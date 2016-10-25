@@ -52,11 +52,4 @@ Package.onUse(function(api) {
 		'client/page/stylesheets/snippetPage.less'
 	], 'client');
 
-	// api.export('multilinePasteHandler');
-	// api.export('multilinePaste');
 });
-
-Npm.depends({
-	'mime-types': '2.1.11'
-});
-
