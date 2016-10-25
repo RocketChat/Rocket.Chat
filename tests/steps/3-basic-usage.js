@@ -9,7 +9,7 @@ import sideNav from '../pageobjects/side-nav.page';
 //test data imports
 import {username, email, password} from '../test-data/user.js';
 import {publicChannelName, privateChannelName} from '../test-data/channel.js';
-import {targetUser} from '../test-data/interactions.js';
+import {targetUser, imgURL} from '../test-data/interactions.js';
 
 //Test data
 const message = 'message from '+username;
@@ -232,7 +232,7 @@ describe('Basic usage', function() {
 
 			describe('fileUpload', ()=> {
 				it('send a attachment', () => {
-					mainContent.fileUpload('./public/images/logo/1024x1024.png');
+					mainContent.fileUpload(imgURL);
 				});
 
 				it('should show the confirm button', () => {
