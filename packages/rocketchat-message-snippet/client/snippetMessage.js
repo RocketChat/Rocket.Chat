@@ -1,6 +1,6 @@
 Meteor.methods({
 	snippetMessage: function(message) {
-		if (typeof Meteor.userId() === 'undefined' || Meteor.userId() == null) {
+		if (typeof Meteor.userId() === 'undefined' || Meteor.userId() === null) {
 			return false;
 		}
 		if ((typeof RocketChat.settings.get('Message_AllowSnippeting') === 'undefined') ||
@@ -9,9 +9,9 @@ Meteor.methods({
 			return false;
 		}
 
-		let room = RocketChat.models.Rooms.findOne({ _id: message.rid });
+		let subscription = RocketChat.models.Subscriptions.findOne({ rid: message.rid, 'u._id': Meteor.userId() });
 
-		if (Array.isArray(room.usernames) && room.usernames.indexOf(Meteor.user().username) === -1) {
+		if (subscription === undefined) {
 			return false;
 		}
 		ChatMessage.update({

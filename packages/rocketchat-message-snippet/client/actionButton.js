@@ -38,18 +38,17 @@ Meteor.startup(function() {
 
 		},
 		validation: function(message) {
-			let room = RocketChat.models.Subscriptions.findOne({_id: message.rid});
-
-			if (Array.isArray(room.usernames) && (room.usernames.indexOf(Meteor.user().username) === -1)) {
+			if (RocketChat.models.Subscriptions.findOne({ rid: message.rid, 'u._id': Meteor.userId() }) === undefined) {
 				return false;
-			} else {
-				if (message.snippeted || ((RocketChat.settings.get('Message_AllowSnippeting') === undefined) ||
-										(RocketChat.settings.get('Message_AllowSnippeting') === null) ||
-										(RocketChat.settings.get('Message_AllowSnippeting')) === false)) {
-					return false;
-				}
-				return RocketChat.authz.hasAtLeastOnePermission('snippet-message', message.rid);
 			}
+
+			if (message.snippeted || ((RocketChat.settings.get('Message_AllowSnippeting') === undefined) ||
+				(RocketChat.settings.get('Message_AllowSnippeting') === null) ||
+				(RocketChat.settings.get('Message_AllowSnippeting')) === false)) {
+				return false;
+			}
+
+			return RocketChat.authz.hasAtLeastOnePermission('snippet-message', message.rid);
 		}
 	});
 });
