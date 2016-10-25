@@ -4,6 +4,24 @@ if (!Accounts.saml) {
 	Accounts.saml = {};
 }
 
+// Override the standard logout behaviour.
+//
+// If we find a saml_provider in our session, we will initiate logout
+// from rocketchat via saml.
+
+var originalLogout = Meteor.logout;
+
+Meteor.logout = function() {
+	var provider = Session.get('saml_provider');
+	if (provider) {
+		Session.set('saml_provider', false);
+		return Meteor.logoutWithSaml({ provider: provider });
+	}
+	else {
+		return originalLogout.apply(Meteor, arguments);
+	}
+};
+
 var openCenteredPopup = function(url, width, height) {
 	var newwindow;
 
@@ -75,6 +93,7 @@ Accounts.saml.initiateLogin = function(options, callback, dimensions) {
 };
 
 Meteor.loginWithSaml = function(options, callback) {
+	Session.set('saml_provider', options.provider);
 	options = options || {};
 	var credentialToken = Random.id();
 	options.credentialToken = credentialToken;

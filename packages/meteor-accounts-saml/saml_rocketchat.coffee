@@ -13,9 +13,10 @@ Meteor.methods
 
 	addSamlService: (name) ->
 		RocketChat.settings.add "SAML_Custom_#{name}"                   , false                                                         , { type: 'boolean', group: 'SAML', section: name, i18nLabel: 'Accounts_OAuth_Custom_Enable'}
-		RocketChat.settings.add "SAML_Custom_#{name}_provider"          , 'openidp'                                                     , { type: 'string' , group: 'SAML', section: name, i18nLabel: 'SAML_Custom_Provider'}
-		RocketChat.settings.add "SAML_Custom_#{name}_entry_point"       , 'https://openidp.feide.no/simplesaml/saml2/idp/SSOService.php', { type: 'string' , group: 'SAML', section: name, i18nLabel: 'SAML_Custom_Entry_point'}
-		RocketChat.settings.add "SAML_Custom_#{name}_issuer"            , 'https://rocket.chat/'                                        , { type: 'string' , group: 'SAML', section: name, i18nLabel: 'SAML_Custom_Issuer'}
+		RocketChat.settings.add "SAML_Custom_#{name}_provider"          , 'provider-name'                                               , { type: 'string' , group: 'SAML', section: name, i18nLabel: 'SAML_Custom_Provider'}
+		RocketChat.settings.add "SAML_Custom_#{name}_entry_point"       , 'https://example.com/simplesaml/saml2/idp/SSOService.php'     , { type: 'string' , group: 'SAML', section: name, i18nLabel: 'SAML_Custom_Entry_point'}
+		RocketChat.settings.add "SAML_Custom_#{name}_idp_slo_redirect_url", 'https://example.com/simplesaml/saml2/idp/SingleLogoutService.php', { type: 'string' , group: 'SAML', section: name, i18nLabel: 'SAML_IDP_SLO_Redirect_URL'}
+		RocketChat.settings.add "SAML_Custom_#{name}_issuer"            , 'https://your-rocket-chat/_saml/metadata/provider-name'       , { type: 'string' , group: 'SAML', section: name, i18nLabel: 'SAML_Custom_Issuer'}
 		RocketChat.settings.add "SAML_Custom_#{name}_cert"              , ''                                                            , { type: 'string' , group: 'SAML', section: name, i18nLabel: 'SAML_Custom_Cert'}
 		RocketChat.settings.add "SAML_Custom_#{name}_public_cert_file_path", '', {
 			type: 'string' ,
@@ -73,6 +74,7 @@ getSamlConfigs = (service) ->
 	privateKeyFilePath: RocketChat.settings.get("#{service.key}_private_key_file_path")
 	publicCertFilePath: RocketChat.settings.get("#{service.key}_public_cert_file_path")
 	entryPoint: RocketChat.settings.get("#{service.key}_entry_point")
+	idpSLORedirectURL:	RocketChat.settings.get("#{service.key}_idp_slo_redirect_url")
 	issuer: RocketChat.settings.get("#{service.key}_issuer")
 	cert: RocketChat.settings.get("#{service.key}_cert")
 	generateUsername: RocketChat.settings.get("#{service.key}_generate_username")
@@ -102,6 +104,7 @@ configureSamlService = (samlConfigs) ->
 	Accounts.saml.settings.providers.push
 		provider: samlConfigs.clientConfig.provider
 		entryPoint: samlConfigs.entryPoint
+		idpSLORedirectURL: samlConfigs.idpSLORedirectURL
 		issuer: samlConfigs.issuer
 		cert: samlConfigs.cert
 		privateCert: privateCert
