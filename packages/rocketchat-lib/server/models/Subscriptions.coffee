@@ -1,6 +1,6 @@
-RocketChat.models.Subscriptions = new class extends RocketChat.models._Base
+class ModelSubscriptions extends RocketChat.models._Base
 	constructor: ->
-		super('subscription')
+		super(arguments...)
 
 		@tryEnsureIndex { 'rid': 1, 'u._id': 1 }, { unique: 1 }
 		@tryEnsureIndex { 'rid': 1, 'alert': 1, 'u._id': 1 }
@@ -15,7 +15,6 @@ RocketChat.models.Subscriptions = new class extends RocketChat.models._Base
 		@tryEnsureIndex { 'desktopNotifications': 1 }, { sparse: 1 }
 		@tryEnsureIndex { 'mobilePushNotifications': 1 }, { sparse: 1 }
 		@tryEnsureIndex { 'emailNotifications': 1 }, { sparse: 1 }
-
 
 	# FIND ONE
 	findOneByRoomIdAndUserId: (roomId, userId) ->
@@ -362,3 +361,5 @@ RocketChat.models.Subscriptions = new class extends RocketChat.models._Base
 			"u._id": userId
 
 		return @remove query
+
+RocketChat.models.Subscriptions = new ModelSubscriptions('subscription')

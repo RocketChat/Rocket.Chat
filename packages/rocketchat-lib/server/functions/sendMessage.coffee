@@ -12,7 +12,7 @@ RocketChat.sendMessage = (user, message, room, upsert = false) ->
 
 	message.rid = room._id
 
-	if not room.usernames?
+	if not room.usernames? || room.usernames.length is 0
 		room = RocketChat.models.Rooms.findOneById(room._id)
 
 	if message.parseUrls isnt false
