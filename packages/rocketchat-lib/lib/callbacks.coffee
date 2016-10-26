@@ -6,7 +6,12 @@
 ###
 RocketChat.callbacks = {}
 
-RocketChat.callbacks.showTime = false
+if Meteor.isServer
+	RocketChat.callbacks.showTime = true
+	RocketChat.callbacks.showTotalTime = true
+else
+	RocketChat.callbacks.showTime = false
+	RocketChat.callbacks.showTotalTime = false
 
 ###
 # Callback priorities
@@ -33,6 +38,9 @@ RocketChat.callbacks.add = (hook, callback, priority, id) ->
 	if RocketChat.callbacks.showTime is true
 		err = new Error
 		callback.stack = err.stack
+
+		# if not id?
+		# 	console.log('Callback without id', callback.stack)
 
 	# Avoid adding the same callback twice
 	for cb in RocketChat.callbacks[hook]
@@ -64,23 +72,39 @@ RocketChat.callbacks.remove = (hookName, id) ->
 RocketChat.callbacks.run = (hook, item, constant) ->
 	callbacks = RocketChat.callbacks[hook]
 	if !!callbacks?.length
+		if RocketChat.callbacks.showTotalTime is true
+			totalTime = 0
+
 		# if the hook exists, and contains callbacks to run
-		_.sortBy(callbacks, (callback) -> return callback.priority or RocketChat.callbacks.priority.MEDIUM).reduce (result, callback) ->
+		result = _.sortBy(callbacks, (callback) -> return callback.priority or RocketChat.callbacks.priority.MEDIUM).reduce (result, callback) ->
 			# console.log(callback.name);
-			if RocketChat.callbacks.showTime is true
+			if RocketChat.callbacks.showTime is true or RocketChat.callbacks.showTotalTime is true
 				time = Date.now()
 
 			callbackResult = callback result, constant
 
-			if RocketChat.callbacks.showTime is true
-				console.log hook, Date.now() - time
-				console.log callback.stack.split('\n')[2]
+			if RocketChat.callbacks.showTime is true or RocketChat.callbacks.showTotalTime is true
+				currentTime = Date.now() - time
+				totalTime += currentTime
+				if RocketChat.callbacks.showTime is true
+					if Meteor.isServer
+						RocketChat.statsTracker.timing('callbacks.time', currentTime, ["hook:#{hook}", "callback:#{callback.id}"]);
+					else
+						console.log String(currentTime), hook, callback.id, callback.stack?.split?('\n')[2]?.match(/\(.+\)/)?[0]
 
 			return callbackResult
 		, item
+
+		if RocketChat.callbacks.showTotalTime is true
+			if Meteor.isServer
+				RocketChat.statsTracker.timing('callbacks.totalTime', totalTime, ["hook:#{hook}"]);
+			else
+				console.log hook+':', totalTime
+
+		return result
 	else
 		# else, just return the item unchanged
-		item
+		return item
 
 ###
 # Successively run all of a hook's callbacks on an item, in async mode (only works on server)
