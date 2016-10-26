@@ -26,7 +26,6 @@ this.Livechat = new (class Livechat {
 				RoomHistoryManager.getMoreIfIsEmpty(this._room.get());
 				visitor.subscribeToRoom(this._room.get());
 				visitor.setRoom(this._room.get());
-				c.stop();
 			}
 		});
 	}
