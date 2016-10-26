@@ -16,5 +16,5 @@ else
 	Meteor.startup ->
 		Tracker.autorun ->
 			if RocketChat.settings.get 'API_Wordpress_URL'
-				config.serverURL = value
+				config.serverURL = RocketChat.settings.get 'API_Wordpress_URL'
 				WordPress.configure config
