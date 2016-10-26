@@ -28,6 +28,14 @@ const commands = {
 				customLoginWith.call(Meteor, {'redirectUrl': customRedirectUri}, customOAuthCallback);
 			}
 		}
+	},
+
+	'login-with-token'(data) {
+		if (typeof data.token === 'string') {
+			Meteor.loginWithToken(data.token, function() {
+				console.log('Iframe command [login-with-token]: result', arguments);
+			});
+		}
 	}
 };
 
