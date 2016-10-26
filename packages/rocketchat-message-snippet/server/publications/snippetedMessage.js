@@ -3,9 +3,24 @@ Meteor.publish('snippetedMessage', function(_id) {
 		return this.ready();
 	}
 
+	let snippet = RocketChat.models.Messages.findOne({'_id': _id, snippeted: true});
+	let user = RocketChat.models.Users.findOneById(this.userId);
+	console.log(user.username);
+	let roomSnippetQuery = {
+		'_id': snippet.rid,
+		'usernames': {
+			'$in': [
+				user.username
+			]
+		}
+	};
+
+	if (RocketChat.models.Rooms.findOne(roomSnippetQuery) === undefined) {
+		return this.ready();
+	}
+
 	let publication = this;
 
-	let user = RocketChat.models.Users.findOneById(this.userId);
 
 	if (typeof user === 'undefined' || user === null) {
 		return this.ready();
