@@ -44,6 +44,6 @@ Template.messageAttachment.helpers
 	time: ->
 		return moment(@ts).format(RocketChat.settings.get('Message_TimeFormat'))
 
-	injectIndex: (data, index) ->
-		data.index = index
+	injectIndex: (data, previousIndex, index) ->
+		data.index = previousIndex + '.attachments.' + index
 		return
