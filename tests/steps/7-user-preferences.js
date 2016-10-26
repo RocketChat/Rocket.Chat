@@ -6,7 +6,7 @@ import mainContent from '../pageobjects/main-content.page';
 import sideNav from '../pageobjects/side-nav.page';
 import preferencesMainContent from '../pageobjects/preferences-main-content.page';
 
-import {username} from '../test-data/user.js';
+import {username, password} from '../test-data/user.js';
 import {publicChannelName} from '../test-data/channel.js';
 import {imgURL} from '../test-data/interactions.js';
 
@@ -59,13 +59,14 @@ describe('user preferences', ()=> {
 		});
 
 	});
-	describe('user info change', ()=> {
+	//it gives off a "Too Many Requests Error" due the 60 seconds username change restriction
+	describe.skip('user info change', ()=> {
 		it('click on the profile link', ()=> {
 			sideNav.profile.click();
 			browser.pause(1000);
 		});
 
-		it.skip('change the name field', ()=> {
+		it('change the name field', ()=> {
 			preferencesMainContent.changeRealName('EditedRealName'+username);
 		});
 
@@ -79,6 +80,10 @@ describe('user preferences', ()=> {
 
 		it('save the settings', ()=> {
 			preferencesMainContent.saveChanges();
+		});
+
+		it.skip('put the password in the sweet alert input', ()=> {
+			preferencesMainContent.acceptPasswordOverlay(password);
 		});
 
 		it('click on the avatar link', ()=> {
@@ -106,5 +111,24 @@ describe('user preferences', ()=> {
 			mainContent.lastMessageUser.getText().should.equal('EditedUserName'+username);
 		});
 
+		it('the name on the nav bar should be the edited one', () => {
+			sideNav.accountBoxUserName.getText().should.equal('EditedUserName'+username);
+		});
+
+		it('click on the last message ', () => {
+			mainContent.lastMessageUser.click();
+		});
+
+		it('the user name on the members flex tab should be the edited one', () => {
+			flexTab.memberUserName.getText().should.equal('EditedUserName'+username);
+		});
+
+		it('the real name on the members flex tab should be the edited one', () => {
+			flexTab.memberRealName.getText().should.equal('EditedRealName'+username);
+		});
+
+		it('close the flexTab', () => {
+			flexTab.membersTab.click();
+		});
 	});
 });

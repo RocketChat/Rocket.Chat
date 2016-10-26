@@ -10,6 +10,9 @@ class PreferencesMainContent extends Page {
 	get avatarFileInput() { return browser.element('.avatar-file-input'); }
 	get useUploadedAvatar() { return browser.element('.avatar-suggestion-item:nth-of-type(2) .select-service'); }
 	get submitBtn() { return browser.element('.submit .button'); }
+	get sweetAlert() { return browser.element('.sweet-alert'); }
+	get sweetAlertConfirm() { return browser.element('.sweet-alert .sa-confirm-button-container'); }
+	get sweetAlertPasswordField() { return browser.element('.sweet-alert [type="password"]'); }
 
 	changeUsername(userName) {
 		this.userNameTextInput.waitForVisible(5000);
@@ -29,12 +32,18 @@ class PreferencesMainContent extends Page {
 	saveChanges() {
 		this.submitBtn.waitForVisible(5000);
 		this.submitBtn.click();
-		browser.pause(2000);
 	}
 
 	changeAvatarUpload(url) {
 		this.avatarFileInput.chooseFile(url);
 		this.useUploadedAvatar.click();
+	}
+
+	acceptPasswordOverlay(password) {
+		this.sweetAlert.waitForVisible();
+		this.sweetAlertPasswordField.setValue(password);
+		this.sweetAlertConfirm.click();
+		browser.pause(15000)
 	}
 }
 
