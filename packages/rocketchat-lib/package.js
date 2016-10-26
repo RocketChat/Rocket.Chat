@@ -102,8 +102,9 @@ Package.onUse(function(api) {
 	api.addFiles('server/models/Uploads.coffee', 'server');
 	api.addFiles('server/models/Users.coffee', 'server');
 
-	// CACHE
 	api.addFiles('server/startup/statsTracker.js', 'server');
+
+	// CACHE
 	api.addFiles('server/startup/cache/CacheLoad.js', 'server');
 
 	// SERVER PUBLICATIONS

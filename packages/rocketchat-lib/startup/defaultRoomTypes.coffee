@@ -11,15 +11,19 @@ RocketChat.roomTypes.add 'c', 10,
 		action: (params, queryParams) ->
 			openRoom 'c', params.name
 			RocketChat.TabBar.showGroup 'channel'
+
 	findRoom: (identifier) ->
 		query =
 			t: 'c'
 			name: identifier
 		return ChatRoom.findOne(query)
+
 	roomName: (roomData) ->
 		return roomData.name
+
 	condition: ->
 		return RocketChat.authz.hasAtLeastOnePermission ['view-c-room', 'view-joined-room']
+
 	showJoinLink: (roomId) ->
 		return !! ChatRoom.findOne { _id: roomId, t: 'c' }
 
