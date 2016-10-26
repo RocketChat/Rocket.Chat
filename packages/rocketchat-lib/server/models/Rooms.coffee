@@ -1,13 +1,12 @@
-RocketChat.models.Rooms = new class extends RocketChat.models._Base
+class ModelRooms extends RocketChat.models._Base
 	constructor: ->
-		super('room')
+		super(arguments...)
 
 		@tryEnsureIndex { 'name': 1 }, { unique: 1, sparse: 1 }
 		@tryEnsureIndex { 'default': 1 }
 		@tryEnsureIndex { 'usernames': 1 }
 		@tryEnsureIndex { 't': 1 }
 		@tryEnsureIndex { 'u._id': 1 }
-
 
 	# FIND ONE
 	findOneById: (_id, options) ->
@@ -64,6 +63,7 @@ RocketChat.models.Rooms = new class extends RocketChat.models._Base
 
 
 	# FIND
+
 	findById: (roomId, options) ->
 		return @find { _id: roomId }, options
 
@@ -234,10 +234,9 @@ RocketChat.models.Rooms = new class extends RocketChat.models._Base
 		if archivationstate
 			query.archived = true
 		else
-			query.archived = { $ne: true }
+			query.archived = { $ne: true }
 
 		return @find query, options
-
 
 	# UPDATE
 	archiveById: (_id) ->
@@ -537,3 +536,5 @@ RocketChat.models.Rooms = new class extends RocketChat.models._Base
 			usernames: username
 
 		return @remove query
+
+RocketChat.models.Rooms = new ModelRooms('room')
