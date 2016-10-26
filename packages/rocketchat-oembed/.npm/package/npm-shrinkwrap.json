@@ -11,9 +11,9 @@
       "from": "iconv-lite@0.4.13"
     },
     "ip-range-check": {
-      "version": "0.0.1",
-      "resolved": "https://registry.npmjs.org/ip-range-check/-/ip-range-check-0.0.1.tgz",
-      "from": "ip-range-check@0.0.1"
+      "version": "0.0.2",
+      "resolved": "https://registry.npmjs.org/ip-range-check/-/ip-range-check-0.0.2.tgz",
+      "from": "ip-range-check@0.0.2"
     },
     "ipaddr.js": {
       "version": "1.2.0",
