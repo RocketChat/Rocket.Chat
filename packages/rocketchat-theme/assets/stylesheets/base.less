@@ -1609,6 +1609,7 @@ label.required:after {
 	right: 40px;
 	width: auto;
 	height: auto;
+	.transition(right .25s cubic-bezier(.5, 0, .1, 1));
 	&.flex-opened {
 		right: @flex-tab-width + 40px;
 		.flex-tab {
@@ -1727,6 +1728,12 @@ label.required:after {
 					padding: 5px;
 				}
 			}
+
+			.selected-rooms {
+				.remove-room {
+					cursor: pointer;
+				}
+			}
 		}
 	}
 	.settings-description {
@@ -1772,6 +1779,7 @@ label.required:after {
 			}
 		}
 	}
+
 }
 
 .page-static {

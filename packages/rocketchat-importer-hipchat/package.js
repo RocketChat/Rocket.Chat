@@ -11,7 +11,7 @@ Package.onUse(function(api) {
 		'rocketchat:lib',
 		'rocketchat:importer'
 	]);
-	api.use(['mrt:moment-timezone@0.2.1'], 'server');
+	api.use('aldeed:moment-timezone', 'server');
 	api.use('rocketchat:logger', 'server');
 	api.addFiles('server.coffee', 'server');
 	api.addFiles('main.coffee', ['client', 'server']);
