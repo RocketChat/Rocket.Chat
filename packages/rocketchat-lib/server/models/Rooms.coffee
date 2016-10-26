@@ -1,5 +1,5 @@
 class ModelRooms extends RocketChat.models._Base
-	constructor: (model, cache) ->
+	constructor: ->
 		super(arguments...)
 
 		@tryEnsureIndex { 'name': 1 }, { unique: 1, sparse: 1 }
