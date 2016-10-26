@@ -122,7 +122,7 @@
 				{{/unless}}
 			{{/if}}
 			{{#each attachments}}
-				{{injectIndex . @index}} {{> messageAttachment}}
+				{{injectIndex . ../index @index}} {{> messageAttachment}}
 			{{/each}}
 		</div>
 	</div>
