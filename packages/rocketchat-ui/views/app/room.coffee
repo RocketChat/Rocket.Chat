@@ -550,8 +550,9 @@ Template.room.onRendered ->
 
 	messageBox = $('.messages-box')
 
-	template.isAtBottom = ->
-		if wrapper.scrollTop >= wrapper.scrollHeight - wrapper.clientHeight
+	template.isAtBottom = (scrollThreshold) ->
+		if not scrollThreshold? then scrollThreshold = 0
+		if wrapper.scrollTop + scrollThreshold >= wrapper.scrollHeight - wrapper.clientHeight
 			newMessage.className = "new-message not"
 			return true
 		return false
@@ -561,7 +562,7 @@ Template.room.onRendered ->
 		newMessage.className = "new-message not"
 
 	template.checkIfScrollIsAtBottom = ->
-		template.atBottom = template.isAtBottom()
+		template.atBottom = template.isAtBottom(100)
 		readMessage.enable()
 		readMessage.read()
 
@@ -613,6 +614,11 @@ Template.room.onRendered ->
 		Meteor.setTimeout ->
 			template.checkIfScrollIsAtBottom()
 		, 2000
+
+	wrapper.addEventListener 'scroll', ->
+		template.atBottom = false
+		Meteor.defer ->
+			template.checkIfScrollIsAtBottom()
 
 	$('.flex-tab-bar').on 'click', (e, t) ->
 		Meteor.setTimeout ->
