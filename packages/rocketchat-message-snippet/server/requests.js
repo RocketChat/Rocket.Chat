@@ -1,32 +1,47 @@
 /* global Cookies */
 WebApp.connectHandlers.use('/snippet/download', function(req, res) {
+	var cookie, rawCookies, ref, token, uid;
+	cookie = new Cookies();
+
+	if ((typeof req !== 'undefined' && req !== null ? (ref = req.headers) != null ? ref.cookie : void 0 : void 0) != null) {
+		rawCookies = req.headers.cookie;
+	}
+
+	if (rawCookies != null) {
+		uid = cookie.get('rc_uid', rawCookies);
+	}
+
+	if (rawCookies != null) {
+		token = cookie.get('rc_token', rawCookies);
+	}
+
+	if (uid == null) {
+		uid = req.query.rc_uid;
+		token = req.query.rc_token;
+	}
+
+	let user = RocketChat.models.Users.findOneByIdAndLoginToken(uid, token);
+
+	if (!(uid && token && user)) {
+		res.writeHead(403);
+		res.end();
+		console.log('here');
+		return false;
+	}
 	var match = /^\/([^\/]+)\/(.*)/.exec(req.url);
 
 	if (match[1]) {
-		let snippet = RocketChat.models.Messages.findOneById(match[1]);
-		var cookie, rawCookies, ref, token, uid;
-		cookie = new Cookies();
-
-		if ((typeof req !== 'undefined' && req !== null ? (ref = req.headers) != null ? ref.cookie : void 0 : void 0) != null) {
-			rawCookies = req.headers.cookie;
-		}
-
-		if (rawCookies != null) {
-			uid = cookie.get('rc_uid', rawCookies);
-		}
-
-		if (rawCookies != null) {
-			token = cookie.get('rc_token', rawCookies);
-		}
-
-		if (uid == null) {
-			uid = req.query.rc_uid;
-			token = req.query.rc_token;
-		}
-
-		if (!(uid && token && RocketChat.models.Users.findOneByIdAndLoginToken(uid, token))) {
+		let snippet = RocketChat.models.Messages.findOne(
+			{
+				'_id': match[1],
+				'snippeted': true
+			}
+		);
+		let room = RocketChat.models.Rooms.findOne({ '_id': snippet.rid, 'usernames': { '$in': [user.username] }});
+		if (room === undefined) {
 			res.writeHead(403);
 			res.end();
+			console.log('not here');
 			return false;
 		}
 
