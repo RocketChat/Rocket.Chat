@@ -132,7 +132,7 @@ Importer.Slack = class Importer.Slack extends Importer.Base
 									url = user.profile.image_original
 								else if user.profile.image_512
 									url = user.profile.image_512
-								Meteor.call 'setAvatarFromService', url, null, 'url'
+								Meteor.call 'setAvatarFromService', url, undefined, 'url'
 								# Slack's is -18000 which translates to Rocket.Chat's after dividing by 3600
 								if user.tz_offset
 									Meteor.call 'userSetUtcOffset', user.tz_offset / 3600

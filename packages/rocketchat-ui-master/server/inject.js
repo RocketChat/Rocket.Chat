@@ -79,6 +79,14 @@ RocketChat.settings.get('Site_Url', function() {
 	});
 });
 
+RocketChat.settings.get('Site_Name', function(key, value) {
+	if (value) {
+		Inject.rawHead('title', `<title>${value}</title>`);
+	} else {
+		Inject.rawHead('title', '<title>Rocket.Chat</title>');
+	}
+});
+
 RocketChat.settings.get('GoogleSiteVerification_id', function(key, value) {
 	if (value) {
 		Inject.rawHead('google-site-verification', `<meta name="google-site-verification" content="${value}" />`);
