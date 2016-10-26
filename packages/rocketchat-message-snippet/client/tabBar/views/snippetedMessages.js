@@ -21,7 +21,7 @@ Template.snippetedMessages.onCreated(function() {
 	this.autorun(function() {
 		let data = Template.currentData();
 		self.subscribe('snippetedMessages', data.rid, self.limit.get(), function() {
-			if (Messages.find({ snippeted: true, rid: data.rid }).count() < self.limit.get()) {
+			if (SnippetedMessages.find({ snippeted: true, rid: data.rid }).count() < self.limit.get()) {
 				return self.hasMore.set(false);
 			}
 		});
