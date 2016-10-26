@@ -4,19 +4,42 @@ request = HTTPInternals.NpmModules.request.module
 iconv = Npm.require('iconv-lite')
 ipRangeCheck = Npm.require('ip-range-check')
 he = Npm.require('he')
+jschardet = Npm.require('jschardet')
 
 OEmbed = {}
 
 # Detect encoding
-getCharset = (body) ->
-	binary = body.toString 'binary'
-	matches = binary.match /<meta\b[^>]*charset=["']?([\w\-]+)/i
-	if matches
-		return matches[1]
-	return 'utf-8'
+# Priority:
+#   Detected == HTTP Header > Detected == HTML meta > HTTP Header > HTML meta > Detected > Default (utf-8)
+#   See also: https://www.w3.org/International/questions/qa-html-encoding-declarations.en#quickanswer
+getCharset = (contentType, body) ->
+	contentType = contentType || ''
+	binary = body.toString('binary')
 
-toUtf8 = (body) ->
-	return iconv.decode body, getCharset(body)
+	detected = jschardet.detect(binary)
+	if detected.confidence > 0.8
+		detectedCharset = detected.encoding.toLowerCase()
+
+	m1 = contentType.match(/charset=([\w\-]+)/i)
+	if m1
+		httpHeaderCharset = m1[1].toLowerCase()
+
+	m2 = binary.match(/<meta\b[^>]*charset=["']?([\w\-]+)/i)
+	if m2
+		htmlMetaCharset = m2[1].toLowerCase()
+
+	switch detectedCharset
+		when httpHeaderCharset
+			result = httpHeaderCharset
+		when htmlMetaCharset
+			result = htmlMetaCharset
+		else
+			result = httpHeaderCharset || htmlMetaCharset || detectedCharset || 'utf-8'
+
+	return result
+
+toUtf8 = (contentType, body) ->
+	return iconv.decode(body, getCharset(contentType, body))
 
 getUrlContent = (urlObj, redirectCount = 5, callback) ->
 	if _.isString(urlObj)
@@ -78,7 +101,7 @@ getUrlContent = (urlObj, redirectCount = 5, callback) ->
 
 		callback null, {
 			headers: headers
-			body: toUtf8 buffer
+			body: toUtf8(headers['content-type'], buffer)
 			parsedUrl: parsedUrl
 			statusCode: statusCode
 		}
