@@ -18,7 +18,7 @@
 												{{#if editing $key}}
 													<input type="text" name="{{$key}}" value="{{value}}" class="editing" />
 												{{else}}
-													<span>{{value}}</span>
+													<span class='current-setting'>{{value}}</span>
 												{{/if}}
 											{{/if}}
 
@@ -26,7 +26,7 @@
 												{{#if editing $key}}
 													<input type="text" name="{{$key}}" value="{{unscape value}}" class="editing" />
 												{{else}}
-													<span>{{{RocketChatMarkdown value}}}</span>
+													<span class='current-setting'>{{{RocketChatMarkdown value}}}</span>
 												{{/if}}
 											{{/if}}
 
@@ -39,7 +39,7 @@
 														</label>
 													{{/each}}
 												{{else}}
-													<span>{{_ (valueOf $value.options value)}}</span>
+													<span class='current-setting'>{{_ (valueOf $value.options value)}}</span>
 												{{/if}}
 											{{/if}}
 
@@ -55,9 +55,9 @@
 													</label>
 												{{else}}
 													{{#if value}}
-														<span>{{_ 'True'}}</span>
+														<span class='current-setting'>{{_ 'True'}}</span>
 													{{else}}
-														<span>{{_ 'False'}}</span>
+														<span class='current-setting'>{{_ 'False'}}</span>
 													{{/if}}
 												{{/if}}
 											{{/if}}
