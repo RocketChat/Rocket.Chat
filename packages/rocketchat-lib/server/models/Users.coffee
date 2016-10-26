@@ -1,6 +1,6 @@
-RocketChat.models.Users = new class extends RocketChat.models._Base
+class ModelUsers extends RocketChat.models._Base
 	constructor: ->
-		@model = Meteor.users
+		super(arguments...)
 
 		@tryEnsureIndex { 'roles': 1 }, { sparse: 1 }
 		@tryEnsureIndex { 'name': 1 }
@@ -109,10 +109,14 @@ RocketChat.models.Users = new class extends RocketChat.models._Base
 
 		termRegex = new RegExp s.escapeRegExp(searchTerm), 'i'
 		query =
-			active: true
 			$and: [
-				{ username: { $nin: exceptions } }
-				{ username: termRegex }
+				{
+					active: true
+					username: termRegex
+				}
+				{
+					username: { $nin: exceptions }
+				}
 			]
 
 		return @find query, options
@@ -392,3 +396,5 @@ RocketChat.models.Users = new class extends RocketChat.models._Base
 			'emails.verified': true
 
 		return @find query, { fields: { name: 1, username: 1, emails: 1, 'settings.preferences.emailNotificationMode': 1 } }
+
+RocketChat.models.Users = new ModelUsers(Meteor.users)
