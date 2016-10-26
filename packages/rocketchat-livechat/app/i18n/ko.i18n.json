@@ -1,7 +1,9 @@
 {
   "Additional_Feedback": "추가 의견",
-  "Appearance": "외관",
-  "Conversation_finished": "대화 종료",
+  "Appearance": "모양",
+  "Chat_ended": "채팅 끝남!",
+  "Conversation_finished": "대화 종료됨",
+  "End_chat": "채팅 끝남",
   "How_friendly_was_the_chat_agent": "채팅 에이전트는 어떻게 친했다?",
   "How_knowledgeable_was_the_chat_agent": "채팅 에이전트는 어떻게 지식인가?",
   "How_responsive_was_the_chat_agent": "채팅 에이전트는 어떻게 반응이었다?",
