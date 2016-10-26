@@ -86,7 +86,7 @@
     },
     "isarray": {
       "version": "0.0.1",
-      "resolved": "http://registry.npmjs.org/isarray/-/isarray-0.0.1.tgz",
+      "resolved": "https://registry.npmjs.org/isarray/-/isarray-0.0.1.tgz",
       "from": "isarray@0.0.1"
     },
     "lodash": {
