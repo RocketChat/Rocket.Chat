@@ -6,6 +6,11 @@ const commands = {
 		FlowRouter.go(data.path);
 	},
 
+
+	'set-user-status'(data) {
+		AccountBox.setStatus(data.status);
+	},
+
 	'call-custom-oauth-login'(data, event) {
 		const customOAuthCallback = (response) => {
 			event.source.postMessage({
