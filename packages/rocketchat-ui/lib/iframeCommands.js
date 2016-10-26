@@ -1,3 +1,31 @@
+const commands = {
+	go(data) {
+		if (typeof data.path !== 'string' || data.path.trim().length === 0) {
+			return console.error('`path` not defined');
+		}
+		FlowRouter.go(data.path);
+	},
+
+	'call-custom-oauth-login'(data, event) {
+		const customOAuthCallback = (response) => {
+			event.source.postMessage({
+				event: 'custom-oauth-callback',
+				response: response
+			}, event.origin);
+		};
+
+		if (typeof data.service === 'string') {
+			const customOauth = ServiceConfiguration.configurations.findOne({service: data.service});
+
+			if (customOauth) {
+				const customLoginWith = Meteor['loginWith' + _.capitalize(customOauth.service, true)];
+				const customRedirectUri = window.OAuth._redirectUri(customOauth.service, customOauth);
+				customLoginWith.call(Meteor, {'redirectUrl': customRedirectUri}, customOAuthCallback);
+			}
+		}
+	}
+};
+
 window.addEventListener('message', (e) => {
 	if (RocketChat.settings.get('Iframe_Integration_receive_enable') !== true) {
 		return;
@@ -13,31 +41,8 @@ window.addEventListener('message', (e) => {
 		return console.error('Origin not allowed', e.origin);
 	}
 
-	switch (e.data.externalCommand) {
-		case 'go':
-			if (typeof e.data.path !== 'string' || e.data.path.trim().length === 0) {
-				return console.error('`path` not defined');
-			}
-			FlowRouter.go(e.data.path);
-			break;
-
-		case 'call-custom-oauth-login':
-			const customOAuthCallback = (response) => {
-				e.source.postMessage({
-					event: 'custom-oauth-callback',
-					response: response
-				}, e.origin);
-			};
-
-			if (typeof e.data.service === 'string') {
-				const customOauth = ServiceConfiguration.configurations.findOne({service: e.data.service});
-
-				if (customOauth) {
-					const customLoginWith = Meteor['loginWith' + _.capitalize(customOauth.service, true)];
-					const customRedirectUri = window.OAuth._redirectUri(customOauth.service, customOauth);
-					customLoginWith.call(Meteor, {'redirectUrl': customRedirectUri}, customOAuthCallback);
-				}
-			}
-			break;
+	const command = commands[e.data.externalCommand];
+	if (command) {
+		command(e.data, e);
 	}
 });
