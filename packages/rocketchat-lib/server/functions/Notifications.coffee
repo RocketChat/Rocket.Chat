@@ -6,11 +6,23 @@ RocketChat.Notifications = new class
 
 		@streamAll = new Meteor.Streamer 'notify-all'
 		@streamRoom = new Meteor.Streamer 'notify-room'
+		@streamRoomUsers = new Meteor.Streamer 'notify-room-users'
 		@streamUser = new Meteor.Streamer 'notify-user'
 
 
 		@streamAll.allowWrite('none')
 		@streamRoom.allowWrite('none')
+		@streamRoomUsers.allowWrite (eventName, args...) ->
+			[roomId, e] = eventName.split('/')
+
+			user = Meteor.users.findOne @userId, {fields: {username: 1}}
+			if RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(roomId, @userId)?
+				subscriptions = RocketChat.models.Subscriptions.findByRoomId(roomId).fetch()
+				for subscription in subscriptions
+					RocketChat.Notifications.notifyUser(subscription.u._id, eventName, args...)
+
+			return false
+
 		@streamUser.allowWrite('logged')
 
 		@streamAll.allowRead('logged')
@@ -22,6 +34,8 @@ RocketChat.Notifications = new class
 
 			user = Meteor.users.findOne @userId, {fields: {username: 1}}
 			return RocketChat.models.Rooms.findOneByIdContainigUsername(roomId, user.username, {fields: {_id: 1}})?
+
+		@streamRoomUsers.allowRead('none');
 
 		@streamUser.allowRead (eventName) ->
 			userId = eventName.split('/')[0]
@@ -69,7 +83,7 @@ RocketChat.Notifications = new class
 ## Permissions for client
 
 # Enable emit for event typing for rooms and add username to event data
-func = (eventName, username, typing) ->
+func = (eventName, username) ->
 	[room, e] = eventName.split('/')
 
 	if e is 'webrtc'

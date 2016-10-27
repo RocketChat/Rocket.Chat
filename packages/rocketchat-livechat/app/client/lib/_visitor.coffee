@@ -4,6 +4,7 @@ msgStream = new Meteor.Streamer 'room-messages'
 	token = new ReactiveVar null
 	room = new ReactiveVar null
 	roomToSubscribe = new ReactiveVar null
+	roomSubscribed = null
 
 	register = ->
 		if not localStorage.getItem 'visitorToken'
@@ -25,14 +26,15 @@ msgStream = new Meteor.Streamer 'room-messages'
 
 		return roomId
 
-	getRoomToSubscribe = ->
-		return roomToSubscribe.get()
-
-	setRoomToSubscribe = (rid) ->
-		room.set(rid)
-		return roomToSubscribe.set(rid)
+	isSubscribed = (roomId) ->
+		return roomSubscribed is roomId
 
 	subscribeToRoom = (roomId) ->
+		if roomSubscribed?
+			return if roomSubscribed is roomId
+
+		roomSubscribed = roomId
+
 		msgStream.on roomId, (msg) ->
 			if msg.t is 'command'
 				Commands[msg.msg]?()
@@ -48,7 +50,5 @@ msgStream = new Meteor.Streamer 'room-messages'
 	getToken: getToken
 	setRoom: setRoom
 	getRoom: getRoom
-	setRoomToSubscribe: setRoomToSubscribe
-	getRoomToSubscribe: getRoomToSubscribe
-
 	subscribeToRoom: subscribeToRoom
+	isSubscribed: isSubscribed

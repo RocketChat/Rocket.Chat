@@ -398,7 +398,7 @@ Template.room.events
 
 	'dragenter .dropzone': (e) ->
 		types = e.originalEvent?.dataTransfer?.types
-		if types?.length > 0 and _.every(types, (type) => type.indexOf('text/') is -1) and userCanDrop this._id
+		if types?.length > 0 and _.every(types, (type) => type.indexOf('text/') is -1 or type.indexOf('text/uri-list') isnt -1) and userCanDrop this._id
 			e.currentTarget.classList.add 'over'
 
 	'dragleave .dropzone-overlay': (e) ->
@@ -547,8 +547,9 @@ Template.room.onRendered ->
 
 	messageBox = $('.messages-box')
 
-	template.isAtBottom = ->
-		if wrapper.scrollTop >= wrapper.scrollHeight - wrapper.clientHeight
+	template.isAtBottom = (scrollThreshold) ->
+		if not scrollThreshold? then scrollThreshold = 0
+		if wrapper.scrollTop + scrollThreshold >= wrapper.scrollHeight - wrapper.clientHeight
 			newMessage.className = "new-message not"
 			return true
 		return false
@@ -558,7 +559,7 @@ Template.room.onRendered ->
 		newMessage.className = "new-message not"
 
 	template.checkIfScrollIsAtBottom = ->
-		template.atBottom = template.isAtBottom()
+		template.atBottom = template.isAtBottom(100)
 		readMessage.enable()
 		readMessage.read()
 
@@ -610,6 +611,11 @@ Template.room.onRendered ->
 		Meteor.setTimeout ->
 			template.checkIfScrollIsAtBottom()
 		, 2000
+
+	wrapper.addEventListener 'scroll', ->
+		template.atBottom = false
+		Meteor.defer ->
+			template.checkIfScrollIsAtBottom()
 
 	$('.flex-tab-bar').on 'click', (e, t) ->
 		Meteor.setTimeout ->
