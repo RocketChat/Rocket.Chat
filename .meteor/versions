@@ -129,6 +129,7 @@ rocketchat:api@0.0.1
 rocketchat:assets@0.0.1
 rocketchat:authorization@0.0.1
 rocketchat:autolinker@0.0.1
+rocketchat:bot-helpers@0.0.1
 rocketchat:cas@1.0.0
 rocketchat:channel-settings@0.0.1
 rocketchat:channel-settings-mail-messages@0.0.1
@@ -152,6 +153,8 @@ rocketchat:importer@0.0.1
 rocketchat:importer-hipchat@0.0.1
 rocketchat:importer-slack@0.0.1
 rocketchat:integrations@0.0.1
+rocketchat:internal-hubot@0.0.1
+rocketchat:irc@0.0.2
 rocketchat:katex@0.0.1
 rocketchat:ldap@0.0.1
 rocketchat:ldapjs@1.0.0
