@@ -7,7 +7,6 @@ import sideNav from '../pageobjects/side-nav.page';
 import preferencesMainContent from '../pageobjects/preferences-main-content.page';
 
 import {username, password} from '../test-data/user.js';
-import {publicChannelName} from '../test-data/channel.js';
 import {imgURL} from '../test-data/interactions.js';
 
 describe('user preferences', ()=> {
