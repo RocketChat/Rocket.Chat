@@ -3,6 +3,7 @@ set -x
 set -euvo pipefail
 
 # Make meteor bundle
+export NODE_ENV=production
 cd /opt/app
 meteor build --directory /home/vagrant/
 (cd /home/vagrant/bundle/programs/server && meteor npm install)
