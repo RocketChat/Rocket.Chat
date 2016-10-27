@@ -592,6 +592,7 @@
   "Integration_Outgoing_WebHook": "Outgoing WebHook Integration",
   "Integration_updated": "Integration has been updated",
   "Integrations": "Integrations",
+  "Integrations_for_all_channels": "Enter <strong>all_public_channels</strong> to listen on all public channels, <strong>all_private_groups</strong> to listen on all private groups, and <strong>all_direct_messages</strong> to listen to all direct messages.",
   "InternalHubot": "Internal Hubot",
   "InternalHubot_ScriptsToLoad": "Scripts to load",
   "InternalHubot_ScriptsToLoad_Description": "Please enter a comma separated list of scripts to load from https://github.com/github/hubot-scripts/tree/master/src/scripts",
