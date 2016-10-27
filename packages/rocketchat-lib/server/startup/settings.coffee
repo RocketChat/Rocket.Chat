@@ -189,7 +189,10 @@ RocketChat.settings.addGroup 'Message', ->
 	@add 'API_EmbedSafePorts', '80, 443', { type: 'string' }
 	@add 'Message_TimeFormat', 'LT', { type: 'string', public: true, i18nDescription: 'Message_TimeFormat_Description' }
 	@add 'Message_DateFormat', 'LL', { type: 'string', public: true, i18nDescription: 'Message_DateFormat_Description' }
-
+	@add 'Message_HideType_uj', false, { type: 'boolean', public: true }
+	@add 'Message_HideType_ul', false, { type: 'boolean', public: true }
+	@add 'Message_HideType_ru', false, { type: 'boolean', public: true }
+	@add 'Message_HideType_au', false, { type: 'boolean', public: true }
 
 RocketChat.settings.addGroup 'Meta', ->
 	@add 'Meta_language', '', { type: 'string' }
