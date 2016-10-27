@@ -1,10 +1,11 @@
 export METEOR_PRETTY_OUTPUT=0
+export NODE_ENV="production"
 export LIVECHAT_DIR="../../../public/livechat"
 export BUILD_DIR="../build"
 export BUNDLE_DIR="../build/bundle/programs/web.browser"
 
 cd packages/rocketchat-livechat/app
-meteor npm install
+meteor npm install --production
 meteor build --directory $BUILD_DIR
 
 rm -rf $LIVECHAT_DIR
