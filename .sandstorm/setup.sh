@@ -4,6 +4,7 @@ set -euvo pipefail
 
 cd /opt/
 
+NODE_ENV=production
 PACKAGE=meteor-spk-0.3.0
 PACKAGE_FILENAME="$PACKAGE.tar.xz"
 CACHE_TARGET="/host-dot-sandstorm/caches/${PACKAGE_FILENAME}"
@@ -45,3 +46,9 @@ cd /home/vagrant/
 su -c "tar xf '${METEOR_CACHE_TARGET}'" vagrant
 # Link into global PATH
 ln -s /home/vagrant/.meteor/meteor /usr/bin/meteor
+
+sudo apt-get update
+sudo apt-get install build-essential git -y
+
+cd /opt/app
+meteor npm install -g node-pre-gyp
