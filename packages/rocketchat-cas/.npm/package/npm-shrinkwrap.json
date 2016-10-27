@@ -17,7 +17,7 @@
     },
     "core-util-is": {
       "version": "1.0.2",
-      "resolved": "http://registry.npmjs.org/core-util-is/-/core-util-is-1.0.2.tgz",
+      "resolved": "https://registry.npmjs.org/core-util-is/-/core-util-is-1.0.2.tgz",
       "from": "core-util-is@>=1.0.0 <1.1.0"
     },
     "css-select": {
@@ -86,7 +86,7 @@
     },
     "isarray": {
       "version": "0.0.1",
-      "resolved": "http://registry.npmjs.org/isarray/-/isarray-0.0.1.tgz",
+      "resolved": "https://registry.npmjs.org/isarray/-/isarray-0.0.1.tgz",
       "from": "isarray@0.0.1"
     },
     "lodash": {
