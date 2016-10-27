@@ -88,16 +88,15 @@ const pkgdef :Spk.PackageDefinition = (
 	# the app opens while running in dev mode. To see what that looks like,
 	# run `spk init` without the -A option.)
 
-  bridgeConfig = (
-    viewInfo = (
-      eventTypes = [
+	bridgeConfig = (
+		viewInfo = (
+			eventTypes = [
 				(name = "message", verbPhrase = (defaultText = "sent message")),
 				(name = "privateMessage", verbPhrase = (defaultText = "sent private message"), requiredPermission = (explicitList = void)),
 			]
-    ),
-
-    saveIdentityCaps = true,
-  ),
+		),
+		saveIdentityCaps = true,
+	),
 );
 
 const myCommand :Spk.Manifest.Command = (
