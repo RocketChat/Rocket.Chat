@@ -38,13 +38,6 @@ class PreferencesMainContent extends Page {
 		this.avatarFileInput.chooseFile(url);
 		this.useUploadedAvatar.click();
 	}
-
-	acceptPasswordOverlay(password) {
-		this.sweetAlert.waitForVisible();
-		this.sweetAlertPasswordField.setValue(password);
-		this.sweetAlertConfirm.click();
-		browser.pause(15000)
-	}
 }
 
 
