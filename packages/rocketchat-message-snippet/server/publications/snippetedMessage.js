@@ -5,7 +5,6 @@ Meteor.publish('snippetedMessage', function(_id) {
 
 	let snippet = RocketChat.models.Messages.findOne({'_id': _id, snippeted: true});
 	let user = RocketChat.models.Users.findOneById(this.userId);
-	console.log(user.username);
 	let roomSnippetQuery = {
 		'_id': snippet.rid,
 		'usernames': {

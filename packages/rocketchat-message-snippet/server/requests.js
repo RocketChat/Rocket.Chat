@@ -3,19 +3,19 @@ WebApp.connectHandlers.use('/snippet/download', function(req, res) {
 	var cookie, rawCookies, ref, token, uid;
 	cookie = new Cookies();
 
-	if ((typeof req !== 'undefined' && req !== null ? (ref = req.headers) != null ? ref.cookie : void 0 : void 0) != null) {
+	if ((typeof req !== 'undefined' && req !== null ? (ref = req.headers) !== null ? ref.cookie : void 0 : void 0) !== null) {
 		rawCookies = req.headers.cookie;
 	}
 
-	if (rawCookies != null) {
+	if (rawCookies !== null) {
 		uid = cookie.get('rc_uid', rawCookies);
 	}
 
-	if (rawCookies != null) {
+	if (rawCookies !== null) {
 		token = cookie.get('rc_token', rawCookies);
 	}
 
-	if (uid == null) {
+	if (uid === null) {
 		uid = req.query.rc_uid;
 		token = req.query.rc_token;
 	}
@@ -25,7 +25,6 @@ WebApp.connectHandlers.use('/snippet/download', function(req, res) {
 	if (!(uid && token && user)) {
 		res.writeHead(403);
 		res.end();
-		console.log('here');
 		return false;
 	}
 	var match = /^\/([^\/]+)\/(.*)/.exec(req.url);
@@ -41,7 +40,6 @@ WebApp.connectHandlers.use('/snippet/download', function(req, res) {
 		if (room === undefined) {
 			res.writeHead(403);
 			res.end();
-			console.log('not here');
 			return false;
 		}
 
