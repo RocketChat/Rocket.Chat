@@ -43,16 +43,17 @@ rocketchat:api
 rocketchat:assets
 rocketchat:authorization
 rocketchat:autolinker
+rocketchat:bot-helpers
 rocketchat:cas
 rocketchat:channel-settings
 rocketchat:channel-settings-mail-messages
 rocketchat:colors
 rocketchat:crowd
 rocketchat:custom-oauth
-rocketchat:error-handler
 rocketchat:emoji
 rocketchat:emoji-custom
 rocketchat:emoji-emojione
+rocketchat:error-handler
 rocketchat:favico
 rocketchat:file
 rocketchat:file-upload
@@ -64,6 +65,8 @@ rocketchat:importer
 rocketchat:importer-hipchat
 rocketchat:importer-slack
 rocketchat:integrations
+rocketchat:internal-hubot
+rocketchat:irc
 rocketchat:katex
 rocketchat:ldap
 rocketchat:lib
@@ -119,10 +122,7 @@ rocketchat:version
 rocketchat:videobridge
 rocketchat:webrtc
 rocketchat:wordpress
-#rocketchat:bot-helpers
 #rocketchat:chatops
-#rocketchat:internal-hubot
-#rocketchat:irc
 
 konecty:change-case
 konecty:delayed-task
