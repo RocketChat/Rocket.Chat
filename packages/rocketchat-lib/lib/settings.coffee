@@ -57,9 +57,9 @@ RocketChat.settings =
 			for callback in RocketChat.settings.callbacks['*']
 				callback key, value, initialLoad
 
-		for key, value of RocketChat.settings.regexCallbacks
-			if value.regex.test(key)
-				callback(key, value) for callback in value.callbacks
+		for cbKey, cbValue of RocketChat.settings.regexCallbacks
+			if cbValue.regex.test(key)
+				callback(key, value, initialLoad) for callback in cbValue.callbacks
 
 
 	onload: (key, callback) ->

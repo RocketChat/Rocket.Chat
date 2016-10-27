@@ -26,6 +26,10 @@ class MentionsServer
 						verifiedMention =
 							_id: mention
 							username: mention
+				else if mention is 'here'
+					verifiedMention =
+						_id: mention
+						username: mention
 				else
 					verifiedMention = Meteor.users.findOne({username: mention}, {fields: {_id: 1, username: 1}})
 
