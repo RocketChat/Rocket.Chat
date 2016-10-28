@@ -28,7 +28,28 @@ Template.room.helpers
 		return isSubscribed(this._id)
 
 	messagesHistory: ->
-		return ChatMessage.find { rid: this._id, t: { '$ne': 't' }  }, { sort: { ts: 1 } }
+		hideMessagesOfType = []
+		RocketChat.settings.collection.find({_id: /Message_HideType_.+/}).forEach (record) ->
+			type = record._id.replace('Message_HideType_', '')
+			index = hideMessagesOfType.indexOf(type)
+
+			if record.value is true and index is -1
+				hideMessagesOfType.push(type)
+			else if index > -1
+				hideMessagesOfType.splice(index, 1)
+
+		query =
+			rid: this._id
+
+		if hideMessagesOfType.length > 0
+			query.t =
+				$nin: hideMessagesOfType
+
+		options =
+			sort:
+				ts: 1
+
+		return ChatMessage.find(query, options)
 
 	hasMore: ->
 		return RoomHistoryManager.hasMore this._id
