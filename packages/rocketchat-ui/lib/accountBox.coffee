@@ -5,6 +5,7 @@
 
 	setStatus = (status) ->
 		Meteor.call('UserPresence:setDefaultStatus', status)
+		fireGlobalEvent('status-changed', status)
 
 	toggle = ->
 		if status then close() else open()
