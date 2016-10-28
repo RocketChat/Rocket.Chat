@@ -110,41 +110,46 @@ class PresenceManager
 		UserPresence.setDefaultStatus user._id, mapped_status
 
 
-presenceClient = (host, user, password, vhost, domain_id) ->
-	tamqp = Npm.require 'node-thrift-amqp'
-	url = "amqp://#{user}:#{password}@#{host}/#{vhost}?heartbeat=30"
-	opts =
-		servicesExchange: "servicesExchange",
-		responsesExchange: "responsesExchange",
-		routingKey: "presenceHandler"
-	connection = tamqp.createConnection url, opts
-	presenceService = Npm.require('node-ydin-presence-service').presenceService
-	connection.connect (err, conn) ->
-		RocketChat._conn = conn
-		if err
-			logger.error "cannot connect thrift-amqp client: #{err}"
-			return
-		try
-			client = tamqp.createClient presenceService, connection
+class PresenceClient
+	constructor: ({@host, @user, @password, @vhost, @domain_id}) ->
+		@url = "amqp://#{@user}:#{@password}@#{@host}/#{@vhost}?heartbeat=30"
+		@connection = null
+		@client = null
 
-			# i = new pTypes.TXmppEvent(
-			# 			user: "flavio",
-			# 			domain: "example.voismart.com",
-			# 			name: "PRESENCE",
-			# 			resource: 'resource',
-			# 			status: 'available',
-			# 			presence_source: "webchat" )
-			RocketChat._cli = client
-			client.request_initial_status domain_id, null, (err, res) ->
-				if err
-					logger.error "error: #{err}"
-					conn.close()
-		catch e
-			logger.error "catched error: #{e}"
-			conn.close()
+	connect: ->
+		tamqp = Npm.require 'node-thrift-amqp'
+		opts =
+			servicesExchange: "servicesExchange",
+			responsesExchange: "responsesExchange",
+			routingKey: "presenceHandler"
+		connection = tamqp.createConnection @url, opts
+		presenceService = Npm.require('node-ydin-presence-service').presenceService
+		connection.connect (err, conn) =>
+			if err
+				logger.error "cannot connect thrift-amqp client: #{err}"
+				return
 
-	connection.on "error", (err) ->
-		logger.error "thrift-amqp connection error: #{err}"
+			@connection = conn
+			try
+				@client = tamqp.createClient presenceService, connection
+
+				# i = new pTypes.TXmppEvent(
+				# 			user: "flavio",
+				# 			domain: "example.voismart.com",
+				# 			name: "PRESENCE",
+				# 			resource: 'resource',
+				# 			status: 'available',
+				# 			presence_source: "webchat" )
+				@client.request_initial_status @domain_id, null, (err, res) ->
+					if err
+						logger.error "error: #{err}"
+						conn.close()
+			catch e
+				logger.error "catched error: #{e}"
+				conn.close()
+
+		connection.on "error", (err) ->
+			logger.error "thrift-amqp connection error: #{err}"
 
 
 Meteor.startup ->
@@ -188,7 +193,13 @@ Meteor.startup ->
 		logger.error "error getting domain: \"#{e}\""
 		return
 
-	pclient = presenceClient broker_host, broker_user, broker_password, '/ydin', domain_id
+	pclient = new PresenceClient
+		host: broker_host
+		user: broker_user
+		password: broker_password
+		vhost: '/ydin'
+		domain_id: domain_id
+	pclient.connect()
 
 	pm = new PresenceManager
 	c = new AmqpConnection
