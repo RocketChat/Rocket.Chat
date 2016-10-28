@@ -65,10 +65,16 @@ class FlexTab extends Page {
 	get confirmBtn() { return browser.element('.confirm'); }
 
 	get sweetAlertOverlay() { return browser.element('.sweet-overlay'); }
+	get toastAlert() { return browser.element('.toast'); }
 
 	confirmPopup() {
 		this.confirmBtn.click();
 		this.sweetAlertOverlay.waitForVisible(5000, true);
+	}
+
+	dismissToast() {
+		this.toastAlert.click();
+		browser.pause(4000);
 	}
 
 	archiveChannel() {
