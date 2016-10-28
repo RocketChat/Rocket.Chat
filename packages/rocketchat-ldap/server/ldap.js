@@ -319,7 +319,7 @@ LDAP = class LDAP {
 	isUserInGroup(username) {
 		const self = this;
 
-		if (!self.options.group_filter_enabled){
+		if (!self.options.group_filter_enabled) {
 			return true;
 		}
 
@@ -332,18 +332,20 @@ LDAP = class LDAP {
 		if (self.options.group_filter_group_member_attribute !== '') {
 			filter.push(`(${self.options.group_filter_group_member_attribute}=${self.options.group_filter_group_member_format})`);
 		}
-		
+
 		if (self.options.group_filter_group_id_attribute !== '') {
 			filter.push(`(${self.options.group_filter_group_id_attribute}=${self.options.group_filter_group_name})`);
 		}
 		filter.push(')');
-		search_options = {
+		
+		const searchOptions = {
 			filter: filter.join('').replace(/#{username}/g, username),
 			scope: 'sub'
 		};
-		logger.search.debug('Group filter LDAP:', search_options.filter);
-		
-		const result = self.searchAllSync(self.options.domain_base, search_options);
+
+		logger.search.debug('Group filter LDAP:', searchOptions.filter);
+
+		const result = self.searchAllSync(self.options.domain_base, searchOptions);
 
 		if (!Array.isArray(result) || result.length === 0) {
 			return false;
