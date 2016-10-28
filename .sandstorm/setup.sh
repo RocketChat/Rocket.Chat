@@ -2,6 +2,9 @@
 set -x
 set -euvo pipefail
 
+apt-get update
+apt-get install build-essential git -y
+
 cd /opt/
 
 NODE_ENV=production
@@ -46,9 +49,4 @@ cd /home/vagrant/
 su -c "tar xf '${METEOR_CACHE_TARGET}'" vagrant
 # Link into global PATH
 ln -s /home/vagrant/.meteor/meteor /usr/bin/meteor
-
-sudo apt-get update
-sudo apt-get install build-essential git -y
-
-cd /opt/app
-meteor npm install -g node-pre-gyp
+chown vagrant:vagrant /home/vagrant -R
