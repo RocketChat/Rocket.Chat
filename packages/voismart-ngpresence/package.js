@@ -12,8 +12,9 @@ Package.onUse(function(api) {
 		'coffeescript',
 		'tracker',
 		'jzwzz:amqplib',
+		'jparker:crypto-core',
 		'rocketchat:lib',
-		'jparker:crypto-core'
+		'voismart:ngapi'
 	]);
 
 	api.addFiles([
