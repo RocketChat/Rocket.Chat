@@ -1,0 +1,99 @@
+{
+  "dependencies": {
+    "amqplib": {
+      "version": "0.4.2",
+      "resolved": "https://registry.npmjs.org/amqplib/-/amqplib-0.4.2.tgz",
+      "from": "amqplib@0.4.2"
+    },
+    "bitsyntax": {
+      "version": "0.0.4",
+      "resolved": "https://registry.npmjs.org/bitsyntax/-/bitsyntax-0.0.4.tgz",
+      "from": "bitsyntax@>=0.0.4 <0.1.0"
+    },
+    "buffer-more-ints": {
+      "version": "0.0.2",
+      "resolved": "https://registry.npmjs.org/buffer-more-ints/-/buffer-more-ints-0.0.2.tgz",
+      "from": "buffer-more-ints@0.0.2"
+    },
+    "commander": {
+      "version": "2.1.0",
+      "resolved": "https://registry.npmjs.org/commander/-/commander-2.1.0.tgz",
+      "from": "commander@>=2.1.0 <2.2.0"
+    },
+    "core-util-is": {
+      "version": "1.0.2",
+      "resolved": "http://registry.npmjs.org/core-util-is/-/core-util-is-1.0.2.tgz",
+      "from": "core-util-is@>=1.0.0 <1.1.0"
+    },
+    "inherits": {
+      "version": "2.0.3",
+      "resolved": "https://registry.npmjs.org/inherits/-/inherits-2.0.3.tgz",
+      "from": "inherits@>=2.0.1 <2.1.0"
+    },
+    "isarray": {
+      "version": "0.0.1",
+      "resolved": "http://registry.npmjs.org/isarray/-/isarray-0.0.1.tgz",
+      "from": "isarray@0.0.1"
+    },
+    "nan": {
+      "version": "1.0.0",
+      "resolved": "https://registry.npmjs.org/nan/-/nan-1.0.0.tgz",
+      "from": "nan@>=1.0.0 <1.1.0"
+    },
+    "node-int64": {
+      "version": "0.3.3",
+      "resolved": "https://registry.npmjs.org/node-int64/-/node-int64-0.3.3.tgz",
+      "from": "node-int64@>=0.3.0 <0.4.0"
+    },
+    "node-thrift-amqp": {
+      "version": "0.1.0",
+      "resolved": "git+https://github.com/VoiSmart/node-thrift-amqp.git#95939c29ca606f5c8eb897994a2bb3b4fad67540",
+      "from": "node-thrift-amqp@git+https://github.com/VoiSmart/node-thrift-amqp.git#v0.1.0"
+    },
+    "node-ydin-presence-service": {
+      "version": "2.4.6-1.20161027svnr14",
+      "resolved": "git+https://github.com/VoiSmart/node-ydin-presence-service.git#412962fef39fec346fbce917b0c6b0752c91cedc",
+      "from": "node-ydin-presence-service@git+https://github.com/VoiSmart/node-ydin-presence-service.git#2.4.6-1.20161028svnr413"
+    },
+    "options": {
+      "version": "0.0.6",
+      "resolved": "https://registry.npmjs.org/options/-/options-0.0.6.tgz",
+      "from": "options@>=0.0.5"
+    },
+    "q": {
+      "version": "1.0.1",
+      "resolved": "https://registry.npmjs.org/q/-/q-1.0.1.tgz",
+      "from": "q@>=1.0.0 <1.1.0"
+    },
+    "readable-stream": {
+      "version": "1.1.14",
+      "resolved": "https://registry.npmjs.org/readable-stream/-/readable-stream-1.1.14.tgz",
+      "from": "readable-stream@>=1.0.0 <2.0.0 >=1.1.9"
+    },
+    "string_decoder": {
+      "version": "0.10.31",
+      "resolved": "https://registry.npmjs.org/string_decoder/-/string_decoder-0.10.31.tgz",
+      "from": "string_decoder@>=0.10.0 <0.11.0"
+    },
+    "thrift": {
+      "version": "0.9.3",
+      "resolved": "https://registry.npmjs.org/thrift/-/thrift-0.9.3.tgz",
+      "from": "thrift@0.9.3"
+    },
+    "tinycolor": {
+      "version": "0.0.1",
+      "resolved": "https://registry.npmjs.org/tinycolor/-/tinycolor-0.0.1.tgz",
+      "from": "tinycolor@>=0.0.0 <1.0.0"
+    },
+    "when": {
+      "version": "3.6.4",
+      "resolved": "https://registry.npmjs.org/when/-/when-3.6.4.tgz",
+      "from": "when@>=3.6.2 <3.7.0"
+    },
+    "ws": {
+      "version": "0.4.32",
+      "resolved": "https://registry.npmjs.org/ws/-/ws-0.4.32.tgz",
+      "from": "ws@>=0.4.32 <0.5.0"
+    }
+  }
+}

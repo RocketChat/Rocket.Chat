@@ -111,7 +111,7 @@ class PresenceManager
 
 
 class PresenceClient
-	constructor: ({@host, @user, @password, @vhost, @domain_id}) ->
+	constructor: ({@host, @user, @password, @vhost, @domain, @domain_id}) ->
 		@url = "amqp://#{@user}:#{@password}@#{@host}/#{@vhost}?heartbeat=30"
 		@connection = null
 		@client = null
@@ -150,6 +150,23 @@ class PresenceClient
 
 		connection.on "error", (err) ->
 			logger.error "thrift-amqp connection error: #{err}"
+
+	publishPresence: (user, status, statusConnection) ->
+		return
+		# resource = null  # FIXME: use instance_id from UsersSessions
+		# pTypes = Npm.require('node-ydin-presence-service').presenceServiceTypes
+		# i = new pTypes.TXmppEvent(
+		# 			user: user.username,
+		# 			domain: @domain,
+		# 			name: "PRESENCE",
+		# 			resource: resource,
+		# 			status: status,
+		# 			presence_source: "webchat" )
+		# @client.publish_webchat_presence i, @_logErrors
+
+	_logErrors: (err, res) ->
+		if err
+			logger.error "presence client got error: #{err}"
 
 
 Meteor.startup ->
@@ -199,6 +216,7 @@ Meteor.startup ->
 		password: broker_password
 		vhost: '/ydin'
 		domain_id: domain_id
+		domain: ng_domain
 	pclient.connect()
 
 	pm = new PresenceManager
@@ -211,3 +229,6 @@ Meteor.startup ->
 		routingKey: "ydin.presence.event.#{domain_id}"
 		callback: Meteor.bindEnvironment(pm.setPresence)
 	c.connect()
+
+	# add our own callback on user presence set
+	UserPresenceMonitor.onSetUserStatus(pclient.publishPresence)
