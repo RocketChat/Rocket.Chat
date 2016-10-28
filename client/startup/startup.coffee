@@ -56,4 +56,8 @@ Meteor.startup ->
 			localStorage.setItem('userLanguage', userLanguage)
 
 		setLanguage userLanguage
+
+		username = Meteor.user()?.username
+		status = Session.get('user_' + username + '_status')
+		fireGlobalEvent('status-changed', status)
 	)
