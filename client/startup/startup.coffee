@@ -57,7 +57,9 @@ Meteor.startup ->
 
 		setLanguage userLanguage
 
-		username = Meteor.user()?.username
-		status = Session.get('user_' + username + '_status')
-		fireGlobalEvent('status-changed', status)
+		status = undefined
+		Tracker.autorun ->
+		  if Meteor.user()?.status isnt status
+		    status = Meteor.user().status
+		    fireGlobalEvent('status-changed', status)
 	)
