@@ -41,9 +41,10 @@ describe('channel settings', ()=> {
 
 		});
 
-		it.skip('should show the new name', ()=> {
+		it('should show the new name', ()=> {
 			//gives timeout errors
-			flexTab.firstSetting.getText().should.equal('NAME-EDITED-'+publicChannelName);
+			var channelName = sideNav.getChannelFromList('NAME-EDITED-'+publicChannelName);
+			channelName.getText().should.equal('NAME-EDITED-'+publicChannelName);
 		});
 
 		it('click the edit topic', ()=> {
