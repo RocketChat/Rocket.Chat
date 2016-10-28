@@ -337,7 +337,7 @@ LDAP = class LDAP {
 			filter.push(`(${self.options.group_filter_group_id_attribute}=${self.options.group_filter_group_name})`);
 		}
 		filter.push(')');
-		
+
 		const searchOptions = {
 			filter: filter.join('').replace(/#{username}/g, username),
 			scope: 'sub'
