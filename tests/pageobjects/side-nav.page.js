@@ -45,6 +45,10 @@ class SideNav extends Page {
 		this.messageInput.waitForExist();
 	}
 
+	getChannelFromList(channelName) {
+		return browser.element('.rooms-list > .wrapper > ul [title="'+channelName+'"]');
+	}
+
 	createChannel(channelName, isPrivate, isReadOnly) {
 		this.newChannelBtn.click();
 		this.channelType.waitForVisible(10000);
