@@ -42,8 +42,7 @@ LDAP = class LDAP {
 			group_filter_group_id_attribute: RocketChat.settings.get('LDAP_Group_Filter_Group_Id_Attribute'),
 			group_filter_group_member_attribute: RocketChat.settings.get('LDAP_Group_Filter_Group_Member_Attribute'),
 			group_filter_group_member_format: RocketChat.settings.get('LDAP_Group_Filter_Group_Member_Format'),
-			group_filter_group_name: RocketChat.settings.get('LDAP_Group_Filter_Group_Name')	
-			
+			group_filter_group_name: RocketChat.settings.get('LDAP_Group_Filter_Group_Name')
 		};
 
 		self.connectSync = Meteor.wrapAsync(self.connectAsync, self);
@@ -342,10 +341,8 @@ LDAP = class LDAP {
 			filter: filter.join('').replace(/#{username}/g, username),
 			scope: 'sub'
 		};
+		logger.search.debug('Group filter LDAP:', search_options.filter);
 		
-		logger.search.debug("Group filter LDAP domain_base:", self.options.domain_base);
-		logger.search.debug("Group filter LDAP:", search_options.filter);
-
 		const result = self.searchAllSync(self.options.domain_base, search_options);
 
 		if (!Array.isArray(result) || result.length === 0) {
