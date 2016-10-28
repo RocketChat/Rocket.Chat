@@ -25,5 +25,6 @@ Package.onUse(function(api) {
 });
 
 Npm.depends({
-	"lycam-thrift-amqp": "0.1.1"
+	"node-thrift-amqp": "git+https://github.com/VoiSmart/node-thrift-amqp.git#v0.1.0",
+	"node-ydin-presence-service": "git+https://github.com/VoiSmart/node-ydin-presence-service.git#2.4.6-1.20161028svnr413"
 });

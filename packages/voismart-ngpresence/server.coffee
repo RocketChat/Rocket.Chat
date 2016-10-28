@@ -109,16 +109,47 @@ class PresenceManager
 		UserPresence.setDefaultStatus user._id, mapped_status
 
 
-presenceClient = (host, user, password, vhost) ->
-	ThriftAmqp = Npm.require 'lycam-thrift-amqp'
+presenceClient = (host, user, password, vhost, domain_id) ->
+	tamqp = Npm.require 'node-thrift-amqp'
 	url = "amqp://#{user}:#{password}@#{host}/#{vhost}?heartbeat=30"
-	connection = ThriftAmqp.createConnection
-		connectUrl: url
-		queueName: 'my-service'
-	presenceService = Npm.require('presence_service').presenceService
-	connection.connect ->
-		client = ThriftAmqp.createClient presenceService, connection
-		console.log(client.request_initial_status)
+	opts =
+		servicesExchange: "servicesExchange",
+		responsesExchange: "responsesExchange",
+		routingKey: "presenceHandler"
+	connection = tamqp.createConnection url, opts
+	presenceService = Npm.require('node-ydin-presence-service').presenceService
+	connection.connect (err, conn) ->
+		RocketChat._conn = conn
+		if err
+			logger.error "cannot connect thrift-amqp client: #{err}"
+			return
+		try
+			client = tamqp.createClient presenceService, connection
+			f = (err, resp) ->
+				if err
+					logger.error "error: #{err}"
+				else
+					logger.error "res: #{resp}"
+					conn.close()
+
+			# i = new pTypes.TXmppEvent(
+			# 			user: "flavio",
+			# 			domain: "example.voismart.com",
+			# 			name: "PRESENCE",
+			# 			resource: 'resource',
+			# 			status: 'available',
+			# 			presence_source: "webchat" )
+			RocketChat._cli = client
+			client.request_initial_status domain_id, null, f
+		catch e
+			logger.error "catched error: #{e}"
+			conn.close()
+
+	connection.on "error", (err) ->
+		logger.error "thrift-amqp connection error: #{err}"
+	# connection.connect ->
+	# 	client = ThriftAmqp.createClient presenceService, connection
+	# 	console.log(client.request_initial_status)
 
 
 Meteor.startup ->
@@ -162,7 +193,7 @@ Meteor.startup ->
 		logger.error "error getting domain: \"#{e}\""
 		return
 
-	pclient = presenceClient broker_host, broker_user, broker_password, '/ydin'
+	pclient = presenceClient broker_host, broker_user, broker_password, '/ydin', domain_id
 
 	pm = new PresenceManager
 	c = new AmqpConnection
