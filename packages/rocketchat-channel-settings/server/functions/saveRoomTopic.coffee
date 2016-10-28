@@ -6,7 +6,7 @@ RocketChat.saveRoomTopic = (rid, roomTopic, user, sendMessage=true) ->
 
 	update = RocketChat.models.Rooms.setTopicById(rid, roomTopic)
 
-	if udpate and sendMessage
+	if update and sendMessage
 		RocketChat.models.Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser 'room_changed_topic', rid, roomTopic, user
 
 	return update
