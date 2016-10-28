@@ -42,7 +42,21 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base
 		query =
 			_hidden:
 				$ne: true
+
 			rid: roomId
+
+		return @find query, options
+
+	findVisibleByRoomIdNotContainingTypes: (roomId, types, options) ->
+		query =
+			_hidden:
+				$ne: true
+
+			rid: roomId
+
+		if Match.test(types, [String]) and types.length > 0
+			query.t =
+				$nin: types
 
 		return @find query, options
 
@@ -81,6 +95,35 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base
 			ts:
 				$gt: afterTimestamp
 				$lt: beforeTimestamp
+
+		return @find query, options
+
+	findVisibleByRoomIdBeforeTimestampNotContainingTypes: (roomId, timestamp, types, options) ->
+		query =
+			_hidden:
+				$ne: true
+			rid: roomId
+			ts:
+				$lt: timestamp
+
+		if Match.test(types, [String]) and types.length > 0
+			query.t =
+				$nin: types
+
+		return @find query, options
+
+	findVisibleByRoomIdBetweenTimestampsNotContainingTypes: (roomId, afterTimestamp, beforeTimestamp, types, options) ->
+		query =
+			_hidden:
+				$ne: true
+			rid: roomId
+			ts:
+				$gt: afterTimestamp
+				$lt: beforeTimestamp
+
+		if Match.test(types, [String]) and types.length > 0
+			query.t =
+				$nin: types
 
 		return @find query, options
 
