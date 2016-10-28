@@ -1,4 +1,4 @@
-RocketChat.saveRoomName = (rid, name) ->
+RocketChat.saveRoomName = (rid, name, user, sendMessage=true) ->
 	room = RocketChat.models.Rooms.findOneById rid
 
 	if room.t not in ['c', 'p']
@@ -22,7 +22,8 @@ RocketChat.saveRoomName = (rid, name) ->
 	if RocketChat.models.Rooms.findOneByName name
 		throw new Meteor.Error 'error-duplicate-channel-name', 'A channel with name \'' + name + '\' exists', { function: 'RocketChat.saveRoomName', channel_name: name }
 
-	RocketChat.models.Rooms.setNameById rid, name
-	RocketChat.models.Subscriptions.updateNameAndAlertByRoomId rid, name
+	update = RocketChat.models.Rooms.setNameById(rid, name) and RocketChat.models.Subscriptions.updateNameAndAlertByRoomId(rid, name)
+	if update and sendMessage
+		RocketChat.models.Messages.createRoomRenamedWithRoomIdRoomNameAndUser rid, name, user
 
 	return name
