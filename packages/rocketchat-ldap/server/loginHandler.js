@@ -52,7 +52,7 @@ Accounts.registerLoginHandler('ldap', function(loginRequest) {
 		if (ldap.authSync(users[0].dn, loginRequest.ldapPass) === true) {
 			if (ldap.isUserInGroup (loginRequest.username)) {
 				ldapUser = users[0];
-			}else{
+			} else {
 				throw new Error('User not in a valid group');
 			}
 		} else {
