@@ -78,7 +78,8 @@ class AmqpConnection
 			logger.debug "received", payload
 			mtype = payload['type']
 			switch mtype
-				when 'update' then @onUpdateMessage payload.user_statuses
+				when 'update', 'solicited', 'unsolicited'
+					@onUpdateMessage payload.user_statuses
 				else logger.warn "unknown type #{mtype}"
 		catch e
 			logger.error "ignoring message. Got error: ", e
@@ -125,12 +126,6 @@ presenceClient = (host, user, password, vhost, domain_id) ->
 			return
 		try
 			client = tamqp.createClient presenceService, connection
-			f = (err, resp) ->
-				if err
-					logger.error "error: #{err}"
-				else
-					logger.error "res: #{resp}"
-					conn.close()
 
 			# i = new pTypes.TXmppEvent(
 			# 			user: "flavio",
@@ -140,16 +135,16 @@ presenceClient = (host, user, password, vhost, domain_id) ->
 			# 			status: 'available',
 			# 			presence_source: "webchat" )
 			RocketChat._cli = client
-			client.request_initial_status domain_id, null, f
+			client.request_initial_status domain_id, null, (err, res) ->
+				if err
+					logger.error "error: #{err}"
+					conn.close()
 		catch e
 			logger.error "catched error: #{e}"
 			conn.close()
 
 	connection.on "error", (err) ->
 		logger.error "thrift-amqp connection error: #{err}"
-	# connection.connect ->
-	# 	client = ThriftAmqp.createClient presenceService, connection
-	# 	console.log(client.request_initial_status)
 
 
 Meteor.startup ->
