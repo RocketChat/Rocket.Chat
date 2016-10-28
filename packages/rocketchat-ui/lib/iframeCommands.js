@@ -36,6 +36,15 @@ const commands = {
 				console.log('Iframe command [login-with-token]: result', arguments);
 			});
 		}
+	},
+
+	'logout'() {
+		const user = Meteor.user();
+		Meteor.logout(() => {
+			RocketChat.callbacks.run('afterLogoutCleanUp', user);
+			Meteor.call('logoutCleanUp', user);
+			return FlowRouter.go('home');
+		});
 	}
 };
 
