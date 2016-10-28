@@ -414,7 +414,7 @@ class SlackBridge {
 				if (importing) {
 					RocketChat.models.Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser('room_changed_topic', room._id, message.topic, user, { ts: new Date(parseInt(message.ts.split('.')[0]) * 1000), imported: 'slackbridge' });
 				} else {
-					RocketChat.saveRoomTopic(room._id, message.topic, user);
+					RocketChat.saveRoomTopic(room._id, message.topic, user, false);
 				}
 				return;
 			case 'channel_purpose':
@@ -422,7 +422,7 @@ class SlackBridge {
 				if (importing) {
 					RocketChat.models.Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser('room_changed_topic', room._id, message.purpose, user, { ts: new Date(parseInt(message.ts.split('.')[0]) * 1000), imported: 'slackbridge' });
 				} else {
-					RocketChat.saveRoomTopic(room._id, message.purpose, user);
+					RocketChat.saveRoomTopic(room._id, message.purpose, user, false);
 				}
 				return;
 			case 'channel_name':
@@ -430,7 +430,7 @@ class SlackBridge {
 				if (importing) {
 					RocketChat.models.Messages.createRoomRenamedWithRoomIdRoomNameAndUser(room._id, message.name, user, { ts: new Date(parseInt(message.ts.split('.')[0]) * 1000), imported: 'slackbridge' });
 				} else {
-					RocketChat.saveRoomName(room._id, message.name, user);
+					RocketChat.saveRoomName(room._id, message.name, user, false);
 				}
 				return;
 			case 'channel_archive':
@@ -878,7 +878,7 @@ class SlackBridge {
 			if (topic) {
 				let creator = this.findUser(topic_creator) || this.addUser(topic_creator);
 				logger.class.debug('Setting room topic', rid, topic, creator.username);
-				RocketChat.saveRoomTopic(rid, topic, creator);
+				RocketChat.saveRoomTopic(rid, topic, creator, false);
 			}
 		}
 	}
