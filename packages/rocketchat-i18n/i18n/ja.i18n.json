@@ -581,7 +581,7 @@
   "LDAP_Domain_Search_Filter": "ドメイン検索フィルター",
   "LDAP_Domain_Search_Filter_Description": "指定すると、このフィルターにマッチしたユーザーのみログインできます。何も指定しないと、指定したドメインベースの範囲にいるすべてのユーザーログインできるようになります。<br/>例えば Active Directory では `memberOf=cn=ROCKET_CHAT,ou=General Groups` など。<br/>例えば OpenLDAP ( 拡張可能な検索 ) では `ou:dn:=ROCKET_CHAT` など。",
   "LDAP_Domain_Search_Object_Category": "ドメイン検索の objectCategory",
-  "LDAP_Domain_Search_Object_Category_Description": "ユーザーを識別する *objectCategory* 。<br/>空値は *OpenLDAP* のために、除いてください。<br/>例例えば、 `person` など。",
+  "LDAP_Domain_Search_Object_Category_Description": "ユーザーを識別する *objectCategory* 。<br/>空値は *OpenLDAP* のために、除いてください。<br/>例えば、 `person` など。",
   "LDAP_Domain_Search_Object_Class": "ドメイン検索の objectclass",
   "LDAP_Domain_Search_Object_Class_Description": "ユーザーを識別する *objectclass* 。<br/>例えば、 `organizationalPerson` 、 `user` 、 `inetOrgPerson` など。",
   "LDAP_Domain_Search_Password": "ドメイン検索のパスワード",
