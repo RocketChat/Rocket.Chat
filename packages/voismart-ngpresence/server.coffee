@@ -132,14 +132,6 @@ class PresenceClient
 			@connection = conn
 			try
 				@client = tamqp.createClient presenceService, connection
-
-				# i = new pTypes.TXmppEvent(
-				# 			user: "flavio",
-				# 			domain: "example.voismart.com",
-				# 			name: "PRESENCE",
-				# 			resource: 'resource',
-				# 			status: 'available',
-				# 			presence_source: "webchat" )
 				@client.request_initial_status @domain_id, null, (err, res) ->
 					if err
 						logger.error "error: #{err}"
