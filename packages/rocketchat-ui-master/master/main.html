@@ -73,11 +73,9 @@
 						<div class="main-content {{flexOpened}} {{flexOpenedRTC1}} {{flexOpenedRTC2}} {{#if useIframe}}main-modal{{/if}} {{#if modal}}main-modal{{/if}}">
 							{{> Template.dynamic template=center}}
 						</div>
-            {{#unless useIframe}}
   						{{#unless modal}}
   							{{> sideNav }}
   						{{/unless}}
-            {{/unless}}
 					</div>
 					{{> audioNotification }}
 				{{/if}}
