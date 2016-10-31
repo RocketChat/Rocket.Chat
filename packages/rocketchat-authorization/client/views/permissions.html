@@ -6,14 +6,14 @@
 			<table border="1" class="permission-grid">
 				<thead>
 					<tr>
-						<td>&nbsp;</td>
+						<th>&nbsp;</th>
 						{{#each role}}
-							<td title="{{description}}">
+							<th title="{{description}}">
 								<a href="{{pathFor "admin-permissions-edit" name=_id}}">
 									{{_id}}
 									<i class="icon-edit"></i>
 								</a>
-							</td>
+							</th>
 						{{/each}}
 					</tr>
 				</thead>
