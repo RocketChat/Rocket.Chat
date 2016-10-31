@@ -22,6 +22,7 @@
   "Accounts_AllowedDomainsList_Description": "Comma-separated list of allowed domains",
   "Accounts_AllowEmailChange": "Allow Email Change",
   "Accounts_AllowPasswordChange": "Allow Password Change",
+  "Accounts_AllowSearchByName": "Allow user search by name",
   "Accounts_AllowUserAvatarChange": "Allow User Avatar Change",
   "Accounts_AllowUsernameChange": "Allow Username Change",
   "Accounts_AllowUserProfileChange": "Allow User Profile Change",
