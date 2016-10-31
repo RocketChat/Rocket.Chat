@@ -1,7 +1,6 @@
 class LivechatOfficeHour extends RocketChat.models._Base {
 	constructor() {
-		super();
-		this._initModel('livechat_office_hour');
+		super('livechat_office_hour');
 
 		this.tryEnsureIndex({ 'day': 1 }); // the day of the week monday - sunday
 		this.tryEnsureIndex({ 'start': 1 }); // the opening hours of the office

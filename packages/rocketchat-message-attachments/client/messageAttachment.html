@@ -121,6 +121,9 @@
 					</div>
 				{{/unless}}
 			{{/if}}
+			{{#each attachments}}
+				{{injectIndex . ../index @index}} {{> messageAttachment}}
+			{{/each}}
 		</div>
 	</div>
 </template>
