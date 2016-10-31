@@ -47,7 +47,7 @@ Template.body.onRendered ->
 			if RocketChat.Layout.isEmbedded()
 				return fireGlobalEvent('click-message-link', { link: link.pathname + link.search })
 
-			FlowRouter.go(link.pathname + link.search)
+			FlowRouter.go(link.pathname + link.search, null, FlowRouter.current().queryParams)
 
 		if $(link).hasClass('swipebox')
 			if RocketChat.Layout.isEmbedded()
