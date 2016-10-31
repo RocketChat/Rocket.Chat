@@ -1,6 +1,6 @@
 RocketChat.models.Integrations = new class extends RocketChat.models._Base
 	constructor: ->
-		@_initModel 'integrations'
+		super('integrations')
 
 
 	# FIND

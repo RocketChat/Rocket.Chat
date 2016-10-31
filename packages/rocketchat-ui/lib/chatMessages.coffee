@@ -180,22 +180,24 @@ class @ChatMessages
 						if RocketChat.slashCommands.commands[match[1]]
 							commandOptions = RocketChat.slashCommands.commands[match[1]]
 							command = match[1]
-							param = match[2]
+							param = if match[2]? then match[2] else ''
 							if commandOptions.clientOnly
 								commandOptions.callback(command, param, msgObject)
 							else
 								Meteor.call 'slashCommand', {cmd: command, params: param, msg: msgObject }
 							return
-						invalidCommandMsg =
-							_id: Random.id()
-							rid: rid
-							ts: new Date
-							msg: TAPi18n.__('No_such_command', { command: match[1] })
-							u:
-								username: "rocketbot"
-							private: true
-						ChatMessage.upsert { _id: invalidCommandMsg._id }, invalidCommandMsg
-						return
+
+						if !RocketChat.settings.get('Message_AllowUnrecognizedSlashCommand')
+							invalidCommandMsg =
+								_id: Random.id()
+								rid: rid
+								ts: new Date
+								msg: TAPi18n.__('No_such_command', { command: match[1] })
+								u:
+									username: "rocketbot"
+								private: true
+							ChatMessage.upsert { _id: invalidCommandMsg._id }, invalidCommandMsg
+							return
 
 				Meteor.call 'sendMessage', msgObject
 				done()

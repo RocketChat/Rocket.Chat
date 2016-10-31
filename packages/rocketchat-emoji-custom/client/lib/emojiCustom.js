@@ -65,9 +65,17 @@ deleteEmojiCustom = function(emojiData) {
 	if (arrayIndex !== -1) {
 		RocketChat.emoji.packages.emojiCustom.emojisByCategory.rocket.splice(arrayIndex, 1);
 	}
+	let arrayIndexList = RocketChat.emoji.packages.emojiCustom.list.indexOf(`:${emojiData.name}:`);
+	if (arrayIndexList !== -1) {
+		RocketChat.emoji.packages.emojiCustom.list.splice(arrayIndexList, 1);
+	}
 	if (isSetNotNull(() => emojiData.aliases)) {
 		for (let alias of emojiData.aliases) {
 			delete RocketChat.emoji.list[`:${alias}:`];
+			let aliasIndex = RocketChat.emoji.packages.emojiCustom.list.indexOf(`:${alias}:`);
+			if (aliasIndex !== -1) {
+				RocketChat.emoji.packages.emojiCustom.list.splice(aliasIndex, 1);
+			}
 		}
 	}
 	updateEmojiPickerList();
@@ -83,6 +91,10 @@ updateEmojiCustom = function(emojiData) {
 	if (previousExists && isSetNotNull(() => RocketChat.emoji.list[`:${emojiData.previousName}:`].aliases)) {
 		for (let alias of RocketChat.emoji.list[`:${emojiData.previousName}:`].aliases) {
 			delete RocketChat.emoji.list[`:${alias}:`];
+			let aliasIndex = RocketChat.emoji.packages.emojiCustom.list.indexOf(`:${alias}:`);
+			if (aliasIndex !== -1) {
+				RocketChat.emoji.packages.emojiCustom.list.splice(aliasIndex, 1);
+			}
 		}
 	}
 
@@ -91,16 +103,22 @@ updateEmojiCustom = function(emojiData) {
 		if (arrayIndex !== -1) {
 			RocketChat.emoji.packages.emojiCustom.emojisByCategory.rocket.splice(arrayIndex, 1);
 		}
+		let arrayIndexList = RocketChat.emoji.packages.emojiCustom.list.indexOf(`:${emojiData.previousName}:`);
+		if (arrayIndexList !== -1) {
+			RocketChat.emoji.packages.emojiCustom.list.splice(arrayIndexList, 1);
+		}
 		delete RocketChat.emoji.list[`:${emojiData.previousName}:`];
 	}
 
 	let categoryIndex = RocketChat.emoji.packages.emojiCustom.emojisByCategory.rocket.indexOf(`${emojiData.name}`);
 	if (categoryIndex === -1) {
 		RocketChat.emoji.packages.emojiCustom.emojisByCategory.rocket.push(`${emojiData.name}`);
+		RocketChat.emoji.packages.emojiCustom.list.push(`:${emojiData.name}:`);
 	}
 	RocketChat.emoji.list[`:${emojiData.name}:`] = Object.assign({ emojiPackage: 'emojiCustom' }, RocketChat.emoji.list[`:${emojiData.name}:`], emojiData);
 	if (currentAliases) {
 		for (let alias of emojiData.aliases) {
+			RocketChat.emoji.packages.emojiCustom.list.push(`:${alias}:`);
 			RocketChat.emoji.list[`:${alias}:`] = {};
 			RocketChat.emoji.list[`:${alias}:`].emojiPackage = 'emojiCustom';
 			RocketChat.emoji.list[`:${alias}:`].aliasOf = emojiData.name;

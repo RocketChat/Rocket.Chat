@@ -27,8 +27,10 @@ RocketChat._setUsername = (userId, username) ->
 
 
 	# If first time setting username, send Enrollment Email
-	if not previousUsername and user.emails?.length > 0 and RocketChat.settings.get 'Accounts_Enrollment_Email'
-		Accounts.sendEnrollmentEmail(user._id)
+	try
+		if not previousUsername and user.emails?.length > 0 and RocketChat.settings.get 'Accounts_Enrollment_Email'
+			Accounts.sendEnrollmentEmail(user._id)
+	catch error
 
 	# Username is available; if coming from old username, update all references
 	if previousUsername
@@ -60,4 +62,4 @@ RocketChat._setUsername = (userId, username) ->
 	return user
 
 RocketChat.setUsername = RocketChat.RateLimiter.limitFunction RocketChat._setUsername, 1, 60000,
-	0: () -> return not Meteor.userId() or not RocketChat.authz.hasPermission(Meteor.userId(), 'edit-other-user-info') # Administrators have permission to change others usernames, so don't limit those
+	0: (userId) -> return not userId or not RocketChat.authz.hasPermission(userId, 'edit-other-user-info') # Administrators have permission to change others usernames, so don't limit those

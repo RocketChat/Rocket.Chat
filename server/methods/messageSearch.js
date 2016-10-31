@@ -1,6 +1,6 @@
 Meteor.methods({
 	messageSearch: function(text, rid, limit) {
-		var from, mention, options, query, r, result, currentUserName, currentUserId;
+		var from, mention, options, query, r, result, currentUserName, currentUserId, currentUserTimezoneOffset;
 		check(text, String);
 		check(rid, String);
 		check(limit, Match.Optional(Number));
@@ -11,6 +11,7 @@ Meteor.methods({
 			});
 		}
 		currentUserName = Meteor.user().username;
+		currentUserTimezoneOffset = Meteor.user().utcOffset;
 
 		// I would place these methods at the bottom of the file for clarity but travis doesn't appreciate that.
 		// (no-use-before-define)
@@ -42,6 +43,7 @@ Meteor.methods({
 		function filterBeforeDate(_, day, month, year) {
 			month--;
 			var beforeDate = new Date(year, month, day);
+			beforeDate.setHours(beforeDate.getUTCHours() + beforeDate.getTimezoneOffset()/60 + currentUserTimezoneOffset);
 			query.ts = {
 				$lte: beforeDate
 			};
@@ -52,6 +54,7 @@ Meteor.methods({
 			month--;
 			day++;
 			var afterDate = new Date(year, month, day);
+			afterDate.setUTCHours(afterDate.getUTCHours() + afterDate.getTimezoneOffset()/60 + currentUserTimezoneOffset);
 			if (query.ts) {
 				query.ts.$gte = afterDate;
 			} else {
@@ -65,12 +68,14 @@ Meteor.methods({
 		function filterOnDate(_, day, month, year) {
 			month--;
 			var date, dayAfter;
-			date = moment(new Date(year, month, day));
-			dayAfter = moment(date).add(1, 'day');
+			date = new Date(year, month, day);
+			date.setUTCHours(date.getUTCHours() + date.getTimezoneOffset()/60 + currentUserTimezoneOffset);
+			dayAfter = new Date(date);
+			dayAfter.setDate(dayAfter.getDate() + 1);
 			delete query.ts;
 			query.ts = {
-				$gte: date.toDate(),
-				$lt: dayAfter.toDate()
+				$gte: date,
+				$lt: dayAfter
 			};
 			return '';
 		}

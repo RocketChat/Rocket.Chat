@@ -144,6 +144,17 @@
 												{{/if}}
 											{{/if}}
 
+											{{#if $eq type 'roomPick'}}
+												<div>
+													{{> inputAutocomplete settings=autocompleteRoom id=_id name=_id class="search autocomplete" autocomplete="off" disabled=isDisabled.disabled}}
+													<ul class="selected-rooms">
+														{{#each selectedRooms}}
+															<li class="remove-room" data-setting={{../_id}}>{{name}} <i class="icon-cancel"></i></li>
+														{{/each}}
+													</ul>
+												</div>
+											{{/if}}
+
 											{{#if description}}
 												<div class="settings-description">{{{RocketChatMarkdown description}}}</div>
 											{{/if}}

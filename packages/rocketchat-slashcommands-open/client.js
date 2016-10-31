@@ -22,7 +22,7 @@ function Open(command, params/*, item*/) {
 	subscription = ChatSubscription.findOne(query);
 
 	if (subscription) {
-		FlowRouter.go(RocketChat.roomTypes.getRouteLink(subscription.t, subscription));
+		FlowRouter.go(RocketChat.roomTypes.getRouteLink(subscription.t, subscription), null, FlowRouter.current().queryParams);
 	}
 }
 

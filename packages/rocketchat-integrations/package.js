@@ -41,6 +41,7 @@ Package.onUse(function(api) {
 	api.addFiles('client/stylesheets/load.coffee', 'server');
 
 	api.addFiles('server/logger.js', 'server');
+	api.addFiles('server/lib/validation.coffee', 'server');
 
 	api.addFiles('server/models/Integrations.coffee', 'server');
 
