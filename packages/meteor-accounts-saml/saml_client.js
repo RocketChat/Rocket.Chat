@@ -16,8 +16,7 @@ Meteor.logout = function() {
 	if (provider) {
 		Session.set('saml_provider', false);
 		return Meteor.logoutWithSaml({ provider: provider });
-	}
-	else {
+	} else {
 		return originalLogout.apply(Meteor, arguments);
 	}
 };
