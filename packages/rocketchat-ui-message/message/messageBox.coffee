@@ -179,7 +179,7 @@ Template.messageBox.events
 
 		fileUpload filesToUpload
 
-	'click .message-form .icon-location.location': (event, instance) ->
+	'click .message-form .geo-location': (event, instance) ->
 		roomId = @_id
 
 		position = RocketChat.Geolocation.get()
