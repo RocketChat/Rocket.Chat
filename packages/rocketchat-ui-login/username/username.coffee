@@ -33,7 +33,7 @@ Template.username.events
 		button = $(event.target).find('button.login')
 		RocketChat.Button.loading(button)
 
-		value = $("input").val().trim()
+		value = $("#username").val().trim()
 		if value is ''
 			username.empty = true
 			instance.username.set(username)

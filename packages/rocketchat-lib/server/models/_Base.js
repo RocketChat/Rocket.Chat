@@ -11,18 +11,24 @@ try {
 }
 
 class ModelsBase extends EventEmitter {
-	_baseName() {
-		return baseName;
-	}
+	constructor(model) {
+		super();
 
-	_initModel(name) {
-		check(name, String);
-
-		this.name = name;
-
-		this.model = new Mongo.Collection(this._baseName() + name);
+		if (Match.test(model, String)) {
+			this.name = model;
+			this.collectionName = this.baseName + this.name;
+			this.model = new Mongo.Collection(this.collectionName);
+		} else {
+			this.name = model._name;
+			this.collectionName = this.name;
+			this.model = model;
+		}
 
 		this.tryEnsureIndex({ '_updatedAt': 1 });
+	}
+
+	get baseName() {
+		return baseName;
 	}
 
 	setUpdatedAt(record = {}, checkQuery = false, query) {

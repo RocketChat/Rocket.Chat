@@ -7,7 +7,14 @@ Meteor.startup(function() {
 		this.add('CAS_enabled', false, { type: 'boolean', group: 'CAS', public: true });
 		this.add('CAS_base_url', '', { type: 'string', group: 'CAS', public: true });
 		this.add('CAS_login_url', '', { type: 'string', group: 'CAS', public: true });
-		this.add('CAS_version', '1.0', { type: 'select', values: [{ key: '1.0', i18nLabel: '1.0'}], group: 'CAS' });
+		this.add('CAS_version', '1.0', { type: 'select', values: [{ key: '1.0', i18nLabel: '1.0'}, { key: '2.0', i18nLabel: '2.0'}], group: 'CAS' });
+
+		this.section('Attribute handling', function() {
+			// Enable/disable sync
+			this.add('CAS_Sync_User_Data_Enabled', true, { type: 'boolean' });
+			// Attribute mapping table
+			this.add('CAS_Sync_User_Data_FieldMap', '{}', { type: 'string' });
+		});
 
 		this.section('CAS Login Layout', function() {
 			this.add('CAS_popup_width', '810', { type: 'string', group: 'CAS', public: true });
@@ -53,14 +60,6 @@ function updateServices(/*record*/) {
 	}, 2000);
 }
 
-function check_record(record) {
-	if (/^CAS_.+/.test(record._id)) {
-		updateServices(record);
-	}
-}
-
-RocketChat.models.Settings.find().observe({
-	added: check_record,
-	changed: check_record,
-	removed: check_record
+RocketChat.settings.get(/^CAS_.+/, (key, value) => {
+	updateServices(value);
 });

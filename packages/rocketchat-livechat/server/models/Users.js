@@ -19,7 +19,10 @@ RocketChat.models.Users.setOperator = function(_id, operator) {
  */
 RocketChat.models.Users.findOnlineAgents = function() {
 	var query = {
-		statusConnection: { $ne: 'offline' },
+		statusConnection: {
+			$exists: true,
+			$ne: 'offline'
+		},
 		statusLivechat: 'available',
 		roles: 'livechat-agent'
 	};
@@ -46,7 +49,10 @@ RocketChat.models.Users.findAgents = function() {
  */
 RocketChat.models.Users.findOnlineUserFromList = function(userList) {
 	var query = {
-		statusConnection: { $ne: 'offline' },
+		statusConnection: {
+			$exists: true,
+			$ne: 'offline'
+		},
 		statusLivechat: 'available',
 		roles: 'livechat-agent',
 		username: {
@@ -63,7 +69,10 @@ RocketChat.models.Users.findOnlineUserFromList = function(userList) {
  */
 RocketChat.models.Users.getNextAgent = function() {
 	var query = {
-		statusConnection: { $ne: 'offline' },
+		statusConnection: {
+			$exists: true,
+			$ne: 'offline'
+		},
 		statusLivechat: 'available',
 		roles: 'livechat-agent'
 	};
@@ -83,10 +92,10 @@ RocketChat.models.Users.getNextAgent = function() {
 	};
 
 	var user = findAndModify(query, sort, update);
-	if (user) {
+	if (user && user.value) {
 		return {
-			agentId: user._id,
-			username: user.username
+			agentId: user.value._id,
+			username: user.value.username
 		};
 	} else {
 		return null;
@@ -203,5 +212,5 @@ RocketChat.models.Users.getNextVisitorUsername = function() {
 
 	const livechatCount = findAndModify(query, null, update);
 
-	return 'guest-' + (livechatCount.value + 1);
+	return 'guest-' + (livechatCount.value.value + 1);
 };

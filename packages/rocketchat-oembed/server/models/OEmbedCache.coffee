@@ -1,6 +1,6 @@
 RocketChat.models.OEmbedCache = new class extends RocketChat.models._Base
 	constructor: ->
-		@_initModel 'oembed_cache'
+		super('oembed_cache')
 
 
 	# FIND ONE
