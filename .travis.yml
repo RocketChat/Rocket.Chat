@@ -32,8 +32,7 @@ cache:
   - "$HOME/build/RocketChat/Rocket.Chat/packages/rocketchat-livechat/app/node_modules"
   - "$HOME/build/RocketChat/Rocket.Chat/packages/rocketchat-livechat/app/.meteor/local"
 before_install:
-- if [ ! -e "$HOME/.meteor/meteor" ]; then curl https://install.meteor.com | sed s/--progress-bar/-sL/g
-  | /bin/sh; fi
+- if [ ! -e "$HOME/.meteor/meteor" ]; then curl https://install.meteor.com | sed s/--progress-bar/-sL/g | /bin/sh; fi
 install:
 - export PATH="$HOME/.meteor:$PATH"
 before_script:
