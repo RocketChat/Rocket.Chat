@@ -115,7 +115,7 @@ Template.createCombinedFlex.events
 				if not privateGroup
 					RocketChat.callbacks.run 'aftercreateCombined', { _id: result.rid, name: name }
 
-				FlowRouter.go successRoute, { name: name }
+				FlowRouter.go successRoute, { name: name }, FlowRouter.current().queryParams
 		else
 			console.log err
 			instance.error.set({ fields: err })
