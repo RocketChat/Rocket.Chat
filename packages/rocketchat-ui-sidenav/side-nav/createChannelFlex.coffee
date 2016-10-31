@@ -106,7 +106,7 @@ Template.createChannelFlex.events
 					instance.clearForm()
 
 				RocketChat.callbacks.run 'afterCreateChannel', { _id: result.rid, name: name }
-				FlowRouter.go 'channel', { name: name }
+				FlowRouter.go 'channel', { name: name }, FlowRouter.current().queryParams
 		else
 			console.log err
 			instance.error.set({ fields: err })
