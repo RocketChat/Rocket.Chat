@@ -41,7 +41,6 @@ before_script:
 - npm run lint
 script:
 - travis_retry travis_wait 15 meteor build /tmp/build
-after_script:
 - meteor npm run chimp-test
 before_deploy:
 - source ".travis/setartname.sh"

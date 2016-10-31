@@ -11,8 +11,8 @@
       "from": "array-series@>=0.1.5 <0.2.0"
     },
     "cross-spawn": {
-      "version": "4.0.0",
-      "resolved": "https://registry.npmjs.org/cross-spawn/-/cross-spawn-4.0.0.tgz",
+      "version": "4.0.2",
+      "resolved": "https://registry.npmjs.org/cross-spawn/-/cross-spawn-4.0.2.tgz",
       "from": "cross-spawn@>=4.0.0 <5.0.0"
     },
     "debug": {
