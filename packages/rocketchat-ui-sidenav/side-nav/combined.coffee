@@ -17,7 +17,8 @@ Template.combined.helpers
 		return ChatSubscription.find query, { sort: 'name': 1 }
 
 	canCreate: ->
-		return RocketChat.authz.hasAtLeastOnePermission ['create-c', 'create-p']
+		#return RocketChat.authz.hasAtLeastOnePermission ['create-c', 'create-p']
+		return false
 
 Template.combined.events
 	'click .add-room': (e, instance) ->
@@ -28,5 +29,9 @@ Template.combined.events
 			e.preventDefault()
 
 	'click .more-channels': ->
-		SideNav.setFlex "listCombinedFlex"
-		SideNav.openFlex()
+		#SideNav.setFlex "listCombinedFlex"
+		#SideNav.openFlex()
+
+	'click .new-project': ->
+		window.location.replace("https://stage.ubegin.com/action/new-project");
+

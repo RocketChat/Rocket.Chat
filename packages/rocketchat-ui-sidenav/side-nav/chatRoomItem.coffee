@@ -26,7 +26,7 @@ Template.chatRoomItem.helpers
 
 		return false unless roomData
 
-		if (roomData.cl? and not roomData.cl) or roomData.t is 'd' or (roomData.usernames?.indexOf(Meteor.user().username) isnt -1 and roomData.usernames?.length is 1)
+		if (roomData.cl? and not roomData.cl) or roomData.t is 'd'
 			return false
 		else
 			return true
@@ -119,3 +119,6 @@ Template.chatRoomItem.events
 						RoomManager.close rid
 			else
 				swal.close()
+
+	'click .add-people': ->
+		window.location.replace("https://stage.ubegin.com/action/new-project");
