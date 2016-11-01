@@ -3,7 +3,7 @@ const commands = {
 		if (typeof data.path !== 'string' || data.path.trim().length === 0) {
 			return console.error('`path` not defined');
 		}
-		FlowRouter.go(data.path);
+		FlowRouter.go(data.path, null, FlowRouter.current().queryParams);
 	},
 
 
