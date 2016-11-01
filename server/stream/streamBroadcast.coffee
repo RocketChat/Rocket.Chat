@@ -44,7 +44,7 @@ startMatrixBroadcast = ->
 					return
 
 			logger.connection.info 'connecting in', instance
-			connections[instance] = DDP.connect(instance, {_dontPrintErrors: true})
+			connections[instance] = DDP.connect(instance, {_dontPrintErrors: LoggerManager.logLevel < 2})
 			connections[instance].instanceRecord = record;
 			connections[instance].instanceId = record._id;
 			connections[instance].onReconnect = ->
@@ -92,7 +92,7 @@ startStreamCastBroadcast = (value) ->
 	instance = 'StreamCast'
 
 	logger.connection.info 'connecting in', instance, value
-	connection = DDP.connect(value, {_dontPrintErrors: true})
+	connection = DDP.connect(value, {_dontPrintErrors: LoggerManager.logLevel < 2})
 	connections[instance] = connection
 	connection.instanceId = instance
 	connection.onReconnect = ->
