@@ -33,6 +33,8 @@ Template.body.onRendered ->
 		target = e.target
 		if /input|textarea|select/i.test(target.tagName)
 			return
+		if $.swipebox.isOpen
+			return
 		$inputMessage = $('textarea.input-message')
 		if 0 == $inputMessage.length
 			return
