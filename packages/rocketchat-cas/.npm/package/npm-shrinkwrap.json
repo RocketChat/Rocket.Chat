@@ -8,7 +8,7 @@
     "cas": {
       "version": "0.0.5",
       "resolved": "git+https://github.com/kcbanner/node-cas.git#fcd27dad333223b3b75a048bce27973fb3ca0f62",
-      "from": "git+https://github.com/kcbanner/node-cas.git#fcd27dad333223b3b75a048bce27973fb3ca0f62"
+      "from": "cas@git+https://github.com/kcbanner/node-cas#fcd27dad333223b3b75a048bce27973fb3ca0f62"
     },
     "cheerio": {
       "version": "0.19.0",
