@@ -97,7 +97,7 @@ Template.privateGroupsFlex.events
 					return handleError(err)
 				SideNav.closeFlex()
 				instance.clearForm()
-				FlowRouter.go 'group', { name: name }
+				FlowRouter.go 'group', { name: name }, FlowRouter.current().queryParams
 		else
 			Template.instance().error.set({fields: err})
 
