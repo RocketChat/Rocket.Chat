@@ -66,7 +66,6 @@ RocketChat.settings.get('theme-color-tertiary-background-color', function(key, v
 
 RocketChat.settings.get('Accounts_ForgetUserSessionOnWindowClose', function(key, value) {
 	if (value) {
-		console.log('Accounts_ForgetUserSessionOnWindowClose');
 		Inject.rawModHtml('Accounts_ForgetUserSessionOnWindowClose', function(html) {
 			const script = `
 				<script>
