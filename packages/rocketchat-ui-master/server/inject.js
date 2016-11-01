@@ -64,6 +64,25 @@ RocketChat.settings.get('theme-color-tertiary-background-color', function(key, v
 	}
 });
 
+RocketChat.settings.get('Accounts_ForgetUserSessionOnWindowClose', function(key, value) {
+	if (value) {
+		Inject.rawModHtml('Accounts_ForgetUserSessionOnWindowClose', function(html) {
+			const script = `
+				<script>
+					if (Meteor._localStorage._data === undefined && window.sessionStorage) {
+						Meteor._localStorage = window.sessionStorage;
+					}
+				</script>
+			`;
+			return html.replace(/<\/body>/, script+'\n</body>');
+		});
+	} else {
+		Inject.rawModHtml('Accounts_ForgetUserSessionOnWindowClose', function(html) {
+			return html;
+		});
+	}
+});
+
 RocketChat.settings.get('Site_Url', function() {
 	Meteor.defer(function() {
 		let baseUrl;
