@@ -121,4 +121,5 @@ Template.chatRoomItem.events
 				swal.close()
 
 	'click .add-people': ->
-		window.location.replace("https://stage.ubegin.com/action/new-project");
+		HTTP.call 'GET', 'https://stage.ubegin.com:1337/project/info/'+this.name, (error, result) ->
+			window.location.replace(result.data.url);
