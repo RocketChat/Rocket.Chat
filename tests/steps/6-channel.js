@@ -84,20 +84,25 @@ describe('channel settings', ()=> {
 			flexTab.thirdSetting.getText().should.equal('DESCRIPTION EDITED');
 		});
 
+		it('dismiss the toast', ()=> {
+			flexTab.dismissToast();
+		});
+
 		it('open the users tab', ()=> {
-			browser.pause(7000);
 			flexTab.membersTab.waitForVisible();
 			flexTab.membersTab.click();
 
 		});
 
 		it('sets rocket cat as owner', ()=> {
-			browser.pause(1000);
 			flexTab.setUserOwner(targetUser);
 		});
 
+		it('dismiss the toast', ()=> {
+			flexTab.dismissToast();
+		});
+
 		it('should show the owner add message', ()=> {
-			browser.pause(10000);
 			mainContent.lastMessage.getText().should.equal(targetUser+' was set owner by '+username);
 		});
 
@@ -111,7 +116,7 @@ describe('channel settings', ()=> {
 		});
 
 		it('mute rocket cat', ()=> {
-			browser.pause(6000);
+			browser.pause(5000);
 			flexTab.muteUser(targetUser);
 		});
 
@@ -120,7 +125,7 @@ describe('channel settings', ()=> {
 		});
 
 		it('close the user screen', ()=> {
-			browser.pause(6000);
+			browser.pause(5000);
 			flexTab.viewAllBtn.click();
 		});
 	});
