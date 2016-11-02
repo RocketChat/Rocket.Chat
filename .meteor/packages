@@ -122,6 +122,7 @@ rocketchat:version
 rocketchat:videobridge
 rocketchat:webrtc
 rocketchat:wordpress
+rocketchat:message-snippet
 #rocketchat:chatops
 
 konecty:change-case
