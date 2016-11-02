@@ -122,6 +122,7 @@ class PresenceClient
 			servicesExchange: "servicesExchange",
 			responsesExchange: "responsesExchange",
 			routingKey: "presenceHandler"
+			logger: logger
 		connection = tamqp.createConnection @url, opts
 		presenceService = Npm.require('node-ydin-presence-service').presenceService
 		connection.connect (err, conn) =>
@@ -144,7 +145,7 @@ class PresenceClient
 			logger.error "thrift-amqp connection error: #{err}"
 
 	publishPresence: (user, status, statusConnection) ->
-		return
+		logger.error "publishing presence for #{user.username} to (#{status}, #{statusConnection})"
 		# resource = null  # FIXME: use instance_id from UsersSessions
 		# pTypes = Npm.require('node-ydin-presence-service').presenceServiceTypes
 		# i = new pTypes.TXmppEvent(

@@ -47,8 +47,8 @@
     },
     "node-thrift-amqp": {
       "version": "0.1.0",
-      "resolved": "git+https://github.com/VoiSmart/node-thrift-amqp.git#95939c29ca606f5c8eb897994a2bb3b4fad67540",
-      "from": "node-thrift-amqp@git+https://github.com/VoiSmart/node-thrift-amqp.git#v0.1.0"
+      "resolved": "git+https://github.com/VoiSmart/node-thrift-amqp.git#dce4d7d14e728506643a03439d81581c264d7407",
+      "from": "node-thrift-amqp@git+https://github.com/VoiSmart/node-thrift-amqp.git#v0.2.1"
     },
     "node-ydin-presence-service": {
       "version": "2.4.6-1.20161027svnr14",
