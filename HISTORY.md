@@ -1,5 +1,45 @@
 # History
 
+## 0.45.0, 2016-Oct-31
+
+- Add global keydown event handler
+- Add hubot packages as default
+- Add Iframe change status (#4741)
+- Add iframe command 'login-with-token` (#4746)
+- Add iframe command 'logout'
+- Add jschardet for detect encoding of oembed body
+- Add keywords for outgoing integrations across all public/private/direct channels
+- Add migration to escape old room topic changed messages
+- Add option to hide some system messages
+- Add scroll listener to admin log viewer
+- Add scroll listener to rooms
+- Add Stream cast (#4727)
+- Add support for attachments inside quoted messages
+- Add threshold to check if admin log viewer is at bottom
+- Add threshold to check if room is at bottom
+- Add users to default channels when using REST API
+- Add version and RocketChat.Info to Bugsnag notifications
+- Change event keydown to keypress
+- Exporting NODE_ENV=production to all builded images
+- Fix action link handler
+- Fix Assign issuer value from tag value instead of incorrect tag object (#4754)
+- Fix check user.profile.email and fallback with username: user.name if it does not exist in user record (#4614)
+- Fix Drag&Drop files into channel doesn't work on Safari (#4721)
+- Fix jitsi:updateTimeout error
+- Fix Livechat Remove Department Closes #4720 Thanks to @deep0982
+- Fix replace null value of contextType by an empty string so check(String) won't fail (#4495)
+- Fix the timeout in the channel name test
+- Ignore keypress if swipebox is open
+- Keep queryParams when using FlowRouter.go to room routes
+- Make the location button use the full button and not just the icon
+- Move to main.coffee and add select tag to ignore list
+- OEmbed: More smart charset detection algorithm
+- Show a desktop notification only for the opened room if on embedded mode
+- Time Range filter from and to in livechat current chat page
+- Trigger a global event on embedded mode instead of calling action link
+- Update ip-range-check to version 0.0.2 to get rid of debugger call Day8/ip-range-check#1
+- Update all npm-shrinkwrap.json with npm 3.10.9
+
 ## 0.44.0, 2016-Oct-25
 
 - Add archive and unarchive api endpoints

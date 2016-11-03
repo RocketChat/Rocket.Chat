@@ -59,14 +59,22 @@ class FlexTab extends Page {
 	get thirdSetting() { return browser.element('.clearfix li:nth-child(3) .current-setting'); }
 	get editNameTextInput() { return browser.element('.channel-settings input[name="name"]'); }
 	get editNameSave() { return browser.element('.channel-settings .save'); }
+	get memberUserName() { return browser.element('.info h3'); }
+	get memberRealName() { return browser.element('.info p'); }
 
 	get confirmBtn() { return browser.element('.confirm'); }
 
 	get sweetAlertOverlay() { return browser.element('.sweet-overlay'); }
+	get toastAlert() { return browser.element('.toast'); }
 
 	confirmPopup() {
 		this.confirmBtn.click();
 		this.sweetAlertOverlay.waitForVisible(5000, true);
+	}
+
+	dismissToast() {
+		this.toastAlert.click();
+		browser.pause(4000);
 	}
 
 	archiveChannel() {
