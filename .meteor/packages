@@ -4,6 +4,7 @@
 # but you can also edit it by hand.
 
 rocketchat:cors
+
 accounts-facebook@1.0.11
 accounts-github@1.0.11
 accounts-google@1.0.11
@@ -132,7 +133,8 @@ konecty:multiple-instances-status
 konecty:nrr
 konecty:user-presence
 
-chrismbeckett:toastr
+lamatyus:toastr
+momentjs:moment@=2.15.1
 dispatch:run-as-user
 francocatena:status
 jalik:ufs
@@ -143,7 +145,6 @@ kadira:flow-router
 kenton:accounts-sandstorm
 mizzao:autocomplete
 mizzao:timesync
-momentjs:moment
 mrt:reactive-store
 mystor:device-detection
 nimble:restivus

@@ -34,6 +34,10 @@
     {
       "name": "Sing Li",
       "email": "sing.li@rocket.chat"
+    },
+    {
+      "name": "Alex Terpyakov",
+      "email": "terpyakov@gmail.com"
     }
   ],
   "keywords": [
@@ -42,7 +46,7 @@
     "chat"
   ],
   "scripts": {
-    "start": "meteor run",
+    "start": "meteor npm i && meteor",
     "lint": "eslint .",
     "deploy": "npm run build && pm2 startOrRestart pm2.json",
     "chimp-watch": "chimp --ddp=http://localhost:3000 --watch --mocha --path=tests",
