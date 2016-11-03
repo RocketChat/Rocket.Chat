@@ -1,4 +1,154 @@
-## NEXT
+# History
+
+## 0.45.0, 2016-Oct-31
+
+- Add global keydown event handler
+- Add hubot packages as default
+- Add Iframe change status (#4741)
+- Add iframe command 'login-with-token` (#4746)
+- Add iframe command 'logout'
+- Add jschardet for detect encoding of oembed body
+- Add keywords for outgoing integrations across all public/private/direct channels
+- Add migration to escape old room topic changed messages
+- Add option to hide some system messages
+- Add scroll listener to admin log viewer
+- Add scroll listener to rooms
+- Add Stream cast (#4727)
+- Add support for attachments inside quoted messages
+- Add threshold to check if admin log viewer is at bottom
+- Add threshold to check if room is at bottom
+- Add users to default channels when using REST API
+- Add version and RocketChat.Info to Bugsnag notifications
+- Change event keydown to keypress
+- Exporting NODE_ENV=production to all builded images
+- Fix action link handler
+- Fix Assign issuer value from tag value instead of incorrect tag object (#4754)
+- Fix check user.profile.email and fallback with username: user.name if it does not exist in user record (#4614)
+- Fix Drag&Drop files into channel doesn't work on Safari (#4721)
+- Fix jitsi:updateTimeout error
+- Fix Livechat Remove Department Closes #4720 Thanks to @deep0982
+- Fix replace null value of contextType by an empty string so check(String) won't fail (#4495)
+- Fix the timeout in the channel name test
+- Ignore keypress if swipebox is open
+- Keep queryParams when using FlowRouter.go to room routes
+- Make the location button use the full button and not just the icon
+- Move to main.coffee and add select tag to ignore list
+- OEmbed: More smart charset detection algorithm
+- Show a desktop notification only for the opened room if on embedded mode
+- Time Range filter from and to in livechat current chat page
+- Trigger a global event on embedded mode instead of calling action link
+- Update ip-range-check to version 0.0.2 to get rid of debugger call Day8/ip-range-check#1
+- Update all npm-shrinkwrap.json with npm 3.10.9
+
+## 0.44.0, 2016-Oct-25
+
+- Add archive and unarchive api endpoints
+- Add check package dependency to the iframe-login package. (#4664)
+- Add classes to spans in flextab
+- Add docker image creation for experimental branch
+- Add moment to rocketchat:lib dependencies
+- Add RoomPick setting type
+- Add session as a dependency of rocketchat:lib (#4661)
+- Add Slackbridge Out
+- Add tests for emoji, screen resolution, messages, rooms managment
+- Allow to call custom oauth services using iframe events (#4685, #4687)
+- Fix public channel name typo
+- Fix the wrong file path
+- Fix undefinied slash command parameters (#4668)
+- Fix user can use /leave in a direct message (#4663)
+- Fix visitor not being able to use livechat if session expired
+- Propagate bot messages through slackbridge
+- Replace mrt:moment-timezone by aldeed:moment-timezone as it depend on the official moment package
+- Set tap:i18n version in i18n package to install the expected version when the package is used in other projects
+
+## 0.43.0, 2016-Oct-17
+
+- Add @here support for only notifying users that are active
+- Add base support for config via webservices
+- Add basic killswitch to enable/disable IRC functionality
+- Add oplog state to startup message
+- Add site name to html meta title via server side inject
+- Add transition to main-content
+- Add validations to transcript sending method
+- Adds options for ldap connect and idle timeout
+- Allow outgoing integrations to post as the triggering user
+- Fix email formatting and swal alert going out of widget
+- Fix Firefox DnD by checking types of drag event
+- Fix match on livechat department save
+- Fix select custom field validation
+- Fix stuck in login page after logout
+- Fix the slack and hipchat importers on users importing
+- Fix transcript to users without email
+- METEOR@1.4.1.2
+- Migrated IRC config defaults to web admin panel and mapped to variables.
+- Package development status provided as an alert to users. Caveat emptor.
+- Remove mapReduces from statistics
+- Schedule syncedcron to run every one hour at the startup minute
+- Set babel cache directory for integrations
+- Switch snap from imagemagick to graphicsmagick
+
+## 0.42.0, 2016-Oct-04
+
+- Add dependency to package with avatar template
+- Add ids for irc.server callbacks
+- Add livechat REST endpoints
+- Add REST endpoint to save settings
+- Add REST endpoints to livechat agents, managers and departments
+- Add support for apostrophe emojis
+- Add videocall support to livechat
+- Added CAS 2.0 settings
+- Allow imported users to register themselves
+- CAS: BugFix for service URL when RC running in subdir. Source: #3981
+- Decrease the callback priority of highlight words
+- Enable slackbridge slashcommand after enabling
+- Fix bug when setting readonly room as default room
+- Fix Error when Importing Slack History (#4388)
+- Fix for DnD files in Firefox
+- Fix livechat routing to agents that have never logged in
+- Fix OEmbed exception on request error
+- Fix Relative path on og:image meta tag results in broken preview image
+- Fix setting username from REST API
+- Fix translations if tap language was changed (#4470)
+- Merged improvements from `more-streams` (#4510) (#4513)
+- Move livechat SMS endpoint to default Rocket.Chat REST APIs
+- Properly stop AV tracks when closing video recording dialog
+- Remove colon from mention on reply message
+- Remove sync methods (#4512)
+- Return status code 403 forbidden instead of 401 unauthorized
+- Show muted icon in list of users
+- Standardize settings endpoint return
+- Update Autolinker to 1.2.0
+
+## 0.41.0, 2016-Sep-27
+
+- Add ability to close open livechats if an agent goes offline
+- Add basic channels tests
+- Add Error Handler to send uncaught exceptions to a room
+- Add filter to current livechats screen
+- Add login tests
+- Add migration to remove old Crowd setting
+- Add new global events
+- Allow webhook to decide if message is groupable
+- Catch errors sending mail
+- Fix auto complete issues with users and emoji
+- Fix error CodeMirror undefined when leaving admin
+- Fix ignore JSON.parse errors
+- Fix jitsiTimeout errors
+- Fix list of user auto complete from server
+- Fix open a new window if on embedded view mode
+- Fix stop registration if mail fails
+- Fix variable name in webhook (#4439)
+- Flip user video
+- Made Accounts_UseDNSDomainCheck false by default
+- Prevent edited messaged breaking line
+- Prevent empty username suggestion
+- Prevent error when parsing oembed meta
+- Remove colon from users autocomplete
+- Removed fast-render
+- Removed the word BY from the edited description title
+- Rename atlassian crowd url to remove space
+- Replace autocomplte popups subscriptions with methods
+- Trigger global event to embedded images
 
 ## 0.40.1, 2016-Sep-21
 

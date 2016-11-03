@@ -155,7 +155,10 @@ ExecuteTriggerUrl = (url, trigger, message, room, tries=0) ->
 	logger.outgoing.debug data
 
 	sendMessage = (message) ->
-		user = RocketChat.models.Users.findOneByUsername(trigger.username)
+		if trigger.impersonateUser ? false
+			user = RocketChat.models.Users.findOneByUsername(data.user_name)
+		else
+			user = RocketChat.models.Users.findOneByUsername(trigger.username)
 
 		message.bot =
 			i: trigger._id
@@ -278,12 +281,18 @@ ExecuteTriggers = (message, room) ->
 			if triggers['@'+id]?
 				triggersToExecute.push trigger for key, trigger of triggers['@'+id]
 
+			if triggers.all_direct_messages?
+				triggersToExecute.push trigger for key, trigger of triggers.all_direct_messages
+
 			if id isnt username and triggers['@'+username]?
 				triggersToExecute.push trigger for key, trigger of triggers['@'+username]
 
 		when 'c'
 			if triggers.__any?
 				triggersToExecute.push trigger for key, trigger of triggers.__any
+
+			if triggers.all_public_channels?
+				triggersToExecute.push trigger for key, trigger of triggers.all_public_channels
 
 			if triggers['#'+room._id]?
 				triggersToExecute.push trigger for key, trigger of triggers['#'+room._id]
@@ -292,6 +301,9 @@ ExecuteTriggers = (message, room) ->
 				triggersToExecute.push trigger for key, trigger of triggers['#'+room.name]
 
 		else
+			if triggers.all_private_groups?
+				triggersToExecute.push trigger for key, trigger of triggers.all_private_groups
+
 			if triggers['#'+room._id]?
 				triggersToExecute.push trigger for key, trigger of triggers['#'+room._id]
 

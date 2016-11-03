@@ -25,7 +25,7 @@ Template.createCombinedFlex.helpers
 					noMatchTemplate: Template.userSearchEmpty
 					matchAll: true
 					filter:
-						exceptions: [Meteor.user().username, Meteor.user().name].concat(Template.instance().selectedUsers.get())
+						exceptions: [Meteor.user().username].concat(Template.instance().selectedUsers.get())
 					selector: (match) ->
 						return { term: match }
 					sort: 'username'
@@ -115,7 +115,7 @@ Template.createCombinedFlex.events
 				if not privateGroup
 					RocketChat.callbacks.run 'aftercreateCombined', { _id: result.rid, name: name }
 
-				FlowRouter.go successRoute, { name: name }
+				FlowRouter.go successRoute, { name: name }, FlowRouter.current().queryParams
 		else
 			console.log err
 			instance.error.set({ fields: err })

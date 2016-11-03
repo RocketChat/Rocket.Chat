@@ -49,11 +49,11 @@
 			if @stream?
 				vtracks = @stream.getVideoTracks()
 				for vtrack in vtracks
-					vtrack.stop?()
+					vtrack.stop()
 
 				atracks = @stream.getAudioTracks()
 				for atrack in atracks
-					atrack.stop?()
+					atrack.stop()
 
 			if @videoel?
 				@videoel.pause

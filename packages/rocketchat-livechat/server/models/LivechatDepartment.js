@@ -3,8 +3,7 @@
  */
 class LivechatDepartment extends RocketChat.models._Base {
 	constructor() {
-		super();
-		this._initModel('livechat_department');
+		super('livechat_department');
 	}
 
 	// FIND
