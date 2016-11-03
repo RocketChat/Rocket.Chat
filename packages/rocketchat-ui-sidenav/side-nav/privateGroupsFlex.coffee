@@ -25,7 +25,7 @@ Template.privateGroupsFlex.helpers
 					noMatchTemplate: Template.userSearchEmpty
 					matchAll: true
 					filter:
-						exceptions: [Meteor.user().username, Meteor.user().name].concat(Template.instance().selectedUsers.get())
+						exceptions: [Meteor.user().username].concat(Template.instance().selectedUsers.get())
 					selector: (match) ->
 						return { term: match }
 					sort: 'username'
@@ -97,7 +97,7 @@ Template.privateGroupsFlex.events
 					return handleError(err)
 				SideNav.closeFlex()
 				instance.clearForm()
-				FlowRouter.go 'group', { name: name }
+				FlowRouter.go 'group', { name: name }, FlowRouter.current().queryParams
 		else
 			Template.instance().error.set({fields: err})
 

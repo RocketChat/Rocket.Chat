@@ -16,6 +16,19 @@ this.Livechat = new (class Livechat {
 		this._offlineUnavailableMessage = new ReactiveVar('');
 		this._displayOfflineForm = new ReactiveVar(true);
 		this._offlineSuccessMessage = new ReactiveVar(TAPi18n.__('Thanks_We_ll_get_back_to_you_soon'));
+		this._videoCall = new ReactiveVar(false);
+		this._transcriptMessage = new ReactiveVar('');
+
+		this._room = new ReactiveVar(null);
+
+		Tracker.autorun((c) => {
+			if (this._room.get() && Meteor.userId()) {
+				RoomHistoryManager.getMoreIfIsEmpty(this._room.get());
+				visitor.subscribeToRoom(this._room.get());
+				visitor.setRoom(this._room.get());
+				c.stop();
+			}
+		});
 	}
 
 	get online() {
@@ -50,6 +63,12 @@ this.Livechat = new (class Livechat {
 	}
 	get offlineSuccessMessage() {
 		return this._offlineSuccessMessage.get();
+	}
+	get videoCall() {
+		return this._videoCall.get();
+	}
+	get transcriptMessage() {
+		return this._transcriptMessage.get();
 	}
 
 	set online(value) {
@@ -92,5 +111,15 @@ this.Livechat = new (class Livechat {
 	}
 	set offlineFontColor(value) {
 		this._offlineFontColor.set(value);
+	}
+	set videoCall(value) {
+		this._videoCall.set(value);
+	}
+	set transcriptMessage(value) {
+		this._transcriptMessage.set(value);
+	}
+
+	set room(roomId) {
+		this._room.set(roomId);
 	}
 })();

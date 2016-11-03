@@ -1505,11 +1505,15 @@ label.required:after {
 	overflow-y: hidden;
 	.content {
 		&:extend(.fill-all);
-		padding: 25px 40px 0px;
+		padding: 25px 40px;
 		overflow-y: scroll;
 		margin-top: 60px;
 		-webkit-overflow-scrolling: touch;
 		.calc(height, ~'100% - 60px');
+
+		fieldset {
+			margin-bottom: 1em;
+		}
 	}
 }
 
@@ -1590,6 +1594,7 @@ label.required:after {
 	justify-content: center;
 	padding: 0 40px;
 	> .spotlight-input {
+		position: relative;
 		width: 100%;
 		max-width: 600px;
 		font-size: 24px;
@@ -1646,6 +1651,7 @@ label.required:after {
 	right: 40px;
 	width: auto;
 	height: auto;
+	.transition(right .25s cubic-bezier(.5, 0, .1, 1));
 	&.flex-opened {
 		right: @flex-tab-width + 40px;
 		.flex-tab {
@@ -1750,6 +1756,12 @@ label.required:after {
 					padding: 5px;
 				}
 			}
+
+			.selected-rooms {
+				.remove-room {
+					cursor: pointer;
+				}
+			}
 		}
 	}
 	.settings-description {
@@ -1793,6 +1805,7 @@ label.required:after {
 			}
 		}
 	}
+
 }
 
 .page-static {
@@ -2536,6 +2549,7 @@ label.required:after {
 				border-left: 0;
 				margin-left: 0;
 				padding-left: 0;
+				white-space: nowrap;
 			}
 			.private {
 				display: none;
@@ -4179,6 +4193,10 @@ body:not(.is-cordova) {
 			text-align: center;
 			font-weight: bold;
 		}
+	}
+	.video-flip {
+		transform: scaleX(-1);
+		filter: FlipH;
 	}
 	.videos {
 		display: -webkit-flex;

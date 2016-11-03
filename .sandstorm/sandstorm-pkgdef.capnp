@@ -19,9 +19,9 @@ const pkgdef :Spk.PackageDefinition = (
 
 		appTitle = (defaultText = "Rocket.Chat"),
 
-		appVersion = 39,  # Increment this for every release.
+		appVersion = 45,  # Increment this for every release.
 
-		appMarketingVersion = (defaultText = "0.39.0"),
+		appMarketingVersion = (defaultText = "0.46.0-develop"),
 		# Human-readable representation of appVersion. Should match the way you
 		# identify versions of your app in documentation and marketing.
 
@@ -88,16 +88,15 @@ const pkgdef :Spk.PackageDefinition = (
 	# the app opens while running in dev mode. To see what that looks like,
 	# run `spk init` without the -A option.)
 
-  bridgeConfig = (
-    viewInfo = (
-      eventTypes = [
+	bridgeConfig = (
+		viewInfo = (
+			eventTypes = [
 				(name = "message", verbPhrase = (defaultText = "sent message")),
 				(name = "privateMessage", verbPhrase = (defaultText = "sent private message"), requiredPermission = (explicitList = void)),
 			]
-    ),
-
-    saveIdentityCaps = true,
-  ),
+		),
+		saveIdentityCaps = true,
+	),
 );
 
 const myCommand :Spk.Manifest.Command = (

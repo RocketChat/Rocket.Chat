@@ -1,5 +1,6 @@
 Meteor.methods
 	channelsList: (filter, channelType, limit, sort) ->
+		this.unblock()
 
 		check filter, String
 		check channelType, String

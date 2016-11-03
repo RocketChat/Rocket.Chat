@@ -110,7 +110,13 @@ RocketChat.saveUser = function(userId, userData) {
 				html: header + html + footer
 			};
 
-			Email.send(email);
+			Meteor.defer(function() {
+				try {
+					Email.send(email);
+				} catch (error) {
+					throw new Meteor.Error('error-email-send-failed', 'Error trying to send email: ' + error.message, { function: 'RocketChat.saveUser', message: error.message });
+				}
+			});
 		}
 
 		return _id;

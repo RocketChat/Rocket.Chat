@@ -25,7 +25,7 @@ Template.createChannelFlex.helpers
 					noMatchTemplate: Template.userSearchEmpty
 					matchAll: true
 					filter:
-						exceptions: [Meteor.user().username, Meteor.user().name].concat(Template.instance().selectedUsers.get())
+						exceptions: [Meteor.user().username].concat(Template.instance().selectedUsers.get())
 					selector: (match) ->
 						return { term: match }
 					sort: 'username'
@@ -106,7 +106,7 @@ Template.createChannelFlex.events
 					instance.clearForm()
 
 				RocketChat.callbacks.run 'afterCreateChannel', { _id: result.rid, name: name }
-				FlowRouter.go 'channel', { name: name }
+				FlowRouter.go 'channel', { name: name }, FlowRouter.current().queryParams
 		else
 			console.log err
 			instance.error.set({ fields: err })

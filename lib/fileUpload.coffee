@@ -1,5 +1,5 @@
 if UploadFS?
-	RocketChat.models.Uploads.model.allow
+	RocketChat.models.Uploads.allow
 		insert: (userId, doc) ->
 			return userId
 
