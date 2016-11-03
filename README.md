@@ -198,7 +198,7 @@ Add Rocket.Chat to this world famous time tested small enterprise server today:
 Follow these [deployment instructions](https://rocket.chat/docs/installation/manual-installation/ubuntu/)
 
 ## Hyper.sh
-Follow there [deployment instructions](https://rocket.chat/docs/installation/paas-deployments/hyper-sh/) to install a per-second billed Rocket.Chat instance on [Hyper.sh](https://rocket.chat/docs/installation/paas-deployments/hyper-sh/)
+Follow their [deployment instructions](https://rocket.chat/docs/installation/paas-deployments/hyper-sh/) to install a per-second billed Rocket.Chat instance on [Hyper.sh](https://rocket.chat/docs/installation/paas-deployments/hyper-sh/)
 
 # About Rocket.Chat
 
