@@ -145,7 +145,10 @@ class PresenceClient
 			logger.error "thrift-amqp connection error: #{err}"
 
 	publishPresence: (user, status, statusConnection) ->
+		usersSession = Package.mongo.MongoInternals.defaultRemoteCollectionDriver().open('usersSessions')
+		userConnections = usersSession.find({"_id": user._id}).fetch()
 		logger.error "publishing presence for #{user.username} to (#{status}, #{statusConnection})"
+		logger.error("connections", userConnections)
 		# resource = null  # FIXME: use instance_id from UsersSessions
 		# pTypes = Npm.require('node-ydin-presence-service').presenceServiceTypes
 		# i = new pTypes.TXmppEvent(
