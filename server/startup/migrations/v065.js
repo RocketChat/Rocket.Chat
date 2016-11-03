@@ -1,7 +1,7 @@
 RocketChat.Migrations.add({
 	version: 65,
 	up: function() {
-			if (RocketChat && RocketChat.models && RocketChat.models.Settings) {
+		if (RocketChat && RocketChat.models && RocketChat.models.Settings) {
 
 			// New color settings - start with old settings as defaults
 			var replace1 = RocketChat.models.Settings.findOne({ _id: 'theme-color-quaternary-font-color' });
