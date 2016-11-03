@@ -29,6 +29,17 @@ Template.body.onRendered ->
 					if subscription.alert or subscription.unread > 0
 						Meteor.call 'readMessages', subscription.rid
 
+	$(document.body).on 'keypress', (e) ->
+		target = e.target
+		if /input|textarea|select/i.test(target.tagName)
+			return
+		if $.swipebox.isOpen
+			return
+		$inputMessage = $('textarea.input-message')
+		if 0 == $inputMessage.length
+			return
+		$inputMessage.focus()
+
 	$(document.body).on 'click', 'a', (e) ->
 		link = e.currentTarget
 		if link.origin is s.rtrim(Meteor.absoluteUrl(), '/') and /msg=([a-zA-Z0-9]+)/.test(link.search)
@@ -38,7 +49,7 @@ Template.body.onRendered ->
 			if RocketChat.Layout.isEmbedded()
 				return fireGlobalEvent('click-message-link', { link: link.pathname + link.search })
 
-			FlowRouter.go(link.pathname + link.search)
+			FlowRouter.go(link.pathname + link.search, null, FlowRouter.current().queryParams)
 
 		if $(link).hasClass('swipebox')
 			if RocketChat.Layout.isEmbedded()

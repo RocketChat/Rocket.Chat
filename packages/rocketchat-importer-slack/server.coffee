@@ -123,7 +123,10 @@ Importer.Slack = class Importer.Slack extends Importer.Base
 								slackLong: "<@#{user.id}|#{user.name}>"
 								rocket: "@#{existantUser.username}"
 						else
-							userId = Accounts.createUser { email: user.profile.email, password: Date.now() + user.name + user.profile.email.toUpperCase() }
+							if user.profile.email
+								userId = Accounts.createUser { email: user.profile.email, password: Date.now() + user.name + user.profile.email.toUpperCase() }
+							else
+								userId = Accounts.createUser { username: user.name, password: Date.now() + user.name }
 							Meteor.runAsUser userId, () =>
 								Meteor.call 'setUsername', user.name
 								Meteor.call 'joinDefaultChannels', true
