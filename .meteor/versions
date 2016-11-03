@@ -14,7 +14,7 @@ babel-compiler@6.13.0
 babel-runtime@0.1.13
 base64@1.0.10
 binary-heap@1.0.10
-blaze@2.1.9
+blaze@2.2.0
 blaze-html-templates@1.0.5
 blaze-tools@1.0.10
 boilerplate-generator@1.0.11
@@ -89,7 +89,7 @@ mobile-experience@1.0.4
 mobile-status-bar@1.0.13
 modules@0.7.7
 modules-runtime@0.7.7
-momentjs:moment@2.15.2
+momentjs:moment@2.15.1
 mongo@1.1.14
 mongo-id@1.0.6
 mongo-livedata@1.0.12
