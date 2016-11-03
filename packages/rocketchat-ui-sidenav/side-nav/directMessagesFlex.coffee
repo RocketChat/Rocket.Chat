@@ -59,7 +59,7 @@ Template.directMessagesFlex.events
 					return handleError(err)
 				SideNav.closeFlex()
 				instance.clearForm()
-				FlowRouter.go 'direct', { username: username }
+				FlowRouter.go 'direct', { username: username }, FlowRouter.current().queryParams
 		else
 			Template.instance().error.set(err)
 

@@ -7,6 +7,7 @@ Package.describe({
 
 Npm.depends({
 	'bad-words': '1.3.1',
+	'node-dogstatsd': '0.0.6',
 	'localforage': '1.4.2',
 	'bugsnag': '1.8.0'
 });
@@ -25,7 +26,7 @@ Package.onUse(function(api) {
 	api.use('ddp-rate-limiter');
 	api.use('underscore');
 	api.use('mongo');
-	api.use('underscorestring:underscore.string');
+	api.use('underscorestring:underscore.string@3.3.4');
 	api.use('matb33:collection-hooks');
 	api.use('service-configuration');
 	api.use('check');
@@ -35,6 +36,8 @@ Package.onUse(function(api) {
 	api.use('rocketchat:version');
 	api.use('rocketchat:logger');
 	api.use('rocketchat:custom-oauth');
+	api.use('rocketchat:authorization', {unordered: true});
+	api.use('rocketchat:push-notifications', {unordered: true});
 
 	api.use('templating', 'client');
 	api.use('kadira:flow-router');
@@ -98,6 +101,8 @@ Package.onUse(function(api) {
 	api.addFiles('server/models/Subscriptions.coffee', 'server');
 	api.addFiles('server/models/Uploads.coffee', 'server');
 	api.addFiles('server/models/Users.coffee', 'server');
+
+	api.addFiles('server/startup/statsTracker.js', 'server');
 
 	// SERVER PUBLICATIONS
 	api.addFiles('server/publications/settings.coffee', 'server');
@@ -175,8 +180,6 @@ Package.onUse(function(api) {
 
 	api.imply('tap:i18n');
 });
-
-
 
 Package.onTest(function(api) {
 	api.use('coffeescript');
