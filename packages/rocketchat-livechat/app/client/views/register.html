@@ -20,6 +20,11 @@
 				</select>
 			{{/if}}
 			<button type="submit" id="btnEntrar" class="button"> {{_ "Start_Chat"}} </button>
+
+			{{#if videoCallEnabled}}
+				<br>
+				<button type="submit" class="button request-video"> {{_ "Request_video_chat"}} </button>
+			{{/if}}
 		</form>
 	</div>
 </template>

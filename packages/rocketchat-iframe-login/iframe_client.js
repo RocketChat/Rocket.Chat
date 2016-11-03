@@ -67,9 +67,7 @@ class IframeLogin {
 		HTTP.call(this.apiMethod, this.apiUrl, options, (error, result) => {
 			console.log(error, result);
 			if (result && result.data && result.data.token) {
-				// TODO get from api
-				// result.data.token = 'yaMadZ1RMBdMzs6kGycKybrHVptoDl7nokxtorz1me0';
-				this.loginWithToken(result.data.token, (error, result) => {
+				this.loginWithToken(result.data, (error, result) => {
 					if (error) {
 						this.reactiveIframeUrl.set(iframeUrl);
 					} else {
@@ -89,15 +87,24 @@ class IframeLogin {
 			return;
 		}
 
+		if (Match.test(token, String)) {
+			token = {
+				token: token
+			};
+		}
+
 		console.log('loginWithToken');
+
+		if (token.loginToken) {
+			return Meteor.loginWithToken(token.loginToken, callback);
+		}
+
 		Accounts.callLoginMethod({
 			methodArguments: [{
 				iframe: true,
-				token: token
+				token: token.token
 			}],
-			userCallback: (err) => {
-				callback(err);
-			}
+			userCallback: callback
 		});
 	}
 }
@@ -144,7 +151,7 @@ window.addEventListener('message', (e) => {
 			break;
 
 		case 'login-with-token':
-			RocketChat.iframeLogin.loginWithToken(e.data.token, (error) => {
+			RocketChat.iframeLogin.loginWithToken(e.data, (error) => {
 				if (error) {
 					e.source.postMessage({
 						event: 'login-error',

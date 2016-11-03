@@ -14,6 +14,7 @@ RocketChat.settings.addGroup 'Accounts', ->
 	@add 'Accounts_ShowFormLogin', true, { type: 'boolean', public: true }
 	@add 'Accounts_EmailOrUsernamePlaceholder', '', { type: 'string', public: true, i18nLabel: 'Placeholder_for_email_or_username_login_field' }
 	@add 'Accounts_PasswordPlaceholder', '', { type: 'string', public: true, i18nLabel: 'Placeholder_for_password_login_field' }
+	@add 'Accounts_ForgetUserSessionOnWindowClose', false, { type: 'boolean', public: true }
 
 	@section 'Registration', ->
 		@add 'Accounts_RequireNameForSignUp', true, { type: 'boolean', public: true }
@@ -25,7 +26,7 @@ RocketChat.settings.addGroup 'Accounts', ->
 		@add 'Accounts_BlockedDomainsList', '', { type: 'string' }
 		@add 'Accounts_BlockedUsernameList', '', { type: 'string' }
 		@add 'Accounts_UseDefaultBlockedDomainsList', true, { type: 'boolean' }
-		@add 'Accounts_UseDNSDomainCheck', true, { type: 'boolean' }
+		@add 'Accounts_UseDNSDomainCheck', false, { type: 'boolean' }
 
 		@add 'Accounts_RegistrationForm', 'Public', { type: 'select', public: true, values: [ { key: 'Public', i18nLabel: 'Accounts_RegistrationForm_Public' }, { key: 'Disabled', i18nLabel: 'Accounts_RegistrationForm_Disabled' }, { key: 'Secret URL', i18nLabel: 'Accounts_RegistrationForm_Secret_URL' } ] }
 		@add 'Accounts_RegistrationForm_SecretURL', Random.id(), { type: 'string' }
@@ -123,6 +124,9 @@ RocketChat.settings.addGroup 'General', ->
 	@section 'Translations', ->
 		@add 'Custom_Translations', '', { type: 'code', public: true }
 
+	@section 'Stream Cast', ->
+		@add 'Stream_Cast_Address', '', { type: 'string' }
+
 RocketChat.settings.addGroup 'Email', ->
 	@section 'Header and Footer', ->
 		@add 'Email_Header', '<table border="0" cellspacing="0" cellpadding="0" width="100%" bgcolor="#f3f3f3" style="color:#4a4a4a;font-family: Helvetica,Arial,sans-serif;font-size:14px;line-height:20px;border-collapse:callapse;border-spacing:0;margin:0 auto"><tr><td style="padding:1em"><table border="0" cellspacing="0" cellpadding="0" align="center" width="100%" style="width:100%;margin:0 auto;max-width:800px"><tr><td bgcolor="#ffffff" style="background-color:#ffffff; border: 1px solid #DDD; font-size: 10pt; font-family: Helvetica,Arial,sans-serif;"><table width="100%" border="0" cellspacing="0" cellpadding="0"><tr><td style="background-color: #04436a;"><h1 style="font-family: Helvetica,Arial,sans-serif; padding: 0 1em; margin: 0; line-height: 70px; color: #FFF;">[Site_Name]</h1></td></tr><tr><td style="padding: 1em; font-size: 10pt; font-family: Helvetica,Arial,sans-serif;">', {
@@ -167,6 +171,7 @@ RocketChat.settings.addGroup 'Message', ->
 	@add 'Message_AllowEditing_BlockEditInMinutes', 0, { type: 'int', public: true, i18nDescription: 'Message_AllowEditing_BlockEditInMinutesDescription' }
 	@add 'Message_AllowDeleting', true, { type: 'boolean', public: true }
 	@add 'Message_AllowDeleting_BlockDeleteInMinutes', 0, { type: 'int', public: true, i18nDescription: 'Message_AllowDeleting_BlockDeleteInMinutes' }
+	@add 'Message_AllowUnrecognizedSlashCommand', false, { type: 'boolean', public: true}
 	@add 'Message_AlwaysSearchRegExp', false, { type: 'boolean' }
 	@add 'Message_ShowEditedStatus', true, { type: 'boolean', public: true }
 	@add 'Message_ShowDeletedStatus', false, { type: 'boolean', public: true }
@@ -185,7 +190,10 @@ RocketChat.settings.addGroup 'Message', ->
 	@add 'API_EmbedSafePorts', '80, 443', { type: 'string' }
 	@add 'Message_TimeFormat', 'LT', { type: 'string', public: true, i18nDescription: 'Message_TimeFormat_Description' }
 	@add 'Message_DateFormat', 'LL', { type: 'string', public: true, i18nDescription: 'Message_DateFormat_Description' }
-
+	@add 'Message_HideType_uj', false, { type: 'boolean', public: true }
+	@add 'Message_HideType_ul', false, { type: 'boolean', public: true }
+	@add 'Message_HideType_ru', false, { type: 'boolean', public: true }
+	@add 'Message_HideType_au', false, { type: 'boolean', public: true }
 
 RocketChat.settings.addGroup 'Meta', ->
 	@add 'Meta_language', '', { type: 'string' }
