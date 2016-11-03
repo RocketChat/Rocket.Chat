@@ -1,4 +1,7 @@
 #!/bin/bash
+set -x
+set -euvo pipefail
+IFS=$'\n\t'
 
 if [ -z "$SNAPCRAFT_SECRET" ]; then
     exit 0
@@ -21,6 +24,8 @@ else
     CHANNEL=edge
     SNAP_FOLDER=$PWD/.snapcraft/edge
 fi
+
+echo "snapping release for $CHANNEL channel"
 
 docker run -v $HOME:/root -v $SNAP_FOLDER:/cwd snapcore/snapcraft sh -c 'cd /cwd; apt update && snapcraft'
 docker run -v $HOME:/root -v $SNAP_FOLDER:/cwd -e CHANNEL=$CHANNEL snapcore/snapcraft sh -c "cd /cwd; snapcraft push *.snap --release $CHANNEL"

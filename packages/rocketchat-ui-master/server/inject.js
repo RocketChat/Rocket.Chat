@@ -64,6 +64,25 @@ RocketChat.settings.get('theme-color-tertiary-background-color', function(key, v
 	}
 });
 
+RocketChat.settings.get('Accounts_ForgetUserSessionOnWindowClose', function(key, value) {
+	if (value) {
+		Inject.rawModHtml('Accounts_ForgetUserSessionOnWindowClose', function(html) {
+			const script = `
+				<script>
+					if (Meteor._localStorage._data === undefined && window.sessionStorage) {
+						Meteor._localStorage = window.sessionStorage;
+					}
+				</script>
+			`;
+			return html.replace(/<\/body>/, script+'\n</body>');
+		});
+	} else {
+		Inject.rawModHtml('Accounts_ForgetUserSessionOnWindowClose', function(html) {
+			return html;
+		});
+	}
+});
+
 RocketChat.settings.get('Site_Url', function() {
 	Meteor.defer(function() {
 		let baseUrl;
@@ -77,6 +96,14 @@ RocketChat.settings.get('Site_Url', function() {
 		}
 		Inject.rawHead('base', `<base href="${baseUrl}">`);
 	});
+});
+
+RocketChat.settings.get('Site_Name', function(key, value) {
+	if (value) {
+		Inject.rawHead('title', `<title>${value}</title>`);
+	} else {
+		Inject.rawHead('title', '<title>Rocket.Chat</title>');
+	}
 });
 
 RocketChat.settings.get('GoogleSiteVerification_id', function(key, value) {
