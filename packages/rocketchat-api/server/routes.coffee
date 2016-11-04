@@ -103,7 +103,7 @@ RocketChat.API.v1.addRoute 'channels.create', authRequired: true,
 			return RocketChat.API.v1.failure e.name + ': ' + e.message
 
 		return RocketChat.API.v1.success
-			channel: RocketChat.models.Rooms.findOne({_id: id.rid})
+			channel: RocketChat.models.Rooms.findOneById(id.rid)
 
 # List Private Groups a user has access to
 RocketChat.API.v1.addRoute 'groups.list', authRequired: true,
@@ -123,7 +123,7 @@ RocketChat.API.v1.addRoute 'channel.addall', authRequired: true,
 			return RocketChat.API.v1.failure e.name + ': ' + e.message
 
 		return RocketChat.API.v1.success
-			channel: RocketChat.models.Rooms.findOne({_id: @bodyParams.roomId})
+			channel: RocketChat.models.Rooms.findOneById(@bodyParams.roomId)
 
 # List all users
 RocketChat.API.v1.addRoute 'users.list', authRequired: true,
@@ -132,6 +132,81 @@ RocketChat.API.v1.addRoute 'users.list', authRequired: true,
 			return RocketChat.API.v1.unauthorized()
 
 		return { users: RocketChat.models.Users.find().fetch() }
+
+# Create user
+RocketChat.API.v1.addRoute 'users.create', authRequired: true,
+	post: ->
+		try
+			check @bodyParams,
+				email: String
+				name: String
+				password: String
+				username: String
+				role: Match.Maybe(String)
+				joinDefaultChannels: Match.Maybe(Boolean)
+				requirePasswordChange: Match.Maybe(Boolean)
+				sendWelcomeEmail: Match.Maybe(Boolean)
+				verified: Match.Maybe(Boolean)
+				customFields: Match.Maybe(Object)
+
+			# check username availability first (to not create an user without a username)
+			try
+				nameValidation = new RegExp '^' + RocketChat.settings.get('UTF8_Names_Validation') + '$'
+			catch
+				nameValidation = new RegExp '^[0-9a-zA-Z-_.]+$'
+
+			if not nameValidation.test @bodyParams.username
+				return RocketChat.API.v1.failure 'Invalid username'
+
+			unless RocketChat.checkUsernameAvailability @bodyParams.username
+				return RocketChat.API.v1.failure 'Username not available'
+
+			userData = {}
+
+			newUserId = RocketChat.saveUser(@userId, @bodyParams)
+
+			if @bodyParams.customFields?
+				RocketChat.saveCustomFields(newUserId, @bodyParams.customFields)
+
+			user = RocketChat.models.Users.findOneById(newUserId)
+
+			if typeof @bodyParams.joinDefaultChannels is 'undefined' or @bodyParams.joinDefaultChannels
+				RocketChat.addUserToDefaultChannels(user)
+
+			return RocketChat.API.v1.success
+				user: user
+		catch e
+			return RocketChat.API.v1.failure e.name + ': ' + e.message
+
+# Update user
+RocketChat.API.v1.addRoute 'user.update', authRequired: true,
+	post: ->
+		try
+			check @bodyParams,
+				userId: String
+				data:
+					email: Match.Maybe(String)
+					name: Match.Maybe(String)
+					password: Match.Maybe(String)
+					username: Match.Maybe(String)
+					role: Match.Maybe(String)
+					joinDefaultChannels: Match.Maybe(Boolean)
+					requirePasswordChange: Match.Maybe(Boolean)
+					sendWelcomeEmail: Match.Maybe(Boolean)
+					verified: Match.Maybe(Boolean)
+					customFields: Match.Maybe(Object)
+
+			userData = _.extend({ _id: @bodyParams.userId }, @bodyParams.data)
+
+			RocketChat.saveUser(@userId, userData)
+
+			if @bodyParams.data.customFields?
+				RocketChat.saveCustomFields(@bodyParams.userId, @bodyParams.data.customFields)
+
+			return RocketChat.API.v1.success
+				user: RocketChat.models.Users.findOneById(@bodyParams.userId)
+		catch e
+			return RocketChat.API.v1.failure e.name + ': ' + e.message
 
 # Get User Information
 RocketChat.API.v1.addRoute 'user.info', authRequired: true,
@@ -185,5 +260,4 @@ RocketChat.API.v1.addRoute 'groups.create', authRequired: true,
 			return RocketChat.API.v1.failure e.name + ': ' + e.message
 
 		return RocketChat.API.v1.success
-			group: RocketChat.models.Rooms.findOne({_id: id.rid})
-
+			group: RocketChat.models.Rooms.findOneById(id.rid)

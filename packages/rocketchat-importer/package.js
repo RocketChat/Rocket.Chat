@@ -6,15 +6,15 @@ Package.describe({
 });
 
 Package.onUse(function(api) {
-	api.versionsFrom('1.0');
 	api.use([
 		'ecmascript',
 		'templating',
 		'coffeescript',
 		'check',
-		'rocketchat:lib@0.0.1'
+		'rocketchat:lib'
 	]);
 
+	api.use('aldeed:moment-timezone', 'server');
 	api.use('rocketchat:logger', 'server');
 	api.use('templating', 'client');
 
@@ -55,5 +55,6 @@ Package.onUse(function(api) {
 });
 
 Npm.depends({
-	'adm-zip': '0.4.7'
+	'adm-zip': '0.4.7',
+	'bson': '0.5.5'
 });

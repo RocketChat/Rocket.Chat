@@ -25,7 +25,7 @@
 								<input type="text" name="channel" value="{{data.channel}}" placeholder="{{_ 'User_or_channel_name'}}" />
 								<div class="settings-description">{{_ "Optional channel to listen on"}}</div>
 								<div class="settings-description">{{{_ "Start_with_s_for_user_or_s_for_channel_Eg_s_or_s" "@" "#" "@john" "#general"}}}</div>
-								<div class="settings-description">{{{_ "Leave empty to listen <strong>any public channel</strong>"}}}</div>
+								<div class="settings-description">{{{_ "Integrations_for_all_channels"}}}</div>
 							</div>
 						</div>
 						<div class="input-line double-col">
@@ -41,6 +41,14 @@
 							<div>
 								<textarea name="urls" style="height: 100px;">{{join data.urls "\n"}}</textarea>
 								<div class="settings-description">{{_ "Enter as many URLs as you like, one per line, please"}}</div>
+							</div>
+						</div>
+						<div class="input-line double-col">
+							<label>{{_ "Impersonate_user"}}</label>
+							<div>
+								<label><input type="radio" name="impersonateUser" value="1" checked="{{$eq data.impersonateUser true}}" /> {{_ "True"}}</label>
+								<label><input type="radio" name="impersonateUser" value="0" checked="{{$neq data.impersonateUser true}}" /> {{_ "False"}}</label>
+								<div class="settings-description">{{_ "Impersonate_user_description"}}</div>
 							</div>
 						</div>
 						<div class="input-line double-col">
@@ -109,7 +117,7 @@
 										<div class="title">
 											{{data.scriptError.name}}
 										</div>
-										<pre>{{data.scriptError.codeFrame}}</pre>
+										<pre>{{data.scriptError.message}}</pre>
 									</div>
 								{{/if}}
 							</div>

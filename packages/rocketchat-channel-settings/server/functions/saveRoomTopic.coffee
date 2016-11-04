@@ -1,4 +1,4 @@
-RocketChat.saveRoomTopic = (rid, roomTopic, user) ->
+RocketChat.saveRoomTopic = (rid, roomTopic, user, sendMessage=true) ->
 	unless Match.test rid, String
 		throw new Meteor.Error 'invalid-room', 'Invalid room', { function: 'RocketChat.saveRoomTopic' }
 
@@ -6,6 +6,7 @@ RocketChat.saveRoomTopic = (rid, roomTopic, user) ->
 
 	update = RocketChat.models.Rooms.setTopicById(rid, roomTopic)
 
-	RocketChat.models.Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser 'room_changed_topic', rid, roomTopic, user
+	if update and sendMessage
+		RocketChat.models.Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser 'room_changed_topic', rid, roomTopic, user
 
 	return update

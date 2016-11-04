@@ -5,18 +5,15 @@ Package.describe({
 	git: ''
 });
 
+Npm.depends({
+	autolinker: '1.2.0'
+});
+
 Package.onUse(function(api) {
-	api.versionsFrom('1.0');
+	api.use('ecmascript');
+	api.use('rocketchat:lib');
 
-	api.use([
-		'coffeescript',
-		'rocketchat:lib'
-	]);
+	api.addFiles('client.js', 'client');
 
-	api.addFiles([
-		'autolinker.coffee',
-		'lib/Autolinker.min.js'
-	], ['client']);
-
-	api.addFiles('settings.coffee', ['server']);
+	api.addFiles('settings.js', 'server');
 });

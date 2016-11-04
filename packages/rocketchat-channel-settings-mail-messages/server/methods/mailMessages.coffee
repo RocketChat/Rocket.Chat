@@ -23,7 +23,9 @@ Meteor.methods
 					emails.push user.emails[0].address
 				else
 					missing.push username
-		console.log emails
+
+		console.log 'Sending messages to e-mails: ', emails
+
 		for email in emails
 			unless rfcMailPatternWithName.test email.trim()
 				throw new Meteor.Error('error-invalid-email', "Invalid email #{email}", { method: 'mailMessages', email: email })

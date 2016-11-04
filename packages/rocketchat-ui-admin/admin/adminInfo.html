@@ -24,7 +24,7 @@
 					</tr>
 					<tr>
 						<th>{{_ "Installed_at"}}</th>
-						<td>{{statistics.createdAt}}</td>
+						<td>{{statistics.installedAt}}</td>
 					</tr>
 					<tr>
 						<th>{{_ "Uptime"}}</th>
@@ -189,18 +189,6 @@
 						<tr>
 							<th>{{_ "Stats_Total_Messages"}}</th>
 							<td>{{statistics.totalMessages}}</td>
-						</tr>
-						<tr>
-							<th>{{_ "Stats_Max_Room_Users"}}</th>
-							<td>{{statistics.maxRoomUsers}}</td>
-						</tr>
-						<tr>
-							<th>{{_ "Stats_Avg_Channel_Users"}}</th>
-							<td>{{numFormat statistics.avgChannelUsers}}</td>
-						</tr>
-						<tr>
-							<th>{{_ "Stats_Avg_Private_Group_Users"}}</th>
-							<td>{{numFormat statistics.avgPrivateGroupUsers}}</td>
 						</tr>
 					</table>
 

@@ -2,10 +2,10 @@
     "kind": "Template",
     "apiVersion": "v1",
     "metadata": {
-        "name": "rocket-chat",
+        "name": "rocket-chat-ephemeral",
         "annotations": {
-            "description": "Rocket.Chat with a MongoDB database",
-            "tags": "quickstart,nodejs,mongodb",
+            "description": "Rocket.Chat with a MongoDB database running with an Ephemeral storage.",
+            "tags": "quickstart,nodejs,mongodb,instant-app",
             "iconClass": "icon-nodejs"
         }
     },
@@ -217,7 +217,7 @@
                         "containers": [
                             {
                                 "name": "rocketchat",
-                                "image": "172.30.19.110:5000/openshift/rocket-chat@sha256:0cb778a504334142a411ecf6ea6ab23ba02e64eb2591a5833e4b1745361645ca",
+                                "image": "rocketchat/rocket.chat:latest",
                                 "ports": [
                                     {
                                         "containerPort": 3000,

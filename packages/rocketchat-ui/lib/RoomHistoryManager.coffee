@@ -206,7 +206,7 @@
 		if histories[rid]?
 			histories[rid].hasMore.set true
 			histories[rid].isLoading.set false
-			histories[rid].loaded = 0
+			histories[rid].loaded = undefined
 
 	getRoom: getRoom
 	getMore: getMore

@@ -6,9 +6,6 @@ Package.describe({
 });
 
 Package.onUse(function(api) {
-
-	api.versionsFrom('1.0');
-
 	// Server libs
 	api.use('rocketchat:lib', 'server');
 	api.use('rocketchat:logger', 'server');
@@ -30,5 +27,5 @@ Package.onUse(function(api) {
 });
 
 Npm.depends({
-	cas: '0.0.3'
+	cas: 'git+https://github.com/kcbanner/node-cas#fcd27dad333223b3b75a048bce27973fb3ca0f62'
 });

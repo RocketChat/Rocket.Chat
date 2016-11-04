@@ -1,5 +1,9 @@
 Meteor.methods
 	loadMissedMessages: (rid, start) ->
+
+		check rid, String
+		check start, Date
+
 		if not Meteor.userId()
 			throw new Meteor.Error 'error-invalid-user', 'Invalid user', { method: 'loadMissedMessages' }
 

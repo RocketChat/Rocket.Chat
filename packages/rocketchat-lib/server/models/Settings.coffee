@@ -1,6 +1,6 @@
-RocketChat.models.Settings = new class extends RocketChat.models._Base
+class ModelSettings extends RocketChat.models._Base
 	constructor: ->
-		@_initModel 'settings'
+		super(arguments...)
 
 		@tryEnsureIndex { 'blocked': 1 }, { sparse: 1 }
 		@tryEnsureIndex { 'hidden': 1 }, { sparse: 1 }
@@ -18,6 +18,13 @@ RocketChat.models.Settings = new class extends RocketChat.models._Base
 			_id: _id
 
 		return @find query
+
+	findOneNotHiddenById: (_id) ->
+		query =
+			_id: _id
+			hidden: { $ne: true }
+
+		return @findOne query
 
 	findByIds: (_id = []) ->
 		_id = [].concat _id
@@ -80,7 +87,20 @@ RocketChat.models.Settings = new class extends RocketChat.models._Base
 	updateValueById: (_id, value) ->
 		query =
 			blocked: { $ne: true }
+			value: { $ne: value }
 			_id: _id
+
+		update =
+			$set:
+				value: value
+
+		return @update query, update
+
+	updateValueNotHiddenById: (_id, value) ->
+		query =
+			_id: _id
+			hidden: { $ne: true }
+			blocked: { $ne: true }
 
 		update =
 			$set:
@@ -114,3 +134,5 @@ RocketChat.models.Settings = new class extends RocketChat.models._Base
 			_id: _id
 
 		return @remove query
+
+RocketChat.models.Settings = new ModelSettings('settings')

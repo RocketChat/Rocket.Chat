@@ -6,8 +6,6 @@ Package.describe({
 });
 
 Package.onUse(function(api) {
-	api.versionsFrom('1.0');
-
 	api.use([
 		'coffeescript',
 		'tracker',
@@ -31,8 +29,8 @@ Package.onUse(function(api) {
 });
 
 Npm.depends({
-	'coffee-script': '1.9.3',
-	'hubot': '2.13.1',
-	'hubot-scripts': '2.16.2',
-	'hubot-help': '0.1.2'
+	'coffee-script': '1.10.0',
+	'hubot': '2.19.0',
+	'hubot-scripts': '2.17.1',
+	'hubot-help': '0.2.0'
 });

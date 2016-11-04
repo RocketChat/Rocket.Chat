@@ -1,4 +1,4 @@
-FROM rocketchat/base
+FROM rocketchat/base:4
 
 ENV RC_VERSION develop
 

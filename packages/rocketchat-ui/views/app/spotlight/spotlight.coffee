@@ -3,40 +3,62 @@
 		$('.spotlight').addClass('hidden')
 
 	show: ->
+		$('.spotlight input').val('')
 		$('.spotlight').removeClass('hidden')
 		$('.spotlight input').focus()
 
+getFromServer = (filter, records, cb) =>
+	Meteor.call 'spotlight', filter, Meteor.user().username, (err, results) ->
+		if err?
+			return console.log err
+
+		server = []
+
+		if results?.users?.length > 0
+			for user in results.users when not _.findWhere(records, {t: 'd', name: user.username})?
+				server.push({
+					_id: user._id
+					t: 'd',
+					name: user.username
+				})
+
+		if results?.rooms?.length > 0
+			for room in results.rooms
+				server.push({
+					_id: room._id
+					t: 'c',
+					name: room.name
+				})
+
+		if server.length > 0
+			cb(records.concat(server))
+
+getFromServerDelayed = _.throttle getFromServer, 500
+
 Template.spotlight.helpers
-	autocompleteSettings: ->
-		return {
-			limit: 10
-			# inputDelay: 300
-			rules: [
-				{
-					collection: 'UserAndRoom'
-					subscription: 'spotlight'
-					field: 'name'
-					template: Template.roomSearch
-					noMatchTemplate: Template.roomSearchEmpty
-					matchAll: true
-					sort: 'name'
-				}
-			]
-		}
+	popupConfig: ->
+		config =
+			cls: 'popup-down'
+			collection: RocketChat.models.Subscriptions
+			template: 'spotlightTemplate'
+			input: '[name=spotlight]'
+			getFilter: (collection, filter, cb) ->
+				exp = new RegExp("#{RegExp.escape filter}", 'i')
 
-Template.spotlight.events
-	'autocompleteselect input': (event, template, doc) ->
-		if doc.type is 'u'
-			Meteor.call 'createDirectMessage', doc.username, (error, result) ->
-				if error
-					return handleError(error)
+				records = collection.find({name: exp, rid: {$ne: Session.get('openedRoom')}}, {limit: 10, sort: {unread: -1, ls: -1}}).fetch()
 
-				if result?.rid?
-					FlowRouter.go('direct', { username: doc.username })
-					event.currentTarget.value = ''
-		else if doc.type is 'r'
-			FlowRouter.go FlowRouter.path RocketChat.roomTypes.getRouteLink doc.t, doc
+				cb(records)
 
-			event.currentTarget.value = ''
+				if filter?.trim().length < 1 or records.length >= 5
+					return
 
-		spotlight.hide()
+				getFromServerDelayed(filter, records, cb)
+
+			getValue: (_id, collection, records, firstPartValue) ->
+				doc = _.findWhere(records, {_id: _id})
+
+				FlowRouter.go(RocketChat.roomTypes.getRouteLink(doc.t, doc), null, FlowRouter.current().queryParams)
+
+				spotlight.hide()
+
+		return config

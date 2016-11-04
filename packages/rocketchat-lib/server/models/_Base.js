@@ -11,21 +11,33 @@ try {
 }
 
 class ModelsBase extends EventEmitter {
-	_baseName() {
-		return baseName;
-	}
+	constructor(model) {
+		super();
 
-	_initModel(name) {
-		check(name, String);
-
-		this.name = name;
-
-		this.model = new Mongo.Collection(this._baseName() + name);
+		if (Match.test(model, String)) {
+			this.name = model;
+			this.collectionName = this.baseName + this.name;
+			this.model = new Mongo.Collection(this.collectionName);
+		} else {
+			this.name = model._name;
+			this.collectionName = this.name;
+			this.model = model;
+		}
 
 		this.tryEnsureIndex({ '_updatedAt': 1 });
 	}
 
-	setUpdatedAt(record = {}) {
+	get baseName() {
+		return baseName;
+	}
+
+	setUpdatedAt(record = {}, checkQuery = false, query) {
+		if (checkQuery === true) {
+			if (!query || Object.keys(query).length === 0) {
+				throw new Meteor.Error('Models._Base: Empty query');
+			}
+		}
+
 		if (/(^|,)\$/.test(Object.keys(record).join(','))) {
 			record.$set = record.$set || {};
 			record.$set._updatedAt = new Date;
@@ -55,7 +67,7 @@ class ModelsBase extends EventEmitter {
 	}
 
 	update(query, update, options = {}) {
-		this.setUpdatedAt(update);
+		this.setUpdatedAt(update, true, query);
 
 		if (options.upsert) {
 			return this.upsert(query, update);
@@ -74,15 +86,15 @@ class ModelsBase extends EventEmitter {
 			}
 		}
 
-		query = { _id: { $in: _.pluck(ids, '_id') } };
 		const result = this.model.update(query, update, options);
-		this.emit('update', query, update);
-		this.emit('change', 'update', query, update);
+		const idQuery = { _id: { $in: _.pluck(ids, '_id') } };
+		this.emit('update', idQuery, update);
+		this.emit('change', 'update', idQuery, update);
 		return result;
 	}
 
 	upsert(query, update) {
-		this.setUpdatedAt(update);
+		this.setUpdatedAt(update, true, query);
 
 		const id = this.model.findOne(query, { fields: { _id: 1 } });
 		const result = this.model.upsert(...arguments);

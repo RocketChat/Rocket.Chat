@@ -36,15 +36,22 @@ Meteor.methods({
 		};
 		RocketChat.models.Subscriptions.insert(subscriptionData);
 
+		// update room
 		const room = RocketChat.models.Rooms.findOneById(inquiry.rid);
 		const usernames = room.usernames.concat(agent.username);
 
 		RocketChat.models.Rooms.changeAgentByRoomId(inquiry.rid, usernames, agent);
 
+		room.usernames = usernames;
+		room.servedBy = {
+			_id: agent.agentId,
+			username: agent.username
+		};
+
 		// mark inquiry as taken
 		RocketChat.models.LivechatInquiry.takeInquiry(inquiry._id);
 
 		// return room corresponding to inquiry (for redirecting agent to the room route)
-		return RocketChat.models.Rooms.findOneById(inquiry.rid);
+		return room;
 	}
 });
