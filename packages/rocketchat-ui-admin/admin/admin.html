@@ -105,12 +105,8 @@
 														{{> CodeMirror name=_id options=getEditorOptions code=value }}
 														{{setEditorOnBlur _id}}
 														<div class="buttons">
-															<button class="button button-primary button-fullscreen">
-																Full Screen
-															</button>
-															<button class="button button-primary button-restore">
-																Exit Full Screen
-															</button>
+															<button class="button primary button-fullscreen">Full Screen</button>
+															<button class="button primary button-restore">Exit Full Screen</button>
 														</div>
 													</div>
 												{{/if}}
@@ -129,7 +125,7 @@
 													<div class="settings-file-preview">
 														<div class="preview" style="background-image:url({{value.url}}?_dc={{random}});"></div>
 														<div class="action">
-															<button type="button" class="button delete delete-asset"><i class="icon-trash"></i>{{_ 'Delete'}}</button>
+															<button type="button" class="button danger delete-asset"><i class="icon-trash"></i>{{_ 'Delete'}}</button>
 														</div>
 													</div>
 												{{else}}
@@ -168,14 +164,14 @@
 								{{#if section}}
 									{{#if sectionIsCustomOAuth section}}
 										<div class="submit">
-											<button class="button delete remove-custom-oauth"><span>{{_ "Remove_custom_oauth"}}</span></button>
+											<button class="button danger remove-custom-oauth"><span>{{_ "Remove_custom_oauth"}}</span></button>
 										</div>
 									{{/if}}
 								{{/if}}
 
 								{{#if hasChanges section}}
 									<div class="submit">
-										<button class="button save"><i class="icon-send"></i><span>{{_ "Save_changes"}}</span></button>
+										<button class="button primary save"><i class="icon-send"></i><span>{{_ "Save_changes"}}</span></button>
 									</div>
 								{{/if}}
 							</div>
