@@ -17,6 +17,13 @@ Template.chatRoomItem.helpers
 	roomIcon: ->
 		return RocketChat.roomTypes.getIcon this.t
 
+	isNotDirect: ->
+		roomIcon = RocketChat.roomTypes.getIcon this.t
+		if roomIcon != "icon-at"
+			return true
+		else
+			return false
+
 	active: ->
 		if Session.get('openedRoom') is this.rid
 			return 'active'

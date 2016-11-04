@@ -22,9 +22,10 @@ Template.combined.helpers
 
 Template.combined.events
 	'click .add-room': (e, instance) ->
+		window.location.replace("https://stage.ubegin.com/action/new-project")
 		if RocketChat.authz.hasAtLeastOnePermission(['create-c', 'create-p'])
-			SideNav.setFlex "createCombinedFlex"
-			SideNav.openFlex()
+			#SideNav.setFlex "createCombinedFlex"
+			#SideNav.openFlex()
 		else
 			e.preventDefault()
 

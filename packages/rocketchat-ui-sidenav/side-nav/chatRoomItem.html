@@ -8,6 +8,9 @@
 			<span class='name {{archived}}'>{{name}}</span>
 			{{#if $not unread}}
 				<span class='opt'>
+					{{#if isNotDirect}}
+					<i class="icon-plus add-people" title="{{_ "Add People To Project"}}" aria-label="{{_ "Add People To Project"}}"></i>
+					{{/if}}
 					<i class="icon-eye-off hide-room" title="{{_ "Hide_room"}}" aria-label="{{_ "Hide_room"}}"></i>
 					{{#if canLeave}}
 						<i class="icon-logout leave-room" title="{{_ "Leave_room"}}" aria-label="{{_ "Leave_room"}}"></i>
@@ -15,6 +18,5 @@
 				</span>
 			{{/if}}
 		</a>
-		<button class="more add-people">  -  {{_ "Add People To Project"}}</button>
 	</li>
 </template>
