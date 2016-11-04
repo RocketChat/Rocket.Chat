@@ -72,7 +72,15 @@ class ModelSubscriptions extends RocketChat.models._Base
 
 	findByRoomId: (roomId, options) ->
 		query =
-			"rid": roomId
+			rid: roomId
+
+		return @find query, options
+
+	findByRoomIdAndNotUserId: (roomId, userId, options) ->
+		query =
+			rid: roomId
+			'u._id':
+				$ne: userId
 
 		return @find query, options
 
