@@ -24,7 +24,7 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 		return -1;
 	};
 
-	var settings, desktopMentionIds, i, j, len, len1, highlights, mentionIds, highlightsIds, usersWithHighlights, mobileMentionIds, ref, ref1, toAll, toHere, userIdsToNotify, userIdsToPushNotify, userOfMention, userOfMentionId, usersOfDesktopMentions, usersOfMentionId, usersOfMentionItem, usersOfMobileMentions;
+	var settings, desktopMentionIds, i, j, len, len1, highlights, mentionIds, highlightsIds, usersWithHighlights, mobileMentionIds, ref, ref1, toAll, toHere, userIdsToNotify, userIdsToPushNotify, userOfMention, userOfMentionId, usersOfDesktopMentions, usersOfMentionId, usersOfMentionItem, usersOfMobileMentions, sandstormEnabled;
 
 	/**
 	 * Checks if a given user can be notified
@@ -127,10 +127,10 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 			}
 		});
 
-		var SandstormEnabled = (typeof RocketChat.Sandstorm !== "undefined")
+		sandstormEnabled = (typeof RocketChat.Sandstorm !== 'undefined');
 
 		// Always notify Sandstorm
-		if (userOfMention != null && SandstormEnabled) {
+		if (userOfMention != null && sandstormEnabled) {
 			RocketChat.Sandstorm.notify(message, [userOfMention._id],
 				'@' + user.username + ': ' + message.msg, 'privateMessage');
 		}
@@ -336,7 +336,7 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 		}
 
 		const allUserIdsToNotify = _.unique(userIdsToNotify.concat(userIdsToPushNotify));
-		if (SandstormEnabled) {
+		if (sandstormEnabled) {
 			if (room.t === 'p') {
 				RocketChat.Sandstorm.notify(message, allUserIdsToNotify,
 					'@' + user.username + ': ' + message.msg, 'privateMessage');
