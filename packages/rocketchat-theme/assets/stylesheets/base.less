@@ -1343,6 +1343,9 @@ label.required:after {
 			&:hover {
 				text-decoration: none;
 			}
+			.archived {
+				font-style: italic;
+			}
 		}
 		.opt {
 			position: absolute;
@@ -3990,6 +3993,15 @@ body:not(.is-cordova) {
 	.social-login {
 		margin-bottom: 10px;
 	}
+	.message-form textarea {
+		max-height: 100px !important;
+	}
+}
+
+@media all and(max-height: 260px) {
+	.message-form textarea {
+		max-height: 50px !important;
+	}
 }
 
 .webrtc-video {
@@ -4385,6 +4397,47 @@ a + br.only-after-a {
 						}
 					}
 				}
+			}
+		}
+	}
+}
+
+.form-inline {
+	input,
+	select {
+		display: inline-block;
+		width: auto;
+		vertical-align: middle;
+	}
+	label {
+		display: inline-block;
+		max-width: 100%;
+	}
+	.form-group {
+		display: inline-block;
+	}
+}
+
+.embedded-view {
+	.main-content.main-modal {
+		right: 0;
+	}
+	.messages-container {
+		border: none;
+		.messages-box {
+			margin-top: 0;
+		}
+		.footer {
+			min-height: 36px;
+			padding: 0;
+			.message-input {
+				border: none;
+			}
+			.stream-info {
+				display: none;
+			}
+			.formatting-tips {
+				display: none;
 			}
 		}
 	}
