@@ -42,6 +42,17 @@ logger = new Logger 'NGApi'
 			token: token
 			limit: 1
 
+	getContacts: (token, filter) ->
+		url = @server + '/jsondata/extjs/authedPhonebookHandler/get_contact'
+		@_doFormPost url,
+			token: token
+			filter: filter
+			limit: 25
+			page: 1
+			phonebooktype: 4
+			start: 0
+
+
 	_doPost: (url, data) ->
 		try
 			response = Meteor.http.post url, data

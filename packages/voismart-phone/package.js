@@ -14,7 +14,8 @@ Package.onUse(function(api) {
 		'tracker',
 		'reactive-var',
 		'rocketchat:lib',
-		'voismart:webnotifications'
+		'voismart:webnotifications',
+        'voismart:ngapi'
 	]);
 
 	api.use('templating', 'client');
@@ -32,6 +33,8 @@ Package.onUse(function(api) {
             'client/views/phone.less',
             'client/views/phoneSettings.less',
             'client/views/phoneButtons.html',
+            'client/views/phoneSearch.less',
+            'client/views/phoneSearch.html',
             'client/phone.coffee',
             'client/phoneSettings.coffee',
             'client/phoneButtons.coffee',
@@ -40,7 +43,8 @@ Package.onUse(function(api) {
 
     api.addFiles([
             'server/settings.coffee',
-			'server/methods/phoneFindUserByQ.coffee'
+			'server/methods/phoneFindUserByQ.coffee',
+            'server/methods/getContacts.coffee'
     ], 'server');
 
 	api.addFiles([], 'server');

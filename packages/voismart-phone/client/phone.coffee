@@ -59,16 +59,28 @@ Template.phone.events
 		value = _.trim $(e.target).val()
 		display = instance.phoneDisplay.get()
 		instance.phoneDisplay.set(display + value)
+		instance.search(display + value)
 		RocketChat.Phone.endDtmf(value)
 
 	'change #phone-display': (e, instance) ->
 		value = _.trim $(e.target).val()
 		instance.phoneDisplay.set(value)
 
-	'keypress #phone-display': (e, instance) ->
+	'keydown #phone-display': _.debounce (e, instance) ->
 		if e.keyCode == 13
 			number = instance.phoneDisplay.get()
 			RocketChat.Phone.newCall(number)
+
+		else
+			value = e.target.value.trim()
+			if value is '' and instance.searchTerm.get()
+					instance.searchTerm.set ''
+					instance.searchResult.set undefined
+					return
+			else if value is instance.searchTerm.get()
+					return
+			instance.search()
+	, 500
 
 	'click #phone-dial': (e, instance)->
 		number = instance.phoneDisplay.get()
@@ -133,6 +145,12 @@ Template.phone.events
 					if i.msRequestFullscreen
 						i.msRequestFullscreen()
 
+	'click .phone-search-contact-number': (e, instance) ->
+		number = _.trim $(e.target).text()
+		instance.phoneDisplay.set(number)
+		instance.searchTerm.set ''
+		instance.searchResult.set undefined
+		RocketChat.Phone.newCall(number)
 
 Template.phone.helpers
 	phoneDisplay: ->
@@ -188,10 +206,18 @@ Template.phone.helpers
 			return 'phone-active-key'
 		return ''
 
+	searchTerm: ->
+    	return Template.instance().searchTerm.get()
+
+	searchResult: ->
+		return Template.instance().searchResult.get()?.contacts
+
 
 Template.phone.onCreated ->
 	@showSettings = new ReactiveVar false
 	@phoneDisplay = new ReactiveVar ""
+	@searchTerm = new ReactiveVar ''
+	@searchResult = new ReactiveVar
 
 
 Template.phone.onDestroyed ->
@@ -208,6 +234,19 @@ Template.phone.onRendered ->
 		Session.get('openedRoom')
 		FlowRouter.watchPathChange()
 		RocketChat.Phone.placeVideo()
+
+	@search = (searchvalue) => 
+		if searchvalue
+			current_search = searchvalue
+		else
+			current_search = @$('#phone-display').val()
+
+		@searchTerm.set current_search
+		Meteor.call 'getContacts', current_search, (error, results) =>
+			if not results?
+				@searchResult.set contacts: []
+			else
+			    @searchResult.set results
 
 
 RocketChat.Phone = new class
@@ -245,7 +284,7 @@ RocketChat.Phone = new class
 			{name: 'answer', callback: => answer(false)},
 			{name: 'hangup', callback: => @hangup()}
 		])
-
+		
 	answer = (useVideo) ->
 		if window.rocketDebug
 			console.log "Will answer call"

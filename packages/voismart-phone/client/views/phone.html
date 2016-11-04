@@ -81,5 +81,10 @@
 				{{> phoneSettings ""}}
 			{{/if}}
 		</div>
+		<div>
+			{{#if searchResult}}
+            	{{> phoneSearch contacts=searchResult}}
+            {{/if}}
+		</div>
     </div>
 </template>
