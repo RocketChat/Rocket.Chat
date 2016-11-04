@@ -1,11 +1,11 @@
 <template name="admin">
 	<section class="page-container page-home page-static page-settings">
-		<head class="fixed-title">
+		<header class="fixed-title">
 			{{> burger}}
 			<h2>
 				<span class="room-title">{{#with group}}{{label}}{{/with}}</span>
 			</h2>
-		</head>
+		</header>
 
 		<div class="content">
 			{{#unless hasPermission 'view-privileged-setting'}}
