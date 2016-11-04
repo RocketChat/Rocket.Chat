@@ -14,6 +14,7 @@
 * [Mobile apps](#mobile-apps)
 * [Desktop apps](#desktop-apps)
 * [Deployment](#deployment)
+   * [Snaps](#snaps)
    * [Sandstorm.io](#sandstormio) 
    * [DPlatform](#dplatform) 
    * [IndieHosters](#indiehosters)
@@ -29,6 +30,7 @@
   * [Raspberry Pi 2](#raspberry-pi-2)
   * [Koozali SME](#koozali-sme)
   * [Ubuntu VPS](#ubuntu-vps)
+  * [Hyper.sh](#hypersh)
 * [About Rocket.Chat](#about-rocketchat)
   * [On the News](#on-the-news)
   * [Features](#features)
@@ -72,6 +74,20 @@ Now compatible with all Android devices as old as version 4.0.x - [download here
 
 
 # Deployment
+
+## Instant Server Intallation with Snaps
+ 
+Install Rocket.Chat in seconds on Linux (Ubuntu and others) with:
+
+```
+sudo snap install rocketchat-server
+```
+
+[![Rocket.Chat Snap is recommended for Linux deployments](https://github.com/Sing-Li/bbug/raw/master/images/ubuntulogo.png)](https://uappexplorer.com/app/rocketchat-server.rocketchat)
+
+Installing snaps is very quick.  By running that command you have your full Rocket.Chat server up and running.  Snaps are secure.  They are isolated with all of their dependencies.  Snaps also auto update when we release new versions. 
+
+Find out more information about our snaps [here](https://rocket.chat/docs/installation/manual-installation/ubuntu/snaps/)
 
 ## Sandstorm.io
 Host your own Rocket.Chat server in four seconds flat:
@@ -180,6 +196,9 @@ Add Rocket.Chat to this world famous time tested small enterprise server today:
 
 ## Ubuntu VPS
 Follow these [deployment instructions](https://rocket.chat/docs/installation/manual-installation/ubuntu/)
+
+## Hyper.sh
+Follow their [deployment instructions](https://rocket.chat/docs/installation/paas-deployments/hyper-sh/) to install a per-second billed Rocket.Chat instance on [Hyper.sh](https://rocket.chat/docs/installation/paas-deployments/hyper-sh/)
 
 # About Rocket.Chat
 

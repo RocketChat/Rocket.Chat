@@ -180,7 +180,7 @@ class @ChatMessages
 						if RocketChat.slashCommands.commands[match[1]]
 							commandOptions = RocketChat.slashCommands.commands[match[1]]
 							command = match[1]
-							param = match[2]
+							param = if match[2]? then match[2] else ''
 							if commandOptions.clientOnly
 								commandOptions.callback(command, param, msgObject)
 							else

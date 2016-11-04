@@ -1,11 +1,11 @@
 <template name="admin">
 	<section class="page-container page-home page-static page-settings">
-		<head class="fixed-title">
+		<header class="fixed-title">
 			{{> burger}}
 			<h2>
 				<span class="room-title">{{#with group}}{{label}}{{/with}}</span>
 			</h2>
-		</head>
+		</header>
 
 		<div class="content">
 			{{#unless hasPermission 'view-privileged-setting'}}
@@ -129,7 +129,7 @@
 													<div class="settings-file-preview">
 														<div class="preview" style="background-image:url({{value.url}}?_dc={{random}});"></div>
 														<div class="action">
-															<button type="button" class="button red delete-asset"><i class="icon-trash"></i>{{_ 'Delete'}}</button>
+															<button type="button" class="button delete delete-asset"><i class="icon-trash"></i>{{_ 'Delete'}}</button>
 														</div>
 													</div>
 												{{else}}
@@ -142,6 +142,17 @@
 														</div>
 													</div>
 												{{/if}}
+											{{/if}}
+
+											{{#if $eq type 'roomPick'}}
+												<div>
+													{{> inputAutocomplete settings=autocompleteRoom id=_id name=_id class="search autocomplete" autocomplete="off" disabled=isDisabled.disabled}}
+													<ul class="selected-rooms">
+														{{#each selectedRooms}}
+															<li class="remove-room" data-setting={{../_id}}>{{name}} <i class="icon-cancel"></i></li>
+														{{/each}}
+													</ul>
+												</div>
 											{{/if}}
 
 											{{#if description}}

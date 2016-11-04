@@ -418,8 +418,8 @@
       "from": "spdx-correct@>=1.0.0 <1.1.0"
     },
     "spdx-expression-parse": {
-      "version": "1.0.3",
-      "resolved": "https://registry.npmjs.org/spdx-expression-parse/-/spdx-expression-parse-1.0.3.tgz",
+      "version": "1.0.4",
+      "resolved": "https://registry.npmjs.org/spdx-expression-parse/-/spdx-expression-parse-1.0.4.tgz",
       "from": "spdx-expression-parse@>=1.0.0 <1.1.0"
     },
     "spdx-license-ids": {

@@ -39,6 +39,7 @@ Package.onUse(function(api) {
 	api.addFiles('lib/customEventPolyfill.js', 'client');
 	api.addFiles('lib/fileUpload.coffee', 'client');
 	api.addFiles('lib/fireEvent.js', 'client');
+	api.addFiles('lib/iframeCommands.js', 'client');
 	api.addFiles('lib/jquery.swipebox.min.js', 'client');
 	api.addFiles('lib/menu.coffee', 'client');
 	api.addFiles('lib/modal.coffee', 'client');

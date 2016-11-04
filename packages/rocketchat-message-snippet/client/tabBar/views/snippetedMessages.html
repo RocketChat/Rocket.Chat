@@ -1,0 +1,28 @@
+<template name="snippetedMessages">
+	<div class="content">
+		<div class="list-view pinned-messages-list">
+			<div class="title">
+				<h2>{{_ "Snippet_Messages"}}</h2>
+			</div>
+			{{#if Template.subscriptionsReady}}
+				{{#unless hasMessages}}
+					<h2>{{_ "No_snippet_messages"}}</h2>
+				{{/unless}}
+			{{/if}}
+		</div>
+		<ul class="list clearfix">
+			{{#each messages}}
+				{{#nrr nrrargs 'snippetMessage' message}}{{/nrr}}
+			{{/each}}
+			{{#if hasMore}}
+				<li class="load-more">
+					{{#if Template.subscriptionsReady}}
+						<button>{{_ "Has_more"}}...</button>
+					{{else}}
+						<div class="load-more-loading">{{_ "Loading..."}}</div>
+					{{/if}}
+				</li>
+			{{/if}}
+		</ul>
+	</div>
+</template>

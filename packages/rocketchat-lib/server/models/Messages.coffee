@@ -13,6 +13,7 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base
 		@tryEnsureIndex { 'file._id': 1 }, { sparse: 1 }
 		@tryEnsureIndex { 'mentions.username': 1 }, { sparse: 1 }
 		@tryEnsureIndex { 'pinned': 1 }, { sparse: 1 }
+		@tryEnsureIndex { 'snippeted': 1 }, { sparse: 1 }
 		@tryEnsureIndex { 'location': '2dsphere' }
 
 
@@ -42,7 +43,21 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base
 		query =
 			_hidden:
 				$ne: true
+
 			rid: roomId
+
+		return @find query, options
+
+	findVisibleByRoomIdNotContainingTypes: (roomId, types, options) ->
+		query =
+			_hidden:
+				$ne: true
+
+			rid: roomId
+
+		if Match.test(types, [String]) and types.length > 0
+			query.t =
+				$nin: types
 
 		return @find query, options
 
@@ -84,6 +99,35 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base
 
 		return @find query, options
 
+	findVisibleByRoomIdBeforeTimestampNotContainingTypes: (roomId, timestamp, types, options) ->
+		query =
+			_hidden:
+				$ne: true
+			rid: roomId
+			ts:
+				$lt: timestamp
+
+		if Match.test(types, [String]) and types.length > 0
+			query.t =
+				$nin: types
+
+		return @find query, options
+
+	findVisibleByRoomIdBetweenTimestampsNotContainingTypes: (roomId, afterTimestamp, beforeTimestamp, types, options) ->
+		query =
+			_hidden:
+				$ne: true
+			rid: roomId
+			ts:
+				$gt: afterTimestamp
+				$lt: beforeTimestamp
+
+		if Match.test(types, [String]) and types.length > 0
+			query.t =
+				$nin: types
+
+		return @find query, options
+
 	findVisibleCreatedOrEditedAfterTimestamp: (timestamp, options) ->
 		query =
 			_hidden: { $ne: true }
@@ -110,6 +154,14 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base
 			t: { $ne: 'rm' }
 			_hidden: { $ne: true }
 			pinned: true
+			rid: roomId
+
+		return @find query, options
+
+	findSnippetedByRoom: (roomId, options) ->
+		query =
+			_hidden: { $ne: true }
+			snippeted: true
 			rid: roomId
 
 		return @find query, options
@@ -179,6 +231,22 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base
 				pinned: pinned
 				pinnedAt: pinnedAt || new Date
 				pinnedBy: pinnedBy
+
+		return @update query, update
+
+	setSnippetedByIdAndUserId: (message, snippetName, snippetedBy, snippeted=true, snippetedAt=0) ->
+		query =
+			_id: message._id
+
+		msg = "```" + message.msg + "```"
+
+		update =
+			$set:
+				msg: msg
+				snippeted: snippeted
+				snippetedAt: snippetedAt || new Date
+				snippetedBy: snippetedBy
+				snippetName: snippetName
 
 		return @update query, update
 
