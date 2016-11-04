@@ -7,8 +7,18 @@ let maxFileSize = 0;
 
 FileUpload = {
 	validateFileUpload(file) {
+		if (!Match.test(file.rid, String)) {
+			return false;
+		}
+
+		const user = Meteor.user();
+		const room = RocketChat.models.Rooms.findOneById(file.rid);
+
+		if (RocketChat.authz.canAccessRoom(room, user) !== true) {
+			return false;
+		}
+
 		if (file.size > maxFileSize) {
-			const user = Meteor.user();
 			const reason = TAPi18n.__('File_exceeds_allowed_size_of_bytes', {
 				size: filesize(maxFileSize)
 			}, user.language);
@@ -16,7 +26,6 @@ FileUpload = {
 		}
 
 		if (!RocketChat.fileUploadIsValidContentType(file.type)) {
-			const user = Meteor.user();
 			const reason = TAPi18n.__('File_type_is_not_accepted', user.language);
 			throw new Meteor.Error('error-invalid-file-type', reason);
 		}
