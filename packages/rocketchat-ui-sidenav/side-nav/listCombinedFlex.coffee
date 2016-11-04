@@ -30,7 +30,7 @@ Template.listCombinedFlex.events
 		SideNav.closeFlex()
 
 	'click footer .create': ->
-		if RocketChat.authz.hasAtLeastOnePermission( 'create-c')
+		if RocketChat.authz.hasAtLeastOnePermission ['create-c', 'create-p']
 			SideNav.setFlex "createCombinedFlex"
 
 	'mouseenter header': ->
