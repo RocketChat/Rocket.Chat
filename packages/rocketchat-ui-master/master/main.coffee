@@ -29,8 +29,12 @@ Template.body.onRendered ->
 					if subscription.alert or subscription.unread > 0
 						Meteor.call 'readMessages', subscription.rid
 
-	$(document.body).on 'keypress', (e) ->
+	$(document.body).on 'keydown', (e) ->
 		target = e.target
+		if(e.ctrlKey is true or e.metaKey is true)
+			return
+		if !(e.keyCode > 45 and e.keyCode < 91 or e.keyCode == 8)
+			return
 		if /input|textarea|select/i.test(target.tagName)
 			return
 		if $.swipebox.isOpen
