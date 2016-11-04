@@ -959,7 +959,8 @@ label.required:after {
 			text-align: center;
 			margin-left: 0 -1px 0 1px;
 		}
-		button, a {
+		button,
+		a {
 			position: relative;
 			display: table;
 			width: 100%;
@@ -1116,9 +1117,10 @@ label.required:after {
 			-moz-border-radius: 0px;
 			border-radius: 0px;
 		}
-
 		.inline-fields {
-			input, label, select {
+			input,
+			label,
+			select {
 				display: inline-block;
 			}
 		}
@@ -1430,7 +1432,6 @@ label.required:after {
 		margin-top: 60px;
 		-webkit-overflow-scrolling: touch;
 		.calc(height, ~'100% - 60px');
-
 		fieldset {
 			margin-bottom: 1em;
 		}
@@ -1676,7 +1677,6 @@ label.required:after {
 					padding: 5px;
 				}
 			}
-
 			.selected-rooms {
 				.remove-room {
 					cursor: pointer;
@@ -1725,7 +1725,6 @@ label.required:after {
 			}
 		}
 	}
-
 }
 
 .page-static {
@@ -2017,7 +2016,7 @@ label.required:after {
 		left: 0px;
 		right: 0px;
 		overflow: hidden;
-		box-shadow: 0 -1px 10px 0 rgba(0,0,0,0.2),0 1px 1px rgba(0,0,0,0.16);
+		box-shadow: 0 -1px 10px 0 rgba(0, 0, 0, 0.2), 0 1px 1px rgba(0, 0, 0, 0.16);
 		border-radius: 5px;
 	}
 	.message-popup-title {
@@ -2398,21 +2397,18 @@ label.required:after {
 		display: block;
 		width: 40px;
 		height: 40px;
-
 		&:not(.thumb-small) {
 			.avatar {
 				width: 40px;
 				height: 40px;
 			}
 		}
-
 		&.thumb-small {
 			position: initial;
 			width: 20px;
 			height: 20px;
 			display: inline-block;
 			vertical-align: bottom;
-
 			.avatar {
 				width: 20px;
 				height: 20px;
@@ -2592,64 +2588,66 @@ body:not(.is-cordova) {
 		}
 	}
 }
-.compact{
-	.message{
+
+.compact {
+	.message {
 		min-height: 26px;
 		padding: 5px 15px 0 37px;
-		.body{
+		.body {
 			display: inline;
-			.inline-image img{
+			.inline-image img {
 				max-height: 100px;
 			}
-			.inline-video{
+			.inline-video {
 				max-height: 150px;
 			}
 			.attachment {
 				.attachment-title > a {
 					font-size: 0.9em;
 				}
-				.attachment-author img{
+				.attachment-author img {
 					border-radius: 2px;
 				}
 			}
-			blockquote iframe{
+			blockquote iframe {
 				height: 150px;
 				width: 266px;
 			}
 		}
-		.info{
-			.avatar-image{
+		.info {
+			.avatar-image {
 				border-radius: 2px;
 			}
-			.role-tag{
+			.role-tag {
 				display: none;
 			}
 		}
-		.thumb{
+		.thumb {
 			height: 20px;
 			width: 20px;
 			left: 10px;
-
 			.avatar {
 				width: 20px;
 				height: 20px;
 			}
 		}
-		&.sequential{
-			 .thumb:not(.thumb-small), .user {
-				 display: inline-block;
-			 }
-			.info{
+		&.sequential {
+			.thumb:not(.thumb-small),
+			.user {
+				display: inline-block;
+			}
+			.info {
 				position: relative;
 				text-align: right;
 				left: 0;
-				.time, .edited{
+				.time,
+				.edited {
 					display: inline-block;
 				}
 			}
 		}
 	}
-	.message-cog-container .message-cog{
+	.message-cog-container .message-cog {
 		visibility: visible;
 	}
 }
@@ -2691,59 +2689,62 @@ body:not(.is-cordova) {
 		}
 	}
 }
-.compact{
-	.message{
+
+.compact {
+	.message {
 		min-height: 26px;
 		padding: 5px 15px 0 37px;
-		.body{
+		.body {
 			display: inline;
-			.inline-image img{
+			.inline-image img {
 				max-height: 100px;
 			}
-			.inline-video{
+			.inline-video {
 				max-height: 150px;
 			}
 			.attachment {
 				.attachment-title > a {
 					font-size: 0.9em;
 				}
-				.attachment-author img{
+				.attachment-author img {
 					border-radius: 2px;
 				}
 			}
-			blockquote iframe{
+			blockquote iframe {
 				height: 150px;
 				width: 266px;
 			}
 		}
-		.info{
-			.avatar-image{
+		.info {
+			.avatar-image {
 				border-radius: 2px;
 			}
-			.role-tag{
+			.role-tag {
 				display: none;
 			}
 		}
-		.thumb{
+		.thumb {
 			height: 20px;
 			width: 20px;
 			left: 10px;
 		}
-		&.sequential{
-			 .thumb:not(.thumb-small), .user {
-				 display: inline-block;
-			 }
-			.info{
+		&.sequential {
+			.thumb:not(.thumb-small),
+			.user {
+				display: inline-block;
+			}
+			.info {
 				position: relative;
 				text-align: right;
 				left: 0;
-				.time, .edited{
+				.time,
+				.edited {
 					display: inline-block;
 				}
 			}
 		}
 	}
-	.message-cog-container .message-cog{
+	.message-cog-container .message-cog {
 		visibility: visible;
 	}
 }
@@ -3151,24 +3152,20 @@ body:not(.is-cordova) {
 		}
 		> .input-line {
 			margin-top: 20px;
-
 			#password {
 				width: 70%;
 			}
 		}
 		nav {
 			padding: 0;
-
 			&.buttons {
 				margin-top: 2em;
 			}
 		}
-
 		.form-divisor {
 			text-align: center;
 			margin: 2em 0;
 			height: 9px;
-
 			> span {
 				padding: 0 1em;
 			}
@@ -3313,19 +3310,13 @@ body:not(.is-cordova) {
 	&.opened {
 		.animation(fadeIn .1s ease-out forwards);
 		.modal {
-			.animation(modalEnter .35s cubic-bezier(.5,
-			0,
-			.1,
-			1) forwards .1s);
+			.animation(modalEnter .35s cubic-bezier(.5, 0, .1, 1) forwards .1s);
 		}
 	}
 	&.closed {
 		.animation(fadeOut .2s ease-out forwards);
 		.modal {
-			.animation(modalExit .25s cubic-bezier(.5,
-			0,
-			.1,
-			1) forwards);
+			.animation(modalExit .25s cubic-bezier(.5, 0, .1, 1) forwards);
 		}
 	}
 	&.overflow {
@@ -3521,7 +3512,8 @@ body:not(.is-cordova) {
 				visibility: hidden;
 			}
 		}
-		input, select {
+		input,
+		select {
 			box-shadow: 0 0 0;
 			position: relative;
 			margin-top: 10px;
@@ -3557,7 +3549,6 @@ body:not(.is-cordova) {
 		input:-webkit-autofill {
 			-webkit-box-shadow: 0 0 0px 1000px #f4f4f4 inset;
 		}
-
 		.input-error {
 			text-align: left;
 			color: #b40202;
@@ -3784,7 +3775,7 @@ body:not(.is-cordova) {
 		}
 	}
 	.avatar-file-input::-webkit-file-upload-button {
-	   visibility: hidden;
+		visibility: hidden;
 	}
 }
 
@@ -3794,9 +3785,9 @@ body:not(.is-cordova) {
 	th,
 	td {
 		vertical-align: middle;
-	  padding: .6rem .7rem;
-	  text-align: left;
-	  border-width: 0 0 1px 0;
+		padding: .6rem .7rem;
+		text-align: left;
+		border-width: 0 0 1px 0;
 	}
 	th {
 		white-space: nowrap;
@@ -3875,9 +3866,7 @@ body:not(.is-cordova) {
 					&:nth-child(1) {
 						opacity: 1;
 						width: 10px;
-						.transform-origin(50%,
-						50%,
-						0);
+						.transform-origin(50%, 50%, 0);
 						.transform(translateY(3px) rotate(-45deg));
 					}
 					&:nth-child(2) {
@@ -3886,9 +3875,7 @@ body:not(.is-cordova) {
 					&:nth-child(3) {
 						opacity: 1;
 						width: 10px;
-						.transform-origin(50%,
-						50%,
-						0);
+						.transform-origin(50%, 50%, 0);
 						.transform(translateY(-3px) rotate(45deg));
 					}
 				}
