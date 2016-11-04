@@ -388,7 +388,7 @@ Template.room.events
 			if RocketChat.Layout.isEmbedded()
 				return fireGlobalEvent('click-mention-link', { path: FlowRouter.path('channel', {name: channel}), channel: channel })
 
-			FlowRouter.go 'channel', {name: channel}
+			FlowRouter.go 'channel', { name: channel }, FlowRouter.current().queryParams
 			return
 
 		if RocketChat.Layout.isEmbedded()
