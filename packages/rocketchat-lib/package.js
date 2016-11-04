@@ -166,6 +166,8 @@ Package.onUse(function(api) {
 	api.addFiles('client/defaultTabBars.js', 'client');
 	api.addFiles('client/CustomTranslations.js', 'client');
 
+	api.addFiles('client/ScreenSize.js', 'client');
+
 	// CLIENT MODELS
 	api.addFiles('client/models/_Base.coffee', 'client');
 	api.addFiles('client/models/Uploads.coffee', 'client');

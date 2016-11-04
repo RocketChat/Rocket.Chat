@@ -195,6 +195,12 @@ Template.main.helpers
 	embeddedVersion: ->
 		return 'embedded-view' if RocketChat.Layout.isEmbedded()
 
+	openSideNavClass: ->
+		if RocketChat.ScreenSize.isDesktop()
+			return 'menu-opened'
+
+		return 'menu-closed'
+
 
 Template.main.events
 
@@ -202,6 +208,7 @@ Template.main.events
 		console.log 'room click .burger' if window.rocketDebug
 		chatContainer = $("#rocket-chat")
 		menu.toggle()
+		SideNav.setSideNavArrow()
 
 	'touchstart': (e, t) ->
 		if document.body.clientWidth > 780
