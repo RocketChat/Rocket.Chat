@@ -24,36 +24,36 @@
 }
 
 .input-shade(@color, @bg) {
-  input,
+	input,
 	select,
 	textarea {
 		color: @color;
 		background-color: transparent;
-		border-color: mix(contrast(@bg),@bg,10%);
+		border-color: mix(contrast(@bg), @bg, 10%);
 		border-style: solid;
-    &::placeholder {
-      color: mix(@color,@bg,75%);
-    }
-    &[disabled] {
-      background-color: mix(contrast(@bg),@bg,10%);
-    }
-  }
+		&::placeholder {
+			color: mix(@color, @bg, 75%);
+		}
+		&[disabled] {
+			background-color: mix(contrast(@bg), @bg, 10%);
+		}
+	}
 	.diabled label,
 	[disabled] label {
-		color: mix(@color,@bg,75%);
+		color: mix(@color, @bg, 75%);
 	}
 	.-autocomplete-container {
-		background-color: mix(contrast(@bg),@bg,10%);
+		background-color: mix(contrast(@bg), @bg, 10%);
 	}
 	.-autocomplete-item.selected {
-		background-color: mix(contrast(@bg),@bg,20%);
+		background-color: mix(contrast(@bg), @bg, 20%);
 	}
-  input[type="button"],
+	input[type="button"],
 	input[type="submit"] {
-    color: @color;
-    background: mix(contrast(@bg),@bg,10%);
-    border-color: mix(contrast(@bg),@bg,10%);
-  }
+		color: @color;
+		background: mix(contrast(@bg), @bg, 10%);
+		border-color: mix(contrast(@bg), @bg, 10%);
+	}
 }
 
 .blink(@color) {
@@ -86,12 +86,13 @@
 		color: @hover;
 	}
 }
+
 .buttonColors(@color, @bg) {
 	transition: color 0.2s ease-out, background-color 0.2s ease-out;
 	color: @color;
 	background-color: @bg;
 	&:hover {
-		color: lighten(@color,10%);
+		color: lighten(@color, 10%);
 		background-color: darken(@bg, 5%);
 	}
 }
