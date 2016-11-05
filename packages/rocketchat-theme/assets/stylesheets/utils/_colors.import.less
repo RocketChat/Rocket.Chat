@@ -621,29 +621,15 @@ i.status-offline {
 	.buttonColors(@secondary-action-contrast, @secondary-action-color);
 }
 
+// new layout buttons
 .button {
 	.buttonColors(@secondary-action-contrast, @secondary-action-color);
-	&.button-primary,
-	&.primary,
-	&.save,
-	&.send,
-	&.start {
+	&.primary {
 		.buttonColors(@primary-action-contrast, @primary-action-color);
 	}
-	// TODO: Secondary button usage needs refactor and guidelines to be consistent
-	// &.back,
-	// &.cancel,
-	// &.secondary {
-	// 	.buttonColors(@secondary-action-contrast,@secondary-action-color);
-	// }
-	// TODO: buttons bellow should have the danger class
-	// &.delete,
-	// &.delete-role,
-	// &.end,
-	// &.logout,
-	// &.mute-user,
-	// &.remove,
-	// &.remove-user,
+	&.secondary {
+		.buttonColors(@secondary-action-contrast, @secondary-action-color);
+	}
 	&.danger {
 		.buttonColors(@error-contrast, @error-color);
 	}
