@@ -1,11 +1,11 @@
 <template name="adminInfo">
 	<section class="page-container page-list">
-		<head class="fixed-title">
+		<header class="fixed-title">
 			{{> burger}}
 			<h2>
 				<span class="room-title">{{_ "Info"}}</span>
 			</h2>
-		</head>
+		</header>
 		<div class="content">
 			{{#if hasPermission 'view-statistics'}}
 				<h3>{{_ "Rocket.Chat"}}</h3>
@@ -192,7 +192,7 @@
 						</tr>
 					</table>
 
-					<button type="button" class="button refresh">Refresh</button>
+					<button type="button" class="button primary refresh">Refresh</button>
 				{{else}}
 					{{_ "Loading..."}}
 				{{/if}}

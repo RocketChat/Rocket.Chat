@@ -1,17 +1,33 @@
-.custom-scroll(@background, @thumb, @width: 8px, @height: 8px) {
-	-ms-overflow-style: -ms-autohiding-scrollbar;
-	&::-webkit-scrollbar {
-		height: @height;
-		width: @width;
-		background: @background;
-	}
-	&::-webkit-scrollbar-thumb {
-		background-color: @thumb;
-		-webkit-border-radius: 50px;
-	}
-	&::-webkit-scrollbar-corner {
-		background-color: @background;
-	}
+/** ----------------------------------------------------------------------------
+ * Derivative colours (fixed variants of inherited variables)
+ */
+
+@primary-action-color: @action-buttons-color;
+@secondary-action-color: @primary-font-color;
+@success-color: rgba(53, 172, 25, 1.0);
+@error-color: rgba(188, 32, 49, 1.0);
+@pending-color: #fcb316;
+@component-color: @input-font-color;
+@selection-color: @info-active-font-color;
+@primary-background-contrast: contrast(@primary-background-color, #444);
+@primary-action-contrast: contrast(@primary-action-color, #444);
+@secondary-action-contrast: contrast(@secondary-action-color, #444);
+@selection-background: lighten(@selection-color, 30%);
+@success-background: lighten(@success-color, 40%);
+@success-border: lighten(@success-color, 30%);
+@error-background: lighten(@error-color, 40%);
+@error-border: lighten(@error-color, 30%);
+@error-contrast: contrast(@error-color);
+@pending-background: lighten(@pending-color, 40%);
+@pending-border: lighten(@pending-color, 30%);
+@window-border-color: @component-color;
+
+/** ----------------------------------------------------------------------------
+ * Document components
+ */
+
+html {
+	.custom-scroll(transparent, @custom-scrollbar-color, 0);
 }
 
 a {
@@ -213,58 +229,42 @@ label.required:after {
 
 // new layout buttons
 .button {
-	color: rgba(255, 255, 255, 0.85);
-	background-color: @action-buttons-color;
-	&:before {
-		background-color: rgba(0, 0, 0, 0.1);
-	}
-	&:hover {
-		color: #FFF;
+	.buttonColors(@secondary-action-contrast, @secondary-action-color);
+	&.primary {
+		.buttonColors(@primary-action-contrast, @primary-action-color);
 	}
 	&.secondary {
-		background-color: @tertiary-background-color;
-		color: @primary-font-color;
-		&:before {
-			background-color: rgba(0, 0, 0, 0.045);
+		.buttonColors(@secondary-action-contrast, @secondary-action-color);
+	}
+	&.danger {
+		.buttonColors(@error-contrast, @error-color);
+	}
+	&.external-login {
+		color: white;
+		&.facebook {
+			background-color: #325c99;
 		}
-	}
-	&.delete,
-	&.remove,
-	&.red {
-		background-color: #bc2031;
-	}
-	&.lightblue {
-		background-color: #02acec;
-		&:disabled {
-			background-color: desaturate(#02acec, 20%);
+		&.twitter {
+			background-color: #02acec;
 		}
-	}
-	&.clean {
-		background-color: @clean-buttons-color;
-	}
-	&.facebook {
-		background-color: #325c99;
-	}
-	&.twitter {
-		background-color: #02acec;
-	}
-	&.google {
-		background-color: #dd4b39;
-	}
-	&.github {
-		background-color: #4c4c4c;
-	}
-	&.gitlab {
-		background-color: #373d47;
-	}
-	&.trello {
-		background-color: #026aa7;
-	}
-	&.meteor-developer {
-		background-color: #de4f4f;
-	}
-	&.wordpress {
-		background-color: #1e8cbe;
+		&.google {
+			background-color: #dd4b39;
+		}
+		&.github {
+			background-color: #4c4c4c;
+		}
+		&.gitlab {
+			background-color: #373d47;
+		}
+		&.trello {
+			background-color: #026aa7;
+		}
+		&.meteor-developer {
+			background-color: #de4f4f;
+		}
+		&.wordpress {
+			background-color: #1e8cbe;
+		}
 	}
 }
 
@@ -1236,10 +1236,6 @@ a.github-fork {
 
 .attention-message {
 	color: white;
-}
-
-.green {
-	color: green;
 }
 
 .flex-tab-bar {
