@@ -1,11 +1,11 @@
 <template name="admin">
 	<section class="page-container page-home page-static page-settings">
-		<head class="fixed-title">
+		<header class="fixed-title">
 			{{> burger}}
 			<h2>
 				<span class="room-title">{{#with group}}{{label}}{{/with}}</span>
 			</h2>
-		</head>
+		</header>
 
 		<div class="content">
 			{{#unless hasPermission 'view-privileged-setting'}}
@@ -105,12 +105,8 @@
 														{{> CodeMirror name=_id options=getEditorOptions code=value }}
 														{{setEditorOnBlur _id}}
 														<div class="buttons">
-															<button class="button button-primary button-fullscreen">
-																Full Screen
-															</button>
-															<button class="button button-primary button-restore">
-																Exit Full Screen
-															</button>
+															<button class="button primary button-fullscreen">Full Screen</button>
+															<button class="button primary button-restore">Exit Full Screen</button>
 														</div>
 													</div>
 												{{/if}}
@@ -118,7 +114,7 @@
 
 											{{#if $eq type 'action'}}
 												{{#if hasChanges section}}
-													<span style="line-height: 40px; color: #888;">{{_ "Save_to_enable_this_action"}}</span>
+													<span style="line-height: 40px" class="secondary-text">{{_ "Save_to_enable_this_action"}}</span>
 												{{else}}
 													<button type="button" class="button primary action" data-setting="{{_id}}" data-action="{{value}}" {{isDisabled}}>{{_ actionText}}</button>
 												{{/if}}
@@ -129,7 +125,7 @@
 													<div class="settings-file-preview">
 														<div class="preview" style="background-image:url({{value.url}}?_dc={{random}});"></div>
 														<div class="action">
-															<button type="button" class="button red delete-asset"><i class="icon-trash"></i>{{_ 'Delete'}}</button>
+															<button type="button" class="button danger delete-asset"><i class="icon-trash"></i>{{_ 'Delete'}}</button>
 														</div>
 													</div>
 												{{else}}
@@ -168,14 +164,14 @@
 								{{#if section}}
 									{{#if sectionIsCustomOAuth section}}
 										<div class="submit">
-											<button class="button delete remove-custom-oauth"><span>{{_ "Remove_custom_oauth"}}</span></button>
+											<button class="button danger remove-custom-oauth"><span>{{_ "Remove_custom_oauth"}}</span></button>
 										</div>
 									{{/if}}
 								{{/if}}
 
 								{{#if hasChanges section}}
 									<div class="submit">
-										<button class="button save"><i class="icon-send"></i><span>{{_ "Save_changes"}}</span></button>
+										<button class="button primary save"><i class="icon-send"></i><span>{{_ "Save_changes"}}</span></button>
 									</div>
 								{{/if}}
 							</div>

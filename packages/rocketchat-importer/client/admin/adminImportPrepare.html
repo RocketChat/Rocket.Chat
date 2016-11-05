@@ -1,12 +1,12 @@
 <template name="adminImportPrepare">
 	<section class="page-container page-home page-static page-settings">
 		{{#with importer}}
-			<head class="fixed-title">
+			<header class="fixed-title">
 				{{> burger}}
 				<h2>
 					<span class="room-title">{{name}} - {{_ description }}</span>
 				</h2>
-			</head>
+			</header>
 			<div class="content">
 				{{#unless isAdmin}}
 					<p>You are not authorized to view this page.</p>
@@ -17,10 +17,10 @@
 								<div class="section">
 									<h1>{{_ "Actions"}}</h1>
 									<div class="section-content">
-										<button class="button restart"><i class="icon-send"></i><span>{{_ "Importer_Prepare_Restart_Import"}}</span></button>
-										<button class="button start"><i class="icon-send"></i><span>{{_ "Importer_Prepare_Start_Import"}}</span></button>
 										<button class="button uncheck-deleted-users"><i class="icon-send"></i><span>{{_ "Importer_Prepare_Uncheck_Deleted_Users"}}</span></button>
 										<button class="button uncheck-archived-channels"><i class="icon-send"></i><span>{{_ "Importer_Prepare_Uncheck_Archived_Channels"}}</span></button>
+										<button class="button restart"><i class="icon-send"></i><span>{{_ "Importer_Prepare_Restart_Import"}}</span></button>
+										<button class="button primary start"><i class="icon-send"></i><span>{{_ "Importer_Prepare_Start_Import"}}</span></button>
 									</div>
 								</div>
 
