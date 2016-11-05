@@ -153,6 +153,7 @@
   "API_Analytics": "Analytics",
   "API_Embed": "Embed Link Previews",
   "API_Embed_Description": "Whether embedded link previews are enabled or not when a user posts a link to a website.",
+  "API_EmbedCacheExpirationDays": "Embed cache expiration days",
   "API_EmbedDisabledFor": "Disable Embed for Users",
   "API_EmbedDisabledFor_Description": "Comma-separated list of usernames to disable the embedded link previews.",
   "API_EmbedIgnoredHosts": "Embed Ignored Hosts",
