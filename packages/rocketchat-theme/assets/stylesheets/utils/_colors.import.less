@@ -9,7 +9,6 @@
 @pending-color: #fcb316;
 @component-color: @input-font-color;
 @selection-color: @info-active-font-color;
-
 @primary-background-contrast: contrast(@primary-background-color, #444);
 @primary-action-contrast: contrast(@primary-action-color, #444);
 @secondary-action-contrast: contrast(@secondary-action-color, #444);
@@ -231,28 +230,13 @@ label.required:after {
 // new layout buttons
 .button {
 	.buttonColors(@secondary-action-contrast, @secondary-action-color);
-	&.button-primary,
-	&.primary,
-	&.save,
-	&.send,
-	&.start {
+	&.primary {
 		.buttonColors(@primary-action-contrast, @primary-action-color);
 	}
-	// TODO: Secondary button usage needs refactor and guidelines to be consistent
-	// &.back,
-	// &.cancel,
-	// &.secondary {
-	// 	.buttonColors(@secondary-action-contrast,@secondary-action-color);
-	// }
-	&.danger,
-	&.delete,
-	&.delete-role,
-	&.end,
-	&.logout,
-	&.mute-user,
-	&.remove,
-	&.remove-user,
-	&.stop-call {
+	&.secondary {
+		.buttonColors(@secondary-action-contrast, @secondary-action-color);
+	}
+	&.danger {
 		.buttonColors(@error-contrast, @error-color);
 	}
 	&.external-login {
@@ -1252,10 +1236,6 @@ a.github-fork {
 
 .attention-message {
 	color: white;
-}
-
-.green {
-	color: green;
 }
 
 .flex-tab-bar {
