@@ -63,7 +63,7 @@
 											{{/if}}
 
 											{{#if editing $key}}
-												<button type="button" class="button secondary cancel">{{_ "Cancel"}}</button>
+												<button type="button" class="button cancel">{{_ "Cancel"}}</button>
 												<button type="button" class="button primary save">{{_ "Save"}}</button>
 											{{else}}
 												<span>{{#if $value.canEdit room}} <i class="icon-pencil" data-edit="{{$key}}"></i>{{/if}}</span>
@@ -82,7 +82,7 @@
 			</form>
 			{{#if canDeleteRoom}}
 			<nav>
-				<button class='button delete red'><span><i class='icon-trash'></i> {{_ "Delete"}}</span></button>
+				<button class='button danger delete'><span><i class='icon-trash'></i> {{_ "Delete"}}</span></button>
 			</nav>
 			{{/if}}
 		</div>
