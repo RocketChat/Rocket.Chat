@@ -24,7 +24,7 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 		return -1;
 	};
 
-	var settings, desktopMentionIds, i, j, len, len1, highlights, mentionIds, highlightsIds, usersWithHighlights, mobileMentionIds, ref, ref1, toAll, toHere, userIdsToNotify, userIdsToPushNotify, userOfMention, userOfMentionId, usersOfDesktopMentions, usersOfMentionId, usersOfMentionItem, usersOfMobileMentions;
+	var settings, desktopMentionIds, i, j, len, len1, highlights, mentionIds, highlightsIds, usersWithHighlights, mobileMentionIds, ref, ref1, toAll, toHere, userIdsToNotify, userIdsToPushNotify, userOfMention, userOfMentionId, usersOfDesktopMentions, usersOfMentionId, usersOfMentionItem, usersOfMobileMentions, sandstormEnabled;
 
 	/**
 	 * Checks if a given user can be notified
@@ -127,11 +127,12 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 			}
 		});
 
+		sandstormEnabled = (typeof RocketChat.Sandstorm !== 'undefined');
+
 		// Always notify Sandstorm
-		if (userOfMention != null) {
+		if (userOfMention != null && sandstormEnabled) {
 			RocketChat.Sandstorm.notify(message, [userOfMention._id],
 				'@' + user.username + ': ' + message.msg, 'privateMessage');
-
 		}
 		if ((userOfMention != null) && canBeNotified(userOfMentionId, 'mobile')) {
 			RocketChat.Notifications.notifyUser(userOfMention._id, 'notification', {
@@ -335,12 +336,14 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 		}
 
 		const allUserIdsToNotify = _.unique(userIdsToNotify.concat(userIdsToPushNotify));
-		if (room.t === 'p') {
-			RocketChat.Sandstorm.notify(message, allUserIdsToNotify,
-				'@' + user.username + ': ' + message.msg, 'privateMessage');
-		} else {
-			RocketChat.Sandstorm.notify(message, allUserIdsToNotify,
-				'@' + user.username + ': ' + message.msg, 'message');
+		if (sandstormEnabled) {
+			if (room.t === 'p') {
+				RocketChat.Sandstorm.notify(message, allUserIdsToNotify,
+					'@' + user.username + ': ' + message.msg, 'privateMessage');
+			} else {
+				RocketChat.Sandstorm.notify(message, allUserIdsToNotify,
+					'@' + user.username + ': ' + message.msg, 'message');
+			}
 		}
 	}
 
