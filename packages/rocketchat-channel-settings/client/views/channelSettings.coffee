@@ -2,9 +2,10 @@ Template.channelSettings.helpers
 	toArray: (obj) ->
 		arr = []
 		for key, value of obj
-			arr.push
-				$key: key
-				$value: value
+			if key != "url"
+				arr.push
+					$key: key
+					$value: value
 		return arr
 
 	valueOf: (obj, key) ->
@@ -18,11 +19,15 @@ Template.channelSettings.helpers
 	settings: ->
 		return Template.instance().settings
 
+	getProjectInfo: ->
+		project_info = ChatRoom.findOne(@rid).details;
+		return project_info
 	getRoom: ->
 		return ChatRoom.findOne(@rid)
 
 	editing: (field) ->
-		return Template.instance().editing.get() is field
+		#return Template.instance().editing.get() is field
+		return false
 
 	channelSettings: ->
 		return RocketChat.ChannelSettings.getOptions()
@@ -88,6 +93,14 @@ Template.channelSettings.events
 	'click .save': (e, t) ->
 		e.preventDefault()
 		t.saveSetting()
+
+	'click .edit': (e, t) ->
+		e.preventDefault()
+		window.open ChatRoom.findOne(@rid).details.url
+
+	'click #open_profile' : (e,t) ->
+		e.preventDefault()
+		window.open 'https://stage.ubegin.com/discover/projects/'+ChatRoom.findOne(@rid).name
 
 Template.channelSettings.onCreated ->
 	@editing = new ReactiveVar

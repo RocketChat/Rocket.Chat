@@ -12,14 +12,16 @@
 					<p>{{{_ "Please_wait_activation"}}}</p>
 				</header>
 			{{else}}
+				<!--
 				{{ > loginServices }}
+				-->
 				{{#if needsValidateEmail}}
 					<div class="alert alert-danger">
 						{{_ "You_need_confirm_email"}}
 					</div>
 				{{/if}}
 				{{#if showFormLogin}}
-					<div class="fields">
+					<div class="fields" style="display:none">
 						{{#if state 'login'}}
 							<div class='input-text active'>
 								<label for="emailOrUsername">{{emailOrUsernamePlaceholder}}</label>
@@ -94,9 +96,11 @@
 							</div>
 						{{/if}}
 					</div>
+					<!--
 					<div class="submit">
 						<button data-loading-text="{{_ "Please_wait"}}..." class='button primary login'><span>{{btnLoginSave}}</span></button>
 					</div>
+					-->
 					{{#if state 'login'}}
 						{{#if registrationAllowed}}
 							<div>

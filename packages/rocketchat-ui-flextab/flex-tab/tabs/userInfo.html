@@ -11,14 +11,19 @@
 					{{> avatar username=username}}
 				</div>
 				<div class="info">
-					<h3 title="{{username}}"><i class="status-{{status}}"></i> {{username}}</h3>
-					<p>{{name}}</p>
+					<h3 title="{{username}}"><i class="status-{{status}}"></i> {{name}}</h3>
+					<p style="font-size:20px;color:black">{{location}}</p>
+					<!--
 					<p>
 						{{#each roleTags}}
 							<span class="role-tag" data-role="{{description}}">{{description}}</span>
 						{{/each}}
 					</p>
+					-->
 					{{#if utc}}<p><i class="icon-clock"></i>{{userTime}} (UTC {{utc}})</p>{{/if}}
+					<br>
+					<p style="color:black">{{declaration}}</p>
+					<!--
 					{{#if hasPermission 'view-full-other-user-info'}}
 						{{#if hasEmails}}
 							{{#each emails}} <p><i class="icon-mail"></i> {{address}}{{#if verified}}&nbsp;<i class="icon-ok"></i>{{/if}}</p> {{/each}}
@@ -37,10 +42,12 @@
 						{{#if services.twitter.id}} <p><i class="icon-twitter"></i><a href="https://twitter.com/{{services.twitter.screenName}}" target="_blank">{{services.twitter.screenName}}</a></p> {{/if}}
 						{{#if services.wordpress.id}} <p><i class="icon-wordpress"></i>{{services.wordpress.user_login}}</p> {{/if}}
 					{{/if}}
+					-->
 				</div>
 			</div>
 			{{/with}}
 			<nav>
+				<!--
 				{{#if user.active}}
 					{{> videoButtons}}
 				{{/if}}
@@ -101,6 +108,8 @@
 				{{#if showAll}}
 					<button class='button secondary back'><span>{{_ "View_All"}} <i class='icon-angle-right'></i></span></button>
 				{{/if}}
+				-->
+				<button type="button" class="button black secondary" id="open_profile" style="float:right">{{_ "Open Profile"}}</button>
 			</nav>
 		{{/if}}
 	{{/if}}

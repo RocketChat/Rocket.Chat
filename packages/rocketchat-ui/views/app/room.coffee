@@ -119,9 +119,6 @@ Template.room.helpers
 		return moment(this.since).calendar(null, {sameDay: 'LT'})
 
 	flexTemplate: ->
-		if (RocketChat.TabBar.getTemplate() == "channelSettings")
-			window.location.replace("https://stage.ubegin.com/discover/projects/"+ChatRoom.findOne(this._id).name)
-			return ''
 		return RocketChat.TabBar.getTemplate()
 
 	flexData: ->
@@ -341,7 +338,7 @@ Template.room.events
 		if roomData.t in ['c', 'p', 'd']
 			instance.setUserDetail this._arguments[1].u.username
 			window.location.replace("https://stage.ubegin.com/discover/people/"+this._arguments[1].u.username)
-			#RocketChat.TabBar.setTemplate 'membersList'
+		#RocketChat.TabBar.setTemplate 'membersList'
 
 	'scroll .wrapper': _.throttle (e, instance) ->
 		if RoomHistoryManager.isLoading(@_id) is false and (RoomHistoryManager.hasMore(@_id) is true or RoomHistoryManager.hasMoreNext(@_id) is true)
@@ -403,6 +400,7 @@ Template.room.events
 
 		RocketChat.TabBar.setTemplate 'membersList'
 		window.location.replace("https://stage.ubegin.com/discover/people/"+$(e.currentTarget).data('username'))
+		alert($(e.currentTarget).data('username'))
 		#instance.setUserDetail $(e.currentTarget).data('username')
 
 		RocketChat.TabBar.openFlex()
@@ -607,7 +605,7 @@ Template.room.onRendered ->
 
 		observer.observe wrapperUl,
 			childList: true
-	# observer.disconnect()
+		# observer.disconnect()
 
 	template.onWindowResize = ->
 		Meteor.defer ->

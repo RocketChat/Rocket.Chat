@@ -338,6 +338,10 @@ Template.userInfo.events
 
 		instance.editingUser.set instance.user.get()._id
 
+	'click #open_profile': (e, inst) ->
+		e.preventDefault()
+		window.open 'https://stage.ubegin.com/celebrate/people/'+Template.instance().user.get().username
+
 Template.userInfo.onCreated ->
 	@now = new ReactiveVar moment()
 

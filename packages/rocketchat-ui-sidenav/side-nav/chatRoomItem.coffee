@@ -129,4 +129,4 @@ Template.chatRoomItem.events
 
 	'click .add-people': ->
 		HTTP.call 'GET', 'https://stage.ubegin.com:1337/project/info/'+this.name, (error, result) ->
-			window.location.replace(result.data.url);
+			window.open (result.data.url)

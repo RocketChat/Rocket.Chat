@@ -96,7 +96,7 @@ Template.membersList.helpers
 
 	userInfoDetail: ->
 		room = ChatRoom.findOne(this.rid, { fields: { t: 1 } })
-
+		
 		return {
 			username: Template.instance().userDetail.get()
 			clear: Template.instance().clearUserDetail
