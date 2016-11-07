@@ -18,11 +18,13 @@ FileUpload = {
 			return false;
 		}
 
-		if (file.size > maxFileSize) {
-			const reason = TAPi18n.__('File_exceeds_allowed_size_of_bytes', {
-				size: filesize(maxFileSize)
-			}, user.language);
-			throw new Meteor.Error('error-file-too-large', reason);
+		if (maxFileSize !== -1) {
+			if (file.size > maxFileSize) {
+				const reason = TAPi18n.__('File_exceeds_allowed_size_of_bytes', {
+					size: filesize(maxFileSize)
+				}, user.language);
+				throw new Meteor.Error('error-file-too-large', reason);
+			}
 		}
 
 		if (!RocketChat.fileUploadIsValidContentType(file.type)) {
