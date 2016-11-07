@@ -18,7 +18,7 @@ FileUpload = {
 			return false;
 		}
 
-		if (maxFileSize !== -1) {
+		if (parseInt(maxFileSize) !== -1) {
 			if (file.size > maxFileSize) {
 				const reason = TAPi18n.__('File_exceeds_allowed_size_of_bytes', {
 					size: filesize(maxFileSize)
