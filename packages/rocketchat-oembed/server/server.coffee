@@ -31,8 +31,7 @@ getCharset = (contentType, body) ->
 	if detectedCharset
 		if detectedCharset == httpHeaderCharset
 			result = httpHeaderCharset
-
-		if detectedCharset == htmlMetaCharset
+		else if detectedCharset == htmlMetaCharset
 			result = htmlMetaCharset
 
 	unless result
