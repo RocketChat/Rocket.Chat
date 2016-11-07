@@ -28,13 +28,15 @@ getCharset = (contentType, body) ->
 	if m2
 		htmlMetaCharset = m2[1].toLowerCase()
 
-	switch detectedCharset
-		when httpHeaderCharset
+	if detectedCharset
+		if detectedCharset == httpHeaderCharset
 			result = httpHeaderCharset
-		when htmlMetaCharset
+
+		if detectedCharset == htmlMetaCharset
 			result = htmlMetaCharset
-		else
-			result = httpHeaderCharset || htmlMetaCharset || detectedCharset
+
+	unless result
+		result = httpHeaderCharset || htmlMetaCharset || detectedCharset
 
 	return result || 'utf-8'
 
