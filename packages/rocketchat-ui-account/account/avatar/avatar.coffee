@@ -7,7 +7,9 @@ Template.avatar.helpers
 		if not username?
 			return
 
-		user = Meteor.users.findOne({username:this.u?.username})
+		user = Meteor.users.findOne({username:username})
+		console.log username
+		console.log user
 		if user?.photo
 			return user?.photo
 

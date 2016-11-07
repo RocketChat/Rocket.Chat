@@ -5,6 +5,7 @@ Template.userInfo.helpers
 
 	username: ->
 		user = Template.instance().user.get()
+		console.log Template.instance().user.get()
 		return user.username
 
 	email: ->
