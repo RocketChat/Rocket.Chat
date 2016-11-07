@@ -12,26 +12,27 @@ calculateClientHash = WebAppHashing.calculateClientHash
 WebAppHashing.calculateClientHash = (manifest, includeFilter, runtimeConfigOverride) ->
 	css = RocketChat.theme.getCss()
 
-	WebAppInternals.staticFiles['/__cordova/theme.css'] = WebAppInternals.staticFiles['/theme.css'] =
-		cacheable: true
-		sourceMapUrl: undefined
-		type: 'css'
-		content: css
+	if css.trim() isnt ''
+		WebAppInternals.staticFiles['/__cordova/theme.css'] = WebAppInternals.staticFiles['/theme.css'] =
+			cacheable: true
+			sourceMapUrl: undefined
+			type: 'css'
+			content: css
 
-	hash = crypto.createHash('sha1').update(css).digest('hex')
+		hash = crypto.createHash('sha1').update(css).digest('hex')
 
-	themeManifestItem = _.find manifest, (item) -> return item.path is 'app/theme.css'
-	if not themeManifestItem?
-		themeManifestItem = {}
-		manifest.push themeManifestItem
+		themeManifestItem = _.find manifest, (item) -> return item.path is 'app/theme.css'
+		if not themeManifestItem?
+			themeManifestItem = {}
+			manifest.push themeManifestItem
 
-	themeManifestItem.path = 'app/theme.css'
-	themeManifestItem.type = 'css'
-	themeManifestItem.cacheable = true
-	themeManifestItem.where = 'client'
-	themeManifestItem.url = "/theme.css?#{hash}"
-	themeManifestItem.size = css.length
-	themeManifestItem.hash = hash
+		themeManifestItem.path = 'app/theme.css'
+		themeManifestItem.type = 'css'
+		themeManifestItem.cacheable = true
+		themeManifestItem.where = 'client'
+		themeManifestItem.url = "/theme.css?#{hash}"
+		themeManifestItem.size = css.length
+		themeManifestItem.hash = hash
 
 	calculateClientHash.call this, manifest, includeFilter, runtimeConfigOverride
 
@@ -63,20 +64,28 @@ RocketChat.theme = new class
 		# Add option to use extended (minor) color palette
 		RocketChat.settings.add 'theme-option-extended-colors', false, { group: 'Layout', type: 'boolean', public: false, i18nDescription: 'Use_minor_colors'}
 
-		@compileDelayed = _.debounce Meteor.bindEnvironment(@compile.bind(@)), 300
+		RocketChat.settings.onload 'css', Meteor.bindEnvironment (key, value, initialLoad) =>
+			if not initialLoad
+				Meteor.startup ->
+					process.emit('message', {refresh: 'client'})
 
-		RocketChat.settings.onload '*', Meteor.bindEnvironment (key, value, initialLoad) =>
-			if key is 'theme-custom-css'
-				if value?.trim() isnt ''
-					@customCSS = value
-			else if /^theme-.+/.test(key) is true
-				name = key.replace /^theme-[a-z]+-/, ''
-				if @variables[name]?
-					@variables[name].value = value
-			else
-				return
+		@compileDelayed = _.debounce Meteor.bindEnvironment(@compile.bind(@)), 100
 
-			@compileDelayed()
+		Meteor.startup =>
+			RocketChat.settings.onAfterInitialLoad =>
+
+				RocketChat.settings.get '*', Meteor.bindEnvironment (key, value, initialLoad) =>
+					if key is 'theme-custom-css'
+						if value?.trim() isnt ''
+							@customCSS = value
+					else if /^theme-.+/.test(key) is true
+						name = key.replace /^theme-[a-z]+-/, ''
+						if @variables[name]?
+							@variables[name].value = value
+					else
+						return
+
+					@compileDelayed()
 
 	compile: ->
 		content = [
@@ -91,6 +100,7 @@ RocketChat.theme = new class
 				content.push result
 
 		content.push @customCSS
+
 		content = content.join '\n'
 
 		options =
@@ -106,7 +116,11 @@ RocketChat.theme = new class
 				return console.log err
 
 			RocketChat.settings.updateById 'css', data.css
-			process.emit('message', {refresh: 'client'})
+
+			Meteor.startup ->
+				Meteor.setTimeout ->
+					process.emit('message', {refresh: 'client'})
+				, 200
 
 	addVariable: (type, name, value, section, persist=true) ->
 		@variables[name] =
@@ -134,12 +148,14 @@ RocketChat.theme = new class
 		obj = {}
 		for name, variable of @variables
 			obj[name] = variable.value
+
 		return obj
 
 	getVariablesAsLess: ->
 		items = []
 		for name, variable of @variables
 			items.push "@#{name}: #{variable.value};"
+
 		return items.join '\n'
 
 	addPackageAsset: (cb) ->
@@ -147,4 +163,4 @@ RocketChat.theme = new class
 		@compileDelayed()
 
 	getCss: ->
-		return RocketChat.settings.get 'css'
+		return RocketChat.settings.get('css') or ''
