@@ -128,5 +128,5 @@ Template.chatRoomItem.events
 				swal.close()
 
 	'click .add-people': ->
-		HTTP.call 'GET', 'https://stage.ubegin.com:1337/project/info/'+this.name, (error, result) ->
-			window.open (result.data.url)
+		project_info = ChatRoom.findOne(this.rid).details
+		window.open project_info.url
