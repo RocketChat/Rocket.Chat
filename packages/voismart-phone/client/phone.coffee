@@ -666,6 +666,8 @@ RocketChat.Phone = new class
 		setCallState('trying')
 		_curCall = _vertoHandle.newCall({
 			destination_number: destination,
+			caller_id_name: Meteor.user().name,
+			caller_id_number: Meteor.user().phoneextension,
 			useVideo: has_video,
 			useStereo: true,
 			useCamera: _videoDevice,
