@@ -15,6 +15,7 @@ Meteor.startup ->
 				description: 1
 				sysMes: 1
 				joinCodeRequired: 1
+				details: 1
 
 		if RocketChat.authz.hasPermission(this.userId, 'view-join-code')
 			options.fields.joinCode = 1
