@@ -7,8 +7,11 @@ Template.message.helpers
 		roles = _.union(UserRoles.findOne(this.u?._id)?.roles, RoomRoles.findOne({'u._id': this.u?._id, rid: this.rid })?.roles)
 		return RocketChat.models.Roles.find({ _id: { $in: roles }, description: { $exists: 1, $ne: '' } }, { fields: { description: 1 } })
 	userrealname : ->
-		HTTP.call 'GET', 'https://stage.ubegin.com:1337/user/info/'+this.u?.username, (error, result) ->
-			console.log result.data.fullName
+		user = Meteor.users.findOne({username:this.u?.username})
+		return user?.name
+	avatar_img : ->
+		user = Meteor.users.findOne({username:this.u?.username})
+		return user?.photo
 	isGroupable: ->
 		return 'false' if this.groupable is false
 	isSequential: ->
