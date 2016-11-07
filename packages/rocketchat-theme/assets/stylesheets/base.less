@@ -601,8 +601,8 @@ label.required:after {
 	&:extend(.unselectable);
 	display: inline-block;
 	padding: 9px 12px;
-	font-weight: 500;
-	font-size: 13px;
+	font-weight: 600;
+	font-size: 14px;
 	text-align: center;
 	text-transform: uppercase;
 	word-spacing: 0;
@@ -612,37 +612,6 @@ label.required:after {
 	span {
 		position: relative;
 		z-index: 2;
-	}
-	&:before {
-		content: " ";
-		position: absolute;
-		top: 0;
-		left: 0;
-		width: 100%;
-		height: 100%;
-		opacity: 0;
-		z-index: 1;
-	}
-	&:hover {
-		text-decoration: none;
-		&:before {
-			opacity: 1;
-		}
-	}
-	&.delete,
-	&.remove,
-	&.short {
-		min-width: 100px;
-	}
-	&.lightblue {
-		min-width: 100px;
-	}
-	&.clean {
-		font-size: 14px;
-		box-shadow: 0 0 3px rgba(0, 0, 0, 0.08);
-		&.primary {
-			font-weight: 600;
-		}
 	}
 	&.button-block {
 		display: block;
@@ -1328,7 +1297,6 @@ label.required:after {
 			&:hover {
 				text-decoration: none;
 			}
-
 			.archived {
 				font-style: italic;
 			}
@@ -1423,7 +1391,6 @@ label.required:after {
 		margin-top: 60px;
 		-webkit-overflow-scrolling: touch;
 		.calc(height, ~'100% - 60px');
-
 		fieldset {
 			margin-bottom: 1em;
 		}
@@ -4162,7 +4129,6 @@ body:not(.is-cordova) {
 	.social-login {
 		margin-bottom: 10px;
 	}
-
 	.message-form textarea {
 		max-height: 100px !important;
 	}
@@ -4601,7 +4567,8 @@ a + br.only-after-a {
 }
 
 .form-inline {
-	input, select {
+	input,
+	select {
 		display: inline-block;
 		width: auto;
 		vertical-align: middle;
@@ -4610,7 +4577,6 @@ a + br.only-after-a {
 		display: inline-block;
 		max-width: 100%;
 	}
-
 	.form-group {
 		display: inline-block;
 	}
@@ -4619,6 +4585,7 @@ a + br.only-after-a {
 .embedded-view {
 	.main-content.main-modal {
 		right: 0;
+		left: 20px;
 	}
 	.messages-container {
 		border: none;
@@ -4628,7 +4595,6 @@ a + br.only-after-a {
 		.footer {
 			min-height: 36px;
 			padding: 0;
-
 			.message-input {
 				border: none;
 			}

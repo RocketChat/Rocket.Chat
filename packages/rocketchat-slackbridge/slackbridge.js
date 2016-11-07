@@ -47,6 +47,16 @@ class SlackBridge {
 			this.rtm = new RtmClient(this.apiToken);
 			this.rtm.start();
 			this.setEvents();
+			RocketChat.settings.get('SlackBridge_Out_Enabled', (key, value) => {
+				if (value) {
+					RocketChat.callbacks.add('afterSaveMessage', this.slackBridgeOut.bind(this), RocketChat.callbacks.priority.LOW, 'SlackBridge_Out');
+				} else {
+					RocketChat.callbacks.remove('afterSaveMessage', 'SlackBridge_Out');
+				}
+			});
+			Meteor.startup(() => {
+				this.populateChannelMap(); // If run outside of Meteor.startup, HTTP is not defined
+			});
 		}
 	}
 
@@ -55,6 +65,7 @@ class SlackBridge {
 			this.connected = false;
 			this.rtm.disconnect && this.rtm.disconnect();
 			logger.connection.info('Disconnected');
+			RocketChat.callbacks.remove('afterSaveMessage', 'SlackBridge_Out');
 		}
 	}
 
@@ -172,21 +183,35 @@ class SlackBridge {
 	addUser(userId) {
 		logger.class.debug('Adding user from Slack', userId);
 		let data = HTTP.get('https://slack.com/api/users.info', { params: { token: this.apiToken, user: userId } });
-		if (data && data.data && data.data.ok === true && data.data.user && data.data.user.profile && data.data.user.profile.email) {
+		if (data && data.data && data.data.ok === true && data.data.user) {
 			let userData = data.data.user;
-			let existingUser = RocketChat.models.Users.findOneByEmailAddress(userData.profile.email) || RocketChat.models.Users.findOneByUsername(userData.name);
+			let isBot = userData.is_bot === true;
+			let email = userData.profile && userData.profile.email || '';
+			let existingUser;
+			if (!isBot) {
+				existingUser = RocketChat.models.Users.findOneByEmailAddress(email) || RocketChat.models.Users.findOneByUsername(userData.name);
+			} else {
+				existingUser = RocketChat.models.Users.findOneByUsername(userData.name);
+			}
+
 			if (existingUser) {
 				userData.rocketId = existingUser._id;
 				userData.name = existingUser.username;
 			} else {
-				userData.rocketId = Accounts.createUser({ email: userData.profile.email, password: Date.now() + userData.name + userData.profile.email.toUpperCase() });
+				let newUser = { password: Random.id() };
+				if (isBot || !email) {
+					newUser.username = userData.name;
+				} else {
+					newUser.email = email;
+				}
+				userData.rocketId = Accounts.createUser(newUser);
 				let userUpdate = {
 					username: userData.name,
 					utcOffset: userData.tz_offset / 3600, // Slack's is -18000 which translates to Rocket.Chat's after dividing by 3600,
-					roles: [ 'user' ]
+					roles: isBot ? [ 'bot' ] : [ 'user' ]
 				};
 
-				if (userData.profile.real_name) {
+				if (userData.profile && userData.profile.real_name) {
 					userUpdate['name'] = userData.profile.real_name;
 				}
 
@@ -200,20 +225,28 @@ class SlackBridge {
 				let user = RocketChat.models.Users.findOneById(userData.rocketId);
 
 				let url = null;
-				if (userData.profile.image_original) {
-					url = userData.profile.image_original;
-				} else if (userData.profile.image_512) {
-					url = userData.profile.image_512;
+				if (userData.profile) {
+					if (userData.profile.image_original) {
+						url = userData.profile.image_original;
+					} else if (userData.profile.image_512) {
+						url = userData.profile.image_512;
+					}
 				}
-				try {
-					RocketChat.setUserAvatar(user, url, null, 'url');
-				} catch (error) {
-					logger.class.debug('Error setting user avatar', error.message);
+				if (url) {
+					try {
+						RocketChat.setUserAvatar(user, url, null, 'url');
+					} catch (error) {
+						logger.class.debug('Error setting user avatar', error.message);
+					}
 				}
 				RocketChat.addUserToDefaultChannels(user, true);
 			}
 
-			RocketChat.models.Users.update({ _id: userData.rocketId }, { $addToSet: { importIds: userData.id } });
+			let importIds = [ userData.id ];
+			if (isBot && userData.profile && userData.profile.bot_id) {
+				importIds.push(userData.profile.bot_id);
+			}
+			RocketChat.models.Users.update({ _id: userData.rocketId }, { $addToSet: { importIds: { $each: importIds } } });
 			if (!this.userTags[userId]) {
 				this.userTags[userId] = { slack: `<@${userId}>`, rocket: `@${userData.name}` };
 			}
@@ -278,6 +311,8 @@ class SlackBridge {
 		let user = null;
 		if (message.subtype === 'message_deleted' || message.subtype === 'message_changed') {
 			user = message.previous_message.user ? this.findUser(message.previous_message.user) || this.addUser(message.previous_message.user) : null;
+		} else if (message.subtype === 'bot_message') {
+			user = RocketChat.models.Users.findOneById('rocket.cat', { fields: { username: 1 } });
 		} else {
 			user = message.user ? this.findUser(message.user) || this.addUser(message.user) : null;
 		}
@@ -316,9 +351,9 @@ class SlackBridge {
 					rid: room._id,
 					bot: true,
 					attachments: message.attachments,
-					username: message.username
+					username: message.username || message.bot_id
 				};
-				this.addAlias(message.username, msgObj);
+				this.addAlias(message.username || message.bot_id, msgObj);
 				if (message.icons) {
 					msgObj.emoji = message.icons.emoji;
 				}
@@ -379,7 +414,7 @@ class SlackBridge {
 				if (importing) {
 					RocketChat.models.Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser('room_changed_topic', room._id, message.topic, user, { ts: new Date(parseInt(message.ts.split('.')[0]) * 1000), imported: 'slackbridge' });
 				} else {
-					RocketChat.saveRoomTopic(room._id, message.topic, user);
+					RocketChat.saveRoomTopic(room._id, message.topic, user, false);
 				}
 				return;
 			case 'channel_purpose':
@@ -387,7 +422,7 @@ class SlackBridge {
 				if (importing) {
 					RocketChat.models.Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser('room_changed_topic', room._id, message.purpose, user, { ts: new Date(parseInt(message.ts.split('.')[0]) * 1000), imported: 'slackbridge' });
 				} else {
-					RocketChat.saveRoomTopic(room._id, message.purpose, user);
+					RocketChat.saveRoomTopic(room._id, message.purpose, user, false);
 				}
 				return;
 			case 'channel_name':
@@ -395,7 +430,7 @@ class SlackBridge {
 				if (importing) {
 					RocketChat.models.Messages.createRoomRenamedWithRoomIdRoomNameAndUser(room._id, message.name, user, { ts: new Date(parseInt(message.ts.split('.')[0]) * 1000), imported: 'slackbridge' });
 				} else {
-					RocketChat.saveRoomName(room._id, message.name, user);
+					RocketChat.saveRoomName(room._id, message.name, user, false);
 				}
 				return;
 			case 'channel_archive':
@@ -843,7 +878,7 @@ class SlackBridge {
 			if (topic) {
 				let creator = this.findUser(topic_creator) || this.addUser(topic_creator);
 				logger.class.debug('Setting room topic', rid, topic, creator.username);
-				RocketChat.saveRoomTopic(rid, topic, creator);
+				RocketChat.saveRoomTopic(rid, topic, creator, false);
 			}
 		}
 	}
@@ -906,6 +941,57 @@ class SlackBridge {
 		} else {
 			logger.class.error('Could not find Rocket.Chat room with specified id', rid);
 			return callback(new Meteor.Error('error-invalid-room', 'Invalid room'));
+		}
+	}
+
+	populateChannelMap() {
+		logger.class.debug('Populating channel map');
+		let response = HTTP.get('https://slack.com/api/channels.list', { params: { token: this.apiToken } });
+		if (response && response.data && _.isArray(response.data.channels) && response.data.channels.length > 0) {
+			for (let channel of response.data.channels) {
+				let rocketchat_room = RocketChat.models.Rooms.findOneByName(channel.name, { fields: { _id: 1 } });
+				if (rocketchat_room) {
+					this.channelMap[rocketchat_room._id] = { id: channel.id, family: channel.id.charAt(0) === 'C' ? 'channels' : 'groups' };
+				}
+			}
+		}
+		response = HTTP.get('https://slack.com/api/groups.list', { params: { token: this.apiToken } });
+		if (response && response.data && _.isArray(response.data.groups) && response.data.groups.length > 0) {
+			for (let group of response.data.groups) {
+				let rocketchat_room = RocketChat.models.Rooms.findOneByName(group.name, { fields: { _id: 1 } });
+				if (rocketchat_room) {
+					this.channelMap[rocketchat_room._id] = { id: group.id, family: group.id.charAt(0) === 'C' ? 'channels' : 'groups' };
+				}
+			}
+		}
+	}
+
+	slackBridgeOut(message) {
+		// Ignore messages originating from Slack
+		if (message._id.indexOf('slack-') === 0) {
+			return message;
+		}
+		let outChannels = RocketChat.settings.get('SlackBridge_Out_All') ? _.keys(this.channelMap) : _.pluck(RocketChat.settings.get('SlackBridge_Out_Channels'), '_id') || [];
+		logger.class.debug('Out Channels: ', outChannels);
+		if (outChannels.indexOf(message.rid) !== -1) {
+			logger.class.debug('Message out', message);
+			this.postMessage(this.channelMap[message.rid], message);
+		}
+		return message;
+	}
+
+	postMessage(room, message) {
+		if (room && room.id) {
+			let data = {
+				token: this.apiToken,
+				text: message.msg,
+				channel: room.id,
+				username: message.u && message.u.username,
+				icon_url: getAvatarUrlFromUsername(message.u && message.u.username),
+				link_names: 1
+			};
+			logger.class.debug('Post Message', data);
+			HTTP.post('https://slack.com/api/chat.postMessage', { params: data });
 		}
 	}
 }

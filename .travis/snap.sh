@@ -1,4 +1,7 @@
 #!/bin/bash
+set -x
+set -euvo pipefail
+IFS=$'\n\t'
 
 if [ -z "$SNAPCRAFT_SECRET" ]; then
     exit 0
