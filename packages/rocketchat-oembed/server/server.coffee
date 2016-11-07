@@ -34,9 +34,8 @@ getCharset = (contentType, body) ->
 		when htmlMetaCharset
 			result = htmlMetaCharset
 		else
-			result = httpHeaderCharset || htmlMetaCharset || detectedCharset || 'utf-8'
-
-	return result
+			result = httpHeaderCharset || htmlMetaCharset || detectedCharset
+	return result || 'utf-8'
 
 toUtf8 = (contentType, body) ->
 	return iconv.decode(body, getCharset(contentType, body))
