@@ -22,7 +22,7 @@
     },
     "core-util-is": {
       "version": "1.0.2",
-      "resolved": "http://registry.npmjs.org/core-util-is/-/core-util-is-1.0.2.tgz",
+      "resolved": "https://registry.npmjs.org/core-util-is/-/core-util-is-1.0.2.tgz",
       "from": "core-util-is@>=1.0.0 <1.1.0"
     },
     "inherits": {
@@ -32,7 +32,7 @@
     },
     "isarray": {
       "version": "0.0.1",
-      "resolved": "http://registry.npmjs.org/isarray/-/isarray-0.0.1.tgz",
+      "resolved": "https://registry.npmjs.org/isarray/-/isarray-0.0.1.tgz",
       "from": "isarray@0.0.1"
     },
     "nan": {
@@ -52,8 +52,8 @@
     },
     "node-ydin-presence-service": {
       "version": "2.4.6-1.20161027svnr14",
-      "resolved": "git+https://github.com/VoiSmart/node-ydin-presence-service.git#412962fef39fec346fbce917b0c6b0752c91cedc",
-      "from": "node-ydin-presence-service@git+https://github.com/VoiSmart/node-ydin-presence-service.git#2.4.6-1.20161028svnr413"
+      "resolved": "git+https://github.com/VoiSmart/node-ydin-presence-service.git#a5678e4709575160d836caa71f9794fe78ed910f",
+      "from": "node-ydin-presence-service@git+https://github.com/VoiSmart/node-ydin-presence-service.git#2.4.6-1.20161104svnr414"
     },
     "options": {
       "version": "0.0.6",

@@ -111,6 +111,12 @@ class PresenceManager
 
 
 class PresenceClient
+	presmapper:
+		busy: 'DND'
+		away: 'AWAY'
+		online: 'AVAILABLE'
+		offline: 'OFFLINE'
+
 	constructor: ({@host, @user, @password, @vhost, @domain, @domain_id}) ->
 		@url = "amqp://#{@user}:#{@password}@#{@host}/#{@vhost}?heartbeat=30"
 		@connection = null
@@ -144,21 +150,23 @@ class PresenceClient
 		connection.on "error", (err) ->
 			logger.error "thrift-amqp connection error: #{err}"
 
-	publishPresence: (user, status, statusConnection) ->
-		usersSession = Package.mongo.MongoInternals.defaultRemoteCollectionDriver().open('usersSessions')
-		userConnections = usersSession.find({"_id": user._id}).fetch()
+	publishPresence: (user, status, statusConnection) =>
 		logger.error "publishing presence for #{user.username} to (#{status}, #{statusConnection})"
-		logger.error("connections", userConnections)
-		# resource = null  # FIXME: use instance_id from UsersSessions
-		# pTypes = Npm.require('node-ydin-presence-service').presenceServiceTypes
-		# i = new pTypes.TXmppEvent(
-		# 			user: user.username,
-		# 			domain: @domain,
-		# 			name: "PRESENCE",
-		# 			resource: resource,
-		# 			status: status,
-		# 			presence_source: "webchat" )
-		# @client.publish_webchat_presence i, @_logErrors
+		usersSession = Package.mongo.MongoInternals.defaultRemoteCollectionDriver().open('usersSessions')
+		userConnections = usersSession.findOne({"_id": user._id})?.connections or []
+		# we need to iterate through connections to get its id to use it as
+		# the presence info resource
+		for connection in userConnections
+			logger.error "processing", connection
+			pTypes = Npm.require('node-ydin-presence-service').presenceServiceTypes
+			i = new pTypes.TXmppEvent(
+						user: user.username,
+						domain: @domain,
+						name: "PRESENCE",
+						resource: connection.id,
+						status: @presmapper[connection.status] or 'UNKNOWN',
+						presence_source: "webchat" )
+			@client.publish_webchat_presence i, @_logErrors
 
 	_logErrors: (err, res) ->
 		if err
