@@ -1,0 +1,16 @@
+# This file contains information which helps Meteor properly upgrade your
+# app when you run 'meteor update'. You should check it into version control
+# with your project.
+
+notices-for-0.9.0
+notices-for-0.9.1
+0.9.4-platform-file
+notices-for-facebook-graph-api-2
+1.2.0-standard-minifiers-package
+1.2.0-meteor-platform-split
+1.2.0-cordova-changes
+1.2.0-breaking-changes
+1.3.0-split-minifiers-package
+1.3.5-remove-old-dev-bundle-link
+1.4.0-remove-old-dev-bundle-link
+1.4.1-add-shell-server-package
