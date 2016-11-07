@@ -11,7 +11,7 @@ Template.avatar.helpers
 		console.log username
 		console.log user
 		if user?.photo
-			return user?.photo
+			return "background-image:url(#{user.photo});"
 
 		Session.get "avatar_random_#{username}"
 
