@@ -21,6 +21,7 @@ Template.channelSettings.helpers
 
 	getProjectInfo: ->
 		project_info = ChatRoom.findOne(@rid).details;
+		console.log ChatRoom.findOne(@rid)
 		return project_info
 	getRoom: ->
 		return ChatRoom.findOne(@rid)
