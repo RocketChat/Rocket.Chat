@@ -17,9 +17,21 @@ Meteor.methods
 		RocketChat.settings.add "SAML_Custom_#{name}_entry_point"       , 'https://openidp.feide.no/simplesaml/saml2/idp/SSOService.php', { type: 'string' , group: 'SAML', section: name, i18nLabel: 'SAML_Custom_Entry_point'}
 		RocketChat.settings.add "SAML_Custom_#{name}_issuer"            , 'https://rocket.chat/'                                        , { type: 'string' , group: 'SAML', section: name, i18nLabel: 'SAML_Custom_Issuer'}
 		RocketChat.settings.add "SAML_Custom_#{name}_cert"              , ''                                                            , { type: 'string' , group: 'SAML', section: name, i18nLabel: 'SAML_Custom_Cert'}
-		RocketChat.settings.add "SAML_Custom_#{name}_public_cert_file_path"  , '/path/to/filename.crt'                                           , { type: 'string' , group: 'SAML', section: name, i18nLabel: 'SAML_Custom_Public_Cert_File_Path'}
-		RocketChat.settings.add "SAML_Custom_#{name}_private_key_file_path"  , '/path/to/filename.key'                                           , { type: 'string' , group: 'SAML', section: name, i18nLabel: 'SAML_Custom_Private_Key_File_Path'}
-		RocketChat.settings.add "SAML_Custom_#{name}_button_label_text" , ''                                                            , { type: 'string' , group: 'SAML', section: name, i18nLabel: 'Accounts_OAuth_Custom_Button_Label_Text'}
+		RocketChat.settings.add "SAML_Custom_#{name}_public_cert_file_path", '', {
+			type: 'string' ,
+			group: 'SAML',
+			section: name,
+			i18nLabel: 'SAML_Custom_Public_Cert_File_Path',
+			i18nDescription: 'SAML_Custom_Public_Cert_File_Path_Description'
+		}
+		RocketChat.settings.add "SAML_Custom_#{name}_private_key_file_path", '', {
+			type: 'string' ,
+			group: 'SAML',
+			section: name,
+			i18nLabel: 'SAML_Custom_Private_Key_File_Path',
+			i18nDescription: 'SAML_Custom_Private_Key_File_Path_Description'
+		}
+		RocketChat.settings.add "SAML_Custom_#{name}_button_label_text" , ''																														, { type: 'string' , group: 'SAML', section: name, i18nLabel: 'Accounts_OAuth_Custom_Button_Label_Text'}
 		RocketChat.settings.add "SAML_Custom_#{name}_button_label_color", '#FFFFFF'                                                     , { type: 'string' , group: 'SAML', section: name, i18nLabel: 'Accounts_OAuth_Custom_Button_Label_Color'}
 		RocketChat.settings.add "SAML_Custom_#{name}_button_color"      , '#13679A'                                                     , { type: 'string' , group: 'SAML', section: name, i18nLabel: 'Accounts_OAuth_Custom_Button_Color'}
 		RocketChat.settings.add "SAML_Custom_#{name}_generate_username" , false                                                         , { type: 'boolean', group: 'SAML', section: name, i18nLabel: 'SAML_Custom_Generate_Username'}
@@ -71,14 +83,21 @@ getSamlConfigs = (service) ->
 # Meteor saml package uses Accounts.saml.settings.
 
 configureSamlService = (samlConfigs) ->
-	try
-		privateKey = fs.readFileSync(samlConfigs.privateKeyFilePath).toString()
-		privateCert = fs.readFileSync(samlConfigs.publicCertFilePath).toString()
-	catch err
-		console.warn "Can't configure key or cert for SAML, signing will not be performed by RocketChat"
-		console.warn "Error was: #{err.message}"
-		privateKey = false
-		privateCert = false
+	privateKey = false
+	privateCert = false
+	if samlConfigs.privateKeyFilePath and samlConfigs.publicCertFilePath
+		try
+			privateKey = fs.readFileSync(samlConfigs.privateKeyFilePath).toString()
+			privateCert = fs.readFileSync(samlConfigs.publicCertFilePath).toString()
+			logger.info "Successfully loaded public cert and private key files for SAML."
+		catch err
+			logger.error "Can't configure key or cert for SAML, signing will not be performed by RocketChat."
+			logger.error "Error was: #{err.message}"
+	else
+		if samlConfigs.privateKeyFilePath or samlConfigs.publicCertFilePath
+			logger.error "You must specify both cert and key files."
+			privateKey = false
+			privateCert = false
 	Accounts.saml.settings.generateUsername = samlConfigs.generateUsername
 	Accounts.saml.settings.providers.push
 		provider: samlConfigs.clientConfig.provider
