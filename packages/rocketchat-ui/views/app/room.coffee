@@ -67,11 +67,9 @@ Template.room.helpers
 		return Session.get 'uploading'
 
 	roomName: ->
-		roomData = Session.get('roomData' + this._id)
-		return '' unless roomData
-
-		return RocketChat.roomTypes.getRoomName roomData?.t, roomData
-
+		project_info = ChatRoom.findOne(this._id).details
+		return project_info.name
+		
 	roomTopic: ->
 		roomData = Session.get('roomData' + this._id)
 		return '' unless roomData
