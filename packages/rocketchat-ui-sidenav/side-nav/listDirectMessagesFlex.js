@@ -15,7 +15,15 @@ Template.listDirectMessagesFlex.helpers({
 	},
 	hidden() {
 		return !!RocketChat.models.Subscriptions.findOne({ name: this.name, open: false });
+	},
+	getrealname(username) {
+		user = Meteor.users.findOne({username:username});
+		if (user)
+			return user.name;
+		else
+			return username;
 	}
+
 });
 
 Template.listDirectMessagesFlex.events({

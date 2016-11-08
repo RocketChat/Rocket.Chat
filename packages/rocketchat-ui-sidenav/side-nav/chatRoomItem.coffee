@@ -16,6 +16,7 @@ Template.chatRoomItem.helpers
 		if project_info
 			return project_info?.name
 		else
+			console.log this
 			user = Meteor.users.findOne({username:this.name})
 			return user?.name
 
