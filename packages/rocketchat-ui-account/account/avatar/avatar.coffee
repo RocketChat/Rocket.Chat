@@ -8,6 +8,8 @@ Template.avatar.helpers
 			return
 
 		user = Meteor.users.findOne({username:username})
+		console.log username
+		console.log user
 		if user?.photo
 			return "background-image:url(#{user.photo});"
 
