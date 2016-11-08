@@ -15,16 +15,41 @@ var fiber = Npm.require('fibers');
 var connect = Npm.require('connect');
 RoutePolicy.declare('/_saml/', 'network');
 
+/**
+ * Fetch SAML provider configs for given 'provider'.
+ */
+function getSamlProviderConfig(provider) {
+	if (! provider) {
+		throw new Meteor.Error('no-saml-provider',
+													 'SAML internal error',
+													 { method: 'getSamlProviderConfig' });
+	}
+	var samlProvider = function(element) {
+		return (element.provider === provider);
+	};
+	return Accounts.saml.settings.providers.filter(samlProvider)[0];
+}
+
 Meteor.methods({
+
+	/**
+	 * Return true if the saml provider is configured to use single logout.
+	 *
+	 * Single logout will be applied if idpSLORedirectURL has been set.
+	 */
+	usingSingleLogout: function(provider) {
+		var providerConfig = getSamlProviderConfig(provider);
+		if (!providerConfig) return false;
+		if (providerConfig.idpSLORedirectURL) return true;
+		return false;
+	},
+
 	samlLogout: function(provider) {
 		// Make sure the user is logged in before initiate SAML SLO
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'samlLogout' });
 		}
-		var samlProvider = function(element) {
-			return (element.provider === provider);
-		};
-		var providerConfig = Accounts.saml.settings.providers.filter(samlProvider)[0];
+		var providerConfig = getSamlProviderConfig(provider);
 
 		if (Accounts.saml.settings.debug) {
 			console.log('Logout request from ' + JSON.stringify(providerConfig));
