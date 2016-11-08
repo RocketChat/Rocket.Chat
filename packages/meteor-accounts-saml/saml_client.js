@@ -6,19 +6,22 @@ if (!Accounts.saml) {
 
 // Override the standard logout behaviour.
 //
-// If we find a saml_provider in our session, we will initiate logout
-// from rocketchat via saml.
+// If we find a samlProvider in our session, and we are using single
+// logout we will initiate logout from rocketchat via saml.
 
-var originalLogout = Meteor.logout;
+var MeteorLogout = Meteor.logout;
 
 Meteor.logout = function() {
-	var provider = Session.get('saml_provider');
+	var provider = Session.get('samlProvider'),
+			usingSingleLogout = Session.get('usingSingleLogout');
 	if (provider) {
-		Session.set('saml_provider', false);
-		return Meteor.logoutWithSaml({ provider: provider });
-	} else {
-		return originalLogout.apply(Meteor, arguments);
+		Session.set('samlProvider', false);
+		Session.set('usingSingleLogout', false);
+		if (usingSingleLogout) {
+			return Meteor.logoutWithSaml({ provider: provider });
+		}
 	}
+	return MeteorLogout.apply(Meteor, arguments);
 };
 
 var openCenteredPopup = function(url, width, height) {
@@ -91,8 +94,9 @@ Accounts.saml.initiateLogin = function(options, callback, dimensions) {
 	}, 100);
 };
 
+
 Meteor.loginWithSaml = function(options, callback) {
-	Session.set('saml_provider', options.provider);
+	Session.set('samlProvider', options.provider);
 	options = options || {};
 	var credentialToken = Random.id();
 	options.credentialToken = credentialToken;
@@ -105,6 +109,15 @@ Meteor.loginWithSaml = function(options, callback) {
 			}],
 			userCallback: callback
 		});
+	});
+
+	// Record if we are doing single logout with the idp.
+
+	Meteor.call('usingSingleLogout', options.provider, function (err, res) {
+		if (! err) {
+			Session.set('usingSingleLogout', res);
+		}
+		console.log('usingSingleLogout', res);
 	});
 };
 
