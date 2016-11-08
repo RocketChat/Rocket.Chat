@@ -12,11 +12,11 @@ Template.chatRoomItem.helpers
 		return 'status-' + (Session.get('user_' + this.name + '_status') or 'offline')
 
 	name: ->
+		console.log this
 		project_info = ChatRoom.findOne(this.rid)?.details
 		if project_info
 			return project_info?.name
 		else
-			console.log this
 			user = Meteor.users.findOne({username:this.name})
 			return user?.name
 
