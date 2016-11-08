@@ -34,6 +34,7 @@ Template.membersList.helpers
 					utcOffset = "+#{utcOffset}"
 				utcOffset = "(UTC #{utcOffset})"
 			user = Meteor.users.findOne({username:username})
+			console.log user
 			if (user)
 				realname = user.name
 			else
