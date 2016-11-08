@@ -385,7 +385,7 @@ Template.userInfo.onCreated ->
 	@autorun =>
 		data = Template.currentData()
 		if data.username?
-			filter = { username: data.username }
+			filter = { name: data.username }
 		else if data._id?
 			filter = { _id: data._id }
 
