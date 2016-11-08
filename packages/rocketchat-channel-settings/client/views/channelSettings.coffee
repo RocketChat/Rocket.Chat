@@ -97,6 +97,8 @@ Template.channelSettings.events
 	'click .edit': (e, t) ->
 		e.preventDefault()
 		room_info = ChatRoom.findOne(@rid)
+		console.log room_info
+		console.log this
 		if room_info.t != "d"
 			window.open ChatRoom.findOne(@rid).details.url
 		else
