@@ -16,7 +16,8 @@ Template.chatRoomItem.helpers
 		if project_info
 			return project_info?.name
 		else
-			return this.name
+			user = Meteor.users.findOne({username:this.name})
+			return user?.name
 
 	roomIcon: ->
 		return RocketChat.roomTypes.getIcon this.t
