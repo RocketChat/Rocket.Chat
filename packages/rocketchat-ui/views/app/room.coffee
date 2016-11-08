@@ -72,8 +72,12 @@ Template.room.helpers
 			return project_info.name
 		roomData = Session.get('roomData' + this._id)
 		return '' unless roomData
-
-		return RocketChat.roomTypes.getRoomName roomData?.t, roomData
+		roomname = RocketChat.roomTypes.getRoomName roomData?.t, roomData
+		user = Meteor.users.findOne({username:roomname})
+		if user
+			return user?.name
+		else
+			return roomname
 
 	roomTopic: ->
 		roomData = Session.get('roomData' + this._id)
