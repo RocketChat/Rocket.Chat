@@ -12,9 +12,8 @@ Template.chatRoomItem.helpers
 		return 'status-' + (Session.get('user_' + this.name + '_status') or 'offline')
 
 	name: ->
-		project_info = ChatRoom.findOne(this.rid).details
-		console.log this.rid
-		return project_info.name
+		project_info = ChatRoom.findOne(this.rid)?.details
+		return project_info?.name
 
 	roomIcon: ->
 		return RocketChat.roomTypes.getIcon this.t
