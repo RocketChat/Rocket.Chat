@@ -70,6 +70,8 @@ Template.userInfo.helpers
 		return !!RoomRoles.findOne({ rid: Session.get('openedRoom'), "u._id": Template.instance().user.get()?._id, roles: 'owner' })
 
 	user: ->
+		user = Template.instance().user.get()
+		console.log user
 		return Template.instance().user.get()
 
 	hasEmails: ->
