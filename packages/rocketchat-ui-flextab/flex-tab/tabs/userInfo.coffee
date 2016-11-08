@@ -343,7 +343,7 @@ Template.userInfo.events
 
 	'click #open_profile': (e, inst) ->
 		e.preventDefault()
-		window.open 'https://stage.ubegin.com/celebrate/people/'+Template.instance().user.get().username
+		window.open 'https://stage.ubegin.com/discover/people/'+Template.instance().user.get().username
 
 Template.userInfo.onCreated ->
 	@now = new ReactiveVar moment()
@@ -389,6 +389,8 @@ Template.userInfo.onCreated ->
 		else if data._id?
 			filter = { _id: data._id }
 
+		console.log filter
 		user = Meteor.users.findOne(filter)
+		console.log user
 
 		@user.set user
