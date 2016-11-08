@@ -96,7 +96,11 @@ Template.channelSettings.events
 
 	'click .edit': (e, t) ->
 		e.preventDefault()
-		window.open ChatRoom.findOne(@rid).details.url
+		room_info = ChatRoom.findOne(@rid)
+		if room_info.t != "d"
+			window.open ChatRoom.findOne(@rid).details.url
+		else
+			window.open 'https://stage.ubegin.com/discover/people/'+room_info.name
 
 	'click #open_profile' : (e,t) ->
 		e.preventDefault()

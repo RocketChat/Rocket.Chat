@@ -70,8 +70,6 @@ Template.userInfo.helpers
 		return !!RoomRoles.findOne({ rid: Session.get('openedRoom'), "u._id": Template.instance().user.get()?._id, roles: 'owner' })
 
 	user: ->
-		user = Template.instance().user.get()
-		console.log user
 		return Template.instance().user.get()
 
 	hasEmails: ->
@@ -389,7 +387,6 @@ Template.userInfo.onCreated ->
 		else if data._id?
 			filter = { _id: data._id }
 
-		console.log filter
 		user = Meteor.users.findOne(filter)
 		if !user
 			user = Meteor.users.findOne({username: data.username})
