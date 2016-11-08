@@ -99,8 +99,6 @@ Template.channelSettings.events
 	'click .edit': (e, t) ->
 		e.preventDefault()
 		room_info = ChatRoom.findOne(@rid)
-		console.log room_info
-		console.log this
 		if room_info.t != "d"
 			window.open ChatRoom.findOne(@rid).details.url
 		else
@@ -108,7 +106,8 @@ Template.channelSettings.events
 
 	'click #open_profile' : (e,t) ->
 		e.preventDefault()
-		window.open 'https://stage.ubegin.com/discover/people/'+this.userDetail
+		room_info = ChatRoom.findOne(@rid)
+		window.open 'https://stage.ubegin.com/discover/project/'+room_info.name
 
 Template.channelSettings.onCreated ->
 	@editing = new ReactiveVar
