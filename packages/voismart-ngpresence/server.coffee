@@ -37,7 +37,11 @@ class AmqpConnection
 	onError: (e) =>
 		logger.error('error', e)
 		if @conn
-			@conn.close()
+			try
+				@conn.close()
+			catch e
+				# just ignore close errors: https://github.com/squaremo/amqp.node/issues/111#issuecomment-69464994
+				undefined
 			@conn = null
 			@chan = null
 			@qid = null
