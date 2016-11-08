@@ -87,7 +87,7 @@ class AmqpConnection
 
 	onUpdateMessage: (statuses) =>
 		for status in statuses
-			@callback status.user, status['status_xmpp_policy']
+			@callback status.user, status['status_webchat_policy']
 
 
 class PresenceManager
@@ -105,9 +105,12 @@ class PresenceManager
 
 	setPresence: (username, status) =>
 		user = RocketChat.models.Users.findOneByUsername username
+		if not user
+			logger.warn "no such user: #{username}"
+			return
 		mapped_status = @presmapper[status] or @default_status
 		logger.debug "setting status for #{username} to #{mapped_status}"
-		UserPresence.setDefaultStatus user._id, mapped_status
+		Meteor.users.update({_id: user._id}, {$set: {status: mapped_status}})
 
 
 class PresenceClient
@@ -151,22 +154,17 @@ class PresenceClient
 			logger.error "thrift-amqp connection error: #{err}"
 
 	publishPresence: (user, status, statusConnection) =>
-		logger.error "publishing presence for #{user.username} to (#{status}, #{statusConnection})"
-		usersSession = Package.mongo.MongoInternals.defaultRemoteCollectionDriver().open('usersSessions')
-		userConnections = usersSession.findOne({"_id": user._id})?.connections or []
-		# we need to iterate through connections to get its id to use it as
-		# the presence info resource
-		for connection in userConnections
-			logger.error "processing", connection
-			pTypes = Npm.require('node-ydin-presence-service').presenceServiceTypes
-			i = new pTypes.TXmppEvent(
-						user: user.username,
-						domain: @domain,
-						name: "PRESENCE",
-						resource: connection.id,
-						status: @presmapper[connection.status] or 'UNKNOWN',
-						presence_source: "webchat" )
-			@client.publish_webchat_presence i, @_logErrors
+		pTypes = Npm.require('node-ydin-presence-service').presenceServiceTypes
+		status = @presmapper[status] or 'UNKNOWN'
+		i = new pTypes.TXmppEvent(
+					user: user.username,
+					domain: @domain,
+					name: "PRESENCE",
+					resource: "webchat",
+					status: status,
+					presence_source: "webchat" )
+		logger.error "publishing presence for #{user.username} to #{status}"
+		@client.publish_webchat_presence i, @_logErrors
 
 	_logErrors: (err, res) ->
 		if err
