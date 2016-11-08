@@ -391,6 +391,7 @@ Template.userInfo.onCreated ->
 
 		console.log filter
 		user = Meteor.users.findOne(filter)
-		console.log user
+		if !user
+			user = Meteor.users.findOne({username: data.username})
 
 		@user.set user
