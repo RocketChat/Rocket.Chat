@@ -68,8 +68,13 @@ Template.room.helpers
 
 	roomName: ->
 		project_info = ChatRoom.findOne(this._id).details
-		return project_info.name
-		
+		if project_info
+			return project_info.name
+		roomData = Session.get('roomData' + this._id)
+		return '' unless roomData
+
+		return RocketChat.roomTypes.getRoomName roomData?.t, roomData
+
 	roomTopic: ->
 		roomData = Session.get('roomData' + this._id)
 		return '' unless roomData

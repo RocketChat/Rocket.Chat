@@ -13,7 +13,10 @@ Template.chatRoomItem.helpers
 
 	name: ->
 		project_info = ChatRoom.findOne(this.rid)?.details
-		return project_info?.name
+		if project_info
+			return project_info?.name
+		else
+			return this.name
 
 	roomIcon: ->
 		return RocketChat.roomTypes.getIcon this.t
