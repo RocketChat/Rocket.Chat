@@ -1,6 +1,7 @@
 Template.userInfo.helpers
 	name: ->
 		user = Template.instance().user.get()
+		console.log user
 		return if user.name then user.name else TAPi18n.__ 'Unnamed'
 
 	username: ->

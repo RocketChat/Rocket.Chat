@@ -33,9 +33,10 @@ Template.membersList.helpers
 				if utcOffset > 0
 					utcOffset = "+#{utcOffset}"
 				utcOffset = "(UTC #{utcOffset})"
+			user = Meteor.users.findOne({username:username})
 
 			return {
-				username: username
+				username: user.name
 				status: onlineUsers[username]?.status
 				muted: username in roomMuted
 				utcOffset: utcOffset
@@ -96,7 +97,7 @@ Template.membersList.helpers
 
 	userInfoDetail: ->
 		room = ChatRoom.findOne(this.rid, { fields: { t: 1 } })
-		
+
 		return {
 			username: Template.instance().userDetail.get()
 			clear: Template.instance().clearUserDetail
