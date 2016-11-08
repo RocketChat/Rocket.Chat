@@ -73,11 +73,11 @@ Template.phone.events
 
 		else
 			value = e.target.value.trim()
-			if value is '' and instance.searchTerm.get()
-					instance.searchTerm.set ''
-					instance.searchResult.set undefined
+			if value is '' and RocketChat.Phone.getSearchTerm()
+					RocketChat.Phone.setSearchTerm('')
+					RocketChat.Phone.setSearchResult(undefined)
 					return
-			else if value is instance.searchTerm.get()
+			else if value is RocketChat.Phone.getSearchTerm()
 					return
 			instance.search()
 	, 500
@@ -148,8 +148,6 @@ Template.phone.events
 	'click .phone-search-contact-number': (e, instance) ->
 		number = _.trim $(e.target).text()
 		instance.phoneDisplay.set(number)
-		instance.searchTerm.set ''
-		instance.searchResult.set undefined
 		RocketChat.Phone.newCall(number)
 
 Template.phone.helpers
@@ -207,17 +205,15 @@ Template.phone.helpers
 		return ''
 
 	searchTerm: ->
-    	return Template.instance().searchTerm.get()
+    	return RocketChat.Phone.getSearchTerm()
 
 	searchResult: ->
-		return Template.instance().searchResult.get()?.contacts
+		return RocketChat.Phone.getSearchResult()
 
 
 Template.phone.onCreated ->
 	@showSettings = new ReactiveVar false
 	@phoneDisplay = new ReactiveVar ""
-	@searchTerm = new ReactiveVar ''
-	@searchResult = new ReactiveVar
 
 
 Template.phone.onDestroyed ->
@@ -241,12 +237,12 @@ Template.phone.onRendered ->
 		else
 			current_search = @$('#phone-display').val()
 
-		@searchTerm.set current_search
+		RocketChat.Phone.setSearchTerm(current_search)
 		Meteor.call 'getContacts', current_search, (error, results) =>
 			if not results?
-				@searchResult.set contacts: []
+				RocketChat.Phone.setSearchResult([])
 			else
-			    @searchResult.set results
+			    RocketChat.Phone.setSearchResult(results)
 
 
 RocketChat.Phone = new class
@@ -256,6 +252,8 @@ RocketChat.Phone = new class
 	callOperation = new ReactiveVar ""
 	onHold = new ReactiveVar false
 	muted = new ReactiveVar false
+	searchTerm = new ReactiveVar ''
+	searchResult = new ReactiveVar
 
 	_started = false
 	_login = undefined
@@ -544,6 +542,18 @@ RocketChat.Phone = new class
 	getCallCidNum: ->
 		return callCidNum.get()
 
+	getSearchTerm: ->
+		return searchTerm.get()
+
+	getSearchResult: ->
+		return searchResult.get()?.contacts
+
+	setSearchTerm: (term) ->
+		searchTerm.set(term)
+
+	setSearchResult: (results) ->
+		searchResult.set(results)
+
 	removeVideo: ->
 		_videoTag.appendTo($("body"))
 		_videoTag.css('display', 'none')
@@ -626,6 +636,8 @@ RocketChat.Phone = new class
 		console.log('What Im doing here: ', _callState, ' ', _curCall)
 
 	newCall: (destination, useVideo) ->
+		@setSearchTerm('')
+		@setSearchResult(undefined)
 		if useVideo
 			useVideo = true
 		else
