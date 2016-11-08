@@ -90,15 +90,15 @@
 					-->
 				</ul>
 			</form>
-			{{#if canDeleteRoom}}
 			<nav>
+			{{#if canDeleteRoom}}
 				<button class='button edit red'><span><i class='icon-trash'></i> {{_ "Edit"}}</span></button>
-				<button type="button" class="button black secondary" id="open_profile" style="float:right">{{_ "Open Profile"}}</button>
 				<!--
 				<button class='button delete red'><span><i class='icon-trash'></i> {{_ "Delete"}}</span></button>
 				-->
-			</nav>
 			{{/if}}
+				<button type="button" class="button black secondary" id="open_profile" style="float:right">{{_ "Open Profile"}}</button>
+			</nav>
 		</div>
 	</div>
 </template>

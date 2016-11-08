@@ -37,6 +37,8 @@ Template.channelSettings.helpers
 
 	canDeleteRoom: ->
 		roomType = ChatRoom.findOne(@rid, { fields: { t: 1 }})?.t
+		if roomType == "d"
+			return false
 		return roomType? and RocketChat.authz.hasAtLeastOnePermission("delete-#{roomType}", @rid)
 	readOnly: ->
 		return  ChatRoom.findOne(@rid, { fields: { ro: 1 }})?.ro
@@ -102,11 +104,11 @@ Template.channelSettings.events
 		if room_info.t != "d"
 			window.open ChatRoom.findOne(@rid).details.url
 		else
-			window.open 'https://stage.ubegin.com/discover/people/'+room_info.name
+			window.open 'https://stage.ubegin.com/discover/people/'+this.userDetail
 
 	'click #open_profile' : (e,t) ->
 		e.preventDefault()
-		window.open 'https://stage.ubegin.com/discover/projects/'+ChatRoom.findOne(@rid).name
+		window.open 'https://stage.ubegin.com/discover/projects/'+this.userDetail
 
 Template.channelSettings.onCreated ->
 	@editing = new ReactiveVar
