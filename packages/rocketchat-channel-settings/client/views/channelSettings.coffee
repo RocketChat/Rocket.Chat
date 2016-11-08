@@ -108,7 +108,7 @@ Template.channelSettings.events
 
 	'click #open_profile' : (e,t) ->
 		e.preventDefault()
-		window.open 'https://stage.ubegin.com/discover/projects/'+this.userDetail
+		window.open 'https://stage.ubegin.com/discover/people/'+this.userDetail
 
 Template.channelSettings.onCreated ->
 	@editing = new ReactiveVar
