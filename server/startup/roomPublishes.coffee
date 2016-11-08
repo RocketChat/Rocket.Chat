@@ -25,7 +25,7 @@ Meteor.startup ->
 		else if RocketChat.authz.hasPermission(this.userId, 'view-joined-room')
 			roomId = RocketChat.models.Subscriptions.findByTypeNameAndUserId('c', identifier, this.userId).fetch()
 			if roomId.length > 0
-				return RocketChat.models.Rooms.findById(roomId[0]?.rid, options)
+				return RocketChat.models.Rooms.find(roomId[0]?.rid, options)
 
 		return this.ready()
 

@@ -13,6 +13,7 @@ Template.chatRoomItem.helpers
 
 	name: ->
 		project_info = ChatRoom.findOne(this.rid).details
+		console.log this.rid
 		return project_info.name
 
 	roomIcon: ->
