@@ -2,7 +2,7 @@ Meteor.publish 'userData', ->
 	unless this.userId
 		return this.ready()
 
-	RocketChat.models.Users.find this.userId,
+	RocketChat.models.Users.find {},
 		fields:
 			name: 1
 			username: 1
