@@ -29,7 +29,7 @@ Template.messageBox.helpers
 	joinCodeRequired: ->
 		return Session.get('roomData' + this._id)?.joinCodeRequired
 	subscribed: ->
-		return RocketChat.roomTypes.verifyCanSendMessage @_id
+		return true
 	allowedToSend: ->
 		# if RocketChat.roomTypes.readOnly @_id, Meteor.user()
 		# 	return false
