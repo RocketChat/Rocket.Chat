@@ -1,9 +1,9 @@
 RocketChat.setUserAvatar = function(user, dataURI, contentType, service) {
+	let encoding, image;
+
 	if (service === 'initials') {
 		return RocketChat.models.Users.setAvatarOrigin(user._id, service);
-	}
-
-	if (service === 'url') {
+	} else if (service === 'url') {
 		let result = null;
 
 		try {
@@ -23,26 +23,20 @@ RocketChat.setUserAvatar = function(user, dataURI, contentType, service) {
 			throw new Meteor.Error('error-avatar-invalid-url', `Invalid avatar URL: ${dataURI}`, { function: 'RocketChat.setUserAvatar', url: dataURI });
 		}
 
-		let ars = RocketChatFile.bufferToStream(new Buffer(result.content, 'binary'));
-		RocketChatFileAvatarInstance.deleteFile(encodeURIComponent(`${user.username}.jpg`));
-		let aws = RocketChatFileAvatarInstance.createWriteStream(encodeURIComponent(`${user.username}.jpg`), result.headers['content-type']);
-		aws.on('end', Meteor.bindEnvironment(function() {
-			Meteor.setTimeout(function() {
-				console.log(`Set ${user.username}'s avatar from the url: ${dataURI}`);
-				RocketChat.models.Users.setAvatarOrigin(user._id, service);
-				RocketChat.Notifications.notifyAll('updateAvatar', { username: user.username });
-			}, 500);
-		}));
-
-		ars.pipe(aws);
-		return;
+		encoding = 'binary';
+		image = result.content;
+		contentType = result.headers['content-type'];
+	} else if (service === 'rest') {
+		encoding = 'binary';
+		image = dataURI;
+	} else {
+		let fileData = RocketChatFile.dataURIParse(dataURI);
+		encoding = 'base64';
+		image = fileData.image;
+		contentType = fileData.contentType;
 	}
 
-	let fileData = RocketChatFile.dataURIParse(dataURI);
-	let image = fileData.image;
-	contentType = fileData.contentType;
-
-	let rs = RocketChatFile.bufferToStream(new Buffer(image, 'base64'));
+	let rs = RocketChatFile.bufferToStream(new Buffer(image, encoding));
 	RocketChatFileAvatarInstance.deleteFile(encodeURIComponent(`${user.username}.jpg`));
 	let ws = RocketChatFileAvatarInstance.createWriteStream(encodeURIComponent(`${user.username}.jpg`), contentType);
 	ws.on('end', Meteor.bindEnvironment(function() {
