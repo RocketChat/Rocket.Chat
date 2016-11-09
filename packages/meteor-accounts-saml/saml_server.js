@@ -21,8 +21,8 @@ RoutePolicy.declare('/_saml/', 'network');
 function getSamlProviderConfig(provider) {
 	if (! provider) {
 		throw new Meteor.Error('no-saml-provider',
-													 'SAML internal error',
-													 { method: 'getSamlProviderConfig' });
+														'SAML internal error',
+														{ method: 'getSamlProviderConfig' });
 	}
 	var samlProvider = function(element) {
 		return (element.provider === provider);
@@ -39,8 +39,12 @@ Meteor.methods({
 	 */
 	usingSingleLogout: function(provider) {
 		var providerConfig = getSamlProviderConfig(provider);
-		if (!providerConfig) return false;
-		if (providerConfig.idpSLORedirectURL) return true;
+		if (! providerConfig) {
+			return false;
+		}
+		if (providerConfig.idpSLORedirectURL) {
+			return true;
+		}
 		return false;
 	},
 
