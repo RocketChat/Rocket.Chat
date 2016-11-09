@@ -33,9 +33,14 @@ Template.membersList.helpers
 				if utcOffset > 0
 					utcOffset = "+#{utcOffset}"
 				utcOffset = "(UTC #{utcOffset})"
+			user = Meteor.users.findOne({username:username})
+			if (user)
+				realname = user.name
+			else
+				realname = username
 
 			return {
-				username: username
+				username: realname
 				status: onlineUsers[username]?.status
 				muted: username in roomMuted
 				utcOffset: utcOffset

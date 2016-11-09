@@ -3,25 +3,33 @@
 		<div class="day-divider">
 			<span>{{date}}</span>
 		</div>
-		{{#if avatar}}
-			{{#if avatarFromUsername}}
-				<button class="thumb user-card-message" data-username="{{u.username}}" tabindex="1">{{> avatar username=avatarFromUsername}}</button>
-			{{else}}
-				<button class="thumb user-card-message" data-username="{{u.username}}" tabindex="1">
-					<div class="avatar">
-						<div class="avatar-image" style="background-image:url({{avatar}});"></div>
-					</div>
-				</button>
-			{{/if}}
+		{{#if avatar_img}}
+			<button class="thumb user-card-message" data-username="{{u.username}}" tabindex="1">
+				<div class="avatar">
+					<div class="avatar-image" style="background-image:url({{avatar_img}});"></div>
+				</div>
+			</button>
 		{{else}}
-			{{#if emoji}}
-				<button class="thumb user-card-message" data-username="{{u.username}}" tabindex="1">
-					<div class="avatar">
-						{{{getEmoji emoji}}}
-					</div>
-				</button>
+			{{#if avatar}}
+				{{#if avatarFromUsername}}
+					<button class="thumb user-card-message" data-username="{{u.username}}" tabindex="1">{{> avatar username=avatarFromUsername}}</button>
+				{{else}}
+					<button class="thumb user-card-message" data-username="{{u.username}}" tabindex="1">
+						<div class="avatar">
+							<div class="avatar-image" style="background-image:url({{avatar}});"></div>
+						</div>
+					</button>
+				{{/if}}
 			{{else}}
-				<button class="thumb user-card-message" data-username="{{u.username}}" tabindex="1">{{> avatar username=u.username}}</button>
+				{{#if emoji}}
+					<button class="thumb user-card-message" data-username="{{u.username}}" tabindex="1">
+						<div class="avatar">
+							{{{getEmoji emoji}}}
+						</div>
+					</button>
+				{{else}}
+					<button class="thumb user-card-message" data-username="{{u.username}}" tabindex="1">{{> avatar username=u.username}}</button>
+				{{/if}}
 			{{/if}}
 		{{/if}}
 		{{#if alias}}

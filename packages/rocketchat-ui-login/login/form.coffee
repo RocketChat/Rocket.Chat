@@ -130,16 +130,18 @@ Template.loginForm.events
 					setLanguage(Meteor.user()?.language)
 
 	'click .register': ->
-		Template.instance().state.set 'register'
-		RocketChat.callbacks.run('loginPageStateChange', Template.instance().state.get());
+		window.open "https://stage.ubegin.com/register"
+		#Template.instance().state.set 'register'
+		#RocketChat.callbacks.run('loginPageStateChange', Template.instance().state.get());
 
 	'click .back-to-login': ->
 		Template.instance().state.set 'login'
 		RocketChat.callbacks.run('loginPageStateChange', Template.instance().state.get());
 
 	'click .forgot-password': ->
-		Template.instance().state.set 'forgot-password'
-		RocketChat.callbacks.run('loginPageStateChange', Template.instance().state.get());
+		window.open "https://stage.ubegin.com/reset-password"
+		#Template.instance().state.set 'forgot-password'
+		#RocketChat.callbacks.run('loginPageStateChange', Template.instance().state.get());
 
 	'click .one-passsword': ->
 		if not OnePassword?.findLoginForUrl?

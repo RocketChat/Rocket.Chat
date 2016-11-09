@@ -2,7 +2,7 @@ Meteor.publish 'userData', ->
 	unless this.userId
 		return this.ready()
 
-	RocketChat.models.Users.find this.userId,
+	RocketChat.models.Users.find {},
 		fields:
 			name: 1
 			username: 1
@@ -22,3 +22,6 @@ Meteor.publish 'userData', ->
 			requirePasswordChangeReason: 1
 			'services.password.bcrypt': 1
 			statusLivechat: 1 # @TODO create an API so a package could add fields here
+			photo: 1
+			declaration: 1
+			location: 1

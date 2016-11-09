@@ -14,8 +14,7 @@ RocketChat.TabBar = new class
 
 	setTemplate = (t, callback) ->
 		template.set t
-		if (t != "channelSettings")
-			openFlex(callback)
+		openFlex(callback)
 
 	getTemplate = ->
 		return template.get()

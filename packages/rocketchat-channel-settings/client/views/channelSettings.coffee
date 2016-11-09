@@ -2,9 +2,10 @@ Template.channelSettings.helpers
 	toArray: (obj) ->
 		arr = []
 		for key, value of obj
-			arr.push
-				$key: key
-				$value: value
+			if key != "url"
+				arr.push
+					$key: key
+					$value: value
 		return arr
 
 	valueOf: (obj, key) ->
@@ -18,11 +19,15 @@ Template.channelSettings.helpers
 	settings: ->
 		return Template.instance().settings
 
+	getProjectInfo: ->
+		project_info = ChatRoom.findOne(@rid).details;
+		return project_info
 	getRoom: ->
 		return ChatRoom.findOne(@rid)
 
 	editing: (field) ->
-		return Template.instance().editing.get() is field
+		#return Template.instance().editing.get() is field
+		return false
 
 	channelSettings: ->
 		return RocketChat.ChannelSettings.getOptions()
@@ -32,6 +37,8 @@ Template.channelSettings.helpers
 
 	canDeleteRoom: ->
 		roomType = ChatRoom.findOne(@rid, { fields: { t: 1 }})?.t
+		if roomType == "d"
+			return false
 		return roomType? and RocketChat.authz.hasAtLeastOnePermission("delete-#{roomType}", @rid)
 	readOnly: ->
 		return  ChatRoom.findOne(@rid, { fields: { ro: 1 }})?.ro
@@ -88,6 +95,19 @@ Template.channelSettings.events
 	'click .save': (e, t) ->
 		e.preventDefault()
 		t.saveSetting()
+
+	'click .edit': (e, t) ->
+		e.preventDefault()
+		room_info = ChatRoom.findOne(@rid)
+		if room_info.t != "d"
+			window.open ChatRoom.findOne(@rid).details.url
+		else
+			window.open 'https://stage.ubegin.com/discover/people/'+this.userDetail
+
+	'click #open_profile' : (e,t) ->
+		e.preventDefault()
+		room_info = ChatRoom.findOne(@rid)
+		window.open 'https://stage.ubegin.com/discover/project/'+room_info.name
 
 Template.channelSettings.onCreated ->
 	@editing = new ReactiveVar

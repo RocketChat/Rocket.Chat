@@ -1,6 +1,7 @@
 Template.userInfo.helpers
 	name: ->
 		user = Template.instance().user.get()
+		console.log user
 		return if user.name then user.name else TAPi18n.__ 'Unnamed'
 
 	username: ->
@@ -338,6 +339,10 @@ Template.userInfo.events
 
 		instance.editingUser.set instance.user.get()._id
 
+	'click #open_profile': (e, inst) ->
+		e.preventDefault()
+		window.open 'https://stage.ubegin.com/discover/people/'+Template.instance().user.get().username
+
 Template.userInfo.onCreated ->
 	@now = new ReactiveVar moment()
 
@@ -378,10 +383,12 @@ Template.userInfo.onCreated ->
 	@autorun =>
 		data = Template.currentData()
 		if data.username?
-			filter = { username: data.username }
+			filter = { name: data.username }
 		else if data._id?
 			filter = { _id: data._id }
 
 		user = Meteor.users.findOne(filter)
+		if !user
+			user = Meteor.users.findOne({username: data.username})
 
 		@user.set user

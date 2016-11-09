@@ -14,6 +14,10 @@ Template.accountFlex.events
 	'click .account-link': ->
 		menu.close()
 
+	'click .edit-profile': (e, inst)->
+		e.preventDefault()
+		window.open 'https://stage.ubegin.com/celebrate/edit-profile'
+
 Template.accountFlex.helpers
 	allowUserProfileChange: ->
 		return RocketChat.settings.get("Accounts_AllowUserProfileChange")

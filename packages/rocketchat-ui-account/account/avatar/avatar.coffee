@@ -7,6 +7,12 @@ Template.avatar.helpers
 		if not username?
 			return
 
+		user = Meteor.users.findOne({name:username})
+		if (!user)
+			user = Meteor.users.findOne({username:username})
+		if user?.photo
+			return "background-image:url(#{user.photo});"
+
 		Session.get "avatar_random_#{username}"
 
 		url = getAvatarUrlFromUsername(username)

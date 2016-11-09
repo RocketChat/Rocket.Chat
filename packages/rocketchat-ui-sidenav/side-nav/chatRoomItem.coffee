@@ -12,7 +12,13 @@ Template.chatRoomItem.helpers
 		return 'status-' + (Session.get('user_' + this.name + '_status') or 'offline')
 
 	name: ->
-		return this.name
+		if this.t != "d"
+			project_info = ChatRoom.findOne(this.rid)?.details
+			if project_info
+				return project_info?.name
+		else
+			user = Meteor.users.findOne({username:this.name})
+			return user?.name
 
 	roomIcon: ->
 		return RocketChat.roomTypes.getIcon this.t
@@ -128,5 +134,5 @@ Template.chatRoomItem.events
 				swal.close()
 
 	'click .add-people': ->
-		HTTP.call 'GET', 'https://stage.ubegin.com:1337/project/info/'+this.name, (error, result) ->
-			window.location.replace(result.data.url);
+		project_info = ChatRoom.findOne(this.rid).details
+		window.open project_info.url

@@ -13,10 +13,6 @@ Template.flexTabBar.events
 	'click .tab-button': (e, t) ->
 		e.preventDefault()
 
-		if ($(e.target).attr('class') == "icon-info-circled") || $(e.target).hasClass("icon-info-circled")
-			$('.flex-tab').css('max-width', '')
-			$('.main-content').css('right', '')
-			return
 		if RocketChat.TabBar.isFlexOpen() and RocketChat.TabBar.getTemplate() is @template
 			RocketChat.TabBar.closeFlex()
 			$('.flex-tab').css('max-width', '')

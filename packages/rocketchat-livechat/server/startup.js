@@ -13,7 +13,8 @@ Meteor.startup(() => {
 			tags: 1,
 			sms: 1,
 			code: 1,
-			open: 1
+			open: 1,
+			details: 1
 		});
 	});
 

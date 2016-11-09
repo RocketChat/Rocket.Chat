@@ -67,10 +67,17 @@ Template.room.helpers
 		return Session.get 'uploading'
 
 	roomName: ->
+		project_info = ChatRoom.findOne(this._id).details
+		if project_info
+			return project_info.name
 		roomData = Session.get('roomData' + this._id)
 		return '' unless roomData
-
-		return RocketChat.roomTypes.getRoomName roomData?.t, roomData
+		roomname = RocketChat.roomTypes.getRoomName roomData?.t, roomData
+		user = Meteor.users.findOne({username:roomname})
+		if user
+			return user?.name
+		else
+			return roomname
 
 	roomTopic: ->
 		roomData = Session.get('roomData' + this._id)
@@ -119,9 +126,6 @@ Template.room.helpers
 		return moment(this.since).calendar(null, {sameDay: 'LT'})
 
 	flexTemplate: ->
-		if (RocketChat.TabBar.getTemplate() == "channelSettings")
-			window.location.replace("https://stage.ubegin.com/discover/projects/"+ChatRoom.findOne(this._id).name)
-			return ''
 		return RocketChat.TabBar.getTemplate()
 
 	flexData: ->
@@ -326,8 +330,8 @@ Template.room.events
 		, 10
 
 	"click .flex-tab .user-image > button" : (e, instance) ->
-		#RocketChat.TabBar.openFlex()
-		#instance.setUserDetail @username
+		RocketChat.TabBar.openFlex()
+		instance.setUserDetail @username
 
 	'click .user-card-message': (e, instance) ->
 		roomData = Session.get('roomData' + this._arguments[1].rid)
@@ -340,8 +344,8 @@ Template.room.events
 
 		if roomData.t in ['c', 'p', 'd']
 			instance.setUserDetail this._arguments[1].u.username
-			window.location.replace("https://stage.ubegin.com/discover/people/"+this._arguments[1].u.username)
-			#RocketChat.TabBar.setTemplate 'membersList'
+			#window.location.replace("https://stage.ubegin.com/discover/people/"+this._arguments[1].u.username)
+			RocketChat.TabBar.setTemplate 'membersList'
 
 	'scroll .wrapper': _.throttle (e, instance) ->
 		if RoomHistoryManager.isLoading(@_id) is false and (RoomHistoryManager.hasMore(@_id) is true or RoomHistoryManager.hasMoreNext(@_id) is true)
@@ -392,7 +396,7 @@ Template.room.events
 			if RocketChat.Layout.isEmbedded()
 				return fireGlobalEvent('click-mention-link', { path: FlowRouter.path('channel', {name: channel}), channel: channel })
 
-			FlowRouter.go 'channel', { name: channel }, FlowRouter.current().queryParams
+			FlowRouter.go 'channel', {name: channel}
 			return
 
 		if RocketChat.Layout.isEmbedded()
@@ -402,8 +406,7 @@ Template.room.events
 			return
 
 		RocketChat.TabBar.setTemplate 'membersList'
-		window.location.replace("https://stage.ubegin.com/discover/people/"+$(e.currentTarget).data('username'))
-		#instance.setUserDetail $(e.currentTarget).data('username')
+		instance.setUserDetail $(e.currentTarget).data('username')
 
 		RocketChat.TabBar.openFlex()
 
@@ -607,7 +610,7 @@ Template.room.onRendered ->
 
 		observer.observe wrapperUl,
 			childList: true
-	# observer.disconnect()
+		# observer.disconnect()
 
 	template.onWindowResize = ->
 		Meteor.defer ->

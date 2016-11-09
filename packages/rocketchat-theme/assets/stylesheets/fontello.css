@@ -103,7 +103,7 @@
 .icon-ok-circled:before { content: '\50'; } /* 'P' */
 .icon-ok-squared:before { content: '\51'; } /* 'Q' */
 .icon-cancel:before { content: '\52'; } /* 'R' */
-.icon-plus:before { content: '\53'; } /* 'S' */
+.icon-plus:before { content: '\53'; color:black} /* 'S' */
 .icon-plus-circled:before { content: '\54'; } /* 'T' */
 .icon-plus-squared:before { content: '\55'; } /* 'U' */
 .icon-plus-squared-alt:before { content: '\56'; } /* 'V' */
