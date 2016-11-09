@@ -18,7 +18,7 @@ var MeteorLogout = Meteor.logout;
 Meteor.logout = function() {
 	var cookies = new Cookies();
 	var provider = cookies.get('samlProvider'),
-			usingSingleLogout = cookies.get('usingSingleLogout');
+		usingSingleLogout = cookies.get('usingSingleLogout');
 	if (provider) {
 		cookies.set('samlProvider', false);
 		cookies.set('usingSingleLogout', false);
@@ -119,7 +119,7 @@ Meteor.loginWithSaml = function(options, callback) {
 
 	// Record if we are doing single logout with the idp.
 
-	Meteor.call('usingSingleLogout', options.provider, function (err, res) {
+	Meteor.call('usingSingleLogout', options.provider, function(err, res) {
 		if (! err) {
 			cookies.set('usingSingleLogout', res);
 		}
