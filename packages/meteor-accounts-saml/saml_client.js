@@ -1,4 +1,4 @@
-/* globals cordova */
+/* globals cordova, Cookies */
 
 if (!Accounts.saml) {
 	Accounts.saml = {};
@@ -6,17 +6,22 @@ if (!Accounts.saml) {
 
 // Override the standard logout behaviour.
 //
-// If we find a samlProvider in our session, and we are using single
+// If we find a samlProvider in our cookie, and we are using single
 // logout we will initiate logout from rocketchat via saml.
+// If not using single logout, we just do the standard logout.
+//
+// TODO: This may need some work as it is not clear if we are really
+// logging out of the idp when doing the standard logout.
 
 var MeteorLogout = Meteor.logout;
 
 Meteor.logout = function() {
-	var provider = Session.get('samlProvider'),
-			usingSingleLogout = Session.get('usingSingleLogout');
+	var cookies = new Cookies();
+	var provider = cookies.get('samlProvider'),
+			usingSingleLogout = cookies.get('usingSingleLogout');
 	if (provider) {
-		Session.set('samlProvider', false);
-		Session.set('usingSingleLogout', false);
+		cookies.set('samlProvider', false);
+		cookies.set('usingSingleLogout', false);
 		if (usingSingleLogout) {
 			return Meteor.logoutWithSaml({ provider: provider });
 		}
@@ -96,7 +101,8 @@ Accounts.saml.initiateLogin = function(options, callback, dimensions) {
 
 
 Meteor.loginWithSaml = function(options, callback) {
-	Session.set('samlProvider', options.provider);
+	var cookies = new Cookies();
+	cookies.set('samlProvider', options.provider);
 	options = options || {};
 	var credentialToken = Random.id();
 	options.credentialToken = credentialToken;
@@ -115,7 +121,7 @@ Meteor.loginWithSaml = function(options, callback) {
 
 	Meteor.call('usingSingleLogout', options.provider, function (err, res) {
 		if (! err) {
-			Session.set('usingSingleLogout', res);
+			cookies.set('usingSingleLogout', res);
 		}
 		console.log('usingSingleLogout', res);
 	});
