@@ -231,7 +231,7 @@
 
     FSRTCattachMediaStream = function(element, stream) {
         if (element && element.id && attachMediaStream) {
-            attachMediaStream(element, stream);
+            element = attachMediaStream(element, stream);
         } else {
             if (typeof element.srcObject !== 'undefined') {
                 element.srcObject = stream;
@@ -241,6 +241,7 @@
                 console.error('Error attaching stream to element.');
             }
         }
+        return element;
     }
 
 
@@ -252,7 +253,8 @@
         var element = self.options.useAudio;
         console.log("REMOTE STREAM", stream, element);
 
-        FSRTCattachMediaStream(element, stream);
+        element = FSRTCattachMediaStream(element, stream);
+        self.options.useAudio = element;
 
         self.options.useAudio.play();
         self.remoteStream = stream;
