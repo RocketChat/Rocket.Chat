@@ -555,13 +555,18 @@ RocketChat.Phone = new class
 		searchResult.set(results)
 
 	removeVideo: ->
+		_videoTag = $("#phonestream")
 		_videoTag.appendTo($("body"))
 		_videoTag.css('display', 'none')
+		if _curCall and _callState is 'active'
+			_videoTag[0].play()
 
 	placeVideo: ->
+		_videoTag = $("#phonestream")
 		_videoTag.appendTo($("#phone-video"))
 		if _curCall and _callState is 'active'
 			_videoTag.css('display', 'block')
+			_videoTag[0].play()
 		else
 			_videoTag.css('display', 'none')
 
