@@ -1,5 +1,10 @@
 @PhoneTones = class Tone
-	constructor: (@context, @freq1, @freq2) ->
+	constructor: (@freq1, @freq2) ->
+		@context = undefined
+		AudioContext = window.AudioContext || window.webkitAudioContext || window.mozAudioContext
+		if AudioContext?
+			@context = new AudioContext()
+			
 		@status = 0
 		@dtmfFrequencies =
 			"1": {f1: 697, f2: 1209},
@@ -18,6 +23,9 @@
 		@ringerLFOSource = null
 
 	setup: (f1, f2) ->
+		if !@context?
+			return
+
 		f1 = f1 or @freq1
 		f2 = f2 or @freq2
 		@osc1 = @context.createOscillator()
@@ -38,6 +46,9 @@
 		@filter.connect(@context.destination)
 
 	start: (f1, f2) ->
+		if !@context?
+			return
+
 		if @status == 1
 			return
 		@setup(f1, f2)
@@ -46,6 +57,9 @@
 		@status = 1
 
 	stop: () ->
+		if !@context?
+			return
+
 		if @status == 0
 			return
 		@osc1?.stop(0)
@@ -54,11 +68,17 @@
 		@status = 0
 
 	startDtmf: (key) ->
+		if !@context?
+			return
+
 		f = @dtmfFrequencies[key]
 		if f and f.f1 and f.f2
 			@start(f.f1, f.f2)
 
 	createRingerLFO: (country) ->
+		if !@context?
+			return
+
 		mapper =
 			'it': @_createRingerLFOIt
 			'uk': @_createRingerLFOUk
@@ -100,6 +120,9 @@
 		@ringerLFOSource.start(0)
 
 	startRingback: (country) ->
+		if !@context?
+			return
+
 		country = country?.toLowerCase() or 'it'
 		capitalizedCountry = country[0].toUpperCase() + country.slice(1)
 		mapper =
