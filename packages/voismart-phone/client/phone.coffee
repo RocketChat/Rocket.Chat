@@ -562,7 +562,6 @@ RocketChat.Phone = new class
 			_videoTag[0].play()
 
 	placeVideo: ->
-		_videoTag = $("#phonestream")
 		_videoTag.appendTo($("#phone-video"))
 		if _curCall and _callState is 'active'
 			_videoTag.css('display', 'block')
