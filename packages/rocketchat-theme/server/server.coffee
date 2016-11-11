@@ -61,9 +61,6 @@ RocketChat.theme = new class
 		RocketChat.settings.add 'css', ''
 		RocketChat.settings.addGroup 'Layout'
 
-		# Add option to use extended (minor) color palette
-		RocketChat.settings.add 'theme-option-extended-colors', false, { group: 'Layout', type: 'boolean', public: false, i18nDescription: 'Use_minor_colors'}
-
 		RocketChat.settings.onload 'css', Meteor.bindEnvironment (key, value, initialLoad) =>
 			if not initialLoad
 				Meteor.startup ->
@@ -122,7 +119,7 @@ RocketChat.theme = new class
 					process.emit('message', {refresh: 'client'})
 				, 200
 
-	addVariable: (type, name, value, section, persist=true) ->
+	addVariable: (type, name, value, section, persist=true, editor, allowedTypes) ->
 		@variables[name] =
 			type: type
 			value: value
@@ -131,15 +128,15 @@ RocketChat.theme = new class
 			config =
 				group: 'Layout'
 				type: type
+				editor: editor or type
 				section: section
 				public: false
+				allowedTypes: allowedTypes
 
 			RocketChat.settings.add "theme-#{type}-#{name}", value, config
 
-	addPublicColor: (name, value, section) ->
-		persist = true
-		persist = false if section is 'Colors (minor)' and not RocketChat.settings.get 'theme-option-extended-colors'
-		@addVariable 'color', name, value, section, persist
+	addPublicColor: (name, value, section, editor='color') ->
+		@addVariable 'color', name, value, section, true, editor, ['color', 'expression']
 
 	addPublicFont: (name, value) ->
 		@addVariable 'font', name, value, 'Fonts', true

@@ -1630,6 +1630,16 @@ label.required:after {
 					font-weight: bold;
 					padding: 5px;
 				}
+				.horizontal {
+					display: flex;
+				}
+				.flex-grow-1 {
+					flex-grow: 1;
+				}
+				.color-editor {
+					width: 150px;
+					position: relative;
+				}
 			}
 			.selected-rooms {
 				.remove-room {
@@ -3414,6 +3424,13 @@ body:not(.is-cordova) {
 	}
 }
 
+.select-arrow {
+	position: absolute;
+	bottom: 11px;
+	right: 4px;
+	color: #a9a9a9;
+}
+
 #login-card {
 	width: 100%;
 	max-width: 520px;
@@ -3497,10 +3514,7 @@ body:not(.is-cordova) {
 			}
 		}
 		.select-arrow {
-			position: absolute;
-			bottom: 11px;
 			right: 0px;
-			color: #a9a9a9;
 		}
 		label {
 			position: absolute;
