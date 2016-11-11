@@ -29,18 +29,18 @@ Template.messageBox.helpers
 	joinCodeRequired: ->
 		return Session.get('roomData' + this._id)?.joinCodeRequired
 	subscribed: ->
-		return RocketChat.roomTypes.verifyCanSendMessage @_id
+		return true
 	allowedToSend: ->
-		if RocketChat.roomTypes.readOnly @_id, Meteor.user()
-			return false
-
-		if RocketChat.roomTypes.archived @_id
-			return false
-
-		roomData = Session.get('roomData' + this._id)
-		if roomData?.t is 'd'
-			if ChatSubscription.findOne({ rid: this._id }, { fields: { archived: 1 } })?.archived
-				return false
+		# if RocketChat.roomTypes.readOnly @_id, Meteor.user()
+		# 	return false
+		#
+		# if RocketChat.roomTypes.archived @_id
+		# 	return false
+		#
+		# roomData = Session.get('roomData' + this._id)
+		# if roomData?.t is 'd'
+		# 	if ChatSubscription.findOne({ rid: this._id }, { fields: { archived: 1 } })?.archived
+		# 		return false
 
 		return true
 
