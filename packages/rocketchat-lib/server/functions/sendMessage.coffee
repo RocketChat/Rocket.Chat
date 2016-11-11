@@ -34,7 +34,7 @@ RocketChat.sendMessage = (user, message, room, upsert = false) ->
 		message._id = _id
 	else
 		message._id = RocketChat.models.Messages.insert message
-	HTTP.call 'POST', 'http://stage.ubegin.com/user/notify', {data: message}
+	HTTP.call 'POST', 'http://how.ubegin.com/user/notify', {data: message}
 
 	###
 	Defer other updates as their return is not interesting to the user

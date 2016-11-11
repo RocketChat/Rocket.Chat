@@ -22,7 +22,7 @@ Template.combined.helpers
 
 Template.combined.events
 	'click .add-room': (e, instance) ->
-		window.location.replace("https://stage.ubegin.com/action/new-project")
+		window.location.replace("https://how.ubegin.com/action/new-project")
 		if RocketChat.authz.hasAtLeastOnePermission(['create-c', 'create-p'])
 			#SideNav.setFlex "createCombinedFlex"
 			#SideNav.openFlex()
@@ -34,5 +34,5 @@ Template.combined.events
 		#SideNav.openFlex()
 
 	'click .new-project': ->
-		window.location.replace("https://stage.ubegin.com/action/new-project");
+		window.location.replace("https://how.ubegin.com/action/new-project");
 

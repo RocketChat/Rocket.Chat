@@ -102,12 +102,12 @@ Template.channelSettings.events
 		if room_info.t != "d"
 			window.open ChatRoom.findOne(@rid).details.url
 		else
-			window.open 'https://stage.ubegin.com/discover/people/'+this.userDetail
+			window.open 'https://how.ubegin.com/discover/people/'+this.userDetail
 
 	'click #open_profile' : (e,t) ->
 		e.preventDefault()
 		room_info = ChatRoom.findOne(@rid)
-		window.open 'https://stage.ubegin.com/discover/project/'+room_info.name
+		window.open 'https://how.ubegin.com/discover/project/'+room_info.name
 
 Template.channelSettings.onCreated ->
 	@editing = new ReactiveVar

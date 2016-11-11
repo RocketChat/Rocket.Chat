@@ -16,7 +16,7 @@ Template.accountFlex.events
 
 	'click .edit-profile': (e, inst)->
 		e.preventDefault()
-		window.open 'https://stage.ubegin.com/celebrate/edit-profile'
+		window.open 'https://how.ubegin.com/celebrate/edit-profile'
 
 Template.accountFlex.helpers
 	allowUserProfileChange: ->

@@ -130,7 +130,7 @@ Template.loginForm.events
 					setLanguage(Meteor.user()?.language)
 
 	'click .register': ->
-		window.open "https://stage.ubegin.com/register"
+		window.open "https://how.ubegin.com/register"
 		#Template.instance().state.set 'register'
 		#RocketChat.callbacks.run('loginPageStateChange', Template.instance().state.get());
 
@@ -139,7 +139,7 @@ Template.loginForm.events
 		RocketChat.callbacks.run('loginPageStateChange', Template.instance().state.get());
 
 	'click .forgot-password': ->
-		window.open "https://stage.ubegin.com/reset-password"
+		window.open "https://how.ubegin.com/reset-password"
 		#Template.instance().state.set 'forgot-password'
 		#RocketChat.callbacks.run('loginPageStateChange', Template.instance().state.get());
 

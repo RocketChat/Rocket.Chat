@@ -341,7 +341,7 @@ Template.userInfo.events
 
 	'click #open_profile': (e, inst) ->
 		e.preventDefault()
-		window.open 'https://stage.ubegin.com/discover/people/'+Template.instance().user.get().username
+		window.open 'https://how.ubegin.com/discover/people/'+Template.instance().user.get().username
 
 Template.userInfo.onCreated ->
 	@now = new ReactiveVar moment()
