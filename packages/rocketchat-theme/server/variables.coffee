@@ -32,15 +32,15 @@ majorColors=
 
 # Minor colours implement major colours by default, but can be overruled
 minorColors=
-  'tertiary-background-color': majorColors['component-color']
-  'tertiary-font-color': alphaColors['transparent-light']
-  'link-font-color': majorColors['primary-action-color']
-  'info-font-color': majorColors['secondary-font-color']
-  'custom-scrollbar-color': alphaColors['transparent-dark']
-  'status-online': majorColors['success-color']
-  'status-away': majorColors['pending-color']
-  'status-busy': majorColors['error-color']
-  'status-offline': alphaColors['transparent-darker']
+  'tertiary-background-color': '@component-color'
+  'tertiary-font-color': '@transparent-light'
+  'link-font-color': '@primary-action-color'
+  'info-font-color': '@secondary-font-color'
+  'custom-scrollbar-color': '@transparent-dark'
+  'status-online': '@success-color'
+  'status-away': '@pending-color'
+  'status-busy': '@error-color'
+  'status-offline': '@transparent-darker'
 
 # Bulk-add settings for color scheme
 for key, value of majorColors
@@ -48,7 +48,7 @@ for key, value of majorColors
 for key, value of alphaColors
   RocketChat.theme.addPublicColor key, value, 'Colors (alphas)'
 for key, value of minorColors
-  RocketChat.theme.addPublicColor key, value, 'Colors (minor)'
+  RocketChat.theme.addPublicColor key, value, 'Colors (minor)', 'expression'
 
 RocketChat.theme.addPublicFont 'body-font-family', "-apple-system, BlinkMacSystemFont, Roboto, 'Helvetica Neue', Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Meiryo UI'"
 
