@@ -17,7 +17,7 @@ apps:
         daemon: simple
         plugs: [network, network-bind]
     rocketchat-mongo:
-        command: env LC_ALL=C mongod --smallfiles --dbpath=$SNAP_COMMON
+        command: env LC_ALL=C mongod --bind_ip 127.0.0.1 --smallfiles --dbpath=$SNAP_COMMON
         daemon: simple
         plugs: [network, network-bind]
 parts:
