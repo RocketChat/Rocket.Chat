@@ -19,9 +19,9 @@ FileUpload = {
 			return false;
 		}
 
-		if (!directMessageAllow && room.t === "d") {
+		if (!directMessageAllow && room.t === 'd') {
 			const reason = TAPi18n.__('File_not_allowed_direct_messages', user.language);
-			throw new Meteor.Error('error-invalid-file-type', reason);
+			throw new Meteor.Error('error-direct-message-not-allowed', reason);
 		}
 
 		if (file.size > maxFileSize) {
