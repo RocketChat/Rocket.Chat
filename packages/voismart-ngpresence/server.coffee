@@ -1,3 +1,11 @@
+#
+# FIXME: implement status reset:
+#        a connected client is online and it disconnects while a server process
+#        is down. To avoid the presence server to forcibly set (or just
+#        remember) the old state, we should publish the correct client state
+#        towards ydin when asked to set an unknown or disconnected user.
+#
+
 crypto = Npm.require 'crypto'
 
 logger = new Logger 'NGPresence'
