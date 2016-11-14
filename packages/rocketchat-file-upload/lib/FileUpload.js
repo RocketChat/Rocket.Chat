@@ -21,7 +21,7 @@ FileUpload = {
 
 		if (!directMessageAllow && room.t === 'd') {
 			const reason = TAPi18n.__('File_not_allowed_direct_messages', user.language);
-			throw new Meteor.Error('error-direct-message-not-allowed', reason);
+			throw new Meteor.Error('error-direct-message-file-upload-not-allowed', reason);
 		}
 
 		if (file.size > maxFileSize) {

@@ -425,7 +425,7 @@
   "error-invalid-email": "Invalid email __email__",
   "error-invalid-file-height": "Invalid file height",
   "error-invalid-file-type": "Invalid file type",
-  "error-direct-message-not-allowed": "File sharing not allowed in direct messages",
+  "error-direct-message-file-upload-not-allowed": "File sharing not allowed in direct messages",
   "error-invalid-file-width": "Invalid file width",
   "error-invalid-from-address": "You informed an invalid FROM address.",
   "error-invalid-integration": "Invalid integration",
