@@ -86,6 +86,13 @@ Template.messageBox.helpers
 		if not Template.instance().isMessageFieldEmpty.get()
 			return 'show-send'
 
+	showFileUpload: ->
+		roomData = Session.get('roomData' + this._id)
+		if roomData?.t is 'd'
+			return RocketChat.settings.get('FileUpload_Enabled_Direct')
+		else
+			return true
+
 	showLocation: ->
 		return RocketChat.Geolocation.get() isnt false
 
