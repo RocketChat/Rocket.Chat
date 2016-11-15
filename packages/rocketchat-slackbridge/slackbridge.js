@@ -982,12 +982,16 @@ class SlackBridge {
 
 	postMessage(room, message) {
 		if (room && room.id) {
+			let iconUrl = getAvatarUrlFromUsername(message.u && message.u.username);
+			if (iconUrl) {
+				iconUrl = Meteor.absoluteUrl().replace(/\/$/, '') + iconUrl;
+			}
 			let data = {
 				token: this.apiToken,
 				text: message.msg,
 				channel: room.id,
 				username: message.u && message.u.username,
-				icon_url: getAvatarUrlFromUsername(message.u && message.u.username),
+				icon_url: iconUrl,
 				link_names: 1
 			};
 			logger.class.debug('Post Message', data);
