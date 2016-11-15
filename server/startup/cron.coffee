@@ -17,11 +17,8 @@ generateStatistics = ->
 			logger.warn('Failed to send usage report')
 	return
 
-cacheCleanup = ->
-	date = new Date()
-	expirationDays = RocketChat.settings.get 'API_EmbedCacheExpirationDays'
-	date.setDate(date.getDate() - expirationDays)
-	RocketChat.models.OEmbedCache.removeAfterDate date
+cleanupOEmbedCache = ->
+	Meteor.call('OEmbedCacheCleanup')
 
 Meteor.startup ->
 	Meteor.defer ->
@@ -39,6 +36,6 @@ Meteor.startup ->
 			schedule: (parser) ->
 				now = new Date()
 				return parser.cron now.getMinutes() + ' ' + now.getHours() + ' * * *'
-			job: cacheCleanup
+			job: cleanupOEmbedCache
 
 		SyncedCron.start()
