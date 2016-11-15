@@ -62,6 +62,7 @@ rocketchat:gitlab
 rocketchat:highlight-words
 rocketchat:iframe-login
 rocketchat:importer
+rocketchat:importer-csv
 rocketchat:importer-hipchat
 rocketchat:importer-slack
 rocketchat:integrations
