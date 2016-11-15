@@ -1,13 +1,17 @@
 hideMessagesOfType = []
 RocketChat.settings.get /Message_HideType_.+/, (key, value) ->
 	type = key.replace('Message_HideType_', '')
-	index = hideMessagesOfType.indexOf(type)
-
-	if value is true and index is -1
-		hideMessagesOfType.push(type)
-	else if index > -1
-		hideMessagesOfType.splice(index, 1)
-
+	switch (type)
+		when 'mute_unmute'
+			types = [ 'user-muted', 'user-unmuted' ]
+		else
+			types = [ type ]
+	types.forEach (type) ->
+		index = hideMessagesOfType.indexOf(type)
+		if value is true and index is -1
+			hideMessagesOfType.push(type)
+		else if index > -1
+			hideMessagesOfType.splice(index, 1)
 
 Meteor.methods
 	loadHistory: (rid, end, limit=20, ls) ->
