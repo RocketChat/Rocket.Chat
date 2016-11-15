@@ -28,4 +28,10 @@ if (process.env.SANDSTORM === '1') {
 	waitPromise = function(promise) {
 		return promiseToFuture(promise).wait();
 	};
+
+	// This usual implementation of this method returns an absolute URL that is invalid
+	// under Sandstorm.
+	UploadFS.Store.prototype.getURL = function (path) {
+		return this.getRelativeURL(path);
+	};
 }
