@@ -11,9 +11,9 @@
 				{{#unless isAdmin}}
 					<p>You are not authorized to view this page.</p>
 				{{else}}
-					{{#if isCSV}}
-						<p style="color: #bc2031;">{{_ "Importer_CSV_Information"}} <a href="https://rocket.chat/docs/administrator-guides/import/csv/" target="_blank">https://rocket.chat/docs/administrator-guides/import/csv/</a></p>
-					{{/if}}
+					{{#each warnings}}
+						<p style="color: #bc2031;">{{_ text}} <a href="{{href}}" target="_blank">{{href}}</a></p>
+					{{/each}}
 					<div class="rocket-form">
 						<fieldset>
 							{{#if isLoaded}}
@@ -51,6 +51,7 @@
 												<li>
 													<input type="checkbox" name="{{channel_id}}" checked="checked" />{{name}}
 													{{#if is_archived}} <em>({{_ "Importer_Archived"}})</em>{{/if}}
+													{{#if is_private}} <em>({{_ "Private_Group"}})</em>{{/if}}
 												</li>
 											{{/each}}
 										</ul>
