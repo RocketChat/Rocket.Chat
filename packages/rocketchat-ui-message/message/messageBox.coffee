@@ -265,14 +265,15 @@ Template.messageBox.onCreated ->
 	@autorun =>
 		videoRegex = /video\/webm|video\/\*/i
 		videoEnabled = !RocketChat.settings.get("FileUpload_MediaTypeWhiteList") || RocketChat.settings.get("FileUpload_MediaTypeWhiteList").match(videoRegex)
-		if RocketChat.settings.get('Message_VideoRecorderEnabled') and (navigator.getUserMedia? or navigator.webkitGetUserMedia?) and videoEnabled and RocketChat.settings.get('FileUpload_Enabled') and (not Meteor.isCordova)
+		if RocketChat.settings.get('Message_VideoRecorderEnabled') and (navigator.getUserMedia? or navigator.webkitGetUserMedia?) and videoEnabled and RocketChat.settings.get('FileUpload_Enabled') and (not Meteor.isCordova) and MediaRecorder?
 			@showVideoRec.set true
 		else
 			@showVideoRec.set false
 
 		wavRegex = /audio\/wav|audio\/\*/i
 		wavEnabled = !RocketChat.settings.get("FileUpload_MediaTypeWhiteList") || RocketChat.settings.get("FileUpload_MediaTypeWhiteList").match(wavRegex)
-		if RocketChat.settings.get('Message_AudioRecorderEnabled') and (navigator.getUserMedia? or navigator.webkitGetUserMedia? or (RocketChat.Device.isIos() and navigator.device.capture?)) and wavEnabled and RocketChat.settings.get('FileUpload_Enabled')
+		AudioContext = window.AudioContext or window.webkitAudioContext
+		if RocketChat.settings.get('Message_AudioRecorderEnabled') and (navigator.getUserMedia? or navigator.webkitGetUserMedia? or (RocketChat.Device.isIos() and navigator.device.capture?)) and wavEnabled and RocketChat.settings.get('FileUpload_Enabled') and AudioContext?
 			@showMicButton.set true
 		else
 			@showMicButton.set false

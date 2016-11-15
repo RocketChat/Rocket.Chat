@@ -3,9 +3,8 @@ Meteor.startup ->
 	if Meteor.isCordova
 		return
 
-	AudioContext = window.AudioContext || window.webkitAudioContext || window.mozAudioContext
-	if AudioContext
-		RocketChat.ToneGenerator = new PhoneTones(new AudioContext(), 0, 0)
+	
+	RocketChat.ToneGenerator = new PhoneTones(0, 0)
 
 	Tracker.autorun ->
 		user  = Meteor.user()
@@ -265,7 +264,7 @@ Template.phone.onRendered ->
 		FlowRouter.watchPathChange()
 		RocketChat.Phone.placeVideo()
 
-	@search = (searchvalue) => 
+	@search = (searchvalue) =>
 		if searchvalue
 			current_search = searchvalue
 		else
@@ -316,7 +315,7 @@ RocketChat.Phone = new class
 			{name: 'answer', callback: => answer(false)},
 			{name: 'hangup', callback: => @hangup()}
 		])
-		
+
 	answer = (useVideo) ->
 		if window.rocketDebug
 			console.log "Will answer call"
@@ -463,6 +462,7 @@ RocketChat.Phone = new class
 				clearNotification()
 				delete _dialogs[d.callID]
 				WebNotifications.closeNotification 'phone'
+				$("#phonestream").css('display', 'none')
 
 	remap_hcause: (cause) ->
 		dflt = cause
@@ -589,15 +589,14 @@ RocketChat.Phone = new class
 		searchResult.set(results)
 
 	removeVideo: ->
+		_videoTag = $("#phonestream")
 		_videoTag.appendTo($("body"))
 		_videoTag.css('display', 'none')
-		_videoTag.css('visibility', 'hidden')
 		if _curCall and _callState is 'active'
 			_videoTag[0].play()
 
 	placeVideo: ->
 		_videoTag.appendTo($("#phone-video"))
-		_videoTag.css('visibility', 'visible')
 		if _curCall and _callState is 'active'
 			_videoTag.css('display', 'block')
 			_videoTag[0].play()
@@ -674,10 +673,12 @@ RocketChat.Phone = new class
 		@setSearchResult(undefined)
 		if useVideo
 			useVideo = true
+			_videoTag.css('display', 'block')
 		else
 			useVideo = false
+			_videoTag.css('display', 'none')
 		Session.set("VoiSmart::Phone::lastUseVideo", useVideo)
-
+			
 
 		if !destination or destination is ''
 			console.log("No number provided") if window.rocketDebug
@@ -717,8 +718,8 @@ RocketChat.Phone = new class
 			useVideo: has_video,
 			useStereo: true,
 			useCamera: _videoDevice,
-			useSpeak: _audioOutDevice || "none",
-			useMic: _audioInDevice || "none",
+			useSpeak: _audioOutDevice || "any",
+			useMic: _audioInDevice || "any"
 		}, {
 			onDialogState: onDialogState
 		})
