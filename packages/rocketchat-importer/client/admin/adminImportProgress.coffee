@@ -20,20 +20,20 @@ Template.adminImportProgress.onCreated ->
 
 			if progress
 				if progress.step is 'importer_done'
-					toastr.success t(progress.step[0].toUpperCase() + progress.step.slice(1))
+					toastr.success t(progress.step)
 					FlowRouter.go '/admin/import'
 				else if progress.step is 'importer_import_failed'
-					toastr.error t(progress.step[0].toUpperCase() + progress.step.slice(1))
+					toastr.error t(progress.step)
 					FlowRouter.go '/admin/import/prepare/' + FlowRouter.getParam('importer')
 				else
-					instance.step.set t(progress.step[0].toUpperCase() + progress.step.slice(1))
+					instance.step.set t(progress.step)
 					instance.completed.set progress.count.completed
 					instance.total.set progress.count.total
 					setTimeout(() ->
 						instance.updateProgress()
 					, 100)
 			else
-				toastr.warning t('Importer_not_in_progress')
+				toastr.warning t('importer_not_in_progress')
 				FlowRouter.go '/admin/import/prepare/' + FlowRouter.getParam('importer')
 
 	instance.updateProgress()
