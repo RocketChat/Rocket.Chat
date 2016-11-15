@@ -36,7 +36,7 @@ Importer.CSV = class ImporterCSV extends Importer.Base {
 			if (entry.entryName.toLowerCase() === 'channels.csv') {
 				super.updateProgress(Importer.ProgressStep.PREPARING_CHANNELS);
 				const parsedChannels = this.csvParser(entry.getData().toString());
-				tempChannels = parsedChannels.map((c) => { return { id: c[0].trim().replace('.', '_'), name: c[0].trim(), creator: c[1].trim() }; });
+				tempChannels = parsedChannels.map((c) => { return { id: c[0].trim().replace('.', '_'), name: c[0].trim(), creator: c[1].trim(), isPrivate: c[2].trim().toLowerCase() === 'private' ? true : false }; });
 				continue;
 			}
 
@@ -120,7 +120,7 @@ Importer.CSV = class ImporterCSV extends Importer.Base {
 		}
 
 		const selectionUsers = tempUsers.map((u) => new Importer.SelectionUser(u.id, u.username, u.email, false, false, true));
-		const selectionChannels = tempChannels.map((c) => new Importer.SelectionChannel(c.id, c.name, false, true));
+		const selectionChannels = tempChannels.map((c) => new Importer.SelectionChannel(c.id, c.name, false, true, c.isPrivate));
 
 		super.updateProgress(Importer.ProgressStep.USER_SELECTION);
 		return new Importer.Selection(this.name, selectionUsers, selectionChannels);
@@ -211,8 +211,8 @@ Importer.CSV = class ImporterCSV extends Importer.Base {
 
 						//Create the channel
 						Meteor.runAsUser(creatorId, () => {
-							const returned = Meteor.call('createChannel', c.name, []);
-							c.rocketId = returned.rid;
+							const roomInfo = Meteor.call(c.isPrivate ? 'createPrivateGroup' : 'createChannel', c.name, []);
+							c.rocketId = roomInfo.rid;
 						});
 
 						RocketChat.models.Rooms.update({ _id: c.rocketId }, { $addToSet: { importIds: c.id } });
@@ -275,7 +275,7 @@ Importer.CSV = class ImporterCSV extends Importer.Base {
 
 	getSelection() {
 		const selectionUsers = this.users.users.map((u) => new Importer.SelectionUser(u.id, u.username, u.email, false, false, true));
-		const selectionChannels = this.channels.channels.map((c) => new Importer.SelectionChannel(c.id, c.name, false, true));
+		const selectionChannels = this.channels.channels.map((c) => new Importer.SelectionChannel(c.id, c.name, false, true, c.isPrivate));
 
 		return new Importer.Selection(this.name, selectionUsers, selectionChannels);
 	}

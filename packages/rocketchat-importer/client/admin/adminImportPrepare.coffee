@@ -10,8 +10,6 @@ Template.adminImportPrepare.helpers
 				importer = i
 
 		return importer
-	isCSV: ->
-		return FlowRouter.getParam('importer') == 'csv'
 	isLoaded: ->
 		return Template.instance().loaded.get()
 	isPreparing: ->

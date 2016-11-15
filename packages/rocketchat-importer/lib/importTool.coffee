@@ -6,4 +6,4 @@ Importer.addImporter = (name, importer, options) ->
 			name: options.name
 			importer: importer
 			fileTypeRegex: options.fileTypeRegex
-			description: options.description
+			warnings: options.warnings
