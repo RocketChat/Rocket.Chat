@@ -150,6 +150,7 @@ rocketchat:highlight-words@0.0.1
 rocketchat:i18n@0.0.1
 rocketchat:iframe-login@1.0.0
 rocketchat:importer@0.0.1
+rocketchat:importer-csv@1.0.0
 rocketchat:importer-hipchat@0.0.1
 rocketchat:importer-slack@0.0.1
 rocketchat:integrations@0.0.1

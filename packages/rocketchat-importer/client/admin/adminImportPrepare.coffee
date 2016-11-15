@@ -10,6 +10,8 @@ Template.adminImportPrepare.helpers
 				importer = i
 
 		return importer
+	isCSV: ->
+		return FlowRouter.getParam('importer') == 'csv'
 	isLoaded: ->
 		return Template.instance().loaded.get()
 	isPreparing: ->
@@ -41,6 +43,12 @@ Template.adminImportPrepare.events
 					if error
 						console.warn 'Errored out preparing the import:', error
 						handleError(error)
+						return
+
+					if !data
+						console.warn 'The importer ' + importer.key + ' is not set up correctly, as it did not return any data.'
+						toastr.error t('Importer_not_setup')
+						template.preparing.set false
 						return
 
 					if data.step
