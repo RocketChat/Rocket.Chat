@@ -135,7 +135,12 @@ Importer.Slack = class Importer.Slack extends Importer.Base
 									url = user.profile.image_original
 								else if user.profile.image_512
 									url = user.profile.image_512
-								Meteor.call 'setAvatarFromService', url, undefined, 'url'
+
+								try
+								  Meteor.call 'setAvatarFromService', url, undefined, 'url'
+								catch error
+								  this.logger.warn "Failed to set #{user.name}'s avatar from url #{url}"
+
 								# Slack's is -18000 which translates to Rocket.Chat's after dividing by 3600
 								if user.tz_offset
 									Meteor.call 'userSetUtcOffset', user.tz_offset / 3600
@@ -173,13 +178,9 @@ Importer.Slack = class Importer.Slack extends Importer.Base
 								if user?
 									users.push user.username
 
-							userId = ''
-							for user in @users.users when user.id is channel.creator
+							userId = startedByUserId
+							for user in @users.users when user.id is channel.creator and user.do_import
 								userId = user.rocketId
-
-							if userId is ''
-								@logger.warn "Failed to find the channel creator for #{channel.name}, setting it to the current running user."
-								userId = startedByUserId
 
 							Meteor.runAsUser userId, () =>
 								returned = Meteor.call 'createChannel', channel.name, users
