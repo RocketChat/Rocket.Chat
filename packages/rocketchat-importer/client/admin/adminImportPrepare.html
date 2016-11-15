@@ -1,10 +1,10 @@
 <template name="adminImportPrepare">
-	<section class="page-container page-home page-static">
+	<section class="page-container page-home page-static page-settings">
 		{{#with importer}}
 			<header class="fixed-title">
 				{{> burger}}
 				<h2>
-					<span class="room-title">{{name}}</span>
+					<span class="room-title">{{name}} - {{_ description }}</span>
 				</h2>
 			</header>
 			<div class="content">
