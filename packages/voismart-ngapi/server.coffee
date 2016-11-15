@@ -52,6 +52,16 @@ logger = new Logger 'NGApi'
 			phonebooktype: 4
 			start: 0
 
+	getPersonalRegistry: (token) ->
+		url = @server + '/jsondata/extjs/registryHandler/read_latest'
+		@_doFormPost url,
+			token: token
+			limit: 25
+			page: 1
+			start: 0
+			sort: 'start_time'
+			dir: 'DESC'
+
 
 	_doPost: (url, data) ->
 		try

@@ -129,7 +129,8 @@ Template.phone.events
 			console.log "transferring call..."
 
 		number = instance.phoneDisplay.get()
-		RocketChat.Phone.transfer(number)
+		if number
+			RocketChat.Phone.transfer(number)
 
 	'click #phone-fullscreen': (e, instance) ->
 		i = document.getElementById("phonestream")
@@ -149,6 +150,32 @@ Template.phone.events
 		number = _.trim $(e.target).text()
 		instance.phoneDisplay.set(number)
 		RocketChat.Phone.newCall(number)
+
+	'click #phone_personal_registry': (e, instance) ->
+		showRegistry = instance.showRegistry.get()
+		if !showRegistry
+			Meteor.call 'getPersonalRegistry', (error, results) =>
+				if not results?
+					instance.listRegistry.set([])
+				else
+					console.log("result registry on click ", results)
+					repr_res = []
+					for record in results.calls
+						convert_date = moment(record.start_time).format("DD-MM-YYYY H:mm:ss")
+						convert_status = "icon-up"
+						switch record.status
+							when "out"
+								convert_status = "icon-up"
+							when "in"
+								convert_status = "icon-down"
+							when "missed"
+								convert_status = "icon-forward"
+						repr_res.push({'number': record.number, 'status': convert_status, 'start_time': convert_date})
+					instance.listRegistry.set({'calls': repr_res})
+		else
+			instance.listRegistry.set([])
+
+		instance.showRegistry.set(!showRegistry)
 
 Template.phone.helpers
 	phoneDisplay: ->
@@ -209,11 +236,18 @@ Template.phone.helpers
 
 	searchResult: ->
 		return RocketChat.Phone.getSearchResult()
+	
+	showRegistry: ->
+		return Template.instance().showRegistry.get()
 
+	listRegistry: ->
+		return Template.instance().listRegistry.get()
 
 Template.phone.onCreated ->
 	@showSettings = new ReactiveVar false
 	@phoneDisplay = new ReactiveVar ""
+	@showRegistry = new ReactiveVar false
+	@listRegistry = new ReactiveVar ""
 
 
 Template.phone.onDestroyed ->

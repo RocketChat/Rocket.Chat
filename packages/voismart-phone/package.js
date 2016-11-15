@@ -35,6 +35,8 @@ Package.onUse(function(api) {
             'client/views/phoneButtons.html',
             'client/views/phoneSearch.less',
             'client/views/phoneSearch.html',
+            'client/views/phoneRegistry.html',
+            'client/views/phoneRegistry.less',
             'client/phone.coffee',
             'client/phoneSettings.coffee',
             'client/phoneButtons.coffee',
@@ -44,7 +46,8 @@ Package.onUse(function(api) {
     api.addFiles([
             'server/settings.coffee',
 			'server/methods/phoneFindUserByQ.coffee',
-            'server/methods/getContacts.coffee'
+            'server/methods/getContacts.coffee',
+            'server/methods/getPersonalRegistry.coffee'
     ], 'server');
 
 	api.addFiles([], 'server');
