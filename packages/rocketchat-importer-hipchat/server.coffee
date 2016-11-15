@@ -86,7 +86,7 @@ Importer.HipChat = class Importer.HipChat extends Importer.Base
 		@addCountToTotal messagesCount
 
 		if tempUsers.length is 0 or tempRooms.length is 0 or messagesCount is 0
-			@logger.warn "The loaded users count #{tempUsers.length}, the loaded channels #{tempChannels.length}, and the loaded messages #{messagesCount}"
+			@logger.warn "The loaded users count #{tempUsers.length}, the loaded channels #{tempRooms.length}, and the loaded messages #{messagesCount}"
 			@updateProgress Importer.ProgressStep.ERROR
 			return @getProgress()
 

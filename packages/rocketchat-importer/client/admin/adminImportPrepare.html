@@ -1,16 +1,19 @@
 <template name="adminImportPrepare">
-	<section class="page-container page-home page-static page-settings">
+	<section class="page-container page-home page-static">
 		{{#with importer}}
 			<header class="fixed-title">
 				{{> burger}}
 				<h2>
-					<span class="room-title">{{name}} - {{_ description }}</span>
+					<span class="room-title">{{name}}</span>
 				</h2>
 			</header>
 			<div class="content">
 				{{#unless isAdmin}}
 					<p>You are not authorized to view this page.</p>
 				{{else}}
+					{{#if isCSV}}
+						<p style="color: #bc2031;">{{_ "Importer_CSV_Information"}} <a href="https://rocket.chat/docs/administrator-guides/import/csv/" target="_blank">https://rocket.chat/docs/administrator-guides/import/csv/</a></p>
+					{{/if}}
 					<div class="rocket-form">
 						<fieldset>
 							{{#if isLoaded}}
