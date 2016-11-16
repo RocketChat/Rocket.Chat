@@ -296,6 +296,14 @@ Importer.Slack = class Importer.Slack extends Importer.Base
 													msgObj.ets = new Date(parseInt(message.edited.ts.split('.')[0]) * 1000)
 
 												RocketChat.sendMessage @getRocketUser(message.user), msgObj, room, true
+
+									# Process the reactions
+									if RocketChat.models.Messages.findOneById(msgDataDefaults._id)? and message.reactions?.length > 0
+										for reaction in message.reactions
+											for u in reaction.users
+												if @getRocketUser(u)?
+													Meteor.call 'setReaction', ":#{reaction.name}:", createdMsg._id
+
 									@addCountCompleted 1
 			console.log missedTypes
 			@updateProgress Importer.ProgressStep.FINISHING
@@ -322,6 +330,7 @@ Importer.Slack = class Importer.Slack extends Importer.Base
 		if message?
 			message = message.replace /<!everyone>/g, '@all'
 			message = message.replace /<!channel>/g, '@all'
+			message = message.replace /<!here>/g, '@here'
 			message = message.replace /&gt;/g, '<'
 			message = message.replace /&lt;/g, '>'
 			message = message.replace /&amp;/g, '&'
