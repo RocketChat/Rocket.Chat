@@ -4,7 +4,7 @@
 			<header class="fixed-title">
 				{{> burger}}
 				<h2>
-					<span class="room-title">{{name}} - {{_ description }}</span>
+					<span class="room-title">{{name}}</span>
 				</h2>
 			</header>
 			<div class="content">
@@ -57,7 +57,12 @@
 								{{#if isPreparing}}
 									{{> loading}}
 								{{else}}
-									<input type="file" class="import-file-input" accept="{{ fileType }}">
+									<div class="section">
+										<h1>{{_ "Importer_Source_File"}}</h1>
+										<div class="section-content">
+											<input type="file" class="import-file-input" accept="{{ fileType }}">
+										</div>
+									</div>
 								{{/if}}
 							{{/if}}
 						</fieldset>
