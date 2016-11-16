@@ -1,14 +1,17 @@
 <template name="phoneRegistry">
-    {{#each listcalls.calls}}
-    <div class="phone-registry-content">
-         <div class="phone-registry-record">
-             <div class="phone-registry-record-number">
-                <span>{{number}}</span>
-            </div>
-            <div class="phone-registry-record-info">
-                <span> <i class={{status}}></i>{{start_time}}</span>
-            </div>
-         </div>
-    </div>
-    {{/each}}
+	{{#each listcalls.calls}}
+	<div class="phone-registry-content">
+		<div class="thumb">
+			<i class="icon-phone"></i>
+		</div>
+		 <div class="phone-registry-record">
+			<div class="phone-registry-record-info">
+				<span> <i class={{status}}></i>&nbsp;{{start_time}}</span>
+			</div>
+			<div class="phone-registry-record-number">
+				<span>{{number}}</span>
+			</div>
+		</div>
+	</div>
+	{{/each}}
 </template>
