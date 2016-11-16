@@ -18,3 +18,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/routes.coffee', 'server');
 	api.addFiles('server/settings.js', 'server');
 });
+
+Npm.depends({
+	busboy: '0.2.13'
+});

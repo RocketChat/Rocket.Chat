@@ -239,6 +239,36 @@ RocketChat.API.v1.addRoute 'users.delete', authRequired: true,
 
 		return RocketChat.API.v1.success
 
+# Set user's avatar
+RocketChat.API.v1.addRoute 'users.setAvatar', authRequired: true,
+	post: ->
+		try
+			Busboy = Npm.require('busboy')
+
+			busboy = new Busboy headers: @request.headers
+
+			user = Meteor.users.findOne(@userId)
+
+			Meteor.wrapAsync((callback) =>
+				busboy.on 'file', Meteor.bindEnvironment (fieldname, file, filename, encoding, mimetype) =>
+					if fieldname isnt 'image'
+						return callback(new Meteor.Error 'invalid-field')
+
+					imageData = []
+					file.on 'data', Meteor.bindEnvironment (data) ->
+						imageData.push data
+
+					file.on 'end', Meteor.bindEnvironment () =>
+						RocketChat.setUserAvatar(user, Buffer.concat(imageData), mimetype, 'rest')
+						callback()
+
+				@request.pipe busboy
+			)()
+		catch e
+			return RocketChat.API.v1.failure e.name + ': ' + e.message
+
+		return RocketChat.API.v1.success()
+
 # Create Private Group
 RocketChat.API.v1.addRoute 'groups.create', authRequired: true,
 	post: ->
@@ -254,8 +284,8 @@ RocketChat.API.v1.addRoute 'groups.create', authRequired: true,
 				Meteor.runAsUser this.userId, =>
 					id = Meteor.call 'createPrivateGroup', @bodyParams.name, []
 			else
-			  Meteor.runAsUser this.userId, =>
-				  id = Meteor.call 'createPrivateGroup', @bodyParams.name, @bodyParams.members, []
+				Meteor.runAsUser this.userId, =>
+					id = Meteor.call 'createPrivateGroup', @bodyParams.name, @bodyParams.members, []
 		catch e
 			return RocketChat.API.v1.failure e.name + ': ' + e.message
 
