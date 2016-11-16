@@ -194,6 +194,7 @@ RocketChat.settings.addGroup 'Message', ->
 	@add 'Message_HideType_ul', false, { type: 'boolean', public: true }
 	@add 'Message_HideType_ru', false, { type: 'boolean', public: true }
 	@add 'Message_HideType_au', false, { type: 'boolean', public: true }
+	@add 'Message_HideType_mute_unmute', false, { type: 'boolean', public: true }
 
 RocketChat.settings.addGroup 'Meta', ->
 	@add 'Meta_language', '', { type: 'string' }
