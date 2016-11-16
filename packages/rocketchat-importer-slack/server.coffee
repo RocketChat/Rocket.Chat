@@ -244,7 +244,12 @@ Importer.Slack = class Importer.Slack extends Importer.Base
 												_.extend msgObj, msgDataDefaults
 
 												if message.edited?
-													msgObj.ets = new Date(parseInt(message.edited.ts.split('.')[0]) * 1000)
+													msgObj.editedAt = new Date(parseInt(message.edited.ts.split('.')[0]) * 1000)
+													editedBy = @getRocketUser(message.edited.user)
+													if editedBy?
+														msgObj.editedBy =
+															_id: editedBy._id
+															username: editedBy.username
 
 												if message.icons?
 													msgObj.emoji = message.icons.emoji
@@ -293,7 +298,12 @@ Importer.Slack = class Importer.Slack extends Importer.Base
 												_.extend msgObj, msgDataDefaults
 
 												if message.edited?
-													msgObj.ets = new Date(parseInt(message.edited.ts.split('.')[0]) * 1000)
+													msgObj.editedAt = new Date(parseInt(message.edited.ts.split('.')[0]) * 1000)
+													editedBy = @getRocketUser(message.edited.user)
+													if editedBy?
+														msgObj.editedBy =
+															_id: editedBy._id
+															username: editedBy.username
 
 												RocketChat.sendMessage @getRocketUser(message.user), msgObj, room, true
 
@@ -301,11 +311,13 @@ Importer.Slack = class Importer.Slack extends Importer.Base
 									if RocketChat.models.Messages.findOneById(msgDataDefaults._id)? and message.reactions?.length > 0
 										for reaction in message.reactions
 											for u in reaction.users
-												if @getRocketUser(u)?
-													Meteor.call 'setReaction', ":#{reaction.name}:", createdMsg._id
+												rcUser = @getRocketUser(u)
+												if rcUser?
+													Meteor.runAsUser rcUser._id, () =>
+														Meteor.call 'setReaction', ":#{reaction.name}:", msgDataDefaults._id
 
 									@addCountCompleted 1
-			console.log missedTypes
+			console.log 'Missed import types:', missedTypes
 			@updateProgress Importer.ProgressStep.FINISHING
 			for channel in @channels.channels when channel.do_import and channel.is_archived
 				do (channel) =>
