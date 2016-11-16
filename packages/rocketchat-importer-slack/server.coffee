@@ -192,10 +192,9 @@ Importer.Slack = class Importer.Slack extends Importer.Base
 
 							if not _.isEmpty channel.topic?.value
 								roomUpdate.topic = channel.topic.value
-								lastSetTopic = channel.topic.last_set
 
-							if not _.isEmpty(channel.purpose?.value) and channel.purpose.last_set > lastSetTopic
-								roomUpdate.topic = channel.purpose.value
+							if not _.isEmpty(channel.purpose?.value)
+								roomUpdate.description = channel.purpose.value
 
 							RocketChat.models.Rooms.update { _id: channel.rocketId }, { $set: roomUpdate, $addToSet: { importIds: channel.id } }
 
@@ -203,7 +202,7 @@ Importer.Slack = class Importer.Slack extends Importer.Base
 			@collection.update { _id: @channels._id }, { $set: { 'channels': @channels.channels }}
 
 			missedTypes = {}
-			ignoreTypes = { 'bot_add': true, 'file_comment': true, 'file_mention': true, 'channel_name': true }
+			ignoreTypes = { 'bot_add': true, 'file_comment': true, 'file_mention': true }
 			@updateProgress Importer.ProgressStep.IMPORTING_MESSAGES
 			for channel, messagesObj of @messages
 				do (channel, messagesObj) =>
@@ -256,9 +255,14 @@ Importer.Slack = class Importer.Slack extends Importer.Base
 
 												RocketChat.sendMessage botUser, msgObj, room, true
 											else if message.subtype is 'channel_purpose'
-												RocketChat.models.Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser 'room_changed_topic', room._id, message.purpose, @getRocketUser(message.user), msgDataDefaults
+												if @getRocketUser(message.user)?
+													RocketChat.models.Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser 'room_changed_description', room._id, message.purpose, @getRocketUser(message.user), msgDataDefaults
 											else if message.subtype is 'channel_topic'
-												RocketChat.models.Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser 'room_changed_topic', room._id, message.topic, @getRocketUser(message.user), msgDataDefaults
+												if @getRocketUser(message.user)?
+													RocketChat.models.Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser 'room_changed_topic', room._id, message.topic, @getRocketUser(message.user), msgDataDefaults
+											else if message.subtype is 'channel_name'
+												if @getRocketUser(message.user)?
+													RocketChat.models.Messages.createRoomRenamedWithRoomIdRoomNameAndUser room._id, message.name, @getRocketUser(message.user), msgDataDefaults
 											else if message.subtype is 'pinned_item'
 												if message.attachments
 													msgObj =
