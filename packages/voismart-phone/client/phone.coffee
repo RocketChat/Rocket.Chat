@@ -3,7 +3,7 @@ Meteor.startup ->
 	if Meteor.isCordova
 		return
 
-	
+
 	RocketChat.ToneGenerator = new PhoneTones(0, 0)
 
 	Tracker.autorun ->
@@ -150,6 +150,11 @@ Template.phone.events
 		instance.phoneDisplay.set(number)
 		RocketChat.Phone.newCall(number)
 
+	'click .phone-registry-record-number': (e, instance) ->
+		number = _.trim $(e.target).text()
+		instance.phoneDisplay.set(number)
+		RocketChat.Phone.newCall(number)
+
 	'click #phone_personal_registry': (e, instance) ->
 		showRegistry = instance.showRegistry.get()
 		if !showRegistry
@@ -157,7 +162,6 @@ Template.phone.events
 				if not results?
 					instance.listRegistry.set([])
 				else
-					console.log("result registry on click ", results)
 					repr_res = []
 					for record in results.calls
 						convert_date = moment(record.start_time).format("DD-MM-YYYY H:mm:ss")
@@ -235,12 +239,15 @@ Template.phone.helpers
 
 	searchResult: ->
 		return RocketChat.Phone.getSearchResult()
-	
+
 	showRegistry: ->
 		return Template.instance().showRegistry.get()
 
 	listRegistry: ->
 		return Template.instance().listRegistry.get()
+
+	videoEnabled: ->
+		return RocketChat.Phone.getEnabledCamera()
 
 Template.phone.onCreated ->
 	@showSettings = new ReactiveVar false
@@ -287,6 +294,7 @@ RocketChat.Phone = new class
 	muted = new ReactiveVar false
 	searchTerm = new ReactiveVar ''
 	searchResult = new ReactiveVar
+	enabledCamera = new ReactiveVar false
 
 	_started = false
 	_login = undefined
@@ -554,6 +562,7 @@ RocketChat.Phone = new class
 		_audioInDevice = conf.audioInDevice
 		_audioOutDevice = conf.audioOutDevice
 		_videoDevice = conf.videoDevice
+		enabledCamera.set(conf.videoDevice)
 
 	refreshDevices = (what) ->
 		if window.rocketDebug
@@ -587,6 +596,9 @@ RocketChat.Phone = new class
 
 	setSearchResult: (results) ->
 		searchResult.set(results)
+
+	getEnabledCamera: ->
+		return enabledCamera.get()
 
 	removeVideo: ->
 		_videoTag = $("#phonestream")
@@ -678,7 +690,7 @@ RocketChat.Phone = new class
 			useVideo = false
 			_videoTag.css('display', 'none')
 		Session.set("VoiSmart::Phone::lastUseVideo", useVideo)
-			
+
 
 		if !destination or destination is ''
 			console.log("No number provided") if window.rocketDebug
@@ -776,6 +788,7 @@ RocketChat.Phone = new class
 		if id is 'none'
 			id = null
 		_videoDevice = id
+		enabledCamera.set(id)
 		setConfig()
 
 	getVideoDevice: ->

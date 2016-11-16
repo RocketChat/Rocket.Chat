@@ -9,7 +9,7 @@
 					<button class='button' id="phone-redial" title="{{_ 'Redial'}}"><i class="icon-arrows-cw"></i></button>
 					<button class='button' id="phone-clear" title="{{_ 'Clear'}}"><i class="icon-eraser"></i></button>
 					<button class='button' id="phone_settings" title="{{_ 'Settings'}}"><i class="icon-tools"></i></button>
-					<button class='button' id="phone_personal_registry" title="{{_ 'Settings'}}"><i class="icon-list"></i></button>
+					<button class='button' id="phone_personal_registry" title="{{_ 'Registry'}}"><i class="icon-list"></i></button>
 				</div>
 				{{#if displayCallStatus}}
 				<div class="phone-utility-buttons">
@@ -48,14 +48,18 @@
 			{{#if callIsRinging}}
 			<div class="call-buttons-container">
 				<button class='button green-hook' id="phone-dial"><i class="icon-phone"></i></button>
+				{{#if videoEnabled}}
 				<button class='button green-hook' id="phone-video-dial"><i class="icon-videocam"></i></button>
+				{{/if}}
                 <button class='button red-hook' id="phone-hangup"><i class="icon-phone"></i></button>
 			</div>
 			{{/if}}
 			{{#if callIsIdle}}
 			<div class="call-buttons-container">
 				<button class='button green-hook' id="phone-dial"><i class="icon-phone"></i></button>
+				{{#if videoEnabled}}
 				<button class='button green-hook' id="phone-video-dial"><i class="icon-videocam"></i></button>
+				{{/if}}
 			</div>
 			{{/if}}
 		</div>
