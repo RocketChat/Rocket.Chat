@@ -130,6 +130,8 @@ Template.phone.events
 		number = instance.phoneDisplay.get()
 		if number
 			RocketChat.Phone.transfer(number)
+		else
+			toastr.error TAPi18n.__('Empty_Number')
 
 	'click #phone-fullscreen': (e, instance) ->
 		i = document.getElementById("phonestream")
@@ -670,6 +672,10 @@ RocketChat.Phone = new class
 		_curCall = null
 
 	dialKey: (number, useVideo) ->
+		if !number
+			toastr.error TAPi18n.__('Empty_Number')
+			return
+
 		if !_curCall? and _callState is null
 			@newCall(number, useVideo)
 			return

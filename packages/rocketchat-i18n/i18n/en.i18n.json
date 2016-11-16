@@ -1497,5 +1497,6 @@
   "Fullscreen": "Fullscreen",
   "Redial": "Redial",
   "Clear": "Clear",
-  "Registry": "Call registry"
+  "Registry": "Call registry",
+  "Empty_Number": "Insert a number to call"
 }
