@@ -11,11 +11,17 @@
 				{{#unless isAdmin}}
 					<p>You are not authorized to view this page.</p>
 				{{else}}
-					{{#each warnings}}
-						<p style="color: #bc2031;">{{_ text}} <a href="{{href}}" target="_blank">{{href}}</a></p>
-					{{/each}}
 					<div class="rocket-form">
 						<fieldset>
+							{{#each warnings}}
+								<div class="section">
+									<h1>{{_ "Warnings"}}</h1>
+									<div class="section-content">
+										<p style="color: #bc2031;">{{_ text}} <a href="{{href}}" target="_blank">{{href}}</a></p>
+									</div>
+								</div>
+							{{/each}}
+
 							{{#if isLoaded}}
 								<div class="section">
 									<h1>{{_ "Actions"}}</h1>

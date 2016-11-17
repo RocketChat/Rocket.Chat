@@ -20,6 +20,8 @@ Importer.CSV = class ImporterCSV extends Importer.Base {
 		let tempUsers = [];
 		const tempMessages = new Map();
 		for (let entry of zipEntries) {
+			this.logger.debug(`Entry: ${entry.entryName}`);
+
 			//Ignore anything that has `__MACOSX` in it's name, as sadly these things seem to mess everything up
 			if (entry.entryName.indexOf('__MACOSX') > -1) {
 				this.logger.debug(`Ignoring the file: ${entry.entryName}`);
@@ -36,7 +38,15 @@ Importer.CSV = class ImporterCSV extends Importer.Base {
 			if (entry.entryName.toLowerCase() === 'channels.csv') {
 				super.updateProgress(Importer.ProgressStep.PREPARING_CHANNELS);
 				const parsedChannels = this.csvParser(entry.getData().toString());
-				tempChannels = parsedChannels.map((c) => { return { id: c[0].trim().replace('.', '_'), name: c[0].trim(), creator: c[1].trim(), isPrivate: c[2].trim().toLowerCase() === 'private' ? true : false }; });
+				tempChannels = parsedChannels.map((c) => {
+					return {
+						id: c[0].trim().replace('.', '_'),
+						name: c[0].trim(),
+						creator: c[1].trim(),
+						isPrivate: c[2].trim().toLowerCase() === 'private' ? true : false,
+						members: c[3].trim().split(';').map((m) => m.trim())
+					};
+				});
 				continue;
 			}
 
@@ -211,7 +221,7 @@ Importer.CSV = class ImporterCSV extends Importer.Base {
 
 						//Create the channel
 						Meteor.runAsUser(creatorId, () => {
-							const roomInfo = Meteor.call(c.isPrivate ? 'createPrivateGroup' : 'createChannel', c.name, []);
+							const roomInfo = Meteor.call(c.isPrivate ? 'createPrivateGroup' : 'createChannel', c.name, c.members);
 							c.rocketId = roomInfo.rid;
 						});
 
