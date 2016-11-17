@@ -18,13 +18,16 @@ Template.message.helpers
 		return 'msg-error' if @error
 
 	body: ->
+		user = Meteor.users.findOne({username:this.u.username})
+		if this.msg
+			addeduser = Meteor.users.findOne({username:this.msg})
 		switch this.t
-			when 'r'  then t('Room_name_changed', { room_name: this.msg, user_by: this.u.username })
-			when 'au' then t('User_added_by', { user_added: this.msg, user_by: this.u.username })
-			when 'ru' then t('User_removed_by', { user_removed: this.msg, user_by: this.u.username })
-			when 'ul' then tr('User_left', { context: this.u.gender }, { user_left: this.u.username })
-			when 'uj' then tr('User_joined', { context: this.u.gender }, { user: this.u.username })
-			when 'wm' then t('Welcome', { user: this.u.username })
+			when 'r'  then t('Room_name_changed', { room_name: this.msg, user_by: user?.name })
+			when 'au' then t('User_added_by', { user_added: addeduser?.name, user_by: user?.name })
+			when 'ru' then t('User_removed_by', { user_removed: addeduser?.name, user_by: user?.name })
+			when 'ul' then tr('User_left', { context: this.u.gender }, { user_left: user?.name })
+			when 'uj' then tr('User_joined', { context: this.u.gender }, { user: user?.name })
+			when 'wm' then t('Welcome', { user: user?.name })
 			when 'livechat-close' then t('Conversation_finished')
 			# when 'rtc' then RocketChat.callbacks.run 'renderRtcMessage', this
 			else
