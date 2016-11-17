@@ -576,6 +576,7 @@
   "Importer_Prepare_Uncheck_Deleted_Users": "Uncheck Deleted Users",
   "Importer_progress_error": "Failed to get the progress for the import.",
   "Importer_setup_error": "An error occurred while setting up the importer.",
+  "Importer_Source_File": "Source File Selection",
   "Incoming_Livechats": "Incoming Livechats",
   "inline_code": "inline_code",
   "Install_Extension": "Install Extension",
