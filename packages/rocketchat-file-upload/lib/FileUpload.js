@@ -19,7 +19,7 @@ FileUpload = {
 			return false;
 		}
 
-		if (!fileUploadAllowed){
+		if (!fileUploadAllowed) {
 			const reason = TAPi18n.__('FileUpload_Disabled', user.language);
 			throw new Meteor.Error('error-file-upload-disabled', reason);
 		}
