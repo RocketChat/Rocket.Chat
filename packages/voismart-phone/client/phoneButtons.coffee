@@ -5,6 +5,12 @@ Template.phoneButtons.helpers
 	desktopPhone: ->
 		return !Meteor.isCordova
 
+	videoEnabled: ->
+		cached = localStorage.getItem('MeteorPhoneConfig')
+		phone_config = $.parseJSON(cached)
+		if phone_config
+			return phone_config['videoDevice']
+
 Template.phoneButtons.events
 	'click .stop-phone-call': (e, t) ->
 		RocketChat.Phone.hangup()
