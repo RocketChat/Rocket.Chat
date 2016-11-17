@@ -115,14 +115,25 @@ class PresenceManager
 
 	default_status: 'offline'
 
+	constructor: (presenceClient) ->
+		@presenceClient = presenceClient
+
 	setPresence: (username, status) =>
 		user = RocketChat.models.Users.findOneByUsername username
 		if not user
 			logger.warn "no such user: #{username}"
 			return
 		mapped_status = @presmapper[status] or @default_status
-		logger.debug "setting status for #{username} to #{mapped_status}"
-		Meteor.users.update({_id: user._id}, {$set: {status: mapped_status}})
+		if user.statusConnection == "offline" and mapped_status != "offline"
+			# this user is not connected, publish back his status
+			# (maybe the client disconnected while the presence server was
+			# down)
+			logger.info "#{username} is offline, not #{mapped_status}. Publishing offline"
+			@presenceClient.publishPresence(user, "offline", user.statusConnection)
+			return
+		else
+			logger.info "setting status for #{username} to #{mapped_status}"
+			Meteor.users.update({_id: user._id}, {$set: {status: mapped_status}})
 
 
 class PresenceClient
@@ -136,6 +147,8 @@ class PresenceClient
 		@url = "amqp://#{@user}:#{@password}@#{@host}/#{@vhost}?heartbeat=30"
 		@connection = null
 		@client = null
+		@connected = false
+		@sendQueue = []
 
 	connect: ->
 		tamqp = Npm.require 'node-thrift-amqp'
@@ -149,6 +162,7 @@ class PresenceClient
 		connection.connect (err, conn) =>
 			if err
 				logger.error "cannot connect thrift-amqp client: #{err}"
+				@connected = false
 				return
 
 			@connection = conn
@@ -158,6 +172,12 @@ class PresenceClient
 					if err
 						logger.error "error: #{err}"
 						conn.close()
+				@connected = true
+
+				# flush sendQueue
+				for el in @sendQueue
+					@publishPresence el[0], el[1], el[2]
+				@sendQueue = []
 			catch e
 				logger.error "catched error: #{e}"
 				conn.close()
@@ -166,6 +186,11 @@ class PresenceClient
 			logger.error "thrift-amqp connection error: #{err}"
 
 	publishPresence: (user, status, statusConnection) =>
+		if not @connected
+			logger.error('not connected, publishing to sendqueue', user, status)
+			@sendQueue.push([user, status, statusConnection])
+			return
+
 		pTypes = Npm.require('node-ydin-presence-service').presenceServiceTypes
 		status = @presmapper[status] or 'UNKNOWN'
 		i = new pTypes.TXmppEvent(
@@ -175,7 +200,7 @@ class PresenceClient
 					resource: "webchat",
 					status: status,
 					presence_source: "webchat" )
-		logger.error "publishing presence for #{user.username} to #{status}"
+		logger.info "publishing presence for #{user.username} to #{status}"
 		@client.publish_webchat_presence i, @_logErrors
 
 	_logErrors: (err, res) ->
@@ -233,7 +258,7 @@ Meteor.startup ->
 		domain: ng_domain
 	pclient.connect()
 
-	pm = new PresenceManager
+	pm = new PresenceManager(pclient)
 	c = new AmqpConnection
 		host: broker_host
 		vhost: '/ydin_evb'
