@@ -25,14 +25,47 @@ class BotHelpers {
 	}
 
 	// request methods or props as arguments to Meteor.call
-	request(prop) {
+	request(prop, ...params) {
 		if (typeof this[prop] === 'undefined') {
 			return null;
 		} else if (typeof this[prop] === 'function') {
-			return this[prop]();
+			return this[prop](...params);
 		} else {
 			return this[prop];
 		}
+	}
+
+	addUserToRole(userName, roleName) {
+		Meteor.call('authorization:addUserToRole', roleName, userName);
+	}
+
+	removeUserFromRole(userName, roleName) {
+		Meteor.call('authorization:removeUserFromRole', roleName, userName);
+	}
+
+	addUserToRoom(userName, room) {
+		let foundRoom = RocketChat.models.Rooms.findOneByIdOrName(room);
+
+		if (!_.isObject(foundRoom)) {
+			throw new Meteor.Error('invalid-channel');
+		}
+
+		let data = {};
+		data.rid = foundRoom._id;
+		data.username = userName;
+		Meteor.call('addUserToRoom', data);
+	}
+
+	removeUserFromRoom(userName, room) {
+		let foundRoom = RocketChat.models.Rooms.findOneByIdOrName(room);
+
+		if (!_.isObject(foundRoom)) {
+			throw new Meteor.Error('invalid-channel');
+		}
+		let data = {};
+		data.rid = foundRoom._id;
+		data.username = userName;
+		Meteor.call('removeUserFromRoom', data);
 	}
 
 	// generic error whenever property access insufficient to fill request
