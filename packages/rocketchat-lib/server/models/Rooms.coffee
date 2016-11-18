@@ -239,6 +239,18 @@ class ModelRooms extends RocketChat.models._Base
 		return @find query, options
 
 	# UPDATE
+	addImportIds: (_id, importIds) ->
+		importIds = [].concat(importIds);
+		query =
+			_id: _id
+
+		update =
+			$addToSet:
+				importIds:
+					$each: importIds
+
+		return @update query, update
+
 	archiveById: (_id) ->
 		query =
 			_id: _id
