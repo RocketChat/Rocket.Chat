@@ -9,14 +9,14 @@ logger = new Logger 'rocketchat:theme',
 
 
 WebApp.rawConnectHandlers.use (req, res, next) ->
-	path = req.url.split("?")[0];
+	path = req.url.split("?")[0]
 	if (path == '/__cordova/theme.css' || path == '/theme.css')
 		css = RocketChat.theme.getCss()
 		hash = crypto.createHash('sha1').update(css).digest('hex')
 		res.setHeader('Content-Type', 'text/css; charset=UTF-8')
 		res.setHeader('ETag', '"' + hash + '"')
 		res.write(css)
-		res.end();
+		res.end()
 	else
 		next()
 
