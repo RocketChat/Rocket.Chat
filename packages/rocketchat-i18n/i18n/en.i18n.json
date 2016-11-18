@@ -482,6 +482,7 @@
   "File_type_is_not_accepted": "File type is not accepted.",
   "FileUpload": "File Upload",
   "FileUpload_Enabled": "File Uploads Enabled",
+  "FileUpload_Disabled": "File uploads are disabled.",
   "FileUpload_File_Empty": "File empty",
   "FileUpload_FileSystemPath": "System Path",
   "FileUpload_MaxFileSize": "Maximum File Upload Size (in bytes)",
