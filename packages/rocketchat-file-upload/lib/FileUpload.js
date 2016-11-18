@@ -13,9 +13,15 @@ FileUpload = {
 
 		const user = Meteor.user();
 		const room = RocketChat.models.Rooms.findOneById(file.rid);
+		const fileUploadAllowed = RocketChat.settings.get('FileUpload_Enabled');
 
 		if (RocketChat.authz.canAccessRoom(room, user) !== true) {
 			return false;
+		}
+
+		if (!fileUploadAllowed) {
+			const reason = TAPi18n.__('FileUpload_Disabled', user.language);
+			throw new Meteor.Error('error-file-upload-disabled', reason);
 		}
 
 		if (file.size > maxFileSize) {
