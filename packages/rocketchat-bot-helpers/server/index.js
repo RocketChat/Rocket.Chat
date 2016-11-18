@@ -44,7 +44,7 @@ class BotHelpers {
 	}
 
 	addUserToRoom(userName, room) {
-		let foundRoom = RocketChat.models.Rooms.findOneByIdOrName(room)
+		let foundRoom = RocketChat.models.Rooms.findOneByIdOrName(room);
 
 		if (!_.isObject(foundRoom)) {
 			throw new Meteor.Error('invalid-channel');
@@ -57,7 +57,7 @@ class BotHelpers {
 	}
 
 	removeUserFromRoom(userName, room) {
-		let foundRoom = RocketChat.models.Rooms.findOneByIdOrName(room)
+		let foundRoom = RocketChat.models.Rooms.findOneByIdOrName(room);
 
 		if (!_.isObject(foundRoom)) {
 			throw new Meteor.Error('invalid-channel');
