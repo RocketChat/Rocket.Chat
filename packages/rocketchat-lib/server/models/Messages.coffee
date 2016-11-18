@@ -15,6 +15,7 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base
 		@tryEnsureIndex { 'pinned': 1 }, { sparse: 1 }
 		@tryEnsureIndex { 'snippeted': 1 }, { sparse: 1 }
 		@tryEnsureIndex { 'location': '2dsphere' }
+		@tryEnsureIndex { 'slackBotId': 1, 'slackTs': 1 }, { sparse: 1 }
 
 
 	# FIND ONE
@@ -181,6 +182,13 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base
 
 		return @find query, options
 
+	findOneBySlackBotIdAndSlackTs: (slackBotId, slackTs) ->
+		query =
+			slackBotId: slackBotId
+			slackTs: slackTs
+
+		return @findOne query
+
 	cloneAndSaveAsHistoryById: (_id) ->
 		me = RocketChat.models.Users.findOneById Meteor.userId()
 		record = @findOneById _id
@@ -324,6 +332,17 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base
 		update =
 			$set:
 				attachments: attachments
+
+		return @update query, update
+
+	setSlackBotIdAndSlackTs: (_id, slackBotId, slackTs) ->
+		query =
+			_id: _id
+
+		update =
+			$set:
+				slackBotId: slackBotId
+				slackTs: slackTs
 
 		return @update query, update
 
