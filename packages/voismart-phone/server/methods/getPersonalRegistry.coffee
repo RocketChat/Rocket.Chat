@@ -1,18 +1,11 @@
 Meteor.methods
 	getPersonalRegistry: () ->
-		ng = new NGApi(RocketChat.settings.get('OrchestraIntegration_Server'))
 		domain = RocketChat.settings.get('OrchestraIntegration_Domain')
 		user = RocketChat.models.Users.findOneById Meteor.userId()
 		username = user.username + "@" + domain
+		ng = new NGApiAuto(username, RocketChat.settings.get('OrchestraIntegration_Server'))
 		try
-			res = ng.trustedLogin username
-			token = res.token
-		catch e
-			# unauthorized or error contacting server
-			return
-
-		try
-			results = ng.getPersonalRegistry(token)
+			results = ng.getPersonalRegistry()
 		catch e
 			return
 

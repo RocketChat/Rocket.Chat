@@ -1,5 +1,6 @@
 logger = new Logger 'NGApi'
 
+_cached_token = {}
 
 @NGApi = class NGApi
 	constructor: (@server) ->
@@ -85,3 +86,43 @@ logger = new Logger 'NGApi'
 		@_doPost url,
 			params: data
 			headers: headers
+
+@NGApiAuto = class NGApiAuto extends NGApi
+	constructor: (@username, @server) ->
+		if !_cached_token[@username]
+			@_getToken()
+
+	_getToken: ->
+		try
+			res = @trustedLogin @username
+			_cached_token[@username] = res.token
+		catch e
+			_cached_token[@username] = undefined
+
+	_doPost: (url, data, attempt) ->
+		data.params.token = _cached_token[@username]
+		try
+			response = Meteor.http.post url, data
+			if Math.floor(response.statusCode / 100) == 2
+				# 2xx status code
+				content = JSON.parse response.content
+				if content.errcode == 401 && !attempt?
+					attempt = true
+					@_getToken()
+					return @_doPost url,
+						data,
+						attempt
+				return content
+			else
+				logger.error "request to #{url} returned with status code #{response.statusCode}"
+				throw Error 'unhandled response code', response.statusCode
+		catch e
+			logger.error "error in POST request to #{url}: #{e}"
+			logger.debug e.stack
+			throw e
+
+	getContacts: (filter) ->
+		super(_cached_token[@username], filter)
+
+	getPersonalRegistry: ->
+		super(_cached_token[@username])
