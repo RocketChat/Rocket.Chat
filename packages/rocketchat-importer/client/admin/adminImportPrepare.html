@@ -13,6 +13,15 @@
 				{{else}}
 					<div class="rocket-form">
 						<fieldset>
+							{{#each warnings}}
+								<div class="section">
+									<h1>{{_ "Warnings"}}</h1>
+									<div class="section-content">
+										<p style="color: #bc2031;">{{_ text}} <a href="{{href}}" target="_blank">{{href}}</a></p>
+									</div>
+								</div>
+							{{/each}}
+
 							{{#if isLoaded}}
 								<div class="section">
 									<h1>{{_ "Actions"}}</h1>
@@ -48,6 +57,7 @@
 												<li>
 													<input type="checkbox" name="{{channel_id}}" checked="checked" />{{name}}
 													{{#if is_archived}} <em>({{_ "Importer_Archived"}})</em>{{/if}}
+													{{#if is_private}} <em>({{_ "Private_Group"}})</em>{{/if}}
 												</li>
 											{{/each}}
 										</ul>
