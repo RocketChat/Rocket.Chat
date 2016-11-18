@@ -22,6 +22,10 @@ Package.onUse(function(api) {
 		'settings.coffee'
 	], ['server']);
 
+	api.addFiles([
+		'client.coffee'
+	], ['client']);
+
 });
 
 Npm.depends({
