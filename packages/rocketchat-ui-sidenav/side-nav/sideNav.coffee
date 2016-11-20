@@ -55,6 +55,9 @@ Template.sideNav.events
 		e.preventDefault()
 
 Template.sideNav.onRendered ->
+	Meteor.subscribe 'room', "c"
+	Meteor.subscribe 'room', "p"
+	Meteor.subscribe 'room', "d"
 	SideNav.init()
 	menu.init()
 
