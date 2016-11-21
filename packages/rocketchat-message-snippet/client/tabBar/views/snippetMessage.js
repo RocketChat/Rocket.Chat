@@ -1,3 +1,5 @@
+import moment from 'moment';
+
 Template.snippetMessage.helpers({
 	time: function() {
 		return moment(this.ts).format(RocketChat.settings.get('Message_TimeFormat'));

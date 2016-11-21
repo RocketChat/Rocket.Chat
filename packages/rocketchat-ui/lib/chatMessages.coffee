@@ -1,3 +1,5 @@
+import moment from 'moment'
+
 class @ChatMessages
 	init: (node) ->
 		this.editing = {}
