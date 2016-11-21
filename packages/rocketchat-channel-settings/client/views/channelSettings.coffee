@@ -1,3 +1,4 @@
+import toastr from 'toastr'
 Template.channelSettings.helpers
 	toArray: (obj) ->
 		arr = []
