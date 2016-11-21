@@ -22,21 +22,21 @@ underscore@1.0.10
 jquery@1.11.10
 random@1.0.10
 ejson@1.0.13
-coffeescript@1.11.1_2
+coffeescript@1.11.1_4
 rocketchat:streamer
 kadira:flow-router
 kadira:blaze-layout
 konecty:nrr
-less@2.7.6
+less@2.7.8
 underscorestring:underscore.string
 momentjs:moment
 mizzao:timesync
 reactive-var@1.0.11
-accounts-password@1.3.1
+accounts-password@1.3.3
 tap:i18n
 # kevohagan:sweetalert
 smoral:sweetalert
-ecmascript@0.5.9
+ecmascript@0.6.1
 es5-shim@4.6.15
 standard-minifier-css@1.3.2
 standard-minifier-js@1.2.1
