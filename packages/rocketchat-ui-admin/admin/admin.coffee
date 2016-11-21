@@ -1,3 +1,4 @@
+import toastr from 'toastr'
 TempSettings = new Meteor.Collection null
 Template.admin.onCreated ->
 	if not RocketChat.settings.cachedCollectionPrivate?

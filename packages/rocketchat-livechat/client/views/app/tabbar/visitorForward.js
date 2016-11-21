@@ -1,3 +1,4 @@
+import toastr from 'toastr';
 Template.visitorForward.helpers({
 	visitor() {
 		return Template.instance().visitor.get();
