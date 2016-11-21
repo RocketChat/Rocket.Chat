@@ -43,6 +43,12 @@ Template.adminImportPrepare.events
 						handleError(error)
 						return
 
+					if !data
+						console.warn 'The importer ' + importer.key + ' is not set up correctly, as it did not return any data.'
+						toastr.error t('Importer_not_setup')
+						template.preparing.set false
+						return
+
 					if data.step
 						console.warn 'Invalid file.'
 						toastr.error t('Invalid_Export_File', importer.key)

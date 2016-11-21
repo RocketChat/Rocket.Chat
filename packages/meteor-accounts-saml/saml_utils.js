@@ -309,7 +309,7 @@ SAML.prototype.validateLogoutResponse = function(samlResponse, callback) {
 
 SAML.prototype.validateResponse = function(samlResponse, relayState, callback) {
 	var self = this;
-	var xml = new Buffer(samlResponse, 'base64').toString('ascii');
+	var xml = new Buffer(samlResponse, 'base64').toString('utf8');
 	// We currently use RelayState to save SAML provider
 	if (Meteor.settings.debug) {
 		console.log('Validating response with relay state: ' + xml);
