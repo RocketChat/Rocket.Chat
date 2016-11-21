@@ -1,3 +1,4 @@
+import toastr from 'toastr';
 /* globals LivechatOfficeHour */
 import moment from 'moment';
 

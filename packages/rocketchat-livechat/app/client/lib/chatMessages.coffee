@@ -1,3 +1,4 @@
+import toastr from 'toastr'
 class @ChatMessages
 	init: (node) ->
 		this.editing = {}

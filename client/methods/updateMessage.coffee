@@ -1,4 +1,5 @@
 import moment from 'moment'
+import toastr from 'toastr'
 
 Meteor.methods
 	updateMessage: (message) ->
