@@ -1,3 +1,5 @@
+import moment from 'moment'
+
 Template.viewLogs.onCreated ->
 	@subscribe 'stdout'
 	@atBottom = true
