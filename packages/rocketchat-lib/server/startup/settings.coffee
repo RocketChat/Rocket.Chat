@@ -185,6 +185,8 @@ RocketChat.settings.addGroup 'Message', ->
 	@add 'Message_AudioRecorderEnabled', true, { type: 'boolean', public: true, i18nDescription: 'Message_AudioRecorderEnabledDescription' }
 	@add 'Message_GroupingPeriod', 300, { type: 'int', public: true, i18nDescription: 'Message_GroupingPeriodDescription' }
 	@add 'API_Embed', true, { type: 'boolean', public: true }
+	@add 'API_EmbedCacheExpirationDays', 30, { type: 'int', public: false }
+	@add 'API_Embed_clear_cache_now', 'OEmbedCacheCleanup', { type: 'action', actionText: 'clear', i18nLabel: 'clear_cache_now' }
 	@add 'API_EmbedDisabledFor', '', { type: 'string', public: true, i18nDescription: 'API_EmbedDisabledFor_Description' }
 	@add 'API_EmbedIgnoredHosts', 'localhost, 127.0.0.1, 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16', { type: 'string', i18nDescription: 'API_EmbedIgnoredHosts_Description' }
 	@add 'API_EmbedSafePorts', '80, 443', { type: 'string' }
