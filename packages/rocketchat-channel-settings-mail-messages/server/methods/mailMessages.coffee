@@ -1,3 +1,5 @@
+import moment from 'moment'
+
 Meteor.methods
 	'mailMessages': (data) ->
 		if not Meteor.userId()

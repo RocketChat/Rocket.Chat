@@ -1,3 +1,4 @@
+import toastr from 'toastr';
 var ManagerUsers;
 
 Meteor.startup(function() {

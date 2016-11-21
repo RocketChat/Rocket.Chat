@@ -1,3 +1,4 @@
+import toastr from 'toastr'
 Template.avatarPrompt.onCreated ->
 	self = this
 	self.suggestions = new ReactiveVar
