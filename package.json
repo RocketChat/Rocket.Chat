@@ -65,6 +65,8 @@
     "babel-runtime": "^6.18.0",
     "bcrypt": "^0.8.7",
     "moment": "^2.16.0",
-    "moment-timezone": "^0.5.9"
+    "moment-timezone": "^0.5.9",
+    "jquery": "^3.1.1",
+    "toastr": "^2.1.2"
   }
 }

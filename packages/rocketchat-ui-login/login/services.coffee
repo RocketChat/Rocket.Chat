@@ -1,3 +1,4 @@
+import toastr from 'toastr'
 Meteor.startup ->
 	ServiceConfiguration.configurations.find({custom: true}).observe
 		added: (record) ->

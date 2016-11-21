@@ -22,7 +22,6 @@ caching-html-compiler@1.0.7
 callback-hook@1.0.10
 cfs:http-methods@0.0.32
 check@1.2.4
-chrismbeckett:toastr@2.1.2_1
 coffeescript@1.11.1_4
 dandv:caret-position@2.1.1
 ddp@1.2.5
