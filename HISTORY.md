@@ -1,5 +1,73 @@
 # History
 
+## 0.46.0, 2016-Nov-21
+
+### Upgraded to meteor 1.4.2.3 - Now uses NodeJS 4.6.2
+
+- Add a csv plain text importer (#2689)
+- Add a verified email toast
+- Add an area to the warnings piece and allow defining users to be part of channels.
+- Add channel renames to the importer tool
+- Add debug to build scripts
+- Add Hyper.sh
+- Add missing dependencies to rocketchat:lib
+- Add more tests
+- Add option to hide user muted/unmuted messages
+- Add option to remove the filesize restriction
+- Add path prefix to sidenav layout (#4798)
+- Add reaction importing capability for Slack
+- Add REST endpoint to set user avatar
+- Add scrollbar into the snippet view page
+- Add setting to Forget user session on window close
+- Add snippet message plugin
+- Add snippet page and file creation
+- Add syntax highlighting when a snippet is created
+- Add tabBar english translation
+- Add user account tests
+- Allow private groups and add warnings to the importers
+- Bot-helpers bugfix and new features
+- Change default button colors and font-weight
+- Change Jitsi iframe width to auto
+- Change user rooms verifications to subscriptions
+- Change utf8 names validation label
+- Disabling the snippet feature by default
+- Do not trigger livechat integration if room still open
+- Enable broadcast connection logs when log level is 2
+- Fix channels were the creator wasn't imported was causing issues (#4934, #4899, #3911)
+- Fix chevrons were backwards (#3581)
+- Fix errors related to user status on logout
+- Fix hubot-help path (#4807)
+- Fix ignore cdn_prefix setting if empty (#4546)
+- Fix LDAP filter users by their group (#4756)
+- Fix Message_AllowSnippeting setting checks
+- Fix sandstorm upload: UploadFS.Store.GetURL to return a relative URL
+- Fix slackbridge out to stop re-sending messages that go out
+- Fix the import progress not having the correct translations
+- Fix Url previews are broken (#4779)
+- Fixes the auto focus while using ctrl commands
+- Fixes the create new btn bug
+- List rocketchat:authorization as a dependency of rocketchat:lib
+- Move client tabs into tabBar folder
+- Provide the full avatar url when posting out to Slack
+- Reactions need to be ran as the user who reacted and fix edits not showing
+- Remove log and useless else condition.
+- Remove online status class from channels
+- Remove unused ChatSnippetMessage class
+- Remove unused mime-type dependency
+- Remove unused settings and add translation
+- Replace erroneous head tags with header tags
+- Sandstorm build: use node and npm from Meteor dev bundle, and don't use sudo.
+- Standardising buttons appearance
+- Support symbolic link integration
+- Update Autolinker to 1.3.2
+- Update blaze
+- Update buffer to string conversion using utf8
+- Update FileUpload.js
+- Update LESSHat from version: v3.0.2 (2014-06-17) to version: v4.1.0 (2016-07-19)
+- Using --headless instead of METEOR_PRETTY_OUTPUT=0
+- Using border-with on CSS to control borders
+- Validate user access on file upload
+
 ## 0.45.0, 2016-Oct-31
 
 - Add global keydown event handler
@@ -164,7 +232,7 @@
 
 ## 0.40.0, 2016-Sep-20
 
-### IMPORTANT: Upgraded to meteor 1.4.1.1 - Now uses NodeJS 4.5
+### Upgraded to meteor 1.4.1.1 - Now uses NodeJS 4.5
 
 - Add a minimalistic view for embedded layout
 - Add a setting to disable system notifications

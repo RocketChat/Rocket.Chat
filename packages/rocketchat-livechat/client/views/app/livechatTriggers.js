@@ -1,3 +1,4 @@
+import toastr from 'toastr';
 Template.livechatTriggers.helpers({
 	conditions() {
 		var trigger = Template.instance().trigger.get();

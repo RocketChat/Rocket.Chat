@@ -1,3 +1,5 @@
+import moment from 'moment';
+
 Template.livechatCurrentChats.helpers({
 	livechatRoom() {
 		return ChatRoom.find({ t: 'l' }, { sort: { ts: -1 } });
