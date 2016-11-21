@@ -86,7 +86,7 @@ Importer.HipChat = class Importer.HipChat extends Importer.Base
 		@addCountToTotal messagesCount
 
 		if tempUsers.length is 0 or tempRooms.length is 0 or messagesCount is 0
-			@logger.warn "The loaded users count #{tempUsers.length}, the loaded channels #{tempChannels.length}, and the loaded messages #{messagesCount}"
+			@logger.warn "The loaded users count #{tempUsers.length}, the loaded channels #{tempRooms.length}, and the loaded messages #{messagesCount}"
 			@updateProgress Importer.ProgressStep.ERROR
 			return @getProgress()
 
@@ -94,7 +94,7 @@ Importer.HipChat = class Importer.HipChat extends Importer.Base
 			#HipChat's export doesn't contain bot users, from the data I've seen
 			return new Importer.SelectionUser user.user_id, user.name, user.email, user.is_deleted, false, !user.is_bot
 		selectionChannels = tempRooms.map (room) ->
-			return new Importer.SelectionChannel room.room_id, room.name, room.is_archived, true
+			return new Importer.SelectionChannel room.room_id, room.name, room.is_archived, true, false
 
 		@updateProgress Importer.ProgressStep.USER_SELECTION
 		return new Importer.Selection @name, selectionUsers, selectionChannels
@@ -234,6 +234,6 @@ Importer.HipChat = class Importer.HipChat extends Importer.Base
 			#HipChat's export doesn't contain bot users, from the data I've seen
 			return new Importer.SelectionUser user.user_id, user.name, user.email, user.is_deleted, false, !user.is_bot
 		selectionChannels = @channels.channels.map (room) ->
-			return new Importer.SelectionChannel room.room_id, room.name, room.is_archived, true
+			return new Importer.SelectionChannel room.room_id, room.name, room.is_archived, true, false
 
 		return new Importer.Selection @name, selectionUsers, selectionChannels

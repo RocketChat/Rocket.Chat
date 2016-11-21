@@ -13,16 +13,24 @@ FileUpload = {
 
 		const user = Meteor.user();
 		const room = RocketChat.models.Rooms.findOneById(file.rid);
+		const fileUploadAllowed = RocketChat.settings.get('FileUpload_Enabled');
 
 		if (RocketChat.authz.canAccessRoom(room, user) !== true) {
 			return false;
 		}
 
-		if (file.size > maxFileSize) {
-			const reason = TAPi18n.__('File_exceeds_allowed_size_of_bytes', {
-				size: filesize(maxFileSize)
-			}, user.language);
-			throw new Meteor.Error('error-file-too-large', reason);
+		if (!fileUploadAllowed) {
+			const reason = TAPi18n.__('FileUpload_Disabled', user.language);
+			throw new Meteor.Error('error-file-upload-disabled', reason);
+		}
+
+		if (parseInt(maxFileSize) > 0) {
+			if (file.size > maxFileSize) {
+				const reason = TAPi18n.__('File_exceeds_allowed_size_of_bytes', {
+					size: filesize(maxFileSize)
+				}, user.language);
+				throw new Meteor.Error('error-file-too-large', reason);
+			}
 		}
 
 		if (!RocketChat.fileUploadIsValidContentType(file.type)) {

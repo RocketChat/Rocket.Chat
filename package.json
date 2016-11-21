@@ -42,7 +42,7 @@
     "chat"
   ],
   "scripts": {
-    "start": "meteor run",
+    "start": "meteor npm i && meteor",
     "lint": "eslint .",
     "deploy": "npm run build && pm2 startOrRestart pm2.json",
     "chimp-watch": "chimp --ddp=http://localhost:3000 --watch --mocha --path=tests",
@@ -58,10 +58,11 @@
     "email": "support@rocket.chat"
   },
   "devDependencies": {
-    "chimp": "^0.40.7",
-    "eslint": "^3.1.1"
+    "chimp": "^0.41.2",
+    "eslint": "^3.10.2"
   },
   "dependencies": {
+    "babel-runtime": "^6.18.0",
     "bcrypt": "^0.8.7"
   }
 }
