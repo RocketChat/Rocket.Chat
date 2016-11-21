@@ -552,6 +552,18 @@ class ModelsBaseCache extends EventEmitter {
 			fieldsToGet.push('_id');
 		}
 
+		let pickFields = (obj, fields) => {
+			let picked = {};
+			fields.forEach((field) => {
+				if (field.indexOf('.') !== -1) {
+					objectPath.set(picked, field, objectPath.get(obj, field));
+				} else {
+					picked[field] = obj[field];
+				}
+			});
+			return picked;
+		};
+
 		if (fieldsToRemove.length > 0 || fieldsToGet.length > 0) {
 			if (Array.isArray(result)) {
 				result = result.map((record) => {
@@ -560,7 +572,7 @@ class ModelsBaseCache extends EventEmitter {
 					}
 
 					if (fieldsToGet.length > 0) {
-						return _.pick(record, ...fieldsToGet);
+						return pickFields(record, fieldsToGet);
 					}
 				});
 			} else {
@@ -569,7 +581,7 @@ class ModelsBaseCache extends EventEmitter {
 				}
 
 				if (fieldsToGet.length > 0) {
-					return _.pick(result, ...fieldsToGet);
+					return pickFields(result, fieldsToGet);
 				}
 			}
 		}
