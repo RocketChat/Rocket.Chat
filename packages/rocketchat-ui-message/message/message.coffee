@@ -1,3 +1,5 @@
+import moment from 'moment'
+
 Template.message.helpers
 	isBot: ->
 		return 'bot' if this.bot?

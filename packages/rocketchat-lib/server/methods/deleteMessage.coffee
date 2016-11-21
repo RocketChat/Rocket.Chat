@@ -1,3 +1,5 @@
+import moment from 'moment'
+
 Meteor.methods
 	deleteMessage: (message) ->
 
