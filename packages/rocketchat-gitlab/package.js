@@ -5,6 +5,7 @@ Package.describe({
 });
 
 Package.onUse(function(api) {
+	api.use('ecmascript');
 	api.use('coffeescript');
 	api.use('rocketchat:lib');
 	api.use('rocketchat:custom-oauth');
