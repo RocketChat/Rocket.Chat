@@ -1,3 +1,4 @@
+import toastr from 'toastr';
 /* globals LivechatIntegration */
 Template.livechatIntegrations.helpers({
 	webhookUrl() {

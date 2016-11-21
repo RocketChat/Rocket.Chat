@@ -1,3 +1,4 @@
+import toastr from 'toastr';
 Meteor.startup(function() {
 	Tracker.autorun(function() {
 		var user = Meteor.user();
