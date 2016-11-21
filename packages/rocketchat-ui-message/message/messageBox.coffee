@@ -77,7 +77,15 @@ Template.messageBox.helpers
 		return RocketChat.settings.get('FileUpload_MediaTypeWhiteList')
 
 	showFileUpload: ->
-		return RocketChat.settings.get('FileUpload_Enabled')
+		if (RocketChat.settings.get('FileUpload_Enabled'))
+			roomData = Session.get('roomData' + this._id)
+			if roomData?.t is 'd'
+				return RocketChat.settings.get('FileUpload_Enabled_Direct')
+			else
+				return true
+		else
+			return RocketChat.settings.get('FileUpload_Enabled')
+
 
 	showMic: ->
 		return Template.instance().showMicButton.get()
@@ -88,13 +96,6 @@ Template.messageBox.helpers
 	showSend: ->
 		if not Template.instance().isMessageFieldEmpty.get()
 			return 'show-send'
-
-	showFileUpload: ->
-		roomData = Session.get('roomData' + this._id)
-		if roomData?.t is 'd'
-			return RocketChat.settings.get('FileUpload_Enabled_Direct')
-		else
-			return true
 
 	showLocation: ->
 		return RocketChat.Geolocation.get() isnt false
