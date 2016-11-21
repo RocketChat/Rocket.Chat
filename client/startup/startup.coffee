@@ -59,7 +59,9 @@ Meteor.startup ->
 
 		status = undefined
 		Tracker.autorun ->
-		  if Meteor.user()?.status isnt status
-		    status = Meteor.user().status
-		    fireGlobalEvent('status-changed', status)
+			return if not Meteor.userId()
+
+			if Meteor.user()?.status isnt status
+				status = Meteor.user().status
+				fireGlobalEvent('status-changed', status)
 	)
