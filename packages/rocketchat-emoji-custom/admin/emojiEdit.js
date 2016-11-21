@@ -1,3 +1,4 @@
+import toastr from 'toastr';
 /* globals isSetNotNull */
 Template.emojiEdit.helpers({
 	emoji() {

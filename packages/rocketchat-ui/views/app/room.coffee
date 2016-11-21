@@ -1,3 +1,5 @@
+import moment from 'moment'
+
 socialSharing = (options = {}) ->
 	window.plugins.socialsharing.share(options.message, options.subject, options.file, options.link)
 

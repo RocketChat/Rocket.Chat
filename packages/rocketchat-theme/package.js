@@ -10,6 +10,7 @@ Package.onUse(function(api) {
 	api.use('rocketchat:logger');
 	api.use('rocketchat:assets');
 	api.use('coffeescript');
+	api.use('ecmascript');
 	api.use('underscore');
 	api.use('webapp');
 	api.use('webapp-hashing');
