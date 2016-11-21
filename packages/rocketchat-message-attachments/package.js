@@ -8,6 +8,7 @@ Package.describe({
 Package.onUse(function(api) {
 	api.use([
 		'templating',
+		'ecmascript',
 		'coffeescript',
 		'underscore',
 		'rocketchat:lib'

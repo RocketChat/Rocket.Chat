@@ -144,7 +144,6 @@ kadira:flow-router
 kenton:accounts-sandstorm
 mizzao:autocomplete
 mizzao:timesync
-momentjs:moment
 mrt:reactive-store
 mystor:device-detection
 nimble:restivus

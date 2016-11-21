@@ -1,3 +1,5 @@
+import moment from 'moment';
+
 Template.livechatAppearance.helpers({
 	previewState() {
 		return Template.instance().previewState.get();
