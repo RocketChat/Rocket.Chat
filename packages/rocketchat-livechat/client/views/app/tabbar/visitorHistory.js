@@ -1,3 +1,5 @@
+import moment from 'moment';
+
 Template.visitorHistory.helpers({
 	historyLoaded() {
 		return !Template.instance().loadHistory.ready();

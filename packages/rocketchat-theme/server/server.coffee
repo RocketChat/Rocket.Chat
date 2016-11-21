@@ -8,17 +8,23 @@ logger = new Logger 'rocketchat:theme',
 			type: 'info'
 
 
+WebApp.rawConnectHandlers.use (req, res, next) ->
+	path = req.url.split("?")[0]
+	if (path == '/__cordova/theme.css' || path == '/theme.css')
+		css = RocketChat.theme.getCss()
+		hash = crypto.createHash('sha1').update(css).digest('hex')
+		res.setHeader('Content-Type', 'text/css; charset=UTF-8')
+		res.setHeader('ETag', '"' + hash + '"')
+		res.write(css)
+		res.end()
+	else
+		next()
+
 calculateClientHash = WebAppHashing.calculateClientHash
 WebAppHashing.calculateClientHash = (manifest, includeFilter, runtimeConfigOverride) ->
 	css = RocketChat.theme.getCss()
 
 	if css.trim() isnt ''
-		WebAppInternals.staticFiles['/__cordova/theme.css'] = WebAppInternals.staticFiles['/theme.css'] =
-			cacheable: true
-			sourceMapUrl: undefined
-			type: 'css'
-			content: css
-
 		hash = crypto.createHash('sha1').update(css).digest('hex')
 
 		themeManifestItem = _.find manifest, (item) -> return item.path is 'app/theme.css'

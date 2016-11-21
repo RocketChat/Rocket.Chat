@@ -2,6 +2,8 @@
  * Derivative colours (fixed variants of inherited variables)
  */
 
+@default-action-color: darken(@secondary-background-color, 15%);
+@default-action-contrast: contrast(@default-action-color, #444);
 @primary-background-contrast: contrast(@primary-background-color, #444);
 @primary-action-contrast: contrast(@primary-action-color, #444);
 @secondary-action-contrast: contrast(@secondary-action-color, #444);
@@ -623,7 +625,7 @@ i.status-offline {
 
 // new layout buttons
 .button {
-	.buttonColors(@secondary-action-contrast, @secondary-action-color);
+	.buttonColors(@default-action-contrast, @default-action-color);
 	&.primary {
 		.buttonColors(@primary-action-contrast, @primary-action-color);
 	}

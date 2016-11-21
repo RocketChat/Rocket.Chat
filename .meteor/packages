@@ -133,7 +133,6 @@ konecty:multiple-instances-status
 konecty:nrr
 konecty:user-presence
 
-chrismbeckett:toastr
 dispatch:run-as-user
 francocatena:status
 jalik:ufs
@@ -144,7 +143,6 @@ kadira:flow-router
 kenton:accounts-sandstorm
 mizzao:autocomplete
 mizzao:timesync
-momentjs:moment
 mrt:reactive-store
 mystor:device-detection
 nimble:restivus

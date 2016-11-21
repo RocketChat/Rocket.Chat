@@ -1,3 +1,4 @@
+import toastr from 'toastr'
 Template.integrationsOutgoing.onCreated ->
 	@record = new ReactiveVar
 		username: 'rocket.cat'

@@ -1,3 +1,4 @@
+import toastr from 'toastr';
 this.handleError = function(error, useToastr = true) {
 	if (_.isObject(error.details)) {
 		for (var key in error.details) {

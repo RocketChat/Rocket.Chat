@@ -1,3 +1,5 @@
+import moment from 'moment';
+
 class LivechatOfficeHour extends RocketChat.models._Base {
 	constructor() {
 		super('livechat_office_hour');

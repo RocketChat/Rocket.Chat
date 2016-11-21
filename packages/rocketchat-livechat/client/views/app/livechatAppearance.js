@@ -1,3 +1,6 @@
+import moment from 'moment';
+import toastr from 'toastr';
+
 Template.livechatAppearance.helpers({
 	previewState() {
 		return Template.instance().previewState.get();
