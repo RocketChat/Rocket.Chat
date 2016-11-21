@@ -7,6 +7,7 @@ Package.describe({
 
 Package.on_use(function(api) {
 	api.use(['rocketchat:lib'], 'server');
+	api.use(['ecmascript'], 'server');
 	api.use(['coffeescript'], 'server');
 	api.use(['routepolicy', 'webapp', 'underscore', 'service-configuration'], 'server');
 	api.use(['http', 'accounts-base'], ['client', 'server']);
