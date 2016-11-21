@@ -6,6 +6,7 @@ Package.describe({
 
 Package.onUse(function(api) {
 	api.use([
+		'ecmascript',
 		'coffeescript'
 	], 'client');
 	api.addFiles([
