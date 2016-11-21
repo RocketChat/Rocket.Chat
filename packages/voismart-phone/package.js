@@ -39,6 +39,7 @@ Package.onUse(function(api) {
             'client/phone.coffee',
             'client/phoneSettings.coffee',
             'client/phoneButtons.coffee',
+			'client/phoneSearch.coffee',
             'client/tone.coffee'
     ], 'client');
 

@@ -1,4 +1,4 @@
-<template name="phoneSearch">         
+<template name="phoneSearch">
         {{#if contacts}}
             {{#each contacts}}
             <div class="phone-search-content">
@@ -8,14 +8,14 @@
                     </div>
                 {{else}}
                     <div class="thumb">
-                        {{> avatar username=sn}}
+						{{> avatar username=(urlify sn)}}
                     </div>
                 {{/if}}
                 <div class="phone-search-contact">
                     <div class="phone-search-contact-sn">
                         <span>{{sn}}&nbsp;{{givenName}}</span>
                     </div>
-                
+
                     {{#each telephone in telephoneNumber}}
                         <div class="phone-search-contact-number">
                             <span>{{telephone}}</span>
