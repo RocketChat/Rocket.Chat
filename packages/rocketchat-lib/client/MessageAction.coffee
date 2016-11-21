@@ -1,3 +1,5 @@
+import moment from 'moment'
+
 RocketChat.MessageAction = new class
 	buttons = new ReactiveVar {}
 

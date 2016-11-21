@@ -1,4 +1,5 @@
 /* globals LivechatOfficeHour */
+import moment from 'moment';
 
 Template.livechatOfficeHours.helpers({
 	days() {

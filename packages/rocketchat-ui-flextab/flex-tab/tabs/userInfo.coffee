@@ -1,3 +1,5 @@
+import moment from 'moment'
+
 Template.userInfo.helpers
 	name: ->
 		user = Template.instance().user.get()
