@@ -9,6 +9,7 @@ Package.onUse(function(api) {
 	api.use('oauth');
 	api.use('oauth2');
 	api.use('underscore');
+	api.use('ecmascript');
 	api.use('coffeescript');
 	api.use('accounts-oauth');
 	api.use('service-configuration');

@@ -3,7 +3,9 @@
  */
 
 @primary-action-color: @action-buttons-color;
-@secondary-action-color: @primary-font-color;
+@secondary-action-color: lighten(@primary-action-color, 25%);
+@default-action-color: darken(@secondary-background-color, 15%);
+@default-action-contrast: contrast(@default-action-color, #444);
 @success-color: rgba(53, 172, 25, 1.0);
 @error-color: rgba(188, 32, 49, 1.0);
 @pending-color: #fcb316;
@@ -229,7 +231,7 @@ label.required:after {
 
 // new layout buttons
 .button {
-	.buttonColors(@secondary-action-contrast, @secondary-action-color);
+	.buttonColors(@default-action-contrast, @default-action-color);
 	&.primary {
 		.buttonColors(@primary-action-contrast, @primary-action-color);
 	}

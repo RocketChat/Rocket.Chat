@@ -1,3 +1,5 @@
+import moment from 'moment';
+
 RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 	// skips this callback if the message was edited
 	if (message.editedAt) {
