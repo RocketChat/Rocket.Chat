@@ -76,6 +76,9 @@ Template.messageBox.helpers
 	fileUploadAllowedMediaTypes: ->
 		return RocketChat.settings.get('FileUpload_MediaTypeWhiteList')
 
+	showFileUpload: ->
+		return RocketChat.settings.get('FileUpload_Enabled')
+
 	showMic: ->
 		return Template.instance().showMicButton.get()
 
