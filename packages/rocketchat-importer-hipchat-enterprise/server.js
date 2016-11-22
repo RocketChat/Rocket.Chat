@@ -10,7 +10,7 @@ Importer.HipChatEnterprise = class ImporterHipChatEnterprise extends Importer.Ba
 		this.tarStream = Npm.require('tar-stream');
 		this.extract = this.tarStream.extract();
 		this.path = require('path');
-		// this.messages = new Map();
+		this.messages = new Map();
 	}
 
 	prepare(dataURI, sentContentType, fileName) {
@@ -20,26 +20,29 @@ Importer.HipChatEnterprise = class ImporterHipChatEnterprise extends Importer.Ba
 		const tempRooms = [];
 		const tempMessages = new Map();
 		const promise = new Promise((resolve, reject) => {
-			this.extract.on('entry', (header, stream, next) => {
+			this.extract.on('entry', Meteor.bindEnvironment((header, stream, next) => {
 				if (header.name.indexOf('.json') !== -1) {
 					const info = this.path.parse(header.name);
 
-					stream.on('data', (chunk) => {
+					stream.on('data', Meteor.bindEnvironment((chunk) => {
 						const file = JSON.parse(chunk);
 
 						if (info.base === 'users.json') {
+							super.updateProgress(Importer.ProgressStep.PREPARING_USERS);
 							for (let u of file) {
 								tempUsers.push({
 									id: u.User.id,
 									email: u.User.email,
 									name: u.User.name,
 									username: u.User.mention_name,
-									avatar: u.User.avatar,
+									avatar: u.User.avatar.replace(/\n/g, ''),
 									timezone: u.User.timezone,
 									isDeleted: u.User.is_deleted
 								});
 							}
+							console.log('Users', tempUsers);
 						} else if (info.base === 'rooms.json') {
+							super.updateProgress(Importer.ProgressStep.PREPARING_CHANNELS);
 							for (let r of file) {
 								tempRooms.push({
 									id: r.Room.id,
@@ -51,7 +54,7 @@ Importer.HipChatEnterprise = class ImporterHipChatEnterprise extends Importer.Ba
 									topic: r.Room.topic
 								});
 							}
-							console.log(tempRooms);
+							console.log('Rooms', tempRooms);
 						} else if (info.base === 'history.json') {
 							const dirSplit = info.dir.split('/'); //['.', 'users', '1']
 							if (dirSplit[1] === 'users') {
@@ -74,13 +77,14 @@ Importer.HipChatEnterprise = class ImporterHipChatEnterprise extends Importer.Ba
 											type: 'topic',
 											id: `hipchatenterprise-${dirSplit[2]}-${m.TopicRoomMessage.id}`,
 											userId: m.TopicRoomMessage.sender.id,
-											ts: new Date(m.TopicRoomMessage.timestamp.split(' ')[0])
+											ts: new Date(m.TopicRoomMessage.timestamp.split(' ')[0]),
+											text: m.TopicRoomMessage.message
 										});
 									} else {
 										console.warn('HipChat Enterprise importer isn\'t configured to handle this message:', m);
 									}
 								}
-								console.log(roomMsgs);
+								console.log(`${roomIdenifer} messages`, roomMsgs);
 								tempMessages.set(roomIdenifer, roomMsgs);
 							} else {
 								console.warn(`HipChat Enterprise importer isn't configured to handle "${dirSplit[1]}" files.`);
@@ -89,28 +93,74 @@ Importer.HipChatEnterprise = class ImporterHipChatEnterprise extends Importer.Ba
 							//What are these files!?
 							console.log(`HipChat Enterprise importer doesn't know what to do with the file "${header.name}" :o`, info);
 						}
-					});
+					}));
 
 					stream.on('end', () => next());
 					stream.on('error', () => next());
 				} else {
 					next();
 				}
-			});
+			}));
 
 			this.extract.on('error', (err) => {
 				console.warn('extract error:', err);
 				reject();
 			});
 
-			this.extract.on('finish', () => {
+			this.extract.on('finish', Meteor.bindEnvironment(() => {
+				// Insert the users record, eventually this might have to be split into several ones as well
+				// if someone tries to import a several thousands users instance
+				const usersId = this.collection.insert({ 'import': this.importRecord._id, 'importer': this.name, 'type': 'users', 'users': tempUsers });
+				this.users = this.collection.findOne(usersId);
+				super.updateRecord({ 'count.users': tempUsers.length });
+				super.addCountToTotal(tempUsers.length);
+
+				// Insert the channels records.
+				const channelsId = this.collection.insert({ 'import': this.importRecord._id, 'importer': this.name, 'type': 'channels', 'channels': tempRooms });
+				this.channels = this.collection.findOne(channelsId);
+				super.updateRecord({ 'count.channels': tempRooms.length });
+				super.addCountToTotal(tempRooms.length);
+
+				// Save the messages records to the import record for `startImport` usage
+				super.updateProgress(Importer.ProgressStep.PREPARING_MESSAGES);
+				let messagesCount = 0;
+				for (let [channel, msgs] of tempMessages.entries()) {
+					if (!this.messages.get(channel)) {
+						this.messages.set(channel, new Map());
+					}
+
+					messagesCount += msgs.length;
+					super.updateRecord({ 'messagesstatus': channel });
+
+					if (Importer.Base.getBSONSize(msgs) > Importer.Base.MaxBSONSize) {
+						Importer.Base.getBSONSafeArraysFromAnArray(msgs).forEach((splitMsg, i) => {
+							const messagesId = this.collection.insert({ 'import': this.importRecord._id, 'importer': this.name, 'type': 'messages', 'name': `${channel}/${i}`, 'messages': splitMsg });
+							this.messages.get(channel).set(`${channel}.${i}`, this.collection.findOne(messagesId));
+						});
+					} else {
+						const messagesId = this.collection.insert({ 'import': this.importRecord._id, 'importer': this.name, 'type': 'messages', 'name': `${channel}`, 'messages': msgs });
+						this.messages.get(channel).set(channel, this.collection.findOne(messagesId));
+					}
+				}
+
+				super.updateRecord({ 'count.messages': messagesCount, 'messagesstatus': null });
+				super.addCountToTotal(messagesCount);
+
+				//Ensure we have some users, channels, and messages
+				if (tempUsers.length === 0 || tempRooms.length === 0 || messagesCount === 0) {
+					this.logger.warn(`The loaded users count ${tempUsers.length}, the loaded rooms ${tempRooms.length}, and the loaded messages ${messagesCount}`);
+					super.updateProgress(Importer.ProgressStep.ERROR);
+					reject();
+					return;
+				}
+
 				const selectionUsers = tempUsers.map((u) => new Importer.SelectionUser(u.id, u.username, u.email, u.isDeleted, false, true));
 				const selectionChannels = tempRooms.map((r) => new Importer.SelectionChannel(r.id, r.name, r.isArchived, true, r.isPrivate));
 
-				// super.updateProgress(Importer.ProgressStep.USER_SELECTION);
+				super.updateProgress(Importer.ProgressStep.USER_SELECTION);
 
 				resolve(new Importer.Selection(this.name, selectionUsers, selectionChannels));
-			});
+			}));
 
 			//Wish I could make this cleaner :(
 			const split = dataURI.split(',');
@@ -125,13 +175,163 @@ Importer.HipChatEnterprise = class ImporterHipChatEnterprise extends Importer.Ba
 
 	startImport(importSelection) {
 		super.startImport(importSelection);
-		// const started = Date.now();
+		const started = Date.now();
 
-		//Went it's done:
-		// super.updateProgress(Importer.ProgressStep.FINISHING);
-		// super.updateProgress(Importer.ProgressStep.DONE);
-		// const timeTook = Date.now() - started;
-		// this.logger.log(`CSV Import took ${timeTook} milliseconds.`);
+		//Ensure we're only going to import the users that the user has selected
+		for (let user of importSelection.users) {
+			for (let u of this.users.users) {
+				if (u.id === user.user_id) {
+					u.do_import = user.do_import;
+				}
+			}
+		}
+		this.collection.update({ _id: this.users._id }, { $set: { 'users': this.users.users }});
+
+		//Ensure we're only importing the channels the user has selected.
+		for (let channel of importSelection.channels) {
+			for (let c of this.channels.channels) {
+				if (c.id === channel.channel_id) {
+					c.do_import = channel.do_import;
+				}
+			}
+		}
+		this.collection.update({ _id: this.channels._id }, { $set: { 'channels': this.channels.channels }});
+
+		const startedByUserId = Meteor.userId();
+		Meteor.defer(() => {
+			super.updateProgress(Importer.ProgressStep.IMPORTING_USERS);
+			//Import the users
+			for (let u of this.users.users) {
+				this.logger.debug(`Starting the user import: ${u.username} and are we importing them? ${u.do_import}`);
+				if (!u.do_import) {
+					continue;
+				}
+
+				Meteor.runAsUser(startedByUserId, () => {
+					let existantUser = RocketChat.models.Users.findOneByEmailAddress(u.email);
+
+					//If we couldn't find one by their email address, try to find an existing user by their username
+					if (!existantUser) {
+						existantUser = RocketChat.models.Users.findOneByUsername(u.username);
+					}
+
+					if (existantUser) {
+						//since we have an existing user, let's try a few things
+						u.rocketId = existantUser._id;
+						RocketChat.models.Users.update({ _id: u.rocketId }, { $addToSet: { importIds: u.id } });
+					} else {
+						const userId = Accounts.createUser({ email: u.email, password: Date.now() + u.name + u.email.toUpperCase() });
+						Meteor.runAsUser(userId, () => {
+							Meteor.call('setUsername', u.username);
+							Meteor.call('joinDefaultChannels', true);
+							Meteor.call('setAvatarFromService', `data:image/png;base64,${u.avatar}`);
+							//TODO: Use moment timezone to calc the time offset - Meteor.call 'userSetUtcOffset', user.tz_offset / 3600
+							RocketChat.models.Users.setName(userId, u.name);
+
+							//Deleted users are 'inactive' users in Rocket.Chat
+							if (u.deleted) {
+								Meteor.call('setUserActiveStatus', userId, false);
+							}
+
+							RocketChat.models.Users.update({ _id: userId }, { $addToSet: { importIds: u.id } });
+							u.rocketId = userId;
+						});
+					}
+
+					super.addCountCompleted(1);
+				});
+			}
+			this.collection.update({ _id: this.users._id }, { $set: { 'users': this.users.users }});
+
+			//Import the channels
+			super.updateProgress(Importer.ProgressStep.IMPORTING_CHANNELS);
+			for (let c of this.channels.channels) {
+				if (!c.do_import) {
+					continue;
+				}
+
+				Meteor.runAsUser(startedByUserId, () => {
+					let existantRoom = RocketChat.models.Rooms.findOneByName(c.name);
+					//If the room exists or the name of it is 'general', then we don't need to create it again
+					if (existantRoom || c.name.toUpperCase() === 'GENERAL') {
+						c.rocketId = c.name.toUpperCase() === 'GENERAL' ? 'GENERAL' : existantRoom._id;
+						RocketChat.models.Rooms.update({ _id: c.rocketId }, { $addToSet: { importIds: c.id } });
+					} else {
+						//Find the rocketchatId of the user who created this channel
+						let creatorId = startedByUserId;
+						for (let u of this.users.users) {
+							if (u.id === c.creator && u.do_import) {
+								creatorId = u.rocketId;
+							}
+						}
+
+						//Create the channel
+						Meteor.runAsUser(creatorId, () => {
+							const roomInfo = Meteor.call(c.isPrivate ? 'createPrivateGroup' : 'createChannel', c.name, []);
+							c.rocketId = roomInfo.rid;
+						});
+
+						RocketChat.models.Rooms.update({ _id: c.rocketId }, { $set: { ts: c.created, topic: c.topic }, $addToSet: { importIds: c.id } });
+					}
+
+					super.addCountCompleted(1);
+				});
+			}
+			this.collection.update({ _id: this.channels._id }, { $set: { 'channels': this.channels.channels }});
+
+			//Import the Messages
+			super.updateProgress(Importer.ProgressStep.IMPORTING_MESSAGES);
+			for (let [ch, messagesMap] of this.messages.entries()) {
+				const hipChannel = this.getChannelFromRoomIdentifier(ch);
+				if (!hipChannel.do_import) {
+					continue;
+				}
+
+				const room = RocketChat.models.Rooms.findOneById(hipChannel.rocketId, { fields: { usernames: 1, t: 1, name: 1 } });
+				Meteor.runAsUser(startedByUserId, () => {
+					for (let [msgGroupData, msgs] of messagesMap.entries()) {
+						console.log('Loop through messages in the room:', room);
+						console.log(`Msg group data: ${msgGroupData} messages:`, msgs);
+						super.updateRecord({ 'messagesstatus': `${ch}/${msgGroupData}.${msgs.messages.length}` });
+						for (let msg of msgs.messages) {
+							if (isNaN(msg.ts)) {
+								this.logger.warn(`Timestamp on a message in ${ch}/${msgGroupData} is invalid`);
+								super.addCountCompleted(1);
+								continue;
+							}
+
+							const creator = this.getUserFromUserId(msg.userId);
+							if (creator) {
+								switch (msg.type) {
+									case 'user':
+										RocketChat.sendMessage(creator, {
+											_id: msg.id,
+											ts: msg.ts,
+											msg: msg.text,
+											rid: room._id,
+											u: {
+												_id: creator._id,
+												username: creator.username
+											}
+										}, room, true);
+										break;
+									case 'topic':
+										RocketChat.models.Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser('room_changed_topic', room._id, msg.text, creator, { _id: msg.id, ts: msg.ts });
+										break;
+								}
+							}
+
+							super.addCountCompleted(1);
+						}
+					}
+				});
+			}
+
+			super.updateProgress(Importer.ProgressStep.FINISHING);
+			super.updateProgress(Importer.ProgressStep.DONE);
+			const timeTook = Date.now() - started;
+			this.logger.log(`HipChat Enterprise Import took ${timeTook} milliseconds.`);
+		});
 
 		return super.getProgress();
 	}
@@ -141,5 +341,21 @@ Importer.HipChatEnterprise = class ImporterHipChatEnterprise extends Importer.Ba
 		// const selectionChannels = this.channels.channels.map((c) => new Importer.SelectionChannel(c.id, c.name, false, true, c.isPrivate));
 
 		return new Importer.Selection(this.name, [], []);
+	}
+
+	getChannelFromRoomIdentifier(roomIdenifer) {
+		for (let ch of this.channels.channels) {
+			if (`rooms/${ch.id}` === roomIdenifer) {
+				return ch;
+			}
+		}
+	}
+
+	getUserFromUserId(userId) {
+		for (let u of this.users.users) {
+			if (u.id === userId) {
+				return RocketChat.models.Users.findOneById(u.rocketId, { fields: { username: 1 }});
+			}
+		}
 	}
 };
