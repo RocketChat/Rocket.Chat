@@ -41,6 +41,7 @@ Package.onUse(function(api) {
 	api.addFiles('lib/fireEvent.js', 'client');
 	api.addFiles('lib/iframeCommands.js', 'client');
 	api.addFiles('lib/jquery.swipebox.min.js', 'client');
+	api.addFiles('lib/jquery.swipebox.init.js', 'client');
 	api.addFiles('lib/menu.coffee', 'client');
 	api.addFiles('lib/modal.coffee', 'client');
 	api.addFiles('lib/Modernizr.js', 'client');
