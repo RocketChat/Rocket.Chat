@@ -8,7 +8,7 @@ class FlexTab extends Page {
 	get setOwnerBtn() { return browser.element('.set-owner'); }
 	get setModeratorBtn() { return browser.element('.set-moderator'); }
 	get muteUserBtn() { return browser.element('.mute-user'); }
-	get viewAllBtn() { return browser.element('.button.secondary.back'); }
+	get viewAllBtn() { return browser.element('.button.back'); }
 	get startVideoCall() { return browser.element('.start-video-call'); }
 	get startAudioCall() { return browser.element('.start-audio-call'); }
 	get showAll() { return browser.element('.see-all'); }
