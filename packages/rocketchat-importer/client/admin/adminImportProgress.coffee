@@ -1,3 +1,4 @@
+import toastr from 'toastr'
 Template.adminImportProgress.helpers
 	step: ->
 		return Template.instance().step.get()

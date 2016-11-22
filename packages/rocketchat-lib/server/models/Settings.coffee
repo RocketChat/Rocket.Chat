@@ -96,6 +96,19 @@ class ModelSettings extends RocketChat.models._Base
 
 		return @update query, update
 
+	updateValueAndEditorById: (_id, value, editor) ->
+		query =
+			blocked: { $ne: true }
+			value: { $ne: value }
+			_id: _id
+
+		update =
+			$set:
+				value: value
+				editor: editor
+
+		return @update query, update
+
 	updateValueNotHiddenById: (_id, value) ->
 		query =
 			_id: _id

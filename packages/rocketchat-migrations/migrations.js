@@ -1,3 +1,5 @@
+import moment from 'moment';
+
 /*
 	Adds migration capabilities. Migrations are defined like:
 

@@ -106,4 +106,9 @@ RocketChat.settings.addGroup('FileUpload', function() {
 			}
 		});
 	});
+
+	this.add('FileUpload_Enabled_Direct', true, {
+		type: 'boolean',
+		public: true
+	});
 });

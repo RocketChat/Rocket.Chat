@@ -1,3 +1,5 @@
+import moment from 'moment'
+
 Template.messageAttachment.helpers
 	fixCordova: (url) ->
 		if Meteor.isCordova and url?[0] is '/'

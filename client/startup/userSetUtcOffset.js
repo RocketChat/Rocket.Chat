@@ -1,3 +1,5 @@
+import moment from 'moment';
+
 Meteor.startup(function() {
 	Tracker.autorun(function() {
 		var user, utcOffset;

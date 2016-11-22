@@ -76,6 +76,10 @@ RocketChat.settings.add = (_id, value, options = {}) ->
 		$setOnInsert:
 			createdAt: new Date
 
+	if options.editor?
+		updateOperations.$setOnInsert.editor = options.editor
+		delete options.editor
+
 	if not options.value?
 		if options.force is true
 			updateOperations.$set.value = options.packageValue
@@ -163,11 +167,14 @@ RocketChat.settings.removeById = (_id) ->
 # Update a setting by id
 # @param {String} _id
 ###
-RocketChat.settings.updateById = (_id, value) ->
+RocketChat.settings.updateById = (_id, value, editor) ->
 	# console.log '[functions] RocketChat.settings.updateById -> '.green, 'arguments:', arguments
 
 	if not _id or not value?
 		return false
+
+	if editor?
+		return RocketChat.models.Settings.updateValueAndEditorById _id, value, editor
 
 	return RocketChat.models.Settings.updateValueById _id, value
 
