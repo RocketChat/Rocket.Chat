@@ -42,12 +42,6 @@ WebAppHashing.calculateClientHash = (manifest, includeFilter, runtimeConfigOverr
 
 	calculateClientHash.call this, manifest, includeFilter, runtimeConfigOverride
 
-
-setctionPerType =
-	'color': 'Colors'
-	'font': 'Fonts'
-
-
 RocketChat.theme = new class
 	variables: {}
 	packageCallbacks: []
@@ -131,7 +125,7 @@ RocketChat.theme = new class
 					process.emit('message', {refresh: 'client'})
 				, 200
 
-	addVariable: (type, name, value, persist=true) ->
+	addVariable: (type, name, value, section, persist=true, editor, allowedTypes) ->
 		@variables[name] =
 			type: type
 			value: value
@@ -140,16 +134,18 @@ RocketChat.theme = new class
 			config =
 				group: 'Layout'
 				type: type
-				section: setctionPerType[type]
+				editor: editor or type
+				section: section
 				public: false
+				allowedTypes: allowedTypes
 
 			RocketChat.settings.add "theme-#{type}-#{name}", value, config
 
-	addPublicColor: (name, value) ->
-		@addVariable 'color', name, value, true
+	addPublicColor: (name, value, section, editor='color') ->
+		@addVariable 'color', name, value, section, true, editor, ['color', 'expression']
 
 	addPublicFont: (name, value) ->
-		@addVariable 'font', name, value, true
+		@addVariable 'font', name, value, 'Fonts', true
 
 	getVariablesAsObject: ->
 		obj = {}
