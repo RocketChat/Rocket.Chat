@@ -9,8 +9,8 @@
 # New colors, used for shades on solid backgrounds
 # Defined range of transparencies reduces random colour variances
 alphaColors=
-  'transparent-darker': 'rgba(0,0,0,.15)'
-  'transparent-dark': 'rgba(0,0,0,.03)'
+  'transparent-darker': 'rgba(0,0,0,0.15)'
+  'transparent-dark': 'rgba(0,0,0,0.03)'
   'transparent-light': 'rgba(255,255,255,0.60)'
   'transparent-lighter': 'rgba(255,255,255,0.25)'
 
