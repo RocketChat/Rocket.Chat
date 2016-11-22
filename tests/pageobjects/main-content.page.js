@@ -86,6 +86,7 @@ class MainContent extends Page {
 	openMessageActionMenu() {
 		this.lastMessage.moveToObject();
 		this.messageOptionsBtn.click();
+		this.messageActionMenu.waitForVisible(5000);
 	}
 
 	//do one of the message actions, based on the "action" parameter inserted.
