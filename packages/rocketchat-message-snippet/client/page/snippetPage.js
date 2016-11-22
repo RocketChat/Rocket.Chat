@@ -1,4 +1,6 @@
 /* global SnippetedMessages */
+import moment from 'moment';
+
 Template.snippetPage.helpers({
 	snippet: function() {
 		return SnippetedMessages.findOne({ _id: FlowRouter.getParam('snippetId') });

@@ -1,3 +1,6 @@
+import moment from 'moment'
+import 'moment-timezone'
+
 Importer.HipChat = class Importer.HipChat extends Importer.Base
 	@RoomPrefix = 'hipchat_export/rooms/'
 	@UsersPrefix = 'hipchat_export/users/'

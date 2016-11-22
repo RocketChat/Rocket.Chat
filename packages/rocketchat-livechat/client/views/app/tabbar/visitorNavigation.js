@@ -1,3 +1,5 @@
+import moment from 'moment';
+
 Template.visitorNavigation.helpers({
 	loadingNavigation() {
 		return !Template.instance().pageVisited.ready();

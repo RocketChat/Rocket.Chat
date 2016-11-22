@@ -1,3 +1,4 @@
+import toastr from 'toastr'
 Template.loginForm.helpers
 	userName: ->
 		return Meteor.user()?.username
