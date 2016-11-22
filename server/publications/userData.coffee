@@ -23,5 +23,6 @@ Meteor.publish 'userData', ->
 			'services.password.bcrypt': 1
 			statusLivechat: 1 # @TODO create an API so a package could add fields here
 			photo: 1
+			photo_full: 1
 			declaration: 1
 			location: 1

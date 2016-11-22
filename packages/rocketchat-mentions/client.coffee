@@ -15,7 +15,6 @@ class MentionsClient
 				mentions.push mention
 
 			me = Meteor.user()?.username
-
 			if mentions.length isnt 0
 				mentions = _.unique mentions
 				mentions = mentions.join('|')
@@ -30,7 +29,11 @@ class MentionsClient
 					classes = 'mention-link'
 					if username is me
 						classes += ' mention-link-me'
-
+					user = Meteor.users.findOne({name:username})
+					if (!user)
+						user = Meteor.users.findOne({username:username})
+					if user?.name
+						return match.replace mention, "<a class=\"#{classes}\" data-username=\"#{username}\">@#{user.name}</a>"
 					return match.replace mention, "<a class=\"#{classes}\" data-username=\"#{username}\">#{mention}</a>"
 
 			channels = []
