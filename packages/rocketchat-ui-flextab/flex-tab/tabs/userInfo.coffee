@@ -122,8 +122,8 @@ Template.userInfo.events
 
 			if result?.rid?
                 FlowRouter.go('direct', { username: @username }, FlowRouter.current().queryParams, ->
-                if window.matchMedia("(max-width: 500px)").matches
-                    RocketChat.TabBar.closeFlex())                   
+		if window.matchMedia("(max-width: 500px)").matches
+			RocketChat.TabBar.closeFlex())                   
 
 	"click .flex-tab  .video-remote" : (e) ->
 		if RocketChat.TabBar.isFlexOpen()
