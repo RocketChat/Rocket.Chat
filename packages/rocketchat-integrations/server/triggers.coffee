@@ -235,14 +235,14 @@ ExecuteTriggerUrl = (url, trigger, message, room, tries=0) ->
 			if result?
 				logger.outgoing.error 'Error for trigger', trigger.name, 'to', url, result
 
-			if result.statusCode is 410
-				RocketChat.models.Integrations.remove _id: trigger._id
-				return
+				if result.statusCode is 410
+					RocketChat.models.Integrations.remove _id: trigger._id
+					return
 
-			if result.statusCode is 500
-				logger.outgoing.error 'Error [500] for trigger', trigger.name, 'to', url
-				logger.outgoing.error result.content
-				return
+				if result.statusCode is 500
+					logger.outgoing.error 'Error [500] for trigger', trigger.name, 'to', url
+					logger.outgoing.error result.content
+					return
 
 			if tries <= 6
 				# Try again in 0.1s, 1s, 10s, 1m40s, 16m40s, 2h46m40s and 27h46m40s
