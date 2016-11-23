@@ -389,6 +389,9 @@ Already a JavaScript developer?  Familiar with Meteor?  [Pick an issue](https://
 
 A lot of work has already gone into Rocket.Chat, but we have much bigger plans for it!
 
+### Contributor License Agreement
+
+Please review and sign our CLA at https://cla-assistant.io/RocketChat/Rocket.Chat
 
 # Credits
 
