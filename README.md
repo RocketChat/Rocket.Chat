@@ -362,7 +362,7 @@ Now just clone and start the app:
 ```sh
 git clone https://github.com/RocketChat/Rocket.Chat.git
 cd Rocket.Chat
-meteor
+meteor npm start
 ```
 
 If you are not a developer and just want to run the server - see [deployment methods](https://rocket.chat/docs/installation/paas-deployments/).
