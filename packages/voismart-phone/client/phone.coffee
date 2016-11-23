@@ -672,11 +672,11 @@ RocketChat.Phone = new class
 		_curCall = null
 
 	dialKey: (number, useVideo) ->
-		if !number
-			toastr.error TAPi18n.__('Empty_Number')
-			return
 
 		if !_curCall? and _callState is null
+			if !number
+				toastr.error TAPi18n.__('Empty_Number')
+				return
 			@newCall(number, useVideo)
 			return
 
