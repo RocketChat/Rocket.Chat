@@ -57,6 +57,9 @@ class MainContent extends Page {
 	get messagePopUpTitle() { return browser.element('.message-popup-title'); }
 	get messagePopUpItems() { return browser.element('.message-popup-items'); }
 	get messagePopUpFirstItem() { return browser.element('.popup-item.selected'); }
+	get settingLanguageSelect() { return browser.element('#language '); }
+	get settingLanguageEnglish() { return browser.element('[value="en"]'); }
+	get settingSaveBtn() { return browser.element('.button.save'); }
 
 	sendMessage(text) {
 		this.setTextToInput(text);
@@ -87,6 +90,14 @@ class MainContent extends Page {
 		this.lastMessage.moveToObject();
 		this.messageOptionsBtn.click();
 		this.messageActionMenu.waitForVisible(5000);
+	}
+
+	setLanguageToEnglish() {
+		this.settingLanguageSelect.click();
+		browser.pause(500);
+		this.settingLanguageEnglish.click();
+		browser.pause(300);
+		this.settingSaveBtn.click();
 	}
 
 	//do one of the message actions, based on the "action" parameter inserted.
