@@ -121,7 +121,7 @@ Template.userInfo.events
 				return handleError(error)
 
 			if result?.rid?
-				FlowRouter.go('direct', { username: @username }, FlowRouter.current().queryParams)
+				FlowRouter.go('direct', { username: @username }, FlowRouter.current().queryParams, RocketChat.TabBar.closeFlex())
 
 	"click .flex-tab  .video-remote" : (e) ->
 		if RocketChat.TabBar.isFlexOpen()
