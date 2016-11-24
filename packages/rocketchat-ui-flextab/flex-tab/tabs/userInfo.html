@@ -47,59 +47,59 @@
 
 				{{#if showAll}}
 					{{#if canDirectMessage user.username}}
-						<button class='button button-block pvt-msg'><span><i class='icon-chat'></i> {{_ "Conversation"}}</span></button>
+						<button class='button button-block primary pvt-msg'><span><i class='icon-chat'></i> {{_ "Conversation"}}</span></button>
 					{{/if}}
 					{{#if canSetOwner}}
 						{{#if isOwner}}
-							<button class="button button-block unset-owner lightblue"><span>{{_ "Remove_as_owner"}}</span></button>
+							<button class="button button-block danger unset-owner"><span>{{_ "Remove_as_owner"}}</span></button>
 						{{else}}
-							<button class="button button-block set-owner lightblue"><span>{{_ "Set_as_owner"}}</span></button>
+							<button class="button button-block secondary set-owner"><span>{{_ "Set_as_owner"}}</span></button>
 						{{/if}}
 					{{/if}}
 					{{#if canSetModerator}}
 						{{#if isModerator}}
-							<button class="button button-block unset-moderator lightblue"><span>{{_ "Remove_as_moderator"}}</span></button>
+							<button class="button button-block danger unset-moderator"><span>{{_ "Remove_as_moderator"}}</span></button>
 						{{else}}
-							<button class="button button-block set-moderator lightblue"><span>{{_ "Set_as_moderator"}}</span></button>
+							<button class="button button-block secondary set-moderator"><span>{{_ "Set_as_moderator"}}</span></button>
 						{{/if}}
-					{{/if}}
-					{{#if canRemoveUser}}
-						<button class="button button-block remove-user red"><span>{{_ "Remove_from_room"}}</span></button>
 					{{/if}}
 					{{#if canMuteUser}}
 						{{#if userMuted}}
-							<button class="button button-block unmute-user primary"><span>{{_ "Unmute_user"}}</span></button>
+							<button class="button button-block secondary unmute-user primary"><span>{{_ "Unmute_user"}}</span></button>
 						{{else}}
-							<button class="button button-block mute-user red"><span>{{_ "Mute_user"}}</span></button>
+							<button class="button button-block danger mute-user"><span>{{_ "Mute_user"}}</span></button>
 						{{/if}}
+					{{/if}}
+					{{#if canRemoveUser}}
+						<button class="button button-block danger remove-user"><span>{{_ "Remove_from_room"}}</span></button>
 					{{/if}}
 				{{/if}}
 
 				{{#unless hideAdminControls}}
 					{{#if hasPermission 'edit-other-user-info'}}
-					<button class='button lightblue edit-user button-block'><span><i class='icon-edit'></i> {{_ "Edit"}}</span></button>
+					<button class='button button-block primary edit-user'><span><i class='icon-edit'></i> {{_ "Edit"}}</span></button>
 					{{/if}}
 					{{#if hasPermission 'assign-admin-role'}}
 						{{#if hasAdminRole}}
-						<button class='button lightblue remove-admin button-block'><span><i class='icon-shield'></i> {{_ "Remove_Admin"}}</span></button>
+						<button class='button button-block danger remove-admin'><span><i class='icon-shield'></i> {{_ "Remove_Admin"}}</span></button>
 						{{else}}
-						<button class='button lightblue make-admin button-block'><span><i class='icon-shield'></i> {{_ "Make_Admin"}}</span></button>
+						<button class='button button-block secondary make-admin'><span><i class='icon-shield'></i> {{_ "Make_Admin"}}</span></button>
 						{{/if}}
 					{{/if}}
 					{{#if hasPermission 'edit-other-user-active-status'}}
 						{{#if active}}
-						<button class='button deactivate button-block'><span><i class='icon-block'></i> {{_ "Deactivate"}}</span></button>
+						<button class='button button-block danger deactivate'><span><i class='icon-block'></i> {{_ "Deactivate"}}</span></button>
 						{{else}}
-						<button class='button activate button-block'><span><i class='icon-ok-circled'></i> {{_ "Activate"}}</span></button>
+						<button class='button button-block secondary activate'><span><i class='icon-ok-circled'></i> {{_ "Activate"}}</span></button>
 						{{/if}}
 					{{/if}}
 					{{#if hasPermission 'delete-user'}}
-					<button class='button delete red button-block'><span><i class='icon-trash'></i> {{_ "Delete"}}</span></button>
+					<button class='button button-block danger delete'><span><i class='icon-trash'></i> {{_ "Delete"}}</span></button>
 					{{/if}}
 				{{/unless}}
 
 				{{#if showAll}}
-					<button class='button secondary back'><span>{{_ "View_All"}} <i class='icon-angle-right'></i></span></button>
+					<button class='button back'><span>{{_ "View_All"}} <i class='icon-angle-right'></i></span></button>
 				{{/if}}
 			</nav>
 		{{/if}}

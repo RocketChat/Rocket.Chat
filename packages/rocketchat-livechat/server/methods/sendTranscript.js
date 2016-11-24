@@ -1,5 +1,7 @@
 /* globals emailSettings, DDPRateLimiter */
 /* Send a transcript of the room converstation to the given email */
+import moment from 'moment';
+
 Meteor.methods({
 	'livechat:sendTranscript'(rid, email) {
 		check(rid, String);

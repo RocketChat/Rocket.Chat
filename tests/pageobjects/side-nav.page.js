@@ -32,10 +32,21 @@ class SideNav extends Page {
 	get statusOffline() { return browser.element('.offline'); }
 	get account() { return browser.element('#account'); }
 	get logout() { return browser.element('#logout'); }
+	get sideNavBar() { return browser.element('.side-nav '); }
+	get sideNavBtn() { return browser.element('.fixed-title .burger'); }
+
+	get preferences() { return browser.element('.account-link:nth-of-type(1)'); }
+	get profile() { return browser.element('.account-link:nth-of-type(2)'); }
+	get avatar() { return browser.element('.account-link:nth-of-type(3)'); }
+	get preferencesClose() { return browser.element('.side-nav .arrow.close'); }
 
 	openChannel(channelName) {
 		browser.click('.rooms-list > .wrapper > ul [title="'+channelName+'"]');
 		this.messageInput.waitForExist();
+	}
+
+	getChannelFromList(channelName) {
+		return browser.element('.rooms-list > .wrapper > ul [title="'+channelName+'"]');
 	}
 
 	createChannel(channelName, isPrivate, isReadOnly) {

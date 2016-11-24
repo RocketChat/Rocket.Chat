@@ -1,3 +1,4 @@
+import toastr from 'toastr'
 Template.accountProfile.helpers
 	allowDeleteOwnAccount: ->
 		return RocketChat.settings.get('Accounts_AllowDeleteOwnAccount')
