@@ -71,6 +71,11 @@ Meteor.startup ->
 			colors = ['#F44336','#E91E63','#9C27B0','#673AB7','#3F51B5','#2196F3','#03A9F4','#00BCD4','#009688','#4CAF50','#8BC34A','#CDDC39','#FFC107','#FF9800','#FF5722','#795548','#9E9E9E','#607D8B']
 
 			username = params.username.replace('.jpg', '')
+			if RocketChat.settings.get 'UI_Use_Name_Avatar'
+				user = RocketChat.models.Users.findOneByUsername(username, { fields: { name: 1 } })
+				if user?.name
+					username = user.name
+
 			color = ''
 			initials = ''
 			if username is "?"
@@ -80,7 +85,7 @@ Meteor.startup ->
 				position = username.length % colors.length
 				color = colors[position]
 				username = username.replace(/[^A-Za-z0-9]/g, '.').replace(/\.+/g, '.').replace(/(^\.)|(\.$)/g, '')
-				usernameParts = username.split('.')
+				usernameParts = username.split(/[\s\.]+/)
 				initials = if usernameParts.length > 1
 					_.first(usernameParts)[0] + _.last(usernameParts)[0]
 				else
