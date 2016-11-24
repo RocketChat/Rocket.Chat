@@ -10,7 +10,8 @@ logger = new Logger 'rocketchat:theme',
 
 WebApp.rawConnectHandlers.use (req, res, next) ->
 	path = req.url.split("?")[0]
-	if (path == '/__cordova/theme.css' || path == '/theme.css')
+	prefix = __meteor_runtime_config__.ROOT_URL_PATH_PREFIX || ''
+	if (path == "#{prefix}/__cordova/theme.css" || path == "#{prefix}/theme.css")
 		css = RocketChat.theme.getCss()
 		hash = crypto.createHash('sha1').update(css).digest('hex')
 		res.setHeader('Content-Type', 'text/css; charset=UTF-8')
