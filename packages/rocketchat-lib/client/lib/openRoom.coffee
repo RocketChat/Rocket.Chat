@@ -29,7 +29,6 @@ currentTracker = undefined
 							return
 				else
 					Meteor.call 'getRoomByTypeAndName', type, name, (err, record) ->
-						console.log 'getRoomByTypeAndName', err, record
 						if err?
 							Session.set 'roomNotFound', {type: type, name: name}
 							BlazeLayout.render 'main', {center: 'roomNotFound'}
