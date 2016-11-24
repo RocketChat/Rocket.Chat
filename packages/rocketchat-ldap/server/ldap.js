@@ -110,7 +110,7 @@ LDAP = class LDAP {
 			// Set host parameter for tls.connect which is used by ldapjs starttls. This shouldn't be needed in newer nodejs versions (e.g v5.6.0).
 			// https://github.com/RocketChat/Rocket.Chat/issues/2035
 			// https://github.com/mcavage/node-ldapjs/issues/349
-			tlsOptions.host = [self.options.host];
+			tlsOptions.host = self.options.host;
 
 			logger.connection.info('Starting TLS');
 			logger.connection.debug('tlsOptions', tlsOptions);
