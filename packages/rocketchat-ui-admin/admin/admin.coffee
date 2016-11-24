@@ -1,16 +1,39 @@
+import toastr from 'toastr'
 TempSettings = new Meteor.Collection null
+RocketChat.TempSettings = TempSettings
+
+updateColorComponent = ->
+	$('input.minicolors').minicolors
+		theme: 'rocketchat'
+		format: 'hex'
+		opacity: true
+
 Template.admin.onCreated ->
 	if not RocketChat.settings.cachedCollectionPrivate?
 		RocketChat.settings.cachedCollectionPrivate = new RocketChat.CachedCollection({ name: 'private-settings', eventType: 'onAll' })
 		RocketChat.settings.collectionPrivate = RocketChat.settings.cachedCollectionPrivate.collection
 		RocketChat.settings.cachedCollectionPrivate.init()
 
+	this.selectedRooms = new ReactiveVar {}
+
 	RocketChat.settings.collectionPrivate.find().observe
-		added: (data) ->
+		added: (data) =>
+			selectedRooms = this.selectedRooms.get()
+			if data.type is 'roomPick'
+				selectedRooms[data._id] = data.value
+				this.selectedRooms.set(selectedRooms)
 			TempSettings.insert data
-		changed: (data) ->
+		changed: (data) =>
+			selectedRooms = this.selectedRooms.get()
+			if data.type is 'roomPick'
+				selectedRooms[data._id] = data.value
+				this.selectedRooms.set(selectedRooms)
 			TempSettings.update data._id, data
-		removed: (data) ->
+		removed: (data) =>
+			selectedRooms = this.selectedRooms.get()
+			if data.type is 'roomPick'
+				delete selectedRooms[data._id]
+				this.selectedRooms.set(selectedRooms)
 			TempSettings.remove data._id
 
 Template.admin.onDestroyed ->
@@ -200,6 +223,32 @@ Template.admin.helpers
 		if fileConstraints.extensions?.length > 0
 			return '.' + fileConstraints.extensions.join(', .')
 
+	autocompleteRoom: ->
+		return {
+			limit: 10
+			# inputDelay: 300
+			rules: [
+				{
+					# @TODO maybe change this 'collection' and/or template
+					collection: 'CachedChannelList'
+					subscription: 'channelAndPrivateAutocomplete'
+					field: 'name'
+					template: Template.roomSearch
+					noMatchTemplate: Template.roomSearchEmpty
+					matchAll: true
+					selector: (match) ->
+						return { name: match }
+					sort: 'name'
+				}
+			]
+		}
+
+	selectedRooms: ->
+		console.log(this._id)
+		return Template.instance().selectedRooms.get()[this._id] or []
+
+	getColorVariable: (color) ->
+		return color.replace(/theme-color-/, '@')
 
 Template.admin.events
 	"change .input-monitor": (e, t) ->
@@ -216,6 +265,14 @@ Template.admin.events
 				value: value
 				changed: RocketChat.settings.collectionPrivate.findOne(@_id).value isnt value
 
+	"change select[name=color-editor]": (e, t) ->
+		value = _.trim $(e.target).val()
+		TempSettings.update {_id: @_id},
+			$set:
+				editor: value
+
+		Meteor.setTimeout updateColorComponent, 100
+
 	"click .submit .save": (e, t) ->
 		group = FlowRouter.getParam('group')
 
@@ -231,7 +288,7 @@ Template.admin.events
 		else
 			query.section = @section
 
-		settings = TempSettings.find(query, {fields: {_id: 1, value: 1}}).fetch()
+		settings = TempSettings.find(query, {fields: {_id: 1, value: 1, editor: 1}}).fetch()
 
 		if not _.isEmpty settings
 			RocketChat.settings.batchSet settings, (err, success) ->
@@ -341,6 +398,29 @@ Template.admin.events
 		codeMirrorBox.removeClass('code-mirror-box-fullscreen')
 		codeMirrorBox.find('.CodeMirror')[0].CodeMirror.refresh()
 
+	'autocompleteselect .autocomplete': (event, instance, doc) ->
+		selectedRooms = instance.selectedRooms.get()
+		selectedRooms[this.id] = (selectedRooms[this.id] || []).concat doc
+		instance.selectedRooms.set selectedRooms
+		value = selectedRooms[this.id]
+		TempSettings.update {_id: this.id},
+			$set:
+				value: value
+				changed: RocketChat.settings.collectionPrivate.findOne(this.id).value isnt value
+		event.currentTarget.value = ''
+		event.currentTarget.focus()
+
+	'click .remove-room': (event, instance) ->
+		docId = this._id
+		settingId = event.currentTarget.getAttribute('data-setting')
+		selectedRooms = instance.selectedRooms.get()
+		selectedRooms[settingId] = _.reject(selectedRooms[settingId] || [], (setting) -> setting._id is docId)
+		instance.selectedRooms.set selectedRooms
+		value = selectedRooms[settingId]
+		TempSettings.update {_id: settingId},
+			$set:
+				value: value
+				changed: RocketChat.settings.collectionPrivate.findOne(settingId).value isnt value
 
 Template.admin.onRendered ->
 	Tracker.afterFlush ->
@@ -348,11 +428,11 @@ Template.admin.onRendered ->
 		SideNav.openFlex()
 
 	Meteor.setTimeout ->
-		$('input.minicolors').minicolors({theme: 'rocketchat'})
+		updateColorComponent()
 	, 1000
 
 	Tracker.autorun ->
 		FlowRouter.watchPathChange()
 		Meteor.setTimeout ->
-			$('input.minicolors').minicolors({theme: 'rocketchat'})
+			updateColorComponent()
 		, 400

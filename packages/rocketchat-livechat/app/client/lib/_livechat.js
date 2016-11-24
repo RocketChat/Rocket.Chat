@@ -18,6 +18,17 @@ this.Livechat = new (class Livechat {
 		this._offlineSuccessMessage = new ReactiveVar(TAPi18n.__('Thanks_We_ll_get_back_to_you_soon'));
 		this._videoCall = new ReactiveVar(false);
 		this._transcriptMessage = new ReactiveVar('');
+
+		this._room = new ReactiveVar(null);
+
+		Tracker.autorun((c) => {
+			if (this._room.get() && Meteor.userId()) {
+				RoomHistoryManager.getMoreIfIsEmpty(this._room.get());
+				visitor.subscribeToRoom(this._room.get());
+				visitor.setRoom(this._room.get());
+				c.stop();
+			}
+		});
 	}
 
 	get online() {
@@ -106,5 +117,9 @@ this.Livechat = new (class Livechat {
 	}
 	set transcriptMessage(value) {
 		this._transcriptMessage.set(value);
+	}
+
+	set room(roomId) {
+		this._room.set(roomId);
 	}
 })();

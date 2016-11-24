@@ -2,18 +2,17 @@
 	<div class="permissions-manager">
 		{{#if hasPermission}}
 			<a href="{{pathFor "admin-permissions-new"}}" class="button primary new-role">{{_ "New_role"}}</a>
-
 			<table border="1" class="permission-grid">
 				<thead>
 					<tr>
-						<td>&nbsp;</td>
+						<th>&nbsp;</th>
 						{{#each role}}
-							<td title="{{description}}">
+							<th title="{{description}}">
 								<a href="{{pathFor "admin-permissions-edit" name=_id}}">
 									{{_id}}
 									<i class="icon-edit"></i>
 								</a>
-							</td>
+							</th>
 						{{/each}}
 					</tr>
 				</thead>

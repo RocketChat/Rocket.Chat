@@ -235,14 +235,14 @@ ExecuteTriggerUrl = (url, trigger, message, room, tries=0) ->
 			if result?
 				logger.outgoing.error 'Error for trigger', trigger.name, 'to', url, result
 
-			if result.statusCode is 410
-				RocketChat.models.Integrations.remove _id: trigger._id
-				return
+				if result.statusCode is 410
+					RocketChat.models.Integrations.remove _id: trigger._id
+					return
 
-			if result.statusCode is 500
-				logger.outgoing.error 'Error [500] for trigger', trigger.name, 'to', url
-				logger.outgoing.error result.content
-				return
+				if result.statusCode is 500
+					logger.outgoing.error 'Error [500] for trigger', trigger.name, 'to', url
+					logger.outgoing.error result.content
+					return
 
 			if tries <= 6
 				# Try again in 0.1s, 1s, 10s, 1m40s, 16m40s, 2h46m40s and 27h46m40s
@@ -281,12 +281,18 @@ ExecuteTriggers = (message, room) ->
 			if triggers['@'+id]?
 				triggersToExecute.push trigger for key, trigger of triggers['@'+id]
 
+			if triggers.all_direct_messages?
+				triggersToExecute.push trigger for key, trigger of triggers.all_direct_messages
+
 			if id isnt username and triggers['@'+username]?
 				triggersToExecute.push trigger for key, trigger of triggers['@'+username]
 
 		when 'c'
 			if triggers.__any?
 				triggersToExecute.push trigger for key, trigger of triggers.__any
+
+			if triggers.all_public_channels?
+				triggersToExecute.push trigger for key, trigger of triggers.all_public_channels
 
 			if triggers['#'+room._id]?
 				triggersToExecute.push trigger for key, trigger of triggers['#'+room._id]
@@ -295,6 +301,9 @@ ExecuteTriggers = (message, room) ->
 				triggersToExecute.push trigger for key, trigger of triggers['#'+room.name]
 
 		else
+			if triggers.all_private_groups?
+				triggersToExecute.push trigger for key, trigger of triggers.all_private_groups
+
 			if triggers['#'+room._id]?
 				triggersToExecute.push trigger for key, trigger of triggers['#'+room._id]
 

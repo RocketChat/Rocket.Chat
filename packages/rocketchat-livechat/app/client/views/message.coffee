@@ -1,5 +1,6 @@
-Template.message.helpers
+import moment from 'moment'
 
+Template.message.helpers
 	own: ->
 		return 'own' if this.u?._id is Meteor.userId()
 

@@ -10,7 +10,7 @@ Template.videoFlexTab.onCreated(function() {
 
 	let timeOut = null;
 
-	let width = 500;
+	let width = 'auto';
 	let height = 500;
 
 	let configOverwrite = {

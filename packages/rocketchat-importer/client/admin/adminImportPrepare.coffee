@@ -1,3 +1,4 @@
+import toastr from 'toastr'
 Template.adminImportPrepare.helpers
 	isAdmin: ->
 		return RocketChat.authz.hasRole(Meteor.userId(), 'admin')
@@ -41,6 +42,12 @@ Template.adminImportPrepare.events
 					if error
 						console.warn 'Errored out preparing the import:', error
 						handleError(error)
+						return
+
+					if !data
+						console.warn 'The importer ' + importer.key + ' is not set up correctly, as it did not return any data.'
+						toastr.error t('Importer_not_setup')
+						template.preparing.set false
 						return
 
 					if data.step

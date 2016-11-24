@@ -23,7 +23,7 @@ FlowRouter.route '/',
 				Meteor.defer ->
 					if Meteor.user().defaultRoom?
 						room = Meteor.user().defaultRoom.split('/')
-						FlowRouter.go room[0], {name: room[1]}
+						FlowRouter.go room[0], { name: room[1] }, FlowRouter.current().queryParams
 					else
 						FlowRouter.go 'home'
 				c.stop()
