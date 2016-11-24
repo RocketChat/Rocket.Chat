@@ -176,7 +176,7 @@ Api.testapiValidateRooms =  (rooms) ->
 	for room, i in rooms
 		if room.name?
 			if room.members?
-				if room.members.length > 1
+				if room.members.length > 0
 					try
 						nameValidation = new RegExp '^' + RocketChat.settings.get('UTF8_Names_Validation') + '$', 'i'
 					catch
@@ -231,7 +231,10 @@ Api.addRoute 'bulk/createRoom', authRequired: true,
 					Api.testapiValidateRooms @bodyParams.rooms
 					ids = []
 					Meteor.runAsUser this.userId, () =>
-						(ids[i] = Meteor.call 'createChannel', incoming.name, incoming.members) for incoming,i in @bodyParams.rooms
+						(if incoming.private
+							ids[i] = Meteor.call 'createPrivateGroup', incoming.name, incoming.members
+						else 
+							ids[i] = Meteor.call 'createChannel', incoming.name, incoming.members) for incoming,i in @bodyParams.rooms
 					status: 'success', ids: ids   # need to handle error
 				catch e
 					statusCode: 400    # bad request or other errors
