@@ -7,13 +7,13 @@ Package.describe({
 
 Package.onUse(function(api) {
 	api.use([
+		'ecmascript',
 		'coffeescript',
 		'templating',
 		'reactive-var',
 		'less',
 		'rocketchat:lib',
-		'rocketchat:channel-settings',
-		'momentjs:moment'
+		'rocketchat:channel-settings'
 	]);
 
 	api.addFiles([

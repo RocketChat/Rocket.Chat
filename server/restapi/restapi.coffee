@@ -176,7 +176,7 @@ Api.testapiValidateRooms =  (rooms) ->
 	for room, i in rooms
 		if room.name?
 			if room.members?
-				if room.members.length > 1
+				if room.members.length > 0
 					try
 						nameValidation = new RegExp '^' + RocketChat.settings.get('UTF8_Names_Validation') + '$', 'i'
 					catch
@@ -231,12 +231,51 @@ Api.addRoute 'bulk/createRoom', authRequired: true,
 					Api.testapiValidateRooms @bodyParams.rooms
 					ids = []
 					Meteor.runAsUser this.userId, () =>
-						(ids[i] = Meteor.call 'createChannel', incoming.name, incoming.members) for incoming,i in @bodyParams.rooms
+						(if incoming.private
+							ids[i] = Meteor.call 'createPrivateGroup', incoming.name, incoming.members
+						else 
+							ids[i] = Meteor.call 'createChannel', incoming.name, incoming.members) for incoming,i in @bodyParams.rooms
 					status: 'success', ids: ids   # need to handle error
 				catch e
 					statusCode: 400    # bad request or other errors
 					body: status: 'fail', message: e.name + ' :: ' + e.message
 			else
 				console.log '[restapi] bulk/createRoom -> '.red, "User does not have 'bulk-create-c' permission"
+				statusCode: 403
+				body: status: 'error', message: 'You do not have permission to do this'
+
+# archive a room by it's ID
+Api.addRoute 'room/:id/archive', authRequired: true,
+	post:
+		action: ->
+			# user must also have archive-room permission
+			if RocketChat.authz.hasPermission(@userId, 'archive-room')
+				try
+					Meteor.runAsUser this.userId, () =>
+						Meteor.call('archiveRoom', @urlParams.id)
+					status: 'success'   # need to handle error
+				catch e
+					statusCode: 400    # bad request or other errors
+					body: status: 'fail', message: e.name + ' :: ' + e.message
+			else
+				console.log '[restapi] archiveRoom -> '.red, "User does not have 'archive-room' permission"
+				statusCode: 403
+				body: status: 'error', message: 'You do not have permission to do this'
+				
+# unarchive a room by it's ID
+Api.addRoute 'room/:id/unarchive', authRequired: true,
+	post:
+		action: ->
+			# user must also have unarchive-room permission 
+			if RocketChat.authz.hasPermission(@userId, 'unarchive-room')
+				try
+					Meteor.runAsUser this.userId, () =>
+						Meteor.call('unarchiveRoom', @urlParams.id)
+					status: 'success'   # need to handle error
+				catch e
+					statusCode: 400    # bad request or other errors
+					body: status: 'fail', message: e.name + ' :: ' + e.message
+			else
+				console.log '[restapi] unarchiveRoom -> '.red, "User does not have 'unarchive-room' permission"
 				statusCode: 403
 				body: status: 'error', message: 'You do not have permission to do this'

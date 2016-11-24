@@ -1,11 +1,11 @@
 <template name="adminImport">
 	<section class="page-container page-home page-static page-settings">
-		<head class="fixed-title">
+		<header class="fixed-title">
 			{{> burger}}
 			<h2>
 				<span class="room-title">Import</span>
 			</h2>
-		</head>
+		</header>
 		<div class="content">
 			{{#unless isAdmin}}
 				<p>You are not authorized to view this page.</p>
@@ -18,8 +18,7 @@
 								<h1>{{name}}</h1>
 								<div class="section-content">
 									<div>{{getDescription .}}</div>
-									<button class="button start-import">Start</button>
-
+									<button class="button primary start-import">Start</button>
 								</div>
 							</div>
 						{{/each}}
