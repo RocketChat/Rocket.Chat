@@ -104,7 +104,7 @@ class ModelsBaseCache extends EventEmitter {
 		traceMethodCalls(this);
 
 		this.indexes = {};
-		this.ignoeUpdatedFields = ['_updatedAt'];
+		this.ignoreUpdatedFields = ['_updatedAt'];
 
 		this.query = {};
 		this.options = {};
@@ -307,11 +307,11 @@ class ModelsBaseCache extends EventEmitter {
 			return;
 		}
 
-		let key = [];
+		const keys = [];
 		for (const field of index.fields) {
-			key.push(objectPath.get(record, field));
+			keys.push(objectPath.get(record, field));
 		}
-		key = key.join('|');
+		const key = keys.join('|');
 
 		if (index.type === 'unique') {
 			index.data[key] = record;
@@ -724,7 +724,7 @@ class ModelsBaseCache extends EventEmitter {
 			return;
 		}
 
-		const updatedFields = _.without(Object.keys(diff), ...this.ignoeUpdatedFields);
+		const updatedFields = _.without(Object.keys(diff), ...this.ignoreUpdatedFields);
 
 		if (updatedFields.length > 0) {
 			this.emit('beforeupdate', record, diff);
