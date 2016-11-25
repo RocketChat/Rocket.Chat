@@ -1,3 +1,5 @@
+import moment from 'moment'
+
 Template.message.helpers
 	isBot: ->
 		return 'bot' if this.bot?
@@ -86,7 +88,7 @@ Template.message.helpers
 	hasOembed: ->
 		return false unless this.urls?.length > 0 and Template.oembedBaseWidget? and RocketChat.settings.get 'API_Embed'
 
-		return false unless this.u?.username not in RocketChat.settings.get('API_EmbedDisabledFor')?.split(',')
+		return false unless this.u?.username not in RocketChat.settings.get('API_EmbedDisabledFor')?.split(',').map (username) -> username.trim()
 
 		return true
 

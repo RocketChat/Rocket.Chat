@@ -1,6 +1,7 @@
 RocketChat.models.OEmbedCache = new class extends RocketChat.models._Base
 	constructor: ->
 		super('oembed_cache')
+		@tryEnsureIndex { 'updatedAt': 1 }
 
 
 	# FIND ONE
@@ -20,3 +21,10 @@ RocketChat.models.OEmbedCache = new class extends RocketChat.models._Base
 
 		record._id = @insert record
 		return record
+
+	# REMOVE
+	removeAfterDate: (date) ->
+		query =
+			updatedAt:
+				$lte: date
+		@remove query
