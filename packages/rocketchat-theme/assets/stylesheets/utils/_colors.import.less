@@ -168,9 +168,13 @@ blockquote:before {
  */
 
 .spotlight {
-	background-color: @transparent-dark;
-	i {
+	background-color: @transparent-darker;
+	> .spotlight-input {
+		background-color: @secondary-background-color;
 		color: @secondary-font-color;
+		> i {
+			color: @secondary-font-color;
+		}
 	}
 }
 
@@ -272,16 +276,9 @@ blockquote:before {
 			.buttonColors(@primary-font-color, @transparent-dark);
 		}
 	}
-	.new-message,
-	.popup-item.selected {
+	.new-message {
 		color: @primary-action-contrast;
 		background-color: @primary-action-color;
-	}
-	.message-popup {
-		background: @content-background-color;
-	}
-	.message-popup-title {
-		background-color: @secondary-background-color;
 	}
 	.messages-box {
 		.jump-recent {
@@ -295,6 +292,27 @@ blockquote:before {
 		}
 	}
 }
+
+.message-popup {
+	background: @content-background-color;
+}
+
+.message-popup-title {
+	background-color: @secondary-background-color;
+	// border-bottom-color: #E7E7E7;
+}
+
+.popup-item {
+	// color: @secondary-font-color;
+	&.selected {
+		color: @primary-action-contrast;
+		background-color: @primary-action-color;
+	}
+	span {
+		color: @secondary-font-color;
+	}
+}
+
 
 .messages-box {
 	.start {
@@ -315,7 +333,7 @@ blockquote:before {
 	.body {
 		color: @primary-font-color;
 	}
-	&.system body {
+	&.system .body {
 		color: @info-font-color;
 	}
 	&:hover {
@@ -326,7 +344,7 @@ blockquote:before {
 	}
 	.message-dropdown,
 	.options-menu {
-		color: @info-font-color;
+		color: @secondary-font-color;
 		background-color: @content-background-color;
 		ul li:hover {
 			color: @secondary-action-contrast;
@@ -660,6 +678,9 @@ i.status-offline {
 		}
 		&.wordpress {
 			background-color: #1e8cbe;
+		}
+		&.linkedin {
+			background-color: #1b86bc;
 		}
 	}
 }
