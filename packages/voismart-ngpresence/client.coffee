@@ -28,7 +28,7 @@ Meteor.startup ->
 	RocketChat.VoismartPresenceExtensionInstalled = false
 	_extensionPopupTimer = undefined
 
-	window.addEventListener 'message', (e) ->
+	window.addEventListener 'message', (event) ->
 		if (event.source != window) or (event.data.name != 'rocketchat_presence')
 			return
 
