@@ -5,7 +5,6 @@ import flexTab from '../pageobjects/flex-tab.page';
 import mainContent from '../pageobjects/main-content.page';
 import sideNav from '../pageobjects/side-nav.page';
 
-import {username} from '../test-data/user.js';
 import {publicChannelName} from '../test-data/channel.js';
 import {targetUser} from '../test-data/interactions.js';
 
@@ -42,7 +41,6 @@ describe('channel settings', ()=> {
 		});
 
 		it('should show the new name', ()=> {
-			//gives timeout errors
 			var channelName = sideNav.getChannelFromList('NAME-EDITED-'+publicChannelName);
 			channelName.getText().should.equal('NAME-EDITED-'+publicChannelName);
 		});
@@ -102,8 +100,12 @@ describe('channel settings', ()=> {
 			flexTab.dismissToast();
 		});
 
-		it('should show the owner add message', ()=> {
-			mainContent.lastMessage.getText().should.equal(targetUser+' was set owner by '+username);
+		it('the last message should be a subscription role added', ()=> {
+			mainContent.lastMessageRoleAdded.isVisible().should.be.true;
+		});
+
+		it('should show the target username in owner add message', ()=> {
+			mainContent.lastMessage.getText().should.have.string(targetUser);
 		});
 
 		it('sets rocket cat as moderator', ()=> {
@@ -111,8 +113,12 @@ describe('channel settings', ()=> {
 			flexTab.setUserModerator(targetUser);
 		});
 
-		it('should show the moderator add message', ()=> {
-			mainContent.lastMessage.getText().should.equal(targetUser+' was set moderator by '+username);
+		it('the last message should be a subscription role added', ()=> {
+			mainContent.lastMessageRoleAdded.isVisible().should.be.true;
+		});
+
+		it('should show the target username in moderator add message', ()=> {
+			mainContent.lastMessage.getText().should.have.string(targetUser);
 		});
 
 		it('mute rocket cat', ()=> {
