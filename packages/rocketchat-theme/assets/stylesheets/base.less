@@ -1458,6 +1458,7 @@ label.required:after {
 	}
 }
 
+
 .spotlight {
 	position: fixed;
 	top: 0;
@@ -1475,8 +1476,12 @@ label.required:after {
 		max-width: 600px;
 		font-size: 24px;
 		margin-top: 6%;
+		margin-bottom: auto;
+		border-radius: 5px;
+		overflow: hidden;
+		box-shadow: 0px 15px 50px rgba(0, 0, 0, 0.5);
 		> input {
-			box-shadow: 0px 10px 20px rgba(0, 0, 0, .5);
+			box-shadow: none;
 			border-width: 0px;
 			line-height: 46px;
 			height: 46px;
@@ -1489,6 +1494,43 @@ label.required:after {
 			width: 46px;
 			text-align: center;
 			font-weight: 100;
+		}
+		.message-popup {
+			position: relative;
+			box-shadow: none;
+			border-radius: 0;
+			.popup-item {
+				border-top: 1px solid #eaeaea;
+				line-height: 40px;
+				font-size: 20px;
+				padding: 0 10px;
+				white-space: nowrap;
+				text-overflow: ellipsis;
+				overflow: hidden;
+				i {
+					margin-right: 4px;
+					line-height: 28px;
+					display: inline-block;
+					border-radius: 20px;
+					width: 28px;
+				}
+				&.selected {
+					i {
+						box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.2);
+					}
+				}
+				span {
+					float: right;
+					border-radius: 2px;
+					margin-top: 10px;
+					min-width: 20px;
+					padding: 0 2px;
+					text-align: center;
+					font-size: 14px;
+					line-height: 20px;
+					font-weight: 800;
+				}
+			}
 		}
 	}
 }
@@ -2278,6 +2320,34 @@ label.required:after {
 	}
 	&:nth-child(1) {
 		margin-top: 0;
+	}
+	.day-divider {
+		height: 50px;
+		display: none;
+		text-align: center;
+		left: 0;
+		position: absolute;
+		top: 0px;
+		right: 0;
+		align-items: center;
+		justify-content: center;
+		span {
+			padding: 0 8px;
+			z-index: 1;
+			border-radius: 4px;
+			font-size: 12px;
+			font-weight: 600;
+		}
+		&:before {
+			position: absolute;
+			content: " ";
+			display: block;
+			border-bottom-width: 1px;
+			border-bottom-style: solid;
+			top: 25px;
+			left: 0;
+			right: 0;
+		}
 	}
 	&.new-day {
 		margin-top: 60px;
@@ -3776,6 +3846,23 @@ body:not(.is-cordova) {
 	}
 	th {
 		white-space: nowrap;
+	}
+}
+
+.statistics-table {
+	margin-bottom: 30px;
+	width: 100%;
+	th,
+	td {
+		text-align: left;
+		padding: 6px 8px;
+	}
+	th {
+		text-align: right;
+		width: 30%;
+	}
+	td {
+		width: 70%;
 	}
 }
 
