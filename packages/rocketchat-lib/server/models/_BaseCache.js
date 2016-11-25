@@ -98,7 +98,7 @@ class Adapter {
 const db = new loki('rocket.chat.json', {adapter: Adapter});
 
 class ModelsBaseCache extends EventEmitter {
-	constructor(modelNameOrModel) {
+	constructor(model) {
 		super();
 
 		traceMethodCalls(this);
@@ -127,11 +127,7 @@ class ModelsBaseCache extends EventEmitter {
 
 		this.db = db;
 
-		if (Match.test(modelNameOrModel, String)) {
-			this.model = RocketChat.models[modelNameOrModel];
-		} else {
-			this.model = modelNameOrModel;
-		}
+		this.model = model;
 
 		this.collectionName = this.model._db.collectionName;
 		this.collection = this.db.addCollection(this.collectionName);
