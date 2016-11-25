@@ -1483,7 +1483,7 @@
   "Phone_end_call": "Call terminated",
   "Phone_failed_call": "Call failed",
   "User_busy": "User busy",
-  "No_anwer": "No answer",
+  "No_answer": "No answer",
   "No_route_destination": "No route to destination",
   "Destination_out_of_order": "Destination out of order",
   "Normal_temporary_failure": "Normal temporary failure",
