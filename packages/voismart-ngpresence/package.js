@@ -11,9 +11,12 @@ Package.onUse(function(api) {
 	api.use([
 		'coffeescript',
 		'tracker',
+		'templating',
+		'less',
 		'jzwzz:amqplib',
 		'jparker:crypto-core',
 		'rocketchat:lib',
+		'rocketchat:ui',
 		'voismart:ngapi'
 	]);
 
@@ -23,6 +26,9 @@ Package.onUse(function(api) {
 	], ['server']);
 
 	api.addFiles([
+		'extensionAlert.html',
+		'extensionAlert.coffee',
+		'extensionAlert.less',
 		'client.coffee'
 	], ['client']);
 

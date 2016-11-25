@@ -1,0 +1,19 @@
+<template name="extensionAlert">
+	{{#if logged}}
+		<div class="extension-alert hidden">
+			{{_ "You_need_install_an_extension_to_allow_presence" }}
+			<button class="install">{{_ "Install" }}</button>
+			<i class="icon-cancel"></i>
+		</div>
+
+		<div class="extension-configuration hidden">
+			<div class="configuration-text">
+				{{configurationTextPart1}}
+				<img src="images/presence_exten_menu.png" height="200">
+				{{configurationTextPart2}}
+				<img src="images/presence_exten_config.png" height="200">
+				<button class="configurationOk">{{_ "Ok" }}</button>
+			</div>
+		</div>
+	{{/if}}
+</template>

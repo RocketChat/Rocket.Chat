@@ -1496,5 +1496,10 @@
   "Redial": "Redial",
   "Clear": "Clear",
   "Registry": "Call registry",
-  "Empty_Number": "Insert a number to call"
+  "Empty_Number": "Insert a number to call",
+  "Install_Presence_Extension": "Install Presence Extension",
+  "You_need_install_an_extension_to_allow_presence": "You must install an extension to use presence.",
+  "Configure_Presence_Extension": "Configure the extension after install",
+  "Presence_Extension_Configuration_Part1": "After installation, configure your extension by clicking on it:",
+  "Presence_Extension_Configuration_Part2": "insert the URL \"%s\" in the first field and the desired away time.",
 }
