@@ -134,24 +134,6 @@ describe('Basic usage', function() {
 		});
 	});
 
-	describe('Setting the tests Preferences', () => {
-		it('opens the user preferences screen', () => {
-			sideNav.accountBoxUserName.waitForVisible();
-			sideNav.accountBoxUserName.click();
-			sideNav.account.waitForVisible();
-			sideNav.account.click();
-		});
-
-		it('Sets the language to english', () => {
-			mainContent.setLanguageToEnglish();
-			browser.pause(10000);
-		});
-
-		it('close the preferences menu', () => {
-			sideNav.preferencesClose.click();
-		});
-	});
-
 	describe('general channel', () => {
 		it('open GENERAL', () => {
 			sideNav.getChannelFromList('general').waitForExist(5000);
