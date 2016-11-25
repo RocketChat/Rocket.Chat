@@ -19,6 +19,7 @@ class MainContent extends Page {
 	get popupFileCancelBtn() { return browser.element('.sa-button-container .cancel'); }
 	get lastMessageUser() { return browser.element('.message:last-child .user-card-message:nth-of-type(2)'); }
 	get lastMessage() { return browser.element('.message:last-child .body'); }
+	get lastMessageRoleAdded() { return browser.element('.message:last-child.subscription-role-added .body'); }
 	get beforeLastMessage() { return browser.element('.message:nth-last-child(2) .body'); }
 	get lastMessageUserTag() { return browser.element('.message:last-child .role-tag'); }
 	get lastMessageImg() { return browser.element('.message:last-child .attachment-image img'); }
@@ -57,9 +58,6 @@ class MainContent extends Page {
 	get messagePopUpTitle() { return browser.element('.message-popup-title'); }
 	get messagePopUpItems() { return browser.element('.message-popup-items'); }
 	get messagePopUpFirstItem() { return browser.element('.popup-item.selected'); }
-	get settingLanguageSelect() { return browser.element('#language '); }
-	get settingLanguageEnglish() { return browser.element('[value="en"]'); }
-	get settingSaveBtn() { return browser.element('.button.save'); }
 
 	sendMessage(text) {
 		this.setTextToInput(text);
