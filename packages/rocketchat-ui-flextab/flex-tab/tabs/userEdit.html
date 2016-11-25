@@ -31,7 +31,7 @@
 					<div class="input-line">
 						<label for="password">{{_ "Password"}}</label>
 						<input type="password" id="password" autocomplete="off" value="">
-						<input type="button" id="randomPassword" class="button" value="{{_ "Random"}}">
+						<button id="randomPassword" class="button">{{_ 'Random'}}</button>
 					</div>
 					<div class="input-line">
 						<label for="changePassword">
@@ -63,8 +63,8 @@
 					</div>
 				{{/unless}}
 				<nav>
-					<button class='button button-block blue save'><span>{{_ "Save"}}</span></button>
-					<button class='button button-block cancel secondary' type="button"><span>{{_ "Cancel"}}</span></button>
+					<button class='button button-block cancel' type="button"><span>{{_ "Cancel"}}</span></button>
+					<button class='button button-block primary save'><span>{{_ "Save"}}</span></button>
 				</nav>
 			</form>
 		</div>

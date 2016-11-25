@@ -25,47 +25,6 @@ RocketChat.statistics.get = ->
 	# Message statistics
 	statistics.totalMessages = RocketChat.models.Messages.find().count()
 
-	m = ->
-		emit 1,
-			sum: this.usernames?.length or 0
-			min: this.usernames?.length or 0
-			max: this.usernames?.length or 0
-			count: 1
-
-		emit this.t,
-			sum: this.usernames?.length or 0
-			min: this.usernames?.length or 0
-			max: this.usernames?.length or 0
-			count: 1
-
-	r = (k, v) ->
-		a = v.shift()
-		for b in v
-			a.sum += b.sum
-			a.min = Math.min a.min, b.min
-			a.max = Math.max a.max, b.max
-			a.count += b.count
-		return a
-
-	f = (k, v) ->
-		v.avg = v.sum / v.count
-		return v
-
-	result = RocketChat.models.Rooms.model.mapReduce(m, r, { finalize: f, out: "rocketchat_mr_statistics" })
-
-	statistics.maxRoomUsers = 0
-	statistics.avgChannelUsers = 0
-	statistics.avgPrivateGroupUsers = 0
-
-	if RocketChat.models.MRStatistics.findOneById(1)
-		statistics.maxRoomUsers = RocketChat.models.MRStatistics.findOneById(1).value.max
-
-	if RocketChat.models.MRStatistics.findOneById('c')
-		statistics.avgChannelUsers = RocketChat.models.MRStatistics.findOneById('c').value.avg
-
-	if RocketChat.models.MRStatistics.findOneById('p')
-		statistics.avgPrivateGroupUsers = RocketChat.models.MRStatistics.findOneById('p').value.avg
-
 	statistics.lastLogin = RocketChat.models.Users.getLastLogin()
 	statistics.lastMessageSentAt = RocketChat.models.Messages.getLastTimestamp()
 	statistics.lastSeenSubscription = RocketChat.models.Subscriptions.getLastSeen()

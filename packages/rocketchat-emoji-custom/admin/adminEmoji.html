@@ -1,11 +1,11 @@
 <template name="adminEmoji">
 	<section class="page-container page-list">
-		<head class="fixed-title">
+		<header class="fixed-title">
 			{{> burger}}
 			<h2>
 				<span class="room-title">{{_ "Custom_Emoji"}}</span>
 			</h2>
-		</head>
+		</header>
 		<div class="content">
 			{{#unless hasPermission 'manage-emoji'}}
 				<p>{{_ "You_are_not_authorized_to_view_this_page"}}</p>

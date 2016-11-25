@@ -1,5 +1,160 @@
 # History
 
+## 0.46.0, 2016-Nov-21
+
+### Upgraded to meteor 1.4.2.3 - Now uses NodeJS 4.6.2
+
+- Add a csv plain text importer (#2689)
+- Add a verified email toast
+- Add an area to the warnings piece and allow defining users to be part of channels.
+- Add channel renames to the importer tool
+- Add debug to build scripts
+- Add Hyper.sh
+- Add missing dependencies to rocketchat:lib
+- Add more tests
+- Add option to hide user muted/unmuted messages
+- Add option to remove the filesize restriction
+- Add path prefix to sidenav layout (#4798)
+- Add reaction importing capability for Slack
+- Add REST endpoint to set user avatar
+- Add scrollbar into the snippet view page
+- Add setting to Forget user session on window close
+- Add snippet message plugin
+- Add snippet page and file creation
+- Add syntax highlighting when a snippet is created
+- Add tabBar english translation
+- Add user account tests
+- Allow private groups and add warnings to the importers
+- Bot-helpers bugfix and new features
+- Change default button colors and font-weight
+- Change Jitsi iframe width to auto
+- Change user rooms verifications to subscriptions
+- Change utf8 names validation label
+- Disabling the snippet feature by default
+- Do not trigger livechat integration if room still open
+- Enable broadcast connection logs when log level is 2
+- Fix channels were the creator wasn't imported was causing issues (#4934, #4899, #3911)
+- Fix chevrons were backwards (#3581)
+- Fix errors related to user status on logout
+- Fix hubot-help path (#4807)
+- Fix ignore cdn_prefix setting if empty (#4546)
+- Fix LDAP filter users by their group (#4756)
+- Fix Message_AllowSnippeting setting checks
+- Fix sandstorm upload: UploadFS.Store.GetURL to return a relative URL
+- Fix slackbridge out to stop re-sending messages that go out
+- Fix the import progress not having the correct translations
+- Fix Url previews are broken (#4779)
+- Fixes the auto focus while using ctrl commands
+- Fixes the create new btn bug
+- List rocketchat:authorization as a dependency of rocketchat:lib
+- Move client tabs into tabBar folder
+- Provide the full avatar url when posting out to Slack
+- Reactions need to be ran as the user who reacted and fix edits not showing
+- Remove log and useless else condition.
+- Remove online status class from channels
+- Remove unused ChatSnippetMessage class
+- Remove unused mime-type dependency
+- Remove unused settings and add translation
+- Replace erroneous head tags with header tags
+- Sandstorm build: use node and npm from Meteor dev bundle, and don't use sudo.
+- Standardising buttons appearance
+- Support symbolic link integration
+- Update Autolinker to 1.3.2
+- Update blaze
+- Update buffer to string conversion using utf8
+- Update FileUpload.js
+- Update LESSHat from version: v3.0.2 (2014-06-17) to version: v4.1.0 (2016-07-19)
+- Using --headless instead of METEOR_PRETTY_OUTPUT=0
+- Using border-with on CSS to control borders
+- Validate user access on file upload
+
+## 0.45.0, 2016-Oct-31
+
+- Add global keydown event handler
+- Add hubot packages as default
+- Add Iframe change status (#4741)
+- Add iframe command 'login-with-token` (#4746)
+- Add iframe command 'logout'
+- Add jschardet for detect encoding of oembed body
+- Add keywords for outgoing integrations across all public/private/direct channels
+- Add migration to escape old room topic changed messages
+- Add option to hide some system messages
+- Add scroll listener to admin log viewer
+- Add scroll listener to rooms
+- Add Stream cast (#4727)
+- Add support for attachments inside quoted messages
+- Add threshold to check if admin log viewer is at bottom
+- Add threshold to check if room is at bottom
+- Add users to default channels when using REST API
+- Add version and RocketChat.Info to Bugsnag notifications
+- Change event keydown to keypress
+- Exporting NODE_ENV=production to all builded images
+- Fix action link handler
+- Fix Assign issuer value from tag value instead of incorrect tag object (#4754)
+- Fix check user.profile.email and fallback with username: user.name if it does not exist in user record (#4614)
+- Fix Drag&Drop files into channel doesn't work on Safari (#4721)
+- Fix jitsi:updateTimeout error
+- Fix Livechat Remove Department Closes #4720 Thanks to @deep0982
+- Fix replace null value of contextType by an empty string so check(String) won't fail (#4495)
+- Fix the timeout in the channel name test
+- Ignore keypress if swipebox is open
+- Keep queryParams when using FlowRouter.go to room routes
+- Make the location button use the full button and not just the icon
+- Move to main.coffee and add select tag to ignore list
+- OEmbed: More smart charset detection algorithm
+- Show a desktop notification only for the opened room if on embedded mode
+- Time Range filter from and to in livechat current chat page
+- Trigger a global event on embedded mode instead of calling action link
+- Update ip-range-check to version 0.0.2 to get rid of debugger call Day8/ip-range-check#1
+- Update all npm-shrinkwrap.json with npm 3.10.9
+
+## 0.44.0, 2016-Oct-25
+
+- Add archive and unarchive api endpoints
+- Add check package dependency to the iframe-login package. (#4664)
+- Add classes to spans in flextab
+- Add docker image creation for experimental branch
+- Add moment to rocketchat:lib dependencies
+- Add RoomPick setting type
+- Add session as a dependency of rocketchat:lib (#4661)
+- Add Slackbridge Out
+- Add tests for emoji, screen resolution, messages, rooms managment
+- Allow to call custom oauth services using iframe events (#4685, #4687)
+- Fix public channel name typo
+- Fix the wrong file path
+- Fix undefinied slash command parameters (#4668)
+- Fix user can use /leave in a direct message (#4663)
+- Fix visitor not being able to use livechat if session expired
+- Propagate bot messages through slackbridge
+- Replace mrt:moment-timezone by aldeed:moment-timezone as it depend on the official moment package
+- Set tap:i18n version in i18n package to install the expected version when the package is used in other projects
+
+## 0.43.0, 2016-Oct-17
+
+- Add @here support for only notifying users that are active
+- Add base support for config via webservices
+- Add basic killswitch to enable/disable IRC functionality
+- Add oplog state to startup message
+- Add site name to html meta title via server side inject
+- Add transition to main-content
+- Add validations to transcript sending method
+- Adds options for ldap connect and idle timeout
+- Allow outgoing integrations to post as the triggering user
+- Fix email formatting and swal alert going out of widget
+- Fix Firefox DnD by checking types of drag event
+- Fix match on livechat department save
+- Fix select custom field validation
+- Fix stuck in login page after logout
+- Fix the slack and hipchat importers on users importing
+- Fix transcript to users without email
+- METEOR@1.4.1.2
+- Migrated IRC config defaults to web admin panel and mapped to variables.
+- Package development status provided as an alert to users. Caveat emptor.
+- Remove mapReduces from statistics
+- Schedule syncedcron to run every one hour at the startup minute
+- Set babel cache directory for integrations
+- Switch snap from imagemagick to graphicsmagick
+
 ## 0.42.0, 2016-Oct-04
 
 - Add dependency to package with avatar template
@@ -77,7 +232,7 @@
 
 ## 0.40.0, 2016-Sep-20
 
-### IMPORTANT: Upgraded to meteor 1.4.1.1 - Now uses NodeJS 4.5
+### Upgraded to meteor 1.4.1.1 - Now uses NodeJS 4.5
 
 - Add a minimalistic view for embedded layout
 - Add a setting to disable system notifications

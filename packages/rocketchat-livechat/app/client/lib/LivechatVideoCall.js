@@ -6,7 +6,8 @@ LivechatVideoCall = new (class LivechatVideoCall {
 		this.calling = new ReactiveVar(false);
 
 		if (typeof JitsiMeetExternalAPI === 'undefined') {
-			$.getScript('/packages/rocketchat_videobridge/client/public/external_api.js');
+			const prefix = __meteor_runtime_config__.ROOT_URL_PATH_PREFIX || '';
+			$.getScript(`${prefix}/packages/rocketchat_videobridge/client/public/external_api.js`);
 		}
 	}
 

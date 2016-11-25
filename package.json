@@ -1,7 +1,7 @@
 {
   "name": "Rocket.Chat",
   "description": "The Ultimate Open Source WebChat Platform",
-  "version": "0.43.0-develop",
+  "version": "0.47.0-develop",
   "author": {
     "name": "Rocket.Chat",
     "url": "https://rocket.chat/"
@@ -9,7 +9,7 @@
   "contributors": [
     {
       "name": "Aaron Ogle",
-      "email": "aaron.olge@rocket.chat"
+      "email": "aaron.ogle@rocket.chat"
     },
     {
       "name": "Bradley Hilton",
@@ -42,7 +42,7 @@
     "chat"
   ],
   "scripts": {
-    "start": "meteor run",
+    "start": "meteor npm i && meteor",
     "lint": "eslint .",
     "deploy": "npm run build && pm2 startOrRestart pm2.json",
     "chimp-watch": "chimp --ddp=http://localhost:3000 --watch --mocha --path=tests",
@@ -58,10 +58,15 @@
     "email": "support@rocket.chat"
   },
   "devDependencies": {
-    "chimp": "^0.40.7",
-    "eslint": "^3.1.1"
+    "chimp": "^0.42.0",
+    "eslint": "^3.10.2"
   },
   "dependencies": {
-    "bcrypt": "^0.8.7"
+    "babel-runtime": "^6.18.0",
+    "bcrypt": "^0.8.7",
+    "moment": "^2.16.0",
+    "moment-timezone": "^0.5.9",
+    "jquery": "^2.1.0",
+    "toastr": "^2.1.2"
   }
 }

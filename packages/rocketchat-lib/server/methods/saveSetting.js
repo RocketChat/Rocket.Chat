@@ -1,5 +1,5 @@
 Meteor.methods({
-	saveSetting: function(_id, value) {
+	saveSetting: function(_id, value, editor) {
 		if (Meteor.userId() === null) {
 			throw new Meteor.Error('error-action-not-allowed', 'Editing settings is not allowed', {
 				method: 'saveSetting'
@@ -19,6 +19,9 @@ Meteor.methods({
 
 		//Verify the value is what it should be
 		switch (setting.type) {
+			case 'roomPick':
+				check(value, [Object]);
+				break;
 			case 'boolean':
 				check(value, Boolean);
 				break;
@@ -30,7 +33,7 @@ Meteor.methods({
 				break;
 		}
 
-		RocketChat.settings.updateById(_id, value);
+		RocketChat.settings.updateById(_id, value, editor);
 		return true;
 	}
 });

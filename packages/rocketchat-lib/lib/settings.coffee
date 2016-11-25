@@ -43,7 +43,7 @@ RocketChat.settings =
 
 		save = (setting) ->
 			return (callback) ->
-				Meteor.call 'saveSetting', setting._id, setting.value, callback
+				Meteor.call 'saveSetting', setting._id, setting.value, setting.editor, callback
 
 		actions = _.map settings, (setting) -> save(setting)
 		_(actions).reduceRight(_.wrap, (err, success) -> return callback err, success)()
@@ -57,9 +57,9 @@ RocketChat.settings =
 			for callback in RocketChat.settings.callbacks['*']
 				callback key, value, initialLoad
 
-		for key, value of RocketChat.settings.regexCallbacks
-			if value.regex.test(key)
-				callback(key, value) for callback in value.callbacks
+		for cbKey, cbValue of RocketChat.settings.regexCallbacks
+			if cbValue.regex.test(key)
+				callback(key, value, initialLoad) for callback in cbValue.callbacks
 
 
 	onload: (key, callback) ->
