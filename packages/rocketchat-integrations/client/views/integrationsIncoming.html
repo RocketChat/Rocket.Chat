@@ -78,12 +78,8 @@
 									</div>
 									{{> CodeMirror name="script" options=editorOptions code=data.script }}
 									<div class="buttons">
-										<button class="button button-primary button-fullscreen">
-											Full Screen
-										</button>
-										<button class="button button-primary button-restore">
-											Exit Full Screen
-										</button>
+										<button class="button primary button-fullscreen">Full Screen</button>
+										<button class="button primary button-restore">Exit Full Screen</button>
 									</div>
 								</div>
 								{{#if data.scriptError}}
@@ -130,9 +126,9 @@
 				</div>
 				<div class="submit">
 					{{#if data.token}}
-						<button class="button red delete"><i class="icon-trash"></i><span>{{_ "Delete"}}</span></button>
+						<button class="button danger delete"><i class="icon-trash"></i><span>{{_ "Delete"}}</span></button>
 					{{/if}}
-					<button class="button save"><i class="icon-send"></i><span>{{_ "Save_changes"}}</span></button>
+					<button class="button primary save"><i class="icon-send"></i><span>{{_ "Save_changes"}}</span></button>
 				</div>
 			</div>
 		{{else}}

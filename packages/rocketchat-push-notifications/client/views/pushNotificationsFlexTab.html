@@ -20,10 +20,10 @@
 									<label>{{_ "Duration"}} ({{_ "seconds"}}) <input type="number" name="duration" min="0" value="" placeholder="{{_ "Use_User_Preferences_or_Global_Settings"}}"></label>
 								{{/if}}
 
-								<button type="button" class="button secondary cancel">{{_ "Cancel"}}</button>
+								<button type="button" class="button cancel">{{_ "Cancel"}}</button>
 								<button type="button" class="button primary save">{{_ "Save"}}</button>
 							{{else}}
-								<span>{{subValue 'desktopNotifications'}} <i class="icon-pencil" data-edit="desktopNotifications"></i></span>
+								<span class="current-setting">{{subValue 'desktopNotifications'}} <i class="icon-pencil" data-edit="desktopNotifications"></i></span>
 							{{/if}}
 						</div>
 					</li>
@@ -31,7 +31,7 @@
 					<li>
 						<label>{{_ "Desktop_Notifications_Duration"}}</label>
 						<div>
-							<span>{{#if desktopNotificationDuration}}{{desktopNotificationDuration}} {{_"seconds"}}{{else}}{{_ "Use_User_Preferences_or_Global_Settings"}}{{/if}}</span>
+							<span class="current-setting">{{#if desktopNotificationDuration}}{{desktopNotificationDuration}} {{_"seconds"}}{{else}}{{_ "Use_User_Preferences_or_Global_Settings"}}{{/if}}</span>
 						</div>
 					</li>
 					{{/unless}}
@@ -42,10 +42,10 @@
 								<label><input type="radio" name="mobilePushNotifications" value="all" checked="{{$eq mobilePushNotifications 'all'}}" /> {{_ "All_messages"}}</label>
 								<label><input type="radio" name="mobilePushNotifications" value="mentions" checked="{{$eq mobilePushNotifications 'mentions'}}" /> {{_ "Mentions_default"}}</label>
 								<label><input type="radio" name="mobilePushNotifications" value="nothing" checked="{{$eq mobilePushNotifications 'nothing'}}" /> {{_ "Nothing"}}</label>
-								<button type="button" class="button secondary cancel">{{_ "Cancel"}}</button>
+								<button type="button" class="button cancel">{{_ "Cancel"}}</button>
 								<button type="button" class="button primary save">{{_ "Save"}}</button>
 							{{else}}
-								<span>{{subValue 'mobilePushNotifications'}} <i class="icon-pencil" data-edit="mobilePushNotifications"></i></span>
+								<span class="current-setting">{{subValue 'mobilePushNotifications'}} <i class="icon-pencil" data-edit="mobilePushNotifications"></i></span>
 							{{/if}}
 						</div>
 					</li>
@@ -59,10 +59,10 @@
 								{{/if}}
 								<label><input type="radio" name="emailNotifications" value="nothing" checked="{{$eq emailNotifications 'nothing'}}" /> {{_ "Nothing"}}</label>
 								<label><input type="radio" name="emailNotifications" value="default" checked="{{$eq emailNotifications 'default'}}" /> {{_ "Use_account_preference"}}</label>
-								<button type="button" class="button secondary cancel">{{_ "Cancel"}}</button>
+								<button type="button" class="button cancel">{{_ "Cancel"}}</button>
 								<button type="button" class="button primary save">{{_ "Save"}}</button>
 							{{else}}
-								<span>{{subValue 'emailNotifications'}} <i class="icon-pencil" data-edit="emailNotifications"></i></span>
+								<span class="current-setting">{{subValue 'emailNotifications'}} <i class="icon-pencil" data-edit="emailNotifications"></i></span>
 							{{/if}}
 						</div>
 					</li>
@@ -80,10 +80,10 @@
 								<label><input type="radio" name="unreadAlert" value="all" checked="{{$eq unreadAlert 'all'}}" /> {{_ "On"}}</label>
 								<label><input type="radio" name="unreadAlert" value="nothing" checked="{{$eq unreadAlert 'nothing'}}" /> {{_ "Off"}}</label>
 								<label><input type="radio" name="unreadAlert" value="default" checked="{{$eq unreadAlert 'default'}}" /> {{_ "Use_account_preference"}}</label>
-								<button type="button" class="button secondary cancel">{{_ "Cancel"}}</button>
+								<button type="button" class="button cancel">{{_ "Cancel"}}</button>
 								<button type="button" class="button primary save">{{_ "Save"}}</button>
 							{{else}}
-								<span>{{unreadAlertText}} <i class="icon-pencil" data-edit="unreadAlert"></i></span>
+								<span class="current-setting">{{unreadAlertText}} <i class="icon-pencil" data-edit="unreadAlert"></i></span>
 							{{/if}}
 						</div>
 					</li>

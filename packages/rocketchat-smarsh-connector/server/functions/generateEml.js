@@ -1,3 +1,6 @@
+import moment from 'moment';
+import 'moment-timezone';
+
 const start = '<table style="width: 100%; border: 1px solid; border-collapse: collapse; table-layout: fixed; margin-top: 10px; font-size: 12px; word-break: break-word;"><tbody>';
 const end = '</tbody></table>';
 const opentr = '<tr style="border: 1px solid;">';

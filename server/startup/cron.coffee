@@ -17,6 +17,9 @@ generateStatistics = ->
 			logger.warn('Failed to send usage report')
 	return
 
+cleanupOEmbedCache = ->
+	Meteor.call('OEmbedCacheCleanup')
+
 Meteor.startup ->
 	Meteor.defer ->
 		generateStatistics()
@@ -25,7 +28,14 @@ Meteor.startup ->
 		SyncedCron.add
 			name: 'Generate and save statistics',
 			schedule: (parser) -># parser is a later.parse object
-				return parser.text 'every 1 hour'
+				return parser.cron new Date().getMinutes() + ' * * * *'
 			job: generateStatistics
+
+		SyncedCron.add
+			name: 'Cleanup OEmbed cache'
+			schedule: (parser) ->
+				now = new Date()
+				return parser.cron now.getMinutes() + ' ' + now.getHours() + ' * * *'
+			job: cleanupOEmbedCache
 
 		SyncedCron.start()

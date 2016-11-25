@@ -1,4 +1,5 @@
 /* globals Push */
+import moment from 'moment';
 
 RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 	// skips this callback if the message was edited
@@ -24,7 +25,7 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 		return -1;
 	};
 
-	var settings, desktopMentionIds, i, j, len, len1, highlights, mentionIds, highlightsIds, usersWithHighlights, mobileMentionIds, ref, ref1, toAll, userIdsToNotify, userIdsToPushNotify, userOfMention, userOfMentionId, usersOfDesktopMentions, usersOfMentionId, usersOfMentionItem, usersOfMobileMentions;
+	var settings, desktopMentionIds, i, j, len, len1, highlights, mentionIds, highlightsIds, usersWithHighlights, mobileMentionIds, ref, ref1, toAll, toHere, userIdsToNotify, userIdsToPushNotify, userOfMention, userOfMentionId, usersOfDesktopMentions, usersOfMentionId, usersOfMentionItem, usersOfMobileMentions;
 
 	/**
 	 * Checks if a given user can be notified
@@ -181,6 +182,7 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 			});
 		}
 		toAll = mentionIds.indexOf('all') > -1;
+		toHere = mentionIds.indexOf('here') > -1;
 		if (mentionIds.length > 0 || settings.alwaysNotifyDesktopUsers.length > 0) {
 			desktopMentionIds = _.union(mentionIds, settings.alwaysNotifyDesktopUsers);
 			desktopMentionIds = _.difference(desktopMentionIds, settings.dontNotifyDesktopUsers);
@@ -248,7 +250,7 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 			}), '_id');
 		}
 
-		if (toAll && ((ref1 = room.usernames) != null ? ref1.length : void 0) > 0) {
+		if ((toAll || toHere) && ((ref1 = room.usernames) != null ? ref1.length : void 0) > 0) {
 			RocketChat.models.Users.find({
 				username: {
 					$in: room.usernames
@@ -268,7 +270,7 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 				if (((ref2 = user.status) === 'online' || ref2 === 'away' || ref2 === 'busy') && (ref3 = user._id, indexOf.call(settings.dontNotifyDesktopUsers, ref3) < 0)) {
 					userIdsToNotify.push(user._id);
 				}
-				if (user.statusConnection !== 'online' && (ref4 = user._id, indexOf.call(settings.dontNotifyMobileUsers, ref4) < 0)) {
+				if (toAll && user.statusConnection !== 'online' && (ref4 = user._id, indexOf.call(settings.dontNotifyMobileUsers, ref4) < 0)) {
 					return userIdsToPushNotify.push(user._id);
 				}
 			});

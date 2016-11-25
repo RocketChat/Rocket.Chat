@@ -12,7 +12,9 @@
 								<label>{{_ "Name"}}</label>
 								<div>
 									{{#if editing 'roomName'}}
-										<input type="text" name="roomName" value="{{roomName}}" class="editing" /> <button type="button" class="button secondary cancel">{{_ "Cancel"}}</button> <button type="button" class="button primary save">{{_ "Save"}}</button>
+										<input type="text" name="roomName" value="{{roomName}}" class="editing" />
+										<button type="button" class="button cancel">{{_ "Cancel"}}</button>
+										<button type="button" class="button primary save">{{_ "Save"}}</button>
 									{{else}}
 										<span>{{roomName}}{{#if canEdit}} <i class="icon-pencil" data-edit="roomName"></i>{{/if}}</span>
 									{{/if}}
@@ -23,7 +25,9 @@
 							<label>{{_ "Topic"}}</label>
 							<div>
 								{{#if editing 'roomTopic'}}
-									<input type="text" name="roomTopic" value="{{roomTopic}}" class="editing" /> <button type="button" class="button secondary cancel">{{_ "Cancel"}}</button> <button type="button" class="button primary save">{{_ "Save"}}</button>
+									<input type="text" name="roomTopic" value="{{roomTopic}}" class="editing" />
+									<button type="button" class="button cancel">{{_ "Cancel"}}</button>
+									<button type="button" class="button primary save">{{_ "Save"}}</button>
 								{{else}}
 									<span>{{roomTopic}}{{#if canEdit}} <i class="icon-pencil" data-edit="roomTopic"></i>{{/if}}</span>
 								{{/if}}
@@ -36,7 +40,7 @@
 									{{#if editing 'roomType'}}
 										<label><input type="radio" name="roomType" class="editing" value="c" checked="{{$eq roomType 'c'}}" /> {{_ "Channel"}}</label>
 										<label><input type="radio" name="roomType" value="p" checked="{{$eq roomType 'p'}}" /> {{_ "Private_Group"}}</label>
-										<button type="button" class="button secondary cancel">{{_ "Cancel"}}</button>
+										<button type="button" class="button cancel">{{_ "Cancel"}}</button>
 										<button type="button" class="button primary save">{{_ "Save"}}</button>
 									{{else}}
 										<span>{{roomTypeDescription}}{{#if canEdit}} <i class="icon-pencil" data-edit="roomType"></i>{{/if}}</span>
@@ -51,7 +55,7 @@
 									{{#if editing 'archivationState'}}
 										<label><input type="radio" name="archivationState" class="editing" value="true" checked="{{$eq archivationState true}}" /> {{_ "Room_archivation_state_true"}}</label>
 										<label><input type="radio" name="archivationState" value="false" checked="{{$neq archivationState true}}" /> {{_ "Room_archivation_state_false"}}</label>
-										<button type="button" class="button secondary cancel">{{_ "Cancel"}}</button>
+										<button type="button" class="button cancel">{{_ "Cancel"}}</button>
 										<button type="button" class="button primary save">{{_ "Save"}}</button>
 									{{else}}
 										<span>{{archivationStateDescription}}{{#if canEdit}} <i class="icon-pencil" data-edit="archivationState"></i>{{/if}}</span>
@@ -66,7 +70,7 @@
 									{{#if editing 'readOnly'}}
 										<label><input type="radio" name="readOnly" class="editing" value="true" checked="{{$eq readOnly true}}" /> {{_ "True"}}</label>
 										<label><input type="radio" name="readOnly" value="false" checked="{{$neq readOnly true}}" /> {{_ "False"}}</label>
-										<button type="button" class="button secondary cancel">{{_ "Cancel"}}</button>
+										<button type="button" class="button cancel">{{_ "Cancel"}}</button>
 										<button type="button" class="button primary save">{{_ "Save"}}</button>
 									{{else}}
 										<span>{{readOnlyDescription}}{{#if canEdit}} <i class="icon-pencil" data-edit="readOnly"></i>{{/if}}</span>
@@ -80,9 +84,9 @@
 					</ul>
 				</form>
 				{{#if canDeleteRoom}}
-				<nav>
-					<button class='button delete red'><span><i class='icon-trash'></i> {{_ "Delete"}}</span></button>
-				</nav>
+					<nav>
+						<button class='button danger delete'><span><i class='icon-trash'></i> {{_ "Delete"}}</span></button>
+					</nav>
 				{{/if}}
 			</div>
 		</div>

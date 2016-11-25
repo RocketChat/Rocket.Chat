@@ -133,6 +133,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/methods/closeRoom.js', 'server');
 	api.addFiles('server/methods/getCustomFields.js', 'server');
 	api.addFiles('server/methods/getInitialData.js', 'server');
+	api.addFiles('server/methods/loginByToken.js', 'server');
 	api.addFiles('server/methods/pageVisited.js', 'server');
 	api.addFiles('server/methods/registerGuest.js', 'server');
 	api.addFiles('server/methods/removeAgent.js', 'server');
@@ -156,6 +157,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/methods/takeInquiry.js', 'server');
 	api.addFiles('server/methods/returnAsInquiry.js', 'server');
 	api.addFiles('server/methods/saveOfficeHours.js', 'server');
+	api.addFiles('server/methods/sendTranscript.js', 'server');
 
 	// models
 	api.addFiles('server/models/Users.js', 'server');

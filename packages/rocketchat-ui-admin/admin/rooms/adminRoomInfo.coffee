@@ -1,3 +1,4 @@
+import toastr from 'toastr'
 Template.adminRoomInfo.helpers
 	selectedRoom: ->
 		return Session.get 'adminRoomsSelected'
@@ -36,7 +37,7 @@ Template.adminRoomInfo.helpers
 		room = ChatRoom.findOne(@rid, { fields: { ro: 1 }})
 		return room?.ro
 	readOnlyDescription: ->
-		room = ChatRoom.findOne(@rid, { fields: { ro: 1 }}) 
+		room = ChatRoom.findOne(@rid, { fields: { ro: 1 }})
 		readOnly = room?.ro
 		if readOnly is true
 			return t('True')
