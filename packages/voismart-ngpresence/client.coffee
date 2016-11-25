@@ -64,4 +64,4 @@ Meteor.startup ->
 
 	if browser and (not Meteor.isCordova) and Meteor.user()
 		f = -> _installExtension(browser)
-		_extensionPopupTimer = Meteor.setTimeout f, 5000 # 90*1000
+		_extensionPopupTimer = Meteor.setTimeout f, 10000 # 90*1000

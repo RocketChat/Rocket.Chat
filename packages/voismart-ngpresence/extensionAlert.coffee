@@ -9,6 +9,7 @@ Template.extensionAlert.events
 
 		showConfiguration = ->
 			instance.$('.extension-configuration').removeClass('hidden')
+			instance.$('.popup-warning').removeClass('hidden')
 
 		if browser == 'chrome'
 			chrome.webstore.install undefined, showConfiguration, ->
@@ -25,6 +26,7 @@ Template.extensionAlert.events
 
 	'click .configurationOk': (e, instance) ->
 		instance.$('.extension-configuration').addClass('hidden')
+		instance.$('.popup-warning').addClass('hidden')
 
 
 Template.extensionAlert.helpers
