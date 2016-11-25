@@ -96,16 +96,16 @@ Importer.HipChatEnterprise = class ImporterHipChatEnterprise extends Importer.Ba
 											text: m.TopicRoomMessage.message
 										});
 									} else {
-										console.warn('HipChat Enterprise importer isn\'t configured to handle this message:', m);
+										this.logger.warn('HipChat Enterprise importer isn\'t configured to handle this message:', m);
 									}
 								}
 								tempMessages.set(roomIdentifier, roomMsgs);
 							} else {
-								console.warn(`HipChat Enterprise importer isn't configured to handle "${dirSplit[1]}" files.`);
+								this.logger.warn(`HipChat Enterprise importer isn't configured to handle "${dirSplit[1]}" files.`);
 							}
 						} else {
 							//What are these files!?
-							console.warn(`HipChat Enterprise importer doesn't know what to do with the file "${header.name}" :o`, info);
+							this.logger.warn(`HipChat Enterprise importer doesn't know what to do with the file "${header.name}" :o`, info);
 						}
 					}));
 
@@ -117,7 +117,7 @@ Importer.HipChatEnterprise = class ImporterHipChatEnterprise extends Importer.Ba
 			}));
 
 			this.extract.on('error', (err) => {
-				console.warn('extract error:', err);
+				this.logger.warn('extract error:', err);
 				reject();
 			});
 
