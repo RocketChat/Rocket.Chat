@@ -416,21 +416,6 @@
 			.fixed-title h2 {
 				margin-right: 45px;
 			}
-			&.menu-opened {
-				.burger {
-					i {
-						&:nth-child(1) {
-							.transform(translateY(3px) rotate(45deg));
-						}
-						&:nth-child(3) {
-							.transform(translateY(-3px) rotate(-45deg));
-						}
-					}
-				}
-				.main-content {
-					.transform(translateX(-@rooms-box-width));
-				}
-			}
 		}
 	}
 	.burger {
@@ -438,6 +423,16 @@
 		.right(0px);
 		.unread-burger-alert {
 			.left(4px);
+		}
+		&.menu-opened {
+			i {
+				&:nth-child(1) {
+					.transform(translate(25%, 3px) rotate(45deg) scale(0.5, 1));
+				}
+				&:nth-child(3) {
+					.transform(translate(25%, -3px) rotate(-45deg) scale(0.5, 1));
+				}
+			}
 		}
 	}
 	.arrow {
