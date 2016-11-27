@@ -279,3 +279,30 @@ Api.addRoute 'room/:id/unarchive', authRequired: true,
 				console.log '[restapi] unarchiveRoom -> '.red, "User does not have 'unarchive-room' permission"
 				statusCode: 403
 				body: status: 'error', message: 'You do not have permission to do this'
+				
+# add member to room -  POST body should be { "member" : "memberId"}
+Api.addRoute 'rooms/:id/addMember', authRequired: true,
+	post: ->
+		try
+			Meteor.runAsUser this.userId, () =>
+				console.log @bodyParams.member
+				Meteor.call 'addUserToRoom', {rid: @urlParams.id, username: @bodyParams.member}
+			status: 'success'	#need to handle error
+		catch e
+			console.log '[restapi] rooms/:id/addMember -> '.red
+			statusCode: 400    # bad request or other errors
+			body: status: 'fail', message: e.name + ' :: ' + e.message
+
+
+# remove member from room -  POST body should be { "member" : "memberId"}
+Api.addRoute 'rooms/:id/removeMember', authRequired: true,
+	post: ->
+		try
+			Meteor.runAsUser this.userId, () =>
+				console.log @bodyParams.member
+				Meteor.call 'removeUserFromRoom', {rid: @urlParams.id, username: @bodyParams.member}
+			status: 'success'	#need to handle error
+		catch e
+			console.log '[restapi] rooms/:id/removeMember -> '.red
+			statusCode: 400    # bad request or other errors
+			body: status: 'fail', message: e.name + ' :: ' + e.message
