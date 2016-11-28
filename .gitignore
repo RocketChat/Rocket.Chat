@@ -70,3 +70,8 @@ pm2.json
 settings.json
 build.sh
 /public/livechat
+
+# LG-specific
+**/coverage/*
+**/.nyc_output/*
+packages/rocketchat-lg-*/.npm
