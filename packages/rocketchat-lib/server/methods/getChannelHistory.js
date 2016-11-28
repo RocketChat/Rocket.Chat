@@ -1,7 +1,6 @@
 Meteor.methods({
-	getChannelHistory(rid, latest, oldest, inclusive, count, unreads) {
+	getChannelHistory({rid, latest = new Date(), oldest, inclusive, count = 20, unreads}) {
 		check(rid, String);
-		console.log(arguments);
 
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'getChannelHistory' });
@@ -30,17 +29,11 @@ Meteor.methods({
 			}
 		}
 
-		//Limit the count to 20 if it wasn't defined
-		let limit = 20;
-		if (!_.isUndefined(count)) {
-			limit = count;
-		}
-
 		const options = {
 			sort: {
 				ts: -1
 			},
-			limit: limit
+			limit: count
 		};
 
 		if (!RocketChat.settings.get('Message_ShowEditedStatus')) {

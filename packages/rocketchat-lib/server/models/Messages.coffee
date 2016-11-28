@@ -147,7 +147,6 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base
 		if Match.test(types, [String]) and types.length > 0
 			query.t =
 				$nin: types
->>>>>>> develop
 
 		return @find query, options
 
