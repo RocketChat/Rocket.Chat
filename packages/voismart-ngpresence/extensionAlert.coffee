@@ -9,15 +9,20 @@ Template.extensionAlert.events
 
 		showConfiguration = ->
 			instance.$('.extension-configuration').removeClass('hidden')
+		showAlert = ->
 			instance.$('.popup-warning').removeClass('hidden')
 
 		if browser == 'chrome'
 			chrome.webstore.install undefined, showConfiguration, ->
-				window.open('https://chrome.google.com/webstore/detail/nocfbnnmjnndkbipkabodnheejiegccf')
+				win = window.open 'https://chrome.google.com/webstore/detail/nocfbnnmjnndkbipkabodnheejiegccf'
 				showConfiguration()
+				if not win
+					showAlert()
 		else if browser == 'firefox'
-			window.open('https://addons.mozilla.org/en-GB/firefox/addon/rocketchat-screen-share/')
+			win = window.open('https://addons.mozilla.org/en-GB/firefox/addon/rocketchat-screen-share/')
 			showConfiguration()
+			if not win
+				showAlert()
 
 		instance.$('.extension-alert').addClass('hidden')
 
