@@ -1,3 +1,9 @@
+# NOTE: THIS IS A FORK
+
+This is a fork of Rocket.Chat by Learners Guild. See the [**Learners Guild README**](README-learners-guild.md) for more details and installation instructions.
+
+----------------
+
 ![Rocket.Chat logo](https://rocket.chat/images/logo/logo-dark.svg?v3)
 
 # The Ultimate Open Source WebChat Platform
@@ -15,11 +21,11 @@
 * [Desktop apps](#desktop-apps)
 * [Deployment](#deployment)
    * [Snaps](#snaps)
-   * [Sandstorm.io](#sandstormio) 
-   * [DPlatform](#dplatform) 
+   * [Sandstorm.io](#sandstormio)
+   * [DPlatform](#dplatform)
    * [IndieHosters](#indiehosters)
    * [Ubuntu 16.04](#ubuntu-1604)
-   * [Cloudron.io](#cloudronio) 
+   * [Cloudron.io](#cloudronio)
    * [Nitrous.io](#nitrousio)
    * [Heroku](#heroku)
   * [Scalingo](#scalingo)
@@ -76,7 +82,7 @@ Now compatible with all Android devices as old as version 4.0.x - [download here
 # Deployment
 
 ## Instant Server Intallation with Snaps
- 
+
 Install Rocket.Chat in seconds on Linux (Ubuntu and others) with:
 
 ```
@@ -85,7 +91,7 @@ sudo snap install rocketchat-server
 
 [![Rocket.Chat Snap is recommended for Linux deployments](https://github.com/Sing-Li/bbug/raw/master/images/ubuntulogo.png)](https://uappexplorer.com/app/rocketchat-server.rocketchat)
 
-Installing snaps is very quick.  By running that command you have your full Rocket.Chat server up and running.  Snaps are secure.  They are isolated with all of their dependencies.  Snaps also auto update when we release new versions. 
+Installing snaps is very quick.  By running that command you have your full Rocket.Chat server up and running.  Snaps are secure.  They are isolated with all of their dependencies.  Snaps also auto update when we release new versions.
 
 Find out more information about our snaps [here](https://rocket.chat/docs/installation/manual-installation/ubuntu/snaps/)
 
@@ -97,7 +103,7 @@ Host your own Rocket.Chat server in four seconds flat:
 
 ## DPlatform
 
-Easiest way to install a ready-to-run Rocket.Chat server on a Linux machine, VM, or VPS - [@j8r's   DPlatform](https://github.com/j8r/DPlatform), now in Alpha! 
+Easiest way to install a ready-to-run Rocket.Chat server on a Linux machine, VM, or VPS - [@j8r's   DPlatform](https://github.com/j8r/DPlatform), now in Alpha!
 
 [![DP deploy](https://raw.githubusercontent.com/DFabric/DPlatform-ShellCore/gh-pages/img/deploy.png)](https://dfabric.github.io/DPlatform-ShellCore)
 
