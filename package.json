@@ -47,7 +47,17 @@
     "test": "node .scripts/start.js",
     "deploy": "npm run build && pm2 startOrRestart pm2.json",
     "chimp-watch": "chimp --ddp=http://localhost:3000 --watch --mocha --path=tests/steps",
-    "chimp-test": "chimp --ddp=http://localhost:3000 --mocha --path=tests/steps"
+    "chimp-test": "chimp --ddp=http://localhost:3000 --mocha --path=tests/steps",
+    "lg:start": "test \"$NODE_ENV\" = 'development' && npm run lg:start:dev || npm run start:prod",
+    "lg:start:prod": "test \"$NODE_ENV\" = 'development' || npm run lg:start:server",
+    "lg:start:dev": "set -a ; source ./.env ; set +a && meteor npm install && npm run lg:start:server",
+    "lg:start:server": "meteor || echo 'Done.'",
+    "lg:lint": "./node_modules/.bin/xo './packages/rocketchat-lg-*/**/*.js'",
+    "lg:test:cov": "npm run lg:test:cov:run && npm run lg:test:cov:send",
+    "lg:test:cov:run": "NODE_ENV=test ./node_modules/.bin/nyc --reporter=lcov npm run lg:test:run",
+    "lg:test:cov:send": "./node_modules/.bin/codeclimate-test-reporter < ./tests/coverage/lcov.info",
+    "lg:test:run": "NODE_ENV=test ./node_modules/.bin/babel-tape-runner './**/__tests__/*.test.js'",
+    "lg:test": "npm run lg:lint && npm run lg:test:run --"
   },
   "license": "MIT",
   "repository": {
@@ -59,9 +69,23 @@
     "email": "support@rocket.chat"
   },
   "devDependencies": {
+    "babel-cli": "^6.11.4",
+    "babel-core": "^6.11.4",
+    "babel-polyfill": "^6.9.1",
+    "babel-preset-es2015": "^6.9.0",
+    "babel-preset-stage-2": "^6.11.0",
+    "babel-tape-runner": "^2.0.1",
+    "chimp": "^0.41.2",
     "chimp": "^0.44.0",
+    "codeclimate-test-reporter": "^0.3.3",
+    "eslint": "^3.10.2",
     "eslint": "^3.11.1",
-    "supertest": "^2.0.1"
+    "faucet": "0.0.1",
+    "nyc": "^7.1.0",
+    "pre-commit": "^1.1.3",
+    "supertest": "^2.0.1",
+    "tape": "^4.6.0",
+    "xo": "^0.15.1"
   },
   "dependencies": {
     "jquery": "^2.1.0",
@@ -70,5 +94,67 @@
     "moment": "^2.17.1",
     "moment-timezone": "^0.5.10",
     "toastr": "^2.1.2"
-  }
+  },
+  "babel": {
+    "env": {
+      "test": {
+        "only": [
+          "packages/rocketchat-lg-*/**/*.js"
+        ],
+        "presets": [
+          "es2015",
+          "stage-2"
+        ],
+        "sourceMap": "inline"
+      }
+    }
+  },
+  "xo": {
+    "rules": {
+      "comma-dangle": [
+        0
+      ],
+      "no-negated-condition": [
+        0
+      ],
+      "quotes": [
+        2,
+        "single",
+        "avoid-escape"
+      ],
+      "xo/filename-case": 0
+    },
+    "globals": [
+      "Accounts",
+      "ChatMessage",
+      "HTTP",
+      "Meteor",
+      "Npm",
+      "Package",
+      "Random",
+      "RavenLogger",
+      "Restivus",
+      "RocketChat",
+      "Session",
+      "Template",
+      "Tracker"
+    ],
+    "esnext": true,
+    "space": true,
+    "semicolon": false
+  },
+  "nyc": {
+    "all": true,
+    "include": [
+      "packages/rocketchat-lg-*/**/*.js"
+    ],
+    "require": [
+      "babel-core/register",
+      "babel-polyfill"
+    ],
+    "report-dir": "./tests/coverage"
+  },
+  "precommit": [
+    "lg:lint"
+  ]
 }
