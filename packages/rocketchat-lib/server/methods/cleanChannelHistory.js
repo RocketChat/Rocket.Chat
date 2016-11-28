@@ -1,14 +1,12 @@
 Meteor.methods({
-	cleanChannelHistory(roomId, latest, oldest, inclusive) {
+	cleanChannelHistory({roomId, latest, oldest, inclusive}) {
 		check(roomId, String);
 		check(latest, Date);
 		check(oldest, Date);
 		check(inclusive, Boolean);
 
-		console.log(arguments);
-
 		if (!Meteor.userId()) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'getChannelHistory' });
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'cleanChannelHistory' });
 		}
 
 		if (!RocketChat.authz.hasPermission(Meteor.userId(), 'clean-channel-history')) {

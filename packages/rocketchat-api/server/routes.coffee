@@ -110,6 +110,8 @@ RocketChat.API.v1.addRoute 'channels.history', authRequired: true,
 		if not @queryParams.roomId?
 			return RocketChat.API.v1.failure 'Query parameter "roomId" is required.'
 
+		rid = @queryParams.roomId
+
 		latestDate = new Date
 		if @queryParams.latest?
 			latestDate = new Date(@queryParams.latest)
@@ -134,7 +136,7 @@ RocketChat.API.v1.addRoute 'channels.history', authRequired: true,
 
 		try
 			Meteor.runAsUser this.userId, =>
-				result = Meteor.call 'getChannelHistory', @queryParams.roomId, latestDate, oldestDate, inclusive, count, unreads
+				result = Meteor.call 'getChannelHistory', { rid, latest: latestDate, oldest: oldestDate, inclusive, count, unreads }
 		catch e
 			return RocketChat.API.v1.failure e.name + ': ' + e.message
 
@@ -146,14 +148,16 @@ RocketChat.API.v1.addRoute 'channels.cleanHistory', authRequired: true,
 		if not @bodyParams.roomId?
 			return RocketChat.API.v1.failure 'Body parameter "roomId" is required.'
 
+		roomId = @bodyParams.roomId
+
 		if not @bodyParams.latest?
 			return RocketChat.API.v1.failure 'Body parameter "latest" is required.'
 
 		if not @bodyParams.oldest?
 			return RocketChat.API.v1.failure 'Body parameter "oldest" is required.'
 
-		latestDate = new Date(@bodyParams.latest)
-		oldestDate = new Date(@bodyParams.oldest)
+		latest = new Date(@bodyParams.latest)
+		oldest = new Date(@bodyParams.oldest)
 
 		inclusive = false
 		if @bodyParams.inclusive?
@@ -161,7 +165,7 @@ RocketChat.API.v1.addRoute 'channels.cleanHistory', authRequired: true,
 
 		try
 			Meteor.runAsUser this.userId, =>
-				Meteor.call 'cleanChannelHistory', @bodyParams.roomId, latestDate, oldestDate, inclusive
+				Meteor.call 'cleanChannelHistory', { roomId, latest, oldest, inclusive }
 		catch e
 			return RocketChat.API.v1.failure e.name + ': ' + e.message
 
