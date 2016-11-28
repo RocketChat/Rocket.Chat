@@ -1,5 +1,5 @@
 Meteor.methods({
-	getChannelHistory({rid, latest = new Date(), oldest, inclusive, count = 20, unreads}) {
+	getChannelHistory({rid, latest, oldest, inclusive, count = 20, unreads}) {
 		check(rid, String);
 
 		if (!Meteor.userId()) {
