@@ -1,16 +1,13 @@
 Meteor.methods	
 	updateRoom: (room) ->
 		name = room.name
-		console.log('***-1', room)
 		if not Meteor.userId()
 			throw new Meteor.Error('error-invalid-user', "Invalid user", { method: 'updateRoom' })
 
 		originalRoom = RocketChat.models.Rooms.findOneById room._id
-		console.log('***0', originalRoom?._id?)
 
 		if not originalRoom?._id?
 			return
-		console.log('***1')
 		hasPermission = RocketChat.authz.hasPermission(Meteor.userId(), 'edit-room', room.rid)
 		editAllowed = RocketChat.settings.get 'Room_AllowEditing'
 		editOwn = originalRoom?.u?._id is Meteor.userId()
@@ -44,7 +41,6 @@ Meteor.methods
 			_id: tempid,
 			{$set: room}
 
-		console.log('***5')
 		RocketChat.models.Subscriptions.update
 			rid: tempid,
 			{$set: {name: room.name}},

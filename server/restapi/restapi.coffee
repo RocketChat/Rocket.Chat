@@ -287,10 +287,10 @@ Api.addRoute 'rooms/:id/addMember', authRequired: true,
 			Meteor.runAsUser this.userId, () =>
 				console.log @bodyParams.member
 				Meteor.call 'addUserToRoom', {rid: @urlParams.id, username: @bodyParams.member}
-			status: 'success'	#need to handle error
+			status: 'success'
 		catch e
 			console.log '[restapi] rooms/:id/addMember -> '.red
-			statusCode: 400    # bad request or other errors
+			statusCode: 400
 			body: status: 'fail', message: e.name + ' :: ' + e.message
 
 
@@ -301,10 +301,10 @@ Api.addRoute 'rooms/:id/removeMember', authRequired: true,
 			Meteor.runAsUser this.userId, () =>
 				console.log @bodyParams.member
 				Meteor.call 'removeUserFromRoom', {rid: @urlParams.id, username: @bodyParams.member}
-			status: 'success'	#need to handle error
+			status: 'success'
 		catch e
 			console.log '[restapi] rooms/:id/removeMember -> '.red
-			statusCode: 400    # bad request or other errors
+			statusCode: 400
 			body: status: 'fail', message: e.name + ' :: ' + e.message
 
 Api.addRoute 'bulk/updateRoom', authRequired: true,
@@ -319,15 +319,13 @@ Api.addRoute 'bulk/updateRoom', authRequired: true,
 					Api.testapiValidateRoomName @bodyParams.rooms
 					ids = []
 					for incoming, i in @bodyParams.rooms
-						console.log '111', incoming.id ,incoming.name
 						Meteor.runAsUser this.userId, () =>
 							(ids[i] = Meteor.call 'updateRoom', {_id: incoming.id, name: incoming.name, memebers: incoming.members}) 
-							console.log ids[i]
-					status: 'success', ids: ids # need to handle error
+					status: 'success', ids: ids
 					console.log ids
 					return ids
 				catch e
-					statusCode: 400 # bad request or other error
+					statusCode: 400
 					body: status: 'fail', message: e.name + ' :: ' + e.message
 			else
 				console.log '[restapi] bulk/updatePrivateRoom -> '.red, "user does not have 'edit-room' permission"
