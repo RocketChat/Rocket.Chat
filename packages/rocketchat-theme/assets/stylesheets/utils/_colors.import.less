@@ -329,6 +329,28 @@ blockquote:before {
  * Message content
  */
 
+.first-unread {
+	.body {
+		&::before {
+			background: @primary-background-color;
+		}
+		&::after {
+			color: @content-background-color;
+		}
+	}
+}
+
+.first-unread-opaque {
+	.body {
+		&::before {
+			background: @component-color;
+		}
+		&::after {
+			color: @primary-font-color;
+		}
+	}
+}
+
 .message {
 	.body {
 		color: @primary-font-color;
