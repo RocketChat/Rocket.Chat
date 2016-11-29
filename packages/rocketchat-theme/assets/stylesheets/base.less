@@ -1585,23 +1585,17 @@ label.required:after {
 	.transition(right .25s cubic-bezier(.5, 0, .1, 1));
 	&.flex-opened {
 		right: @flex-tab-width + 40px;
-		.flex-tab {
-			right: 40px;
-			.transform(translateX(0));
-		}
 	}
 	&.layout1 {
 		right: @flex-tab-webrtc-width;
 		.flex-tab {
 			max-width: @flex-tab-webrtc-width;
-			.transform(translateX(0));
 		}
 	}
 	&.layout2 {
 		right: @flex-tab-webrtc-2-width;
 		.flex-tab {
 			max-width: @flex-tab-webrtc-2-width;
-			.transform(translateX(0));
 		}
 	}
 	&.main-modal {
@@ -2816,15 +2810,14 @@ body:not(.is-cordova) {
 
 // FLEX-TAB and FLEX-TAB views
 .flex-tab {
-	overflow-x: visible;
 	position: fixed;
-	z-index: 110;
-	max-width: @flex-tab-width;
-	width: 90%;
-	bottom: 0;
-	right: 0;
 	top: 0;
-	.transform(translateX(100%));
+	bottom: 0;
+	left: 100%;
+	width: 90%;
+	max-width: @flex-tab-width;
+	z-index: 110;
+	overflow-x: visible;
 	.transition(transform .25s cubic-bezier(.5, 0, .1, 1));
 	.control {
 		.header {
@@ -3908,6 +3901,9 @@ body:not(.is-cordova) {
 	#rocket-chat {
 		.flex-opened {
 			right: 40px;
+			.flex-tab {
+				.transform(translateX(-100%));
+			}
 		}
 	}
 }
@@ -3931,9 +3927,6 @@ body:not(.is-cordova) {
 		}
 		.fixed-title h2 {
 			margin-left: 45px;
-		}
-		.flex-tab {
-			top: 0;
 		}
 		.messages-box {
 			padding: 0 10px;
