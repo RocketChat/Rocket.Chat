@@ -76,6 +76,11 @@ Accounts.registerLoginHandler 'orchestraNG', (loginRequest) ->
 			ngUser.phonelogin = "#{phone.username}@#{domain}"
 			ngUser.phonepassword = phone.password
 			ngUser.phoneextension = phone.number_alias
+		else if phones.data
+			# no phone number defined, delete eventual phone
+			ngUser.phonelogin = undefined
+			ngUser.phonepassword = undefined
+			ngUser.phoneextension = undefined
 	catch e
 		# ignore errors getting user's phones
 		logger.error "error in getPhones in for user \"#{loginRequest.username}\": #{e}"
