@@ -33,7 +33,7 @@ startMatrixBroadcast = ->
 				logger.auth.info "prevent self connect", instance
 				return
 
-			if record.extraInformation.host is process.env.INSTANCE_IP
+			if record.extraInformation.host is process.env.INSTANCE_IP and RocketChat.isDocker() is false
 				instance = "localhost:#{record.extraInformation.port}"
 
 			if connections[instance]?.instanceRecord?
@@ -53,7 +53,7 @@ startMatrixBroadcast = ->
 		removed: (record) ->
 			instance = "#{record.extraInformation.host}:#{record.extraInformation.port}"
 
-			if record.extraInformation.host is process.env.INSTANCE_IP
+			if record.extraInformation.host is process.env.INSTANCE_IP and RocketChat.isDocker() is false
 				instance = "localhost:#{record.extraInformation.port}"
 
 			if connections[instance]? and not InstanceStatus.getCollection().findOne({'extraInformation.host': record.extraInformation.host, 'extraInformation.port': record.extraInformation.port})?
