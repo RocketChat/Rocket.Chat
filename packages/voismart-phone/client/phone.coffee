@@ -39,7 +39,7 @@ Meteor.startup ->
 		ppass = user.phonepassword
 
 		if not plogin or not ppass
-			console.log("Phone account data not set (yet)") if window.rocketDebug
+			console.warn("Phone account data not set (yet?)")
 			return
 
 		RocketChat.Phone.start(plogin, ppass, wss, iceServers)
