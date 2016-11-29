@@ -19,6 +19,14 @@ var api = {
 		if (theme.fontColor) {
 			Livechat.customFontColor = theme.fontColor;
 		}
+	},
+
+	setDepartment: function(department) {
+		Livechat.department = department;
+	},
+
+	clearDepartment: function() {
+		Livechat.department = null;
 	}
 };
 
