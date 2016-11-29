@@ -3,10 +3,11 @@
 		<table>
 			<thead>
 				<tr>
-					<th width="25%">{{_ "Name"}}</th>
-					<th width="25%">{{_ "Description"}}</th>
-					<th width="25%">{{_ "Num_Agents"}}</th>
-					<th width="25%">{{_ "Enabled"}}</th>
+					<th width="20%">{{_ "Name"}}</th>
+					<th width="30%">{{_ "Description"}}</th>
+					<th width="10%">{{_ "Num_Agents"}}</th>
+					<th width="20%">{{_ "Enabled"}}</th>
+					<th width="20%">{{_ "Show_on_registration"}}</th>
 					<th>{{_ "Delete"}}</th>
 				</tr>
 			</thead>
@@ -17,6 +18,7 @@
 						<td>{{description}}</td>
 						<td>{{numAgents}}</td>
 						<td>{{#if enabled}}{{_ "Yes"}}{{else}}{{_ "No"}}{{/if}}</td>
+						<td>{{#if showOnRegistration}}{{_ "Yes"}}{{else}}{{_ "No"}}{{/if}}</td>
 						<td><a href="#remove" class="remove-department"><i class="icon-trash"></i></a></td>
 					</tr>
 				{{/each}}

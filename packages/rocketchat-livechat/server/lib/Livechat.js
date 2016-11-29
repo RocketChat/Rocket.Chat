@@ -465,7 +465,8 @@ RocketChat.Livechat = {
 		check(departmentData, {
 			enabled: Boolean,
 			name: String,
-			description: Match.Optional(String)
+			description: Match.Optional(String),
+			showOnRegistration: Boolean
 		});
 
 		check(departmentAgents, [
@@ -482,7 +483,7 @@ RocketChat.Livechat = {
 			}
 		}
 
-		return RocketChat.models.LivechatDepartment.createOrUpdateDepartment(_id, departmentData.enabled, departmentData.name, departmentData.description, departmentAgents);
+		return RocketChat.models.LivechatDepartment.createOrUpdateDepartment(_id, departmentData, departmentAgents);
 	},
 
 	removeDepartment(_id) {
