@@ -174,6 +174,12 @@ blockquote {
 }
 
 .first-unread {
+	&.message {
+		padding-top: 20px;
+	}
+	&.sequential.message {
+		padding-top: 20px;
+	}
 	.body {
 		&::before {
 			content: "";
@@ -181,21 +187,24 @@ blockquote {
 			height: 1px;
 			position: absolute;
 			right: 0px;
-			left: 20px;
+			left: 0px;
 			top: 0px;
 			.transition(background-color, .5s, linear);
+			height: 16px;
 		}
 		&::after {
 			content: "unread messages";
 			display: block;
 			position: absolute;
 			right: 0px;
-			top: -4px;
+			top: 0px;
 			text-transform: uppercase;
-			font-size: 8px;
-			line-height: 10px;
+			font-size: 12px;
+			line-height: 16px;
 			padding: 0 5px;
 			.transition(color, .5s, linear);
+			left: 0;
+			text-align: center;
 		}
 	}
 }
