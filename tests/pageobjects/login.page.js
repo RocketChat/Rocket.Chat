@@ -39,6 +39,15 @@ class LoginPage extends Page {
 		this.submit();
 	}
 
+	registerNewAdmin({adminUsername, adminEmail, adminPassword}) {
+		this.nameField.setValue(adminUsername);
+		this.emailField.setValue(adminEmail);
+		this.passwordField.setValue(adminPassword);
+		this.confirmPasswordField.setValue(adminPassword);
+
+		this.submit();
+	}
+
 	login({email, password}) {
 		this.emailOrUsernameField.setValue(email);
 		this.passwordField.setValue(password);
