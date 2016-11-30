@@ -6,11 +6,7 @@ var path = require('path'),
 	 processes = [];
 
 var baseDir = path.resolve(__dirname, '..'),
-	 srcDir = path.resolve(baseDir),
-	 chimpBin = path.resolve(baseDir, '.scripts/node_modules/.bin/chimp'),
-	 features = [];
-
-// process.argv.slice(2).forEach(function(featureFile) { features.push(path.resolve(featureFile))});
+	 srcDir = path.resolve(baseDir);
 
 var appOptions = {
 	port: 3000,
@@ -30,10 +26,9 @@ chimpNoMirror();
 
 function chimpNoMirror() {
 	appOptions.waitForMessage = 'App running at';
-	// startApp(function () {
-		// console.log("inside no mirror ", chimpSwitches);
+	startApp(function () {
 		startChimp();
-	// });
+	});
 }
 
 function startApp(callback) {
@@ -48,13 +43,10 @@ function startApp(callback) {
 	}, callback);
 }
 
-function startChimp(command) {
-	console.log("chimpBin ", chimpBin);
-	console.log("command ", command);
+function startChimp() {
 	startProcess({
 		name: 'Chimp',
 		command: 'meteor npm run chimp-test',
-		// command: chimpBin + ' ' + command,
 		options: {
 			env: Object.assign({}, process.env, {
 				NODE_PATH: process.env.NODE_PATH +
