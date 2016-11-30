@@ -90,6 +90,7 @@ class @ChatMessages
 						showError error.reason
 
 					if result?.rid? and not visitor.isSubscribed(result.rid)
+						Livechat.connecting = result.showConnecting
 						ChatMessage.update result._id, _.omit(result, '_id')
 						Livechat.room = result.rid
 

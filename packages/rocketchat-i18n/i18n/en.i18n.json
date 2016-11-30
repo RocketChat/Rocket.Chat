@@ -764,6 +764,7 @@
   "Livechat_managers": "Livechat managers",
   "Livechat_offline": "Livechat offline",
   "Livechat_online": "Livechat online",
+  "Livechat_open_inquiery_show_connecting": "Show connecting message instead of input when guest is not yet connected to an agent",
   "Livechat_Queue": "Livechat Queue",
   "Livechat_room_count": "Livechat room count",
   "Livechat_Routing_Method": "Livechat Routing Method",
