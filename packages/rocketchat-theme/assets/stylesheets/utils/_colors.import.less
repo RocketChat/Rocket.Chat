@@ -331,10 +331,10 @@ blockquote:before {
 .first-unread {
 	.body {
 		&::before {
-			background: @primary-background-color;
+			background: @transparent-darker;
 		}
 		&::after {
-			color: @content-background-color;
+			color: @primary-font-color;
 		}
 	}
 }
@@ -342,10 +342,7 @@ blockquote:before {
 .first-unread-opaque {
 	.body {
 		&::before {
-			background: @component-color;
-		}
-		&::after {
-			color: @primary-font-color;
+			background: @transparent-dark;
 		}
 	}
 }
