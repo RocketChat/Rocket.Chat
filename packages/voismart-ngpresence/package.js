@@ -16,6 +16,7 @@ Package.onUse(function(api) {
 		'jzwzz:amqplib',
 		'jparker:crypto-core',
 		'rocketchat:lib',
+		'rocketchat:i18n',
 		'rocketchat:ui',
 		'voismart:ngapi'
 	]);

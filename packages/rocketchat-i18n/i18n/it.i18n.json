@@ -1428,7 +1428,8 @@
   "Empty_Number": "Inserire un numero da chiamare",
   "Install_Presence_Extension": "Installa Extension per la Presence",
   "You_need_install_an_extension_to_allow_presence": "Devi installare una estensione per usare la presenza.",
+  "Presence_Extension_Configuration_Title": "Configurazione estensione",
   "Presence_Extension_Configuration_Part1": "Dopo l'installazione, configura l'estensione cliccando sulla barra degli strumenti:",
-  "Presence_Extension_Configuration_Part2": "inserisci l'URL \"%s\" nel primo campo e il tempo di away desiderato.",
+  "Presence_Extension_Configuration_Part2": "e poi inserisci l'URL \"%s\" nel primo campo e il tempo di away desiderato nel secondo.",
   "Presence_Extension_Popup_Blocker": "Controlla il blocco popup se non visualizzi la pagina di installazione."
 }

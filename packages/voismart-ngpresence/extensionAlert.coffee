@@ -38,6 +38,9 @@ Template.extensionAlert.helpers
 	logged: ->
 		return if Meteor.userId() then true else false
 
+	configurationTextTitle: ->
+		return TAPi18n.__ "Presence_Extension_Configuration_Title"
+
 	configurationTextPart1: ->
 		return TAPi18n.__ "Presence_Extension_Configuration_Part1"
 

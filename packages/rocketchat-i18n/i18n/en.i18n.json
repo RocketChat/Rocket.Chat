@@ -1500,7 +1500,8 @@
   "Install_Presence_Extension": "Install Presence Extension",
   "You_need_install_an_extension_to_allow_presence": "You must install an extension to use presence.",
   "Configure_Presence_Extension": "Configure the extension after install",
+  "Presence_Extension_Configuration_Title": "Extension configuration",
   "Presence_Extension_Configuration_Part1": "After installation, configure your extension by clicking on it:",
-  "Presence_Extension_Configuration_Part2": "insert the URL \"%s\" in the first field and the desired away time.",
+  "Presence_Extension_Configuration_Part2": "and then insert the URL \"%s\" in the first field and the desired away time in the second.",
   "Presence_Extension_Popup_Blocker": "Check your popup blocker if the installation page is not shown."
 }
