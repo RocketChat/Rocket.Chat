@@ -1,12 +1,12 @@
 #!/usr/bin/env node
 var path = require('path'),
-	 fs = require('fs'),
-	 extend = require('util')._extend,
-	 exec = require('child_process').exec,
-	 processes = [];
+	fs = require('fs'),
+	extend = require('util')._extend,
+	exec = require('child_process').exec,
+	processes = [];
 
 var baseDir = path.resolve(__dirname, '..'),
-	 srcDir = path.resolve(baseDir);
+	srcDir = path.resolve(baseDir);
 
 var appOptions = {
 	port: 3000,
@@ -15,20 +15,43 @@ var appOptions = {
 	}
 };
 
-var chimpSwitches = '';
-
-chimpSwitches +=
-	 '--path=tests/steps';
-
-chimpNoMirror();
-
 // *************************************************
 
-function chimpNoMirror() {
-	appOptions.waitForMessage = 'App running at';
-	startApp(function () {
-		startChimp();
+function startProcess(opts, callback) {
+	var proc = exec(
+		opts.command,
+		opts.options
+	);
+
+	if (opts.waitForMessage) {
+		proc.stdout.on('data', function waitForMessage(data) {
+			if (data.toString().match(opts.waitForMessage)) {
+				if (callback) {
+					callback();
+				}
+			}
+		});
+	}
+
+	if (!opts.silent) {
+		proc.stdout.pipe(process.stdout);
+		proc.stderr.pipe(process.stderr);
+	}
+
+	if (opts.logFile) {
+		var logStream = fs.createWriteStream(opts.logFile, {flags: 'a'});
+		proc.stdout.pipe(logStream);
+		proc.stderr.pipe(logStream);
+	}
+
+	proc.on('close', function(code) {
+		console.log(opts.name, 'exited with code ' + code);
+		for (var i = 0; i < processes.length; i += 1) {
+			processes[i].kill();
+		}
+		process.exit(code);
 	});
+	processes.push(proc);
 }
 
 function startApp(callback) {
@@ -51,41 +74,17 @@ function startChimp() {
 			env: Object.assign({}, process.env, {
 				NODE_PATH: process.env.NODE_PATH +
 					path.delimiter + srcDir +
-					path.delimiter + srcDir + '/node_modules',
-			}),
-		},
+					path.delimiter + srcDir + '/node_modules'
+			})
+		}
 	});
 }
 
-function startProcess(opts, callback) {
-	var proc = exec(
-		 opts.command,
-		 opts.options
-	);
-	if (opts.waitForMessage) {
-		proc.stdout.on('data', function waitForMessage(data) {
-			if (data.toString().match(opts.waitForMessage)) {
-				if (callback) {
-					callback();
-				}
-			}
-		});
-	}
-	if (!opts.silent) {
-		proc.stdout.pipe(process.stdout);
-		proc.stderr.pipe(process.stderr);
-	}
-	if (opts.logFile) {
-		var logStream = fs.createWriteStream(opts.logFile, {flags: 'a'});
-		proc.stdout.pipe(logStream);
-		proc.stderr.pipe(logStream);
-	}
-	proc.on('close', function (code) {
-		console.log(opts.name, 'exited with code ' + code);
-		for (var i = 0; i < processes.length; i += 1) {
-			processes[i].kill();
-		}
-		process.exit(code);
+function chimpNoMirror() {
+	appOptions.waitForMessage = 'App running at';
+	startApp(function() {
+		startChimp();
 	});
-	processes.push(proc);
 }
+
+chimpNoMirror();
