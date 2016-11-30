@@ -77,7 +77,7 @@ blockquote:before {
 	tr {
 		background-color: @transparent-light;
 		&:nth-of-type(even) {
-			background-color: @transparent-lighter;
+			background-color: @transparent-lightest;
 		}
 	}
 	tr:hover td {
@@ -138,7 +138,7 @@ blockquote:before {
 	pre {
 		color: @error-color;
 		border-color: @error-border;
-		background-color: @transparent-lighter;
+		background-color: @transparent-lightest;
 	}
 }
 
@@ -511,6 +511,12 @@ a:hover {
 		background-color: @primary-action-color;
 		color: @primary-action-contrast;
 	}
+	.button {
+		.buttonColors(@tertiary-font-color, mix(@primary-action-color, @primary-background-color));
+	}
+	.options button {
+		.buttonColors(@tertiary-font-color, @primary-background-color);
+	}
 }
 
 
@@ -526,7 +532,7 @@ a:hover {
 		background-color: @secondary-background-color;
 	}
 	.message {
-		background-color: @transparent-lighter;
+		background-color: @transparent-lightest;
 		&.new-day::before {
 			background-color: @secondary-background-color;
 		}
@@ -702,15 +708,6 @@ i.status-offline {
 		&.linkedin {
 			background-color: #1b86bc;
 		}
-	}
-}
-
-.side-nav {
-	.button {
-		.buttonColors(@tertiary-font-color, mix(@primary-action-color, @primary-background-color));
-	}
-	.options button {
-		.buttonColors(@tertiary-font-color, @primary-background-color);
 	}
 }
 
