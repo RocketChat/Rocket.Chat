@@ -83,6 +83,7 @@ Template.accountPreferences.onCreated ->
 		data.highlights = _.compact(_.map($('[name=highlights]').val().split(','), (e) -> return _.trim(e)))
 		data.desktopNotificationDuration = $('input[name=desktopNotificationDuration]').val()
 		data.unreadAlert = $('#unreadAlert').find('input:checked').val()
+		data.showOnlineUsers = $('#showOnlineUsers').find('input:checked').val()
 
 		Meteor.call 'saveUserPreferences', data, (error, results) ->
 			if results

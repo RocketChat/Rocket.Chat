@@ -37,6 +37,16 @@ Template.chatRoomItem.helpers
 	archived: ->
 		return if this.archived then 'archived'
 
+	onlineUsers: ->
+		if Meteor.user()?.settings?.preferences?.showOnlineUsers
+			onlineUsers = RoomManager.onlineUsers.get()
+			room = ChatRoom.findOne(this.rid)
+			roomUsernames = room?.usernames or []
+			roomOnlineUsernames = roomUsernames.filter((username) -> onlineUsers[username])
+			totalOnline = roomOnlineUsernames.length
+
+			return totalOnline
+
 Template.chatRoomItem.rendered = ->
 	if not (FlowRouter.getParam('_id')? and FlowRouter.getParam('_id') is this.data.rid) and not this.data.ls and this.data.alert is true
 		KonchatNotification.newRoom(this.data.rid)
