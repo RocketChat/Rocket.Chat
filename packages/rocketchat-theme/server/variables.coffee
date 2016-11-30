@@ -11,8 +11,8 @@
 alphaColors=
   'transparent-darker': 'rgba(0,0,0,0.15)'
   'transparent-dark': 'rgba(0,0,0,0.03)'
-  'transparent-light': 'rgba(255,255,255,0.60)'
-  'transparent-lighter': 'rgba(255,255,255,0.25)'
+  'transparent-light': 'rgba(255,255,255,0.25)'
+  'transparent-lighter': 'rgba(255,255,255,0.50)'
 
 # Major colors form the core of the scheme
 # Names changed to reflect usage, comments show pre-refactor names
@@ -36,7 +36,7 @@ minorColors=
   'tertiary-font-color': '@transparent-light'
   'link-font-color': '@primary-action-color'
   'info-font-color': '@secondary-font-color'
-  'custom-scrollbar-color': '@transparent-dark'
+  'custom-scrollbar-color': '@transparent-darker'
   'status-online': '@success-color'
   'status-away': '@pending-color'
   'status-busy': '@error-color'
