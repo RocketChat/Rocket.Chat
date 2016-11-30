@@ -199,12 +199,10 @@ Template.main.helpers
 	embeddedVersion: ->
 		return 'embedded-view' if RocketChat.Layout.isEmbedded()
 
-
 Template.main.events
 
 	"click .burger": ->
 		console.log 'room click .burger' if window.rocketDebug
-		chatContainer = $("#rocket-chat")
 		menu.toggle()
 
 	'touchstart': (e, t) ->
@@ -215,17 +213,18 @@ Template.main.events
 		t.touchstartY = undefined
 		t.movestarted = false
 		t.blockmove = false
+		t.isRtl = isRtl localStorage.getItem "userLanguage"
 		if $(e.currentTarget).closest('.main-content').length > 0
 			t.touchstartX = e.originalEvent.touches[0].clientX
 			t.touchstartY = e.originalEvent.touches[0].clientY
-			t.mainContent = $('.main-content')
+			t.mainContent = $('.main-content, .flex-tab-bar')
 			t.wrapper = $('.messages-box > .wrapper')
 
 	'touchmove': (e, t) ->
 		if t.touchstartX?
 			touch = e.originalEvent.touches[0]
-			diffX = t.touchstartX - touch.clientX
-			diffY = t.touchstartY - touch.clientY
+			diffX = touch.clientX - t.touchstartX
+			diffY = touch.clientY - t.touchstartY
 			absX = Math.abs(diffX)
 			absY = Math.abs(diffY)
 
@@ -235,37 +234,58 @@ Template.main.events
 			if t.blockmove isnt true and (t.movestarted is true or absX > 5)
 				t.movestarted = true
 
-				if menu.isOpen()
-					t.left = 260 - diffX
-				else
-					t.left = -diffX
+				if t.isRtl
+					if menu.isOpen()
+						t.diff = -260 + diffX
+					else
+						t.diff = diffX
 
-				if t.left > 260
-					t.left = 260
-				if t.left < 0
-					t.left = 0
+					if t.diff < -260
+						t.diff = -260
+					if t.diff > 0
+						t.diff = 0
+				else
+					if menu.isOpen()
+						t.diff = 260 + diffX
+					else
+						t.diff = diffX
+
+					if t.diff > 260
+						t.diff = 260
+					if t.diff < 0
+						t.diff = 0
 
 				t.mainContent.addClass('notransition')
-				t.mainContent.css('transform', 'translate('+t.left+'px)')
+				t.mainContent.css('transform', 'translate(' + t.diff + 'px)')
 				t.wrapper.css('overflow', 'hidden')
 
 	'touchend': (e, t) ->
 		if t.movestarted is true
 			t.mainContent.removeClass('notransition')
-			t.mainContent.css('transform', '');
 			t.wrapper.css('overflow', '')
 
-			if menu.isOpen()
-				if t.left >= 200
-					menu.open()
+			if t.isRtl
+				if menu.isOpen()
+					if t.diff >= -200
+						menu.close()
+					else
+						menu.open()
 				else
-					menu.close()
+					if t.diff <= -60
+						menu.open()
+					else
+						menu.close()
 			else
-				if t.left >= 60
-					menu.open()
+				if menu.isOpen()
+					if t.diff >= 200
+						menu.open()
+					else
+						menu.close()
 				else
-					menu.close()
-
+					if t.diff >= 60
+						menu.open()
+					else
+						menu.close()
 
 Template.main.onRendered ->
 
