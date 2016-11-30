@@ -1,18 +1,23 @@
 @menu = new class
 	init: ->
-		@container = $("#rocket-chat")
+		@mainContent = $('.main-content, .flex-tab-bar')
 		@list = $('.rooms-list')
 
+		Session.set("isMenuOpen", false)
+
 	isOpen: ->
-		return @container?.hasClass("menu-opened") is true
+		return Session.get("isMenuOpen")
 
 	open: ->
-		if not @isOpen()
-			@container?.removeClass("menu-closed").addClass("menu-opened")
+		Session.set("isMenuOpen", true)
+		if isRtl localStorage.getItem "userLanguage"
+			@mainContent?.css('transform', 'translateX(-260px)')
+		else
+			@mainContent?.css('transform', 'translateX(260px)')
 
 	close: ->
-		if @isOpen()
-			@container?.removeClass("menu-opened").addClass("menu-closed")
+		Session.set("isMenuOpen", false)
+		@mainContent?.css('transform', 'translateX(0)')
 
 	toggle: ->
 		if @isOpen()
