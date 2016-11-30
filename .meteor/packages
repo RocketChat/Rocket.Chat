@@ -92,18 +92,10 @@ rocketchat:push-notifications
 rocketchat:reactions
 rocketchat:sandstorm
 rocketchat:slackbridge
-rocketchat:slashcommands-archive
-rocketchat:slashcommands-asciiarts
-rocketchat:slashcommands-create
 rocketchat:slashcommands-invite
 rocketchat:slashcommands-join
-rocketchat:slashcommands-kick
 rocketchat:slashcommands-leave
-rocketchat:slashcommands-me
-rocketchat:slashcommands-mute
 rocketchat:slashcommands-open
-rocketchat:slashcommands-topic
-rocketchat:slashcommands-unarchive
 rocketchat:smarsh-connector
 rocketchat:spotify
 rocketchat:statistics
@@ -163,3 +155,8 @@ underscorestring:underscore.string
 yasaricli:slugify
 yasinuslu:blaze-meta
 deepwell:bootstrap-datepicker2
+
+learnersguild:rocketchat-lg-core
+learnersguild:rocketchat-lg-api-extensions
+learnersguild:rocketchat-lg-sso
+learnersguild:rocketchat-lg-game
