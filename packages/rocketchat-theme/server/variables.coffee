@@ -10,9 +10,9 @@
 # Defined range of transparencies reduces random colour variances
 alphaColors=
   'transparent-darker': 'rgba(0,0,0,0.15)'
-  'transparent-dark': 'rgba(0,0,0,0.03)'
-  'transparent-light': 'rgba(255,255,255,0.25)'
-  'transparent-lighter': 'rgba(255,255,255,0.50)'
+  'transparent-dark': 'rgba(0,0,0,0.05)'
+  'transparent-light': 'rgba(255,255,255,0.15)'
+  'transparent-lighter': 'rgba(255,255,255,0.60)'
 
 # Major colors form the core of the scheme
 # Names changed to reflect usage, comments show pre-refactor names
@@ -33,7 +33,7 @@ majorColors=
 # Minor colours implement major colours by default, but can be overruled
 minorColors=
   'tertiary-background-color': '@component-color'
-  'tertiary-font-color': '@transparent-light'
+  'tertiary-font-color': '@transparent-lighter'
   'link-font-color': '@primary-action-color'
   'info-font-color': '@secondary-font-color'
   'custom-scrollbar-color': '@transparent-darker'

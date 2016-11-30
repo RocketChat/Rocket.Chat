@@ -22,7 +22,7 @@
  */
 
 html {
-	.custom-scroll(transparent, @custom-scrollbar-color, 0);
+	.custom-scroll(@transparent-dark, @custom-scrollbar-color, 0);
 }
 
 .flex-nav,
@@ -33,7 +33,7 @@ html {
 .rooms-list,
 .scrollable,
 .user-view {
-	.custom-scroll(transparent, @custom-scrollbar-color);
+	.custom-scroll(@transparent-dark, @custom-scrollbar-color);
 }
 
 body {
@@ -313,7 +313,6 @@ blockquote:before {
 	}
 }
 
-
 .messages-box {
 	.start {
 		color: @info-font-color;
@@ -468,8 +467,9 @@ a:hover {
 	.rooms-list {
 		background-color: lighten(@primary-background-color, 2.5%);
 	}
-	.more:hover,
 	h3:hover,
+	.more:hover,
+	.open-room:hover,
 	.selected-users li {
 		background-color: @transparent-darker;
 	}
@@ -477,13 +477,9 @@ a:hover {
 		color: @tertiary-font-color;
 	}
 	.active a {
-		color: @primary-background-contrast;
-		background-color: @transparent-lighter;
+		background-color: @transparent-light !important;
 	}
-	.open-room:hover {
-		background-color: @transparent-lighter;
-	}
-	.has-alert a {
+	.has-alert .name {
 		color: @primary-background-contrast;
 	}
 	.unread {
@@ -502,7 +498,9 @@ a:hover {
 
 .flex-tab {
 	background-color: @secondary-background-color;
-	.content, .user-view, .list-view {
+	.content,
+	.user-view,
+	.list-view {
 		background-color: @secondary-background-color;
 	}
 	.message {
