@@ -24,12 +24,11 @@ this.Livechat = new (class Livechat {
 
 		this._department = new ReactiveVar(null);
 
-		Tracker.autorun((c) => {
+		Tracker.autorun(() => {
 			if (this._room.get() && Meteor.userId()) {
 				RoomHistoryManager.getMoreIfIsEmpty(this._room.get());
 				visitor.subscribeToRoom(this._room.get());
 				visitor.setRoom(this._room.get());
-				c.stop();
 			}
 		});
 	}
