@@ -40,8 +40,9 @@ before_script:
 - travis_retry npm install
 - npm run lint
 script:
-- travis_retry meteor build --headless /tmp/build
+- npm test
 before_deploy:
+- travis_retry meteor build --headless /tmp/build
 - source ".travis/setartname.sh"
 - source ".travis/setdeploydir.sh"
 - ".travis/setupsig.sh"
