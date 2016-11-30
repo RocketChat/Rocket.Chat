@@ -17,6 +17,7 @@ Meteor.startup ->
 		{ _id: 'create-d',                      roles : ['admin', 'user'] }
 		{ _id: 'create-p',                      roles : ['admin', 'user'] }
 		{ _id: 'create-user',                   roles : ['admin'] }
+		{ _id: 'clean-channel-history',         roles : ['admin'] } # special permission to bulk delete a channel's mesages
 		{ _id: 'delete-c',                      roles : ['admin'] }
 		{ _id: 'delete-d',                      roles : ['admin'] }
 		{ _id: 'delete-message',                roles : ['admin', 'owner', 'moderator'] }
