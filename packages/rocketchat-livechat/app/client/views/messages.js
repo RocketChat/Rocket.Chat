@@ -29,6 +29,9 @@ Template.messages.helpers({
 	},
 	videoCallEnabled() {
 		return Livechat.videoCall;
+	},
+	showConnecting() {
+		return Livechat.connecting;
 	}
 });
 
