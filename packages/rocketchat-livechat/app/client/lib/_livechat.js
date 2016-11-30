@@ -21,6 +21,8 @@ this.Livechat = new (class Livechat {
 
 		this._room = new ReactiveVar(null);
 
+		this._department = new ReactiveVar(null);
+
 		Tracker.autorun((c) => {
 			if (this._room.get() && Meteor.userId()) {
 				RoomHistoryManager.getMoreIfIsEmpty(this._room.get());
@@ -69,6 +71,9 @@ this.Livechat = new (class Livechat {
 	}
 	get transcriptMessage() {
 		return this._transcriptMessage.get();
+	}
+	get department() {
+		return this._department.get();
 	}
 
 	set online(value) {
@@ -121,5 +126,12 @@ this.Livechat = new (class Livechat {
 
 	set room(roomId) {
 		this._room.set(roomId);
+	}
+	set department(departmentId) {
+		const dept = Department.findOne({ _id: departmentId }) || Department.findOne({ name: departmentId });
+
+		if (dept) {
+			this._department.set(dept._id);
+		}
 	}
 })();
