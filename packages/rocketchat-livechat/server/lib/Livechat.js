@@ -68,7 +68,9 @@ RocketChat.Livechat = {
 		if (guest.name) {
 			message.alias = guest.name;
 		}
-		return _.extend(RocketChat.sendMessage(guest, message, room), { newRoom: newRoom });
+
+		// return messages;
+		return _.extend(RocketChat.sendMessage(guest, message, room), { newRoom: newRoom, showConnecting: this.showConnecting() });
 	},
 	registerGuest({ token, name, email, department, phone, loginToken, username } = {}) {
 		check(token, String);
@@ -200,7 +202,6 @@ RocketChat.Livechat = {
 		RocketChat.sendMessage(user, message, room);
 
 		RocketChat.models.Subscriptions.hideByRoomIdAndUserId(room._id, user._id);
-
 		RocketChat.models.Messages.createCommandWithRoomIdAndUser('promptTranscript', room._id, user);
 
 		Meteor.defer(() => {
@@ -496,6 +497,14 @@ RocketChat.Livechat = {
 		}
 
 		return RocketChat.models.LivechatDepartment.removeById(_id);
+	},
+
+	showConnecting() {
+		if (RocketChat.settings.get('Livechat_Routing_Method') === 'Guest_Pool') {
+			return RocketChat.settings.get('Livechat_open_inquiery_show_connecting');
+		} else {
+			return false;
+		}
 	}
 };
 
