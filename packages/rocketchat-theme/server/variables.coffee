@@ -11,7 +11,7 @@
 alphaColors=
   'transparent-darker': 'rgba(0,0,0,0.15)'
   'transparent-dark': 'rgba(0,0,0,0.05)'
-  'transparent-light': 'rgba(255,255,255,0.15)'
+  'transparent-light': 'rgba(255,255,255,0.10)'
   'transparent-lighter': 'rgba(255,255,255,0.30)'
   'transparent-lightest': 'rgba(255,255,255,0.60)'
 
