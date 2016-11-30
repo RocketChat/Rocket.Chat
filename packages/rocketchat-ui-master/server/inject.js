@@ -56,11 +56,11 @@ RocketChat.settings.get('theme-color-primary-background-color', function(key, va
 	}
 });
 
-RocketChat.settings.get('theme-color-tertiary-background-color', function(key, value) {
+RocketChat.settings.get('theme-color-component-color', function(key, value) {
 	if (value) {
-		Inject.rawHead('theme-color-tertiary-background-color', `<style>.loading > div { background-color: ${value};}</style>`);
+		Inject.rawHead('theme-color-component-color', `<style>.loading > div { background-color: ${value};}</style>`);
 	} else {
-		Inject.rawHead('theme-color-tertiary-background-color', '<style>.loading > div { background-color: #cccccc;}</style>');
+		Inject.rawHead('theme-color-component-color', '<style>.loading > div { background-color: #cccccc;}</style>');
 	}
 });
 
