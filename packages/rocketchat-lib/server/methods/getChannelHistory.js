@@ -23,10 +23,8 @@ Meteor.methods({
 		}
 
 		//Verify oldest is a date if it exists
-		if (!_.isUndefined(oldest)) {
-			if (!_.isDate(oldest)) {
-				throw new Meteor.Error('error-invalid-date', 'Invalid date', { method: 'getChannelHistory' });
-			}
+		if (!_.isUndefined(oldest) && !_.isDate(oldest)) {
+			throw new Meteor.Error('error-invalid-date', 'Invalid date', { method: 'getChannelHistory' });
 		}
 
 		const options = {
