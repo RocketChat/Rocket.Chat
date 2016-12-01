@@ -8,7 +8,7 @@ import sideNav from '../pageobjects/side-nav.page';
 import {publicChannelName} from '../test-data/channel.js';
 import {targetUser} from '../test-data/interactions.js';
 
-describe('channel settings', ()=> {
+describe.skip('channel settings', ()=> {
 
 	describe('channel info tab', ()=> {
 		it('open the channel', ()=> {

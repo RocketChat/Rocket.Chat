@@ -5,7 +5,7 @@ RocketChat.TempSettings = TempSettings
 updateColorComponent = ->
 	$('input.minicolors').minicolors
 		theme: 'rocketchat'
-		format: 'hex'
+		format: 'rgb'
 		opacity: true
 
 Template.admin.onCreated ->
