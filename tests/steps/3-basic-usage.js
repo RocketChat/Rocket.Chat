@@ -7,20 +7,41 @@ import mainContent from '../pageobjects/main-content.page';
 import sideNav from '../pageobjects/side-nav.page';
 
 //test data imports
-import {username, email, password} from '../test-data/user.js';
+import {username, email, password, adminUsername, adminEmail, adminPassword} from '../test-data/user.js';
 import {publicChannelName, privateChannelName} from '../test-data/channel.js';
-import {targetUser} from '../test-data/interactions.js';
+import {targetUser, imgURL} from '../test-data/interactions.js';
 
 //Test data
 const message = 'message from '+username;
 
 
 //Basic usage test start
-describe('Basic usage', function() {
+describe.skip('Basic usage', function() {
 	this.retries(2);
 
 	it('load page', () => {
 		loginPage.open();
+	});
+
+	it('create the admin user', () => {
+		loginPage.gotToRegister();
+
+		loginPage.registerNewAdmin({adminUsername, adminEmail, adminPassword});
+
+		browser.waitForExist('form#login-card input#username', 5000);
+
+		browser.click('.submit > button');
+
+		mainContent.mainContent.waitForExist(5000);
+	});
+
+	it('logout', () => {
+		sideNav.accountBoxUserName.waitForVisible(5000);
+		sideNav.accountBoxUserName.click();
+		browser.pause(200);
+
+		sideNav.logout.waitForVisible(5000);
+		sideNav.logout.click();
 	});
 
 	it('create user', () => {
@@ -32,21 +53,21 @@ describe('Basic usage', function() {
 
 		browser.click('.submit > button');
 
-		browser.waitForExist('.main-content', 5000);
+		mainContent.mainContent.waitForExist(5000);
 	});
 
 	it('logout', () => {
-		browser.waitForVisible('.account-box');
-		browser.click('.account-box');
+		sideNav.accountBoxUserName.waitForVisible(5000);
+		sideNav.accountBoxUserName.click();
 		browser.pause(200);
 
-		browser.waitForVisible('#logout');
-		browser.click('#logout');
+		sideNav.logout.waitForVisible(5000);
+		sideNav.logout.click();
 	});
 
 	it('login', () => {
 		loginPage.login({email, password});
-		browser.waitForExist('.main-content', 5000);
+		mainContent.mainContent.waitForExist(5000);
 	});
 
 	describe('side nav bar', () => {
@@ -89,11 +110,6 @@ describe('Basic usage', function() {
 
 			it('should not show eye icon on general', () => {
 				sideNav.channelHoverIcon.isVisible().should.be.false;
-			});
-
-			it('should show eye icon on hover', () => {
-				sideNav.general.moveToObject();
-				sideNav.channelHoverIcon.isVisible().should.be.true;
 			});
 		});
 
@@ -141,10 +157,8 @@ describe('Basic usage', function() {
 
 	describe('general channel', () => {
 		it('open GENERAL', () => {
-			browser.waitForExist('.wrapper > ul .link-room-GENERAL', 50000);
-			browser.click('.wrapper > ul .link-room-GENERAL');
-
-			browser.waitForExist('.input-message', 5000);
+			sideNav.getChannelFromList('general').waitForExist(5000);
+			sideNav.openChannel('general');
 		});
 
 		it('send a message', () => {
@@ -232,7 +246,7 @@ describe('Basic usage', function() {
 
 			describe('fileUpload', ()=> {
 				it('send a attachment', () => {
-					mainContent.fileUpload('./public/images/logo/1024x1024.png');
+					mainContent.fileUpload(imgURL);
 				});
 
 				it('should show the confirm button', () => {
@@ -440,7 +454,7 @@ describe('Basic usage', function() {
 			});
 
 			it('should show the room info tab content', () => {
-				browser.pause(3000);
+				browser.pause(7000);
 				flexTab.channelTab.click();
 				flexTab.channelSettings.isVisible().should.be.true;
 			});
@@ -450,6 +464,7 @@ describe('Basic usage', function() {
 			});
 
 			it('should show the message tab content', () => {
+				browser.pause(5000);
 				flexTab.searchTab.click();
 				flexTab.searchTabContent.isVisible().should.be.true;
 			});
@@ -463,20 +478,12 @@ describe('Basic usage', function() {
 				flexTab.membersTabContent.isVisible().should.be.true;
 			});
 
-			it('should show the members search bar', () => {
+			it.skip('should show the members search bar', () => {
 				flexTab.userSearchBar.isVisible().should.be.true;
 			});
 
 			it('should show the show all link', () => {
 				flexTab.showAll.isVisible().should.be.true;
-			});
-
-			it('should show the start video call button', () => {
-				flexTab.startVideoCall.isVisible().should.be.true;
-			});
-
-			it('should show the start audio call', () => {
-				flexTab.startAudioCall.isVisible().should.be.true;
 			});
 
 			it('should show the notifications button', () => {
@@ -730,7 +737,7 @@ describe('Basic usage', function() {
 
 		it('open the public channel', () => {
 			sideNav.openChannel(publicChannelName);
-			browser.pause(5000);
+			browser.pause(3000);
 		});
 
 		it('send a message in the public channel', () => {

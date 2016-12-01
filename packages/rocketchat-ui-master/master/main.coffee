@@ -29,9 +29,15 @@ Template.body.onRendered ->
 					if subscription.alert or subscription.unread > 0
 						Meteor.call 'readMessages', subscription.rid
 
-	$(document.body).on 'keypress', (e) ->
+	$(document.body).on 'keydown', (e) ->
 		target = e.target
+		if(e.ctrlKey is true or e.metaKey is true)
+			return
+		if !(e.keyCode > 45 and e.keyCode < 91 or e.keyCode == 8)
+			return
 		if /input|textarea|select/i.test(target.tagName)
+			return
+		if $.swipebox.isOpen
 			return
 		$inputMessage = $('textarea.input-message')
 		if 0 == $inputMessage.length
@@ -47,7 +53,7 @@ Template.body.onRendered ->
 			if RocketChat.Layout.isEmbedded()
 				return fireGlobalEvent('click-message-link', { link: link.pathname + link.search })
 
-			FlowRouter.go(link.pathname + link.search)
+			FlowRouter.go(link.pathname + link.search, null, FlowRouter.current().queryParams)
 
 		if $(link).hasClass('swipebox')
 			if RocketChat.Layout.isEmbedded()
@@ -72,68 +78,6 @@ Template.body.onRendered ->
 				j.async = true
 				j.src = '//www.googletagmanager.com/gtm.js?id=' + i + dl
 				f.parentNode.insertBefore j, f
-
-	Tracker.autorun (c) ->
-		if RocketChat.settings.get 'Meta_language'
-			c.stop()
-
-			Meta.set
-				name: 'http-equiv'
-				property: 'content-language'
-				content: RocketChat.settings.get 'Meta_language'
-			Meta.set
-				name: 'name'
-				property: 'language'
-				content: RocketChat.settings.get 'Meta_language'
-
-	Tracker.autorun (c) ->
-		if RocketChat.settings.get 'Meta_fb_app_id'
-			c.stop()
-
-			Meta.set
-				name: 'property'
-				property: 'fb:app_id'
-				content: RocketChat.settings.get 'Meta_fb_app_id'
-
-	Tracker.autorun (c) ->
-		if RocketChat.settings.get 'Meta_robots'
-			c.stop()
-
-			Meta.set
-				name: 'name'
-				property: 'robots'
-				content: RocketChat.settings.get 'Meta_robots'
-
-	Tracker.autorun (c) ->
-		if RocketChat.settings.get 'Meta_google-site-verification'
-			c.stop()
-
-			Meta.set
-				name: 'name'
-				property: 'google-site-verification'
-				content: RocketChat.settings.get 'Meta_google-site-verification'
-
-	Tracker.autorun (c) ->
-		if RocketChat.settings.get 'Meta_msvalidate01'
-			c.stop()
-
-			Meta.set
-				name: 'name'
-				property: 'msvalidate.01'
-				content: RocketChat.settings.get 'Meta_msvalidate01'
-
-	Tracker.autorun (c) ->
-		c.stop()
-
-		Meta.set
-			name: 'name'
-			property: 'application-name'
-			content: RocketChat.settings.get 'Site_Name'
-
-		Meta.set
-			name: 'name'
-			property: 'apple-mobile-web-app-title'
-			content: RocketChat.settings.get 'Site_Name'
 
 	if Meteor.isCordova
 		$(document.body).addClass 'is-cordova'
@@ -193,12 +137,10 @@ Template.main.helpers
 	embeddedVersion: ->
 		return 'embedded-view' if RocketChat.Layout.isEmbedded()
 
-
 Template.main.events
 
 	"click .burger": ->
 		console.log 'room click .burger' if window.rocketDebug
-		chatContainer = $("#rocket-chat")
 		menu.toggle()
 
 	'touchstart': (e, t) ->
@@ -209,17 +151,18 @@ Template.main.events
 		t.touchstartY = undefined
 		t.movestarted = false
 		t.blockmove = false
+		t.isRtl = isRtl localStorage.getItem "userLanguage"
 		if $(e.currentTarget).closest('.main-content').length > 0
 			t.touchstartX = e.originalEvent.touches[0].clientX
 			t.touchstartY = e.originalEvent.touches[0].clientY
-			t.mainContent = $('.main-content')
+			t.mainContent = $('.main-content, .flex-tab-bar')
 			t.wrapper = $('.messages-box > .wrapper')
 
 	'touchmove': (e, t) ->
 		if t.touchstartX?
 			touch = e.originalEvent.touches[0]
-			diffX = t.touchstartX - touch.clientX
-			diffY = t.touchstartY - touch.clientY
+			diffX = touch.clientX - t.touchstartX
+			diffY = touch.clientY - t.touchstartY
 			absX = Math.abs(diffX)
 			absY = Math.abs(diffY)
 
@@ -229,37 +172,58 @@ Template.main.events
 			if t.blockmove isnt true and (t.movestarted is true or absX > 5)
 				t.movestarted = true
 
-				if menu.isOpen()
-					t.left = 260 - diffX
-				else
-					t.left = -diffX
+				if t.isRtl
+					if menu.isOpen()
+						t.diff = -260 + diffX
+					else
+						t.diff = diffX
 
-				if t.left > 260
-					t.left = 260
-				if t.left < 0
-					t.left = 0
+					if t.diff < -260
+						t.diff = -260
+					if t.diff > 0
+						t.diff = 0
+				else
+					if menu.isOpen()
+						t.diff = 260 + diffX
+					else
+						t.diff = diffX
+
+					if t.diff > 260
+						t.diff = 260
+					if t.diff < 0
+						t.diff = 0
 
 				t.mainContent.addClass('notransition')
-				t.mainContent.css('transform', 'translate('+t.left+'px)')
+				t.mainContent.css('transform', 'translate(' + t.diff + 'px)')
 				t.wrapper.css('overflow', 'hidden')
 
 	'touchend': (e, t) ->
 		if t.movestarted is true
 			t.mainContent.removeClass('notransition')
-			t.mainContent.css('transform', '');
 			t.wrapper.css('overflow', '')
 
-			if menu.isOpen()
-				if t.left >= 200
-					menu.open()
+			if t.isRtl
+				if menu.isOpen()
+					if t.diff >= -200
+						menu.close()
+					else
+						menu.open()
 				else
-					menu.close()
+					if t.diff <= -60
+						menu.open()
+					else
+						menu.close()
 			else
-				if t.left >= 60
-					menu.open()
+				if menu.isOpen()
+					if t.diff >= 200
+						menu.open()
+					else
+						menu.close()
 				else
-					menu.close()
-
+					if t.diff >= 60
+						menu.open()
+					else
+						menu.close()
 
 Template.main.onRendered ->
 

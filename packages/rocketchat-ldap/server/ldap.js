@@ -36,7 +36,13 @@ LDAP = class LDAP {
 			domain_search_filter: RocketChat.settings.get('LDAP_Domain_Search_Filter'),
 			domain_search_user_id: RocketChat.settings.get('LDAP_Domain_Search_User_ID'),
 			domain_search_object_class: RocketChat.settings.get('LDAP_Domain_Search_Object_Class'),
-			domain_search_object_category: RocketChat.settings.get('LDAP_Domain_Search_Object_Category')
+			domain_search_object_category: RocketChat.settings.get('LDAP_Domain_Search_Object_Category'),
+			group_filter_enabled: RocketChat.settings.get('LDAP_Group_Filter_Enable'),
+			group_filter_object_class: RocketChat.settings.get('LDAP_Group_Filter_ObjectClass'),
+			group_filter_group_id_attribute: RocketChat.settings.get('LDAP_Group_Filter_Group_Id_Attribute'),
+			group_filter_group_member_attribute: RocketChat.settings.get('LDAP_Group_Filter_Group_Member_Attribute'),
+			group_filter_group_member_format: RocketChat.settings.get('LDAP_Group_Filter_Group_Member_Format'),
+			group_filter_group_name: RocketChat.settings.get('LDAP_Group_Filter_Group_Name')
 		};
 
 		self.connectSync = Meteor.wrapAsync(self.connectAsync, self);
@@ -104,7 +110,7 @@ LDAP = class LDAP {
 			// Set host parameter for tls.connect which is used by ldapjs starttls. This shouldn't be needed in newer nodejs versions (e.g v5.6.0).
 			// https://github.com/RocketChat/Rocket.Chat/issues/2035
 			// https://github.com/mcavage/node-ldapjs/issues/349
-			tlsOptions.host = [self.options.host];
+			tlsOptions.host = self.options.host;
 
 			logger.connection.info('Starting TLS');
 			logger.connection.debug('tlsOptions', tlsOptions);
@@ -309,6 +315,44 @@ LDAP = class LDAP {
 
 		return result[0];
 	}
+
+	isUserInGroup(username) {
+		const self = this;
+
+		if (!self.options.group_filter_enabled) {
+			return true;
+		}
+
+		let filter = ['(&'];
+
+		if (self.options.group_filter_object_class !== '') {
+			filter.push(`(objectclass=${self.options.group_filter_object_class})`);
+		}
+
+		if (self.options.group_filter_group_member_attribute !== '') {
+			filter.push(`(${self.options.group_filter_group_member_attribute}=${self.options.group_filter_group_member_format})`);
+		}
+
+		if (self.options.group_filter_group_id_attribute !== '') {
+			filter.push(`(${self.options.group_filter_group_id_attribute}=${self.options.group_filter_group_name})`);
+		}
+		filter.push(')');
+
+		const searchOptions = {
+			filter: filter.join('').replace(/#{username}/g, username),
+			scope: 'sub'
+		};
+
+		logger.search.debug('Group filter LDAP:', searchOptions.filter);
+
+		const result = self.searchAllSync(self.options.domain_base, searchOptions);
+
+		if (!Array.isArray(result) || result.length === 0) {
+			return false;
+		}
+		return true;
+	}
+
 
 	searchAllAsync(domain_base, options, callback) {
 		const self = this;

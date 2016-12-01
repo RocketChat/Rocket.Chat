@@ -33,7 +33,7 @@ startMatrixBroadcast = ->
 				logger.auth.info "prevent self connect", instance
 				return
 
-			if record.extraInformation.host is process.env.INSTANCE_IP
+			if record.extraInformation.host is process.env.INSTANCE_IP and RocketChat.isDocker() is false
 				instance = "localhost:#{record.extraInformation.port}"
 
 			if connections[instance]?.instanceRecord?
@@ -44,7 +44,7 @@ startMatrixBroadcast = ->
 					return
 
 			logger.connection.info 'connecting in', instance
-			connections[instance] = DDP.connect(instance, {_dontPrintErrors: true})
+			connections[instance] = DDP.connect(instance, {_dontPrintErrors: LoggerManager.logLevel < 2})
 			connections[instance].instanceRecord = record;
 			connections[instance].instanceId = record._id;
 			connections[instance].onReconnect = ->
@@ -53,7 +53,7 @@ startMatrixBroadcast = ->
 		removed: (record) ->
 			instance = "#{record.extraInformation.host}:#{record.extraInformation.port}"
 
-			if record.extraInformation.host is process.env.INSTANCE_IP
+			if record.extraInformation.host is process.env.INSTANCE_IP and RocketChat.isDocker() is false
 				instance = "localhost:#{record.extraInformation.port}"
 
 			if connections[instance]? and not InstanceStatus.getCollection().findOne({'extraInformation.host': record.extraInformation.host, 'extraInformation.port': record.extraInformation.port})?
@@ -92,7 +92,7 @@ startStreamCastBroadcast = (value) ->
 	instance = 'StreamCast'
 
 	logger.connection.info 'connecting in', instance, value
-	connection = DDP.connect(value, {_dontPrintErrors: true})
+	connection = DDP.connect(value, {_dontPrintErrors: LoggerManager.logLevel < 2})
 	connections[instance] = connection
 	connection.instanceId = instance
 	connection.onReconnect = ->

@@ -48,49 +48,76 @@ Inject.rawBody('page-loading', `
 </div>`);
 
 
-RocketChat.settings.get('theme-color-primary-background-color', function(key, value) {
+RocketChat.settings.get('theme-color-primary-background-color', function(key, value = '#04436a') {
+	Inject.rawHead(key, `<style>body { background-color: ${value};}</style>`);
+});
+
+RocketChat.settings.get('theme-color-component-color', function(key, value = '#cccccc') {
+	Inject.rawHead(key, `<style>.loading > div { background-color: ${value};}</style>`);
+});
+
+RocketChat.settings.get('Accounts_ForgetUserSessionOnWindowClose', function(key, value) {
 	if (value) {
-		Inject.rawHead('theme-color-primary-background-color', `<style>body { background-color: ${value};}</style>`);
+		Inject.rawModHtml(key, function(html) {
+			const script = `
+				<script>
+					if (Meteor._localStorage._data === undefined && window.sessionStorage) {
+						Meteor._localStorage = window.sessionStorage;
+					}
+				</script>
+			`;
+			return html.replace(/<\/body>/, script + '\n</body>');
+		});
 	} else {
-		Inject.rawHead('theme-color-primary-background-color', '<style>body { background-color: #04436a;}</style>');
+		Inject.rawModHtml(key, function(html) {
+			return html;
+		});
 	}
 });
 
-RocketChat.settings.get('theme-color-tertiary-background-color', function(key, value) {
-	if (value) {
-		Inject.rawHead('theme-color-tertiary-background-color', `<style>.loading > div { background-color: ${value};}</style>`);
-	} else {
-		Inject.rawHead('theme-color-tertiary-background-color', '<style>.loading > div { background-color: #cccccc;}</style>');
-	}
+RocketChat.settings.get('Site_Name', function(key, value = 'Rocket.Chat') {
+	Inject.rawHead(key,
+		`<title>${value}</title>` +
+		`<meta name="application-name" content="${value}">` +
+		`<meta name="apple-mobile-web-app-title" content="${value}">`);
 });
 
-RocketChat.settings.get('Site_Url', function() {
-	Meteor.defer(function() {
-		let baseUrl;
-		if (__meteor_runtime_config__.ROOT_URL_PATH_PREFIX && __meteor_runtime_config__.ROOT_URL_PATH_PREFIX.trim() !== '') {
-			baseUrl = __meteor_runtime_config__.ROOT_URL_PATH_PREFIX;
-		} else {
-			baseUrl = '/';
-		}
-		if (/\/$/.test(baseUrl) === false) {
-			baseUrl += '/';
-		}
-		Inject.rawHead('base', `<base href="${baseUrl}">`);
-	});
+RocketChat.settings.get('Meta_language', function(key, value = '') {
+	Inject.rawHead(key,
+		`<meta http-equiv="content-language" content="${value}">` +
+		`<meta name="language" content="${value}">`);
 });
 
-RocketChat.settings.get('Site_Name', function(key, value) {
-	if (value) {
-		Inject.rawHead('title', `<title>${value}</title>`);
-	} else {
-		Inject.rawHead('title', '<title>Rocket.Chat</title>');
-	}
+RocketChat.settings.get('Meta_robots', function(key, value = '') {
+	Inject.rawHead(key, `<meta name="robots" content="${value}">`);
 });
 
-RocketChat.settings.get('GoogleSiteVerification_id', function(key, value) {
-	if (value) {
-		Inject.rawHead('google-site-verification', `<meta name="google-site-verification" content="${value}" />`);
-	} else {
-		Inject.rawHead('google-site-verification', '');
-	}
+RocketChat.settings.get('Meta_msvalidate01', function(key, value = '') {
+	Inject.rawHead(key, `<meta name="msvalidate.01" content="${value}">`);
 });
+
+RocketChat.settings.get('Meta_google-site-verification', function(key, value = '') {
+	Inject.rawHead(key, `<meta name="google-site-verification" content="${value}" />`);
+});
+
+RocketChat.settings.get('Meta_fb_app_id', function(key, value = '') {
+	Inject.rawHead(key, `<meta property="fb:app_id" content="${value}">`);
+});
+
+RocketChat.settings.get('Meta_custom', function(key, value = '') {
+	Inject.rawHead(key, value);
+});
+
+Meteor.defer(function() {
+	let baseUrl;
+	if (__meteor_runtime_config__.ROOT_URL_PATH_PREFIX && __meteor_runtime_config__.ROOT_URL_PATH_PREFIX.trim() !== '') {
+		baseUrl = __meteor_runtime_config__.ROOT_URL_PATH_PREFIX;
+	} else {
+		baseUrl = '/';
+	}
+	if (/\/$/.test(baseUrl) === false) {
+		baseUrl += '/';
+	}
+	Inject.rawHead('base', `<base href="${baseUrl}">`);
+});
+

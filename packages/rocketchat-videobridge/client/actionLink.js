@@ -1,3 +1,4 @@
+import toastr from 'toastr';
 RocketChat.actionLinks.register('joinJitsiCall', function(/*message, params*/) {
 	if (Session.get('openedRoom')) {
 		let rid = Session.get('openedRoom');

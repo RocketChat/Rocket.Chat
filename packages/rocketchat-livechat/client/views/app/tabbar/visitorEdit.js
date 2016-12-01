@@ -1,3 +1,4 @@
+import toastr from 'toastr';
 Template.visitorEdit.helpers({
 	visitor() {
 		return Template.instance().visitor.get();

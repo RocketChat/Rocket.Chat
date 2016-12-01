@@ -126,8 +126,12 @@ Template.livechat.onCreated(function() {
 	this.statusLivechat = new ReactiveVar();
 
 	this.autorun(() => {
-		const user = RocketChat.models.Users.findOne(Meteor.userId(), { fields: { statusLivechat: 1 } });
-		this.statusLivechat.set(user.statusLivechat);
+		if (Meteor.userId()) {
+			const user = RocketChat.models.Users.findOne(Meteor.userId(), { fields: { statusLivechat: 1 } });
+			this.statusLivechat.set(user.statusLivechat);
+		} else {
+			this.statusLivechat.set();
+		}
 	});
 
 	this.subscribe('livechat:inquiry');

@@ -105,6 +105,73 @@ RocketChat.API.v1.addRoute 'channels.create', authRequired: true,
 		return RocketChat.API.v1.success
 			channel: RocketChat.models.Rooms.findOneById(id.rid)
 
+RocketChat.API.v1.addRoute 'channels.history', authRequired: true,
+	get: ->
+		if not @queryParams.roomId?
+			return RocketChat.API.v1.failure 'Query parameter "roomId" is required.'
+
+		rid = @queryParams.roomId
+
+		latestDate = new Date
+		if @queryParams.latest?
+			latestDate = new Date(@queryParams.latest)
+
+		oldestDate = undefined
+		if @queryParams.oldest?
+			oldestDate = new Date(@queryParams.oldest)
+
+		inclusive = false
+		if @queryParams.inclusive?
+			inclusive = @queryParams.inclusive
+
+		count = 20
+		if @queryParams.count?
+			count = parseInt @queryParams.count
+
+		unreads = false
+		if @queryParams.unreads?
+			unreads = @queryParams.unreads
+
+		result = {}
+
+		try
+			Meteor.runAsUser this.userId, =>
+				result = Meteor.call 'getChannelHistory', { rid, latest: latestDate, oldest: oldestDate, inclusive, count, unreads }
+		catch e
+			return RocketChat.API.v1.failure e.name + ': ' + e.message
+
+		return RocketChat.API.v1.success
+			result: result
+
+RocketChat.API.v1.addRoute 'channels.cleanHistory', authRequired: true,
+	post: ->
+		if not @bodyParams.roomId?
+			return RocketChat.API.v1.failure 'Body parameter "roomId" is required.'
+
+		roomId = @bodyParams.roomId
+
+		if not @bodyParams.latest?
+			return RocketChat.API.v1.failure 'Body parameter "latest" is required.'
+
+		if not @bodyParams.oldest?
+			return RocketChat.API.v1.failure 'Body parameter "oldest" is required.'
+
+		latest = new Date(@bodyParams.latest)
+		oldest = new Date(@bodyParams.oldest)
+
+		inclusive = false
+		if @bodyParams.inclusive?
+			inclusive = @bodyParams.inclusive
+
+		try
+			Meteor.runAsUser this.userId, =>
+				Meteor.call 'cleanChannelHistory', { roomId, latest, oldest, inclusive }
+		catch e
+			return RocketChat.API.v1.failure e.name + ': ' + e.message
+
+		return RocketChat.API.v1.success
+			success: true
+
 # List Private Groups a user has access to
 RocketChat.API.v1.addRoute 'groups.list', authRequired: true,
 	get: ->
@@ -168,8 +235,13 @@ RocketChat.API.v1.addRoute 'users.create', authRequired: true,
 			if @bodyParams.customFields?
 				RocketChat.saveCustomFields(newUserId, @bodyParams.customFields)
 
+			user = RocketChat.models.Users.findOneById(newUserId)
+
+			if typeof @bodyParams.joinDefaultChannels is 'undefined' or @bodyParams.joinDefaultChannels
+				RocketChat.addUserToDefaultChannels(user)
+
 			return RocketChat.API.v1.success
-				user: RocketChat.models.Users.findOneById(newUserId)
+				user: user
 		catch e
 			return RocketChat.API.v1.failure e.name + ': ' + e.message
 
@@ -234,6 +306,36 @@ RocketChat.API.v1.addRoute 'users.delete', authRequired: true,
 
 		return RocketChat.API.v1.success
 
+# Set user's avatar
+RocketChat.API.v1.addRoute 'users.setAvatar', authRequired: true,
+	post: ->
+		try
+			Busboy = Npm.require('busboy')
+
+			busboy = new Busboy headers: @request.headers
+
+			user = Meteor.users.findOne(@userId)
+
+			Meteor.wrapAsync((callback) =>
+				busboy.on 'file', Meteor.bindEnvironment (fieldname, file, filename, encoding, mimetype) =>
+					if fieldname isnt 'image'
+						return callback(new Meteor.Error 'invalid-field')
+
+					imageData = []
+					file.on 'data', Meteor.bindEnvironment (data) ->
+						imageData.push data
+
+					file.on 'end', Meteor.bindEnvironment () =>
+						RocketChat.setUserAvatar(user, Buffer.concat(imageData), mimetype, 'rest')
+						callback()
+
+				@request.pipe busboy
+			)()
+		catch e
+			return RocketChat.API.v1.failure e.name + ': ' + e.message
+
+		return RocketChat.API.v1.success()
+
 # Create Private Group
 RocketChat.API.v1.addRoute 'groups.create', authRequired: true,
 	post: ->
@@ -249,8 +351,8 @@ RocketChat.API.v1.addRoute 'groups.create', authRequired: true,
 				Meteor.runAsUser this.userId, =>
 					id = Meteor.call 'createPrivateGroup', @bodyParams.name, []
 			else
-			  Meteor.runAsUser this.userId, =>
-				  id = Meteor.call 'createPrivateGroup', @bodyParams.name, @bodyParams.members, []
+				Meteor.runAsUser this.userId, =>
+					id = Meteor.call 'createPrivateGroup', @bodyParams.name, @bodyParams.members, []
 		catch e
 			return RocketChat.API.v1.failure e.name + ': ' + e.message
 

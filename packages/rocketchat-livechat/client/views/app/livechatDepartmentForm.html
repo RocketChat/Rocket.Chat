@@ -22,6 +22,13 @@
 							<textarea name="description" rows="6">{{department.description}}</textarea>
 						</div>
 					</div>
+					<div class="input-line">
+						<label>{{_ "Show_on_registration_page"}}</label>
+						<div>
+							<label><input type="radio" name="showOnRegistration" value="1" checked="{{showOnRegistration true}}" /> {{_ "Yes"}}</label>
+							<label><input type="radio" name="showOnRegistration" value="0" checked="{{showOnRegistration false}}" /> {{_ "No"}}</label>
+						</div>
+					</div>
 					<hr />
 					<h2>{{_ "Agents"}}</h2>
 
@@ -71,8 +78,8 @@
 
 				</fieldset>
 				<div class="submit">
-					<button type="button" class="button secondary back"><i class="icon-left-big"></i><span>{{_ "Back"}}</span></button>
-					<button class="button save"><i class="icon-floppy"></i><span>{{_ "Save"}}</span></button>
+					<button class="button back" type="button"><i class="icon-left-big"></i><span>{{_ "Back"}}</span></button>
+					<button class="button primary save"><i class="icon-floppy"></i><span>{{_ "Save"}}</span></button>
 				</div>
 			{{else}}
 				{{> loading}}
