@@ -1,3 +1,4 @@
+import toastr from 'toastr'
 class @ChatMessages
 	init: (node) ->
 		this.editing = {}
@@ -75,7 +76,12 @@ class @ChatMessages
 			rid ?= visitor.getRoom(true)
 
 			sendMessage = (callback) ->
-				msgObject = { _id: Random.id(), rid: rid, msg: msg, token: visitor.getToken() }
+				msgObject = {
+					_id: Random.id(),
+					rid: rid,
+					msg: msg,
+					token: visitor.getToken()
+				}
 				MsgTyping.stop(rid)
 
 				Meteor.call 'sendMessageLivechat', msgObject, (error, result) ->
@@ -83,12 +89,20 @@ class @ChatMessages
 						ChatMessage.update msgObject._id, { $set: { error: true } }
 						showError error.reason
 
-					if result.rid? and not visitor.isSubscribed(result.rid)
+					if result?.rid? and not visitor.isSubscribed(result.rid)
+						Livechat.connecting = result.showConnecting
 						ChatMessage.update result._id, _.omit(result, '_id')
 						Livechat.room = result.rid
 
 			if not Meteor.userId()
-				Meteor.call 'livechat:registerGuest', { token: visitor.getToken() }, (error, result) ->
+				guest = {
+					token: visitor.getToken()
+				}
+
+				if Livechat.department
+					guest.department = Livechat.department
+
+				Meteor.call 'livechat:registerGuest', guest, (error, result) ->
 					if error?
 						return showError error.reason
 

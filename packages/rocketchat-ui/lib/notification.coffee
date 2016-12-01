@@ -30,11 +30,11 @@
 						window.focus()
 						switch notification.payload.type
 							when 'd'
-								FlowRouter.go 'direct', {username: notification.payload.sender.username}
+								FlowRouter.go 'direct', { username: notification.payload.sender.username }, FlowRouter.current().queryParams
 							when 'c'
-								FlowRouter.go 'channel', {name: notification.payload.name}
+								FlowRouter.go 'channel', { name: notification.payload.name }, FlowRouter.current().queryParams
 							when 'p'
-								FlowRouter.go 'group', {name: notification.payload.name}
+								FlowRouter.go 'group', { name: notification.payload.name }, FlowRouter.current().queryParams
 
 	showDesktop: (notification) ->
 		if notification.payload.rid is Session.get('openedRoom') and window.document.hasFocus?()

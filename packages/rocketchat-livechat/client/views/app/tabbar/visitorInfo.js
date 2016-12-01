@@ -1,3 +1,4 @@
+import moment from 'moment';
 import UAParser from 'ua-parser-js';
 
 Template.visitorInfo.helpers({

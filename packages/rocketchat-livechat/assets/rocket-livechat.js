@@ -75,6 +75,14 @@
 		callHook('setTheme', theme);
 	};
 
+	var setDepartment = function(department) {
+		callHook('setDepartment', department);
+	};
+
+	var clearDepartment = function() {
+		callHook('clearDepartment');
+	};
+
 	var currentPage = {
 		href: null,
 		title: null
@@ -168,7 +176,9 @@
 	w.RocketChat.livechat = {
 		pageVisited: pageVisited,
 		setCustomField: setCustomField,
-		setTheme: setTheme
+		setTheme: setTheme,
+		setDepartment: setDepartment,
+		clearDepartment: clearDepartment
 	};
 
 	// proccess queue

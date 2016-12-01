@@ -1,26 +1,35 @@
 <template name="adminImportPrepare">
 	<section class="page-container page-home page-static page-settings">
 		{{#with importer}}
-			<head class="fixed-title">
+			<header class="fixed-title">
 				{{> burger}}
 				<h2>
-					<span class="room-title">{{name}} - {{_ description }}</span>
+					<span class="room-title">{{name}}</span>
 				</h2>
-			</head>
+			</header>
 			<div class="content">
 				{{#unless isAdmin}}
 					<p>You are not authorized to view this page.</p>
 				{{else}}
 					<div class="rocket-form">
 						<fieldset>
+							{{#each warnings}}
+								<div class="section">
+									<h1>{{_ "Warnings"}}</h1>
+									<div class="section-content">
+										<p style="color: #bc2031;">{{_ text}} <a href="{{href}}" target="_blank">{{href}}</a></p>
+									</div>
+								</div>
+							{{/each}}
+
 							{{#if isLoaded}}
 								<div class="section">
 									<h1>{{_ "Actions"}}</h1>
 									<div class="section-content">
-										<button class="button restart"><i class="icon-send"></i><span>{{_ "Importer_Prepare_Restart_Import"}}</span></button>
-										<button class="button start"><i class="icon-send"></i><span>{{_ "Importer_Prepare_Start_Import"}}</span></button>
 										<button class="button uncheck-deleted-users"><i class="icon-send"></i><span>{{_ "Importer_Prepare_Uncheck_Deleted_Users"}}</span></button>
 										<button class="button uncheck-archived-channels"><i class="icon-send"></i><span>{{_ "Importer_Prepare_Uncheck_Archived_Channels"}}</span></button>
+										<button class="button restart"><i class="icon-send"></i><span>{{_ "Importer_Prepare_Restart_Import"}}</span></button>
+										<button class="button primary start"><i class="icon-send"></i><span>{{_ "Importer_Prepare_Start_Import"}}</span></button>
 									</div>
 								</div>
 
@@ -48,6 +57,7 @@
 												<li>
 													<input type="checkbox" name="{{channel_id}}" checked="checked" />{{name}}
 													{{#if is_archived}} <em>({{_ "Importer_Archived"}})</em>{{/if}}
+													{{#if is_private}} <em>({{_ "Private_Group"}})</em>{{/if}}
 												</li>
 											{{/each}}
 										</ul>
@@ -57,7 +67,12 @@
 								{{#if isPreparing}}
 									{{> loading}}
 								{{else}}
-									<input type="file" class="import-file-input" accept="{{ fileType }}">
+									<div class="section">
+										<h1>{{_ "Importer_Source_File"}}</h1>
+										<div class="section-content">
+											<input type="file" class="import-file-input" accept="{{ fileType }}">
+										</div>
+									</div>
 								{{/if}}
 							{{/if}}
 						</fieldset>

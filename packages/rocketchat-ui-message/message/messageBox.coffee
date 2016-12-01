@@ -1,3 +1,4 @@
+import toastr from 'toastr'
 katexSyntax = ->
 	if RocketChat.katex.katex_enabled()
 		return "$$KaTeX$$"   if RocketChat.katex.dollar_syntax_enabled()
@@ -75,6 +76,17 @@ Template.messageBox.helpers
 
 	fileUploadAllowedMediaTypes: ->
 		return RocketChat.settings.get('FileUpload_MediaTypeWhiteList')
+
+	showFileUpload: ->
+		if (RocketChat.settings.get('FileUpload_Enabled'))
+			roomData = Session.get('roomData' + this._id)
+			if roomData?.t is 'd'
+				return RocketChat.settings.get('FileUpload_Enabled_Direct')
+			else
+				return true
+		else
+			return RocketChat.settings.get('FileUpload_Enabled')
+
 
 	showMic: ->
 		return Template.instance().showMicButton.get()
@@ -179,7 +191,7 @@ Template.messageBox.events
 
 		fileUpload filesToUpload
 
-	'click .message-form .icon-location.location': (event, instance) ->
+	'click .message-form .geo-location': (event, instance) ->
 		roomId = @_id
 
 		position = RocketChat.Geolocation.get()

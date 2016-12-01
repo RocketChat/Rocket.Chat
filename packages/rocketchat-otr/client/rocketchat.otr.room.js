@@ -1,3 +1,4 @@
+import toastr from 'toastr';
 /* globals crypto */
 
 RocketChat.OTR.Room = class {

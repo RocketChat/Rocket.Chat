@@ -1,45 +1,36 @@
 .rtl {
 	direction: rtl;
-
 	// Mix-ins
 	.right(@right) {
 		right: @right;
 		left: auto;
 	}
-
 	.left (@left) {
 		left: @left;
 		right: auto;
 	}
-
 	.margin-right(@margin-right) {
 		margin-right: @margin-right;
 		margin-left: auto;
 	}
-
 	.margin-left(@margin-left) {
 		margin-left: @margin-left;
 		margin-right: auto;
 	}
-
 	.padding-right(@padding-right) {
 		padding-right: @padding-right;
 		padding-left: 0px;
 	}
-
 	.padding-left(@padding-left) {
 		padding-left: @padding-left;
 		padding-right: 0px;
 	}
-
 	button {
 		text-align: right;
 	}
-
 	.text-right {
 		text-align: left;
 	}
-
 	.side-nav {
 		.right(0px);
 		.header {
@@ -173,23 +164,17 @@
 			.left(6px);
 		}
 	}
-
 	.side-nav:before {
 		.right(8px);
 	}
-
 	.main-content {
 		left: 0;
 		right: @rooms-box-width;
-		.margin-left(40px);
+		.transition(left .25s cubic-bezier(.5, 0, .1, 1));
 		&.flex-opened {
-			left: @flex-tab-width;
-			.flex-tab {
-				.left(40px);
-			}
+			left: @flex-tab-width + 40px;
 		}
 	}
-
 	.page-settings {
 		.content {
 			> .info {
@@ -208,18 +193,15 @@
 			}
 		}
 	}
-
 	.messages-box {
 		margin: 60px 0px 0px 20px;
 		.new-message {
 			.right(50%);
 		}
 	}
-
 	.terminal {
 		direction: ltr;
 	}
-
 	.container-bars {
 		.upload-progress {
 			.upload-progress-progress {
@@ -240,7 +222,6 @@
 			}
 		}
 	}
-
 	.messages-container {
 		.right(0);
 		.edit-room-title {
@@ -264,12 +245,12 @@
 				padding-right: 49px;
 				padding-left: 8px;
 				text-align: right;
-				border-left-width: 1px;
+				border-width: 0 0 0 1px;
 				border-right-width: 0;
 			}
 			> .stream-info {
 				float: right;
-			 }
+			}
 			> .formatting-tips {
 				float: left;
 				position: relative;
@@ -283,7 +264,6 @@
 			}
 		}
 	}
-
 	.account-box {
 		.options {
 			direction: ltr;
@@ -292,13 +272,10 @@
 			}
 		}
 	}
-
 	.flex-tab-bar {
 		.left(0);
 		border-right: 1px solid #eaeaea;
 		border-left: none;
-		z-index: 13;
-
 		.tab-button {
 			&.active {
 				.margin-right(-1px);
@@ -307,13 +284,11 @@
 			}
 		}
 	}
-
 	.flex-tab {
+		.right(100%);
 		border-left: unset;
-		border-right: 1px solid;
+		border-width: 0 1px 0 0;
 		border-right-color: @tertiary-background-color;
-		.left(0);
-		.transform(translateX(-100%));
 		.control {
 			text-align: right;
 			padding: 12px 30px 12px;
@@ -338,7 +313,6 @@
 			}
 		}
 	}
-
 	.flex-opened {
 		.flex-tab {
 			.control {
@@ -348,7 +322,6 @@
 			}
 		}
 	}
-
 	.input-line {
 		&.search {
 			.icon-spin {
@@ -390,7 +363,6 @@
 			}
 		}
 	}
-
 	.user-image {
 		.avatar {
 			&:after {
@@ -409,7 +381,6 @@
 			.padding-right(10px);
 		}
 	}
-
 	.user-view {
 		nav {
 			.margin-right(-4px);
@@ -424,16 +395,17 @@
 			}
 		}
 	}
-
 	@media all and(max-width: 1100px) {
 		#rocket-chat {
 			.flex-opened {
 				left: 0;
 				right: @rooms-box-width;
+				.flex-tab {
+					.transform(translateX(calc(~'100% + 40px')));
+				}
 			}
 		}
 	}
-
 	@media all and(max-width: 780px) {
 		#rocket-chat {
 			.main-content {
@@ -442,36 +414,29 @@
 			.fixed-title h2 {
 				margin-right: 45px;
 			}
-			&.menu-opened {
-				.burger {
-					i {
-						&:nth-child(1) {
-							.transform(translateY(3px) rotate(45deg));
-						}
-						&:nth-child(3) {
-							.transform(translateY(-3px) rotate(-45deg));
-						}
-					}
-				}
-				.main-content {
-					.transform(translateX(-@rooms-box-width));
-				}
-			}
 		}
 	}
-
 	.burger {
 		.margin-right(7px);
 		.right(0px);
 		.unread-burger-alert {
 			.left(4px);
 		}
+		&.menu-opened {
+			i {
+				&:nth-child(1) {
+					.transform(translate(25%, 3px) rotate(45deg) scale(0.5, 1));
+				}
+				&:nth-child(3) {
+					.transform(translate(25%, -3px) rotate(-45deg) scale(0.5, 1));
+				}
+			}
+		}
 	}
-
 	.arrow {
 		&:before,
 		&:after {
-			.calc(right,~"50% - 5px");
+			.calc(right, ~"50% - 5px");
 		}
 		&:before {
 			.transform(rotate(135deg) translateX(4px));
@@ -512,7 +477,6 @@
 			}
 		}
 	}
-
 	.message {
 		padding-left: 20px;
 		padding-right: 70px;
@@ -568,14 +532,12 @@
 			}
 		}
 	}
-
 	blockquote {
 		.padding-right(10px);
 		&:before {
 			.right(0px);
 		}
 	}
-
 	.first-unread {
 		.body {
 			&::before {
@@ -587,16 +549,13 @@
 			}
 		}
 	}
-
 	.ticks-bar {
 		.left(2px);
 	}
-
 	.fixed-title {
 		padding: 0 20px 0 10px;
 		.right(0);
 	}
-
 	.list-view {
 		> .title {
 			.see-all {
@@ -613,7 +572,6 @@
 			}
 		}
 	}
-
 	.page-list {
 		.list {
 			a {
@@ -636,14 +594,12 @@
 			}
 		}
 	}
-
 	.statistics-table {
 		th,
 		td {
 			text-align: right;
 		}
 	}
-
 	.minicolors-theme-rocketchat {
 		.minicolors-swatch {
 			.right(1px);
@@ -651,7 +607,6 @@
 			border-width: 0 0 0 1px;
 		}
 	}
-
 	.code-mirror-box {
 		direction: ltr;
 		.buttons {
@@ -664,11 +619,9 @@
 				padding-right: 10px;
 				padding-left: unset;
 				direction: rtl;
-
 			}
 		}
 	}
-
 	@media all and (max-width: 780px) {
 		.code-mirror-box {
 			&.code-mirror-box-fullscreen {
@@ -676,7 +629,6 @@
 			}
 		}
 	}
-
 	.rocket-form {
 		legend {
 			&:after {
@@ -690,7 +642,6 @@
 			text-align: left;
 		}
 	}
-
 	/* Overridding classes from swipebox.min.css */
 	#swipebox-close {
 		.left(0);
@@ -700,15 +651,13 @@
 			.left(10px);
 		}
 	}
-	#swipebox-overlay{
+	#swipebox-overlay {
 		direction: ltr;
 	}
-
 	/* Override toastr messages to show on hte left side */
 	.toast-top-right {
 		.left(12px);
 	}
-
 	.spotlight {
 		> .spotlight-input {
 			.icon-search {

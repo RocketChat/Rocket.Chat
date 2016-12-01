@@ -1,4 +1,13 @@
+import toastr from 'toastr'
 TempSettings = new Meteor.Collection null
+RocketChat.TempSettings = TempSettings
+
+updateColorComponent = ->
+	$('input.minicolors').minicolors
+		theme: 'rocketchat'
+		format: 'rgb'
+		opacity: true
+
 Template.admin.onCreated ->
 	if not RocketChat.settings.cachedCollectionPrivate?
 		RocketChat.settings.cachedCollectionPrivate = new RocketChat.CachedCollection({ name: 'private-settings', eventType: 'onAll' })
@@ -238,6 +247,9 @@ Template.admin.helpers
 		console.log(this._id)
 		return Template.instance().selectedRooms.get()[this._id] or []
 
+	getColorVariable: (color) ->
+		return color.replace(/theme-color-/, '@')
+
 Template.admin.events
 	"change .input-monitor": (e, t) ->
 		value = _.trim $(e.target).val()
@@ -252,6 +264,14 @@ Template.admin.events
 			$set:
 				value: value
 				changed: RocketChat.settings.collectionPrivate.findOne(@_id).value isnt value
+
+	"change select[name=color-editor]": (e, t) ->
+		value = _.trim $(e.target).val()
+		TempSettings.update {_id: @_id},
+			$set:
+				editor: value
+
+		Meteor.setTimeout updateColorComponent, 100
 
 	"click .submit .save": (e, t) ->
 		group = FlowRouter.getParam('group')
@@ -268,7 +288,7 @@ Template.admin.events
 		else
 			query.section = @section
 
-		settings = TempSettings.find(query, {fields: {_id: 1, value: 1}}).fetch()
+		settings = TempSettings.find(query, {fields: {_id: 1, value: 1, editor: 1}}).fetch()
 
 		if not _.isEmpty settings
 			RocketChat.settings.batchSet settings, (err, success) ->
@@ -408,11 +428,11 @@ Template.admin.onRendered ->
 		SideNav.openFlex()
 
 	Meteor.setTimeout ->
-		$('input.minicolors').minicolors({theme: 'rocketchat'})
+		updateColorComponent()
 	, 1000
 
 	Tracker.autorun ->
 		FlowRouter.watchPathChange()
 		Meteor.setTimeout ->
-			$('input.minicolors').minicolors({theme: 'rocketchat'})
+			updateColorComponent()
 		, 400
