@@ -354,15 +354,13 @@ blockquote:before {
 	}
 	.message-dropdown,
 	.options-menu {
-		color: @secondary-font-color;
+		color: lighten(@primary-font-color, 13%);
 		background-color: @content-background-color;
 		ul li:hover {
-			color: @secondary-action-contrast;
-			background-color: @secondary-action-color;
+			background-color: @tertiary-background-color;
 		}
 		.message-dropdown-close {
-			color: @content-background-color;
-			background-color: @info-font-color;
+			background-color: @secondary-background-color;
 		}
 	}
 	&.new-day::before {
