@@ -16,7 +16,7 @@ const message = 'message from '+username;
 
 
 //Basic usage test start
-describe('Basic usage', function() {
+describe.skip('Basic usage', function() {
 	this.retries(2);
 
 	it('load page', () => {
