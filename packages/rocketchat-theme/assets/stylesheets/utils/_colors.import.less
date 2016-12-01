@@ -265,7 +265,7 @@ blockquote:before {
 			background-color: @content-background-color;
 		}
 		.message-buttons {
-			.buttonColors(@primary-font-color, @transparent-dark);
+			.buttonColors(lighten(@primary-font-color, 25%), @secondary-background-color);
 		}
 	}
 	.new-message {
