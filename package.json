@@ -44,9 +44,10 @@
   "scripts": {
     "start": "meteor npm i && meteor",
     "lint": "eslint .",
+    "test": "node .scripts/start.js",
     "deploy": "npm run build && pm2 startOrRestart pm2.json",
-    "chimp-watch": "chimp --ddp=http://localhost:3000 --watch --mocha --path=tests",
-    "chimp-test": "chimp --mocha --path=tests --mochaSlow=0 --browser=chromedriver"
+    "chimp-watch": "chimp --ddp=http://localhost:3000 --watch --mocha --path=tests/steps --browser=chromedriver",
+    "chimp-test": "chimp --ddp=http://localhost:3000 --mocha --path=tests/steps --mochaSlow=0 --browser=chromedriver"
   },
   "license": "MIT",
   "repository": {

@@ -7,14 +7,17 @@ Template.register.helpers({
 	welcomeMessage() {
 		return '';
 	},
-	hasDepartments() {
-		return Department.find().count() > 1;
+	showDepartments() {
+		return Department.find({ showOnRegistration: true }).count() > 1;
 	},
 	departments() {
-		return Department.find();
+		return Department.find({ showOnRegistration: true });
 	},
 	videoCallEnabled() {
 		return Livechat.videoCall;
+	},
+	selectedDepartment() {
+		return this._id === Livechat.department;
 	}
 });
 
@@ -47,7 +50,7 @@ Template.register.events({
 				token: visitor.getToken(),
 				name: $name.val(),
 				email: $email.val(),
-				department: departmentId
+				department: Livechat.deparment || departmentId
 			};
 			Meteor.call('livechat:registerGuest', guest, function(error, result) {
 				if (error != null) {
