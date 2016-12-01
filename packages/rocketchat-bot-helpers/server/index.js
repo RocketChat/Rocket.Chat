@@ -76,7 +76,7 @@ class BotHelpers {
 	// "public" properties accessed by getters
 	// allUsers / onlineUsers return whichever properties are enabled by settings
 	get allUsers() {
-		if (!Object.keys(this.userFields)) {
+		if (!Object.keys(this.userFields).length) {
 			this.requestError();
 			return false;
 		} else {
@@ -84,7 +84,7 @@ class BotHelpers {
 		}
 	}
 	get onlineUsers() {
-		if (!Object.keys(this.userFields)) {
+		if (!Object.keys(this.userFields).length) {
 			this.requestError();
 			return false;
 		} else {
