@@ -32,7 +32,6 @@ Template.adminImportPrepare.events
 
 		for blob in files
 			template.preparing.set true
-			console.log blob.type, importer.fileTypeRegex
 			if not importer.fileTypeRegex.test blob.type
 				toastr.error t('Invalid_Import_File_Type')
 				template.preparing.set false
