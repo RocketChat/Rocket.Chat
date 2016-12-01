@@ -193,6 +193,11 @@ blockquote:before {
 	color: @primary-font-color;
 	background-color: @content-background-color;
 	.input-shade(@primary-font-color, @content-background-color);
+	.input-text {
+		input:-webkit-autofill {
+			-webkit-box-shadow: 0 0 0px 20px @content-background-color inset;
+		}
+	}
 }
 
 .dropzone.over .dropzone-overlay {
