@@ -31,23 +31,6 @@ function getSamlProviderConfig(provider) {
 }
 
 Meteor.methods({
-
-	/**
-	 * Return true if the saml provider is configured to use single logout.
-	 *
-	 * Single logout will be applied if idpSLORedirectURL has been set.
-	 */
-	usingSingleLogout: function(provider) {
-		var providerConfig = getSamlProviderConfig(provider);
-		if (! providerConfig) {
-			return false;
-		}
-		if (providerConfig.idpSLORedirectURL) {
-			return true;
-		}
-		return false;
-	},
-
 	samlLogout: function(provider) {
 		// Make sure the user is logged in before initiate SAML SLO
 		if (!Meteor.userId()) {

@@ -1,4 +1,4 @@
-/* globals cordova, Cookies */
+/* globals cordova */
 
 if (!Accounts.saml) {
 	Accounts.saml = {};
@@ -6,7 +6,7 @@ if (!Accounts.saml) {
 
 // Override the standard logout behaviour.
 //
-// If we find a samlProvider in our cookie, and we are using single
+// If we find a samlProvider, and we are using single
 // logout we will initiate logout from rocketchat via saml.
 // If not using single logout, we just do the standard logout.
 //
@@ -16,14 +16,13 @@ if (!Accounts.saml) {
 var MeteorLogout = Meteor.logout;
 
 Meteor.logout = function() {
-	var cookies = new Cookies();
-	var provider = cookies.get('samlProvider'),
-		usingSingleLogout = cookies.get('usingSingleLogout');
-	if (provider) {
-		cookies.set('samlProvider', false);
-		cookies.set('usingSingleLogout', false);
-		if (usingSingleLogout) {
-			return Meteor.logoutWithSaml({ provider: provider });
+	var samlService = ServiceConfiguration.configurations.findOne({service: 'saml'});
+	if (samlService) {
+		var provider = samlService.clientConfig && samlService.clientConfig.provider;
+		if (provider) {
+			if (samlService.idpSLORedirectURL) {
+				return Meteor.logoutWithSaml({ provider: provider });
+			}
 		}
 	}
 	return MeteorLogout.apply(Meteor, arguments);
@@ -101,8 +100,6 @@ Accounts.saml.initiateLogin = function(options, callback, dimensions) {
 
 
 Meteor.loginWithSaml = function(options, callback) {
-	var cookies = new Cookies();
-	cookies.set('samlProvider', options.provider);
 	options = options || {};
 	var credentialToken = Random.id();
 	options.credentialToken = credentialToken;
@@ -116,21 +113,11 @@ Meteor.loginWithSaml = function(options, callback) {
 			userCallback: callback
 		});
 	});
-
-	// Record if we are doing single logout with the idp.
-
-	Meteor.call('usingSingleLogout', options.provider, function(err, res) {
-		if (! err) {
-			cookies.set('usingSingleLogout', res);
-		}
-		console.log('usingSingleLogout', res);
-	});
 };
 
 Meteor.logoutWithSaml = function(options/*, callback*/) {
 	//Accounts.saml.idpInitiatedSLO(options, callback);
 	Meteor.call('samlLogout', options.provider, function(err, result) {
-		console.log('LOC ' + result);
 		// A nasty bounce: 'result' has the SAML LogoutRequest but we need a proper 302 to redirected from the server.
 		//window.location.replace(Meteor.absoluteUrl('_saml/sloRedirect/' + options.provider + '/?redirect='+result));
 		window.location.replace(Meteor.absoluteUrl('_saml/sloRedirect/' + options.provider + '/?redirect=' + encodeURIComponent(result)));
