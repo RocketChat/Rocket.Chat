@@ -3789,7 +3789,10 @@ body:not(.is-cordova) {
 .mention-link {
 	border-radius: 4px;
 	padding: 0px 4px 2px 4px;
-	font-weight: bold;
+	&.mention-link-me,
+	&.mention-link-all {
+		font-weight: bold;
+	}
 }
 
 .highlight-text {

@@ -387,16 +387,14 @@ blockquote:before {
 		.linkColors(@link-font-color, darken(@link-font-color, 10%));
 	}
 	a.mention-link {
-		background-color: @secondary-action-color;
-		color: @secondary-action-contrast;
-		&.mention-link-all,
+		color: @primary-action-color;
 		&.mention-link-me {
 			color: @primary-action-contrast;
 			background-color: @primary-action-color;
 		}
 		&.mention-link-all {
-			color: contrast(@selection-color);
-			background-color: @selection-color;
+			color: @primary-action-contrast;
+			background-color: @attention-color;
 		}
 	}
 	.highlight-text {
