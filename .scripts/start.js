@@ -15,8 +15,6 @@ var appOptions = {
 	}
 };
 
-// *************************************************
-
 function startProcess(opts, callback) {
 	var proc = exec(
 		opts.command,
