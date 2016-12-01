@@ -86,11 +86,11 @@ getSamlConfigs = (service) ->
 configureSamlService = (samlConfigs) ->
 	privateKey = false
 	privateCert = false
-	if samlConfigs.secret.privateKeyFilePath and samlConfigs.secret.publicCert
+	if samlConfigs.secret.privateKey and samlConfigs.secret.publicCert
 		privateKey = samlConfigs.secret.privateKey
 		privateCert = samlConfigs.secret.publicCert
 	else
-		if samlConfigs.secret.privateKeyFilePath or samlConfigs.secret.publicCertFilePath
+		if samlConfigs.secret.privateKey or samlConfigs.secret.publicCert
 			logger.error "You must specify both cert and key files."
 			privateKey = false
 			privateCert = false
