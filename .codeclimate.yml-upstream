@@ -1,0 +1,44 @@
+# This is a sample .codeclimate.yml configured for Engine analysis on Code
+# Climate Platform. For an overview of the Code Climate Platform, see here:
+# http://docs.codeclimate.com/article/300-the-codeclimate-platform
+
+# Under the engines key, you can configure which engines will analyze your repo.
+# Each key is an engine name. For each value, you need to specify enabled: true
+# to enable the engine as well as any other engines-specific configuration.
+
+# For more details, see here:
+# http://docs.codeclimate.com/article/289-configuring-your-repository-via-codeclimate-yml#platform
+
+# For a list of all available engines, see here:
+# http://docs.codeclimate.com/article/296-engines-available-engines
+
+engines:
+# to turn on an engine, add it here and set enabled to `true`
+# to turn off an engine, set enabled to `false` or remove it
+  coffeelint:
+    enabled: true
+  eslint:
+    enabled: true
+  csslint:
+    enabled: true
+
+# Engines can analyze files and report issues on them, but you can separately
+# decide which files will receive ratings based on those issues. This is
+# specified by path patterns under the ratings key.
+
+# For more details see here:
+# http://docs.codeclimate.com/article/289-configuring-your-repository-via-codeclimate-yml#platform
+
+ratings:
+  paths:
+  - "**.coffee"
+  - "**.js"
+  - "**.css"
+
+# You can globally exclude files from being analyzed by any engine using the
+# exclude_paths key.
+
+exclude_paths:
+- "private/moment-locales/**/*"
+- "packages/rocketchat-favico/favico.js"
+#- "vendor/**/*""
