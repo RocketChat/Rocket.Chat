@@ -117,6 +117,12 @@ Accounts.registerLoginHandler(function(loginRequest) {
 				}]
 			};
 
+			try {
+				Accounts.validateNewUser(newUser);
+			} catch (e) {
+				throw new Error('The email\'s domain is not allowed!');
+			}
+
 			if (Accounts.saml.settings.generateUsername === true) {
 				var username = RocketChat.generateUsernameSuggestion(newUser);
 				if (username) {
