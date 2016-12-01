@@ -201,9 +201,10 @@ RocketChat.settings.addGroup 'Message', ->
 RocketChat.settings.addGroup 'Meta', ->
 	@add 'Meta_language', '', { type: 'string' }
 	@add 'Meta_fb_app_id', '', { type: 'string' }
-	@add 'Meta_robots', '', { type: 'string' }
+	@add 'Meta_robots', 'INDEX,FOLLOW', { type: 'string' }
 	@add 'Meta_google-site-verification', '', { type: 'string' }
 	@add 'Meta_msvalidate01', '', { type: 'string' }
+	@add 'Meta_custom', '', { type: 'string', multiline: true }
 
 
 RocketChat.settings.addGroup 'Push', ->
