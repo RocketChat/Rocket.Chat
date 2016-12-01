@@ -24,7 +24,7 @@ Meteor.methods
 			section: name,
 			i18nLabel: 'SAML_Custom_Public_Cert'
 		}
-		RocketChat.settings.add "SAML_Custom_#{name}", '', {
+		RocketChat.settings.add "SAML_Custom_#{name}_private_key", '', {
 			type: 'string' ,
 			group: 'SAML',
 			section: name,
