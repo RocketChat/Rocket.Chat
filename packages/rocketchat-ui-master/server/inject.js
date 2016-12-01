@@ -96,7 +96,7 @@ RocketChat.settings.get('Meta_msvalidate01', function(key, value = '') {
 	Inject.rawHead(key, `<meta name="msvalidate.01" content="${value}">`);
 });
 
-RocketChat.settings.get('GoogleSiteVerification_id', function(key, value = '') {
+RocketChat.settings.get('Meta_google-site-verification', function(key, value = '') {
 	Inject.rawHead(key, `<meta name="google-site-verification" content="${value}" />`);
 });
 
