@@ -18,18 +18,17 @@ Meteor.methods
 		RocketChat.settings.add "SAML_Custom_#{name}_idp_slo_redirect_url" , 'https://example.com/simplesaml/saml2/idp/SingleLogoutService.php', { type: 'string' , group: 'SAML', section: name, i18nLabel: 'SAML_Custom_IDP_SLO_Redirect_URL'}
 		RocketChat.settings.add "SAML_Custom_#{name}_issuer"               , 'https://your-rocket-chat/_saml/metadata/provider-name'           , { type: 'string' , group: 'SAML', section: name, i18nLabel: 'SAML_Custom_Issuer'}
 		RocketChat.settings.add "SAML_Custom_#{name}_cert"                 , ''                                                                , { type: 'string' , group: 'SAML', section: name, i18nLabel: 'SAML_Custom_Cert', multiline: true}
-		RocketChat.settings.add "SAML_Custom_#{name}_public_cert_file_path", '', {
+		RocketChat.settings.add "SAML_Custom_#{name}_public_cert", '', {
 			type: 'string' ,
 			group: 'SAML',
 			section: name,
-			i18nLabel: 'SAML_Custom_Public_Cert_File_Path',
-			i18nDescription: 'SAML_Custom_Public_Cert_File_Path_Description'
+			i18nLabel: 'SAML_Custom_Public_Cert'
 		}
-		RocketChat.settings.add "SAML_Custom_#{name}_private_key_file_path", '', {
+		RocketChat.settings.add "SAML_Custom_#{name}", '', {
 			type: 'string' ,
 			group: 'SAML',
 			section: name,
-			i18nLabel: 'SAML_Custom_Private_Key_File_Path'
+			i18nLabel: 'SAML_Custom_Private_Key'
 		}
 		RocketChat.settings.add "SAML_Custom_#{name}_button_label_text" , ''                                                            , { type: 'string' , group: 'SAML', section: name, i18nLabel: 'Accounts_OAuth_Custom_Button_Label_Text'}
 		RocketChat.settings.add "SAML_Custom_#{name}_button_label_color", '#FFFFFF'                                                     , { type: 'string' , group: 'SAML', section: name, i18nLabel: 'Accounts_OAuth_Custom_Button_Label_Color'}
@@ -75,8 +74,8 @@ getSamlConfigs = (service) ->
 	generateUsername: RocketChat.settings.get("#{service.key}_generate_username")
 	issuer: RocketChat.settings.get("#{service.key}_issuer")
 	secret:
-		privateKeyFilePath: RocketChat.settings.get("#{service.key}_private_key_file_path")
-		publicCertFilePath: RocketChat.settings.get("#{service.key}_public_cert_file_path")
+		privateKey: RocketChat.settings.get("#{service.key}_private_key")
+		publicCert: RocketChat.settings.get("#{service.key}_public_cert")
 		cert: RocketChat.settings.get("#{service.key}_cert")
 
 # Configure Meteor SAML.
@@ -87,14 +86,9 @@ getSamlConfigs = (service) ->
 configureSamlService = (samlConfigs) ->
 	privateKey = false
 	privateCert = false
-	if samlConfigs.secret.privateKeyFilePath and samlConfigs.secret.publicCertFilePath
-		try
-			privateKey = fs.readFileSync(samlConfigs.secret.privateKeyFilePath).toString()
-			privateCert = fs.readFileSync(samlConfigs.secret.publicCertFilePath).toString()
-			logger.info "Successfully loaded public cert and private key files for SAML."
-		catch err
-			logger.error "Can't configure key or cert for SAML, signing will not be performed by RocketChat."
-			logger.error "Error was: #{err.message}"
+	if samlConfigs.secret.privateKeyFilePath and samlConfigs.secret.publicCert
+		privateKey = samlConfigs.secret.privateKey
+		privateCert = samlConfigs.secret.publicCert
 	else
 		if samlConfigs.secret.privateKeyFilePath or samlConfigs.secret.publicCertFilePath
 			logger.error "You must specify both cert and key files."
