@@ -267,6 +267,11 @@ blockquote:before {
 		.message-buttons {
 			.buttonColors(lighten(@primary-font-color, 25%), @secondary-background-color);
 		}
+		textarea {
+			&.editing {
+				background-color: lighten(@pending-color, 40%);
+			}
+		}
 	}
 	.new-message {
 		color: @primary-action-contrast;
@@ -311,7 +316,7 @@ blockquote:before {
 	}
 	.editing .body,
 	textarea.editing {
-		background-color: @selection-background;
+		background-color: lighten(@pending-color, 40%);
 	}
 }
 
