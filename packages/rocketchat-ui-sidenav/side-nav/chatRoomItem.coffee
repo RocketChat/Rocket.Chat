@@ -9,7 +9,7 @@ Template.chatRoomItem.helpers
 			return this.unread
 
 	userStatus: ->
-		return 'status-' + (Session.get('user_' + this.name + '_status') or 'offline')
+		return 'status-' + (Session.get('user_' + this.name + '_status') or 'offline') if this.t is 'd'
 
 	name: ->
 		return this.name

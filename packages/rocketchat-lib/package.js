@@ -26,16 +26,17 @@ Package.onUse(function(api) {
 	api.use('ddp-rate-limiter');
 	api.use('underscore');
 	api.use('mongo');
-	api.use('underscorestring:underscore.string');
+	api.use('underscorestring:underscore.string@3.3.4');
 	api.use('matb33:collection-hooks');
 	api.use('service-configuration');
 	api.use('check');
-	api.use('momentjs:moment');
 	api.use('rocketchat:i18n');
 	api.use('rocketchat:streamer');
 	api.use('rocketchat:version');
 	api.use('rocketchat:logger');
 	api.use('rocketchat:custom-oauth');
+	api.use('rocketchat:authorization', {unordered: true});
+	api.use('rocketchat:push-notifications', {unordered: true});
 
 	api.use('templating', 'client');
 	api.use('kadira:flow-router');
@@ -62,6 +63,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/lib/RateLimiter.coffee', 'server');
 
 	// SERVER FUNCTIONS
+	api.addFiles('server/functions/isDocker.js', 'server');
 	api.addFiles('server/functions/addUserToDefaultChannels.js', 'server');
 	api.addFiles('server/functions/addUserToRoom.js', 'server');
 	api.addFiles('server/functions/archiveRoom.js', 'server');
@@ -135,6 +137,8 @@ Package.onUse(function(api) {
 	api.addFiles('server/methods/updateMessage.coffee', 'server');
 	api.addFiles('server/methods/filterBadWords.js', ['server']);
 	api.addFiles('server/methods/filterATAllTag.js', 'server');
+	api.addFiles('server/methods/getChannelHistory.js', 'server');
+	api.addFiles('server/methods/cleanChannelHistory.js', 'server');
 
 	// SERVER STARTUP
 	api.addFiles('server/startup/settingsOnLoadCdnPrefix.coffee', 'server');

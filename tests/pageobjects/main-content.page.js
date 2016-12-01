@@ -19,6 +19,7 @@ class MainContent extends Page {
 	get popupFileCancelBtn() { return browser.element('.sa-button-container .cancel'); }
 	get lastMessageUser() { return browser.element('.message:last-child .user-card-message:nth-of-type(2)'); }
 	get lastMessage() { return browser.element('.message:last-child .body'); }
+	get lastMessageRoleAdded() { return browser.element('.message:last-child.subscription-role-added .body'); }
 	get beforeLastMessage() { return browser.element('.message:nth-last-child(2) .body'); }
 	get lastMessageUserTag() { return browser.element('.message:last-child .role-tag'); }
 	get lastMessageImg() { return browser.element('.message:last-child .attachment-image img'); }
@@ -86,6 +87,15 @@ class MainContent extends Page {
 	openMessageActionMenu() {
 		this.lastMessage.moveToObject();
 		this.messageOptionsBtn.click();
+		this.messageActionMenu.waitForVisible(5000);
+	}
+
+	setLanguageToEnglish() {
+		this.settingLanguageSelect.click();
+		browser.pause(500);
+		this.settingLanguageEnglish.click();
+		browser.pause(300);
+		this.settingSaveBtn.click();
 	}
 
 	//do one of the message actions, based on the "action" parameter inserted.

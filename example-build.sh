@@ -1,4 +1,7 @@
-#!/usr/bin/env bash
+#!/bin/bash
+set -x
+set -euvo pipefail
+IFS=$'\n\t'
 
 export METEOR_SETTINGS=$(cat settings.json)
 export NODE_ENV=production

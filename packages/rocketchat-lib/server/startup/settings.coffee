@@ -14,6 +14,7 @@ RocketChat.settings.addGroup 'Accounts', ->
 	@add 'Accounts_ShowFormLogin', true, { type: 'boolean', public: true }
 	@add 'Accounts_EmailOrUsernamePlaceholder', '', { type: 'string', public: true, i18nLabel: 'Placeholder_for_email_or_username_login_field' }
 	@add 'Accounts_PasswordPlaceholder', '', { type: 'string', public: true, i18nLabel: 'Placeholder_for_password_login_field' }
+	@add 'Accounts_ForgetUserSessionOnWindowClose', false, { type: 'boolean', public: true }
 
 	@section 'Registration', ->
 		@add 'Accounts_RequireNameForSignUp', true, { type: 'boolean', public: true }
@@ -96,7 +97,6 @@ RocketChat.settings.addGroup 'General', ->
 	@add 'CDN_PREFIX', '', { type: 'string' }
 	@add 'Force_SSL', false, { type: 'boolean', public: true }
 	@add 'GoogleTagManager_id', '', { type: 'string', public: true }
-	@add 'GoogleSiteVerification_id', '', { type: 'string', public: false }
 	@add 'Bugsnag_api_key', '', { type: 'string', public: false }
 	@add 'Restart', 'restart_server', { type: 'action', actionText: 'Restart_the_server' }
 
@@ -184,6 +184,8 @@ RocketChat.settings.addGroup 'Message', ->
 	@add 'Message_AudioRecorderEnabled', true, { type: 'boolean', public: true, i18nDescription: 'Message_AudioRecorderEnabledDescription' }
 	@add 'Message_GroupingPeriod', 300, { type: 'int', public: true, i18nDescription: 'Message_GroupingPeriodDescription' }
 	@add 'API_Embed', true, { type: 'boolean', public: true }
+	@add 'API_EmbedCacheExpirationDays', 30, { type: 'int', public: false }
+	@add 'API_Embed_clear_cache_now', 'OEmbedCacheCleanup', { type: 'action', actionText: 'clear', i18nLabel: 'clear_cache_now' }
 	@add 'API_EmbedDisabledFor', '', { type: 'string', public: true, i18nDescription: 'API_EmbedDisabledFor_Description' }
 	@add 'API_EmbedIgnoredHosts', 'localhost, 127.0.0.1, 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16', { type: 'string', i18nDescription: 'API_EmbedIgnoredHosts_Description' }
 	@add 'API_EmbedSafePorts', '80, 443', { type: 'string' }
@@ -193,13 +195,15 @@ RocketChat.settings.addGroup 'Message', ->
 	@add 'Message_HideType_ul', false, { type: 'boolean', public: true }
 	@add 'Message_HideType_ru', false, { type: 'boolean', public: true }
 	@add 'Message_HideType_au', false, { type: 'boolean', public: true }
+	@add 'Message_HideType_mute_unmute', false, { type: 'boolean', public: true }
 
 RocketChat.settings.addGroup 'Meta', ->
 	@add 'Meta_language', '', { type: 'string' }
 	@add 'Meta_fb_app_id', '', { type: 'string' }
-	@add 'Meta_robots', '', { type: 'string' }
+	@add 'Meta_robots', 'INDEX,FOLLOW', { type: 'string' }
 	@add 'Meta_google-site-verification', '', { type: 'string' }
 	@add 'Meta_msvalidate01', '', { type: 'string' }
+	@add 'Meta_custom', '', { type: 'code', code: 'text/html', multiline: true }
 
 
 RocketChat.settings.addGroup 'Push', ->

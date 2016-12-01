@@ -13,7 +13,9 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base
 		@tryEnsureIndex { 'file._id': 1 }, { sparse: 1 }
 		@tryEnsureIndex { 'mentions.username': 1 }, { sparse: 1 }
 		@tryEnsureIndex { 'pinned': 1 }, { sparse: 1 }
+		@tryEnsureIndex { 'snippeted': 1 }, { sparse: 1 }
 		@tryEnsureIndex { 'location': '2dsphere' }
+		@tryEnsureIndex { 'slackBotId': 1, 'slackTs': 1 }, { sparse: 1 }
 
 
 	# FIND ONE
@@ -87,6 +89,16 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base
 
 		return @find query, options
 
+	findVisibleByRoomIdBeforeTimestampInclusive: (roomId, timestamp, options) ->
+		query =
+			_hidden:
+				$ne: true
+			rid: roomId
+			ts:
+				$lte: timestamp
+
+		return @find query, options
+
 	findVisibleByRoomIdBetweenTimestamps: (roomId, afterTimestamp, beforeTimestamp, options) ->
 		query =
 			_hidden:
@@ -95,6 +107,17 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base
 			ts:
 				$gt: afterTimestamp
 				$lt: beforeTimestamp
+
+		return @find query, options
+
+	findVisibleByRoomIdBetweenTimestampsInclusive: (roomId, afterTimestamp, beforeTimestamp, options) ->
+		query =
+			_hidden:
+				$ne: true
+			rid: roomId
+			ts:
+				$gte: afterTimestamp
+				$lte: beforeTimestamp
 
 		return @find query, options
 
@@ -157,6 +180,14 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base
 
 		return @find query, options
 
+	findSnippetedByRoom: (roomId, options) ->
+		query =
+			_hidden: { $ne: true }
+			snippeted: true
+			rid: roomId
+
+		return @find query, options
+
 	getLastTimestamp: (options = {}) ->
 		query = { ts: { $exists: 1 } }
 		options.sort = { ts: -1 }
@@ -171,6 +202,13 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base
 				$in: messageIds
 
 		return @find query, options
+
+	findOneBySlackBotIdAndSlackTs: (slackBotId, slackTs) ->
+		query =
+			slackBotId: slackBotId
+			slackTs: slackTs
+
+		return @findOne query
 
 	cloneAndSaveAsHistoryById: (_id) ->
 		me = RocketChat.models.Users.findOneById Meteor.userId()
@@ -222,6 +260,22 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base
 				pinned: pinned
 				pinnedAt: pinnedAt || new Date
 				pinnedBy: pinnedBy
+
+		return @update query, update
+
+	setSnippetedByIdAndUserId: (message, snippetName, snippetedBy, snippeted=true, snippetedAt=0) ->
+		query =
+			_id: message._id
+
+		msg = "```" + message.msg + "```"
+
+		update =
+			$set:
+				msg: msg
+				snippeted: snippeted
+				snippetedAt: snippetedAt || new Date
+				snippetedBy: snippetedBy
+				snippetName: snippetName
 
 		return @update query, update
 
@@ -299,6 +353,17 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base
 		update =
 			$set:
 				attachments: attachments
+
+		return @update query, update
+
+	setSlackBotIdAndSlackTs: (_id, slackBotId, slackTs) ->
+		query =
+			_id: _id
+
+		update =
+			$set:
+				slackBotId: slackBotId
+				slackTs: slackTs
 
 		return @update query, update
 

@@ -1,3 +1,5 @@
+import moment from 'moment'
+
 socialSharing = (options = {}) ->
 	window.plugins.socialsharing.share(options.message, options.subject, options.file, options.link)
 
@@ -31,12 +33,18 @@ Template.room.helpers
 		hideMessagesOfType = []
 		RocketChat.settings.collection.find({_id: /Message_HideType_.+/}).forEach (record) ->
 			type = record._id.replace('Message_HideType_', '')
-			index = hideMessagesOfType.indexOf(type)
+			switch (type)
+				when 'mute_unmute'
+					types = [ 'user-muted', 'user-unmuted' ]
+				else
+					types = [ type ]
+			types.forEach (type) ->
+				index = hideMessagesOfType.indexOf(type)
 
-			if record.value is true and index is -1
-				hideMessagesOfType.push(type)
-			else if index > -1
-				hideMessagesOfType.splice(index, 1)
+				if record.value is true and index is -1
+					hideMessagesOfType.push(type)
+				else if index > -1
+					hideMessagesOfType.splice(index, 1)
 
 		query =
 			rid: this._id
@@ -388,7 +396,7 @@ Template.room.events
 			if RocketChat.Layout.isEmbedded()
 				return fireGlobalEvent('click-mention-link', { path: FlowRouter.path('channel', {name: channel}), channel: channel })
 
-			FlowRouter.go 'channel', {name: channel}
+			FlowRouter.go 'channel', { name: channel }, FlowRouter.current().queryParams
 			return
 
 		if RocketChat.Layout.isEmbedded()
