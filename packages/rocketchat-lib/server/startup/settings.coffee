@@ -97,7 +97,6 @@ RocketChat.settings.addGroup 'General', ->
 	@add 'CDN_PREFIX', '', { type: 'string' }
 	@add 'Force_SSL', false, { type: 'boolean', public: true }
 	@add 'GoogleTagManager_id', '', { type: 'string', public: true }
-	@add 'GoogleSiteVerification_id', '', { type: 'string', public: false }
 	@add 'Bugsnag_api_key', '', { type: 'string', public: false }
 	@add 'Restart', 'restart_server', { type: 'action', actionText: 'Restart_the_server' }
 
