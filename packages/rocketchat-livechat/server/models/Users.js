@@ -19,8 +19,7 @@ RocketChat.models.Users.setOperator = function(_id, operator) {
  */
 RocketChat.models.Users.findOnlineAgents = function() {
 	var query = {
-		statusConnection: {
-			$exists: true,
+		status: {
 			$ne: 'offline'
 		},
 		statusLivechat: 'available',
@@ -49,8 +48,7 @@ RocketChat.models.Users.findAgents = function() {
  */
 RocketChat.models.Users.findOnlineUserFromList = function(userList) {
 	var query = {
-		statusConnection: {
-			$exists: true,
+		status: {
 			$ne: 'offline'
 		},
 		statusLivechat: 'available',
@@ -69,8 +67,7 @@ RocketChat.models.Users.findOnlineUserFromList = function(userList) {
  */
 RocketChat.models.Users.getNextAgent = function() {
 	var query = {
-		statusConnection: {
-			$exists: true,
+		status: {
 			$ne: 'offline'
 		},
 		statusLivechat: 'available',
