@@ -9,7 +9,7 @@ import preferencesMainContent from '../pageobjects/preferences-main-content.page
 import {username, password} from '../test-data/user.js';
 import {imgURL} from '../test-data/interactions.js';
 
-describe('user preferences', ()=> {
+describe.skip('user preferences', ()=> {
 
 	it('opens the user preferences screen', () => {
 		sideNav.accountBoxUserName.waitForVisible();

@@ -4,7 +4,7 @@
 import mainContent from '../pageobjects/main-content.page';
 import sideNav from '../pageobjects/side-nav.page';
 
-describe('resolutions tests', ()=> {
+describe.skip('resolutions tests', ()=> {
 	describe('mobile render', ()=> {
 		it('change the resolution', ()=> {
 			browser.windowHandleSize({
