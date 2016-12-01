@@ -204,7 +204,7 @@ RocketChat.settings.addGroup 'Meta', ->
 	@add 'Meta_robots', 'INDEX,FOLLOW', { type: 'string' }
 	@add 'Meta_google-site-verification', '', { type: 'string' }
 	@add 'Meta_msvalidate01', '', { type: 'string' }
-	@add 'Meta_custom', '', { type: 'string', multiline: true }
+	@add 'Meta_custom', '', { type: 'code', code: 'text/html', multiline: true }
 
 
 RocketChat.settings.addGroup 'Push', ->
