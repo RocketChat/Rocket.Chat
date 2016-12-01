@@ -29,7 +29,8 @@ majorColors=
   'success-color': '#1DCE73'
   'pending-color': '#FCB316'
   'error-color': '#BC2031'
-  'selection-color': '#02ACEC'
+  'selection-color': '#02ACEC',
+  'attention-color': '#9C27B0'
 
 # Minor colours implement major colours by default, but can be overruled
 minorColors=
