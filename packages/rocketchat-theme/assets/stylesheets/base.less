@@ -2135,6 +2135,10 @@ label.required:after {
 				transform: rotate(90deg);
 			}
 		}
+		.stream-info {
+			font-size: 12px;
+			padding: 3px;
+		}
 		.editing-commands {
 			display: none;
 			text-transform: lowercase;
@@ -2158,6 +2162,9 @@ label.required:after {
 			}
 			.editing-commands {
 				display: block;
+			}
+			.stream-info {
+				display: none;
 			}
 		}
 	}
@@ -3537,8 +3544,8 @@ body:not(.is-cordova) {
 	max-width: 520px;
 	padding: 20px;
 	margin: 20px auto;
-	box-shadow: 0 0 6px 10px rgba(0, 0, 0, 0.1);
-	border-radius: 2px;
+	box-shadow: 0 1px 1px 0 rgba(0,0,0,0.2),0 2px 10px 0 rgba(0,0,0,0.16);
+	border-radius: 4px;
 	position: relative;
 	z-index: 1;
 	header {
@@ -3570,18 +3577,11 @@ body:not(.is-cordova) {
 		width: 100%;
 		font-size: 10px;
 	}
-	.submit {
-		margin: 12px 0;
-	}
-	.remember {
-		float: left;
-	}
-	.remember input {
-		margin-right: 4px;
-	}
-	.forgot {
-		float: right;
-		line-height: 20px;
+	.submit,
+	.register,
+	.forgot-password,
+	.back-to-login {
+ 		margin-top: 12px;
 	}
 	.input-text {
 		margin: 0 0 14px 0;
@@ -3604,7 +3604,6 @@ body:not(.is-cordova) {
 		select {
 			box-shadow: 0 0 0;
 			position: relative;
-			margin-top: 10px;
 			padding: 4px 8px;
 			font-size: 18px;
 			border-width: 0 0 1px 0;
@@ -3618,26 +3617,17 @@ body:not(.is-cordova) {
 			right: 0px;
 		}
 		label {
-			position: absolute;
-			top: 20px;
-			left: 8px;
+			margin-left: 8px;
 			display: block;
-			font-size: 18px;
+			font-size: 12px;
 			text-align: left;
 			color: #a9a9a9;
 			transition: all 0.3s;
 		}
-		&.focus label {
-			top: 0;
-			font-size: 12px;
-		}
-		input:-webkit-autofill {
-			-webkit-box-shadow: 0 0 0px 1000px #f4f4f4 inset;
-		}
 		.input-error {
 			text-align: left;
 			color: #b40202;
-			padding-left: 4px;
+			padding-left: 8px;
 			font-weight: bold;
 			font-size: 14px;
 		}
@@ -3645,13 +3635,6 @@ body:not(.is-cordova) {
 }
 
 .social-login {
-	text-align: center;
-	position: relative;
-	z-index: 1;
-	display: -webkit-flex;
-	display: flex;
-	flex-wrap: wrap;
-	-webkit-flex-wrap: wrap;
 	margin-bottom: 20px;
 	h3 {
 		&:extend(.rocket-h3);
@@ -3659,12 +3642,8 @@ body:not(.is-cordova) {
 		margin-bottom: 12px;
 	}
 	.button {
-		border-radius: 2px;
-		min-height: 40px;
-		line-height: 20px;
+		line-height: 22px;
 		font-size: 18px;
-		margin: 2px;
-		padding: 0;
 		-webkit-flex-grow: 1;
 		flex-grow: 1;
 	}
@@ -3789,7 +3768,10 @@ body:not(.is-cordova) {
 .mention-link {
 	border-radius: 4px;
 	padding: 0px 4px 2px 4px;
-	font-weight: bold;
+	&.mention-link-me,
+	&.mention-link-all {
+		font-weight: bold;
+	}
 }
 
 .highlight-text {
@@ -3995,12 +3977,10 @@ body:not(.is-cordova) {
 		bottom: 0;
 		right: 0;
 		z-index: 1000000;
-		display: block;
 		font-size: 42px;
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		margin: 0 51px 0 12px;
 		> div {
 			padding: 40px;
 			border-radius: 10px;
@@ -4011,11 +3991,11 @@ body:not(.is-cordova) {
 	}
 }
 
-@media (min-width: 780px) {
-	.dropzone.over .dropzone-overlay {
-		margin: 0 51px 0 270px;
-	}
-}
+// @media (min-width: 780px) {
+// 	.dropzone.over .dropzone-overlay {
+// 		margin: 0 51px 0 270px;
+// 	}
+// }
 
 .is-cordova {
 	.flex-tab {
