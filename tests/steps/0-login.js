@@ -3,7 +3,7 @@
 import loginPage from '../pageobjects/login.page';
 
 describe('login', () => {
-	it('load page', () => {
+	before(()=>{
 		loginPage.open();
 	});
 
