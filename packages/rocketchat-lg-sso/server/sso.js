@@ -66,8 +66,7 @@ function createOrUpdateUserFromJWT(lgJWT) {
   try {
     setAvatarFromGitHubAvatar(rcUser, lgUser)
   } catch (err) {
-    RavenLogger.log(err)
-    logger.warn('could not set avatar from GitHub avatar', err.stack)
+    logger.warn('could not set avatar from GitHub avatar', err.message)
   }
 
   return rcUser
