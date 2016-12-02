@@ -48,6 +48,11 @@ RocketChat.roomTypes.add 'd', 20,
 		return ChatSubscription.findOne({ rid: roomData._id }, { fields: { name: 1 } })?.name
 	condition: ->
 		return RocketChat.authz.hasAtLeastOnePermission ['view-d-room', 'view-joined-room']
+	getUserStatus: (roomId) ->
+		subscription = RocketChat.models.Subscriptions.findOne({rid: roomId});
+		return if not subscription?
+
+		return Session.get('user_' + subscription.name + '_status');
 
 RocketChat.roomTypes.add 'p', 30,
 	template: 'privateGroups'
