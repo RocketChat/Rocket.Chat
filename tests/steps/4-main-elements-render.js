@@ -1,47 +1,17 @@
 /* eslint-env mocha */
 /* eslint-disable func-names, prefer-arrow-callback */
 
-import loginPage from '../pageobjects/login.page';
 import flexTab from '../pageobjects/flex-tab.page';
 import mainContent from '../pageobjects/main-content.page';
 import sideNav from '../pageobjects/side-nav.page';
 
 //test data imports
+import {checkIfUserIsValid} from '../test-data/checks';
 import {username, email, password} from '../test-data/user.js';
-
 //Basic usage test start
 describe('Main Elements Render', function() {
 	before(()=>{
-		if (!sideNav.accountBoxUserName.isVisible()) {
-			//if the user is not logged in.
-			console.log('	User lot logged. logging in...');
-			loginPage.open();
-			loginPage.login({email, password});
-			try {
-				mainContent.mainContent.waitForExist(5000);
-			} catch (e) {
-				//if the user dont exist.
-				console.log('	User dont exist. Creating user...');
-				loginPage.gotToRegister();
-				loginPage.registerNewUser({username, email, password});
-				browser.waitForExist('form#login-card input#username', 5000);
-				browser.click('.submit > button');
-				mainContent.mainContent.waitForExist(5000);
-			}
-		} else if (!sideNav.accountBoxUserName.getText() === username) {
-			//if the logged user is not the right one
-			console.log('	Wrong logged user. Changing user...');
-			sideNav.accountBoxUserName.waitForVisible(5000);
-			sideNav.accountBoxUserName.click();
-			browser.pause(200);
-			sideNav.logout.waitForVisible(5000);
-			sideNav.logout.click();
-
-			loginPage.open();
-			loginPage.login({email, password});
-		} else {
-			console.log('	User already logged');
-		}
+		checkIfUserIsValid(username, email, password);
 		sideNav.getChannelFromList('general').waitForExist(5000);
 		sideNav.openChannel('general');
 	});
