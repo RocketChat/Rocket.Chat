@@ -45,9 +45,8 @@ before_script:
 - mkdir /tmp/build
 - travis_retry npm install
 - npm run lint
-- echo "replication:" | sudo tee -a /etc/mongod.conf
 - |-
-  echo "  replSetName: \"rs0\"" | sudo tee -a /etc/mongod.conf
+  echo "replication:\n  replSetName: \"rs0\"" | sudo tee -a /etc/mongod.conf
 - cat /etc/mongod.conf
 - sudo service mongod restart
 - sleep 20
