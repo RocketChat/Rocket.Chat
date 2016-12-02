@@ -251,6 +251,17 @@ Template.phone.helpers
 	videoEnabled: ->
 		return RocketChat.Phone.getEnabledCamera()
 
+	callIsAnswered: ->
+		return RocketChat.Phone.isAnswered()
+
+	callDuration: ->
+		start = Session.get("VoiSmart::Phone::lastAnswered")
+		if start
+			now = Math.round(Chronos.now() / 1000)
+		else
+			start = now
+		return moment().startOf('day').seconds(now - start).format('HH:mm:ss')
+
 Template.phone.onCreated ->
 	@showSettings = new ReactiveVar false
 	@phoneDisplay = new ReactiveVar ""
@@ -297,6 +308,7 @@ RocketChat.Phone = new class
 	searchTerm = new ReactiveVar ''
 	searchResult = new ReactiveVar
 	enabledCamera = new ReactiveVar false
+	answered = new ReactiveVar false
 
 	_started = false
 	_login = undefined
@@ -435,6 +447,9 @@ RocketChat.Phone = new class
 				setCallState('active')
 				RocketChat.ToneGenerator.stop()
 				msg = TAPi18n.__("In_call_with")
+				now = new Date().getTime()
+				Session.set("VoiSmart::Phone::lastAnswered", Math.round(now / 1000))
+				answered.set(true)
 				if d.direction.name == 'outbound'
 					putNotification(msg, d.params.destination_number)
 				else
@@ -444,6 +459,8 @@ RocketChat.Phone = new class
 
 			when 'hangup'
 				RocketChat.ToneGenerator.stop()
+				answered.set(false)
+				Session.set("VoiSmart::Phone::lastAnswered", null)
 				if _callState != 'transfer'
 					if window.rocketDebug
 						console.log("hangup call rq")
@@ -640,6 +657,9 @@ RocketChat.Phone = new class
 
 	isMuted: () ->
 		return muted.get()
+
+	isAnswered: () ->
+		return answered.get()
 
 	toggleHold: () ->
 		if !_curCall?

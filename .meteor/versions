@@ -58,8 +58,8 @@ jalik:ufs-local@0.2.8
 jparker:crypto-core@0.1.0
 jparker:crypto-md5@0.1.1
 jparker:gravatar@0.5.1
-jzwzz:amqplib@0.0.2
 jquery@1.11.10
+jzwzz:amqplib@0.0.2
 kadira:blaze-layout@2.3.0
 kadira:flow-router@2.12.1
 kenton:accounts-sandstorm@0.5.1
@@ -124,6 +124,7 @@ rate-limit@1.0.6
 reactive-dict@1.1.8
 reactive-var@1.0.11
 reload@1.1.11
+remcoder:chronos@0.5.0
 retry@1.0.9
 rocketchat:action-links@0.0.1
 rocketchat:api@0.0.1
@@ -241,6 +242,7 @@ twitter@1.1.13
 ui@1.0.12
 underscore@1.0.10
 underscorestring:underscore.string@3.3.4
+url@1.0.11
 voismart:disable-cordova-otr@0.0.1
 voismart:ngapi@0.0.1
 voismart:nglogin@0.0.1
@@ -249,8 +251,8 @@ voismart:phone@0.0.1
 voismart:user-call@0.0.1
 voismart:webc@0.0.1
 voismart:webnotifications@0.0.1
-url@1.0.11
 webapp@1.3.12
 webapp-hashing@1.0.9
 yasaricli:slugify@0.0.7
 yasinuslu:blaze-meta@0.3.3
+zodiase:function-bind@0.0.1

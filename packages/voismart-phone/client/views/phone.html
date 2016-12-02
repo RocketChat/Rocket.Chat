@@ -30,6 +30,11 @@
 				<div class="callOperation">
 					{{callOperation}}
 				</div>
+				{{#if callIsAnswered}}
+				<div class="callDuration">
+					{{callDuration}}
+				</div>
+				{{/if}}
 				<div class="callContact">
 					{{callCidNum}}&nbsp;{{callCidName}}
 				</div>
