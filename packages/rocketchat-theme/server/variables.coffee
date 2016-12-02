@@ -9,6 +9,7 @@
 # New colors, used for shades on solid backgrounds
 # Defined range of transparencies reduces random colour variances
 alphaColors=
+  'transparent-darkest': 'rgba(0,0,0,0.5)' 
   'transparent-darker': 'rgba(0,0,0,0.15)'
   'transparent-dark': 'rgba(0,0,0,0.05)'
   'transparent-light': 'rgba(255,255,255,0.10)'
@@ -24,12 +25,13 @@ majorColors=
   'primary-action-color': '#13679A' # was action-buttons-color
   'secondary-background-color': '#F4F4F4'
   'secondary-font-color': '#A0A0A0'
-  'secondary-action-color': '#E5E5E5'
+  'secondary-action-color': '#DDDDDD'
   'component-color': '#EAEAEA'
   'success-color': '#1DCE73'
   'pending-color': '#FCB316'
   'error-color': '#BC2031'
-  'selection-color': '#02ACEC'
+  'selection-color': '#02ACEC',
+  'attention-color': '#9C27B0'
 
 # Minor colours implement major colours by default, but can be overruled
 minorColors=
