@@ -22,12 +22,14 @@ Meteor.methods
 			type: 'string' ,
 			group: 'SAML',
 			section: name,
+			multiline: true,
 			i18nLabel: 'SAML_Custom_Public_Cert'
 		}
 		RocketChat.settings.add "SAML_Custom_#{name}_private_key", '', {
 			type: 'string' ,
 			group: 'SAML',
 			section: name,
+			multiline: true,
 			i18nLabel: 'SAML_Custom_Private_Key'
 		}
 		RocketChat.settings.add "SAML_Custom_#{name}_button_label_text" , ''                                                            , { type: 'string' , group: 'SAML', section: name, i18nLabel: 'Accounts_OAuth_Custom_Button_Label_Text'}
