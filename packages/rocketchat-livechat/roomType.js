@@ -38,6 +38,21 @@ RocketChat.roomTypes.add('l', 5, {
 		return room && room.open === true;
 	},
 
+	getUserStatus(roomId) {
+		const room = Session.get('roomData' + roomId);
+		if (!room) {
+			return;
+		}
+		const subscription = RocketChat.models.Subscriptions.findOne({rid: roomId});
+		if (!subscription) {
+			return;
+		}
+		let guestName = _.without(room.usernames, subscription.u.username);
+		if (guestName) {
+			return Session.get('user_' + guestName + '_status');
+		}
+	},
+
 	notSubscribedTpl: {
 		template: 'livechatNotSubscribed'
 	}
