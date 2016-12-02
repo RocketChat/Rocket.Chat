@@ -4,9 +4,10 @@ Template.spotlightTemplate.helpers({
 	},
 
 	userStatus() {
-		if (this.t === 'd' || this.t === 'l') {
+		if (this.t === 'd') {
 			return 'status-' + (Session.get(`user_${this.name}_status`) || 'offline');
+		} else {
+			return 'status-' + (RocketChat.roomTypes.getUserStatus(this.t, this.rid || this._id) || 'offline');
 		}
-		return 'status-offline';
 	}
 });
