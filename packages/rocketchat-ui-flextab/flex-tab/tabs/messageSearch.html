@@ -19,23 +19,19 @@
 				{{/unless}}
 			{{/if}}
 		</div>
-		<ul class="list clearfix">
-			{{#if currentSearchTerm}}
-				{{#if searchResultMessages}}
+		{{#if currentSearchTerm}}
+			{{#if searchResultMessages}}
+				<ul class="list clearfix">
 					{{#each searchResultMessages}}
 						{{#nrr nrrargs 'message' message}}{{/nrr}}
 					{{/each}}
-					{{#if hasMore}}
-						<li class="load-more">
-							{{#if ready}}
-								<button>{{_ "Has_more"}}...</button>
-							{{else}}
-								<div class="load-more-loading">{{_ "Loading..."}}</div>
-							{{/if}}
-						</li>
-					{{/if}}
+				</ul>
+				{{#if hasMore}}
+					<div class="load-more">
+						{{> loading dark=true}}
+					</div>
 				{{/if}}
 			{{/if}}
-		</ul>
+		{{/if}}
 	</div>
 </template>
