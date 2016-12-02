@@ -42,19 +42,15 @@ before_install:
 install:
 - export PATH="$HOME/.meteor:$PATH"
 before_script:
-- mkdir /tmp/build
-- travis_retry npm install
-- npm run lint
 - echo "replication:" | sudo tee -a /etc/mongod.conf
 - |-
   echo "  replSetName: \"rs0\"" | sudo tee -a /etc/mongod.conf
-- cat /etc/hosts
-- cat /etc/mongod.conf
 - sudo service mongod restart
-- sleep 20
+- mkdir /tmp/build
+- travis_retry npm install
 - |-
   mongo --eval 'rs.initiate({_id:"rs0", members: [{"_id":1, "host":"localhost:27017"}]})'
-- sleep 15
+- npm run lint
 - mongo --eval 'rs.status()'
 script:
 - npm test
