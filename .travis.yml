@@ -45,7 +45,10 @@ before_script:
 - mkdir /tmp/build
 - travis_retry npm install
 - npm run lint
+- cat /etc/mongodb.conf
+- cat /etc/mongod.conf
 - echo "replSet = rs0" | sudo tee -a /etc/mongodb.conf
+- cat /etc/mongodb.conf
 - sudo service mongod restart
 - sleep 20
 - mongo --eval 'rs.initiate()'
