@@ -46,7 +46,8 @@ Api.addRoute('rooms', {authRequired: true}, {
       /* eslint-disable prefer-arrow-callback */
       const result = Meteor.runAsUser(userId, function () {
         const {rid} = Meteor.call('createChannel', name, members)
-        RocketChat.saveRoomTopic(rid, topic)
+        const user = RocketChat.models.Users.findOneById(userId)
+        RocketChat.saveRoomTopic(rid, topic, user)
         return {
           status: 'success',
           room: {
