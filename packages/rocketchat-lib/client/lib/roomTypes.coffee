@@ -21,6 +21,9 @@ RocketChat.roomTypes = new class roomTypesClient extends roomTypesCommon
 		list = _.reject @roomTypesOrder, (t) -> return except.indexOf(t.identifier) isnt -1
 		return _.map list, (t) -> return t.identifier
 
+	getUserStatus: (roomType, roomId) ->
+		return @roomTypes[roomType]?.getUserStatus?(roomId)
+
 	findRoom: (roomType, identifier, user) ->
 		return @roomTypes[roomType]?.findRoom identifier, user
 
