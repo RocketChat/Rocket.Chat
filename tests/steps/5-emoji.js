@@ -4,7 +4,7 @@
 import mainContent from '../pageobjects/main-content.page';
 import sideNav from '../pageobjects/side-nav.page';
 
-describe('emoji', ()=> {
+describe.skip('emoji', ()=> {
 	it('opens general', ()=> {
 		sideNav.openChannel('general');
 	});

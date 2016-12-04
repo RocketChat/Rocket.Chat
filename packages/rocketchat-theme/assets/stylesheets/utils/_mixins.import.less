@@ -92,7 +92,7 @@
 	color: @color;
 	background-color: @bg;
 	&:hover {
-		color: lighten(@color, 10%);
-		background-color: darken(@bg, 5%);
+		color: mix(@color, contrast(@bg), 60%);
+		background-color: fadein(mix(@bg, contrast(@color), 60%), 25%);
 	}
 }

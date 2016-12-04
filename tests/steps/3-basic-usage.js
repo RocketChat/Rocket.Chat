@@ -7,7 +7,7 @@ import mainContent from '../pageobjects/main-content.page';
 import sideNav from '../pageobjects/side-nav.page';
 
 //test data imports
-import {username, email, password} from '../test-data/user.js';
+import {username, email, password, adminUsername, adminEmail, adminPassword} from '../test-data/user.js';
 import {publicChannelName, privateChannelName} from '../test-data/channel.js';
 import {targetUser, imgURL} from '../test-data/interactions.js';
 
@@ -16,11 +16,32 @@ const message = 'message from '+username;
 
 
 //Basic usage test start
-describe('Basic usage', function() {
+describe.skip('Basic usage', function() {
 	this.retries(2);
 
 	it('load page', () => {
 		loginPage.open();
+	});
+
+	it('create the admin user', () => {
+		loginPage.gotToRegister();
+
+		loginPage.registerNewAdmin({adminUsername, adminEmail, adminPassword});
+
+		browser.waitForExist('form#login-card input#username', 5000);
+
+		browser.click('.submit > button');
+
+		mainContent.mainContent.waitForExist(5000);
+	});
+
+	it('logout', () => {
+		sideNav.accountBoxUserName.waitForVisible(5000);
+		sideNav.accountBoxUserName.click();
+		browser.pause(200);
+
+		sideNav.logout.waitForVisible(5000);
+		sideNav.logout.click();
 	});
 
 	it('create user', () => {
@@ -131,24 +152,6 @@ describe('Basic usage', function() {
 					sideNav.logout.isVisible().should.be.true;
 				});
 			});
-		});
-	});
-
-	describe('Setting the tests Preferences', () => {
-		it('opens the user preferences screen', () => {
-			sideNav.accountBoxUserName.waitForVisible();
-			sideNav.accountBoxUserName.click();
-			sideNav.account.waitForVisible();
-			sideNav.account.click();
-		});
-
-		it('Sets the language to english', () => {
-			mainContent.setLanguageToEnglish();
-			browser.pause(10000);
-		});
-
-		it('close the preferences menu', () => {
-			sideNav.preferencesClose.click();
 		});
 	});
 
