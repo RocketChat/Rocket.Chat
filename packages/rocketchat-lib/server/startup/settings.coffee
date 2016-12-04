@@ -97,7 +97,6 @@ RocketChat.settings.addGroup 'General', ->
 	@add 'CDN_PREFIX', '', { type: 'string' }
 	@add 'Force_SSL', false, { type: 'boolean', public: true }
 	@add 'GoogleTagManager_id', '', { type: 'string', public: true }
-	@add 'GoogleSiteVerification_id', '', { type: 'string', public: false }
 	@add 'Bugsnag_api_key', '', { type: 'string', public: false }
 	@add 'Restart', 'restart_server', { type: 'action', actionText: 'Restart_the_server' }
 
@@ -201,9 +200,10 @@ RocketChat.settings.addGroup 'Message', ->
 RocketChat.settings.addGroup 'Meta', ->
 	@add 'Meta_language', '', { type: 'string' }
 	@add 'Meta_fb_app_id', '', { type: 'string' }
-	@add 'Meta_robots', '', { type: 'string' }
+	@add 'Meta_robots', 'INDEX,FOLLOW', { type: 'string' }
 	@add 'Meta_google-site-verification', '', { type: 'string' }
 	@add 'Meta_msvalidate01', '', { type: 'string' }
+	@add 'Meta_custom', '', { type: 'code', code: 'text/html', multiline: true }
 
 
 RocketChat.settings.addGroup 'Push', ->
