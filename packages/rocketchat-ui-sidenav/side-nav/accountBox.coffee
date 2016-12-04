@@ -61,6 +61,9 @@ Template.accountBox.events
 		AccountBox.openFlex()
 
 	'click .account-box-item': ->
+		if @href
+			FlowRouter.go @href
+
 		if @sideNav?
 			SideNav.setFlex @sideNav
 			SideNav.openFlex()

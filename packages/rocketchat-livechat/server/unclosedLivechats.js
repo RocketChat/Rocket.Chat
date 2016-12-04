@@ -76,12 +76,12 @@ RocketChat.settings.get('Livechat_agent_leave_action', function(key, value) {
 	}
 });
 
-UserPresenceMonitor.onSetUserStatus((user, status, statusConnection) => {
+UserPresenceMonitor.onSetUserStatus((user, status/*, statusConnection*/) => {
 	if (!monitorAgents) {
 		return;
 	}
 	if (onlineAgents.exists(user._id)) {
-		if (statusConnection === 'offline' || user.statusLivechat === 'not-available') {
+		if (status === 'offline' || user.statusLivechat === 'not-available') {
 			onlineAgents.remove(user._id, () => {
 				runAgentLeaveAction(user._id);
 			});

@@ -63,6 +63,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/lib/RateLimiter.coffee', 'server');
 
 	// SERVER FUNCTIONS
+	api.addFiles('server/functions/isDocker.js', 'server');
 	api.addFiles('server/functions/addUserToDefaultChannels.js', 'server');
 	api.addFiles('server/functions/addUserToRoom.js', 'server');
 	api.addFiles('server/functions/archiveRoom.js', 'server');
@@ -137,6 +138,8 @@ Package.onUse(function(api) {
 	api.addFiles('server/methods/updateMessage.coffee', 'server');
 	api.addFiles('server/methods/filterBadWords.js', ['server']);
 	api.addFiles('server/methods/filterATAllTag.js', 'server');
+	api.addFiles('server/methods/getChannelHistory.js', 'server');
+	api.addFiles('server/methods/cleanChannelHistory.js', 'server');
 
 	// SERVER STARTUP
 	api.addFiles('server/startup/settingsOnLoadCdnPrefix.coffee', 'server');

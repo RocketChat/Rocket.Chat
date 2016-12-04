@@ -22,23 +22,15 @@
  */
 
 html {
-	.custom-scroll(transparent, @custom-scrollbar-color, 0);
+	.custom-scroll(@transparent-dark, @custom-scrollbar-color, 0);
 }
 
-.flex-nav,
-.flex-tab .content,
-.messages-container .wrapper,
-.list-view,
-.page-container .content,
-.rooms-list,
-.scrollable,
-.user-view {
-	.custom-scroll(transparent, @custom-scrollbar-color);
+* {
+	.custom-scroll(@transparent-dark, @custom-scrollbar-color);
 }
 
 body {
 	color: @primary-font-color;
-	background-color: @content-background-color;
 	* {
 		border-color: @component-color;
 	}
@@ -77,7 +69,7 @@ blockquote:before {
 	tr {
 		background-color: @transparent-light;
 		&:nth-of-type(even) {
-			background-color: @transparent-lighter;
+			background-color: @transparent-lightest;
 		}
 	}
 	tr:hover td {
@@ -138,7 +130,7 @@ blockquote:before {
 	pre {
 		color: @error-color;
 		border-color: @error-border;
-		background-color: @transparent-lighter;
+		background-color: @transparent-lightest;
 	}
 }
 
@@ -201,13 +193,18 @@ blockquote:before {
 	color: @primary-font-color;
 	background-color: @content-background-color;
 	.input-shade(@primary-font-color, @content-background-color);
+	.input-text {
+		input:-webkit-autofill {
+			-webkit-box-shadow: 0 0 0px 20px @content-background-color inset;
+		}
+	}
 }
 
 .dropzone.over .dropzone-overlay {
-	background-color: @transparent-darker;
+	background-color: @transparent-darkest;
 	color: @content-background-color;
 	> div {
-		background-color: @transparent-darker;
+		background-color: @transparent-darkest;
 	}
 }
 
@@ -244,8 +241,8 @@ blockquote:before {
 
 .container-bars {
 	.upload-progress {
-		background-color: @success-background;
-		color: @success-color;
+		background-color: @component-color;
+		color: @primary-action-color;
 		&.upload-error {
 			background-color: @error-background;
 			border-color: @error-border;
@@ -273,7 +270,12 @@ blockquote:before {
 			background-color: @content-background-color;
 		}
 		.message-buttons {
-			.buttonColors(@primary-font-color, @transparent-dark);
+			.buttonColors(lighten(@primary-font-color, 25%), @secondary-background-color);
+		}
+		textarea {
+			&.editing {
+				background-color: lighten(@pending-color, 40%);
+			}
 		}
 	}
 	.new-message {
@@ -313,14 +315,13 @@ blockquote:before {
 	}
 }
 
-
 .messages-box {
 	.start {
 		color: @info-font-color;
 	}
 	.editing .body,
 	textarea.editing {
-		background-color: @selection-background;
+		background-color: lighten(@pending-color, 40%);
 	}
 }
 
@@ -328,6 +329,25 @@ blockquote:before {
 /** ----------------------------------------------------------------------------
  * Message content
  */
+
+.first-unread {
+	.body {
+		&::before {
+			background: @transparent-darker;
+		}
+		&::after {
+			color: @primary-font-color;
+		}
+	}
+}
+
+.first-unread-opaque {
+	.body {
+		&::before {
+			background: @transparent-dark;
+		}
+	}
+}
 
 .message {
 	.body {
@@ -344,15 +364,13 @@ blockquote:before {
 	}
 	.message-dropdown,
 	.options-menu {
-		color: @secondary-font-color;
+		color: lighten(@primary-font-color, 13%);
 		background-color: @content-background-color;
 		ul li:hover {
-			color: @secondary-action-contrast;
-			background-color: @secondary-action-color;
+			background-color: @tertiary-background-color;
 		}
 		.message-dropdown-close {
-			color: @content-background-color;
-			background-color: @info-font-color;
+			background-color: @secondary-background-color;
 		}
 	}
 	&.new-day::before {
@@ -377,16 +395,14 @@ blockquote:before {
 		.linkColors(@link-font-color, darken(@link-font-color, 10%));
 	}
 	a.mention-link {
-		background-color: @secondary-action-color;
-		color: @secondary-action-contrast;
-		&.mention-link-all,
+		color: @primary-action-color;
 		&.mention-link-me {
 			color: @primary-action-contrast;
 			background-color: @primary-action-color;
 		}
 		&.mention-link-all {
-			color: contrast(@selection-color);
-			background-color: @selection-color;
+			color: @primary-action-contrast;
+			background-color: @attention-color;
 		}
 	}
 	.highlight-text {
@@ -468,22 +484,25 @@ a:hover {
 	.rooms-list {
 		background-color: lighten(@primary-background-color, 2.5%);
 	}
-	.more:hover,
 	h3:hover,
+	li:hover,
+	.more:hover,
 	.selected-users li {
 		background-color: @transparent-darker;
 	}
-	li.active .opt {
-		color: @tertiary-font-color;
+	li.active {
+		background-color: @transparent-light !important;
 	}
-	.active a {
-		color: @primary-background-contrast;
-		background-color: @transparent-lighter;
+	i {
+		color: @transparent-lighter;
 	}
-	.open-room:hover {
-		background-color: @transparent-lighter;
+	i.status-offline {
+		color: @transparent-lighter !important;
 	}
-	.has-alert a {
+	.opt i:hover {
+		color: @transparent-lightest;
+	}
+	.has-alert .name {
 		color: @primary-background-contrast;
 	}
 	.unread {
@@ -492,6 +511,12 @@ a:hover {
 	.unread-rooms {
 		background-color: @primary-action-color;
 		color: @primary-action-contrast;
+	}
+	.button {
+		.buttonColors(@tertiary-font-color, mix(@primary-action-color, @primary-background-color));
+	}
+	.options button {
+		.buttonColors(@tertiary-font-color, @primary-background-color);
 	}
 }
 
@@ -502,11 +527,12 @@ a:hover {
 
 .flex-tab {
 	background-color: @secondary-background-color;
-	.content, .user-view, .list-view {
+	.content,
+	.user-view,
+	.list-view {
 		background-color: @secondary-background-color;
 	}
 	.message {
-		background-color: @transparent-lighter;
 		&.new-day::before {
 			background-color: @secondary-background-color;
 		}
@@ -563,7 +589,6 @@ i.status-online {
 
 .account-box .status-online .thumb:after,
 .account-box .status.online:after,
-.options .status .online:after,
 .popup-user-status-online,
 .status-online:after,
 .user-image.status-online .avatar:after {
@@ -577,7 +602,6 @@ i.status-away {
 
 .account-box .status-away .thumb:after,
 .account-box .status.away:after,
-.options .status .online:after,
 .popup-user-status-away,
 .status-pending:after,
 .user-image.status-away .avatar:after {
@@ -591,7 +615,6 @@ i.status-busy {
 
 .account-box .status-busy .thumb:after,
 .account-box .status.busy:after,
-.options .status .online:after,
 .popup-user-status-busy,
 .status-busy:after,
 .user-image.status-busy .avatar:after {
@@ -603,14 +626,16 @@ i.status-offline {
 	color: @status-offline;
 }
 
-.account-box .status-offline .thumb:after,
-.account-box .status.offline:after,
-.options .status .online:after,
 .popup-user-status-offline,
 .status-offline:after,
 .user-image.status-offline .avatar:after {
 	background-color: @status-offline;
 	border-color: darken(@status-offline, 10%);
+}
+
+.account-box .status-offline .thumb:after,
+.account-box .status.offline:after {
+	background-color: @transparent-lighter;
 }
 
 .popup-user-status {
@@ -682,15 +707,6 @@ i.status-offline {
 		&.linkedin {
 			background-color: #1b86bc;
 		}
-	}
-}
-
-.side-nav {
-	.button {
-		.buttonColors(@tertiary-font-color, mix(@primary-action-color, @primary-background-color));
-	}
-	.options button {
-		.buttonColors(@tertiary-font-color, @primary-background-color);
 	}
 }
 
@@ -773,6 +789,12 @@ label.required:after {
 		background-color: @pending-background;
 		border-color: @pending-border;
 		color: @pending-color;
+	}
+}
+
+.emoji-filter {
+	input {
+		background-color: @content-background-color;
 	}
 }
 
