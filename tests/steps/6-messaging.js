@@ -65,6 +65,166 @@ function messagingTest() {
 	});
 }
 
+function messageActionsTest() {
+	describe('Message actions', ()=> {
+		it('send a message to be tested', () => {
+			mainContent.sendMessage('Message for Message Actions Tests');
+		});
+		describe('Message Actuins Render', ()=> {
+			before(() => {
+				mainContent.openMessageActionMenu();
+			});
+
+			after(() => {
+				mainContent.selectAction('close');
+			});
+
+			it('should show the message action menu', () => {
+				mainContent.messageActionMenu.isVisible().should.be.true;
+			});
+
+			it('should show the reply action', () => {
+				mainContent.messageReply.isVisible().should.be.true;
+			});
+
+			it('should show the edit action', () => {
+				mainContent.messageEdit.isVisible().should.be.true;
+			});
+
+			it('should show the delete action', () => {
+				mainContent.messageDelete.isVisible().should.be.true;
+			});
+
+			it('should show the permalink action', () => {
+				mainContent.messagePermalink.isVisible().should.be.true;
+			});
+
+			it('should show the copy action', () => {
+				mainContent.messageCopy.isVisible().should.be.true;
+			});
+
+			it('should show the quote the action', () => {
+				mainContent.messageQuote.isVisible().should.be.true;
+			});
+
+			it('should show the star action', () => {
+				mainContent.messageStar.isVisible().should.be.true;
+			});
+
+			it('should show the reaction action', () => {
+				mainContent.messageReaction.isVisible().should.be.true;
+			});
+
+			it('should show the close action', () => {
+				mainContent.messageClose.isVisible().should.be.true;
+			});
+
+			it('should not show the pin action', () => {
+				mainContent.messagePin.isVisible().should.be.false;
+			});
+
+			it('should not show the mark as unread action', () => {
+				mainContent.messageUnread.isVisible().should.be.false;
+			});
+		});
+
+		describe('Message Actions usage'() => {
+			describe('Message Reply'() => {
+				before(() => {
+					mainContent.openMessageActionMenu();
+				});
+				it('reply the message', () => {
+					mainContent.selectAction('reply');
+					mainContent.sendBtn.click();
+				});
+
+				it('checks if the message was replied', () => {
+					mainContent.lastMessageTextAttachment.getText().should.equal(mainContent.beforeLastMessage.getText());
+				});
+			});
+
+
+			describe('Message edit', () => {
+				before(() => {
+					mainContent.sendMessage('Message for Message edit Tests ');
+					mainContent.openMessageActionMenu();
+				});
+
+				it('edit the message', () => {
+					mainContent.selectAction('edit');
+					mainContent.sendBtn.click();
+				});
+			});
+
+
+			describe('Message delete', () => {
+				before(() => {
+					mainContent.sendMessage('Message for Message Delete Tests');
+					mainContent.openMessageActionMenu();
+				});
+
+				it('delete the message', () => {
+					mainContent.selectAction('delete');
+					mainContent.popupFileConfirmBtn.click();
+				});
+
+				it('should not show the deleted message', () => {
+					mainContent.lastMessage.should.not.equal('Message for Message Delete Tests');
+				});
+			});
+
+			describe('Message quote', () => {
+				before(() => {
+					mainContent.sendMessage('Message for quote Tests');
+					mainContent.openMessageActionMenu();
+				});
+
+				it('quote the message', () => {
+					mainContent.selectAction('quote');
+					mainContent.sendBtn.click();
+				});
+
+				it('checks if the message was quoted', () => {
+					mainContent.lastMessageTextAttachment.getText().should.equal(mainContent.beforeLastMessage.getText());
+				});
+			});
+
+			describe('Message star', () => {
+				before(() => {
+					mainContent.sendMessage('Message for star Tests');
+					mainContent.openMessageActionMenu();
+				});
+
+				it('star the message', () => {
+					mainContent.selectAction('star');
+				});
+			});
+
+			describe('Message star', () => {
+				before(() => {
+					mainContent.sendMessage('Message for copy Tests');
+					mainContent.openMessageActionMenu();
+				});
+
+				it('copy the message', () => {
+					mainContent.selectAction('copy');
+				});
+			});
+
+			describe('Message star', () => {
+				before(() => {
+					mainContent.sendMessage('Message for permalink Tests');
+					mainContent.openMessageActionMenu();
+				});
+
+				it('permalink the message', () => {
+					mainContent.selectAction('permalink');
+				});
+			});
+		});
+	});
+}
+
 describe('Messaging in different channels', () => {
 	before(()=>{
 		checkIfUserIsValid(username, email, password);
@@ -85,6 +245,30 @@ describe('Messaging in different channels', () => {
 				sideNav.createChannel(publicChannelName, false, false);
 				setPublicChannelCreated(true);
 				console.log('	public channel not found, creating one...');
+			}
+			sideNav.openChannel(publicChannelName);
+		});
+		messagingTest();
+	});
+
+	describe('Messaging in created private channel', () => {
+		before(()=>{
+			if (!privateChannelCreated) {
+				sideNav.createChannel(privateChannelName, true, false);
+				setPrivateChannelCreated(true);
+				console.log('	private channel not found, creating one...');
+			}
+			sideNav.openChannel(privateChannelName);
+		});
+		messagingTest();
+	});
+
+	describe('Messaging in created direct message', () => {
+		before(()=>{
+			if (!publicChannelCreated) {
+				sideNav.startDirectMessage(targetUser);
+				setDirectMessageCreated(true);
+				console.log('	Direct message not found, creating one...');
 			}
 			sideNav.openChannel(publicChannelName);
 		});
