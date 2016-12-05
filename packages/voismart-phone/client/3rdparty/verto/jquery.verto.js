@@ -2043,6 +2043,7 @@
             videoParams: dialog.params.videoParams,
             audioParams: verto.options.audioParams,
             iceServers: verto.options.iceServers,
+			forceRelay: verto.options.forceRelay,
             screenShare: dialog.screenShare,
             useCamera: dialog.useCamera,
             useMic: dialog.useMic,
@@ -2106,7 +2107,7 @@
     }
 
 
-    // Attach audio output device to video element using device/sink ID.                                                                                           
+    // Attach audio output device to video element using device/sink ID.
     function find_name(id) {
         for (var i in $.verto.audioOutDevices) {
             var source = $.verto.audioOutDevices[i];

@@ -81,6 +81,7 @@
             screenShare: false,
             useCamera: "any",
             iceServers: false,
+			forceRelay: false,
             videoParams: {},
             audioParams: {},
             callbacks: {
@@ -418,6 +419,7 @@
                 },
                 constraints: self.constraints,
                 iceServers: self.options.iceServers,
+				forceRelay: self.options.forceRelay,
                 offerSDP: {
                     type: "offer",
                     sdp: self.remoteSDP
@@ -607,6 +609,7 @@
                 },
                 constraints: self.constraints,
                 iceServers: self.options.iceServers,
+				forceRelay: self.options.forceRelay
             });
 
             onStreamSuccess(self, stream);
@@ -663,7 +666,12 @@
             if (typeof (options.iceServers) === "boolean") {
                 config.iceServers = [default_ice];
             } else {
-                config.iceServers = options.iceServers;
+				console.log(options);
+				config.iceServers = options.iceServers;
+				if(options.forceRelay) {
+					config.iceTransportPolicy = "relay"; //can be also "relay"
+				}
+				//config.bundlePolicy = "max-bundle"; // can be also "balanced" (def), "max-compat", "max-bundle"
             }
         }
 
@@ -745,7 +753,7 @@
 
         //var constraints = options.constraints || {
         //  offerToReceiveAudio: true,
-        //offerToReceiveVideo: true   
+        //offerToReceiveVideo: true
         //};
 
         // onOfferSDP(RTCSessionDescription)

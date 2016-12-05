@@ -14,6 +14,7 @@ Meteor.startup ->
 		enabled = RocketChat.settings.get('Phone_Enabled')
 		wss = RocketChat.settings.get('Phone_WSS')
 		servers = RocketChat.settings.get("Phone_ICEServers")
+		forceRelay = RocketChat.settings.get("Phone_ICEForceRelay")
 
 		iceServers = []
 		if servers? and (servers?.trim() isnt '')
@@ -30,6 +31,7 @@ Meteor.startup ->
 					serverConfig.credential = decodeURIComponent(server[1])
 
 				iceServers.push serverConfig
+		iceConfig = {forceRelay: forceRelay, iceServers: iceServers}
 
 		if not enabled or not wss
 			console.log("Phone not enabled or missing server url") if window.rocketDebug
@@ -42,7 +44,7 @@ Meteor.startup ->
 			console.warn("Phone account data not set (yet?)")
 			return
 
-		RocketChat.Phone.start(plogin, ppass, wss, iceServers)
+		RocketChat.Phone.start(plogin, ppass, wss, iceConfig)
 
 
 Template.phone.events
@@ -315,7 +317,7 @@ RocketChat.Phone = new class
 	_password = undefined
 	_vertoHandle = undefined
 	_server = undefined
-	_iceServers = []
+	_iceConfig = {forceRelay: false, iceServers: []}
 	_videoTag = undefined
 	_vertoEchoTimer = undefined
 
@@ -550,14 +552,15 @@ RocketChat.Phone = new class
 			console.log _login
 			console.log _password
 			console.log _server
-			console.log _iceServers
+			console.log _iceConfig
 
 		_vertoHandle = new jQuery.verto({
 			login: _login,
 			passwd: _password
 			socketUrl: _server,
 			ringFile: 'sounds/bell_ring2.wav',
-			iceServers: _iceServers,
+			iceServers: _iceConfig?.iceServers,
+			forceRelay: _iceConfig?.forceRelay,
 			tag: "phonestream"
 			audioParams: {
 				googEchoCancellation: true,
@@ -834,7 +837,7 @@ RocketChat.Phone = new class
 	getVideoDevice: ->
 		return _videoDevice
 
-	start: (login, password, server, iceServers) ->
+	start: (login, password, server, iceConfig) ->
 		console.log("Starting verto....") if window.rocketDebug
 
 		if _started and (login != _login or _password != password or _server != server)
@@ -856,7 +859,7 @@ RocketChat.Phone = new class
 		_login = login
 		_password = password
 		_server = server
-		_iceServers = iceServers
+		_iceConfig = iceConfig
 
 		getConfig()
 
