@@ -10,10 +10,10 @@ RocketChat.saveUser = function(userId, userData) {
 		throw new Meteor.Error('error-action-not-allowed', 'Adding user is not allowed', { method: 'insertOrUpdateUser', action: 'Adding_user' });
 	}
 
-	if(existingRoles.indexOf(userData.role) < 0){
+	if (existingRoles.indexOf(userData.role) < 0) {
 		throw new Meteor.Error('error-action-not-allowed', 'The role you are assigning does not exist', { method: 'insertOrUpdateUser', action: 'Assign_role' });
 	}
-	
+
 	if (userData.role === 'admin' && !RocketChat.authz.hasPermission(userId, 'assign-admin-role')) {
 		throw new Meteor.Error('error-action-not-allowed', 'Assigning admin is not allowed', { method: 'insertOrUpdateUser', action: 'Assign_admin' });
 	}
