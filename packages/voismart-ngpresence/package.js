@@ -12,7 +12,7 @@ Package.onUse(function(api) {
 		'coffeescript',
 		'tracker',
 		'templating',
-		'less',
+		'less@2.7.6',
 		'jzwzz:amqplib',
 		'jparker:crypto-core',
 		'rocketchat:lib',
