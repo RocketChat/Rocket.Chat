@@ -569,6 +569,8 @@
   "Iframe_Integration_send_target_origin_Description": "Only pages with given origin will be able to listen to events or `*` for all origins. Example `http://localhost`",
   "Importer_Archived": "Archived",
   "Importer_CSV_Information": "The CSV importer requires a specific format, please read the documentation for how to structure your zip file:",
+  "Importer_HipChatEnterprise_Information": "The file uploaded must be a decrypted tar.gz, please read the documentation for further information:",
+  "Importer_HipChatEnterprise_BetaWarning": "Please be aware that this import is still a work in progress, please report any errors which occur in GitHub:",
   "Importer_done": "Importing complete!",
   "Importer_finishing": "Finishing up the import.",
   "Importer_From_Description": "Imports __from__ data into Rocket.Chat.",
