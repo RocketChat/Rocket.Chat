@@ -8,10 +8,12 @@
 				<ul class="list clearfix">
 					{{#let projectInfo = getProjectInfo}}
 						{{#each toArray projectInfo}}
-							<li>
-								<label>{{$key}}</label>
-								<span class='current-setting'>{{$value}}</span>
-							</li>
+							{{#if $value}}
+								<li>
+									<label>{{$key}}</label>
+									<span class='current-setting'>{{{$value}}}</span>
+								</li>
+							{{/if}}
 						{{/each}}
 					{{/let}}
 					<!--
