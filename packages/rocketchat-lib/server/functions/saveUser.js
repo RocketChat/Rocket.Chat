@@ -1,6 +1,6 @@
 RocketChat.saveUser = function(userId, userData) {
 	const user = RocketChat.models.Users.findOneById(userId);
-	existingRoles = _.map(_.pluck(RocketChat.authz.getRoles(), '_id'), function(r) { return r.toLowerCase(); });
+	let existingRoles = _.map(_.pluck(RocketChat.authz.getRoles(), '_id'), function(r) { return r.toLowerCase(); });
 
 	if (userData._id && userId !== userData._id && !RocketChat.authz.hasPermission(userId, 'edit-other-user-info')) {
 		throw new Meteor.Error('error-action-not-allowed', 'Editing user is not allowed', { method: 'insertOrUpdateUser', action: 'Editing_user' });
