@@ -317,6 +317,7 @@ RocketChat.Phone = new class
 	_server = undefined
 	_iceServers = []
 	_videoTag = undefined
+	_vertoEchoTimer = undefined
 
 	_audioInDevice = undefined
 	_audioOutDevice = undefined
@@ -365,7 +366,20 @@ RocketChat.Phone = new class
 		if window.rocketDebug
 			console.log('onWSLogin', success)
 
+		if _vertoEchoTimer?
+			Meteor.clearInterval(_vertoEchoTimer)
+			_vertoEchoTimer = undefined
+		_vertoEchoTimer = Meteor.setInterval(vertoPinger, 15000)
+
+	vertoPinger = () ->
+		if _vertoHandle?
+			_vertoHandle.sendMethod("echo", {alive: true})
+
 	onWSClose = (verto, success) ->
+		if _vertoEchoTimer?
+			Meteor.clearInterval(_vertoEchoTimer)
+			_vertoEchoTimer = undefined
+
 		if window.rocketDebug
 			console.log('onWSClose', success)
 
