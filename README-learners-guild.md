@@ -161,7 +161,6 @@ git push -u origin YOUR_BRANCH_NAME
 
 7. No need to wait for Rocket.Chat to merge-in your changes, though you might need to cherry-pick the commit from the `develop` branch into the `lg-master` branch.
 
-
 [mehserve]: https://github.com/timecounts/mehserve
 [meteor]: https://www.meteor.com/
 [rocket-chat-pr]: https://github.com/RocketChat/Rocket.Chat/pulls
