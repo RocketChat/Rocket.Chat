@@ -142,6 +142,10 @@ RocketChat.saveUser = function(userId, userData) {
 			updateUser.$set.name = userData.name;
 		}
 
+		if (userData.role){
+			updateUser.$set.roles = [ (userData.role || 'user') ]
+		}
+
 		if (userData.requirePasswordChange) {
 			updateUser.$set.requirePasswordChange = userData.requirePasswordChange;
 		}
