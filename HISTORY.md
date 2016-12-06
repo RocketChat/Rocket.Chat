@@ -1,5 +1,61 @@
 # History
 
+## 0.47.0, 2016-Dec-06
+
+- Add 'clear OEmbed cache now' button
+- Add a method and rest api to clean up a channel's history
+- Add ability to choose a department from the API to livechat
+- Add channel history rest api
+- Add channel history rest api which is slack compatiable.
+- Add ecmascript to all packages with coffeescript
+- Add feature to clear OEmbed cache after user-defined amount of time
+- Add heirarchy and refactor colour variables
+- Add method do check if process is running inside docker
+- Add migrations, label, toggle for minor colors
+- Add option to disable file uploads in direct messages
+- Add the feature to hide the file sharing btn and some fixes
+- Allow load css from subdir
+- Allow setting border colours in imports
+- Allow simpler pinning and unpinning via the methods, only require _id and rid.
+- Allow use expressions/variables as colors
+- Change custom account box items to button
+- Convert the channels.history from post to get
+- Fix 'user is typing' break line
+- Fix bug with Disable Embed for Users
+- Fix button/bg colors and contrast
+- Fix code that check for empty object
+- Fix file list in cordova
+- Fix improper use of head tag (replace with header)
+- Fix improve unread mark
+- Fix issue #4387, crash when using StartTLS and LDAP
+- Fix issue #4813
+- Fix jitsi lib load in sub dir
+- Fix login logo in subdir
+- Fix missed styles and cull transparent variables
+- Fix oauth client when client had previously authorized
+- Fix redirectUrl after custom oauth successful login initiated by iframe command, fixes #5042 (#5043)
+- Fix sandstorm call setPath on navigation
+- Fix set user's email from REST API
+- Fix to stop changing the instance IP if running in docker
+- Fix windows issues on startup
+- Improved performance of sidebar rendering. Fixed RTL sidebar opening.
+- Inject meta tag via Inject.rawHead
+- Load permissions styles through theme methods
+- Migrating from GoogleSiteVerification_id to Meta_google-site-verification
+- Move less mixins into separate import
+- No longer allow invisible agents get livechats
+- Recommend using meteor npm start
+- Remove c from function param
+- Remove the default value for the latest on the getChannelHistory
+- Rename action-buttons-color primary-action-color
+- Restore migrations post merge upstream versions
+- Serve theme.css through WebApp.rawConnectHandlers
+- Show 'connecting to agent..' message option on LIveChat client
+- Simplify button classes, remove color names
+- Update action link and permissions colors to use theme variables
+- Updated to autolinker 1.4.0
+- Use toastr from npm
+
 ## 0.46.0, 2016-Nov-21
 
 ### Upgraded to meteor 1.4.2.3 - Now uses NodeJS 4.6.2
