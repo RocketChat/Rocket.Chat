@@ -54,8 +54,8 @@ describe('Main Elements Render', function() {
 				sideNav.general.isVisible().should.be.true;
 			});
 
-			it('should not show eye icon on general', () => {
-				sideNav.channelHoverIcon.isVisible().should.be.false;
+			it('should show eye icon on general', () => {
+				sideNav.channelHoverIcon.isVisible().should.be.true;
 			});
 		});
 	});
@@ -342,22 +342,21 @@ describe('Main Elements Render', function() {
 				});
 			});
 
-			describe('Starred Messages Tab', () => {
+			describe('Pinned Messages Tab', () => {
 				before(()=> {
 					browser.pause(700);
-					flexTab.starredTab.click();
+					flexTab.pinnedTab.click();
 				});
 
 				after(()=> {
-					flexTab.starredTab.click();
+					flexTab.pinnedTab.click();
 				});
 
 				it('should show the pinned button', () => {
 					flexTab.pinnedTab.isVisible().should.be.true;
 				});
 
-				it('should show the pinned messages Tab content', () => {
-					flexTab.pinnedTab.click();
+				it('should show the pinned messages Tab content', () => {;
 					flexTab.pinnedTabContent.isVisible().should.be.true;
 				});
 			});
