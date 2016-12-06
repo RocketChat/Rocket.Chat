@@ -19,16 +19,12 @@
 						</a>
 					</li>
 				{{/each}}
-				{{#if hasMore}}
-					<li class="load-more">
-						{{#if Template.subscriptionsReady}}
-							<button>{{_ "Has_more"}}...</button>
-						{{else}}
-							<div class="load-more-loading">{{_ "Loading..."}}</div>
-						{{/if}}
-					</li>
-				{{/if}}
 			</ul>
+			{{#if hasMore}}
+				<div class="load-more">
+					{{> loading dark=true}}
+				</div>
+			{{/if}}
 			{{#if Template.subscriptionsReady}}
 				{{#unless hasFiles}}
 					<h2>{{_ "Room_uploaded_file_list_empty"}}</h2>
