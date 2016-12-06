@@ -93,14 +93,7 @@ Template.room.helpers
 
 	userStatus: ->
 		roomData = Session.get('roomData' + this._id)
-
-		return {} unless roomData
-
-		if roomData.t in ['d', 'l']
-			subscription = RocketChat.models.Subscriptions.findOne({rid: this._id});
-			return Session.get('user_' + subscription.name + '_status') || 'offline'
-		else
-			return 'offline'
+		return RocketChat.roomTypes.getUserStatus(roomData.t, this._id) or 'offline'
 
 	flexOpened: ->
 		return 'opened' if RocketChat.TabBar.isFlexOpen()
