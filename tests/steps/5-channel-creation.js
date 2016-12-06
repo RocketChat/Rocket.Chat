@@ -19,6 +19,7 @@ describe('Channel creation', function() {
 	beforeEach(()=>{
 		sideNav.getChannelFromList('general').waitForVisible(5000);
 		sideNav.openChannel('general');
+		browser.pause(1000);
 	});
 
 	afterEach(function() {
