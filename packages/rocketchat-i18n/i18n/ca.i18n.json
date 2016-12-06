@@ -569,6 +569,8 @@
   "Iframe_Integration_send_target_origin_Description": "Només les pàgines amb l'origen proporcionat podran rebre esdeveniments o `*` per a totes.  Exemple `http://localhost`",
   "Importer_Archived": "Arxivat",
   "Importer_CSV_Information": "L'importador CSV requereix un format específic, si us plau llegiu la documentació sobre com estructurar l'arxiu .zip:",
+  "Importer_HipChatEnterprise_Information": "L'arxiu pujat ha de ser un tar.gz desencriptat. Si us plau, llegiu la documentació per a més informació:",
+  "Importer_HipChatEnterprise_BetaWarning": "Tingueu en compte que aquest sistema d'importació encara està en desenvolupament. Si us plau, notifiqueu-nos a GitHub els errors que es produeixin:",
   "Importer_done": "Importació completa!",
   "Importer_finishing": "Finalitza la importació.",
   "Importer_From_Description": "Importa les dades de __from__ a Rocket.Chat.",
