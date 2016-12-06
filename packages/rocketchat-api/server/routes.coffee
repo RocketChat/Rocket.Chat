@@ -310,27 +310,31 @@ RocketChat.API.v1.addRoute 'users.delete', authRequired: true,
 RocketChat.API.v1.addRoute 'users.setAvatar', authRequired: true,
 	post: ->
 		try
-			Busboy = Npm.require('busboy')
-
-			busboy = new Busboy headers: @request.headers
+			check @bodyParams,
+				avatarUrl: Match.Maybe(String)
 
 			user = Meteor.users.findOne(@userId)
 
-			Meteor.wrapAsync((callback) =>
-				busboy.on 'file', Meteor.bindEnvironment (fieldname, file, filename, encoding, mimetype) =>
-					if fieldname isnt 'image'
-						return callback(new Meteor.Error 'invalid-field')
+			if @bodyParams.avatarUrl
+				RocketChat.setUserAvatar(user, @bodyParams.avatarUrl, '', 'url')
+			else
+				Busboy = Npm.require('busboy')
+				busboy = new Busboy headers: @request.headers
+				Meteor.wrapAsync((callback) =>
+					busboy.on 'file', Meteor.bindEnvironment (fieldname, file, filename, encoding, mimetype) =>
+						if fieldname isnt 'image'
+							return callback(new Meteor.Error 'invalid-field')
 
-					imageData = []
-					file.on 'data', Meteor.bindEnvironment (data) ->
-						imageData.push data
+						imageData = []
+						file.on 'data', Meteor.bindEnvironment (data) ->
+							imageData.push data
 
-					file.on 'end', Meteor.bindEnvironment () =>
-						RocketChat.setUserAvatar(user, Buffer.concat(imageData), mimetype, 'rest')
-						callback()
+						file.on 'end', Meteor.bindEnvironment () =>
+							RocketChat.setUserAvatar(user, Buffer.concat(imageData), mimetype, 'rest')
+							callback()
 
-				@request.pipe busboy
-			)()
+					@request.pipe busboy
+				)()
 		catch e
 			return RocketChat.API.v1.failure e.name + ': ' + e.message
 
