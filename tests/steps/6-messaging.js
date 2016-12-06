@@ -1,40 +1,47 @@
 /* eslint-env mocha */
 /* eslint-disable func-names, prefer-arrow-callback */
 
-import loginPage from '../pageobjects/login.page';
-import flexTab from '../pageobjects/flex-tab.page';
 import mainContent from '../pageobjects/main-content.page';
 import sideNav from '../pageobjects/side-nav.page';
 
 //test data imports
-import {username, email, password, adminUsername, adminEmail, adminPassword} from '../test-data/user.js';
+import {username, email, password} from '../test-data/user.js';
 import {publicChannelName, privateChannelName} from '../test-data/channel.js';
 import {targetUser, imgURL} from '../test-data/interactions.js';
 import {checkIfUserIsValid, publicChannelCreated, privateChannelCreated, directMessageCreated, setPublicChannelCreated, setPrivateChannelCreated, setDirectMessageCreated} from '../test-data/checks';
-import {username, email, password} from '../test-data/user.js';
+
 
 //Test data
 const message = 'message from '+username;
+var currentTest = 'none';
 
 function messagingTest() {
 	describe('Normal message', ()=> {
 		it('send a message', () => {
 			mainContent.sendMessage(message);
 		});
+
 		it('should show the last message', () => {
 			mainContent.lastMessage.isVisible().should.be.true;
 		});
 
-		it('the last message should be from the loged user', () => {
-			mainContent.lastMessageUser.getText().should.equal(username);
-		});
+		if (!currentTest === 'direct') {
+			it('the last message should be from the loged user', () => {
+				mainContent.lastMessageUser.getText().should.equal(username);
+			});
+		}
 
-		it('should not show the Admin tag', () => {
-			mainContent.lastMessageUserTag.isVisible().should.be.false;
-		});
+		if (currentTest === 'general') {
+			it('should not show the Admin tag', () => {
+				mainContent.lastMessageUserTag.isVisible().should.be.false;
+			});
+		}
 	});
 
 	describe('fileUpload', ()=> {
+		after(() => {
+			browser.pause(3000);
+		});
 		it('send a attachment', () => {
 			mainContent.fileUpload(imgURL);
 		});
@@ -70,9 +77,10 @@ function messageActionsTest() {
 		it('send a message to be tested', () => {
 			mainContent.sendMessage('Message for Message Actions Tests');
 		});
-		describe('Message Actuins Render', ()=> {
+		describe('Message Actions Render', ()=> {
 			before(() => {
 				mainContent.openMessageActionMenu();
+				browser.pause(1000);
 			});
 
 			after(() => {
@@ -119,17 +127,19 @@ function messageActionsTest() {
 				mainContent.messageClose.isVisible().should.be.true;
 			});
 
-			it('should not show the pin action', () => {
-				mainContent.messagePin.isVisible().should.be.false;
-			});
+			if (currentTest === 'general') {
+				it('should not show the pin action', () => {
+					mainContent.messagePin.isVisible().should.be.false;
+				});
+			}
 
 			it('should not show the mark as unread action', () => {
 				mainContent.messageUnread.isVisible().should.be.false;
 			});
 		});
 
-		describe('Message Actions usage'() => {
-			describe('Message Reply'() => {
+		describe('Message Actions usage', () => {
+			describe('Message Reply', () => {
 				before(() => {
 					mainContent.openMessageActionMenu();
 				});
@@ -146,7 +156,8 @@ function messageActionsTest() {
 
 			describe('Message edit', () => {
 				before(() => {
-					mainContent.sendMessage('Message for Message edit Tests ');
+					mainContent.addTextToInput('Message for Message edit Tests ');
+					mainContent.sendBtn.click();
 					mainContent.openMessageActionMenu();
 				});
 
@@ -175,6 +186,7 @@ function messageActionsTest() {
 
 			describe('Message quote', () => {
 				before(() => {
+					browser.pause(2000);
 					mainContent.sendMessage('Message for quote Tests');
 					mainContent.openMessageActionMenu();
 				});
@@ -200,7 +212,7 @@ function messageActionsTest() {
 				});
 			});
 
-			describe('Message star', () => {
+			describe('Message copy', () => {
 				before(() => {
 					mainContent.sendMessage('Message for copy Tests');
 					mainContent.openMessageActionMenu();
@@ -211,11 +223,12 @@ function messageActionsTest() {
 				});
 			});
 
-			describe('Message star', () => {
+			describe('Message Permalink', () => {
 				before(() => {
 					mainContent.sendMessage('Message for permalink Tests');
 					mainContent.openMessageActionMenu();
 				});
+
 
 				it('permalink the message', () => {
 					mainContent.selectAction('permalink');
@@ -227,16 +240,23 @@ function messageActionsTest() {
 
 describe('Messaging in different channels', () => {
 	before(()=>{
+		browser.pause(3000);
 		checkIfUserIsValid(username, email, password);
 		sideNav.getChannelFromList('general').waitForExist(5000);
 		sideNav.openChannel('general');
 	});
+	after(()=>{
+		browser.pause(3000);
+	});
+
 
 	describe('Messaging in GENERAL channel', () => {
 		before(()=>{
 			sideNav.openChannel('general');
+			currentTest = 'general';
 		});
 		messagingTest();
+		messageActionsTest();
 	});
 
 	describe('Messaging in created public channel', () => {
@@ -246,9 +266,11 @@ describe('Messaging in different channels', () => {
 				setPublicChannelCreated(true);
 				console.log('	public channel not found, creating one...');
 			}
+			currentTest = 'public';
 			sideNav.openChannel(publicChannelName);
 		});
 		messagingTest();
+		messageActionsTest();
 	});
 
 	describe('Messaging in created private channel', () => {
@@ -258,18 +280,21 @@ describe('Messaging in different channels', () => {
 				setPrivateChannelCreated(true);
 				console.log('	private channel not found, creating one...');
 			}
+			currentTest = 'private';
 			sideNav.openChannel(privateChannelName);
 		});
 		messagingTest();
+		messageActionsTest();
 	});
 
 	describe('Messaging in created direct message', () => {
 		before(()=>{
-			if (!publicChannelCreated) {
+			if (!directMessageCreated) {
 				sideNav.startDirectMessage(targetUser);
 				setDirectMessageCreated(true);
 				console.log('	Direct message not found, creating one...');
 			}
+			currentTest = 'direct';
 			sideNav.openChannel(publicChannelName);
 		});
 		messagingTest();
