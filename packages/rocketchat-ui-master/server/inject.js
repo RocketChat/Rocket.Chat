@@ -21,6 +21,7 @@ Inject.rawBody('page-loading', `
 	display: inline-block;
 	-webkit-animation: loading-bouncedelay 1.4s infinite ease-in-out both;
 	animation: loading-bouncedelay 1.4s infinite ease-in-out both;
+	background-color: rgba(255,255,255,0.8);
 }
 .loading .bounce1 {
 	-webkit-animation-delay: -0.32s;
@@ -50,10 +51,6 @@ Inject.rawBody('page-loading', `
 
 RocketChat.settings.get('theme-color-primary-background-color', function(key, value = '#04436a') {
 	Inject.rawHead(key, `<style>body { background-color: ${value};}</style>`);
-});
-
-RocketChat.settings.get('theme-color-component-color', function(key, value = '#cccccc') {
-	Inject.rawHead(key, `<style>.loading > div { background-color: ${value};}</style>`);
 });
 
 RocketChat.settings.get('Accounts_ForgetUserSessionOnWindowClose', function(key, value) {
