@@ -4,6 +4,30 @@ if (!Accounts.saml) {
 	Accounts.saml = {};
 }
 
+// Override the standard logout behaviour.
+//
+// If we find a samlProvider, and we are using single
+// logout we will initiate logout from rocketchat via saml.
+// If not using single logout, we just do the standard logout.
+//
+// TODO: This may need some work as it is not clear if we are really
+// logging out of the idp when doing the standard logout.
+
+var MeteorLogout = Meteor.logout;
+
+Meteor.logout = function() {
+	var samlService = ServiceConfiguration.configurations.findOne({service: 'saml'});
+	if (samlService) {
+		var provider = samlService.clientConfig && samlService.clientConfig.provider;
+		if (provider) {
+			if (samlService.idpSLORedirectURL) {
+				return Meteor.logoutWithSaml({ provider: provider });
+			}
+		}
+	}
+	return MeteorLogout.apply(Meteor, arguments);
+};
+
 var openCenteredPopup = function(url, width, height) {
 	var newwindow;
 
@@ -74,6 +98,7 @@ Accounts.saml.initiateLogin = function(options, callback, dimensions) {
 	}, 100);
 };
 
+
 Meteor.loginWithSaml = function(options, callback) {
 	options = options || {};
 	var credentialToken = Random.id();
@@ -93,7 +118,6 @@ Meteor.loginWithSaml = function(options, callback) {
 Meteor.logoutWithSaml = function(options/*, callback*/) {
 	//Accounts.saml.idpInitiatedSLO(options, callback);
 	Meteor.call('samlLogout', options.provider, function(err, result) {
-		console.log('LOC ' + result);
 		// A nasty bounce: 'result' has the SAML LogoutRequest but we need a proper 302 to redirected from the server.
 		//window.location.replace(Meteor.absoluteUrl('_saml/sloRedirect/' + options.provider + '/?redirect='+result));
 		window.location.replace(Meteor.absoluteUrl('_saml/sloRedirect/' + options.provider + '/?redirect=' + encodeURIComponent(result)));
