@@ -79,13 +79,6 @@ RocketChat.API.v1.addRoute 'chat.postMessage', authRequired: true,
 
 
 
-# List all users
-RocketChat.API.v1.addRoute 'users.list', authRequired: true,
-	get: ->
-		if RocketChat.authz.hasRole(@userId, 'admin') is false
-			return RocketChat.API.v1.unauthorized()
-
-		return { users: RocketChat.models.Users.find().fetch() }
 
 # Create user
 RocketChat.API.v1.addRoute 'users.create', authRequired: true,
@@ -162,18 +155,9 @@ RocketChat.API.v1.addRoute 'user.update', authRequired: true,
 		catch e
 			return RocketChat.API.v1.failure e.name + ': ' + e.message
 
-# Get User Information
-RocketChat.API.v1.addRoute 'user.info', authRequired: true,
-	post: ->
-		if RocketChat.authz.hasRole(@userId, 'admin') is false
-			return RocketChat.API.v1.unauthorized()
 
-		return { user: RocketChat.models.Users.findOneByUsername @bodyParams.name }
 
-# Get User Presence
-RocketChat.API.v1.addRoute 'user.getpresence', authRequired: true,
-	post: ->
-		return { user: RocketChat.models.Users.findOne( { username: @bodyParams.name} , {fields: {status: 1}} ) }
+
 
 # Delete User
 RocketChat.API.v1.addRoute 'users.delete', authRequired: true,
