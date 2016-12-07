@@ -3,9 +3,12 @@
 const logger = new Logger('CustomOAuth');
 
 const Services = {};
+const BeforeUpdateOrCreateUserFromExternalService = [];
 
 export class CustomOAuth {
 	constructor(name, options) {
+		logger.debug('Init CustomOAuth', name, options);
+
 		this.name = name;
 		if (!Match.test(this.name, String)) {
 			throw new Meteor.Error('CustomOAuth: Name is required and must be String');
@@ -27,6 +30,7 @@ export class CustomOAuth {
 
 		Accounts.oauth.registerService(this.name);
 		this.registerService();
+		this.addHookToProcessUser();
 	}
 
 	configure(options) {
@@ -50,6 +54,8 @@ export class CustomOAuth {
 		this.tokenPath = options.tokenPath;
 		this.identityPath = options.identityPath;
 		this.tokenSentVia = options.tokenSentVia;
+		this.usernameField = (options.usernameField || '').trim();
+		this.mergeUsers = options.mergeUsers;
 
 		if (!/^https?:\/\/.+/.test(this.tokenPath)) {
 			this.tokenPath = this.serverURL + this.tokenPath;
@@ -211,4 +217,46 @@ export class CustomOAuth {
 	retrieveCredential(credentialToken, credentialSecret) {
 		return OAuth.retrieveCredential(credentialToken, credentialSecret);
 	}
+
+	addHookToProcessUser() {
+		BeforeUpdateOrCreateUserFromExternalService.push((serviceName, serviceData/*, options*/) => {
+			if (serviceName !== this.name) {
+				return;
+			}
+
+			if (this.usernameField) {
+				if (!serviceData[this.usernameField]) {
+					return logger.error(`Username field "${this.usernameField}" not found in data`, serviceData);
+				}
+
+				const user = RocketChat.models.Users.findOneByUsername(serviceData[this.usernameField]);
+				if (!user) {
+					return;
+				}
+
+				if (this.mergeUsers !== true) {
+					throw new Meteor.Error('CustomOAuth', `User with username ${user.username} already exists`);
+				}
+
+				const serviceIdKey = `services.${serviceName}.id`;
+				const update = {
+					$set: {
+						[serviceIdKey]: serviceData.id
+					}
+				};
+
+				RocketChat.models.Users.update({_id: user._id, update});
+			}
+		});
+	}
 }
+
+
+const updateOrCreateUserFromExternalService = Accounts.updateOrCreateUserFromExternalService;
+Accounts.updateOrCreateUserFromExternalService = function(/*serviceName, serviceData, options*/) {
+	for (const hook of BeforeUpdateOrCreateUserFromExternalService) {
+		hook.apply(this, arguments);
+	}
+
+	return updateOrCreateUserFromExternalService.apply(this, arguments);
+};
