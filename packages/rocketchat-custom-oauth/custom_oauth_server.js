@@ -225,11 +225,23 @@ export class CustomOAuth {
 			}
 
 			if (this.usernameField) {
-				if (!serviceData[this.usernameField]) {
-					return logger.error(`Username field "${this.usernameField}" not found in data`, serviceData);
+				let username = '';
+
+				if (this.usernameField.indexOf('#{') > -1) {
+					username = this.usernameField.replace(/#{(.+?)}/g, function(match, field) {
+						if (!serviceData[field]) {
+							throw new Meteor.Error(`Username template item "${field}" not found in data`, serviceData);
+						}
+						return serviceData[field];
+					});
+				} else {
+					username = serviceData[this.usernameField];
+					if (!username) {
+						return logger.error(`Username field "${this.usernameField}" not found in data`, serviceData);
+					}
 				}
 
-				const user = RocketChat.models.Users.findOneByUsername(serviceData[this.usernameField]);
+				const user = RocketChat.models.Users.findOneByUsername(username);
 				if (!user) {
 					return;
 				}
