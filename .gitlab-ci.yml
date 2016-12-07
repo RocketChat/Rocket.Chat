@@ -9,7 +9,7 @@ build_development:
     AWS_REGION: us-west-2
     AWS_DEFAULT_REGION: us-west-2
   script:
-    - apt-get update && apt-get install python-pip
+    - apt-get update && apt-get install -y python-pip
     - pip install awscli
     - if [ ! -e "$HOME/.meteor/meteor" ]; then curl https://install.meteor.com | sed s/--progress-bar/-sL/g | /bin/sh; fi
     - export PATH="$HOME/.meteor:$PATH" && scripts/build.sh
