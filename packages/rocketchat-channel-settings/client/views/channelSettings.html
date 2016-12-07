@@ -63,10 +63,22 @@
 											{{/if}}
 
 											{{#if editing $key}}
-												<button type="button" class="button cancel">{{_ "Cancel"}}</button>
-												<button type="button" class="button primary save">{{_ "Save"}}</button>
+												<div class="buttons">
+													{{#unless $eq $value.type 'boolean'}}
+														<button type="button" class="button cancel">
+															<i class="icon-cancel"></i>
+														</button>
+													{{/unless}}
+													<button type="button" class="button primary save">
+														<i class="icon-ok"></i>
+													</button>
+												</div>
 											{{else}}
-												<span>{{#if $value.canEdit room}} <i class="icon-pencil" data-edit="{{$key}}"></i>{{/if}}</span>
+												{{#if $value.canEdit room}}
+													<button type="button" class="button edit">
+														<i class="icon-pencil" data-edit="{{$key}}"></i>
+													</button>
+												{{/if}}
 											{{/if}}
 										</div>
 									</li>

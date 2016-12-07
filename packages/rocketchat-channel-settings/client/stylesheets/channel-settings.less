@@ -3,30 +3,51 @@
 		ul {
 			li {
 				margin-bottom: 20px;
-			}
-		}
-
-		form {
-			label {
-				display: block;
-				font-weight: bold;
-				margin-bottom: 5px;
-			}
-
-			div span {
-				font-size: 14px;
-				i.icon-pencil {
-					font-size: 12px;
-					margin-left: 3px;
+				> div {
+					position: relative;
+					font-size: 0;
 				}
 			}
 		}
-
+		label {
+			display: block;
+			font-weight: bold;
+			margin-bottom: 5px;
+			font-size: 14px;
+		}
+		.current-setting {
+			font-size: 14px;
+			display: inline-block;
+			width: calc(~"100% - 38px");
+		}
+		.icon-pencil {
+			display: inline-block;
+			font-size: 12px;
+			width: 20px;
+			vertical-align: top;
+		}
+		.editing {
+			padding-right: 80px;
+			font-size: 14px;
+		}
+		.buttons {
+			position: absolute;
+			top: 1px;
+			bottom: 1px;
+			right: 1px;
+			border-radius: 0 4px 4px 0;
+			background: black;
+			.button {
+				padding: 8px;
+			}
+		}
+		.button.edit {
+			padding: 8px;
+		}
 		.submit {
 			margin-top: 30px;
 			text-align: center;
 		}
-
 		[data-edit] {
 			cursor: pointer;
 		}
