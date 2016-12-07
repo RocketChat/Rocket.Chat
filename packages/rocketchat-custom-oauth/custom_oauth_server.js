@@ -1,5 +1,7 @@
 /*globals OAuth*/
 
+const logger = new Logger('CustomOAuth');
+
 const Services = {};
 
 export class CustomOAuth {
@@ -115,11 +117,17 @@ export class CustomOAuth {
 				params: params
 			});
 
+			let data;
+
 			if (response.data) {
-				return response.data;
+				data = response.data;
 			} else {
-				return JSON.parse(response.content);
+				data = JSON.parse(response.content);
 			}
+
+			logger.debug('Identity response', JSON.stringify(data, null, 2));
+
+			return data;
 		} catch (err) {
 			const error = new Error(`Failed to fetch identity from ${this.name} at ${this.identityPath}. ${err.message}`);
 			throw _.extend(error, {response: err.response});
