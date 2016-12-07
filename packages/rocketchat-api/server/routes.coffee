@@ -67,126 +67,17 @@ RocketChat.API.v1.addRoute 'chat.postMessage', authRequired: true,
 		catch e
 			return RocketChat.API.v1.failure e.error
 
-# Set Channel Topic
-RocketChat.API.v1.addRoute 'channels.setTopic', authRequired: true,
-	post: ->
-		if not @bodyParams.channel?
-			return RocketChat.API.v1.failure 'Body param "channel" is required'
-
-		if not @bodyParams.topic?
-			return RocketChat.API.v1.failure 'Body param "topic" is required'
-
-		unless RocketChat.authz.hasPermission(@userId, 'edit-room', @bodyParams.channel)
-			return RocketChat.API.v1.unauthorized()
-
-		if not RocketChat.saveRoomTopic(@bodyParams.channel, @bodyParams.topic, @user)
-			return RocketChat.API.v1.failure 'invalid_channel'
-
-		return RocketChat.API.v1.success
-			topic: @bodyParams.topic
-
-
-# Create Channel
-RocketChat.API.v1.addRoute 'channels.create', authRequired: true,
-	post: ->
-		if not @bodyParams.name?
-			return RocketChat.API.v1.failure 'Body param "name" is required'
-
-		if not RocketChat.authz.hasPermission(@userId, 'create-c')
-			return RocketChat.API.v1.unauthorized()
-
-		id = undefined
-		try
-			Meteor.runAsUser this.userId, =>
-				id = Meteor.call 'createChannel', @bodyParams.name, []
-		catch e
-			return RocketChat.API.v1.failure e.name + ': ' + e.message
-
-		return RocketChat.API.v1.success
-			channel: RocketChat.models.Rooms.findOneById(id.rid)
-
-RocketChat.API.v1.addRoute 'channels.history', authRequired: true,
-	get: ->
-		if not @queryParams.roomId?
-			return RocketChat.API.v1.failure 'Query parameter "roomId" is required.'
-
-		rid = @queryParams.roomId
-
-		latestDate = new Date
-		if @queryParams.latest?
-			latestDate = new Date(@queryParams.latest)
-
-		oldestDate = undefined
-		if @queryParams.oldest?
-			oldestDate = new Date(@queryParams.oldest)
-
-		inclusive = false
-		if @queryParams.inclusive?
-			inclusive = @queryParams.inclusive
-
-		count = 20
-		if @queryParams.count?
-			count = parseInt @queryParams.count
-
-		unreads = false
-		if @queryParams.unreads?
-			unreads = @queryParams.unreads
-
-		result = {}
-
-		try
-			Meteor.runAsUser this.userId, =>
-				result = Meteor.call 'getChannelHistory', { rid, latest: latestDate, oldest: oldestDate, inclusive, count, unreads }
-		catch e
-			return RocketChat.API.v1.failure e.name + ': ' + e.message
-
-		return RocketChat.API.v1.success
-			messages: result.messages
-
-RocketChat.API.v1.addRoute 'channels.cleanHistory', authRequired: true,
-	post: ->
-		if not @bodyParams.roomId?
-			return RocketChat.API.v1.failure 'Body parameter "roomId" is required.'
-
-		roomId = @bodyParams.roomId
-
-		if not @bodyParams.latest?
-			return RocketChat.API.v1.failure 'Body parameter "latest" is required.'
-
-		if not @bodyParams.oldest?
-			return RocketChat.API.v1.failure 'Body parameter "oldest" is required.'
-
-		latest = new Date(@bodyParams.latest)
-		oldest = new Date(@bodyParams.oldest)
-
-		inclusive = false
-		if @bodyParams.inclusive?
-			inclusive = @bodyParams.inclusive
-
-		try
-			Meteor.runAsUser this.userId, =>
-				Meteor.call 'cleanChannelHistory', { roomId, latest, oldest, inclusive }
-		catch e
-			return RocketChat.API.v1.failure e.name + ': ' + e.message
-
-		return RocketChat.API.v1.success
-			success: true
 
 
 
-# Add All Users to Channel
-RocketChat.API.v1.addRoute 'channel.addall', authRequired: true,
-	post: ->
 
-		id = undefined
-		try
-			Meteor.runAsUser this.userId, =>
-				id = Meteor.call 'addAllUserToRoom', @bodyParams.roomId, []
-		catch e
-			return RocketChat.API.v1.failure e.name + ': ' + e.message
 
-		return RocketChat.API.v1.success
-			channel: RocketChat.models.Rooms.findOneById(@bodyParams.roomId)
+
+
+
+
+
+
 
 # List all users
 RocketChat.API.v1.addRoute 'users.list', authRequired: true,

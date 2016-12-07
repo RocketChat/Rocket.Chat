@@ -49,7 +49,7 @@ RocketChat.API.v1.addRoute('groups.close', { authRequired: true }, {
 		}
 
 		if (!findResult.open) {
-			return RocketChat.API.v1.failure(`The private group, ${this.bodyParams.name}, is already closed to the sender`);
+			return RocketChat.API.v1.failure(`The private group with an id "${this.bodyParams.roomId}" is already closed to the sender`);
 		}
 
 		try {
