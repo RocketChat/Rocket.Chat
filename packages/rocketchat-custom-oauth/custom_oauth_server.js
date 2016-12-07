@@ -218,6 +218,26 @@ export class CustomOAuth {
 		return OAuth.retrieveCredential(credentialToken, credentialSecret);
 	}
 
+	getUsername(data) {
+		let username = '';
+
+		if (this.usernameField.indexOf('#{') > -1) {
+			username = this.usernameField.replace(/#{(.+?)}/g, function(match, field) {
+				if (!data[field]) {
+					throw new Meteor.Error(`Username template item "${field}" not found in data`, data);
+				}
+				return data[field];
+			});
+		} else {
+			username = data[this.usernameField];
+			if (!username) {
+				throw new Meteor.Error(`Username field "${this.usernameField}" not found in data`, data);
+			}
+		}
+
+		return username;
+	}
+
 	addHookToProcessUser() {
 		BeforeUpdateOrCreateUserFromExternalService.push((serviceName, serviceData/*, options*/) => {
 			if (serviceName !== this.name) {
@@ -225,21 +245,7 @@ export class CustomOAuth {
 			}
 
 			if (this.usernameField) {
-				let username = '';
-
-				if (this.usernameField.indexOf('#{') > -1) {
-					username = this.usernameField.replace(/#{(.+?)}/g, function(match, field) {
-						if (!serviceData[field]) {
-							throw new Meteor.Error(`Username template item "${field}" not found in data`, serviceData);
-						}
-						return serviceData[field];
-					});
-				} else {
-					username = serviceData[this.usernameField];
-					if (!username) {
-						return logger.error(`Username field "${this.usernameField}" not found in data`, serviceData);
-					}
-				}
+				const username = this.getUsername(serviceData);
 
 				const user = RocketChat.models.Users.findOneByUsername(username);
 				if (!user) {
@@ -260,6 +266,19 @@ export class CustomOAuth {
 				RocketChat.models.Users.update({_id: user._id}, update);
 			}
 		});
+
+		Accounts.validateNewUser((user) => {
+			if (!user.services || !user.services[this.name] || !user.services[this.name].id) {
+				return true;
+			}
+
+			if (this.usernameField) {
+				user.username = this.getUsername(user.services[this.name]);
+			}
+
+			return true;
+		});
+
 	}
 }
 
