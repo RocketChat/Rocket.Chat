@@ -1,0 +1,31 @@
+stages:
+  - build
+  - deploy
+
+build_development:
+  image: node:latest
+  stage: build
+  variables:
+    AWS_REGION: us-west-2
+    AWS_DEFAULT_REGION: us-west-2
+  script:
+    - apt-get update && apt-get install python-pip
+    - pip install awscli
+    - if [ ! -e "$HOME/.meteor/meteor" ]; then curl https://install.meteor.com | sed s/--progress-bar/-sL/g | /bin/sh; fi
+    - export PATH="$HOME/.meteor:$PATH" && scripts/build.sh
+    - aws s3 cp dist/lookamo.chat.tar.gz s3://lookamo-maintenance-dev/lookamo.chat-dist/lookamo.chat.tar.gz
+  only:
+    - master
+
+deploy_development:
+  image: python:latest
+  environment: development
+  stage: deploy
+  variables:
+    AWS_REGION: sa-east-1
+    AWS_DEFAULT_REGION: us-east-1
+  script:
+    - pip install awscli
+    - scripts/deploy.sh 7b7a33ea-84d1-4100-b5db-770d87c7db24 03a4fd55-b34c-4cfc-acc9-53726b126387
+  only:
+    - master
