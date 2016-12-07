@@ -257,7 +257,7 @@ export class CustomOAuth {
 					}
 				};
 
-				RocketChat.models.Users.update({_id: user._id, update});
+				RocketChat.models.Users.update({_id: user._id}, update);
 			}
 		});
 	}
