@@ -122,6 +122,18 @@ RocketChat.saveUser = function(userId, userData) {
 		return _id;
 	} else {
 		// update user
+		if (userData.username) {
+			RocketChat.setUsername(userData._id, userData.username);
+		}
+
+		if (userData.email) {
+			RocketChat.setEmail(userData._id, userData.email);
+		}
+
+		if (userData.password && userData.password.trim() && RocketChat.authz.hasPermission(userId, 'edit-other-user-password')) {
+			Accounts.setPassword(userData._id, userData.password.trim());
+		}
+
 		const updateUser = {
 			$set: {}
 		};
@@ -135,24 +147,10 @@ RocketChat.saveUser = function(userId, userData) {
 		}
 
 		if (userData.verified) {
-			updateUser.$set['emails.0.verified'] = true;
-		} else {
-			updateUser.$set['emails.0.verified'] = false;
+			updateUser.$set['emails.0.verified'] = userData.verified;
 		}
 
 		Meteor.users.update({ _id: userData._id }, updateUser);
-
-		if (userData.username) {
-			RocketChat.setUsername(userData._id, userData.username);
-		}
-
-		if (userData.email) {
-			RocketChat.setEmail(userData._id, userData.email);
-		}
-
-		if (userData.password && userData.password.trim() && RocketChat.authz.hasPermission(userId, 'edit-other-user-password')) {
-			Accounts.setPassword(userData._id, userData.password.trim());
-		}
 
 		return true;
 	}

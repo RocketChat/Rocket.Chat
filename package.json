@@ -1,7 +1,7 @@
 {
   "name": "Rocket.Chat",
   "description": "The Ultimate Open Source WebChat Platform",
-  "version": "0.47.0-develop",
+  "version": "0.48.0-develop",
   "author": {
     "name": "Rocket.Chat",
     "url": "https://rocket.chat/"
@@ -46,8 +46,8 @@
     "lint": "eslint .",
     "test": "node .scripts/start.js",
     "deploy": "npm run build && pm2 startOrRestart pm2.json",
-    "chimp-watch": "chimp --ddp=http://localhost:3000 --watch --mocha --path=tests/steps --browser=chromedriver",
-    "chimp-test": "chimp --ddp=http://localhost:3000 --mocha --path=tests/steps --mochaSlow=0 --browser=chromedriver"
+    "chimp-watch": "chimp --ddp=http://localhost:3000 --watch --mocha --path=tests/steps",
+    "chimp-test": "chimp --ddp=http://localhost:3000 --mocha --path=tests/steps --mochaSlow=0"
   },
   "license": "MIT",
   "repository": {
@@ -59,14 +59,14 @@
     "email": "support@rocket.chat"
   },
   "devDependencies": {
-    "chimp": "^0.42.0",
+    "chimp": "^0.44.0",
     "eslint": "^3.11.1"
   },
   "dependencies": {
     "babel-runtime": "^6.18.0",
-    "bcrypt": "^0.8.7",
+    "bcrypt": "^1.0.0",
     "jquery": "^2.1.0",
-    "moment": "^2.17.0",
+    "moment": "^2.17.1",
     "moment-timezone": "^0.5.10",
     "toastr": "^2.1.2"
   }
