@@ -251,7 +251,7 @@ describe('Messaging in different channels', () => {
 		sideNav.openChannel('general');
 	});
 	after(()=>{
-		browser.pause(3000);
+		browser.pause(1000);
 	});
 
 
