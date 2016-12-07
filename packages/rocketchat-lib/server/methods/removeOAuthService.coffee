@@ -24,3 +24,5 @@ Meteor.methods
 		RocketChat.settings.removeById "Accounts_OAuth_Custom-#{name}-button_label_color"
 		RocketChat.settings.removeById "Accounts_OAuth_Custom-#{name}-button_color"
 		RocketChat.settings.removeById "Accounts_OAuth_Custom-#{name}-login_style"
+		RocketChat.settings.removeById "Accounts_OAuth_Custom-#{name}-username_field"
+		RocketChat.settings.removeById "Accounts_OAuth_Custom-#{name}-merge_users"
