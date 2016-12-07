@@ -141,7 +141,7 @@ RocketChat.API.v1.addRoute 'channels.history', authRequired: true,
 			return RocketChat.API.v1.failure e.name + ': ' + e.message
 
 		return RocketChat.API.v1.success
-			result: result
+			messages: result.messages
 
 RocketChat.API.v1.addRoute 'channels.cleanHistory', authRequired: true,
 	post: ->
@@ -172,11 +172,7 @@ RocketChat.API.v1.addRoute 'channels.cleanHistory', authRequired: true,
 		return RocketChat.API.v1.success
 			success: true
 
-# List Private Groups a user has access to
-RocketChat.API.v1.addRoute 'groups.list', authRequired: true,
-	get: ->
-		roomIds = _.pluck RocketChat.models.Subscriptions.findByTypeAndUserId('p', @userId).fetch(), 'rid'
-		return { groups: RocketChat.models.Rooms.findByIds(roomIds).fetch() }
+
 
 # Add All Users to Channel
 RocketChat.API.v1.addRoute 'channel.addall', authRequired: true,
@@ -340,25 +336,4 @@ RocketChat.API.v1.addRoute 'users.setAvatar', authRequired: true,
 
 		return RocketChat.API.v1.success()
 
-# Create Private Group
-RocketChat.API.v1.addRoute 'groups.create', authRequired: true,
-	post: ->
-		if not @bodyParams.name?
-			return RocketChat.API.v1.failure 'Body param "name" is required'
 
-		if not RocketChat.authz.hasPermission(@userId, 'create-p')
-			return RocketChat.API.v1.unauthorized()
-
-		id = undefined
-		try
-			if not @bodyParams.members?
-				Meteor.runAsUser this.userId, =>
-					id = Meteor.call 'createPrivateGroup', @bodyParams.name, []
-			else
-				Meteor.runAsUser this.userId, =>
-					id = Meteor.call 'createPrivateGroup', @bodyParams.name, @bodyParams.members, []
-		catch e
-			return RocketChat.API.v1.failure e.name + ': ' + e.message
-
-		return RocketChat.API.v1.success
-			group: RocketChat.models.Rooms.findOneById(id.rid)
