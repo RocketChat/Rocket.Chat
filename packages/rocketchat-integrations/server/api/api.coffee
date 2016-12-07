@@ -50,9 +50,6 @@ Api = new Restivus
 	apiPath: 'hooks/'
 	auth:
 		user: ->
-			if @bodyParams?.payload?
-				@bodyParams = JSON.parse @bodyParams.payload
-
 			@integration = RocketChat.models.Integrations.findOne
 				_id: @request.params.integrationId
 				token: decodeURIComponent @request.params.token
