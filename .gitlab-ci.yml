@@ -15,7 +15,7 @@ build_development:
     - export PATH="$HOME/.meteor:$PATH" && scripts/build.sh
     - aws s3 cp dist/lookamo.chat.tar.gz s3://lookamo-maintenance-dev/lookamo.chat-dist/lookamo.chat.tar.gz
   only:
-    - master
+    - lookamo
 
 deploy_development:
   image: python:latest
@@ -28,4 +28,4 @@ deploy_development:
     - pip install awscli
     - scripts/deploy.sh 7b7a33ea-84d1-4100-b5db-770d87c7db24 03a4fd55-b34c-4cfc-acc9-53726b126387
   only:
-    - master
+    - lookamo
