@@ -252,6 +252,7 @@
   "CDN_PREFIX": "CDN Prefix",
   "Certificates_and_Keys": "Certificates and Keys",
   "Changing_email": "Changing email",
+  "Change_Room_Type": "Changing the Room Type",
   "channel": "channel",
   "Channel": "Channel",
   "Channel_already_exist": "The channel '#%s' already exists.",
