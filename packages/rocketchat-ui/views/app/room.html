@@ -86,11 +86,7 @@
 						{{#if canPreview}}
 							{{#if hasMore}}
 								<li class="load-more">
-									{{#if isLoading}}
-										<div class="load-more-loading">{{_ "Loading_more_from_history"}}...</div>
-									{{else}}
-										<button>{{_ "Has_more"}}...</button>
-									{{/if}}
+									{{> loading dark=true}}
 								</li>
 							{{else}}
 								<li class="start">
@@ -103,11 +99,7 @@
 						{{/each}}
 						{{#if hasMoreNext}}
 							<li class="load-more">
-								{{#if isLoading}}
-									<div class="load-more-loading">{{_ "Loading_more_from_history"}}...</div>
-								{{else}}
-									<button>{{_ "Has_more"}}...</button>
-								{{/if}}
+								{{> loading dark=true}}
 							</li>
 						{{/if}}
 					</ul>
