@@ -13,7 +13,7 @@ function findChannelById(roomId) {
 	return room;
 }
 
-RocketChat.API.v1.addRoute('channel.addall', { authRequired: true }, {
+RocketChat.API.v1.addRoute('channels.addAll', { authRequired: true }, {
 	post: function() {
 		const findResult = findChannelById(this.bodyParams.roomId);
 
@@ -330,6 +330,15 @@ RocketChat.API.v1.addRoute('channels.list', { authRequired: true }, {
 	get: function() {
 		return RocketChat.API.v1.success({
 			channels: RocketChat.models.Rooms.findByType('c').fetch()
+		});
+	}
+});
+
+RocketChat.API.v1.addRoute('channels.list.joined', { authRequired: true }, {
+	get: function() {
+		const roomIds = _.pluck(RocketChat.models.Subscriptions.findByTypeAndUserId('p', this.userId).fetch(), 'rid');
+		return RocketChat.API.v1.success({
+			channels: RocketChat.models.Rooms.findByIds(roomIds).fetch()
 		});
 	}
 });
