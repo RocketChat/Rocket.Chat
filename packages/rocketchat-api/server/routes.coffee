@@ -237,9 +237,6 @@ RocketChat.API.v1.addRoute 'users.create', authRequired: true,
 
 			user = RocketChat.models.Users.findOneById(newUserId)
 
-			if typeof @bodyParams.joinDefaultChannels is 'undefined' or @bodyParams.joinDefaultChannels
-				RocketChat.addUserToDefaultChannels(user)
-
 			return RocketChat.API.v1.success
 				user: user
 		catch e

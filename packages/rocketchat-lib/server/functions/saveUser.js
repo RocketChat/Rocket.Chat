@@ -51,7 +51,8 @@ RocketChat.saveUser = function(userId, userData) {
 		// insert user
 		const createUser = {
 			username: userData.username,
-			password: userData.password
+			password: userData.password,
+			joinDefaultChannels: userData.joinDefaultChannels
 		};
 		if (userData.email) {
 			createUser.email = userData.email;
@@ -75,12 +76,6 @@ RocketChat.saveUser = function(userId, userData) {
 		}
 
 		Meteor.users.update({ _id: _id }, updateUser);
-
-		if (userData.joinDefaultChannels) {
-			Meteor.runAsUser(_id, () => {
-				Meteor.call('joinDefaultChannels');
-			});
-		}
 
 		if (userData.sendWelcomeEmail) {
 			const header = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Header') || '');
