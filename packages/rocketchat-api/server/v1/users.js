@@ -138,9 +138,13 @@ RocketChat.API.v1.addRoute('users.list', { authRequired: true }, {
 RocketChat.API.v1.addRoute('users.setAvatar', { authRequired: true }, {
 	post: function() {
 		try {
-			check(this.bodyParams, { avatarUrl: Match.Maybe(String) });
+			check(this.bodyParams, { avatarUrl: Match.Maybe(String), userId: Match.Maybe(String) });
 
-			const user = Meteor.users.findOne(this.userId);
+			if (typeof this.bodyParams.userId !== 'undefined' && this.userId !== this.bodyParams.userId && !RocketChat.authz.hasPermission(this.userId, 'edit-other-user-info')) {
+				return RocketChat.API.v1.unauthorized();
+			}
+
+			const user = Meteor.users.findOne(this.bodyParams.userId ? this.bodyParams.userId : this.userId);
 
 			if (this.bodyParams.avatarUrl) {
 				RocketChat.setUserAvatar(user, this.bodyParams.avatarUrl, '', 'url');
