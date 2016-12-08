@@ -9,8 +9,7 @@ import preferencesMainContent from '../pageobjects/preferences-main-content.page
 import {username, password, email} from '../test-data/user.js';
 import {imgURL} from '../test-data/interactions.js';
 
-import {publicChannelName, privateChannelName} from '../test-data/channel.js';
-import {checkIfUserIsValid, publicChannelCreated, privateChannelCreated, directMessageCreated, setPublicChannelCreated, setPrivateChannelCreated, setDirectMessageCreated} from '../test-data/checks';
+import {checkIfUserIsValid} from '../test-data/checks';
 
 
 describe('user preferences', ()=> {
