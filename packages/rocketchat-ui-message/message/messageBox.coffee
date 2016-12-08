@@ -105,7 +105,7 @@ Template.messageBox.helpers
 		return RocketChat.roomTypes.getNotSubscribedTpl @_id
 
 	showSandstorm: ->
-		return Meteor.settings.public.sandstorm
+		return Meteor.settings.public.sandstorm && !Meteor.isCordova
 
 
 Template.messageBox.events
