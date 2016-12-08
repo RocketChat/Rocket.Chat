@@ -74,7 +74,7 @@ function messagingTest() {
 
 function messageActionsTest() {
 	describe('Message actions', ()=> {
-		it('send a message to be tested', () => {
+		before(() => {
 			mainContent.sendMessage('Message for Message Actions Tests');
 		});
 		describe('Message Actions Render', ()=> {

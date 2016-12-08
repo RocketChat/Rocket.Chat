@@ -21,7 +21,7 @@ export function setDirectMessageCreated(status) {
 export function checkIfUserIsValid(username, email, password) {
 	if (!sideNav.accountBoxUserName.isVisible()) {
 		//if the user is not logged in.
-		console.log('	User lot logged. logging in...');
+		console.log('	User not logged. logging in...');
 		loginPage.open();
 		loginPage.login({email, password});
 		try {

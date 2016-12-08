@@ -6,12 +6,20 @@ import mainContent from '../pageobjects/main-content.page';
 import sideNav from '../pageobjects/side-nav.page';
 import preferencesMainContent from '../pageobjects/preferences-main-content.page';
 
-import {username, password} from '../test-data/user.js';
+import {username, password, email} from '../test-data/user.js';
 import {imgURL} from '../test-data/interactions.js';
 
-describe.skip('user preferences', ()=> {
+import {publicChannelName, privateChannelName} from '../test-data/channel.js';
+import {checkIfUserIsValid, publicChannelCreated, privateChannelCreated, directMessageCreated, setPublicChannelCreated, setPrivateChannelCreated, setDirectMessageCreated} from '../test-data/checks';
 
-	it('opens the user preferences screen', () => {
+
+describe('user preferences', ()=> {
+	before(() => {
+		browser.pause(3000);
+		checkIfUserIsValid(username, email, password);
+		sideNav.getChannelFromList('general').waitForExist(5000);
+		sideNav.openChannel('general');
+
 		sideNav.accountBoxUserName.waitForVisible();
 		sideNav.accountBoxUserName.click();
 		sideNav.account.waitForVisible();

@@ -9,7 +9,7 @@ import {publicChannelName, privateChannelName} from '../test-data/channel.js';
 import {targetUser, imgURL} from '../test-data/interactions.js';
 import {checkIfUserIsValid, publicChannelCreated, privateChannelCreated, directMessageCreated, setPublicChannelCreated, setPrivateChannelCreated, setDirectMessageCreated} from '../test-data/checks';
 
-describe.only('emoji', ()=> {
+describe('emoji', ()=> {
 	before(()=>{
 		browser.pause(1000);
 		checkIfUserIsValid(username, email, password);
@@ -84,16 +84,18 @@ describe.only('emoji', ()=> {
 	describe('usage', ()=> {
 		describe('send emoji via screen', ()=> {
 			before(()=> {
+				browser.pause(300);
 				mainContent.emojiBtn.click();
 				mainContent.emojiPickerPeopleIcon.click();
 			});
 
-			it('selectz a smile emoji', ()=> {
-				mainContent.emojiSmile.click();
+			it('select a grinning emoji', ()=> {
+				mainContent.emojiGrinning.waitForVisible(5000);
+				mainContent.emojiGrinning.click();
 			});
 
 			it('the value on the message input should be the same as the emoji clicked', ()=> {
-				mainContent.messageInput.getValue().should.equal(':smile:');
+				mainContent.messageInput.getValue().should.equal(':grinning:');
 			});
 
 			it('send the emoji', ()=> {
@@ -102,7 +104,7 @@ describe.only('emoji', ()=> {
 			});
 
 			it('the value on the message should be the same as the emoji clicked', ()=> {
-				mainContent.lastMessage.getText().should.equal('😄');
+				mainContent.lastMessage.getText().should.equal('😀');
 			});
 		});
 	});
