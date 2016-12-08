@@ -6,8 +6,10 @@ if [ -d dist ]; then
   rm -rf dist
 fi &&
 npm install &&
-meteor build --headless --allow-superuser /tmp &&
-ls -Al /tmp &&
-tar --exclude=..* -czf /tmp/lookamo.com.tar.gz * .* &&
+meteor build --directory --headless --allow-superuser /tmp &&
+dir=`pwd` &&
+cd /tmp/bundle && 
+tar --exclude=..* -czf /tmp/lookamo.chat.tar.gz * .* &&
+cd $dir &&
 mkdir dist &&
-cp /tmp/lookamo.com.tar.gz dist/lookamo.com.tar.gz
+cp /tmp/lookamo.chat.tar.gz dist/lookamo.chat.tar.gz
