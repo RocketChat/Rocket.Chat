@@ -10,7 +10,7 @@ build_development:
     AWS_DEFAULT_REGION: us-west-2
   script:
     - apt-get update && apt-get install -y python unzip wget
-    - curl "https://s3.amazonaws.com/aws-cli/awscli-bundle.zip" -o "/tmp/awscli-bundle.zip" && unzip /tmp/awscli-bundle.zip -d /tmp && sudo /tmp/awscli-bundle/install -i /usr/local/aws -b /usr/local/bin/aws && rm -rf /tmp/awscli-bundle.zip /tmp/awscli-bundle
+    - curl "https://s3.amazonaws.com/aws-cli/awscli-bundle.zip" -o "/tmp/awscli-bundle.zip" && unzip /tmp/awscli-bundle.zip -d /tmp && /tmp/awscli-bundle/install -i /usr/local/aws -b /usr/local/bin/aws && rm -rf /tmp/awscli-bundle.zip /tmp/awscli-bundle
     - if [ ! -e "$HOME/.meteor/meteor" ]; then curl https://install.meteor.com | sed s/--progress-bar/-sL/g | /bin/sh; fi
     - export PATH="$HOME/.meteor:$PATH" && scripts/build.sh
     - aws s3 cp dist/lookamo.chat.tar.gz s3://lookamo-maintenance-dev/lookamo.chat-dist/lookamo.chat.tar.gz

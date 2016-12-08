@@ -6,7 +6,7 @@ if [ -d dist ]; then
   rm -rf dist
 fi &&
 npm install &&
-meteor build --headless /tmp &&
+meteor build --headless --allow-superuser /tmp &&
 ls -Al /tmp &&
 tar --exclude=..* -czf /tmp/lookamo.com.tar.gz * .* &&
 mkdir dist &&
