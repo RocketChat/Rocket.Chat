@@ -184,8 +184,7 @@ Importer.CSV = class ImporterCSV extends Importer.Base {
 					} else {
 						const userId = Accounts.createUser({ email: u.email, password: Date.now() + u.name + u.email.toUpperCase() });
 						Meteor.runAsUser(userId, () => {
-							Meteor.call('setUsername', u.username);
-							Meteor.call('joinDefaultChannels', true);
+							Meteor.call('setUsername', u.username, {joinDefaultChannelsSilenced: true});
 							RocketChat.models.Users.setName(userId, u.name);
 							RocketChat.models.Users.update({ _id: userId }, { $addToSet: { importIds: u.id } });
 							u.rocketId = userId;
