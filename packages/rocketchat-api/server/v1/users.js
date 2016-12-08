@@ -179,7 +179,7 @@ RocketChat.API.v1.addRoute('users.setAvatar', { authRequired: true }, {
 RocketChat.API.v1.addRoute('users.update', { authRequired: true }, {
 	post: function() {
 		try {
-			check (this.bodyParams, {
+			check(this.bodyParams, {
 				userId: String,
 				data: {
 					email: Match.Maybe(String),
