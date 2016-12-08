@@ -256,8 +256,7 @@ Importer.HipChatEnterprise = class ImporterHipChatEnterprise extends Importer.Ba
 					} else {
 						const userId = Accounts.createUser({ email: u.email, password: Date.now() + u.name + u.email.toUpperCase() });
 						Meteor.runAsUser(userId, () => {
-							Meteor.call('setUsername', u.username);
-							Meteor.call('joinDefaultChannels', true);
+							Meteor.call('setUsername', u.username, {joinDefaultChannelsSilenced: true});
 							//TODO: Use moment timezone to calc the time offset - Meteor.call 'userSetUtcOffset', user.tz_offset / 3600
 							RocketChat.models.Users.setName(userId, u.name);
 							//TODO: Think about using a custom field for the users "title" field
