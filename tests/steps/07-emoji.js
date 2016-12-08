@@ -5,9 +5,7 @@ import mainContent from '../pageobjects/main-content.page';
 import sideNav from '../pageobjects/side-nav.page';
 
 import {username, email, password} from '../test-data/user.js';
-import {publicChannelName, privateChannelName} from '../test-data/channel.js';
-import {targetUser, imgURL} from '../test-data/interactions.js';
-import {checkIfUserIsValid, publicChannelCreated, privateChannelCreated, directMessageCreated, setPublicChannelCreated, setPrivateChannelCreated, setDirectMessageCreated} from '../test-data/checks';
+import {checkIfUserIsValid} from '../test-data/checks';
 
 describe('emoji', ()=> {
 	before(()=>{
