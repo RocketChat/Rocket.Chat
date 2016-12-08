@@ -157,7 +157,6 @@ Api.addRoute 'bulk/register', authRequired: true,
 						ids[i] = {uid: Meteor.call 'registerUser', incoming}
 						Meteor.runAsUser ids[i].uid, () =>
 							Meteor.call 'setUsername', incoming.name
-							Meteor.call 'joinDefaultChannels'
 
 					status: 'success', ids: ids
 				catch e
@@ -233,7 +232,7 @@ Api.addRoute 'bulk/createRoom', authRequired: true,
 					Meteor.runAsUser this.userId, () =>
 						(if incoming.private
 							ids[i] = Meteor.call 'createPrivateGroup', incoming.name, incoming.members
-						else 
+						else
 							ids[i] = Meteor.call 'createChannel', incoming.name, incoming.members) for incoming,i in @bodyParams.rooms
 					status: 'success', ids: ids   # need to handle error
 				catch e
@@ -261,12 +260,12 @@ Api.addRoute 'room/:id/archive', authRequired: true,
 				console.log '[restapi] archiveRoom -> '.red, "User does not have 'archive-room' permission"
 				statusCode: 403
 				body: status: 'error', message: 'You do not have permission to do this'
-				
+
 # unarchive a room by it's ID
 Api.addRoute 'room/:id/unarchive', authRequired: true,
 	post:
 		action: ->
-			# user must also have unarchive-room permission 
+			# user must also have unarchive-room permission
 			if RocketChat.authz.hasPermission(@userId, 'unarchive-room')
 				try
 					Meteor.runAsUser this.userId, () =>
