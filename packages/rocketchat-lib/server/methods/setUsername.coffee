@@ -1,5 +1,5 @@
 Meteor.methods
-	setUsername: (username, {joinDefaultChannelsSilenced}) ->
+	setUsername: (username, {joinDefaultChannelsSilenced}={}) ->
 
 		check username, String
 
