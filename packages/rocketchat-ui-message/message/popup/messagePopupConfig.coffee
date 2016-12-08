@@ -73,7 +73,7 @@ Template.messagePopupConfig.helpers
 				items = filteredUsersMemory.find({ts: {$exists: true}, username: exp}, {limit: 5, sort: {ts: -1}}).fetch()
 
 				# Get online users
-				if items.length < 5 and filter?.trim() isnt ''
+				if items.length < 5 and filter?.trim() isnt '' and RocketChat.authz.hasAllPermission('view-d-room')
 					messageUsers = _.pluck(items, 'username')
 					Meteor.users.find({$and: [{username: exp}, {username: {$nin: [Meteor.user()?.username].concat(messageUsers)}}]}, {limit: 5 - messageUsers.length}).fetch().forEach (item) ->
 						items.push
