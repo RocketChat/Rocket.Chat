@@ -143,7 +143,14 @@ Template.channelSettings.onCreated ->
 			options:
 				c: 'Channel'
 				p: 'Private_Group'
-			canView: (room) => room.t in ['c', 'p']
+			canView: (room) ->
+				if not room.t in ['c', 'p']
+					return false
+				else if room.t is 'p' and not RocketChat.authz.hasAllPermission('create-c')
+					return false
+				else if room.t is 'c' and not RocketChat.authz.hasAllPermission('create-p')
+					return false
+				return true
 			canEdit: (room) => RocketChat.authz.hasAllPermission('edit-room', room._id)
 			save: (value, room) ->
 				if value not in ['c', 'p']
