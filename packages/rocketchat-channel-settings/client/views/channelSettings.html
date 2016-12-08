@@ -11,14 +11,14 @@
 
 							{{#if $value.canView room}}
 								{{#let value=(valueOf room $key)}}
-									<li>
+									<li class="{{$value.type}}">
 										<label>{{_ $value.label}}</label>
-										<div>
+										<div class="setting-block">
 											{{#if $eq $value.type 'text'}}
 												{{#if editing $key}}
 													<input type="text" name="{{$key}}" value="{{value}}" class="editing" />
 												{{else}}
-													<span class='current-setting'>{{value}}</span>
+													<span class='current-setting' data-edit="{{$key}}">{{value}}</span>
 												{{/if}}
 											{{/if}}
 
@@ -26,58 +26,44 @@
 												{{#if editing $key}}
 													<input type="text" name="{{$key}}" value="{{unscape value}}" class="editing" />
 												{{else}}
-													<span class='current-setting'>{{{RocketChatMarkdown value}}}</span>
+													<span class='current-setting' data-edit="{{$key}}">{{{RocketChatMarkdown value}}}</span>
 												{{/if}}
 											{{/if}}
 
 											{{#if $eq $value.type 'select'}}
-												{{#if editing $key}}
-													{{#each toArray $value.options}}
-														<label>
-															<input type="radio" name="{{../$key}}" value="{{$key}}" checked="{{$eq value $key}}" class="editing" />
-															{{_ $value}}
-														</label>
-													{{/each}}
-												{{else}}
-													<span class='current-setting'>{{_ (valueOf $value.options value)}}</span>
-												{{/if}}
+												{{#each toArray $value.options}}
+													<div class="input radio">
+														<input type="radio" id="{{$key}}" name="{{../$key}}" value="{{$key}}" checked="{{$eq value $key}}" />
+														<label for="{{$key}}">{{_ $value}}</label>
+													</div>
+												{{/each}}
 											{{/if}}
 
 											{{#if $eq $value.type 'boolean'}}
-												{{#if editing $key}}
-													<label>
-														<input type="radio" name="{{$key}}" value="true" checked="{{$eq value true}}" class="editing" />
-														{{_ 'True'}}
-													</label>
-													<label>
-														<input type="radio" name="{{$key}}" value="false" checked="{{$neq value true}}" class="editing" />
-														{{_ 'False'}}
-													</label>
-												{{else}}
-													{{#if value}}
-														<span class='current-setting'>{{_ 'True'}}</span>
-													{{else}}
-														<span class='current-setting'>{{_ 'False'}}</span>
-													{{/if}}
-												{{/if}}
+												<div class="input checkbox toggle">
+													<input type="checkbox" id="{{$key}}" name="{{$key}}" value="{{value}}" checked="{{$eq value true}}" />
+													<label for="{{$key}}"></label>
+												</div>
 											{{/if}}
 
-											{{#if editing $key}}
-												<div class="buttons">
-													{{#unless $eq $value.type 'boolean'}}
-														<button type="button" class="button cancel">
-															<i class="icon-cancel"></i>
+											{{#if $value.canEdit room}}
+												{{#if editing $key}}
+													<div class="buttons">
+														{{#if isTextInput $value.type}}
+															<button type="button" class="button cancel">
+																<i class="icon-cancel"></i>
+															</button>
+														{{/if}}
+														<button type="button" class="button primary save">
+															<i class="icon-ok"></i>
 														</button>
-													{{/unless}}
-													<button type="button" class="button primary save">
-														<i class="icon-ok"></i>
-													</button>
-												</div>
-											{{else}}
-												{{#if $value.canEdit room}}
-													<button type="button" class="button edit">
-														<i class="icon-pencil" data-edit="{{$key}}"></i>
-													</button>
+													</div>
+												{{else}}
+													{{#if isTextInput $value.type}}
+														<button type="button" class="button edit">
+															<i class="icon-pencil" data-edit="{{$key}}"></i>
+														</button>
+													{{/if}}
 												{{/if}}
 											{{/if}}
 										</div>

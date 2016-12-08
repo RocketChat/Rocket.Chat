@@ -11,6 +11,9 @@ Template.channelSettings.helpers
 	valueOf: (obj, key) ->
 		return obj?[key]
 
+	isTextInput: (value) ->
+		return value == 'text' or value == 'markdown'
+
 	showSetting: (setting, room) ->
 		if setting.showInDirect is false
 			return room.t isnt 'd'
@@ -81,6 +84,13 @@ Template.channelSettings.events
 		e.preventDefault()
 		t.editing.set($(e.currentTarget).data('edit'))
 		setTimeout (-> t.$('input.editing').focus().select()), 100
+
+	'change [type="radio"]': (e, t) ->
+		t.editing.set($(e.currentTarget).attr('name'))
+
+	'change [type="checkbox"]': (e, t) ->
+		t.editing.set($(e.currentTarget).attr('name'))
+		t.saveSetting()
 
 	'click .cancel': (e, t) ->
 		e.preventDefault()
@@ -203,11 +213,12 @@ Template.channelSettings.onCreated ->
 	@saveSetting = =>
 		room = ChatRoom.findOne @data?.rid
 		field = @editing.get()
+		console.log('FIELD', field)
 
 		if @settings[field].type is 'select'
 			value = @$(".channel-settings form [name=#{field}]:checked").val()
 		else if @settings[field].type is 'boolean'
-			value = @$(".channel-settings form [name=#{field}]:checked").val() is 'true'
+			value = @$(".channel-settings form [name=#{field}]:checked").val() is 'on'
 		else
 			value = @$(".channel-settings form [name=#{field}]").val()
 

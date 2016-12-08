@@ -107,7 +107,7 @@ blockquote:before {
 	textarea {
 		background-color: @content-background-color;
 		&:focus {
-			border-color: fade(@secondary-background-contrast, 50%);
+			border-color: lighten(@secondary-background-contrast, 30%);
 		}
 	}
 }
@@ -139,6 +139,38 @@ input:-webkit-autofill {
 
 input:-webkit-autofill {
 	background-color: transparent !important;
+}
+
+.input {
+	&.radio {
+		label {
+			&:before {
+				background-color: @content-background-color;
+				border-color: lighten(@secondary-background-contrast, 30%);
+			}
+			&:after {
+				background-color: @secondary-background-contrast;
+			}
+		}
+	}
+	&.checkbox.toggle {
+		input:checked + label:before {
+			background-color: @secondary-background-contrast;
+		}
+		label {
+			&:before {
+				background-color: lighten(@secondary-background-contrast, 30%);
+			}
+			&:after {
+				background-color: @content-background-color;
+			}
+			&:hover {
+				&:before {
+					background-color: lighten(@secondary-background-contrast, 20%);
+				}
+			}
+		}
+	}
 }
 
 
