@@ -15,7 +15,6 @@ Package.onUse(function(api) {
 	]);
 
 	api.addFiles('server/api.coffee', 'server');
-	api.addFiles('server/routes.coffee', 'server');
 	api.addFiles('server/v1/channels.js', 'server');
 	api.addFiles('server/v1/groups.js', 'server');
 	api.addFiles('server/v1/im.js', 'server');
