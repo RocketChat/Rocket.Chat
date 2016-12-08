@@ -236,11 +236,6 @@ Accounts.registerLoginHandler(function(options) {
 		logger.debug('Created new user for \'' + result.username + '\' with id: ' + user._id);
 		//logger.debug(JSON.stringify(user, undefined, 4));
 
-		logger.debug('Joining user to default channels');
-		Meteor.runAsUser(user._id, function() {
-			Meteor.call('joinDefaultChannels');
-		});
-
 		logger.debug('Joining user to attribute channels: ' + int_attrs.rooms);
 		if (int_attrs.rooms) {
 			_.each(int_attrs.rooms.split(','), function(room_name) {
