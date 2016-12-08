@@ -20,5 +20,5 @@ Package.onUse(function(api) {
 });
 
 Npm.depends({
-	'slack-client': '2.0.4'
+	'slack-client': '2.0.6'
 });
