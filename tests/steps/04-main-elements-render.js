@@ -356,7 +356,7 @@ describe('Main Elements Render', function() {
 					flexTab.pinnedTab.isVisible().should.be.true;
 				});
 
-				it('should show the pinned messages Tab content', () => {;
+				it('should show the pinned messages Tab content', () => {
 					flexTab.pinnedTabContent.isVisible().should.be.true;
 				});
 			});
