@@ -4,7 +4,7 @@ Api = new Restivus
 	enableCors: false
 
 
-Api.addRoute 'info', authRequired: false,
+Api.addRoute 'info', authRequired: true,
 	get: -> RocketChat.Info
 
 
