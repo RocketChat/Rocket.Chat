@@ -9,7 +9,7 @@ import sideNav from '../pageobjects/side-nav.page';
 import {checkIfUserIsValid} from '../test-data/checks';
 import {username, email, password} from '../test-data/user.js';
 //Basic usage test start
-describe.only('Main Elements Render', function() {
+describe('Main Elements Render', function() {
 	before(()=>{
 		checkIfUserIsValid(username, email, password);
 		sideNav.getChannelFromList('general').waitForExist(5000);
