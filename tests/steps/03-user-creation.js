@@ -19,9 +19,9 @@ describe('User Creation', function() {
 	});
 
 	/*If you are using a clean database dont pass any environment variables
-	if you have an existing database please pass the username (ADMIN_USERNAME) and password (ADMIN_PASSWORD) of the admin as environment variables.*/
+	if you have an existing database please pass the username (ADMIN_USERNAME) and password (ADMIN_PASS) of the admin as environment variables.*/
 
-	if (process.env.ADMIN_USERNAME && process.env.ADMIN_PASSWORD) {
+	if (process.env.ADMIN_USERNAME && process.env.ADMIN_PASS) {
 		console.log('Admin login and password provided, skipping admin creation.');
 	} else {
 		it('create the admin user', () => {
