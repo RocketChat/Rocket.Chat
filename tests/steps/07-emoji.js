@@ -4,16 +4,28 @@
 import mainContent from '../pageobjects/main-content.page';
 import sideNav from '../pageobjects/side-nav.page';
 
-describe.skip('emoji', ()=> {
-	it('opens general', ()=> {
+import {username, email, password} from '../test-data/user.js';
+import {checkIfUserIsValid} from '../test-data/checks';
+
+describe('emoji', ()=> {
+	before(()=>{
+		browser.pause(1000);
+		checkIfUserIsValid(username, email, password);
+		sideNav.getChannelFromList('general').waitForExist(5000);
 		sideNav.openChannel('general');
 	});
 
-	it('opens emoji menu', ()=> {
-		mainContent.emojiBtn.click();
-	});
 
 	describe('render', ()=> {
+		before(()=> {
+			mainContent.emojiBtn.click();
+		});
+
+		after(() => {
+			mainContent.emojiSmile.click();
+			mainContent.setTextToInput('');
+		});
+
 		it('should show the emoji picker menu', ()=> {
 			mainContent.emojiPickerMainScreen.isVisible().should.be.true;
 		});
@@ -65,24 +77,37 @@ describe.skip('emoji', ()=> {
 		it('should show the emoji picker search bar', ()=> {
 			mainContent.emojiPickerFilter.isVisible().should.be.true;
 		});
+	});
 
-		it('send a smile emoji', ()=> {
-			mainContent.emojiSmile.click();
+	describe('usage', ()=> {
+		describe('send emoji via screen', ()=> {
+			before(()=> {
+				browser.pause(300);
+				mainContent.emojiBtn.click();
+				mainContent.emojiPickerPeopleIcon.click();
+			});
+
+			it('select a grinning emoji', ()=> {
+				mainContent.emojiGrinning.waitForVisible(5000);
+				mainContent.emojiGrinning.click();
+			});
+
+			it('the value on the message input should be the same as the emoji clicked', ()=> {
+				mainContent.messageInput.getValue().should.equal(':grinning:');
+			});
+
+			it('send the emoji', ()=> {
+				mainContent.addTextToInput(' ');
+				mainContent.sendBtn.click();
+			});
+
+			it('the value on the message should be the same as the emoji clicked', ()=> {
+				mainContent.lastMessage.getText().should.equal('😀');
+			});
 		});
+	});
 
-		it('the value on the message input should be the same as the emoji clicked', ()=> {
-			mainContent.messageInput.getValue().should.equal(':smile:');
-		});
-
-		it('send the emoji', ()=> {
-			mainContent.addTextToInput(' ');
-			mainContent.sendBtn.click();
-		});
-
-		it('the value on the message should be the same as the emoji clicked', ()=> {
-			mainContent.lastMessage.getText().should.equal('😄');
-		});
-
+	describe('send emoji via text', ()=> {
 		it('adds emoji text to the message input', ()=> {
 			mainContent.addTextToInput(':smile');
 		});
