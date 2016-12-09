@@ -197,15 +197,21 @@ class SlackBridge {
 				userData.rocketId = existingUser._id;
 				userData.name = existingUser.username;
 			} else {
-				let newUser = { password: Random.id() };
-				if (isBot || !email) {
-					newUser.username = userData.name;
-				} else {
+				let newUser = {
+					password: Random.id(),
+					username: userData.name
+				};
+
+				if (!isBot && email) {
 					newUser.email = email;
 				}
+
+				if (isBot) {
+					newUser.joinDefaultChannels = false;
+				}
+
 				userData.rocketId = Accounts.createUser(newUser);
 				let userUpdate = {
-					username: userData.name,
 					utcOffset: userData.tz_offset / 3600, // Slack's is -18000 which translates to Rocket.Chat's after dividing by 3600,
 					roles: isBot ? [ 'bot' ] : [ 'user' ]
 				};
@@ -238,7 +244,6 @@ class SlackBridge {
 						logger.class.debug('Error setting user avatar', error.message);
 					}
 				}
-				RocketChat.addUserToDefaultChannels(user, true);
 			}
 
 			let importIds = [ userData.id ];
