@@ -278,3 +278,67 @@ Api.addRoute 'room/:id/unarchive', authRequired: true,
 				console.log '[restapi] unarchiveRoom -> '.red, "User does not have 'unarchive-room' permission"
 				statusCode: 403
 				body: status: 'error', message: 'You do not have permission to do this'
+
+# add member to room -  POST body should be { "member" : "memberId"}
+Api.addRoute 'rooms/:id/addMember', authRequired: true,
+	post: ->
+		try
+			Meteor.runAsUser this.userId, () =>
+				console.log @bodyParams.member
+				Meteor.call 'addUserToRoom', {rid: @urlParams.id, username: @bodyParams.member}
+			status: 'success'
+		catch e
+			console.log '[restapi] rooms/:id/addMember -> '.red
+			statusCode: 400
+			body: status: 'fail', message: e.name + ' :: ' + e.message
+
+
+# remove member from room -  POST body should be { "member" : "memberId"}
+Api.addRoute 'rooms/:id/removeMember', authRequired: true,
+	post: ->
+		try
+			Meteor.runAsUser this.userId, () =>
+				console.log @bodyParams.member
+				Meteor.call 'removeUserFromRoom', {rid: @urlParams.id, username: @bodyParams.member}
+			status: 'success'
+		catch e
+			console.log '[restapi] rooms/:id/removeMember -> '.red
+			statusCode: 400
+			body: status: 'fail', message: e.name + ' :: ' + e.message
+
+Api.addRoute 'bulk/updateRoom', authRequired: true,
+	put:
+		action: ->
+			console.log 'before permission'
+			# user must also have create-p permission
+			if RocketChat.authz.hasPermission(@userId, 'edit-room')
+				console.log 'after permission'
+				try
+					this.response.setTimeout (1000 * @bodyParams.rooms.length)
+					Api.testapiValidateRoomName @bodyParams.rooms
+					ids = []
+					for incoming, i in @bodyParams.rooms
+						Meteor.runAsUser this.userId, () =>
+							(ids[i] = Meteor.call 'updateRoom', {_id: incoming.id, name: incoming.name, memebers: incoming.members}) 
+					status: 'success', ids: ids
+					console.log ids
+					return ids
+				catch e
+					statusCode: 400
+					body: status: 'fail', message: e.name + ' :: ' + e.message
+			else
+				console.log '[restapi] bulk/updatePrivateRoom -> '.red, "user does not have 'edit-room' permission"
+
+# validate an array of rooms
+Api.testapiValidateRoomName =  (rooms) ->
+	for room, i in rooms
+		if room.name?
+			try
+				nameValidation = new RegExp '^' + RocketChat.settings.get('UTF8_Names_Validation') + '$', 'i'
+			catch
+				nameValidation = new RegExp '^[0-9a-zA-Z-_.]+$', 'i'
+
+			if nameValidation.test room.name
+				continue
+		throw new Meteor.Error 'invalid-room-record', "[restapi] bulk/createRoom -> record #" + i + " is invalid"
+	return
