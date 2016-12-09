@@ -148,7 +148,7 @@ function messageActionsTest() {
 					mainContent.sendBtn.click();
 				});
 
-				it('checks if the message was replied', () => {
+				it.skip('checks if the message was replied', () => {
 					mainContent.lastMessageTextAttachment.waitForExist(5000);
 					mainContent.lastMessageTextAttachment.getText().should.equal(mainContent.beforeLastMessage.getText());
 				});
