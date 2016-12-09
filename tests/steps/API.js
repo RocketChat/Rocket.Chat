@@ -25,10 +25,10 @@ const credentials = {
 
 const login = {
 	user: process.env.ADMIN_USERNAME,
-	password: process.env.ADMIN_PASSWORD
+	password: process.env.ADMIN_PASS
 };
 
-describe.skip('API', () => {
+describe('API', () => {
 	before((done) => {
 		request.post(api('/login'))
 			.send(login)
