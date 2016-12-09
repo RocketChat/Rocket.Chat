@@ -3,7 +3,7 @@
 import loginPage from '../pageobjects/login.page';
 
 describe.skip('register', () => {
-	it('load page', () => {
+	before(() => {
 		loginPage.open();
 		loginPage.gotToForgotPassword();
 	});
