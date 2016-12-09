@@ -113,6 +113,8 @@ Template.livechatWindow.onCreated(function() {
 			result.departments.forEach((department) => {
 				Department.insert(department);
 			});
+
+			Livechat.ready();
 		}
 	});
 });

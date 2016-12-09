@@ -61,32 +61,32 @@ startMatrixBroadcast = ->
 				connections[instance].disconnect()
 				delete connections[instance]
 
-	Meteor.methods
-		broadcastAuth: (remoteId, selfId) ->
-			check selfId, String
-			check remoteId, String
+Meteor.methods
+	broadcastAuth: (remoteId, selfId) ->
+		check selfId, String
+		check remoteId, String
 
-			@unblock()
-			if selfId is InstanceStatus.id() and remoteId isnt InstanceStatus.id() and InstanceStatus.getCollection().findOne({_id: remoteId})?
-				@connection.broadcastAuth = true
+		@unblock()
+		if selfId is InstanceStatus.id() and remoteId isnt InstanceStatus.id() and InstanceStatus.getCollection().findOne({_id: remoteId})?
+			@connection.broadcastAuth = true
 
-			return @connection.broadcastAuth is true
+		return @connection.broadcastAuth is true
 
-		stream: (streamName, eventName, args) ->
-			# Prevent call from self and client
-			if not @connection?
-				return 'self-not-authorized'
+	stream: (streamName, eventName, args) ->
+		# Prevent call from self and client
+		if not @connection?
+			return 'self-not-authorized'
 
-			# Prevent call from unauthrorized connections
-			if @connection.broadcastAuth isnt true
-				return 'not-authorized'
+		# Prevent call from unauthrorized connections
+		if @connection.broadcastAuth isnt true
+			return 'not-authorized'
 
-			if not Meteor.StreamerCentral.instances[streamName]?
-				return 'stream-not-exists'
+		if not Meteor.StreamerCentral.instances[streamName]?
+			return 'stream-not-exists'
 
-			Meteor.StreamerCentral.instances[streamName]._emit(eventName, args)
+		Meteor.StreamerCentral.instances[streamName]._emit(eventName, args)
 
-			return undefined
+		return undefined
 
 startStreamCastBroadcast = (value) ->
 	instance = 'StreamCast'

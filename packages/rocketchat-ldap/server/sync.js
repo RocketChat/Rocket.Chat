@@ -187,11 +187,6 @@ addLdapUser = function addLdapUser(ldapUser, username, password) {
 
 	syncUserData(userObject, ldapUser);
 
-	logger.info('Joining user to default channels');
-	Meteor.runAsUser(userObject._id, function() {
-		Meteor.call('joinDefaultChannels');
-	});
-
 	return {
 		userId: userObject._id
 	};
