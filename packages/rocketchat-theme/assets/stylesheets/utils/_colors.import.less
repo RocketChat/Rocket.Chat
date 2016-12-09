@@ -157,6 +157,9 @@ input:-webkit-autofill {
 		input:checked + label:before {
 			background-color: @secondary-background-contrast;
 		}
+		input:disabled + label:before {
+			background-color: lighten(@secondary-background-contrast, 50%) !important;
+		}
 		label {
 			&:before {
 				background-color: lighten(@secondary-background-contrast, 30%);
@@ -641,6 +644,11 @@ a:hover {
 		}
 		.icon-ok {
 			color: inherit;
+		}
+		.input.checkbox.toggle {
+			input:checked + label:before {
+				background-color: @primary-background-color;
+			}
 		}
 	}
 }
