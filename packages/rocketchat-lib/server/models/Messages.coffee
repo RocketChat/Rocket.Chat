@@ -402,7 +402,7 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base
 
 	createUserAddedWithRoomIdAndUser: (roomId, user, extraData) ->
 		message = user.username
-		return @createWithTypeRoomIdMessageAndUser 'au', roomId, message, user, extraData
+		return @createWithTypeRoomIdMessageAndUser 'au', roomId, message, user, _.extend extraData || {}, added : _id : user._id
 
 	createCommandWithRoomIdAndUser: (command, roomId, user, extraData) ->
 		return @createWithTypeRoomIdMessageAndUser 'command', roomId, command, user, extraData
