@@ -41,5 +41,10 @@ window.addEventListener('message', function(msg) {
 
 // tell parent window that we are ready
 Meteor.startup(function() {
-	parentCall('ready');
+	Tracker.autorun((c) => {
+		if (Livechat.isReady()) {
+			parentCall('ready');
+			c.stop();
+		}
+	});
 });
