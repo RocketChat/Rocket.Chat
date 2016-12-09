@@ -57,7 +57,7 @@ describe('API', () => {
 				expect(res.body).to.have.property('username', login.user);
 				expect(res.body).to.have.property('active');
 				expect(res.body).to.have.property('name');
-				expect(res.body).to.have.deep.property('emails[0].address');
+				expect(res.body).to.have.deep.property('emails[0].address', process.env.ADMIN_EMAIL);
 			})
 			.end(done);
 	});
