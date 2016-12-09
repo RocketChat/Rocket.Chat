@@ -1,5 +1,5 @@
 RocketChat.Migrations.add({
-	version: 69,
+	version: 70,
 	up: function() {
 		const settings = RocketChat.models.Settings.find({ _id: /^Accounts_OAuth_Custom_.+/ }).fetch();
 		for (const setting of settings) {
