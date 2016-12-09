@@ -57,6 +57,7 @@ describe('resolutions tests', ()=> {
 			it('opens the user preferences screen', () => {
 				sideNav.accountBoxUserName.waitForVisible();
 				sideNav.accountBoxUserName.click();
+				browser.pause(500);
 				sideNav.account.waitForVisible();
 				sideNav.account.click();
 			});
