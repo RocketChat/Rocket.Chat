@@ -12,7 +12,7 @@ import {imgURL} from '../test-data/interactions.js';
 import {checkIfUserIsValid} from '../test-data/checks';
 
 
-describe('user preferences', ()=> {
+describe.skip('user preferences', ()=> {
 	before(() => {
 		browser.pause(3000);
 		checkIfUserIsValid(username, email, password);
