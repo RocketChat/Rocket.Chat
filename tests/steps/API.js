@@ -1,4 +1,5 @@
 /* eslint-env mocha */
+/* globals expect */
 /* eslint no-unused-vars: 0 */
 
 import supertest from 'supertest';
