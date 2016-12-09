@@ -25,7 +25,7 @@ function createOrUpdateUserFromJWT(lgJWT) {
     'services.lgSSO.lgUser.id': lgUser.id
   })
   const roles = ['user']
-  if (lgUser.roles.indexOf('backoffice') >= 0) {
+  if (lgUser.roles.indexOf('staff') >= 0) {
     roles.push('admin')
   }
   const newUser = {
