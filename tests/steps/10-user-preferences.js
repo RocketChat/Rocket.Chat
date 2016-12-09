@@ -21,6 +21,7 @@ describe('user preferences', ()=> {
 
 		sideNav.accountBoxUserName.waitForVisible();
 		sideNav.accountBoxUserName.click();
+		browser.pause(500);
 		sideNav.account.waitForVisible();
 		sideNav.account.click();
 		browser.pause(1000);
