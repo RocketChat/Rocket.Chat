@@ -22,7 +22,7 @@ RocketChat.API.v1.addRoute('channels.addAll', { authRequired: true }, {
 		}
 
 		if (findResult.archived) {
-			return RocketChat.API.v1.failure(`The channel, ${this.bodyParams.name}, is already archived`);
+			return RocketChat.API.v1.failure(`The channel, ${findResult.name}, is archived`);
 		}
 
 		try {
@@ -72,7 +72,7 @@ RocketChat.API.v1.addRoute('channels.cleanHistory', { authRequired: true }, {
 		}
 
 		if (findResult.archived) {
-			return RocketChat.API.v1.failure(`The channel, ${this.bodyParams.name}, is already archived`);
+			return RocketChat.API.v1.failure(`The channel, ${findResult.name}, is archived`);
 		}
 
 		if (!this.bodyParams.latest) {
@@ -243,7 +243,7 @@ RocketChat.API.v1.addRoute('channels.invite', { authRequired: true }, {
 		}
 
 		if (findResult.archived) {
-			return RocketChat.API.v1.failure(`The channel, ${this.bodyParams.name}, is archived`);
+			return RocketChat.API.v1.failure(`The channel, ${findResult.name}, is archived`);
 		}
 
 		const user = RocketChat.models.Users.findOneById(this.bodyParams.userId);
@@ -261,7 +261,7 @@ RocketChat.API.v1.addRoute('channels.invite', { authRequired: true }, {
 		}
 
 		return RocketChat.API.v1.success({
-			group: RocketChat.models.Rooms.findOneById(findResult._id)
+			channel: RocketChat.models.Rooms.findOneById(findResult._id)
 		});
 	}
 });
@@ -280,7 +280,7 @@ RocketChat.API.v1.addRoute('channels.kick', { authRequired: true }, {
 		}
 
 		if (findResult.archived) {
-			return RocketChat.API.v1.failure(`The channel, ${this.bodyParams.name}, is archived`);
+			return RocketChat.API.v1.failure(`The channel, ${findResult.name}, is archived`);
 		}
 
 		const user = RocketChat.models.Users.findOneById(this.bodyParams.userId);
@@ -297,7 +297,9 @@ RocketChat.API.v1.addRoute('channels.kick', { authRequired: true }, {
 			return RocketChat.API.v1.failure(`${e.name}: ${e.message}`);
 		}
 
-		return RocketChat.API.v1.success();
+		return RocketChat.API.v1.success({
+			channel: RocketChat.models.Rooms.findOneById(findResult._id)
+		});
 	}
 });
 
@@ -311,7 +313,7 @@ RocketChat.API.v1.addRoute('channels.leave', { authRequired: true }, {
 		}
 
 		if (findResult.archived) {
-			return RocketChat.API.v1.failure(`The channel, ${this.bodyParams.name}, is archived`);
+			return RocketChat.API.v1.failure(`The channel, ${findResult.name}, is archived`);
 		}
 
 		try {
@@ -322,7 +324,9 @@ RocketChat.API.v1.addRoute('channels.leave', { authRequired: true }, {
 			return RocketChat.API.v1.failure(`${e.name}: ${e.message}`);
 		}
 
-		return RocketChat.API.v1.success();
+		return RocketChat.API.v1.success({
+			channel: RocketChat.models.Rooms.findOneById(findResult._id)
+		});
 	}
 });
 
@@ -386,7 +390,7 @@ RocketChat.API.v1.addRoute('channels.rename', { authRequired: true }, {
 		}
 
 		if (findResult.archived) {
-			return RocketChat.API.v1.failure(`The channel, ${this.bodyParams.name}, is archived`);
+			return RocketChat.API.v1.failure(`The channel, ${findResult.name}, is archived`);
 		}
 
 		if (findResult.name === this.bodyParams.name) {
@@ -420,7 +424,7 @@ RocketChat.API.v1.addRoute('channels.setDescription', { authRequired: true }, {
 		}
 
 		if (findResult.archived) {
-			return RocketChat.API.v1.failure(`The channel, ${this.bodyParams.name}, is archived`);
+			return RocketChat.API.v1.failure(`The channel, ${findResult.name}, is archived`);
 		}
 
 		if (findResult.description === this.bodyParams.description) {
@@ -455,7 +459,7 @@ RocketChat.API.v1.addRoute('channels.setPurpose', { authRequired: true }, {
 		}
 
 		if (findResult.archived) {
-			return RocketChat.API.v1.failure(`The channel, ${this.bodyParams.name}, is archived`);
+			return RocketChat.API.v1.failure(`The channel, ${findResult.name}, is archived`);
 		}
 
 		if (findResult.description === this.bodyParams.purpose) {
@@ -490,7 +494,7 @@ RocketChat.API.v1.addRoute('channels.setTopic', { authRequired: true }, {
 		}
 
 		if (findResult.archived) {
-			return RocketChat.API.v1.failure(`The channel, ${this.bodyParams.name}, is archived`);
+			return RocketChat.API.v1.failure(`The channel, ${findResult.name}, is archived`);
 		}
 
 		if (findResult.topic === this.bodyParams.topic) {
