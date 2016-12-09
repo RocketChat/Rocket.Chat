@@ -1,5 +1,10 @@
 # History
 
+## 0.47.1, 2016-Dec-09
+
+- Fix color migrations
+- Fix to prevent register broadcastAuth more than one time
+
 ## 0.47.0, 2016-Dec-06
 
 - Add 'clear OEmbed cache now' button
