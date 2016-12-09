@@ -1,5 +1,5 @@
 /* eslint-env mocha */
-/* eslint no-unused-vars: false */
+/* eslint no-unused-vars: 0 */
 
 import supertest from 'supertest';
 const request = supertest('http://localhost:3000');
