@@ -262,7 +262,7 @@ describe('Main Elements Render', function() {
 					flexTab.userSearchBar.isVisible().should.be.true;
 				});
 
-				it('should show the show all link', () => {
+				it.skip('should show the show all link', () => {
 					flexTab.showAll.isVisible().should.be.true;
 				});
 			});
