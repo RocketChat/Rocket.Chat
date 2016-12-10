@@ -14,7 +14,7 @@ Meteor.methods({
 			deleteOwn = message.u._id === Meteor.userId();
 		}
 
-		if (!hasPermission || (deleteAllowed === false && deleteOwn === true)) {
+		if (!(hasPermission || (deleteAllowed && deleteOwn))) {
 			return false;
 		}
 
