@@ -2,9 +2,12 @@ stages:
   - build
   - deploy
 
-build_development:
+build:
   image: node:latest
   stage: build
+  artifacts:
+    paths:
+      - dist
   script:
     - if [ ! -e "$HOME/.meteor/meteor" ]; then curl https://install.meteor.com | sed s/--progress-bar/-sL/g | /bin/sh; fi
     - export PATH="$HOME/.meteor:$PATH" && scripts/build.sh
@@ -13,6 +16,8 @@ deploy_development:
   image: python:latest
   environment: development
   stage: deploy
+  dependencies:
+    - build
   variables:
     AWS_REGION: us-west-2
     AWS_DEFAULT_REGION: us-west-2
@@ -27,6 +32,8 @@ deploy_production:
   image: python:latest
   environment: production
   stage: deploy
+  dependencies:
+    - build
   variables:
     AWS_REGION: us-west-2
     AWS_DEFAULT_REGION: us-west-2
