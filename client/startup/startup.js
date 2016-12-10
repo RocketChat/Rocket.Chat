@@ -28,13 +28,13 @@ Meteor.startup(function() {
 		return lng;
 	};
 
-	const defaultUserLanguage = function() {
+	window.defaultUserLanguage = function() {
 		return RocketChat.settings.get('Language') || defaultAppLanguage();
 	};
 
 	const loadedLanguages = [];
 
-	const setLanguage = function(language) {
+	window.setLanguage = function(language) {
 		if (!language) {
 			return;
 		}
@@ -64,13 +64,13 @@ Meteor.startup(function() {
 	};
 
 	Meteor.subscribe('userData', function() {
-		const userLanguage = Meteor.user() ? Meteor.user().language : defaultUserLanguage();
+		const userLanguage = Meteor.user() ? Meteor.user().language : window.defaultUserLanguage();
 
 		if (localStorage.getItem('userLanguage') !== userLanguage) {
 			localStorage.setItem('userLanguage', userLanguage);
 		}
 
-		setLanguage(userLanguage);
+		window.setLanguage(userLanguage);
 
 		let status = undefined;
 		Tracker.autorun(function() {
