@@ -18,7 +18,7 @@ Meteor.methods({
 
 		const me = Meteor.users.findOne(Meteor.userId());
 
-		if (!hasPermission || (editAllowed === false && editOwn === true)) {
+		if (!(hasPermission || (editAllowed && editOwn))) {
 			toastr.error(t('error-action-not-allowed', { action: t('Message_editing') }));
 			return false;
 		}
