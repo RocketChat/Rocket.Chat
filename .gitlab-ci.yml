@@ -5,27 +5,34 @@ stages:
 build_development:
   image: node:latest
   stage: build
-  variables:
-    AWS_REGION: us-west-2
-    AWS_DEFAULT_REGION: us-west-2
   script:
-    - apt-get update && apt-get install -y python unzip wget python-dev
-    - curl "https://s3.amazonaws.com/aws-cli/awscli-bundle.zip" -o "/tmp/awscli-bundle.zip" && unzip /tmp/awscli-bundle.zip -d /tmp && /tmp/awscli-bundle/install -i /usr/local/aws -b /usr/local/bin/aws && rm -rf /tmp/awscli-bundle.zip /tmp/awscli-bundle
     - if [ ! -e "$HOME/.meteor/meteor" ]; then curl https://install.meteor.com | sed s/--progress-bar/-sL/g | /bin/sh; fi
     - export PATH="$HOME/.meteor:$PATH" && scripts/build.sh
-    - aws s3 cp dist/lookamo.chat.tar.gz s3://lookamo-maintenance-dev/lookamo.chat-dist/lookamo.chat.tar.gz
-  only:
-    - lookamo
 
 deploy_development:
   image: python:latest
   environment: development
   stage: deploy
   variables:
-    AWS_REGION: sa-east-1
-    AWS_DEFAULT_REGION: us-east-1
+    AWS_REGION: us-west-2
+    AWS_DEFAULT_REGION: us-west-2
   script:
     - pip install awscli
-    - scripts/deploy.sh 7b7a33ea-84d1-4100-b5db-770d87c7db24 03a4fd55-b34c-4cfc-acc9-53726b126387
+    - aws s3 cp dist/lookamo.chat.tar.gz s3://lookamo-maintenance-dev/lookamo.chat-dist/lookamo.chat.tar.gz
+    - export AWS_REGION=sa-east-1 && export AWS_DEFAULT_REGION=us-east-1 && scripts/deploy.sh 7b7a33ea-84d1-4100-b5db-770d87c7db24 03a4fd55-b34c-4cfc-acc9-53726b126387
+  only:
+    - lookamo-development
+
+deploy_production:
+  image: python:latest
+  environment: production
+  stage: deploy
+  variables:
+    AWS_REGION: us-west-2
+    AWS_DEFAULT_REGION: us-west-2
+  script:
+    - pip install awscli
+    - aws s3 cp dist/lookamo.chat.tar.gz s3://lookamo-maintenance-prod/lookamo.chat-dist/lookamo.chat.tar.gz
+    - export AWS_REGION=sa-east-1 && export AWS_DEFAULT_REGION=us-east-1 && scripts/deploy.sh 76dd1987-5b3c-4b53-bdc2-835064b6a928 c709d2ba-50a1-47b0-aa87-494e42b3db21
   only:
     - lookamo
