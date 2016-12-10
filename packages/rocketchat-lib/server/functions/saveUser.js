@@ -1,6 +1,6 @@
 RocketChat.saveUser = function(userId, userData) {
 	const user = RocketChat.models.Users.findOneById(userId);
-	let existingRoles = _.map(_.pluck(RocketChat.authz.getRoles(), '_id'), function(r) { return r.toLowerCase(); });
+	let existingRoles = _.pluck(RocketChat.authz.getRoles(), '_id');
 
 	if (userData._id && userId !== userData._id && !RocketChat.authz.hasPermission(userId, 'edit-other-user-info')) {
 		throw new Meteor.Error('error-action-not-allowed', 'Editing user is not allowed', { method: 'insertOrUpdateUser', action: 'Editing_user' });
@@ -10,11 +10,11 @@ RocketChat.saveUser = function(userId, userData) {
 		throw new Meteor.Error('error-action-not-allowed', 'Adding user is not allowed', { method: 'insertOrUpdateUser', action: 'Adding_user' });
 	}
 
-	if (existingRoles.indexOf(userData.role) < 0) {
-		throw new Meteor.Error('error-action-not-allowed', 'The role you are assigning does not exist', { method: 'insertOrUpdateUser', action: 'Assign_role' });
+	if (userData.roles && _.difference(userData.roles, existingRoles).length > 0) {
+		throw new Meteor.Error('error-action-not-allowed', 'The field Roles consist invalid role name', { method: 'insertOrUpdateUser', action: 'Assign_role' });
 	}
 
-	if (userData.role === 'admin' && !RocketChat.authz.hasPermission(userId, 'assign-admin-role')) {
+	if (userData.roles && _.indexOf(userData.roles, 'admin') >= 0 && !RocketChat.authz.hasPermission(userId, 'assign-admin-role')) {
 		throw new Meteor.Error('error-action-not-allowed', 'Assigning admin is not allowed', { method: 'insertOrUpdateUser', action: 'Assign_admin' });
 	}
 
@@ -68,7 +68,7 @@ RocketChat.saveUser = function(userId, userData) {
 		const updateUser = {
 			$set: {
 				name: userData.name,
-				roles: [ (userData.role || 'user') ]
+				roles: userData.roles || ['user']
 			}
 		};
 
@@ -142,8 +142,8 @@ RocketChat.saveUser = function(userId, userData) {
 			updateUser.$set.name = userData.name;
 		}
 
-		if (userData.role) {
-			updateUser.$set.roles = [ (userData.role || 'user') ];
+		if (userData.roles) {
+			updateUser.$set.roles = userData.roles;
 		}
 
 		if (userData.requirePasswordChange) {
