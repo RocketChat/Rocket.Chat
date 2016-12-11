@@ -36,13 +36,8 @@ class API extends Restivus
 
 RocketChat.API = {}
 
-
-RocketChat.API.v1 = new API
-	version: 'v1'
-	useDefaultAuth: true
-	prettyJson: true
-	enableCors: false
-	auth:
+getUserAuth = ->
+	return {
 		token: 'services.resume.loginTokens.hashedToken'
 		user: ->
 			if @bodyParams?.payload?
@@ -59,3 +54,18 @@ RocketChat.API.v1 = new API
 			return {} =
 				userId: @request.headers['x-user-id']
 				token: token
+	}
+
+
+RocketChat.API.v1 = new API
+	version: 'v1'
+	useDefaultAuth: true
+	prettyJson: true
+	enableCors: false
+	auth: getUserAuth()
+
+RocketChat.API.default = new API
+	useDefaultAuth: true
+	prettyJson: true
+	enableCors: false
+	auth: getUserAuth()
