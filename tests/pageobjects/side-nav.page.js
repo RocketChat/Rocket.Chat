@@ -59,6 +59,7 @@ class SideNav extends Page {
 		if (isReadOnly) {
 			this.channelReadOnly.click();
 		}
+		browser.pause(200);
 		this.saveChannelBtn.click();
 		browser.waitForExist('[title="'+channelName+'"]', 1000);
 	}
