@@ -88,3 +88,4 @@ env:
   - ADMIN_USERNAME: "admin-test"
   - ADMIN_EMAIL: "admin-test@rocket.chat"
   - ADMIN_PASS: "admin-test"
+  - DISABLE_ANIMATION: "true"

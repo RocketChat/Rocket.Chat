@@ -48,6 +48,16 @@ Inject.rawBody('page-loading', `
 	</div>
 </div>`);
 
+if (process.env.DISABLE_ANIMATION) {
+	Inject.rawHead('disable-animation', `
+	<style>
+		body, body * {
+			animation: none !important;
+			transition: none !important;
+		}
+	</style>
+	`);
+}
 
 RocketChat.settings.get('theme-color-primary-background-color', function(key, value = '#04436a') {
 	Inject.rawHead(key, `<style>body { background-color: ${value};}</style>`);
