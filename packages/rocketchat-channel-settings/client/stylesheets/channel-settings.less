@@ -24,6 +24,12 @@
 			display: inline-block;
 			vertical-align: middle;
 			min-height: 20px;
+			cursor: pointer;
+			margin-top: 3px;
+			&[data-edit="false"] {
+				cursor: inherit;
+				user-select: initial;
+			}
 		}
 		.editing {
 			padding-right: 80px;
@@ -51,10 +57,6 @@
 		.submit {
 			margin-top: 30px;
 			text-align: center;
-		}
-		[data-edit] {
-			cursor: pointer;
-			margin-top: 3px;
 		}
 		.boolean {
 			font-size: 0;

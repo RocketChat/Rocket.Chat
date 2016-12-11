@@ -1087,6 +1087,26 @@ label.required:after {
 				display: inline-block;
 			}
 		}
+		&.toggle {
+			font-size: 0;
+			> label {
+				display: inline-block;
+				width: calc(~"100% - 40px");
+				font-size: 14px;
+			}
+			> div {
+				width: 40px;
+    			display: inline-block;
+			}
+		}
+		&.label-top {
+			position: relative;
+			i {
+				position: absolute;
+				left: 7px;
+				top: 26px;
+			}
+		}
 	}
 	.input-submit {
 		margin: 35px 0 0 -4px;
