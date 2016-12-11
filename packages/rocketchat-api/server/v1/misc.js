@@ -1,6 +1,8 @@
 RocketChat.API.v1.addRoute('info', { authRequired: false }, {
 	get: function() {
-		return RocketChat.Info;
+		return RocketChat.API.v1.success({
+			info: RocketChat.Info
+		});
 	}
 });
 
