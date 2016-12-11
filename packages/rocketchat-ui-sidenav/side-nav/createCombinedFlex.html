@@ -7,27 +7,29 @@
 	<div class="content">
 		<div class="wrapper">
 			<h4>{{_ "Create_new" }}</h4>
-			<div class="input-line">
+			<div class="input-line label-top">
 				<label for="channel-name">{{_ "Name"}}</label>
 				<input type="text" id="channel-name" class="required" dir="auto" placeholder="{{_ 'Enter_name_here'}}">
+				<i class="icon-hash"></i>
 			</div>
-			<div class="input-line">
+			<div class="input-line toggle">
 				<label for="channel-type">{{_ "Private"}}</label>
 				<div class="input checkbox toggle">
 					<input type="checkbox" id="channel-type" {{privateSwitchDisabled}} {{privateSwitchChecked}}>
 					<label for="channel-type"></label>
 				</div>
 			</div>
-			<div class="input-line">
+			<div class="input-line toggle">
 				<label for="channel-ro">{{_ "Read_only_channel"}}</label>
 				<div class="input checkbox toggle">
 					<input type="checkbox" id="channel-ro">
 					<label for="channel-ro"></label>
 				</div>
 			</div>
-			<div class="input-line">
+			<div class="input-line label-top">
 				<label for="channel-members">{{_ "Select_users"}}</label>
 				{{> inputAutocomplete settings=autocompleteSettings id="channel-members" class="search" placeholder=(_ "Search_by_username") autocomplete="off"}}
+				<i class="icon-search"></i>
 				<ul class="selected-users">
 					{{#each selectedUsers}}
 						<li>{{.}} <i class="icon-cancel remove-room-member"></i></li>
