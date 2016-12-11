@@ -25,6 +25,9 @@ Template.channelSettings.helpers
 	editing: (field) ->
 		return Template.instance().editing.get() is field
 
+	isDisabled: (field, room) ->
+		return Template.instance().settings[field].processing.get() or !RocketChat.authz.hasAllPermission('edit-room', room._id)
+
 	channelSettings: ->
 		return RocketChat.ChannelSettings.getOptions()
 
@@ -81,8 +84,9 @@ Template.channelSettings.events
 
 	'click [data-edit]': (e, t) ->
 		e.preventDefault()
-		t.editing.set($(e.currentTarget).data('edit'))
-		setTimeout (-> t.$('input.editing').focus().select()), 100
+		if $(e.currentTarget).data('edit')
+			t.editing.set($(e.currentTarget).data('edit'))
+			setTimeout (-> t.$('input.editing').focus().select()), 100
 
 	'change [type="radio"]': (e, t) ->
 		t.editing.set($(e.currentTarget).attr('name'))
@@ -187,6 +191,7 @@ Template.channelSettings.onCreated ->
 			type: 'boolean'
 			label: 'Room_archivation_state_true'
 			isToggle: true,
+			processing: new ReactiveVar(false)
 			canView: (room) => room.t isnt 'd'
 			canEdit: (room) => RocketChat.authz.hasAtLeastOnePermission(['archive-room', 'unarchive-room'], room._id)
 			save: (value, room) =>
