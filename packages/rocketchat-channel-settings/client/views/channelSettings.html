@@ -15,33 +15,29 @@
 										<label>{{_ $value.label}}</label>
 										<div class="setting-block">
 											{{#if $eq $value.type 'text'}}
-												{{#if $value.canEdit room}}
-													{{#if editing $key}}
+												{{#if editing $key}}
+													{{#if $value.canEdit room}}
 														<input type="text" name="{{$key}}" value="{{value}}" class="editing" />
-													{{else}}
-														<span class='current-setting' data-edit="{{$key}}">{{value}}</span>
 													{{/if}}
 												{{else}}
-													<span class='current-setting'>{{value}}</span>
+													<span class='current-setting' data-edit="{{#if $value.canEdit room}}{{$key}}{{else}}false{{/if}}">{{value}}</span>
 												{{/if}}
 											{{/if}}
 
 											{{#if $eq $value.type 'markdown'}}
-												{{#if $value.canEdit room}}
-													{{#if editing $key}}
+												{{#if editing $key}}
+													{{#if $value.canEdit room}}
 														<input type="text" name="{{$key}}" value="{{unscape value}}" class="editing" />
-													{{else}}
-														<span class='current-setting' data-edit="{{$key}}">{{{RocketChatMarkdown value}}}</span>
 													{{/if}}
 												{{else}}
-													<span class='current-setting'>{{{RocketChatMarkdown value}}}</span>
+													<span class='current-setting' data-edit="{{#if $value.canEdit room}}{{$key}}{{else}}false{{/if}}">{{{RocketChatMarkdown value}}}</span>
 												{{/if}}
 											{{/if}}
 
 											{{#if $eq $value.type 'select'}}
 												{{#each toArray $value.options}}
 													<div class="input radio">
-														<input type="radio" id="{{$key}}" name="{{../$key}}" value="{{$key}}" checked="{{$eq value $key}}" />
+														<input type="radio" id="{{$key}}" name="{{../$key}}" value="{{$key}}" checked="{{$eq value $key}}" disabled="{{isDisabled $key room}}" />
 														<label for="{{$key}}">{{_ $value}}</label>
 													</div>
 												{{/each}}
@@ -49,11 +45,7 @@
 
 											{{#if $eq $value.type 'boolean'}}
 												<div class="input checkbox toggle">
-													{{#if $value.canEdit room}}
-														<input type="checkbox" id="{{$key}}" name="{{$key}}" value="{{value}}" checked="{{$eq value true}}" disabled="{{$value.processing.get}}" />
-													{{else}}
-														<input type="checkbox" id="{{$key}}" name="{{$key}}" value="{{value}}" checked="{{$eq value true}}" disabled />
-													{{/if}}
+													<input type="checkbox" id="{{$key}}" name="{{$key}}" value="{{value}}" checked="{{$eq value true}}" disabled="{{isDisabled $key room}}" />
 													<label for="{{$key}}"></label>
 												</div>
 												{{#if $value.canEdit room}}
