@@ -271,6 +271,9 @@ blockquote:before {
 		}
 		.message-buttons {
 			.buttonColors(lighten(@primary-font-color, 25%), @secondary-background-color);
+			&:hover {
+				background-color: mix(@secondary-background-color, contrast(@primary-font-color), 20%);
+			}
 		}
 		textarea {
 			&.editing {
