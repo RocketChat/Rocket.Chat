@@ -171,6 +171,16 @@ Template.channelSettings.onCreated ->
 					return handleError err if err
 					toastr.success TAPi18n.__ 'Read_only_changed_successfully'
 
+		reactWhenReadOnly:
+			type: 'boolean'
+			label: 'React_when_read_only'
+			canView: (room) => room.t isnt 'd' and room.ro
+			canEdit: (room) => RocketChat.authz.hasAllPermission('set-react-when-readonly', room._id)
+			save: (value, room) ->
+				Meteor.call 'saveRoomSettings', room._id, 'reactWhenReadOnly', value, (err, result) ->
+					return handleError err if err
+					toastr.success TAPi18n.__ 'React_when_read_only_changed_successfully'
+
 		archived:
 			type: 'boolean'
 			label: 'Room_archivation_state_true'

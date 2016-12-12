@@ -128,7 +128,6 @@ Template.message.helpers
 	hideReactions: ->
 		return 'hidden' if _.isEmpty(@reactions)
 
-
 	actionLinks: ->
 		# remove 'method_id' and 'params' properties
 		return _.map(@actionLinks, (actionLink, key) -> _.extend({ id: key }, _.omit(actionLink, 'method_id', 'params')))
