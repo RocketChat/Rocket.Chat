@@ -21,10 +21,8 @@ describe.skip('user preferences', ()=> {
 
 		sideNav.accountBoxUserName.waitForVisible();
 		sideNav.accountBoxUserName.click();
-		browser.pause(500);
 		sideNav.account.waitForVisible();
 		sideNav.account.click();
-		browser.pause(1000);
 	});
 
 	describe('render', ()=> {
@@ -42,7 +40,6 @@ describe.skip('user preferences', ()=> {
 
 		it('click on the profile link', ()=> {
 			sideNav.profile.click();
-			browser.pause(1000);
 		});
 
 		it('should show the username input', ()=> {
@@ -70,7 +67,6 @@ describe.skip('user preferences', ()=> {
 	describe.skip('user info change', ()=> {
 		it('click on the profile link', ()=> {
 			sideNav.profile.click();
-			browser.pause(1000);
 		});
 
 		it('change the name field', ()=> {
@@ -103,7 +99,6 @@ describe.skip('user preferences', ()=> {
 
 		it('close the preferences menu', () => {
 			sideNav.preferencesClose.click();
-			browser.pause(3000);
 		});
 
 		it('open GENERAL', () => {

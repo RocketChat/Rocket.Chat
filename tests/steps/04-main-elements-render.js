@@ -210,7 +210,7 @@ describe('Main Elements Render', function() {
 				});
 
 				it('should show the room info tab content', () => {
-					browser.pause(7000);
+					flexTab.channelSettings.waitForVisible(5000);
 					flexTab.channelSettings.isVisible().should.be.true;
 				});
 
