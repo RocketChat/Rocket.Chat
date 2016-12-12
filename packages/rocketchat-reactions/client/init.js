@@ -7,7 +7,7 @@ Template.room.events({
 		let user = Meteor.user();
 		let room = RocketChat.models.Rooms.findOne({ _id: data._arguments[1].rid });
 
-		if (Array.isArray(room.muted) && room.muted.indexOf(user.username) !== -1) {
+		if (Array.isArray(room.muted) && room.muted.indexOf(user.username) !== -1 && !room.reactWhenReadOnly) {
 			return false;
 		}
 
