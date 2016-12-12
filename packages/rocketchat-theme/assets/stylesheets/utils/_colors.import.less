@@ -16,6 +16,9 @@
 @pending-background: lighten(@pending-color, 45%);
 @pending-border: lighten(@pending-color, 30%);
 @window-border-color: @component-color;
+@code-background-color: #f8f8f8;
+@code-border-color: #ccc;
+@code-font-color: #333;
 
 /** ----------------------------------------------------------------------------
  * Document components
@@ -37,9 +40,9 @@ body {
 }
 
 code {
-	background-color: @transparent-dark;
-	border-color: @component-color;
-	color: @secondary-font-color;
+	background-color: @code-background-color;
+	border-color: @code-border-color;
+	color: @code-font-color;
 }
 
 blockquote:before {
