@@ -13,6 +13,8 @@ Meteor.methods({
 			return false;
 		} else if (!RocketChat.models.Subscriptions.findOne({ rid: message.rid })) {
 			return false;
+		} else if (message.private) {
+			return false;
 		}
 
 		if (message.reactions && message.reactions[reaction] && message.reactions[reaction].usernames.indexOf(user.username) !== -1) {
