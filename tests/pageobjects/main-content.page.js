@@ -81,7 +81,6 @@ class MainContent extends Page {
 	fileUpload(filePath) {
 		this.sendMessage('Prepare for the file');
 		this.fileAttachment.chooseFile(filePath);
-		browser.pause(1000);
 	}
 
 	openMessageActionMenu() {
@@ -92,9 +91,7 @@ class MainContent extends Page {
 
 	setLanguageToEnglish() {
 		this.settingLanguageSelect.click();
-		browser.pause(500);
 		this.settingLanguageEnglish.click();
-		browser.pause(300);
 		this.settingSaveBtn.click();
 	}
 

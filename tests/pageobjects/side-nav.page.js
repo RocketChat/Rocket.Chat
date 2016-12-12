@@ -85,14 +85,14 @@ class SideNav extends Page {
 
 	startDirectMessage(user) {
 		this.newDirectMessageBtn.click();
-		browser.pause(1000);
 		this.directMessageTarget.waitForVisible(3000);
 		this.directMessageTarget.setValue(user);
 		browser.waitForVisible('.-autocomplete-item', 3000);
-		browser.pause(500);
 		browser.click('.-autocomplete-item');
+		browser.pause(200);
 		this.saveDirectMessageBtn.click();
 		browser.waitForExist('[title="'+user+'"]');
+		this.channelType.waitForVisible(500, true);
 	}
 }
 
