@@ -28,7 +28,28 @@ const login = {
 	password: process.env.ADMIN_PASS
 };
 
-describe('API', () => {
+describe('API default', () => {
+	// Required by mobile apps
+	it('/info', (done) => {
+		request.get('/api/info')
+			.expect('Content-Type', 'application/json')
+			.expect(200)
+			.expect((res) => {
+				expect(res.body).to.have.property('version');
+				expect(res.body).to.have.deep.property('build.date');
+				expect(res.body).to.have.deep.property('build.nodeVersion');
+				expect(res.body).to.have.deep.property('build.arch');
+				expect(res.body).to.have.deep.property('build.platform');
+				expect(res.body).to.have.deep.property('build.osRelease');
+				expect(res.body).to.have.deep.property('build.totalMemory');
+				expect(res.body).to.have.deep.property('build.freeMemory');
+				expect(res.body).to.have.deep.property('build.cpus');
+			})
+			.end(done);
+	});
+});
+
+describe('API v1', () => {
 	before((done) => {
 		request.post(api('/login'))
 			.send(login)

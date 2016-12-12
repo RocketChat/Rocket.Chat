@@ -127,7 +127,8 @@ RocketChat.Livechat = {
 					username: username,
 					globalRoles: ['livechat-guest'],
 					department: department,
-					type: 'visitor'
+					type: 'visitor',
+					joinDefaultChannels: false
 				};
 
 				if (this.connection) {
