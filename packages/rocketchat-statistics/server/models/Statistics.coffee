@@ -1,6 +1,6 @@
 RocketChat.models.Statistics = new class extends RocketChat.models._Base
 	constructor: ->
-		@_initModel 'statistics'
+		super('statistics')
 
 		@tryEnsureIndex { 'createdAt': 1 }
 

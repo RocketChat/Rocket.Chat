@@ -17,7 +17,8 @@ Template.channels.helpers
 		return ChatSubscription.find query, { sort: 't': 1, 'name': 1 }
 
 	canCreate: ->
-		return RocketChat.authz.hasAtLeastOnePermission ['create-c']
+		#return RocketChat.authz.hasAtLeastOnePermission ['create-c']
+		return false
 
 Template.channels.events
 	'click .add-room': (e, instance) ->
@@ -28,5 +29,5 @@ Template.channels.events
 			e.preventDefault()
 
 	'click .more-channels': ->
-		SideNav.setFlex "listChannelsFlex"
-		SideNav.openFlex()
+		#SideNav.setFlex "listChannelsFlex"
+		#SideNav.openFlex()

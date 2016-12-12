@@ -6,13 +6,12 @@ Package.describe({
 });
 
 Package.onUse(function(api) {
-	api.versionsFrom('1.0');
 	api.use([
 		'coffeescript',
-		'rocketchat:lib@0.0.1',
-		'rocketchat:importer@0.0.1'
+		'rocketchat:lib',
+		'rocketchat:importer'
 	]);
-	api.use(['mrt:moment-timezone@0.2.1'], 'server');
+	api.use('aldeed:moment-timezone', 'server');
 	api.use('rocketchat:logger', 'server');
 	api.addFiles('server.coffee', 'server');
 	api.addFiles('main.coffee', ['client', 'server']);

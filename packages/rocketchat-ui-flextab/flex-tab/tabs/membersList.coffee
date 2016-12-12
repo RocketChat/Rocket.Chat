@@ -16,8 +16,10 @@ Template.membersList.helpers
 
 	roomUsers: ->
 		onlineUsers = RoomManager.onlineUsers.get()
-		roomUsernames = ChatRoom.findOne(this.rid)?.usernames or []
+		room = ChatRoom.findOne(this.rid)
+		roomUsernames = room?.usernames or []
 		roomOnlineUsernames = roomUsernames.filter((username) -> onlineUsers[username])
+		roomMuted = room?.muted or []
 
 		if Template.instance().showAllUsers.get()
 			usernames = roomUsernames
@@ -31,10 +33,16 @@ Template.membersList.helpers
 				if utcOffset > 0
 					utcOffset = "+#{utcOffset}"
 				utcOffset = "(UTC #{utcOffset})"
+			user = Meteor.users.findOne({username:username})
+			if (user)
+				realname = user.name
+			else
+				realname = username
 
 			return {
-				username: username
+				username: realname
 				status: onlineUsers[username]?.status
+				muted: username in roomMuted
 				utcOffset: utcOffset
 			}
 
@@ -78,7 +86,7 @@ Template.membersList.helpers
 					noMatchTemplate: Template.userSearchEmpty
 					matchAll: true
 					filter:
-						exceptions: [Meteor.user().username, Meteor.user().name]
+						exceptions: [Meteor.user().username]
 					selector: (match) ->
 						return { term: match }
 					sort: 'username'

@@ -14,6 +14,13 @@ Template.username.helpers
 		return Template.instance().username.get()
 
 Template.username.events
+	'focus .input-text input': (event) ->
+		$(event.currentTarget).parents('.input-text').addClass('focus')
+
+	'blur .input-text input': (event) ->
+		if event.currentTarget.value is ''
+			$(event.currentTarget).parents('.input-text').removeClass('focus')
+
 	'submit #login-card': (event, instance) ->
 		event.preventDefault()
 
@@ -26,7 +33,7 @@ Template.username.events
 		button = $(event.target).find('button.login')
 		RocketChat.Button.loading(button)
 
-		value = $("input").val().trim()
+		value = $("#username").val().trim()
 		if value is ''
 			username.empty = true
 			instance.username.set(username)

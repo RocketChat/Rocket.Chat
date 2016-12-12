@@ -51,7 +51,13 @@ Template.sideNav.events
 	'scroll .rooms-list': ->
 		menu.updateUnreadBars()
 
+	'dropped .side-nav': (e) ->
+		e.preventDefault()
+
 Template.sideNav.onRendered ->
+	Meteor.subscribe 'room', "c"
+	Meteor.subscribe 'room', "p"
+	Meteor.subscribe 'room', "d"
 	SideNav.init()
 	menu.init()
 

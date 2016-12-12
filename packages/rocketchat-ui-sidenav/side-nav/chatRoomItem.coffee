@@ -12,10 +12,23 @@ Template.chatRoomItem.helpers
 		return 'status-' + (Session.get('user_' + this.name + '_status') or 'offline')
 
 	name: ->
-		return this.name
+		if this.t != "d"
+			project_info = ChatRoom.findOne(this.rid)?.details
+			if project_info
+				return project_info?.name
+		else
+			user = Meteor.users.findOne({username:this.name})
+			return user?.name
 
 	roomIcon: ->
 		return RocketChat.roomTypes.getIcon this.t
+
+	isNotDirect: ->
+		roomIcon = RocketChat.roomTypes.getIcon this.t
+		if roomIcon != "icon-at"
+			return true
+		else
+			return false
 
 	active: ->
 		if Session.get('openedRoom') is this.rid
@@ -26,13 +39,16 @@ Template.chatRoomItem.helpers
 
 		return false unless roomData
 
-		if (roomData.cl? and not roomData.cl) or roomData.t is 'd' or (roomData.usernames?.indexOf(Meteor.user().username) isnt -1 and roomData.usernames?.length is 1)
+		if (roomData.cl? and not roomData.cl) or roomData.t is 'd'
 			return false
 		else
 			return true
 
 	route: ->
 		return RocketChat.roomTypes.getRouteLink @t, @
+
+	archived: ->
+		return if this.archived then 'archived'
 
 Template.chatRoomItem.rendered = ->
 	if not (FlowRouter.getParam('_id')? and FlowRouter.getParam('_id') is this.data.rid) and not this.data.ls and this.data.alert is true
@@ -72,6 +88,9 @@ Template.chatRoomItem.events
 			Meteor.call 'hideRoom', rid, (err) ->
 				if err
 					handleError(err)
+				else
+					if rid is Session.get('openedRoom')
+						Session.delete('openedRoom')
 
 	'click .leave-room': (e) ->
 		e.stopPropagation()
@@ -113,3 +132,7 @@ Template.chatRoomItem.events
 						RoomManager.close rid
 			else
 				swal.close()
+
+	'click .add-people': ->
+		project_info = ChatRoom.findOne(this.rid).details
+		window.open project_info.url

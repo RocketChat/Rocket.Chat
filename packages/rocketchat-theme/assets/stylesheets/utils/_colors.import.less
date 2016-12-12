@@ -1,16 +1,34 @@
-.custom-scroll(@background, @thumb, @width: 8px, @height: 8px) {
-	&::-webkit-scrollbar {
-		height: @height;
-		width: @width;
-		background: @background;
-	}
-	&::-webkit-scrollbar-thumb {
-		background-color: @thumb;
-		-webkit-border-radius: 50px;
-	}
-	&::-webkit-scrollbar-corner {
-		background-color: @background;
-	}
+/** ----------------------------------------------------------------------------
+ * Derivative colours (fixed variants of inherited variables)
+ */
+
+@primary-action-color: @action-buttons-color;
+@secondary-action-color: @primary-font-color;
+@success-color: rgba(53, 172, 25, 1.0);
+@error-color: rgba(188, 32, 49, 1.0);
+@pending-color: #fcb316;
+@component-color: @input-font-color;
+@selection-color: @info-active-font-color;
+
+@primary-background-contrast: contrast(@primary-background-color, #444);
+@primary-action-contrast: contrast(@primary-action-color, #444);
+@secondary-action-contrast: contrast(@secondary-action-color, #444);
+@selection-background: lighten(@selection-color, 30%);
+@success-background: lighten(@success-color, 40%);
+@success-border: lighten(@success-color, 30%);
+@error-background: lighten(@error-color, 40%);
+@error-border: lighten(@error-color, 30%);
+@error-contrast: contrast(@error-color);
+@pending-background: lighten(@pending-color, 40%);
+@pending-border: lighten(@pending-color, 30%);
+@window-border-color: @component-color;
+
+/** ----------------------------------------------------------------------------
+ * Document components
+ */
+
+html {
+	.custom-scroll(transparent, @custom-scrollbar-color, 0);
 }
 
 a {
@@ -129,7 +147,6 @@ html {
 
 body {
 	color: @primary-font-color;
-	background-color: @primary-background-color;
 }
 
 textarea,
@@ -213,58 +230,56 @@ label.required:after {
 
 // new layout buttons
 .button {
-	color: rgba(255, 255, 255, 0.85);
-	background-color: @action-buttons-color;
-	&:before {
-		background-color: rgba(0, 0, 0, 0.1);
+	.buttonColors(@secondary-action-contrast, @secondary-action-color);
+	&.button-primary,
+	&.primary,
+	&.save,
+	&.send,
+	&.start {
+		.buttonColors(@primary-action-contrast, @primary-action-color);
 	}
-	&:hover {
-		color: #FFF;
-	}
-	&.secondary {
-		background-color: @tertiary-background-color;
-		color: @primary-font-color;
-		&:before {
-			background-color: rgba(0, 0, 0, 0.045);
-		}
-	}
+	// TODO: Secondary button usage needs refactor and guidelines to be consistent
+	// &.back,
+	// &.cancel,
+	// &.secondary {
+	// 	.buttonColors(@secondary-action-contrast,@secondary-action-color);
+	// }
 	&.delete,
+	&.delete-role,
+	&.end,
+	&.logout,
+	&.mute-user,
 	&.remove,
-	&.red {
-		background-color: #bc2031;
+	&.remove-user,
+	&.stop-call {
+		.buttonColors(@error-contrast, @error-color);
 	}
-	&.lightblue {
-		background-color: #02acec;
-		&:disabled {
-			background-color: desaturate(#02acec, 20%);
+	&.external-login {
+		color: white;
+		&.facebook {
+			background-color: #325c99;
 		}
-	}
-	&.clean {
-		background-color: @clean-buttons-color;
-	}
-	&.facebook {
-		background-color: #325c99;
-	}
-	&.twitter {
-		background-color: #02acec;
-	}
-	&.google {
-		background-color: #dd4b39;
-	}
-	&.github {
-		background-color: #4c4c4c;
-	}
-	&.gitlab {
-		background-color: #373d47;
-	}
-	&.trello {
-		background-color: #026aa7;
-	}
-	&.meteor-developer {
-		background-color: #de4f4f;
-	}
-	&.wordpress {
-		background-color: #1e8cbe;
+		&.twitter {
+			background-color: #02acec;
+		}
+		&.google {
+			background-color: #dd4b39;
+		}
+		&.github {
+			background-color: #4c4c4c;
+		}
+		&.gitlab {
+			background-color: #373d47;
+		}
+		&.trello {
+			background-color: #026aa7;
+		}
+		&.meteor-developer {
+			background-color: #de4f4f;
+		}
+		&.wordpress {
+			background-color: #1e8cbe;
+		}
 	}
 }
 
@@ -391,9 +406,9 @@ a.github-fork {
 		span.soon {
 			color: #aaa;
 		}
-		button, a {
+		button,
+		a {
 			color: fade( @quaternary-font-color, 50%);
-			border-bottom-color: darken(@primary-background-color, 2%);
 			&:hover {
 				background-color: darken(@primary-background-color, 2%);
 				color: fade( @quaternary-font-color, 75%);
@@ -628,7 +643,6 @@ a.github-fork {
 					&:nth-child(odd) {
 						background-color: @secondary-background-color;
 					}
-
 					&.row-link {
 						cursor: pointer;
 						&:hover {
@@ -636,7 +650,6 @@ a.github-fork {
 						}
 					}
 				}
-
 				td {
 					a {
 						color: @link-font-color;
@@ -689,6 +702,7 @@ a.github-fork {
 
 // change to page-messages
 .messages-container {
+	border-right-color: @tertiary-background-color;
 	.edit-room-title {
 		color: @secondary-font-color;
 		&:hover {
@@ -701,38 +715,6 @@ a.github-fork {
 	.footer {
 		background: #FCFCFC;
 		border-top-color: @tertiary-background-color;
-	}
-	.message-popup {
-		background: #FFF;
-	}
-	.message-popup-title {
-		background-color: @secondary-background-color;
-		border-bottom-color: #E7E7E7;
-	}
-	.popup-item {
-		color: @secondary-font-color;
-		&.selected {
-			background-color: #4CAEEB;
-			color: #FFF;
-		}
-	}
-	.popup-user-status {
-		border-color: rgba(0, 0, 0, .2);
-	}
-	.popup-user-status-system {
-		border-color: transparent;
-	}
-	.popup-user-status-offline {
-		background-color: @status-offline;
-	}
-	.popup-user-status-online {
-		background-color: @status-online;
-	}
-	.popup-user-status-away {
-		background-color: @status-away;
-	}
-	.popup-user-status-busy {
-		background-color: @status-busy;
 	}
 	.message-form {
 		> .message-input {
@@ -748,11 +730,12 @@ a.github-fork {
 			}
 		}
 		textarea {
+			.custom-scroll(transparent, #EAEAEA);
 			&.editing {
 				background-color: #fff7d8;
 			}
 		}
-		.users-typing {
+		.stream-info {
 			color: #888888;
 			background: #FCFCFC;
 		}
@@ -771,6 +754,47 @@ a.github-fork {
 			}
 		}
 	}
+}
+
+.message-popup {
+	background: #FFF;
+}
+
+.message-popup-title {
+	background-color: @secondary-background-color;
+	border-bottom-color: #E7E7E7;
+}
+
+.popup-item {
+	color: @secondary-font-color;
+	&.selected {
+		background-color: #4CAEEB;
+		color: #FFF;
+	}
+}
+
+.popup-user-status {
+	border-color: rgba(0, 0, 0, .2);
+}
+
+.popup-user-status-system {
+	border-color: transparent;
+}
+
+.popup-user-status-offline {
+	background-color: @status-offline;
+}
+
+.popup-user-status-online {
+	background-color: @status-online;
+}
+
+.popup-user-status-away {
+	background-color: @status-away;
+}
+
+.popup-user-status-busy {
+	background-color: @status-busy;
 }
 
 .messages-box {
@@ -796,12 +820,15 @@ a.github-fork {
 
 .message {
 	&.new-day {
-		&:before {
+		.day-divider {
 			color: @secondary-font-color;
 			background-color: @content-background-color;
-		}
-		&:after {
-			border-top-color: #ddd;
+			span {
+				background-color: @content-background-color;
+			}
+			&:before {
+				border-bottom-color: @tertiary-background-color;
+			}
 		}
 	}
 	.user {
@@ -832,7 +859,6 @@ a.github-fork {
 // FLEX-TAB and FLEX-TAB views
 .flex-tab {
 	background-color: @secondary-background-color;
-	border-left-color: @tertiary-background-color;
 	.control {
 		background-color: @secondary-background-color;
 		&:before {
@@ -896,11 +922,14 @@ a.github-fork {
 	}
 	.message {
 		&.new-day {
-			&:before {
+			.day-divider {
 				background-color: @secondary-background-color;
-			}
-			&:after {
-				border-top-color: @tertiary-background-color;
+				span {
+					background-color: @secondary-background-color;
+				}
+				&:before {
+					border-bottom-color: @tertiary-background-color;
+				}
 			}
 		}
 	}
@@ -962,7 +991,6 @@ a.github-fork {
 		}
 	}
 	.box {
-		h4 {}
 		&:after {
 			background-color: #CDCDCD;
 		}
@@ -995,7 +1023,6 @@ a.github-fork {
 		}
 		.form-divisor {
 			border-bottom: 1px solid #ddd;
-
 			> span {
 				background-color: @secondary-background-color;
 			}
@@ -1016,7 +1043,6 @@ a.github-fork {
 	&:hover,
 	&.selected {
 		.avatar {
-			&:after {}
 			.status-offline {
 				&:after {
 					background-color: @status-offline;
@@ -1128,17 +1154,9 @@ a.github-fork {
 			color: #b40202;
 		}
 	}
-	a {
-		color: @primary-background-color;
-		&:active {
-			color: @primary-background-color;
-		}
-		&:hover {
-			color: darken(@primary-background-color, 10%);
-		}
-	}
 	.input-text {
-		input {
+		input,
+		select {
 			background-color: transparent;
 			border-bottom-color: #DFDFDF;
 			&.error {
@@ -1160,10 +1178,9 @@ a.github-fork {
 			}
 		}
 		input:-webkit-autofill {
-			color: @content-background-color !important;
-		}
-		input:-webkit-autofill {
-			background-color: transparent !important;
+			color: @primary-font-color !important;
+			background-color: #FAFAFA !important;
+			-webkit-box-shadow: 0 0 0px 1000px #FAFAFA inset;
 		}
 	}
 }
@@ -1241,9 +1258,17 @@ a.github-fork {
 }
 
 .flex-tab-bar {
+	background: #FCFCFC;
 	.tab-button {
+		&:hover {
+			background: #EAEAEA;
+		}
 		&.red {
 			color: red;
+		}
+		&.active {
+			background-color: @secondary-background-color;
+			border-color: #ff0000;
 		}
 		&.attention {
 			animation-duration: 1000ms;

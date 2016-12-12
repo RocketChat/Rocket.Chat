@@ -15,12 +15,11 @@ class MentionsClient
 				mentions.push mention
 
 			me = Meteor.user()?.username
-
 			if mentions.length isnt 0
 				mentions = _.unique mentions
 				mentions = mentions.join('|')
 				msg = msg.replace new RegExp("(?:^|\\s|\\n)(@(#{mentions}):?)[:.,\s]?", 'g'), (match, mention, username) ->
-					if username is 'all'
+					if username is 'all' or username is 'here'
 						return match.replace mention, "<a class=\"mention-link mention-link-me mention-link-all\">#{mention}</a>"
 
 					if not message.temp?
@@ -30,7 +29,11 @@ class MentionsClient
 					classes = 'mention-link'
 					if username is me
 						classes += ' mention-link-me'
-
+					user = Meteor.users.findOne({name:username})
+					if (!user)
+						user = Meteor.users.findOne({username:username})
+					if user?.name
+						return match.replace mention, "<a class=\"#{classes}\" data-username=\"#{username}\">@#{user.name}</a>"
 					return match.replace mention, "<a class=\"#{classes}\" data-username=\"#{username}\">#{mention}</a>"
 
 			channels = []
@@ -51,5 +54,5 @@ class MentionsClient
 			message.html = msg
 		return message
 
-RocketChat.callbacks.add 'renderMessage', MentionsClient
-RocketChat.callbacks.add 'renderMentions', MentionsClient
+RocketChat.callbacks.add 'renderMessage', MentionsClient, RocketChat.callbacks.priority.MEDIUM, 'mentions-message'
+RocketChat.callbacks.add 'renderMentions', MentionsClient, RocketChat.callbacks.priority.MEDIUM, 'mentions-mentions'

@@ -1,16 +1,87 @@
 /* globals Inject */
 
 Inject.rawBody('page-loading', `
-	<div id="initial-page-loading" class="page-loading">
-		<div class="spinner">
-			<div class="rect1"></div>
-			<div class="rect2"></div>
-			<div class="rect3"></div>
-			<div class="rect4"></div>
-			<div class="rect5"></div>
-		</div>
-	</div>`
-);
+<style>
+.loading {
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	display: flex;
+	align-items: center;
+	position: absolute;
+	justify-content: center;
+	text-align: center;
+}
+.loading > div {
+	width: 10px;
+	height: 10px;
+	margin: 2px;
+	border-radius: 100%;
+	display: inline-block;
+	-webkit-animation: loading-bouncedelay 1.4s infinite ease-in-out both;
+	animation: loading-bouncedelay 1.4s infinite ease-in-out both;
+}
+.loading .bounce1 {
+	-webkit-animation-delay: -0.32s;
+	animation-delay: -0.32s;
+}
+.loading .bounce2 {
+	-webkit-animation-delay: -0.16s;
+	animation-delay: -0.16s;
+}
+@-webkit-keyframes loading-bouncedelay {
+	0%, 80%, 100% { -webkit-transform: scale(0) }
+	40% { -webkit-transform: scale(1.0) }
+}
+@keyframes loading-bouncedelay {
+	0%, 80%, 100% { transform: scale(0); }
+	40% { transform: scale(1.0); }
+}
+</style>
+<div id="initial-page-loading" class="page-loading">
+	<div class="loading">
+		<div class="bounce1"></div>
+		<div class="bounce2"></div>
+		<div class="bounce3"></div>
+	</div>
+</div>`);
+
+
+RocketChat.settings.get('theme-color-primary-background-color', function(key, value) {
+	if (value) {
+		Inject.rawHead('theme-color-primary-background-color', `<style>body { background-color: ${value};}</style>`);
+	} else {
+		Inject.rawHead('theme-color-primary-background-color', '<style>body { background-color: #04436a;}</style>');
+	}
+});
+
+RocketChat.settings.get('theme-color-tertiary-background-color', function(key, value) {
+	if (value) {
+		Inject.rawHead('theme-color-tertiary-background-color', `<style>.loading > div { background-color: ${value};}</style>`);
+	} else {
+		Inject.rawHead('theme-color-tertiary-background-color', '<style>.loading > div { background-color: #cccccc;}</style>');
+	}
+});
+
+RocketChat.settings.get('Accounts_ForgetUserSessionOnWindowClose', function(key, value) {
+	if (value) {
+		Inject.rawModHtml('Accounts_ForgetUserSessionOnWindowClose', function(html) {
+			const script = `
+				<script>
+					if (Meteor._localStorage._data === undefined && window.sessionStorage) {
+						Meteor._localStorage = window.sessionStorage;
+					}
+				</script>
+			`;
+			return html.replace(/<\/body>/, script+'\n</body>');
+		});
+	} else {
+		Inject.rawModHtml('Accounts_ForgetUserSessionOnWindowClose', function(html) {
+			return html;
+		});
+	}
+});
 
 RocketChat.settings.get('Site_Url', function() {
 	Meteor.defer(function() {
@@ -25,6 +96,14 @@ RocketChat.settings.get('Site_Url', function() {
 		}
 		Inject.rawHead('base', `<base href="${baseUrl}">`);
 	});
+});
+
+RocketChat.settings.get('Site_Name', function(key, value) {
+	if (value) {
+		Inject.rawHead('title', `<title>${value}</title>`);
+	} else {
+		Inject.rawHead('title', '<title>Rocket.Chat</title>');
+	}
 });
 
 RocketChat.settings.get('GoogleSiteVerification_id', function(key, value) {

@@ -25,7 +25,7 @@ Template.privateGroupsFlex.helpers
 					noMatchTemplate: Template.userSearchEmpty
 					matchAll: true
 					filter:
-						exceptions: [Meteor.user().username, Meteor.user().name].concat(Template.instance().selectedUsers.get())
+						exceptions: [Meteor.user().username].concat(Template.instance().selectedUsers.get())
 					selector: (match) ->
 						return { term: match }
 					sort: 'username'
@@ -80,9 +80,10 @@ Template.privateGroupsFlex.events
 	'click .save-pvt-group': (e, instance) ->
 		err = SideNav.validate()
 		name = instance.find('#pvt-group-name').value.toLowerCase().trim()
+		readOnly = instance.find('#channel-ro').checked
 		instance.groupName.set name
 		if not err
-			Meteor.call 'createPrivateGroup', name, instance.selectedUsers.get(), (err, result) ->
+			Meteor.call 'createPrivateGroup', name, instance.selectedUsers.get(), readOnly, (err, result) ->
 				if err
 					if err.error is 'error-invalid-name'
 						instance.error.set({ invalid: true })
@@ -96,7 +97,7 @@ Template.privateGroupsFlex.events
 					return handleError(err)
 				SideNav.closeFlex()
 				instance.clearForm()
-				FlowRouter.go 'group', { name: name }
+				FlowRouter.go 'group', { name: name }, FlowRouter.current().queryParams
 		else
 			Template.instance().error.set({fields: err})
 

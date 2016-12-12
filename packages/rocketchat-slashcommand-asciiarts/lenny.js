@@ -16,5 +16,5 @@ function LennyFace(command, params, item) {
 
 RocketChat.slashCommands.add('lennyface', LennyFace, {
 	description: 'Slash_LennyFace_Description',
-	params: 'your message (optional)'
+	params: 'your_message_optional'
 });

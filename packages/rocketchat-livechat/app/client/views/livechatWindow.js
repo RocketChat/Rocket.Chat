@@ -1,4 +1,5 @@
-/* globals Department, Livechat */
+/* globals Department, Livechat, LivechatVideoCall */
+
 Template.livechatWindow.helpers({
 	title() {
 		return Livechat.title;
@@ -38,6 +39,9 @@ Template.livechatWindow.helpers({
 			displayOfflineForm: Livechat.displayOfflineForm
 		};
 	},
+	videoCalling() {
+		return LivechatVideoCall.isActive();
+	}
   usersTyping() {
     room_typing = MsgTyping.get(visitor.getRoom());
     users = _.keys(room_typing.users);
@@ -103,13 +107,14 @@ Template.livechatWindow.onCreated(function() {
 				Livechat.title = result.title;
 				Livechat.onlineColor = result.color;
 				Livechat.online = true;
+				Livechat.transcript = result.transcript;
+				Livechat.transcriptMessage = result.transcriptMessage;
 			}
+			Livechat.videoCall = result.videoCall;
 			Livechat.registrationForm = result.registrationForm;
 
 			if (result.room) {
-				RoomHistoryManager.getMoreIfIsEmpty(result.room._id);
-				visitor.subscribeToRoom(result.room._id);
-				visitor.setRoom(result.room._id);
+				Livechat.room = result.room._id;
 			}
 
 			TAPi18n.setLanguage((result.language || defaultAppLanguage()).split('-').shift());

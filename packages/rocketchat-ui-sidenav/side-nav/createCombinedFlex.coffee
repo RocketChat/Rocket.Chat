@@ -25,7 +25,7 @@ Template.createCombinedFlex.helpers
 					noMatchTemplate: Template.userSearchEmpty
 					matchAll: true
 					filter:
-						exceptions: [Meteor.user().username, Meteor.user().name].concat(Template.instance().selectedUsers.get())
+						exceptions: [Meteor.user().username].concat(Template.instance().selectedUsers.get())
 					selector: (match) ->
 						return { term: match }
 					sort: 'username'
@@ -89,11 +89,12 @@ Template.createCombinedFlex.events
 		err = SideNav.validate()
 		name = instance.find('#channel-name').value.toLowerCase().trim()
 		privateGroup = instance.find('#channel-type').checked
+		readOnly = instance.find('#channel-ro').checked
 		createRoute = if privateGroup then 'createPrivateGroup' else 'createChannel'
 		successRoute = if privateGroup then 'group' else 'channel'
 		instance.roomName.set name
 		if not err
-			Meteor.call createRoute, name, instance.selectedUsers.get(), (err, result) ->
+			Meteor.call createRoute, name, instance.selectedUsers.get(), readOnly, (err, result) ->
 				if err
 					console.log err
 					if err.error is 'error-invalid-name'
@@ -114,7 +115,7 @@ Template.createCombinedFlex.events
 				if not privateGroup
 					RocketChat.callbacks.run 'aftercreateCombined', { _id: result.rid, name: name }
 
-				FlowRouter.go successRoute, { name: name }
+				FlowRouter.go successRoute, { name: name }, FlowRouter.current().queryParams
 		else
 			console.log err
 			instance.error.set({ fields: err })

@@ -17,6 +17,7 @@
 				n = new Notification notification.title,
 					icon: notification.icon or getAvatarUrlFromUsername notification.payload.sender.username
 					body: _.stripTags(message.msg)
+					tag: notification.payload._id,
 					silent: true
 
 				notificationDuration = (notification.duration - 0) or (Meteor.user()?.settings?.preferences?.desktopNotificationDuration - 0) or RocketChat.settings.get('Desktop_Notifications_Duration')
@@ -25,14 +26,15 @@
 
 				if notification.payload?.rid?
 					n.onclick = ->
+						this.close()
 						window.focus()
 						switch notification.payload.type
 							when 'd'
-								FlowRouter.go 'direct', {username: notification.payload.sender.username}
+								FlowRouter.go 'direct', { username: notification.payload.sender.username }, FlowRouter.current().queryParams
 							when 'c'
-								FlowRouter.go 'channel', {name: notification.payload.name}
+								FlowRouter.go 'channel', { name: notification.payload.name }, FlowRouter.current().queryParams
 							when 'p'
-								FlowRouter.go 'group', {name: notification.payload.name}
+								FlowRouter.go 'group', { name: notification.payload.name }, FlowRouter.current().queryParams
 
 	showDesktop: (notification) ->
 		if notification.payload.rid is Session.get('openedRoom') and window.document.hasFocus?()

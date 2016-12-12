@@ -122,16 +122,24 @@ class CustomOAuth
 
 			if identity?.CharacterID and not identity.id
 				identity.id = identity.CharacterID
-			
+
 			# Fix Dataporten having 'user.userid' instead of 'id'
 			if identity?.user?.userid and not identity.id
 				identity.id = identity.user.userid
 				identity.email = identity.user.email
-			
+
+			# Fix general 'phid' instead of 'id' from phabricator
+			if identity?.phid and not identity.id
+				identity.id = identity.phid
+
+			# Fix Keycloak-like identities having 'sub' instead of 'id'
+			if identity?.sub and not identity.id
+				identity.id = identity.sub
+
 			# Fix general 'userid' instead of 'id' from provider
 			if identity?.userid and not identity.id
 				identity.id = identity.userid
-				
+
 			# console.log 'id:', JSON.stringify identity, null, '  '
 
 			serviceData =
@@ -144,7 +152,7 @@ class CustomOAuth
 				serviceData: serviceData
 				options:
 					profile:
-						name: identity.name or identity.username or identity.nickname or identity.CharacterName or identity.user?.name
+						name: identity.name or identity.username or identity.nickname or identity.CharacterName or identity.userName or identity.preferred_username or identity.user?.name
 
 			# console.log data
 

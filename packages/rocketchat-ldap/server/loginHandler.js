@@ -1,4 +1,4 @@
-/* globals LDAP, slug, getLdapUsername, getLdapUserUniqueID, syncUserData, getDataToSyncUserData */
+/* globals LDAP, slug, getLdapUsername, getLdapUserUniqueID, syncUserData, addLdapUser */
 /* eslint new-cap: [2, {"capIsNewExceptions": ["SHA256"]}] */
 
 const logger = new Logger('LDAPHandler', {});
@@ -50,7 +50,11 @@ Accounts.registerLoginHandler('ldap', function(loginRequest) {
 		}
 
 		if (ldap.authSync(users[0].dn, loginRequest.ldapPass) === true) {
-			ldapUser = users[0];
+			if (ldap.isUserInGroup (loginRequest.username)) {
+				ldapUser = users[0];
+			} else {
+				throw new Error('User not in a valid group');
+			}
 		} else {
 			logger.info('Wrong password for', loginRequest.username);
 		}
@@ -61,7 +65,11 @@ Accounts.registerLoginHandler('ldap', function(loginRequest) {
 	ldap.disconnect();
 
 	if (ldapUser === undefined) {
-		return fallbackDefaultAccountSystem(self, loginRequest.username, loginRequest.ldapPass);
+		if (RocketChat.settings.get('LDAP_Login_Fallback') === true) {
+			return fallbackDefaultAccountSystem(self, loginRequest.username, loginRequest.ldapPass);
+		}
+
+		throw new Meteor.Error('LDAP-login-error', 'LDAP Authentication failed with provided username ['+loginRequest.username+']');
 	}
 
 	let username;
@@ -125,44 +133,7 @@ Accounts.registerLoginHandler('ldap', function(loginRequest) {
 	}
 
 	logger.info('User does not exist, creating', username);
+
 	// Create new user
-	var userObject = {
-		username: username
-	};
-
-	let userData = getDataToSyncUserData(ldapUser, {});
-
-	if (userData && userData.emails) {
-		userObject.email = userData.emails[0].address;
-	} else if (ldapUser.object.mail && ldapUser.object.mail.indexOf('@') > -1) {
-		userObject.email = ldapUser.object.mail;
-	} else if (RocketChat.settings.get('LDAP_Default_Domain') !== '') {
-		userObject.email = username + '@' + RocketChat.settings.get('LDAP_Default_Domain');
-	} else {
-		const error = new Meteor.Error('LDAP-login-error', 'LDAP Authentication succeded, there is no email to create an account. Have you tried setting your Default Domain in LDAP Settings?');
-		logger.error(error);
-		throw error;
-	}
-
-	logger.debug('New user data', userObject);
-
-	userObject.password = loginRequest.ldapPass;
-
-	try {
-		userObject._id = Accounts.createUser(userObject);
-	} catch (error) {
-		logger.error('Error creating user', error);
-		throw error;
-	}
-
-	syncUserData(userObject, ldapUser);
-
-	logger.info('Joining user to default channels');
-	Meteor.runAsUser(userObject._id, function() {
-		Meteor.call('joinDefaultChannels');
-	});
-
-	return {
-		userId: userObject._id
-	};
+	return addLdapUser(ldapUser, username, loginRequest.ldapPass);
 });

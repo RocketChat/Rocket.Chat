@@ -10,8 +10,8 @@ generateStatistics = ->
 	statistics = RocketChat.statistics.save()
 	statistics.host = Meteor.absoluteUrl()
 	if RocketChat.settings.get 'Statistics_reporting'
-		try	
-			HTTP.post 'https://rocket.chat/stats',
+		try
+			HTTP.post 'https://collector.rocket.chat/',
 				data: statistics
 		catch e
 			logger.warn('Failed to send usage report')
@@ -25,7 +25,7 @@ Meteor.startup ->
 		SyncedCron.add
 			name: 'Generate and save statistics',
 			schedule: (parser) -># parser is a later.parse object
-				return parser.text 'every 1 hour'
+				return parser.cron new Date().getMinutes() + ' * * * *'
 			job: generateStatistics
 
 		SyncedCron.start()

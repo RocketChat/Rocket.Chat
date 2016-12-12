@@ -1,5 +1,17 @@
 Meteor.methods
 	sendMessage: (message) ->
+
+		check message, Object
+
+		if message.ts
+			tsDiff = Math.abs(moment(message.ts).diff())
+			if tsDiff > 60000
+				throw new Meteor.Error('error-message-ts-out-of-sync', 'Message timestamp is out of sync', { method: 'sendMessage', message_ts: message.ts, server_ts: new Date().getTime() })
+			else if tsDiff > 10000
+				message.ts = new Date()
+		else
+			message.ts = new Date()
+
 		if message.msg?.length > RocketChat.settings.get('Message_MaxAllowedSize')
 			throw new Meteor.Error('error-message-size-exceeded', 'Message size exceeds Message_MaxAllowedSize', { method: 'sendMessage' })
 
@@ -29,9 +41,9 @@ Meteor.methods
 		RocketChat.sendMessage user, message, room
 
 # Limit a user to sending 5 msgs/second
-# DDPRateLimiter.addRule
-# 	type: 'method'
-# 	name: 'sendMessage'
-# 	userId: (userId) ->
-# 		return RocketChat.models.Users.findOneById(userId)?.username isnt RocketChat.settings.get('InternalHubot_Username')
-# , 5, 1000
+DDPRateLimiter.addRule
+	type: 'method'
+	name: 'sendMessage'
+	userId: (userId) ->
+		return RocketChat.models.Users.findOneById(userId)?.username isnt RocketChat.settings.get('InternalHubot_Username')
+, 5, 1000

@@ -28,6 +28,9 @@
 								<button data-username="{{username}}" tabindex="0" title="{{username}}">
 									{{> avatar username=username}}
 									<p>{{username}} {{utcOffset}}</p>
+									{{#if muted}}
+										<i class="icon-mute" title="{{_ "User_muted"}}"></i>
+									{{/if}}
 								</button>
 							</li>
 						{{/each}}

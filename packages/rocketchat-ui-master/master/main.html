@@ -1,5 +1,4 @@
 <head>
-	<title>Rocket.Chat</title>
 	<meta charset="utf-8" />
 	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
 	<meta http-equiv="expires" content="-1" />
@@ -64,21 +63,19 @@
 					{{> spotlight}}
 					{{> videoCall overlay=true}}
 					<div id="user-card-popover"></div>
-					<div id="rocket-chat" class="menu-nav menu-closed">
+					<div id="rocket-chat" class="{{embeddedVersion}} menu-nav menu-closed">
 						<div class="connection-status">
 							{{> status}}
 						</div>
-						{{#unless modal}}
 							<div class="flex-tab-bar" role="toolbar">
 								{{> flexTabBar}}
 							</div>
-						{{/unless}}
-						<div class="main-content {{flexOpened}} {{flexOpenedRTC1}} {{flexOpenedRTC2}} {{#if modal}}main-modal{{/if}}">
+						<div class="main-content {{flexOpened}} {{flexOpenedRTC1}} {{flexOpenedRTC2}} {{#if useIframe}}main-modal{{/if}} {{#if modal}}main-modal{{/if}}">
 							{{> Template.dynamic template=center}}
 						</div>
-						{{#unless modal}}
-							{{> sideNav }}
-						{{/unless}}
+  						{{#unless embeddedVersion}}
+  							{{> sideNav }}
+  						{{/unless}}
 					</div>
 					{{> audioNotification }}
 				{{/if}}
@@ -86,6 +83,6 @@
 			<script>{{{CustomScriptLoggedIn}}}</script>
 		{{/unless}}
 	{{else}}
-		{{> pageLoading}}
+		{{> loading}}
 	{{/if}}
 </template>

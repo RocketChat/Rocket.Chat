@@ -350,7 +350,7 @@ SAML.prototype.validateResponse = function(samlResponse, relayState, callback) {
 
 			var issuer = self.getElement(assertion[0], 'Issuer');
 			if (issuer) {
-				profile.issuer = issuer[0];
+				profile.issuer = issuer[0]._;
 			}
 
 			var subject = self.getElement(assertion[0], 'Subject');

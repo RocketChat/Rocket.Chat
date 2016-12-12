@@ -1,19 +1,18 @@
 RocketChat.callbacks.add('beforeSaveMessage', function(message) {
-
 	// Test if the message mentions include @all.
 	if (message.mentions != null &&
 		_.pluck(message.mentions, '_id').some((item) => item === 'all')) {
 
 		// Check if the user has permissions to use @all.
-		if (!RocketChat.authz.hasPermission(Meteor.userId(), 'mention-all')) {
+		if (!RocketChat.authz.hasPermission(message.u._id, 'mention-all')) {
 
 			// Get the language of the user for the error notification.
-			let language = Meteor.user().language;
+			let language = RocketChat.models.Users.findOneById(message.u._id).language;
 			let action = TAPi18n.__('Notify_all_in_this_room', {}, language);
 
 			// Add a notification to the chat, informing the user that this
 			// action is not allowed.
-			RocketChat.Notifications.notifyUser(Meteor.userId(), 'message', {
+			RocketChat.Notifications.notifyUser(message.u._id, 'message', {
 				_id: Random.id(),
 				rid: message.rid,
 				ts: new Date,
@@ -34,5 +33,4 @@ RocketChat.callbacks.add('beforeSaveMessage', function(message) {
 
 	return message;
 
-}, 1);
-
+}, 1, 'filterATAllTag');

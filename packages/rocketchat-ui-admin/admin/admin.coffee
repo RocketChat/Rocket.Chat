@@ -5,12 +5,26 @@ Template.admin.onCreated ->
 		RocketChat.settings.collectionPrivate = RocketChat.settings.cachedCollectionPrivate.collection
 		RocketChat.settings.cachedCollectionPrivate.init()
 
+	this.selectedRooms = new ReactiveVar {}
+
 	RocketChat.settings.collectionPrivate.find().observe
-		added: (data) ->
+		added: (data) =>
+			selectedRooms = this.selectedRooms.get()
+			if data.type is 'roomPick'
+				selectedRooms[data._id] = data.value
+				this.selectedRooms.set(selectedRooms)
 			TempSettings.insert data
-		changed: (data) ->
+		changed: (data) =>
+			selectedRooms = this.selectedRooms.get()
+			if data.type is 'roomPick'
+				selectedRooms[data._id] = data.value
+				this.selectedRooms.set(selectedRooms)
 			TempSettings.update data._id, data
-		removed: (data) ->
+		removed: (data) =>
+			selectedRooms = this.selectedRooms.get()
+			if data.type is 'roomPick'
+				delete selectedRooms[data._id]
+				this.selectedRooms.set(selectedRooms)
 			TempSettings.remove data._id
 
 Template.admin.onDestroyed ->
@@ -176,6 +190,8 @@ Template.admin.helpers
 
 	setEditorOnBlur: (_id) ->
 		Meteor.defer ->
+			return if not $('.code-mirror-box[data-editor-id="'+_id+'"] .CodeMirror')[0]
+
 			codeMirror = $('.code-mirror-box[data-editor-id="'+_id+'"] .CodeMirror')[0].CodeMirror
 			if codeMirror.changeAdded is true
 				return
@@ -198,6 +214,29 @@ Template.admin.helpers
 		if fileConstraints.extensions?.length > 0
 			return '.' + fileConstraints.extensions.join(', .')
 
+	autocompleteRoom: ->
+		return {
+			limit: 10
+			# inputDelay: 300
+			rules: [
+				{
+					# @TODO maybe change this 'collection' and/or template
+					collection: 'CachedChannelList'
+					subscription: 'channelAndPrivateAutocomplete'
+					field: 'name'
+					template: Template.roomSearch
+					noMatchTemplate: Template.roomSearchEmpty
+					matchAll: true
+					selector: (match) ->
+						return { name: match }
+					sort: 'name'
+				}
+			]
+		}
+
+	selectedRooms: ->
+		console.log(this._id)
+		return Template.instance().selectedRooms.get()[this._id] or []
 
 Template.admin.events
 	"change .input-monitor": (e, t) ->
@@ -339,6 +378,29 @@ Template.admin.events
 		codeMirrorBox.removeClass('code-mirror-box-fullscreen')
 		codeMirrorBox.find('.CodeMirror')[0].CodeMirror.refresh()
 
+	'autocompleteselect .autocomplete': (event, instance, doc) ->
+		selectedRooms = instance.selectedRooms.get()
+		selectedRooms[this.id] = (selectedRooms[this.id] || []).concat doc
+		instance.selectedRooms.set selectedRooms
+		value = selectedRooms[this.id]
+		TempSettings.update {_id: this.id},
+			$set:
+				value: value
+				changed: RocketChat.settings.collectionPrivate.findOne(this.id).value isnt value
+		event.currentTarget.value = ''
+		event.currentTarget.focus()
+
+	'click .remove-room': (event, instance) ->
+		docId = this._id
+		settingId = event.currentTarget.getAttribute('data-setting')
+		selectedRooms = instance.selectedRooms.get()
+		selectedRooms[settingId] = _.reject(selectedRooms[settingId] || [], (setting) -> setting._id is docId)
+		instance.selectedRooms.set selectedRooms
+		value = selectedRooms[settingId]
+		TempSettings.update {_id: settingId},
+			$set:
+				value: value
+				changed: RocketChat.settings.collectionPrivate.findOne(settingId).value isnt value
 
 Template.admin.onRendered ->
 	Tracker.afterFlush ->

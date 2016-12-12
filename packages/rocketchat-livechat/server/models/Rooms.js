@@ -18,7 +18,8 @@ RocketChat.models.Rooms.updateSurveyFeedbackById = function(_id, surveyFeedback)
 
 RocketChat.models.Rooms.updateLivechatDataByToken = function(token, key, value) {
 	const query = {
-		'v.token': token
+		'v.token': token,
+		open: true
 	};
 
 	const update = {
@@ -30,21 +31,23 @@ RocketChat.models.Rooms.updateLivechatDataByToken = function(token, key, value) 
 	return this.update(query, update);
 };
 
-RocketChat.models.Rooms.findLivechat = function(offset = 0, limit = 20) {
-	const query = {
+RocketChat.models.Rooms.findLivechat = function(filter = {}, offset = 0, limit = 20) {
+	const query = _.extend(filter, {
 		t: 'l'
-	};
+	});
 
 	return this.find(query, { sort: { ts: - 1 }, offset: offset, limit: limit });
 };
 
 RocketChat.models.Rooms.findLivechatByCode = function(code, fields) {
-	const query = {
-		t: 'l',
-		code: parseInt(code)
-	};
+	code = parseInt(code);
 
 	let options = {};
+
+	const query = {
+		t: 'l',
+		code: code
+	};
 
 	if (fields) {
 		options.fields = fields;
@@ -73,7 +76,7 @@ RocketChat.models.Rooms.getNextLivechatRoomCode = function() {
 
 	const livechatCount = findAndModify(query, null, update);
 
-	return livechatCount.value;
+	return livechatCount.value.value;
 };
 
 RocketChat.models.Rooms.findOpenByVisitorToken = function(visitorToken, options) {

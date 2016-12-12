@@ -2,9 +2,13 @@
 set -x
 set -euvo pipefail
 
+apt-get update
+apt-get install build-essential git -y
+
 cd /opt/
 
-PACKAGE=meteor-spk-0.2.1
+NODE_ENV=production
+PACKAGE=meteor-spk-0.3.0
 PACKAGE_FILENAME="$PACKAGE.tar.xz"
 CACHE_TARGET="/host-dot-sandstorm/caches/${PACKAGE_FILENAME}"
 
@@ -28,7 +32,7 @@ cp -a /lib/x86_64-linux-gnu/libtinfo.so.* /opt/meteor-spk/meteor-spk.deps/lib/x8
 # Unfortunately, Meteor does not explicitly make it easy to cache packages, but
 # we know experimentally that the package is mostly directly extractable to a
 # user's $HOME/.meteor directory.
-METEOR_RELEASE=1.2.1
+METEOR_RELEASE=1.4.2
 METEOR_PLATFORM=os.linux.x86_64
 METEOR_TARBALL_FILENAME="meteor-bootstrap-${METEOR_PLATFORM}.tar.gz"
 METEOR_TARBALL_URL="https://d3sqy0vbqsdhku.cloudfront.net/packages-bootstrap/${METEOR_RELEASE}/${METEOR_TARBALL_FILENAME}"
@@ -45,3 +49,4 @@ cd /home/vagrant/
 su -c "tar xf '${METEOR_CACHE_TARGET}'" vagrant
 # Link into global PATH
 ln -s /home/vagrant/.meteor/meteor /usr/bin/meteor
+chown vagrant:vagrant /home/vagrant -R

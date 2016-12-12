@@ -1,3 +1,71 @@
+
+Template.message.helpers
+	isBot: ->
+		return 'bot' if this.bot?
+	roleTags: ->
+		unless RocketChat.settings.get('UI_DisplayRoles')
+			return []
+		roles = _.union(UserRoles.findOne(this.u?._id)?.roles, RoomRoles.findOne({'u._id': this.u?._id, rid: this.rid })?.roles)
+		return RocketChat.models.Roles.find({ _id: { $in: roles }, description: { $exists: 1, $ne: '' } }, { fields: { description: 1 } })
+	userrealname : ->
+		user = Meteor.users.findOne({username:this.u?.username})
+		return user?.name
+	avatar_img : ->
+		user = Meteor.users.findOne({username:this.u?.username})
+		return user?.photo
+	isGroupable: ->
+		return 'false' if this.groupable is false
+	isSequential: ->
+		return 'sequential' if this.groupable isnt false
+	avatarFromUsername: ->
+		if this.avatar? and this.avatar[0] is '@'
+			return this.avatar.replace(/^@/, '')
+	getEmoji: (emoji) ->
+		return renderEmoji emoji
+	own: ->
+		return 'own' if this.u?._id is Meteor.userId()
+	timestamp: ->
+		return +this.ts
+	chatops: ->
+		return 'chatops-message' if this.u?.username is RocketChat.settings.get('Chatops_Username')
+	time: ->
+		return moment(this.ts).format(RocketChat.settings.get('Message_TimeFormat'))
+	date: ->
+		return moment(this.ts).format(RocketChat.settings.get('Message_DateFormat'))
+	isTemp: ->
+		if @temp is true
+			return 'temp'
+	body: ->
+		return Template.instance().body
+	system: ->
+		if RocketChat.MessageTypes.isSystemMessage(this)
+			return 'system'
+	edited: ->
+		return Template.instance().wasEdited
+
+	editTime: ->
+		if Template.instance().wasEdited
+			return moment(@editedAt).format(RocketChat.settings.get('Message_DateFormat') + ' ' + RocketChat.settings.get('Message_TimeFormat'))
+	editedBy: ->
+		return "" unless Template.instance().wasEdited
+		# try to return the username of the editor,
+		# otherwise a special "?" character that will be
+		# rendered as a special avatar
+		return @editedBy?.username or "?"
+	canEdit: ->
+		hasPermission = RocketChat.authz.hasAtLeastOnePermission('edit-message', this.rid)
+		isEditAllowed = RocketChat.settings.get 'Message_AllowEditing'
+		editOwn = this.u?._id is Meteor.userId()
+
+		return unless hasPermission or (isEditAllowed and editOwn)
+
+		blockEditInMinutes = RocketChat.settings.get 'Message_AllowEditing_BlockEditInMinutes'
+		if blockEditInMinutes? and blockEditInMinutes isnt 0
+			msgTs = moment(this.ts) if this.ts?
+			currentTsDiff = moment().diff(msgTs, 'minutes') if msgTs?
+			return currentTsDiff < blockEditInMinutes
+		else
+			return true
 katexSyntax = ->
 	if RocketChat.katex.katex_enabled()
 		return "$$KaTeX$$"   if RocketChat.katex.dollar_syntax_enabled()
@@ -262,6 +330,16 @@ Template.messageBox.onCreated ->
 		else
 			@showVideoRec.set false
 
+	hideReactions: ->
+		return 'hidden' if _.isEmpty(@reactions)
+
+
+	actionLinks: ->
+		# remove 'method_id' and 'params' properties
+		return _.map(@actionLinks, (actionLink, key) -> _.extend({ id: key }, _.omit(actionLink, 'method_id', 'params')))
+
+	hideActionLinks: ->
+		return 'hidden' if _.isEmpty(@actionLinks)
 		wavRegex = /audio\/wav|audio\/\*/i
 		wavEnabled = !RocketChat.settings.get("FileUpload_MediaTypeWhiteList") || RocketChat.settings.get("FileUpload_MediaTypeWhiteList").match(wavRegex)
 		if RocketChat.settings.get('Message_AudioRecorderEnabled') and (navigator.getUserMedia? or navigator.webkitGetUserMedia?) and wavEnabled and RocketChat.settings.get('FileUpload_Enabled')
@@ -270,6 +348,9 @@ Template.messageBox.onCreated ->
 			@showMicButton.set false
 
 
+	hideCog: ->
+		subscription = RocketChat.models.Subscriptions.findOne({ rid: this.rid });
+		return 'hidden' if not subscription?
 Meteor.startup ->
 	RocketChat.Geolocation = new ReactiveVar false
 

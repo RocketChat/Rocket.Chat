@@ -28,7 +28,7 @@ if (process.env.SANDSTORM === '1') {
 			activity.users = _.map(userIds, function(userId) {
 				var user = Meteor.users.findOne({_id: userId}, {fields: {'services.sandstorm.id': 1}});
 				return {
-					identity: httpBridge.getSavedIdentity(user.services.sandstorm.id).identity,
+					identity: waitPromise(httpBridge.getSavedIdentity(user.services.sandstorm.id)).identity,
 					mentioned: true
 				};
 			});

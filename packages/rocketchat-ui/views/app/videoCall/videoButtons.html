@@ -1,5 +1,6 @@
 <template name="videoButtons">
-	<div class="group-call-buttons">
+	<div class="buttons-group">
+		{{#if 0}}
 		{{#if videoAvaliable}}
 			{{#unless videoActive}}
 				{{#if callInProgress}}
@@ -10,6 +11,7 @@
 					<button class="start-audio-call button" aria-label="{{_ "Start_audio_call"}}"><i class="icon-phone"></i></button>
 				{{/if}}
 			{{/unless}}
+		{{/if}}
 		{{/if}}
 	</div>
 </template>

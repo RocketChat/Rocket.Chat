@@ -21,49 +21,39 @@ updateServices = ->
 	Meteor.clearTimeout timer if timer?
 
 	timer = Meteor.setTimeout ->
-		services = RocketChat.models.Settings.find({_id: /^(SAML_Custom_)[a-z]+$/i}).fetch()
+		services = RocketChat.settings.get(/^(SAML_Custom_)[a-z]+$/i)
 
 		Accounts.saml.settings.providers = []
 
 		for service in services
-			logger.updated service._id
+			logger.updated service.key
 
 			serviceName = 'saml'
 
 			if service.value is true
 				data =
-					buttonLabelText: RocketChat.models.Settings.findOneById("#{service._id}_button_label_text")?.value
-					buttonLabelColor: RocketChat.models.Settings.findOneById("#{service._id}_button_label_color")?.value
-					buttonColor: RocketChat.models.Settings.findOneById("#{service._id}_button_color")?.value
+					buttonLabelText: RocketChat.settings.get("#{service.key}_button_label_text")
+					buttonLabelColor: RocketChat.settings.get("#{service.key}_button_label_color")
+					buttonColor: RocketChat.settings.get("#{service.key}_button_color")
 					clientConfig:
-						provider: RocketChat.models.Settings.findOneById("#{service._id}_provider")?.value
+						provider: RocketChat.settings.get("#{service.key}_provider")
 
-				Accounts.saml.settings.generateUsername = RocketChat.models.Settings.findOneById("#{service._id}_generate_username")?.value
+				Accounts.saml.settings.generateUsername = RocketChat.settings.get("#{service.key}_generate_username")
 
 				Accounts.saml.settings.providers.push
 					provider: data.clientConfig.provider
-					entryPoint: RocketChat.models.Settings.findOneById("#{service._id}_entry_point")?.value
-					issuer: RocketChat.models.Settings.findOneById("#{service._id}_issuer")?.value
-					cert: RocketChat.models.Settings.findOneById("#{service._id}_cert")?.value
+					entryPoint: RocketChat.settings.get("#{service.key}_entry_point")
+					issuer: RocketChat.settings.get("#{service.key}_issuer")
+					cert: RocketChat.settings.get("#{service.key}_cert")
 
 				ServiceConfiguration.configurations.upsert {service: serviceName.toLowerCase()}, $set: data
 			else
 				ServiceConfiguration.configurations.remove {service: serviceName.toLowerCase()}
 	, 2000
 
-RocketChat.models.Settings.find().observe
-	added: (record) ->
-		if /^SAML_.+/.test record._id
-			updateServices()
-
-	changed: (record) ->
-		if /^SAML_.+/.test record._id
-			updateServices()
-
-	removed: (record) ->
-		if /^SAML_.+/.test record._id
-			updateServices()
+RocketChat.settings.get /^SAML_.+/, (key, value) ->
+	updateServices()
 
 Meteor.startup ->
-	if not RocketChat.models.Settings.findOne({_id: /^(SAML_Custom)[a-z]+$/i})?
+	if RocketChat.settings.get(/^(SAML_Custom)_[a-z]+$/i)?.length is 0
 		Meteor.call 'addSamlService', 'Default'

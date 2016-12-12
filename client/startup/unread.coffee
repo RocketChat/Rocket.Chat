@@ -13,6 +13,7 @@ Meteor.startup ->
 				openedRoomId = Session.get 'openedRoom'
 
 		for subscription in subscriptions.fetch()
+			fireGlobalEvent 'unread-changed-by-subscription', subscription
 
 			if subscription.alert or subscription.unread > 0
 				# This logic is duplicated in /client/notifications/notification.coffee.

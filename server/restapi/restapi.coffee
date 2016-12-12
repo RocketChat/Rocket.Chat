@@ -240,3 +240,39 @@ Api.addRoute 'bulk/createRoom', authRequired: true,
 				console.log '[restapi] bulk/createRoom -> '.red, "User does not have 'bulk-create-c' permission"
 				statusCode: 403
 				body: status: 'error', message: 'You do not have permission to do this'
+
+# archive a room by it's ID
+Api.addRoute 'room/:id/archive', authRequired: true,
+	post:
+		action: ->
+			# user must also have archive-room permission
+			if RocketChat.authz.hasPermission(@userId, 'archive-room')
+				try
+					Meteor.runAsUser this.userId, () =>
+						Meteor.call('archiveRoom', @urlParams.id)
+					status: 'success'   # need to handle error
+				catch e
+					statusCode: 400    # bad request or other errors
+					body: status: 'fail', message: e.name + ' :: ' + e.message
+			else
+				console.log '[restapi] archiveRoom -> '.red, "User does not have 'archive-room' permission"
+				statusCode: 403
+				body: status: 'error', message: 'You do not have permission to do this'
+				
+# unarchive a room by it's ID
+Api.addRoute 'room/:id/unarchive', authRequired: true,
+	post:
+		action: ->
+			# user must also have unarchive-room permission 
+			if RocketChat.authz.hasPermission(@userId, 'unarchive-room')
+				try
+					Meteor.runAsUser this.userId, () =>
+						Meteor.call('unarchiveRoom', @urlParams.id)
+					status: 'success'   # need to handle error
+				catch e
+					statusCode: 400    # bad request or other errors
+					body: status: 'fail', message: e.name + ' :: ' + e.message
+			else
+				console.log '[restapi] unarchiveRoom -> '.red, "User does not have 'unarchive-room' permission"
+				statusCode: 403
+				body: status: 'error', message: 'You do not have permission to do this'
