@@ -57,9 +57,11 @@ Meteor.startup(function() {
 			let room = RocketChat.models.Rooms.findOne({ _id: message.rid });
 			let user = Meteor.user();
 
-			if (Array.isArray(room.muted) && room.muted.indexOf(user.username) !== -1) {
+			if (Array.isArray(room.muted) && room.muted.indexOf(user.username) !== -1 && !room.reactWhenReadOnly) {
 				return false;
 			} else if (!RocketChat.models.Subscriptions.findOne({ rid: message.rid })) {
+				return false;
+			} else if (message.private) {
 				return false;
 			}
 
