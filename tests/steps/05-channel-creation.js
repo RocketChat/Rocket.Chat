@@ -17,14 +17,13 @@ describe('Channel creation', function() {
 	});
 
 	beforeEach(()=>{
-		browser.pause(300);
 		sideNav.getChannelFromList('general').waitForVisible(5000);
 		sideNav.openChannel('general');
-		browser.pause(300);
+		browser.pause(1000);
 	});
 
 	afterEach(function() {
-		if (this.currentTest.state !== 'passed' && this.currentTest.title !== 'should close the channel creation tab') {
+		if (this.currentTest.state !== 'passed') {
 			setPublicChannelCreated(false);
 			switch (this.currentTest.title) {
 				case 'create a public channel':
@@ -48,10 +47,6 @@ describe('Channel creation', function() {
 			sideNav.createChannel(publicChannelName, false, false);
 			setPublicChannelCreated(true);
 		});
-
-		it('should close the channel creation tab', function() {
-			sideNav.channelType.isVisible().should.be.false;
-		});
 	});
 
 	describe('create a private channel', function() {
@@ -59,20 +54,12 @@ describe('Channel creation', function() {
 			sideNav.createChannel(privateChannelName, true, false);
 			setPrivateChannelCreated(true);
 		});
-
-		it('should close the channel creation tab', function() {
-			sideNav.channelType.isVisible().should.be.false;
-		});
 	});
 
 	describe('direct channel', function() {
 		it('start a direct message with rocket.cat', function() {
 			sideNav.startDirectMessage(targetUser);
 			setDirectMessageCreated(true);
-		});
-
-		it('should close the channel creation tab', function() {
-			sideNav.channelType.isVisible().should.be.false;
 		});
 	});
 });
