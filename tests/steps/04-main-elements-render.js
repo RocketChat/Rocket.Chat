@@ -64,7 +64,6 @@ describe('Main Elements Render', function() {
 		describe('render', () => {
 			before(() => {
 				sideNav.accountBoxUserName.click();
-				browser.pause(500);
 				sideNav.userOptions.waitForVisible(5000);
 			});
 
@@ -105,7 +104,6 @@ describe('Main Elements Render', function() {
 	describe('main content', () => {
 		describe('render', () => {
 			before(()=> {
-				browser.pause(500);
 				sideNav.getChannelFromList('general').waitForVisible(5000);
 				sideNav.openChannel('general');
 			});
@@ -191,13 +189,11 @@ describe('Main Elements Render', function() {
 	describe('flextab usage', () => {
 		describe('render', () => {
 			before(()=> {
-				browser.pause(500);
 				sideNav.getChannelFromList('general').waitForVisible(5000);
 				sideNav.openChannel('general');
 			});
 			describe('Room Info Tab', () => {
 				before(()=> {
-					browser.pause(700);
 					flexTab.channelTab.click();
 				});
 
@@ -223,7 +219,6 @@ describe('Main Elements Render', function() {
 
 			describe('Search Tab', () => {
 				before(()=> {
-					browser.pause(700);
 					flexTab.searchTab.click();
 				});
 
@@ -242,7 +237,6 @@ describe('Main Elements Render', function() {
 
 			describe('Members Tab', () => {
 				before(()=> {
-					browser.pause(700);
 					flexTab.membersTab.click();
 				});
 
@@ -269,7 +263,6 @@ describe('Main Elements Render', function() {
 
 			describe('Notifications Tab', () => {
 				before(()=> {
-					browser.pause(700);
 					flexTab.notificationsTab.click();
 				});
 
@@ -288,7 +281,6 @@ describe('Main Elements Render', function() {
 
 			describe('Files Tab', () => {
 				before(()=> {
-					browser.pause(700);
 					flexTab.filesTab.click();
 				});
 
@@ -307,7 +299,6 @@ describe('Main Elements Render', function() {
 
 			describe('Mentions Tab', () => {
 				before(()=> {
-					browser.pause(700);
 					flexTab.mentionsTab.click();
 				});
 
@@ -326,7 +317,6 @@ describe('Main Elements Render', function() {
 
 			describe('Starred Messages Tab', () => {
 				before(()=> {
-					browser.pause(700);
 					flexTab.starredTab.click();
 				});
 
@@ -345,7 +335,6 @@ describe('Main Elements Render', function() {
 
 			describe('Pinned Messages Tab', () => {
 				before(()=> {
-					browser.pause(700);
 					flexTab.pinnedTab.click();
 				});
 

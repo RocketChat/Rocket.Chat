@@ -28,7 +28,6 @@ describe('channel usage', ()=> {
 		});
 
 		after(()=> {
-			browser.pause(500);
 			flexTab.membersTab.waitForVisible();
 			flexTab.membersTab.click();
 		});
@@ -48,7 +47,6 @@ describe('channel usage', ()=> {
 
 			after(()=> {
 				flexTab.dismissToast();
-				browser.pause(300);
 				flexTab.channelTab.waitForVisible();
 				flexTab.channelTab.click();
 			});
@@ -74,7 +72,6 @@ describe('channel usage', ()=> {
 			});
 
 			it('should show the new name', ()=> {
-				browser.pause(500);
 				var channelName = sideNav.getChannelFromList('NAME-EDITED-'+publicChannelName);
 				channelName.getText().should.equal('NAME-EDITED-'+publicChannelName);
 			});
@@ -88,13 +85,11 @@ describe('channel usage', ()=> {
 
 			after(()=> {
 				flexTab.dismissToast();
-				browser.pause(300);
 				flexTab.channelTab.waitForVisible();
 				flexTab.channelTab.click();
 			});
 
 			it('click the edit topic', ()=> {
-				browser.pause(500);
 				flexTab.editTopicBtn.waitForVisible(5000);
 				flexTab.editTopicBtn.click();
 			});
@@ -121,13 +116,11 @@ describe('channel usage', ()=> {
 
 			after(()=> {
 				flexTab.dismissToast();
-				browser.pause(300);
 				flexTab.channelTab.waitForVisible();
 				flexTab.channelTab.click();
 			});
 
 			it('click the edit description', ()=> {
-				browser.pause(500);
 				flexTab.editDescriptionBtn.waitForVisible();
 				flexTab.editDescriptionBtn.click();
 			});
@@ -188,7 +181,6 @@ describe('channel usage', ()=> {
 			});
 
 			it('sets rocket cat as moderator', ()=> {
-				browser.pause(1000);
 				flexTab.setUserModerator(targetUser);
 			});
 
@@ -213,7 +205,6 @@ describe('channel usage', ()=> {
 			});
 
 			it('mute rocket cat', ()=> {
-				browser.pause(5000);
 				flexTab.muteUser(targetUser);
 			});
 

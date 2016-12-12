@@ -14,7 +14,6 @@ import {checkIfUserIsValid} from '../test-data/checks';
 
 describe.skip('user preferences', ()=> {
 	before(() => {
-		browser.pause(3000);
 		checkIfUserIsValid(username, email, password);
 		sideNav.getChannelFromList('general').waitForExist(5000);
 		sideNav.openChannel('general');
