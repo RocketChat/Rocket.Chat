@@ -15,7 +15,7 @@ Meteor.methods({
 
 		const user = Meteor.user();
 
-		if (Array.isArray(room.muted) && room.muted.indexOf(user.username) !== -1) {
+		if (Array.isArray(room.muted) && room.muted.indexOf(user.username) !== -1 && !room.reactWhenReadOnly) {
 			RocketChat.Notifications.notifyUser(Meteor.userId(), 'message', {
 				_id: Random.id(),
 				rid: room._id,

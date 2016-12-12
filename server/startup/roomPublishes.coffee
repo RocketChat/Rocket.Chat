@@ -11,6 +11,7 @@ Meteor.startup ->
 				muted: 1
 				archived: 1
 				ro: 1
+				reactWhenReadOnly: 1
 				jitsiTimeout: 1
 				description: 1
 				sysMes: 1
@@ -40,6 +41,7 @@ Meteor.startup ->
 				muted: 1
 				archived: 1
 				ro: 1
+				reactWhenReadOnly: 1
 				jitsiTimeout: 1
 				description: 1
 				sysMes: 1
