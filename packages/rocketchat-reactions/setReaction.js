@@ -7,6 +7,10 @@ Meteor.methods({
 
 		let message = RocketChat.models.Messages.findOneById(messageId);
 
+		if (!message) {
+			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'setReaction' });
+		}
+
 		let room = Meteor.call('canAccessRoom', message.rid, Meteor.userId());
 
 		if (!room) {
