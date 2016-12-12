@@ -740,9 +740,13 @@ i.status-offline {
 }
 
 .alert-warning {
-	color: @pending-color;
+	color: darken(@pending-color, 25%);
 	background-color: @pending-background;
 	border-color: @pending-border;
+}
+
+.alert-link {
+	.linkColors(@link-font-color, darken(@link-font-color, 10%));
 }
 
 .alert-danger {
