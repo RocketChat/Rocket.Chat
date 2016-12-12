@@ -16,6 +16,9 @@
 @pending-background: lighten(@pending-color, 45%);
 @pending-border: lighten(@pending-color, 30%);
 @window-border-color: @component-color;
+@code-background-color: #f8f8f8;
+@code-border-color: #ccc;
+@code-font-color: #333;
 
 /** ----------------------------------------------------------------------------
  * Document components
@@ -37,9 +40,9 @@ body {
 }
 
 code {
-	background-color: @transparent-dark;
-	border-color: @component-color;
-	color: @secondary-font-color;
+	background-color: @code-background-color;
+	border-color: @code-border-color;
+	color: @code-font-color;
 }
 
 blockquote:before {
@@ -271,6 +274,9 @@ blockquote:before {
 		}
 		.message-buttons {
 			.buttonColors(lighten(@primary-font-color, 25%), @secondary-background-color);
+			&:hover {
+				background-color: mix(@secondary-background-color, contrast(@primary-font-color), 20%);
+			}
 		}
 		textarea {
 			&.editing {
@@ -675,6 +681,9 @@ i.status-offline {
 	&.secondary {
 		.buttonColors(@secondary-action-contrast, @secondary-action-color);
 	}
+	&.tertiary {
+		.buttonColors(@primary-action-contrast, @selection-color);
+	}
 	&.danger {
 		.buttonColors(@error-contrast, @error-color);
 	}
@@ -734,9 +743,13 @@ i.status-offline {
 }
 
 .alert-warning {
-	color: @pending-color;
+	color: darken(@pending-color, 25%);
 	background-color: @pending-background;
 	border-color: @pending-border;
+}
+
+.alert-link {
+	.linkColors(@link-font-color, darken(@link-font-color, 10%));
 }
 
 .alert-danger {
