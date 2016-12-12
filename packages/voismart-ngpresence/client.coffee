@@ -6,7 +6,7 @@ _installExtension = (browser) ->
 		if not main
 			console.error 'voismart-ngpresence: cannot get main component'
 			return
-		Blaze.render(Template.extensionAlert, main)
+		Blaze.renderWithData(Template.extensionAlert, {'browser': browser}, main)
 		extensionAlert = $(".extension-alert")
 		if not extensionAlert.length
 			# just give up
