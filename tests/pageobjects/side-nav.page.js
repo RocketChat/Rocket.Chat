@@ -43,6 +43,9 @@ class SideNav extends Page {
 	openChannel(channelName) {
 		browser.click('.rooms-list > .wrapper > ul [title="'+channelName+'"]');
 		this.messageInput.waitForExist(5000);
+		browser.waitUntil(function() {
+			return browser.getText('.room-title') === channelName;
+		}, 5000);
 	}
 
 	getChannelFromList(channelName) {
