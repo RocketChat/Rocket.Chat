@@ -525,6 +525,7 @@ form.inline {
 	input[type='url'],
 	input[type='password'],
 	input[type='time'] select {
+	select {
 		width: auto;
 	}
 }
@@ -582,7 +583,35 @@ textarea[disabled] {
 label.required:after {
 	content: ' *';
 }
+.status-offline,
+.icon-at.status-offline {}
 
+.status-online,
+.icon-at.status-online {}
+
+.status-busy,
+.icon-at.status-busy {}
+
+.status-away,
+.icon-at.status-away {}
+
+// TODO -- Refactor favorite styles and logic;
+.favorite-room {}
+
+.toggle-favorite {}
+
+.loading {
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	display: flex;
+	align-items: center;
+	position: absolute;
+	justify-content: center;
+	font-size: 2em;
+	color: #ccc;
+}
 .btn-loading {
 	pointer-events: none;
 	cursor: not-allowed;
@@ -613,7 +642,43 @@ label.required:after {
 		position: relative;
 		z-index: 2;
 	}
-	&.button-block {
+	&:before {
+		content: " ";
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		opacity: 0;
+		z-index: 1;
+	}
+	&:hover {
+		text-decoration: none;
+		&:before {
+			opacity: 1;
+		}
+	}
+	&.secondary {
+		&:before {}
+	}
+	&.delete,
+	&.remove,
+	&.short {
+		min-width: 100px;
+	}
+	&.lightblue {
+		min-width: 100px;
+	}
+	&.clean {
+		font-size: 14px;
+		box-shadow: 0 0 3px rgba(0, 0, 0, 0.08);
+		&.primary {
+			font-weight: 600;
+		}
+	}
+
+  
+ &.button-block {
 		display: block;
 		margin-bottom: 4px;
 		width: 100%;
@@ -896,7 +961,7 @@ label.required:after {
 				z-index: 5;
 				position: absolute;
 				left: 18px;
-				.calc(top, ~"50% - 8px");
+				.calc(top, ~"50% - 1px");
 			}
 		}
 		span.soon {
@@ -921,6 +986,7 @@ label.required:after {
 			padding: 15px 12px;
 			line-height: 1;
 			text-decoration: none;
+			&:nth-child(even) {}
 			&:hover {
 				text-decoration: none;
 			}
@@ -2051,6 +2117,73 @@ label.required:after {
 		width: 100%;
 		min-height: @footer-min-height;
 	}
+	.message-popup-results {
+		.loading {
+			display: none;
+		}
+		&.notready {
+			.message-popup-items {
+				position: relative;
+				height: 100px;
+				.loading {
+					display: flex;
+				}
+			}
+			.popup-item {
+				display: none;
+			}
+		}
+	}
+	.message-popup-position {
+		position: relative;
+	}
+	.message-popup {
+		position: absolute;
+		z-index: 101;
+		bottom: 0px;
+		left: 0px;
+		right: 0px;
+		overflow: hidden;
+		box-shadow: 0 -1px 10px 0 rgba(0,0,0,0.2),0 1px 1px rgba(0,0,0,0.16);
+		border-radius: 5px;
+	}
+	.message-popup-title {
+		border-bottom: 1px solid;
+		padding: 0 20px;
+		line-height: 32px;
+		font-size: 14px;
+		font-weight: 300;
+	}
+	.popup-item {
+		padding: 0 20px;
+		line-height: 32px;
+		cursor: pointer;
+		user-select: none;
+		&.selected {}
+	}
+	.popup-user-avatar {
+		width: 24px;
+		display: inline-block;
+		height: 24px;
+		background-size: contain;
+		border-radius: 3px;
+		margin: -7px 4px;
+	}
+	.popup-user-status {
+		border: 1px solid;
+		width: 10px;
+		height: 10px;
+		display: inline-block;
+		border-radius: 10px;
+	}
+	.popup-user-status-system {}
+	.popup-user-status-offline {}
+	.popup-user-status-online {}
+	.popup-user-status-away {}
+	.popup-user-status-busy {}
+	.popup-slash-command-description {
+		float: right;
+	}
 	.message-form {
 		> .message-input {
 			border: 1px solid;
@@ -2101,6 +2234,7 @@ label.required:after {
 			padding-top: 9px;
 			padding-bottom: 9px;
 			padding-left: 49px;
+            padding-right: 30px;
 			border-radius: 0;
 			overflow-y: auto;
 			-webkit-overflow-scrolling: touch;
@@ -2117,12 +2251,22 @@ label.required:after {
 			height: 23px;
 			font-size: 12px;
 			padding: 3px;
+		.users-typing {
+			//float: left;
+			//height: 23px;
+			font-size: 15px;
+            padding: 3px 38px 3px 3px;
+            overflow-y: auto;
 			display: inline-block;
-			white-space: nowrap;
+			white-space: normal;//nowrap;
 			overflow: hidden;
 			text-overflow: ellipsis;
 			max-width: 100%;
 			z-index: 10;
+            position:absolute;
+            word-wrap: break-word;
+            //top: -40px;
+            bottom: 80px;
 		}
 		.formatting-tips {
 			float: right;
@@ -2536,6 +2680,7 @@ label.required:after {
 			padding: 1px 4px;
 			border-radius: 2px;
 			color: white;
+            display:none;
 		}
 	}
 	.private {
@@ -3630,6 +3775,7 @@ body:not(.is-cordova) {
 	.forgot-password,
 	.back-to-login,
 	.register-link-replacement {
+	.submit, .register, .forgot-password, .back-to-login {
 		margin-top: 12px;
 	}
 	.input-text {
@@ -3662,6 +3808,9 @@ body:not(.is-cordova) {
 			border-radius: 0px;
 			&.error {
 				border-bottom: 1px solid;
+			}
+			&:focus {
+				border-color: #13679a !important;
 			}
 			&:focus {
 				border-color: #13679a !important;
@@ -3715,11 +3864,11 @@ body:not(.is-cordova) {
 	margin: auto;
 	width: 100%;
 	min-height: 100%;
-	z-index: 101;
+	z-index: 102;
 	.wrapper {
 		text-align: center;
 		z-index: 10;
-		position: relative;
+		/*position: relative;*/
 		width: 100%;
 		padding: 20px;
 	}
@@ -4378,6 +4527,7 @@ body:not(.is-cordova) {
 }
 
 .powered-by {
+    display:none;
 	margin-top: 1em;
 }
 

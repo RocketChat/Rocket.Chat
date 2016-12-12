@@ -36,8 +36,9 @@
 				if item.t isnt 'command'
 					ChatMessage.upsert {_id: item._id}, item
 			room.isLoading.set false
-			room.loaded += result.messages.length
-			if result.messages.length < limit
+			if result?.messages?.length?
+				room.loaded += result.messages.length
+			if result?.messages?.length < limit
 				room.hasMore.set false
 
 	hasMore = (rid) ->

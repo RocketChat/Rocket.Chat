@@ -1,3 +1,4 @@
+
 <template name="message">
 	<li id="{{_id}}" class="message {{isSequential}} {{system}} {{t}} {{own}} {{isTemp}} {{chatops}} {{customClass}}" data-username="{{u.username}}" data-groupable="{{isGroupable}}" data-date="{{date}}" data-timestamp="{{timestamp}}">
 		<div class="day-divider">
@@ -30,10 +31,99 @@
 				{{else}}
 					<button class="thumb user-card-message" data-username="{{u.username}}" tabindex="1">{{> avatar username=u.username}}</button>
 				{{/if}}
+<template name="messageBox">
+	{{#if subscribed}}
+		<form class="message-form" method="post" action="/">
+			{{> messagePopupConfig getPopupConfig}}
+			<div class="message-input">
+				<div class="input-message-container">
+					<textarea dir="auto" name="msg" maxlength="{{maxMessageLength}}" class="input-message autogrow-short" placeholder="{{_ 'Message'}}"></textarea>
+
+					<div class="inner-left-toolbar">
+						<i class="emoji-picker-icon icon-people"></i>
+					</div>
+				</div>
+
+				{{#unless showSend}}
+					<div class="message-buttons file">
+						<i class="icon-attach file"></i>
+						<input type="file" accept="{{fileUploadAllowedMediaTypes}}">
+					</div>
+
+					{{#if showSandstorm}}
+						<div class="message-buttons sandstorm-offer">
+							<i class="icon-plus" title="{{_ "Sandstorm_Powerbox_Share"}}"></i>
+						</div>
+					{{/if}}
+
+					{{#if showLocation}}
+						<div class="message-buttons location">
+							<i class="icon-location location"></i>
+						</div>
+					{{/if}}
+
+					{{#if showMic}}
+						<div class="message-buttons">
+							<div class="mic">
+								<i class="icon-mic" aria-label="{{_ "Record"}}"></i>
+							</div>
+							<div class="stop-mic hidden">
+								<i class="icon-stop" aria-label="{{_ "Stop_Recording"}}"></i>
+							</div>
+						</div>
+					{{/if}}
+
+					{{#if showVRec}}
+						<div class="message-buttons video-button">
+							<i class="icon-videocam" aria-label="{{_ "Record"}}"></i>
+						</div>
+					{{/if}}
+				{{/unless}}
+
+				{{#if showSend}}
+					<div class="message-buttons send-button">
+						<i class="icon-paper-plane" aria-label="{{_ "Send"}}"></i>
+					</div>
+				{{/if}}
+			</div>
+			<div class="users-typing">
+				{{#with usersTyping}}
+					<strong>{{users}}</strong>
+
+					{{typing_text}}
+                    {{#if typing_text}}
+                    <img src="data:image/gif;base64,R0lGODlhGgAQAIQXADMzM2ZmZpkzM8wzM6p3AMxmM91mZv9mZsSRAN2qAP/MAOWATf+ZZv/lboiIiJmZmaqqqru7u/+/mczMzN3d3f/lzP//3f///////////////////////////////////yH/C05FVFNDQVBFMi4wAwEAAAAh/hFDcmVhdGVkIHdpdGggR0lNUAAh+QQJKAAfACwAAAAAGgAQAAAFUuAnjqT4HEepruRDQcbAzmNiQZMj06zdKI5IgLfyKRKJIbFkRBKWTMvPCSU1E8+q6JrVcrVb6REL/nzBjApi3NUuKhICufwBSBiMNhgAEBToIyEAIfkECSgAHwAsAAAAABoAEAAABVHgJ45kKT7HYa7s91CQMbT0l1jQ5Mz1ejcKRyTQM/0UiQSxSDomCcymBfiMjpwJqNU2RWa3XOp3i9Vay2BGBeE1WxcVCWEMBkgYDPcWABAUtiEAIfkEASgAHwAsAAAAABoAEAAABVHgJ45kaX7PcZzs+VCQMbT0l1jQ5Mz1eTcKRyTQM/0UiQSxSDomCcymBfiMjpwJqNU2RWa3XOp3i9Vay2BGBeE1WxcVCWEMBkgYDPcWABAUeiEAOw==">
+                    {{/if}}
+				{{/with}}
+			</div>
+
+			{{#if showFormattingTips}}
+			<div class="formatting-tips" aria-hidden="true" dir="auto">
+				{{#if showMarkdown}}
+				<b>*{{_ "bold"}}*</b>
+				<i>_{{_ "italics"}}_</i>
+				<span>~<strike>{{_ "strike"}}</strike>~</span>
+				{{/if}}
+				{{#if showMarkdownCode}}
+				<code class="inline">`{{_ "inline_code"}}`</code>
+				<code class="inline"><span class="hidden-br"><br></span>```<span class="hidden-br"><br></span><i class="icon-level-down"></i>{{_ "multi"}}<span class="hidden-br"><br></span><i class="icon-level-down"></i>{{_ "line"}}<span class="hidden-br"><br></span><i class="icon-level-down"></i>```</code>
+				{{/if}}
+				{{#if katexSyntax}}
+				<span><a href="https://github.com/Khan/KaTeX/wiki/Function-Support-in-KaTeX" target="_blank">{{katexSyntax}}</a></span>
+				{{/if}}
+				{{#if showMarkdown}}
+				<q><span class="hidden-br"><br></span>&gt;{{_ "quote"}}</q>
+				{{/if}}
+			</div>
 			{{/if}}
-		{{/if}}
-		{{#if alias}}
-			<button type="button" class="user user-card-message" data-username="{{u.username}}" tabindex="1">{{alias}} <span class="message-alias">@{{u.username}}</span></button>
+			<div class="editing-commands" aria-hidden="true" dir="auto">
+				<div class="editing-commands-cancel">{{_ 'Esc_to'}} <button type="button">{{_ 'Cancel_message_input'}}</button></div>
+				<div class="editing-commands-save">{{_ 'Enter_to'}} <button type="button">{{_ 'Save_changes'}}</button></div>
+			</div>
+		</form>
+	{{else}}
+		{{#with notSubscribedTpl}}
+			{{> Template.dynamic . }}
 		{{else}}
 			<button type="button" class="user user-card-message" data-username="{{u.username}}" tabindex="1">{{userrealname}}</button>
 		{{/if}}
@@ -102,4 +192,15 @@
 			</li>
 		</ul>
 	</li>
+			{{#if canJoin}}
+			<div>
+				{{{_ "you_are_in_preview_mode_of" room_name=roomName}}}
+				{{#if joinCodeRequired}}
+					<input type="text" name="joinCode" placeholder="{{_ 'Code'}}" style="width: 100px">
+				{{/if}}
+				<button class="button join"><span><i class="icon-login"></i> {{_ "join"}}</span></button>
+			</div>
+			{{/if}}
+		{{/with}}
+	{{/if}}
 </template>

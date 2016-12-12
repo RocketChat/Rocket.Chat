@@ -129,7 +129,14 @@ input:focus {
 
 	border-top-right-radius: inherit;
 	border-top-left-radius: inherit;
-
+    .users-typing {
+      bottom: 55px;
+      position: absolute;
+      left: 10px;
+    }
+    .body {
+      word-wrap: break-word;
+    }
 	.title {
 		flex: 1 0 @header-min-height;
 
@@ -168,7 +175,7 @@ input:focus {
 		border-right: 1px solid @window-border-color;
 		overflow-y: auto;
 		.wrapper {
-			padding-bottom: 6px;
+			padding-bottom: 15px;
 
 			ul {
 				list-style-type: none;
@@ -637,6 +644,7 @@ input:focus {
 }
 
 .powered-by {
+    display:none;
 	margin-top: -20px;
 	line-height: 20px;
 	right: 0;

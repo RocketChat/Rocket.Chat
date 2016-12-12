@@ -42,6 +42,18 @@ Template.livechatWindow.helpers({
 	videoCalling() {
 		return LivechatVideoCall.isActive();
 	}
+  usersTyping() {
+    room_typing = MsgTyping.get(visitor.getRoom());
+    users = _.keys(room_typing.users);
+    if (room_typing.input_text == "")
+      return "";
+    input_text = " is Typing";
+
+    if (users.length ==  0)
+      return "";
+    if (users.length == 1)
+      return users[0] + input_text;
+  }
 });
 
 Template.livechatWindow.events({
