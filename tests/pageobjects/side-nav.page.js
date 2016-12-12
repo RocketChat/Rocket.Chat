@@ -62,6 +62,7 @@ class SideNav extends Page {
 		browser.pause(200);
 		this.saveChannelBtn.click();
 		browser.waitForExist('[title="'+channelName+'"]', 1000);
+		this.channelType.waitForVisible(500, true);
 	}
 
 	addPeopleToChannel(user) {
