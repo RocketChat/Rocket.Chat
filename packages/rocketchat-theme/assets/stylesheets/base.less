@@ -2027,6 +2027,7 @@ label.required:after {
 		min-height: @footer-min-height;
 	}
 	.message-form {
+		margin-bottom: 18px;
 		> .message-input {
 			border-width: 1px;
 			overflow: hidden;
@@ -2096,7 +2097,7 @@ label.required:after {
 		}
 		.formatting-tips {
 			float: right;
-			height: 23px;
+			height: 25px;
 			font-size: 11px;
 			padding: 3px;
 			display: -webkit-flex;
@@ -2137,7 +2138,9 @@ label.required:after {
 		}
 		.stream-info {
 			font-size: 12px;
+			height: 25px;
 			padding: 3px;
+			float: left;
 		}
 		.editing-commands {
 			display: none;
@@ -3767,10 +3770,10 @@ body:not(.is-cordova) {
 
 .mention-link {
 	border-radius: 4px;
-	padding: 0px 4px 2px 4px;
 	&.mention-link-me,
 	&.mention-link-all {
 		font-weight: bold;
+		padding: 0 4px 2px;
 	}
 }
 
