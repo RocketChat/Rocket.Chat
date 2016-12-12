@@ -9,7 +9,7 @@ import {targetUser} from '../test-data/interactions.js';
 import {checkIfUserIsValid, setPublicChannelCreated, setPrivateChannelCreated, setDirectMessageCreated} from '../test-data/checks';
 import {username, email, password} from '../test-data/user.js';
 //Basic usage test start
-describe.only('Channel creation', function() {
+describe('Channel creation', function() {
 	before(()=>{
 		checkIfUserIsValid(username, email, password);
 		sideNav.getChannelFromList('general').waitForExist(5000);
