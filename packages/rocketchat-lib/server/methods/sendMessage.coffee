@@ -42,10 +42,10 @@ Meteor.methods
 
 		RocketChat.sendMessage user, message, room
 
-# Limit a user to sending 5 msgs/second
+# Limit a user, who does not have the "bot" role, to sending 5 msgs/second
 DDPRateLimiter.addRule
 	type: 'method'
 	name: 'sendMessage'
 	userId: (userId) ->
-		return RocketChat.models.Users.findOneById(userId)?.username isnt RocketChat.settings.get('InternalHubot_Username')
+		return 'bot' not in RocketChat.models.Users.findOneById(userId)?.roles
 , 5, 1000
