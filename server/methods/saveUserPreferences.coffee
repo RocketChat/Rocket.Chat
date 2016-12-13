@@ -1,5 +1,8 @@
 Meteor.methods
 	saveUserPreferences: (settings) ->
+
+		check settings, Object
+
 		if Meteor.userId()
 			preferences = {}
 
@@ -38,8 +41,14 @@ Meteor.methods
 			else
 				delete preferences.mergeChannels
 
+			if settings.unreadAlert?
+				preferences.unreadAlert = if settings.unreadAlert is "1" then true else false
+
+			preferences.desktopNotificationDuration = settings.desktopNotificationDuration - 0
 			preferences.viewMode = settings.viewMode || 0
 			preferences.hideUsernames = settings.hideUsernames is "1"
+			preferences.hideAvatars = settings.hideAvatars is "1"
+			preferences.hideFlexTab = settings.hideFlexTab is "1"
 			preferences.highlights = settings.highlights
 
 			RocketChat.models.Users.setPreferences Meteor.userId(), preferences

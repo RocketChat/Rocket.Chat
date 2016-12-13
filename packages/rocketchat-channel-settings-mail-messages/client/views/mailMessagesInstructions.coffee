@@ -1,3 +1,4 @@
+import toastr from 'toastr'
 Template.mailMessagesInstructions.helpers
 	name: ->
 		return Meteor.user().name
@@ -23,7 +24,7 @@ Template.mailMessagesInstructions.helpers
 					filter:
 						exceptions: Template.instance().selectedUsers.get()
 					selector: (match) ->
-						return { username: match }
+						return { term: match }
 					sort: 'username'
 				}
 			]

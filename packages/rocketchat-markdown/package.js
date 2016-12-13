@@ -6,10 +6,9 @@ Package.describe({
 });
 
 Package.onUse(function(api) {
-	api.versionsFrom('1.0');
-
 	api.use([
 		'coffeescript',
+		'ecmascript',
 		'underscore',
 		'templating',
 		'underscorestring:underscore.string',

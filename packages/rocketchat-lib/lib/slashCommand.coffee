@@ -7,6 +7,7 @@ RocketChat.slashCommands.add = (command, callback, options) ->
 		callback: callback
 		params: options?.params
 		description: options?.description
+		clientOnly: options?.clientOnly or false
 
 	return
 

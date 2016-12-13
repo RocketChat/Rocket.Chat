@@ -1,5 +1,6 @@
-Template.message.helpers
+import moment from 'moment'
 
+Template.message.helpers
 	own: ->
 		return 'own' if this.u?._id is Meteor.userId()
 
@@ -34,7 +35,7 @@ Template.message.helpers
 				# message = RocketChat.callbacks.run 'renderMessage', this
 				message = this
 				this.html = message.html.replace /\n/gm, '<br/>'
-				return this.html
+				return livechatAutolinker.link this.html
 
 	system: ->
 		return 'system' if this.t in ['s', 'p', 'f', 'r', 'au', 'ru', 'ul', 'wm', 'uj', 'livechat-close']

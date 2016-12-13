@@ -1,3 +1,4 @@
+import toastr from 'toastr';
 Template.visitorEdit.helpers({
 	visitor() {
 		return Template.instance().visitor.get();
@@ -22,7 +23,7 @@ Template.visitorEdit.helpers({
 	},
 
 	joinTags() {
-		return this.tags.join(', ');
+		return this.tags && this.tags.join(', ');
 	}
 });
 
@@ -53,7 +54,7 @@ Template.visitorEdit.events({
 		roomData.topic = event.currentTarget.elements['topic'].value;
 		roomData.tags = event.currentTarget.elements['tags'].value;
 
-		Meteor.call('livechat:saveLivechatInfo', userData, roomData, (err) => {
+		Meteor.call('livechat:saveInfo', userData, roomData, (err) => {
 			if (err) {
 				toastr.error(t(err.error));
 			} else {

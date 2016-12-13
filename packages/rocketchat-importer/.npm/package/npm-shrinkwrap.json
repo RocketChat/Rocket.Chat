@@ -1,7 +1,14 @@
 {
   "dependencies": {
     "adm-zip": {
-      "version": "0.4.7"
+      "version": "0.4.7",
+      "resolved": "https://registry.npmjs.org/adm-zip/-/adm-zip-0.4.7.tgz",
+      "from": "adm-zip@0.4.7"
+    },
+    "bson": {
+      "version": "0.5.5",
+      "resolved": "https://registry.npmjs.org/bson/-/bson-0.5.5.tgz",
+      "from": "bson@0.5.5"
     }
   }
 }

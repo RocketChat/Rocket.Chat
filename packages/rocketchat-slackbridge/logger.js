@@ -4,6 +4,7 @@
 logger = new Logger('SlackBridge', {
 	sections: {
 		connection: 'Connection',
-		events: 'Events'
+		events: 'Events',
+		class: 'Class'
 	}
 });

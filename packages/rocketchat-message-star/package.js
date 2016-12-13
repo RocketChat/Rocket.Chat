@@ -6,12 +6,11 @@ Package.describe({
 });
 
 Package.onUse(function(api) {
-	api.versionsFrom('1.0');
-
 	api.use([
 		'coffeescript',
+		'ecmascript',
 		'underscore',
-		'less@2.5.0',
+		'less',
 		'rocketchat:lib'
 	]);
 

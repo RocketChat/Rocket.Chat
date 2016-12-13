@@ -1,6 +1,6 @@
-RocketChat.models.Users = new class extends RocketChat.models._Base
+class ModelUsers extends RocketChat.models._Base
 	constructor: ->
-		@model = Meteor.users
+		super(arguments...)
 
 		@tryEnsureIndex { 'roles': 1 }, { sparse: 1 }
 		@tryEnsureIndex { 'name': 1 }
@@ -70,33 +70,53 @@ RocketChat.models.Users = new class extends RocketChat.models._Base
 	findUsersByUsernamesWithHighlights: (usernames, options) ->
 		query =
 			username: { $in: usernames }
-			'settings.preferences.highlights':
+			'settings.preferences.highlights.0':
 				$exists: true
 
 		return @find query, options
 
-	findActiveByUsernameRegexWithExceptions: (username, exceptions = [], options = {}) ->
+	findActiveByUsernameOrNameRegexWithExceptions: (searchTerm, exceptions = [], options = {}) ->
 		if not _.isArray exceptions
 			exceptions = [ exceptions ]
 
-		usernameRegex = new RegExp username, "i"
-		query =
-			$and: [
-				{ active: true }
-				{ username: { $nin: exceptions } }
-				{ username: usernameRegex }
-			]
-			type:
+		termRegex = new RegExp s.escapeRegExp(searchTerm), 'i'
+		query = {
+			$or: [{
+				username: termRegex
+			}, {
+				name: termRegex
+			}],
+			active: true,
+			type: {
 				$in: ['user', 'bot']
+			},
+			$and: [{
+				username: {
+					$exists: true
+				}
+			}, {
+				username: {
+					$nin: exceptions
+				}
+			}]
+		}
 
 		return @find query, options
 
-	findByActiveUsersUsernameExcept: (username, except, options) ->
+	findByActiveUsersUsernameExcept: (searchTerm, exceptions = [], options = {}) ->
+		if not _.isArray exceptions
+			exceptions = [ exceptions ]
+
+		termRegex = new RegExp s.escapeRegExp(searchTerm), 'i'
 		query =
-			active: true
 			$and: [
-				{username: {$nin: except}}
-				{username: username}
+				{
+					active: true
+					username: termRegex
+				}
+				{
+					username: { $nin: exceptions }
+				}
 			]
 
 		return @find query, options
@@ -134,6 +154,12 @@ RocketChat.models.Users = new class extends RocketChat.models._Base
 
 		return @find query, options
 
+	findCrowdUsers: (options) ->
+		query =
+			crowd: true
+
+		return @find query, options
+
 	getLastLogin: (options = {}) ->
 		query = { lastLogin: { $exists: 1 } }
 		options.sort = { lastLogin: -1 }
@@ -149,6 +175,19 @@ RocketChat.models.Users = new class extends RocketChat.models._Base
 		return @find query, options
 
 	# UPDATE
+	addImportIds: (_id, importIds) ->
+		importIds = [].concat(importIds)
+
+		query =
+			_id: _id
+
+		update =
+			$addToSet:
+				importIds:
+					$each: importIds
+
+		return @update query, update
+
 	updateLastLoginById: (_id) ->
 		update =
 			$set:
@@ -199,6 +238,16 @@ RocketChat.models.Users = new class extends RocketChat.models._Base
 		update =
 			$set:
 				name: name
+
+		return @update _id, update
+
+	setCustomFields: (_id, fields) ->
+		values = {}
+		for key, value of fields
+			values["customFields.#{key}"] = value
+
+		update =
+			$set: values
 
 		return @update _id, update
 
@@ -347,11 +396,13 @@ RocketChat.models.Users = new class extends RocketChat.models._Base
 	- he is not online
 	- has a verified email
 	- has not disabled email notifications
+	- `active` is equal to true (false means they were deactivated and can't login)
 	###
 	getUsersToSendOfflineEmail: (usersIds) ->
 		query =
 			_id:
 				$in: usersIds
+			active: true
 			status: 'offline'
 			statusConnection:
 				$ne: 'online'
@@ -359,3 +410,4 @@ RocketChat.models.Users = new class extends RocketChat.models._Base
 
 		return @find query, { fields: { name: 1, username: 1, emails: 1, 'settings.preferences.emailNotificationMode': 1 } }
 
+RocketChat.models.Users = new ModelUsers(Meteor.users)

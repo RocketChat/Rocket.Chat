@@ -7,7 +7,6 @@ Package.describe({
 });
 
 Package.onUse(function(api) {
-	api.versionsFrom('1.0');
 	api.use([
 		'ecmascript',
 		'coffeescript',
@@ -17,7 +16,7 @@ Package.onUse(function(api) {
 
 	api.use('mongo', ['client', 'server']);
 	api.use('kadira:flow-router', 'client');
-	api.use('less@2.5.1', 'client');
+	api.use('less', 'client');
 	api.use('tracker', 'client');
 
 	api.use('templating', 'client');
@@ -42,7 +41,8 @@ Package.onUse(function(api) {
 	api.addFiles('client/views/permissionsRole.coffee', ['client']);
 
 	// stylesheets
-	api.addFiles('client/stylesheets/permissions.less', 'client');
+	api.addAssets('client/stylesheets/permissions.less', 'server');
+	api.addFiles('client/stylesheets/load.coffee', 'server');
 
 	api.addFiles('server/models/Permissions.coffee', ['server']);
 	api.addFiles('server/models/Roles.coffee', ['server']);
@@ -61,7 +61,6 @@ Package.onUse(function(api) {
 	// publications
 	api.addFiles('server/publications/permissions.js', 'server');
 	api.addFiles('server/publications/roles.coffee', 'server');
-	api.addFiles('server/publications/scopedRoles.js', 'server');
 	api.addFiles('server/publications/usersInRole.coffee', 'server');
 
 	// methods

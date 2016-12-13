@@ -1,4 +1,7 @@
 Template.directMessages.helpers
+	isActive: ->
+		return 'active' if ChatSubscription.findOne({ t: { $in: ['d']}, f: { $ne: true }, open: true, rid: Session.get('openedRoom') }, { fields: { _id: 1 } })?
+
 	rooms: ->
 		query = { t: { $in: ['d']}, f: { $ne: true }, open: true }
 
@@ -7,13 +10,17 @@ Template.directMessages.helpers
 				$ne: true
 
 		return ChatSubscription.find query, { sort: 't': 1, 'name': 1 }
-	isActive: ->
-		return 'active' if ChatSubscription.findOne({ t: { $in: ['d']}, f: { $ne: true }, open: true, rid: Session.get('openedRoom') }, { fields: { _id: 1 } })?
+
+	canCreate: ->
+		return RocketChat.authz.hasAtLeastOnePermission ['create-d']
 
 Template.directMessages.events
 	'click .add-room': (e, instance) ->
-		SideNav.setFlex "directMessagesFlex"
-		SideNav.openFlex()
+		if RocketChat.authz.hasAtLeastOnePermission('create-d')
+			SideNav.setFlex "directMessagesFlex"
+			SideNav.openFlex()
+		else
+			e.preventDefault()
 
 	'click .more-direct-messages': ->
 		SideNav.setFlex "listDirectMessagesFlex"

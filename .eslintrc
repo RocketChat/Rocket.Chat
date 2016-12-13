@@ -1,4 +1,7 @@
 {
+	"parserOptions": {
+		"sourceType": "module"
+	},
 	"env": {
 		"browser": true,
 		"commonjs": true,
@@ -46,7 +49,7 @@
 		}],
 		"no-lonely-if": 2,
 		"no-trailing-spaces": 2,
-		"complexity": [1, 11],
+		"complexity": [1, 31],
 		"space-in-parens": [2, "never"],
 		"space-before-function-paren": [2, "never"],
 		"space-before-blocks": [2, "always"],
@@ -63,7 +66,9 @@
 		"block-scoped-var": 2,
 		"curly": [2, "all"],
 		"eqeqeq": [2, "allow-null"],
-		"new-cap": 2,
+		"new-cap":  [2, {
+			"capIsNewExceptions": ["Match.Optional", "Match.Maybe", "Match.ObjectIncluding"]
+		}],
 		"use-isnan": 2,
 		"valid-typeof": 2,
 		"linebreak-style": [2, "unix"],
@@ -79,6 +84,7 @@
 		"Assets"                      : false,
 		"Blaze"                       : false,
 		"BlazeLayout"                 : false,
+		"browser"                     : false,
 		"ChatMessage"                 : false,
 		"ChatMessages"                : false,
 		"ChatRoom"                    : false,
@@ -123,6 +129,7 @@
 		"swal"                        : false,
 		"t"                           : false,
 		"TAPi18n"                     : false,
+		"TAPi18next"                  : false,
 		"Template"                    : false,
 		"TimeSync"                    : false,
 		"toastr"                      : false,

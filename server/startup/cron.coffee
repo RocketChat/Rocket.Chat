@@ -10,9 +10,15 @@ generateStatistics = ->
 	statistics = RocketChat.statistics.save()
 	statistics.host = Meteor.absoluteUrl()
 	if RocketChat.settings.get 'Statistics_reporting'
-		HTTP.post 'https://rocket.chat/stats',
-			data: statistics
+		try
+			HTTP.post 'https://collector.rocket.chat/',
+				data: statistics
+		catch e
+			logger.warn('Failed to send usage report')
 	return
+
+cleanupOEmbedCache = ->
+	Meteor.call('OEmbedCacheCleanup')
 
 Meteor.startup ->
 	Meteor.defer ->
@@ -22,7 +28,14 @@ Meteor.startup ->
 		SyncedCron.add
 			name: 'Generate and save statistics',
 			schedule: (parser) -># parser is a later.parse object
-				return parser.text 'every 1 hour'
+				return parser.cron new Date().getMinutes() + ' * * * *'
 			job: generateStatistics
+
+		SyncedCron.add
+			name: 'Cleanup OEmbed cache'
+			schedule: (parser) ->
+				now = new Date()
+				return parser.cron now.getMinutes() + ' ' + now.getHours() + ' * * *'
+			job: cleanupOEmbedCache
 
 		SyncedCron.start()

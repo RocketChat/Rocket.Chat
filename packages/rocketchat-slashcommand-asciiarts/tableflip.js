@@ -9,12 +9,12 @@ function Tableflip(command, params, item) {
 		var msg;
 
 		msg = item;
-		msg.msg = params + ' ¯(╯°□°）╯︵ ┻━┻';
+		msg.msg = params + ' (╯°□°）╯︵ ┻━┻';
 		Meteor.call('sendMessage', msg);
 	}
 }
 
 RocketChat.slashCommands.add('tableflip', Tableflip, {
 	description: 'Slash_Tableflip_Description',
-	params: 'your message (optional)'
+	params: 'your_message_optional'
 });

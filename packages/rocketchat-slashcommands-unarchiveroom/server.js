@@ -5,7 +5,7 @@ function Unarchive(command, params, item) {
 	}
 	channel = params.trim();
 	if (channel === '') {
-		room = RocketChat.models.Rooms.findOneById(item.rid)
+		room = RocketChat.models.Rooms.findOneById(item.rid);
 		channel = room.name;
 	} else {
 		channel = channel.replace('#', '');

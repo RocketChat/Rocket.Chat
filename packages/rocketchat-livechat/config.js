@@ -67,15 +67,30 @@ Meteor.startup(function() {
 		i18nLabel: 'Livechat_room_count'
 	});
 
-	RocketChat.settings.add('Livechat_forward_open_chats', false, {
-		type: 'boolean',
-		group: 'Livechat'
+	RocketChat.settings.add('Livechat_agent_leave_action', 'none', {
+		type: 'select',
+		group: 'Livechat',
+		values: [
+			{ key: 'none', i18nLabel: 'None' },
+			{ key: 'forward', i18nLabel: 'Forward' },
+			{ key: 'close', i18nLabel: 'Close' }
+		],
+		i18nLabel: 'How_to_handle_open_sessions_when_agent_goes_offline'
 	});
 
-	RocketChat.settings.add('Livechat_forward_open_chats_timeout', 60, {
+	RocketChat.settings.add('Livechat_agent_leave_action_timeout', 60, {
 		type: 'int',
 		group: 'Livechat',
-		enableQuery: { _id: 'Livechat_forward_open_chats', value: true }
+		enableQuery: { _id: 'Livechat_agent_leave_action', value: { $ne: 'none' } },
+		i18nLabel: 'How_long_to_wait_after_agent_goes_offline',
+		i18nDescription: 'Time_in_seconds'
+	});
+
+	RocketChat.settings.add('Livechat_agent_leave_comment', '', {
+		type: 'string',
+		group: 'Livechat',
+		enableQuery: { _id: 'Livechat_agent_leave_action', value: 'close' },
+		i18nLabel: 'Comment_to_leave_on_closing_session'
 	});
 
 	RocketChat.settings.add('Livechat_webhookUrl', false, {
@@ -129,4 +144,79 @@ Meteor.startup(function() {
 		public: true,
 		i18nLabel: 'Apiai_Language'
 	});
+
+	RocketChat.settings.add('Livechat_history_monitor_type', 'url', {
+		type: 'select',
+		group: 'Livechat',
+		i18nLabel: 'Monitor_history_for_changes_on',
+		values: [
+			{ key: 'url', i18nLabel: 'Page_URL' },
+			{ key: 'title', i18nLabel: 'Page_title' }
+		]
+	});
+
+	RocketChat.settings.add('Livechat_Routing_Method', 'Least_Amount', {
+		type: 'select',
+		group: 'Livechat',
+		public: true,
+		values: [
+			{key: 'Least_Amount', i18nLabel: 'Least_Amount'},
+			{key: 'Guest_Pool', i18nLabel: 'Guest_Pool'}
+		]
+	});
+
+	RocketChat.settings.add('Livechat_guest_pool_with_no_agents', false, {
+		type: 'boolean',
+		group: 'Livechat',
+		i18nLabel: 'Accept_with_no_online_agents',
+		i18nDescription: 'Accept_incoming_livechat_requests_even_if_there_are_no_online_agents',
+		enableQuery: { _id: 'Livechat_Routing_Method', value: 'Guest_Pool' }
+	});
+
+	RocketChat.settings.add('Livechat_show_queue_list_link', false, {
+		type: 'boolean',
+		group: 'Livechat',
+		public: true,
+		i18nLabel: 'Show_queue_list_to_all_agents'
+	});
+
+	RocketChat.settings.add('Livechat_enable_office_hours', false, {
+		type: 'boolean',
+		group: 'Livechat',
+		public: true,
+		i18nLabel: 'Office_Hours_Enabled'
+	});
+
+	RocketChat.settings.add('Livechat_videocall_enabled', false, {
+		type: 'boolean',
+		group: 'Livechat',
+		public: true,
+		i18nLabel: 'Videocall_enabled',
+		i18nDescription: 'Beta_feature_Depends_on_Video_Conference_to_be_enabled',
+		enableQuery: { _id: 'Jitsi_Enabled', value: true }
+	});
+
+	RocketChat.settings.add('Livechat_enable_transcript', false, {
+		type: 'boolean',
+		group: 'Livechat',
+		public: true,
+		i18nLabel: 'Transcript_Enabled'
+	});
+
+	RocketChat.settings.add('Livechat_transcript_message', 'Would you like a copy of this chat emailed?', {
+		type: 'string',
+		group: 'Livechat',
+		public: true,
+		i18nLabel: 'Transcript_message',
+		enableQuery: { _id: 'Livechat_enable_transcript', value: true }
+	});
+
+	RocketChat.settings.add('Livechat_open_inquiery_show_connecting', false, {
+		type: 'boolean',
+		group: 'Livechat',
+		public: true,
+		i18nLabel: 'Livechat_open_inquiery_show_connecting',
+		enableQuery: { _id: 'Livechat_Routing_Method', value: 'Guest_Pool' }
+	});
+
 });

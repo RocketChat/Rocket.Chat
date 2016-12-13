@@ -7,16 +7,18 @@ Package.describe({
 });
 
 Package.onUse(function(api) {
-	api.versionsFrom('1.2.1');
 	api.use('ecmascript');
 	api.use('rocketchat:lib');
 	api.use('rocketchat:logger');
 
+	api.addFiles('slashcommand/slackbridge_import.client.js', 'client');
+
 	api.addFiles('logger.js', 'server');
 	api.addFiles('settings.js', 'server');
 	api.addFiles('slackbridge.js', 'server');
+	api.addFiles('slashcommand/slackbridge_import.server.js', 'server');
 });
 
 Npm.depends({
-	'slack-client': '2.0.4'
+	'slack-client': '2.0.6'
 });

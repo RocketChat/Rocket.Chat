@@ -1,3 +1,6 @@
+import moment from 'moment'
+import toastr from 'toastr'
+
 RocketChat.MessageAction = new class
 	buttons = new ReactiveVar {}
 
@@ -79,6 +82,30 @@ Meteor.startup ->
 			RocketChat.MessageAction.hideDropDown()
 
 	RocketChat.MessageAction.addButton
+		id: 'reply-message'
+		icon: 'icon-reply'
+		i18nLabel: 'Reply'
+		context: [
+			'message'
+			'message-mobile'
+		]
+		action: (event, instance) ->
+			message = @_arguments[1]
+			input = instance.find('.input-message')
+			url = RocketChat.MessageAction.getPermaLink(message._id)
+			text = '[ ](' + url + ') @' + message.u.username + ' '
+			if input.value
+				input.value += if input.value.endsWith(' ') then '' else ' '
+			input.value += text
+			input.focus()
+			RocketChat.MessageAction.hideDropDown()
+		validation: (message) ->
+			if not RocketChat.models.Subscriptions.findOne({ rid: message.rid })?
+				return false
+			return true
+		order: 1
+
+	RocketChat.MessageAction.addButton
 		id: 'edit-message'
 		icon: 'icon-pencil'
 		i18nLabel: 'Edit'
@@ -96,9 +123,7 @@ Meteor.startup ->
 				input.updateAutogrow()
 			, 200
 		validation: (message) ->
-			room = RocketChat.models.Rooms.findOne({ _id: message.rid })
-
-			if Array.isArray(room.usernames) && room.usernames.indexOf(Meteor.user().username) is -1
+			if not RocketChat.models.Subscriptions.findOne({ rid: message.rid })?
 				return false
 
 			hasPermission = RocketChat.authz.hasAtLeastOnePermission('edit-message', message.rid)
@@ -114,7 +139,7 @@ Meteor.startup ->
 				return currentTsDiff < blockEditInMinutes
 			else
 				return true
-		order: 1
+		order: 2
 
 	RocketChat.MessageAction.addButton
 		id: 'delete-message'
@@ -129,9 +154,7 @@ Meteor.startup ->
 			RocketChat.MessageAction.hideDropDown()
 			chatMessages[Session.get('openedRoom')].confirmDeleteMsg(message)
 		validation: (message) ->
-			room = RocketChat.models.Rooms.findOne({ _id: message.rid })
-
-			if Array.isArray(room.usernames) && room.usernames.indexOf(Meteor.user().username) is -1
+			if not RocketChat.models.Subscriptions.findOne({ rid: message.rid })?
 				return false
 
 			hasPermission = RocketChat.authz.hasAtLeastOnePermission('delete-message', message.rid)
@@ -147,7 +170,7 @@ Meteor.startup ->
 				return currentTsDiff < blockDeleteInMinutes
 			else
 				return true
-		order: 2
+		order: 3
 
 	RocketChat.MessageAction.addButton
 		id: 'permalink'
@@ -164,13 +187,11 @@ Meteor.startup ->
 			$(event.currentTarget).attr('data-clipboard-text', RocketChat.MessageAction.getPermaLink(message._id));
 			toastr.success(TAPi18n.__('Copied'))
 		validation: (message) ->
-			room = RocketChat.models.Rooms.findOne({ _id: message.rid })
-
-			if Array.isArray(room.usernames) && room.usernames.indexOf(Meteor.user().username) is -1
+			if not RocketChat.models.Subscriptions.findOne({ rid: message.rid })?
 				return false
 
 			return true
-		order: 3
+		order: 4
 
 	RocketChat.MessageAction.addButton
 		id: 'copy'
@@ -187,13 +208,11 @@ Meteor.startup ->
 			$(event.currentTarget).attr('data-clipboard-text', message)
 			toastr.success(TAPi18n.__('Copied'))
 		validation: (message) ->
-			room = RocketChat.models.Rooms.findOne({ _id: message.rid })
-
-			if Array.isArray(room.usernames) && room.usernames.indexOf(Meteor.user().username) is -1
+			if not RocketChat.models.Subscriptions.findOne({ rid: message.rid })?
 				return false
 
 			return true
-		order: 4
+		order: 5
 
 	RocketChat.MessageAction.addButton
 		id: 'quote-message'
@@ -212,13 +231,10 @@ Meteor.startup ->
 				input.value += if input.value.endsWith(' ') then '' else ' '
 			input.value += text
 			input.focus()
-			$(input).keyup()
 			RocketChat.MessageAction.hideDropDown()
 		validation: (message) ->
-			room = RocketChat.models.Rooms.findOne({ _id: message.rid })
-
-			if Array.isArray(room.usernames) && room.usernames.indexOf(Meteor.user().username) is -1
+			if not RocketChat.models.Subscriptions.findOne({ rid: message.rid })?
 				return false
 
 			return true
-		order: 5
+		order: 6

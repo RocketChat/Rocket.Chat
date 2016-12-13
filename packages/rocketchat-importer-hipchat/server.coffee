@@ -1,3 +1,6 @@
+import moment from 'moment'
+import 'moment-timezone'
+
 Importer.HipChat = class Importer.HipChat extends Importer.Base
 	@RoomPrefix = 'hipchat_export/rooms/'
 	@UsersPrefix = 'hipchat_export/users/'
@@ -86,7 +89,7 @@ Importer.HipChat = class Importer.HipChat extends Importer.Base
 		@addCountToTotal messagesCount
 
 		if tempUsers.length is 0 or tempRooms.length is 0 or messagesCount is 0
-			@logger.warn "The loaded users count #{tempUsers.length}, the loaded channels #{tempChannels.length}, and the loaded messages #{messagesCount}"
+			@logger.warn "The loaded users count #{tempUsers.length}, the loaded channels #{tempRooms.length}, and the loaded messages #{messagesCount}"
 			@updateProgress Importer.ProgressStep.ERROR
 			return @getProgress()
 
@@ -94,7 +97,7 @@ Importer.HipChat = class Importer.HipChat extends Importer.Base
 			#HipChat's export doesn't contain bot users, from the data I've seen
 			return new Importer.SelectionUser user.user_id, user.name, user.email, user.is_deleted, false, !user.is_bot
 		selectionChannels = tempRooms.map (room) ->
-			return new Importer.SelectionChannel room.room_id, room.name, room.is_archived, true
+			return new Importer.SelectionChannel room.room_id, room.name, room.is_archived, true, false
 
 		@updateProgress Importer.ProgressStep.USER_SELECTION
 		return new Importer.Selection @name, selectionUsers, selectionChannels
@@ -132,10 +135,9 @@ Importer.HipChat = class Importer.HipChat extends Importer.Base
 								hipchat: "@#{user.mention_name}"
 								rocket: "@#{user.mention_name}"
 							Meteor.runAsUser userId, () =>
-								Meteor.call 'setUsername', user.mention_name
-								Meteor.call 'joinDefaultChannels', true
-								Meteor.call 'setAvatarFromService', user.photo_url, null, 'url'
-								Meteor.call 'updateUserUtcOffset', parseInt moment().tz(user.timezone).format('Z').toString().split(':')[0]
+								Meteor.call 'setUsername', user.mention_name, {joinDefaultChannelsSilenced: true}
+								Meteor.call 'setAvatarFromService', user.photo_url, undefined, 'url'
+								Meteor.call 'userSetUtcOffset', parseInt moment().tz(user.timezone).format('Z').toString().split(':')[0]
 
 							if user.name?
 								RocketChat.models.Users.setName userId, user.name
@@ -234,6 +236,6 @@ Importer.HipChat = class Importer.HipChat extends Importer.Base
 			#HipChat's export doesn't contain bot users, from the data I've seen
 			return new Importer.SelectionUser user.user_id, user.name, user.email, user.is_deleted, false, !user.is_bot
 		selectionChannels = @channels.channels.map (room) ->
-			return new Importer.SelectionChannel room.room_id, room.name, room.is_archived, true
+			return new Importer.SelectionChannel room.room_id, room.name, room.is_archived, true, false
 
 		return new Importer.Selection @name, selectionUsers, selectionChannels

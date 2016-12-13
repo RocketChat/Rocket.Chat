@@ -1,30 +1,31 @@
 //! moment.js locale configuration
-//! locale : khmer (km)
+//! locale : Cambodian [km]
 //! author : Kruy Vanna : https://github.com/kruyvanna
 
-(function (global, factory) {
-   typeof exports === 'object' && typeof module !== 'undefined' ? factory(require('../moment')) :
-   typeof define === 'function' && define.amd ? define(['moment'], factory) :
+;(function (global, factory) {
+   typeof exports === 'object' && typeof module !== 'undefined'
+       && typeof require === 'function' ? factory(require('../moment')) :
+   typeof define === 'function' && define.amd ? define(['../moment'], factory) :
    factory(global.moment)
 }(this, function (moment) { 'use strict';
 
 
     var km = moment.defineLocale('km', {
-        months: 'មករា_កុម្ភៈ_មិនា_មេសា_ឧសភា_មិថុនា_កក្កដា_សីហា_កញ្ញា_តុលា_វិច្ឆិកា_ធ្នូ'.split('_'),
-        monthsShort: 'មករា_កុម្ភៈ_មិនា_មេសា_ឧសភា_មិថុនា_កក្កដា_សីហា_កញ្ញា_តុលា_វិច្ឆិកា_ធ្នូ'.split('_'),
+        months: 'មករា_កុម្ភៈ_មីនា_មេសា_ឧសភា_មិថុនា_កក្កដា_សីហា_កញ្ញា_តុលា_វិច្ឆិកា_ធ្នូ'.split('_'),
+        monthsShort: 'មករា_កុម្ភៈ_មីនា_មេសា_ឧសភា_មិថុនា_កក្កដា_សីហា_កញ្ញា_តុលា_វិច្ឆិកា_ធ្នូ'.split('_'),
         weekdays: 'អាទិត្យ_ច័ន្ទ_អង្គារ_ពុធ_ព្រហស្បតិ៍_សុក្រ_សៅរ៍'.split('_'),
         weekdaysShort: 'អាទិត្យ_ច័ន្ទ_អង្គារ_ពុធ_ព្រហស្បតិ៍_សុក្រ_សៅរ៍'.split('_'),
         weekdaysMin: 'អាទិត្យ_ច័ន្ទ_អង្គារ_ពុធ_ព្រហស្បតិ៍_សុក្រ_សៅរ៍'.split('_'),
         longDateFormat: {
             LT: 'HH:mm',
-            LTS : 'LT:ss',
+            LTS : 'HH:mm:ss',
             L: 'DD/MM/YYYY',
             LL: 'D MMMM YYYY',
-            LLL: 'D MMMM YYYY LT',
-            LLLL: 'dddd, D MMMM YYYY LT'
+            LLL: 'D MMMM YYYY HH:mm',
+            LLLL: 'dddd, D MMMM YYYY HH:mm'
         },
         calendar: {
-            sameDay: '[ថ្ងៃនៈ ម៉ោង] LT',
+            sameDay: '[ថ្ងៃនេះ ម៉ោង] LT',
             nextDay: '[ស្អែក ម៉ោង] LT',
             nextWeek: 'dddd [ម៉ោង] LT',
             lastDay: '[ម្សិលមិញ ម៉ោង] LT',

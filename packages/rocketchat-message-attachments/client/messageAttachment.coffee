@@ -1,3 +1,5 @@
+import moment from 'moment'
+
 Template.messageAttachment.helpers
 	fixCordova: (url) ->
 		if Meteor.isCordova and url?[0] is '/'
@@ -8,7 +10,10 @@ Template.messageAttachment.helpers
 			else
 				url = url + '&' + query
 
-		return url
+		if Meteor.settings.public.sandstorm or url.match /^(https?:)?\/\//i
+			return url
+		else
+			return Meteor.absoluteUrl().replace(/\/$/, '') + __meteor_runtime_config__.ROOT_URL_PATH_PREFIX + url
 
 	parsedText: ->
 		renderMessageBody { msg: this.text }
@@ -40,3 +45,7 @@ Template.messageAttachment.helpers
 
 	time: ->
 		return moment(@ts).format(RocketChat.settings.get('Message_TimeFormat'))
+
+	injectIndex: (data, previousIndex, index) ->
+		data.index = previousIndex + '.attachments.' + index
+		return

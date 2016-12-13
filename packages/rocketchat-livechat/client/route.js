@@ -76,6 +76,14 @@ AccountBox.addRoute({
 }, livechatManagerRoutes);
 
 AccountBox.addRoute({
+	name: 'livechat-officeHours',
+	path: '/officeHours',
+	sideNav: 'livechatFlex',
+	i18nPageTitle: 'Office_Hours',
+	pageTemplate: 'livechatOfficeHours'
+}, livechatManagerRoutes);
+
+AccountBox.addRoute({
 	name: 'livechat-customfields',
 	path: '/customfields',
 	sideNav: 'livechatFlex',
@@ -106,3 +114,12 @@ AccountBox.addRoute({
 	i18nPageTitle: 'Integrations',
 	pageTemplate: 'livechatIntegrations'
 }, livechatManagerRoutes);
+
+AccountBox.addRoute({
+	name: 'livechat-queue',
+	path: '/livechat-queue',
+	i18nPageTitle: 'Livechat_Queue',
+	pageTemplate: 'livechatQueue'
+});
+
+

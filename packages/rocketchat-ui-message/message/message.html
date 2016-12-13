@@ -1,5 +1,8 @@
 <template name="message">
 	<li id="{{_id}}" class="message {{isSequential}} {{system}} {{t}} {{own}} {{isTemp}} {{chatops}} {{customClass}}" data-username="{{u.username}}" data-groupable="{{isGroupable}}" data-date="{{date}}" data-timestamp="{{timestamp}}">
+		<div class="day-divider">
+			<span>{{date}}</span>
+		</div>
 		{{#if avatar}}
 			{{#if avatarFromUsername}}
 				<button class="thumb user-card-message" data-username="{{u.username}}" tabindex="1">{{> avatar username=avatarFromUsername}}</button>
@@ -27,32 +30,22 @@
 			<button type="button" class="user user-card-message" data-username="{{u.username}}" tabindex="1">{{u.username}}</button>
 		{{/if}}
 		<span class="info">
-			{{#each roleTags}}
-				<span class="role-tag" data-role="{{description}}">{{description}}</span>
-			{{/each}}
-			{{#if isBot}}
-				<span class="is-bot">BOT</span>
-			{{/if}}
-			{{#if edited}}
-				<span
-					title='{{_ "edited"}} {{_ "at"}} {{editTime}} {{_ "by"}} {{editedBy}}'
-					class="time">
-					{{time}}
-				</span>
-				<span class="edited" title='{{_ "edited"}} {{_ "at"}} {{editTime}} {{_ "by"}} {{editedBy}}' >
-					<i class="icon-edit" aria-label="{{_ "Edited"}}"></i>
-					{{_ "by"}}
-					<button class="thumb thumb-small user-card-message" data-username="{{editedBy}}" tabindex="1">
-						{{> avatar username=editedBy}}
-					</button>
-				</span>
-			{{else}}
-				<span class="time">{{time}}</span>
-			{{/if}}
-			{{#if private}}
-				<span class="private">{{_ "Only_you_can_see_this_message"}}</span>
-			{{/if}}
-
+		{{#each roleTags}}
+			<span class="role-tag" data-role="{{description}}">{{description}}</span>
+		{{/each}}
+		{{#if isBot}}
+			<span class="is-bot">BOT</span>
+		{{/if}}
+		<span class="time" title='{{date}} {{time}}'>{{time}}</span>
+		{{#if edited}}
+			<span class="edited" title='{{_ "edited"}} {{_ "at"}} {{editTime}} {{_ "by"}} {{editedBy}}'>
+				<i class="icon-edit" aria-label="{{_ "Edited"}}"></i>
+				<button class="thumb thumb-small user-card-message" data-username="{{editedBy}}" tabindex="1">{{> avatar username=editedBy}}</button>
+			</span>
+		{{/if}}
+		{{#if private}}
+			<span class="private">{{_ "Only_you_can_see_this_message"}}</span>
+		{{/if}}
 			<div class="message-cog-container {{hideCog}}">
 				<i class="icon-cog message-cog" aria-label="{{_ "Actions"}}"></i>
 			</div>
@@ -61,24 +54,25 @@
 			{{{body}}}
 			{{#if hasOembed}}
 				{{#each urls}}
-					{{injectIndex . @index}}
-					{{> oembedBaseWidget}}
+					{{injectIndex . @index}} {{> oembedBaseWidget}}
 				{{/each}}
 			{{/if}}
 			{{#each attachments}}
-				{{injectIndex . @index}}
-				{{> messageAttachment}}
+				{{injectIndex . @index}} {{> messageAttachment}}
 			{{/each}}
 		</div>
 		<ul class="actionLinks {{hideActionLinks}}">
 			{{#each actionLink in actionLinks}}
 				<li>
-					<span class="action-link">
-						<meta name="{{actionLink.id}}"/>
+					<span class="action-link" data-actionlink="{{actionLink.id}}">
 						{{#if actionLink.icon}}
 							<i class="{{actionLink.icon}}"></i>
 						{{/if}}
-						{{actionLink.label}}		
+						{{#if actionLink.i18nLabel}}
+							{{_ actionLink.i18nLabel}}
+						{{else}}
+							{{actionLink.label}}
+						{{/if}}
 					</span>
 				</li>
 			{{/each}}
@@ -86,7 +80,7 @@
 		<ul class="reactions {{hideReactions}}">
 			{{#each reaction in reactions}}
 				<li data-emoji="{{reaction.emoji}}" {{markUserReaction reaction}}>
-					<span class="reaction-emoji">{{> emojione reaction.emoji}}</span>
+					<span class="reaction-emoji">{{> renderEmoji reaction.emoji}}</span>
 					<span class="reaction-count">{{reaction.count}}</span>
 					<ul class="people">
 						<span style="font-weight: bold;">

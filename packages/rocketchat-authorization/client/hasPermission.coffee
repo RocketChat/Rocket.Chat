@@ -9,7 +9,7 @@ atLeastOne = (permissions, scope) ->
 all = (permissions, scope) ->
 	return _.every permissions, (permissionId) ->
 		permission = ChatPermissions.findOne permissionId
-		return _.some permission.roles, (roleName) ->
+		return permission and _.some permission.roles, (roleName) ->
 			role = RocketChat.models.Roles.findOne roleName
 			roleScope = role?.scope
 			return RocketChat.models[roleScope]?.isUserInRole?(Meteor.userId(), roleName, scope)
@@ -29,7 +29,7 @@ hasPermission = (permissions, scope, strategy) ->
 	unless userId
 		return false
 
-	unless RocketChat.authz.subscription.ready()
+	unless RocketChat.authz.cachedCollection.ready.get()
 		return false
 
 	permissions = [].concat permissions

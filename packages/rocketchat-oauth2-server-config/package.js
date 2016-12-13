@@ -5,10 +5,9 @@ Package.describe({
 });
 
 Package.onUse(function(api) {
-	api.versionsFrom('1.0');
-
 	api.use('webapp');
 	api.use('coffeescript');
+	api.use('ecmascript');
 	api.use('rocketchat:lib');
 	api.use('rocketchat:api');
 	api.use('rocketchat:theme');

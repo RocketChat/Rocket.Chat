@@ -29,6 +29,7 @@ Meteor.loginWithLDAP = function(username, password, customLdapOptions, callback)
 
 	// Set up loginRequest object
 	var loginRequest = {
+		ldap: true,
 		username: username,
 		ldapPass: password,
 		ldapOptions: customLdapOptions

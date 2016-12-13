@@ -59,7 +59,7 @@ Template.adminUsers.onCreated ->
 	@users = ->
 		filter = _.trim instance.filter?.get()
 		if filter
-			filterReg = new RegExp filter, "i"
+			filterReg = new RegExp s.escapeRegExp(filter), "i"
 			query = { $or: [ { username: filterReg }, { name: filterReg }, { "emails.address": filterReg } ] }
 		else
 			query = {}

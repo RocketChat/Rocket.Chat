@@ -47,14 +47,14 @@
 					});
 
 				// Did enter get pressed?  Resize in this keydown event so that the flicker doesn't occur.
-				if (event && event.data && event.data.event === 'keydown' && event.keyCode === 13 && event.shiftKey) {
+				if (event && event.data && event.data.event === 'keydown' && event.keyCode === 13 && (event.shiftKey || event.ctrlKey || event.altKey)) {
 					val += '<br />';
 				}
 
 				shadow.css('width', $self.width());
 				shadow.html(val + (noFlickerPad === 0 ? '...' : '')); // Append '...' to resize pre-emptively.
 
-				var newHeight = Math.max(shadow.height() + noFlickerPad, minHeight);
+				var newHeight = Math.max(shadow.height() + noFlickerPad + 1, minHeight);
 				if (settings.preGrowCallback !== null) {
 					newHeight = settings.preGrowCallback($self, shadow, newHeight, minHeight);
 				}
@@ -64,7 +64,7 @@
 				if (settings.postGrowCallback !== null) {
 					settings.postGrowCallback($self);
 				}
-			}
+			};
 
 			$self.change(update).keyup(update).keydown({
 				event: 'keydown'

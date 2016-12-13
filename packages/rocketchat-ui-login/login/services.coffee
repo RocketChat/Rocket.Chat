@@ -1,9 +1,11 @@
+import toastr from 'toastr'
 Meteor.startup ->
 	ServiceConfiguration.configurations.find({custom: true}).observe
 		added: (record) ->
 			new CustomOAuth record.service,
 				serverURL: record.serverURL
 				authorizePath: record.authorizePath
+				scope: record.scope
 
 Template.loginServices.helpers
 	loginService: ->

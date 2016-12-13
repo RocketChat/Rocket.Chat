@@ -1,3 +1,6 @@
+import moment from 'moment'
+import toastr from 'toastr'
+
 class @ChatMessages
 	init: (node) ->
 		this.editing = {}
@@ -11,7 +14,7 @@ class @ChatMessages
 		return
 
 	resize: ->
-		dif = 60 + $(".messages-container").find("footer").outerHeight()
+		dif = (if RocketChat.Layout.isEmbedded() then 0 else 60) + $(".messages-container").find("footer").outerHeight()
 		$(".messages-box").css
 			height: "calc(100% - #{dif}px)"
 
@@ -169,17 +172,35 @@ class @ChatMessages
 
 				KonchatNotification.removeRoomNotification(rid)
 				input.value = ''
+				input.updateAutogrow?()
 				this.hasValue.set false
 				this.stopTyping(rid)
 
 				#Check if message starts with /command
 				if msg[0] is '/'
 					match = msg.match(/^\/([^\s]+)(?:\s+(.*))?$/m)
-					if match? and RocketChat.slashCommands.commands[match[1]]
-						command = match[1]
-						param = match[2]
-						Meteor.call 'slashCommand', {cmd: command, params: param, msg: msgObject }
-						return
+					if match?
+						if RocketChat.slashCommands.commands[match[1]]
+							commandOptions = RocketChat.slashCommands.commands[match[1]]
+							command = match[1]
+							param = if match[2]? then match[2] else ''
+							if commandOptions.clientOnly
+								commandOptions.callback(command, param, msgObject)
+							else
+								Meteor.call 'slashCommand', {cmd: command, params: param, msg: msgObject }
+							return
+
+						if !RocketChat.settings.get('Message_AllowUnrecognizedSlashCommand')
+							invalidCommandMsg =
+								_id: Random.id()
+								rid: rid
+								ts: new Date
+								msg: TAPi18n.__('No_such_command', { command: match[1] })
+								u:
+									username: "rocketbot"
+								private: true
+							ChatMessage.upsert { _id: invalidCommandMsg._id }, invalidCommandMsg
+							return
 
 				Meteor.call 'sendMessage', msgObject
 				done()
@@ -313,7 +334,7 @@ class @ChatMessages
 		$input = $(input)
 		k = event.which
 		this.resize(input)
-		if k is 13 and not event.shiftKey # Enter without shift
+		if k is 13 and not event.shiftKey and not event.ctrlKey and not event.altKey # Enter without shift/ctrl/alt
 			event.preventDefault()
 			event.stopPropagation()
 			this.send(rid, input)
@@ -362,6 +383,21 @@ class @ChatMessages
 		# ctrl (command) + shift + k -> clear room messages
 		else if k is 75 and ((navigator?.platform?.indexOf('Mac') isnt -1 and event.metaKey and event.shiftKey) or (navigator?.platform?.indexOf('Mac') is -1 and event.ctrlKey and event.shiftKey))
 			RoomHistoryManager.clear rid
+
+	valueChanged: (rid, event) ->
+		if this.input.value.length is 1
+			this.determineInputDirection()
+
+	determineInputDirection: () ->
+		this.input.dir = if this.isMessageRtl(this.input.value) then 'rtl' else 'ltr'
+
+	# http://stackoverflow.com/a/14824756
+	isMessageRtl: (message) ->
+		ltrChars    = 'A-Za-z\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u02B8\u0300-\u0590\u0800-\u1FFF'+'\u2C00-\uFB1C\uFDFE-\uFE6F\uFEFD-\uFFFF'
+		rtlChars    = '\u0591-\u07FF\uFB1D-\uFDFD\uFE70-\uFEFC'
+		rtlDirCheck = new RegExp "^[^#{ltrChars}]*[#{rtlChars}]"
+
+		return rtlDirCheck.test message
 
 	isMessageTooLong: (message) ->
 		message?.length > this.messageMaxSize

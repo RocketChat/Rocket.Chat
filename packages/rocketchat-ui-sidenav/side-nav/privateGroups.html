@@ -1,7 +1,7 @@
 <template name="privateGroups">
 	<h3 class="add-room {{isActive}}">
-		{{_ "Private_Groups"}}
-		{{#if hasPermission 'create-p'}}
+		{{_ "Private_Groups"}} <span class="room-count-small">({{rooms.count}})</span>
+		{{#if canCreate}}
 			<i class="icon-plus"></i>
 		{{/if}}
 	</h3>

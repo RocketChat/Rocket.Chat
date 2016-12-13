@@ -1,10 +1,11 @@
 //! moment.js locale configuration
-//! locale : norwegian nynorsk (nn)
+//! locale : Nynorsk [nn]
 //! author : https://github.com/mechuwind
 
-(function (global, factory) {
-   typeof exports === 'object' && typeof module !== 'undefined' ? factory(require('../moment')) :
-   typeof define === 'function' && define.amd ? define(['moment'], factory) :
+;(function (global, factory) {
+   typeof exports === 'object' && typeof module !== 'undefined'
+       && typeof require === 'function' ? factory(require('../moment')) :
+   typeof define === 'function' && define.amd ? define(['../moment'], factory) :
    factory(global.moment)
 }(this, function (moment) { 'use strict';
 
@@ -17,11 +18,11 @@
         weekdaysMin : 'su_må_ty_on_to_fr_lø'.split('_'),
         longDateFormat : {
             LT : 'HH:mm',
-            LTS : 'LT:ss',
+            LTS : 'HH:mm:ss',
             L : 'DD.MM.YYYY',
-            LL : 'D MMMM YYYY',
-            LLL : 'D MMMM YYYY LT',
-            LLLL : 'dddd D MMMM YYYY LT'
+            LL : 'D. MMMM YYYY',
+            LLL : 'D. MMMM YYYY [kl.] H:mm',
+            LLLL : 'dddd D. MMMM YYYY [kl.] HH:mm'
         },
         calendar : {
             sameDay: '[I dag klokka] LT',
@@ -33,7 +34,7 @@
         },
         relativeTime : {
             future : 'om %s',
-            past : 'for %s sidan',
+            past : '%s sidan',
             s : 'nokre sekund',
             m : 'eit minutt',
             mm : '%d minutt',

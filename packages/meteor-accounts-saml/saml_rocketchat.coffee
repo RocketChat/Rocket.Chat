@@ -1,3 +1,5 @@
+fs = Npm.require('fs')
+
 logger = new Logger 'steffo:meteor-accounts-saml',
 	methods:
 		updated:
@@ -5,65 +7,107 @@ logger = new Logger 'steffo:meteor-accounts-saml',
 
 RocketChat.settings.addGroup 'SAML'
 Meteor.methods
+
+  # Define configuration settings for each provider (name) in the
+  # admin SAML form.
+
 	addSamlService: (name) ->
-		RocketChat.settings.add "SAML_Custom_#{name}"                   , false                                                         , { type: 'boolean', group: 'SAML', section: name, i18nLabel: 'Accounts_OAuth_Custom_Enable'}
-		RocketChat.settings.add "SAML_Custom_#{name}_provider"          , 'openidp'                                                     , { type: 'string' , group: 'SAML', section: name, i18nLabel: 'SAML_Custom_Provider'}
-		RocketChat.settings.add "SAML_Custom_#{name}_entry_point"       , 'https://openidp.feide.no/simplesaml/saml2/idp/SSOService.php', { type: 'string' , group: 'SAML', section: name, i18nLabel: 'SAML_Custom_Entry_point'}
-		RocketChat.settings.add "SAML_Custom_#{name}_issuer"            , 'https://rocket.chat/'                                        , { type: 'string' , group: 'SAML', section: name, i18nLabel: 'SAML_Custom_Issuer'}
-		RocketChat.settings.add "SAML_Custom_#{name}_cert"              , ''                                                            , { type: 'string' , group: 'SAML', section: name, i18nLabel: 'SAML_Custom_Cert'}
+		RocketChat.settings.add "SAML_Custom_#{name}"                      , false                                                             , { type: 'boolean', group: 'SAML', section: name, i18nLabel: 'Accounts_OAuth_Custom_Enable'}
+		RocketChat.settings.add "SAML_Custom_#{name}_provider"             , 'provider-name'                                                   , { type: 'string' , group: 'SAML', section: name, i18nLabel: 'SAML_Custom_Provider'}
+		RocketChat.settings.add "SAML_Custom_#{name}_entry_point"          , 'https://example.com/simplesaml/saml2/idp/SSOService.php'         , { type: 'string' , group: 'SAML', section: name, i18nLabel: 'SAML_Custom_Entry_point'}
+		RocketChat.settings.add "SAML_Custom_#{name}_idp_slo_redirect_url" , 'https://example.com/simplesaml/saml2/idp/SingleLogoutService.php', { type: 'string' , group: 'SAML', section: name, i18nLabel: 'SAML_Custom_IDP_SLO_Redirect_URL'}
+		RocketChat.settings.add "SAML_Custom_#{name}_issuer"               , 'https://your-rocket-chat/_saml/metadata/provider-name'           , { type: 'string' , group: 'SAML', section: name, i18nLabel: 'SAML_Custom_Issuer'}
+		RocketChat.settings.add "SAML_Custom_#{name}_cert"                 , ''                                                                , { type: 'string' , group: 'SAML', section: name, i18nLabel: 'SAML_Custom_Cert', multiline: true}
+		RocketChat.settings.add "SAML_Custom_#{name}_public_cert", '', {
+			type: 'string' ,
+			group: 'SAML',
+			section: name,
+			multiline: true,
+			i18nLabel: 'SAML_Custom_Public_Cert'
+		}
+		RocketChat.settings.add "SAML_Custom_#{name}_private_key", '', {
+			type: 'string' ,
+			group: 'SAML',
+			section: name,
+			multiline: true,
+			i18nLabel: 'SAML_Custom_Private_Key'
+		}
 		RocketChat.settings.add "SAML_Custom_#{name}_button_label_text" , ''                                                            , { type: 'string' , group: 'SAML', section: name, i18nLabel: 'Accounts_OAuth_Custom_Button_Label_Text'}
 		RocketChat.settings.add "SAML_Custom_#{name}_button_label_color", '#FFFFFF'                                                     , { type: 'string' , group: 'SAML', section: name, i18nLabel: 'Accounts_OAuth_Custom_Button_Label_Color'}
 		RocketChat.settings.add "SAML_Custom_#{name}_button_color"      , '#13679A'                                                     , { type: 'string' , group: 'SAML', section: name, i18nLabel: 'Accounts_OAuth_Custom_Button_Color'}
 		RocketChat.settings.add "SAML_Custom_#{name}_generate_username" , false                                                         , { type: 'boolean', group: 'SAML', section: name, i18nLabel: 'SAML_Custom_Generate_Username'}
 
 timer = undefined
+
+# Find existing SAML services (idp's) in RocketChat settings and
+# update the system.
+#
+# Updating the system includes:
+# 1) Appending enabled providers to Accounts.saml.settings.providers.
+# 2) Appending enabled providers to ServiceConfiguration.configurations.
+# 3) Removing disabled providers from ServiceConfiguration.configurations.
+
 updateServices = ->
 	Meteor.clearTimeout timer if timer?
-
 	timer = Meteor.setTimeout ->
-		services = RocketChat.models.Settings.find({_id: /^(SAML_Custom_)[a-z]+$/i}).fetch()
-
+		services = RocketChat.settings.get(/^(SAML_Custom_)[a-z]+$/i)
 		Accounts.saml.settings.providers = []
-
 		for service in services
-			logger.updated service._id
-
 			serviceName = 'saml'
-
 			if service.value is true
-				data =
-					buttonLabelText: RocketChat.models.Settings.findOneById("#{service._id}_button_label_text")?.value
-					buttonLabelColor: RocketChat.models.Settings.findOneById("#{service._id}_button_label_color")?.value
-					buttonColor: RocketChat.models.Settings.findOneById("#{service._id}_button_color")?.value
-					clientConfig:
-						provider: RocketChat.models.Settings.findOneById("#{service._id}_provider")?.value
-
-				Accounts.saml.settings.generateUsername = RocketChat.models.Settings.findOneById("#{service._id}_generate_username")?.value
-
-				Accounts.saml.settings.providers.push
-					provider: data.clientConfig.provider
-					entryPoint: RocketChat.models.Settings.findOneById("#{service._id}_entry_point")?.value
-					issuer: RocketChat.models.Settings.findOneById("#{service._id}_issuer")?.value
-					cert: RocketChat.models.Settings.findOneById("#{service._id}_cert")?.value
-
-				ServiceConfiguration.configurations.upsert {service: serviceName.toLowerCase()}, $set: data
+				samlConfigs = getSamlConfigs(service)
+				configureSamlService(samlConfigs)
+				ServiceConfiguration.configurations.upsert {service: serviceName.toLowerCase()}, $set: samlConfigs
 			else
 				ServiceConfiguration.configurations.remove {service: serviceName.toLowerCase()}
+			logger.updated service.key
 	, 2000
 
-RocketChat.models.Settings.find().observe
-	added: (record) ->
-		if /^SAML_.+/.test record._id
-			updateServices()
+# Fetch config settings from RocketChat for a given SAML service "SAML_Custom_<name>".
 
-	changed: (record) ->
-		if /^SAML_.+/.test record._id
-			updateServices()
+getSamlConfigs = (service) ->
+	buttonLabelText: RocketChat.settings.get("#{service.key}_button_label_text")
+	buttonLabelColor: RocketChat.settings.get("#{service.key}_button_label_color")
+	buttonColor: RocketChat.settings.get("#{service.key}_button_color")
+	clientConfig:
+		provider: RocketChat.settings.get("#{service.key}_provider")
+	entryPoint: RocketChat.settings.get("#{service.key}_entry_point")
+	idpSLORedirectURL: RocketChat.settings.get("#{service.key}_idp_slo_redirect_url")
+	generateUsername: RocketChat.settings.get("#{service.key}_generate_username")
+	issuer: RocketChat.settings.get("#{service.key}_issuer")
+	secret:
+		privateKey: RocketChat.settings.get("#{service.key}_private_key")
+		publicCert: RocketChat.settings.get("#{service.key}_public_cert")
+		cert: RocketChat.settings.get("#{service.key}_cert")
 
-	removed: (record) ->
-		if /^SAML_.+/.test record._id
-			updateServices()
+# Configure Meteor SAML.
+#
+# Get private key for signing and update Accounts.saml.settings.
+# Meteor saml package uses Accounts.saml.settings.
+
+configureSamlService = (samlConfigs) ->
+	privateKey = false
+	privateCert = false
+	if samlConfigs.secret.privateKey and samlConfigs.secret.publicCert
+		privateKey = samlConfigs.secret.privateKey
+		privateCert = samlConfigs.secret.publicCert
+	else
+		if samlConfigs.secret.privateKey or samlConfigs.secret.publicCert
+			logger.error "You must specify both cert and key files."
+			privateKey = false
+			privateCert = false
+	Accounts.saml.settings.generateUsername = samlConfigs.generateUsername
+	Accounts.saml.settings.providers.push
+		provider: samlConfigs.clientConfig.provider
+		entryPoint: samlConfigs.entryPoint
+		idpSLORedirectURL: samlConfigs.idpSLORedirectURL
+		issuer: samlConfigs.issuer
+		cert: samlConfigs.secret.cert
+		privateCert: privateCert
+		privateKey: privateKey
+
+RocketChat.settings.get /^SAML_.+/, (key, value) ->
+	updateServices()
 
 Meteor.startup ->
-	if not RocketChat.models.Settings.findOne({_id: /^(SAML_Custom)[a-z]+$/i})?
-		Meteor.call 'addSamlService', 'Default'
+	Meteor.call 'addSamlService', 'Default'

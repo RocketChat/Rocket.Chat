@@ -99,7 +99,7 @@
 		if not rid?
 			return
 
-		subscription = ChatSubscription.findOne rid: rid
+		subscription = ChatSubscription.findOne rid: rid, {reactive: false}
 		if not subscription?
 			return
 

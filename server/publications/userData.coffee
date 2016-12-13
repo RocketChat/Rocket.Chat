@@ -13,6 +13,8 @@ Meteor.publish 'userData', ->
 			utcOffset: 1
 			language: 1
 			settings: 1
+			roles: 1
+			active: 1
 			defaultRoom: 1
 			'services.github': 1
 			'services.gitlab': 1

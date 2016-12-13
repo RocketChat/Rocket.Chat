@@ -59,8 +59,9 @@
 		}
 	};
 
-	var pageVisited = function() {
+	var pageVisited = function(change) {
 		callHook('pageVisited', {
+			change: change,
 			location: JSON.parse(JSON.stringify(document.location)),
 			title: document.title
 		});
@@ -70,6 +71,18 @@
 		callHook('setCustomField', [ key, value ]);
 	};
 
+	var setTheme = function(theme) {
+		callHook('setTheme', theme);
+	};
+
+	var setDepartment = function(department) {
+		callHook('setDepartment', department);
+	};
+
+	var clearDepartment = function() {
+		callHook('clearDepartment');
+	};
+
 	var currentPage = {
 		href: null,
 		title: null
@@ -77,9 +90,11 @@
 	var trackNavigation = function() {
 		setInterval(function() {
 			if (document.location.href !== currentPage.href) {
-				pageVisited();
-
+				pageVisited('url');
 				currentPage.href = document.location.href;
+			}
+			if (document.title !== currentPage.title) {
+				pageVisited('title');
 				currentPage.title = document.title;
 			}
 		}, 800);
@@ -160,7 +175,10 @@
 	// exports
 	w.RocketChat.livechat = {
 		pageVisited: pageVisited,
-		setCustomField: setCustomField
+		setCustomField: setCustomField,
+		setTheme: setTheme,
+		setDepartment: setDepartment,
+		clearDepartment: clearDepartment
 	};
 
 	// proccess queue

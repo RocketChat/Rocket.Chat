@@ -16,6 +16,9 @@ Template.channels.helpers
 
 		return ChatSubscription.find query, { sort: 't': 1, 'name': 1 }
 
+	canCreate: ->
+		return RocketChat.authz.hasAtLeastOnePermission ['create-c']
+
 Template.channels.events
 	'click .add-room': (e, instance) ->
 		if RocketChat.authz.hasAtLeastOnePermission('create-c')

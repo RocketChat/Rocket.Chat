@@ -2,23 +2,26 @@
 	.actionLinks {
 		padding: 0;
 		margin-top: 4px;
+		margin-bottom: 4px;
 		text-align: center;
 		li {
 			cursor: pointer;
 			position: relative;
 			padding-right: 2px;
-			color: #036;
+			color: @primary-action-color;
 
 			list-style: none;
 			display: inline;
 
-
-			&:hover {
-				color: #369;
+			.action-link {
+				background-color: @primary-action-color;
+				padding: 5px;
+				border-radius: 7px;
+				color: @tertiary-font-color;
+				margin: 0 2px;
 			}
 		}
 
-		li:after { content: " \25CF"; }
 		li:last-child:after { content: none; }
 	}
 }

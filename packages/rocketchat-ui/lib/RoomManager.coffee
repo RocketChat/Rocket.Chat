@@ -42,7 +42,7 @@ Tracker.autorun ->
 	if Meteor.userId()
 		RocketChat.Notifications.onUser 'message', (msg) ->
 			msg.u =
-				username: 'rocketbot'
+				username: 'rocket.cat'
 			msg.private = true
 
 			ChatMessage.upsert { _id: msg._id }, msg
@@ -50,15 +50,10 @@ Tracker.autorun ->
 
 @RoomManager = new class
 	openedRooms = {}
-	subscription = null
 	msgStream = new Meteor.Streamer 'room-messages'
 	onlineUsers = new ReactiveVar {}
 
 	Dep = new Tracker.Dependency
-
-	init = ->
-		subscription = Meteor.subscribe('subscription')
-		return subscription
 
 	close = (typeName) ->
 		if openedRooms[typeName]
@@ -99,7 +94,7 @@ Tracker.autorun ->
 				if record.ready is true
 					return
 
-				ready = record.sub[0].ready() and subscription.ready()
+				ready = record.sub[0].ready() and CachedChatSubscription.ready.get() is true
 
 				if ready is true
 					type = typeName.substr(0, 1)
@@ -136,6 +131,8 @@ Tracker.autorun ->
 
 										RocketChat.callbacks.run 'streamMessage', msg
 
+										window.fireGlobalEvent('new-message', msg);
+
 							RocketChat.Notifications.onRoom openedRooms[typeName].rid, 'deleteMessage', onDeleteMessageStream
 
 				Dep.changed()
@@ -169,7 +166,7 @@ Tracker.autorun ->
 		if openedRooms[typeName].ready
 			closeOlderRooms()
 
-		if subscription.ready() && Meteor.userId()
+		if CachedChatSubscription.ready.get() is true && Meteor.userId()
 
 			if openedRooms[typeName].active isnt true
 				openedRooms[typeName].active = true
@@ -242,7 +239,6 @@ Tracker.autorun ->
 	open: open
 	close: close
 	closeAllRooms: closeAllRooms
-	init: init
 	getDomOfRoom: getDomOfRoom
 	existsDomOfRoom: existsDomOfRoom
 	msgStream: msgStream
@@ -251,6 +247,7 @@ Tracker.autorun ->
 	onlineUsers: onlineUsers
 	updateMentionsMarksOfRoom: updateMentionsMarksOfRoom
 	getOpenedRoomByRid: getOpenedRoomByRid
+	computation: computation
 
 
 RocketChat.callbacks.add 'afterLogoutCleanUp', ->

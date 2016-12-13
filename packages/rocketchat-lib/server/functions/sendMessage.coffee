@@ -7,9 +7,12 @@ RocketChat.sendMessage = (user, message, room, upsert = false) ->
 
 	message.u = _.pick user, ['_id','username']
 
+	if not Match.test(message.msg, String)
+		message.msg = ''
+
 	message.rid = room._id
 
-	if not room.usernames?
+	if not room.usernames? || room.usernames.length is 0
 		room = RocketChat.models.Rooms.findOneById(room._id)
 
 	if message.parseUrls isnt false
@@ -17,6 +20,12 @@ RocketChat.sendMessage = (user, message, room, upsert = false) ->
 			message.urls = urls.map (url) -> url: url
 
 	message = RocketChat.callbacks.run 'beforeSaveMessage', message
+
+	# Avoid saving sandstormSessionId to the database
+	sandstormSessionId = null
+	if message.sandstormSessionId
+		sandstormSessionId = message.sandstormSessionId
+		delete message.sandstormSessionId
 
 	if message._id? and upsert
 		_id = message._id
@@ -31,6 +40,7 @@ RocketChat.sendMessage = (user, message, room, upsert = false) ->
 	###
 	Meteor.defer ->
 		# Execute all callbacks
+		message.sandstormSessionId = sandstormSessionId
 		RocketChat.callbacks.run 'afterSaveMessage', message, room
 
 	return message
