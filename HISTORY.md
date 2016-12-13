@@ -1,5 +1,9 @@
 # History
 
+## 0.48.1, 2016-Dec-13 - Now uses NodeJS 4.7.0
+
+- Fix integration payload JSON.parse 
+
 ## 0.48.0, 2016-Dec-12
 
 - Add CustomOAuth logger
