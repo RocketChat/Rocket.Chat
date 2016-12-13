@@ -46,7 +46,7 @@
 - Set username automaticaly
 - Support username template in CustomOAuth
 - Update momentjs to 2.17.1
-- Update slack-client to 2.0.6- 
+- Update slack-client to 2.0.6
 
 ## 0.47.1, 2016-Dec-09
 
