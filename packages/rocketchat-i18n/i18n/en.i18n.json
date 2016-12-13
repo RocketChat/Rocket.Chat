@@ -1050,6 +1050,8 @@
   "quote": "quote",
   "Quote": "Quote",
   "Random": "Random",
+  "React_when_read_only": "Allow Reacting",
+  "React_when_read_only_changed_successfully": "Allow reacting when read only changed successfully",
   "Reacted_with": "Reacted with",
   "Reactions": "Reactions",
   "Read_only": "Read Only",
