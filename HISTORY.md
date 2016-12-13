@@ -1,5 +1,9 @@
 # History
 
+## 0.48.1, 2016-Dec-13 - Now uses NodeJS 4.7.0
+
+- Fix integration payload JSON.parse 
+
 ## 0.48.0, 2016-Dec-12
 
 - Add CustomOAuth logger
@@ -42,7 +46,7 @@
 - Set username automaticaly
 - Support username template in CustomOAuth
 - Update momentjs to 2.17.1
-- Update slack-client to 2.0.6- 
+- Update slack-client to 2.0.6
 
 ## 0.47.1, 2016-Dec-09
 

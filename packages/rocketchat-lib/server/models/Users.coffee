@@ -364,7 +364,7 @@ class ModelUsers extends RocketChat.models._Base
 					address: s.trim(data.email)
 				]
 			else
-				unsetData.name = 1
+				unsetData.emails = 1
 
 		if data.phone?
 			if not _.isEmpty(s.trim(data.phone))
