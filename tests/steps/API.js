@@ -51,7 +51,7 @@ describe('API default', () => {
 
 describe('API v1', () => {
 	before((done) => {
-		request.post(api('/login'))
+		request.post(api('login'))
 			.send(login)
 			.expect('Content-Type', 'application/json')
 			.expect(200)
