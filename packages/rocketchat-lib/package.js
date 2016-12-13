@@ -7,8 +7,10 @@ Package.describe({
 
 Npm.depends({
 	'bad-words': '1.3.1',
+	'object-path': '0.9.2',
 	'node-dogstatsd': '0.0.6',
 	'localforage': '1.4.2',
+	'lokijs': '1.4.1',
 	'bugsnag': '1.8.0'
 });
 
@@ -104,6 +106,9 @@ Package.onUse(function(api) {
 	api.addFiles('server/models/Users.coffee', 'server');
 
 	api.addFiles('server/startup/statsTracker.js', 'server');
+
+	// CACHE
+	api.addFiles('server/startup/cache/CacheLoad.js', 'server');
 
 	// SERVER PUBLICATIONS
 	api.addFiles('server/publications/settings.coffee', 'server');
