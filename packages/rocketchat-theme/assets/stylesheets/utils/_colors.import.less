@@ -102,6 +102,11 @@ blockquote:before {
 			border-color: fade(@primary-background-contrast, 50%);
 		}
 	}
+	.input.checkbox.toggle {
+		input:checked + label:before {
+			background-color: @primary-action-color;
+		}
+	}
 }
 
 .flex-tab {
