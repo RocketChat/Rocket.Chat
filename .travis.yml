@@ -51,11 +51,17 @@ before_script:
 - |-
   mongo --eval 'rs.initiate({_id:"rs0", members: [{"_id":1, "host":"localhost:27017"}]})'
 - npm run lint
+- travis_retry meteor build --headless /tmp/build
+- mkdir /tmp/build-test
+- tar -xf /tmp/build/Rocket.Chat.tar.gz -C /tmp/build-test/
+- cd /tmp/build-test/bundle/programs/server
+- npm install -g node-gyp node-pre-gyp
+- npm install
+- cd -
 - mongo --eval 'rs.status()'
 script:
 - npm test
 before_deploy:
-- travis_retry meteor build --headless /tmp/build
 - source ".travis/setartname.sh"
 - source ".travis/setdeploydir.sh"
 - ".travis/setupsig.sh"
