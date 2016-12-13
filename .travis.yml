@@ -46,6 +46,7 @@ before_script:
 - travis_retry npm install
 - npm run lint
 - travis_retry meteor build --headless /tmp/build
+- mkdir /tmp/build-test
 - tar -xf /tmp/build/Rocket.Chat.tar.gz -C /tmp/build-test/
 - cd /tmp/build-test/bundle/programs/server
 - npm install
