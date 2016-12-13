@@ -68,6 +68,17 @@ class ModelUsers extends RocketChat.models._Base
 		return @find query, options
 
 	findUsersByUsernamesWithHighlights: (usernames, options) ->
+		if this.useCache
+			result =
+				fetch: () ->
+					return RocketChat.models.Users.getDynamicView('highlights').data().filter (record) ->
+						return usernames.indexOf(record.username) > -1
+				count: () ->
+					return result.fetch().length
+				forEach: (fn) ->
+					return result.fetch().forEach(fn)
+			return result
+
 		query =
 			username: { $in: usernames }
 			'settings.preferences.highlights.0':
@@ -410,4 +421,4 @@ class ModelUsers extends RocketChat.models._Base
 
 		return @find query, { fields: { name: 1, username: 1, emails: 1, 'settings.preferences.emailNotificationMode': 1 } }
 
-RocketChat.models.Users = new ModelUsers(Meteor.users)
+RocketChat.models.Users = new ModelUsers(Meteor.users, true)
