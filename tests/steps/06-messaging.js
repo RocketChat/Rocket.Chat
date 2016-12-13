@@ -157,8 +157,7 @@ function messageActionsTest() {
 
 			describe('Message edit', () => {
 				before(() => {
-					mainContent.addTextToInput('Message for Message edit Tests ');
-					mainContent.sendBtn.click();
+					mainContent.sendMessage('Message for Message edit Tests');
 					mainContent.openMessageActionMenu();
 				});
 
@@ -171,8 +170,7 @@ function messageActionsTest() {
 
 			describe('Message delete', () => {
 				before(() => {
-					mainContent.addTextToInput('Message for Message Delete Tests');
-					mainContent.sendBtn.click();
+					mainContent.sendMessage('Message for Message Delete Tests');
 					mainContent.openMessageActionMenu();
 				});
 
@@ -187,27 +185,27 @@ function messageActionsTest() {
 			});
 
 			describe('Message quote', () => {
+				const message = 'Message for quote Tests - ' + Date.now();
+
 				before(() => {
 					browser.pause(2000);
-					mainContent.addTextToInput('Message for quote Tests');
-					mainContent.sendBtn.click();
+					mainContent.sendMessage(message);
 					mainContent.openMessageActionMenu();
 				});
 
 				it('quote the message', () => {
 					mainContent.selectAction('quote');
 					mainContent.sendBtn.click();
-				});
 
-				it('checks if the message was quoted', () => {
-					mainContent.lastMessageTextAttachment.getText().should.equal(mainContent.beforeLastMessage.getText());
+					browser.waitUntil(function() {
+						return browser.getText(mainContent.lastMessageTextAttachment.selector) === message;
+					}, 2000);
 				});
 			});
 
 			describe('Message star', () => {
 				before(() => {
-					mainContent.addTextToInput('Message for star Tests');
-					mainContent.sendBtn.click();
+					mainContent.sendMessage('Message for star Tests');
 					mainContent.openMessageActionMenu();
 				});
 
@@ -218,8 +216,7 @@ function messageActionsTest() {
 
 			describe('Message copy', () => {
 				before(() => {
-					mainContent.addTextToInput('Message for copy Tests');
-					mainContent.sendBtn.click();
+					mainContent.sendMessage('Message for copy Tests');
 					mainContent.openMessageActionMenu();
 				});
 
@@ -230,8 +227,7 @@ function messageActionsTest() {
 
 			describe('Message Permalink', () => {
 				before(() => {
-					mainContent.addTextToInput('Message for permalink Tests');
-					mainContent.sendBtn.click();
+					mainContent.sendMessage('Message for permalink Tests');
 					mainContent.openMessageActionMenu();
 				});
 
