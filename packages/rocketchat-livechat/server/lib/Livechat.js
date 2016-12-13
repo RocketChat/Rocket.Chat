@@ -106,15 +106,7 @@ RocketChat.Livechat = {
 
 			var existingUser = null;
 
-			if (s.trim(email) !== '' && (existingUser = RocketChat.models.Users.findOneByEmailAddress(email))) {
-				if (existingUser.type !== 'visitor') {
-					throw new Meteor.Error('error-invalid-user', 'This email belongs to a registered user.');
-				}
-
-				updateUser.$addToSet = {
-					globalRoles: 'livechat-guest'
-				};
-
+			if (s.trim(email) !== '' && (existingUser = RocketChat.models.Users.findOneGuestByEmailAddress(email))) {
 				if (loginToken) {
 					updateUser.$addToSet['services.resume.loginTokens'] = loginToken;
 				}
@@ -156,7 +148,7 @@ RocketChat.Livechat = {
 		}
 
 		if (email && email.trim() !== '') {
-			updateUser.$set.emails = [
+			updateUser.$set.visitorEmails = [
 				{ address: email }
 			];
 		}
@@ -178,7 +170,7 @@ RocketChat.Livechat = {
 		if (phone) {
 			updateData.phone = phone;
 		}
-		const ret = RocketChat.models.Users.saveUserById(_id, updateData);
+		const ret = RocketChat.models.Users.saveGuestById(_id, updateData);
 
 		Meteor.defer(() => {
 			RocketChat.callbacks.run('livechat.saveGuest', updateData);
@@ -387,8 +379,8 @@ RocketChat.Livechat = {
 			postData.crmData = room.crmData;
 		}
 
-		if (visitor.emails && visitor.emails.length > 0) {
-			postData.visitor.email = visitor.emails[0].address;
+		if (visitor.visitorEmails && visitor.visitorEmails.length > 0) {
+			postData.visitor.email = visitor.visitorEmails[0].address;
 		}
 		if (visitor.phone && visitor.phone.length > 0) {
 			postData.visitor.phone = visitor.phone[0].phoneNumber;
