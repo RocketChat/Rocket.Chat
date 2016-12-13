@@ -316,10 +316,14 @@ blockquote {
 		margin-bottom: 0;
 	}
 	&.search {
-		.icon-spin {
+		i {
 			position: absolute;
-			right: 5px;
 			top: 10px;
+			left: 7px;
+		}
+		.icon-spin {
+			right: 5px;
+			left: auto;
 			font-weight: 400;
 			-webkit-animation-name: spin;
 			-webkit-animation-duration: 2000ms;
@@ -337,15 +341,6 @@ blockquote {
 			animation-duration: 2000ms;
 			animation-iteration-count: infinite;
 			animation-timing-function: linear;
-		}
-		.icon-search,
-		.icon-right-open-small,
-		.icon-sort-alt-up,
-		.icon-lock,
-		.icon-comment {
-			position: absolute;
-			left: 2px;
-			top: 10px;
 		}
 		input {
 			padding-left: 30px;
@@ -1073,29 +1068,41 @@ label.required:after {
 			margin-bottom: 0;
 		}
 		label {
-			text-transform: uppercase;
 			font-weight: 400;
 			margin-bottom: 0;
 		}
 		input[type='text'],
 		input[type='password'],
 		select {
-			border-width: 0 0 1px 0;
-			padding: 0 8px;
+			padding: 0 8px 0 30px;
 			box-shadow: 0 0 0;
-			border-radius: 0;
-			-webkit-appearance: none;
-			-moz-appearance: none;
 			appearance: none;
-			-webkit-border-radius: 0px;
-			-moz-border-radius: 0px;
-			border-radius: 0px;
+			border-width: 1px;
+			border-radius: 4px;
 		}
 		.inline-fields {
 			input,
 			label,
 			select {
 				display: inline-block;
+			}
+		}
+		&.toggle {
+			font-size: 0;
+			> span {
+				display: inline-block;
+				width: calc(~"100% - 40px");
+				font-size: 14px;
+				vertical-align: top;
+			}
+			> div {
+				width: 40px;
+    			display: inline-block;
+			}
+		}
+		&.no-icon {
+			input {
+				padding: 0 8px;
 			}
 		}
 	}
@@ -1227,13 +1234,9 @@ label.required:after {
 		}
 	}
 	.search-form {
-		.search {
-			padding-left: 25px;
-		}
 		> div {
 			position: relative;
 		}
-		margin-right: 20px;
 	}
 	h3 {
 		&:extend(.small-title);
@@ -1356,7 +1359,7 @@ label.required:after {
 	}
 	.unread-rooms {
 		position: absolute;
-		z-index: 1;
+		z-index: 1000;
 		width: 100%;
 		text-align: center;
 		line-height: 24px;
