@@ -12,7 +12,7 @@ Template.extensionAlert.events
 				if not win
 					showAlert()
 		else if this.browser == 'firefox'
-			win = window.open('https://addons.mozilla.org/en-GB/firefox/addon/rocketchat-screen-share/')
+			win = window.open('https://addons.mozilla.org/en-GB/firefox/addon/voismart-social-chat/')
 			showConfiguration()
 			if not win
 				showAlert()
