@@ -305,6 +305,7 @@ RocketChat.API.v1.addRoute 'users.delete', authRequired: true,
 			return RocketChat.API.v1.failure e.name + ': ' + e.message
 
 		return RocketChat.API.v1.success
+			success: true
 
 # Set user's avatar
 RocketChat.API.v1.addRoute 'users.setAvatar', authRequired: true,
