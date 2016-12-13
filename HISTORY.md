@@ -1,5 +1,49 @@
 # History
 
+## 0.48.0, 2016-Dec-12
+
+- Add CustomOAuth logger
+- Add env var to disable animations
+- Add new options (username-field and merge-users) to CustomOAuth
+- Add search field in admin
+- Add support to set own avatar from URL on REST API
+- Add validateNewUser check to compare against whitelist
+- Allow setting other users avatars if you have permissions
+- Change all 'Has more' with loading animation
+- Change CustomOAuth setting format
+- Change field name to roles and type to Array.
+- Change from loading cert from a file to storing the cert
+- Don't allow changing the room type if you only have permission to create one and not the other
+- Fix accountFlex highlight on hover issue
+- Fix crash if a webhook payload had a field named "payload"
+- Fix email being unverified when calling user.update
+- Fix Geolocation button
+- Fix handle saml urls with query strings.
+- Fix katex
+- Fix SAML logout
+- Fix the chat.postMessage not returning any data about the sent message
+- Fix the nameFilter being required on groupsList, since it isn't a requirement
+- Fix to do saml http-redirect binding with signing.
+- Fix typo in result ordering regex.
+- Fix unread messages bar overlapping
+- Hide Sandstorm offer button on Cordova
+- Init API tests
+- Made the logged user check more modular
+- Make the server information of the api consistant with others
+- Move joinDefaultChannels to internal APIs
+- Move the channels to their own file and add several rest api methods
+- Move the groups v1 api calls out of the huge routes.coffee file
+- Move the rest of the current rest api to individual files
+- Move the v1 settings into the v1 folder
+- Only unwrapping webhook payloads if necessary
+- Pick only departments that would shown on registration if none set
+- Prevent register broadcastAuth more than one time
+- Remove reactions when messages are removed, fixes #5164
+- Set username automaticaly
+- Support username template in CustomOAuth
+- Update momentjs to 2.17.1
+- Update slack-client to 2.0.6- 
+
 ## 0.47.1, 2016-Dec-09
 
 - Fix color migrations
