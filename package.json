@@ -1,7 +1,7 @@
 {
   "name": "Rocket.Chat",
   "description": "The Ultimate Open Source WebChat Platform",
-  "version": "0.48.0-develop",
+  "version": "0.49.0-develop",
   "author": {
     "name": "Rocket.Chat",
     "url": "https://rocket.chat/"
@@ -59,8 +59,8 @@
     "email": "support@rocket.chat"
   },
   "devDependencies": {
-    "chimp": "^0.44.0",
-    "eslint": "^3.11.1",
+    "chimp": "^0.45.0",
+    "eslint": "^3.12.1",
     "supertest": "^2.0.1"
   },
   "dependencies": {
