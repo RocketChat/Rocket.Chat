@@ -59,6 +59,7 @@ before_script:
 - npm install
 - cd -
 - mongo --eval 'rs.status()'
+- mongo meteor --eval 'db.getCollectionNames()'
 script:
 - npm test
 before_deploy:
