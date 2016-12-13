@@ -32,6 +32,16 @@ RocketChat.models.Rooms.setReadOnlyById = (_id, readOnly) ->
 
 	return @update query, update
 
+RocketChat.models.Rooms.setAllowReactingWhenReadOnlyById = (_id, allowReacting) ->
+	query =
+		_id: _id
+
+	update =
+		$set:
+			reactWhenReadOnly: allowReacting
+
+	return @update query, update
+
 RocketChat.models.Rooms.setSystemMessagesById = (_id, systemMessages) ->
 	query =
 		_id: _id
