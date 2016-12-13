@@ -9,8 +9,8 @@ var baseDir = path.resolve(__dirname, '..'),
 	srcDir = path.resolve(baseDir);
 
 var appOptions = {
-	port: 3000,
 	env: {
+		PORT: 3000,
 		ROOT_URL: 'http://localhost:3000'
 	}
 };
@@ -55,7 +55,7 @@ function startProcess(opts, callback) {
 function startApp(callback) {
 	startProcess({
 		name: 'Meteor App',
-		command: 'meteor --port ' + appOptions.port,
+		command: 'node /tmp/build-test/bundle/main.js',
 		waitForMessage: appOptions.waitForMessage,
 		options: {
 			cwd: srcDir,
@@ -79,7 +79,7 @@ function startChimp() {
 }
 
 function chimpNoMirror() {
-	appOptions.waitForMessage = 'App running at';
+	appOptions.waitForMessage = 'SERVER RUNNING';
 	startApp(function() {
 		startChimp();
 	});
