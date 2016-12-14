@@ -109,16 +109,23 @@ class FlexTab extends Page {
 
 	setUserModerator(user) {
 		const userEl = browser.element('.flex-tab button[title="'+user+'"]');
-		userEl.waitForVisible();
-		userEl.click();
-		this.setModeratorBtn.click();
-		this.viewAllBtn.click();
+		if (!userEl.isVisible() && this.showAll) {
+			this.setModeratorBtn.click();
+			this.viewAllBtn.click();
+		} else {
+			userEl.waitForVisible(5000);
+			userEl.click();
+			this.setModeratorBtn.waitForVisible(5000);
+			this.setModeratorBtn.click();
+			this.viewAllBtn.click();
+		}
 	}
 
 	muteUser(user) {
 		const userEl = browser.element('.flex-tab button[title="'+user+'"]');
 		userEl.waitForVisible();
 		userEl.click();
+		this.muteUserBtn.waitForVisible(5000);
 		this.muteUserBtn.click();
 	}
 }
