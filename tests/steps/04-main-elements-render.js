@@ -104,6 +104,7 @@ describe('Main Elements Render', function() {
 	describe('main content', () => {
 		describe('render', () => {
 			before(()=> {
+				sideNav.logout.waitForVisible(5000, true);
 				sideNav.getChannelFromList('general').waitForVisible(5000);
 				sideNav.openChannel('general');
 			});
