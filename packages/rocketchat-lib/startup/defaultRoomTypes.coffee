@@ -19,7 +19,7 @@ RocketChat.roomTypes.add 'c', 10,
 		return ChatRoom.findOne(query)
 
 	roomName: (roomData) ->
-		return roomData.name
+		return { name: roomData.name }
 
 	condition: ->
 		return RocketChat.authz.hasAtLeastOnePermission ['view-c-room', 'view-joined-room']
@@ -73,6 +73,6 @@ RocketChat.roomTypes.add 'p', 30,
 			name: identifier
 		return ChatRoom.findOne(query)
 	roomName: (roomData) ->
-		return roomData.name
+		return { name: roomData.name }
 	condition: ->
 		return RocketChat.authz.hasAllPermission 'view-p-room'
