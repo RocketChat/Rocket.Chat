@@ -1,3 +1,3 @@
-Importer.AddImporter 'hipchat', Importer.HipChat,
+Importer.addImporter 'hipchat', Importer.HipChat,
 	name: 'HipChat'
 	fileTypeRegex: new RegExp 'application\/.*?zip'

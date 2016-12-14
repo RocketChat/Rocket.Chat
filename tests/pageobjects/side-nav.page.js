@@ -42,7 +42,7 @@ class SideNav extends Page {
 
 	openChannel(channelName) {
 		browser.click('.rooms-list > .wrapper > ul [title="'+channelName+'"]');
-		this.messageInput.waitForExist();
+		this.messageInput.waitForExist(5000);
 	}
 
 	getChannelFromList(channelName) {
@@ -59,8 +59,10 @@ class SideNav extends Page {
 		if (isReadOnly) {
 			this.channelReadOnly.click();
 		}
+		browser.pause(200);
 		this.saveChannelBtn.click();
 		browser.waitForExist('[title="'+channelName+'"]', 1000);
+		this.channelType.waitForVisible(500, true);
 	}
 
 	addPeopleToChannel(user) {

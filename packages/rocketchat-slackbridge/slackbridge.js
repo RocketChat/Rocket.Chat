@@ -119,7 +119,7 @@ class SlackBridge {
 			// If the room exists, make sure we have its id in importIds
 			if (existingRoom || channelData.is_general) {
 				channelData.rocketId = channelData.is_general ? 'GENERAL' : existingRoom._id;
-				RocketChat.models.Rooms.update({ _id: channelData.rocketId }, { $addToSet: { importIds: channelData.id } });
+				RocketChat.models.Rooms.addImportIds(channelData.rocketId, channelData.id);
 			} else {
 				let users = [];
 				for (let member of channelData.members) {
@@ -161,8 +161,7 @@ class SlackBridge {
 				if (!_.isEmpty(channelData.purpose && channelData.purpose.value) && channelData.purpose.last_set > lastSetTopic) {
 					roomUpdate.topic = channelData.purpose.value;
 				}
-
-				RocketChat.models.Rooms.update({ _id: channelData.rocketId }, { $set: roomUpdate, $addToSet: { importIds: channelData.id } });
+				RocketChat.models.Rooms.addImportIds(channelData.rocketId, channelData.id);
 				this.channelMap[channelData.rocketId] = { id: channelId, family: channelId.charAt(0) === 'C' ? 'channels' : 'groups' };
 			}
 			return RocketChat.models.Rooms.findOneById(channelData.rocketId);
@@ -198,15 +197,21 @@ class SlackBridge {
 				userData.rocketId = existingUser._id;
 				userData.name = existingUser.username;
 			} else {
-				let newUser = { password: Random.id() };
-				if (isBot || !email) {
-					newUser.username = userData.name;
-				} else {
+				let newUser = {
+					password: Random.id(),
+					username: userData.name
+				};
+
+				if (!isBot && email) {
 					newUser.email = email;
 				}
+
+				if (isBot) {
+					newUser.joinDefaultChannels = false;
+				}
+
 				userData.rocketId = Accounts.createUser(newUser);
 				let userUpdate = {
-					username: userData.name,
 					utcOffset: userData.tz_offset / 3600, // Slack's is -18000 which translates to Rocket.Chat's after dividing by 3600,
 					roles: isBot ? [ 'bot' ] : [ 'user' ]
 				};
@@ -239,14 +244,13 @@ class SlackBridge {
 						logger.class.debug('Error setting user avatar', error.message);
 					}
 				}
-				RocketChat.addUserToDefaultChannels(user, true);
 			}
 
 			let importIds = [ userData.id ];
 			if (isBot && userData.profile && userData.profile.bot_id) {
 				importIds.push(userData.profile.bot_id);
 			}
-			RocketChat.models.Users.update({ _id: userData.rocketId }, { $addToSet: { importIds: { $each: importIds } } });
+			RocketChat.models.Users.addImportIds(userData.rocketId, importIds);
 			if (!this.userTags[userId]) {
 				this.userTags[userId] = { slack: `<@${userId}>`, rocket: `@${userData.name}` };
 			}
@@ -291,7 +295,7 @@ class SlackBridge {
 			}
 			_.extend(msgObj, msgDataDefaults);
 			if (message.edited) {
-				msgObj.ets = new Date(parseInt(message.edited.ts.split('.')[0]) * 1000);
+				msgObj.editedAt = new Date(parseInt(message.edited.ts.split('.')[0]) * 1000);
 			}
 			if (message.subtype === 'bot_message') {
 				user = RocketChat.models.Users.findOneById('rocket.cat', { fields: { username: 1 } });
@@ -302,7 +306,15 @@ class SlackBridge {
 				msgObj.pinnedAt = Date.now;
 				msgObj.pinnedBy = _.pick(user, '_id', 'username');
 			}
-			RocketChat.sendMessage(user, msgObj, room, true);
+			if (message.subtype === 'bot_message') {
+				Meteor.setTimeout(() => {
+					if (message.bot_id && message.ts && !RocketChat.models.Messages.findOneBySlackBotIdAndSlackTs(message.bot_id, message.ts)) {
+						RocketChat.sendMessage(user, msgObj, room, true);
+					}
+				}, 500);
+			} else {
+				RocketChat.sendMessage(user, msgObj, room, true);
+			}
 		}
 	}
 
@@ -982,16 +994,23 @@ class SlackBridge {
 
 	postMessage(room, message) {
 		if (room && room.id) {
+			let iconUrl = getAvatarUrlFromUsername(message.u && message.u.username);
+			if (iconUrl) {
+				iconUrl = Meteor.absoluteUrl().replace(/\/$/, '') + iconUrl;
+			}
 			let data = {
 				token: this.apiToken,
 				text: message.msg,
 				channel: room.id,
 				username: message.u && message.u.username,
-				icon_url: getAvatarUrlFromUsername(message.u && message.u.username),
+				icon_url: iconUrl,
 				link_names: 1
 			};
 			logger.class.debug('Post Message', data);
-			HTTP.post('https://slack.com/api/chat.postMessage', { params: data });
+			const postResult = HTTP.post('https://slack.com/api/chat.postMessage', { params: data });
+			if (postResult.statusCode === 200 && postResult.data && postResult.data.message && postResult.data.message.bot_id && postResult.data.message.ts) {
+				RocketChat.models.Messages.setSlackBotIdAndSlackTs(message._id, postResult.data.message.bot_id, postResult.data.message.ts);
+			}
 		}
 	}
 }

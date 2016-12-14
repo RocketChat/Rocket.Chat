@@ -13,10 +13,13 @@
 				</div>
 
 				{{#unless showSend}}
-					<div class="message-buttons file">
-						<i class="icon-attach file"></i>
-						<input type="file" accept="{{fileUploadAllowedMediaTypes}}">
-					</div>
+					{{#if showFileUpload}}
+						<div class="message-buttons file">
+							<i class="icon-attach file"></i>
+							<input type="file" accept="{{fileUploadAllowedMediaTypes}}">
+						</div>
+					{{/if}}
+
 
 					{{#if showSandstorm}}
 						<div class="message-buttons sandstorm-offer">

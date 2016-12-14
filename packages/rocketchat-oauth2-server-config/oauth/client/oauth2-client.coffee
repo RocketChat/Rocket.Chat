@@ -44,4 +44,4 @@ Template.authorize.onRendered ->
 	@autorun (c) =>
 		if Meteor.user()?.oauth?.athorizedClients?.indexOf(@data.client_id()) > -1
 			c.stop()
-			$('button').click()
+			$('button[type=submit]').click()

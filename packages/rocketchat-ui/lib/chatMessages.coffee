@@ -1,3 +1,6 @@
+import moment from 'moment'
+import toastr from 'toastr'
+
 class @ChatMessages
 	init: (node) ->
 		this.editing = {}
