@@ -14,7 +14,6 @@ Meteor.methods
 		if _.trim name
 			name = _.trim name
 
-		#unless RocketChat.models.Users.setName Meteor.userId(), name
 		unless RocketChat.setRealName user._id, name
 			throw new Meteor.Error 'error-could-not-change-name', "Could not change name", { method: 'setRealName' }
 
