@@ -56,7 +56,6 @@ FlowRouter.route('/home', {
 		RocketChat.TabBar.showGroup('home');
 		KonchatNotification.getDesktopPermission();
 		if (queryParams.saml_idp_credentialToken !== undefined) {
-			console.log('Login with SAML, credentialToken:', queryParams.saml_idp_credentialToken);
 			Accounts.callLoginMethod({
 				methodArguments: [{
 					saml: true,
