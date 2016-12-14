@@ -38,12 +38,16 @@ RocketChat.roomTypes.add 'd', 20,
 			RocketChat.TabBar.showGroup 'directmessage'
 		link: (sub) ->
 			return { username: sub.name }
+
 	findRoom: (identifier, user) ->
 		query =
 			t: 'd'
-			usernames:
-				$all: [identifier, user.username]
-		return ChatRoom.findOne(query)
+			name: identifier
+
+		subscription = ChatSubscription.findOne(query)
+		if subscription?.rid
+			return ChatRoom.findOne(subscription.rid)
+
 	roomName: (roomData) ->
 		return ChatSubscription.findOne({ rid: roomData._id }, { fields: { name: 1, fname: 1 } })
 	condition: ->
