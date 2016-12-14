@@ -333,12 +333,22 @@ var middleware = function(req, res, next) {
 
 					var credentialToken = profile.inResponseToId || profile.InResponseTo || samlObject.credentialToken;
 					if (!credentialToken) {
-						throw new Error('Unable to determine credentialToken');
+						// No credentialToken in IdP-initiated SSO
+						var credentialToken = Random.id();
+						Accounts.saml._loginResultForCredentialToken[credentialToken] = {
+							profile: profile
+						};
+						url = Meteor.absoluteUrl('home') + '?saml_idp_credentialToken='+credentialToken;
+						res.writeHead(302, {
+							'Location': url
+						});
+						res.end();
+					} else {
+						Accounts.saml._loginResultForCredentialToken[credentialToken] = {
+							profile: profile
+						};
+						closePopup(res);
 					}
-					Accounts.saml._loginResultForCredentialToken[credentialToken] = {
-						profile: profile
-					};
-					closePopup(res);
 				});
 				break;
 			default:
