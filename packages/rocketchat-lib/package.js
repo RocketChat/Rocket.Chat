@@ -7,8 +7,10 @@ Package.describe({
 
 Npm.depends({
 	'bad-words': '1.3.1',
+	'object-path': '0.9.2',
 	'node-dogstatsd': '0.0.6',
 	'localforage': '1.4.2',
+	'lokijs': '1.4.1',
 	'bugsnag': '1.8.0'
 });
 
@@ -72,6 +74,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/functions/createRoom.js', 'server');
 	api.addFiles('server/functions/deleteMessage.js', 'server');
 	api.addFiles('server/functions/deleteUser.js', 'server');
+	api.addFiles('server/functions/getFullUserData.js', 'server');
 	api.addFiles('server/functions/removeUserFromRoom.js', 'server');
 	api.addFiles('server/functions/saveUser.js', 'server');
 	api.addFiles('server/functions/saveCustomFields.js', 'server');
@@ -105,6 +108,9 @@ Package.onUse(function(api) {
 
 	api.addFiles('server/startup/statsTracker.js', 'server');
 
+	// CACHE
+	api.addFiles('server/startup/cache/CacheLoad.js', 'server');
+
 	// SERVER PUBLICATIONS
 	api.addFiles('server/publications/settings.coffee', 'server');
 
@@ -117,6 +123,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/methods/createPrivateGroup.coffee', 'server');
 	api.addFiles('server/methods/deleteMessage.coffee', 'server');
 	api.addFiles('server/methods/deleteUserOwnAccount.js', 'server');
+	api.addFiles('server/methods/getFullUserData.js', 'server');
 	api.addFiles('server/methods/getRoomRoles.js', 'server');
 	api.addFiles('server/methods/getUserRoles.js', 'server');
 	api.addFiles('server/methods/joinRoom.coffee', 'server');

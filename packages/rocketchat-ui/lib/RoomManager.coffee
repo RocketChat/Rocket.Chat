@@ -57,10 +57,6 @@ Tracker.autorun ->
 
 	close = (typeName) ->
 		if openedRooms[typeName]
-			if openedRooms[typeName].sub?
-				for sub in openedRooms[typeName].sub
-					sub.stop()
-
 			if openedRooms[typeName].rid?
 				msgStream.removeAllListeners openedRooms[typeName].rid
 				RocketChat.Notifications.unRoom openedRooms[typeName].rid, 'deleteMessage', onDeleteMessageStream
@@ -87,14 +83,10 @@ Tracker.autorun ->
 				unless user?.username
 					return
 
-				record.sub = [
-					Meteor.subscribe 'room', typeName
-				]
-
 				if record.ready is true
 					return
 
-				ready = record.sub[0].ready() and CachedChatSubscription.ready.get() is true
+				ready = CachedChatRoom.ready.get() and CachedChatSubscription.ready.get() is true
 
 				if ready is true
 					type = typeName.substr(0, 1)
@@ -252,3 +244,4 @@ Tracker.autorun ->
 
 RocketChat.callbacks.add 'afterLogoutCleanUp', ->
 	RoomManager.closeAllRooms()
+, RocketChat.callbacks.priority.MEDIUM, 'roommanager-after-logout-cleanup'

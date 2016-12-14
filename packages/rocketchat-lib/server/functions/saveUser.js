@@ -1,5 +1,6 @@
 RocketChat.saveUser = function(userId, userData) {
 	const user = RocketChat.models.Users.findOneById(userId);
+	let existingRoles = _.pluck(RocketChat.authz.getRoles(), '_id');
 
 	if (userData._id && userId !== userData._id && !RocketChat.authz.hasPermission(userId, 'edit-other-user-info')) {
 		throw new Meteor.Error('error-action-not-allowed', 'Editing user is not allowed', { method: 'insertOrUpdateUser', action: 'Editing_user' });
@@ -9,7 +10,11 @@ RocketChat.saveUser = function(userId, userData) {
 		throw new Meteor.Error('error-action-not-allowed', 'Adding user is not allowed', { method: 'insertOrUpdateUser', action: 'Adding_user' });
 	}
 
-	if (userData.role === 'admin' && !RocketChat.authz.hasPermission(userId, 'assign-admin-role')) {
+	if (userData.roles && _.difference(userData.roles, existingRoles).length > 0) {
+		throw new Meteor.Error('error-action-not-allowed', 'The field Roles consist invalid role name', { method: 'insertOrUpdateUser', action: 'Assign_role' });
+	}
+
+	if (userData.roles && _.indexOf(userData.roles, 'admin') >= 0 && !RocketChat.authz.hasPermission(userId, 'assign-admin-role')) {
 		throw new Meteor.Error('error-action-not-allowed', 'Assigning admin is not allowed', { method: 'insertOrUpdateUser', action: 'Assign_admin' });
 	}
 
@@ -51,7 +56,8 @@ RocketChat.saveUser = function(userId, userData) {
 		// insert user
 		const createUser = {
 			username: userData.username,
-			password: userData.password
+			password: userData.password,
+			joinDefaultChannels: userData.joinDefaultChannels
 		};
 		if (userData.email) {
 			createUser.email = userData.email;
@@ -62,7 +68,7 @@ RocketChat.saveUser = function(userId, userData) {
 		const updateUser = {
 			$set: {
 				name: userData.name,
-				roles: [ (userData.role || 'user') ]
+				roles: userData.roles || ['user']
 			}
 		};
 
@@ -75,12 +81,6 @@ RocketChat.saveUser = function(userId, userData) {
 		}
 
 		Meteor.users.update({ _id: _id }, updateUser);
-
-		if (userData.joinDefaultChannels) {
-			Meteor.runAsUser(_id, () => {
-				Meteor.call('joinDefaultChannels');
-			});
-		}
 
 		if (userData.sendWelcomeEmail) {
 			const header = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Header') || '');
@@ -140,6 +140,10 @@ RocketChat.saveUser = function(userId, userData) {
 
 		if (userData.name) {
 			updateUser.$set.name = userData.name;
+		}
+
+		if (userData.roles) {
+			updateUser.$set.roles = userData.roles;
 		}
 
 		if (userData.requirePasswordChange) {

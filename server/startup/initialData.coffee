@@ -5,7 +5,7 @@ Meteor.startup ->
 			RocketChat.models.Rooms.createWithIdTypeAndName 'GENERAL', 'c', 'general',
 				default: true
 
-		if not RocketChat.models.Users.findOneById('rocket.cat')?
+		if not RocketChat.models.Users.db.findOneById('rocket.cat')?
 			RocketChat.models.Users.create
 				_id: 'rocket.cat'
 				name: "Rocket.Cat"

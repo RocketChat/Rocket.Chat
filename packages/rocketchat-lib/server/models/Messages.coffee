@@ -244,6 +244,7 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base
 				urls: []
 				mentions: []
 				attachments: []
+				reactions: []
 				editedAt: new Date()
 				editedBy:
 					_id: user._id

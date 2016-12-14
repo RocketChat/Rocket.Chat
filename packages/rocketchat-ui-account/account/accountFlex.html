@@ -9,13 +9,16 @@
 			<ul>
 				<li>
 					<a href="{{pathFor 'account' group='preferences'}}" class="account-link">{{_ "Preferences"}}</a>
+				</li>
+				<li>
 					{{#if allowUserProfileChange}}
 						<a href="{{pathFor 'account' group='profile'}}" class="account-link">{{_ "Profile"}}</a>
 					{{/if}}
+				</li>
+				<li>
 					{{#if allowUserAvatarChange}}
 						<a href="{{pathFor 'changeAvatar'}}" class="account-link">{{_ "Avatar"}}</a>
 					{{/if}}
-					{{!-- move this to profile --}}
 				</li>
 			</ul>
 		</div>
