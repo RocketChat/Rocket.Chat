@@ -85,6 +85,7 @@ class MainContent extends Page {
 
 	openMessageActionMenu() {
 		this.lastMessage.moveToObject();
+		this.messageOptionsBtn.waitForVisible(5000);
 		this.messageOptionsBtn.click();
 		this.messageActionMenu.waitForVisible(5000);
 	}

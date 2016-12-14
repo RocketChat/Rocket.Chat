@@ -82,7 +82,9 @@ function messageActionsTest() {
 			});
 
 			after(() => {
+				browser.pause(100);
 				mainContent.selectAction('close');
+				mainContent.messageActionMenu.waitForVisible(5000, true);
 			});
 
 			it('should show the message action menu', () => {
