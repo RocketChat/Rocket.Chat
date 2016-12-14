@@ -103,44 +103,53 @@ class MainContent extends Page {
 		switch (action) {
 			case 'edit':
 				this.messageEdit.waitForVisible(5000);
+				browser.pause(1000);
 				this.messageEdit.click();
 				browser.pause(1000);
 				this.messageInput.addValue('this message was edited');
 				break;
 			case 'reply':
 				this.messageReply.waitForVisible(5000);
+				browser.pause(1000);
 				this.messageReply.click();
 				browser.pause(1000);
 				this.messageInput.addValue(' this is a reply message');
 				break;
 			case 'delete':
 				this.messageDelete.waitForVisible(5000);
+				browser.pause(1000);
 				this.messageDelete.click();
 				break;
 			case 'permalink':
 				this.messagePermalink.waitForVisible(5000);
+				browser.pause(1000);
 				this.messagePermalink.click();
 				break;
 			case 'copy':
 				this.messageCopy.waitForVisible(5000);
+				browser.pause(1000);
 				this.messageCopy.click();
 				break;
 			case 'quote':
 				this.messageQuote.waitForVisible(5000);
+				browser.pause(1000);
 				this.messageQuote.click();
 				browser.pause(1000);
 				this.messageInput.addValue(' this is a quote message');
 				break;
 			case 'star':
 				this.messageStar.waitForVisible(5000);
+				browser.pause(1000);
 				this.messageStar.click();
 				break;
 			case 'unread':
 				this.messageUnread.waitForVisible(5000);
+				browser.pause(1000);
 				this.messageUnread.click();
 				break;
 			case 'reaction':
 				this.messageReply.waitForVisible(5000);
+				browser.pause(1000);
 				this.messageReply.click();
 				this.emojiPickerMainScreen.waitForVisible(5000);
 				this.emojiPickerPeopleIcon.click();
@@ -149,6 +158,7 @@ class MainContent extends Page {
 				break;
 			case 'close':
 				this.messageClose.waitForVisible(5000);
+				browser.pause(1000);
 				this.messageClose.click();
 				break;
 		}
