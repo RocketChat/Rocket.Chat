@@ -53,6 +53,7 @@ class SideNav extends Page {
 	}
 
 	createChannel(channelName, isPrivate, isReadOnly) {
+		this.newChannelBtn.waitForVisible(10000);
 		this.newChannelBtn.click();
 		this.channelType.waitForVisible(10000);
 		this.channelName.setValue(channelName);
@@ -84,6 +85,7 @@ class SideNav extends Page {
 	}
 
 	startDirectMessage(user) {
+		this.newDirectMessageBtn.waitForVisible(3000);
 		this.newDirectMessageBtn.click();
 		this.directMessageTarget.waitForVisible(3000);
 		this.directMessageTarget.setValue(user);
@@ -92,7 +94,6 @@ class SideNav extends Page {
 		browser.pause(200);
 		this.saveDirectMessageBtn.click();
 		browser.waitForExist('[title="'+user+'"]');
-		this.channelType.waitForVisible(500, true);
 	}
 }
 
