@@ -76,6 +76,10 @@ RocketChat.settings.add = (_id, value, options = {}) ->
 		$setOnInsert:
 			createdAt: new Date
 
+	if options.editor?
+		updateOperations.$setOnInsert.editor = options.editor
+		delete options.editor
+
 	if not options.value?
 		if options.force is true
 			updateOperations.$set.value = options.packageValue
@@ -88,9 +92,16 @@ RocketChat.settings.add = (_id, value, options = {}) ->
 		updateOperations.$unset = { section: 1 }
 		query.section = { $exists: false }
 
-	if not RocketChat.models.Settings.findOne(query)?
+	existantSetting = RocketChat.models.Settings.findOne(query)
+
+	if existantSetting?
+		if not existantSetting.editor? and updateOperations.$setOnInsert.editor?
+			updateOperations.$set.editor = updateOperations.$setOnInsert.editor
+			delete updateOperations.$setOnInsert.editor
+	else
 		updateOperations.$set.ts = new Date
-		return RocketChat.models.Settings.upsert { _id: _id }, updateOperations
+
+	return RocketChat.models.Settings.upsert { _id: _id }, updateOperations
 
 
 
@@ -163,11 +174,14 @@ RocketChat.settings.removeById = (_id) ->
 # Update a setting by id
 # @param {String} _id
 ###
-RocketChat.settings.updateById = (_id, value) ->
+RocketChat.settings.updateById = (_id, value, editor) ->
 	# console.log '[functions] RocketChat.settings.updateById -> '.green, 'arguments:', arguments
 
 	if not _id or not value?
 		return false
+
+	if editor?
+		return RocketChat.models.Settings.updateValueAndEditorById _id, value, editor
 
 	return RocketChat.models.Settings.updateValueById _id, value
 

@@ -1,3 +1,5 @@
+import moment from 'moment'
+
 Template.integrations.helpers
 	hasPermission: ->
 		return RocketChat.authz.hasAtLeastOnePermission(['manage-integrations', 'manage-own-integrations'])

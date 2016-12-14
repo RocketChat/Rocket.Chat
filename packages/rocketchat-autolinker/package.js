@@ -6,7 +6,7 @@ Package.describe({
 });
 
 Npm.depends({
-	autolinker: '1.2.0'
+	autolinker: '1.4.0'
 });
 
 Package.onUse(function(api) {

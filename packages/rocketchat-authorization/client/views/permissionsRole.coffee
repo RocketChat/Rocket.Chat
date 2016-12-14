@@ -1,3 +1,4 @@
+import toastr from 'toastr'
 Template.permissionsRole.helpers
 	role: ->
 		return RocketChat.models.Roles.findOne({ _id: FlowRouter.getParam('name') }) or {}

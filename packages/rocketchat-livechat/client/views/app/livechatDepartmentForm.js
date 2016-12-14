@@ -1,3 +1,4 @@
+import toastr from 'toastr';
 Template.livechatDepartmentForm.helpers({
 	department() {
 		return Template.instance().department.get();
@@ -11,6 +12,10 @@ Template.livechatDepartmentForm.helpers({
 	availableAgents() {
 		var selected = _.pluck(Template.instance().selectedAgents.get(), 'username');
 		return AgentUsers.find({ username: { $nin: selected }}, { sort: { username: 1 } });
+	},
+	showOnRegistration(value) {
+		let department = Template.instance().department.get();
+		return department.showOnRegistration === value || (department.showOnRegistration === undefined && value === true);
 	}
 });
 
@@ -23,6 +28,7 @@ Template.livechatDepartmentForm.events({
 		var enabled = instance.$('input[name=enabled]:checked').val();
 		var name = instance.$('input[name=name]').val();
 		var description = instance.$('textarea[name=description]').val();
+		var showOnRegistration = instance.$('input[name=showOnRegistration]:checked').val();
 
 		if (enabled !== '1' && enabled !== '0') {
 			return toastr.error(t('Please_select_enabled_yes_or_no'));
@@ -38,7 +44,8 @@ Template.livechatDepartmentForm.events({
 		var departmentData = {
 			enabled: enabled === '1' ? true : false,
 			name: name.trim(),
-			description: description.trim()
+			description: description.trim(),
+			showOnRegistration: showOnRegistration === '1' ? true : false
 		};
 
 		var departmentAgents = [];

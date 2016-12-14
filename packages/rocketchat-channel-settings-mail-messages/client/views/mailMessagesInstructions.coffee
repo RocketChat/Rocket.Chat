@@ -1,3 +1,4 @@
+import toastr from 'toastr'
 Template.mailMessagesInstructions.helpers
 	name: ->
 		return Meteor.user().name

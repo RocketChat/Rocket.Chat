@@ -1,4 +1,4 @@
- .custom-scroll(@background, @thumb, @width: 8px, @height: 8px) {
+.custom-scroll(@background, @thumb, @width: 8px, @height: 8px) {
 	-webkit-overflow-scrolling: touch;
 	&::-webkit-scrollbar {
 		height: @height;
@@ -92,7 +92,7 @@
 	color: @color;
 	background-color: @bg;
 	&:hover {
-		color: lighten(@color, 10%);
-		background-color: darken(@bg, 5%);
+		color: mix(@color, contrast(@bg), 60%);
+		background-color: mix(@bg, contrast(@color), 60%);
 	}
 }

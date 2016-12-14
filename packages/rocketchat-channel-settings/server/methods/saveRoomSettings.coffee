@@ -17,6 +17,12 @@ Meteor.methods
 
 		room = RocketChat.models.Rooms.findOneById rid
 		if room?
+			if setting is 'roomType' and value isnt room.t and value is 'c' and not RocketChat.authz.hasPermission(@userId, 'create-c')
+				throw new Meteor.Error 'error-action-not-allowed', 'Changing a private group to a public channel is not allowed', { method: 'saveRoomSettings', action: 'Change_Room_Type' }
+
+			if setting is 'roomType' and value isnt room.t and value is 'p' and not RocketChat.authz.hasPermission(@userId, 'create-p')
+				throw new Meteor.Error 'error-action-not-allowed', 'Changing a public channel to a private room is not allowed', { method: 'saveRoomSettings', action: 'Change_Room_Type' }
+
 			switch setting
 				when 'roomName'
 					name = RocketChat.saveRoomName rid, value, Meteor.user()
