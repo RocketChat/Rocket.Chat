@@ -92,7 +92,7 @@ RocketChat.settings.add = (_id, value, options = {}) ->
 		updateOperations.$unset = { section: 1 }
 		query.section = { $exists: false }
 
-	existantSetting = RocketChat.models.Settings.findOne(query)
+	existantSetting = RocketChat.models.Settings.db.findOne(query)
 
 	if existantSetting?
 		if not existantSetting.editor? and updateOperations.$setOnInsert.editor?

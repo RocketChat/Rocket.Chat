@@ -4,8 +4,8 @@ class SideNav extends Page {
 	get directMessageTarget() { return browser.element('.flex-nav input#who'); }
 	get saveDirectMessageBtn() { return browser.element('.save-direct-message'); }
 
-	get channelType() { return browser.element('#channel-type'); }
-	get channelReadOnly() { return browser.element('#channel-ro'); }
+	get channelType() { return browser.element('label[for="channel-type"]'); }
+	get channelReadOnly() { return browser.element('label[for="channel-ro"]'); }
 	get channelName() { return browser.element('#channel-name'); }
 	get saveChannelBtn() { return browser.element('.save-channel'); }
 

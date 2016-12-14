@@ -7,19 +7,25 @@
 	<div class="content">
 		<div class="wrapper">
 			<h4>{{_ "Create_new" }}</h4>
-			<div class="input-line">
-				<label for="channel-name">{{_ "Name"}}</label>
+			<div class="input-line no-icon">
+				<span>{{_ "Name"}}</span>
 				<input type="text" id="channel-name" class="required" dir="auto" placeholder="{{_ 'Enter_name_here'}}">
 			</div>
-			<div class="input-line">
-				<label for="channel-type">{{_ "Private_Group"}}</label>
-				<input type="checkbox" id="channel-type" {{privateSwitchDisabled}} {{privateSwitchChecked}}>
+			<div class="input-line toggle">
+				<span>{{_ "Private"}}</span>
+				<div class="input checkbox toggle">
+					<input type="checkbox" id="channel-type" {{privateSwitchDisabled}} {{privateSwitchChecked}}>
+					<label for="channel-type"></label>
+				</div>
 			</div>
-			<div class="input-line">
-				<label for="channel-ro">{{_ "Read_only_channel"}}</label>
-				<input type="checkbox" id="channel-ro">
+			<div class="input-line toggle">
+				<span>{{_ "Read_only_channel"}}</span>
+				<div class="input checkbox toggle">
+					<input type="checkbox" id="channel-ro">
+					<label for="channel-ro"></label>
+				</div>
 			</div>
-			<div class="input-line">
+			<div class="input-line no-icon">
 				<label for="channel-members">{{_ "Select_users"}}</label>
 				{{> inputAutocomplete settings=autocompleteSettings id="channel-members" class="search" placeholder=(_ "Search_by_username") autocomplete="off"}}
 				<ul class="selected-users">
