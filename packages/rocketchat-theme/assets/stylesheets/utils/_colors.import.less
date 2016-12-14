@@ -6,6 +6,7 @@
 @default-action-contrast: contrast(@default-action-color, #444);
 @primary-background-contrast: contrast(@primary-background-color, #444);
 @primary-action-contrast: contrast(@primary-action-color, #444);
+@secondary-background-contrast: contrast(@secondary-background-color, #444);
 @secondary-action-contrast: contrast(@secondary-action-color, #444);
 @selection-background: lighten(@selection-color, 30%);
 @success-background: lighten(@success-color, 45%);
@@ -82,6 +83,145 @@ blockquote:before {
 
 .burger i {
 	background-color: @primary-font-color;
+}
+
+
+/** ----------------------------------------------------------------------------
+ * Forms
+ */
+
+.input-shade(@primary-font-color, @content-background-color);
+.flex-nav {
+	.input-shade(@primary-background-contrast, @primary-background-color);
+	label,
+	legend {
+		color: @tertiary-font-color;
+	}
+	input {
+		&:focus {
+			border-color: fade(@primary-background-contrast, 50%);
+		}
+	}
+	.input.checkbox.toggle {
+		input:checked + label:before {
+			background-color: @primary-action-color;
+		}
+	}
+}
+
+.flex-tab {
+	input,
+	select,
+	textarea {
+		background-color: @content-background-color;
+		&:focus {
+			border-color: lighten(@secondary-background-contrast, 30%);
+		}
+	}
+}
+
+.input-line {
+	&.setting-changed > label {
+		color: @selection-color;
+	}
+	i,
+	.settings-description {
+		color: @secondary-font-color;
+	}
+	.settings-alert {
+		background-color: @pending-background;
+		border-color: @pending-border;
+		color: @pending-color;
+	}
+}
+
+.emoji-filter {
+	input {
+		background-color: @content-background-color;
+	}
+}
+
+input:-webkit-autofill {
+	color: @primary-font-color !important;
+}
+
+input:-webkit-autofill {
+	background-color: transparent !important;
+}
+
+.input {
+	&.radio {
+		label {
+			&:before {
+				background-color: @content-background-color;
+				border-color: lighten(@secondary-background-contrast, 30%);
+			}
+			&:after {
+				background-color: @secondary-background-contrast;
+			}
+		}
+	}
+	&.checkbox.toggle {
+		input:checked + label:before {
+			background-color: @secondary-background-contrast;
+		}
+		input:disabled + label:before {
+			background-color: lighten(@secondary-background-contrast, 50%) !important;
+		}
+		label {
+			&:before {
+				background-color: lighten(@secondary-background-contrast, 30%);
+			}
+			&:after {
+				background-color: @content-background-color;
+			}
+			&:hover {
+				&:before {
+					background-color: lighten(@secondary-background-contrast, 20%);
+				}
+			}
+		}
+	}
+}
+
+
+/** ----------------------------------------------------------------------------
+ * Misc typography variants
+ */
+
+a {
+	color: @primary-font-color;
+}
+
+a:active,
+a:hover {
+	color: @primary-action-color;
+}
+
+.message,
+.flex-tab {
+	a i,
+	a[class^="icon-"] {
+		color: @primary-font-color;
+		&:hover {
+			color: darken(@primary-font-color, 10%);
+		}
+	}
+}
+
+.load-more .load-more-loading,
+.secondary-text {
+	color: @secondary-font-color;
+}
+
+.alert-icon {
+	color: @success-color;
+}
+
+.error {
+	background-color: @error-background;
+	border-color: @error-color;
+	color: @error-color;
 }
 
 
@@ -423,46 +563,6 @@ blockquote:before {
 
 
 /** ----------------------------------------------------------------------------
- * Misc typography variants
- */
-
-a {
-	color: @primary-font-color;
-}
-
-a:active,
-a:hover {
-	color: @primary-action-color;
-}
-
-.message,
-.flex-tab {
-	a i,
-	a[class^="icon-"] {
-		color: @primary-font-color;
-		&:hover {
-			color: darken(@primary-font-color, 10%);
-		}
-	}
-}
-
-.load-more .load-more-loading,
-.secondary-text {
-	color: @secondary-font-color;
-}
-
-.alert-icon {
-	color: @success-color;
-}
-
-.error {
-	background-color: @error-background;
-	border-color: @error-color;
-	color: @error-color;
-}
-
-
-/** ----------------------------------------------------------------------------
  * Side nav
  */
 
@@ -541,6 +641,25 @@ a:hover {
 	.message {
 		&.new-day::before {
 			background-color: @secondary-background-color;
+		}
+	}
+	.channel-settings {
+		.buttons {
+			background-color: @secondary-background-color;
+			.button {
+				.buttonColors(lighten(@primary-font-color, 25%), @secondary-background-color);
+			}
+		}
+		.button.edit {
+			.buttonColors(lighten(@primary-font-color, 25%), @secondary-background-color);
+		}
+		.icon-ok {
+			color: inherit;
+		}
+		.input.checkbox.toggle {
+			input:checked + label:before {
+				background-color: @primary-background-color;
+			}
 		}
 	}
 }
@@ -770,55 +889,4 @@ label.required:after {
 
 .loading.dark > div {
 	background-color: @transparent-darkest;
-}
-
-
-/** ----------------------------------------------------------------------------
- * Forms
- */
-
-.input-shade(@primary-font-color, @content-background-color);
-.flex-nav {
-	.input-shade(@primary-background-contrast, @primary-background-color);
-	label,
-	legend {
-		color: @tertiary-font-color;
-	}
-}
-
-.flex-tab {
-	input,
-	select,
-	textarea {
-		background-color: @content-background-color;
-	}
-}
-
-.input-line {
-	&.setting-changed > label {
-		color: @selection-color;
-	}
-	i,
-	.settings-description {
-		color: @secondary-font-color;
-	}
-	.settings-alert {
-		background-color: @pending-background;
-		border-color: @pending-border;
-		color: @pending-color;
-	}
-}
-
-.emoji-filter {
-	input {
-		background-color: @content-background-color;
-	}
-}
-
-input:-webkit-autofill {
-	color: @primary-font-color !important;
-}
-
-input:-webkit-autofill {
-	background-color: transparent !important;
 }

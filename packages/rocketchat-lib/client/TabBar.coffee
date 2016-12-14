@@ -12,6 +12,9 @@ RocketChat.TabBar = new class
 
 	visibleGroup = new ReactiveVar ''
 
+	_setTemplate = (t) ->
+		template.set t
+
 	setTemplate = (t, callback) ->
 		template.set t
 		openFlex(callback)
@@ -109,6 +112,8 @@ RocketChat.TabBar = new class
 			else
 				extraGroups[id] ?= []
 				extraGroups[id] = _.union extraGroups[id], groups
+
+	_setTemplate: _setTemplate
 
 	removeGroup = (id, groups) ->
 		Tracker.nonreactive ->
