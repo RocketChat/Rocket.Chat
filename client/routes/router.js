@@ -52,10 +52,21 @@ FlowRouter.route('/login', {
 FlowRouter.route('/home', {
 	name: 'home',
 
-	action() {
+	action(params, queryParams) {
 		RocketChat.TabBar.showGroup('home');
-		BlazeLayout.render('main', {center: 'home'});
 		KonchatNotification.getDesktopPermission();
+		if (queryParams.saml_idp_credentialToken !== undefined) {
+			console.log('Login with SAML, credentialToken:', queryParams.saml_idp_credentialToken)
+			Accounts.callLoginMethod({
+				methodArguments: [{
+					saml: true,
+					credentialToken: queryParams.saml_idp_credentialToken
+				}],
+				userCallback: function() {BlazeLayout.render('main', {center: 'home'});}
+			});
+		} else {
+			BlazeLayout.render('main', {center: 'home'});
+		}
 	}
 });
 
