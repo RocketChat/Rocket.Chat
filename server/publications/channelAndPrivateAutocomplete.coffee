@@ -15,6 +15,7 @@ Meteor.publish 'channelAndPrivateAutocomplete', (selector) ->
 		sort:
 			name: 1
 
+	# CACHE: can we stop using publications here?
 	cursorHandle = RocketChat.models.Rooms.findByNameStartingAndTypes(selector.name, ['c', 'p'], options).observeChanges
 		added: (_id, record) ->
 			pub.added('autocompleteRecords', _id, record)
