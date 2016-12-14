@@ -334,11 +334,11 @@ var middleware = function(req, res, next) {
 					var credentialToken = profile.inResponseToId || profile.InResponseTo || samlObject.credentialToken;
 					if (!credentialToken) {
 						// No credentialToken in IdP-initiated SSO
-						var credentialToken = Random.id();
-						Accounts.saml._loginResultForCredentialToken[credentialToken] = {
+						var saml_idp_credentialToken = Random.id();
+						Accounts.saml._loginResultForCredentialToken[saml_idp_credentialToken] = {
 							profile: profile
 						};
-						url = Meteor.absoluteUrl('home') + '?saml_idp_credentialToken='+credentialToken;
+						var url = Meteor.absoluteUrl('home') + '?saml_idp_credentialToken='+saml_idp_credentialToken;
 						res.writeHead(302, {
 							'Location': url
 						});
