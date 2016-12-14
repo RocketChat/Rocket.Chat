@@ -26,7 +26,7 @@ getFromServer = (filter, records, cb) =>
 			for room in results.rooms
 				server.push({
 					_id: room._id
-					t: 'c',
+					t: room.t,
 					name: room.name
 				})
 

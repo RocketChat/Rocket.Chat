@@ -1,3 +1,4 @@
+import toastr from 'toastr'
 Template.accountPreferences.helpers
 	languages: ->
 		languages = TAPi18n.getLanguages()

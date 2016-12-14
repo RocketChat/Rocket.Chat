@@ -15,6 +15,7 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base
 		@tryEnsureIndex { 'pinned': 1 }, { sparse: 1 }
 		@tryEnsureIndex { 'snippeted': 1 }, { sparse: 1 }
 		@tryEnsureIndex { 'location': '2dsphere' }
+		@tryEnsureIndex { 'slackBotId': 1, 'slackTs': 1 }, { sparse: 1 }
 
 
 	# FIND ONE
@@ -88,6 +89,16 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base
 
 		return @find query, options
 
+	findVisibleByRoomIdBeforeTimestampInclusive: (roomId, timestamp, options) ->
+		query =
+			_hidden:
+				$ne: true
+			rid: roomId
+			ts:
+				$lte: timestamp
+
+		return @find query, options
+
 	findVisibleByRoomIdBetweenTimestamps: (roomId, afterTimestamp, beforeTimestamp, options) ->
 		query =
 			_hidden:
@@ -96,6 +107,17 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base
 			ts:
 				$gt: afterTimestamp
 				$lt: beforeTimestamp
+
+		return @find query, options
+
+	findVisibleByRoomIdBetweenTimestampsInclusive: (roomId, afterTimestamp, beforeTimestamp, options) ->
+		query =
+			_hidden:
+				$ne: true
+			rid: roomId
+			ts:
+				$gte: afterTimestamp
+				$lte: beforeTimestamp
 
 		return @find query, options
 
@@ -181,6 +203,13 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base
 
 		return @find query, options
 
+	findOneBySlackBotIdAndSlackTs: (slackBotId, slackTs) ->
+		query =
+			slackBotId: slackBotId
+			slackTs: slackTs
+
+		return @findOne query
+
 	cloneAndSaveAsHistoryById: (_id) ->
 		me = RocketChat.models.Users.findOneById Meteor.userId()
 		record = @findOneById _id
@@ -215,6 +244,7 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base
 				urls: []
 				mentions: []
 				attachments: []
+				reactions: []
 				editedAt: new Date()
 				editedBy:
 					_id: user._id
@@ -324,6 +354,17 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base
 		update =
 			$set:
 				attachments: attachments
+
+		return @update query, update
+
+	setSlackBotIdAndSlackTs: (_id, slackBotId, slackTs) ->
+		query =
+			_id: _id
+
+		update =
+			$set:
+				slackBotId: slackBotId
+				slackTs: slackTs
 
 		return @update query, update
 

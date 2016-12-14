@@ -8,7 +8,7 @@
 RocketChat.API.v1.addRoute 'room.info', authRequired: true,
 	post: ->
 		
-		if RocketChat.authz.hasRole(@userId, 'admin') is false
+		if RocketChat.authz.hasPermission(@userId, 'create-p') is false
 			return RocketChat.API.v1.unauthorized()
 
 		try
@@ -59,7 +59,7 @@ RocketChat.API.v1.addRoute 'room/name/:rname/integrations', authRequired: true,
 RocketChat.API.v1.addRoute 'room.update', authRequired: true, 
 	post: ->
 	
-		if RocketChat.authz.hasRole(@userId, 'admin') is false
+		if RocketChat.authz.hasPermission(@userId, 'create-p') is false
 			return RocketChat.API.v1.unauthorized()
 		try
 			this.response.setTimeout (2000)
@@ -193,7 +193,7 @@ RocketChat.API.v1.addRoute 'room/direct.list', authRequired: true,
 	
 	get: ->	
 		
-		if RocketChat.authz.hasRole(@userId, 'admin') is false
+		if RocketChat.authz.hasPermission(@userId, 'create-p') is false
 			return RocketChat.API.v1.unauthorized()
 		
 		try

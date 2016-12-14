@@ -7,11 +7,11 @@ Package.describe({
 
 Package.onUse(function(api) {
 	api.use([
+		'ecmascript',
 		'coffeescript',
 		'rocketchat:lib',
 		'rocketchat:importer'
 	]);
-	api.use('aldeed:moment-timezone', 'server');
 	api.use('rocketchat:logger', 'server');
 	api.addFiles('server.coffee', 'server');
 	api.addFiles('main.coffee', ['client', 'server']);

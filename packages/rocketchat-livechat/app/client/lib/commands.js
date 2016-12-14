@@ -60,5 +60,9 @@ this.Commands = {
 				showConfirmButton: false
 			});
 		}
+	},
+
+	connected: function() {
+		Livechat.connecting = false;
 	}
 };
