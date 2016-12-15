@@ -58,8 +58,10 @@ describe('channel usage', ()=> {
 			});
 
 			after(()=> {
-				flexTab.dismissToast();
-				flexTab.toastAlert.waitForVisible(5000, true);
+				if (flexTab.toastAlert.isVisible()) {
+					flexTab.dismissToast();
+					flexTab.toastAlert.waitForVisible(5000, true);
+				}
 				flexTab.channelTab.waitForVisible(5000);
 				flexTab.channelTab.click();
 			});
@@ -97,8 +99,10 @@ describe('channel usage', ()=> {
 			});
 
 			after(()=> {
-				flexTab.dismissToast();
-				flexTab.toastAlert.waitForVisible(5000, true);
+				if (flexTab.toastAlert.isVisible()) {
+					flexTab.dismissToast();
+					flexTab.toastAlert.waitForVisible(5000, true);
+				}
 				flexTab.channelTab.waitForVisible();
 				flexTab.channelTab.click();
 			});
@@ -129,8 +133,10 @@ describe('channel usage', ()=> {
 			});
 
 			after(()=> {
-				flexTab.dismissToast();
-				flexTab.toastAlert.waitForVisible(5000, true);
+				if (flexTab.toastAlert.isVisible()) {
+					flexTab.dismissToast();
+					flexTab.toastAlert.waitForVisible(5000, true);
+				}
 				flexTab.channelTab.waitForVisible();
 				flexTab.channelTab.click();
 			});
@@ -158,11 +164,19 @@ describe('channel usage', ()=> {
 	describe('Members tab usage', () => {
 		describe('Owner added', () => {
 			before(()=> {
+				if (flexTab.toastAlert.isVisible()) {
+					flexTab.dismissToast();
+					flexTab.toastAlert.waitForVisible(5000, true);
+				}
 				flexTab.membersTab.waitForVisible();
 				flexTab.membersTab.click();
 			});
 
 			after(()=> {
+				if (flexTab.toastAlert.isVisible()) {
+					flexTab.dismissToast();
+					flexTab.toastAlert.waitForVisible(5000, true);
+				}
 				flexTab.membersTab.waitForVisible();
 				flexTab.membersTab.click();
 			});
@@ -172,8 +186,10 @@ describe('channel usage', ()=> {
 			});
 
 			it('dismiss the toast', ()=> {
-				flexTab.dismissToast();
-				flexTab.toastAlert.waitForVisible(5000, true);
+				if (flexTab.toastAlert.isVisible()) {
+					flexTab.dismissToast();
+					flexTab.toastAlert.waitForVisible(5000, true);
+				}
 			});
 
 			it('the last message should be a subscription role added', ()=> {
