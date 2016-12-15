@@ -223,7 +223,7 @@ Meteor.startup ->
 	try
 		if ng_user and ng_passwd
 			# use username/password login
-			res = ng.login ng_user, ng_passwd
+			res = ng.login "#{ng_user}@#{ng_domain}", ng_passwd
 		else if ng_user
 			# use trusted auth
 			res = ng.trustedLogin "#{ng_user}@#{ng_domain}"
