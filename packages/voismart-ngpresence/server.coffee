@@ -92,7 +92,7 @@ class AmqpConnection
 	onUpdateMessage: (statuses) =>
 		for status in statuses
 			resources = (r for r in status['resources'] when r.type == 'webchat')
-			@callback status.user, status['status_webchat_policy'], status, resources
+			@callback status.user, status['status_webchat_policy'], resources
 
 
 class PresenceManager
@@ -124,7 +124,10 @@ class PresenceManager
 			logger.info "#{username} is offline, not #{mapped_status}. Publishing offline"
 			@presenceClient.publishPresence(user, "offline", user.statusConnection)
 			return
-		else
+		else if user.statusConnection != "offline"
+			# only set status if we aren't offline
+			# e.g. if aggregated status is dnd because of a call, do not update
+			#      chat status unless we have a user connection
 			logger.info "setting status for #{username} to #{mapped_status}"
 			Meteor.users.update({_id: user._id}, {$set: {status: mapped_status}})
 
