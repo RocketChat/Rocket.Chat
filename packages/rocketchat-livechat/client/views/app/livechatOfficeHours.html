@@ -1,59 +1,61 @@
 <template name="livechatOfficeHours">
-	<div class="livechat-officeHours-div">
-		<form class="rocket-form" id="officeHoursForm">
+	{{#requiresPermission 'view-livechat-manager'}}
+		<div class="livechat-officeHours-div">
+			<form class="rocket-form" id="officeHoursForm">
 
-			<fieldset>
-				<legend>{{_ "Office_hours_enabled"}}</legend>
-				<input type="radio" class="preview-settings" name="enableOfficeHours" id="enableOfficeHoursTrue" checked="{{enableOfficeHoursTrueChecked}}" value="true">
-				<label for="displayOfflineFormTrue">{{_ "True"}}</label>
-				<input type="radio" class="preview-settings" name="enableOfficeHours" id="enableOfficeHoursFalse" checked="{{enableOfficeHoursFalseChecked}}" value="false">
-				<label for="displayOfflineFormFalse">{{_ "False"}}</label>
-			</fieldset>
+				<fieldset>
+					<legend>{{_ "Office_hours_enabled"}}</legend>
+					<input type="radio" class="preview-settings" name="enableOfficeHours" id="enableOfficeHoursTrue" checked="{{enableOfficeHoursTrueChecked}}" value="true">
+					<label for="displayOfflineFormTrue">{{_ "True"}}</label>
+					<input type="radio" class="preview-settings" name="enableOfficeHours" id="enableOfficeHoursFalse" checked="{{enableOfficeHoursFalseChecked}}" value="false">
+					<label for="displayOfflineFormFalse">{{_ "False"}}</label>
+				</fieldset>
 
-			<!-- days open -->
-			<fieldset>
-				<legend>{{_ "Open_days_of_the_week"}}</legend>
-				{{#each day in days}}
-					{{#if open day}}
-						<label class="dayOpenCheck"><input type="checkbox" name={{openName day}} checked>{{name day}}</label>
-					{{else}}
-						<label class="dayOpenCheck"><input type="checkbox" name={{openName day}}>{{name day}}</label>
-					{{/if}}
-				{{/each}}
-			</fieldset>
+				<!-- days open -->
+				<fieldset>
+					<legend>{{_ "Open_days_of_the_week"}}</legend>
+					{{#each day in days}}
+						{{#if open day}}
+							<label class="dayOpenCheck"><input type="checkbox" name={{openName day}} checked>{{name day}}</label>
+						{{else}}
+							<label class="dayOpenCheck"><input type="checkbox" name={{openName day}}>{{name day}}</label>
+						{{/if}}
+					{{/each}}
+				</fieldset>
 
-			<!-- times -->
-			<fieldset>
-				<legend>{{_ "Hours"}}</legend>
-				{{#each day in days}}
-					<div class="input-line">
-						<h1><strong>{{name day}}</strong></h1>
-						<table style="width:100%;">
-							<tr>
-								<td>{{_ "Open"}}:</td>
-								<td>{{_ "Close"}}:</td>
-							</tr>
-							<tr>
-								<td>
-									<div style="margin-right:30px">
-										<input type="time" class="preview-settings" name={{startName day}} id={{startName day}}  value={{start day}} style="width=100px;">
-									</div>
-								</td>
-								<td>
-									<div style="margin-right:30px">
-										<input type="time" class="preview-settings" name={{finishName day}} id={{finishName day}} value={{finish day}} style="width=100px;">
-									</div>
-								</td>
-							</tr>
-						</table>
-					</div>
-				{{/each}}
-			</fieldset>
+				<!-- times -->
+				<fieldset>
+					<legend>{{_ "Hours"}}</legend>
+					{{#each day in days}}
+						<div class="input-line">
+							<h1><strong>{{name day}}</strong></h1>
+							<table style="width:100%;">
+								<tr>
+									<td>{{_ "Open"}}:</td>
+									<td>{{_ "Close"}}:</td>
+								</tr>
+								<tr>
+									<td>
+										<div style="margin-right:30px">
+											<input type="time" class="preview-settings" name={{startName day}} id={{startName day}}  value={{start day}} style="width=100px;">
+										</div>
+									</td>
+									<td>
+										<div style="margin-right:30px">
+											<input type="time" class="preview-settings" name={{finishName day}} id={{finishName day}} value={{finish day}} style="width=100px;">
+										</div>
+									</td>
+								</tr>
+							</table>
+						</div>
+					{{/each}}
+				</fieldset>
 
 
-			<div class="submit">
-				<button class="button"><i class="icon-floppy"></i>{{_ "Save"}}</button>
-			</div>
-		</form>
-	</div>
+				<div class="submit">
+					<button class="button"><i class="icon-floppy"></i>{{_ "Save"}}</button>
+				</div>
+			</form>
+		</div>
+	{{/requiresPermission}}
 </template>
