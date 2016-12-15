@@ -91,7 +91,8 @@ class AmqpConnection
 
 	onUpdateMessage: (statuses) =>
 		for status in statuses
-			@callback status.user, status['status_webchat_policy']
+			resources = (r for r in status['resources'] when r.type == 'webchat')
+			@callback status.user, status['status_webchat_policy'], status, resources
 
 
 class PresenceManager
@@ -110,13 +111,13 @@ class PresenceManager
 	constructor: (presenceClient) ->
 		@presenceClient = presenceClient
 
-	setPresence: (username, status) =>
+	setPresence: (username, status, resources) =>
 		user = RocketChat.models.Users.findOneByUsername username
 		if not user
 			logger.warn "no such user: #{username}"
 			return
 		mapped_status = @presmapper[status] or @default_status
-		if user.statusConnection == "offline" and mapped_status != "offline"
+		if user.statusConnection == "offline" and mapped_status != "offline" and resources.length > 0
 			# this user is not connected, publish back his status
 			# (maybe the client disconnected while the presence server was
 			# down)
