@@ -258,52 +258,48 @@ blockquote {
 	-webkit-overflow-scrolling: touch;
 }
 
-.rocket-form {
-	max-width: 620px;
-	width: 90%;
-	legend {
-		margin-bottom: 23px;
-		position: relative;
-		width: 100%;
-		display: block;
-		h3 {
-			margin-bottom: 5px !important;
-		}
-		&:after {
-			content: " ";
-			height: 1px;
-			display: block;
-			position: absolute;
-			width: 100%;
-			bottom: -10px;
-			left: 0;
-		}
-	}
-	fieldset {
-		display: block;
-		margin-bottom: 40px;
-		small {
-			font-size: 11px;
-		}
-	}
-	.logoutOthers {
-		text-align: right;
-	}
-	.submit {
-		margin-top: 20px;
-		text-align: right;
-	}
-	&.request-password {
-		margin: 0 auto;
-		fieldset {
-			margin-top: 20px;
-			label {
+.page-container {
+	.content {
+		.rocket-form {
+			max-width: 620px;
+			width: 90%;
+			fieldset {
 				display: block;
-				margin-top: 20px;
+				margin: 1em 0 1.5em 0;
+				small {
+					font-size: 11px;
+				}
 			}
-		}
-		.submit {
-			text-align: center;
+			legend {
+				margin: 12px 0;
+				position: relative;
+				width: 100%;
+				display: block;
+				font-weight: bold;
+				h3 {
+					margin-bottom: 5px !important;
+				}
+			}
+			.logoutOthers {
+				text-align: right;
+			}
+			.submit {
+				margin-top: 20px;
+				text-align: right;
+			}
+			&.request-password {
+				margin: 0 auto;
+				fieldset {
+					margin-top: 20px;
+					label {
+						display: block;
+						margin-top: 20px;
+					}
+				}
+				.submit {
+					text-align: center;
+				}
+			}
 		}
 	}
 }
