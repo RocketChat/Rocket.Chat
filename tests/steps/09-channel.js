@@ -58,8 +58,10 @@ describe('channel usage', ()=> {
 			});
 
 			after(()=> {
-				flexTab.dismissToast();
-				flexTab.toastAlert.waitForVisible(5000, true);
+				if (flexTab.toastAlert.isVisible()) {
+					flexTab.dismissToast();
+					flexTab.toastAlert.waitForVisible(5000, true);
+				}
 				flexTab.channelTab.waitForVisible(5000);
 				flexTab.channelTab.click();
 			});
@@ -97,8 +99,10 @@ describe('channel usage', ()=> {
 			});
 
 			after(()=> {
-				flexTab.dismissToast();
-				flexTab.toastAlert.waitForVisible(5000, true);
+				if (flexTab.toastAlert.isVisible()) {
+					flexTab.dismissToast();
+					flexTab.toastAlert.waitForVisible(5000, true);
+				}
 				flexTab.channelTab.waitForVisible();
 				flexTab.channelTab.click();
 			});
@@ -129,8 +133,10 @@ describe('channel usage', ()=> {
 			});
 
 			after(()=> {
-				flexTab.dismissToast();
-				flexTab.toastAlert.waitForVisible(5000, true);
+				if (flexTab.toastAlert.isVisible()) {
+					flexTab.dismissToast();
+					flexTab.toastAlert.waitForVisible(5000, true);
+				}
 				flexTab.channelTab.waitForVisible();
 				flexTab.channelTab.click();
 			});
@@ -171,10 +177,12 @@ describe('channel usage', ()=> {
 				flexTab.setUserOwner(targetUser);
 			});
 
-			it('dismiss the toast', ()=> {
-				flexTab.dismissToast();
-				flexTab.toastAlert.waitForVisible(5000, true);
-			});
+			if (flexTab.toastAlert.isVisible()) {
+				it('dismiss the toast', ()=> {
+					flexTab.dismissToast();
+					flexTab.toastAlert.waitForVisible(5000, true);
+				});
+			}
 
 			it('the last message should be a subscription role added', ()=> {
 				mainContent.lastMessageRoleAdded.isVisible().should.be.true;
