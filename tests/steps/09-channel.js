@@ -64,6 +64,7 @@ describe('channel usage', ()=> {
 				}
 				flexTab.channelTab.waitForVisible(5000);
 				flexTab.channelTab.click();
+				browser.pause(400);
 			});
 
 			it('should show the old name', ()=> {
