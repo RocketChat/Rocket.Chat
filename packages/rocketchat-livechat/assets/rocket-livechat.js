@@ -42,8 +42,10 @@
 		toggleWindow: function(/*forceClose*/) {
 			if (widget.dataset.state === 'closed') {
 				openWidget();
+				callHook('widgetOpened');
 			} else {
 				closeWidget();
+				callHook('widgetClosed');
 			}
 		},
 		openPopout: function() {
