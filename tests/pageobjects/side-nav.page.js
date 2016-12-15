@@ -65,7 +65,7 @@ class SideNav extends Page {
 		}
 		browser.pause(200);
 		this.saveChannelBtn.click();
-		browser.pause(1000);
+		browser.pause(300);
 		browser.waitForExist('[title="'+channelName+'"]', 1000);
 		this.channelType.waitForVisible(500, true);
 	}
