@@ -59,7 +59,7 @@ assets =
 			height: 192
 	'favicon_512':
 		label: 'android-chrome 512x512 (png)'
-		defaultUrl: 'images/logo/android-chrome-512x512.png'
+		defaultUrl: 'images/logo/512x512.png'
 		constraints:
 			type: 'image'
 			extensions: ['png']
