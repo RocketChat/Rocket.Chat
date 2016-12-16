@@ -74,7 +74,6 @@ class FlexTab extends Page {
 
 	dismissToast() {
 		this.toastAlert.click();
-		browser.pause(4000);
 	}
 
 	archiveChannel() {
@@ -96,7 +95,6 @@ class FlexTab extends Page {
 		const userEl = browser.element('.flex-tab button[title="'+user+'"]');
 		userEl.waitForVisible();
 		userEl.click();
-		browser.pause(300);
 		this.removeUserBtn.click();
 	}
 
@@ -104,7 +102,6 @@ class FlexTab extends Page {
 		const userEl = browser.element('.flex-tab button[title="'+user+'"]');
 		userEl.waitForVisible();
 		userEl.click();
-		browser.pause(300);
 		this.setOwnerBtn.waitForVisible(5000);
 		this.setOwnerBtn.click();
 		this.viewAllBtn.click();
@@ -112,18 +109,23 @@ class FlexTab extends Page {
 
 	setUserModerator(user) {
 		const userEl = browser.element('.flex-tab button[title="'+user+'"]');
-		userEl.waitForVisible();
-		userEl.click();
-		browser.pause(300);
-		this.setModeratorBtn.click();
-		this.viewAllBtn.click();
+		if (!userEl.isVisible() && this.showAll) {
+			this.setModeratorBtn.click();
+			this.viewAllBtn.click();
+		} else {
+			userEl.waitForVisible(5000);
+			userEl.click();
+			this.setModeratorBtn.waitForVisible(5000);
+			this.setModeratorBtn.click();
+			this.viewAllBtn.click();
+		}
 	}
 
 	muteUser(user) {
 		const userEl = browser.element('.flex-tab button[title="'+user+'"]');
 		userEl.waitForVisible();
 		userEl.click();
-		browser.pause(300);
+		this.muteUserBtn.waitForVisible(5000);
 		this.muteUserBtn.click();
 	}
 }

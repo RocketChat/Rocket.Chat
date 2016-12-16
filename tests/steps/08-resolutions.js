@@ -10,7 +10,6 @@ import {checkIfUserIsValid} from '../test-data/checks';
 describe.skip('resolutions tests', ()=> {
 	describe('mobile render', ()=> {
 		before(()=> {
-			browser.pause(1000);
 			checkIfUserIsValid(username, email, password);
 			sideNav.getChannelFromList('general').waitForExist(5000);
 			sideNav.openChannel('general');
@@ -37,7 +36,6 @@ describe.skip('resolutions tests', ()=> {
 			});
 
 			it('should open de sidenav', () => {
-				browser.pause(1000);
 				mainContent.mainContent.getLocation().should.not.deep.equal({x:0, y:0});
 			});
 
@@ -46,19 +44,16 @@ describe.skip('resolutions tests', ()=> {
 			});
 
 			it('should close de sidenav', () => {
-				browser.pause(1000);
 				mainContent.mainContent.getLocation().should.deep.equal({x:0, y:0});
 			});
 
 			it('press the navbar button', () => {
 				sideNav.sideNavBtn.click();
-				browser.pause(500);
 			});
 
 			it('opens the user preferences screen', () => {
 				sideNav.accountBoxUserName.waitForVisible();
 				sideNav.accountBoxUserName.click();
-				browser.pause(500);
 				sideNav.account.waitForVisible();
 				sideNav.account.click();
 			});
@@ -69,7 +64,6 @@ describe.skip('resolutions tests', ()=> {
 			});
 
 			it('should close de sidenav', () => {
-				browser.pause(1000);
 				mainContent.mainContent.getLocation().should.deep.equal({x:0, y:0});
 			});
 
@@ -83,7 +77,6 @@ describe.skip('resolutions tests', ()=> {
 			});
 
 			it('should close de sidenav', () => {
-				browser.pause(1000);
 				mainContent.mainContent.getLocation().should.deep.equal({x:0, y:0});
 			});
 
@@ -97,7 +90,6 @@ describe.skip('resolutions tests', ()=> {
 			});
 
 			it('should close de sidenav', () => {
-				browser.pause(1000);
 				mainContent.mainContent.getLocation().should.deep.equal({x:0, y:0});
 			});
 
@@ -106,7 +98,6 @@ describe.skip('resolutions tests', ()=> {
 			});
 
 			it('close the preferences menu', () => {
-				browser.pause(500);
 				sideNav.preferencesClose.click();
 			});
 		});
