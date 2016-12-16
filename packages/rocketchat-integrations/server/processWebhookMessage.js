@@ -1,11 +1,11 @@
-function retrieveRoomInfo({ userId, channel, ignoreEmpty=false }) {
+function retrieveRoomInfo({ currentUserId, channel, ignoreEmpty=false }) {
 	const room = RocketChat.models.Rooms.findOneByIdOrName(channel);
 	if (!_.isObject(room) && !ignoreEmpty) {
 		throw new Meteor.Error('invalid-channel');
 	}
 
 	if (room && room.t === 'c') {
-		Meteor.runAsUser(userId, function() {
+		Meteor.runAsUser(currentUserId, function() {
 			return Meteor.call('joinRoom', room._id);
 		});
 	}
@@ -13,25 +13,26 @@ function retrieveRoomInfo({ userId, channel, ignoreEmpty=false }) {
 	return room;
 }
 
-function retrieveDirectMessageInfo({ userId, channel }) {
-	const roomUser = RocketChat.models.Users.findOne({
-		$or: [
-			{
-				_id: channel
-			}, {
-				username: channel
-			}
-		]
-	}) || {};
+function retrieveDirectMessageInfo({ currentUserId, channel, findByUserIdOnly=false }) {
+	let roomUser = undefined;
 
-	const rid = [userId, roomUser._id].sort().join('');
-	let room = RocketChat.models.Rooms.findOneById({$in: [rid, channel]});
-	if (!_.isObject(roomUser) && !_.isObject(room)) {
+	if (findByUserIdOnly) {
+		roomUser = RocketChat.models.Users.findOneById(channel);
+	} else {
+		roomUser = RocketChat.models.Users.findOne({
+			$or: [{ _id: channel }, { username: channel }]
+		});
+	}
+
+	if (!_.isObject(roomUser)) {
 		throw new Meteor.Error('invalid-channel');
 	}
 
+	const rid = [currentUserId, roomUser._id].sort().join('');
+	let room = RocketChat.models.Rooms.findOneById({ $in: [rid, channel] });
+
 	if (!room) {
-		Meteor.runAsUser(userId, function() {
+		Meteor.runAsUser(currentUserId, function() {
 			Meteor.call('createDirectMessage', roomUser.username);
 			room = RocketChat.models.Rooms.findOneById(rid);
 		});
@@ -64,20 +65,20 @@ this.processWebhookMessage = function(messageObj, user, defaultValues) {
 
 		switch (channelType) {
 			case '#':
-				room = retrieveRoomInfo({ userId: user._id, channel });
+				room = retrieveRoomInfo({ currentUserId: user._id, channel });
 				break;
 			case '@':
-				room = retrieveDirectMessageInfo({ userId: user._id, channel });
+				room = retrieveDirectMessageInfo({ currentUserId: user._id, channel });
 				break;
 			default:
 				//Try to find the room by id or name if they didn't include the prefix.
-				room = retrieveRoomInfo({ userId: user._id, channel: channelType + channel, ignoreEmpty: true });
+				room = retrieveRoomInfo({ currentUserId: user._id, channel: channelType + channel, ignoreEmpty: true });
 				if (room) {
 					break;
 				}
 
 				//We didn't get a room, let's try finding direct messages
-				room = retrieveDirectMessageInfo({ userId: user._id, channel: channelType + channel });
+				room = retrieveDirectMessageInfo({ currentUserId: user._id, channel: channelType + channel, findByUserIdOnly: true });
 				if (room) {
 					break;
 				}
