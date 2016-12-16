@@ -40,7 +40,6 @@ export function checkIfUserIsValid(username, email, password) {
 		console.log('	Wrong logged user. Changing user...');
 		sideNav.accountBoxUserName.waitForVisible(5000);
 		sideNav.accountBoxUserName.click();
-		browser.pause(200);
 		sideNav.logout.waitForVisible(5000);
 		sideNav.logout.click();
 

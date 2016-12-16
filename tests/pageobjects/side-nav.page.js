@@ -43,6 +43,9 @@ class SideNav extends Page {
 	openChannel(channelName) {
 		browser.click('.rooms-list > .wrapper > ul [title="'+channelName+'"]');
 		this.messageInput.waitForExist(5000);
+		browser.waitUntil(function() {
+			return browser.getText('.room-title') === channelName;
+		}, 5000);
 	}
 
 	getChannelFromList(channelName) {
@@ -50,6 +53,7 @@ class SideNav extends Page {
 	}
 
 	createChannel(channelName, isPrivate, isReadOnly) {
+		this.newChannelBtn.waitForVisible(10000);
 		this.newChannelBtn.click();
 		this.channelType.waitForVisible(10000);
 		this.channelName.setValue(channelName);
@@ -61,6 +65,7 @@ class SideNav extends Page {
 		}
 		browser.pause(200);
 		this.saveChannelBtn.click();
+		browser.pause(300);
 		browser.waitForExist('[title="'+channelName+'"]', 1000);
 		this.channelType.waitForVisible(500, true);
 	}
@@ -81,13 +86,13 @@ class SideNav extends Page {
 	}
 
 	startDirectMessage(user) {
+		this.newDirectMessageBtn.waitForVisible(3000);
 		this.newDirectMessageBtn.click();
-		browser.pause(1000);
 		this.directMessageTarget.waitForVisible(3000);
 		this.directMessageTarget.setValue(user);
 		browser.waitForVisible('.-autocomplete-item', 3000);
-		browser.pause(500);
 		browser.click('.-autocomplete-item');
+		browser.pause(200);
 		this.saveDirectMessageBtn.click();
 		browser.waitForExist('[title="'+user+'"]');
 	}
