@@ -1,5 +1,47 @@
+function retrieveRoomInfo({ userId, channel, ignoreEmpty=false }) {
+	const room = RocketChat.models.Rooms.findOneByIdOrName(channel);
+	if (!_.isObject(room) && !ignoreEmpty) {
+		throw new Meteor.Error('invalid-channel');
+	}
+
+	if (room && room.t === 'c') {
+		Meteor.runAsUser(userId, function() {
+			return Meteor.call('joinRoom', room._id);
+		});
+	}
+
+	return room;
+}
+
+function retrieveDirectMessageInfo({ userId, channel }) {
+	const roomUser = RocketChat.models.Users.findOne({
+		$or: [
+			{
+				_id: channel
+			}, {
+				username: channel
+			}
+		]
+	}) || {};
+
+	const rid = [userId, roomUser._id].sort().join('');
+	let room = RocketChat.models.Rooms.findOneById({$in: [rid, channel]});
+	if (!_.isObject(roomUser) && !_.isObject(room)) {
+		throw new Meteor.Error('invalid-channel');
+	}
+
+	if (!room) {
+		Meteor.runAsUser(userId, function() {
+			Meteor.call('createDirectMessage', roomUser.username);
+			room = RocketChat.models.Rooms.findOneById(rid);
+		});
+	}
+
+	return room;
+}
+
 this.processWebhookMessage = function(messageObj, user, defaultValues) {
-	var attachment, channel, channels, channelType, i, len, message, ref, rid, room, roomUser, ret;
+	var attachment, channel, channels, channelType, i, len, message, ref, room, ret;
 	ret = [];
 
 	if (!defaultValues) {
@@ -11,7 +53,7 @@ this.processWebhookMessage = function(messageObj, user, defaultValues) {
 		};
 	}
 
-	channel = messageObj.channel || defaultValues.channel;
+	channel = messageObj.channel || messageObj.roomId || defaultValues.channel;
 
 	channels = [].concat(channel);
 
@@ -22,41 +64,26 @@ this.processWebhookMessage = function(messageObj, user, defaultValues) {
 
 		switch (channelType) {
 			case '#':
-				room = RocketChat.models.Rooms.findOneByIdOrName(channel);
-				if (!_.isObject(room)) {
-					throw new Meteor.Error('invalid-channel');
-				}
-				rid = room._id;
-				if (room.t === 'c') {
-					Meteor.runAsUser(user._id, function() {
-						return Meteor.call('joinRoom', room._id);
-					});
-				}
+				room = retrieveRoomInfo({ userId: user._id, channel });
 				break;
 			case '@':
-				roomUser = RocketChat.models.Users.findOne({
-					$or: [
-						{
-							_id: channel
-						}, {
-							username: channel
-						}
-					]
-				}) || {};
-				rid = [user._id, roomUser._id].sort().join('');
-				room = RocketChat.models.Rooms.findOneById({$in: [rid, channel]});
-				if (!_.isObject(roomUser) && !_.isObject(room)) {
-					throw new Meteor.Error('invalid-channel');
-				}
-				if (!room) {
-					Meteor.runAsUser(user._id, function() {
-						Meteor.call('createDirectMessage', roomUser.username);
-						room = RocketChat.models.Rooms.findOneById(rid);
-					});
-				}
+				room = retrieveDirectMessageInfo({ userId: user._id, channel });
 				break;
 			default:
-				throw new Meteor.Error('invalid-channel-type');
+				//Try to find the room by id or name if they didn't include the prefix.
+				room = retrieveRoomInfo({ userId: user._id, channel: channelType + channel, ignoreEmpty: true });
+				if (room) {
+					break;
+				}
+
+				//We didn't get a room, let's try finding direct messages
+				room = retrieveDirectMessageInfo({ userId: user._id, channel: channelType + channel });
+				if (room) {
+					break;
+				}
+
+				//No room, so throw an error
+				throw new Meteor.Error('invalid-channel');
 		}
 
 		if (messageObj.attachments && !_.isArray(messageObj.attachments)) {
