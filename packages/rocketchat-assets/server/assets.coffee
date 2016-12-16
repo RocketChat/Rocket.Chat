@@ -49,15 +49,7 @@ assets =
 			extensions: ['png']
 			width: 32
 			height: 32
-	'android_512':
-		label: 'android-chrome 512x512 (png)'
-		defaultUrl: 'images/logo/android-chrome-512x512.png'
-		constraints:
-			type: 'image'
-			extensions: ['png']
-			width: 512
-			height: 512
-	'android_192':
+	'favicon_192':
 		label: 'android-chrome 192x192 (png)'
 		defaultUrl: 'images/logo/android-chrome-192x192.png'
 		constraints:
@@ -65,6 +57,14 @@ assets =
 			extensions: ['png']
 			width: 192
 			height: 192
+	'favicon_512':
+		label: 'android-chrome 512x512 (png)'
+		defaultUrl: 'images/logo/android-chrome-512x512.png'
+		constraints:
+			type: 'image'
+			extensions: ['png']
+			width: 512
+			height: 512
 	'touchicon_180':
 		label: 'apple-touch-icon 180x180 (png)'
 		defaultUrl: 'images/logo/apple-touch-icon.png'
