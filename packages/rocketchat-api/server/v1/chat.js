@@ -2,11 +2,11 @@
 RocketChat.API.v1.addRoute('chat.delete', { authRequired: true }, {
 	post: function() {
 		try {
-			check(this.bodyParams, {
+			check(this.bodyParams, Match.ObjectIncluding({
 				msgId: String,
 				roomId: String,
 				asUser: Match.Maybe(Boolean)
-			});
+			}));
 
 			const msg = RocketChat.models.Messages.findOneById(this.bodyParams.msgId, { fields: { u: 1, rid: 1 }});
 
@@ -35,14 +35,6 @@ RocketChat.API.v1.addRoute('chat.delete', { authRequired: true }, {
 RocketChat.API.v1.addRoute('chat.postMessage', { authRequired: true }, {
 	post: function() {
 		try {
-			if (!this.bodyParams.attachments) {
-				check(this.bodyParams, {
-					channel: String,
-					text: String
-				});
-			}
-
-			//TODO: Completely rewrite this? Seems too "magical"
 			const messageReturn = processWebhookMessage(this.bodyParams, this.user)[0];
 
 			if (!messageReturn) {
