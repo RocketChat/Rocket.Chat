@@ -109,7 +109,7 @@ class FlexTab extends Page {
 
 	setUserModerator(user) {
 		const userEl = browser.element('.flex-tab button[title="'+user+'"]');
-		if (!userEl.isVisible() && this.showAll) {
+		if (!userEl.isVisible() && this.showAll.isVisible()) {
 			this.setModeratorBtn.click();
 			this.viewAllBtn.click();
 		} else {
@@ -123,10 +123,15 @@ class FlexTab extends Page {
 
 	muteUser(user) {
 		const userEl = browser.element('.flex-tab button[title="'+user+'"]');
-		userEl.waitForVisible();
-		userEl.click();
-		this.muteUserBtn.waitForVisible(5000);
-		this.muteUserBtn.click();
+		if (!userEl.isVisible() && this.showAll.isVisible()) {
+			this.muteUserBtn.waitForVisible(5000);
+			this.muteUserBtn.click();
+		} else {
+			userEl.waitForVisible();
+			userEl.click();
+			this.muteUserBtn.waitForVisible(5000);
+			this.muteUserBtn.click();
+		}
 	}
 }
 
