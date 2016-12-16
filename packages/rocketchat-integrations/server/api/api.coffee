@@ -50,7 +50,10 @@ Api = new Restivus
 	apiPath: 'hooks/'
 	auth:
 		user: ->
-			if @bodyParams?.payload?
+			payloadKeys = Object.keys @bodyParams
+			payloadIsWrapped = @bodyParams?.payload? and payloadKeys.length == 1
+
+			if payloadIsWrapped and @request.headers['content-type'] is 'application/x-www-form-urlencoded'
 				@bodyParams = JSON.parse @bodyParams.payload
 
 			@integration = RocketChat.models.Integrations.findOne

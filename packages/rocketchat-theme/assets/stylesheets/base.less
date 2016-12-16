@@ -316,10 +316,14 @@ blockquote {
 		margin-bottom: 0;
 	}
 	&.search {
-		.icon-spin {
+		i {
 			position: absolute;
-			right: 5px;
 			top: 10px;
+			left: 7px;
+		}
+		.icon-spin {
+			right: 5px;
+			left: auto;
 			font-weight: 400;
 			-webkit-animation-name: spin;
 			-webkit-animation-duration: 2000ms;
@@ -337,15 +341,6 @@ blockquote {
 			animation-duration: 2000ms;
 			animation-iteration-count: infinite;
 			animation-timing-function: linear;
-		}
-		.icon-search,
-		.icon-right-open-small,
-		.icon-sort-alt-up,
-		.icon-lock,
-		.icon-comment {
-			position: absolute;
-			left: 2px;
-			top: 10px;
 		}
 		input {
 			padding-left: 30px;
@@ -572,7 +567,7 @@ form.inline {
 		font-size: 14px;
 		padding: 8px 8px;
 	}
-	.loading {
+	.loading-animation {
 		position: relative;
 		min-height: 60px;
 	}
@@ -1073,29 +1068,41 @@ label.required:after {
 			margin-bottom: 0;
 		}
 		label {
-			text-transform: uppercase;
 			font-weight: 400;
 			margin-bottom: 0;
 		}
 		input[type='text'],
 		input[type='password'],
 		select {
-			border-width: 0 0 1px 0;
-			padding: 0 8px;
+			padding: 0 8px 0 30px;
 			box-shadow: 0 0 0;
-			border-radius: 0;
-			-webkit-appearance: none;
-			-moz-appearance: none;
 			appearance: none;
-			-webkit-border-radius: 0px;
-			-moz-border-radius: 0px;
-			border-radius: 0px;
+			border-width: 1px;
+			border-radius: 4px;
 		}
 		.inline-fields {
 			input,
 			label,
 			select {
 				display: inline-block;
+			}
+		}
+		&.toggle {
+			font-size: 0;
+			> span {
+				display: inline-block;
+				width: calc(~"100% - 40px");
+				font-size: 14px;
+				vertical-align: top;
+			}
+			> div {
+				width: 40px;
+				display: inline-block;
+			}
+		}
+		&.no-icon {
+			input {
+				padding: 0 8px;
 			}
 		}
 	}
@@ -1227,13 +1234,9 @@ label.required:after {
 		}
 	}
 	.search-form {
-		.search {
-			padding-left: 25px;
-		}
 		> div {
 			position: relative;
 		}
-		margin-right: 20px;
 	}
 	h3 {
 		&:extend(.small-title);
@@ -1478,7 +1481,6 @@ label.required:after {
 		text-align: right;
 	}
 }
-
 
 .spotlight {
 	position: fixed;
@@ -2027,6 +2029,7 @@ label.required:after {
 		min-height: @footer-min-height;
 	}
 	.message-form {
+		margin-bottom: 18px;
 		> .message-input {
 			border-width: 1px;
 			overflow: hidden;
@@ -2096,7 +2099,7 @@ label.required:after {
 		}
 		.formatting-tips {
 			float: right;
-			height: 23px;
+			height: 25px;
 			font-size: 11px;
 			padding: 3px;
 			display: -webkit-flex;
@@ -2137,7 +2140,9 @@ label.required:after {
 		}
 		.stream-info {
 			font-size: 12px;
+			height: 25px;
 			padding: 3px;
+			float: left;
 		}
 		.editing-commands {
 			display: none;
@@ -2178,27 +2183,6 @@ label.required:after {
 	&.admin {
 		.message:hover:not(.system) .message-action {
 			display: inline-block;
-		}
-	}
-}
-
-.message-popup-items {
-	.loading {
-		display: none;
-	}
-}
-
-.message-popup-results {
-	&.notready {
-		.message-popup-items {
-			position: relative;
-			height: 100px;
-			.loading {
-				display: flex;
-			}
-		}
-		.popup-item {
-			display: none;
 		}
 	}
 }
@@ -3544,7 +3528,7 @@ body:not(.is-cordova) {
 	max-width: 520px;
 	padding: 20px;
 	margin: 20px auto;
-	box-shadow: 0 1px 1px 0 rgba(0,0,0,0.2),0 2px 10px 0 rgba(0,0,0,0.16);
+	box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.2), 0 2px 10px 0 rgba(0, 0, 0, 0.16);
 	border-radius: 4px;
 	position: relative;
 	z-index: 1;
@@ -3581,7 +3565,7 @@ body:not(.is-cordova) {
 	.register,
 	.forgot-password,
 	.back-to-login {
- 		margin-top: 12px;
+		margin-top: 12px;
 	}
 	.input-text {
 		margin: 0 0 14px 0;
@@ -3767,10 +3751,10 @@ body:not(.is-cordova) {
 
 .mention-link {
 	border-radius: 4px;
-	padding: 0px 4px 2px 4px;
 	&.mention-link-me,
 	&.mention-link-all {
 		font-weight: bold;
+		padding: 0 4px 2px;
 	}
 }
 
@@ -3996,7 +3980,6 @@ body:not(.is-cordova) {
 // 		margin: 0 51px 0 270px;
 // 	}
 // }
-
 .is-cordova {
 	.flex-tab {
 		.control {
@@ -4487,5 +4470,12 @@ a + br.only-after-a {
 	}
 }
 
-#swipebox-slider .slide .swipebox-inline-container, #swipebox-slider .slide .swipebox-video-container, #swipebox-slider .slide img {padding: 40px;}
-#swipebox-overlay {background: rgba(13, 13, 13, 0.5);}
+#swipebox-slider .slide .swipebox-inline-container,
+#swipebox-slider .slide .swipebox-video-container,
+#swipebox-slider .slide img {
+	padding: 40px;
+}
+
+#swipebox-overlay {
+	background: rgba(13, 13, 13, 0.5);
+}

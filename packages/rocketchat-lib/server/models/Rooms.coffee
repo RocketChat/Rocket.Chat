@@ -8,8 +8,15 @@ class ModelRooms extends RocketChat.models._Base
 		@tryEnsureIndex { 't': 1 }
 		@tryEnsureIndex { 'u._id': 1 }
 
+		this.cache.ignoreUpdatedFields.push('msgs', 'lm')
+		this.cache.ensureIndex(['t', 'name'], 'unique')
+		this.cache.options = {fields: {usernames: 0}}
+
 	# FIND ONE
 	findOneById: (_id, options) ->
+		if this.useCache
+			return this.cache.findByIndex('_id', _id, options).fetch()
+
 		query =
 			_id: _id
 
@@ -213,6 +220,9 @@ class ModelRooms extends RocketChat.models._Base
 		return @find query, options
 
 	findByTypeAndName: (type, name, options) ->
+		if this.useCache
+			return this.cache.findByIndex('t,name', [type, name], options)
+
 		query =
 			name: name
 			t: type
@@ -549,4 +559,4 @@ class ModelRooms extends RocketChat.models._Base
 
 		return @remove query
 
-RocketChat.models.Rooms = new ModelRooms('room')
+RocketChat.models.Rooms = new ModelRooms('room', true)

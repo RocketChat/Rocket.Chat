@@ -36,5 +36,6 @@ Meteor.publish('livechat:rooms', function(filter = {}, offset = 0, limit = 20) {
 		query['ts'] = { $gt: StartDate, $lt: ToDate };
 	}
 
+	// CACHE: can we stop using publications here?
 	return RocketChat.models.Rooms.findLivechat(query, offset, limit);
 });
