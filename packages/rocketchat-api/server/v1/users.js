@@ -119,7 +119,7 @@ RocketChat.API.v1.addRoute('users.list', { authRequired: true }, {
 		let limit = -1;
 
 		if (typeof this.queryParams.limit !== 'undefined') {
-			limit = parseInt(limit);
+			limit = parseInt(this.queryParams.limit);
 		}
 
 		let result = undefined;
