@@ -167,6 +167,42 @@ RocketChat.API.v1.addRoute('channels.create', { authRequired: true }, {
 	}
 });
 
+RocketChat.API.v1.addRoute('channels.getIntegrations', { authRequired: true }, {
+	get: function() {
+		if (!RocketChat.authz.hasPermission(this.userId, 'manage-integrations')) {
+			return RocketChat.API.v1.unauthorized();
+		}
+
+		const findResult = findChannelById(this.queryParams.roomId);
+
+		if (findResult.statusCode) {
+			return findResult;
+		}
+
+		let includeAllPublicChannels = true;
+		if (typeof this.queryParams.includeAllPublicChannels !== 'undefined') {
+			includeAllPublicChannels = this.queryParams.includeAllPublicChannels === 'true';
+		}
+
+		const channelsToSearch = [`#${findResult.name}`];
+		if (includeAllPublicChannels) {
+			channelsToSearch.push('all_public_channels');
+		}
+
+		try {
+			return RocketChat.API.v1.success({
+				integrations: RocketChat.models.Integrations.find({
+					channel: {
+						$in: channelsToSearch
+					}
+				}).fetch()
+			});
+		} catch (e) {
+			return RocketChat.API.v1.failure(`${e.name}: ${e.message}`);
+		}
+	}
+});
+
 RocketChat.API.v1.addRoute('channels.history', { authRequired: true }, {
 	get: function() {
 		const findResult = findChannelById(this.queryParams.roomId);

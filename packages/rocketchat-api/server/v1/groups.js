@@ -94,6 +94,43 @@ RocketChat.API.v1.addRoute('groups.create', { authRequired: true }, {
 	}
 });
 
+RocketChat.API.v1.addRoute('groups.getIntegrations', { authRequired: true }, {
+	get: function() {
+		if (!RocketChat.authz.hasPermission(this.userId, 'manage-integrations')) {
+			return RocketChat.API.v1.unauthorized();
+		}
+
+		const findResult = findPrivateGroupById(this.queryParams.roomId, this.userId);
+
+		//The find method returns either with the group or the failure
+		if (findResult.statusCode) {
+			return findResult;
+		}
+
+		let includeAllPrivateGroups = true;
+		if (typeof this.queryParams.includeAllPrivateGroups !== 'undefined') {
+			includeAllPrivateGroups = this.queryParams.includeAllPrivateGroups === 'true';
+		}
+
+		const channelsToSearch = [`#${findResult.name}`];
+		if (includeAllPrivateGroups) {
+			channelsToSearch.push('all_private_groups');
+		}
+
+		try {
+			return RocketChat.API.v1.success({
+				integrations: RocketChat.models.Integrations.find({
+					channel: {
+						$in: channelsToSearch
+					}
+				}).fetch()
+			});
+		} catch (e) {
+			return RocketChat.API.v1.failure(`${e.name}: ${e.message}`);
+		}
+	}
+});
+
 RocketChat.API.v1.addRoute('groups.history', { authRequired: true }, {
 	get: function() {
 		const findResult = findPrivateGroupById(this.queryParams.roomId, this.userId);
