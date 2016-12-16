@@ -64,7 +64,9 @@ if (process.env.DISABLE_ANIMATION) {
 }
 
 RocketChat.settings.get('theme-color-primary-background-color', function(key, value = '#04436a') {
-	Inject.rawHead(key, `<style>body { background-color: ${value};}</style>`);
+	Inject.rawHead(key, `<style>body { background-color: ${value};}</style>` +
+						`<meta name="msapplication-TileColor" content="${value}" />` +
+						`<meta name="theme-color" content="${value}" />`);
 });
 
 RocketChat.settings.get('Accounts_ForgetUserSessionOnWindowClose', function(key, value) {
