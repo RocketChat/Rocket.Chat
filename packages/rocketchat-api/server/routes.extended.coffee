@@ -1,32 +1,3 @@
-# Rocket.Chat Extended API Methods: Provide methods for working with 
-
-
-#* Room API: Provides a unified interface for working with channels, groups, and direct messages *#
-
-
-# Retrieve information for room. Provides lookup by room name (`name`) or room ID (`roomId`)
-RocketChat.API.v1.addRoute 'room.info', authRequired: true,
-	post: ->
-		
-		if RocketChat.authz.hasPermission(@userId, 'create-p') is false
-			return RocketChat.API.v1.unauthorized()
-
-		try
-			check @bodyParams,
-				roomId: Match.Maybe(String)
-				name: Match.Maybe(String)
-			
-			this.response.setTimeout(1000)
-			room = RocketChat.models.Rooms.findOneById @bodyParams.roomId
-			if !room
-				room = RocketChat.models.Rooms.findOneByName @bodyParams.name
-
-			return { room: room }
-		
-		catch e
-			return RocketChat.API.v1.failure e.name + ': ' + e.message
-
-
 ### Retrieve integrations for a specific room. Requires `manage-integrations role`.
 
 Room name needs to be URL encoded, as the identifiers begin with characters
@@ -36,18 +7,18 @@ that are not URL safe (e.g., '#' for channels and groups and '@' for direct mess
 ###
 RocketChat.API.v1.addRoute 'room/name/:rname/integrations', authRequired: true,
 	get: ->
-		
+
 		if RocketChat.authz.hasPermission(@userId, 'manage-integrations') is false
 			return RocketChat.API.v1.unauthorized()
-		
-		try	
-			this.response.setTimeout(1000)			
+
+		try
+			this.response.setTimeout(1000)
 			return RocketChat.API.v1.success
 				integrations: RocketChat.models.Integrations.find({
 						"channel":decodeURIComponent(@urlParams.rname)
 					}).fetch()
-		
-		catch e 
+
+		catch e
 			return RocketChat.API.v1.failure e.name + ': ' + e.message
 
 
@@ -55,17 +26,17 @@ RocketChat.API.v1.addRoute 'room/name/:rname/integrations', authRequired: true,
 
 ['roomName', 'roomTopic', 'roomDescription', 'roomType', 'readOnly', 'systemMessages', 'default', 'joinCode']
 
-###		
-RocketChat.API.v1.addRoute 'room.update', authRequired: true, 
+###
+RocketChat.API.v1.addRoute 'room.update', authRequired: true,
 	post: ->
-	
+
 		if RocketChat.authz.hasPermission(@userId, 'create-p') is false
 			return RocketChat.API.v1.unauthorized()
 		try
 			this.response.setTimeout (2000)
 			room = RocketChat.models.Rooms.findOneByName @bodyParams.roomName
 			Meteor.runAsUser this.userId, () =>
-			
+
 				if @bodyParams.newName
 					Meteor.call 'saveRoomSettings', room._id, 'roomName', @bodyParams.newName
 				if @bodyParams.roomTopic
@@ -91,7 +62,7 @@ RocketChat.API.v1.addRoute 'room.update', authRequired: true,
 # Add user to a channel/group
 RocketChat.API.v1.addRoute 'room.addUser', authRequired: true,
 	post: ->
-		
+
 		try
 			this.response.setTimeout (1000 * @userId.length)
 			Meteor.runAsUser this.userId, () =>
@@ -112,17 +83,17 @@ RocketChat.API.v1.addRoute 'room.addUser', authRequired: true,
 ###
 RocketChat.API.v1.addRoute 'room.delete', authRequired: true,
 	post: ->
-		
+
 		if RocketChat.authz.hasPermission(@userId, 'delete-p') is false
 			return RocketChat.API.v1.unauthorized()
-		
+
 		try
 			Meteor.runAsUser this.userId, () =>
 				Meteor.call 'eraseRoom', @bodyParams.roomId or @bodyParams.name
 
 		catch e
 			return RocketChat.API.v1.failure e.name + ': ' + e.message
-		
+
 		return RocketChat.API.v1.success
 			room: @bodyParams.roomId or @bodyParams.name
 
@@ -190,18 +161,18 @@ Pagination controlled by the page and items query parameters. Defaults: page=1, 
 
 ###
 RocketChat.API.v1.addRoute 'room/direct.list', authRequired: true,
-	
-	get: ->	
-		
+
+	get: ->
+
 		if RocketChat.authz.hasPermission(@userId, 'create-p') is false
 			return RocketChat.API.v1.unauthorized()
-		
+
 		try
 			this.response.setTimeout (1000)
-			
+
 			rpage = if @queryParams.page then Number(@queryParams.page) else 1
 			ritems = if @queryParams.items then Number(@queryParams.items) else 100
-			
+
 			rooms = RocketChat.models.Rooms.findByType('d', {
 					sort: { msgs:-1 }, skip: (rpage-1)*ritems, limit: ritems
 				}).fetch()
@@ -211,7 +182,7 @@ RocketChat.API.v1.addRoute 'room/direct.list', authRequired: true,
 				page: rpage
 				items: rooms.length
 				total: RocketChat.models.Rooms.findByType('d').count()
-		
+
 		catch e
 			return RocketChat.API.v1.failure e.name + ': ' + e.message
 
@@ -229,10 +200,10 @@ Pagination controlled by the page and items query parameters. Defaults: page=1, 
 ###
 RocketChat.API.v1.addRoute 'integrations.list', authRequired: true,
 	get: ->
-	
+
 		if RocketChat.authz.hasPermission(@userId, 'manage-integrations') is false
 			return RocketChat.API.v1.unauthorized()
-		try 
+		try
 			this.response.setTimeout (1000)
 			rpage = if @queryParams.page then Number(@queryParams.page) else 1
 			ritems = if @queryParams.items then Number(@queryParams.items) else 100
@@ -242,21 +213,21 @@ RocketChat.API.v1.addRoute 'integrations.list', authRequired: true,
 				page: rpage
 				items: integrations.length
 				total: RocketChat.models.Integrations.find().count()
-		
+
 		catch e
 			return RocketChat.API.v1.failure e.name + ': ' + e.message
 
 
 ### Create outgoing webhook. User must have manage-integrations role.
-###		
+###
 RocketChat.API.v1.addRoute 'integrations/outgoingWebhook.create', authRequired: true,
 	post: ->
-	
+
 		if RocketChat.authz.hasPermission(@userId, 'manage-integrations') is false
 			return RocketChat.API.v1.unauthorized()
-					
+
 		try
-			check @bodyParams,				
+			check @bodyParams,
 				name: String
 				enabled: Boolean
 				username: String
@@ -270,7 +241,7 @@ RocketChat.API.v1.addRoute 'integrations/outgoingWebhook.create', authRequired: 
 				script: Match.Maybe(String)
 
 			this.response.setTimeout (1000 * @bodyParams.name.length)
-				
+
 			Meteor.runAsUser this.userId, () =>
 				Meteor.call 'addOutgoingIntegration', @bodyParams
 			return RocketChat.API.v1.success
@@ -282,24 +253,24 @@ RocketChat.API.v1.addRoute 'integrations/outgoingWebhook.create', authRequired: 
 ### Remove outgoing webhook. User must have manage-integrations permissions.
 
 @parama integrationId (str): The ID of the integration to remove.
-###			
+###
 RocketChat.API.v1.addRoute 'integrations/outgoingWebhook.delete', authRequired: true,
 	post: ->
-	
+
 		if RocketChat.authz.hasPermission(@userId, 'manage-integrations') is false
 			return RocketChat.API.v1.unauthorized()
-				
+
 		try
 
 			check @bodyParams,
 				integrationId: String
 
 			this.response.setTimeout(1000)
-			
+
 			Meteor.runAsUser this.userId, () =>
 				Meteor.call 'deleteOutgoingIntegration', @bodyParams.integrationId
 			return RocketChat.API.v1.success
 				body: [integration: @bodyParams.integrationId]
-		
+
 		catch e
 			return RocketChat.API.v1.failure  @bodyParams.integrationId, message: e.name + ' :: ' + e.message
