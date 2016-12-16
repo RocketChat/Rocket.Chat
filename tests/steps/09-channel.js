@@ -23,10 +23,10 @@ describe('channel usage', ()=> {
 
 	describe('Adding a user to the room', () => {
 		before(()=> {
-			if (flexTab.toastAlert.isVisible()) {
+			/*if (flexTab.toastAlert.isVisible()) {
 				flexTab.dismissToast();
 				flexTab.toastAlert.waitForVisible(5000, true);
-			}
+			}*/
 			flexTab.membersTab.waitForVisible();
 			flexTab.membersTab.click();
 		});
