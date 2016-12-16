@@ -563,7 +563,7 @@ form.inline {
 		font-size: 14px;
 		padding: 8px 8px;
 	}
-	.loading {
+	.loading-animation {
 		position: relative;
 		min-height: 60px;
 	}
@@ -1093,7 +1093,7 @@ label.required:after {
 			}
 			> div {
 				width: 40px;
-    			display: inline-block;
+				display: inline-block;
 			}
 		}
 		&.no-icon {
@@ -1477,7 +1477,6 @@ label.required:after {
 		text-align: right;
 	}
 }
-
 
 .spotlight {
 	position: fixed;
@@ -2180,27 +2179,6 @@ label.required:after {
 	&.admin {
 		.message:hover:not(.system) .message-action {
 			display: inline-block;
-		}
-	}
-}
-
-.message-popup-items {
-	.loading {
-		display: none;
-	}
-}
-
-.message-popup-results {
-	&.notready {
-		.message-popup-items {
-			position: relative;
-			height: 100px;
-			.loading {
-				display: flex;
-			}
-		}
-		.popup-item {
-			display: none;
 		}
 	}
 }
@@ -3546,7 +3524,7 @@ body:not(.is-cordova) {
 	max-width: 520px;
 	padding: 20px;
 	margin: 20px auto;
-	box-shadow: 0 1px 1px 0 rgba(0,0,0,0.2),0 2px 10px 0 rgba(0,0,0,0.16);
+	box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.2), 0 2px 10px 0 rgba(0, 0, 0, 0.16);
 	border-radius: 4px;
 	position: relative;
 	z-index: 1;
@@ -3583,7 +3561,7 @@ body:not(.is-cordova) {
 	.register,
 	.forgot-password,
 	.back-to-login {
- 		margin-top: 12px;
+		margin-top: 12px;
 	}
 	.input-text {
 		margin: 0 0 14px 0;
@@ -3998,7 +3976,6 @@ body:not(.is-cordova) {
 // 		margin: 0 51px 0 270px;
 // 	}
 // }
-
 .is-cordova {
 	.flex-tab {
 		.control {
@@ -4489,5 +4466,12 @@ a + br.only-after-a {
 	}
 }
 
-#swipebox-slider .slide .swipebox-inline-container, #swipebox-slider .slide .swipebox-video-container, #swipebox-slider .slide img {padding: 40px;}
-#swipebox-overlay {background: rgba(13, 13, 13, 0.5);}
+#swipebox-slider .slide .swipebox-inline-container,
+#swipebox-slider .slide .swipebox-video-container,
+#swipebox-slider .slide img {
+	padding: 40px;
+}
+
+#swipebox-overlay {
+	background: rgba(13, 13, 13, 0.5);
+}
