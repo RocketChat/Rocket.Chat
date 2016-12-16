@@ -40,7 +40,6 @@ function messagingTest() {
 
 	describe('fileUpload', ()=> {
 		after(() => {
-			browser.pause(3000);
 		});
 		it('send a attachment', () => {
 			mainContent.fileUpload(imgURL);
@@ -80,11 +79,12 @@ function messageActionsTest() {
 		describe('Message Actions Render', ()=> {
 			before(() => {
 				mainContent.openMessageActionMenu();
-				browser.pause(1000);
 			});
 
 			after(() => {
+				browser.pause(100);
 				mainContent.selectAction('close');
+				mainContent.messageActionMenu.waitForVisible(5000, true);
 			});
 
 			it('should show the message action menu', () => {
@@ -177,6 +177,7 @@ function messageActionsTest() {
 				it('delete the message', () => {
 					mainContent.selectAction('delete');
 					mainContent.popupFileConfirmBtn.click();
+					browser.waitForVisible('.sweet-overlay', 3000, true);
 				});
 
 				it('should not show the deleted message', () => {
@@ -188,7 +189,6 @@ function messageActionsTest() {
 				const message = 'Message for quote Tests - ' + Date.now();
 
 				before(() => {
-					browser.pause(2000);
 					mainContent.sendMessage(message);
 					mainContent.openMessageActionMenu();
 				});
@@ -242,13 +242,9 @@ function messageActionsTest() {
 
 describe('Messaging in different channels', () => {
 	before(()=>{
-		browser.pause(3000);
 		checkIfUserIsValid(username, email, password);
 		sideNav.getChannelFromList('general').waitForExist(5000);
 		sideNav.openChannel('general');
-	});
-	after(()=>{
-		browser.pause(1000);
 	});
 
 
