@@ -153,6 +153,7 @@ input:focus {
 			padding-right: 5px;
 
 			svg {
+				cursor: pointer;
 				fill: currentColor;
 				width: 14px;
 				margin: 0 2px;
@@ -160,6 +161,16 @@ input:focus {
 			}
 		}
 	}
+
+	&.popout {
+		border-top-right-radius: 0;
+		border-top-left-radius: 0;
+
+		.title {
+			cursor: default;
+		}
+	}
+
 	.messages {
 		flex: 1 1 100%;
 
