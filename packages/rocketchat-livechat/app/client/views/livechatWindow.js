@@ -41,6 +41,9 @@ Template.livechatWindow.helpers({
 	},
 	videoCalling() {
 		return LivechatVideoCall.isActive();
+	},
+	isOpened() {
+		return Livechat.isWidgetOpened();
 	}
 });
 
