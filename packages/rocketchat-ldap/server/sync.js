@@ -221,8 +221,7 @@ sync = function sync() {
 
 				if (!user) {
 					addLdapUser(ldapUser, username);
-				}
-				else if (user.ldap !== true && RocketChat.settings.get('LDAP_Merge_Existing_Users') === true) {
+				} else if (user.ldap !== true && RocketChat.settings.get('LDAP_Merge_Existing_Users') === true) {
 					syncUserData(user, ldapUser);
 				}
 			});
