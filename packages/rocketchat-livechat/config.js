@@ -184,7 +184,7 @@ Meteor.startup(function() {
 		type: 'boolean',
 		group: 'Livechat',
 		public: true,
-		i18nLabel: 'Office_Hours_Enabled'
+		i18nLabel: 'Office_hours_enabled'
 	});
 
 	RocketChat.settings.add('Livechat_videocall_enabled', false, {

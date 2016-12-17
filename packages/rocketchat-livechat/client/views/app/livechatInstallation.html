@@ -1,8 +1,10 @@
 <template name="livechatInstallation">
-	<p>{{{_ "To_install_RocketChat_Livechat_in_your_website_copy_paste_this_code_above_the_last_body_tag_on_your_site"}}}</p>
+	{{#requiresPermission 'view-livechat-manager'}}
+		<p>{{{_ "To_install_RocketChat_Livechat_in_your_website_copy_paste_this_code_above_the_last_body_tag_on_your_site"}}}</p>
 
-	<div class="livechat-code">
-		<textarea class="clipboard" data-clipboard-target=".livechat-code textarea">{{script}}</textarea>
-		<button class="button clipboard" data-clipboard-target=".livechat-code textarea"><i class="icon-docs"></i>{{_ "Copy_to_clipboard"}}</button>
-	</div>
+		<div class="livechat-code">
+			<textarea class="clipboard" data-clipboard-target=".livechat-code textarea">{{script}}</textarea>
+			<button class="button clipboard" data-clipboard-target=".livechat-code textarea"><i class="icon-docs"></i>{{_ "Copy_to_clipboard"}}</button>
+		</div>
+	{{/requiresPermission}}
 </template>
