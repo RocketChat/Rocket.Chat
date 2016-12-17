@@ -38,11 +38,9 @@ Meteor.methods({
 
 		// update room
 		const room = RocketChat.models.Rooms.findOneById(inquiry.rid);
-		const usernames = room.usernames.concat(agent.username);
 
-		RocketChat.models.Rooms.changeAgentByRoomId(inquiry.rid, usernames, agent);
+		RocketChat.models.Rooms.changeAgentByRoomId(inquiry.rid, agent);
 
-		room.usernames = usernames;
 		room.servedBy = {
 			_id: agent.agentId,
 			username: agent.username
