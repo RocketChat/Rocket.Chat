@@ -29,6 +29,7 @@
 		widget.dataset.state = 'opened';
 		widget.style.height = '300px';
 		callHook('widgetOpened');
+		document.querySelector('.rocketchat-widget iframe').focus();
 	};
 
 	var api = {
