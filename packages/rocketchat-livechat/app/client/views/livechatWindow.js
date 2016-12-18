@@ -120,4 +120,8 @@ Template.livechatWindow.onCreated(function() {
 			Livechat.ready();
 		}
 	});
+
+	$(window).on('focus', () => {
+		$('textarea').focus();
+	});
 });
