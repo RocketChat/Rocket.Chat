@@ -283,8 +283,10 @@ RocketChat.Livechat = {
 			agent = RocketChat.Livechat.getNextAgent(transferData.departmentId);
 		}
 
-		if (agent && agent.agentId !== room.servedBy._id) {
-			room.usernames = _.without(room.usernames, room.servedBy.username).concat(agent.username);
+		const servedBy = room.servedBy;
+
+		if (agent && agent.agentId !== servedBy._id) {
+			room.usernames = _.without(room.usernames, servedBy.username).concat(agent.username);
 
 			RocketChat.models.Rooms.changeAgentByRoomId(room._id, agent);
 
@@ -304,11 +306,11 @@ RocketChat.Livechat = {
 				mobilePushNotifications: 'all',
 				emailNotifications: 'all'
 			};
-			RocketChat.models.Subscriptions.removeByRoomIdAndUserId(room._id, room.servedBy._id);
+			RocketChat.models.Subscriptions.removeByRoomIdAndUserId(room._id, servedBy._id);
 
 			RocketChat.models.Subscriptions.insert(subscriptionData);
 
-			RocketChat.models.Messages.createUserLeaveWithRoomIdAndUser(room._id, { _id: room.servedBy._id, username: room.servedBy.username });
+			RocketChat.models.Messages.createUserLeaveWithRoomIdAndUser(room._id, { _id: servedBy._id, username: servedBy.username });
 			RocketChat.models.Messages.createUserJoinWithRoomIdAndUser(room._id, { _id: agent.agentId, username: agent.username });
 
 			return true;
