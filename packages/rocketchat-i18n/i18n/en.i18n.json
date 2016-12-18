@@ -858,6 +858,7 @@
   "Message_removed": "Message removed",
   "Message_SetNameToAliasEnabled": "Set a user name to alias in message",
   "Message_SetNameToAliasEnabled_Description": "Only if not already set alias. The old messages alias not changed if user has changed the name.",
+  "Message_SetNameAsAliasInDirectMessagesEnabled": "Set the user name as alias in the direct messages",
   "Message_ShowDeletedStatus": "Show Deleted Status",
   "Message_ShowEditedStatus": "Show Edited Status",
   "Message_ShowFormattingTips": "Show Formatting Tips",

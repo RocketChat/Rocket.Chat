@@ -15,6 +15,12 @@ Template.chatRoomItem.helpers
 	name: ->
 		return this.name
 
+	alias: ->
+		return this.alias
+
+	showAlias: ->
+		return this.t == 'd' && RocketChat.settings.get('Message_SetNameAsAliasInDirectMessagesEnabled')
+
 	roomIcon: ->
 		return RocketChat.roomTypes.getIcon this.t
 
