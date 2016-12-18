@@ -192,10 +192,10 @@ input:focus {
 
 			.message {
 				font-size: 12px;
-				padding-left: 40px;
+				padding: 3px 10px 3px 50px;
 				position: relative;
 				line-height: 18px;
-				margin: 12px 10px 0;
+				margin: 3px 0 3px 0;
 				min-height: 36px;
 				&:nth-child(1) {
 					margin-top: 0;
@@ -237,6 +237,9 @@ input:focus {
 				&.own:hover:not(.system) .edit-message {
 					display: inline-block;
 				}
+				&.own {
+					background-color: #f5f5f5;
+				}
 				.delete-message {
 					display: none;
 					cursor: pointer;
@@ -256,8 +259,8 @@ input:focus {
 				}
 				.thumb {
 					position: absolute;
-					left: 0;
-					top: 0;
+					left: 10px;
+					top: 6px;
 					display: block;
 					width: 30px;
 					height: 30px;
