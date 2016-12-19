@@ -68,6 +68,7 @@ class FlexTab extends Page {
 	get toastAlert() { return browser.element('.toast'); }
 
 	confirmPopup() {
+		this.confirmBtn.waitForVisible(5000);
 		this.confirmBtn.click();
 		this.sweetAlertOverlay.waitForVisible(5000, true);
 	}
@@ -123,11 +124,11 @@ class FlexTab extends Page {
 
 	muteUser(user) {
 		const userEl = browser.element('.flex-tab button[title="'+user+'"]');
-		if (!userEl.isVisible() || this.showAll.isVisible()) {
+		if (this.showAll.isVisible()) {
 			this.muteUserBtn.waitForVisible(5000);
 			this.muteUserBtn.click();
 		} else {
-			userEl.waitForVisible();
+			userEl.waitForVisible(5000);
 			userEl.click();
 			this.muteUserBtn.waitForVisible(5000);
 			this.muteUserBtn.click();
