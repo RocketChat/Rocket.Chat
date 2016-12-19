@@ -15,12 +15,7 @@
 }
 
 .gradient(@startColor: #eee, @endColor: white) {
-	background-color: @startColor;
-	background: -webkit-gradient(linear, left top, left bottom, from(@startColor), to(@endColor));
-	background: -webkit-linear-gradient(top, @startColor, @endColor);
-	background: -moz-linear-gradient(top, @startColor, @endColor);
-	background: -ms-linear-gradient(top, @startColor, @endColor);
-	background: -o-linear-gradient(top, @startColor, @endColor);
+	background: linear-gradient(to top, @startColor, @endColor);
 }
 
 .input-shade(@color, @bg) {
@@ -61,6 +56,7 @@
 	animation-name: blink;
 	animation-iteration-count: infinite;
 	animation-direction: alternate;
+
 	@keyframes blink {
 		from {
 			color: @color;
@@ -69,6 +65,7 @@
 			opacity: inherit;
 		}
 	}
+
 	@-webkit-keyframes blink {
 		from {
 			color: @color;
