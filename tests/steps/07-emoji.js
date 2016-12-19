@@ -9,7 +9,6 @@ import {checkIfUserIsValid} from '../test-data/checks';
 
 describe('emoji', ()=> {
 	before(()=>{
-		browser.pause(1000);
 		checkIfUserIsValid(username, email, password);
 		sideNav.getChannelFromList('general').waitForExist(5000);
 		sideNav.openChannel('general');
@@ -82,7 +81,6 @@ describe('emoji', ()=> {
 	describe('usage', ()=> {
 		describe('send emoji via screen', ()=> {
 			before(()=> {
-				browser.pause(300);
 				mainContent.emojiBtn.click();
 				mainContent.emojiPickerPeopleIcon.click();
 			});
