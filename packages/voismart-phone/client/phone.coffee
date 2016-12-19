@@ -124,6 +124,8 @@ Template.phone.events
 			console.log "clearing display"
 
 		instance.phoneDisplay.set('')
+		RocketChat.Phone.setSearchTerm('')
+		RocketChat.Phone.setSearchResult()
 
 	'click #phone-transfer': (e, instance)->
 		if window.rocketDebug
