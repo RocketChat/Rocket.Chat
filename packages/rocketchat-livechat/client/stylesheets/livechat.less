@@ -1,10 +1,11 @@
 .flex-list {
 	.active {
-		background-color: rgba(255,255,255,0.075);
+		background-color: rgba(255, 255, 255, 0.075);
 	}
 }
 
-.trigger-option, .trigger-value {
+.trigger-option,
+.trigger-value {
 	float: left;
 	display: inline-block;
 }
@@ -17,7 +18,6 @@
 
 .trigger-value {
 	width: 70%;
-
 	input {
 		display: inline-block !important;
 		width: auto !important;
@@ -28,12 +28,11 @@
 	width: 90%;
 	max-width: 750px;
 	text-align: right;
-
 	textarea {
 		text-align: left;
 		width: 100%;
 		height: 200px;
-		background-color: #EFEFEF;
+		background-color: #efefef;
 		font-family: courier;
 		font-size: 12px;
 		display: block;
@@ -45,7 +44,8 @@
 	margin-bottom: 1em;
 }
 
-.livechat-settings-div, .livechat-preview-div {
+.livechat-settings-div,
+.livechat-preview-div {
 	width: 50%;
 	float: left;
 	height: 95%;
@@ -54,37 +54,32 @@
 }
 
 .livechat-settings-div {
-	border-right: 1px solid #CCC;
+	border-right: 1px solid #cccccc;
 }
 
 .livechat-preview {
 	width: 340px;
 	height: 350px;
 	margin: 0 auto;
-
-	border-bottom: 1px solid #CCC;
+	border-bottom: 1px solid #cccccc;
 	position: relative;
-
 	.preview-wrapper {
 		position: absolute;
 		width: 100%;
 		padding: 0 20px;
 		height: 300px;
 		bottom: 0;
-
 		@header-min-height: 30px;
 		@footer-min-height: 55px;
-		@link-font-color: #008CE3;
+		@link-font-color: #008ce3;
 		@primary-font-color: #444444;
 		@secondary-font-color: #7f7f7f;
-		@info-font-color: #AAAAAA;
-
+		@info-font-color: #aaaaaa;
 		font-family: 'Helvetica Neue', Helvetica, Roboto, Arial, sans-serif, "Meiryo UI";
 		font-size: 0.8rem;
 		color: @primary-font-color;
 		-webkit-font-smoothing: antialiased;
 		line-height: 1rem;
-
 		input,
 		button,
 		select,
@@ -94,20 +89,17 @@
 			line-height: inherit;
 			padding: 5px;
 			margin: 5px 0;
-			border: 1px solid #E7E7E7;
+			border: 1px solid #e7e7e7;
 			border-radius: 5px;
 			outline: none;
 		}
-
 		input {
 			height: 28px;
 		}
-
 		input:focus {
 			outline: none;
 			box-shadow: 0 0 0;
 		}
-
 		.button {
 			&:extend(.unselectable);
 			display: inline-block;
@@ -122,14 +114,14 @@
 			border-radius: 0;
 			line-height: 16px;
 			position: relative;
-			cursor: pointer;background-color: #FFF;
+			cursor: pointer;
 			color: rgba(255, 255, 255, 0.85);
 			background-color: lighten(desaturate(@primary-background-color, 15%), 12.5%);
 			span {
 				position: relative;
 				z-index: 2;
 			}
-			&:before {
+			&::before {
 				background-color: rgba(0, 0, 0, 0.1);
 				content: " ";
 				position: absolute;
@@ -143,15 +135,15 @@
 			}
 			&:hover {
 				text-decoration: none;
-				color: #FFF;
-				&:before {
+				color: #ffffff;
+				&::before {
 					opacity: 1;
 				}
 			}
 			&.secondary {
 				background-color: @tertiary-background-color;
 				color: @primary-font-color;
-				&:before {
+				&::before {
 					background-color: rgba(0, 0, 0, 0.045);
 				}
 			}
@@ -167,20 +159,16 @@
 				width: 100%;
 			}
 		}
-
 		.livechat-room {
 			display: flex;
 			flex-direction: column;
 			height: 100%;
-
 			.title {
 				flex: 1 0 @header-min-height;
-
 				line-height: @header-min-height;
-
 				border-top-right-radius: 5px;
 				border-top-left-radius: 5px;
-				color: #FFF;
+				color: #ffffff;
 				z-index: 10;
 				cursor: pointer;
 				h1 {
@@ -190,7 +178,6 @@
 					display: inline-block;
 					text-transform: none;
 				}
-
 				.toolbar {
 					display: inline-block;
 					float: right;
@@ -199,14 +186,12 @@
 			}
 			.messages {
 				flex: 1 1 100%;
-
-				background-color: #FFF;
-				border-left: 1px solid #E7E7E7;
-				border-right: 1px solid #E7E7E7;
+				background-color: #ffffff;
+				border-left: 1px solid #e7e7e7;
+				border-right: 1px solid #e7e7e7;
 				overflow-y: auto;
 				.wrapper {
 					padding-bottom: 6px;
-
 					ul {
 						list-style-type: none;
 						padding: 0;
@@ -214,7 +199,6 @@
 							padding: 0;
 						}
 					}
-
 					.message {
 						font-size: 12px;
 						padding-left: 40px;
@@ -229,7 +213,7 @@
 							margin-top: 60px;
 						}
 						&.new-day {
-							&:before {
+							&::before {
 								content: attr(data-date);
 								display: block;
 								position: absolute;
@@ -242,17 +226,17 @@
 								color: @secondary-font-color;
 								z-index: 10;
 								padding: 0 10px;
-								background-color: #FFF;
+								background-color: #ffffff;
 								min-width: 120px;
 							}
-							&:after {
+							&::after {
 								content: " ";
 								display: block;
 								position: absolute;
 								top: -20px;
 								left: 0;
 								width: 100%;
-								border-top: 1px solid #ddd;
+								border-top: 1px solid #dddddd;
 							}
 						}
 						.edit-message {
@@ -276,7 +260,7 @@
 							margin-right: 5px;
 							outline: none;
 							&:hover {
-								color: #333;
+								color: #333333;
 							}
 						}
 						.thumb {
@@ -292,7 +276,6 @@
 							color: @info-font-color;
 						}
 						&.sequential {
-							// margin-top: 5px;
 							padding-top: 5px;
 							margin-top: 0;
 							margin-bottom: 0;
@@ -357,12 +340,11 @@
 							.transition(opacity 1s linear);
 						}
 						&.temp .body {
-							opacity: .5;
+							opacity: 0.5;
 						}
 						&.msg-error .body {
 							text-decoration: line-through;
 						}
-
 						.avatar .avatar-image {
 							height: 100%;
 							width: 100%;
@@ -386,7 +368,7 @@
 					width: 130px;
 					height: 30px;
 					text-align: center;
-					color: #FFF;
+					color: #ffffff;
 					line-height: 30px;
 					font-size: 0.8em;
 					cursor: pointer;
@@ -399,18 +381,15 @@
 						.transform(translateY(100%));
 					}
 				}
-
 				.error {
 					bottom: 40px;
 					position: fixed;
 					width: 100%;
-					background-color: #F7D799;
+					background-color: #f7d799;
 					padding: 5px;
 					z-index: 8;
-
 					.transition(transform 0.2s ease-out);
 					.transform(translateY(100%));
-
 					&.show {
 						.transform(translateY(0));
 					}
@@ -418,16 +397,13 @@
 			}
 			.footer {
 				flex: 1 0 @footer-min-height;
-
 				z-index: 10;
-
-				background-color: #FCFCFC;
-				border-top: 1px solid #E7E7E7;
-				border-left: 1px solid #E7E7E7;
-				border-right: 1px solid #E7E7E7;
-
+				background-color: #fcfcfc;
+				border-top: 1px solid #e7e7e7;
+				border-left: 1px solid #e7e7e7;
+				border-right: 1px solid #e7e7e7;
 				.input-wrapper {
-					padding: 6px 6px 0 6px;
+					padding: 6px 6px 0;
 					padding-right: 30px;
 					textarea {
 						display: block;
@@ -435,8 +411,7 @@
 						padding-right: 38px;
 						overflow-y: auto;
 						resize: none;
-						border: 1px solid #E7E7E7;
-						// margin: 10px;
+						border: 1px solid #e7e7e7;
 						border-radius: 5px;
 						max-height: 200px;
 						width: 100%;
@@ -444,12 +419,11 @@
 						-webkit-appearance: none;
 						height: 28px;
 						line-height: normal;
-						background-color: #fff;
+						background-color: #ffffff;
 						position: relative;
 						outline: none;
 					}
 				}
-
 				.send-button {
 					float: right;
 					position: relative;
@@ -458,47 +432,39 @@
 					color: @secondary-font-color;
 					cursor: pointer;
 					.transition(color .15s ease-out);
-
 					&:hover {
 						color: @primary-font-color;
 					}
 				}
 			}
-
 			.offline {
 				flex: 1 1 100%;
 				background-color: white;
 				padding: 1em 10px;
-				border-left: 1px solid #E7E7E7;
-				border-right: 1px solid #E7E7E7;
-
+				border-left: 1px solid #e7e7e7;
+				border-right: 1px solid #e7e7e7;
 				.offline-message {
 					padding: 1em 0;
 				}
-
 				.message-sent {
 					text-align: center;
 				}
-
 				form {
-					input, textarea {
+					input,
+					textarea {
 						display: block;
 						width: 100%;
 					}
-
 					textarea {
 						height: 3.5em;
 					}
-
 					.buttons {
 						text-align: center;
 					}
-
 					.error {
 						display: none;
-						background-color: #F7D799;
+						background-color: #f7d799;
 						padding: 5px;
-
 						&.show {
 							display: block;
 						}
@@ -507,8 +473,8 @@
 			}
 		}
 	}
-
-	&.closed, &.closed-offline {
+	&.closed,
+	&.closed-offline {
 		.preview-wrapper {
 			height: 32px;
 			.livechat-room .title .toolbar {
@@ -529,15 +495,13 @@
 
 .department-agents {
 	list-style-type: none;
-
 	li {
 		display: inline-block;
-		background-color: #DDD;
+		background-color: #dddddd;
 		border-radius: 10px;
 		padding: 2px 8px 2px 2px;
 		margin: 1px 0;
 		cursor: pointer;
-
 		.icon-plus-circled {
 			opacity: 0.5;
 			font-size: 0.8rem;
@@ -582,28 +546,25 @@
 	padding: 0 20px;
 }
 
-.visitor-navigation, .visitor-custom-fields {
+.visitor-navigation,
+.visitor-custom-fields {
 	.visitor-scroll {
 		height: 130px;
 		overflow-y: auto;
-		border: 1px solid #E7E7E7;
+		border: 1px solid #e7e7e7;
 		border-radius: 4px;
 		padding: 4px;
 		margin-top: 4px;
 		margin-bottom: 20px;
-
 		ul {
 			li {
 				white-space: nowrap;
-
 				a {
 					text-overflow: ellipsis;
 					display: block;
 					overflow: hidden;
-
 					color: @secondary-font-color;
 					text-decoration: underline;
-
 					&:hover {
 						text-decoration: none;
 					}
@@ -615,9 +576,7 @@
 
 .livechat-section {
 	opacity: 0.5;
-
 	.transition(opacity .4s ease);
-
 	&.available {
 		opacity: 1;
 	}
@@ -638,10 +597,10 @@
 .external-message {
 	padding: 10px;
 	position: relative;
-	&:after {
+	&::after {
 		content: " ";
 		position: absolute;
-		border-bottom: 1px solid #CCC;
+		border-bottom: 1px solid #cccccc;
 		left: 10px;
 		right: 10px;
 		bottom: 0;
