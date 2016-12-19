@@ -9,17 +9,16 @@
 			position: relative;
 			padding-right: 2px;
 			color: @primary-action-color;
-
 			list-style: none;
 			display: inline;
-
 			.action-link {
 				padding: 5px;
 				border-radius: 7px;
 				margin: 0 2px;
 			}
 		}
-
-		li:last-child:after { content: none; }
+		li:last-child::after {
+			content: none;
+		}
 	}
 }

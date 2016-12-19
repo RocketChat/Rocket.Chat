@@ -5,7 +5,7 @@
 		right: @right;
 		left: auto;
 	}
-	.left (@left) {
+	.left(@left) {
 		left: @left;
 		right: auto;
 	}
@@ -19,11 +19,11 @@
 	}
 	.padding-right(@padding-right) {
 		padding-right: @padding-right;
-		padding-left: 0px;
+		padding-left: 0;
 	}
 	.padding-left(@padding-left) {
 		padding-left: @padding-left;
-		padding-right: 0px;
+		padding-right: 0;
 	}
 	button {
 		text-align: right;
@@ -32,16 +32,16 @@
 		text-align: left;
 	}
 	.side-nav {
-		.right(0px);
+		.right(0);
 		.header {
-			.right(0px);
+			.right(0);
 			.account-box {
 				.info {
-					padding: 10px 18px 10px 0px;
+					padding: 10px 18px 10px 0;
 					.thumb {
 						float: right;
 					}
-					.thumb:after {
+					.thumb::after {
 						.right(-14px);
 					}
 					.data {
@@ -53,14 +53,14 @@
 					}
 				}
 				.options {
-					.right(0px);
+					.right(0);
 					.status {
 						.padding-right(38px);
 					}
 					span.soon {
 						.left(-30px);
 					}
-					.status:after {
+					.status::after {
 						.right(18px);
 					}
 				}
@@ -76,7 +76,7 @@
 			transform: rotateY(180deg);
 		}
 		.footer {
-			.right(0px);
+			.right(0);
 		}
 		.rooms-list {
 			direction: ltr;
@@ -97,23 +97,23 @@
 			}
 		}
 		.more {
-			padding: 4px 10px 4px 0px;
+			padding: 4px 10px 4px 0;
 		}
 		.empty {
 			.padding-right(10px);
 		}
 		ul .opt {
-			.left(0px);
+			.left(0);
 			.padding-left(10px);
 			text-align: left;
 		}
 		.flex-nav {
-			.right(0px);
+			.right(0);
 			> section {
-				.right(0px);
+				.right(0);
 			}
 			header {
-				.right(0px);
+				.right(0);
 				.padding-right(15px);
 				> div {
 					text-align: right;
@@ -125,13 +125,13 @@
 				}
 			}
 			.input-submit {
-				margin: 35px -4px 0 0px;
+				margin: 35px -4px 0 0;
 			}
-			.button:before {
-				.right(0px);
+			.button::before {
+				.right(0);
 			}
 			footer {
-				.right(0px);
+				.right(0);
 				text-align: right;
 				> div {
 					text-align: right;
@@ -164,7 +164,7 @@
 			.left(6px);
 		}
 	}
-	.side-nav:before {
+	.side-nav::before {
 		.right(8px);
 	}
 	.main-content {
@@ -183,7 +183,7 @@
 		}
 		.section {
 			border-right: none;
-			border-left: 1px solid #ddd;
+			border-left: 1px solid #dddddd;
 			.section-content {
 				.input-line {
 					> label {
@@ -194,7 +194,7 @@
 		}
 	}
 	.messages-box {
-		margin: 60px 0px 0px 20px;
+		margin: 60px 0 0 20px;
 		.new-message {
 			.right(50%);
 		}
@@ -205,7 +205,7 @@
 	.container-bars {
 		.upload-progress {
 			.upload-progress-progress {
-				.right(0px);
+				.right(0);
 			}
 			.upload-progress-text {
 				> a {
@@ -258,8 +258,8 @@
 				q {
 					padding: 0 3px 0 0;
 					border-right: 3px solid;
-					border-left: 0px none;
-					border-right-color: #CCC;
+					border-left: 0 none;
+					border-right-color: #cccccc;
 				}
 			}
 		}
@@ -291,7 +291,7 @@
 		border-right-color: @tertiary-background-color;
 		.control {
 			text-align: right;
-			padding: 12px 30px 12px;
+			padding: 12px 30px;
 			> a,
 			> form {
 				float: right;
@@ -365,7 +365,7 @@
 	}
 	.user-image {
 		.avatar {
-			&:after {
+			&::after {
 				.right(-12px);
 			}
 		}
@@ -395,6 +395,7 @@
 			}
 		}
 	}
+
 	@media all and(max-width: 1100px) {
 		#rocket-chat {
 			.flex-opened {
@@ -406,6 +407,7 @@
 			}
 		}
 	}
+
 	@media all and(max-width: 780px) {
 		#rocket-chat {
 			.main-content {
@@ -418,7 +420,7 @@
 	}
 	.burger {
 		.margin-right(7px);
-		.right(0px);
+		.right(0);
 		.unread-burger-alert {
 			.left(4px);
 		}
@@ -434,45 +436,45 @@
 		}
 	}
 	.arrow {
-		&:before,
-		&:after {
+		&::before,
+		&::after {
 			.calc(right, ~"50% - 5px");
 		}
-		&:before {
+		&::before {
 			.transform(rotate(135deg) translateX(4px));
 		}
-		&:after {
+		&::after {
 			.transform(rotate(-135deg) translateX(4px));
 		}
 		&.left {
-			&:before {
+			&::before {
 				.transform(rotate(-45deg) translateY(-4px));
 			}
-			&:after {
+			&::after {
 				.transform(rotate(45deg) translateY(4px));
 			}
 		}
 		&.top {
-			&:before {
+			&::before {
 				.transform(rotate(45deg) translateX(-2px) translateY(2px));
 			}
-			&:after {
+			&::after {
 				.transform(rotate(-45deg) translateX(2px) translateY(2px));
 			}
 		}
 		&.bottom {
-			&:before {
+			&::before {
 				.transform(rotate(-45deg) translateX(-2px) translateY(-2px));
 			}
-			&:after {
+			&::after {
 				.transform(rotate(45deg) translateX(2px) translateY(-2px));
 			}
 		}
 		&.close {
-			&:before {
+			&::before {
 				.transform(rotate(-45deg));
 			}
-			&:after {
+			&::after {
 				.transform(rotate(45deg));
 			}
 		}
@@ -487,7 +489,7 @@
 					&:first-child {
 						padding-right: 6px;
 						padding-left: 8px;
-						border-left: 1px solid #eee;
+						border-left: 1px solid #eeeeee;
 						border-right: unset;
 					}
 					&:last-child {
@@ -506,7 +508,7 @@
 		}
 		.info {
 			.edited {
-				border-right: 1px dotted #BAB8B8;
+				border-right: 1px dotted #bab8d8;
 				border-left: unset;
 				.padding-right(3px);
 				.margin-right(3px);
@@ -534,18 +536,18 @@
 	}
 	blockquote {
 		.padding-right(10px);
-		&:before {
-			.right(0px);
+		&::before {
+			.right(0);
 		}
 	}
 	.first-unread {
 		.body {
 			&::before {
 				right: 20px;
-				left: 0px;
+				left: 0;
 			}
 			&::after {
-				.left(0px);
+				.left(0);
 			}
 		}
 	}
@@ -622,6 +624,7 @@
 			}
 		}
 	}
+
 	@media all and (max-width: 780px) {
 		.code-mirror-box {
 			&.code-mirror-box-fullscreen {
@@ -631,7 +634,7 @@
 	}
 	.rocket-form {
 		legend {
-			&:after {
+			&::after {
 				right: 0;
 			}
 		}
@@ -642,11 +645,13 @@
 			text-align: left;
 		}
 	}
+
 	/* Overridding classes from swipebox.min.css */
 	#swipebox-close {
 		.left(0);
 	}
-	@media screen and (min-width:800px) {
+
+	@media screen and (min-width: 800px) {
 		#swipebox-close {
 			.left(10px);
 		}
@@ -654,6 +659,7 @@
 	#swipebox-overlay {
 		direction: ltr;
 	}
+
 	/* Override toastr messages to show on hte left side */
 	.toast-top-right {
 		.left(12px);
