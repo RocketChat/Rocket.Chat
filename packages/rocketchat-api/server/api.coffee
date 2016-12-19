@@ -33,6 +33,14 @@ class API extends Restivus
 				success: false
 				error: msg or 'unauthorized'
 
+	getPaginationItems: (req) ->
+		console.log(req)
+		offset = if req.queryParams.offset then parseInt(req.queryParams.offset) else 0
+		count = if req.queryParams.count then parseInt(req.queryParams.count) else 25
+		count = 100 if count > 100
+		return {} =
+			offset: offset
+			count: count
 
 RocketChat.API = {}
 

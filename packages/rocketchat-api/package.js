@@ -26,8 +26,6 @@ Package.onUse(function(api) {
 	api.addFiles('server/v1/misc.js', 'server');
 	api.addFiles('server/v1/users.js', 'server');
 	api.addFiles('server/v1/settings.js', 'server');
-
-	api.addFiles('server/routes.extended.coffee', 'server');
 });
 
 Npm.depends({

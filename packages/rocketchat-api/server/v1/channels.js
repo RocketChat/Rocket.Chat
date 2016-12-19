@@ -260,7 +260,7 @@ RocketChat.API.v1.addRoute('channels.info', { authRequired: true }, {
 		}
 
 		return RocketChat.API.v1.success({
-			channel: RocketChat.models.Rooms.findOneById(findResult._id)
+			channel: RocketChat.models.Rooms.findOneById(findResult._id, { fields: { joinCode: 0, $loki: 0, meta: 0 }})
 		});
 	}
 });
@@ -368,8 +368,28 @@ RocketChat.API.v1.addRoute('channels.leave', { authRequired: true }, {
 
 RocketChat.API.v1.addRoute('channels.list', { authRequired: true }, {
 	get: function() {
+		const { offset, count } = RocketChat.API.v1.getPaginationItems(this);
+
+		//This is for polling services, such as Zapier until we get a new
+		//feature that notifies via webhooks about new events (channels, users, etc)
+		if (offset === -1) {
+			return RocketChat.API.v1.success({
+				channels: RocketChat.models.Rooms.findByType('c', { fields: { joinCode: 0, $loki: 0, meta: 0 }}).fetch()
+			});
+		}
+
+		const rooms = RocketChat.models.Rooms.findByType('c', {
+			sort: { msgs: -1 },
+			skip: offset,
+			limit: count,
+			fields: { joinCode: 0, $loki: 0, meta: 0 }
+		}).fetch();
+
 		return RocketChat.API.v1.success({
-			channels: RocketChat.models.Rooms.findByType('c').fetch()
+			channels: rooms,
+			count: rooms.length,
+			offset,
+			total: RocketChat.models.Rooms.findByType('c').count()
 		});
 	}
 });
@@ -377,8 +397,20 @@ RocketChat.API.v1.addRoute('channels.list', { authRequired: true }, {
 RocketChat.API.v1.addRoute('channels.list.joined', { authRequired: true }, {
 	get: function() {
 		const roomIds = _.pluck(RocketChat.models.Subscriptions.findByTypeAndUserId('p', this.userId).fetch(), 'rid');
+
+		const { offset, count } = RocketChat.API.v1.getPaginationItems(this);
+		const rooms = RocketChat.models.Rooms.findByIds(roomIds, {
+			sort: { msgs: -1 },
+			skip: offset,
+			limit: count,
+			fields: { joinCode: 0, $loki: 0, meta: 0 }
+		}).fetch();
+
 		return RocketChat.API.v1.success({
-			channels: RocketChat.models.Rooms.findByIds(roomIds).fetch()
+			channels: rooms,
+			offset,
+			count: rooms.length,
+			total: RocketChat.models.Rooms.findByIds(roomIds).count()
 		});
 	}
 });
@@ -481,6 +513,40 @@ RocketChat.API.v1.addRoute('channels.setDescription', { authRequired: true }, {
 	}
 });
 
+RocketChat.API.v1.addRoute('channels.setJoinCode', { authRequired: true }, {
+	post: function() {
+		if (!this.bodyParams.joinCode || !this.bodyParams.joinCode.trim()) {
+			return RocketChat.API.v1.failure('The bodyParam "joinCode" is required');
+		}
+
+		const findResult = findChannelById(this.bodyParams.roomId);
+
+		if (findResult.statusCode) {
+			return findResult;
+		}
+
+		if (findResult.archived) {
+			return RocketChat.API.v1.failure(`The channel, ${findResult.name}, is archived`);
+		}
+
+		if (findResult.joinCode === this.bodyParams.joinCode) {
+			return RocketChat.API.v1.failure('The channel join code setting is the same as what it would be changed to.');
+		}
+
+		try {
+			Meteor.runAsUser(this.userId, () => {
+				Meteor.call('saveRoomSettings', findResult._id, 'joinCode', this.bodyParams.joinCode);
+			});
+		} catch (e) {
+			return RocketChat.API.v1.failure(`${e.name}: ${e.message}`);
+		}
+
+		return RocketChat.API.v1.success({
+			channel: RocketChat.models.Rooms.findOneById(findResult._id)
+		});
+	}
+});
+
 RocketChat.API.v1.addRoute('channels.setPurpose', { authRequired: true }, {
 	post: function() {
 		if (!this.bodyParams.purpose || !this.bodyParams.purpose.trim()) {
@@ -516,6 +582,40 @@ RocketChat.API.v1.addRoute('channels.setPurpose', { authRequired: true }, {
 	}
 });
 
+RocketChat.API.v1.addRoute('channels.setReadOnly', { authRequired: true }, {
+	post: function() {
+		if (typeof this.bodyParams.readOnly === 'undefined') {
+			return RocketChat.API.v1.failure('The bodyParam "readOnly" is required');
+		}
+
+		const findResult = findChannelById(this.bodyParams.roomId);
+
+		if (findResult.statusCode) {
+			return findResult;
+		}
+
+		if (findResult.archived) {
+			return RocketChat.API.v1.failure(`The channel, ${findResult.name}, is archived`);
+		}
+
+		if (findResult.ro === this.bodyParams.readOnly) {
+			return RocketChat.API.v1.failure('The channel read only setting is the same as what it would be changed to.');
+		}
+
+		try {
+			Meteor.runAsUser(this.userId, () => {
+				Meteor.call('saveRoomSettings', findResult._id, 'readOnly', this.bodyParams.readOnly);
+			});
+		} catch (e) {
+			return RocketChat.API.v1.failure(`${e.name}: ${e.message}`);
+		}
+
+		return RocketChat.API.v1.success({
+			channel: RocketChat.models.Rooms.findOneById(findResult._id)
+		});
+	}
+});
+
 RocketChat.API.v1.addRoute('channels.setTopic', { authRequired: true }, {
 	post: function() {
 		if (!this.bodyParams.topic || !this.bodyParams.topic.trim()) {
@@ -523,7 +623,6 @@ RocketChat.API.v1.addRoute('channels.setTopic', { authRequired: true }, {
 		}
 
 		const findResult = findChannelById(this.bodyParams.roomId);
-
 
 		if (findResult.statusCode) {
 			return findResult;
@@ -547,6 +646,40 @@ RocketChat.API.v1.addRoute('channels.setTopic', { authRequired: true }, {
 
 		return RocketChat.API.v1.success({
 			topic: this.bodyParams.topic
+		});
+	}
+});
+
+RocketChat.API.v1.addRoute('channels.setType', { authRequired: true }, {
+	post: function() {
+		if (!this.bodyParams.type || !this.bodyParams.type.trim()) {
+			return RocketChat.API.v1.failure('The bodyParam "type" is required');
+		}
+
+		const findResult = findChannelById(this.bodyParams.roomId);
+
+		if (findResult.statusCode) {
+			return findResult;
+		}
+
+		if (findResult.archived) {
+			return RocketChat.API.v1.failure(`The channel, ${findResult.name}, is archived`);
+		}
+
+		if (findResult.t === this.bodyParams.topic) {
+			return RocketChat.API.v1.failure('The channel type is the same as what it would be changed to.');
+		}
+
+		try {
+			Meteor.runAsUser(this.userId, () => {
+				Meteor.call('saveRoomSettings', findResult._id, 'roomType', this.bodyParams.type);
+			});
+		} catch (e) {
+			return RocketChat.API.v1.failure(`${e.name}: ${e.message}`);
+		}
+
+		return RocketChat.API.v1.success({
+			channel: RocketChat.models.Rooms.findOneById(findResult._id)
 		});
 	}
 });
