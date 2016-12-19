@@ -190,7 +190,7 @@ RocketChat.API.v1.addRoute('groups.info', { authRequired: true }, {
 		}
 
 		return RocketChat.API.v1.success({
-			group: RocketChat.models.Rooms.findOneById(findResult.rid)
+			group: RocketChat.models.Rooms.findOneById(findResult.rid, { fields: { $loki: 0, meta: 0 }})
 		});
 	}
 });
@@ -296,8 +296,28 @@ RocketChat.API.v1.addRoute('groups.leave', { authRequired: true }, {
 RocketChat.API.v1.addRoute('groups.list', { authRequired: true }, {
 	get: function() {
 		const roomIds = _.pluck(RocketChat.models.Subscriptions.findByTypeAndUserId('p', this.userId).fetch(), 'rid');
+		const { offset, count } = RocketChat.API.v1.getPaginationItems(this);
+
+		//This is for polling services, such as Zapier until we get a new
+		//feature that notifies via webhooks about new events (channels, users, etc)
+		if (offset === -1) {
+			return RocketChat.API.v1.success({
+				groups: RocketChat.models.Rooms.findByIds(roomIds, { fields: { $loki: 0, meta: 0 } }).fetch()
+			});
+		}
+
+		const rooms = RocketChat.models.Rooms.findByIds(roomIds, {
+			sort: { msgs: -1 },
+			skip: offset,
+			limit: count,
+			fields: { $loki: 0, meta: 0 }
+		}).fetch();
+
 		return RocketChat.API.v1.success({
-			groups: RocketChat.models.Rooms.findByIds(roomIds).fetch()
+			groups: rooms,
+			offset,
+			count: rooms.length,
+			total: RocketChat.models.Rooms.findByIds(roomIds).count()
 		});
 	}
 });
@@ -420,6 +440,40 @@ RocketChat.API.v1.addRoute('groups.setPurpose', { authRequired: true }, {
 	}
 });
 
+RocketChat.API.v1.addRoute('groups.setReadOnly', { authRequired: true }, {
+	post: function() {
+		if (typeof this.bodyParams.readOnly === 'undefined') {
+			return RocketChat.API.v1.failure('The bodyParam "readOnly" is required');
+		}
+
+		const findResult = findPrivateGroupById(this.bodyParams.roomId, this.userId);
+
+		if (findResult.statusCode) {
+			return findResult;
+		}
+
+		if (findResult.archived) {
+			return RocketChat.API.v1.failure(`The private group, ${findResult.name}, is archived`);
+		}
+
+		if (findResult.ro === this.bodyParams.readOnly) {
+			return RocketChat.API.v1.failure('The private group read only setting is the same as what it would be changed to.');
+		}
+
+		try {
+			Meteor.runAsUser(this.userId, () => {
+				Meteor.call('saveRoomSettings', findResult._id, 'readOnly', this.bodyParams.readOnly);
+			});
+		} catch (e) {
+			return RocketChat.API.v1.failure(`${e.name}: ${e.message}`);
+		}
+
+		return RocketChat.API.v1.success({
+			channel: RocketChat.models.Rooms.findOneById(findResult._id)
+		});
+	}
+});
+
 RocketChat.API.v1.addRoute('groups.setTopic', { authRequired: true }, {
 	post: function() {
 		if (!this.bodyParams.topic || !this.bodyParams.topic.trim()) {
@@ -447,6 +501,40 @@ RocketChat.API.v1.addRoute('groups.setTopic', { authRequired: true }, {
 
 		return RocketChat.API.v1.success({
 			topic: this.bodyParams.topic
+		});
+	}
+});
+
+RocketChat.API.v1.addRoute('groups.setType', { authRequired: true }, {
+	post: function() {
+		if (!this.bodyParams.type || !this.bodyParams.type.trim()) {
+			return RocketChat.API.v1.failure('The bodyParam "type" is required');
+		}
+
+		const findResult = findPrivateGroupById(this.bodyParams.roomId, this.userId);
+
+		if (findResult.statusCode) {
+			return findResult;
+		}
+
+		if (findResult.archived) {
+			return RocketChat.API.v1.failure(`The private group, ${findResult.name}, is archived`);
+		}
+
+		if (findResult.t === this.bodyParams.topic) {
+			return RocketChat.API.v1.failure('The private group type is the same as what it would be changed to.');
+		}
+
+		try {
+			Meteor.runAsUser(this.userId, () => {
+				Meteor.call('saveRoomSettings', findResult._id, 'roomType', this.bodyParams.type);
+			});
+		} catch (e) {
+			return RocketChat.API.v1.failure(`${e.name}: ${e.message}`);
+		}
+
+		return RocketChat.API.v1.success({
+			channel: RocketChat.models.Rooms.findOneById(findResult._id)
 		});
 	}
 });
