@@ -140,23 +140,25 @@ input:focus {
 		color: #ffffff;
 		z-index: 10;
 		cursor: pointer;
+		padding: 0 10px;
 		h1 {
 			margin: 0;
-			padding: 0 10px;
 			font-size: 10pt;
 			display: inline-block;
 		}
 		.toolbar {
 			display: inline-block;
 			float: right;
-			padding-right: 5px;
-			padding-top: 3px;
-			height: 30px;
 			svg {
 				cursor: pointer;
 				fill: currentColor;
 				width: 14px;
-				margin: 0 2px;
+				margin: 0 5px;
+				vertical-align: middle;
+
+				&:last-of-type {
+					margin-right: 0;
+				}
 			}
 		}
 	}
