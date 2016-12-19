@@ -6,16 +6,6 @@
 	var hookQueue = [];
 	var ready = false;
 
-	var closeWidget = function() {
-		widget.dataset.state = 'closed';
-		widget.style.height = '30px';
-	};
-
-	var openWidget = function() {
-		widget.dataset.state = 'opened';
-		widget.style.height = '300px';
-	};
-
 	// hooks
 	var callHook = function(action, params) {
 		if (!ready) {
@@ -27,6 +17,19 @@
 			args: params
 		};
 		iframe.contentWindow.postMessage(data, '*');
+	};
+
+	var closeWidget = function() {
+		widget.dataset.state = 'closed';
+		widget.style.height = '30px';
+		callHook('widgetClosed');
+	};
+
+	var openWidget = function() {
+		widget.dataset.state = 'opened';
+		widget.style.height = '300px';
+		callHook('widgetOpened');
+		document.querySelector('.rocketchat-widget iframe').focus();
 	};
 
 	var api = {
