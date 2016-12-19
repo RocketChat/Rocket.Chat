@@ -3,11 +3,11 @@
  */
 
 @default-action-color: darken(@secondary-background-color, 15%);
-@default-action-contrast: contrast(@default-action-color, #444);
-@primary-background-contrast: contrast(@primary-background-color, #444);
-@primary-action-contrast: contrast(@primary-action-color, #444);
-@secondary-background-contrast: contrast(@secondary-background-color, #444);
-@secondary-action-contrast: contrast(@secondary-action-color, #444);
+@default-action-contrast: contrast(@default-action-color, #444444);
+@primary-background-contrast: contrast(@primary-background-color, #444444);
+@primary-action-contrast: contrast(@primary-action-color, #444444);
+@secondary-background-contrast: contrast(@secondary-background-color, #444444);
+@secondary-action-contrast: contrast(@secondary-action-color, #444444);
 @selection-background: lighten(@selection-color, 30%);
 @success-background: lighten(@success-color, 45%);
 @success-border: lighten(@success-color, 30%);
@@ -18,8 +18,8 @@
 @pending-border: lighten(@pending-color, 30%);
 @window-border-color: @component-color;
 @code-background-color: #f8f8f8;
-@code-border-color: #ccc;
-@code-font-color: #333;
+@code-border-color: #cccccc;
+@code-font-color: #333333;
 
 /** ----------------------------------------------------------------------------
  * Document components
@@ -46,7 +46,7 @@ code {
 	color: @code-font-color;
 }
 
-blockquote:before {
+blockquote::before {
 	background-color: @transparent-darker;
 }
 
@@ -85,12 +85,12 @@ blockquote:before {
 	background-color: @primary-font-color;
 }
 
-
 /** ----------------------------------------------------------------------------
  * Forms
  */
 
 .input-shade(@primary-font-color, @content-background-color);
+
 .flex-nav {
 	.input-shade(@primary-background-contrast, @primary-background-color);
 	label,
@@ -103,7 +103,7 @@ blockquote:before {
 		}
 	}
 	.input.checkbox.toggle {
-		input:checked + label:before {
+		input:checked + label::before {
 			background-color: @primary-action-color;
 		}
 	}
@@ -152,38 +152,37 @@ input:-webkit-autofill {
 .input {
 	&.radio {
 		label {
-			&:before {
+			&::before {
 				background-color: @content-background-color;
 				border-color: lighten(@secondary-background-contrast, 30%);
 			}
-			&:after {
+			&::after {
 				background-color: @secondary-background-contrast;
 			}
 		}
 	}
 	&.checkbox.toggle {
-		input:checked + label:before {
+		input:checked + label::before {
 			background-color: @secondary-background-contrast;
 		}
-		input:disabled + label:before {
+		input:disabled + label::before {
 			background-color: lighten(@secondary-background-contrast, 50%) !important;
 		}
 		label {
-			&:before {
+			&::before {
 				background-color: lighten(@secondary-background-contrast, 30%);
 			}
-			&:after {
+			&::after {
 				background-color: @content-background-color;
 			}
 			&:hover {
-				&:before {
+				&::before {
 					background-color: lighten(@secondary-background-contrast, 20%);
 				}
 			}
 		}
 	}
 }
-
 
 /** ----------------------------------------------------------------------------
  * Misc typography variants
@@ -224,7 +223,6 @@ a:hover {
 	color: @error-color;
 }
 
-
 /** ----------------------------------------------------------------------------
  * Admin and settings styles
  */
@@ -237,7 +235,7 @@ a:hover {
 		background-color: @content-background-color;
 	}
 	.terminal {
-		background-color: #444;
+		background-color: #444444;
 		color: white;
 		.time {
 			color: @secondary-font-color;
@@ -297,7 +295,6 @@ a:hover {
 	}
 }
 
-
 /** ----------------------------------------------------------------------------
  * Asides (external to main application views)
  */
@@ -338,7 +335,7 @@ a:hover {
 	.input-shade(@primary-font-color, @content-background-color);
 	.input-text {
 		input:-webkit-autofill {
-			-webkit-box-shadow: 0 0 0px 20px @content-background-color inset;
+			-webkit-box-shadow: 0 0 0 20px @content-background-color inset;
 		}
 	}
 }
@@ -350,7 +347,6 @@ a:hover {
 		background-color: @transparent-darkest;
 	}
 }
-
 
 /** ----------------------------------------------------------------------------
  * Room components
@@ -471,7 +467,6 @@ a:hover {
 	}
 }
 
-
 /** ----------------------------------------------------------------------------
  * Message content
  */
@@ -561,7 +556,6 @@ a:hover {
 	}
 }
 
-
 /** ----------------------------------------------------------------------------
  * Side nav
  */
@@ -576,8 +570,8 @@ a:hover {
 	.info {
 		.linkColors(@tertiary-font-color, @tertiary-font-color);
 	}
-	.arrow:before,
-	.arrow:after {
+	.arrow::before,
+	.arrow::after {
 		background-color: @tertiary-font-color;
 	}
 	.info,
@@ -626,7 +620,6 @@ a:hover {
 	}
 }
 
-
 /** ----------------------------------------------------------------------------
  * Flex tabs / admin fly-out panels
  */
@@ -657,7 +650,7 @@ a:hover {
 			color: inherit;
 		}
 		.input.checkbox.toggle {
-			input:checked + label:before {
+			input:checked + label::before {
 				background-color: @primary-background-color;
 			}
 		}
@@ -703,7 +696,6 @@ a:hover {
 	}
 }
 
-
 /** ----------------------------------------------------------------------------
  * User status / user meta
  */
@@ -712,11 +704,11 @@ i.status-online {
 	color: @status-online;
 }
 
-.account-box .status-online .thumb:after,
-.account-box .status.online:after,
+.account-box .status-online .thumb::after,
+.account-box .status.online::after,
 .popup-user-status-online,
-.status-online:after,
-.user-image.status-online .avatar:after {
+.status-online::after,
+.user-image.status-online .avatar::after {
 	background-color: @status-online;
 	border-color: darken(@status-online, 10%);
 }
@@ -725,11 +717,11 @@ i.status-away {
 	color: @status-away;
 }
 
-.account-box .status-away .thumb:after,
-.account-box .status.away:after,
+.account-box .status-away .thumb::after,
+.account-box .status.away::after,
 .popup-user-status-away,
-.status-pending:after,
-.user-image.status-away .avatar:after {
+.status-pending::after,
+.user-image.status-away .avatar::after {
 	background-color: @status-away;
 	border-color: darken(@status-away, 10%);
 }
@@ -738,11 +730,11 @@ i.status-busy {
 	color: @status-busy;
 }
 
-.account-box .status-busy .thumb:after,
-.account-box .status.busy:after,
+.account-box .status-busy .thumb::after,
+.account-box .status.busy::after,
 .popup-user-status-busy,
-.status-busy:after,
-.user-image.status-busy .avatar:after {
+.status-busy::after,
+.user-image.status-busy .avatar::after {
 	background-color: @status-busy;
 	border-color: darken(@status-busy, 10%);
 }
@@ -752,14 +744,14 @@ i.status-offline {
 }
 
 .popup-user-status-offline,
-.status-offline:after,
-.user-image.status-offline .avatar:after {
+.status-offline::after,
+.user-image.status-offline .avatar::after {
 	background-color: @status-offline;
 	border-color: darken(@status-offline, 10%);
 }
 
-.account-box .status-offline .thumb:after,
-.account-box .status.offline:after {
+.account-box .status-offline .thumb::after,
+.account-box .status.offline::after {
 	background-color: @transparent-lighter;
 }
 
@@ -775,13 +767,12 @@ i.status-offline {
 	p {
 		color: @secondary-font-color;
 	}
-	.box:after,
+	.box::after,
 	.stats li,
 	.tags li {
 		background-color: @component-color;
 	}
 }
-
 
 /** ----------------------------------------------------------------------------
  * Buttons!
@@ -792,6 +783,7 @@ i.status-offline {
 }
 
 // new layout buttons
+
 .button {
 	.buttonColors(@default-action-contrast, @default-action-color);
 	&.primary {
@@ -838,7 +830,6 @@ i.status-offline {
 	}
 }
 
-
 /** ----------------------------------------------------------------------------
  * Feedback and overlay content
  */
@@ -878,7 +869,7 @@ i.status-offline {
 }
 
 .side-nav .input-error,
-label.required:after {
+label.required::after {
 	color: @error-color;
 }
 
