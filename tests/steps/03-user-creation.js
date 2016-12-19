@@ -39,7 +39,6 @@ describe('User Creation', function() {
 		it('logout', () => {
 			sideNav.accountBoxUserName.waitForVisible(5000);
 			sideNav.accountBoxUserName.click();
-			browser.pause(200);
 
 			sideNav.logout.waitForVisible(5000);
 			sideNav.logout.click();
