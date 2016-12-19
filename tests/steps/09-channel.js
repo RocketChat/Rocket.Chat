@@ -226,9 +226,9 @@ describe('channel usage', ()=> {
 			});
 		});
 
-		describe('User muted', () => {
+		describe.skip('User muted', () => {
 			before(()=> {
-				flexTab.membersTab.waitForVisible();
+				flexTab.membersTab.waitForVisible(5000);
 				flexTab.membersTab.click();
 			});
 
