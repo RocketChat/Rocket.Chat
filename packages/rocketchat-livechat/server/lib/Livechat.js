@@ -108,6 +108,9 @@ RocketChat.Livechat = {
 
 			if (s.trim(email) !== '' && (existingUser = RocketChat.models.Users.findOneGuestByEmailAddress(email))) {
 				if (loginToken) {
+					if (!updateUser.$addToSet) {
+						updateUser.$addToSet = {};
+					}
 					updateUser.$addToSet['services.resume.loginTokens'] = loginToken;
 				}
 
