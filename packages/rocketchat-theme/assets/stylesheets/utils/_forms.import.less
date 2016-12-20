@@ -2,6 +2,7 @@
 	&.radio {
 		min-height: 13px;
 		position: relative;
+
 		input {
 			position: absolute;
 			top: 0;
@@ -11,14 +12,17 @@
 			z-index: -1;
 			width: 0;
 			height: 0;
+
 			&:checked + label::after {
 				opacity: 1;
 			}
 		}
+
 		label {
 			cursor: pointer;
 			user-select: none;
 			padding-left: 20px;
+
 			&::before {
 				content: '';
 				position: absolute;
@@ -29,6 +33,7 @@
 				border-width: 1px;
 				border-radius: 50%;
 			}
+
 			&::after {
 				content: '';
 				position: absolute;
@@ -42,9 +47,11 @@
 			}
 		}
 	}
+
 	&.checkbox.toggle {
 		min-height: 20px;
 		position: relative;
+
 		input {
 			position: absolute;
 			top: 0;
@@ -54,16 +61,19 @@
 			z-index: -1;
 			width: 0;
 			height: 0;
+
 			&:checked + label::after {
 				left: 25px;
 			}
 		}
+
 		label {
 			cursor: pointer;
 			user-select: none;
 			display: block;
 			min-height: 20px;
 			vertical-align: top;
+
 			&::before {
 				display: block;
 				position: absolute;
@@ -77,6 +87,7 @@
 				border-radius: 50px;
 				.transition(background-color .2s ease-out);
 			}
+
 			&::after {
 				content: '';
 				position: absolute;
