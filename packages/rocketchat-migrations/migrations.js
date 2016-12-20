@@ -1,3 +1,5 @@
+/* eslint-disable */
+import moment from 'moment';
 /*
 	Adds migration capabilities. Migrations are defined like:
 
@@ -26,8 +28,7 @@
 	be in an inconsistant state.
 */
 
-// since we'll be at version 0 by default, we should have a migration set for
-// it.
+// since we'll be at version 0 by default, we should have a migration set for it.
 var DefaultMigration = {
 	version: 0,
 	up: function() {
@@ -274,7 +275,9 @@ Migrations._migrateTo = function(version, rerun) {
 		log.info('Running ' + direction + '() on version ' + migration.version + maybeName());
 
 		try {
-			migration[direction](migration);
+			RocketChat.models._CacheControl.withValue(false, function() {
+				migration[direction](migration);
+			});
 		} catch (e) {
 			console.log(makeABox([
 				"ERROR! SERVER STOPPED",

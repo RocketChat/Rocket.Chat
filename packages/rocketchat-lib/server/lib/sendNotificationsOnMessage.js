@@ -1,4 +1,5 @@
 /* globals Push */
+import moment from 'moment';
 
 RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 	// skips this callback if the message was edited
@@ -109,10 +110,13 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 	userIdsToNotify = [];
 	userIdsToPushNotify = [];
 	usersWithHighlights = [];
+
+	console.time('sendNotificationOnMessage');
 	highlights = RocketChat.models.Users.findUsersByUsernamesWithHighlights(room.usernames, { fields: { '_id': 1, 'settings.preferences.highlights': 1 }}).fetch();
+	console.timeEnd('sendNotificationOnMessage');
 
 	highlights.forEach(function(user) {
-		if (user && user.settings && user.settings.preferences && messageContainsHighlight(message, user.settings.preferences.highlights)) {
+		if (messageContainsHighlight(message, user.settings.preferences.highlights)) {
 			usersWithHighlights.push(user);
 		}
 	});
@@ -166,6 +170,7 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 				}
 			});
 		}
+
 		if ((userOfMention != null) && canBeNotified(userOfMentionId, 'desktop')) {
 			if (Push.enabled === true && userOfMention.statusConnection !== 'online') {
 				Push.send({
@@ -192,6 +197,7 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 				return message;
 			}
 		}
+
 	} else {
 		mentionIds = [];
 		if ((ref = message.mentions) != null) {

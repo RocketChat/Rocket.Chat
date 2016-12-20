@@ -1,4 +1,6 @@
+import toastr from 'toastr';
 /* globals LivechatOfficeHour */
+import moment from 'moment';
 
 Template.livechatOfficeHours.helpers({
 	days() {
@@ -67,9 +69,8 @@ Template.livechatOfficeHours.events({
 		let value = e.currentTarget.value;
 		if (e.currentTarget.type === 'radio') {
 			value = value === 'true';
+			instance[e.currentTarget.name].set(value);
 		}
-
-		instance[e.currentTarget.name].set(value);
 	},
 	'submit .rocket-form'(e, instance) {
 		e.preventDefault();

@@ -1,3 +1,4 @@
+import toastr from 'toastr';
 /* globals ChatSubscription */
 
 Template.pushNotificationsFlexTab.helpers({

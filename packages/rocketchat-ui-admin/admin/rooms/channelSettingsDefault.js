@@ -1,3 +1,4 @@
+import toastr from 'toastr';
 /* globals ChatRoom */
 
 Template.channelSettingsDefault.helpers({

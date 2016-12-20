@@ -31,6 +31,7 @@ Package.onUse(function(api) {
 	api.addFiles('client/startup.coffee', ['client']);
 	api.addFiles('client/hasPermission.coffee', ['client']);
 	api.addFiles('client/hasRole.coffee', ['client']);
+	api.addFiles('client/requiresPermission.html', ['client']);
 
 	api.addFiles('client/route.coffee', ['client']);
 
@@ -41,7 +42,8 @@ Package.onUse(function(api) {
 	api.addFiles('client/views/permissionsRole.coffee', ['client']);
 
 	// stylesheets
-	api.addFiles('client/stylesheets/permissions.less', 'client');
+	api.addAssets('client/stylesheets/permissions.less', 'server');
+	api.addFiles('client/stylesheets/load.coffee', 'server');
 
 	api.addFiles('server/models/Permissions.coffee', ['server']);
 	api.addFiles('server/models/Roles.coffee', ['server']);

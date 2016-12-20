@@ -30,6 +30,7 @@
   * [Raspberry Pi 2](#raspberry-pi-2)
   * [Koozali SME](#koozali-sme)
   * [Ubuntu VPS](#ubuntu-vps)
+  * [Hyper.sh](#hypersh)
 * [About Rocket.Chat](#about-rocketchat)
   * [On the News](#on-the-news)
   * [Features](#features)
@@ -120,13 +121,6 @@ Install Rocket.Chat on [Cloudron](https://cloudron.io) Smartserver:
 
 [![Install](https://cloudron.io/img/button.svg)](https://cloudron.io/button.html?app=chat.rocket.cloudronapp)
 
-## Nitrous.io
-**Free** development environment for Rocket.Chat in the cloud on [Nitrous.io](https://www.nitrous.io):
-
-<a href="https://www.nitrous.io/quickstart">
-  <img src="https://nitrous-image-icons.s3.amazonaws.com/quickstart.png" alt="Nitrous Quickstart" width=142 height=34>
-</a>
-
 ## Heroku
 Host your own Rocket.Chat server for **FREE** with [One-Click Deploy](https://heroku.com/deploy)
 
@@ -195,6 +189,9 @@ Add Rocket.Chat to this world famous time tested small enterprise server today:
 
 ## Ubuntu VPS
 Follow these [deployment instructions](https://rocket.chat/docs/installation/manual-installation/ubuntu/)
+
+## Hyper.sh
+Follow their [deployment instructions](https://rocket.chat/docs/installation/paas-deployments/hyper-sh/) to install a per-second billed Rocket.Chat instance on [Hyper.sh](https://rocket.chat/docs/installation/paas-deployments/hyper-sh/)
 
 # About Rocket.Chat
 
@@ -365,7 +362,7 @@ Now just clone and start the app:
 ```sh
 git clone https://github.com/RocketChat/Rocket.Chat.git
 cd Rocket.Chat
-meteor
+meteor npm start
 ```
 
 If you are not a developer and just want to run the server - see [deployment methods](https://rocket.chat/docs/installation/paas-deployments/).
@@ -392,6 +389,9 @@ Already a JavaScript developer?  Familiar with Meteor?  [Pick an issue](https://
 
 A lot of work has already gone into Rocket.Chat, but we have much bigger plans for it!
 
+### Contributor License Agreement
+
+Please review and sign our CLA at https://cla-assistant.io/RocketChat/Rocket.Chat
 
 # Credits
 

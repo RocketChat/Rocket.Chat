@@ -16,23 +16,20 @@ Template.membersList.helpers
 
 	roomUsers: ->
 		onlineUsers = RoomManager.onlineUsers.get()
+		roomUsernames = Template.instance().users.get()
 		room = ChatRoom.findOne(this.rid)
-		roomUsernames = room?.usernames or []
-		roomOnlineUsernames = roomUsernames.filter((username) -> onlineUsers[username])
 		roomMuted = room?.muted or []
 
-		if Template.instance().showAllUsers.get()
-			usernames = roomUsernames
-		else
-			usernames = roomOnlineUsernames
+		totalOnline = 0
+		users = roomUsernames.map (username) ->
+			if onlineUsers[username]?
+				totalOnline++
+				utcOffset = onlineUsers[username].utcOffset
 
-		users = usernames.map (username) ->
-			utcOffset = onlineUsers[username]?.utcOffset
-
-			if utcOffset?
-				if utcOffset > 0
-					utcOffset = "+#{utcOffset}"
-				utcOffset = "(UTC #{utcOffset})"
+				if utcOffset?
+					if utcOffset > 0
+						utcOffset = "+#{utcOffset}"
+					utcOffset = "(UTC #{utcOffset})"
 
 			return {
 				username: username
@@ -50,14 +47,13 @@ Template.membersList.helpers
 		hasMore = users.length > usersLimit
 		users = _.first(users, usersLimit)
 
-		totalUsers = roomUsernames.length
 		totalShowing = users.length
-		totalOnline = roomOnlineUsernames.length
 
 		ret =
 			_id: this.rid
-			total: totalUsers
+			total: Template.instance().total.get()
 			totalShowing: totalShowing
+			loading: Template.instance().loading.get()
 			totalOnline: totalOnline
 			users: users
 			hasMore: hasMore
@@ -132,6 +128,17 @@ Template.membersList.onCreated ->
 	@usersLimit = new ReactiveVar 100
 	@userDetail = new ReactiveVar
 	@showDetail = new ReactiveVar false
+
+	@users = new ReactiveVar []
+	@total = new ReactiveVar
+	@loading = new ReactiveVar true
+
+	Tracker.autorun =>
+		@loading.set true
+		Meteor.call 'getUsersOfRoom', this.data.rid, this.showAllUsers.get(), (error, users) =>
+			@users.set users.records
+			@total.set users.total
+			@loading.set false
 
 	@clearUserDetail = =>
 		@showDetail.set(false)

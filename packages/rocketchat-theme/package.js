@@ -10,6 +10,7 @@ Package.onUse(function(api) {
 	api.use('rocketchat:logger');
 	api.use('rocketchat:assets');
 	api.use('coffeescript');
+	api.use('ecmascript');
 	api.use('underscore');
 	api.use('webapp');
 	api.use('webapp-hashing');
@@ -25,7 +26,9 @@ Package.onUse(function(api) {
 
 
 	api.addAssets('assets/stylesheets/global/_variables.less', 'server');
+	api.addAssets('assets/stylesheets/utils/_mixins.import.less', 'server');
 	api.addAssets('assets/stylesheets/utils/_colors.import.less', 'server');
+	api.addAssets('assets/stylesheets/utils/_forms.import.less', 'server');
 	api.addAssets('assets/stylesheets/utils/_keyframes.import.less', 'server');
 	api.addAssets('assets/stylesheets/utils/_lesshat.import.less', 'server');
 	api.addAssets('assets/stylesheets/utils/_preloader.import.less', 'server');

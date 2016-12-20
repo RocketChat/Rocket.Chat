@@ -20,13 +20,14 @@ Package.onUse(function(api) {
 		'client/lib/ChannelSettings.coffee',
 		'client/startup/messageTypes.coffee',
 		'client/startup/tabBar.coffee',
-		'client/startup/trackSettingsChange.coffee',
+		'client/startup/trackSettingsChange.js',
 		'client/views/channelSettings.html',
 		'client/views/channelSettings.coffee',
 		'client/stylesheets/channel-settings.less'
 	], 'client');
 
 	api.addFiles([
+		'server/functions/saveReactWhenReadOnly.js',
 		'server/functions/saveRoomType.coffee',
 		'server/functions/saveRoomTopic.coffee',
 		'server/functions/saveRoomName.coffee',

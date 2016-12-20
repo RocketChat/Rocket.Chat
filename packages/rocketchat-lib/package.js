@@ -7,12 +7,16 @@ Package.describe({
 
 Npm.depends({
 	'bad-words': '1.3.1',
+	'object-path': '0.9.2',
+	'node-dogstatsd': '0.0.6',
 	'localforage': '1.4.2',
+	'lokijs': '1.4.1',
 	'bugsnag': '1.8.0'
 });
 
 Package.onUse(function(api) {
 	api.use('rate-limit');
+	api.use('session');
 	api.use('reactive-var');
 	api.use('reactive-dict');
 	api.use('accounts-base');
@@ -24,7 +28,7 @@ Package.onUse(function(api) {
 	api.use('ddp-rate-limiter');
 	api.use('underscore');
 	api.use('mongo');
-	api.use('underscorestring:underscore.string');
+	api.use('underscorestring:underscore.string@3.3.4');
 	api.use('matb33:collection-hooks');
 	api.use('service-configuration');
 	api.use('check');
@@ -33,6 +37,8 @@ Package.onUse(function(api) {
 	api.use('rocketchat:version');
 	api.use('rocketchat:logger');
 	api.use('rocketchat:custom-oauth');
+	api.use('rocketchat:authorization', {unordered: true});
+	api.use('rocketchat:push-notifications', {unordered: true});
 
 	api.use('templating', 'client');
 	api.use('kadira:flow-router');
@@ -59,6 +65,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/lib/RateLimiter.coffee', 'server');
 
 	// SERVER FUNCTIONS
+	api.addFiles('server/functions/isDocker.js', 'server');
 	api.addFiles('server/functions/addUserToDefaultChannels.js', 'server');
 	api.addFiles('server/functions/addUserToRoom.js', 'server');
 	api.addFiles('server/functions/archiveRoom.js', 'server');
@@ -67,6 +74,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/functions/createRoom.js', 'server');
 	api.addFiles('server/functions/deleteMessage.js', 'server');
 	api.addFiles('server/functions/deleteUser.js', 'server');
+	api.addFiles('server/functions/getFullUserData.js', 'server');
 	api.addFiles('server/functions/removeUserFromRoom.js', 'server');
 	api.addFiles('server/functions/saveUser.js', 'server');
 	api.addFiles('server/functions/saveCustomFields.js', 'server');
@@ -97,6 +105,11 @@ Package.onUse(function(api) {
 	api.addFiles('server/models/Uploads.coffee', 'server');
 	api.addFiles('server/models/Users.coffee', 'server');
 
+	api.addFiles('server/startup/statsTracker.js', 'server');
+
+	// CACHE
+	api.addFiles('server/startup/cache/CacheLoad.js', 'server');
+
 	// SERVER PUBLICATIONS
 	api.addFiles('server/publications/settings.coffee', 'server');
 
@@ -109,6 +122,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/methods/createPrivateGroup.coffee', 'server');
 	api.addFiles('server/methods/deleteMessage.coffee', 'server');
 	api.addFiles('server/methods/deleteUserOwnAccount.js', 'server');
+	api.addFiles('server/methods/getFullUserData.js', 'server');
 	api.addFiles('server/methods/getRoomRoles.js', 'server');
 	api.addFiles('server/methods/getUserRoles.js', 'server');
 	api.addFiles('server/methods/joinRoom.coffee', 'server');
@@ -130,6 +144,8 @@ Package.onUse(function(api) {
 	api.addFiles('server/methods/updateMessage.coffee', 'server');
 	api.addFiles('server/methods/filterBadWords.js', ['server']);
 	api.addFiles('server/methods/filterATAllTag.js', 'server');
+	api.addFiles('server/methods/getChannelHistory.js', 'server');
+	api.addFiles('server/methods/cleanChannelHistory.js', 'server');
 
 	// SERVER STARTUP
 	api.addFiles('server/startup/settingsOnLoadCdnPrefix.coffee', 'server');
@@ -173,8 +189,6 @@ Package.onUse(function(api) {
 
 	api.imply('tap:i18n');
 });
-
-
 
 Package.onTest(function(api) {
 	api.use('coffeescript');

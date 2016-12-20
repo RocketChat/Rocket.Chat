@@ -1,6 +1,6 @@
-RocketChat.models.Users = new class extends RocketChat.models._Base
+class ModelUsers extends RocketChat.models._Base
 	constructor: ->
-		@model = Meteor.users
+		super(arguments...)
 
 		@tryEnsureIndex { 'roles': 1 }, { sparse: 1 }
 		@tryEnsureIndex { 'name': 1 }
@@ -68,6 +68,17 @@ RocketChat.models.Users = new class extends RocketChat.models._Base
 		return @find query, options
 
 	findUsersByUsernamesWithHighlights: (usernames, options) ->
+		if this.useCache
+			result =
+				fetch: () ->
+					return RocketChat.models.Users.getDynamicView('highlights').data().filter (record) ->
+						return usernames.indexOf(record.username) > -1
+				count: () ->
+					return result.fetch().length
+				forEach: (fn) ->
+					return result.fetch().forEach(fn)
+			return result
+
 		query =
 			username: { $in: usernames }
 			'settings.preferences.highlights.0':
@@ -109,10 +120,14 @@ RocketChat.models.Users = new class extends RocketChat.models._Base
 
 		termRegex = new RegExp s.escapeRegExp(searchTerm), 'i'
 		query =
-			active: true
 			$and: [
-				{ username: { $nin: exceptions } }
-				{ username: termRegex }
+				{
+					active: true
+					username: termRegex
+				}
+				{
+					username: { $nin: exceptions }
+				}
 			]
 
 		return @find query, options
@@ -178,6 +193,19 @@ RocketChat.models.Users = new class extends RocketChat.models._Base
 		return @find query, options
 
 	# UPDATE
+	addImportIds: (_id, importIds) ->
+		importIds = [].concat(importIds)
+
+		query =
+			_id: _id
+
+		update =
+			$addToSet:
+				importIds:
+					$each: importIds
+
+		return @update query, update
+
 	updateLastLoginById: (_id) ->
 		update =
 			$set:
@@ -343,7 +371,7 @@ RocketChat.models.Users = new class extends RocketChat.models._Base
 					address: s.trim(data.email)
 				]
 			else
-				unsetData.name = 1
+				unsetData.emails = 1
 
 		if data.phone?
 			if not _.isEmpty(s.trim(data.phone))
@@ -399,3 +427,5 @@ RocketChat.models.Users = new class extends RocketChat.models._Base
 			'emails.verified': true
 
 		return @find query, { fields: { name: 1, username: 1, emails: 1, 'settings.preferences.emailNotificationMode': 1 } }
+
+RocketChat.models.Users = new ModelUsers(Meteor.users, true)

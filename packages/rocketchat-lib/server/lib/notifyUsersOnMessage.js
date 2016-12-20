@@ -1,3 +1,5 @@
+import moment from 'moment';
+
 RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 	// skips this callback if the message was edited
 	if (message.editedAt) {
@@ -40,7 +42,9 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 		mentionIds = [];
 		highlightsIds = [];
 		toAll = false;
+		console.time('notifyUsersOnMessage');
 		highlights = RocketChat.models.Users.findUsersByUsernamesWithHighlights(room.usernames, { fields: { '_id': 1, 'settings.preferences.highlights': 1 }}).fetch();
+		console.timeEnd('notifyUsersOnMessage');
 
 		if (message.mentions != null) {
 			message.mentions.forEach(function(mention) {

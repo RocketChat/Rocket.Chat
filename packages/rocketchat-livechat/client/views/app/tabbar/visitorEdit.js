@@ -1,3 +1,4 @@
+import toastr from 'toastr';
 Template.visitorEdit.helpers({
 	visitor() {
 		return Template.instance().visitor.get();
@@ -9,8 +10,8 @@ Template.visitorEdit.helpers({
 
 	email() {
 		const visitor = Template.instance().visitor.get();
-		if (visitor.emails && visitor.emails.length > 0) {
-			return visitor.emails[0].address;
+		if (visitor.visitorEmails && visitor.visitorEmails.length > 0) {
+			return visitor.visitorEmails[0].address;
 		}
 	},
 

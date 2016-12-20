@@ -1,71 +1,72 @@
 <template name="livechatUsers">
-	<h2>{{_ "Livechat_managers"}}</h2>
-	<form id="form-manager" class="inline">
-		<label>{{_ "Add_manager"}}</label>
-		{{> inputAutocomplete settings=managerAutocompleteSettings name="username" class="search" placeholder=(_ "Search_by_username") autocomplete="off"}}
-		<button name="add" class="button primary">{{_ "Add"}}</button>
-	</form>
-	<div class="list">
-		<table>
-			<thead>
-				<tr>
-					<th>&nbsp;</th>
-					<th width="34%">{{_ "Name"}}</th>
-					<th width="33%">{{_ "Username"}}</th>
-					<th width="33%">{{_ "Email"}}</th>
-					<th>&nbsp;</th>
-				</tr>
-			</thead>
-			<tbody>
-				{{#each managers}}
-					<tr class="user-info" data-id="{{_id}}">
-						<td>
-							<div class="user-image status-{{status}}">
-								{{> avatar username=username}}
-							</div>
-						</td>
-						<td>{{name}}</td>
-						<td>{{username}}</td>
-						<td>{{emailAddress}}</td>
-						<td><a href="#remove" class="remove-manager"><i class="icon-trash"></i></a></td>
+	{{#requiresPermission 'view-livechat-manager'}}
+		<h2>{{_ "Livechat_managers"}}</h2>
+		<form id="form-manager" class="inline">
+			<label>{{_ "Add_manager"}}</label>
+			{{> inputAutocomplete settings=managerAutocompleteSettings name="username" class="search" placeholder=(_ "Search_by_username") autocomplete="off"}}
+			<button name="add" class="button primary add">{{_ "Add"}}</button>
+		</form>
+		<div class="list">
+			<table>
+				<thead>
+					<tr>
+						<th>&nbsp;</th>
+						<th width="34%">{{_ "Name"}}</th>
+						<th width="33%">{{_ "Username"}}</th>
+						<th width="33%">{{_ "Email"}}</th>
+						<th>&nbsp;</th>
 					</tr>
-				{{/each}}
-			</tbody>
-		</table>
-	</div>
-	<h2>{{_ "Livechat_agents"}}</h2>
-	<form id="form-agent" class="inline">
-		<label>{{_ "Add_agent"}}</label>
-		{{> inputAutocomplete settings=agentAutocompleteSettings name="username" class="search" placeholder=(_ "Search_by_username") autocomplete="off"}}
-		<button name="add" class="button primary">{{_ "Add"}}</button>
-	</form>
-	<div class="list">
-		<table>
-			<thead>
-				<tr>
-					<th>&nbsp;</th>
-					<th width="34%">{{_ "Name"}}</th>
-					<th width="33%">{{_ "Username"}}</th>
-					<th width="33%">{{_ "Email"}}</th>
-					<th>&nbsp;</th>
-				</tr>
-			</thead>
-			<tbody>
-				{{#each agents}}
-					<tr class="user-info" data-id="{{_id}}">
-						<td>
-							<div class="user-image status-{{status}}">
-								{{> avatar username=username}}
-							</div>
-						</td>
-						<td>{{name}}</td>
-						<td>{{username}}</td>
-						<td>{{emailAddress}}</td>
-						<td><a href="#remove" class="remove-agent"><i class="icon-trash"></i></a></td>
+				</thead>
+				<tbody>
+					{{#each managers}}
+						<tr class="user-info" data-id="{{_id}}">
+							<td>
+								<div class="user-image status-{{status}}">
+									{{> avatar username=username}}
+								</div>
+							</td>
+							<td>{{name}}</td>
+							<td>{{username}}</td>
+							<td>{{emailAddress}}</td>
+							<td><a href="#remove" class="remove-manager"><i class="icon-trash"></i></a></td>
+						</tr>
+					{{/each}}
+				</tbody>
+			</table>
+		</div>
+		<h2>{{_ "Livechat_agents"}}</h2>
+		<form id="form-agent" class="inline">
+			<label>{{_ "Add_agent"}}</label>
+			{{> inputAutocomplete settings=agentAutocompleteSettings name="username" class="search" placeholder=(_ "Search_by_username") autocomplete="off"}}
+			<button name="add" class="button primary add">{{_ "Add"}}</button>
+		</form>
+		<div class="list">
+			<table>
+				<thead>
+					<tr>
+						<th>&nbsp;</th>
+						<th width="34%">{{_ "Name"}}</th>
+						<th width="33%">{{_ "Username"}}</th>
+						<th width="33%">{{_ "Email"}}</th>
+						<th>&nbsp;</th>
 					</tr>
-				{{/each}}
-			</tbody>
-		</table>
-	</div>
+				</thead>
+				<tbody>
+					{{#each agents}}
+						<tr class="user-info" data-id="{{_id}}">
+							<td>
+								<div class="user-image status-{{status}}">
+									{{> avatar username=username}}
+								</div>
+							</td>
+							<td>{{name}}</td>
+							<td>{{username}}</td>
+							<td>{{emailAddress}}</td>
+							<td><a href="#remove" class="remove-agent"><i class="icon-trash"></i></a></td>
+						</tr>
+					{{/each}}
+				</tbody>
+			</table>
+		</div>
+	{{/requiresPermission}}
 </template>
-

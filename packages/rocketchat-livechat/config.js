@@ -184,7 +184,7 @@ Meteor.startup(function() {
 		type: 'boolean',
 		group: 'Livechat',
 		public: true,
-		i18nLabel: 'Office_Hours_Enabled'
+		i18nLabel: 'Office_hours_enabled'
 	});
 
 	RocketChat.settings.add('Livechat_videocall_enabled', false, {
@@ -209,6 +209,14 @@ Meteor.startup(function() {
 		public: true,
 		i18nLabel: 'Transcript_message',
 		enableQuery: { _id: 'Livechat_enable_transcript', value: true }
+	});
+
+	RocketChat.settings.add('Livechat_open_inquiery_show_connecting', false, {
+		type: 'boolean',
+		group: 'Livechat',
+		public: true,
+		i18nLabel: 'Livechat_open_inquiery_show_connecting',
+		enableQuery: { _id: 'Livechat_Routing_Method', value: 'Guest_Pool' }
 	});
 
 });

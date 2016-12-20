@@ -11,15 +11,19 @@ RocketChat.roomTypes.add 'c', 10,
 		action: (params, queryParams) ->
 			openRoom 'c', params.name
 			RocketChat.TabBar.showGroup 'channel'
+
 	findRoom: (identifier) ->
 		query =
 			t: 'c'
 			name: identifier
 		return ChatRoom.findOne(query)
+
 	roomName: (roomData) ->
 		return roomData.name
+
 	condition: ->
 		return RocketChat.authz.hasAtLeastOnePermission ['view-c-room', 'view-joined-room']
+
 	showJoinLink: (roomId) ->
 		return !! ChatRoom.findOne { _id: roomId, t: 'c' }
 
@@ -34,16 +38,26 @@ RocketChat.roomTypes.add 'd', 20,
 			RocketChat.TabBar.showGroup 'directmessage'
 		link: (sub) ->
 			return { username: sub.name }
+
 	findRoom: (identifier, user) ->
 		query =
 			t: 'd'
-			usernames:
-				$all: [identifier, user.username]
-		return ChatRoom.findOne(query)
+			name: identifier
+
+		subscription = ChatSubscription.findOne(query)
+		if subscription?.rid
+			return ChatRoom.findOne(subscription.rid)
+
 	roomName: (roomData) ->
 		return ChatSubscription.findOne({ rid: roomData._id }, { fields: { name: 1 } })?.name
+
 	condition: ->
 		return RocketChat.authz.hasAtLeastOnePermission ['view-d-room', 'view-joined-room']
+	getUserStatus: (roomId) ->
+		subscription = RocketChat.models.Subscriptions.findOne({rid: roomId});
+		return if not subscription?
+
+		return Session.get('user_' + subscription.name + '_status');
 
 RocketChat.roomTypes.add 'p', 30,
 	template: 'privateGroups'
