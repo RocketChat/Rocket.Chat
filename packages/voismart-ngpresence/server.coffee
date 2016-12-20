@@ -84,6 +84,8 @@ class AmqpConnection
 			switch mtype
 				when 'update', 'solicited', 'unsolicited'
 					@onUpdateMessage payload.user_statuses
+				when 'probe'
+					# do nothing but do not clutter logs
 				else logger.warn "unknown type #{mtype}"
 		catch e
 			logger.error "ignoring message. Got error: ", e
