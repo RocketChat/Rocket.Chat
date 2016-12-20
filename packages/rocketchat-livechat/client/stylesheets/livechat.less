@@ -238,9 +238,7 @@
 
 						&.new-day {
 							margin-top: 60px;
-						}
 
-						&.new-day {
 							&::before {
 								content: attr(data-date);
 								display: block;
@@ -597,15 +595,6 @@
 	}
 }
 
-.user-view {
-	li {
-		color: @secondary-font-color;
-		line-height: 18px;
-		font-size: 12px;
-		font-weight: 300;
-	}
-}
-
 .icon-chat-empty.status-offline {
 	color: @status-offline;
 }
@@ -695,6 +684,13 @@
 }
 
 .user-view {
+	li {
+		color: @secondary-font-color;
+		line-height: 18px;
+		font-size: 12px;
+		font-weight: 300;
+	}
+
 	nav.centered-buttons {
 		text-align: center;
 		margin-bottom: 1em;
