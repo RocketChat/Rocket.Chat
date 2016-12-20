@@ -78,7 +78,10 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 	let maxMembersForNotification = RocketChat.settings.get('Notifications_Max_Room_Members');
 	let disableAllMessageNotifications = room.usernames.length > maxMembersForNotification && maxMembersForNotification !== 0;
 	let subscriptions = RocketChat.models.Subscriptions.findNotificationPreferencesByRoom(room._id, disableAllMessageNotifications);
-	let userIds = subscriptions.map((s) => s.u._id);
+	let userIds = [];
+	subscriptions.forEach((s) => {
+		userIds.push(s.u._id);
+	});
 	let userSettings = {};
 	RocketChat.models.Users.findUsersByIds(userIds, { fields: { 'settings.preferences.desktopNotifications': 1, 'settings.preferences.mobileNotifications': 1 } }).forEach((user) => {
 		userSettings[user._id] = user.settings;
