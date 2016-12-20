@@ -1,5 +1,13 @@
 # History
 
+## 0.48.2, 2016-Dec-20 
+
+- Add button to refresh aouth services
+- Fix download on electron
+- Fix issue creating users with username from OAuth
+- Fix message when username field not exists in OAuth data
+- Fix OAuth global variable
+
 ## 0.48.1, 2016-Dec-13 - Now uses NodeJS 4.7.0
 
 - Fix integration payload JSON.parse 
