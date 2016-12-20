@@ -321,6 +321,14 @@ Template.admin.events
 				if err
 					handleError(err)
 
+	"click .submit .refresh-oauth": (e, t) ->
+		toastr.info TAPi18n.__ 'Refreshing'
+		Meteor.call 'refreshOAuthService', (err) ->
+			if err
+				handleError(err)
+			else
+				toastr.success TAPi18n.__ 'Done'
+
 	"click .submit .remove-custom-oauth": (e, t) ->
 		name = this.section.replace('Custom OAuth: ', '')
 		config =
