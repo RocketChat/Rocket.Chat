@@ -1,9 +1,15 @@
 RocketChat.Migrations.add({
 	version: 73,
 	up: function() {
-		RocketChat.models.Users.find({}, {username: 1, name: 1}).forEach((user) => {
-			RocketChat.models.Messages.updateAllNamesByUserId(user._id, user.name);
-			RocketChat.models.Subscriptions.setRealNameForDirectRoomsWithUsername(user.username, user.name);
+		RocketChat.models.Users.find({ 'oauth.athorizedClients': { $exists: true } }, { oauth: 1 }).forEach(function(user) {
+			RocketChat.models.Users.update({ _id: user._id }, {
+				$set: {
+					'oauth.authorizedClients': user.oauth.athorizedClients
+				},
+				$unset: {
+					'oauth.athorizedClients': 1
+				}
+			});
 		});
 	}
 });

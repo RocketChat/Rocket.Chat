@@ -9,8 +9,9 @@
 }
 
 .message {
-	&.otr, &.otr-ack {
-		.info:before {
+	&.otr,
+	&.otr-ack {
+		.info::before {
 			font-family: 'fontello';
 			content: "\e952";
 			visibility: visible;
@@ -21,7 +22,7 @@
 
 .message {
 	&.otr-ack {
-		.info:before {
+		.info::before {
 			color: green;
 		}
 	}

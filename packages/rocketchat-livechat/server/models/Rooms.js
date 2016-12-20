@@ -166,13 +166,12 @@ RocketChat.models.Rooms.findOpenByAgent = function(userId) {
 	return this.find(query);
 };
 
-RocketChat.models.Rooms.changeAgentByRoomId = function(roomId, newUsernames, newAgent) {
+RocketChat.models.Rooms.changeAgentByRoomId = function(roomId, newAgent) {
 	const query = {
 		_id: roomId
 	};
 	const update = {
 		$set: {
-			usernames: newUsernames,
 			servedBy: {
 				_id: newAgent.agentId,
 				username: newAgent.username

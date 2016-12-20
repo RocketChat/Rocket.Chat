@@ -171,7 +171,7 @@ rocketchat:message-pin@0.0.1
 rocketchat:message-snippet@0.0.1
 rocketchat:message-star@0.0.1
 rocketchat:migrations@0.0.1
-rocketchat:oauth2-server@1.4.0
+rocketchat:oauth2-server@2.0.0
 rocketchat:oauth2-server-config@1.0.0
 rocketchat:oembed@0.0.1
 rocketchat:otr@0.0.1

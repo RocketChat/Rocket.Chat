@@ -26,6 +26,8 @@ this.Livechat = new (class Livechat {
 
 		this._ready = new ReactiveVar(false);
 
+		this._widgetOpened = new ReactiveVar(false);
+
 		Tracker.autorun(() => {
 			if (this._room.get() && Meteor.userId()) {
 				RoomHistoryManager.getMoreIfIsEmpty(this._room.get());
@@ -149,5 +151,17 @@ this.Livechat = new (class Livechat {
 
 	isReady() {
 		return this._ready.get();
+	}
+
+	setWidgetOpened() {
+		return this._widgetOpened.set(true);
+	}
+
+	setWidgetClosed() {
+		return this._widgetOpened.set(false);
+	}
+
+	isWidgetOpened() {
+		return this._widgetOpened.get();
 	}
 })();
