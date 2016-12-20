@@ -45,7 +45,7 @@
 			width: 100%;
 			overflow: hidden;
 			white-space: nowrap;
-			i:after {
+			i::after {
 				content: " ";
 				display: inline-block;
 				width: 8px;
@@ -53,18 +53,18 @@
 				border-radius: 4px;
 				vertical-align: middle;
 			}
-			i.status-offline {
-				&:after {}
-			}
-			i.status-online {
-				&:after {}
-			}
-			i.status-away {
-				&:after {}
-			}
-			i.status-busy {
-				&:after {}
-			}
+			// i.status-offline {
+			// 	&:after {}
+			// }
+			// i.status-online {
+			// 	&:after {}
+			// }
+			// i.status-away {
+			// 	&:after {}
+			// }
+			// i.status-busy {
+			// 	&:after {}
+			// }
 		}
 		p {
 			-webkit-user-select: text;
@@ -77,7 +77,7 @@
 		}
 	}
 	.edit-form {
-		padding: 20px 20px 0 20px;
+		padding: 20px 20px 0;
 		white-space: normal;
 		h3 {
 			font-size: 24px;
@@ -94,23 +94,20 @@
 		}
 		nav {
 			padding: 0;
-
 			&.buttons {
 				margin-top: 2em;
 			}
 		}
-
 		.form-divisor {
 			text-align: center;
 			margin: 2em 0;
 			height: 9px;
-
 			> span {
 				padding: 0 1em;
 			}
 		}
 	}
 	.room-info-content > div {
-		margin: 0 0 20px 0;
+		margin: 0 0 20px;
 	}
 }
