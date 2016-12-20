@@ -208,6 +208,7 @@
 
 					<div class="submit">
 						{{#if $eq group._id 'OAuth'}}
+							<button class="button secondary refresh-oauth"><span>{{_ "Refresh_oauth_services"}}</span></button>
 							<button class="button secondary add-custom-oauth"><span>{{_ "Add_custom_oauth"}}</span></button>
 						{{/if}}
 						{{#if $eq group._id 'Assets'}}
