@@ -98,7 +98,7 @@ RocketChat.API.v1.addRoute('integrations.remove', { authRequired: true }, {
 					});
 
 					return RocketChat.API.v1.success({
-						integrationId: integration._id
+						integration: integration
 					});
 				default:
 					return RocketChat.API.v1.failure('Invalid integration type.');

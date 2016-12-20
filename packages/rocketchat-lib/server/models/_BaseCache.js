@@ -521,7 +521,7 @@ class ModelsBaseCache extends EventEmitter {
 				result.splice(0, options.skip);
 			}
 
-			if (typeof options.limit === 'number') {
+			if (typeof options.limit === 'number' && options.limit !== 0) {
 				result.splice(options.limit);
 			}
 		}
@@ -651,7 +651,8 @@ class ModelsBaseCache extends EventEmitter {
 			count: () => {
 				try {
 					query = this.processQuery(query);
-					return this.processQueryOptionsOnResult(this.collection.find(query), options).length;
+					const { limit, skip } = options;
+					return this.processQueryOptionsOnResult(this.collection.find(query), { limit, skip }).length;
 				} catch (e) {
 					console.error('Exception on cache find for', this.collectionName, ...arguments);
 					console.error(e.stack);

@@ -34,12 +34,30 @@ class API extends Restivus
 				error: msg or 'unauthorized'
 
 	getPaginationItems: (req) ->
+		hardUpperLimit = if RocketChat.settings.get('API_Upper_Count_Limit') <= 0 then 100 else RocketChat.settings.get('API_Upper_Count_Limit')
+		defaultCount = if RocketChat.settings.get('API_Default_Count') <= 0 then 50 else RocketChat.settings.get('API_Default_Count')
 		offset = if req.queryParams.offset then parseInt(req.queryParams.offset) else 0
-		count = if req.queryParams.count then parseInt(req.queryParams.count) else 25
-		count = 100 if count > 100
+		# Ensure count is an appropiate amount
+		if typeof req.queryParams.count != 'undefined'
+			count = parseInt(req.queryParams.count)
+		else
+			count = defaultCount
+
+		if count > hardUpperLimit
+			count = hardUpperLimit
+
+		if count == 0
+			count = defaultCount
+
 		return {} =
 			offset: offset
 			count: count
+
+	getRoomFieldsToExclude: () ->
+		return {} =
+			joinCode: 0
+			$loki: 0
+			meta: 0
 
 RocketChat.API = {}
 
