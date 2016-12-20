@@ -521,7 +521,7 @@ RocketChat.API.v1.addRoute('groups.setType', { authRequired: true }, {
 			return RocketChat.API.v1.failure(`The private group, ${findResult.name}, is archived`);
 		}
 
-		if (findResult.t === this.bodyParams.topic) {
+		if (findResult.t === this.bodyParams.type) {
 			return RocketChat.API.v1.failure('The private group type is the same as what it would be changed to.');
 		}
 

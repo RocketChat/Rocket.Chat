@@ -189,17 +189,13 @@ RocketChat.API.v1.addRoute('channels.getIntegrations', { authRequired: true }, {
 			channelsToSearch.push('all_public_channels');
 		}
 
-		try {
-			return RocketChat.API.v1.success({
-				integrations: RocketChat.models.Integrations.find({
-					channel: {
-						$in: channelsToSearch
-					}
-				}).fetch()
-			});
-		} catch (e) {
-			return RocketChat.API.v1.failure(`${e.name}: ${e.message}`);
-		}
+		return RocketChat.API.v1.success({
+			integrations: RocketChat.models.Integrations.find({
+				channel: {
+					$in: channelsToSearch
+				}
+			}).fetch()
+		});
 	}
 });
 
@@ -370,14 +366,6 @@ RocketChat.API.v1.addRoute('channels.list', { authRequired: true }, {
 	get: function() {
 		const { offset, count } = RocketChat.API.v1.getPaginationItems(this);
 
-		//This is for polling services, such as Zapier until we get a new
-		//feature that notifies via webhooks about new events (channels, users, etc)
-		if (offset === -1) {
-			return RocketChat.API.v1.success({
-				channels: RocketChat.models.Rooms.findByType('c', { fields: { joinCode: 0, $loki: 0, meta: 0 }}).fetch()
-			});
-		}
-
 		const rooms = RocketChat.models.Rooms.findByType('c', {
 			sort: { msgs: -1 },
 			skip: offset,
@@ -529,10 +517,6 @@ RocketChat.API.v1.addRoute('channels.setJoinCode', { authRequired: true }, {
 			return RocketChat.API.v1.failure(`The channel, ${findResult.name}, is archived`);
 		}
 
-		if (findResult.joinCode === this.bodyParams.joinCode) {
-			return RocketChat.API.v1.failure('The channel join code setting is the same as what it would be changed to.');
-		}
-
 		try {
 			Meteor.runAsUser(this.userId, () => {
 				Meteor.call('saveRoomSettings', findResult._id, 'joinCode', this.bodyParams.joinCode);
@@ -666,7 +650,7 @@ RocketChat.API.v1.addRoute('channels.setType', { authRequired: true }, {
 			return RocketChat.API.v1.failure(`The channel, ${findResult.name}, is archived`);
 		}
 
-		if (findResult.t === this.bodyParams.topic) {
+		if (findResult.t === this.bodyParams.type) {
 			return RocketChat.API.v1.failure('The channel type is the same as what it would be changed to.');
 		}
 

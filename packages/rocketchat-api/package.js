@@ -15,6 +15,7 @@ Package.onUse(function(api) {
 	]);
 
 	api.addFiles('server/api.coffee', 'server');
+	api.addFiles('server/settings.js', 'server');
 
 	api.addFiles('server/default/info.js', 'server');
 
