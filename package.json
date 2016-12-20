@@ -44,6 +44,7 @@
   "scripts": {
     "start": "meteor npm i && meteor",
     "lint": "eslint .",
+		"stylelint": "stylelint **/*.less",
     "test": "node .scripts/start.js",
     "deploy": "npm run build && pm2 startOrRestart pm2.json",
     "chimp-watch": "chimp --ddp=http://localhost:3000 --watch --mocha --path=tests/steps",
@@ -61,6 +62,7 @@
   "devDependencies": {
     "chimp": "^0.45.0",
     "eslint": "^3.12.1",
+    "stylelint": "^7.6.0",
     "supertest": "^2.0.1"
   },
   "dependencies": {

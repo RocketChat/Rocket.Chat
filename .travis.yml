@@ -51,6 +51,7 @@ before_script:
 - |-
   mongo --eval 'rs.initiate({_id:"rs0", members: [{"_id":1, "host":"localhost:27017"}]})'
 - npm run lint
+- npm run stylelint
 - travis_retry meteor build --headless /tmp/build
 - mkdir /tmp/build-test
 - tar -xf /tmp/build/Rocket.Chat.tar.gz -C /tmp/build-test/
@@ -59,6 +60,7 @@ before_script:
 - npm install
 - cd -
 - mongo --eval 'rs.status()'
+- mongo meteor --eval 'db.getCollectionNames()'
 script:
 - npm test
 before_deploy:

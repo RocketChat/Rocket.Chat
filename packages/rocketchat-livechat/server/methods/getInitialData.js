@@ -50,8 +50,8 @@ Meteor.methods({
 		info.transcriptMessage = initSettings.Livechat_transcript_message;
 
 
-		RocketChat.models.LivechatTrigger.find().forEach((trigger) => {
-			info.triggers.push(trigger);
+		RocketChat.models.LivechatTrigger.findEnabled().forEach((trigger) => {
+			info.triggers.push(_.pick(trigger, '_id', 'actions', 'conditions'));
 		});
 
 		RocketChat.models.LivechatDepartment.findEnabledWithAgents().forEach((department) => {

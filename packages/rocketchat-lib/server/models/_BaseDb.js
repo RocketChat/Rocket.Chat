@@ -129,7 +129,7 @@ class ModelsBaseDb {
 		try {
 			return this.ensureIndex(...arguments);
 		} catch (e) {
-			console.log(e);
+			console.error('Error creating index:', this.name, '->', ...arguments, e);
 		}
 	}
 
@@ -137,7 +137,7 @@ class ModelsBaseDb {
 		try {
 			return this.dropIndex(...arguments);
 		} catch (e) {
-			console.log(e);
+			console.error('Error dropping index:', this.name, '->', ...arguments, e);
 		}
 	}
 
