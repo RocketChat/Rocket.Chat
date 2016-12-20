@@ -122,6 +122,8 @@ Template.livechatWindow.onCreated(function() {
 	});
 
 	$(window).on('focus', () => {
-		$('textarea').focus();
+		if (Livechat.isWidgetOpened()) {
+			$('textarea').focus();
+		}
 	});
 });
