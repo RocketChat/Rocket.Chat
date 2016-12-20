@@ -117,18 +117,6 @@ blockquote::before {
 	}
 }
 
-.flex-tab {
-	input,
-	select,
-	textarea {
-		background-color: @content-background-color;
-
-		&:focus {
-			border-color: lighten(@secondary-background-contrast, 30%);
-		}
-	}
-}
-
 .input-line {
 	&.setting-changed > label {
 		color: @selection-color;
@@ -154,9 +142,6 @@ blockquote::before {
 
 input:-webkit-autofill {
 	color: @primary-font-color !important;
-}
-
-input:-webkit-autofill {
 	background-color: transparent !important;
 }
 
@@ -702,6 +687,16 @@ a:hover {
  */
 .flex-tab {
 	background-color: @secondary-background-color;
+
+	input,
+	select,
+	textarea {
+		background-color: @content-background-color;
+
+		&:focus {
+			border-color: lighten(@secondary-background-contrast, 30%);
+		}
+	}
 
 	.content,
 	.user-view,
