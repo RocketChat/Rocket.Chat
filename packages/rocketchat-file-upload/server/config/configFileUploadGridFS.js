@@ -1,8 +1,8 @@
 /* globals FileUpload, UploadFS */
-var stream = Npm.require('stream');
-var zlib = Npm.require('zlib');
-var util = Npm.require('util');
-
+const stream = Npm.require('stream');
+const zlib = Npm.require('zlib');
+const util = Npm.require('util');
+const logger = new Logger('FileUpload');
 
 function ExtractRange(options) {
 	if (!(this instanceof ExtractRange)) {
@@ -115,6 +115,7 @@ var readFromGridFS = function(storeName, fileId, file, headers, req, res) {
 		delete headers['Content-Length'];
 		headers['Content-Length'] = range.stop - range.start + 1;
 		res.writeHead(206, headers);
+		logger.debug('File upload extracting range');
 		ws.pipe(new ExtractRange({ start: range.start, stop: range.stop })).pipe(res);
 	} else {
 		res.writeHead(200, headers);
