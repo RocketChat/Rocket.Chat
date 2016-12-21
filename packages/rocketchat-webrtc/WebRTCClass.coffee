@@ -464,7 +464,7 @@ class WebRTCClass
 	stopAllPeerConnections: ->
 		for id, peerConnection of @peerConnections
 			@stopPeerConnection id
-		window.audioContext.close()
+		window.audioContext?.close()
 
 	setAudioEnabled: (enabled=true) ->
 		if @localStream?
