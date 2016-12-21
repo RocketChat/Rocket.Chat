@@ -58,7 +58,7 @@ RocketChat.EmojiPicker = {
 		let cssProperties = {
 			top: top,
 			left: left
-		}
+		};
 
 		if (top < 0) {
 			cssProperties.top = 10;
@@ -72,7 +72,7 @@ RocketChat.EmojiPicker = {
 
 			if (left + pickerWidth > windowSize) {
 				let emojiButtonSize = $('.reaction-message.message-action').outerWidth();
-				cssProperties.left = left - pickerWidth + emojiButtonSize
+				cssProperties.left = left - pickerWidth + emojiButtonSize;
 			}
 		}
 
