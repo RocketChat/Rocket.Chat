@@ -31,9 +31,9 @@ class SideNav extends Page {
 	get statusBusy() { return browser.element('.busy'); }
 	get statusOffline() { return browser.element('.offline'); }
 	get account() { return browser.element('#account'); }
+	get admin() { return browser.element('#admin'); }
 	get logout() { return browser.element('#logout'); }
 	get sideNavBar() { return browser.element('.side-nav '); }
-	get sideNavBtn() { return browser.element('.fixed-title .burger'); }
 
 	get preferences() { return browser.element('.account-link:nth-of-type(1)'); }
 	get profile() { return browser.element('.account-link:nth-of-type(2)'); }
