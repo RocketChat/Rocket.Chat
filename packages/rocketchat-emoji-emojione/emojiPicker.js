@@ -1523,13 +1523,6 @@ emojisByCategory = {
 		'flag_ss',
 		'flag_tc',
 		'flag_mf'
-	],
-	'modifier': [
-		'tone1',
-		'tone2',
-		'tone3',
-		'tone4',
-		'tone5'
 	]
 };
 

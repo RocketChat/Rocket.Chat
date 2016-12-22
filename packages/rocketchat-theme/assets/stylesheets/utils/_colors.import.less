@@ -1,7 +1,6 @@
 /** ----------------------------------------------------------------------------
  * Derivative colours (fixed variants of inherited variables)
  */
-
 @default-action-color: darken(@secondary-background-color, 15%);
 @default-action-contrast: contrast(@default-action-color, #444444);
 @primary-background-contrast: contrast(@primary-background-color, #444444);
@@ -24,7 +23,6 @@
 /** ----------------------------------------------------------------------------
  * Document components
  */
-
 html {
 	.custom-scroll(@transparent-dark, @custom-scrollbar-color, 0);
 }
@@ -35,6 +33,7 @@ html {
 
 body {
 	color: @primary-font-color;
+
 	* {
 		border-color: @component-color;
 	}
@@ -54,6 +53,7 @@ blockquote::before {
 .cms-page,
 .page-container {
 	background-color: @content-background-color;
+
 	header {
 		background-color: @content-background-color;
 		border-color: @component-color;
@@ -63,19 +63,24 @@ blockquote::before {
 .page-container table {
 	overflow: hidden;
 	background-color: @secondary-background-color;
+
 	th,
 	td {
 		border-color: @component-color;
 	}
+
 	th {
 		background-color: @content-background-color;
 	}
+
 	tr {
 		background-color: @transparent-light;
+
 		&:nth-of-type(even) {
 			background-color: @transparent-lightest;
 		}
 	}
+
 	tr:hover td {
 		background-color: @content-background-color;
 	}
@@ -93,29 +98,21 @@ blockquote::before {
 
 .flex-nav {
 	.input-shade(@primary-background-contrast, @primary-background-color);
+
 	label,
 	legend {
 		color: @tertiary-font-color;
 	}
+
 	input {
 		&:focus {
 			border-color: fade(@primary-background-contrast, 50%);
 		}
 	}
+
 	.input.checkbox.toggle {
 		input:checked + label::before {
 			background-color: @primary-action-color;
-		}
-	}
-}
-
-.flex-tab {
-	input,
-	select,
-	textarea {
-		background-color: @content-background-color;
-		&:focus {
-			border-color: lighten(@secondary-background-contrast, 30%);
 		}
 	}
 }
@@ -124,10 +121,12 @@ blockquote::before {
 	&.setting-changed > label {
 		color: @selection-color;
 	}
+
 	i,
 	.settings-description {
 		color: @secondary-font-color;
 	}
+
 	.settings-alert {
 		background-color: @pending-background;
 		border-color: @pending-border;
@@ -143,9 +142,6 @@ blockquote::before {
 
 input:-webkit-autofill {
 	color: @primary-font-color !important;
-}
-
-input:-webkit-autofill {
 	background-color: transparent !important;
 }
 
@@ -156,25 +152,31 @@ input:-webkit-autofill {
 				background-color: @content-background-color;
 				border-color: lighten(@secondary-background-contrast, 30%);
 			}
+
 			&::after {
 				background-color: @secondary-background-contrast;
 			}
 		}
 	}
+
 	&.checkbox.toggle {
 		input:checked + label::before {
 			background-color: @secondary-background-contrast;
 		}
+
 		input:disabled + label::before {
 			background-color: lighten(@secondary-background-contrast, 50%) !important;
 		}
+
 		label {
 			&::before {
 				background-color: lighten(@secondary-background-contrast, 30%);
 			}
+
 			&::after {
 				background-color: @content-background-color;
 			}
+
 			&:hover {
 				&::before {
 					background-color: lighten(@secondary-background-contrast, 20%);
@@ -187,7 +189,6 @@ input:-webkit-autofill {
 /** ----------------------------------------------------------------------------
  * Misc typography variants
  */
-
 a {
 	color: @primary-font-color;
 }
@@ -202,6 +203,7 @@ a:hover {
 	a i,
 	a[class^="icon-"] {
 		color: @primary-font-color;
+
 		&:hover {
 			color: darken(@primary-font-color, 10%);
 		}
@@ -226,17 +228,19 @@ a:hover {
 /** ----------------------------------------------------------------------------
  * Admin and settings styles
  */
-
 .page-settings {
 	.content {
 		background-color: @transparent-dark;
 	}
+
 	.section {
 		background-color: @content-background-color;
 	}
+
 	.terminal {
 		background-color: #444444;
 		color: white;
+
 		.time {
 			color: @secondary-font-color;
 		}
@@ -247,6 +251,7 @@ a:hover {
 .page-settings {
 	a {
 		color: @primary-font-color;
+
 		&:hover {
 			color: @primary-action-color;
 		}
@@ -268,6 +273,7 @@ a:hover {
 		background-color: @error-color;
 		color: white;
 	}
+
 	pre {
 		color: @error-color;
 		border-color: @error-border;
@@ -277,8 +283,10 @@ a:hover {
 
 .code-mirror-box {
 	.buttons {
-		background-color: #f7f7f7; // matches plugin styles
+		background-color: #f7f7f7;
+		// matches plugin styles
 	}
+
 	&.code-mirror-box-fullscreen {
 		background-color: @content-background-color;
 	}
@@ -286,10 +294,12 @@ a:hover {
 
 .avatar-suggestion-item {
 	background-color: @tertiary-background-color;
+
 	.avatar {
 		background-size: cover;
 		background-color: @tertiary-background-color;
 	}
+
 	.question-mark::before {
 		color: @secondary-font-color;
 	}
@@ -298,12 +308,13 @@ a:hover {
 /** ----------------------------------------------------------------------------
  * Asides (external to main application views)
  */
-
 .spotlight {
 	background-color: @transparent-darker;
+
 	> .spotlight-input {
 		background-color: @secondary-background-color;
 		color: @secondary-font-color;
+
 		> i {
 			color: @secondary-font-color;
 		}
@@ -318,12 +329,15 @@ a:hover {
 .page-loading {
 	.gradient(shade(@primary-background-color), @primary-background-color);
 	color: @tertiary-font-color;
+
 	a {
 		color: @tertiary-font-color;
 	}
+
 	a:hover {
 		color: @primary-background-contrast;
 	}
+
 	.spinner > div {
 		background-color: @primary-background-contrast;
 	}
@@ -333,6 +347,7 @@ a:hover {
 	color: @primary-font-color;
 	background-color: @content-background-color;
 	.input-shade(@primary-font-color, @content-background-color);
+
 	.input-text {
 		input:-webkit-autofill {
 			-webkit-box-shadow: 0 0 0 20px @content-background-color inset;
@@ -343,6 +358,7 @@ a:hover {
 .dropzone.over .dropzone-overlay {
 	background-color: @transparent-darkest;
 	color: @content-background-color;
+
 	> div {
 		background-color: @transparent-darkest;
 	}
@@ -351,7 +367,6 @@ a:hover {
 /** ----------------------------------------------------------------------------
  * Room components
  */
-
 .new-message {
 	color: @primary-action-contrast;
 	background-color: @primary-action-color;
@@ -361,6 +376,7 @@ a:hover {
 	.tick {
 		background-color: @primary-action-color;
 	}
+
 	.tick-all {
 		background-color: @selection-color;
 	}
@@ -382,14 +398,17 @@ a:hover {
 	.upload-progress {
 		background-color: @component-color;
 		color: @primary-action-color;
+
 		&.upload-error {
 			background-color: @error-background;
 			border-color: @error-border;
 		}
+
 		.upload-progress-progress {
 			background-color: @success-background;
 		}
 	}
+
 	.unread-bar {
 		background-color: @component-color;
 		color: @primary-action-color;
@@ -400,37 +419,47 @@ a:hover {
 	.edit-room-title {
 		.linkColors(@secondary-font-color, @primary-font-color);
 	}
+
 	.footer {
 		background: @content-background-color;
 	}
+
 	.message-form {
 		color: @secondary-font-color;
+
 		.input-message-container {
 			background-color: @content-background-color;
 		}
+
 		.message-buttons {
 			.buttonColors(lighten(@primary-font-color, 25%), @secondary-background-color);
+
 			&:hover {
 				background-color: mix(@secondary-background-color, contrast(@primary-font-color), 20%);
 			}
 		}
+
 		textarea {
 			&.editing {
 				background-color: lighten(@pending-color, 40%);
 			}
 		}
 	}
+
 	.new-message {
 		color: @primary-action-contrast;
 		background-color: @primary-action-color;
 	}
+
 	.messages-box {
 		.jump-recent {
 			background-color: @component-color;
 		}
+
 		&.selectable .selected {
 			background-color: @selection-background;
 		}
+
 		.load-more span {
 			background-color: @secondary-background-color;
 		}
@@ -448,10 +477,12 @@ a:hover {
 
 .popup-item {
 	// color: @secondary-font-color;
+
 	&.selected {
 		color: @primary-action-contrast;
 		background-color: @primary-action-color;
 	}
+
 	span {
 		color: @secondary-font-color;
 	}
@@ -461,6 +492,7 @@ a:hover {
 	.start {
 		color: @info-font-color;
 	}
+
 	.editing .body,
 	textarea.editing {
 		background-color: lighten(@pending-color, 40%);
@@ -470,12 +502,12 @@ a:hover {
 /** ----------------------------------------------------------------------------
  * Message content
  */
-
 .first-unread {
 	.body {
 		&::before {
 			background: @transparent-darker;
 		}
+
 		&::after {
 			color: @primary-font-color;
 		}
@@ -494,29 +526,37 @@ a:hover {
 	.body {
 		color: @primary-font-color;
 	}
+
 	&.system .body {
 		color: @info-font-color;
 	}
+
 	&:hover {
 		background-color: @transparent-dark;
 	}
+
 	.toggle-options {
 		color: @secondary-font-color;
 	}
+
 	.message-dropdown,
 	.options-menu {
 		color: lighten(@primary-font-color, 13%);
 		background-color: @content-background-color;
+
 		ul li:hover {
 			background-color: @tertiary-background-color;
 		}
+
 		.message-dropdown-close {
 			background-color: @secondary-background-color;
 		}
 	}
+
 	&.new-day::before {
 		background-color: @content-background-color;
 	}
+
 	&.new-day::after,
 	.info,
 	.user-view,
@@ -524,31 +564,39 @@ a:hover {
 		color: @info-font-color;
 		border-color: @component-color;
 	}
+
 	.user {
 		color: @primary-font-color;
 	}
+
 	.is-bot,
 	.role-tag {
 		background-color: @info-font-color;
 		color: contrast(@info-font-color);
 	}
+
 	a {
 		.linkColors(@link-font-color, darken(@link-font-color, 10%));
 	}
+
 	a.mention-link {
 		color: @primary-action-color;
+
 		&.mention-link-me {
 			color: @primary-action-contrast;
 			background-color: @primary-action-color;
 		}
+
 		&.mention-link-all {
 			color: @primary-action-contrast;
 			background-color: @attention-color;
 		}
 	}
+
 	.highlight-text {
 		background-color: @selection-background;
 	}
+
 	.attachment {
 		.attachment-block-border {
 			background-color: @info-font-color;
@@ -559,21 +607,24 @@ a:hover {
 /** ----------------------------------------------------------------------------
  * Side nav
  */
-
 .side-nav {
 	color: @tertiary-font-color;
 	background-color: @primary-background-color;
+
 	* {
 		border-color: @transparent-darker;
 	}
+
 	a,
 	.info {
 		.linkColors(@tertiary-font-color, @tertiary-font-color);
 	}
+
 	.arrow::before,
 	.arrow::after {
 		background-color: @tertiary-font-color;
 	}
+
 	.info,
 	.options,
 	.content,
@@ -581,40 +632,51 @@ a:hover {
 	header {
 		background-color: @primary-background-color;
 	}
+
 	.rooms-list {
 		background-color: lighten(@primary-background-color, 2.5%);
 	}
+
 	h3:hover,
 	li:hover,
 	.more:hover,
 	.selected-users li {
 		background-color: @transparent-darker;
 	}
+
 	li.active {
 		background-color: @transparent-light !important;
 	}
+
 	i {
 		color: @transparent-lighter;
 	}
+
 	i.status-offline {
 		color: @transparent-lighter !important;
 	}
+
 	.opt i:hover {
 		color: @transparent-lightest;
 	}
+
 	.has-alert .name {
 		color: @primary-background-contrast;
 	}
+
 	.unread {
 		background-color: @success-color;
 	}
+
 	.unread-rooms {
 		background-color: @primary-action-color;
 		color: @primary-action-contrast;
 	}
+
 	.button {
 		.buttonColors(@tertiary-font-color, mix(@primary-action-color, @primary-background-color));
 	}
+
 	.options button {
 		.buttonColors(@tertiary-font-color, @primary-background-color);
 	}
@@ -623,32 +685,48 @@ a:hover {
 /** ----------------------------------------------------------------------------
  * Flex tabs / admin fly-out panels
  */
-
 .flex-tab {
 	background-color: @secondary-background-color;
+
+	input,
+	select,
+	textarea {
+		background-color: @content-background-color;
+
+		&:focus {
+			border-color: lighten(@secondary-background-contrast, 30%);
+		}
+	}
+
 	.content,
 	.user-view,
 	.list-view {
 		background-color: @secondary-background-color;
 	}
+
 	.message {
 		&.new-day::before {
 			background-color: @secondary-background-color;
 		}
 	}
+
 	.channel-settings {
 		.buttons {
 			background-color: @secondary-background-color;
+
 			.button {
 				.buttonColors(lighten(@primary-font-color, 25%), @secondary-background-color);
 			}
 		}
+
 		.button.edit {
 			.buttonColors(lighten(@primary-font-color, 25%), @secondary-background-color);
 		}
+
 		.icon-ok {
 			color: inherit;
 		}
+
 		.input.checkbox.toggle {
 			input:checked + label::before {
 				background-color: @primary-background-color;
@@ -660,18 +738,22 @@ a:hover {
 .flex-tab-bar {
 	background-color: @content-background-color;
 	border-color: @component-color;
+
 	.tab-button {
 		&:hover {
 			background-color: @secondary-background-color;
 		}
+
 		&.active {
 			background-color: @secondary-background-color;
 			border-right-color: @selection-color;
 		}
+
 		&.attention {
 			.blink(@selection-color);
 		}
 	}
+
 	.counter {
 		background: @secondary-font-color;
 		color: white;
@@ -686,11 +768,13 @@ a:hover {
 		background-color: @transparent-darker;
 		color: white;
 	}
+
 	.main-video > div,
 	.video-muted-overlay,
 	.videos .video-item > div {
 		background-color: @transparent-darker;
 	}
+
 	video {
 		background-color: black;
 	}
@@ -699,7 +783,6 @@ a:hover {
 /** ----------------------------------------------------------------------------
  * User status / user meta
  */
-
 i.status-online {
 	color: @status-online;
 }
@@ -767,6 +850,7 @@ i.status-offline {
 	p {
 		color: @secondary-font-color;
 	}
+
 	.box::after,
 	.stats li,
 	.tags li {
@@ -777,7 +861,6 @@ i.status-offline {
 /** ----------------------------------------------------------------------------
  * Buttons!
  */
-
 .actionLinks li .action-link {
 	.buttonColors(@primary-action-contrast, @primary-action-color);
 }
@@ -786,44 +869,58 @@ i.status-offline {
 
 .button {
 	.buttonColors(@default-action-contrast, @default-action-color);
+
 	&.primary {
 		.buttonColors(@primary-action-contrast, @primary-action-color);
 	}
+
 	&.secondary {
 		.buttonColors(@secondary-action-contrast, @secondary-action-color);
 	}
+
 	&.tertiary {
 		.buttonColors(@primary-action-contrast, @selection-color);
 	}
+
 	&.danger {
 		.buttonColors(@error-contrast, @error-color);
 	}
+
 	&.external-login {
 		color: white;
+
 		&.facebook {
 			background-color: #325c99;
 		}
+
 		&.twitter {
 			background-color: #02acec;
 		}
+
 		&.google {
 			background-color: #dd4b39;
 		}
+
 		&.github {
 			background-color: #4c4c4c;
 		}
+
 		&.gitlab {
 			background-color: #373d47;
 		}
+
 		&.trello {
 			background-color: #026aa7;
 		}
+
 		&.meteor-developer {
 			background-color: #de4f4f;
 		}
+
 		&.wordpress {
 			background-color: #1e8cbe;
 		}
+
 		&.linkedin {
 			background-color: #1b86bc;
 		}
@@ -833,7 +930,6 @@ i.status-offline {
 /** ----------------------------------------------------------------------------
  * Feedback and overlay content
  */
-
 .icon-ok,
 .feedback-success {
 	color: @success-color;
