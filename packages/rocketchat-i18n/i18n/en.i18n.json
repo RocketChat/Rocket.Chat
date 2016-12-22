@@ -1064,6 +1064,7 @@
   "Read_only_group": "Read Only Group",
   "Record": "Record",
   "Redirect_URI": "Redirect URI",
+  "Refresh_oauth_services": "Refresh OAuth Services",
   "Refresh_keys": "Refresh keys",
   "Refresh_your_page_after_install_to_enable_screen_sharing": "Refresh your page after install to enable screen sharing",
   "Register": "Register a new account",

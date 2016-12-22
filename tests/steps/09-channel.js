@@ -25,7 +25,7 @@ describe('channel usage', ()=> {
 		before(()=> {
 			if (flexTab.toastAlert.isVisible()) {
 				flexTab.dismissToast();
-				browser.waitForVisible('.toast', 5000, true);
+				flexTab.toastAlert.waitForVisible(5000, true);
 			}
 			flexTab.membersTab.waitForVisible();
 			flexTab.membersTab.click();
@@ -34,7 +34,7 @@ describe('channel usage', ()=> {
 		after(()=> {
 			if (flexTab.toastAlert.isVisible()) {
 				flexTab.dismissToast();
-				browser.waitForVisible('.toast', 5000, true);
+				flexTab.toastAlert.waitForVisible(5000, true);
 			}
 			flexTab.membersTab.waitForVisible();
 			flexTab.membersTab.click();
@@ -51,7 +51,7 @@ describe('channel usage', ()=> {
 			before(()=> {
 				if (flexTab.toastAlert.isVisible()) {
 					flexTab.dismissToast();
-					browser.waitForVisible('.toast', 5000, true);
+					flexTab.toastAlert.waitForVisible(5000, true);
 				}
 				flexTab.channelTab.waitForVisible();
 				flexTab.channelTab.click();
@@ -60,7 +60,7 @@ describe('channel usage', ()=> {
 			after(()=> {
 				if (flexTab.toastAlert.isVisible()) {
 					flexTab.dismissToast();
-					browser.waitForVisible('.toast', 5000, true);
+					flexTab.toastAlert.waitForVisible(5000, true);
 				}
 				flexTab.channelTab.waitForVisible(5000);
 				flexTab.channelTab.click();
@@ -102,7 +102,7 @@ describe('channel usage', ()=> {
 			after(()=> {
 				if (flexTab.toastAlert.isVisible()) {
 					flexTab.dismissToast();
-					browser.waitForVisible('.toast', 5000, true);
+					flexTab.toastAlert.waitForVisible(5000, true);
 				}
 				flexTab.channelTab.waitForVisible();
 				flexTab.channelTab.click();
@@ -136,7 +136,7 @@ describe('channel usage', ()=> {
 			after(()=> {
 				if (flexTab.toastAlert.isVisible()) {
 					flexTab.dismissToast();
-					browser.waitForVisible('.toast', 5000, true);
+					flexTab.toastAlert.waitForVisible(5000, true);
 				}
 				flexTab.channelTab.waitForVisible();
 				flexTab.channelTab.click();
@@ -167,7 +167,7 @@ describe('channel usage', ()=> {
 			before(()=> {
 				if (flexTab.toastAlert.isVisible()) {
 					flexTab.dismissToast();
-					browser.waitForVisible('.toast', 5000, true);
+					flexTab.toastAlert.waitForVisible(5000, true);
 				}
 				flexTab.membersTab.waitForVisible();
 				flexTab.membersTab.click();
@@ -176,7 +176,7 @@ describe('channel usage', ()=> {
 			after(()=> {
 				if (flexTab.toastAlert.isVisible()) {
 					flexTab.dismissToast();
-					browser.waitForVisible('.toast', 5000, true);
+					flexTab.toastAlert.waitForVisible(5000, true);
 				}
 				flexTab.membersTab.waitForVisible();
 				flexTab.membersTab.click();
@@ -189,7 +189,7 @@ describe('channel usage', ()=> {
 			it('dismiss the toast', ()=> {
 				if (flexTab.toastAlert.isVisible()) {
 					flexTab.dismissToast();
-					browser.waitForVisible('.toast', 5000, true);
+					flexTab.toastAlert.waitForVisible(5000, true);
 				}
 			});
 
