@@ -46,7 +46,6 @@ export class CustomOAuth {
 	}
 
 	configureLogin() {
-		self = this;
 		const loginWithService = 'loginWith' + s.capitalize(this.name);
 
 		Meteor[loginWithService] = (options, callback) => {
@@ -57,7 +56,7 @@ export class CustomOAuth {
 			}
 
 			const credentialRequestCompleteCallback = Accounts.oauth.credentialRequestCompleteHandler(callback);
-			self.requestCredential(options, credentialRequestCompleteCallback);
+			this.requestCredential(options, credentialRequestCompleteCallback);
 		};
 	}
 
