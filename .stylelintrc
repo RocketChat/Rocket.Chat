@@ -1,6 +1,12 @@
 {
 	"rules": {
-		"at-rule-empty-line-before": "always",
+		"at-rule-empty-line-before": [ "always", {
+			except: [
+				"blockless-after-same-name-blockless",
+				"first-nested",
+			],
+			ignore: ["after-comment"],
+		} ],
 		"at-rule-name-case": "lower",
 		"at-rule-name-space-after": "always",
 		"at-rule-semicolon-newline-after": "always",
@@ -63,6 +69,7 @@
 		"media-query-list-comma-newline-after": "always-multi-line",
 		"media-query-list-comma-space-after": "always-single-line",
 		"media-query-list-comma-space-before": "never",
+		"no-duplicate-selectors": true,
 		"no-empty-source": true,
 		"no-eol-whitespace": true,
 		"no-extra-semicolons": true,
@@ -71,8 +78,13 @@
 		"number-no-trailing-zeros": true,
 		"property-case": "lower",
 		"property-no-unknown": true,
-		"rule-nested-empty-line-before": "never",
-		"rule-non-nested-empty-line-before": "always",
+		"rule-nested-empty-line-before": [ "always", {
+			except: ["first-nested"],
+			ignore: ["after-comment"],
+		} ],
+		"rule-non-nested-empty-line-before": [ "always", {
+			ignore: ["after-comment"],
+		} ],
 		"selector-attribute-brackets-space-inside": "never",
 		"selector-attribute-operator-space-after": "never",
 		"selector-attribute-operator-space-before": "never",
