@@ -5,10 +5,10 @@ import flexTab from '../pageobjects/flex-tab.page';
 import mainContent from '../pageobjects/main-content.page';
 import sideNav from '../pageobjects/side-nav.page';
 
-import {username, email, password} from '../test-data/user.js';
-import {checkIfUserIsValid, publicChannelCreated, setPublicChannelCreated} from '../test-data/checks';
-import {publicChannelName} from '../test-data/channel.js';
-import {targetUser} from '../test-data/interactions.js';
+import {username, email, password} from '../data/user.js';
+import {checkIfUserIsValid, publicChannelCreated, setPublicChannelCreated} from '../data/checks';
+import {publicChannelName} from '../data/channel.js';
+import {targetUser} from '../data/interactions.js';
 
 describe('channel usage', ()=> {
 	before(() => {
