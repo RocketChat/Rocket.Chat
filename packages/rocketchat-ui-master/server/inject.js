@@ -52,7 +52,7 @@ Inject.rawBody('page-loading', `
 	</div>
 </div>`);
 
-if (process.env.DISABLE_ANIMATION) {
+if (process.env.DISABLE_ANIMATION || process.env.TEST_MODE === 'true') {
 	Inject.rawHead('disable-animation', `
 	<style>
 		body, body * {
