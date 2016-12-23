@@ -113,6 +113,7 @@ Meteor.startup ->
 			console.log "Name: #{adminUser.name}".green
 			console.log "Email: #{adminUser.emails[0].address}".green
 			console.log "Username: #{adminUser.username}".green
+			console.log "Password: #{adminUser._id}".green
 
 			if RocketChat.models.Users.findOneByEmailAddress(adminUser.emails[0].address)
 				throw new Meteor.Error "Email #{adminUser.emails[0].address} already exists", 'Rocket.Chat can\'t run in test mode'
@@ -123,5 +124,4 @@ Meteor.startup ->
 			RocketChat.models.Users.create adminUser
 
 			Accounts.setPassword adminUser._id, adminUser._id
-			console.log "Password: #{adminUser._id}".green
 			RocketChat.authz.addUserRoles(adminUser._id, 'admin')
