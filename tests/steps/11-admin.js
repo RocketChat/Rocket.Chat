@@ -5,8 +5,8 @@ import sideNav from '../pageobjects/side-nav.page';
 import admin from '../pageobjects/administration.page';
 
 //test data imports
-import {checkIfUserIsAdmin} from '../test-data/checks';
-import {adminUsername, adminEmail, adminPassword} from '../test-data/user.js';
+import {checkIfUserIsAdmin} from '../data/checks';
+import {adminUsername, adminEmail, adminPassword} from '../data/user.js';
 
 describe('Admin Login', () => {
 	before(() => {
