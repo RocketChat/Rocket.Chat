@@ -259,7 +259,7 @@ Template.phone.helpers
 		return RocketChat.Phone.isAnswered()
 
 	callDuration: ->
-		start = Session.get("VoiSmart::Phone::lastAnswered")
+		start = localStorage.getItem("VoiSmart::Phone::lastAnswered")
 		if start
 			now = Math.round(Chronos.now() / 1000)
 		else
@@ -465,8 +465,9 @@ RocketChat.Phone = new class
 				setCallState('active')
 				RocketChat.ToneGenerator.stop()
 				msg = TAPi18n.__("In_call_with")
-				now = new Date().getTime()
-				Session.set("VoiSmart::Phone::lastAnswered", Math.round(now / 1000))
+				if !d.attach
+					now = new Date().getTime()
+					localStorage.setItem("VoiSmart::Phone::lastAnswered", Math.round(now / 1000))
 				answered.set(true)
 				if d.direction.name == 'outbound'
 					putNotification(msg, d.params.destination_number)
@@ -478,7 +479,8 @@ RocketChat.Phone = new class
 			when 'hangup'
 				RocketChat.ToneGenerator.stop()
 				answered.set(false)
-				Session.set("VoiSmart::Phone::lastAnswered", null)
+				localStorage.removeItem("VoiSmart::Phone::lastAnswered")
+				localStorage.removeItem("VoiSmart::Phone::sessionUUID")
 				if _callState != 'transfer'
 					if window.rocketDebug
 						console.log("hangup call rq")
@@ -556,6 +558,12 @@ RocketChat.Phone = new class
 			console.log _server
 			console.log _iceConfig
 
+		old_session_uuid = localStorage.getItem("VoiSmart::Phone::sessionUUID")
+		if old_session_uuid
+			session_uuid = old_session_uuid
+		else
+			session_uuid = $.verto.genUUID()
+		localStorage.setItem("VoiSmart::Phone::sessionUUID", session_uuid)
 		_vertoHandle = new jQuery.verto({
 			login: _login,
 			passwd: _password
@@ -569,10 +577,12 @@ RocketChat.Phone = new class
 				googNoiseSuppression: true,
 				googHighpassFilter: true
 			},
-			sessid: $.verto.genUUID(),
+			sessid: session_uuid,
 			deviceParams: {
 				useCamera: _videoDevice,
-				onResCheck: refreshVideoResolution
+				onResCheck: refreshVideoResolution,
+				useSpeak: _audioOutDevice,
+				useMic: _audioInDevice
 			}
 		}, {
 			onWSLogin: onWSLogin,
