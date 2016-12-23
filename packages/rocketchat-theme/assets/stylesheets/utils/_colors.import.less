@@ -1005,6 +1005,13 @@ label.required::after {
 	color: @error-contrast;
 }
 
-.loading-animation.dark > div {
-	background-color: @transparent-darkest;
+/** ----------------------------------------------------------------------------
+ * Loading
+ */
+
+.main-content,
+.flex-tab {
+	.loading-animation > div {
+		background-color: @primary-font-color;
+	}
 }
