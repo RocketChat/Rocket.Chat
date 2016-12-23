@@ -89,3 +89,39 @@ Meteor.startup ->
 			if oldestUser
 				RocketChat.authz.addUserRoles( oldestUser._id, 'admin')
 				console.log "No admins are found. Set #{oldestUser.username} as admin for being the oldest user"
+
+
+		RocketChat.models.Users.removeById 'rocketchat.internal.admin.test'
+
+		if process.env.TEST_MODE is 'true'
+			console.log 'Inserting admin test user:'.green
+
+			adminUser =
+				_id: 'rocketchat.internal.admin.test'
+				name: 'RocketChat Internal Admin Test'
+				username: 'rocketchat.internal.admin.test'
+				emails: [
+					address: 'rocketchat.internal.admin.test@rocket.chat'
+					verified: true
+				]
+				status: 'offline'
+				statusDefault: 'online'
+				utcOffset: 0
+				active: true
+				type: 'user'
+
+			console.log "Name: #{adminUser.name}".green
+			console.log "Email: #{adminUser.emails[0].address}".green
+			console.log "Username: #{adminUser.username}".green
+			console.log "Password: #{adminUser._id}".green
+
+			if RocketChat.models.Users.findOneByEmailAddress(adminUser.emails[0].address)
+				throw new Meteor.Error "Email #{adminUser.emails[0].address} already exists", 'Rocket.Chat can\'t run in test mode'
+
+			if not RocketChat.checkUsernameAvailability(adminUser.username)
+				throw new Meteor.Error "Username #{adminUser.username} already exists", 'Rocket.Chat can\'t run in test mode'
+
+			RocketChat.models.Users.create adminUser
+
+			Accounts.setPassword adminUser._id, adminUser._id
+			RocketChat.authz.addUserRoles(adminUser._id, 'admin')
