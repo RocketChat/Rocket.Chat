@@ -26,26 +26,23 @@ const credentials = {
 };
 
 var login = {
-	user: adminUsername,
-	password: adminPassword
+	user: process.env.ADMIN_USERNAME,
+	password: process.env.ADMIN_PASS
 };
+var email = process.env.ADMIN_EMAIL;
 
-var email = adminEmail;
-
-if (process.env.ADMIN_USERNAME && process.env.ADMIN_PASS) {
+if (!(process.env.ADMIN_USERNAME && process.env.ADMIN_PASS)) {
 	login = {
-		user: process.env.ADMIN_USERNAME,
-		password: process.env.ADMIN_PASS
+		user: adminUsername,
+		password: adminPassword
 	};
-	email = process.env.ADMIN_EMAIL;
+	email = adminEmail;
 }
 
 
 describe('API default', () => {
 	// Required by mobile apps
 	it('/info', (done) => {
-		console.log(login);
-		console.log(email);
 		request.get('/api/info')
 			.expect('Content-Type', 'application/json')
 			.expect(200)
