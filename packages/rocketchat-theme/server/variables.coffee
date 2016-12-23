@@ -9,7 +9,7 @@
 # New colors, used for shades on solid backgrounds
 # Defined range of transparencies reduces random colour variances
 alphaColors=
-  'transparent-darkest': 'rgba(0,0,0,0.5)' 
+  'transparent-darkest': 'rgba(0,0,0,0.5)'
   'transparent-darker': 'rgba(0,0,0,0.15)'
   'transparent-dark': 'rgba(0,0,0,0.05)'
   'transparent-light': 'rgba(255,255,255,0.10)'
@@ -48,8 +48,6 @@ minorColors=
 # Bulk-add settings for color scheme
 for key, value of majorColors
   RocketChat.theme.addPublicColor key, value, 'Colors'
-for key, value of alphaColors
-  RocketChat.theme.addPublicColor key, value, 'Colors (alphas)'
 for key, value of minorColors
   RocketChat.theme.addPublicColor key, value, 'Colors (minor)', 'expression'
 
