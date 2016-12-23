@@ -116,8 +116,6 @@ RocketChat.Livechat = {
 
 				userId = existingUser._id;
 			} else {
-				updateUser.$set.name = name;
-
 				var userData = {
 					username: username,
 					globalRoles: ['livechat-guest'],
@@ -154,6 +152,10 @@ RocketChat.Livechat = {
 			updateUser.$set.visitorEmails = [
 				{ address: email }
 			];
+		}
+
+		if (name) {
+			RocketChat._setRealName(userId, name);
 		}
 
 		Meteor.users.update(userId, updateUser);

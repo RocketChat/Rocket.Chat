@@ -45,6 +45,7 @@ Meteor.methods
 				open: true
 			$setOnInsert:
 				name: to.username
+				alias: to.name
 				t: 'd'
 				alert: false
 				unread: 0
