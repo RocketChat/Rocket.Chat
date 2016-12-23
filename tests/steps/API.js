@@ -3,6 +3,8 @@
 /* eslint no-unused-vars: 0 */
 
 import supertest from 'supertest';
+import {adminUsername, adminEmail, adminPassword} from '../test-data/user.js';
+
 const request = supertest('http://localhost:3000');
 const prefix = '/api/v1/';
 
@@ -23,14 +25,27 @@ const credentials = {
 	['X-User-Id']: undefined
 };
 
-const login = {
-	user: process.env.ADMIN_USERNAME,
-	password: process.env.ADMIN_PASS
+var login = {
+	user: adminUsername,
+	password: adminPassword
 };
+
+var email = adminEmail;
+
+if (process.env.ADMIN_USERNAME && process.env.ADMIN_PASS) {
+	login = {
+		user: process.env.ADMIN_USERNAME,
+		password: process.env.ADMIN_PASS
+	};
+	email = process.env.ADMIN_EMAIL;
+}
+
 
 describe('API default', () => {
 	// Required by mobile apps
 	it('/info', (done) => {
+		console.log(login);
+		console.log(email);
 		request.get('/api/info')
 			.expect('Content-Type', 'application/json')
 			.expect(200)
@@ -78,7 +93,7 @@ describe('API v1', () => {
 				expect(res.body).to.have.property('username', login.user);
 				expect(res.body).to.have.property('active');
 				expect(res.body).to.have.property('name');
-				expect(res.body).to.have.deep.property('emails[0].address', process.env.ADMIN_EMAIL);
+				expect(res.body).to.have.deep.property('emails[0].address', email);
 			})
 			.end(done);
 	});
