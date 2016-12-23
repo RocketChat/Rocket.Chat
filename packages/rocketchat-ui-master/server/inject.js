@@ -60,6 +60,9 @@ if (process.env.DISABLE_ANIMATION || process.env.TEST_MODE === 'true') {
 			transition: none !important;
 		}
 	</style>
+	<script>
+		window.DISABLE_ANIMATION = true;
+	</script>
 	`);
 }
 
