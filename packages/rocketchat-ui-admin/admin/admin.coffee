@@ -2,11 +2,10 @@ import toastr from 'toastr'
 TempSettings = new Meteor.Collection null
 RocketChat.TempSettings = TempSettings
 
-updateColorComponent = ->
-	$('input.minicolors').minicolors
+updateColorComponent = (input = $('input.minicolors')) ->
+	input.minicolors
 		theme: 'rocketchat'
-		format: 'rgb'
-		opacity: true
+		letterCase: 'uppercase'
 
 Template.admin.onCreated ->
 	if not RocketChat.settings.cachedCollectionPrivate?
@@ -272,6 +271,41 @@ Template.admin.events
 				editor: value
 
 		Meteor.setTimeout updateColorComponent, 100
+
+	"click .submit .discard": ->
+		group = FlowRouter.getParam('group')
+
+		query =
+			group: group
+			changed: true
+
+		settings = TempSettings.find(query, {fields: {_id: 1, value: 1, editor: 1}}).fetch()
+
+		settings.forEach (setting) ->
+			oldSetting = RocketChat.settings.cachedCollectionPrivate.collection.findOne({"_id": setting._id})
+			input = $('.page-settings').find('[name="' + setting._id + '"]')
+
+			switch oldSetting.type
+				when 'boolean'
+					input.not(':checked').prop('checked', true).change()
+				when 'code'
+					input.next()[0].CodeMirror.setValue(oldSetting.value)
+				when 'color'
+					oldEditorColor = oldSetting.editor is 'color'
+					input.parents('.horizontal').find('select[name="color-editor"]').val(oldSetting.editor).change()
+
+					if oldEditorColor && setting.editor is 'color'
+						input.minicolors('value', oldSetting.value)
+					else
+						input.val(oldSetting.value).change()
+
+					if oldEditorColor
+						Meteor.setTimeout ->
+							updateColorComponent(input)
+						, 100
+
+				else
+					input.val(oldSetting.value).change()
 
 	"click .submit .save": (e, t) ->
 		group = FlowRouter.getParam('group')

@@ -5,10 +5,10 @@ import mainContent from '../pageobjects/main-content.page';
 import sideNav from '../pageobjects/side-nav.page';
 
 //test data imports
-import {username, email, password} from '../test-data/user.js';
-import {publicChannelName, privateChannelName} from '../test-data/channel.js';
-import {targetUser, imgURL} from '../test-data/interactions.js';
-import {checkIfUserIsValid, publicChannelCreated, privateChannelCreated, directMessageCreated, setPublicChannelCreated, setPrivateChannelCreated, setDirectMessageCreated} from '../test-data/checks';
+import {username, email, password} from '../data/user.js';
+import {publicChannelName, privateChannelName} from '../data/channel.js';
+import {targetUser, imgURL} from '../data/interactions.js';
+import {checkIfUserIsValid, publicChannelCreated, privateChannelCreated, directMessageCreated, setPublicChannelCreated, setPrivateChannelCreated, setDirectMessageCreated} from '../data/checks';
 
 
 //Test data

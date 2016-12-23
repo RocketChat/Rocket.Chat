@@ -6,10 +6,10 @@ import mainContent from '../pageobjects/main-content.page';
 import sideNav from '../pageobjects/side-nav.page';
 import preferencesMainContent from '../pageobjects/preferences-main-content.page';
 
-import {username, password, email} from '../test-data/user.js';
-import {imgURL} from '../test-data/interactions.js';
+import {username, password, email} from '../data/user.js';
+import {imgURL} from '../data/interactions.js';
 
-import {checkIfUserIsValid} from '../test-data/checks';
+import {checkIfUserIsValid} from '../data/checks';
 
 
 describe.skip('user preferences', ()=> {
