@@ -44,10 +44,13 @@
 				{{#if user.active}}
 					{{> videoButtons}}
 				{{/if}}
+				{{#if isDirect}}
+					<button class='button button-block primary pvt-msg'><span><i class='icon-chat'></i> {{_ "Conversation"}}</span></button>
+				{{/if}}
 
 				{{#if showAll}}
 					{{#if canDirectMessage user.username}}
-						<button class='button button-block primary pvt-msg'><span><i class='icon-chat'></i> {{_ "Conversation"}}</span></button>
+						<button class='button button-block danger block-user'><span><i class='icon-chat'></i> {{_ "Block_User"}}</span></button>
 					{{/if}}
 					{{#if canSetOwner}}
 						{{#if isOwner}}
