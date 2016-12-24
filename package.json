@@ -48,7 +48,7 @@
     "test": "node .scripts/start.js",
     "deploy": "npm run build && pm2 startOrRestart pm2.json",
     "chimp-watch": "chimp --ddp=http://localhost:3000 --watch --mocha --path=tests/steps",
-    "chimp-test": "chimp --ddp=http://localhost:3000 --mocha --path=tests/steps"
+    "chimp-test": "chimp tests/chimp-config.js"
   },
   "license": "MIT",
   "repository": {
