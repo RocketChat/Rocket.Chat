@@ -45,19 +45,23 @@ describe('login', () => {
 		});
 	});
 
-	describe('email / username', () => {
-		it('it should be required', () => {
+	describe('required fields', () => {
+		before(() => {
 			loginPage.submit();
-			loginPage.emailOrUsernameField.getAttribute('class').should.contain('error');
-			loginPage.emailOrUsernameInvalidText.getText().should.not.be.empty;
 		});
-	});
 
-	describe('password', () => {
-		it('it should be required', () => {
-			loginPage.submit();
-			loginPage.passwordField.getAttribute('class').should.contain('error');
-			loginPage.passwordInvalidText.getText().should.not.be.empty;
+		describe('email / username', () => {
+			it('should be required', () => {
+				loginPage.emailOrUsernameField.getAttribute('class').should.contain('error');
+				loginPage.emailOrUsernameInvalidText.getText().should.not.be.empty;
+			});
+		});
+
+		describe('password', () => {
+			it('should be required', () => {
+				loginPage.passwordField.getAttribute('class').should.contain('error');
+				loginPage.passwordInvalidText.getText().should.not.be.empty;
+			});
 		});
 	});
 });
