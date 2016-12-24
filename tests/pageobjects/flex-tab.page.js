@@ -108,20 +108,17 @@ class FlexTab extends Page {
 		this.setOwnerBtn.waitForVisible(5000);
 		this.setOwnerBtn.click();
 		this.viewAllBtn.click();
+		browser.pause(100);
 	}
 
 	setUserModerator(user) {
 		const userEl = this.getUserEl(user);
-		if (!userEl.isVisible() && this.showAll.isVisible()) {
-			this.setModeratorBtn.click();
-			this.viewAllBtn.click();
-		} else {
-			userEl.waitForVisible(5000);
-			userEl.click();
-			this.setModeratorBtn.waitForVisible(5000);
-			this.setModeratorBtn.click();
-			this.viewAllBtn.click();
-		}
+		userEl.waitForVisible();
+		userEl.click();
+		this.setModeratorBtn.waitForVisible();
+		this.setModeratorBtn.click();
+		this.viewAllBtn.click();
+		browser.pause(100);
 	}
 
 	muteUser(user) {
