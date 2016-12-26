@@ -94,9 +94,7 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 	userIdsToPushNotify = [];
 	usersWithHighlights = [];
 
-	console.time('sendNotificationOnMessage');
 	highlights = RocketChat.models.Users.findUsersByUsernamesWithHighlights(room.usernames, { fields: { '_id': 1, 'settings.preferences.highlights': 1 }}).fetch();
-	console.timeEnd('sendNotificationOnMessage');
 
 	highlights.forEach(function(user) {
 		if (messageContainsHighlight(message, user.settings.preferences.highlights)) {

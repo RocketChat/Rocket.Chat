@@ -160,7 +160,7 @@ class WebRTCClass
 		@screenShareAvailable = @navigator in ['chrome', 'firefox']
 
 		@media =
-			video: true
+			video: false
 			audio: true
 
 		@transport = new @transportClass @

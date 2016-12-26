@@ -6,7 +6,7 @@ import mainContent from '../pageobjects/main-content.page';
 import sideNav from '../pageobjects/side-nav.page';
 
 //test data imports
-import {username, email, password, adminUsername, adminEmail, adminPassword} from '../test-data/user.js';
+import {username, email, password, adminUsername, adminEmail, adminPassword} from '../data/user.js';
 
 
 
@@ -24,7 +24,7 @@ describe('User Creation', function() {
 	if (process.env.ADMIN_USERNAME && process.env.ADMIN_PASS) {
 		console.log('Admin login and password provided, skipping admin creation.');
 	} else {
-		it('create the admin user', () => {
+		it.skip('create the admin user', () => {
 			loginPage.gotToRegister();
 
 			loginPage.registerNewAdmin({adminUsername, adminEmail, adminPassword});
@@ -36,7 +36,7 @@ describe('User Creation', function() {
 			mainContent.mainContent.waitForExist(5000);
 		});
 
-		it('logout', () => {
+		it.skip('logout', () => {
 			sideNav.accountBoxUserName.waitForVisible(5000);
 			sideNav.accountBoxUserName.click();
 
