@@ -21,6 +21,17 @@
 @code-font-color: #333333;
 
 /** ----------------------------------------------------------------------------
+ * Transparency variables
+ */
+
+@transparent-darkest: rgba(0, 0, 0, 0.5);
+@transparent-darker: rgba(0, 0, 0, 0.15);
+@transparent-dark: rgba(0, 0, 0, 0.05);
+@transparent-light: rgba(255, 255, 255, 0.1);
+@transparent-lighter: rgba(255, 255, 255, 0.3);
+@transparent-lightest: rgba(255, 255, 255, 0.6);
+
+/** ----------------------------------------------------------------------------
  * Document components
  */
 html {
@@ -872,18 +883,38 @@ i.status-offline {
 
 	&.primary {
 		.buttonColors(@primary-action-contrast, @primary-action-color);
+
+		&[disabled] {
+			background-color: lighten(desaturate(@primary-action-color, 50%), 30%);
+		}
 	}
 
 	&.secondary {
 		.buttonColors(@secondary-action-contrast, @secondary-action-color);
+
+		&[disabled] {
+			background-color: lighten(desaturate(@secondary-action-color, 50%), 30%);
+		}
 	}
 
 	&.tertiary {
 		.buttonColors(@primary-action-contrast, @selection-color);
+
+		&[disabled] {
+			background-color: lighten(desaturate(@selection-color, 50%), 30%);
+		}
 	}
 
 	&.danger {
 		.buttonColors(@error-contrast, @error-color);
+
+		&[disabled] {
+			background-color: lighten(desaturate(@error-color, 50%), 30%);
+		}
+	}
+
+	&[disabled] {
+		cursor: initial;
 	}
 
 	&.external-login {
@@ -974,6 +1005,13 @@ label.required::after {
 	color: @error-contrast;
 }
 
-.loading-animation.dark > div {
-	background-color: @transparent-darkest;
+/** ----------------------------------------------------------------------------
+ * Loading
+ */
+
+.main-content,
+.flex-tab {
+	.loading-animation > div {
+		background-color: @primary-font-color;
+	}
 }
