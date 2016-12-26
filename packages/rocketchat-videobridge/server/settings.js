@@ -27,6 +27,16 @@ Meteor.startup(function() {
 			public: true
 		});
 
+		this.add('Jitsi_Open_New_Window', false, {
+			type: 'boolean',
+			enableQuery: {
+				_id: 'Jitsi_Enabled',
+				value: true
+			},
+			i18nLabel: 'Always_open_in_new_window',
+			public: true
+		});
+
 		this.add('Jitsi_Enable_Channels', false, {
 			type: 'boolean',
 			enableQuery: {

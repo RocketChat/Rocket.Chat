@@ -81,20 +81,18 @@ class MainContent extends Page {
 	fileUpload(filePath) {
 		this.sendMessage('Prepare for the file');
 		this.fileAttachment.chooseFile(filePath);
-		browser.pause(1000);
 	}
 
 	openMessageActionMenu() {
 		this.lastMessage.moveToObject();
+		this.messageOptionsBtn.waitForVisible(5000);
 		this.messageOptionsBtn.click();
 		this.messageActionMenu.waitForVisible(5000);
 	}
 
 	setLanguageToEnglish() {
 		this.settingLanguageSelect.click();
-		browser.pause(500);
 		this.settingLanguageEnglish.click();
-		browser.pause(300);
 		this.settingSaveBtn.click();
 	}
 
@@ -104,13 +102,11 @@ class MainContent extends Page {
 			case 'edit':
 				this.messageEdit.waitForVisible(5000);
 				this.messageEdit.click();
-				browser.pause(1000);
 				this.messageInput.addValue('this message was edited');
 				break;
 			case 'reply':
 				this.messageReply.waitForVisible(5000);
 				this.messageReply.click();
-				browser.pause(1000);
 				this.messageInput.addValue(' this is a reply message');
 				break;
 			case 'delete':
@@ -128,7 +124,6 @@ class MainContent extends Page {
 			case 'quote':
 				this.messageQuote.waitForVisible(5000);
 				this.messageQuote.click();
-				browser.pause(1000);
 				this.messageInput.addValue(' this is a quote message');
 				break;
 			case 'star':

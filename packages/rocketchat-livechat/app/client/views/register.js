@@ -40,7 +40,7 @@ Template.register.events({
 		} else {
 			var departmentId = instance.$('select[name=department]').val();
 			if (!departmentId) {
-				var department = Department.findOne();
+				var department = Department.findOne({ showOnRegistration: true });
 				if (department) {
 					departmentId = department._id;
 				}

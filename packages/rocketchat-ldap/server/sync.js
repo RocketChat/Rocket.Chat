@@ -187,11 +187,6 @@ addLdapUser = function addLdapUser(ldapUser, username, password) {
 
 	syncUserData(userObject, ldapUser);
 
-	logger.info('Joining user to default channels');
-	Meteor.runAsUser(userObject._id, function() {
-		Meteor.call('joinDefaultChannels');
-	});
-
 	return {
 		userId: userObject._id
 	};
@@ -226,6 +221,8 @@ sync = function sync() {
 
 				if (!user) {
 					addLdapUser(ldapUser, username);
+				} else if (user.ldap !== true && RocketChat.settings.get('LDAP_Merge_Existing_Users') === true) {
+					syncUserData(user, ldapUser);
 				}
 			});
 		}

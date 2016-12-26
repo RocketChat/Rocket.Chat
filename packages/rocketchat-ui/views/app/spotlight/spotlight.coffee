@@ -26,7 +26,7 @@ getFromServer = (filter, records, cb) =>
 			for room in results.rooms
 				server.push({
 					_id: room._id
-					t: 'c',
+					t: room.t,
 					name: room.name
 				})
 
@@ -57,7 +57,7 @@ Template.spotlight.helpers
 			getValue: (_id, collection, records, firstPartValue) ->
 				doc = _.findWhere(records, {_id: _id})
 
-				FlowRouter.go(RocketChat.roomTypes.getRouteLink(doc.t, doc), null, FlowRouter.current().queryParams)
+				RocketChat.roomTypes.openRouteLink(doc.t, doc, FlowRouter.current().queryParams)
 
 				spotlight.hide()
 

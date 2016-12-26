@@ -27,6 +27,14 @@ var api = {
 
 	clearDepartment: function() {
 		Livechat.department = null;
+	},
+
+	widgetOpened: function() {
+		Livechat.setWidgetOpened();
+	},
+
+	widgetClosed: function() {
+		Livechat.setWidgetClosed();
 	}
 };
 
@@ -41,5 +49,10 @@ window.addEventListener('message', function(msg) {
 
 // tell parent window that we are ready
 Meteor.startup(function() {
-	parentCall('ready');
+	Tracker.autorun((c) => {
+		if (Livechat.isReady()) {
+			parentCall('ready');
+			c.stop();
+		}
+	});
 });
