@@ -53,6 +53,11 @@ RocketChat.QueueMethods = {
 		RocketChat.models.Rooms.insert(room);
 		RocketChat.models.Subscriptions.insert(subscriptionData);
 
+		RocketChat.Livechat.stream.emit(room._id, {
+			type: 'agentData',
+			data: RocketChat.models.Users.getAgentInfo(agent.agentId)
+		});
+
 		return room;
 	},
 	/* Guest Pool Queuing Method:
