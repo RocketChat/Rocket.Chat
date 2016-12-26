@@ -50,7 +50,7 @@ Meteor.methods({
 			};
 		}
 
-		return RocketChat.models.Rooms.findBySubscriptionUserId(Meteor.userId(), options);
+		return RocketChat.models.Rooms.findBySubscriptionUserId(Meteor.userId(), options).fetch();
 	},
 
 	getRoomByTypeAndName(type, name) {
