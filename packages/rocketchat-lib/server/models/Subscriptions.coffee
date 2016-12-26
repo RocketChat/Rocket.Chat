@@ -304,16 +304,18 @@ class ModelSubscriptions extends RocketChat.models._Base
 
 		return @update query, update, { multi: true }
 
-	setBlocked: (blocked, blocker) ->
+	setBlockedByRoomId: (rid, blocked, blocker) ->
 		query =
-			rid: blocked + blocker
+			rid: rid
+			'u._id': blocked
 
 		update =
 			$set:
 				blocked: 1
 
 		query2 =
-			rid: blocker + blocked
+			rid: rid
+			'u._id': blocker
 
 		update2 =
 			$set:
@@ -321,16 +323,18 @@ class ModelSubscriptions extends RocketChat.models._Base
 
 		return @update(query, update) and @update(query2, update2)
 
-	unsetBlocked: (blocked, blocker) ->
+	unsetBlockedByRoomId: (rid, blocked, blocker) ->
 		query =
-			rid: blocked + blocker
+			rid: rid
+			'u._id': blocked
 
 		update =
 			$unset:
 				blocked: 1
 
 		query2 =
-			rid: blocker + blocked
+			rid: rid
+			'u._id': blocker
 
 		update2 =
 			$unset:

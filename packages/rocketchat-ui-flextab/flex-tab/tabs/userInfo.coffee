@@ -116,6 +116,10 @@ Template.userInfo.helpers
 
 		return room?.t is 'd'
 
+	isBlocker: ->
+		subscription = ChatSubscription.findOne({rid:Session.get('openedRoom'), 'u._id': Meteor.userId()}, { fields: { blocker: 1 } });
+		return subscription.blocker
+
 Template.userInfo.events
 	'click .thumb': (e) ->
 		$(e.currentTarget).toggleClass('bigger')
@@ -352,9 +356,19 @@ Template.userInfo.events
 		e.stopPropagation()
 		e.preventDefault()
 
-		Meteor.call 'blockUser', instance.user.get()._id, (error, result) ->
+		Meteor.call 'blockUser', { rid: Session.get('openedRoom'), blocked: instance.user.get()._id }, (error, result) ->
 			if result
 				toastr.success t('User_is_blocked')
+			if error
+				handleError(error)
+
+	'click .unblock-user': (e, instance) ->
+		e.stopPropagation()
+		e.preventDefault()
+
+		Meteor.call 'unblockUser', { rid: Session.get('openedRoom'), blocked: instance.user.get()._id }, (error, result) ->
+			if result
+				toastr.success t('User_is_unblocked')
 			if error
 				handleError(error)
 
