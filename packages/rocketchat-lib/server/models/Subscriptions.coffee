@@ -311,7 +311,7 @@ class ModelSubscriptions extends RocketChat.models._Base
 
 		update =
 			$set:
-				blocked: 1
+				blocked: true
 
 		query2 =
 			rid: rid
@@ -319,7 +319,7 @@ class ModelSubscriptions extends RocketChat.models._Base
 
 		update2 =
 			$set:
-				blocker: 1
+				blocker: true
 
 		return @update(query, update) and @update(query2, update2)
 
