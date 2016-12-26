@@ -410,6 +410,10 @@ class ModelsBaseCache extends EventEmitter {
 	}
 
 	load() {
+		if (this.model._useCache === false) {
+			return;
+		}
+
 		console.log('Will load cache for', this.collectionName);
 		this.emit('beforeload');
 		this.loaded = false;
