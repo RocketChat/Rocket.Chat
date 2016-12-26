@@ -96,6 +96,47 @@ class ModelRooms extends RocketChat.models._Base
 
 		return @find query, options
 
+	findBySubscriptionUserId: (userId, options) ->
+		if this.useCache
+			data = RocketChat.models.Subscriptions.findByUserId(userId).fetch()
+			data = data.map (item) ->
+				if item._room
+					return item._room
+				console.log('Empty Room for Subscription', record);
+				return {}
+			return this.arrayToCursor this.processQueryOptionsOnResult(data, options)
+
+		data = RocketChat.models.Subscriptions.findByUserId(userId, {fields: {rid: 1}}).fetch()
+		data = data.map (item) -> item.rid
+
+		query =
+			_id:
+				$in: data
+
+		this.find query, options
+
+	findBySubscriptionUserIdUpdatedAfter: (userId, _updatedAt, options) ->
+		if this.useCache
+			data = RocketChat.models.Subscriptions.findByUserId(userId).fetch()
+			data = data.map (item) ->
+				if item._room
+					return item._room
+				console.log('Empty Room for Subscription', record);
+				return {}
+			data = data.filter (item) -> item._updatedAt > _updatedAt
+			return this.arrayToCursor this.processQueryOptionsOnResult(data, options)
+
+		ids = RocketChat.models.Subscriptions.findByUserId(userId, {fields: {rid: 1}}).fetch()
+		ids = ids.map (item) -> item.rid
+
+		query =
+			_id:
+				$in: ids
+			_updatedAt:
+				$gt: _updatedAt
+
+		this.find query, options
+
 	findByNameContaining: (name, options) ->
 		nameRegex = new RegExp s.trim(s.escapeRegExp(name)), "i"
 
