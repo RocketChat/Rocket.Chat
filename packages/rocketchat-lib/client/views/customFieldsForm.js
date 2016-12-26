@@ -1,9 +1,6 @@
 Template.customFieldsForm.helpers({
 	customFields() {
-		console.log('this ->', this);
 		const customFields = Template.instance().customFields.get();
-
-		console.log('Template.instance().customFields ->', Template.instance().customFields);
 
 		if (!customFields) {
 			return [];

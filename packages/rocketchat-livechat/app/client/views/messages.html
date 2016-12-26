@@ -1,16 +1,22 @@
 <template name="messages">
+	{{#with agentData}}
 	<div class="header">
 		<div class="picture">
-			<img src="http://www.fundboxcapital.com/wp-content/uploads/2015/02/blank-avatar.png">
+			<img src="{{avatar}}">
 		</div>
 		<div class="info">
 			<ul>
-				<li><h2>Agent Name</h2></li>
-				<li>Email</li>
-				<li>Phone</li>
+				<li><h2>{{name}}</h2></li>
+				{{#if email}}
+					<li>{{email}}</li>
+				{{/if}}
+				{{#if phone}}
+					<li>{{phone}}</li>
+				{{/if}}
 			</ul>
 		</div>
 	</div>
+	{{/with}}
 	<div class="messages">
 		<div class="wrapper">
 			<ul>
