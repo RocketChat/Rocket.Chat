@@ -307,6 +307,8 @@
   "Custom_Script_Logged_Out": "Script Personalizado para usuários não logados",
   "Dashboard": "Dashboard",
   "Date": "Data",
+  "Date_From": "De",
+  "Date_to": "até",
   "days": "dias",
   "DB_Migration": "Migração de banco de dados",
   "DB_Migration_Date": "Data da migração do banco de dados",
