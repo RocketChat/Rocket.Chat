@@ -147,23 +147,23 @@ class ModelsBaseCache extends EventEmitter {
 			return;
 		}
 
-		RocketChat.models[join].on('inserted', (record) => {
+		RocketChat.models[join].cache.on('inserted', (record) => {
 			this.processRemoteJoinInserted({join, field, link, multi, record: record});
 		});
 
-		RocketChat.models[join].on('beforeupdate', (record, diff) => {
+		RocketChat.models[join].cache.on('beforeupdate', (record, diff) => {
 			if (diff[link.remote]) {
 				this.processRemoteJoinRemoved({join, field, link, multi, record: record});
 			}
 		});
 
-		RocketChat.models[join].on('updated', (record, diff) => {
+		RocketChat.models[join].cache.on('updated', (record, diff) => {
 			if (diff[link.remote]) {
 				this.processRemoteJoinInserted({join, field, link, multi, record: record});
 			}
 		});
 
-		RocketChat.models[join].on('removed', (record) => {
+		RocketChat.models[join].cache.on('removed', (record) => {
 			this.processRemoteJoinRemoved({join, field, link, multi, record: record});
 		});
 
