@@ -185,10 +185,10 @@ input:focus {
 	.header {
 		flex: 1 0 60px;
 		display: flex;
-		box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.15);
+		box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.2);
 		background-color: #fcfcfc;
 		color: @secondary-font-color;
-		z-index: 1;
+		z-index: 2;
 
 		.picture {
 			flex: 0 1 60px;
@@ -197,7 +197,7 @@ input:focus {
 			img {
 				width: 50px;
 				height: 50px;
-				border-radius: 50%;
+				border-radius: 6px;
 				border: 1px solid @window-border-color;
 			}
 		}
@@ -205,6 +205,15 @@ input:focus {
 		.info {
 			flex: 1;
 			padding: 5px 0;
+
+			h2 {
+				color: @primary-font-color;
+				font-size: 14px;
+			}
+
+			li {
+				font-size: 11px;
+			}
 		}
 	}
 
@@ -232,7 +241,6 @@ input:focus {
 				padding: 8px 10px 0;
 				position: relative;
 				line-height: 18px;
-				// margin: 3px 0;
 				min-height: 36px;
 
 				&::after {
@@ -282,7 +290,7 @@ input:focus {
 						text-align: center;
 						.calc(left, ~'50% - 70px');
 						color: @secondary-font-color;
-						z-index: 10;
+						z-index: 1;
 						padding: 0 10px;
 						background-color: #ffffff;
 						min-width: 120px;
@@ -304,10 +312,6 @@ input:focus {
 				.edit-message {
 					display: none;
 					cursor: pointer;
-				}
-
-				&.own:hover:not(.system) .edit-message {
-					display: inline-block;
 				}
 
 				&.own {
@@ -336,10 +340,6 @@ input:focus {
 				.delete-message {
 					display: none;
 					cursor: pointer;
-				}
-
-				&.own:hover:not(.system) .delete-message {
-					display: inline-block;
 				}
 
 				.user {

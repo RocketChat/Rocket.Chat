@@ -27,6 +27,7 @@ Package.onUse(function(api) {
 	api.use('rocketchat:authorization');
 	api.use('rocketchat:logger');
 	api.use('rocketchat:api');
+	api.use('rocketchat:streamer');
 	api.use('konecty:user-presence');
 	api.use('rocketchat:ui');
 	api.use('kadira:flow-router', 'client');
@@ -134,6 +135,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/methods/closeByVisitor.js', 'server');
 	api.addFiles('server/methods/closeRoom.js', 'server');
 	api.addFiles('server/methods/getCustomFields.js', 'server');
+	api.addFiles('server/methods/getAgentData.js', 'server');
 	api.addFiles('server/methods/getInitialData.js', 'server');
 	api.addFiles('server/methods/loginByToken.js', 'server');
 	api.addFiles('server/methods/pageVisited.js', 'server');
