@@ -39,6 +39,20 @@ class ModelsBase {
 		return this.useCache === true ? 'cache' : '_db';
 	}
 
+	arrayToCursor(data) {
+		return {
+			fetch() {
+				return data;
+			},
+			count() {
+				return data.length;
+			},
+			forEach(fn) {
+				return data.forEach(fn);
+			}
+		};
+	}
+
 	setUpdatedAt(/*record, checkQuery, query*/) {
 		return this._db.setUpdatedAt(...arguments);
 	}
