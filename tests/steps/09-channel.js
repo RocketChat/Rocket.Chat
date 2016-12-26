@@ -16,7 +16,7 @@ describe('channel usage', ()=> {
 		if (!publicChannelCreated) {
 			sideNav.createChannel(publicChannelName, false, false);
 			setPublicChannelCreated(true);
-			console.log('	public channel not found, creating one...');
+			console.log('public channel not found, creating one...');
 		}
 		sideNav.openChannel(publicChannelName);
 	});
@@ -25,7 +25,7 @@ describe('channel usage', ()=> {
 		before(()=> {
 			if (flexTab.toastAlert.isVisible()) {
 				flexTab.dismissToast();
-				browser.waitForVisible('.toast', 5000, true);
+				flexTab.toastAlert.waitForVisible(5000, true);
 			}
 			flexTab.membersTab.waitForVisible();
 			flexTab.membersTab.click();
@@ -34,7 +34,7 @@ describe('channel usage', ()=> {
 		after(()=> {
 			if (flexTab.toastAlert.isVisible()) {
 				flexTab.dismissToast();
-				browser.waitForVisible('.toast', 5000, true);
+				flexTab.toastAlert.waitForVisible(5000, true);
 			}
 			flexTab.membersTab.waitForVisible();
 			flexTab.membersTab.click();
@@ -51,7 +51,7 @@ describe('channel usage', ()=> {
 			before(()=> {
 				if (flexTab.toastAlert.isVisible()) {
 					flexTab.dismissToast();
-					browser.waitForVisible('.toast', 5000, true);
+					flexTab.toastAlert.waitForVisible(5000, true);
 				}
 				flexTab.channelTab.waitForVisible();
 				flexTab.channelTab.click();
@@ -60,7 +60,7 @@ describe('channel usage', ()=> {
 			after(()=> {
 				if (flexTab.toastAlert.isVisible()) {
 					flexTab.dismissToast();
-					browser.waitForVisible('.toast', 5000, true);
+					flexTab.toastAlert.waitForVisible(5000, true);
 				}
 				flexTab.channelTab.waitForVisible(5000);
 				flexTab.channelTab.click();
@@ -102,7 +102,7 @@ describe('channel usage', ()=> {
 			after(()=> {
 				if (flexTab.toastAlert.isVisible()) {
 					flexTab.dismissToast();
-					browser.waitForVisible('.toast', 5000, true);
+					flexTab.toastAlert.waitForVisible(5000, true);
 				}
 				flexTab.channelTab.waitForVisible();
 				flexTab.channelTab.click();
@@ -136,7 +136,7 @@ describe('channel usage', ()=> {
 			after(()=> {
 				if (flexTab.toastAlert.isVisible()) {
 					flexTab.dismissToast();
-					browser.waitForVisible('.toast', 5000, true);
+					flexTab.toastAlert.waitForVisible(5000, true);
 				}
 				flexTab.channelTab.waitForVisible();
 				flexTab.channelTab.click();
@@ -167,7 +167,7 @@ describe('channel usage', ()=> {
 			before(()=> {
 				if (flexTab.toastAlert.isVisible()) {
 					flexTab.dismissToast();
-					browser.waitForVisible('.toast', 5000, true);
+					flexTab.toastAlert.waitForVisible(5000, true);
 				}
 				flexTab.membersTab.waitForVisible();
 				flexTab.membersTab.click();
@@ -176,7 +176,7 @@ describe('channel usage', ()=> {
 			after(()=> {
 				if (flexTab.toastAlert.isVisible()) {
 					flexTab.dismissToast();
-					browser.waitForVisible('.toast', 5000, true);
+					flexTab.toastAlert.waitForVisible(5000, true);
 				}
 				flexTab.membersTab.waitForVisible();
 				flexTab.membersTab.click();
@@ -189,7 +189,7 @@ describe('channel usage', ()=> {
 			it('dismiss the toast', ()=> {
 				if (flexTab.toastAlert.isVisible()) {
 					flexTab.dismissToast();
-					browser.waitForVisible('.toast', 5000, true);
+					flexTab.toastAlert.waitForVisible(5000, true);
 				}
 			});
 
@@ -204,17 +204,32 @@ describe('channel usage', ()=> {
 
 		describe('Moderator added', () => {
 			before(()=> {
-				flexTab.membersTab.waitForVisible(5000);
+				if (flexTab.toastAlert.isVisible()) {
+					flexTab.dismissToast();
+					flexTab.toastAlert.waitForVisible(5000, true);
+				}
+				flexTab.membersTab.waitForVisible();
 				flexTab.membersTab.click();
 			});
 
 			after(()=> {
-				flexTab.membersTab.waitForVisible(5000);
+				if (flexTab.toastAlert.isVisible()) {
+					flexTab.dismissToast();
+					flexTab.toastAlert.waitForVisible(5000, true);
+				}
+				flexTab.membersTab.waitForVisible();
 				flexTab.membersTab.click();
 			});
 
 			it('sets rocket cat as moderator', ()=> {
 				flexTab.setUserModerator(targetUser);
+			});
+
+			it('dismiss the toast', ()=> {
+				if (flexTab.toastAlert.isVisible()) {
+					flexTab.dismissToast();
+					flexTab.toastAlert.waitForVisible(5000, true);
+				}
 			});
 
 			it('the last message should be a subscription role added', ()=> {

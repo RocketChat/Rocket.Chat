@@ -8,7 +8,7 @@ import sideNav from '../pageobjects/side-nav.page';
 //test data imports
 import {checkIfUserIsValid} from '../data/checks';
 import {username, email, password} from '../data/user.js';
-//Basic usage test start
+
 describe('Main Elements Render', function() {
 	before(()=>{
 		checkIfUserIsValid(username, email, password);
