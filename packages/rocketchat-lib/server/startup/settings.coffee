@@ -41,6 +41,7 @@ RocketChat.settings.addGroup 'Accounts', ->
 		@add 'Accounts_AvatarSize', 200, { type: 'int', enableQuery: {_id: 'Accounts_AvatarResize', value: true} }
 		@add 'Accounts_AvatarStoreType', 'GridFS', { type: 'select', values: [ { key: 'GridFS', i18nLabel: 'GridFS' }, { key: 'FileSystem', i18nLabel: 'FileSystem' } ] }
 		@add 'Accounts_AvatarStorePath', '', { type: 'string', enableQuery: {_id: 'Accounts_AvatarStoreType', value: 'FileSystem'} }
+		@add 'Accounts_SetDefaultAvatar', true, { type: 'boolean' }
 
 RocketChat.settings.addGroup 'OAuth', ->
 
