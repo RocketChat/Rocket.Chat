@@ -23,6 +23,7 @@ RocketChat.QueueMethods = {
 			ts: new Date(),
 			v: {
 				_id: guest._id,
+				username: guest.username,
 				token: message.token
 			},
 			servedBy: {
@@ -96,6 +97,11 @@ RocketChat.QueueMethods = {
 			department: guest.department,
 			agents: agentIds,
 			status: 'open',
+			v: {
+				_id: guest._id,
+				username: guest.username,
+				token: message.token
+			},
 			t: 'l'
 		};
 		const room = _.extend({
@@ -109,6 +115,7 @@ RocketChat.QueueMethods = {
 			ts: new Date(),
 			v: {
 				_id: guest._id,
+				username: guest.username,
 				token: message.token
 			},
 			cl: false,
