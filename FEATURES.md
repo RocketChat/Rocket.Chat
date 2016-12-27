@@ -1,3 +1,5 @@
+# Features
+
 - Self Host
   - Docker  
   - Multiple Deployment Options (Heroku, Digital Ocean, Sandstorm, etc.)  
