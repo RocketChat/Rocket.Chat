@@ -1,7 +1,21 @@
 import toastr from 'toastr';
-/* globals ChatSubscription */
+/* globals ChatSubscription, KonchatNotification */
 
 Template.pushNotificationsFlexTab.helpers({
+	audioAssets() {
+		return KonchatNotification.audioAssets;
+	},
+	audioNotifications() {
+		const sub = ChatSubscription.findOne({
+			rid: Session.get('openedRoom')
+		}, {
+			fields: {
+				audioNotifications: 1
+			}
+		});
+		return sub ? sub.audioNotifications : 'defaultAudioNotification';
+	},
+
 	desktopNotifications() {
 		var sub = ChatSubscription.findOne({
 			rid: Session.get('openedRoom')
@@ -70,6 +84,24 @@ Template.pushNotificationsFlexTab.helpers({
 		}
 		return t('Use_account_preference');
 	},
+	audioValue() {
+		const sub = ChatSubscription.findOne({
+			rid: Session.get('openedRoom')
+		}, {
+			fields: {
+				audioNotifications: 1
+			}
+		});
+		const audio = sub ? sub.audioNotifications : 'defaultAudioNotification';
+		if (audio === 'none') {
+			return t('None');
+		} else if (audio === 'defaultAudioNotification') {
+			return t('Default');
+		} else {
+			const asset = _.findWhere(KonchatNotification.audioAssets, { _id: audio });
+			return asset && asset.name;
+		}
+	},
 	subValue(field) {
 		var sub = ChatSubscription.findOne({
 			rid: Session.get('openedRoom')
@@ -124,17 +156,30 @@ Template.pushNotificationsFlexTab.onCreated(function() {
 	this.editing = new ReactiveVar();
 
 	this.validateSetting = (field) => {
-		const value = this.$('input[name='+ field +']:checked').val();
-		if (['all', 'mentions', 'nothing', 'default'].indexOf(value) === -1) {
-			toastr.error(t('Invalid_notification_setting_s', value || ''));
-			return false;
+		switch (field) {
+			case 'audioNotifications':
+				return true;
+			default:
+				const value = this.$('input[name='+ field +']:checked').val();
+				if (['all', 'mentions', 'nothing', 'default'].indexOf(value) === -1) {
+					toastr.error(t('Invalid_notification_setting_s', value || ''));
+					return false;
+				}
+				return true;
 		}
-		return true;
 	};
 
 	this.saveSetting = () => {
 		const field = this.editing.get();
-		const value = this.$('input[name='+ field +']:checked').val();
+		let value;
+		switch (field) {
+			case 'audioNotifications':
+				value = this.$('select[name='+field+']').val();
+				break;
+			default:
+				value = this.$('input[name='+ field +']:checked').val();
+				break;
+		}
 		const duration = $('input[name=duration]').val();
 		if (this.validateSetting(field)) {
 			Meteor.call('saveNotificationSettings', Session.get('openedRoom'), field, value, (err/*, result*/) => {
@@ -178,5 +223,27 @@ Template.pushNotificationsFlexTab.events({
 	'click .save'(e, instance) {
 		e.preventDefault();
 		instance.saveSetting();
+	},
+
+	'click [data-play]'(e) {
+		e.preventDefault();
+		let audio = $(e.currentTarget).data('play');
+		if (audio && audio !== 'none') {
+			let $audio = $('#' + audio);
+			if ($audio && $audio[0] && $audio[0].play) {
+				$audio[0].play();
+			}
+		}
+	},
+
+	'change select[name=audioNotifications]'(e) {
+		e.preventDefault();
+		let audio = $(e.currentTarget).val();
+		if (audio && audio !== 'none') {
+			let $audio = $('#' + audio);
+			if ($audio && $audio[0] && $audio[0].play) {
+				$audio[0].play();
+			}
+		}
 	}
 });
