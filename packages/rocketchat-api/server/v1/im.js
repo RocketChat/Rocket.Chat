@@ -89,18 +89,34 @@ RocketChat.API.v1.addRoute('im.history', { authRequired: true }, {
 
 RocketChat.API.v1.addRoute('im.list', { authRequired: true }, {
 	get: function() {
-		const roomIds = _.pluck(RocketChat.models.Subscriptions.findByTypeAndUserId('d', this.userId).fetch(), 'rid');
 		const { offset, count } = RocketChat.API.v1.getPaginationItems(this);
+		let rooms = _.pluck(RocketChat.models.Subscriptions.findByTypeAndUserId('d', this.userId).fetch(), '_room');
+		const totalCount = rooms.length;
 
-		//This is for polling services, such as Zapier until we get a new
-		//feature that notifies via webhooks about new events (channels, users, etc)
-		if (offset === -1) {
-			return RocketChat.API.v1.success({
-				ims: RocketChat.models.Rooms.findByIds(roomIds, { fields: RocketChat.API.v1.roomFieldsToExclude }).fetch()
-			});
+		rooms = RocketChat.models.Rooms.processQueryOptionsOnResult(rooms, {
+			sort: { msgs: -1 },
+			skip: offset,
+			limit: count,
+			fields: RocketChat.API.v1.roomFieldsToExclude
+		});
+
+		return RocketChat.API.v1.success({
+			ims: rooms,
+			offset,
+			count: rooms.length,
+			total: totalCount
+		});
+	}
+});
+
+RocketChat.API.v1.addRoute('im.list.everyone', { authRequired: true }, {
+	get: function() {
+		if (!RocketChat.authz.hasPermission(this.userId, 'view-room-administration')) {
+			return RocketChat.API.v1.unauthorized();
 		}
 
-		const rooms = RocketChat.models.Rooms.findByIds(roomIds, {
+		const { offset, count } = RocketChat.API.v1.getPaginationItems(this);
+		const rooms = RocketChat.models.Rooms.findByType('d', {
 			sort: { msgs: -1 },
 			skip: offset,
 			limit: count,
@@ -111,35 +127,8 @@ RocketChat.API.v1.addRoute('im.list', { authRequired: true }, {
 			ims: rooms,
 			offset,
 			count: rooms.length,
-			total: RocketChat.models.Rooms.findByIds(roomIds).count()
+			total: RocketChat.models.Rooms.findByType('d').count()
 		});
-	}
-});
-
-RocketChat.API.v1.addRoute('im.list.everyone', { authRequired: true }, {
-	get: function() {
-		try {
-			if (!RocketChat.authz.hasPermission(this.userId, 'view-room-administration')) {
-				return RocketChat.API.v1.unauthorized();
-			}
-
-			const { offset, count } = RocketChat.API.v1.getPaginationItems(this);
-			const rooms = RocketChat.models.Rooms.findByType('d', {
-				sort: { msgs: -1 },
-				skip: offset,
-				limit: count,
-				fields: RocketChat.API.v1.roomFieldsToExclude
-			}).fetch();
-
-			return RocketChat.API.v1.success({
-				ims: rooms,
-				offset,
-				count: rooms.length,
-				total: RocketChat.models.Rooms.findByType('d').count()
-			});
-		} catch (e) {
-			return RocketChat.API.v1.failure(`${e.name}: ${e.message}`);
-		}
 	}
 });
 
@@ -167,7 +156,6 @@ RocketChat.API.v1.addRoute('im.open', { authRequired: true }, {
 		return RocketChat.API.v1.success();
 	}
 });
-
 
 RocketChat.API.v1.addRoute('im.setTopic', { authRequired: true }, {
 	post: function() {
