@@ -96,7 +96,7 @@ RocketChat.API.v1.addRoute('im.list', { authRequired: true }, {
 		//feature that notifies via webhooks about new events (channels, users, etc)
 		if (offset === -1) {
 			return RocketChat.API.v1.success({
-				ims: RocketChat.models.Rooms.findByIds(roomIds, { fields: { $loki: 0, meta: 0 } }).fetch()
+				ims: RocketChat.models.Rooms.findByIds(roomIds, { fields: RocketChat.API.v1.roomFieldsToExclude }).fetch()
 			});
 		}
 
@@ -104,7 +104,7 @@ RocketChat.API.v1.addRoute('im.list', { authRequired: true }, {
 			sort: { msgs: -1 },
 			skip: offset,
 			limit: count,
-			fields: { $loki: 0, meta: 0 }
+			fields: RocketChat.API.v1.roomFieldsToExclude
 		}).fetch();
 
 		return RocketChat.API.v1.success({
@@ -128,7 +128,7 @@ RocketChat.API.v1.addRoute('im.list.everyone', { authRequired: true }, {
 				sort: { msgs: -1 },
 				skip: offset,
 				limit: count,
-				fields: { $loki: 0, meta: 0 }
+				fields: RocketChat.API.v1.roomFieldsToExclude
 			}).fetch();
 
 			return RocketChat.API.v1.success({

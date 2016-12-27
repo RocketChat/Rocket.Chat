@@ -1,6 +1,10 @@
 class API extends Restivus
 	constructor: ->
 		@authMethods = []
+		@roomFieldsToExclude =
+			joinCode: 0
+			$loki: 0
+			meta: 0
 		super
 
 	addAuthMethod: (method) ->
@@ -52,12 +56,6 @@ class API extends Restivus
 		return {} =
 			offset: offset
 			count: count
-
-	getRoomFieldsToExclude: () ->
-		return {} =
-			joinCode: 0
-			$loki: 0
-			meta: 0
 
 RocketChat.API = {}
 
