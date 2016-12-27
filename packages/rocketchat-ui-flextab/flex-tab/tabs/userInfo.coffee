@@ -111,6 +111,15 @@ Template.userInfo.helpers
 		roles = _.union(UserRoles.findOne(uid)?.roles, RoomRoles.findOne({'u._id': uid, rid: Session.get('openedRoom') })?.roles)
 		return RocketChat.models.Roles.find({ _id: { $in: roles }, description: { $exists: 1 } }, { fields: { description: 1 } })
 
+	isDirect: ->
+		room = ChatRoom.findOne(Session.get('openedRoom'))
+
+		return room?.t is 'd'
+
+	isBlocker: ->
+		subscription = ChatSubscription.findOne({rid:Session.get('openedRoom'), 'u._id': Meteor.userId()}, { fields: { blocker: 1 } });
+		return subscription.blocker
+
 Template.userInfo.events
 	'click .thumb': (e) ->
 		$(e.currentTarget).toggleClass('bigger')
@@ -123,7 +132,7 @@ Template.userInfo.events
 			if result?.rid?
 				FlowRouter.go('direct', { username: @username }, FlowRouter.current().queryParams, ->
 				if window.matchMedia("(max-width: 500px)").matches
-					RocketChat.TabBar.closeFlex())                   
+					RocketChat.TabBar.closeFlex())
 
 	"click .flex-tab  .video-remote" : (e) ->
 		if RocketChat.TabBar.isFlexOpen()
@@ -342,6 +351,26 @@ Template.userInfo.events
 		e.preventDefault()
 
 		instance.editingUser.set instance.user.get()._id
+
+	'click .block-user': (e, instance) ->
+		e.stopPropagation()
+		e.preventDefault()
+
+		Meteor.call 'blockUser', { rid: Session.get('openedRoom'), blocked: instance.user.get()._id }, (error, result) ->
+			if result
+				toastr.success t('User_is_blocked')
+			if error
+				handleError(error)
+
+	'click .unblock-user': (e, instance) ->
+		e.stopPropagation()
+		e.preventDefault()
+
+		Meteor.call 'unblockUser', { rid: Session.get('openedRoom'), blocked: instance.user.get()._id }, (error, result) ->
+			if result
+				toastr.success t('User_is_unblocked')
+			if error
+				handleError(error)
 
 Template.userInfo.onCreated ->
 	@now = new ReactiveVar moment()

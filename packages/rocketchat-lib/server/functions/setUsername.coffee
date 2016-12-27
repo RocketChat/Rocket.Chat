@@ -24,13 +24,26 @@ RocketChat._setUsername = (userId, username) ->
 		unless RocketChat.checkUsernameAvailability username
 			return false
 
-
-
 	# If first time setting username, send Enrollment Email
 	try
 		if not previousUsername and user.emails?.length > 0 and RocketChat.settings.get 'Accounts_Enrollment_Email'
 			Accounts.sendEnrollmentEmail(user._id)
 	catch error
+
+	user.username = username
+
+	# If first time setting username, check if should set default avatar
+	if not previousUsername and RocketChat.settings.get('Accounts_SetDefaultAvatar') is true
+		avatarSuggestions = getAvatarSuggestionForUser user
+		for service, avatarData of avatarSuggestions
+			if service isnt 'gravatar'
+				RocketChat.setUserAvatar(user, avatarData.blob, avatarData.contentType, service)
+				gravatar = null
+				break
+			else
+				gravatar = avatarData
+		if gravatar?
+			RocketChat.setUserAvatar(user, gravatar.blob, gravatar.contentType, 'gravatar')
 
 	# Username is available; if coming from old username, update all references
 	if previousUsername
@@ -58,7 +71,6 @@ RocketChat._setUsername = (userId, username) ->
 
 	# Set new username
 	RocketChat.models.Users.setUsername user._id, username
-	user.username = username
 	return user
 
 RocketChat.setUsername = RocketChat.RateLimiter.limitFunction RocketChat._setUsername, 1, 60000,
