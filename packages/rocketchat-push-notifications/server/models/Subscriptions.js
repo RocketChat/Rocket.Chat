@@ -1,3 +1,17 @@
+RocketChat.models.Subscriptions.updateAudioNotificationsById = function(_id, audioNotifications) {
+	const query = {
+		_id: _id
+	};
+
+	const update = {
+		$set: {
+			audioNotifications: audioNotifications
+		}
+	};
+
+	return this.update(query, update);
+};
+
 RocketChat.models.Subscriptions.updateDesktopNotificationsById = function(_id, desktopNotifications) {
 	const query = {
 		_id: _id
@@ -109,6 +123,7 @@ RocketChat.models.Subscriptions.findNotificationPreferencesByRoom = function(roo
 		rid: roomId,
 		'u._id': {$exists: true},
 		$or: [
+			{audioNotifications: {$exists: true}},
 			{desktopNotifications: {$exists: true}},
 			{desktopNotificationDuration: {$exists: true}},
 			{mobilePushNotifications: {$exists: true}}
