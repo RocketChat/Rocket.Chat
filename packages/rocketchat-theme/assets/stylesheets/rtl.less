@@ -219,7 +219,9 @@
 	.main-content {
 		left: 40px;
 		right: @rooms-box-width;
-		transition: left 0.25s cubic-bezier(0.5, 0, 0.1, 1);
+		transition:
+			left 0.25s cubic-bezier(0.5, 0, 0.1, 1),
+			right 0.25s cubic-bezier(0.5, 0, 0.1, 1);
 
 		&.flex-opened {
 			left: @flex-tab-width + 40px;
@@ -362,7 +364,7 @@
 		}
 
 		&.menu-opened {
-			right: calc(~"100vw + 40px");
+			left: -40px;
 		}
 	}
 

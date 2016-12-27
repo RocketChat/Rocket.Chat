@@ -1764,7 +1764,9 @@ label.required::after {
 	right: 40px;
 	width: auto;
 	height: auto;
-	transition: right 0.25s cubic-bezier(0.5, 0, 0.1, 1);
+	transition:
+		right 0.25s cubic-bezier(0.5, 0, 0.1, 1),
+		left 0.25s cubic-bezier(0.5, 0, 0.1, 1);
 
 	&.flex-opened {
 		right: @flex-tab-width + 40px;
@@ -3042,7 +3044,7 @@ body:not(.is-cordova) {
 	}
 
 	&.menu-opened {
-		left: calc(~"100vw + 40px");
+		right: -40px;
 	}
 
 	.tab-button {
