@@ -1,0 +1,3 @@
+RocketChat.sounds = {
+	list: []
+};
