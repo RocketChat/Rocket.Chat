@@ -362,21 +362,22 @@ RocketChat.API.v1.addRoute('channels.list', { authRequired: true }, {
 
 RocketChat.API.v1.addRoute('channels.list.joined', { authRequired: true }, {
 	get: function() {
-		const roomIds = _.pluck(RocketChat.models.Subscriptions.findByTypeAndUserId('p', this.userId).fetch(), 'rid');
-
 		const { offset, count } = RocketChat.API.v1.getPaginationItems(this);
-		const rooms = RocketChat.models.Rooms.findByIds(roomIds, {
+		let rooms = _.pluck(RocketChat.models.Subscriptions.findByTypeAndUserId('c', this.userId).fetch(), '_room');
+		const totalCount = rooms.length;
+
+		rooms = RocketChat.models.Rooms.processQueryOptionsOnResult(rooms, {
 			sort: { msgs: -1 },
 			skip: offset,
 			limit: count,
 			fields: RocketChat.API.v1.roomFieldsToExclude
-		}).fetch();
+		});
 
 		return RocketChat.API.v1.success({
 			channels: rooms,
 			offset,
 			count: rooms.length,
-			total: RocketChat.models.Rooms.findByIds(roomIds).count()
+			total: totalCount
 		});
 	}
 });
