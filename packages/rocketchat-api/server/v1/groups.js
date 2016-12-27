@@ -1,5 +1,5 @@
 //Returns the private group subscription IF found otherwise it will reutrn the failure of why it didn't. Check the `statusCode` property
-function findPrivateGroupById(roomId, userId) {
+function findPrivateGroupById({ roomId, userId, checkedArchived = true }) {
 	if (!roomId || !roomId.trim()) {
 		return RocketChat.API.v1.failure('Body param "roomId" is required');
 	}
@@ -10,21 +10,21 @@ function findPrivateGroupById(roomId, userId) {
 		return RocketChat.API.v1.failure(`No private group found by the id of: ${roomId}`);
 	}
 
+	if (checkedArchived && roomSub.archived) {
+		return RocketChat.API.v1.failure(`The private group, ${roomSub.name}, is already archived`);
+	}
+
 	return roomSub;
 }
 
 //Archives a private group only if it wasn't
 RocketChat.API.v1.addRoute('groups.archive', { authRequired: true }, {
 	post: function() {
-		const findResult = findPrivateGroupById(this.bodyParams.roomId, this.userId);
+		const findResult = findPrivateGroupById({ roomId: this.bodyParams.roomId, userId: this.userId });
 
 		//The find method returns either with the group or the failure
 		if (findResult.statusCode) {
 			return findResult;
-		}
-
-		if (findResult.archived) {
-			return RocketChat.API.v1.failure(`The private group, ${this.bodyParams.name}, is already archived`);
 		}
 
 		try {
@@ -41,7 +41,7 @@ RocketChat.API.v1.addRoute('groups.archive', { authRequired: true }, {
 
 RocketChat.API.v1.addRoute('groups.close', { authRequired: true }, {
 	post: function() {
-		const findResult = findPrivateGroupById(this.bodyParams.roomId, this.userId);
+		const findResult = findPrivateGroupById({ roomId: this.bodyParams.roomId, userId: this.userId, checkedArchived: false });
 
 		//The find method returns either with the group or the failure
 		if (findResult.statusCode) {
@@ -100,7 +100,7 @@ RocketChat.API.v1.addRoute('groups.getIntegrations', { authRequired: true }, {
 			return RocketChat.API.v1.unauthorized();
 		}
 
-		const findResult = findPrivateGroupById(this.queryParams.roomId, this.userId);
+		const findResult = findPrivateGroupById({ roomId: this.queryParams.roomId, userId: this.userId, checkedArchived: false });
 
 		//The find method returns either with the group or the failure
 		if (findResult.statusCode) {
@@ -133,7 +133,7 @@ RocketChat.API.v1.addRoute('groups.getIntegrations', { authRequired: true }, {
 
 RocketChat.API.v1.addRoute('groups.history', { authRequired: true }, {
 	get: function() {
-		const findResult = findPrivateGroupById(this.queryParams.roomId, this.userId);
+		const findResult = findPrivateGroupById({ roomId: this.queryParams.roomId, userId: this.userId, checkedArchived: false });
 
 		//The find method returns either with the group or the failure
 		if (findResult.statusCode) {
@@ -182,7 +182,7 @@ RocketChat.API.v1.addRoute('groups.history', { authRequired: true }, {
 
 RocketChat.API.v1.addRoute('groups.info', { authRequired: true }, {
 	get: function() {
-		const findResult = findPrivateGroupById(this.queryParams.roomId, this.userId);
+		const findResult = findPrivateGroupById({ roomId: this.queryParams.roomId, userId: this.userId, checkedArchived: false });
 
 		//The find method returns either with the group or the failure
 		if (findResult.statusCode) {
@@ -201,15 +201,11 @@ RocketChat.API.v1.addRoute('groups.invite', { authRequired: true }, {
 			return RocketChat.API.v1.failure('Body param "userId" is required');
 		}
 
-		const findResult = findPrivateGroupById(this.bodyParams.roomId, this.userId);
+		const findResult = findPrivateGroupById({ roomId: this.bodyParams.roomId, userId: this.userId });
 
 		//The find method returns either with the group or the failure
 		if (findResult.statusCode) {
 			return findResult;
-		}
-
-		if (findResult.archived) {
-			return RocketChat.API.v1.failure(`The private group, ${this.bodyParams.name}, is archived`);
 		}
 
 		const user = RocketChat.models.Users.findOneById(this.bodyParams.userId);
@@ -238,15 +234,11 @@ RocketChat.API.v1.addRoute('groups.kick', { authRequired: true }, {
 			return RocketChat.API.v1.failure('Body param "userId" is required');
 		}
 
-		const findResult = findPrivateGroupById(this.bodyParams.roomId, this.userId);
+		const findResult = findPrivateGroupById({ roomId: this.bodyParams.roomId, userId: this.userId });
 
 		//The find method returns either with the group or the failure
 		if (findResult.statusCode) {
 			return findResult;
-		}
-
-		if (findResult.archived) {
-			return RocketChat.API.v1.failure(`The private group, ${this.bodyParams.name}, is archived`);
 		}
 
 		const user = RocketChat.models.Users.findOneById(this.bodyParams.userId);
@@ -269,15 +261,11 @@ RocketChat.API.v1.addRoute('groups.kick', { authRequired: true }, {
 
 RocketChat.API.v1.addRoute('groups.leave', { authRequired: true }, {
 	post: function() {
-		const findResult = findPrivateGroupById(this.bodyParams.roomId, this.userId);
+		const findResult = findPrivateGroupById({ roomId: this.bodyParams.roomId, userId: this.userId });
 
 		//The find method returns either with the group or the failure
 		if (findResult.statusCode) {
 			return findResult;
-		}
-
-		if (findResult.archived) {
-			return RocketChat.API.v1.failure(`The private group, ${this.bodyParams.name}, is archived`);
 		}
 
 		try {
@@ -324,7 +312,7 @@ RocketChat.API.v1.addRoute('groups.list', { authRequired: true }, {
 
 RocketChat.API.v1.addRoute('groups.open', { authRequired: true }, {
 	post: function() {
-		const findResult = findPrivateGroupById(this.bodyParams.roomId, this.userId);
+		const findResult = findPrivateGroupById({ roomId: this.bodyParams.roomId, userId: this.userId, checkedArchived: false });
 
 		//The find method returns either with the group or the failure
 		if (findResult.statusCode) {
@@ -353,15 +341,11 @@ RocketChat.API.v1.addRoute('groups.rename', { authRequired: true }, {
 			return RocketChat.API.v1.failure('The bodyParam "name" is required');
 		}
 
-		const findResult = findPrivateGroupById(this.bodyParams.roomId, this.userId);
+		const findResult = findPrivateGroupById({ roomId: this.bodyParams.roomId, userId: this.userId });
 
 		//The find method returns either with the group or the failure
 		if (findResult.statusCode) {
 			return findResult;
-		}
-
-		if (findResult.archived) {
-			return RocketChat.API.v1.failure(`The private group, ${this.bodyParams.name}, is archived`);
 		}
 
 		try {
@@ -384,15 +368,11 @@ RocketChat.API.v1.addRoute('groups.setDescription', { authRequired: true }, {
 			return RocketChat.API.v1.failure('The bodyParam "description" is required');
 		}
 
-		const findResult = findPrivateGroupById(this.bodyParams.roomId, this.userId);
+		const findResult = findPrivateGroupById({ roomId: this.bodyParams.roomId, userId: this.userId });
 
 		//The find method returns either with the group or the failure
 		if (findResult.statusCode) {
 			return findResult;
-		}
-
-		if (findResult.archived) {
-			return RocketChat.API.v1.failure(`The private group, ${this.bodyParams.name}, is archived`);
 		}
 
 		try {
@@ -415,15 +395,11 @@ RocketChat.API.v1.addRoute('groups.setPurpose', { authRequired: true }, {
 			return RocketChat.API.v1.failure('The bodyParam "purpose" is required');
 		}
 
-		const findResult = findPrivateGroupById(this.bodyParams.roomId, this.userId);
+		const findResult = findPrivateGroupById({ roomId: this.bodyParams.roomId, userId: this.userId });
 
 		//The find method returns either with the group or the failure
 		if (findResult.statusCode) {
 			return findResult;
-		}
-
-		if (findResult.archived) {
-			return RocketChat.API.v1.failure(`The private group, ${this.bodyParams.name}, is archived`);
 		}
 
 		try {
@@ -446,14 +422,10 @@ RocketChat.API.v1.addRoute('groups.setReadOnly', { authRequired: true }, {
 			return RocketChat.API.v1.failure('The bodyParam "readOnly" is required');
 		}
 
-		const findResult = findPrivateGroupById(this.bodyParams.roomId, this.userId);
+		const findResult = findPrivateGroupById({ roomId: this.bodyParams.roomId, userId: this.userId });
 
 		if (findResult.statusCode) {
 			return findResult;
-		}
-
-		if (findResult.archived) {
-			return RocketChat.API.v1.failure(`The private group, ${findResult.name}, is archived`);
 		}
 
 		if (findResult.ro === this.bodyParams.readOnly) {
@@ -480,15 +452,11 @@ RocketChat.API.v1.addRoute('groups.setTopic', { authRequired: true }, {
 			return RocketChat.API.v1.failure('The bodyParam "topic" is required');
 		}
 
-		const findResult = findPrivateGroupById(this.bodyParams.roomId, this.userId);
+		const findResult = findPrivateGroupById({ roomId: this.bodyParams.roomId, userId: this.userId });
 
 		//The find method returns either with the group or the failure
 		if (findResult.statusCode) {
 			return findResult;
-		}
-
-		if (findResult.archived) {
-			return RocketChat.API.v1.failure(`The private group, ${this.bodyParams.name}, is archived`);
 		}
 
 		try {
@@ -511,14 +479,10 @@ RocketChat.API.v1.addRoute('groups.setType', { authRequired: true }, {
 			return RocketChat.API.v1.failure('The bodyParam "type" is required');
 		}
 
-		const findResult = findPrivateGroupById(this.bodyParams.roomId, this.userId);
+		const findResult = findPrivateGroupById({ roomId: this.bodyParams.roomId, userId: this.userId });
 
 		if (findResult.statusCode) {
 			return findResult;
-		}
-
-		if (findResult.archived) {
-			return RocketChat.API.v1.failure(`The private group, ${findResult.name}, is archived`);
 		}
 
 		if (findResult.t === this.bodyParams.type) {
@@ -541,15 +505,11 @@ RocketChat.API.v1.addRoute('groups.setType', { authRequired: true }, {
 
 RocketChat.API.v1.addRoute('groups.unarchive', { authRequired: true }, {
 	post: function() {
-		const findResult = findPrivateGroupById(this.bodyParams.roomId, this.userId);
+		const findResult = findPrivateGroupById({ roomId: this.bodyParams.roomId, userId: this.userId });
 
 		//The find method returns either with the group or the failure
 		if (findResult.statusCode) {
 			return findResult;
-		}
-
-		if (!findResult.archived) {
-			return RocketChat.API.v1.failure(`The private group, ${this.bodyParams.name}, is not archived`);
 		}
 
 		try {

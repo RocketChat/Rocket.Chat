@@ -1,5 +1,5 @@
 //Returns the channel IF found otherwise it will return the failure of why it didn't. Check the `statusCode` property
-function findChannelById(roomId) {
+function findChannelById({ roomId, checkedArchived = true }) {
 	if (!roomId || !roomId.trim()) {
 		return RocketChat.API.v1.failure('The parameter "roomId" is required');
 	}
@@ -10,19 +10,19 @@ function findChannelById(roomId) {
 		return RocketChat.API.v1.failure(`No channel found by the id of: ${roomId}`);
 	}
 
+	if (checkedArchived && room.archived) {
+		return RocketChat.API.v1.failure(`The channel, ${room.name}, is archived`);
+	}
+
 	return room;
 }
 
 RocketChat.API.v1.addRoute('channels.addAll', { authRequired: true }, {
 	post: function() {
-		const findResult = findChannelById(this.bodyParams.roomId);
+		const findResult = findChannelById({ roomId: this.bodyParams.roomId });
 
 		if (findResult.statusCode) {
 			return findResult;
-		}
-
-		if (findResult.archived) {
-			return RocketChat.API.v1.failure(`The channel, ${findResult.name}, is archived`);
 		}
 
 		try {
@@ -41,14 +41,10 @@ RocketChat.API.v1.addRoute('channels.addAll', { authRequired: true }, {
 
 RocketChat.API.v1.addRoute('channels.archive', { authRequired: true }, {
 	post: function() {
-		const findResult = findChannelById(this.bodyParams.roomId);
+		const findResult = findChannelById({ roomId: this.bodyParams.roomId });
 
 		if (findResult.statusCode) {
 			return findResult;
-		}
-
-		if (findResult.archived) {
-			return RocketChat.API.v1.failure(`The channel, ${findResult.name}, is already archived`);
 		}
 
 		try {
@@ -65,14 +61,10 @@ RocketChat.API.v1.addRoute('channels.archive', { authRequired: true }, {
 
 RocketChat.API.v1.addRoute('channels.cleanHistory', { authRequired: true }, {
 	post: function() {
-		const findResult = findChannelById(this.bodyParams.roomId);
+		const findResult = findChannelById({ roomId: this.bodyParams.roomId });
 
 		if (findResult.statusCode) {
 			return findResult;
-		}
-
-		if (findResult.archived) {
-			return RocketChat.API.v1.failure(`The channel, ${findResult.name}, is archived`);
 		}
 
 		if (!this.bodyParams.latest) {
@@ -105,7 +97,7 @@ RocketChat.API.v1.addRoute('channels.cleanHistory', { authRequired: true }, {
 
 RocketChat.API.v1.addRoute('channels.close', { authRequired: true }, {
 	post: function() {
-		const findResult = findChannelById(this.bodyParams.roomId);
+		const findResult = findChannelById({ roomId: this.bodyParams.roomId, checkedArchived: false });
 
 		if (findResult.statusCode) {
 			return findResult;
@@ -173,7 +165,7 @@ RocketChat.API.v1.addRoute('channels.getIntegrations', { authRequired: true }, {
 			return RocketChat.API.v1.unauthorized();
 		}
 
-		const findResult = findChannelById(this.queryParams.roomId);
+		const findResult = findChannelById({ roomId: this.queryParams.roomId, checkedArchived: false });
 
 		if (findResult.statusCode) {
 			return findResult;
@@ -201,7 +193,7 @@ RocketChat.API.v1.addRoute('channels.getIntegrations', { authRequired: true }, {
 
 RocketChat.API.v1.addRoute('channels.history', { authRequired: true }, {
 	get: function() {
-		const findResult = findChannelById(this.queryParams.roomId);
+		const findResult = findChannelById({ roomId: this.queryParams.roomId, checkedArchived: false });
 
 		if (findResult.statusCode) {
 			return findResult;
@@ -249,7 +241,7 @@ RocketChat.API.v1.addRoute('channels.history', { authRequired: true }, {
 
 RocketChat.API.v1.addRoute('channels.info', { authRequired: true }, {
 	get: function() {
-		const findResult = findChannelById(this.queryParams.roomId);
+		const findResult = findChannelById({ roomId: this.queryParams.roomId, checkedArchived: false });
 
 		if (findResult.statusCode) {
 			return findResult;
@@ -267,15 +259,11 @@ RocketChat.API.v1.addRoute('channels.invite', { authRequired: true }, {
 			return RocketChat.API.v1.failure('Body param "userId" is required');
 		}
 
-		const findResult = findChannelById(this.bodyParams.roomId);
+		const findResult = findChannelById({ roomId: this.bodyParams.roomId });
 
 
 		if (findResult.statusCode) {
 			return findResult;
-		}
-
-		if (findResult.archived) {
-			return RocketChat.API.v1.failure(`The channel, ${findResult.name}, is archived`);
 		}
 
 		const user = RocketChat.models.Users.findOneById(this.bodyParams.userId);
@@ -304,14 +292,10 @@ RocketChat.API.v1.addRoute('channels.kick', { authRequired: true }, {
 			return RocketChat.API.v1.failure('Body param "userId" is required');
 		}
 
-		const findResult = findChannelById(this.bodyParams.roomId);
+		const findResult = findChannelById({ roomId: this.bodyParams.roomId });
 
 		if (findResult.statusCode) {
 			return findResult;
-		}
-
-		if (findResult.archived) {
-			return RocketChat.API.v1.failure(`The channel, ${findResult.name}, is archived`);
 		}
 
 		const user = RocketChat.models.Users.findOneById(this.bodyParams.userId);
@@ -336,14 +320,10 @@ RocketChat.API.v1.addRoute('channels.kick', { authRequired: true }, {
 
 RocketChat.API.v1.addRoute('channels.leave', { authRequired: true }, {
 	post: function() {
-		const findResult = findChannelById(this.bodyParams.roomId);
+		const findResult = findChannelById({ roomId: this.bodyParams.roomId });
 
 		if (findResult.statusCode) {
 			return findResult;
-		}
-
-		if (findResult.archived) {
-			return RocketChat.API.v1.failure(`The channel, ${findResult.name}, is archived`);
 		}
 
 		try {
@@ -403,7 +383,7 @@ RocketChat.API.v1.addRoute('channels.list.joined', { authRequired: true }, {
 
 RocketChat.API.v1.addRoute('channels.open', { authRequired: true }, {
 	post: function() {
-		const findResult = findChannelById(this.bodyParams.roomId);
+		const findResult = findChannelById({ roomId: this.bodyParams.roomId, checkedArchived: false });
 
 		if (findResult.statusCode) {
 			return findResult;
@@ -437,14 +417,10 @@ RocketChat.API.v1.addRoute('channels.rename', { authRequired: true }, {
 			return RocketChat.API.v1.failure('The bodyParam "name" is required');
 		}
 
-		const findResult = findChannelById(this.bodyParams.roomId);
+		const findResult = findChannelById({ roomId: this.bodyParams.roomId });
 
 		if (findResult.statusCode) {
 			return findResult;
-		}
-
-		if (findResult.archived) {
-			return RocketChat.API.v1.failure(`The channel, ${findResult.name}, is archived`);
 		}
 
 		if (findResult.name === this.bodyParams.name) {
@@ -471,14 +447,10 @@ RocketChat.API.v1.addRoute('channels.setDescription', { authRequired: true }, {
 			return RocketChat.API.v1.failure('The bodyParam "description" is required');
 		}
 
-		const findResult = findChannelById(this.bodyParams.roomId);
+		const findResult = findChannelById({ roomId: this.bodyParams.roomId });
 
 		if (findResult.statusCode) {
 			return findResult;
-		}
-
-		if (findResult.archived) {
-			return RocketChat.API.v1.failure(`The channel, ${findResult.name}, is archived`);
 		}
 
 		if (findResult.description === this.bodyParams.description) {
@@ -505,14 +477,10 @@ RocketChat.API.v1.addRoute('channels.setJoinCode', { authRequired: true }, {
 			return RocketChat.API.v1.failure('The bodyParam "joinCode" is required');
 		}
 
-		const findResult = findChannelById(this.bodyParams.roomId);
+		const findResult = findChannelById({ roomId: this.bodyParams.roomId });
 
 		if (findResult.statusCode) {
 			return findResult;
-		}
-
-		if (findResult.archived) {
-			return RocketChat.API.v1.failure(`The channel, ${findResult.name}, is archived`);
 		}
 
 		try {
@@ -535,14 +503,10 @@ RocketChat.API.v1.addRoute('channels.setPurpose', { authRequired: true }, {
 			return RocketChat.API.v1.failure('The bodyParam "purpose" is required');
 		}
 
-		const findResult = findChannelById(this.bodyParams.roomId);
+		const findResult = findChannelById({ roomId: this.bodyParams.roomId });
 
 		if (findResult.statusCode) {
 			return findResult;
-		}
-
-		if (findResult.archived) {
-			return RocketChat.API.v1.failure(`The channel, ${findResult.name}, is archived`);
 		}
 
 		if (findResult.description === this.bodyParams.purpose) {
@@ -569,14 +533,10 @@ RocketChat.API.v1.addRoute('channels.setReadOnly', { authRequired: true }, {
 			return RocketChat.API.v1.failure('The bodyParam "readOnly" is required');
 		}
 
-		const findResult = findChannelById(this.bodyParams.roomId);
+		const findResult = findChannelById({ roomId: this.bodyParams.roomId });
 
 		if (findResult.statusCode) {
 			return findResult;
-		}
-
-		if (findResult.archived) {
-			return RocketChat.API.v1.failure(`The channel, ${findResult.name}, is archived`);
 		}
 
 		if (findResult.ro === this.bodyParams.readOnly) {
@@ -603,14 +563,10 @@ RocketChat.API.v1.addRoute('channels.setTopic', { authRequired: true }, {
 			return RocketChat.API.v1.failure('The bodyParam "topic" is required');
 		}
 
-		const findResult = findChannelById(this.bodyParams.roomId);
+		const findResult = findChannelById({ roomId: this.bodyParams.roomId });
 
 		if (findResult.statusCode) {
 			return findResult;
-		}
-
-		if (findResult.archived) {
-			return RocketChat.API.v1.failure(`The channel, ${findResult.name}, is archived`);
 		}
 
 		if (findResult.topic === this.bodyParams.topic) {
@@ -637,14 +593,10 @@ RocketChat.API.v1.addRoute('channels.setType', { authRequired: true }, {
 			return RocketChat.API.v1.failure('The bodyParam "type" is required');
 		}
 
-		const findResult = findChannelById(this.bodyParams.roomId);
+		const findResult = findChannelById({ roomId: this.bodyParams.roomId });
 
 		if (findResult.statusCode) {
 			return findResult;
-		}
-
-		if (findResult.archived) {
-			return RocketChat.API.v1.failure(`The channel, ${findResult.name}, is archived`);
 		}
 
 		if (findResult.t === this.bodyParams.type) {
@@ -667,7 +619,7 @@ RocketChat.API.v1.addRoute('channels.setType', { authRequired: true }, {
 
 RocketChat.API.v1.addRoute('channels.unarchive', { authRequired: true }, {
 	post: function() {
-		const findResult = findChannelById(this.bodyParams.roomId);
+		const findResult = findChannelById({ roomId: this.bodyParams.roomId, checkedArchived: false });
 
 		if (findResult.statusCode) {
 			return findResult;
