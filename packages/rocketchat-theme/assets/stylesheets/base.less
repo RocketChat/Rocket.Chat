@@ -1774,6 +1774,11 @@ label.required::after {
 		}
 	}
 
+	&.menu-opened {
+		left: 260px !important;
+		width: 100vw;
+	}
+
 	&.layout1 {
 		right: @flex-tab-webrtc-width;
 
@@ -3034,6 +3039,10 @@ body:not(.is-cordova) {
 				will-change: right, left;
 			}
 		}
+	}
+
+	&.menu-opened {
+		left: calc(~"100vw + 40px");
 	}
 
 	.tab-button {

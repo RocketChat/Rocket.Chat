@@ -224,6 +224,10 @@
 		&.flex-opened {
 			left: @flex-tab-width + 40px;
 		}
+
+		&.menu-opened {
+			right: 260px !important;
+		}
 	}
 
 	.page-settings {
@@ -355,6 +359,10 @@
 				border-left: 3px solid #ff0000;
 				border-right: unset;
 			}
+		}
+
+		&.menu-opened {
+			right: calc(~"100vw + 40px");
 		}
 	}
 
@@ -510,6 +518,7 @@
 		#rocket-chat {
 			.main-content {
 				right: 0;
+				left: 40px;
 			}
 
 			.fixed-title h2 {
