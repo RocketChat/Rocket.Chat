@@ -17,28 +17,39 @@ Package.onUse(function(api) {
 
 	api.use('templating', 'client');
 
-
+	// Server side files
 	api.addFiles('server/server.coffee', 'server');
 	api.addFiles('server/variables.coffee', 'server');
 
+	// Client side files
 	api.addFiles('client/minicolors/jquery.minicolors.css', 'client');
 	api.addFiles('client/minicolors/jquery.minicolors.js', 'client');
 
+	// Vendor stylesheets
+	api.addAssets('assets/stylesheets/vendor/animation.css', 'server');
+	api.addAssets('assets/stylesheets/vendor/fontello.css', 'server');
+	api.addAssets('assets/stylesheets/vendor/swipebox.css', 'server');
 
-	api.addAssets('assets/stylesheets/global/_variables.less', 'server');
-	api.addAssets('assets/stylesheets/utils/_mixins.import.less', 'server');
+	// Custom stylesheets
+	api.addAssets('assets/stylesheets/_core.import.less', 'server');
+	api.addAssets('assets/stylesheets/base.less', 'server');
+	api.addAssets('assets/stylesheets/blocks/_general-rtl.import.less', 'server');
+	api.addAssets('assets/stylesheets/blocks/_general.import.less', 'server');
+	api.addAssets('assets/stylesheets/global/_variables.import.less', 'server');
+	api.addAssets('assets/stylesheets/mixins/_blink.import.less', 'server');
+	api.addAssets('assets/stylesheets/mixins/_buttonColors.import.less', 'server');
+	api.addAssets('assets/stylesheets/mixins/_custom-scroll.import.less', 'server');
+	api.addAssets('assets/stylesheets/mixins/_gradient.import.less', 'server');
+	api.addAssets('assets/stylesheets/mixins/_input-shade.import.less', 'server');
+	api.addAssets('assets/stylesheets/mixins/_linkColors.import.less', 'server');
+	api.addAssets('assets/stylesheets/rtl.less', 'server');
+	api.addAssets('assets/stylesheets/utils/_chatops.import.less', 'server');
 	api.addAssets('assets/stylesheets/utils/_colors.import.less', 'server');
 	api.addAssets('assets/stylesheets/utils/_forms.import.less', 'server');
 	api.addAssets('assets/stylesheets/utils/_keyframes.import.less', 'server');
-	api.addAssets('assets/stylesheets/utils/_lesshat.import.less', 'server');
 	api.addAssets('assets/stylesheets/utils/_preloader.import.less', 'server');
-	api.addAssets('assets/stylesheets/utils/_reset.import.less', 'server');
-	api.addAssets('assets/stylesheets/utils/_chatops.less', 'server');
-	api.addAssets('assets/stylesheets/animation.css', 'server');
-	api.addAssets('assets/stylesheets/base.less', 'server');
-	api.addAssets('assets/stylesheets/fontello.css', 'server');
-	api.addAssets('assets/stylesheets/rtl.less', 'server');
-	api.addAssets('assets/stylesheets/swipebox.min.css', 'server');
+	api.addAssets('assets/stylesheets/variables/_variables.import.less', 'server');
+	api.addAssets('assets/stylesheets/vendor/_reset.import.less', 'server');
 });
 
 Npm.depends({
