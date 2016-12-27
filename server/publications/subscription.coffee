@@ -18,6 +18,8 @@ fields =
 	emailNotifications: 1
 	unreadAlert: 1
 	_updatedAt: 1
+	blocked: 1
+	blocker: 1
 
 
 Meteor.methods

@@ -41,6 +41,9 @@ Template.livechatWindow.helpers({
 	},
 	videoCalling() {
 		return LivechatVideoCall.isActive();
+	},
+	isOpened() {
+		return Livechat.isWidgetOpened();
 	}
 });
 
@@ -115,6 +118,12 @@ Template.livechatWindow.onCreated(function() {
 			});
 
 			Livechat.ready();
+		}
+	});
+
+	$(window).on('focus', () => {
+		if (Livechat.isWidgetOpened()) {
+			$('textarea').focus();
 		}
 	});
 });

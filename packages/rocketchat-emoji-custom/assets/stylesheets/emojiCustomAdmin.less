@@ -4,6 +4,7 @@
 	overflow: hidden;
 	position: relative;
 	border-radius: 4px;
+
 	.emojiAdminPreview-image {
 		height: 100%;
 		width: 100%;
@@ -22,17 +23,21 @@
 	z-index: 15;
 	overflow-y: auto;
 	overflow-x: hidden;
+
 	.thumb {
 		width: 100%;
 		height: 350px;
 		padding: 20px;
 	}
+
 	nav {
 		padding: 0 20px;
 	}
+
 	.info {
 		white-space: normal;
 		padding: 0 20px;
+
 		h3 {
 			-webkit-user-select: text;
 			-moz-user-select: text;
@@ -45,7 +50,8 @@
 			width: 100%;
 			overflow: hidden;
 			white-space: nowrap;
-			i:after {
+
+			i::after {
 				content: " ";
 				display: inline-block;
 				width: 8px;
@@ -53,19 +59,8 @@
 				border-radius: 4px;
 				vertical-align: middle;
 			}
-			i.status-offline {
-				&:after {}
-			}
-			i.status-online {
-				&:after {}
-			}
-			i.status-away {
-				&:after {}
-			}
-			i.status-busy {
-				&:after {}
-			}
 		}
+
 		p {
 			-webkit-user-select: text;
 			-moz-user-select: text;
@@ -76,22 +71,27 @@
 			font-weight: 300;
 		}
 	}
+
 	.edit-form {
-		padding: 20px 20px 0 20px;
+		padding: 20px 20px 0;
 		white-space: normal;
+
 		h3 {
 			font-size: 24px;
 			margin-bottom: 8px;
 			line-height: 22px;
 		}
+
 		p {
 			line-height: 18px;
 			font-size: 12px;
 			font-weight: 300;
 		}
+
 		> .input-line {
 			margin-top: 20px;
 		}
+
 		nav {
 			padding: 0;
 
@@ -110,7 +110,8 @@
 			}
 		}
 	}
+
 	.room-info-content > div {
-		margin: 0 0 20px 0;
+		margin: 0 0 20px;
 	}
 }

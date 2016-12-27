@@ -1,5 +1,5 @@
 <template name="livechatQueue">
-	{{#if hasPermission}}
+	{{#requiresPermission 'view-livechat-manager'}}
 		{{#each departments}}
 			<p class="queue-department">
 				{{_ "Department"}}: <strong>{{name}}</strong>
@@ -34,7 +34,5 @@
 				</div>
 			</div>
 		{{/each}}
-	{{else}}
-		<p>{{_ "You_are_not_authorized_to_view_this_page"}}</p>
-	{{/if}}
+	{{/requiresPermission}}
 </template>
