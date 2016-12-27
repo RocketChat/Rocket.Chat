@@ -6,9 +6,9 @@ import mainContent from '../pageobjects/main-content.page';
 import sideNav from '../pageobjects/side-nav.page';
 
 //test data imports
-import {checkIfUserIsValid} from '../test-data/checks';
-import {username, email, password} from '../test-data/user.js';
-//Basic usage test start
+import {checkIfUserIsValid} from '../data/checks';
+import {username, email, password} from '../data/user.js';
+
 describe('Main Elements Render', function() {
 	before(()=>{
 		checkIfUserIsValid(username, email, password);
@@ -64,7 +64,6 @@ describe('Main Elements Render', function() {
 		describe('render', () => {
 			before(() => {
 				sideNav.accountBoxUserName.click();
-				browser.pause(500);
 				sideNav.userOptions.waitForVisible(5000);
 			});
 
@@ -105,7 +104,7 @@ describe('Main Elements Render', function() {
 	describe('main content', () => {
 		describe('render', () => {
 			before(()=> {
-				browser.pause(500);
+				sideNav.logout.waitForVisible(5000, true);
 				sideNav.getChannelFromList('general').waitForVisible(5000);
 				sideNav.openChannel('general');
 			});
@@ -191,13 +190,11 @@ describe('Main Elements Render', function() {
 	describe('flextab usage', () => {
 		describe('render', () => {
 			before(()=> {
-				browser.pause(500);
 				sideNav.getChannelFromList('general').waitForVisible(5000);
 				sideNav.openChannel('general');
 			});
 			describe('Room Info Tab', () => {
 				before(()=> {
-					browser.pause(700);
 					flexTab.channelTab.click();
 				});
 
@@ -210,7 +207,7 @@ describe('Main Elements Render', function() {
 				});
 
 				it('should show the room info tab content', () => {
-					browser.pause(7000);
+					flexTab.channelSettings.waitForVisible(5000);
 					flexTab.channelSettings.isVisible().should.be.true;
 				});
 
@@ -223,7 +220,6 @@ describe('Main Elements Render', function() {
 
 			describe('Search Tab', () => {
 				before(()=> {
-					browser.pause(700);
 					flexTab.searchTab.click();
 				});
 
@@ -242,7 +238,6 @@ describe('Main Elements Render', function() {
 
 			describe('Members Tab', () => {
 				before(()=> {
-					browser.pause(700);
 					flexTab.membersTab.click();
 				});
 
@@ -269,7 +264,6 @@ describe('Main Elements Render', function() {
 
 			describe('Notifications Tab', () => {
 				before(()=> {
-					browser.pause(700);
 					flexTab.notificationsTab.click();
 				});
 
@@ -288,7 +282,6 @@ describe('Main Elements Render', function() {
 
 			describe('Files Tab', () => {
 				before(()=> {
-					browser.pause(700);
 					flexTab.filesTab.click();
 				});
 
@@ -307,7 +300,6 @@ describe('Main Elements Render', function() {
 
 			describe('Mentions Tab', () => {
 				before(()=> {
-					browser.pause(700);
 					flexTab.mentionsTab.click();
 				});
 
@@ -326,7 +318,6 @@ describe('Main Elements Render', function() {
 
 			describe('Starred Messages Tab', () => {
 				before(()=> {
-					browser.pause(700);
 					flexTab.starredTab.click();
 				});
 
@@ -345,7 +336,6 @@ describe('Main Elements Render', function() {
 
 			describe('Pinned Messages Tab', () => {
 				before(()=> {
-					browser.pause(700);
 					flexTab.pinnedTab.click();
 				});
 

@@ -31,6 +31,7 @@ Package.onUse(function(api) {
 	api.addFiles('client/startup.coffee', ['client']);
 	api.addFiles('client/hasPermission.coffee', ['client']);
 	api.addFiles('client/hasRole.coffee', ['client']);
+	api.addFiles('client/requiresPermission.html', ['client']);
 
 	api.addFiles('client/route.coffee', ['client']);
 
