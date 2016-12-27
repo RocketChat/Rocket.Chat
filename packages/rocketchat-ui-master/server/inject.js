@@ -43,7 +43,9 @@ Inject.rawHead('page-loading', `
 	100% { transform: scale(0); }
 	40% { transform: scale(1.0); }
 }
-</style>
+</style>`);
+
+Inject.rawBody('page-loading-div', `
 <div id="initial-page-loading" class="page-loading">
 	<div class="loading-animation">
 		<div class="bounce1"></div>
