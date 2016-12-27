@@ -3,13 +3,13 @@
 	notificationStatus: new ReactiveVar
 
 	audioAssets: [
-		{ '_id': 'chatBeep02', 'name': 'Beep 2', 'sources': [ { 'src': 'sounds/beep.mp3', 'type': 'audio/mpeg' } ] }
-		{ '_id': 'chatBeep03', 'name': 'Beep 3', 'sources': [ { 'src': 'sounds/ding.mp3', 'type': 'audio/mpeg' } ] }
-		{ '_id': 'chatBeep04', 'name': 'Beep 4', 'sources': [ { 'src': 'sounds/335908__littlerainyseasons__correct.mp3', 'type': 'audio/mpeg' } ] }
-		{ '_id': 'chatBeep05', 'name': 'Beep 5', 'sources': [ { 'src': 'sounds/320202__chelle19__dingmp3.mp3', 'type': 'audio/mpeg' } ] }
-		{ '_id': 'chatBeep06', 'name': 'Beep 6', 'sources': [ { 'src': 'sounds/218851__kellyconidi__highbell.mp3', 'type': 'audio/mpeg' } ] }
-		{ '_id': 'chatBeep07', 'name': 'Beep 7', 'sources': [ { 'src': 'sounds/167346__willy-ineedthatapp-com__droplet-good5.mp3', 'type': 'audio/mpeg' } ] }
-		{ '_id': 'verbal', 'name': 'Verbal Ding', 'sources': [ { 'src': 'sounds/179132__alphahog__ding.mp3', 'type': 'audio/mpeg' } ] }
+		{ '_id': 'beep', 'name': 'Beep', 'sources': [ { 'src': 'sounds/beep.mp3', 'type': 'audio/mpeg' } ] }
+		{ '_id': 'ding', 'name': 'Ding', 'sources': [ { 'src': 'sounds/ding.mp3', 'type': 'audio/mpeg' } ] }
+		{ '_id': 'seasons', 'name': 'Seasons', 'sources': [ { 'src': 'sounds/seasons.mp3', 'type': 'audio/mpeg' } ] }
+		{ '_id': 'chelle', 'name': 'Chelle', 'sources': [ { 'src': 'sounds/chelle.mp3', 'type': 'audio/mpeg' } ] }
+		{ '_id': 'highbell', 'name': 'High Bell', 'sources': [ { 'src': 'sounds/highbell.mp3', 'type': 'audio/mpeg' } ] }
+		{ '_id': 'droplet', 'name': 'Droplet', 'sources': [ { 'src': 'sounds/droplet.mp3', 'type': 'audio/mpeg' } ] }
+		{ '_id': 'verbal', 'name': 'Verbal', 'sources': [ { 'src': 'sounds/verbal.mp3', 'type': 'audio/mpeg' } ] }
 	]
 
 	# notificacoes HTML5
@@ -58,13 +58,13 @@
 			KonchatNotification.notify(notification)
 
 	newMessage: ->
-		if not Session.equals('user_' + Meteor.userId() + '_status', 'busy') and Meteor.user()?.settings?.preferences?.newMessageNotification isnt false
+		if not Session.equals('user_' + Meteor.userId() + '_status', 'busy') and Meteor.user()?.settings?.preferences?.audioNotifications isnt 'none'
 			sub = ChatSubscription.findOne({ rid: Session.get('openedRoom') }, { fields: { audioNotifications: 1 } });
 			if sub?.audioNotifications isnt 'none'
 				if sub?.audioNotifications
 					$("##{sub.audioNotifications}")[0].play()
 				else
-					$('#defaultAudioNotification')[0].play()
+					$('#chime')[0].play()
 
 	newRoom: (rid, withSound = true) ->
 		Tracker.nonreactive ->
