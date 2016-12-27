@@ -13,7 +13,8 @@
 								<label>
 									<select name="audioNotifications" class="audio">
 										<option value="none" selected="{{$eq audioNotifications 'none'}}">{{_ "None"}}</option>
-										<option value="defaultAudioNotification" selected="{{$eq audioNotifications 'defaultAudioNotification'}}">{{_ "Default"}}</option>
+										<option value="" selected="{{$eq audioNotifications ''}}">{{_ "Use_account_preference"}} ({{_ "Default"}})</option>
+										<option value="chime" selected="{{$eq audioNotifications 'chime'}}">Chime</option>
 										{{#each audioAssets}}
 											<option value="{{_id}}" selected="{{$eq audioNotifications _id}}">{{name}}</option>
 										{{/each}}

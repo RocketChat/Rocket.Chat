@@ -13,9 +13,8 @@ Template.pushNotificationsFlexTab.helpers({
 				audioNotifications: 1
 			}
 		});
-		return sub ? sub.audioNotifications : 'defaultAudioNotification';
+		return sub ? sub.audioNotifications : '';
 	},
-
 	desktopNotifications() {
 		var sub = ChatSubscription.findOne({
 			rid: Session.get('openedRoom')
@@ -92,11 +91,11 @@ Template.pushNotificationsFlexTab.helpers({
 				audioNotifications: 1
 			}
 		});
-		const audio = sub ? sub.audioNotifications : 'defaultAudioNotification';
+		const audio = sub ? sub.audioNotifications : '';
 		if (audio === 'none') {
 			return t('None');
-		} else if (audio === 'defaultAudioNotification') {
-			return t('Default');
+		} else if (audio === '') {
+			return t('Use_account_preference');
 		} else {
 			const asset = _.findWhere(KonchatNotification.audioAssets, { _id: audio });
 			return asset && asset.name;

@@ -1,5 +1,11 @@
 import toastr from 'toastr'
 Template.accountPreferences.helpers
+	audioAssets: ->
+		return KonchatNotification.audioAssets
+
+	audioNotifications: ->
+		return Meteor.user()?.settings?.preferences?.audioNotifications || 'chime'
+
 	languages: ->
 		languages = TAPi18n.getLanguages()
 		result = []
@@ -67,7 +73,7 @@ Template.accountPreferences.onCreated ->
 			reload = true
 
 		data.newRoomNotification = $('input[name=newRoomNotification]:checked').val()
-		data.newMessageNotification = $('input[name=newMessageNotification]:checked').val()
+		data.audioNotifications = $('select[name=audioNotifications]').val()
 		data.useEmojis = $('input[name=useEmojis]:checked').val()
 		data.convertAsciiEmoji = $('input[name=convertAsciiEmoji]:checked').val()
 		data.saveMobileBandwidth = $('input[name=saveMobileBandwidth]:checked').val()
@@ -119,3 +125,12 @@ Template.accountPreferences.events
 					username: 'rocket.cat'
 			title: TAPi18n.__('Desktop_Notification_Test')
 			text: TAPi18n.__('This_is_a_desktop_notification')
+
+	'change select[name=audioNotifications]': (e) ->
+		e.preventDefault()
+		audio = $(e.currentTarget).val()
+		if audio is 'none'
+			return
+
+		$audio = $('#' + (audio || 'chime'))
+		$audio?[0]?.play()
