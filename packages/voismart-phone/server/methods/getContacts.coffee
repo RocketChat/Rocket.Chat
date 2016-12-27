@@ -7,7 +7,7 @@ Meteor.methods
 
 		try
 			value = value.trim()
-			splitted_values = value.split(" ")
+			splitted_values = value.split(" +")
 			filter = '(sn=*{SRC}* or givenName=*{SRC}* or o=*{SRC}* or mail=*{SRC}* or mobile=*{SRC}* or facsimileTelephoneNumber=*{SRC}* or telephoneNumber=*{SRC}*)'
 			new_filter = (filter.replace(/{SRC}/g,	v) for v in splitted_values)
 			joined_filter = new_filter.join(" and ")
