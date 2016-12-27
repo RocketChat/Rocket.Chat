@@ -96,6 +96,8 @@ Template.pushNotificationsFlexTab.helpers({
 			return t('None');
 		} else if (audio === '') {
 			return t('Use_account_preference');
+		} else if (audio === 'chime') {
+			return 'Chime';
 		} else {
 			const asset = _.findWhere(KonchatNotification.audioAssets, { _id: audio });
 			return asset && asset.name;
