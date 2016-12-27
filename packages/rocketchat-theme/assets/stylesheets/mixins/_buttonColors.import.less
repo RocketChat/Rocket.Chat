@@ -1,0 +1,10 @@
+.buttonColors(@color, @bg) {
+	transition: color 0.2s ease-out, background-color 0.2s ease-out;
+	color: @color;
+	background-color: @bg;
+
+	&:hover {
+		color: mix(@color, contrast(@bg), 60%);
+		background-color: mix(@bg, contrast(@color), 60%);
+	}
+}

@@ -1,0 +1,26 @@
+.blink(@color) {
+	animation-duration: 1000ms;
+	animation-name: blink;
+	animation-iteration-count: infinite;
+	animation-direction: alternate;
+
+	@keyframes blink {
+		from {
+			color: @color;
+		}
+
+		to {
+			opacity: inherit;
+		}
+	}
+
+	@-webkit-keyframes blink {
+		from {
+			color: @color;
+		}
+
+		to {
+			color: inherit;
+		}
+	}
+}
