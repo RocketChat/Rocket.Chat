@@ -1,13 +1,12 @@
 /** ----------------------------------------------------------------------------
  * Derivative colours (fixed variants of inherited variables)
  */
-
 @default-action-color: darken(@secondary-background-color, 15%);
-@default-action-contrast: contrast(@default-action-color, #444);
-@primary-background-contrast: contrast(@primary-background-color, #444);
-@primary-action-contrast: contrast(@primary-action-color, #444);
-@secondary-background-contrast: contrast(@secondary-background-color, #444);
-@secondary-action-contrast: contrast(@secondary-action-color, #444);
+@default-action-contrast: contrast(@default-action-color, #444444);
+@primary-background-contrast: contrast(@primary-background-color, #444444);
+@primary-action-contrast: contrast(@primary-action-color, #444444);
+@secondary-background-contrast: contrast(@secondary-background-color, #444444);
+@secondary-action-contrast: contrast(@secondary-action-color, #444444);
 @selection-background: lighten(@selection-color, 30%);
 @success-background: lighten(@success-color, 45%);
 @success-border: lighten(@success-color, 30%);
@@ -18,13 +17,23 @@
 @pending-border: lighten(@pending-color, 30%);
 @window-border-color: @component-color;
 @code-background-color: #f8f8f8;
-@code-border-color: #ccc;
-@code-font-color: #333;
+@code-border-color: #cccccc;
+@code-font-color: #333333;
+
+/** ----------------------------------------------------------------------------
+ * Transparency variables
+ */
+
+@transparent-darkest: rgba(0, 0, 0, 0.5);
+@transparent-darker: rgba(0, 0, 0, 0.15);
+@transparent-dark: rgba(0, 0, 0, 0.05);
+@transparent-light: rgba(255, 255, 255, 0.1);
+@transparent-lighter: rgba(255, 255, 255, 0.3);
+@transparent-lightest: rgba(255, 255, 255, 0.6);
 
 /** ----------------------------------------------------------------------------
  * Document components
  */
-
 html {
 	.custom-scroll(@transparent-dark, @custom-scrollbar-color, 0);
 }
@@ -35,6 +44,7 @@ html {
 
 body {
 	color: @primary-font-color;
+
 	* {
 		border-color: @component-color;
 	}
@@ -46,7 +56,7 @@ code {
 	color: @code-font-color;
 }
 
-blockquote:before {
+blockquote::before {
 	background-color: @transparent-darker;
 }
 
@@ -54,6 +64,7 @@ blockquote:before {
 .cms-page,
 .page-container {
 	background-color: @content-background-color;
+
 	header {
 		background-color: @content-background-color;
 		border-color: @component-color;
@@ -63,19 +74,24 @@ blockquote:before {
 .page-container table {
 	overflow: hidden;
 	background-color: @secondary-background-color;
+
 	th,
 	td {
 		border-color: @component-color;
 	}
+
 	th {
 		background-color: @content-background-color;
 	}
+
 	tr {
 		background-color: @transparent-light;
+
 		&:nth-of-type(even) {
 			background-color: @transparent-lightest;
 		}
 	}
+
 	tr:hover td {
 		background-color: @content-background-color;
 	}
@@ -85,37 +101,29 @@ blockquote:before {
 	background-color: @primary-font-color;
 }
 
-
 /** ----------------------------------------------------------------------------
  * Forms
  */
 
 .input-shade(@primary-font-color, @content-background-color);
+
 .flex-nav {
 	.input-shade(@primary-background-contrast, @primary-background-color);
+
 	label,
 	legend {
 		color: @tertiary-font-color;
 	}
+
 	input {
 		&:focus {
 			border-color: fade(@primary-background-contrast, 50%);
 		}
 	}
-	.input.checkbox.toggle {
-		input:checked + label:before {
-			background-color: @primary-action-color;
-		}
-	}
-}
 
-.flex-tab {
-	input,
-	select,
-	textarea {
-		background-color: @content-background-color;
-		&:focus {
-			border-color: lighten(@secondary-background-contrast, 30%);
+	.input.checkbox.toggle {
+		input:checked + label::before {
+			background-color: @primary-action-color;
 		}
 	}
 }
@@ -124,10 +132,12 @@ blockquote:before {
 	&.setting-changed > label {
 		color: @selection-color;
 	}
+
 	i,
 	.settings-description {
 		color: @secondary-font-color;
 	}
+
 	.settings-alert {
 		background-color: @pending-background;
 		border-color: @pending-border;
@@ -143,40 +153,43 @@ blockquote:before {
 
 input:-webkit-autofill {
 	color: @primary-font-color !important;
-}
-
-input:-webkit-autofill {
 	background-color: transparent !important;
 }
 
 .input {
 	&.radio {
 		label {
-			&:before {
+			&::before {
 				background-color: @content-background-color;
 				border-color: lighten(@secondary-background-contrast, 30%);
 			}
-			&:after {
+
+			&::after {
 				background-color: @secondary-background-contrast;
 			}
 		}
 	}
+
 	&.checkbox.toggle {
-		input:checked + label:before {
+		input:checked + label::before {
 			background-color: @secondary-background-contrast;
 		}
-		input:disabled + label:before {
+
+		input:disabled + label::before {
 			background-color: lighten(@secondary-background-contrast, 50%) !important;
 		}
+
 		label {
-			&:before {
+			&::before {
 				background-color: lighten(@secondary-background-contrast, 30%);
 			}
-			&:after {
+
+			&::after {
 				background-color: @content-background-color;
 			}
+
 			&:hover {
-				&:before {
+				&::before {
 					background-color: lighten(@secondary-background-contrast, 20%);
 				}
 			}
@@ -184,11 +197,9 @@ input:-webkit-autofill {
 	}
 }
 
-
 /** ----------------------------------------------------------------------------
  * Misc typography variants
  */
-
 a {
 	color: @primary-font-color;
 }
@@ -203,6 +214,7 @@ a:hover {
 	a i,
 	a[class^="icon-"] {
 		color: @primary-font-color;
+
 		&:hover {
 			color: darken(@primary-font-color, 10%);
 		}
@@ -224,21 +236,22 @@ a:hover {
 	color: @error-color;
 }
 
-
 /** ----------------------------------------------------------------------------
  * Admin and settings styles
  */
-
 .page-settings {
 	.content {
 		background-color: @transparent-dark;
 	}
+
 	.section {
 		background-color: @content-background-color;
 	}
+
 	.terminal {
-		background-color: #444;
+		background-color: #444444;
 		color: white;
+
 		.time {
 			color: @secondary-font-color;
 		}
@@ -249,6 +262,7 @@ a:hover {
 .page-settings {
 	a {
 		color: @primary-font-color;
+
 		&:hover {
 			color: @primary-action-color;
 		}
@@ -270,6 +284,7 @@ a:hover {
 		background-color: @error-color;
 		color: white;
 	}
+
 	pre {
 		color: @error-color;
 		border-color: @error-border;
@@ -279,8 +294,10 @@ a:hover {
 
 .code-mirror-box {
 	.buttons {
-		background-color: #f7f7f7; // matches plugin styles
+		background-color: #f7f7f7;
+		// matches plugin styles
 	}
+
 	&.code-mirror-box-fullscreen {
 		background-color: @content-background-color;
 	}
@@ -288,25 +305,27 @@ a:hover {
 
 .avatar-suggestion-item {
 	background-color: @tertiary-background-color;
+
 	.avatar {
 		background-size: cover;
 		background-color: @tertiary-background-color;
 	}
+
 	.question-mark::before {
 		color: @secondary-font-color;
 	}
 }
 
-
 /** ----------------------------------------------------------------------------
  * Asides (external to main application views)
  */
-
 .spotlight {
 	background-color: @transparent-darker;
+
 	> .spotlight-input {
 		background-color: @secondary-background-color;
 		color: @secondary-font-color;
+
 		> i {
 			color: @secondary-font-color;
 		}
@@ -321,12 +340,15 @@ a:hover {
 .page-loading {
 	.gradient(shade(@primary-background-color), @primary-background-color);
 	color: @tertiary-font-color;
+
 	a {
 		color: @tertiary-font-color;
 	}
+
 	a:hover {
 		color: @primary-background-contrast;
 	}
+
 	.spinner > div {
 		background-color: @primary-background-contrast;
 	}
@@ -336,9 +358,10 @@ a:hover {
 	color: @primary-font-color;
 	background-color: @content-background-color;
 	.input-shade(@primary-font-color, @content-background-color);
+
 	.input-text {
 		input:-webkit-autofill {
-			-webkit-box-shadow: 0 0 0px 20px @content-background-color inset;
+			-webkit-box-shadow: 0 0 0 20px @content-background-color inset;
 		}
 	}
 }
@@ -346,16 +369,15 @@ a:hover {
 .dropzone.over .dropzone-overlay {
 	background-color: @transparent-darkest;
 	color: @content-background-color;
+
 	> div {
 		background-color: @transparent-darkest;
 	}
 }
 
-
 /** ----------------------------------------------------------------------------
  * Room components
  */
-
 .new-message {
 	color: @primary-action-contrast;
 	background-color: @primary-action-color;
@@ -365,6 +387,7 @@ a:hover {
 	.tick {
 		background-color: @primary-action-color;
 	}
+
 	.tick-all {
 		background-color: @selection-color;
 	}
@@ -386,14 +409,17 @@ a:hover {
 	.upload-progress {
 		background-color: @component-color;
 		color: @primary-action-color;
+
 		&.upload-error {
 			background-color: @error-background;
 			border-color: @error-border;
 		}
+
 		.upload-progress-progress {
 			background-color: @success-background;
 		}
 	}
+
 	.unread-bar {
 		background-color: @component-color;
 		color: @primary-action-color;
@@ -404,37 +430,47 @@ a:hover {
 	.edit-room-title {
 		.linkColors(@secondary-font-color, @primary-font-color);
 	}
+
 	.footer {
 		background: @content-background-color;
 	}
+
 	.message-form {
 		color: @secondary-font-color;
+
 		.input-message-container {
 			background-color: @content-background-color;
 		}
+
 		.message-buttons {
 			.buttonColors(lighten(@primary-font-color, 25%), @secondary-background-color);
+
 			&:hover {
 				background-color: mix(@secondary-background-color, contrast(@primary-font-color), 20%);
 			}
 		}
+
 		textarea {
 			&.editing {
 				background-color: lighten(@pending-color, 40%);
 			}
 		}
 	}
+
 	.new-message {
 		color: @primary-action-contrast;
 		background-color: @primary-action-color;
 	}
+
 	.messages-box {
 		.jump-recent {
 			background-color: @component-color;
 		}
+
 		&.selectable .selected {
 			background-color: @selection-background;
 		}
+
 		.load-more span {
 			background-color: @secondary-background-color;
 		}
@@ -452,10 +488,12 @@ a:hover {
 
 .popup-item {
 	// color: @secondary-font-color;
+
 	&.selected {
 		color: @primary-action-contrast;
 		background-color: @primary-action-color;
 	}
+
 	span {
 		color: @secondary-font-color;
 	}
@@ -465,22 +503,22 @@ a:hover {
 	.start {
 		color: @info-font-color;
 	}
+
 	.editing .body,
 	textarea.editing {
 		background-color: lighten(@pending-color, 40%);
 	}
 }
 
-
 /** ----------------------------------------------------------------------------
  * Message content
  */
-
 .first-unread {
 	.body {
 		&::before {
 			background: @transparent-darker;
 		}
+
 		&::after {
 			color: @primary-font-color;
 		}
@@ -499,29 +537,37 @@ a:hover {
 	.body {
 		color: @primary-font-color;
 	}
+
 	&.system .body {
 		color: @info-font-color;
 	}
+
 	&:hover {
 		background-color: @transparent-dark;
 	}
+
 	.toggle-options {
 		color: @secondary-font-color;
 	}
+
 	.message-dropdown,
 	.options-menu {
 		color: lighten(@primary-font-color, 13%);
 		background-color: @content-background-color;
+
 		ul li:hover {
 			background-color: @tertiary-background-color;
 		}
+
 		.message-dropdown-close {
 			background-color: @secondary-background-color;
 		}
 	}
+
 	&.new-day::before {
 		background-color: @content-background-color;
 	}
+
 	&.new-day::after,
 	.info,
 	.user-view,
@@ -529,31 +575,39 @@ a:hover {
 		color: @info-font-color;
 		border-color: @component-color;
 	}
+
 	.user {
 		color: @primary-font-color;
 	}
+
 	.is-bot,
 	.role-tag {
 		background-color: @info-font-color;
 		color: contrast(@info-font-color);
 	}
+
 	a {
 		.linkColors(@link-font-color, darken(@link-font-color, 10%));
 	}
+
 	a.mention-link {
 		color: @primary-action-color;
+
 		&.mention-link-me {
 			color: @primary-action-contrast;
 			background-color: @primary-action-color;
 		}
+
 		&.mention-link-all {
 			color: @primary-action-contrast;
 			background-color: @attention-color;
 		}
 	}
+
 	.highlight-text {
 		background-color: @selection-background;
 	}
+
 	.attachment {
 		.attachment-block-border {
 			background-color: @info-font-color;
@@ -561,25 +615,27 @@ a:hover {
 	}
 }
 
-
 /** ----------------------------------------------------------------------------
  * Side nav
  */
-
 .side-nav {
 	color: @tertiary-font-color;
 	background-color: @primary-background-color;
+
 	* {
 		border-color: @transparent-darker;
 	}
+
 	a,
 	.info {
 		.linkColors(@tertiary-font-color, @tertiary-font-color);
 	}
-	.arrow:before,
-	.arrow:after {
+
+	.arrow::before,
+	.arrow::after {
 		background-color: @tertiary-font-color;
 	}
+
 	.info,
 	.options,
 	.content,
@@ -587,77 +643,103 @@ a:hover {
 	header {
 		background-color: @primary-background-color;
 	}
+
 	.rooms-list {
 		background-color: lighten(@primary-background-color, 2.5%);
 	}
+
 	h3:hover,
 	li:hover,
 	.more:hover,
 	.selected-users li {
 		background-color: @transparent-darker;
 	}
+
 	li.active {
 		background-color: @transparent-light !important;
 	}
+
 	i {
 		color: @transparent-lighter;
 	}
+
 	i.status-offline {
 		color: @transparent-lighter !important;
 	}
+
 	.opt i:hover {
 		color: @transparent-lightest;
 	}
+
 	.has-alert .name {
 		color: @primary-background-contrast;
 	}
+
 	.unread {
 		background-color: @success-color;
 	}
+
 	.unread-rooms {
 		background-color: @primary-action-color;
 		color: @primary-action-contrast;
 	}
+
 	.button {
 		.buttonColors(@tertiary-font-color, mix(@primary-action-color, @primary-background-color));
 	}
+
 	.options button {
 		.buttonColors(@tertiary-font-color, @primary-background-color);
 	}
 }
 
-
 /** ----------------------------------------------------------------------------
  * Flex tabs / admin fly-out panels
  */
-
 .flex-tab {
 	background-color: @secondary-background-color;
+
+	input,
+	select,
+	textarea {
+		background-color: @content-background-color;
+
+		&:focus {
+			border-color: lighten(@secondary-background-contrast, 30%);
+		}
+	}
+
 	.content,
 	.user-view,
 	.list-view {
 		background-color: @secondary-background-color;
 	}
+
 	.message {
 		&.new-day::before {
 			background-color: @secondary-background-color;
 		}
 	}
+
 	.channel-settings {
 		.buttons {
 			background-color: @secondary-background-color;
+
 			.button {
 				.buttonColors(lighten(@primary-font-color, 25%), @secondary-background-color);
 			}
 		}
+
 		.button.edit {
 			.buttonColors(lighten(@primary-font-color, 25%), @secondary-background-color);
 		}
+
 		.icon-ok {
 			color: inherit;
 		}
+
 		.input.checkbox.toggle {
-			input:checked + label:before {
+			input:checked + label::before {
 				background-color: @primary-background-color;
 			}
 		}
@@ -667,18 +749,22 @@ a:hover {
 .flex-tab-bar {
 	background-color: @content-background-color;
 	border-color: @component-color;
+
 	.tab-button {
 		&:hover {
 			background-color: @secondary-background-color;
 		}
+
 		&.active {
 			background-color: @secondary-background-color;
 			border-right-color: @selection-color;
 		}
+
 		&.attention {
 			.blink(@selection-color);
 		}
 	}
+
 	.counter {
 		background: @secondary-font-color;
 		color: white;
@@ -693,30 +779,30 @@ a:hover {
 		background-color: @transparent-darker;
 		color: white;
 	}
+
 	.main-video > div,
 	.video-muted-overlay,
 	.videos .video-item > div {
 		background-color: @transparent-darker;
 	}
+
 	video {
 		background-color: black;
 	}
 }
 
-
 /** ----------------------------------------------------------------------------
  * User status / user meta
  */
-
 i.status-online {
 	color: @status-online;
 }
 
-.account-box .status-online .thumb:after,
-.account-box .status.online:after,
+.account-box .status-online .thumb::after,
+.account-box .status.online::after,
 .popup-user-status-online,
-.status-online:after,
-.user-image.status-online .avatar:after {
+.status-online::after,
+.user-image.status-online .avatar::after {
 	background-color: @status-online;
 	border-color: darken(@status-online, 10%);
 }
@@ -725,11 +811,11 @@ i.status-away {
 	color: @status-away;
 }
 
-.account-box .status-away .thumb:after,
-.account-box .status.away:after,
+.account-box .status-away .thumb::after,
+.account-box .status.away::after,
 .popup-user-status-away,
-.status-pending:after,
-.user-image.status-away .avatar:after {
+.status-pending::after,
+.user-image.status-away .avatar::after {
 	background-color: @status-away;
 	border-color: darken(@status-away, 10%);
 }
@@ -738,11 +824,11 @@ i.status-busy {
 	color: @status-busy;
 }
 
-.account-box .status-busy .thumb:after,
-.account-box .status.busy:after,
+.account-box .status-busy .thumb::after,
+.account-box .status.busy::after,
 .popup-user-status-busy,
-.status-busy:after,
-.user-image.status-busy .avatar:after {
+.status-busy::after,
+.user-image.status-busy .avatar::after {
 	background-color: @status-busy;
 	border-color: darken(@status-busy, 10%);
 }
@@ -752,14 +838,14 @@ i.status-offline {
 }
 
 .popup-user-status-offline,
-.status-offline:after,
-.user-image.status-offline .avatar:after {
+.status-offline::after,
+.user-image.status-offline .avatar::after {
 	background-color: @status-offline;
 	border-color: darken(@status-offline, 10%);
 }
 
-.account-box .status-offline .thumb:after,
-.account-box .status.offline:after {
+.account-box .status-offline .thumb::after,
+.account-box .status.offline::after {
 	background-color: @transparent-lighter;
 }
 
@@ -775,74 +861,106 @@ i.status-offline {
 	p {
 		color: @secondary-font-color;
 	}
-	.box:after,
+
+	.box::after,
 	.stats li,
 	.tags li {
 		background-color: @component-color;
 	}
 }
 
-
 /** ----------------------------------------------------------------------------
  * Buttons!
  */
-
-.actionLinks li {
-	.buttonColors(@secondary-action-contrast, @secondary-action-color);
+.actionLinks li .action-link {
+	.buttonColors(@primary-action-contrast, @primary-action-color);
 }
 
 // new layout buttons
+
 .button {
 	.buttonColors(@default-action-contrast, @default-action-color);
+
 	&.primary {
 		.buttonColors(@primary-action-contrast, @primary-action-color);
+
+		&[disabled] {
+			background-color: lighten(desaturate(@primary-action-color, 50%), 30%);
+		}
 	}
+
 	&.secondary {
 		.buttonColors(@secondary-action-contrast, @secondary-action-color);
+
+		&[disabled] {
+			background-color: lighten(desaturate(@secondary-action-color, 50%), 30%);
+		}
 	}
+
 	&.tertiary {
 		.buttonColors(@primary-action-contrast, @selection-color);
+
+		&[disabled] {
+			background-color: lighten(desaturate(@selection-color, 50%), 30%);
+		}
 	}
+
 	&.danger {
 		.buttonColors(@error-contrast, @error-color);
+
+		&[disabled] {
+			background-color: lighten(desaturate(@error-color, 50%), 30%);
+		}
 	}
+
+	&[disabled] {
+		cursor: initial;
+	}
+
 	&.external-login {
 		color: white;
+
 		&.facebook {
 			background-color: #325c99;
 		}
+
 		&.twitter {
 			background-color: #02acec;
 		}
+
 		&.google {
 			background-color: #dd4b39;
 		}
+
 		&.github {
 			background-color: #4c4c4c;
 		}
+
 		&.gitlab {
 			background-color: #373d47;
 		}
+
 		&.trello {
 			background-color: #026aa7;
 		}
+
 		&.meteor-developer {
 			background-color: #de4f4f;
 		}
+
 		&.wordpress {
 			background-color: #1e8cbe;
 		}
+
 		&.linkedin {
 			background-color: #1b86bc;
 		}
 	}
 }
 
-
 /** ----------------------------------------------------------------------------
  * Feedback and overlay content
  */
-
 .icon-ok,
 .feedback-success {
 	color: @success-color;
@@ -878,7 +996,7 @@ i.status-offline {
 }
 
 .side-nav .input-error,
-label.required:after {
+label.required::after {
 	color: @error-color;
 }
 
@@ -887,6 +1005,13 @@ label.required:after {
 	color: @error-contrast;
 }
 
-.loading-animation.dark > div {
-	background-color: @transparent-darkest;
+/** ----------------------------------------------------------------------------
+ * Loading
+ */
+
+.main-content,
+.flex-tab {
+	.loading-animation > div {
+		background-color: @primary-font-color;
+	}
 }

@@ -304,6 +304,44 @@ class ModelSubscriptions extends RocketChat.models._Base
 
 		return @update query, update, { multi: true }
 
+	setBlockedByRoomId: (rid, blocked, blocker) ->
+		query =
+			rid: rid
+			'u._id': blocked
+
+		update =
+			$set:
+				blocked: true
+
+		query2 =
+			rid: rid
+			'u._id': blocker
+
+		update2 =
+			$set:
+				blocker: true
+
+		return @update(query, update) and @update(query2, update2)
+
+	unsetBlockedByRoomId: (rid, blocked, blocker) ->
+		query =
+			rid: rid
+			'u._id': blocked
+
+		update =
+			$unset:
+				blocked: 1
+
+		query2 =
+			rid: rid
+			'u._id': blocker
+
+		update2 =
+			$unset:
+				blocker: 1
+
+		return @update(query, update) and @update(query2, update2)
+
 	updateTypeByRoomId: (roomId, type) ->
 		query =
 			rid: roomId

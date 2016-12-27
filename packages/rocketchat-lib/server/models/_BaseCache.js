@@ -430,6 +430,11 @@ class ModelsBaseCache extends EventEmitter {
 			collection: this.collectionName
 		};
 
+		if (!MongoInternals.defaultRemoteCollectionDriver().mongo._oplogHandle || !MongoInternals.defaultRemoteCollectionDriver().mongo._oplogHandle.onOplogEntry) {
+			console.error('\nYour MongoDB is not with ReplicaSet enabled.\nPlease enable it.\nYou can see more information at:\n* https://docs.mongodb.com/v3.2/tutorial/convert-standalone-to-replica-set/ \n* https://github.com/RocketChat/Rocket.Chat/issues/5212\n');
+			throw new Meteor.Error('Your MongoDB is not with ReplicaSet enabled.');
+		}
+
 		MongoInternals.defaultRemoteCollectionDriver().mongo._oplogHandle.onOplogEntry(query, (record) => {
 			this.processOplogRecord(record);
 		});

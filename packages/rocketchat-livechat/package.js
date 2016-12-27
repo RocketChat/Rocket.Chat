@@ -91,6 +91,8 @@ Package.onUse(function(api) {
 	api.addFiles('client/views/app/livechatQueue.js', 'client');
 	api.addFiles('client/views/app/livechatTriggers.html', 'client');
 	api.addFiles('client/views/app/livechatTriggers.js', 'client');
+	api.addFiles('client/views/app/livechatTriggersForm.html', 'client');
+	api.addFiles('client/views/app/livechatTriggersForm.js', 'client');
 	api.addFiles('client/views/app/livechatUsers.html', 'client');
 	api.addFiles('client/views/app/livechatUsers.js', 'client');
 	api.addFiles('client/views/app/livechatOfficeHours.html', 'client');
@@ -190,6 +192,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/publications/livechatManagers.js', 'server');
 	api.addFiles('server/publications/livechatRooms.js', 'server');
 	api.addFiles('server/publications/livechatQueue.js', 'server');
+	api.addFiles('server/publications/livechatTriggers.js', 'server');
 	api.addFiles('server/publications/visitorHistory.js', 'server');
 	api.addFiles('server/publications/visitorInfo.js', 'server');
 	api.addFiles('server/publications/visitorPageVisited.js', 'server');
