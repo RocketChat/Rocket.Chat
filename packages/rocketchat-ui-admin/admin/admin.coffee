@@ -314,14 +314,6 @@ Template.admin.events
 			group: group
 			changed: true
 
-		if @section is ''
-			query.$or = [
-				{section: ''}
-				{section: {$exists: false}}
-			]
-		else
-			query.section = @section
-
 		settings = TempSettings.find(query, {fields: {_id: 1, value: 1, editor: 1}}).fetch()
 
 		if not _.isEmpty settings

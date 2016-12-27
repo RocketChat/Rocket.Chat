@@ -118,6 +118,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/methods/refreshOAuthService.js', 'server');
 	api.addFiles('server/methods/addUserToRoom.coffee', 'server');
 	api.addFiles('server/methods/archiveRoom.coffee', 'server');
+	api.addFiles('server/methods/blockUser.js', 'server');
 	api.addFiles('server/methods/checkRegistrationSecretURL.coffee', 'server');
 	api.addFiles('server/methods/createChannel.coffee', 'server');
 	api.addFiles('server/methods/createPrivateGroup.coffee', 'server');
@@ -142,6 +143,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/methods/setEmail.js', 'server');
 	api.addFiles('server/methods/restartServer.coffee', 'server');
 	api.addFiles('server/methods/unarchiveRoom.coffee', 'server');
+	api.addFiles('server/methods/unblockUser.js', 'server');
 	api.addFiles('server/methods/updateMessage.coffee', 'server');
 	api.addFiles('server/methods/filterBadWords.js', ['server']);
 	api.addFiles('server/methods/filterATAllTag.js', 'server');

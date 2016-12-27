@@ -27,6 +27,16 @@ Meteor.methods
 		if not room
 			return false
 
+		subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(message.rid, Meteor.userId());
+		if subscription and (subscription.blocked or subscription.blocker)
+			RocketChat.Notifications.notifyUser Meteor.userId(), 'message', {
+				_id: Random.id()
+				rid: room._id
+				ts: new Date
+				msg: TAPi18n.__('room_is_blocked', {}, user.language)
+			}
+			return false
+
 		if user.username in (room.muted or [])
 			RocketChat.Notifications.notifyUser Meteor.userId(), 'message', {
 				_id: Random.id()
