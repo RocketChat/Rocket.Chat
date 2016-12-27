@@ -117,17 +117,13 @@ RocketChat.API.v1.addRoute('groups.getIntegrations', { authRequired: true }, {
 			channelsToSearch.push('all_private_groups');
 		}
 
-		try {
-			return RocketChat.API.v1.success({
-				integrations: RocketChat.models.Integrations.find({
-					channel: {
-						$in: channelsToSearch
-					}
-				}).fetch()
-			});
-		} catch (e) {
-			return RocketChat.API.v1.failure(`${e.name}: ${e.message}`);
-		}
+		return RocketChat.API.v1.success({
+			integrations: RocketChat.models.Integrations.find({
+				channel: {
+					$in: channelsToSearch
+				}
+			}).fetch()
+		});
 	}
 });
 
@@ -283,29 +279,22 @@ RocketChat.API.v1.addRoute('groups.leave', { authRequired: true }, {
 //List Private Groups a user has access to
 RocketChat.API.v1.addRoute('groups.list', { authRequired: true }, {
 	get: function() {
-		const roomIds = _.pluck(RocketChat.models.Subscriptions.findByTypeAndUserId('p', this.userId).fetch(), 'rid');
 		const { offset, count } = RocketChat.API.v1.getPaginationItems(this);
+		let rooms = _.pluck(RocketChat.models.Subscriptions.findByTypeAndUserId('p', this.userId).fetch(), '_room');
+		const totalCount = rooms.length;
 
-		//This is for polling services, such as Zapier until we get a new
-		//feature that notifies via webhooks about new events (channels, users, etc)
-		if (count === -1) {
-			return RocketChat.API.v1.success({
-				groups: RocketChat.models.Rooms.findByIds(roomIds, { fields: RocketChat.API.v1.roomFieldsToExclude }).fetch()
-			});
-		}
-
-		const rooms = RocketChat.models.Rooms.findByIds(roomIds, {
+		rooms = RocketChat.models.Rooms.processQueryOptionsOnResult(rooms, {
 			sort: { msgs: -1 },
 			skip: offset,
 			limit: count,
 			fields: RocketChat.API.v1.roomFieldsToExclude
-		}).fetch();
+		});
 
 		return RocketChat.API.v1.success({
 			groups: rooms,
 			offset,
 			count: rooms.length,
-			total: RocketChat.models.Rooms.findByIds(roomIds).count()
+			total: totalCount
 		});
 	}
 });
