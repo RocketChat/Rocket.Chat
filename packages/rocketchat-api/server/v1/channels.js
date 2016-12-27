@@ -34,7 +34,7 @@ RocketChat.API.v1.addRoute('channels.addAll', { authRequired: true }, {
 		}
 
 		return RocketChat.API.v1.success({
-			channel: RocketChat.models.Rooms.findOneById(findResult._id)
+			channel: RocketChat.models.Rooms.findOneById(findResult._id, { fields: RocketChat.API.v1.roomFieldsToExclude })
 		});
 	}
 });
@@ -162,7 +162,7 @@ RocketChat.API.v1.addRoute('channels.create', { authRequired: true }, {
 		}
 
 		return RocketChat.API.v1.success({
-			channel: RocketChat.models.Rooms.findOneById(id.rid)
+			channel: RocketChat.models.Rooms.findOneById(id.rid, { fields: RocketChat.API.v1.roomFieldsToExclude })
 		});
 	}
 });
@@ -256,7 +256,7 @@ RocketChat.API.v1.addRoute('channels.info', { authRequired: true }, {
 		}
 
 		return RocketChat.API.v1.success({
-			channel: RocketChat.models.Rooms.findOneById(findResult._id, { fields: { joinCode: 0, $loki: 0, meta: 0 }})
+			channel: RocketChat.models.Rooms.findOneById(findResult._id, { fields: RocketChat.API.v1.roomFieldsToExclude })
 		});
 	}
 });
@@ -293,7 +293,7 @@ RocketChat.API.v1.addRoute('channels.invite', { authRequired: true }, {
 		}
 
 		return RocketChat.API.v1.success({
-			channel: RocketChat.models.Rooms.findOneById(findResult._id)
+			channel: RocketChat.models.Rooms.findOneById(findResult._id, { fields: RocketChat.API.v1.roomFieldsToExclude })
 		});
 	}
 });
@@ -305,7 +305,6 @@ RocketChat.API.v1.addRoute('channels.kick', { authRequired: true }, {
 		}
 
 		const findResult = findChannelById(this.bodyParams.roomId);
-
 
 		if (findResult.statusCode) {
 			return findResult;
@@ -330,7 +329,7 @@ RocketChat.API.v1.addRoute('channels.kick', { authRequired: true }, {
 		}
 
 		return RocketChat.API.v1.success({
-			channel: RocketChat.models.Rooms.findOneById(findResult._id)
+			channel: RocketChat.models.Rooms.findOneById(findResult._id, { fields: RocketChat.API.v1.roomFieldsToExclude })
 		});
 	}
 });
@@ -338,7 +337,6 @@ RocketChat.API.v1.addRoute('channels.kick', { authRequired: true }, {
 RocketChat.API.v1.addRoute('channels.leave', { authRequired: true }, {
 	post: function() {
 		const findResult = findChannelById(this.bodyParams.roomId);
-
 
 		if (findResult.statusCode) {
 			return findResult;
@@ -357,7 +355,7 @@ RocketChat.API.v1.addRoute('channels.leave', { authRequired: true }, {
 		}
 
 		return RocketChat.API.v1.success({
-			channel: RocketChat.models.Rooms.findOneById(findResult._id)
+			channel: RocketChat.models.Rooms.findOneById(findResult._id, { fields: RocketChat.API.v1.roomFieldsToExclude })
 		});
 	}
 });
@@ -370,7 +368,7 @@ RocketChat.API.v1.addRoute('channels.list', { authRequired: true }, {
 			sort: { msgs: -1 },
 			skip: offset,
 			limit: count,
-			fields: { joinCode: 0, $loki: 0, meta: 0 }
+			fields: RocketChat.API.v1.roomFieldsToExclude
 		}).fetch();
 
 		return RocketChat.API.v1.success({
@@ -391,7 +389,7 @@ RocketChat.API.v1.addRoute('channels.list.joined', { authRequired: true }, {
 			sort: { msgs: -1 },
 			skip: offset,
 			limit: count,
-			fields: { joinCode: 0, $loki: 0, meta: 0 }
+			fields: RocketChat.API.v1.roomFieldsToExclude
 		}).fetch();
 
 		return RocketChat.API.v1.success({
@@ -462,7 +460,7 @@ RocketChat.API.v1.addRoute('channels.rename', { authRequired: true }, {
 		}
 
 		return RocketChat.API.v1.success({
-			channel: RocketChat.models.Rooms.findOneById(findResult._id)
+			channel: RocketChat.models.Rooms.findOneById(findResult._id, { fields: RocketChat.API.v1.roomFieldsToExclude })
 		});
 	}
 });
@@ -526,7 +524,7 @@ RocketChat.API.v1.addRoute('channels.setJoinCode', { authRequired: true }, {
 		}
 
 		return RocketChat.API.v1.success({
-			channel: RocketChat.models.Rooms.findOneById(findResult._id)
+			channel: RocketChat.models.Rooms.findOneById(findResult._id, { fields: RocketChat.API.v1.roomFieldsToExclude })
 		});
 	}
 });
@@ -538,7 +536,6 @@ RocketChat.API.v1.addRoute('channels.setPurpose', { authRequired: true }, {
 		}
 
 		const findResult = findChannelById(this.bodyParams.roomId);
-
 
 		if (findResult.statusCode) {
 			return findResult;
@@ -595,7 +592,7 @@ RocketChat.API.v1.addRoute('channels.setReadOnly', { authRequired: true }, {
 		}
 
 		return RocketChat.API.v1.success({
-			channel: RocketChat.models.Rooms.findOneById(findResult._id)
+			channel: RocketChat.models.Rooms.findOneById(findResult._id, { fields: RocketChat.API.v1.roomFieldsToExclude })
 		});
 	}
 });
@@ -663,7 +660,7 @@ RocketChat.API.v1.addRoute('channels.setType', { authRequired: true }, {
 		}
 
 		return RocketChat.API.v1.success({
-			channel: RocketChat.models.Rooms.findOneById(findResult._id)
+			channel: RocketChat.models.Rooms.findOneById(findResult._id, { fields: RocketChat.API.v1.roomFieldsToExclude })
 		});
 	}
 });
