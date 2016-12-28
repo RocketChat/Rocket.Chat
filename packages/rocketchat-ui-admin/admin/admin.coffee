@@ -274,7 +274,7 @@ Template.admin.helpers
 	getColorVariable: (color) ->
 		return color.replace(/theme-color-/, '@')
 
-	isDefaultSetting: (settingId) ->
+	isDefaultValue: (settingId) ->
 		setting = TempSettings.findOne({_id: settingId}, {fields: {value: 1, packageValue: 1}})
 		return setting.value is setting.packageValue
 
