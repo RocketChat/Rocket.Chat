@@ -722,7 +722,6 @@ label.required::after {
 	position: absolute;
 	top: 5px;
 	left: 0;
-	will-change: transform;
 	.transition(transform .2s ease-out .1s);
 
 	i {
@@ -1254,9 +1253,8 @@ label.required::after {
 	width: @rooms-box-width;
 	height: auto;
 	overflow: visible;
-	z-index: 100;
+	z-index: 1;
 	padding: 12px 0 0;
-	will-change: transform;
 
 	&::before {
 		content: " ";
@@ -1767,11 +1765,21 @@ label.required::after {
 	right: 40px;
 	width: auto;
 	height: auto;
-	will-change: transform;
-	.transition(right .25s cubic-bezier(.5, 0, .1, 1));
+	transition:
+		right 0.25s cubic-bezier(0.5, 0, 0.1, 1),
+		left 0.25s cubic-bezier(0.5, 0, 0.1, 1);
 
 	&.flex-opened {
 		right: @flex-tab-width + 40px;
+
+		.flex-tab {
+			right: 40px;
+		}
+	}
+
+	&.menu-opened {
+		left: 260px !important;
+		width: 100vw;
 	}
 
 	&.layout1 {
@@ -3031,8 +3039,21 @@ body:not(.is-cordova) {
 	height: 100%;
 	top: 0;
 	right: 0;
-	z-index: 130;
-	will-change: transform;
+	z-index: 100;
+
+	&:hover {
+		+ .main-content {
+			will-change: right, left;
+
+			.flex-tab {
+				will-change: right, left;
+			}
+		}
+	}
+
+	&.menu-opened {
+		right: -40px;
+	}
 
 	.tab-button {
 		position: relative;
@@ -3154,12 +3175,11 @@ body:not(.is-cordova) {
 	position: fixed;
 	top: 0;
 	bottom: 0;
-	left: 100%;
-	width: 90%;
+	right: 40px - @flex-tab-width;
+	width: 80%;
 	max-width: @flex-tab-width;
-	z-index: 110;
 	overflow-x: visible;
-	.transition(transform .25s cubic-bezier(.5, 0, .1, 1));
+	transition: right 0.25s cubic-bezier(0.5, 0, 0.1, 1);
 
 	.control {
 		.header {
@@ -4375,10 +4395,10 @@ body:not(.is-cordova) {
 	#rocket-chat {
 		.flex-opened {
 			right: 40px;
+		}
 
-			.flex-tab {
-				.transform(translateX(-100%));
-			}
+		.flex-tab {
+			z-index: 100;
 		}
 	}
 }
@@ -4388,20 +4408,12 @@ body:not(.is-cordova) {
 		.burger {
 			visibility: visible;
 			display: inline-block;
+			will-change: transform;
 		}
 
 		.main-content {
 			left: 0;
-			z-index: 120;
-		}
-
-		.main-content,
-		.flex-tab-bar {
-			.transition(transform .2s linear);
-
-			&.notransition {
-				.transition(transform .0s);
-			}
+			z-index: 10;
 		}
 
 		.fixed-title h2 {
