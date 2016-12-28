@@ -274,8 +274,12 @@ Template.admin.helpers
 	getColorVariable: (color) ->
 		return color.replace(/theme-color-/, '@')
 
+	isDefaultSetting: (settingId) ->
+		setting = TempSettings.findOne({_id: settingId}, {fields: {value: 1, packageValue: 1}})
+		return setting.value is setting.packageValue
+
 Template.admin.events
-	"change .input-monitor": (e, t) ->
+	"change .input-monitor, keyup .input-monitor": (e, t) ->
 		value = _.trim $(e.target).val()
 
 		switch @type
@@ -304,7 +308,8 @@ Template.admin.events
 			group: group
 			changed: true
 
-		settings = TempSettings.find(query, {fields: {_id: 1}}).fetch()
+		settings = TempSettings.find(query, {fields: {_id: 1, value: 1, packageValue: 1}}).fetch()
+		console.log(settings)
 
 		settings.forEach (setting) ->
 			oldSetting = RocketChat.settings.cachedCollectionPrivate.collection.findOne({_id: setting._id}, {fields: {value: 1, type:1, editor: 1}})
