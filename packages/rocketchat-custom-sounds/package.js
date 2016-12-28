@@ -12,6 +12,7 @@ Package.onUse(function(api) {
 		'rocketchat:file',
 		'rocketchat:lib',
 		'templating',
+		'reactive-var',
 		'underscore',
 		'webapp'
 	]);
@@ -27,6 +28,15 @@ Package.onUse(function(api) {
 	api.addFiles('server/models/CustomSounds.js', 'server');
 	api.addFiles('server/publications/customSounds.js', 'server');
 
+	api.addFiles([
+		'server/methods/deleteCustomSound.js',
+		'server/methods/insertOrUpdateSound.js',
+		'server/methods/listCustomSounds.js',
+		'server/methods/uploadCustomSound.js'
+	], 'server');
+
+	api.addFiles('assets/stylesheets/customSoundsAdmin.less', 'client');
+
 	api.addFiles('admin/startup.js', 'client');
 	api.addFiles('admin/adminSounds.html', 'client');
 	api.addFiles('admin/adminSounds.js', 'client');
@@ -34,8 +44,12 @@ Package.onUse(function(api) {
 	api.addFiles('admin/adminSoundInfo.html', 'client');
 	api.addFiles('admin/soundEdit.html', 'client');
 	api.addFiles('admin/soundEdit.js', 'client');
+	api.addFiles('admin/soundInfo.html', 'client');
+	api.addFiles('admin/soundInfo.js', 'client');
 	api.addFiles('admin/route.js', 'client');
 
-	api.addFiles('client/lib/custom-sounds.js', 'client');
+	api.addFiles('client/lib/CustomSounds.js', 'client');
 	api.addFiles('client/models/CustomSounds.js', 'client');
+	api.addFiles('client/notifications/updateCustomSound.js', 'client');
+	api.addFiles('client/notifications/deleteCustomSound.js', 'client');
 });

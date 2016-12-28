@@ -1,7 +1,7 @@
 import toastr from 'toastr'
 Template.accountPreferences.helpers
 	audioAssets: ->
-		return KonchatNotification.audioAssets
+		return RocketChat.CustomSounds && RocketChat.CustomSounds.getList && RocketChat.CustomSounds.getList() || [];
 
 	audioNotifications: ->
 		return Meteor.user()?.settings?.preferences?.audioNotifications || 'chime'

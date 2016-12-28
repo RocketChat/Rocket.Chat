@@ -19,6 +19,15 @@ class CustomSounds extends RocketChat.models._Base {
 		return this.find(query, options);
 	}
 
+	findByNameExceptID(name, except, options) {
+		let query = {
+			_id: { $nin: [ except ] },
+			name
+		};
+
+		return this.find(query, options);
+	}
+
 	//update
 	setName(_id, name) {
 		let update = {
