@@ -26,16 +26,17 @@ Package.onUse(function(api) {
 	api.addFiles('client/minicolors/jquery.minicolors.js', 'client');
 
 	// Vendor stylesheets
-	api.addAssets('assets/stylesheets/vendor/animation.css', 'server');
-	api.addAssets('assets/stylesheets/vendor/fontello.css', 'server');
-	api.addAssets('assets/stylesheets/vendor/swipebox.css', 'server');
+	api.addAssets('assets/stylesheets/vendor/fontello.css', 'client');
+	api.addAssets('assets/stylesheets/vendor/swipebox.css', 'client');
 
 	// Custom stylesheets
+
 	api.addAssets('assets/stylesheets/_core.import.less', 'server');
+	api.addAssets('assets/stylesheets/variables/_variables.import.less', 'server');
 	api.addAssets('assets/stylesheets/base.less', 'server');
 	api.addAssets('assets/stylesheets/blocks/_general-rtl.import.less', 'server');
 	api.addAssets('assets/stylesheets/blocks/_general.import.less', 'server');
-	api.addAssets('assets/stylesheets/global/_variables.import.less', 'server');
+	api.addAssets('assets/stylesheets/mixins/_lesshat.import.less', 'server');
 	api.addAssets('assets/stylesheets/mixins/_blink.import.less', 'server');
 	api.addAssets('assets/stylesheets/mixins/_buttonColors.import.less', 'server');
 	api.addAssets('assets/stylesheets/mixins/_custom-scroll.import.less', 'server');
@@ -47,8 +48,6 @@ Package.onUse(function(api) {
 	api.addAssets('assets/stylesheets/utils/_colors.import.less', 'server');
 	api.addAssets('assets/stylesheets/utils/_forms.import.less', 'server');
 	api.addAssets('assets/stylesheets/utils/_keyframes.import.less', 'server');
-	api.addAssets('assets/stylesheets/utils/_preloader.import.less', 'server');
-	api.addAssets('assets/stylesheets/variables/_variables.import.less', 'server');
 	api.addAssets('assets/stylesheets/vendor/_reset.import.less', 'server');
 });
 
