@@ -1,5 +1,13 @@
 Meteor.methods({
-	'sendFileMessage'(roomId, store, file) {
+	/*
+		msgData = {
+			avatar: 'url',
+			emoji: ':ghost:',
+			alias: 'name',
+			msg: 'text'
+		}
+	*/
+	'sendFileMessage'(roomId, store, file, msgData = {}) {
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'sendFileMessage' });
 		}
@@ -40,7 +48,6 @@ Meteor.methods({
 		const msg = {
 			_id: Random.id(),
 			rid: roomId,
-			msg: '',
 			file: {
 				_id: file._id
 			},
@@ -48,6 +55,6 @@ Meteor.methods({
 			attachments: [attachment]
 		};
 
-		return Meteor.call('sendMessage', msg);
+		return Meteor.call('sendMessage', Object.assign({ msg: '' }, msgData, msg));
 	}
 });
