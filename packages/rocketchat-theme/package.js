@@ -35,11 +35,6 @@ Package.onUse(function(api) {
 
 	api.addFiles('assets/stylesheets/base.less', 'client');
 
-
-	api.addAssets('assets/stylesheets/_core.import.less', 'server');
-	api.addAssets('assets/stylesheets/variables/_variables.import.less', 'server');
-	api.addAssets('assets/stylesheets/blocks/_general-rtl.import.less', 'server');
-	api.addAssets('assets/stylesheets/blocks/_general.import.less', 'server');
 	api.addAssets('assets/stylesheets/utils/_forms.import.less', 'server');
 	api.addAssets('assets/stylesheets/utils/_keyframes.import.less', 'server');
 
