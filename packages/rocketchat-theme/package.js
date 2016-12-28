@@ -26,9 +26,9 @@ Package.onUse(function(api) {
 	api.addFiles('client/minicolors/jquery.minicolors.js', 'client');
 
 	// Vendor stylesheets
-	api.addAssets('assets/stylesheets/vendor/reset.css', 'client');
-	api.addAssets('assets/stylesheets/vendor/fontello.css', 'client');
-	api.addAssets('assets/stylesheets/vendor/swipebox.css', 'client');
+	api.addFiles('assets/stylesheets/vendor/reset.css', 'client');
+	api.addFiles('assets/stylesheets/vendor/fontello.css', 'client');
+	api.addFiles('assets/stylesheets/vendor/swipebox.css', 'client');
 
 	// Custom stylesheets
 
@@ -37,6 +37,11 @@ Package.onUse(function(api) {
 	api.addAssets('assets/stylesheets/base.less', 'server');
 	api.addAssets('assets/stylesheets/blocks/_general-rtl.import.less', 'server');
 	api.addAssets('assets/stylesheets/blocks/_general.import.less', 'server');
+	api.addAssets('assets/stylesheets/rtl.less', 'server');
+	api.addAssets('assets/stylesheets/utils/_forms.import.less', 'server');
+	api.addAssets('assets/stylesheets/utils/_keyframes.import.less', 'server');
+
+	// Run-time stylesheets
 	api.addAssets('assets/stylesheets/mixins/_lesshat.import.less', 'server');
 	api.addAssets('assets/stylesheets/mixins/_blink.import.less', 'server');
 	api.addAssets('assets/stylesheets/mixins/_buttonColors.import.less', 'server');
@@ -44,11 +49,7 @@ Package.onUse(function(api) {
 	api.addAssets('assets/stylesheets/mixins/_gradient.import.less', 'server');
 	api.addAssets('assets/stylesheets/mixins/_input-shade.import.less', 'server');
 	api.addAssets('assets/stylesheets/mixins/_linkColors.import.less', 'server');
-	api.addAssets('assets/stylesheets/rtl.less', 'server');
-	api.addAssets('assets/stylesheets/utils/_chatops.import.less', 'server');
 	api.addAssets('assets/stylesheets/utils/_colors.import.less', 'server');
-	api.addAssets('assets/stylesheets/utils/_forms.import.less', 'server');
-	api.addAssets('assets/stylesheets/utils/_keyframes.import.less', 'server');
 });
 
 Npm.depends({
