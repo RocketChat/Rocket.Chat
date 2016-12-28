@@ -1,3 +1,13 @@
+.clearfix {
+	clear: both;
+
+	&::after {
+		content: "";
+		display: table;
+		clear: both;
+	}
+}
+
 *,
 *::before,
 *::after {
