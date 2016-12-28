@@ -25,10 +25,10 @@ RocketChat.API.v1.addRoute('users.create', { authRequired: true }, {
 			if (this.bodyParams.customFields) {
 				RocketChat.saveCustomFields(newUserId, this.bodyParams.customFields);
 			}
-
-			if (this.bodyParams.active === false) {
+			
+			if (typeof this.bodyParams.data.active !== 'undefined') {
 				Meteor.runAsUser(this.userId, () => {
-					Meteor.call('setUserActiveStatus', newUserId, false);
+					Meteor.call('setUserActiveStatus', this.bodyParams.userId, this.bodyParams.data.active);
 				});
 			}
 
@@ -208,7 +208,10 @@ RocketChat.API.v1.addRoute('users.update', { authRequired: true }, {
 
 			const userData = _.extend({ _id: this.bodyParams.userId }, this.bodyParams.data);
 
+			///////////// Please review this line. It will fail if we just want to enable user using REST API
+			////////////  {"userId": "ID", "data": { "active": true }}
 			RocketChat.saveUser(this.userId, userData);
+			////////////
 
 			if (this.bodyParams.data.customFields) {
 				RocketChat.saveCustomFields(this.bodyParams.userId, this.bodyParams.data.customFields);
