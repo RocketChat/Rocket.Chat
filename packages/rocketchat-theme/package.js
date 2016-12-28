@@ -26,6 +26,7 @@ Package.onUse(function(api) {
 	api.addFiles('client/minicolors/jquery.minicolors.js', 'client');
 
 	// Vendor stylesheets
+	api.addAssets('assets/stylesheets/vendor/reset.css', 'client');
 	api.addAssets('assets/stylesheets/vendor/fontello.css', 'client');
 	api.addAssets('assets/stylesheets/vendor/swipebox.css', 'client');
 
@@ -48,7 +49,6 @@ Package.onUse(function(api) {
 	api.addAssets('assets/stylesheets/utils/_colors.import.less', 'server');
 	api.addAssets('assets/stylesheets/utils/_forms.import.less', 'server');
 	api.addAssets('assets/stylesheets/utils/_keyframes.import.less', 'server');
-	api.addAssets('assets/stylesheets/vendor/_reset.import.less', 'server');
 });
 
 Npm.depends({
