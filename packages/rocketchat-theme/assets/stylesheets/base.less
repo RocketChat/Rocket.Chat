@@ -685,9 +685,15 @@ label.required::after {
 
 	.button:first-child {
 		margin-left: 0;
-		-webkit-flex-grow: 1;
-		-moz-flex-grow: 1;
 		flex-grow: 1;
+	}
+}
+
+.oauth-panel {
+	.buttons-group {
+		.button:first-child {
+			flex-grow: 0;
+		}
 	}
 }
 
