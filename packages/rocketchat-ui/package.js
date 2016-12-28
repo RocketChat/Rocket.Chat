@@ -78,7 +78,6 @@ Package.onUse(function(api) {
 	api.addFiles('views/404/roomNotFound.html', 'client');
 	api.addFiles('views/404/invalidSecretURL.html', 'client');
 	api.addFiles('views/app/audioNotification.html', 'client');
-	api.addFiles('views/app/audioNotification.js', 'client');
 	api.addFiles('views/app/burger.html', 'client');
 	api.addFiles('views/app/home.html', 'client');
 	api.addFiles('views/app/notAuthorized.html', 'client');

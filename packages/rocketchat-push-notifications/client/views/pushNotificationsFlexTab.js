@@ -1,9 +1,9 @@
 import toastr from 'toastr';
-/* globals ChatSubscription, KonchatNotification */
+/* globals ChatSubscription */
 
 Template.pushNotificationsFlexTab.helpers({
 	audioAssets() {
-		return KonchatNotification.audioAssets;
+		return RocketChat.CustomSounds && RocketChat.CustomSounds.getList && RocketChat.CustomSounds.getList() || [];
 	},
 	audioNotifications() {
 		const sub = ChatSubscription.findOne({
@@ -13,7 +13,7 @@ Template.pushNotificationsFlexTab.helpers({
 				audioNotifications: 1
 			}
 		});
-		return sub ? sub.audioNotifications : '';
+		return sub ? sub.audioNotifications || '' : '';
 	},
 	desktopNotifications() {
 		var sub = ChatSubscription.findOne({
@@ -91,7 +91,7 @@ Template.pushNotificationsFlexTab.helpers({
 				audioNotifications: 1
 			}
 		});
-		const audio = sub ? sub.audioNotifications : '';
+		const audio = sub ? sub.audioNotifications || '': '';
 		if (audio === 'none') {
 			return t('None');
 		} else if (audio === '') {
@@ -99,7 +99,8 @@ Template.pushNotificationsFlexTab.helpers({
 		} else if (audio === 'chime') {
 			return 'Chime';
 		} else {
-			const asset = _.findWhere(KonchatNotification.audioAssets, { _id: audio });
+			const audioAssets = RocketChat.CustomSounds && RocketChat.CustomSounds.getList && RocketChat.CustomSounds.getList() || [];
+			const asset = _.findWhere(audioAssets, { _id: audio });
 			return asset && asset.name;
 		}
 	},
@@ -233,6 +234,14 @@ Template.pushNotificationsFlexTab.events({
 			let $audio = $('#' + audio);
 			if ($audio && $audio[0] && $audio[0].play) {
 				$audio[0].play();
+			}
+		} else {
+			audio = Meteor.user() && Meteor.user().settings && Meteor.user().settings.preferences && Meteor.user().settings.preferences.audioNotifications || 'chime';
+			if (audio && audio !== 'none') {
+				let $audio = $('#' + audio);
+				if ($audio && $audio[0] && $audio[0].play) {
+					$audio[0].play();
+				}
 			}
 		}
 	},

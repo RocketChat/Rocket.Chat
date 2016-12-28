@@ -4,7 +4,8 @@ Meteor.publish('customSounds', function(filter, limit) {
 	}
 
 	let fields = {
-		name: 1
+		name: 1,
+		extension: 1
 	};
 
 	filter = s.trim(filter);
