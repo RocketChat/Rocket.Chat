@@ -195,9 +195,11 @@
 											{{/if}}
 										</div>
 										{{#unless $eq group._id 'Assets'}}
-											<button text="{{_ 'Reset'}}" data-setting="{{_id}}" class="reset-setting button danger">
-												<i class="icon-ccw"></i>
-											</button>
+											{{#unless isDefaultSetting _id}}
+												<button text="{{_ 'Reset'}}" data-setting="{{_id}}" class="reset-setting button danger">
+													<i class="icon-ccw"></i>
+												</button>
+											{{/unless}}
 										{{/unless}}
 									</div>
 								{{/each}}
