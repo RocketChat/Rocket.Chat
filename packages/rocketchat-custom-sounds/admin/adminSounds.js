@@ -43,7 +43,7 @@ Template.adminSounds.onCreated(function() {
 		id: 'add-sound',
 		i18nTitle: 'Custom_Sound_Add',
 		icon: 'icon-plus',
-		template: 'adminSoundsEdit',
+		template: 'adminSoundEdit',
 		openClick(/*e, t*/) {
 			RocketChat.TabBar.setData();
 			return true;
@@ -56,7 +56,7 @@ Template.adminSounds.onCreated(function() {
 		id: 'admin-sound-info',
 		i18nTitle: 'Custom_Sound_Info',
 		icon: 'icon-cog',
-		template: 'adminSoundsInfo',
+		template: 'adminSoundInfo',
 		order: 2
 	});
 
@@ -73,7 +73,7 @@ Template.adminSounds.onCreated(function() {
 
 		if (filter) {
 			let filterReg = new RegExp(s.escapeRegExp(filter), 'i');
-			query = { $or: [ { name: filterReg }, {aliases: filterReg } ] };
+			query = { name: filterReg };
 		}
 
 		let limit = (isSetNotNull(() => instance.limit))? instance.limit.get() : 0;
@@ -106,8 +106,8 @@ Template.adminSounds.events({
 
 	['click .sound-info'](e) {
 		e.preventDefault();
-		RocketChat.TabBar.setTemplate('adminSoundsInfo');
-		RocketChat.TabBar.setData(RocketChat.models.CustomSound.findOne({_id: this._id}));
+		RocketChat.TabBar.setTemplate('adminSoundInfo');
+		RocketChat.TabBar.setData(RocketChat.models.CustomSounds.findOne({_id: this._id}));
 		RocketChat.TabBar.openFlex();
 		RocketChat.TabBar.showGroup('adminSounds-selected');
 	},
@@ -116,5 +116,14 @@ Template.adminSounds.events({
 		e.preventDefault();
 		e.stopPropagation();
 		t.limit.set(t.limit.get() + 50);
+	},
+
+	['click .icon-play-circled'](e) {
+		e.preventDefault();
+		e.stopPropagation();
+		const $audio = $('#' + this._id);
+		if ($audio && $audio[0] && $audio[0].play) {
+			$audio[0].play();
+		}
 	}
 });

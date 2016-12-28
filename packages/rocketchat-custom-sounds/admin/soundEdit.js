@@ -83,7 +83,7 @@ Template.soundEdit.onCreated(function() {
 
 		if (!soundData._id) {
 			if (!this.soundFile) {
-				errors.push('Sound_File');
+				errors.push('Sound_File_mp3');
 			}
 		}
 
@@ -92,7 +92,7 @@ Template.soundEdit.onCreated(function() {
 		}
 
 		if (this.soundFile) {
-			if (!/audio\/mpeg/.test(this.soundFile.type)) {
+			if (!/audio\/mp3/.test(this.soundFile.type)) {
 				errors.push('FileType');
 				toastr.error(TAPi18n.__('error-invalid-file-type'));
 			}
@@ -108,44 +108,42 @@ Template.soundEdit.onCreated(function() {
 			if (this.soundFile) {
 				soundData.newFile = true;
 				soundData.extension = this.soundFile.name.split('.').pop();
+				soundData.type = this.soundFile.type;
 			}
 
-			console.log('save -> ', soundData);
+			Meteor.call('insertOrUpdateSound', soundData, (error, result) => {
+				if (result) {
+					soundData._id = result;
+					soundData.random = Math.round(Math.random() * 1000);
 
-			// Meteor.call('insertOrUpdateSound', soundData, (error, result) => {
-			// 	if (result) {
-			// 		if (this.soundFile) {
-			// 			toastr.info(TAPi18n.__('Uploading_file'));
+					if (this.soundFile) {
+						toastr.info(TAPi18n.__('Uploading_file'));
 
-			// 			let reader = new FileReader();
-			// 			reader.readAsBinaryString(this.soundFile);
-			// 			reader.onloadend = () => {
-			// 				Meteor.call('uploadSoundCustom', reader.result, this.soundFile.type, soundData, (uploadError/*, data*/) => {
-			// 					if (uploadError != null) {
-			// 						handleError(uploadError);
-			// 						console.log(uploadError);
-			// 						return;
-			// 					}
-			// 				}
-			// 				);
-			// 				delete this.soundFile;
-			// 				toastr.success(TAPi18n.__('File_uploaded'));
-			// 			};
-			// 		}
+						let reader = new FileReader();
+						reader.readAsBinaryString(this.soundFile);
+						reader.onloadend = () => {
+							Meteor.call('uploadCustomSound', reader.result, this.soundFile.type, soundData, (uploadError/*, data*/) => {
+								if (uploadError != null) {
+									handleError(uploadError);
+									console.log(uploadError);
+									return;
+								}
+							}
+							);
+							delete this.soundFile;
+							toastr.success(TAPi18n.__('File_uploaded'));
+						};
+					}
 
-			// 		if (soundData._id) {
-			// 			toastr.success(t('Custom_Sound_Updated_Successfully'));
-			// 		} else {
-			// 			toastr.success(t('Custom_Sound_Added_Successfully'));
-			// 		}
+					toastr.success(t('Custom_Sound_Saved_Successfully'));
 
-			// 		this.cancel(form, soundData.name);
-			// 	}
+					this.cancel(form, soundData.name);
+				}
 
-			// 	if (error) {
-			// 		handleError(error);
-			// 	}
-			// });
+				if (error) {
+					handleError(error);
+				}
+			});
 		}
 	};
 });

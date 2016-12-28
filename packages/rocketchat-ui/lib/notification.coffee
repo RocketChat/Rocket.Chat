@@ -2,16 +2,6 @@
 @KonchatNotification =
 	notificationStatus: new ReactiveVar
 
-	audioAssets: [
-		{ '_id': 'beep', 'name': 'Beep', 'sources': [ { 'src': 'sounds/beep.mp3', 'type': 'audio/mpeg' } ] }
-		{ '_id': 'ding', 'name': 'Ding', 'sources': [ { 'src': 'sounds/ding.mp3', 'type': 'audio/mpeg' } ] }
-		{ '_id': 'seasons', 'name': 'Seasons', 'sources': [ { 'src': 'sounds/seasons.mp3', 'type': 'audio/mpeg' } ] }
-		{ '_id': 'chelle', 'name': 'Chelle', 'sources': [ { 'src': 'sounds/chelle.mp3', 'type': 'audio/mpeg' } ] }
-		{ '_id': 'highbell', 'name': 'High Bell', 'sources': [ { 'src': 'sounds/highbell.mp3', 'type': 'audio/mpeg' } ] }
-		{ '_id': 'droplet', 'name': 'Droplet', 'sources': [ { 'src': 'sounds/droplet.mp3', 'type': 'audio/mpeg' } ] }
-		{ '_id': 'verbal', 'name': 'Verbal', 'sources': [ { 'src': 'sounds/verbal.mp3', 'type': 'audio/mpeg' } ] }
-	]
-
 	# notificacoes HTML5
 	getDesktopPermission: ->
 		if window.Notification && Notification.permission != "granted" && !Meteor.settings.public.sandstorm
