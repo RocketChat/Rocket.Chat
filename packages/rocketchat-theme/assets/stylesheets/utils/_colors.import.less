@@ -256,6 +256,12 @@ a:hover {
 			color: @secondary-font-color;
 		}
 	}
+
+	.section-content {
+		.reset-setting i {
+			color: @error-contrast;
+		}
+	}
 }
 
 .page-list,
@@ -677,6 +683,7 @@ a:hover {
 
 	.unread {
 		background-color: @success-color;
+		color: contrast(@success-color, #000000, #ffffff, 50%);
 	}
 
 	.unread-rooms {
