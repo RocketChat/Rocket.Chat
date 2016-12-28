@@ -195,7 +195,7 @@
 											{{/if}}
 										</div>
 										{{#unless $eq group._id 'Assets'}}
-											{{#unless isDefaultSetting _id}}
+											{{#unless isDefaultValue _id}}
 												<button text="{{_ 'Reset'}}" data-setting="{{_id}}" class="reset-setting button danger">
 													<i class="icon-ccw"></i>
 												</button>
