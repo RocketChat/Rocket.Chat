@@ -46,7 +46,7 @@ RocketChat.API.v1.addRoute('integrations.list', { authRequired: true }, {
 		const integrations = RocketChat.models.Integrations.find({}, {
 			sort: { ts: -1 },
 			skip: offset,
-			limit: count,
+			limit: count
 		}).fetch();
 
 		return RocketChat.API.v1.success({
