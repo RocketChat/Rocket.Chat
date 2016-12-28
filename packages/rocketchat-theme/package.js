@@ -11,6 +11,7 @@ Package.onUse(function(api) {
 	api.use('rocketchat:assets');
 	api.use('coffeescript');
 	api.use('ecmascript');
+	api.use('less');
 	api.use('underscore');
 	api.use('webapp');
 	api.use('webapp-hashing');
@@ -32,12 +33,13 @@ Package.onUse(function(api) {
 
 	// Custom stylesheets
 
+	api.addFiles('assets/stylesheets/base.less', 'client');
+
+
 	api.addAssets('assets/stylesheets/_core.import.less', 'server');
 	api.addAssets('assets/stylesheets/variables/_variables.import.less', 'server');
-	api.addAssets('assets/stylesheets/base.less', 'server');
 	api.addAssets('assets/stylesheets/blocks/_general-rtl.import.less', 'server');
 	api.addAssets('assets/stylesheets/blocks/_general.import.less', 'server');
-	api.addAssets('assets/stylesheets/rtl.less', 'server');
 	api.addAssets('assets/stylesheets/utils/_forms.import.less', 'server');
 	api.addAssets('assets/stylesheets/utils/_keyframes.import.less', 'server');
 
