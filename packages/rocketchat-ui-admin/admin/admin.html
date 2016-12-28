@@ -51,8 +51,8 @@
 								{{/if}}
 								{{#each settings}}
 									<div class="input-line double-col {{#if changed}}setting-changed{{/if}}" {{isDisabled}}>
-										<label>{{label}}</label>
-										<div>
+										<label class="setting-label">{{label}}</label>
+										<div class="setting-field">
 											{{#if $eq type 'string'}}
 												{{#if multiline}}
 													<textarea class="input-monitor" name="{{_id}}" rows="4" style="height: auto" {{isDisabled}}>{{value}}</textarea>
@@ -194,8 +194,26 @@
 												<div class="settings-alert"><i class="icon-attention"></i>{{{_ alert}}}</div>
 											{{/if}}
 										</div>
+										{{#unless $eq group._id 'Assets'}}
+											{{#unless isDefaultValue _id}}
+												<button text="{{_ 'Reset'}}" data-setting="{{_id}}" class="reset-setting button danger">
+													<i class="icon-ccw"></i>
+												</button>
+											{{/unless}}
+										{{/unless}}
 									</div>
 								{{/each}}
+
+								{{#unless $eq group._id 'Assets'}}
+									<div class="input-line double-col">
+										<label class="setting-label">{{_ "Reset_section_settings"}}</label>
+										<div class="setting-field">
+											<button data-section="{{section}}" class="reset-group button danger">
+												{{_ "Reset"}}
+											</button>
+										</div>
+									</div>
+								{{/unless}}
 
 								{{#if section}}
 									{{#if sectionIsCustomOAuth section}}
