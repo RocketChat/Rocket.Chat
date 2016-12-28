@@ -1,4 +1,22 @@
 <template name="messages">
+	{{#with agentData}}
+	<div class="header">
+		<div class="picture">
+			<img src="{{avatar}}">
+		</div>
+		<div class="info">
+			<ul>
+				<li><h2>{{name}}</h2></li>
+				{{#if email}}
+					<li>{{email}}</li>
+				{{/if}}
+				{{#if phone}}
+					<li>{{phone}}</li>
+				{{/if}}
+			</ul>
+		</div>
+	</div>
+	{{/with}}
 	<div class="messages">
 		<div class="wrapper">
 			<ul>
