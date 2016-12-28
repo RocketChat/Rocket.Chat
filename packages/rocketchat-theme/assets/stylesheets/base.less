@@ -1830,77 +1830,84 @@ label.required::after {
 				display: none;
 			}
 		}
+	}
 
-		.section-title {
+	.section-title {
+		display: flex;
+		font-size: 24px;
+		font-weight: 600;
+		line-height: 40px;
+
+		.section-title-text {
+			flex-grow: 1;
+		}
+
+		.section-title-right {
+			line-height: 0;
+		}
+	}
+
+	.section-content {
+		border: none !important;
+		border-radius: 0 !important;
+		padding: 20px 0 0 !important;
+
+		.input-line {
+			border-bottom: 1px solid #eeeeee;
+			padding: 20px 0;
+			margin-bottom: 0;
 			display: flex;
-			font-size: 24px;
-			font-weight: 600;
-			line-height: 40px;
+			align-items: center;
 
-			.section-title-text {
-				flex-grow: 1;
+			&:last-child {
+				border-bottom: none;
+				padding-bottom: 0;
 			}
 
-			.section-title-right {
-				line-height: 0;
+			&:first-child {
+				padding-top: 0;
+			}
+
+			.horizontal {
+				display: flex;
+			}
+
+			.flex-grow-1 {
+				flex-grow: 1;
 			}
 		}
 
-		.section-content {
-			border: none !important;
-			border-radius: 0 !important;
-			padding: 20px 0 0 !important;
+		.reset-setting {
+			margin-left: 20px;
+		}
 
-			.input-line {
-				border-bottom: 1px solid #eeeeee;
-				padding: 20px 0;
-				margin-bottom: 0;
+		.setting-label {
+			text-align: left;
+			font-weight: 500;
+			font-size: 16px;
+			line-height: 20px;
+			width: 25%;
+		}
 
-				&:last-child {
-					border-bottom: none;
-					padding-bottom: 0;
-				}
+		.settings-description {
+			padding: 5px;
+			line-height: 20px;
+		}
 
-				&:first-child {
-					padding-top: 0;
-				}
+		.settings-alert {
+			border-width: 1px;
+			font-weight: bold;
+			padding: 5px;
+		}
 
-				> label {
-					text-align: left;
-					font-weight: 500;
-					font-size: 16px;
-					line-height: 20px;
-				}
+		.color-editor {
+			width: 150px;
+			position: relative;
+		}
 
-				.settings-description {
-					padding: 5px;
-					line-height: 20px;
-				}
-
-				.settings-alert {
-					border-width: 1px;
-					font-weight: bold;
-					padding: 5px;
-				}
-
-				.horizontal {
-					display: flex;
-				}
-
-				.flex-grow-1 {
-					flex-grow: 1;
-				}
-
-				.color-editor {
-					width: 150px;
-					position: relative;
-				}
-			}
-
-			.selected-rooms {
-				.remove-room {
-					cursor: pointer;
-				}
+		.selected-rooms {
+			.remove-room {
+				cursor: pointer;
 			}
 		}
 	}
