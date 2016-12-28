@@ -1090,6 +1090,7 @@
   "Require_password_change": "Require password change",
   "Resend_verification_email": "Resend verification email",
   "Reset": "Reset",
+	"Reset_section_settings": "Reset section settings",
   "Reset_password": "Reset password",
   "Restart": "Restart",
   "Restart_the_server": "Restart the server",
