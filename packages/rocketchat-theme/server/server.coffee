@@ -54,7 +54,7 @@ RocketChat.theme = new class
 		'assets/stylesheets/mixins/_gradient.import.less'
 		'assets/stylesheets/mixins/_input-shade.import.less'
 		'assets/stylesheets/mixins/_linkColors.import.less'
-		'assets/stylesheets/utils/_colors.import.less'
+		'assets/stylesheets/colors.less'
 	]
 
 	constructor: ->

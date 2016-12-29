@@ -40,8 +40,8 @@ Package.onUse(function(api) {
 
 	api.addFiles('assets/stylesheets/base.less', 'client');
 
-	api.addAssets('assets/stylesheets/utils/_forms.import.less', 'server');
-	api.addAssets('assets/stylesheets/utils/_keyframes.import.less', 'server');
+	api.addAssets('assets/stylesheets/_forms.import.less', 'server');
+	api.addAssets('assets/stylesheets/_keyframes.import.less', 'server');
 
 	// Run-time stylesheets
 	api.addAssets('assets/stylesheets/mixins/_lesshat.import.less', 'server');
@@ -51,7 +51,7 @@ Package.onUse(function(api) {
 	api.addAssets('assets/stylesheets/mixins/_gradient.import.less', 'server');
 	api.addAssets('assets/stylesheets/mixins/_input-shade.import.less', 'server');
 	api.addAssets('assets/stylesheets/mixins/_linkColors.import.less', 'server');
-	api.addAssets('assets/stylesheets/utils/_colors.import.less', 'server');
+	api.addAssets('assets/stylesheets/colors.less', 'server');
 });
 
 Npm.depends({
