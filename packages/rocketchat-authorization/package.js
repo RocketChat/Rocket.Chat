@@ -45,7 +45,7 @@ Package.onUse(function(api) {
 	// stylesheets
 	api.addFiles('client/stylesheets/permissions.less', 'client');
 	api.addAssets('client/stylesheets/colors.less', 'server');
-	api.addFiles('client/stylesheets/load.coffee', 'server');
+	api.addFiles('client/stylesheets/load.js', 'server');
 
 	api.addFiles('server/models/Permissions.coffee', ['server']);
 	api.addFiles('server/models/Roles.coffee', ['server']);
