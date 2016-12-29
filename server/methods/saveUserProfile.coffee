@@ -1,5 +1,5 @@
 Meteor.methods
-	saveUserProfile: (settings) ->
+	saveUserProfile: (settings, customFields) ->
 
 		check settings, Object
 
@@ -42,5 +42,7 @@ Meteor.methods
 		profile = {}
 
 		RocketChat.models.Users.setProfile Meteor.userId(), profile
+
+		RocketChat.saveCustomFields Meteor.userId(), customFields
 
 		return true
