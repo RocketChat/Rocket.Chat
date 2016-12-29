@@ -10,7 +10,7 @@ Meteor.methods
 				RocketChat.models.Users.setLanguage Meteor.userId(), settings.language
 
 			if settings.newRoomNotification?
-				preferences.newRoomNotification = if settings.newRoomNotification is "1" then true else false
+				preferences.newRoomNotification = settings.newRoomNotification
 
 			if settings.audioNotifications?
 				preferences.audioNotifications = settings.audioNotifications
