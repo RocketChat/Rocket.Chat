@@ -505,7 +505,6 @@ html {
 }
 
 body {
-	font-family: @body-font-family;
 	font-size: 0.875rem;
 	height: 100%;
 	width: 100%;
@@ -685,9 +684,15 @@ label.required::after {
 
 	.button:first-child {
 		margin-left: 0;
-		-webkit-flex-grow: 1;
-		-moz-flex-grow: 1;
 		flex-grow: 1;
+	}
+}
+
+.oauth-panel {
+	.buttons-group {
+		.button:first-child {
+			flex-grow: 0;
+		}
 	}
 }
 
@@ -726,10 +731,6 @@ label.required::after {
 		margin: 5px 0;
 		opacity: 0.8;
 		.transition(transform .2s ease-out);
-
-		&:nth-child(3) {
-			.transition-delay(.1s);
-		}
 	}
 
 	.unread-burger-alert {
@@ -1084,7 +1085,6 @@ label.required::after {
 		min-height: @header-min-height;
 		height: @header-min-height;
 		padding-left: 15px;
-		.transition-delay(.05s);
 
 		> div {
 			display: table-cell;
@@ -1120,7 +1120,6 @@ label.required::after {
 		z-index: 120;
 		text-align: left;
 		height: @footer-min-height;
-		.transition-delay(.22s);
 
 		> div {
 			display: table-cell;
@@ -1140,7 +1139,6 @@ label.required::after {
 		display: block;
 		-webkit-overflow-scrolling: touch;
 		padding: 20px 10px;
-		.transition-delay(.135s);
 
 		&.no-shadow {
 			box-shadow: 0 0 0;
@@ -1830,77 +1828,84 @@ label.required::after {
 				display: none;
 			}
 		}
+	}
 
-		.section-title {
+	.section-title {
+		display: flex;
+		font-size: 24px;
+		font-weight: 600;
+		line-height: 40px;
+
+		.section-title-text {
+			flex-grow: 1;
+		}
+
+		.section-title-right {
+			line-height: 0;
+		}
+	}
+
+	.section-content {
+		border: none !important;
+		border-radius: 0 !important;
+		padding: 20px 0 0 !important;
+
+		.input-line {
+			border-bottom: 1px solid #eeeeee;
+			padding: 20px 0;
+			margin-bottom: 0;
 			display: flex;
-			font-size: 24px;
-			font-weight: 600;
-			line-height: 40px;
+			align-items: flex-start;
 
-			.section-title-text {
-				flex-grow: 1;
+			&:last-child {
+				border-bottom: none;
+				padding-bottom: 0;
 			}
 
-			.section-title-right {
-				line-height: 0;
+			&:first-child {
+				padding-top: 0;
+			}
+
+			.horizontal {
+				display: flex;
+			}
+
+			.flex-grow-1 {
+				flex-grow: 1;
 			}
 		}
 
-		.section-content {
-			border: none !important;
-			border-radius: 0 !important;
-			padding: 20px 0 0 !important;
+		.reset-setting {
+			margin-left: 20px;
+		}
 
-			.input-line {
-				border-bottom: 1px solid #eeeeee;
-				padding: 20px 0;
-				margin-bottom: 0;
+		.setting-label {
+			text-align: left;
+			font-weight: 500;
+			font-size: 16px;
+			line-height: 20px;
+			width: 25%;
+		}
 
-				&:last-child {
-					border-bottom: none;
-					padding-bottom: 0;
-				}
+		.settings-description {
+			padding: 5px;
+			line-height: 20px;
+		}
 
-				&:first-child {
-					padding-top: 0;
-				}
+		.settings-alert {
+			border-width: 1px;
+			font-weight: bold;
+			padding: 5px;
+		}
 
-				> label {
-					text-align: left;
-					font-weight: 500;
-					font-size: 16px;
-					line-height: 20px;
-				}
+		.color-editor {
+			width: 150px;
+			position: relative;
+		}
 
-				.settings-description {
-					padding: 5px;
-					line-height: 20px;
-				}
-
-				.settings-alert {
-					border-width: 1px;
-					font-weight: bold;
-					padding: 5px;
-				}
-
-				.horizontal {
-					display: flex;
-				}
-
-				.flex-grow-1 {
-					flex-grow: 1;
-				}
-
-				.color-editor {
-					width: 150px;
-					position: relative;
-				}
-			}
-
-			.selected-rooms {
-				.remove-room {
-					cursor: pointer;
-				}
+		.selected-rooms {
+			.remove-room {
+				cursor: pointer;
 			}
 		}
 	}
@@ -3186,7 +3191,6 @@ body:not(.is-cordova) {
 			}
 
 			.flex-opened & {
-				.transition-delay(0s);
 				.transform(translateX(0));
 			}
 		}
@@ -4000,7 +4004,7 @@ body:not(.is-cordova) {
 		margin-top: 12px;
 	}
 
-	.input-text {
+	.input-line {
 		margin: 0 0 14px;
 		position: relative;
 
@@ -4033,10 +4037,6 @@ body:not(.is-cordova) {
 			&:focus {
 				border-color: #13679a !important;
 			}
-		}
-
-		.select-arrow {
-			right: 0;
 		}
 
 		label {
@@ -4497,7 +4497,7 @@ body:not(.is-cordova) {
 		padding: 10px;
 		margin: 10px auto;
 
-		.input-text {
+		.input-line {
 			margin-bottom: 6px;
 		}
 
