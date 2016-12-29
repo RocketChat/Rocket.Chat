@@ -62,7 +62,7 @@ Template.livechat.helpers({
 		const statusLivechat = Template.instance().statusLivechat.get();
 
 		return {
-			status: statusLivechat,
+			status: statusLivechat === 'available' ? 'status-online' : 'status-offline',
 			icon: statusLivechat === 'available' ? 'icon-toggle-on' : 'icon-toggle-off',
 			hint: statusLivechat === 'available' ? t('Available') : t('Not_Available')
 		};
