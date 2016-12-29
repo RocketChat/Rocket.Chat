@@ -3,8 +3,8 @@ Template.accountPreferences.helpers
 	audioAssets: ->
 		return RocketChat.CustomSounds && RocketChat.CustomSounds.getList && RocketChat.CustomSounds.getList() || [];
 
-	audioNotifications: ->
-		return Meteor.user()?.settings?.preferences?.audioNotifications || 'chime'
+	newMessageNotification: ->
+		return Meteor.user()?.settings?.preferences?.newMessageNotification || 'chime'
 
 	newRoomNotification: ->
 		return Meteor.user()?.settings?.preferences?.newRoomNotification || 'door'
@@ -76,7 +76,7 @@ Template.accountPreferences.onCreated ->
 			reload = true
 
 		data.newRoomNotification = $('select[name=newRoomNotification]').val()
-		data.audioNotifications = $('select[name=audioNotifications]').val()
+		data.newMessageNotification = $('select[name=newMessageNotification]').val()
 		data.useEmojis = $('input[name=useEmojis]:checked').val()
 		data.convertAsciiEmoji = $('input[name=convertAsciiEmoji]:checked').val()
 		data.saveMobileBandwidth = $('input[name=saveMobileBandwidth]:checked').val()

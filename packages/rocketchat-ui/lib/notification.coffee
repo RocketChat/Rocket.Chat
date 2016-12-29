@@ -49,15 +49,13 @@
 
 	newMessage: ->
 		if not Session.equals('user_' + Meteor.userId() + '_status', 'busy')
-			sub = ChatSubscription.findOne({ rid: Session.get('openedRoom') }, { fields: { audioNotifications: 1 } });
-			if sub?.audioNotifications isnt 'none'
-				if sub?.audioNotifications
-					$("audio##{sub.audioNotifications}")[0].play()
-				else if Meteor.user()?.settings?.preferences?.audioNotifications isnt 'none'
-					if Meteor.user()?.settings?.preferences?.audioNotifications
-						$("audio##{Meteor.user().settings.preferences.audioNotifications}")[0].play()
-					else
-						$('audio#chime')[0].play()
+			newMessageNotification = Meteor.user()?.settings?.preferences?.newMessageNotification || 'chime'
+			sub = ChatSubscription.findOne({ rid: Session.get('openedRoom') }, { fields: { audioNotification: 1 } });
+			if sub?.audioNotification isnt 'none'
+				if sub?.audioNotification
+					$("audio##{sub.audioNotification}")[0].play()
+				else if newMessageNotification isnt 'none'
+					$("audio##{newMessageNotification}")[0].play()
 
 	newRoom: (rid, withSound = true) ->
 		Tracker.nonreactive ->
@@ -78,16 +76,11 @@
 		$('.link-room-' + rid).removeClass('new-room-highlight')
 
 Tracker.autorun ->
+	newRoomNotification = Meteor.user()?.settings?.preferences?.newRoomNotification || 'door'
 	if Session.get('newRoomSound')?.length > 0
 		Tracker.nonreactive ->
-			if not Session.equals('user_' + Meteor.userId() + '_status', 'busy') and Meteor.user()?.settings?.preferences?.newRoomNotification isnt 'none'
-				if Meteor.user()?.settings?.preferences?.newRoomNotification
-					$("audio#{Meteor.user().settings.preferences.newRoomNotification}").each ->
-						this.play?()
-				else
-					$("audio#door").each ->
-						this.play?()
+			if not Session.equals('user_' + Meteor.userId() + '_status', 'busy') and newRoomNotification isnt 'none'
+				$("audio##{newRoomNotification}")?[0]?.play?()
 	else
-		$('audio#door').each ->
-			this.pause?()
-			this.currentTime = 0
+		$("audio##{newRoomNotification}")?[0]?.pause?()
+		$("audio##{newRoomNotification}")?[0]?.currentTime = 0

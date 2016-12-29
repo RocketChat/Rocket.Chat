@@ -12,7 +12,7 @@ fields =
 	roles: 1
 	unread: 1
 	archived: 1
-	audioNotifications: 1
+	audioNotification: 1
 	desktopNotifications: 1
 	desktopNotificationDuration: 1
 	mobilePushNotifications: 1
