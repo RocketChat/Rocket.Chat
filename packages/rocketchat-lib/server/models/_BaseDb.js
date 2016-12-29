@@ -87,7 +87,7 @@ class ModelsBaseDb extends EventEmitter {
 		// };
 		this.model.remove = function() {
 			const beforeRemove = self.emit('beforeRemove', ...arguments);
-			const result = originals.remove.apply(this.model, arguments);
+			const result = originals.remove.apply(self.model, arguments);
 			self.emit('afterRemove', beforeRemove, result, ...arguments);
 			return result;
 		};
