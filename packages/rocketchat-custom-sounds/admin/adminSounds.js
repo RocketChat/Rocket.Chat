@@ -121,7 +121,7 @@ Template.adminSounds.events({
 	['click .icon-play-circled'](e) {
 		e.preventDefault();
 		e.stopPropagation();
-		const $audio = $('#' + this._id);
+		const $audio = $('audio#' + this._id);
 		if ($audio && $audio[0] && $audio[0].play) {
 			$audio[0].play();
 		}

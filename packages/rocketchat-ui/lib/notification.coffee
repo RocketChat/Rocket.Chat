@@ -52,12 +52,12 @@
 			sub = ChatSubscription.findOne({ rid: Session.get('openedRoom') }, { fields: { audioNotifications: 1 } });
 			if sub?.audioNotifications isnt 'none'
 				if sub?.audioNotifications
-					$("##{sub.audioNotifications}")[0].play()
+					$("audio##{sub.audioNotifications}")[0].play()
 				else if Meteor.user()?.settings?.preferences?.audioNotifications isnt 'none'
 					if Meteor.user()?.settings?.preferences?.audioNotifications
-						$("##{Meteor.user().settings.preferences.audioNotifications}")[0].play()
+						$("audio##{Meteor.user().settings.preferences.audioNotifications}")[0].play()
 					else
-						$('#chime')[0].play()
+						$('audio#chime')[0].play()
 
 	newRoom: (rid, withSound = true) ->
 		Tracker.nonreactive ->
@@ -81,9 +81,9 @@ Tracker.autorun ->
 	if Session.get('newRoomSound')?.length > 0
 		Tracker.nonreactive ->
 			if not Session.equals('user_' + Meteor.userId() + '_status', 'busy') and Meteor.user()?.settings?.preferences?.newRoomNotification isnt false
-				$('#chatNewRoomNotification').each ->
+				$('audio#door').each ->
 					this.play?()
 	else
-		$('#chatNewRoomNotification').each ->
+		$('audio#door').each ->
 			this.pause?()
 			this.currentTime = 0
