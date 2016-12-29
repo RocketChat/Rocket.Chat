@@ -47,7 +47,7 @@ RocketChat.theme = new class
 	variables: {}
 	packageCallbacks: []
 	files: [
-		'assets/stylesheets/mixins/_lesshat.import.less' 
+		'assets/stylesheets/_lesshat.import.less' 
 		'assets/stylesheets/mixins/_blink.import.less'
 		'assets/stylesheets/mixins/_buttonColors.import.less'
 		'assets/stylesheets/mixins/_custom-scroll.import.less'

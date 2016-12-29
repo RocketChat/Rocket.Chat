@@ -36,15 +36,11 @@ Package.onUse(function(api) {
 	api.addAssets('client/fontello/font/fontello.woff', 'client');
 	api.addAssets('client/fontello/font/fontello.woff2', 'client');
 
-	// Custom stylesheets
-
+	// Compiled stylesheets
 	api.addFiles('assets/stylesheets/base.less', 'client');
 
-	api.addAssets('assets/stylesheets/_forms.import.less', 'server');
-	api.addAssets('assets/stylesheets/_keyframes.import.less', 'server');
-
 	// Run-time stylesheets
-	api.addAssets('assets/stylesheets/mixins/_lesshat.import.less', 'server');
+	api.addAssets('assets/stylesheets/_lesshat.import.less', 'server');
 	api.addAssets('assets/stylesheets/mixins/_blink.import.less', 'server');
 	api.addAssets('assets/stylesheets/mixins/_buttonColors.import.less', 'server');
 	api.addAssets('assets/stylesheets/mixins/_custom-scroll.import.less', 'server');
