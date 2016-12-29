@@ -76,10 +76,14 @@ Template.pushNotificationsFlexTab.helpers({
 		}, {
 			fields: {
 				t: 1,
+				mute: 1,
 				[field]: 1
 			}
 		});
 		if (sub) {
+			if (sub.mute && sub.mute !== 'nothing' && field !== 'mute') {
+				return t('Muted');
+			}
 			switch (sub[field]) {
 				case 'all':
 					return t('All_messages');
@@ -89,9 +93,15 @@ Template.pushNotificationsFlexTab.helpers({
 					return t('Use_account_preference');
 				case 'mentions':
 					return t('Mentions');
+				case 'everything':
+					return t('Everything');
+				case 'notifications':
+					return t('Notifications');
 				default:
 					if (field === 'emailNotifications') {
 						return t('Use_account_preference');
+					} else if (field === 'mute') {
+						return t('Nothing');
 					} else {
 						return t('Mentions');
 					}
@@ -117,6 +127,16 @@ Template.pushNotificationsFlexTab.helpers({
 	},
 	emailVerified() {
 		return Meteor.user().emails && Meteor.user().emails[0] && Meteor.user().emails[0].verified;
+	},
+	mute() {
+		var sub = ChatSubscription.findOne({
+			rid: Session.get('openedRoom')
+		}, {
+			fields: {
+				mute: 1
+			}
+		});
+		return sub ? sub.mute || 'nothing' : 'nothing';
 	}
 });
 
@@ -125,7 +145,7 @@ Template.pushNotificationsFlexTab.onCreated(function() {
 
 	this.validateSetting = (field) => {
 		const value = this.$('input[name='+ field +']:checked').val();
-		if (['all', 'mentions', 'nothing', 'default'].indexOf(value) === -1) {
+		if (['all', 'mentions', 'nothing', 'default', 'everything', 'notifications'].indexOf(value) === -1) {
 			toastr.error(t('Invalid_notification_setting_s', value || ''));
 			return false;
 		}
