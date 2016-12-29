@@ -171,8 +171,13 @@
 							<div class="input-line double-col">
 								<label>{{_ "New_Room_Notification"}}</label>
 								<div>
-									<label><input type="radio" name="newRoomNotification" value="1" checked="{{checked 'newRoomNotification' true true}}" /> {{_ "True"}}</label>
-									<label><input type="radio" name="newRoomNotification" value="0" checked="{{checked 'newRoomNotification' false}}" /> {{_ "False"}}</label>
+									<select name="newRoomNotification" class="audio">
+										<option value="none" selected="{{$eq newRoomNotification 'none'}}">{{_ "None"}}</option>
+										<option value="chime" selected="{{$eq newRoomNotification 'chime'}}">Door ({{_ "Default"}})</option>
+										{{#each audioAssets}}
+											<option value="{{_id}}" selected="{{$eq newRoomNotification _id}}">{{name}}</option>
+										{{/each}}
+									</select>
 								</div>
 							</div>
 							<div class="input-line double-col">

@@ -132,5 +132,5 @@ Template.accountPreferences.events
 		if audio is 'none'
 			return
 
-		$audio = $('#' + (audio || 'chime'))
+		$audio = $('audio#' + (audio || 'chime'))
 		$audio?[0]?.play()
