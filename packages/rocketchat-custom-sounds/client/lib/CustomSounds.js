@@ -4,7 +4,6 @@ class CustomSounds {
 		this.list = new ReactiveVar({});
 		this.add({ _id: 'beep', name: 'Beep', extension: 'mp3', src: '/sounds/beep.mp3' });
 		this.add({ _id: 'chelle', name: 'Chelle', extension: 'mp3', src: '/sounds/chelle.mp3' });
-		this.add({ _id: 'chime', name: 'Chime', extension: 'mp3', src: '/sounds/chime.mp3' });
 		this.add({ _id: 'ding', name: 'Ding', extension: 'mp3', src: '/sounds/ding.mp3' });
 		this.add({ _id: 'door', name: 'Door', extension: 'mp3', src: '/sounds/door.mp3' });
 		this.add({ _id: 'droplet', name: 'Droplet', extension: 'mp3', src: '/sounds/droplet.mp3' });
