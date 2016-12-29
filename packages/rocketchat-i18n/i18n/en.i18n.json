@@ -504,6 +504,7 @@
   "File_exceeds_allowed_size_of_bytes": "File exceeds allowed size of __size__.",
   "File_not_allowed_direct_messages": "File sharing not allowed in direct messages.",
   "File_type_is_not_accepted": "File type is not accepted.",
+  "File_uploaded": "File uploaded",
   "FileUpload": "File Upload",
   "FileUpload_Enabled": "File Uploads Enabled",
   "FileUpload_Disabled": "File uploads are disabled.",

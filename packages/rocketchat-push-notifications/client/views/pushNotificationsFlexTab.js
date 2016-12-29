@@ -5,15 +5,15 @@ Template.pushNotificationsFlexTab.helpers({
 	audioAssets() {
 		return RocketChat.CustomSounds && RocketChat.CustomSounds.getList && RocketChat.CustomSounds.getList() || [];
 	},
-	audioNotifications() {
+	audioNotification() {
 		const sub = ChatSubscription.findOne({
 			rid: Session.get('openedRoom')
 		}, {
 			fields: {
-				audioNotifications: 1
+				audioNotification: 1
 			}
 		});
-		return sub ? sub.audioNotifications || '' : '';
+		return sub ? sub.audioNotification || '' : '';
 	},
 	desktopNotifications() {
 		var sub = ChatSubscription.findOne({
@@ -88,10 +88,10 @@ Template.pushNotificationsFlexTab.helpers({
 			rid: Session.get('openedRoom')
 		}, {
 			fields: {
-				audioNotifications: 1
+				audioNotification: 1
 			}
 		});
-		const audio = sub ? sub.audioNotifications || '': '';
+		const audio = sub ? sub.audioNotification || '': '';
 		if (audio === 'none') {
 			return t('None');
 		} else if (audio === '') {
@@ -159,7 +159,7 @@ Template.pushNotificationsFlexTab.onCreated(function() {
 
 	this.validateSetting = (field) => {
 		switch (field) {
-			case 'audioNotifications':
+			case 'audioNotification':
 				return true;
 			default:
 				const value = this.$('input[name='+ field +']:checked').val();
@@ -175,7 +175,7 @@ Template.pushNotificationsFlexTab.onCreated(function() {
 		const field = this.editing.get();
 		let value;
 		switch (field) {
-			case 'audioNotifications':
+			case 'audioNotification':
 				value = this.$('select[name='+field+']').val();
 				break;
 			default:
@@ -236,7 +236,7 @@ Template.pushNotificationsFlexTab.events({
 				$audio[0].play();
 			}
 		} else {
-			audio = Meteor.user() && Meteor.user().settings && Meteor.user().settings.preferences && Meteor.user().settings.preferences.audioNotifications || 'chime';
+			audio = Meteor.user() && Meteor.user().settings && Meteor.user().settings.preferences && Meteor.user().settings.preferences.newMessageNotification || 'chime';
 			if (audio && audio !== 'none') {
 				let $audio = $('audio#' + audio);
 				if ($audio && $audio[0] && $audio[0].play) {
@@ -246,7 +246,7 @@ Template.pushNotificationsFlexTab.events({
 		}
 	},
 
-	'change select[name=audioNotifications]'(e) {
+	'change select[name=audioNotification]'(e) {
 		e.preventDefault();
 		let audio = $(e.currentTarget).val();
 		if (audio && audio !== 'none') {

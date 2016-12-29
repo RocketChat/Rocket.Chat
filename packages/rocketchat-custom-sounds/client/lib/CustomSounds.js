@@ -25,7 +25,7 @@ class CustomSounds {
 
 	remove(sound) {
 		const list = this.list.get();
-		delete this.list[sound._id];
+		delete list[sound._id];
 		this.list.set(list);
 		$('#' + sound._id).remove();
 	}

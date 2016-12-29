@@ -183,11 +183,11 @@
 							<div class="input-line double-col">
 								<label>{{_ "New_Message_Notification"}}</label>
 								<div>
-									<select name="audioNotifications" class="audio">
-										<option value="none" selected="{{$eq audioNotifications 'none'}}">{{_ "None"}}</option>
-										<option value="chime" selected="{{$eq audioNotifications 'chime'}}">Chime ({{_ "Default"}})</option>
+									<select name="newMessageNotification" class="audio">
+										<option value="none" selected="{{$eq newMessageNotification 'none'}}">{{_ "None"}}</option>
+										<option value="chime" selected="{{$eq newMessageNotification 'chime'}}">Chime ({{_ "Default"}})</option>
 										{{#each audioAssets}}
-											<option value="{{_id}}" selected="{{$eq audioNotifications _id}}">{{name}}</option>
+											<option value="{{_id}}" selected="{{$eq newMessageNotification _id}}">{{name}}</option>
 										{{/each}}
 									</select>
 								</div>
