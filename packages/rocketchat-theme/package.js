@@ -26,9 +26,15 @@ Package.onUse(function(api) {
 	api.addFiles('client/minicolors/jquery.minicolors.css', 'client');
 	api.addFiles('client/minicolors/jquery.minicolors.js', 'client');
 
+	api.addFiles('client/fontello/css/fontello.css', 'client');
+	api.addAssets('client/fontello/font/fontello.eot', 'client');
+	api.addAssets('client/fontello/font/fontello.svg', 'client');
+	api.addAssets('client/fontello/font/fontello.ttf', 'client');
+	api.addAssets('client/fontello/font/fontello.woff', 'client');
+	api.addAssets('client/fontello/font/fontello.woff2', 'client');
+
 	// Vendor stylesheets
 	api.addFiles('assets/stylesheets/vendor/reset.css', 'client');
-	api.addFiles('assets/stylesheets/vendor/fontello.css', 'client');
 	api.addFiles('assets/stylesheets/vendor/swipebox.css', 'client');
 
 	// Custom stylesheets
