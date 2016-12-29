@@ -63,6 +63,17 @@ Template.phone.events
 		instance.search(display + value)
 		RocketChat.Phone.endDtmf(value)
 
+	'paste #phone-display':  _.debounce (e, instance) ->
+		value = $(e.target).val()
+		replaced_value = value.replace(/\D/g,'')
+		if !replaced_value
+			replaced_value = ""
+		RocketChat.Phone.setSearchTerm(replaced_value)
+		RocketChat.Phone.setSearchResult(replaced_value)
+		instance.phoneDisplay.set(replaced_value)
+		$('#phone-display').val(replaced_value)
+	, 200
+
 	'change #phone-display': (e, instance) ->
 		value = _.trim $(e.target).val()
 		instance.phoneDisplay.set(value)
