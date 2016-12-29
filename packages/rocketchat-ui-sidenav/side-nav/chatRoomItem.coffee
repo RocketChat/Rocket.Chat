@@ -1,7 +1,7 @@
 Template.chatRoomItem.helpers
 
 	alert: ->
-		if FlowRouter.getParam('_id') isnt this.rid or not document.hasFocus()
+		if this.mute isnt 'everything' and (FlowRouter.getParam('_id') isnt this.rid or not document.hasFocus())
 			return this.alert
 
 	unread: ->

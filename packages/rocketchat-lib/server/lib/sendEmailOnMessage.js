@@ -63,20 +63,24 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 	messageHTML = messageHTML.replace(/\n/gm, '<br/>');
 
 	RocketChat.models.Subscriptions.findWithSendEmailByRoomId(room._id).forEach((sub) => {
-		switch (sub.emailNotifications) {
-			case 'all':
-				usersToSendEmail[sub.u._id] = 'force';
-				break;
-			case 'mentions':
-				if (usersToSendEmail[sub.u._id]) {
+		if (sub.mute && sub.mute !== 'nothing') {
+			delete usersToSendEmail[sub.u._id];
+		} else {
+			switch (sub.emailNotifications) {
+				case 'all':
 					usersToSendEmail[sub.u._id] = 'force';
-				}
-				break;
-			case 'nothing':
-				delete usersToSendEmail[sub.u._id];
-				break;
-			case 'default':
-				break;
+					break;
+				case 'mentions':
+					if (usersToSendEmail[sub.u._id]) {
+						usersToSendEmail[sub.u._id] = 'force';
+					}
+					break;
+				case 'nothing':
+					delete usersToSendEmail[sub.u._id];
+					break;
+				case 'default':
+					break;
+			}
 		}
 	});
 
