@@ -20,6 +20,7 @@ fields =
 	_updatedAt: 1
 	blocked: 1
 	blocker: 1
+	mute: 1
 
 
 Meteor.methods
