@@ -37,7 +37,7 @@ Package.onUse(function(api) {
 	api.addFiles('assets/stylesheets/base.less', 'client');
 
 	// Run-time stylesheets
-	api.addAssets('assets/stylesheets/_lesshat.import.less', 'server');
+	api.addAssets('assets/stylesheets/utils/_lesshat.import.less', 'server');
 	api.addAssets('assets/stylesheets/mixins/_blink.import.less', 'server');
 	api.addAssets('assets/stylesheets/mixins/_buttonColors.import.less', 'server');
 	api.addAssets('assets/stylesheets/mixins/_custom-scroll.import.less', 'server');
