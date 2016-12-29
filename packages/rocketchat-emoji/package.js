@@ -23,7 +23,7 @@ Package.onUse(function(api) {
 	api.addFiles('emojiPicker.html', 'client');
 	api.addFiles('emojiPicker.js', 'client');
 	api.addFiles('emojiPicker.less', 'client');
-	
+
 	api.addFiles('emoji.css', 'client');
 
 	api.addFiles('lib/emojiRenderer.js', 'client');
