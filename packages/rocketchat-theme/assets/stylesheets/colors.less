@@ -43,6 +43,7 @@ html {
 }
 
 body {
+	font-family: @body-font-family;
 	color: @primary-font-color;
 
 	* {
@@ -58,6 +59,26 @@ code {
 
 blockquote::before {
 	background-color: @transparent-darker;
+}
+
+.filter-item {
+	border-color: @secondary-background-color;
+
+	&:hover {
+		border-color: @info-font-color;
+	}
+
+	&.active {
+		border-color: @primary-background-color;
+	}
+}
+
+.info-font-color {
+	color: @info-font-color;
+}
+
+.secondary-background-color {
+	background-color: @secondary-background-color;
 }
 
 .main-content,
