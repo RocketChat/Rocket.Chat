@@ -173,7 +173,7 @@
 								<div>
 									<select name="newRoomNotification" class="audio">
 										<option value="none" selected="{{$eq newRoomNotification 'none'}}">{{_ "None"}}</option>
-										<option value="chime" selected="{{$eq newRoomNotification 'chime'}}">Door ({{_ "Default"}})</option>
+										<option value="door" selected="{{$eq newRoomNotification 'door'}}">Door ({{_ "Default"}})</option>
 										{{#each audioAssets}}
 											<option value="{{_id}}" selected="{{$eq newRoomNotification _id}}">{{name}}</option>
 										{{/each}}

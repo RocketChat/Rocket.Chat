@@ -80,9 +80,13 @@
 Tracker.autorun ->
 	if Session.get('newRoomSound')?.length > 0
 		Tracker.nonreactive ->
-			if not Session.equals('user_' + Meteor.userId() + '_status', 'busy') and Meteor.user()?.settings?.preferences?.newRoomNotification isnt false
-				$('audio#door').each ->
-					this.play?()
+			if not Session.equals('user_' + Meteor.userId() + '_status', 'busy') and Meteor.user()?.settings?.preferences?.newRoomNotification isnt 'none'
+				if Meteor.user()?.settings?.preferences?.newRoomNotification
+					$("audio#{Meteor.user().settings.preferences.newRoomNotification}").each ->
+						this.play?()
+				else
+					$("audio#door").each ->
+						this.play?()
 	else
 		$('audio#door').each ->
 			this.pause?()
