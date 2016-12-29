@@ -7,6 +7,23 @@
 			<form>
 				<ul class="list clearfix">
 					<li>
+						<label>{{_ "Mute"}}</label>
+						<div>
+							{{#if editing 'mute'}}
+								<label><input type="radio" name="mute" value="everything" checked="{{$eq mute 'everything'}}" /> {{_ "Everything"}}</label>
+								<label><input type="radio" name="mute" value="notifications" checked="{{$eq mute 'notifications'}}" /> {{_ "Notifications"}}</label>
+								<label><input type="radio" name="mute" value="nothing" checked="{{$eq mute 'nothing'}}" /> {{_ "Nothing"}}</label>
+								<button type="button" class="button cancel">{{_ "Cancel"}}</button>
+								<button type="button" class="button primary save">{{_ "Save"}}</button>
+								<div class="alert">
+									{{_ "Notifications_Muted_Description"}}
+								</div>
+							{{else}}
+								<span class="current-setting">{{subValue 'mute'}} <i class="icon-pencil" data-edit="mute"></i></span>
+							{{/if}}
+						</div>
+					</li>
+					<li>
 						<label>{{_ "Desktop"}}</label>
 						<div>
 							{{#if editing 'desktopNotifications'}}
