@@ -459,10 +459,7 @@ class ModelsBaseCache extends EventEmitter {
 		const db = this.model._db;
 
 		// INSERT
-		// db.on('beforeInsert', (record) => {
-		// 	console.log('beforeInsert', JSON.stringify(record));
-		// });
-		db.on('afterInsert', (beforeInsert, _id, record) => {
+		db.on('afterInsert', (beforeInsertResult, _id, record) => {
 			record._id = _id;
 			// console.log('afterInsert', JSON.stringify(record));
 			this.insert(record);
@@ -476,14 +473,12 @@ class ModelsBaseCache extends EventEmitter {
 		// });
 
 		// UPDATE
-		db.on('beforeUpdate', (query, update, options = {}) => {
+		db.on('beforeUpdate', (response, query, update, options = {}) => {
 			if (this.defineSyncStrategy(query, update) === 'db') {
 				const findOptions = {fields: {_id: 1}};
-				let records = options.multi ? db.find(query, findOptions).fetch() : db.findOne(query, findOptions);
-				if (records && !Array.isArray(records)) {
+				let records = options.multi ? db.find(query, findOptions).fetch() : db.findOne(query, findOptions) || [];
+				if (!Array.isArray(records)) {
 					records = [records];
-				} else {
-					records = [];
 				}
 				for (const key in query) {
 					if (query.hasOwnProperty(key)) {
@@ -493,18 +488,17 @@ class ModelsBaseCache extends EventEmitter {
 				query._id = {
 					$in: records.map(item => item._id)
 				};
-				return 'db';
+				response.strategy = 'db';
 			}
 		});
 
-		db.on('afterUpdate', (beforeUpdate, result, query, update, options = {}) => {
-			if (beforeUpdate === 'db') {
+		db.on('afterUpdate', (beforeUpdateResult, result, query, update, options = {}) => {
+			console.log('afterUpdate', this.collectionName, {beforeUpdateResult, result, query, update, options});
+			if (beforeUpdateResult.strategy === 'db') {
 				// Find only updated fields?
-				let records = options.multi ? db.find(query).fetch() : db.findOne(query);
-				if (records && !Array.isArray(records)) {
+				let records = options.multi ? db.find(query).fetch() : db.findOne(query) || [];
+				if (!Array.isArray(records)) {
 					records = [records];
-				} else {
-					records = [];
 				}
 				for (const record of records) {
 					this.updateDiffById(record._id, record);
@@ -514,13 +508,44 @@ class ModelsBaseCache extends EventEmitter {
 			}
 		});
 
-		db.on('beforeUpsert', (query, update) => {
-			console.log('beforeUpsert', {query: JSON.stringify(query), update: JSON.stringify(update)});
+		db.on('beforeUpsert', (response, query, update, options = {}) => {
+			const findOptions = {fields: {_id: 1}};
+			let records = options.multi ? db.find(query, findOptions).fetch() : db.findOne(query, findOptions) || [];
+			if (!Array.isArray(records)) {
+				records = [records];
+			}
+
+			response.ids = records.map(item => item._id);
 		});
 
-		// db.on('afterUpsert', (beforeUpsert, result, query, update) => {
+		// Insert
+		// { numberAffected: 1, insertedId: 'asd' }
+		// Update
+		// { numberAffected: 1 }
+
+		// Always go to DB to get update records
+		db.on('afterUpsert', (beforeUpsertResult, result, query, update, options = {}) => {
 		// 	console.log('afterUpsert', {beforeUpsert, result, query, update});
-		// });
+			console.log('beforeUpsert', beforeUpsertResult, {result, query, update});
+			if (result.insertedId) {
+				this.insert(db.findOne({_id: result.insertedId}));
+				return;
+			}
+
+			const findQuery = {
+				_id: {
+					$in: beforeUpsertResult.ids
+				}
+			};
+
+			let records = options.multi ? db.find(findQuery).fetch() : db.findOne(findQuery) || [];
+			if (!Array.isArray(records)) {
+				records = [records];
+			}
+			for (const record of records) {
+				this.updateDiffById(record._id, record);
+			}
+		});
 	}
 
 	startOplog() {
@@ -848,6 +873,7 @@ class ModelsBaseCache extends EventEmitter {
 	}
 
 	updateRecord(record, update) {
+		console.log('updateRecord', {record, update});
 		// TODO remove - ignore updates in room.usernames
 		if (this.collectionName === 'rocketchat_room' && (record.usernames || (record.$set && record.$set.usernames))) {
 			delete record.usernames;
@@ -987,13 +1013,13 @@ class ModelsBaseCache extends EventEmitter {
 	}
 
 	update(query, update, options = {}) {
-		console.log('update', {query: JSON.stringify(query), update: JSON.stringify(update), options});
-		let records = options.multi ? this.find(query).fetch() : this.findOne(query);
-		if (records && !Array.isArray(records)) {
+		// console.log('update', {query: JSON.stringify(query), update: JSON.stringify(update), options});
+		let records = options.multi ? this.find(query).fetch() : this.findOne(query) || [];
+		if (!Array.isArray(records)) {
 			records = [records];
-		} else {
-			records = [];
 		}
+
+		console.log('update', this.collectionName, records.length, {options, query});
 
 		for (const record of records) {
 			this.updateRecord(record, update);

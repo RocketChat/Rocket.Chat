@@ -59,23 +59,24 @@ class ModelsBaseDb extends EventEmitter {
 		const self = this;
 
 		this.model.insert = function() {
-			const beforeInsert = self.emit('beforeInsert', ...arguments);
+			const beforeInsertResult = {};
+			self.emit('beforeInsert', beforeInsertResult, ...arguments);
 			const result = originals.insert.apply(self.model, arguments);
-			self.emit('afterInsert', beforeInsert, result, ...arguments);
+			self.emit('afterInsert', beforeInsertResult, result, ...arguments);
 			return result;
 		};
 		this.model.update = function(query, update, options = {}) {
-			let beforeUpdate;
+			const beforeUpdateResult = {};
 			if (options.upsert === true) {
-				beforeUpdate = self.emit('beforeUpsert', ...arguments);
+				self.emit('beforeUpsert', beforeUpdateResult, ...arguments);
 			} else {
-				beforeUpdate = self.emit('beforeUpdate', ...arguments);
+				self.emit('beforeUpdate', beforeUpdateResult, ...arguments);
 			}
 			const result = originals.update.apply(self.model, arguments);
 			if (options.upsert === true) {
-				self.emit('afterUpsert', beforeUpdate, result, ...arguments);
+				self.emit('afterUpsert', beforeUpdateResult, result, ...arguments);
 			} else {
-				self.emit('afterUpdate', beforeUpdate, result, ...arguments);
+				self.emit('afterUpdate', beforeUpdateResult, result, ...arguments);
 			}
 			return result;
 		};
@@ -86,9 +87,10 @@ class ModelsBaseDb extends EventEmitter {
 		// 	return result;
 		// };
 		this.model.remove = function() {
-			const beforeRemove = self.emit('beforeRemove', ...arguments);
+			const beforeRemoveResult = {};
+			self.emit('beforeRemove', beforeRemoveResult, ...arguments);
 			const result = originals.remove.apply(self.model, arguments);
-			self.emit('afterRemove', beforeRemove, result, ...arguments);
+			self.emit('afterRemove', beforeRemoveResult, result, ...arguments);
 			return result;
 		};
 	}
