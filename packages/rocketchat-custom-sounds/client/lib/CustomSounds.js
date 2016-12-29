@@ -1,4 +1,3 @@
-/* globals isSetNotNull */
 class CustomSounds {
 	constructor() {
 		this.list = new ReactiveVar({});
