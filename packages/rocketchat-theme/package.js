@@ -15,27 +15,26 @@ Package.onUse(function(api) {
 	api.use('underscore');
 	api.use('webapp');
 	api.use('webapp-hashing');
-
 	api.use('templating', 'client');
 
 	// Server side files
 	api.addFiles('server/server.coffee', 'server');
 	api.addFiles('server/variables.coffee', 'server');
 
-	// Client side files
+	// Meyerweb Reset
+	api.addFiles('client/meyerweb/reset.css', 'client');
+
+	// Minicolors
 	api.addFiles('client/minicolors/jquery.minicolors.css', 'client');
 	api.addFiles('client/minicolors/jquery.minicolors.js', 'client');
 
+	// Fontello
 	api.addFiles('client/fontello/css/fontello.css', 'client');
 	api.addAssets('client/fontello/font/fontello.eot', 'client');
 	api.addAssets('client/fontello/font/fontello.svg', 'client');
 	api.addAssets('client/fontello/font/fontello.ttf', 'client');
 	api.addAssets('client/fontello/font/fontello.woff', 'client');
 	api.addAssets('client/fontello/font/fontello.woff2', 'client');
-
-	// Vendor stylesheets
-	api.addFiles('assets/stylesheets/vendor/reset.css', 'client');
-	api.addFiles('assets/stylesheets/vendor/swipebox.css', 'client');
 
 	// Custom stylesheets
 
