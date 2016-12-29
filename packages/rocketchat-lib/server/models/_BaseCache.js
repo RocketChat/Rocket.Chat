@@ -436,7 +436,8 @@ class ModelsBaseCache extends EventEmitter {
 			'$bit',
 			'$pull',
 			'$pushAll',
-			'$push'
+			'$push',
+			'$setOnInsert'
 		];
 
 		const modifierKeys = Object.keys(modifier);
@@ -450,9 +451,7 @@ class ModelsBaseCache extends EventEmitter {
 			return 'db';
 		}
 
-		// if (_.intersection(modifierKeys, inMemoryModifiers).length > 0) {
 		return 'cache';
-		// }
 	}
 
 	startSync() {
@@ -461,7 +460,6 @@ class ModelsBaseCache extends EventEmitter {
 		// INSERT
 		db.on('afterInsert', (beforeInsertResult, _id, record) => {
 			record._id = _id;
-			// console.log('afterInsert', JSON.stringify(record));
 			this.insert(record);
 		});
 
@@ -493,7 +491,6 @@ class ModelsBaseCache extends EventEmitter {
 		});
 
 		db.on('afterUpdate', (beforeUpdateResult, result, query, update, options = {}) => {
-			console.log('afterUpdate', this.collectionName, {beforeUpdateResult, result, query, update, options});
 			if (beforeUpdateResult.strategy === 'db') {
 				// Find only updated fields?
 				let records = options.multi ? db.find(query).fetch() : db.findOne(query) || [];
@@ -518,15 +515,8 @@ class ModelsBaseCache extends EventEmitter {
 			response.ids = records.map(item => item._id);
 		});
 
-		// Insert
-		// { numberAffected: 1, insertedId: 'asd' }
-		// Update
-		// { numberAffected: 1 }
-
 		// Always go to DB to get update records
 		db.on('afterUpsert', (beforeUpsertResult, result, query, update, options = {}) => {
-		// 	console.log('afterUpsert', {beforeUpsert, result, query, update});
-			console.log('beforeUpsert', beforeUpsertResult, {result, query, update});
 			if (result.insertedId) {
 				this.insert(db.findOne({_id: result.insertedId}));
 				return;
@@ -873,7 +863,6 @@ class ModelsBaseCache extends EventEmitter {
 	}
 
 	updateRecord(record, update) {
-		console.log('updateRecord', {record, update});
 		// TODO remove - ignore updates in room.usernames
 		if (this.collectionName === 'rocketchat_room' && (record.usernames || (record.$set && record.$set.usernames))) {
 			delete record.usernames;
@@ -1003,8 +992,6 @@ class ModelsBaseCache extends EventEmitter {
 			});
 		}
 
-		// '$setOnInsert', // { $setOnInsert: { <field1>: <value1>, ... } }, upsert only
-
 		this.collection.update(record);
 
 		if (updatedFields.length > 0) {
@@ -1013,13 +1000,10 @@ class ModelsBaseCache extends EventEmitter {
 	}
 
 	update(query, update, options = {}) {
-		// console.log('update', {query: JSON.stringify(query), update: JSON.stringify(update), options});
 		let records = options.multi ? this.find(query).fetch() : this.findOne(query) || [];
 		if (!Array.isArray(records)) {
 			records = [records];
 		}
-
-		console.log('update', this.collectionName, records.length, {options, query});
 
 		for (const record of records) {
 			this.updateRecord(record, update);
