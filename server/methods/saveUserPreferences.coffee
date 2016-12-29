@@ -12,8 +12,8 @@ Meteor.methods
 			if settings.newRoomNotification?
 				preferences.newRoomNotification = settings.newRoomNotification
 
-			if settings.audioNotifications?
-				preferences.audioNotifications = settings.audioNotifications
+			if settings.newMessageNotification?
+				preferences.newMessageNotification = settings.newMessageNotification
 
 			if settings.useEmojis?
 				preferences.useEmojis = if settings.useEmojis is "1" then true else false
