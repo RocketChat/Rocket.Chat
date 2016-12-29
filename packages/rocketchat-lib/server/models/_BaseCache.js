@@ -809,15 +809,8 @@ class ModelsBaseCache extends EventEmitter {
 
 	insert(record) {
 		if (Array.isArray(record)) {
-			for (let i=0; i < record.length; i++) {
-				// TODO remove - ignore updates in room.usernames
-				if (this.collectionName === 'rocketchat_room' && record[i].usernames) {
-					delete record[i].usernames;
-				}
-				this.emit('beforeinsert', record[i]);
-				this.addToAllIndexes(record[i]);
-				this.collection.insert(record[i]);
-				this.emit('inserted', record[i]);
+			for (const item of record) {
+				this.insert(item);
 			}
 		} else {
 			// TODO remove - ignore updates in room.usernames
