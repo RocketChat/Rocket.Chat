@@ -1,5 +1,5 @@
 <template name="emojiPicker">
-	<div class="emoji-picker">
+	<div class="emoji-picker secondary-background-color">
 		<div class="emoji-top">
 			<form class="emoji-filter input-line search search-form">
 				<input type="text" class="search" autocomplete="off">
@@ -7,7 +7,7 @@
 			</form>
 			<div class="change-tone">
 				<a href="#change-tone"><span class="current-tone {{currentTone}}"></span></a>
-				<ul class="tone-selector">
+				<ul class="tone-selector secondary-background-color">
 					<li><a href="#tone" class="tone" data-tone="0"><span class="tone-0"></span></a></li>
 					<li><a href="#tone" class="tone" data-tone="1"><span class="tone-1"></span></a></li>
 					<li><a href="#tone" class="tone" data-tone="2"><span class="tone-2"></span></a></li>
@@ -21,7 +21,7 @@
 			<ul class="filter-list">
 				{{#each category}}
 					<li class="filter-item {{activeCategory .}}" title="{{categoryName .}}">
-						<a href="#{{.}}" class="category-link"><i class="category-icon icon-{{.}}"></i></a>
+						<a href="#{{.}}" class="category-link info-font-color"><i class="category-icon icon-{{.}}"></i></a>
 					</li>
 				{{/each}}
 			</ul>

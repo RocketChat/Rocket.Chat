@@ -51,9 +51,7 @@ Package.onUse(function(api) {
 	api.addFiles('client/ui.js', 'client');
 	api.addFiles('client/route.js', 'client');
 
-	// add stylesheets to theme compiler
-	api.addAssets('client/stylesheets/livechat.less', 'server');
-	api.addFiles('client/stylesheets/load.js', 'server');
+	api.addFiles('client/stylesheets/livechat.less', 'client');
 
 	// collections
 	api.addFiles('client/collections/AgentUsers.js', 'client');
