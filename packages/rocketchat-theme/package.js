@@ -21,9 +21,6 @@ Package.onUse(function(api) {
 	api.addFiles('server/server.coffee', 'server');
 	api.addFiles('server/variables.coffee', 'server');
 
-	// Meyerweb Reset
-	api.addFiles('client/meyerweb/reset.css', 'client');
-
 	// Minicolors
 	api.addFiles('client/minicolors/jquery.minicolors.css', 'client');
 	api.addFiles('client/minicolors/jquery.minicolors.js', 'client');
