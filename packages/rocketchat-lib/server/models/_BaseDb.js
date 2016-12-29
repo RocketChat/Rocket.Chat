@@ -124,7 +124,6 @@ class ModelsBaseDb extends EventEmitter {
 
 	remove(query) {
 		const records = this.model.find(query).fetch();
-		this.emit('beforeRemove', query, records);
 
 		const ids = [];
 		for (const record of records) {
