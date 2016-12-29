@@ -6,17 +6,17 @@
 			<br>
 			{{#with role}}
 				<form id="form-role" class="inline form-role">
-					<label>{{_ "Role"}} :</label>
+					<label class="role-label">{{_ "Role"}} :</label>
 					{{#if editing}}
 						<span>{{_id}}</span>
 					{{else}}
 						<input type="text" name="name" value="">
 					{{/if}}
 					<br>
-					<label>{{_ "Description"}} :</label>
+					<label class="role-label">{{_ "Description"}} :</label>
 					<input type="text" name="description" value="{{description}}">
 					<br>
-					<label>{{_ "Scope"}} :</label>
+					<label class="role-label">{{_ "Scope"}} :</label>
 					<select name="scope" disabled="{{protected}}">
 						<option value="Users" selected="{{$eq scope 'Users'}}">{{_ "Global"}}</option>
 						<option value="Subscriptions" selected="{{$eq scope 'Subscriptions'}}">{{_ "Rooms"}}</option>
@@ -30,7 +30,7 @@
 				</form>
 			{{/with}}
 			{{#if editing}}
-				<h2>{{_ "Users_in_role"}}</h2>
+				<h2 class="in-role-title">{{_ "Users_in_role"}}</h2>
 				{{#if $eq role.scope 'Subscriptions'}}
 					<form id="form-search-room" class="inline">
 						<label>{{_ "Choose_a_room"}}</label>

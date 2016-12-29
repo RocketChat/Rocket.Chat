@@ -1,1 +1,1 @@
-RocketChat.theme.addPackageAsset -> Assets.getText 'client/stylesheets/permissions.less'
+RocketChat.theme.addPackageAsset -> Assets.getText 'client/stylesheets/colors.less'
