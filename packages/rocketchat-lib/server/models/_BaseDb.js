@@ -1,4 +1,5 @@
 const baseName = 'rocketchat_';
+import {EventEmitter} from 'events';
 
 const trash = new Mongo.Collection(baseName + '_trash');
 try {
@@ -8,8 +9,10 @@ try {
 	console.log(e);
 }
 
-class ModelsBaseDb {
+class ModelsBaseDb extends EventEmitter {
 	constructor(model) {
+		super();
+
 		if (Match.test(model, String)) {
 			this.name = model;
 			this.collectionName = this.baseName + this.name;
@@ -19,6 +22,8 @@ class ModelsBaseDb {
 			this.collectionName = this.name;
 			this.model = model;
 		}
+
+		this.wrapModel();
 
 		this.tryEnsureIndex({ '_updatedAt': 1 });
 	}
@@ -44,6 +49,50 @@ class ModelsBaseDb {
 		return record;
 	}
 
+	wrapModel() {
+		const originals = {
+			insert: this.model.insert,
+			update: this.model.update,
+			// upsert: this.model.upsert,
+			remove: this.model.remove
+		};
+		const self = this;
+
+		this.model.insert = function() {
+			const beforeInsert = self.emit('beforeInsert', ...arguments);
+			const result = originals.insert.apply(self.model, arguments);
+			self.emit('afterInsert', beforeInsert, result, ...arguments);
+			return result;
+		};
+		this.model.update = function(query, update, options = {}) {
+			let beforeUpdate;
+			if (options.upsert === true) {
+				beforeUpdate = self.emit('beforeUpsert', ...arguments);
+			} else {
+				beforeUpdate = self.emit('beforeUpdate', ...arguments);
+			}
+			const result = originals.update.apply(self.model, arguments);
+			if (options.upsert === true) {
+				self.emit('afterUpsert', beforeUpdate, result, ...arguments);
+			} else {
+				self.emit('afterUpdate', beforeUpdate, result, ...arguments);
+			}
+			return result;
+		};
+		// this.model.upsert = function() {
+		// 	const beforeUpsert = self.emit('beforeUpsert', ...arguments);
+		// 	const result = originals.upsert.apply(self.model, arguments);
+		// 	self.emit('afterUpsert', beforeUpsert, result, ...arguments);
+		// 	return result;
+		// };
+		this.model.remove = function() {
+			const beforeRemove = self.emit('beforeRemove', ...arguments);
+			const result = originals.remove.apply(this.model, arguments);
+			self.emit('afterRemove', beforeRemove, result, ...arguments);
+			return result;
+		};
+	}
+
 	find() {
 		return this.model.find(...arguments);
 	}
@@ -57,27 +106,35 @@ class ModelsBaseDb {
 
 		const result = this.model.insert(...arguments);
 		record._id = result;
+		// this.emit('afterInsert', result, record);
 		return result;
 	}
 
 	update(query, update, options = {}) {
-		this.setUpdatedAt(update, true, query);
-
 		if (options.upsert) {
 			return this.upsert(query, update);
 		}
 
-		return this.model.update(query, update, options);
+		this.setUpdatedAt(update, true, query);
+		// const beforeUpdate = this.emit('beforeUpdate', query, update, options);
+
+		const result = this.model.update(query, update, options);
+		// this.emit('afterUpdate', beforeUpdate, result, query, update, options);
+		return result;
 	}
 
 	upsert(query, update) {
 		this.setUpdatedAt(update, true, query);
+		// const beforeUpsert = this.emit('beforeUpsert', ...arguments);
 
-		return this.model.upsert(...arguments);
+		const result = this.model.upsert(...arguments);
+		// this.emit('afterUpsert', beforeUpsert, result, ...arguments);
+		return result;
 	}
 
 	remove(query) {
 		const records = this.model.find(query).fetch();
+		this.emit('beforeRemove', query, records);
 
 		const ids = [];
 		for (const record of records) {
