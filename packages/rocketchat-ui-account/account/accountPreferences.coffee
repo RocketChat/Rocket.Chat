@@ -6,6 +6,9 @@ Template.accountPreferences.helpers
 	audioNotifications: ->
 		return Meteor.user()?.settings?.preferences?.audioNotifications || 'chime'
 
+	newRoomNotification: ->
+		return Meteor.user()?.settings?.preferences?.newRoomNotification || 'door'
+
 	languages: ->
 		languages = TAPi18n.getLanguages()
 		result = []
@@ -72,7 +75,7 @@ Template.accountPreferences.onCreated ->
 			data.language = selectedLanguage
 			reload = true
 
-		data.newRoomNotification = $('input[name=newRoomNotification]:checked').val()
+		data.newRoomNotification = $('select[name=newRoomNotification]').val()
 		data.audioNotifications = $('select[name=audioNotifications]').val()
 		data.useEmojis = $('input[name=useEmojis]:checked').val()
 		data.convertAsciiEmoji = $('input[name=convertAsciiEmoji]:checked').val()
@@ -126,11 +129,12 @@ Template.accountPreferences.events
 			title: TAPi18n.__('Desktop_Notification_Test')
 			text: TAPi18n.__('This_is_a_desktop_notification')
 
-	'change select[name=audioNotifications]': (e) ->
+	'change .audio': (e) ->
 		e.preventDefault()
 		audio = $(e.currentTarget).val()
 		if audio is 'none'
 			return
 
-		$audio = $('audio#' + (audio || 'chime'))
-		$audio?[0]?.play()
+		if audio
+			$audio = $('audio#' + audio)
+			$audio?[0]?.play()
