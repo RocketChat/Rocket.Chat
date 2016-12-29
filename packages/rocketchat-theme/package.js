@@ -34,11 +34,11 @@ Package.onUse(function(api) {
 	api.addAssets('client/fontello/font/fontello.woff2', 'client');
 
 	// Compiled stylesheets
-	api.addFiles('assets/stylesheets/base.less', 'client');
+	api.addFiles('client/main.less', 'client');
 
 	// Run-time stylesheets
-	api.addAssets('assets/stylesheets/utils/_mixins.import.less', 'server');
-	api.addAssets('assets/stylesheets/colors.less', 'server');
+	api.addAssets('server/lesshat.less', 'server');
+	api.addAssets('server/colors.less', 'server');
 });
 
 Npm.depends({

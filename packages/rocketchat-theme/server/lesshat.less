@@ -1,7 +1,6 @@
 .calc(...) {
 	@process: ~`(function(a){function c(c,t){var r=");\n",s=e.split(","),l=s[0]+":"+c+"("+(s[1].trim()||0)+r;"start"==t?a="0;\n"+l:a+=l}a=a||8121991;var t="@{state}",e=a;if(8121991==a)return a;switch(t){case"1":c("-webkit-calc","start"),c("-moz-calc"),c("calc");break;case"2":c("-webkit-calc","start"),c("-moz-calc");break;case"3":c("-webkit-calc","start"),c("calc");break;case"4":c("-webkit-calc","start");break;case"5":c("-moz-calc","start"),c("calc");break;case"6":c("-moz-calc","start");break;case"7":c("calc","start")}return a=a.replace(/;$/g,"")})((function(){var r="@{arguments}";return r=r.replace(/^\[|\]$/g,"")})())`;
 	@state: 1; -lh-property: @process;
-
 }
 
 .transform(...) {

@@ -47,8 +47,8 @@ RocketChat.theme = new class
 	variables: {}
 	packageCallbacks: []
 	files: [
-		'assets/stylesheets/utils/_mixins.import.less'
-		'assets/stylesheets/colors.less'
+		'server/lesshat.less'
+		'server/colors.less'
 	]
 
 	constructor: ->

@@ -1,1 +1,2 @@
-packages/rocketchat-theme/assets/stylesheets/utils/_lesshat.import.less
+**/lesshat.less
+**/_lesshat.import.less
