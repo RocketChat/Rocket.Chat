@@ -1,0 +1,131 @@
+.calc(...) {
+	@process: ~`(function(a){function c(c,t){var r=");\n",s=e.split(","),l=s[0]+":"+c+"("+(s[1].trim()||0)+r;"start"==t?a="0;\n"+l:a+=l}a=a||8121991;var t="@{state}",e=a;if(8121991==a)return a;switch(t){case"1":c("-webkit-calc","start"),c("-moz-calc"),c("calc");break;case"2":c("-webkit-calc","start"),c("-moz-calc");break;case"3":c("-webkit-calc","start"),c("calc");break;case"4":c("-webkit-calc","start");break;case"5":c("-moz-calc","start"),c("calc");break;case"6":c("-moz-calc","start");break;case"7":c("calc","start")}return a=a.replace(/;$/g,"")})((function(){var r="@{arguments}";return r=r.replace(/^\[|\]$/g,"")})())`;
+	@state: 1; -lh-property: @process;
+}
+
+.transform(...) {
+	@process: ~`(function(e){e=e||"none";var r={translate:"px",rotate:"deg",rotate3d:"deg",skew:"deg"};/^\w*\(?[a-z0-9.]*\)?/.test(e)&&(e=e.replace(/(?:,)(?![^(]*\))/g,""));for(var t in r)e.indexOf(t)>=0&&(e=e.replace(new RegExp(t+"[\\w]?\\([a-z0-9, %]*\\)"),function(e){var n=/(\d+\.?\d*)(?!\w|%)/g;return"rotate3d"==t&&(n=/,\s*\d+$/),e.replace(n,function(e){return e+r[t]})}));return e})((function(){var r="@{arguments}";return r=r.replace(/^\[|\]$/g,"")})())`;
+	-webkit-transform: @process;
+	-moz-transform: @process;
+	-ms-transform: @process;
+	-o-transform: @process;
+	transform: @process;
+}
+
+.transition(...) {
+	@process_webkit: ~`(function(r){r=r||"all 0 ease 0";var e=["background-size","border-radius","border-bottom-left-radius","border-bottom-right-radius","border-top-left-radius","border-top-right-radius","box-shadow","column","transform","filter"],t="-webkit-",o=/(?:\d)(?:ms|s)/gi,a=/(?:\s|^)(\.?\d+\.?\d*)(?![^(]*\)|\w|%)/gi;return/^[^, ]*,/.test(r)&&(r=r.replace(/(?:,)(?![^(]*\))/g,"")),e.forEach(function(e,o){r.indexOf(e)!==-1&&(r=r.replace(new RegExp(e,"g"),function(r){return t+r}))}),o.test(r)||"0"===r||(r=r.replace(a,function(r){return r+=parseFloat(r,10)>10?"ms":"s"})),r})((function(){var r="@{arguments}";return r=r.replace(/^\[|\]$/g,"")})())`;
+	@process_moz: ~`(function(e){e=e||"all 0 ease 0";var n=["background-size","box-shadow","column","transform","filter"],r="-moz-",t=/(?:\d)(?:ms|s)/gi,a=/(?:\s|^)(\.?\d+\.?\d*)(?![^(]*\)|\w|%)/gi;return/^[^, ]*,/.test(e)&&(e=e.replace(/(?:,)(?![^(]*\))/g,"")),n.forEach(function(n,t){e.indexOf(n)!==-1&&(e=e.replace(new RegExp(n,"g"),function(e){return r+e}))}),t.test(e)||"0"===e||(e=e.replace(a,function(e){return e+=parseFloat(e,10)>10?"ms":"s"})),e})((function(){var r="@{arguments}";return r=r.replace(/^\[|\]$/g,"")})())`;
+	@process_opera: ~`(function(e){e=e||"all 0 ease 0";var n=["transform"],r="-o-",t=/(?:\d)(?:ms|s)/gi,a=/(?:\s|^)(\.?\d+\.?\d*)(?![^(]*\)|\w|%)/gi;return/^[^, ]*,/.test(e)&&(e=e.replace(/(?:,)(?![^(]*\))/g,"")),n.forEach(function(n,t){e.indexOf(n)!==-1&&(e=e.replace(new RegExp(n,"g"),function(e){return r+e}))}),t.test(e)||"0"===e||(e=e.replace(a,function(e){return e+=parseFloat(e,10)>10?"ms":"s"})),e})((function(){var r="@{arguments}";return r=r.replace(/^\[|\]$/g,"")})())`;
+	@process: ~`(function(n){n=n||"all 0 ease 0";var e=["-webkit-","-moz-","-o-",""],t=["column","transform","filter"],r=/(?:\d)(?:ms|s)/gi,o=/(?:\s|^)(\.?\d+\.?\d*)(?![^(]*\)|\w|%)/gi;/^[^, ]*,/.test(n)&&(n=n.replace(/(?:,)(?![^(]*\))/g,""));var i=n.split(/(?:,)(?![^(]*\))/g);return i.forEach(function(n,r){t.forEach(function(t){n.indexOf(t)!==-1&&(i[r]="",e.forEach(function(o,a){i[r]+=n.trim().replace(new RegExp(t,"g"),function(n){return o+n}),a<e.length-1&&(i[r]+=",")}))})}),n=i.join(","),r.test(n)||"0"===n||(n=n.replace(o,function(n){return n+=parseFloat(n,10)>10?"ms":"s"})),n})((function(){var r="@{arguments}";return r=r.replace(/^\[|\]$/g,"")})())`;
+	-webkit-transition: @process_webkit;
+	-moz-transition: @process_moz;
+	-o-transition: @process_opera;
+	transition: @process;
+}
+
+.custom-scroll(@background, @thumb, @width: 8px, @height: 8px) {
+	-webkit-overflow-scrolling: touch;
+
+	&::-webkit-scrollbar {
+		height: @height;
+		width: @width;
+		background: @background;
+	}
+
+	&::-webkit-scrollbar-thumb {
+		background-color: @thumb;
+		-webkit-border-radius: 50px;
+	}
+
+	&::-webkit-scrollbar-corner {
+		background-color: @background;
+	}
+}
+
+.gradient(@startColor: #eee, @endColor: white) {
+	background: linear-gradient(to top, @startColor, @endColor);
+}
+
+.input-shade(@color, @bg) {
+	input,
+	select,
+	textarea {
+		color: @color;
+		background-color: transparent;
+		border-color: mix(contrast(@bg), @bg, 10%);
+		border-style: solid;
+
+		&::placeholder {
+			color: mix(@color, @bg, 75%);
+		}
+
+		&[disabled] {
+			background-color: mix(contrast(@bg), @bg, 10%);
+		}
+	}
+
+	.diabled label,
+	[disabled] label {
+		color: mix(@color, @bg, 75%);
+	}
+
+	.-autocomplete-container {
+		background-color: mix(contrast(@bg), @bg, 10%);
+	}
+
+	.-autocomplete-item.selected {
+		background-color: mix(contrast(@bg), @bg, 20%);
+	}
+
+	input[type="button"],
+	input[type="submit"] {
+		color: @color;
+		background: mix(contrast(@bg), @bg, 10%);
+		border-color: mix(contrast(@bg), @bg, 10%);
+	}
+}
+
+.blink(@color) {
+	animation-duration: 1000ms;
+	animation-name: blink;
+	animation-iteration-count: infinite;
+	animation-direction: alternate;
+
+	@keyframes blink {
+		from {
+			color: @color;
+		}
+
+		to {
+			opacity: inherit;
+		}
+	}
+
+	@-webkit-keyframes blink {
+		from {
+			color: @color;
+		}
+
+		to {
+			color: inherit;
+		}
+	}
+}
+
+.linkColors(@color, @hover) {
+	color: @color;
+
+	&:hover {
+		color: @hover;
+	}
+}
+
+.buttonColors(@color, @bg) {
+	color: @color;
+	background-color: @bg;
+
+	&:hover {
+		color: mix(@color, contrast(@bg), 60%);
+		background-color: mix(@bg, contrast(@color), 60%);
+	}
+}
