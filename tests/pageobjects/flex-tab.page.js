@@ -67,6 +67,18 @@ class FlexTab extends Page {
 	get sweetAlertOverlay() { return browser.element('.sweet-overlay'); }
 	get toastAlert() { return browser.element('.toast'); }
 
+	//admin view flextab items
+	get usersSendInvitationTab() { return browser.element('[aria-label="Invite Users"] .icon-paper-plane'); }
+	get usersAddUserTab() { return browser.element('[aria-label="Add User"] .icon-plus'); }
+	get usersSendInvitationTextArea() { return browser.element('#inviteEmails'); }
+	get usersSendInvitationCancel() { return browser.element('button.cancel'); }
+	get usersSendInvitationSend() { return browser.element('button.send'); }
+	get usersAddUserName() { return browser.element('#name'); }
+	get usersAddUserUsername() { return browser.element('#username'); }
+	get usersAddUserEmail() { return browser.element('#email'); }
+	get usersAddUserPassword() { return browser.element('#password'); }
+	get usersAddUserRole() { return browser.element('#role'); }
+
 	getUserEl(username) { return browser.element(`.flex-tab button[title="${username}"] > p`); }
 
 	confirmPopup() {
