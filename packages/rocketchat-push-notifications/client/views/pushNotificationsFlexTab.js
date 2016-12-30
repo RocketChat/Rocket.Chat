@@ -81,9 +81,6 @@ Template.pushNotificationsFlexTab.helpers({
 			}
 		});
 		if (sub) {
-			if (sub.mute && sub.mute !== 'nothing' && field !== 'mute') {
-				return t('Muted');
-			}
 			switch (sub[field]) {
 				case 'all':
 					return t('All_messages');
