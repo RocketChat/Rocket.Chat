@@ -464,11 +464,12 @@ class ModelsBaseCache extends EventEmitter {
 		});
 
 		// REMOVE
-		// db.on('beforeRemove', (query, records) => {
-		// 	for (const record of records) {
-		// 		this.removeById(record._id);
-		// 	}
-		// });
+		db.on('afterRemove', (beforeRemoveResult, result, records/*, query*/) => {
+			for (const record of records) {
+				console.log('afterRemove', this.collectionName, record._id);
+				this.removeById(record._id);
+			}
+		});
 
 		// UPDATE
 		db.on('beforeUpdate', (response, query, update, options = {}) => {
