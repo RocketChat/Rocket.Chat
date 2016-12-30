@@ -38,7 +38,10 @@ class Administration extends Page {
 	get rolesNewRoleDesc() { return browser.element('[name="description"]'); }
 	get rolesNewRoleScope() { return browser.element('[name="scope"]'); }
 	get rolesAddBtn() { return browser.element('button.add'); }
-	get rolesRoomsSearchForm() { return browser.element('.search [name="room"]); }
+	get rolesRoomsSearchForm() { return browser.element('.search [name="room"]'); }
+	get emojiFilter() { return browser.element('#emoji-filter'); }
+	get emojiFilter() { return browser.element('#emoji-filter'); }
+
 
 
 }
