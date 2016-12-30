@@ -2308,23 +2308,25 @@
     $.verto.dialog.prototype.stopRinging = function () {
         var dialog = this;
         if (dialog.verto.ringer) {
-            dialog.verto.ringer.stop();
+            dialog.verto.ringer.get(0).pause();
+            dialog.verto.ringer.get(0).currentTime = 0;
         }
     };
 
-    $.verto.dialog.prototype.indicateRing = function () {
+    $.verto.dialog.prototype.indicateRing = function (timeout) {
         var dialog = this;
 
         if (dialog.verto.ringer) {
-            dialog.verto.ringer.attr("src", dialog.verto.options.ringFile)[0].play();
-
+            if (dialog.verto.ringer.get(0).paused)
+                dialog.verto.ringer.attr("src", dialog.verto.options.ringFile)[0].play();
+            timewait = timeout || 150
             setTimeout(function () {
                 dialog.stopRinging();
                 if (dialog.state == $.verto.enum.state.ringing) {
-                    dialog.indicateRing();
+                    dialog.indicateRing(dialog.verto.options.ringSleep);
                 }
             },
-                dialog.verto.options.ringSleep);
+                timewait);
         }
     };
 
