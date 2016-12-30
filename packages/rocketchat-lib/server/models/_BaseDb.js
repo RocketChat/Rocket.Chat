@@ -50,43 +50,23 @@ class ModelsBaseDb extends EventEmitter {
 	}
 
 	wrapModel() {
-		const originals = {
-			insert: this.model.insert,
-			update: this.model.update,
-			remove: this.model.remove
+		this.originals = {
+			insert: this.model.insert.bind(this.model),
+			update: this.model.update.bind(this.model),
+			remove: this.model.remove.bind(this.model)
 		};
 		const self = this;
 
 		this.model.insert = function() {
-			const beforeInsertResult = {};
-			self.emit('beforeInsert', beforeInsertResult, ...arguments);
-			const result = originals.insert.apply(self.model, arguments);
-			self.emit('afterInsert', beforeInsertResult, result, ...arguments);
-			return result;
+			return self.insert(...arguments);
 		};
 
-		this.model.update = function(query, update, options = {}) {
-			const beforeUpdateResult = {};
-			if (options.upsert === true) {
-				self.emit('beforeUpsert', beforeUpdateResult, ...arguments);
-			} else {
-				self.emit('beforeUpdate', beforeUpdateResult, ...arguments);
-			}
-			const result = originals.update.apply(self.model, arguments);
-			if (options.upsert === true) {
-				self.emit('afterUpsert', beforeUpdateResult, result, ...arguments);
-			} else {
-				self.emit('afterUpdate', beforeUpdateResult, result, ...arguments);
-			}
-			return result;
+		this.model.update = function() {
+			return self.update(...arguments);
 		};
 
 		this.model.remove = function() {
-			const beforeRemoveResult = {};
-			self.emit('beforeRemove', beforeRemoveResult, ...arguments);
-			const result = originals.remove.apply(self.model, arguments);
-			self.emit('afterRemove', beforeRemoveResult, result, ...arguments);
-			return result;
+			return self.remove(...arguments);
 		};
 	}
 
@@ -101,28 +81,46 @@ class ModelsBaseDb extends EventEmitter {
 	insert(record) {
 		this.setUpdatedAt(record);
 
-		const result = this.model.insert(...arguments);
+		const beforeInsertResult = {};
+		this.emit('beforeInsert', beforeInsertResult, ...arguments);
+
+		const result = this.originals.insert(...arguments);
 		record._id = result;
+
+		this.emit('afterInsert', beforeInsertResult, result, ...arguments);
 		return result;
 	}
 
 	update(query, update, options = {}) {
-		if (options.upsert) {
-			return this.upsert(query, update);
+		this.setUpdatedAt(update, true, query);
+
+		const beforeUpdateResult = {};
+		if (options.upsert === true) {
+			this.emit('beforeUpsert', beforeUpdateResult, ...arguments);
+		} else {
+			this.emit('beforeUpdate', beforeUpdateResult, ...arguments);
 		}
 
-		this.setUpdatedAt(update, true, query);
+		const result = this.originals.update(query, update, options);
 
-		return this.model.update(query, update, options);
+		if (options.upsert === true) {
+			this.emit('afterUpsert', beforeUpdateResult, result, ...arguments);
+		} else {
+			this.emit('afterUpdate', beforeUpdateResult, result, ...arguments);
+		}
+		return result;
 	}
 
-	upsert(query, update) {
-		this.setUpdatedAt(update, true, query);
-
-		return this.model.upsert(...arguments);
+	upsert(query, update, options = {}) {
+		options.upsert = true;
+		options._returnObject = true;
+		return this.update(query, update, options);
 	}
 
 	remove(query) {
+		const beforeRemoveResult = {};
+		this.emit('beforeRemove', beforeRemoveResult, ...arguments);
+
 		const records = this.model.find(query).fetch();
 
 		const ids = [];
@@ -137,7 +135,9 @@ class ModelsBaseDb extends EventEmitter {
 
 		query = { _id: { $in: ids } };
 
-		return this.model.remove(query);
+		const result = this.originals.remove(query);
+		this.emit('afterRemove', beforeRemoveResult, result, records, ...arguments);
+		return result;
 	}
 
 	insertOrUpsert(...args) {
