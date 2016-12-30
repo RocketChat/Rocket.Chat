@@ -28,6 +28,17 @@ class Administration extends Page {
 	get roomsGeneralChannel() { return browser.element('td=general'); }
 	get usersRocketCat() { return browser.element('td=Rocket.Cat'); }
 	get usersFilter() { return browser.element('#users-filter'); }
+	get rolesNewRolesButton() { return browser.element('.button.new-role'); }
+	get rolesPermissionGrid() { return browser.element('.permission-grid'); }
+	get rolesAdmin() { return browser.element('[title="Admin"]'); }
+	get rolesModerator() { return browser.element('[title="Moderator"]'); }
+	get rolesOwner() { return browser.element('[title="Owner"]'); }
+	get rolesReturnLink() { return browser.element('[href="/admin/permissions"]'); }
+	get rolesNewRoleName() { return browser.element('[name="name"]'); }
+	get rolesNewRoleDesc() { return browser.element('[name="description"]'); }
+	get rolesNewRoleScope() { return browser.element('[name="scope"]'); }
+	get rolesAddBtn() { return browser.element('button.add'); }
+	get rolesRoomsSearchForm() { return browser.element('.search [name="room"]); }
 
 
 }

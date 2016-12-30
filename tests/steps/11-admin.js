@@ -8,7 +8,7 @@ import admin from '../pageobjects/administration.page';
 import {checkIfUserIsAdmin} from '../data/checks';
 import {adminUsername, adminEmail, adminPassword} from '../data/user.js';
 
-describe('Admin Login', () => {
+describe.only('Admin Login', () => {
 	before(() => {
 		checkIfUserIsAdmin(adminUsername, adminEmail, adminPassword);
 		sideNav.getChannelFromList('general').waitForExist(5000);
@@ -118,8 +118,31 @@ describe('Admin Login', () => {
 					admin.roomsGeneralChannel.isVisible().should.be.true;
 				});
 			});
+
+			describe('filter text with wrong channel', () => {
+				before(() => {
+					admin.roomsFilter.click();
+					browser.pause(5000);
+					admin.roomsFilter.setValue('something else');
+				});
+
+				after(() => {
+					admin.roomsFilter.click();
+					admin.roomsFilter.setValue('');
+				});
+
+				it('should not show the general channel', () => {
+					admin.roomsGeneralChannel.isVisible().should.be.false;
+				});
+			});
 			describe('filter checkbox', () => {
 				var checkbox = 1;
+				before(() => {
+					admin.roomsFilter.setValue('');
+					//add value triggers a key event that changes search±±±±±±±±±
+					admin.roomsFilter.addValue(' ');
+					admin.roomsGeneralChannel.waitForVisible(5000);
+				});
 				beforeEach(() => {
 					switch (checkbox) {
 						case 1:
@@ -195,7 +218,25 @@ describe('Admin Login', () => {
 					});
 
 					it('should show rocket.cat', () => {
+						admin.usersRocketCat.waitForVisible();
 						admin.usersRocketCat.isVisible().should.be.true;
+					});
+				});
+
+				describe('filter text with wrong user', () => {
+					before(() => {
+						admin.usersFilter.click();
+						browser.pause(5000);
+						admin.usersFilter.setValue('something else');
+					});
+
+					after(() => {
+						admin.usersFilter.click();
+						admin.usersFilter.setValue('');
+					});
+
+					it('should not show rocket.cat', () => {
+						admin.usersRocketCat.isVisible().should.be.false;
 					});
 				});
 			});
