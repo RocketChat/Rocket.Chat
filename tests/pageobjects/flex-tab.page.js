@@ -73,11 +73,17 @@ class FlexTab extends Page {
 	get usersSendInvitationTextArea() { return browser.element('#inviteEmails'); }
 	get usersSendInvitationCancel() { return browser.element('button.cancel'); }
 	get usersSendInvitationSend() { return browser.element('button.send'); }
+	get usersButtonSave() { return browser.element('button.save'); }
 	get usersAddUserName() { return browser.element('#name'); }
 	get usersAddUserUsername() { return browser.element('#username'); }
 	get usersAddUserEmail() { return browser.element('#email'); }
 	get usersAddUserPassword() { return browser.element('#password'); }
 	get usersAddUserRole() { return browser.element('#role'); }
+	get usersAddUserVerifiedCheckbox() { return browser.element('#verified'); }
+	get usersAddUserChangePasswordCheckbox() { return browser.element('#changePassword'); }
+	get usersAddUserDefaultChannelCheckbox() { return browser.element('#joinDefaultChannels'); }
+	get usersAddUserWelcomeEmailCheckbox() { return browser.element('#sendWelcomeEmail'); }
+	get usersAddUserRandomPassword() { return browser.element('#randomPassword'); }
 
 	getUserEl(username) { return browser.element(`.flex-tab button[title="${username}"] > p`); }
 
