@@ -84,6 +84,8 @@ class FlexTab extends Page {
 	get usersAddUserDefaultChannelCheckbox() { return browser.element('#joinDefaultChannels'); }
 	get usersAddUserWelcomeEmailCheckbox() { return browser.element('#sendWelcomeEmail'); }
 	get usersAddUserRandomPassword() { return browser.element('#randomPassword'); }
+	get emojiNewAliases() { return browser.element('#aliases'); }
+	get emojiNewImageInput() { return browser.element('#image'); }
 
 	getUserEl(username) { return browser.element(`.flex-tab button[title="${username}"] > p`); }
 
