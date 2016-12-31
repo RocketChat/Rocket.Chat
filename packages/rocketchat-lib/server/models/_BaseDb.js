@@ -10,7 +10,7 @@ try {
 }
 
 class ModelsBaseDb extends EventEmitter {
-	constructor(model) {
+	constructor(model, baseModel) {
 		super();
 
 		if (Match.test(model, String)) {
@@ -22,6 +22,8 @@ class ModelsBaseDb extends EventEmitter {
 			this.collectionName = this.name;
 			this.model = model;
 		}
+
+		this.baseModel = baseModel;
 
 		this.wrapModel();
 
@@ -78,35 +80,120 @@ class ModelsBaseDb extends EventEmitter {
 		return this.model.findOne(...arguments);
 	}
 
+	defineSyncStrategy(query, modifier, options) {
+		if (this.baseModel.useCache === false) {
+			return 'db';
+		}
+
+		if (options.upsert === true) {
+			return 'db';
+		}
+
+		const dbModifiers = [
+			'$currentDate',
+			'$bit',
+			'$pull',
+			'$pushAll',
+			'$push',
+			'$setOnInsert'
+		];
+
+		const modifierKeys = Object.keys(modifier);
+
+		if (_.intersection(modifierKeys, dbModifiers).length > 0) {
+			return 'db';
+		}
+
+		const placeholderFields = Object.keys(query).filter(item => item.indexOf('$') > -1);
+		if (placeholderFields.length > 0) {
+			return 'db';
+		}
+
+		return 'cache';
+	}
+
 	insert(record) {
 		this.setUpdatedAt(record);
 
-		const beforeInsertResult = {};
-		this.emit('beforeInsert', beforeInsertResult, ...arguments);
-
 		const result = this.originals.insert(...arguments);
+		if (this.listenerCount('change') > 0) {
+			this.emit('change', {
+				action: 'insert',
+				id: result,
+				data: _.extend({}, record)
+			});
+		}
+
 		record._id = result;
 
-		this.emit('afterInsert', beforeInsertResult, result, ...arguments);
 		return result;
 	}
 
 	update(query, update, options = {}) {
 		this.setUpdatedAt(update, true, query);
 
-		const beforeUpdateResult = {};
-		if (options.upsert === true) {
-			this.emit('beforeUpsert', beforeUpdateResult, ...arguments);
-		} else {
-			this.emit('beforeUpdate', beforeUpdateResult, ...arguments);
+		let strategy = this.defineSyncStrategy(query, update, options);
+		let ids = [];
+		if (this.listenerCount('change') > 0 && strategy === 'db') {
+			const findOptions = {fields: {_id: 1}};
+			let records = options.multi ? this.find(query, findOptions).fetch() : this.findOne(query, findOptions) || [];
+			if (!Array.isArray(records)) {
+				records = [records];
+			}
+
+			ids = records.map(item => item._id);
+			if (options.upsert !== true) {
+				query = {
+					_id: {
+						$in: ids
+					}
+				};
+			}
 		}
 
 		const result = this.originals.update(query, update, options);
 
-		if (options.upsert === true) {
-			this.emit('afterUpsert', beforeUpdateResult, result, ...arguments);
-		} else {
-			this.emit('afterUpdate', beforeUpdateResult, result, ...arguments);
+		if (this.listenerCount('change') > 0) {
+			if (strategy === 'db') {
+				if (options.upsert === true) {
+					if (result.insertedId) {
+						this.emit('change', {
+							action: 'insert',
+							id: result.insertedId,
+							data: this.findOne({_id: result.insertedId})
+						});
+						return;
+					}
+
+					query = {
+						_id: {
+							$in: ids
+						}
+					};
+				}
+
+				let records = options.multi ? this.find(query).fetch() : this.findOne(query) || [];
+				if (!Array.isArray(records)) {
+					records = [records];
+				}
+				for (const record of records) {
+					this.emit('change', {
+						action: 'update:db',
+						id: record._id,
+						data: _.extend({}, record)
+					});
+				}
+			} else {
+				this.emit('change', {
+					action: 'update:cache',
+					id: undefined,
+					data: {
+						query: query,
+						update: update,
+						options: options
+					}
+				});
+			}
 		}
 		return result;
 	}
@@ -118,9 +205,6 @@ class ModelsBaseDb extends EventEmitter {
 	}
 
 	remove(query) {
-		const beforeRemoveResult = {};
-		this.emit('beforeRemove', beforeRemoveResult, ...arguments);
-
 		const records = this.model.find(query).fetch();
 
 		const ids = [];
@@ -136,7 +220,15 @@ class ModelsBaseDb extends EventEmitter {
 		query = { _id: { $in: ids } };
 
 		const result = this.originals.remove(query);
-		this.emit('afterRemove', beforeRemoveResult, result, records, ...arguments);
+
+		for (const record of records) {
+			this.emit('change', {
+				action: 'remove',
+				id: record._id,
+				data: _.extend({}, record)
+			});
+		}
+
 		return result;
 	}
 
