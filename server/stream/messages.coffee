@@ -45,15 +45,17 @@ Meteor.startup ->
 	query =
 		collection: RocketChat.models.Messages.collectionName
 
-	MongoInternals.defaultRemoteCollectionDriver().mongo._oplogHandle.onOplogEntry query, (action) ->
-		if action.op.op is 'i'
-			publishMessage 'inserted', action.op.o
-			return
+	RocketChat.models.Messages._db.on 'change', ({action, id, data, oplog}) =>
+		switch action
+			when 'insert'
+				data._id = id;
+				publishMessage 'inserted', data
+				break;
 
-		if action.op.op is 'u'
-			publishMessage 'updated', RocketChat.models.Messages.findOne({_id: action.id})
-			return
+			when 'update:record'
+				publishMessage 'updated', data;
+				break;
 
-		# if action.op.op is 'd'
-		# 	publishMessage 'deleted', {_id: action.id}
-		# 	return
+			when 'update:diff'
+				publishMessage 'updated', RocketChat.models.Messages.findOne({_id: id})
+				break;

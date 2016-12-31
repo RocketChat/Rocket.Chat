@@ -1,4 +1,3 @@
-/* globals MongoInternals */
 /* eslint new-cap: 0 */
 
 import loki from 'lokijs';
@@ -424,7 +423,7 @@ class ModelsBaseCache extends EventEmitter {
 		}
 		console.log(String(data.length), 'records load from', this.collectionName);
 		RocketChat.statsTracker.timing('cache.load', RocketChat.statsTracker.now() - time, [`collection:${this.collectionName}`]);
-		// this.startOplog();
+
 		this.startSync();
 		this.loaded = true;
 		this.emit('afterload');
@@ -459,7 +458,7 @@ class ModelsBaseCache extends EventEmitter {
 			return;
 		}
 
-		this.model._db.on('change', ({action, id, data}) => {
+		this.model._db.on('change', ({action, id, data, oplog}) => {
 			switch (action) {
 				case 'insert':
 					data._id = id;
@@ -470,69 +469,19 @@ class ModelsBaseCache extends EventEmitter {
 					this.removeById(id);
 					break;
 
-				case 'update:db':
+				case 'update:record':
 					this.updateDiffById(id, data);
 					break;
 
-				case 'update:cache':
+				case 'update:diff':
+					this.updateDiffById(id, data);
+					break;
+
+				case 'update:query':
 					this.update(data.query, data.update, data.options);
 					break;
 			}
 		});
-	}
-
-	startOplog() {
-		const query = {
-			collection: this.collectionName
-		};
-
-		if (!MongoInternals.defaultRemoteCollectionDriver().mongo._oplogHandle || !MongoInternals.defaultRemoteCollectionDriver().mongo._oplogHandle.onOplogEntry) {
-			console.error('\nYour MongoDB is not with ReplicaSet enabled.\nPlease enable it.\nYou can see more information at:\n* https://docs.mongodb.com/v3.2/tutorial/convert-standalone-to-replica-set/ \n* https://github.com/RocketChat/Rocket.Chat/issues/5212\n');
-			throw new Meteor.Error('Your MongoDB is not with ReplicaSet enabled.');
-		}
-
-		MongoInternals.defaultRemoteCollectionDriver().mongo._oplogHandle.onOplogEntry(query, (record) => {
-			this.processOplogRecord(record);
-		});
-	}
-
-	processOplogRecord(action) {
-		if (action.op.op === 'i') {
-			this.insert(action.op.o);
-			return;
-		}
-
-		if (action.op.op === 'u') {
-			let diff = {};
-
-			if (!action.op.o.$set && !action.op.o.$unset) {
-				diff = action.op.o;
-			} else {
-				if (action.op.o.$set) {
-					for (let key in action.op.o.$set) {
-						if (action.op.o.$set.hasOwnProperty(key)) {
-							diff[key] = action.op.o.$set[key];
-						}
-					}
-				}
-
-				if (action.op.o.$unset) {
-					for (let key in action.op.o.$unset) {
-						if (action.op.o.$unset.hasOwnProperty(key)) {
-							diff[key] = undefined;
-						}
-					}
-				}
-			}
-
-			this.updateDiffById(action.id, diff);
-			return;
-		}
-
-		if (action.op.op === 'd') {
-			this.removeById(action.id);
-			return;
-		}
 	}
 
 	processQueryOptionsOnResult(result, options={}) {
