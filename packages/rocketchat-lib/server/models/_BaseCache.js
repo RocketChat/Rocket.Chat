@@ -458,7 +458,7 @@ class ModelsBaseCache extends EventEmitter {
 			return;
 		}
 
-		this.model._db.on('change', ({action, id, data, oplog}) => {
+		this.model._db.on('change', ({action, id, data/*, oplog*/}) => {
 			switch (action) {
 				case 'insert':
 					data._id = id;
