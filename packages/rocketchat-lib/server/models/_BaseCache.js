@@ -455,86 +455,28 @@ class ModelsBaseCache extends EventEmitter {
 	}
 
 	startSync() {
-		const db = this.model._db;
+		if (this.model._useCache === false) {
+			return;
+		}
 
-		// INSERT
-		db.on('afterInsert', (beforeInsertResult, _id, record) => {
-			record._id = _id;
-			this.insert(record);
-		});
+		this.model._db.on('change', ({action, id, data}) => {
+			switch (action) {
+				case 'insert':
+					data._id = id;
+					this.insert(data);
+					break;
 
-		// REMOVE
-		db.on('afterRemove', (beforeRemoveResult, result, records/*, query*/) => {
-			for (const record of records) {
-				console.log('afterRemove', this.collectionName, record._id);
-				this.removeById(record._id);
-			}
-		});
+				case 'remove':
+					this.removeById(id);
+					break;
 
-		// UPDATE
-		db.on('beforeUpdate', (response, query, update, options = {}) => {
-			if (this.defineSyncStrategy(query, update) === 'db') {
-				const findOptions = {fields: {_id: 1}};
-				let records = options.multi ? db.find(query, findOptions).fetch() : db.findOne(query, findOptions) || [];
-				if (!Array.isArray(records)) {
-					records = [records];
-				}
-				for (const key in query) {
-					if (query.hasOwnProperty(key)) {
-						delete query[key];
-					}
-				}
-				query._id = {
-					$in: records.map(item => item._id)
-				};
-				response.strategy = 'db';
-			}
-		});
+				case 'update:db':
+					this.updateDiffById(id, data);
+					break;
 
-		db.on('afterUpdate', (beforeUpdateResult, result, query, update, options = {}) => {
-			if (beforeUpdateResult.strategy === 'db') {
-				// Find only updated fields?
-				let records = options.multi ? db.find(query).fetch() : db.findOne(query) || [];
-				if (!Array.isArray(records)) {
-					records = [records];
-				}
-				for (const record of records) {
-					this.updateDiffById(record._id, record);
-				}
-			} else {
-				this.update(query, update, options);
-			}
-		});
-
-		db.on('beforeUpsert', (response, query, update, options = {}) => {
-			const findOptions = {fields: {_id: 1}};
-			let records = options.multi ? db.find(query, findOptions).fetch() : db.findOne(query, findOptions) || [];
-			if (!Array.isArray(records)) {
-				records = [records];
-			}
-
-			response.ids = records.map(item => item._id);
-		});
-
-		// Always go to DB to get update records
-		db.on('afterUpsert', (beforeUpsertResult, result, query, update, options = {}) => {
-			if (result.insertedId) {
-				this.insert(db.findOne({_id: result.insertedId}));
-				return;
-			}
-
-			const findQuery = {
-				_id: {
-					$in: beforeUpsertResult.ids
-				}
-			};
-
-			let records = options.multi ? db.find(findQuery).fetch() : db.findOne(findQuery) || [];
-			if (!Array.isArray(records)) {
-				records = [records];
-			}
-			for (const record of records) {
-				this.updateDiffById(record._id, record);
+				case 'update:cache':
+					this.update(data.query, data.update, data.options);
+					break;
 			}
 		});
 	}
