@@ -2246,6 +2246,7 @@ label.required::after {
 
 .flex-tab-main-content {
 	flex-grow: 1;
+	position: relative;
 }
 
 .room-container {
@@ -3033,7 +3034,7 @@ body:not(.is-cordova) {
 }
 
 .flex-tab-bar {
-	width: 40px;
+	min-width: 40px;
 	height: 100%;
 	z-index: 130;
 	will-change: transform;
@@ -3159,7 +3160,7 @@ body:not(.is-cordova) {
 	display: none;
 	top: 0;
 	bottom: 0;
-	width: @flex-tab-width;
+	min-width: @flex-tab-width;
 	z-index: 110;
 	overflow-x: visible;
 	.transition(transform .25s cubic-bezier(.5, 0, .1, 1));
