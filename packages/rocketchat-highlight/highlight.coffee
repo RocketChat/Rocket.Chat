@@ -50,7 +50,7 @@ class Highlight
 						message.tokens.push
 							highlight: true
 							token: token
-							text: "<pre><code class='hljs " + result.language + "'><span class='copyonly'>```<br></span>" + result.value + "<span class='copyonly'><br>```</span></code></pre>"
+							text: "<pre><code class='code-colors hljs " + result.language + "'><span class='copyonly'>```<br></span>" + result.value + "<span class='copyonly'><br>```</span></code></pre>"
 
 						msgParts[index] = token
 					else
