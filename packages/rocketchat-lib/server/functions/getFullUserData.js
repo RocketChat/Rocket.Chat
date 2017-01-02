@@ -19,7 +19,8 @@ RocketChat.getFullUserData = function({userId, filter, limit}) {
 			services: 1,
 			requirePasswordChange: 1,
 			requirePasswordChangeReason: 1,
-			roles: 1
+			roles: 1,
+			customFields: 1
 		});
 	} else if (limit !== -1) {
 		limit = 1;
