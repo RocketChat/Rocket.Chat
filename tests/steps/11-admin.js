@@ -348,8 +348,6 @@ describe('Admin Login', () => {
 
 				it('should show the new role button', () => {
 					admin.rolesNewRolesButton.isVisible().should.be.true;
-
-					admin.room
 				});
 			});
 		});
