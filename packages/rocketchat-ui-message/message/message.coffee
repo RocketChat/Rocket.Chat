@@ -32,8 +32,11 @@ Template.message.helpers
 			return 'temp'
 	body: ->
 		return Template.instance().body
-	system: ->
+	system: (returnClass) ->
 		if RocketChat.MessageTypes.isSystemMessage(this)
+			if returnClass
+				return 'color-info-font-color'
+
 			return 'system'
 	edited: ->
 		return Template.instance().wasEdited
