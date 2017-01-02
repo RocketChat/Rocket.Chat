@@ -99,6 +99,7 @@ RocketChat.settings.addGroup 'General', ->
 	@add 'Force_SSL', false, { type: 'boolean', public: true }
 	@add 'GoogleTagManager_id', '', { type: 'string', public: true }
 	@add 'Bugsnag_api_key', '', { type: 'string', public: false }
+	@add 'Force_Disable_OpLog_For_Cache', false, { type: 'boolean', public: false }
 	@add 'Restart', 'restart_server', { type: 'action', actionText: 'Restart_the_server' }
 
 	@section 'UTF8', ->
