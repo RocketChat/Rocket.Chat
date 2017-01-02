@@ -1756,14 +1756,14 @@ label.required::after {
 	top: 0;
 	bottom: 0;
 	left: @rooms-box-width;
-	right: 40px;
+	right: 0;
 	width: auto;
 	height: auto;
 	will-change: transform;
 	.transition(right .25s cubic-bezier(.5, 0, .1, 1));
 
-	&.flex-opened {
-		right: @flex-tab-width + 40px;
+	&.flex-opened .flex-tab {
+		display: block;
 	}
 
 	&.layout1 {
@@ -2237,11 +2237,25 @@ label.required::after {
 	}
 }
 
+.flex-tab-container {
+	display: flex;
+	flex-direction: row;
+	align-items: stretch;
+	height: 100%;
+}
+
+.flex-tab-main-content {
+	flex-grow: 1;
+}
+
+.room-container {
+	height: 100%;
+}
+
 // change to page-messages
 
 .messages-container {
-	position: absolute;
-	width: 100%;
+	position: relative;
 	height: 100%;
 	top: 0;
 	left: 0;
@@ -3019,11 +3033,8 @@ body:not(.is-cordova) {
 }
 
 .flex-tab-bar {
-	position: absolute;
 	width: 40px;
 	height: 100%;
-	top: 0;
-	right: 0;
 	z-index: 130;
 	will-change: transform;
 
@@ -3144,12 +3155,11 @@ body:not(.is-cordova) {
 // FLEX-TAB and FLEX-TAB views
 
 .flex-tab {
-	position: fixed;
+	position: relative;
+	display: none;
 	top: 0;
 	bottom: 0;
-	left: 100%;
-	width: 90%;
-	max-width: @flex-tab-width;
+	width: @flex-tab-width;
 	z-index: 110;
 	overflow-x: visible;
 	.transition(transform .25s cubic-bezier(.5, 0, .1, 1));
@@ -4366,10 +4376,9 @@ body:not(.is-cordova) {
 @media all and(max-width: 1100px) {
 	#rocket-chat {
 		.flex-opened {
-			right: 40px;
-
 			.flex-tab {
-				.transform(translateX(-100%));
+				position: absolute;
+				right: 40px;
 			}
 		}
 
@@ -4446,6 +4455,8 @@ body:not(.is-cordova) {
 }
 
 .dropzone {
+	height: 100%;
+
 	.dropzone-overlay {
 		display: none;
 	}
