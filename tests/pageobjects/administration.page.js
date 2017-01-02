@@ -7,6 +7,7 @@ class Administration extends Page {
 	get infoLink() { return browser.element('.flex-nav .content [href="/admin/info"]'); }
 	get roomsLink() { return browser.element('.flex-nav .content [href="/admin/rooms"]'); }
 	get usersLink() { return browser.element('.flex-nav .content [href="/admin/users"]'); }
+	get generalLink() { return browser.element('.flex-nav .content [href="/admin/General"]'); }
 	get permissionsLink() { return browser.element('.flex-nav .content [href="/admin/permissions"]'); }
 	get customScriptBtn() { return browser.element('.section:nth-of-type(6) .expand'); }
 	get customScriptLoggedOutTextArea() { return browser.element('.section:nth-of-type(6) .CodeMirror-scroll'); }
@@ -28,6 +29,7 @@ class Administration extends Page {
 	get roomsPrivateCheckbox() { return browser.element('label:nth-of-type(3) input[name="room-type"]'); }
 	get roomsGeneralChannel() { return browser.element('td=general'); }
 	get usersRocketCat() { return browser.element('td=Rocket.Cat'); }
+	get usersInternalAdmin() { return browser.element('td=rocketchat.internal.admin.test'); }
 	get usersFilter() { return browser.element('#users-filter'); }
 	get rolesNewRolesButton() { return browser.element('.button.new-role'); }
 	get rolesPermissionGrid() { return browser.element('.permission-grid'); }
@@ -41,7 +43,35 @@ class Administration extends Page {
 	get rolesAddBtn() { return browser.element('button.add'); }
 	get rolesRoomsSearchForm() { return browser.element('.search [name="room"]'); }
 	get emojiFilter() { return browser.element('#emoji-filter'); }
-	get emojiFilter() { return browser.element('#emoji-filter'); }
+
+	//settings
+	get generalButtonExpandIframe() { return browser.element('.button.expand'); }
+	get generalButtonExpandNotifications() { return browser.element('.button.expand:nth-of-type(2)'); }
+	get generalButtonExpandRest() { return browser.element('.button.expand:nth-of-type(3)'); }
+	get generalButtonExpandReporting() { return browser.element('.button.expand:nth-of-type(4)'); }
+	get generalButtonExpandStreamCast() { return browser.element('.button.expand:nth-of-type(5)'); }
+	get generalButtonExpandTranslations() { return browser.element('.button.expand:nth-of-type(6)'); }
+	get generalButtonExpandUTF8() { return browser.element('.button.expand:nth-of-type(7)'); }
+
+	get generalSiteUrl() { return browser.element('[name="Site_Url"]'); }
+	get generalSiteName() { return browser.element('[name="Site_Name"]'); }
+	get generalLanguage() { return browser.element('[name="Language"]'); }
+	get generalSelfSignedCertsTrue() { return browser.element('label:nth-of-type(1) [name="Allow_Invalid_SelfSigned_Certs"]'); }
+	get generalSelfSignedCertsFalse() { return browser.element('label:nth-of-type(2) [name="Allow_Invalid_SelfSigned_Certs"]'); }
+	get generalFavoriteRoomTrue() { return browser.element('label:nth-of-type(1) [name="Favorite_Rooms"]'); }
+	get generalFavoriteRoomFalse() { return browser.element('label:nth-of-type(2) [name="Favorite_Rooms"]'); }
+	get generalCdnPrefix() { return browser.element('[name="CDN_PREFIX"]'); }
+	get generalForceSSLTrue() { return browser.element('label:nth-of-type(1) [name="Force_SSL"]'); }
+	get generalForceSSLFalse() { return browser.element('label:nth-of-type(2) [name="Force_SSL"]'); }
+	get generalGoogleTagId() { return browser.element('[name="GoogleTagManager_id"]'); }
+	get generalBugsnagKey() { return browser.element('[name="Bugsnag_api_key"]'); }
+	get generalIframeSendTrue() { return browser.element('label:nth-of-type(1) [name="Iframe_Integration_send_enable"]'); }
+	get generalIframeSendFalse() { return browser.element('label:nth-of-type(2) [name="Iframe_Integration_send_enable"]'); }
+	get generalIframeSendTargetOrigin() { return browser.element('[name="Iframe_Integration_send_target_origin"]'); }
+	get generalIframeRecieveTrue() { return browser.element('label:nth-of-type(1) [name="Iframe_Integration_receive_enable"]'); }
+	get generalIframeRecieveFalse() { return browser.element('label:nth-of-type(2) [name="Iframe_Integration_receive_enable"]'); }
+	get generalIframeRecieveOrigin() { return browser.element('[name="Iframe_Integration_receive_origin"]'); }
+
 
 
 
