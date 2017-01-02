@@ -1,6 +1,6 @@
 <template name="adminUsers">
-	<section class="page-container page-list">
-		<header class="fixed-title">
+	<section class="page-container page-list content-background-color">
+		<header class="fixed-title content-background-color border-component-color">
 			{{> burger}}
 			<h2>
 				<span class="room-title">{{_ "Users"}}</span>
@@ -24,23 +24,23 @@
 					<table>
 						<thead>
 							<tr class="admin-table-row">
-								<th>&nbsp;</th>
-								<th width="34%">{{_ "Name"}}</th>
-								<th width="33%">{{_ "Username"}}</th>
-								<th width="33%">{{_ "Email"}}</th>
+								<th class="content-background-color border-component-color">&nbsp;</th>
+								<th class="content-background-color border-component-color" width="34%">{{_ "Name"}}</th>
+								<th class="content-background-color border-component-color" width="33%">{{_ "Username"}}</th>
+								<th class="content-background-color border-component-color" width="33%">{{_ "Email"}}</th>
 							</tr>
 						</thead>
 						<tbody>
 							{{#each users}}
 							<tr class="user-info row-link">
-								<td>
+								<td class="border-component-color">
 									<div class="user-image status-{{status}}">
 										{{> avatar username=username}}
 									</div>
 								</td>
-								<td>{{name}}</td>
-								<td>{{username}}</td>
-								<td>{{emailAddress}}</td>
+								<td class="border-component-color">{{name}}</td>
+								<td class="border-component-color">{{username}}</td>
+								<td class="border-component-color">{{emailAddress}}</td>
 							</tr>
 							{{/each}}
 						</tbody>

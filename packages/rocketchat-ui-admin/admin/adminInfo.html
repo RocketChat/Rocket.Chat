@@ -1,6 +1,6 @@
 <template name="adminInfo">
-	<section class="page-container page-list">
-		<header class="fixed-title">
+	<section class="page-container page-list content-background-color">
+		<header class="fixed-title content-background-color border-component-color">
 			{{> burger}}
 			<h2>
 				<span class="room-title">{{_ "Info"}}</span>
@@ -11,36 +11,36 @@
 				<h3>{{_ "Rocket.Chat"}}</h3>
 				<table class="statistics-table">
 					<tr class="admin-table-row">
-						<th>{{_ "Version"}}</th>
-						<td>{{statistics.version}}</td>
+						<th class="content-background-color border-component-color">{{_ "Version"}}</th>
+						<td class="border-component-color">{{statistics.version}}</td>
 					</tr>
 					<tr class="admin-table-row">
-						<th>{{_ "DB_Migration"}}</th>
-						<td>{{statistics.migration.version}}</td>
+						<th class="content-background-color border-component-color">{{_ "DB_Migration"}}</th>
+						<td class="border-component-color">{{statistics.migration.version}}</td>
 					</tr>
 					<tr class="admin-table-row">
-						<th>{{_ "DB_Migration_Date"}}</th>
-						<td>{{statistics.migration.lockedAt}}</td>
+						<th class="content-background-color border-component-color">{{_ "DB_Migration_Date"}}</th>
+						<td class="border-component-color">{{statistics.migration.lockedAt}}</td>
 					</tr>
 					<tr class="admin-table-row">
-						<th>{{_ "Installed_at"}}</th>
-						<td>{{statistics.installedAt}}</td>
+						<th class="content-background-color border-component-color">{{_ "Installed_at"}}</th>
+						<td class="border-component-color">{{statistics.installedAt}}</td>
 					</tr>
 					<tr class="admin-table-row">
-						<th>{{_ "Uptime"}}</th>
-						<td>{{humanReadableTime statistics.process.uptime}}</td>
+						<th class="content-background-color border-component-color">{{_ "Uptime"}}</th>
+						<td class="border-component-color">{{humanReadableTime statistics.process.uptime}}</td>
 					</tr>
 					<tr class="admin-table-row">
-						<th>{{_ "Deployment_ID"}}</th>
-						<td>{{statistics.uniqueId}}</td>
+						<th class="content-background-color border-component-color">{{_ "Deployment_ID"}}</th>
+						<td class="border-component-color">{{statistics.uniqueId}}</td>
 					</tr>
 					<tr class="admin-table-row">
-						<th>{{_ "PID"}}</th>
-						<td>{{statistics.process.pid}}</td>
+						<th class="content-background-color border-component-color">{{_ "PID"}}</th>
+						<td class="border-component-color">{{statistics.process.pid}}</td>
 					</tr>
 					<tr class="admin-table-row">
-						<th>{{_ "Running_Instances"}}</th>
-						<td>{{statistics.instanceCount}}</td>
+						<th class="content-background-color border-component-color">{{_ "Running_Instances"}}</th>
+						<td class="border-component-color">{{statistics.instanceCount}}</td>
 					</tr>
 				</table>
 			{{/if}}
@@ -48,28 +48,28 @@
 			<h3>{{_ "Commit"}}</h3>
 			<table class="statistics-table">
 				<tr class="admin-table-row">
-					<th>{{_ "Hash"}}</th>
-					<td>{{info.commit.hash}}</td>
+					<th class="content-background-color border-component-color">{{_ "Hash"}}</th>
+					<td class="border-component-color">{{info.commit.hash}}</td>
 				</tr>
 				<tr class="admin-table-row">
-					<th>{{_ "Date"}}</th>
-					<td>{{info.commit.date}}</td>
+					<th class="content-background-color border-component-color">{{_ "Date"}}</th>
+					<td class="border-component-color">{{info.commit.date}}</td>
 				</tr>
 				<tr class="admin-table-row">
-					<th>{{_ "Branch"}}</th>
-					<td>{{info.commit.branch}}</td>
+					<th class="content-background-color border-component-color">{{_ "Branch"}}</th>
+					<td class="border-component-color">{{info.commit.branch}}</td>
 				</tr>
 				<tr class="admin-table-row">
-					<th>{{_ "Tag"}}</th>
-					<td>{{info.commit.tag}}</td>
+					<th class="content-background-color border-component-color">{{_ "Tag"}}</th>
+					<td class="border-component-color">{{info.commit.tag}}</td>
 				</tr>
 				<tr class="admin-table-row">
-					<th>{{_ "Author"}}</th>
-					<td>{{info.commit.author}}</td>
+					<th class="content-background-color border-component-color">{{_ "Author"}}</th>
+					<td class="border-component-color">{{info.commit.author}}</td>
 				</tr>
 				<tr class="admin-table-row">
-					<th>{{_ "Subject"}}</th>
-					<td>{{info.commit.subject}}</td>
+					<th class="content-background-color border-component-color">{{_ "Subject"}}</th>
+					<td class="border-component-color">{{info.commit.subject}}</td>
 				</tr>
 			</table>
 
@@ -78,68 +78,68 @@
 					<h3>{{_ "Runtime_Environment"}}</h3>
 					<table class="statistics-table">
 						<tr class="admin-table-row">
-							<th>{{_ "OS_Type"}}</th>
-							<td>{{statistics.os.type}}</td>
+							<th class="content-background-color border-component-color">{{_ "OS_Type"}}</th>
+							<td class="border-component-color">{{statistics.os.type}}</td>
 						</tr>
 						<tr class="admin-table-row">
-							<th>{{_ "OS_Platform"}}</th>
-							<td>{{statistics.os.platform}}</td>
+							<th class="content-background-color border-component-color">{{_ "OS_Platform"}}</th>
+							<td class="border-component-color">{{statistics.os.platform}}</td>
 						</tr>
 						<tr class="admin-table-row">
-							<th>{{_ "OS_Arch"}}</th>
-							<td>{{statistics.os.arch}}</td>
+							<th class="content-background-color border-component-color">{{_ "OS_Arch"}}</th>
+							<td class="border-component-color">{{statistics.os.arch}}</td>
 						</tr>
 						<tr class="admin-table-row">
-							<th>{{_ "OS_Release"}}</th>
-							<td>{{statistics.os.release}}</td>
+							<th class="content-background-color border-component-color">{{_ "OS_Release"}}</th>
+							<td class="border-component-color">{{statistics.os.release}}</td>
 						</tr>
 						<tr class="admin-table-row">
-							<th>{{_ "Node_version"}}</th>
-							<td>{{statistics.process.nodeVersion}}</td>
+							<th class="content-background-color border-component-color">{{_ "Node_version"}}</th>
+							<td class="border-component-color">{{statistics.process.nodeVersion}}</td>
 						</tr>
 						<tr class="admin-table-row">
-							<th>{{_ "OS_Uptime"}}</th>
-							<td>{{humanReadableTime statistics.os.uptime}}</td>
+							<th class="content-background-color border-component-color">{{_ "OS_Uptime"}}</th>
+							<td class="border-component-color">{{humanReadableTime statistics.os.uptime}}</td>
 						</tr>
 						<tr class="admin-table-row">
-							<th>{{_ "OS_Loadavg"}}</th>
-							<td>{{numFormat statistics.os.loadavg.[0]}}, {{numFormat statistics.os.loadavg.[1]}}, {{numFormat statistics.os.loadavg.[2]}}</td>
+							<th class="content-background-color border-component-color">{{_ "OS_Loadavg"}}</th>
+							<td class="border-component-color">{{numFormat statistics.os.loadavg.[0]}}, {{numFormat statistics.os.loadavg.[1]}}, {{numFormat statistics.os.loadavg.[2]}}</td>
 						</tr>
 						<tr class="admin-table-row">
-							<th>{{_ "OS_Totalmem"}}</th>
-							<td>{{inGB statistics.os.totalmem}}</td>
+							<th class="content-background-color border-component-color">{{_ "OS_Totalmem"}}</th>
+							<td class="border-component-color">{{inGB statistics.os.totalmem}}</td>
 						</tr>
 						<tr class="admin-table-row">
-							<th>{{_ "OS_Freemem"}}</th>
-							<td>{{inGB statistics.os.freemem}}</td>
+							<th class="content-background-color border-component-color">{{_ "OS_Freemem"}}</th>
+							<td class="border-component-color">{{inGB statistics.os.freemem}}</td>
 						</tr>
 						<tr class="admin-table-row">
-							<th>{{_ "OS_Cpus"}}</th>
-							<td>{{statistics.os.cpus.length}}</td>
+							<th class="content-background-color border-component-color">{{_ "OS_Cpus"}}</th>
+							<td class="border-component-color">{{statistics.os.cpus.length}}</td>
 						</tr>
 					</table>
 
 					<h3>{{_ "Build_Environment"}}</h3>
 					<table class="statistics-table">
 						<tr class="admin-table-row">
-							<th>{{_ "OS_Platform"}}</th>
-							<td>{{build.platform}}</td>
+							<th class="content-background-color border-component-color">{{_ "OS_Platform"}}</th>
+							<td class="border-component-color">{{build.platform}}</td>
 						</tr>
 						<tr class="admin-table-row">
-							<th>{{_ "OS_Arch"}}</th>
-							<td>{{build.arch}}</td>
+							<th class="content-background-color border-component-color">{{_ "OS_Arch"}}</th>
+							<td class="border-component-color">{{build.arch}}</td>
 						</tr>
 						<tr class="admin-table-row">
-							<th>{{_ "OS_Release"}}</th>
-							<td>{{build.osRelease}}</td>
+							<th class="content-background-color border-component-color">{{_ "OS_Release"}}</th>
+							<td class="border-component-color">{{build.osRelease}}</td>
 						</tr>
 						<tr class="admin-table-row">
-							<th>{{_ "Node_version"}}</th>
-							<td>{{build.nodeVersion}}</td>
+							<th class="content-background-color border-component-color">{{_ "Node_version"}}</th>
+							<td class="border-component-color">{{build.nodeVersion}}</td>
 						</tr>
 						<tr class="admin-table-row">
-							<th>{{_ "Date"}}</th>
-							<td>{{formatDate build.date}}</td>
+							<th class="content-background-color border-component-color">{{_ "Date"}}</th>
+							<td class="border-component-color">{{formatDate build.date}}</td>
 						</tr>
 					</table>
 
@@ -147,48 +147,48 @@
 					<h3>{{_ "Usage"}}</h3>
 					<table class="statistics-table">
 						<tr class="admin-table-row">
-							<th>{{_ "Stats_Total_Users"}}</th>
-							<td>{{statistics.totalUsers}}</td>
+							<th class="content-background-color border-component-color">{{_ "Stats_Total_Users"}}</th>
+							<td class="border-component-color">{{statistics.totalUsers}}</td>
 						</tr>
 						<tr class="admin-table-row">
-							<th>{{_ "Stats_Active_Users"}}</th>
-							<td>{{statistics.activeUsers}}</td>
+							<th class="content-background-color border-component-color">{{_ "Stats_Active_Users"}}</th>
+							<td class="border-component-color">{{statistics.activeUsers}}</td>
 						</tr>
 						<tr class="admin-table-row">
-							<th>{{_ "Stats_Non_Active_Users"}}</th>
-							<td>{{statistics.nonActiveUsers}}</td>
+							<th class="content-background-color border-component-color">{{_ "Stats_Non_Active_Users"}}</th>
+							<td class="border-component-color">{{statistics.nonActiveUsers}}</td>
 						</tr>
 						<tr class="admin-table-row">
-							<th>{{_ "Stats_Online_Users"}}</th>
-							<td>{{statistics.onlineUsers}}</td>
+							<th class="content-background-color border-component-color">{{_ "Stats_Online_Users"}}</th>
+							<td class="border-component-color">{{statistics.onlineUsers}}</td>
 						</tr>
 						<tr class="admin-table-row">
-							<th>{{_ "Stats_Away_Users"}}</th>
-							<td>{{statistics.awayUsers}}</td>
+							<th class="content-background-color border-component-color">{{_ "Stats_Away_Users"}}</th>
+							<td class="border-component-color">{{statistics.awayUsers}}</td>
 						</tr>
 						<tr class="admin-table-row">
-							<th>{{_ "Stats_Offline_Users"}}</th>
-							<td>{{statistics.offlineUsers}}</td>
+							<th class="content-background-color border-component-color">{{_ "Stats_Offline_Users"}}</th>
+							<td class="border-component-color">{{statistics.offlineUsers}}</td>
 						</tr>
 						<tr class="admin-table-row">
-							<th>{{_ "Stats_Total_Rooms"}}</th>
-							<td>{{statistics.totalRooms}}</td>
+							<th class="content-background-color border-component-color">{{_ "Stats_Total_Rooms"}}</th>
+							<td class="border-component-color">{{statistics.totalRooms}}</td>
 						</tr>
 						<tr class="admin-table-row">
-							<th>{{_ "Stats_Total_Channels"}}</th>
-							<td>{{statistics.totalChannels}}</td>
+							<th class="content-background-color border-component-color">{{_ "Stats_Total_Channels"}}</th>
+							<td class="border-component-color">{{statistics.totalChannels}}</td>
 						</tr>
 						<tr class="admin-table-row">
-							<th>{{_ "Stats_Total_Private_Groups"}}</th>
-							<td>{{statistics.totalPrivateGroups}}</td>
+							<th class="content-background-color border-component-color">{{_ "Stats_Total_Private_Groups"}}</th>
+							<td class="border-component-color">{{statistics.totalPrivateGroups}}</td>
 						</tr>
 						<tr class="admin-table-row">
-							<th>{{_ "Stats_Total_Direct_Messages"}}</th>
-							<td>{{statistics.totalDirect}}</td>
+							<th class="content-background-color border-component-color">{{_ "Stats_Total_Direct_Messages"}}</th>
+							<td class="border-component-color">{{statistics.totalDirect}}</td>
 						</tr>
 						<tr class="admin-table-row">
-							<th>{{_ "Stats_Total_Messages"}}</th>
-							<td>{{statistics.totalMessages}}</td>
+							<th class="content-background-color border-component-color">{{_ "Stats_Total_Messages"}}</th>
+							<td class="border-component-color">{{statistics.totalMessages}}</td>
 						</tr>
 					</table>
 
