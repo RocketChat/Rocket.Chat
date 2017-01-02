@@ -1,5 +1,5 @@
 const options = {
-	fields: Object.keys({
+	fields: {
 		_id: 1,
 		name: 1,
 		t: 1,
@@ -22,13 +22,13 @@ const options = {
 		v: 1,
 		label: 1,
 		ro: 1
-	})
+	}
 };
 
 
 const roomMap = (record) => {
 	if (record._room) {
-		return _.pick(record._room, ...options.fields);
+		return _.pick(record._room, ...Object.keys(options.fields));
 	}
 	console.log('Empty Room for Subscription', record);
 	return {};
@@ -43,18 +43,14 @@ Meteor.methods({
 
 		this.unblock();
 
-		const data = RocketChat.models.Subscriptions.findByUserId(Meteor.userId()).fetch();
-
 		if (updatedAt instanceof Date) {
 			return {
-				update: data
-					.filter(record => { return record._room && record._room._updatedAt > updatedAt; })
-					.map(roomMap),
-				remove: RocketChat.models.Subscriptions.trashFindDeletedAfter(updatedAt, {'u._id': Meteor.userId()}, {fields: {_id: 1, _deletedAt: 1}}).fetch()
+				update: RocketChat.models.Rooms.findBySubscriptionUserIdUpdatedAfter(Meteor.userId(), updatedAt, options).fetch(),
+				remove: RocketChat.models.Rooms.trashFindDeletedAfter(updatedAt, {}, {fields: {_id: 1, _deletedAt: 1}}).fetch()
 			};
 		}
 
-		return data.map(roomMap);
+		return RocketChat.models.Rooms.findBySubscriptionUserId(Meteor.userId(), options).fetch();
 	},
 
 	getRoomByTypeAndName(type, name) {
