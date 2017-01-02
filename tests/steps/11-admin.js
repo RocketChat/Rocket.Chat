@@ -2,13 +2,14 @@
 /* eslint-disable func-names, prefer-arrow-callback */
 
 import sideNav from '../pageobjects/side-nav.page';
+import flexTab from '../pageobjects/flex-tab.page';
 import admin from '../pageobjects/administration.page';
 
 //test data imports
 import {checkIfUserIsAdmin} from '../data/checks';
 import {adminUsername, adminEmail, adminPassword} from '../data/user.js';
 
-describe.only('Admin Login', () => {
+describe('Admin Login', () => {
 	before(() => {
 		checkIfUserIsAdmin(adminUsername, adminEmail, adminPassword);
 		sideNav.getChannelFromList('general').waitForExist(5000);
@@ -239,6 +240,117 @@ describe.only('Admin Login', () => {
 						admin.usersRocketCat.isVisible().should.be.false;
 					});
 				});
+
+				describe('users flex tab ', () => {
+					describe('send invitation', () => {
+						before(() => {
+							flexTab.usersSendInvitationTab.waitForVisible(5000);
+							flexTab.usersSendInvitationTab.click();
+							flexTab.usersSendInvitationTextArea.waitForVisible(5000);
+						});
+
+						after(() => {
+							flexTab.usersSendInvitationTab.waitForVisible(5000);
+							flexTab.usersSendInvitationTab.click();
+							flexTab.usersSendInvitationTextArea.waitForVisible(5000, true);
+						});
+
+						it('should show the send invitation text area', () => {
+							flexTab.usersSendInvitationTextArea.isVisible().should.be.true;
+						});
+
+						it('should show the cancel button', () => {
+							flexTab.usersButtonCancel.isVisible().should.be.true;
+						});
+
+						it('should show the send button', () => {
+							flexTab.usersSendInvitationSend.isVisible().should.be.true;
+						});
+					});
+					describe('create user ', () => {
+						before(() => {
+							flexTab.usersAddUserTab.waitForVisible(5000);
+							flexTab.usersAddUserTab.click();
+							flexTab.usersAddUserName.waitForVisible(5000);
+						});
+
+						after(() => {
+							flexTab.usersAddUserTab.waitForVisible(5000);
+							flexTab.usersAddUserTab.click();
+							flexTab.usersAddUserName.waitForVisible(5000, true);
+						});
+
+						it('should show the name field', () => {
+							flexTab.usersAddUserName.isVisible().should.be.true;
+						});
+
+						it('should show the username field', () => {
+							flexTab.usersAddUserUsername.isVisible().should.be.true;
+						});
+
+						it('should show the email field', () => {
+							flexTab.usersAddUserEmail.isVisible().should.be.true;
+						});
+
+						it('should show the verified checkbox', () => {
+							flexTab.usersAddUserVerifiedCheckbox.isVisible().should.be.true;
+						});
+
+						it('should show the password field', () => {
+							flexTab.usersAddUserPassword.isVisible().should.be.true;
+						});
+
+						it('should show the random password button', () => {
+							flexTab.usersAddUserRandomPassword.isVisible().should.be.true;
+						});
+
+						it('should show the require password change button', () => {
+							flexTab.usersAddUserChangePasswordCheckbox.isVisible().should.be.true;
+						});
+
+						it('should show the role dropdown', () => {
+							flexTab.usersAddUserRole.isVisible().should.be.true;
+						});
+
+						it('should show the join default channel checkbox', () => {
+							flexTab.usersAddUserDefaultChannelCheckbox.isVisible().should.be.true;
+						});
+
+						it('should show the send welcome checkbox', () => {
+							flexTab.usersAddUserWelcomeEmailCheckbox.isVisible().should.be.true;
+						});
+
+						it('should show the save button', () => {
+							flexTab.usersButtonSave.isVisible().should.be.true;
+						});
+
+						it('should show the cancel button', () => {
+							flexTab.usersButtonCancel.isVisible().should.be.true;
+						});
+					});
+				});
+			});
+
+			describe('roles', () => {
+				before(() =>{
+					admin.permissionsLink.waitForVisible(5000);
+					admin.permissionsLink.click();
+					admin.rolesPermissionGrid.waitForVisible(5000);
+				});
+
+				after(() => {
+					admin.infoLink.click();
+				});
+
+				it('should show the permissions grid', () => {
+					admin.rolesPermissionGrid.isVisible().should.be.true;
+				});
+
+				it('should show the new role button', () => {
+					admin.rolesNewRolesButton.isVisible().should.be.true;
+
+					admin.room
+				});
 			});
 		});
 	});
@@ -251,6 +363,8 @@ describe.only('Admin Login', () => {
 	get layoutLink() { return browser.element('.flex-nav .content [href="/admin/Layout"]'); }
 	get infoLink() { return browser.element('.flex-nav .content [href="/admin/info"]'); }
 	get roomsLink() { return browser.element('.flex-nav .content [href="/admin/rooms"]'); }
+	get usersLink() { return browser.element('.flex-nav .content [href="/admin/users"]'); }
+	get permissionsLink() { return browser.element('.flex-nav .content [href="/admin/permissions"]'); }
 	get customScriptBtn() { return browser.element('.section:nth-of-type(6) .expand'); }
 	get customScriptLoggedOutTextArea() { return browser.element('.section:nth-of-type(6) .CodeMirror-scroll'); }
 	get customScriptLoggedInTextArea() { return browser.element('.CodeMirror.cm-s-default:nth-of-type(2)'); }
@@ -264,14 +378,27 @@ describe.only('Admin Login', () => {
 	get infoBuildTable() { return browser.element('.content .statistics-table:nth-of-type(4)'); }
 	get infoUsageTableTitle() { return browser.element('.content h3:nth-of-type(5)'); }
 	get infoUsageTable() { return browser.element('.content .statistics-table:nth-of-type(5)'); }
-	get roomsSearchForm() { return browser.element('.content .search.form'); }
+	get roomsSearchForm() { return browser.element('.content .search'); }
 	get roomsFilter() { return browser.element('#rooms-filter'); }
-	get roomsChannelsCheckbox() { return browser.element('input[name="room-type"]')[0]; }
-	get roomsDirectCheckbox() { return browser.element('input[name="room-type"]')[1]; }
-	get roomsChannelsCheckbox() { return browser.element('input[name="room-type"]'[2]); }
-	get roomsGeneralChannel() { return browser.getText('td=general'); }
-	get usersRocketCat() { return browser.getText('td=Rocket.Cat'); }
+	get roomsChannelsCheckbox() { return browser.element('label:nth-of-type(1) input[name="room-type"]'); }
+	get roomsDirectCheckbox() { return browser.element('label:nth-of-type(2) input[name="room-type"]'); }
+	get roomsPrivateCheckbox() { return browser.element('label:nth-of-type(3) input[name="room-type"]'); }
+	get roomsGeneralChannel() { return browser.element('td=general'); }
+	get usersRocketCat() { return browser.element('td=Rocket.Cat'); }
 	get usersFilter() { return browser.element('#users-filter'); }
+	get rolesNewRolesButton() { return browser.element('.button.new-role'); }
+	get rolesPermissionGrid() { return browser.element('.permission-grid'); }
+	get rolesAdmin() { return browser.element('[title="Admin"]'); }
+	get rolesModerator() { return browser.element('[title="Moderator"]'); }
+	get rolesOwner() { return browser.element('[title="Owner"]'); }
+	get rolesReturnLink() { return browser.element('[href="/admin/permissions"]'); }
+	get rolesNewRoleName() { return browser.element('[name="name"]'); }
+	get rolesNewRoleDesc() { return browser.element('[name="description"]'); }
+	get rolesNewRoleScope() { return browser.element('[name="scope"]'); }
+	get rolesAddBtn() { return browser.element('button.add'); }
+	get rolesRoomsSearchForm() { return browser.element('.search [name="room"]'); }
+	get emojiFilter() { return browser.element('#emoji-filter'); }
+	get emojiFilter() { return browser.element('#emoji-filter'); }
 
 
 }

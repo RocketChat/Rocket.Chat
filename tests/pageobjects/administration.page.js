@@ -7,6 +7,7 @@ class Administration extends Page {
 	get infoLink() { return browser.element('.flex-nav .content [href="/admin/info"]'); }
 	get roomsLink() { return browser.element('.flex-nav .content [href="/admin/rooms"]'); }
 	get usersLink() { return browser.element('.flex-nav .content [href="/admin/users"]'); }
+	get permissionsLink() { return browser.element('.flex-nav .content [href="/admin/permissions"]'); }
 	get customScriptBtn() { return browser.element('.section:nth-of-type(6) .expand'); }
 	get customScriptLoggedOutTextArea() { return browser.element('.section:nth-of-type(6) .CodeMirror-scroll'); }
 	get customScriptLoggedInTextArea() { return browser.element('.CodeMirror.cm-s-default:nth-of-type(2)'); }
