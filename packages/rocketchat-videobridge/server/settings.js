@@ -17,6 +17,16 @@ Meteor.startup(function() {
 			public: true
 		});
 
+		this.add('Jitsi_URL_Room_Prefix', 'RocketChat', {
+			type: 'string',
+			enableQuery: {
+				_id: 'Jitsi_Enabled',
+				value: true
+			},
+			i18nLabel: 'URL_room_prefix',
+			public: true
+		});
+
 		this.add('Jitsi_SSL', true, {
 			type: 'boolean',
 			enableQuery: {
