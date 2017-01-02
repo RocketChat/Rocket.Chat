@@ -17,7 +17,6 @@ FlowRouter.route('/admin/rooms', {
 FlowRouter.route('/admin/info', {
 	name: 'admin-info',
 	action() {
-		RocketChat.TabBar.showGroup('adminInfo');
 		BlazeLayout.render('main', {center: 'adminInfo'});
 	}
 });
