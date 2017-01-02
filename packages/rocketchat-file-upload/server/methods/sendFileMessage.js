@@ -1,12 +1,4 @@
 Meteor.methods({
-	/*
-		msgData = {
-			avatar: 'url',
-			emoji: ':ghost:',
-			alias: 'name',
-			msg: 'text'
-		}
-	*/
 	'sendFileMessage'(roomId, store, file, msgData = {}) {
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'sendFileMessage' });
@@ -17,6 +9,13 @@ Meteor.methods({
 		if (!room) {
 			return false;
 		}
+
+		check(msgData, {
+			avatar: Match.Optional(String),
+			emoji: Match.Optional(String),
+			alias: Match.Optional(String),
+			msg: Match.Optional(String)
+		});
 
 		RocketChat.models.Uploads.updateFileComplete(file._id, Meteor.userId(), _.omit(file, '_id'));
 
@@ -45,7 +44,7 @@ Meteor.methods({
 			attachment.video_size = file.size;
 		}
 
-		const msg = {
+		const msg = Object.assign({ msg: '' }, msgData, {
 			_id: Random.id(),
 			rid: roomId,
 			file: {
@@ -53,8 +52,8 @@ Meteor.methods({
 			},
 			groupable: false,
 			attachments: [attachment]
-		};
+		});
 
-		return Meteor.call('sendMessage', Object.assign({ msg: '' }, msgData, msg));
+		return Meteor.call('sendMessage', msg);
 	}
 });
