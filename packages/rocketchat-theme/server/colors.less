@@ -34,12 +34,24 @@
 /** ----------------------------------------------------------------------------
  * Document components
  */
-html {
-	.custom-scroll(@transparent-dark, @custom-scrollbar-color, 0);
-}
 
 * {
-	.custom-scroll(@transparent-dark, @custom-scrollbar-color);
+	-webkit-overflow-scrolling: touch;
+
+	&::-webkit-scrollbar {
+		height: 8px;
+		width: 8px;
+		background: @transparent-dark;
+	}
+
+	&::-webkit-scrollbar-thumb {
+		background-color: @custom-scrollbar-color;
+		-webkit-border-radius: 50px;
+	}
+
+	&::-webkit-scrollbar-corner {
+		background-color: @transparent-dark;
+	}
 }
 
 body {
