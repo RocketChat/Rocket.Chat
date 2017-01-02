@@ -15,7 +15,7 @@
 			{{/unless}}
 		</header>
 
-		<div class="content">
+		<div class="content background-transparent-dark">
 			{{#unless hasPermission 'view-privileged-setting'}}
 				<p>{{_ "You_are_not_authorized_to_view_this_page"}}</p>
 			{{else}}
@@ -166,7 +166,7 @@
 													</div>
 												{{else}}
 													<div class="settings-file-preview">
-														<div class="preview no-file"><i class="icon-upload"></i></div>
+														<div class="preview no-file background-transparent-light"><i class="icon-upload"></i></div>
 														<div class="action">
 															<div class="button primary">{{_ 'Select_file'}}
 																<input type="file" accept="{{assetAccept fileConstraints}}" />

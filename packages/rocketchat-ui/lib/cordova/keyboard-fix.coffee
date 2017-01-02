@@ -8,7 +8,6 @@ if Meteor.isCordova
 		if device?.platform.toLowerCase() isnt 'android'
 			if Meteor.userId()?
 				$('.main-content').css 'height', window.innerHeight
-				$('.mobile-message-menu').css 'height', window.innerHeight
 				$('.sweet-alert').css 'transform', "translateY(-#{(document.height - window.innerHeight)/2}px)"
 				$('.sweet-alert').css '-webkit-transform', "translateY(-#{(document.height - window.innerHeight)/2}px)"
 			else
@@ -19,7 +18,6 @@ if Meteor.isCordova
 		if device?.platform.toLowerCase() isnt 'android'
 			if Meteor.userId()?
 				$('.main-content').css 'height', window.innerHeight
-				$('.mobile-message-menu').css 'height', window.innerHeight
 				$('.sweet-alert').css 'transform', ''
 				$('.sweet-alert').css '-webkit-transform', ''
 			else
