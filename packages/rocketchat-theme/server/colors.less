@@ -49,8 +49,46 @@
 @transparent-lighter: rgba(255, 255, 255, 0.3);
 @transparent-lightest: rgba(255, 255, 255, 0.6);
 
+// Backgrounds
+
+.background-transparent-darkest {
+	background-color: @transparent-darkest;
+}
+
+.background-transparent-darker {
+	background-color: @transparent-darker;
+}
+
+.background-transparent-darker-hover:hover {
+	background-color: @transparent-darker;
+}
+
+.background-transparent-darker-before::before {
+	background-color: @transparent-darker;
+}
+
+.background-transparent-dark {
+	background-color: @transparent-dark;
+}
+
+.background-transparent-dark-hover:hover {
+	background-color: @transparent-dark;
+}
+
+.border-transparent-dark {
+	border-color: @transparent-dark;
+}
+
+.background-transparent-light {
+	background-color: @transparent-light;
+}
+
+.background-transparent-lightest {
+	background-color: @transparent-lightest;
+}
+
 /** ----------------------------------------------------------------------------
- * Document components
+ * Special components
  */
 
 * {
@@ -72,9 +110,32 @@
 	}
 }
 
-blockquote::before {
-	background-color: @transparent-darker;
+.admin-table-row {
+	background-color: @transparent-light;
+
+	&:nth-of-type(even) {
+		background-color: @transparent-lightest;
+	}
 }
+
+.side-nav {
+	i {
+		color: @transparent-lighter;
+	}
+
+	.opt i:hover {
+		color: @transparent-lightest;
+	}
+}
+
+.account-box .status-offline .thumb::after,
+.account-box .status.offline::after {
+	background-color: @transparent-lighter;
+}
+
+/** ----------------------------------------------------------------------------
+ * Document components
+ */
 
 .filter-item {
 	border-color: @secondary-background-color;
@@ -118,14 +179,6 @@ blockquote::before {
 
 	th {
 		background-color: @content-background-color;
-	}
-
-	tr {
-		background-color: @transparent-light;
-
-		&:nth-of-type(even) {
-			background-color: @transparent-lightest;
-		}
 	}
 
 	tr:hover td {
@@ -276,10 +329,6 @@ a:hover {
  * Admin and settings styles
  */
 .page-settings {
-	.content {
-		background-color: @transparent-dark;
-	}
-
 	.section {
 		background-color: @content-background-color;
 	}
@@ -312,7 +361,6 @@ a:hover {
 }
 
 .settings-file-preview .preview.no-file {
-	background-color: @transparent-light;
 	color: @secondary-font-color;
 }
 
@@ -330,7 +378,6 @@ a:hover {
 	pre {
 		color: @error-color;
 		border-color: @error-border;
-		background-color: @transparent-lightest;
 	}
 }
 
@@ -362,8 +409,6 @@ a:hover {
  * Asides (external to main application views)
  */
 .spotlight {
-	background-color: @transparent-darker;
-
 	> .spotlight-input {
 		background-color: @secondary-background-color;
 		color: @secondary-font-color;
@@ -372,10 +417,6 @@ a:hover {
 			color: @secondary-font-color;
 		}
 	}
-}
-
-.mobile-message-menu {
-	background-color: @transparent-dark;
 }
 
 .full-page,
@@ -409,12 +450,7 @@ a:hover {
 }
 
 .dropzone.over .dropzone-overlay {
-	background-color: @transparent-darkest;
 	color: @content-background-color;
-
-	> div {
-		background-color: @transparent-darkest;
-	}
 }
 
 /** ----------------------------------------------------------------------------
@@ -584,10 +620,6 @@ a:hover {
 		color: @info-font-color;
 	}
 
-	&:hover {
-		background-color: @transparent-dark;
-	}
-
 	.toggle-options {
 		color: @secondary-font-color;
 	}
@@ -664,10 +696,6 @@ a:hover {
 	color: @tertiary-font-color;
 	background-color: @primary-background-color;
 
-	* {
-		border-color: @transparent-darker;
-	}
-
 	a,
 	.info {
 		.linkColors(@tertiary-font-color, @tertiary-font-color);
@@ -690,27 +718,12 @@ a:hover {
 		background-color: lighten(@primary-background-color, 2.5%);
 	}
 
-	h3:hover,
-	li:hover,
-	.more:hover,
-	.selected-users li {
-		background-color: @transparent-darker;
-	}
-
 	li.active {
 		background-color: @transparent-light !important;
 	}
 
-	i {
-		color: @transparent-lighter;
-	}
-
 	i.status-offline {
 		color: @transparent-lighter !important;
-	}
-
-	.opt i:hover {
-		color: @transparent-lightest;
 	}
 
 	.has-alert .name {
@@ -819,14 +832,7 @@ a:hover {
 	.main-video,
 	.state-overlay::before,
 	.videos .video-item {
-		background-color: @transparent-darker;
 		color: white;
-	}
-
-	.main-video > div,
-	.video-muted-overlay,
-	.videos .video-item > div {
-		background-color: @transparent-darker;
 	}
 
 	video {
@@ -885,15 +891,6 @@ i.status-offline {
 .user-image.status-offline .avatar::after {
 	background-color: @status-offline;
 	border-color: darken(@status-offline, 10%);
-}
-
-.account-box .status-offline .thumb::after,
-.account-box .status.offline::after {
-	background-color: @transparent-lighter;
-}
-
-.popup-user-status {
-	border-color: @transparent-dark;
 }
 
 .popup-user-status-system {

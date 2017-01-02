@@ -1,6 +1,6 @@
 <template name="oembedSpotifyWidget">
 	{{#if parsedUrl}}
-		<blockquote>
+		<blockquote class="background-transparent-darker-before">
 			<a href="https://www.spotify.com" style="color: #9e9ea6">Spotify</a><br/>
 			{{#if match meta.ogAudio "spotify:artist:\\S+"}}
 				<a href="{{url}}">{{{meta.ogTitle}}}</a>

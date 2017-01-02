@@ -1,5 +1,5 @@
 <template name="privateGroups">
-	<h3 class="add-room {{isActive}}">
+	<h3 class="add-room background-transparent-darker-hover {{isActive}}">
 		{{_ "Private_Groups"}} <span class="room-count-small">({{rooms.count}})</span>
 		{{#if canCreate}}
 			<i class="icon-plus"></i>
@@ -13,6 +13,6 @@
 		{{/each}}
 	</ul>
 	{{#if $gt total totalOpen}}
-		<button class="more more-groups">{{_ "More_groups"}}...</button>
+		<button class="more more-groups background-transparent-darker-hover">{{_ "More_groups"}}...</button>
 	{{/if}}
 </template>
