@@ -106,7 +106,6 @@ describe('Admin Login', () => {
 			describe('filter text', () => {
 				before(() => {
 					admin.roomsFilter.click();
-					browser.pause(5000);
 					admin.roomsFilter.setValue('general');
 				});
 
@@ -348,6 +347,54 @@ describe('Admin Login', () => {
 
 				it('should show the new role button', () => {
 					admin.rolesNewRolesButton.isVisible().should.be.true;
+				});
+
+				it('should show the admin link', () => {
+					admin.rolesAdmin.isVisible().should.be.true;
+				});
+
+				describe('new role', () => {
+					before(() => {
+						admin.rolesNewRolesButton.waitForVisible(5000);
+						admin.rolesNewRolesButton.click();
+						admin.rolesReturnLink.waitForVisible(5000);
+					});
+
+					after(() => {
+						admin.rolesReturnLink.click();
+					});
+
+					it('should show the return to permissions', () => {
+						admin.rolesReturnLink.isVisible().should.be.true;
+					});
+
+					it('should show the new role name field', () => {
+						admin.rolesNewRoleName.isVisible().should.be.true;
+					});
+
+					it('should show the new role description field', () => {
+						admin.rolesNewRoleDesc.isVisible().should.be.true;
+					});
+
+					it('should show the new role scope', () => {
+						admin.rolesNewRoleScope.isVisible().should.be.true;
+					});
+				});
+
+				describe('admin role', () => {
+					before(() => {
+						admin.rolesAdmin.waitForVisible(5000);
+						admin.rolesAdmin.click();
+						admin.usersInternalAdmin.waitForVisible(5000);
+					});
+
+					after(() => {
+						admin.rolesReturnLink.click();
+					});
+
+					it('should show internal admin', () => {
+						admin.usersInternalAdmin.isVisible().should.be.true;
+					});
 				});
 			});
 		});
