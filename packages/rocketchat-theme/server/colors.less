@@ -1,21 +1,3 @@
-.global-font-family {
-	font-family: @body-font-family;
-}
-
-.color-primary-font-color {
-	color: @primary-font-color;
-}
-
-.border-component-color {
-	border-color: @component-color;
-}
-
-.code-colors {
-	background-color: @code-background-color;
-	border-color: @code-border-color;
-	color: @code-font-color;
-}
-
 /** ----------------------------------------------------------------------------
  * Derivative colours (fixed variants of inherited variables)
  */
@@ -37,6 +19,36 @@
 @code-background-color: #f8f8f8;
 @code-border-color: #cccccc;
 @code-font-color: #333333;
+
+/** ----------------------------------------------------------------------------
+ * Transparency variables
+ */
+
+.global-font-family {
+	font-family: @body-font-family;
+}
+
+.color-primary-font-color {
+	color: @primary-font-color;
+}
+
+.border-component-color {
+	border-color: @component-color;
+}
+
+.code-colors {
+	background-color: @code-background-color;
+	border-color: @code-border-color;
+	color: @code-font-color;
+}
+
+.color-info-font-color {
+	color: @info-font-color;
+}
+
+.background-info-font-color {
+	background-color: @info-font-color;
+}
 
 /** ----------------------------------------------------------------------------
  * Transparency variables
@@ -133,10 +145,6 @@
 	background-color: @transparent-lighter;
 }
 
-/** ----------------------------------------------------------------------------
- * Document components
- */
-
 .filter-item {
 	border-color: @secondary-background-color;
 
@@ -149,9 +157,9 @@
 	}
 }
 
-.info-font-color {
-	color: @info-font-color;
-}
+/** ----------------------------------------------------------------------------
+ * Document components
+ */
 
 .secondary-background-color {
 	background-color: @secondary-background-color;
@@ -578,10 +586,6 @@ a:hover {
 }
 
 .messages-box {
-	.start {
-		color: @info-font-color;
-	}
-
 	.editing .body,
 	textarea.editing {
 		background-color: lighten(@pending-color, 40%);
@@ -616,10 +620,6 @@ a:hover {
 		color: @primary-font-color;
 	}
 
-	&.system .body {
-		color: @info-font-color;
-	}
-
 	.toggle-options {
 		color: @secondary-font-color;
 	}
@@ -642,11 +642,9 @@ a:hover {
 		background-color: @content-background-color;
 	}
 
-	&.new-day::after,
 	.info,
 	.user-view,
 	.message-alias {
-		color: @info-font-color;
 		border-color: @component-color;
 	}
 
@@ -656,7 +654,6 @@ a:hover {
 
 	.is-bot,
 	.role-tag {
-		background-color: @info-font-color;
 		color: contrast(@info-font-color);
 	}
 
@@ -680,12 +677,6 @@ a:hover {
 
 	.highlight-text {
 		background-color: @selection-background;
-	}
-
-	.attachment {
-		.attachment-block-border {
-			background-color: @info-font-color;
-		}
 	}
 }
 

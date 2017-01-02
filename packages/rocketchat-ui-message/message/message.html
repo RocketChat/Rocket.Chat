@@ -25,16 +25,16 @@
 			{{/if}}
 		{{/if}}
 		{{#if alias}}
-			<button type="button" class="user user-card-message" data-username="{{u.username}}" tabindex="1">{{alias}} <span class="message-alias">@{{u.username}}</span></button>
+			<button type="button" class="user user-card-message" data-username="{{u.username}}" tabindex="1">{{alias}} <span class="message-alias color-info-font-color">@{{u.username}}</span></button>
 		{{else}}
 			<button type="button" class="user user-card-message" data-username="{{u.username}}" tabindex="1">{{u.username}}</button>
 		{{/if}}
-		<span class="info">
+		<span class="info color-info-font-color">
 		{{#each roleTags}}
-			<span class="role-tag" data-role="{{description}}">{{description}}</span>
+			<span class="role-tag background-info-font-color" data-role="{{description}}">{{description}}</span>
 		{{/each}}
 		{{#if isBot}}
-			<span class="is-bot">BOT</span>
+			<span class="is-bot background-info-font-color">BOT</span>
 		{{/if}}
 		<span class="time" title='{{date}} {{time}}'>{{time}}</span>
 		{{#if edited}}
@@ -50,7 +50,7 @@
 				<i class="icon-cog message-cog" aria-label="{{_ "Actions"}}"></i>
 			</div>
 		</span>
-		<div class="body" dir="auto">
+		<div class="body {{system true}}" dir="auto">
 			{{{body}}}
 			{{#if hasOembed}}
 				{{#each urls}}
