@@ -5,7 +5,8 @@
 				{{_ "Drop_to_upload_file"}}
 			</div>
 		</div>
-		<section class="messages-container {{adminClass}}" id="{{windowId}}" aria-label="{{_ "Channel"}}">
+		<div class="flex-tab-container">
+		<section class="messages-container flex-tab-main-content {{adminClass}}" id="{{windowId}}" aria-label="{{_ "Channel"}}">
 			{{#unless embeddedVersion}}
 			<header class="fixed-title">
 				{{> burger}}
@@ -109,5 +110,9 @@
 		<section class="flex-tab">
 			{{> Template.dynamic template=flexTemplate data=flexData}}
 		</section>
+		<div class="flex-tab-bar" role="toolbar">
+			{{> flexTabBar}}
+		</div>
+		</div>
 	</div>
 </template>
