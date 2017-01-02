@@ -1,6 +1,6 @@
 <template name="adminEmoji">
-	<section class="page-container page-list">
-		<header class="fixed-title">
+	<section class="page-container page-list content-background-color">
+		<header class="fixed-title content-background-color border-component-color">
 			{{> burger}}
 			<h2>
 				<span class="room-title">{{_ "Custom_Emoji"}}</span>
@@ -24,21 +24,21 @@
 					<table>
 						<thead>
 							<tr class="admin-table-row">
-								<th>&nbsp;</th>
-								<th width="51%">{{_ "Name"}}</th>
-								<th width="49%">{{_ "Aliases"}}</th>
+								<th class="content-background-color border-component-color">&nbsp;</th>
+								<th class="content-background-color border-component-color" width="51%">{{_ "Name"}}</th>
+								<th class="content-background-color border-component-color" width="49%">{{_ "Aliases"}}</th>
 							</tr>
 						</thead>
 						<tbody>
 							{{#each customemoji}}
 							<tr class="emoji-info row-link admin-table-row">
-								<td>
+								<td class="border-component-color">
 									<div class="emojiAdminPreview-image">
 										{{> emojiPreview name=name extension=extension}}
 									</div>
 								</td>
-								<td>{{name}}</td>
-								<td>{{aliases}}</td>
+								<td class="border-component-color">{{name}}</td>
+								<td class="border-component-color">{{aliases}}</td>
 							</tr>
 							{{/each}}
 						</tbody>
