@@ -958,7 +958,7 @@
   "Should_exists_a_user_with_this_username": "המשתמש חייב להיות קיים.",
   "Show_all": "הצג הכול",
   "Show_more": "הראה עוד",
-  "Show_only_online": "הצג רק באינטרנט",
+  "Show_only_online": "הצג רק מחוברים",
   "Show_preregistration_form": "צג טופס הרשמה מראש",
   "Showing_archived_results": "<p style=\";text-align:right;direction:rtl\"> מציג תוצאות <b>בארכיון %s</b> </p>",
   "Showing_online_users": "מציג <b>__total_showing__</b> מתוך __total__ משתמשים",
