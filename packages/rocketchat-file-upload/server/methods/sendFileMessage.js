@@ -14,6 +14,7 @@ Meteor.methods({
 			avatar: Match.Optional(String),
 			emoji: Match.Optional(String),
 			alias: Match.Optional(String),
+			groupable: Match.Optional(Boolean),
 			msg: Match.Optional(String)
 		});
 
@@ -44,15 +45,16 @@ Meteor.methods({
 			attachment.video_size = file.size;
 		}
 
-		const msg = Object.assign({ msg: '' }, msgData, {
+		const msg = Object.assign({
 			_id: Random.id(),
 			rid: roomId,
+			msg: '',
 			file: {
 				_id: file._id
 			},
 			groupable: false,
 			attachments: [attachment]
-		});
+		}, msgData);
 
 		return Meteor.call('sendMessage', msg);
 	}
