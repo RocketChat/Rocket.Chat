@@ -106,18 +106,31 @@ class ModelsBaseDb extends EventEmitter {
 			return 'db';
 		}
 
-		const dbModifiers = [
-			'$currentDate',
-			'$bit',
-			'$pull',
-			'$pushAll',
-			'$push',
-			'$setOnInsert'
+		// const dbModifiers = [
+		// 	'$currentDate',
+		// 	'$bit',
+		// 	'$pull',
+		// 	'$pushAll',
+		// 	'$push',
+		// 	'$setOnInsert'
+		// ];
+
+		const cacheAllowedModifiers = [
+			'$set',
+			'$unset',
+			'$min',
+			'$max',
+			'$inc',
+			'$mul',
+			'$rename',
+			'$pullAll',
+			'$pop',
+			'$addToSet'
 		];
 
-		const modifierKeys = Object.keys(modifier);
+		const notAllowedModifiers = Object.keys(modifier).filter(i => i.startsWith('$') && cacheAllowedModifiers.includes(i) === false);
 
-		if (_.intersection(modifierKeys, dbModifiers).length > 0) {
+		if (notAllowedModifiers.length > 0) {
 			return 'db';
 		}
 
