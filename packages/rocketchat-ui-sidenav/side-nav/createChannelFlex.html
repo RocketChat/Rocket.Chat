@@ -20,7 +20,7 @@
 				{{> inputAutocomplete settings=autocompleteSettings id="channel-members" class="search" placeholder=(_ "Search_by_username") autocomplete="off"}}
 				<ul class="selected-users">
 					{{#each selectedUsers}}
-						<li>{{.}} <i class="icon-cancel remove-room-member"></i></li>
+						<li class="background-transparent-darker">{{.}} <i class="icon-cancel remove-room-member"></i></li>
 					{{/each}}
 				</ul>
 			</div>

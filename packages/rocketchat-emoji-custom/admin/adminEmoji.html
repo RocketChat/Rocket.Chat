@@ -23,7 +23,7 @@
 				<div class="list">
 					<table>
 						<thead>
-							<tr>
+							<tr class="admin-table-row">
 								<th>&nbsp;</th>
 								<th width="51%">{{_ "Name"}}</th>
 								<th width="49%">{{_ "Aliases"}}</th>
@@ -31,7 +31,7 @@
 						</thead>
 						<tbody>
 							{{#each customemoji}}
-							<tr class="emoji-info row-link">
+							<tr class="emoji-info row-link admin-table-row">
 								<td>
 									<div class="emojiAdminPreview-image">
 										{{> emojiPreview name=name extension=extension}}
