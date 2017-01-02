@@ -29,7 +29,7 @@ class ModelsBaseDb extends EventEmitter {
 
 		this.wrapModel();
 
-		this.isOplogAvailable = MongoInternals.defaultRemoteCollectionDriver().mongo._oplogHandle && !!MongoInternals.defaultRemoteCollectionDriver().mongo._oplogHandle.onOplogEntry;
+		this.isOplogAvailable = MongoInternals.defaultRemoteCollectionDriver().mongo._oplogHandle && !!MongoInternals.defaultRemoteCollectionDriver().mongo._oplogHandle.onOplogEntry && RocketChat.settings.get('Force_Disable_OpLog_For_Cache') === false;
 
 		// When someone start listening for changes we start oplog if available
 		this.once('newListener', (event/*, listener*/) => {
@@ -130,6 +130,10 @@ class ModelsBaseDb extends EventEmitter {
 	}
 
 	processOplogRecord(action) {
+		if (this.isOplogAvailable === false) {
+			return;
+		}
+
 		if (action.op.op === 'i') {
 			this.emit('change', {
 				action: 'insert',
