@@ -10,6 +10,12 @@
 	border-color: @component-color;
 }
 
+.code-colors {
+	background-color: @code-background-color;
+	border-color: @code-border-color;
+	color: @code-font-color;
+}
+
 /** ----------------------------------------------------------------------------
  * Derivative colours (fixed variants of inherited variables)
  */
@@ -64,18 +70,6 @@
 	&::-webkit-scrollbar-corner {
 		background-color: @transparent-dark;
 	}
-}
-
-// body {
-// 	* {
-// 		border-color: @component-color;
-// 	}
-// }
-
-code {
-	background-color: @code-background-color;
-	border-color: @code-border-color;
-	color: @code-font-color;
 }
 
 blockquote::before {
