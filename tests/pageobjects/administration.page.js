@@ -71,6 +71,15 @@ class Administration extends Page {
 	get generalIframeRecieveTrue() { return browser.element('label:nth-of-type(1) [name="Iframe_Integration_receive_enable"]'); }
 	get generalIframeRecieveFalse() { return browser.element('label:nth-of-type(2) [name="Iframe_Integration_receive_enable"]'); }
 	get generalIframeRecieveOrigin() { return browser.element('[name="Iframe_Integration_receive_origin"]'); }
+	get generalNotificationDuration() { return browser.element('[name="Desktop_Notifications_Duration"]'); }
+	get generalRestApiUserLimit() { return browser.element('[name="API_User_Limit"]'); }
+	get generalReportingTrue() { return browser.element('label:nth-of-type(1) [name="Statistics_reporting"]'); }
+	get generalReportingFalse() { return browser.element('label:nth-of-type(2) [name="Statistics_reporting"]'); }
+	get generalStreamCastAdress() { return browser.element('[name="Stream_Cast_Address"]'); }
+	get generalUTF8Regex() { return browser.element('[name="UTF8_Names_Validation"]'); }
+	get generalUTF8NamesSlugTrue() { return browser.element('label:nth-of-type(1) [name="UTF8_Names_Slugify"]'); }
+	get generalUTF8NamesSlug() { return browser.element('label:nth-of-type(2) [name="UTF8_Names_Slugify"]'); }
+
 
 
 
