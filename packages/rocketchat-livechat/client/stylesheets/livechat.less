@@ -1,3 +1,12 @@
+@import "lesshat.less";
+
+@header-min-height: 30px;
+@footer-min-height: 55px;
+@link-font-color: #008ce3;
+@primary-font-color: #444444;
+@secondary-font-color: #7f7f7f;
+@info-font-color: #aaaaaa;
+
 .flex-list {
 	.active {
 		background-color: rgba(255, 255, 255, 0.075);
@@ -72,12 +81,6 @@
 		padding: 0 20px;
 		height: 300px;
 		bottom: 0;
-		@header-min-height: 30px;
-		@footer-min-height: 55px;
-		@link-font-color: #008ce3;
-		@primary-font-color: #444444;
-		@secondary-font-color: #7f7f7f;
-		@info-font-color: #aaaaaa;
 		font-family: 'Helvetica Neue', Helvetica, Roboto, Arial, sans-serif, "Meiryo UI";
 		font-size: 0.8rem;
 		color: @primary-font-color;
@@ -123,7 +126,6 @@
 			position: relative;
 			cursor: pointer;
 			color: rgba(255, 255, 255, 0.85);
-			background-color: lighten(desaturate(@primary-background-color, 15%), 12.5%);
 
 			span {
 				position: relative;
@@ -149,15 +151,6 @@
 
 				&::before {
 					opacity: 1;
-				}
-			}
-
-			&.secondary {
-				background-color: @tertiary-background-color;
-				color: @primary-font-color;
-
-				&::before {
-					background-color: rgba(0, 0, 0, 0.045);
 				}
 			}
 
@@ -595,22 +588,6 @@
 	}
 }
 
-.icon-chat-empty.status-offline {
-	color: @status-offline;
-}
-
-.icon-chat-empty.status-online {
-	color: @status-online;
-}
-
-.icon-chat-empty.status-busy {
-	color: @status-busy;
-}
-
-.icon-chat-empty.status-away {
-	color: @status-away;
-}
-
 .visitor-custom-fields {
 	padding: 0 20px;
 }
@@ -659,14 +636,6 @@
 	float: right;
 	margin-right: 10px;
 	font-size: 20px;
-
-	&.available {
-		color: @status-online;
-	}
-
-	&.not-available {
-		color: @status-offline;
-	}
 }
 
 .external-message {
