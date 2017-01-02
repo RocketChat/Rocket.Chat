@@ -429,30 +429,6 @@ class ModelsBaseCache extends EventEmitter {
 		this.emit('afterload');
 	}
 
-	defineSyncStrategy(query, modifier) {
-		const dbModifiers = [
-			'$currentDate',
-			'$bit',
-			'$pull',
-			'$pushAll',
-			'$push',
-			'$setOnInsert'
-		];
-
-		const modifierKeys = Object.keys(modifier);
-
-		if (_.intersection(modifierKeys, dbModifiers).length > 0) {
-			return 'db';
-		}
-
-		const placeholderFields = Object.keys(query).filter(item => item.indexOf('$') > -1);
-		if (placeholderFields.length > 0) {
-			return 'db';
-		}
-
-		return 'cache';
-	}
-
 	startSync() {
 		if (this.model._useCache === false) {
 			return;
