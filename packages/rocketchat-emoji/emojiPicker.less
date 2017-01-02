@@ -1,7 +1,8 @@
+@import "lesshat.less";
+
 .emoji-picker-icon {
 	cursor: pointer;
 	font-size: 18px;
-	color: @info-font-color;
 
 	&::before {
 		.transition(transform 0.2s ease);
@@ -17,7 +18,6 @@
 .emoji-picker {
 	width: 100%;
 	max-width: 365px;
-	background-color: @secondary-background-color;
 	border-radius: 5px;
 	box-shadow:
 		0 1px 1px 0 rgba(0, 0, 0, 0.2),
@@ -48,21 +48,13 @@
 
 	.filter-item {
 		padding: 6px 0;
-		border-bottom: 2px solid @secondary-background-color;
+		border-style: solid;
+		border-width: 0 0 2px;
 		display: flex;
 		justify-content: center;
 		flex-grow: 1;
 
-		&:hover {
-			border-bottom: 2px solid @info-font-color;
-		}
-
-		&.active {
-			border-bottom: 2px solid @primary-background-color;
-		}
-
 		.category-icon {
-			color: @info-font-color;
 			font-size: 20px;
 		}
 	}
@@ -75,7 +67,6 @@
 		height: 160px;
 		overflow-y: auto;
 		padding: 3px 0 0 2px;
-		.custom-scroll(transparent, #dddddd);
 
 		.emoji-list {
 			display: none;
@@ -131,7 +122,6 @@
 
 		.tone-selector {
 			position: absolute;
-			background-color: @secondary-background-color;
 			border-radius: 4px;
 			box-shadow:
 				0 1px 1px 0 rgba(0, 0, 0, 0.2),
