@@ -24,6 +24,24 @@
  * Transparency variables
  */
 
+@transparent-darkest: rgba(0, 0, 0, 0.5);
+@transparent-darker: rgba(0, 0, 0, 0.15);
+@transparent-dark: rgba(0, 0, 0, 0.05);
+@transparent-light: rgba(255, 255, 255, 0.1);
+@transparent-lighter: rgba(255, 255, 255, 0.3);
+@transparent-lightest: rgba(255, 255, 255, 0.6);
+
+
+/** ----------------------------------------------------------------------------
+ * Classes for variables
+ */
+
+// Major colors
+
+.content-background-color {
+	background-color: @content-background-color;
+}
+
 .global-font-family {
 	font-family: @body-font-family;
 }
@@ -50,18 +68,7 @@
 	background-color: @info-font-color;
 }
 
-/** ----------------------------------------------------------------------------
- * Transparency variables
- */
-
-@transparent-darkest: rgba(0, 0, 0, 0.5);
-@transparent-darker: rgba(0, 0, 0, 0.15);
-@transparent-dark: rgba(0, 0, 0, 0.05);
-@transparent-light: rgba(255, 255, 255, 0.1);
-@transparent-lighter: rgba(255, 255, 255, 0.3);
-@transparent-lightest: rgba(255, 255, 255, 0.6);
-
-// Backgrounds
+// transparent
 
 .background-transparent-darkest {
 	background-color: @transparent-darkest;
@@ -157,6 +164,12 @@
 	}
 }
 
+.page-container {
+	tr:hover td {
+		background-color: @content-background-color;
+	}
+}
+
 /** ----------------------------------------------------------------------------
  * Document components
  */
@@ -165,33 +178,9 @@
 	background-color: @secondary-background-color;
 }
 
-.main-content,
-.cms-page,
-.page-container {
-	background-color: @content-background-color;
-
-	header {
-		background-color: @content-background-color;
-		border-color: @component-color;
-	}
-}
-
 .page-container table {
 	overflow: hidden;
 	background-color: @secondary-background-color;
-
-	th,
-	td {
-		border-color: @component-color;
-	}
-
-	th {
-		background-color: @content-background-color;
-	}
-
-	tr:hover td {
-		background-color: @content-background-color;
-	}
 }
 
 .burger i {
