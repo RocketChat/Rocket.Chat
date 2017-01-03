@@ -4,6 +4,8 @@ import loki from 'lokijs';
 import {EventEmitter} from 'events';
 import objectPath from 'object-path';
 
+const logger = new Logger('BaseCache');
+
 const lokiEq = loki.LokiOps.$eq;
 
 loki.LokiOps.$eq = function(a, b) {
@@ -642,17 +644,17 @@ class ModelsBaseCache extends EventEmitter {
 			},
 
 			observe: (obj) => {
-				console.log(this.collectionName, 'Falling back observe to model with query:', query);
+				logger.debug(this.collectionName, 'Falling back observe to model with query:', query);
 				return this.model.db.find(...arguments).observe(obj);
 			},
 
 			observeChanges: (obj) => {
-				console.log(this.collectionName, 'Falling back observeChanges to model with query:', query);
+				logger.debug(this.collectionName, 'Falling back observeChanges to model with query:', query);
 				return this.model.db.find(...arguments).observeChanges(obj);
 			},
 
 			_publishCursor: (cursor, sub, collection) => {
-				console.log(this.collectionName, 'Falling back _publishCursor to model with query:', query);
+				logger.debug(this.collectionName, 'Falling back _publishCursor to model with query:', query);
 				return this.model.db.find(...arguments)._publishCursor(cursor, sub, collection);
 			}
 		};
