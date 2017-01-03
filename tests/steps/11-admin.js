@@ -9,6 +9,7 @@ import admin from '../pageobjects/administration.page';
 import {checkIfUserIsAdmin} from '../data/checks';
 import {adminUsername, adminEmail, adminPassword} from '../data/user.js';
 
+describe('Admin Login', () => {
 	before(() => {
 		checkIfUserIsAdmin(adminUsername, adminEmail, adminPassword);
 		sideNav.getChannelFromList('general').waitForExist(5000);
@@ -448,17 +449,13 @@ import {adminUsername, adminEmail, adminPassword} from '../data/user.js';
 					admin.generalBugsnagKey.isVisible().should.be.true;
 				});
 			});
+
 			describe('iframe', () => {
 				before(() => {
 					admin.generalButtonExpandIframe.waitForVisible(5000);
 					admin.generalButtonExpandIframe.click();
 					admin.generalIframeSendTrue.waitForVisible(5000);
 					admin.generalIframeSendTrue.scroll();
-				});
-
-				after(() => {
-					admin.generalButtonExpandIframe.waitForVisible(5000);
-					admin.generalButtonExpandIframe.click();
 				});
 
 				it('should show iframe send checkboxes', () => {
@@ -479,90 +476,77 @@ import {adminUsername, adminEmail, adminPassword} from '../data/user.js';
 					admin.generalIframeRecieveOrigin.isVisible().should.be.true;
 				});
 			});
+
+			describe('notifications', () => {
+				before(() => {
+					admin.generalButtonExpandNotifications.waitForVisible(5000);
+					admin.generalButtonExpandNotifications.click();
+					admin.generalNotificationDuration.waitForVisible(5000);
+					admin.generalNotificationDuration.scroll();
+				});
+
+				it('should show the notifications durations field', () => {
+					admin.generalNotificationDuration.isVisible().should.be.true;
+				});
+			});
+
+			describe('rest api', () => {
+				before(() => {
+					admin.generalButtonExpandRest.waitForVisible(5000);
+					admin.generalButtonExpandRest.click();
+					admin.generalRestApiUserLimit.waitForVisible(5000);
+					admin.generalRestApiUserLimit.scroll();
+				});
+
+				it('should show the API user add limit field', () => {
+					admin.generalRestApiUserLimit.isVisible().should.be.true;
+				});
+			});
+
+			describe('reporting', () => {
+				before(() => {
+					admin.generalButtonExpandReporting.waitForVisible(5000);
+					admin.generalButtonExpandReporting.click();
+					admin.generalReportingTrue.waitForVisible(5000);
+					admin.generalReportingTrue.scroll();
+				});
+
+				it('should show the report to rocket.chat checkboxes', () => {
+					admin.generalReportingTrue.isVisible().should.be.true;
+					admin.generalReportingFalse.isVisible().should.be.true;
+				});
+			});
+
+			describe('stream cast', () => {
+				before(() => {
+					admin.generalButtonExpandStreamCast.waitForVisible(5000);
+					admin.generalButtonExpandStreamCast.click();
+					admin.generalStreamCastAdress.waitForVisible(5000);
+					admin.generalStreamCastAdress.scroll();
+				});
+
+				it('should show the stream cast adress field', () => {
+					admin.generalStreamCastAdress.isVisible().should.be.true;
+				});
+			});
+
+			describe('stream cast', () => {
+				before(() => {
+					admin.generalButtonExpandUTF8.waitForVisible(5000);
+					admin.generalButtonExpandUTF8.click();
+					admin.generalUTF8Regex.waitForVisible(5000);
+					admin.generalUTF8Regex.scroll();
+				});
+
+				it('should show the utf8 regex field', () => {
+					admin.generalUTF8Regex.isVisible().should.be.true;
+				});
+
+				it('should show the utf8 names slug checkboxes', () => {
+					admin.generalUTF8NamesSlugTrue.isVisible().should.be.true;
+					admin.generalUTF8NamesSlugFalse.isVisible().should.be.true;
+				});
+			});
 		});
 	});
 });
-
-
-
-/*class Administration extends Page {
-	get flexNav() { return browser.element('.flex-nav'); }
-	get flexNavContent() { return browser.element('.flex-nav .content'); }
-	get layoutLink() { return browser.element('.flex-nav .content [href="/admin/Layout"]'); }
-	get infoLink() { return browser.element('.flex-nav .content [href="/admin/info"]'); }
-	get roomsLink() { return browser.element('.flex-nav .content [href="/admin/rooms"]'); }
-	get usersLink() { return browser.element('.flex-nav .content [href="/admin/users"]'); }
-	get permissionsLink() { return browser.element('.flex-nav .content [href="/admin/permissions"]'); }
-	get customScriptBtn() { return browser.element('.section:nth-of-type(6) .expand'); }
-	get customScriptLoggedOutTextArea() { return browser.element('.section:nth-of-type(6) .CodeMirror-scroll'); }
-	get customScriptLoggedInTextArea() { return browser.element('.CodeMirror.cm-s-default:nth-of-type(2)'); }
-	get infoRocketChatTableTitle() { return browser.element('.content h3'); }
-	get infoRocketChatTable() { return browser.element('.content .statistics-table'); }
-	get infoCommitTableTitle() { return browser.element('.content h3:nth-of-type(2)'); }
-	get infoCommitTable() { return browser.element('.content .statistics-table:nth-of-type(2)'); }
-	get infoRuntimeTableTitle() { return browser.element('.content h3:nth-of-type(3)'); }
-	get infoRuntimeTable() { return browser.element('.content .statistics-table:nth-of-type(3)'); }
-	get infoBuildTableTitle() { return browser.element('.content h3:nth-of-type(4)'); }
-	get infoBuildTable() { return browser.element('.content .statistics-table:nth-of-type(4)'); }
-	get infoUsageTableTitle() { return browser.element('.content h3:nth-of-type(5)'); }
-	get infoUsageTable() { return browser.element('.content .statistics-table:nth-of-type(5)'); }
-	get roomsSearchForm() { return browser.element('.content .search'); }
-	get roomsFilter() { return browser.element('#rooms-filter'); }
-	get roomsChannelsCheckbox() { return browser.element('label:nth-of-type(1) input[name="room-type"]'); }
-	get roomsDirectCheckbox() { return browser.element('label:nth-of-type(2) input[name="room-type"]'); }
-	get roomsPrivateCheckbox() { return browser.element('label:nth-of-type(3) input[name="room-type"]'); }
-	get roomsGeneralChannel() { return browser.element('td=general'); }
-	get usersRocketCat() { return browser.element('td=Rocket.Cat'); }
-	get usersFilter() { return browser.element('#users-filter'); }
-	get rolesNewRolesButton() { return browser.element('.button.new-role'); }
-	get rolesPermissionGrid() { return browser.element('.permission-grid'); }
-	get rolesAdmin() { return browser.element('[title="Admin"]'); }
-	get rolesModerator() { return browser.element('[title="Moderator"]'); }
-	get rolesOwner() { return browser.element('[title="Owner"]'); }
-	get rolesReturnLink() { return browser.element('[href="/admin/permissions"]'); }
-	get rolesNewRoleName() { return browser.element('[name="name"]'); }
-	get rolesNewRoleDesc() { return browser.element('[name="description"]'); }
-	get rolesNewRoleScope() { return browser.element('[name="scope"]'); }
-	get rolesAddBtn() { return browser.element('button.add'); }
-	get rolesRoomsSearchForm() { return browser.element('.search [name="room"]'); }
-	get emojiFilter() { return browser.element('#emoji-filter'); }
-	get emojiFilter() { return browser.element('#emoji-filter'); }
-
-	get generalButtonExpandIframe() { return browser.element('.button.expand'); }
-	get generalButtonExpandNotifications() { return browser.element('.button.expand:nth-of-type(2)'); }
-	get generalButtonExpandRest() { return browser.element('.button.expand:nth-of-type(3)'); }
-	get generalButtonExpandReporting() { return browser.element('.button.expand:nth-of-type(4)'); }
-	get generalButtonExpandStreamCast() { return browser.element('.button.expand:nth-of-type(5)'); }
-	get generalButtonExpandTranslations() { return browser.element('.button.expand:nth-of-type(6)'); }
-	get generalButtonExpandUTF8() { return browser.element('.button.expand:nth-of-type(7)'); }
-
-	get generalSiteUrl() { return browser.element('[name="Site_Url"]'); }
-	get generalSiteName() { return browser.element('[name="Site_Name"]'); }
-	get generalLanguage() { return browser.element('[name="Language"]'); }
-	get generalSelfSignedCertsTrue() { return browser.element('label:nth-of-type(1) [name="Allow_Invalid_SelfSigned_Certs"]'); }
-	get generalSelfSignedCertsFalse() { return browser.element('label:nth-of-type(2) [name="Allow_Invalid_SelfSigned_Certs"]'); }
-	get generalFavoriteRoomTrue() { return browser.element('label:nth-of-type(1) [name="Favorite_Rooms"]'); }
-	get generalFavoriteRoomFalse() { return browser.element('label:nth-of-type(2) [name="Favorite_Rooms"]'); }
-	get generalCdnPrefix() { return browser.element('[name="CDN_PREFIX"]'); }
-	get generalForceSSLTrue() { return browser.element('label:nth-of-type(1) [name="Force_SSL"]'); }
-	get generalForceSSLFalse() { return browser.element('label:nth-of-type(2) [name="Force_SSL"]'); }
-	get generalGoogleTagId() { return browser.element('[name="GoogleTagManager_id"]'); }
-	get generalBugsnagKey() { return browser.element('[name="Bugsnag_api_key"]'); }
-	get generalIframeSendTrue() { return browser.element('label:nth-of-type(1) [name="Iframe_Integration_send_enable"]'); }
-	get generalIframeSendFalse() { return browser.element('label:nth-of-type(2) [name="Iframe_Integration_send_enable"]'); }
-	get generalIframeSendTargetOrigin() { return browser.element('[name="Iframe_Integration_send_target_origin"]'); }
-	get generalIframeRecieveTrue() { return browser.element('label:nth-of-type(1) [name="Iframe_Integration_receive_enable"]'); }
-	get generalIframeRecieveFalse() { return browser.element('label:nth-of-type(2) [name="Iframe_Integration_receive_enable"]'); }
-	get generalIframeRecieveOrigin() { return browser.element('[name="Iframe_Integration_receive_origin"]'); }
-	get generalNotificationDuration() { return browser.element('[name="Desktop_Notifications_Duration"]'); }
-	get generalRestApiUserLimit() { return browser.element('[name="API_User_Limit"]'); }
-	get generalReportingTrue() { return browser.element('label:nth-of-type(1) [name="Statistics_reporting"]'); }
-	get generalReportingFalse() { return browser.element('label:nth-of-type(2) [name="Statistics_reporting"]'); }
-	get generalStreamCastAdress() { return browser.element('[name="Stream_Cast_Address"]'); }
-	get generalUTF8Regex() { return browser.element('[name="UTF8_Names_Validation"]'); }
-	get generalUTF8NamesSlugTrue() { return browser.element('label:nth-of-type(1) [name="UTF8_Names_Slugify"]'); }
-	get generalUTF8NamesSlug() { return browser.element('label:nth-of-type(2) [name="UTF8_Names_Slugify"]'); }
-
-
-}
-*/
