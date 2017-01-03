@@ -38,13 +38,14 @@ Importer.Base = class Importer.Base
 	#
 	# @param [String] name the name of the Importer
 	# @param [String] description the i18n string which describes the importer
-	# @param [RegExp] fileTypeRegex the regexp to validate the uploaded file type against
+	# @param [String] mimeType the of the expected file type
 	#
-	constructor: (@name, @description, @fileTypeRegex) ->
+	constructor: (@name, @description, @mimeType) ->
 		@logger = new Logger("#{@name} Importer", {});
 		@progress = new Importer.Progress @name
 		@collection = Importer.RawImports
 		@AdmZip = Npm.require 'adm-zip'
+		@getFileType = Npm.require 'file-type'
 		importId = Importer.Imports.insert { 'type': @name, 'ts': Date.now(), 'status': @progress.step, 'valid': true, 'user': Meteor.user()._id }
 		@importRecord = Importer.Imports.findOne importId
 		@users = {}
@@ -60,7 +61,8 @@ Importer.Base = class Importer.Base
 	# @return [Importer.Selection] Contains two properties which are arrays of objects, `channels` and `users`.
 	#
 	prepare: (dataURI, sentContentType, fileName) =>
-		if not @fileTypeRegex.test sentContentType
+		fileType = @getFileType(new Buffer(dataURI.split(',')[1], 'base64'))
+		if fileType.mime isnt @mimeType
 			throw new Error "Invalid file uploaded to import #{@name} data from." #TODO: Make translatable
 
 		@updateProgress Importer.ProgressStep.PREPARING_STARTED
