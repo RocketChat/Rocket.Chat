@@ -85,6 +85,10 @@
 	color: @pending-color;
 }
 
+.error-color {
+	color: @pending-color;
+}
+
 .code-colors {
 	background-color: @code-background-color;
 	border-color: @code-border-color;
@@ -304,7 +308,6 @@ a:hover {
 .error {
 	background-color: @error-background;
 	border-color: @error-color;
-	color: @error-color;
 }
 
 /** ----------------------------------------------------------------------------
@@ -353,7 +356,6 @@ a:hover {
 	}
 
 	pre {
-		color: @error-color;
 		border-color: @error-border;
 	}
 }
@@ -419,10 +421,6 @@ a:hover {
  */
 .new-message {
 	color: @primary-action-contrast;
-}
-
-.room-not-found {
-	color: @error-color;
 }
 
 .toggle-favorite {
@@ -870,12 +868,10 @@ i.status-offline {
 }
 
 .alert-danger {
-	color: @error-color;
 	background-color: @error-background;
 	border-color: @error-border;
 }
 
-.side-nav .input-error,
 label.required::after {
 	color: @error-color;
 }
