@@ -9,6 +9,7 @@ import admin from '../pageobjects/administration.page';
 import {checkIfUserIsAdmin} from '../data/checks';
 import {adminUsername, adminEmail, adminPassword} from '../data/user.js';
 
+describe.only('Admin Login', () => {
 	before(() => {
 		checkIfUserIsAdmin(adminUsername, adminEmail, adminPassword);
 		sideNav.getChannelFromList('general').waitForExist(5000);
@@ -456,11 +457,6 @@ import {adminUsername, adminEmail, adminPassword} from '../data/user.js';
 					admin.generalIframeSendTrue.scroll();
 				});
 
-				after(() => {
-					admin.generalButtonExpandIframe.waitForVisible(5000);
-					admin.generalButtonExpandIframe.click();
-				});
-
 				it('should show iframe send checkboxes', () => {
 					admin.generalIframeSendTrue.isVisible().should.be.true;
 					admin.generalIframeSendFalse.isVisible().should.be.true;
@@ -477,6 +473,77 @@ import {adminUsername, adminEmail, adminPassword} from '../data/user.js';
 
 				it('should show send origin field', () => {
 					admin.generalIframeRecieveOrigin.isVisible().should.be.true;
+				});
+			});
+
+			describe('notifications', () => {
+				before(() => {
+					admin.generalButtonExpandNotifications.waitForVisible(5000);
+					admin.generalButtonExpandNotifications.click();
+					admin.generalNotificationDuration.waitForVisible(5000);
+					admin.generalNotificationDuration.scroll();
+				});
+
+				it('should show the notifications durations field', () => {
+					admin.generalNotificationDuration.isVisible().should.be.true;
+				});
+			});
+
+			describe('rest api', () => {
+				before(() => {
+					admin.generalButtonExpandRest.waitForVisible(5000);
+					admin.generalButtonExpandRest.click();
+					admin.generalRestApiUserLimit.waitForVisible(5000);
+					admin.generalRestApiUserLimit.scroll();
+				});
+
+				it('should show the API user add limit field', () => {
+					admin.generalRestApiUserLimit.isVisible().should.be.true;
+				});
+			});
+
+			describe('reporting', () => {
+				before(() => {
+					admin.generalButtonExpandReporting.waitForVisible(5000);
+					admin.generalButtonExpandReporting.click();
+					admin.generalReportingTrue.waitForVisible(5000);
+					admin.generalReportingTrue.scroll();
+				});
+
+				it('should show the report to rocket.chat checkboxes', () => {
+					admin.generalReportingTrue.isVisible().should.be.true;
+					admin.generalReportingFalse.isVisible().should.be.true;
+				});
+			});
+
+			describe('stream cast', () => {
+				before(() => {
+					admin.generalButtonExpandStreamCast.waitForVisible(5000);
+					admin.generalButtonExpandStreamCast.click();
+					admin.generalStreamCastAdress.waitForVisible(5000);
+					admin.generalStreamCastAdress.scroll();
+				});
+
+				it('should show the stream cast adress field', () => {
+					admin.generalStreamCastAdress.isVisible().should.be.true;
+				});
+			});
+
+			describe('stream cast', () => {
+				before(() => {
+					admin.generalButtonExpandUTF8.waitForVisible(5000);
+					admin.generalButtonExpandUTF8.click();
+					admin.generalUTF8Regex.waitForVisible(5000);
+					admin.generalUTF8Regex.scroll();
+				});
+
+				it('should show the utf8 regex field', () => {
+					admin.generalUTF8Regex.isVisible().should.be.true;
+				});
+
+				it('should show the utf8 names slug checkboxes', () => {
+					admin.generalUTF8NamesSlugTrue.isVisible().should.be.true;
+					admin.generalUTF8NamesSlugFalse.isVisible().should.be.true;
 				});
 			});
 		});
