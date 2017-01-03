@@ -1,7 +1,7 @@
 class API extends Restivus
 	constructor: ->
 		@authMethods = []
-		@roomFieldsToExclude =
+		@defaultFieldsToExclude =
 			joinCode: 0
 			$loki: 0
 			meta: 0
