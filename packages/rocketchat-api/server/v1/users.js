@@ -32,7 +32,7 @@ RocketChat.API.v1.addRoute('users.create', { authRequired: true }, {
 				});
 			}
 
-			return RocketChat.API.v1.success({ user: RocketChat.models.Users.findOneById(newUserId) });
+			return RocketChat.API.v1.success({ user: RocketChat.models.Users.findOneById(newUserId, { fields: RocketChat.API.v1.roomFieldsToExclude }) });
 		} catch (e) {
 			return RocketChat.API.v1.failure(e.name + ': ' + e.message);
 		}
@@ -191,7 +191,7 @@ RocketChat.API.v1.addRoute('users.update', { authRequired: true }, {
 		try {
 			check(this.bodyParams, {
 				userId: String,
-				data: {
+				data: Match.ObjectIncluding({
 					email: Match.Maybe(String),
 					name: Match.Maybe(String),
 					password: Match.Maybe(String),
@@ -203,7 +203,7 @@ RocketChat.API.v1.addRoute('users.update', { authRequired: true }, {
 					sendWelcomeEmail: Match.Maybe(Boolean),
 					verified: Match.Maybe(Boolean),
 					customFields: Match.Maybe(Object)
-				}
+				})
 			});
 
 			const userData = _.extend({ _id: this.bodyParams.userId }, this.bodyParams.data);
@@ -220,7 +220,7 @@ RocketChat.API.v1.addRoute('users.update', { authRequired: true }, {
 				});
 			}
 
-			return RocketChat.API.v1.success({ user: RocketChat.models.Users.findOneById(this.bodyParams.userId) });
+			return RocketChat.API.v1.success({ user: RocketChat.models.Users.findOneById(this.bodyParams.userId, { fields: RocketChat.API.v1.roomFieldsToExclude }) });
 		} catch (e) {
 			return RocketChat.API.v1.failure(e.name + ': ' + e.message);
 		}
