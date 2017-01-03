@@ -5,7 +5,7 @@ RocketChat.models._CacheControl = new Meteor.EnvironmentVariable();
 
 class ModelsBase {
 	constructor(nameOrModel, useCache) {
-		this._db = new ModelsBaseDb(nameOrModel);
+		this._db = new ModelsBaseDb(nameOrModel, this);
 		this.model = this._db.model;
 		this.collectionName = this._db.collectionName;
 		this.name = this._db.name;
@@ -37,6 +37,20 @@ class ModelsBase {
 
 	get origin() {
 		return this.useCache === true ? 'cache' : '_db';
+	}
+
+	arrayToCursor(data) {
+		return {
+			fetch() {
+				return data;
+			},
+			count() {
+				return data.length;
+			},
+			forEach(fn) {
+				return data.forEach(fn);
+			}
+		};
 	}
 
 	setUpdatedAt(/*record, checkQuery, query*/) {
