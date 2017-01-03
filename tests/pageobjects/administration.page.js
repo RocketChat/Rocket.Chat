@@ -9,7 +9,7 @@ class Administration extends Page {
 	get usersLink() { return browser.element('.flex-nav .content [href="/admin/users"]'); }
 	get generalLink() { return browser.element('.flex-nav .content [href="/admin/General"]'); }
 	get permissionsLink() { return browser.element('.flex-nav .content [href="/admin/permissions"]'); }
-	get customScriptBtn() { return browser.element('.section:nth-of-type(6) .expand'); }
+	get customScriptBtn() { return browser.element('.section:nth-of-type(6) .collapse'); }
 	get customScriptLoggedOutTextArea() { return browser.element('.section:nth-of-type(6) .CodeMirror-scroll'); }
 	get customScriptLoggedInTextArea() { return browser.element('.CodeMirror.cm-s-default:nth-of-type(2)'); }
 	get infoRocketChatTableTitle() { return browser.element('.content h3'); }
@@ -45,13 +45,13 @@ class Administration extends Page {
 	get emojiFilter() { return browser.element('#emoji-filter'); }
 
 	//settings
-	get generalButtonExpandIframe() { return browser.element('.button.expand'); }
-	get generalButtonExpandNotifications() { return browser.element('.button.expand:nth-of-type(2)'); }
-	get generalButtonExpandRest() { return browser.element('.button.expand:nth-of-type(3)'); }
-	get generalButtonExpandReporting() { return browser.element('.button.expand:nth-of-type(4)'); }
-	get generalButtonExpandStreamCast() { return browser.element('.button.expand:nth-of-type(5)'); }
-	get generalButtonExpandTranslations() { return browser.element('.button.expand:nth-of-type(6)'); }
-	get generalButtonExpandUTF8() { return browser.element('.button.expand:nth-of-type(7)'); }
+	get generalButtonExpandIframe() { return browser.element('.section:nth-of-type(2) .button.expand'); }
+	get generalButtonExpandNotifications() { return browser.element('.section:nth-of-type(3) .button.expand'); }
+	get generalButtonExpandRest() { return browser.element('.section:nth-of-type(4) .button.expand'); }
+	get generalButtonExpandReporting() { return browser.element('.section:nth-of-type(5) .button.expand'); }
+	get generalButtonExpandStreamCast() { return browser.element('.section:nth-of-type(6) .button.expand'); }
+	get generalButtonExpandTranslations() { return browser.element('.section:nth-of-type(7) .button.expand'); }
+	get generalButtonExpandUTF8() { return browser.element('.section:nth-of-type(8) .button.expand'); }
 
 	get generalSiteUrl() { return browser.element('[name="Site_Url"]'); }
 	get generalSiteName() { return browser.element('[name="Site_Name"]'); }
@@ -78,11 +78,7 @@ class Administration extends Page {
 	get generalStreamCastAdress() { return browser.element('[name="Stream_Cast_Address"]'); }
 	get generalUTF8Regex() { return browser.element('[name="UTF8_Names_Validation"]'); }
 	get generalUTF8NamesSlugTrue() { return browser.element('label:nth-of-type(1) [name="UTF8_Names_Slugify"]'); }
-	get generalUTF8NamesSlug() { return browser.element('label:nth-of-type(2) [name="UTF8_Names_Slugify"]'); }
-
-
-
-
+	get generalUTF8NamesSlugFalse() { return browser.element('label:nth-of-type(2) [name="UTF8_Names_Slugify"]'); }
 
 }
 
