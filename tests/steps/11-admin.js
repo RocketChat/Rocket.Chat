@@ -19,7 +19,6 @@ import {adminUsername, adminEmail, adminPassword} from '../data/user.js';
 		before(() => {
 			sideNav.accountBoxUserName.click();
 			sideNav.admin.waitForVisible(5000);
-
 		});
 
 		it('Enter the admin view', () => {
@@ -430,10 +429,53 @@ import {adminUsername, adminEmail, adminPassword} from '../data/user.js';
 				it('should show cdn prefix field', () => {
 					admin.generalCdnPrefix.isVisible().should.be.true;
 				});
+
+				it('should show the force SSL checkboxes', () => {
+					admin.generalForceSSLTrue.isVisible().should.be.true;
+					admin.generalForceSSLFalse.isVisible().should.be.true;
+				});
+
+				it('should show google tag id field', () => {
+					admin.generalGoogleTagId.isVisible().should.be.true;
+				});
+
+				it('should show bugsnag key field', () => {
+					admin.generalBugsnagKey.isVisible().should.be.true;
+				});
+			});
+			describe('iframe', () => {
+				before(() => {
+					admin.generalButtonExpandIframe.waitForVisible(5000);
+					admin.generalButtonExpandIframe.click();
+					admin.generalIframeSendTrue.waitForVisible(5000);
+					admin.generalIframeSendTrue.scroll();
+				});
+
+				after(() => {
+					admin.generalButtonExpandIframe.waitForVisible(5000);
+					admin.generalButtonExpandIframe.click();
+				});
+
+				it('should show iframe send checkboxes', () => {
+					admin.generalIframeSendTrue.isVisible().should.be.true;
+					admin.generalIframeSendFalse.isVisible().should.be.true;
+				});
+
+				it('should show send origin field', () => {
+					admin.generalIframeSendTargetOrigin.isVisible().should.be.true;
+				});
+
+				it('should show iframe send checkboxes', () => {
+					admin.generalIframeRecieveFalse.isVisible().should.be.true;
+					admin.generalIframeRecieveTrue.isVisible().should.be.true;
+				});
+
+				it('should show send origin field', () => {
+					admin.generalIframeRecieveOrigin.isVisible().should.be.true;
+				});
 			});
 		});
 	});
-
 });
 
 
