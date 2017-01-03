@@ -53,6 +53,14 @@
 	color: @primary-font-color;
 }
 
+.color-primary-action-color {
+	color: @primary-action-color;
+}
+
+.background-primary-action-color {
+	background-color: @primary-action-color;
+}
+
 .border-component-color {
 	border-color: @component-color;
 }
@@ -71,6 +79,9 @@
 	background-color: @info-font-color;
 }
 
+.background-attention-color {
+	background-color: @attention-color;
+}
 // transparent
 
 .background-transparent-darkest {
@@ -341,7 +352,6 @@ a:hover {
 
 .new-logs {
 	background: @primary-action-contrast;
-	color: @primary-action-color;
 }
 
 .code-error-box {
@@ -427,17 +437,6 @@ a:hover {
  */
 .new-message {
 	color: @primary-action-contrast;
-	background-color: @primary-action-color;
-}
-
-.ticks-bar {
-	.tick {
-		background-color: @primary-action-color;
-	}
-
-	.tick-all {
-		background-color: @selection-color;
-	}
 }
 
 .room-not-found {
@@ -455,7 +454,6 @@ a:hover {
 .container-bars {
 	.upload-progress {
 		background-color: @component-color;
-		color: @primary-action-color;
 
 		&.upload-error {
 			background-color: @error-background;
@@ -469,7 +467,6 @@ a:hover {
 
 	.unread-bar {
 		background-color: @component-color;
-		color: @primary-action-color;
 	}
 }
 
@@ -500,11 +497,6 @@ a:hover {
 		}
 	}
 
-	.new-message {
-		color: @primary-action-contrast;
-		background-color: @primary-action-color;
-	}
-
 	.messages-box {
 		.jump-recent {
 			background-color: @component-color;
@@ -530,8 +522,6 @@ a:hover {
 }
 
 .popup-item {
-	// color: @secondary-font-color;
-
 	&.selected {
 		color: @primary-action-contrast;
 		background-color: @primary-action-color;
@@ -607,17 +597,13 @@ a:hover {
 		.linkColors(@link-font-color, darken(@link-font-color, 10%));
 	}
 
-	a.mention-link {
-		color: @primary-action-color;
-
+	.mention-link {
 		&.mention-link-me {
 			color: @primary-action-contrast;
-			background-color: @primary-action-color;
 		}
 
 		&.mention-link-all {
 			color: @primary-action-contrast;
-			background-color: @attention-color;
 		}
 	}
 
@@ -672,7 +658,6 @@ a:hover {
 	}
 
 	.unread-rooms {
-		background-color: @primary-action-color;
 		color: @primary-action-contrast;
 	}
 
