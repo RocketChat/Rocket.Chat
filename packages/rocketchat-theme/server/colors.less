@@ -77,6 +77,10 @@
 	background-color: @component-color;
 }
 
+.success-color {
+	color: @success-color;
+}
+
 .code-colors {
 	background-color: @code-background-color;
 	border-color: @code-border-color;
@@ -292,10 +296,6 @@ a:hover {
 			color: darken(@primary-font-color, 10%);
 		}
 	}
-}
-
-.alert-icon {
-	color: @success-color;
 }
 
 .error {
@@ -649,10 +649,6 @@ a:hover {
 			.buttonColors(lighten(@primary-font-color, 25%), @secondary-background-color);
 		}
 
-		.icon-ok {
-			color: inherit;
-		}
-
 		.input.checkbox.toggle {
 			input:checked + label::before {
 				background-color: @primary-background-color;
@@ -858,18 +854,6 @@ i.status-offline {
 /** ----------------------------------------------------------------------------
  * Feedback and overlay content
  */
-.icon-ok,
-.feedback-success {
-	color: @success-color;
-}
-
-.feedback-warning {
-	color: @pending-color;
-}
-
-.feedback-error {
-	color: @error-color;
-}
 
 .livechat-form .error,
 .offline .error {
