@@ -240,17 +240,6 @@ integrationInfoRest = ->
 		body:
 			success: true
 
-
-RocketChat.API.v1.addRoute 'integrations.create', authRequired: true,
-	post: ->
-		return createIntegration @bodyParams, @user
-
-
-RocketChat.API.v1.addRoute 'integrations.remove', authRequired: true,
-	post: ->
-		return removeIntegration @bodyParams, @user
-
-
 Api.addRoute ':integrationId/:userId/:token', authRequired: true, {post: executeIntegrationRest, get: executeIntegrationRest}
 Api.addRoute ':integrationId/:token', authRequired: true, {post: executeIntegrationRest, get: executeIntegrationRest}
 
