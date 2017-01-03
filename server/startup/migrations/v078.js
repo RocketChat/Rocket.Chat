@@ -4,4 +4,3 @@ RocketChat.Migrations.add({
 		RocketChat.models.Permissions.update({ _id: { $in: ['create-c', 'create-d', 'create-p'] }}, { $addToSet: { roles: 'bot' }}, { multi: true });
 	}
 });
-
