@@ -55,6 +55,5 @@ Package.onUse(function(api) {
 
 Npm.depends({
 	'adm-zip': '0.4.7',
-	'bson': '0.5.5',
-	'file-type': '4.0.0'
+	'bson': '0.5.5'
 });

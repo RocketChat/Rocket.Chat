@@ -71,6 +71,8 @@
     "bcrypt": "^1.0.2",
     "moment": "^2.17.1",
     "moment-timezone": "^0.5.11",
-    "toastr": "^2.1.2"
+    "toastr": "^2.1.2",
+    "mime-types": "2.1.13",
+    "file-type": "4.0.0"
   }
 }
