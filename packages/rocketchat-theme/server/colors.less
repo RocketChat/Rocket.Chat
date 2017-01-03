@@ -31,7 +31,6 @@
 @transparent-lighter: rgba(255, 255, 255, 0.3);
 @transparent-lightest: rgba(255, 255, 255, 0.6);
 
-
 /** ----------------------------------------------------------------------------
  * Classes for variables
  */
@@ -40,6 +39,10 @@
 
 .content-background-color {
 	background-color: @content-background-color;
+}
+
+.primary-background-color {
+	background-color: @primary-background-color;
 }
 
 .global-font-family {
@@ -203,6 +206,14 @@
 	select,
 	textarea {
 		background-color: @content-background-color;
+	}
+
+	.channel-settings {
+		.input.checkbox.toggle {
+			input:checked + label::before {
+				background-color: @primary-background-color;
+			}
+		}
 	}
 }
 
@@ -675,7 +686,6 @@ a:hover {
  */
 .side-nav {
 	color: @tertiary-font-color;
-	background-color: @primary-background-color;
 
 	a,
 	.info {
@@ -685,14 +695,6 @@ a:hover {
 	.arrow::before,
 	.arrow::after {
 		background-color: @tertiary-font-color;
-	}
-
-	.info,
-	.options,
-	.content,
-	footer,
-	header {
-		background-color: @primary-background-color;
 	}
 
 	.rooms-list {
@@ -736,6 +738,9 @@ a:hover {
 .flex-tab {
 	background-color: @secondary-background-color;
 
+	input,
+	select,
+	textarea {
 		&:focus {
 			border-color: lighten(@secondary-background-contrast, 30%);
 		}
@@ -768,12 +773,6 @@ a:hover {
 
 		.icon-ok {
 			color: inherit;
-		}
-
-		.input.checkbox.toggle {
-			input:checked + label::before {
-				background-color: @primary-background-color;
-			}
 		}
 	}
 }
