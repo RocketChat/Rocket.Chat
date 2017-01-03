@@ -23,7 +23,7 @@
 				{{#with unreadData}}
 					{{#if since}}
 						{{#if count}}
-							<div class="unread-bar">
+							<div class="unread-bar color-primary-action-color">
 								<button class="jump-to">
 									<span class="jump-to-large">{{_ "Jump_to_first_unread"}}</span>
 									<span class="jump-to-small">{{_ "Jump"}}</span>
@@ -42,7 +42,7 @@
 					{{/if}}
 				{{/with}}
 				{{#each uploading}}
-					<div class="upload-progress {{#if error}}upload-error{{/if}}">
+					<div class="upload-progress color-primary-action-color {{#if error}}upload-error{{/if}}">
 						{{#if error}}
 							<div class="upload-progress-text">
 								{{error}}
@@ -64,7 +64,7 @@
 			</div>
 			<div class="messages-box {{#if selectable}}selectable{{/if}} {{viewMode}}">
 				<div class="ticks-bar"></div>
-				<button class="new-message not">
+				<button class="new-message background-primary-action-color not">
 					<i class="icon-down-big"></i>
 					{{_ "New_messages"}}
 				</button>
