@@ -32,7 +32,7 @@ RocketChat.API.v1.addRoute('users.create', { authRequired: true }, {
 				});
 			}
 
-			return RocketChat.API.v1.success({ user: RocketChat.models.Users.findOneById(newUserId, { fields: RocketChat.API.v1.roomFieldsToExclude }) });
+			return RocketChat.API.v1.success({ user: RocketChat.models.Users.findOneById(newUserId, { fields: RocketChat.API.v1.defaultFieldsToExclude }) });
 		} catch (e) {
 			return RocketChat.API.v1.failure(e.name + ': ' + e.message);
 		}
@@ -220,7 +220,7 @@ RocketChat.API.v1.addRoute('users.update', { authRequired: true }, {
 				});
 			}
 
-			return RocketChat.API.v1.success({ user: RocketChat.models.Users.findOneById(this.bodyParams.userId, { fields: RocketChat.API.v1.roomFieldsToExclude }) });
+			return RocketChat.API.v1.success({ user: RocketChat.models.Users.findOneById(this.bodyParams.userId, { fields: RocketChat.API.v1.defaultFieldsToExclude }) });
 		} catch (e) {
 			return RocketChat.API.v1.failure(e.name + ': ' + e.message);
 		}
