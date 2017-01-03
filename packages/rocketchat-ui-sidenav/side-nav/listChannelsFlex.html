@@ -1,10 +1,10 @@
 <template name="listChannelsFlex">
-	<header>
+	<header class="primary-background-color">
 		<div>
 			<h4>{{_ "Channels"}}</h4>
 		</div>
 	</header>
-	<div class="content">
+	<div class="content primary-background-color">
 		<div class="wrapper">
 			<div class="flex-control">
 				<div class="search">
@@ -60,7 +60,7 @@
 			{{/if}}
 		</div>
 	</div>
-	<footer>
+	<footer class="primary-background-color">
 		<div>
 		{{#if hasPermission 'create-c'}}
 			<button class="button primary create">{{_ "Create_new"}}</button>
