@@ -1,6 +1,10 @@
 class API extends Restivus
 	constructor: ->
 		@authMethods = []
+		@roomFieldsToExclude =
+			joinCode: 0
+			$loki: 0
+			meta: 0
 		super
 
 	addAuthMethod: (method) ->
@@ -33,6 +37,28 @@ class API extends Restivus
 				success: false
 				error: msg or 'unauthorized'
 
+	# If the count query param is higher than the "API_Upper_Count_Limit" setting, then we limit that
+	# If the count query param isn't defined, then we set it to the "API_Default_Count" setting
+	# If the count is zero, then that means unlimited and is only allowed if the setting "API_Allow_Infinite_Count" is true
+	getPaginationItems: (req) ->
+		hardUpperLimit = if RocketChat.settings.get('API_Upper_Count_Limit') <= 0 then 100 else RocketChat.settings.get('API_Upper_Count_Limit')
+		defaultCount = if RocketChat.settings.get('API_Default_Count') <= 0 then 50 else RocketChat.settings.get('API_Default_Count')
+		offset = if req.queryParams.offset then parseInt(req.queryParams.offset) else 0
+		# Ensure count is an appropiate amount
+		if typeof req.queryParams.count != 'undefined'
+			count = parseInt(req.queryParams.count)
+		else
+			count = defaultCount
+
+		if count > hardUpperLimit
+			count = hardUpperLimit
+
+		if count == 0 and !RocketChat.settings.get('API_Allow_Infinite_Count')
+			count = defaultCount
+
+		return {} =
+			offset: offset
+			count: count
 
 RocketChat.API = {}
 
