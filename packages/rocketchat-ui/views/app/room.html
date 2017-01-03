@@ -23,7 +23,7 @@
 				{{#with unreadData}}
 					{{#if since}}
 						{{#if count}}
-							<div class="unread-bar color-primary-action-color">
+							<div class="unread-bar color-primary-action-color background-component-color">
 								<button class="jump-to">
 									<span class="jump-to-large">{{_ "Jump_to_first_unread"}}</span>
 									<span class="jump-to-small">{{_ "Jump"}}</span>
@@ -42,7 +42,7 @@
 					{{/if}}
 				{{/with}}
 				{{#each uploading}}
-					<div class="upload-progress color-primary-action-color {{#if error}}upload-error{{/if}}">
+					<div class="upload-progress color-primary-action-color background-component-color {{#if error}}upload-error{{/if}}">
 						{{#if error}}
 							<div class="upload-progress-text">
 								{{error}}
@@ -68,7 +68,7 @@
 					<i class="icon-down-big"></i>
 					{{_ "New_messages"}}
 				</button>
-				<div class="jump-recent {{#unless hasMoreNext}}not{{/unless}}">
+				<div class="jump-recent background-component-color {{#unless hasMoreNext}}not{{/unless}}">
 					<button>{{_ "Jump_to_recent_messages"}} <i class="icon-level-down"></i></button>
 				</div>
 				{{#unless canPreview}}

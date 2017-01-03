@@ -73,6 +73,10 @@
 	border-color: @component-color;
 }
 
+.background-component-color {
+	background-color: @component-color;
+}
+
 .code-colors {
 	background-color: @code-background-color;
 	border-color: @code-border-color;
@@ -428,8 +432,6 @@ a:hover {
 
 .container-bars {
 	.upload-progress {
-		background-color: @component-color;
-
 		&.upload-error {
 			background-color: @error-background;
 			border-color: @error-border;
@@ -438,10 +440,6 @@ a:hover {
 		.upload-progress-progress {
 			background-color: @success-background;
 		}
-	}
-
-	.unread-bar {
-		background-color: @component-color;
 	}
 }
 
@@ -471,10 +469,6 @@ a:hover {
 	}
 
 	.messages-box {
-		.jump-recent {
-			background-color: @component-color;
-		}
-
 		&.selectable .selected {
 			background-color: @selection-background;
 		}
