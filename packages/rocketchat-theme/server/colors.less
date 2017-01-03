@@ -132,29 +132,6 @@
 	}
 }
 
-.admin-table-row {
-	background-color: @transparent-light;
-
-	&:nth-of-type(even) {
-		background-color: @transparent-lightest;
-	}
-}
-
-.side-nav {
-	i {
-		color: @transparent-lighter;
-	}
-
-	.opt i:hover {
-		color: @transparent-lightest;
-	}
-}
-
-.account-box .status-offline .thumb::after,
-.account-box .status.offline::after {
-	background-color: @transparent-lighter;
-}
-
 .filter-item {
 	border-color: @secondary-background-color;
 
@@ -167,56 +144,6 @@
 	}
 }
 
-.page-container {
-	tr:hover td {
-		background-color: @content-background-color;
-	}
-}
-
-.input {
-	&.radio {
-		label {
-			&::before {
-				background-color: @content-background-color;
-			}
-		}
-	}
-
-	&.checkbox.toggle {
-		label {
-			&::after {
-				background-color: @content-background-color;
-			}
-		}
-	}
-}
-
-.message {
-	&.new-day::before {
-		background-color: @content-background-color;
-	}
-
-	&.new-day::after {
-		border-color: @component-color;
-	}
-}
-
-.flex-tab {
-	input,
-	select,
-	textarea {
-		background-color: @content-background-color;
-	}
-
-	.channel-settings {
-		.input.checkbox.toggle {
-			input:checked + label::before {
-				background-color: @primary-background-color;
-			}
-		}
-	}
-}
-
 /** ----------------------------------------------------------------------------
  * Document components
  */
@@ -225,9 +152,15 @@
 	background-color: @secondary-background-color;
 }
 
-.page-container table {
-	overflow: hidden;
-	background-color: @secondary-background-color;
+.page-container {
+	table {
+		overflow: hidden;
+		background-color: @secondary-background-color;
+	}
+
+	tr:hover td {
+		background-color: @content-background-color;
+	}
 }
 
 .burger i {
@@ -288,6 +221,7 @@ input:-webkit-autofill {
 		label {
 			&::before {
 				border-color: lighten(@secondary-background-contrast, 30%);
+				background-color: @content-background-color;
 			}
 
 			&::after {
@@ -308,6 +242,10 @@ input:-webkit-autofill {
 		label {
 			&::before {
 				background-color: lighten(@secondary-background-contrast, 30%);
+			}
+
+			&::after {
+				background-color: @content-background-color;
 			}
 
 			&:hover {
@@ -386,6 +324,14 @@ a:hover {
 		&:hover {
 			color: @primary-action-color;
 		}
+	}
+}
+
+.admin-table-row {
+	background-color: @transparent-light;
+
+	&:nth-of-type(even) {
+		background-color: @transparent-lightest;
 	}
 }
 
@@ -628,6 +574,14 @@ a:hover {
 }
 
 .message {
+	&.new-day::before {
+		background-color: @content-background-color;
+	}
+
+	&.new-day::after {
+		border-color: @component-color;
+	}
+
 	.body {
 		color: @primary-font-color;
 	}
@@ -709,6 +663,14 @@ a:hover {
 		color: @transparent-lighter !important;
 	}
 
+	i {
+		color: @transparent-lighter;
+	}
+
+	.opt i:hover {
+		color: @transparent-lightest;
+	}
+
 	.has-alert .name {
 		color: @primary-background-contrast;
 	}
@@ -741,6 +703,8 @@ a:hover {
 	input,
 	select,
 	textarea {
+		background-color: @content-background-color;
+
 		&:focus {
 			border-color: lighten(@secondary-background-contrast, 30%);
 		}
@@ -773,6 +737,12 @@ a:hover {
 
 		.icon-ok {
 			color: inherit;
+		}
+
+		.input.checkbox.toggle {
+			input:checked + label::before {
+				background-color: @primary-background-color;
+			}
 		}
 	}
 }
@@ -826,6 +796,11 @@ i.status-online {
 .user-image.status-online .avatar::after {
 	background-color: @status-online;
 	border-color: darken(@status-online, 10%);
+}
+
+.account-box .status-offline .thumb::after,
+.account-box .status.offline::after {
+	background-color: @transparent-lighter;
 }
 
 i.status-away {
