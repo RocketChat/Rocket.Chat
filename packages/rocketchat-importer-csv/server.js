@@ -1,8 +1,8 @@
 /* globals Importer */
 
 Importer.CSV = class ImporterCSV extends Importer.Base {
-	constructor(name, descriptionI18N, fileTypeRegex) {
-		super(name, descriptionI18N, fileTypeRegex);
+	constructor(name, descriptionI18N, mimeType) {
+		super(name, descriptionI18N, mimeType);
 		this.logger.debug('Constructed a new CSV Importer.');
 
 		this.csvParser = Npm.require('csv-parse/lib/sync');
