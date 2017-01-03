@@ -170,6 +170,42 @@
 	}
 }
 
+.input {
+	&.radio {
+		label {
+			&::before {
+				background-color: @content-background-color;
+			}
+		}
+	}
+
+	&.checkbox.toggle {
+		label {
+			&::after {
+				background-color: @content-background-color;
+			}
+		}
+	}
+}
+
+.message {
+	&.new-day::before {
+		background-color: @content-background-color;
+	}
+
+	&.new-day::after {
+		border-color: @component-color;
+	}
+}
+
+.flex-tab {
+	input,
+	select,
+	textarea {
+		background-color: @content-background-color;
+	}
+}
+
 /** ----------------------------------------------------------------------------
  * Document components
  */
@@ -231,12 +267,6 @@
 	}
 }
 
-.emoji-filter {
-	input {
-		background-color: @content-background-color;
-	}
-}
-
 input:-webkit-autofill {
 	color: @primary-font-color !important;
 	background-color: transparent !important;
@@ -246,7 +276,6 @@ input:-webkit-autofill {
 	&.radio {
 		label {
 			&::before {
-				background-color: @content-background-color;
 				border-color: lighten(@secondary-background-contrast, 30%);
 			}
 
@@ -268,10 +297,6 @@ input:-webkit-autofill {
 		label {
 			&::before {
 				background-color: lighten(@secondary-background-contrast, 30%);
-			}
-
-			&::after {
-				background-color: @content-background-color;
 			}
 
 			&:hover {
@@ -326,10 +351,6 @@ a:hover {
  * Admin and settings styles
  */
 .page-settings {
-	.section {
-		background-color: @content-background-color;
-	}
-
 	.terminal {
 		background-color: #444444;
 		color: white;
@@ -383,10 +404,6 @@ a:hover {
 		background-color: #f7f7f7;
 		// matches plugin styles
 	}
-
-	&.code-mirror-box-fullscreen {
-		background-color: @content-background-color;
-	}
 }
 
 .avatar-suggestion-item {
@@ -436,7 +453,6 @@ a:hover {
 
 #login-card {
 	color: @primary-font-color;
-	background-color: @content-background-color;
 	.input-shade(@primary-font-color, @content-background-color);
 
 	.input-text {
@@ -512,10 +528,6 @@ a:hover {
 
 	.message-form {
 		color: @secondary-font-color;
-
-		.input-message-container {
-			background-color: @content-background-color;
-		}
 
 		.message-buttons {
 			.buttonColors(lighten(@primary-font-color, 25%), @secondary-background-color);
@@ -616,7 +628,6 @@ a:hover {
 	.message-dropdown,
 	.options-menu {
 		color: lighten(@primary-font-color, 13%);
-		background-color: @content-background-color;
 
 		ul li:hover {
 			background-color: @tertiary-background-color;
@@ -625,16 +636,6 @@ a:hover {
 		.message-dropdown-close {
 			background-color: @secondary-background-color;
 		}
-	}
-
-	&.new-day::before {
-		background-color: @content-background-color;
-	}
-
-	.info,
-	.user-view,
-	.message-alias {
-		border-color: @component-color;
 	}
 
 	.user {
@@ -735,11 +736,6 @@ a:hover {
 .flex-tab {
 	background-color: @secondary-background-color;
 
-	input,
-	select,
-	textarea {
-		background-color: @content-background-color;
-
 		&:focus {
 			border-color: lighten(@secondary-background-contrast, 30%);
 		}
@@ -783,9 +779,6 @@ a:hover {
 }
 
 .flex-tab-bar {
-	background-color: @content-background-color;
-	border-color: @component-color;
-
 	.tab-button {
 		&:hover {
 			background-color: @secondary-background-color;

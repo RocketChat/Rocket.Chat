@@ -25,11 +25,11 @@
 			{{/if}}
 		{{/if}}
 		{{#if alias}}
-			<button type="button" class="user user-card-message" data-username="{{u.username}}" tabindex="1">{{alias}} <span class="message-alias color-info-font-color">@{{u.username}}</span></button>
+			<button type="button" class="user user-card-message" data-username="{{u.username}}" tabindex="1">{{alias}} <span class="message-alias border-component-color color-info-font-color">@{{u.username}}</span></button>
 		{{else}}
 			<button type="button" class="user user-card-message" data-username="{{u.username}}" tabindex="1">{{u.username}}</button>
 		{{/if}}
-		<span class="info color-info-font-color">
+		<span class="info border-component-color color-info-font-color">
 		{{#each roleTags}}
 			<span class="role-tag background-info-font-color" data-role="{{description}}">{{description}}</span>
 		{{/each}}

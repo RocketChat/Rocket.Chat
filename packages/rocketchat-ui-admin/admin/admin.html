@@ -1,6 +1,6 @@
 <template name="admin">
-	<section class="page-container page-home page-static page-settings content-background-color">
-		<header class="fixed-title content-background-color border-component-color">
+	<section class="page-container page-home page-static page-settings">
+		<header class="fixed-title border-component-color">
 			{{> burger}}
 			<h2>
 				<span class="room-title">{{#with group}}{{label}}{{/with}}</span>
@@ -39,7 +39,7 @@
 									</div>
 								</div>
 							{{/if}}
-							<div class="section-content">
+							<div class="section-content border-component-color">
 								{{#if section}}
 									{{#if sectionIsCustomOAuth section}}
 										<div class="section-helper">
