@@ -97,7 +97,7 @@ RocketChat.API.v1.addRoute('im.list', { authRequired: true }, {
 			sort: { msgs: -1 },
 			skip: offset,
 			limit: count,
-			fields: RocketChat.API.v1.roomFieldsToExclude
+			fields: RocketChat.API.v1.defaultFieldsToExclude
 		});
 
 		return RocketChat.API.v1.success({
@@ -120,7 +120,7 @@ RocketChat.API.v1.addRoute('im.list.everyone', { authRequired: true }, {
 			sort: { msgs: -1 },
 			skip: offset,
 			limit: count,
-			fields: RocketChat.API.v1.roomFieldsToExclude
+			fields: RocketChat.API.v1.defaultFieldsToExclude
 		}).fetch();
 
 		return RocketChat.API.v1.success({
