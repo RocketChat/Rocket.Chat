@@ -11,6 +11,12 @@ try {
 	console.log(e);
 }
 
+let isOplogAvailable = MongoInternals.defaultRemoteCollectionDriver().mongo._oplogHandle && !!MongoInternals.defaultRemoteCollectionDriver().mongo._oplogHandle.onOplogEntry;
+let isOplogEnabled = isOplogAvailable;
+RocketChat.settings.get('Force_Disable_OpLog_For_Cache', (key, value) => {
+	isOplogEnabled = isOplogAvailable && value === false;
+});
+
 class ModelsBaseDb extends EventEmitter {
 	constructor(model, baseModel) {
 		super();
@@ -29,17 +35,16 @@ class ModelsBaseDb extends EventEmitter {
 
 		this.wrapModel();
 
-		this.isOplogAvailable = MongoInternals.defaultRemoteCollectionDriver().mongo._oplogHandle && !!MongoInternals.defaultRemoteCollectionDriver().mongo._oplogHandle.onOplogEntry && RocketChat.settings.get('Force_Disable_OpLog_For_Cache') === false;
-
 		// When someone start listening for changes we start oplog if available
 		this.once('newListener', (event/*, listener*/) => {
 			if (event === 'change') {
-				if (this.isOplogAvailable) {
+				if (isOplogEnabled) {
 					const query = {
 						collection: this.collectionName
 					};
 
 					MongoInternals.defaultRemoteCollectionDriver().mongo._oplogHandle.onOplogEntry(query, this.processOplogRecord.bind(this));
+					MongoInternals.defaultRemoteCollectionDriver().mongo._oplogHandle._defineTooFarBehind(Number.MAX_SAFE_INTEGER);
 				}
 			}
 		});
@@ -143,7 +148,7 @@ class ModelsBaseDb extends EventEmitter {
 	}
 
 	processOplogRecord(action) {
-		if (this.isOplogAvailable === false) {
+		if (isOplogEnabled === false) {
 			return;
 		}
 
@@ -208,7 +213,7 @@ class ModelsBaseDb extends EventEmitter {
 		this.setUpdatedAt(record);
 
 		const result = this.originals.insert(...arguments);
-		if (!this.isOplogAvailable && this.listenerCount('change') > 0) {
+		if (!isOplogEnabled && this.listenerCount('change') > 0) {
 			this.emit('change', {
 				action: 'insert',
 				id: result,
@@ -227,7 +232,7 @@ class ModelsBaseDb extends EventEmitter {
 
 		let strategy = this.defineSyncStrategy(query, update, options);
 		let ids = [];
-		if (!this.isOplogAvailable && this.listenerCount('change') > 0 && strategy === 'db') {
+		if (!isOplogEnabled && this.listenerCount('change') > 0 && strategy === 'db') {
 			const findOptions = {fields: {_id: 1}};
 			let records = options.multi ? this.find(query, findOptions).fetch() : this.findOne(query, findOptions) || [];
 			if (!Array.isArray(records)) {
@@ -246,7 +251,7 @@ class ModelsBaseDb extends EventEmitter {
 
 		const result = this.originals.update(query, update, options);
 
-		if (!this.isOplogAvailable && this.listenerCount('change') > 0) {
+		if (!isOplogEnabled && this.listenerCount('change') > 0) {
 			if (strategy === 'db') {
 				if (options.upsert === true) {
 					if (result.insertedId) {
@@ -274,7 +279,7 @@ class ModelsBaseDb extends EventEmitter {
 					this.emit('change', {
 						action: 'update:record',
 						id: record._id,
-						data: _.extend({}, record),
+						data: record,
 						oplog: false
 					});
 				}
@@ -317,7 +322,7 @@ class ModelsBaseDb extends EventEmitter {
 
 		const result = this.originals.remove(query);
 
-		if (!this.isOplogAvailable && this.listenerCount('change') > 0) {
+		if (!isOplogEnabled && this.listenerCount('change') > 0) {
 			for (const record of records) {
 				this.emit('change', {
 					action: 'remove',
