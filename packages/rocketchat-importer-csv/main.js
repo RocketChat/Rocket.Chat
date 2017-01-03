@@ -6,5 +6,5 @@ Importer.addImporter('csv', Importer.CSV, {
 		text: 'Importer_CSV_Information',
 		href: 'https://rocket.chat/docs/administrator-guides/import/csv/'
 	}],
-	fileTypeRegex: new RegExp('application\/.*?zip')
+	mimeType: 'application/zip'
 });
