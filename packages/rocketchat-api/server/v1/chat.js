@@ -51,3 +51,38 @@ RocketChat.API.v1.addRoute('chat.postMessage', { authRequired: true }, {
 		}
 	}
 });
+
+RocketChat.API.v1.addRoute('chat.update', { authRequired: true }, {
+	post: function() {
+		try {
+			check(this.bodyParams, Match.ObjectIncluding({
+				roomId: String,
+				msgId: String,
+				text: String //Using text to be consistant with chat.postMessage
+			}));
+
+			const msg = RocketChat.models.Messages.findOneById(this.bodyParams.msgId);
+
+			//Ensure the message exists
+			if (!msg) {
+				return RocketChat.API.v1.failure(`No message found with the id of "${this.bodyParams.msgId}".`);
+			}
+
+			if (this.bodyParams.roomId !== msg.rid) {
+				return RocketChat.API.v1.failure('The room id provided does not match where the message is from.');
+			}
+
+			//Permission checks are already done in the updateMessage method, so no need to duplicate them
+			Meteor.runAsUser(this.userId, () => {
+				Meteor.call('updateMessage', { _id: msg._id, msg: this.bodyParams.text, rid: msg.rid });
+
+			});
+
+			return RocketChat.API.v1.success({
+				message: RocketChat.models.Messages.findOneById(msg._id)
+			});
+		} catch (e) {
+			return RocketChat.API.v1.failure(e.name + ': ' + e.message);
+		}
+	}
+});

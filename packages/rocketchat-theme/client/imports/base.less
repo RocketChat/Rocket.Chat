@@ -2326,6 +2326,7 @@ label.required::after {
 					overflow: hidden;
 					opacity: 0;
 					cursor: pointer;
+					width: 100%;
 				}
 
 				input::-webkit-file-upload-button {
@@ -4371,6 +4372,16 @@ body:not(.is-cordova) {
 				.transform(translateX(-100%));
 			}
 		}
+
+		&.embedded-view {
+			.flex-opened {
+				right: 0;
+
+				.flex-tab {
+					transform: none;
+				}
+			}
+		}
 	}
 }
 
@@ -4981,6 +4992,10 @@ a + br.only-after-a {
 		.footer {
 			min-height: 36px;
 			padding: 0;
+
+			.message-form {
+				margin-bottom: 0;
+			}
 
 			.message-input {
 				border-width: 0;
