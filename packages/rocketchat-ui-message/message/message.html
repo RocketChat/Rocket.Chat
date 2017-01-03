@@ -25,9 +25,9 @@
 			{{/if}}
 		{{/if}}
 		{{#if alias}}
-			<button type="button" class="user user-card-message" data-username="{{u.username}}" tabindex="1">{{alias}} <span class="message-alias border-component-color color-info-font-color">@{{u.username}}</span></button>
+			<button type="button" class="user user-card-message color-primary-font-color" data-username="{{u.username}}" tabindex="1">{{alias}} <span class="message-alias border-component-color color-info-font-color">@{{u.username}}</span></button>
 		{{else}}
-			<button type="button" class="user user-card-message" data-username="{{u.username}}" tabindex="1">{{u.username}}</button>
+			<button type="button" class="user user-card-message color-primary-font-color" data-username="{{u.username}}" tabindex="1">{{u.username}}</button>
 		{{/if}}
 		<span class="info border-component-color color-info-font-color">
 		{{#each roleTags}}
@@ -50,7 +50,7 @@
 				<i class="icon-cog message-cog" aria-label="{{_ "Actions"}}"></i>
 			</div>
 		</span>
-		<div class="body {{system true}}" dir="auto">
+		<div class="body color-primary-font-color {{system true}}" dir="auto">
 			{{{body}}}
 			{{#if hasOembed}}
 				{{#each urls}}
