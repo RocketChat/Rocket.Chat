@@ -38,8 +38,8 @@ Template.adminImportPrepare.events
 			reader.onloadend = ->
 				Meteor.call 'prepareImport', importer.key, reader.result, blob.type, blob.name, (error, data) ->
 					if error
-						console.warn 'Errored out preparing the import:', error
-						handleError(error)
+						toastr.error t('Invalid_Import_File_Type')
+						template.preparing.set false
 						return
 
 					if !data

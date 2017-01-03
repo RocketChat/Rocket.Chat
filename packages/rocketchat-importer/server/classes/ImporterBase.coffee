@@ -62,8 +62,12 @@ Importer.Base = class Importer.Base
 	#
 	prepare: (dataURI, sentContentType, fileName) =>
 		fileType = @getFileType(new Buffer(dataURI.split(',')[1], 'base64'))
-		if fileType.mime isnt @mimeType
-			throw new Error "Invalid file uploaded to import #{@name} data from." #TODO: Make translatable
+		@logger.debug 'Uploaded file information is:', fileType
+		@logger.debug 'Expected file type is:', @mimeType
+
+		if not fileType or fileType.mime isnt @mimeType
+			@logger.warn "Invalid file uploaded for the #{@name} importer."
+			throw new Meteor.Error('error-invalid-file-uploaded', "Invalid file uploaded to import #{@name} data from.", { step: 'prepare' })
 
 		@updateProgress Importer.ProgressStep.PREPARING_STARTED
 		@updateRecord { 'file': fileName }
