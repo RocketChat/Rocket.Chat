@@ -9,7 +9,7 @@
 		<div class="content">
 			{{#if hasPermission 'view-statistics'}}
 				<h3>{{_ "Rocket.Chat"}}</h3>
-				<table class="statistics-table">
+				<table class="statistics-table secondary-background-color">
 					<tr class="admin-table-row">
 						<th class="content-background-color border-component-color">{{_ "Version"}}</th>
 						<td class="border-component-color">{{statistics.version}}</td>
@@ -46,7 +46,7 @@
 			{{/if}}
 
 			<h3>{{_ "Commit"}}</h3>
-			<table class="statistics-table">
+			<table class="statistics-table secondary-background-color">
 				<tr class="admin-table-row">
 					<th class="content-background-color border-component-color">{{_ "Hash"}}</th>
 					<td class="border-component-color">{{info.commit.hash}}</td>
@@ -76,7 +76,7 @@
 			{{#if hasPermission 'view-statistics'}}
 				{{#if isReady}}
 					<h3>{{_ "Runtime_Environment"}}</h3>
-					<table class="statistics-table">
+					<table class="statistics-table secondary-background-color">
 						<tr class="admin-table-row">
 							<th class="content-background-color border-component-color">{{_ "OS_Type"}}</th>
 							<td class="border-component-color">{{statistics.os.type}}</td>
@@ -120,7 +120,7 @@
 					</table>
 
 					<h3>{{_ "Build_Environment"}}</h3>
-					<table class="statistics-table">
+					<table class="statistics-table secondary-background-color">
 						<tr class="admin-table-row">
 							<th class="content-background-color border-component-color">{{_ "OS_Platform"}}</th>
 							<td class="border-component-color">{{build.platform}}</td>
@@ -145,7 +145,7 @@
 
 
 					<h3>{{_ "Usage"}}</h3>
-					<table class="statistics-table">
+					<table class="statistics-table secondary-background-color">
 						<tr class="admin-table-row">
 							<th class="content-background-color border-component-color">{{_ "Stats_Total_Users"}}</th>
 							<td class="border-component-color">{{statistics.totalUsers}}</td>
