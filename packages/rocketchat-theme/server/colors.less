@@ -65,6 +65,10 @@
 	background-color: @secondary-background-color;
 }
 
+.secondary-font-color {
+	color: @secondary-font-color;
+}
+
 .border-component-color {
 	border-color: @component-color;
 }
@@ -209,11 +213,6 @@
 		color: @selection-color;
 	}
 
-	i,
-	.settings-description {
-		color: @secondary-font-color;
-	}
-
 	.settings-alert {
 		background-color: @pending-background;
 		border-color: @pending-border;
@@ -291,11 +290,6 @@ a:hover {
 	}
 }
 
-.load-more .load-more-loading,
-.secondary-text {
-	color: @secondary-font-color;
-}
-
 .alert-icon {
 	color: @success-color;
 }
@@ -313,10 +307,6 @@ a:hover {
 	.terminal {
 		background-color: #444444;
 		color: white;
-
-		.time {
-			color: @secondary-font-color;
-		}
 	}
 
 	.section-content {
@@ -343,10 +333,6 @@ a:hover {
 	&:nth-of-type(even) {
 		background-color: @transparent-lightest;
 	}
-}
-
-.settings-file-preview .preview.no-file {
-	color: @secondary-font-color;
 }
 
 .new-logs {
@@ -388,15 +374,6 @@ a:hover {
 /** ----------------------------------------------------------------------------
  * Asides (external to main application views)
  */
-.spotlight {
-	> .spotlight-input {
-		color: @secondary-font-color;
-
-		> i {
-			color: @secondary-font-color;
-		}
-	}
-}
 
 .full-page,
 .page-loading {
@@ -478,8 +455,6 @@ a:hover {
 	}
 
 	.message-form {
-		color: @secondary-font-color;
-
 		.message-buttons {
 			.buttonColors(lighten(@primary-font-color, 25%), @secondary-background-color);
 
@@ -510,10 +485,6 @@ a:hover {
 	&.selected {
 		color: @primary-action-contrast;
 		background-color: @primary-action-color;
-	}
-
-	span {
-		color: @secondary-font-color;
 	}
 }
 
@@ -554,10 +525,6 @@ a:hover {
 
 	&.new-day::after {
 		border-color: @component-color;
-	}
-
-	.toggle-options {
-		color: @secondary-font-color;
 	}
 
 	.message-dropdown,
@@ -798,10 +765,6 @@ i.status-offline {
 }
 
 .user-view {
-	p {
-		color: @secondary-font-color;
-	}
-
 	.box::after,
 	.stats li,
 	.tags li {
