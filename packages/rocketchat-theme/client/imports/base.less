@@ -197,7 +197,7 @@ blockquote {
 			right: 0;
 			left: 0;
 			top: 0;
-			.transition(background-color, 0.5s, linear);
+			transition: background-color, 0.5s, linear;
 			height: 16px;
 		}
 
@@ -211,7 +211,7 @@ blockquote {
 			font-size: 12px;
 			line-height: 16px;
 			padding: 0 5px;
-			.transition(color, 0.5s, linear);
+			transition: color, 0.5s, linear;
 			left: 0;
 			text-align: center;
 		}
@@ -335,6 +335,20 @@ blockquote {
 
 	table {
 		overflow: hidden;
+		margin-bottom: 30px;
+		width: 100%;
+
+		th,
+		td {
+			vertical-align: middle;
+			padding: 0.6rem 0.7rem;
+			text-align: left;
+			border-width: 0 0 1px;
+		}
+
+		th {
+			white-space: nowrap;
+		}
 	}
 }
 
@@ -559,7 +573,7 @@ input[type='password'] {
 input.input-forward {
 	width: 0;
 	visibility: hidden;
-	.transition(width 0.5s ease-in);
+	transition: width 0.5s ease-in;
 }
 
 input.input-forward.show {
@@ -770,7 +784,7 @@ label.required::after {
 	top: 5px;
 	left: 0;
 	will-change: transform;
-	.transition(transform .2s ease-out .1s);
+	transition: transform 0.2s ease-out 0.1s;
 
 	i {
 		display: block;
@@ -778,7 +792,7 @@ label.required::after {
 		width: 20px;
 		margin: 5px 0;
 		opacity: 0.8;
-		.transition(transform .2s ease-out);
+		transition: transform 0.2s ease-out;
 	}
 
 	.unread-burger-alert {
@@ -835,12 +849,12 @@ label.required::after {
 
 	&::before {
 		.transform(rotate(135deg) translateX(-4px));
-		.transition(transform .185s ease-out, background .15s ease-out);
+		transition: transform 0.185s ease-out, background 0.15s ease-out;
 	}
 
 	&::after {
 		.transform(rotate(-135deg) translateX(-4px));
-		.transition(transform .185s ease-out, background .15s ease-out);
+		transition: transform 0.185s ease-out, background 0.15s ease-out;
 	}
 
 	&.left {
@@ -931,7 +945,7 @@ label.required::after {
 	height: auto;
 	opacity: 1;
 	visibility: visible;
-	.transition(opacity .2s ease-out);
+	transition: opacity 0.2s ease-out;
 
 	&.animated-hidden {
 		visibility: hidden;
@@ -1002,7 +1016,7 @@ label.required::after {
 			position: relative;
 			width: 130px;
 			text-align: left;
-			.transition(color .15s ease-out);
+			transition: color 0.15s ease-out;
 		}
 	}
 
@@ -1017,7 +1031,7 @@ label.required::after {
 		-webkit-overflow-scrolling: touch;
 		direction: rtl;
 		.calc(height, ~'100% - ' @header-min-height + @footer-min-height);
-		.transition(transform .3s cubic-bezier(.5, 0, .1, 1));
+		transition: transform 0.3s cubic-bezier(0.5, 0, 0.1, 1);
 		z-index: 99;
 
 		&.animated-hidden {
@@ -1100,7 +1114,7 @@ label.required::after {
 	overflow-y: auto;
 	overflow-x: hidden;
 	width: @rooms-box-width;
-	.transition(transform .15s cubic-bezier(.5, 0, .1, 1));
+	transition: transform 0.15s cubic-bezier(0.5, 0, 0.1, 1);
 
 	&.animated-hidden {
 		.transform(translateX(-100%));
@@ -1115,7 +1129,7 @@ label.required::after {
 	header,
 	footer,
 	.content {
-		.transition(transform .425s cubic-bezier(0, .8, .05, 1));
+		transition: transform 0.425s cubic-bezier(0, 0.8, 0.05, 1);
 	}
 
 	> section {
@@ -1467,7 +1481,7 @@ label.required::after {
 				top: 2px;
 				opacity: 0;
 				.transform(translateX(-10px));
-				.transition(opacity .15s ease .35s, transform .12s ease-out .35s);
+				transition: opacity 0.15s ease 0.35s, transform 0.12s ease-out 0.35s;
 			}
 
 			&:hover {
@@ -1522,7 +1536,7 @@ label.required::after {
 			opacity: 0;
 			display: block;
 			top: 7px;
-			.transition(opacity .12s ease);
+			transition: opacity 0.12s ease;
 
 			i {
 				margin: 0 1px;
@@ -1589,7 +1603,7 @@ label.required::after {
 		overflow: hidden;
 
 		&.has-unread {
-			.transition(max-height 1s ease-in, opacity .5s linear);
+			transition: max-height 1s ease-in, opacity 0.5s linear;
 			max-height: 5000px;
 			opacity: 1;
 		}
@@ -1780,7 +1794,7 @@ label.required::after {
 	width: auto;
 	height: auto;
 	will-change: transform;
-	.transition(right .25s cubic-bezier(.5, 0, .1, 1));
+	transition: right 0.25s cubic-bezier(0.5, 0, 0.1, 1);
 
 	&.flex-opened {
 		right: @flex-tab-width + 40px;
@@ -2176,7 +2190,7 @@ label.required::after {
 	box-shadow:
 		0 1px 1px 0 rgba(0, 0, 0, 0.2),
 		0 2px 10px 0 rgba(0, 0, 0, 0.16);
-	.transition(transform 0.4s ease, visibility 0.3s ease, opacity 0.3s ease);
+	transition: transform 0.4s ease, visibility 0.3s ease, opacity 0.3s ease;
 	.transform(translateY(-10px));
 	opacity: 0;
 	visibility: hidden;
@@ -2202,7 +2216,7 @@ label.required::after {
 			height: 100%;
 			width: 0%;
 			z-index: 1;
-			.transition(width, 1s, ease-out);
+			transition: width, 1s, ease-out;
 		}
 
 		.upload-progress-text {
@@ -2331,7 +2345,7 @@ label.required::after {
 				align-items: center;
 				justify-content: center;
 				position: relative;
-				.transition(background-color 0.1s linear, color 0.1s linear);
+				transition: background-color 0.1s linear, color 0.1s linear;
 
 				i {
 					font-size: 18px;
@@ -2394,7 +2408,7 @@ label.required::after {
 			right: 20px;
 			opacity: 0.5;
 			white-space: nowrap;
-			.transition(opacity .2 linear);
+			transition: opacity 0.2 linear;
 
 			> * {
 				margin: 0 3px;
@@ -2587,7 +2601,7 @@ label.required::after {
 		bottom: 8px;
 		left: 50%;
 		z-index: 15;
-		.transition(transform 0.3s ease-out);
+		transition: transform 0.3s ease-out;
 		.transform(translateY(0));
 
 		&.not {
@@ -2608,17 +2622,16 @@ label.required::after {
 		right: 20px;
 		border-top-left-radius: 4px;
 		border-top-right-radius: 4px;
-
-		button {
-			.unselectable;
-			cursor: pointer;
-		}
-
-		.transition(transform 0.3s ease-out);
+		transition: transform 0.3s ease-out;
 		.transform(translateY(0));
 
 		&.not {
 			.transform(translateY(150%));
+		}
+
+		button {
+			.unselectable;
+			cursor: pointer;
 		}
 	}
 
@@ -2939,7 +2952,7 @@ label.required::after {
 
 	.body {
 		opacity: 1;
-		.transition(opacity 1s linear);
+		transition: opacity 1s linear;
 		margin-top: 2px;
 
 		.inline-image {
@@ -3172,7 +3185,7 @@ body:not(.is-cordova) {
 	max-width: @flex-tab-width;
 	z-index: 110;
 	overflow-x: visible;
-	.transition(transform .25s cubic-bezier(.5, 0, .1, 1));
+	transition: transform 0.25s cubic-bezier(0.5, 0, 0.1, 1);
 
 	.control {
 		.header {
@@ -3201,11 +3214,11 @@ body:not(.is-cordova) {
 			border-width: 0 0 1px;
 			cursor: pointer;
 			.transform(translateX(-27px));
-			.transition(transform .25s ease-out .475s, background .075s ease-out .5s);
+			transition: transform 0.25s ease-out 0.475s, background 0.075s ease-out 0.5s;
 
 			i {
 				.transform-origin(50%, 50%, 0);
-				.transition(transform .3s ease-out);
+				transition: transform 0.3s ease-out;
 				height: 12.5px;
 				vertical-align: top;
 				margin-top: 1px;
@@ -3258,7 +3271,7 @@ body:not(.is-cordova) {
 		-webkit-overflow-scrolling: touch;
 
 		> div {
-			.transition(transform .45s cubic-bezier(.5, 0, 0, 1), opacity .125s ease-out .1s);
+			transition: transform 0.45s cubic-bezier(0.5, 0, 0, 1), opacity 0.125s ease-out 0.1s;
 		}
 
 		> .animated-hidden {
@@ -3538,7 +3551,7 @@ body:not(.is-cordova) {
 			padding: 0 5px;
 			line-height: 22px;
 			position: relative;
-			.transition(background .18s ease, colo .18s ease);
+			transition: background 0.18s ease, color 0.18s ease;
 
 			&::before {
 				content: attr(data-stats);
@@ -3592,7 +3605,7 @@ body:not(.is-cordova) {
 			padding: 0 5px;
 			line-height: 22px;
 			position: relative;
-			.transition(background .18s ease, colo .18s ease);
+			transition: background 0.18s ease, color 0.18s ease;
 
 			&::before {
 				content: attr(data-stats);
@@ -4258,7 +4271,7 @@ body:not(.is-cordova) {
 	width: 100%;
 	padding: 12px;
 	border: 0;
-	.transition(background-color .15s ease-out, border-color .15s ease-out);
+	transition: background-color 0.15s ease-out, border-color 0.15s ease-out;
 
 	&:first-child {
 		margin-top: 10px;
@@ -4317,23 +4330,6 @@ body:not(.is-cordova) {
 
 	.avatar-file-input::-webkit-file-upload-button {
 		visibility: hidden;
-	}
-}
-
-.page-container table {
-	margin-bottom: 30px;
-	width: 100%;
-
-	th,
-	td {
-		vertical-align: middle;
-		padding: 0.6rem 0.7rem;
-		text-align: left;
-		border-width: 0 0 1px;
-	}
-
-	th {
-		white-space: nowrap;
 	}
 }
 
@@ -4419,10 +4415,10 @@ body:not(.is-cordova) {
 
 		.main-content,
 		.flex-tab-bar {
-			.transition(transform .2s linear);
+			transition: transform 0.2s linear;
 
 			&.notransition {
-				.transition(transform .0s);
+				transition: transform 0;
 			}
 		}
 
@@ -4779,7 +4775,7 @@ body:not(.is-cordova) {
 	cursor: pointer;
 	bottom: 8px;
 	left: 50%;
-	.transition(transform 0.3s ease-out);
+	transition: transform 0.3s ease-out;
 	.transform(translateY(0));
 
 	&.not {
