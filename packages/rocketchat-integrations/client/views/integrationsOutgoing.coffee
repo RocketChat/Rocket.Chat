@@ -136,11 +136,11 @@ Template.integrationsOutgoing.events
 					FlowRouter.go "admin-integrations"
 
 	"click .button-fullscreen": ->
-		$('.code-mirror-box').addClass('code-mirror-box-fullscreen');
+		$('.code-mirror-box').addClass('code-mirror-box-fullscreen content-background-color');
 		$('.CodeMirror')[0].CodeMirror.refresh()
 
 	"click .button-restore": ->
-		$('.code-mirror-box').removeClass('code-mirror-box-fullscreen');
+		$('.code-mirror-box').removeClass('code-mirror-box-fullscreen content-background-color');
 		$('.CodeMirror')[0].CodeMirror.refresh()
 
 	"click .submit > .save": ->
