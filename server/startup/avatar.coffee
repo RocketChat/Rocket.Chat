@@ -38,6 +38,8 @@ Meteor.startup ->
 		params =
 			username: decodeURIComponent(req.url.replace(/^\//, '').replace(/\?.*$/, ''))
 
+		username = params.username.replace(/\.jpg$/, '').replace(/^@/, '')
+
 		if _.isEmpty params.username
 			res.writeHead 403
 			res.write 'Forbidden'
@@ -46,15 +48,13 @@ Meteor.startup ->
 
 		if params.username[0] isnt '@'
 			if Meteor.settings?.public?.sandstorm
-				user = RocketChat.models.Users.findOneByUsername(params.username.replace('.jpg', ''))
+				user = RocketChat.models.Users.findOneByUsername(username)
 				if user?.services?.sandstorm?.picture
 					res.setHeader 'Location', user.services.sandstorm.picture
 					res.writeHead 302
 					res.end()
 					return
-			file = RocketChatFileAvatarInstance.getFileWithReadStream encodeURIComponent("#{params.username.replace('.jpg', '')}.jpg")
-		else
-			params.username = params.username.replace '@', ''
+			file = RocketChatFileAvatarInstance.getFileWithReadStream encodeURIComponent("#{username}.jpg")
 
 		#console.log "[avatar] checking username #{@params.username} (derrived from path #{req.url})"
 		res.setHeader 'Content-Disposition', 'inline'
@@ -74,7 +74,6 @@ Meteor.startup ->
 
 			colors = ['#F44336','#E91E63','#9C27B0','#673AB7','#3F51B5','#2196F3','#03A9F4','#00BCD4','#009688','#4CAF50','#8BC34A','#CDDC39','#FFC107','#FF9800','#FF5722','#795548','#9E9E9E','#607D8B']
 
-			username = params.username.replace('.jpg', '')
 			color = ''
 			initials = ''
 			if username is "?"
