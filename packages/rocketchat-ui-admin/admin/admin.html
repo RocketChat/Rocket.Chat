@@ -191,13 +191,13 @@
 												<div class="settings-description">{{{RocketChatMarkdown description}}}</div>
 											{{/if}}
 											{{#if alert}}
-												<div class="settings-alert pending-color"><i class="icon-attention secondary-font-color"></i>{{{_ alert}}}</div>
+												<div class="settings-alert pending-color background-pending-background"><i class="icon-attention secondary-font-color"></i>{{{_ alert}}}</div>
 											{{/if}}
 										</div>
 										{{#unless $eq group._id 'Assets'}}
 											{{#unless isDefaultValue _id}}
 												<button text="{{_ 'Reset'}}" data-setting="{{_id}}" class="reset-setting button danger">
-													<i class="icon-ccw secondary-font-color"></i>
+													<i class="icon-ccw secondary-font-color color-error-contrast"></i>
 												</button>
 											{{/unless}}
 										{{/unless}}
