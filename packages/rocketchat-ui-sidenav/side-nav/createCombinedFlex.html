@@ -15,18 +15,18 @@
 				<span>{{_ "Private"}}</span>
 				<div class="input checkbox toggle">
 					<input type="checkbox" id="channel-type" {{privateSwitchDisabled}} {{privateSwitchChecked}}>
-					<label for="channel-type"></label>
+					<label class="color-tertiary-font-color" for="channel-type"></label>
 				</div>
 			</div>
 			<div class="input-line toggle">
 				<span>{{_ "Read_only_channel"}}</span>
 				<div class="input checkbox toggle">
 					<input type="checkbox" id="channel-ro">
-					<label for="channel-ro"></label>
+					<label class="color-tertiary-font-color" for="channel-ro"></label>
 				</div>
 			</div>
 			<div class="input-line no-icon">
-				<label for="channel-members">{{_ "Select_users"}}</label>
+				<label class="color-tertiary-font-color" for="channel-members">{{_ "Select_users"}}</label>
 				{{> inputAutocomplete settings=autocompleteSettings id="channel-members" class="search" placeholder=(_ "Search_by_username") autocomplete="off"}}
 				<ul class="selected-users">
 					{{#each selectedUsers}}
