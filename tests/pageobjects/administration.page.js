@@ -42,6 +42,23 @@ class Administration extends Page {
 	get rolesNewRoleScope() { return browser.element('[name="scope"]'); }
 	get rolesAddBtn() { return browser.element('button.add'); }
 	get rolesRoomsSearchForm() { return browser.element('.search [name="room"]'); }
+
+	//permissions grids checkboxes
+
+	get rolesUserCreateC() { return browser.element('[name="perm[user][create-c]"]'); }
+	get rolesUserCreateP() { return browser.element('[name="perm[user][create-p]"]'); }
+	get rolesUserCreateD() { return browser.element('[name="perm[user][create-d]"]'); }
+	get rolesUserMentionAll() { return browser.element('[name="perm[user][mention-all]"]'); }
+	get rolesUserPreviewC() { return browser.element('[name="perm[user][preview-c-room]"]'); }
+	get rolesUserViewC() { return browser.element('[name="perm[user][view-c-room]"]'); }
+	get rolesUserViewD() { return browser.element('[name="perm[user][view-d-room]"]'); }
+	get rolesUserViewP() { return browser.element('[name="perm[user][view-p-room]"]'); }
+	get rolesUserHistory() { return browser.element('[name="perm[user][view-history]"]'); }
+	get rolesOwnerDeleteMessage() { return browser.element('[name="perm[owner][delete-message]"]'); }
+	get rolesOwnerEditMessage() { return browser.element('[name="perm[owner][edit-message]"]'); }
+	get rolesOwnerEditMessage() { return browser.element('[name="perm[owner][edit-message]"]'); }
+
+
 	get emojiFilter() { return browser.element('#emoji-filter'); }
 
 	//settings
