@@ -114,7 +114,7 @@ Meteor.startup ->
 		res.setHeader 'Cache-Control', 'public, max-age=0'
 		res.setHeader 'Expires', '-1'
 		res.setHeader 'Last-Modified', file.uploadDate?.toUTCString() or new Date().toUTCString()
-		res.setHeader 'Content-Type', file.contentType
+		res.setHeader 'Content-Type', file.contentType or 'image/jpeg'
 		res.setHeader 'Content-Length', file.length
 
 		file.readStream.pipe res
