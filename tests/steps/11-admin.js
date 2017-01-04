@@ -16,6 +16,13 @@ describe('Admin Login', () => {
 		sideNav.openChannel('general');
 	});
 
+	after(() => {
+		sideNav.preferencesClose.waitForVisible(5000);
+		sideNav.preferencesClose.click();
+		sideNav.getChannelFromList('general').waitForExist(5000);
+		sideNav.openChannel('general');
+	});
+
 	describe('Admin view', () => {
 		before(() => {
 			sideNav.accountBoxUserName.click();
