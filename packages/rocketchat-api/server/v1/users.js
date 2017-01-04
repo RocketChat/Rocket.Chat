@@ -26,9 +26,9 @@ RocketChat.API.v1.addRoute('users.create', { authRequired: true }, {
 				RocketChat.saveCustomFields(newUserId, this.bodyParams.customFields);
 			}
 
-			if (this.bodyParams.active === false) {
+			if (typeof this.bodyParams.active !== 'undefined') {
 				Meteor.runAsUser(this.userId, () => {
-					Meteor.call('setUserActiveStatus', newUserId, false);
+					Meteor.call('setUserActiveStatus', newUserId, this.bodyParams.active);
 				});
 			}
 
