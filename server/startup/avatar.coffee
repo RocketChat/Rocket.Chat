@@ -18,7 +18,11 @@ Meteor.startup ->
 		height = RocketChat.settings.get 'Accounts_AvatarSize'
 		width = height
 
-		RocketChatFile.gm(readStream, file.fileName).background('#ffffff').resize(width, height+'^>').gravity('Center').extent(width, height).stream('jpeg').pipe(writeStream)
+		# - Resize the image using the width or height as minium value
+		# - Keep the image aspect ratio
+		# - Crop image to keep max size of width and height
+		# - Use extent to set background color for transparent images
+		RocketChatFile.gm(readStream, file.fileName).background('#ffffff').resize(width, height+'^').gravity('Center').crop(width, height).extent(width, height).stream('jpeg').pipe(writeStream)
 
 	path = "~/uploads"
 
@@ -34,6 +38,8 @@ Meteor.startup ->
 		params =
 			username: decodeURIComponent(req.url.replace(/^\//, '').replace(/\?.*$/, ''))
 
+		username = params.username.replace(/\.jpg$/, '').replace(/^@/, '')
+
 		if _.isEmpty params.username
 			res.writeHead 403
 			res.write 'Forbidden'
@@ -42,15 +48,13 @@ Meteor.startup ->
 
 		if params.username[0] isnt '@'
 			if Meteor.settings?.public?.sandstorm
-				user = RocketChat.models.Users.findOneByUsername(params.username.replace('.jpg', ''))
+				user = RocketChat.models.Users.findOneByUsername(username)
 				if user?.services?.sandstorm?.picture
 					res.setHeader 'Location', user.services.sandstorm.picture
 					res.writeHead 302
 					res.end()
 					return
-			file = RocketChatFileAvatarInstance.getFileWithReadStream encodeURIComponent(params.username)
-		else
-			params.username = params.username.replace '@', ''
+			file = RocketChatFileAvatarInstance.getFileWithReadStream encodeURIComponent("#{username}.jpg")
 
 		#console.log "[avatar] checking username #{@params.username} (derrived from path #{req.url})"
 		res.setHeader 'Content-Disposition', 'inline'
@@ -70,7 +74,6 @@ Meteor.startup ->
 
 			colors = ['#F44336','#E91E63','#9C27B0','#673AB7','#3F51B5','#2196F3','#03A9F4','#00BCD4','#009688','#4CAF50','#8BC34A','#CDDC39','#FFC107','#FF9800','#FF5722','#795548','#9E9E9E','#607D8B']
 
-			username = params.username.replace('.jpg', '')
 			color = ''
 			initials = ''
 			if username is "?"
@@ -111,7 +114,7 @@ Meteor.startup ->
 		res.setHeader 'Cache-Control', 'public, max-age=0'
 		res.setHeader 'Expires', '-1'
 		res.setHeader 'Last-Modified', file.uploadDate?.toUTCString() or new Date().toUTCString()
-		res.setHeader 'Content-Type', 'image/jpeg'
+		res.setHeader 'Content-Type', file.contentType
 		res.setHeader 'Content-Length', file.length
 
 		file.readStream.pipe res
