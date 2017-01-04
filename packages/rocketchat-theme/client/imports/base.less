@@ -674,6 +674,50 @@ label.required::after {
 		margin-bottom: 4px;
 		width: 100%;
 	}
+
+	&[disabled] {
+		cursor: initial;
+	}
+
+	&.external-login {
+		color: white;
+
+		&.facebook {
+			background-color: #325c99;
+		}
+
+		&.twitter {
+			background-color: #02acec;
+		}
+
+		&.google {
+			background-color: #dd4b39;
+		}
+
+		&.github {
+			background-color: #4c4c4c;
+		}
+
+		&.gitlab {
+			background-color: #373d47;
+		}
+
+		&.trello {
+			background-color: #026aa7;
+		}
+
+		&.meteor-developer {
+			background-color: #de4f4f;
+		}
+
+		&.wordpress {
+			background-color: #1e8cbe;
+		}
+
+		&.linkedin {
+			background-color: #1b86bc;
+		}
+	}
 }
 
 .buttons-group {
@@ -4502,6 +4546,13 @@ body:not(.is-cordova) {
 }
 
 .webrtc-video {
+	&.webrtc-video-overlay,
+	.main-video,
+	.state-overlay::before,
+	.videos .video-item {
+		color: #ffffff;
+	}
+
 	&.webrtc-video-overlay {
 		position: fixed;
 		left: 0;
@@ -4514,7 +4565,7 @@ body:not(.is-cordova) {
 		justify-content: center;
 
 		.main-video {
-			video {
+			.webrtc-video-element {
 				max-width: 100%;
 				width: auto;
 			}
@@ -4524,7 +4575,7 @@ body:not(.is-cordova) {
 	.main-video {
 		text-align: center;
 
-		video {
+		.webrtc-video-element {
 			width: 100%;
 			min-height: 299px;
 		}
@@ -4577,7 +4628,7 @@ body:not(.is-cordova) {
 				font-weight: bold;
 			}
 
-			video {
+			.webrtc-video-element {
 				height: 70px;
 				max-width: 100px;
 			}
@@ -4614,6 +4665,10 @@ body:not(.is-cordova) {
 			}
 		}
 	}
+}
+
+.webrtc-video-element {
+	background-color: #000000;
 }
 
 .alert-icon {
@@ -4768,6 +4823,7 @@ body:not(.is-cordova) {
 	.buttons {
 		text-align: right;
 		border-width: 0 1px 1px;
+		background-color: #f7f7f7;
 	}
 
 	&.code-mirror-box-fullscreen {
