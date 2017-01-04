@@ -113,8 +113,18 @@
 	background-color: @tertiary-background-color;
 }
 
+// Derivative Colors
+
 .color-tertiary-font-color {
 	color: @tertiary-font-color;
+}
+
+.error-background {
+	background-color: @error-background;
+}
+
+.error-border {
+	border-color: @error-border;
 }
 
 // transparent
@@ -317,7 +327,6 @@ a:hover {
 }
 
 .error {
-	background-color: @error-background;
 	border-color: @error-color;
 }
 
@@ -364,10 +373,6 @@ a:hover {
 	.title {
 		background-color: @error-color;
 		color: white;
-	}
-
-	pre {
-		border-color: @error-border;
 	}
 }
 
@@ -433,11 +438,6 @@ a:hover {
 
 .container-bars {
 	.upload-progress {
-		&.upload-error {
-			background-color: @error-background;
-			border-color: @error-border;
-		}
-
 		.upload-progress-progress {
 			background-color: @success-background;
 		}
@@ -850,11 +850,6 @@ i.status-offline {
  * Feedback and overlay content
  */
 
-.livechat-form .error,
-.offline .error {
-	background-color: @error-background;
-}
-
 .alert-warning {
 	color: darken(@pending-color, 25%);
 	background-color: @pending-background;
@@ -863,11 +858,6 @@ i.status-offline {
 
 .alert-link {
 	.linkColors(@link-font-color, darken(@link-font-color, 10%));
-}
-
-.alert-danger {
-	background-color: @error-background;
-	border-color: @error-border;
 }
 
 label.required::after {
