@@ -18,7 +18,10 @@ Meteor.startup ->
 		height = RocketChat.settings.get 'Accounts_AvatarSize'
 		width = height
 
-		RocketChatFile.gm(readStream, file.fileName).background('#ffffff').resize(width, height+'^>').gravity('Center').extent(width, height).stream('jpeg').pipe(writeStream)
+		# - Resize the image using the width or height as minium value
+		# - Keep the image aspect ratio
+		# - Crop image to keep max size of width and height
+		RocketChatFile.gm(readStream, file.fileName).resize(width, height+'^').gravity('Center').crop(width, height).stream('jpeg').pipe(writeStream)
 
 	path = "~/uploads"
 
