@@ -2,6 +2,7 @@
 /* eslint-disable func-names, prefer-arrow-callback */
 
 import sideNav from '../pageobjects/side-nav.page';
+import flexTab from '../pageobjects/flex-tab.page';
 import admin from '../pageobjects/administration.page';
 
 //test data imports
@@ -15,11 +16,10 @@ describe('Admin Login', () => {
 		sideNav.openChannel('general');
 	});
 
-	describe('Enter the admin view', () => {
+	describe('Admin view', () => {
 		before(() => {
 			sideNav.accountBoxUserName.click();
 			sideNav.admin.waitForVisible(5000);
-
 		});
 
 		it('Enter the admin view', () => {
@@ -76,6 +76,7 @@ describe('Admin Login', () => {
 			after(() => {
 				admin.infoLink.click();
 			});
+
 			describe('render', () => {
 				it('should show the search form', () => {
 					admin.roomsSearchForm.isVisible().should.be.true;
@@ -105,7 +106,6 @@ describe('Admin Login', () => {
 			describe('filter text', () => {
 				before(() => {
 					admin.roomsFilter.click();
-					browser.pause(5000);
 					admin.roomsFilter.setValue('general');
 				});
 
@@ -118,8 +118,32 @@ describe('Admin Login', () => {
 					admin.roomsGeneralChannel.isVisible().should.be.true;
 				});
 			});
+
+			describe('filter text with wrong channel', () => {
+				before(() => {
+					admin.roomsFilter.click();
+					browser.pause(5000);
+					admin.roomsFilter.setValue('something else');
+				});
+
+				after(() => {
+					admin.roomsFilter.click();
+					admin.roomsFilter.setValue('');
+				});
+
+				it('should not show the general channel', () => {
+					admin.roomsGeneralChannel.isVisible().should.be.false;
+				});
+			});
+
 			describe('filter checkbox', () => {
 				var checkbox = 1;
+				before(() => {
+					admin.roomsFilter.setValue('');
+					//add value triggers a key event that changes search±±±±±±±±±
+					admin.roomsFilter.addValue(' ');
+					admin.roomsGeneralChannel.waitForVisible(5000);
+				});
 				beforeEach(() => {
 					switch (checkbox) {
 						case 1:
@@ -162,76 +186,367 @@ describe('Admin Login', () => {
 					admin.roomsGeneralChannel.isVisible().should.be.false;
 				});
 			});
-			describe('users', () => {
+		});
+
+		describe('users', () => {
+			before(() => {
+				admin.usersLink.waitForVisible(5000);
+				admin.usersLink.click();
+				admin.usersFilter.waitForVisible(5000);
+			});
+
+			after(() => {
+				admin.infoLink.click();
+			});
+
+			it('should show the search form', () => {
+				admin.usersFilter.isVisible().should.be.true;
+			});
+
+
+			it('should show rocket.cat', () => {
+				admin.usersRocketCat.isVisible().should.be.true;
+			});
+
+			describe('filter text', () => {
 				before(() => {
-					admin.usersLink.waitForVisible(5000);
-					admin.usersLink.click();
-					admin.usersFilter.waitForVisible(5000);
+					admin.usersFilter.click();
+					browser.pause(5000);
+					admin.usersFilter.setValue('Rocket.Cat');
 				});
 
 				after(() => {
-					admin.infoLink.click();
+					admin.usersFilter.click();
+					admin.usersFilter.setValue('');
 				});
-
-				it('should show the search form', () => {
-					admin.usersFilter.isVisible().should.be.true;
-				});
-
 
 				it('should show rocket.cat', () => {
+					admin.usersRocketCat.waitForVisible();
 					admin.usersRocketCat.isVisible().should.be.true;
 				});
+			});
 
-				describe('filter text', () => {
+			describe('filter text with wrong user', () => {
+				before(() => {
+					admin.usersFilter.click();
+					browser.pause(5000);
+					admin.usersFilter.setValue('something else');
+				});
+
+				after(() => {
+					admin.usersFilter.click();
+					admin.usersFilter.setValue('');
+				});
+
+				it('should not show rocket.cat', () => {
+					admin.usersRocketCat.isVisible().should.be.false;
+				});
+			});
+
+			describe('users flex tab ', () => {
+				describe('send invitation', () => {
 					before(() => {
-						admin.usersFilter.click();
-						browser.pause(5000);
-						admin.usersFilter.setValue('Rocket.Cat');
+						flexTab.usersSendInvitationTab.waitForVisible(5000);
+						flexTab.usersSendInvitationTab.click();
+						flexTab.usersSendInvitationTextArea.waitForVisible(5000);
 					});
 
 					after(() => {
-						admin.usersFilter.click();
-						admin.usersFilter.setValue('');
+						flexTab.usersSendInvitationTab.waitForVisible(5000);
+						flexTab.usersSendInvitationTab.click();
+						flexTab.usersSendInvitationTextArea.waitForVisible(5000, true);
 					});
 
-					it('should show rocket.cat', () => {
-						admin.usersRocketCat.isVisible().should.be.true;
+					it('should show the send invitation text area', () => {
+						flexTab.usersSendInvitationTextArea.isVisible().should.be.true;
 					});
+
+					it('should show the cancel button', () => {
+						flexTab.usersButtonCancel.isVisible().should.be.true;
+					});
+
+					it('should show the send button', () => {
+						flexTab.usersSendInvitationSend.isVisible().should.be.true;
+					});
+				});
+
+				describe('create user ', () => {
+					before(() => {
+						flexTab.usersAddUserTab.waitForVisible(5000);
+						flexTab.usersAddUserTab.click();
+						flexTab.usersAddUserName.waitForVisible(5000);
+					});
+
+					after(() => {
+						flexTab.usersAddUserTab.waitForVisible(5000);
+						flexTab.usersAddUserTab.click();
+						flexTab.usersAddUserName.waitForVisible(5000, true);
+					});
+
+					it('should show the name field', () => {
+						flexTab.usersAddUserName.isVisible().should.be.true;
+					});
+
+					it('should show the username field', () => {
+						flexTab.usersAddUserUsername.isVisible().should.be.true;
+					});
+
+					it('should show the email field', () => {
+						flexTab.usersAddUserEmail.isVisible().should.be.true;
+					});
+
+					it('should show the verified checkbox', () => {
+						flexTab.usersAddUserVerifiedCheckbox.isVisible().should.be.true;
+					});
+
+					it('should show the password field', () => {
+						flexTab.usersAddUserPassword.isVisible().should.be.true;
+					});
+
+					it('should show the random password button', () => {
+						flexTab.usersAddUserRandomPassword.isVisible().should.be.true;
+					});
+
+					it('should show the require password change button', () => {
+						flexTab.usersAddUserChangePasswordCheckbox.isVisible().should.be.true;
+					});
+
+					it('should show the role dropdown', () => {
+						flexTab.usersAddUserRole.isVisible().should.be.true;
+					});
+
+					it('should show the join default channel checkbox', () => {
+						flexTab.usersAddUserDefaultChannelCheckbox.isVisible().should.be.true;
+					});
+
+					it('should show the send welcome checkbox', () => {
+						flexTab.usersAddUserWelcomeEmailCheckbox.isVisible().should.be.true;
+					});
+
+					it('should show the save button', () => {
+						flexTab.usersButtonSave.isVisible().should.be.true;
+					});
+
+					it('should show the cancel button', () => {
+						flexTab.usersButtonCancel.isVisible().should.be.true;
+					});
+				});
+			});
+		});
+
+		describe('roles', () => {
+			before(() =>{
+				admin.permissionsLink.waitForVisible(5000);
+				admin.permissionsLink.click();
+				admin.rolesPermissionGrid.waitForVisible(5000);
+			});
+
+			after(() => {
+				admin.infoLink.click();
+			});
+
+			it('should show the permissions grid', () => {
+				admin.rolesPermissionGrid.isVisible().should.be.true;
+			});
+
+			it('should show the new role button', () => {
+				admin.rolesNewRolesButton.isVisible().should.be.true;
+			});
+
+			it('should show the admin link', () => {
+				admin.rolesAdmin.isVisible().should.be.true;
+			});
+
+			describe('new role', () => {
+				before(() => {
+					admin.rolesNewRolesButton.waitForVisible(5000);
+					admin.rolesNewRolesButton.click();
+					admin.rolesReturnLink.waitForVisible(5000);
+				});
+
+				after(() => {
+					admin.rolesReturnLink.click();
+				});
+
+				it('should show the return to permissions', () => {
+					admin.rolesReturnLink.isVisible().should.be.true;
+				});
+
+				it('should show the new role name field', () => {
+					admin.rolesNewRoleName.isVisible().should.be.true;
+				});
+
+				it('should show the new role description field', () => {
+					admin.rolesNewRoleDesc.isVisible().should.be.true;
+				});
+
+				it('should show the new role scope', () => {
+					admin.rolesNewRoleScope.isVisible().should.be.true;
+				});
+			});
+
+			describe('admin role', () => {
+				before(() => {
+					admin.rolesAdmin.waitForVisible(5000);
+					admin.rolesAdmin.click();
+					admin.usersInternalAdmin.waitForVisible(5000);
+				});
+
+				after(() => {
+					admin.rolesReturnLink.click();
+				});
+
+				it('should show internal admin', () => {
+					admin.usersInternalAdmin.isVisible().should.be.true;
+				});
+			});
+		});
+
+		describe('general settings', () => {
+			before(() => {
+				admin.generalLink.waitForVisible(5000);
+				admin.generalLink.click();
+				admin.generalSiteUrl.waitForVisible(5000);
+			});
+
+			describe('general', () => {
+				it('should show site url field', () => {
+					admin.generalSiteUrl.isVisible().should.be.true;
+				});
+
+				it('should show site name field', () => {
+					admin.generalLink.isVisible().should.be.true;
+				});
+
+				it('should show language field', () => {
+					admin.generalLanguage.isVisible().should.be.true;
+				});
+
+				it('should show invalid self signed certs checkboxes', () => {
+					admin.generalSelfSignedCertsFalse.isVisible().should.be.true;
+					admin.generalSelfSignedCertsTrue.isVisible().should.be.true;
+				});
+
+				it('should show favorite rooms checkboxes', () => {
+					admin.generalFavoriteRoomFalse.isVisible().should.be.true;
+					admin.generalFavoriteRoomTrue.isVisible().should.be.true;
+				});
+
+				it('should show cdn prefix field', () => {
+					admin.generalCdnPrefix.isVisible().should.be.true;
+				});
+
+				it('should show the force SSL checkboxes', () => {
+					admin.generalForceSSLTrue.isVisible().should.be.true;
+					admin.generalForceSSLFalse.isVisible().should.be.true;
+				});
+
+				it('should show google tag id field', () => {
+					admin.generalGoogleTagId.isVisible().should.be.true;
+				});
+
+				it('should show bugsnag key field', () => {
+					admin.generalBugsnagKey.isVisible().should.be.true;
+				});
+			});
+
+			describe('iframe', () => {
+				before(() => {
+					admin.generalButtonExpandIframe.waitForVisible(5000);
+					admin.generalButtonExpandIframe.click();
+					admin.generalIframeSendTrue.waitForVisible(5000);
+					admin.generalIframeSendTrue.scroll();
+				});
+
+				it('should show iframe send checkboxes', () => {
+					admin.generalIframeSendTrue.isVisible().should.be.true;
+					admin.generalIframeSendFalse.isVisible().should.be.true;
+				});
+
+				it('should show send origin field', () => {
+					admin.generalIframeSendTargetOrigin.isVisible().should.be.true;
+				});
+
+				it('should show iframe send checkboxes', () => {
+					admin.generalIframeRecieveFalse.isVisible().should.be.true;
+					admin.generalIframeRecieveTrue.isVisible().should.be.true;
+				});
+
+				it('should show send origin field', () => {
+					admin.generalIframeRecieveOrigin.isVisible().should.be.true;
+				});
+			});
+
+			describe('notifications', () => {
+				before(() => {
+					admin.generalButtonExpandNotifications.waitForVisible(5000);
+					admin.generalButtonExpandNotifications.click();
+					admin.generalNotificationDuration.waitForVisible(5000);
+					admin.generalNotificationDuration.scroll();
+				});
+
+				it('should show the notifications durations field', () => {
+					admin.generalNotificationDuration.isVisible().should.be.true;
+				});
+			});
+
+			describe('rest api', () => {
+				before(() => {
+					admin.generalButtonExpandRest.waitForVisible(5000);
+					admin.generalButtonExpandRest.click();
+					admin.generalRestApiUserLimit.waitForVisible(5000);
+					admin.generalRestApiUserLimit.scroll();
+				});
+
+				it('should show the API user add limit field', () => {
+					admin.generalRestApiUserLimit.isVisible().should.be.true;
+				});
+			});
+
+			describe('reporting', () => {
+				before(() => {
+					admin.generalButtonExpandReporting.waitForVisible(5000);
+					admin.generalButtonExpandReporting.click();
+					admin.generalReportingTrue.waitForVisible(5000);
+					admin.generalReportingTrue.scroll();
+				});
+
+				it('should show the report to rocket.chat checkboxes', () => {
+					admin.generalReportingTrue.isVisible().should.be.true;
+					admin.generalReportingFalse.isVisible().should.be.true;
+				});
+			});
+
+			describe('stream cast', () => {
+				before(() => {
+					admin.generalButtonExpandStreamCast.waitForVisible(5000);
+					admin.generalButtonExpandStreamCast.click();
+					admin.generalStreamCastAdress.waitForVisible(5000);
+					admin.generalStreamCastAdress.scroll();
+				});
+
+				it('should show the stream cast adress field', () => {
+					admin.generalStreamCastAdress.isVisible().should.be.true;
+				});
+			});
+
+			describe('stream cast', () => {
+				before(() => {
+					admin.generalButtonExpandUTF8.waitForVisible(5000);
+					admin.generalButtonExpandUTF8.click();
+					admin.generalUTF8Regex.waitForVisible(5000);
+					admin.generalUTF8Regex.scroll();
+				});
+
+				it('should show the utf8 regex field', () => {
+					admin.generalUTF8Regex.isVisible().should.be.true;
+				});
+
+				it('should show the utf8 names slug checkboxes', () => {
+					admin.generalUTF8NamesSlugTrue.isVisible().should.be.true;
+					admin.generalUTF8NamesSlugFalse.isVisible().should.be.true;
 				});
 			});
 		});
 	});
 });
-
-
-/*class Administration extends Page {
-	get flexNav() { return browser.element('.flex-nav'); }
-	get flexNavContent() { return browser.element('.flex-nav .content'); }
-	get layoutLink() { return browser.element('.flex-nav .content [href="/admin/Layout"]'); }
-	get infoLink() { return browser.element('.flex-nav .content [href="/admin/info"]'); }
-	get roomsLink() { return browser.element('.flex-nav .content [href="/admin/rooms"]'); }
-	get customScriptBtn() { return browser.element('.section:nth-of-type(6) .expand'); }
-	get customScriptLoggedOutTextArea() { return browser.element('.section:nth-of-type(6) .CodeMirror-scroll'); }
-	get customScriptLoggedInTextArea() { return browser.element('.CodeMirror.cm-s-default:nth-of-type(2)'); }
-	get infoRocketChatTableTitle() { return browser.element('.content h3'); }
-	get infoRocketChatTable() { return browser.element('.content .statistics-table'); }
-	get infoCommitTableTitle() { return browser.element('.content h3:nth-of-type(2)'); }
-	get infoCommitTable() { return browser.element('.content .statistics-table:nth-of-type(2)'); }
-	get infoRuntimeTableTitle() { return browser.element('.content h3:nth-of-type(3)'); }
-	get infoRuntimeTable() { return browser.element('.content .statistics-table:nth-of-type(3)'); }
-	get infoBuildTableTitle() { return browser.element('.content h3:nth-of-type(4)'); }
-	get infoBuildTable() { return browser.element('.content .statistics-table:nth-of-type(4)'); }
-	get infoUsageTableTitle() { return browser.element('.content h3:nth-of-type(5)'); }
-	get infoUsageTable() { return browser.element('.content .statistics-table:nth-of-type(5)'); }
-	get roomsSearchForm() { return browser.element('.content .search.form'); }
-	get roomsFilter() { return browser.element('#rooms-filter'); }
-	get roomsChannelsCheckbox() { return browser.element('input[name="room-type"]')[0]; }
-	get roomsDirectCheckbox() { return browser.element('input[name="room-type"]')[1]; }
-	get roomsChannelsCheckbox() { return browser.element('input[name="room-type"]'[2]); }
-	get roomsGeneralChannel() { return browser.getText('td=general'); }
-	get usersRocketCat() { return browser.getText('td=Rocket.Cat'); }
-	get usersFilter() { return browser.element('#users-filter'); }
-
-
-}
-*/
