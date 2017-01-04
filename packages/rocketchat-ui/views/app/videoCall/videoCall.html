@@ -3,13 +3,13 @@
 		{{#if videoActive}}
 			<div class="webrtc-video {{#if overlay}}webrtc-video-overlay background-transparent-darker{{/if}}">
 				<div class="main-video background-transparent-darker">
-					<video src="{{mainVideoUrl}}" autoplay muted="true" class="{{#if $eq mainVideoUrl selfVideoUrl}}video-flip{{/if}}"></video>
+					<video src="{{mainVideoUrl}}" autoplay muted="true" class="webrtc-video-element {{#if $eq mainVideoUrl selfVideoUrl}}video-flip{{/if}}"></video>
 					<div class="background-transparent-darker">{{mainVideoUsername}}</div>
 				</div>
 				<div class="videos">
 					{{#if selfVideoUrl}}
 						<div class="video-item background-transparent-darker" data-username="$self">
-							<video src="{{selfVideoUrl}}" autoplay muted="true" class="{{#unless screenShareEnabled}}video-flip{{/unless}}"></video>
+							<video src="{{selfVideoUrl}}" autoplay muted="true" class="webrtc-video-element {{#unless screenShareEnabled}}video-flip{{/unless}}"></video>
 							{{#unless audioAndVideoEnabled}}
 								<div class="video-muted-overlay background-transparent-darker">
 									{{#unless audioEnabled}}
@@ -25,7 +25,7 @@
 					{{/if}}
 					{{#each remoteVideoItems}}
 						<div class="video-item background-transparent-darker {{#unless connected}}state-overlay background-transparent-darker-before{{/unless}}" data-state-text="{{stateText}}" data-username="{{id}}">
-							<video src="{{url}}" autoplay></video>
+							<video src="{{url}}" autoplay class="webrtc-video-element"></video>
 							<div class="background-transparent-darker">{{usernameByUserId id}}</div>
 						</div>
 					{{/each}}
