@@ -15,9 +15,6 @@
 @error-contrast: contrast(@error-color);
 @pending-background: lighten(@pending-color, 45%);
 @pending-border: lighten(@pending-color, 30%);
-@code-background-color: #f8f8f8;
-@code-border-color: #cccccc;
-@code-font-color: #333333;
 
 /** ----------------------------------------------------------------------------
  * Transparency variables
@@ -38,6 +35,10 @@
 
 .content-background-color {
 	background-color: @content-background-color;
+}
+
+.color-content-background-color {
+	color: @content-background-color;
 }
 
 .primary-background-color {
@@ -94,12 +95,6 @@
 
 .error-color {
 	color: @pending-color;
-}
-
-.code-colors {
-	background-color: @code-background-color;
-	border-color: @code-border-color;
-	color: @code-font-color;
 }
 
 .color-info-font-color {
@@ -221,10 +216,6 @@
  */
 
 .page-container {
-	table {
-		overflow: hidden;
-	}
-
 	tr:hover td {
 		background-color: @content-background-color;
 	}
@@ -311,9 +302,6 @@ input:-webkit-autofill {
 /** ----------------------------------------------------------------------------
  * Misc typography variants
  */
-a {
-	color: @primary-font-color;
-}
 
 a:active,
 a:hover {
@@ -339,12 +327,6 @@ a:hover {
 /** ----------------------------------------------------------------------------
  * Admin and settings styles
  */
-.page-settings {
-	.terminal {
-		background-color: #444444;
-		color: white;
-	}
-}
 
 .page-list,
 .page-settings {
@@ -372,7 +354,6 @@ a:hover {
 .code-error-box {
 	.title {
 		background-color: @error-color;
-		color: white;
 	}
 }
 
@@ -384,10 +365,6 @@ a:hover {
 }
 
 .avatar-suggestion-item {
-	.avatar {
-		background-size: cover;
-	}
-
 	.question-mark::before {
 		color: @secondary-font-color;
 	}
@@ -408,10 +385,6 @@ a:hover {
 	a:hover {
 		color: @primary-background-contrast;
 	}
-
-	.spinner > div {
-		background-color: @primary-background-contrast;
-	}
 }
 
 #login-card {
@@ -424,10 +397,6 @@ a:hover {
 	}
 }
 
-.dropzone.over .dropzone-overlay {
-	color: @content-background-color;
-}
-
 /** ----------------------------------------------------------------------------
  * Room components
  */
@@ -436,12 +405,8 @@ a:hover {
 	color: @component-color;
 }
 
-.container-bars {
-	.upload-progress {
-		.upload-progress-progress {
-			background-color: @success-background;
-		}
-	}
+.upload-progress-progress {
+	background-color: @success-background;
 }
 
 .messages-container {
@@ -452,26 +417,20 @@ a:hover {
 	.footer {
 		background: @content-background-color;
 	}
+}
 
-	.message-form {
-		.message-buttons {
-			.buttonColors(lighten(@primary-font-color, 25%), @secondary-background-color);
+.message-form {
+	.message-buttons {
+		.buttonColors(lighten(@primary-font-color, 25%), @secondary-background-color);
 
-			&:hover {
-				background-color: mix(@secondary-background-color, contrast(@primary-font-color), 20%);
-			}
-		}
-
-		textarea {
-			&.editing {
-				background-color: lighten(@pending-color, 40%);
-			}
+		&:hover {
+			background-color: mix(@secondary-background-color, contrast(@primary-font-color), 20%);
 		}
 	}
 
-	.messages-box {
-		&.selectable .selected {
-			background-color: @selection-background;
+	.message-form-text {
+		&.editing {
+			background-color: lighten(@pending-color, 40%);
 		}
 	}
 }
@@ -484,10 +443,14 @@ a:hover {
 }
 
 .messages-box {
-	.editing .body,
-	textarea.editing {
-		background-color: lighten(@pending-color, 40%);
+	&.selectable .selected {
+		background-color: @selection-background;
 	}
+
+	// .editing .body,
+	// textarea.editing {
+	// 	background-color: lighten(@pending-color, 40%);
+	// }
 }
 
 /** ----------------------------------------------------------------------------
@@ -614,8 +577,6 @@ a:hover {
 	input,
 	select,
 	textarea {
-		background-color: @content-background-color;
-
 		&:focus {
 			border-color: lighten(@secondary-background-contrast, 30%);
 		}
@@ -852,6 +813,7 @@ i.status-offline {
 
 .alert-warning {
 	color: darken(@pending-color, 25%);
+	background-color: @pending-background;
 }
 
 .alert-link {

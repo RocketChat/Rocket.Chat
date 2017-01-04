@@ -332,6 +332,10 @@ blockquote {
 			}
 		}
 	}
+
+	table {
+		overflow: hidden;
+	}
 }
 
 .input-line {
@@ -4689,22 +4693,23 @@ body:not(.is-cordova) {
 	padding: 8px 10px !important;
 	font-family: Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 	font-weight: 500;
-	-webkit-user-select: text;
-	-moz-user-select: text;
-	-ms-user-select: text;
-	user-select: text;
 	margin-bottom: 0 !important;
+	background-color: #444444 !important;
+	color: #ffffff;
+}
 
-	* {
-		-webkit-user-select: text;
-		-moz-user-select: text;
-		-ms-user-select: text;
-		user-select: text;
-	}
+.terminal-line {
+	word-break: break-all;
+}
 
-	> div {
-		word-break: break-all;
-	}
+.terminal-time {
+	color: #7f7f7f;
+}
+
+.code-colors {
+	background-color: #f8f8f8;
+	border-color: #cccccc;
+	color: #333333;
 }
 
 .new-logs {

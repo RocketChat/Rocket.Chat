@@ -2,8 +2,8 @@
 	{{#if hasPermission}}
 		<div class="section terminal">
 			{{#each logs}}
-				<div>
-					<!-- <span class="time secondary-font-color">{{formatTS ts}}</span>  -->
+				<div class="terminal-line">
+					{{!-- <span class="terminal-time">{{formatTS ts}}</span> --}}
 					{{{ansispan string}}}
 				</div>
 			{{/each}}
