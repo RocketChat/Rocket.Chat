@@ -8,7 +8,7 @@
 					<div class="admin-integrations-new-panel">
 						{{#each integrations}}
 							{{#if $eq type 'webhook-incoming'}}
-								<a href="{{pathFor "admin-integrations-incoming" id=_id}}">
+								<a class="admin-integrations-type" href="{{pathFor "admin-integrations-incoming" id=_id}}">
 									<div class="admin-integrations-new-item">
 										<i class="icon-login"></i>
 										<div class="admin-integrations-new-item-body">
@@ -31,7 +31,7 @@
 						{{/each}}
 						{{#each integrations}}
 							{{#if $eq type 'webhook-outgoing'}}
-								<a href="{{pathFor "admin-integrations-outgoing" id=_id}}">
+								<a class="admin-integrations-type" href="{{pathFor "admin-integrations-outgoing" id=_id}}">
 									<div class="admin-integrations-new-item">
 										<i class="icon-login"></i>
 										<div class="admin-integrations-new-item-body">

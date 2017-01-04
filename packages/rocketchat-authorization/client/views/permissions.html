@@ -7,7 +7,7 @@
 					<tr>
 						<th>&nbsp;</th>
 						{{#each role}}
-							<th title="{{description}}">
+							<th class="permission-grid-title" title="{{description}}">
 								<a href="{{pathFor "admin-permissions-edit" name=_id}}">
 									{{_id}}
 									<i class="icon-edit"></i>
@@ -19,9 +19,9 @@
 				<tbody>
 					{{#each permission}}
 						<tr>
-							<td>{{_id}}</td>
+							<td class="permission-grid-cell">{{_id}}</td>
 							{{#each role}}
-								<td>
+								<td class="permission-grid-cell">
 									<input type="checkbox" name="perm[{{_id}}][{{../_id}}]" class="role-permission" value="1" checked="{{granted ../roles}}" data-role="{{_id}}" data-permission="{{../_id}}">
 								</td>
 							{{/each}}

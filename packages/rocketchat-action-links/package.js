@@ -11,9 +11,11 @@ Package.onUse(function(api) {
 	api.use('rocketchat:lib');
 	api.use('rocketchat:theme');
 	api.use('rocketchat:ui');
+	api.use('less');
 
 	api.addFiles('client/init.js', 'client');
-	api.addAssets('client/stylesheets/actionLinks.less', 'server');
+	api.addFiles('client/stylesheets/actionLinks.less', 'client');
+	api.addAssets('client/stylesheets/colors.less', 'server');
 	api.addFiles('loadStylesheets.js', 'server');
 
 	api.addFiles('server/registerActionLinkFuncts.js', ['server', 'client']);
