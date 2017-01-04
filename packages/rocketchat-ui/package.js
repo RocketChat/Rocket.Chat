@@ -57,6 +57,8 @@ Package.onUse(function(api) {
 	api.addFiles('lib/tapi18n.coffee', 'client');
 	api.addFiles('lib/textarea-autogrow.js', 'client');
 
+	api.addFiles('lib/codeMirror/codeMirror.js', 'client');
+
 	// LIB CORDOVA
 	api.addFiles('lib/cordova/facebook-login.coffee', 'client');
 	api.addFiles('lib/cordova/keyboard-fix.coffee', 'client');
