@@ -7,4 +7,4 @@
 		path = Meteor.absoluteUrl().replace /\/$/, ''
 	else
 		path = __meteor_runtime_config__.ROOT_URL_PATH_PREFIX || '';
-	"#{path}/avatar/#{encodeURIComponent(username)}.jpg?_dc=#{random}"
+	"#{path}/avatar/#{encodeURIComponent(username)}?_dc=#{random}"
