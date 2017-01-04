@@ -85,8 +85,12 @@
 	color: @pending-color;
 }
 
-.background-pending-background {
+.pending-background {
 	background-color: @pending-background;
+}
+
+.pending-border {
+	border-color: @pending-border;
 }
 
 .error-color {
@@ -256,10 +260,6 @@
 .input-line {
 	&.setting-changed > label {
 		color: @selection-color;
-	}
-
-	.settings-alert {
-		border-color: @pending-border;
 	}
 }
 
@@ -853,7 +853,6 @@ i.status-offline {
 
 .alert-warning {
 	color: darken(@pending-color, 25%);
-	border-color: @pending-border;
 }
 
 .alert-link {
