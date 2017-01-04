@@ -94,6 +94,29 @@ RocketChat.API.v1.addRoute('groups.create', { authRequired: true }, {
 	}
 });
 
+RocketChat.API.v1.addRoute('groups.delete', { authRequired: true }, {
+	post: function() {
+		const findResult = findPrivateGroupById({ roomId: this.bodyParams.roomId, userId: this.userId, checkedArchived: false });
+
+		//The find method returns either with the group or the failure
+		if (findResult.statusCode) {
+			return findResult;
+		}
+
+		try {
+			Meteor.runAsUser(this.userId, () => {
+				Meteor.call('eraseRoom', findResult.rid);
+			});
+		} catch (e) {
+			return RocketChat.API.v1.failure(`${e.name}: ${e.message}`);
+		}
+
+		return RocketChat.API.v1.success({
+			group: RocketChat.models.Rooms.processQueryOptionsOnResult([findResult._room], { fields: RocketChat.API.v1.defaultFieldsToExclude })[0]
+		});
+	}
+});
+
 RocketChat.API.v1.addRoute('groups.getIntegrations', { authRequired: true }, {
 	get: function() {
 		if (!RocketChat.authz.hasPermission(this.userId, 'manage-integrations')) {
@@ -284,7 +307,7 @@ RocketChat.API.v1.addRoute('groups.list', { authRequired: true }, {
 		const totalCount = rooms.length;
 
 		rooms = RocketChat.models.Rooms.processQueryOptionsOnResult(rooms, {
-			sort: { msgs: -1 },
+			sort: { name: 1 },
 			skip: offset,
 			limit: count,
 			fields: RocketChat.API.v1.defaultFieldsToExclude

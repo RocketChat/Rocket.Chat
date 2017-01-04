@@ -94,7 +94,7 @@ RocketChat.API.v1.addRoute('im.list', { authRequired: true }, {
 		const totalCount = rooms.length;
 
 		rooms = RocketChat.models.Rooms.processQueryOptionsOnResult(rooms, {
-			sort: { msgs: -1 },
+			sort: { name: 1 },
 			skip: offset,
 			limit: count,
 			fields: RocketChat.API.v1.defaultFieldsToExclude
@@ -117,7 +117,7 @@ RocketChat.API.v1.addRoute('im.list.everyone', { authRequired: true }, {
 
 		const { offset, count } = RocketChat.API.v1.getPaginationItems(this);
 		const rooms = RocketChat.models.Rooms.findByType('d', {
-			sort: { msgs: -1 },
+			sort: { name: 1 },
 			skip: offset,
 			limit: count,
 			fields: RocketChat.API.v1.defaultFieldsToExclude
