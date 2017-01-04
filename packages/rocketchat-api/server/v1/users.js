@@ -28,7 +28,7 @@ RocketChat.API.v1.addRoute('users.create', { authRequired: true }, {
 
 			if (typeof this.bodyParams.active !== 'undefined') {
 				Meteor.runAsUser(this.userId, () => {
-					Meteor.call('setUserActiveStatus', this.bodyParams.userId, this.bodyParams.active);
+					Meteor.call('setUserActiveStatus', newUserId, this.bodyParams.active);
 				});
 			}
 
