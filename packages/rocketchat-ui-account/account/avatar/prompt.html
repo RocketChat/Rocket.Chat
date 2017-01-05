@@ -1,6 +1,6 @@
 <template name="avatarSuggestion">
 	{{#if .}}
-		<div class="avatar-suggestion-item tertiary-background-color">
+		<div class="avatar-suggestion-item border-component-color">
 			<div class="avatar tertiary-background-color" style="background-image: url({{blob}});">
 			</div>
 			<div class="action">
@@ -12,7 +12,7 @@
 
 <template name="avatarSuggestionLogin">
 	{{#if .}}
-		<div class="avatar-suggestion-item tertiary-background-color">
+		<div class="avatar-suggestion-item border-component-color">
 			<div class="avatar question-mark icon-user tertiary-background-color"></div>
 			<div class="action">
 				<button type="button" class="button primary {{.}} login-with-service">{{_ "Login_with" .}}</button>
@@ -36,7 +36,7 @@
 				</header>
 				<div>
 					<div class="avatar-suggestions">
-						<div class="avatar-suggestion-item tertiary-background-color">
+						<div class="avatar-suggestion-item border-component-color">
 							{{> avatar username=initialsUsername }}
 							{{#with service='initials'}}
 								<div class="action">
@@ -44,7 +44,7 @@
 								</div>
 							{{/with}}
 						</div>
-						<div class="avatar-suggestion-item tertiary-background-color">
+						<div class="avatar-suggestion-item border-component-color">
 							<div style="background-image: url({{upload.blob}});" class="avatar tertiary-background-color {{#unless upload}}question-mark icon-upload{{/unless}}">
 							</div>
 							<div class="action">
@@ -56,7 +56,7 @@
 								{{/with}}
 							</div>
 						</div>
-						<div class="avatar-suggestion-item tertiary-background-color">
+						<div class="avatar-suggestion-item border-component-color">
 							{{#with service='url'}}
 								<div class="avatar question-mark icon-upload tertiary-background-color"></div>
 								<div class="action">
