@@ -1,10 +1,10 @@
 <template name="loginForm">
 	{{#if state 'sandstorm'}}
-		<div class="alert alert-danger">
+		<div class="alert error-color error-background error-border">
 			You must login to Sandstorm (on the top right) in order to access this chat.
 		</div>
 	{{else}}
-		<form id="login-card" method='/' novalidate>
+		<form id="login-card" class="content-background-color color-primary-font-color" method='/' novalidate>
 			{{#if state 'wait-activation'}}
 				<header>
 					<h2>{{{_ "Registration_Succeeded"}}}</h2>
@@ -14,7 +14,7 @@
 			{{else}}
 				{{ > loginServices }}
 				{{#if needsValidateEmail}}
-					<div class="alert alert-danger">
+					<div class="alert error-color error-background error-border">
 						{{_ "You_need_confirm_email"}}
 					</div>
 				{{/if}}
@@ -116,7 +116,7 @@
 		<div class='login-terms'>
 			{{{loginTerms}}}
 			<div class="powered-by">
-				Powered by <a href="https://rocket.chat">Open Source Chat Platform Rocket.Chat</a>.
+				Powered by <a class="color-tertiary-font-color" href="https://rocket.chat">Open Source Chat Platform Rocket.Chat</a>.
 			</div>
 		</div>
 	{{/if}}
