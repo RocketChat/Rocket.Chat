@@ -4,6 +4,8 @@
 import sideNav from '../pageobjects/side-nav.page';
 import flexTab from '../pageobjects/flex-tab.page';
 import admin from '../pageobjects/administration.page';
+import mainContent from '../pageobjects/main-content.page';
+import {checkIfUserIsValid} from '../data/checks';
 
 //test data imports
 import {checkIfUserIsAdmin} from '../data/checks';
@@ -52,16 +54,11 @@ describe('Admin settings', () => {
 		});
 	});
 
-	describe('permissions?', () => {
+	describe('permissions', () => {
 		before(() => {
 			admin.permissionsLink.waitForVisible(5000);
 			admin.permissionsLink.click();
 			admin.rolesPermissionGrid.waitForVisible(5000);
-		});
-
-		after(() => {
-			admin.infoLink.waitForVisible(5000);
-			admin.infoLink.click();
 		});
 
 		describe('changing the permissions', () => {
@@ -90,7 +87,7 @@ describe('Admin settings', () => {
 			});
 
 			it('should change the mention all permission', () => {
-				if (admin.rolesUserCreateC.isSelected()) {
+				if (admin.rolesUserMentionAll.isSelected()) {
 					admin.rolesUserMentionAll.waitForVisible(5000);
 					admin.rolesUserMentionAll.scroll();
 					admin.rolesUserMentionAll.click();
@@ -112,10 +109,53 @@ describe('Admin settings', () => {
 					admin.rolesOwnerEditMessage.click();
 				}
 			});
+		});
+	});
+	describe('test the permissions', () => {
+		before(() => {
+			sideNav.preferencesClose.waitForVisible(5000);
+			sideNav.preferencesClose.click();
 
-
-
+			checkIfUserIsValid('adminCreated'+username, 'adminCreated'+email, password);
 		});
 
+		it('should not show the plus icon on channels ', () => {
+			sideNav.newChannelIcon.isVisible().should.be.false;
+		});
+
+		it('when clicked should not show the new channel name input ', () => {
+			sideNav.newChannelBtn.click();
+			sideNav.channelName.isVisible().should.be.false;
+		});
+
+		it('should not show the plus icon on direct messages ', () => {
+			sideNav.newDirectMessageIcon.isVisible().should.be.false;
+		});
+
+		it('when clicked should not show the new direct message user input ', () => {
+			sideNav.newDirectMessageBtn.click();
+			sideNav.directMessageTarget.isVisible().should.be.false;
+		});
+
+		it('go to general', () => {
+			sideNav.getChannelFromList('general').waitForExist(5000);
+			sideNav.openChannel('general');
+		});
+
+		it('try to use @all and should be warned by rocket.cat ', () => {
+			mainContent.addTextToInput('@all');
+			mainContent.mentionAllPopUp.waitForVisible(5000);
+			mainContent.mentionAllPopUp.click();
+			mainContent.sendBtn.click();
+			mainContent.lastMessage.getText().should.equal('Notify all in this room is not allowed');
+		});
+
+		it.skip('should not be able to delete own message ', () => {
+			//waiting for changes in the delete-message permission
+		});
+
+		it.skip('should not be able to edit own message ', () => {
+			//waiting for changes in the edit-message permission
+		});
 	});
 });
