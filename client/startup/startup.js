@@ -1,6 +1,14 @@
 /* globals UserPresence, fireGlobalEvent, isRtl */
 
 import moment from 'moment';
+import toastr from 'toastr';
+
+if (window.DISABLE_ANIMATION) {
+	toastr.options.timeOut = 1;
+	toastr.options.showDuration = 0;
+	toastr.options.hideDuration = 0;
+	toastr.options.extendedTimeOut = 0;
+}
 
 Meteor.startup(function() {
 	TimeSync.loggingEnabled = false;
