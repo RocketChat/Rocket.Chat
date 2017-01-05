@@ -6,6 +6,8 @@ import supertest from 'supertest';
 const request = supertest('http://localhost:3000');
 const prefix = '/api/v1/';
 
+import {adminUsername, adminEmail, adminPassword} from '../data/user.js';
+
 function api(path) {
 	return prefix + path;
 }
@@ -24,8 +26,8 @@ const credentials = {
 };
 
 const login = {
-	user: process.env.ADMIN_USERNAME,
-	password: process.env.ADMIN_PASS
+	user: adminUsername,
+	password: adminPassword
 };
 
 describe('API default', () => {
@@ -51,7 +53,7 @@ describe('API default', () => {
 
 describe('API v1', () => {
 	before((done) => {
-		request.post(api('/login'))
+		request.post(api('login'))
 			.send(login)
 			.expect('Content-Type', 'application/json')
 			.expect(200)
@@ -78,7 +80,7 @@ describe('API v1', () => {
 				expect(res.body).to.have.property('username', login.user);
 				expect(res.body).to.have.property('active');
 				expect(res.body).to.have.property('name');
-				expect(res.body).to.have.deep.property('emails[0].address', process.env.ADMIN_EMAIL);
+				expect(res.body).to.have.deep.property('emails[0].address', adminEmail);
 			})
 			.end(done);
 	});

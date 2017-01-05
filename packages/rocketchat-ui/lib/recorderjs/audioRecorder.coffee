@@ -4,7 +4,7 @@
 		navigator.getUserMedia = navigator.getUserMedia or navigator.webkitGetUserMedia
 		window.URL = window.URL or window.webkitURL
 
-		@audio_context = new AudioContext
+		window.audioContext = new AudioContext
 
 		ok = (stream) =>
 			@startUserMedia(stream)
@@ -18,7 +18,7 @@
 
 	startUserMedia: (stream) ->
 		@stream = stream
-		input = @audio_context.createMediaStreamSource(stream)
+		input = window.audioContext.createMediaStreamSource(stream)
 		@recorder = new Recorder(input, {workerPath: '/recorderWorker.js'})
 		@recorder.record()
 
@@ -32,7 +32,8 @@
 
 		@recorder.clear()
 
-		delete @audio_context
+		window.audioContext.close()
+		delete window.audioContext
 		delete @recorder
 		delete @stream
 

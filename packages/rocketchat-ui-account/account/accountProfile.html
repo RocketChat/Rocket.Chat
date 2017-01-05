@@ -56,6 +56,9 @@
 						</div>
 					</div>
 				</fieldset>
+				<fieldset>
+					{{> customFieldsForm hideFromForm=false formData=customFields}}
+				</fieldset>
 				<div class="submit">
 					<button class="button primary send"><i class="icon-send"></i><span>{{_ "Save_changes"}}</span></button>
 				</div>

@@ -195,6 +195,7 @@ class CachedCollection {
 		Meteor.call(this.methodName, (error, data) => {
 			this.log(`${data.length} records loaded from server`);
 			data.forEach((record) => {
+				delete record.$loki;
 				this.collection.upsert({ _id: record._id }, _.omit(record, '_id'));
 
 				if (record._updatedAt && record._updatedAt > this.updatedAt) {
@@ -310,9 +311,10 @@ class CachedCollection {
 	setupListener(eventType, eventName) {
 		RocketChat.Notifications[eventType || this.eventType](eventName || this.eventName, (t, record) => {
 			this.log('record received', t, record);
-			if (t === 'remove') {
+			if (t === 'removed') {
 				this.collection.remove(record._id);
 			} else {
+				delete record.$loki;
 				this.collection.upsert({ _id: record._id }, _.omit(record, '_id'));
 			}
 

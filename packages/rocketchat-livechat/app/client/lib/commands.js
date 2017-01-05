@@ -14,7 +14,7 @@ this.Commands = {
 	promptTranscript: function() {
 		if (Livechat.transcript) {
 			const user = Meteor.user();
-			let email = user.emails && user.emails.length > 0 ? user.emails[0].address : '';
+			let email = user.visitorEmails && user.visitorEmails.length > 0 ? user.visitorEmails[0].address : '';
 
 			swal({
 				title: t('Chat_ended'),
