@@ -23,7 +23,7 @@ class MarkdownCode
 
 			message.tokens.push
 				token: token
-				text: "#{p1}<span class=\"copyonly\">`</span><span><code class=\"inline\">#{p2}</code></span><span class=\"copyonly\">`</span>#{p3}"
+				text: "#{p1}<span class=\"copyonly\">`</span><span><code class=\"code-colors inline\">#{p2}</code></span><span class=\"copyonly\">`</span>#{p3}"
 
 			return token
 
@@ -70,7 +70,7 @@ class MarkdownCode
 					message.tokens.push
 						highlight: true
 						token: token
-						text: "<pre><code class='hljs " + result.language + "'><span class='copyonly'>```<br></span>" + result.value + "<span class='copyonly'><br>```</span></code></pre>"
+						text: "<pre><code class='code-colors hljs " + result.language + "'><span class='copyonly'>```<br></span>" + result.value + "<span class='copyonly'><br>```</span></code></pre>"
 
 					msgParts[index] = token
 				else
