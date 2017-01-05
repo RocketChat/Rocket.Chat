@@ -2,8 +2,8 @@
 	<div class="emoji-picker secondary-background-color">
 		<div class="emoji-top">
 			<form class="emoji-filter input-line search search-form">
-				<input type="text" class="search" autocomplete="off">
-				<i class="icon-search"></i>
+				<input type="text" class="search content-background-color" autocomplete="off">
+				<i class="icon-search secondary-font-color"></i>
 			</form>
 			<div class="change-tone">
 				<a href="#change-tone"><span class="current-tone {{currentTone}}"></span></a>
@@ -20,8 +20,8 @@
 		<div class="filter">
 			<ul class="filter-list">
 				{{#each category}}
-					<li class="filter-item {{activeCategory .}}" title="{{categoryName .}}">
-						<a href="#{{.}}" class="category-link info-font-color"><i class="category-icon icon-{{.}}"></i></a>
+					<li class="filter-item border-secondary-background-color {{activeCategory .}}" title="{{categoryName .}}">
+						<a href="#{{.}}" class="category-link color-info-font-color"><i class="category-icon icon-{{.}}"></i></a>
 					</li>
 				{{/each}}
 			</ul>

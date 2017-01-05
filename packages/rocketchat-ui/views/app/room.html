@@ -1,13 +1,13 @@
 <template name="room">
 	<div class="dropzone">
-		<div class="dropzone-overlay">
-			<div>
+		<div class="dropzone-overlay background-transparent-darkest color-content-background-color">
+			<div class="background-transparent-darkest">
 				{{_ "Drop_to_upload_file"}}
 			</div>
 		</div>
-		<section class="messages-container {{adminClass}}" id="{{windowId}}" aria-label="{{_ "Channel"}}">
+		<section class="messages-container border-component-color {{adminClass}}" id="{{windowId}}" aria-label="{{_ "Channel"}}">
 			{{#unless embeddedVersion}}
-			<header class="fixed-title">
+			<header class="fixed-title content-background-color border-component-color">
 				{{> burger}}
 				<h2>
 					{{#if showToggleFavorite}}
@@ -23,7 +23,7 @@
 				{{#with unreadData}}
 					{{#if since}}
 						{{#if count}}
-							<div class="unread-bar">
+							<div class="unread-bar color-primary-action-color background-component-color">
 								<button class="jump-to">
 									<span class="jump-to-large">{{_ "Jump_to_first_unread"}}</span>
 									<span class="jump-to-small">{{_ "Jump"}}</span>
@@ -42,7 +42,7 @@
 					{{/if}}
 				{{/with}}
 				{{#each uploading}}
-					<div class="upload-progress {{#if error}}upload-error{{/if}}">
+					<div class="upload-progress color-primary-action-color background-component-color {{#if error}}error-background error-border{{/if}}">
 						{{#if error}}
 							<div class="upload-progress-text">
 								{{error}}
@@ -64,15 +64,15 @@
 			</div>
 			<div class="messages-box {{#if selectable}}selectable{{/if}} {{viewMode}}">
 				<div class="ticks-bar"></div>
-				<button class="new-message not">
+				<button class="new-message background-primary-action-color color-primary-action-contrast not">
 					<i class="icon-down-big"></i>
 					{{_ "New_messages"}}
 				</button>
-				<div class="jump-recent {{#unless hasMoreNext}}not{{/unless}}">
+				<div class="jump-recent background-component-color {{#unless hasMoreNext}}not{{/unless}}">
 					<button>{{_ "Jump_to_recent_messages"}} <i class="icon-level-down"></i></button>
 				</div>
 				{{#unless canPreview}}
-					<div class="content room-not-found">
+					<div class="content room-not-found error-color">
 						<div>
 							{{_ "You_must_join_to_view_messages_in_this_channel"}}
 						</div>
@@ -86,7 +86,7 @@
 									{{> loading}}
 								</li>
 							{{else}}
-								<li class="start">
+								<li class="start color-info-font-color">
 									{{_ "Start_of_conversation"}}
 								</li>
 							{{/if}}
@@ -102,11 +102,11 @@
 					</ul>
 				</div>
 			</div>
-			<footer class="footer">
+			<footer class="footer border-component-color">
 				{{> messageBox}}
 			</footer>
 		</section>
-		<section class="flex-tab">
+		<section class="flex-tab secondary-background-color">
 			{{> Template.dynamic template=flexTemplate data=flexData}}
 		</section>
 	</div>

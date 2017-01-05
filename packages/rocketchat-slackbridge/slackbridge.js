@@ -56,7 +56,12 @@ class SlackBridge {
 				}
 			});
 			Meteor.startup(() => {
-				this.populateSlackChannelMap(); // If run outside of Meteor.startup, HTTP is not defined
+				try {
+					this.populateSlackChannelMap(); // If run outside of Meteor.startup, HTTP is not defined
+				} catch (err) {
+					logger.class.error('Error attempting to connect to Slack', err);
+					this.disconnect();
+				}
 			});
 		}
 	}
