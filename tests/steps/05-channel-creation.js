@@ -2,12 +2,12 @@
 /* eslint-disable func-names, prefer-arrow-callback */
 
 import sideNav from '../pageobjects/side-nav.page';
-import {publicChannelName, privateChannelName} from '../test-data/channel.js';
-import {targetUser} from '../test-data/interactions.js';
+import {publicChannelName, privateChannelName} from '../data/channel.js';
+import {targetUser} from '../data/interactions.js';
 
 //test data imports
-import {checkIfUserIsValid, setPublicChannelCreated, setPrivateChannelCreated, setDirectMessageCreated} from '../test-data/checks';
-import {username, email, password} from '../test-data/user.js';
+import {checkIfUserIsValid, setPublicChannelCreated, setPrivateChannelCreated, setDirectMessageCreated} from '../data/checks';
+import {username, email, password} from '../data/user.js';
 //Basic usage test start
 describe('Channel creation', function() {
 	before(()=>{
@@ -19,7 +19,6 @@ describe('Channel creation', function() {
 	beforeEach(()=>{
 		sideNav.getChannelFromList('general').waitForVisible(5000);
 		sideNav.openChannel('general');
-		browser.pause(1000);
 	});
 
 	afterEach(function() {

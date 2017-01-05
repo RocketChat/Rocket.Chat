@@ -4,8 +4,8 @@ class SideNav extends Page {
 	get directMessageTarget() { return browser.element('.flex-nav input#who'); }
 	get saveDirectMessageBtn() { return browser.element('.save-direct-message'); }
 
-	get channelType() { return browser.element('#channel-type'); }
-	get channelReadOnly() { return browser.element('#channel-ro'); }
+	get channelType() { return browser.element('label[for="channel-type"]'); }
+	get channelReadOnly() { return browser.element('label[for="channel-ro"]'); }
 	get channelName() { return browser.element('#channel-name'); }
 	get saveChannelBtn() { return browser.element('.save-channel'); }
 
@@ -31,9 +31,9 @@ class SideNav extends Page {
 	get statusBusy() { return browser.element('.busy'); }
 	get statusOffline() { return browser.element('.offline'); }
 	get account() { return browser.element('#account'); }
+	get admin() { return browser.element('#admin'); }
 	get logout() { return browser.element('#logout'); }
 	get sideNavBar() { return browser.element('.side-nav '); }
-	get sideNavBtn() { return browser.element('.fixed-title .burger'); }
 
 	get preferences() { return browser.element('.account-link:nth-of-type(1)'); }
 	get profile() { return browser.element('.account-link:nth-of-type(2)'); }
@@ -43,6 +43,9 @@ class SideNav extends Page {
 	openChannel(channelName) {
 		browser.click('.rooms-list > .wrapper > ul [title="'+channelName+'"]');
 		this.messageInput.waitForExist(5000);
+		browser.waitUntil(function() {
+			return browser.getText('.room-title') === channelName;
+		}, 5000);
 	}
 
 	getChannelFromList(channelName) {
@@ -50,6 +53,7 @@ class SideNav extends Page {
 	}
 
 	createChannel(channelName, isPrivate, isReadOnly) {
+		this.newChannelBtn.waitForVisible(10000);
 		this.newChannelBtn.click();
 		this.channelType.waitForVisible(10000);
 		this.channelName.setValue(channelName);
@@ -59,8 +63,9 @@ class SideNav extends Page {
 		if (isReadOnly) {
 			this.channelReadOnly.click();
 		}
-		browser.pause(200);
+		browser.pause(500);
 		this.saveChannelBtn.click();
+		browser.pause(500);
 		browser.waitForExist('[title="'+channelName+'"]', 1000);
 		this.channelType.waitForVisible(500, true);
 	}
@@ -81,13 +86,13 @@ class SideNav extends Page {
 	}
 
 	startDirectMessage(user) {
+		this.newDirectMessageBtn.waitForVisible(3000);
 		this.newDirectMessageBtn.click();
-		browser.pause(1000);
 		this.directMessageTarget.waitForVisible(3000);
 		this.directMessageTarget.setValue(user);
 		browser.waitForVisible('.-autocomplete-item', 3000);
-		browser.pause(500);
 		browser.click('.-autocomplete-item');
+		browser.pause(200);
 		this.saveDirectMessageBtn.click();
 		browser.waitForExist('[title="'+user+'"]');
 	}

@@ -8,7 +8,7 @@ Meteor.methods({
 		check(transferData, {
 			roomId: String,
 			userId: Match.Optional(String),
-			deparmentId: Match.Optional(String)
+			departmentId: Match.Optional(String)
 		});
 
 		const room = RocketChat.models.Rooms.findOneById(transferData.roomId);

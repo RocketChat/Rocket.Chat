@@ -116,10 +116,16 @@ RocketChat.API.v1.addRoute('users.info', { authRequired: true }, {
 
 RocketChat.API.v1.addRoute('users.list', { authRequired: true }, {
 	get: function() {
+		let limit = -1;
+
+		if (typeof this.queryParams.limit !== 'undefined') {
+			limit = parseInt(this.queryParams.limit);
+		}
+
 		let result = undefined;
 		try {
 			Meteor.runAsUser(this.userId, () => {
-				result = Meteor.call('getFullUserData', {});
+				result = Meteor.call('getFullUserData', { filter: '', limit });
 			});
 		} catch (e) {
 			return RocketChat.API.v1.failure(e.name + ': ' + e.message);

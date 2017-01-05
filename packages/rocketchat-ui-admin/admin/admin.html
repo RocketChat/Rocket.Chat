@@ -5,6 +5,14 @@
 			<h2>
 				<span class="room-title">{{#with group}}{{label}}{{/with}}</span>
 			</h2>
+			{{#unless $eq group._id 'Assets'}}
+				<div class="submit">
+					{{#if hasChanges}}
+						<button class="button danger discard"><i class="icon-send"></i><span>{{_ "Cancel"}}</span></button>
+					{{/if}}
+					<button class="button primary save" disabled="{{not hasChanges}}"><i class="icon-send"></i><span>{{_ "Save_changes"}}</span></button>
+				</div>
+			{{/unless}}
 		</header>
 
 		<div class="content">
@@ -43,8 +51,8 @@
 								{{/if}}
 								{{#each settings}}
 									<div class="input-line double-col {{#if changed}}setting-changed{{/if}}" {{isDisabled}}>
-										<label>{{label}}</label>
-										<div>
+										<label class="setting-label">{{label}}</label>
+										<div class="setting-field">
 											{{#if $eq type 'string'}}
 												{{#if multiline}}
 													<textarea class="input-monitor" name="{{_id}}" rows="4" style="height: auto" {{isDisabled}}>{{value}}</textarea>
@@ -186,8 +194,26 @@
 												<div class="settings-alert"><i class="icon-attention"></i>{{{_ alert}}}</div>
 											{{/if}}
 										</div>
+										{{#unless $eq group._id 'Assets'}}
+											{{#unless isDefaultValue _id}}
+												<button text="{{_ 'Reset'}}" data-setting="{{_id}}" class="reset-setting button danger">
+													<i class="icon-ccw"></i>
+												</button>
+											{{/unless}}
+										{{/unless}}
 									</div>
 								{{/each}}
+
+								{{#unless $eq group._id 'Assets'}}
+									<div class="input-line double-col">
+										<label class="setting-label">{{_ "Reset_section_settings"}}</label>
+										<div class="setting-field">
+											<button data-section="{{section}}" class="reset-group button danger">
+												{{_ "Reset"}}
+											</button>
+										</div>
+									</div>
+								{{/unless}}
 
 								{{#if section}}
 									{{#if sectionIsCustomOAuth section}}
@@ -196,18 +222,13 @@
 										</div>
 									{{/if}}
 								{{/if}}
-
-								{{#if hasChanges section}}
-									<div class="submit">
-										<button class="button primary save"><i class="icon-send"></i><span>{{_ "Save_changes"}}</span></button>
-									</div>
-								{{/if}}
 							</div>
 						</div>
 					{{/each}}
 
 					<div class="submit">
 						{{#if $eq group._id 'OAuth'}}
+							<button class="button secondary refresh-oauth"><span>{{_ "Refresh_oauth_services"}}</span></button>
 							<button class="button secondary add-custom-oauth"><span>{{_ "Add_custom_oauth"}}</span></button>
 						{{/if}}
 						{{#if $eq group._id 'Assets'}}

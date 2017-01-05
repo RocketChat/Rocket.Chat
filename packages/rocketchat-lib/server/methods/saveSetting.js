@@ -15,7 +15,7 @@ Meteor.methods({
 		//Verify the _id passed in is a string.
 		check(_id, String);
 
-		const setting = RocketChat.models.Settings.findOneById(_id);
+		const setting = RocketChat.models.Settings.db.findOneById(_id);
 
 		//Verify the value is what it should be
 		switch (setting.type) {

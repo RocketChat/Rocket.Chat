@@ -214,3 +214,77 @@ RocketChat.models.Users.getNextVisitorUsername = function() {
 
 	return 'guest-' + (livechatCount.value.value + 1);
 };
+
+RocketChat.models.Users.saveGuestById = function(_id, data) {
+	const setData = {};
+	const unsetData = {};
+
+	if (data.name) {
+		if (!_.isEmpty(s.trim(data.name))) {
+			setData.name = s.trim(data.name);
+		} else {
+			unsetData.name = 1;
+		}
+	}
+
+	if (data.email) {
+		if (!_.isEmpty(s.trim(data.email))) {
+			setData.visitorEmails = [
+				{ address: s.trim(data.email) }
+			];
+		} else {
+			unsetData.visitorEmails = 1;
+		}
+	}
+
+	if (data.phone) {
+		if (!_.isEmpty(s.trim(data.phone))) {
+			setData.phone = [
+				{ phoneNumber: s.trim(data.phone) }
+			];
+		} else {
+			unsetData.phone = 1;
+		}
+	}
+
+	const update = {};
+
+	if (!_.isEmpty(setData)) {
+		update.$set = setData;
+	}
+
+	if (!_.isEmpty(unsetData)) {
+		update.$unset = unsetData;
+	}
+
+	if (_.isEmpty(update)) {
+		return true;
+	}
+
+	return this.update({ _id }, update);
+};
+
+RocketChat.models.Users.findOneGuestByEmailAddress = function(emailAddress) {
+	const query = {
+		'visitorEmails.address': new RegExp('^' + s.escapeRegExp(emailAddress) + '$', 'i')
+	};
+
+	return this.findOne(query);
+};
+
+RocketChat.models.Users.getAgentInfo = function(agentId) {
+	const query = {
+		_id: agentId
+	};
+
+	const options = {
+		fields: {
+			name: 1,
+			username: 1,
+			emails: 1,
+			customFields: 1
+		}
+	};
+
+	return this.findOne(query, options);
+};

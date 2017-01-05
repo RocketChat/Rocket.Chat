@@ -44,11 +44,17 @@
 				{{#if user.active}}
 					{{> videoButtons}}
 				{{/if}}
+				{{#if isDirect}}
+					{{#if isBlocker}}
+						<button class='button button-block tertiary unblock-user'><span><i class='icon-block'></i> {{_ "Unblock_User"}}</span></button>
+					{{else}}
+						<button class='button button-block danger block-user'><span><i class='icon-block'></i> {{_ "Block_User"}}</span></button>
+					{{/if}}
+				{{/if}}
 
 				{{#if showAll}}
 					{{#if canDirectMessage user.username}}
-						<button class='button button-block primary pvt-msg'><span><i class='icon-chat'></i> {{_ "Conversation"}}</span></button>
-					{{/if}}
+						<button class='button button-block primary pvt-msg'><span><i class='icon-chat'></i> {{_ "Conversation"}}</span></button> {{/if}}
 					{{#if canSetOwner}}
 						{{#if isOwner}}
 							<button class="button button-block danger unset-owner"><span>{{_ "Remove_as_owner"}}</span></button>

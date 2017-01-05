@@ -47,22 +47,6 @@ Template.loginForm.helpers
 	hasOnePassword: ->
 		return OnePassword?.findLoginForUrl? && device?.platform?.toLocaleLowerCase() is 'ios'
 
-	customFields: ->
-		if not Template.instance().customFields.get()
-			return []
-
-		customFieldsArray = []
-		for key, value of Template.instance().customFields.get()
-			if value.hideFromForm is true
-				continue
-
-			customFieldsArray.push
-				fieldName: key,
-				field: value
-
-		return customFieldsArray
-
-
 Template.loginForm.events
 	'submit #login-card': (event, instance) ->
 		event.preventDefault()
