@@ -12,5 +12,44 @@ Template.livechatInstallation.helpers({
 })(window, document, 'script', '${siteUrl}/livechat');
 </script>
 <!-- End of Rocket.Chat Livechat Script -->`;
+	},
+
+	domains() {
+		return LivechatValidDomains.find();
 	}
+});
+
+Template.livechatDepartments.events({
+	'click .remove-domain'(e/*, instance*/) {
+		e.preventDefault();
+		e.stopPropagation();
+
+		swal({
+			title: t('Are_you_sure'),
+			type: 'warning',
+			showCancelButton: true,
+			confirmButtonColor: '#DD6B55',
+			confirmButtonText: t('Yes'),
+			cancelButtonText: t('Cancel'),
+			closeOnConfirm: false,
+			html: false
+		}, () => {
+			Meteor.call('livechat:removeDomain', this._id, function(error/*, result*/) {
+				if (error) {
+					return handleError(error);
+				}
+				swal({
+					title: t('Removed'),
+					text: t('Domain_removed'),
+					type: 'success',
+					timer: 1000,
+					showConfirmButton: false
+				});
+			});
+		});
+	},
+});
+
+Template.livechatInstallation.onCreated(function() {
+	this.subscribe('livechat:validDomain');
 });

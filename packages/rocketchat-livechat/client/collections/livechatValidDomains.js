@@ -1,0 +1,1 @@
+this.LivechatValidDomains = new Mongo.Collection('rocketchat_livechat_valid_domains');

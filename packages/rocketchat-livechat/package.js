@@ -64,6 +64,7 @@ Package.onUse(function(api) {
 	api.addFiles('client/collections/LivechatTrigger.js', 'client');
 	api.addFiles('client/collections/LivechatInquiry.js', 'client');
 	api.addFiles('client/collections/livechatOfficeHour.js', 'client');
+	api.addFiles('client/collections/livechatValidDomains.js', 'client');
 
 	api.addFiles('client/methods/changeLivechatStatus.js', 'client');
 
@@ -199,6 +200,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/publications/visitorPageVisited.js', 'server');
 	api.addFiles('server/publications/livechatInquiries.js', 'server');
 	api.addFiles('server/publications/livechatOfficeHours.js', 'server');
+	api.addFiles('server/publications/LivechatValidDomain.js', 'server');
 
 	// REST endpoints
 	api.addFiles('server/api.js', 'server');
