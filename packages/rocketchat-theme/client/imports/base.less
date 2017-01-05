@@ -4270,7 +4270,8 @@ body:not(.is-cordova) {
 	flex-flow: row nowrap;
 	width: 100%;
 	padding: 12px;
-	border: 0;
+	border-width: 1px;
+	border-radius: 4px;
 	transition: background-color 0.15s ease-out, border-color 0.15s ease-out;
 
 	&:first-child {
@@ -4311,6 +4312,15 @@ body:not(.is-cordova) {
 		min-width: 120px;
 		cursor: pointer;
 		text-align: center;
+	}
+
+	.input-line {
+		display: flex;
+		align-items: center;
+	}
+
+	#avatarurl {
+		margin-right: 20px;
 	}
 
 	input[type=file] {
