@@ -58,6 +58,7 @@ class MainContent extends Page {
 	get messagePopUpTitle() { return browser.element('.message-popup-title'); }
 	get messagePopUpItems() { return browser.element('.message-popup-items'); }
 	get messagePopUpFirstItem() { return browser.element('.popup-item.selected'); }
+	get mentionAllPopUp() { return browser.element('.popup-item[data-id="all"]'); }
 
 	sendMessage(text) {
 		this.setTextToInput(text);
