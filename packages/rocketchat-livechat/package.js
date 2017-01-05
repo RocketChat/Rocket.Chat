@@ -171,6 +171,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/models/indexes.js', 'server');
 	api.addFiles('server/models/LivechatInquiry.js', 'server');
 	api.addFiles('server/models/LivechatOfficeHour.js', 'server');
+	api.addFiles('server/models/LivechatValidDomains.js', 'server');
 
 	// server lib
 	api.addFiles('server/lib/Livechat.js', 'server');
