@@ -30,7 +30,7 @@ RocketChat.API.v1.addRoute('im.close', { authRequired: true }, {
 				Meteor.call('hideRoom', findResult.rid);
 			});
 		} catch (e) {
-			return RocketChat.API.v1.failure(`${e.name}: ${e.message}`);
+			return RocketChat.API.v1.failure(`${e.name}: ${e.message}`, e.error);
 		}
 
 		return RocketChat.API.v1.success();
@@ -77,7 +77,7 @@ RocketChat.API.v1.addRoute('im.history', { authRequired: true }, {
 				result = Meteor.call('getChannelHistory', { rid: findResult.rid, latest: latestDate, oldest: oldestDate, inclusive, count, unreads });
 			});
 		} catch (e) {
-			return RocketChat.API.v1.failure(`${e.name}: ${e.message}`);
+			return RocketChat.API.v1.failure(`${e.name}: ${e.message}`, e.error);
 		}
 
 		return RocketChat.API.v1.success({
@@ -150,7 +150,7 @@ RocketChat.API.v1.addRoute('im.open', { authRequired: true }, {
 				Meteor.call('openRoom', findResult.rid);
 			});
 		} catch (e) {
-			return RocketChat.API.v1.failure(`${e.name}: ${e.message}`);
+			return RocketChat.API.v1.failure(`${e.name}: ${e.message}`, e.error);
 		}
 
 		return RocketChat.API.v1.success();
@@ -175,7 +175,7 @@ RocketChat.API.v1.addRoute('im.setTopic', { authRequired: true }, {
 				Meteor.call('saveRoomSettings', findResult.rid, 'roomTopic', this.bodyParams.topic);
 			});
 		} catch (e) {
-			return RocketChat.API.v1.failure(`${e.name}: ${e.message}`);
+			return RocketChat.API.v1.failure(`${e.name}: ${e.message}`, e.error);
 		}
 
 		return RocketChat.API.v1.success({
