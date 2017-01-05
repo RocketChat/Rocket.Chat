@@ -52,7 +52,7 @@ RocketChat.API.v1.addRoute('channels.archive', { authRequired: true }, {
 				Meteor.call('archiveRoom', findResult._id);
 			});
 		} catch (e) {
-			return RocketChat.API.v1.failure(`${e.name}: ${e.message}`);
+			return RocketChat.API.v1.failure(`${e.name}: ${e.message}`, e.error);
 		}
 
 		return RocketChat.API.v1.success();
@@ -118,7 +118,7 @@ RocketChat.API.v1.addRoute('channels.close', { authRequired: true }, {
 				Meteor.call('hideRoom', findResult._id);
 			});
 		} catch (e) {
-			return RocketChat.API.v1.failure(`${e.name}: ${e.message}`);
+			return RocketChat.API.v1.failure(`${e.name}: ${e.message}`, e.error);
 		}
 
 		return RocketChat.API.v1.success();
@@ -150,7 +150,7 @@ RocketChat.API.v1.addRoute('channels.create', { authRequired: true }, {
 				id = Meteor.call('createChannel', this.bodyParams.name, this.bodyParams.members ? this.bodyParams.members : [], readOnly);
 			});
 		} catch (e) {
-			return RocketChat.API.v1.failure(`${e.name}: ${e.message}`);
+			return RocketChat.API.v1.failure(`${e.name}: ${e.message}`, e.error);
 		}
 
 		return RocketChat.API.v1.success({
@@ -173,7 +173,7 @@ RocketChat.API.v1.addRoute('channels.delete', { authRequired: true }, {
 				Meteor.call('eraseRoom', findResult._id);
 			});
 		} catch (e) {
-			return RocketChat.API.v1.failure(`${e.name}: ${e.message}`);
+			return RocketChat.API.v1.failure(`${e.name}: ${e.message}`, e.error);
 		}
 
 		return RocketChat.API.v1.success({
@@ -199,17 +199,41 @@ RocketChat.API.v1.addRoute('channels.getIntegrations', { authRequired: true }, {
 			includeAllPublicChannels = this.queryParams.includeAllPublicChannels === 'true';
 		}
 
-		const channelsToSearch = [`#${findResult.name}`];
+		const query = {
+			$or: [{
+				channel: {
+					$in: [`#${findResult.name}`]
+				}
+			}]
+		};
+
 		if (includeAllPublicChannels) {
-			channelsToSearch.push('all_public_channels');
+			query.$or.push({
+				channel: {
+					$eq: []
+				}
+			});
+
+			query.$or.push({
+				channel: {
+					$in: ['all_public_channels']
+				}
+			});
 		}
 
+		const { offset, count } = RocketChat.API.v1.getPaginationItems(this);
+		const integrations = RocketChat.models.Integrations.find(query, {
+			sort: { _createdAt: 1 },
+			skip: offset,
+			limit: count,
+			fields: RocketChat.API.v1.defaultFieldsToExclude
+		}).fetch();
+
 		return RocketChat.API.v1.success({
-			integrations: RocketChat.models.Integrations.find({
-				channel: {
-					$in: channelsToSearch
-				}
-			}).fetch()
+			integrations,
+			count: integrations.length,
+			offset,
+			total: RocketChat.models.Integrations.find(query).count()
 		});
 	}
 });
@@ -253,7 +277,7 @@ RocketChat.API.v1.addRoute('channels.history', { authRequired: true }, {
 				result = Meteor.call('getChannelHistory', { rid: findResult._id, latest: latestDate, oldest: oldestDate, inclusive, count, unreads });
 			});
 		} catch (e) {
-			return RocketChat.API.v1.failure(`${e.name}: ${e.message}`);
+			return RocketChat.API.v1.failure(`${e.name}: ${e.message}`, e.error);
 		}
 
 		return RocketChat.API.v1.success({
@@ -300,7 +324,29 @@ RocketChat.API.v1.addRoute('channels.invite', { authRequired: true }, {
 				Meteor.call('addUserToRoom', { rid: findResult._id, username: user.username });
 			});
 		} catch (e) {
-			return RocketChat.API.v1.failure(`${e.name}: ${e.message}`);
+			return RocketChat.API.v1.failure(`${e.name}: ${e.message}`, e.error);
+		}
+
+		return RocketChat.API.v1.success({
+			channel: RocketChat.models.Rooms.findOneById(findResult._id, { fields: RocketChat.API.v1.defaultFieldsToExclude })
+		});
+	}
+});
+
+RocketChat.API.v1.addRoute('channels.join', { authRequired: true }, {
+	post: function() {
+		const findResult = findChannelById({ roomId: this.bodyParams.roomId });
+
+		if (findResult.statusCode) {
+			return findResult;
+		}
+
+		try {
+			Meteor.runAsUser(this.userId, () => {
+				Meteor.call('joinRoom', findResult._id, this.bodyParams.joinCode);
+			});
+		} catch (e) {
+			return RocketChat.API.v1.failure(`${e.name}: ${e.message}`, e.error);
 		}
 
 		return RocketChat.API.v1.success({
@@ -332,7 +378,7 @@ RocketChat.API.v1.addRoute('channels.kick', { authRequired: true }, {
 				Meteor.call('removeUserFromRoom', { rid: findResult._id, username: user.username });
 			});
 		} catch (e) {
-			return RocketChat.API.v1.failure(`${e.name}: ${e.message}`);
+			return RocketChat.API.v1.failure(`${e.name}: ${e.message}`, e.error);
 		}
 
 		return RocketChat.API.v1.success({
@@ -354,7 +400,7 @@ RocketChat.API.v1.addRoute('channels.leave', { authRequired: true }, {
 				Meteor.call('leaveRoom', findResult._id);
 			});
 		} catch (e) {
-			return RocketChat.API.v1.failure(`${e.name}: ${e.message}`);
+			return RocketChat.API.v1.failure(`${e.name}: ${e.message}`, e.error);
 		}
 
 		return RocketChat.API.v1.success({
@@ -428,7 +474,7 @@ RocketChat.API.v1.addRoute('channels.open', { authRequired: true }, {
 				Meteor.call('openRoom', findResult._id);
 			});
 		} catch (e) {
-			return RocketChat.API.v1.failure(`${e.name}: ${e.message}`);
+			return RocketChat.API.v1.failure(`${e.name}: ${e.message}`, e.error);
 		}
 
 		return RocketChat.API.v1.success();
@@ -456,7 +502,7 @@ RocketChat.API.v1.addRoute('channels.rename', { authRequired: true }, {
 				Meteor.call('saveRoomSettings', findResult._id, 'roomName', this.bodyParams.name);
 			});
 		} catch (e) {
-			return RocketChat.API.v1.failure(`${e.name}: ${e.message}`);
+			return RocketChat.API.v1.failure(`${e.name}: ${e.message}`, e.error);
 		}
 
 		return RocketChat.API.v1.success({
@@ -486,7 +532,7 @@ RocketChat.API.v1.addRoute('channels.setDescription', { authRequired: true }, {
 				Meteor.call('saveRoomSettings', findResult._id, 'roomDescription', this.bodyParams.description);
 			});
 		} catch (e) {
-			return RocketChat.API.v1.failure(`${e.name}: ${e.message}`);
+			return RocketChat.API.v1.failure(`${e.name}: ${e.message}`, e.error);
 		}
 
 		return RocketChat.API.v1.success({
@@ -512,7 +558,7 @@ RocketChat.API.v1.addRoute('channels.setJoinCode', { authRequired: true }, {
 				Meteor.call('saveRoomSettings', findResult._id, 'joinCode', this.bodyParams.joinCode);
 			});
 		} catch (e) {
-			return RocketChat.API.v1.failure(`${e.name}: ${e.message}`);
+			return RocketChat.API.v1.failure(`${e.name}: ${e.message}`, e.error);
 		}
 
 		return RocketChat.API.v1.success({
@@ -542,7 +588,7 @@ RocketChat.API.v1.addRoute('channels.setPurpose', { authRequired: true }, {
 				Meteor.call('saveRoomSettings', findResult._id, 'roomDescription', this.bodyParams.purpose);
 			});
 		} catch (e) {
-			return RocketChat.API.v1.failure(`${e.name}: ${e.message}`);
+			return RocketChat.API.v1.failure(`${e.name}: ${e.message}`, e.error);
 		}
 
 		return RocketChat.API.v1.success({
@@ -572,7 +618,7 @@ RocketChat.API.v1.addRoute('channels.setReadOnly', { authRequired: true }, {
 				Meteor.call('saveRoomSettings', findResult._id, 'readOnly', this.bodyParams.readOnly);
 			});
 		} catch (e) {
-			return RocketChat.API.v1.failure(`${e.name}: ${e.message}`);
+			return RocketChat.API.v1.failure(`${e.name}: ${e.message}`, e.error);
 		}
 
 		return RocketChat.API.v1.success({
@@ -602,7 +648,7 @@ RocketChat.API.v1.addRoute('channels.setTopic', { authRequired: true }, {
 				Meteor.call('saveRoomSettings', findResult._id, 'roomTopic', this.bodyParams.topic);
 			});
 		} catch (e) {
-			return RocketChat.API.v1.failure(`${e.name}: ${e.message}`);
+			return RocketChat.API.v1.failure(`${e.name}: ${e.message}`, e.error);
 		}
 
 		return RocketChat.API.v1.success({
@@ -632,7 +678,7 @@ RocketChat.API.v1.addRoute('channels.setType', { authRequired: true }, {
 				Meteor.call('saveRoomSettings', findResult._id, 'roomType', this.bodyParams.type);
 			});
 		} catch (e) {
-			return RocketChat.API.v1.failure(`${e.name}: ${e.message}`);
+			return RocketChat.API.v1.failure(`${e.name}: ${e.message}`, e.error);
 		}
 
 		return RocketChat.API.v1.success({
@@ -658,7 +704,7 @@ RocketChat.API.v1.addRoute('channels.unarchive', { authRequired: true }, {
 				Meteor.call('unarchiveRoom', findResult._id);
 			});
 		} catch (e) {
-			return RocketChat.API.v1.failure(`${e.name}: ${e.message}`);
+			return RocketChat.API.v1.failure(`${e.name}: ${e.message}`, e.error);
 		}
 
 		return RocketChat.API.v1.success();

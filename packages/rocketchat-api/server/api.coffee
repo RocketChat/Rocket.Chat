@@ -18,13 +18,15 @@ class API extends Restivus
 			statusCode: 200
 			body: result
 
-	failure: (result) ->
+	failure: (result, errorType) ->
 		if _.isObject(result)
 			result.success = false
 		else
 			result =
 				success: false
 				error: result
+			if errorType?
+				result.errorType = errorType
 
 		return {} =
 			statusCode: 400

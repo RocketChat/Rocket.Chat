@@ -32,7 +32,7 @@ RocketChat.API.v1.addRoute('groups.archive', { authRequired: true }, {
 				Meteor.call('archiveRoom', findResult.rid);
 			});
 		} catch (e) {
-			return RocketChat.API.v1.failure(`${e.name}: ${e.message}`);
+			return RocketChat.API.v1.failure(`${e.name}: ${e.message}`, e.error);
 		}
 
 		return RocketChat.API.v1.success();
@@ -57,7 +57,7 @@ RocketChat.API.v1.addRoute('groups.close', { authRequired: true }, {
 				Meteor.call('hideRoom', findResult.rid);
 			});
 		} catch (e) {
-			return RocketChat.API.v1.failure(`${e.name}: ${e.message}`);
+			return RocketChat.API.v1.failure(`${e.name}: ${e.message}`, e.error);
 		}
 
 		return RocketChat.API.v1.success();
@@ -85,7 +85,7 @@ RocketChat.API.v1.addRoute('groups.create', { authRequired: true }, {
 				id = Meteor.call('createPrivateGroup', this.bodyParams.name, this.bodyParams.members ? this.bodyParams.members : []);
 			});
 		} catch (e) {
-			return RocketChat.API.v1.failure(`${e.name}: ${e.message}`);
+			return RocketChat.API.v1.failure(`${e.name}: ${e.message}`, e.error);
 		}
 
 		return RocketChat.API.v1.success({
@@ -108,7 +108,7 @@ RocketChat.API.v1.addRoute('groups.delete', { authRequired: true }, {
 				Meteor.call('eraseRoom', findResult.rid);
 			});
 		} catch (e) {
-			return RocketChat.API.v1.failure(`${e.name}: ${e.message}`);
+			return RocketChat.API.v1.failure(`${e.name}: ${e.message}`, e.error);
 		}
 
 		return RocketChat.API.v1.success({
@@ -140,12 +140,20 @@ RocketChat.API.v1.addRoute('groups.getIntegrations', { authRequired: true }, {
 			channelsToSearch.push('all_private_groups');
 		}
 
+		const { offset, count } = RocketChat.API.v1.getPaginationItems(this);
+		const query = { channel: { $in: channelsToSearch } };
+		const integrations = RocketChat.models.Integrations.find(query, {
+			sort: { _createdAt: 1 },
+			skip: offset,
+			limit: count,
+			fields: RocketChat.API.v1.defaultFieldsToExclude
+		}).fetch();
+
 		return RocketChat.API.v1.success({
-			integrations: RocketChat.models.Integrations.find({
-				channel: {
-					$in: channelsToSearch
-				}
-			}).fetch()
+			integrations,
+			count: integrations.length,
+			offset,
+			total: RocketChat.models.Integrations.find(query).count()
 		});
 	}
 });
@@ -190,7 +198,7 @@ RocketChat.API.v1.addRoute('groups.history', { authRequired: true }, {
 				result = Meteor.call('getChannelHistory', { rid: findResult.rid, latest: latestDate, oldest: oldestDate, inclusive, count, unreads });
 			});
 		} catch (e) {
-			return RocketChat.API.v1.failure(`${e.name}: ${e.message}`);
+			return RocketChat.API.v1.failure(`${e.name}: ${e.message}`, e.error);
 		}
 
 		return RocketChat.API.v1.success({
@@ -238,7 +246,7 @@ RocketChat.API.v1.addRoute('groups.invite', { authRequired: true }, {
 				Meteor.call('addUserToRoom', { rid: findResult.rid, username: user.username });
 			});
 		} catch (e) {
-			return RocketChat.API.v1.failure(`${e.name}: ${e.message}`);
+			return RocketChat.API.v1.failure(`${e.name}: ${e.message}`, e.error);
 		}
 
 		return RocketChat.API.v1.success({
@@ -271,7 +279,7 @@ RocketChat.API.v1.addRoute('groups.kick', { authRequired: true }, {
 				Meteor.call('removeUserFromRoom', { rid: findResult.rid, username: user.username });
 			});
 		} catch (e) {
-			return RocketChat.API.v1.failure(`${e.name}: ${e.message}`);
+			return RocketChat.API.v1.failure(`${e.name}: ${e.message}`, e.error);
 		}
 
 		return RocketChat.API.v1.success();
@@ -292,7 +300,7 @@ RocketChat.API.v1.addRoute('groups.leave', { authRequired: true }, {
 				Meteor.call('leaveRoom', findResult.rid);
 			});
 		} catch (e) {
-			return RocketChat.API.v1.failure(`${e.name}: ${e.message}`);
+			return RocketChat.API.v1.failure(`${e.name}: ${e.message}`, e.error);
 		}
 
 		return RocketChat.API.v1.success();
@@ -340,7 +348,7 @@ RocketChat.API.v1.addRoute('groups.open', { authRequired: true }, {
 				Meteor.call('openRoom', findResult.rid);
 			});
 		} catch (e) {
-			return RocketChat.API.v1.failure(`${e.name}: ${e.message}`);
+			return RocketChat.API.v1.failure(`${e.name}: ${e.message}`, e.error);
 		}
 
 		return RocketChat.API.v1.success();
@@ -365,7 +373,7 @@ RocketChat.API.v1.addRoute('groups.rename', { authRequired: true }, {
 				Meteor.call('saveRoomSettings', findResult.rid, 'roomName', this.bodyParams.name);
 			});
 		} catch (e) {
-			return RocketChat.API.v1.failure(`${e.name}: ${e.message}`);
+			return RocketChat.API.v1.failure(`${e.name}: ${e.message}`, e.error);
 		}
 
 		return RocketChat.API.v1.success({
@@ -392,7 +400,7 @@ RocketChat.API.v1.addRoute('groups.setDescription', { authRequired: true }, {
 				Meteor.call('saveRoomSettings', findResult.rid, 'roomDescription', this.bodyParams.description);
 			});
 		} catch (e) {
-			return RocketChat.API.v1.failure(`${e.name}: ${e.message}`);
+			return RocketChat.API.v1.failure(`${e.name}: ${e.message}`, e.error);
 		}
 
 		return RocketChat.API.v1.success({
@@ -419,7 +427,7 @@ RocketChat.API.v1.addRoute('groups.setPurpose', { authRequired: true }, {
 				Meteor.call('saveRoomSettings', findResult.rid, 'roomDescription', this.bodyParams.purpose);
 			});
 		} catch (e) {
-			return RocketChat.API.v1.failure(`${e.name}: ${e.message}`);
+			return RocketChat.API.v1.failure(`${e.name}: ${e.message}`, e.error);
 		}
 
 		return RocketChat.API.v1.success({
@@ -449,7 +457,7 @@ RocketChat.API.v1.addRoute('groups.setReadOnly', { authRequired: true }, {
 				Meteor.call('saveRoomSettings', findResult._id, 'readOnly', this.bodyParams.readOnly);
 			});
 		} catch (e) {
-			return RocketChat.API.v1.failure(`${e.name}: ${e.message}`);
+			return RocketChat.API.v1.failure(`${e.name}: ${e.message}`, e.error);
 		}
 
 		return RocketChat.API.v1.success({
@@ -476,7 +484,7 @@ RocketChat.API.v1.addRoute('groups.setTopic', { authRequired: true }, {
 				Meteor.call('saveRoomSettings', findResult.rid, 'roomTopic', this.bodyParams.topic);
 			});
 		} catch (e) {
-			return RocketChat.API.v1.failure(`${e.name}: ${e.message}`);
+			return RocketChat.API.v1.failure(`${e.name}: ${e.message}`, e.error);
 		}
 
 		return RocketChat.API.v1.success({
@@ -506,7 +514,7 @@ RocketChat.API.v1.addRoute('groups.setType', { authRequired: true }, {
 				Meteor.call('saveRoomSettings', findResult._id, 'roomType', this.bodyParams.type);
 			});
 		} catch (e) {
-			return RocketChat.API.v1.failure(`${e.name}: ${e.message}`);
+			return RocketChat.API.v1.failure(`${e.name}: ${e.message}`, e.error);
 		}
 
 		return RocketChat.API.v1.success({
@@ -529,7 +537,7 @@ RocketChat.API.v1.addRoute('groups.unarchive', { authRequired: true }, {
 				Meteor.call('unarchiveRoom', findResult.rid);
 			});
 		} catch (e) {
-			return RocketChat.API.v1.failure(`${e.name}: ${e.message}`);
+			return RocketChat.API.v1.failure(`${e.name}: ${e.message}`, e.error);
 		}
 
 		return RocketChat.API.v1.success();
