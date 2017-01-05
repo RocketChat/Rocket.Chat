@@ -11,6 +11,11 @@ WebApp.connectHandlers.use('/livechat', Meteor.bindEnvironment((req, res, next) 
 	}
 	res.setHeader('content-type', 'text/html; charset=utf-8');
 
+	d = req.headers.referer.match(/^(?:https?:\/\/)?(?:www\.)?([^\/]+)/)[1];
+	if (RocketChat.models.LivechatValidDomains.findOneByDomain(d) === null) {
+		return next();
+	}
+
 	const head = Assets.getText('public/head.html');
 
 	const html = `<html>
