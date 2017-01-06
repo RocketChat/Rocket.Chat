@@ -530,7 +530,7 @@ RocketChat.Livechat = {
 		check(domain, String);
 
 		// check to make sure domain follows schema "www.cname.website.com" before inserting
-		if (domain.match(/https?:\/\/(?:www\.|(?!www))[^\s\.]+\.[^\s]{2,}|www\.[^\s]+\.[^\s]{2,}/) !== null) {
+		if (domain.match(/^\w+(\.\w+)*(:[0-9]+)?\/?(\/[.\w]*)*$/) !== null) {
 			//parse the domain and insert
 			return RocketChat.models.LivechatValidDomains.insertDomain(domain.match(/^(?:https?:\/\/)?(?:www\.)?([^\/]+)/)[1]);
 		} else {
