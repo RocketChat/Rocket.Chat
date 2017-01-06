@@ -36,6 +36,9 @@ Template.oembedUrlWidget.helpers
 
 		url = decodedOgImage or this.meta.twitterImage
 
+		if not url?
+			return
+
 		if url.indexOf('//') is 0
 			url = "#{this.parsedUrl.protocol}#{url}"
 

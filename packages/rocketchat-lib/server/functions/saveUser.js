@@ -124,7 +124,12 @@ RocketChat.saveUser = function(userId, userData) {
 
 		if (RocketChat.settings.get('Accounts_SetDefaultAvatar') === true && userData.email) {
 			let gravatarUrl = Gravatar.imageUrl(userData.email, {default: '404', size: 200, secure: true});
-			RocketChat.setUserAvatar(userData, gravatarUrl, '', 'url');
+
+			try {
+				RocketChat.setUserAvatar(userData, gravatarUrl, '', 'url');
+			} catch (e) {
+				//Ignore this error for now, as it not being successful isn't bad
+			}
 		}
 
 		return _id;

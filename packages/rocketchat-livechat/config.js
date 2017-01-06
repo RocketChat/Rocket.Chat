@@ -14,6 +14,14 @@ Meteor.startup(function() {
 		i18nLabel: 'Display_offline_form'
 	});
 
+	RocketChat.settings.add('Livechat_validate_offline_email', true, {
+		type: 'boolean',
+		group: 'Livechat',
+		public: true,
+		section: 'Offline',
+		i18nLabel: 'Validate_email_address'
+	});
+
 	RocketChat.settings.add('Livechat_offline_form_unavailable', '', {
 		type: 'string',
 		group: 'Livechat',
