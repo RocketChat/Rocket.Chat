@@ -7,14 +7,13 @@ Package.describe({
 
 Package.onUse(function(api) {
 	api.use([
-		'coffeescript',
 		'underscore',
 		'ecmascript',
 		'rocketchat:lib',
 		'nimble:restivus'
 	]);
 
-	api.addFiles('server/api.coffee', 'server');
+	api.addFiles('server/api.js', 'server');
 	api.addFiles('server/settings.js', 'server');
 
 	api.addFiles('server/default/info.js', 'server');
