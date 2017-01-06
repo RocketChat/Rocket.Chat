@@ -89,15 +89,16 @@ RocketChat.API.v1.addRoute('im.history', { authRequired: true }, {
 
 RocketChat.API.v1.addRoute('im.list', { authRequired: true }, {
 	get: function() {
-		const { offset, count } = RocketChat.API.v1.getPaginationItems(this);
+		const { offset, count } = this.getPaginationItems();
+		const { sort, fields } = this.parseJsonQuery();
 		let rooms = _.pluck(RocketChat.models.Subscriptions.findByTypeAndUserId('d', this.userId).fetch(), '_room');
 		const totalCount = rooms.length;
 
 		rooms = RocketChat.models.Rooms.processQueryOptionsOnResult(rooms, {
-			sort: { name: 1 },
+			sort: sort ? sort : { name: 1 },
 			skip: offset,
 			limit: count,
-			fields: RocketChat.API.v1.defaultFieldsToExclude
+			fields: Object.assign({}, fields, RocketChat.API.v1.defaultFieldsToExclude)
 		});
 
 		return RocketChat.API.v1.success({
@@ -115,19 +116,23 @@ RocketChat.API.v1.addRoute('im.list.everyone', { authRequired: true }, {
 			return RocketChat.API.v1.unauthorized();
 		}
 
-		const { offset, count } = RocketChat.API.v1.getPaginationItems(this);
-		const rooms = RocketChat.models.Rooms.findByType('d', {
-			sort: { name: 1 },
+		const { offset, count } = this.getPaginationItems();
+		const { sort, fields, query } = this.parseJsonQuery();
+
+		const ourQuery = Object.assign({}, query, { t: 'd' });
+
+		const rooms = RocketChat.models.Rooms.find(ourQuery, {
+			sort: sort ? sort : { name: 1 },
 			skip: offset,
 			limit: count,
-			fields: RocketChat.API.v1.defaultFieldsToExclude
+			fields: Object.assign({}, fields, RocketChat.API.v1.defaultFieldsToExclude)
 		}).fetch();
 
 		return RocketChat.API.v1.success({
 			ims: rooms,
 			offset,
 			count: rooms.length,
-			total: RocketChat.models.Rooms.findByType('d').count()
+			total: RocketChat.models.Rooms.find(ourQuery).count()
 		});
 	}
 });

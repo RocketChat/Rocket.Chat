@@ -42,18 +42,22 @@ RocketChat.API.v1.addRoute('integrations.list', { authRequired: true }, {
 			return RocketChat.API.v1.unauthorized();
 		}
 
-		const { offset, count } = RocketChat.API.v1.getPaginationItems(this);
-		const integrations = RocketChat.models.Integrations.find({}, {
-			sort: { ts: -1 },
+		const { offset, count } = this.getPaginationItems();
+		const { sort, fields, query } = this.parseJsonQuery();
+
+		const ourQuery = Object.assign({}, query);
+		const integrations = RocketChat.models.Integrations.find(ourQuery, {
+			sort: sort ? sort : { ts: -1 },
 			skip: offset,
-			limit: count
+			limit: count,
+			fields
 		}).fetch();
 
 		return RocketChat.API.v1.success({
 			integrations: integrations,
 			offset,
 			items: integrations.length,
-			total: RocketChat.models.Integrations.find().count()
+			total: RocketChat.models.Integrations.find(ourQuery).count()
 		});
 	}
 });
