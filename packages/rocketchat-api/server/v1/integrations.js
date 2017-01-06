@@ -76,9 +76,9 @@ RocketChat.API.v1.addRoute('integrations.remove', { authRequired: true }, {
 					let integration;
 
 					if (this.bodyParams.target_url) {
-						integration = RocketChat.models.Integrations.findOne({ urls: this.bodyParams.target_url }, { fields: { name: 1 } });
+						integration = RocketChat.models.Integrations.findOne({ urls: this.bodyParams.target_url });
 					} else if (this.bodyParams.integrationId) {
-						integration = RocketChat.models.Integrations.findOneById(this.bodyParams.integrationId, { fields: { name: 1 } });
+						integration = RocketChat.models.Integrations.findOne({ _id: this.bodyParams.integrationId });
 					}
 
 					if (!integration) {
