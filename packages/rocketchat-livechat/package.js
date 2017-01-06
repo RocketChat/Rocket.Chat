@@ -129,6 +129,7 @@ Package.onUse(function(api) {
 
 	// methods
 	api.addFiles('server/methods/addAgent.js', 'server');
+	api.addFiles('server/methods/addValidDomain.js', 'server');
 	api.addFiles('server/methods/addManager.js', 'server');
 	api.addFiles('server/methods/changeLivechatStatus.js', 'server');
 	api.addFiles('server/methods/closeByVisitor.js', 'server');
@@ -142,6 +143,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/methods/removeAgent.js', 'server');
 	api.addFiles('server/methods/removeCustomField.js', 'server');
 	api.addFiles('server/methods/removeDepartment.js', 'server');
+	api.addFiles('server/methods/removeValidDomain.js', 'server');
 	api.addFiles('server/methods/removeManager.js', 'server');
 	api.addFiles('server/methods/removeTrigger.js', 'server');
 	api.addFiles('server/methods/saveCustomField.js', 'server');
