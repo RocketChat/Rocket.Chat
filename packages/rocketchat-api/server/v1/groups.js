@@ -140,20 +140,22 @@ RocketChat.API.v1.addRoute('groups.getIntegrations', { authRequired: true }, {
 			channelsToSearch.push('all_private_groups');
 		}
 
-		const { offset, count } = RocketChat.API.v1.getPaginationItems(this);
-		const query = { channel: { $in: channelsToSearch } };
-		const integrations = RocketChat.models.Integrations.find(query, {
-			sort: { _createdAt: 1 },
+		const { offset, count } = this.getPaginationItems();
+		const { sort, fields, query } = this.parseJsonQuery();
+
+		const ourQuery = Object.assign({}, query, { channel: { $in: channelsToSearch } });
+		const integrations = RocketChat.models.Integrations.find(ourQuery, {
+			sort: sort ? sort : { _createdAt: 1 },
 			skip: offset,
 			limit: count,
-			fields: RocketChat.API.v1.defaultFieldsToExclude
+			fields: Object.assign({}, fields, RocketChat.API.v1.defaultFieldsToExclude)
 		}).fetch();
 
 		return RocketChat.API.v1.success({
 			integrations,
 			count: integrations.length,
 			offset,
-			total: RocketChat.models.Integrations.find(query).count()
+			total: RocketChat.models.Integrations.find(ourQuery).count()
 		});
 	}
 });
@@ -310,15 +312,16 @@ RocketChat.API.v1.addRoute('groups.leave', { authRequired: true }, {
 //List Private Groups a user has access to
 RocketChat.API.v1.addRoute('groups.list', { authRequired: true }, {
 	get: function() {
-		const { offset, count } = RocketChat.API.v1.getPaginationItems(this);
+		const { offset, count } = this.getPaginationItems();
+		const { sort, fields } = this.parseJsonQuery();
 		let rooms = _.pluck(RocketChat.models.Subscriptions.findByTypeAndUserId('p', this.userId).fetch(), '_room');
 		const totalCount = rooms.length;
 
 		rooms = RocketChat.models.Rooms.processQueryOptionsOnResult(rooms, {
-			sort: { name: 1 },
+			sort: sort ? sort : { name: 1 },
 			skip: offset,
 			limit: count,
-			fields: RocketChat.API.v1.defaultFieldsToExclude
+			fields: Object.assign({}, fields, RocketChat.API.v1.defaultFieldsToExclude)
 		});
 
 		return RocketChat.API.v1.success({
