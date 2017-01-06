@@ -1,7 +1,12 @@
 /* globals msgStream */
 Meteor.methods({
-	setReaction(reaction, messageId) {
-		if (!Meteor.userId()) {
+	setReaction(reaction, messageId, user) {
+
+		if (!user) {
+			user = Meteor.user();
+		}
+
+		if (!user._id) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'setReaction' });
 		}
 
@@ -11,13 +16,11 @@ Meteor.methods({
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'setReaction' });
 		}
 
-		let room = Meteor.call('canAccessRoom', message.rid, Meteor.userId());
+		let room = Meteor.call('canAccessRoom', message.rid, user._id);
 
 		if (!room) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'setReaction' });
 		}
-
-		const user = Meteor.user();
 
 		if (Array.isArray(room.muted) && room.muted.indexOf(user.username) !== -1 && !room.reactWhenReadOnly) {
 			RocketChat.Notifications.notifyUser(Meteor.userId(), 'message', {
@@ -41,8 +44,10 @@ Meteor.methods({
 			if (_.isEmpty(message.reactions)) {
 				delete message.reactions;
 				RocketChat.models.Messages.unsetReactions(messageId);
+				RocketChat.callbacks.run('unsetReaction', messageId, reaction);
 			} else {
 				RocketChat.models.Messages.setReactions(messageId, message.reactions);
+				RocketChat.callbacks.run('setReaction', messageId, reaction);
 			}
 		} else {
 			if (!message.reactions) {
@@ -56,6 +61,7 @@ Meteor.methods({
 			message.reactions[reaction].usernames.push(user.username);
 
 			RocketChat.models.Messages.setReactions(messageId, message.reactions);
+			RocketChat.callbacks.run('setReaction', messageId, reaction);
 		}
 
 		msgStream.emit(message.rid, message);
