@@ -357,7 +357,9 @@ class SlackBridge {
 				//Stash this away to key off it later so we don't send it back to Slack
 				this.reactionsMap.set('unset'+rocketMsg._id+rocketReaction, rocketUser);
 				logger.class.debug('Removing reaction from Slack');
-				Meteor.call('setReaction', rocketReaction, rocketMsg._id, rocketUser);
+				Meteor.runAsUser(rocketUser._id, () => {
+					Meteor.call('setReaction', rocketReaction, rocketMsg._id);
+				});
 			}
 		}
 	}
@@ -398,7 +400,9 @@ class SlackBridge {
 				//Stash this away to key off it later so we don't send it back to Slack
 				this.reactionsMap.set('set'+rocketMsg._id+rocketReaction, rocketUser);
 				logger.class.debug('Adding reaction from Slack');
-				Meteor.call('setReaction', rocketReaction, rocketMsg._id, rocketUser);
+				Meteor.runAsUser(rocketUser._id, () => {
+					Meteor.call('setReaction', rocketReaction, rocketMsg._id);
+				});
 			}
 		}
 	}
