@@ -512,7 +512,33 @@ RocketChat.Livechat = {
 		} else {
 			return false;
 		}
+	},
+
+	removeValidDomain(_id) {
+		check(_id, String);
+
+		var domain = RocketChat.models.LivechatValidDomains.findOneById(_id, { fields: { _id: 1 } });
+
+		if (!domain) {
+			throw new Meteor.Error('domain-not-found', 'Domain not found', { method: 'livechat:LivechatValidDomains' });
+		}
+
+		return RocketChat.models.LivechatValidDomains.removeById(_id);
+	},
+
+	addValidDomain(domain) {
+		check(domain, String);
+
+		// check to make sure domain follows schema "www.cname.website.com" before inserting
+		if (domain.match(/https?:\/\/(?:www\.|(?!www))[^\s\.]+\.[^\s]{2,}|www\.[^\s]+\.[^\s]{2,}/) !== null) {
+			//parse the domain and insert
+			return RocketChat.models.LivechatValidDomains.insertDomain(domain.match(/^(?:https?:\/\/)?(?:www\.)?([^\/]+)/)[1]);
+		} else {
+			throw new Meteor.Error('invalid-domain', 'Not a valid domain', { method: 'livechat:addValidDomain' });
+		}
 	}
+
+
 };
 
 RocketChat.Livechat.stream = new Meteor.Streamer('livechat-room');

@@ -5,7 +5,7 @@ class LivechatValidDomains extends RocketChat.models._Base {
 	}
 
 	findOneById(dId) {
-		check(dId, String);
+		// check(dId, String);
 		return this.findOne({ _id: dId });
 	}
 
@@ -16,17 +16,17 @@ class LivechatValidDomains extends RocketChat.models._Base {
 
 	insertDomain(domain) {
 		check(domain, String);
-
-		// check to make sure domain follows schema "www.cname.website.com" before inserting
-		if (domain.match(/https?:\/\/(?:www\.|(?!www))[^\s\.]+\.[^\s]{2,}|www\.[^\s]+\.[^\s]{2,}/) !== null) {
-			//parse the domain and insert
-			this.insert({ domain: domain.match(/^(?:https?:\/\/)?(?:www\.)?([^\/]+)/)[1] });
-		}
+		return this.insert({ domain: domain });
 	}
 
-	removeDomain(domain) {
+	removeByDomain(domain) {
 		check(domain, String);
-		this.remove({ domain: domain});
+		return this.remove({ domain: domain});
+	}
+
+	removeById(id) {
+		// check(id, String);
+		return this.remove({ _id: id });
 	}
 }
 
