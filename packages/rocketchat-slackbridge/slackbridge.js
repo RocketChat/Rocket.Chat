@@ -104,7 +104,6 @@ class SlackBridge {
 	}
 
 	findRocketChannel(slackChannelId) {
-		logger.class.debug('Searching for Rocket.Chat channel', slackChannelId);
 		return RocketChat.models.Rooms.findOneByImportId(slackChannelId);
 	}
 
@@ -177,7 +176,6 @@ class SlackBridge {
 	}
 
 	findRocketUser(slackUserID) {
-		logger.class.debug('Searching for Rocket.Chat user', slackUserID);
 		let rocketUser = RocketChat.models.Users.findOneByImportId(slackUserID);
 		if (rocketUser && !this.userTags[slackUserID]) {
 			this.userTags[slackUserID] = { slack: `<@${slackUserID}>`, rocket: `@${rocketUser.username}` };
@@ -334,6 +332,9 @@ class SlackBridge {
 				case 'message_deleted':
 					this.processSlackMessageDeleted(slackMessage);
 					break;
+				case 'message_changed':
+					this.processSlackMessageChanged(slackMessage);
+					break;
 				default:
 					//Keeping backwards compatability for now, refactor later
 					this.processSlackNewMessage(slackMessage, isImporting);
@@ -368,9 +369,6 @@ class SlackBridge {
 				return this.addAliasToRocketMsg(rocketUser.username, {
 					msg: `_${this.convertSlackMsgTxtToRocketTxtFormat(slackMessage.text)}_`
 				});
-			case 'message_changed':
-				this.editRocketMessage(rocketChannel, rocketUser, slackMessage);
-				return;
 			case 'channel_join':
 				if (isImporting) {
 					RocketChat.models.Messages.createUserJoinWithRoomIdAndUser(rocketChannel._id, rocketUser, { ts: new Date(parseInt(slackMessage.ts.split('.')[0]) * 1000), imported: 'slackbridge' });
@@ -491,20 +489,6 @@ class SlackBridge {
 				logger.class.error('Unpinned item not implemented');
 				return;
 		}
-	}
-
-	/**
-	* Edits a rocket message
-	**/
-	editRocketMessage(rocketChannel, rocketUser, slackMessage) {
-		let rocketMsgObj = {
-			//@TODO _id
-			_id: this.createRocketID(slackMessage, slackMessage.ts),
-			rid: rocketChannel._id,
-			msg: this.convertSlackMsgTxtToRocketTxtFormat(slackMessage.message.text)
-		};
-
-		RocketChat.updateMessage(rocketMsgObj, rocketUser);
 	}
 
 	/**
@@ -982,10 +966,18 @@ class SlackBridge {
 
 	onRocketMessage(rocketMessage) {
 		logger.class.debug('onRocketMessage', rocketMessage);
+
+		if (rocketMessage.editedAt) {
+			//This is an Edit Event
+			this.processRocketMessageChanged(rocketMessage);
+			return rocketMessage;
+		}
 		// Ignore messages originating from Slack
 		if (rocketMessage._id.indexOf('slack-') === 0) {
 			return rocketMessage;
 		}
+
+		//Probably a new message from Rocket.Chat
 		let outSlackChannels = RocketChat.settings.get('SlackBridge_Out_All') ? _.keys(this.slackChannelMap) : _.pluck(RocketChat.settings.get('SlackBridge_Out_Channels'), '_id') || [];
 		//logger.class.debug('Out SlackChannels: ', outSlackChannels);
 		if (outSlackChannels.indexOf(rocketMessage.rid) !== -1) {
@@ -999,12 +991,14 @@ class SlackBridge {
 			let data = {
 				token: this.apiToken,
 				ts: this.getSlackTS(rocketMessage),
-				channel: this.slackChannelMap[rocketMessage.rid].id
+				channel: this.slackChannelMap[rocketMessage.rid].id,
+				as_user: true
 			};
 
+			logger.class.debug('Post Delete Message to Slack', data);
 			const postResult = HTTP.post('https://slack.com/api/chat.delete', { params: data });
 			if (postResult.statusCode === 200 && postResult.data && postResult.data.ok === true) {
-				logger.class.debug('Slack message deleted');
+				logger.class.debug('Message deleted on Slack');
 			}
 		}
 	}
@@ -1032,6 +1026,40 @@ class SlackBridge {
 	}
 
 	/*
+	 https://api.slack.com/methods/chat.update
+	 */
+	postMessageUpdateToSlack(slackChannel, rocketMessage) {
+		if (slackChannel && slackChannel.id) {
+			let data = {
+				token: this.apiToken,
+				ts: this.getSlackTS(rocketMessage),
+				channel: slackChannel.id,
+				text: rocketMessage.msg,
+				as_user: true
+			};
+			logger.class.debug('Post UpdateMessage To Slack', data);
+			const postResult = HTTP.post('https://slack.com/api/chat.update', { params: data });
+			if (postResult.statusCode === 200 && postResult.data && postResult.data.ok === true) {
+				logger.class.debug('Message updated on Slack');
+			}
+		}
+	}
+
+	processRocketMessageChanged(rocketMessage) {
+		if (rocketMessage) {
+			if (rocketMessage.updatedBySlack) {
+				//We have already processed this
+				delete rocketMessage.updatedBySlack;
+				return;
+			}
+
+			//This was a change from Rocket.Chat
+			let slackChannel = this.slackChannelMap[rocketMessage.rid];
+			this.postMessageUpdateToSlack(slackChannel, rocketMessage);
+		}
+	}
+
+	/*
 	 https://api.slack.com/events/message/message_deleted
 	 */
 	processSlackMessageDeleted(slackMessage) {
@@ -1052,7 +1080,34 @@ class SlackBridge {
 
 				if (rocketMsgObj) {
 					RocketChat.deleteMessage(rocketMsgObj, rocketUser);
+					logger.class.debug('Rocket message deleted by Slack');
 				}
+			}
+		}
+	}
+
+	/*
+	 https://api.slack.com/events/message/message_changed
+	 */
+	processSlackMessageChanged(slackMessage) {
+		if (slackMessage.previous_message) {
+			let currentMsg = RocketChat.models.Messages.findOneById(this.createRocketID(slackMessage, slackMessage.message.ts));
+
+			//Only process this change, if its an actual update (not just Slack repeating back our Rocket original change)
+			if (currentMsg && (slackMessage.message.text !== currentMsg.msg)) {
+				let rocketChannel = this.getRocketChannel(slackMessage);
+				let rocketUser = slackMessage.previous_message.user ? this.findRocketUser(slackMessage.previous_message.user) || this.addRocketUser(slackMessage.previous_message.user) : null;
+
+				let rocketMsgObj = {
+					//@TODO _id
+					_id: this.createRocketID(slackMessage, slackMessage.previous_message.ts),
+					rid: rocketChannel._id,
+					msg: this.convertSlackMsgTxtToRocketTxtFormat(slackMessage.message.text),
+					updatedBySlack: true	//We don't want to notify slack about this change since Slack initiated it
+				};
+
+				RocketChat.updateMessage(rocketMsgObj, rocketUser);
+				logger.class.debug('Rocket message updated by Slack');
 			}
 		}
 	}
@@ -1063,9 +1118,7 @@ class SlackBridge {
 	processSlackNewMessage(slackMessage, isImporting) {
 		let rocketChannel = this.getRocketChannel(slackMessage);
 		let rocketUser = null;
-		if (slackMessage.subtype === 'message_changed') {
-			rocketUser = slackMessage.previous_message.user ? this.findRocketUser(slackMessage.previous_message.user) || this.addRocketUser(slackMessage.previous_message.user) : null;
-		} else if (slackMessage.subtype === 'bot_message') {
+		if (slackMessage.subtype === 'bot_message') {
 			rocketUser = RocketChat.models.Users.findOneById('rocket.cat', { fields: { username: 1 } });
 		} else {
 			rocketUser = slackMessage.user ? this.findRocketUser(slackMessage.user) || this.addRocketUser(slackMessage.user) : null;
