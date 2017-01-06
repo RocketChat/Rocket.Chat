@@ -116,27 +116,43 @@ RocketChat.API.v1.addRoute('users.info', { authRequired: true }, {
 
 RocketChat.API.v1.addRoute('users.list', { authRequired: true }, {
 	get: function() {
-		let limit = -1;
+		const { offset, count } = this.getPaginationItems();
+		const { sort, fields, query } = this.parseJsonQuery();
 
-		if (typeof this.queryParams.limit !== 'undefined') {
-			limit = parseInt(this.queryParams.limit);
+		let fieldsToKeepFromRegularUsers;
+		if (!RocketChat.authz.hasPermission(this.userId, 'view-full-other-user-info')) {
+			fieldsToKeepFromRegularUsers = {
+				avatarOrigin: 0,
+				emails: 0,
+				phone: 0,
+				statusConnection: 0,
+				createdAt: 0,
+				lastLogin: 0,
+				services: 0,
+				requirePasswordChange: 0,
+				requirePasswordChangeReason: 0,
+				roles: 0,
+				statusDefault: 0,
+				_updatedAt: 0,
+				customFields: 0
+			};
 		}
 
-		let result = undefined;
-		try {
-			Meteor.runAsUser(this.userId, () => {
-				result = Meteor.call('getFullUserData', { filter: '', limit });
-			});
-		} catch (e) {
-			return RocketChat.API.v1.failure(e.name + ': ' + e.message);
-		}
+		const ourQuery = Object.assign({}, query);
+		const ourFields = Object.assign({}, fields, fieldsToKeepFromRegularUsers, RocketChat.API.v1.defaultFieldsToExclude);
 
-		if (!result) {
-			return RocketChat.API.v1.failure('Failed to get the users data.');
-		}
+		const users = RocketChat.models.Users.find(ourQuery, {
+			sort: sort ? sort : { username: 1 },
+			skip: offset,
+			limit: count,
+			fields: ourFields
+		}).fetch();
 
 		return RocketChat.API.v1.success({
-			users: result
+			users,
+			count: users.length,
+			offset,
+			total: RocketChat.models.Users.find(ourQuery).count()
 		});
 	}
 });

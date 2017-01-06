@@ -2,7 +2,9 @@
 class API extends Restivus {
 	constructor(properties) {
 		super(properties);
+		this.logger = new Logger(`API ${properties.version ? properties.version : 'default'} Logger`, {});
 		this.authMethods = [];
+		this.helperMethods = new Map();
 		this.defaultFieldsToExclude = {
 			joinCode: 0,
 			$loki: 0,
@@ -56,34 +58,43 @@ class API extends Restivus {
 		};
 	}
 
-	// If the count query param is higher than the "API_Upper_Count_Limit" setting, then we limit that
-	// If the count query param isn't defined, then we set it to the "API_Default_Count" setting
-	// If the count is zero, then that means unlimited and is only allowed if the setting "API_Allow_Infinite_Count" is true
-	getPaginationItems(req) {
-		const hardUpperLimit = RocketChat.settings.get('API_Upper_Count_Limit') <= 0 ? 100 : RocketChat.settings.get('API_Upper_Count_Limit');
-		const defaultCount = RocketChat.settings.get('API_Default_Count') <= 0 ? 50 : RocketChat.settings.get('API_Default_Count');
-		const offset = req.queryParams.offset ? parseInt(req.queryParams.offset) : 0;
-		let count = defaultCount;
-
-		// Ensure count is an appropiate amount
-		if (typeof req.queryParams.count !== 'undefined') {
-			count = parseInt(req.queryParams.count);
-		} else {
-			count = defaultCount;
+	addRoute(route, options, endpoints) {
+		//Note: required if the developer didn't provide options
+		if (typeof endpoints === 'undefined') {
+			endpoints = options;
+			options = {};
 		}
 
-		if (count > hardUpperLimit) {
-			count = hardUpperLimit;
+		//Note: This is required due to Restivus calling `addRoute` in the constructor of itself
+		if (this.helperMethods) {
+			Object.keys(endpoints).forEach((method) => {
+				if (typeof endpoints[method] === 'function') {
+					endpoints[method] = { action: endpoints[method] };
+				}
+
+				//Add a try/catch for each much
+				const originalAction = endpoints[method].action;
+				endpoints[method].action = function() {
+					let result;
+					try {
+						result = originalAction.apply(this);
+					} catch (e) {
+						return RocketChat.API.v1.failure(e.message, e.error);
+					}
+
+					return result ? result : RocketChat.API.v1.success();
+				};
+
+				for (const [name, helperMethod] of this.helperMethods) {
+					endpoints[method][name] = helperMethod;
+				}
+
+				//Allow the endpoints to make usage of the logger which respects the user's settings
+				endpoints[method].logger = this.logger;
+			});
 		}
 
-		if (count === 0 && !RocketChat.settings.get('API_Allow_Infinite_Count')) {
-			count = defaultCount;
-		}
-
-		return {
-			offset,
-			count
-		};
+		super.addRoute(route, options, endpoints);
 	}
 }
 
@@ -121,7 +132,6 @@ const getUserAuth = function _getUserAuth() {
 		}
 	};
 };
-
 
 RocketChat.API.v1 = new API({
 	version: 'v1',
