@@ -1,3 +1,5 @@
+/* globals LivechatValidDomains */
+
 import toastr from 'toastr';
 
 Template.livechatInstallation.helpers({
@@ -28,7 +30,7 @@ Template.livechatInstallation.helpers({
 		if (!Template.instance().enableWidgetDomains.get()) {
 			return 'checked';
 		}
-	},
+	}
 });
 
 Template.livechatInstallation.events({
@@ -43,8 +45,8 @@ Template.livechatInstallation.events({
 		e.preventDefault();
 
 		var settings = [{
-				_id: 'enable_widget_domains',
-				value: instance.enableWidgetDomains.get()
+			_id: 'enable_widget_domains',
+			value: instance.enableWidgetDomains.get()
 		}];
 		RocketChat.settings.batchSet(settings, (err/*, success*/) => {
 			if (err) {
@@ -53,7 +55,7 @@ Template.livechatInstallation.events({
 			toastr.success(t('Settings_updated'));
 		});
 	},
-	'click .add-domain'(e, instance) {
+	'click .add-domain'(/*e, instance*/) {
 		swal({
 			title: t('enter-domain'),
 			type: 'input',
@@ -81,15 +83,13 @@ Template.livechatInstallation.events({
 					timer: 1000,
 					showConfirmButton: false
 				});
-			});	
+			});
 		});
 	},
 	'click .remove-domain'(e/*, instance*/) {
 		e.preventDefault();
 		e.stopPropagation();
-		
-		console.log("id: ", this._id);
-		
+
 		swal({
 			title: t('Are_you_sure'),
 			type: 'warning',

@@ -12,11 +12,8 @@ WebApp.connectHandlers.use('/livechat', Meteor.bindEnvironment((req, res, next) 
 	res.setHeader('content-type', 'text/html; charset=utf-8');
 
 	if (RocketChat.settings.get('enable_widget_domains')) {
-		console.log("check for valid domains");
-		
-		d = req.headers.referer.match(/^(?:https?:\/\/)?(?:www\.)?([^\/]+)/)[1];
+		let d = req.headers.referer.match(/^(?:https?:\/\/)?(?:www\.)?([^\/]+)/)[1];
 		if (RocketChat.models.LivechatValidDomains.findOneByDomain(d) === undefined) {
-			console.log("not a valid domain");
 			res.setHeader('X-FRAME-OPTIONS', 'DENY');
 			return next();
 		}
@@ -25,7 +22,7 @@ WebApp.connectHandlers.use('/livechat', Meteor.bindEnvironment((req, res, next) 
 	}
 
 	const head = Assets.getText('public/head.html');
-	
+
 	const html = `<html>
 		<head>
 			<link rel="stylesheet" type="text/css" class="__meteor-css__" href="/livechat/livechat.css?_dc=${Autoupdate.autoupdateVersion}">
@@ -41,5 +38,5 @@ WebApp.connectHandlers.use('/livechat', Meteor.bindEnvironment((req, res, next) 
 	</html>`;
 
 	res.write(html);
-	res.end();	
+	res.end();
 }));
