@@ -8,7 +8,7 @@ Meteor.methods
 			importer.importerInstance.updateProgress Importer.ProgressStep.CANCELLED
 			importer.importerInstance.updateRecord { valid: false }
 			importer.importerInstance = undefined
-			importer.importerInstance = new importer.importer importer.name, importer.description, importer.fileTypeRegex
+			importer.importerInstance = new importer.importer importer.name, importer.description, importer.mimeType
 			return importer.importerInstance.getProgress()
 		else
 			throw new Meteor.Error 'error-importer-not-defined', 'The importer was not defined correctly, it is missing the Import class.', { method: 'restartImport' }

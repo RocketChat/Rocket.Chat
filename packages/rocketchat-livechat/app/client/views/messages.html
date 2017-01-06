@@ -25,11 +25,11 @@
 				{{/each}}
 			</ul>
 		</div>
-		<div class="new-message not">
+		<div class="new-message background-primary-action-color color-primary-action-contrast not">
 			<span>{{_ "New_messages"}}</span>
 		</div>
 
-		<div class="error">
+		<div class="error error-color error-background">
 			<span></span>
 		</div>
 	</div>
@@ -71,7 +71,7 @@
 			{{/with}}
 		{{else}}
 			{{> options show=showOptions}}
-			<button class="toggle-options">{{optionsLink}}</button>
+			<button class="toggle-options secondary-font-color">{{optionsLink}}</button>
 		{{/if}}
 	</div>
 </template>

@@ -456,12 +456,12 @@ Template.admin.events
 
 	"click .button-fullscreen": ->
 		codeMirrorBox = $('.code-mirror-box[data-editor-id="'+this._id+'"]')
-		codeMirrorBox.addClass('code-mirror-box-fullscreen')
+		codeMirrorBox.addClass('code-mirror-box-fullscreen content-background-color')
 		codeMirrorBox.find('.CodeMirror')[0].CodeMirror.refresh()
 
 	"click .button-restore": ->
 		codeMirrorBox = $('.code-mirror-box[data-editor-id="'+this._id+'"]')
-		codeMirrorBox.removeClass('code-mirror-box-fullscreen')
+		codeMirrorBox.removeClass('code-mirror-box-fullscreen content-background-color')
 		codeMirrorBox.find('.CodeMirror')[0].CodeMirror.refresh()
 
 	'autocompleteselect .autocomplete': (event, instance, doc) ->
