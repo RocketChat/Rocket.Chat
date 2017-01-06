@@ -50,14 +50,14 @@ RocketChat.API.v1.addRoute('livechat/domains/:_id', { authRequired: true }, {
 
 		try {
 			check(this.urlParams, { _id: String });
-			domain = RocketChat.models.LivechatValidDomains.findOneById(this.urlParams._id);
+			let domain = RocketChat.models.LivechatValidDomains.findOneById(this.urlParams._id);
 
 			if (domain) {
 				return RocketChat.API.v1.success({
-			 		domain: _.pick(domain, '_id', 'domain')
+					domain: _.pick(domain, '_id', 'domain')
 				});
 			}
-			
+
 			return RocketChat.API.v1.failure();
 		} catch (e) {
 			return RocketChat.API.v1.failure(e.error);
