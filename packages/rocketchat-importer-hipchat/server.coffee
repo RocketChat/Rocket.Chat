@@ -5,8 +5,8 @@ Importer.HipChat = class Importer.HipChat extends Importer.Base
 	@RoomPrefix = 'hipchat_export/rooms/'
 	@UsersPrefix = 'hipchat_export/users/'
 
-	constructor: (name, descriptionI18N, fileTypeRegex) ->
-		super(name, descriptionI18N, fileTypeRegex)
+	constructor: (name, descriptionI18N, mimeType) ->
+		super(name, descriptionI18N, mimeType)
 		@logger.debug('Constructed a new Slack Importer.')
 		@userTags = []
 

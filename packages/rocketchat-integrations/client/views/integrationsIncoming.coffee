@@ -154,12 +154,12 @@ Template.integrationsIncoming.events
 
 	"click .button-fullscreen": ->
 		codeMirrorBox = $('.code-mirror-box')
-		codeMirrorBox.addClass('code-mirror-box-fullscreen')
+		codeMirrorBox.addClass('code-mirror-box-fullscreen content-background-color')
 		codeMirrorBox.find('.CodeMirror')[0].CodeMirror.refresh()
 
 	"click .button-restore": ->
 		codeMirrorBox = $('.code-mirror-box')
-		codeMirrorBox.removeClass('code-mirror-box-fullscreen')
+		codeMirrorBox.removeClass('code-mirror-box-fullscreen content-background-color')
 		codeMirrorBox.find('.CodeMirror')[0].CodeMirror.refresh()
 
 	"click .submit > .save": ->

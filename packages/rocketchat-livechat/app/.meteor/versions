@@ -6,7 +6,7 @@ babel-compiler@6.13.0
 babel-runtime@1.0.1
 base64@1.0.10
 binary-heap@1.0.10
-blaze@2.2.0
+blaze@2.2.1
 blaze-tools@1.0.10
 boilerplate-generator@1.0.11
 caching-compiler@1.1.9
@@ -48,7 +48,7 @@ minifier-js@1.2.15
 minimongo@1.0.19
 mizzao:timesync@0.4.0
 modules@0.7.7
-modules-runtime@0.7.7
+modules-runtime@0.7.8
 momentjs:moment@2.17.1
 mongo@1.1.14
 mongo-id@1.0.6
