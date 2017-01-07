@@ -1,6 +1,6 @@
 Package.describe({
   name: 'learnersguild:rocketchat-lg-sso',
-  version: '1.0.1',
+  version: '1.0.2',
   summary: 'Accounts login handler for Learners Guild SSO.',
 })
 
