@@ -18,6 +18,7 @@ Package.onUse(function(api) {
 
 	//Register v1 helpers
 	api.addFiles('server/v1/helpers/getPaginationItems.js', 'server');
+	api.addFiles('server/v1/helpers/getUserFromParams.js', 'server');
 	api.addFiles('server/v1/helpers/parseJsonQuery.js', 'server');
 
 	api.addFiles('server/default/info.js', 'server');

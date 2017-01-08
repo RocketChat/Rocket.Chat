@@ -79,6 +79,7 @@ class API extends Restivus {
 					try {
 						result = originalAction.apply(this);
 					} catch (e) {
+						this.logger.debug(`${method} ${route} threw an error:`, e);
 						return RocketChat.API.v1.failure(e.message, e.error);
 					}
 
@@ -91,6 +92,7 @@ class API extends Restivus {
 
 				//Allow the endpoints to make usage of the logger which respects the user's settings
 				endpoints[method].logger = this.logger;
+				endpoints[method].method = method.toUpperCase();
 			});
 		}
 
