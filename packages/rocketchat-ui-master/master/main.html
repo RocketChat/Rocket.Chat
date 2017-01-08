@@ -20,7 +20,7 @@
 	<link rel="apple-touch-icon" sizes="180x180" href="images/logo/apple-touch-icon-180x180.png?v=3" />
 </head>
 
-<body>
+<body class="global-font-family color-primary-font-color">
 </body>
 
 <template name="main">
@@ -52,11 +52,11 @@
 							{{> status}}
 						</div>
 						{{#unless modal}}
-							<div class="flex-tab-bar" role="toolbar">
+							<div class="flex-tab-bar content-background-color" role="toolbar">
 								{{> flexTabBar}}
 							</div>
 						{{/unless}}
-						<div class="main-content {{flexOpened}} {{flexOpenedRTC1}} {{flexOpenedRTC2}} {{#if modal}}main-modal{{/if}}">
+						<div class="main-content content-background-color {{flexOpened}} {{flexOpenedRTC1}} {{flexOpenedRTC2}} {{#if modal}}main-modal{{/if}}">
 							{{> Template.dynamic template=center}}
 						</div>
 						{{#unless modal}}
