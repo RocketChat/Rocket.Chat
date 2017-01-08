@@ -1,6 +1,6 @@
 <template name="accountPreferences">
 	<section class="page-container page-home page-static">
-		<header class="fixed-title">
+		<header class="fixed-title border-component-color">
 			{{> burger}}
 			<h2>
 				<span class="room-title">{{_ "Preferences"}}</span>
@@ -11,7 +11,7 @@
 				<fieldset>
 					<div class="section">
 						<h1>{{_ "Localization"}}</h1>
-						<div class="section-content">
+						<div class="section-content border-component-color">
 							<div class="input-line">
 								<label for="language">{{_ "Language"}}</label>
 								<div>
@@ -26,18 +26,18 @@
 					</div>
 					<div class="section">
 						<h1>{{_ "Messages"}}</h1>
-						<div class="section-content">
+						<div class="section-content border-component-color">
 							<div class="input-line double-col">
 								<label>{{_ "Desktop_Notifications"}}</label>
 								<div>
 									{{#if desktopNotificationEnabled}}
 										<label>{{_ "Desktop_Notifications_Enabled"}}</label>
-										<label><button class="button test-notifications"><i class="icon-comment-empty"></i> <span>{{_ "Test_Desktop_Notifications"}}</span></button></label>
+										<label><button class="button test-notifications"><i class="icon-comment-empty secondary-font-color"></i> <span>{{_ "Test_Desktop_Notifications"}}</span></button></label>
 									{{else}}
 										{{#if desktopNotificationDisabled}}
 											<label>{{_ "Desktop_Notifications_Disabled"}}</label>
 										{{else}}
-											<label><button class="button enable-notifications"><i class="icon-comment-empty"></i> <span>{{_ "Enable_Desktop_Notifications"}}</span></button></label>
+											<label><button class="button enable-notifications"><i class="icon-comment-empty secondary-font-color"></i> <span>{{_ "Enable_Desktop_Notifications"}}</span></button></label>
 										{{/if}}
 									{{/if}}
 								</div>
@@ -155,7 +155,7 @@
 					</div>
 					<div class="section">
 						<h1>{{_ "Highlights"}}</h1>
-						<div class="section-content">
+						<div class="section-content border-component-color">
 							<div class="input-line double-col">
 								<label>{{_ "Highlights_List"}}</label>
 								<div>
@@ -167,7 +167,7 @@
 					</div>
 					<div class="section">
 						<h1>{{_ "Sound"}}</h1>
-						<div class="section-content">
+						<div class="section-content border-component-color">
 							<div class="input-line double-col">
 								<label>{{_ "New_Room_Notification"}}</label>
 								<div>

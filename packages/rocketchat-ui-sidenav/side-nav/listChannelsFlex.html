@@ -1,10 +1,10 @@
 <template name="listChannelsFlex">
-	<header>
+	<header class="primary-background-color">
 		<div>
 			<h4>{{_ "Channels"}}</h4>
 		</div>
 	</header>
-	<div class="content">
+	<div class="content primary-background-color">
 		<div class="wrapper">
 			<div class="flex-control">
 				<div class="search">
@@ -14,7 +14,7 @@
 								<option value="joined" selected="{{showSelected 'joined'}}">{{_ "Joined"}}</option>
 								<option value="all" selected="{{showSelected 'all'}}">{{_ "All"}}</option>
 							</select>
-							<i class="icon-comment"></i>
+							<i class="icon-comment secondary-font-color"></i>
 						</div>
 						<div class="input-line search">
 							<select class="c-select" id="sort-channels">
@@ -25,11 +25,11 @@
 								<option value="name" selected="{{sortSubscriptionsSelected 'name'}}">{{_ "Name"}}</option>
 								<option value="ls" selected="{{sortSubscriptionsSelected 'ls'}}">{{_ "Last_seen"}}</option>
 							</select>
-							<i class="icon-sort-alt-up"></i>
+							<i class="icon-sort-alt-up secondary-font-color"></i>
 						</div>
 						<div class="input-line search">
 							<input type="text" id="channel-search" class="search" placeholder="{{_ "Search_Channels"}}" autocomplete="off" />
-							<i class="icon-right-open-small"></i>
+							<i class="icon-right-open-small secondary-font-color"></i>
 						</div>
 					</form>
 				</div>
@@ -60,7 +60,7 @@
 			{{/if}}
 		</div>
 	</div>
-	<footer>
+	<footer class="primary-background-color">
 		<div>
 		{{#if hasPermission 'create-c'}}
 			<button class="button primary create">{{_ "Create_new"}}</button>

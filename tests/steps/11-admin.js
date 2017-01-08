@@ -16,6 +16,13 @@ describe('Admin Login', () => {
 		sideNav.openChannel('general');
 	});
 
+	after(() => {
+		sideNav.preferencesClose.waitForVisible(5000);
+		sideNav.preferencesClose.click();
+		sideNav.getChannelFromList('general').waitForExist(5000);
+		sideNav.openChannel('general');
+	});
+
 	describe('Admin view', () => {
 		before(() => {
 			sideNav.accountBoxUserName.click();
@@ -414,12 +421,61 @@ describe('Admin Login', () => {
 					admin.generalSiteUrl.isVisible().should.be.true;
 				});
 
+				it('should change site url field', () => {
+					admin.generalSiteUrl.setValue('something');
+				});
+
+				it('should show the reset button', () => {
+					admin.generalSiteUrlReset.waitForVisible(5000);
+					admin.generalSiteUrlReset.isVisible().should.be.true;
+				});
+
+				it('should click the reset button', () => {
+					admin.generalSiteUrlReset.click();
+				});
+
+				it('the site url field should be different from the last input', () => {
+					admin.generalSiteUrl.getText().should.not.equal('something');
+				});
+
 				it('should show site name field', () => {
-					admin.generalLink.isVisible().should.be.true;
+					admin.generalSiteName.isVisible().should.be.true;
+				});
+
+				it('should change site name field', () => {
+					admin.generalSiteName.setValue('something');
+				});
+
+				it('should show the reset button', () => {
+					admin.generalSiteNameReset.waitForVisible(5000);
+					admin.generalSiteNameReset.isVisible().should.be.true;
+				});
+
+				it('should click the reset button', () => {
+					admin.generalSiteNameReset.click();
+				});
+
+				it('the name field should be different from the last input', () => {
+					admin.generalSiteName.getText().should.not.equal('something');
 				});
 
 				it('should show language field', () => {
 					admin.generalLanguage.isVisible().should.be.true;
+				});
+
+				it('should change the language ', () => {
+					admin.generalLanguage.click();
+					admin.generalLanguagePtOption.waitForVisible(5000);
+					admin.generalLanguagePtOption.click();
+				});
+
+				it('should show the reset button', () => {
+					admin.generalLanguageReset.waitForVisible(5000);
+					admin.generalLanguageReset.isVisible().should.be.true;
+				});
+
+				it('should click the reset button', () => {
+					admin.generalLanguageReset.click();
 				});
 
 				it('should show invalid self signed certs checkboxes', () => {
@@ -427,13 +483,52 @@ describe('Admin Login', () => {
 					admin.generalSelfSignedCertsTrue.isVisible().should.be.true;
 				});
 
+				it('should change the invalid self signed certs checkboxes', () => {
+					admin.generalSelfSignedCertsTrue.click();
+				});
+
+				it('should show the reset button', () => {
+					admin.generalSelfSignedCertsReset.waitForVisible(5000);
+					admin.generalSelfSignedCertsReset.isVisible().should.be.true;
+				});
+
+				it('should click the reset button', () => {
+					admin.generalSelfSignedCertsReset.click();
+				});
+
 				it('should show favorite rooms checkboxes', () => {
 					admin.generalFavoriteRoomFalse.isVisible().should.be.true;
 					admin.generalFavoriteRoomTrue.isVisible().should.be.true;
 				});
 
+				it('should change the favorite rooms checkboxes', () => {
+					admin.generalFavoriteRoomFalse.click();
+				});
+
+				it('should show the reset button', () => {
+					admin.generalFavoriteRoomReset.waitForVisible(5000);
+					admin.generalFavoriteRoomReset.isVisible().should.be.true;
+				});
+
+				it('should click the reset button', () => {
+					admin.generalFavoriteRoomReset.click();
+				});
+
 				it('should show cdn prefix field', () => {
 					admin.generalCdnPrefix.isVisible().should.be.true;
+				});
+
+				it('should change site url field', () => {
+					admin.generalCdnPrefix.setValue('something');
+				});
+
+				it('should show the reset button', () => {
+					admin.generalCdnPrefixReset.waitForVisible(5000);
+					admin.generalCdnPrefixReset.isVisible().should.be.true;
+				});
+
+				it('should click the reset button', () => {
+					admin.generalCdnPrefixReset.click();
 				});
 
 				it('should show the force SSL checkboxes', () => {
@@ -441,12 +536,51 @@ describe('Admin Login', () => {
 					admin.generalForceSSLFalse.isVisible().should.be.true;
 				});
 
+				it('should change the force ssl checkboxes', () => {
+					admin.generalForceSSLTrue.click();
+				});
+
+				it('should show the reset button', () => {
+					admin.generalForceSSLReset.waitForVisible(5000);
+					admin.generalForceSSLReset.isVisible().should.be.true;
+				});
+
+				it('should click the reset button', () => {
+					admin.generalForceSSLReset.click();
+				});
+
 				it('should show google tag id field', () => {
 					admin.generalGoogleTagId.isVisible().should.be.true;
 				});
 
+				it('should change google tag id field', () => {
+					admin.generalGoogleTagId.setValue('something');
+				});
+
+				it('should show the reset button', () => {
+					admin.generalGoogleTagIdReset.waitForVisible(5000);
+					admin.generalGoogleTagIdReset.isVisible().should.be.true;
+				});
+
+				it('should click the reset button', () => {
+					admin.generalGoogleTagIdReset.click();
+				});
+
 				it('should show bugsnag key field', () => {
 					admin.generalBugsnagKey.isVisible().should.be.true;
+				});
+
+				it('should change bugsnag key id field', () => {
+					admin.generalBugsnagKey.setValue('something');
+				});
+
+				it('should show the reset button', () => {
+					admin.generalBugsnagKeyReset.waitForVisible(5000);
+					admin.generalBugsnagKeyReset.isVisible().should.be.true;
+				});
+
+				it('should click the reset button', () => {
+					admin.generalBugsnagKeyReset.click();
 				});
 			});
 
