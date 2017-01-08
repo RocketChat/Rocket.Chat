@@ -43,18 +43,14 @@ RocketChat.API.v1.addRoute('settings/:_id', { authRequired: true }, {
 			return RocketChat.API.v1.unauthorized();
 		}
 
-		try {
-			check(this.bodyParams, {
-				value: Match.Any
-			});
+		check(this.bodyParams, {
+			value: Match.Any
+		});
 
-			if (RocketChat.models.Settings.updateValueNotHiddenById(this.urlParams._id, this.bodyParams.value)) {
-				return RocketChat.API.v1.success();
-			}
-
-			return RocketChat.API.v1.failure();
-		} catch (e) {
-			return RocketChat.API.v1.failure(e.message);
+		if (RocketChat.models.Settings.updateValueNotHiddenById(this.urlParams._id, this.bodyParams.value)) {
+			return RocketChat.API.v1.success();
 		}
+
+		return RocketChat.API.v1.failure();
 	}
 });
