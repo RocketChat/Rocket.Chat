@@ -595,7 +595,7 @@ class WebRTCClass
 				title = "Group audio call from #{subscription.name}"
 
 		swal
-			title: "<i class='icon-#{icon} alert-icon'></i>#{title}"
+			title: "<i class='icon-#{icon} alert-icon success-color'></i>#{title}"
 			text: "Do you want to accept?"
 			html: true
 			showCancelButton: true

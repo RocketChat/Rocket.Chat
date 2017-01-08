@@ -23,7 +23,7 @@ apps:
 parts:
     node:
         plugin: nodejs
-        node-engine: 4.7.0
+        node-engine: 4.7.1
         node-packages:
             - promise
             - fibers
