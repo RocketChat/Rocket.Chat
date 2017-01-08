@@ -25,13 +25,9 @@ RocketChat.API.v1.addRoute('im.close', { authRequired: true }, {
 			return RocketChat.API.v1.failure(`The direct message room, ${this.bodyParams.name}, is already closed to the sender`);
 		}
 
-		try {
-			Meteor.runAsUser(this.userId, () => {
-				Meteor.call('hideRoom', findResult.rid);
-			});
-		} catch (e) {
-			return RocketChat.API.v1.failure(`${e.name}: ${e.message}`, e.error);
-		}
+		Meteor.runAsUser(this.userId, () => {
+			Meteor.call('hideRoom', findResult.rid);
+		});
 
 		return RocketChat.API.v1.success();
 	}
@@ -71,17 +67,13 @@ RocketChat.API.v1.addRoute('im.history', { authRequired: true }, {
 			unreads = this.queryParams.unreads;
 		}
 
-		let result = {};
-		try {
-			Meteor.runAsUser(this.userId, () => {
-				result = Meteor.call('getChannelHistory', { rid: findResult.rid, latest: latestDate, oldest: oldestDate, inclusive, count, unreads });
-			});
-		} catch (e) {
-			return RocketChat.API.v1.failure(`${e.name}: ${e.message}`, e.error);
-		}
+		let result;
+		Meteor.runAsUser(this.userId, () => {
+			result = Meteor.call('getChannelHistory', { rid: findResult.rid, latest: latestDate, oldest: oldestDate, inclusive, count, unreads });
+		});
 
 		return RocketChat.API.v1.success({
-			messages: result.messages
+			messages: result && result.messages ? result.messages : []
 		});
 	}
 });
@@ -150,13 +142,9 @@ RocketChat.API.v1.addRoute('im.open', { authRequired: true }, {
 			return RocketChat.API.v1.failure(`The direct message room, ${this.bodyParams.name}, is already open for the sender`);
 		}
 
-		try {
-			Meteor.runAsUser(this.userId, () => {
-				Meteor.call('openRoom', findResult.rid);
-			});
-		} catch (e) {
-			return RocketChat.API.v1.failure(`${e.name}: ${e.message}`, e.error);
-		}
+		Meteor.runAsUser(this.userId, () => {
+			Meteor.call('openRoom', findResult.rid);
+		});
 
 		return RocketChat.API.v1.success();
 	}
@@ -175,13 +163,9 @@ RocketChat.API.v1.addRoute('im.setTopic', { authRequired: true }, {
 			return findResult;
 		}
 
-		try {
-			Meteor.runAsUser(this.userId, () => {
-				Meteor.call('saveRoomSettings', findResult.rid, 'roomTopic', this.bodyParams.topic);
-			});
-		} catch (e) {
-			return RocketChat.API.v1.failure(`${e.name}: ${e.message}`, e.error);
-		}
+		Meteor.runAsUser(this.userId, () => {
+			Meteor.call('saveRoomSettings', findResult.rid, 'roomTopic', this.bodyParams.topic);
+		});
 
 		return RocketChat.API.v1.success({
 			topic: this.bodyParams.topic
