@@ -1,6 +1,6 @@
 <template name="flexTabBar">
-	<section class="flex-tab">
-		{{> Template.dynamic template=template data=data}}
+	<section class="flex-tab {{opened}}">
+		{{> Template.dynamic template=template data=flexData}}
 	</section>
 	<div class="flex-tab-bar" role="toolbar">
 		{{#each buttons}}

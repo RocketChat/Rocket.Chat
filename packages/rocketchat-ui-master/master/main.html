@@ -51,7 +51,7 @@
 						<div class="connection-status">
 							{{> status}}
 						</div>
-						<div class="main-content {{flexOpened}} {{flexOpenedRTC1}} {{flexOpenedRTC2}} {{#if modal}}main-modal{{/if}}">
+						<div class="main-content {{#if modal}}main-modal{{/if}}">
 							{{> Template.dynamic template=center}}
 						</div>
 						{{#unless modal}}

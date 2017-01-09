@@ -39,13 +39,15 @@ Template.userEdit.events
 Template.userEdit.onCreated ->
 	@user = this.data?.user
 
+	tabBar = Template.currentData().tabBar
+
 	@cancel = (form, username) =>
 		form.reset()
 		this.$('input[type=checkbox]').prop('checked', true);
 		if @user
 			@data.back(username)
 		else
-			RocketChat.TabBar.closeFlex()
+			tabBar.close()
 
 	@getUserData = =>
 		userData = { _id: @user?._id }

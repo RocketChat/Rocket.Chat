@@ -3,10 +3,6 @@ Template.adminRooms.helpers
 		return Template.instance().ready?.get()
 	rooms: ->
 		return Template.instance().rooms()
-	flexOpened: ->
-		return 'opened' if RocketChat.TabBar.isFlexOpen()
-	arrowPosition: ->
-		return 'left' unless RocketChat.TabBar.isFlexOpen()
 	isLoading: ->
 		return 'btn-loading' unless Template.instance().ready?.get()
 	hasMore: ->
@@ -25,17 +21,15 @@ Template.adminRooms.helpers
 			return TAPi18n.__ 'Direct Message'
 		if @t is 'p'
 			return TAPi18n.__ 'Private Group'
-
-	flexTemplate: ->
-		return RocketChat.TabBar.getTemplate()
-	flexData: ->
-		return RocketChat.TabBar.getData()
-
 	default: ->
 		if this.default
 			return t('True')
 		else
 			return t('False')
+	flexData: ->
+		return {
+			tabBar: Template.instance().tabBar
+		}
 
 Template.adminRooms.onCreated ->
 	instance = @
@@ -44,8 +38,11 @@ Template.adminRooms.onCreated ->
 	@types = new ReactiveVar []
 	@ready = new ReactiveVar true
 
+	@tabBar = new RocketChatTabBar();
+	@tabBar.showGroup(FlowRouter.current().route.name);
+
 	RocketChat.TabBar.addButton({
-		groups: ['adminrooms'],
+		groups: ['admin-rooms'],
 		id: 'admin-room',
 		i18nTitle: 'Room_Info',
 		icon: 'icon-info-circled',
@@ -110,12 +107,12 @@ Template.adminRooms.events
 		e.preventDefault()
 		t.filter.set e.currentTarget.value
 
-	'click .room-info': (e) ->
+	'click .room-info': (e, instance) ->
 		e.preventDefault()
 
 		Session.set('adminRoomsSelected', { rid: @_id });
 
-		RocketChat.TabBar.setTemplate('adminRoomInfo')
+		instance.tabBar.open('admin-room')
 
 	'click .load-more': (e, t) ->
 		e.preventDefault()

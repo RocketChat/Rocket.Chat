@@ -1,4 +1,4 @@
-/* globals isSetNotNull */
+/* globals isSetNotNull, RocketChatTabBar */
 Template.adminEmoji.helpers({
 	isReady() {
 		if (isSetNotNull(() => Template.instance().ready)) {
@@ -24,11 +24,11 @@ Template.adminEmoji.helpers({
 		}
 		return false;
 	},
-	flexTemplate() {
-		return RocketChat.TabBar.getTemplate();
-	},
 	flexData() {
-		return RocketChat.TabBar.getData();
+		return {
+			tabBar: Template.instance().tabBar,
+			data: Template.instance().tabBarData.get()
+		};
 	}
 });
 
@@ -38,21 +38,21 @@ Template.adminEmoji.onCreated(function() {
 	this.filter = new ReactiveVar('');
 	this.ready = new ReactiveVar(false);
 
+	this.tabBar = new RocketChatTabBar();
+	this.tabBar.showGroup(FlowRouter.current().route.name);
+	this.tabBarData = new ReactiveVar();
+
 	RocketChat.TabBar.addButton({
-		groups: ['adminEmoji', 'adminEmoji-selected'],
+		groups: ['emoji-custom'],
 		id: 'add-emoji',
 		i18nTitle: 'Custom_Emoji_Add',
 		icon: 'icon-plus',
 		template: 'adminEmojiEdit',
-		openClick(/*e, t*/) {
-			RocketChat.TabBar.setData();
-			return true;
-		},
 		order: 1
 	});
 
 	RocketChat.TabBar.addButton({
-		groups: ['adminEmoji-selected'],
+		groups: ['emoji-custom'],
 		id: 'admin-emoji-info',
 		i18nTitle: 'Custom_Emoji_Info',
 		icon: 'icon-cog',
@@ -104,12 +104,10 @@ Template.adminEmoji.events({
 		t.filter.set(e.currentTarget.value);
 	},
 
-	['click .emoji-info'](e) {
+	['click .emoji-info'](e, instance) {
 		e.preventDefault();
-		RocketChat.TabBar.setTemplate('adminEmojiInfo');
-		RocketChat.TabBar.setData(RocketChat.models.EmojiCustom.findOne({_id: this._id}));
-		RocketChat.TabBar.openFlex();
-		RocketChat.TabBar.showGroup('adminEmoji-selected');
+		instance.tabBarData.set(RocketChat.models.EmojiCustom.findOne({_id: this._id}));
+		instance.tabBar.open('admin-emoji-info');
 	},
 
 	['click .load-more'](e, t) {
