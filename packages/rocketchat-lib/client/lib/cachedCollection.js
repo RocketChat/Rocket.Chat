@@ -98,7 +98,7 @@ class CachedCollection {
 		useSync = true,
 		useCache = true,
 		debug = true,
-		version = 3,
+		version = 5,
 		maxCacheTime = 60*60*24*30
 	}) {
 		this.collection = collection || new Meteor.Collection(null);
