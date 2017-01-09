@@ -42,6 +42,8 @@ RocketChatTabBar = class RocketChatTabBar {
 	}
 
 	open(button) {
+		this.state.set('opened');
+
 		if (button) {
 			if (typeof button !== 'object' || !button.id) {
 				button = RocketChat.TabBar.getButton(button);
@@ -54,10 +56,10 @@ RocketChatTabBar = class RocketChatTabBar {
 			this.template.set(button.template);
 		}
 
-		this.state.set('opened');
-
-		$('.flex-tab').find('input[type=text]:first').focus();
-		$('.flex-tab .content').scrollTop(0);
+		Tracker.afterFlush(() => {
+			$('.flex-tab').find('input[type=text]:first').focus();
+			$('.flex-tab .content').scrollTop(0);
+		});
 	}
 
 	close() {
