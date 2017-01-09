@@ -51,6 +51,8 @@
 				{{/unless}}
 			</div>
 		</section>
-		{{> flexTabBar template=flexTemplate data=flexData}}
+		{{#with flexData}}
+			{{> flexTabBar}}
+		{{/with}}
 	</div>
 </template>

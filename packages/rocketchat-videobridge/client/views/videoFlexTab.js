@@ -8,6 +8,10 @@ Template.videoFlexTab.helpers({
 });
 
 Template.videoFlexTab.onCreated(function() {
+	this.tabBar = Template.currentData().tabBar;
+});
+
+Template.videoFlexTab.onRendered(function() {
 	this.api = null;
 
 	let timeOut = null;
@@ -27,7 +31,7 @@ Template.videoFlexTab.onCreated(function() {
 		$('.flex-tab').css('max-width', '');
 		$('.main-content').css('right', '');
 
-		RocketChat.TabBar.closeFlex();
+		this.tabBar.close();
 
 		RocketChat.TabBar.updateButton('video', { class: '' });
 	};
@@ -35,7 +39,7 @@ Template.videoFlexTab.onCreated(function() {
 	this.timeout = null;
 	this.autorun(() => {
 		if (RocketChat.settings.get('Jitsi_Enabled')) {
-			if (RocketChat.TabBar.isFlexOpen() && RocketChat.TabBar.getTemplate() === 'videoFlexTab') {
+			if (this.tabBar.getState() === 'opened') {
 				let roomId = Session.get('openedRoom');
 
 				let domain = RocketChat.settings.get('Jitsi_Domain');
@@ -78,7 +82,7 @@ Template.videoFlexTab.onCreated(function() {
 
 						// Keep it from showing duplicates when re-evaluated on variable change.
 						if (!$('[id^=jitsiConference]').length) {
-							this.api = new JitsiMeetExternalAPI(domain, jitsiRoom, width, height, document.getElementById('videoContainer'), configOverwrite, interfaceConfigOverwrite, noSsl);
+							this.api = new JitsiMeetExternalAPI(domain, jitsiRoom, width, height, this.$('.video-container').get(0), configOverwrite, interfaceConfigOverwrite, noSsl);
 
 							/*
 							* Hack to send after frame is loaded.
