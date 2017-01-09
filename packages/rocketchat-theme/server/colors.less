@@ -15,10 +15,6 @@
 @error-contrast: contrast(@error-color);
 @pending-background: lighten(@pending-color, 45%);
 @pending-border: lighten(@pending-color, 30%);
-@window-border-color: @component-color;
-@code-background-color: #f8f8f8;
-@code-border-color: #cccccc;
-@code-font-color: #333333;
 
 /** ----------------------------------------------------------------------------
  * Transparency variables
@@ -32,38 +28,190 @@
 @transparent-lightest: rgba(255, 255, 255, 0.6);
 
 /** ----------------------------------------------------------------------------
- * Document components
+ * Classes for variables
  */
-html {
-	.custom-scroll(@transparent-dark, @custom-scrollbar-color, 0);
+
+// Major colors
+
+.content-background-color {
+	background-color: @content-background-color;
 }
 
-* {
-	.custom-scroll(@transparent-dark, @custom-scrollbar-color);
+.color-content-background-color {
+	color: @content-background-color;
 }
 
-body {
+.primary-background-color {
+	background-color: @primary-background-color;
+}
+
+.global-font-family {
 	font-family: @body-font-family;
+}
+
+.color-primary-font-color {
 	color: @primary-font-color;
-
-	* {
-		border-color: @component-color;
-	}
 }
 
-code {
-	background-color: @code-background-color;
-	border-color: @code-border-color;
-	color: @code-font-color;
+.color-primary-action-color {
+	color: @primary-action-color;
 }
 
-blockquote::before {
+.background-primary-action-color {
+	background-color: @primary-action-color;
+}
+
+.secondary-background-color {
+	background-color: @secondary-background-color;
+}
+
+.border-secondary-background-color {
+	border-color: @secondary-background-color;
+}
+
+.secondary-font-color {
+	color: @secondary-font-color;
+}
+
+.border-component-color {
+	border-color: @component-color;
+}
+
+.background-component-color {
+	background-color: @component-color;
+}
+
+.success-color {
+	color: @success-color;
+}
+
+.pending-color {
+	color: @pending-color;
+}
+
+.pending-background {
+	background-color: @pending-background;
+}
+
+.pending-border {
+	border-color: @pending-border;
+}
+
+.error-color {
+	color: @error-color;
+}
+
+.background-error-color {
+	background-color: @error-color;
+}
+
+.color-info-font-color {
+	color: @info-font-color;
+}
+
+.background-info-font-color {
+	background-color: @info-font-color;
+}
+
+.background-attention-color {
+	background-color: @attention-color;
+}
+
+// Minor Colors
+
+.tertiary-background-color {
+	background-color: @tertiary-background-color;
+}
+
+.border-tertiary-background-color {
+	border-color: @tertiary-background-color;
+}
+
+// Derivative Colors
+
+.color-tertiary-font-color {
+	color: @tertiary-font-color;
+}
+
+.error-background {
+	background-color: @error-background;
+}
+
+.error-border {
+	border-color: @error-border;
+}
+
+.color-error-contrast {
+	color: @error-contrast;
+}
+
+// transparent
+
+.background-transparent-darkest {
+	background-color: @transparent-darkest;
+}
+
+.background-transparent-darker {
 	background-color: @transparent-darker;
 }
 
-.filter-item {
-	border-color: @secondary-background-color;
+.background-transparent-darker-hover:hover {
+	background-color: @transparent-darker;
+}
 
+.background-transparent-darker-before::before {
+	background-color: @transparent-darker;
+}
+
+.background-transparent-dark {
+	background-color: @transparent-dark;
+}
+
+.background-transparent-dark-hover:hover {
+	background-color: @transparent-dark;
+}
+
+.border-transparent-dark {
+	border-color: @transparent-dark;
+}
+
+.background-transparent-light {
+	background-color: @transparent-light;
+}
+
+.background-transparent-lightest {
+	background-color: @transparent-lightest;
+}
+
+// Derivative Colors
+.color-primary-action-contrast {
+	color: @primary-action-contrast;
+}
+
+/** ----------------------------------------------------------------------------
+ * Special components
+ */
+
+* {
+	-webkit-overflow-scrolling: touch;
+
+	&::-webkit-scrollbar {
+		height: 8px;
+		width: 8px;
+		background: @transparent-dark;
+	}
+
+	&::-webkit-scrollbar-thumb {
+		background-color: @custom-scrollbar-color;
+		-webkit-border-radius: 50px;
+	}
+
+	&::-webkit-scrollbar-corner {
+		background-color: @transparent-dark;
+	}
+}
+
+.filter-item {
 	&:hover {
 		border-color: @info-font-color;
 	}
@@ -73,46 +221,11 @@ blockquote::before {
 	}
 }
 
-.info-font-color {
-	color: @info-font-color;
-}
+/** ----------------------------------------------------------------------------
+ * Document components
+ */
 
-.secondary-background-color {
-	background-color: @secondary-background-color;
-}
-
-.main-content,
-.cms-page,
 .page-container {
-	background-color: @content-background-color;
-
-	header {
-		background-color: @content-background-color;
-		border-color: @component-color;
-	}
-}
-
-.page-container table {
-	overflow: hidden;
-	background-color: @secondary-background-color;
-
-	th,
-	td {
-		border-color: @component-color;
-	}
-
-	th {
-		background-color: @content-background-color;
-	}
-
-	tr {
-		background-color: @transparent-light;
-
-		&:nth-of-type(even) {
-			background-color: @transparent-lightest;
-		}
-	}
-
 	tr:hover td {
 		background-color: @content-background-color;
 	}
@@ -131,11 +244,6 @@ blockquote::before {
 .flex-nav {
 	.input-shade(@primary-background-contrast, @primary-background-color);
 
-	label,
-	legend {
-		color: @tertiary-font-color;
-	}
-
 	input {
 		&:focus {
 			border-color: fade(@primary-background-contrast, 50%);
@@ -153,23 +261,6 @@ blockquote::before {
 	&.setting-changed > label {
 		color: @selection-color;
 	}
-
-	i,
-	.settings-description {
-		color: @secondary-font-color;
-	}
-
-	.settings-alert {
-		background-color: @pending-background;
-		border-color: @pending-border;
-		color: @pending-color;
-	}
-}
-
-.emoji-filter {
-	input {
-		background-color: @content-background-color;
-	}
 }
 
 input:-webkit-autofill {
@@ -181,8 +272,8 @@ input:-webkit-autofill {
 	&.radio {
 		label {
 			&::before {
-				background-color: @content-background-color;
 				border-color: lighten(@secondary-background-contrast, 30%);
+				background-color: @content-background-color;
 			}
 
 			&::after {
@@ -221,9 +312,6 @@ input:-webkit-autofill {
 /** ----------------------------------------------------------------------------
  * Misc typography variants
  */
-a {
-	color: @primary-font-color;
-}
 
 a:active,
 a:hover {
@@ -242,48 +330,13 @@ a:hover {
 	}
 }
 
-.load-more .load-more-loading,
-.secondary-text {
-	color: @secondary-font-color;
-}
-
-.alert-icon {
-	color: @success-color;
-}
-
 .error {
-	background-color: @error-background;
 	border-color: @error-color;
-	color: @error-color;
 }
 
 /** ----------------------------------------------------------------------------
  * Admin and settings styles
  */
-.page-settings {
-	.content {
-		background-color: @transparent-dark;
-	}
-
-	.section {
-		background-color: @content-background-color;
-	}
-
-	.terminal {
-		background-color: #444444;
-		color: white;
-
-		.time {
-			color: @secondary-font-color;
-		}
-	}
-
-	.section-content {
-		.reset-setting i {
-			color: @error-contrast;
-		}
-	}
-}
 
 .page-list,
 .page-settings {
@@ -296,48 +349,19 @@ a:hover {
 	}
 }
 
-.settings-file-preview .preview.no-file {
+.admin-table-row {
 	background-color: @transparent-light;
-	color: @secondary-font-color;
-}
 
-.new-logs {
-	background: @primary-action-contrast;
-	color: @primary-action-color;
-}
-
-.code-error-box {
-	.title {
-		background-color: @error-color;
-		color: white;
-	}
-
-	pre {
-		color: @error-color;
-		border-color: @error-border;
+	&:nth-of-type(even) {
 		background-color: @transparent-lightest;
 	}
 }
 
-.code-mirror-box {
-	.buttons {
-		background-color: #f7f7f7;
-		// matches plugin styles
-	}
-
-	&.code-mirror-box-fullscreen {
-		background-color: @content-background-color;
-	}
+.new-logs {
+	background: @primary-action-contrast;
 }
 
 .avatar-suggestion-item {
-	background-color: @tertiary-background-color;
-
-	.avatar {
-		background-size: cover;
-		background-color: @tertiary-background-color;
-	}
-
 	.question-mark::before {
 		color: @secondary-font-color;
 	}
@@ -346,27 +370,10 @@ a:hover {
 /** ----------------------------------------------------------------------------
  * Asides (external to main application views)
  */
-.spotlight {
-	background-color: @transparent-darker;
-
-	> .spotlight-input {
-		background-color: @secondary-background-color;
-		color: @secondary-font-color;
-
-		> i {
-			color: @secondary-font-color;
-		}
-	}
-}
-
-.mobile-message-menu {
-	background-color: @transparent-dark;
-}
 
 .full-page,
 .page-loading {
 	.gradient(shade(@primary-background-color), @primary-background-color);
-	color: @tertiary-font-color;
 
 	a {
 		color: @tertiary-font-color;
@@ -375,15 +382,9 @@ a:hover {
 	a:hover {
 		color: @primary-background-contrast;
 	}
-
-	.spinner > div {
-		background-color: @primary-background-contrast;
-	}
 }
 
 #login-card {
-	color: @primary-font-color;
-	background-color: @content-background-color;
 	.input-shade(@primary-font-color, @content-background-color);
 
 	.input-text {
@@ -393,64 +394,16 @@ a:hover {
 	}
 }
 
-.dropzone.over .dropzone-overlay {
-	background-color: @transparent-darkest;
-	color: @content-background-color;
-
-	> div {
-		background-color: @transparent-darkest;
-	}
-}
-
 /** ----------------------------------------------------------------------------
  * Room components
  */
-.new-message {
-	color: @primary-action-contrast;
-	background-color: @primary-action-color;
-}
-
-.ticks-bar {
-	.tick {
-		background-color: @primary-action-color;
-	}
-
-	.tick-all {
-		background-color: @selection-color;
-	}
-}
-
-.room-not-found {
-	color: @error-color;
-}
-
-.favorite-room {
-	color: @pending-color;
-}
 
 .toggle-favorite {
 	color: @component-color;
 }
 
-.container-bars {
-	.upload-progress {
-		background-color: @component-color;
-		color: @primary-action-color;
-
-		&.upload-error {
-			background-color: @error-background;
-			border-color: @error-border;
-		}
-
-		.upload-progress-progress {
-			background-color: @success-background;
-		}
-	}
-
-	.unread-bar {
-		background-color: @component-color;
-		color: @primary-action-color;
-	}
+.upload-progress-progress {
+	background-color: @success-background;
 }
 
 .messages-container {
@@ -461,80 +414,40 @@ a:hover {
 	.footer {
 		background: @content-background-color;
 	}
-
-	.message-form {
-		color: @secondary-font-color;
-
-		.input-message-container {
-			background-color: @content-background-color;
-		}
-
-		.message-buttons {
-			.buttonColors(lighten(@primary-font-color, 25%), @secondary-background-color);
-
-			&:hover {
-				background-color: mix(@secondary-background-color, contrast(@primary-font-color), 20%);
-			}
-		}
-
-		textarea {
-			&.editing {
-				background-color: lighten(@pending-color, 40%);
-			}
-		}
-	}
-
-	.new-message {
-		color: @primary-action-contrast;
-		background-color: @primary-action-color;
-	}
-
-	.messages-box {
-		.jump-recent {
-			background-color: @component-color;
-		}
-
-		&.selectable .selected {
-			background-color: @selection-background;
-		}
-
-		.load-more span {
-			background-color: @secondary-background-color;
-		}
-	}
 }
 
-.message-popup {
-	background: @content-background-color;
-}
+.message-form {
+	.message-buttons {
+		.buttonColors(lighten(@primary-font-color, 25%), @secondary-background-color);
 
-.message-popup-title {
-	background-color: @secondary-background-color;
-	// border-bottom-color: #E7E7E7;
+		&:hover {
+			background-color: mix(@secondary-background-color, contrast(@primary-font-color), 20%);
+		}
+	}
+
+	.message-form-text {
+		&.editing {
+			background-color: lighten(@pending-color, 40%);
+		}
+	}
 }
 
 .popup-item {
-	// color: @secondary-font-color;
-
 	&.selected {
 		color: @primary-action-contrast;
 		background-color: @primary-action-color;
 	}
-
-	span {
-		color: @secondary-font-color;
-	}
 }
 
 .messages-box {
-	.start {
-		color: @info-font-color;
+	&.selectable .selected {
+		background-color: @selection-background;
 	}
 
-	.editing .body,
-	textarea.editing {
-		background-color: lighten(@pending-color, 40%);
-	}
+	// .editing .body,
+	// textarea.editing {
+	// 	background-color: lighten(@pending-color, 40%);
+	// }
 }
 
 /** ----------------------------------------------------------------------------
@@ -561,55 +474,25 @@ a:hover {
 }
 
 .message {
-	.body {
-		color: @primary-font-color;
+	&.new-day::before {
+		background-color: @content-background-color;
 	}
 
-	&.system .body {
-		color: @info-font-color;
-	}
-
-	&:hover {
-		background-color: @transparent-dark;
-	}
-
-	.toggle-options {
-		color: @secondary-font-color;
+	&.new-day::after {
+		border-color: @component-color;
 	}
 
 	.message-dropdown,
 	.options-menu {
 		color: lighten(@primary-font-color, 13%);
-		background-color: @content-background-color;
 
 		ul li:hover {
 			background-color: @tertiary-background-color;
 		}
-
-		.message-dropdown-close {
-			background-color: @secondary-background-color;
-		}
-	}
-
-	&.new-day::before {
-		background-color: @content-background-color;
-	}
-
-	&.new-day::after,
-	.info,
-	.user-view,
-	.message-alias {
-		color: @info-font-color;
-		border-color: @component-color;
-	}
-
-	.user {
-		color: @primary-font-color;
 	}
 
 	.is-bot,
 	.role-tag {
-		background-color: @info-font-color;
 		color: contrast(@info-font-color);
 	}
 
@@ -617,28 +500,18 @@ a:hover {
 		.linkColors(@link-font-color, darken(@link-font-color, 10%));
 	}
 
-	a.mention-link {
-		color: @primary-action-color;
-
+	.mention-link {
 		&.mention-link-me {
 			color: @primary-action-contrast;
-			background-color: @primary-action-color;
 		}
 
 		&.mention-link-all {
 			color: @primary-action-contrast;
-			background-color: @attention-color;
 		}
 	}
 
 	.highlight-text {
 		background-color: @selection-background;
-	}
-
-	.attachment {
-		.attachment-block-border {
-			background-color: @info-font-color;
-		}
 	}
 }
 
@@ -646,13 +519,6 @@ a:hover {
  * Side nav
  */
 .side-nav {
-	color: @tertiary-font-color;
-	background-color: @primary-background-color;
-
-	* {
-		border-color: @transparent-darker;
-	}
-
 	a,
 	.info {
 		.linkColors(@tertiary-font-color, @tertiary-font-color);
@@ -663,35 +529,20 @@ a:hover {
 		background-color: @tertiary-font-color;
 	}
 
-	.info,
-	.options,
-	.content,
-	footer,
-	header {
-		background-color: @primary-background-color;
-	}
-
 	.rooms-list {
 		background-color: lighten(@primary-background-color, 2.5%);
-	}
-
-	h3:hover,
-	li:hover,
-	.more:hover,
-	.selected-users li {
-		background-color: @transparent-darker;
 	}
 
 	li.active {
 		background-color: @transparent-light !important;
 	}
 
-	i {
-		color: @transparent-lighter;
-	}
-
 	i.status-offline {
 		color: @transparent-lighter !important;
+	}
+
+	i {
+		color: @transparent-lighter;
 	}
 
 	.opt i:hover {
@@ -707,11 +558,6 @@ a:hover {
 		color: contrast(@success-color, #000000, #ffffff, 50%);
 	}
 
-	.unread-rooms {
-		background-color: @primary-action-color;
-		color: @primary-action-contrast;
-	}
-
 	.button {
 		.buttonColors(@tertiary-font-color, mix(@primary-action-color, @primary-background-color));
 	}
@@ -725,13 +571,9 @@ a:hover {
  * Flex tabs / admin fly-out panels
  */
 .flex-tab {
-	background-color: @secondary-background-color;
-
 	input,
 	select,
 	textarea {
-		background-color: @content-background-color;
-
 		&:focus {
 			border-color: lighten(@secondary-background-contrast, 30%);
 		}
@@ -751,8 +593,6 @@ a:hover {
 
 	.channel-settings {
 		.buttons {
-			background-color: @secondary-background-color;
-
 			.button {
 				.buttonColors(lighten(@primary-font-color, 25%), @secondary-background-color);
 			}
@@ -760,10 +600,6 @@ a:hover {
 
 		.button.edit {
 			.buttonColors(lighten(@primary-font-color, 25%), @secondary-background-color);
-		}
-
-		.icon-ok {
-			color: inherit;
 		}
 
 		.input.checkbox.toggle {
@@ -775,9 +611,6 @@ a:hover {
 }
 
 .flex-tab-bar {
-	background-color: @content-background-color;
-	border-color: @component-color;
-
 	.tab-button {
 		&:hover {
 			background-color: @secondary-background-color;
@@ -799,26 +632,6 @@ a:hover {
 	}
 }
 
-.webrtc-video {
-	&.webrtc-video-overlay,
-	.main-video,
-	.state-overlay::before,
-	.videos .video-item {
-		background-color: @transparent-darker;
-		color: white;
-	}
-
-	.main-video > div,
-	.video-muted-overlay,
-	.videos .video-item > div {
-		background-color: @transparent-darker;
-	}
-
-	video {
-		background-color: black;
-	}
-}
-
 /** ----------------------------------------------------------------------------
  * User status / user meta
  */
@@ -833,6 +646,11 @@ i.status-online {
 .user-image.status-online .avatar::after {
 	background-color: @status-online;
 	border-color: darken(@status-online, 10%);
+}
+
+.account-box .status-offline .thumb::after,
+.account-box .status.offline::after {
+	background-color: @transparent-lighter;
 }
 
 i.status-away {
@@ -872,30 +690,17 @@ i.status-offline {
 	border-color: darken(@status-offline, 10%);
 }
 
-.account-box .status-offline .thumb::after,
-.account-box .status.offline::after {
-	background-color: @transparent-lighter;
-}
+// .popup-user-status-system {
+// 	border-color: transparent;
+// }
 
-.popup-user-status {
-	border-color: @transparent-dark;
-}
-
-.popup-user-status-system {
-	border-color: transparent;
-}
-
-.user-view {
-	p {
-		color: @secondary-font-color;
-	}
-
-	.box::after,
-	.stats li,
-	.tags li {
-		background-color: @component-color;
-	}
-}
+// .user-view {
+// 	.box::after,
+// 	.stats li,
+// 	.tags li {
+// 		background-color: @component-color;
+// 	}
+// }
 
 /** ----------------------------------------------------------------------------
  * Buttons!
@@ -940,97 +745,23 @@ i.status-offline {
 			background-color: lighten(desaturate(@error-color, 50%), 30%);
 		}
 	}
-
-	&[disabled] {
-		cursor: initial;
-	}
-
-	&.external-login {
-		color: white;
-
-		&.facebook {
-			background-color: #325c99;
-		}
-
-		&.twitter {
-			background-color: #02acec;
-		}
-
-		&.google {
-			background-color: #dd4b39;
-		}
-
-		&.github {
-			background-color: #4c4c4c;
-		}
-
-		&.gitlab {
-			background-color: #373d47;
-		}
-
-		&.trello {
-			background-color: #026aa7;
-		}
-
-		&.meteor-developer {
-			background-color: #de4f4f;
-		}
-
-		&.wordpress {
-			background-color: #1e8cbe;
-		}
-
-		&.linkedin {
-			background-color: #1b86bc;
-		}
-	}
 }
 
 /** ----------------------------------------------------------------------------
  * Feedback and overlay content
  */
-.icon-ok,
-.feedback-success {
-	color: @success-color;
-}
-
-.feedback-warning {
-	color: @pending-color;
-}
-
-.feedback-error {
-	color: @error-color;
-}
-
-.livechat-form .error,
-.offline .error {
-	background-color: @error-background;
-}
 
 .alert-warning {
 	color: darken(@pending-color, 25%);
 	background-color: @pending-background;
-	border-color: @pending-border;
 }
 
 .alert-link {
 	.linkColors(@link-font-color, darken(@link-font-color, 10%));
 }
 
-.alert-danger {
-	color: @error-color;
-	background-color: @error-background;
-	border-color: @error-border;
-}
-
-.side-nav .input-error,
 label.required::after {
 	color: @error-color;
-}
-
-.burger .unread-burger-alert {
-	background-color: @error-color;
-	color: @error-contrast;
 }
 
 /** ----------------------------------------------------------------------------
