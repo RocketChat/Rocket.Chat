@@ -28,7 +28,10 @@ The following can be configured in your Rocket.Chat Administration SlackBridge p
 #### Group Chat Messages
 * Send and receive basic messages
 * Delete messages
+* Edit messages (Slack doesn't allow editing of BOT messages, so can't edit a Rocket msg in Slack)
+
 #### Files
+
 #### Imports
 
 ### TODO
