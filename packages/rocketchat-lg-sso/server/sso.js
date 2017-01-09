@@ -13,7 +13,7 @@ function joinRoom(rcUser, roomName) {
 function setAvatarFromGitHubAvatar(rcUser, lgUser) {
   Meteor.runAsUser(rcUser._id, () => {
     logger.log('setting avatar from GitHub avatar')
-    const url = `https://github.com/${lgUser.handle}.png?s=200`
+    const url = `https://github.com/${lgUser.handle}.png?size=200`
     Meteor.call('setAvatarFromService', url, undefined, 'url')
   })
 }
