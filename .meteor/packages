@@ -96,6 +96,7 @@ rocketchat:slashcommands-archive
 rocketchat:slashcommands-asciiarts
 rocketchat:slashcommands-create
 rocketchat:slashcommands-invite
+rocketchat:slashcommands-invite-all
 rocketchat:slashcommands-join
 rocketchat:slashcommands-kick
 rocketchat:slashcommands-leave
