@@ -94,6 +94,7 @@ Template.membersList.helpers
 		room = ChatRoom.findOne(this.rid, { fields: { t: 1 } })
 
 		return {
+			tabBar: Template.currentData().tabBar
 			username: Template.instance().userDetail.get()
 			clear: Template.instance().clearUserDetail
 			showAll: room?.t in ['c', 'p']
@@ -133,7 +134,11 @@ Template.membersList.onCreated ->
 	@total = new ReactiveVar
 	@loading = new ReactiveVar true
 
+	@tabBar = Template.instance().tabBar
+
 	Tracker.autorun =>
+		return unless this.data.rid?
+
 		@loading.set true
 		Meteor.call 'getUsersOfRoom', this.data.rid, this.showAllUsers.get(), (error, users) =>
 			@users.set users.records
