@@ -71,13 +71,21 @@ class FlexTab extends Page {
 	get usersSendInvitationTab() { return browser.element('[aria-label="Invite Users"] .icon-paper-plane'); }
 	get usersAddUserTab() { return browser.element('[aria-label="Add User"] .icon-plus'); }
 	get usersSendInvitationTextArea() { return browser.element('#inviteEmails'); }
-	get usersSendInvitationCancel() { return browser.element('button.cancel'); }
+	get usersButtonCancel() { return browser.element('button.cancel'); }
 	get usersSendInvitationSend() { return browser.element('button.send'); }
+	get usersButtonSave() { return browser.element('button.save'); }
 	get usersAddUserName() { return browser.element('#name'); }
 	get usersAddUserUsername() { return browser.element('#username'); }
 	get usersAddUserEmail() { return browser.element('#email'); }
 	get usersAddUserPassword() { return browser.element('#password'); }
 	get usersAddUserRole() { return browser.element('#role'); }
+	get usersAddUserVerifiedCheckbox() { return browser.element('#verified'); }
+	get usersAddUserChangePasswordCheckbox() { return browser.element('#changePassword'); }
+	get usersAddUserDefaultChannelCheckbox() { return browser.element('#joinDefaultChannels'); }
+	get usersAddUserWelcomeEmailCheckbox() { return browser.element('#sendWelcomeEmail'); }
+	get usersAddUserRandomPassword() { return browser.element('#randomPassword'); }
+	get emojiNewAliases() { return browser.element('#aliases'); }
+	get emojiNewImageInput() { return browser.element('#image'); }
 
 	getUserEl(username) { return browser.element(`.flex-tab button[title="${username}"] > p`); }
 
