@@ -47,22 +47,24 @@
 					{{> spotlight}}
 					{{> videoCall overlay=true}}
 					<div id="user-card-popover"></div>
-					<div id="rocket-chat" class="{{embeddedVersion}} menu-nav">
-						<div class="connection-status">
-							{{> status}}
-						</div>
-						{{#unless modal}}
-							<div class="flex-tab-bar content-background-color" role="toolbar">
-								{{> flexTabBar}}
+					{{#let sessionName=sessionUsername}}
+						<div id="rocket-chat" class="{{embeddedVersion}} menu-nav" session-username={{sessionName}}>
+							<div class="connection-status">
+								{{> status}}
 							</div>
-						{{/unless}}
-						<div class="main-content content-background-color {{flexOpened}} {{flexOpenedRTC1}} {{flexOpenedRTC2}} {{#if modal}}main-modal{{/if}}">
-							{{> Template.dynamic template=center}}
+							{{#unless modal}}
+								<div class="flex-tab-bar content-background-color" role="toolbar">
+									{{> flexTabBar}}
+								</div>
+							{{/unless}}
+							<div class="main-content content-background-color {{flexOpened}} {{flexOpenedRTC1}} {{flexOpenedRTC2}} {{#if modal}}main-modal{{/if}}">
+								{{> Template.dynamic template=center}}
+							</div>
+							{{#unless modal}}
+								{{> sideNav }}
+							{{/unless}}
 						</div>
-						{{#unless modal}}
-							{{> sideNav }}
-						{{/unless}}
-					</div>
+					{{/let}}
 					{{> audioNotification }}
 				{{/if}}
 			{{/unless}}
