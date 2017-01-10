@@ -14,6 +14,9 @@ class MainContent extends Page {
 	get emojiBtn() { return browser.element('.inner-left-toolbar .emoji-picker-icon'); }
 	get channelTitle() { return browser.element('.room-title'); }
 	get popupFileConfirmBtn() { return browser.element('.sa-confirm-button-container .confirm'); }
+	get popupFileName() { return browser.element('#file-name'); }
+	get popupFileDescription() { return browser.element('#file-description'); }
+	get popupFileConfirmBtn() { return browser.element('.sa-confirm-button-container .confirm'); }
 	get popupFilePreview() { return browser.element('.upload-preview-file'); }
 	get popupFileTitle() { return browser.element('.upload-preview-title'); }
 	get popupFileCancelBtn() { return browser.element('.sa-button-container .cancel'); }
