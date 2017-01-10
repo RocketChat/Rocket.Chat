@@ -1,7 +1,7 @@
 RocketChat.Migrations.add({
 	version: 79,
 	up: function() {
-		const integrations = RocketChat.models.Integrations.find({type: 'webhook-incoming'}).fetch()
+		const integrations = RocketChat.models.Integrations.find({type: 'webhook-incoming'}).fetch();
 
 		for (const integration of integrations) {
 			if (typeof integration.channel === 'string') {
