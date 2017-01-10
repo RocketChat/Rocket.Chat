@@ -72,8 +72,8 @@ Accounts.registerLoginHandler(loginRequest => {
     try {
       joinRoom(rcUser, 'general')
     } catch (err) {
+      logger.warn('could not join `general` room', err.stack || err)
       RavenLogger.log(err)
-      logger.warn('could not join `general` room', err.stack)
     }
 
     // create or update the login token
@@ -86,8 +86,8 @@ Accounts.registerLoginHandler(loginRequest => {
 
     return {userId: rcUser._id, token: stampedToken.token}
   } catch (err) {
-    RavenLogger.log(err)
     logger.error('error signing-in using SSO on idm service', err.stack)
+    RavenLogger.log(err)
   }
 
   return undefined
