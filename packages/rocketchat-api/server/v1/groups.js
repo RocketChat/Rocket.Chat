@@ -25,7 +25,7 @@ RocketChat.API.v1.addRoute('groups.addModerator', { authRequired: true }, {
 			return findResult;
 		}
 
-		const { user } = this.getUserFromParams();
+		const user = this.getUserFromParams();
 
 		Meteor.runAsUser(this.userId, () => {
 			Meteor.call('addRoomModerator', findResult.rid, user._id);
@@ -43,7 +43,7 @@ RocketChat.API.v1.addRoute('groups.addOwner', { authRequired: true }, {
 			return findResult;
 		}
 
-		const { user } = this.getUserFromParams();
+		const user = this.getUserFromParams();
 
 		Meteor.runAsUser(this.userId, () => {
 			Meteor.call('addRoomOwner', findResult.rid, user._id);
@@ -249,7 +249,7 @@ RocketChat.API.v1.addRoute('groups.invite', { authRequired: true }, {
 			return findResult;
 		}
 
-		const { user } = this.getUserFromParams();
+		const user = this.getUserFromParams();
 
 		Meteor.runAsUser(this.userId, () => {
 			Meteor.call('addUserToRoom', { rid: findResult.rid, username: user.username });
@@ -270,7 +270,7 @@ RocketChat.API.v1.addRoute('groups.kick', { authRequired: true }, {
 			return findResult;
 		}
 
-		const { user } = this.getUserFromParams();
+		const user = this.getUserFromParams();
 
 		Meteor.runAsUser(this.userId, () => {
 			Meteor.call('removeUserFromRoom', { rid: findResult.rid, username: user.username });
@@ -350,7 +350,7 @@ RocketChat.API.v1.addRoute('groups.removeModerator', { authRequired: true }, {
 			return findResult;
 		}
 
-		const { user } = this.getUserFromParams();
+		const user = this.getUserFromParams();
 
 		Meteor.runAsUser(this.userId, () => {
 			Meteor.call('removeRoomModerator', findResult.rid, user._id);
@@ -368,7 +368,7 @@ RocketChat.API.v1.addRoute('groups.removeOwner', { authRequired: true }, {
 			return findResult;
 		}
 
-		const { user } = this.getUserFromParams();
+		const user = this.getUserFromParams();
 
 		Meteor.runAsUser(this.userId, () => {
 			Meteor.call('removeRoomOwner', findResult.rid, user._id);
