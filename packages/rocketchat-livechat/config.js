@@ -232,6 +232,6 @@ Meteor.startup(function() {
 		group: 'Livechat',
 		public: true,
 		i18nLabel: 'Livechat_AllowedDomainsList',
-		i18nDescription: 'Domains_allowed_to_embed_the_livechat_widget',
+		i18nDescription: 'Domains_allowed_to_embed_the_livechat_widget'
 	});
 });
