@@ -6,42 +6,5 @@
 			<textarea class="clipboard" data-clipboard-target=".livechat-code textarea">{{script}}</textarea>
 			<button class="button clipboard" data-clipboard-target=".livechat-code textarea"><i class="icon-docs"></i>{{_ "Copy_to_clipboard"}}</button>
 		</div>
-
-		<form class="rocket-form">
-			<fieldset>
-				<div class="input-line">
-					<label for="enableWidgetDomains">{{_ "Restrict Livechat to valid domains only"}}</label>
-					<div class="inline-fields">
-						<input type="radio" class="preview-settings" name="enableWidgetDomains" id="enableWidgetDomainsTrue" checked="{{enableWidgetDomainsTrueChecked}}" value="true">
-						<label for="displayOfflineFormTrue">{{_ "True"}}</label>
-						<input type="radio" class="preview-settings" name="enableWidgetDomains" id="enableWidgetDomainsFalse" checked="{{enableWidgetDomainsFalseChecked}}" value="false">
-						<label for="displayOfflineFormFalse">{{_ "False"}}</label>
-					</div>
-				</div>
-			</fieldset>
-			<div class="submit">
-				<button class="button primary save"><i class="icon-floppy"></i>{{_ "Save"}}</button>
-			</div>
-		</form>
-
-		<div class="list">
-			<table>
-				<thead>
-					<tr>
-						<th width="80%">{{_ "Domain"}}</th>
-						<th>{{_ "Delete"}}</th>
-					</tr>
-				</thead>
-				<tbody>
-					{{#each domains}}
-						<tr class="row-link" data-id="{{_id}}">
-							<td>{{domain}}</td>
-							<td><a class="remove-domain"><i class="icon-trash"></i></a></td>
-						</tr>
-					{{/each}}
-				</tbody>
-			</table>
-		</div>
-		<button class="button primary add-domain">{{_ "Add_Domain"}}</button>
 	{{/requiresPermission}}
 </template>
