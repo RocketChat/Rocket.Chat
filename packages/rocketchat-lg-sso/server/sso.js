@@ -10,14 +10,6 @@ function joinRoom(rcUser, roomName) {
   })
 }
 
-function setAvatarFromGitHubAvatar(rcUser, lgUser) {
-  Meteor.runAsUser(rcUser._id, () => {
-    logger.log('setting avatar from GitHub avatar')
-    const url = `https://github.com/${lgUser.handle}.png?size=200`
-    Meteor.call('setAvatarFromService', url, undefined, 'url')
-  })
-}
-
 function createOrUpdateUserFromJWT(lgJWT) {
   const lgUser = userFromJWT(lgJWT)
 
@@ -60,13 +52,6 @@ function createOrUpdateUserFromJWT(lgJWT) {
     const mergedUser = Object.assign({}, newUser, {services: {lgSSO}})
     const userId = Accounts.insertUserDoc({}, mergedUser)
     rcUser = Meteor.users.findOne(userId)
-  }
-
-  // update user avatar using GitHub avatar
-  try {
-    setAvatarFromGitHubAvatar(rcUser, lgUser)
-  } catch (err) {
-    logger.warn('could not set avatar from GitHub avatar', err.message)
   }
 
   return rcUser
