@@ -210,6 +210,12 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base
 
 		return @findOne query
 
+	findOneBySlackTs: (slackTs) ->
+		query =
+			slackTs: slackTs
+
+		return @findOne query
+
 	cloneAndSaveAsHistoryById: (_id) ->
 		me = RocketChat.models.Users.findOneById Meteor.userId()
 		record = @findOneById _id

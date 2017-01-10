@@ -41,8 +41,10 @@ Meteor.methods({
 			if (_.isEmpty(message.reactions)) {
 				delete message.reactions;
 				RocketChat.models.Messages.unsetReactions(messageId);
+				RocketChat.callbacks.run('unsetReaction', messageId, reaction);
 			} else {
 				RocketChat.models.Messages.setReactions(messageId, message.reactions);
+				RocketChat.callbacks.run('setReaction', messageId, reaction);
 			}
 		} else {
 			if (!message.reactions) {
@@ -56,6 +58,7 @@ Meteor.methods({
 			message.reactions[reaction].usernames.push(user.username);
 
 			RocketChat.models.Messages.setReactions(messageId, message.reactions);
+			RocketChat.callbacks.run('setReaction', messageId, reaction);
 		}
 
 		msgStream.emit(message.rid, message);
