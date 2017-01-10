@@ -21,17 +21,16 @@ Package.onUse(function(api) {
 	api.addFiles('server/server.coffee', 'server');
 	api.addFiles('server/variables.coffee', 'server');
 
-	// Minicolors
-	api.addFiles('client/minicolors/jquery.minicolors.css', 'client');
-	api.addFiles('client/minicolors/jquery.minicolors.js', 'client');
+	// Colorpicker
+	api.addFiles('client/vendor/jscolor.js', 'client');
 
 	// Fontello
-	api.addFiles('client/fontello/css/fontello.css', 'client');
-	api.addAssets('client/fontello/font/fontello.eot', 'client');
-	api.addAssets('client/fontello/font/fontello.svg', 'client');
-	api.addAssets('client/fontello/font/fontello.ttf', 'client');
-	api.addAssets('client/fontello/font/fontello.woff', 'client');
-	api.addAssets('client/fontello/font/fontello.woff2', 'client');
+	api.addFiles('client/vendor/fontello/css/fontello.css', 'client');
+	api.addAssets('client/vendor/fontello/font/fontello.eot', 'client');
+	api.addAssets('client/vendor/fontello/font/fontello.svg', 'client');
+	api.addAssets('client/vendor/fontello/font/fontello.ttf', 'client');
+	api.addAssets('client/vendor/fontello/font/fontello.woff', 'client');
+	api.addAssets('client/vendor/fontello/font/fontello.woff2', 'client');
 
 	// Compiled stylesheets
 	api.addFiles('client/main.less', 'client');
