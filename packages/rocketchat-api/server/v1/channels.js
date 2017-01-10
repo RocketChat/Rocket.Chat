@@ -1,17 +1,17 @@
 //Returns the channel IF found otherwise it will return the failure of why it didn't. Check the `statusCode` property
 function findChannelById({ roomId, checkedArchived = true }) {
 	if (!roomId || !roomId.trim()) {
-		return RocketChat.API.v1.failure('The parameter "roomId" is required');
+		throw new Meteor.Error('error-roomid-param-not-provided', 'The parameter "roomId" is required');
 	}
 
 	const room = RocketChat.models.Rooms.findOneById(roomId, { fields: RocketChat.API.v1.defaultFieldsToExclude });
 
 	if (!room || room.t !== 'c') {
-		return RocketChat.API.v1.failure(`No channel found by the id of: ${roomId}`);
+		throw new Meteor.Error('error-room-not-found', `No channel found by the id of: ${roomId}`);
 	}
 
 	if (checkedArchived && room.archived) {
-		return RocketChat.API.v1.failure(`The channel, ${room.name}, is archived`);
+		throw new Meteor.Error('error-room-aquived', `The channel, ${room.name}, is archived`);
 	}
 
 	return room;
@@ -20,10 +20,6 @@ function findChannelById({ roomId, checkedArchived = true }) {
 RocketChat.API.v1.addRoute('channels.addAll', { authRequired: true }, {
 	post: function() {
 		const findResult = findChannelById({ roomId: this.bodyParams.roomId });
-
-		if (findResult.statusCode) {
-			return findResult;
-		}
 
 		Meteor.runAsUser(this.userId, () => {
 			Meteor.call('addAllUserToRoom', findResult._id);
@@ -39,10 +35,6 @@ RocketChat.API.v1.addRoute('channels.addModerator', { authRequired: true }, {
 	post: function() {
 		const findResult = findChannelById({ roomId: this.bodyParams.roomId });
 
-		if (findResult.statusCode) {
-			return findResult;
-		}
-
 		const user = this.getUserFromParams();
 
 		Meteor.runAsUser(this.userId, () => {
@@ -56,10 +48,6 @@ RocketChat.API.v1.addRoute('channels.addModerator', { authRequired: true }, {
 RocketChat.API.v1.addRoute('channels.addOwner', { authRequired: true }, {
 	post: function() {
 		const findResult = findChannelById({ roomId: this.bodyParams.roomId });
-
-		if (findResult.statusCode) {
-			return findResult;
-		}
 
 		const user = this.getUserFromParams();
 
@@ -75,10 +63,6 @@ RocketChat.API.v1.addRoute('channels.archive', { authRequired: true }, {
 	post: function() {
 		const findResult = findChannelById({ roomId: this.bodyParams.roomId });
 
-		if (findResult.statusCode) {
-			return findResult;
-		}
-
 		Meteor.runAsUser(this.userId, () => {
 			Meteor.call('archiveRoom', findResult._id);
 		});
@@ -90,10 +74,6 @@ RocketChat.API.v1.addRoute('channels.archive', { authRequired: true }, {
 RocketChat.API.v1.addRoute('channels.cleanHistory', { authRequired: true }, {
 	post: function() {
 		const findResult = findChannelById({ roomId: this.bodyParams.roomId });
-
-		if (findResult.statusCode) {
-			return findResult;
-		}
 
 		if (!this.bodyParams.latest) {
 			return RocketChat.API.v1.failure('Body parameter "latest" is required.');
@@ -122,10 +102,6 @@ RocketChat.API.v1.addRoute('channels.cleanHistory', { authRequired: true }, {
 RocketChat.API.v1.addRoute('channels.close', { authRequired: true }, {
 	post: function() {
 		const findResult = findChannelById({ roomId: this.bodyParams.roomId, checkedArchived: false });
-
-		if (findResult.statusCode) {
-			return findResult;
-		}
 
 		const sub = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(findResult._id, this.userId);
 
@@ -179,10 +155,7 @@ RocketChat.API.v1.addRoute('channels.delete', { authRequired: true }, {
 	post: function() {
 		const findResult = findChannelById({ roomId: this.bodyParams.roomId, checkedArchived: false });
 
-		//The find method returns either with the group or the failure
-		if (findResult.statusCode) {
-			return findResult;
-		}
+		//The find method returns either with the group or the failur
 
 		Meteor.runAsUser(this.userId, () => {
 			Meteor.call('eraseRoom', findResult._id);
@@ -201,10 +174,6 @@ RocketChat.API.v1.addRoute('channels.getIntegrations', { authRequired: true }, {
 		}
 
 		const findResult = findChannelById({ roomId: this.queryParams.roomId, checkedArchived: false });
-
-		if (findResult.statusCode) {
-			return findResult;
-		}
 
 		let includeAllPublicChannels = true;
 		if (typeof this.queryParams.includeAllPublicChannels !== 'undefined') {
@@ -258,10 +227,6 @@ RocketChat.API.v1.addRoute('channels.history', { authRequired: true }, {
 	get: function() {
 		const findResult = findChannelById({ roomId: this.queryParams.roomId, checkedArchived: false });
 
-		if (findResult.statusCode) {
-			return findResult;
-		}
-
 		let latestDate = new Date();
 		if (this.queryParams.latest) {
 			latestDate = new Date(this.queryParams.latest);
@@ -302,10 +267,6 @@ RocketChat.API.v1.addRoute('channels.info', { authRequired: true }, {
 	get: function() {
 		const findResult = findChannelById({ roomId: this.queryParams.roomId, checkedArchived: false });
 
-		if (findResult.statusCode) {
-			return findResult;
-		}
-
 		return RocketChat.API.v1.success({
 			channel: RocketChat.models.Rooms.findOneById(findResult._id, { fields: RocketChat.API.v1.defaultFieldsToExclude })
 		});
@@ -315,10 +276,6 @@ RocketChat.API.v1.addRoute('channels.info', { authRequired: true }, {
 RocketChat.API.v1.addRoute('channels.invite', { authRequired: true }, {
 	post: function() {
 		const findResult = findChannelById({ roomId: this.bodyParams.roomId });
-
-		if (findResult.statusCode) {
-			return findResult;
-		}
 
 		const user = this.getUserFromParams();
 
@@ -336,10 +293,6 @@ RocketChat.API.v1.addRoute('channels.join', { authRequired: true }, {
 	post: function() {
 		const findResult = findChannelById({ roomId: this.bodyParams.roomId });
 
-		if (findResult.statusCode) {
-			return findResult;
-		}
-
 		Meteor.runAsUser(this.userId, () => {
 			Meteor.call('joinRoom', findResult._id, this.bodyParams.joinCode);
 		});
@@ -353,10 +306,6 @@ RocketChat.API.v1.addRoute('channels.join', { authRequired: true }, {
 RocketChat.API.v1.addRoute('channels.kick', { authRequired: true }, {
 	post: function() {
 		const findResult = findChannelById({ roomId: this.bodyParams.roomId });
-
-		if (findResult.statusCode) {
-			return findResult;
-		}
 
 		const user = this.getUserFromParams();
 
@@ -373,10 +322,6 @@ RocketChat.API.v1.addRoute('channels.kick', { authRequired: true }, {
 RocketChat.API.v1.addRoute('channels.leave', { authRequired: true }, {
 	post: function() {
 		const findResult = findChannelById({ roomId: this.bodyParams.roomId });
-
-		if (findResult.statusCode) {
-			return findResult;
-		}
 
 		Meteor.runAsUser(this.userId, () => {
 			Meteor.call('leaveRoom', findResult._id);
@@ -441,10 +386,6 @@ RocketChat.API.v1.addRoute('channels.open', { authRequired: true }, {
 	post: function() {
 		const findResult = findChannelById({ roomId: this.bodyParams.roomId, checkedArchived: false });
 
-		if (findResult.statusCode) {
-			return findResult;
-		}
-
 		const sub = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(findResult._id, this.userId);
 
 		if (!sub) {
@@ -467,10 +408,6 @@ RocketChat.API.v1.addRoute('channels.removeModerator', { authRequired: true }, {
 	post: function() {
 		const findResult = findChannelById({ roomId: this.bodyParams.roomId });
 
-		if (findResult.statusCode) {
-			return findResult;
-		}
-
 		const user = this.getUserFromParams();
 
 		Meteor.runAsUser(this.userId, () => {
@@ -484,10 +421,6 @@ RocketChat.API.v1.addRoute('channels.removeModerator', { authRequired: true }, {
 RocketChat.API.v1.addRoute('channels.removeOwner', { authRequired: true }, {
 	post: function() {
 		const findResult = findChannelById({ roomId: this.bodyParams.roomId });
-
-		if (findResult.statusCode) {
-			return findResult;
-		}
 
 		const user = this.getUserFromParams();
 
@@ -506,10 +439,6 @@ RocketChat.API.v1.addRoute('channels.rename', { authRequired: true }, {
 		}
 
 		const findResult = findChannelById({ roomId: this.bodyParams.roomId });
-
-		if (findResult.statusCode) {
-			return findResult;
-		}
 
 		if (findResult.name === this.bodyParams.name) {
 			return RocketChat.API.v1.failure('The channel name is the same as what it would be renamed to.');
@@ -533,10 +462,6 @@ RocketChat.API.v1.addRoute('channels.setDescription', { authRequired: true }, {
 
 		const findResult = findChannelById({ roomId: this.bodyParams.roomId });
 
-		if (findResult.statusCode) {
-			return findResult;
-		}
-
 		if (findResult.description === this.bodyParams.description) {
 			return RocketChat.API.v1.failure('The channel description is the same as what it would be changed to.');
 		}
@@ -559,10 +484,6 @@ RocketChat.API.v1.addRoute('channels.setJoinCode', { authRequired: true }, {
 
 		const findResult = findChannelById({ roomId: this.bodyParams.roomId });
 
-		if (findResult.statusCode) {
-			return findResult;
-		}
-
 		Meteor.runAsUser(this.userId, () => {
 			Meteor.call('saveRoomSettings', findResult._id, 'joinCode', this.bodyParams.joinCode);
 		});
@@ -580,10 +501,6 @@ RocketChat.API.v1.addRoute('channels.setPurpose', { authRequired: true }, {
 		}
 
 		const findResult = findChannelById({ roomId: this.bodyParams.roomId });
-
-		if (findResult.statusCode) {
-			return findResult;
-		}
 
 		if (findResult.description === this.bodyParams.purpose) {
 			return RocketChat.API.v1.failure('The channel purpose (description) is the same as what it would be changed to.');
@@ -607,10 +524,6 @@ RocketChat.API.v1.addRoute('channels.setReadOnly', { authRequired: true }, {
 
 		const findResult = findChannelById({ roomId: this.bodyParams.roomId });
 
-		if (findResult.statusCode) {
-			return findResult;
-		}
-
 		if (findResult.ro === this.bodyParams.readOnly) {
 			return RocketChat.API.v1.failure('The channel read only setting is the same as what it would be changed to.');
 		}
@@ -632,10 +545,6 @@ RocketChat.API.v1.addRoute('channels.setTopic', { authRequired: true }, {
 		}
 
 		const findResult = findChannelById({ roomId: this.bodyParams.roomId });
-
-		if (findResult.statusCode) {
-			return findResult;
-		}
 
 		if (findResult.topic === this.bodyParams.topic) {
 			return RocketChat.API.v1.failure('The channel topic is the same as what it would be changed to.');
@@ -659,10 +568,6 @@ RocketChat.API.v1.addRoute('channels.setType', { authRequired: true }, {
 
 		const findResult = findChannelById({ roomId: this.bodyParams.roomId });
 
-		if (findResult.statusCode) {
-			return findResult;
-		}
-
 		if (findResult.t === this.bodyParams.type) {
 			return RocketChat.API.v1.failure('The channel type is the same as what it would be changed to.');
 		}
@@ -680,10 +585,6 @@ RocketChat.API.v1.addRoute('channels.setType', { authRequired: true }, {
 RocketChat.API.v1.addRoute('channels.unarchive', { authRequired: true }, {
 	post: function() {
 		const findResult = findChannelById({ roomId: this.bodyParams.roomId, checkedArchived: false });
-
-		if (findResult.statusCode) {
-			return findResult;
-		}
 
 		if (!findResult.archived) {
 			return RocketChat.API.v1.failure(`The channel, ${findResult.name}, is not archived`);
