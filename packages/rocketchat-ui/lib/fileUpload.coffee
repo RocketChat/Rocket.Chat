@@ -50,8 +50,8 @@ readAsArrayBuffer = (file, callback) ->
 						</audio>
 					</div>
 					<div class='upload-preview-title'>
-						<input id='file-name' style='display: inherit;' value='#{Handlebars._escape(file.name)}' placeholder='#{t("File_upload_name")}'>
-						<input id='file-description' style='display: inherit;' value='' placeholder='#{t("File_upload_description")}'>
+						<input id='file-name' style='display: inherit;' value='#{Handlebars._escape(file.name)}' placeholder='#{t("Upload_file_name")}'>
+						<input id='file-description' style='display: inherit;' value='' placeholder='#{t("Upload_file_description")}'>
 					</div>
 				"""
 			else if file.type is 'video'
@@ -63,8 +63,8 @@ readAsArrayBuffer = (file, callback) ->
 						</video>
 					</div>
 					<div class='upload-preview-title'>
-						<input id='file-name' style='display: inherit;' value='#{Handlebars._escape(file.name)}' placeholder='#{t("File_upload_name")}'>
-						<input id='file-description' style='display: inherit;' value='' placeholder='#{t("File_upload_description")}'>
+						<input id='file-name' style='display: inherit;' value='#{Handlebars._escape(file.name)}' placeholder='#{t("Upload_file_name")}'>
+						<input id='file-description' style='display: inherit;' value='' placeholder='#{t("Upload_file_description")}'>
 					</div>
 				"""
 			else
@@ -73,8 +73,8 @@ readAsArrayBuffer = (file, callback) ->
 						<div class='upload-preview-file' style='background-image: url(#{fileContent})'></div>
 					</div>
 					<div class='upload-preview-title'>
-						<input id='file-name' style='display: inherit;' value='#{Handlebars._escape(file.name)}' placeholder='#{t("File_upload_name")}'>
-						<input id='file-description' style='display: inherit;' value='' placeholder='#{t("File_upload_description")}'>
+						<input id='file-name' style='display: inherit;' value='#{Handlebars._escape(file.name)}' placeholder='#{t("Upload_file_name")}'>
+						<input id='file-description' style='display: inherit;' value='' placeholder='#{t("Upload_file_description")}'>
 					</div>
 				"""
 
