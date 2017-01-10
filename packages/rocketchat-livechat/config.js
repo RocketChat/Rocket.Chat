@@ -227,13 +227,6 @@ Meteor.startup(function() {
 		enableQuery: { _id: 'Livechat_Routing_Method', value: 'Guest_Pool' }
 	});
 
-	RocketChat.settings.add('enable_widget_domains', false, {
-		type: 'boolean',
-		group: 'Livechat',
-		public: true,
-		i18nLabel: 'enable_widget_domains'
-	});
-
 	RocketChat.settings.add('Livechat_AllowedDomainsList', '', {
 		type: 'string',
 		group: 'Livechat',
