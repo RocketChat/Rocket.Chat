@@ -12,7 +12,7 @@ function fallbackDefaultAccountSystem(bind, username, password) {
 		}
 	}
 
-	logger.info('Fallback to default account systen', username);
+	logger.info('Fallback to default account system', username);
 
 	const loginRequest = {
 		user: username,
