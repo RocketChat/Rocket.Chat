@@ -31,7 +31,5 @@ RocketChat.API.v1.helperMethods.set('getUserFromParams', function _getUserFromPa
 		throw new Meteor.Error('error-invalid-user', 'The required "userId" or "username" param provided does not match any users');
 	}
 
-	return {
-		user
-	};
+	return user;
 });

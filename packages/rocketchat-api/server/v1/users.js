@@ -41,7 +41,7 @@ RocketChat.API.v1.addRoute('users.delete', { authRequired: true }, {
 			return RocketChat.API.v1.unauthorized();
 		}
 
-		const { user } = this.getUserFromParams();
+		const user = this.getUserFromParams();
 
 		Meteor.runAsUser(this.userId, () => {
 			Meteor.call('deleteUser', user._id);
@@ -55,7 +55,7 @@ RocketChat.API.v1.addRoute('users.getPresence', { authRequired: true }, {
 	get: function() {
 		//BLAHHHHHHHHHH :'(
 		if ((this.queryParams.userId && this.userId !== this.queryParams.userId) || (this.queryParams.username && this.user.username !== this.queryParams.username) || (this.queryParams.user && this.user.username !== this.queryParams.user)) {
-			const { user } = this.getUserFromParams();
+			const user = this.getUserFromParams();
 
 			return RocketChat.API.v1.success({
 				presence: user.status
@@ -73,7 +73,7 @@ RocketChat.API.v1.addRoute('users.getPresence', { authRequired: true }, {
 
 RocketChat.API.v1.addRoute('users.info', { authRequired: true }, {
 	get: function() {
-		const { user } = this.getUserFromParams();
+		const user = this.getUserFromParams();
 
 		let result;
 		Meteor.runAsUser(this.userId, () => {
