@@ -86,7 +86,7 @@ Accounts.registerLoginHandler(loginRequest => {
 
     return {userId: rcUser._id, token: stampedToken.token}
   } catch (err) {
-    logger.error('error signing-in using SSO on idm service', err.stack)
+    logger.error('error signing-in using SSO on idm service', err.stack || err)
     RavenLogger.log(err)
   }
 
