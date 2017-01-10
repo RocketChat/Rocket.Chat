@@ -181,25 +181,13 @@ RocketChat.API.v1.addRoute('channels.getIntegrations', { authRequired: true }, {
 		}
 
 		let ourQuery = {
-			$or: [{
-				channel: {
-					$in: [`#${findResult.name}`]
-				}
-			}]
+			channel: `#${findResult.name}`
 		};
 
 		if (includeAllPublicChannels) {
-			ourQuery.$or.push({
-				channel: {
-					$eq: []
-				}
-			});
-
-			ourQuery.$or.push({
-				channel: {
-					$in: ['all_public_channels']
-				}
-			});
+			ourQuery.channel = {
+				$in: [ourQuery.channel, 'all_public_channels']
+			};
 		}
 
 		const { offset, count } = this.getPaginationItems();
