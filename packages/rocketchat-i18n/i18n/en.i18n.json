@@ -778,6 +778,8 @@
   "List_of_Channels": "List of Channels",
   "List_of_Direct_Messages": "List of Direct Messages",
   "Livechat_agents": "Livechat agents",
+  "Livechat_AllowedDomainsList": "Livechat allowed domains",
+  "Domains_allowed_to_embed_the_livechat_widget": "Comma-separated list of domains allowed to embed the livechat widget. Leave blank to allow all domains.",
   "Livechat_Dashboard": "Livechat Dashboard",
   "Livechat_enabled": "Livechat enabled",
   "Livechat_forward_open_chats": "Forward open chats",

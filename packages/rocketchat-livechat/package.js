@@ -64,7 +64,6 @@ Package.onUse(function(api) {
 	api.addFiles('client/collections/LivechatTrigger.js', 'client');
 	api.addFiles('client/collections/LivechatInquiry.js', 'client');
 	api.addFiles('client/collections/livechatOfficeHour.js', 'client');
-	api.addFiles('client/collections/livechatValidDomains.js', 'client');
 
 	api.addFiles('client/methods/changeLivechatStatus.js', 'client');
 
@@ -129,7 +128,6 @@ Package.onUse(function(api) {
 
 	// methods
 	api.addFiles('server/methods/addAgent.js', 'server');
-	api.addFiles('server/methods/addValidDomain.js', 'server');
 	api.addFiles('server/methods/addManager.js', 'server');
 	api.addFiles('server/methods/changeLivechatStatus.js', 'server');
 	api.addFiles('server/methods/closeByVisitor.js', 'server');
@@ -143,7 +141,6 @@ Package.onUse(function(api) {
 	api.addFiles('server/methods/removeAgent.js', 'server');
 	api.addFiles('server/methods/removeCustomField.js', 'server');
 	api.addFiles('server/methods/removeDepartment.js', 'server');
-	api.addFiles('server/methods/removeValidDomain.js', 'server');
 	api.addFiles('server/methods/removeManager.js', 'server');
 	api.addFiles('server/methods/removeTrigger.js', 'server');
 	api.addFiles('server/methods/saveCustomField.js', 'server');
@@ -176,7 +173,6 @@ Package.onUse(function(api) {
 	api.addFiles('server/models/indexes.js', 'server');
 	api.addFiles('server/models/LivechatInquiry.js', 'server');
 	api.addFiles('server/models/LivechatOfficeHour.js', 'server');
-	api.addFiles('server/models/LivechatValidDomains.js', 'server');
 
 	// server lib
 	api.addFiles('server/lib/Livechat.js', 'server');
@@ -202,7 +198,6 @@ Package.onUse(function(api) {
 	api.addFiles('server/publications/visitorPageVisited.js', 'server');
 	api.addFiles('server/publications/livechatInquiries.js', 'server');
 	api.addFiles('server/publications/livechatOfficeHours.js', 'server');
-	api.addFiles('server/publications/LivechatValidDomain.js', 'server');
 
 	// REST endpoints
 	api.addFiles('server/api.js', 'server');
