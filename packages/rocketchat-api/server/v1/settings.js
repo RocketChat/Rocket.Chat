@@ -9,7 +9,7 @@ RocketChat.API.v1.addRoute('settings', { authRequired: true }, {
 		};
 
 		if (!RocketChat.authz.hasPermission(this.userId, 'view-privileged-setting')) {
-			ourQuery.public = { $ne: false };
+			ourQuery.public = true;
 		}
 
 		ourQuery = Object.assign({}, query, ourQuery);
