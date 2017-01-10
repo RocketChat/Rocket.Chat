@@ -524,7 +524,7 @@ class ModelsBaseCache extends EventEmitter {
 		}
 
 		if (fieldsToRemove.length > 0 && fieldsToGet.length > 0) {
-			console.error('Can\'t mix remove and get fields');
+			console.warn('Can\'t mix remove and get fields');
 			fieldsToRemove.splice(0, fieldsToRemove.length);
 		}
 
