@@ -24,6 +24,7 @@ Meteor.methods({
 
 		var attachment = {
 			title: `${TAPi18n.__('Attachment_File_Uploaded')}: ${file.name}`,
+			description: file.description,
 			title_link: fileUrl,
 			title_link_download: true
 		};
