@@ -2,11 +2,6 @@ import toastr from 'toastr'
 TempSettings = new Meteor.Collection null
 RocketChat.TempSettings = TempSettings
 
-updateColorComponent = (input = $('input.minicolors')) ->
-	input.minicolors
-		theme: 'rocketchat'
-		letterCase: 'uppercase'
-
 getDefaultSetting = (settingId) ->
 	return RocketChat.settings.cachedCollectionPrivate.collection.findOne({_id: settingId})
 
@@ -19,15 +14,11 @@ setFieldValue = (settingId, value, type, editor) ->
 		when 'code'
 			input.next()[0].CodeMirror.setValue(value)
 		when 'color'
-			editorColor = editor is 'color'
 			input.parents('.horizontal').find('select[name="color-editor"]').val(editor).change()
 			input.val(value).change()
 
-			if editorColor
-				Meteor.setTimeout ->
-					updateColorComponent(input)
-					input.minicolors('value', value)
-				, 100
+			if editor is 'color'
+				new jscolor(input)
 
 		else
 			input.val(value).change()
@@ -84,14 +75,10 @@ Template.admin.helpers
 		return selected
 
 	group: ->
-		group = FlowRouter.getParam('group')
-		group ?= TempSettings.findOne({ type: 'group' })?._id
-		return TempSettings.findOne { _id: group, type: 'group' }
+		return TempSettings.findOne { _id: FlowRouter.getParam('group'), type: 'group' }
 
 	sections: ->
-		group = FlowRouter.getParam('group')
-		group ?= TempSettings.findOne({ type: 'group' })?._id
-		settings = TempSettings.find({ group: group }, {sort: {section: 1, sorter: 1, i18nLabel: 1}}).fetch()
+		settings = TempSettings.find({ group: FlowRouter.getParam('group') }, {sort: {section: 1, sorter: 1, i18nLabel: 1}}).fetch()
 
 		sections = {}
 		for setting in settings
@@ -299,8 +286,6 @@ Template.admin.events
 			$set:
 				editor: value
 
-		Meteor.setTimeout updateColorComponent, 100
-
 	"click .submit .discard": ->
 		group = FlowRouter.getParam('group')
 
@@ -493,12 +478,12 @@ Template.admin.onRendered ->
 		SideNav.setFlex "adminFlex"
 		SideNav.openFlex()
 
-	Meteor.setTimeout ->
-		updateColorComponent()
-	, 1000
-
 	Tracker.autorun ->
 		FlowRouter.watchPathChange()
-		Meteor.setTimeout ->
-			updateColorComponent()
-		, 400
+
+		hasColor = TempSettings.findOne { group: FlowRouter.getParam('group'), type: 'color' }
+		if hasColor
+			Meteor.setTimeout ->
+				$('.colorpicker-input').each (index, el) ->
+					new jscolor(el)
+			, 400
