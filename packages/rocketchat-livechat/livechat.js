@@ -11,9 +11,15 @@ WebApp.connectHandlers.use('/livechat', Meteor.bindEnvironment((req, res, next) 
 	}
 	res.setHeader('content-type', 'text/html; charset=utf-8');
 
-	if (RocketChat.settings.get('enable_widget_domains')) {
+	var domainWhiteList = RocketChat.settings.get('Livechat_AllowedDomainsList');
+
+	if (!_.isEmpty(domainWhiteList.trim())) {
+		domainWhiteList = _.map(domainWhiteList.split(','), function (domain) {
+			return domain.trim();
+		});
+
 		let d = req.headers.referer.match(/^(?:https?:\/\/)?(?:www\.)?([^\/]+)/)[1];
-		if (RocketChat.models.LivechatValidDomains.findOneByDomain(d) === undefined) {
+		if (!_.contains(domainWhiteList, d)) {
 			res.setHeader('X-FRAME-OPTIONS', 'DENY');
 			return next();
 		}
