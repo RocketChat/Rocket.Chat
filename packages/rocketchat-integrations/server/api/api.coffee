@@ -50,7 +50,10 @@ Api = new Restivus
 	apiPath: 'hooks/'
 	auth:
 		user: ->
-			if @bodyParams?.payload?
+			payloadKeys = Object.keys @bodyParams
+			payloadIsWrapped = @bodyParams?.payload? and payloadKeys.length == 1
+
+			if payloadIsWrapped and @request.headers['content-type'] is 'application/x-www-form-urlencoded'
 				@bodyParams = JSON.parse @bodyParams.payload
 
 			@integration = RocketChat.models.Integrations.findOne
@@ -236,17 +239,6 @@ integrationInfoRest = ->
 		statusCode: 200
 		body:
 			success: true
-
-
-RocketChat.API.v1.addRoute 'integrations.create', authRequired: true,
-	post: ->
-		return createIntegration @bodyParams, @user
-
-
-RocketChat.API.v1.addRoute 'integrations.remove', authRequired: true,
-	post: ->
-		return removeIntegration @bodyParams, @user
-
 
 Api.addRoute ':integrationId/:userId/:token', authRequired: true, {post: executeIntegrationRest, get: executeIntegrationRest}
 Api.addRoute ':integrationId/:token', authRequired: true, {post: executeIntegrationRest, get: executeIntegrationRest}

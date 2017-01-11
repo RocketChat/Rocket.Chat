@@ -6,15 +6,9 @@
 	var hookQueue = [];
 	var ready = false;
 
-	var closeWidget = function() {
-		widget.dataset.state = 'closed';
-		widget.style.height = '30px';
-	};
-
-	var openWidget = function() {
-		widget.dataset.state = 'opened';
-		widget.style.height = '300px';
-	};
+	var widgetWidth = '320px';
+	var widgetHeightOpened = '350px';
+	var widgetHeightClosed = '30px';
 
 	// hooks
 	var callHook = function(action, params) {
@@ -27,6 +21,19 @@
 			args: params
 		};
 		iframe.contentWindow.postMessage(data, '*');
+	};
+
+	var closeWidget = function() {
+		widget.dataset.state = 'closed';
+		widget.style.height = widgetHeightClosed;
+		callHook('widgetClosed');
+	};
+
+	var openWidget = function() {
+		widget.dataset.state = 'opened';
+		widget.style.height = widgetHeightOpened;
+		callHook('widgetOpened');
+		document.querySelector('.rocketchat-widget iframe').focus();
 	};
 
 	var api = {
@@ -75,6 +82,14 @@
 		callHook('setTheme', theme);
 	};
 
+	var setDepartment = function(department) {
+		callHook('setDepartment', department);
+	};
+
+	var clearDepartment = function() {
+		callHook('clearDepartment');
+	};
+
 	var currentPage = {
 		href: null,
 		title: null
@@ -107,8 +122,8 @@
 								'</div><div class="rocketchat-overlay"></div>';
 
 		chatWidget.style.position = 'fixed';
-		chatWidget.style.width = '300px';
-		chatWidget.style.height = '30px';
+		chatWidget.style.width = widgetWidth;
+		chatWidget.style.height = widgetHeightClosed;
 		chatWidget.style.borderTopLeftRadius = '5px';
 		chatWidget.style.borderTopRightRadius = '5px';
 		chatWidget.style.bottom = '0';
@@ -137,7 +152,7 @@
 			} else {
 				chatWidget.style.left = 'auto';
 				chatWidget.style.right = '50px';
-				chatWidget.style.width = '300px';
+				chatWidget.style.width = widgetWidth;
 			}
 		};
 
@@ -168,7 +183,9 @@
 	w.RocketChat.livechat = {
 		pageVisited: pageVisited,
 		setCustomField: setCustomField,
-		setTheme: setTheme
+		setTheme: setTheme,
+		setDepartment: setDepartment,
+		clearDepartment: clearDepartment
 	};
 
 	// proccess queue

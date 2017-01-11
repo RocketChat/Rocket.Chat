@@ -1,11 +1,11 @@
 <template name="messageBox">
 	{{#if subscribed}}
-		<form class="message-form" method="post" action="/">
+		<form class="message-form secondary-font-color" method="post" action="/">
 			{{> messagePopupConfig getPopupConfig}}
 			{{#if allowedToSend}}
-			<div class="message-input">
-				<div class="input-message-container">
-					<textarea dir="auto" name="msg" maxlength="{{maxMessageLength}}" class="input-message autogrow-short" placeholder="{{_ 'Message'}}"></textarea>
+			<div class="message-input border-component-color">
+				<div class="input-message-container content-background-color">
+					<textarea dir="auto" name="msg" maxlength="{{maxMessageLength}}" class="message-form-text input-message autogrow-short" placeholder="{{_ 'Message'}}"></textarea>
 
 					<div class="inner-left-toolbar">
 						<i class="emoji-picker-icon icon-people"></i>
@@ -59,7 +59,11 @@
 			</div>
 			{{else}}
 			<div class="stream-info">
-				{{_ "room_is_read_only"}}
+				{{#if isBlockedOrBlocker}}
+					{{_ "room_is_blocked"}}
+				{{else}}
+					{{_ "room_is_read_only"}}
+				{{/if}}
 			</div>
 			{{/if}}
 			<div class="stream-info">
@@ -89,8 +93,8 @@
 					<span>~<strike>{{_ "strike"}}</strike>~</span>
 					{{/if}}
 					{{#if showMarkdownCode}}
-					<code class="inline">`{{_ "inline_code"}}`</code>
-					<code class="inline"><span class="hidden-br"><br></span>```<span class="hidden-br"><br></span><i class="icon-level-down"></i>{{_ "multi"}}<span class="hidden-br"><br></span><i class="icon-level-down"></i>{{_ "line"}}<span class="hidden-br"><br></span><i class="icon-level-down"></i>```</code>
+					<code class="code-colors inline">`{{_ "inline_code"}}`</code>
+					<code class="code-colors inline"><span class="hidden-br"><br></span>```<span class="hidden-br"><br></span><i class="icon-level-down"></i>{{_ "multi"}}<span class="hidden-br"><br></span><i class="icon-level-down"></i>{{_ "line"}}<span class="hidden-br"><br></span><i class="icon-level-down"></i>```</code>
 					{{/if}}
 					{{#if katexSyntax}}
 					<span><a href="https://github.com/Khan/KaTeX/wiki/Function-Support-in-KaTeX" target="_blank">{{katexSyntax}}</a></span>

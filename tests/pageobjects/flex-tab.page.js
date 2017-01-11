@@ -67,14 +67,36 @@ class FlexTab extends Page {
 	get sweetAlertOverlay() { return browser.element('.sweet-overlay'); }
 	get toastAlert() { return browser.element('.toast'); }
 
+	//admin view flextab items
+	get usersSendInvitationTab() { return browser.element('[aria-label="Invite Users"] .icon-paper-plane'); }
+	get usersAddUserTab() { return browser.element('[aria-label="Add User"] .icon-plus'); }
+	get usersSendInvitationTextArea() { return browser.element('#inviteEmails'); }
+	get usersButtonCancel() { return browser.element('button.cancel'); }
+	get usersSendInvitationSend() { return browser.element('button.send'); }
+	get usersButtonSave() { return browser.element('button.save'); }
+	get usersAddUserName() { return browser.element('#name'); }
+	get usersAddUserUsername() { return browser.element('#username'); }
+	get usersAddUserEmail() { return browser.element('#email'); }
+	get usersAddUserPassword() { return browser.element('#password'); }
+	get usersAddUserRole() { return browser.element('#role'); }
+	get usersAddUserVerifiedCheckbox() { return browser.element('#verified'); }
+	get usersAddUserChangePasswordCheckbox() { return browser.element('#changePassword'); }
+	get usersAddUserDefaultChannelCheckbox() { return browser.element('#joinDefaultChannels'); }
+	get usersAddUserWelcomeEmailCheckbox() { return browser.element('#sendWelcomeEmail'); }
+	get usersAddUserRandomPassword() { return browser.element('#randomPassword'); }
+	get emojiNewAliases() { return browser.element('#aliases'); }
+	get emojiNewImageInput() { return browser.element('#image'); }
+
+	getUserEl(username) { return browser.element(`.flex-tab button[title="${username}"] > p`); }
+
 	confirmPopup() {
+		this.confirmBtn.waitForVisible(5000);
 		this.confirmBtn.click();
 		this.sweetAlertOverlay.waitForVisible(5000, true);
 	}
 
 	dismissToast() {
 		this.toastAlert.click();
-		browser.pause(4000);
 	}
 
 	archiveChannel() {
@@ -93,38 +115,43 @@ class FlexTab extends Page {
 	}
 
 	removePeopleFromChannel(user) {
-		const userEl = browser.element('.flex-tab button[title="'+user+'"]');
+		const userEl = this.getUserEl(user);
 		userEl.waitForVisible();
 		userEl.click();
-		browser.pause(300);
 		this.removeUserBtn.click();
 	}
 
 	setUserOwner(user) {
-		const userEl = browser.element('.flex-tab button[title="'+user+'"]');
+		const userEl = this.getUserEl(user);
 		userEl.waitForVisible();
 		userEl.click();
-		browser.pause(300);
 		this.setOwnerBtn.waitForVisible(5000);
 		this.setOwnerBtn.click();
 		this.viewAllBtn.click();
+		browser.pause(100);
 	}
 
 	setUserModerator(user) {
-		const userEl = browser.element('.flex-tab button[title="'+user+'"]');
+		const userEl = this.getUserEl(user);
 		userEl.waitForVisible();
 		userEl.click();
-		browser.pause(300);
+		this.setModeratorBtn.waitForVisible();
 		this.setModeratorBtn.click();
 		this.viewAllBtn.click();
+		browser.pause(100);
 	}
 
 	muteUser(user) {
-		const userEl = browser.element('.flex-tab button[title="'+user+'"]');
-		userEl.waitForVisible();
-		userEl.click();
-		browser.pause(300);
-		this.muteUserBtn.click();
+		const userEl = this.getUserEl(user);
+		if (this.showAll.isVisible()) {
+			this.muteUserBtn.waitForVisible(5000);
+			this.muteUserBtn.click();
+		} else {
+			userEl.waitForVisible(5000);
+			userEl.click();
+			this.muteUserBtn.waitForVisible(5000);
+			this.muteUserBtn.click();
+		}
 	}
 }
 

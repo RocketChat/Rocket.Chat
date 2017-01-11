@@ -9,7 +9,8 @@ Template.chatRoomItem.helpers
 			return this.unread
 
 	userStatus: ->
-		return 'status-' + (Session.get('user_' + this.name + '_status') or 'offline') if this.t is 'd'
+		userStatus = RocketChat.roomTypes.getUserStatus(this.t, this.rid);
+		return 'status-' + (userStatus or 'offline')
 
 	name: ->
 		return this.name

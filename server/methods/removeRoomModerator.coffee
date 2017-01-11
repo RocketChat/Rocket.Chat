@@ -10,13 +10,20 @@ Meteor.methods
 		unless RocketChat.authz.hasPermission Meteor.userId(), 'set-moderator', rid
 			throw new Meteor.Error 'error-not-allowed', 'Not allowed', { method: 'removeRoomModerator' }
 
-		subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId rid, userId
+		user = RocketChat.models.Users.findOneById userId
+
+		unless user?.username
+			throw new Meteor.Error 'error-invalid-user', 'Invalid user', { method: 'removeRoomModerator' }
+
+		subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId rid, user._id
 		unless subscription?
 			throw new Meteor.Error 'error-invalid-room', 'Invalid room', { method: 'removeRoomModerator' }
 
+		if 'moderator' not in (subscription.roles or [])
+			throw new Meteor.Error 'error-user-not-moderator', 'User is not a moderator', { method: 'removeRoomModerator' }
+
 		RocketChat.models.Subscriptions.removeRoleById(subscription._id, 'moderator')
 
-		user = RocketChat.models.Users.findOneById userId
 		fromUser = RocketChat.models.Users.findOneById Meteor.userId()
 		RocketChat.models.Messages.createSubscriptionRoleRemovedWithRoomIdAndUser rid, user,
 			u:

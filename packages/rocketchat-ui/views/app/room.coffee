@@ -18,7 +18,7 @@ Template.room.helpers
 
 	favorite: ->
 		sub = ChatSubscription.findOne { rid: this._id }, { fields: { f: 1 } }
-		return 'icon-star favorite-room' if sub?.f? and sub.f and favoritesEnabled()
+		return 'icon-star favorite-room pending-color' if sub?.f? and sub.f and favoritesEnabled()
 		return 'icon-star-empty'
 
 	favoriteLabel: ->
@@ -93,14 +93,7 @@ Template.room.helpers
 
 	userStatus: ->
 		roomData = Session.get('roomData' + this._id)
-
-		return {} unless roomData
-
-		if roomData.t in ['d', 'l']
-			subscription = RocketChat.models.Subscriptions.findOne({rid: this._id});
-			return Session.get('user_' + subscription.name + '_status') || 'offline'
-		else
-			return 'offline'
+		return RocketChat.roomTypes.getUserStatus(roomData.t, this._id) or 'offline'
 
 	flexOpened: ->
 		return 'opened' if RocketChat.TabBar.isFlexOpen()
@@ -127,7 +120,10 @@ Template.room.helpers
 		return moment(this.since).calendar(null, {sameDay: 'LT'})
 
 	flexTemplate: ->
-		return RocketChat.TabBar.getTemplate()
+		if Session.get('openedRoom') is this._id
+			return RocketChat.TabBar.getTemplate()
+
+		return ''
 
 	flexData: ->
 		return _.extend {
@@ -579,13 +575,13 @@ Template.room.onRendered ->
 	template.isAtBottom = (scrollThreshold) ->
 		if not scrollThreshold? then scrollThreshold = 0
 		if wrapper.scrollTop + scrollThreshold >= wrapper.scrollHeight - wrapper.clientHeight
-			newMessage.className = "new-message not"
+			newMessage.className = "new-message background-primary-action-color not"
 			return true
 		return false
 
 	template.sendToBottom = ->
 		wrapper.scrollTop = wrapper.scrollHeight - wrapper.clientHeight
-		newMessage.className = "new-message not"
+		newMessage.className = "new-message background-primary-action-color not"
 
 	template.checkIfScrollIsAtBottom = ->
 		template.atBottom = template.isAtBottom(100)

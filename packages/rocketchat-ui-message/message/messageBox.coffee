@@ -40,10 +40,17 @@ Template.messageBox.helpers
 
 		roomData = Session.get('roomData' + this._id)
 		if roomData?.t is 'd'
-			if ChatSubscription.findOne({ rid: this._id }, { fields: { archived: 1 } })?.archived
+			subscription = ChatSubscription.findOne({ rid: this._id }, { fields: { archived: 1, blocked: 1, blocker: 1 } })
+			if subscription and (subscription.archived or subscription.blocked or subscription.blocker)
 				return false
 
 		return true
+	isBlockedOrBlocker: ->
+		roomData = Session.get('roomData' + this._id)
+		if roomData?.t is 'd'
+			subscription = ChatSubscription.findOne({ rid: this._id }, { fields: { blocked: 1, blocker: 1 } })
+			if subscription and (subscription.blocked or subscription.blocker)
+				return true
 
 	getPopupConfig: ->
 		template = Template.instance()
@@ -105,7 +112,7 @@ Template.messageBox.helpers
 		return RocketChat.roomTypes.getNotSubscribedTpl @_id
 
 	showSandstorm: ->
-		return Meteor.settings.public.sandstorm
+		return Meteor.settings.public.sandstorm && !Meteor.isCordova
 
 
 Template.messageBox.events
@@ -191,7 +198,7 @@ Template.messageBox.events
 
 		fileUpload filesToUpload
 
-	'click .message-form .geo-location': (event, instance) ->
+	'click .message-form .message-buttons.location': (event, instance) ->
 		roomId = @_id
 
 		position = RocketChat.Geolocation.get()

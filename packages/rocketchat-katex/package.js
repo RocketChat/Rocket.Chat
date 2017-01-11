@@ -15,7 +15,6 @@ Package.onUse(function(api) {
 
 	api.addFiles('settings.coffee', 'server');
 	api.addFiles('katex.coffee');
-	api.addFiles('client/katex/katex.min.js', 'client');
 	api.addFiles('client/katex/katex.min.css', 'client');
 	api.addFiles('client/style.css', 'client');
 

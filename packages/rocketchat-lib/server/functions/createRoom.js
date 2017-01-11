@@ -54,7 +54,7 @@ RocketChat.createRoom = function(type, name, owner, members, readOnly) {
 		});
 	}
 
-	room = RocketChat.models.Rooms.createWithTypeNameUserAndUsernames(type, name, owner.username, members, {
+	room = RocketChat.models.Rooms.createWithTypeNameUserAndUsernames(type, name, owner, members, {
 		ts: now,
 		ro: readOnly === true,
 		sysMes: readOnly !== true

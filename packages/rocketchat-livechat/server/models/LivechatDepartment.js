@@ -4,6 +4,11 @@
 class LivechatDepartment extends RocketChat.models._Base {
 	constructor() {
 		super('livechat_department');
+
+		this.tryEnsureIndex({
+			numAgents: 1,
+			enabled: 1
+		});
 	}
 
 	// FIND
@@ -19,17 +24,16 @@ class LivechatDepartment extends RocketChat.models._Base {
 		return this.find(query, options);
 	}
 
-	createOrUpdateDepartment(_id, enabled, name, description, agents, extraData) {
+	createOrUpdateDepartment(_id, { enabled, name, description, showOnRegistration }, agents) {
 		agents = [].concat(agents);
 
 		var record = {
 			enabled: enabled,
 			name: name,
 			description: description,
-			numAgents: agents.length
+			numAgents: agents.length,
+			showOnRegistration: showOnRegistration
 		};
-
-		_.extend(record, extraData);
 
 		if (_id) {
 			this.update({ _id: _id }, { $set: record });

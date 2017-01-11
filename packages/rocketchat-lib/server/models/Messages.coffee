@@ -89,6 +89,16 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base
 
 		return @find query, options
 
+	findVisibleByRoomIdBeforeTimestampInclusive: (roomId, timestamp, options) ->
+		query =
+			_hidden:
+				$ne: true
+			rid: roomId
+			ts:
+				$lte: timestamp
+
+		return @find query, options
+
 	findVisibleByRoomIdBetweenTimestamps: (roomId, afterTimestamp, beforeTimestamp, options) ->
 		query =
 			_hidden:
@@ -97,6 +107,17 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base
 			ts:
 				$gt: afterTimestamp
 				$lt: beforeTimestamp
+
+		return @find query, options
+
+	findVisibleByRoomIdBetweenTimestampsInclusive: (roomId, afterTimestamp, beforeTimestamp, options) ->
+		query =
+			_hidden:
+				$ne: true
+			rid: roomId
+			ts:
+				$gte: afterTimestamp
+				$lte: beforeTimestamp
 
 		return @find query, options
 
@@ -189,6 +210,12 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base
 
 		return @findOne query
 
+	findOneBySlackTs: (slackTs) ->
+		query =
+			slackTs: slackTs
+
+		return @findOne query
+
 	cloneAndSaveAsHistoryById: (_id) ->
 		me = RocketChat.models.Users.findOneById Meteor.userId()
 		record = @findOneById _id
@@ -223,6 +250,7 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base
 				urls: []
 				mentions: []
 				attachments: []
+				reactions: []
 				editedAt: new Date()
 				editedBy:
 					_id: user._id

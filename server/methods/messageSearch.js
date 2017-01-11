@@ -148,7 +148,7 @@ Meteor.methods({
 		text = text.replace(/after:(\d{1,2})[\/\.-](\d{1,2})[\/\.-](\d{4})/g, filterAfterDate);
 		text = text.replace(/on:(\d{1,2})[\/\.-](\d{1,2})[\/\.-](\d{4})/g, filterOnDate);
 		// Sort order
-		text = text.replace(/(?:order|sort):(asc|ascend|ascending|desc|descend|descening)/g, sortByTimestamp);
+		text = text.replace(/(?:order|sort):(asc|ascend|ascending|desc|descend|descending)/g, sortByTimestamp);
 
 		// Query in message text
 		text = text.trim().replace(/\s\s/g, ' ');

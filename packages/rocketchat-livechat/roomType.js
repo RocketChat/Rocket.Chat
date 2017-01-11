@@ -1,4 +1,4 @@
-/* globals openRoom */
+/* globals openRoom, LivechatInquiry */
 
 RocketChat.roomTypes.add('l', 5, {
 	template: 'livechat',
@@ -36,6 +36,22 @@ RocketChat.roomTypes.add('l', 5, {
 	canSendMessage(roomId) {
 		let room = ChatRoom.findOne({ _id: roomId }, { fields: { open: 1 } });
 		return room && room.open === true;
+	},
+
+	getUserStatus(roomId) {
+		let guestName;
+		const room = Session.get('roomData' + roomId);
+
+		if (room) {
+			guestName = room.v && room.v.username;
+		} else {
+			const inquiry = LivechatInquiry.findOne({ rid: roomId });
+			guestName = inquiry && inquiry.v && inquiry.v.username;
+		}
+
+		if (guestName) {
+			return Session.get('user_' + guestName + '_status');
+		}
 	},
 
 	notSubscribedTpl: {

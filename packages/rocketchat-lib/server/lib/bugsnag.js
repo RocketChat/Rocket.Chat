@@ -12,7 +12,10 @@ const notify = function(message, stack) {
 	if (typeof stack === 'string') {
 		message += ' ' + stack;
 	}
-	const options = { app: { version: RocketChat.Info.version, info: RocketChat.Info } };
+	let options = {};
+	if (RocketChat.Info) {
+		options = { app: { version: RocketChat.Info.version, info: RocketChat.Info } };
+	}
 	const error = new Error(message);
 	error.stack = stack;
 	RocketChat.bugsnag.notify(error, options);
@@ -20,6 +23,7 @@ const notify = function(message, stack) {
 
 process.on('uncaughtException', Meteor.bindEnvironment((error) => {
 	notify(error.message, error.stack);
+	throw error;
 }));
 
 let originalMeteorDebug = Meteor._debug;
