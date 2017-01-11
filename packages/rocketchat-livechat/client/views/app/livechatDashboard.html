@@ -1,3 +1,5 @@
 <template name="livechatDashboard">
-	<h1>Dashboard</h1>
+	{{#requiresPermission 'view-livechat-manager'}}
+		<h1>Dashboard</h1>
+	{{/requiresPermission}}
 </template>

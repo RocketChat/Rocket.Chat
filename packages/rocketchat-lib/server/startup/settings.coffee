@@ -41,6 +41,7 @@ RocketChat.settings.addGroup 'Accounts', ->
 		@add 'Accounts_AvatarSize', 200, { type: 'int', enableQuery: {_id: 'Accounts_AvatarResize', value: true} }
 		@add 'Accounts_AvatarStoreType', 'GridFS', { type: 'select', values: [ { key: 'GridFS', i18nLabel: 'GridFS' }, { key: 'FileSystem', i18nLabel: 'FileSystem' } ] }
 		@add 'Accounts_AvatarStorePath', '', { type: 'string', enableQuery: {_id: 'Accounts_AvatarStoreType', value: 'FileSystem'} }
+		@add 'Accounts_SetDefaultAvatar', true, { type: 'boolean' }
 
 RocketChat.settings.addGroup 'OAuth', ->
 
@@ -94,11 +95,11 @@ RocketChat.settings.addGroup 'General', ->
 	@add 'Language', '', { type: 'language', public: true }
 	@add 'Allow_Invalid_SelfSigned_Certs', false, { type: 'boolean' }
 	@add 'Favorite_Rooms', true, { type: 'boolean', public: true }
-	@add 'CDN_PREFIX', '', { type: 'string' }
+	@add 'CDN_PREFIX', '', { type: 'string', public: true }
 	@add 'Force_SSL', false, { type: 'boolean', public: true }
 	@add 'GoogleTagManager_id', '', { type: 'string', public: true }
-	@add 'GoogleSiteVerification_id', '', { type: 'string', public: false }
 	@add 'Bugsnag_api_key', '', { type: 'string', public: false }
+	@add 'Force_Disable_OpLog_For_Cache', false, { type: 'boolean', public: false }
 	@add 'Restart', 'restart_server', { type: 'action', actionText: 'Restart_the_server' }
 
 	@section 'UTF8', ->
@@ -201,9 +202,10 @@ RocketChat.settings.addGroup 'Message', ->
 RocketChat.settings.addGroup 'Meta', ->
 	@add 'Meta_language', '', { type: 'string' }
 	@add 'Meta_fb_app_id', '', { type: 'string' }
-	@add 'Meta_robots', '', { type: 'string' }
+	@add 'Meta_robots', 'INDEX,FOLLOW', { type: 'string' }
 	@add 'Meta_google-site-verification', '', { type: 'string' }
 	@add 'Meta_msvalidate01', '', { type: 'string' }
+	@add 'Meta_custom', '', { type: 'code', code: 'text/html', multiline: true }
 
 
 RocketChat.settings.addGroup 'Push', ->

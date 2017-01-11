@@ -18,15 +18,35 @@ this.Livechat = new (class Livechat {
 		this._offlineSuccessMessage = new ReactiveVar(TAPi18n.__('Thanks_We_ll_get_back_to_you_soon'));
 		this._videoCall = new ReactiveVar(false);
 		this._transcriptMessage = new ReactiveVar('');
-
+		this._connecting = new ReactiveVar(false);
 		this._room = new ReactiveVar(null);
+		this._department = new ReactiveVar(null);
+		this._widgetOpened = new ReactiveVar(false);
+		this._ready = new ReactiveVar(false);
+		this._agent = new ReactiveVar();
 
-		Tracker.autorun((c) => {
+		this.stream = new Meteor.Streamer('livechat-room');
+
+		Tracker.autorun(() => {
 			if (this._room.get() && Meteor.userId()) {
 				RoomHistoryManager.getMoreIfIsEmpty(this._room.get());
 				visitor.subscribeToRoom(this._room.get());
 				visitor.setRoom(this._room.get());
-				c.stop();
+
+				Meteor.call('livechat:getAgentData', this._room.get(), (error, result) => {
+					if (!error) {
+						this._agent.set(result);
+					}
+				});
+				this.stream.on(this._room.get(), (eventData) => {
+					if (!eventData || !eventData.type) {
+						return;
+					}
+
+					if (eventData.type === 'agentData') {
+						this._agent.set(eventData.data);
+					}
+				});
 			}
 		});
 	}
@@ -70,6 +90,15 @@ this.Livechat = new (class Livechat {
 	get transcriptMessage() {
 		return this._transcriptMessage.get();
 	}
+	get department() {
+		return this._department.get();
+	}
+	get connecting() {
+		return this._connecting.get();
+	}
+	get agent() {
+		return this._agent.get();
+	}
 
 	set online(value) {
 		this._online.set(value);
@@ -92,7 +121,6 @@ this.Livechat = new (class Livechat {
 	set offlineSuccessMessage(value) {
 		this._offlineSuccessMessage.set(value);
 	}
-
 	set customColor(value) {
 		this._customColor.set(value);
 	}
@@ -102,7 +130,6 @@ this.Livechat = new (class Livechat {
 	set offlineColor(value) {
 		this._offlineColor.set(value);
 	}
-
 	set customFontColor(value) {
 		this._customFontColor.set(value);
 	}
@@ -118,8 +145,40 @@ this.Livechat = new (class Livechat {
 	set transcriptMessage(value) {
 		this._transcriptMessage.set(value);
 	}
-
+	set connecting(value) {
+		this._connecting.set(value);
+	}
 	set room(roomId) {
 		this._room.set(roomId);
+	}
+	set department(departmentId) {
+		const dept = Department.findOne({ _id: departmentId }) || Department.findOne({ name: departmentId });
+
+		if (dept) {
+			this._department.set(dept._id);
+		}
+	}
+	set agent(agentData) {
+		this._agent.set(agentData);
+	}
+
+	ready() {
+		this._ready.set(true);
+	}
+
+	isReady() {
+		return this._ready.get();
+	}
+
+	setWidgetOpened() {
+		return this._widgetOpened.set(true);
+	}
+
+	setWidgetClosed() {
+		return this._widgetOpened.set(false);
+	}
+
+	isWidgetOpened() {
+		return this._widgetOpened.get();
 	}
 })();

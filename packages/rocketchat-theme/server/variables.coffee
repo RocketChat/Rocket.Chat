@@ -9,10 +9,12 @@
 # New colors, used for shades on solid backgrounds
 # Defined range of transparencies reduces random colour variances
 alphaColors=
+  'transparent-darkest': 'rgba(0,0,0,0.5)'
   'transparent-darker': 'rgba(0,0,0,0.15)'
-  'transparent-dark': 'rgba(0,0,0,0.03)'
-  'transparent-light': 'rgba(255,255,255,0.60)'
-  'transparent-lighter': 'rgba(255,255,255,0.25)'
+  'transparent-dark': 'rgba(0,0,0,0.05)'
+  'transparent-light': 'rgba(255,255,255,0.10)'
+  'transparent-lighter': 'rgba(255,255,255,0.30)'
+  'transparent-lightest': 'rgba(255,255,255,0.60)'
 
 # Major colors form the core of the scheme
 # Names changed to reflect usage, comments show pre-refactor names
@@ -23,20 +25,21 @@ majorColors=
   'primary-action-color': '#13679A' # was action-buttons-color
   'secondary-background-color': '#F4F4F4'
   'secondary-font-color': '#A0A0A0'
-  'secondary-action-color': '#E5E5E5'
+  'secondary-action-color': '#DDDDDD'
   'component-color': '#EAEAEA'
   'success-color': '#1DCE73'
   'pending-color': '#FCB316'
   'error-color': '#BC2031'
-  'selection-color': '#02ACEC'
+  'selection-color': '#02ACEC',
+  'attention-color': '#9C27B0'
 
 # Minor colours implement major colours by default, but can be overruled
 minorColors=
   'tertiary-background-color': '@component-color'
-  'tertiary-font-color': '@transparent-light'
+  'tertiary-font-color': '@transparent-lightest'
   'link-font-color': '@primary-action-color'
   'info-font-color': '@secondary-font-color'
-  'custom-scrollbar-color': '@transparent-dark'
+  'custom-scrollbar-color': '@transparent-darker'
   'status-online': '@success-color'
   'status-away': '@pending-color'
   'status-busy': '@error-color'
@@ -45,8 +48,6 @@ minorColors=
 # Bulk-add settings for color scheme
 for key, value of majorColors
   RocketChat.theme.addPublicColor key, value, 'Colors'
-for key, value of alphaColors
-  RocketChat.theme.addPublicColor key, value, 'Colors (alphas)'
 for key, value of minorColors
   RocketChat.theme.addPublicColor key, value, 'Colors (minor)', 'expression'
 

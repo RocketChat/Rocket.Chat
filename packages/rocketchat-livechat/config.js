@@ -14,6 +14,14 @@ Meteor.startup(function() {
 		i18nLabel: 'Display_offline_form'
 	});
 
+	RocketChat.settings.add('Livechat_validate_offline_email', true, {
+		type: 'boolean',
+		group: 'Livechat',
+		public: true,
+		section: 'Offline',
+		i18nLabel: 'Validate_email_address'
+	});
+
 	RocketChat.settings.add('Livechat_offline_form_unavailable', '', {
 		type: 'string',
 		group: 'Livechat',
@@ -184,7 +192,7 @@ Meteor.startup(function() {
 		type: 'boolean',
 		group: 'Livechat',
 		public: true,
-		i18nLabel: 'Office_Hours_Enabled'
+		i18nLabel: 'Office_hours_enabled'
 	});
 
 	RocketChat.settings.add('Livechat_videocall_enabled', false, {
@@ -211,4 +219,19 @@ Meteor.startup(function() {
 		enableQuery: { _id: 'Livechat_enable_transcript', value: true }
 	});
 
+	RocketChat.settings.add('Livechat_open_inquiery_show_connecting', false, {
+		type: 'boolean',
+		group: 'Livechat',
+		public: true,
+		i18nLabel: 'Livechat_open_inquiery_show_connecting',
+		enableQuery: { _id: 'Livechat_Routing_Method', value: 'Guest_Pool' }
+	});
+
+	RocketChat.settings.add('Livechat_AllowedDomainsList', '', {
+		type: 'string',
+		group: 'Livechat',
+		public: true,
+		i18nLabel: 'Livechat_AllowedDomainsList',
+		i18nDescription: 'Domains_allowed_to_embed_the_livechat_widget'
+	});
 });

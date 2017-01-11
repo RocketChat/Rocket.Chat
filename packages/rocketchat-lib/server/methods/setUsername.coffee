@@ -1,5 +1,5 @@
 Meteor.methods
-	setUsername: (username) ->
+	setUsername: (username, {joinDefaultChannelsSilenced}={}) ->
 
 		check username, String
 
@@ -32,6 +32,10 @@ Meteor.methods
 
 		unless RocketChat.setUsername user._id, username
 			throw new Meteor.Error 'error-could-not-change-username', "Could not change username", { method: 'setUsername' }
+
+		if not user.username?
+			Meteor.runAsUser user._id, ->
+				Meteor.call('joinDefaultChannels', joinDefaultChannelsSilenced)
 
 		return username
 

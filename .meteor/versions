@@ -13,7 +13,7 @@ babel-compiler@6.13.0
 babel-runtime@1.0.1
 base64@1.0.10
 binary-heap@1.0.10
-blaze@2.2.0
+blaze@2.2.1
 blaze-html-templates@1.0.5
 blaze-tools@1.0.10
 boilerplate-generator@1.0.11
@@ -62,7 +62,7 @@ kadira:flow-router@2.12.1
 kenton:accounts-sandstorm@0.5.1
 konecty:change-case@2.3.0
 konecty:delayed-task@1.0.0
-konecty:mongo-counter@0.0.5_2
+konecty:mongo-counter@0.0.5_3
 konecty:multiple-instances-status@1.0.6_1
 konecty:nrr@2.0.2
 konecty:user-presence@1.2.9
@@ -86,7 +86,7 @@ mizzao:timesync@0.3.4
 mobile-experience@1.0.4
 mobile-status-bar@1.0.13
 modules@0.7.7
-modules-runtime@0.7.7
+modules-runtime@0.7.8
 mongo@1.1.14
 mongo-id@1.0.6
 mongo-livedata@1.0.12
@@ -95,7 +95,7 @@ mystor:device-detection@0.2.0
 nimble:restivus@0.8.11
 nooitaf:colors@1.1.2_1
 npm-bcrypt@0.9.2
-npm-mongo@2.2.11_2
+npm-mongo@2.2.16_1
 oauth@1.1.12
 oauth1@1.1.11
 oauth2@1.1.11
@@ -106,9 +106,7 @@ pauli:accounts-linkedin@1.3.1
 pauli:linkedin@1.3.1
 peerlibrary:aws-sdk@2.4.9_1
 peerlibrary:blocking@0.5.2
-perak:codemirror@1.3.1
 percolate:synced-cron@1.3.2
-pntbr:js-yaml-client@0.0.1
 promise@0.8.8
 raix:eventemitter@0.1.3
 raix:eventstate@0.0.4
@@ -149,6 +147,7 @@ rocketchat:iframe-login@1.0.0
 rocketchat:importer@0.0.1
 rocketchat:importer-csv@1.0.0
 rocketchat:importer-hipchat@0.0.1
+rocketchat:importer-hipchat-enterprise@1.0.0
 rocketchat:importer-slack@0.0.1
 rocketchat:integrations@0.0.1
 rocketchat:internal-hubot@0.0.1
@@ -170,7 +169,7 @@ rocketchat:message-pin@0.0.1
 rocketchat:message-snippet@0.0.1
 rocketchat:message-star@0.0.1
 rocketchat:migrations@0.0.1
-rocketchat:oauth2-server@1.4.0
+rocketchat:oauth2-server@2.0.0
 rocketchat:oauth2-server-config@1.0.0
 rocketchat:oembed@0.0.1
 rocketchat:otr@0.0.1

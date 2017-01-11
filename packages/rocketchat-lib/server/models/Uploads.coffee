@@ -25,6 +25,7 @@ RocketChat.models.Uploads = new class extends RocketChat.models._Base
 				userId: 1
 				rid: 1
 				name: 1
+				description: 1
 				type: 1
 				url: 1
 				uploadedAt: 1
