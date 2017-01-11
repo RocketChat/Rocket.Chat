@@ -14,11 +14,16 @@ class MainContent extends Page {
 	get emojiBtn() { return browser.element('.inner-left-toolbar .emoji-picker-icon'); }
 	get channelTitle() { return browser.element('.room-title'); }
 	get popupFileConfirmBtn() { return browser.element('.sa-confirm-button-container .confirm'); }
+	get popupFileName() { return browser.element('#file-name'); }
+	get popupFileDescription() { return browser.element('#file-description'); }
+	get popupFileConfirmBtn() { return browser.element('.sa-confirm-button-container .confirm'); }
 	get popupFilePreview() { return browser.element('.upload-preview-file'); }
 	get popupFileTitle() { return browser.element('.upload-preview-title'); }
 	get popupFileCancelBtn() { return browser.element('.sa-button-container .cancel'); }
 	get lastMessageUser() { return browser.element('.message:last-child .user-card-message:nth-of-type(2)'); }
 	get lastMessage() { return browser.element('.message:last-child .body'); }
+	get lastMessageImg() { return browser.element('.message:last-child .body .inline-image'); }
+	get lastMessageDesc() { return browser.element('.message:last-child .body .attachment-description p'); }
 	get lastMessageRoleAdded() { return browser.element('.message:last-child.subscription-role-added .body'); }
 	get beforeLastMessage() { return browser.element('.message:nth-last-child(2) .body'); }
 	get lastMessageUserTag() { return browser.element('.message:last-child .role-tag'); }
