@@ -237,7 +237,7 @@ class ModelRooms extends RocketChat.models._Base
 
 		return @find query, options
 
-	findByTypeContainigUsernames: (type, username, options) ->
+	findByTypeContainingUsernames: (type, username, options) ->
 		query =
 			t: type
 			usernames: { $all: [].concat(username) }
