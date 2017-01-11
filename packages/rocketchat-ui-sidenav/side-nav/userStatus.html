@@ -1,7 +1,7 @@
 <template name="userStatus">
 	<div class="account-box">
 		{{#with myUserInfo}}
-			<div class="info status-{{status}}">
+			<div class="info status-{{status}} primary-background-color">
 				{{#if username}}
 					<div class="thumb" data-status='{{visualStatus}}'>
 						{{> avatar username=username}}
@@ -11,7 +11,7 @@
 					</div>
 				{{/if}}
 			</div>
-			<nav class="options animated-hidden">
+			<nav class="options primary-background-color animated-hidden">
 				<div class="wrapper">
 					<button data-status="online" class="status online"><span>{{_ "Online"}}</span></button>
 					<button data-status="away" class="status away"><span>{{_ "Away" context="male"}}</span></button>

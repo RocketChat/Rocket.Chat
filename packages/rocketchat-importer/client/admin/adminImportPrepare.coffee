@@ -32,18 +32,14 @@ Template.adminImportPrepare.events
 
 		for blob in files
 			template.preparing.set true
-			if not importer.fileTypeRegex.test blob.type
-				toastr.error t('Invalid_Import_File_Type')
-				template.preparing.set false
-				return
 
 			reader = new FileReader()
 			reader.readAsDataURL(blob)
 			reader.onloadend = ->
 				Meteor.call 'prepareImport', importer.key, reader.result, blob.type, blob.name, (error, data) ->
 					if error
-						console.warn 'Errored out preparing the import:', error
-						handleError(error)
+						toastr.error t('Invalid_Import_File_Type')
+						template.preparing.set false
 						return
 
 					if !data

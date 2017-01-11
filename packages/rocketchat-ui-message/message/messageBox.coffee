@@ -40,10 +40,17 @@ Template.messageBox.helpers
 
 		roomData = Session.get('roomData' + this._id)
 		if roomData?.t is 'd'
-			if ChatSubscription.findOne({ rid: this._id }, { fields: { archived: 1 } })?.archived
+			subscription = ChatSubscription.findOne({ rid: this._id }, { fields: { archived: 1, blocked: 1, blocker: 1 } })
+			if subscription and (subscription.archived or subscription.blocked or subscription.blocker)
 				return false
 
 		return true
+	isBlockedOrBlocker: ->
+		roomData = Session.get('roomData' + this._id)
+		if roomData?.t is 'd'
+			subscription = ChatSubscription.findOne({ rid: this._id }, { fields: { blocked: 1, blocker: 1 } })
+			if subscription and (subscription.blocked or subscription.blocker)
+				return true
 
 	getPopupConfig: ->
 		template = Template.instance()

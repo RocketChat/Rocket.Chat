@@ -41,6 +41,7 @@ RocketChat.settings.addGroup 'Accounts', ->
 		@add 'Accounts_AvatarSize', 200, { type: 'int', enableQuery: {_id: 'Accounts_AvatarResize', value: true} }
 		@add 'Accounts_AvatarStoreType', 'GridFS', { type: 'select', values: [ { key: 'GridFS', i18nLabel: 'GridFS' }, { key: 'FileSystem', i18nLabel: 'FileSystem' } ] }
 		@add 'Accounts_AvatarStorePath', '', { type: 'string', enableQuery: {_id: 'Accounts_AvatarStoreType', value: 'FileSystem'} }
+		@add 'Accounts_SetDefaultAvatar', true, { type: 'boolean' }
 
 RocketChat.settings.addGroup 'OAuth', ->
 
@@ -94,10 +95,11 @@ RocketChat.settings.addGroup 'General', ->
 	@add 'Language', '', { type: 'language', public: true }
 	@add 'Allow_Invalid_SelfSigned_Certs', false, { type: 'boolean' }
 	@add 'Favorite_Rooms', true, { type: 'boolean', public: true }
-	@add 'CDN_PREFIX', '', { type: 'string' }
+	@add 'CDN_PREFIX', '', { type: 'string', public: true }
 	@add 'Force_SSL', false, { type: 'boolean', public: true }
 	@add 'GoogleTagManager_id', '', { type: 'string', public: true }
 	@add 'Bugsnag_api_key', '', { type: 'string', public: false }
+	@add 'Force_Disable_OpLog_For_Cache', false, { type: 'boolean', public: false }
 	@add 'Restart', 'restart_server', { type: 'action', actionText: 'Restart_the_server' }
 
 	@section 'UTF8', ->

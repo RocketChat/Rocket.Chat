@@ -1,3 +1,12 @@
+@import "lesshat.less";
+
+@header-min-height: 30px;
+@footer-min-height: 55px;
+@link-font-color: #008ce3;
+@primary-font-color: #444444;
+@secondary-font-color: #7f7f7f;
+@info-font-color: #aaaaaa;
+
 .flex-list {
 	.active {
 		background-color: rgba(255, 255, 255, 0.075);
@@ -18,6 +27,7 @@
 
 .trigger-value {
 	width: 70%;
+
 	input {
 		display: inline-block !important;
 		width: auto !important;
@@ -28,6 +38,7 @@
 	width: 90%;
 	max-width: 750px;
 	text-align: right;
+
 	textarea {
 		text-align: left;
 		width: 100%;
@@ -63,23 +74,19 @@
 	margin: 0 auto;
 	border-bottom: 1px solid #cccccc;
 	position: relative;
+
 	.preview-wrapper {
 		position: absolute;
 		width: 100%;
 		padding: 0 20px;
 		height: 300px;
 		bottom: 0;
-		@header-min-height: 30px;
-		@footer-min-height: 55px;
-		@link-font-color: #008ce3;
-		@primary-font-color: #444444;
-		@secondary-font-color: #7f7f7f;
-		@info-font-color: #aaaaaa;
 		font-family: 'Helvetica Neue', Helvetica, Roboto, Arial, sans-serif, "Meiryo UI";
 		font-size: 0.8rem;
 		color: @primary-font-color;
 		-webkit-font-smoothing: antialiased;
 		line-height: 1rem;
+
 		input,
 		button,
 		select,
@@ -93,13 +100,16 @@
 			border-radius: 5px;
 			outline: none;
 		}
+
 		input {
 			height: 28px;
 		}
+
 		input:focus {
 			outline: none;
 			box-shadow: 0 0 0;
 		}
+
 		.button {
 			&:extend(.unselectable);
 			display: inline-block;
@@ -116,11 +126,12 @@
 			position: relative;
 			cursor: pointer;
 			color: rgba(255, 255, 255, 0.85);
-			background-color: lighten(desaturate(@primary-background-color, 15%), 12.5%);
+
 			span {
 				position: relative;
 				z-index: 2;
 			}
+
 			&::before {
 				background-color: rgba(0, 0, 0, 0.1);
 				content: " ";
@@ -131,38 +142,38 @@
 				height: 100%;
 				opacity: 0;
 				z-index: 1;
-				.transition(opacity .1s ease-out);
+				transition: opacity 0.1s ease-out;
 			}
+
 			&:hover {
 				text-decoration: none;
 				color: #ffffff;
+
 				&::before {
 					opacity: 1;
 				}
 			}
-			&.secondary {
-				background-color: @tertiary-background-color;
-				color: @primary-font-color;
-				&::before {
-					background-color: rgba(0, 0, 0, 0.045);
-				}
-			}
+
 			&.clean {
 				font-size: 14px;
 				box-shadow: 0 0 3px rgba(0, 0, 0, 0.08);
+
 				&.primary {
 					font-weight: 600;
 				}
 			}
+
 			&.button-block {
 				display: block;
 				width: 100%;
 			}
 		}
+
 		.livechat-room {
 			display: flex;
 			flex-direction: column;
 			height: 100%;
+
 			.title {
 				flex: 1 0 @header-min-height;
 				line-height: @header-min-height;
@@ -171,6 +182,7 @@
 				color: #ffffff;
 				z-index: 10;
 				cursor: pointer;
+
 				h1 {
 					margin: 0;
 					padding: 0 5px;
@@ -178,27 +190,33 @@
 					display: inline-block;
 					text-transform: none;
 				}
+
 				.toolbar {
 					display: inline-block;
 					float: right;
 					padding-right: 5px;
 				}
 			}
+
 			.messages {
 				flex: 1 1 100%;
 				background-color: #ffffff;
 				border-left: 1px solid #e7e7e7;
 				border-right: 1px solid #e7e7e7;
 				overflow-y: auto;
+
 				.wrapper {
 					padding-bottom: 6px;
+
 					ul {
 						list-style-type: none;
 						padding: 0;
+
 						li {
 							padding: 0;
 						}
 					}
+
 					.message {
 						font-size: 12px;
 						padding-left: 40px;
@@ -206,13 +224,14 @@
 						line-height: 18px;
 						margin: 12px 10px 0;
 						min-height: 36px;
+
 						&:nth-child(1) {
 							margin-top: 0;
 						}
+
 						&.new-day {
 							margin-top: 60px;
-						}
-						&.new-day {
+
 							&::before {
 								content: attr(data-date);
 								display: block;
@@ -229,6 +248,7 @@
 								background-color: #ffffff;
 								min-width: 120px;
 							}
+
 							&::after {
 								content: " ";
 								display: block;
@@ -239,30 +259,37 @@
 								border-top: 1px solid #dddddd;
 							}
 						}
+
 						.edit-message {
 							display: none;
 							cursor: pointer;
 						}
+
 						&.own:hover:not(.system) .edit-message {
 							display: inline-block;
 						}
+
 						.delete-message {
 							display: none;
 							cursor: pointer;
 						}
+
 						&.own:hover:not(.system) .delete-message {
 							display: inline-block;
 						}
+
 						.user {
 							display: inline-block;
 							font-weight: 600;
 							color: #444444;
 							margin-right: 5px;
 							outline: none;
+
 							&:hover {
 								color: #333333;
 							}
 						}
+
 						.thumb {
 							position: absolute;
 							left: 0;
@@ -271,80 +298,100 @@
 							width: 30px;
 							height: 30px;
 						}
+
 						.info {
 							font-size: 10px;
 							color: @info-font-color;
 						}
+
 						&.sequential {
 							padding-top: 5px;
 							margin-top: 0;
 							margin-bottom: 0;
 							min-height: 20px;
+
 							.user {
 								display: none;
 							}
+
 							.thumb {
 								display: none;
 							}
+
 							.info {
 								position: absolute;
 								text-align: right;
 								left: -20px;
 								width: 55px;
+
 								.time {
 									display: none;
 								}
+
 								.edited {
 									display: inline-block;
 								}
+
 								.edit-message {
 									float: left;
 									margin-left: 1px;
 								}
+
 								.delete-message {
 									float: left;
 								}
 							}
+
 							&:hover {
 								.time {
 									display: inline-block;
 								}
+
 								.edited {
 									display: none;
 								}
 							}
 						}
+
 						&.system {
 							.body {
 								color: @info-font-color;
 								font-style: italic;
 								text-transform: lowercase;
+
 								em {
 									font-weight: 600;
 								}
 							}
 						}
+
 						.avatar-initials {
 							line-height: 40px;
 						}
+
 						a {
 							color: @link-font-color;
 							font-weight: 400;
+
 							&:hover {
 								color: darken(@link-font-color, 10%);
 								text-decoration: underline;
 							}
 						}
+
 						.body {
 							opacity: 1;
-							.transition(opacity 1s linear);
+							transition: opacity 1s linear;
 						}
+
 						&.temp .body {
 							opacity: 0.5;
 						}
+
 						&.msg-error .body {
 							text-decoration: line-through;
 						}
+
 						.avatar .avatar-image {
 							height: 100%;
 							width: 100%;
@@ -360,6 +407,7 @@
 						}
 					}
 				}
+
 				.new-message {
 					margin: 0 -65px;
 					position: absolute;
@@ -375,12 +423,14 @@
 					bottom: 8px;
 					left: 50%;
 					z-index: 5;
-					.transition(transform 0.3s ease-out);
+					transition: transform 0.3s ease-out;
 					.transform(translateY(-40px));
+
 					&.not {
 						.transform(translateY(100%));
 					}
 				}
+
 				.error {
 					bottom: 40px;
 					position: fixed;
@@ -388,13 +438,15 @@
 					background-color: #f7d799;
 					padding: 5px;
 					z-index: 8;
-					.transition(transform 0.2s ease-out);
+					transition: transform 0.2s ease-out;
 					.transform(translateY(100%));
+
 					&.show {
 						.transform(translateY(0));
 					}
 				}
 			}
+
 			.footer {
 				flex: 1 0 @footer-min-height;
 				z-index: 10;
@@ -402,9 +454,11 @@
 				border-top: 1px solid #e7e7e7;
 				border-left: 1px solid #e7e7e7;
 				border-right: 1px solid #e7e7e7;
+
 				.input-wrapper {
 					padding: 6px 6px 0;
 					padding-right: 30px;
+
 					textarea {
 						display: block;
 						padding: 6px 8px;
@@ -424,6 +478,7 @@
 						outline: none;
 					}
 				}
+
 				.send-button {
 					float: right;
 					position: relative;
@@ -431,40 +486,49 @@
 					top: -28px;
 					color: @secondary-font-color;
 					cursor: pointer;
-					.transition(color .15s ease-out);
+					transition: color 0.15s ease-out;
+
 					&:hover {
 						color: @primary-font-color;
 					}
 				}
 			}
+
 			.offline {
 				flex: 1 1 100%;
 				background-color: white;
 				padding: 1em 10px;
 				border-left: 1px solid #e7e7e7;
 				border-right: 1px solid #e7e7e7;
+
 				.offline-message {
 					padding: 1em 0;
 				}
+
 				.message-sent {
 					text-align: center;
 				}
+
 				form {
 					input,
 					textarea {
 						display: block;
 						width: 100%;
 					}
+
 					textarea {
 						height: 3.5em;
 					}
+
 					.buttons {
 						text-align: center;
 					}
+
 					.error {
 						display: none;
 						background-color: #f7d799;
 						padding: 5px;
+
 						&.show {
 							display: block;
 						}
@@ -473,19 +537,24 @@
 			}
 		}
 	}
+
 	&.closed,
 	&.closed-offline {
 		.preview-wrapper {
 			height: 32px;
+
 			.livechat-room .title .toolbar {
 				display: none;
 			}
+
 			.messages {
 				display: none;
 			}
+
 			.footer {
 				display: none;
 			}
+
 			.offline {
 				display: none;
 			}
@@ -495,6 +564,7 @@
 
 .department-agents {
 	list-style-type: none;
+
 	li {
 		display: inline-block;
 		background-color: #dddddd;
@@ -502,6 +572,7 @@
 		padding: 2px 8px 2px 2px;
 		margin: 1px 0;
 		cursor: pointer;
+
 		.icon-plus-circled {
 			opacity: 0.5;
 			font-size: 0.8rem;
@@ -515,31 +586,6 @@
 		line-height: 24px;
 		height: 24px;
 	}
-}
-
-.user-view {
-	li {
-		color: @secondary-font-color;
-		line-height: 18px;
-		font-size: 12px;
-		font-weight: 300;
-	}
-}
-
-.icon-chat-empty.status-offline {
-	color: @status-offline;
-}
-
-.icon-chat-empty.status-online {
-	color: @status-online;
-}
-
-.icon-chat-empty.status-busy {
-	color: @status-busy;
-}
-
-.icon-chat-empty.status-away {
-	color: @status-away;
 }
 
 .visitor-custom-fields {
@@ -556,15 +602,18 @@
 		padding: 4px;
 		margin-top: 4px;
 		margin-bottom: 20px;
+
 		ul {
 			li {
 				white-space: nowrap;
+
 				a {
 					text-overflow: ellipsis;
 					display: block;
 					overflow: hidden;
 					color: @secondary-font-color;
 					text-decoration: underline;
+
 					&:hover {
 						text-decoration: none;
 					}
@@ -576,7 +625,8 @@
 
 .livechat-section {
 	opacity: 0.5;
-	.transition(opacity .4s ease);
+	transition: opacity 0.4s ease;
+
 	&.available {
 		opacity: 1;
 	}
@@ -586,17 +636,12 @@
 	float: right;
 	margin-right: 10px;
 	font-size: 20px;
-	&.available {
-		color: @status-online;
-	}
-	&.not-available {
-		color: @status-offline;
-	}
 }
 
 .external-message {
 	padding: 10px;
 	position: relative;
+
 	&::after {
 		content: " ";
 		position: absolute;
@@ -608,9 +653,17 @@
 }
 
 .user-view {
+	li {
+		color: @secondary-font-color;
+		line-height: 18px;
+		font-size: 12px;
+		font-weight: 300;
+	}
+
 	nav.centered-buttons {
 		text-align: center;
 		margin-bottom: 1em;
+
 		button {
 			display: inline-block;
 			width: auto;
@@ -628,6 +681,7 @@
 
 .visitor-edit {
 	padding: 20px;
+
 	h3 {
 		font-size: 24px;
 		margin-bottom: 8px;
