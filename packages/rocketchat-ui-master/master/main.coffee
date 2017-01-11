@@ -60,7 +60,7 @@ Template.body.onRendered ->
 				e.preventDefault()
 				e.stopPropagation()
 				fireGlobalEvent('click-image-link', { href: link.href })
-
+				
 	Tracker.autorun (c) ->
 		w = window
 		d = document
@@ -112,6 +112,9 @@ Template.main.helpers
 
 	hasUsername: ->
 		return Meteor.userId()? and Meteor.user().username?
+	
+	sessionUsername: ->
+		return Meteor.user().username
 
 	flexOpened: ->
 		console.log 'layout.helpers flexOpened' if window.rocketDebug
