@@ -254,7 +254,7 @@ class ModelRooms extends RocketChat.models._Base
 
 		return @find query, options
 
-	findByContainigUsername: (username, options) ->
+	findByContainingUsername: (username, options) ->
 		query =
 			usernames: username
 
