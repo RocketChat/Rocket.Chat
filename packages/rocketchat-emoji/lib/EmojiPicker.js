@@ -53,21 +53,30 @@ RocketChat.EmojiPicker = {
 	},
 	setPosition() {
 		let sourcePos = $(this.source).offset();
-		let left = (sourcePos.left - this.width + 65);
+		let left = sourcePos.left;
 		let top = (sourcePos.top - this.height - 5);
+		let cssProperties = {
+			top: top,
+			left: left
+		};
 
-		if (left < 0) {
-			left = 10;
-		}
 		if (top < 0) {
-			top = 10;
+			cssProperties.top = 10;
 		}
 
-		return $('.emoji-picker')
-			.css({
-				top: top + 'px',
-				left: left + 'px'
-			});
+		if (left < 35) {
+			cssProperties.left = 0;
+		} else {
+			let windowSize = $(window).width();
+			let pickerWidth = $('.emoji-picker').width();
+
+			if (left + pickerWidth > windowSize) {
+				let emojiButtonSize = $('.reaction-message.message-action').outerWidth();
+				cssProperties.left = left - pickerWidth + emojiButtonSize;
+			}
+		}
+
+		return $('.emoji-picker').css(cssProperties);
 	},
 	open(source, callback) {
 		if (!this.initiated) {

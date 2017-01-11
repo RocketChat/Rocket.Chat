@@ -1,3 +1,4 @@
+/* globals Gravatar */
 RocketChat.saveUser = function(userId, userData) {
 	const user = RocketChat.models.Users.findOneById(userId);
 	let existingRoles = _.pluck(RocketChat.authz.getRoles(), '_id');
@@ -117,6 +118,18 @@ RocketChat.saveUser = function(userId, userData) {
 					throw new Meteor.Error('error-email-send-failed', 'Error trying to send email: ' + error.message, { function: 'RocketChat.saveUser', message: error.message });
 				}
 			});
+		}
+
+		userData._id = _id;
+
+		if (RocketChat.settings.get('Accounts_SetDefaultAvatar') === true && userData.email) {
+			let gravatarUrl = Gravatar.imageUrl(userData.email, {default: '404', size: 200, secure: true});
+
+			try {
+				RocketChat.setUserAvatar(userData, gravatarUrl, '', 'url');
+			} catch (e) {
+				//Ignore this error for now, as it not being successful isn't bad
+			}
 		}
 
 		return _id;

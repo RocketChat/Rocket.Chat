@@ -25,7 +25,7 @@ FileUpload.AmazonS3 = class FileUploadAmazonS3 extends FileUploadBase {
 					Session.set('uploading', uploading);
 				}
 			} else {
-				file = _.pick(this.meta, 'type', 'size', 'name', 'identify');
+				file = _.pick(this.meta, 'type', 'size', 'name', 'identify', 'description');
 				file._id = downloadUrl.substr(downloadUrl.lastIndexOf('/') + 1);
 				file.url = downloadUrl;
 

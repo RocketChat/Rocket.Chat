@@ -47,20 +47,8 @@ RocketChat.theme = new class
 	variables: {}
 	packageCallbacks: []
 	files: [
-		'assets/stylesheets/global/_variables.less'
-		'assets/stylesheets/utils/_keyframes.import.less'
-		'assets/stylesheets/utils/_lesshat.import.less'
-		'assets/stylesheets/utils/_preloader.import.less'
-		'assets/stylesheets/utils/_reset.import.less'
-		'assets/stylesheets/utils/_chatops.less'
-		'assets/stylesheets/animation.css'
-		'assets/stylesheets/base.less'
-		'assets/stylesheets/fontello.css'
-		'assets/stylesheets/rtl.less'
-		'assets/stylesheets/swipebox.min.css'
-		'assets/stylesheets/utils/_mixins.import.less'
-		'assets/stylesheets/utils/_colors.import.less'
-		'assets/stylesheets/utils/_forms.import.less'
+		'server/lesshat.less'
+		'server/colors.less'
 	]
 
 	constructor: ->

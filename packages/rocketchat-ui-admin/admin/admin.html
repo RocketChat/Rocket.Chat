@@ -1,13 +1,21 @@
 <template name="admin">
 	<section class="page-container page-home page-static page-settings">
-		<header class="fixed-title">
+		<header class="fixed-title border-component-color">
 			{{> burger}}
 			<h2>
 				<span class="room-title">{{#with group}}{{label}}{{/with}}</span>
 			</h2>
+			{{#unless $eq group._id 'Assets'}}
+				<div class="submit">
+					{{#if hasChanges}}
+						<button class="button danger discard"><i class="icon-send"></i><span>{{_ "Cancel"}}</span></button>
+					{{/if}}
+					<button class="button primary save" disabled="{{not hasChanges}}"><i class="icon-send"></i><span>{{_ "Save_changes"}}</span></button>
+				</div>
+			{{/unless}}
 		</header>
 
-		<div class="content">
+		<div class="content background-transparent-dark">
 			{{#unless hasPermission 'view-privileged-setting'}}
 				<p>{{_ "You_are_not_authorized_to_view_this_page"}}</p>
 			{{else}}
@@ -31,7 +39,7 @@
 									</div>
 								</div>
 							{{/if}}
-							<div class="section-content">
+							<div class="section-content border-component-color">
 								{{#if section}}
 									{{#if sectionIsCustomOAuth section}}
 										<div class="section-helper">
@@ -43,8 +51,8 @@
 								{{/if}}
 								{{#each settings}}
 									<div class="input-line double-col {{#if changed}}setting-changed{{/if}}" {{isDisabled}}>
-										<label>{{label}}</label>
-										<div>
+										<label class="setting-label">{{label}}</label>
+										<div class="setting-field">
 											{{#if $eq type 'string'}}
 												{{#if multiline}}
 													<textarea class="input-monitor" name="{{_id}}" rows="4" style="height: auto" {{isDisabled}}>{{value}}</textarea>
@@ -72,7 +80,7 @@
 
 											{{#if $eq type 'select'}}
 												<div class="select-arrow">
-													<i class="icon-down-open"></i>
+													<i class="icon-down-open secondary-font-color"></i>
 												</div>
 												<select class="input-monitor" name="{{_id}}" {{isDisabled}}>
 													{{#each values}}
@@ -83,7 +91,7 @@
 
 											{{#if $eq type 'language'}}
 												<div class="select-arrow">
-													<i class="icon-down-open"></i>
+													<i class="icon-down-open secondary-font-color"></i>
 												</div>
 												<select class="input-monitor" name="{{_id}}" {{isDisabled}}>
 													{{#each languages}}
@@ -96,17 +104,18 @@
 												<div class="horizontal">
 													{{#if $eq editor 'color'}}
 														<div class="flex-grow-1">
-															<input class="input-monitor minicolors" type="text" name="{{_id}}" value="{{value}}" {{isDisabled}}/>
+															<input class="input-monitor colorpicker-input" type="text" name="{{_id}}" value="{{value}}" autocomplete="off" {{isDisabled}}/>
+															<span class="colorpicker-swatch border-component-color" style="background-color: {{value}}"></span>
 														</div>
 													{{/if}}
 													{{#if $eq editor 'expression'}}
 														<div class="flex-grow-1">
-															<input class="input-monitor not-minicolors" type="text" name="{{_id}}" value="{{value}}" {{isDisabled}}/>
+															<input class="input-monitor" type="text" name="{{_id}}" value="{{value}}" {{isDisabled}}/>
 														</div>
 													{{/if}}
 													<div class="color-editor">
 														<div class="select-arrow">
-															<i class="icon-down-open"></i>
+															<i class="icon-down-open secondary-font-color"></i>
 														</div>
 														<select name="color-editor">
 															{{#each allowedTypes}}
@@ -142,7 +151,7 @@
 
 											{{#if $eq type 'action'}}
 												{{#if hasChanges section}}
-													<span style="line-height: 40px" class="secondary-text">{{_ "Save_to_enable_this_action"}}</span>
+													<span style="line-height: 40px" class="secondary-font-color">{{_ "Save_to_enable_this_action"}}</span>
 												{{else}}
 													<button type="button" class="button primary action" data-setting="{{_id}}" data-action="{{value}}" {{isDisabled}}>{{_ actionText}}</button>
 												{{/if}}
@@ -153,12 +162,12 @@
 													<div class="settings-file-preview">
 														<div class="preview" style="background-image:url({{value.url}}?_dc={{random}});"></div>
 														<div class="action">
-															<button type="button" class="button danger delete-asset"><i class="icon-trash"></i>{{_ 'Delete'}}</button>
+															<button type="button" class="button danger delete-asset"><i class="icon-trash secondary-font-color"></i>{{_ 'Delete'}}</button>
 														</div>
 													</div>
 												{{else}}
 													<div class="settings-file-preview">
-														<div class="preview no-file"><i class="icon-upload"></i></div>
+														<div class="preview no-file background-transparent-light secondary-font-color"><i class="icon-upload secondary-font-color"></i></div>
 														<div class="action">
 															<div class="button primary">{{_ 'Select_file'}}
 																<input type="file" accept="{{assetAccept fileConstraints}}" />
@@ -173,7 +182,7 @@
 													{{> inputAutocomplete settings=autocompleteRoom id=_id name=_id class="search autocomplete" autocomplete="off" disabled=isDisabled.disabled}}
 													<ul class="selected-rooms">
 														{{#each selectedRooms}}
-															<li class="remove-room" data-setting={{../_id}}>{{name}} <i class="icon-cancel"></i></li>
+															<li class="remove-room" data-setting={{../_id}}>{{name}} <i class="icon-cancel secondary-font-color"></i></li>
 														{{/each}}
 													</ul>
 												</div>
@@ -183,11 +192,29 @@
 												<div class="settings-description">{{{RocketChatMarkdown description}}}</div>
 											{{/if}}
 											{{#if alert}}
-												<div class="settings-alert"><i class="icon-attention"></i>{{{_ alert}}}</div>
+												<div class="settings-alert pending-color pending-background pending-border"><i class="icon-attention secondary-font-color"></i>{{{_ alert}}}</div>
 											{{/if}}
 										</div>
+										{{#unless $eq group._id 'Assets'}}
+											{{#unless isDefaultValue _id}}
+												<button text="{{_ 'Reset'}}" data-setting="{{_id}}" class="reset-setting button danger">
+													<i class="icon-ccw secondary-font-color color-error-contrast"></i>
+												</button>
+											{{/unless}}
+										{{/unless}}
 									</div>
 								{{/each}}
+
+								{{#unless $eq group._id 'Assets'}}
+									<div class="input-line double-col">
+										<label class="setting-label">{{_ "Reset_section_settings"}}</label>
+										<div class="setting-field">
+											<button data-section="{{section}}" class="reset-group button danger">
+												{{_ "Reset"}}
+											</button>
+										</div>
+									</div>
+								{{/unless}}
 
 								{{#if section}}
 									{{#if sectionIsCustomOAuth section}}
@@ -195,12 +222,6 @@
 											<button class="button danger remove-custom-oauth"><span>{{_ "Remove_custom_oauth"}}</span></button>
 										</div>
 									{{/if}}
-								{{/if}}
-
-								{{#if hasChanges section}}
-									<div class="submit">
-										<button class="button primary save"><i class="icon-send"></i><span>{{_ "Save_changes"}}</span></button>
-									</div>
 								{{/if}}
 							</div>
 						</div>

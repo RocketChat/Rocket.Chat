@@ -1,8 +1,8 @@
 /* globals Importer */
 
 Importer.HipChatEnterprise = class ImporterHipChatEnterprise extends Importer.Base {
-	constructor(name, descriptionI18N, fileTypeRegex) {
-		super(name, descriptionI18N, fileTypeRegex);
+	constructor(name, descriptionI18N, mimeType) {
+		super(name, descriptionI18N, mimeType);
 		this.logger.debug('Constructed a new HipChat Enterprise Importer.');
 
 		this.Readable = require('stream').Readable;

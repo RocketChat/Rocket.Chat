@@ -1,3 +1,3 @@
-Template.registerHelper('log', function() {
+Template.registerHelper('log', () => {
 	console.log.apply(console, arguments);
 });
