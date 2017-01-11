@@ -12,7 +12,7 @@
 					<p>{{{_ "Please_wait_activation"}}}</p>
 				</header>
 			{{else}}
-				{{ > loginServices }}
+				{{> loginServices }}
 				{{#if needsValidateEmail}}
 					<div class="alert error-color error-background error-border">
 						{{_ "You_need_confirm_email"}}
