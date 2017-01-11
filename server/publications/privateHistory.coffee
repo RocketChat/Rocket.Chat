@@ -10,4 +10,3 @@ Meteor.publish 'privateHistory', ->
 			ts: 1
 			lm: 1
 			cl: 1
-
