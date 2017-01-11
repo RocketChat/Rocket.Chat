@@ -60,8 +60,8 @@
     "email": "support@rocket.chat"
   },
   "devDependencies": {
-    "chimp": "^0.45.1",
-    "eslint": "^3.12.2",
+    "chimp": "^0.46.0",
+    "eslint": "^3.13.1",
     "stylelint": "^7.7.1",
     "supertest": "^2.0.1"
   },
