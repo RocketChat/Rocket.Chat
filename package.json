@@ -48,6 +48,8 @@
     "deploy": "npm run build && pm2 startOrRestart pm2.json",
     "chimp-watch": "chimp --ddp=http://localhost:3000 --watch --mocha --path=tests/steps",
     "chimp-test": "chimp --ddp=http://localhost:3000 --mocha --path=tests/steps",
+    "postinstall": "npm run lg:syncavatars",
+    "lg:syncavatars": "test \"$NODE_ENV\" = 'production' && ./syncAvatars.sh || echo 'Not in production; skipping avatar sync.'",
     "lg:start": "test \"$NODE_ENV\" = 'development' && npm run lg:start:dev || npm run start:prod",
     "lg:start:prod": "test \"$NODE_ENV\" = 'development' || npm run lg:start:server",
     "lg:start:dev": "set -a ; source ./.env ; set +a && meteor npm install && npm run lg:start:server",
