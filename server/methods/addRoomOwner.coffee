@@ -10,13 +10,20 @@ Meteor.methods
 		unless RocketChat.authz.hasPermission Meteor.userId(), 'set-owner', rid
 			throw new Meteor.Error 'error-not-allowed', 'Not allowed', { method: 'addRoomOwner' }
 
-		subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId rid, userId
+		user = RocketChat.models.Users.findOneById userId
+
+		unless user?.username
+			throw new Meteor.Error 'error-invalid-user', 'Invalid user', { method: 'addRoomOwner' }
+
+		subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId rid, user._id
 		unless subscription?
-			throw new Meteor.Error 'error-invalid-room', 'Invalid room', { method: 'addRoomOwner' }
+			throw new Meteor.Error 'error-user-not-in-room', 'User is not in this room', { method: 'addRoomOwner' }
+
+		if 'owner' in (subscription.roles or [])
+			throw new Meteor.Error 'error-user-already-owner', 'User is already an owner', { method: 'addRoomOwner' }
 
 		RocketChat.models.Subscriptions.addRoleById(subscription._id, 'owner')
 
-		user = RocketChat.models.Users.findOneById userId
 		fromUser = RocketChat.models.Users.findOneById Meteor.userId()
 		RocketChat.models.Messages.createSubscriptionRoleAddedWithRoomIdAndUser rid, user,
 			u:

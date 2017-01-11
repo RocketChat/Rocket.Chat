@@ -58,6 +58,30 @@ Template.messages.helpers({
 			selfTyping: MsgTyping.selfTyping.get(),
 			users: usernames.join(` ${t('and')} `)
 		};
+	},
+	agentData() {
+		const agent = Livechat.agent;
+		if (!agent) {
+			return null;
+		}
+
+		const agentData = {
+			avatar: getAvatarUrlFromUsername(agent.username)
+		};
+
+		if (agent.name) {
+			agentData.name = agent.name;
+		}
+
+		if (agent.emails && agent.emails[0] && agent.emails[0].address) {
+			agentData.email = agent.emails[0].address;
+		}
+
+		if (agent.customFields && agent.customFields.phone) {
+			agentData.phone = agent.customFields.phone;
+		}
+
+		return agentData;
 	}
 });
 

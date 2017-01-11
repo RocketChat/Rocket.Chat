@@ -2,11 +2,26 @@ import toastr from 'toastr'
 TempSettings = new Meteor.Collection null
 RocketChat.TempSettings = TempSettings
 
-updateColorComponent = ->
-	$('input.minicolors').minicolors
-		theme: 'rocketchat'
-		format: 'rgb'
-		opacity: true
+getDefaultSetting = (settingId) ->
+	return RocketChat.settings.cachedCollectionPrivate.collection.findOne({_id: settingId})
+
+setFieldValue = (settingId, value, type, editor) ->
+	input = $('.page-settings').find('[name="' + settingId + '"]')
+
+	switch type
+		when 'boolean'
+			$('.page-settings').find('[name="' + settingId + '"][value="' + Number(value) + '"]').prop('checked', true).change()
+		when 'code'
+			input.next()[0].CodeMirror.setValue(value)
+		when 'color'
+			input.parents('.horizontal').find('select[name="color-editor"]').val(editor).change()
+			input.val(value).change()
+
+			if editor is 'color'
+				new jscolor(input)
+
+		else
+			input.val(value).change()
 
 Template.admin.onCreated ->
 	if not RocketChat.settings.cachedCollectionPrivate?
@@ -60,14 +75,10 @@ Template.admin.helpers
 		return selected
 
 	group: ->
-		group = FlowRouter.getParam('group')
-		group ?= TempSettings.findOne({ type: 'group' })?._id
-		return TempSettings.findOne { _id: group, type: 'group' }
+		return TempSettings.findOne { _id: FlowRouter.getParam('group'), type: 'group' }
 
 	sections: ->
-		group = FlowRouter.getParam('group')
-		group ?= TempSettings.findOne({ type: 'group' })?._id
-		settings = TempSettings.find({ group: group }, {sort: {section: 1, sorter: 1, i18nLabel: 1}}).fetch()
+		settings = TempSettings.find({ group: FlowRouter.getParam('group') }, {sort: {section: 1, sorter: 1, i18nLabel: 1}}).fetch()
 
 		sections = {}
 		for setting in settings
@@ -250,8 +261,12 @@ Template.admin.helpers
 	getColorVariable: (color) ->
 		return color.replace(/theme-color-/, '@')
 
+	isDefaultValue: (settingId) ->
+		setting = TempSettings.findOne({_id: settingId}, {fields: {value: 1, packageValue: 1}})
+		return setting.value is setting.packageValue
+
 Template.admin.events
-	"change .input-monitor": (e, t) ->
+	"change .input-monitor, keyup .input-monitor": (e, t) ->
 		value = _.trim $(e.target).val()
 
 		switch @type
@@ -271,7 +286,43 @@ Template.admin.events
 			$set:
 				editor: value
 
-		Meteor.setTimeout updateColorComponent, 100
+	"click .submit .discard": ->
+		group = FlowRouter.getParam('group')
+
+		query =
+			group: group
+			changed: true
+
+		settings = TempSettings.find(query, {fields: {_id: 1, value: 1, packageValue: 1}}).fetch()
+		console.log(settings)
+
+		settings.forEach (setting) ->
+			oldSetting = RocketChat.settings.cachedCollectionPrivate.collection.findOne({_id: setting._id}, {fields: {value: 1, type:1, editor: 1}})
+
+			setFieldValue(setting._id, oldSetting.value, oldSetting.type, oldSetting.editor)
+
+	"click .reset-setting": (e, t) ->
+		e.preventDefault();
+		settingId = $(e.target).data('setting')
+		if typeof settingId is 'undefined' then settingId = $(e.target).parent().data('setting')
+
+		defaultValue = getDefaultSetting(settingId)
+
+		setFieldValue(settingId, defaultValue.packageValue, defaultValue.type, defaultValue.editor)
+
+	"click .reset-group": (e, t) ->
+		e.preventDefault();
+		group = FlowRouter.getParam('group')
+		section = $(e.target).data('section')
+
+		if section is ""
+			settings = TempSettings.find({group: group, section: {$exists: false}}, {fields: {_id: 1}}).fetch()
+		else
+			settings = TempSettings.find({group: group, section: section}, {fields: {_id: 1}}).fetch()
+
+		settings.forEach (setting) ->
+			defaultValue = getDefaultSetting(setting._id)
+			setFieldValue(setting._id, defaultValue.packageValue, defaultValue.type, defaultValue.editor)
 
 	"click .submit .save": (e, t) ->
 		group = FlowRouter.getParam('group')
@@ -279,14 +330,6 @@ Template.admin.events
 		query =
 			group: group
 			changed: true
-
-		if @section is ''
-			query.$or = [
-				{section: ''}
-				{section: {$exists: false}}
-			]
-		else
-			query.section = @section
 
 		settings = TempSettings.find(query, {fields: {_id: 1, value: 1, editor: 1}}).fetch()
 
@@ -398,12 +441,12 @@ Template.admin.events
 
 	"click .button-fullscreen": ->
 		codeMirrorBox = $('.code-mirror-box[data-editor-id="'+this._id+'"]')
-		codeMirrorBox.addClass('code-mirror-box-fullscreen')
+		codeMirrorBox.addClass('code-mirror-box-fullscreen content-background-color')
 		codeMirrorBox.find('.CodeMirror')[0].CodeMirror.refresh()
 
 	"click .button-restore": ->
 		codeMirrorBox = $('.code-mirror-box[data-editor-id="'+this._id+'"]')
-		codeMirrorBox.removeClass('code-mirror-box-fullscreen')
+		codeMirrorBox.removeClass('code-mirror-box-fullscreen content-background-color')
 		codeMirrorBox.find('.CodeMirror')[0].CodeMirror.refresh()
 
 	'autocompleteselect .autocomplete': (event, instance, doc) ->
@@ -435,12 +478,12 @@ Template.admin.onRendered ->
 		SideNav.setFlex "adminFlex"
 		SideNav.openFlex()
 
-	Meteor.setTimeout ->
-		updateColorComponent()
-	, 1000
-
 	Tracker.autorun ->
 		FlowRouter.watchPathChange()
-		Meteor.setTimeout ->
-			updateColorComponent()
-		, 400
+
+		hasColor = TempSettings.findOne { group: FlowRouter.getParam('group'), type: 'color' }
+		if hasColor
+			Meteor.setTimeout ->
+				$('.colorpicker-input').each (index, el) ->
+					new jscolor(el)
+			, 400

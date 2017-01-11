@@ -316,6 +316,11 @@ RocketChat.Livechat = {
 			RocketChat.models.Messages.createUserLeaveWithRoomIdAndUser(room._id, { _id: servedBy._id, username: servedBy.username });
 			RocketChat.models.Messages.createUserJoinWithRoomIdAndUser(room._id, { _id: agent.agentId, username: agent.username });
 
+			RocketChat.Livechat.stream.emit(room._id, {
+				type: 'agentData',
+				data: RocketChat.models.Users.getAgentInfo(agent.agentId)
+			});
+
 			return true;
 		}
 
@@ -509,6 +514,9 @@ RocketChat.Livechat = {
 		}
 	}
 };
+
+RocketChat.Livechat.stream = new Meteor.Streamer('livechat-room');
+RocketChat.Livechat.stream.allowRead('logged');
 
 RocketChat.settings.get('Livechat_history_monitor_type', (key, value) => {
 	RocketChat.Livechat.historyMonitorType = value;

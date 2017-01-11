@@ -5,10 +5,10 @@ import mainContent from '../pageobjects/main-content.page';
 import sideNav from '../pageobjects/side-nav.page';
 
 //test data imports
-import {username, email, password} from '../test-data/user.js';
-import {publicChannelName, privateChannelName} from '../test-data/channel.js';
-import {targetUser, imgURL} from '../test-data/interactions.js';
-import {checkIfUserIsValid, publicChannelCreated, privateChannelCreated, directMessageCreated, setPublicChannelCreated, setPrivateChannelCreated, setDirectMessageCreated} from '../test-data/checks';
+import {username, email, password} from '../data/user.js';
+import {publicChannelName, privateChannelName} from '../data/channel.js';
+import {targetUser, imgURL} from '../data/interactions.js';
+import {checkIfUserIsValid, publicChannelCreated, privateChannelCreated, directMessageCreated, setPublicChannelCreated, setPrivateChannelCreated, setDirectMessageCreated} from '../data/checks';
 
 
 //Test data
@@ -65,8 +65,30 @@ function messagingTest() {
 			mainContent.popupFileTitle.isVisible().should.be.true;
 		});
 
+		it('should show the file name input', () => {
+			mainContent.popupFileName.isVisible().should.be.true;
+		});
+
+		it('should fill the file name input', () => {
+			mainContent.popupFileName.setValue('File Name');
+		});
+
+		it('should show the file name input', () => {
+			mainContent.popupFileDescription.isVisible().should.be.true;
+		});
+
+		it('should fill the file name input', () => {
+			mainContent.popupFileDescription.setValue('File Description');
+		});
+
 		it('click the confirm', () => {
 			mainContent.popupFileConfirmBtn.click();
+			mainContent.popupFileConfirmBtn.waitForVisible(5000, true);
+		});
+
+		it('should show the file in the message', () => {
+			mainContent.lastMessageDesc.waitForVisible(10000);
+			mainContent.lastMessageDesc.getText().should.equal('File Description');
 		});
 	});
 }

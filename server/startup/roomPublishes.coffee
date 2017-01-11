@@ -66,5 +66,5 @@ Meteor.startup ->
 		user = RocketChat.models.Users.findOneById this.userId, fields: username: 1
 		if RocketChat.authz.hasAtLeastOnePermission(this.userId, ['view-d-room', 'view-joined-room'])
 			# CACHE: can we stop using publications here?
-			return RocketChat.models.Rooms.findByTypeContainigUsernames 'd', [user.username, identifier], options
+			return RocketChat.models.Rooms.findByTypeContainingUsernames 'd', [user.username, identifier], options
 		return this.ready()

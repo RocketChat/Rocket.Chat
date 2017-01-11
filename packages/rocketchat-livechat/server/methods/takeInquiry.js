@@ -54,6 +54,11 @@ Meteor.methods({
 		// and inquiry being taken, message would not be switched off.
 		RocketChat.models.Messages.createCommandWithRoomIdAndUser('connected', room._id, user);
 
+		RocketChat.Livechat.stream.emit(room._id, {
+			type: 'agentData',
+			data: RocketChat.models.Users.getAgentInfo(agent.agentId)
+		});
+
 		// return room corresponding to inquiry (for redirecting agent to the room route)
 		return room;
 	}

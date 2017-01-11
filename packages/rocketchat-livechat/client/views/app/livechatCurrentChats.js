@@ -1,8 +1,10 @@
 import moment from 'moment';
 
+const LivechatRoom = new Mongo.Collection('livechatRoom');
+
 Template.livechatCurrentChats.helpers({
 	livechatRoom() {
-		return ChatRoom.find({ t: 'l' }, { sort: { ts: -1 } });
+		return LivechatRoom.find({ t: 'l' }, { sort: { ts: -1 } });
 	},
 	startedAt() {
 		return moment(this.ts).format('L LTS');
@@ -38,6 +40,18 @@ Template.livechatCurrentChats.events({
 			}
 		});
 
+		if (!_.isEmpty(filter.from)) {
+			filter.from = moment(filter.from, moment.localeData().longDateFormat('L')).toDate();
+		} else {
+			delete filter.from;
+		}
+
+		if (!_.isEmpty(filter.to)) {
+			filter.to = moment(filter.to, moment.localeData().longDateFormat('L')).toDate();
+		} else {
+			delete filter.to;
+		}
+
 		instance.filter.set(filter);
 		instance.limit.set(20);
 	}
@@ -51,5 +65,13 @@ Template.livechatCurrentChats.onCreated(function() {
 
 	this.autorun(() => {
 		this.subscribe('livechat:rooms', this.filter.get(), 0, this.limit.get());
+	});
+});
+
+Template.livechatCurrentChats.onRendered(function() {
+	this.$('.input-daterange').datepicker({
+		autoclose: true,
+		todayHighlight: true,
+		format: moment.localeData().longDateFormat('L').toLowerCase()
 	});
 });

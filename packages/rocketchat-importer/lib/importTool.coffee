@@ -5,5 +5,5 @@ Importer.addImporter = (name, importer, options) ->
 		Importer.Importers[name] =
 			name: options.name
 			importer: importer
-			fileTypeRegex: options.fileTypeRegex
+			mimeType: options.mimeType
 			warnings: options.warnings

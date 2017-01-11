@@ -178,6 +178,8 @@ Template.emojiPicker.events({
 		event.stopPropagation();
 		event.preventDefault();
 
+		instance.$('.emoji-filter .search').val('').change();
+
 		instance.currentCategory.set(event.currentTarget.hash.substr(1));
 
 		return false;
@@ -247,7 +249,7 @@ Template.emojiPicker.events({
 			event.preventDefault();
 		}
 	},
-	'keyup .emoji-filter .search'(event, instance) {
+	'keyup .emoji-filter .search, change .emoji-filter .search'(event, instance) {
 		const value = event.target.value.trim();
 		const cst = instance.currentSearchTerm;
 		if (value === cst.get()) {

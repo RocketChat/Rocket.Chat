@@ -271,3 +271,20 @@ RocketChat.models.Users.findOneGuestByEmailAddress = function(emailAddress) {
 
 	return this.findOne(query);
 };
+
+RocketChat.models.Users.getAgentInfo = function(agentId) {
+	const query = {
+		_id: agentId
+	};
+
+	const options = {
+		fields: {
+			name: 1,
+			username: 1,
+			emails: 1,
+			customFields: 1
+		}
+	};
+
+	return this.findOne(query, options);
+};

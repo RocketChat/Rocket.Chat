@@ -40,7 +40,6 @@ currentTracker = undefined
 
 				return
 
-			$('.rocket-loader').remove();
 			mainNode = document.querySelector('.main-content')
 			if mainNode?
 				for child in mainNode.children
