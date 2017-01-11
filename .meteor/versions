@@ -95,7 +95,7 @@ mystor:device-detection@0.2.0
 nimble:restivus@0.8.11
 nooitaf:colors@1.1.2_1
 npm-bcrypt@0.9.2
-npm-mongo@2.2.11_2
+npm-mongo@2.2.16_1
 oauth@1.1.12
 oauth1@1.1.11
 oauth2@1.1.11

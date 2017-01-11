@@ -65,8 +65,30 @@ function messagingTest() {
 			mainContent.popupFileTitle.isVisible().should.be.true;
 		});
 
+		it('should show the file name input', () => {
+			mainContent.popupFileName.isVisible().should.be.true;
+		});
+
+		it('should fill the file name input', () => {
+			mainContent.popupFileName.setValue('File Name');
+		});
+
+		it('should show the file name input', () => {
+			mainContent.popupFileDescription.isVisible().should.be.true;
+		});
+
+		it('should fill the file name input', () => {
+			mainContent.popupFileDescription.setValue('File Description');
+		});
+
 		it('click the confirm', () => {
 			mainContent.popupFileConfirmBtn.click();
+			mainContent.popupFileConfirmBtn.waitForVisible(5000, true);
+		});
+
+		it('should show the file in the message', () => {
+			mainContent.lastMessageDesc.waitForVisible(10000);
+			mainContent.lastMessageDesc.getText().should.equal('File Description');
 		});
 	});
 }
