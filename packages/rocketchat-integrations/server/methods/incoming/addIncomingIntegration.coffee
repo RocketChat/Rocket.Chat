@@ -69,6 +69,7 @@ Meteor.methods
 
 		integration.type = 'webhook-incoming'
 		integration.token = token
+		integration.channel = channels
 		integration.userId = user._id
 		integration._createdAt = new Date
 		integration._createdBy = RocketChat.models.Users.findOne @userId, {fields: {username: 1}}
