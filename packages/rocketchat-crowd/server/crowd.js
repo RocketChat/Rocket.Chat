@@ -170,10 +170,6 @@ const CROWD = class CROWD {
 			});
 		}
 
-		Meteor.runAsUser(crowdUser._id, function() {
-			Meteor.call('joinDefaultChannels');
-		});
-
 		return {
 			userId: crowdUser._id
 		};

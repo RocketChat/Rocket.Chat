@@ -29,6 +29,22 @@ Template.uploadedFilesList.helpers
 	url: ->
 		return '/file-upload/' + @_id + '/' + @name
 
+	fixCordova: (url) ->
+		if Meteor.isCordova and url?[0] is '/'
+			url = Meteor.absoluteUrl().replace(/\/$/, '') + url
+			query = "rc_uid=#{Meteor.userId()}&rc_token=#{Meteor._localStorage.getItem('Meteor.loginToken')}"
+			if url.indexOf('?') is -1
+				url = url + '?' + query
+			else
+				url = url + '&' + query
+
+		if Meteor.settings.public.sandstorm or url.match /^(https?:)?\/\//i
+			return url
+		else if navigator.userAgent.indexOf('Electron') > -1
+			return __meteor_runtime_config__.ROOT_URL_PATH_PREFIX + url
+		else
+			return Meteor.absoluteUrl().replace(/\/$/, '') + __meteor_runtime_config__.ROOT_URL_PATH_PREFIX + url
+
 Template.uploadedFilesList.events
 	'click .room-file-item': (e, t) ->
 		if $(e.currentTarget).siblings('.icon-picture').length

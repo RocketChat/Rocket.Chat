@@ -81,6 +81,11 @@ Accounts.insertUserDoc = _.wrap Accounts.insertUserDoc, (insertUserDoc, options,
 
 	_id = insertUserDoc.call(Accounts, options, user)
 
+	# Add user to default channels
+	if user.username? and options.joinDefaultChannels isnt false and user.joinDefaultChannels isnt false
+		Meteor.runAsUser _id, ->
+			Meteor.call('joinDefaultChannels', options.joinDefaultChannelsSilenced)
+
 	if roles.length is 0
 		# when inserting first user give them admin privileges otherwise make a regular user
 		hasAdmin = RocketChat.models.Users.findOne({ roles: 'admin' }, {fields: {_id: 1}})

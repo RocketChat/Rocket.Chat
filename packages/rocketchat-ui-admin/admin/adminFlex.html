@@ -42,6 +42,10 @@
 						{{_ "Settings"}}
 					</h3>
 
+					<li>
+						<input type="text" name="settings-search" placeholder="{{_ 'Search'}}">
+					</li>
+
 					{{#each groups}}
 					<li>
 						<a href="{{pathFor 'admin' group=_id}}" class="admin-link">{{label}}</a>

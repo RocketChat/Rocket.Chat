@@ -34,7 +34,7 @@ Package.onUse(function(api) {
 	//Server methods
 	api.addFiles('server/methods/getImportProgress.coffee', 'server');
 	api.addFiles('server/methods/getSelectionData.coffee', 'server');
-	api.addFiles('server/methods/prepareImport.coffee', 'server');
+	api.addFiles('server/methods/prepareImport.js', 'server');
 	api.addFiles('server/methods/restartImport.coffee', 'server');
 	api.addFiles('server/methods/setupImporter.coffee', 'server');
 	api.addFiles('server/methods/startImport.coffee', 'server');

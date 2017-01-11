@@ -160,7 +160,7 @@ class WebRTCClass
 		@screenShareAvailable = @navigator in ['chrome', 'firefox']
 
 		@media =
-			video: true
+			video: false
 			audio: true
 
 		@transport = new @transportClass @
@@ -228,10 +228,10 @@ class WebRTCClass
 		if @active isnt true or @monitor is true or @remoteMonitoring is true then return
 
 		remoteConnections = []
-		for id, peerConnections of @peerConnections
+		for id, peerConnection of @peerConnections
 			remoteConnections.push
 				id: id
-				media: peerConnections.remoteMedia
+				media: peerConnection.remoteMedia
 
 		@transport.sendStatus
 			media: @media
@@ -339,6 +339,8 @@ class WebRTCClass
 				stream.removeTrack(stream.getAudioTracks()[0])
 				stream.addTrack(peer.stream.getAudioTracks()[0])
 				stream.volume = volume
+
+				this.audioContext = audioContext
 
 			onSuccess(stream)
 
@@ -461,7 +463,8 @@ class WebRTCClass
 
 	stopAllPeerConnections: ->
 		for id, peerConnection of @peerConnections
-				@stopPeerConnection id
+			@stopPeerConnection id
+		window.audioContext?.close()
 
 	setAudioEnabled: (enabled=true) ->
 		if @localStream?
@@ -592,7 +595,7 @@ class WebRTCClass
 				title = "Group audio call from #{subscription.name}"
 
 		swal
-			title: "<i class='icon-#{icon} alert-icon'></i>#{title}"
+			title: "<i class='icon-#{icon} alert-icon success-color'></i>#{title}"
 			text: "Do you want to accept?"
 			html: true
 			showCancelButton: true

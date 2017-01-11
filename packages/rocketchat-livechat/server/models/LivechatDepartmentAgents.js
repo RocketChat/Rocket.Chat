@@ -74,7 +74,7 @@ class LivechatDepartmentAgents extends RocketChat.models._Base {
 		var agents = this.findByDepartmentId(departmentId).fetch();
 
 		if (agents.length === 0) {
-			return;
+			return [];
 		}
 
 		var onlineUsers = RocketChat.models.Users.findOnlineUserFromList(_.pluck(agents, 'username'));
@@ -93,7 +93,7 @@ class LivechatDepartmentAgents extends RocketChat.models._Base {
 		if (depAgents) {
 			return depAgents;
 		} else {
-			return null;
+			return [];
 		}
 	}
 

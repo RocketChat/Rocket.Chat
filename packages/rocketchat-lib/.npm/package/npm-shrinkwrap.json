@@ -324,6 +324,11 @@
       "resolved": "https://registry.npmjs.org/localforage/-/localforage-1.4.2.tgz",
       "from": "localforage@1.4.2"
     },
+    "lokijs": {
+      "version": "1.4.1",
+      "resolved": "https://registry.npmjs.org/lokijs/-/lokijs-1.4.1.tgz",
+      "from": "lokijs@1.4.1"
+    },
     "mime-db": {
       "version": "1.24.0",
       "resolved": "https://registry.npmjs.org/mime-db/-/mime-db-1.24.0.tgz",
@@ -353,6 +358,11 @@
       "version": "1.0.11",
       "resolved": "https://registry.npmjs.org/object-keys/-/object-keys-1.0.11.tgz",
       "from": "object-keys@>=1.0.6 <2.0.0"
+    },
+    "object-path": {
+      "version": "0.9.2",
+      "resolved": "https://registry.npmjs.org/object-path/-/object-path-0.9.2.tgz",
+      "from": "object-path@0.9.2"
     },
     "pinkie": {
       "version": "2.0.4",

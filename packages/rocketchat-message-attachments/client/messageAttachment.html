@@ -3,7 +3,7 @@
 		<!-- <div>fallback: {{fallback}}</div> -->
 		{{pretext}}
 		<div class="attachment-block">
-			<div class="attachment-block-border" style="background-color: {{color}}"></div>
+			<div class="attachment-block-border background-info-font-color" style="background-color: {{color}}"></div>
 			{{#if author_name}}
 				{{#if author_link}}
 					<div class="attachment-author">
@@ -121,6 +121,13 @@
 					</div>
 				{{/unless}}
 			{{/if}}
+
+			{{#if description}}
+				<div class="attachment-description">
+					<p>{{{description}}}</p>
+				</div>
+			{{/if}}
+
 			{{#each attachments}}
 				{{injectIndex . ../index @index}} {{> messageAttachment}}
 			{{/each}}

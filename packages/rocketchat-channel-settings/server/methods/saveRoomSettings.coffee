@@ -6,7 +6,7 @@ Meteor.methods
 		unless Match.test rid, String
 			throw new Meteor.Error 'error-invalid-room', 'Invalid room', { method: 'saveRoomSettings' }
 
-		if setting not in ['roomName', 'roomTopic', 'roomDescription', 'roomType', 'readOnly', 'systemMessages', 'default', 'joinCode']
+		if setting not in ['roomName', 'roomTopic', 'roomDescription', 'roomType', 'readOnly', 'reactWhenReadOnly', 'systemMessages', 'default', 'joinCode']
 			throw new Meteor.Error 'error-invalid-settings', 'Invalid settings provided', { method: 'saveRoomSettings' }
 
 		unless RocketChat.authz.hasPermission(Meteor.userId(), 'edit-room', rid)
@@ -17,6 +17,12 @@ Meteor.methods
 
 		room = RocketChat.models.Rooms.findOneById rid
 		if room?
+			if setting is 'roomType' and value isnt room.t and value is 'c' and not RocketChat.authz.hasPermission(@userId, 'create-c')
+				throw new Meteor.Error 'error-action-not-allowed', 'Changing a private group to a public channel is not allowed', { method: 'saveRoomSettings', action: 'Change_Room_Type' }
+
+			if setting is 'roomType' and value isnt room.t and value is 'p' and not RocketChat.authz.hasPermission(@userId, 'create-p')
+				throw new Meteor.Error 'error-action-not-allowed', 'Changing a public channel to a private room is not allowed', { method: 'saveRoomSettings', action: 'Change_Room_Type' }
+
 			switch setting
 				when 'roomName'
 					name = RocketChat.saveRoomName rid, value, Meteor.user()
@@ -32,6 +38,9 @@ Meteor.methods
 				when 'readOnly'
 					if value isnt room.ro
 						RocketChat.saveRoomReadOnly rid, value, Meteor.user()
+				when 'reactWhenReadOnly'
+					if value isnt room.reactWhenReadOnly
+						RocketChat.saveReactWhenReadOnly rid, value, Meteor.user()
 				when 'systemMessages'
 					if value isnt room.sysMes
 						RocketChat.saveRoomSystemMessages rid, value, Meteor.user()

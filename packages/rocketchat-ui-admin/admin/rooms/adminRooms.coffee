@@ -14,10 +14,10 @@ Template.adminRooms.helpers
 	roomCount: ->
 		return Template.instance().rooms?().count()
 	name: ->
-		if @t is 'c' or @t is 'p'
-			return @name
-		else if @t is 'd'
-			return @usernames.join ' x '
+		# if @t is 'c' or @t is 'p'
+		return @name
+		# else if @t is 'd'
+		# 	return @usernames.join ' x '
 	type: ->
 		if @t is 'c'
 			return TAPi18n.__ 'Channel'

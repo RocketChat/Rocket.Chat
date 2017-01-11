@@ -27,6 +27,7 @@ Package.onUse(function(api) {
 	], 'client');
 
 	api.addFiles([
+		'server/functions/saveReactWhenReadOnly.js',
 		'server/functions/saveRoomType.coffee',
 		'server/functions/saveRoomTopic.coffee',
 		'server/functions/saveRoomName.coffee',

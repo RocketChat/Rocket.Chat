@@ -1,6 +1,6 @@
 Importer.Slack = class Importer.Slack extends Importer.Base
-	constructor: (name, descriptionI18N, fileTypeRegex) ->
-		super(name, descriptionI18N, fileTypeRegex)
+	constructor: (name, descriptionI18N, mimeType) ->
+		super(name, descriptionI18N, mimeType)
 		@userTags = []
 		@bots = {}
 		@logger.debug('Constructed a new Slack Importer.')
@@ -126,10 +126,9 @@ Importer.Slack = class Importer.Slack extends Importer.Base
 							if user.profile.email
 								userId = Accounts.createUser { email: user.profile.email, password: Date.now() + user.name + user.profile.email.toUpperCase() }
 							else
-								userId = Accounts.createUser { username: user.name, password: Date.now() + user.name }
+								userId = Accounts.createUser { username: user.name, password: Date.now() + user.name, joinDefaultChannelsSilenced: true }
 							Meteor.runAsUser userId, () =>
-								Meteor.call 'setUsername', user.name
-								Meteor.call 'joinDefaultChannels', true
+								Meteor.call 'setUsername', user.name, {joinDefaultChannelsSilenced: true}
 								url = null
 								if user.profile.image_original
 									url = user.profile.image_original

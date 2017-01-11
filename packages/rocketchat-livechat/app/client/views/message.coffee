@@ -40,6 +40,12 @@ Template.message.helpers
 	system: ->
 		return 'system' if this.t in ['s', 'p', 'f', 'r', 'au', 'ru', 'ul', 'wm', 'uj', 'livechat-close']
 
+	sender: ->
+		agent = Livechat.agent
+		if agent && @u.username is agent.username
+			return agent.name or agent.username
+		return @u.username
+
 
 Template.message.onViewRendered = (context) ->
 	view = this

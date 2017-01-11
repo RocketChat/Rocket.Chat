@@ -1,21 +1,23 @@
 <template name="message">
-	<li id="{{_id}}" class="message sequential {{system}} {{t}} {{own}} {{isTemp}} {{error}}" data-username="{{u.username}}" data-date="{{date}}">
-		<span class="thumb thumb-small" data-username="{{u.username}}" tabindex="1">{{> avatar username=u.username}}</span>
-		<span class="user" data-username="{{u.username}}" tabindex="1">
-			{{#if own}}
-				{{_ "You"}}
-			{{else}}
-				{{u.username}}
-			{{/if}}
-		</span>
-		<span class="info">
-			<span class="time">{{time}}</span>
-			{{#if edit}}
-				<span class="edited">({{_ "edited"}})</span>
-			{{/if}}
-		</span>
-		<div class="body" dir="auto">
-			{{{body}}}
+	<li id="{{_id}}" class="message background-transparent-dark-hover sequential {{system}} {{t}} {{own}} {{isTemp}} {{error}}" data-username="{{u.username}}" data-date="{{date}}">
+		<div class="content">
+			<span class="thumb thumb-small" data-username="{{u.username}}" tabindex="1">{{> avatar username=u.username}}</span>
+			<span class="user" data-username="{{u.username}}" tabindex="1">
+				{{#if own}}
+					{{_ "You"}}
+				{{else}}
+					{{sender}}
+				{{/if}}
+			</span>
+			<div class="body" dir="auto">
+				{{{body}}}
+				<span class="info">
+					<span class="time">{{time}}</span>
+					{{#if edit}}
+						<span class="edited">({{_ "edited"}})</span>
+					{{/if}}
+				</span>
+			</div>
 		</div>
 	</li>
 </template>

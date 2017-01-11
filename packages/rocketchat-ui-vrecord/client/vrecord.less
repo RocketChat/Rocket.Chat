@@ -2,9 +2,10 @@
 	opacity: 0;
 	visibility: hidden;
 	position: absolute;
-	background-color: @secondary-background-color;
 	border-radius: 5px;
-	box-shadow: 0px 1px 1px 0 rgba(0,0,0,0.2), 0 2px 10px 0 rgba(0,0,0,.16);
+	box-shadow:
+		0 1px 1px 0 rgba(0, 0, 0, 0.2),
+		0 2px 10px 0 rgba(0, 0, 0, 0.16);
 
 	&.show {
 		opacity: 1;
@@ -25,20 +26,21 @@
 				display: table-cell;
 				margin: 0 2px;
 				padding: 6px 0;
-
-				border-bottom: 2px solid @secondary-background-color;
+				border-bottom-width: 2px;
 
 				&.right-aligned {
 					text-align: right;
 				}
+
 				&.left-aligned {
 					text-align: left;
 				}
 			}
 		}
 	}
+
 	.video-container {
-		padding: 5px 5px 5px 5px;
+		padding: 5px;
 	}
 }
 
