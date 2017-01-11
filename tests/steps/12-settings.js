@@ -345,5 +345,78 @@ describe('Changing settings via api', () => {
 				.end(done);
 		});
 	});
+
+	describe('profile changes', () => {
+		before(() => {
+			sideNav.accountBoxUserName.click();
+			sideNav.account.waitForVisible(5000);
+			sideNav.account.click();
+		});
+
+		after(() => {
+			sideNav.preferencesClose.click();
+			sideNav.getChannelFromList('general').waitForExist(5000);
+			sideNav.openChannel('general');
+		});
+		describe('block profile change', () => {
+			it('should change the allow user profile change via api', (done) => {
+				request.post(api('settings/Accounts_AllowUserProfileChange'))
+					.set(credentials)
+					.send({'value' : false})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+					})
+					.end(done);
+			});
+
+			it('should not show profile link', () => {
+				sideNav.profile.isVisible().should.be.false;
+			});
+
+			it('should change the allow user profile change via api', (done) => {
+				request.post(api('settings/Accounts_AllowUserProfileChange'))
+					.set(credentials)
+					.send({'value' : true})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+					})
+					.end(done);
+			});
+		});
+
+		describe('block avatar change', () => {
+			it('should change the allow user avatar change via api', (done) => {
+				request.post(api('settings/Accounts_AllowUserAvatarChange'))
+					.set(credentials)
+					.send({'value' : false})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+					})
+					.end(done);
+			});
+
+			it('should not show avatar link', () => {
+				sideNav.avatar.isVisible().should.be.false;
+			});
+
+			it('should change the allow user avatar change via api', (done) => {
+				request.post(api('settings/Accounts_AllowUserAvatarChange'))
+					.set(credentials)
+					.send({'value' : true})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+					})
+					.end(done);
+			});
+		});
+	});
 });
 
