@@ -123,10 +123,10 @@ syncUserData = function syncUserData(user, ldapUser) {
 	const userData = getDataToSyncUserData(ldapUser, user);
 	if (user && user._id && userData) {
 		logger.debug('setting', JSON.stringify(userData, null, 2));
- 		if (userData.name) {
- 			RocketChat._setRealName(user._id, userData.name);
- 			delete userData.name;
- 		}
+		if (userData.name) {
+			RocketChat._setRealName(user._id, userData.name);
+			delete userData.name;
+		}
 		Meteor.users.update(user._id, { $set: userData });
 		user = Meteor.users.findOne({_id: user._id});
 	}
