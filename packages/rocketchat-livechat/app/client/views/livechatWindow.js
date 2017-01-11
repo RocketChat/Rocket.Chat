@@ -108,6 +108,10 @@ Template.livechatWindow.onCreated(function() {
 				Livechat.room = result.room._id;
 			}
 
+			if (result.agentData) {
+				Livechat.agent = result.agentData;
+			}
+
 			TAPi18n.setLanguage((result.language || defaultAppLanguage()).split('-').shift());
 
 			Triggers.setTriggers(result.triggers);

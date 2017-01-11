@@ -1,6 +1,6 @@
 Importer.Slack = class Importer.Slack extends Importer.Base
-	constructor: (name, descriptionI18N, fileTypeRegex) ->
-		super(name, descriptionI18N, fileTypeRegex)
+	constructor: (name, descriptionI18N, mimeType) ->
+		super(name, descriptionI18N, mimeType)
 		@userTags = []
 		@bots = {}
 		@logger.debug('Constructed a new Slack Importer.')

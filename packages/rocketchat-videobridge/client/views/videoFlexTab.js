@@ -39,7 +39,7 @@ Template.videoFlexTab.onCreated(function() {
 				let roomId = Session.get('openedRoom');
 
 				let domain = RocketChat.settings.get('Jitsi_Domain');
-				let jitsiRoom = 'RocketChat' + CryptoJS.MD5(RocketChat.settings.get('uniqueID') + roomId).toString();
+				let jitsiRoom = RocketChat.settings.get('Jitsi_URL_Room_Prefix') + CryptoJS.MD5(RocketChat.settings.get('uniqueID') + roomId).toString();
 				let noSsl = RocketChat.settings.get('Jitsi_SSL') ? false : true;
 
 				if (jitsiRoomActive !== null && jitsiRoomActive !== jitsiRoom) {

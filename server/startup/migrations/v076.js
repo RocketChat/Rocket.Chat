@@ -1,9 +1,10 @@
 RocketChat.Migrations.add({
 	version: 76,
 	up: function() {
-		RocketChat.models.Users.find({}, {username: 1, name: 1}).forEach((user) => {
-			RocketChat.models.Messages.updateAllNamesByUserId(user._id, user.name);
-			RocketChat.models.Subscriptions.setRealNameForDirectRoomsWithUsername(user.username, user.name);
-		});
+		if (RocketChat && RocketChat.models && RocketChat.models.Settings) {
+			RocketChat.models.Settings.find({section: 'Colors (alphas)'}).forEach((setting) => {
+				RocketChat.models.Settings.remove({ _id: setting._id });
+			});
+		}
 	}
 });

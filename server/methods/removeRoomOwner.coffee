@@ -10,9 +10,17 @@ Meteor.methods
 		unless RocketChat.authz.hasPermission Meteor.userId(), 'set-owner', rid
 			throw new Meteor.Error 'error-not-allowed', 'Not allowed', { method: 'removeRoomOwner' }
 
-		subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId rid, userId
+		user = RocketChat.models.Users.findOneById userId
+
+		unless user?.username
+			throw new Meteor.Error 'error-invalid-user', 'Invalid user', { method: 'removeRoomOwner' }
+
+		subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId rid, user._id
 		unless subscription?
 			throw new Meteor.Error 'error-invalid-room', 'Invalid room', { method: 'removeRoomOwner' }
+
+		if 'owner' not in (subscription.roles or [])
+			throw new Meteor.Error 'error-user-not-owner', 'User is not an owner', { method: 'removeRoomOwner' }
 
 		numOwners = RocketChat.authz.getUsersInRole('owner', rid).count()
 		if numOwners is 1
@@ -20,7 +28,6 @@ Meteor.methods
 
 		RocketChat.models.Subscriptions.removeRoleById(subscription._id, 'owner')
 
-		user = RocketChat.models.Users.findOneById userId
 		fromUser = RocketChat.models.Users.findOneById Meteor.userId()
 		RocketChat.models.Messages.createSubscriptionRoleRemovedWithRoomIdAndUser rid, user,
 			u:

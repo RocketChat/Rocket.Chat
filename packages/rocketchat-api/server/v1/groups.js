@@ -1,5 +1,5 @@
 //Returns the private group subscription IF found otherwise it will reutrn the failure of why it didn't. Check the `statusCode` property
-function findPrivateGroupById(roomId, userId) {
+function findPrivateGroupById({ roomId, userId, checkedArchived = true }) {
 	if (!roomId || !roomId.trim()) {
 		return RocketChat.API.v1.failure('Body param "roomId" is required');
 	}
@@ -10,30 +10,62 @@ function findPrivateGroupById(roomId, userId) {
 		return RocketChat.API.v1.failure(`No private group found by the id of: ${roomId}`);
 	}
 
+	if (checkedArchived && roomSub.archived) {
+		return RocketChat.API.v1.failure(`The private group, ${roomSub.name}, is already archived`);
+	}
+
 	return roomSub;
 }
+
+RocketChat.API.v1.addRoute('groups.addModerator', { authRequired: true }, {
+	post: function() {
+		const findResult = findPrivateGroupById({ roomId: this.bodyParams.roomId, userId: this.userId });
+
+		if (findResult.statusCode) {
+			return findResult;
+		}
+
+		const user = this.getUserFromParams();
+
+		Meteor.runAsUser(this.userId, () => {
+			Meteor.call('addRoomModerator', findResult.rid, user._id);
+		});
+
+		return RocketChat.API.v1.success();
+	}
+});
+
+RocketChat.API.v1.addRoute('groups.addOwner', { authRequired: true }, {
+	post: function() {
+		const findResult = findPrivateGroupById({ roomId: this.bodyParams.roomId, userId: this.userId });
+
+		if (findResult.statusCode) {
+			return findResult;
+		}
+
+		const user = this.getUserFromParams();
+
+		Meteor.runAsUser(this.userId, () => {
+			Meteor.call('addRoomOwner', findResult.rid, user._id);
+		});
+
+		return RocketChat.API.v1.success();
+	}
+});
 
 //Archives a private group only if it wasn't
 RocketChat.API.v1.addRoute('groups.archive', { authRequired: true }, {
 	post: function() {
-		const findResult = findPrivateGroupById(this.bodyParams.roomId, this.userId);
+		const findResult = findPrivateGroupById({ roomId: this.bodyParams.roomId, userId: this.userId });
 
 		//The find method returns either with the group or the failure
 		if (findResult.statusCode) {
 			return findResult;
 		}
 
-		if (findResult.archived) {
-			return RocketChat.API.v1.failure(`The private group, ${this.bodyParams.name}, is already archived`);
-		}
-
-		try {
-			Meteor.runAsUser(this.userId, () => {
-				Meteor.call('archiveRoom', findResult.rid);
-			});
-		} catch (e) {
-			return RocketChat.API.v1.failure(`${e.name}: ${e.message}`);
-		}
+		Meteor.runAsUser(this.userId, () => {
+			Meteor.call('archiveRoom', findResult.rid);
+		});
 
 		return RocketChat.API.v1.success();
 	}
@@ -41,7 +73,7 @@ RocketChat.API.v1.addRoute('groups.archive', { authRequired: true }, {
 
 RocketChat.API.v1.addRoute('groups.close', { authRequired: true }, {
 	post: function() {
-		const findResult = findPrivateGroupById(this.bodyParams.roomId, this.userId);
+		const findResult = findPrivateGroupById({ roomId: this.bodyParams.roomId, userId: this.userId, checkedArchived: false });
 
 		//The find method returns either with the group or the failure
 		if (findResult.statusCode) {
@@ -52,13 +84,9 @@ RocketChat.API.v1.addRoute('groups.close', { authRequired: true }, {
 			return RocketChat.API.v1.failure(`The private group with an id "${this.bodyParams.roomId}" is already closed to the sender`);
 		}
 
-		try {
-			Meteor.runAsUser(this.userId, () => {
-				Meteor.call('hideRoom', findResult.rid);
-			});
-		} catch (e) {
-			return RocketChat.API.v1.failure(`${e.name}: ${e.message}`);
-		}
+		Meteor.runAsUser(this.userId, () => {
+			Meteor.call('hideRoom', findResult.rid);
+		});
 
 		return RocketChat.API.v1.success();
 	}
@@ -79,24 +107,82 @@ RocketChat.API.v1.addRoute('groups.create', { authRequired: true }, {
 			return RocketChat.API.v1.failure('Body param "members" must be an array if provided');
 		}
 
-		let id = undefined;
-		try {
-			Meteor.runAsUser(this.userId, () => {
-				id = Meteor.call('createPrivateGroup', this.bodyParams.name, this.bodyParams.members ? this.bodyParams.members : []);
-			});
-		} catch (e) {
-			return RocketChat.API.v1.failure(`${e.name}: ${e.message}`);
-		}
+		let id;
+		Meteor.runAsUser(this.userId, () => {
+			id = Meteor.call('createPrivateGroup', this.bodyParams.name, this.bodyParams.members ? this.bodyParams.members : []);
+		});
 
 		return RocketChat.API.v1.success({
-			group: RocketChat.models.Rooms.findOneById(id.rid)
+			group: RocketChat.models.Rooms.findOneById(id.rid, { fields: RocketChat.API.v1.defaultFieldsToExclude })
+		});
+	}
+});
+
+RocketChat.API.v1.addRoute('groups.delete', { authRequired: true }, {
+	post: function() {
+		const findResult = findPrivateGroupById({ roomId: this.bodyParams.roomId, userId: this.userId, checkedArchived: false });
+
+		//The find method returns either with the group or the failure
+		if (findResult.statusCode) {
+			return findResult;
+		}
+
+		Meteor.runAsUser(this.userId, () => {
+			Meteor.call('eraseRoom', findResult.rid);
+		});
+
+		return RocketChat.API.v1.success({
+			group: RocketChat.models.Rooms.processQueryOptionsOnResult([findResult._room], { fields: RocketChat.API.v1.defaultFieldsToExclude })[0]
+		});
+	}
+});
+
+RocketChat.API.v1.addRoute('groups.getIntegrations', { authRequired: true }, {
+	get: function() {
+		if (!RocketChat.authz.hasPermission(this.userId, 'manage-integrations')) {
+			return RocketChat.API.v1.unauthorized();
+		}
+
+		const findResult = findPrivateGroupById({ roomId: this.queryParams.roomId, userId: this.userId, checkedArchived: false });
+
+		//The find method returns either with the group or the failure
+		if (findResult.statusCode) {
+			return findResult;
+		}
+
+		let includeAllPrivateGroups = true;
+		if (typeof this.queryParams.includeAllPrivateGroups !== 'undefined') {
+			includeAllPrivateGroups = this.queryParams.includeAllPrivateGroups === 'true';
+		}
+
+		const channelsToSearch = [`#${findResult.name}`];
+		if (includeAllPrivateGroups) {
+			channelsToSearch.push('all_private_groups');
+		}
+
+		const { offset, count } = this.getPaginationItems();
+		const { sort, fields, query } = this.parseJsonQuery();
+
+		const ourQuery = Object.assign({}, query, { channel: { $in: channelsToSearch } });
+		const integrations = RocketChat.models.Integrations.find(ourQuery, {
+			sort: sort ? sort : { _createdAt: 1 },
+			skip: offset,
+			limit: count,
+			fields: Object.assign({}, fields, RocketChat.API.v1.defaultFieldsToExclude)
+		}).fetch();
+
+		return RocketChat.API.v1.success({
+			integrations,
+			count: integrations.length,
+			offset,
+			total: RocketChat.models.Integrations.find(ourQuery).count()
 		});
 	}
 });
 
 RocketChat.API.v1.addRoute('groups.history', { authRequired: true }, {
 	get: function() {
-		const findResult = findPrivateGroupById(this.queryParams.roomId, this.userId);
+		const findResult = findPrivateGroupById({ roomId: this.queryParams.roomId, userId: this.userId, checkedArchived: false });
 
 		//The find method returns either with the group or the failure
 		if (findResult.statusCode) {
@@ -128,24 +214,20 @@ RocketChat.API.v1.addRoute('groups.history', { authRequired: true }, {
 			unreads = this.queryParams.unreads;
 		}
 
-		let result = {};
-		try {
-			Meteor.runAsUser(this.userId, () => {
-				result = Meteor.call('getChannelHistory', { rid: findResult.rid, latest: latestDate, oldest: oldestDate, inclusive, count, unreads });
-			});
-		} catch (e) {
-			return RocketChat.API.v1.failure(`${e.name}: ${e.message}`);
-		}
+		let result;
+		Meteor.runAsUser(this.userId, () => {
+			result = Meteor.call('getChannelHistory', { rid: findResult.rid, latest: latestDate, oldest: oldestDate, inclusive, count, unreads });
+		});
 
 		return RocketChat.API.v1.success({
-			messages: result.messages
+			messages: result && result.messages ? result.messages : []
 		});
 	}
 });
 
 RocketChat.API.v1.addRoute('groups.info', { authRequired: true }, {
 	get: function() {
-		const findResult = findPrivateGroupById(this.queryParams.roomId, this.userId);
+		const findResult = findPrivateGroupById({ roomId: this.queryParams.roomId, userId: this.userId, checkedArchived: false });
 
 		//The find method returns either with the group or the failure
 		if (findResult.statusCode) {
@@ -153,78 +235,46 @@ RocketChat.API.v1.addRoute('groups.info', { authRequired: true }, {
 		}
 
 		return RocketChat.API.v1.success({
-			group: RocketChat.models.Rooms.findOneById(findResult.rid)
+			group: RocketChat.models.Rooms.findOneById(findResult.rid, { fields: RocketChat.API.v1.defaultFieldsToExclude })
 		});
 	}
 });
 
 RocketChat.API.v1.addRoute('groups.invite', { authRequired: true }, {
 	post: function() {
-		if (!this.bodyParams.userId || !this.bodyParams.userId.trim()) {
-			return RocketChat.API.v1.failure('Body param "userId" is required');
-		}
-
-		const findResult = findPrivateGroupById(this.bodyParams.roomId, this.userId);
+		const findResult = findPrivateGroupById({ roomId: this.bodyParams.roomId, userId: this.userId });
 
 		//The find method returns either with the group or the failure
 		if (findResult.statusCode) {
 			return findResult;
 		}
 
-		if (findResult.archived) {
-			return RocketChat.API.v1.failure(`The private group, ${this.bodyParams.name}, is archived`);
-		}
+		const user = this.getUserFromParams();
 
-		const user = RocketChat.models.Users.findOneById(this.bodyParams.userId);
-
-		if (!user) {
-			return RocketChat.API.v1.failure(`There is not a user with the id: ${this.bodyParams.userId}`);
-		}
-
-		try {
-			Meteor.runAsUser(this.userId, () => {
-				Meteor.call('addUserToRoom', { rid: findResult.rid, username: user.username });
-			});
-		} catch (e) {
-			return RocketChat.API.v1.failure(`${e.name}: ${e.message}`);
-		}
+		Meteor.runAsUser(this.userId, () => {
+			Meteor.call('addUserToRoom', { rid: findResult.rid, username: user.username });
+		});
 
 		return RocketChat.API.v1.success({
-			group: RocketChat.models.Rooms.findOneById(findResult.rid)
+			group: RocketChat.models.Rooms.findOneById(findResult.rid, { fields: RocketChat.API.v1.defaultFieldsToExclude })
 		});
 	}
 });
 
 RocketChat.API.v1.addRoute('groups.kick', { authRequired: true }, {
 	post: function() {
-		if (!this.bodyParams.userId || !this.bodyParams.userId.trim()) {
-			return RocketChat.API.v1.failure('Body param "userId" is required');
-		}
-
-		const findResult = findPrivateGroupById(this.bodyParams.roomId, this.userId);
+		const findResult = findPrivateGroupById({ roomId: this.bodyParams.roomId, userId: this.userId });
 
 		//The find method returns either with the group or the failure
 		if (findResult.statusCode) {
 			return findResult;
 		}
 
-		if (findResult.archived) {
-			return RocketChat.API.v1.failure(`The private group, ${this.bodyParams.name}, is archived`);
-		}
+		const user = this.getUserFromParams();
 
-		const user = RocketChat.models.Users.findOneById(this.bodyParams.userId);
-
-		if (!user) {
-			return RocketChat.API.v1.failure(`There is not a user with the id: ${this.bodyParams.userId}`);
-		}
-
-		try {
-			Meteor.runAsUser(this.userId, () => {
-				Meteor.call('removeUserFromRoom', { rid: findResult.rid, username: user.username });
-			});
-		} catch (e) {
-			return RocketChat.API.v1.failure(`${e.name}: ${e.message}`);
-		}
+		Meteor.runAsUser(this.userId, () => {
+			Meteor.call('removeUserFromRoom', { rid: findResult.rid, username: user.username });
+		});
 
 		return RocketChat.API.v1.success();
 	}
@@ -232,24 +282,16 @@ RocketChat.API.v1.addRoute('groups.kick', { authRequired: true }, {
 
 RocketChat.API.v1.addRoute('groups.leave', { authRequired: true }, {
 	post: function() {
-		const findResult = findPrivateGroupById(this.bodyParams.roomId, this.userId);
+		const findResult = findPrivateGroupById({ roomId: this.bodyParams.roomId, userId: this.userId });
 
 		//The find method returns either with the group or the failure
 		if (findResult.statusCode) {
 			return findResult;
 		}
 
-		if (findResult.archived) {
-			return RocketChat.API.v1.failure(`The private group, ${this.bodyParams.name}, is archived`);
-		}
-
-		try {
-			Meteor.runAsUser(this.userId, () => {
-				Meteor.call('leaveRoom', findResult.rid);
-			});
-		} catch (e) {
-			return RocketChat.API.v1.failure(`${e.name}: ${e.message}`);
-		}
+		Meteor.runAsUser(this.userId, () => {
+			Meteor.call('leaveRoom', findResult.rid);
+		});
 
 		return RocketChat.API.v1.success();
 	}
@@ -258,16 +300,30 @@ RocketChat.API.v1.addRoute('groups.leave', { authRequired: true }, {
 //List Private Groups a user has access to
 RocketChat.API.v1.addRoute('groups.list', { authRequired: true }, {
 	get: function() {
-		const roomIds = _.pluck(RocketChat.models.Subscriptions.findByTypeAndUserId('p', this.userId).fetch(), 'rid');
+		const { offset, count } = this.getPaginationItems();
+		const { sort, fields } = this.parseJsonQuery();
+		let rooms = _.pluck(RocketChat.models.Subscriptions.findByTypeAndUserId('p', this.userId).fetch(), '_room');
+		const totalCount = rooms.length;
+
+		rooms = RocketChat.models.Rooms.processQueryOptionsOnResult(rooms, {
+			sort: sort ? sort : { name: 1 },
+			skip: offset,
+			limit: count,
+			fields: Object.assign({}, fields, RocketChat.API.v1.defaultFieldsToExclude)
+		});
+
 		return RocketChat.API.v1.success({
-			groups: RocketChat.models.Rooms.findByIds(roomIds).fetch()
+			groups: rooms,
+			offset,
+			count: rooms.length,
+			total: totalCount
 		});
 	}
 });
 
 RocketChat.API.v1.addRoute('groups.open', { authRequired: true }, {
 	post: function() {
-		const findResult = findPrivateGroupById(this.bodyParams.roomId, this.userId);
+		const findResult = findPrivateGroupById({ roomId: this.bodyParams.roomId, userId: this.userId, checkedArchived: false });
 
 		//The find method returns either with the group or the failure
 		if (findResult.statusCode) {
@@ -278,13 +334,45 @@ RocketChat.API.v1.addRoute('groups.open', { authRequired: true }, {
 			return RocketChat.API.v1.failure(`The private group, ${this.bodyParams.name}, is already open for the sender`);
 		}
 
-		try {
-			Meteor.runAsUser(this.userId, () => {
-				Meteor.call('openRoom', findResult.rid);
-			});
-		} catch (e) {
-			return RocketChat.API.v1.failure(`${e.name}: ${e.message}`);
+		Meteor.runAsUser(this.userId, () => {
+			Meteor.call('openRoom', findResult.rid);
+		});
+
+		return RocketChat.API.v1.success();
+	}
+});
+
+RocketChat.API.v1.addRoute('groups.removeModerator', { authRequired: true }, {
+	post: function() {
+		const findResult = findPrivateGroupById({ roomId: this.bodyParams.roomId, userId: this.userId });
+
+		if (findResult.statusCode) {
+			return findResult;
 		}
+
+		const user = this.getUserFromParams();
+
+		Meteor.runAsUser(this.userId, () => {
+			Meteor.call('removeRoomModerator', findResult.rid, user._id);
+		});
+
+		return RocketChat.API.v1.success();
+	}
+});
+
+RocketChat.API.v1.addRoute('groups.removeOwner', { authRequired: true }, {
+	post: function() {
+		const findResult = findPrivateGroupById({ roomId: this.bodyParams.roomId, userId: this.userId });
+
+		if (findResult.statusCode) {
+			return findResult;
+		}
+
+		const user = this.getUserFromParams();
+
+		Meteor.runAsUser(this.userId, () => {
+			Meteor.call('removeRoomOwner', findResult.rid, user._id);
+		});
 
 		return RocketChat.API.v1.success();
 	}
@@ -296,27 +384,19 @@ RocketChat.API.v1.addRoute('groups.rename', { authRequired: true }, {
 			return RocketChat.API.v1.failure('The bodyParam "name" is required');
 		}
 
-		const findResult = findPrivateGroupById(this.bodyParams.roomId, this.userId);
+		const findResult = findPrivateGroupById({ roomId: this.bodyParams.roomId, userId: this.userId });
 
 		//The find method returns either with the group or the failure
 		if (findResult.statusCode) {
 			return findResult;
 		}
 
-		if (findResult.archived) {
-			return RocketChat.API.v1.failure(`The private group, ${this.bodyParams.name}, is archived`);
-		}
-
-		try {
-			Meteor.runAsUser(this.userId, () => {
-				Meteor.call('saveRoomSettings', findResult.rid, 'roomName', this.bodyParams.name);
-			});
-		} catch (e) {
-			return RocketChat.API.v1.failure(`${e.name}: ${e.message}`);
-		}
+		Meteor.runAsUser(this.userId, () => {
+			Meteor.call('saveRoomSettings', findResult.rid, 'roomName', this.bodyParams.name);
+		});
 
 		return RocketChat.API.v1.success({
-			channel: RocketChat.models.Rooms.findOneById(findResult.rid)
+			channel: RocketChat.models.Rooms.findOneById(findResult.rid, { fields: RocketChat.API.v1.defaultFieldsToExclude })
 		});
 	}
 });
@@ -327,24 +407,16 @@ RocketChat.API.v1.addRoute('groups.setDescription', { authRequired: true }, {
 			return RocketChat.API.v1.failure('The bodyParam "description" is required');
 		}
 
-		const findResult = findPrivateGroupById(this.bodyParams.roomId, this.userId);
+		const findResult = findPrivateGroupById({ roomId: this.bodyParams.roomId, userId: this.userId });
 
 		//The find method returns either with the group or the failure
 		if (findResult.statusCode) {
 			return findResult;
 		}
 
-		if (findResult.archived) {
-			return RocketChat.API.v1.failure(`The private group, ${this.bodyParams.name}, is archived`);
-		}
-
-		try {
-			Meteor.runAsUser(this.userId, () => {
-				Meteor.call('saveRoomSettings', findResult.rid, 'roomDescription', this.bodyParams.description);
-			});
-		} catch (e) {
-			return RocketChat.API.v1.failure(`${e.name}: ${e.message}`);
-		}
+		Meteor.runAsUser(this.userId, () => {
+			Meteor.call('saveRoomSettings', findResult.rid, 'roomDescription', this.bodyParams.description);
+		});
 
 		return RocketChat.API.v1.success({
 			description: this.bodyParams.description
@@ -358,27 +430,45 @@ RocketChat.API.v1.addRoute('groups.setPurpose', { authRequired: true }, {
 			return RocketChat.API.v1.failure('The bodyParam "purpose" is required');
 		}
 
-		const findResult = findPrivateGroupById(this.bodyParams.roomId, this.userId);
+		const findResult = findPrivateGroupById({ roomId: this.bodyParams.roomId, userId: this.userId });
 
 		//The find method returns either with the group or the failure
 		if (findResult.statusCode) {
 			return findResult;
 		}
 
-		if (findResult.archived) {
-			return RocketChat.API.v1.failure(`The private group, ${this.bodyParams.name}, is archived`);
-		}
-
-		try {
-			Meteor.runAsUser(this.userId, () => {
-				Meteor.call('saveRoomSettings', findResult.rid, 'roomDescription', this.bodyParams.purpose);
-			});
-		} catch (e) {
-			return RocketChat.API.v1.failure(`${e.name}: ${e.message}`);
-		}
+		Meteor.runAsUser(this.userId, () => {
+			Meteor.call('saveRoomSettings', findResult.rid, 'roomDescription', this.bodyParams.purpose);
+		});
 
 		return RocketChat.API.v1.success({
 			purpose: this.bodyParams.purpose
+		});
+	}
+});
+
+RocketChat.API.v1.addRoute('groups.setReadOnly', { authRequired: true }, {
+	post: function() {
+		if (typeof this.bodyParams.readOnly === 'undefined') {
+			return RocketChat.API.v1.failure('The bodyParam "readOnly" is required');
+		}
+
+		const findResult = findPrivateGroupById({ roomId: this.bodyParams.roomId, userId: this.userId });
+
+		if (findResult.statusCode) {
+			return findResult;
+		}
+
+		if (findResult.ro === this.bodyParams.readOnly) {
+			return RocketChat.API.v1.failure('The private group read only setting is the same as what it would be changed to.');
+		}
+
+		Meteor.runAsUser(this.userId, () => {
+			Meteor.call('saveRoomSettings', findResult._id, 'readOnly', this.bodyParams.readOnly);
+		});
+
+		return RocketChat.API.v1.success({
+			group: RocketChat.models.Rooms.findOneById(findResult._id, { fields: RocketChat.API.v1.defaultFieldsToExclude })
 		});
 	}
 });
@@ -389,24 +479,16 @@ RocketChat.API.v1.addRoute('groups.setTopic', { authRequired: true }, {
 			return RocketChat.API.v1.failure('The bodyParam "topic" is required');
 		}
 
-		const findResult = findPrivateGroupById(this.bodyParams.roomId, this.userId);
+		const findResult = findPrivateGroupById({ roomId: this.bodyParams.roomId, userId: this.userId });
 
 		//The find method returns either with the group or the failure
 		if (findResult.statusCode) {
 			return findResult;
 		}
 
-		if (findResult.archived) {
-			return RocketChat.API.v1.failure(`The private group, ${this.bodyParams.name}, is archived`);
-		}
-
-		try {
-			Meteor.runAsUser(this.userId, () => {
-				Meteor.call('saveRoomSettings', findResult.rid, 'roomTopic', this.bodyParams.topic);
-			});
-		} catch (e) {
-			return RocketChat.API.v1.failure(`${e.name}: ${e.message}`);
-		}
+		Meteor.runAsUser(this.userId, () => {
+			Meteor.call('saveRoomSettings', findResult.rid, 'roomTopic', this.bodyParams.topic);
+		});
 
 		return RocketChat.API.v1.success({
 			topic: this.bodyParams.topic
@@ -414,26 +496,44 @@ RocketChat.API.v1.addRoute('groups.setTopic', { authRequired: true }, {
 	}
 });
 
+RocketChat.API.v1.addRoute('groups.setType', { authRequired: true }, {
+	post: function() {
+		if (!this.bodyParams.type || !this.bodyParams.type.trim()) {
+			return RocketChat.API.v1.failure('The bodyParam "type" is required');
+		}
+
+		const findResult = findPrivateGroupById({ roomId: this.bodyParams.roomId, userId: this.userId });
+
+		if (findResult.statusCode) {
+			return findResult;
+		}
+
+		if (findResult.t === this.bodyParams.type) {
+			return RocketChat.API.v1.failure('The private group type is the same as what it would be changed to.');
+		}
+
+		Meteor.runAsUser(this.userId, () => {
+			Meteor.call('saveRoomSettings', findResult._id, 'roomType', this.bodyParams.type);
+		});
+
+		return RocketChat.API.v1.success({
+			group: RocketChat.models.Rooms.findOneById(findResult._id, { fields: RocketChat.API.v1.defaultFieldsToExclude })
+		});
+	}
+});
+
 RocketChat.API.v1.addRoute('groups.unarchive', { authRequired: true }, {
 	post: function() {
-		const findResult = findPrivateGroupById(this.bodyParams.roomId, this.userId);
+		const findResult = findPrivateGroupById({ roomId: this.bodyParams.roomId, userId: this.userId });
 
 		//The find method returns either with the group or the failure
 		if (findResult.statusCode) {
 			return findResult;
 		}
 
-		if (!findResult.archived) {
-			return RocketChat.API.v1.failure(`The private group, ${this.bodyParams.name}, is not archived`);
-		}
-
-		try {
-			Meteor.runAsUser(this.userId, () => {
-				Meteor.call('unarchiveRoom', findResult.rid);
-			});
-		} catch (e) {
-			return RocketChat.API.v1.failure(`${e.name}: ${e.message}`);
-		}
+		Meteor.runAsUser(this.userId, () => {
+			Meteor.call('unarchiveRoom', findResult.rid);
+		});
 
 		return RocketChat.API.v1.success();
 	}
