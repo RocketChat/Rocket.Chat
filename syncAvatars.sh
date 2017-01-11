@@ -46,6 +46,7 @@ if (!module.parent) {
 EOF
 
 node printUsernames.js ${MONGO_URL} | xargs -I {} curl -sLo ${AVATARS_PATH}/{}.png https://github.com/{}.png?size=200
+rm printUsernames.js
 cd ${AVATARS_PATH}
 for f in *.png; do
   jpg=$(echo $f | sed "s/\.png$/.jpg/")
