@@ -18,34 +18,28 @@ RocketChat.TabBar = new (class TabBar {
 			return false;
 		}
 
-		Tracker.nonreactive(() => {
-			let btns = this.buttons.get();
-			btns[config.id] = config;
+		let btns = this.buttons.curValue;
+		btns[config.id] = config;
 
-			if (this.extraGroups[config.id]) {
-				btns[config.id].groups = _.union((btns[config.id].groups || []), this.extraGroups[config.id]);
-			}
+		if (this.extraGroups[config.id]) {
+			btns[config.id].groups = _.union((btns[config.id].groups || []), this.extraGroups[config.id]);
+		}
 
-			this.buttons.set(btns);
-		});
+		this.buttons.set(btns);
 	}
 
 	removeButton(id) {
-		Tracker.nonreactive(() => {
-			let btns = this.buttons.get();
-			delete btns[id];
-			this.buttons.set(btns);
-		});
+		let btns = this.buttons.curValue;
+		delete btns[id];
+		this.buttons.set(btns);
 	}
 
 	updateButton(id, config) {
-		Tracker.nonreactive(() => {
-			let btns = this.buttons.get();
-			if (btns[id]) {
-				btns[id] = _.extend(btns[id], config);
-				this.buttons.set(btns);
-			}
-		});
+		let btns = this.buttons.curValue;
+		if (btns[id]) {
+			btns[id] = _.extend(btns[id], config);
+			this.buttons.set(btns);
+		}
 	}
 
 	getButtons() {
@@ -57,26 +51,22 @@ RocketChat.TabBar = new (class TabBar {
 	}
 
 	addGroup(id, groups) {
-		Tracker.nonreactive(() => {
-			let btns = this.buttons.get();
-			if (btns[id]) {
-				btns[id].groups = _.union((btns[id].groups || []), groups);
-				this.buttons.set(btns);
-			} else {
-				this.extraGroups[id] = _.union((this.extraGroups[id] || []), groups);
-			}
-		});
+		let btns = this.buttons.curValue;
+		if (btns[id]) {
+			btns[id].groups = _.union((btns[id].groups || []), groups);
+			this.buttons.set(btns);
+		} else {
+			this.extraGroups[id] = _.union((this.extraGroups[id] || []), groups);
+		}
 	}
 
 	removeGroup(id, groups) {
-		Tracker.nonreactive(() => {
-			let btns = this.buttons.get();
-			if (btns[id]) {
-				btns[id].groups = _.difference((btns[id].groups || []), groups);
-				this.buttons.set(btns);
-			} else {
-				this.extraGroups[id] = _.difference((this.extraGroups[id] || []), groups);
-			}
-		});
+		let btns = this.buttons.curValue;
+		if (btns[id]) {
+			btns[id].groups = _.difference((btns[id].groups || []), groups);
+			this.buttons.set(btns);
+		} else {
+			this.extraGroups[id] = _.difference((this.extraGroups[id] || []), groups);
+		}
 	}
 });
