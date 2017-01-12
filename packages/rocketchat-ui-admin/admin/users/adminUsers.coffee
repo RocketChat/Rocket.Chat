@@ -7,12 +7,13 @@ Template.adminUsers.helpers
 		return 'btn-loading' unless Template.instance().ready?.get()
 	hasMore: ->
 		return Template.instance().limit?.get() is Template.instance().users?().length
-	flexTemplate: ->
-		return RocketChat.TabBar.getTemplate()
-	flexData: ->
-		return RocketChat.TabBar.getData()
 	emailAddress: ->
 		return _.map(@emails, (e) -> e.address).join(', ')
+	flexData: ->
+		return {
+			tabBar: Template.instance().tabBar
+			data: Template.instance().tabBarData.get()
+		}
 
 Template.adminUsers.onCreated ->
 	instance = @
@@ -20,8 +21,13 @@ Template.adminUsers.onCreated ->
 	@filter = new ReactiveVar ''
 	@ready = new ReactiveVar true
 
+	@tabBar = new RocketChatTabBar();
+	@tabBar.showGroup(FlowRouter.current().route.name);
+
+	@tabBarData = new ReactiveVar
+
 	RocketChat.TabBar.addButton({
-		groups: ['adminusers', 'adminusers-selected'],
+		groups: ['admin-users'],
 		id: 'invite-user',
 		i18nTitle: 'Invite_Users',
 		icon: 'icon-paper-plane',
@@ -30,19 +36,16 @@ Template.adminUsers.onCreated ->
 	})
 
 	RocketChat.TabBar.addButton({
-		groups: ['adminusers', 'adminusers-selected'],
+		groups: ['admin-users'],
 		id: 'add-user',
 		i18nTitle: 'Add_User',
 		icon: 'icon-plus',
 		template: 'adminUserEdit',
-		openClick: (e, t) ->
-			RocketChat.TabBar.setData()
-			return true
 		order: 2
 	})
 
 	RocketChat.TabBar.addButton({
-		groups: ['adminusers-selected']
+		groups: ['admin-users']
 		id: 'admin-user-info',
 		i18nTitle: 'User_Info',
 		icon: 'icon-user',
@@ -85,18 +88,11 @@ Template.adminUsers.events
 		e.preventDefault()
 		t.filter.set e.currentTarget.value
 
-	'click .flex-tab .more': ->
-		if RocketChat.TabBar.isFlexOpen()
-			RocketChat.TabBar.closeFlex()
-		else
-			RocketChat.TabBar.openFlex()
-
-	'click .user-info': (e) ->
+	'click .user-info': (e, instance) ->
 		e.preventDefault()
-		RocketChat.TabBar.setTemplate 'adminUserInfo'
-		RocketChat.TabBar.setData Meteor.users.findOne @_id
-		RocketChat.TabBar.openFlex()
-		RocketChat.TabBar.showGroup 'adminusers-selected'
+
+		instance.tabBarData.set Meteor.users.findOne @_id
+		instance.tabBar.open('admin-user-info')
 
 	'click .info-tabs button': (e) ->
 		e.preventDefault()
