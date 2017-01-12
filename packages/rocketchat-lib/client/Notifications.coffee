@@ -2,6 +2,7 @@ RocketChat.Notifications = new class
 	constructor: ->
 		@debug = false
 		@streamAll = new Meteor.Streamer 'notify-all'
+		@streamLogged = new Meteor.Streamer 'notify-logged'
 		@streamRoom = new Meteor.Streamer 'notify-room'
 		@streamRoomUsers = new Meteor.Streamer 'notify-room-users'
 		@streamUser = new Meteor.Streamer 'notify-user'
@@ -32,6 +33,9 @@ RocketChat.Notifications = new class
 	onAll: (eventName, callback) ->
 		@streamAll.on eventName, callback
 
+	onLogged: (eventName, callback) ->
+		@streamLogged.on eventName, callback
+
 	onRoom: (room, eventName, callback) ->
 		if @debug is true
 			@streamRoom.on room, -> console.log "RocketChat.Notifications: onRoom #{room}", arguments
@@ -44,6 +48,9 @@ RocketChat.Notifications = new class
 
 	unAll: (callback) ->
 		@streamAll.removeListener 'notify', callback
+
+	unLogged: (callback) ->
+		@streamLogged.removeListener 'notify', callback
 
 	unRoom: (room, eventName, callback) ->
 		@streamRoom.removeListener "#{room}/#{eventName}", callback
