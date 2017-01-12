@@ -60,7 +60,7 @@ RocketChat.Notifications = new class
 		console.log 'notifyLogged', arguments if @debug is true
 
 		args.unshift eventName
-		@streamLogged.emit.apply @streamAll, args
+		@streamLogged.emit.apply @streamLogged, args
 
 	notifyRoom: (room, eventName, args...) ->
 		console.log 'notifyRoom', arguments if @debug is true
@@ -85,7 +85,7 @@ RocketChat.Notifications = new class
 		console.log 'notifyLogged', arguments if @debug is true
 
 		args.unshift eventName
-		@streamLogged.emitWithoutBroadcast.apply @streamAll, args
+		@streamLogged.emitWithoutBroadcast.apply @streamLogged, args
 
 	notifyRoomInThisInstance: (room, eventName, args...) ->
 		console.log 'notifyRoomAndBroadcast', arguments if @debug is true

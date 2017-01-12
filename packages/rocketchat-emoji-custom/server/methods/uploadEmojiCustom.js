@@ -13,7 +13,7 @@ Meteor.methods({
 		RocketChatFileEmojiCustomInstance.deleteFile(encodeURIComponent(`${emojiData.name}.${emojiData.extension}`));
 		let ws = RocketChatFileEmojiCustomInstance.createWriteStream(encodeURIComponent(`${emojiData.name}.${emojiData.extension}`), contentType);
 		ws.on('end', Meteor.bindEnvironment(() =>
-			Meteor.setTimeout(() => RocketChat.Notifications.notifyAll('updateEmojiCustom', {emojiData})
+			Meteor.setTimeout(() => RocketChat.Notifications.notifyLogged('updateEmojiCustom', {emojiData})
 			, 500)
 		));
 
