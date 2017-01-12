@@ -55,8 +55,9 @@ RocketChat.EmojiPicker = {
 		let sourcePos = $(this.source).offset();
 		let left = sourcePos.left;
 		let top = (sourcePos.top - this.height - 5);
+		let bottom = (sourcePos.bottom + sourcePos.height + 5);
 		let cssProperties = {
-			top: top,
+			bottom: bottom,
 			left: left
 		};
 
@@ -79,7 +80,6 @@ RocketChat.EmojiPicker = {
 		return $('.emoji-picker').css(cssProperties);
 	},
 	open(source, callback) {
-		$('.emoji-picker').css('display', 'block');
 		if (!this.initiated) {
 			this.init();
 		}
@@ -87,22 +87,17 @@ RocketChat.EmojiPicker = {
 		this.source = source;
 
 		const containerEl = this.setPosition();
+		containerEl.addClass('show');
 
-		setTimeout(() => {
-			containerEl.addClass('show');
-			const emojiInput = containerEl.find('.emoji-filter input.search');
-			if (emojiInput) {
-				emojiInput.focus();
-			}
-		}, 200);
+		const emojiInput = containerEl.find('.emoji-filter input.search');
+		if (emojiInput) {
+			emojiInput.focus();
+		}
 		this.opened = true;
 	},
 	close() {
 		$('.emoji-picker').removeClass('show');
 		this.opened = false;
-		setTimeout(() => {
-			$('.emoji-picker').css('display', 'none');
-		}, 200);
 	},
 	pickEmoji(emoji) {
 		this.pickCallback(emoji);
