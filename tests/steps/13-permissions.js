@@ -190,6 +190,7 @@ describe('Admin settings', () => {
 		it('go to general', () => {
 			sideNav.getChannelFromList('general').waitForExist(5000);
 			sideNav.openChannel('general');
+			mainContent.messageInput.waitForVisible(5000);
 		});
 
 		it('try to use @all and should be warned by rocket.cat ', () => {
