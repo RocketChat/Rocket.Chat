@@ -6,7 +6,8 @@ import supertest from 'supertest';
 const request = supertest('http://localhost:3000');
 const prefix = '/api/v1/';
 
-import {adminUsername, adminEmail, adminPassword} from '../data/user.js';
+
+import {username, email, password, adminUsername, adminEmail, adminPassword} from '../data/user.js';
 
 function api(path) {
 	return prefix + path;
@@ -29,6 +30,8 @@ const login = {
 	user: adminUsername,
 	password: adminPassword
 };
+
+var targetUserId = undefined;
 
 describe('API default', () => {
 	// Required by mobile apps
@@ -83,6 +86,81 @@ describe('API v1', () => {
 				expect(res.body).to.have.deep.property('emails[0].address', adminEmail);
 			})
 			.end(done);
+	});
+
+	describe('Users', () => {
+		it('/users.create', (done) => {
+			request.post(api('users.create'))
+				.set(credentials)
+				.send({
+					email: email,
+					name: username,
+					username: username,
+					password: password,
+					active: true,
+					roles: ['user'],
+					joinDefaultChannels: true,
+					verified:true
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.deep.property('user.username', username);
+					expect(res.body).to.have.deep.property('user.emails[0].address', email);
+					expect(res.body).to.have.deep.property('user.active', true);
+					expect(res.body).to.have.deep.property('user.name', username);
+					targetUserId = res.body.user._id;
+				})
+				.end(done);
+		});
+
+		it('/users.info', (done) => {
+			request.get(api('users.info'))
+				.set(credentials)
+				.query({
+					userId: targetUserId
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.deep.property('user.username', username);
+					expect(res.body).to.have.deep.property('user.emails[0].address', email);
+					expect(res.body).to.have.deep.property('user.active', true);
+					expect(res.body).to.have.deep.property('user.name', username);
+				})
+				.end(done);
+		});
+
+		it('/users.getPresence', (done) => {
+			request.get(api('users.getPresence'))
+				.set(credentials)
+				.query({
+					userId: targetUserId
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.deep.property('presence', 'offline');
+				})
+				.end(done);
+		});
+
+		it('/users.list', (done) => {
+			request.get(api('users.list'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('count');
+					expect(res.body).to.have.property('total');
+				})
+				.end(done);
+		});
+
 	});
 
 });
