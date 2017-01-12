@@ -355,7 +355,7 @@ describe('Changing settings via api', () => {
 
 		after(() => {
 			sideNav.preferencesClose.click();
-			sideNav.getChannelFromList('general').waitForExist(5000);
+			sideNav.getChannelFromList('general').waitForVisible(5000);
 			sideNav.openChannel('general');
 		});
 		describe('block profile change', () => {
