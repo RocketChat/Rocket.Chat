@@ -32,6 +32,6 @@ Meteor.methods
 			role: 'moderator'
 
 		if RocketChat.settings.get('UI_DisplayRoles')
-			RocketChat.Notifications.notifyAll('roles-change', { type: 'added', _id: 'moderator', u: { _id: user._id, username: user.username }, scope: rid });
+			RocketChat.Notifications.notifyLogged('roles-change', { type: 'added', _id: 'moderator', u: { _id: user._id, username: user.username }, scope: rid });
 
 		return true

@@ -5,12 +5,14 @@ RocketChat.Notifications = new class
 		@debug = false
 
 		@streamAll = new Meteor.Streamer 'notify-all'
+		@streamLogged = new Meteor.Streamer 'notify-logged'
 		@streamRoom = new Meteor.Streamer 'notify-room'
 		@streamRoomUsers = new Meteor.Streamer 'notify-room-users'
 		@streamUser = new Meteor.Streamer 'notify-user'
 
 
 		@streamAll.allowWrite('none')
+		@streamLogged.allowWrite('none')
 		@streamRoom.allowWrite('none')
 		@streamRoomUsers.allowWrite (eventName, args...) ->
 			[roomId, e] = eventName.split('/')
@@ -25,7 +27,9 @@ RocketChat.Notifications = new class
 
 		@streamUser.allowWrite('logged')
 
-		@streamAll.allowRead('logged')
+		@streamAll.allowRead('all')
+
+		@streamLogged.allowRead('logged')
 
 		@streamRoom.allowRead (eventName) ->
 			if not @userId? then return false
@@ -52,6 +56,12 @@ RocketChat.Notifications = new class
 		args.unshift eventName
 		@streamAll.emit.apply @streamAll, args
 
+	notifyLogged: (eventName, args...) ->
+		console.log 'notifyLogged', arguments if @debug is true
+
+		args.unshift eventName
+		@streamLogged.emit.apply @streamLogged, args
+
 	notifyRoom: (room, eventName, args...) ->
 		console.log 'notifyRoom', arguments if @debug is true
 
@@ -70,6 +80,12 @@ RocketChat.Notifications = new class
 
 		args.unshift eventName
 		@streamAll.emitWithoutBroadcast.apply @streamAll, args
+
+	notifyLoggedInThisInstance: (eventName, args...) ->
+		console.log 'notifyLogged', arguments if @debug is true
+
+		args.unshift eventName
+		@streamLogged.emitWithoutBroadcast.apply @streamLogged, args
 
 	notifyRoomInThisInstance: (room, eventName, args...) ->
 		console.log 'notifyRoomAndBroadcast', arguments if @debug is true
