@@ -160,13 +160,6 @@ Template.admin.helpers
 
 		return t(section)
 
-	flexOpened: ->
-		return 'opened' if RocketChat.TabBar.isFlexOpen()
-
-	arrowPosition: ->
-		console.log 'room.helpers arrowPosition' if window.rocketDebug
-		return 'left' unless RocketChat.TabBar.isFlexOpen()
-
 	label: ->
 		label = @i18nLabel or @_id
 		return TAPi18n.__ label if label
