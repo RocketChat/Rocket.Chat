@@ -12,7 +12,7 @@ Meteor.methods
 
 		RocketChat.models.Users.unsetAvatarOrigin user._id
 
-		RocketChat.Notifications.notifyAll 'updateAvatar', {username: user.username}
+		RocketChat.Notifications.notifyLogged 'updateAvatar', {username: user.username}
 		return
 
 # Limit changing avatar once per minute
