@@ -361,6 +361,7 @@ describe('Changing settings via api', () => {
 			sideNav.getChannelFromList('general').waitForVisible(5000);
 			sideNav.openChannel('general');
 		});
+	describe.skip('profile changes', () => {
 		describe('block profile change', () => {
 			it('should change the allow user profile change via api', (done) => {
 				request.post(api('settings/Accounts_AllowUserProfileChange'))
