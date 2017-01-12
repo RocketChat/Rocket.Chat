@@ -1,5 +1,44 @@
 # History
 
+## 0.49.0 - 2017-Jan-11
+
+### Now uses NodeJS 4.7.1
+
+- Add basic support for RFC 7233
+- Add Button to block direct message
+- Add caching layer using LokiDB
+- Add custom fields to user's profile
+- Add discard and reset button to admin panels
+- Add email address validation to livechat offline messages
+- Add file name and description on file upload
+- Add Livechat domains validations
+- Add many API endpoints, see https://rocket.chat/docs/developer-guides/rest-api/
+- Add methods from rest api 0.5 to v1
+- Add stylelint to CSS and LESS files
+- Add the migration for bots to be able to create rooms
+- Allow alias, avatar, and emoji in the sendFileMessage.
+- Allow query, sort, and fields on the queryParams of the rest api
+- Allow to merge users with LDAP on bulk sync
+- Bi-directional Sladk message edit, delete and reactions
+- Disable animations when TEST_MODE=true
+- Do not require .jpg for avatar url and return correct content type
+- Enable CDN_PREFIX for avatars
+- Fix crash at startup if Slack bridge enabled and slack.com is not reachable #5426
+- Fix importer relying on os file type, use file signature. Closes #3050
+- Fix issue creating users with username from OAuth
+- Fix screen sharing bug when receiving audio call. issue #5286
+- Migrate livechat visitors' emails field to visitorEmails
+- New livechat layout
+- Normalize favicons, tiles and touchicons
+- Refactored API endpoints to more closely conform to Slack API conventions and naming conventions
+- Remove alpha colors and add disabled buttons style
+- Sets default avatar after setting username for the first time by default
+- Several performance improvements
+- Styles cleanup (#5354) (#5364)
+- Support SAML IDP-initiated login mode
+- Update docker-compose to version 2
+- Use CodeMirror from Npm
+
 ## 0.48.2 - 2016-Dec-20
 
 - Add button to refresh aouth services
