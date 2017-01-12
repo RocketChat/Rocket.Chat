@@ -25,7 +25,7 @@ setFieldValue = (settingId, value, type, editor) ->
 
 Template.admin.onCreated ->
 	if not RocketChat.settings.cachedCollectionPrivate?
-		RocketChat.settings.cachedCollectionPrivate = new RocketChat.CachedCollection({ name: 'private-settings', eventType: 'onAll' })
+		RocketChat.settings.cachedCollectionPrivate = new RocketChat.CachedCollection({ name: 'private-settings', eventType: 'onLogged' })
 		RocketChat.settings.collectionPrivate = RocketChat.settings.cachedCollectionPrivate.collection
 		RocketChat.settings.cachedCollectionPrivate.init()
 
