@@ -79,6 +79,7 @@ RocketChat.EmojiPicker = {
 		return $('.emoji-picker').css(cssProperties);
 	},
 	open(source, callback) {
+		$('.emoji-picker').css('display', 'block');
 		if (!this.initiated) {
 			this.init();
 		}
@@ -86,19 +87,22 @@ RocketChat.EmojiPicker = {
 		this.source = source;
 
 		const containerEl = this.setPosition();
-		containerEl.addClass('show');
 
 		setTimeout(() => {
+			containerEl.addClass('show');
 			const emojiInput = containerEl.find('.emoji-filter input.search');
 			if (emojiInput) {
 				emojiInput.focus();
 			}
-		}, 100);
+		}, 200);
 		this.opened = true;
 	},
 	close() {
 		$('.emoji-picker').removeClass('show');
 		this.opened = false;
+		setTimeout(() => {
+			$('.emoji-picker').css('display', 'none');
+		}, 200);
 	},
 	pickEmoji(emoji) {
 		this.pickCallback(emoji);
