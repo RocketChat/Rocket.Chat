@@ -354,8 +354,10 @@ describe('Changing settings via api', () => {
 		});
 
 		after(() => {
+			sideNav.preferencesClose.waitForVisible(5000);
 			sideNav.preferencesClose.click();
-			sideNav.profile.waitForVisible(5000, true);
+			sideNav.avatar.waitForVisible(5000, true);
+			browser.pause(500);
 			sideNav.getChannelFromList('general').waitForVisible(5000);
 			sideNav.openChannel('general');
 		});
