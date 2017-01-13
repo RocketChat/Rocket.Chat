@@ -113,18 +113,6 @@ Template.main.helpers
 	hasUsername: ->
 		return Meteor.userId()? and Meteor.user().username?
 
-	flexOpened: ->
-		console.log 'layout.helpers flexOpened' if window.rocketDebug
-		return 'flex-opened' if RocketChat.TabBar.isFlexOpen()
-
-	flexOpenedRTC1: ->
-		console.log 'layout.helpers flexOpenedRTC1' if window.rocketDebug
-		return 'layout1' if Session.equals('rtcLayoutmode', 1)
-
-	flexOpenedRTC2: ->
-		console.log 'layout.helpers flexOpenedRTC2' if window.rocketDebug
-		return 'layout2' if (Session.get('rtcLayoutmode') > 1)
-
 	requirePasswordChange: ->
 		return Meteor.user()?.requirePasswordChange is true
 

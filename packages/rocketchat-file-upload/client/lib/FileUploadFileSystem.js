@@ -29,7 +29,7 @@ FileUpload.FileSystem = class FileUploadFileSystem extends FileUploadBase {
 				}
 			},
 			onComplete: (fileData) => {
-				var file = _.pick(fileData, '_id', 'type', 'size', 'name', 'identify');
+				var file = _.pick(fileData, '_id', 'type', 'size', 'name', 'identify', 'description');
 
 				file.url = fileData.url.replace(Meteor.absoluteUrl(), '/');
 
