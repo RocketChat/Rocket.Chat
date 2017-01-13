@@ -29,6 +29,7 @@ Package.onUse(function(api) {
 	api.addFiles('lib/emojiRenderer.js', 'client');
 	api.addFiles('lib/EmojiPicker.js', 'client');
 	api.addFiles('emojiButton.js', 'client');
+	api.addFiles('keyboardFix.js', 'client');
 
 	api.export('renderEmoji');
 });
