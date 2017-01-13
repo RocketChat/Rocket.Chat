@@ -49,7 +49,10 @@ readAsArrayBuffer = (file, callback) ->
 							Your browser does not support the audio element.
 						</audio>
 					</div>
-					<div class='upload-preview-title'>#{Handlebars._escape(file.name)}</div>
+					<div class='upload-preview-title'>
+						<input id='file-name' style='display: inherit;' value='#{Handlebars._escape(file.name)}' placeholder='#{t("Upload_file_name")}'>
+						<input id='file-description' style='display: inherit;' value='' placeholder='#{t("Upload_file_description")}'>
+					</div>
 				"""
 			else if file.type is 'video'
 				text = """
@@ -59,14 +62,20 @@ readAsArrayBuffer = (file, callback) ->
 							Your browser does not support the video element.
 						</video>
 					</div>
-					<div class='upload-preview-title'>#{Handlebars._escape(file.name)}</div>
+					<div class='upload-preview-title'>
+						<input id='file-name' style='display: inherit;' value='#{Handlebars._escape(file.name)}' placeholder='#{t("Upload_file_name")}'>
+						<input id='file-description' style='display: inherit;' value='' placeholder='#{t("Upload_file_description")}'>
+					</div>
 				"""
 			else
 				text = """
 					<div class='upload-preview'>
 						<div class='upload-preview-file' style='background-image: url(#{fileContent})'></div>
 					</div>
-					<div class='upload-preview-title'>#{Handlebars._escape(file.name)}</div>
+					<div class='upload-preview-title'>
+						<input id='file-name' style='display: inherit;' value='#{Handlebars._escape(file.name)}' placeholder='#{t("Upload_file_name")}'>
+						<input id='file-description' style='display: inherit;' value='' placeholder='#{t("Upload_file_description")}'>
+					</div>
 				"""
 
 			swal
@@ -78,15 +87,15 @@ readAsArrayBuffer = (file, callback) ->
 				html: true
 			, (isConfirm) ->
 				consume()
-
 				if isConfirm isnt true
 					return
 
 				record =
-					name: file.name or file.file.name
+					name: document.getElementById('file-name').value or file.name or file.file.name
 					size: file.file.size
 					type: file.file.type
 					rid: roomId
+					description: document.getElementById('file-description').value
 
 				upload = fileUploadHandler record, file.file
 
