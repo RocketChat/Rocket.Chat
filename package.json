@@ -1,79 +1,79 @@
 {
-  "name": "Rocket.Chat",
-  "description": "The Ultimate Open Source WebChat Platform",
-  "version": "0.49.0-develop",
-  "author": {
-    "name": "Rocket.Chat",
-    "url": "https://rocket.chat/"
-  },
-  "contributors": [
-    {
-      "name": "Aaron Ogle",
-      "email": "aaron.ogle@rocket.chat"
-    },
-    {
-      "name": "Bradley Hilton",
-      "email": "bradley.hilton@rocket.chat"
-    },
-    {
-      "name": "Diego Sampaio",
-      "email": "diego.sampaio@rocket.chat"
-    },
-    {
-      "name": "Gabriel Engel",
-      "email": "gabriel.engel@rocket.chat"
-    },
-    {
-      "name": "Marcelo Schmidt",
-      "email": "marcelo.schmidt@rocket.chat"
-    },
-    {
-      "name": "Rodrigo Nascimento",
-      "email": "rodrigo.nascimento@rocket.chat"
-    },
-    {
-      "name": "Sing Li",
-      "email": "sing.li@rocket.chat"
-    }
-  ],
-  "keywords": [
-    "rocketchat",
-    "rocket",
-    "chat"
-  ],
-  "scripts": {
-    "start": "meteor npm i && meteor",
-    "lint": "eslint .",
-    "stylelint": "stylelint **/*.less",
-    "test": "node .scripts/start.js",
-    "deploy": "npm run build && pm2 startOrRestart pm2.json",
-    "chimp-watch": "chimp --ddp=http://localhost:3000 --watch --mocha --path=tests/steps",
-    "chimp-test": "chimp tests/chimp-config.js"
-  },
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/RocketChat/Rocket.Chat.git"
-  },
-  "bugs": {
-    "url": "https://github.com/RocketChat/Rocket.Chat/issues",
-    "email": "support@rocket.chat"
-  },
-  "devDependencies": {
-    "chimp": "^0.45.1",
-    "eslint": "^3.12.2",
-    "stylelint": "^7.7.1",
-    "supertest": "^2.0.1"
-  },
-  "dependencies": {
-    "jquery": "^2.1.0",
-    "babel-runtime": "^6.20.0",
-    "bcrypt": "^1.0.2",
-    "moment": "^2.17.1",
-    "moment-timezone": "^0.5.11",
-    "toastr": "^2.1.2",
-    "mime-types": "2.1.13",
-    "file-type": "4.0.0",
-    "codemirror": "5.22.0"
-  }
+	"name": "Rocket.Chat",
+	"description": "The Ultimate Open Source WebChat Platform",
+	"version": "0.50.0-develop",
+	"author": {
+		"name": "Rocket.Chat",
+		"url": "https://rocket.chat/"
+	},
+	"contributors": [
+		{
+			"name": "Aaron Ogle",
+			"email": "aaron.ogle@rocket.chat"
+		},
+		{
+			"name": "Bradley Hilton",
+			"email": "bradley.hilton@rocket.chat"
+		},
+		{
+			"name": "Diego Sampaio",
+			"email": "diego.sampaio@rocket.chat"
+		},
+		{
+			"name": "Gabriel Engel",
+			"email": "gabriel.engel@rocket.chat"
+		},
+		{
+			"name": "Marcelo Schmidt",
+			"email": "marcelo.schmidt@rocket.chat"
+		},
+		{
+			"name": "Rodrigo Nascimento",
+			"email": "rodrigo.nascimento@rocket.chat"
+		},
+		{
+			"name": "Sing Li",
+			"email": "sing.li@rocket.chat"
+		}
+	],
+	"keywords": [
+		"rocketchat",
+		"rocket",
+		"chat"
+	],
+	"scripts": {
+		"start": "meteor npm i && meteor",
+		"lint": "eslint .",
+		"stylelint": "stylelint **/*.less",
+		"test": "node .scripts/start.js",
+		"deploy": "npm run build && pm2 startOrRestart pm2.json",
+		"chimp-watch": "chimp --ddp=http://localhost:3000 --watch --mocha --path=tests/steps",
+		"chimp-test": "chimp tests/chimp-config.js"
+	},
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/RocketChat/Rocket.Chat.git"
+	},
+	"bugs": {
+		"url": "https://github.com/RocketChat/Rocket.Chat/issues",
+		"email": "support@rocket.chat"
+	},
+	"devDependencies": {
+		"chimp": "^0.45.1",
+		"eslint": "^3.13.1",
+		"stylelint": "^7.7.1",
+		"supertest": "^2.0.1"
+	},
+	"dependencies": {
+		"jquery": "^2.1.0",
+		"babel-runtime": "^6.20.0",
+		"bcrypt": "^1.0.2",
+		"moment": "^2.17.1",
+		"moment-timezone": "^0.5.11",
+		"toastr": "^2.1.2",
+		"mime-types": "2.1.13",
+		"file-type": "4.0.0",
+		"codemirror": "5.22.0"
+	}
 }
