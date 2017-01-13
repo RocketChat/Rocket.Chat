@@ -4,6 +4,8 @@ import loki from 'lokijs';
 import {EventEmitter} from 'events';
 import objectPath from 'object-path';
 
+RocketChat.loki = loki;
+
 const logger = new Logger('BaseCache');
 
 const lokiEq = loki.LokiOps.$eq;
@@ -26,6 +28,9 @@ loki.LokiOps.$exists = function(a, b) {
 	return loki.LokiOps.$eq(a, undefined);
 };
 
+loki.LokiOps.$elemMatch = function(a, b) {
+	return _.findWhere(a, b);
+};
 
 const ignore = [
 	'emit',
@@ -569,7 +574,7 @@ class ModelsBaseCache extends EventEmitter {
 		return result;
 	}
 
-	processQuery(query) {
+	processQuery(query, parentField) {
 		if (!query) {
 			return query;
 		}
@@ -580,7 +585,7 @@ class ModelsBaseCache extends EventEmitter {
 			};
 		}
 
-		if (Object.keys(query).length > 1) {
+		if (Object.keys(query).length > 1 && parentField !== '$elemMatch') {
 			const and = [];
 			for (const field in query) {
 				if (query.hasOwnProperty(field)) {
@@ -603,12 +608,12 @@ class ModelsBaseCache extends EventEmitter {
 
 				if (field === '$and' || field === '$or') {
 					query[field] = value.map((subValue) => {
-						return this.processQuery(subValue);
+						return this.processQuery(subValue, field);
 					});
 				}
 
 				if (Match.test(value, Object) && Object.keys(value).length > 0) {
-					query[field] = this.processQuery(value);
+					query[field] = this.processQuery(value, field);
 				}
 			}
 		}
@@ -623,8 +628,11 @@ class ModelsBaseCache extends EventEmitter {
 					query = this.processQuery(query);
 					return this.processQueryOptionsOnResult(this.collection.find(query), options);
 				} catch (e) {
-					console.error('Exception on cache find for', this.collectionName, ...arguments);
+					console.error('Exception on cache find for', this.collectionName);
+					console.error('Query:', JSON.stringify(query, null, 2));
+					console.error('Options:', JSON.stringify(options, null, 2));
 					console.error(e.stack);
+					throw e;
 				}
 			},
 
@@ -634,8 +642,11 @@ class ModelsBaseCache extends EventEmitter {
 					const { limit, skip } = options;
 					return this.processQueryOptionsOnResult(this.collection.find(query), { limit, skip }).length;
 				} catch (e) {
-					console.error('Exception on cache find for', this.collectionName, ...arguments);
+					console.error('Exception on cache find for', this.collectionName);
+					console.error('Query:', JSON.stringify(query, null, 2));
+					console.error('Options:', JSON.stringify(options, null, 2));
 					console.error(e.stack);
+					throw e;
 				}
 			},
 
@@ -661,8 +672,16 @@ class ModelsBaseCache extends EventEmitter {
 	}
 
 	findOne(query, options) {
-		query = this.processQuery(query);
-		return this.processQueryOptionsOnResult(this.collection.findOne(query), options);
+		try {
+			query = this.processQuery(query);
+			return this.processQueryOptionsOnResult(this.collection.findOne(query), options);
+		} catch (e) {
+			console.error('Exception on cache findOne for', this.collectionName);
+			console.error('Query:', JSON.stringify(query, null, 2));
+			console.error('Options:', JSON.stringify(options, null, 2));
+			console.error(e.stack);
+			throw e;
+		}
 	}
 
 	findOneById(_id, options) {
