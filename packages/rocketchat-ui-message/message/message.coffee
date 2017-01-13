@@ -232,4 +232,4 @@ Template.message.onViewRendered = (context) ->
 			else
 				if templateInstance?.firstNode && templateInstance?.atBottom is false
 					newMessage = templateInstance?.find(".new-message")
-					newMessage?.className = "new-message background-primary-action-color"
+					newMessage?.className = "new-message background-primary-action-color color-content-background-color "
