@@ -3,11 +3,19 @@
 /* eslint no-unused-vars: 0 */
 
 import supertest from 'supertest';
+import {imgURL} from '../data/interactions.js';
+import {publicChannelName, privateChannelName} from '../data/channel.js';
 const request = supertest('http://localhost:3000');
 const prefix = '/api/v1/';
 
 
 import {username, email, password, adminUsername, adminEmail, adminPassword} from '../data/user.js';
+const apiUsername = 'api'+username;
+const apiEmail = 'api'+email;
+const apiPublicChannelName= 'api'+publicChannelName;
+const apiPrivateChannelName = 'api'+privateChannelName;
+var targetUserId = undefined;
+var channelId = undefined;
 
 function api(path) {
 	return prefix + path;
@@ -31,7 +39,6 @@ const login = {
 	password: adminPassword
 };
 
-var targetUserId = undefined;
 
 describe('API default', () => {
 	// Required by mobile apps
@@ -93,9 +100,9 @@ describe('API v1', () => {
 			request.post(api('users.create'))
 				.set(credentials)
 				.send({
-					email: email,
-					name: username,
-					username: username,
+					email: apiEmail,
+					name: apiUsername,
+					username: apiUsername,
 					password: password,
 					active: true,
 					roles: ['user'],
@@ -106,10 +113,10 @@ describe('API v1', () => {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.deep.property('user.username', username);
-					expect(res.body).to.have.deep.property('user.emails[0].address', email);
+					expect(res.body).to.have.deep.property('user.username', apiUsername);
+					expect(res.body).to.have.deep.property('user.emails[0].address', apiEmail);
 					expect(res.body).to.have.deep.property('user.active', true);
-					expect(res.body).to.have.deep.property('user.name', username);
+					expect(res.body).to.have.deep.property('user.name', apiUsername);
 					targetUserId = res.body.user._id;
 				})
 				.end(done);
@@ -125,10 +132,10 @@ describe('API v1', () => {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.deep.property('user.username', username);
-					expect(res.body).to.have.deep.property('user.emails[0].address', email);
+					expect(res.body).to.have.deep.property('user.username', apiUsername);
+					expect(res.body).to.have.deep.property('user.emails[0].address', apiEmail);
 					expect(res.body).to.have.deep.property('user.active', true);
-					expect(res.body).to.have.deep.property('user.name', username);
+					expect(res.body).to.have.deep.property('user.name', apiUsername);
 				})
 				.end(done);
 		});
@@ -161,6 +168,150 @@ describe('API v1', () => {
 				.end(done);
 		});
 
+		it.skip('/users.setAvatar', (done) => {
+			request.post(api('users.setAvatar'))
+				.set(credentials)
+				.send(imgURL)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+
+		it('/users.update', (done) => {
+			request.post(api('users.update'))
+				.set(credentials)
+				.send({
+					userId: targetUserId,
+					data :{
+						email: apiEmail,
+						name: 'edited'+apiUsername,
+						username: 'edited'+apiUsername,
+						password: password,
+						active: true,
+						roles: ['user']
+					}
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.deep.property('user.username', 'edited'+apiUsername);
+					expect(res.body).to.have.deep.property('user.emails[0].address', apiEmail);
+					expect(res.body).to.have.deep.property('user.active', true);
+					expect(res.body).to.have.deep.property('user.name', 'edited'+apiUsername);
+				})
+				.end(done);
+		});
 	});
+
+	describe('channels', () => {
+		it('/channels.create', (done) => {
+			request.post(api('channels.create'))
+				.set(credentials)
+				.send({
+					name: apiPublicChannelName
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.deep.property('channel._id');
+					expect(res.body).to.have.deep.property('channel.name', apiPublicChannelName);
+					expect(res.body).to.have.deep.property('channel.t', 'c');
+					expect(res.body).to.have.deep.property('channel.msgs', 0);
+					channelId = res.body.channel._id;
+				})
+				.end(done);
+		});
+
+		it('/channels.info', (done) => {
+			request.get(api('channels.info'))
+				.set(credentials)
+				.query({
+					roomId: channelId
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.deep.property('channel._id');
+					expect(res.body).to.have.deep.property('channel.name', apiPublicChannelName);
+					expect(res.body).to.have.deep.property('channel.t', 'c');
+					expect(res.body).to.have.deep.property('channel.msgs', 0);
+				})
+				.end(done);
+		});
+
+		it('/channels.invite', (done) => {
+			request.post(api('channels.invite'))
+				.set(credentials)
+				.send({
+					roomId: channelId,
+					userId: 'rocket.cat'
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.deep.property('channel._id');
+					expect(res.body).to.have.deep.property('channel.name', apiPublicChannelName);
+					expect(res.body).to.have.deep.property('channel.t', 'c');
+					expect(res.body).to.have.deep.property('channel.msgs', 0);
+				})
+				.end(done);
+		});
+
+		it('/channels.setDescription', (done) => {
+			request.post(api('channels.setDescription'))
+				.set(credentials)
+				.send({
+					roomId: channelId,
+					description: 'this is a description for a channel for api tests'
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.deep.property('description', 'this is a description for a channel for api tests');
+				})
+				.end(done);
+		});
+
+		it('/channels.setTopic', (done) => {
+			request.post(api('channels.setTopic'))
+				.set(credentials)
+				.send({
+					roomId: channelId,
+					topic: 'this is a topic of a channel for api tests'
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.deep.property('topic', 'this is a topic of a channel for api tests');
+				})
+				.end(done);
+		});
+
+		it('/channels.setPurpose', (done) => {
+			request.post(api('channels.setPurpose'))
+				.set(credentials)
+				.send({
+					roomId: channelId,
+					purpose: 'this is a purpose of a channel for api tests'
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.deep.property('purpose', 'this is a purpose of a channel for api tests');
+				})
+				.end(done);
+		});
+	});
+
 
 });
