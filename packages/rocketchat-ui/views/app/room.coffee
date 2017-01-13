@@ -543,13 +543,13 @@ Template.room.onRendered ->
 	template.isAtBottom = (scrollThreshold) ->
 		if not scrollThreshold? then scrollThreshold = 0
 		if wrapper.scrollTop + scrollThreshold >= wrapper.scrollHeight - wrapper.clientHeight
-			newMessage.className = "new-message background-primary-action-color not"
+			newMessage.className = "new-message background-primary-action-color color-content-background-color not"
 			return true
 		return false
 
 	template.sendToBottom = ->
 		wrapper.scrollTop = wrapper.scrollHeight - wrapper.clientHeight
-		newMessage.className = "new-message background-primary-action-color not"
+		newMessage.className = "new-message background-primary-action-color color-content-background-color not"
 
 	template.checkIfScrollIsAtBottom = ->
 		template.atBottom = template.isAtBottom(100)
