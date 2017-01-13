@@ -5,14 +5,12 @@
 			<h2>
 				<span class="room-title">{{#with group}}{{label}}{{/with}}</span>
 			</h2>
-			{{#unless $eq group._id 'Assets'}}
-				<div class="submit">
-					{{#if hasChanges}}
-						<button class="button danger discard"><i class="icon-send"></i><span>{{_ "Cancel"}}</span></button>
-					{{/if}}
-					<button class="button primary save" disabled="{{not hasChanges}}"><i class="icon-send"></i><span>{{_ "Save_changes"}}</span></button>
-				</div>
-			{{/unless}}
+			<div class="submit">
+				{{#if hasChanges}}
+					<button class="button danger discard"><i class="icon-send"></i><span>{{_ "Cancel"}}</span></button>
+				{{/if}}
+				<button class="button primary save" disabled="{{not hasChanges}}"><i class="icon-send"></i><span>{{_ "Save_changes"}}</span></button>
+			</div>
 		</header>
 
 		<div class="content background-transparent-dark">
