@@ -63,8 +63,6 @@ describe('channel usage', ()=> {
 					flexTab.toastAlert.waitForVisible(5000, true);
 				}
 				flexTab.channelTab.waitForVisible(5000);
-				flexTab.channelTab.click();
-				browser.pause(400);
 			});
 
 			it('should show the old name', ()=> {
@@ -84,7 +82,6 @@ describe('channel usage', ()=> {
 
 			it('save the name', ()=> {
 				flexTab.editNameSave.click();
-
 			});
 
 			it('should show the new name', ()=> {
