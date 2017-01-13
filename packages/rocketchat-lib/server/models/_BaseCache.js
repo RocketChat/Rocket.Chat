@@ -4,8 +4,6 @@ import loki from 'lokijs';
 import {EventEmitter} from 'events';
 import objectPath from 'object-path';
 
-RocketChat.loki = loki;
-
 const logger = new Logger('BaseCache');
 
 const lokiEq = loki.LokiOps.$eq;
