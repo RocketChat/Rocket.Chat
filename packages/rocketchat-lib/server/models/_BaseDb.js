@@ -56,12 +56,12 @@ class ModelsBaseDb extends EventEmitter {
 		return baseName;
 	}
 
-	setUpdatedAt(record = {}, checkQuery = false, query) {
-		if (checkQuery === true) {
-			if (!query || Object.keys(query).length === 0) {
-				throw new Meteor.Error('Models._Base: Empty query');
-			}
-		}
+	setUpdatedAt(record = {}/*, checkQuery = false, query*/) {
+		// if (checkQuery === true) {
+		// 	if (!query || Object.keys(query).length === 0) {
+		// 		throw new Meteor.Error('Models._Base: Empty query');
+		// 	}
+		// }
 
 		if (/(^|,)\$/.test(Object.keys(record).join(','))) {
 			record.$set = record.$set || {};
