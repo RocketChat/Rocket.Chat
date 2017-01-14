@@ -1,5 +1,20 @@
 # History
 
+## 0.49.1 - 2017-Jan-13
+
+- Fix emoji picker handling
+- Fix favicons and add an option to enable svg
+- Fix find with $elemMatch. Closes #5536
+- Fix livechat whitedomains list
+- Fix logo in admin
+- Fix message-dropdown background
+- Fix migration 77. Closes #5542
+- Fix new-message background
+- Keep only public settings using notifyAll
+- Move room panels from main content into room wrapper
+- Refactor action links to better handle client side buttons only
+- Send notifyAll to all users and create notifyLogged to notify only logged users- 
+
 ## 0.49.0 - 2017-Jan-11
 
 ### Now uses NodeJS 4.7.1
