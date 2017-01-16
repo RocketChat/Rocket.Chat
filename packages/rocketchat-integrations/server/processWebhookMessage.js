@@ -25,7 +25,7 @@ function retrieveDirectMessageInfo({ currentUserId, channel, findByUserIdOnly=fa
 	}
 
 	const rid = [currentUserId, roomUser._id].sort().join('');
-	let room = RocketChat.models.Rooms.findOneById({ $in: [rid, channel] });
+	let room = RocketChat.models.Rooms.findOneByIds([rid, channel]);
 
 	if (!_.isObject(room)) {
 		throw new Meteor.Error('invalid-channel');
@@ -60,7 +60,6 @@ this.processWebhookMessage = function(messageObj, user, defaultValues) {
 
 	for (channel of channels) {
 		channelType = channel[0];
-		console.log('The channelType:', channel);
 
 		channel = channel.substr(1);
 

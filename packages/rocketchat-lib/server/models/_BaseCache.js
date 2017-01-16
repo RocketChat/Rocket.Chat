@@ -370,17 +370,6 @@ class ModelsBaseCache extends EventEmitter {
 	}
 
 	_findByIndex(index, keys) {
-		if (keys.$in) {
-			for (let i = 0; i < keys.$in.length; i++) {
-				const result = this._findByIndex(index, keys.$in[i]);
-				if (result) {
-					return result;
-				}
-			}
-
-			return;
-		}
-
 		const key = [].concat(keys).join('|');
 		if (!this.indexes[index]) {
 			return;
@@ -695,6 +684,11 @@ class ModelsBaseCache extends EventEmitter {
 
 	findOneById(_id, options) {
 		return this.findByIndex('_id', _id, options).fetch();
+	}
+
+	findOneByIds(ids, options) {
+		const query = this.processQuery({ _id: { $in: ids }});
+		return this.processQueryOptionsOnResult(this.collection.findOne(query), options);
 	}
 
 	findWhere(query, options) {
