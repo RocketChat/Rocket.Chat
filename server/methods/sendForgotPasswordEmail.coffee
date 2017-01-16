@@ -13,11 +13,12 @@ Meteor.methods
 				return regex.test(userEmail)
 
 			if RocketChat.settings.get('Forgot_Password_Customized')
-				subject = RocketChat.placeholders.replace(RocketChat.settings.get('Forgot_Password_Subject') || '')
+				subject = RocketChat.placeholders.replace(RocketChat.settings.get('Forgot_Password_Email_Subject') || '')
 				html = RocketChat.placeholders.replace(RocketChat.settings.get('Forgot_Password_Email') || '')
-				Accounts.emailTemplates.resetPassword.subject = user ->
+				Accounts.emailTemplates.resetPassword.subject = (userModel) ->
 					return subject
-				Accounts.emailTemplates.resetPassword.html = (user, url) ->
+				Accounts.emailTemplates.resetPassword.html = (userModel, url) ->
+					url = url.replace('/#/', '/');
 					return html.replace('[Forgot_Password_Url]', url);
 
 			try
