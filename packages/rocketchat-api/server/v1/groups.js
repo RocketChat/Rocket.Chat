@@ -1,7 +1,7 @@
 //Returns the private group subscription IF found otherwise it will reutrn the failure of why it didn't. Check the `statusCode` property
 function findPrivateGroupByIdOrName({ roomId, roomName, userId, checkedArchived = true }) {
 	if ((!roomId || !roomId.trim()) && (!roomName || !roomName.trim())) {
-		throw new Meteor.Error('error-roomid-param-not-provided', 'The parameter "roomId" is required');
+		throw new Meteor.Error('error-roomid-param-not-provided', 'The parameter "roomId" or "roomName" is required');
 	}
 
 	let roomSub;
@@ -435,16 +435,7 @@ RocketChat.API.v1.addRoute('groups.setType', { authRequired: true }, {
 
 RocketChat.API.v1.addRoute('groups.unarchive', { authRequired: true }, {
 	post: function() {
-<<<<<<< HEAD
-		const findResult = findPrivateGroupByIdOrName({ roomId: this.bodyParams.roomId, userId: this.userId });
-
-		//The find method returns either with the group or the failure
-		if (findResult.statusCode) {
-			return findResult;
-		}
-=======
 		const findResult = findPrivateGroupById({ roomId: this.bodyParams.roomId, userId: this.userId, checkedArchived: false });
->>>>>>> 0d6d3f546aa18bc0778b367186c13fb45ba1d6c2
 
 		Meteor.runAsUser(this.userId, () => {
 			Meteor.call('unarchiveRoom', findResult.rid);
