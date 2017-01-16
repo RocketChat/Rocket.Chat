@@ -8,8 +8,6 @@ Template.flexTabBar.helpers
 	visible: ->
 		if @groups.indexOf(Template.instance().tabBar.currentGroup()) is -1
 			return 'hidden'
-	opened: ->
-		return Template.instance().tabBar.getState()
 	template: ->
 		return Template.instance().tabBar.getTemplate()
 	flexData: ->
