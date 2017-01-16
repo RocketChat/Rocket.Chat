@@ -42,6 +42,7 @@ before_install:
 install:
 - export PATH="$HOME/.meteor:$PATH"
 before_script:
+- ".travis/snap.sh"
 - echo "replication:" | sudo tee -a /etc/mongod.conf
 - |-
   echo "  replSetName: \"rs0\"" | sudo tee -a /etc/mongod.conf
@@ -72,7 +73,6 @@ before_deploy:
 - ".travis/setupsig.sh"
 - ".travis/namefiles.sh"
 - echo ".travis/sandstorm.sh"
-- ".travis/snap.sh"
 deploy:
   provider: s3
   access_key_id: AKIAIKIA7H7D47KUHYCA

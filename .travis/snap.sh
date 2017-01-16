@@ -2,6 +2,9 @@
 set -euvo pipefail
 IFS=$'\n\t'
 
+# Add launchpad to known hosts
+ssh-keyscan -t rsa -H git.launchpad.net > ~/.ssh/known_hosts
+
 # Determine the channel to push snap to.
 if [[ $TRAVIS_TAG ]]
  then
@@ -12,7 +15,7 @@ fi
 
 echo "Preparing to trigger a snap release for $CHANNEL channel"
 
-cd $PWD/../.snapcraft
+cd $PWD/.snapcraft
 
 # Decrypt key
 openssl aes-256-cbc -K $encrypted_f5c8ae370556_key -iv $encrypted_f5c8ae370556_iv -in launchpadkey.enc -out launchpadkey -d
