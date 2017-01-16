@@ -325,7 +325,7 @@ RocketChat.API.v1.addRoute('groups.rename', { authRequired: true }, {
 		});
 
 		return RocketChat.API.v1.success({
-			channel: RocketChat.models.Rooms.findOneById(findResult.rid, { fields: RocketChat.API.v1.defaultFieldsToExclude })
+			group: RocketChat.models.Rooms.findOneById(findResult.rid, { fields: RocketChat.API.v1.defaultFieldsToExclude })
 		});
 	}
 });
@@ -379,7 +379,7 @@ RocketChat.API.v1.addRoute('groups.setReadOnly', { authRequired: true }, {
 		}
 
 		Meteor.runAsUser(this.userId, () => {
-			Meteor.call('saveRoomSettings', findResult._id, 'readOnly', this.bodyParams.readOnly);
+			Meteor.call('saveRoomSettings', findResult.rid, 'readOnly', this.bodyParams.readOnly);
 		});
 
 		return RocketChat.API.v1.success({
@@ -419,7 +419,7 @@ RocketChat.API.v1.addRoute('groups.setType', { authRequired: true }, {
 		}
 
 		Meteor.runAsUser(this.userId, () => {
-			Meteor.call('saveRoomSettings', findResult._id, 'roomType', this.bodyParams.type);
+			Meteor.call('saveRoomSettings', findResult.rid, 'roomType', this.bodyParams.type);
 		});
 
 		return RocketChat.API.v1.success({
