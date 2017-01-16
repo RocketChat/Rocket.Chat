@@ -20,7 +20,7 @@ function findPrivateGroupByName({ roomName, userId, checkedArchived = true }) {
 	if (!roomName || !roomName.trim()) {
 		return RocketChat.API.v1.failure('Body param "roomName" is required');
 	}
-	
+
 	const roomSub = RocketChat.models.Subscriptions.findOneByRoomNameAndUserId(roomName, userId);
 
 	if (!roomSub || roomSub.t !== 'p') {
@@ -245,9 +245,9 @@ RocketChat.API.v1.addRoute('groups.history', { authRequired: true }, {
 RocketChat.API.v1.addRoute('groups.info', { authRequired: true }, {
 	get: function() {
 		let findResult;
-		if(this.queryParams.roomId) {
+		if (this.queryParams.roomId) {
 			findResult = findPrivateGroupById({ roomId: this.queryParams.roomId, userId: this.userId, checkedArchived: false });
-		} else if(this.queryParams.roomName) {
+		} else if (this.queryParams.roomName) {
 			findResult = findPrivateGroupByName({ roomName: this.queryParams.roomName, userId: this.userId, checkedArchived: false });
 		}
 
