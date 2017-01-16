@@ -13,9 +13,6 @@ userCanDrop = (_id) ->
 	return !RocketChat.roomTypes.readOnly _id, Meteor.user()
 
 Template.room.helpers
-	flexOpened: ->
-		return Template.instance().tabBar.getState()
-
 	embeddedVersion: ->
 		return RocketChat.Layout.isEmbedded()
 
