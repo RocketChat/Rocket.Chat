@@ -1,11 +1,6 @@
 #!/bin/bash
-set -x
 set -euvo pipefail
 IFS=$'\n\t'
-
-#if [ -z "$SNAPCRAFT_SECRET" ]; then
-#    exit 0
-#fi
 
 if [[ $TRAVIS_TAG ]]
  then
