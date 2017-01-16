@@ -68,6 +68,20 @@ if (process.env.DISABLE_ANIMATION || process.env.TEST_MODE === 'true') {
 	`);
 }
 
+RocketChat.settings.get('Assets_SvgFavicon_Enable', (key, value) => {
+	const standardFavicons = `
+		<link rel="icon" sizes="16x16" type="image/png" href="assets/favicon_16.png" />
+		<link rel="icon" sizes="32x32" type="image/png" href="assets/favicon_32.png" />`;
+
+	if (value) {
+		Inject.rawHead(key,
+			`${standardFavicons}
+			<link rel="icon" sizes="any" type="image/svg+xml" href="assets/favicon.svg" />`);
+	} else {
+		Inject.rawHead(key, standardFavicons);
+	}
+});
+
 RocketChat.settings.get('theme-color-primary-background-color', (key, value = '#04436a') => {
 	Inject.rawHead(key, `<style>body { background-color: ${value};}</style>` +
 						`<meta name="msapplication-TileColor" content="${value}" />` +
