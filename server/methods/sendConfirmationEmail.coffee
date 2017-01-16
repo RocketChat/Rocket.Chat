@@ -12,7 +12,7 @@ Meteor.methods
 				Accounts.emailTemplates.verifyEmail.subject = (userModel) ->
 					return subject
 				Accounts.emailTemplates.verifyEmail.html = (userModel, url) ->
-					return html.replace('[Verification_Url]', url);
+					return html.replace(/\[Verification_Url]/g, url);
 
 			try
 				Accounts.sendVerificationEmail(user._id, s.trim(email))
