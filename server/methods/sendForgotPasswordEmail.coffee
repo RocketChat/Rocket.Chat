@@ -12,6 +12,14 @@ Meteor.methods
 			email = _.find _.pluck(user.emails || [], 'address'), (userEmail) ->
 				return regex.test(userEmail)
 
+			if RocketChat.settings.get('Forgot_Password_Customized')
+				subject = RocketChat.placeholders.replace(RocketChat.settings.get('Forgot_Password_Subject') || '')
+				html = RocketChat.placeholders.replace(RocketChat.settings.get('Forgot_Password_Email') || '')
+				Accounts.emailTemplates.resetPassword.subject = user ->
+					return subject
+				Accounts.emailTemplates.resetPassword.html = (user, url) ->
+					return html.replace('[Forgot_Password_Url]', url);
+
 			try
 				Accounts.sendResetPasswordEmail(user._id, email)
 			catch error
