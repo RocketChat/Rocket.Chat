@@ -72,7 +72,8 @@
 		"moment": "^2.17.1",
 		"moment-timezone": "^0.5.11",
 		"toastr": "^2.1.2",
-		"mime-types": "2.1.13",
+		"mime-type": "^3.0.4",
+		"mime-db": "^1.26.0",
 		"file-type": "4.0.0",
 		"codemirror": "5.22.0"
 	}
