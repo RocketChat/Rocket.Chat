@@ -11,7 +11,7 @@ function findChannelById({ roomId, checkedArchived = true }) {
 	}
 
 	if (checkedArchived && room.archived) {
-		throw new Meteor.Error('error-room-aquived', `The channel, ${room.name}, is archived`);
+		throw new Meteor.Error('error-room-archived', `The channel, ${room.name}, is archived`);
 	}
 
 	return room;
