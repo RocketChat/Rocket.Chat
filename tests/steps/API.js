@@ -168,6 +168,31 @@ describe('API default', () => {
 				.end(done);
 		});
 
+		it.skip('/users.list', (done) => {
+		//filtering user list
+			request.get(api('users.list'))
+				.set(credentials)
+				.query({
+					name: { '$regex': 'g' }
+				})
+				.fields({
+					username: 1
+				})
+				.sort({
+					createdAt: -1
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('count');
+					expect(res.body).to.have.property('total');
+				})
+				.end(done);
+		});
+
+
+
 		it.skip('/users.setAvatar', (done) => {
 			request.post(api('users.setAvatar'))
 				.set(credentials)
@@ -245,6 +270,51 @@ describe('API default', () => {
 				.end(done);
 		});
 
+		it('/chat.postMessage', (done) => {
+			request.post(api('chat.postMessage'))
+				.set(credentials)
+				.send({
+					roomId: channelId,
+					channel: apiPublicChannelName,
+					text: 'Sample message',
+					alias: 'Gruggy',
+					emoji: ':smirk:',
+					avatar: 'http://res.guggy.com/logo_128.png',
+					attachments: [{
+						color: '#ff0000',
+						text: 'Yay for gruggy!',
+						ts: '2016-12-09T16:53:06.761Z',
+						thumb_url: 'http://res.guggy.com/logo_128.png',
+						message_link: 'https://google.com',
+						collapsed: false,
+						author_name: 'Bradley Hilton',
+						author_link: 'https://rocket.chat/',
+						author_icon: 'https://avatars.githubusercontent.com/u/850391?v=3',
+						title: 'Attachment Example',
+						title_link: 'https://youtube.com',
+						title_link_download: 'https://rocket.chat/download',
+						image_url: 'http://res.guggy.com/logo_128.png',
+						audio_url: 'http://www.w3schools.com/tags/horse.mp3',
+						video_url: 'http://www.w3schools.com/tags/movie.mp4',
+						fields: [{
+							short: true,
+							title: 'Test',
+							value: 'Testing out something or other'
+						}, {
+							short: true,
+							title: 'Another Test',
+							value: '[Link](https://google.com/) something and this and that.'
+						}]
+					}]
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+
 		it('/channels.invite', (done) => {
 			request.post(api('channels.invite'))
 				.set(credentials)
@@ -259,7 +329,7 @@ describe('API default', () => {
 					expect(res.body).to.have.deep.property('channel._id');
 					expect(res.body).to.have.deep.property('channel.name', apiPublicChannelName);
 					expect(res.body).to.have.deep.property('channel.t', 'c');
-					expect(res.body).to.have.deep.property('channel.msgs', 0);
+					expect(res.body).to.have.deep.property('channel.msgs', 1);
 				})
 				.end(done);
 		});
@@ -278,7 +348,7 @@ describe('API default', () => {
 					expect(res.body).to.have.deep.property('channel._id');
 					expect(res.body).to.have.deep.property('channel.name', apiPublicChannelName);
 					expect(res.body).to.have.deep.property('channel.t', 'c');
-					expect(res.body).to.have.deep.property('channel.msgs', 0);
+					expect(res.body).to.have.deep.property('channel.msgs', 1);
 				})
 				.end(done);
 		});
@@ -464,7 +534,7 @@ describe('API default', () => {
 					expect(res.body).to.have.deep.property('channel._id');
 					expect(res.body).to.have.deep.property('channel.name', 'EDITED'+apiPublicChannelName);
 					expect(res.body).to.have.deep.property('channel.t', 'c');
-					expect(res.body).to.have.deep.property('channel.msgs', 0);
+					expect(res.body).to.have.deep.property('channel.msgs', 1);
 				})
 				.end(done);
 		});
@@ -498,7 +568,7 @@ describe('API default', () => {
 					expect(res.body).to.have.deep.property('channel._id');
 					expect(res.body).to.have.deep.property('channel.name', 'EDITED'+apiPublicChannelName);
 					expect(res.body).to.have.deep.property('channel.t', 'c');
-					expect(res.body).to.have.deep.property('channel.msgs', 0);
+					expect(res.body).to.have.deep.property('channel.msgs', 1);
 				})
 				.end(done);
 		});
@@ -517,7 +587,7 @@ describe('API default', () => {
 					expect(res.body).to.have.deep.property('channel._id');
 					expect(res.body).to.have.deep.property('channel.name', 'EDITED'+apiPublicChannelName);
 					expect(res.body).to.have.deep.property('channel.t', 'c');
-					expect(res.body).to.have.deep.property('channel.msgs', 0);
+					expect(res.body).to.have.deep.property('channel.msgs', 1);
 				})
 				.end(done);
 		});
@@ -538,7 +608,7 @@ describe('API default', () => {
 					expect(res.body).to.have.deep.property('channel._id');
 					expect(res.body).to.have.deep.property('channel.name', 'EDITED'+apiPublicChannelName);
 					expect(res.body).to.have.deep.property('channel.t', 'c');
-					expect(res.body).to.have.deep.property('channel.msgs', 0);
+					expect(res.body).to.have.deep.property('channel.msgs', 1);
 				})
 				.end(done);
 		});
@@ -557,7 +627,7 @@ describe('API default', () => {
 					expect(res.body).to.have.deep.property('channel._id');
 					expect(res.body).to.have.deep.property('channel.name', 'EDITED'+apiPublicChannelName);
 					expect(res.body).to.have.deep.property('channel.t', 'c');
-					expect(res.body).to.have.deep.property('channel.msgs', 0);
+					expect(res.body).to.have.deep.property('channel.msgs', 1);
 				})
 				.end(done);
 		});
@@ -576,7 +646,7 @@ describe('API default', () => {
 					expect(res.body).to.have.deep.property('channel._id');
 					expect(res.body).to.have.deep.property('channel.name', 'EDITED'+apiPublicChannelName);
 					expect(res.body).to.have.deep.property('channel.t', 'p');
-					expect(res.body).to.have.deep.property('channel.msgs', 0);
+					expect(res.body).to.have.deep.property('channel.msgs', 1);
 				})
 				.end(done);
 		});
@@ -620,6 +690,51 @@ describe('API default', () => {
 				.end(done);
 		});
 
+		it('/chat.postMessage', (done) => {
+			request.post(api('chat.postMessage'))
+				.set(credentials)
+				.send({
+					roomId: groupId,
+					channel: apiPrivateChannelName,
+					text: 'Sample message',
+					alias: 'Gruggy',
+					emoji: ':smirk:',
+					avatar: 'http://res.guggy.com/logo_128.png',
+					attachments: [{
+						color: '#ff0000',
+						text: 'Yay for gruggy!',
+						ts: '2016-12-09T16:53:06.761Z',
+						thumb_url: 'http://res.guggy.com/logo_128.png',
+						message_link: 'https://google.com',
+						collapsed: false,
+						author_name: 'Bradley Hilton',
+						author_link: 'https://rocket.chat/',
+						author_icon: 'https://avatars.githubusercontent.com/u/850391?v=3',
+						title: 'Attachment Example',
+						title_link: 'https://youtube.com',
+						title_link_download: 'https://rocket.chat/download',
+						image_url: 'http://res.guggy.com/logo_128.png',
+						audio_url: 'http://www.w3schools.com/tags/horse.mp3',
+						video_url: 'http://www.w3schools.com/tags/movie.mp4',
+						fields: [{
+							short: true,
+							title: 'Test',
+							value: 'Testing out something or other'
+						}, {
+							short: true,
+							title: 'Another Test',
+							value: '[Link](https://google.com/) something and this and that.'
+						}]
+					}]
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+
 		it('/groups.invite', (done) => {
 			request.post(api('groups.invite'))
 				.set(credentials)
@@ -634,7 +749,7 @@ describe('API default', () => {
 					expect(res.body).to.have.deep.property('group._id');
 					expect(res.body).to.have.deep.property('group.name', apiPrivateChannelName);
 					expect(res.body).to.have.deep.property('group.t', 'p');
-					expect(res.body).to.have.deep.property('group.msgs', 0);
+					expect(res.body).to.have.deep.property('group.msgs', 1);
 				})
 				.end(done);
 		});
@@ -803,7 +918,7 @@ describe('API default', () => {
 					expect(res.body).to.have.deep.property('group._id');
 					expect(res.body).to.have.deep.property('group.name', 'EDITED'+apiPrivateChannelName);
 					expect(res.body).to.have.deep.property('group.t', 'p');
-					expect(res.body).to.have.deep.property('group.msgs', 0);
+					expect(res.body).to.have.deep.property('group.msgs', 1);
 				})
 				.end(done);
 		});
