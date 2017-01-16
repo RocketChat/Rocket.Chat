@@ -2255,6 +2255,7 @@ label.required::after {
 .flex-tab-main-content {
 	flex-grow: 1;
 	position: relative;
+	z-index: 1;
 }
 
 .room-container {
@@ -2268,7 +2269,7 @@ label.required::after {
 	height: 100%;
 	top: 0;
 	left: 0;
-	border-width: 0 1px 0 0;
+	z-index: 1;
 
 	.room-topic {
 		font-size: 14px;
@@ -3119,17 +3120,20 @@ body:not(.is-cordova) {
 }
 
 // FLEX-TAB and FLEX-TAB views
+.main-content-flex {
+	display: flex;
+	height: 100%;
+}
+
 .flex-tab-container {
 	display: flex;
-	flex-direction: row;
-	align-items: stretch;
-	height: 100%;
+	z-index: 2;
+	border-width: 0 0 0 1px;
 
 	.flex-tab {
 		position: relative;
 		display: none;
 		width: @flex-tab-width;
-		z-index: 11;
 		overflow-x: visible;
 
 		.control {
@@ -3281,7 +3285,6 @@ body:not(.is-cordova) {
 
 	.flex-tab-bar {
 		min-width: 40px;
-		height: 100%;
 		z-index: 1;
 
 		.tab-button {
@@ -4384,7 +4387,6 @@ body:not(.is-cordova) {
 			position: absolute;
 			right: 40px;
 			border-width: 0 0 0 1px;
-			z-index: 101;
 			height: 100%;
 		}
 	}
@@ -4427,14 +4429,13 @@ body:not(.is-cordova) {
 
 @media all and(max-width: 440px) {
 	.flex-tab-container.opened {
-		.messages-container {
-			display: none;
-		}
+		position: absolute;
+		width: 100%;
+		height: 100%;
 
 		.flex-tab {
 			position: relative;
 			right: auto;
-			border: 0;
 		}
 	}
 }
