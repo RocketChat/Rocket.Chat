@@ -370,6 +370,17 @@ class ModelsBaseCache extends EventEmitter {
 	}
 
 	_findByIndex(index, keys) {
+		if (keys.$in) {
+			for (let i = 0; i < keys.$in.length; i++) {
+				const result = this._findByIndex(index, keys.$in[i]);
+				if (result) {
+					return result;
+				}
+			}
+
+			return;
+		}
+
 		const key = [].concat(keys).join('|');
 		if (!this.indexes[index]) {
 			return;
