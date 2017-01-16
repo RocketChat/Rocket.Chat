@@ -188,7 +188,6 @@ sendHelper = Meteor.bindEnvironment (robot, envelope, strings, map) ->
 
 InternalHubot = {}
 
-
 init = _.debounce Meteor.bindEnvironment( =>
 	if RocketChat.settings.get 'InternalHubot_Enabled'
 		InternalHubot = new Robot null, null, false, RocketChat.settings.get 'InternalHubot_Username'
