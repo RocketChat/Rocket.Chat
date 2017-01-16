@@ -1,4 +1,5 @@
 import moment from 'moment'
+import mime from 'mime-type/with-db'
 
 socialSharing = (options = {}) ->
 	window.plugins.socialsharing.share(options.message, options.subject, options.file, options.link)
@@ -407,6 +408,8 @@ Template.room.events
 
 		filesToUpload = []
 		for file in files
+			# `file.type = mime.lookup(file.name)` does not work.
+			Object.defineProperty(file, 'type', { value: mime.lookup(file.name) })
 			filesToUpload.push
 				file: file
 				name: file.name
