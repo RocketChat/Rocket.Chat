@@ -419,7 +419,7 @@ RocketChat.API.v1.addRoute('groups.setType', { authRequired: true }, {
 		}
 
 		Meteor.runAsUser(this.userId, () => {
-			Meteor.call('saveRoomSettings', findResult._id, 'roomType', this.bodyParams.type);
+			Meteor.call('saveRoomSettings', findResult.rid, 'roomType', this.bodyParams.type);
 		});
 
 		return RocketChat.API.v1.success({
