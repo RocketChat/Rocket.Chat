@@ -16,6 +16,7 @@ const apiPublicChannelName= 'api'+publicChannelName;
 const apiPrivateChannelName = 'api'+privateChannelName;
 var targetUserId = undefined;
 var channelId = undefined;
+var groupId = undefined;
 
 function api(path) {
 	return prefix + path;
@@ -61,7 +62,6 @@ describe('API default', () => {
 	});
 });
 
-describe('API v1', () => {
 	before((done) => {
 		request.post(api('login'))
 			.send(login)
@@ -264,6 +264,25 @@ describe('API v1', () => {
 				.end(done);
 		});
 
+		it('/channels.kick', (done) => {
+			request.post(api('channels.kick'))
+				.set(credentials)
+				.send({
+					roomId: channelId,
+					userId: 'rocket.cat'
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.deep.property('channel._id');
+					expect(res.body).to.have.deep.property('channel.name', apiPublicChannelName);
+					expect(res.body).to.have.deep.property('channel.t', 'c');
+					expect(res.body).to.have.deep.property('channel.msgs', 0);
+				})
+				.end(done);
+		});
+
 		it('/channels.setDescription', (done) => {
 			request.post(api('channels.setDescription'))
 				.set(credentials)
@@ -311,7 +330,528 @@ describe('API v1', () => {
 				})
 				.end(done);
 		});
+
+		it('/channels.history', (done) => {
+			request.get(api('channels.history'))
+				.set(credentials)
+				.query({
+					roomId: channelId
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('messages');
+				})
+				.end(done);
+		});
+
+		it('/channels.cleanHistory', (done) => {
+			request.post(api('channels.cleanHistory'))
+				.set(credentials)
+				.send({
+					roomId: channelId,
+					latest: '2016-12-09T13:42:25.304Z',
+					oldest: '2016-08-30T13:42:25.304Z'
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+
+		it('/channels.archive', (done) => {
+			request.post(api('channels.archive'))
+				.set(credentials)
+				.send({
+					roomId: channelId
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+
+		it('/channels.unarchive', (done) => {
+			request.post(api('channels.unarchive'))
+				.set(credentials)
+				.send({
+					roomId: channelId
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+
+		it('/channels.close', (done) => {
+			request.post(api('channels.close'))
+				.set(credentials)
+				.send({
+					roomId: channelId
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+
+		it('/channels.open', (done) => {
+			request.post(api('channels.open'))
+				.set(credentials)
+				.send({
+					roomId: channelId
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+
+		it('/channels.list', (done) => {
+			request.get(api('channels.list'))
+				.set(credentials)
+				.query({
+					roomId: channelId
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('count');
+					expect(res.body).to.have.property('total');
+				})
+				.end(done);
+		});
+
+		it('/channels.list.joined', (done) => {
+			request.get(api('channels.list.joined'))
+				.set(credentials)
+				.query({
+					roomId: channelId
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('count');
+					expect(res.body).to.have.property('total');
+				})
+				.end(done);
+		});
+
+		it('/channels.rename', (done) => {
+			request.post(api('channels.rename'))
+				.set(credentials)
+				.send({
+					roomId: channelId,
+					name: 'EDITED'+apiPublicChannelName
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.deep.property('channel._id');
+					expect(res.body).to.have.deep.property('channel.name', 'EDITED'+apiPublicChannelName);
+					expect(res.body).to.have.deep.property('channel.t', 'c');
+					expect(res.body).to.have.deep.property('channel.msgs', 0);
+				})
+				.end(done);
+		});
+
+		it('/channels.getIntegrations', (done) => {
+			request.get(api('channels.getIntegrations'))
+				.set(credentials)
+				.query({
+					roomId: channelId
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('count', 0);
+					expect(res.body).to.have.property('total', 0);
+				})
+				.end(done);
+		});
+
+		it('/channels.addAll', (done) => {
+			request.post(api('channels.addAll'))
+				.set(credentials)
+				.send({
+					roomId: channelId
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.deep.property('channel._id');
+					expect(res.body).to.have.deep.property('channel.name', 'EDITED'+apiPublicChannelName);
+					expect(res.body).to.have.deep.property('channel.t', 'c');
+					expect(res.body).to.have.deep.property('channel.msgs', 0);
+				})
+				.end(done);
+		});
+
+		it('/channels.setJoinCode', (done) => {
+			request.post(api('channels.setJoinCode'))
+				.set(credentials)
+				.send({
+					roomId: channelId,
+					joinCode: '123'
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.deep.property('channel._id');
+					expect(res.body).to.have.deep.property('channel.name', 'EDITED'+apiPublicChannelName);
+					expect(res.body).to.have.deep.property('channel.t', 'c');
+					expect(res.body).to.have.deep.property('channel.msgs', 0);
+				})
+				.end(done);
+		});
+
+
+
+		it('/channels.setReadOnly', (done) => {
+			request.post(api('channels.setReadOnly'))
+				.set(credentials)
+				.send({
+					roomId: channelId,
+					readOnly: true
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.deep.property('channel._id');
+					expect(res.body).to.have.deep.property('channel.name', 'EDITED'+apiPublicChannelName);
+					expect(res.body).to.have.deep.property('channel.t', 'c');
+					expect(res.body).to.have.deep.property('channel.msgs', 0);
+				})
+				.end(done);
+		});
+
+		it.skip('/channels.leave', (done) => {
+			request.post(api('channels.leave'))
+				.set(credentials)
+				.send({
+					roomId: channelId
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(log)
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.deep.property('channel._id');
+					expect(res.body).to.have.deep.property('channel.name', 'EDITED'+apiPublicChannelName);
+					expect(res.body).to.have.deep.property('channel.t', 'c');
+					expect(res.body).to.have.deep.property('channel.msgs', 0);
+				})
+				.end(done);
+		});
+
+		it('/channels.setType', (done) => {
+			request.post(api('channels.setType'))
+				.set(credentials)
+				.send({
+					roomId: channelId,
+					type: 'p'
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.deep.property('channel._id');
+					expect(res.body).to.have.deep.property('channel.name', 'EDITED'+apiPublicChannelName);
+					expect(res.body).to.have.deep.property('channel.t', 'p');
+					expect(res.body).to.have.deep.property('channel.msgs', 0);
+				})
+				.end(done);
+		});
 	});
 
+	describe('groups', () => {
+		it('/groups.create', (done) => {
+			request.post(api('groups.create'))
+				.set(credentials)
+				.send({
+					name: apiPrivateChannelName
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.deep.property('group._id');
+					expect(res.body).to.have.deep.property('group.name', apiPrivateChannelName);
+					expect(res.body).to.have.deep.property('group.t', 'p');
+					expect(res.body).to.have.deep.property('group.msgs', 0);
+					groupId = res.body.group._id;
+				})
+				.end(done);
+		});
 
+		it('/groups.info', (done) => {
+			request.get(api('groups.info'))
+				.set(credentials)
+				.query({
+					roomId: groupId
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.deep.property('group._id');
+					expect(res.body).to.have.deep.property('group.name', apiPrivateChannelName);
+					expect(res.body).to.have.deep.property('group.t', 'p');
+					expect(res.body).to.have.deep.property('group.msgs', 0);
+				})
+				.end(done);
+		});
+
+		it('/groups.invite', (done) => {
+			request.post(api('groups.invite'))
+				.set(credentials)
+				.send({
+					roomId: groupId,
+					userId: 'rocket.cat'
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.deep.property('group._id');
+					expect(res.body).to.have.deep.property('group.name', apiPrivateChannelName);
+					expect(res.body).to.have.deep.property('group.t', 'p');
+					expect(res.body).to.have.deep.property('group.msgs', 0);
+				})
+				.end(done);
+		});
+
+		it('/groups.kick', (done) => {
+			request.post(api('groups.kick'))
+				.set(credentials)
+				.send({
+					roomId: groupId,
+					userId: 'rocket.cat'
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+
+		it('/groups.setDescription', (done) => {
+			request.post(api('groups.setDescription'))
+				.set(credentials)
+				.send({
+					roomId: groupId,
+					description: 'this is a description for a channel for api tests'
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.deep.property('description', 'this is a description for a channel for api tests');
+				})
+				.end(done);
+		});
+
+		it('/groups.setTopic', (done) => {
+			request.post(api('groups.setTopic'))
+				.set(credentials)
+				.send({
+					roomId: groupId,
+					topic: 'this is a topic of a channel for api tests'
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.deep.property('topic', 'this is a topic of a channel for api tests');
+				})
+				.end(done);
+		});
+
+		it('/groups.setPurpose', (done) => {
+			request.post(api('groups.setPurpose'))
+				.set(credentials)
+				.send({
+					roomId: groupId,
+					purpose: 'this is a purpose of a channel for api tests'
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.deep.property('purpose', 'this is a purpose of a channel for api tests');
+				})
+				.end(done);
+		});
+
+		it('/groups.history', (done) => {
+			request.get(api('groups.history'))
+				.set(credentials)
+				.query({
+					roomId: groupId
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('messages');
+				})
+				.end(done);
+		});
+
+		it('/groups.archive', (done) => {
+			request.post(api('groups.archive'))
+				.set(credentials)
+				.send({
+					roomId: groupId
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+
+		it('/groups.unarchive', (done) => {
+			request.post(api('groups.unarchive'))
+				.set(credentials)
+				.send({
+					roomId: groupId
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+
+		it('/groups.close', (done) => {
+			request.post(api('groups.close'))
+				.set(credentials)
+				.send({
+					roomId: groupId
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+
+		it('/groups.open', (done) => {
+			request.post(api('groups.open'))
+				.set(credentials)
+				.send({
+					roomId: groupId
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+
+		it('/groups.list', (done) => {
+			request.get(api('groups.list'))
+				.set(credentials)
+				.query({
+					roomId: groupId
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('count');
+					expect(res.body).to.have.property('total');
+				})
+				.end(done);
+		});
+
+		it('/groups.rename', (done) => {
+			request.post(api('groups.rename'))
+				.set(credentials)
+				.send({
+					roomId: groupId,
+					name: 'EDITED'+apiPrivateChannelName
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.deep.property('group._id');
+					expect(res.body).to.have.deep.property('group.name', 'EDITED'+apiPrivateChannelName);
+					expect(res.body).to.have.deep.property('group.t', 'p');
+					expect(res.body).to.have.deep.property('group.msgs', 0);
+				})
+				.end(done);
+		});
+
+		it('/groups.getIntegrations', (done) => {
+			request.get(api('groups.getIntegrations'))
+				.set(credentials)
+				.query({
+					roomId: groupId
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('count', 0);
+					expect(res.body).to.have.property('total', 0);
+				})
+				.end(done);
+		});
+
+		it('/groups.setReadOnly', (done) => {
+			request.post(api('groups.setReadOnly'))
+				.set(credentials)
+				.send({
+					roomId: groupId,
+					readOnly: true
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+
+		it('/groups.setType', (done) => {
+			request.post(api('groups.setType'))
+				.set(credentials)
+				.send({
+					roomId: groupId,
+					type: 'c'
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+	});
 });
