@@ -325,7 +325,7 @@ RocketChat.API.v1.addRoute('groups.rename', { authRequired: true }, {
 		});
 
 		return RocketChat.API.v1.success({
-			channel: RocketChat.models.Rooms.findOneById(findResult.rid, { fields: RocketChat.API.v1.defaultFieldsToExclude })
+			group: RocketChat.models.Rooms.findOneById(findResult.rid, { fields: RocketChat.API.v1.defaultFieldsToExclude })
 		});
 	}
 });
