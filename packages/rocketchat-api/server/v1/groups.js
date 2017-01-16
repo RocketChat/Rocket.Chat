@@ -435,7 +435,7 @@ RocketChat.API.v1.addRoute('groups.setType', { authRequired: true }, {
 
 RocketChat.API.v1.addRoute('groups.unarchive', { authRequired: true }, {
 	post: function() {
-		const findResult = findPrivateGroupById({ roomId: this.bodyParams.roomId, userId: this.userId, checkedArchived: false });
+		const findResult = findPrivateGroupByIdorName({ roomId: this.bodyParams.roomId, userId: this.userId, checkedArchived: false });
 
 		Meteor.runAsUser(this.userId, () => {
 			Meteor.call('unarchiveRoom', findResult.rid);
