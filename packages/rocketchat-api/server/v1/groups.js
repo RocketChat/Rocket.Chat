@@ -16,6 +16,23 @@ function findPrivateGroupById({ roomId, userId, checkedArchived = true }) {
 
 	return roomSub;
 }
+function findPrivateGroupByName({ roomName, userId, checkedArchived = true }) {
+	if (!roomName || !roomName.trim()) {
+		return RocketChat.API.v1.failure('Body param "roomName" is required');
+	}
+	
+	const roomSub = RocketChat.models.Subscriptions.findOneByRoomNameAndUserId(roomName, userId);
+
+	if (!roomSub || roomSub.t !== 'p') {
+		return RocketChat.API.v1.failure(`No private group found by the name of: ${roomName}`);
+	}
+
+	if (checkedArchived && roomSub.archived) {
+		return RocketChat.API.v1.failure(`The private group, ${roomSub.name}, is already archived`);
+	}
+
+	return roomSub;
+}
 
 RocketChat.API.v1.addRoute('groups.addModerator', { authRequired: true }, {
 	post: function() {
@@ -227,7 +244,12 @@ RocketChat.API.v1.addRoute('groups.history', { authRequired: true }, {
 
 RocketChat.API.v1.addRoute('groups.info', { authRequired: true }, {
 	get: function() {
-		const findResult = findPrivateGroupById({ roomId: this.queryParams.roomId, userId: this.userId, checkedArchived: false });
+		let findResult;
+		if(this.queryParams.roomId) {
+			findResult = findPrivateGroupById({ roomId: this.queryParams.roomId, userId: this.userId, checkedArchived: false });
+		} else if(this.queryParams.roomName) {
+			findResult = findPrivateGroupByName({ roomName: this.queryParams.roomName, userId: this.userId, checkedArchived: false });
+		}
 
 		//The find method returns either with the group or the failure
 		if (findResult.statusCode) {
@@ -235,7 +257,7 @@ RocketChat.API.v1.addRoute('groups.info', { authRequired: true }, {
 		}
 
 		return RocketChat.API.v1.success({
-			group: RocketChat.models.Rooms.findOneById(findResult.rid, { fields: RocketChat.API.v1.defaultFieldsToExclude })
+			group: RocketChat.models.Rooms.findOneByName(findResult.name, { fields: RocketChat.API.v1.defaultFieldsToExclude })
 		});
 	}
 });
