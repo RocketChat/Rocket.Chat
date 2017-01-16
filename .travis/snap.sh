@@ -1,35 +1,37 @@
 #!/bin/bash
-
+set -x
 set -euvo pipefail
 IFS=$'\n\t'
 
-if [ -z "$SNAPCRAFT_SECRET" ]; then
-    exit 0
-fi
-
-mkdir -p ".encrypted"
-if [ ! -e ".encrypted/snapcraft.cfg.enc" ]; then
-    echo "Seeding a new macaroon."
-    echo "$SNAPCRAFT_CONFIG" > ".encrypted/snapcraft.cfg.enc"
-fi
-
-mkdir -p "$HOME/.config/snapcraft"
-openssl enc -aes-256-cbc -base64 -pass env:SNAPCRAFT_SECRET -d -in ".encrypted/snapcraft.cfg.enc" -out "$HOME/.config/snapcraft/snapcraft.cfg"
+#if [ -z "$SNAPCRAFT_SECRET" ]; then
+#    exit 0
+#fi
 
 if [[ $TRAVIS_TAG ]]
  then
     CHANNEL=stable
-    SNAP_FOLDER=$PWD/.snapcraft/stable
 else
     CHANNEL=edge
-    SNAP_FOLDER=$PWD/.snapcraft/edge
 fi
 
 echo "snapping release for $CHANNEL channel"
 
-docker run -v $HOME:/root -v $SNAP_FOLDER:/cwd snapcore/snapcraft sh -c 'cd /cwd; apt update && snapcraft'
-docker run -v $HOME:/root -v $SNAP_FOLDER:/cwd -e CHANNEL=$CHANNEL snapcore/snapcraft sh -c "cd /cwd; snapcraft push *.snap --release $CHANNEL"
+cd $PWD/../.snapcraft
 
-openssl enc -aes-256-cbc -base64 -pass env:SNAPCRAFT_SECRET -out ".encrypted/snapcraft.cfg.enc" < "$HOME/.config/snapcraft/snapcraft.cfg"
-rm -f "$HOME/.config/snapcraft/snapcraft.cfg"
+openssl aes-256-cbc -K $encrypted_f5c8ae370556_key -iv $encrypted_f5c8ae370556_iv -in launchpadkey.enc -out launchpadkey -d
 
+echo "Tag: $TRAVIS_TAG \r\nBranch: $TRAVIS_BRANCH\r\nBuild: $TRAVIS_BUILD_NUMBER\r\nCommit: $TRAVIS_COMMIT" > buildinfo
+
+GIT_SSH_COMMAND="ssh -i launchpadkey" git clone -b $CHANNEL git+ssh://rocket.chat.buildmaster@git.launchpad.net/rocket.chat launchpad
+
+cp -r bin snapcraft.yaml buildinfo launchpad/
+
+cd launchpad
+
+git add bin snapcraft.yaml buildinfo
+
+git commit -m "Travis Build: $TRAVIS_BUILD_NUMBER Travis Commit: $TRAVIS_COMMIT"
+
+GIT_SSH_COMMAND="ssh -i ../launchpadkey" git push origin $CHANNEL
+
+rm -rf launchpadkey launchpad
