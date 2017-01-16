@@ -78,7 +78,7 @@ parts:
             - lib
     scripts:
         plugin: dump
-        source: bin/
+        source: resources/
         organize:
             rcbackup: bin/rcbackup
             startmongo: bin/startmongo
