@@ -23,6 +23,9 @@ cd $PWD/.snapcraft
 # Decrypt key
 openssl aes-256-cbc -K $encrypted_f5c8ae370556_key -iv $encrypted_f5c8ae370556_iv -in launchpadkey.enc -out launchpadkey -d
 
+# Change permissions
+chmod 0600 launchpadkey
+
 # We need some meta data so it'll actually commit.  This could be useful to have for debugging later.
 echo "Tag: $TRAVIS_TAG \r\nBranch: $TRAVIS_BRANCH\r\nBuild: $TRAVIS_BUILD_NUMBER\r\nCommit: $TRAVIS_COMMIT" > buildinfo
 
