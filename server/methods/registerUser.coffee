@@ -35,7 +35,7 @@ Meteor.methods
 					Accounts.emailTemplates.verifyEmail.subject = (userModel) ->
 						return subject
 					Accounts.emailTemplates.verifyEmail.html = (userModel, url) ->
-						return html.replace('[Verification_Url]', url);
+						return html.replace(/\[Verification_Url]/g, url);
 				Accounts.sendVerificationEmail(userId, userData.email);
 		catch error
 			# throw new Meteor.Error 'error-email-send-failed', 'Error trying to send email: ' + error.message, { method: 'registerUser', message: error.message }
