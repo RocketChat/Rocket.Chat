@@ -1,0 +1,98 @@
+#
+# Easiest way to work with this file, from an updated Ubuntu 16.04 LTS image
+# 1.   create a non-root user with sudo priv and perform following steps as non-root
+# 2.  `sudo apt-get update`
+# 3.  `sudo apt-get install snapcraft python build-essential`
+# 4.  `snapcraft stage`
+# 5.  `snapcraft snap`
+
+name: rocketchat-server
+version: 0.50.0-develop
+summary: Rocket.Chat server
+description: Have your own Slack like online chat, built with Meteor. https://rocket.chat/
+confinement: strict
+apps:
+    rocketchat-server:
+        command: env BABEL_CACHE_DIR=/tmp ROOT_URL=http://localhost PORT=3000 MONGO_URL=mongodb://localhost:27017/parties Accounts_AvatarStorePath=$SNAP_COMMON/uploads MONGO_OPLOG_URL=mongodb://localhost:27017/local?replicaSet=rcreplset node $SNAP/main.js
+        daemon: simple
+        plugs: [network, network-bind]
+    rocketchat-mongo:
+        command: env LC_ALL=C startmongo
+        daemon: simple
+        plugs: [network, network-bind]
+    rocketchat-caddy:
+        command: env LC_ALL=C caddy -conf=$SNAP_DATA/Caddyfile -host=localhost:8080 
+        daemon: simple
+        plugs: [network, network-bind]
+    backupdb:
+        command: env LC_ALL=c rcbackup
+        plugs: [network]
+    initcaddy:
+        command: env LC_ALL=c initcaddy
+parts:
+    node:
+        plugin: nodejs
+        node-engine: 4.7.0
+        after: [mongodb]
+        node-packages:
+            - minimax
+            - bcrypt
+            - promise
+            - meteor-promise
+            - fibers
+            - underscore
+            - source-map-support
+            - semver
+        build-packages:
+            - python
+            - build-essential
+        organize:
+            lib/node_modules: node_modules
+        stage:
+            - bin
+            - node_modules
+        snap:
+            - bin
+            - node_modules
+    mongodb:
+        plugin: dump
+        source: https://rocket.chat/releases/latest/download
+        source-type: tar
+        stage-packages:
+            - graphicsmagick
+            - mongodb-server
+            - libtcmalloc-minimal4
+            - mongodb-clients
+            - libssl1.0.0
+        stage:
+            - programs
+            - main.js
+            - usr
+            - etc
+            - lib
+        snap:
+            - programs
+            - main.js
+            - usr
+            - etc
+            - lib
+    scripts:
+        plugin: dump
+        source: bin/
+        organize:
+            rcbackup: bin/rcbackup
+            startmongo: bin/startmongo
+            initmongo: bin/initmongo
+            Caddyfile: bin/Caddyfile
+            initcaddy: bin/initcaddy
+            initmongoreplset.js: bin/initmongoreplset.js
+        snap:
+            - bin
+    caddy:
+        plugin: go
+        go-importpath:  github.com/mholt/caddy
+        source: https://github.com/mholt/caddy
+        source-type: git
+        source-commit: 53e117802fedd5915eeb32907873d8786a4b2936
+        snap:
+            - bin/caddy
