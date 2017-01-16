@@ -26,6 +26,7 @@ class ModelSubscriptions extends RocketChat.models._Base
 	findOneByRoomIdAndUserId: (roomId, userId) ->
 		if this.useCache
 			return this.cache.findByIndex('rid,u._id', [roomId, userId]).fetch()
+		
 		query =
 			rid: roomId
 			"u._id": userId
