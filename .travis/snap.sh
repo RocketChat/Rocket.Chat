@@ -5,6 +5,9 @@ IFS=$'\n\t'
 # Add launchpad to known hosts
 ssh-keyscan -t rsa -H git.launchpad.net > ~/.ssh/known_hosts
 
+git config user.name "CI Bot"
+git config user.email "rocketchat.buildmaster@git.launchpad.net"
+
 # Determine the channel to push snap to.
 if [[ $TRAVIS_TAG ]]
  then
