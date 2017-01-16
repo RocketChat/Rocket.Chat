@@ -189,19 +189,19 @@ sendHelper = Meteor.bindEnvironment (robot, envelope, strings, map) ->
 InternalHubot = {}
 
 init = =>
-	InternalHubot = new Robot null, null, false, RocketChat.settings.get 'InternalHubot_Username'
-	InternalHubot.alias = 'bot'
-	InternalHubot.adapter = new RocketChatAdapter InternalHubot
-	HubotScripts(InternalHubot)
-	InternalHubot.run()
-
 	if RocketChat.settings.get 'InternalHubot_Enabled'
+		InternalHubot = new Robot null, null, false, RocketChat.settings.get 'InternalHubot_Username'
+		InternalHubot.alias = 'bot'
+		InternalHubot.adapter = new RocketChatAdapter InternalHubot
+		HubotScripts(InternalHubot)
+		InternalHubot.run()
 		RocketChat.callbacks.add 'afterSaveMessage', InternalHubotReceiver, RocketChat.callbacks.priority.LOW, 'InternalHubot'
 	else
+		InternalHubot = {}
 		RocketChat.callbacks.remove 'afterSaveMessage', 'InternalHubot'
 
 Meteor.startup ->
 	init()
 	RocketChat.models.Settings.findByIds([ 'InternalHubot_Username', 'InternalHubot_Enabled', 'InternalHubot_ScriptsToLoad']).observe
 		changed: ->
-			init()
+			_.debounce init(), 1000

@@ -216,6 +216,7 @@ RocketChat.Assets = new class
 
 
 RocketChat.settings.addGroup 'Assets'
+RocketChat.settings.add 'Assets_SvgFavicon_Enable', true, { type: 'boolean', group: 'Assets', i18nLabel: 'Enable_Svg_Favicon' }
 for key, value of assets
 	do (key, value) ->
 		RocketChat.settings.add "Assets_#{key}", {defaultUrl: value.defaultUrl}, { type: 'asset', group: 'Assets', fileConstraints: value.constraints, i18nLabel: value.label, asset: key, public: true }
