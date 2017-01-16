@@ -5,7 +5,7 @@ function findPrivateGroupByIdOrName({ roomId, roomName, userId, checkedArchived 
 	}
 
 	let roomSub;
-	if (roomId){
+	if (roomId) {
 		roomSub = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(roomId, userId);
 	} else if (roomName) {
 		roomSub = RocketChat.models.Subscriptions.findOneByRoomNameAndUserId(roomName, userId);
@@ -435,7 +435,7 @@ RocketChat.API.v1.addRoute('groups.setType', { authRequired: true }, {
 
 RocketChat.API.v1.addRoute('groups.unarchive', { authRequired: true }, {
 	post: function() {
-		const findResult = findPrivateGroupByIdorName({ roomId: this.bodyParams.roomId, userId: this.userId, checkedArchived: false });
+		const findResult = findPrivateGroupByIdOrName({ roomId: this.bodyParams.roomId, userId: this.userId, checkedArchived: false });
 
 		Meteor.runAsUser(this.userId, () => {
 			Meteor.call('unarchiveRoom', findResult.rid);
