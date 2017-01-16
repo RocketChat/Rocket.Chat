@@ -3128,16 +3128,9 @@ body:not(.is-cordova) {
 	.flex-tab {
 		position: relative;
 		display: none;
-		top: 0;
-		bottom: 0;
-		min-width: @flex-tab-width;
-		z-index: 110;
+		width: @flex-tab-width;
+		z-index: 11;
 		overflow-x: visible;
-		transition: transform 0.25s cubic-bezier(0.5, 0, 0.1, 1);
-
-		&.opened {
-			display: block;
-		}
 
 		.control {
 			.header {
@@ -3289,8 +3282,7 @@ body:not(.is-cordova) {
 	.flex-tab-bar {
 		min-width: 40px;
 		height: 100%;
-		z-index: 130;
-		will-change: transform;
+		z-index: 1;
 
 		.tab-button {
 			position: relative;
@@ -3325,6 +3317,12 @@ body:not(.is-cordova) {
 					margin-right: -3px;
 				}
 			}
+		}
+	}
+
+	&.opened {
+		.flex-tab {
+			display: block;
 		}
 	}
 }
@@ -4381,11 +4379,13 @@ body:not(.is-cordova) {
 }
 
 @media all and(max-width: 1100px) {
-	#rocket-chat {
-		.flex-tab.opened {
+	.flex-tab-container.opened {
+		.flex-tab {
 			position: absolute;
 			right: 40px;
 			border-width: 0 0 0 1px;
+			z-index: 101;
+			height: 100%;
 		}
 	}
 }
@@ -4400,15 +4400,6 @@ body:not(.is-cordova) {
 		.main-content {
 			left: 0;
 			z-index: 120;
-		}
-
-		.main-content,
-		.flex-tab-bar {
-			transition: transform 0.2s linear;
-
-			&.notransition {
-				transition: transform 0;
-			}
 		}
 
 		.fixed-title h2 {
@@ -4430,6 +4421,20 @@ body:not(.is-cordova) {
 		button {
 			margin-top: 6px;
 			padding: 10px 22px;
+		}
+	}
+}
+
+@media all and(max-width: 440px) {
+	.flex-tab-container.opened {
+		.messages-container {
+			display: none;
+		}
+
+		.flex-tab {
+			position: relative;
+			right: auto;
+			border: 0;
 		}
 	}
 }
