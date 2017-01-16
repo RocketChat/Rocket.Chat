@@ -19,7 +19,7 @@ Meteor.methods
 					return subject
 				Accounts.emailTemplates.resetPassword.html = (userModel, url) ->
 					url = url.replace('/#/', '/');
-					return html.replace('[Forgot_Password_Url]', url);
+					return html.replace(/\[Forgot_Password_Url]/g, url);
 
 			try
 				Accounts.sendResetPasswordEmail(user._id, email)
