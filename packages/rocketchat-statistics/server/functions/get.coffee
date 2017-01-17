@@ -54,4 +54,7 @@ RocketChat.statistics.get = ->
 
 	statistics.instanceCount = InstanceStatus.getCollection().find().count()
 
+	if MongoInternals.defaultRemoteCollectionDriver().mongo._oplogHandle?.onOplogEntry? and RocketChat.settings.get('Force_Disable_OpLog_For_Cache') isnt true
+		statistics.oplogEnabled = true
+
 	return statistics
