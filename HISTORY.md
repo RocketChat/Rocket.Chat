@@ -27,7 +27,7 @@
 - Keep only public settings using notifyAll
 - Move room panels from main content into room wrapper
 - Refactor action links to better handle client side buttons only
-- Send notifyAll to all users and create notifyLogged to notify only logged users- 
+- Send notifyAll to all users and create notifyLogged to notify only logged users
 
 ## 0.49.0 - 2017-Jan-11
 

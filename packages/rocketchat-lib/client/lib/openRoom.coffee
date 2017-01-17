@@ -60,7 +60,7 @@ currentTracker = undefined
 			, 2000
 			# KonchatNotification.removeRoomNotification(params._id)
 
-			if Meteor.Device.isDesktop()
+			if Meteor.Device.isDesktop() and window.chatMessages?[room._id]?
 				setTimeout ->
 					$('.message-form .input-message').focus()
 				, 100
