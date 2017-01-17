@@ -21,15 +21,15 @@ function retrieveDirectMessageInfo({ currentUserId, channel, findByUserIdOnly=fa
 	} else {
 		roomUser = RocketChat.models.Users.findOne({
 			$or: [{ _id: channel }, { username: channel }]
-		});
-	}
-
-	if (!_.isObject(roomUser)) {
-		throw new Meteor.Error('invalid-channel');
+		}) || {};
 	}
 
 	const rid = [currentUserId, roomUser._id].sort().join('');
-	let room = RocketChat.models.Rooms.findOneById({ $in: [rid, channel] });
+	let room = RocketChat.models.Rooms.findOneByIds([rid, channel]);
+
+	if (!_.isObject(room)) {
+		throw new Meteor.Error('invalid-channel');
+	}
 
 	if (!room) {
 		Meteor.runAsUser(currentUserId, function() {
@@ -74,12 +74,14 @@ this.processWebhookMessage = function(messageObj, user, defaultValues) {
 				//Try to find the room by id or name if they didn't include the prefix.
 				room = retrieveRoomInfo({ currentUserId: user._id, channel: channelType + channel, ignoreEmpty: true });
 				if (room) {
+					channel = channelType + channel;
 					break;
 				}
 
 				//We didn't get a room, let's try finding direct messages
 				room = retrieveDirectMessageInfo({ currentUserId: user._id, channel: channelType + channel, findByUserIdOnly: true });
 				if (room) {
+					channel = channelType + channel;
 					break;
 				}
 
