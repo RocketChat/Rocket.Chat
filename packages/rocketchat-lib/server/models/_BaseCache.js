@@ -686,6 +686,11 @@ class ModelsBaseCache extends EventEmitter {
 		return this.findByIndex('_id', _id, options).fetch();
 	}
 
+	findOneByIds(ids, options) {
+		const query = this.processQuery({ _id: { $in: ids }});
+		return this.processQueryOptionsOnResult(this.collection.findOne(query), options);
+	}
+
 	findWhere(query, options) {
 		query = this.processQuery(query);
 		return this.processQueryOptionsOnResult(this.collection.findWhere(query), options);
