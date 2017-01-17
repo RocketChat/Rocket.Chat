@@ -217,7 +217,7 @@
 	}
 
 	.main-content {
-		left: 40px;
+		left: 0;
 		right: @rooms-box-width;
 		transition: left 0.25s cubic-bezier(0.5, 0, 0.1, 1);
 
@@ -344,11 +344,11 @@
 		}
 	}
 
-	.flex-tab-bar {
-		.left(0);
-		border-right: 1px solid #eaeaea;
-		border-left: none;
+	.flex-tab-container {
+		border-width: 0 1px 0 0;
+	}
 
+	.flex-tab-bar {
 		.tab-button {
 			&.active {
 				.margin-right(-1px);
@@ -359,11 +359,6 @@
 	}
 
 	.flex-tab {
-		.right(100%);
-		border-left: unset;
-		border-width: 0 1px 0 0;
-		// border-right-color: @tertiary-background-color;
-
 		.control {
 			text-align: right;
 			padding: 12px 30px;

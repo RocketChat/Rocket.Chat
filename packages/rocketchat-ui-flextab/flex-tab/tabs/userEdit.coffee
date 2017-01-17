@@ -59,7 +59,7 @@ Template.userEdit.onCreated ->
 		userData.requirePasswordChange = this.$("#changePassword:checked").length > 0
 		userData.joinDefaultChannels = this.$("#joinDefaultChannels:checked").length > 0
 		userData.sendWelcomeEmail = this.$("#sendWelcomeEmail:checked").length > 0
-		userData.role = this.$("#role").val()
+		userData.roles = [this.$("#role").val()] if this.$("#role").val()
 		return userData
 
 	@validate = =>
