@@ -17,6 +17,8 @@ const apiPrivateChannelName = 'api'+privateChannelName;
 var targetUserId = undefined;
 var channelId = undefined;
 var groupId = undefined;
+var messageId = undefined;
+var integrationId = undefined;
 
 function api(path) {
 	return prefix + path;
@@ -176,12 +178,9 @@ describe('API v1', () => {
 				.query({
 					name: { '$regex': 'g' }
 				})
-				.fields({
-					username: 1
-				})
-				.sort({
-					createdAt: -1
-				})
+				.field('username', 1)
+				.sort('createdAt', -1)
+				.expect(log)
 				.expect('Content-Type', 'application/json')
 				.expect(200)
 				.expect((res) => {
@@ -197,7 +196,7 @@ describe('API v1', () => {
 		it.skip('/users.setAvatar', (done) => {
 			request.post(api('users.setAvatar'))
 				.set(credentials)
-				.send(imgURL)
+				.attach('avatarUrl', imgURL)
 				.expect('Content-Type', 'application/json')
 				.expect(200)
 				.expect((res) => {
@@ -312,6 +311,25 @@ describe('API v1', () => {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.deep.property('message.msg', 'Sample message');
+					messageId = res.body.message._id;
+				})
+				.end(done);
+		});
+
+		it('/chat.update', (done) => {
+			request.post(api('chat.update'))
+				.set(credentials)
+				.send({
+					roomId: channelId,
+					msgId: messageId,
+					text: 'This message was edited via API'
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.deep.property('message.msg', 'This message was edited via API');
 				})
 				.end(done);
 		});
@@ -335,6 +353,66 @@ describe('API v1', () => {
 				.end(done);
 		});
 
+		it('/channels.addModerator', (done) => {
+			request.post(api('channels.addModerator'))
+				.set(credentials)
+				.send({
+					roomId: channelId,
+					userId: 'rocket.cat'
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+
+		it('/channels.removeModerator', (done) => {
+			request.post(api('channels.removeModerator'))
+				.set(credentials)
+				.send({
+					roomId: channelId,
+					userId: 'rocket.cat'
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+
+		it('/channels.addOwner', (done) => {
+			request.post(api('channels.addOwner'))
+				.set(credentials)
+				.send({
+					roomId: channelId,
+					userId: 'rocket.cat'
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+
+		it('/channels.removeOwner', (done) => {
+			request.post(api('channels.removeOwner'))
+				.set(credentials)
+				.send({
+					roomId: channelId,
+					userId: 'rocket.cat'
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+
 		it('/channels.kick', (done) => {
 			request.post(api('channels.kick'))
 				.set(credentials)
@@ -350,6 +428,40 @@ describe('API v1', () => {
 					expect(res.body).to.have.deep.property('channel.name', apiPublicChannelName);
 					expect(res.body).to.have.deep.property('channel.t', 'c');
 					expect(res.body).to.have.deep.property('channel.msgs', 1);
+				})
+				.end(done);
+		});
+
+		it('/channels.invite', (done) => {
+			request.post(api('channels.invite'))
+				.set(credentials)
+				.send({
+					roomId: channelId,
+					userId: 'rocket.cat'
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.deep.property('channel._id');
+					expect(res.body).to.have.deep.property('channel.name', apiPublicChannelName);
+					expect(res.body).to.have.deep.property('channel.t', 'c');
+					expect(res.body).to.have.deep.property('channel.msgs', 1);
+				})
+				.end(done);
+		});
+
+		it('/channels.addOwner', (done) => {
+			request.post(api('channels.addOwner'))
+				.set(credentials)
+				.send({
+					roomId: channelId,
+					userId: 'rocket.cat'
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
 				})
 				.end(done);
 		});
@@ -521,6 +633,21 @@ describe('API v1', () => {
 				.end(done);
 		});
 
+		it('/chat.delete', (done) => {
+			request.post(api('chat.delete'))
+				.set(credentials)
+				.send({
+					roomId: channelId,
+					msgId: messageId
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+
 		it('/channels.rename', (done) => {
 			request.post(api('channels.rename'))
 				.set(credentials)
@@ -593,8 +720,6 @@ describe('API v1', () => {
 				.end(done);
 		});
 
-
-
 		it('/channels.setReadOnly', (done) => {
 			request.post(api('channels.setReadOnly'))
 				.set(credentials)
@@ -614,14 +739,13 @@ describe('API v1', () => {
 				.end(done);
 		});
 
-		it.skip('/channels.leave', (done) => {
+		it('/channels.leave', (done) => {
 			request.post(api('channels.leave'))
 				.set(credentials)
 				.send({
 					roomId: channelId
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(log)
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
@@ -732,6 +856,25 @@ describe('API v1', () => {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.deep.property('message.msg', 'Sample message');
+					messageId = res.body.message._id;
+				})
+				.end(done);
+		});
+
+		it('/chat.update', (done) => {
+			request.post(api('chat.update'))
+				.set(credentials)
+				.send({
+					roomId: groupId,
+					msgId: messageId,
+					text: 'This message was edited via API'
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.deep.property('message.msg', 'This message was edited via API');
 				})
 				.end(done);
 		});
@@ -755,8 +898,102 @@ describe('API v1', () => {
 				.end(done);
 		});
 
+		it('/groups.addModerator', (done) => {
+			request.post(api('groups.addModerator'))
+				.set(credentials)
+				.send({
+					roomId: groupId,
+					userId: 'rocket.cat'
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+
+		it('/groups.removeModerator', (done) => {
+			request.post(api('groups.removeModerator'))
+				.set(credentials)
+				.send({
+					roomId: groupId,
+					userId: 'rocket.cat'
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+
+		it('/groups.addOwner', (done) => {
+			request.post(api('groups.addOwner'))
+				.set(credentials)
+				.send({
+					roomId: groupId,
+					userId: 'rocket.cat'
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+
+		it('/groups.removeOwner', (done) => {
+			request.post(api('groups.removeOwner'))
+				.set(credentials)
+				.send({
+					roomId: groupId,
+					userId: 'rocket.cat'
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+
 		it('/groups.kick', (done) => {
 			request.post(api('groups.kick'))
+				.set(credentials)
+				.send({
+					roomId: groupId,
+					userId: 'rocket.cat'
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+
+		it('/groups.invite', (done) => {
+			request.post(api('groups.invite'))
+				.set(credentials)
+				.send({
+					roomId: groupId,
+					userId: 'rocket.cat'
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.deep.property('group._id');
+					expect(res.body).to.have.deep.property('group.name', apiPrivateChannelName);
+					expect(res.body).to.have.deep.property('group.t', 'p');
+					expect(res.body).to.have.deep.property('group.msgs', 1);
+				})
+				.end(done);
+		});
+
+		it('/groups.addOwner', (done) => {
+			request.post(api('groups.addOwner'))
 				.set(credentials)
 				.send({
 					roomId: groupId,
@@ -905,6 +1142,21 @@ describe('API v1', () => {
 				.end(done);
 		});
 
+		it('/chat.delete', (done) => {
+			request.post(api('chat.delete'))
+				.set(credentials)
+				.send({
+					roomId: groupId,
+					msgId: messageId
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+
 		it('/groups.rename', (done) => {
 			request.post(api('groups.rename'))
 				.set(credentials)
@@ -955,6 +1207,20 @@ describe('API v1', () => {
 				.end(done);
 		});
 
+		it.skip('/groups.leave', (done) => {
+			request.post(api('groups.leave'))
+				.set(credentials)
+				.send({
+					roomId: groupId
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+
 		it('/groups.setType', (done) => {
 			request.post(api('groups.setType'))
 				.set(credentials)
@@ -966,6 +1232,176 @@ describe('API v1', () => {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+	});
+
+	describe('direct messages', () => {
+		it('/chat.postMessage', (done) => {
+			request.post(api('chat.postMessage'))
+				.set(credentials)
+				.send({
+					channel: 'rocket.cat',
+					text: 'This message was sent using the API'
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.deep.property('message.msg', 'This message was sent using the API');
+					expect(res.body).to.have.deep.property('message.rid', 'rocket.catrocketchat.internal.admin.test');
+				})
+				.end(done);
+		});
+
+		it('/im.setTopic', (done) => {
+			request.post(api('im.setTopic'))
+				.set(credentials)
+				.send({
+					roomId: 'rocket.catrocketchat.internal.admin.test',
+					topic: 'a direct message with rocket.cat'
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+
+		it('/im.history', (done) => {
+			request.get(api('im.history'))
+				.set(credentials)
+				.query({
+					roomId: 'rocket.catrocketchat.internal.admin.test',
+					userId: 'rocket.cat'
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('messages');
+				})
+				.end(done);
+		});
+
+		it('/im.list', (done) => {
+			request.get(api('im.list'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('count');
+					expect(res.body).to.have.property('total');
+				})
+				.end(done);
+		});
+
+		it('/im.list.everyone', (done) => {
+			request.get(api('im.list.everyone'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('count');
+					expect(res.body).to.have.property('total');
+				})
+				.end(done);
+		});
+
+		it('/im.close', (done) => {
+			request.post(api('im.close'))
+				.set(credentials)
+				.send({
+					roomId: 'rocket.catrocketchat.internal.admin.test',
+					userId: 'rocket.cat'
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+
+		it('/im.open', (done) => {
+			request.post(api('im.open'))
+				.set(credentials)
+				.send({
+					roomId: 'rocket.catrocketchat.internal.admin.test',
+					userId: 'rocket.cat'
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+	});
+
+	describe('integrations', () => {
+		it('/integrations.create', (done) => {
+			request.post(api('integrations.create'))
+				.set(credentials)
+				.send({
+					type: 'webhook-outgoing',
+					name: 'Guggy',
+					enabled: true,
+					username: 'rocket.cat',
+					urls: ['http://text2gif.guggy.com/guggify'],
+					scriptEnabled: false,
+					channel: '#general',
+					triggerWords: ['!guggy'],
+					alias: 'guggy',
+					avatar: 'http://res.guggy.com/logo_128.png',
+					emoji: ':ghost:'
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					integrationId = res.body.integration._id;
+					expect(res.body).to.have.deep.property('integration.name', 'Guggy');
+					expect(res.body).to.have.deep.property('integration.type', 'webhook-outgoing');
+					expect(res.body).to.have.deep.property('integration.enabled', true);
+					expect(res.body).to.have.deep.property('integration.username', 'rocket.cat');
+				})
+				.end(done);
+		});
+
+		it('/integrations.list', (done) => {
+			request.get(api('integrations.list'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('offset');
+					expect(res.body).to.have.property('items');
+					expect(res.body).to.have.property('total');
+				})
+				.end(done);
+		});
+
+		it('/integrations.remove', (done) => {
+			request.post(api('integrations.remove'))
+				.set(credentials)
+				.send({
+					type: 'webhook-outgoing',
+					integrationId: integrationId
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.deep.property('integration.name', 'Guggy');
+					expect(res.body).to.have.deep.property('integration.type', 'webhook-outgoing');
+					expect(res.body).to.have.deep.property('integration.enabled', true);
+					expect(res.body).to.have.deep.property('integration.username', 'rocket.cat');
 				})
 				.end(done);
 		});
