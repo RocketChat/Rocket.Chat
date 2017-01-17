@@ -1265,6 +1265,7 @@ describe('API v1', () => {
 					topic: 'a direct message with rocket.cat'
 				})
 				.expect('Content-Type', 'application/json')
+				.expect(log)
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
@@ -1280,6 +1281,7 @@ describe('API v1', () => {
 					userId: 'rocket.cat'
 				})
 				.expect('Content-Type', 'application/json')
+				.expect(log)
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
@@ -1322,6 +1324,7 @@ describe('API v1', () => {
 					userId: 'rocket.cat'
 				})
 				.expect('Content-Type', 'application/json')
+				.expect(log)
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
@@ -1337,6 +1340,7 @@ describe('API v1', () => {
 					userId: 'rocket.cat'
 				})
 				.expect('Content-Type', 'application/json')
+				.expect(log)
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
