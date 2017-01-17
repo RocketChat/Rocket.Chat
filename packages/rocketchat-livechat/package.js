@@ -27,6 +27,7 @@ Package.onUse(function(api) {
 	api.use('rocketchat:authorization');
 	api.use('rocketchat:logger');
 	api.use('rocketchat:api');
+	api.use('rocketchat:theme');
 	api.use('rocketchat:streamer');
 	api.use('konecty:user-presence');
 	api.use('rocketchat:ui');
