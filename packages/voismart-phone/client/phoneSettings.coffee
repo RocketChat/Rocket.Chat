@@ -53,6 +53,13 @@ Template.phoneSettings.helpers
 			console.log ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
 		return def.concat res
 
+	usedeskphone: (checkValue, isdefault) ->
+		res = RocketChat.Phone.getUseDeskPhone()
+
+		if not res and isdefault is true
+			res = checkValue
+
+		return res is checkValue
 
 Template.phoneSettings.events
 	'change #audioInDevice': (e, t) ->
@@ -82,6 +89,13 @@ Template.phoneSettings.events
 	'change #videoResolution': (e, t) ->
 		value = _.trim $(e.target).val()
 		RocketChat.Phone.setVideoResolution(value)
+
+		if window.rocketDebug
+			console.log value
+
+	'change #useDeskPhone': (e, t) ->
+		value = _.trim $(e.target).val()
+		RocketChat.Phone.setUseDeskPhone(value)
 
 		if window.rocketDebug
 			console.log value

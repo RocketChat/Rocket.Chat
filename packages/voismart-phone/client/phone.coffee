@@ -337,6 +337,7 @@ RocketChat.Phone = new class
 	_audioInDevice = undefined
 	_audioOutDevice = undefined
 	_videoDevice = null
+	_useDeskPhone = false
 
 	_curCall = null
 	_dialogs = {}
@@ -608,6 +609,7 @@ RocketChat.Phone = new class
 			audioInDevice: _audioInDevice
 			audioOutDevice: _audioOutDevice
 			videoDevice: _videoDevice
+			useDeskPhone: _useDeskPhone
 		}
 		localStorage.setItem('MeteorPhoneConfig', $.toJSON(conf))
 
@@ -621,6 +623,7 @@ RocketChat.Phone = new class
 		_audioInDevice = conf.audioInDevice
 		_audioOutDevice = conf.audioOutDevice
 		_videoDevice = conf.videoDevice
+		_useDeskPhone = conf.useDeskPhone
 		enabledCamera.set(conf.videoDevice)
 
 	refreshDevices = (what) ->
@@ -766,6 +769,13 @@ RocketChat.Phone = new class
 			console.log("Cannot call while in call") if window.rocketDebug
 			return
 
+		if _useDeskPhone and !useVideo
+			Meteor.call 'clickAndDial', destination, (error, results) =>
+				if error
+					console.error("Error in calling click and dial method", error)
+					toastr.error error.reason
+			return
+
 		has_mic = RocketChat.Phone.getAudioInDevice()
 		has_speak = RocketChat.Phone.getAudioOutDevice()
 		if !has_mic? or !has_speak? or has_mic is "none" or has_speak is "none"
@@ -849,6 +859,17 @@ RocketChat.Phone = new class
 
 	getAudioOutDevice: ->
 		return _audioOutDevice
+
+	getUseDeskPhone: ->
+		return _useDeskPhone
+
+	setUseDeskPhone: (value) ->
+		value = parseInt(value)
+		if value
+			_useDeskPhone = true
+		else
+			_useDeskPhone = false
+		setConfig()
 
 	setVideoDevice: (id) ->
 		if id is 'none'

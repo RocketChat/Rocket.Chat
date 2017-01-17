@@ -47,7 +47,8 @@ Package.onUse(function(api) {
 		'server/settings.coffee',
 		'server/methods/phoneFindUserByQ.coffee',
 		'server/methods/getContacts.coffee',
-		'server/methods/getPersonalRegistry.coffee'
+		'server/methods/getPersonalRegistry.coffee',
+		'server/methods/clickAndDial.coffee'
 	], 'server');
 
 	api.addFiles([], 'server');

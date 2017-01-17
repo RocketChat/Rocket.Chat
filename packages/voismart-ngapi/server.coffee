@@ -63,6 +63,11 @@ _cached_token = {}
 			sort: 'start_time'
 			dir: 'DESC'
 
+	clickAndDial: (token, number) ->
+		url = @server + '/jsondata/extjs/dialerHandler/click_and_dial'
+		@_doFormPost url,
+			token: token
+			data: JSON.stringify([{number_to_call: number}])
 
 	_doPost: (url, data) ->
 		try
@@ -126,3 +131,6 @@ _cached_token = {}
 
 	getPersonalRegistry: ->
 		super(_cached_token[@username])
+
+	clickAndDial: (number) ->
+		super(_cached_token[@username], number)
