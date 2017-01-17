@@ -42,7 +42,6 @@ before_install:
 install:
 - export PATH="$HOME/.meteor:$PATH"
 before_script:
-- ".travis/snap.sh"
 - echo "replication:" | sudo tee -a /etc/mongod.conf
 - |-
   echo "  replSetName: \"rs0\"" | sudo tee -a /etc/mongod.conf
