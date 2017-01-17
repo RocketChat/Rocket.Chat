@@ -1110,7 +1110,7 @@ label.required::after {
 	top: 0;
 	left: 0;
 	height: 100%;
-	z-index: 3;
+	z-index: 2;
 	overflow-y: auto;
 	overflow-x: hidden;
 	width: @rooms-box-width;
@@ -1370,7 +1370,7 @@ label.required::after {
 		top: 0;
 		left: 0;
 		width: 100%;
-		z-index: 2;
+		z-index: 1;
 		cursor: pointer;
 		min-height: @header-min-height;
 		height: @header-min-height;
@@ -1380,7 +1380,7 @@ label.required::after {
 		position: absolute;
 		top: 18px;
 		right: 8px;
-		z-index: 3;
+		z-index: 2;
 		cursor: pointer;
 	}
 
@@ -1393,7 +1393,7 @@ label.required::after {
 		text-align: right;
 		min-height: @footer-min-height;
 		height: @footer-min-height;
-		z-index: 3;
+		z-index: 1;
 
 		.logo {
 			display: block;
@@ -2255,6 +2255,7 @@ label.required::after {
 .flex-tab-main-content {
 	flex-grow: 1;
 	position: relative;
+	z-index: 1;
 }
 
 .room-container {
@@ -2268,7 +2269,7 @@ label.required::after {
 	height: 100%;
 	top: 0;
 	left: 0;
-	border-width: 0 1px 0 0;
+	z-index: 1;
 
 	.room-topic {
 		font-size: 14px;
@@ -3119,25 +3120,21 @@ body:not(.is-cordova) {
 }
 
 // FLEX-TAB and FLEX-TAB views
+.main-content-flex {
+	display: flex;
+	height: 100%;
+}
+
 .flex-tab-container {
 	display: flex;
-	flex-direction: row;
-	align-items: stretch;
-	height: 100%;
+	z-index: 2;
+	border-width: 0 0 0 1px;
 
 	.flex-tab {
 		position: relative;
 		display: none;
-		top: 0;
-		bottom: 0;
-		min-width: @flex-tab-width;
-		z-index: 110;
+		width: @flex-tab-width;
 		overflow-x: visible;
-		transition: transform 0.25s cubic-bezier(0.5, 0, 0.1, 1);
-
-		&.opened {
-			display: block;
-		}
 
 		.control {
 			.header {
@@ -3288,9 +3285,7 @@ body:not(.is-cordova) {
 
 	.flex-tab-bar {
 		min-width: 40px;
-		height: 100%;
-		z-index: 130;
-		will-change: transform;
+		z-index: 1;
 
 		.tab-button {
 			position: relative;
@@ -3325,6 +3320,12 @@ body:not(.is-cordova) {
 					margin-right: -3px;
 				}
 			}
+		}
+	}
+
+	&.opened {
+		.flex-tab {
+			display: block;
 		}
 	}
 }
@@ -4381,11 +4382,12 @@ body:not(.is-cordova) {
 }
 
 @media all and(max-width: 1100px) {
-	#rocket-chat {
-		.flex-tab.opened {
+	.flex-tab-container.opened {
+		.flex-tab {
 			position: absolute;
 			right: 40px;
 			border-width: 0 0 0 1px;
+			height: 100%;
 		}
 	}
 }
@@ -4400,15 +4402,6 @@ body:not(.is-cordova) {
 		.main-content {
 			left: 0;
 			z-index: 120;
-		}
-
-		.main-content,
-		.flex-tab-bar {
-			transition: transform 0.2s linear;
-
-			&.notransition {
-				transition: transform 0;
-			}
 		}
 
 		.fixed-title h2 {
@@ -4430,6 +4423,19 @@ body:not(.is-cordova) {
 		button {
 			margin-top: 6px;
 			padding: 10px 22px;
+		}
+	}
+}
+
+@media all and(max-width: 440px) {
+	.flex-tab-container.opened {
+		position: absolute;
+		width: 100%;
+		height: 100%;
+
+		.flex-tab {
+			position: relative;
+			right: auto;
 		}
 	}
 }

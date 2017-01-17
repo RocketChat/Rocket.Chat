@@ -73,6 +73,24 @@ class ModelsBase {
 		}
 	}
 
+	findOneById() {
+		try {
+			return this[this.origin].findOneById(...arguments);
+		} catch (e) {
+			console.error('Exception on find', e, ...arguments);
+		}
+	}
+
+	findOneByIds(ids, options) {
+		check(ids, [String]);
+
+		try {
+			return this[this.origin].findOneByIds(ids, options);
+		} catch (e) {
+			console.error('Exception on find', e, ...arguments);
+		}
+	}
+
 	insert(/*record*/) {
 		return this._db.insert(...arguments);
 	}
