@@ -15,8 +15,17 @@ loki.LokiOps.$eq = function(a, b) {
 	return lokiEq(a, b);
 };
 
-loki.LokiOps.$in = loki.LokiOps.$containsAny;
-loki.LokiOps.$nin = loki.LokiOps.$containsNone;
+const lokiIn = loki.LokiOps.$in;
+loki.LokiOps.$in = function(a, b) {
+	if (Array.isArray(a)) {
+		return a.some(subA => lokiIn(subA, b));
+	}
+	return lokiIn(a, b);
+};
+
+loki.LokiOps.$nin = function(a, b) {
+	return !loki.LokiOps.$in(a, b);
+};
 
 loki.LokiOps.$exists = function(a, b) {
 	if (b) {
