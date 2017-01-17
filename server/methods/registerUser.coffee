@@ -29,6 +29,13 @@ Meteor.methods
 
 		try
 			if userData.email
+				if RocketChat.settings.get('Verification_Customized')
+					subject = RocketChat.placeholders.replace(RocketChat.settings.get('Verification_Email_Subject') || '')
+					html = RocketChat.placeholders.replace(RocketChat.settings.get('Verification_Email') || '')
+					Accounts.emailTemplates.verifyEmail.subject = (userModel) ->
+						return subject
+					Accounts.emailTemplates.verifyEmail.html = (userModel, url) ->
+						return html.replace(/\[Verification_Url]/g, url);
 				Accounts.sendVerificationEmail(userId, userData.email);
 		catch error
 			# throw new Meteor.Error 'error-email-send-failed', 'Error trying to send email: ' + error.message, { method: 'registerUser', message: error.message }

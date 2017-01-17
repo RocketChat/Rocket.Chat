@@ -105,6 +105,14 @@ class ModelsBaseDb extends EventEmitter {
 		return this.model.findOne(...arguments);
 	}
 
+	findOneById(_id, options) {
+		return this.model.findOne({ _id }, options);
+	}
+
+	findOneByIds(ids, options) {
+		return this.model.findOne({ _id: { $in: ids }}, options);
+	}
+
 	defineSyncStrategy(query, modifier, options) {
 		if (this.baseModel.useCache === false) {
 			return 'db';

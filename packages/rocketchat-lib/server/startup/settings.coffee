@@ -166,6 +166,15 @@ RocketChat.settings.addGroup 'Email', ->
 		@add 'Accounts_UserAddedEmailSubject', '', { type: 'string', i18nLabel: "Subject", enableQuery: { _id: 'Accounts_UserAddedEmail_Customized', value: true }, i18nDefaultQuery: { _id: 'Accounts_UserAddedEmail_Customized', value: false } }
 		@add 'Accounts_UserAddedEmail', '', { type: 'code', code: 'text/html', multiline: true, i18nLabel: 'Body', i18nDescription: 'Accounts_UserAddedEmail_Description', enableQuery: { _id: 'Accounts_UserAddedEmail_Customized', value: true }, i18nDefaultQuery: { _id: 'Accounts_UserAddedEmail_Customized', value: false } }
 
+	@section 'Forgot Password', ->
+		@add 'Forgot_Password_Customized', false, { type: 'boolean', i18nLabel: 'Custom' }
+		@add 'Forgot_Password_Email_Subject', '', { type: 'string', i18nLabel: 'Subject', enableQuery: { _id: 'Forgot_Password_Customized', value: true }, i18nDefaultQuery: { _id: 'Forgot_Password_Customized', value: false } }
+		@add 'Forgot_Password_Email', '', { type: 'code', code: 'text/html', multiline: true, i18nLabel: 'Body', i18nDescription: 'Forgot_Password_Description', enableQuery: { _id: 'Forgot_Password_Customized', value: true }, i18nDefaultQuery: { _id: 'Forgot_Password_Customized', value: false } }
+
+	@section 'Verification', ->
+		@add 'Verification_Customized', false, { type: 'boolean', i18nLabel: 'Custom' }
+		@add 'Verification_Email_Subject', '', { type: 'string', i18nLabel: 'Subject', enableQuery: { _id: 'Verification_Customized', value: true }, i18nDefaultQuery: { _id: 'Verification_Customized', value: false } }
+		@add 'Verification_Email', '', { type: 'code', code: 'text/html', multiline: true, i18nLabel: 'Body', i18nDescription: 'Verification_Description', enableQuery: { _id: 'Verification_Customized', value: true }, i18nDefaultQuery: { _id: 'Verification_Customized', value: false } }
 
 RocketChat.settings.addGroup 'Message', ->
 	@add 'Message_AllowEditing', true, { type: 'boolean', public: true }

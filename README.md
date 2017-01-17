@@ -265,6 +265,7 @@ It is a great solution for communities and companies wanting to privately host t
 - Audio calls
 - Multi-users Audio Conference
 - Screensharing
+- Drupal 7.x and 8.x Plug-in ([download](https://www.drupal.org/project/rocket_chat)  and [source code](https://github.com/jelhouss/rocket_chat) )
 - XMPP bridge ([try it](https://demo.rocket.chat/channel/general))
 - REST APIs
 - Remote Locations Video Monitoring
@@ -289,7 +290,6 @@ It is a great solution for communities and companies wanting to privately host t
 - Native Android Application [Issue #271 - HELP WANTED](https://github.com/RocketChat/Rocket.Chat/issues/271)
 - Off the Record Messaging [Issue #36](https://github.com/RocketChat/Rocket.Chat/issues/36), [Issue #268](https://github.com/RocketChat/Rocket.Chat/issues/268)
 - Wordpress Plug-in  [Issue # 1920](https://github.com/RocketChat/Rocket.Chat/issues/1920)
-- Drupal Plug-in [Issue # 1921](https://github.com/RocketChat/Rocket.Chat/issues/1921)
 - Integration with PSTN (telephone networks)
 - API-enabled methods: [Issue #202](https://github.com/RocketChat/Rocket.Chat/issues/202), [Issue #454](https://github.com/RocketChat/Rocket.Chat/issues/454), [Issue #455](https://github.com/RocketChat/Rocket.Chat/issues/455), [Issue #759](https://github.com/RocketChat/Rocket.Chat/issues/759)
 - Scalable WebRTC broadcaster / media-server integration, [Issue #1118](https://github.com/RocketChat/Rocket.Chat/issues/1118)
