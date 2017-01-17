@@ -1,5 +1,34 @@
 # History
 
+## 0.49.2 - 2017-Jan-16
+
+- Add findOneById and findOneByIds to all layers of the models
+- Add relation between client cache and user’s token
+- Allow the text of attachments to be collapsed
+- Fix an error with updating the users if no role was defined
+- Fix flex-nav z-index
+- Fix flex-tab on mobile
+- Fix making the internal Hubot init() function always debounced
+- Fix private groups not being able to be unarchived via the rest api
+- Fix the cache layer not respecting findById via query
+- Fix the roles not being respected on user creation
+- Fix to prevent stop hubot initiating even when disabled
+
+## 0.49.1 - 2017-Jan-13
+
+- Fix emoji picker handling
+- Fix favicons and add an option to enable svg
+- Fix find with $elemMatch. Closes #5536
+- Fix livechat whitedomains list
+- Fix logo in admin
+- Fix message-dropdown background
+- Fix migration 77. Closes #5542
+- Fix new-message background
+- Keep only public settings using notifyAll
+- Move room panels from main content into room wrapper
+- Refactor action links to better handle client side buttons only
+- Send notifyAll to all users and create notifyLogged to notify only logged users- 
+
 ## 0.49.0 - 2017-Jan-11
 
 ### Now uses NodeJS 4.7.1
