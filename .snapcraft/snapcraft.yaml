@@ -17,7 +17,7 @@ apps:
         daemon: simple
         plugs: [network, network-bind]
     rocketchat-mongo:
-        command: env LC_ALL=C startmongo
+        command: env LC_ALL=C mongod --bind_ip 127.0.0.1 --smallfiles --dbpath=$SNAP_COMMON
         daemon: simple
         plugs: [network, network-bind]
     rocketchat-caddy:
@@ -32,49 +32,49 @@ apps:
 parts:
     node:
         plugin: nodejs
-        node-engine: 4.7.0
-        after: [mongodb]
+        node-engine: 4.7.1
         node-packages:
-            - minimax
-            - bcrypt
             - promise
-            - meteor-promise
             - fibers
             - underscore
             - source-map-support
             - semver
         build-packages:
+            # For fibers
             - python
             - build-essential
+            - nodejs
         organize:
             lib/node_modules: node_modules
-        stage:
-            - bin
-            - node_modules
-        snap:
-            - bin
-            - node_modules
-    mongodb:
+    rocketchat-server:
         plugin: dump
+        after: [mongodb]
         source: https://rocket.chat/releases/latest/download
         source-type: tar
         stage-packages:
             - graphicsmagick
-            - mongodb-server
-            - libtcmalloc-minimal4
-            - mongodb-clients
-            - libssl1.0.0
         stage:
             - programs
             - main.js
             - usr
-            - etc
             - lib
         snap:
             - programs
             - main.js
             - usr
-            - etc
+            - lib
+    mongodb:
+        source: https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu1604-3.2.7.tgz
+        plugin: dump
+        stage-packages:
+            - libssl1.0.0
+        stage:
+            - usr
+            - bin
+            - lib
+        snap:
+            - usr
+            - bin
             - lib
     scripts:
         plugin: dump
