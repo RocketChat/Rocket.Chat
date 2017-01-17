@@ -24,23 +24,17 @@ function retrieveDirectMessageInfo({ currentUserId, channel, findByUserIdOnly=fa
 		});
 	}
 
-	let room, rid;
-	if (_.isObject(roomUser)) {
-		rid = [currentUserId, roomUser._id].sort().join('');
-		room = RocketChat.models.Rooms.findOneById(rid);
-	} else {
-		room = RocketChat.models.Rooms.findOneById(channel);
-	}
+	const rid = _.isObject(roomUser) ? [currentUserId, roomUser._id].sort().join('') : channel;
+	const room = RocketChat.models.Rooms.findOneById(rid);
 
 	if (_.isObject(room)) {
 		return room;
 	}
 
-	Meteor.runAsUser(currentUserId, function() {
-		rid = Meteor.call('createDirectMessage', roomUser.username).rid;
+	return Meteor.runAsUser(currentUserId, function() {
+		const {rid} = Meteor.call('createDirectMessage', roomUser.username);
+		return RocketChat.models.Rooms.findOneById(rid);
 	});
-
-	return RocketChat.models.Rooms.findOneById(rid);
 }
 
 this.processWebhookMessage = function(messageObj, user, defaultValues) {
