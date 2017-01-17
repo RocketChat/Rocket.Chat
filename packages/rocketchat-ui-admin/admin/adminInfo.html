@@ -7,14 +7,14 @@
 			</h2>
 		</header>
 		<div class="content">
-		{{#if $gt statistics.instanceCount 1}}
-			{{#unless statistics.oplogEnabled}}
-				<h1 class="alert error-color error-border error-background">
-					{{_ "Error_OpLog_ReplicaSet_should_be_enabled_when_running_multiple_instances"}}<br/>
-					<a href="https://docs.mongodb.com/manual/tutorial/deploy-replica-set/">https://docs.mongodb.com/manual/tutorial/deploy-replica-set/</a>
-				</h1>
-			{{/unless}}
-		{{/if}}
+			{{#if $gt statistics.instanceCount 1}}
+				{{#unless statistics.oplogEnabled}}
+					<h1 class="alert error-color error-border error-background">
+						{{_ "Error_OpLog_ReplicaSet_should_be_enabled_when_running_multiple_instances"}}<br/>
+						<a href="https://docs.mongodb.com/manual/tutorial/deploy-replica-set/">https://docs.mongodb.com/manual/tutorial/deploy-replica-set/</a>
+					</h1>
+				{{/unless}}
+			{{/if}}
 
 			{{#if hasPermission 'view-statistics'}}
 				<h3>{{_ "Rocket.Chat"}}</h3>
