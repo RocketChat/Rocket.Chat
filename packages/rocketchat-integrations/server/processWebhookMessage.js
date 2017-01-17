@@ -24,19 +24,20 @@ function retrieveDirectMessageInfo({ currentUserId, channel, findByUserIdOnly=fa
 		});
 	}
 
-	if (!_.isObject(roomUser)) {
-		throw new Meteor.Error('invalid-target-user');
+	let room, rid;
+	if (_.isObject(roomUser)) {
+		rid = [currentUserId, roomUser._id].sort().join('');
+		room = RocketChat.models.Rooms.findOneById(rid);
+	} else {
+		room = RocketChat.models.Rooms.findOneById(channel);
 	}
-
-	const rid = [currentUserId, roomUser._id].sort().join('');
-	const room = RocketChat.models.Rooms.findOneByIds([rid, channel]);
 
 	if (_.isObject(room)) {
 		return room;
 	}
 
 	Meteor.runAsUser(currentUserId, function() {
-		Meteor.call('createDirectMessage', roomUser.username);
+		rid = Meteor.call('createDirectMessage', roomUser.username).rid;
 	});
 
 	return RocketChat.models.Rooms.findOneById(rid);
