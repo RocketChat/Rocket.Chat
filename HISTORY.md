@@ -1,5 +1,19 @@
 # History
 
+## 0.49.2 - 2017-Jan-16
+
+- Add findOneById and findOneByIds to all layers of the models
+- Add relation between client cache and user’s token
+- Allow the text of attachments to be collapsed
+- Fix an error with updating the users if no role was defined
+- Fix flex-nav z-index
+- Fix flex-tab on mobile
+- Fix making the internal Hubot init() function always debounced
+- Fix private groups not being able to be unarchived via the rest api
+- Fix the cache layer not respecting findById via query
+- Fix the roles not being respected on user creation
+- Fix to prevent stop hubot initiating even when disabled
+
 ## 0.49.1 - 2017-Jan-13
 
 - Fix emoji picker handling
