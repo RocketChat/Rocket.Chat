@@ -1,10 +1,15 @@
 //Returns the private group subscription IF found otherwise it will reutrn the failure of why it didn't. Check the `statusCode` property
-function findPrivateGroupById({ roomId, userId, checkedArchived = true }) {
-	if (!roomId || !roomId.trim()) {
-		throw new Meteor.Error('error-roomid-param-not-provided', 'The parameter "roomId" is required');
+function findPrivateGroupByIdOrName({ roomId, roomName, userId, checkedArchived = true }) {
+	if ((!roomId || !roomId.trim()) && (!roomName || !roomName.trim())) {
+		throw new Meteor.Error('error-roomid-param-not-provided', 'The parameter "roomId" or "roomName" is required');
 	}
 
-	const roomSub = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(roomId, userId);
+	let roomSub;
+	if (roomId) {
+		roomSub = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(roomId, userId);
+	} else if (roomName) {
+		roomSub = RocketChat.models.Subscriptions.findOneByRoomNameAndUserId(roomName, userId);
+	}
 
 	if (!roomSub || roomSub.t !== 'p') {
 		throw new Meteor.Error('error-room-not-found', `No private group by the id of: ${roomId}`);
@@ -19,7 +24,7 @@ function findPrivateGroupById({ roomId, userId, checkedArchived = true }) {
 
 RocketChat.API.v1.addRoute('groups.addModerator', { authRequired: true }, {
 	post: function() {
-		const findResult = findPrivateGroupById({ roomId: this.bodyParams.roomId, userId: this.userId });
+		const findResult = findPrivateGroupByIdOrName({ roomId: this.bodyParams.roomId, userId: this.userId });
 
 		const user = this.getUserFromParams();
 
@@ -33,7 +38,7 @@ RocketChat.API.v1.addRoute('groups.addModerator', { authRequired: true }, {
 
 RocketChat.API.v1.addRoute('groups.addOwner', { authRequired: true }, {
 	post: function() {
-		const findResult = findPrivateGroupById({ roomId: this.bodyParams.roomId, userId: this.userId });
+		const findResult = findPrivateGroupByIdOrName({ roomId: this.bodyParams.roomId, userId: this.userId });
 
 		const user = this.getUserFromParams();
 
@@ -48,7 +53,7 @@ RocketChat.API.v1.addRoute('groups.addOwner', { authRequired: true }, {
 //Archives a private group only if it wasn't
 RocketChat.API.v1.addRoute('groups.archive', { authRequired: true }, {
 	post: function() {
-		const findResult = findPrivateGroupById({ roomId: this.bodyParams.roomId, userId: this.userId });
+		const findResult = findPrivateGroupByIdOrName({ roomId: this.bodyParams.roomId, userId: this.userId });
 
 		Meteor.runAsUser(this.userId, () => {
 			Meteor.call('archiveRoom', findResult.rid);
@@ -60,7 +65,7 @@ RocketChat.API.v1.addRoute('groups.archive', { authRequired: true }, {
 
 RocketChat.API.v1.addRoute('groups.close', { authRequired: true }, {
 	post: function() {
-		const findResult = findPrivateGroupById({ roomId: this.bodyParams.roomId, userId: this.userId, checkedArchived: false });
+		const findResult = findPrivateGroupByIdOrName({ roomId: this.bodyParams.roomId, userId: this.userId, checkedArchived: false });
 
 		if (!findResult.open) {
 			return RocketChat.API.v1.failure(`The private group with an id "${this.bodyParams.roomId}" is already closed to the sender`);
@@ -102,7 +107,7 @@ RocketChat.API.v1.addRoute('groups.create', { authRequired: true }, {
 
 RocketChat.API.v1.addRoute('groups.delete', { authRequired: true }, {
 	post: function() {
-		const findResult = findPrivateGroupById({ roomId: this.bodyParams.roomId, userId: this.userId, checkedArchived: false });
+		const findResult = findPrivateGroupByIdOrName({ roomId: this.bodyParams.roomId, userId: this.userId, checkedArchived: false });
 
 		Meteor.runAsUser(this.userId, () => {
 			Meteor.call('eraseRoom', findResult.rid);
@@ -120,7 +125,7 @@ RocketChat.API.v1.addRoute('groups.getIntegrations', { authRequired: true }, {
 			return RocketChat.API.v1.unauthorized();
 		}
 
-		const findResult = findPrivateGroupById({ roomId: this.queryParams.roomId, userId: this.userId, checkedArchived: false });
+		const findResult = findPrivateGroupByIdOrName({ roomId: this.queryParams.roomId, userId: this.userId, checkedArchived: false });
 
 		let includeAllPrivateGroups = true;
 		if (typeof this.queryParams.includeAllPrivateGroups !== 'undefined') {
@@ -154,7 +159,7 @@ RocketChat.API.v1.addRoute('groups.getIntegrations', { authRequired: true }, {
 
 RocketChat.API.v1.addRoute('groups.history', { authRequired: true }, {
 	get: function() {
-		const findResult = findPrivateGroupById({ roomId: this.queryParams.roomId, userId: this.userId, checkedArchived: false });
+		const findResult = findPrivateGroupByIdOrName({ roomId: this.queryParams.roomId, userId: this.userId, checkedArchived: false });
 
 		let latestDate = new Date();
 		if (this.queryParams.latest) {
@@ -194,7 +199,7 @@ RocketChat.API.v1.addRoute('groups.history', { authRequired: true }, {
 
 RocketChat.API.v1.addRoute('groups.info', { authRequired: true }, {
 	get: function() {
-		const findResult = findPrivateGroupById({ roomId: this.queryParams.roomId, userId: this.userId, checkedArchived: false });
+		const findResult = findPrivateGroupByIdOrName({ roomId: this.queryParams.roomId, roomName: this.queryParams.roomName, userId: this.userId, checkedArchived: false });
 
 		return RocketChat.API.v1.success({
 			group: RocketChat.models.Rooms.findOneById(findResult.rid, { fields: RocketChat.API.v1.defaultFieldsToExclude })
@@ -204,7 +209,7 @@ RocketChat.API.v1.addRoute('groups.info', { authRequired: true }, {
 
 RocketChat.API.v1.addRoute('groups.invite', { authRequired: true }, {
 	post: function() {
-		const findResult = findPrivateGroupById({ roomId: this.bodyParams.roomId, userId: this.userId });
+		const findResult = findPrivateGroupByIdOrName({ roomId: this.bodyParams.roomId, userId: this.userId });
 
 		const user = this.getUserFromParams();
 
@@ -220,7 +225,7 @@ RocketChat.API.v1.addRoute('groups.invite', { authRequired: true }, {
 
 RocketChat.API.v1.addRoute('groups.kick', { authRequired: true }, {
 	post: function() {
-		const findResult = findPrivateGroupById({ roomId: this.bodyParams.roomId, userId: this.userId });
+		const findResult = findPrivateGroupByIdOrName({ roomId: this.bodyParams.roomId, userId: this.userId });
 
 		const user = this.getUserFromParams();
 
@@ -234,7 +239,7 @@ RocketChat.API.v1.addRoute('groups.kick', { authRequired: true }, {
 
 RocketChat.API.v1.addRoute('groups.leave', { authRequired: true }, {
 	post: function() {
-		const findResult = findPrivateGroupById({ roomId: this.bodyParams.roomId, userId: this.userId });
+		const findResult = findPrivateGroupByIdOrName({ roomId: this.bodyParams.roomId, userId: this.userId });
 
 		Meteor.runAsUser(this.userId, () => {
 			Meteor.call('leaveRoom', findResult.rid);
@@ -270,7 +275,7 @@ RocketChat.API.v1.addRoute('groups.list', { authRequired: true }, {
 
 RocketChat.API.v1.addRoute('groups.open', { authRequired: true }, {
 	post: function() {
-		const findResult = findPrivateGroupById({ roomId: this.bodyParams.roomId, userId: this.userId, checkedArchived: false });
+		const findResult = findPrivateGroupByIdOrName({ roomId: this.bodyParams.roomId, userId: this.userId, checkedArchived: false });
 
 		if (findResult.open) {
 			return RocketChat.API.v1.failure(`The private group, ${this.bodyParams.name}, is already open for the sender`);
@@ -286,7 +291,7 @@ RocketChat.API.v1.addRoute('groups.open', { authRequired: true }, {
 
 RocketChat.API.v1.addRoute('groups.removeModerator', { authRequired: true }, {
 	post: function() {
-		const findResult = findPrivateGroupById({ roomId: this.bodyParams.roomId, userId: this.userId });
+		const findResult = findPrivateGroupByIdOrName({ roomId: this.bodyParams.roomId, userId: this.userId });
 
 		const user = this.getUserFromParams();
 
@@ -300,7 +305,7 @@ RocketChat.API.v1.addRoute('groups.removeModerator', { authRequired: true }, {
 
 RocketChat.API.v1.addRoute('groups.removeOwner', { authRequired: true }, {
 	post: function() {
-		const findResult = findPrivateGroupById({ roomId: this.bodyParams.roomId, userId: this.userId });
+		const findResult = findPrivateGroupByIdOrName({ roomId: this.bodyParams.roomId, userId: this.userId });
 
 		const user = this.getUserFromParams();
 
@@ -318,7 +323,7 @@ RocketChat.API.v1.addRoute('groups.rename', { authRequired: true }, {
 			return RocketChat.API.v1.failure('The bodyParam "name" is required');
 		}
 
-		const findResult = findPrivateGroupById({ roomId: this.bodyParams.roomId, userId: this.userId });
+		const findResult = findPrivateGroupByIdOrName({ roomId: this.bodyParams.roomId, userId: this.userId });
 
 		Meteor.runAsUser(this.userId, () => {
 			Meteor.call('saveRoomSettings', findResult.rid, 'roomName', this.bodyParams.name);
@@ -336,7 +341,7 @@ RocketChat.API.v1.addRoute('groups.setDescription', { authRequired: true }, {
 			return RocketChat.API.v1.failure('The bodyParam "description" is required');
 		}
 
-		const findResult = findPrivateGroupById({ roomId: this.bodyParams.roomId, userId: this.userId });
+		const findResult = findPrivateGroupByIdOrName({ roomId: this.bodyParams.roomId, userId: this.userId });
 
 		Meteor.runAsUser(this.userId, () => {
 			Meteor.call('saveRoomSettings', findResult.rid, 'roomDescription', this.bodyParams.description);
@@ -354,7 +359,7 @@ RocketChat.API.v1.addRoute('groups.setPurpose', { authRequired: true }, {
 			return RocketChat.API.v1.failure('The bodyParam "purpose" is required');
 		}
 
-		const findResult = findPrivateGroupById({ roomId: this.bodyParams.roomId, userId: this.userId });
+		const findResult = findPrivateGroupByIdOrName({ roomId: this.bodyParams.roomId, userId: this.userId });
 
 		Meteor.runAsUser(this.userId, () => {
 			Meteor.call('saveRoomSettings', findResult.rid, 'roomDescription', this.bodyParams.purpose);
@@ -372,7 +377,7 @@ RocketChat.API.v1.addRoute('groups.setReadOnly', { authRequired: true }, {
 			return RocketChat.API.v1.failure('The bodyParam "readOnly" is required');
 		}
 
-		const findResult = findPrivateGroupById({ roomId: this.bodyParams.roomId, userId: this.userId });
+		const findResult = findPrivateGroupByIdOrName({ roomId: this.bodyParams.roomId, userId: this.userId });
 
 		if (findResult.ro === this.bodyParams.readOnly) {
 			return RocketChat.API.v1.failure('The private group read only setting is the same as what it would be changed to.');
@@ -394,7 +399,7 @@ RocketChat.API.v1.addRoute('groups.setTopic', { authRequired: true }, {
 			return RocketChat.API.v1.failure('The bodyParam "topic" is required');
 		}
 
-		const findResult = findPrivateGroupById({ roomId: this.bodyParams.roomId, userId: this.userId });
+		const findResult = findPrivateGroupByIdOrName({ roomId: this.bodyParams.roomId, userId: this.userId });
 
 		Meteor.runAsUser(this.userId, () => {
 			Meteor.call('saveRoomSettings', findResult.rid, 'roomTopic', this.bodyParams.topic);
@@ -412,7 +417,7 @@ RocketChat.API.v1.addRoute('groups.setType', { authRequired: true }, {
 			return RocketChat.API.v1.failure('The bodyParam "type" is required');
 		}
 
-		const findResult = findPrivateGroupById({ roomId: this.bodyParams.roomId, userId: this.userId });
+		const findResult = findPrivateGroupByIdOrName({ roomId: this.bodyParams.roomId, userId: this.userId });
 
 		if (findResult.t === this.bodyParams.type) {
 			return RocketChat.API.v1.failure('The private group type is the same as what it would be changed to.');
@@ -430,7 +435,7 @@ RocketChat.API.v1.addRoute('groups.setType', { authRequired: true }, {
 
 RocketChat.API.v1.addRoute('groups.unarchive', { authRequired: true }, {
 	post: function() {
-		const findResult = findPrivateGroupById({ roomId: this.bodyParams.roomId, userId: this.userId, checkedArchived: false });
+		const findResult = findPrivateGroupByIdOrName({ roomId: this.bodyParams.roomId, userId: this.userId, checkedArchived: false });
 
 		Meteor.runAsUser(this.userId, () => {
 			Meteor.call('unarchiveRoom', findResult.rid);
