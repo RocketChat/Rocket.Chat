@@ -1,5 +1,25 @@
 # History
 
+## 0.49.3 - 2017-Jan-18
+
+- Add Drupal 7 and 8 plug-in information
+- Add option to get group by name in api/v1/groups.info?roomName=testing
+- Add forgot password template
+- Add verification email template
+- Allow retrieveDirectMessageInfo with rid
+- Fix outgoing integration to require channel
+- Fix to not ser userLanguage as undefined
+- Fix cannot set property input of undefined (#5619)
+- Fix agents not being able to see queue list page
+- Fix error preventing showing error on upload to s3
+- Fix flex-tab on cordova
+- Fix processWebhookMessage and Loki $in/$nin
+- Fix tab-bar position on swipe
+- Make Internal Hubot disabled by default
+- Meteor update blaze upgraded from 2.2.1 to 2.3.0 and related packages
+- Show correct data at admin/rooms
+- Show the oplog status on admin and an error alert when necessary
+
 ## 0.49.2 - 2017-Jan-16
 
 - Add findOneById and findOneByIds to all layers of the models
