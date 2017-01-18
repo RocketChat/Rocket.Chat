@@ -420,6 +420,7 @@
   "Enter_name_here": "Enter name here",
   "Enter_to": "Enter to",
   "Error": "Error",
+  "Error_OpLog_ReplicaSet_should_be_enabled_when_running_multiple_instances": "Error: OpLog (ReplicaSet) should be enabled when running multiple instances",
   "error-action-not-allowed": "__action__ is not allowed",
   "error-application-not-found": "Application not found",
   "error-archived-duplicate-name": "There's an archived channel with name '__room_name__'",

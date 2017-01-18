@@ -97,10 +97,12 @@ Template.main.helpers
 			return false
 
 	useIframe: ->
-		return RocketChat.iframeLogin.reactiveEnabled.get()
+		iframeEnabled = (typeof RocketChat.iframeLogin isnt "undefined")
+		return (iframeEnabled and RocketChat.iframeLogin.reactiveEnabled.get())
 
 	iframeUrl: ->
-		return RocketChat.iframeLogin.reactiveIframeUrl.get()
+		iframeEnabled = (typeof RocketChat.iframeLogin isnt "undefined")
+		return (iframeEnabled and RocketChat.iframeLogin.reactiveIframeUrl.get())
 
 	subsReady: ->
 		routerReady = FlowRouter.subsReady('userData', 'activeUsers')
@@ -143,7 +145,7 @@ Template.main.events
 		if $(e.currentTarget).closest('.main-content').length > 0
 			t.touchstartX = e.originalEvent.touches[0].clientX
 			t.touchstartY = e.originalEvent.touches[0].clientY
-			t.mainContent = $('.main-content, .flex-tab-bar')
+			t.mainContent = $('.main-content')
 			t.wrapper = $('.messages-box > .wrapper')
 
 	'touchmove': (e, t) ->

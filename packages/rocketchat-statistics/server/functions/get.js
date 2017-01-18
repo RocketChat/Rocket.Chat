@@ -1,9 +1,9 @@
-/* global InstanceStatus */
+/* global InstanceStatus, MongoInternals */
 RocketChat.statistics.get = function _getStatistics() {
 	const statistics = {};
 
 	// Version
-	statistics.uniqueId = RocketChat.settings.get('uniqueID')
+	statistics.uniqueId = RocketChat.settings.get('uniqueID');
 	if (RocketChat.models.Settings.findOne('uniqueID')) {
 		statistics.installedAt = RocketChat.models.Settings.findOne('uniqueID').createdAt;
 	}
@@ -60,7 +60,11 @@ RocketChat.statistics.get = function _getStatistics() {
 	};
 
 	statistics.migration = RocketChat.Migrations._getControl();
-	statistics.instanceCount = InstanceStatus.getCollection().find().count();
+	statistics.instanceCount = InstanceStatus.getCollection().find({ _updatedAt: { $gt: new Date(Date.now() - process.uptime() * 1000 - 2000) }}).count();
+
+	if (MongoInternals.defaultRemoteCollectionDriver().mongo._oplogHandle && MongoInternals.defaultRemoteCollectionDriver().mongo._oplogHandle.onOplogEntry && RocketChat.settings.get('Force_Disable_OpLog_For_Cache') !== true) {
+		statistics.oplogEnabled = true;
+	}
 
 	return statistics;
 };
