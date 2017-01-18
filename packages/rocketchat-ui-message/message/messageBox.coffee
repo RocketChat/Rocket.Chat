@@ -9,6 +9,10 @@ katexSyntax = ->
 	return false
 
 Template.messageBox.helpers
+	guestDisabled: ->
+		return if Meteor.user().guestId then 'disabled' else ''
+	placeholder: ->
+		return if Meteor.user().guestId then t('Login_Or_Register_Message_Box') else t('Message')
 	roomName: ->
 		roomData = Session.get('roomData' + this._id)
 		return '' unless roomData

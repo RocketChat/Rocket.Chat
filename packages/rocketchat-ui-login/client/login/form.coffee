@@ -29,6 +29,9 @@ Template.loginForm.helpers
 	registrationAllowed: ->
 		return RocketChat.settings.get('Accounts_RegistrationForm') is 'Public' or Template.instance().validSecretURL?.get()
 
+	guestLoginAllowed: ->
+		return RocketChat.settings.get('Accounts_AllowGuestAccess')
+
 	linkReplacementText: ->
 		return RocketChat.settings.get('Accounts_RegistrationForm_LinkReplacementText')
 
@@ -127,6 +130,13 @@ Template.loginForm.events
 	'click .forgot-password': ->
 		Template.instance().state.set 'forgot-password'
 		RocketChat.callbacks.run('loginPageStateChange', Template.instance().state.get());
+
+	'click .login-as-guest': ->
+		Meteor.call 'getGuestAccount', (error, user) ->
+			if error
+				console.log (error);
+				return
+			Meteor.loginWithPassword(user, '');
 
 	'click .one-passsword': ->
 		if not OnePassword?.findLoginForUrl?

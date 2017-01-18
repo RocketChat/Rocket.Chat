@@ -1,5 +1,5 @@
 RocketChat.sendMessage = (user, message, room, upsert = false) ->
-	if not user or not message or not room._id
+	if not user or not message or not room._id or user.guestId
 		return false
 
 	unless message.ts?

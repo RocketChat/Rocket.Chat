@@ -112,9 +112,12 @@ Accounts.insertUserDoc = _.wrap(Accounts.insertUserDoc, function(insertUserDoc, 
 		_id: _id
 	});
 
+	const isGuest = user.username && user.username.match(/guest-\d/);
+
 	if (user.username && options.joinDefaultChannels !== false && user.joinDefaultChannels !== false) {
 		Meteor.runAsUser(_id, function() {
-			return Meteor.call('joinDefaultChannels', options.joinDefaultChannelsSilenced);
+			const silencedJoin = (isGuest ? true : options.joinDefaultChannelsSilenced)
+			return Meteor.call('joinDefaultChannels', silencedJoin);
 		});
 	}
 
@@ -130,6 +133,8 @@ Accounts.insertUserDoc = _.wrap(Accounts.insertUserDoc, function(insertUserDoc, 
 
 		if (hasAdmin) {
 			roles.push('user');
+		} else if (isGuest) {
+			roles.push('guest');
 		} else {
 			roles.push('admin');
 		}

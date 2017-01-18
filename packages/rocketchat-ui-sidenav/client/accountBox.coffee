@@ -17,6 +17,9 @@ Template.accountBox.helpers
 			username: username
 		}
 
+	isGuest: ->
+		return Meteor.user()?.guestId
+
 	showAdminOption: ->
 		return RocketChat.authz.hasAtLeastOnePermission( ['view-statistics', 'view-room-administration', 'view-user-administration', 'view-privileged-setting' ]) or RocketChat.AdminBox.getOptions().length > 0
 
@@ -36,6 +39,7 @@ Template.accountBox.events
 		event.preventDefault()
 		user = Meteor.user()
 		Meteor.logout ->
+			Session.set 'no-guest', true
 			RocketChat.callbacks.run 'afterLogoutCleanUp', user
 			Meteor.call('logoutCleanUp', user)
 			FlowRouter.go 'home'
@@ -57,6 +61,12 @@ Template.accountBox.events
 		event.stopPropagation();
 		event.preventDefault();
 		AccountBox.openFlex()
+
+	'click #login': ->
+		user = Meteor.user()
+		Accounts.logout ->
+			Session.set 'no-guest', true
+			Meteor.call 'removeGuestUser', user
 
 	'click .account-box-item': ->
 		if @href

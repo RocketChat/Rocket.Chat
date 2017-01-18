@@ -15,6 +15,7 @@ Meteor.publish('userData', function() {
 			language: 1,
 			settings: 1,
 			roles: 1,
+			guestId: 1,
 			active: 1,
 			defaultRoom: 1,
 			customFields: 1,

@@ -14,6 +14,8 @@ readAsArrayBuffer = (file, callback) ->
 
 
 @fileUpload = (files) ->
+	if Meteor.user().guestId
+		return
 	roomId = Session.get('openedRoom')
 	files = [].concat files
 
