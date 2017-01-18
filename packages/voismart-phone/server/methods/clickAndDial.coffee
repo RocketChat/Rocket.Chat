@@ -1,5 +1,6 @@
 Meteor.methods
 	clickAndDial: (number) ->
+		this.unblock()
 		domain = RocketChat.settings.get('OrchestraIntegration_Domain')
 		user = RocketChat.models.Users.findOneById Meteor.userId()
 		username = user.username + "@" + domain
