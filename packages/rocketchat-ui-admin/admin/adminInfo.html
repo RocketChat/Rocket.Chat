@@ -7,6 +7,15 @@
 			</h2>
 		</header>
 		<div class="content">
+			{{#if $gt statistics.instanceCount 1}}
+				{{#unless statistics.oplogEnabled}}
+					<h1 class="alert error-color error-border error-background">
+						{{_ "Error_OpLog_ReplicaSet_should_be_enabled_when_running_multiple_instances"}}<br/>
+						<a href="https://docs.mongodb.com/manual/tutorial/deploy-replica-set/">https://docs.mongodb.com/manual/tutorial/deploy-replica-set/</a>
+					</h1>
+				{{/unless}}
+			{{/if}}
+
 			{{#if hasPermission 'view-statistics'}}
 				<h3>{{_ "Rocket.Chat"}}</h3>
 				<table class="statistics-table secondary-background-color">
@@ -41,6 +50,10 @@
 					<tr class="admin-table-row">
 						<th class="content-background-color border-component-color">{{_ "Running_Instances"}}</th>
 						<td class="border-component-color">{{statistics.instanceCount}}</td>
+					</tr>
+					<tr class="admin-table-row">
+						<th class="content-background-color border-component-color">{{_ "OpLog"}}</th>
+						<td class="border-component-color">{{#if statistics.oplogEnabled}}{{_ "Enabled"}}{{else}}{{_ "Disabled"}}{{/if}}</td>
 					</tr>
 				</table>
 			{{/if}}
