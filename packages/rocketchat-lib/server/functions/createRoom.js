@@ -1,5 +1,5 @@
 /* globals RocketChat */
-RocketChat.createRoom = function(type, name, owner, members, readOnly) {
+RocketChat.createRoom = function(type, name, owner, members, readOnly, customFields) {
 	name = s.trim(name);
 	owner = s.trim(owner);
 	members = [].concat(members);
@@ -58,7 +58,7 @@ RocketChat.createRoom = function(type, name, owner, members, readOnly) {
 		ts: now,
 		ro: readOnly === true,
 		sysMes: readOnly !== true
-	});
+	}, customFields);
 
 	for (let username of members) {
 		let member = RocketChat.models.Users.findOneByUsername(username, { fields: { username: 1 }});
