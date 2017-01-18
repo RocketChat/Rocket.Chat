@@ -1,3 +1,5 @@
+AdminChatRoom = new Meteor.Collection('rocketchat_room')
+
 Template.adminRooms.helpers
 	isReady: ->
 		return Template.instance().ready?.get()
@@ -10,10 +12,10 @@ Template.adminRooms.helpers
 	roomCount: ->
 		return Template.instance().rooms?().count()
 	name: ->
-		# if @t is 'c' or @t is 'p'
-		return @name
-		# else if @t is 'd'
-		# 	return @usernames.join ' x '
+		if @t is 'c' or @t is 'p'
+			return @name
+		else if @t is 'd'
+			return @usernames.join ' x '
 	type: ->
 		if @t is 'c'
 			return TAPi18n.__ 'Channel'
@@ -86,7 +88,7 @@ Template.adminRooms.onCreated ->
 		if types.length
 			query['t'] = { $in: types }
 
-		return ChatRoom.find(query, { limit: instance.limit?.get(), sort: { default: -1, name: 1 } })
+		return AdminChatRoom.find(query, { limit: instance.limit?.get(), sort: { default: -1, name: 1 } })
 
 	@getSearchTypes = ->
 		return _.map $('[name=room-type]:checked'), (input) -> return $(input).val()
