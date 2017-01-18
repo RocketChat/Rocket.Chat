@@ -58,7 +58,7 @@ Template.accountProfile.onCreated ->
 
 		data = { currentPassword: currentPassword }
 
-		if _.trim $('#password').val()
+		if _.trim($('#password').val()) and RocketChat.settings.get("Accounts_AllowPasswordChange")
 			data.newPassword = $('#password').val()
 
 		if _.trim $('#realname').val()
