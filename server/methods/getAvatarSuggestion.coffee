@@ -27,7 +27,7 @@
 	if user.services.twitter?.profile_image_url_https? and RocketChat.settings.get 'Accounts_OAuth_Twitter'
 		avatars.push
 			service: 'twitter'
-			url: user.services.twitter.profile_image_url_https
+			url: user.services.twitter.profile_image_url_https.replace(/_normal|_bigger/, '')
 
 	if user.services.gitlab?.avatar_url? and RocketChat.settings.get 'Accounts_OAuth_Gitlab'
 		avatars.push
