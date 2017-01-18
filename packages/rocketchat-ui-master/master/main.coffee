@@ -97,10 +97,12 @@ Template.main.helpers
 			return false
 
 	useIframe: ->
-		return RocketChat.iframeLogin.reactiveEnabled.get()
+		iframeEnabled = (typeof RocketChat.iframeLogin isnt "undefined")
+		return (iframeEnabled and RocketChat.iframeLogin.reactiveEnabled.get())
 
 	iframeUrl: ->
-		return RocketChat.iframeLogin.reactiveIframeUrl.get()
+		iframeEnabled = (typeof RocketChat.iframeLogin isnt "undefined")
+		return (iframeEnabled and RocketChat.iframeLogin.reactiveIframeUrl.get())
 
 	subsReady: ->
 		routerReady = FlowRouter.subsReady('userData', 'activeUsers')
