@@ -14,7 +14,6 @@ FileUpload.AmazonS3 = class FileUploadAmazonS3 extends FileUploadBase {
 				this.computation.stop();
 			}
 
-			console.log('call', error, downloadUrl);
 			if (error) {
 				uploading = Session.get('uploading');
 				if (!Array.isArray(uploading)) {
