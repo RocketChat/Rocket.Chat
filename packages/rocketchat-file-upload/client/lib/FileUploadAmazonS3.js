@@ -10,20 +10,29 @@ FileUpload.AmazonS3 = class FileUploadAmazonS3 extends FileUploadBase {
 		this.uploader.send(this.file, (error, downloadUrl) => {
 			var file, item, uploading;
 
-			this.computation.stop();
+			if (this.computation) {
+				this.computation.stop();
+			}
 
 			if (error) {
 				uploading = Session.get('uploading');
-				if (uploading !== null) {
-					item = _.findWhere(uploading, {
-						id: this.id
-					});
-					if (item !== null) {
-						item.error = error.error;
-						item.percentage = 0;
-					}
-					Session.set('uploading', uploading);
+				if (!Array.isArray(uploading)) {
+					uploading = [];
 				}
+
+				item = _.findWhere(uploading, {
+					id: this.id
+				});
+				if (_.isObject(item)) {
+					item.error = error.error;
+					item.percentage = 0;
+				} else {
+					uploading.push({
+						error: error.error,
+						percentage: 0
+					});
+				}
+				Session.set('uploading', uploading);
 			} else {
 				file = _.pick(this.meta, 'type', 'size', 'name', 'identify', 'description');
 				file._id = downloadUrl.substr(downloadUrl.lastIndexOf('/') + 1);

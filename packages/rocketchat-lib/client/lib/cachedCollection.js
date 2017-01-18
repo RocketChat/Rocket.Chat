@@ -94,11 +94,11 @@ class CachedCollection {
 		syncMethodName,
 		eventName,
 		eventType = 'onUser',
-		initOnLogin = false,
+		userRelated = true,
 		useSync = true,
 		useCache = true,
 		debug = true,
-		version = 5,
+		version = 6,
 		maxCacheTime = 60*60*24*30
 	}) {
 		this.collection = collection || new Meteor.Collection(null);
@@ -113,13 +113,13 @@ class CachedCollection {
 		this.useCache = useCache;
 		this.debug = debug;
 		this.version = version;
-		this.initOnLogin = initOnLogin;
+		this.userRelated = userRelated;
 		this.updatedAt = new Date(0);
 		this.maxCacheTime = maxCacheTime;
 
 		RocketChat.CachedCollectionManager.register(this);
 
-		if (initOnLogin === true) {
+		if (userRelated === true) {
 			RocketChat.CachedCollectionManager.onLogin(() => {
 				this.log('Init on login');
 				this.ready.set(false);
@@ -151,13 +151,21 @@ class CachedCollection {
 		});
 	}
 
+	getToken() {
+		if (this.userRelated === false) {
+			return undefined;
+		}
+
+		return Accounts._storedLoginToken();
+	}
+
 	loadFromCache(callback = () => {}) {
 		if (this.useCache === false) {
 			return callback(false);
 		}
 
 		localforage.getItem(this.name, (error, data) => {
-			if (data && data.version < this.version) {
+			if (data && (data.version < this.version || data.token !== this.getToken())) {
 				this.clearCache();
 				callback(false);
 				return;
@@ -291,13 +299,14 @@ class CachedCollection {
 		localforage.setItem(this.name, {
 			updatedAt: new Date,
 			version: this.version,
+			token: this.getToken(),
 			records: data
 		});
 		this.log('saving cache (done)');
 	}
 
 	clearCacheOnLogout() {
-		if (this.initOnLogin === true) {
+		if (this.userRelated === true) {
 			this.clearCache();
 		}
 	}

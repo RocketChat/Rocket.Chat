@@ -9,15 +9,13 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
 	<meta name="mobile-web-app-capable" content="yes" />
 	<meta name="apple-mobile-web-app-capable" content="yes" />
-	<meta name="msapplication-TileImage" content="images/logo/mstile-144x144.png?v=3" />
-	<meta name="msapplication-config" content="images/logo/browserconfig.xml?v=3" />
-	<link rel="manifest" href="images/logo/manifest.json?v=3" />
+	<meta name="msapplication-TileImage" content="assets/tile_144.png" />
+	<meta name="msapplication-config" content="images/browserconfig.xml" />
+	<link rel="manifest" href="images/manifest.json" />
 	<link rel="chrome-webstore-item" href="https://chrome.google.com/webstore/detail/nocfbnnmjnndkbipkabodnheejiegccf" />
-	<link rel="icon" sizes="any" type="image/svg+xml" href="assets/favicon.svg?v=3" />
-	<link rel="icon" sizes="32x32" type="image/png" href="/images/logo/favicon-32x32.png?v=3" />
-	<link rel="icon" sizes="16x16" type="image/png" href="/images/logo/favicon-16x16.png?v=3" />
-	<link rel="mask-icon" href="/images/logo/safari-pinned-tab.svg" color="#04436a">
-	<link rel="apple-touch-icon" sizes="180x180" href="images/logo/apple-touch-icon-180x180.png?v=3" />
+	<link rel="mask-icon" href="assets/safari_pinned.svg" color="#04436a">
+	<link rel="apple-touch-icon" sizes="180x180" href="assets/touchicon_180.png" />
+	<link rel="apple-touch-icon-precomposed" href="assets/touchicon_180_pre.png">
 </head>
 
 <body class="global-font-family color-primary-font-color">
@@ -51,12 +49,7 @@
 						<div class="connection-status">
 							{{> status}}
 						</div>
-						{{#unless modal}}
-							<div class="flex-tab-bar content-background-color" role="toolbar">
-								{{> flexTabBar}}
-							</div>
-						{{/unless}}
-						<div class="main-content content-background-color {{flexOpened}} {{flexOpenedRTC1}} {{flexOpenedRTC2}} {{#if modal}}main-modal{{/if}}">
+						<div class="main-content content-background-color {{#if modal}}main-modal{{/if}}">
 							{{> Template.dynamic template=center}}
 						</div>
 						{{#unless modal}}

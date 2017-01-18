@@ -1,6 +1,6 @@
 Meteor.startup ->
 	RocketChat.TabBar.addButton({
-		groups: ['channel', 'privategroup'],
+		groups: ['channel', 'group'],
 		id: 'mentions',
 		i18nTitle: 'Mentions',
 		icon: 'icon-at',
