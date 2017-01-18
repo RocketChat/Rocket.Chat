@@ -20,8 +20,6 @@ Package.onUse(function(api) {
 		'rocketchat:lib'
 	]);
 
-	api.use('rocketchat:ui');
-
 	api.addFiles('flex-tab/flexTabBar.html', 'client');
 	api.addFiles('flex-tab/tabs/membersList.html', 'client');
 	api.addFiles('flex-tab/tabs/messageSearch.html', 'client');
@@ -35,5 +33,4 @@ Package.onUse(function(api) {
 	api.addFiles('flex-tab/tabs/uploadedFilesList.coffee', 'client');
 	api.addFiles('flex-tab/tabs/userEdit.coffee', 'client');
 	api.addFiles('flex-tab/tabs/userInfo.coffee', 'client');
-
 });

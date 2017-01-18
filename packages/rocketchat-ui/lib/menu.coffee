@@ -1,6 +1,6 @@
 @menu = new class
 	init: ->
-		@mainContent = $('.main-content, .flex-tab-bar')
+		@mainContent = $('.main-content')
 		@list = $('.rooms-list')
 
 		Session.set("isMenuOpen", false)

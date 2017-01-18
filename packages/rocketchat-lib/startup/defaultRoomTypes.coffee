@@ -10,7 +10,6 @@ RocketChat.roomTypes.add 'c', 10,
 		path: '/channel/:name'
 		action: (params, queryParams) ->
 			openRoom 'c', params.name
-			RocketChat.TabBar.showGroup 'channel'
 
 	findRoom: (identifier) ->
 		query =
@@ -35,7 +34,6 @@ RocketChat.roomTypes.add 'd', 20,
 		path: '/direct/:username'
 		action: (params, queryParams) ->
 			openRoom 'd', params.username
-			RocketChat.TabBar.showGroup 'directmessage'
 		link: (sub) ->
 			return { username: sub.name }
 
@@ -67,7 +65,6 @@ RocketChat.roomTypes.add 'p', 30,
 		path: '/group/:name'
 		action: (params, queryParams) ->
 			openRoom 'p', params.name
-			RocketChat.TabBar.showGroup 'privategroup'
 	findRoom: (identifier) ->
 		query =
 			t: 'p'

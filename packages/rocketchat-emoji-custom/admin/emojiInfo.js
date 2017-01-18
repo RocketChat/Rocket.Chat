@@ -21,6 +21,7 @@ Template.emojiInfo.helpers({
 	emojiToEdit() {
 		let instance = Template.instance();
 		return {
+			tabBar: this.tabBar,
 			emoji: instance.emoji.get(),
 			back(name) {
 				instance.editingEmoji.set();
@@ -73,8 +74,7 @@ Template.emojiInfo.events({
 							showConfirmButton: false
 						});
 
-						RocketChat.TabBar.showGroup('adminEmoji');
-						RocketChat.TabBar.closeFlex();
+						instance.tabBar.close();
 					}
 				});
 			});
@@ -95,6 +95,8 @@ Template.emojiInfo.onCreated(function() {
 	this.editingEmoji = new ReactiveVar();
 
 	this.loadedName = new ReactiveVar();
+
+	this.tabBar = Template.currentData().tabBar;
 
 	this.autorun(() => {
 		let data = Template.currentData();

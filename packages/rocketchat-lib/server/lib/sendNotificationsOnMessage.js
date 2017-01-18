@@ -113,11 +113,11 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 	let push_username;
 	let push_room;
 	if (RocketChat.settings.get('Push_show_username_room')) {
-		push_username = '@' + user.username;
-		push_room = '#' + room.name + ' ';
+		push_username = user.username;
+		push_room = '#' + room.name;
 	} else {
-		push_username = ' ';
-		push_room = ' ';
+		push_username = '';
+		push_room = '';
 	}
 
 	if ((room.t == null) || room.t === 'd') {
@@ -154,16 +154,10 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 
 		if ((userOfMention != null) && canBeNotified(userOfMentionId, 'desktop')) {
 			if (Push.enabled === true && userOfMention.statusConnection !== 'online') {
-				Push.send({
-					from: 'push',
-					title: push_username,
-					text: push_message,
-					apn: {
-						// ternary operator
-						text: push_username + ((push_username !== ' ' && push_message !== ' ') ? ':\n' : '') + push_message
-					},
-					badge: 1,
-					sound: 'chime',
+				RocketChat.PushNotification.send({
+					roomId: message.rid,
+					username: push_username,
+					message: push_message,
 					payload: {
 						host: Meteor.absoluteUrl(),
 						rid: message.rid,
@@ -171,7 +165,7 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 						type: room.t,
 						name: room.name
 					},
-					query: {
+					usersTo: {
 						userId: userOfMention._id
 					}
 				});
@@ -314,16 +308,11 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 
 		if (userIdsToPushNotify.length > 0) {
 			if (Push.enabled === true) {
-				Push.send({
-					from: 'push',
-					title: push_room + push_username,
-					text: push_message,
-					apn: {
-						// ternary operator
-						text: push_room + push_username + ((push_username !== ' ' && push_room !== ' ' && push_message !== ' ') ? ':\n' : '') + push_message
-					},
-					badge: 1,
-					sound: 'chime',
+				RocketChat.PushNotification.send({
+					roomId: message.rid,
+					roomName: push_room,
+					username: push_username,
+					message: push_message,
 					payload: {
 						host: Meteor.absoluteUrl(),
 						rid: message.rid,
@@ -331,7 +320,7 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 						type: room.t,
 						name: room.name
 					},
-					query: {
+					usersTo: {
 						userId: {
 							$in: userIdsToPushNotify
 						}
