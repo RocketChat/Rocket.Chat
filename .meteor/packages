@@ -152,7 +152,7 @@ ostrio:cookies
 pauli:accounts-linkedin
 percolate:synced-cron
 raix:handlebar-helpers
-raix:push
+raix:push@3.0.3-rc.7
 raix:ui-dropped-event
 smoral:sweetalert
 steffo:meteor-accounts-saml
