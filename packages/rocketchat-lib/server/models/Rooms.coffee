@@ -546,7 +546,7 @@ class ModelRooms extends RocketChat.models._Base
 		return @update { _id: _id }, update
 
 	# INSERT
-	createWithTypeNameUserAndUsernames: (type, name, user, usernames, extraData) ->
+	createWithTypeNameUserAndUsernames: (type, name, user, usernames, extraData, customFields) ->
 		room =
 			name: name
 			t: type
@@ -557,6 +557,10 @@ class ModelRooms extends RocketChat.models._Base
 				username: user.username
 
 		_.extend room, extraData
+
+		if customFields
+			room.customFields = customFields
+		
 
 		room._id = @insert room
 		return room

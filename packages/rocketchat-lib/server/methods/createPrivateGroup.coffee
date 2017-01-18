@@ -1,5 +1,5 @@
 Meteor.methods
-	createPrivateGroup: (name, members) ->
+	createPrivateGroup: (name, members, customFields) ->
 
 		check name, String
 		check members, Match.Optional([String])
@@ -10,4 +10,4 @@ Meteor.methods
 		unless RocketChat.authz.hasPermission(Meteor.userId(), 'create-p')
 			throw new Meteor.Error 'error-not-allowed', "Not allowed", { method: 'createPrivateGroup' }
 
-		return RocketChat.createRoom('p', name, Meteor.user()?.username, members);
+		return RocketChat.createRoom('p', name, Meteor.user()?.username, members, undefined, customFields);
