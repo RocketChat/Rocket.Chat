@@ -29,7 +29,7 @@ Template.channelSettings.helpers
 		return Template.instance().settings[field].processing.get() or !RocketChat.authz.hasAllPermission('edit-room', room._id)
 
 	channelSettings: ->
-		return RocketChat.ChannelSettings.getOptions()
+		return RocketChat.ChannelSettings.getOptions(Template.currentData())
 
 	unscape: (value) ->
 		return s.unescapeHTML value
