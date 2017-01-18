@@ -25,16 +25,20 @@ function retrieveDirectMessageInfo({ currentUserId, channel, findByUserIdOnly=fa
 	}
 
 	const rid = _.isObject(roomUser) ? [currentUserId, roomUser._id].sort().join('') : channel;
-	const room = RocketChat.models.Rooms.findOneById(rid);
+	let room = RocketChat.models.Rooms.findOneById(rid);
 
-	if (_.isObject(room)) {
-		return room;
+	if (!_.isObject(room)) {
+		if (!_.isObject(roomUser)) {
+			throw new Meteor.Error('invalid-channel');
+		}
+
+		room = Meteor.runAsUser(currentUserId, function() {
+			const {rid} = Meteor.call('createDirectMessage', roomUser.username);
+			return RocketChat.models.Rooms.findOneById(rid);
+		});
 	}
 
-	return Meteor.runAsUser(currentUserId, function() {
-		const {rid} = Meteor.call('createDirectMessage', roomUser.username);
-		return RocketChat.models.Rooms.findOneById(rid);
-	});
+	return room;
 }
 
 this.processWebhookMessage = function(messageObj, user, defaultValues) {
