@@ -74,7 +74,7 @@ this.processWebhookMessage = function(messageObj, user, defaultValues) {
 				channel = channelType + channel;
 
 				//Try to find the room by id or name if they didn't include the prefix.
-				room = retrieveRoomInfo({ currentUserId: user._id, channel: channel, ignoreEmpty: true });
+				room = retrieveRoomInfo({ currentUserId: user._id, channel, ignoreEmpty: true });
 				if (room) {
 					break;
 				}
