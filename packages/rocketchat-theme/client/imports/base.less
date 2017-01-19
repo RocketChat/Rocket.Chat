@@ -2740,13 +2740,9 @@ label.required::after {
 	}
 
 	.message-cog-container {
+		cursor: pointer;
 		position: relative;
-		display: inline-block;
-
-		.message-cog {
-			visibility: hidden;
-			cursor: pointer;
-		}
+		display: none;
 	}
 
 	@keyframes dropdown-in {
@@ -3008,8 +3004,8 @@ label.required::after {
 }
 
 body:not(.is-cordova) {
-	.message:hover:not(.system) .message-cog {
-		visibility: visible;
+	.message:hover:not(.system) .message-cog-container {
+		display: inline-block;
 	}
 
 	.message {
@@ -3114,8 +3110,8 @@ body:not(.is-cordova) {
 		}
 	}
 
-	.message-cog-container .message-cog {
-		visibility: visible;
+	.message-cog-container {
+		display: inline-block;
 	}
 }
 
