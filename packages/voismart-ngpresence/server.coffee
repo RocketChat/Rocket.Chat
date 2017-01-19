@@ -206,10 +206,14 @@ class PresenceClient
 			logger.error "presence client got error: #{err}"
 
 
-Meteor.startup ->
-	if not RocketChat.settings.get('OrchestraIntegration_PresenceEnabled')
-		return
+_retry = new Retry
+	baseTimeout: 5000
+	maxTimeout: 30000
 
+_count = 0
+
+
+_do_startup = ->
 	broker_host = RocketChat.settings.get('OrchestraIntegration_BrokerHost')
 	broker_user = RocketChat.settings.get('OrchestraIntegration_BrokerUser')
 	broker_password = RocketChat.settings.get('OrchestraIntegration_BrokerPassword')
@@ -245,6 +249,7 @@ Meteor.startup ->
 		domain_id = user.domain_id
 	catch e
 		logger.error "error getting domain: \"#{e}\""
+		_retry.retryLater ++_count, _do_startup
 		return
 
 	pclient = new PresenceClient
@@ -269,3 +274,10 @@ Meteor.startup ->
 
 	# add our own callback on user presence set
 	UserPresenceMonitor.onSetUserStatus(pclient.publishPresence)
+
+
+Meteor.startup ->
+	if not RocketChat.settings.get('OrchestraIntegration_PresenceEnabled')
+		return
+
+	_do_startup()

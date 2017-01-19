@@ -18,6 +18,7 @@ Package.onUse(function(api) {
 		'rocketchat:lib',
 		'rocketchat:i18n',
 		'rocketchat:ui',
+		'retry',
 		'voismart:ngapi'
 	]);
 
