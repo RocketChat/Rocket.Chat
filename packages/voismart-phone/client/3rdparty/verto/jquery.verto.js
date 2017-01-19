@@ -139,6 +139,16 @@
 
         if (verto.options.ringFile && verto.options.tag) {
             verto.ringer = $("#" + tag);
+            verto.playing = false;
+            verto.paused = true;
+            verto.ringer.get(0).onplay = function () {
+                verto.playing = true;
+                verto.paused = false;
+            };
+            verto.ringer.get(0).onpause = function () {
+                verto.playing = false;
+                verto.paused = true;
+            };
         }
 
         verto.rpcClient.call('login', {});
@@ -2156,9 +2166,9 @@
     $.verto.dialog.prototype.setState = function (state) {
         var dialog = this;
 
-        if (dialog.state == $.verto.enum.state.ringing) {
+        /*if (dialog.state == $.verto.enum.state.ringing) {
             dialog.stopRinging();
-        }
+        }*/
 
         if (dialog.state == state || !checkStateChange(dialog.state, state)) {
             console.error("Dialog " + dialog.callID + ": INVALID state change from " + dialog.state.name + " to " + state.name);
@@ -2308,25 +2318,26 @@
     $.verto.dialog.prototype.stopRinging = function () {
         var dialog = this;
         if (dialog.verto.ringer) {
-            dialog.verto.ringer.get(0).pause();
-            dialog.verto.ringer.get(0).currentTime = 0;
+            if (!dialog.verto.ringer.get(0).paused && !dialog.verto.paused && dialog.state.name === 'ringing') {
+                dialog.verto.ringer.get(0).pause();
+                dialog.verto.ringer.get(0).currentTime = 0;
+            }
         }
     };
 
-    $.verto.dialog.prototype.indicateRing = function (timeout) {
+    $.verto.dialog.prototype.indicateRing = function () {
         var dialog = this;
 
         if (dialog.verto.ringer) {
-            if (dialog.verto.ringer.get(0).paused)
+            if (dialog.verto.ringer.get(0).paused && !dialog.verto.playing)
                 dialog.verto.ringer.attr("src", dialog.verto.options.ringFile)[0].play();
-            timewait = timeout || 150
             setTimeout(function () {
                 dialog.stopRinging();
                 if (dialog.state == $.verto.enum.state.ringing) {
-                    dialog.indicateRing(dialog.verto.options.ringSleep);
+                    dialog.indicateRing();
                 }
             },
-                timewait);
+                dialog.verto.options.ringSleep);
         }
     };
 
