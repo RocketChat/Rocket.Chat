@@ -1,5 +1,28 @@
 # History
 
+## 0.49.4 - 2017-Jan-19
+
+- Add customFields to groups.create api (#5639)
+- Add RoomManager to list of globals
+- Add support to inbox style push notifications for Android
+- Add support to msapplication oembed metadata
+- Fix Zapier oAuthApp settings to enable it and update the redirectUri
+- Fix admin info to only count recenlty updated instances
+- Fix exception in template helper, iframe login
+- Fix Further disallowance of changing the password, this time on the client side
+- Fix groups.setReadOnly and groups.setType not returning the correct group via rest api
+- Fix hover size on edit messages
+- Fix joinDefaultChannels for Custom OAuth
+- Fix prevent error with positional operator
+- Fix room’s info panel at Admin Rooms
+- Fix sidenav in window resize
+- Fix the incorrect default url for new instances.
+- Fix to remove _normal and _bigger from twitter avatar url
+- Fix to sync createPrivateGroup and createChannel parameter order for readOnly and customFields
+- Fix to use eval to execute loggedIn and loggedOut scripts
+- Fix to use favicon 192 for push notifications
+- Fix users being able to change their passwords when the setting disabled that
+
 ## 0.49.3 - 2017-Jan-18
 
 - Add Drupal 7 and 8 plug-in information
