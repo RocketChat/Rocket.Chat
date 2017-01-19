@@ -5,7 +5,7 @@ if not RocketChat.models.OAuthApps.findOne('zapier')
 		active: true
 		clientId: 'zapier'
 		clientSecret: 'RTK6TlndaCIolhQhZ7_KHIGOKj41RnlaOq_o-7JKwLr'
-		redirectUri: 'https://zapier.com/dashboard/auth/oauth/return/AppAPI/'
+		redirectUri: 'https://zapier.com/dashboard/auth/oauth/return/App32270API/'
 		_createdAt: new Date
 		_createdBy:
 			_id: 'system'
