@@ -20,6 +20,15 @@ apps:
         command: env LC_ALL=C mongod --bind_ip 127.0.0.1 --smallfiles --dbpath=$SNAP_COMMON
         daemon: simple
         plugs: [network, network-bind]
+    rocketchat-caddy:
+        command: env LC_ALL=C caddy -conf=$SNAP_DATA/Caddyfile -host=localhost:8080 
+        daemon: simple
+        plugs: [network, network-bind]
+    backupdb:
+        command: env LC_ALL=c rcbackup
+        plugs: [network]
+    initcaddy:
+        command: env LC_ALL=c initcaddy
 parts:
     node:
         plugin: nodejs
@@ -67,3 +76,23 @@ parts:
             - usr
             - bin
             - lib
+    scripts:
+        plugin: dump
+        source: resources/
+        organize:
+            rcbackup: bin/rcbackup
+            startmongo: bin/startmongo
+            initmongo: bin/initmongo
+            Caddyfile: bin/Caddyfile
+            initcaddy: bin/initcaddy
+            initmongoreplset.js: bin/initmongoreplset.js
+        snap:
+            - bin
+    caddy:
+        plugin: go
+        go-importpath:  github.com/mholt/caddy
+        source: https://github.com/mholt/caddy
+        source-type: git
+        source-commit: 53e117802fedd5915eeb32907873d8786a4b2936
+        snap:
+            - bin/caddy
