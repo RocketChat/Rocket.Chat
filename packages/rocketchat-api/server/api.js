@@ -75,6 +75,7 @@ class API extends Restivus {
 				//Add a try/catch for each much
 				const originalAction = endpoints[method].action;
 				endpoints[method].action = function() {
+					this.logger.debug(`${this.request.method.toUpperCase()}: ${this.request.url}`);
 					let result;
 					try {
 						result = originalAction.apply(this);
@@ -92,7 +93,6 @@ class API extends Restivus {
 
 				//Allow the endpoints to make usage of the logger which respects the user's settings
 				endpoints[method].logger = this.logger;
-				endpoints[method].method = method.toUpperCase();
 			});
 		}
 
