@@ -120,6 +120,7 @@
 		"RocketChatFile"              : false,
 		"RocketChatFileAvatarInstance": false,
 		"RoomHistoryManager"          : false,
+		"RoomManager"                 : false,
 		"s"                           : false,
 		"ServiceConfiguration"        : false,
 		"Session"                     : false,
