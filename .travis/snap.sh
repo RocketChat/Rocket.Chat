@@ -36,7 +36,7 @@ echo "$PWD"
 ls -lah
 
 # Rarely will change, but just incase we copy it all
-cp -r resources snapcraft.yaml buildinfo launchpad/
+cp -r resources $CHANNEL/snapcraft.yaml buildinfo launchpad/
 cd launchpad
 git add resources snapcraft.yaml buildinfo
 
