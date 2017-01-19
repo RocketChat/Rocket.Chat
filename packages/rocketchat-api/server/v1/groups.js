@@ -392,7 +392,7 @@ RocketChat.API.v1.addRoute('groups.setReadOnly', { authRequired: true }, {
 		});
 
 		return RocketChat.API.v1.success({
-			group: RocketChat.models.Rooms.findOneById(findResult._id, { fields: RocketChat.API.v1.defaultFieldsToExclude })
+			group: RocketChat.models.Rooms.findOneById(findResult.rid, { fields: RocketChat.API.v1.defaultFieldsToExclude })
 		});
 	}
 });
@@ -432,7 +432,7 @@ RocketChat.API.v1.addRoute('groups.setType', { authRequired: true }, {
 		});
 
 		return RocketChat.API.v1.success({
-			group: RocketChat.models.Rooms.findOneById(findResult._id, { fields: RocketChat.API.v1.defaultFieldsToExclude })
+			group: RocketChat.models.Rooms.findOneById(findResult.rid, { fields: RocketChat.API.v1.defaultFieldsToExclude })
 		});
 	}
 });
