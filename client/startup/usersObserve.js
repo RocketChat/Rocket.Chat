@@ -1,5 +1,3 @@
-/* globals RoomManager */
-
 Meteor.startup(function() {
 	Meteor.users.find({}, { fields: { name: 1, username: 1, pictures: 1, status: 1, emails: 1, phone: 1, services: 1, utcOffset: 1 } }).observe({
 		added(user) {
