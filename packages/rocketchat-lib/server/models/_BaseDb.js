@@ -158,6 +158,24 @@ class ModelsBaseDb extends EventEmitter {
 		return 'cache';
 	}
 
+	updateHasPositionalOperator(update) {
+		for (const key in update) {
+			if (key.includes('.$')) {
+				return true;
+			}
+
+			const value = update[key];
+
+			if (Match.test(value, Object)) {
+				if (this.updateHasPositionalOperator(value) === true) {
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
+
 	processOplogRecord(action) {
 		if (isOplogEnabled === false) {
 			return;
@@ -251,7 +269,7 @@ class ModelsBaseDb extends EventEmitter {
 			}
 
 			ids = records.map(item => item._id);
-			if (options.upsert !== true) {
+			if (options.upsert !== true && this.updateHasPositionalOperator(update) === false) {
 				query = {
 					_id: {
 						$in: ids

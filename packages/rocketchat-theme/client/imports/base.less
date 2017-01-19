@@ -2740,13 +2740,9 @@ label.required::after {
 	}
 
 	.message-cog-container {
+		cursor: pointer;
 		position: relative;
-		display: inline-block;
-
-		.message-cog {
-			visibility: hidden;
-			cursor: pointer;
-		}
+		display: none;
 	}
 
 	@keyframes dropdown-in {
@@ -3008,8 +3004,8 @@ label.required::after {
 }
 
 body:not(.is-cordova) {
-	.message:hover:not(.system) .message-cog {
-		visibility: visible;
+	.message:hover:not(.system) .message-cog-container {
+		display: inline-block;
 	}
 
 	.message {
@@ -3114,8 +3110,8 @@ body:not(.is-cordova) {
 		}
 	}
 
-	.message-cog-container .message-cog {
-		visibility: visible;
+	.message-cog-container {
+		display: inline-block;
 	}
 }
 
@@ -4381,83 +4377,6 @@ body:not(.is-cordova) {
 	background: none;
 }
 
-@media all and(max-width: 1100px) {
-	.flex-tab-container.opened {
-		.flex-tab {
-			position: absolute;
-			right: 40px;
-			border-width: 0 0 0 1px;
-			height: 100%;
-		}
-	}
-}
-
-@media all and(max-width: 780px) {
-	#rocket-chat {
-		.burger {
-			visibility: visible;
-			display: inline-block;
-		}
-
-		.main-content {
-			left: 0;
-			z-index: 120;
-		}
-
-		.fixed-title h2 {
-			margin-left: 45px;
-		}
-
-		.messages-box {
-			padding: 0 10px;
-		}
-	}
-
-	.sweet-alert {
-		h2 {
-			font-size: 20px;
-			line-height: 30px;
-			margin: 10px 0;
-		}
-
-		button {
-			margin-top: 6px;
-			padding: 10px 22px;
-		}
-	}
-}
-
-@media all and(max-width: 440px) {
-	.flex-tab-container.opened {
-		position: absolute;
-		width: 100%;
-		height: 100%;
-		top: 0;
-		left: 0;
-
-		.flex-tab {
-			position: relative;
-			right: auto;
-		}
-	}
-}
-
-@media all and(max-height: 400px) {
-	.upload-preview .upload-preview-file {
-		height: 100px;
-	}
-}
-
-@media all and(max-width: 500px) {
-	.messages-container {
-		.message-form {
-			> .formatting-tips {
-				display: none;
-			}
-		}
-	}
-}
-
 .dropzone {
 	height: 100%;
 
@@ -4508,35 +4427,6 @@ body:not(.is-cordova) {
 	.footer {
 		padding-left: 10px;
 		padding-right: 10px;
-	}
-}
-
-@media all and(max-height: 480px) {
-	#login-card {
-		padding: 10px;
-		margin: 10px auto;
-
-		.input-line {
-			margin-bottom: 6px;
-		}
-
-		.submit {
-			margin: 0;
-		}
-	}
-
-	.social-login {
-		margin-bottom: 10px;
-	}
-
-	.message-form textarea {
-		max-height: 100px !important;
-	}
-}
-
-@media all and(max-height: 260px) {
-	.message-form textarea {
-		max-height: 50px !important;
 	}
 }
 
@@ -4869,36 +4759,6 @@ body:not(.is-cordova) {
 	top: 19px;
 }
 
-@media all and(max-width: 780px) {
-	.code-mirror-box {
-		&.code-mirror-box-fullscreen {
-			left: 0;
-		}
-	}
-
-	.container-bars {
-		.unread-bar {
-			.unread-count {
-				display: inline-block;
-			}
-
-			.unread-count-since {
-				display: none;
-			}
-
-			> button.jump-to {
-				.jump-to-small {
-					display: inline-block;
-				}
-
-				.jump-to-large {
-					display: none;
-				}
-			}
-		}
-	}
-}
-
 .one-passsword {
 	background-image: url('/images/onepassword-button.png');
 	height: 40px;
@@ -5041,4 +4901,146 @@ a + br.only-after-a {
 
 #swipebox-overlay {
 	background: rgba(13, 13, 13, 0.5);
+}
+
+// MEDIA QUERIES
+
+@media all and(max-width: 1100px) {
+	.flex-tab-container.opened {
+		.flex-tab {
+			position: absolute;
+			right: 40px;
+			border-width: 0 0 0 1px;
+			height: 100%;
+		}
+	}
+}
+
+@media all and(min-width: 781px) {
+	.main-content {
+		transform: translateX(0) !important;
+	}
+}
+
+@media all and(max-width: 780px) {
+	#rocket-chat {
+		.burger {
+			visibility: visible;
+			display: inline-block;
+		}
+
+		.main-content {
+			left: 0;
+			z-index: 120;
+		}
+
+		.fixed-title h2 {
+			margin-left: 45px;
+		}
+
+		.messages-box {
+			padding: 0 10px;
+		}
+	}
+
+	.sweet-alert {
+		h2 {
+			font-size: 20px;
+			line-height: 30px;
+			margin: 10px 0;
+		}
+
+		button {
+			margin-top: 6px;
+			padding: 10px 22px;
+		}
+	}
+
+	.code-mirror-box {
+		&.code-mirror-box-fullscreen {
+			left: 0;
+		}
+	}
+
+	.container-bars {
+		.unread-bar {
+			.unread-count {
+				display: inline-block;
+			}
+
+			.unread-count-since {
+				display: none;
+			}
+
+			> button.jump-to {
+				.jump-to-small {
+					display: inline-block;
+				}
+
+				.jump-to-large {
+					display: none;
+				}
+			}
+		}
+	}
+}
+
+@media all and(max-width: 500px) {
+	.messages-container {
+		.message-form {
+			> .formatting-tips {
+				display: none;
+			}
+		}
+	}
+}
+
+@media all and(max-height: 480px) {
+	#login-card {
+		padding: 10px;
+		margin: 10px auto;
+
+		.input-line {
+			margin-bottom: 6px;
+		}
+
+		.submit {
+			margin: 0;
+		}
+	}
+
+	.social-login {
+		margin-bottom: 10px;
+	}
+
+	.message-form textarea {
+		max-height: 100px !important;
+	}
+}
+
+@media all and(max-width: 440px) {
+	.flex-tab-container.opened {
+		position: absolute;
+		width: 100%;
+		height: 100%;
+		top: 0;
+		left: 0;
+
+		.flex-tab {
+			position: relative;
+			right: auto;
+		}
+	}
+}
+
+@media all and(max-height: 400px) {
+	.upload-preview .upload-preview-file {
+		height: 100px;
+	}
+}
+
+@media all and(max-height: 260px) {
+	.message-form textarea {
+		max-height: 50px !important;
+	}
 }
