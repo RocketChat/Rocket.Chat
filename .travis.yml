@@ -62,6 +62,7 @@ before_script:
 - mongo --eval 'rs.status()'
 - mongo meteor --eval 'db.getCollectionNames()'
 script:
+- ".travis/snap.sh"
 - npm test
 - mongo meteor --eval 'db.dropDatabase()'
 - unset MONGO_OPLOG_URL
