@@ -1,4 +1,4 @@
-AdminChatRoom = new Meteor.Collection('rocketchat_room')
+@AdminChatRoom = new Meteor.Collection('rocketchat_room')
 
 Template.adminRooms.helpers
 	isReady: ->
