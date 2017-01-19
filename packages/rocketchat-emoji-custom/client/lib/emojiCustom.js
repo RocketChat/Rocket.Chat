@@ -1,4 +1,4 @@
-/* globals getEmojiUrlFromName:true, updateEmojiCustom:true, deleteEmojiCustom:true, isSetNotNull, RoomManager */
+/* globals getEmojiUrlFromName:true, updateEmojiCustom:true, deleteEmojiCustom:true, isSetNotNull */
 RocketChat.emoji.packages.emojiCustom = {
 	emojiCategories: { rocket: TAPi18n.__('Custom') },
 	toneList: {},
