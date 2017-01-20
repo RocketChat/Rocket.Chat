@@ -4,18 +4,15 @@ function retrieveRoomInfo({ currentUserId, channel, ignoreEmpty=false }) {
 		throw new Meteor.Error('invalid-channel');
 	}
 
-	//Since the room object can be empty, return out now since we depend on it to be an object below
-	if (!room) {
-		return room;
-	}
+	if (room && room.t === 'c') {
+		//Check if the user already has a Subscription or not, this avoids this issue: https://github.com/RocketChat/Rocket.Chat/issues/5477
+		const sub = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(room._id, currentUserId);
 
-	//Check if the user already has a Subscription or not, this avoids this issue: https://github.com/RocketChat/Rocket.Chat/issues/5477
-	const sub = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(room._id, currentUserId);
-
-	if (!sub && room.t === 'c') {
-		Meteor.runAsUser(currentUserId, function() {
-			return Meteor.call('joinRoom', room._id);
-		});
+		if (!sub) {
+			Meteor.runAsUser(currentUserId, function() {
+				return Meteor.call('joinRoom', room._id);
+			});
+		}
 	}
 
 	return room;
