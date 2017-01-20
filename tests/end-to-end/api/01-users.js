@@ -2,9 +2,9 @@
 /* globals expect */
 /* eslint no-unused-vars: 0 */
 
-import {getCredentials, api, login, request, credentials, apiEmail, apiUsername, targetUser, log} from '../data/api-data.js';
-import {adminEmail, password} from '../data/user.js';
-import {imgURL} from '../data/interactions.js';
+import {getCredentials, api, login, request, credentials, apiEmail, apiUsername, targetUser, log} from '../../data/api-data.js';
+import {adminEmail, password} from '../../data/user.js';
+import {imgURL} from '../../data/interactions.js';
 import supertest from 'supertest';
 
 describe('Users', () => {
