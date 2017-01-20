@@ -1,28 +1,28 @@
 /* eslint-env mocha */
 
-import loginPage from '../pageobjects/login.page';
+import loginPage from '../../pageobjects/login.page';
 
-describe('register', () => {
+describe.skip('register', () => {
 	before(() => {
 		loginPage.open();
-		loginPage.gotToRegister();
+		loginPage.gotToForgotPassword();
 	});
 
 	describe('render', () => {
-		it('should show name field', () => {
-			loginPage.nameField.isVisible().should.be.true;
+		it('should not show name field', () => {
+			loginPage.nameField.isVisible().should.be.false;
 		});
 
 		it('should show email field', () => {
 			loginPage.emailField.isVisible().should.be.true;
 		});
 
-		it('should show password field', () => {
-			loginPage.passwordField.isVisible().should.be.true;
+		it('should not show password field', () => {
+			loginPage.passwordField.isVisible().should.be.false;
 		});
 
-		it('should show confirm password field', () => {
-			loginPage.confirmPasswordField.isVisible().should.be.true;
+		it('should not show confirm password field', () => {
+			loginPage.confirmPasswordField.isVisible().should.be.false;
 		});
 
 		it('should not show email / username field', () => {
@@ -43,14 +43,6 @@ describe('register', () => {
 
 		it('should show back to login button', () => {
 			loginPage.backToLoginButton.isVisible().should.be.true;
-		});
-	});
-
-	describe('name', () => {
-		it('it should be required', () => {
-			loginPage.submit();
-			loginPage.nameField.getAttribute('class').should.contain('error');
-			loginPage.nameInvalidText.getText().should.not.be.empty;
 		});
 	});
 
@@ -80,30 +72,6 @@ describe('register', () => {
 			loginPage.submit();
 			loginPage.emailField.getAttribute('class').should.contain('error');
 			loginPage.emailInvalidText.getText().should.not.be.empty;
-		});
-	});
-
-	describe('password', () => {
-		it('it should be required', () => {
-			loginPage.submit();
-			loginPage.passwordField.getAttribute('class').should.contain('error');
-			loginPage.passwordInvalidText.getText().should.not.be.empty;
-		});
-	});
-
-	describe('confirm-password', () => {
-		it('it should be invalid if different from password', () => {
-			loginPage.passwordField.setValue('password');
-			loginPage.submit();
-			loginPage.confirmPasswordField.getAttribute('class').should.contain('error');
-			loginPage.confirmPasswordInvalidText.getText().should.not.be.empty;
-		});
-
-		it('it should be valid if equal to password', () => {
-			loginPage.confirmPasswordField.setValue('password');
-			loginPage.submit();
-			loginPage.passwordField.getAttribute('class').should.not.contain('error');
-			loginPage.passwordInvalidText.getText().should.be.empty;
 		});
 	});
 });

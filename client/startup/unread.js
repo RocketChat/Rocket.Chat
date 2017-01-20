@@ -1,4 +1,4 @@
-/* globals fireGlobalEvent, readMessage, RoomManager, Favico, favico, menu */
+/* globals fireGlobalEvent, readMessage, Favico, favico, menu */
 
 Meteor.startup(function() {
 	Tracker.autorun(function() {
