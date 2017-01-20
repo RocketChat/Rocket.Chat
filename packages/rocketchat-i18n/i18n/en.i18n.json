@@ -839,7 +839,7 @@
   "MapView_GMapsAPIKey_Description": "This can be obtained from the Google Developers Console for free.",
   "Mark_as_read": "Mark as read",
   "Mark_as_unread": "Mark as unread",
-  "Markdown_Headers": "Markdown Headers",
+  "Markdown_Headers": "Allow Markdown headers in messages",
   "Markdown_SupportSchemesForLink": "Markdown Support Schemes for Link",
   "Markdown_SupportSchemesForLink_Description": "Comma-separated list of allowed schemes",
   "Max_length_is": "Max length is %s",
