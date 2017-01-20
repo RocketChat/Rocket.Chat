@@ -98,9 +98,14 @@ RocketChat.API.v1.addRoute('groups.create', { authRequired: true }, {
 			return RocketChat.API.v1.failure('Body param "customFields" must be an object if provided');
 		}
 
+		let readOnly = false;
+		if (typeof this.bodyParams.readOnly !== 'undefined') {
+			readOnly = this.bodyParams.readOnly;
+		}
+
 		let id;
 		Meteor.runAsUser(this.userId, () => {
-			id = Meteor.call('createPrivateGroup', this.bodyParams.name, this.bodyParams.members ? this.bodyParams.members : [], this.bodyParams.customFields);
+			id = Meteor.call('createPrivateGroup', this.bodyParams.name, this.bodyParams.members ? this.bodyParams.members : [], readOnly, this.bodyParams.customFields);
 		});
 
 		return RocketChat.API.v1.success({
@@ -392,7 +397,7 @@ RocketChat.API.v1.addRoute('groups.setReadOnly', { authRequired: true }, {
 		});
 
 		return RocketChat.API.v1.success({
-			group: RocketChat.models.Rooms.findOneById(findResult._id, { fields: RocketChat.API.v1.defaultFieldsToExclude })
+			group: RocketChat.models.Rooms.findOneById(findResult.rid, { fields: RocketChat.API.v1.defaultFieldsToExclude })
 		});
 	}
 });
@@ -432,7 +437,7 @@ RocketChat.API.v1.addRoute('groups.setType', { authRequired: true }, {
 		});
 
 		return RocketChat.API.v1.success({
-			group: RocketChat.models.Rooms.findOneById(findResult._id, { fields: RocketChat.API.v1.defaultFieldsToExclude })
+			group: RocketChat.models.Rooms.findOneById(findResult.rid, { fields: RocketChat.API.v1.defaultFieldsToExclude })
 		});
 	}
 });
