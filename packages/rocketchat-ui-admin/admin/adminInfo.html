@@ -9,10 +9,11 @@
 		<div class="content">
 			{{#if $gt statistics.instanceCount 1}}
 				{{#unless statistics.oplogEnabled}}
-					<h1 class="alert error-color error-border error-background">
-						{{_ "Error_OpLog_ReplicaSet_should_be_enabled_when_running_multiple_instances"}}<br/>
-						<a href="https://docs.mongodb.com/manual/tutorial/deploy-replica-set/">https://docs.mongodb.com/manual/tutorial/deploy-replica-set/</a>
-					</h1>
+					<div class="alert error-color error-border error-background">
+						<b>{{_ "Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances"}}</b><br/><br/>
+						{{_ "Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances_details"}}<br/><br/>
+						<a target="_blank" href="https://rocket.chat/docs/installation/manual-installation/multiple-instances-to-improve-performance/#running-multiple-instances-per-host-to-improve-performance">{{_ "Click_here_for_more_info"}}</a>
+					</div>
 				{{/unless}}
 			{{/if}}
 
