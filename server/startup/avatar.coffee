@@ -90,7 +90,7 @@ Meteor.startup ->
 				position = username.length % colors.length
 				color = colors[position]
 				username = username.replace(/[^A-Za-z0-9]/g, '.').replace(/\.+/g, '.').replace(/(^\.)|(\.$)/g, '')
-				usernameParts = username.split(/[\s\.]+/)
+				usernameParts = username.split('.')
 				initials = if usernameParts.length > 1
 					_.first(usernameParts)[0] + _.last(usernameParts)[0]
 				else
