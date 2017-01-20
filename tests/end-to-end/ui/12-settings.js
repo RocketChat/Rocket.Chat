@@ -6,15 +6,15 @@ import supertest from 'supertest';
 const request = supertest('http://localhost:3000');
 const prefix = '/api/v1/';
 
-import flexTab from '../pageobjects/flex-tab.page';
-import mainContent from '../pageobjects/main-content.page';
-import sideNav from '../pageobjects/side-nav.page';
+import flexTab from '../../pageobjects/flex-tab.page';
+import mainContent from '../../pageobjects/main-content.page';
+import sideNav from '../../pageobjects/side-nav.page';
 
 //test data imports
-import {checkIfUserIsValid} from '../data/checks';
-import {targetUser, imgURL} from '../data/interactions.js';
+import {checkIfUserIsValid} from '../../data/checks';
+import {targetUser, imgURL} from '../../data/interactions.js';
 
-import {adminUsername, adminEmail, adminPassword, username, email, password} from '../data/user.js';
+import {adminUsername, adminEmail, adminPassword, username, email, password} from '../../data/user.js';
 
 function api(path) {
 	return prefix + path;
