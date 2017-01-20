@@ -1377,7 +1377,7 @@
   "Type_your_new_password": "Type your new password",
   "UI_DisplayRoles": "Display Roles",
   "UI_Merge_Channels_Groups": "Merge private groups with channels",
-  "UI_Use_Name_Avatar": "Use name for default user avatar",
+  "UI_Use_Name_Avatar": "Use full name initials to generate default avatar",
   "Unarchive": "Unarchive",
   "Unblock_User": "Unblock User",
   "Unmute_someone_in_room": "Unmute someone in the room",
