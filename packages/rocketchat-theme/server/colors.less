@@ -179,6 +179,10 @@
 	background-color: @transparent-light;
 }
 
+.border-transparent-lighter {
+	border-color: @transparent-lighter;
+}
+
 .background-transparent-lightest {
 	background-color: @transparent-lightest;
 }
@@ -241,8 +245,18 @@
 
 .input-shade(@primary-font-color, @content-background-color);
 
+.toolbar--search {
+	&:focus {
+		border-color: fade(@primary-background-contrast, 50%);
+	}
+
+	&::placeholder {
+		color: @transparent-lighter;
+	}
+}
+
 .flex-nav {
-	.input-shade(@primary-background-contrast, @primary-background-color);
+	.input-shade(@primary-background-contrast, @transparent-lighter);
 
 	input {
 		&:focus {

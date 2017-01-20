@@ -1,0 +1,10 @@
+<template name="toolbar">
+	<div class="toolbar">
+		<i class="toolbar--search-icon icon-search secondary-font-color"></i>
+		<input type="text" name="toolbar-search" class="toolbar--search background-transparent-light color-content-background-color border-transparent-lighter" placeholder="{{_ "Search"}}">
+
+		{{#each results}}
+			<p>{{name}}</p>
+		{{/each}}
+	</div>
+</template>
