@@ -1615,6 +1615,17 @@ label.required::after {
 	position: relative;
 	padding-right: 8px;
 	margin-top: 10px;
+
+	&.active {
+		position: absolute;
+		width: 100%;
+		background: #044b76;
+		height: 97%;
+		z-index: 1;
+		left: 0;
+		margin-left: 8px;
+		padding-right: 16px;
+	}
 }
 
 .toolbar--search-icon {
@@ -2512,11 +2523,28 @@ label.required::after {
 		0 -1px 10px 0 rgba(0, 0, 0, 0.2),
 		0 1px 1px rgba(0, 0, 0, 0.16);
 	border-radius: 5px;
-}
 
-.message-popup.popup-down {
-	bottom: auto;
-	top: 0;
+	&.popup-down {
+		bottom: auto;
+		top: 0;
+	}
+
+	&.search-results-list {
+		top: 25px;
+		height: 500px;
+		box-shadow: none;
+		border-radius: 0;
+
+		.popup-item {
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;
+		}
+
+		.unread {
+			top: 8px;
+		}
+	}
 }
 
 .message-popup-title {
