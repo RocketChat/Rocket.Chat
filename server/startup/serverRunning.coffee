@@ -15,7 +15,7 @@ Meteor.startup ->
 	Meteor.setTimeout ->
 		msg = [
 			"Rocket.Chat Version: #{RocketChat.Info.version}"
-			"     NodeJS Version: #{'7.6.2'} - #{process.arch}"
+			"     NodeJS Version: #{process.versions.node} - #{process.arch}"
 			"           Platform: #{process.platform}"
 			"       Process Port: #{process.env.PORT}"
 			"           Site URL: #{RocketChat.settings.get('Site_Url')}"
@@ -30,7 +30,7 @@ Meteor.startup ->
 
 		msg = msg.join('\n')
 
-		if semver.satisfies('7.6.2', desiredNodeVersionMajor)
+		if semver.satisfies(process.versions.node, desiredNodeVersionMajor)
 			SystemLogger.startup_box msg, 'SERVER RUNNING'
 		else
 			msg += [
