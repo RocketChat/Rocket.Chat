@@ -5,9 +5,14 @@ function retrieveRoomInfo({ currentUserId, channel, ignoreEmpty=false }) {
 	}
 
 	if (room && room.t === 'c') {
-		Meteor.runAsUser(currentUserId, function() {
-			return Meteor.call('joinRoom', room._id);
-		});
+		//Check if the user already has a Subscription or not, this avoids this issue: https://github.com/RocketChat/Rocket.Chat/issues/5477
+		const sub = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(room._id, currentUserId);
+
+		if (!sub) {
+			Meteor.runAsUser(currentUserId, function() {
+				return Meteor.call('joinRoom', room._id);
+			});
+		}
 	}
 
 	return room;
