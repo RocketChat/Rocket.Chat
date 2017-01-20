@@ -119,10 +119,16 @@ Template.main.helpers
 		return Meteor.user()?.requirePasswordChange is true
 
 	CustomScriptLoggedOut: ->
-		RocketChat.settings.get 'Custom_Script_Logged_Out'
+		script = RocketChat.settings.get('Custom_Script_Logged_Out') or ''
+		if script.trim()
+			eval(script)
+		return
 
 	CustomScriptLoggedIn: ->
-		RocketChat.settings.get 'Custom_Script_Logged_In'
+		script = RocketChat.settings.get('Custom_Script_Logged_In') or ''
+		if script.trim()
+			eval(script)
+		return
 
 	embeddedVersion: ->
 		return 'embedded-view' if RocketChat.Layout.isEmbedded()

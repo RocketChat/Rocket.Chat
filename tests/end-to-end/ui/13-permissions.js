@@ -1,15 +1,15 @@
 /* eslint-env mocha */
 /* eslint-disable func-names, prefer-arrow-callback */
 
-import sideNav from '../pageobjects/side-nav.page';
-import flexTab from '../pageobjects/flex-tab.page';
-import admin from '../pageobjects/administration.page';
-import mainContent from '../pageobjects/main-content.page';
-import {checkIfUserIsValid} from '../data/checks';
+import sideNav from '../../pageobjects/side-nav.page';
+import flexTab from '../../pageobjects/flex-tab.page';
+import admin from '../../pageobjects/administration.page';
+import mainContent from '../../pageobjects/main-content.page';
+import {checkIfUserIsValid} from '../../data/checks';
 
 //test data imports
-import {checkIfUserIsAdmin} from '../data/checks';
-import {username, email, password, adminUsername, adminEmail, adminPassword} from '../data/user.js';
+import {checkIfUserIsAdmin} from '../../data/checks';
+import {username, email, password, adminUsername, adminEmail, adminPassword} from '../../data/user.js';
 
 describe('Admin settings', () => {
 	before(() => {
@@ -20,6 +20,56 @@ describe('Admin settings', () => {
 		sideNav.accountBoxUserName.click();
 		sideNav.admin.waitForVisible(5000);
 		sideNav.admin.click();
+	});
+
+	after(() => {
+		checkIfUserIsAdmin(adminUsername, adminEmail, adminPassword);
+		sideNav.getChannelFromList('general').waitForExist(5000);
+		sideNav.openChannel('general');
+		sideNav.accountBoxUserName.waitForVisible(5000);
+		sideNav.accountBoxUserName.click();
+		sideNav.admin.waitForVisible(5000);
+		sideNav.admin.click();
+		admin.permissionsLink.waitForVisible(5000);
+		admin.permissionsLink.click();
+		admin.rolesPermissionGrid.waitForVisible(5000);
+
+		if (!admin.rolesUserCreateC.isSelected()) {
+			admin.rolesUserCreateC.waitForVisible(5000);
+			admin.rolesUserCreateC.scroll();
+			admin.rolesUserCreateC.click();
+		}
+
+		if (!admin.rolesUserCreateD.isSelected()) {
+			admin.rolesUserCreateD.waitForVisible(5000);
+			admin.rolesUserCreateD.scroll();
+			admin.rolesUserCreateD.click();
+		}
+
+		if (!admin.rolesUserCreateP.isSelected()) {
+			admin.rolesUserCreateP.waitForVisible(5000);
+			admin.rolesUserCreateP.scroll();
+			admin.rolesUserCreateP.click();
+		}
+
+		if (!admin.rolesUserMentionAll.isSelected()) {
+			admin.rolesUserMentionAll.waitForVisible(5000);
+			admin.rolesUserMentionAll.scroll();
+			admin.rolesUserMentionAll.click();
+		}
+
+
+		if (!admin.rolesOwnerDeleteMessage.isSelected()) {
+			admin.rolesOwnerDeleteMessage.waitForVisible(5000);
+			admin.rolesOwnerDeleteMessage.scroll();
+			admin.rolesOwnerDeleteMessage.click();
+		}
+
+		if (!admin.rolesOwnerEditMessage.isSelected()) {
+			admin.rolesOwnerEditMessage.waitForVisible(5000);
+			admin.rolesOwnerEditMessage.scroll();
+			admin.rolesOwnerEditMessage.click();
+		}
 	});
 
 	describe('user creation via admin view', () => {
@@ -140,6 +190,7 @@ describe('Admin settings', () => {
 		it('go to general', () => {
 			sideNav.getChannelFromList('general').waitForExist(5000);
 			sideNav.openChannel('general');
+			mainContent.messageInput.waitForVisible(5000);
 		});
 
 		it('try to use @all and should be warned by rocket.cat ', () => {
