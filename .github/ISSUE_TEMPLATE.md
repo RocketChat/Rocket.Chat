@@ -1,3 +1,6 @@
-Rocket.Chat server version: (make sure you are running the latest)
-Number of instances: (you can see this on the admin/info)
-MongoDB in Replicaset mode: (yes/no)
+<!-- INSTRUCTION: Complete the information below from your Administration page -->
+
+Rocket.Chat Version: 
+Running Instances: 
+DB Replicaset OpLog:
+Node Version:
