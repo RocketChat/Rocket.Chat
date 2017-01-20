@@ -2,8 +2,8 @@
 /* globals expect */
 /* eslint no-unused-vars: 0 */
 
-import {getCredentials, api, login, request, credentials} from '../data/api-data.js';
-import {adminEmail} from '../data/user.js';
+import {getCredentials, api, login, request, credentials} from '../../data/api-data.js';
+import {adminEmail} from '../../data/user.js';
 import supertest from 'supertest';
 
 describe('miscellaneous', () => {

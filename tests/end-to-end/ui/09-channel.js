@@ -1,14 +1,14 @@
 /* eslint-env mocha */
 /* eslint-disable func-names, prefer-arrow-callback */
 
-import flexTab from '../pageobjects/flex-tab.page';
-import mainContent from '../pageobjects/main-content.page';
-import sideNav from '../pageobjects/side-nav.page';
+import flexTab from '../../pageobjects/flex-tab.page';
+import mainContent from '../../pageobjects/main-content.page';
+import sideNav from '../../pageobjects/side-nav.page';
 
-import {username, email, password} from '../data/user.js';
-import {checkIfUserIsValid, publicChannelCreated, setPublicChannelCreated} from '../data/checks';
-import {publicChannelName} from '../data/channel.js';
-import {targetUser} from '../data/interactions.js';
+import {username, email, password} from '../../data/user.js';
+import {checkIfUserIsValid, publicChannelCreated, setPublicChannelCreated} from '../../data/checks';
+import {publicChannelName} from '../../data/channel.js';
+import {targetUser} from '../../data/interactions.js';
 
 describe('channel usage', ()=> {
 	before(() => {
