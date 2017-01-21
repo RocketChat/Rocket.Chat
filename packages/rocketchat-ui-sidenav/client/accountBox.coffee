@@ -66,7 +66,9 @@ Template.accountBox.events
 		user = Meteor.user()
 		Accounts.logout ->
 			Session.set 'no-guest', true
-			Meteor.call 'removeGuestUser', user
+			RocketChat.callbacks.run 'afterLogoutCleanUp', user
+			Meteor.call 'logoutCleanUp', user
+			FlowRouter.go 'home'
 
 	'click .account-box-item': ->
 		if @href

@@ -5,6 +5,7 @@ RocketChat.settings.add('uniqueID', process.env.DEPLOYMENT_ID or Random.id(), { 
 # if you add a node to the i18n.json with the same setting name but with `_Description` it will automatically work.
 RocketChat.settings.addGroup 'Accounts', ->
 	@add 'Accounts_AllowGuestAccess', false, { type: 'boolean', public: true}
+	@add 'Accounts_AutomaticallyLoginAsGuest', true, { type: 'boolean', public: true, enableQuery: { _id: 'Accounts_AllowGuestAccess', value: true }}
 	@add 'Accounts_AllowDeleteOwnAccount', false, { type: 'boolean', public: true, enableQuery: { _id: 'Accounts_AllowUserProfileChange', value: true } }
 	@add 'Accounts_AllowUserProfileChange', true, { type: 'boolean', public: true }
 	@add 'Accounts_AllowUserAvatarChange', true, { type: 'boolean', public: true }
