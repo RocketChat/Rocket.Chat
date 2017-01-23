@@ -80,7 +80,7 @@ Template.toolbar.helpers({
 				const doc = _.findWhere(records, {_id: _id});
 
 				RocketChat.roomTypes.openRouteLink(doc.t, doc, FlowRouter.current().queryParams);
-				toolbarSearch.clear();
+				// toolbarSearch.clear();
       		}
 		};
 
@@ -95,15 +95,6 @@ Template.toolbar.events({
 			which: 27
 		});
 		toolbarSearch.clear();
-	},
-	'keydown .toolbar-search__input': (event) => {
-		if (event.which === 13) {
-			$('.toolbar-search__input').trigger({
-				type: 'keyup',
-				which: 27
-			});
-			toolbarSearch.clear();
-		}
 	}
 });
 
