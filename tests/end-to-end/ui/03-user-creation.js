@@ -3,10 +3,9 @@
 
 import loginPage from '../../pageobjects/login.page';
 import mainContent from '../../pageobjects/main-content.page';
-import sideNav from '../../pageobjects/side-nav.page';
 
 //test data imports
-import {username, email, password, adminUsername, adminEmail, adminPassword} from '../../data/user.js';
+import {username, email, password} from '../../data/user.js';
 
 
 
