@@ -245,7 +245,7 @@
 
 .input-shade(@primary-font-color, @content-background-color);
 
-.toolbar--search {
+.toolbar-search__input {
 	&:focus {
 		border-color: fade(@primary-background-contrast, 50%);
 	}
@@ -543,7 +543,8 @@ a:hover {
 		background-color: @tertiary-font-color;
 	}
 
-	.rooms-list {
+	.rooms-list,
+	.toolbar {
 		background-color: lighten(@primary-background-color, 2.5%);
 	}
 
@@ -583,6 +584,10 @@ a:hover {
 
 .message-popup.search-results-list {
 	background-color: lighten(@primary-background-color, 2.5%);
+
+	.popup-item.selected {
+		background-color: @transparent-darker;
+	}
 }
 
 /** ----------------------------------------------------------------------------
