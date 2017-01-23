@@ -1,6 +1,7 @@
 /* eslint-env mocha */
 /* eslint-disable func-names, prefer-arrow-callback */
 
+import page from '../../pageobjects/Page';
 import mainContent from '../../pageobjects/main-content.page';
 import sideNav from '../../pageobjects/side-nav.page';
 
@@ -13,17 +14,11 @@ describe.skip('resolutions tests', ()=> {
 			checkIfUserIsValid(username, email, password);
 			sideNav.getChannelFromList('general').waitForExist(5000);
 			sideNav.openChannel('general');
-			browser.windowHandleSize({
-				width: 650,
-				height: 800
-			});
+			page.setWindowSize(650, 800);
 		});
 
 		after(()=> {
-			browser.windowHandleSize({
-				width: 1450,
-				height: 900
-			});
+			page.setWindowSize(1450, 900);
 		});
 
 		describe('moving elements ', () => {
