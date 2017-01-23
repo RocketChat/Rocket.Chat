@@ -99,13 +99,14 @@ Template.messagePopup.onCreated ->
 		if event.which in [keys.ENTER, keys.TAB]
 			console.log('ENTER')
 
-			template.open.set false
-
 			template.enterValue()
 
 			event.preventDefault()
 			event.stopPropagation()
-			return
+			setTimeout ->
+				template.open.set false
+			, 500
+			return false
 
 		if event.which is keys.ARROW_UP
 			template.up()
