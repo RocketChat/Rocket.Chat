@@ -96,22 +96,30 @@ Template.messagePopup.onCreated ->
 		if template.open.curValue isnt true or template.hasData.curValue isnt true
 			return
 
-		if event.which in [keys.ARROW_UP, keys.ARROW_DOWN]
-			event.preventDefault()
-			event.stopPropagation()
-
 		if event.which in [keys.ENTER, keys.TAB]
+			console.log('ENTER')
+
 			template.open.set false
 
 			template.enterValue()
 
 			event.preventDefault()
 			event.stopPropagation()
+			return
 
 		if event.which is keys.ARROW_UP
 			template.up()
+
+			event.preventDefault()
+			event.stopPropagation()
+			return
+
 		else if event.which is keys.ARROW_DOWN
 			template.down()
+
+			event.preventDefault()
+			event.stopPropagation()
+			return
 
 	template.setTextFilter = _.debounce (value) ->
 		template.textFilter.set(value)
