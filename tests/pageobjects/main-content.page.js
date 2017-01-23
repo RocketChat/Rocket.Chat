@@ -104,7 +104,7 @@ class MainContent extends Page {
 
 	waitForLastMessageEqualsText(text) {
 		browser.waitUntil(function() {
-			return browser.getText('.message:last-child .attachment-text') === text;
+			return browser.getText('.message:last-child .body') === text;
 		}, 2000);
 	}
 
