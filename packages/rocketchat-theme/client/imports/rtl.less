@@ -802,19 +802,22 @@
 		.left(12px);
 	}
 
-	.spotlight {
-		> .spotlight-input {
-			.icon-search {
-				left: 0;
-			}
+	.toolbar-search {
+		padding: 0 0 0 8px;
+	}
 
-			.message-popup {
-				.popup-item {
-					span {
-						float: left;
-					}
-				}
-			}
+	.toolbar-search__icon {
+		right: 0;
+	}
+
+	.toolbar-search__icon--cancel {
+		right: auto;
+		left: 0;
+	}
+
+	.message-popup.search-results-list {
+		.popup-item {
+			padding-right: 6px;
 		}
 	}
 }
