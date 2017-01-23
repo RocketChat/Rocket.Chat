@@ -59,7 +59,7 @@ Template.toolbar.helpers({
 			cls: 'search-results-list',
 			collection: RocketChat.models.Subscriptions,
 			template: 'toolbarSearchList',
-      		input: '.toolbar-search__input',
+			input: '.toolbar-search__input',
 			getFilter: function(collection, filter, cb) {
 				const resultsFromClient = collection.find({name: new RegExp((RegExp.escape(filter)), 'i'), rid: {$ne: Session.get('openedRoom')}}, {limit: 10, sort: {unread: -1, ls: -1}}).fetch();
 
@@ -80,8 +80,7 @@ Template.toolbar.helpers({
 				const doc = _.findWhere(records, {_id: _id});
 
 				RocketChat.roomTypes.openRouteLink(doc.t, doc, FlowRouter.current().queryParams);
-				// toolbarSearch.clear();
-      		}
+			}
 		};
 
 		return config;
