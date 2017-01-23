@@ -102,6 +102,12 @@ class MainContent extends Page {
 		this.settingSaveBtn.click();
 	}
 
+	waitForLastMessageTextAttachmentEqualsText(text) {
+		browser.waitUntil(function() {
+			return browser.getText('.message:last-child .attachment-text') === text;
+		}, 2000);
+	}
+
 	waitForLastMessageEqualsText(text) {
 		browser.waitUntil(function() {
 			return browser.getText('.message:last-child .body') === text;
