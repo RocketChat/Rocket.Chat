@@ -218,7 +218,7 @@ function messageActionsTest() {
 				it('quote the message', () => {
 					mainContent.selectAction('quote');
 					mainContent.sendBtn.click();
-					mainContent.waitForLastMessageEqualsText(message);
+					mainContent.waitForLastMessageTextAttachmentEqualsText(message);
 				});
 			});
 
