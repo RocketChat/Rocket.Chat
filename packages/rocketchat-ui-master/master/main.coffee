@@ -9,9 +9,6 @@ Template.body.onRendered ->
 			e.stopPropagation()
 			toolbarSearch.focus()
 
-		if e.keyCode is 27
-			toolbarSearch.clear()
-
 		unread = Session.get('unread')
 		if e.keyCode is 27 and e.shiftKey is true and unread? and unread isnt ''
 			e.preventDefault()

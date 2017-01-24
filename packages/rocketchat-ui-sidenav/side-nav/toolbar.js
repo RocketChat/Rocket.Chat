@@ -1,18 +1,39 @@
+let isLoading;
+let filterText = '';
+let usernamesFromClient;
+let resultsFromClient;
+
+Meteor.startup(() => {
+	isLoading = new ReactiveVar(false);
+});
+
 const toolbarSearch = {
-	clear: () => {
+	clear() {
 		$('.toolbar-search__input').val('');
-		console.log('clear');
+		$('.toolbar-search__input').trigger({
+			type: 'keyup',
+			which: 27
+		});
 	},
-	focus: () => {
-		$('.toolbar-search__input').val('');
+
+	focus() {
 		$('.toolbar-search__input').focus();
 	}
 };
 
 this.toolbarSearch = toolbarSearch;
 
-const getFromServer = (filter, usernames, records, cb) => {
-	Meteor.call('spotlight', filter, usernames, (err, results) => {
+const getFromServer = (cb) => {
+	isLoading.set(true);
+	const currentFilter = filterText;
+
+	Meteor.call('spotlight', currentFilter, usernamesFromClient, (err, results) => {
+		if (currentFilter !== filterText) {
+			return;
+		}
+
+		isLoading.set(false);
+
 		if (err) {
 			console.log(err);
 			return false;
@@ -43,12 +64,12 @@ const getFromServer = (filter, usernames, records, cb) => {
 		}
 
 		if (resultsFromServer.length) {
-			cb(records.concat(resultsFromServer));
+			cb(resultsFromClient.concat(resultsFromServer));
 		}
 	});
 };
 
-const getFromServerDelayed = _.throttle(getFromServer, 500);
+const getFromServerThrottled = _.throttle(getFromServer, 500);
 
 Template.toolbar.helpers({
 	results() {
@@ -59,12 +80,17 @@ Template.toolbar.helpers({
 			cls: 'search-results-list',
 			collection: RocketChat.models.Subscriptions,
 			template: 'toolbarSearchList',
+			emptyTemplate: 'toolbarSearchListEmpty',
 			input: '.toolbar-search__input',
+			closeOnEsc: false,
+			blurOnSelectItem: true,
+			isLoading: isLoading,
 			getFilter: function(collection, filter, cb) {
-				const resultsFromClient = collection.find({name: new RegExp((RegExp.escape(filter)), 'i'), rid: {$ne: Session.get('openedRoom')}}, {limit: 10, sort: {unread: -1, ls: -1}}).fetch();
+				filterText = filter;
+				resultsFromClient = collection.find({name: new RegExp((RegExp.escape(filter)), 'i'), rid: {$ne: Session.get('openedRoom')}}, {limit: 10, sort: {unread: -1, ls: -1}}).fetch();
 
 				const resultsFromClientLength = resultsFromClient.length;
-				const usernamesFromClient = [Meteor.user().username];
+				usernamesFromClient = [Meteor.user().username];
 
 				for (let i = 0; i < resultsFromClientLength; i++) {
 					if (resultsFromClient[i].t === 'd') {
@@ -74,7 +100,7 @@ Template.toolbar.helpers({
 
 				cb(resultsFromClient);
 
-				getFromServerDelayed(filter, usernamesFromClient, resultsFromClient, cb);
+				getFromServerThrottled(cb);
 			},
 			getValue: function(_id, collection, records) {
 				const doc = _.findWhere(records, {_id: _id});
@@ -88,12 +114,23 @@ Template.toolbar.helpers({
 });
 
 Template.toolbar.events({
-	'click .toolbar-search__icon--cancel': () => {
-		$('.toolbar-search__input').trigger({
-			type: 'keyup',
-			which: 27
-		});
+	'blur .toolbar-search__input'() {
 		toolbarSearch.clear();
+	},
+
+	'keyup .toolbar-search__input'(e) {
+		if (e.which === 27) {
+			e.preventDefault();
+			e.stopPropagation();
+
+			const $inputMessage = $('textarea.input-message');
+
+			if (0 === $inputMessage.length) {
+				return;
+			}
+
+			$inputMessage.focus();
+		}
 	}
 });
 
