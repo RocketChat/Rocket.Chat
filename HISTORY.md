@@ -1,5 +1,9 @@
 # History
 
+## 0.50.1 - 2017-Jan-24
+
+- Fix cache $ne operator
+
 ## 0.50.0 - 2017-Jan-24
 
 - Add APIs for users.register and users.getAvatar
