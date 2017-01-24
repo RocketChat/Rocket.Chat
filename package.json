@@ -47,7 +47,7 @@
 		"stylelint": "stylelint **/*.less",
 		"test": "node .scripts/start.js",
 		"deploy": "npm run build && pm2 startOrRestart pm2.json",
-		"chimp-watch": "chimp --ddp=http://localhost:3000 --watch --mocha --path=tests/steps",
+		"chimp-watch": "chimp --ddp=http://localhost:3000 --watch --mocha --path=tests/end-to-end",
 		"chimp-test": "chimp tests/chimp-config.js"
 	},
 	"license": "MIT",
@@ -74,6 +74,7 @@
 		"toastr": "^2.1.2",
 		"mime-types": "2.1.14",
 		"file-type": "4.0.0",
+		"semver": "^5.3.0",
 		"codemirror": "5.22.2"
 	}
 }

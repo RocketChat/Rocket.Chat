@@ -1,13 +1,13 @@
 /* eslint-env mocha */
 /* eslint-disable func-names, prefer-arrow-callback */
 
-import flexTab from '../pageobjects/flex-tab.page';
-import mainContent from '../pageobjects/main-content.page';
-import sideNav from '../pageobjects/side-nav.page';
+import flexTab from '../../pageobjects/flex-tab.page';
+import mainContent from '../../pageobjects/main-content.page';
+import sideNav from '../../pageobjects/side-nav.page';
 
 //test data imports
-import {checkIfUserIsValid} from '../data/checks';
-import {username, email, password} from '../data/user.js';
+import {checkIfUserIsValid} from '../../data/checks';
+import {username, email, password} from '../../data/user.js';
 
 describe('Main Elements Render', function() {
 	before(()=>{
