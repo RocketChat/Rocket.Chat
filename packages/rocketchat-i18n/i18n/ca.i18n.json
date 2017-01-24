@@ -410,6 +410,7 @@
   "Enable": "Activa",
   "Enable_Desktop_Notifications": "Activa notificacions d'escriptori",
   "Enabled": "Activa",
+  "Enable_Svg_Favicon": "Activa el favicon SVG",
   "Encrypted_message": "Missatge xifrat",
   "End_OTR": "Finalitza OTR",
   "Enter_a_regex": "Introdueix una RegExp",
