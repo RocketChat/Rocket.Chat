@@ -11,16 +11,25 @@ function InviteAll(command, params, item) {
 	if (!channel) {
 		return;
 	}
-	let room = RocketChat.models.Rooms.findOneByName(channel);
 	let users = RocketChat.models.Rooms.findOneById(item.rid).usernames || [];
+	let currentUser = Meteor.users.findOne(Meteor.userId());
 
+	if (users.length > RocketChat.settings.get('API_User_Limit')) {
+    return RocketChat.Notifications.notifyUser(Meteor.userId(), 'message', {
+      _id: Random.id(),
+      rid: item.rid,
+      ts: new Date(),
+      msg: TAPi18n.__('error-user-limit-exceeded', null, currentUser.language)
+    });		
+	}
+
+	let room = RocketChat.models.Rooms.findOneByName(channel);
 	if (!room) {
 		return Meteor.call('createChannel', channel, users);
 	}
 
-	let currentUser = Meteor.users.findOne(Meteor.userId());
 	users.forEach(function(user) {
-		try {			
+		try {
 			Meteor.call('addUserToRoom', {
 				rid: room._id,
 				username: user
