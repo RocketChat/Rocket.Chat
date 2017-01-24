@@ -91,7 +91,7 @@ Template.integrationsIncoming.helpers
 		for key, value of data
 			delete data[key] if value in [null, ""]
 
-		return "curl -X POST --data-urlencode 'payload=#{JSON.stringify(data)}' #{record.url}"
+		return "curl -X POST -H 'Content-Type: application/json' --data '#{JSON.stringify(data)}' #{record.url}"
 
 	editorOptions: ->
 		return {} =
