@@ -71,7 +71,7 @@ Api = new Restivus
 
 
 createIntegration = (options, user) ->
-	logger.incoming.info 'Add integration'
+	logger.incoming.info 'Add integration', options.name
 	logger.incoming.debug options
 
 	Meteor.runAsUser user._id, =>
@@ -115,7 +115,7 @@ removeIntegration = (options, user) ->
 
 
 executeIntegrationRest = ->
-	logger.incoming.info 'Post integration'
+	logger.incoming.info 'Post integration', @integration.name
 	logger.incoming.debug '@urlParams', @urlParams
 	logger.incoming.debug '@bodyParams', @bodyParams
 
