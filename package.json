@@ -75,6 +75,7 @@
 		"mime-types": "^2.1.14",
 		"file-type": "^4.0.0",
 		"semver": "^5.3.0",
-		"codemirror": "^5.22.2"
+		"codemirror": "^5.22.2",
+    		"prom-client": "^7.0.1"
 	}
 }
