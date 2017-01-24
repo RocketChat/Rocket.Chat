@@ -84,7 +84,9 @@
 							{{#if canPreview}}
 								{{#if hasMore}}
 									<li class="load-more">
-										{{> loading}}
+										{{#if isLoading}}
+											{{> loading}}
+										{{/if}}
 									</li>
 								{{else}}
 									<li class="start color-info-font-color">
@@ -97,7 +99,9 @@
 							{{/each}}
 							{{#if hasMoreNext}}
 								<li class="load-more">
-									{{> loading}}
+									{{#if isLoading}}
+										{{> loading}}
+									{{/if}}
 								</li>
 							{{/if}}
 						</ul>
