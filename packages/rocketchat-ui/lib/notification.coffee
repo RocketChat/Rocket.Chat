@@ -26,11 +26,12 @@
 					setTimeout ( -> n.close() ), notificationDuration * 1000
 
 				if notification.payload?.rid?
-					n.addEventListener 'reply', ({response}) ->
-						Meteor.call 'sendMessage',
-							_id: Random.id()
-							rid: notification.payload.rid
-							msg: response
+					if n.addEventListener?
+						n.addEventListener 'reply', ({response}) ->
+							Meteor.call 'sendMessage',
+								_id: Random.id()
+								rid: notification.payload.rid
+								msg: response
 
 					n.onclick = ->
 						this.close()
