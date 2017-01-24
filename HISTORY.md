@@ -1,5 +1,60 @@
 # History
 
+## 0.50.0 - 2017-Jan-24
+
+- Add APIs for users.register and users.getAvatar
+- Add error and exit process when nodejs version is impatible
+- Add option to use real name for avatar
+- Fix chat.postMessage not behaving like the web client (#5477)
+- Fix files uploaded by other users not being able to be deleted by users with permission
+- Fix Slack Importer incorrectly logging missed types and add slackbot_response to the import
+- Fix to prevent create 2 upload bars
+- Fix undefined language seting issue on reload
+- Improve message of multiple instances without oplog
+
+## 0.49.4 - 2017-Jan-19
+
+- Add customFields to groups.create api (#5639)
+- Add RoomManager to list of globals
+- Add support to inbox style push notifications for Android
+- Add support to msapplication oembed metadata
+- Fix Zapier oAuthApp settings to enable it and update the redirectUri
+- Fix admin info to only count recenlty updated instances
+- Fix exception in template helper, iframe login
+- Fix Further disallowance of changing the password, this time on the client side
+- Fix groups.setReadOnly and groups.setType not returning the correct group via rest api
+- Fix hover size on edit messages
+- Fix joinDefaultChannels for Custom OAuth
+- Fix prevent error with positional operator
+- Fix room’s info panel at Admin Rooms
+- Fix sidenav in window resize
+- Fix the incorrect default url for new instances.
+- Fix to remove _normal and _bigger from twitter avatar url
+- Fix to sync createPrivateGroup and createChannel parameter order for readOnly and customFields
+- Fix to use eval to execute loggedIn and loggedOut scripts
+- Fix to use favicon 192 for push notifications
+- Fix users being able to change their passwords when the setting disabled that
+
+## 0.49.3 - 2017-Jan-18
+
+- Add Drupal 7 and 8 plug-in information
+- Add option to get group by name in api/v1/groups.info?roomName=testing
+- Add forgot password template
+- Add verification email template
+- Allow retrieveDirectMessageInfo with rid
+- Fix outgoing integration to require channel
+- Fix to not ser userLanguage as undefined
+- Fix cannot set property input of undefined (#5619)
+- Fix agents not being able to see queue list page
+- Fix error preventing showing error on upload to s3
+- Fix flex-tab on cordova
+- Fix processWebhookMessage and Loki $in/$nin
+- Fix tab-bar position on swipe
+- Make Internal Hubot disabled by default
+- Meteor update blaze upgraded from 2.2.1 to 2.3.0 and related packages
+- Show correct data at admin/rooms
+- Show the oplog status on admin and an error alert when necessary
+
 ## 0.49.2 - 2017-Jan-16
 
 - Add findOneById and findOneByIds to all layers of the models
