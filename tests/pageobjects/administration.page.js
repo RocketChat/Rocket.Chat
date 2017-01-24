@@ -120,7 +120,8 @@ class Administration extends Page {
 		var element = browser.element('td=adminCreated'+user);
 		element.waitForVisible(5000);
 		browser.pause(500);
-		return element.isVisible();
+		var result = element.isVisible();
+		return result[0];
 	}
 }
 

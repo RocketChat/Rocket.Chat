@@ -98,7 +98,7 @@ describe('Admin settings', () => {
 		});
 
 		it('should show the user in the list', () => {
-			admin.checkUserList(username).should.contain(true);
+			admin.checkUserList(username).should.be.true;
 		});
 	});
 
