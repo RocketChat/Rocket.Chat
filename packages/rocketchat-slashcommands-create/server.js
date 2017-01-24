@@ -1,6 +1,17 @@
 function Create(command, params, item) {
+	function getParams(str) {
+		const regex = /(--(\w+))+/g;
+		let m, result = [];
+		while ((m = regex.exec(str)) !== null) {
+			if (m.index === regex.lastIndex) {
+				regex.lastIndex++;
+			}
+			result.push(m[2]);
+		}
+		return result;
+	}
 	var channel, room, user;
-	var regexp = /#?([\d-_\w]+)/g
+	var regexp = /#?([\d-_\w]+)/g;
 	if (command !== 'create' || !Match.test(params, String)) {
 		return;
 	}
@@ -22,26 +33,14 @@ function Create(command, params, item) {
 				sprintf: [channel]
 			}, user.language)
 		});
-		return;			
+		return;
 	}
-	
-	if(getParams(params).indexOf('private') > -1){
-		return Meteor.call('createPrivateGroup', channel, []);	
+
+	if (getParams(params).indexOf('private') > -1) {
+		return Meteor.call('createPrivateGroup', channel, []);
 	}
-	
+
 	Meteor.call('createChannel', channel, []);
-	
-	function getParams(str) {
-		const regex = /(--(\w+))+/g;
-		let m ,result = [];			
-		while ((m = regex.exec(str)) !== null) {
-				if (m.index === regex.lastIndex) {
-						regex.lastIndex++;
-				}			  			    
-				result.push(m[2]);
-		}
-		return result;
-	}
 }
 
 RocketChat.slashCommands.add('create', Create);
