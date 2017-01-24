@@ -1,5 +1,17 @@
 # History
 
+## 0.50.0 - 2017-Jan-24
+
+- Add APIs for users.register and users.getAvatar
+- Add error and exit process when nodejs version is impatible
+- Add option to use real name for avatar
+- Fix chat.postMessage not behaving like the web client (#5477)
+- Fix files uploaded by other users not being able to be deleted by users with permission
+- Fix Slack Importer incorrectly logging missed types and add slackbot_response to the import
+- Fix to prevent create 2 upload bars
+- Fix undefined language seting issue on reload
+- Improve message of multiple instances without oplog
+
 ## 0.49.4 - 2017-Jan-19
 
 - Add customFields to groups.create api (#5639)
