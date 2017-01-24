@@ -1,5 +1,8 @@
 RocketChat.API.default.addRoute('metrics', { authRequired: false }, {
-	get: function() {
-    return { headers: { 'Content-Type': 'text/plain' }, body: RocketChat.promclient.register.metrics()};
-}
+	get:	function() {
+		return {
+			headers: { 'Content-Type': 'text/plain' },
+			body: RocketChat.promclient.register.metrics()
+		};
+	}
 });
