@@ -3,9 +3,9 @@
  * @param {Object} message - The message object
  */
 
-function InviteAll(type) {
+function inviteAll(type) {
 
-	return function InviteAll(command, params, item) {
+	return function inviteAll(command, params, item) {
 		// if (/invite\-all/.test(command) || !Match.test(params, String)) {
 		// 	return;
 		// }
@@ -63,9 +63,9 @@ function InviteAll(type) {
 				});
 			}
 		});
-	}
+	};
 }
 
-RocketChat.slashCommands.add('invite-all-to', InviteAll('to'));
-RocketChat.slashCommands.add('invite-all-from', InviteAll('from'));
-module.exports = InviteAll;
+RocketChat.slashCommands.add('invite-all-to', inviteAll('to'));
+RocketChat.slashCommands.add('invite-all-from', inviteAll('from'));
+module.exports = inviteAll;
