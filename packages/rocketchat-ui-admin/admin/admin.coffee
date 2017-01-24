@@ -472,9 +472,7 @@ Template.admin.onRendered ->
 		SideNav.openFlex()
 
 	Tracker.autorun ->
-		FlowRouter.watchPathChange()
-
-		hasColor = TempSettings.findOne { group: FlowRouter.getParam('group'), type: 'color' }
+		hasColor = TempSettings.findOne { group: FlowRouter.getParam('group'), type: 'color' }, { fields: { _id: 1 } }
 		if hasColor
 			Meteor.setTimeout ->
 				$('.colorpicker-input').each (index, el) ->
