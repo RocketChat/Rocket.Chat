@@ -11,7 +11,6 @@ Package.onUse(function(api) {
 		'ecmascript',
 		'rocketchat:lib',
 		'nimble:restivus'
-	
 	]);
 
 	api.addFiles('server/api.js', 'server');
@@ -24,7 +23,6 @@ Package.onUse(function(api) {
 
 	api.addFiles('server/default/info.js', 'server');
 	api.addFiles('server/default/metrics.js', 'server');
-	
 
 	//Add v1 routes
 	api.addFiles('server/v1/channels.js', 'server');
