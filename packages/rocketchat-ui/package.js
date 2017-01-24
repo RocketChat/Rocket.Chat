@@ -40,9 +40,6 @@ Package.onUse(function(api) {
 	api.addFiles('lib/fileUpload.coffee', 'client');
 	api.addFiles('lib/fireEvent.js', 'client');
 	api.addFiles('lib/iframeCommands.js', 'client');
-	api.addFiles('lib/jquery.swipebox.min.css', 'client');
-	api.addFiles('lib/jquery.swipebox.min.js', 'client');
-	api.addFiles('lib/jquery.swipebox.init.js', 'client');
 	api.addFiles('lib/menu.coffee', 'client');
 	api.addFiles('lib/modal.coffee', 'client');
 	api.addFiles('lib/Modernizr.js', 'client');
@@ -95,6 +92,7 @@ Package.onUse(function(api) {
 	api.addFiles('views/app/spotlight/spotlightTemplate.html', 'client');
 	api.addFiles('views/app/videoCall/videoButtons.html', 'client');
 	api.addFiles('views/app/videoCall/videoCall.html', 'client');
+	api.addFiles('views/app/photoswipe.html', 'client');
 
 	api.addFiles('views/cmsPage.coffee', 'client');
 	api.addFiles('views/fxos.coffee', 'client');
@@ -111,4 +109,5 @@ Package.onUse(function(api) {
 	api.addFiles('views/app/spotlight/spotlightTemplate.js', 'client');
 	api.addFiles('views/app/videoCall/videoButtons.coffee', 'client');
 	api.addFiles('views/app/videoCall/videoCall.coffee', 'client');
+	api.addFiles('views/app/photoswipe.js', 'client');
 });

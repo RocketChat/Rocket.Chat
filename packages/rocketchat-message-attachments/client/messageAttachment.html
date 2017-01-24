@@ -65,11 +65,14 @@
 				{{#unless collapsed}}
 					<div class="attachment-image">
 					{{#if loadImage}}
-						<a href="{{fixCordova image_url}}" class="swipebox" target="_blank">
+						<figure>
 							<div class="inline-image" style="background-image: url('{{fixCordova image_url}}');">
-								<img src="{{fixCordova image_url}}" height="{{getImageHeight image_dimensions.height}}">
+								<img src="{{fixCordova image_url}}" height="{{getImageHeight image_dimensions.height}}" class="gallery-item" data-title="{{title}}" data-description="{{description}}">
 							</div>
-						</a>
+							{{#if description}}
+								<figcaption class="attachment-description">{{description}}</figcaption>
+							{{/if}}
+						</figure>
 					{{else}}
 						<div class="image-to-download" data-url="{{image_url}}">
 							<i class="icon-picture"></i>
@@ -123,12 +126,6 @@
 						{{/each}}
 					</div>
 				{{/unless}}
-			{{/if}}
-
-			{{#if description}}
-				<div class="attachment-description">
-					<p>{{{description}}}</p>
-				</div>
 			{{/if}}
 
 			{{#each attachments}}
