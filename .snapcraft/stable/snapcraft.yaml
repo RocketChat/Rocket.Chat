@@ -56,11 +56,13 @@ parts:
         stage:
             - programs
             - main.js
+            - .node_version.txt
             - usr
             - lib
         snap:
             - programs
             - main.js
+            - .node_version.txt
             - usr
             - lib
     mongodb:
