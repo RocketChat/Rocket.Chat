@@ -1,12 +1,12 @@
 /* eslint-env mocha */
 /* eslint-disable func-names, prefer-arrow-callback */
 
-import loginPage from '../pageobjects/login.page';
-import mainContent from '../pageobjects/main-content.page';
-import sideNav from '../pageobjects/side-nav.page';
+import loginPage from '../../pageobjects/login.page';
+import mainContent from '../../pageobjects/main-content.page';
+import sideNav from '../../pageobjects/side-nav.page';
 
 //test data imports
-import {username, email, password, adminUsername, adminEmail, adminPassword} from '../data/user.js';
+import {username, email, password, adminUsername, adminEmail, adminPassword} from '../../data/user.js';
 
 
 

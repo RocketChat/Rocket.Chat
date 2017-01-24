@@ -10,7 +10,14 @@ const lokiEq = loki.LokiOps.$eq;
 
 loki.LokiOps.$eq = function(a, b) {
 	if (Array.isArray(a)) {
-		return loki.LokiOps.$containsAny(a, b);
+		return a.indexOf(b) !== -1;
+	}
+	return lokiEq(a, b);
+};
+
+loki.LokiOps.$ne = function(a, b) {
+	if (Array.isArray(a)) {
+		return a.indexOf(b) === -1;
 	}
 	return lokiEq(a, b);
 };
