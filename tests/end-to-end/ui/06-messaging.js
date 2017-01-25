@@ -3,6 +3,7 @@
 
 import mainContent from '../../pageobjects/main-content.page';
 import sideNav from '../../pageobjects/side-nav.page';
+import Global from '../../pageobjects/global';
 
 //test data imports
 import {username, email, password} from '../../data/user.js';
@@ -104,7 +105,6 @@ function messageActionsTest() {
 			});
 
 			after(() => {
-				browser.pause(100);
 				mainContent.selectAction('close');
 				mainContent.messageActionMenu.waitForVisible(5000, true);
 			});
@@ -199,7 +199,7 @@ function messageActionsTest() {
 				it('delete the message', () => {
 					mainContent.selectAction('delete');
 					mainContent.popupFileConfirmBtn.click();
-					browser.waitForVisible('.sweet-overlay', 3000, true);
+					Global.sweetAlertOverlay.waitForVisible(3000, true);
 				});
 
 				it('should not show the deleted message', () => {
@@ -218,10 +218,7 @@ function messageActionsTest() {
 				it('quote the message', () => {
 					mainContent.selectAction('quote');
 					mainContent.sendBtn.click();
-
-					browser.waitUntil(function() {
-						return browser.getText(mainContent.lastMessageTextAttachment.selector) === message;
-					}, 2000);
+					mainContent.waitForLastMessageTextAttachmentEqualsText(message);
 				});
 			});
 
