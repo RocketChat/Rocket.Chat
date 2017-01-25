@@ -1,6 +1,6 @@
-RocketChat.models.Roles = new class extends RocketChat.models._Base
+class ModelRoles extends RocketChat.models._Base
 	constructor: ->
-		super('roles')
+		super(arguments...)
 		@tryEnsureIndex { 'name': 1 }
 		@tryEnsureIndex { 'scope': 1 }
 
@@ -41,3 +41,6 @@ RocketChat.models.Roles = new class extends RocketChat.models._Base
 			role = @findOne roleName
 			roleScope = role?.scope or 'Users'
 			RocketChat.models[roleScope]?.removeRolesByUserId?(userId, roleName, scope)
+
+RocketChat.models.Roles = new ModelRoles('roles', true)
+RocketChat.models.Roles.cache.load()
