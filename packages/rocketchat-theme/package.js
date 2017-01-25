@@ -24,6 +24,9 @@ Package.onUse(function(api) {
 	// Colorpicker
 	api.addFiles('client/vendor/jscolor.js', 'client');
 
+	// Photoswipe
+	api.addFiles('client/vendor/photoswipe.less', 'client');
+
 	// Fontello
 	api.addFiles('client/vendor/fontello/css/fontello.css', 'client');
 	api.addAssets('client/vendor/fontello/font/fontello.eot', 'client');
