@@ -76,6 +76,7 @@
 		"file-type": "^4.1.0",
 		"semver": "^5.3.0",
 		"codemirror": "^5.23.0",
-		"photoswipe": "^4.1.1"
+		"photoswipe": "^4.1.1",
+		"prom-client": "^7.0.1"
 	}
 }
