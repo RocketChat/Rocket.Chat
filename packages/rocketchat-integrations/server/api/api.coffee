@@ -54,7 +54,18 @@ Api = new Restivus
 			payloadIsWrapped = @bodyParams?.payload? and payloadKeys.length == 1
 
 			if payloadIsWrapped and @request.headers['content-type'] is 'application/x-www-form-urlencoded'
-				@bodyParams = JSON.parse @bodyParams.payload
+				try
+					@bodyParams = JSON.parse @bodyParams.payload
+				catch e
+					return {
+						error: {
+							statusCode: 400
+							body: {
+								success: false
+								error: e.message
+							}
+						}
+					}
 
 			@integration = RocketChat.models.Integrations.findOne
 				_id: @request.params.integrationId

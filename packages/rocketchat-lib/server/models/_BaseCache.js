@@ -7,6 +7,7 @@ import objectPath from 'object-path';
 const logger = new Logger('BaseCache');
 
 const lokiEq = loki.LokiOps.$eq;
+const lokiNe = loki.LokiOps.$ne;
 
 loki.LokiOps.$eq = function(a, b) {
 	if (Array.isArray(a)) {
@@ -19,7 +20,7 @@ loki.LokiOps.$ne = function(a, b) {
 	if (Array.isArray(a)) {
 		return a.indexOf(b) === -1;
 	}
-	return lokiEq(a, b);
+	return lokiNe(a, b);
 };
 
 const lokiIn = loki.LokiOps.$in;
