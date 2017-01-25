@@ -55,8 +55,11 @@ class SideNav extends Page {
 	createChannel(channelName, isPrivate, isReadOnly) {
 		this.newChannelBtn.waitForVisible(10000);
 		this.newChannelBtn.click();
+		this.channelName.waitForVisible(10000);
+		this.channelName.setValue('');
+		this.channelName.addValue(channelName);
+		browser.pause(1000);
 		this.channelType.waitForVisible(10000);
-		this.channelName.setValue(channelName);
 		if (isPrivate) {
 			this.channelType.click();
 		}
@@ -66,8 +69,8 @@ class SideNav extends Page {
 		browser.pause(500);
 		this.saveChannelBtn.click();
 		browser.pause(500);
-		browser.waitForExist('[title="'+channelName+'"]', 1000);
-		this.channelType.waitForVisible(500, true);
+		browser.waitForExist('[title="'+channelName+'"]', 10000);
+		this.channelType.waitForVisible(5000, true);
 	}
 
 	addPeopleToChannel(user) {
@@ -94,7 +97,7 @@ class SideNav extends Page {
 		browser.click('.-autocomplete-item');
 		browser.pause(200);
 		this.saveDirectMessageBtn.click();
-		browser.waitForExist('[title="'+user+'"]');
+		browser.waitForExist('[title="'+user+'"]', 5000);
 	}
 }
 
