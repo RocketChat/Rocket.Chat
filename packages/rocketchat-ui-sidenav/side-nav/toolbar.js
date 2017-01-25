@@ -69,7 +69,7 @@ const getFromServer = (cb) => {
 	});
 };
 
-const getFromServerThrottled = _.throttle(getFromServer, 500);
+const getFromServerDebounced = _.debounce(getFromServer, 500);
 
 Template.toolbar.helpers({
 	results() {
@@ -87,7 +87,7 @@ Template.toolbar.helpers({
 			isLoading: isLoading,
 			getFilter: function(collection, filter, cb) {
 				filterText = filter;
-				resultsFromClient = collection.find({name: new RegExp((RegExp.escape(filter)), 'i'), rid: {$ne: Session.get('openedRoom')}}, {limit: 10, sort: {unread: -1, ls: -1}}).fetch();
+				resultsFromClient = collection.find({name: new RegExp((RegExp.escape(filter)), 'i'), rid: {$ne: Session.get('openedRoom')}}, {limit: 20, sort: {unread: -1, ls: -1}}).fetch();
 
 				const resultsFromClientLength = resultsFromClient.length;
 				usernamesFromClient = [Meteor.user().username];
@@ -100,7 +100,9 @@ Template.toolbar.helpers({
 
 				cb(resultsFromClient);
 
-				getFromServerThrottled(cb);
+				if (filterText.trim() !== '' && resultsFromClient.length < 20) {
+					getFromServerDebounced(cb);
+				}
 			},
 			getValue: function(_id, collection, records) {
 				const doc = _.findWhere(records, {_id: _id});
