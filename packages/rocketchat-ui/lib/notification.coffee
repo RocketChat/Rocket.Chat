@@ -47,10 +47,10 @@
 			notification.icon = avatarAsPng
 			KonchatNotification.notify(notification)
 
-	newMessage: ->
+	newMessage: (rid) ->
 		if not Session.equals('user_' + Meteor.userId() + '_status', 'busy')
 			newMessageNotification = Meteor.user()?.settings?.preferences?.newMessageNotification || 'chime'
-			sub = ChatSubscription.findOne({ rid: Session.get('openedRoom') }, { fields: { audioNotification: 1 } });
+			sub = ChatSubscription.findOne({ rid: rid }, { fields: { audioNotification: 1 } });
 			if sub?.audioNotification isnt 'none'
 				if sub?.audioNotification
 					$("audio##{sub.audioNotification}")[0].play()
