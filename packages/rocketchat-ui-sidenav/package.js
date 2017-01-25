@@ -36,6 +36,7 @@ Package.onUse(function(api) {
 	api.addFiles('side-nav/privateGroupsFlex.html', 'client');
 	api.addFiles('side-nav/sideNav.html', 'client');
 	api.addFiles('side-nav/starredRooms.html', 'client');
+	api.addFiles('side-nav/toolbar.html', 'client');
 	api.addFiles('side-nav/unreadRooms.html', 'client');
 	api.addFiles('side-nav/userStatus.html', 'client');
 
@@ -55,6 +56,7 @@ Package.onUse(function(api) {
 	api.addFiles('side-nav/privateGroupsFlex.coffee', 'client');
 	api.addFiles('side-nav/sideNav.coffee', 'client');
 	api.addFiles('side-nav/starredRooms.coffee', 'client');
+	api.addFiles('side-nav/toolbar.js', 'client');
 	api.addFiles('side-nav/unreadRooms.coffee', 'client');
 });
 

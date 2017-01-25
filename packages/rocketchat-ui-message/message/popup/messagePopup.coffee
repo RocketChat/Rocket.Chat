@@ -51,6 +51,10 @@ Template.messagePopup.onCreated ->
 
 	template.triggerAnywhere = val(template.data.triggerAnywhere, true)
 
+	template.closeOnEsc = val(template.data.closeOnEsc, true)
+
+	template.blurOnSelectItem = val(template.data.blurOnSelectItem, false)
+
 	template.prefix = val(template.data.prefix, template.trigger)
 
 	template.suffix = val(template.data.suffix, '')
@@ -96,29 +100,38 @@ Template.messagePopup.onCreated ->
 		if template.open.curValue isnt true or template.hasData.curValue isnt true
 			return
 
-		if event.which in [keys.ARROW_UP, keys.ARROW_DOWN]
-			event.preventDefault()
-			event.stopPropagation()
-
 		if event.which in [keys.ENTER, keys.TAB]
-			template.open.set false
+			if template.blurOnSelectItem is true
+				template.input.blur()
+			else
+				template.open.set false
 
 			template.enterValue()
 
 			event.preventDefault()
 			event.stopPropagation()
+			return
 
 		if event.which is keys.ARROW_UP
 			template.up()
-		else if event.which is keys.ARROW_DOWN
+
+			event.preventDefault()
+			event.stopPropagation()
+			return
+
+		if event.which is keys.ARROW_DOWN
 			template.down()
+
+			event.preventDefault()
+			event.stopPropagation()
+			return
 
 	template.setTextFilter = _.debounce (value) ->
 		template.textFilter.set(value)
 	, template.textFilterDelay
 
 	template.onInputKeyup = (event) =>
-		if template.open.curValue is true and event.which is keys.ESC
+		if template.closeOnEsc is true and template.open.curValue is true and event.which is keys.ESC
 			template.open.set false
 			event.preventDefault()
 			event.stopPropagation()
@@ -139,6 +152,27 @@ Template.messagePopup.onCreated ->
 		if event.which not in [keys.ARROW_UP, keys.ARROW_DOWN]
 			Meteor.defer =>
 				template.verifySelection()
+
+	template.onFocus = (event) =>
+		if template.open.curValue is true
+			return
+
+		value = template.input.value
+		value = value.substr 0, getCursorPosition(template.input)
+
+		if template.matchSelectorRegex.test value
+			template.setTextFilter value.match(template.selectorRegex)[1]
+			template.open.set true
+			Meteor.defer =>
+				template.verifySelection()
+		else
+			template.open.set false
+
+	template.onBlur = (event) =>
+		if template.open.curValue is false
+			return
+
+		template.open.set false
 
 	template.enterValue = ->
 		if not template.value.curValue? then return
@@ -188,11 +222,15 @@ Template.messagePopup.onRendered ->
 
 	$(this.input).on 'keyup', this.onInputKeyup.bind this
 	$(this.input).on 'keydown', this.onInputKeydown.bind this
+	$(this.input).on 'focus', this.onFocus.bind this
+	$(this.input).on 'blur', this.onBlur.bind this
 
 
 Template.messagePopup.onDestroyed ->
 	$(this.input).off 'keyup', this.onInputKeyup
 	$(this.input).off 'keydown', this.onInputKeydown
+	$(this.input).off 'focus', this.onFocus
+	$(this.input).off 'blur', this.onBlur
 
 
 Template.messagePopup.events
@@ -220,7 +258,7 @@ Template.messagePopup.events
 
 Template.messagePopup.helpers
 	isOpen: ->
-		Template.instance().open.get() and (Template.instance().hasData.get() or not Template.instance().parentTemplate(1).subscriptionsReady())
+		Template.instance().open.get() and ((Template.instance().hasData.get() or Template.instance().data.emptyTemplate?) or not Template.instance().parentTemplate(1).subscriptionsReady())
 
 	data: ->
 		template = Template.instance()
