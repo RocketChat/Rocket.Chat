@@ -66,7 +66,7 @@
 		"supertest": "^2.0.1"
 	},
 	"dependencies": {
-		"jquery": "^2.1.0",
+		"jquery": "^3.1.1",
 		"babel-runtime": "^6.22.0",
 		"bcrypt": "^1.0.2",
 		"moment": "^2.17.1",
@@ -76,6 +76,7 @@
 		"file-type": "^4.1.0",
 		"semver": "^5.3.0",
 		"codemirror": "^5.23.0",
+		"photoswipe": "^4.1.1",
 		"prom-client": "^7.0.1"
 	}
 }

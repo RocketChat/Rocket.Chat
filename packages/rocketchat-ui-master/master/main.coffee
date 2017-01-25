@@ -34,8 +34,6 @@ Template.body.onRendered ->
 			return
 		if /input|textarea|select/i.test(target.tagName)
 			return
-		if $.swipebox.isOpen
-			return
 		$inputMessage = $('textarea.input-message')
 		if 0 == $inputMessage.length
 			return
@@ -51,12 +49,6 @@ Template.body.onRendered ->
 				return fireGlobalEvent('click-message-link', { link: link.pathname + link.search })
 
 			FlowRouter.go(link.pathname + link.search, null, FlowRouter.current().queryParams)
-
-		if $(link).hasClass('swipebox')
-			if RocketChat.Layout.isEmbedded()
-				e.preventDefault()
-				e.stopPropagation()
-				fireGlobalEvent('click-image-link', { href: link.href })
 
 	Tracker.autorun (c) ->
 		w = window
