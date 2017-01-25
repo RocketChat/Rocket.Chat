@@ -91,8 +91,6 @@ Package.onUse(function(api) {
 	api.addFiles('views/app/roomSearch.html', 'client');
 	api.addFiles('views/app/secretURL.html', 'client');
 	api.addFiles('views/app/userSearch.html', 'client');
-	api.addFiles('views/app/spotlight/spotlight.html', 'client');
-	api.addFiles('views/app/spotlight/spotlightTemplate.html', 'client');
 	api.addFiles('views/app/videoCall/videoButtons.html', 'client');
 	api.addFiles('views/app/videoCall/videoCall.html', 'client');
 
@@ -106,9 +104,6 @@ Package.onUse(function(api) {
 	api.addFiles('views/app/room.coffee', 'client');
 	api.addFiles('views/app/roomSearch.coffee', 'client');
 	api.addFiles('views/app/secretURL.coffee', 'client');
-	api.addFiles('views/app/spotlight/mobileMessageMenu.coffee', 'client');
-	api.addFiles('views/app/spotlight/spotlight.coffee', 'client');
-	api.addFiles('views/app/spotlight/spotlightTemplate.js', 'client');
 	api.addFiles('views/app/videoCall/videoButtons.coffee', 'client');
 	api.addFiles('views/app/videoCall/videoCall.coffee', 'client');
 });
