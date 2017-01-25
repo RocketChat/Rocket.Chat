@@ -102,6 +102,18 @@ class MainContent extends Page {
 		this.settingSaveBtn.click();
 	}
 
+	waitForLastMessageTextAttachmentEqualsText(text) {
+		browser.waitUntil(function() {
+			return browser.getText('.message:last-child .attachment-text') === text;
+		}, 2000);
+	}
+
+	waitForLastMessageEqualsText(text) {
+		browser.waitUntil(function() {
+			return browser.getText('.message:last-child .body') === text;
+		}, 2000);
+	}
+
 	//do one of the message actions, based on the "action" parameter inserted.
 	selectAction(action) {
 		switch (action) {

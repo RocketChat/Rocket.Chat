@@ -98,9 +98,7 @@ describe('Admin settings', () => {
 		});
 
 		it('should show the user in the list', () => {
-			browser.pause(200);
-			var element = browser.element('td=adminCreated'+username);
-			element.isVisible().should.be.visible;
+			admin.checkUserList(username).should.be.true;
 		});
 	});
 
@@ -197,7 +195,9 @@ describe('Admin settings', () => {
 			mainContent.addTextToInput('@all');
 			mainContent.mentionAllPopUp.waitForVisible(5000);
 			mainContent.mentionAllPopUp.click();
+			mainContent.mentionAllPopUp.waitForVisible(5000, true);
 			mainContent.sendBtn.click();
+			mainContent.waitForLastMessageEqualsText('Notify all in this room is not allowed');
 			mainContent.lastMessage.getText().should.equal('Notify all in this room is not allowed');
 		});
 
