@@ -71,8 +71,8 @@ konecty:user-presence@1.2.9
 launch-screen@1.1.0
 learnersguild:rocketchat-lg-api-extensions@1.0.1
 learnersguild:rocketchat-lg-core@1.0.1
-learnersguild:rocketchat-lg-game@1.1.3
-learnersguild:rocketchat-lg-sso@1.0.1
+learnersguild:rocketchat-lg-game@1.3.0
+learnersguild:rocketchat-lg-sso@1.0.2
 less@2.7.8
 livedata@1.0.18
 localstorage@1.0.12
