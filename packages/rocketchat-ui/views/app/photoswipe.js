@@ -2,9 +2,13 @@ import PhotoSwipe from 'photoswipe';
 import PhotoSwipeUI_Default from 'photoswipe/dist/photoswipe-ui-default';
 import 'photoswipe/dist/photoswipe.css';
 
-Meteor.startup(function() {
-	const getItems = (imageSrc) => {
-		const selector = document.querySelectorAll('.gallery-item');
+Meteor.startup(() => {
+	const initGallery = (selector, items, options) => {
+		const gallery = new PhotoSwipe(selector, PhotoSwipeUI_Default, items, options);
+		gallery.init();
+	};
+
+	const getItems = (selector, imageSrc) => {
 		let results = {
 			index: 0,
 			items: []
@@ -27,28 +31,40 @@ Meteor.startup(function() {
 		return results;
 	};
 
+	const galleryOptions = {
+		index: 0,
+		bgOpacity: 0.8,
+		showHideOpacity: true,
+		counterEl: false,
+		shareEl: false
+	};
+
 	$(document).on('click', '.gallery-item', function() {
-		const pswp = document.getElementById('pswp');
-		const images = getItems($(this)[0].src);
+		const images = getItems(document.querySelectorAll('.gallery-item'), $(this)[0].src);
 
-		const options = {
-			index: images.index,
-			bgOpacity: 0.8,
-			showHideOpacity: true,
-			counterEl: false,
-			shareEl: false,
-			addCaptionHTMLFn: function(item, captionEl) {
-				if (!item.title) {
-					captionEl.children[0].innerText = '';
-					return false;
-				}
-
-				captionEl.children[0].innerHTML = `${item.title}<br/><small>${item.description}</small> `;
-				return true;
-			}
+		galleryOptions.index = images.index;
+		galleryOptions.addCaptionHTMLFn = function(item, captionEl) {
+			captionEl.children[0].innerHTML = `${item.title}<br/><small>${item.description}</small> `;
+			return true;
 		};
 
-		const gallery = new PhotoSwipe(pswp, PhotoSwipeUI_Default, images.items, options);
-		gallery.init();
+		initGallery(document.getElementById('pswp'), images.items, galleryOptions);
+	});
+
+	$(document).on('click', '.room-files-image', (e) => {
+		e.preventDefault();
+		e.stopPropagation();
+
+		const img = new Image();
+		img.src = e.currentTarget.href;
+		img.addEventListener('load', function() {
+			const item = [{
+				src: this.src,
+				w: this.naturalWidth,
+				h: this.naturalHeight
+			}];
+
+			initGallery(document.getElementById('pswp'), item, galleryOptions);
+		});
 	});
 });
