@@ -6,9 +6,10 @@
 function inviteAll(type) {
 
 	return function inviteAll(command, params, item) {
-		// if (/invite\-all/.test(command) || !Match.test(params, String)) {
-		// 	return;
-		// }
+		if (!/invite\-all-(to|from)/.test(command) || !Match.test(params, String)) {
+			return;
+		}
+
 		let regexp = /#([\d-_\w]+)/g,
 			[, channel] = regexp.exec(params.trim());
 
@@ -31,7 +32,6 @@ function inviteAll(type) {
 				}, currentUser.language)
 			});
 		}
-
 		let users = baseChannel.usernames || [];
 
 		if (users.length > RocketChat.settings.get('API_User_Limit')) {
@@ -43,26 +43,24 @@ function inviteAll(type) {
 			});
 		}
 
-		if (!targetChannel) {
-			return Meteor.call('createChannel', channel, users);
+		if (!targetChannel && ['c', 'p'].indexOf(baseChannel.t) > -1) {
+			return Meteor.call(baseChannel.t === 'c' ? 'createChannel' : 'createPrivateGroup', channel, users);
 		}
 
-		users.forEach(function(user) {
-			try {
-				Meteor.call('addUserToRoom', {
-					rid: targetChannel._id,
-					username: user
-				});
-			} catch (e) {
-				let msg = e.error === 'cant-invite-for-direct-room' ? 'Cannot_invite_users_to_direct_rooms' : e.error;
-				RocketChat.Notifications.notifyUser(Meteor.userId(), 'message', {
-					_id: Random.id(),
-					rid: item.rid,
-					ts: new Date(),
-					msg: TAPi18n.__(msg, null, currentUser.language)
-				});
-			}
-		});
+		try {
+			Meteor.call('addUsersToRoom', {
+				rid: targetChannel._id,
+				users: users
+			});
+		} catch (e) {
+			let msg = e.error === 'cant-invite-for-direct-room' ? 'Cannot_invite_users_to_direct_rooms' : e.error;
+			RocketChat.Notifications.notifyUser(Meteor.userId(), 'message', {
+				_id: Random.id(),
+				rid: item.rid,
+				ts: new Date(),
+				msg: TAPi18n.__(msg, null, currentUser.language)
+			});
+		}
 	};
 }
 
