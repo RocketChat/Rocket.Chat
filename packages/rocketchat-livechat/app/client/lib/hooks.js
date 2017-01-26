@@ -27,6 +27,14 @@ var api = {
 
 	clearDepartment: function() {
 		Livechat.department = null;
+	},
+
+	widgetOpened: function() {
+		Livechat.setWidgetOpened();
+	},
+
+	widgetClosed: function() {
+		Livechat.setWidgetClosed();
 	}
 };
 

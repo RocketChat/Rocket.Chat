@@ -28,11 +28,18 @@ currentTracker = undefined
 							BlazeLayout.render 'main', {center: 'roomNotFound'}
 							return
 				else
-					Session.set 'roomNotFound', {type: type, name: name}
-					BlazeLayout.render 'main', {center: 'roomNotFound'}
+					Meteor.call 'getRoomByTypeAndName', type, name, (err, record) ->
+						if err?
+							Session.set 'roomNotFound', {type: type, name: name}
+							BlazeLayout.render 'main', {center: 'roomNotFound'}
+						else
+							delete record.$loki
+							RocketChat.models.Rooms.upsert({ _id: record._id }, _.omit(record, '_id'))
+							RoomManager.close(type + name)
+							openRoom(type, name)
+
 				return
 
-			$('.rocket-loader').remove();
 			mainNode = document.querySelector('.main-content')
 			if mainNode?
 				for child in mainNode.children
@@ -53,7 +60,7 @@ currentTracker = undefined
 			, 2000
 			# KonchatNotification.removeRoomNotification(params._id)
 
-			if Meteor.Device.isDesktop()
+			if Meteor.Device.isDesktop() and window.chatMessages?[room._id]?
 				setTimeout ->
 					$('.message-form .input-message').focus()
 				, 100

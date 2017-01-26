@@ -7,21 +7,28 @@ Package.describe({
 
 Package.onUse(function(api) {
 	api.use([
-		'coffeescript',
 		'underscore',
 		'ecmascript',
 		'rocketchat:lib',
 		'nimble:restivus'
 	]);
 
-	api.addFiles('server/api.coffee', 'server');
+	api.addFiles('server/api.js', 'server');
+	api.addFiles('server/settings.js', 'server');
+
+	//Register v1 helpers
+	api.addFiles('server/v1/helpers/getPaginationItems.js', 'server');
+	api.addFiles('server/v1/helpers/getUserFromParams.js', 'server');
+	api.addFiles('server/v1/helpers/parseJsonQuery.js', 'server');
 
 	api.addFiles('server/default/info.js', 'server');
 
+	//Add v1 routes
 	api.addFiles('server/v1/channels.js', 'server');
 	api.addFiles('server/v1/chat.js', 'server');
 	api.addFiles('server/v1/groups.js', 'server');
 	api.addFiles('server/v1/im.js', 'server');
+	api.addFiles('server/v1/integrations.js', 'server');
 	api.addFiles('server/v1/misc.js', 'server');
 	api.addFiles('server/v1/users.js', 'server');
 	api.addFiles('server/v1/settings.js', 'server');

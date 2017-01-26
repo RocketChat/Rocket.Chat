@@ -52,10 +52,19 @@ FlowRouter.route('/login', {
 FlowRouter.route('/home', {
 	name: 'home',
 
-	action() {
-		RocketChat.TabBar.showGroup('home');
-		BlazeLayout.render('main', {center: 'home'});
+	action(params, queryParams) {
 		KonchatNotification.getDesktopPermission();
+		if (queryParams.saml_idp_credentialToken !== undefined) {
+			Accounts.callLoginMethod({
+				methodArguments: [{
+					saml: true,
+					credentialToken: queryParams.saml_idp_credentialToken
+				}],
+				userCallback: function() { BlazeLayout.render('main', {center: 'home'}); }
+			});
+		} else {
+			BlazeLayout.render('main', {center: 'home'});
+		}
 	}
 });
 
@@ -63,7 +72,6 @@ FlowRouter.route('/changeavatar', {
 	name: 'changeAvatar',
 
 	action() {
-		RocketChat.TabBar.showGroup('changeavatar');
 		BlazeLayout.render('main', {center: 'avatarPrompt'});
 	}
 });
@@ -76,7 +84,6 @@ FlowRouter.route('/account/:group?', {
 			params.group = 'Preferences';
 		}
 		params.group = _.capitalize(params.group, true);
-		RocketChat.TabBar.showGroup('account');
 		BlazeLayout.render('main', { center: `account${params.group}` });
 	}
 });
@@ -90,7 +97,6 @@ FlowRouter.route('/history/private', {
 
 	action() {
 		Session.setDefault('historyFilter', '');
-		RocketChat.TabBar.showGroup('private-history');
 		BlazeLayout.render('main', {center: 'privateHistory'});
 	}
 });

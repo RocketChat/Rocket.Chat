@@ -1,6 +1,133 @@
 # History
 
-## 0.48.2, 2016-Dec-20 
+## 0.50.1 - 2017-Jan-24
+
+- Fix cache $ne operator
+
+## 0.50.0 - 2017-Jan-24
+
+- Add APIs for users.register and users.getAvatar
+- Add error and exit process when nodejs version is impatible
+- Add option to use real name for avatar
+- Fix chat.postMessage not behaving like the web client (#5477)
+- Fix files uploaded by other users not being able to be deleted by users with permission
+- Fix Slack Importer incorrectly logging missed types and add slackbot_response to the import
+- Fix to prevent create 2 upload bars
+- Fix undefined language seting issue on reload
+- Improve message of multiple instances without oplog
+
+## 0.49.4 - 2017-Jan-19
+
+- Add customFields to groups.create api (#5639)
+- Add RoomManager to list of globals
+- Add support to inbox style push notifications for Android
+- Add support to msapplication oembed metadata
+- Fix Zapier oAuthApp settings to enable it and update the redirectUri
+- Fix admin info to only count recenlty updated instances
+- Fix exception in template helper, iframe login
+- Fix Further disallowance of changing the password, this time on the client side
+- Fix groups.setReadOnly and groups.setType not returning the correct group via rest api
+- Fix hover size on edit messages
+- Fix joinDefaultChannels for Custom OAuth
+- Fix prevent error with positional operator
+- Fix room’s info panel at Admin Rooms
+- Fix sidenav in window resize
+- Fix the incorrect default url for new instances.
+- Fix to remove _normal and _bigger from twitter avatar url
+- Fix to sync createPrivateGroup and createChannel parameter order for readOnly and customFields
+- Fix to use eval to execute loggedIn and loggedOut scripts
+- Fix to use favicon 192 for push notifications
+- Fix users being able to change their passwords when the setting disabled that
+
+## 0.49.3 - 2017-Jan-18
+
+- Add Drupal 7 and 8 plug-in information
+- Add option to get group by name in api/v1/groups.info?roomName=testing
+- Add forgot password template
+- Add verification email template
+- Allow retrieveDirectMessageInfo with rid
+- Fix outgoing integration to require channel
+- Fix to not ser userLanguage as undefined
+- Fix cannot set property input of undefined (#5619)
+- Fix agents not being able to see queue list page
+- Fix error preventing showing error on upload to s3
+- Fix flex-tab on cordova
+- Fix processWebhookMessage and Loki $in/$nin
+- Fix tab-bar position on swipe
+- Make Internal Hubot disabled by default
+- Meteor update blaze upgraded from 2.2.1 to 2.3.0 and related packages
+- Show correct data at admin/rooms
+- Show the oplog status on admin and an error alert when necessary
+
+## 0.49.2 - 2017-Jan-16
+
+- Add findOneById and findOneByIds to all layers of the models
+- Add relation between client cache and user’s token
+- Allow the text of attachments to be collapsed
+- Fix an error with updating the users if no role was defined
+- Fix flex-nav z-index
+- Fix flex-tab on mobile
+- Fix making the internal Hubot init() function always debounced
+- Fix private groups not being able to be unarchived via the rest api
+- Fix the cache layer not respecting findById via query
+- Fix the roles not being respected on user creation
+- Fix to prevent stop hubot initiating even when disabled
+
+## 0.49.1 - 2017-Jan-13
+
+- Fix emoji picker handling
+- Fix favicons and add an option to enable svg
+- Fix find with $elemMatch. Closes #5536
+- Fix livechat whitedomains list
+- Fix logo in admin
+- Fix message-dropdown background
+- Fix migration 77. Closes #5542
+- Fix new-message background
+- Keep only public settings using notifyAll
+- Move room panels from main content into room wrapper
+- Refactor action links to better handle client side buttons only
+- Send notifyAll to all users and create notifyLogged to notify only logged users
+
+## 0.49.0 - 2017-Jan-11
+
+### Now uses NodeJS 4.7.1
+
+- Add basic support for RFC 7233
+- Add Button to block direct message
+- Add caching layer using LokiDB
+- Add custom fields to user's profile
+- Add discard and reset button to admin panels
+- Add email address validation to livechat offline messages
+- Add file name and description on file upload
+- Add Livechat domains validations
+- Add many API endpoints, see https://rocket.chat/docs/developer-guides/rest-api/
+- Add methods from rest api 0.5 to v1
+- Add stylelint to CSS and LESS files
+- Add the migration for bots to be able to create rooms
+- Allow alias, avatar, and emoji in the sendFileMessage.
+- Allow query, sort, and fields on the queryParams of the rest api
+- Allow to merge users with LDAP on bulk sync
+- Bi-directional Sladk message edit, delete and reactions
+- Disable animations when TEST_MODE=true
+- Do not require .jpg for avatar url and return correct content type
+- Enable CDN_PREFIX for avatars
+- Fix crash at startup if Slack bridge enabled and slack.com is not reachable #5426
+- Fix importer relying on os file type, use file signature. Closes #3050
+- Fix issue creating users with username from OAuth
+- Fix screen sharing bug when receiving audio call. issue #5286
+- Migrate livechat visitors' emails field to visitorEmails
+- New livechat layout
+- Normalize favicons, tiles and touchicons
+- Refactored API endpoints to more closely conform to Slack API conventions and naming conventions
+- Remove alpha colors and add disabled buttons style
+- Sets default avatar after setting username for the first time by default
+- Several performance improvements
+- Styles cleanup (#5354) (#5364)
+- Support SAML IDP-initiated login mode
+- Update docker-compose to version 2
+- Use CodeMirror from Npm
+
+## 0.48.2 - 2016-Dec-20
 
 - Add button to refresh aouth services
 - Fix download on electron
@@ -8,11 +135,13 @@
 - Fix message when username field not exists in OAuth data
 - Fix OAuth global variable
 
-## 0.48.1, 2016-Dec-13 - Now uses NodeJS 4.7.0
+## 0.48.1 - 2016-Dec-13
+
+### Now uses NodeJS 4.7.0
 
 - Fix integration payload JSON.parse 
 
-## 0.48.0, 2016-Dec-12
+## 0.48.0 - 2016-Dec-12
 
 - Add CustomOAuth logger
 - Add env var to disable animations
@@ -54,14 +183,14 @@
 - Set username automaticaly
 - Support username template in CustomOAuth
 - Update momentjs to 2.17.1
-- Update slack-client to 2.0.6- 
+- Update slack-client to 2.0.6
 
-## 0.47.1, 2016-Dec-09
+## 0.47.1 - 2016-Dec-09
 
 - Fix color migrations
 - Fix to prevent register broadcastAuth more than one time
 
-## 0.47.0, 2016-Dec-06
+## 0.47.0 - 2016-Dec-06
 
 - Add 'clear OEmbed cache now' button
 - Add a method and rest api to clean up a channel's history
@@ -117,7 +246,7 @@
 - Updated to autolinker 1.4.0
 - Use toastr from npm
 
-## 0.46.0, 2016-Nov-21
+## 0.46.0 - 2016-Nov-21
 
 ### Upgraded to meteor 1.4.2.3 - Now uses NodeJS 4.6.2
 
@@ -185,7 +314,7 @@
 - Using border-with on CSS to control borders
 - Validate user access on file upload
 
-## 0.45.0, 2016-Oct-31
+## 0.45.0 - 2016-Oct-31
 
 - Add global keydown event handler
 - Add hubot packages as default
@@ -225,7 +354,7 @@
 - Update ip-range-check to version 0.0.2 to get rid of debugger call Day8/ip-range-check#1
 - Update all npm-shrinkwrap.json with npm 3.10.9
 
-## 0.44.0, 2016-Oct-25
+## 0.44.0 - 2016-Oct-25
 
 - Add archive and unarchive api endpoints
 - Add check package dependency to the iframe-login package. (#4664)
@@ -246,7 +375,7 @@
 - Replace mrt:moment-timezone by aldeed:moment-timezone as it depend on the official moment package
 - Set tap:i18n version in i18n package to install the expected version when the package is used in other projects
 
-## 0.43.0, 2016-Oct-17
+## 0.43.0 - 2016-Oct-17
 
 - Add @here support for only notifying users that are active
 - Add base support for config via webservices
@@ -272,7 +401,7 @@
 - Set babel cache directory for integrations
 - Switch snap from imagemagick to graphicsmagick
 
-## 0.42.0, 2016-Oct-04
+## 0.42.0 - 2016-Oct-04
 
 - Add dependency to package with avatar template
 - Add ids for irc.server callbacks
@@ -304,7 +433,7 @@
 - Standardize settings endpoint return
 - Update Autolinker to 1.2.0
 
-## 0.41.0, 2016-Sep-27
+## 0.41.0 - 2016-Sep-27
 
 - Add ability to close open livechats if an agent goes offline
 - Add basic channels tests
@@ -335,7 +464,7 @@
 - Replace autocomplte popups subscriptions with methods
 - Trigger global event to embedded images
 
-## 0.40.1, 2016-Sep-21
+## 0.40.1 - 2016-Sep-21
 
 - Allow Iframe login with default tokens
 - Fix embedded layout message box auto-resize
@@ -347,7 +476,7 @@
 - Show file type on file upload error (#3217)
 - Use the npm package of UAParser on LiveChat
 
-## 0.40.0, 2016-Sep-20
+## 0.40.0 - 2016-Sep-20
 
 ### Upgraded to meteor 1.4.1.1 - Now uses NodeJS 4.5
 
@@ -427,7 +556,7 @@
 - Using faster npm bcrypt module
 - Verify permissions on spotlight list
 
-## 0.39.0, 2016-Sep-05
+## 0.39.0 - 2016-Sep-05
 
 - Accept username from SAML response
 - Add image attachment support when a bot (ex using giffy) posts just an image
@@ -456,7 +585,7 @@
 - UI improvements to login screen
 - Update the opened livechat room by token
 
-## 0.38.0, 2016-Aug-30
+## 0.38.0 - 2016-Aug-30
 
 - Action links improvements
 - Add global event unread-changed-by-subscription
@@ -491,7 +620,7 @@
 - Update to depend only on the gMaps API key, add i18n strings for geolocaiotn sharing
 - Updated loginform a11y and UX - labels instead of placeholders (#4075)
 
-## 0.37.1, 2016-Aug-17
+## 0.37.1 - 2016-Aug-17
 
 - Allow deletion of records with same id on settings
 - Created inital Iframe integration
@@ -502,7 +631,7 @@
 - Changed SlackBridge to import from begin to end
 - Suppress message-pinned notification from import
 
-## 0.37.0, 2016-Aug-15
+## 0.37.0 - 2016-Aug-15
 
 - Added an option to SlackBridge to exclude some bots messages from propagating. (#3813)
 - Added bot-helpers package (#3799)
@@ -556,7 +685,7 @@
 - Update default setting for file upload types to include video
 - Update side-nav with room counts (#3967)
 
-## 0.36.0, 2016-Aug-02
+## 0.36.0 - 2016-Aug-02
 
 ### Core updates
 
@@ -632,7 +761,7 @@
 - Update emojione to 2.2.5 (#3736)
 - Update hubot version to v.0.1.4
 
-## 0.35.0, 2016-Jun-28
+## 0.35.0 - 2016-Jun-28
 
 - Add a list of reserved usernames
 - Add admin setting to disable merged groups and channels
@@ -651,12 +780,12 @@
 - Preventing message update on multiple sendMessage calls
 - Update for Dataporten closing #3580 (#3608)
 
-## 0.34.0, 2016-Jun-14
+## 0.34.0 - 2016-Jun-14
 
 - BETA JITSI INTEGRATION (#3476)
 - Add more config options to livechat (#3497)
 
-## 0.33.0, 2016-Jun-07
+## 0.33.0 - 2016-Jun-07
 
 - Add a method and api way to get a user's private groups, for external usage
 - Add ASCII art commands /tableflip /unflip /lennyface /gimme
@@ -679,7 +808,7 @@
 - Send livechat webhooks
 - Use <button/> rather than <i/> for tab buttons.
 
-## 0.32.0, 2016-May-30
+## 0.32.0 - 2016-May-30
 
 - Add autocomplete for adding users to roles
 - Add bad word filter to settings UI
@@ -711,7 +840,7 @@
 - Remove resize animation preventing scroll stay at bottom
 - Update user-presence package
 
-## 0.31.0, 2016-May-16
+## 0.31.0 - 2016-May-16
 
 - Add header and footer to e-mails
 - Add new livechat settings to livechat manager
@@ -742,7 +871,7 @@
 - Save room's name as the livechat visitor name
 - Use HTML emails instead of Text- 
 
-## 0.30.0, 2016-May-09
+## 0.30.0 - 2016-May-09
 
 - Ability to run imports several times without duplicate messages (#3123)
 - Add /shrug command
@@ -791,7 +920,7 @@
 - Use native code to set file upload cookies
 - Wait until user is logged-in to add message listener
 
-## 0.29.0, 2016-May-02
+## 0.29.0 - 2016-May-02
 
 - Add a i18nDefaultQuery option to settings
 - Add a sequential code for livechat rooms
@@ -842,7 +971,7 @@
 - Use new placholders.js for sending mail through Mailer
 - Verify if user's emails and phone are arrays before showing them
 
-## 0.28.0, 2016-Apr-25
+## 0.28.0 - 2016-Apr-25
 
  - Add "by" and "at" to language files
  - Add API method to list online users in a room
@@ -884,7 +1013,7 @@
  - Show all - RTL fix (#2957)
  - Use the logo from uploaded assets for the menu footer
 
-## 0.27.0, 2016-Apr-18
+## 0.27.0 - 2016-Apr-18
 
 - Add admin to default list of allowed roles on 'pin-message' (#2846)
 - Add date/time format settings (#2852)
@@ -918,7 +1047,7 @@
 - Use different color for mentions "all" (#2865)
 - User info tab bar improvements (#2893)
 
-## 0.26.0, 2016-Apr-11
+## 0.26.0 - 2016-Apr-11
 
 - Add a download icon to file list (#2817)
 - Add ability to hide embedded media
@@ -957,7 +1086,7 @@
 - Use RocketChat Logger as SyncedCron logger
 - When creating a room, set user only as owner, not moderator
 
-## 0.25.0, 2016-Apr-04
+## 0.25.0 - 2016-Apr-04
 
 - Add black list email list options
 - Add more indexes to users collection
@@ -1004,7 +1133,7 @@
 - Use page-loading animation when waiting subs
 - Use ReadOnly globals
 
-## 0.24.0, 2016-Mar-28
+## 0.24.0 - 2016-Mar-28
 
 - Add a title with emoji's shortname on picker
 - Add Assets and Blaze to jshint global variables
@@ -1061,7 +1190,7 @@
 - Use the login layout for the reset password screen
 - Using PNG emoji sprites for better performance
 
-## 0.23.0, 2016-Mar-21
+## 0.23.0 - 2016-Mar-21
 
 - Accept * for all media types
 - Add emoji picker
@@ -1105,7 +1234,7 @@
 - Use login logo as asset
 - Use URL compatible token and do not sabe in user record
 
-## 0.22.0, 2016-Mar-14
+## 0.22.0 - 2016-Mar-14
 
 - Add AES encryption routines
 - Add CDN config option for file upload
@@ -1149,7 +1278,7 @@
 - Trim slashes from Site_Url - closes #2462
 - Upload files to file system support
 
-## 0.21.0, 2016-Mar-07
+## 0.21.0 - 2016-Mar-07
 
 - Add ability for users to delete their own accounts
 - Add infinite scrolling to channels list
@@ -1183,7 +1312,7 @@
 - Shows OAuth Callback URLs
 - Support 'user_id' in addition to 'id' and 'ID' for service identifier
 
-## 0.20.0, 2016-Feb-29
+## 0.20.0 - 2016-Feb-29
 
 - Ability to disable sending nickname and message via push notification
 - Add back 'delete room' button - closes #2351
@@ -1221,7 +1350,7 @@
 - Updated sweetalert
 - Uses the setting for validating rooms renaming - closes #2297
 
-## 0.19.0, 2016-Feb-22
+## 0.19.0 - 2016-Feb-22
 
 - Add alerts for highlight words
 - Add button to show offline users in a room
@@ -1260,7 +1389,7 @@
 - Split CA cert into array of strings.
 - Switched CAS configuration from Meteor.settings to RocketChat.settings.
 
-## 0.18.0, 2016-Feb-15
+## 0.18.0 - 2016-Feb-15
 
 - Add .jshintrc to project
 - Add button to test desktop notifications
@@ -1285,7 +1414,7 @@
 - Terminal output should be displayed in LTR always
 - Using REST to send pushes through gateway
 
-## 0.17.0, 2016-Feb-09
+## 0.17.0 - 2016-Feb-09
 
 - Add a button to allow deleting an uploaded file
 - Add an example of how to send logs from server to client
@@ -1320,7 +1449,7 @@
 - Show that server is running on logs
 - Use the RocketChat.Info.version on headers
 
-## 0.16.0, 2016-Feb-01
+## 0.16.0 - 2016-Feb-01
 
 - Add option for admin to require user to change password
 - Add option for admins to manually add new users
@@ -1335,7 +1464,7 @@
 - Show "Room not Found" correctly
 - Update konecty:multiple-instances-status to 1.0.5
 
-## 0.15.0, 2016-Jan-25
+## 0.15.0 - 2016-Jan-25
 
 - Ability to change email on account
 - Add "Default Domain" to LDAP config
@@ -1356,7 +1485,7 @@
 - Outgoing: Get the room from posted message to reply
 - Temporary fix for AM/PM timestamp breaking cog
 
-## 0.14.0, 2016-Jan-18
+## 0.14.0 - 2016-Jan-18
 
 - Add admin setting to Force SSL
 - Add connections status bar to login page
@@ -1405,7 +1534,7 @@
 - Using default values instead of integration data
 - Using processWebhookMessage on V1 APIs
 
-## 0.13.0, 2016-Jan-11
+## 0.13.0 - 2016-Jan-11
 
 - Add api `chat.messageExample`
 - Add apis 'integrations.create' and 'integrations.remove'
@@ -1447,11 +1576,11 @@
 - Update log.coffee
 - Use different ids for members info and user info tabbars
 
-## 0.12.1, 2016-Jan-05
+## 0.12.1 - 2016-Jan-05
 
 - Fix problem with middleware that tries to parse json body
 
-## 0.12.0, 2016-Jan-04
+## 0.12.0 - 2016-Jan-04
 
 - Add a setting to disable form-based login
 - Add request debug messages
@@ -1469,7 +1598,7 @@
 - Try to parse all request bodies as JSON
 - Upload build artifacts to GitHub and sign tgz for docker images
 
-## 0.11.0, 2015-Dec-28
+## 0.11.0 - 2015-Dec-28
 
 - Add "Jump to" and infinite scroll to message search results
 - Add infinite scroll to files list
@@ -1512,15 +1641,15 @@
 - Turn channel and triggerWords optional in triggers
 - Using branding image from main APP
 
-## 0.10.2, 2015-Dec-22
+## 0.10.2 - 2015-Dec-22
 
 - Fixes image preview bugs with filenames containing spaces
 
-## 0.10.1, 2015-Dec-21
+## 0.10.1 - 2015-Dec-21
 
 - Fix upload permissions introduced in raik:ufs 0.3.4
 
-## 0.10.0, 2015-Dec-21
+## 0.10.0 - 2015-Dec-21
 
 - Accept property *msg* as text in attachments
 - Add "Room has been deleted" entry
@@ -1620,7 +1749,7 @@
 - Use attachments to render preview of uploads and use relative paths
 - Using flow-router group routes
 
-## 0.9.0, 2015-Dec-14
+## 0.9.0 - 2015-Dec-14
 
 - Add a new setting type "action" to call server methods
 - Add lib clipboard.js
@@ -1662,7 +1791,7 @@
 - Prompt users to install extentions to enable screen sharing
 - Shos if message is from bot and never render compact message version
 
-## 0.8.0, 2015-Dec-8
+## 0.8.0 - 2015-Dec-8
 
 - Add "Meiryo UI" to font-family
 - Add option to disable "Forgot Password" link on login page
@@ -1693,6 +1822,6 @@
 - Translate section of settings
 - Update the flex-nav hidden element for RTL
 
-## 0.1.0, 2015-May-19
+## 0.1.0 - 2015-May-19
 
 - Initial public launch

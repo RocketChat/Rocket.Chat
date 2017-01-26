@@ -49,12 +49,13 @@ Template.emojiEdit.onCreated(function() {
 		this.emoji = this.data.emoji;
 	} else {
 		this.emoji = undefined;
-		RocketChat.TabBar.showGroup('adminEmoji');
 	}
+
+	this.tabBar = Template.currentData().tabBar;
 
 	this.cancel = (form, name) => {
 		form.reset();
-		RocketChat.TabBar.closeFlex();
+		this.tabBar.close();
 		if (this.emoji) {
 			this.data.back(name);
 		}

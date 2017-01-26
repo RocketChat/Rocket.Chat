@@ -11,11 +11,11 @@
 				{{#with user}}
 					<div class="info">
 						<h3 title="{{username}}"><i class="status-{{status}}"></i> {{username}}</h3>
-						<p>{{name}}</p>
+						<p class="secondary-font-color">{{name}}</p>
 
 						<ul>
 							{{#if utc}}<li><i class="icon-clock"></i>{{userTime}} (UTC {{utc}})</li>{{/if}}
-							{{#each emails}} <li><i class="icon-mail"></i> {{address}}{{#if verified}}&nbsp;<i class="icon-ok"></i>{{/if}}</li> {{/each}}
+							{{#each visitorEmails}} <li><i class="icon-mail"></i> {{address}}{{#if verified}}&nbsp;<i class="icon-ok success-color"></i>{{/if}}</li> {{/each}}
 							{{#each phone}} <li><i class="icon-phone"></i> {{phoneNumber}}</li> {{/each}}
 							{{#if lastLogin}} <li><i class="icon-calendar"></i> {{_ "Created_at"}}: {{createdAt}}</li> {{/if}}
 							{{#if lastLogin}} <li><i class="icon-calendar"></i> {{_ "Last_login"}}: {{lastLogin}}</li> {{/if}}

@@ -1,6 +1,14 @@
 /* globals UserPresence, fireGlobalEvent, isRtl */
 
 import moment from 'moment';
+import toastr from 'toastr';
+
+if (window.DISABLE_ANIMATION) {
+	toastr.options.timeOut = 1;
+	toastr.options.showDuration = 0;
+	toastr.options.hideDuration = 0;
+	toastr.options.extendedTimeOut = 0;
+}
 
 Meteor.startup(function() {
 	TimeSync.loggingEnabled = false;
@@ -64,7 +72,7 @@ Meteor.startup(function() {
 	};
 
 	Meteor.subscribe('userData', function() {
-		const userLanguage = Meteor.user() ? Meteor.user().language : window.defaultUserLanguage();
+		const userLanguage = Meteor.user() && Meteor.user().language ? Meteor.user().language : window.defaultUserLanguage();
 
 		if (localStorage.getItem('userLanguage') !== userLanguage) {
 			localStorage.setItem('userLanguage', userLanguage);

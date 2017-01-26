@@ -27,6 +27,8 @@ Package.onUse(function(api) {
 	api.use('rocketchat:authorization');
 	api.use('rocketchat:logger');
 	api.use('rocketchat:api');
+	api.use('rocketchat:theme');
+	api.use('rocketchat:streamer');
 	api.use('konecty:user-presence');
 	api.use('rocketchat:ui');
 	api.use('kadira:flow-router', 'client');
@@ -50,9 +52,7 @@ Package.onUse(function(api) {
 	api.addFiles('client/ui.js', 'client');
 	api.addFiles('client/route.js', 'client');
 
-	// add stylesheets to theme compiler
-	api.addAssets('client/stylesheets/livechat.less', 'server');
-	api.addFiles('client/stylesheets/load.js', 'server');
+	api.addFiles('client/stylesheets/livechat.less', 'client');
 
 	// collections
 	api.addFiles('client/collections/AgentUsers.js', 'client');
@@ -91,6 +91,8 @@ Package.onUse(function(api) {
 	api.addFiles('client/views/app/livechatQueue.js', 'client');
 	api.addFiles('client/views/app/livechatTriggers.html', 'client');
 	api.addFiles('client/views/app/livechatTriggers.js', 'client');
+	api.addFiles('client/views/app/livechatTriggersForm.html', 'client');
+	api.addFiles('client/views/app/livechatTriggersForm.js', 'client');
 	api.addFiles('client/views/app/livechatUsers.html', 'client');
 	api.addFiles('client/views/app/livechatUsers.js', 'client');
 	api.addFiles('client/views/app/livechatOfficeHours.html', 'client');
@@ -132,6 +134,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/methods/closeByVisitor.js', 'server');
 	api.addFiles('server/methods/closeRoom.js', 'server');
 	api.addFiles('server/methods/getCustomFields.js', 'server');
+	api.addFiles('server/methods/getAgentData.js', 'server');
 	api.addFiles('server/methods/getInitialData.js', 'server');
 	api.addFiles('server/methods/loginByToken.js', 'server');
 	api.addFiles('server/methods/pageVisited.js', 'server');
@@ -190,6 +193,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/publications/livechatManagers.js', 'server');
 	api.addFiles('server/publications/livechatRooms.js', 'server');
 	api.addFiles('server/publications/livechatQueue.js', 'server');
+	api.addFiles('server/publications/livechatTriggers.js', 'server');
 	api.addFiles('server/publications/visitorHistory.js', 'server');
 	api.addFiles('server/publications/visitorInfo.js', 'server');
 	api.addFiles('server/publications/visitorPageVisited.js', 'server');

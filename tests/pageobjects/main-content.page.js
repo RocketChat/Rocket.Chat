@@ -14,11 +14,16 @@ class MainContent extends Page {
 	get emojiBtn() { return browser.element('.inner-left-toolbar .emoji-picker-icon'); }
 	get channelTitle() { return browser.element('.room-title'); }
 	get popupFileConfirmBtn() { return browser.element('.sa-confirm-button-container .confirm'); }
+	get popupFileName() { return browser.element('#file-name'); }
+	get popupFileDescription() { return browser.element('#file-description'); }
+	get popupFileConfirmBtn() { return browser.element('.sa-confirm-button-container .confirm'); }
 	get popupFilePreview() { return browser.element('.upload-preview-file'); }
 	get popupFileTitle() { return browser.element('.upload-preview-title'); }
 	get popupFileCancelBtn() { return browser.element('.sa-button-container .cancel'); }
 	get lastMessageUser() { return browser.element('.message:last-child .user-card-message:nth-of-type(2)'); }
 	get lastMessage() { return browser.element('.message:last-child .body'); }
+	get lastMessageImg() { return browser.element('.message:last-child .body .inline-image'); }
+	get lastMessageDesc() { return browser.element('.message:last-child .body .attachment-description p'); }
 	get lastMessageRoleAdded() { return browser.element('.message:last-child.subscription-role-added .body'); }
 	get beforeLastMessage() { return browser.element('.message:nth-last-child(2) .body'); }
 	get lastMessageUserTag() { return browser.element('.message:last-child .role-tag'); }
@@ -58,6 +63,7 @@ class MainContent extends Page {
 	get messagePopUpTitle() { return browser.element('.message-popup-title'); }
 	get messagePopUpItems() { return browser.element('.message-popup-items'); }
 	get messagePopUpFirstItem() { return browser.element('.popup-item.selected'); }
+	get mentionAllPopUp() { return browser.element('.popup-item[data-id="all"]'); }
 
 	sendMessage(text) {
 		this.setTextToInput(text);
@@ -81,20 +87,18 @@ class MainContent extends Page {
 	fileUpload(filePath) {
 		this.sendMessage('Prepare for the file');
 		this.fileAttachment.chooseFile(filePath);
-		browser.pause(1000);
 	}
 
 	openMessageActionMenu() {
 		this.lastMessage.moveToObject();
+		this.messageOptionsBtn.waitForVisible(5000);
 		this.messageOptionsBtn.click();
 		this.messageActionMenu.waitForVisible(5000);
 	}
 
 	setLanguageToEnglish() {
 		this.settingLanguageSelect.click();
-		browser.pause(500);
 		this.settingLanguageEnglish.click();
-		browser.pause(300);
 		this.settingSaveBtn.click();
 	}
 
@@ -103,53 +107,41 @@ class MainContent extends Page {
 		switch (action) {
 			case 'edit':
 				this.messageEdit.waitForVisible(5000);
-				browser.pause(1000);
 				this.messageEdit.click();
-				browser.pause(1000);
 				this.messageInput.addValue('this message was edited');
 				break;
 			case 'reply':
 				this.messageReply.waitForVisible(5000);
-				browser.pause(1000);
 				this.messageReply.click();
-				browser.pause(1000);
 				this.messageInput.addValue(' this is a reply message');
 				break;
 			case 'delete':
 				this.messageDelete.waitForVisible(5000);
-				browser.pause(1000);
 				this.messageDelete.click();
 				break;
 			case 'permalink':
 				this.messagePermalink.waitForVisible(5000);
-				browser.pause(1000);
 				this.messagePermalink.click();
 				break;
 			case 'copy':
 				this.messageCopy.waitForVisible(5000);
-				browser.pause(1000);
 				this.messageCopy.click();
 				break;
 			case 'quote':
 				this.messageQuote.waitForVisible(5000);
-				browser.pause(1000);
 				this.messageQuote.click();
-				browser.pause(1000);
 				this.messageInput.addValue(' this is a quote message');
 				break;
 			case 'star':
 				this.messageStar.waitForVisible(5000);
-				browser.pause(1000);
 				this.messageStar.click();
 				break;
 			case 'unread':
 				this.messageUnread.waitForVisible(5000);
-				browser.pause(1000);
 				this.messageUnread.click();
 				break;
 			case 'reaction':
 				this.messageReply.waitForVisible(5000);
-				browser.pause(1000);
 				this.messageReply.click();
 				this.emojiPickerMainScreen.waitForVisible(5000);
 				this.emojiPickerPeopleIcon.click();
@@ -158,7 +150,6 @@ class MainContent extends Page {
 				break;
 			case 'close':
 				this.messageClose.waitForVisible(5000);
-				browser.pause(1000);
 				this.messageClose.click();
 				break;
 		}

@@ -1,24 +1,24 @@
 <template name="listDirectMessagesFlex">
-	<header>
+	<header class="primary-background-color">
 		<div>
 			<h4>{{_ "Direct_Messages"}}</h4>
 		</div>
 	</header>
-	<div class="content">
+	<div class="content primary-background-color">
 		<div class="wrapper">
 			<div class="flex-control">
 				<div class="search">
 					<form class="search-form" role="form">
 						<div class="input-line search">
-							<input type="text" id="channel-search" class="search" placeholder="{{_ "Search_Direct_Messages"}}" autocomplete="off" />
-							<i class="icon-right-open-small"></i>
+							<input type="text" id="channel-search" class="search" placeholder="{{_ "Search"}}" autocomplete="off" />
+							<i class="icon-search secondary-font-color"></i>
 						</div>
 						<div class="input-line search">
 							<select class="c-select" id="sort">
 								<option value="name" selected="{{sortSelected 'name'}}">{{_ "Name"}}</option>
 								<option value="ls" selected="{{sortSelected 'ls'}}">{{_ "Last_seen"}}</option>
 							</select>
-							<i class="icon-sort-alt-up"></i>
+							<i class="icon-sort-alt-up secondary-font-color"></i>
 						</div>
 					</form>
 				</div>

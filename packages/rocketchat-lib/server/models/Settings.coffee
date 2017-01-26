@@ -5,13 +5,6 @@ class ModelSettings extends RocketChat.models._Base
 		@tryEnsureIndex { 'blocked': 1 }, { sparse: 1 }
 		@tryEnsureIndex { 'hidden': 1 }, { sparse: 1 }
 
-	# FIND ONE
-	findOneById: (_id, options) ->
-		query =
-			_id: _id
-
-		return @findOne query, options
-
 	# FIND
 	findById: (_id) ->
 		query =
@@ -148,4 +141,4 @@ class ModelSettings extends RocketChat.models._Base
 
 		return @remove query
 
-RocketChat.models.Settings = new ModelSettings('settings')
+RocketChat.models.Settings = new ModelSettings('settings', true)

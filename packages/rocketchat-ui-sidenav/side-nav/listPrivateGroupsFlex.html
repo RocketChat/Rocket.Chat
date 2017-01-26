@@ -1,10 +1,10 @@
 <template name="listPrivateGroupsFlex">
-	<header>
+	<header class="primary-background-color">
 		<div>
 			<h4>{{_ "Private_Groups"}}</h4>
 		</div>
 	</header>
-	<div class="content">
+	<div class="content primary-background-color">
 		<div class="wrapper">
 			<div class="flex-control">
 				<div class="search">
@@ -14,11 +14,11 @@
 								<option value="name" selected="{{sortSelected 'name'}}">{{_ "Name"}}</option>
 								<option value="ls" selected="{{sortSelected 'ls'}}">{{_ "Last_seen"}}</option>
 							</select>
-							<i class="icon-sort-alt-up"></i>
+							<i class="icon-sort-alt-up secondary-font-color"></i>
 						</div>
 						<div class="input-line search">
 							<input type="text" id="channel-search" class="search" placeholder="{{_ "Search_Private_Groups"}}" autocomplete="off" />
-							<i class="icon-right-open-small"></i>
+							<i class="icon-right-open-small secondary-font-color"></i>
 						</div>
 					</form>
 				</div>
@@ -46,7 +46,7 @@
 			{{/if}}
 		</div>
 	</div>
-	<footer>
+	<footer class="primary-background-color">
 		<div>
 			<button class="button primary create">{{_ "Create_new"}}</button>
 		</div>

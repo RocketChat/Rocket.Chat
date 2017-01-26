@@ -37,10 +37,25 @@ Meteor.startup ->
 	if not RocketChat.settings.get 'Message_ShowEditedStatus'
 		fields = { 'editedAt': 0 }
 
-	RocketChat.models.Messages.on 'change', (type, args...) ->
-		records = RocketChat.models.Messages.getChangedRecords type, args[0], fields
+	publishMessage = (type, record) ->
+		if record._hidden isnt true and not record.imported?
+			msgStream.emitWithoutBroadcast '__my_messages__', record, {}
+			msgStream.emitWithoutBroadcast record.rid, record
 
-		for record in records
-			if record._hidden isnt true and not record.imported?
-				msgStream.emit '__my_messages__', record, {}
-				msgStream.emit record.rid, record
+	query =
+		collection: RocketChat.models.Messages.collectionName
+
+	RocketChat.models.Messages._db.on 'change', ({action, id, data, oplog}) =>
+		switch action
+			when 'insert'
+				data._id = id;
+				publishMessage 'inserted', data
+				break;
+
+			when 'update:record'
+				publishMessage 'updated', data;
+				break;
+
+			when 'update:diff'
+				publishMessage 'updated', RocketChat.models.Messages.findOne({_id: id})
+				break;

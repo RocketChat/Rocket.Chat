@@ -18,7 +18,7 @@ assets =
 			width: undefined
 			height: undefined
 	'favicon_ico':
-		label: 'favicon.ico'
+		label: 'favicon (ico)'
 		defaultUrl: 'favicon.ico'
 		constraints:
 			type: 'image'
@@ -26,53 +26,101 @@ assets =
 			width: undefined
 			height: undefined
 	'favicon':
-		label: 'favicon.svg'
+		label: 'favicon (svg)'
 		defaultUrl: 'images/logo/icon.svg'
 		constraints:
 			type: 'image'
 			extensions: ['svg']
 			width: undefined
 			height: undefined
-	'favicon_64':
-		label: 'favicon.png (64x64)'
-		defaultUrl: 'images/logo/favicon-64x64.png'
+	'favicon_16':
+		label: 'favicon 16x16 (png)'
+		defaultUrl: 'images/logo/favicon-16x16.png'
 		constraints:
 			type: 'image'
 			extensions: ['png']
-			width: 64
-			height: 64
-	'favicon_96':
-		label: 'favicon.png (96x96)'
-		defaultUrl: 'images/logo/favicon-96x96.png'
+			width: 16
+			height: 16
+	'favicon_32':
+		label: 'favicon 32x32 (png)'
+		defaultUrl: 'images/logo/favicon-32x32.png'
 		constraints:
 			type: 'image'
 			extensions: ['png']
-			width: 96
-			height: 96
-	'favicon_128':
-		label: 'favicon.png (128x128)'
-		defaultUrl: 'images/logo/favicon-128x128.png'
-		constraints:
-			type: 'image'
-			extensions: ['png']
-			width: 128
-			height: 128
+			width: 32
+			height: 32
 	'favicon_192':
-		label: 'favicon.png (192x192)'
+		label: 'android-chrome 192x192 (png)'
 		defaultUrl: 'images/logo/android-chrome-192x192.png'
 		constraints:
 			type: 'image'
 			extensions: ['png']
 			width: 192
 			height: 192
-	'favicon_256':
-		label: 'favicon.png (256x256)'
-		defaultUrl: 'images/logo/favicon-256x256.png'
+	'favicon_512':
+		label: 'android-chrome 512x512 (png)'
+		defaultUrl: 'images/logo/512x512.png'
 		constraints:
 			type: 'image'
 			extensions: ['png']
-			width: 256
-			height: 256
+			width: 512
+			height: 512
+	'touchicon_180':
+		label: 'apple-touch-icon 180x180 (png)'
+		defaultUrl: 'images/logo/apple-touch-icon.png'
+		constraints:
+			type: 'image'
+			extensions: ['png']
+			width: 180
+			height: 180
+	'touchicon_180_pre':
+		label: 'apple-touch-icon-precomposed 180x180 (png)'
+		defaultUrl: 'images/logo/apple-touch-icon-precomposed.png'
+		constraints:
+			type: 'image'
+			extensions: ['png']
+			width: 180
+			height: 180
+	'tile_144':
+		label: 'mstile 144x144 (png)'
+		defaultUrl: 'images/logo/mstile-144x144.png'
+		constraints:
+			type: 'image'
+			extensions: ['png']
+			width: 144
+			height: 144
+	'tile_150':
+		label: 'mstile 150x150 (png)'
+		defaultUrl: 'images/logo/mstile-150x150.png'
+		constraints:
+			type: 'image'
+			extensions: ['png']
+			width: 150
+			height: 150
+	'tile_310_square':
+		label: 'mstile 310x310 (png)'
+		defaultUrl: 'images/logo/mstile-310x310.png'
+		constraints:
+			type: 'image'
+			extensions: ['png']
+			width: 310
+			height: 310
+	'tile_310_wide':
+		label: 'mstile 310x150 (png)'
+		defaultUrl: 'images/logo/mstile-310x150.png'
+		constraints:
+			type: 'image'
+			extensions: ['png']
+			width: 310
+			height: 150
+	'safari_pinned':
+		label: 'safari pinneed tab (svg)'
+		defaultUrl: 'images/logo/safari-pinned-tab.svg'
+		constraints:
+			type: 'image'
+			extensions: ['svg']
+			width: undefined
+			height: undefined
 
 
 RocketChat.Assets = new class
@@ -168,6 +216,7 @@ RocketChat.Assets = new class
 
 
 RocketChat.settings.addGroup 'Assets'
+RocketChat.settings.add 'Assets_SvgFavicon_Enable', true, { type: 'boolean', group: 'Assets', i18nLabel: 'Enable_Svg_Favicon' }
 for key, value of assets
 	do (key, value) ->
 		RocketChat.settings.add "Assets_#{key}", {defaultUrl: value.defaultUrl}, { type: 'asset', group: 'Assets', fileConstraints: value.constraints, i18nLabel: value.label, asset: key, public: true }

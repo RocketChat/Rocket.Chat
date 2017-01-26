@@ -1,7 +1,8 @@
 @ChatMessage = new Meteor.Collection null
-@ChatRoom = new Meteor.Collection 'rocketchat_room'
+@CachedChatRoom = new RocketChat.CachedCollection({ name: 'rooms' })
+@ChatRoom = CachedChatRoom.collection
 
-@CachedChatSubscription = new RocketChat.CachedCollection({ name: 'subscriptions', initOnLogin: true })
+@CachedChatSubscription = new RocketChat.CachedCollection({ name: 'subscriptions' })
 @ChatSubscription = CachedChatSubscription.collection
 @UserRoles = new Mongo.Collection null
 @RoomRoles = new Mongo.Collection null

@@ -64,7 +64,7 @@ Meteor.methods({
 
 			let _id = RocketChat.models.EmojiCustom.create(createEmoji);
 
-			RocketChat.Notifications.notifyAll('updateEmojiCustom', {emojiData: createEmoji});
+			RocketChat.Notifications.notifyLogged('updateEmojiCustom', {emojiData: createEmoji});
 
 			return _id;
 		} else {
@@ -98,7 +98,7 @@ Meteor.methods({
 				RocketChat.models.EmojiCustom.setAliases(emojiData._id, []);
 			}
 
-			RocketChat.Notifications.notifyAll('updateEmojiCustom', {emojiData});
+			RocketChat.Notifications.notifyLogged('updateEmojiCustom', {emojiData});
 
 			return true;
 		}

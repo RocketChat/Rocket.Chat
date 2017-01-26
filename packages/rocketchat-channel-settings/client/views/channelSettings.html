@@ -11,63 +11,68 @@
 
 							{{#if $value.canView room}}
 								{{#let value=(valueOf room $key)}}
-									<li>
+									<li class="{{$value.type}}">
 										<label>{{_ $value.label}}</label>
-										<div>
+										<div class="setting-block">
 											{{#if $eq $value.type 'text'}}
 												{{#if editing $key}}
-													<input type="text" name="{{$key}}" value="{{value}}" class="editing" />
+													{{#if $value.canEdit room}}
+														<input type="text" name="{{$key}}" value="{{value}}" class="content-background-color editing" />
+													{{/if}}
 												{{else}}
-													<span class='current-setting'>{{value}}</span>
+													<span class='current-setting' data-edit="{{#if $value.canEdit room}}{{$key}}{{else}}false{{/if}}">{{value}}</span>
 												{{/if}}
 											{{/if}}
 
 											{{#if $eq $value.type 'markdown'}}
 												{{#if editing $key}}
-													<input type="text" name="{{$key}}" value="{{unscape value}}" class="editing" />
+													{{#if $value.canEdit room}}
+														<input type="text" name="{{$key}}" value="{{unscape value}}" class="content-background-color editing" />
+													{{/if}}
 												{{else}}
-													<span class='current-setting'>{{{RocketChatMarkdown value}}}</span>
+													<span class='current-setting' data-edit="{{#if $value.canEdit room}}{{$key}}{{else}}false{{/if}}">{{{RocketChatMarkdown value}}}</span>
 												{{/if}}
 											{{/if}}
 
 											{{#if $eq $value.type 'select'}}
-												{{#if editing $key}}
-													{{#each toArray $value.options}}
-														<label>
-															<input type="radio" name="{{../$key}}" value="{{$key}}" checked="{{$eq value $key}}" class="editing" />
-															{{_ $value}}
-														</label>
-													{{/each}}
-												{{else}}
-													<span class='current-setting'>{{_ (valueOf $value.options value)}}</span>
-												{{/if}}
+												{{#each toArray $value.options}}
+													<div class="input radio">
+														<input type="radio" id="{{$key}}" name="{{../$key}}" value="{{$key}}" checked="{{$eq value $key}}" disabled="{{isDisabled $key room}}" />
+														<label for="{{$key}}">{{_ $value}}</label>
+													</div>
+												{{/each}}
 											{{/if}}
 
 											{{#if $eq $value.type 'boolean'}}
-												{{#if editing $key}}
-													<label>
-														<input type="radio" name="{{$key}}" value="true" checked="{{$eq value true}}" class="editing" />
-														{{_ 'True'}}
-													</label>
-													<label>
-														<input type="radio" name="{{$key}}" value="false" checked="{{$neq value true}}" class="editing" />
-														{{_ 'False'}}
-													</label>
-												{{else}}
-													{{#if value}}
-														<span class='current-setting'>{{_ 'True'}}</span>
-													{{else}}
-														<span class='current-setting'>{{_ 'False'}}</span>
+												<div class="input checkbox toggle">
+													<input type="checkbox" id="{{$key}}" name="{{$key}}" value="{{value}}" checked="{{$eq value true}}" disabled="{{isDisabled $key room}}" />
+													<label for="{{$key}}"></label>
+												</div>
+												{{#if $value.canEdit room}}
+													{{#if $value.processing.get}}
+														{{> loading}}
 													{{/if}}
 												{{/if}}
 											{{/if}}
 
-											{{#if editing $key}}
-												<button type="button" class="button cancel">{{_ "Cancel"}}</button>
-												<button type="button" class="button primary save">{{_ "Save"}}</button>
-											{{else}}
-												<span>{{#if $value.canEdit room}} <i class="icon-pencil" data-edit="{{$key}}"></i>{{/if}}</span>
-											{{/if}}
+											{{#unless $value.isToggle}}
+												{{#if $value.canEdit room}}
+													{{#if editing $key}}
+														<div class="buttons secondary-background-color">
+															<button type="button" class="button cancel">
+																<i class="icon-cancel"></i>
+															</button>
+															<button type="button" class="button primary save">
+																<i class="icon-ok success-color"></i>
+															</button>
+														</div>
+													{{else}}
+														<button type="button" class="button edit">
+															<i class="icon-pencil" data-edit="{{$key}}"></i>
+														</button>
+													{{/if}}
+												{{/if}}
+											{{/unless}}
 										</div>
 									</li>
 								{{/let}}
@@ -81,9 +86,9 @@
 				</ul>
 			</form>
 			{{#if canDeleteRoom}}
-			<nav>
-				<button class='button danger delete'><span><i class='icon-trash'></i> {{_ "Delete"}}</span></button>
-			</nav>
+				<nav>
+					<button class="button danger delete" title="{{_ 'Delete'}}"><i class="icon-trash"></i></button>
+				</nav>
 			{{/if}}
 		</div>
 	</div>

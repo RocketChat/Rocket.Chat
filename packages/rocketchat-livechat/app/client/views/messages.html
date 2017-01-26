@@ -1,4 +1,22 @@
 <template name="messages">
+	{{#with agentData}}
+	<div class="header">
+		<div class="picture">
+			<img src="{{avatar}}">
+		</div>
+		<div class="info">
+			<ul>
+				<li><h2>{{name}}</h2></li>
+				{{#if email}}
+					<li>{{email}}</li>
+				{{/if}}
+				{{#if phone}}
+					<li>{{phone}}</li>
+				{{/if}}
+			</ul>
+		</div>
+	</div>
+	{{/with}}
 	<div class="messages">
 		<div class="wrapper">
 			<ul>
@@ -7,11 +25,11 @@
 				{{/each}}
 			</ul>
 		</div>
-		<div class="new-message not">
+		<div class="new-message background-primary-action-color color-primary-action-contrast not">
 			<span>{{_ "New_messages"}}</span>
 		</div>
 
-		<div class="error">
+		<div class="error error-color error-background">
 			<span></span>
 		</div>
 	</div>
@@ -32,7 +50,28 @@
 			</div>
 		{{/if}}
 
-		{{> options show=showOptions}}
-		<button class="toggle-options">{{optionsLink}}</button>
+		{{#if usersTyping.users}}
+			{{#with usersTyping}}
+				<div class="typing">
+					<strong>{{users}}</strong>
+					{{#if multi}}
+						{{#if selfTyping}}
+							{{_ "are_also_typing"}}
+						{{else}}
+							{{_ "are_typing"}}
+						{{/if}}
+					{{else}}
+						{{#if selfTyping}}
+							{{_ "is_also_typing" context="male"}}
+						{{else}}
+							{{_ "is_typing" context="male"}}
+						{{/if}}
+					{{/if}}
+				</div>
+			{{/with}}
+		{{else}}
+			{{> options show=showOptions}}
+			<button class="toggle-options secondary-font-color">{{optionsLink}}</button>
+		{{/if}}
 	</div>
 </template>

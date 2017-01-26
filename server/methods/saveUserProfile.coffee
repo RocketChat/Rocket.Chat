@@ -1,5 +1,5 @@
 Meteor.methods
-	saveUserProfile: (settings) ->
+	saveUserProfile: (settings, customFields) ->
 
 		check settings, Object
 
@@ -23,7 +23,7 @@ Meteor.methods
 				return false
 			return true
 
-		if settings.newPassword?
+		if settings.newPassword? and RocketChat.settings.get('Accounts_AllowPasswordChange') is true
 			unless checkPassword user, settings.currentPassword
 				throw new Meteor.Error('error-invalid-password', 'Invalid password', { method: 'saveUserProfile' })
 			Accounts.setPassword Meteor.userId(), settings.newPassword, { logout: false }
@@ -42,5 +42,7 @@ Meteor.methods
 		profile = {}
 
 		RocketChat.models.Users.setProfile Meteor.userId(), profile
+
+		RocketChat.saveCustomFields Meteor.userId(), customFields
 
 		return true

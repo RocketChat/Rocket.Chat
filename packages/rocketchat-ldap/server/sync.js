@@ -145,7 +145,7 @@ syncUserData = function syncUserData(user, ldapUser) {
 			ws.on('end', Meteor.bindEnvironment(function() {
 				Meteor.setTimeout(function() {
 					RocketChat.models.Users.setAvatarOrigin(user._id, 'ldap');
-					RocketChat.Notifications.notifyAll('updateAvatar', {username: user.username});
+					RocketChat.Notifications.notifyLogged('updateAvatar', {username: user.username});
 				}, 500);
 			}));
 			rs.pipe(ws);
@@ -221,6 +221,8 @@ sync = function sync() {
 
 				if (!user) {
 					addLdapUser(ldapUser, username);
+				} else if (user.ldap !== true && RocketChat.settings.get('LDAP_Merge_Existing_Users') === true) {
+					syncUserData(user, ldapUser);
 				}
 			});
 		}

@@ -10,7 +10,6 @@ RocketChat.roomTypes.add 'c', 10,
 		path: '/channel/:name'
 		action: (params, queryParams) ->
 			openRoom 'c', params.name
-			RocketChat.TabBar.showGroup 'channel'
 
 	findRoom: (identifier) ->
 		query =
@@ -35,17 +34,21 @@ RocketChat.roomTypes.add 'd', 20,
 		path: '/direct/:username'
 		action: (params, queryParams) ->
 			openRoom 'd', params.username
-			RocketChat.TabBar.showGroup 'directmessage'
 		link: (sub) ->
 			return { username: sub.name }
+
 	findRoom: (identifier, user) ->
 		query =
 			t: 'd'
-			usernames:
-				$all: [identifier, user.username]
-		return ChatRoom.findOne(query)
+			name: identifier
+
+		subscription = ChatSubscription.findOne(query)
+		if subscription?.rid
+			return ChatRoom.findOne(subscription.rid)
+
 	roomName: (roomData) ->
 		return ChatSubscription.findOne({ rid: roomData._id }, { fields: { name: 1 } })?.name
+
 	condition: ->
 		return RocketChat.authz.hasAtLeastOnePermission ['view-d-room', 'view-joined-room']
 	getUserStatus: (roomId) ->
@@ -62,7 +65,6 @@ RocketChat.roomTypes.add 'p', 30,
 		path: '/group/:name'
 		action: (params, queryParams) ->
 			openRoom 'p', params.name
-			RocketChat.TabBar.showGroup 'privategroup'
 	findRoom: (identifier) ->
 		query =
 			t: 'p'
