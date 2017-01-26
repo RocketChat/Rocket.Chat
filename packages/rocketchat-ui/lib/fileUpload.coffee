@@ -99,20 +99,21 @@ readAsArrayBuffer = (file, callback) ->
 
 				upload = fileUploadHandler record, file.file
 
+				uploading = Session.get('uploading') or []
+				uploading.push
+					id: upload.id
+					name: upload.getFileName()
+					percentage: 0
+
+				Session.set 'uploading', uploading
+
 				upload.onProgress = (progress) ->
-					uploading = Session.get('uploading') or []
+					uploading = Session.get('uploading')
 
 					item = _.findWhere(uploading, {id: upload.id})
-
-					if not item?
-						item =
-							id: upload.id
-							name: upload.getFileName()
-
-						uploading.push item
-
-					item.percentage = Math.round(progress * 100) or 0
-					Session.set 'uploading', uploading
+					if item?
+						item.percentage = Math.round(progress * 100) or 0
+						Session.set 'uploading', uploading
 
 				upload.start()
 

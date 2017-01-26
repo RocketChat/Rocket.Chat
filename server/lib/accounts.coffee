@@ -81,6 +81,10 @@ Accounts.insertUserDoc = _.wrap Accounts.insertUserDoc, (insertUserDoc, options,
 
 	_id = insertUserDoc.call(Accounts, options, user)
 
+	# Get user from db again to get all fields added by middlewares like
+	# validateNewUser and others.
+	user = Meteor.users.findOne({_id: _id});
+
 	# Add user to default channels
 	if user.username? and options.joinDefaultChannels isnt false and user.joinDefaultChannels isnt false
 		Meteor.runAsUser _id, ->

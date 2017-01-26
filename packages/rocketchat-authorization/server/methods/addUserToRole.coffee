@@ -17,6 +17,6 @@ Meteor.methods
 		add = RocketChat.models.Roles.addUserRoles user._id, roleName, scope
 
 		if RocketChat.settings.get('UI_DisplayRoles')
-			RocketChat.Notifications.notifyAll('roles-change', { type: 'added', _id: roleName, u: { _id: user._id, username: username }, scope: scope });
+			RocketChat.Notifications.notifyLogged('roles-change', { type: 'added', _id: roleName, u: { _id: user._id, username: username }, scope: scope });
 
 		return add

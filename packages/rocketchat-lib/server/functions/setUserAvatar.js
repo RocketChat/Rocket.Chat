@@ -42,7 +42,7 @@ RocketChat.setUserAvatar = function(user, dataURI, contentType, service) {
 	ws.on('end', Meteor.bindEnvironment(function() {
 		Meteor.setTimeout(function() {
 			RocketChat.models.Users.setAvatarOrigin(user._id, service);
-			RocketChat.Notifications.notifyAll('updateAvatar', {username: user.username});
+			RocketChat.Notifications.notifyLogged('updateAvatar', {username: user.username});
 		}, 500);
 	}));
 	rs.pipe(ws);
