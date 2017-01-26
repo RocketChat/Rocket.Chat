@@ -19,12 +19,20 @@
 					body: _.stripTags(message.msg)
 					tag: notification.payload._id,
 					silent: true
+					canReply: true
 
 				notificationDuration = (notification.duration - 0) or (Meteor.user()?.settings?.preferences?.desktopNotificationDuration - 0) or RocketChat.settings.get('Desktop_Notifications_Duration')
 				if notificationDuration > 0
 					setTimeout ( -> n.close() ), notificationDuration * 1000
 
 				if notification.payload?.rid?
+					if n.addEventListener?
+						n.addEventListener 'reply', ({response}) ->
+							Meteor.call 'sendMessage',
+								_id: Random.id()
+								rid: notification.payload.rid
+								msg: response
+
 					n.onclick = ->
 						this.close()
 						window.focus()

@@ -1,6 +1,6 @@
 Meteor.startup(function() {
 	RocketChat.TabBar.addButton({
-		groups: ['channel', 'privategroup', 'directmessage'],
+		groups: ['channel', 'group', 'direct'],
 		id: 'push-notifications',
 		i18nTitle: 'Notifications',
 		icon: 'icon-bell-alt',

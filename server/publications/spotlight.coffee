@@ -23,4 +23,4 @@ DDPRateLimiter.addRule
 	name: 'spotlight'
 	userId: (userId) ->
 		return true
-, 10, 10000
+, 100, 100000

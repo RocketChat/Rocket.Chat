@@ -132,6 +132,7 @@ ExecuteTriggerUrl = (url, trigger, message, room, tries=0) ->
 			return
 
 	data =
+		message_id: message._id
 		token: trigger.token
 		channel_id: room._id
 		channel_name: room.name
