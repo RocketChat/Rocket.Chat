@@ -25,7 +25,7 @@ setFieldValue = (settingId, value, type, editor) ->
 
 Template.admin.onCreated ->
 	if not RocketChat.settings.cachedCollectionPrivate?
-		RocketChat.settings.cachedCollectionPrivate = new RocketChat.CachedCollection({ name: 'private-settings', eventType: 'onAll' })
+		RocketChat.settings.cachedCollectionPrivate = new RocketChat.CachedCollection({ name: 'private-settings', eventType: 'onLogged' })
 		RocketChat.settings.collectionPrivate = RocketChat.settings.cachedCollectionPrivate.collection
 		RocketChat.settings.cachedCollectionPrivate.init()
 
@@ -159,13 +159,6 @@ Template.admin.helpers
 			return section
 
 		return t(section)
-
-	flexOpened: ->
-		return 'opened' if RocketChat.TabBar.isFlexOpen()
-
-	arrowPosition: ->
-		console.log 'room.helpers arrowPosition' if window.rocketDebug
-		return 'left' unless RocketChat.TabBar.isFlexOpen()
 
 	label: ->
 		label = @i18nLabel or @_id
@@ -479,9 +472,7 @@ Template.admin.onRendered ->
 		SideNav.openFlex()
 
 	Tracker.autorun ->
-		FlowRouter.watchPathChange()
-
-		hasColor = TempSettings.findOne { group: FlowRouter.getParam('group'), type: 'color' }
+		hasColor = TempSettings.findOne { group: FlowRouter.getParam('group'), type: 'color' }, { fields: { _id: 1 } }
 		if hasColor
 			Meteor.setTimeout ->
 				$('.colorpicker-input').each (index, el) ->

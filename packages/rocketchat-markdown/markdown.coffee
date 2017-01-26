@@ -18,7 +18,7 @@ class Markdown
 		# Support ![alt text](http://image url)
 		msg = msg.replace new RegExp("!\\[([^\\]]+)\\]\\(((?:#{schemes}):\\/\\/[^\\)]+)\\)", 'gm'), (match, title, url) ->
 			target = if url.indexOf(Meteor.absoluteUrl()) is 0 then '' else '_blank'
-			return '<a href="' + url + '" title="' + title + '" class="swipebox" target="' + target + '"><div class="inline-image" style="background-image: url(' + url + ');"></div></a>'
+			return '<a href="' + url + '" title="' + title + '" target="' + target + '"><div class="inline-image" style="background-image: url(' + url + ');"></div></a>'
 
 		# Support [Text](http://link)
 		msg = msg.replace new RegExp("\\[([^\\]]+)\\]\\(((?:#{schemes}):\\/\\/[^\\)]+)\\)", 'gm'), (match, title, url) ->

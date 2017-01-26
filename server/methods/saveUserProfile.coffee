@@ -23,7 +23,7 @@ Meteor.methods
 				return false
 			return true
 
-		if settings.newPassword?
+		if settings.newPassword? and RocketChat.settings.get('Accounts_AllowPasswordChange') is true
 			unless checkPassword user, settings.currentPassword
 				throw new Meteor.Error('error-invalid-password', 'Invalid password', { method: 'saveUserProfile' })
 			Accounts.setPassword Meteor.userId(), settings.newPassword, { logout: false }

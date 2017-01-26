@@ -124,41 +124,15 @@ Template.userInfo.events
 	'click .thumb': (e) ->
 		$(e.currentTarget).toggleClass('bigger')
 
-	'click .pvt-msg': (e) ->
+	'click .pvt-msg': (e, instance) ->
 		Meteor.call 'createDirectMessage', @username, (error, result) =>
 			if error
 				return handleError(error)
 
 			if result?.rid?
-				FlowRouter.go('direct', { username: @username }, FlowRouter.current().queryParams, ->
-				if window.matchMedia("(max-width: 500px)").matches
-					RocketChat.TabBar.closeFlex())
-
-	"click .flex-tab  .video-remote" : (e) ->
-		if RocketChat.TabBar.isFlexOpen()
-			if (!Session.get('rtcLayoutmode'))
-				Session.set('rtcLayoutmode', 1)
-			else
-				t = Session.get('rtcLayoutmode')
-				t = (t + 1) % 4
-				console.log  'setting rtcLayoutmode to ' + t  if window.rocketDebug
-				Session.set('rtcLayoutmode', t)
-
-	"click .flex-tab  .video-self" : (e) ->
-		if (Session.get('rtcLayoutmode') == 3)
-			console.log 'video-self clicked in layout3' if window.rocketDebug
-			i = document.getElementById("fullscreendiv")
-			if i.requestFullscreen
-				i.requestFullscreen()
-			else
-				if i.webkitRequestFullscreen
-					i.webkitRequestFullscreen()
-				else
-					if i.mozRequestFullScreen
-						i.mozRequestFullScreen()
-					else
-						if i.msRequestFullscreen
-							i.msRequestFullscreen()
+				FlowRouter.go 'direct', { username: @username }, FlowRouter.current().queryParams, ->
+					if window.matchMedia("(max-width: 500px)").matches
+						instance.tabBar.close()
 
 	'click .back': (e, instance) ->
 		instance.clear()
@@ -344,7 +318,7 @@ Template.userInfo.events
 						timer: 2000
 						showConfirmButton: false
 
-					RocketChat.TabBar.closeFlex()
+					instance.tabBar.close()
 
 	'click .edit-user': (e, instance) ->
 		e.stopPropagation()
@@ -374,14 +348,11 @@ Template.userInfo.events
 
 Template.userInfo.onCreated ->
 	@now = new ReactiveVar moment()
-
 	@user = new ReactiveVar
-
 	@editingUser = new ReactiveVar
-
 	@loadingUserInfo = new ReactiveVar true
-
 	@loadedUsername = new ReactiveVar
+	@tabBar = Template.currentData().tabBar
 
 	Meteor.setInterval =>
 		@now.set moment()
