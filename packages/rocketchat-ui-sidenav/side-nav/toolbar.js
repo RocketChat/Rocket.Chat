@@ -10,10 +10,6 @@ Meteor.startup(() => {
 const toolbarSearch = {
 	clear() {
 		$('.toolbar-search__input').val('');
-		$('.toolbar-search__input').trigger({
-			type: 'keyup',
-			which: 27
-		});
 	},
 
 	focus() {
@@ -76,6 +72,14 @@ Template.toolbar.helpers({
 		return Template.instance().resultsList.get();
 	},
 	popupConfig() {
+		const open = new ReactiveVar(false);
+
+		Tracker.autorun(() => {
+			if (open.get() === false) {
+				toolbarSearch.clear();
+			}
+		});
+
 		const config = {
 			cls: 'search-results-list',
 			collection: RocketChat.models.Subscriptions,
@@ -85,6 +89,7 @@ Template.toolbar.helpers({
 			closeOnEsc: false,
 			blurOnSelectItem: true,
 			isLoading: isLoading,
+			open: open,
 			getFilter: function(collection, filter, cb) {
 				filterText = filter;
 				resultsFromClient = collection.find({name: new RegExp((RegExp.escape(filter)), 'i'), rid: {$ne: Session.get('openedRoom')}}, {limit: 20, sort: {unread: -1, ls: -1}}).fetch();
@@ -116,10 +121,6 @@ Template.toolbar.helpers({
 });
 
 Template.toolbar.events({
-	'blur .toolbar-search__input'() {
-		toolbarSearch.clear();
-	},
-
 	'keyup .toolbar-search__input'(e) {
 		if (e.which === 27) {
 			e.preventDefault();
