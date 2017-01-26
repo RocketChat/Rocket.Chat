@@ -14,7 +14,7 @@ import {username, email, password, adminUsername, adminEmail, adminPassword} fro
 describe('Admin settings', () => {
 	before(() => {
 		checkIfUserIsAdmin(adminUsername, adminEmail, adminPassword);
-		sideNav.getChannelFromList('general').waitForExist(5000);
+		sideNav.getChannelFromList('general').waitForVisible(5000);
 		sideNav.openChannel('general');
 		sideNav.accountBoxUserName.waitForVisible(5000);
 		sideNav.accountBoxUserName.click();
@@ -192,13 +192,7 @@ describe('Admin settings', () => {
 		});
 
 		it('try to use @all and should be warned by rocket.cat ', () => {
-			mainContent.addTextToInput('@all');
-			mainContent.mentionAllPopUp.waitForVisible(5000);
-			mainContent.mentionAllPopUp.click();
-			mainContent.mentionAllPopUp.waitForVisible(5000, true);
-			mainContent.sendBtn.click();
-			mainContent.waitForLastMessageEqualsText('Notify all in this room is not allowed');
-			mainContent.lastMessage.getText().should.equal('Notify all in this room is not allowed');
+			mainContent.tryToMentionAll();
 		});
 
 		it.skip('should not be able to delete own message ', () => {
