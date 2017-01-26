@@ -1,21 +1,15 @@
 RocketChat.Migrations.add({
 	version: 83,
 	up: function() {
-		if (RocketChat && RocketChat.models && RocketChat.models.Users) {
-			RocketChat.models.Users.update({ username: 'Rocket.Cat' }, { $set: { username: 'rocket.cat' } });
-		}
-		if (RocketChat && RocketChat.models && RocketChat.models.Messages) {
-			RocketChat.models.Messages.update({ 'editedBy.username': 'Rocket.Cat' }, { $set: { 'editedBy.username': 'rocket.cat' } });
-			RocketChat.models.Messages.update({ 'mentions.username': 'Rocket.Cat' }, { $set: { 'mentions.$.username': 'rocket.cat' } });
-		}
-		if (RocketChat && RocketChat.models && RocketChat.models.Rooms) {
-			RocketChat.models.Rooms.update({ 'usernames': 'Rocket.Cat' }, { $set: { 'usernames.$': 'rocket.cat' } });
-			RocketChat.models.Rooms.update({ 'muted': 'Rocket.Cat' }, { $set: { 'muted.$': 'rocket.cat' } });
-			RocketChat.models.Rooms.update({ 'u.username': 'Rocket.Cat' }, { $set: { 'u.username': 'rocket.cat' } });
-		}
-		if (RocketChat && RocketChat.models && RocketChat.models.Subscriptions) {
-			RocketChat.models.Subscriptions.update({ 'u.username': 'Rocket.Cat' }, { $set: { 'u.username': 'rocket.cat' } });
-			RocketChat.models.Subscriptions.update({ 'type': 'd', 'name': 'Rocket.Cat' }, { $set: { 'name': 'rocket.cat' } });
+		if (RocketChat && RocketChat.models && RocketChat.models.Settings && RocketChat.models.Users) {
+			var setting = RocketChat.models.Settings.findOne({ _id: 'InternalHubot_Username' });
+			if (setting && setting.value) {
+				var username = setting.value;
+				var user = RocketChat.models.Users.findOne({ username: username });
+				if (!user && setting.value === 'Rocket.Cat') {
+					RocketChat.models.Settings.update({ _id: 'InternalHubot_Username' }, { $set: { value: 'rocket.cat', packageValue: 'rocket.cat' } });
+				}
+			}
 		}
 	}
 });
