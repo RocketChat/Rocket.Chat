@@ -6,7 +6,7 @@ class SideNav extends Page {
 
 	get channelType() { return browser.element('label[for="channel-type"]'); }
 	get channelReadOnly() { return browser.element('label[for="channel-ro"]'); }
-	get channelName() { return browser.element('#channel-name'); }
+	get channelName() { return browser.element('input#channel-name'); }
 	get saveChannelBtn() { return browser.element('.save-channel'); }
 
 	get messageInput() { return browser.element('.input-message'); }
@@ -56,8 +56,9 @@ class SideNav extends Page {
 		this.newChannelBtn.waitForVisible(10000);
 		this.newChannelBtn.click();
 		this.channelName.waitForVisible(10000);
-		this.channelName.setValue('');
-		this.channelName.addValue(channelName);
+		//workaround for incomplete setvalue bug
+		this.channelName.setValue(channelName);
+		this.channelName.setValue(channelName);
 		browser.pause(1000);
 		this.channelType.waitForVisible(10000);
 		if (isPrivate) {
@@ -93,9 +94,8 @@ class SideNav extends Page {
 		this.newDirectMessageBtn.click();
 		this.directMessageTarget.waitForVisible(3000);
 		this.directMessageTarget.setValue(user);
-		browser.waitForVisible('.-autocomplete-item', 3000);
+		browser.waitForVisible('.-autocomplete-item', 5000);
 		browser.click('.-autocomplete-item');
-		browser.pause(200);
 		this.saveDirectMessageBtn.click();
 		browser.waitForExist('[title="'+user+'"]', 5000);
 	}
