@@ -217,7 +217,7 @@
 	}
 
 	.main-content {
-		left: 40px;
+		left: 0;
 		right: @rooms-box-width;
 		transition: left 0.25s cubic-bezier(0.5, 0, 0.1, 1);
 
@@ -344,11 +344,11 @@
 		}
 	}
 
-	.flex-tab-bar {
-		.left(0);
-		border-right: 1px solid #eaeaea;
-		border-left: none;
+	.flex-tab-container {
+		border-width: 0 1px 0 0;
+	}
 
+	.flex-tab-bar {
 		.tab-button {
 			&.active {
 				.margin-right(-1px);
@@ -359,11 +359,6 @@
 	}
 
 	.flex-tab {
-		.right(100%);
-		border-left: unset;
-		border-width: 0 1px 0 0;
-		// border-right-color: @tertiary-background-color;
-
 		.control {
 			text-align: right;
 			padding: 12px 30px;
@@ -744,14 +739,6 @@
 		}
 	}
 
-	.minicolors-theme-rocketchat {
-		.minicolors-swatch {
-			.right(1px);
-			border-radius: 0 5px 5px 0;
-			border-width: 0 0 0 1px;
-		}
-	}
-
 	.code-mirror-box {
 		direction: ltr;
 
@@ -795,39 +782,27 @@
 		}
 	}
 
-	/* Overridding classes from swipebox.min.css */
-	#swipebox-close {
-		.left(0);
-	}
-
-	@media screen and (min-width: 800px) {
-		#swipebox-close {
-			.left(10px);
-		}
-	}
-
-	#swipebox-overlay {
-		direction: ltr;
-	}
-
 	/* Override toastr messages to show on hte left side */
 	.toast-top-right {
 		.left(12px);
 	}
 
-	.spotlight {
-		> .spotlight-input {
-			.icon-search {
-				left: 0;
-			}
+	.toolbar-search {
+		padding: 0 0 0 8px;
+	}
 
-			.message-popup {
-				.popup-item {
-					span {
-						float: left;
-					}
-				}
-			}
+	.toolbar-search__icon {
+		right: 0;
+	}
+
+	.toolbar-search__icon--cancel {
+		right: auto;
+		left: 0;
+	}
+
+	.message-popup.search-results-list {
+		.popup-item {
+			padding-right: 6px;
 		}
 	}
 }

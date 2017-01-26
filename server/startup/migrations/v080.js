@@ -1,9 +1,25 @@
 RocketChat.Migrations.add({
 	version: 80,
 	up: function() {
-		RocketChat.models.Users.find({}, {username: 1, name: 1}).forEach((user) => {
-			RocketChat.models.Messages.updateAllNamesByUserId(user._id, user.name);
-			RocketChat.models.Subscriptions.setRealNameForDirectRoomsWithUsername(user.username, user.name);
-		});
+		const query = {
+			type: 'webhook-outgoing',
+			$or: [{
+				channel: []
+			}, {
+				channel: ''
+			}, {
+				channel: {
+					$exists: false
+				}
+			}]
+		};
+
+		const update = {
+			$set: {
+				channel: ['all_public_channels']
+			}
+		};
+
+		RocketChat.models.Integrations.update(query, update, {multi: true});
 	}
 });
