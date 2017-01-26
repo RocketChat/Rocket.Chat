@@ -1,5 +1,5 @@
 RocketChat.Migrations.add({
-	version: 78,
+	version: 83,
 	up: function() {
 		if (RocketChat && RocketChat.models && RocketChat.models.Users) {
 			RocketChat.models.Users.update({ newMessageNotification: false }, { $set: { newMessageNotification: 'none' } }, { multi: true });
