@@ -40,7 +40,7 @@ Meteor.startup(function() {
 			username: decodeURIComponent(req.url.replace(/^\//, '').replace(/\?.*$/, ''))
 		};
 
-		const username = params.username.replace(/\.jpg$/, '').replace(/^@/, '');
+		let username = params.username.replace(/\.jpg$/, '').replace(/^@/, '');
 
 		if (_.isEmpty(params.username)) {
 			res.writeHead(403);
@@ -83,7 +83,6 @@ Meteor.startup(function() {
 			}
 
 			const colors = ['#F44336', '#E91E63', '#9C27B0', '#673AB7', '#3F51B5', '#2196F3', '#03A9F4', '#00BCD4', '#009688', '#4CAF50', '#8BC34A', '#CDDC39', '#FFC107', '#FF9800', '#FF5722', '#795548', '#9E9E9E', '#607D8B'];
-			let username;
 
 			if (RocketChat.settings.get('UI_Use_Name_Avatar')) {
 				const user = RocketChat.models.Users.findOneByUsername(username, {
