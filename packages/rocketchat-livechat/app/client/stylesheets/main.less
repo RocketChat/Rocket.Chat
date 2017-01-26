@@ -93,7 +93,7 @@ input:focus {
 		height: 100%;
 		opacity: 0;
 		z-index: 1;
-		.transition(opacity .1s ease-out);
+		transition: opacity 0.1s ease-out;
 	}
 
 	&:hover {
@@ -428,7 +428,7 @@ input:focus {
 
 				.body {
 					opacity: 1;
-					.transition(opacity 1s linear);
+					transition: opacity 1s linear;
 				}
 
 				&.temp .body {
@@ -470,7 +470,7 @@ input:focus {
 			bottom: 8px;
 			left: 50%;
 			z-index: 5;
-			.transition(transform 0.3s ease-out);
+			transition: transform 0.3s ease-out;
 			.transform(translateY(-40px));
 
 			&.not {
@@ -485,7 +485,7 @@ input:focus {
 			background-color: #f7d799;
 			padding: 5px;
 			z-index: 8;
-			.transition(transform 0.2s ease-out);
+			transition: transform 0.2s ease-out;
 			.transform(translateY(100%));
 
 			&.show {
@@ -541,7 +541,7 @@ input:focus {
 					height: 15px;
 					margin: 0 4px;
 					cursor: pointer;
-					.transition(fill .15s ease-out);
+					transition: fill 0.15s ease-out;
 
 					&:hover {
 						fill: @primary-font-color;
@@ -581,7 +581,7 @@ input:focus {
 				0 2px 10px 0 rgba(0, 0, 0, 0.16);
 			position: absolute;
 			z-index: 200;
-			.transition(transform 0.15s ease, visibility 0.15s ease, opacity 0.15s ease);
+			transition: transform 0.15s ease, visibility 0.15s ease, opacity 0.15s ease;
 			.transform(translateY(30px));
 			opacity: 0;
 			visibility: hidden;
@@ -769,7 +769,7 @@ input:focus {
 	padding: 0 1em;
 	opacity: 0.5;
 	align-self: flex-end;
-	.transition(opacity .15s ease-out);
+	transition: opacity 0.15s ease-out;
 
 	&:hover {
 		opacity: 1;
@@ -816,7 +816,7 @@ input:focus {
 			opacity: 0;
 			visibility: hidden;
 			.transform(translateY(50px));
-			.transition(opacity 0.175s ease-out, transform 0.175s ease-out, visibility 0.175s ease-out);
+			transition: opacity 0.175s ease-out, transform 0.175s ease-out, visibility 0.175s ease-out;
 
 			&.visible {
 				opacity: 1;

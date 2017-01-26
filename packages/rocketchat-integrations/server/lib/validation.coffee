@@ -1,4 +1,4 @@
-RocketChat.integrations.validateOutgoing = (integration, userId) -> 
+RocketChat.integrations.validateOutgoing = (integration, userId) ->
 	if integration.channel?.trim? and integration.channel.trim() is ''
 		delete integration.channel
 
@@ -16,7 +16,10 @@ RocketChat.integrations.validateOutgoing = (integration, userId) ->
 	if integration.urls.length is 0
 		throw new Meteor.Error 'error-invalid-urls', 'Invalid URLs', { method: 'addOutgoingIntegration' }
 
-	channels = if integration.channel then _.map(integration.channel.split(','), (channel) -> s.trim(channel)) else []
+	if not Match.test integration.channel, String
+		throw new Meteor.Error 'error-invalid-channel', 'Invalid Channel', { method: 'addOutgoingIntegration' }
+
+	channels = _.map(integration.channel.split(','), (channel) -> s.trim(channel))
 
 	scopedChannels = ['all_public_channels', 'all_private_groups', 'all_direct_messages']
 	for channel in channels
@@ -49,7 +52,7 @@ RocketChat.integrations.validateOutgoing = (integration, userId) ->
 			if channel is 'all_public_channels'
 				#No special permissions needed to add integration to public channels
 			else if not RocketChat.authz.hasPermission userId, 'manage-integrations'
-				throw new Meteor.Error 'error-invalid-channel', 'Invalid Channel', { method: 'addOutgoingIntegration' }					
+				throw new Meteor.Error 'error-invalid-channel', 'Invalid Channel', { method: 'addOutgoingIntegration' }
 		else
 			record = undefined
 			channelType = channel[0]

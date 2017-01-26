@@ -1,6 +1,6 @@
 /* globals fireGlobalEvent */
 Template.room.events({
-	'click .action-link'(event) {
+	'click .action-link'(event, instance) {
 		event.preventDefault();
 		event.stopPropagation();
 
@@ -15,7 +15,7 @@ Template.room.events({
 		}
 
 		if (data && data._arguments && data._arguments[1] && data._arguments[1]._id) {
-			Meteor.call('actionLinkHandler', $(event.currentTarget).data('actionlink'), data._arguments[1]._id, (err) => {
+			RocketChat.actionLinks.run($(event.currentTarget).data('actionlink'), data._arguments[1]._id, instance, (err) => {
 				if (err) {
 					handleError(err);
 				}

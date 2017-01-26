@@ -91,7 +91,7 @@ Template.integrationsIncoming.helpers
 		for key, value of data
 			delete data[key] if value in [null, ""]
 
-		return "curl -X POST --data-urlencode 'payload=#{JSON.stringify(data)}' #{record.url}"
+		return "curl -X POST -H 'Content-Type: application/json' --data '#{JSON.stringify(data)}' #{record.url}"
 
 	editorOptions: ->
 		return {} =
@@ -154,12 +154,12 @@ Template.integrationsIncoming.events
 
 	"click .button-fullscreen": ->
 		codeMirrorBox = $('.code-mirror-box')
-		codeMirrorBox.addClass('code-mirror-box-fullscreen')
+		codeMirrorBox.addClass('code-mirror-box-fullscreen content-background-color')
 		codeMirrorBox.find('.CodeMirror')[0].CodeMirror.refresh()
 
 	"click .button-restore": ->
 		codeMirrorBox = $('.code-mirror-box')
-		codeMirrorBox.removeClass('code-mirror-box-fullscreen')
+		codeMirrorBox.removeClass('code-mirror-box-fullscreen content-background-color')
 		codeMirrorBox.find('.CodeMirror')[0].CodeMirror.refresh()
 
 	"click .submit > .save": ->
