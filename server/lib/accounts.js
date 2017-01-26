@@ -116,7 +116,7 @@ Accounts.insertUserDoc = _.wrap(Accounts.insertUserDoc, function(insertUserDoc, 
 
 	if (user.username && options.joinDefaultChannels !== false && user.joinDefaultChannels !== false) {
 		Meteor.runAsUser(_id, function() {
-			const silencedJoin = (isGuest ? true : options.joinDefaultChannelsSilenced)
+			const silencedJoin = (isGuest ? true : options.joinDefaultChannelsSilenced);
 			return Meteor.call('joinDefaultChannels', silencedJoin);
 		});
 	}
