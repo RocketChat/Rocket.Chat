@@ -1,23 +1,25 @@
 /* global logger, processWebhookMessage */
-RocketChat.integrations.triggerHandler = new class RocketChatIntegrationHanlder {
+class RocketChatIntegrationHandler {
 	constructor() {
 		this.vm = Npm.require('vm');
 		this.successResults = [200, 201, 202];
 		this.compiledScripts = {};
 		this.triggers = {};
 
+		const self = this;
+
 		RocketChat.models.Integrations.find({type: 'webhook-outgoing'}).observe({
-			added(record) {
+			added: (record) => {
 				this.addIntegration(record);
 			},
 
 			changed(record) {
-				this.removeIntegration(record);
-				this.addIntegration(record);
+				self.removeIntegration(record);
+				self.addIntegration(record);
 			},
 
 			removed(record) {
-				this.removeIntegration(record);
+				self.removeIntegration(record);
 			}
 		});
 	}
@@ -417,4 +419,6 @@ RocketChat.integrations.triggerHandler = new class RocketChatIntegrationHanlder 
 			}
 		});
 	}
-};
+}
+
+RocketChat.integrations.triggerHandler = new RocketChatIntegrationHandler();

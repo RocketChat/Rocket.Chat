@@ -59,6 +59,7 @@ Package.onUse(function(api) {
 	// api
 	api.addFiles('server/api/api.coffee', 'server');
 
+	api.addFiles('server/lib/triggerHandler.js', 'server');
 	api.addFiles('server/triggers.js', 'server');
 
 	api.addFiles('server/processWebhookMessage.js', 'server');
