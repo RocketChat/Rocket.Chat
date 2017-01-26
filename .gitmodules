@@ -1,0 +1,3 @@
+[submodule "packages/drawingCanvas"]
+	path = packages/drawingCanvas
+	url = https://github.com/garg/drawingCanvas.git
