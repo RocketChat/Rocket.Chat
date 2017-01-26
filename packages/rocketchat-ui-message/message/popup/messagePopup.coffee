@@ -41,7 +41,7 @@ Template.messagePopup.onCreated ->
 
 	template.textFilterDelay = val(template.data.textFilterDelay, 0)
 
-	template.open = new ReactiveVar false
+	template.open = val(template.data.open, new ReactiveVar(false))
 
 	template.hasData = new ReactiveVar false
 
@@ -154,6 +154,8 @@ Template.messagePopup.onCreated ->
 				template.verifySelection()
 
 	template.onFocus = (event) =>
+		template.clickingItem = false;
+
 		if template.open.curValue is true
 			return
 
@@ -170,6 +172,9 @@ Template.messagePopup.onCreated ->
 
 	template.onBlur = (event) =>
 		if template.open.curValue is false
+			return
+
+		if template.clickingItem is true
 			return
 
 		template.open.set false
@@ -246,8 +251,14 @@ Template.messagePopup.events
 		e.currentTarget.className += ' selected'
 		template.value.set this._id
 
-	'click .popup-item': (e) ->
+	'mousedown .popup-item': (e) ->
 		template = Template.instance()
+		template.clickingItem = true;
+
+	'mouseup .popup-item': (e) ->
+		template = Template.instance()
+
+		template.clickingItem = false;
 
 		template.value.set this._id
 
