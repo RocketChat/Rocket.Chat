@@ -1,21 +1,39 @@
-/* globals MongoInternals */
 /* eslint new-cap: 0 */
 
 import loki from 'lokijs';
 import {EventEmitter} from 'events';
 import objectPath from 'object-path';
 
+const logger = new Logger('BaseCache');
+
 const lokiEq = loki.LokiOps.$eq;
+const lokiNe = loki.LokiOps.$ne;
 
 loki.LokiOps.$eq = function(a, b) {
 	if (Array.isArray(a)) {
-		return loki.LokiOps.$containsAny(a, b);
+		return a.indexOf(b) !== -1;
 	}
 	return lokiEq(a, b);
 };
 
-loki.LokiOps.$in = loki.LokiOps.$containsAny;
-loki.LokiOps.$nin = loki.LokiOps.$containsNone;
+loki.LokiOps.$ne = function(a, b) {
+	if (Array.isArray(a)) {
+		return a.indexOf(b) === -1;
+	}
+	return lokiNe(a, b);
+};
+
+const lokiIn = loki.LokiOps.$in;
+loki.LokiOps.$in = function(a, b) {
+	if (Array.isArray(a)) {
+		return a.some(subA => lokiIn(subA, b));
+	}
+	return lokiIn(a, b);
+};
+
+loki.LokiOps.$nin = function(a, b) {
+	return !loki.LokiOps.$in(a, b);
+};
 
 loki.LokiOps.$exists = function(a, b) {
 	if (b) {
@@ -25,6 +43,9 @@ loki.LokiOps.$exists = function(a, b) {
 	return loki.LokiOps.$eq(a, undefined);
 };
 
+loki.LokiOps.$elemMatch = function(a, b) {
+	return _.findWhere(a, b);
+};
 
 const ignore = [
 	'emit',
@@ -147,23 +168,23 @@ class ModelsBaseCache extends EventEmitter {
 			return;
 		}
 
-		RocketChat.models[join].on('inserted', (record) => {
+		RocketChat.models[join].cache.on('inserted', (record) => {
 			this.processRemoteJoinInserted({join, field, link, multi, record: record});
 		});
 
-		RocketChat.models[join].on('beforeupdate', (record, diff) => {
+		RocketChat.models[join].cache.on('beforeupdate', (record, diff) => {
 			if (diff[link.remote]) {
 				this.processRemoteJoinRemoved({join, field, link, multi, record: record});
 			}
 		});
 
-		RocketChat.models[join].on('updated', (record, diff) => {
+		RocketChat.models[join].cache.on('updated', (record, diff) => {
 			if (diff[link.remote]) {
 				this.processRemoteJoinInserted({join, field, link, multi, record: record});
 			}
 		});
 
-		RocketChat.models[join].on('removed', (record) => {
+		RocketChat.models[join].cache.on('removed', (record) => {
 			this.processRemoteJoinRemoved({join, field, link, multi, record: record});
 		});
 
@@ -410,6 +431,10 @@ class ModelsBaseCache extends EventEmitter {
 	}
 
 	load() {
+		if (this.model._useCache === false) {
+			return;
+		}
+
 		console.log('Will load cache for', this.collectionName);
 		this.emit('beforeload');
 		this.loaded = false;
@@ -420,71 +445,41 @@ class ModelsBaseCache extends EventEmitter {
 		}
 		console.log(String(data.length), 'records load from', this.collectionName);
 		RocketChat.statsTracker.timing('cache.load', RocketChat.statsTracker.now() - time, [`collection:${this.collectionName}`]);
-		this.startOplog();
+
+		this.startSync();
 		this.loaded = true;
 		this.emit('afterload');
 	}
 
-	startOplog() {
-		const query = {
-			collection: this.collectionName
-		};
-
-		if (!MongoInternals.defaultRemoteCollectionDriver().mongo._oplogHandle || !MongoInternals.defaultRemoteCollectionDriver().mongo._oplogHandle.onOplogEntry) {
-			console.error('\nYour MongoDB is not with ReplicaSet enabled.\nPlease enable it.\nYou can see more information at:\n* https://docs.mongodb.com/v3.2/tutorial/convert-standalone-to-replica-set/ \n* https://github.com/RocketChat/Rocket.Chat/issues/5212\n');
-			throw new Meteor.Error('Your MongoDB is not with ReplicaSet enabled.');
-		}
-
-		MongoInternals.defaultRemoteCollectionDriver().mongo._oplogHandle.onOplogEntry(query, (record) => {
-			this.processOplogRecord(record);
-		});
-	}
-
-	processOplogRecord(action) {
-		// TODO remove - ignore updates in room.usernames
-		if (this.collectionName === 'rocketchat_room' && action.op.o.usernames) {
-			delete action.op.o.usernames;
-		}
-		if (this.collectionName === 'rocketchat_room' && action.op.o.$set && action.op.o.$set.usernames) {
-			delete action.op.o.$set.usernames;
-		}
-
-		if (action.op.op === 'i') {
-			this.insert(action.op.o);
+	startSync() {
+		if (this.model._useCache === false) {
 			return;
 		}
 
-		if (action.op.op === 'u') {
-			let diff = {};
+		this.model._db.on('change', ({action, id, data/*, oplog*/}) => {
+			switch (action) {
+				case 'insert':
+					data._id = id;
+					this.insert(data);
+					break;
 
-			if (!action.op.o.$set && !action.op.o.$unset) {
-				diff = action.op.o;
-			} else {
-				if (action.op.o.$set) {
-					for (let key in action.op.o.$set) {
-						if (action.op.o.$set.hasOwnProperty(key)) {
-							diff[key] = action.op.o.$set[key];
-						}
-					}
-				}
+				case 'remove':
+					this.removeById(id);
+					break;
 
-				if (action.op.o.$unset) {
-					for (let key in action.op.o.$unset) {
-						if (action.op.o.$unset.hasOwnProperty(key)) {
-							diff[key] = undefined;
-						}
-					}
-				}
+				case 'update:record':
+					this.updateDiffById(id, data);
+					break;
+
+				case 'update:diff':
+					this.updateDiffById(id, data);
+					break;
+
+				case 'update:query':
+					this.update(data.query, data.update, data.options);
+					break;
 			}
-
-			this.updateDiffById(action.id, diff);
-			return;
-		}
-
-		if (action.op.op === 'd') {
-			this.removeById(action.id);
-			return;
-		}
+		});
 	}
 
 	processQueryOptionsOnResult(result, options={}) {
@@ -522,7 +517,11 @@ class ModelsBaseCache extends EventEmitter {
 				});
 			}
 
-			if (typeof options.limit === 'number') {
+			if (typeof options.skip === 'number') {
+				result.splice(0, options.skip);
+			}
+
+			if (typeof options.limit === 'number' && options.limit !== 0) {
 				result.splice(options.limit);
 			}
 		}
@@ -545,7 +544,7 @@ class ModelsBaseCache extends EventEmitter {
 		}
 
 		if (fieldsToRemove.length > 0 && fieldsToGet.length > 0) {
-			console.error('Can\'t mix remove and get fields');
+			console.warn('Can\'t mix remove and get fields');
 			fieldsToRemove.splice(0, fieldsToRemove.length);
 		}
 
@@ -590,7 +589,7 @@ class ModelsBaseCache extends EventEmitter {
 		return result;
 	}
 
-	processQuery(query) {
+	processQuery(query, parentField) {
 		if (!query) {
 			return query;
 		}
@@ -601,7 +600,7 @@ class ModelsBaseCache extends EventEmitter {
 			};
 		}
 
-		if (Object.keys(query).length > 1) {
+		if (Object.keys(query).length > 1 && parentField !== '$elemMatch') {
 			const and = [];
 			for (const field in query) {
 				if (query.hasOwnProperty(field)) {
@@ -624,12 +623,12 @@ class ModelsBaseCache extends EventEmitter {
 
 				if (field === '$and' || field === '$or') {
 					query[field] = value.map((subValue) => {
-						return this.processQuery(subValue);
+						return this.processQuery(subValue, field);
 					});
 				}
 
 				if (Match.test(value, Object) && Object.keys(value).length > 0) {
-					query[field] = this.processQuery(value);
+					query[field] = this.processQuery(value, field);
 				}
 			}
 		}
@@ -644,18 +643,25 @@ class ModelsBaseCache extends EventEmitter {
 					query = this.processQuery(query);
 					return this.processQueryOptionsOnResult(this.collection.find(query), options);
 				} catch (e) {
-					console.error('Exception on cache find for', this.collectionName, ...arguments);
+					console.error('Exception on cache find for', this.collectionName);
+					console.error('Query:', JSON.stringify(query, null, 2));
+					console.error('Options:', JSON.stringify(options, null, 2));
 					console.error(e.stack);
+					throw e;
 				}
 			},
 
 			count: () => {
 				try {
 					query = this.processQuery(query);
-					return this.collection.find(query).length;
+					const { limit, skip } = options;
+					return this.processQueryOptionsOnResult(this.collection.find(query), { limit, skip }).length;
 				} catch (e) {
-					console.error('Exception on cache find for', this.collectionName, ...arguments);
+					console.error('Exception on cache find for', this.collectionName);
+					console.error('Query:', JSON.stringify(query, null, 2));
+					console.error('Options:', JSON.stringify(options, null, 2));
 					console.error(e.stack);
+					throw e;
 				}
 			},
 
@@ -664,29 +670,42 @@ class ModelsBaseCache extends EventEmitter {
 			},
 
 			observe: (obj) => {
-				console.log(this.collectionName, 'Falling back observe to model with query:', query);
+				logger.debug(this.collectionName, 'Falling back observe to model with query:', query);
 				return this.model.db.find(...arguments).observe(obj);
 			},
 
 			observeChanges: (obj) => {
-				console.log(this.collectionName, 'Falling back observeChanges to model with query:', query);
+				logger.debug(this.collectionName, 'Falling back observeChanges to model with query:', query);
 				return this.model.db.find(...arguments).observeChanges(obj);
 			},
 
 			_publishCursor: (cursor, sub, collection) => {
-				console.log(this.collectionName, 'Falling back _publishCursor to model with query:', query);
+				logger.debug(this.collectionName, 'Falling back _publishCursor to model with query:', query);
 				return this.model.db.find(...arguments)._publishCursor(cursor, sub, collection);
 			}
 		};
 	}
 
 	findOne(query, options) {
-		query = this.processQuery(query);
-		return this.processQueryOptionsOnResult(this.collection.findOne(query), options);
+		try {
+			query = this.processQuery(query);
+			return this.processQueryOptionsOnResult(this.collection.findOne(query), options);
+		} catch (e) {
+			console.error('Exception on cache findOne for', this.collectionName);
+			console.error('Query:', JSON.stringify(query, null, 2));
+			console.error('Options:', JSON.stringify(options, null, 2));
+			console.error(e.stack);
+			throw e;
+		}
 	}
 
 	findOneById(_id, options) {
 		return this.findByIndex('_id', _id, options).fetch();
+	}
+
+	findOneByIds(ids, options) {
+		const query = this.processQuery({ _id: { $in: ids }});
+		return this.processQueryOptionsOnResult(this.collection.findOne(query), options);
 	}
 
 	findWhere(query, options) {
@@ -704,13 +723,14 @@ class ModelsBaseCache extends EventEmitter {
 
 	insert(record) {
 		if (Array.isArray(record)) {
-			for (let i=0; i < record.length; i++) {
-				this.emit('beforeinsert', record[i]);
-				this.addToAllIndexes(record[i]);
-				this.collection.insert(record[i]);
-				this.emit('inserted', record[i]);
+			for (const item of record) {
+				this.insert(item);
 			}
 		} else {
+			// TODO remove - ignore updates in room.usernames
+			if (this.collectionName === 'rocketchat_room' && record.usernames) {
+				delete record.usernames;
+			}
 			this.emit('beforeinsert', record);
 			this.addToAllIndexes(record);
 			this.collection.insert(record);
@@ -719,6 +739,11 @@ class ModelsBaseCache extends EventEmitter {
 	}
 
 	updateDiffById(id, diff) {
+		// TODO remove - ignore updates in room.usernames
+		if (this.collectionName === 'rocketchat_room' && diff.usernames) {
+			delete diff.usernames;
+		}
+
 		const record = this._findByIndex('_id', id);
 		if (!record) {
 			console.error('Cache.updateDiffById: No record', this.collectionName, id, diff);
@@ -741,6 +766,154 @@ class ModelsBaseCache extends EventEmitter {
 
 		if (updatedFields.length > 0) {
 			this.emit('updated', record, diff);
+		}
+	}
+
+	updateRecord(record, update) {
+		// TODO remove - ignore updates in room.usernames
+		if (this.collectionName === 'rocketchat_room' && (record.usernames || (record.$set && record.$set.usernames))) {
+			delete record.usernames;
+			if (record.$set && record.$set.usernames) {
+				delete record.$set.usernames;
+			}
+		}
+
+		const topLevelFields = Object.keys(update).map(field => field.split('.')[0]);
+		const updatedFields = _.without(topLevelFields, ...this.ignoreUpdatedFields);
+
+		if (updatedFields.length > 0) {
+			this.emit('beforeupdate', record, record);
+		}
+
+		if (update.$set) {
+			_.each(update.$set, (value, field) => {
+				objectPath.set(record, field, value);
+			});
+		}
+
+		if (update.$unset) {
+			_.each(update.$unset, (value, field) => {
+				objectPath.del(record, field);
+			});
+		}
+
+		if (update.$min) {
+			_.each(update.$min, (value, field) => {
+				let curValue = objectPath.get(record, field);
+				if (curValue === undefined || value < curValue) {
+					objectPath.set(record, field, value);
+				}
+			});
+		}
+
+		if (update.$max) {
+			_.each(update.$max, (value, field) => {
+				let curValue = objectPath.get(record, field);
+				if (curValue === undefined || value > curValue) {
+					objectPath.set(record, field, value);
+				}
+			});
+		}
+
+		if (update.$inc) {
+			_.each(update.$inc, (value, field) => {
+				let curValue = objectPath.get(record, field);
+				if (curValue === undefined) {
+					curValue = value;
+				} else {
+					curValue += value;
+				}
+				objectPath.set(record, field, curValue);
+			});
+		}
+
+		if (update.$mul) {
+			_.each(update.$mul, (value, field) => {
+				let curValue = objectPath.get(record, field);
+				if (curValue === undefined) {
+					curValue = 0;
+				} else {
+					curValue *= value;
+				}
+				objectPath.set(record, field, curValue);
+			});
+		}
+
+		if (update.$rename) {
+			_.each(update.$rename, (value, field) => {
+				let curValue = objectPath.get(record, field);
+				if (curValue !== undefined) {
+					objectPath.set(record, value, curValue);
+					objectPath.del(record, field);
+				}
+			});
+		}
+
+		if (update.$pullAll) {
+			_.each(update.$pullAll, (value, field) => {
+				let curValue = objectPath.get(record, field);
+				if (Array.isArray(curValue)) {
+					curValue = _.difference(curValue, value);
+					objectPath.set(record, field, curValue);
+				}
+			});
+		}
+
+		if (update.$pop) {
+			_.each(update.$pop, (value, field) => {
+				let curValue = objectPath.get(record, field);
+				if (Array.isArray(curValue)) {
+					if (value === -1) {
+						curValue.shift();
+					} else {
+						curValue.pop();
+					}
+					objectPath.set(record, field, curValue);
+				}
+			});
+		}
+
+		if (update.$addToSet) {
+			_.each(update.$addToSet, (value, field) => {
+				let curValue = objectPath.get(record, field);
+				if (curValue === undefined) {
+					curValue = [];
+				}
+				if (Array.isArray(curValue)) {
+					const length = curValue.length;
+
+					if (value && value.$each && Array.isArray(value.$each)) {
+						for (const valueItem of value.$each) {
+							if (curValue.indexOf(valueItem) === -1) {
+								curValue.push(valueItem);
+							}
+						}
+					} else if (curValue.indexOf(value) === -1) {
+						curValue.push(value);
+					}
+
+					if (curValue.length > length) {
+						objectPath.set(record, field, curValue);
+					}
+				}
+			});
+		}
+
+		this.collection.update(record);
+
+		if (updatedFields.length > 0) {
+			this.emit('updated', record, record);
+		}
+	}
+
+	update(query, update, options = {}) {
+		let records = options.multi ? this.find(query).fetch() : this.findOne(query) || [];
+		if (!Array.isArray(records)) {
+			records = [records];
+		}
+
+		for (const record of records) {
+			this.updateRecord(record, update);
 		}
 	}
 

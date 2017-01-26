@@ -2,11 +2,6 @@ import toastr from 'toastr'
 TempSettings = new Meteor.Collection null
 RocketChat.TempSettings = TempSettings
 
-updateColorComponent = (input = $('input.minicolors')) ->
-	input.minicolors
-		theme: 'rocketchat'
-		letterCase: 'uppercase'
-
 getDefaultSetting = (settingId) ->
 	return RocketChat.settings.cachedCollectionPrivate.collection.findOne({_id: settingId})
 
@@ -19,22 +14,18 @@ setFieldValue = (settingId, value, type, editor) ->
 		when 'code'
 			input.next()[0].CodeMirror.setValue(value)
 		when 'color'
-			editorColor = editor is 'color'
 			input.parents('.horizontal').find('select[name="color-editor"]').val(editor).change()
 			input.val(value).change()
 
-			if editorColor
-				Meteor.setTimeout ->
-					updateColorComponent(input)
-					input.minicolors('value', value)
-				, 100
+			if editor is 'color'
+				new jscolor(input)
 
 		else
 			input.val(value).change()
 
 Template.admin.onCreated ->
 	if not RocketChat.settings.cachedCollectionPrivate?
-		RocketChat.settings.cachedCollectionPrivate = new RocketChat.CachedCollection({ name: 'private-settings', eventType: 'onAll' })
+		RocketChat.settings.cachedCollectionPrivate = new RocketChat.CachedCollection({ name: 'private-settings', eventType: 'onLogged' })
 		RocketChat.settings.collectionPrivate = RocketChat.settings.cachedCollectionPrivate.collection
 		RocketChat.settings.cachedCollectionPrivate.init()
 
@@ -84,14 +75,10 @@ Template.admin.helpers
 		return selected
 
 	group: ->
-		group = FlowRouter.getParam('group')
-		group ?= TempSettings.findOne({ type: 'group' })?._id
-		return TempSettings.findOne { _id: group, type: 'group' }
+		return TempSettings.findOne { _id: FlowRouter.getParam('group'), type: 'group' }
 
 	sections: ->
-		group = FlowRouter.getParam('group')
-		group ?= TempSettings.findOne({ type: 'group' })?._id
-		settings = TempSettings.find({ group: group }, {sort: {section: 1, sorter: 1, i18nLabel: 1}}).fetch()
+		settings = TempSettings.find({ group: FlowRouter.getParam('group') }, {sort: {section: 1, sorter: 1, i18nLabel: 1}}).fetch()
 
 		sections = {}
 		for setting in settings
@@ -172,13 +159,6 @@ Template.admin.helpers
 			return section
 
 		return t(section)
-
-	flexOpened: ->
-		return 'opened' if RocketChat.TabBar.isFlexOpen()
-
-	arrowPosition: ->
-		console.log 'room.helpers arrowPosition' if window.rocketDebug
-		return 'left' unless RocketChat.TabBar.isFlexOpen()
 
 	label: ->
 		label = @i18nLabel or @_id
@@ -298,8 +278,6 @@ Template.admin.events
 		TempSettings.update {_id: @_id},
 			$set:
 				editor: value
-
-		Meteor.setTimeout updateColorComponent, 100
 
 	"click .submit .discard": ->
 		group = FlowRouter.getParam('group')
@@ -456,12 +434,12 @@ Template.admin.events
 
 	"click .button-fullscreen": ->
 		codeMirrorBox = $('.code-mirror-box[data-editor-id="'+this._id+'"]')
-		codeMirrorBox.addClass('code-mirror-box-fullscreen')
+		codeMirrorBox.addClass('code-mirror-box-fullscreen content-background-color')
 		codeMirrorBox.find('.CodeMirror')[0].CodeMirror.refresh()
 
 	"click .button-restore": ->
 		codeMirrorBox = $('.code-mirror-box[data-editor-id="'+this._id+'"]')
-		codeMirrorBox.removeClass('code-mirror-box-fullscreen')
+		codeMirrorBox.removeClass('code-mirror-box-fullscreen content-background-color')
 		codeMirrorBox.find('.CodeMirror')[0].CodeMirror.refresh()
 
 	'autocompleteselect .autocomplete': (event, instance, doc) ->
@@ -493,12 +471,10 @@ Template.admin.onRendered ->
 		SideNav.setFlex "adminFlex"
 		SideNav.openFlex()
 
-	Meteor.setTimeout ->
-		updateColorComponent()
-	, 1000
-
 	Tracker.autorun ->
-		FlowRouter.watchPathChange()
-		Meteor.setTimeout ->
-			updateColorComponent()
-		, 400
+		hasColor = TempSettings.findOne { group: FlowRouter.getParam('group'), type: 'color' }, { fields: { _id: 1 } }
+		if hasColor
+			Meteor.setTimeout ->
+				$('.colorpicker-input').each (index, el) ->
+					new jscolor(el)
+			, 400
