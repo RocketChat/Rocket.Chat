@@ -91,6 +91,8 @@ Template.messageBox.helpers
 		return RocketChat.settings.get('FileUpload_MediaTypeWhiteList')
 
 	showFileUpload: ->
+		if Meteor.user().guestId
+			return false
 		if (RocketChat.settings.get('FileUpload_Enabled'))
 			roomData = Session.get('roomData' + this._id)
 			if roomData?.t is 'd'
@@ -102,13 +104,13 @@ Template.messageBox.helpers
 
 
 	showMic: ->
-		return Template.instance().showMicButton.get()
+		return Template.instance().showMicButton.get() and not Meteor.user().guestId
 
 	showVRec: ->
-		return Template.instance().showVideoRec.get()
+		return Template.instance().showVideoRec.get() and not Meteor.user().guestId
 
 	showSend: ->
-		if not Template.instance().isMessageFieldEmpty.get()
+		if not Template.instance().isMessageFieldEmpty.get() and not Meteor.user().guestId
 			return 'show-send'
 
 	showLocation: ->
