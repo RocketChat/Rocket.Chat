@@ -11,6 +11,7 @@ import {checkIfUserIsValid} from '../../data/checks';
 import {checkIfUserIsAdmin} from '../../data/checks';
 import {username, email, password, adminUsername, adminEmail, adminPassword} from '../../data/user.js';
 
+describe('Admin settings', () => {
 	before(() => {
 		checkIfUserIsAdmin(adminUsername, adminEmail, adminPassword);
 		sideNav.getChannelFromList('general').waitForVisible(5000);
