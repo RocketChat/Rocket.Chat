@@ -10,9 +10,6 @@ class PreferencesMainContent extends Page {
 	get avatarFileInput() { return browser.element('.avatar-file-input'); }
 	get useUploadedAvatar() { return browser.element('.avatar-suggestion-item:nth-of-type(2) .select-service'); }
 	get submitBtn() { return browser.element('.submit .button'); }
-	get sweetAlert() { return browser.element('.sweet-alert'); }
-	get sweetAlertConfirm() { return browser.element('.sweet-alert .sa-confirm-button-container'); }
-	get sweetAlertPasswordField() { return browser.element('.sweet-alert [type="password"]'); }
 
 	changeUsername(userName) {
 		this.userNameTextInput.waitForVisible(5000);

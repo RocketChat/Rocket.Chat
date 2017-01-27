@@ -11,7 +11,8 @@ Npm.depends({
 	'node-dogstatsd': '0.0.6',
 	'localforage': '1.4.2',
 	'lokijs': '1.4.1',
-	'bugsnag': '1.8.0'
+	'bugsnag': '1.8.0',
+	'prom-client': '7.0.1'
 });
 
 Package.onUse(function(api) {
@@ -49,6 +50,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/lib/debug.js', 'server');
 
 	// COMMON LIB
+	api.addFiles('lib/getURL.js');
 	api.addFiles('lib/settings.coffee');
 	api.addFiles('lib/configLogger.coffee');
 	api.addFiles('lib/callbacks.coffee');
@@ -61,6 +63,7 @@ Package.onUse(function(api) {
 	api.addFiles('lib/MessageTypes.coffee');
 
 	api.addFiles('server/lib/bugsnag.js', 'server');
+	api.addFiles('server/lib/metrics.js', 'server');
 
 	api.addFiles('server/lib/RateLimiter.coffee', 'server');
 
@@ -88,6 +91,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/functions/Notifications.coffee', 'server');
 
 	// SERVER LIB
+	api.addFiles('server/lib/PushNotification.js', 'server');
 	api.addFiles('server/lib/defaultBlockedDomainsList.js', 'server');
 	api.addFiles('server/lib/notifyUsersOnMessage.js', 'server');
 	api.addFiles('server/lib/roomTypes.coffee', 'server');

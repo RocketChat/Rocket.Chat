@@ -51,6 +51,20 @@ RocketChat.API.v1.addRoute('users.delete', { authRequired: true }, {
 	}
 });
 
+RocketChat.API.v1.addRoute('users.getAvatar', { authRequired: false }, {
+	get: function() {
+		const user = this.getUserFromParams();
+
+		const url = RocketChat.getURL(`/avatar/${user.username}`, { cdn: false, full: true });
+		this.response.setHeader('Location', url);
+
+		return {
+			statusCode: 307,
+			body: url
+		};
+	}
+});
+
 RocketChat.API.v1.addRoute('users.getPresence', { authRequired: true }, {
 	get: function() {
 		//BLAHHHHHHHHHH :'(
@@ -130,6 +144,28 @@ RocketChat.API.v1.addRoute('users.list', { authRequired: true }, {
 			offset,
 			total: RocketChat.models.Users.find(ourQuery).count()
 		});
+	}
+});
+
+RocketChat.API.v1.addRoute('users.register', { authRequired: false }, {
+	post: function() {
+		if (this.userId) {
+			return RocketChat.API.v1.failure('Logged in users can not register again.');
+		}
+
+		//We set their username here, so require it
+		//The `registerUser` checks for the other requirements
+		check(this.bodyParams, Match.ObjectIncluding({
+			username: String
+		}));
+
+		//Register the user
+		const userId = Meteor.call('registerUser', this.bodyParams);
+
+		//Now set their username
+		Meteor.runAsUser(userId, () => Meteor.call('setUsername', this.bodyParams.username));
+
+		return RocketChat.API.v1.success({ user: RocketChat.models.Users.findOneById(userId, { fields: RocketChat.API.v1.defaultFieldsToExclude }) });
 	}
 });
 

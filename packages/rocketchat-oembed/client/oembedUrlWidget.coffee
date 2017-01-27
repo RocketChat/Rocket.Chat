@@ -34,7 +34,7 @@ Template.oembedUrlWidget.helpers
 
 		decodedOgImage = @meta.ogImage?.replace?(/&amp;/g, '&')
 
-		url = decodedOgImage or this.meta.twitterImage
+		url = this.meta.msapplicationTileImage or decodedOgImage or this.meta.twitterImage
 
 		if not url?
 			return

@@ -72,7 +72,7 @@ Meteor.startup(function() {
 	};
 
 	Meteor.subscribe('userData', function() {
-		const userLanguage = Meteor.user() ? Meteor.user().language : window.defaultUserLanguage();
+		const userLanguage = Meteor.user() && Meteor.user().language ? Meteor.user().language : window.defaultUserLanguage();
 
 		if (localStorage.getItem('userLanguage') !== userLanguage) {
 			localStorage.setItem('userLanguage', userLanguage);

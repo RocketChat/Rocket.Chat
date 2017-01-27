@@ -6,7 +6,7 @@ class SideNav extends Page {
 
 	get channelType() { return browser.element('label[for="channel-type"]'); }
 	get channelReadOnly() { return browser.element('label[for="channel-ro"]'); }
-	get channelName() { return browser.element('#channel-name'); }
+	get channelName() { return browser.element('input#channel-name'); }
 	get saveChannelBtn() { return browser.element('.save-channel'); }
 
 	get messageInput() { return browser.element('.input-message'); }
@@ -55,8 +55,12 @@ class SideNav extends Page {
 	createChannel(channelName, isPrivate, isReadOnly) {
 		this.newChannelBtn.waitForVisible(10000);
 		this.newChannelBtn.click();
-		this.channelType.waitForVisible(10000);
+		this.channelName.waitForVisible(10000);
+		//workaround for incomplete setvalue bug
 		this.channelName.setValue(channelName);
+		this.channelName.setValue(channelName);
+		browser.pause(1000);
+		this.channelType.waitForVisible(10000);
 		if (isPrivate) {
 			this.channelType.click();
 		}
@@ -66,8 +70,8 @@ class SideNav extends Page {
 		browser.pause(500);
 		this.saveChannelBtn.click();
 		browser.pause(500);
-		browser.waitForExist('[title="'+channelName+'"]', 1000);
-		this.channelType.waitForVisible(500, true);
+		browser.waitForExist('[title="'+channelName+'"]', 10000);
+		this.channelType.waitForVisible(5000, true);
 	}
 
 	addPeopleToChannel(user) {
@@ -90,11 +94,10 @@ class SideNav extends Page {
 		this.newDirectMessageBtn.click();
 		this.directMessageTarget.waitForVisible(3000);
 		this.directMessageTarget.setValue(user);
-		browser.waitForVisible('.-autocomplete-item', 3000);
+		browser.waitForVisible('.-autocomplete-item', 5000);
 		browser.click('.-autocomplete-item');
-		browser.pause(200);
 		this.saveDirectMessageBtn.click();
-		browser.waitForExist('[title="'+user+'"]');
+		browser.waitForExist('[title="'+user+'"]', 5000);
 	}
 }
 

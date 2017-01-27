@@ -34,7 +34,7 @@
 			{{else}}
 				{{> loginLayout center="loginForm"}}
 			{{/if}}
-			<script>{{{CustomScriptLoggedOut}}}</script>
+			{{ CustomScriptLoggedOut }}
 		{{else}}
 			{{#unless hasUsername}}
 				{{> username}}
@@ -42,7 +42,6 @@
 				{{#if requirePasswordChange}}
 					{{> loginLayout center="resetPassword"}}
 				{{else}}
-					{{> spotlight}}
 					{{> videoCall overlay=true}}
 					<div id="user-card-popover"></div>
 					<div id="rocket-chat" class="{{embeddedVersion}} menu-nav">
@@ -59,7 +58,8 @@
 					{{> audioNotification }}
 				{{/if}}
 			{{/unless}}
-			<script>{{{CustomScriptLoggedIn}}}</script>
+			{{ CustomScriptLoggedIn }}
+			{{> photoswipe}}
 		{{/unless}}
 	{{else}}
 		{{> loading}}

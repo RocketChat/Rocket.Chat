@@ -23,7 +23,7 @@ class MainContent extends Page {
 	get lastMessageUser() { return browser.element('.message:last-child .user-card-message:nth-of-type(2)'); }
 	get lastMessage() { return browser.element('.message:last-child .body'); }
 	get lastMessageImg() { return browser.element('.message:last-child .body .inline-image'); }
-	get lastMessageDesc() { return browser.element('.message:last-child .body .attachment-description p'); }
+	get lastMessageDesc() { return browser.element('.message:last-child .body .attachment-description'); }
 	get lastMessageRoleAdded() { return browser.element('.message:last-child.subscription-role-added .body'); }
 	get beforeLastMessage() { return browser.element('.message:nth-last-child(2) .body'); }
 	get lastMessageUserTag() { return browser.element('.message:last-child .role-tag'); }
@@ -100,6 +100,29 @@ class MainContent extends Page {
 		this.settingLanguageSelect.click();
 		this.settingLanguageEnglish.click();
 		this.settingSaveBtn.click();
+	}
+
+	waitForLastMessageTextAttachmentEqualsText(text) {
+		browser.waitUntil(function() {
+			return browser.getText('.message:last-child .attachment-text') === text;
+		}, 2000);
+	}
+
+	waitForLastMessageEqualsText(text) {
+		browser.waitUntil(function() {
+			return browser.getText('.message:last-child .body') === text;
+		}, 2000);
+	}
+
+	tryToMentionAll() {
+		this.addTextToInput('@all');
+		this.mentionAllPopUp.waitForVisible(5000);
+		browser.pause(100);
+		this.mentionAllPopUp.click();
+		this.mentionAllPopUp.waitForVisible(5000, true);
+		this.sendBtn.click();
+		this.waitForLastMessageEqualsText('Notify all in this room is not allowed');
+		this.lastMessage.getText().should.equal('Notify all in this room is not allowed');
 	}
 
 	//do one of the message actions, based on the "action" parameter inserted.

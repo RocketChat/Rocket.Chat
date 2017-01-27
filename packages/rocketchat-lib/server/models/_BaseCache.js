@@ -7,16 +7,33 @@ import objectPath from 'object-path';
 const logger = new Logger('BaseCache');
 
 const lokiEq = loki.LokiOps.$eq;
+const lokiNe = loki.LokiOps.$ne;
 
 loki.LokiOps.$eq = function(a, b) {
 	if (Array.isArray(a)) {
-		return loki.LokiOps.$containsAny(a, b);
+		return a.indexOf(b) !== -1;
 	}
 	return lokiEq(a, b);
 };
 
-loki.LokiOps.$in = loki.LokiOps.$containsAny;
-loki.LokiOps.$nin = loki.LokiOps.$containsNone;
+loki.LokiOps.$ne = function(a, b) {
+	if (Array.isArray(a)) {
+		return a.indexOf(b) === -1;
+	}
+	return lokiNe(a, b);
+};
+
+const lokiIn = loki.LokiOps.$in;
+loki.LokiOps.$in = function(a, b) {
+	if (Array.isArray(a)) {
+		return a.some(subA => lokiIn(subA, b));
+	}
+	return lokiIn(a, b);
+};
+
+loki.LokiOps.$nin = function(a, b) {
+	return !loki.LokiOps.$in(a, b);
+};
 
 loki.LokiOps.$exists = function(a, b) {
 	if (b) {
@@ -684,6 +701,11 @@ class ModelsBaseCache extends EventEmitter {
 
 	findOneById(_id, options) {
 		return this.findByIndex('_id', _id, options).fetch();
+	}
+
+	findOneByIds(ids, options) {
+		const query = this.processQuery({ _id: { $in: ids }});
+		return this.processQueryOptionsOnResult(this.collection.findOne(query), options);
 	}
 
 	findWhere(query, options) {
