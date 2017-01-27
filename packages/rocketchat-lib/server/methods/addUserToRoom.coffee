@@ -12,7 +12,7 @@ Meteor.methods
 		room = RocketChat.models.Rooms.findOneById data.rid
 		userId = Meteor.userId()
 		user = Meteor.user()
-		userInRoom = room.usernames?.indexOf(Meteor.user().username) >= 0
+		userInRoom = room.usernames?.indexOf(user.username) >= 0
 		canAddToOwnRoom = RocketChat.authz.hasPermission userId, 'add-user-to-own-room', room._id
 		canAddToAnyRoom = RocketChat.authz.hasPermission userId, 'add-user-to-any-room'
 		newUser = RocketChat.models.Users.findOneByUsername data.username
@@ -24,11 +24,11 @@ Meteor.methods
 		if room.t is 'p' and not userInRoom
 			throw new Meteor.Error 'error-not-allowed', 'Not allowed', { method: 'addUserToRoom' }
 
-		# Can't add to channels if you're not a member (without higher permissions)
+		# Can't add to channels when you're not a member (without higher permissions)
 		if room.t is 'c' and not userInRoom and not canAddToAnyRoom
 			throw new Meteor.Error 'error-not-allowed', 'Not allowed', { method: 'addUserToRoom' }
 
-		# Can't add to channels if you're a member without permission
+		# Can't add to channels when you are a member without permission
 		if room.t is 'c' and userInRoom and not canAddToOwnRoom
 			throw new Meteor.Error 'error-not-allowed', 'Not allowed', { method: 'addUserToRoom' }
 
