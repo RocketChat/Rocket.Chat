@@ -1,3 +1,5 @@
+/* global generateSuggestion */
+
 RocketChat.Migrations.add({
 	version: 1,
 	up() {
@@ -13,7 +15,7 @@ RocketChat.Migrations.add({
 			if (username && username.trim() !== '') {
 				return RocketChat.models.Users.setUsername(user._id, username);
 			} else {
-				return console.log("User without username", JSON.stringify(user, null, ' '));
+				return console.log('User without username', JSON.stringify(user, null, ' '));
 			}
 		});
 	}
