@@ -1,9 +1,9 @@
 /* global Push, SystemLogger */
 
 Meteor.methods({
-	log() {
-		return console.log(...arguments);
-	},
+	// log() {
+	// 	return console.log(...arguments);
+	// },
 
 	push_test() {
 		const user = Meteor.user();
