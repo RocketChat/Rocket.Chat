@@ -315,9 +315,6 @@ Template.room.events
 				RoomHistoryManager.getMoreNext(@_id)
 	, 200
 
-	'click .load-more > button': ->
-		RoomHistoryManager.getMore(@_id)
-
 	'click .new-message': (e) ->
 		Template.instance().atBottom = true
 		Template.instance().find('.input-message').focus()
@@ -533,6 +530,12 @@ Template.room.onRendered ->
 	unless window.chatMessages[Session.get('openedRoom')]
 		window.chatMessages[Session.get('openedRoom')] = new ChatMessages
 	chatMessages[Session.get('openedRoom')].init(this.firstNode)
+
+	if Meteor.Device.isDesktop()
+		setTimeout ->
+			$('.message-form .input-message').focus()
+		, 100
+
 	# ScrollListener.init()
 
 	wrapper = this.find('.wrapper')

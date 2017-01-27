@@ -1,3 +1,5 @@
+/*globals jscolor*/
+/*eslint new-cap: ["error", { "newIsCapExceptions": ["jscolor"] }]*/
 import moment from 'moment';
 import toastr from 'toastr';
 
@@ -204,9 +206,6 @@ Template.livechatAppearance.events({
 		instance.offlineSuccessMessage.set(RocketChat.settings.get('Livechat_offline_success_message'));
 		instance.titleOffline.set(RocketChat.settings.get('Livechat_offline_title'));
 		instance.colorOffline.set(RocketChat.settings.get('Livechat_offline_title_color'));
-
-		instance.$('input.preview-settings[name=color]').minicolors('value', instance.color.get());
-		instance.$('input.preview-settings[name=colorOffline]').minicolors('value', instance.colorOffline.get());
 	},
 	'submit .rocket-form'(e, instance) {
 		e.preventDefault();
@@ -260,9 +259,8 @@ Template.livechatAppearance.events({
 
 Template.livechatAppearance.onRendered(function() {
 	Meteor.setTimeout(() => {
-		$('input.minicolors').minicolors({
-			theme: 'rocketchat',
-			letterCase: 'uppercase'
+		$('.colorpicker-input').each((index, el) => {
+			new jscolor(el);
 		});
 	}, 500);
 });

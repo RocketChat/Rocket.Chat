@@ -9,7 +9,6 @@ packages/rocketchat-livechat/app/node_modules
 packages/rocketchat-migrations/
 packages/rocketchat-theme/client/minicolors/jquery.minicolors.js
 packages/rocketchat-ui/lib/customEventPolyfill.js
-packages/rocketchat-ui/lib/jquery.swipebox.min.js
 packages/rocketchat-ui/lib/Modernizr.js
 packages/rocketchat-ui/lib/recorderjs/recorder.js
 packages/rocketchat-ui/lib/textarea-autogrow.js
