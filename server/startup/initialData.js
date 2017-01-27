@@ -1,12 +1,12 @@
 Meteor.startup(function() {
 	Meteor.defer(function() {
-		if (RocketChat.models.Rooms.findOneById('GENERAL') == null) {
+		if (!RocketChat.models.Rooms.findOneById('GENERAL')) {
 			RocketChat.models.Rooms.createWithIdTypeAndName('GENERAL', 'c', 'general', {
 				'default': true
 			});
 		}
 
-		if (RocketChat.models.Users.db.findOneById('rocket.cat') == null) {
+		if (!RocketChat.models.Users.db.findOneById('rocket.cat')) {
 			RocketChat.models.Users.create({
 				_id: 'rocket.cat',
 				name: 'Rocket.Cat',
@@ -33,7 +33,7 @@ Meteor.startup(function() {
 			rs.pipe(ws);
 		}
 
-		if (process.env.ADMIN_PASS != null) {
+		if (process.env.ADMIN_PASS) {
 			if (_.isEmpty(RocketChat.authz.getUsersInRole('admin').fetch())) {
 				console.log('Inserting admin user:'.green);
 				const adminUser = {
@@ -45,7 +45,7 @@ Meteor.startup(function() {
 					active: true
 				};
 
-				if (process.env.ADMIN_NAME != null) {
+				if (process.env.ADMIN_NAME) {
 					adminUser.name = process.env.ADMIN_NAME;
 				}
 
