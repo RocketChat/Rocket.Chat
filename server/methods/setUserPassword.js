@@ -2,13 +2,14 @@ Meteor.methods({
 	setUserPassword(password) {
 		check(password, String);
 
-		if (!Meteor.userId()) {
+		const userId = Meteor.userId();
+
+		if (!userId) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: 'setUserPassword'
 			});
 		}
 
-		const userId = Meteor.userId();
 		const user = RocketChat.models.Users.findOneById(userId);
 
 		if (user && user.requirePasswordChange !== true) {
