@@ -1324,7 +1324,7 @@ label.required::after {
 	.rooms-list {
 		direction: rtl;
 		position: absolute;
-		top: @header-min-height;
+		top: @header-min-height + @toolbar-height;
 		bottom: @footer-min-height;
 		width: 100%;
 		overflow-x: hidden;
@@ -1337,7 +1337,6 @@ label.required::after {
 			padding-left: 8px;
 			padding-bottom: 1em;
 			position: relative;
-			padding-top: 50px;
 		}
 	}
 
@@ -1372,7 +1371,7 @@ label.required::after {
 		top: 0;
 		left: 0;
 		width: 100%;
-		z-index: 2;
+		z-index: 3;
 		cursor: pointer;
 		min-height: @header-min-height;
 		height: @header-min-height;
@@ -1587,11 +1586,11 @@ label.required::after {
 		-webkit-justify-content: center;
 
 		&.top-unread-rooms {
-			top: 105px;
+			top: @header-min-height + @toolbar-height;
 		}
 
 		&.bottom-unread-rooms {
-			bottom: 70px;
+			bottom: @footer-min-height;
 		}
 
 		i {
@@ -1614,15 +1613,15 @@ label.required::after {
 }
 
 .toolbar {
-	position: fixed;
-	width: 244px;
-	z-index: 3;
-	top: 60px;
-	padding-top: 10px;
+	position: absolute;
+	width: 100%;
+	z-index: 2;
+	top: @header-min-height;
+	height: @toolbar-height;
 }
 
 .toolbar-search {
-	padding-right: 8px;
+	margin: 10px 8px;
 	position: relative;
 }
 
@@ -1637,7 +1636,7 @@ label.required::after {
 
 .toolbar-search__icon--cancel {
 	left: auto;
-	right: 8px;
+	right: 0;
 	opacity: 0;
 	transition: opacity 0.3s;
 }
@@ -2473,21 +2472,43 @@ label.required::after {
 	}
 
 	&.search-results-list {
-		top: 25px;
-		height: calc(~"100vh - 200px");
+		top: 0;
+		height: calc(~"100vh -" @header-min-height + @toolbar-height + @footer-min-height);
 		overflow-y: auto;
 		box-shadow: none;
 		border-radius: 0;
+		padding: 25px 0 0 8px;
+		direction: rtl;
 
 		.popup-item {
 			white-space: nowrap;
 			overflow: hidden;
 			text-overflow: ellipsis;
 			padding-left: 6px;
+			position: relative;
+			direction: ltr;
+			height: 30px;
+
+			i::before {
+				margin-right: 0;
+			}
+		}
+
+		.room-title {
+			line-height: 30px;
+			font-size: 15px;
+		}
+
+		.bold {
+			font-weight: 700;
 		}
 
 		.unread {
 			top: 8px;
+		}
+
+		.loading-animation {
+			position: relative;
 		}
 	}
 }
