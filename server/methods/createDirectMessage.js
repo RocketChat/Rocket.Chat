@@ -40,6 +40,7 @@ Meteor.methods({
 
 		const now = new Date();
 
+		// Make sure we have a room
 		RocketChat.models.Rooms.upsert({
 			_id: rid
 		}, {
@@ -53,6 +54,7 @@ Meteor.methods({
 			}
 		});
 
+		// Make user I have a subcription to this room
 		const upsertSubscription = {
 			$set: {
 				ts: now,
@@ -77,16 +79,12 @@ Meteor.methods({
 
 		RocketChat.models.Subscriptions.upsert({
 			rid: rid,
-			$and: [{
-				'u._id': me._id
-			}]
+			$and: [{'u._id': me._id}] // work around to solve problems with upsert and dot
 		}, upsertSubscription);
 
 		RocketChat.models.Subscriptions.upsert({
 			rid: rid,
-			$and: [{
-				'u._id': to._id
-			}]
+			$and: [{'u._id': to._id}] // work around to solve problems with upsert and dot
 		}, {
 			$setOnInsert: {
 				name: me.username,
