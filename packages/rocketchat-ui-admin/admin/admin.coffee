@@ -154,6 +154,9 @@ Template.admin.helpers
 
 		return TempSettings.find(query).count() > 0
 
+	isSettingChanged: (id) ->
+		return RocketChat.TempSettings.findOne({_id: id}, {fields: {changed: 1}}).changed
+
 	translateSection: (section) ->
 		if section.indexOf(':') > -1
 			return section
