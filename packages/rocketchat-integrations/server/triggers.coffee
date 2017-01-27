@@ -105,10 +105,10 @@ executeScript = (integration, method, params) ->
 
 		return result
 	catch e
-		logger.incoming.error '[Error running Script in Trigger', integration.name, ':]'
-		logger.incoming.error integration.scriptCompiled.replace(/^/gm, '  ')
-		logger.incoming.error "[Stack:]"
-		logger.incoming.error e.stack.replace(/^/gm, '  ')
+		logger.outgoing.error '[Error running Script in Trigger', integration.name, ':]'
+		logger.outgoing.error integration.scriptCompiled.replace(/^/gm, '  ')
+		logger.outgoing.error "[Stack:]"
+		logger.outgoing.error e.stack.replace(/^/gm, '  ')
 		return
 
 
