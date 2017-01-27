@@ -109,9 +109,10 @@ module.exports = {
 		// tags and grep only work when watch mode is false
 		tags: '',
 		grep: null,
-		timeout: 60000,
-		reporter: 'spec',
+		timeout: 10000,
+		reporter: 'min',
 		slow: 100,
+		retries: 3,
 		bail: false // bail after first test failure
 	},
 
