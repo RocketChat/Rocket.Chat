@@ -91,10 +91,10 @@ executeScript = (integration, method, params) ->
 			HTTP: (method, url, options) ->
 				try
 					return {} =
-					result: HTTP.call method, url, options
+						result: HTTP.call method, url, options
 				catch e
 					return {} =
-					error: e
+						error: e
 			script: script
 			method: method
 			params: params
