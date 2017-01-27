@@ -22,6 +22,7 @@ Meteor.methods({
 
 		RocketChat.models.Integrations.update(integrationId, {
 			$set: {
+				event: integration.event,
 				enabled: integration.enabled,
 				name: integration.name,
 				avatar: integration.avatar,

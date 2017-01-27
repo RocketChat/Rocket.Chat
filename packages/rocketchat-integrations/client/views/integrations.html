@@ -39,7 +39,7 @@
 												Outgoing WebHook {{#if name}}- {{name}}{{/if}}
 											</div>
 											<div class="admin-integrations-new-item-description">
-												{{{_ "Created_at_s_by_s" (dateFormated _createdAt) _createdBy.username}}}
+												{{{_ "Created_at_s_by_s_triggered_by_s" (dateFormated _createdAt) _createdBy.username (eventType18n event)}}}
 											</div>
 										</div>
 										<i class="icon-angle-right"></i>

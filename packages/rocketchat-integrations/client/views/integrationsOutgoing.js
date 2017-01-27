@@ -3,28 +3,8 @@
 import toastr from 'toastr';
 
 Template.integrationsOutgoing.onCreated(function _integrationsOutgoingOnCreated() {
-	return this.record = new ReactiveVar({
-		username: 'rocket.cat',
-		token: Random.id(24)
-	});
-});
-
-
-Template.integrationsOutgoing.helpers({
-	join(arr, sep) {
-		if (!arr || !arr.join) {
-			return arr;
-		}
-
-		return arr.join(sep);
-	},
-
-	hasPermission() {
-		return RocketChat.authz.hasAtLeastOnePermission(['manage-integrations', 'manage-own-integrations']);
-	},
-
-	data() {
-		const params = Template.instance().data.params ? Template.instance().data.params() : undefined;
+	this.getData = () => {
+		const params = this.data.params ? this.data.params() : undefined;
 
 		if (params && params.id) {
 			let data;
@@ -43,11 +23,56 @@ Template.integrationsOutgoing.helpers({
 			}
 		}
 
-		return Template.instance().record.curValue;
+		return this.record.get();
+	};
+
+	return this.record = new ReactiveVar({
+		username: 'rocket.cat',
+		token: Random.id(24)
+	});
+});
+
+Template.integrationsOutgoing.helpers({
+	join(arr, sep) {
+		if (!arr || !arr.join) {
+			return arr;
+		}
+
+		return arr.join(sep);
+	},
+
+	hasPermission() {
+		return RocketChat.authz.hasAtLeastOnePermission(['manage-integrations', 'manage-own-integrations']);
+	},
+
+	data() {
+		return Template.instance().getData();
+	},
+
+	eventTypes() {
+		return Object.values(RocketChat.integrations.outgoingEvents);
+	},
+
+	hasTypeSelected() {
+		const record = Template.instance().getData();
+
+		return typeof record.event === 'string' && record.event !== '';
+	},
+
+	shouldDisplayChannel() {
+		const record = Template.instance().getData();
+
+		return typeof record.event === 'string' && RocketChat.integrations.outgoingEvents[record.event].use.channel;
+	},
+
+	shouldDisplayTriggerWords() {
+		const record = Template.instance().getData();
+
+		return typeof record.event === 'string' && RocketChat.integrations.outgoingEvents[record.event].use.triggerWords;
 	},
 
 	example() {
-		const record = Template.instance().record.get();
+		const record = Template.instance().getData();
 
 		return {
 			_id: Random.id(),
@@ -75,7 +100,7 @@ Template.integrationsOutgoing.helpers({
 	},
 
 	exampleJson() {
-		const record = Template.instance().record.get();
+		const record = Template.instance().getData();
 		const data = {
 			username: record.alias,
 			icon_emoji: record.emoji,
@@ -124,16 +149,24 @@ Template.integrationsOutgoing.helpers({
 Template.integrationsOutgoing.events({
 	'blur input': (e, t) => {
 		t.record.set({
+			event: $('[name=event]').val().trim(),
 			name: $('[name=name]').val().trim(),
 			alias: $('[name=alias]').val().trim(),
 			emoji: $('[name=emoji]').val().trim(),
 			avatar: $('[name=avatar]').val().trim(),
-			channel: $('[name=channel]').val().trim(),
+			channel: $('[name=channel]').val()? $('[name=channel]').val().trim() : undefined,
 			username: $('[name=username]').val().trim(),
-			triggerWords: $('[name=triggerWords]').val().trim(),
+			triggerWords: $('[name=triggerWords]').val() ? $('[name=triggerWords]').val().trim() : undefined,
 			urls: $('[name=urls]').val().trim(),
 			token: $('[name=token]').val().trim()
 		});
+	},
+
+	'change select': (e, t) => {
+		const record = t.record.get();
+		record.event = $('[name=event]').val().trim();
+
+		t.record.set(record);
 	},
 
 	'click .submit > .delete': () => {
@@ -179,36 +212,45 @@ Template.integrationsOutgoing.events({
 	},
 
 	'click .submit > .save': () => {
+		const event = $('[name=event]').val().trim();
 		const enabled = $('[name=enabled]:checked').val().trim();
 		const name = $('[name=name]').val().trim();
 		const impersonateUser = $('[name=impersonateUser]:checked').val().trim();
 		const alias = $('[name=alias]').val().trim();
 		const emoji = $('[name=emoji]').val().trim();
 		const avatar = $('[name=avatar]').val().trim();
-		const channel = $('[name=channel]').val().trim();
 		const username = $('[name=username]').val().trim();
 		const token = $('[name=token]').val().trim();
 		const scriptEnabled = $('[name=scriptEnabled]:checked').val().trim();
 		const script = $('[name=script]').val().trim();
-		let triggerWords = $('[name=triggerWords]').val().trim();
 		let urls = $('[name=urls]').val().trim();
 
 		if (username === '' && impersonateUser === '0') {
 			return toastr.error(TAPi18n.__('The_username_is_required'));
 		}
 
-		triggerWords = triggerWords.split(',').filter((word) => word.trim() !== '');
 		urls = urls.split('\n').filter((url) => url.trim() !== '');
-
 		if (urls.length === 0) {
 			return toastr.error(TAPi18n.__('You_should_inform_one_url_at_least'));
 		}
 
-		if (channel.trim() === '') {
-			return toastr.error(TAPi18n.__('error-the-field-is-required', { field: TAPi18n.__('Channel') }));
+		let triggerWords;
+		if (RocketChat.integrations.outgoingEvents[event].use.triggerWords) {
+			triggerWords = $('[name=triggerWords]').val().trim();
+			triggerWords = triggerWords.split(',').filter((word) => word.trim() !== '');
+		}
+
+		let channel;
+		if (RocketChat.integrations.outgoingEvents[event].use.channel) {
+			channel = $('[name=channel]').val().trim();
+
+			if (channel && channel.trim() === '') {
+				return toastr.error(TAPi18n.__('error-the-field-is-required', { field: TAPi18n.__('Channel') }));
+			}
 		}
 
 		const integration = {
+			event: event !== '' ? event : undefined,
 			enabled: enabled === '1',
 			username: username,
 			channel: channel !== '' ? channel : undefined,

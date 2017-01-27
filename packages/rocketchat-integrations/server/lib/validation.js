@@ -7,12 +7,16 @@ RocketChat.integrations.validateOutgoing = function _validateOutgoing(integratio
 		delete integration.channel;
 	}
 
+	if (!integration.event || !Match.test(integration.event, String) || integration.event.trim() === '' || !RocketChat.integrations.outgoingEvents[integration.event]) {
+		throw new Meteor.Error('error-invalid-event-type', 'Invalid event type', { function: 'validateOutgoing' });
+	}
+
 	if (!integration.username || !Match.test(integration.username, String) || integration.username.trim() === '') {
-		throw new Meteor.Error('error-invalid-username', 'Invalid username', { method: 'addOutgoingIntegration' });
+		throw new Meteor.Error('error-invalid-username', 'Invalid username', { function: 'validateOutgoing' });
 	}
 
 	if (!Match.test(integration.urls, [String])) {
-		throw new Meteor.Error('error-invalid-urls', 'Invalid URLs', { method: 'addOutgoingIntegration' });
+		throw new Meteor.Error('error-invalid-urls', 'Invalid URLs', { function: 'validateOutgoing' });
 	}
 
 	for (const [index, url] of integration.urls.entries()) {
@@ -24,24 +28,29 @@ RocketChat.integrations.validateOutgoing = function _validateOutgoing(integratio
 	integration.urls = _.without(integration.urls, [undefined]);
 
 	if (integration.urls.length === 0) {
-		throw new Meteor.Error('error-invalid-urls', 'Invalid URLs', { method: 'addOutgoingIntegration' });
+		throw new Meteor.Error('error-invalid-urls', 'Invalid URLs', { function: 'validateOutgoing' });
 	}
 
-	if (!Match.test(integration.channel, String)) {
-		throw new Meteor.Error('error-invalid-channel', 'Invalid Channel', { method: 'addOutgoingIntegration' });
-	}
+	let channels = [];
+	if (RocketChat.integrations.outgoingEvents[integration.event].use.channel) {
+		if (!Match.test(integration.channel, String)) {
+			throw new Meteor.Error('error-invalid-channel', 'Invalid Channel', { function: 'validateOutgoing' });
+		} else {
+			channels = _.map(integration.channel.split(','), (channel) => s.trim(channel));
 
-	const channels = _.map(integration.channel.split(','), (channel) => s.trim(channel));
-
-	for (const channel of channels) {
-		if (!validChannelChars.includes(channel[0]) && !scopedChannels.includes(channel.toLowerCase())) {
-			throw new Meteor.Error('error-invalid-channel-start-with-chars', 'Invalid channel. Start with @ or #', { method: 'updateIncomingIntegration' });
+			for (const channel of channels) {
+				if (!validChannelChars.includes(channel[0]) && !scopedChannels.includes(channel.toLowerCase())) {
+					throw new Meteor.Error('error-invalid-channel-start-with-chars', 'Invalid channel. Start with @ or #', { function: 'validateOutgoing' });
+				}
+			}
 		}
+	} else if (!RocketChat.authz.hasPermission(userId, 'manage-integrations')) {
+		throw new Meteor.Error('error-invalid-permissions', 'Invalid permission for required Integration creation.', { function: 'validateOutgoing' });
 	}
 
-	if (integration.triggerWords) {
+	if (RocketChat.integrations.outgoingEvents[integration.event].use.triggerWords && integration.triggerWords) {
 		if (!Match.test(integration.triggerWords, [String])) {
-			throw new Meteor.Error('error-invalid-triggerWords', 'Invalid triggerWords', { method: 'addOutgoingIntegration' });
+			throw new Meteor.Error('error-invalid-triggerWords', 'Invalid triggerWords', { function: 'validateOutgoing' });
 		}
 
 		for (const [index, triggerWord] of integration.triggerWords) {
@@ -51,6 +60,8 @@ RocketChat.integrations.validateOutgoing = function _validateOutgoing(integratio
 		}
 
 		integration.triggerWords = _.without(integration.triggerWords, [undefined]);
+	} else {
+		delete integration.triggerWords;
 	}
 
 	if (integration.scriptEnabled === true && integration.script && integration.script.trim() !== '') {
@@ -70,7 +81,7 @@ RocketChat.integrations.validateOutgoing = function _validateOutgoing(integratio
 			if (channel === 'all_public_channels') {
 				// No special permissions needed to add integration to public channels
 			} else if (!RocketChat.authz.hasPermission(userId, 'manage-integrations')) {
-				throw new Meteor.Error('error-invalid-channel', 'Invalid Channel', { method: 'addOutgoingIntegration' });
+				throw new Meteor.Error('error-invalid-channel', 'Invalid Channel', { function: 'validateOutgoing' });
 			}
 		} else {
 			let record;
@@ -97,11 +108,11 @@ RocketChat.integrations.validateOutgoing = function _validateOutgoing(integratio
 			}
 
 			if (!record) {
-				throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'addOutgoingIntegration' });
+				throw new Meteor.Error('error-invalid-room', 'Invalid room', { function: 'validateOutgoing' });
 			}
 
 			if (record.usernames && !RocketChat.authz.hasPermission(userId, 'manage-integrations') && RocketChat.authz.hasPermission(userId, 'manage-own-integrations') && !record.usernames.includes(Meteor.user().username)) {
-				throw new Meteor.Error('error-invalid-channel', 'Invalid Channel', { method: 'addOutgoingIntegration' });
+				throw new Meteor.Error('error-invalid-channel', 'Invalid Channel', { function: 'validateOutgoing' });
 			}
 		}
 	}
@@ -109,7 +120,7 @@ RocketChat.integrations.validateOutgoing = function _validateOutgoing(integratio
 	const user = RocketChat.models.Users.findOne({ username: integration.username });
 
 	if (!user) {
-		throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'addOutgoingIntegration' });
+		throw new Meteor.Error('error-invalid-user', 'Invalid user', { function: 'validateOutgoing' });
 	}
 
 	integration.type = 'webhook-outgoing';
