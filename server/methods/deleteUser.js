@@ -21,11 +21,7 @@ Meteor.methods({
 			});
 		}
 
-		const adminCount = Meteor.users.find({
-			roles: {
-				$in: ['admin']
-			}
-		}).count();
+		const adminCount = Meteor.users.find({roles: 'admin'}).count();
 
 		const userIsAdmin = user.roles.indexOf('admin') > -1;
 
