@@ -67,7 +67,7 @@
 		"curly": [2, "all"],
 		"eqeqeq": [2, "allow-null"],
 		"new-cap":  [2, {
-			"capIsNewExceptions": ["Match.Optional", "Match.Maybe", "Match.ObjectIncluding"]
+			"capIsNewExceptions": ["Match.Optional", "Match.Maybe", "Match.ObjectIncluding", "Push.Configure"]
 		}],
 		"use-isnan": 2,
 		"valid-typeof": 2,
@@ -92,6 +92,7 @@
 		"check"                       : false,
 		"CryptoJS"                    : false,
 		"Department"                  : false,
+		"DDPRateLimiter"              : false,
 		"EJSON"                       : false,
 		"Email"                       : false,
 		"FlowRouter"                  : false,
