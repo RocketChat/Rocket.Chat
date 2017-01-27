@@ -7,10 +7,7 @@ Template.body.onRendered ->
 		if e.keyCode is 80 and (e.ctrlKey is true or e.metaKey is true) and e.shiftKey is false
 			e.preventDefault()
 			e.stopPropagation()
-			spotlight.show()
-
-		if e.keyCode is 27
-			spotlight.hide()
+			toolbarSearch.focus()
 
 		unread = Session.get('unread')
 		if e.keyCode is 27 and e.shiftKey is true and unread? and unread isnt ''
@@ -37,8 +34,6 @@ Template.body.onRendered ->
 			return
 		if /input|textarea|select/i.test(target.tagName)
 			return
-		if $.swipebox.isOpen
-			return
 		$inputMessage = $('textarea.input-message')
 		if 0 == $inputMessage.length
 			return
@@ -54,12 +49,6 @@ Template.body.onRendered ->
 				return fireGlobalEvent('click-message-link', { link: link.pathname + link.search })
 
 			FlowRouter.go(link.pathname + link.search, null, FlowRouter.current().queryParams)
-
-		if $(link).hasClass('swipebox')
-			if RocketChat.Layout.isEmbedded()
-				e.preventDefault()
-				e.stopPropagation()
-				fireGlobalEvent('click-image-link', { href: link.href })
 
 	Tracker.autorun (c) ->
 		w = window
@@ -97,10 +86,12 @@ Template.main.helpers
 			return false
 
 	useIframe: ->
-		return RocketChat.iframeLogin.reactiveEnabled.get()
+		iframeEnabled = (typeof RocketChat.iframeLogin isnt "undefined")
+		return (iframeEnabled and RocketChat.iframeLogin.reactiveEnabled.get())
 
 	iframeUrl: ->
-		return RocketChat.iframeLogin.reactiveIframeUrl.get()
+		iframeEnabled = (typeof RocketChat.iframeLogin isnt "undefined")
+		return (iframeEnabled and RocketChat.iframeLogin.reactiveIframeUrl.get())
 
 	subsReady: ->
 		routerReady = FlowRouter.subsReady('userData', 'activeUsers')
@@ -117,10 +108,16 @@ Template.main.helpers
 		return Meteor.user()?.requirePasswordChange is true
 
 	CustomScriptLoggedOut: ->
-		RocketChat.settings.get 'Custom_Script_Logged_Out'
+		script = RocketChat.settings.get('Custom_Script_Logged_Out') or ''
+		if script.trim()
+			eval(script)
+		return
 
 	CustomScriptLoggedIn: ->
-		RocketChat.settings.get 'Custom_Script_Logged_In'
+		script = RocketChat.settings.get('Custom_Script_Logged_In') or ''
+		if script.trim()
+			eval(script)
+		return
 
 	embeddedVersion: ->
 		return 'embedded-view' if RocketChat.Layout.isEmbedded()
@@ -143,7 +140,7 @@ Template.main.events
 		if $(e.currentTarget).closest('.main-content').length > 0
 			t.touchstartX = e.originalEvent.touches[0].clientX
 			t.touchstartY = e.originalEvent.touches[0].clientY
-			t.mainContent = $('.main-content, .flex-tab-bar')
+			t.mainContent = $('.main-content')
 			t.wrapper = $('.messages-box > .wrapper')
 
 	'touchmove': (e, t) ->
