@@ -148,5 +148,13 @@ Template.toolbarSearchList.helpers({
 		} else {
 			return 'status-' + (RocketChat.roomTypes.getUserStatus(this.t, this.rid || this._id) || 'offline');
 		}
+	},
+
+	displayName() {
+		if (RocketChat.settings.get('UI_Use_Real_Name') && this.fname) {
+			return this.fname;
+		} else {
+			return this.name;
+		}
 	}
 });
