@@ -18,9 +18,13 @@ Template.message.helpers
 	getEmoji: (emoji) ->
 		return renderEmoji emoji
 	getName: ->
+		if this.alias
+			return this.alias
 		if RocketChat.settings.get('UI_Use_Real_Name') and this.u?.name
 			return this.u.name
 		return this.u?.username
+	showUsername: ->
+		return this.alias or (RocketChat.settings.get('UI_Use_Real_Name') and this.u?.name)
 	own: ->
 		return 'own' if this.u?._id is Meteor.userId()
 	timestamp: ->
