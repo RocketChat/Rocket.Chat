@@ -6,11 +6,12 @@
 function inviteAll(type) {
 
 	return function inviteAll(command, params, item) {
+
 		if (!/invite\-all-(to|from)/.test(command) || !Match.test(params, String)) {
 			return;
 		}
 
-		let regexp = /#([\d-_\w]+)/g,
+		let regexp = /#?([\d-_\w]+)/g,
 			[, channel] = regexp.exec(params.trim());
 
 		if (!channel) {
@@ -34,23 +35,35 @@ function inviteAll(type) {
 		}
 		let users = baseChannel.usernames || [];
 
-		if (users.length > RocketChat.settings.get('API_User_Limit')) {
+		try {
+			if (users.length > RocketChat.settings.get('API_User_Limit')) {
+				throw new Meteor.Error('error-user-limit-exceeded', 'User Limit Exceeded', {
+					method: 'addAllToRoom'
+				});
+			}
+
+			if (!targetChannel && ['c', 'p'].indexOf(baseChannel.t) > -1) {
+				Meteor.call(baseChannel.t === 'c' ? 'createChannel' : 'createPrivateGroup', channel, users);
+				RocketChat.Notifications.notifyUser(Meteor.userId(), 'message', {
+					_id: Random.id(),
+					rid: item.rid,
+					ts: new Date(),
+					msg: TAPi18n.__('Channel_created', {
+						postProcess: 'sprintf',
+						sprintf: [channel]
+					}, currentUser.language)
+				});
+			} else {
+				Meteor.call('addUsersToRoom', {
+					rid: targetChannel._id,
+					users: users
+				});
+			}
 			return RocketChat.Notifications.notifyUser(Meteor.userId(), 'message', {
 				_id: Random.id(),
 				rid: item.rid,
 				ts: new Date(),
-				msg: TAPi18n.__('error-user-limit-exceeded', null, currentUser.language)
-			});
-		}
-
-		if (!targetChannel && ['c', 'p'].indexOf(baseChannel.t) > -1) {
-			return Meteor.call(baseChannel.t === 'c' ? 'createChannel' : 'createPrivateGroup', channel, users);
-		}
-
-		try {
-			Meteor.call('addUsersToRoom', {
-				rid: targetChannel._id,
-				users: users
+				msg: TAPi18n.__('Users_added', null, currentUser.language)
 			});
 		} catch (e) {
 			let msg = e.error === 'cant-invite-for-direct-room' ? 'Cannot_invite_users_to_direct_rooms' : e.error;
@@ -63,7 +76,6 @@ function inviteAll(type) {
 		}
 	};
 }
-
 RocketChat.slashCommands.add('invite-all-to', inviteAll('to'));
 RocketChat.slashCommands.add('invite-all-from', inviteAll('from'));
 module.exports = inviteAll;
