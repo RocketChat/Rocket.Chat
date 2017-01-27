@@ -201,7 +201,7 @@ RocketChat.integrations.triggerHandler = new class RocketChatIntegrationHandler 
 	}
 
 	executeTriggers() {
-		logger.outgoing('Execute Triggers:', arguments[0]);
+		logger.outgoing.debug('Execute Triggers:', arguments[0]);
 
 		const argObject = this.eventNameArgumentsToObject(...arguments);
 		const { event, message, room } = argObject;

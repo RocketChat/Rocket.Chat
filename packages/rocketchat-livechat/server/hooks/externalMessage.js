@@ -37,7 +37,8 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 			const response = HTTP.post('https://api.api.ai/api/query?v=20150910', {
 				data: {
 					query: message.msg,
-					lang: apiaiLanguage
+					lang: apiaiLanguage,
+					sessionId: room._id
 				},
 				headers: {
 					'Content-Type': 'application/json; charset=utf-8',
