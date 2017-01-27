@@ -1,5 +1,3 @@
-/* global generateSuggestion */
-
 RocketChat.Migrations.add({
 	version: 1,
 	up() {
@@ -11,7 +9,7 @@ RocketChat.Migrations.add({
 				$exists: true
 			}
 		}).forEach((user) => {
-			const username = generateSuggestion(user);
+			const username = RocketChat.generateUsernameSuggestion(user);
 			if (username && username.trim() !== '') {
 				return RocketChat.models.Users.setUsername(user._id, username);
 			} else {
