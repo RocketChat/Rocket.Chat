@@ -1,11 +1,11 @@
 /* globals FileSystemStore:true, FileUpload, UploadFS, RocketChatFile */
 
-let storeName = 'fileSystem';
+const storeName = 'fileSystem';
 
 FileSystemStore = null;
 
-let createFileSystemStore = _.debounce(function() {
-	let stores = UploadFS.getStores();
+const createFileSystemStore = _.debounce(function() {
+	const stores = UploadFS.getStores();
 	if (stores[storeName]) {
 		delete stores[storeName];
 	}
@@ -48,14 +48,14 @@ let createFileSystemStore = _.debounce(function() {
 
 RocketChat.settings.get('FileUpload_FileSystemPath', createFileSystemStore);
 
-var fs = Npm.require('fs');
+const fs = Npm.require('fs');
 
 FileUpload.addHandler(storeName, {
 	get(file, req, res) {
-		let filePath = FileSystemStore.getFilePath(file._id, file);
+		const filePath = FileSystemStore.getFilePath(file._id, file);
 
 		try {
-			let stat = Meteor.wrapAsync(fs.stat)(filePath);
+			const stat = Meteor.wrapAsync(fs.stat)(filePath);
 
 			if (stat && stat.isFile()) {
 				file = FileUpload.addExtensionTo(file);
@@ -72,6 +72,7 @@ FileUpload.addHandler(storeName, {
 			return;
 		}
 	},
+
 	delete(file) {
 		return FileSystemStore.delete(file._id);
 	}
