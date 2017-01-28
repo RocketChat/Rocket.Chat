@@ -35,6 +35,7 @@ Template.membersList.helpers
 				username: username
 				status: onlineUsers[username]?.status
 				muted: username in roomMuted
+				utcOffsetNum: onlineUsers[username].utcOffset
 				utcOffset: utcOffset
 			}
 
@@ -63,6 +64,9 @@ Template.membersList.helpers
 		roomData = Session.get('roomData' + this._id)
 		return '' unless roomData
 		return roomData.t in ['p', 'c'] and RocketChat.authz.hasAllPermission('add-user-to-room', this._id)
+
+	showUtcOffset: ->
+		return this.utcOffsetNum isnt Meteor.user().utcOffset
 
 	autocompleteSettingsAddUser: ->
 		return {
