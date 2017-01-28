@@ -104,7 +104,6 @@ oauth2@1.1.11
 observe-sequence@1.0.14
 ordered-dict@1.0.9
 ostrio:cookies@2.1.2
-paintchat:paintchat-main@0.0.1
 pauli:accounts-linkedin@1.3.1
 pauli:linkedin@1.3.1
 peerlibrary:aws-sdk@2.4.9_1
@@ -176,6 +175,7 @@ rocketchat:oauth2-server@2.0.0
 rocketchat:oauth2-server-config@1.0.0
 rocketchat:oembed@0.0.1
 rocketchat:otr@0.0.1
+rocketchat:paint@0.0.1
 rocketchat:piwik@0.0.1
 rocketchat:push-notifications@0.0.1
 rocketchat:reactions@0.0.1
