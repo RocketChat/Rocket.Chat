@@ -1,16 +1,16 @@
 Images.allow({
-  insert: function(userId, doc) {
-    // TODO: check room privileges
-    return false;
-  },
+	insert: function (userId, doc) {
+		// TODO: check room privileges
+		return false;
+	},
 
-  update: function(userId, doc, fields, modifier) {
-    return false;
-  },
+	update: function (userId, doc, fields, modifier) {
+		return false;
+	},
 
-  remove: function(userId, doc) {
-    return false;
-  },
+	remove: function (userId, doc) {
+		return false;
+	},
 });
 
 
@@ -18,11 +18,11 @@ Images.allow({
 //================================================================================
 
 // TODO: pagination
-Meteor.publish('images', function() {
+Meteor.publish('images', function () {
 	if (!this.userId) {
 		return [];
 	}
-  return Images.find({}, {fields: {data: 0}});
+	return Images.find({}, {fields: {data: 0}});
 });
 
 

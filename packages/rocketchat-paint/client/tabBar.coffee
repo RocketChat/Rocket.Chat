@@ -18,13 +18,13 @@ RocketChat.callbacks.add 'enter-room', ->
 	PaintChat.getTextures() # Load all the textures for the brushes.
 	#console.log RocketChat.TabBar.getTemplate()
 	if RocketChat.TabBar.getTemplate() == "drawingBoardMain"
-		#console.log "I found drawingBoardMain"
+#console.log "I found drawingBoardMain"
 		Session.set('settingsTemplate', null)
 		if PaintChat.drawingCanvas
 			Blaze.remove(PaintChat.drawingCanvas)
 			PaintChat.Strokes.stop();
 			PaintChat.drawingCanvas = Blaze.render(Template.drawingCanvas, $('#drawingCanvas')[0])
-			#console.log ('replaced drawingCanvas');
+#console.log ('replaced drawingCanvas');
 	else
 		return 0
 , RocketChat.callbacks.priority.MEDIUM, 'deal-with-room-change'

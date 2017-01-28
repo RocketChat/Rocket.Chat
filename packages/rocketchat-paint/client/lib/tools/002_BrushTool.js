@@ -14,7 +14,7 @@ BrushTool = function BrushTool(params) {
 	this.texture = new ReactiveVar(params.texture || 0);
 	this.scatter = new ReactiveVar(params.scatter || 0);
 	this.spacing = new ReactiveVar(params.spacing || 0);
-	this.flow    = new ReactiveVar(params.flow || 100);
+	this.flow = new ReactiveVar(params.flow || 100);
 	this.currentEvent = null
 }
 
@@ -87,7 +87,7 @@ _.extend(BrushTool.prototype, {
 	},
 
 	toolDown: function (e, drawArea, picture, roomid) {
-    //console.log(this.getMode());
+		//console.log(this.getMode());
 		//var coords = PaintChat.getRelativeCoords(e, drawArea);
 		//var oldPixel = picture.getPixelRGBA(coords);
 
@@ -156,7 +156,6 @@ _.extend(BrushTool.prototype, {
 			this.currentEvent = null;
 
 
-
 		}
 		//console.log(this);
 	},
@@ -171,7 +170,10 @@ _.extend(BrushTool.prototype, {
 		var cursorcoords = PaintChat.getRelativeCoords(e, drawArea);
 		var coords = PaintChat.getRelativeCoords(e, drawArea);
 		var $cursorCanvas = $('#cursorCanvas');
-		$cursorCanvas.css({'left': (cursorcoords.x - ($cursorCanvas.width() / 2) + 0.5 ), 'top': (cursorcoords.y - ($cursorCanvas.width() / 2) + 0.5 )});
+		$cursorCanvas.css({
+			'left': (cursorcoords.x - ($cursorCanvas.width() / 2) + 0.5 ),
+			'top': (cursorcoords.y - ($cursorCanvas.width() / 2) + 0.5 )
+		});
 
 		if (this.currentEvent !== null) {
 			// var pressure = (Math.sin(pressureInd * 0.4) + 2.0) * 0.33;
@@ -221,7 +223,7 @@ _.extend(BrushTool.prototype, {
 		return parseInt(this.size.get(), 10);
 	},
 
-	setSize: function(size){
+	setSize: function (size) {
 		this.size.set(size);
 	},
 
@@ -229,7 +231,7 @@ _.extend(BrushTool.prototype, {
 		return this.hardness.get();
 	},
 
-	getTexture: function() {
+	getTexture: function () {
 		return this.texture.get();
 	},
 
@@ -237,21 +239,21 @@ _.extend(BrushTool.prototype, {
 		return this.alpha.get();
 	},
 
-	getMode: function(){
-		return parseInt(this.mode.get(),10);
+	getMode: function () {
+		return parseInt(this.mode.get(), 10);
 	},
 
-	getScatter: function(){
+	getScatter: function () {
 		//return parseInt(this.scatter.get(), 10);
 		return this.scatter.get();
 	},
 
-	getSpacing: function(){
+	getSpacing: function () {
 		//return parseInt(this.spacing.get(), 10);
 		return this.spacing.get();
 	},
 
-	getFlow: function(){
+	getFlow: function () {
 		return parseInt(this.flow.get(), 10);
 	},
 

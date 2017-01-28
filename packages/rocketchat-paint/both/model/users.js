@@ -1,18 +1,18 @@
 /*
-  username
-  emails[]
+ username
+ emails[]
 
-  admin
-  uberadmin
+ admin
+ uberadmin
 
-  tools [ ]
-    tool
-    color
-    opacity
-    size
-    harndess
-  currentTool
+ tools [ ]
+ tool
+ color
+ opacity
+ size
+ harndess
+ currentTool
 
-*/
+ */
 Users = Meteor.users;
 

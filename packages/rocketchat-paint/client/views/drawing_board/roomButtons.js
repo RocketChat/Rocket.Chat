@@ -1,7 +1,7 @@
 /**
  * Created by khurrum on 1/17/16.
  */
-Template.roomButtons.onRendered(function(){
+Template.roomButtons.onRendered(function () {
 	$("#colorPicker").spectrum({
 		flat: false,
 		//showAlpha: true,
@@ -26,28 +26,28 @@ Template.roomButtons.onRendered(function(){
 });
 
 Template.roomButtons.helpers({
-	tool_icon: function(){
+	tool_icon: function () {
 		return PaintChat.getTool(this).getIconName();
 	},
 
-	activeIf: function(a, b, active) {
-		if(a == b) return _.isString(active) ? active : '_active';
+	activeIf: function (a, b, active) {
+		if (a == b) return _.isString(active) ? active : '_active';
 		return '';
 	},
 
-	tool_name: function(){
+	tool_name: function () {
 		return PaintChat.getTool(this).getName();
 	},
 
-	brush: function() {
+	brush: function () {
 		return PaintChat.getTool(this);
 	},
 
-	brushIdxes: function() {
+	brushIdxes: function () {
 		return _.range(PaintChat.tools.count.get());
 	},
 
-	selectedBrushIndex: function() {
+	selectedBrushIndex: function () {
 		return PaintChat.tools.index.get();
 	},
 
@@ -56,42 +56,42 @@ Template.roomButtons.helpers({
 		return tool.settingsTemplate && tool.index.get() == PaintChat.tools.index.get();
 	},
 
-	typeIs: function(value) {
+	typeIs: function (value) {
 		//return PaintChat.getTool(this).type.get() === value;
 		return PaintChat.getTool(this).getType() === value;
 	},
 
-	selectedIf: function(brush, prop, val) {
+	selectedIf: function (brush, prop, val) {
 		return (PaintChat.getTool(brush).get(prop) === val) ? '_selected' : '';
 	},
 
-	zoomLevelLabel: function() {
+	zoomLevelLabel: function () {
 		var level = PaintChat.zoom.level.get() * 200;
 		return (Math.round(level)) + '%';
 	},
 
-	canClear: function() {
+	canClear: function () {
 		return RocketChat.authz.hasRole(Meteor.userId(), ["admin", "moderator"], this.rid);
 	}
 });
 
 Template.roomButtons.events({
-	'click ._selected': function(e, t){
+	'click ._selected': function (e, t) {
 		if (PaintChat.tools.list[PaintChat.tools.index.get()].settingsTemplate) {
 			$('#slider').toggleClass("slide-in");
 		}
 	},
 
-	'click .saveToCloud': function(e, t){
+	'click .saveToCloud': function (e, t) {
 		//console.log('Save to Cloud');
 		var name = Session.get('openedRoom') + Date.now();
-		PaintChat.Picture.toBlob(function(x){
+		PaintChat.Picture.toBlob(function (x) {
 			//console.log(x);
-			fileUpload([{file: x, name:name}]);
+			fileUpload([{file: x, name: name}]);
 		});
 	},
 
-	'click .clearBoard': function(e, template){
+	'click .clearBoard': function (e, template) {
 		swal({
 				title: t('Are_you_sure'),
 				showCancelButton: true
@@ -106,14 +106,14 @@ Template.roomButtons.events({
 			});
 	},
 
-	'click .__brush': function(e, t) {
+	'click .__brush': function (e, t) {
 		var button = $(e.currentTarget);
 		var currentTool = PaintChat.tools.list[button.data('index')];
 		PaintChat.currentTool = currentTool;
 		currentTool.setSettingsTemplate();
 
 
-		if(PaintChat.tools.index.curValue !== Number(button.data('index'))) {
+		if (PaintChat.tools.index.curValue !== Number(button.data('index'))) {
 			var index = Number(button.data('index'));
 			PaintChat.tools.index.set(Number(button.data('index')));
 			currentTool.setMouseCursor();
@@ -124,22 +124,21 @@ Template.roomButtons.events({
 		button.addClass('_active');
 	},
 
-	'click ._ico': function(e, t) {
+	'click ._ico': function (e, t) {
 
 		var bid = $(e.target).closest('._button').data('index');
 		var prop = $(e.target).closest('._line').data('for');
 
 		// Wee want to convert the context value from object (used by handlebars) to a plain type
-		if(prop === 'size')
+		if (prop === 'size')
 			PaintChat.getTool(bid).set(prop, 0 + this);
 		else
 			PaintChat.getTool(bid).set(prop, '' + this);
 
-		_.defer(function() {
+		_.defer(function () {
 			t.$('.__brush').removeClass('_active');
 		});
 	},
-
 
 
 });

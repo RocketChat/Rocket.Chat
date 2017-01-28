@@ -14,7 +14,7 @@ Template.brushSettings.helpers({
 		//return PaintChat.getTool()[params].get();
 	},
 
-	blendModes: function() {
+	blendModes: function () {
 		var blendModes = new Array();
 		for (var key in PictureEvent.Mode) {
 			if (PictureEvent.Mode.hasOwnProperty(key)) {
@@ -27,7 +27,7 @@ Template.brushSettings.helpers({
 		return blendModes;
 	},
 
-	brushTextures: function(){
+	brushTextures: function () {
 		var TextureInformation = [];
 		for (var i = 0; i < PaintChat.textures.length; i++) {
 			var key = i + 1;
@@ -40,26 +40,26 @@ Template.brushSettings.helpers({
 });
 
 Template.brushSettings.events({
-  //todo: pointermove ONLY if pointer is also down
+	//todo: pointermove ONLY if pointer is also down
 	'change .__param, click .__param, pointerdown .__param, pointermove .__param': function (e, t) {
 		var slider = $(e.currentTarget);
 		var param = slider.data('param');
 		var value = slider.val();
 		var result = PaintChat.getTool()[param].set(value);
 
-		if (param === 'size'){
+		if (param === 'size') {
 			$('#size-value').text(value);
 		}
 
-		if (param === 'alpha'){
+		if (param === 'alpha') {
 			$('#opacity-value').text(value);
 		}
 
-		if (param === 'hardness'){
+		if (param === 'hardness') {
 			$('#edge-value').text(value);
 		}
 
-		if (param === 'flow'){
+		if (param === 'flow') {
 			$('#flow-value').text(value);
 		}
 
@@ -76,7 +76,7 @@ Template.brushSettings.events({
 			softness = (1 - (PaintChat.getTool()['hardness'].get() / 100)),
 			mode = PictureEvent.Mode.normal,
 			w = 256,
-			ySteps = 1/ 6;
+			ySteps = 1 / 6;
 		var undone = t.preview.undoLatest();
 		if (undone) {
 			var update = new PictureUpdate('undo');
@@ -98,19 +98,19 @@ Template.brushSettings.events({
 		return result;
 	},
 
-	'touchmove #brushSettings': function(e, t) {
+	'touchmove #brushSettings': function (e, t) {
 		e.stopPropagation();
 		//e.preventDefault();
 	}
 
 });
 
-Template.brushSettings.onRendered(function(){
+Template.brushSettings.onRendered(function () {
 	this.drawArea = this.find('#brushPreview');
 	this.preview = PaintChat.createPicture('preview', 250, 100);
 	PaintChat.attachPicture(this.preview, this.drawArea);
 //console.log(this.preview);
-	this.pushEvent = function(event) {
+	this.pushEvent = function (event) {
 		var update = new PictureUpdate('add_picture_event');
 		update.setPictureEvent(0, event);
 		this.preview.pushUpdate(update);
@@ -119,13 +119,13 @@ Template.brushSettings.onRendered(function(){
 
 	var color = [0, 0, 0],
 		flow = (PaintChat.getTool().getFlow() / 100),
-		opacity = (PaintChat.getTool().getAlpha() /100),
+		opacity = (PaintChat.getTool().getAlpha() / 100),
 		radius = PaintChat.getTool().getSize(),
 		texture = PaintChat.getTool().getTexture(),
 		softness = (1 - (PaintChat.getTool().getHardness() / 100)),
 		mode = PictureEvent.Mode.normal,
 		w = 256,
-		ySteps = 1/ 6;
+		ySteps = 1 / 6;
 
 	$('#size-value').text(radius);
 
@@ -145,10 +145,9 @@ Template.brushSettings.onRendered(function(){
 	this.pushEvent(this.event);
 
 
-
 });
 
-Template.brushSettings.onCreated(function(){
+Template.brushSettings.onCreated(function () {
 
 });
 

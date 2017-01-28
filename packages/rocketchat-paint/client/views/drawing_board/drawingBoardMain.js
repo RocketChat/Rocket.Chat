@@ -2,7 +2,7 @@
  * Created by khurrum on 1/17/16.
  */
 
-Template.drawingBoardMain.onCreated(function(){
+Template.drawingBoardMain.onCreated(function () {
 
 });
 

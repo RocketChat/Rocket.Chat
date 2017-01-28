@@ -2,13 +2,13 @@
   height: 100%;
 }
 
-.closeSettings{
+.closeSettings {
   padding: .3em .5em;
   border: 10px solid transparent;
   border-radius: 50%;
   background: #eee;
   background-clip: padding-box;
-  box-shadow: 0 0 0 1px rgba(0,0,0,.3) inset;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, .3) inset;
   color: white;
   font: bold 150%/1 sans-serif;
   cursor: pointer;
@@ -34,7 +34,7 @@
   border: 1px solid #666;
   border-radius: .8em;
   padding: 1em;
-  box-shadow: 1px 1px 3px 1px rgba(0,0,0,0.5);
+  box-shadow: 1px 1px 3px 1px rgba(0, 0, 0, 0.5);
 }
 
 .slide-in {
@@ -50,19 +50,31 @@
 }
 
 @keyframes slide-in {
-  100% { transform: translateX(0%); }
+  100% {
+	transform: translateX(0%);
+  }
 }
 
 @-webkit-keyframes slide-in {
-  100% { -webkit-transform: translateX(0%); }
+  100% {
+	-webkit-transform: translateX(0%);
+  }
 }
 
 @keyframes slide-out {
-  0% { transform: translateX(0%); }
-  100% { transform: translateX(-100%); }
+  0% {
+	transform: translateX(0%);
+  }
+  100% {
+	transform: translateX(-100%);
+  }
 }
 
 @-webkit-keyframes slide-out {
-  0% { -webkit-transform: translateX(0%); }
-  100% { -webkit-transform: translateX(-100%); }
+  0% {
+	-webkit-transform: translateX(0%);
+  }
+  100% {
+	-webkit-transform: translateX(-100%);
+  }
 }

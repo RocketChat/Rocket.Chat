@@ -3,7 +3,7 @@
  */
 
 Meteor.methods({
-	insertStroke: function(data) {
+	insertStroke: function (data) {
 		check(data, {
 			userId: String,
 			sessionId: String,

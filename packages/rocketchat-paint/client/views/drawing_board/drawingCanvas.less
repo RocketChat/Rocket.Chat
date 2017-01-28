@@ -4,7 +4,6 @@
 @orange: #f88800;
 @redlight: #e7002a;
 
-
 .noselect {
   -webkit-touch-callout: none;
   -webkit-user-select: none;
@@ -14,18 +13,17 @@
   user-select: none;
 }
 
-
 //the actual canvas
 #drawingBoard {
   //max-width: 100%;
   border: 1px solid #666;
-  box-shadow: 1px 1px 3px 1px rgba(0,0,0,0.5);
+  box-shadow: 1px 1px 3px 1px rgba(0, 0, 0, 0.5);
 }
 
 //Where picture is going to be attached
 #__drawingCanvas {
   .noselect;
-  position:relative;
+  position: relative;
   left: 50px;
   min-height: 540px;
   //max-width: 85%;
@@ -50,12 +48,12 @@
   text-align: center;
 }
 
-#cursorCanvas{
+#cursorCanvas {
   touch-action: none;
   position: absolute;
   cursor: url(/files/images/cursors/cursor.gif) 2 2, crosshair;
   pointer-events: none;
-  z-index:99
+  z-index: 99
 }
 
 /*

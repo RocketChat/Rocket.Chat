@@ -44,8 +44,8 @@ _.extend(PanMoveTool.prototype, {
 			var jDrawArea = $(drawArea);
 			var deltaX = coords.x - this.startCoords.x;
 			var deltaY = coords.y - this.startCoords.y;
-			jDrawArea.css( 'top', '+='+deltaY );
-			jDrawArea.css( 'left', '+='+deltaX);
+			jDrawArea.css('top', '+=' + deltaY);
+			jDrawArea.css('left', '+=' + deltaX);
 		}
 
 	},

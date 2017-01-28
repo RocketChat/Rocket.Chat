@@ -3,7 +3,7 @@
  */
 // #### Eraser Tool   #### //
 
-EraserTool = function EraserTool(params){
+EraserTool = function EraserTool(params) {
 	baseTool.call(this, params);
 	this.size = new ReactiveVar(params.size || 8);
 	this.alpha = new ReactiveVar(params.alpha || 100);
@@ -30,7 +30,7 @@ _.extend(EraserTool, {
 });
 
 
-_.extend(EraserTool.prototype,{
+_.extend(EraserTool.prototype, {
 
 	toStore: function () {
 		var store = {
@@ -87,7 +87,7 @@ _.extend(EraserTool.prototype,{
 			0, // textureId
 			1 - this.getHardness() / 100,    // softness
 			this.getMode());
-    //console.log(this.currentEvent);
+		//console.log(this.currentEvent);
 		var coords = PaintChat.getRelativeCoords(e, drawArea);
 		var pressure = 0.75;
 		picture.pictureTransform.inverseTransform(coords);
@@ -146,7 +146,10 @@ _.extend(EraserTool.prototype,{
 		Area.Presences.update(e);
 		var coords = PaintChat.getRelativeCoords(e, drawArea);
 		var $cursorCanvas = $('#cursorCanvas');
-		$cursorCanvas.css({'left': (coords.x - ($cursorCanvas.width() / 2) + 0.5 ), 'top': (coords.y - ($cursorCanvas.width() / 2) + 0.5 )});
+		$cursorCanvas.css({
+			'left': (coords.x - ($cursorCanvas.width() / 2) + 0.5 ),
+			'top': (coords.y - ($cursorCanvas.width() / 2) + 0.5 )
+		});
 
 		if (this.currentEvent !== null) {
 			// var pressure = (Math.sin(pressureInd * 0.4) + 2.0) * 0.33;
@@ -202,7 +205,7 @@ _.extend(EraserTool.prototype,{
 		return this.alpha.get();
 	},
 
-	getMode: function() {
+	getMode: function () {
 		return 0;
 	}
 

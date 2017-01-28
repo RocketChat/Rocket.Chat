@@ -8,27 +8,27 @@ PaintChat.theW = 2160;//1152; //1536;  610 1220;
 PaintChat.theH = 1080; //576; //768;    435 870; //
 
 PaintChat.zoom = {
-	factor: function(){
+	factor: function () {
 		return Math.sqrt(2);
 	},
 
 	level: new ReactiveVar(0.5),
 
-	zoomIn: function() {
+	zoomIn: function () {
 		var lvl = PaintChat.zoom.level.get();
-		if(lvl <= 0.01) return;
+		if (lvl <= 0.01) return;
 		PaintChat.zoom.level.set(lvl / this.factor);
 	},
 
-	zoomOut: function() {
+	zoomOut: function () {
 		var lvl = PaintChat.zoom.level.get();
-		if(lvl > 3) return;
+		if (lvl > 3) return;
 		PaintChat.zoom.level.set(lvl * this.factor);
 	}
 };
 
-ForegroundColor = function(params) {
-	this.color =    new ReactiveVar(params.color || [0,16,32]);
+ForegroundColor = function (params) {
+	this.color = new ReactiveVar(params.color || [0, 16, 32]);
 };
 
 ForegroundColor.prototype = {
@@ -36,11 +36,11 @@ ForegroundColor.prototype = {
 		this.color.set(params);
 
 	},
-	getColor: function(){
+	getColor: function () {
 		return this.color.get();
 	},
 
-	getRGBString: function(){
+	getRGBString: function () {
 		var arr = this.getColor();
 		return "rgb(" + arr[0] + ", " + arr[1] + ", " + arr[2] + ")";
 
@@ -53,20 +53,20 @@ PaintChat.foregroundColor = new ForegroundColor({color: [198, 52, 16]});
 PaintChat.tools = {
 	list: [
 		new BrushTool({
-			name:     'Brush Tool',
+			name: 'Brush Tool',
 			iconName: 'fa fa-paint-brush',
-			type:     'standard',
-			color:    PaintChat.foregroundColor.getColor(),
+			type: 'standard',
+			color: PaintChat.foregroundColor.getColor(),
 			//size:     P,
 			//alpha:    100,
 			//hardness: 80,
-			mode:			1,
+			mode: 1,
 			settingsTemplate: 'brushSettings'
 		}),
 		new ColorPicker({
-			name:       'ColorPicker Tool',
-			iconName:   'fa fa-eyedropper',
-			type:       'colorPicker',
+			name: 'ColorPicker Tool',
+			iconName: 'fa fa-eyedropper',
+			type: 'colorPicker',
 		}),
 		new EraserTool({
 			name: 'Eraser Tool',
@@ -74,55 +74,55 @@ PaintChat.tools = {
 			type: 'eraser',
 		}),
 		new ZoomTool({
-			name:		'ZoomTool',
-			iconName:	'fa fa-search',
-			type:		'zoom',
+			name: 'ZoomTool',
+			iconName: 'fa fa-search',
+			type: 'zoom',
 		}),
 		/*new PanMoveTool({
-			name:		'PanMoveTool',
-			iconName:	'fa fa-arrows',
-			type:		'pan-move',
-		}),*/
+		 name:		'PanMoveTool',
+		 iconName:	'fa fa-arrows',
+		 type:		'pan-move',
+		 }),*/
 	],
-	count:      new ReactiveVar(4),
-	index:      new ReactiveVar(0)
+	count: new ReactiveVar(4),
+	index: new ReactiveVar(0)
 };
 
 PaintChat.textures = [{
 	name: "Chalk 1",
-	url:  "/packages/paintchat_paintchat-main/public/textures/chalk1-128.png",
+	url: "/packages/paintchat_paintchat-main/public/textures/chalk1-128.png",
 	//icon
 }, {
 	name: "Chalk 2",
-	url:  "/packages/paintchat_paintchat-main/public/textures/chalk2-128.png",
+	url: "/packages/paintchat_paintchat-main/public/textures/chalk2-128.png",
 }, {
 	name: "Chalk 3",
-	url:	"/packages/paintchat_paintchat-main/public/textures/chalk3-128.png",
+	url: "/packages/paintchat_paintchat-main/public/textures/chalk3-128.png",
 }, {
 	name: "Chalk 4",
-	url:  "/packages/paintchat_paintchat-main/public/textures/chalk4-128.png",
+	url: "/packages/paintchat_paintchat-main/public/textures/chalk4-128.png",
 }, {
 	name: "Speckled Brush",
-	url:  "/packages/paintchat_paintchat-main/public/textures/speckled-128.png",
+	url: "/packages/paintchat_paintchat-main/public/textures/speckled-128.png",
 }, {
 	name: "Rough Brush",
-	url:  "/packages/paintchat_paintchat-main/public/textures/brush6-128.png",
+	url: "/packages/paintchat_paintchat-main/public/textures/brush6-128.png",
 }];
 
-PaintChat.getTextures = function(){
+PaintChat.getTextures = function () {
 	var promises = [];
 	PaintChat.brushTextureData = [];
 	for (var i = 0; i < PaintChat.textures.length; i++) {
-		(function(url, promise) {
+		(function (url, promise) {
 			var img = new Image();
-			img.onload = function() {
+			img.onload = function () {
 				promise.resolve();
 			};
 			img.src = url;
 			PaintChat.brushTextureData.push(img);
 		})(PaintChat.textures[i].url, promises[i] = $.Deferred());
 	}
-	$.when.apply($, promises).done(function() {
+	$.when.apply($, promises).done(function () {
 		//console.log('images loaded');
 		//console.log(brushTextureData);
 		return PaintChat.brushTextureData;
@@ -134,32 +134,30 @@ PaintChat.getTextures = function(){
 
 
 
-	var brushTextureData = []
-	for (var x = 0; x < PaintChat.textures.length; x++){
-		var image = document.createElement('img');
-		//image.onload = function () {
-		//	console.log('img loaded');
-		//}
-		image.src = PaintChat.textures[x].url;
-		brushTextureData.push(image);
+ var brushTextureData = []
+ for (var x = 0; x < PaintChat.textures.length; x++){
+ var image = document.createElement('img');
+ //image.onload = function () {
+ //	console.log('img loaded');
+ //}
+ image.src = PaintChat.textures[x].url;
+ brushTextureData.push(image);
 
-	}
-	return brushTextureData;*/
-
-
+ }
+ return brushTextureData;*/
 
 
-PaintChat.getTool = function(idx) {
-	if(typeof idx === 'undefined') idx = PaintChat.tools.index.get();
-	idx = 0+idx;
+PaintChat.getTool = function (idx) {
+	if (typeof idx === 'undefined') idx = PaintChat.tools.index.get();
+	idx = 0 + idx;
 	return PaintChat.tools.list[idx];
 };
 
-PaintChat.setActiveTool = function(idx){
+PaintChat.setActiveTool = function (idx) {
 	PaintChat.tools.index.set(idx);
 };
 
-PaintChat.createCanvas = function(parent){
+PaintChat.createCanvas = function (parent) {
 	return console.log('creating canvas');
 };
 
@@ -196,7 +194,7 @@ PaintChat.resetCanvas = function () {
 	isMouseDown = false;    //todo: better way of detecting dragging.
 };
 
-PaintChat.createPicture = function(name, width, height){
+PaintChat.createPicture = function (name, width, height) {
 
 	var picture = new Picture(
 		name,
@@ -214,13 +212,13 @@ PaintChat.createPicture = function(name, width, height){
 
 };
 
-PaintChat.resetPicture = function(name, width, height){
+PaintChat.resetPicture = function (name, width, height) {
 	var picture = PaintChat.createPicture(name, width, height);
 	picture.crop(picture.boundsRect, PaintChat.zoom.level.get());
 	return picture;
 };
 
-PaintChat.attachPicture = function(picture, element) {
+PaintChat.attachPicture = function (picture, element) {
 	//Attach the picture
 	if (element) {
 		//console.log(element);
@@ -231,29 +229,29 @@ PaintChat.attachPicture = function(picture, element) {
 	}
 };
 
-PaintChat.removeChildren = function(element){
+PaintChat.removeChildren = function (element) {
 	while (element.firstChild) {
 		element.removeChild(element.firstChild);
 	}
 };
 
-PaintChat.canvasState = function(data){
+PaintChat.canvasState = function (data) {
 	this.data = data;
 }
 
-PaintChat.destroyPicture = function(picture){
+PaintChat.destroyPicture = function (picture) {
 	picture.destroy();
 	picture.display();
 };
 
-PaintChat.clearPicture = function(picture){
+PaintChat.clearPicture = function (picture) {
 //
 };
 
-PaintChat.clearCanvas = function(canvas){
+PaintChat.clearCanvas = function (canvas) {
 };
 
-PaintChat.stopObserver = function(observer){
+PaintChat.stopObserver = function (observer) {
 	return console.log('stop observer.. though autoruns should do this');
 };
 
@@ -266,18 +264,18 @@ PaintChat.getRelativeCoords = function getRelativeCoords(event, element) {
 
 	// + 0.5 to move to pixel center
 	if (event.touches !== undefined && event.touches.length > 0) {
-		return new Vec2(scale*(event.touches[0].clientX - rect.left + 0.5),
-			scale*(event.touches[0].clientY - rect.top + 0.5));
+		return new Vec2(scale * (event.touches[0].clientX - rect.left + 0.5),
+			scale * (event.touches[0].clientY - rect.top + 0.5));
 	}
-	return new Vec2(scale*(event.clientX - rect.left + 0.5),
-		scale*(event.clientY - rect.top + 0.5));
+	return new Vec2(scale * (event.clientX - rect.left + 0.5),
+		scale * (event.clientY - rect.top + 0.5));
 };
 
 
 PaintChat.drawLine = function (line, target) {
 	//console.log("start drawing a line");
 	//(color, flow, opacity, radius,textureId, softness, mode)
-	if (line.params.m === undefined){
+	if (line.params.m === undefined) {
 		line.params.m = 1;
 	}
 	var event = target.createBrushEvent(
@@ -302,7 +300,7 @@ PaintChat.drawLine = function (line, target) {
 	//target.animate(0.99)
 };
 
-PaintChat.startLines = function(){
+PaintChat.startLines = function () {
 	PaintChat.Strokes = Strokes.find({roomId: Session.get('openedRoom')}, {sort: {submitted: 1}}).observeChanges({
 		added: function (id, line) {
 			if (PaintChat.ignoreStrokes && (line.userId === Meteor.userId())) {

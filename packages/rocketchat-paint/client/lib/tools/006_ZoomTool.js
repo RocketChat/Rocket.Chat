@@ -4,8 +4,8 @@
 
 // #### Zoom Tool     #### //
 
-ZoomTool = function ZoomTool(params){
-    baseTool.call(this, params);
+ZoomTool = function ZoomTool(params) {
+	baseTool.call(this, params);
 }
 
 ZoomTool.prototype = Object.create(baseTool.prototype);
@@ -36,7 +36,6 @@ _.extend(ZoomTool.prototype, {
 	toolUp: function (e, drawArea, picture) {
 		this.mouseDown = false;
 	}
-
 
 
 });

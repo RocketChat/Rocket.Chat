@@ -1,34 +1,31 @@
 /*
-  title
-  roomId
-  boardId
+ title
+ roomId
+ boardId
 
-  time
-  userId
+ time
+ userId
 
-  likes
+ likes
 
-  REMOVED
-  --data--
+ REMOVED
+ --data--
 
-*/
+ */
 
 Images = new Meteor.Collection('images');
 
 
+Images.before.insert(function (userId, doc) {
 
+	if (!userId) return false;
 
+	_.extend(doc, {
+		time: (Meteor.isServer) ? new Date() : new Date(TimeSync.serverTime()),
+		userId: userId,
+		likes: 0,
+	});
 
-Images.before.insert(function(userId, doc) {
-
-  if(!userId) return false;
-
-  _.extend(doc, {
-    time:       (Meteor.isServer) ? new Date() : new Date(TimeSync.serverTime()),
-    userId:     userId,
-    likes:      0,
-  });
-  
 });
 
 

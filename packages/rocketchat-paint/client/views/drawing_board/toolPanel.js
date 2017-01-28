@@ -2,7 +2,7 @@
  * Created by khurrum on 1/29/16.
  */
 
-Template.toolPanel.onRendered(function(){
+Template.toolPanel.onRendered(function () {
 	$("#colorPicker").spectrum({
 		flat: true,
 		//showAlpha: true,
