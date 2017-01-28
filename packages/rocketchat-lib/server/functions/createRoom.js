@@ -1,5 +1,5 @@
 /* globals RocketChat */
-RocketChat.createRoom = function(type, name, owner, members, readOnly) {
+RocketChat.createRoom = function(type, name, owner, members, readOnly, extraData={}) {
 	name = s.trim(name);
 	owner = s.trim(owner);
 	members = [].concat(members);
@@ -54,11 +54,13 @@ RocketChat.createRoom = function(type, name, owner, members, readOnly) {
 		});
 	}
 
-	room = RocketChat.models.Rooms.createWithTypeNameUserAndUsernames(type, name, owner, members, {
+	extraData = Object.assign({}, extraData, {
 		ts: now,
 		ro: readOnly === true,
 		sysMes: readOnly !== true
 	});
+
+	room = RocketChat.models.Rooms.createWithTypeNameUserAndUsernames(type, name, owner, members, extraData);
 
 	for (let username of members) {
 		let member = RocketChat.models.Users.findOneByUsername(username, { fields: { username: 1 }});

@@ -10,11 +10,6 @@ class ModelUsers extends RocketChat.models._Base
 		@tryEnsureIndex { 'statusConnection': 1 }, { sparse: 1 }
 		@tryEnsureIndex { 'type': 1 }
 
-
-	# FIND ONE
-	findOneById: (_id, options) ->
-		return @findOne _id, options
-
 	findOneByImportId: (_id, options) ->
 		return @findOne { importIds: _id }, options
 

@@ -7,6 +7,16 @@
 			</h2>
 		</header>
 		<div class="content">
+			{{#if $gt statistics.instanceCount 1}}
+				{{#unless statistics.oplogEnabled}}
+					<div class="alert error-color error-border error-background">
+						<b>{{_ "Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances"}}</b><br/><br/>
+						{{_ "Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances_details"}}<br/><br/>
+						<a target="_blank" href="https://rocket.chat/docs/installation/manual-installation/multiple-instances-to-improve-performance/#running-multiple-instances-per-host-to-improve-performance">{{_ "Click_here_for_more_info"}}</a>
+					</div>
+				{{/unless}}
+			{{/if}}
+
 			{{#if hasPermission 'view-statistics'}}
 				<h3>{{_ "Rocket.Chat"}}</h3>
 				<table class="statistics-table secondary-background-color">
@@ -41,6 +51,10 @@
 					<tr class="admin-table-row">
 						<th class="content-background-color border-component-color">{{_ "Running_Instances"}}</th>
 						<td class="border-component-color">{{statistics.instanceCount}}</td>
+					</tr>
+					<tr class="admin-table-row">
+						<th class="content-background-color border-component-color">{{_ "OpLog"}}</th>
+						<td class="border-component-color">{{#if statistics.oplogEnabled}}{{_ "Enabled"}}{{else}}{{_ "Disabled"}}{{/if}}</td>
 					</tr>
 				</table>
 			{{/if}}
