@@ -25,7 +25,7 @@ ExtractRange.prototype._transform = function(chunk, enc, cb) {
 	} else if (this.bytes_read + chunk.length < this.start) {
 		// this chunk is still before the start byte
 	} else {
-		var start, stop;
+		let start, stop;
 		if (this.start <= this.bytes_read) {
 			start = 0;
 		} else {
@@ -36,7 +36,7 @@ ExtractRange.prototype._transform = function(chunk, enc, cb) {
 		} else {
 			stop = chunk.length;
 		}
-		var newchunk = chunk.slice(start, stop);
+		const newchunk = chunk.slice(start, stop);
 		this.push(newchunk);
 	}
 	this.bytes_read += chunk.length;
@@ -44,9 +44,9 @@ ExtractRange.prototype._transform = function(chunk, enc, cb) {
 };
 
 
-var getByteRange = function(header) {
+const getByteRange = function(header) {
 	if (header) {
-		var matches = header.match(/(\d+)-(\d+)/);
+		const matches = header.match(/(\d+)-(\d+)/);
 		if (matches) {
 			return {
 				start: parseInt(matches[1], 10),
@@ -59,10 +59,10 @@ var getByteRange = function(header) {
 
 
 // code from: https://github.com/jalik/jalik-ufs/blob/master/ufs-server.js#L91
-var readFromGridFS = function(storeName, fileId, file, headers, req, res) {
-	var store = UploadFS.getStore(storeName);
-	var rs = store.getReadStream(fileId, file);
-	var ws = new stream.PassThrough();
+const readFromGridFS = function(storeName, fileId, file, headers, req, res) {
+	const store = UploadFS.getStore(storeName);
+	const rs = store.getReadStream(fileId, file);
+	const ws = new stream.PassThrough();
 
 	rs.on('error', function(err) {
 		store.onReadError.call(store, err, fileId, file);
@@ -77,14 +77,13 @@ var readFromGridFS = function(storeName, fileId, file, headers, req, res) {
 		ws.emit('end');
 	});
 
-	var accept = req.headers['accept-encoding'] || '';
+	const accept = req.headers['accept-encoding'] || '';
 
 	// Transform stream
 	store.transformRead(rs, ws, fileId, file, req, headers);
 
-	var h = req.headers;
-	var range = getByteRange(h.range);
-	var out_of_range = false;
+	const range = getByteRange(req.headers.range);
+	let out_of_range = false;
 	if (range) {
 		out_of_range = (range.start > file.size) || (range.stop <= range.start) || (range.stop > file.size);
 	}
@@ -126,7 +125,7 @@ var readFromGridFS = function(storeName, fileId, file, headers, req, res) {
 FileUpload.addHandler('rocketchat_uploads', {
 	get(file, req, res) {
 		file = FileUpload.addExtensionTo(file);
-		let headers = {
+		const headers = {
 			'Content-Disposition': `attachment; filename*=UTF-8''${encodeURIComponent(file.name)}`,
 			'Last-Modified': file.uploadedAt.toUTCString(),
 			'Content-Type': file.type,
@@ -138,4 +137,3 @@ FileUpload.addHandler('rocketchat_uploads', {
 		return Meteor.fileStore.delete(file._id);
 	}
 });
-
