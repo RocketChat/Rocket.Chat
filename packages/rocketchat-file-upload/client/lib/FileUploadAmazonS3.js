@@ -8,7 +8,7 @@ FileUpload.AmazonS3 = class FileUploadAmazonS3 extends FileUploadBase {
 
 	start() {
 		this.uploader.send(this.file, (error, downloadUrl) => {
-			var file, item, uploading;
+			let item, uploading;
 
 			if (this.computation) {
 				this.computation.stop();
@@ -34,7 +34,7 @@ FileUpload.AmazonS3 = class FileUploadAmazonS3 extends FileUploadBase {
 				}
 				Session.set('uploading', uploading);
 			} else {
-				file = _.pick(this.meta, 'type', 'size', 'name', 'identify', 'description');
+				const file = _.pick(this.meta, 'type', 'size', 'name', 'identify', 'description');
 				file._id = downloadUrl.substr(downloadUrl.lastIndexOf('/') + 1);
 				file.url = downloadUrl;
 
