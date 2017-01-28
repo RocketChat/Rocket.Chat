@@ -297,7 +297,7 @@ Template.room.events
 
 	"click .flex-tab .user-image > button" : (e, instance) ->
 		instance.tabBar.open()
-		instance.setUserDetail @username
+		instance.setUserDetail @user.username
 
 	'click .user-card-message': (e, instance) ->
 		roomData = Session.get('roomData' + this._arguments[1].rid)

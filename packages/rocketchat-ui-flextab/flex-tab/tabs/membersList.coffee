@@ -16,15 +16,15 @@ Template.membersList.helpers
 
 	roomUsers: ->
 		onlineUsers = RoomManager.onlineUsers.get()
-		roomUsernames = Template.instance().users.get()
+		roomUsers = Template.instance().users.get()
 		room = ChatRoom.findOne(this.rid)
 		roomMuted = room?.muted or []
 
 		totalOnline = 0
-		users = roomUsernames.map (username) ->
-			if onlineUsers[username]?
+		users = roomUsers.map (user) ->
+			if onlineUsers[user.username]?
 				totalOnline++
-				utcOffset = onlineUsers[username].utcOffset
+				utcOffset = onlineUsers[user.username].utcOffset
 
 				if utcOffset?
 					if utcOffset > 0
@@ -32,13 +32,13 @@ Template.membersList.helpers
 					utcOffset = "(UTC #{utcOffset})"
 
 			return {
-				username: username
-				status: onlineUsers[username]?.status
-				muted: username in roomMuted
+				user: user
+				status: onlineUsers[user.username]?.status
+				muted: user.username in roomMuted
 				utcOffset: utcOffset
 			}
 
-		users = _.sortBy users, 'username'
+		users = _.sortBy users, (u) -> u.user.username
 		# show online users first.
 		# sortBy is stable, so we can do this
 		users = _.sortBy users, (u) -> !u.status?
@@ -92,7 +92,6 @@ Template.membersList.helpers
 
 	userInfoDetail: ->
 		room = ChatRoom.findOne(this.rid, { fields: { t: 1 } })
-
 		return {
 			tabBar: Template.currentData().tabBar
 			username: Template.instance().userDetail.get()
@@ -101,6 +100,9 @@ Template.membersList.helpers
 			hideAdminControls: room?.t in ['c', 'p', 'd']
 			video: room?.t in ['d']
 		}
+
+	displayName: ->
+		return if RocketChat.settings.get('UI_Use_Real_Name') then this.user.name else this.user.username
 
 Template.membersList.events
 	'click .see-all': (e, instance) ->
