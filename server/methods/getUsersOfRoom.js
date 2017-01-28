@@ -26,7 +26,7 @@ Meteor.methods({
 			return {
 				username: record._user.username,
 				name: record._user.name
-			}
+			};
 		};
 
 		const records = RocketChat.models.Subscriptions.findByRoomId(roomId).fetch();
