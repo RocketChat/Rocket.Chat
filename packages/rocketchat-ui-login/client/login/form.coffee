@@ -132,11 +132,12 @@ Template.loginForm.events
 		RocketChat.callbacks.run('loginPageStateChange', Template.instance().state.get());
 
 	'click .login-as-guest': ->
-		Meteor.call 'getGuestAccount', (error, user) ->
+		Meteor.call 'getGuestAccount', (error, email) ->
 			if error
-				console.log (error);
+				console.log error
 				return
-			Meteor.loginWithPassword(user, '');
+			Meteor.loginWithPassword email, '', (error) ->
+				console.log error
 
 	'click .one-passsword': ->
 		if not OnePassword?.findLoginForUrl?

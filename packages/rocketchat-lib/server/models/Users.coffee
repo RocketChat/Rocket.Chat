@@ -247,6 +247,13 @@ class ModelUsers extends RocketChat.models._Base
 
 		return @update _id, update
 
+	setGuestId: (_id, guestId) ->
+		update =
+			$set:
+				guestId: guestId
+
+		return @update _id, update
+
 	setCustomFields: (_id, fields) ->
 		values = {}
 		for key, value of fields

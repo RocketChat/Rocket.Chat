@@ -2,12 +2,17 @@ Template.username.onCreated ->
 	self = this
 	self.username = new ReactiveVar
 
-	Meteor.call 'getUsernameSuggestion', (error, username) ->
+	if Meteor.user().guestId
 		self.username.set
 			ready: true
-			username: username
-		Meteor.defer ->
-			self.find('input').focus()
+			username: ''
+	else
+		Meteor.call 'getUsernameSuggestion', (error, username) ->
+			self.username.set
+				ready: true
+				username: username
+			Meteor.defer ->
+				self.find('input').focus()
 
 Template.username.helpers
 	username: ->

@@ -112,7 +112,7 @@ Accounts.insertUserDoc = _.wrap(Accounts.insertUserDoc, function(insertUserDoc, 
 		_id: _id
 	});
 
-	const isGuest = user.username && user.username.match(/guest-\d/);
+	const isGuest = user.emails[0] && user.emails[0].address.match(/@rocket-chat\.guest/);
 
 	if (user.username && options.joinDefaultChannels !== false && user.joinDefaultChannels !== false) {
 		Meteor.runAsUser(_id, function() {
@@ -133,11 +133,13 @@ Accounts.insertUserDoc = _.wrap(Accounts.insertUserDoc, function(insertUserDoc, 
 
 		if (hasAdmin) {
 			roles.push('user');
-		} else if (isGuest) {
-			roles.push('guest');
 		} else {
 			roles.push('admin');
 		}
+	}
+
+	if (isGuest) {
+		roles = ['guest'];
 	}
 
 	RocketChat.authz.addUserRoles(_id, roles);
