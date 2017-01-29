@@ -12,7 +12,7 @@
 
 <template name="toolbarSearchList">
 	<i class="{{icon}} {{userStatus}}"></i>
-	{{name}}
+	<span class="room-title {{#if unread}}bold{{/if}}">{{name}}</span>
 	{{#if unread}}
 		<span class="unread">{{unread}}</span>
 	{{/if}}
