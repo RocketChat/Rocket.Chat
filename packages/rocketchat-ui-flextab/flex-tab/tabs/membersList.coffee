@@ -62,7 +62,10 @@ Template.membersList.helpers
 	canAddUser: ->
 		roomData = Session.get('roomData' + this._id)
 		return '' unless roomData
-		return roomData.t in ['p', 'c'] and RocketChat.authz.hasAtLeastOnePermission(['add-user-to-any-room', 'add-user-to-own-room'], this._id)
+		return switch roomData.t
+			when 'p' then RocketChat.authz.hasAtLeastOnePermission ['add-user-to-any-p-room', 'add-user-to-own-room'], this._id
+			when 'c' then RocketChat.authz.hasAtLeastOnePermission ['add-user-to-any-c-room', 'add-user-to-own-room'], this._id
+			else false
 
 	autocompleteSettingsAddUser: ->
 		return {
