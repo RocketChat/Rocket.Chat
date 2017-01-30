@@ -116,10 +116,6 @@ class MainContent extends Page {
 
 	tryToMentionAll() {
 		this.addTextToInput('@all');
-		this.mentionAllPopUp.waitForVisible(5000);
-		browser.pause(100);
-		this.mentionAllPopUp.click();
-		this.mentionAllPopUp.waitForVisible(5000, true);
 		this.sendBtn.click();
 		this.waitForLastMessageEqualsText('Notify all in this room is not allowed');
 		this.lastMessage.getText().should.equal('Notify all in this room is not allowed');
