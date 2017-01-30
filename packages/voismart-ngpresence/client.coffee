@@ -19,7 +19,7 @@ _installExtension = (browser) ->
 Meteor.startup ->
 	_extensionAlertInstalled = false
 	RocketChat.settings.onload 'OrchestraIntegration_PresenceEnabled', (k, enabled) ->
-		if not enabled or _extensionAlertInstalled
+		if not enabled
 			return
 
 		RocketChat.VoismartPresenceExtensionInstalled = false
@@ -31,6 +31,8 @@ Meteor.startup ->
 			browser = undefined
 
 		if browser and (not Meteor.isCordova) and Meteor.user()
+			if _extensionAlertInstalled
+				return
 			f = -> _installExtension(browser)
 			_extensionPopupTimer = Meteor.setTimeout f, 90*1000
 			_extensionAlertInstalled = true
