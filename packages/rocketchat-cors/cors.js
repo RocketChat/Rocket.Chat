@@ -6,7 +6,7 @@ WebApp.rawConnectHandlers.use(function(req, res, next) {
 	if (req._body) {
 		return next();
 	}
-	if (req.headers['transfer-encoding'] === void 0 && isNaN(req.headers['content-length'])) {
+	if (req.headers['transfer-encoding'] === undefined && isNaN(req.headers['content-length'])) {
 		return next();
 	}
 	if (req.headers['content-type'] !== '' && req.headers['content-type'] !== undefined) {
