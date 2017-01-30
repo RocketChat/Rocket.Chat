@@ -68,6 +68,9 @@ const getFromServer = (cb) => {
 const getFromServerDebounced = _.debounce(getFromServer, 500);
 
 Template.toolbar.helpers({
+	canCreate() {
+		return RocketChat.authz.hasAtLeastOnePermission(['create-c', 'create-p']);
+	},
 	results() {
 		return Template.instance().resultsList.get();
 	},
@@ -134,6 +137,14 @@ Template.toolbar.events({
 
 			$inputMessage.focus();
 		}
+	},
+	'click .toolbar-search__create-channel'(e) {
+		if (RocketChat.authz.hasAtLeastOnePermission(['create-c', 'create-p'])) {
+			SideNav.setFlex('createCombinedFlex');
+			SideNav.openFlex();
+		} else {
+			e.preventDefault();
+		}
 	}
 });
 
@@ -141,7 +152,6 @@ Template.toolbarSearchList.helpers({
 	icon() {
 		return RocketChat.roomTypes.getIcon(this.t);
 	},
-
 	userStatus() {
 		if (this.t === 'd') {
 			return 'status-' + (Session.get(`user_${this.name}_status`) || 'offline');
