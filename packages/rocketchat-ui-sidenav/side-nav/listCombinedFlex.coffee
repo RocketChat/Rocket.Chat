@@ -19,8 +19,6 @@ Template.listCombinedFlex.helpers
 		return RocketChat.roomTypes.getIcon @t
 	url: ->
 		return if @t is 'p' then 'group' else 'channel'
-	canCreate: ->
-		return RocketChat.authz.hasAtLeastOnePermission ['create-c', 'create-p']
 
 Template.listCombinedFlex.events
 	'click header': ->
@@ -28,10 +26,6 @@ Template.listCombinedFlex.events
 
 	'click .channel-link': ->
 		SideNav.closeFlex()
-
-	'click footer .create': ->
-		if RocketChat.authz.hasAtLeastOnePermission ['create-c', 'create-p']
-			SideNav.setFlex "createCombinedFlex"
 
 	'mouseenter header': ->
 		SideNav.overArrow()
