@@ -178,7 +178,7 @@ executeIntegrationRest = ->
 						return store[key]
 				script: script
 				request: request
-			result = vm.runInNewContext('script.process_incoming_webhook({ request: request })', sandbox, { timeout: 3000 })
+			result = vm.runInNewContext('script.process_incoming_request({ request: request })', sandbox, { timeout: 3000 })
 
 			if result?.error?
 				return RocketChat.API.v1.failure result.error
