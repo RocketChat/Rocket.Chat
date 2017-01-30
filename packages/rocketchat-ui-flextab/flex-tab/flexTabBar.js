@@ -35,7 +35,7 @@ Template.flexTabBar.helpers({
 });
 
 Template.flexTabBar.events({
-	'click .tab-button': function(e, instance) {
+	'click .tab-button'(e, instance) {
 		e.preventDefault();
 		if (instance.tabBar.getState() === 'opened' && instance.tabBar.getTemplate() === this.template) {
 			return instance.tabBar.close();
