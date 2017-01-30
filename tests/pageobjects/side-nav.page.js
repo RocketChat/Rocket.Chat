@@ -12,6 +12,7 @@ class SideNav extends Page {
 	get accountBoxUserAvatar() { return browser.element('.account-box .avatar-image'); }
 
 	get newChannelBtn() { return browser.element('.toolbar-search__create-channel'); }
+	get newChannelIcon() { return browser.element('.toolbar-search__create-channel.icon-plus'); }
 	get moreChannels() { return browser.element('.rooms-list .more-channels'); }
 
 	get newDirectMessageBtn() { return browser.element('.rooms-list .add-room:nth-of-type(2)'); }
