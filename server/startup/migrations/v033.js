@@ -1,7 +1,7 @@
 RocketChat.Migrations.add({
 	version: 33,
 	up() {
-		const scriptAlert = '/**\n * This scrit is out-of-date, convert to the new format\n * (https://github.com/RocketChat/Rocket.Chat/wiki/WebHook-Scripting)\n**/\n\n';
+		const scriptAlert = '/**\n * This script is out-of-date, convert to the new format\n * (https://rocket.chat/docs/administrator-guides/integrations)\n**/\n\n';
 
 		const integrations = RocketChat.models.Integrations.find({
 			$or: [
