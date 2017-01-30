@@ -9,7 +9,7 @@ Meteor.methods({
 
 		const room = RocketChat.models.Rooms.findOneById(rid);
 
-		if (room == null) {
+		if (!room) {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'joinRoom' });
 		}
 

@@ -9,7 +9,7 @@ Meteor.methods({
 
 		const user = Meteor.user();
 
-		if ((user.username != null) && !RocketChat.settings.get('Accounts_AllowUsernameChange')) {
+		if (user.username && !RocketChat.settings.get('Accounts_AllowUsernameChange')) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'setUsername' });
 		}
 
@@ -42,7 +42,7 @@ Meteor.methods({
 			throw new Meteor.Error('error-could-not-change-username', 'Could not change username', { method: 'setUsername' });
 		}
 
-		if (user.username == null) {
+		if (!user.username) {
 			Meteor.runAsUser(user._id, () => Meteor.call('joinDefaultChannels', joinDefaultChannelsSilenced));
 		}
 
