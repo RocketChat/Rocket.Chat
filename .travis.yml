@@ -1,6 +1,5 @@
 language: node_js
 services:
-- docker
 - mongodb
 branches:
   only:
