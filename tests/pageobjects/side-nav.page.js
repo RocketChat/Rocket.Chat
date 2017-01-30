@@ -1,9 +1,6 @@
 import Page from './Page';
 
 class SideNav extends Page {
-	get directMessageTarget() { return browser.element('.flex-nav input#who'); }
-	get saveDirectMessageBtn() { return browser.element('.save-direct-message'); }
-
 	get channelType() { return browser.element('label[for="channel-type"]'); }
 	get channelReadOnly() { return browser.element('label[for="channel-ro"]'); }
 	get channelName() { return browser.element('input#channel-name'); }
@@ -39,10 +36,22 @@ class SideNav extends Page {
 	get profile() { return browser.element('.account-link:nth-of-type(2)'); }
 	get avatar() { return browser.element('.account-link:nth-of-type(3)'); }
 	get preferencesClose() { return browser.element('.side-nav .arrow.close'); }
+	get spotlightSearch() { return browser.element('.toolbar-search__input'); }
 
 	openChannel(channelName) {
 		browser.click('.rooms-list > .wrapper > ul [title="'+channelName+'"]');
 		this.messageInput.waitForExist(5000);
+		browser.waitUntil(function() {
+			return browser.getText('.room-title') === channelName;
+		}, 5000);
+	}
+
+	searchChannel(channelName) {
+		this.spotlightSearch.waitForVisible(5000);
+		this.spotlightSearch.click();
+		this.spotlightSearch.setValue(channelName);
+		browser.waitForVisible('.room-title='+channelName, 10000);
+		browser.click('.room-title='+channelName);
 		browser.waitUntil(function() {
 			return browser.getText('.room-title') === channelName;
 		}, 5000);
