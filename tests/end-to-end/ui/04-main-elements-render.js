@@ -42,14 +42,6 @@ describe('Main Elements Render', function() {
 				sideNav.newDirectMessageBtn.isVisible().should.be.true;
 			});
 
-			it('should show the plus icon', () => {
-				sideNav.newDirectMessageIcon.isVisible().should.be.true;
-			});
-
-			it('should show the "More Direct Messages" button', () => {
-				sideNav.moreDirectMessages.isVisible().should.be.true;
-			});
-
 			it('should show "general" channel', () => {
 				sideNav.general.isVisible().should.be.true;
 			});

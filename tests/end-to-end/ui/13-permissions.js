@@ -167,17 +167,8 @@ describe('Admin settings', () => {
 			checkIfUserIsValid('adminCreated'+username, 'adminCreated'+email, password);
 		});
 
-		it('should not show the plus icon on channels ', () => {
+		it('should not show the plus icon on toolbar ', () => {
 			sideNav.newChannelIcon.isVisible().should.be.false;
-		});
-
-		it('when clicked should not show the new channel name input ', () => {
-			sideNav.newChannelBtn.click();
-			sideNav.channelName.isVisible().should.be.false;
-		});
-
-		it('should not show the plus icon on direct messages ', () => {
-			sideNav.newDirectMessageIcon.isVisible().should.be.false;
 		});
 
 		it('go to general', () => {

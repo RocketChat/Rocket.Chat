@@ -1433,22 +1433,12 @@ label.required::after {
 	}
 
 	h3 {
-		&:extend(.small-title);
-		cursor: pointer;
 		position: relative;
 		text-transform: uppercase;
 		font-weight: 500;
 		margin: 25px 0 0;
 		line-height: 28px;
 		padding-left: 10px;
-
-		&.add-room {
-			i {
-				position: absolute;
-				right: 6px;
-				top: 1px;
-			}
-		}
 	}
 
 	.unread {
@@ -1620,8 +1610,12 @@ label.required::after {
 	height: @toolbar-height;
 }
 
-.toolbar-search {
+.toolbar-wrapper {
 	margin: 10px 8px;
+	display: flex;
+}
+
+.toolbar-search {
 	position: relative;
 }
 
@@ -1646,6 +1640,20 @@ label.required::after {
 
 	&:focus + .toolbar-search__icon--cancel {
 		opacity: 1;
+	}
+}
+
+.toolbar-search__buttons {
+	display: flex;
+	align-items: center;
+	margin-left: 5px;
+
+	i {
+		width: 25px;
+		height: 25px;
+		line-height: 25px;
+		text-align: center;
+		cursor: pointer;
 	}
 }
 
