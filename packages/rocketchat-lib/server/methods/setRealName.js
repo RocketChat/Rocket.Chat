@@ -7,7 +7,7 @@ Meteor.methods({
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'setRealName' });
 		}
 
-		let user = Meteor.user();
+		const user = Meteor.user();
 
 		if (user.name === name) {
 			return name;
