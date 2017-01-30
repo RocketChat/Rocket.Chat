@@ -141,7 +141,6 @@ Package.onUse(function(api) {
 	api.addFiles('server/methods/joinDefaultChannels.js', 'server');
 	api.addFiles('server/methods/joinRoom.js', 'server');
 	api.addFiles('server/methods/leaveRoom.js', 'server');
-	api.addFiles('server/methods/refreshOAuthService.js', 'server');
 	api.addFiles('server/methods/removeOAuthService.js', 'server');
 	api.addFiles('server/methods/restartServer.js', 'server');
 	api.addFiles('server/methods/robotMethods.coffee', 'server');
