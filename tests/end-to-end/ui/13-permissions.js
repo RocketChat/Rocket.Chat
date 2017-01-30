@@ -180,11 +180,6 @@ describe('Admin settings', () => {
 			sideNav.newDirectMessageIcon.isVisible().should.be.false;
 		});
 
-		it('when clicked should not show the new direct message user input ', () => {
-			sideNav.newDirectMessageBtn.click();
-			sideNav.directMessageTarget.isVisible().should.be.false;
-		});
-
 		it('go to general', () => {
 			sideNav.getChannelFromList('general').waitForExist(5000);
 			sideNav.openChannel('general');
