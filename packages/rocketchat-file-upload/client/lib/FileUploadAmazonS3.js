@@ -8,19 +8,17 @@ FileUpload.AmazonS3 = class FileUploadAmazonS3 extends FileUploadBase {
 
 	start() {
 		this.uploader.send(this.file, (error, downloadUrl) => {
-			let item, uploading;
-
 			if (this.computation) {
 				this.computation.stop();
 			}
 
 			if (error) {
-				uploading = Session.get('uploading');
+				let uploading = Session.get('uploading');
 				if (!Array.isArray(uploading)) {
 					uploading = [];
 				}
 
-				item = _.findWhere(uploading, {
+				const item = _.findWhere(uploading, {
 					id: this.id
 				});
 				if (_.isObject(item)) {
@@ -40,9 +38,9 @@ FileUpload.AmazonS3 = class FileUploadAmazonS3 extends FileUploadBase {
 
 				Meteor.call('sendFileMessage', this.meta.rid, 's3', file, () => {
 					Meteor.setTimeout(() => {
-						uploading = Session.get('uploading');
+						const uploading = Session.get('uploading');
 						if (uploading !== null) {
-							item = _.findWhere(uploading, {
+							const item = _.findWhere(uploading, {
 								id: this.id
 							});
 							return Session.set('uploading', _.without(uploading, item));
