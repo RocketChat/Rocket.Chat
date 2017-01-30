@@ -176,10 +176,6 @@ describe('Admin settings', () => {
 			sideNav.channelName.isVisible().should.be.false;
 		});
 
-		it('should not show the plus icon on direct messages ', () => {
-			sideNav.newDirectMessageIcon.isVisible().should.be.false;
-		});
-
 		it('go to general', () => {
 			sideNav.getChannelFromList('general').waitForExist(5000);
 			sideNav.openChannel('general');
