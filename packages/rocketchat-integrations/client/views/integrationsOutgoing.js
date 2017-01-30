@@ -60,15 +60,21 @@ Template.integrationsOutgoing.helpers({
 	},
 
 	shouldDisplayChannel() {
-		const record = Template.instance().getData();
+		const record = Template.instance().record.get() || Template.instance().getData();
 
 		return typeof record.event === 'string' && RocketChat.integrations.outgoingEvents[record.event].use.channel;
 	},
 
 	shouldDisplayTriggerWords() {
-		const record = Template.instance().getData();
+		const record = Template.instance().record.get() || Template.instance().getData();
 
 		return typeof record.event === 'string' && RocketChat.integrations.outgoingEvents[record.event].use.triggerWords;
+	},
+
+	shouldDisplayTargetRoom() {
+		const record = Template.instance().record.get() || Template.instance().getData();
+
+		return typeof record.event === 'string' && RocketChat.integrations.outgoingEvents[record.event].use.targetRoom;
 	},
 
 	example() {
@@ -158,7 +164,8 @@ Template.integrationsOutgoing.events({
 			username: $('[name=username]').val().trim(),
 			triggerWords: $('[name=triggerWords]').val() ? $('[name=triggerWords]').val().trim() : undefined,
 			urls: $('[name=urls]').val().trim(),
-			token: $('[name=token]').val().trim()
+			token: $('[name=token]').val().trim(),
+			targetRoom: $('[name=targetRoom]').val() ? $('[name=targetRoom]').val().trim() : undefined
 		});
 	},
 
@@ -244,8 +251,17 @@ Template.integrationsOutgoing.events({
 		if (RocketChat.integrations.outgoingEvents[event].use.channel) {
 			channel = $('[name=channel]').val().trim();
 
-			if (channel && channel.trim() === '') {
+			if (!channel || channel.trim() === '') {
 				return toastr.error(TAPi18n.__('error-the-field-is-required', { field: TAPi18n.__('Channel') }));
+			}
+		}
+
+		let targetRoom;
+		if (RocketChat.integrations.outgoingEvents[event].use.targetRoom) {
+			targetRoom = $('[name=targetRoom]').val().trim();
+
+			if (!targetRoom || targetRoom.trim() === '') {
+				return toastr.error(TAPi18n.__('error-the-field-is-required', { field: TAPi18n.__('TargetRoom') }));
 			}
 		}
 

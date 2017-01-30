@@ -53,6 +53,16 @@
 									</div>
 								</div>
 							{{/if}}
+							{{#if shouldDisplayTargetRoom}}
+								<div class="input-line double-col">
+									<label>{{_ "TargetRoom"}}</label>
+									<div>
+										<input type="text" name="targetRoom" value="{{data.targetRoom}}" placeholder="{{_ 'User_or_channel_name'}}" />
+										<div class="settings-description">{{_ "TargetRoom_Description"}}</div>
+										<div class="settings-description">{{{_ "Start_with_s_for_user_or_s_for_channel_Eg_s_or_s" "@" "#" "@john" "#general"}}}</div>
+									</div>
+								</div>
+							{{/if}}
 							<div class="input-line double-col">
 								<label>{{_ "URLs"}}</label>
 								<div>
