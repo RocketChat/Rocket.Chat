@@ -193,7 +193,7 @@ Package.onUse(function(api) {
 	api.addFiles('client/views/customFieldsForm.html', 'client');
 	api.addFiles('client/views/customFieldsForm.js', 'client');
 
-	api.addFiles('startup/defaultRoomTypes.coffee');
+	api.addFiles('startup/defaultRoomTypes.js');
 
 	// VERSION
 	api.addFiles('rocketchat.info');
