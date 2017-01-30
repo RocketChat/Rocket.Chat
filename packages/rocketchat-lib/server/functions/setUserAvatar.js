@@ -9,8 +9,10 @@ RocketChat.setUserAvatar = function(user, dataURI, contentType, service) {
 		try {
 			result = HTTP.get(dataURI, { npmRequestOptions: {encoding: 'binary'} });
 		} catch (error) {
-			console.log(`Error while handling the setting of the avatar from a url (${dataURI}) for ${user.username}:`, error);
-			throw new Meteor.Error('error-avatar-url-handling', `Error while handling avatar setting from a URL (${dataURI}) for ${user.username}`, { function: 'RocketChat.setUserAvatar', url: dataURI, username: user.username });
+			if (error.response.statusCode !== 404) {
+				console.log(`Error while handling the setting of the avatar from a url (${dataURI}) for ${user.username}:`, error);
+				throw new Meteor.Error('error-avatar-url-handling', `Error while handling avatar setting from a URL (${dataURI}) for ${user.username}`, { function: 'RocketChat.setUserAvatar', url: dataURI, username: user.username });
+			}
 		}
 
 		if (result.statusCode !== 200) {
