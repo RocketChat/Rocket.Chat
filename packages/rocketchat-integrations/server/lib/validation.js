@@ -2,11 +2,7 @@
 const scopedChannels = ['all_public_channels', 'all_private_groups', 'all_direct_messages'];
 const validChannelChars = ['@', '#'];
 
-RocketChat.integrations.validateOutgoing = function _validateOutgoing(integration, userId) {
-	if (integration.channel && Match.test(integration.channel, String) && integration.channel.trim() === '') {
-		delete integration.channel;
-	}
-
+function _verifyRequiredFields(integration) {
 	if (!integration.event || !Match.test(integration.event, String) || integration.event.trim() === '' || !RocketChat.integrations.outgoingEvents[integration.event]) {
 		throw new Meteor.Error('error-invalid-event-type', 'Invalid event type', { function: 'validateOutgoing' });
 	}
@@ -30,6 +26,58 @@ RocketChat.integrations.validateOutgoing = function _validateOutgoing(integratio
 	if (integration.urls.length === 0) {
 		throw new Meteor.Error('error-invalid-urls', 'Invalid URLs', { function: 'validateOutgoing' });
 	}
+}
+
+function _verifyUserHasPermissionForChannels(integration, userId, channels) {
+	for (let channel of channels) {
+		if (scopedChannels.includes(channel)) {
+			if (channel === 'all_public_channels') {
+				// No special permissions needed to add integration to public channels
+			} else if (!RocketChat.authz.hasPermission(userId, 'manage-integrations')) {
+				throw new Meteor.Error('error-invalid-channel', 'Invalid Channel', { function: 'validateOutgoing' });
+			}
+		} else {
+			let record;
+			const channelType = channel[0];
+			channel = channel.substr(1);
+
+			switch (channelType) {
+				case '#':
+					record = RocketChat.models.Rooms.findOne({
+						$or: [
+							{_id: channel},
+							{name: channel}
+						]
+					});
+					break;
+				case '@':
+					record = RocketChat.models.Users.findOne({
+						$or: [
+							{_id: channel},
+							{username: channel}
+						]
+					});
+					break;
+			}
+
+			if (!record) {
+				throw new Meteor.Error('error-invalid-room', 'Invalid room', { function: 'validateOutgoing' });
+			}
+
+			if (record.usernames && !RocketChat.authz.hasPermission(userId, 'manage-integrations') && RocketChat.authz.hasPermission(userId, 'manage-own-integrations') && !record.usernames.includes(Meteor.user().username)) {
+				throw new Meteor.Error('error-invalid-channel', 'Invalid Channel', { function: 'validateOutgoing' });
+			}
+		}
+	}
+}
+
+RocketChat.integrations.validateOutgoing = function _validateOutgoing(integration, userId) {
+	if (integration.channel && Match.test(integration.channel, String) && integration.channel.trim() === '') {
+		delete integration.channel;
+	}
+
+	//Moved to it's own function to statisfy the complexity rule
+	_verifyRequiredFields(integration);
 
 	let channels = [];
 	if (RocketChat.integrations.outgoingEvents[integration.event].use.channel) {
@@ -76,46 +124,7 @@ RocketChat.integrations.validateOutgoing = function _validateOutgoing(integratio
 		}
 	}
 
-	for (let channel of channels) {
-		if (scopedChannels.includes(channel)) {
-			if (channel === 'all_public_channels') {
-				// No special permissions needed to add integration to public channels
-			} else if (!RocketChat.authz.hasPermission(userId, 'manage-integrations')) {
-				throw new Meteor.Error('error-invalid-channel', 'Invalid Channel', { function: 'validateOutgoing' });
-			}
-		} else {
-			let record;
-			const channelType = channel[0];
-			channel = channel.substr(1);
-
-			switch (channelType) {
-				case '#':
-					record = RocketChat.models.Rooms.findOne({
-						$or: [
-							{_id: channel},
-							{name: channel}
-						]
-					});
-					break;
-				case '@':
-					record = RocketChat.models.Users.findOne({
-						$or: [
-							{_id: channel},
-							{username: channel}
-						]
-					});
-					break;
-			}
-
-			if (!record) {
-				throw new Meteor.Error('error-invalid-room', 'Invalid room', { function: 'validateOutgoing' });
-			}
-
-			if (record.usernames && !RocketChat.authz.hasPermission(userId, 'manage-integrations') && RocketChat.authz.hasPermission(userId, 'manage-own-integrations') && !record.usernames.includes(Meteor.user().username)) {
-				throw new Meteor.Error('error-invalid-channel', 'Invalid Channel', { function: 'validateOutgoing' });
-			}
-		}
-	}
+	_verifyUserHasPermissionForChannels(integration, userId, channels);
 
 	const user = RocketChat.models.Users.findOne({ username: integration.username });
 
