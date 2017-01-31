@@ -45,8 +45,8 @@ var settingValue = {
 describe('Changing settings via api', () => {
 	before((done) => {
 		checkIfUserIsValid(username, email, password);
-		sideNav.getChannelFromList('general').waitForExist(5000);
-		sideNav.openChannel('general');
+		sideNav.spotlightSearch.waitForVisible(10000);
+		sideNav.searchChannel('general');
 
 		request.post(api('login'))
 			.send(login)
@@ -357,8 +357,8 @@ describe('Changing settings via api', () => {
 			sideNav.preferencesClose.waitForVisible(5000);
 			sideNav.preferencesClose.click();
 			sideNav.avatar.waitForVisible(5000, true);
-			sideNav.getChannelFromList('general').waitForVisible(5000);
-			sideNav.openChannel('general');
+			sideNav.spotlightSearch.waitForVisible(10000);
+			sideNav.searchChannel('general');
 		});
 		describe('block profile change', () => {
 			it('should change the allow user profile change via api', (done) => {
