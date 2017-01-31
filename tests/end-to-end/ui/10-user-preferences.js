@@ -15,8 +15,8 @@ import {checkIfUserIsValid} from '../../data/checks';
 describe.skip('user preferences', ()=> {
 	before(() => {
 		checkIfUserIsValid(username, email, password);
-		sideNav.getChannelFromList('general').waitForExist(5000);
-		sideNav.openChannel('general');
+		sideNav.spotlightSearch.waitForVisible(10000);
+		sideNav.searchChannel('general');
 
 		sideNav.accountBoxUserName.waitForVisible();
 		sideNav.accountBoxUserName.click();
@@ -101,7 +101,7 @@ describe.skip('user preferences', ()=> {
 		});
 
 		it('open GENERAL', () => {
-			sideNav.openChannel('general');
+			sideNav.searchChannel('general');
 		});
 
 		it('send a message to be tested', () => {
