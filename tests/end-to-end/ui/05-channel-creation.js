@@ -12,13 +12,13 @@ import {username, email, password} from '../../data/user.js';
 describe('Channel creation', function() {
 	before(()=>{
 		checkIfUserIsValid(username, email, password);
-		sideNav.getChannelFromList('general').waitForExist(5000);
-		sideNav.openChannel('general');
+		sideNav.spotlightSearch.waitForVisible(10000);
+		sideNav.searchChannel('general');
 	});
 
 	beforeEach(()=>{
-		sideNav.getChannelFromList('general').waitForVisible(5000);
-		sideNav.openChannel('general');
+		sideNav.spotlightSearch.waitForVisible(10000);
+		sideNav.searchChannel('general');
 	});
 
 	afterEach(function() {
