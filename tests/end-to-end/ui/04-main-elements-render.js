@@ -12,8 +12,8 @@ import {username, email, password} from '../../data/user.js';
 describe('Main Elements Render', function() {
 	before(()=>{
 		checkIfUserIsValid(username, email, password);
-		sideNav.getChannelFromList('general').waitForExist(5000);
-		sideNav.openChannel('general');
+		sideNav.spotlightSearch.waitForVisible(10000);
+		sideNav.searchChannel('general');
 	});
 
 	describe('side nav bar', () => {
