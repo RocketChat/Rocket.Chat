@@ -14,18 +14,19 @@ import {username, email, password, adminUsername, adminEmail, adminPassword} fro
 describe('Admin settings', () => {
 	before(() => {
 		checkIfUserIsAdmin(adminUsername, adminEmail, adminPassword);
-		sideNav.getChannelFromList('general').waitForVisible(5000);
-		sideNav.openChannel('general');
+		sideNav.spotlightSearch.waitForVisible(10000);
+		sideNav.searchChannel('general');
 		sideNav.accountBoxUserName.waitForVisible(5000);
 		sideNav.accountBoxUserName.click();
 		sideNav.admin.waitForVisible(5000);
 		sideNav.admin.click();
+		admin.infoRocketChatTable.waitForVisible(10000);
 	});
 
 	after(() => {
 		checkIfUserIsAdmin(adminUsername, adminEmail, adminPassword);
-		sideNav.getChannelFromList('general').waitForExist(5000);
-		sideNav.openChannel('general');
+		sideNav.spotlightSearch.waitForVisible(10000);
+		sideNav.searchChannel('general');
 		sideNav.accountBoxUserName.waitForVisible(5000);
 		sideNav.accountBoxUserName.click();
 		sideNav.admin.waitForVisible(5000);
@@ -172,8 +173,8 @@ describe('Admin settings', () => {
 		});
 
 		it('go to general', () => {
-			sideNav.getChannelFromList('general').waitForExist(5000);
-			sideNav.openChannel('general');
+			sideNav.spotlightSearch.waitForVisible(10000);
+			sideNav.searchChannel('general');
 			mainContent.messageInput.waitForVisible(5000);
 		});
 
