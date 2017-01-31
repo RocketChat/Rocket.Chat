@@ -114,6 +114,13 @@ class MainContent extends Page {
 		}, 2000);
 	}
 
+	tryToMentionAll() {
+		this.addTextToInput('@all');
+		this.sendBtn.click();
+		this.waitForLastMessageEqualsText('Notify all in this room is not allowed');
+		this.lastMessage.getText().should.equal('Notify all in this room is not allowed');
+	}
+
 	//do one of the message actions, based on the "action" parameter inserted.
 	selectAction(action) {
 		switch (action) {

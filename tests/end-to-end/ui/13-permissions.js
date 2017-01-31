@@ -14,7 +14,7 @@ import {username, email, password, adminUsername, adminEmail, adminPassword} fro
 describe('Admin settings', () => {
 	before(() => {
 		checkIfUserIsAdmin(adminUsername, adminEmail, adminPassword);
-		sideNav.getChannelFromList('general').waitForExist(5000);
+		sideNav.getChannelFromList('general').waitForVisible(5000);
 		sideNav.openChannel('general');
 		sideNav.accountBoxUserName.waitForVisible(5000);
 		sideNav.accountBoxUserName.click();
@@ -167,22 +167,8 @@ describe('Admin settings', () => {
 			checkIfUserIsValid('adminCreated'+username, 'adminCreated'+email, password);
 		});
 
-		it('should not show the plus icon on channels ', () => {
+		it('should not show the plus icon on toolbar ', () => {
 			sideNav.newChannelIcon.isVisible().should.be.false;
-		});
-
-		it('when clicked should not show the new channel name input ', () => {
-			sideNav.newChannelBtn.click();
-			sideNav.channelName.isVisible().should.be.false;
-		});
-
-		it('should not show the plus icon on direct messages ', () => {
-			sideNav.newDirectMessageIcon.isVisible().should.be.false;
-		});
-
-		it('when clicked should not show the new direct message user input ', () => {
-			sideNav.newDirectMessageBtn.click();
-			sideNav.directMessageTarget.isVisible().should.be.false;
 		});
 
 		it('go to general', () => {
@@ -192,13 +178,7 @@ describe('Admin settings', () => {
 		});
 
 		it('try to use @all and should be warned by rocket.cat ', () => {
-			mainContent.addTextToInput('@all');
-			mainContent.mentionAllPopUp.waitForVisible(5000);
-			mainContent.mentionAllPopUp.click();
-			mainContent.mentionAllPopUp.waitForVisible(5000, true);
-			mainContent.sendBtn.click();
-			mainContent.waitForLastMessageEqualsText('Notify all in this room is not allowed');
-			mainContent.lastMessage.getText().should.equal('Notify all in this room is not allowed');
+			mainContent.tryToMentionAll();
 		});
 
 		it.skip('should not be able to delete own message ', () => {
