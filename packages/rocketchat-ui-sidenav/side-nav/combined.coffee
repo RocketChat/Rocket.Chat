@@ -16,17 +16,7 @@ Template.combined.helpers
 
 		return ChatSubscription.find query, { sort: 'name': 1 }
 
-	canCreate: ->
-		return RocketChat.authz.hasAtLeastOnePermission ['create-c', 'create-p']
-
 Template.combined.events
-	'click .add-room': (e, instance) ->
-		if RocketChat.authz.hasAtLeastOnePermission(['create-c', 'create-p'])
-			SideNav.setFlex "createCombinedFlex"
-			SideNav.openFlex()
-		else
-			e.preventDefault()
-
 	'click .more-channels': ->
 		SideNav.setFlex "listCombinedFlex"
 		SideNav.openFlex()

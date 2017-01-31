@@ -118,43 +118,43 @@ Package.onUse(function(api) {
 	api.addFiles('server/publications/settings.coffee', 'server');
 
 	// SERVER METHODS
-	api.addFiles('server/methods/addOAuthService.coffee', 'server');
+	api.addFiles('server/methods/addOAuthService.js', 'server');
 	api.addFiles('server/methods/refreshOAuthService.js', 'server');
-	api.addFiles('server/methods/addUserToRoom.coffee', 'server');
+	api.addFiles('server/methods/addUserToRoom.js', 'server');
 	api.addFiles('server/methods/addUsersToRoom.js', 'server');
-	api.addFiles('server/methods/archiveRoom.coffee', 'server');
+	api.addFiles('server/methods/archiveRoom.js', 'server');
 	api.addFiles('server/methods/blockUser.js', 'server');
-	api.addFiles('server/methods/checkRegistrationSecretURL.coffee', 'server');
-	api.addFiles('server/methods/createChannel.coffee', 'server');
-	api.addFiles('server/methods/createPrivateGroup.coffee', 'server');
+	api.addFiles('server/methods/checkRegistrationSecretURL.js', 'server');
+	api.addFiles('server/methods/cleanChannelHistory.js', 'server');
+	api.addFiles('server/methods/createChannel.js', 'server');
+	api.addFiles('server/methods/createPrivateGroup.js', 'server');
 	api.addFiles('server/methods/deleteMessage.coffee', 'server');
 	api.addFiles('server/methods/deleteUserOwnAccount.js', 'server');
+	api.addFiles('server/methods/filterBadWords.js', ['server']);
+	api.addFiles('server/methods/filterATAllTag.js', 'server');
+	api.addFiles('server/methods/getChannelHistory.js', 'server');
 	api.addFiles('server/methods/getFullUserData.js', 'server');
 	api.addFiles('server/methods/getRoomRoles.js', 'server');
 	api.addFiles('server/methods/getServerInfo.js', 'server');
 	api.addFiles('server/methods/getUserRoles.js', 'server');
-	api.addFiles('server/methods/joinRoom.coffee', 'server');
-	api.addFiles('server/methods/joinDefaultChannels.coffee', 'server');
-	api.addFiles('server/methods/leaveRoom.coffee', 'server');
-	api.addFiles('server/methods/removeOAuthService.coffee', 'server');
+	api.addFiles('server/methods/insertOrUpdateUser.js', 'server');
+	api.addFiles('server/methods/joinDefaultChannels.js', 'server');
+	api.addFiles('server/methods/joinRoom.js', 'server');
+	api.addFiles('server/methods/leaveRoom.js', 'server');
+	api.addFiles('server/methods/removeOAuthService.js', 'server');
+	api.addFiles('server/methods/restartServer.js', 'server');
 	api.addFiles('server/methods/robotMethods.coffee', 'server');
 	api.addFiles('server/methods/saveSetting.js', 'server');
 	api.addFiles('server/methods/sendInvitationEmail.coffee', 'server');
 	api.addFiles('server/methods/sendMessage.coffee', 'server');
 	api.addFiles('server/methods/sendSMTPTestEmail.coffee', 'server');
-	api.addFiles('server/methods/setAdminStatus.coffee', 'server');
-	api.addFiles('server/methods/setRealName.coffee', 'server');
-	api.addFiles('server/methods/setUsername.coffee', 'server');
-	api.addFiles('server/methods/insertOrUpdateUser.coffee', 'server');
+	api.addFiles('server/methods/setAdminStatus.js', 'server');
+	api.addFiles('server/methods/setRealName.js', 'server');
+	api.addFiles('server/methods/setUsername.js', 'server');
 	api.addFiles('server/methods/setEmail.js', 'server');
-	api.addFiles('server/methods/restartServer.coffee', 'server');
-	api.addFiles('server/methods/unarchiveRoom.coffee', 'server');
+	api.addFiles('server/methods/unarchiveRoom.js', 'server');
 	api.addFiles('server/methods/unblockUser.js', 'server');
-	api.addFiles('server/methods/updateMessage.coffee', 'server');
-	api.addFiles('server/methods/filterBadWords.js', ['server']);
-	api.addFiles('server/methods/filterATAllTag.js', 'server');
-	api.addFiles('server/methods/getChannelHistory.js', 'server');
-	api.addFiles('server/methods/cleanChannelHistory.js', 'server');
+	api.addFiles('server/methods/updateMessage.js', 'server');
 
 	// SERVER STARTUP
 	api.addFiles('server/startup/settingsOnLoadCdnPrefix.coffee', 'server');
@@ -193,7 +193,7 @@ Package.onUse(function(api) {
 	api.addFiles('client/views/customFieldsForm.html', 'client');
 	api.addFiles('client/views/customFieldsForm.js', 'client');
 
-	api.addFiles('startup/defaultRoomTypes.coffee');
+	api.addFiles('startup/defaultRoomTypes.js');
 
 	// VERSION
 	api.addFiles('rocketchat.info');
