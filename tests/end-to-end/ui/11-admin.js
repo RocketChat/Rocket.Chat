@@ -129,7 +129,6 @@ describe('Admin Login', () => {
 			describe('filter text with wrong channel', () => {
 				before(() => {
 					admin.roomsFilter.click();
-					browser.pause(5000);
 					admin.roomsFilter.setValue('something else');
 				});
 
@@ -219,7 +218,6 @@ describe('Admin Login', () => {
 			describe('filter text', () => {
 				before(() => {
 					admin.usersFilter.click();
-					browser.pause(5000);
 					admin.usersFilter.setValue('Rocket.Cat');
 				});
 
@@ -237,7 +235,6 @@ describe('Admin Login', () => {
 			describe('filter text with wrong user', () => {
 				before(() => {
 					admin.usersFilter.click();
-					browser.pause(5000);
 					admin.usersFilter.setValue('something else');
 				});
 

@@ -4,6 +4,7 @@
 import flexTab from '../../pageobjects/flex-tab.page';
 import mainContent from '../../pageobjects/main-content.page';
 import sideNav from '../../pageobjects/side-nav.page';
+import Global from '../../pageobjects/global';
 
 import {username, email, password} from '../../data/user.js';
 import {checkIfUserIsValid, publicChannelCreated, setPublicChannelCreated} from '../../data/checks';
@@ -23,18 +24,18 @@ describe('channel usage', ()=> {
 
 	describe('Adding a user to the room', () => {
 		before(()=> {
-			if (flexTab.toastAlert.isVisible()) {
+			if (Global.toastAlert.isVisible()) {
 				flexTab.dismissToast();
-				flexTab.toastAlert.waitForVisible(5000, true);
+				Global.toastAlert.waitForVisible(5000, true);
 			}
 			flexTab.membersTab.waitForVisible();
 			flexTab.membersTab.click();
 		});
 
 		after(()=> {
-			if (flexTab.toastAlert.isVisible()) {
+			if (Global.toastAlert.isVisible()) {
 				flexTab.dismissToast();
-				flexTab.toastAlert.waitForVisible(5000, true);
+				Global.toastAlert.waitForVisible(5000, true);
 			}
 			flexTab.membersTab.waitForVisible();
 			flexTab.membersTab.click();
@@ -49,18 +50,18 @@ describe('channel usage', ()=> {
 	describe('Channel settings', ()=> {
 		describe('Channel name edit', ()=> {
 			before(()=> {
-				if (flexTab.toastAlert.isVisible()) {
+				if (Global.toastAlert.isVisible()) {
 					flexTab.dismissToast();
-					flexTab.toastAlert.waitForVisible(5000, true);
+					Global.toastAlert.waitForVisible(5000, true);
 				}
 				flexTab.channelTab.waitForVisible();
 				flexTab.channelTab.click();
 			});
 
 			after(()=> {
-				if (flexTab.toastAlert.isVisible()) {
+				if (Global.toastAlert.isVisible()) {
 					flexTab.dismissToast();
-					flexTab.toastAlert.waitForVisible(5000, true);
+					Global.toastAlert.waitForVisible(5000, true);
 				}
 				flexTab.channelTab.waitForVisible(5000);
 			});
@@ -97,9 +98,9 @@ describe('channel usage', ()=> {
 			});
 
 			after(()=> {
-				if (flexTab.toastAlert.isVisible()) {
+				if (Global.toastAlert.isVisible()) {
 					flexTab.dismissToast();
-					flexTab.toastAlert.waitForVisible(5000, true);
+					Global.toastAlert.waitForVisible(5000, true);
 				}
 				flexTab.channelTab.waitForVisible();
 				flexTab.channelTab.click();
@@ -131,9 +132,9 @@ describe('channel usage', ()=> {
 			});
 
 			after(()=> {
-				if (flexTab.toastAlert.isVisible()) {
+				if (Global.toastAlert.isVisible()) {
 					flexTab.dismissToast();
-					flexTab.toastAlert.waitForVisible(5000, true);
+					Global.toastAlert.waitForVisible(5000, true);
 				}
 				flexTab.channelTab.waitForVisible();
 				flexTab.channelTab.click();
@@ -162,18 +163,18 @@ describe('channel usage', ()=> {
 	describe('Members tab usage', () => {
 		describe('Owner added', () => {
 			before(()=> {
-				if (flexTab.toastAlert.isVisible()) {
+				if (Global.toastAlert.isVisible()) {
 					flexTab.dismissToast();
-					flexTab.toastAlert.waitForVisible(5000, true);
+					Global.toastAlert.waitForVisible(5000, true);
 				}
 				flexTab.membersTab.waitForVisible();
 				flexTab.membersTab.click();
 			});
 
 			after(()=> {
-				if (flexTab.toastAlert.isVisible()) {
+				if (Global.toastAlert.isVisible()) {
 					flexTab.dismissToast();
-					flexTab.toastAlert.waitForVisible(5000, true);
+					Global.toastAlert.waitForVisible(5000, true);
 				}
 				flexTab.membersTab.waitForVisible();
 				flexTab.membersTab.click();
@@ -184,9 +185,9 @@ describe('channel usage', ()=> {
 			});
 
 			it('dismiss the toast', ()=> {
-				if (flexTab.toastAlert.isVisible()) {
+				if (Global.toastAlert.isVisible()) {
 					flexTab.dismissToast();
-					flexTab.toastAlert.waitForVisible(5000, true);
+					Global.toastAlert.waitForVisible(5000, true);
 				}
 			});
 
@@ -201,18 +202,18 @@ describe('channel usage', ()=> {
 
 		describe('Moderator added', () => {
 			before(()=> {
-				if (flexTab.toastAlert.isVisible()) {
+				if (Global.toastAlert.isVisible()) {
 					flexTab.dismissToast();
-					flexTab.toastAlert.waitForVisible(5000, true);
+					Global.toastAlert.waitForVisible(5000, true);
 				}
 				flexTab.membersTab.waitForVisible();
 				flexTab.membersTab.click();
 			});
 
 			after(()=> {
-				if (flexTab.toastAlert.isVisible()) {
+				if (Global.toastAlert.isVisible()) {
 					flexTab.dismissToast();
-					flexTab.toastAlert.waitForVisible(5000, true);
+					Global.toastAlert.waitForVisible(5000, true);
 				}
 				flexTab.membersTab.waitForVisible();
 				flexTab.membersTab.click();
@@ -223,9 +224,9 @@ describe('channel usage', ()=> {
 			});
 
 			it('dismiss the toast', ()=> {
-				if (flexTab.toastAlert.isVisible()) {
+				if (Global.toastAlert.isVisible()) {
 					flexTab.dismissToast();
-					flexTab.toastAlert.waitForVisible(5000, true);
+					Global.toastAlert.waitForVisible(5000, true);
 				}
 			});
 
