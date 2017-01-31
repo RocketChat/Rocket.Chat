@@ -111,6 +111,7 @@ module.exports = {
 		grep: null,
 		timeout: 10000,
 		reporter: 'min',
+		timeout: 40000,
 		slow: 100,
 		retries: 3,
 		bail: false // bail after first test failure
