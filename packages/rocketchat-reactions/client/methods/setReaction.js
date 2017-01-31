@@ -6,8 +6,8 @@ Meteor.methods({
 
 		const user = Meteor.user();
 
-		let message = RocketChat.models.Messages.findOne({ _id: messageId });
-		let room = RocketChat.models.Rooms.findOne({ _id: message.rid });
+		const message = RocketChat.models.Messages.findOne({ _id: messageId });
+		const room = RocketChat.models.Rooms.findOne({ _id: message.rid });
 
 		if (Array.isArray(room.muted) && room.muted.indexOf(user.username) !== -1 && !room.reactWhenReadOnly) {
 			return false;
