@@ -115,6 +115,14 @@ class Administration extends Page {
 	get generalUTF8NamesSlugTrue() { return browser.element('label:nth-of-type(1) [name="UTF8_Names_Slugify"]'); }
 	get generalUTF8NamesSlugFalse() { return browser.element('label:nth-of-type(2) [name="UTF8_Names_Slugify"]'); }
 	get generalUTF8NamesSlugReset() { return browser.element('.reset-setting[data-setting="UTF8_Names_Slugify"]'); }
+
+	checkUserList(user) {
+		var element = browser.element('td=adminCreated'+user);
+		element.waitForVisible(5000);
+		browser.pause(500);
+		var result = element.isVisible();
+		return result[0];
+	}
 }
 
 module.exports = new Administration();

@@ -782,39 +782,25 @@
 		}
 	}
 
-	/* Overridding classes from swipebox.min.css */
-	#swipebox-close {
-		.left(0);
-	}
-
-	@media screen and (min-width: 800px) {
-		#swipebox-close {
-			.left(10px);
-		}
-	}
-
-	#swipebox-overlay {
-		direction: ltr;
-	}
-
 	/* Override toastr messages to show on hte left side */
 	.toast-top-right {
 		.left(12px);
 	}
 
-	.spotlight {
-		> .spotlight-input {
-			.icon-search {
-				left: 0;
-			}
+	.toolbar-search__icon {
+		right: 0;
+	}
 
-			.message-popup {
-				.popup-item {
-					span {
-						float: left;
-					}
-				}
-			}
+	.toolbar-search__icon--cancel {
+		right: auto;
+		left: 0;
+	}
+
+	.message-popup.search-results-list {
+		direction: ltr;
+
+		.popup-item {
+			direction: rtl;
 		}
 	}
 }
