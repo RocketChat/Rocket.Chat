@@ -167,7 +167,18 @@ executeIntegrationRest = ->
 				username: @user.username
 
 		try
-			result = script.process_incoming_request({ request: request })
+			sandbox =
+				_: _
+				s: s
+				console: console
+				Store:
+					set: (key, val) ->
+						return store[key] = val
+					get: (key) ->
+						return store[key]
+				script: script
+				request: request
+			result = vm.runInNewContext('script.process_incoming_request({ request: request })', sandbox, { timeout: 3000 })
 
 			if result?.error?
 				return RocketChat.API.v1.failure result.error

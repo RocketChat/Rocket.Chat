@@ -27,7 +27,7 @@ Package.onUse(function(api) {
 	api.addFiles('flex-tab/tabs/userEdit.html', 'client');
 	api.addFiles('flex-tab/tabs/userInfo.html', 'client');
 
-	api.addFiles('flex-tab/flexTabBar.coffee', 'client');
+	api.addFiles('flex-tab/flexTabBar.js', 'client');
 	api.addFiles('flex-tab/tabs/membersList.coffee', 'client');
 	api.addFiles('flex-tab/tabs/messageSearch.coffee', 'client');
 	api.addFiles('flex-tab/tabs/uploadedFilesList.coffee', 'client');
