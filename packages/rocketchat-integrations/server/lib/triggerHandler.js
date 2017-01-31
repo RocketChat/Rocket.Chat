@@ -25,13 +25,17 @@ RocketChat.integrations.triggerHandler = new class RocketChatIntegrationHandler 
 	}
 
 	addIntegration(record) {
+		logger.outgoing.debug(`Adding the integration ${record.name} of the event ${record.event}!`);
 		let channels;
-		if (record.event && !RocketChat.integrations.outgoingEvents[record.event].use.channels) {
+		if (record.event && !RocketChat.integrations.outgoingEvents[record.event].use.channel) {
+			logger.outgoing.debug('The integration doesnt rely on channels.');
 			//We don't use any channels, so it's special ;)
 			channels = ['__any'];
 		} else if (_.isEmpty(record.channel)) {
+			logger.outgoing.debug('The integration had an empty channel property, so it is going on all the public channels.');
 			channels = ['all_public_channels'];
 		} else {
+			logger.outgoing.debug('The integration is going on these channels:', record.channel);
 			channels = [].concat(record.channel);
 		}
 
@@ -50,14 +54,34 @@ RocketChat.integrations.triggerHandler = new class RocketChatIntegrationHandler 
 		}
 	}
 
-	//Trigger is the trigger, room is a room, message is a message, and data contains "user_name" if trigger.impersonateUser is truthful.
-	sendMessage({ trigger, room, message, data }) {
+	//Trigger is the trigger, nameOrId is a string which is used to try and find a room, room is a room, message is a message, and data contains "user_name" if trigger.impersonateUser is truthful.
+	sendMessage({ trigger, nameOrId = '', room, message, data }) {
 		let user;
+		//Try to find the user who we are impersonating
 		if (trigger.impersonateUser) {
 			user = RocketChat.models.Users.findOneByUsername(data.user_name);
-		} else {
+		}
+
+		//If they don't exist (aka the trigger didn't contain a user) then we set the user based upon the
+		//configured username for the integration since this is required at all times.
+		if (!user) {
 			user = RocketChat.models.Users.findOneByUsername(trigger.username);
 		}
+
+		let tmpRoom;
+		if (nameOrId || trigger.targetRoom) {
+			tmpRoom = RocketChat.getRoomByNameOrIdWithOptionToJoin({ currentUserId: user._id, nameOrId: nameOrId || trigger.targetRoom, errorOnEmpty: false }) || room;
+		} else {
+			tmpRoom = room;
+		}
+
+		//If no room could be found, we won't be sending any messages but we'll warn in the logs
+		if (!tmpRoom) {
+			logger.outgoing.warn(`The Integration "${trigger.name}" doesn't have a room configured nor did it provide a room to send the message to.`);
+			return;
+		}
+
+		logger.outgoing.debug(`Found a room for ${trigger.name} which is: ${tmpRoom.name} with a type of ${tmpRoom.t}`);
 
 		message.bot = { i: trigger._id };
 
@@ -67,10 +91,10 @@ RocketChat.integrations.triggerHandler = new class RocketChatIntegrationHandler 
 			emoji: trigger.emoji
 		};
 
-		if (room.t === 'd') {
-			message.channel = '@'+room._id;
+		if (tmpRoom.t === 'd') {
+			message.channel = '@' + tmpRoom._id;
 		} else {
-			message.channel = '#'+room._id;
+			message.channel = '#' + tmpRoom._id;
 		}
 
 		message = processWebhookMessage(message, user, defaultValues);
@@ -176,16 +200,6 @@ RocketChat.integrations.triggerHandler = new class RocketChatIntegrationHandler 
 		}
 	}
 
-	getRoomViaProvidedArguments({ nameOrId, room }) {
-		let tmpRoom;
-		if (nameOrId) {
-			nameOrId = nameOrId.replace('@', '').replace('#', '');
-			tmpRoom = RocketChat.models.Rooms.findOneByIdOrName(nameOrId);
-		}
-
-		return tmpRoom || room;
-	}
-
 	eventNameArgumentsToObject() {
 		const argObject = {
 			event: arguments[0]
@@ -216,12 +230,16 @@ RocketChat.integrations.triggerHandler = new class RocketChatIntegrationHandler 
 				break;
 		}
 
+		logger.outgoing.debug(`Got the event arguments for the event: ${argObject.event}`, argObject);
+
 		return argObject;
 	}
 
 	mapEventArgsToData(data, { event, message, room, owner, options, user }) {
 		switch (event) {
 			case 'sendMessage':
+				data.channel_id = room._id;
+				data.channel_name = room.name;
 				data.message_id = message._id;
 				data.timestamp = message.ts;
 				data.user_id = message.u._id;
@@ -237,6 +255,8 @@ RocketChat.integrations.triggerHandler = new class RocketChatIntegrationHandler 
 				}
 				break;
 			case 'roomCreated':
+				data.channel_id = room._id;
+				data.channel_name = room.name;
 				data.timestamp = room.ts;
 				data.user_id = owner._id;
 				data.user_name = owner.username;
@@ -260,7 +280,7 @@ RocketChat.integrations.triggerHandler = new class RocketChatIntegrationHandler 
 	}
 
 	executeTriggers() {
-		logger.outgoing.debug('Execute Triggers:', arguments[0]);
+		logger.outgoing.debug('Execute Trigger:', arguments[0]);
 
 		const argObject = this.eventNameArgumentsToObject(...arguments);
 		const { event, message, room } = argObject;
@@ -274,6 +294,7 @@ RocketChat.integrations.triggerHandler = new class RocketChatIntegrationHandler 
 
 		const triggersToExecute = [];
 
+		logger.outgoing.debug('Starting search for triggers for the room:', room ? room._id : '__any');
 		if (room) {
 			switch (room.t) {
 				case 'd':
@@ -346,7 +367,10 @@ RocketChat.integrations.triggerHandler = new class RocketChatIntegrationHandler 
 			}
 		}
 
+		logger.outgoing.debug(`Found ${triggersToExecute.length} to iterate over and see if the match the event.`);
+
 		for (const triggerToExecute of triggersToExecute) {
+			logger.outgoing.debug(`Is ${triggerToExecute.name} enabled, ${triggerToExecute.enabled}, and what is the event? ${triggerToExecute.event}`);
 			if (triggerToExecute.enabled === true && triggerToExecute.event === event) {
 				this.executeTrigger(triggerToExecute, argObject);
 			}
@@ -360,6 +384,7 @@ RocketChat.integrations.triggerHandler = new class RocketChatIntegrationHandler 
 	}
 
 	executeTriggerUrl(url, trigger, { event, message, room, owner, options, user }, tries = 0) {
+		logger.outgoing.debug(`Starting to execute trigger: ${trigger.name} (${trigger._id})`);
 		let word;
 		//Not all triggers/events support triggerWords
 		if (RocketChat.integrations.outgoingEvents[event].use.triggerWords) {
@@ -380,8 +405,6 @@ RocketChat.integrations.triggerHandler = new class RocketChatIntegrationHandler 
 
 		const data = {
 			token: trigger.token,
-			channel_id: room._id,
-			channel_name: room.name,
 			bot: false
 		};
 
@@ -418,13 +441,7 @@ RocketChat.integrations.triggerHandler = new class RocketChatIntegrationHandler 
 		}
 
 		if (opts.message) {
-			const tmpRoom = this.getRoomViaProvidedArguments({ nameOrId: opts.room || trigger.targetRoom, room });
-			if (!tmpRoom) {
-				logger.outgoing.warn(`The Integration "${trigger.name}" doesn't have a room configured nor did it provide a room to send the message to.`);
-				return;
-			}
-
-			this.sendMessage({ trigger, room: tmpRoom, message: opts.message, data });
+			this.sendMessage({ trigger, room, message: opts.message, data });
 		}
 
 		if (!opts.url || !opts.method) {
@@ -453,13 +470,7 @@ RocketChat.integrations.triggerHandler = new class RocketChatIntegrationHandler 
 				const scriptResult = this.executeScript(trigger, 'process_outgoing_response', sandbox);
 
 				if (scriptResult && scriptResult.content) {
-					const tmpRoom = this.getRoomViaProvidedArguments({ nameOrId: opts.room || trigger.targetRoom, room });
-					if (!tmpRoom) {
-						logger.outgoing.warn(`The Integration "${trigger.name}" doesn't have a room configured nor did it provide a room to send the message to.`);
-						return;
-					}
-
-					this.sendMessage({ trigger, room: tmpRoom, message: scriptResult.content, data });
+					this.sendMessage({ trigger, room, message: scriptResult.content, data });
 					return;
 				}
 
@@ -498,7 +509,7 @@ RocketChat.integrations.triggerHandler = new class RocketChatIntegrationHandler 
 					const waitTime = Math.pow(10, tries+2);
 					logger.outgoing.info(`Trying the Integration ${trigger.name} to ${url} again in ${waitTime} milliseconds.`);
 					Meteor.setTimeout(() => {
-						this.executeTriggerUrl(url, trigger, { event, message, room, owner }, tries+1);
+						this.executeTriggerUrl(url, trigger, { event, message, room, owner, options, user }, tries+1);
 					}, waitTime);
 				}
 
@@ -508,12 +519,6 @@ RocketChat.integrations.triggerHandler = new class RocketChatIntegrationHandler 
 			//process outgoing webhook response as a new message
 			if (result && this.successResults.includes(result.statusCode)) {
 				if (result && result.data && (result.data.text || result.data.attachments)) {
-					const tmpRoom = this.getRoomViaProvidedArguments({ nameOrId: opts.room || trigger.targetRoom, room });
-					if (!tmpRoom) {
-						logger.outgoing.warn(`The Integration "${trigger.name}" doesn't have a room configured nor did it provide a room to send the message to.`);
-						return;
-					}
-
 					this.sendMessage({ trigger, room, message: result.data, data });
 				}
 			}

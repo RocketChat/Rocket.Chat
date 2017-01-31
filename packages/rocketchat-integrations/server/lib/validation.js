@@ -11,6 +11,10 @@ function _verifyRequiredFields(integration) {
 		throw new Meteor.Error('error-invalid-username', 'Invalid username', { function: 'validateOutgoing' });
 	}
 
+	if (RocketChat.integrations.outgoingEvents[integration.event].use.targetRoom && !integration.targetRoom) {
+		throw new Meteor.Error('error-invalid-targetRoom', 'Invalid Target Room', { function: 'validateOutgoing' });
+	}
+
 	if (!Match.test(integration.urls, [String])) {
 		throw new Meteor.Error('error-invalid-urls', 'Invalid URLs', { function: 'validateOutgoing' });
 	}

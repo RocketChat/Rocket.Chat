@@ -3,33 +3,27 @@
 import toastr from 'toastr';
 
 Template.integrationsOutgoing.onCreated(function _integrationsOutgoingOnCreated() {
-	this.getData = () => {
-		const params = this.data.params ? this.data.params() : undefined;
+	const params = this.data.params ? this.data.params() : undefined;
+	let data;
 
-		if (params && params.id) {
-			let data;
-			if (RocketChat.authz.hasAllPermission('manage-integrations')) {
-				data = ChatIntegrations.findOne({ _id: params.id });
-			} else if (RocketChat.authz.hasAllPermission('manage-own-integrations')) {
-				data = ChatIntegrations.findOne({ _id: params.id, '_createdBy._id': Meteor.userId() });
-			}
-
-			if (data) {
-				if (!data.token) {
-					data.token = Random.id(24);
-				}
-
-				return data;
-			}
+	if (params && params.id) {
+		if (RocketChat.authz.hasAllPermission('manage-integrations')) {
+			data = ChatIntegrations.findOne({ _id: params.id });
+		} else if (RocketChat.authz.hasAllPermission('manage-own-integrations')) {
+			data = ChatIntegrations.findOne({ _id: params.id, '_createdBy._id': Meteor.userId() });
 		}
 
-		return this.record.get();
-	};
+		if (data) {
+			if (!data.token) {
+				data.token = Random.id(24);
+			}
+		}
+	}
 
-	return this.record = new ReactiveVar({
+	return this.record = new ReactiveVar(Object.assign({
 		username: 'rocket.cat',
 		token: Random.id(24)
-	});
+	}, data));
 });
 
 Template.integrationsOutgoing.helpers({
@@ -46,7 +40,7 @@ Template.integrationsOutgoing.helpers({
 	},
 
 	data() {
-		return Template.instance().getData();
+		return Template.instance().record.get();
 	},
 
 	eventTypes() {
@@ -54,31 +48,31 @@ Template.integrationsOutgoing.helpers({
 	},
 
 	hasTypeSelected() {
-		const record = Template.instance().getData();
+		const record = Template.instance().record.get();
 
 		return typeof record.event === 'string' && record.event !== '';
 	},
 
 	shouldDisplayChannel() {
-		const record = Template.instance().record.get() || Template.instance().getData();
+		const record = Template.instance().record.get();
 
 		return typeof record.event === 'string' && RocketChat.integrations.outgoingEvents[record.event].use.channel;
 	},
 
 	shouldDisplayTriggerWords() {
-		const record = Template.instance().record.get() || Template.instance().getData();
+		const record = Template.instance().record.get();
 
 		return typeof record.event === 'string' && RocketChat.integrations.outgoingEvents[record.event].use.triggerWords;
 	},
 
 	shouldDisplayTargetRoom() {
-		const record = Template.instance().record.get() || Template.instance().getData();
+		const record = Template.instance().record.get();
 
 		return typeof record.event === 'string' && RocketChat.integrations.outgoingEvents[record.event].use.targetRoom;
 	},
 
 	example() {
-		const record = Template.instance().getData();
+		const record = Template.instance().record.get();
 
 		return {
 			_id: Random.id(),
@@ -106,7 +100,7 @@ Template.integrationsOutgoing.helpers({
 	},
 
 	exampleJson() {
-		const record = Template.instance().getData();
+		const record = Template.instance().record.get();
 		const data = {
 			username: record.alias,
 			icon_emoji: record.emoji,
@@ -270,6 +264,7 @@ Template.integrationsOutgoing.events({
 			enabled: enabled === '1',
 			username: username,
 			channel: channel !== '' ? channel : undefined,
+			targetRoom: targetRoom !== '' ? targetRoom : undefined,
 			alias: alias !== '' ? alias : undefined,
 			emoji: emoji !== '' ? emoji : undefined,
 			avatar: avatar !== '' ? avatar : undefined,

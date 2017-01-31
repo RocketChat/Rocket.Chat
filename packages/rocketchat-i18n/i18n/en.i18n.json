@@ -643,6 +643,7 @@
   "Integrations_Outgoing_Type_RoomCreated": "Room Created (public and private)",
   "Integrations_Outgoing_Type_SendMessage": "Message Sent",
 	"Integrations_Outgoing_Type_UserCreated": "User Created",
+	"Integrations_Outgoing_Type_doesntexist": "doesntexist",
   "Integration_Outgoing_WebHook": "Outgoing WebHook Integration",
   "Integration_updated": "Integration has been updated",
   "Integrations": "Integrations",

@@ -1,51 +1,3 @@
-function retrieveRoomInfo({ currentUserId, channel, ignoreEmpty=false }) {
-	const room = RocketChat.models.Rooms.findOneByIdOrName(channel);
-	if (!_.isObject(room) && !ignoreEmpty) {
-		throw new Meteor.Error('invalid-channel');
-	}
-
-	if (room && room.t === 'c') {
-		//Check if the user already has a Subscription or not, this avoids this issue: https://github.com/RocketChat/Rocket.Chat/issues/5477
-		const sub = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(room._id, currentUserId);
-
-		if (!sub) {
-			Meteor.runAsUser(currentUserId, function() {
-				return Meteor.call('joinRoom', room._id);
-			});
-		}
-	}
-
-	return room;
-}
-
-function retrieveDirectMessageInfo({ currentUserId, channel, findByUserIdOnly=false }) {
-	let roomUser = undefined;
-
-	if (findByUserIdOnly) {
-		roomUser = RocketChat.models.Users.findOneById(channel);
-	} else {
-		roomUser = RocketChat.models.Users.findOne({
-			$or: [{ _id: channel }, { username: channel }]
-		});
-	}
-
-	const rid = _.isObject(roomUser) ? [currentUserId, roomUser._id].sort().join('') : channel;
-	let room = RocketChat.models.Rooms.findOneById(rid);
-
-	if (!_.isObject(room)) {
-		if (!_.isObject(roomUser)) {
-			throw new Meteor.Error('invalid-channel');
-		}
-
-		room = Meteor.runAsUser(currentUserId, function() {
-			const {rid} = Meteor.call('createDirectMessage', roomUser.username);
-			return RocketChat.models.Rooms.findOneById(rid);
-		});
-	}
-
-	return room;
-}
-
 this.processWebhookMessage = function(messageObj, user, defaultValues) {
 	var attachment, channel, channels, channelType, i, len, message, ref, room, ret;
 	ret = [];
@@ -70,22 +22,22 @@ this.processWebhookMessage = function(messageObj, user, defaultValues) {
 
 		switch (channelType) {
 			case '#':
-				room = retrieveRoomInfo({ currentUserId: user._id, channel });
+				room = RocketChat.getRoomByNameOrIdWithOptionToJoin({ currentUserId: user._id, nameOrId: channel, joinChannel: true }); //retrieveRoomInfo({ currentUserId: user._id, channel });
 				break;
 			case '@':
-				room = retrieveDirectMessageInfo({ currentUserId: user._id, channel });
+				room = RocketChat.getRoomByNameOrIdWithOptionToJoin({ currentUserId: user._id, nameOrId: channel, type: 'd' });
 				break;
 			default:
 				channel = channelType + channel;
 
 				//Try to find the room by id or name if they didn't include the prefix.
-				room = retrieveRoomInfo({ currentUserId: user._id, channel, ignoreEmpty: true });
+				room = RocketChat.getRoomByNameOrIdWithOptionToJoin({ currentUserId: user._id, nameOrId: channel, joinChannel: true, errorOnEmpty: false }); //retrieveRoomInfo({ currentUserId: user._id, channel, ignoreEmpty: true });
 				if (room) {
 					break;
 				}
 
 				//We didn't get a room, let's try finding direct messages
-				room = retrieveDirectMessageInfo({ currentUserId: user._id, channel, findByUserIdOnly: true });
+				room = RocketChat.getRoomByNameOrIdWithOptionToJoin({ currentUserId: user._id, nameOrId: channel, type: 'd', tryDirectByUserIdOnly: true }); //retrieveDirectMessageInfo({ currentUserId: user._id, channel, findByUserIdOnly: true });
 				if (room) {
 					break;
 				}
