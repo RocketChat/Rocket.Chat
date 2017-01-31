@@ -57,7 +57,7 @@ describe('Channel creation', function() {
 
 	describe('direct channel', function() {
 		it('start a direct message with rocket.cat', function() {
-			sideNav.startDirectMessage(targetUser);
+			sideNav.searchChannel(targetUser);
 			setDirectMessageCreated(true);
 		});
 	});
