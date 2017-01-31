@@ -79,17 +79,36 @@ executeScript = (integration, method, params) ->
 		return
 
 	try
-		result = script[method](params)
+		sandbox =
+			_: _
+			s: s
+			console: console
+			Store:
+				set: (key, val) ->
+					return store[key] = val
+				get: (key) ->
+					return store[key]
+			HTTP: (method, url, options) ->
+				try
+					return {} =
+						result: HTTP.call method, url, options
+				catch e
+					return {} =
+						error: e
+			script: script
+			method: method
+			params: params
+		result = vm.runInNewContext('script[method](params)', sandbox, { timeout: 3000 })
 
 		logger.outgoing.debug '[Script method [', method, '] result of Trigger', integration.name, ':]'
 		logger.outgoing.debug result
 
 		return result
 	catch e
-		logger.incoming.error '[Error running Script in Trigger', integration.name, ':]'
-		logger.incoming.error integration.scriptCompiled.replace(/^/gm, '  ')
-		logger.incoming.error "[Stack:]"
-		logger.incoming.error e.stack.replace(/^/gm, '  ')
+		logger.outgoing.error '[Error running Script in Trigger', integration.name, ':]'
+		logger.outgoing.error integration.scriptCompiled.replace(/^/gm, '  ')
+		logger.outgoing.error "[Stack:]"
+		logger.outgoing.error e.stack.replace(/^/gm, '  ')
 		return
 
 
