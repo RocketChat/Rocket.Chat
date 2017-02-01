@@ -18,6 +18,13 @@ getIntegrationScript = (integration) ->
 				return store[key] = val
 			get: (key) ->
 				return store[key]
+		HTTP: (method, url, options) ->
+			try
+				return {} =
+					result: HTTP.call method, url, options
+			catch e
+				return {} =
+					error: e
 
 	try
 		logger.incoming.info 'Will evaluate script of Trigger', integration.name
@@ -176,6 +183,13 @@ executeIntegrationRest = ->
 						return store[key] = val
 					get: (key) ->
 						return store[key]
+				HTTP: (method, url, options) ->
+					try
+						return {} =
+							result: HTTP.call method, url, options
+					catch e
+						return {} =
+							error: e
 				script: script
 				request: request
 			result = vm.runInNewContext('script.process_incoming_request({ request: request })', sandbox, { timeout: 3000 })
