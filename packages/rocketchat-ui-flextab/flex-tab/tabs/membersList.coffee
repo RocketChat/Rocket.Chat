@@ -19,7 +19,7 @@ Template.membersList.helpers
 		roomUsernames = Template.instance().users.get()
 		room = ChatRoom.findOne(this.rid)
 		roomMuted = room?.muted or []
-
+		userUtcOffset = Meteor.user().utcOffset
 		totalOnline = 0
 		users = roomUsernames.map (username) ->
 			if onlineUsers[username]?
@@ -27,9 +27,12 @@ Template.membersList.helpers
 				utcOffset = onlineUsers[username].utcOffset
 
 				if utcOffset?
-					if utcOffset > 0
+					if utcOffset is userUtcOffset
+						utcOffset = ""
+					else if utcOffset > 0
 						utcOffset = "+#{utcOffset}"
-					utcOffset = "(UTC #{utcOffset})"
+					else
+						utcOffset = "(UTC #{utcOffset})"
 
 			return {
 				username: username

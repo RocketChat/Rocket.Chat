@@ -12,8 +12,8 @@ import {username, email, password} from '../../data/user.js';
 describe('Main Elements Render', function() {
 	before(()=>{
 		checkIfUserIsValid(username, email, password);
-		sideNav.getChannelFromList('general').waitForExist(5000);
-		sideNav.openChannel('general');
+		sideNav.spotlightSearch.waitForVisible(10000);
+		sideNav.searchChannel('general');
 	});
 
 	describe('side nav bar', () => {
@@ -40,14 +40,6 @@ describe('Main Elements Render', function() {
 
 			it('should show the new direct message button', () => {
 				sideNav.newDirectMessageBtn.isVisible().should.be.true;
-			});
-
-			it('should show the plus icon', () => {
-				sideNav.newDirectMessageIcon.isVisible().should.be.true;
-			});
-
-			it('should show the "More Direct Messages" button', () => {
-				sideNav.moreDirectMessages.isVisible().should.be.true;
 			});
 
 			it('should show "general" channel', () => {

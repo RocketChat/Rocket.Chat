@@ -6,20 +6,18 @@ RocketChat.integrations.triggerHandler = new class RocketChatIntegrationHandler 
 		this.compiledScripts = {};
 		this.triggers = {};
 
-		const self = this;
-
 		RocketChat.models.Integrations.find({type: 'webhook-outgoing'}).observe({
 			added: (record) => {
 				this.addIntegration(record);
 			},
 
-			changed(record) {
-				self.removeIntegration(record);
-				self.addIntegration(record);
+			changed: (record) => {
+				this.removeIntegration(record);
+				this.addIntegration(record);
 			},
 
-			removed(record) {
-				self.removeIntegration(record);
+			removed: (record) => {
+				this.removeIntegration(record);
 			}
 		});
 	}
@@ -137,6 +135,7 @@ RocketChat.integrations.triggerHandler = new class RocketChatIntegrationHandler 
 			if (sandbox.Script) {
 				this.compiledScripts[integration._id] = {
 					script: new sandbox.Script(),
+					store,
 					_updatedAt: integration._updatedAt
 				};
 
@@ -185,17 +184,34 @@ RocketChat.integrations.triggerHandler = new class RocketChatIntegrationHandler 
 		}
 
 		try {
-			const result = script[method](params);
+			const store = this.compiledScripts[integration._id].store;
+			const sandbox = {
+				_, s, console,
+				Store: {
+					set: (key, val) => store[key] = val,
+					get: (key) => store[key]
+				},
+				HTTP: (method, url, options) => {
+					try {
+						return {
+							result: HTTP.call(method, url, options)
+						};
+					} catch (error) {
+						return { error };
+					}
+				}
+			};
+			const result = this.vm.runInNewContext(script[method](params), sandbox, { timeout: 3000 });
 
 			logger.outgoing.debug(`Script method "${method}" result of the Integration "${integration.name}" is:`);
 			logger.outgoing.debug(result);
 
 			return result;
 		} catch (e) {
-			logger.incoming.error(`Error running Script in the Integration ${integration.name}:`);
-			logger.incoming.error(integration.scriptCompiled.replace(/^/gm, '  '));
-			logger.incoming.error('Stack:');
-			logger.incoming.error(e.stack.replace(/^/gm, '  '));
+			logger.outgoing.error(`Error running Script in the Integration ${integration.name}:`);
+			logger.outgoing.error(integration.scriptCompiled.replace(/^/gm, '  '));
+			logger.outgoing.error('Stack:');
+			logger.outgoing.error(e.stack.replace(/^/gm, '  '));
 			return;
 		}
 	}
