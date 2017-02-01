@@ -15,7 +15,7 @@ class ModelRoles extends RocketChat.models._Base {
 
 	isUserInRoles(userId, roles, scope) {
 		roles = [].concat(roles);
-		roles.some((roleName) => {
+		return roles.some((roleName) => {
 			const role = this.findOne(roleName);
 			const roleScope = (role && role.scope) || 'Users';
 			const model = RocketChat.models[roleScope];
