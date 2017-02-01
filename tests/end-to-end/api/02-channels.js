@@ -6,7 +6,22 @@ import {getCredentials, api, login, request, credentials, apiEmail, apiUsername,
 import {adminEmail, password} from '../../data/user.js';
 import supertest from 'supertest';
 
-describe('channels', () => {
+function getRoomInfo(roomId) {
+	return new Promise((resolve/*, reject*/) => {
+		request.get(api('channels.info'))
+			.set(credentials)
+			.query({
+				roomId: roomId
+			})
+			.end((err, req) => {
+				resolve(req.body);
+			});
+	});
+}
+
+describe('channels', function() {
+	this.retries(0);
+
 	before((done) => {
 		request.post(api('login'))
 		.send(login)
@@ -56,7 +71,9 @@ describe('channels', () => {
 			.end(done);
 	});
 
-	it('/channels.invite', (done) => {
+	it('/channels.invite', async (done) => {
+		const roomInfo = await getRoomInfo(channel._id);
+
 		request.post(api('channels.invite'))
 			.set(credentials)
 			.send({
@@ -70,7 +87,7 @@ describe('channels', () => {
 				expect(res.body).to.have.deep.property('channel._id');
 				expect(res.body).to.have.deep.property('channel.name', apiPublicChannelName);
 				expect(res.body).to.have.deep.property('channel.t', 'c');
-				expect(res.body).to.have.deep.property('channel.msgs', 0);
+				expect(res.body).to.have.deep.property('channel.msgs', roomInfo.channel.msgs + 1);
 			})
 			.end(done);
 	});
@@ -135,7 +152,9 @@ describe('channels', () => {
 			.end(done);
 	});
 
-	it('/channels.kick', (done) => {
+	it('/channels.kick', async (done) => {
+		const roomInfo = await getRoomInfo(channel._id);
+
 		request.post(api('channels.kick'))
 			.set(credentials)
 			.send({
@@ -149,12 +168,14 @@ describe('channels', () => {
 				expect(res.body).to.have.deep.property('channel._id');
 				expect(res.body).to.have.deep.property('channel.name', apiPublicChannelName);
 				expect(res.body).to.have.deep.property('channel.t', 'c');
-				expect(res.body).to.have.deep.property('channel.msgs', 0);
+				expect(res.body).to.have.deep.property('channel.msgs', roomInfo.channel.msgs + 1);
 			})
 			.end(done);
 	});
 
-	it('/channels.invite', (done) => {
+	it('/channels.invite', async (done) => {
+		const roomInfo = await getRoomInfo(channel._id);
+
 		request.post(api('channels.invite'))
 			.set(credentials)
 			.send({
@@ -168,7 +189,7 @@ describe('channels', () => {
 				expect(res.body).to.have.deep.property('channel._id');
 				expect(res.body).to.have.deep.property('channel.name', apiPublicChannelName);
 				expect(res.body).to.have.deep.property('channel.t', 'c');
-				expect(res.body).to.have.deep.property('channel.msgs', 0);
+				expect(res.body).to.have.deep.property('channel.msgs', roomInfo.channel.msgs + 1);
 			})
 			.end(done);
 	});
@@ -355,7 +376,9 @@ describe('channels', () => {
 			.end(done);
 	});
 
-	it('/channels.rename', (done) => {
+	it('/channels.rename', async (done) => {
+		const roomInfo = await getRoomInfo(channel._id);
+
 		request.post(api('channels.rename'))
 			.set(credentials)
 			.send({
@@ -369,7 +392,7 @@ describe('channels', () => {
 				expect(res.body).to.have.deep.property('channel._id');
 				expect(res.body).to.have.deep.property('channel.name', 'EDITED'+apiPublicChannelName);
 				expect(res.body).to.have.deep.property('channel.t', 'c');
-				expect(res.body).to.have.deep.property('channel.msgs', 0);
+				expect(res.body).to.have.deep.property('channel.msgs', roomInfo.channel.msgs + 1);
 			})
 			.end(done);
 	});
@@ -403,12 +426,13 @@ describe('channels', () => {
 				expect(res.body).to.have.deep.property('channel._id');
 				expect(res.body).to.have.deep.property('channel.name', 'EDITED'+apiPublicChannelName);
 				expect(res.body).to.have.deep.property('channel.t', 'c');
-				expect(res.body).to.have.deep.property('channel.msgs', 0);
 			})
 			.end(done);
 	});
 
-	it('/channels.setJoinCode', (done) => {
+	it('/channels.setJoinCode', async (done) => {
+		const roomInfo = await getRoomInfo(channel._id);
+
 		request.post(api('channels.setJoinCode'))
 			.set(credentials)
 			.send({
@@ -422,12 +446,14 @@ describe('channels', () => {
 				expect(res.body).to.have.deep.property('channel._id');
 				expect(res.body).to.have.deep.property('channel.name', 'EDITED'+apiPublicChannelName);
 				expect(res.body).to.have.deep.property('channel.t', 'c');
-				expect(res.body).to.have.deep.property('channel.msgs', 0);
+				expect(res.body).to.have.deep.property('channel.msgs', roomInfo.channel.msgs);
 			})
 			.end(done);
 	});
 
-	it('/channels.setReadOnly', (done) => {
+	it('/channels.setReadOnly', async (done) => {
+		const roomInfo = await getRoomInfo(channel._id);
+
 		request.post(api('channels.setReadOnly'))
 			.set(credentials)
 			.send({
@@ -441,12 +467,14 @@ describe('channels', () => {
 				expect(res.body).to.have.deep.property('channel._id');
 				expect(res.body).to.have.deep.property('channel.name', 'EDITED'+apiPublicChannelName);
 				expect(res.body).to.have.deep.property('channel.t', 'c');
-				expect(res.body).to.have.deep.property('channel.msgs', 0);
+				expect(res.body).to.have.deep.property('channel.msgs', roomInfo.channel.msgs);
 			})
 			.end(done);
 	});
 
-	it('/channels.leave', (done) => {
+	it('/channels.leave', async (done) => {
+		const roomInfo = await getRoomInfo(channel._id);
+
 		request.post(api('channels.leave'))
 			.set(credentials)
 			.send({
@@ -459,12 +487,14 @@ describe('channels', () => {
 				expect(res.body).to.have.deep.property('channel._id');
 				expect(res.body).to.have.deep.property('channel.name', 'EDITED'+apiPublicChannelName);
 				expect(res.body).to.have.deep.property('channel.t', 'c');
-				expect(res.body).to.have.deep.property('channel.msgs', 0);
+				expect(res.body).to.have.deep.property('channel.msgs', roomInfo.channel.msgs + 1);
 			})
 			.end(done);
 	});
 
-	it('/channels.setType', (done) => {
+	it('/channels.setType', async (done) => {
+		const roomInfo = await getRoomInfo(channel._id);
+
 		request.post(api('channels.setType'))
 			.set(credentials)
 			.send({
@@ -478,7 +508,7 @@ describe('channels', () => {
 				expect(res.body).to.have.deep.property('channel._id');
 				expect(res.body).to.have.deep.property('channel.name', 'EDITED'+apiPublicChannelName);
 				expect(res.body).to.have.deep.property('channel.t', 'p');
-				expect(res.body).to.have.deep.property('channel.msgs', 0);
+				expect(res.body).to.have.deep.property('channel.msgs', roomInfo.channel.msgs + 1);
 			})
 			.end(done);
 	});
