@@ -34,7 +34,7 @@ describe('groups', function() {
 		.end(done);
 	});
 
-	it('/groups.create', async (done) => {
+	it('/groups.create', (done) => {
 		request.post(api('groups.create'))
 			.set(credentials)
 			.send({
@@ -53,7 +53,7 @@ describe('groups', function() {
 			.end(done);
 	});
 
-	it('/groups.info', async (done) => {
+	it('/groups.info', (done) => {
 		request.get(api('groups.info'))
 			.set(credentials)
 			.query({

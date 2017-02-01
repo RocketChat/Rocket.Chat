@@ -34,7 +34,7 @@ describe('channels', function() {
 		.end(done);
 	});
 
-	it('/channels.create', async (done) => {
+	it('/channels.create', (done) => {
 		request.post(api('channels.create'))
 			.set(credentials)
 			.send({
@@ -53,7 +53,7 @@ describe('channels', function() {
 			.end(done);
 	});
 
-	it('/channels.info', async (done) => {
+	it('/channels.info', (done) => {
 		request.get(api('channels.info'))
 			.set(credentials)
 			.query({
@@ -413,7 +413,7 @@ describe('channels', function() {
 			.end(done);
 	});
 
-	it('/channels.addAll', async (done) => {
+	it('/channels.addAll', (done) => {
 		request.post(api('channels.addAll'))
 			.set(credentials)
 			.send({
