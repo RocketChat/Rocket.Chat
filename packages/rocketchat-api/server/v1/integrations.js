@@ -7,13 +7,15 @@ RocketChat.API.v1.addRoute('integrations.create', { authRequired: true }, {
 			username: String,
 			urls: [String],
 			channel: String,
+			event: String,
 			triggerWords: Match.Maybe([String]),
 			alias: Match.Maybe(String),
 			avatar: Match.Maybe(String),
 			emoji: Match.Maybe(String),
 			token: Match.Maybe(String),
 			scriptEnabled: Boolean,
-			script: Match.Maybe(String)
+			script: Match.Maybe(String),
+			targetChannel: Match.Maybe(String)
 		}));
 
 		let integration;
