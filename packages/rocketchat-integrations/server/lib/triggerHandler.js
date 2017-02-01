@@ -199,9 +199,12 @@ RocketChat.integrations.triggerHandler = new class RocketChatIntegrationHandler 
 					} catch (error) {
 						return { error };
 					}
-				}
+				},
+				script,
+				method,
+				params
 			};
-			const result = this.vm.runInNewContext(script[method](params), sandbox, { timeout: 3000 });
+			const result = this.vm.runInNewContext('script[method](params)', sandbox, { timeout: 3000 });
 
 			logger.outgoing.debug(`Script method "${method}" result of the Integration "${integration.name}" is:`);
 			logger.outgoing.debug(result);
@@ -231,6 +234,13 @@ RocketChat.integrations.triggerHandler = new class RocketChatIntegrationHandler 
 			case 'roomCreated':
 				if (arguments.length >= 3) {
 					argObject.owner = arguments[1];
+					argObject.room = arguments[2];
+				}
+				break;
+			case 'roomJoined':
+			case 'roomLeft':
+				if (arguments.length >= 3) {
+					argObject.user = arguments[1];
 					argObject.room = arguments[2];
 				}
 				break;
@@ -278,6 +288,20 @@ RocketChat.integrations.triggerHandler = new class RocketChatIntegrationHandler 
 				data.user_name = owner.username;
 				data.owner = owner;
 				data.room = room;
+				break;
+			case 'roomJoined':
+			case 'roomLeft':
+				data.timestamp = new Date();
+				data.channel_id = room._id;
+				data.channel_name = room.name;
+				data.user_id = user._id;
+				data.user_name = user.username;
+				data.user = user;
+				data.room = room;
+
+				if (user.type === 'bot') {
+					data.bot = true;
+				}
 				break;
 			case 'userCreated':
 				data.timestamp = user.createdAt;
