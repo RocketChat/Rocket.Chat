@@ -6,7 +6,9 @@ import {getCredentials, api, login, request, credentials} from '../../data/api-d
 import {adminEmail} from '../../data/user.js';
 import supertest from 'supertest';
 
-describe('miscellaneous', () => {
+describe('miscellaneous', function() {
+	this.retries(0);
+
 	before((done) => {
 		request.post(api('login'))
 		.send(login)

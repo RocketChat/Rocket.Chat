@@ -6,7 +6,9 @@ import {getCredentials, api, login, request, credentials, message, log, apiPriva
 import {adminEmail, password} from '../../data/user.js';
 import supertest from 'supertest';
 
-describe('chat', () => {
+describe('chat', function() {
+	this.retries(0);
+
 	before((done) => {
 		request.post(api('login'))
 		.send(login)
