@@ -35,6 +35,7 @@ class SideNav extends Page {
 	get avatar() { return browser.element('.account-link:nth-of-type(3)'); }
 	get preferencesClose() { return browser.element('.side-nav .arrow.close'); }
 	get spotlightSearch() { return browser.element('.toolbar-search__input'); }
+	get channelLeave() { return browser.element('.leave-room'); }
 
 	openChannel(channelName) {
 		browser.click('.rooms-list > .wrapper > ul [title="'+channelName+'"]');
@@ -53,6 +54,14 @@ class SideNav extends Page {
 		browser.waitUntil(function() {
 			return browser.getText('.room-title') === channelName;
 		}, 5000);
+	}
+
+	getChannelFromSpotlight(channelName) {
+		this.spotlightSearch.waitForVisible(5000);
+		this.spotlightSearch.click();
+		this.spotlightSearch.setValue(channelName);
+		browser.waitForVisible('.room-title='+channelName, 5000);
+		return browser.element('.room-title='+channelName);
 	}
 
 	getChannelFromList(channelName) {
