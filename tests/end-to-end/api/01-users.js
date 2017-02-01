@@ -7,7 +7,9 @@ import {adminEmail, password} from '../../data/user.js';
 import {imgURL} from '../../data/interactions.js';
 import supertest from 'supertest';
 
-describe('Users', () => {
+describe('Users', function() {
+	this.retries(0);
+
 	before((done) => {
 		request.post(api('login'))
 		.send(login)
