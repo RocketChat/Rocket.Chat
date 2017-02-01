@@ -6,7 +6,9 @@ import {getCredentials, api, login, request, credentials, integration, log } fro
 import {adminEmail, password} from '../../data/user.js';
 import supertest from 'supertest';
 
-describe('integrations', () => {
+describe('integrations', function() {
+	this.retries(0);
+
 	it('/integrations.create', (done) => {
 		request.post(api('integrations.create'))
 			.set(credentials)
