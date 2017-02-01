@@ -1,90 +1,67 @@
-var ModelRoles,
-  extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
-  hasProp = {}.hasOwnProperty;
+class ModelRoles extends RocketChat.models._Base {
+	constructor() {
+		super(...arguments);
+		this.tryEnsureIndex({ 'name': 1 });
+		this.tryEnsureIndex({ 'scope': 1 });
+	}
 
-ModelRoles = (function(superClass) {
-  extend(ModelRoles, superClass);
+	findUsersInRole(name, scope, options) {
+		const role = this.findOne(name);
+		const roleScope = (role && role.scope) || 'Users';
+		const model = RocketChat.models[roleScope];
 
-  function ModelRoles() {
-    ModelRoles.__super__.constructor.apply(this, arguments);
-    this.tryEnsureIndex({
-      'name': 1
-    });
-    this.tryEnsureIndex({
-      'scope': 1
-    });
-  }
+		return model && model.findUsersInRoles && model.findUsersInRoles(name, scope, options);
+	}
 
-  ModelRoles.prototype.findUsersInRole = function(name, scope, options) {
-    var ref, role, roleScope;
-    role = this.findOne(name);
-    roleScope = (role != null ? role.scope : void 0) || 'Users';
-    return (ref = RocketChat.models[roleScope]) != null ? typeof ref.findUsersInRoles === "function" ? ref.findUsersInRoles(name, scope, options) : void 0 : void 0;
-  };
+	isUserInRoles(userId, roles, scope) {
+		roles = [].concat(roles);
+		roles.some((roleName) => {
+			const role = this.findOne(roleName);
+			const roleScope = (role && role.scope) || 'Users';
+			const model = RocketChat.models[roleScope];
 
-  ModelRoles.prototype.isUserInRoles = function(userId, roles, scope) {
-    roles = [].concat(roles);
-    return _.some(roles, (function(_this) {
-      return function(roleName) {
-        var ref, role, roleScope;
-        role = _this.findOne(roleName);
-        roleScope = (role != null ? role.scope : void 0) || 'Users';
-        return (ref = RocketChat.models[roleScope]) != null ? typeof ref.isUserInRole === "function" ? ref.isUserInRole(userId, roleName, scope) : void 0 : void 0;
-      };
-    })(this));
-  };
+			return model && model.isUserInRole && model.isUserInRole(userId, roleName, scope);
+		});
+	}
 
-  ModelRoles.prototype.createOrUpdate = function(name, scope, description, protectedRole) {
-    var updateData;
-    if (scope == null) {
-      scope = 'Users';
-    }
-    updateData = {};
-    updateData.name = name;
-    updateData.scope = scope;
-    if (description != null) {
-      updateData.description = description;
-    }
-    if (protectedRole != null) {
-      updateData["protected"] = protectedRole;
-    }
-    return this.upsert({
-      _id: name
-    }, {
-      $set: updateData
-    });
-  };
+	createOrUpdate(name, scope = 'Users', description, protectedRole) {
+		const updateData = {};
+		updateData.name = name;
+		updateData.scope = scope;
 
-  ModelRoles.prototype.addUserRoles = function(userId, roles, scope) {
-    var i, len, ref, results, role, roleName, roleScope;
-    roles = [].concat(roles);
-    results = [];
-    for (i = 0, len = roles.length; i < len; i++) {
-      roleName = roles[i];
-      role = this.findOne(roleName);
-      roleScope = (role != null ? role.scope : void 0) || 'Users';
-      results.push((ref = RocketChat.models[roleScope]) != null ? typeof ref.addRolesByUserId === "function" ? ref.addRolesByUserId(userId, roleName, scope) : void 0 : void 0);
-    }
-    return results;
-  };
+		if (description) {
+			updateData.description = description;
+		}
 
-  ModelRoles.prototype.removeUserRoles = function(userId, roles, scope) {
-    var i, len, ref, results, role, roleName, roleScope;
-    roles = [].concat(roles);
-    results = [];
-    for (i = 0, len = roles.length; i < len; i++) {
-      roleName = roles[i];
-      role = this.findOne(roleName);
-      roleScope = (role != null ? role.scope : void 0) || 'Users';
-      results.push((ref = RocketChat.models[roleScope]) != null ? typeof ref.removeRolesByUserId === "function" ? ref.removeRolesByUserId(userId, roleName, scope) : void 0 : void 0);
-    }
-    return results;
-  };
+		if (protectedRole) {
+			updateData.protected = protectedRole;
+		}
 
-  return ModelRoles;
+		this.upsert({ _id: name }, { $set: updateData });
+	}
 
-})(RocketChat.models._Base);
+	addUserRoles(userId, roles, scope) {
+		roles = [].concat(roles);
+		for (const roleName of roles) {
+			const role = this.findOne(roleName);
+			const roleScope = (role && role.scope) || 'Users';
+			const model = RocketChat.models[roleScope];
+
+			return model && model.addRolesByUserId && model.addRolesByUserId(userId, roleName, scope);
+		}
+	}
+
+	removeUserRoles(userId, roles, scope) {
+		roles = [].concat(roles);
+		for (const roleName of roles) {
+			const role = this.findOne(roleName);
+			const roleScope = (role && role.scope) || 'Users';
+			const model = RocketChat.models[roleScope];
+
+			return model && model.removeRolesByUserId && model.removeRolesByUserId(userId, roleName, scope);
+		}
+	}
+}
 
 RocketChat.models.Roles = new ModelRoles('roles', true);
-
 RocketChat.models.Roles.cache.load();
