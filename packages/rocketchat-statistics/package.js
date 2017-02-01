@@ -17,7 +17,7 @@ Package.onUse(function(api) {
 	api.addFiles('lib/rocketchat.coffee', [ 'client', 'server' ]);
 	api.addFiles([
 		'server/models/Statistics.coffee',
-		'server/functions/get.coffee',
+		'server/functions/get.js',
 		'server/functions/save.coffee',
 		'server/methods/getStatistics.coffee'
 	], 'server');
