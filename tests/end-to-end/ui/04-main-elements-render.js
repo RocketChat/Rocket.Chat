@@ -46,6 +46,10 @@ describe('Main Elements Render', function() {
 				sideNav.general.isVisible().should.be.true;
 			});
 
+			it('should show spotlight search bar', () => {
+				sideNav.spotlightSearch.isVisible().should.be.true;
+			});
+
 			it.skip('should not show eye icon on general', () => {
 				sideNav.channelHoverIcon.isVisible().should.be.true;
 			});
