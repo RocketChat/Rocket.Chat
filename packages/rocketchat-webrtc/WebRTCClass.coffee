@@ -150,14 +150,17 @@ class WebRTCClass
 		@autoAccept = false
 
 		@navigator = undefined
-		if navigator.userAgent.toLocaleLowerCase().indexOf('chrome') > -1
+		userAgent = navigator.userAgent.toLocaleLowerCase();
+		if userAgent.indexOf('electron') isnt -1
+			@navigator = 'electron'
+		else if userAgent.indexOf('chrome') isnt -1
 			@navigator = 'chrome'
-		else if navigator.userAgent.toLocaleLowerCase().indexOf('firefox') > -1
+		else if userAgent.indexOf('firefox') isnt -1
 			@navigator = 'firefox'
-		else if navigator.userAgent.toLocaleLowerCase().indexOf('safari') > -1
+		else if userAgent.indexOf('safari') isnt -1
 			@navigator = 'safari'
 
-		@screenShareAvailable = @navigator in ['chrome', 'firefox']
+		@screenShareAvailable = @navigator in ['chrome', 'firefox', 'electron']
 
 		@media =
 			video: false
@@ -357,7 +360,7 @@ class WebRTCClass
 			return
 
 		getScreen = (audioStream) =>
-			if document.cookie.indexOf("rocketchatscreenshare=chrome") is -1 and not window.rocketchatscreenshare?
+			if document.cookie.indexOf("rocketchatscreenshare=chrome") is -1 and not window.rocketchatscreenshare? and @navigator isnt 'electron'
 				refresh = ->
 					swal
 						type: "warning"
@@ -396,8 +399,7 @@ class WebRTCClass
 						mediaSource: 'window'
 				@_getUserMedia media, getScreenSuccess, onError
 			else
-				ChromeScreenShare.getSourceId (id) =>
-					console.log id
+				ChromeScreenShare.getSourceId @navigator, (id) =>
 					media =
 						audio: false
 						video:
