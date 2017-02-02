@@ -24,5 +24,4 @@ Npm.depends({
 	'connect': '2.7.10',
 	'xmlbuilder': '2.6.4',
 	'querystring': '0.2.0',
-	'xml-encryption': '0.7.2'
 });
