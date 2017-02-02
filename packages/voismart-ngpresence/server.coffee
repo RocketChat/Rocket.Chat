@@ -131,7 +131,7 @@ class PresenceManager
 			# e.g. if aggregated status is dnd because of a call, do not update
 			#      chat status unless we have a user connection
 			logger.info "setting status for #{username} to #{mapped_status}"
-			Meteor.users.update({_id: user._id}, {$set: {status: mapped_status}})
+			Meteor.users.update({_id: user._id, status: {$ne: mapped_status}}, {$set: {status: mapped_status}})
 
 
 class PresenceClient
