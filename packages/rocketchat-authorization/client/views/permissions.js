@@ -53,14 +53,14 @@ Template.permissions.onCreated(function() {
 
 	Tracker.autorun(() => {
 		ChatPermissions.find().observeChanges({
-			added(id, fields) {
-				return this.permissionByRole[id] = fields.roles;
+			added: (id, fields) => {
+				this.permissionByRole[id] = fields.roles;
 			},
-			changed(id, fields) {
-				return this.permissionByRole[id] = fields.roles;
+			changed: (id, fields) => {
+				this.permissionByRole[id] = fields.roles;
 			},
-			removed(id) {
-				return delete this.permissionByRole[id];
+			removed: (id) => {
+				delete this.permissionByRole[id];
 			}
 		});
 	});
