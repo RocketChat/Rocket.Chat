@@ -78,6 +78,13 @@
 		focusInput()
 
 	closeFlex = (callback = null) ->
+		if not RocketChat.roomTypes.getTypes().filter((i) -> i.route).map((i) -> i.route.name).includes(FlowRouter.current().route.name)
+			subscription = RocketChat.models.Subscriptions.findOne({rid: Session.get('openedRoom')})
+			if subscription?
+				RocketChat.roomTypes.openRouteLink(subscription.t, subscription, FlowRouter.current().queryParams);
+			else
+				FlowRouter.go('home')
+
 		return if animating == true
 		toggleArrow -1
 		toggleFlex -1, callback
