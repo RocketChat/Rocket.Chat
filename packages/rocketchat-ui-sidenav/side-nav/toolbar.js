@@ -1,3 +1,4 @@
+/* global menu */
 let isLoading;
 let filterText = '';
 let usernamesFromClient;
@@ -144,6 +145,7 @@ Template.toolbar.helpers({
 				const doc = _.findWhere(records, {_id: _id});
 
 				RocketChat.roomTypes.openRouteLink(doc.t, doc, FlowRouter.current().queryParams);
+				menu.close();
 			}
 		};
 
@@ -166,7 +168,8 @@ Template.toolbar.events({
 			$inputMessage.focus();
 		}
 	},
-	'click .toolbar-search__create-channel'(e) {
+
+	'click .toolbar-search__create-channel, touchend .toolbar-search__create-channel'(e) {
 		if (RocketChat.authz.hasAtLeastOnePermission(['create-c', 'create-p'])) {
 			SideNav.setFlex('createCombinedFlex');
 			SideNav.openFlex();
