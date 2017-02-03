@@ -6,3 +6,4 @@
 * Explain how the calculation of the rerun interval is calculated
 * Collect stats on the integrations - how many are installed, enabled, have scripts enabled, and how many time one runs successfully
 * Disable integrations when the configured user gets deleted
+* Add: https://github.com/RocketChat/Rocket.Chat/issues/5176

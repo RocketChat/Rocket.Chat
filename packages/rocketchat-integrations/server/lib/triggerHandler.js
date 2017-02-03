@@ -490,7 +490,7 @@ RocketChat.integrations.triggerHandler = new class RocketChatIntegrationHandler 
 
 		HTTP.call(opts.method, opts.url, opts, (error, result) => {
 			if (!result) {
-				logger.outgoing.info(`Result for the Integration ${trigger.name} to ${url} is empty`);
+				logger.outgoing.warn(`Result for the Integration ${trigger.name} to ${url} is empty`);
 			} else {
 				logger.outgoing.info(`Status code for the Integration ${trigger.name} to ${url} is ${result.statusCode}`);
 			}
@@ -500,10 +500,10 @@ RocketChat.integrations.triggerHandler = new class RocketChatIntegrationHandler 
 					request: opts,
 					response: {
 						error,
-						status_code: result.statusCode,
-						content: result.data,
-						content_raw: result.content,
-						headers: result.headers
+						status_code: result ? result.statusCode : undefined, //These values will be undefined to close issues #4175, #5762, and #5896
+						content: result ? result.data : undefined,
+						content_raw: result ? result.content : undefined,
+						headers: result ? result.headers : {}
 					}
 				};
 
