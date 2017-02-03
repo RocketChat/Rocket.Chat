@@ -20,10 +20,10 @@
 							</div>
 						</div>
 						<div class="input-line double-col">
-							<label>{{_ "Channel"}} ({{_ "optional"}})</label>
+							<label>{{_ "Channel"}}</label>
 							<div>
 								<input type="text" name="channel" value="{{data.channel}}" placeholder="{{_ 'User_or_channel_name'}}" />
-								<div class="settings-description">{{_ "Optional channel to listen on"}}</div>
+								<div class="settings-description">{{_ "Channel_to_listen_on"}}</div>
 								<div class="settings-description">{{{_ "Start_with_s_for_user_or_s_for_channel_Eg_s_or_s" "@" "#" "@john" "#general"}}}</div>
 								<div class="settings-description">{{{_ "Integrations_for_all_channels"}}}</div>
 							</div>
@@ -110,10 +110,10 @@
 								</div>
 								{{#if data.scriptError}}
 									<div class="code-error-box">
-										<div class="title">
+										<div class="title color-content-background-color background-error-color">
 											{{data.scriptError.name}}
 										</div>
-										<pre>{{data.scriptError.message}}</pre>
+										<pre class="script-error background-transparent-lightest error-color error-border">{{data.scriptError.message}}</pre>
 									</div>
 								{{/if}}
 							</div>
@@ -122,7 +122,7 @@
 							<label>{{_ "Responding"}}</label>
 							<div>
 								<div class="settings-description">{{{_ "If the handler wishes to post a response back into the channel, the following JSON should be returned as the body of the response:"}}}</div>
-								<pre><code class="hljs json json-example">{{{exampleJson}}}</code></pre>
+								<pre><code class="code-colors hljs json json-example">{{{exampleJson}}}</code></pre>
 								<div class="settings-description">{{{_ "Empty bodies or bodies with an empty text property will simply be ignored. Non-200 responses will be retried a reasonable number of times. A response will be posted using the alias and avatar specified above. You can override these informations as in the example above."}}}</div>
 							</div>
 						</div>

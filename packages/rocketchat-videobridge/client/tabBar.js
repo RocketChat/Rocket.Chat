@@ -2,13 +2,13 @@ Meteor.startup(function() {
 	Tracker.autorun(function() {
 		if (RocketChat.settings.get('Jitsi_Enabled')) {
 			RocketChat.TabBar.addButton({
-				groups: ['directmessage', 'privategroup'],
+				groups: ['direct', 'group'],
 				id: 'video',
 				i18nTitle: 'Video Chat',
 				icon: 'icon-videocam',
 				iconColor: 'red',
 				template: 'videoFlexTab',
-				width: 790,
+				width: 600,
 				order: 12
 			});
 		} else {

@@ -1,7 +1,7 @@
 <template name="avatarSuggestion">
 	{{#if .}}
-		<div class="avatar-suggestion-item">
-			<div class="avatar" style="background-image: url({{blob}});">
+		<div class="avatar-suggestion-item border-component-color">
+			<div class="avatar tertiary-background-color" style="background-image: url({{blob}});">
 			</div>
 			<div class="action">
 				<button type="button" class="button primary {{service}} select-service">{{_ "Use_service_avatar" service}}</button>
@@ -12,8 +12,8 @@
 
 <template name="avatarSuggestionLogin">
 	{{#if .}}
-		<div class="avatar-suggestion-item">
-			<div class="avatar question-mark icon-user"></div>
+		<div class="avatar-suggestion-item border-component-color">
+			<div class="avatar question-mark icon-user tertiary-background-color"></div>
 			<div class="action">
 				<button type="button" class="button primary {{.}} login-with-service">{{_ "Login_with" .}}</button>
 			</div>
@@ -22,8 +22,8 @@
 </template>
 
 <template name="avatarPrompt">
-	<section class="page-container page-home page-static">
-		<header class="fixed-title">
+	<section class="page-container page-home page-static content-background-color">
+		<header class="fixed-title content-background-color border-component-color">
 			{{> burger}}
 			<h2>
 				<span class="room-title">{{_ "Select_an_avatar"}}</span>
@@ -31,12 +31,12 @@
 		</header>
 		<div class="content">
 			<div class="avatarPrompt">
-				<header>
+				<header class="content-background-color border-component-color">
 					<p>{{_ "Select_service_to_login"}}</p>
 				</header>
 				<div>
 					<div class="avatar-suggestions">
-						<div class="avatar-suggestion-item">
+						<div class="avatar-suggestion-item border-component-color">
 							{{> avatar username=initialsUsername }}
 							{{#with service='initials'}}
 								<div class="action">
@@ -44,8 +44,8 @@
 								</div>
 							{{/with}}
 						</div>
-						<div class="avatar-suggestion-item">
-							<div style="background-image: url({{upload.blob}});" class="avatar {{#unless upload}}question-mark icon-upload{{/unless}}">
+						<div class="avatar-suggestion-item border-component-color">
+							<div style="background-image: url({{upload.blob}});" class="avatar tertiary-background-color {{#unless upload}}question-mark icon-upload{{/unless}}">
 							</div>
 							<div class="action">
 								<div class="button primary">{{_ "Select_file"}}
@@ -56,9 +56,9 @@
 								{{/with}}
 							</div>
 						</div>
-						<div class="avatar-suggestion-item">
+						<div class="avatar-suggestion-item border-component-color">
 							{{#with service='url'}}
-								<div class="avatar question-mark icon-upload"></div>
+								<div class="avatar question-mark icon-upload tertiary-background-color"></div>
 								<div class="action">
 									<div class="input-line">
 										<input type="text" name="avatarurl" id="avatarurl" />

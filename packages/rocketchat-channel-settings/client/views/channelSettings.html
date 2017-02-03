@@ -17,7 +17,7 @@
 											{{#if $eq $value.type 'text'}}
 												{{#if editing $key}}
 													{{#if $value.canEdit room}}
-														<input type="text" name="{{$key}}" value="{{value}}" class="editing" />
+														<input type="text" name="{{$key}}" value="{{value}}" class="content-background-color editing" />
 													{{/if}}
 												{{else}}
 													<span class='current-setting' data-edit="{{#if $value.canEdit room}}{{$key}}{{else}}false{{/if}}">{{value}}</span>
@@ -27,7 +27,7 @@
 											{{#if $eq $value.type 'markdown'}}
 												{{#if editing $key}}
 													{{#if $value.canEdit room}}
-														<input type="text" name="{{$key}}" value="{{unscape value}}" class="editing" />
+														<input type="text" name="{{$key}}" value="{{unscape value}}" class="content-background-color editing" />
 													{{/if}}
 												{{else}}
 													<span class='current-setting' data-edit="{{#if $value.canEdit room}}{{$key}}{{else}}false{{/if}}">{{{RocketChatMarkdown value}}}</span>
@@ -58,12 +58,12 @@
 											{{#unless $value.isToggle}}
 												{{#if $value.canEdit room}}
 													{{#if editing $key}}
-														<div class="buttons">
+														<div class="buttons secondary-background-color">
 															<button type="button" class="button cancel">
 																<i class="icon-cancel"></i>
 															</button>
 															<button type="button" class="button primary save">
-																<i class="icon-ok"></i>
+																<i class="icon-ok success-color"></i>
 															</button>
 														</div>
 													{{else}}
