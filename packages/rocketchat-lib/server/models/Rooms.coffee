@@ -12,16 +12,6 @@ class ModelRooms extends RocketChat.models._Base
 		this.cache.ensureIndex(['t', 'name'], 'unique')
 		this.cache.options = {fields: {usernames: 0}}
 
-	# FIND ONE
-	findOneById: (_id, options) ->
-		if this.useCache
-			return this.cache.findByIndex('_id', _id, options).fetch()
-
-		query =
-			_id: _id
-
-		return @findOne query, options
-
 	findOneByIdOrName: (_idOrName, options) ->
 		query = {
 			$or: [{
@@ -52,14 +42,14 @@ class ModelRooms extends RocketChat.models._Base
 
 		return @findOne query, options
 
-	findOneByIdContainigUsername: (_id, username, options) ->
+	findOneByIdContainingUsername: (_id, username, options) ->
 		query =
 			_id: _id
 			usernames: username
 
 		return @findOne query, options
 
-	findOneByNameAndTypeNotContainigUsername: (name, type, username, options) ->
+	findOneByNameAndTypeNotContainingUsername: (name, type, username, options) ->
 		query =
 			name: name
 			t: type
@@ -230,14 +220,14 @@ class ModelRooms extends RocketChat.models._Base
 
 		return @find query, options
 
-	findByTypeContainigUsername: (type, username, options) ->
+	findByTypeContainingUsername: (type, username, options) ->
 		query =
 			t: type
 			usernames: username
 
 		return @find query, options
 
-	findByTypeContainigUsernames: (type, username, options) ->
+	findByTypeContainingUsernames: (type, username, options) ->
 		query =
 			t: type
 			usernames: { $all: [].concat(username) }
@@ -254,7 +244,7 @@ class ModelRooms extends RocketChat.models._Base
 
 		return @find query, options
 
-	findByContainigUsername: (username, options) ->
+	findByContainingUsername: (username, options) ->
 		query =
 			usernames: username
 
@@ -404,6 +394,16 @@ class ModelRooms extends RocketChat.models._Base
 		update =
 			$set:
 				name: name
+
+		return @update query, update
+
+	incMsgCountById: (_id, inc=1) ->
+		query =
+			_id: _id
+
+		update =
+			$inc:
+				msgs: inc
 
 		return @update query, update
 

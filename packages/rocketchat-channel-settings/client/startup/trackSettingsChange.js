@@ -1,4 +1,3 @@
-/* globals RoomManager */
 Meteor.startup(function() {
 	let roomSettingsChangedCallback = (msg) => {
 		Tracker.nonreactive(() => {

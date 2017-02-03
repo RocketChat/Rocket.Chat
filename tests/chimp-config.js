@@ -19,7 +19,7 @@ module.exports = {
 // 	showXolvioMessages: true,
 
 // 	// - - - - CUCUMBER - - - -
-	path: 'tests/steps',
+	path: 'tests/end-to-end',
 // 	format: 'pretty',
 // 	tags: '~@ignore',
 // 	singleSnippetPerFile: true,
@@ -109,9 +109,10 @@ module.exports = {
 		// tags and grep only work when watch mode is false
 		tags: '',
 		grep: null,
-		timeout: 60000,
-		reporter: 'spec',
+		timeout: 40000,
+		reporter: 'min',
 		slow: 100,
+		retries: 3,
 		bail: false // bail after first test failure
 	},
 

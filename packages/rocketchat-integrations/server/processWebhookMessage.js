@@ -5,9 +5,14 @@ function retrieveRoomInfo({ currentUserId, channel, ignoreEmpty=false }) {
 	}
 
 	if (room && room.t === 'c') {
-		Meteor.runAsUser(currentUserId, function() {
-			return Meteor.call('joinRoom', room._id);
-		});
+		//Check if the user already has a Subscription or not, this avoids this issue: https://github.com/RocketChat/Rocket.Chat/issues/5477
+		const sub = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(room._id, currentUserId);
+
+		if (!sub) {
+			Meteor.runAsUser(currentUserId, function() {
+				return Meteor.call('joinRoom', room._id);
+			});
+		}
 	}
 
 	return room;
@@ -24,17 +29,17 @@ function retrieveDirectMessageInfo({ currentUserId, channel, findByUserIdOnly=fa
 		});
 	}
 
-	if (!_.isObject(roomUser)) {
-		throw new Meteor.Error('invalid-channel');
-	}
+	const rid = _.isObject(roomUser) ? [currentUserId, roomUser._id].sort().join('') : channel;
+	let room = RocketChat.models.Rooms.findOneById(rid);
 
-	const rid = [currentUserId, roomUser._id].sort().join('');
-	let room = RocketChat.models.Rooms.findOneById({ $in: [rid, channel] });
+	if (!_.isObject(room)) {
+		if (!_.isObject(roomUser)) {
+			throw new Meteor.Error('invalid-channel');
+		}
 
-	if (!room) {
-		Meteor.runAsUser(currentUserId, function() {
-			Meteor.call('createDirectMessage', roomUser.username);
-			room = RocketChat.models.Rooms.findOneById(rid);
+		room = Meteor.runAsUser(currentUserId, function() {
+			const {rid} = Meteor.call('createDirectMessage', roomUser.username);
+			return RocketChat.models.Rooms.findOneById(rid);
 		});
 	}
 
@@ -71,14 +76,16 @@ this.processWebhookMessage = function(messageObj, user, defaultValues) {
 				room = retrieveDirectMessageInfo({ currentUserId: user._id, channel });
 				break;
 			default:
+				channel = channelType + channel;
+
 				//Try to find the room by id or name if they didn't include the prefix.
-				room = retrieveRoomInfo({ currentUserId: user._id, channel: channelType + channel, ignoreEmpty: true });
+				room = retrieveRoomInfo({ currentUserId: user._id, channel, ignoreEmpty: true });
 				if (room) {
 					break;
 				}
 
 				//We didn't get a room, let's try finding direct messages
-				room = retrieveDirectMessageInfo({ currentUserId: user._id, channel: channelType + channel, findByUserIdOnly: true });
+				room = retrieveDirectMessageInfo({ currentUserId: user._id, channel, findByUserIdOnly: true });
 				if (room) {
 					break;
 				}
