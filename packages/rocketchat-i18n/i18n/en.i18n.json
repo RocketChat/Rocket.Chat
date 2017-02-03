@@ -688,6 +688,18 @@
   "Katex_Enabled_Description": "Allow using <a target=\"_blank\" href=\"http://khan.github.io/KaTeX/\">katex</a> for math typesetting in messages",
   "Katex_Parenthesis_Syntax": "Allow Parenthesis Syntax",
   "Katex_Parenthesis_Syntax_Description": "Allow using \\[katex block\\] and \\(inline katex\\) syntaxes",
+  "Keyboard_Shortcuts": {
+    "Title":"Keyboard Shortcuts",
+    "Items": [
+      { "Description": "Open Channel / User search", "Keys": "<kbd>Ctrl</kbd> + <kbd>p</kbd>"},
+      { "Description": "Edit previous message", "Keys": "<kbd>Up Arrow</kbd>"},
+      { "Description": "Move to the beginning of the message", "Keys": "<kbd>Command</kbd> (or <kbd>Alt</kbd>) + <kbd>Left Arrow</kbd>"},
+      { "Description": "Move to the beginning of the message", "Keys": "<kbd>Command</kbd> (or <kbd>Alt</kbd>) + <kbd>Up Arrow</kbd>"},
+      { "Description": "Move to the end of the message", "Keys": "<kbd>Command</kbd> (or <kbd>Alt</kbd>) + <kbd>Right Arrow</kbd>"},
+      { "Description": "Move to the end of the message", "Keys": "<kbd>Command</kbd> (or <kbd>Alt</kbd>) + <kbd>Down Arrow</kbd>"},
+      { "Description": "New line in message compose input", "Keys": "<kbd>Shift</kbd> + <kbd>Enter</kbd>"}
+    ]
+  },
   "Knowledge_Base": "Knowledge Base",
   "Label": "Label",
   "Language": "Language",
