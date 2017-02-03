@@ -21,7 +21,7 @@ class MentionsClient
 				mentions = mentions.join('|')
 				msg = msg.replace new RegExp("(?:^|\\s|\\n)(@(#{mentions}):?)[:.,\s]?", 'g'), (match, mention, username) ->
 					if username is 'all' or username is 'here'
-						return match.replace mention, "<a class=\"mention-link mention-link-me mention-link-all\">#{mention}</a>"
+						return match.replace mention, "<a class=\"mention-link mention-link-me mention-link-all background-attention-color\">#{mention}</a>"
 
 					if not message.temp?
 						if not _.findWhere(message.mentions, {username: username})?
@@ -29,7 +29,7 @@ class MentionsClient
 
 					classes = 'mention-link'
 					if username is me
-						classes += ' mention-link-me'
+						classes += ' mention-link-me background-primary-action-color'
 
 					return match.replace mention, "<a class=\"#{classes}\" data-username=\"#{username}\">#{mention}</a>"
 

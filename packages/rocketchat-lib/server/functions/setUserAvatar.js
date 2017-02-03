@@ -9,8 +9,10 @@ RocketChat.setUserAvatar = function(user, dataURI, contentType, service) {
 		try {
 			result = HTTP.get(dataURI, { npmRequestOptions: {encoding: 'binary'} });
 		} catch (error) {
-			console.log(`Error while handling the setting of the avatar from a url (${dataURI}) for ${user.username}:`, error);
-			throw new Meteor.Error('error-avatar-url-handling', `Error while handling avatar setting from a URL (${dataURI}) for ${user.username}`, { function: 'RocketChat.setUserAvatar', url: dataURI, username: user.username });
+			if (error.response.statusCode !== 404) {
+				console.log(`Error while handling the setting of the avatar from a url (${dataURI}) for ${user.username}:`, error);
+				throw new Meteor.Error('error-avatar-url-handling', `Error while handling avatar setting from a URL (${dataURI}) for ${user.username}`, { function: 'RocketChat.setUserAvatar', url: dataURI, username: user.username });
+			}
 		}
 
 		if (result.statusCode !== 200) {
@@ -42,7 +44,7 @@ RocketChat.setUserAvatar = function(user, dataURI, contentType, service) {
 	ws.on('end', Meteor.bindEnvironment(function() {
 		Meteor.setTimeout(function() {
 			RocketChat.models.Users.setAvatarOrigin(user._id, service);
-			RocketChat.Notifications.notifyAll('updateAvatar', {username: user.username});
+			RocketChat.Notifications.notifyLogged('updateAvatar', {username: user.username});
 		}, 500);
 	}));
 	rs.pipe(ws);

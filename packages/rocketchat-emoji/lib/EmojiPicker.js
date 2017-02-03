@@ -88,12 +88,10 @@ RocketChat.EmojiPicker = {
 		const containerEl = this.setPosition();
 		containerEl.addClass('show');
 
-		setTimeout(() => {
-			const emojiInput = containerEl.find('.emoji-filter input.search');
-			if (emojiInput) {
-				emojiInput.focus();
-			}
-		}, 100);
+		const emojiInput = containerEl.find('.emoji-filter input.search');
+		if (emojiInput) {
+			emojiInput.focus();
+		}
 		this.opened = true;
 	},
 	close() {

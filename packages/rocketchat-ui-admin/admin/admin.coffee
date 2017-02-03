@@ -2,13 +2,8 @@ import toastr from 'toastr'
 TempSettings = new Meteor.Collection null
 RocketChat.TempSettings = TempSettings
 
-updateColorComponent = (input = $('input.minicolors')) ->
-	input.minicolors
-		theme: 'rocketchat'
-		letterCase: 'uppercase'
-
 getDefaultSetting = (settingId) ->
-	return RocketChat.settings.cachedCollectionPrivate.collection.findOne({_id: settingId})
+	return RocketChat.settings.collectionPrivate.findOne({_id: settingId})
 
 setFieldValue = (settingId, value, type, editor) ->
 	input = $('.page-settings').find('[name="' + settingId + '"]')
@@ -19,22 +14,18 @@ setFieldValue = (settingId, value, type, editor) ->
 		when 'code'
 			input.next()[0].CodeMirror.setValue(value)
 		when 'color'
-			editorColor = editor is 'color'
 			input.parents('.horizontal').find('select[name="color-editor"]').val(editor).change()
 			input.val(value).change()
 
-			if editorColor
-				Meteor.setTimeout ->
-					updateColorComponent(input)
-					input.minicolors('value', value)
-				, 100
+			if editor is 'color'
+				new jscolor(input)
 
 		else
 			input.val(value).change()
 
 Template.admin.onCreated ->
 	if not RocketChat.settings.cachedCollectionPrivate?
-		RocketChat.settings.cachedCollectionPrivate = new RocketChat.CachedCollection({ name: 'private-settings', eventType: 'onAll' })
+		RocketChat.settings.cachedCollectionPrivate = new RocketChat.CachedCollection({ name: 'private-settings', eventType: 'onLogged' })
 		RocketChat.settings.collectionPrivate = RocketChat.settings.cachedCollectionPrivate.collection
 		RocketChat.settings.cachedCollectionPrivate.init()
 
@@ -78,20 +69,16 @@ Template.admin.helpers
 		return result;
 
 	appLanguage: (key) ->
-		if !key
-			return !RocketChat.settings.get('Language')
-		selected = (RocketChat.settings.get('Language'))?.split('-').shift().toLowerCase() is key
-		return selected
+		return (RocketChat.settings.get('Language'))?.split('-').shift().toLowerCase() is key
 
 	group: ->
-		group = FlowRouter.getParam('group')
-		group ?= TempSettings.findOne({ type: 'group' })?._id
-		return TempSettings.findOne { _id: group, type: 'group' }
+		groupId = FlowRouter.getParam('group')
+		group = RocketChat.settings.collectionPrivate.findOne { _id: groupId, type: 'group' }
 
-	sections: ->
-		group = FlowRouter.getParam('group')
-		group ?= TempSettings.findOne({ type: 'group' })?._id
-		settings = TempSettings.find({ group: group }, {sort: {section: 1, sorter: 1, i18nLabel: 1}}).fetch()
+		if not group
+			return
+
+		settings = RocketChat.settings.collectionPrivate.find({ group: groupId }, {sort: {section: 1, sorter: 1, i18nLabel: 1}}).fetch()
 
 		sections = {}
 		for setting in settings
@@ -106,19 +93,19 @@ Template.admin.helpers
 
 				found = 0
 				for item in i18nDefaultQuery
-					if TempSettings.findOne(item)?
+					if RocketChat.settings.collectionPrivate.findOne(item)?
 						setting.value = TAPi18n.__(setting._id + '_Default')
 
 			sections[setting.section or ''] ?= []
 			sections[setting.section or ''].push setting
 
-		sectionsArray = []
+		group.sections = []
 		for key, value of sections
-			sectionsArray.push
+			group.sections.push
 				section: key
 				settings: value
 
-		return sectionsArray
+		return group
 
 	i18nDefaultValue: ->
 		return TAPi18n.__(@_id + '_Default')
@@ -167,18 +154,14 @@ Template.admin.helpers
 
 		return TempSettings.find(query).count() > 0
 
+	isSettingChanged: (id) ->
+		return RocketChat.TempSettings.findOne({_id: id}, {fields: {changed: 1}}).changed
+
 	translateSection: (section) ->
 		if section.indexOf(':') > -1
 			return section
 
 		return t(section)
-
-	flexOpened: ->
-		return 'opened' if RocketChat.TabBar.isFlexOpen()
-
-	arrowPosition: ->
-		console.log 'room.helpers arrowPosition' if window.rocketDebug
-		return 'left' unless RocketChat.TabBar.isFlexOpen()
 
 	label: ->
 		label = @i18nLabel or @_id
@@ -279,7 +262,7 @@ Template.admin.helpers
 		return setting.value is setting.packageValue
 
 Template.admin.events
-	"change .input-monitor, keyup .input-monitor": (e, t) ->
+	"change .input-monitor, keyup .input-monitor": _.throttle((e, t) ->
 		value = _.trim $(e.target).val()
 
 		switch @type
@@ -292,14 +275,13 @@ Template.admin.events
 			$set:
 				value: value
 				changed: RocketChat.settings.collectionPrivate.findOne(@_id).value isnt value
+	, 500)
 
 	"change select[name=color-editor]": (e, t) ->
 		value = _.trim $(e.target).val()
 		TempSettings.update {_id: @_id},
 			$set:
 				editor: value
-
-		Meteor.setTimeout updateColorComponent, 100
 
 	"click .submit .discard": ->
 		group = FlowRouter.getParam('group')
@@ -309,10 +291,9 @@ Template.admin.events
 			changed: true
 
 		settings = TempSettings.find(query, {fields: {_id: 1, value: 1, packageValue: 1}}).fetch()
-		console.log(settings)
 
 		settings.forEach (setting) ->
-			oldSetting = RocketChat.settings.cachedCollectionPrivate.collection.findOne({_id: setting._id}, {fields: {value: 1, type:1, editor: 1}})
+			oldSetting = RocketChat.settings.collectionPrivate.findOne({_id: setting._id}, {fields: {value: 1, type:1, editor: 1}})
 
 			setFieldValue(setting._id, oldSetting.value, oldSetting.type, oldSetting.editor)
 
@@ -456,12 +437,12 @@ Template.admin.events
 
 	"click .button-fullscreen": ->
 		codeMirrorBox = $('.code-mirror-box[data-editor-id="'+this._id+'"]')
-		codeMirrorBox.addClass('code-mirror-box-fullscreen')
+		codeMirrorBox.addClass('code-mirror-box-fullscreen content-background-color')
 		codeMirrorBox.find('.CodeMirror')[0].CodeMirror.refresh()
 
 	"click .button-restore": ->
 		codeMirrorBox = $('.code-mirror-box[data-editor-id="'+this._id+'"]')
-		codeMirrorBox.removeClass('code-mirror-box-fullscreen')
+		codeMirrorBox.removeClass('code-mirror-box-fullscreen content-background-color')
 		codeMirrorBox.find('.CodeMirror')[0].CodeMirror.refresh()
 
 	'autocompleteselect .autocomplete': (event, instance, doc) ->
@@ -493,12 +474,10 @@ Template.admin.onRendered ->
 		SideNav.setFlex "adminFlex"
 		SideNav.openFlex()
 
-	Meteor.setTimeout ->
-		updateColorComponent()
-	, 1000
-
 	Tracker.autorun ->
-		FlowRouter.watchPathChange()
-		Meteor.setTimeout ->
-			updateColorComponent()
-		, 400
+		hasColor = TempSettings.findOne { group: FlowRouter.getParam('group'), type: 'color' }, { fields: { _id: 1 } }
+		if hasColor
+			Meteor.setTimeout ->
+				$('.colorpicker-input').each (index, el) ->
+					new jscolor(el)
+			, 400

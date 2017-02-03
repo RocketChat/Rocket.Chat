@@ -7,37 +7,37 @@ Template.adminRoomInfo.helpers
 	editing: (field) ->
 		return Template.instance().editing.get() is field
 	notDirect: ->
-		return ChatRoom.findOne(@rid, { fields: { t: 1 }})?.t isnt 'd'
+		return AdminChatRoom.findOne(@rid, { fields: { t: 1 }})?.t isnt 'd'
 	roomType: ->
-		return ChatRoom.findOne(@rid, { fields: { t: 1 }})?.t
+		return AdminChatRoom.findOne(@rid, { fields: { t: 1 }})?.t
 	channelSettings: ->
 		return RocketChat.ChannelSettings.getOptions()
 	roomTypeDescription: ->
-		roomType = ChatRoom.findOne(@rid, { fields: { t: 1 }})?.t
+		roomType = AdminChatRoom.findOne(@rid, { fields: { t: 1 }})?.t
 		if roomType is 'c'
 			return t('Channel')
 		else if roomType is 'p'
 			return t('Private_Group')
 	roomName: ->
-		return ChatRoom.findOne(@rid, { fields: { name: 1 }})?.name
+		return AdminChatRoom.findOne(@rid, { fields: { name: 1 }})?.name
 	roomTopic: ->
-		return ChatRoom.findOne(@rid, { fields: { topic: 1 }})?.topic
+		return AdminChatRoom.findOne(@rid, { fields: { topic: 1 }})?.topic
 	archivationState: ->
-		return ChatRoom.findOne(@rid, { fields: { archived: 1 }})?.archived
+		return AdminChatRoom.findOne(@rid, { fields: { archived: 1 }})?.archived
 	archivationStateDescription: ->
-		archivationState = ChatRoom.findOne(@rid, { fields: { archived: 1 }})?.archived
+		archivationState = AdminChatRoom.findOne(@rid, { fields: { archived: 1 }})?.archived
 		if archivationState is true
 			return t('Room_archivation_state_true')
 		else
 			return t('Room_archivation_state_false')
 	canDeleteRoom: ->
-		roomType = ChatRoom.findOne(@rid, { fields: { t: 1 }})?.t
+		roomType = AdminChatRoom.findOne(@rid, { fields: { t: 1 }})?.t
 		return roomType? and RocketChat.authz.hasAtLeastOnePermission("delete-#{roomType}")
 	readOnly: ->
-		room = ChatRoom.findOne(@rid, { fields: { ro: 1 }})
+		room = AdminChatRoom.findOne(@rid, { fields: { ro: 1 }})
 		return room?.ro
 	readOnlyDescription: ->
-		room = ChatRoom.findOne(@rid, { fields: { ro: 1 }})
+		room = AdminChatRoom.findOne(@rid, { fields: { ro: 1 }})
 		readOnly = room?.ro
 		if readOnly is true
 			return t('True')
@@ -99,7 +99,7 @@ Template.adminRoomInfo.onCreated ->
 		return true
 
 	@validateRoomName = (rid) =>
-		room = ChatRoom.findOne rid
+		room = AdminChatRoom.findOne rid
 
 		if not RocketChat.authz.hasAllPermission('edit-room', rid) or room.t not in ['c', 'p']
 			toastr.error t('error-not-allowed')
@@ -125,7 +125,7 @@ Template.adminRoomInfo.onCreated ->
 		switch @editing.get()
 			when 'roomName'
 				if @validateRoomName(rid)
-					RocketChat.callbacks.run 'roomNameChanged', ChatRoom.findOne(rid)
+					RocketChat.callbacks.run 'roomNameChanged', AdminChatRoom.findOne(rid)
 					Meteor.call 'saveRoomSettings', rid, 'roomName', @$('input[name=roomName]').val(), (err, result) ->
 						if err
 							return handleError(err)
@@ -136,27 +136,27 @@ Template.adminRoomInfo.onCreated ->
 						if err
 							return handleError(err)
 						toastr.success TAPi18n.__ 'Room_topic_changed_successfully'
-						RocketChat.callbacks.run 'roomTopicChanged', ChatRoom.findOne(rid)
+						RocketChat.callbacks.run 'roomTopicChanged', AdminChatRoom.findOne(rid)
 			when 'roomType'
 				if @validateRoomType(rid)
-					RocketChat.callbacks.run 'roomTypeChanged', ChatRoom.findOne(rid)
+					RocketChat.callbacks.run 'roomTypeChanged', AdminChatRoom.findOne(rid)
 					Meteor.call 'saveRoomSettings', rid, 'roomType', @$('input[name=roomType]:checked').val(), (err, result) ->
 						if err
 							return handleError(err)
 						toastr.success TAPi18n.__ 'Room_type_changed_successfully'
 			when 'archivationState'
 				if @$('input[name=archivationState]:checked').val() is 'true'
-					if ChatRoom.findOne(rid)?.archived isnt true
+					if AdminChatRoom.findOne(rid)?.archived isnt true
 						Meteor.call 'archiveRoom', rid, (err, results) ->
 							return handleError(err) if err
 							toastr.success TAPi18n.__ 'Room_archived'
-							RocketChat.callbacks.run 'archiveRoom', ChatRoom.findOne(rid)
+							RocketChat.callbacks.run 'archiveRoom', AdminChatRoom.findOne(rid)
 				else
-					if ChatRoom.findOne(rid)?.archived is true
+					if AdminChatRoom.findOne(rid)?.archived is true
 						Meteor.call 'unarchiveRoom', rid, (err, results) ->
 							return handleError(err) if err
 							toastr.success TAPi18n.__ 'Room_unarchived'
-							RocketChat.callbacks.run 'unarchiveRoom', ChatRoom.findOne(rid)
+							RocketChat.callbacks.run 'unarchiveRoom', AdminChatRoom.findOne(rid)
 			when 'readOnly'
 				Meteor.call 'saveRoomSettings', rid, 'readOnly', @$('input[name=readOnly]:checked').val() is 'true', (err, result) ->
 					return handleError err if err

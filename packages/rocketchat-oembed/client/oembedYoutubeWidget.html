@@ -1,6 +1,6 @@
 <template name="oembedYoutubeWidget">
 	{{#if parsedUrl}}
-		<blockquote>
+		<blockquote class="background-transparent-darker-before">
 			<a href="{{url}}">{{parsedUrl.host}}</a>
 			{{#if collapsed}}
 				<span class="collapse-switch icon-right-dir" data-index="{{index}}" data-collapsed="{{collapsed}}"></span><br>
