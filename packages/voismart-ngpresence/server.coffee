@@ -184,6 +184,8 @@ class PresenceClient
 			logger.error "thrift-amqp connection error: #{err}"
 
 	publishPresence: (user, status, statusConnection) =>
+		if user.status == status
+			return
 		if not @connected
 			logger.error('not connected, publishing to sendqueue', user, status)
 			@sendQueue.push([user, status, statusConnection])
