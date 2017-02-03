@@ -224,9 +224,9 @@ Tracker.autorun ->
 			topOffset = $(item).offset().top + scrollTop
 			percent = 100 / totalHeight * topOffset
 			if $(item).hasClass('mention-link-all')
-				ticksBar.append('<div class="tick tick-all" style="top: '+percent+'%;"></div>')
+				ticksBar.append('<div class="tick background-attention-color" style="top: '+percent+'%;"></div>')
 			else
-				ticksBar.append('<div class="tick" style="top: '+percent+'%;"></div>')
+				ticksBar.append('<div class="tick background-primary-action-color" style="top: '+percent+'%;"></div>')
 
 	open: open
 	close: close

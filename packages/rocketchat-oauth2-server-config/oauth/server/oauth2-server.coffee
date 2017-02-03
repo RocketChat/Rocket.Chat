@@ -19,8 +19,6 @@ Meteor.publish 'oauthClient', (clientId) ->
 
 
 RocketChat.API.v1.addAuthMethod ->
-	console.log @request.method, @request.url
-
 	headerToken = @request.headers['authorization']
 	getToken = @request.query.access_token
 

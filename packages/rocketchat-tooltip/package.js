@@ -12,9 +12,9 @@ Package.onUse(function(api) {
 	api.use('rocketchat:lib');
 	api.use('rocketchat:theme');
 	api.use('rocketchat:ui-master');
+	api.use('less');
 
-	api.addAssets('tooltip.less', 'server');
-	api.addFiles('loadStylesheet.js', 'server');
+	api.addFiles('tooltip.less', 'client');
 
 	api.addFiles('rocketchat-tooltip.html', 'client');
 	api.addFiles('rocketchat-tooltip.js', 'client');

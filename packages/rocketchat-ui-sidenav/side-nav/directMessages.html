@@ -1,9 +1,6 @@
 <template name="directMessages">
 	<h3 class="add-room {{isActive}}">
 		{{_ "Direct_Messages"}} <span class="room-count-small">({{rooms.count}})</span>
-		{{#if canCreate}}
-			<i class="icon-plus"></i>
-		{{/if}}
 	</h3>
 	<ul>
 		{{#each rooms}}
@@ -11,6 +8,5 @@
 		{{else}}
 			<p class="empty">{{_ "No_direct_messages_yet" }}</p>
 		{{/each}}
-		<button class="more more-direct-messages">{{_ "More_direct_messages"}}...</button>
 	</ul>
 </template>

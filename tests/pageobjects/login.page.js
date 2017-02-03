@@ -11,6 +11,7 @@ class LoginPage extends Page {
 	get emailField() { return browser.element('[name=email]'); }
 	get passwordField() { return browser.element('[name=pass]'); }
 	get confirmPasswordField() { return browser.element('[name=confirm-pass]'); }
+	get inputUsername() { return browser.element('form#login-card input#username'); }
 
 	get emailOrUsernameInvalidText() { return browser.element('[name=emailOrUsername]~.input-error'); }
 	get nameInvalidText() { return browser.element('[name=name]~.input-error'); }
@@ -23,14 +24,17 @@ class LoginPage extends Page {
 	}
 
 	gotToRegister() {
+		this.registerButton.waitForVisible(5000);
 		this.registerButton.click();
 	}
 
 	gotToForgotPassword() {
+		this.forgotPasswordButton.waitForVisible(5000);
 		this.forgotPasswordButton.click();
 	}
 
 	registerNewUser({username, email, password}) {
+		this.nameField.waitForVisible(5000);
 		this.nameField.setValue(username);
 		this.emailField.setValue(email);
 		this.passwordField.setValue(password);
@@ -40,6 +44,7 @@ class LoginPage extends Page {
 	}
 
 	registerNewAdmin({adminUsername, adminEmail, adminPassword}) {
+		this.nameField.waitForVisible(5000);
 		this.nameField.setValue(adminUsername);
 		this.emailField.setValue(adminEmail);
 		this.passwordField.setValue(adminPassword);
@@ -49,6 +54,7 @@ class LoginPage extends Page {
 	}
 
 	login({email, password}) {
+		this.emailOrUsernameField.waitForVisible(5000);
 		this.emailOrUsernameField.setValue(email);
 		this.passwordField.setValue(password);
 
@@ -56,6 +62,7 @@ class LoginPage extends Page {
 	}
 
 	submit() {
+		this.submitButton.waitForVisible(5000);
 		this.submitButton.click();
 	}
 }

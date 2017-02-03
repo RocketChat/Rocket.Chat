@@ -229,7 +229,7 @@ Importer.Slack = class Importer.Slack extends Importer.Base
 													msg: "_#{@convertSlackMessageToRocketChat(message.text)}_"
 												_.extend msgObj, msgDataDefaults
 												RocketChat.sendMessage @getRocketUser(message.user), msgObj, room, true
-											else if message.subtype is 'bot_message'
+											else if message.subtype is 'bot_message' or message.subtype is 'slackbot_response'
 												botUser = RocketChat.models.Users.findOneById 'rocket.cat', { fields: { username: 1 }}
 												botUsername = if @bots[message.bot_id] then @bots[message.bot_id]?.name else message.username
 												msgObj =
@@ -320,7 +320,10 @@ Importer.Slack = class Importer.Slack extends Importer.Base
 														Meteor.call 'setReaction', ":#{reaction.name}:", msgDataDefaults._id
 
 									@addCountCompleted 1
-			console.log 'Missed import types:', missedTypes
+
+			if not _.isEmpty missedTypes
+				console.log 'Missed import types:', missedTypes
+
 			@updateProgress Importer.ProgressStep.FINISHING
 			for channel in @channels.channels when channel.do_import and channel.is_archived
 				do (channel) =>
