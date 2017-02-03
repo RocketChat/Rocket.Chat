@@ -33,3 +33,12 @@ RocketChat.TabBar.addButton({
 	template: 'uploadedFilesList',
 	order: 3
 });
+
+RocketChat.TabBar.addButton({
+       groups: ['channel', 'privategroup', 'directmessage'],
+       id: 'keyboard-shortcut-list',
+       i18nTitle: 'Keyboard_Shortcuts.Title',
+       icon: 'icon-keyboard',
+       template: 'keyboardShortcuts',
+       order: 4
+});
