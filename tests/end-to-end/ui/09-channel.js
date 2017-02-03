@@ -337,6 +337,45 @@ describe('channel', ()=> {
 				});
 			});
 
+			describe('channel quit and enter', () => {
+				it('leave the channel', () => {
+					let channel = sideNav.getChannelFromList('NAME-EDITED-'+publicChannelName);
+					channel.click();
+					channel.moveToObject();
+					sideNav.channelLeave.waitForVisible(5000);
+					sideNav.channelLeave.click();
+					Global.sweetAlert.waitForVisible(5000);
+				});
+
+				it('should show the sweet alert popup', () => {
+					Global.sweetAlert.waitForVisible(5000);
+					Global.sweetAlert.isVisible().should.be.true;
+					Global.sweetAlertConfirm.isVisible().should.be.true;
+				});
+
+				it('should close the popup', () => {
+					Global.confirmPopup();
+				});
+
+				it('should not show the channel on the list', () => {
+					sideNav.getChannelFromList('NAME-EDITED-'+publicChannelName).waitForVisible(5000, true);
+					sideNav.getChannelFromList('NAME-EDITED-'+publicChannelName).isVisible().should.be.false;
+				});
+
+				it('should search and enter the channel with the spotlight', () => {
+					sideNav.searchChannel('NAME-EDITED-'+publicChannelName);
+					mainContent.joinChannelBtn.waitForVisible(5000);
+					mainContent.joinChannelBtn.click();
+
+				});
+
+				it('should show the channel on the list', () => {
+					sideNav.getChannelFromList('NAME-EDITED-'+publicChannelName).waitForVisible(10000);
+					sideNav.getChannelFromList('NAME-EDITED-'+publicChannelName).isVisible().should.be.true;
+				});
+			});
+
+
 			describe.skip('User muted', () => {
 				before(()=> {
 					flexTab.membersTab.waitForVisible(5000);
@@ -356,13 +395,8 @@ describe('channel', ()=> {
 					flexTab.confirmPopup();
 				});
 			});
-		});
 
-		it.skip('leave the channel', () => {
-			let channel = sideNav.getChannelFromList('NAME-EDITED-'+publicChannelName);
-			channel.moveToObject();
-			sideNav.channelLeave.waitForVisible(5000);
-			sideNav.channelLeave.click();
+
 		});
 	});
 });
