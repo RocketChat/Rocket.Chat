@@ -1,7 +1,7 @@
 RocketChat.Migrations.add({
 	version: 84,
-	up: function() {
-		if (RocketChat && RocketChat.models && RocketChat.models.Permissions) {
+	up() {
+		if (RocketChat.models && RocketChat.models.Permissions) {
 
 			// Update permission name, copy values from old name
 			var oldPermission = RocketChat.models.Permissions.findOne('add-user-to-room');
@@ -9,11 +9,11 @@ RocketChat.Migrations.add({
 				RocketChat.models.Permissions.upsert({ _id: 'add-user-to-joined-room' }, { $set: { roles: oldPermission.roles } });
 				RocketChat.models.Permissions.remove({ _id: 'add-user-to-room' });
 			}
-
 		}
 	},
-	down: function() {
-		if (RocketChat && RocketChat.models && RocketChat.models.Permissions) {
+
+	down() {
+		if (RocketChat.models && RocketChat.models.Permissions) {
 
 			// Revert permission name, copy values from updated name
 			var newPermission = RocketChat.models.Permissions.findOne('add-user-to-joined-room');
@@ -21,7 +21,6 @@ RocketChat.Migrations.add({
 				RocketChat.models.Permissions.upsert({ _id: 'add-user-to-room' }, { $set: { roles: newPermission.roles } });
 				RocketChat.models.Permissions.remove({ _id: 'add-user-to-joined-room' });
 			}
-
 		}
 	}
 });
