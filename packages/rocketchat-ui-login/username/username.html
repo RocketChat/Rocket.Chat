@@ -1,23 +1,23 @@
 <template name="username">
-	<section class="full-page">
+	<section class="full-page color-tertiary-font-color">
 		<div class="wrapper">
-			<form id="login-card" method='/'>
+			<form id="login-card" class="content-background-color color-primary-font-color" method='/'>
 				<header>
 					<h2>{{_ "Username_title"}}</h2>
 					<p>{{_ "Username_description"}}</p>
 				</header>
 				{{#if username.error}}
-					<div class="alert alert-danger">
+					<div class="alert error-color error-background error-border">
 						{{{_ "error-field-unavailable" field=username.username}}}
 					</div>
 				{{/if}}
 				{{#if username.invalid}}
-					<div class="alert alert-danger">
+					<div class="alert error-color error-background error-border">
 						{{{_ "Username_invalid" username.username}}}
 					</div>
 				{{/if}}
 				{{#if username.empty}}
-					<div class="alert alert-danger">
+					<div class="alert error-color error-background error-border">
 						{{{_ "Username_cant_be_empty"}}}
 					</div>
 				{{/if}}

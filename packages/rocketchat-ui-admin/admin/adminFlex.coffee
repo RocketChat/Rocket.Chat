@@ -2,7 +2,7 @@ Template.adminFlex.onCreated ->
 	@settingsFilter = new ReactiveVar('')
 
 	if not RocketChat.settings.cachedCollectionPrivate?
-		RocketChat.settings.cachedCollectionPrivate = new RocketChat.CachedCollection({ name: 'private-settings', eventType: 'onAll' })
+		RocketChat.settings.cachedCollectionPrivate = new RocketChat.CachedCollection({ name: 'private-settings', eventType: 'onLogged' })
 		RocketChat.settings.collectionPrivate = RocketChat.settings.cachedCollectionPrivate.collection
 		RocketChat.settings.cachedCollectionPrivate.init()
 

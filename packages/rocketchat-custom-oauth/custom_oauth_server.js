@@ -149,6 +149,11 @@ export class CustomOAuth {
 			let identity = self.getIdentity(accessToken);
 
 			if (identity) {
+				// Set 'id' to '_id' for any sources that provide it
+				if (identity._id && !identity.id) {
+					identity.id = identity._id;
+				}
+
 				// Fix for Reddit
 				if (identity.result) {
 					identity = identity.result;

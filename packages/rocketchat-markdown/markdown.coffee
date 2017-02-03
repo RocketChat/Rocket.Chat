@@ -18,7 +18,7 @@ class Markdown
 		# Support ![alt text](http://image url)
 		msg = msg.replace new RegExp("!\\[([^\\]]+)\\]\\(((?:#{schemes}):\\/\\/[^\\)]+)\\)", 'gm'), (match, title, url) ->
 			target = if url.indexOf(Meteor.absoluteUrl()) is 0 then '' else '_blank'
-			return '<a href="' + url + '" title="' + title + '" class="swipebox" target="' + target + '"><div class="inline-image" style="background-image: url(' + url + ');"></div></a>'
+			return '<a href="' + url + '" title="' + title + '" target="' + target + '"><div class="inline-image" style="background-image: url(' + url + ');"></div></a>'
 
 		# Support [Text](http://link)
 		msg = msg.replace new RegExp("\\[([^\\]]+)\\]\\(((?:#{schemes}):\\/\\/[^\\)]+)\\)", 'gm'), (match, title, url) ->
@@ -56,17 +56,17 @@ class Markdown
 		# >>>
 		# Text
 		# <<<
-		msg = msg.replace(/(?:&gt;){3}\n+([\s\S]*?)\n+(?:&lt;){3}/g, '<blockquote><span class="copyonly">&gt;&gt;&gt;</span>$1<span class="copyonly">&lt;&lt;&lt;</span></blockquote>')
+		msg = msg.replace(/(?:&gt;){3}\n+([\s\S]*?)\n+(?:&lt;){3}/g, '<blockquote class="background-transparent-darker-before"><span class="copyonly">&gt;&gt;&gt;</span>$1<span class="copyonly">&lt;&lt;&lt;</span></blockquote>')
 
 		# Support >Text for quote
-		msg = msg.replace(/^&gt;(.*)$/gm, '<blockquote><span class="copyonly">&gt;</span>$1</blockquote>')
+		msg = msg.replace(/^&gt;(.*)$/gm, '<blockquote class="background-transparent-darker-before"><span class="copyonly">&gt;</span>$1</blockquote>')
 
 		# Remove white-space around blockquote (prevent <br>). Because blockquote is block element.
-		msg = msg.replace(/\s*<blockquote>/gm, '<blockquote>')
+		msg = msg.replace(/\s*<blockquote class="background-transparent-darker-before">/gm, '<blockquote class="background-transparent-darker-before">')
 		msg = msg.replace(/<\/blockquote>\s*/gm, '</blockquote>')
 
 		# Remove new-line between blockquotes.
-		msg = msg.replace(/<\/blockquote>\n<blockquote>/gm, '</blockquote><blockquote>')
+		msg = msg.replace(/<\/blockquote>\n<blockquote/gm, '</blockquote><blockquote')
 
 		if not _.isString message
 			message.html = msg

@@ -29,7 +29,7 @@ FileUpload.FileSystem = class FileUploadFileSystem extends FileUploadBase {
 				}
 			},
 			onComplete: (fileData) => {
-				var file = _.pick(fileData, '_id', 'type', 'size', 'name', 'identify');
+				var file = _.pick(fileData, '_id', 'type', 'size', 'name', 'identify', 'description');
 
 				file.url = fileData.url.replace(Meteor.absoluteUrl(), '/');
 
@@ -53,14 +53,6 @@ FileUpload.FileSystem = class FileUploadFileSystem extends FileUploadBase {
 	}
 
 	start() {
-		const uploading = Session.get('uploading') || [];
-		const item = {
-			id: this.id,
-			name: this.getFileName(),
-			percentage: 0
-		};
-		uploading.push(item);
-		Session.set('uploading', uploading);
 		return this.handler.start();
 	}
 

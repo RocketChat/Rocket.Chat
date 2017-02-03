@@ -12,7 +12,10 @@
 					</div>
 					<div class="input-line">
 						<label for="color">{{_ "Title_bar_color"}}</label>
-						<input type="text" class="preview-settings minicolors" name="color" id="color" value="{{color}}">
+						<div>
+							<input type="text" class="preview-settings colorpicker-input" name="color" id="color" value="{{color}}">
+							<span class="colorpicker-swatch border-component-color" style="background-color: {{color}}"></span>
+						</div>
 					</div>
 				</fieldset>
 				<fieldset>
@@ -40,7 +43,10 @@
 					</div>
 					<div class="input-line">
 						<label for="colorOffline">{{_ "Title_bar_color_offline"}}</label>
-						<input type="text" class="preview-settings minicolors" name="colorOffline" id="colorOffline" value="{{colorOffline}}">
+						<div>
+							<input type="text" class="preview-settings colorpicker-input" name="colorOffline" id="colorOffline" value="{{colorOffline}}">
+							<span class="colorpicker-swatch border-component-color" style="background-color: {{colorOffline}}"></span>
+						</div>
 					</div>
 					<div class="input-line">
 						<label for="emailOffline">{{_ "Email_address_to_send_offline_messages"}}</label>

@@ -3,7 +3,6 @@ FlowRouter.route '/admin/integrations',
 	subscriptions: (params, queryParams) ->
 		this.register 'integrations', Meteor.subscribe('integrations')
 	action: (params) ->
-		RocketChat.TabBar.showGroup 'admin-integrations'
 		BlazeLayout.render 'main',
 			center: 'pageSettingsContainer'
 			pageTitle: t('Integrations')
@@ -14,7 +13,6 @@ FlowRouter.route '/admin/integrations/new',
 	subscriptions: (params, queryParams) ->
 		this.register 'integrations', Meteor.subscribe('integrations')
 	action: (params) ->
-		RocketChat.TabBar.showGroup 'admin-integrations'
 		BlazeLayout.render 'main',
 			center: 'pageSettingsContainer'
 			pageTitle: t('Integration_New')
@@ -25,7 +23,6 @@ FlowRouter.route '/admin/integrations/incoming/:id?',
 	subscriptions: (params, queryParams) ->
 		this.register 'integrations', Meteor.subscribe('integrations')
 	action: (params) ->
-		RocketChat.TabBar.showGroup 'admin-integrations'
 		BlazeLayout.render 'main',
 			center: 'pageSettingsContainer'
 			pageTitle: t('Integration_Incoming_WebHook')
@@ -37,7 +34,6 @@ FlowRouter.route '/admin/integrations/outgoing/:id?',
 	subscriptions: (params, queryParams) ->
 		this.register 'integrations', Meteor.subscribe('integrations')
 	action: (params) ->
-		RocketChat.TabBar.showGroup 'admin-integrations'
 		BlazeLayout.render 'main',
 			center: 'pageSettingsContainer'
 			pageTitle: t('Integration_Outgoing_WebHook')

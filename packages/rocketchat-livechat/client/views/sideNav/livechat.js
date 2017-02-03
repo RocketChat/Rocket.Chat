@@ -1,45 +1,43 @@
 /* globals LivechatInquiry, KonchatNotification */
 Template.livechat.helpers({
 	isActive() {
-		if (ChatSubscription.findOne({
+		const query = {
 			t: 'l',
-			f: {
-				$ne: true
-			},
+			f: { $ne: true },
 			open: true,
 			rid: Session.get('openedRoom')
-		}, {
-			fields: {
-				_id: 1
-			}
-		}) != null) {
+		};
+
+		const options = { fields: { _id: 1 } };
+
+		if (ChatSubscription.findOne(query, options)) {
 			return 'active';
 		}
 	},
+
 	rooms() {
-		var query = {
+		const query = {
 			t: 'l',
 			open: true
 		};
 
-		const user = RocketChat.models.Users.findOne(Meteor.userId(), { fields: { 'settings.preferences.unreadRoomsMode': 1 } });
+		const user = RocketChat.models.Users.findOne(Meteor.userId(), {
+			fields: { 'settings.preferences.unreadRoomsMode': 1 }
+		});
 
 		if (user && user.settings && user.settings.preferences && user.settings.preferences.unreadRoomsMode) {
-			query.alert = {
-				$ne: true
-			};
+			query.alert = { $ne: true };
 		}
 
-		return ChatSubscription.find(query, {
-			sort: {
-				't': 1,
-				'name': 1
-			}
-		});
+		return ChatSubscription.find(query, { sort: {
+			't': 1,
+			'name': 1
+		}});
 	},
+
 	inquiries() {
 		// get all inquiries of the department
-		var inqs = LivechatInquiry.find({
+		const inqs = LivechatInquiry.find({
 			agents: Meteor.userId(),
 			status: 'open'
 		}, {
@@ -49,15 +47,17 @@ Template.livechat.helpers({
 		});
 
 		// for notification sound
-		inqs.forEach(function(inq) {
+		inqs.forEach((inq) => {
 			KonchatNotification.newRoom(inq.rid);
 		});
 
 		return inqs;
 	},
+
 	guestPool() {
 		return RocketChat.settings.get('Livechat_Routing_Method') === 'Guest_Pool';
 	},
+
 	available() {
 		const statusLivechat = Template.instance().statusLivechat.get();
 
@@ -67,6 +67,7 @@ Template.livechat.helpers({
 			hint: statusLivechat === 'available' ? t('Available') : t('Not_Available')
 		};
 	},
+
 	livechatAvailable() {
 		return Template.instance().statusLivechat.get();
 	},

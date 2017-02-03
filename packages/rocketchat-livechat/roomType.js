@@ -8,7 +8,6 @@ RocketChat.roomTypes.add('l', 5, {
 		path: '/live/:code(\\d+)',
 		action(params/*, queryParams*/) {
 			openRoom('l', params.code);
-			RocketChat.TabBar.showGroup('livechat', 'search');
 		},
 		link(sub) {
 			return {

@@ -22,7 +22,7 @@ RocketChat.getFullUserData = function({userId, filter, limit}) {
 			roles: 1,
 			customFields: 1
 		});
-	} else if (limit !== -1) {
+	} else if (limit !== 0) {
 		limit = 1;
 	}
 

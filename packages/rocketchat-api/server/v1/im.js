@@ -12,7 +12,7 @@ function findDirectMessageRoomById(roomId, userId) {
 	return roomSub;
 }
 
-RocketChat.API.v1.addRoute('im.close', { authRequired: true }, {
+RocketChat.API.v1.addRoute(['dm.close', 'im.close'], { authRequired: true }, {
 	post: function() {
 		const findResult = findDirectMessageRoomById(this.bodyParams.roomId, this.userId);
 
@@ -25,19 +25,15 @@ RocketChat.API.v1.addRoute('im.close', { authRequired: true }, {
 			return RocketChat.API.v1.failure(`The direct message room, ${this.bodyParams.name}, is already closed to the sender`);
 		}
 
-		try {
-			Meteor.runAsUser(this.userId, () => {
-				Meteor.call('hideRoom', findResult.rid);
-			});
-		} catch (e) {
-			return RocketChat.API.v1.failure(`${e.name}: ${e.message}`);
-		}
+		Meteor.runAsUser(this.userId, () => {
+			Meteor.call('hideRoom', findResult.rid);
+		});
 
 		return RocketChat.API.v1.success();
 	}
 });
 
-RocketChat.API.v1.addRoute('im.history', { authRequired: true }, {
+RocketChat.API.v1.addRoute(['dm.history', 'im.history'], { authRequired: true }, {
 	get: function() {
 		const findResult = findDirectMessageRoomById(this.queryParams.roomId, this.userId);
 
@@ -71,33 +67,69 @@ RocketChat.API.v1.addRoute('im.history', { authRequired: true }, {
 			unreads = this.queryParams.unreads;
 		}
 
-		let result = {};
-		try {
-			Meteor.runAsUser(this.userId, () => {
-				result = Meteor.call('getChannelHistory', { rid: findResult.rid, latest: latestDate, oldest: oldestDate, inclusive, count, unreads });
-			});
-		} catch (e) {
-			return RocketChat.API.v1.failure(`${e.name}: ${e.message}`);
-		}
+		let result;
+		Meteor.runAsUser(this.userId, () => {
+			result = Meteor.call('getChannelHistory', { rid: findResult.rid, latest: latestDate, oldest: oldestDate, inclusive, count, unreads });
+		});
 
 		return RocketChat.API.v1.success({
-			messages: result.messages
+			messages: result && result.messages ? result.messages : []
 		});
 	}
 });
 
-
-RocketChat.API.v1.addRoute('im.list', { authRequired: true }, {
+RocketChat.API.v1.addRoute(['dm.messages.others', 'im.messages.others'], { authRequired: true }, {
 	get: function() {
-		const { offset, count } = RocketChat.API.v1.getPaginationItems(this);
+		if (RocketChat.settings.get('API_Enable_Direct_Message_History_EndPoint') !== true) {
+			throw new Meteor.Error('error-endpoint-disabled', 'This endpoint is disabled', { route: '/api/v1/im.messages.others' });
+		}
+
+		if (!RocketChat.authz.hasPermission(this.userId, 'view-room-administration')) {
+			return RocketChat.API.v1.unauthorized();
+		}
+
+		const roomId = this.queryParams.roomId;
+		if (!roomId || !roomId.trim()) {
+			throw new Meteor.Error('error-roomid-param-not-provided', 'The parameter "roomId" is required');
+		}
+
+		const room = RocketChat.models.Rooms.findOneById(roomId);
+		if (!room || room.t !== 'd') {
+			throw new Meteor.Error('error-room-not-found', `No direct message room found by the id of: ${roomId}`);
+		}
+
+		const { offset, count } = this.getPaginationItems();
+		const { sort, fields, query } = this.parseJsonQuery();
+		const ourQuery = Object.assign({}, query, { rid: room._id });
+
+		const msgs = RocketChat.models.Messages.find(ourQuery, {
+			sort: sort ? sort : { ts: -1 },
+			skip: offset,
+			limit: count,
+			fields: Object.assign({}, fields, RocketChat.API.v1.defaultFieldsToExclude)
+		}).fetch();
+
+		return RocketChat.API.v1.success({
+			messages: msgs,
+			offset,
+			count: msgs.length,
+			total: RocketChat.models.Messages.find(ourQuery).count()
+		});
+	}
+});
+
+RocketChat.API.v1.addRoute(['dm.list', 'im.list'], { authRequired: true }, {
+	get: function() {
+		const { offset, count } = this.getPaginationItems();
+		const { sort, fields } = this.parseJsonQuery();
 		let rooms = _.pluck(RocketChat.models.Subscriptions.findByTypeAndUserId('d', this.userId).fetch(), '_room');
 		const totalCount = rooms.length;
 
 		rooms = RocketChat.models.Rooms.processQueryOptionsOnResult(rooms, {
-			sort: { msgs: -1 },
+			sort: sort ? sort : { name: 1 },
 			skip: offset,
 			limit: count,
-			fields: RocketChat.API.v1.roomFieldsToExclude
+			fields: Object.assign({}, fields, RocketChat.API.v1.defaultFieldsToExclude)
 		});
 
 		return RocketChat.API.v1.success({
@@ -109,30 +141,34 @@ RocketChat.API.v1.addRoute('im.list', { authRequired: true }, {
 	}
 });
 
-RocketChat.API.v1.addRoute('im.list.everyone', { authRequired: true }, {
+RocketChat.API.v1.addRoute(['dm.list.everyone', 'im.list.everyone'], { authRequired: true }, {
 	get: function() {
 		if (!RocketChat.authz.hasPermission(this.userId, 'view-room-administration')) {
 			return RocketChat.API.v1.unauthorized();
 		}
 
-		const { offset, count } = RocketChat.API.v1.getPaginationItems(this);
-		const rooms = RocketChat.models.Rooms.findByType('d', {
-			sort: { msgs: -1 },
+		const { offset, count } = this.getPaginationItems();
+		const { sort, fields, query } = this.parseJsonQuery();
+
+		const ourQuery = Object.assign({}, query, { t: 'd' });
+
+		const rooms = RocketChat.models.Rooms.find(ourQuery, {
+			sort: sort ? sort : { name: 1 },
 			skip: offset,
 			limit: count,
-			fields: RocketChat.API.v1.roomFieldsToExclude
+			fields: Object.assign({}, fields, RocketChat.API.v1.defaultFieldsToExclude)
 		}).fetch();
 
 		return RocketChat.API.v1.success({
 			ims: rooms,
 			offset,
 			count: rooms.length,
-			total: RocketChat.models.Rooms.findByType('d').count()
+			total: RocketChat.models.Rooms.find(ourQuery).count()
 		});
 	}
 });
 
-RocketChat.API.v1.addRoute('im.open', { authRequired: true }, {
+RocketChat.API.v1.addRoute(['dm.open', 'im.open'], { authRequired: true }, {
 	post: function() {
 		const findResult = findDirectMessageRoomById(this.bodyParams.roomId, this.userId);
 
@@ -145,19 +181,15 @@ RocketChat.API.v1.addRoute('im.open', { authRequired: true }, {
 			return RocketChat.API.v1.failure(`The direct message room, ${this.bodyParams.name}, is already open for the sender`);
 		}
 
-		try {
-			Meteor.runAsUser(this.userId, () => {
-				Meteor.call('openRoom', findResult.rid);
-			});
-		} catch (e) {
-			return RocketChat.API.v1.failure(`${e.name}: ${e.message}`);
-		}
+		Meteor.runAsUser(this.userId, () => {
+			Meteor.call('openRoom', findResult.rid);
+		});
 
 		return RocketChat.API.v1.success();
 	}
 });
 
-RocketChat.API.v1.addRoute('im.setTopic', { authRequired: true }, {
+RocketChat.API.v1.addRoute(['dm.setTopic', 'im.setTopic'], { authRequired: true }, {
 	post: function() {
 		if (!this.bodyParams.topic || !this.bodyParams.topic.trim()) {
 			return RocketChat.API.v1.failure('The bodyParam "topic" is required');
@@ -170,13 +202,9 @@ RocketChat.API.v1.addRoute('im.setTopic', { authRequired: true }, {
 			return findResult;
 		}
 
-		try {
-			Meteor.runAsUser(this.userId, () => {
-				Meteor.call('saveRoomSettings', findResult.rid, 'roomTopic', this.bodyParams.topic);
-			});
-		} catch (e) {
-			return RocketChat.API.v1.failure(`${e.name}: ${e.message}`);
-		}
+		Meteor.runAsUser(this.userId, () => {
+			Meteor.call('saveRoomSettings', findResult.rid, 'roomTopic', this.bodyParams.topic);
+		});
 
 		return RocketChat.API.v1.success({
 			topic: this.bodyParams.topic
