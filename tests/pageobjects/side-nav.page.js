@@ -35,6 +35,7 @@ class SideNav extends Page {
 	get avatar() { return browser.element('.account-link:nth-of-type(3)'); }
 	get preferencesClose() { return browser.element('.side-nav .arrow.close'); }
 	get spotlightSearch() { return browser.element('.toolbar-search__input'); }
+	get spotlightSearchPopUp() { return browser.element('.toolbar .message-popup'); }
 	get channelLeave() { return browser.element('.leave-room'); }
 
 	openChannel(channelName) {
