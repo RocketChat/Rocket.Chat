@@ -54,8 +54,8 @@
 	"devDependencies": {
 		"chimp": "^0.47.1",
 		"eslint": "^3.14.1",
-		"stylelint": "^7.7.1",
-		"supertest": "^2.0.1"
+		"stylelint": "^7.8.0",
+		"supertest": "^3.0.0"
 	},
 	"dependencies": {
 		"babel-runtime": "^6.22.0",
