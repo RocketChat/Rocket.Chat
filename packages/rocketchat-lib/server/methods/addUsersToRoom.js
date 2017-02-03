@@ -1,24 +1,23 @@
 Meteor.methods({
-	addUsersToRoom: function(data) {
-		var ref, room, user, userId, userInRoom, canAddUser;
-
+	addUsersToRoom(data = {}) {
 		// Validate user and room
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: 'addUsersToRoom'
 			});
 		}
-		if (!Match.test(data != null ? data.rid : void 0, String)) {
+
+		if (!Match.test(data.rid, String)) {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', {
 				method: 'addUsersToRoom'
 			});
 		}
 
 		// Get user and room details
-		room = RocketChat.models.Rooms.findOneById(data.rid);
-		userId = Meteor.userId();
-		user = Meteor.user();
-		userInRoom = ((ref = room.usernames) != null ? ref.indexOf(user.username) : void 0) >= 0;
+		const room = RocketChat.models.Rooms.findOneById(data.rid);
+		const userId = Meteor.userId();
+		const user = Meteor.user();
+		const userInRoom = Array.isArray(room.usernames) && room.usernames.includes(user.username);
 
 		// Can't add to direct room ever
 		if (room.t === 'd') {
@@ -28,7 +27,7 @@ Meteor.methods({
 		}
 
 		// Can add to any room you're in, with permission, otherwise need specific room type permission
-		canAddUser = false;
+		let canAddUser = false;
 		if (userInRoom && RocketChat.authz.hasPermission(userId, 'add-user-to-joined-room', room._id)) {
 			canAddUser = true;
 		} else if (room.t === 'c' && RocketChat.authz.hasPermission(userId, 'add-user-to-any-c-room')) {
@@ -52,17 +51,17 @@ Meteor.methods({
 		}
 
 		// Validate each user, then add to room
-		data.users.forEach(function(username) {
-			let newUser = RocketChat.models.Users.findOneByUsername(username);
-			if (newUser == null) {
+		data.users.forEach((username) => {
+			const newUser = RocketChat.models.Users.findOneByUsername(username);
+			if (!newUser) {
 				throw new Meteor.Error('error-invalid-username', 'Invalid username', {
 					method: 'addUsersToRoom'
 				});
 			}
+
 			RocketChat.addUserToRoom(data.rid, newUser, user);
 		});
 
 		return true;
-
 	}
 });
