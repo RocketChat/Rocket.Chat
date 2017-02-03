@@ -231,6 +231,20 @@ RocketChat.integrations.triggerHandler = new class RocketChatIntegrationHandler 
 					argObject.room = arguments[2];
 				}
 				break;
+			case 'fileUploaded':
+				if (arguments.length >= 2) {
+					const arghhh = arguments[1];
+					argObject.user = arghhh.user;
+					argObject.room = arghhh.room;
+					argObject.message = arghhh.message;
+				}
+				break;
+			case 'roomArchived':
+				if (arguments.length >= 3) {
+					argObject.room = arguments[1];
+					argObject.user = arguments[2];
+				}
+				break;
 			case 'roomCreated':
 				if (arguments.length >= 3) {
 					argObject.owner = arguments[1];
@@ -280,6 +294,26 @@ RocketChat.integrations.triggerHandler = new class RocketChatIntegrationHandler 
 					data.bot = message.bot;
 				}
 				break;
+			case 'fileUploaded':
+				data.channel_id = room._id;
+				data.channel_name = room.name;
+				data.message_id = message._id;
+				data.timestamp = message.ts;
+				data.user_id = message.u._id;
+				data.user_name = message.u.username;
+				data.text = message.msg;
+				data.user = user;
+				data.room = room;
+				data.message = message;
+
+				if (message.alias) {
+					data.alias = message.alias;
+				}
+
+				if (message.bot) {
+					data.bot = message.bot;
+				}
+				break;
 			case 'roomCreated':
 				data.channel_id = room._id;
 				data.channel_name = room.name;
@@ -289,6 +323,7 @@ RocketChat.integrations.triggerHandler = new class RocketChatIntegrationHandler 
 				data.owner = owner;
 				data.room = room;
 				break;
+			case 'roomArchived':
 			case 'roomJoined':
 			case 'roomLeft':
 				data.timestamp = new Date();

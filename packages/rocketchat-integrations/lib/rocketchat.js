@@ -9,6 +9,24 @@ RocketChat.integrations = {
 				targetRoom: false
 			}
 		},
+		fileUploaded: {
+			label: 'Integrations_Outgoing_Type_FileUploaded',
+			value: 'fileUploaded',
+			use: {
+				channel: true,
+				triggerWords: false,
+				targetRoom: false
+			}
+		},
+		roomArchived: {
+			label: 'Integrations_Outgoing_Type_RoomArchived',
+			value: 'roomArchived',
+			use: {
+				channel: false,
+				triggerWords: false,
+				targetRoom: false
+			}
+		},
 		roomCreated: {
 			label: 'Integrations_Outgoing_Type_RoomCreated',
 			value: 'roomCreated',
