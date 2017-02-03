@@ -18,7 +18,7 @@ Template.room.helpers
 
 	favorite: ->
 		sub = ChatSubscription.findOne { rid: this._id }, { fields: { f: 1 } }
-		return 'icon-star favorite-room' if sub?.f? and sub.f and favoritesEnabled()
+		return 'icon-star favorite-room pending-color' if sub?.f? and sub.f and favoritesEnabled()
 		return 'icon-star-empty'
 
 	favoriteLabel: ->
@@ -95,9 +95,6 @@ Template.room.helpers
 		roomData = Session.get('roomData' + this._id)
 		return RocketChat.roomTypes.getUserStatus(roomData.t, this._id) or 'offline'
 
-	flexOpened: ->
-		return 'opened' if RocketChat.TabBar.isFlexOpen()
-
 	maxMessageLength: ->
 		return RocketChat.settings.get('Message_MaxAllowedSize')
 
@@ -119,18 +116,15 @@ Template.room.helpers
 
 		return moment(this.since).calendar(null, {sameDay: 'LT'})
 
-	flexTemplate: ->
-		if Session.get('openedRoom') is this._id
-			return RocketChat.TabBar.getTemplate()
-
-		return ''
-
 	flexData: ->
-		return _.extend {
-			rid: this._id
-			userDetail: Template.instance().userDetail.get(),
-			clearUserDetail: Template.instance().clearUserDetail
-		}, RocketChat.TabBar.getData()
+		flexData =
+			tabBar: Template.instance().tabBar
+			data:
+				rid: this._id
+				userDetail: Template.instance().userDetail.get(),
+				clearUserDetail: Template.instance().clearUserDetail
+
+		return flexData
 
 	adminClass: ->
 		return 'admin' if RocketChat.authz.hasRole(Meteor.userId(), 'admin')
@@ -178,7 +172,8 @@ Template.room.events
 		, 100
 
 	"click .messages-container": (e) ->
-		if RocketChat.TabBar.isFlexOpen() and Meteor.user()?.settings?.preferences?.hideFlexTab then RocketChat.TabBar.closeFlex()
+		if Template.instance().tabBar.getState() is 'opened' and Meteor.user()?.settings?.preferences?.hideFlexTab
+			Template.instance().tabBar.close()
 
 	"touchstart .message": (e, t) ->
 		touchMoved = false
@@ -277,40 +272,6 @@ Template.room.events
 			message = ChatMessage.find({ rid: _id, ts: { $gt: subscription?.ls } }, { sort: { ts: 1 }, limit: 1 }).fetch()[0]
 			RoomHistoryManager.getSurroundingMessages(message, 50)
 
-	"click .flex-tab .more": (event, t) ->
-		if RocketChat.TabBar.isFlexOpen()
-			Session.set('rtcLayoutmode', 0)
-			RocketChat.TabBar.closeFlex()
-			t.searchResult.set undefined
-		else
-			RocketChat.TabBar.openFlex()
-
-	"click .flex-tab  .video-remote" : (e) ->
-		if RocketChat.TabBar.isFlexOpen()
-			if (!Session.get('rtcLayoutmode'))
-				Session.set('rtcLayoutmode', 1)
-			else
-				t = Session.get('rtcLayoutmode')
-				t = (t + 1) % 4
-				console.log  'setting rtcLayoutmode to ' + t  if window.rocketDebug
-				Session.set('rtcLayoutmode', t)
-
-	"click .flex-tab  .video-self" : (e) ->
-		if (Session.get('rtcLayoutmode') == 3)
-			console.log 'video-self clicked in layout3' if window.rocketDebug
-			i = document.getElementById("fullscreendiv")
-			if i.requestFullscreen
-				i.requestFullscreen()
-			else
-				if i.webkitRequestFullscreen
-					i.webkitRequestFullscreen()
-				else
-					if i.mozRequestFullScreen
-						i.mozRequestFullScreen()
-					else
-						if i.msRequestFullscreen
-							i.msRequestFullscreen()
-
 	'click .toggle-favorite': (event) ->
 		event.stopPropagation()
 		event.preventDefault()
@@ -327,7 +288,7 @@ Template.room.events
 		, 10
 
 	"click .flex-tab .user-image > button" : (e, instance) ->
-		RocketChat.TabBar.openFlex()
+		instance.tabBar.open()
 		instance.setUserDetail @username
 
 	'click .user-card-message': (e, instance) ->
@@ -341,7 +302,9 @@ Template.room.events
 
 		if roomData.t in ['c', 'p', 'd']
 			instance.setUserDetail this._arguments[1].u.username
-		RocketChat.TabBar.setTemplate 'membersList'
+
+		instance.tabBar.setTemplate('membersList')
+		instance.tabBar.open()
 
 	'scroll .wrapper': _.throttle (e, instance) ->
 		if RoomHistoryManager.isLoading(@_id) is false and (RoomHistoryManager.hasMore(@_id) is true or RoomHistoryManager.hasMoreNext(@_id) is true)
@@ -350,9 +313,6 @@ Template.room.events
 			else if RoomHistoryManager.hasMoreNext(@_id) is true and e.target.scrollTop >= e.target.scrollHeight - e.target.clientHeight
 				RoomHistoryManager.getMoreNext(@_id)
 	, 200
-
-	'click .load-more > button': ->
-		RoomHistoryManager.getMore(@_id)
 
 	'click .new-message': (e) ->
 		Template.instance().atBottom = true
@@ -401,10 +361,10 @@ Template.room.events
 			e.preventDefault();
 			return
 
-		RocketChat.TabBar.setTemplate 'membersList'
+		instance.tabBar.setTemplate 'membersList'
 		instance.setUserDetail $(e.currentTarget).data('username')
 
-		RocketChat.TabBar.openFlex()
+		instance.tabBar.open()
 
 	'click .image-to-download': (event) ->
 		ChatMessage.update {_id: this._arguments[1]._id, 'urls.url': $(event.currentTarget).data('url')}, {$set: {'urls.$.downloadImages': true}}
@@ -495,7 +455,12 @@ Template.room.onCreated ->
 	this.selectedRange = []
 	this.selectablePointer = null
 
+	this.flexTemplate = new ReactiveVar
+
 	this.userDetail = new ReactiveVar FlowRouter.getParam('username')
+
+	this.tabBar = new RocketChatTabBar();
+	this.tabBar.showGroup(FlowRouter.current().route.name);
 
 	this.resetSelection = (enabled) =>
 		this.selectable.set(enabled)
@@ -562,6 +527,12 @@ Template.room.onRendered ->
 	unless window.chatMessages[Session.get('openedRoom')]
 		window.chatMessages[Session.get('openedRoom')] = new ChatMessages
 	chatMessages[Session.get('openedRoom')].init(this.firstNode)
+
+	if Meteor.Device.isDesktop()
+		setTimeout ->
+			$('.message-form .input-message').focus()
+		, 100
+
 	# ScrollListener.init()
 
 	wrapper = this.find('.wrapper')
@@ -575,13 +546,13 @@ Template.room.onRendered ->
 	template.isAtBottom = (scrollThreshold) ->
 		if not scrollThreshold? then scrollThreshold = 0
 		if wrapper.scrollTop + scrollThreshold >= wrapper.scrollHeight - wrapper.clientHeight
-			newMessage.className = "new-message not"
+			newMessage.className = "new-message background-primary-action-color color-content-background-color not"
 			return true
 		return false
 
 	template.sendToBottom = ->
 		wrapper.scrollTop = wrapper.scrollHeight - wrapper.clientHeight
-		newMessage.className = "new-message not"
+		newMessage.className = "new-message background-primary-action-color color-content-background-color not"
 
 	template.checkIfScrollIsAtBottom = ->
 		template.atBottom = template.isAtBottom(100)
@@ -679,11 +650,11 @@ Template.room.onRendered ->
 
 	webrtc = WebRTC.getInstanceByRoomId template.data._id
 	if webrtc?
-		Tracker.autorun ->
+		Tracker.autorun =>
 			if webrtc.remoteItems.get()?.length > 0
-				RocketChat.TabBar.setTemplate 'membersList'
-				RocketChat.TabBar.openFlex()
+				@tabBar.setTemplate 'membersList'
+				@tabBar.open()
 
 			if webrtc.localUrl.get()?
-				RocketChat.TabBar.setTemplate 'membersList'
-				RocketChat.TabBar.openFlex()
+				@tabBar.setTemplate 'membersList'
+				@tabBar.open()

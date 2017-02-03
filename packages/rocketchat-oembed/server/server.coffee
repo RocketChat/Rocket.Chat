@@ -204,14 +204,14 @@ getRelevantHeaders = (headersObj) ->
 getRelevantMetaTags = (metaObj) ->
 	tags = {}
 	for key, value of metaObj
-		if /^(og|fb|twitter|oembed).+|description|title|pageTitle$/.test(key.toLowerCase()) and value?.trim() isnt ''
+		if /^(og|fb|twitter|oembed|msapplication).+|description|title|pageTitle$/.test(key.toLowerCase()) and value?.trim() isnt ''
 			tags[key] = value
 
 	if Object.keys(tags).length > 0
 		return tags
 	return
 
-OEmbed.RocketUrlParser = (message) ->
+OEmbed.rocketUrlParser = (message) ->
 	if Array.isArray message.urls
 		attachments = []
 		changed = false
@@ -251,6 +251,6 @@ OEmbed.RocketUrlParser = (message) ->
 
 RocketChat.settings.get 'API_Embed', (key, value) ->
 	if value
-		RocketChat.callbacks.add 'afterSaveMessage', OEmbed.RocketUrlParser, RocketChat.callbacks.priority.LOW, 'API_Embed'
+		RocketChat.callbacks.add 'afterSaveMessage', OEmbed.rocketUrlParser, RocketChat.callbacks.priority.LOW, 'API_Embed'
 	else
 		RocketChat.callbacks.remove 'afterSaveMessage', 'API_Embed'

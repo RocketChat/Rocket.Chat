@@ -12,6 +12,7 @@ class SlackBridge {
 		this.connected = false;
 		this.userTags = {};
 		this.slackChannelMap = {};
+		this.reactionsMap = new Map();
 
 		RocketChat.settings.get('SlackBridge_APIToken', (key, value) => {
 			if (value !== this.apiToken) {
@@ -56,7 +57,12 @@ class SlackBridge {
 				}
 			});
 			Meteor.startup(() => {
-				this.populateSlackChannelMap(); // If run outside of Meteor.startup, HTTP is not defined
+				try {
+					this.populateSlackChannelMap(); // If run outside of Meteor.startup, HTTP is not defined
+				} catch (err) {
+					logger.class.error('Error attempting to connect to Slack', err);
+					this.disconnect();
+				}
 			});
 		}
 	}
@@ -99,7 +105,6 @@ class SlackBridge {
 	}
 
 	findRocketChannel(slackChannelId) {
-		logger.class.debug('Searching for Rocket.Chat channel', slackChannelId);
 		return RocketChat.models.Rooms.findOneByImportId(slackChannelId);
 	}
 
@@ -172,7 +177,6 @@ class SlackBridge {
 	}
 
 	findRocketUser(slackUserID) {
-		logger.class.debug('Searching for Rocket.Chat user', slackUserID);
 		let rocketUser = RocketChat.models.Users.findOneByImportId(slackUserID);
 		if (rocketUser && !this.userTags[slackUserID]) {
 			this.userTags[slackUserID] = { slack: `<@${slackUserID}>`, rocket: `@${rocketUser.username}` };
@@ -319,6 +323,90 @@ class SlackBridge {
 		}
 	}
 
+	/*
+	 https://api.slack.com/events/reaction_removed
+	 */
+	onSlackReactionRemoved(slackReactionMsg) {
+		if (slackReactionMsg) {
+			let rocketUser = this.getRocketUser(slackReactionMsg.user);
+			//Lets find our Rocket originated message
+			let rocketMsg = RocketChat.models.Messages.findOneBySlackTs(slackReactionMsg.item.ts);
+
+			if (!rocketMsg) {
+				//Must have originated from Slack
+				let rocketID = this.createRocketID(slackReactionMsg.item.channel, slackReactionMsg.item.ts);
+				rocketMsg = RocketChat.models.Messages.findOneById(rocketID);
+			}
+
+			if (rocketMsg && rocketUser) {
+				let rocketReaction = ':' + slackReactionMsg.reaction + ':';
+
+				//If the Rocket user has already been removed, then this is an echo back from slack
+				if (rocketMsg.reactions) {
+					let theReaction = rocketMsg.reactions[rocketReaction];
+					if (theReaction) {
+						if (theReaction.usernames.indexOf(rocketUser.username) === -1) {
+							return; //Reaction already removed
+						}
+					}
+				} else {
+					//Reaction already removed
+					return;
+				}
+
+				//Stash this away to key off it later so we don't send it back to Slack
+				this.reactionsMap.set('unset'+rocketMsg._id+rocketReaction, rocketUser);
+				logger.class.debug('Removing reaction from Slack');
+				Meteor.runAsUser(rocketUser._id, () => {
+					Meteor.call('setReaction', rocketReaction, rocketMsg._id);
+				});
+			}
+		}
+	}
+
+	/*
+	 https://api.slack.com/events/reaction_added
+	 */
+	onSlackReactionAdded(slackReactionMsg) {
+		if (slackReactionMsg) {
+			let rocketUser = this.getRocketUser(slackReactionMsg.user);
+
+			if (rocketUser.roles.includes('bot')) {
+				return;
+			}
+
+			//Lets find our Rocket originated message
+			let rocketMsg = RocketChat.models.Messages.findOneBySlackTs(slackReactionMsg.item.ts);
+
+			if (!rocketMsg) {
+				//Must have originated from Slack
+				let rocketID = this.createRocketID(slackReactionMsg.item.channel, slackReactionMsg.item.ts);
+				rocketMsg = RocketChat.models.Messages.findOneById(rocketID);
+			}
+
+			if (rocketMsg && rocketUser) {
+				let rocketReaction = ':' + slackReactionMsg.reaction + ':';
+
+				//If the Rocket user has already reacted, then this is Slack echoing back to us
+				if (rocketMsg.reactions) {
+					let theReaction = rocketMsg.reactions[rocketReaction];
+					if (theReaction) {
+						if (theReaction.usernames.indexOf(rocketUser.username) !== -1) {
+							return; //Already reacted
+						}
+					}
+				}
+
+				//Stash this away to key off it later so we don't send it back to Slack
+				this.reactionsMap.set('set'+rocketMsg._id+rocketReaction, rocketUser);
+				logger.class.debug('Adding reaction from Slack');
+				Meteor.runAsUser(rocketUser._id, () => {
+					Meteor.call('setReaction', rocketReaction, rocketMsg._id);
+				});
+			}
+		}
+	}
+
 	/**
 	 * We have received a message from slack and we need to save/delete/update it into rocket
 	 * https://api.slack.com/events/message
@@ -328,6 +416,9 @@ class SlackBridge {
 			switch (slackMessage.subtype) {
 				case 'message_deleted':
 					this.processSlackMessageDeleted(slackMessage);
+					break;
+				case 'message_changed':
+					this.processSlackMessageChanged(slackMessage);
 					break;
 				default:
 					//Keeping backwards compatability for now, refactor later
@@ -363,9 +454,6 @@ class SlackBridge {
 				return this.addAliasToRocketMsg(rocketUser.username, {
 					msg: `_${this.convertSlackMsgTxtToRocketTxtFormat(slackMessage.text)}_`
 				});
-			case 'message_changed':
-				this.editRocketMessage(rocketChannel, rocketUser, slackMessage);
-				return;
 			case 'channel_join':
 				if (isImporting) {
 					RocketChat.models.Messages.createUserJoinWithRoomIdAndUser(rocketChannel._id, rocketUser, { ts: new Date(parseInt(slackMessage.ts.split('.')[0]) * 1000), imported: 'slackbridge' });
@@ -489,20 +577,6 @@ class SlackBridge {
 	}
 
 	/**
-	* Edits a rocket message
-	**/
-	editRocketMessage(rocketChannel, rocketUser, slackMessage) {
-		let rocketMsgObj = {
-			//@TODO _id
-			_id: this.createRocketID(slackMessage, slackMessage.ts),
-			rid: rocketChannel._id,
-			msg: this.convertSlackMsgTxtToRocketTxtFormat(slackMessage.message.text)
-		};
-
-		RocketChat.updateMessage(rocketMsgObj, rocketUser);
-	}
-
-	/**
 	Uploads the file to the storage.
 	@param [Object] details an object with details about the upload. name, size, type, and rid
 	@param [String] fileUrl url of the file to download/import
@@ -576,11 +650,15 @@ class SlackBridge {
 	registerForRocketEvents() {
 		RocketChat.callbacks.add('afterSaveMessage', this.onRocketMessage.bind(this), RocketChat.callbacks.priority.LOW, 'SlackBridge_Out');
 		RocketChat.callbacks.add('afterDeleteMessage', this.onRocketMessageDelete.bind(this), RocketChat.callbacks.priority.LOW, 'SlackBridge_Delete');
+		RocketChat.callbacks.add('setReaction', this.onRocketSetReaction.bind(this), RocketChat.callbacks.priority.LOW, 'SlackBridge_SetReaction');
+		RocketChat.callbacks.add('unsetReaction', this.onRocketUnSetReaction.bind(this), RocketChat.callbacks.priority.LOW, 'SlackBridge_UnSetReaction');
 	}
 
 	unregisterForRocketEvents() {
 		RocketChat.callbacks.remove('afterSaveMessage', 'SlackBridge_Out');
 		RocketChat.callbacks.remove('afterDeleteMessage', 'SlackBridge_Delete');
+		RocketChat.callbacks.remove('setReaction', 'SlackBridge_SetReaction');
+		RocketChat.callbacks.remove('unsetReaction', 'SlackBridge_UnSetReaction');
 	}
 
 	registerForSlackEvents() {
@@ -616,6 +694,20 @@ class SlackBridge {
 			logger.events.debug('OnSlackEvent-MESSAGE: ', slackMessage);
 			if (slackMessage) {
 				this.onSlackMessage(slackMessage);
+			}
+		}));
+
+		this.rtm.on(RTM_EVENTS.REACTION_ADDED, Meteor.bindEnvironment((reactionMsg) => {
+			logger.events.debug('OnSlackEvent-REACTION_ADDED: ', reactionMsg);
+			if (reactionMsg) {
+				this.onSlackReactionAdded(reactionMsg);
+			}
+		}));
+
+		this.rtm.on(RTM_EVENTS.REACTION_REMOVED, Meteor.bindEnvironment((reactionMsg) => {
+			logger.events.debug('OnSlackEvent-REACTION_REMOVED: ', reactionMsg);
+			if (reactionMsg) {
+				this.onSlackReactionRemoved(reactionMsg);
 			}
 		}));
 
@@ -975,12 +1067,55 @@ class SlackBridge {
 		this.postDeleteMessageToSlack(rocketMessageDeleted);
 	}
 
+	onRocketSetReaction(rocketMsgID, reaction) {
+		logger.class.debug('onRocketSetReaction');
+
+		if (rocketMsgID && reaction) {
+			if (this.reactionsMap.delete('set'+rocketMsgID+reaction)) {
+				//This was a Slack reaction, we don't need to tell Slack about it
+				return;
+			}
+			let rocketMsg = RocketChat.models.Messages.findOneById(rocketMsgID);
+			if (rocketMsg) {
+				let slackChannel = this.slackChannelMap[rocketMsg.rid].id;
+				let slackTS = this.getSlackTS(rocketMsg);
+				this.postReactionAddedToSlack(reaction.replace(/:/g, ''), slackChannel, slackTS);
+			}
+		}
+	}
+
+	onRocketUnSetReaction(rocketMsgID, reaction) {
+		logger.class.debug('onRocketUnSetReaction');
+
+		if (rocketMsgID && reaction) {
+			if (this.reactionsMap.delete('unset'+rocketMsgID+reaction)) {
+				//This was a Slack unset reaction, we don't need to tell Slack about it
+				return;
+			}
+
+			let rocketMsg = RocketChat.models.Messages.findOneById(rocketMsgID);
+			if (rocketMsg) {
+				let slackChannel = this.slackChannelMap[rocketMsg.rid].id;
+				let slackTS = this.getSlackTS(rocketMsg);
+				this.postReactionRemoveToSlack(reaction.replace(/:/g, ''), slackChannel, slackTS);
+			}
+		}
+	}
+
 	onRocketMessage(rocketMessage) {
 		logger.class.debug('onRocketMessage', rocketMessage);
+
+		if (rocketMessage.editedAt) {
+			//This is an Edit Event
+			this.processRocketMessageChanged(rocketMessage);
+			return rocketMessage;
+		}
 		// Ignore messages originating from Slack
 		if (rocketMessage._id.indexOf('slack-') === 0) {
 			return rocketMessage;
 		}
+
+		//Probably a new message from Rocket.Chat
 		let outSlackChannels = RocketChat.settings.get('SlackBridge_Out_All') ? _.keys(this.slackChannelMap) : _.pluck(RocketChat.settings.get('SlackBridge_Out_Channels'), '_id') || [];
 		//logger.class.debug('Out SlackChannels: ', outSlackChannels);
 		if (outSlackChannels.indexOf(rocketMessage.rid) !== -1) {
@@ -989,17 +1124,59 @@ class SlackBridge {
 		return rocketMessage;
 	}
 
+	/*
+	 https://api.slack.com/methods/reactions.add
+	 */
+	postReactionAddedToSlack(reaction, slackChannel, slackTS) {
+		if (reaction && slackChannel && slackTS) {
+			let data = {
+				token: this.apiToken,
+				name: reaction,
+				channel: slackChannel,
+				timestamp: slackTS
+			};
+
+			logger.class.debug('Posting Add Reaction to Slack');
+			const postResult = HTTP.post('https://slack.com/api/reactions.add', { params: data });
+			if (postResult.statusCode === 200 && postResult.data && postResult.data.ok === true) {
+				logger.class.debug('Reaction added to Slack');
+			}
+		}
+	}
+
+	/*
+	 https://api.slack.com/methods/reactions.remove
+	 */
+	postReactionRemoveToSlack(reaction, slackChannel, slackTS) {
+		if (reaction && slackChannel && slackTS) {
+			let data = {
+				token: this.apiToken,
+				name: reaction,
+				channel: slackChannel,
+				timestamp: slackTS
+			};
+
+			logger.class.debug('Posting Remove Reaction to Slack');
+			const postResult = HTTP.post('https://slack.com/api/reactions.remove', { params: data });
+			if (postResult.statusCode === 200 && postResult.data && postResult.data.ok === true) {
+				logger.class.debug('Reaction removed from Slack');
+			}
+		}
+	}
+
 	postDeleteMessageToSlack(rocketMessage) {
 		if (rocketMessage) {
 			let data = {
 				token: this.apiToken,
 				ts: this.getSlackTS(rocketMessage),
-				channel: this.slackChannelMap[rocketMessage.rid].id
+				channel: this.slackChannelMap[rocketMessage.rid].id,
+				as_user: true
 			};
 
+			logger.class.debug('Post Delete Message to Slack', data);
 			const postResult = HTTP.post('https://slack.com/api/chat.delete', { params: data });
 			if (postResult.statusCode === 200 && postResult.data && postResult.data.ok === true) {
-				logger.class.debug('Slack message deleted');
+				logger.class.debug('Message deleted on Slack');
 			}
 		}
 	}
@@ -1022,7 +1199,42 @@ class SlackBridge {
 			const postResult = HTTP.post('https://slack.com/api/chat.postMessage', { params: data });
 			if (postResult.statusCode === 200 && postResult.data && postResult.data.message && postResult.data.message.bot_id && postResult.data.message.ts) {
 				RocketChat.models.Messages.setSlackBotIdAndSlackTs(rocketMessage._id, postResult.data.message.bot_id, postResult.data.message.ts);
+				logger.class.debug('RocketMsgID=' + rocketMessage._id + ' SlackMsgID=' + postResult.data.message.ts + ' SlackBotID=' + postResult.data.message.bot_id);
 			}
+		}
+	}
+
+	/*
+	 https://api.slack.com/methods/chat.update
+	 */
+	postMessageUpdateToSlack(slackChannel, rocketMessage) {
+		if (slackChannel && slackChannel.id) {
+			let data = {
+				token: this.apiToken,
+				ts: this.getSlackTS(rocketMessage),
+				channel: slackChannel.id,
+				text: rocketMessage.msg,
+				as_user: true
+			};
+			logger.class.debug('Post UpdateMessage To Slack', data);
+			const postResult = HTTP.post('https://slack.com/api/chat.update', { params: data });
+			if (postResult.statusCode === 200 && postResult.data && postResult.data.ok === true) {
+				logger.class.debug('Message updated on Slack');
+			}
+		}
+	}
+
+	processRocketMessageChanged(rocketMessage) {
+		if (rocketMessage) {
+			if (rocketMessage.updatedBySlack) {
+				//We have already processed this
+				delete rocketMessage.updatedBySlack;
+				return;
+			}
+
+			//This was a change from Rocket.Chat
+			let slackChannel = this.slackChannelMap[rocketMessage.rid];
+			this.postMessageUpdateToSlack(slackChannel, rocketMessage);
 		}
 	}
 
@@ -1041,13 +1253,40 @@ class SlackBridge {
 
 				if (!rocketMsgObj) {
 					//Must have been a Slack originated msg
-					let _id = this.createRocketID(slackMessage, slackMessage.previous_message.ts);
+					let _id = this.createRocketID(slackMessage.channel, slackMessage.previous_message.ts);
 					rocketMsgObj = RocketChat.models.Messages.findOneById(_id);
 				}
 
 				if (rocketMsgObj) {
 					RocketChat.deleteMessage(rocketMsgObj, rocketUser);
+					logger.class.debug('Rocket message deleted by Slack');
 				}
+			}
+		}
+	}
+
+	/*
+	 https://api.slack.com/events/message/message_changed
+	 */
+	processSlackMessageChanged(slackMessage) {
+		if (slackMessage.previous_message) {
+			let currentMsg = RocketChat.models.Messages.findOneById(this.createRocketID(slackMessage.channel, slackMessage.message.ts));
+
+			//Only process this change, if its an actual update (not just Slack repeating back our Rocket original change)
+			if (currentMsg && (slackMessage.message.text !== currentMsg.msg)) {
+				let rocketChannel = this.getRocketChannel(slackMessage);
+				let rocketUser = slackMessage.previous_message.user ? this.findRocketUser(slackMessage.previous_message.user) || this.addRocketUser(slackMessage.previous_message.user) : null;
+
+				let rocketMsgObj = {
+					//@TODO _id
+					_id: this.createRocketID(slackMessage.channel, slackMessage.previous_message.ts),
+					rid: rocketChannel._id,
+					msg: this.convertSlackMsgTxtToRocketTxtFormat(slackMessage.message.text),
+					updatedBySlack: true	//We don't want to notify slack about this change since Slack initiated it
+				};
+
+				RocketChat.updateMessage(rocketMsgObj, rocketUser);
+				logger.class.debug('Rocket message updated by Slack');
 			}
 		}
 	}
@@ -1058,16 +1297,14 @@ class SlackBridge {
 	processSlackNewMessage(slackMessage, isImporting) {
 		let rocketChannel = this.getRocketChannel(slackMessage);
 		let rocketUser = null;
-		if (slackMessage.subtype === 'message_changed') {
-			rocketUser = slackMessage.previous_message.user ? this.findRocketUser(slackMessage.previous_message.user) || this.addRocketUser(slackMessage.previous_message.user) : null;
-		} else if (slackMessage.subtype === 'bot_message') {
+		if (slackMessage.subtype === 'bot_message') {
 			rocketUser = RocketChat.models.Users.findOneById('rocket.cat', { fields: { username: 1 } });
 		} else {
 			rocketUser = slackMessage.user ? this.findRocketUser(slackMessage.user) || this.addRocketUser(slackMessage.user) : null;
 		}
 		if (rocketChannel && rocketUser) {
 			let msgDataDefaults = {
-				_id: this.createRocketID(slackMessage, slackMessage.ts),
+				_id: this.createRocketID(slackMessage.channel, slackMessage.ts),
 				ts: new Date(parseInt(slackMessage.ts.split('.')[0]) * 1000)
 			};
 			if (isImporting) {
@@ -1115,8 +1352,12 @@ class SlackBridge {
 		return slackMessage.channel ? this.findRocketChannel(slackMessage.channel) || this.addRocketChannel(slackMessage.channel) : null;
 	}
 
-	createRocketID(slackMessage, ts) {
-		return `slack-${slackMessage.channel}-${ts.replace(/\./g, '-')}`;
+	getRocketUser(slackUser) {
+		return slackUser ? this.findRocketUser(slackUser) || this.addRocketUser(slackUser) : null;
+	}
+
+	createRocketID(slackChannel, ts) {
+		return `slack-${slackChannel}-${ts.replace(/\./g, '-')}`;
 	}
 
 }

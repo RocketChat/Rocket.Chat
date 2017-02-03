@@ -142,7 +142,7 @@
 				height: 100%;
 				opacity: 0;
 				z-index: 1;
-				.transition(opacity .1s ease-out);
+				transition: opacity 0.1s ease-out;
 			}
 
 			&:hover {
@@ -381,7 +381,7 @@
 
 						.body {
 							opacity: 1;
-							.transition(opacity 1s linear);
+							transition: opacity 1s linear;
 						}
 
 						&.temp .body {
@@ -423,7 +423,7 @@
 					bottom: 8px;
 					left: 50%;
 					z-index: 5;
-					.transition(transform 0.3s ease-out);
+					transition: transform 0.3s ease-out;
 					.transform(translateY(-40px));
 
 					&.not {
@@ -438,7 +438,7 @@
 					background-color: #f7d799;
 					padding: 5px;
 					z-index: 8;
-					.transition(transform 0.2s ease-out);
+					transition: transform 0.2s ease-out;
 					.transform(translateY(100%));
 
 					&.show {
@@ -486,7 +486,7 @@
 					top: -28px;
 					color: @secondary-font-color;
 					cursor: pointer;
-					.transition(color .15s ease-out);
+					transition: color 0.15s ease-out;
 
 					&:hover {
 						color: @primary-font-color;
@@ -625,7 +625,7 @@
 
 .livechat-section {
 	opacity: 0.5;
-	.transition(opacity .4s ease);
+	transition: opacity 0.4s ease;
 
 	&.available {
 		opacity: 1;

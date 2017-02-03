@@ -111,8 +111,9 @@ Template.loginForm.events
 						else
 							toastr.error t 'User_not_found_or_incorrect_password'
 						return
-					localStorage.setItem('userLanguage', Meteor.user()?.language)
-					setLanguage(Meteor.user()?.language)
+					if Meteor.user()?.language?
+						localStorage.setItem('userLanguage', Meteor.user().language)
+						setLanguage(Meteor.user().language)
 
 	'click .register': ->
 		Template.instance().state.set 'register'

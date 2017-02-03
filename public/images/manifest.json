@@ -1,0 +1,17 @@
+{
+	"name": "Rocket.Chat",
+	"icons": [
+		{
+			"src": "assets\/favicon_192.png",
+			"sizes": "192x192",
+			"type": "image\/png"
+		},
+		{
+			"src": "assets\/favicon_512.png",
+			"sizes": "512x512",
+			"type": "image\/png"
+		}
+	],
+	"start_url": "https:\/\/rocket.chat\/home",
+	"display": "standalone"
+}
