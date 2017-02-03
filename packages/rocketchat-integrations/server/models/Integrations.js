@@ -10,4 +10,8 @@ RocketChat.models.Integrations = new class Integrations extends RocketChat.model
 
 		return this.find({ type }, options);
 	}
+
+	disableByUserId(userId) {
+		return this.update({ userId }, { $set: { enabled: false }}, { multi: true });
+	}
 };
