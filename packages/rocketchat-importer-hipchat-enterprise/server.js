@@ -32,7 +32,7 @@ Importer.HipChatEnterprise = class ImporterHipChatEnterprise extends Importer.Ba
 
 						if (info.base === 'users.json') {
 							super.updateProgress(Importer.ProgressStep.PREPARING_USERS);
-							for (let u of file) {
+							for (const u of file) {
 								tempUsers.push({
 									id: u.User.id,
 									email: u.User.email,
@@ -45,7 +45,7 @@ Importer.HipChatEnterprise = class ImporterHipChatEnterprise extends Importer.Ba
 							}
 						} else if (info.base === 'rooms.json') {
 							super.updateProgress(Importer.ProgressStep.PREPARING_CHANNELS);
-							for (let r of file) {
+							for (const r of file) {
 								tempRooms.push({
 									id: r.Room.id,
 									creator: r.Room.owner,
@@ -62,7 +62,7 @@ Importer.HipChatEnterprise = class ImporterHipChatEnterprise extends Importer.Ba
 
 							if (dirSplit[1] === 'users') {
 								const msgs = [];
-								for (let m of file) {
+								for (const m of file) {
 									if (m.PrivateUserMessage) {
 										msgs.push({
 											type: 'user',
@@ -78,7 +78,7 @@ Importer.HipChatEnterprise = class ImporterHipChatEnterprise extends Importer.Ba
 							} else if (dirSplit[1] === 'rooms') {
 								const roomMsgs = [];
 
-								for (let m of file) {
+								for (const m of file) {
 									if (m.UserMessage) {
 										roomMsgs.push({
 											type: 'user',
@@ -138,7 +138,7 @@ Importer.HipChatEnterprise = class ImporterHipChatEnterprise extends Importer.Ba
 				// Save the messages records to the import record for `startImport` usage
 				super.updateProgress(Importer.ProgressStep.PREPARING_MESSAGES);
 				let messagesCount = 0;
-				for (let [channel, msgs] of tempMessages.entries()) {
+				for (const [channel, msgs] of tempMessages.entries()) {
 					if (!this.messages.get(channel)) {
 						this.messages.set(channel, new Map());
 					}
@@ -157,7 +157,7 @@ Importer.HipChatEnterprise = class ImporterHipChatEnterprise extends Importer.Ba
 					}
 				}
 
-				for (let [directMsgUser, msgs] of tempDirectMessages.entries()) {
+				for (const [directMsgUser, msgs] of tempDirectMessages.entries()) {
 					this.logger.debug(`Preparing the direct messages for: ${directMsgUser}`);
 					if (!this.directMessages.get(directMsgUser)) {
 						this.directMessages.set(directMsgUser, new Map());
@@ -212,8 +212,8 @@ Importer.HipChatEnterprise = class ImporterHipChatEnterprise extends Importer.Ba
 		const started = Date.now();
 
 		//Ensure we're only going to import the users that the user has selected
-		for (let user of importSelection.users) {
-			for (let u of this.users.users) {
+		for (const user of importSelection.users) {
+			for (const u of this.users.users) {
 				if (u.id === user.user_id) {
 					u.do_import = user.do_import;
 				}
@@ -222,8 +222,8 @@ Importer.HipChatEnterprise = class ImporterHipChatEnterprise extends Importer.Ba
 		this.collection.update({ _id: this.users._id }, { $set: { 'users': this.users.users }});
 
 		//Ensure we're only importing the channels the user has selected.
-		for (let channel of importSelection.channels) {
-			for (let c of this.channels.channels) {
+		for (const channel of importSelection.channels) {
+			for (const c of this.channels.channels) {
 				if (c.id === channel.channel_id) {
 					c.do_import = channel.do_import;
 				}
@@ -235,7 +235,7 @@ Importer.HipChatEnterprise = class ImporterHipChatEnterprise extends Importer.Ba
 		Meteor.defer(() => {
 			super.updateProgress(Importer.ProgressStep.IMPORTING_USERS);
 			//Import the users
-			for (let u of this.users.users) {
+			for (const u of this.users.users) {
 				this.logger.debug(`Starting the user import: ${u.username} and are we importing them? ${u.do_import}`);
 				if (!u.do_import) {
 					continue;
@@ -282,13 +282,13 @@ Importer.HipChatEnterprise = class ImporterHipChatEnterprise extends Importer.Ba
 
 			//Import the channels
 			super.updateProgress(Importer.ProgressStep.IMPORTING_CHANNELS);
-			for (let c of this.channels.channels) {
+			for (const c of this.channels.channels) {
 				if (!c.do_import) {
 					continue;
 				}
 
 				Meteor.runAsUser(startedByUserId, () => {
-					let existantRoom = RocketChat.models.Rooms.findOneByName(c.name);
+					const existantRoom = RocketChat.models.Rooms.findOneByName(c.name);
 					//If the room exists or the name of it is 'general', then we don't need to create it again
 					if (existantRoom || c.name.toUpperCase() === 'GENERAL') {
 						c.rocketId = c.name.toUpperCase() === 'GENERAL' ? 'GENERAL' : existantRoom._id;
@@ -296,7 +296,7 @@ Importer.HipChatEnterprise = class ImporterHipChatEnterprise extends Importer.Ba
 					} else {
 						//Find the rocketchatId of the user who created this channel
 						let creatorId = startedByUserId;
-						for (let u of this.users.users) {
+						for (const u of this.users.users) {
 							if (u.id === c.creator && u.do_import) {
 								creatorId = u.rocketId;
 							}
@@ -318,7 +318,7 @@ Importer.HipChatEnterprise = class ImporterHipChatEnterprise extends Importer.Ba
 
 			//Import the Messages
 			super.updateProgress(Importer.ProgressStep.IMPORTING_MESSAGES);
-			for (let [ch, messagesMap] of this.messages.entries()) {
+			for (const [ch, messagesMap] of this.messages.entries()) {
 				const hipChannel = this.getChannelFromRoomIdentifier(ch);
 				if (!hipChannel.do_import) {
 					continue;
@@ -326,9 +326,9 @@ Importer.HipChatEnterprise = class ImporterHipChatEnterprise extends Importer.Ba
 
 				const room = RocketChat.models.Rooms.findOneById(hipChannel.rocketId, { fields: { usernames: 1, t: 1, name: 1 } });
 				Meteor.runAsUser(startedByUserId, () => {
-					for (let [msgGroupData, msgs] of messagesMap.entries()) {
+					for (const [msgGroupData, msgs] of messagesMap.entries()) {
 						super.updateRecord({ 'messagesstatus': `${ch}/${msgGroupData}.${msgs.messages.length}` });
-						for (let msg of msgs.messages) {
+						for (const msg of msgs.messages) {
 							if (isNaN(msg.ts)) {
 								this.logger.warn(`Timestamp on a message in ${ch}/${msgGroupData} is invalid`);
 								super.addCountCompleted(1);
@@ -363,7 +363,7 @@ Importer.HipChatEnterprise = class ImporterHipChatEnterprise extends Importer.Ba
 			}
 
 			//Import the Direct Messages
-			for (let [directMsgRoom, directMessagesMap] of this.directMessages.entries()) {
+			for (const [directMsgRoom, directMessagesMap] of this.directMessages.entries()) {
 				const hipUser = this.getUserFromDirectMessageIdentifier(directMsgRoom);
 				if (!hipUser.do_import) {
 					continue;
@@ -374,9 +374,9 @@ Importer.HipChatEnterprise = class ImporterHipChatEnterprise extends Importer.Ba
 					continue;
 				}
 
-				for (let [msgGroupData, msgs] of directMessagesMap.entries()) {
+				for (const [msgGroupData, msgs] of directMessagesMap.entries()) {
 					super.updateRecord({ 'messagesstatus': `${directMsgRoom}/${msgGroupData}.${msgs.messages.length}` });
-					for (let msg of msgs.messages) {
+					for (const msg of msgs.messages) {
 						if (isNaN(msg.ts)) {
 							this.logger.warn(`Timestamp on a message in ${directMsgRoom}/${msgGroupData} is invalid`);
 							super.addCountCompleted(1);
@@ -436,7 +436,7 @@ Importer.HipChatEnterprise = class ImporterHipChatEnterprise extends Importer.Ba
 	}
 
 	getChannelFromRoomIdentifier(roomIdentifier) {
-		for (let ch of this.channels.channels) {
+		for (const ch of this.channels.channels) {
 			if (`rooms/${ch.id}` === roomIdentifier) {
 				return ch;
 			}
@@ -444,7 +444,7 @@ Importer.HipChatEnterprise = class ImporterHipChatEnterprise extends Importer.Ba
 	}
 
 	getUserFromDirectMessageIdentifier(directIdentifier) {
-		for (let u of this.users.users) {
+		for (const u of this.users.users) {
 			if (`users/${u.id}` === directIdentifier) {
 				return u;
 			}
@@ -452,7 +452,7 @@ Importer.HipChatEnterprise = class ImporterHipChatEnterprise extends Importer.Ba
 	}
 
 	getRocketUserFromUserId(userId) {
-		for (let u of this.users.users) {
+		for (const u of this.users.users) {
 			if (u.id === userId) {
 				return RocketChat.models.Users.findOneById(u.rocketId, { fields: { username: 1 }});
 			}

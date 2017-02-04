@@ -52,10 +52,10 @@ RocketChat.EmojiPicker = {
 		return this.recent;
 	},
 	setPosition() {
-		let sourcePos = $(this.source).offset();
-		let left = sourcePos.left;
-		let top = (sourcePos.top - this.height - 5);
-		let cssProperties = {
+		const sourcePos = $(this.source).offset();
+		const left = sourcePos.left;
+		const top = (sourcePos.top - this.height - 5);
+		const cssProperties = {
 			top: top,
 			left: left
 		};
@@ -67,11 +67,11 @@ RocketChat.EmojiPicker = {
 		if (left < 35) {
 			cssProperties.left = 0;
 		} else {
-			let windowSize = $(window).width();
-			let pickerWidth = $('.emoji-picker').width();
+			const windowSize = $(window).width();
+			const pickerWidth = $('.emoji-picker').width();
 
 			if (left + pickerWidth > windowSize) {
-				let emojiButtonSize = $('.reaction-message.message-action').outerWidth();
+				const emojiButtonSize = $('.reaction-message.message-action').outerWidth();
 				cssProperties.left = left - pickerWidth + emojiButtonSize;
 			}
 		}
@@ -105,7 +105,7 @@ RocketChat.EmojiPicker = {
 		this.addRecent(emoji);
 	},
 	addRecent(emoji) {
-		let pos = this.recent.indexOf(emoji);
+		const pos = this.recent.indexOf(emoji);
 
 		if (pos !== -1) {
 			this.recent.splice(pos, 1);
@@ -119,14 +119,14 @@ RocketChat.EmojiPicker = {
 		this.updateRecent();
 	},
 	updateRecent() {
-		let total = RocketChat.emoji.packages.base.emojisByCategory.recent.length;
+		const total = RocketChat.emoji.packages.base.emojisByCategory.recent.length;
 		let html = '';
 		for (var i = 0; i < total; i++) {
-			let emoji = RocketChat.emoji.packages.base.emojisByCategory.recent[i];
+			const emoji = RocketChat.emoji.packages.base.emojisByCategory.recent[i];
 
 			if (isSetNotNull(() => RocketChat.emoji.list[`:${emoji}:`])) {
-				let emojiPackage = RocketChat.emoji.list[`:${emoji}:`].emojiPackage;
-				let renderedEmoji = RocketChat.emoji.packages[emojiPackage].render(`:${emoji}:`);
+				const emojiPackage = RocketChat.emoji.list[`:${emoji}:`].emojiPackage;
+				const renderedEmoji = RocketChat.emoji.packages[emojiPackage].render(`:${emoji}:`);
 				html += `<li class="emoji-${emoji}" data-emoji="${emoji}">${renderedEmoji}</li>`;
 			} else {
 				this.recent = _.without(this.recent, emoji);

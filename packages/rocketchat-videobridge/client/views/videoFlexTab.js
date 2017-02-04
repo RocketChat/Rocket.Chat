@@ -16,13 +16,13 @@ Template.videoFlexTab.onRendered(function() {
 
 	let timeOut = null;
 
-	let width = 'auto';
-	let height = 500;
+	const width = 'auto';
+	const height = 500;
 
-	let configOverwrite = {
+	const configOverwrite = {
 		desktopSharingChromeExtId: RocketChat.settings.get('Jitsi_Chrome_Extension')
 	};
-	let interfaceConfigOverwrite = {};
+	const interfaceConfigOverwrite = {};
 
 	let jitsiRoomActive = null;
 
@@ -40,11 +40,11 @@ Template.videoFlexTab.onRendered(function() {
 	this.autorun(() => {
 		if (RocketChat.settings.get('Jitsi_Enabled')) {
 			if (this.tabBar.getState() === 'opened') {
-				let roomId = Session.get('openedRoom');
+				const roomId = Session.get('openedRoom');
 
-				let domain = RocketChat.settings.get('Jitsi_Domain');
-				let jitsiRoom = RocketChat.settings.get('Jitsi_URL_Room_Prefix') + CryptoJS.MD5(RocketChat.settings.get('uniqueID') + roomId).toString();
-				let noSsl = RocketChat.settings.get('Jitsi_SSL') ? false : true;
+				const domain = RocketChat.settings.get('Jitsi_Domain');
+				const jitsiRoom = RocketChat.settings.get('Jitsi_URL_Room_Prefix') + CryptoJS.MD5(RocketChat.settings.get('uniqueID') + roomId).toString();
+				const noSsl = RocketChat.settings.get('Jitsi_SSL') ? false : true;
 
 				if (jitsiRoomActive !== null && jitsiRoomActive !== jitsiRoom) {
 					jitsiRoomActive = null;
@@ -69,7 +69,7 @@ Template.videoFlexTab.onRendered(function() {
 						const newWindow = window.open((noSsl ? 'http://' : 'https://') + domain + '/' + jitsiRoom, jitsiRoom);
 						newWindow.focus();
 
-						let closeInterval = setInterval(() => {
+						const closeInterval = setInterval(() => {
 							if (newWindow.closed !== false) {
 								closePanel();
 								clearInterval(closeInterval);
