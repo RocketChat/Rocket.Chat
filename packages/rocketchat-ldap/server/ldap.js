@@ -170,7 +170,7 @@ LDAP = class LDAP {
 			};
 		}
 
-		let filter = ['(&'];
+		const filter = ['(&'];
 
 		if (self.options.domain_search_object_category !== '') {
 			filter.push(`(objectCategory=${self.options.domain_search_object_category})`);
@@ -244,7 +244,7 @@ LDAP = class LDAP {
 
 		self.bindIfNecessary();
 
-		let Unique_Identifier_Field = RocketChat.settings.get('LDAP_Unique_Identifier_Field').split(',');
+		const Unique_Identifier_Field = RocketChat.settings.get('LDAP_Unique_Identifier_Field').split(',');
 
 		let filter;
 
@@ -323,7 +323,7 @@ LDAP = class LDAP {
 			return true;
 		}
 
-		let filter = ['(&'];
+		const filter = ['(&'];
 
 		if (self.options.group_filter_object_class !== '') {
 			filter.push(`(objectclass=${self.options.group_filter_object_class})`);
