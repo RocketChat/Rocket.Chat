@@ -36,6 +36,7 @@
 	"scripts": {
 		"start": "meteor npm i && meteor",
 		"lint": "eslint .",
+		"lint-fix": "eslint . --fix",
 		"stylelint": "stylelint **/*.less",
 		"test": "node .scripts/start.js",
 		"deploy": "npm run build && pm2 startOrRestart pm2.json",

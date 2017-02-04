@@ -72,7 +72,7 @@ Meteor.startup(function() {
 			res.setHeader('Expires', '-1');
 			res.setHeader('Last-Modified', 'Thu, 01 Jan 2015 00:00:00 GMT');
 
-			let reqModifiedHeader = req.headers['if-modified-since'];
+			const reqModifiedHeader = req.headers['if-modified-since'];
 
 			if (reqModifiedHeader) {
 				if (reqModifiedHeader === 'Thu, 01 Jan 2015 00:00:00 GMT') {
@@ -121,7 +121,7 @@ Meteor.startup(function() {
 			return;
 		}
 
-		let reqModifiedHeader = req.headers['if-modified-since'];
+		const reqModifiedHeader = req.headers['if-modified-since'];
 		if (reqModifiedHeader) {
 			if (reqModifiedHeader === (file.uploadDate && file.uploadDate.toUTCString())) {
 				res.setHeader('Last-Modified', reqModifiedHeader);

@@ -6,10 +6,10 @@ Meteor.methods({
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'jitsi:updateTimeout' });
 		}
 
-		let room = RocketChat.models.Rooms.findOneById(rid);
-		let currentTime = new Date().getTime();
+		const room = RocketChat.models.Rooms.findOneById(rid);
+		const currentTime = new Date().getTime();
 
-		let jitsiTimeout = new Date((room && room.jitsiTimeout) || currentTime).getTime();
+		const jitsiTimeout = new Date((room && room.jitsiTimeout) || currentTime).getTime();
 
 		if (jitsiTimeout <= currentTime) {
 			RocketChat.models.Rooms.setJitsiTimeout(rid, new Date(currentTime + 35*1000));
