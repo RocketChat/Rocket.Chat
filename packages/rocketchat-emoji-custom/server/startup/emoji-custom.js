@@ -6,7 +6,7 @@ Meteor.startup(function() {
 		storeType = RocketChat.settings.get('EmojiUpload_Storage_Type');
 	}
 
-	let RocketChatStore = RocketChatFile[storeType];
+	const RocketChatStore = RocketChatFile[storeType];
 
 	if (!isSetNotNull(() => RocketChatStore)) {
 		throw new Error(`Invalid RocketChatStore type [${storeType}]`);
@@ -27,7 +27,7 @@ Meteor.startup(function() {
 	});
 
 	return WebApp.connectHandlers.use('/emoji-custom/', Meteor.bindEnvironment(function(req, res/*, next*/) {
-		let params =
+		const params =
 			{emoji: decodeURIComponent(req.url.replace(/^\//, '').replace(/\?.*$/, ''))};
 
 		if (_.isEmpty(params.emoji)) {
@@ -37,7 +37,7 @@ Meteor.startup(function() {
 			return;
 		}
 
-		let file = RocketChatFileEmojiCustomInstance.getFileWithReadStream(encodeURIComponent(params.emoji));
+		const file = RocketChatFileEmojiCustomInstance.getFileWithReadStream(encodeURIComponent(params.emoji));
 
 		res.setHeader('Content-Disposition', 'inline');
 
@@ -48,7 +48,7 @@ Meteor.startup(function() {
 			res.setHeader('Expires', '-1');
 			res.setHeader('Last-Modified', 'Thu, 01 Jan 2015 00:00:00 GMT');
 
-			let reqModifiedHeader = req.headers['if-modified-since'];
+			const reqModifiedHeader = req.headers['if-modified-since'];
 			if (reqModifiedHeader != null) {
 				if (reqModifiedHeader === 'Thu, 01 Jan 2015 00:00:00 GMT') {
 					res.writeHead(304);
@@ -57,10 +57,10 @@ Meteor.startup(function() {
 				}
 			}
 
-			let color = '#000';
-			let initials = '?';
+			const color = '#000';
+			const initials = '?';
 
-			let svg = `<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+			const svg = `<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <svg xmlns="http://www.w3.org/2000/svg" pointer-events="none" width="50" height="50" style="width: 50px; height: 50px; background-color: ${color};">
 	<text text-anchor="middle" y="50%" x="50%" dy="0.36em" pointer-events="auto" fill="#ffffff" font-family="Helvetica, Arial, Lucida Grande, sans-serif" style="font-weight: 400; font-size: 28px;">
 		${initials}
@@ -77,7 +77,7 @@ Meteor.startup(function() {
 			fileUploadDate = file.uploadDate.toUTCString();
 		}
 
-		let reqModifiedHeader = req.headers['if-modified-since'];
+		const reqModifiedHeader = req.headers['if-modified-since'];
 		if (isSetNotNull(() => reqModifiedHeader)) {
 			if (reqModifiedHeader === fileUploadDate) {
 				res.setHeader('Last-Modified', reqModifiedHeader);
