@@ -1,7 +1,8 @@
 function Create(command, params, item) {
 	function getParams(str) {
 		const regex = /(--(\w+))+/g;
-		let m, result = [];
+		const result = [];
+		let m;
 		while ((m = regex.exec(str)) !== null) {
 			if (m.index === regex.lastIndex) {
 				regex.lastIndex++;

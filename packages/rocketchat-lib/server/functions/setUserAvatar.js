@@ -32,15 +32,15 @@ RocketChat.setUserAvatar = function(user, dataURI, contentType, service) {
 		encoding = 'binary';
 		image = dataURI;
 	} else {
-		let fileData = RocketChatFile.dataURIParse(dataURI);
+		const fileData = RocketChatFile.dataURIParse(dataURI);
 		encoding = 'base64';
 		image = fileData.image;
 		contentType = fileData.contentType;
 	}
 
-	let rs = RocketChatFile.bufferToStream(new Buffer(image, encoding));
+	const rs = RocketChatFile.bufferToStream(new Buffer(image, encoding));
 	RocketChatFileAvatarInstance.deleteFile(encodeURIComponent(`${user.username}.jpg`));
-	let ws = RocketChatFileAvatarInstance.createWriteStream(encodeURIComponent(`${user.username}.jpg`), contentType);
+	const ws = RocketChatFileAvatarInstance.createWriteStream(encodeURIComponent(`${user.username}.jpg`), contentType);
 	ws.on('end', Meteor.bindEnvironment(function() {
 		Meteor.setTimeout(function() {
 			RocketChat.models.Users.setAvatarOrigin(user._id, service);

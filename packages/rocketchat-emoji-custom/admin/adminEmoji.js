@@ -33,7 +33,7 @@ Template.adminEmoji.helpers({
 });
 
 Template.adminEmoji.onCreated(function() {
-	let instance = this;
+	const instance = this;
 	this.limit = new ReactiveVar(50);
 	this.filter = new ReactiveVar('');
 	this.ready = new ReactiveVar(false);
@@ -61,22 +61,22 @@ Template.adminEmoji.onCreated(function() {
 	});
 
 	this.autorun(function() {
-		let limit = (isSetNotNull(() => instance.limit))? instance.limit.get() : 0;
-		let subscription = instance.subscribe('fullEmojiData', '', limit);
+		const limit = (isSetNotNull(() => instance.limit))? instance.limit.get() : 0;
+		const subscription = instance.subscribe('fullEmojiData', '', limit);
 		instance.ready.set(subscription.ready());
 	});
 
 	this.customemoji = function() {
-		let filter = (isSetNotNull(() => instance.filter))? _.trim(instance.filter.get()) : '';
+		const filter = (isSetNotNull(() => instance.filter))? _.trim(instance.filter.get()) : '';
 
 		let query = {};
 
 		if (filter) {
-			let filterReg = new RegExp(s.escapeRegExp(filter), 'i');
+			const filterReg = new RegExp(s.escapeRegExp(filter), 'i');
 			query = { $or: [ { name: filterReg }, {aliases: filterReg } ] };
 		}
 
-		let limit = (isSetNotNull(() => instance.limit))? instance.limit.get() : 0;
+		const limit = (isSetNotNull(() => instance.limit))? instance.limit.get() : 0;
 
 		return RocketChat.models.EmojiCustom.find(query, { limit: limit, sort: { name: 1 }}).fetch();
 	};
