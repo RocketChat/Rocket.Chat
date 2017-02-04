@@ -17,9 +17,9 @@ Template.snippetedMessages.helpers({
 Template.snippetedMessages.onCreated(function() {
 	this.hasMore = new ReactiveVar(true);
 	this.limit = new ReactiveVar(50);
-	let self = this;
+	const self = this;
 	this.autorun(function() {
-		let data = Template.currentData();
+		const data = Template.currentData();
 		self.subscribe('snippetedMessages', data.rid, self.limit.get(), function() {
 			if (SnippetedMessages.find({ snippeted: true, rid: data.rid }).count() < self.limit.get()) {
 				return self.hasMore.set(false);

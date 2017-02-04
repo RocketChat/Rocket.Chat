@@ -7,7 +7,7 @@ RocketChat.Migrations.add({
 		}
 
 		subscriptions = RocketChat.models.Subscriptions.find().forEach(function(subscription) {
-			let user = RocketChat.models.Users.findOne({ _id: subscription && subscription.u && subscription.u._id });
+			const user = RocketChat.models.Users.findOne({ _id: subscription && subscription.u && subscription.u._id });
 			if (!user) {
 				RocketChat.models.Subscriptions.remove({ _id: subscription._id });
 			}

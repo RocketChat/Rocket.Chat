@@ -9,7 +9,7 @@ Meteor.methods({
 			return false;
 		}
 
-		let subscription = RocketChat.models.Subscriptions.findOne({ rid: message.rid, 'u._id': Meteor.userId() });
+		const subscription = RocketChat.models.Subscriptions.findOne({ rid: message.rid, 'u._id': Meteor.userId() });
 
 		if (subscription === undefined) {
 			return false;

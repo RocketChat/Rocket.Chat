@@ -1,7 +1,7 @@
 Template.body.onRendered(() => {
 	Tracker.autorun((c) => {
-		let url = RocketChat.settings.get('PiwikAnalytics_url');
-		let siteId = RocketChat.settings.get('PiwikAnalytics_siteId');
+		const url = RocketChat.settings.get('PiwikAnalytics_url');
+		const siteId = RocketChat.settings.get('PiwikAnalytics_siteId');
 
 		if (Match.test(url, String) && url.trim() !== '' && Match.test(siteId, String) && siteId.trim() !== '') {
 			c.stop();
@@ -15,9 +15,9 @@ Template.body.onRendered(() => {
 			(() => {
 				window._paq.push(['setTrackerUrl', url + 'piwik.php']);
 				window._paq.push(['setSiteId', Number.parseInt(siteId)]);
-				let d = document;
-				let g = d.createElement('script');
-				let s = d.getElementsByTagName('script')[0];
+				const d = document;
+				const g = d.createElement('script');
+				const s = d.getElementsByTagName('script')[0];
 				g.type = 'text/javascript';
 				g.async = true;
 				g.defer = true;
