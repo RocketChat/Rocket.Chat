@@ -13,7 +13,7 @@ import {targetUser} from '../../data/interactions.js';
 
 describe('channel', ()=> {
 	before(() => {
-		checkIfUserIsValid(username, email, password);checkIfUserIsValid(username, email, password);
+		checkIfUserIsValid(username, email, password);
 		if (!publicChannelCreated) {
 			sideNav.createChannel(publicChannelName, false, false);
 			setPublicChannelCreated(true);
