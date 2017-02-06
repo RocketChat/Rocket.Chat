@@ -33,7 +33,7 @@ Template.adminSounds.helpers({
 });
 
 Template.adminSounds.onCreated(function() {
-	let instance = this;
+	const instance = this;
 	this.limit = new ReactiveVar(50);
 	this.filter = new ReactiveVar('');
 	this.ready = new ReactiveVar(false);
@@ -61,22 +61,22 @@ Template.adminSounds.onCreated(function() {
 	});
 
 	this.autorun(function() {
-		let limit = (isSetNotNull(() => instance.limit))? instance.limit.get() : 0;
-		let subscription = instance.subscribe('customSounds', '', limit);
+		const limit = (isSetNotNull(() => instance.limit))? instance.limit.get() : 0;
+		const subscription = instance.subscribe('customSounds', '', limit);
 		instance.ready.set(subscription.ready());
 	});
 
 	this.customsounds = function() {
-		let filter = (isSetNotNull(() => instance.filter))? _.trim(instance.filter.get()) : '';
+		const filter = (isSetNotNull(() => instance.filter))? _.trim(instance.filter.get()) : '';
 
 		let query = {};
 
 		if (filter) {
-			let filterReg = new RegExp(s.escapeRegExp(filter), 'i');
+			const filterReg = new RegExp(s.escapeRegExp(filter), 'i');
 			query = { name: filterReg };
 		}
 
-		let limit = (isSetNotNull(() => instance.limit))? instance.limit.get() : 0;
+		const limit = (isSetNotNull(() => instance.limit))? instance.limit.get() : 0;
 
 		return RocketChat.models.CustomSounds.find(query, { limit: limit, sort: { name: 1 }}).fetch();
 	};
