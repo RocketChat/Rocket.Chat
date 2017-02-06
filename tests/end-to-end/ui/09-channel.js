@@ -13,7 +13,7 @@ import {targetUser} from '../../data/interactions.js';
 
 describe('channel', ()=> {
 	before(() => {
-		checkIfUserIsValid(username, email, password);checkIfUserIsValid(username, email, password);
+		checkIfUserIsValid(username, email, password);
 		if (!publicChannelCreated) {
 			sideNav.createChannel(publicChannelName, false, false);
 			setPublicChannelCreated(true);
@@ -339,7 +339,7 @@ describe('channel', ()=> {
 
 			describe('channel quit and enter', () => {
 				it('leave the channel', () => {
-					let channel = sideNav.getChannelFromList('NAME-EDITED-'+publicChannelName);
+					const channel = sideNav.getChannelFromList('NAME-EDITED-'+publicChannelName);
 					channel.click();
 					channel.moveToObject();
 					sideNav.channelLeave.waitForVisible(5000);
