@@ -165,8 +165,10 @@ Template.messageBox.events
 					file: item.getAsFile()
 					name: 'Clipboard'
 
-		if files.length > 0
+		if files.length
 			fileUpload files
+		else
+			instance.isMessageFieldEmpty.set(false)
 
 	'keydown .input-message': (event) ->
 		chatMessages[@_id].keydown(@_id, event, Template.instance())
