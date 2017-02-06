@@ -14,7 +14,7 @@ Meteor.startup(function() {
 			}
 		});
 
-		for (let subscription of subscriptions.fetch()) {
+		for (const subscription of subscriptions.fetch()) {
 			fireGlobalEvent('unread-changed-by-subscription', subscription);
 
 			if (subscription.alert || subscription.unread > 0) {

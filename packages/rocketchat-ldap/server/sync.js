@@ -12,7 +12,7 @@ slug = function slug(text) {
 
 
 getLdapUsername = function getLdapUsername(ldapUser) {
-	let usernameField = RocketChat.settings.get('LDAP_Username_Field');
+	const usernameField = RocketChat.settings.get('LDAP_Username_Field');
 
 	if (usernameField.indexOf('#{') > -1) {
 		return usernameField.replace(/#{(.+?)}/g, function(match, field) {
@@ -64,9 +64,9 @@ getDataToSyncUserData = function getDataToSyncUserData(ldapUser, user) {
 
 	if (syncUserData && syncUserDataFieldMap) {
 		const fieldMap = JSON.parse(syncUserDataFieldMap);
-		let userData = {};
+		const userData = {};
 
-		let emailList = [];
+		const emailList = [];
 		_.map(fieldMap, function(userField, ldapField) {
 			if (!ldapUser.object.hasOwnProperty(ldapField)) {
 				return;
@@ -158,7 +158,7 @@ addLdapUser = function addLdapUser(ldapUser, username, password) {
 		username: username
 	};
 
-	let userData = getDataToSyncUserData(ldapUser, {});
+	const userData = getDataToSyncUserData(ldapUser, {});
 
 	if (userData && userData.emails) {
 		userObject.email = userData.emails[0].address;
@@ -209,15 +209,13 @@ sync = function sync() {
 			ldapUsers.forEach(function(ldapUser) {
 				const username = slug(getLdapUsername(ldapUser));
 				// Look to see if user already exists
-				let userQuery;
-				let user;
-				userQuery = {
+				const userQuery = {
 					username: username
 				};
 
 				logger.debug('userQuery', userQuery);
 
-				user = Meteor.users.findOne(userQuery);
+				const user = Meteor.users.findOne(userQuery);
 
 				if (!user) {
 					addLdapUser(ldapUser, username);

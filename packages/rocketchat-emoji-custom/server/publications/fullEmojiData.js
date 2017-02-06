@@ -3,7 +3,7 @@ Meteor.publish('fullEmojiData', function(filter, limit) {
 		return this.ready();
 	}
 
-	let fields = {
+	const fields = {
 		name: 1,
 		aliases: 1,
 		extension: 1
@@ -11,14 +11,14 @@ Meteor.publish('fullEmojiData', function(filter, limit) {
 
 	filter = s.trim(filter);
 
-	let options = {
+	const options = {
 		fields,
 		limit,
 		sort: { name: 1 }
 	};
 
 	if (filter) {
-		let filterReg = new RegExp(s.escapeRegExp(filter), 'i');
+		const filterReg = new RegExp(s.escapeRegExp(filter), 'i');
 		return RocketChat.models.EmojiCustom.findByNameOrAlias(filterReg, options);
 	}
 
