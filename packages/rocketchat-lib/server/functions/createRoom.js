@@ -86,7 +86,7 @@ RocketChat.createRoom = function(type, name, owner, members, readOnly, extraData
 
 	if (type === 'c') {
 		Meteor.defer(() => {
-			RocketChat.callbacks.run('afterCreateChannel', owner, room);
+			RocketChat.callbacks.run('afterCreateChannel', room);
 		});
 	}
 
