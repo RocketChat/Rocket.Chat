@@ -552,8 +552,8 @@ class ModelsBaseCache extends EventEmitter {
 			fieldsToGet.push('_id');
 		}
 
-		let pickFields = (obj, fields) => {
-			let picked = {};
+		const pickFields = (obj, fields) => {
+			const picked = {};
 			fields.forEach((field) => {
 				if (field.indexOf('.') !== -1) {
 					objectPath.set(picked, field, objectPath.get(obj, field));
@@ -756,7 +756,7 @@ class ModelsBaseCache extends EventEmitter {
 			this.emit('beforeupdate', record, diff);
 		}
 
-		for (let key in diff) {
+		for (const key in diff) {
 			if (diff.hasOwnProperty(key)) {
 				objectPath.set(record, key, diff[key]);
 			}
@@ -799,7 +799,7 @@ class ModelsBaseCache extends EventEmitter {
 
 		if (update.$min) {
 			_.each(update.$min, (value, field) => {
-				let curValue = objectPath.get(record, field);
+				const curValue = objectPath.get(record, field);
 				if (curValue === undefined || value < curValue) {
 					objectPath.set(record, field, value);
 				}
@@ -808,7 +808,7 @@ class ModelsBaseCache extends EventEmitter {
 
 		if (update.$max) {
 			_.each(update.$max, (value, field) => {
-				let curValue = objectPath.get(record, field);
+				const curValue = objectPath.get(record, field);
 				if (curValue === undefined || value > curValue) {
 					objectPath.set(record, field, value);
 				}
@@ -841,7 +841,7 @@ class ModelsBaseCache extends EventEmitter {
 
 		if (update.$rename) {
 			_.each(update.$rename, (value, field) => {
-				let curValue = objectPath.get(record, field);
+				const curValue = objectPath.get(record, field);
 				if (curValue !== undefined) {
 					objectPath.set(record, value, curValue);
 					objectPath.del(record, field);
@@ -861,7 +861,7 @@ class ModelsBaseCache extends EventEmitter {
 
 		if (update.$pop) {
 			_.each(update.$pop, (value, field) => {
-				let curValue = objectPath.get(record, field);
+				const curValue = objectPath.get(record, field);
 				if (Array.isArray(curValue)) {
 					if (value === -1) {
 						curValue.shift();

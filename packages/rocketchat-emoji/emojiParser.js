@@ -16,11 +16,11 @@ RocketChat.callbacks.add('renderMessage', (message) => {
 			message.html = RocketChat.emoji.packages[emojiPackage].render(message.html);
 		});
 
-		let checkEmojiOnly = $(`<div>${message.html}</div>`);
+		const checkEmojiOnly = $(`<div>${message.html}</div>`);
 		let emojiOnly = true;
-		for (let childNode in checkEmojiOnly[0].childNodes) {
+		for (const childNode in checkEmojiOnly[0].childNodes) {
 			if (checkEmojiOnly[0].childNodes.hasOwnProperty(childNode)) {
-				let child = $(checkEmojiOnly[0].childNodes[childNode]);
+				const child = $(checkEmojiOnly[0].childNodes[childNode]);
 
 				if (child.hasClass('emoji') || child.hasClass('emojione')) {
 					checkEmojiOnly[0].childNodes[childNode] = child.addClass('big');

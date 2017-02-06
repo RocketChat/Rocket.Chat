@@ -18,7 +18,7 @@ FileUpload.FileSystem = class FileUploadFileSystem extends FileUploadBase {
 			onError: (err) => {
 				var uploading = Session.get('uploading');
 				if (uploading != null) {
-					let item = _.findWhere(uploading, {
+					const item = _.findWhere(uploading, {
 						id: this.id
 					});
 					if (item != null) {
@@ -37,7 +37,7 @@ FileUpload.FileSystem = class FileUploadFileSystem extends FileUploadBase {
 					Meteor.setTimeout(() => {
 						var uploading = Session.get('uploading');
 						if (uploading != null) {
-							let item = _.findWhere(uploading, {
+							const item = _.findWhere(uploading, {
 								id: this.id
 							});
 							return Session.set('uploading', _.without(uploading, item));

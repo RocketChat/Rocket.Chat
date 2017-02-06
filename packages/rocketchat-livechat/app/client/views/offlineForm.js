@@ -20,7 +20,7 @@ Template.offlineForm.events({
 
 		const form = event.currentTarget;
 
-		let data = {
+		const data = {
 			name: form.elements['name'].value,
 			email: form.elements['email'].value,
 			message: form.elements['message'].value
