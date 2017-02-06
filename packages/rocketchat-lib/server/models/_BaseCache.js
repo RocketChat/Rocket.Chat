@@ -35,6 +35,10 @@ loki.LokiOps.$nin = function(a, b) {
 	return !loki.LokiOps.$in(a, b);
 };
 
+loki.LokiOps.$all = function(a, b) {
+	return b.every(subB => a.includes(subB));
+};
+
 loki.LokiOps.$exists = function(a, b) {
 	if (b) {
 		return loki.LokiOps.$ne(a, undefined);
