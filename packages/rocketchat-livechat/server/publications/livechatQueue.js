@@ -24,9 +24,9 @@ Meteor.publish('livechat:queue', function() {
 	// 	}
 	// });
 
-	let self = this;
+	const self = this;
 
-	let handleDepts = RocketChat.models.LivechatDepartmentAgents.findUsersInQueue().observeChanges({
+	const handleDepts = RocketChat.models.LivechatDepartmentAgents.findUsersInQueue().observeChanges({
 		added(id, fields) {
 			self.added('livechatQueueUser', id, fields);
 		},

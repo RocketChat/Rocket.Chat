@@ -33,7 +33,7 @@ RocketChat.roomTypes.add('l', 5, {
 	},
 
 	canSendMessage(roomId) {
-		let room = ChatRoom.findOne({ _id: roomId }, { fields: { open: 1 } });
+		const room = ChatRoom.findOne({ _id: roomId }, { fields: { open: 1 } });
 		return room && room.open === true;
 	},
 

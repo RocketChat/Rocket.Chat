@@ -1,7 +1,7 @@
 /* globals Gravatar */
 RocketChat.saveUser = function(userId, userData) {
 	const user = RocketChat.models.Users.findOneById(userId);
-	let existingRoles = _.pluck(RocketChat.authz.getRoles(), '_id');
+	const existingRoles = _.pluck(RocketChat.authz.getRoles(), '_id');
 
 	if (userData._id && userId !== userData._id && !RocketChat.authz.hasPermission(userId, 'edit-other-user-info')) {
 		throw new Meteor.Error('error-action-not-allowed', 'Editing user is not allowed', { method: 'insertOrUpdateUser', action: 'Editing_user' });
@@ -87,7 +87,7 @@ RocketChat.saveUser = function(userId, userData) {
 			const header = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Header') || '');
 			const footer = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Footer') || '');
 
-			let subject, html, email;
+			let subject, html;
 
 			if (RocketChat.settings.get('Accounts_UserAddedEmail_Customized')) {
 				subject = RocketChat.settings.get('Accounts_UserAddedEmailSubject');
@@ -104,7 +104,7 @@ RocketChat.saveUser = function(userId, userData) {
 				password: userData.password
 			});
 
-			email = {
+			const email = {
 				to: userData.email,
 				from: RocketChat.settings.get('From_Email'),
 				subject: subject,
@@ -123,7 +123,7 @@ RocketChat.saveUser = function(userId, userData) {
 		userData._id = _id;
 
 		if (RocketChat.settings.get('Accounts_SetDefaultAvatar') === true && userData.email) {
-			let gravatarUrl = Gravatar.imageUrl(userData.email, {default: '404', size: 200, secure: true});
+			const gravatarUrl = Gravatar.imageUrl(userData.email, {default: '404', size: 200, secure: true});
 
 			try {
 				RocketChat.setUserAvatar(userData, gravatarUrl, '', 'url');
