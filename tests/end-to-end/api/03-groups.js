@@ -6,7 +6,22 @@ import {getCredentials, api, login, request, credentials, group, log, apiPrivate
 import {adminEmail, password} from '../../data/user.js';
 import supertest from 'supertest';
 
-describe('groups', () => {
+function getRoomInfo(roomId) {
+	return new Promise((resolve/*, reject*/) => {
+		request.get(api('groups.info'))
+			.set(credentials)
+			.query({
+				roomId: roomId
+			})
+			.end((err, req) => {
+				resolve(req.body);
+			});
+	});
+}
+
+describe('groups', function() {
+	this.retries(0);
+
 	before((done) => {
 		request.post(api('login'))
 		.send(login)
@@ -56,7 +71,9 @@ describe('groups', () => {
 			.end(done);
 	});
 
-	it('/groups.invite', (done) => {
+	it('/groups.invite', async (done) => {
+		const roomInfo = await getRoomInfo(group._id);
+
 		request.post(api('groups.invite'))
 			.set(credentials)
 			.send({
@@ -70,7 +87,7 @@ describe('groups', () => {
 				expect(res.body).to.have.deep.property('group._id');
 				expect(res.body).to.have.deep.property('group.name', apiPrivateChannelName);
 				expect(res.body).to.have.deep.property('group.t', 'p');
-				expect(res.body).to.have.deep.property('group.msgs', 0);
+				expect(res.body).to.have.deep.property('group.msgs', roomInfo.group.msgs + 1);
 			})
 			.end(done);
 	});
@@ -150,7 +167,9 @@ describe('groups', () => {
 			.end(done);
 	});
 
-	it('/groups.invite', (done) => {
+	it('/groups.invite', async (done) => {
+		const roomInfo = await getRoomInfo(group._id);
+
 		request.post(api('groups.invite'))
 			.set(credentials)
 			.send({
@@ -164,7 +183,7 @@ describe('groups', () => {
 				expect(res.body).to.have.deep.property('group._id');
 				expect(res.body).to.have.deep.property('group.name', apiPrivateChannelName);
 				expect(res.body).to.have.deep.property('group.t', 'p');
-				expect(res.body).to.have.deep.property('group.msgs', 0);
+				expect(res.body).to.have.deep.property('group.msgs', roomInfo.group.msgs + 1);
 			})
 			.end(done);
 	});
@@ -319,7 +338,9 @@ describe('groups', () => {
 			.end(done);
 	});
 
-	it('/groups.rename', (done) => {
+	it('/groups.rename', async (done) => {
+		const roomInfo = await getRoomInfo(group._id);
+
 		request.post(api('groups.rename'))
 			.set(credentials)
 			.send({
@@ -333,7 +354,7 @@ describe('groups', () => {
 				expect(res.body).to.have.deep.property('group._id');
 				expect(res.body).to.have.deep.property('group.name', 'EDITED'+apiPrivateChannelName);
 				expect(res.body).to.have.deep.property('group.t', 'p');
-				expect(res.body).to.have.deep.property('group.msgs', 0);
+				expect(res.body).to.have.deep.property('group.msgs', roomInfo.group.msgs + 1);
 			})
 			.end(done);
 	});
