@@ -7,10 +7,10 @@ RocketChat.saveCustomFields = function(userId, formData) {
 			throw new Meteor.Error('error-invalid-customfield-json', 'Invalid JSON for Custom Fields');
 		}
 
-		let customFields = {};
+		const customFields = {};
 
 		Object.keys(customFieldsMeta).forEach((fieldName) => {
-			let field = customFieldsMeta[fieldName];
+			const field = customFieldsMeta[fieldName];
 
 			customFields[fieldName] = formData[fieldName];
 			if (field.required && !formData[fieldName]) {
@@ -38,8 +38,8 @@ RocketChat.saveCustomFields = function(userId, formData) {
 				return;
 			}
 
-			let modifyRecordField = customFieldsMeta[fieldName].modifyRecordField;
-			let update = {};
+			const modifyRecordField = customFieldsMeta[fieldName].modifyRecordField;
+			const update = {};
 			if (modifyRecordField.array) {
 				update.$addToSet = {};
 				update.$addToSet[modifyRecordField.field] = customFields[fieldName];
