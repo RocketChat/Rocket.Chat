@@ -44,6 +44,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/lib/validation.js', 'server');
 
 	api.addFiles('server/models/Integrations.js', 'server');
+	api.addFiles('server/models/IntegrationHistory.js', 'server');
 
 	// publications
 	api.addFiles('server/publications/integrations.js', 'server');

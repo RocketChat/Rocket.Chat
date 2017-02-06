@@ -36,7 +36,7 @@ FlowRouter.route('/admin/integrations/incoming/:id?', {
 			center: 'pageSettingsContainer',
 			pageTitle: t('Integration_Incoming_WebHook'),
 			pageTemplate: 'integrationsIncoming',
-			params: params
+			params
 		});
 	}
 });
@@ -51,7 +51,7 @@ FlowRouter.route('/admin/integrations/outgoing/:id?', {
 			center: 'pageSettingsContainer',
 			pageTitle: t('Integration_Outgoing_WebHook'),
 			pageTemplate: 'integrationsOutgoing',
-			params: params
+			params
 		});
 	}
 });
