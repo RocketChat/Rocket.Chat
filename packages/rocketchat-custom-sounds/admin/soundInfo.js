@@ -1,7 +1,7 @@
 /* globals isSetNotNull */
 Template.soundInfo.helpers({
 	name() {
-		let sound = Template.instance().sound.get();
+		const sound = Template.instance().sound.get();
 		return sound.name;
 	},
 
@@ -14,14 +14,14 @@ Template.soundInfo.helpers({
 	},
 
 	soundToEdit() {
-		let instance = Template.instance();
+		const instance = Template.instance();
 		return {
 			sound: instance.sound.get(),
 			back(name) {
 				instance.editingSound.set();
 
 				if (isSetNotNull(() => name)) {
-					let sound = instance.sound.get();
+					const sound = instance.sound.get();
 					if (isSetNotNull(() => sound.name) && sound.name !== name) {
 						return instance.loadedName.set(name);
 					}
@@ -35,9 +35,9 @@ Template.soundInfo.events({
 	['click .delete'](e, instance) {
 		e.stopPropagation();
 		e.preventDefault();
-		let sound = instance.sound.get();
+		const sound = instance.sound.get();
 		if (isSetNotNull(() => sound)) {
-			let _id = sound._id;
+			const _id = sound._id;
 			swal({
 				title: t('Are_you_sure'),
 				text: t('Custom_Sound_Delete_Warning'),
@@ -88,15 +88,15 @@ Template.soundInfo.onCreated(function() {
 	this.loadedName = new ReactiveVar();
 
 	this.autorun(() => {
-		let data = Template.currentData();
+		const data = Template.currentData();
 		if (isSetNotNull(() => data.clear)) {
 			this.clear = data.clear;
 		}
 	});
 
 	this.autorun(() => {
-		let data = Template.currentData();
-		let sound = this.sound.get();
+		const data = Template.currentData();
+		const sound = this.sound.get();
 		if (isSetNotNull(() => sound.name)) {
 			this.loadedName.set(sound.name);
 		} else if (isSetNotNull(() => data.name)) {
@@ -105,7 +105,7 @@ Template.soundInfo.onCreated(function() {
 	});
 
 	this.autorun(() => {
-		let data = Template.currentData();
+		const data = Template.currentData();
 		this.sound.set(data);
 	});
 });

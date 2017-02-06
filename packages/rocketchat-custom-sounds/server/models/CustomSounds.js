@@ -12,7 +12,7 @@ class CustomSounds extends RocketChat.models._Base {
 
 	//find
 	findByName(name, options) {
-		let query = {
+		const query = {
 			name
 		};
 
@@ -20,7 +20,7 @@ class CustomSounds extends RocketChat.models._Base {
 	}
 
 	findByNameExceptID(name, except, options) {
-		let query = {
+		const query = {
 			_id: { $nin: [ except ] },
 			name
 		};
@@ -30,7 +30,7 @@ class CustomSounds extends RocketChat.models._Base {
 
 	//update
 	setName(_id, name) {
-		let update = {
+		const update = {
 			$set: {
 				name
 			}

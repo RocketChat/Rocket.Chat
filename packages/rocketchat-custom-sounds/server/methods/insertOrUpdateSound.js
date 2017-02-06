@@ -13,7 +13,7 @@ Meteor.methods({
 
 		//allow all characters except colon, whitespace, comma, >, <, &, ", ', /, \, (, )
 		//more practical than allowing specific sets of characters; also allows foreign languages
-		let nameValidation = /[\s,:><&"'\/\\\(\)]/;
+		const nameValidation = /[\s,:><&"'\/\\\(\)]/;
 
 		//silently strip colon; this allows for uploading :soundname: as soundname
 		soundData.name = soundData.name.replace(/:/g, '');
@@ -36,12 +36,12 @@ Meteor.methods({
 
 		if (!soundData._id) {
 			//insert sound
-			let createSound = {
+			const createSound = {
 				name: soundData.name,
 				extension: soundData.extension
 			};
 
-			let _id = RocketChat.models.CustomSounds.create(createSound);
+			const _id = RocketChat.models.CustomSounds.create(createSound);
 			createSound._id = _id;
 
 			return _id;

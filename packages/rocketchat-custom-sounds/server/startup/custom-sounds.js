@@ -6,7 +6,7 @@ Meteor.startup(function() {
 		storeType = RocketChat.settings.get('CustomSounds_Storage_Type');
 	}
 
-	let RocketChatStore = RocketChatFile[storeType];
+	const RocketChatStore = RocketChatFile[storeType];
 
 	if (!isSetNotNull(() => RocketChatStore)) {
 		throw new Error(`Invalid RocketChatStore type [${storeType}]`);
@@ -29,7 +29,7 @@ Meteor.startup(function() {
 	self = this;
 
 	return WebApp.connectHandlers.use('/custom-sounds/', Meteor.bindEnvironment(function(req, res/*, next*/) {
-		let params =
+		const params =
 			{ sound: decodeURIComponent(req.url.replace(/^\//, '').replace(/\?.*$/, '')) };
 
 		if (_.isEmpty(params.sound)) {
@@ -39,7 +39,7 @@ Meteor.startup(function() {
 			return;
 		}
 
-		let file = RocketChatFileCustomSoundsInstance.getFileWithReadStream(params.sound);
+		const file = RocketChatFileCustomSoundsInstance.getFileWithReadStream(params.sound);
 		if (!file) {
 			return;
 		}
@@ -51,7 +51,7 @@ Meteor.startup(function() {
 			fileUploadDate = file.uploadDate.toUTCString();
 		}
 
-		let reqModifiedHeader = req.headers['if-modified-since'];
+		const reqModifiedHeader = req.headers['if-modified-since'];
 		if (isSetNotNull(() => reqModifiedHeader)) {
 			if (reqModifiedHeader === fileUploadDate) {
 				res.setHeader('Last-Modified', reqModifiedHeader);
