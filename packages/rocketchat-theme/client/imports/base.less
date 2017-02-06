@@ -4058,7 +4058,9 @@ body:not(.is-cordova) {
 }
 
 .social-login {
-	margin-bottom: 20px;
+	margin-bottom: 16px;
+	margin-left: -4px;
+	flex-wrap: wrap;
 
 	h3 {
 		&:extend(.rocket-h3);
@@ -4069,8 +4071,12 @@ body:not(.is-cordova) {
 	.button {
 		line-height: 22px;
 		font-size: 18px;
-		-webkit-flex-grow: 1;
 		flex-grow: 1;
+		margin-bottom: 4px;
+
+		&:first-child {
+			margin-left: 4px;
+		}
 	}
 }
 
@@ -4100,9 +4106,9 @@ body:not(.is-cordova) {
 			top: 0;
 			right: 0;
 			z-index: 20;
-			width: 520px;
 			padding: 10px;
 			max-width: 100%;
+			max-height: 150px;
 		}
 	}
 
@@ -4978,7 +4984,7 @@ a + br.only-after-a {
 	}
 
 	.social-login {
-		margin-bottom: 10px;
+		margin-bottom: 6px;
 	}
 
 	.message-form textarea {

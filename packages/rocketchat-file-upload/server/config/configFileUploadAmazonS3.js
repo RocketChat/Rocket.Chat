@@ -16,7 +16,7 @@ const generateURL = function(file) {
 
 FileUpload.addHandler('s3', {
 	get(file, req, res) {
-		let fileUrl = generateURL(file);
+		const fileUrl = generateURL(file);
 
 		if (fileUrl) {
 			res.setHeader('Location', fileUrl);
@@ -25,8 +25,8 @@ FileUpload.addHandler('s3', {
 		res.end();
 	},
 	delete(file) {
-		let s3 = new AWS.S3();
-		let request = s3.deleteObject({
+		const s3 = new AWS.S3();
+		const request = s3.deleteObject({
 			Bucket: file.s3.bucket,
 			Key: file.s3.path + file._id
 		});
