@@ -93,7 +93,7 @@ class SlackBridge {
 				if (!this.userTags[userId]) {
 					this.findRocketUser(userId) || this.addRocketUser(userId); // This adds userTags for the userId
 				}
-				let userTags = this.userTags[userId];
+				const userTags = this.userTags[userId];
 				if (userTags) {
 					slackMsgTxt = slackMsgTxt.replace(userTags.slack, userTags.rocket);
 				}
@@ -119,31 +119,31 @@ class SlackBridge {
 			isGroup = true;
 		}
 		if (slackResults && slackResults.data && slackResults.data.ok === true) {
-			let rocketChannelData = isGroup ? slackResults.data.group : slackResults.data.channel;
-			let existingRocketRoom = RocketChat.models.Rooms.findOneByName(rocketChannelData.name);
+			const rocketChannelData = isGroup ? slackResults.data.group : slackResults.data.channel;
+			const existingRocketRoom = RocketChat.models.Rooms.findOneByName(rocketChannelData.name);
 
 			// If the room exists, make sure we have its id in importIds
 			if (existingRocketRoom || rocketChannelData.is_general) {
 				rocketChannelData.rocketId = rocketChannelData.is_general ? 'GENERAL' : existingRocketRoom._id;
 				RocketChat.models.Rooms.addImportIds(rocketChannelData.rocketId, rocketChannelData.id);
 			} else {
-				let rocketUsers = [];
-				for (let member of rocketChannelData.members) {
+				const rocketUsers = [];
+				for (const member of rocketChannelData.members) {
 					if (member !== rocketChannelData.creator) {
-						let rocketUser = this.findRocketUser(member) || this.addRocketUser(member);
+						const rocketUser = this.findRocketUser(member) || this.addRocketUser(member);
 						if (rocketUser && rocketUser.username) {
 							rocketUsers.push(rocketUser.username);
 						}
 					}
 				}
-				let rocketUserCreator = rocketChannelData.creator ? this.findRocketUser(rocketChannelData.creator) || this.addRocketUser(rocketChannelData.creator) : null;
+				const rocketUserCreator = rocketChannelData.creator ? this.findRocketUser(rocketChannelData.creator) || this.addRocketUser(rocketChannelData.creator) : null;
 				if (!rocketUserCreator) {
 					logger.class.error('Could not fetch room creator information', rocketChannelData.creator);
 					return;
 				}
 
 				try {
-					let rocketChannel = RocketChat.createRoom(isGroup ? 'p' : 'c', rocketChannelData.name, rocketUserCreator.username, rocketUsers);
+					const rocketChannel = RocketChat.createRoom(isGroup ? 'p' : 'c', rocketChannelData.name, rocketUserCreator.username, rocketUsers);
 					rocketChannelData.rocketId = rocketChannel.rid;
 				} catch (e) {
 					if (!hasRetried) {
@@ -156,7 +156,7 @@ class SlackBridge {
 					}
 				}
 
-				let roomUpdate = {
+				const roomUpdate = {
 					ts: new Date(rocketChannelData.created * 1000)
 				};
 				let lastSetTopic = 0;
@@ -177,7 +177,7 @@ class SlackBridge {
 	}
 
 	findRocketUser(slackUserID) {
-		let rocketUser = RocketChat.models.Users.findOneByImportId(slackUserID);
+		const rocketUser = RocketChat.models.Users.findOneByImportId(slackUserID);
 		if (rocketUser && !this.userTags[slackUserID]) {
 			this.userTags[slackUserID] = { slack: `<@${slackUserID}>`, rocket: `@${rocketUser.username}` };
 		}
@@ -186,11 +186,11 @@ class SlackBridge {
 
 	addRocketUser(slackUserID) {
 		logger.class.debug('Adding Rocket.Chat user from Slack', slackUserID);
-		let slackResults = HTTP.get('https://slack.com/api/users.info', { params: { token: this.apiToken, user: slackUserID } });
+		const slackResults = HTTP.get('https://slack.com/api/users.info', { params: { token: this.apiToken, user: slackUserID } });
 		if (slackResults && slackResults.data && slackResults.data.ok === true && slackResults.data.user) {
-			let rocketUserData = slackResults.data.user;
-			let isBot = rocketUserData.is_bot === true;
-			let email = rocketUserData.profile && rocketUserData.profile.email || '';
+			const rocketUserData = slackResults.data.user;
+			const isBot = rocketUserData.is_bot === true;
+			const email = rocketUserData.profile && rocketUserData.profile.email || '';
 			let existingRocketUser;
 			if (!isBot) {
 				existingRocketUser = RocketChat.models.Users.findOneByEmailAddress(email) || RocketChat.models.Users.findOneByUsername(rocketUserData.name);
@@ -202,7 +202,7 @@ class SlackBridge {
 				rocketUserData.rocketId = existingRocketUser._id;
 				rocketUserData.name = existingRocketUser.username;
 			} else {
-				let newUser = {
+				const newUser = {
 					password: Random.id(),
 					username: rocketUserData.name
 				};
@@ -216,7 +216,7 @@ class SlackBridge {
 				}
 
 				rocketUserData.rocketId = Accounts.createUser(newUser);
-				let userUpdate = {
+				const userUpdate = {
 					utcOffset: rocketUserData.tz_offset / 3600, // Slack's is -18000 which translates to Rocket.Chat's after dividing by 3600,
 					roles: isBot ? [ 'bot' ] : [ 'user' ]
 				};
@@ -232,7 +232,7 @@ class SlackBridge {
 
 				RocketChat.models.Users.update({ _id: rocketUserData.rocketId }, { $set: userUpdate });
 
-				let user = RocketChat.models.Users.findOneById(rocketUserData.rocketId);
+				const user = RocketChat.models.Users.findOneById(rocketUserData.rocketId);
 
 				let url = null;
 				if (rocketUserData.profile) {
@@ -251,7 +251,7 @@ class SlackBridge {
 				}
 			}
 
-			let importIds = [ rocketUserData.id ];
+			const importIds = [ rocketUserData.id ];
 			if (isBot && rocketUserData.profile && rocketUserData.profile.bot_id) {
 				importIds.push(rocketUserData.profile.bot_id);
 			}
@@ -328,22 +328,22 @@ class SlackBridge {
 	 */
 	onSlackReactionRemoved(slackReactionMsg) {
 		if (slackReactionMsg) {
-			let rocketUser = this.getRocketUser(slackReactionMsg.user);
+			const rocketUser = this.getRocketUser(slackReactionMsg.user);
 			//Lets find our Rocket originated message
 			let rocketMsg = RocketChat.models.Messages.findOneBySlackTs(slackReactionMsg.item.ts);
 
 			if (!rocketMsg) {
 				//Must have originated from Slack
-				let rocketID = this.createRocketID(slackReactionMsg.item.channel, slackReactionMsg.item.ts);
+				const rocketID = this.createRocketID(slackReactionMsg.item.channel, slackReactionMsg.item.ts);
 				rocketMsg = RocketChat.models.Messages.findOneById(rocketID);
 			}
 
 			if (rocketMsg && rocketUser) {
-				let rocketReaction = ':' + slackReactionMsg.reaction + ':';
+				const rocketReaction = ':' + slackReactionMsg.reaction + ':';
 
 				//If the Rocket user has already been removed, then this is an echo back from slack
 				if (rocketMsg.reactions) {
-					let theReaction = rocketMsg.reactions[rocketReaction];
+					const theReaction = rocketMsg.reactions[rocketReaction];
 					if (theReaction) {
 						if (theReaction.usernames.indexOf(rocketUser.username) === -1) {
 							return; //Reaction already removed
@@ -369,7 +369,7 @@ class SlackBridge {
 	 */
 	onSlackReactionAdded(slackReactionMsg) {
 		if (slackReactionMsg) {
-			let rocketUser = this.getRocketUser(slackReactionMsg.user);
+			const rocketUser = this.getRocketUser(slackReactionMsg.user);
 
 			if (rocketUser.roles.includes('bot')) {
 				return;
@@ -380,16 +380,16 @@ class SlackBridge {
 
 			if (!rocketMsg) {
 				//Must have originated from Slack
-				let rocketID = this.createRocketID(slackReactionMsg.item.channel, slackReactionMsg.item.ts);
+				const rocketID = this.createRocketID(slackReactionMsg.item.channel, slackReactionMsg.item.ts);
 				rocketMsg = RocketChat.models.Messages.findOneById(rocketID);
 			}
 
 			if (rocketMsg && rocketUser) {
-				let rocketReaction = ':' + slackReactionMsg.reaction + ':';
+				const rocketReaction = ':' + slackReactionMsg.reaction + ':';
 
 				//If the Rocket user has already reacted, then this is Slack echoing back to us
 				if (rocketMsg.reactions) {
-					let theReaction = rocketMsg.reactions[rocketReaction];
+					const theReaction = rocketMsg.reactions[rocketReaction];
 					if (theReaction) {
 						if (theReaction.usernames.indexOf(rocketUser.username) !== -1) {
 							return; //Already reacted
@@ -463,7 +463,7 @@ class SlackBridge {
 				return;
 			case 'group_join':
 				if (slackMessage.inviter) {
-					let inviter = slackMessage.inviter ? this.findRocketUser(slackMessage.inviter) || this.addRocketUser(slackMessage.inviter) : null;
+					const inviter = slackMessage.inviter ? this.findRocketUser(slackMessage.inviter) || this.addRocketUser(slackMessage.inviter) : null;
 					if (isImporting) {
 						RocketChat.models.Messages.createUserAddedWithRoomIdAndUser(rocketChannel._id, rocketUser, {
 							ts: new Date(parseInt(slackMessage.ts.split('.')[0]) * 1000),
@@ -527,7 +527,7 @@ class SlackBridge {
 				return;
 			case 'file_share':
 				if (slackMessage.file && slackMessage.file.url_private_download !== undefined) {
-					let details = {
+					const details = {
 						message_id: `slack-${slackMessage.ts.replace(/\./g, '-')}`,
 						name: slackMessage.file.name,
 						size: slackMessage.file.size,
@@ -586,20 +586,20 @@ class SlackBridge {
 	**/
 	//details, slackMessage.file.url_private_download, rocketUser, rocketChannel, new Date(parseInt(slackMessage.ts.split('.')[0]) * 1000), isImporting);
 	uploadFileFromSlack(details, slackFileURL, rocketUser, rocketChannel, timeStamp, isImporting) {
-		let url = Npm.require('url');
-		let requestModule = /https/i.test(slackFileURL) ? Npm.require('https') : Npm.require('http');
+		const url = Npm.require('url');
+		const requestModule = /https/i.test(slackFileURL) ? Npm.require('https') : Npm.require('http');
 		var parsedUrl = url.parse(slackFileURL, true);
 		parsedUrl.headers = { 'Authorization': 'Bearer ' + this.apiToken };
 		requestModule.get(parsedUrl, Meteor.bindEnvironment((stream) => {
-			let fileId = Meteor.fileStore.create(details);
+			const fileId = Meteor.fileStore.create(details);
 			if (fileId) {
 				Meteor.fileStore.write(stream, fileId, (err, file) => {
 					console.log('fileStore.write', file);
 					if (err) {
 						throw new Error(err);
 					} else {
-						let url = file.url.replace(Meteor.absoluteUrl(), '/');
-						let attachment = {
+						const url = file.url.replace(Meteor.absoluteUrl(), '/');
+						const attachment = {
 							title: `File Uploaded: ${file.name}`,
 							title_link: url
 						};
@@ -621,7 +621,7 @@ class SlackBridge {
 							attachment.video_size = file.size;
 						}
 
-						let msg = {
+						const msg = {
 							rid: details.rid,
 							ts: timeStamp,
 							msg: '',
@@ -901,7 +901,7 @@ class SlackBridge {
 		logger.class.debug('Searching for Slack channel or group', rocketChannelName);
 		let response = HTTP.get('https://slack.com/api/channels.list', { params: { token: this.apiToken } });
 		if (response && response.data && _.isArray(response.data.channels) && response.data.channels.length > 0) {
-			for (let channel of response.data.channels) {
+			for (const channel of response.data.channels) {
 				if (channel.name === rocketChannelName && channel.is_member === true) {
 					return channel;
 				}
@@ -909,7 +909,7 @@ class SlackBridge {
 		}
 		response = HTTP.get('https://slack.com/api/groups.list', { params: { token: this.apiToken } });
 		if (response && response.data && _.isArray(response.data.groups) && response.data.groups.length > 0) {
-			for (let group of response.data.groups) {
+			for (const group of response.data.groups) {
 				if (group.name === rocketChannelName) {
 					return group;
 				}
@@ -919,10 +919,10 @@ class SlackBridge {
 
 	importFromHistory(family, options) {
 		logger.class.debug('Importing messages history');
-		let response = HTTP.get('https://slack.com/api/' + family + '.history', { params: _.extend({ token: this.apiToken }, options) });
+		const response = HTTP.get('https://slack.com/api/' + family + '.history', { params: _.extend({ token: this.apiToken }, options) });
 		if (response && response.data && _.isArray(response.data.messages) && response.data.messages.length > 0) {
 			let latest = 0;
-			for (let message of response.data.messages.reverse()) {
+			for (const message of response.data.messages.reverse()) {
 				logger.class.debug('MESSAGE: ', message);
 				if (!latest || message.ts > latest) {
 					latest = message.ts;
@@ -936,12 +936,12 @@ class SlackBridge {
 
 	copySlackChannelInfo(rid, channelMap) {
 		logger.class.debug('Copying users from Slack channel to Rocket.Chat', channelMap.id, rid);
-		let response = HTTP.get('https://slack.com/api/' + channelMap.family + '.info', { params: { token: this.apiToken, channel: channelMap.id } });
+		const response = HTTP.get('https://slack.com/api/' + channelMap.family + '.info', { params: { token: this.apiToken, channel: channelMap.id } });
 		if (response && response.data) {
-			let data = channelMap.family === 'channels' ? response.data.channel : response.data.group;
+			const data = channelMap.family === 'channels' ? response.data.channel : response.data.group;
 			if (data && _.isArray(data.members) && data.members.length > 0) {
-				for (let member of data.members) {
-					let user = this.findRocketUser(member) || this.addRocketUser(member);
+				for (const member of data.members) {
+					const user = this.findRocketUser(member) || this.addRocketUser(member);
 					if (user) {
 						logger.class.debug('Adding user to room', user.username, rid);
 						RocketChat.addUserToRoom(rid, user, null, true);
@@ -971,7 +971,7 @@ class SlackBridge {
 			}
 
 			if (topic) {
-				let creator = this.findRocketUser(topic_creator) || this.addRocketUser(topic_creator);
+				const creator = this.findRocketUser(topic_creator) || this.addRocketUser(topic_creator);
 				logger.class.debug('Setting room topic', rid, topic, creator.username);
 				RocketChat.saveRoomTopic(rid, topic, creator, false);
 			}
@@ -979,12 +979,12 @@ class SlackBridge {
 	}
 
 	copyPins(rid, channelMap) {
-		let response = HTTP.get('https://slack.com/api/pins.list', { params: { token: this.apiToken, channel: channelMap.id } });
+		const response = HTTP.get('https://slack.com/api/pins.list', { params: { token: this.apiToken, channel: channelMap.id } });
 		if (response && response.data && _.isArray(response.data.items) && response.data.items.length > 0) {
-			for (let pin of response.data.items) {
+			for (const pin of response.data.items) {
 				if (pin.message) {
-					let user = this.findRocketUser(pin.message.user);
-					let msgObj = {
+					const user = this.findRocketUser(pin.message.user);
+					const msgObj = {
 						rid: rid,
 						t: 'message_pinned',
 						msg: '',
@@ -1008,7 +1008,7 @@ class SlackBridge {
 
 	importMessages(rid, callback) {
 		logger.class.info('importMessages: ', rid);
-		let rocketchat_room = RocketChat.models.Rooms.findOneById(rid);
+		const rocketchat_room = RocketChat.models.Rooms.findOneById(rid);
 		if (rocketchat_room) {
 			if (this.slackChannelMap[rid]) {
 				this.copySlackChannelInfo(rid, this.slackChannelMap[rid]);
@@ -1024,7 +1024,7 @@ class SlackBridge {
 
 				return callback();
 			} else {
-				let slack_room = this.findSlackChannel(rocketchat_room.name);
+				const slack_room = this.findSlackChannel(rocketchat_room.name);
 				if (slack_room) {
 					this.slackChannelMap[rid] = { id: slack_room.id, family: slack_room.id.charAt(0) === 'C' ? 'channels' : 'groups' };
 					return this.importMessages(rid, callback);
@@ -1043,8 +1043,8 @@ class SlackBridge {
 		logger.class.debug('Populating channel map');
 		let response = HTTP.get('https://slack.com/api/channels.list', { params: { token: this.apiToken } });
 		if (response && response.data && _.isArray(response.data.channels) && response.data.channels.length > 0) {
-			for (let slackChannel of response.data.channels) {
-				let rocketchat_room = RocketChat.models.Rooms.findOneByName(slackChannel.name, { fields: { _id: 1 } });
+			for (const slackChannel of response.data.channels) {
+				const rocketchat_room = RocketChat.models.Rooms.findOneByName(slackChannel.name, { fields: { _id: 1 } });
 				if (rocketchat_room) {
 					this.slackChannelMap[rocketchat_room._id] = { id: slackChannel.id, family: slackChannel.id.charAt(0) === 'C' ? 'channels' : 'groups' };
 				}
@@ -1052,8 +1052,8 @@ class SlackBridge {
 		}
 		response = HTTP.get('https://slack.com/api/groups.list', { params: { token: this.apiToken } });
 		if (response && response.data && _.isArray(response.data.groups) && response.data.groups.length > 0) {
-			for (let slackGroup of response.data.groups) {
-				let rocketchat_room = RocketChat.models.Rooms.findOneByName(slackGroup.name, { fields: { _id: 1 } });
+			for (const slackGroup of response.data.groups) {
+				const rocketchat_room = RocketChat.models.Rooms.findOneByName(slackGroup.name, { fields: { _id: 1 } });
 				if (rocketchat_room) {
 					this.slackChannelMap[rocketchat_room._id] = { id: slackGroup.id, family: slackGroup.id.charAt(0) === 'C' ? 'channels' : 'groups' };
 				}
@@ -1075,10 +1075,10 @@ class SlackBridge {
 				//This was a Slack reaction, we don't need to tell Slack about it
 				return;
 			}
-			let rocketMsg = RocketChat.models.Messages.findOneById(rocketMsgID);
+			const rocketMsg = RocketChat.models.Messages.findOneById(rocketMsgID);
 			if (rocketMsg) {
-				let slackChannel = this.slackChannelMap[rocketMsg.rid].id;
-				let slackTS = this.getSlackTS(rocketMsg);
+				const slackChannel = this.slackChannelMap[rocketMsg.rid].id;
+				const slackTS = this.getSlackTS(rocketMsg);
 				this.postReactionAddedToSlack(reaction.replace(/:/g, ''), slackChannel, slackTS);
 			}
 		}
@@ -1093,10 +1093,10 @@ class SlackBridge {
 				return;
 			}
 
-			let rocketMsg = RocketChat.models.Messages.findOneById(rocketMsgID);
+			const rocketMsg = RocketChat.models.Messages.findOneById(rocketMsgID);
 			if (rocketMsg) {
-				let slackChannel = this.slackChannelMap[rocketMsg.rid].id;
-				let slackTS = this.getSlackTS(rocketMsg);
+				const slackChannel = this.slackChannelMap[rocketMsg.rid].id;
+				const slackTS = this.getSlackTS(rocketMsg);
 				this.postReactionRemoveToSlack(reaction.replace(/:/g, ''), slackChannel, slackTS);
 			}
 		}
@@ -1116,7 +1116,7 @@ class SlackBridge {
 		}
 
 		//Probably a new message from Rocket.Chat
-		let outSlackChannels = RocketChat.settings.get('SlackBridge_Out_All') ? _.keys(this.slackChannelMap) : _.pluck(RocketChat.settings.get('SlackBridge_Out_Channels'), '_id') || [];
+		const outSlackChannels = RocketChat.settings.get('SlackBridge_Out_All') ? _.keys(this.slackChannelMap) : _.pluck(RocketChat.settings.get('SlackBridge_Out_Channels'), '_id') || [];
 		//logger.class.debug('Out SlackChannels: ', outSlackChannels);
 		if (outSlackChannels.indexOf(rocketMessage.rid) !== -1) {
 			this.postMessageToSlack(this.slackChannelMap[rocketMessage.rid], rocketMessage);
@@ -1129,7 +1129,7 @@ class SlackBridge {
 	 */
 	postReactionAddedToSlack(reaction, slackChannel, slackTS) {
 		if (reaction && slackChannel && slackTS) {
-			let data = {
+			const data = {
 				token: this.apiToken,
 				name: reaction,
 				channel: slackChannel,
@@ -1149,7 +1149,7 @@ class SlackBridge {
 	 */
 	postReactionRemoveToSlack(reaction, slackChannel, slackTS) {
 		if (reaction && slackChannel && slackTS) {
-			let data = {
+			const data = {
 				token: this.apiToken,
 				name: reaction,
 				channel: slackChannel,
@@ -1166,7 +1166,7 @@ class SlackBridge {
 
 	postDeleteMessageToSlack(rocketMessage) {
 		if (rocketMessage) {
-			let data = {
+			const data = {
 				token: this.apiToken,
 				ts: this.getSlackTS(rocketMessage),
 				channel: this.slackChannelMap[rocketMessage.rid].id,
@@ -1187,7 +1187,7 @@ class SlackBridge {
 			if (iconUrl) {
 				iconUrl = Meteor.absoluteUrl().replace(/\/$/, '') + iconUrl;
 			}
-			let data = {
+			const data = {
 				token: this.apiToken,
 				text: rocketMessage.msg,
 				channel: slackChannel.id,
@@ -1209,7 +1209,7 @@ class SlackBridge {
 	 */
 	postMessageUpdateToSlack(slackChannel, rocketMessage) {
 		if (slackChannel && slackChannel.id) {
-			let data = {
+			const data = {
 				token: this.apiToken,
 				ts: this.getSlackTS(rocketMessage),
 				channel: slackChannel.id,
@@ -1233,7 +1233,7 @@ class SlackBridge {
 			}
 
 			//This was a change from Rocket.Chat
-			let slackChannel = this.slackChannelMap[rocketMessage.rid];
+			const slackChannel = this.slackChannelMap[rocketMessage.rid];
 			this.postMessageUpdateToSlack(slackChannel, rocketMessage);
 		}
 	}
@@ -1243,8 +1243,8 @@ class SlackBridge {
 	 */
 	processSlackMessageDeleted(slackMessage) {
 		if (slackMessage.previous_message) {
-			let rocketChannel = this.getRocketChannel(slackMessage);
-			let rocketUser = RocketChat.models.Users.findOneById('rocket.cat', { fields: { username: 1 } });
+			const rocketChannel = this.getRocketChannel(slackMessage);
+			const rocketUser = RocketChat.models.Users.findOneById('rocket.cat', { fields: { username: 1 } });
 
 			if (rocketChannel && rocketUser) {
 				//Find the Rocket message to delete
@@ -1253,7 +1253,7 @@ class SlackBridge {
 
 				if (!rocketMsgObj) {
 					//Must have been a Slack originated msg
-					let _id = this.createRocketID(slackMessage.channel, slackMessage.previous_message.ts);
+					const _id = this.createRocketID(slackMessage.channel, slackMessage.previous_message.ts);
 					rocketMsgObj = RocketChat.models.Messages.findOneById(_id);
 				}
 
@@ -1270,14 +1270,14 @@ class SlackBridge {
 	 */
 	processSlackMessageChanged(slackMessage) {
 		if (slackMessage.previous_message) {
-			let currentMsg = RocketChat.models.Messages.findOneById(this.createRocketID(slackMessage.channel, slackMessage.message.ts));
+			const currentMsg = RocketChat.models.Messages.findOneById(this.createRocketID(slackMessage.channel, slackMessage.message.ts));
 
 			//Only process this change, if its an actual update (not just Slack repeating back our Rocket original change)
 			if (currentMsg && (slackMessage.message.text !== currentMsg.msg)) {
-				let rocketChannel = this.getRocketChannel(slackMessage);
-				let rocketUser = slackMessage.previous_message.user ? this.findRocketUser(slackMessage.previous_message.user) || this.addRocketUser(slackMessage.previous_message.user) : null;
+				const rocketChannel = this.getRocketChannel(slackMessage);
+				const rocketUser = slackMessage.previous_message.user ? this.findRocketUser(slackMessage.previous_message.user) || this.addRocketUser(slackMessage.previous_message.user) : null;
 
-				let rocketMsgObj = {
+				const rocketMsgObj = {
 					//@TODO _id
 					_id: this.createRocketID(slackMessage.channel, slackMessage.previous_message.ts),
 					rid: rocketChannel._id,
@@ -1295,7 +1295,7 @@ class SlackBridge {
 	 This method will get refactored and broken down into single responsibilities
 	 */
 	processSlackNewMessage(slackMessage, isImporting) {
-		let rocketChannel = this.getRocketChannel(slackMessage);
+		const rocketChannel = this.getRocketChannel(slackMessage);
 		let rocketUser = null;
 		if (slackMessage.subtype === 'bot_message') {
 			rocketUser = RocketChat.models.Users.findOneById('rocket.cat', { fields: { username: 1 } });
@@ -1303,7 +1303,7 @@ class SlackBridge {
 			rocketUser = slackMessage.user ? this.findRocketUser(slackMessage.user) || this.addRocketUser(slackMessage.user) : null;
 		}
 		if (rocketChannel && rocketUser) {
-			let msgDataDefaults = {
+			const msgDataDefaults = {
 				_id: this.createRocketID(slackMessage.channel, slackMessage.ts),
 				ts: new Date(parseInt(slackMessage.ts.split('.')[0]) * 1000)
 			};

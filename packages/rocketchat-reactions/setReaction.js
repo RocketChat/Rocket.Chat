@@ -5,13 +5,13 @@ Meteor.methods({
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'setReaction' });
 		}
 
-		let message = RocketChat.models.Messages.findOneById(messageId);
+		const message = RocketChat.models.Messages.findOneById(messageId);
 
 		if (!message) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'setReaction' });
 		}
 
-		let room = Meteor.call('canAccessRoom', message.rid, Meteor.userId());
+		const room = Meteor.call('canAccessRoom', message.rid, Meteor.userId());
 
 		if (!room) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'setReaction' });

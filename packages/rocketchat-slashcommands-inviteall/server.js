@@ -11,16 +11,16 @@ function inviteAll(type) {
 			return;
 		}
 
-		let regexp = /#?([\d-_\w]+)/g,
+		const regexp = /#?([\d-_\w]+)/g,
 			[, channel] = regexp.exec(params.trim());
 
 		if (!channel) {
 			return;
 		}
 
-		let currentUser = Meteor.users.findOne(Meteor.userId());
-		let baseChannel = type === 'to' ? RocketChat.models.Rooms.findOneById(item.rid) : RocketChat.models.Rooms.findOneByName(channel);
-		let targetChannel = type === 'from' ? RocketChat.models.Rooms.findOneById(item.rid) : RocketChat.models.Rooms.findOneByName(channel);
+		const currentUser = Meteor.users.findOne(Meteor.userId());
+		const baseChannel = type === 'to' ? RocketChat.models.Rooms.findOneById(item.rid) : RocketChat.models.Rooms.findOneByName(channel);
+		const targetChannel = type === 'from' ? RocketChat.models.Rooms.findOneById(item.rid) : RocketChat.models.Rooms.findOneByName(channel);
 
 		if (!baseChannel) {
 			return RocketChat.Notifications.notifyUser(Meteor.userId(), 'message', {
@@ -33,7 +33,7 @@ function inviteAll(type) {
 				}, currentUser.language)
 			});
 		}
-		let users = baseChannel.usernames || [];
+		const users = baseChannel.usernames || [];
 
 		try {
 			if (users.length > RocketChat.settings.get('API_User_Limit')) {
@@ -66,7 +66,7 @@ function inviteAll(type) {
 				msg: TAPi18n.__('Users_added', null, currentUser.language)
 			});
 		} catch (e) {
-			let msg = e.error === 'cant-invite-for-direct-room' ? 'Cannot_invite_users_to_direct_rooms' : e.error;
+			const msg = e.error === 'cant-invite-for-direct-room' ? 'Cannot_invite_users_to_direct_rooms' : e.error;
 			RocketChat.Notifications.notifyUser(Meteor.userId(), 'message', {
 				_id: Random.id(),
 				rid: item.rid,
