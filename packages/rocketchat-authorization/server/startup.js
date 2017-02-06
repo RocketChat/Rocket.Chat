@@ -8,7 +8,9 @@ Meteor.startup(function() {
 	const permissions = [
 		{ _id: 'access-permissions',            roles : ['admin'] },
 		{ _id: 'add-oauth-service',             roles : ['admin'] },
-		{ _id: 'add-user-to-room',              roles : ['admin', 'owner', 'moderator'] },
+		{ _id: 'add-user-to-joined-room',       roles : ['admin', 'owner', 'moderator'] },
+		{ _id: 'add-user-to-any-c-room',        roles : ['admin'] },
+		{ _id: 'add-user-to-any-p-room',        roles : [] },
 		{ _id: 'archive-room',                  roles : ['admin', 'owner'] },
 		{ _id: 'assign-admin-role',             roles : ['admin'] },
 		{ _id: 'ban-user',                      roles : ['admin', 'owner', 'moderator'] },
