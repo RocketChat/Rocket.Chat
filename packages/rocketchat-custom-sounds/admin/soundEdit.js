@@ -25,7 +25,7 @@ Template.soundEdit.events({
 	},
 
 	['change input[type=file]'](ev) {
-		let e = (isSetNotNull(() => ev.originalEvent)) ? ev.originalEvent : ev;
+		const e = (isSetNotNull(() => ev.originalEvent)) ? ev.originalEvent : ev;
 		let files = e.target.files;
 		if (!isSetNotNull(() => e.target.files) || files.length === 0) {
 			if (isSetNotNull(() => e.dataTransfer.files)) {
@@ -36,7 +36,7 @@ Template.soundEdit.events({
 		}
 
 		//using let x of y here seems to have incompatibility with some phones
-		for (let file in files) {
+		for (const file in files) {
 			if (files.hasOwnProperty(file)) {
 				Template.instance().soundFile = files[file];
 			}
@@ -61,7 +61,7 @@ Template.soundEdit.onCreated(function() {
 	};
 
 	this.getSoundData = () => {
-		let soundData = {};
+		const soundData = {};
 		if (isSetNotNull(() => this.sound)) {
 			soundData._id = this.sound._id;
 			soundData.previousName = this.sound.name;
@@ -74,9 +74,9 @@ Template.soundEdit.onCreated(function() {
 	};
 
 	this.validate = () => {
-		let soundData = this.getSoundData();
+		const soundData = this.getSoundData();
 
-		let errors = [];
+		const errors = [];
 		if (!soundData.name) {
 			errors.push('Name');
 		}
@@ -87,7 +87,7 @@ Template.soundEdit.onCreated(function() {
 			}
 		}
 
-		for (let error of errors) {
+		for (const error of errors) {
 			toastr.error(TAPi18n.__('error-the-field-is-required', { field: TAPi18n.__(error) }));
 		}
 
@@ -103,7 +103,7 @@ Template.soundEdit.onCreated(function() {
 
 	this.save = (form) => {
 		if (this.validate()) {
-			let soundData = this.getSoundData();
+			const soundData = this.getSoundData();
 
 			if (this.soundFile) {
 				soundData.newFile = true;
@@ -119,7 +119,7 @@ Template.soundEdit.onCreated(function() {
 					if (this.soundFile) {
 						toastr.info(TAPi18n.__('Uploading_file'));
 
-						let reader = new FileReader();
+						const reader = new FileReader();
 						reader.readAsBinaryString(this.soundFile);
 						reader.onloadend = () => {
 							Meteor.call('uploadCustomSound', reader.result, this.soundFile.type, soundData, (uploadError/*, data*/) => {

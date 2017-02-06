@@ -43,7 +43,7 @@ class CustomSounds {
 	}
 
 	getURL(sound) {
-		let path = (Meteor.isCordova) ? Meteor.absoluteUrl().replace(/\/$/, '') : __meteor_runtime_config__.ROOT_URL_PATH_PREFIX || '';
+		const path = (Meteor.isCordova) ? Meteor.absoluteUrl().replace(/\/$/, '') : __meteor_runtime_config__.ROOT_URL_PATH_PREFIX || '';
 		return `${path}/custom-sounds/${sound._id}.${sound.extension}?_dc=${sound.random || 0}`;
 	}
 
@@ -57,7 +57,7 @@ RocketChat.CustomSounds = new CustomSounds;
 
 Meteor.startup(() =>
 	Meteor.call('listCustomSounds', (error, result) => {
-		for (let sound of result) {
+		for (const sound of result) {
 			RocketChat.CustomSounds.add(sound);
 		}
 	})
