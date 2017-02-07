@@ -25,7 +25,7 @@ RocketChat.deleteUser = function(userId) {
 		RocketChatFileAvatarInstance.deleteFile(encodeURIComponent(user.username + '.jpg'));
 	}
 
-	RocketChat.models.Integration.disableByUserId(userId); // Disables all the integrations which rely on the user being deleted.
+	RocketChat.models.Integrations.disableByUserId(userId); // Disables all the integrations which rely on the user being deleted.
 
 	RocketChat.models.Users.removeById(userId); // Remove user from users database
 };
