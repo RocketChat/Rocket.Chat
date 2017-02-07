@@ -104,7 +104,8 @@ class ModelUsers extends RocketChat.models._Base
 				username: {
 					$nin: exceptions
 				}
-			}]
+			}],
+			guestId: { $exists: false }
 		}
 
 		return @find query, options
@@ -123,7 +124,8 @@ class ModelUsers extends RocketChat.models._Base
 				{
 					username: { $nin: exceptions }
 				}
-			]
+			],
+			guestId: { $exists: false }
 
 		return @find query, options
 

@@ -61,7 +61,7 @@ Accounts.onCreateUser(function(options, user = {}) {
 
 	user.status = 'offline';
 	// Only guests are allowed to have empty password
-	const isGuest = options.email.match(/@rocket-chat\.guest/) && options.password == '';
+	const isGuest = options.email.match(/@rocket-chat\.guest/) && options.password === '';
 	user.active = !RocketChat.settings.get('Accounts_ManuallyApproveNewUsers') || isGuest;
 
 	if (!user.name) {
