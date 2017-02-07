@@ -52,4 +52,4 @@ RocketChat.API.v1.addAuthMethod ->
 		# console.log 'user not found'.red
 		return
 
-	return user: _.omit(user, [ 'joinCode', '$loki', 'meta' ])
+	return user: _.omit(user, '$loki')
