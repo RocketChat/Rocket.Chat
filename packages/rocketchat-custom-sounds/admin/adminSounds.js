@@ -1,4 +1,4 @@
-/* globals isSetNotNull */
+/* globals isSetNotNull, RocketChatTabBar */
 Template.adminSounds.helpers({
 	isReady() {
 		if (isSetNotNull(() => Template.instance().ready)) {
@@ -24,11 +24,11 @@ Template.adminSounds.helpers({
 		}
 		return false;
 	},
-	flexTemplate() {
-		return RocketChat.TabBar.getTemplate();
-	},
 	flexData() {
-		return RocketChat.TabBar.getData();
+		return {
+			tabBar: Template.instance().tabBar,
+			data: Template.instance().tabBarData.get()
+		};
 	}
 });
 
@@ -38,21 +38,25 @@ Template.adminSounds.onCreated(function() {
 	this.filter = new ReactiveVar('');
 	this.ready = new ReactiveVar(false);
 
+	this.tabBar = new RocketChatTabBar();
+	this.tabBar.showGroup(FlowRouter.current().route.name);
+	this.tabBarData = new ReactiveVar();
+
 	RocketChat.TabBar.addButton({
-		groups: ['adminSounds', 'adminSounds-selected'],
+		groups: ['custom-sounds', 'custom-sounds-selected'],
 		id: 'add-sound',
 		i18nTitle: 'Custom_Sound_Add',
 		icon: 'icon-plus',
 		template: 'adminSoundEdit',
 		openClick(/*e, t*/) {
-			RocketChat.TabBar.setData();
+			instance.tabBarData.set();
 			return true;
 		},
 		order: 1
 	});
 
 	RocketChat.TabBar.addButton({
-		groups: ['adminSounds-selected'],
+		groups: ['custom-sounds-selected'],
 		id: 'admin-sound-info',
 		i18nTitle: 'Custom_Sound_Info',
 		icon: 'icon-cog',
@@ -104,12 +108,11 @@ Template.adminSounds.events({
 		t.filter.set(e.currentTarget.value);
 	},
 
-	['click .sound-info'](e) {
+	['click .sound-info'](e, instance) {
 		e.preventDefault();
-		RocketChat.TabBar.setTemplate('adminSoundInfo');
-		RocketChat.TabBar.setData(RocketChat.models.CustomSounds.findOne({_id: this._id}));
-		RocketChat.TabBar.openFlex();
-		RocketChat.TabBar.showGroup('adminSounds-selected');
+		instance.tabBarData.set(RocketChat.models.CustomSounds.findOne({_id: this._id}));
+		instance.tabBar.showGroup('custom-sounds-selected');
+		instance.tabBar.open('admin-sound-info');
 	},
 
 	['click .load-more'](e, t) {
