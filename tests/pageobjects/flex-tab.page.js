@@ -64,9 +64,6 @@ class FlexTab extends Page {
 
 	get confirmBtn() { return browser.element('.confirm'); }
 
-	get sweetAlertOverlay() { return browser.element('.sweet-overlay'); }
-	get toastAlert() { return browser.element('.toast'); }
-
 	//admin view flextab items
 	get usersSendInvitationTab() { return browser.element('.flex-tab-bar .icon-paper-plane'); }
 	get usersAddUserTab() { return browser.element('.flex-tab-bar .icon-plus'); }

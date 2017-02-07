@@ -18,6 +18,13 @@ getIntegrationScript = (integration) ->
 				return store[key] = val
 			get: (key) ->
 				return store[key]
+		HTTP: (method, url, options) ->
+			try
+				return {} =
+					result: HTTP.call method, url, options
+			catch e
+				return {} =
+					error: e
 
 	try
 		logger.incoming.info 'Will evaluate script of Trigger', integration.name
@@ -54,7 +61,18 @@ Api = new Restivus
 			payloadIsWrapped = @bodyParams?.payload? and payloadKeys.length == 1
 
 			if payloadIsWrapped and @request.headers['content-type'] is 'application/x-www-form-urlencoded'
-				@bodyParams = JSON.parse @bodyParams.payload
+				try
+					@bodyParams = JSON.parse @bodyParams.payload
+				catch e
+					return {
+						error: {
+							statusCode: 400
+							body: {
+								success: false
+								error: e.message
+							}
+						}
+					}
 
 			@integration = RocketChat.models.Integrations.findOne
 				_id: @request.params.integrationId
@@ -71,7 +89,7 @@ Api = new Restivus
 
 
 createIntegration = (options, user) ->
-	logger.incoming.info 'Add integration'
+	logger.incoming.info 'Add integration', options.name
 	logger.incoming.debug options
 
 	Meteor.runAsUser user._id, =>
@@ -115,7 +133,7 @@ removeIntegration = (options, user) ->
 
 
 executeIntegrationRest = ->
-	logger.incoming.info 'Post integration'
+	logger.incoming.info 'Post integration', @integration.name
 	logger.incoming.debug '@urlParams', @urlParams
 	logger.incoming.debug '@bodyParams', @bodyParams
 
@@ -156,7 +174,25 @@ executeIntegrationRest = ->
 				username: @user.username
 
 		try
-			result = script.process_incoming_request({ request: request })
+			sandbox =
+				_: _
+				s: s
+				console: console
+				Store:
+					set: (key, val) ->
+						return store[key] = val
+					get: (key) ->
+						return store[key]
+				HTTP: (method, url, options) ->
+					try
+						return {} =
+							result: HTTP.call method, url, options
+					catch e
+						return {} =
+							error: e
+				script: script
+				request: request
+			result = vm.runInNewContext('script.process_incoming_request({ request: request })', sandbox, { timeout: 3000 })
 
 			if result?.error?
 				return RocketChat.API.v1.failure result.error

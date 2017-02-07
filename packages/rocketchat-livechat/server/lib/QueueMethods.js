@@ -34,7 +34,7 @@ RocketChat.QueueMethods = {
 			open: true,
 			waitingResponse: true
 		}, roomInfo);
-		let subscriptionData = {
+		const subscriptionData = {
 			rid: message.rid,
 			name: guest.name || guest.username,
 			alert: true,

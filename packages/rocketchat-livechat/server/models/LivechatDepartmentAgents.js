@@ -98,7 +98,7 @@ class LivechatDepartmentAgents extends RocketChat.models._Base {
 	}
 
 	findUsersInQueue(usersList) {
-		let query = {};
+		const query = {};
 
 		if (!_.isEmpty(usersList)) {
 			query.username = {
@@ -106,7 +106,7 @@ class LivechatDepartmentAgents extends RocketChat.models._Base {
 			};
 		}
 
-		let options = {
+		const options = {
 			sort: {
 				departmentId: 1,
 				count: 1,

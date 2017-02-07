@@ -8,7 +8,7 @@ function sendToCRM(hook, room) {
 		return room;
 	}
 
-	let postData = RocketChat.Livechat.getLivechatRoomGuestInfo(room);
+	const postData = RocketChat.Livechat.getLivechatRoomGuestInfo(room);
 	if (hook === 'closeRoom') {
 		postData.type = 'LivechatSession';
 	} else if (hook === 'saveLivechatInfo') {
@@ -21,7 +21,7 @@ function sendToCRM(hook, room) {
 		if (message.t) {
 			return;
 		}
-		let msg = {
+		const msg = {
 			username: message.u.username,
 			msg: message.msg,
 			ts: message.ts

@@ -49,8 +49,9 @@ Meteor.methods
 		message.alias = user.name if not message.alias? and RocketChat.settings.get 'Message_SetNameToAliasEnabled'
 		if Meteor.settings.public.sandstorm
 			message.sandstormSessionId = this.connection.sandstormSessionId()
-
+		
 		RocketChat.sendMessage user, message, room
+		RocketChat.metrics.messagesSent.inc()
 
 # Limit a user, who does not have the "bot" role, to sending 5 msgs/second
 DDPRateLimiter.addRule

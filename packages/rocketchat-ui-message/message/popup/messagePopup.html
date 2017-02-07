@@ -14,6 +14,16 @@
 						</div>
 					{{/each}}
 				</div>
+				{{#unless data}}
+					{{#unless isLoading.get}}
+						{{#if emptyTemplate}}
+							{{> Template.dynamic template=emptyTemplate}}
+						{{/if}}
+					{{/unless}}
+				{{/unless}}
+				{{#if isLoading.get}}
+					{{> loading}}
+				{{/if}}
 			</div>
 		</div>
 	{{/if}}
