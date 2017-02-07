@@ -54,7 +54,7 @@
 	},
 	"devDependencies": {
 		"chimp": "^0.47.1",
-		"eslint": "^3.14.1",
+		"eslint": "^3.15.0",
 		"stylelint": "^7.8.0",
 		"supertest": "^3.0.0"
 	},
