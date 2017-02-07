@@ -10,6 +10,12 @@ Template.userInfo.helpers
 		user = Template.instance().user.get()
 		return user.username
 
+	isGuest: ->
+		user = Template.instance().user.get()
+		if user
+			return user.guestId or Meteor.user().guestId
+		return false
+
 	email: ->
 		user = Template.instance().user.get()
 		return user.emails?[0]?.address

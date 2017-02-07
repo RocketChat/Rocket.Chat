@@ -29,6 +29,14 @@ Template.visitorInfo.helpers({
 		return this.tags && this.tags.join(', ');
 	},
 
+	isGuest() {
+		const user = Template.instance().user.get();
+		if (user) {
+			return user.guestId || Meteor.user().guestId;
+		}
+		return false;
+	},
+
 	customFields() {
 		const fields = [];
 		let livechatData = {};

@@ -36,6 +36,9 @@ Meteor.methods({
 
 		RocketChat.models.Users.setName(userId, username);
 		RocketChat.models.Users.setGuestId(userId, guestId);
+		if (!RocketChat.settings.get('Accounts_AllowGuestToChooseName')) {
+			RocketChat.models.Users.setUsername(userId, username);
+		}
 		Accounts.setPassword(userId, '');
 
 		return email;
