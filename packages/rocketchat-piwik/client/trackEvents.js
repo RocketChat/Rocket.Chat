@@ -26,7 +26,7 @@ RocketChat.callbacks.add('afterSaveMessage', (message) => {
 }, 2000, 'trackEvents');
 
 //Rooms
-RocketChat.callbacks.add('afterCreateChannel', (room) => {
+RocketChat.callbacks.add('afterCreateChannel', (owner, room) => {
 	if (window._paq && RocketChat.settings.get('PiwikAnalytics_features_rooms')) {
 		window._paq.push(['trackEvent', 'Room', 'Create', room.name + ' (' + room._id + ')' ]);
 	}
