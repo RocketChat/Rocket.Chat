@@ -49,12 +49,12 @@ Template.soundEdit.onCreated(function() {
 		this.sound = this.data.sound;
 	} else {
 		this.sound = undefined;
-		RocketChat.TabBar.showGroup('adminSounds');
+		this.data.tabBar.showGroup('custom-sounds');
 	}
 
 	this.cancel = (form, name) => {
 		form.reset();
-		RocketChat.TabBar.closeFlex();
+		this.data.tabBar.close();
 		if (this.sound) {
 			this.data.back(name);
 		}

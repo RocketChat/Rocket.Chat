@@ -4,7 +4,6 @@ FlowRouter.route('/admin/custom-sounds', {
 		this.register('customSounds', Meteor.subscribe('customSounds'));
 	},
 	action(/*params*/) {
-		RocketChat.TabBar.showGroup('adminSounds');
 		BlazeLayout.render('main', {center: 'adminSounds'});
 	}
 });

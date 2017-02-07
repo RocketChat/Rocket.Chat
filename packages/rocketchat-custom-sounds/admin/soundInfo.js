@@ -16,6 +16,8 @@ Template.soundInfo.helpers({
 	soundToEdit() {
 		const instance = Template.instance();
 		return {
+			tabBar: instance.data.tabBar,
+			data: instance.data.data,
 			sound: instance.sound.get(),
 			back(name) {
 				instance.editingSound.set();
@@ -64,8 +66,8 @@ Template.soundInfo.events({
 							showConfirmButton: false
 						});
 
-						RocketChat.TabBar.showGroup('adminSounds');
-						RocketChat.TabBar.closeFlex();
+						instance.data.tabBar.showGroup('custom-sounds');
+						instance.data.tabBar.close();
 					}
 				});
 			});
