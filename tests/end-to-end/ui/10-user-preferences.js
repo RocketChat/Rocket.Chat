@@ -12,7 +12,7 @@ import {imgURL} from '../../data/interactions.js';
 import {checkIfUserIsValid} from '../../data/checks';
 
 
-describe.skip('user preferences', ()=> {
+describe('user preferences', ()=> {
 	before(() => {
 		checkIfUserIsValid(username, email, password);
 		sideNav.spotlightSearch.waitForVisible(10000);
@@ -63,12 +63,12 @@ describe.skip('user preferences', ()=> {
 
 	});
 	//it gives off a "Too Many Requests Error" due the 60 seconds username change restriction
-	describe.skip('user info change', ()=> {
+	describe('user info change', ()=> {
 		it('click on the profile link', ()=> {
 			sideNav.profile.click();
 		});
 
-		it('change the name field', ()=> {
+		it.skip('change the name field', ()=> {
 			preferencesMainContent.changeRealName('EditedRealName'+username);
 		});
 
@@ -97,7 +97,9 @@ describe.skip('user preferences', ()=> {
 		});
 
 		it('close the preferences menu', () => {
+			sideNav.preferencesClose.waitForVisible(5000);
 			sideNav.preferencesClose.click();
+			sideNav.spotlightSearch.waitForVisible(5000);
 		});
 
 		it('open GENERAL', () => {
@@ -108,23 +110,19 @@ describe.skip('user preferences', ()=> {
 			mainContent.sendMessage('HI');
 		});
 
-		it('the name on the last message should be the edited one', () => {
+		it.skip('the name on the last message should be the edited one', () => {
 			mainContent.lastMessageUser.getText().should.equal('EditedUserName'+username);
 		});
 
-		it('the name on the nav bar should be the edited one', () => {
+		it.skip('the name on the nav bar should be the edited one', () => {
 			sideNav.accountBoxUserName.getText().should.equal('EditedUserName'+username);
 		});
 
-		it('click on the last message ', () => {
-			mainContent.lastMessageUser.click();
-		});
-
-		it('the user name on the members flex tab should be the edited one', () => {
+		it.skip('the user name on the members flex tab should be the edited one', () => {
 			flexTab.memberUserName.getText().should.equal('EditedUserName'+username);
 		});
 
-		it('the real name on the members flex tab should be the edited one', () => {
+		it.skip('the real name on the members flex tab should be the edited one', () => {
 			flexTab.memberRealName.getText().should.equal('EditedRealName'+username);
 		});
 
