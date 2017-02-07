@@ -35,12 +35,20 @@ Template.integrationsOutgoing.helpers({
 		return arr.join(sep);
 	},
 
+	showHistoryButton() {
+		return this.params && this.params() && this.params().id;
+	},
+
 	hasPermission() {
 		return RocketChat.authz.hasAtLeastOnePermission(['manage-integrations', 'manage-own-integrations']);
 	},
 
 	data() {
 		return Template.instance().record.get();
+	},
+
+	canDelete() {
+		return Template.instance().record.get()._id !== undefined;
 	},
 
 	eventTypes() {
@@ -168,6 +176,21 @@ Template.integrationsOutgoing.events({
 		record.event = $('[name=event]').val().trim();
 
 		t.record.set(record);
+	},
+
+	'click .button.history': () => {
+		FlowRouter.go(`/admin/integrations/outgoing/${FlowRouter.getParam('id')}/history`);
+	},
+
+	'click .expand': (e) => {
+		$(e.currentTarget).closest('.section').removeClass('section-collapsed');
+		$(e.currentTarget).closest('button').removeClass('expand').addClass('collapse').find('span').text(TAPi18n.__('Collapse'));
+		$('.CodeMirror').each((index, codeMirror) => codeMirror.CodeMirror.refresh());
+	},
+
+	'click .collapse': (e) => {
+		$(e.currentTarget).closest('.section').addClass('section-collapsed');
+		$(e.currentTarget).closest('button').addClass('expand').removeClass('collapse').find('span').text(TAPi18n.__('Expand'));
 	},
 
 	'click .submit > .delete': () => {

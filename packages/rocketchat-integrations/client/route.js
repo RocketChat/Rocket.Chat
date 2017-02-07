@@ -43,14 +43,35 @@ FlowRouter.route('/admin/integrations/incoming/:id?', {
 
 FlowRouter.route('/admin/integrations/outgoing/:id?', {
 	name: 'admin-integrations-outgoing',
-	subscriptions() {
+	subscriptions(params) {
 		this.register('integrations', Meteor.subscribe('integrations'));
+
+		if (params.id) {
+			this.register('integrationHistory', Meteor.subscribe('integrationHistory', params.id));
+		}
 	},
 	action(params) {
 		return BlazeLayout.render('main', {
-			center: 'pageSettingsContainer',
+			center: 'integrationsOutgoing',
 			pageTitle: t('Integration_Outgoing_WebHook'),
-			pageTemplate: 'integrationsOutgoing',
+			params
+		});
+	}
+});
+
+FlowRouter.route('/admin/integrations/outgoing/:id?/history', {
+	name: 'admin-integrations-outgoing-history',
+	subscriptions(params) {
+		this.register('integrations', Meteor.subscribe('integrations'));
+
+		if (params.id) {
+			this.register('integrationHistory', Meteor.subscribe('integrationHistory', params.id));
+		}
+	},
+	action(params) {
+		return BlazeLayout.render('main', {
+			center: 'integrationsOutgoingHistory',
+			pageTitle: t('Integration_Outgoing_WebHook_History'),
 			params
 		});
 	}

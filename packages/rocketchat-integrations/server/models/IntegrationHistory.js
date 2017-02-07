@@ -15,6 +15,10 @@ RocketChat.models.IntegrationHistory = new class IntegrationHistory extends Rock
 		return this.find({ 'integration._id': id }, options);
 	}
 
+	findByIntegrationIdAndCreatedBy(id, creatorId, options) {
+		return this.find({ 'integration._id': id, 'integration._createdBy._id': creatorId }, options);
+	}
+
 	findByEventName(event, options) {
 		return this.find({ event }, options);
 	}

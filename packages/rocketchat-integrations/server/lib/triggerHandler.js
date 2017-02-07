@@ -105,6 +105,7 @@ RocketChat.integrations.triggerHandler = new class RocketChatIntegrationHandler 
 			RocketChat.models.IntegrationHistory.update({ _id: historyId }, { $set: history });
 			return historyId;
 		} else {
+			history._createdAt = new Date();
 			return RocketChat.models.IntegrationHistory.insert(Object.assign({ _id: Random.id() }, history));
 		}
 	}
@@ -273,7 +274,7 @@ RocketChat.integrations.triggerHandler = new class RocketChatIntegrationHandler 
 
 			return result;
 		} catch (e) {
-			this.updateHistory({ historyId, error: true, errorStack: e });
+			this.updateHistory({ historyId, step: `execute-script-error-running-${method}`, error: true, errorStack: e });
 			logger.outgoing.error(`Error running Script in the Integration ${integration.name}:`);
 			logger.outgoing.error(integration.scriptCompiled.replace(/^/gm, '  '));
 			logger.outgoing.error('Stack:');
@@ -523,7 +524,6 @@ RocketChat.integrations.triggerHandler = new class RocketChatIntegrationHandler 
 
 	executeTriggerUrl(url, trigger, { event, message, room, owner, options, user }, theHistoryId, tries = 0) {
 		logger.outgoing.debug(`Starting to execute trigger: ${trigger.name} (${trigger._id})`);
-		const historyId = this.updateHistory({ theHistoryId, step: 'start-execute-trigger-url', integration: trigger, event });
 
 		let word;
 		//Not all triggers/events support triggerWords
@@ -538,11 +538,12 @@ RocketChat.integrations.triggerHandler = new class RocketChatIntegrationHandler 
 
 				// Stop if there are triggerWords but none match
 				if (!word) {
-					this.updateHistory({ historyId, step: 'no-trigger-word-found' });
 					return;
 				}
 			}
 		}
+
+		const historyId = this.updateHistory({ theHistoryId, step: 'start-execute-trigger-url', integration: trigger, event });
 
 		const data = {
 			token: trigger.token,

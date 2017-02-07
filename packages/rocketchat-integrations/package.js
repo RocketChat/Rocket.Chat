@@ -23,7 +23,9 @@ Package.onUse(function(api) {
 	api.use('templating', 'client');
 
 	api.addFiles('lib/rocketchat.js', ['server', 'client']);
-	api.addFiles('client/collection.js', ['client']);
+
+	// items
+	api.addFiles('client/collections.js', 'client');
 	api.addFiles('client/startup.js', 'client');
 	api.addFiles('client/route.js', 'client');
 
@@ -36,6 +38,8 @@ Package.onUse(function(api) {
 	api.addFiles('client/views/integrationsIncoming.js', 'client');
 	api.addFiles('client/views/integrationsOutgoing.html', 'client');
 	api.addFiles('client/views/integrationsOutgoing.js', 'client');
+	api.addFiles('client/views/integrationsOutgoingHistory.html', 'client');
+	api.addFiles('client/views/integrationsOutgoingHistory.js', 'client');
 
 	// stylesheets
 	api.addFiles('client/stylesheets/integrations.less', 'client');
@@ -48,6 +52,7 @@ Package.onUse(function(api) {
 
 	// publications
 	api.addFiles('server/publications/integrations.js', 'server');
+	api.addFiles('server/publications/integrationHistory.js', 'server');
 
 	// methods
 	api.addFiles('server/methods/incoming/addIncomingIntegration.js', 'server');
