@@ -49,10 +49,6 @@ describe('Main Elements Render', function() {
 			it('should show spotlight search bar', () => {
 				sideNav.spotlightSearch.isVisible().should.be.true;
 			});
-
-			it.skip('should not show eye icon on general', () => {
-				sideNav.channelHoverIcon.isVisible().should.be.true;
-			});
 		});
 
 		describe('spotlight search render', () => {
@@ -286,11 +282,7 @@ describe('Main Elements Render', function() {
 					flexTab.membersTabContent.isVisible().should.be.true;
 				});
 
-				it.skip('should show the members search bar', () => {
-					flexTab.userSearchBar.isVisible().should.be.true;
-				});
-
-				it.skip('should show the show all link', () => {
+				it('should show the show all link', () => {
 					flexTab.showAll.isVisible().should.be.true;
 				});
 			});

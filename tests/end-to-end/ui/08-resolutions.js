@@ -94,6 +94,7 @@ describe('resolutions tests', ()=> {
 
 			it('close the preferences menu', () => {
 				sideNav.preferencesClose.click();
+				sideNav.spotlightSearch.waitForVisible(5000);
 			});
 		});
 	});

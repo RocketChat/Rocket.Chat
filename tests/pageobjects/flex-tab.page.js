@@ -1,4 +1,5 @@
 import Page from './Page';
+import Global from './global'
 
 class FlexTab extends Page {
 	get membersTab() { return browser.element('.flex-tab-bar .icon-users'); }
@@ -86,12 +87,6 @@ class FlexTab extends Page {
 
 	getUserEl(username) { return browser.element(`.flex-tab button[title="${username}"] > p`); }
 
-	confirmPopup() {
-		this.confirmBtn.waitForVisible(5000);
-		this.confirmBtn.click();
-		this.sweetAlertOverlay.waitForVisible(5000, true);
-	}
-
 	dismissToast() {
 		this.toastAlert.click();
 	}
@@ -140,15 +135,14 @@ class FlexTab extends Page {
 
 	muteUser(user) {
 		const userEl = this.getUserEl(user);
-		if (this.showAll.isVisible()) {
-			this.muteUserBtn.waitForVisible(5000);
-			this.muteUserBtn.click();
-		} else {
-			userEl.waitForVisible(5000);
-			userEl.click();
-			this.muteUserBtn.waitForVisible(5000);
-			this.muteUserBtn.click();
-		}
+		userEl.waitForVisible(5000);
+		userEl.click();
+		this.muteUserBtn.waitForVisible(5000);
+		this.muteUserBtn.click();
+		Global.confirmPopup();
+		this.viewAllBtn.click();
+		browser.pause(100);
+
 	}
 }
 
