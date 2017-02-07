@@ -1,6 +1,6 @@
 RocketChat.API.default.addRoute('info', { authRequired: false }, {
 	get: function() {
-		let user = this.getLoggedInUser();
+		const user = this.getLoggedInUser();
 
 		if (user && RocketChat.authz.hasRole(user._id, 'admin')) {
 			return {
