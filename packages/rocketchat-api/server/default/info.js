@@ -6,7 +6,7 @@ RocketChat.API.default.addRoute('info', { authRequired: false }, {
 
 		return RocketChat.API.v1.success({
 			info: {
-				"version": RocketChat.Info.version
+				'version': RocketChat.Info.version
 			}
 		});
 	}

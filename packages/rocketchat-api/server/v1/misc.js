@@ -3,12 +3,12 @@ RocketChat.API.v1.addRoute('info', { authRequired: false }, {
 		if (this.request.headers['x-user-id'] != null && RocketChat.authz.hasRole(this.request.headers['x-user-id'], 'admin')) {
 			return {
 				info: RocketChat.Info
-			}
+			};
 		}
 
 		return RocketChat.API.v1.success({
 			info: {
-				"version": RocketChat.Info.version
+				'version': RocketChat.Info.version
 			}
 		});
 	}
