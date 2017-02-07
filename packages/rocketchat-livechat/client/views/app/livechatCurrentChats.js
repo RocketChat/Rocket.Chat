@@ -33,7 +33,7 @@ Template.livechatCurrentChats.events({
 	'submit form'(event, instance) {
 		event.preventDefault();
 
-		let filter = {};
+		const filter = {};
 		$(':input', event.currentTarget).each(function() {
 			if (this.name) {
 				filter[this.name] = $(this).val();

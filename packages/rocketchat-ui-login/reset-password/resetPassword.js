@@ -1,13 +1,13 @@
 import toastr from 'toastr';
 Template.resetPassword.helpers({
 	requirePasswordChange() {
-		let user = Meteor.user();
+		const user = Meteor.user();
 		if (user) {
 			return user.requirePasswordChange;
 		}
 	},
 	requirePasswordChangeReason() {
-		let user = Meteor.user();
+		const user = Meteor.user();
 		if (user) {
 			return user.requirePasswordChangeReason;
 		}
