@@ -106,17 +106,6 @@ class SideNav extends Page {
 		browser.click('[title="'+user+'"]');
 		this.removeUserBtn.click();
 	}
-
-	startDirectMessage(user) {
-		this.newDirectMessageBtn.waitForVisible(3000);
-		this.newDirectMessageBtn.click();
-		this.directMessageTarget.waitForVisible(3000);
-		this.directMessageTarget.setValue(user);
-		browser.waitForVisible('.-autocomplete-item', 5000);
-		browser.click('.-autocomplete-item');
-		this.saveDirectMessageBtn.click();
-		browser.waitForExist('[title="'+user+'"]', 5000);
-	}
 }
 
 module.exports = new SideNav();
