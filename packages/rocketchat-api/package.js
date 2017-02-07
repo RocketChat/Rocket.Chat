@@ -20,7 +20,12 @@ Package.onUse(function(api) {
 	api.addFiles('server/v1/helpers/getPaginationItems.js', 'server');
 	api.addFiles('server/v1/helpers/getUserFromParams.js', 'server');
 	api.addFiles('server/v1/helpers/parseJsonQuery.js', 'server');
+	api.addFiles('server/v1/helpers/getLoggedInUser.js', 'server');
 
+	//Register default helpers
+	api.addFiles('server/default/helpers/getLoggedInUser.js', 'server');
+
+	//Add default routes
 	api.addFiles('server/default/info.js', 'server');
 	api.addFiles('server/default/metrics.js', 'server');
 
