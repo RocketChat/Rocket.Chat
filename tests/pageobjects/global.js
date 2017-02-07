@@ -11,6 +11,13 @@ class Global {
 		this.sweetAlertConfirm.click();
 		this.sweetAlert.waitForVisible(5000, true);
 	}
+
+	setWindowSize(width, height) {
+		browser.windowHandleSize({
+			width: width,
+			height: height
+		});
+	}
 }
 
 module.exports = new Global();
