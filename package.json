@@ -1,7 +1,7 @@
 {
 	"name": "Rocket.Chat",
 	"description": "The Ultimate Open Source WebChat Platform",
-	"version": "0.51.0-develop",
+	"version": "0.52.0-develop",
 	"author": {
 		"name": "Rocket.Chat",
 		"url": "https://rocket.chat/"
@@ -54,7 +54,7 @@
 	},
 	"devDependencies": {
 		"chimp": "^0.47.1",
-		"eslint": "^3.14.1",
+		"eslint": "^3.15.0",
 		"stylelint": "^7.8.0",
 		"supertest": "^3.0.0"
 	},
@@ -64,7 +64,8 @@
 		"codemirror": "^5.23.0",
 		"file-type": "^4.1.0",
 		"jquery": "^3.1.1",
-		"mime-types": "^2.1.14",
+		"mime-db": "^1.26.0",
+		"mime-type": "^3.0.4",
 		"moment": "^2.17.1",
 		"moment-timezone": "^0.5.11",
 		"photoswipe": "^4.1.1",
