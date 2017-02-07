@@ -1,6 +1,6 @@
-sizeOf = Npm.require 'image-size'
-mime = Npm.require 'mime-types'
-crypto = Npm.require 'crypto'
+import sizeOf from 'image-size'
+import mime from 'mime-type/with-db'
+import crypto from 'crypto'
 
 mime.extensions['image/vnd.microsoft.icon'] = ['ico']
 
