@@ -27,7 +27,7 @@ majorColors=
   'secondary-font-color': '#A0A0A0'
   'secondary-action-color': '#DDDDDD'
   'component-color': '#EAEAEA'
-  'success-color': '#1DCE73'
+  'success-color': '#4dff4d'
   'pending-color': '#FCB316'
   'error-color': '#BC2031'
   'selection-color': '#02ACEC',

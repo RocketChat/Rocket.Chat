@@ -23,7 +23,7 @@ RocketChat.createPrivateGroup = function(name, owner, members) {
 		throw new Meteor.Error('error-invalid-name', 'Invalid name', { function: 'RocketChat.createPrivateGroup' });
 	}
 
-	let now = new Date();
+	const now = new Date();
 	if (!_.contains(members, owner)) {
 		members.push(owner);
 	}
@@ -40,13 +40,13 @@ RocketChat.createPrivateGroup = function(name, owner, members) {
 
 	room = RocketChat.models.Rooms.createWithTypeNameUserAndUsernames('p', name, owner, members, { ts: now });
 
-	for (let username of members) {
-		let member = RocketChat.models.Users.findOneByUsername(username, { fields: { username: 1 }});
+	for (const username of members) {
+		const member = RocketChat.models.Users.findOneByUsername(username, { fields: { username: 1 }});
 		if (!member) {
 			continue;
 		}
 
-		let extra = { open: true };
+		const extra = { open: true };
 
 		if (username === owner) {
 			extra.ls = now;

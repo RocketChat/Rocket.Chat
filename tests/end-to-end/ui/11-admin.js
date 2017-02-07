@@ -12,15 +12,13 @@ import {adminUsername, adminEmail, adminPassword} from '../../data/user.js';
 describe('Admin Login', () => {
 	before(() => {
 		checkIfUserIsAdmin(adminUsername, adminEmail, adminPassword);
-		sideNav.getChannelFromList('general').waitForExist(5000);
-		sideNav.openChannel('general');
+		sideNav.spotlightSearch.waitForVisible(10000);
+		sideNav.searchChannel('general');
 	});
 
 	after(() => {
 		sideNav.preferencesClose.waitForVisible(5000);
 		sideNav.preferencesClose.click();
-		sideNav.getChannelFromList('general').waitForExist(5000);
-		sideNav.openChannel('general');
 	});
 
 	describe('Admin view', () => {
@@ -129,7 +127,6 @@ describe('Admin Login', () => {
 			describe('filter text with wrong channel', () => {
 				before(() => {
 					admin.roomsFilter.click();
-					browser.pause(5000);
 					admin.roomsFilter.setValue('something else');
 				});
 
@@ -219,7 +216,6 @@ describe('Admin Login', () => {
 			describe('filter text', () => {
 				before(() => {
 					admin.usersFilter.click();
-					browser.pause(5000);
 					admin.usersFilter.setValue('Rocket.Cat');
 				});
 
@@ -237,7 +233,6 @@ describe('Admin Login', () => {
 			describe('filter text with wrong user', () => {
 				before(() => {
 					admin.usersFilter.click();
-					browser.pause(5000);
 					admin.usersFilter.setValue('something else');
 				});
 

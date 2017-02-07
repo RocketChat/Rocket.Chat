@@ -314,9 +314,6 @@ Template.room.events
 				RoomHistoryManager.getMoreNext(@_id)
 	, 200
 
-	'click .load-more > button': ->
-		RoomHistoryManager.getMore(@_id)
-
 	'click .new-message': (e) ->
 		Template.instance().atBottom = true
 		Template.instance().find('.input-message').focus()

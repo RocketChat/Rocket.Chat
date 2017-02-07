@@ -3,10 +3,9 @@
 
 import loginPage from '../../pageobjects/login.page';
 import mainContent from '../../pageobjects/main-content.page';
-import sideNav from '../../pageobjects/side-nav.page';
 
 //test data imports
-import {username, email, password, adminUsername, adminEmail, adminPassword} from '../../data/user.js';
+import {username, email, password} from '../../data/user.js';
 
 
 
@@ -18,41 +17,14 @@ describe('User Creation', function() {
 		loginPage.open();
 	});
 
-	/*If you are using a clean database dont pass any environment variables
-	if you have an existing database please pass the username (ADMIN_USERNAME) and password (ADMIN_PASS) of the admin as environment variables.*/
-
-	if (process.env.ADMIN_USERNAME && process.env.ADMIN_PASS) {
-		console.log('Admin login and password provided, skipping admin creation.');
-	} else {
-		it.skip('create the admin user', () => {
-			loginPage.gotToRegister();
-
-			loginPage.registerNewAdmin({adminUsername, adminEmail, adminPassword});
-
-			browser.waitForExist('form#login-card input#username', 5000);
-
-			browser.click('.submit > button');
-
-			mainContent.mainContent.waitForExist(5000);
-		});
-
-		it.skip('logout', () => {
-			sideNav.accountBoxUserName.waitForVisible(5000);
-			sideNav.accountBoxUserName.click();
-
-			sideNav.logout.waitForVisible(5000);
-			sideNav.logout.click();
-		});
-	}
-
 	it('create user', () => {
 		loginPage.gotToRegister();
 
 		loginPage.registerNewUser({username, email, password});
 
-		browser.waitForExist('form#login-card input#username', 5000);
+		loginPage.inputUsername.waitForExist(5000);
 
-		browser.click('.submit > button');
+		loginPage.submitButton.click();
 
 		mainContent.mainContent.waitForExist(5000);
 	});

@@ -42,7 +42,6 @@
 				{{#if requirePasswordChange}}
 					{{> loginLayout center="resetPassword"}}
 				{{else}}
-					{{> spotlight}}
 					{{> videoCall overlay=true}}
 					<div id="user-card-popover"></div>
 					<div id="rocket-chat" class="{{embeddedVersion}} menu-nav">
@@ -60,6 +59,7 @@
 				{{/if}}
 			{{/unless}}
 			{{ CustomScriptLoggedIn }}
+			{{> photoswipe}}
 		{{/unless}}
 	{{else}}
 		{{> loading}}

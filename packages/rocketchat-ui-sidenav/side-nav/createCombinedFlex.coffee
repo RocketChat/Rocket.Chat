@@ -71,9 +71,6 @@ Template.createCombinedFlex.events
 	'mouseleave header': ->
 		SideNav.leaveArrow()
 
-	'click footer .all': ->
-		SideNav.setFlex "listCombinedFlex"
-
 	'keydown input[type="text"]': (e, instance) ->
 		Template.instance().error.set([])
 
