@@ -1,5 +1,5 @@
 import Page from './Page';
-import Global from './global'
+import Global from './global';
 
 class FlexTab extends Page {
 	get membersTab() { return browser.element('.flex-tab-bar .icon-users'); }
@@ -86,10 +86,6 @@ class FlexTab extends Page {
 	get emojiNewImageInput() { return browser.element('#image'); }
 
 	getUserEl(username) { return browser.element(`.flex-tab button[title="${username}"] > p`); }
-
-	dismissToast() {
-		this.toastAlert.click();
-	}
 
 	archiveChannel() {
 		this.archiveBtn.waitForVisible();
