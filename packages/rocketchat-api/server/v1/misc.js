@@ -3,9 +3,9 @@ RocketChat.API.v1.addRoute('info', { authRequired: false }, {
 		const user = this.getLoggedInUser();
 
 		if (user && RocketChat.authz.hasRole(user._id, 'admin')) {
-			return {
+			return RocketChat.API.v1.success({
 				info: RocketChat.Info
-			};
+			});
 		}
 
 		return RocketChat.API.v1.success({
