@@ -29,7 +29,7 @@ class ModelRoles extends RocketChat.models._Base {
 		updateData.name = name;
 		updateData.scope = scope;
 
-		if (description) {
+		if (description != null) {
 			updateData.description = description;
 		}
 
