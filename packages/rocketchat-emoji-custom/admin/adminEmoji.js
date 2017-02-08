@@ -90,7 +90,7 @@ Template.adminEmoji.onRendered(() =>
 );
 
 Template.adminEmoji.events({
-	['keydown #emoji-filter'](e) {
+	'keydown #emoji-filter'(e) {
 		//stop enter key
 		if (e.which === 13) {
 			e.stopPropagation();
@@ -98,19 +98,19 @@ Template.adminEmoji.events({
 		}
 	},
 
-	['keyup #emoji-filter'](e, t) {
+	'keyup #emoji-filter'(e, t) {
 		e.stopPropagation();
 		e.preventDefault();
 		t.filter.set(e.currentTarget.value);
 	},
 
-	['click .emoji-info'](e, instance) {
+	'click .emoji-info'(e, instance) {
 		e.preventDefault();
 		instance.tabBarData.set(RocketChat.models.EmojiCustom.findOne({_id: this._id}));
 		instance.tabBar.open('admin-emoji-info');
 	},
 
-	['click .load-more'](e, t) {
+	'click .load-more'(e, t) {
 		e.preventDefault();
 		e.stopPropagation();
 		t.limit.set(t.limit.get() + 50);

@@ -34,7 +34,7 @@ Template.soundInfo.helpers({
 });
 
 Template.soundInfo.events({
-	['click .delete'](e, instance) {
+	'click .delete'(e, instance) {
 		e.stopPropagation();
 		e.preventDefault();
 		const sound = instance.sound.get();
@@ -74,7 +74,7 @@ Template.soundInfo.events({
 		}
 	},
 
-	['click .edit-sound'](e, instance) {
+	'click .edit-sound'(e, instance) {
 		e.stopPropagation();
 		e.preventDefault();
 
