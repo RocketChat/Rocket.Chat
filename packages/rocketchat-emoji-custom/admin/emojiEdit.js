@@ -1,5 +1,5 @@
 import toastr from 'toastr';
-/* globals isSetNotNull */
+
 Template.emojiEdit.helpers({
 	emoji() {
 		return Template.instance().emoji;
@@ -11,24 +11,24 @@ Template.emojiEdit.helpers({
 });
 
 Template.emojiEdit.events({
-	['click .cancel'](e, t) {
+	'click .cancel'(e, t) {
 		e.stopPropagation();
 		e.preventDefault();
 		delete Template.instance().emojiFile;
 		t.cancel(t.find('form'));
 	},
 
-	['submit form'](e, t) {
+	'submit form'(e, t) {
 		e.stopPropagation();
 		e.preventDefault();
 		t.save(e.currentTarget);
 	},
 
-	['change input[type=file]'](ev) {
-		const e = (isSetNotNull(() => ev.originalEvent)) ? ev.originalEvent : ev;
+	'change input[type=file]'(ev) {
+		const e = ev.originalEvent != null ? ev.originalEvent : ev;
 		let files = e.target.files;
-		if (!isSetNotNull(() => e.target.files) || files.length === 0) {
-			if (isSetNotNull(() => e.dataTransfer.files)) {
+		if (files == null || files.length === 0) {
+			if (e.dataTransfer != null && e.dataTransfer.files != null) {
 				files = e.dataTransfer.files;
 			} else {
 				files = [];
@@ -45,7 +45,7 @@ Template.emojiEdit.events({
 });
 
 Template.emojiEdit.onCreated(function() {
-	if (isSetNotNull(() => this.data)) {
+	if (this.data != null) {
 		this.emoji = this.data.emoji;
 	} else {
 		this.emoji = undefined;
@@ -63,7 +63,7 @@ Template.emojiEdit.onCreated(function() {
 
 	this.getEmojiData = () => {
 		const emojiData = {};
-		if (isSetNotNull(() => this.emoji)) {
+		if (this.emoji != null) {
 			emojiData._id = this.emoji._id;
 			emojiData.previousName = this.emoji.name;
 			emojiData.extension = this.emoji.extension;

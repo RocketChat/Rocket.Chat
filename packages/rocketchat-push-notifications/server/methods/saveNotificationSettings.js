@@ -8,11 +8,11 @@ Meteor.methods({
 		check(field, String);
 		check(value, String);
 
-		if (['desktopNotifications', 'mobilePushNotifications', 'emailNotifications', 'unreadAlert'].indexOf(field) === -1) {
+		if (['audioNotification', 'desktopNotifications', 'mobilePushNotifications', 'emailNotifications', 'unreadAlert'].indexOf(field) === -1) {
 			throw new Meteor.Error('error-invalid-settings', 'Invalid settings field', { method: 'saveNotificationSettings' });
 		}
 
-		if (['all', 'mentions', 'nothing', 'default'].indexOf(value) === -1) {
+		if (field !== 'audioNotification' && ['all', 'mentions', 'nothing', 'default'].indexOf(value) === -1) {
 			throw new Meteor.Error('error-invalid-settings', 'Invalid settings value', { method: 'saveNotificationSettings' });
 		}
 
@@ -22,6 +22,9 @@ Meteor.methods({
 		}
 
 		switch (field) {
+			case 'audioNotification':
+				RocketChat.models.Subscriptions.updateAudioNotificationById(subscription._id, value);
+				break;
 			case 'desktopNotifications':
 				RocketChat.models.Subscriptions.updateDesktopNotificationsById(subscription._id, value);
 				break;
