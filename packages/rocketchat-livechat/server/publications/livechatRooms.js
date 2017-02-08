@@ -15,7 +15,7 @@ Meteor.publish('livechat:rooms', function(filter = {}, offset = 0, limit = 20) {
 		to: Match.Maybe(Date)
 	});
 
-	let query = {};
+	const query = {};
 	if (filter.name) {
 		query.label = new RegExp(filter.name, 'i');
 	}
@@ -44,9 +44,9 @@ Meteor.publish('livechat:rooms', function(filter = {}, offset = 0, limit = 20) {
 		query.ts.$lte = filter.to;
 	}
 
-	let self = this;
+	const self = this;
 
-	let handle = RocketChat.models.Rooms.findLivechat(query, offset, limit).observeChanges({
+	const handle = RocketChat.models.Rooms.findLivechat(query, offset, limit).observeChanges({
 		added(id, fields) {
 			self.added('livechatRoom', id, fields);
 		},

@@ -4,7 +4,7 @@ let agentsHandler;
 let monitorAgents = false;
 let actionTimeout = 60000;
 
-let onlineAgents = {
+const onlineAgents = {
 	users: {},
 	queue: {},
 

@@ -1,5 +1,59 @@
 # History
 
+## 0.51.0 - 2017-Fev-07
+
+### Converted several Coffee Script files to JS
+
+- Add .node_version.txt to be included in edge channel
+- Add add-user-to-any-room permission (#5683)
+- Add cache for roles and permissions
+- Add create channel icon to toolbar
+- Add integration name to info logs
+- Add missing required sessionId to api.ai call on externalMessage
+- Add navigation toolbar search
+- Add notification reply when supported
+- Add permissions for adding to each room type
+- Add prometheus monitoring foundation
+- Add query modifier $all to Loki
+- Add rest api to get the statistics
+- Add RocketChat.i18nValidation
+- Add serviceData id based on Rocket.Chat _id
+- Add settings to enable API CORS
+- Add social login buttons wrap
+- Add the http to the incoming webhooks, as that's very useful
+- Add the message counts per room type to the stats
+- Add the owner param to the piwik trackEvents
+- Add toolbar search
+- Fix cache $ne operator
+- Fix color on online status to improve accessibility (#3625)
+- Fix flex-nav select color on windows
+- Fix lag when typing on admin inputs
+- Fix loading animation to show onlywhen room is loading new messages
+- Fix login logo size to max height 150px and remove fixed width
+- Fix message cog on compact view
+- Fix Openshift Templates
+- Fix passing the data to the placeholder replacement (#5914)
+- Fix running afterCreateChannel callbacks
+- Fix screen share to work on electron app
+- Fix several event method to ES6 object notation
+- Fix show send button on paste
+- Fix so internal hubot user name should be lower-case
+- Fix to disallow to change type of direct rooms. Add migration
+- Fix to don’t report gravitar 404 as server error
+- Fix to go back to last room when close admin view
+- Fix to hide utc offset if in same timezone
+- Fix to Omit fields from oauth account provided by rocket.chat
+- Fix to return correct error when parsing json on api
+- Fix toolbar search click
+- Refactor livechat sidenav
+- Remove "Private" button for direct messages
+- Remove xml-encryption module
+- Upgrade jquery to v3
+
+## 0.50.1 - 2017-Jan-24
+
+- Fix cache $ne operator
+
 ## 0.50.0 - 2017-Jan-24
 
 - Add APIs for users.register and users.getAvatar

@@ -62,7 +62,7 @@ window.addEventListener('message', (e) => {
 		return;
 	}
 
-	let origins = RocketChat.settings.get('Iframe_Integration_receive_origin');
+	const origins = RocketChat.settings.get('Iframe_Integration_receive_origin');
 
 	if (origins !== '*' && origins.split(',').indexOf(e.origin) === -1) {
 		return console.error('Origin not allowed', e.origin);

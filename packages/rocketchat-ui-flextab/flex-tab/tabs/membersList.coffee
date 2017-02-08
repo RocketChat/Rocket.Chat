@@ -19,7 +19,7 @@ Template.membersList.helpers
 		roomUsers = Template.instance().users.get()
 		room = ChatRoom.findOne(this.rid)
 		roomMuted = room?.muted or []
-
+		userUtcOffset = Meteor.user().utcOffset
 		totalOnline = 0
 		users = roomUsers.map (user) ->
 			if onlineUsers[user.username]?
@@ -27,9 +27,12 @@ Template.membersList.helpers
 				utcOffset = onlineUsers[user.username].utcOffset
 
 				if utcOffset?
-					if utcOffset > 0
+					if utcOffset is userUtcOffset
+						utcOffset = ""
+					else if utcOffset > 0
 						utcOffset = "+#{utcOffset}"
-					utcOffset = "(UTC #{utcOffset})"
+					else
+						utcOffset = "(UTC #{utcOffset})"
 
 			return {
 				user: user
@@ -62,7 +65,10 @@ Template.membersList.helpers
 	canAddUser: ->
 		roomData = Session.get('roomData' + this._id)
 		return '' unless roomData
-		return roomData.t in ['p', 'c'] and RocketChat.authz.hasAllPermission('add-user-to-room', this._id)
+		return switch roomData.t
+			when 'p' then RocketChat.authz.hasAtLeastOnePermission ['add-user-to-any-p-room', 'add-user-to-joined-room'], this._id
+			when 'c' then RocketChat.authz.hasAtLeastOnePermission ['add-user-to-any-c-room', 'add-user-to-joined-room'], this._id
+			else false
 
 	autocompleteSettingsAddUser: ->
 		return {
