@@ -10,11 +10,11 @@ Meteor.methods({
 			}
 
 			if (settings.newRoomNotification) {
-				preferences.newRoomNotification = settings.newRoomNotification === '1' ? true : false;
+				preferences.newRoomNotification = settings.newRoomNotification;
 			}
 
 			if (settings.newMessageNotification) {
-				preferences.newMessageNotification = settings.newMessageNotification === '1' ? true : false;
+				preferences.newMessageNotification = settings.newMessageNotification;
 			}
 
 			if (settings.useEmojis) {

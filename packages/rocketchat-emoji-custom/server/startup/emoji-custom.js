@@ -1,4 +1,4 @@
-/* globals isSetNotNull, RocketChatFileEmojiCustomInstance */
+/* globals RocketChatFileEmojiCustomInstance */
 Meteor.startup(function() {
 	let storeType = 'GridFS';
 
@@ -8,14 +8,14 @@ Meteor.startup(function() {
 
 	const RocketChatStore = RocketChatFile[storeType];
 
-	if (!isSetNotNull(() => RocketChatStore)) {
+	if (RocketChatStore == null) {
 		throw new Error(`Invalid RocketChatStore type [${storeType}]`);
 	}
 
 	console.log(`Using ${storeType} for custom emoji storage`.green);
 
 	let path = '~/uploads';
-	if (isSetNotNull(() => RocketChat.settings.get('EmojiUpload_FileSystemPath'))) {
+	if (RocketChat.settings.get('EmojiUpload_FileSystemPath') != null) {
 		if (RocketChat.settings.get('EmojiUpload_FileSystemPath').trim() !== '') {
 			path = RocketChat.settings.get('EmojiUpload_FileSystemPath');
 		}
@@ -41,7 +41,7 @@ Meteor.startup(function() {
 
 		res.setHeader('Content-Disposition', 'inline');
 
-		if (!isSetNotNull(() => file)) {
+		if (file == null) {
 			//use code from username initials renderer until file upload is complete
 			res.setHeader('Content-Type', 'image/svg+xml');
 			res.setHeader('Cache-Control', 'public, max-age=0');
@@ -73,12 +73,12 @@ Meteor.startup(function() {
 		}
 
 		let fileUploadDate = undefined;
-		if (isSetNotNull(() => file.uploadDate)) {
+		if (file.uploadDate != null) {
 			fileUploadDate = file.uploadDate.toUTCString();
 		}
 
 		const reqModifiedHeader = req.headers['if-modified-since'];
-		if (isSetNotNull(() => reqModifiedHeader)) {
+		if (reqModifiedHeader != null) {
 			if (reqModifiedHeader === fileUploadDate) {
 				res.setHeader('Last-Modified', reqModifiedHeader);
 				res.writeHead(304);
@@ -89,7 +89,7 @@ Meteor.startup(function() {
 
 		res.setHeader('Cache-Control', 'public, max-age=0');
 		res.setHeader('Expires', '-1');
-		if (isSetNotNull(() => fileUploadDate)) {
+		if (fileUploadDate != null) {
 			res.setHeader('Last-Modified', fileUploadDate);
 		} else {
 			res.setHeader('Last-Modified', new Date().toUTCString());
