@@ -45,7 +45,8 @@ const getFromServer = (cb, type) => {
 				resultsFromServer.push({
 					_id: results.users[i]._id,
 					t: 'd',
-					name: results.users[i].username
+					name: results.users[i].username,
+					fname: results.users[i].name
 				});
 			}
 		}
