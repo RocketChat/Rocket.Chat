@@ -394,7 +394,10 @@ RocketChat.API.v1.addRoute('channels.online', { authRequired: true }, {
 		const onlineInRoom = [];
 		online.forEach(user => {
 			if (room.usernames.indexOf(user.username) !== -1) {
-				onlineInRoom.push(user.username);
+				onlineInRoom.push({
+					_id: user._id,
+					username: user.username
+				});
 			}
 		});
 
