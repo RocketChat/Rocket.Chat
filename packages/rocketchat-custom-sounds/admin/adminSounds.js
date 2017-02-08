@@ -94,7 +94,7 @@ Template.adminSounds.onRendered(() =>
 );
 
 Template.adminSounds.events({
-	['keydown #sound-filter'](e) {
+	'keydown #sound-filter'(e) {
 		//stop enter key
 		if (e.which === 13) {
 			e.stopPropagation();
@@ -102,26 +102,26 @@ Template.adminSounds.events({
 		}
 	},
 
-	['keyup #sound-filter'](e, t) {
+	'keyup #sound-filter'(e, t) {
 		e.stopPropagation();
 		e.preventDefault();
 		t.filter.set(e.currentTarget.value);
 	},
 
-	['click .sound-info'](e, instance) {
+	'click .sound-info'(e, instance) {
 		e.preventDefault();
 		instance.tabBarData.set(RocketChat.models.CustomSounds.findOne({_id: this._id}));
 		instance.tabBar.showGroup('custom-sounds-selected');
 		instance.tabBar.open('admin-sound-info');
 	},
 
-	['click .load-more'](e, t) {
+	'click .load-more'(e, t) {
 		e.preventDefault();
 		e.stopPropagation();
 		t.limit.set(t.limit.get() + 50);
 	},
 
-	['click .icon-play-circled'](e) {
+	'click .icon-play-circled'(e) {
 		e.preventDefault();
 		e.stopPropagation();
 		const $audio = $('audio#' + this._id);
