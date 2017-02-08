@@ -26,7 +26,7 @@ Meteor.methods({
 			} else {
 				userQuery.sort.username = 1;
 			}
-			result.users = RocketChat.models.Users.findByActiveUsersUsernameExcept(text, usernames, userQuery).fetch();
+			result.users = RocketChat.models.Users.findByActiveUsersExcept(text, usernames, userQuery).fetch();
 		}
 
 		if (type.rooms === true && RocketChat.authz.hasPermission(this.userId, 'view-c-room')) {
