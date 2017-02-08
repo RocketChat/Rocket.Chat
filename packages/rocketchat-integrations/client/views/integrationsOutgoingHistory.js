@@ -1,5 +1,33 @@
-/* global ChatIntegrationHistory, hljs */
+/* global ChatIntegrations, ChatIntegrationHistory, hljs */
 import moment from 'moment';
+import toastr from 'toastr';
+
+Template.integrationsOutgoingHistory.onCreated(function _integrationsOutgoingHistoryOnCreated() {
+	this.autorun(() => {
+		const id = this.data && this.data.params && this.data.params().id;
+
+		if (id) {
+			const sub = this.subscribe('integrations');
+			if (sub.ready()) {
+				let intRecord;
+
+				if (RocketChat.authz.hasAllPermission('manage-integrations')) {
+					intRecord = ChatIntegrations.findOne({ _id: id });
+				} else if (RocketChat.authz.hasAllPermission('manage-own-integrations')) {
+					intRecord = ChatIntegrations.findOne({ _id: id, '_createdBy._id': Meteor.userId() });
+				}
+
+				if (!intRecord) {
+					toastr.error(TAPi18n.__('No_integration_found'));
+					FlowRouter.go('admin-integrations');
+				}
+			}
+		} else {
+			toastr.error(TAPi18n.__('No_integration_found'));
+			FlowRouter.go('admin-integrations');
+		}
+	});
+});
 
 Template.integrationsOutgoingHistory.helpers({
 	hasPermission() {
@@ -20,8 +48,18 @@ Template.integrationsOutgoingHistory.helpers({
 		});
 	},
 
-	iconClass(error) {
-		return typeof error !== 'undefined' && error ? 'icon-cancel-circled error-color' : 'icon-ok-circled success-color';
+	hasProperty(history, property) {
+		return typeof history[property] !== 'undefined' || history[property] != null;
+	},
+
+	iconClass(history) {
+		if (typeof history.error !== 'undefined' && history.error) {
+			return 'icon-cancel-circled error-color';
+		} else if (history.finished) {
+			return 'icon-ok-circled success-color';
+		} else {
+			return 'icon-help-circled';
+		}
 	},
 
 	statusI18n(error) {
@@ -29,7 +67,11 @@ Template.integrationsOutgoingHistory.helpers({
 	},
 
 	formatDate(date) {
-		return moment(date).format('L LT');
+		return moment(date).format('L LTS');
+	},
+
+	formatDateDetail(date) {
+		return moment(date).format('L HH:mm:ss:SSSS');
 	},
 
 	eventTypei18n(event) {
@@ -37,7 +79,21 @@ Template.integrationsOutgoingHistory.helpers({
 	},
 
 	jsonStringify(data) {
-		return hljs.highlight('json', JSON.stringify(data, null, 2)).value;
+		return data ? hljs.highlight('json', JSON.stringify(data, null, 2)).value : '';
+	},
+
+	hljsStack(errorStack) {
+		if (!errorStack) {
+			return '';
+		} else if (typeof errorStack === 'object') {
+			return hljs.highlight('json', JSON.stringify(errorStack, null, 2)).value;
+		} else {
+			return hljs.highlight('json', errorStack).value;
+		}
+	},
+
+	integrationId() {
+		return this.params && this.params() && this.params().id;
 	}
 });
 
@@ -53,7 +109,33 @@ Template.integrationsOutgoingHistory.events({
 		$(e.currentTarget).closest('button').addClass('expand').removeClass('collapse').find('span').text(TAPi18n.__('Expand'));
 	},
 
-	'click .replay': (e) => {
-		console.log($(e.currentTarget).attr('data-history-id'));
+	'click .replay': (e, t) => {
+		if (!t || !t.data || !t.data.params || !t.data.params().id) {
+			return;
+		}
+
+		const historyId = $(e.currentTarget).attr('data-history-id');
+
+		Meteor.call('replayOutgoingIntegration', { integrationId: t.data.params().id, historyId }, (e) => {
+			if (e) {
+				handleError(e);
+				return;
+			}
+		});
+	},
+
+	'click .clear-history': (e, t) => {
+		if (!t || !t.data || !t.data.params || !t.data.params().id) {
+			return;
+		}
+
+		Meteor.call('clearIntegrationHistory', t.data.params().id, (e) => {
+			if (e) {
+				handleError(e);
+				return;
+			}
+
+			toastr.success(TAPi18n.__('Integration_History_Cleared'));
+		});
 	}
 });

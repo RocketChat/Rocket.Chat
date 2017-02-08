@@ -12,6 +12,7 @@
             </div>
         </header>
         <div class="content background-transparent-dark">
+			<a href="{{pathFor "admin-integrations"}}"><i class="icon-angle-left"></i> {{_ "Back_to_integrations"}}</a><br><br>
             {{#unless hasPermission}}
                 <p>{{_ "You_are_not_authorized_to_view_this_page"}}</p>
             {{else}}
@@ -178,17 +179,55 @@
 							{{/if}}
 						</div>
 					</div>
-					<div class="section section-collapsed">
-						<div class="section-title">
-							<div class="section-title-text">{{_ "Advanced Settings"}}</div>
-							<div class="section-title-right">
-								<button class="button primary expand"><span>{{_ "Expand"}}</span></button>
+					{{#if hasTypeSelected}}
+						<div class="section section-collapsed">
+							<div class="section-title">
+								<div class="section-title-text">{{_ "Advanced Settings"}}</div>
+								<div class="section-title-right">
+									<button class="button primary expand"><span>{{_ "Expand"}}</span></button>
+								</div>
+							</div>
+							<div class="section-content">
+								<div class="input-line double-col">
+									<label>{{_ "Retry Failed Url Calls"}}</label>
+									<div>
+										<label><input type="radio" name="retryFailedCalls" value="1" checked="{{$eq data.retryFailedCalls true}}" /> {{_ "True"}}</label>
+										<label><input type="radio" name="retryFailedCalls" value="0" checked="{{$neq data.retryFailedCalls true}}" /> {{_ "False"}}</label>
+										<div class="settings-description">{{_ "Should the integration try a reasonable amount of time if the call out to the url fails?"}}</div>
+									</div>
+								</div>
+								{{#if data.retryFailedCalls}}
+									<div class="input-line double-col">
+										<label>{{_ "Retry Count"}}</label>
+										<div>
+											<input type="number" name="retryCount" value="{{data.retryCount}}" />
+											<div class="settings-description">{{_ "How many times should the integration be tried if the call to the url fails?"}}</div>
+										</div>
+									</div>
+									<div class="input-line double-col">
+										<label>{{_ "Retry Timeline"}}</label>
+										<div>
+											<select name="retryTimeline" class="required">
+												<option value="powers-of-ten" selected="{{$eq data.retryTimeline 'powers-of-ten'}}" dir="auto">{{_ 'powers-of-ten'}}</option>
+												<option value="multipules-of-two" selected="{{$eq data.retryTimeline 'multipules-of-two'}}" dir="auto">{{_ 'multipules-of-two'}}</option>
+											</select>
+											<div class="settings-description">{{{_ "Which algoritem should the retrying use? <code class=\"inline\">10^x</code> or <code class=\"inline\">x*2</code>?"}}}</div>
+										</div>
+									</div>
+								{{/if}}
+								{{#if shouldDisplayTriggerWords}}
+									<div class="input-line double-col">
+										<label>{{_ "Trigger Word Anywhere"}}</label>
+										<div>
+											<label><input type="radio" name="triggerWordAnywhere" value="1" checked="{{$eq data.triggerWordAnywhere true}}" /> {{_ "True"}}</label>
+											<label><input type="radio" name="triggerWordAnywhere" value="0" checked="{{$neq data.triggerWordAnywhere true}}" /> {{_ "False"}}</label>
+											<div class="settings-description">{{_ "Should the trigger word be anywhere? False means the trigger word can only be at the start."}}</div>
+										</div>
+									</div>
+								{{/if}}
 							</div>
 						</div>
-						<div class="section-content">
-							<h1>TODO</h1>
-						</div>
-					</div>
+					{{/if}}
                 </div>
 			{{/unless}}
         </div>

@@ -11,7 +11,7 @@ Template.integrations.helpers({
 	dateFormated(date) {
 		return moment(date).format('L LT');
 	},
-	eventType18n(event) {
+	eventTypeI18n(event) {
 		return TAPi18n.__(RocketChat.integrations.outgoingEvents[event].label);
 	}
 });

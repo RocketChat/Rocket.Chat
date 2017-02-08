@@ -3,27 +3,58 @@
 import toastr from 'toastr';
 
 Template.integrationsOutgoing.onCreated(function _integrationsOutgoingOnCreated() {
-	const params = this.data.params ? this.data.params() : undefined;
-	let data;
+	this.record = new ReactiveVar({
+		username: 'rocket.cat',
+		token: Random.id(24),
+		retryFailedCalls: true,
+		retryCount: 6
+	});
 
-	if (params && params.id) {
-		if (RocketChat.authz.hasAllPermission('manage-integrations')) {
-			data = ChatIntegrations.findOne({ _id: params.id });
-		} else if (RocketChat.authz.hasAllPermission('manage-own-integrations')) {
-			data = ChatIntegrations.findOne({ _id: params.id, '_createdBy._id': Meteor.userId() });
-		}
+	this.updateRecord = () => {
+		this.record.set({
+			enabled: $('[name=enabled]:checked').val().trim() === '1',
+			event: $('[name=event]').val().trim(),
+			name: $('[name=name]').val().trim(),
+			alias: $('[name=alias]').val().trim(),
+			emoji: $('[name=emoji]').val().trim(),
+			avatar: $('[name=avatar]').val().trim(),
+			channel: $('[name=channel]').val()? $('[name=channel]').val().trim() : undefined,
+			username: $('[name=username]').val().trim(),
+			triggerWords: $('[name=triggerWords]').val() ? $('[name=triggerWords]').val().trim() : undefined,
+			urls: $('[name=urls]').val().trim(),
+			token: $('[name=token]').val().trim(),
+			scriptEnabled: $('[name=scriptEnabled]:checked').val().trim() === '1',
+			script: $('[name=script]').val().trim(),
+			targetRoom: $('[name=targetRoom]').val() ? $('[name=targetRoom]').val().trim() : undefined,
+			triggerWordAnywhere: $('[name=triggerWordAnywhere]').val() ? $('[name=triggerWordAnywhere]').val().trim() : undefined,
+			retryFailedCalls: $('[name=retryFailedCalls]:checked').val().trim() === '1',
+			retryCount: $('[name=retryCount]').val() ? $('[name=retryCount]').val().trim() : 6
+		});
+	};
 
-		if (data) {
-			if (!data.token) {
-				data.token = Random.id(24);
+	this.autorun(() => {
+		const id = this.data && this.data.params && this.data.params().id;
+
+		if (id) {
+			const sub = this.subscribe('integrations');
+			if (sub.ready()) {
+				let intRecord;
+
+				if (RocketChat.authz.hasAllPermission('manage-integrations')) {
+					intRecord = ChatIntegrations.findOne({ _id: id });
+				} else if (RocketChat.authz.hasAllPermission('manage-own-integrations')) {
+					intRecord = ChatIntegrations.findOne({ _id: id, '_createdBy._id': Meteor.userId() });
+				}
+
+				if (intRecord) {
+					this.record.set(intRecord);
+				} else {
+					toastr.error(TAPi18n.__('No_integration_found'));
+					FlowRouter.go('admin-integrations');
+				}
 			}
 		}
-	}
-
-	return this.record = new ReactiveVar(Object.assign({
-		username: 'rocket.cat',
-		token: Random.id(24)
-	}, data));
+	});
 });
 
 Template.integrationsOutgoing.helpers({
@@ -36,7 +67,7 @@ Template.integrationsOutgoing.helpers({
 	},
 
 	showHistoryButton() {
-		return this.params && this.params() && this.params().id;
+		return this.params && this.params() && typeof this.params().id !== 'undefined';
 	},
 
 	hasPermission() {
@@ -48,7 +79,7 @@ Template.integrationsOutgoing.helpers({
 	},
 
 	canDelete() {
-		return Template.instance().record.get()._id !== undefined;
+		return this.params && this.params() && typeof this.params().id !== 'undefined';
 	},
 
 	eventTypes() {
@@ -156,22 +187,14 @@ Template.integrationsOutgoing.helpers({
 
 Template.integrationsOutgoing.events({
 	'blur input': (e, t) => {
-		t.record.set({
-			event: $('[name=event]').val().trim(),
-			name: $('[name=name]').val().trim(),
-			alias: $('[name=alias]').val().trim(),
-			emoji: $('[name=emoji]').val().trim(),
-			avatar: $('[name=avatar]').val().trim(),
-			channel: $('[name=channel]').val()? $('[name=channel]').val().trim() : undefined,
-			username: $('[name=username]').val().trim(),
-			triggerWords: $('[name=triggerWords]').val() ? $('[name=triggerWords]').val().trim() : undefined,
-			urls: $('[name=urls]').val().trim(),
-			token: $('[name=token]').val().trim(),
-			targetRoom: $('[name=targetRoom]').val() ? $('[name=targetRoom]').val().trim() : undefined
-		});
+		t.updateRecord();
 	},
 
-	'change select': (e, t) => {
+	'click input[type=radio]': (e, t) => {
+		t.updateRecord();
+	},
+
+	'change select[name=event]': (e, t) => {
 		const record = t.record.get();
 		record.event = $('[name=event]').val().trim();
 
@@ -247,6 +270,7 @@ Template.integrationsOutgoing.events({
 		const token = $('[name=token]').val().trim();
 		const scriptEnabled = $('[name=scriptEnabled]:checked').val().trim();
 		const script = $('[name=script]').val().trim();
+		const retryFailedCalls = $('[name=retryFailedCalls]:checked').val().trim();
 		let urls = $('[name=urls]').val().trim();
 
 		if (username === '' && impersonateUser === '0') {
@@ -258,10 +282,12 @@ Template.integrationsOutgoing.events({
 			return toastr.error(TAPi18n.__('You_should_inform_one_url_at_least'));
 		}
 
-		let triggerWords;
+		let triggerWords, triggerWordAnywhere;
 		if (RocketChat.integrations.outgoingEvents[event].use.triggerWords) {
 			triggerWords = $('[name=triggerWords]').val().trim();
 			triggerWords = triggerWords.split(',').filter((word) => word.trim() !== '');
+
+			triggerWordAnywhere = $('[name=triggerWordAnywhere]').val().trim();
 		}
 
 		let channel;
@@ -282,6 +308,11 @@ Template.integrationsOutgoing.events({
 			}
 		}
 
+		let retryCount;
+		if (retryFailedCalls === '1') {
+			retryCount = parseInt($('[name=retryCount]').val().trim());
+		}
+
 		const integration = {
 			event: event !== '' ? event : undefined,
 			enabled: enabled === '1',
@@ -297,7 +328,10 @@ Template.integrationsOutgoing.events({
 			token: token !== '' ? token : undefined,
 			script: script !== '' ? script : undefined,
 			scriptEnabled: scriptEnabled === '1',
-			impersonateUser: impersonateUser === '1'
+			impersonateUser: impersonateUser === '1',
+			retryFailedCalls: retryFailedCalls === '1',
+			retryCount: retryCount ? retryCount : 6,
+			triggerWordAnywhere: triggerWordAnywhere === '1'
 		};
 
 		const params = Template.instance().data.params? Template.instance().data.params() : undefined;

@@ -75,6 +75,14 @@ function _verifyUserHasPermissionForChannels(integration, userId, channels) {
 	}
 }
 
+function _verifyRetryInformation(integration) {
+	if (!integration.retryFailedCalls) {
+		return;
+	}
+
+	integration.retryCount = integration.retryCount ? parseInt(integration.retryCount) : 6;
+}
+
 RocketChat.integrations.validateOutgoing = function _validateOutgoing(integration, userId) {
 	if (integration.channel && Match.test(integration.channel, String) && integration.channel.trim() === '') {
 		delete integration.channel;
@@ -129,6 +137,7 @@ RocketChat.integrations.validateOutgoing = function _validateOutgoing(integratio
 	}
 
 	_verifyUserHasPermissionForChannels(integration, userId, channels);
+	_verifyRetryInformation(integration);
 
 	const user = RocketChat.models.Users.findOne({ username: integration.username });
 

@@ -5,9 +5,8 @@ FlowRouter.route('/admin/integrations', {
 	},
 	action() {
 		return BlazeLayout.render('main', {
-			center: 'pageSettingsContainer',
-			pageTitle: t('Integrations'),
-			pageTemplate: 'integrations'
+			center: 'integrations',
+			pageTitle: t('Integrations')
 		});
 	}
 });
@@ -19,9 +18,8 @@ FlowRouter.route('/admin/integrations/new', {
 	},
 	action() {
 		return BlazeLayout.render('main', {
-			center: 'pageSettingsContainer',
-			pageTitle: t('Integration_New'),
-			pageTemplate: 'integrationsNew'
+			center: 'integrationsNew',
+			pageTitle: t('Integration_New')
 		});
 	}
 });
@@ -43,13 +41,6 @@ FlowRouter.route('/admin/integrations/incoming/:id?', {
 
 FlowRouter.route('/admin/integrations/outgoing/:id?', {
 	name: 'admin-integrations-outgoing',
-	subscriptions(params) {
-		this.register('integrations', Meteor.subscribe('integrations'));
-
-		if (params.id) {
-			this.register('integrationHistory', Meteor.subscribe('integrationHistory', params.id));
-		}
-	},
 	action(params) {
 		return BlazeLayout.render('main', {
 			center: 'integrationsOutgoing',

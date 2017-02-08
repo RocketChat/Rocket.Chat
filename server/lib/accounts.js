@@ -128,9 +128,6 @@ Accounts.insertUserDoc = _.wrap(Accounts.insertUserDoc, function(insertUserDoc, 
 	}
 
 	RocketChat.authz.addUserRoles(_id, roles);
-	Meteor.defer(function() {
-		return RocketChat.callbacks.run('afterCreateUser', options, user);
-	});
 
 	return _id;
 });

@@ -40,6 +40,9 @@ Meteor.methods({
 				scriptCompiled: integration.scriptCompiled,
 				scriptError: integration.scriptError,
 				triggerWords: integration.triggerWords,
+				retryFailedCalls: integration.retryFailedCalls,
+				retryCount: integration.retryCount,
+				triggerWordAnywhere: integration.triggerWordAnywhere,
 				_updatedAt: new Date(),
 				_updatedBy: RocketChat.models.Users.findOne(this.userId, {fields: {username: 1}})
 			}

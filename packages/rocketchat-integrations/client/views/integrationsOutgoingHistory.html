@@ -5,23 +5,28 @@
             <h2>
                 <span class="room-title">{{pageTitle}}</span>
             </h2>
+			{{#if hasPermission}}
+				<div class="submit">
+					<button class="button danger clear-history"><i class="icon-history"></i>{{_ "clear_history"}}</button>
+				</div>
+			{{/if}}
         </header>
         <div class="content background-transparent-dark">
             {{#unless hasPermission}}
                 <p>{{_ "You_are_not_authorized_to_view_this_page"}}</p>
             {{else}}
+				<a href="{{pathFor "admin-integrations-outgoing" id=integrationId}}"><i class="icon-angle-left"></i> {{_ "Back_to_integration_detail"}}</a><br><br>
+
                 <div class="rocket-form">
 					{{#each history in histories}}
 						<div class="section section-collapsed">
 							<div class="section-title">
 								<div class="section-title-text">
-									<i class="{{iconClass history.error}}"></i>
-									{{formatDate history._updatedAt}}
+									<i class="{{iconClass history}}"></i>
+									{{formatDate history._createdAt}}
 								</div>
 								<div class="section-title-right">
-									{{#if history.error}}
-										<button class="button replay" data-history-id="{{ history._id }}">Replay</button>
-									{{/if}}
+									<button class="button replay" data-history-id="{{ history._id }}">Replay</button>
 									<button class="button primary expand">
 										<span>{{_ "Expand"}}</span>
 									</button>
@@ -37,13 +42,13 @@
 								<div class="input-line double-col">
 									<label>{{_ "Time_Started"}}</label>
 									<div>
-										<input class="input-monitor" type="text" disabled value="{{formatDate history._createdAt}}">
+										<input class="input-monitor" type="text" disabled value="{{formatDateDetail history._createdAt}}">
 									</div>
 								</div>
 								<div class="input-line double-col">
 									<label>{{_ "Time_Ended_Or_Erorred"}}</label>
 									<div>
-										<input class="input-monitor" type="text" disabled value="{{formatDate history._updatedAt}}">
+										<input class="input-monitor" type="text" disabled value="{{formatDateDetail history._updatedAt}}">
 									</div>
 								</div>
 								<div class="input-line double-col">
@@ -63,6 +68,54 @@
 									<div>
 										<pre><code class="code-colors hljs json">{{{ jsonStringify history.data }}}</code></pre>
 									</div>
+								</div>
+								{{#if hasProperty history 'url'}}
+									<div class="input-line double-col">
+										<label>{{_ "Http Url"}}</label>
+										<div>
+											<pre><code class="code-colors hljs json">{{ history.url }}</code></pre>
+										</div>
+									</div>
+								{{/if}}
+								{{#if hasProperty history 'httpCallData'}}
+									<div class="input-line double-col">
+										<label>{{_ "Http Call Data"}}</label>
+										<div>
+											<pre><code class="code-colors hljs json">{{{jsonStringify history.httpCallData }}}</code></pre>
+										</div>
+									</div>
+								{{/if}}
+								{{#if hasProperty history 'httpError'}}
+									<div class="input-line double-col">
+										<label>{{_ "Http Url Call Error"}}</label>
+										<div>
+											<pre><code class="code-colors hljs json">{{{ jsonStringify history.httpError }}}</code></pre>
+										</div>
+									</div>
+								{{/if}}
+								{{#if hasProperty history 'httpResult'}}
+									<div class="input-line double-col">
+										<label>{{_ "Http Result"}}</label>
+										<div>
+											<pre><code class="code-colors hljs json">{{{ jsonStringify history.httpResult }}}</code></pre>
+										</div>
+									</div>
+								{{/if}}
+								{{#if hasProperty history 'errorStack'}}
+									<div class="input-line double-col">
+										<label>{{_ "Error StackTrace"}}</label>
+										<div>
+											<pre><code class="code-colors hljs json">{{{ hljsStack history.errorStack }}}</code></pre>
+										</div>
+									</div>
+								{{/if}}
+							</div>
+						</div>
+					{{else}}
+						<div class="section">
+							<div class="section-title">
+								<div class="section-title-text">
+									{{_ "Integration_Outgoing_WebHook_No_History"}}
 								</div>
 							</div>
 						</div>

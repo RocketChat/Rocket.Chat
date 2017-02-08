@@ -60,7 +60,9 @@ Package.onUse(function(api) {
 	api.addFiles('server/methods/incoming/deleteIncomingIntegration.js', 'server');
 	api.addFiles('server/methods/outgoing/addOutgoingIntegration.js', 'server');
 	api.addFiles('server/methods/outgoing/updateOutgoingIntegration.js', 'server');
+	api.addFiles('server/methods/outgoing/replayOutgoingIntegration.js', 'server');
 	api.addFiles('server/methods/outgoing/deleteOutgoingIntegration.js', 'server');
+	api.addFiles('server/methods/clearIntegrationHistory.js', 'server');
 
 	// api
 	api.addFiles('server/api/api.coffee', 'server');
