@@ -1,7 +1,7 @@
-/* globals isSetNotNull, RocketChatTabBar */
+/* globals RocketChatTabBar */
 Template.adminSounds.helpers({
 	isReady() {
-		if (isSetNotNull(() => Template.instance().ready)) {
+		if (Template.instance().ready != null) {
 			return Template.instance().ready.get();
 		}
 		return undefined;
@@ -10,14 +10,14 @@ Template.adminSounds.helpers({
 		return Template.instance().customsounds();
 	},
 	isLoading() {
-		if (isSetNotNull(() => Template.instance().ready)) {
+		if (Template.instance().ready != null) {
 			if (!Template.instance().ready.get()) {
 				return 'btn-loading';
 			}
 		}
 	},
 	hasMore() {
-		if (isSetNotNull(() => Template.instance().limit)) {
+		if (Template.instance().limit != null) {
 			if (typeof Template.instance().customsounds === 'function') {
 				return Template.instance().limit.get() === Template.instance().customsounds().length;
 			}
@@ -65,13 +65,13 @@ Template.adminSounds.onCreated(function() {
 	});
 
 	this.autorun(function() {
-		const limit = (isSetNotNull(() => instance.limit))? instance.limit.get() : 0;
+		const limit = (instance.limit != null) ? instance.limit.get() : 0;
 		const subscription = instance.subscribe('customSounds', '', limit);
 		instance.ready.set(subscription.ready());
 	});
 
 	this.customsounds = function() {
-		const filter = (isSetNotNull(() => instance.filter))? _.trim(instance.filter.get()) : '';
+		const filter = (instance.filter != null) ? _.trim(instance.filter.get()) : '';
 
 		let query = {};
 
@@ -80,7 +80,7 @@ Template.adminSounds.onCreated(function() {
 			query = { name: filterReg };
 		}
 
-		const limit = (isSetNotNull(() => instance.limit))? instance.limit.get() : 0;
+		const limit = (instance.limit != null) ? instance.limit.get() : 0;
 
 		return RocketChat.models.CustomSounds.find(query, { limit: limit, sort: { name: 1 }}).fetch();
 	};

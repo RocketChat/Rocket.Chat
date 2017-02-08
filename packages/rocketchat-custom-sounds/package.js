@@ -19,8 +19,6 @@ Package.onUse(function(api) {
 
 	api.use('kadira:flow-router', 'client');
 
-	api.addFiles('function-isSet.js');
-
 	api.addFiles('server/startup/custom-sounds.js', 'server');
 	api.addFiles('server/startup/permissions.js', 'server');
 	api.addFiles('server/startup/settings.js', 'server');

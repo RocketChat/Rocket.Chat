@@ -1,5 +1,5 @@
 import toastr from 'toastr';
-/* globals isSetNotNull */
+
 Template.soundEdit.helpers({
 	sound() {
 		return Template.instance().sound;
@@ -25,10 +25,10 @@ Template.soundEdit.events({
 	},
 
 	'change input[type=file]'(ev) {
-		const e = (isSetNotNull(() => ev.originalEvent)) ? ev.originalEvent : ev;
+		const e = (ev.originalEvent != null) ? ev.originalEvent : ev;
 		let files = e.target.files;
-		if (!isSetNotNull(() => e.target.files) || files.length === 0) {
-			if (isSetNotNull(() => e.dataTransfer.files)) {
+		if (e.target.files == null || files.length === 0) {
+			if (e.dataTransfer.files != null) {
 				files = e.dataTransfer.files;
 			} else {
 				files = [];
@@ -45,7 +45,7 @@ Template.soundEdit.events({
 });
 
 Template.soundEdit.onCreated(function() {
-	if (isSetNotNull(() => this.data)) {
+	if (this.data != null) {
 		this.sound = this.data.sound;
 	} else {
 		this.sound = undefined;
@@ -62,7 +62,7 @@ Template.soundEdit.onCreated(function() {
 
 	this.getSoundData = () => {
 		const soundData = {};
-		if (isSetNotNull(() => this.sound)) {
+		if (this.sound != null) {
 			soundData._id = this.sound._id;
 			soundData.previousName = this.sound.name;
 			soundData.extension = this.sound.extension;
