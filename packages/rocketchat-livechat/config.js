@@ -227,4 +227,11 @@ Meteor.startup(function() {
 		enableQuery: { _id: 'Livechat_Routing_Method', value: 'Guest_Pool' }
 	});
 
+	RocketChat.settings.add('Livechat_AllowedDomainsList', '', {
+		type: 'string',
+		group: 'Livechat',
+		public: true,
+		i18nLabel: 'Livechat_AllowedDomainsList',
+		i18nDescription: 'Domains_allowed_to_embed_the_livechat_widget'
+	});
 });

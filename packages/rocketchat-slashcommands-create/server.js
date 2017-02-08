@@ -1,9 +1,23 @@
 function Create(command, params, item) {
+	function getParams(str) {
+		const regex = /(--(\w+))+/g;
+		const result = [];
+		let m;
+		while ((m = regex.exec(str)) !== null) {
+			if (m.index === regex.lastIndex) {
+				regex.lastIndex++;
+			}
+			result.push(m[2]);
+		}
+		return result;
+	}
 	var channel, room, user;
+	var regexp = /#?([\d-_\w]+)/g;
 	if (command !== 'create' || !Match.test(params, String)) {
 		return;
 	}
-	channel = params.trim();
+	channel = regexp.exec(params.trim());
+	channel = channel ? channel[1] : '';
 	if (channel === '') {
 		return;
 	}
@@ -22,6 +36,11 @@ function Create(command, params, item) {
 		});
 		return;
 	}
+
+	if (getParams(params).indexOf('private') > -1) {
+		return Meteor.call('createPrivateGroup', channel, []);
+	}
+
 	Meteor.call('createChannel', channel, []);
 }
 

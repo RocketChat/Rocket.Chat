@@ -1,12 +1,12 @@
 /* globals isSetNotNull */
 Template.emojiInfo.helpers({
 	name() {
-		let emoji = Template.instance().emoji.get();
+		const emoji = Template.instance().emoji.get();
 		return emoji.name;
 	},
 
 	aliases() {
-		let emoji = Template.instance().emoji.get();
+		const emoji = Template.instance().emoji.get();
 		return emoji.aliases;
 	},
 
@@ -19,14 +19,15 @@ Template.emojiInfo.helpers({
 	},
 
 	emojiToEdit() {
-		let instance = Template.instance();
+		const instance = Template.instance();
 		return {
+			tabBar: this.tabBar,
 			emoji: instance.emoji.get(),
 			back(name) {
 				instance.editingEmoji.set();
 
 				if (isSetNotNull(() => name)) {
-					let emoji = instance.emoji.get();
+					const emoji = instance.emoji.get();
 					if (isSetNotNull(() => emoji.name) && emoji.name !== name) {
 						return instance.loadedName.set(name);
 					}
@@ -44,9 +45,9 @@ Template.emojiInfo.events({
 	['click .delete'](e, instance) {
 		e.stopPropagation();
 		e.preventDefault();
-		let emoji = instance.emoji.get();
+		const emoji = instance.emoji.get();
 		if (isSetNotNull(() => emoji)) {
-			let _id = emoji._id;
+			const _id = emoji._id;
 			swal({
 				title: t('Are_you_sure'),
 				text: t('Custom_Emoji_Delete_Warning'),
@@ -73,8 +74,7 @@ Template.emojiInfo.events({
 							showConfirmButton: false
 						});
 
-						RocketChat.TabBar.showGroup('adminEmoji');
-						RocketChat.TabBar.closeFlex();
+						instance.tabBar.close();
 					}
 				});
 			});
@@ -96,16 +96,18 @@ Template.emojiInfo.onCreated(function() {
 
 	this.loadedName = new ReactiveVar();
 
+	this.tabBar = Template.currentData().tabBar;
+
 	this.autorun(() => {
-		let data = Template.currentData();
+		const data = Template.currentData();
 		if (isSetNotNull(() => data.clear)) {
 			this.clear = data.clear;
 		}
 	});
 
 	this.autorun(() => {
-		let data = Template.currentData();
-		let emoji = this.emoji.get();
+		const data = Template.currentData();
+		const emoji = this.emoji.get();
 		if (isSetNotNull(() => emoji.name)) {
 			this.loadedName.set(emoji.name);
 		} else if (isSetNotNull(() => data.name)) {
@@ -114,7 +116,7 @@ Template.emojiInfo.onCreated(function() {
 	});
 
 	this.autorun(() => {
-		let data = Template.currentData();
+		const data = Template.currentData();
 		this.emoji.set(data);
 	});
 });

@@ -1,4 +1,4 @@
-/* globals fireGlobalEvent, readMessage, RoomManager, Favico, favico, menu */
+/* globals fireGlobalEvent, readMessage, Favico, favico, menu */
 
 Meteor.startup(function() {
 	Tracker.autorun(function() {
@@ -14,7 +14,7 @@ Meteor.startup(function() {
 			}
 		});
 
-		for (let subscription of subscriptions.fetch()) {
+		for (const subscription of subscriptions.fetch()) {
 			fireGlobalEvent('unread-changed-by-subscription', subscription);
 
 			if (subscription.alert || subscription.unread > 0) {

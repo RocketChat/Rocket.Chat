@@ -8,7 +8,6 @@ RocketChat.roomTypes.add('l', 5, {
 		path: '/live/:code(\\d+)',
 		action(params/*, queryParams*/) {
 			openRoom('l', params.code);
-			RocketChat.TabBar.showGroup('livechat', 'search');
 		},
 		link(sub) {
 			return {
@@ -34,7 +33,7 @@ RocketChat.roomTypes.add('l', 5, {
 	},
 
 	canSendMessage(roomId) {
-		let room = ChatRoom.findOne({ _id: roomId }, { fields: { open: 1 } });
+		const room = ChatRoom.findOne({ _id: roomId }, { fields: { open: 1 } });
 		return room && room.open === true;
 	},
 

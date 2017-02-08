@@ -3,7 +3,7 @@ Meteor.startup ->
 		if RocketChat.settings.get('Chatops_Enabled')
 			console.log 'Adding chatops to tabbar'
 			RocketChat.TabBar.addButton
-				groups: ['channel', 'privategroup', 'directmessage']
+				groups: ['channel', 'group', 'direct']
 				id: 'chatops-button2'
 				i18nTitle: 'rocketchat-chatops:Chatops_Title'
 				icon: 'icon-hubot'
@@ -12,7 +12,7 @@ Meteor.startup ->
 
 			console.log 'Adding chatops to tabbar'
 			RocketChat.TabBar.addButton
-				groups: ['channel', 'privategroup', 'directmessage']
+				groups: ['channel', 'group', 'direct']
 				id: 'chatops-button3'
 				i18nTitle: 'rocketchat-chatops:Chatops_Title'
 				icon: 'icon-inbox'

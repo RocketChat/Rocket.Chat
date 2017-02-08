@@ -1,5 +1,5 @@
 /* globals RocketChat */
-RocketChat.createRoom = function(type, name, owner, members, readOnly) {
+RocketChat.createRoom = function(type, name, owner, members, readOnly, extraData={}) {
 	name = s.trim(name);
 	owner = s.trim(owner);
 	members = [].concat(members);
@@ -24,7 +24,7 @@ RocketChat.createRoom = function(type, name, owner, members, readOnly) {
 		throw new Meteor.Error('error-invalid-name', 'Invalid name', { function: 'RocketChat.createRoom' });
 	}
 
-	let now = new Date();
+	const now = new Date();
 	if (!_.contains(members, owner.username)) {
 		members.push(owner.username);
 	}
@@ -54,14 +54,16 @@ RocketChat.createRoom = function(type, name, owner, members, readOnly) {
 		});
 	}
 
-	room = RocketChat.models.Rooms.createWithTypeNameUserAndUsernames(type, name, owner, members, {
+	extraData = Object.assign({}, extraData, {
 		ts: now,
 		ro: readOnly === true,
 		sysMes: readOnly !== true
 	});
 
-	for (let username of members) {
-		let member = RocketChat.models.Users.findOneByUsername(username, { fields: { username: 1 }});
+	room = RocketChat.models.Rooms.createWithTypeNameUserAndUsernames(type, name, owner, members, extraData);
+
+	for (const username of members) {
+		const member = RocketChat.models.Users.findOneByUsername(username, { fields: { username: 1 }});
 		if (!member) {
 			continue;
 		}
@@ -71,7 +73,7 @@ RocketChat.createRoom = function(type, name, owner, members, readOnly) {
 			RocketChat.models.Rooms.muteUsernameByRoomId(room._id, username);
 		}
 
-		let extra = { open: true };
+		const extra = { open: true };
 
 		if (username === owner.username) {
 			extra.ls = now;

@@ -8,12 +8,12 @@ Meteor.startup(function() {
 					return handleError(error);
 				}
 
-				for (let record of results) {
+				for (const record of results) {
 					UserRoles.upsert({ _id: record._id }, record);
 				}
 			});
 
-			RocketChat.Notifications.onAll('roles-change', function(role) {
+			RocketChat.Notifications.onLogged('roles-change', function(role) {
 				if (role.type === 'added') {
 					if (role.scope) {
 						RoomRoles.upsert({ rid: role.scope, 'u._id': role.u._id }, { $setOnInsert: { u: role.u }, $addToSet: { roles: role._id } });

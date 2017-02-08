@@ -12,16 +12,6 @@ class ModelRooms extends RocketChat.models._Base
 		this.cache.ensureIndex(['t', 'name'], 'unique')
 		this.cache.options = {fields: {usernames: 0}}
 
-	# FIND ONE
-	findOneById: (_id, options) ->
-		if this.useCache
-			return this.cache.findByIndex('_id', _id, options).fetch()
-
-		query =
-			_id: _id
-
-		return @findOne query, options
-
 	findOneByIdOrName: (_idOrName, options) ->
 		query = {
 			$or: [{
@@ -404,6 +394,16 @@ class ModelRooms extends RocketChat.models._Base
 		update =
 			$set:
 				name: name
+
+		return @update query, update
+
+	incMsgCountById: (_id, inc=1) ->
+		query =
+			_id: _id
+
+		update =
+			$inc:
+				msgs: inc
 
 		return @update query, update
 

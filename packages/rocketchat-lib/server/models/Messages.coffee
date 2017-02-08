@@ -17,14 +17,6 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base
 		@tryEnsureIndex { 'location': '2dsphere' }
 		@tryEnsureIndex { 'slackBotId': 1, 'slackTs': 1 }, { sparse: 1 }
 
-
-	# FIND ONE
-	findOneById: (_id, options) ->
-		query =
-			_id: _id
-
-		return @findOne query, options
-
 	# FIND
 	findByMention: (username, options) ->
 		query =
@@ -393,6 +385,7 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base
 		_.extend record, extraData
 
 		record._id = @insertOrUpsert record
+		RocketChat.models.Rooms.incMsgCountById(room._id, 1)
 		return record
 
 	createUserJoinWithRoomIdAndUser: (roomId, user, extraData) ->

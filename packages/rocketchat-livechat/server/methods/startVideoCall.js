@@ -7,14 +7,14 @@ Meteor.methods({
 
 		const guest = Meteor.user();
 
-		let message = {
+		const message = {
 			_id: Random.id(),
 			rid: roomId || Random.id(),
 			msg: '',
 			ts: new Date()
 		};
 
-		let { room } = RocketChat.Livechat.getRoom(guest, message, { jitsiTimeout: new Date(Date.now() + 3600 * 1000) });
+		const { room } = RocketChat.Livechat.getRoom(guest, message, { jitsiTimeout: new Date(Date.now() + 3600 * 1000) });
 		message.rid = room._id;
 
 		RocketChat.models.Messages.createWithTypeRoomIdMessageAndUser('livechat_video_call', room._id, '', guest, {

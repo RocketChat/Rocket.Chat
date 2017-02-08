@@ -26,7 +26,7 @@ Template.register.events({
 		var $email, $name;
 		e.preventDefault();
 
-		let start = () => {
+		const start = () => {
 			instance.hideError();
 			if (instance.request === 'video') {
 				LivechatVideoCall.request();
