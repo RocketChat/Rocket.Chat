@@ -66,7 +66,7 @@ Template.livechatWindow.onCreated(function() {
 
 	const defaultAppLanguage = () => {
 		let lng = window.navigator.userLanguage || window.navigator.language || 'en';
-		let regexp = /([a-z]{2}-)([a-z]{2})/;
+		const regexp = /([a-z]{2}-)([a-z]{2})/;
 		if (regexp.test(lng)) {
 			lng = lng.replace(regexp, function(match, ...parts) {
 				return parts[0] + parts[1].toUpperCase();

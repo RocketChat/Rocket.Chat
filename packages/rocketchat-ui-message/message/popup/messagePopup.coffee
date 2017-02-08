@@ -251,11 +251,11 @@ Template.messagePopup.events
 		e.currentTarget.className += ' selected'
 		template.value.set this._id
 
-	'mousedown .popup-item': (e) ->
+	'mousedown .popup-item, touchstart .popup-item': (e) ->
 		template = Template.instance()
 		template.clickingItem = true;
 
-	'mouseup .popup-item': (e) ->
+	'mouseup .popup-item, touchend .popup-item': (e) ->
 		template = Template.instance()
 
 		template.clickingItem = false;
