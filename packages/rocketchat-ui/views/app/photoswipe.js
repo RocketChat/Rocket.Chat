@@ -9,7 +9,7 @@ Meteor.startup(() => {
 	};
 
 	const getItems = (selector, imageSrc) => {
-		let results = {
+		const results = {
 			index: 0,
 			items: []
 		};

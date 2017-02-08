@@ -44,8 +44,8 @@ Template.visitorEdit.events({
 	'submit form'(event, instance) {
 		console.log('this ->', this);
 		event.preventDefault();
-		let userData = { _id: instance.visitor.get()._id };
-		let roomData = { _id: instance.room.get()._id };
+		const userData = { _id: instance.visitor.get()._id };
+		const roomData = { _id: instance.room.get()._id };
 
 		userData.name = event.currentTarget.elements['name'].value;
 		userData.email = event.currentTarget.elements['email'].value;

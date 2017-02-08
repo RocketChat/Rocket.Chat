@@ -52,6 +52,7 @@ Template.loginForm.events
 		event.preventDefault()
 
 		button = $(event.target).find('button.login')
+		button.focus()
 		RocketChat.Button.loading(button)
 
 		formData = instance.validate()
