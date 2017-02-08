@@ -376,20 +376,22 @@ RocketChat.API.v1.addRoute('channels.list.joined', { authRequired: true }, {
 
 RocketChat.API.v1.addRoute('channels.online', { authRequired: true }, {
 	get: function() {
-		const room = findChannelById(this.queryParams.roomId);
+		const { query } = this.parseJsonQuery();
+		const ourQuery = Object.assign({}, query, { t: 'c' });
 
-		if (room.statusCode) {
-			return room;
+		const room = RocketChat.models.Rooms.findOne(ourQuery);
+
+		if (room == null) {
+			return RocketChat.API.v1.failure('Channel does not exists');
 		}
 
 		const online = RocketChat.models.Users.findUsersNotOffline({
 			fields: {
-				username: 1,
-				status: 1
+				username: 1
 			}
 		}).fetch();
 
-		let onlineInRoom = [];
+		const onlineInRoom = [];
 		online.forEach(user => {
 			if (room.usernames.indexOf(user.username) !== -1) {
 				onlineInRoom.push(user.username);
