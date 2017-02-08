@@ -45,6 +45,10 @@ describe('user preferences', ()=> {
 			preferencesMainContent.userNameTextInput.isVisible().should.be.true;
 		});
 
+		it('should show the real name input', ()=> {
+			preferencesMainContent.realNameTextInput.isVisible().should.be.true;
+		});
+
 		it('should show the email input', ()=> {
 			preferencesMainContent.emailTextInput.isVisible().should.be.true;
 		});
@@ -95,7 +99,8 @@ describe('user preferences', ()=> {
 		it('close the preferences menu', () => {
 			sideNav.preferencesClose.waitForVisible(5000);
 			sideNav.preferencesClose.click();
-			sideNav.spotlightSearch.waitForVisible(5000);
+			sideNav.preferencesClose.click();
+			sideNav.accountBoxUserName.waitForVisible(5000);
 		});
 
 		it('open GENERAL', () => {
@@ -104,9 +109,11 @@ describe('user preferences', ()=> {
 
 		it('send a message to be tested', () => {
 			mainContent.sendMessage('HI');
+			mainContent.waitForLastMessageEqualsText('HI');
 		});
 
 		it('the name on the last message should be the edited one', () => {
+			mainContent.waitForLastMessageUserEqualsText('EditedUserName'+username);
 			mainContent.lastMessageUser.getText().should.equal('EditedUserName'+username);
 		});
 
@@ -121,6 +128,7 @@ describe('user preferences', ()=> {
 		});
 
 		it('the real name on the members flex tab should be the edited one', () => {
+			flexTab.memberRealName.waitForVisible(5000);
 			flexTab.memberRealName.getText().should.equal('EditedRealName'+username);
 		});
 
