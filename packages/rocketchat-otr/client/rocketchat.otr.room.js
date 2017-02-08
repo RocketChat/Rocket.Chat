@@ -178,7 +178,7 @@ RocketChat.OTR.Room = class {
 			case 'handshake':
 				let timeout = null;
 
-				let establishConnection = () => {
+				const establishConnection = () => {
 					this.establishing.set(true);
 					Meteor.clearTimeout(timeout);
 					this.generateKeyPair().then(() => {

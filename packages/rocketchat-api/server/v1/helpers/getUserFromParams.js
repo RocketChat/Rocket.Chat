@@ -3,7 +3,7 @@ RocketChat.API.v1.helperMethods.set('getUserFromParams', function _getUserFromPa
 	const doesntExist = { _doesntExist: true };
 	let user;
 
-	switch (this.method) {
+	switch (this.request.method) {
 		case 'POST':
 		case 'PUT':
 			if (this.bodyParams.userId && this.bodyParams.userId.trim()) {

@@ -1,9 +1,9 @@
 //Trigger the trackPageView manually as the page views don't seem to be tracked
 FlowRouter.triggers.enter([(route) => {
 	if (window._paq) {
-		let http = location.protocol;
-		let slashes = http.concat('//');
-		let host = slashes.concat(window.location.hostname);
+		const http = location.protocol;
+		const slashes = http.concat('//');
+		const host = slashes.concat(window.location.hostname);
 
 		window._paq.push(['setCustomUrl', host + route.path]);
 		window._paq.push(['trackPageView']);
@@ -20,13 +20,13 @@ RocketChat.callbacks.add('loginPageStateChange', (state) => {
 //Messsages
 RocketChat.callbacks.add('afterSaveMessage', (message) => {
 	if (window._paq && RocketChat.settings.get('PiwikAnalytics_features_messages')) {
-		let room = ChatRoom.findOne({ _id: message.rid });
+		const room = ChatRoom.findOne({ _id: message.rid });
 		window._paq.push(['trackEvent', 'Message', 'Send', room.name + ' (' + room._id + ')' ]);
 	}
 }, 2000, 'trackEvents');
 
 //Rooms
-RocketChat.callbacks.add('afterCreateChannel', (room) => {
+RocketChat.callbacks.add('afterCreateChannel', (owner, room) => {
 	if (window._paq && RocketChat.settings.get('PiwikAnalytics_features_rooms')) {
 		window._paq.push(['trackEvent', 'Room', 'Create', room.name + ' (' + room._id + ')' ]);
 	}
@@ -68,7 +68,7 @@ RocketChat.callbacks.add('unarchiveRoom', (room) => {
 	let oldUserId = null;
 
 	Meteor.autorun(() => {
-		let newUserId = Meteor.userId();
+		const newUserId = Meteor.userId();
 		if (oldUserId === null && newUserId) {
 			if (window._paq && RocketChat.settings.get('PiwikAnalytics_features_users')) {
 				window._paq.push(['trackEvent', 'User', 'Login', newUserId ]);

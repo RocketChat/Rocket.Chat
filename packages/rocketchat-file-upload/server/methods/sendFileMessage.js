@@ -4,7 +4,7 @@ Meteor.methods({
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'sendFileMessage' });
 		}
 
-		var room = Meteor.call('canAccessRoom', roomId, Meteor.userId());
+		const room = Meteor.call('canAccessRoom', roomId, Meteor.userId());
 
 		if (!room) {
 			return false;
@@ -20,9 +20,9 @@ Meteor.methods({
 
 		RocketChat.models.Uploads.updateFileComplete(file._id, Meteor.userId(), _.omit(file, '_id'));
 
-		var fileUrl = '/file-upload/' + file._id + '/' + file.name;
+		const fileUrl = '/file-upload/' + file._id + '/' + file.name;
 
-		var attachment = {
+		const attachment = {
 			title: `${TAPi18n.__('Attachment_File_Uploaded')}: ${file.name}`,
 			description: file.description,
 			title_link: fileUrl,
