@@ -9,23 +9,3 @@ RocketChat.API.v1.helperMethods.set('getLoggedInUser', function _getLoggedInUser
 
 	return user;
 });
-
-// const auth = function _auth () {
-// 	const invalidResults = [undefined, null, false];
-// 	return {
-// 		token: 'services.resume.loginTokens.hashedToken',
-// 		user: function(headerId, headerToken) {
-
-
-// 			let token;
-// 			if (headerToken) {
-// 				token = Accounts._hashLoginToken(headerToken);
-// 			}
-
-// 			return {
-// 				userId: headerId,
-// 				token
-// 			};
-// 		}
-// 	};
-// }
