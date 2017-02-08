@@ -45,10 +45,6 @@ describe('user preferences', ()=> {
 			preferencesMainContent.userNameTextInput.isVisible().should.be.true;
 		});
 
-		it('should show the real name input', ()=> {
-			preferencesMainContent.realNameTextInput.isVisible().should.be.true;
-		});
-
 		it('should show the email input', ()=> {
 			preferencesMainContent.emailTextInput.isVisible().should.be.true;
 		});
@@ -68,7 +64,7 @@ describe('user preferences', ()=> {
 			sideNav.profile.click();
 		});
 
-		it.skip('change the name field', ()=> {
+		it('change the name field', ()=> {
 			preferencesMainContent.changeRealName('EditedRealName'+username);
 		});
 
@@ -110,19 +106,21 @@ describe('user preferences', ()=> {
 			mainContent.sendMessage('HI');
 		});
 
-		it.skip('the name on the last message should be the edited one', () => {
+		it('the name on the last message should be the edited one', () => {
 			mainContent.lastMessageUser.getText().should.equal('EditedUserName'+username);
 		});
 
-		it.skip('the name on the nav bar should be the edited one', () => {
+		it('the name on the nav bar should be the edited one', () => {
 			sideNav.accountBoxUserName.getText().should.equal('EditedUserName'+username);
 		});
 
-		it.skip('the user name on the members flex tab should be the edited one', () => {
+		it('the user name on the members flex tab should be the edited one', () => {
+			mainContent.lastMessageUser.click();
+			flexTab.memberUserName.waitForVisible(5000);
 			flexTab.memberUserName.getText().should.equal('EditedUserName'+username);
 		});
 
-		it.skip('the real name on the members flex tab should be the edited one', () => {
+		it('the real name on the members flex tab should be the edited one', () => {
 			flexTab.memberRealName.getText().should.equal('EditedRealName'+username);
 		});
 
