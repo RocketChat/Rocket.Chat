@@ -7,16 +7,37 @@ import objectPath from 'object-path';
 const logger = new Logger('BaseCache');
 
 const lokiEq = loki.LokiOps.$eq;
+const lokiNe = loki.LokiOps.$ne;
 
 loki.LokiOps.$eq = function(a, b) {
 	if (Array.isArray(a)) {
-		return loki.LokiOps.$containsAny(a, b);
+		return a.indexOf(b) !== -1;
 	}
 	return lokiEq(a, b);
 };
 
-loki.LokiOps.$in = loki.LokiOps.$containsAny;
-loki.LokiOps.$nin = loki.LokiOps.$containsNone;
+loki.LokiOps.$ne = function(a, b) {
+	if (Array.isArray(a)) {
+		return a.indexOf(b) === -1;
+	}
+	return lokiNe(a, b);
+};
+
+const lokiIn = loki.LokiOps.$in;
+loki.LokiOps.$in = function(a, b) {
+	if (Array.isArray(a)) {
+		return a.some(subA => lokiIn(subA, b));
+	}
+	return lokiIn(a, b);
+};
+
+loki.LokiOps.$nin = function(a, b) {
+	return !loki.LokiOps.$in(a, b);
+};
+
+loki.LokiOps.$all = function(a, b) {
+	return b.every(subB => a.includes(subB));
+};
 
 loki.LokiOps.$exists = function(a, b) {
 	if (b) {
@@ -26,6 +47,9 @@ loki.LokiOps.$exists = function(a, b) {
 	return loki.LokiOps.$eq(a, undefined);
 };
 
+loki.LokiOps.$elemMatch = function(a, b) {
+	return _.findWhere(a, b);
+};
 
 const ignore = [
 	'emit',
@@ -532,8 +556,8 @@ class ModelsBaseCache extends EventEmitter {
 			fieldsToGet.push('_id');
 		}
 
-		let pickFields = (obj, fields) => {
-			let picked = {};
+		const pickFields = (obj, fields) => {
+			const picked = {};
 			fields.forEach((field) => {
 				if (field.indexOf('.') !== -1) {
 					objectPath.set(picked, field, objectPath.get(obj, field));
@@ -569,7 +593,7 @@ class ModelsBaseCache extends EventEmitter {
 		return result;
 	}
 
-	processQuery(query) {
+	processQuery(query, parentField) {
 		if (!query) {
 			return query;
 		}
@@ -580,7 +604,7 @@ class ModelsBaseCache extends EventEmitter {
 			};
 		}
 
-		if (Object.keys(query).length > 1) {
+		if (Object.keys(query).length > 1 && parentField !== '$elemMatch') {
 			const and = [];
 			for (const field in query) {
 				if (query.hasOwnProperty(field)) {
@@ -603,12 +627,12 @@ class ModelsBaseCache extends EventEmitter {
 
 				if (field === '$and' || field === '$or') {
 					query[field] = value.map((subValue) => {
-						return this.processQuery(subValue);
+						return this.processQuery(subValue, field);
 					});
 				}
 
 				if (Match.test(value, Object) && Object.keys(value).length > 0) {
-					query[field] = this.processQuery(value);
+					query[field] = this.processQuery(value, field);
 				}
 			}
 		}
@@ -623,8 +647,11 @@ class ModelsBaseCache extends EventEmitter {
 					query = this.processQuery(query);
 					return this.processQueryOptionsOnResult(this.collection.find(query), options);
 				} catch (e) {
-					console.error('Exception on cache find for', this.collectionName, ...arguments);
+					console.error('Exception on cache find for', this.collectionName);
+					console.error('Query:', JSON.stringify(query, null, 2));
+					console.error('Options:', JSON.stringify(options, null, 2));
 					console.error(e.stack);
+					throw e;
 				}
 			},
 
@@ -634,8 +661,11 @@ class ModelsBaseCache extends EventEmitter {
 					const { limit, skip } = options;
 					return this.processQueryOptionsOnResult(this.collection.find(query), { limit, skip }).length;
 				} catch (e) {
-					console.error('Exception on cache find for', this.collectionName, ...arguments);
+					console.error('Exception on cache find for', this.collectionName);
+					console.error('Query:', JSON.stringify(query, null, 2));
+					console.error('Options:', JSON.stringify(options, null, 2));
 					console.error(e.stack);
+					throw e;
 				}
 			},
 
@@ -661,12 +691,25 @@ class ModelsBaseCache extends EventEmitter {
 	}
 
 	findOne(query, options) {
-		query = this.processQuery(query);
-		return this.processQueryOptionsOnResult(this.collection.findOne(query), options);
+		try {
+			query = this.processQuery(query);
+			return this.processQueryOptionsOnResult(this.collection.findOne(query), options);
+		} catch (e) {
+			console.error('Exception on cache findOne for', this.collectionName);
+			console.error('Query:', JSON.stringify(query, null, 2));
+			console.error('Options:', JSON.stringify(options, null, 2));
+			console.error(e.stack);
+			throw e;
+		}
 	}
 
 	findOneById(_id, options) {
 		return this.findByIndex('_id', _id, options).fetch();
+	}
+
+	findOneByIds(ids, options) {
+		const query = this.processQuery({ _id: { $in: ids }});
+		return this.processQueryOptionsOnResult(this.collection.findOne(query), options);
 	}
 
 	findWhere(query, options) {
@@ -717,7 +760,7 @@ class ModelsBaseCache extends EventEmitter {
 			this.emit('beforeupdate', record, diff);
 		}
 
-		for (let key in diff) {
+		for (const key in diff) {
 			if (diff.hasOwnProperty(key)) {
 				objectPath.set(record, key, diff[key]);
 			}
@@ -760,7 +803,7 @@ class ModelsBaseCache extends EventEmitter {
 
 		if (update.$min) {
 			_.each(update.$min, (value, field) => {
-				let curValue = objectPath.get(record, field);
+				const curValue = objectPath.get(record, field);
 				if (curValue === undefined || value < curValue) {
 					objectPath.set(record, field, value);
 				}
@@ -769,7 +812,7 @@ class ModelsBaseCache extends EventEmitter {
 
 		if (update.$max) {
 			_.each(update.$max, (value, field) => {
-				let curValue = objectPath.get(record, field);
+				const curValue = objectPath.get(record, field);
 				if (curValue === undefined || value > curValue) {
 					objectPath.set(record, field, value);
 				}
@@ -802,7 +845,7 @@ class ModelsBaseCache extends EventEmitter {
 
 		if (update.$rename) {
 			_.each(update.$rename, (value, field) => {
-				let curValue = objectPath.get(record, field);
+				const curValue = objectPath.get(record, field);
 				if (curValue !== undefined) {
 					objectPath.set(record, value, curValue);
 					objectPath.del(record, field);
@@ -822,7 +865,7 @@ class ModelsBaseCache extends EventEmitter {
 
 		if (update.$pop) {
 			_.each(update.$pop, (value, field) => {
-				let curValue = objectPath.get(record, field);
+				const curValue = objectPath.get(record, field);
 				if (Array.isArray(curValue)) {
 					if (value === -1) {
 						curValue.shift();

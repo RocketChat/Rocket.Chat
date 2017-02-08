@@ -5,9 +5,6 @@ RocketChat.models.Uploads = new class extends RocketChat.models._Base
 		@tryEnsureIndex { 'rid': 1 }
 		@tryEnsureIndex { 'uploadedAt': 1 }
 
-	findOneById: (fileId) ->
-		@findOne { _id: fileId }
-
 	findNotHiddenFilesOfRoom: (roomId, limit) ->
 		fileQuery =
 			rid: roomId

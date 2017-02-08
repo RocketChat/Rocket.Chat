@@ -11,7 +11,7 @@ try {
 	console.log(e);
 }
 
-let isOplogAvailable = MongoInternals.defaultRemoteCollectionDriver().mongo._oplogHandle && !!MongoInternals.defaultRemoteCollectionDriver().mongo._oplogHandle.onOplogEntry;
+const isOplogAvailable = MongoInternals.defaultRemoteCollectionDriver().mongo._oplogHandle && !!MongoInternals.defaultRemoteCollectionDriver().mongo._oplogHandle.onOplogEntry;
 let isOplogEnabled = isOplogAvailable;
 RocketChat.settings.get('Force_Disable_OpLog_For_Cache', (key, value) => {
 	isOplogEnabled = isOplogAvailable && value === false;
@@ -56,12 +56,15 @@ class ModelsBaseDb extends EventEmitter {
 		return baseName;
 	}
 
-	setUpdatedAt(record = {}, checkQuery = false, query) {
-		if (checkQuery === true) {
-			if (!query || Object.keys(query).length === 0) {
-				throw new Meteor.Error('Models._Base: Empty query');
-			}
-		}
+	setUpdatedAt(record = {}) {
+
+		// TODO: Check if this can be deleted, Rodrigo does not rememebr WHY he added it. So he removed it to fix issue #5541
+		// setUpdatedAt(record = {}, checkQuery = false, query) {
+		// if (checkQuery === true) {
+		// 	if (!query || Object.keys(query).length === 0) {
+		// 		throw new Meteor.Error('Models._Base: Empty query');
+		// 	}
+		// }
 
 		if (/(^|,)\$/.test(Object.keys(record).join(','))) {
 			record.$set = record.$set || {};
@@ -100,6 +103,14 @@ class ModelsBaseDb extends EventEmitter {
 
 	findOne() {
 		return this.model.findOne(...arguments);
+	}
+
+	findOneById(_id, options) {
+		return this.model.findOne({ _id }, options);
+	}
+
+	findOneByIds(ids, options) {
+		return this.model.findOne({ _id: { $in: ids }}, options);
 	}
 
 	defineSyncStrategy(query, modifier, options) {
@@ -147,6 +158,24 @@ class ModelsBaseDb extends EventEmitter {
 		return 'cache';
 	}
 
+	updateHasPositionalOperator(update) {
+		for (const key in update) {
+			if (key.includes('.$')) {
+				return true;
+			}
+
+			const value = update[key];
+
+			if (Match.test(value, Object)) {
+				if (this.updateHasPositionalOperator(value) === true) {
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
+
 	processOplogRecord(action) {
 		if (isOplogEnabled === false) {
 			return;
@@ -173,9 +202,9 @@ class ModelsBaseDb extends EventEmitter {
 				return;
 			}
 
-			let diff = {};
+			const diff = {};
 			if (action.op.o.$set) {
-				for (let key in action.op.o.$set) {
+				for (const key in action.op.o.$set) {
 					if (action.op.o.$set.hasOwnProperty(key)) {
 						diff[key] = action.op.o.$set[key];
 					}
@@ -183,7 +212,7 @@ class ModelsBaseDb extends EventEmitter {
 			}
 
 			if (action.op.o.$unset) {
-				for (let key in action.op.o.$unset) {
+				for (const key in action.op.o.$unset) {
 					if (action.op.o.$unset.hasOwnProperty(key)) {
 						diff[key] = undefined;
 					}
@@ -230,7 +259,7 @@ class ModelsBaseDb extends EventEmitter {
 	update(query, update, options = {}) {
 		this.setUpdatedAt(update, true, query);
 
-		let strategy = this.defineSyncStrategy(query, update, options);
+		const strategy = this.defineSyncStrategy(query, update, options);
 		let ids = [];
 		if (!isOplogEnabled && this.listenerCount('change') > 0 && strategy === 'db') {
 			const findOptions = {fields: {_id: 1}};
@@ -240,7 +269,7 @@ class ModelsBaseDb extends EventEmitter {
 			}
 
 			ids = records.map(item => item._id);
-			if (options.upsert !== true) {
+			if (options.upsert !== true && this.updateHasPositionalOperator(update) === false) {
 				query = {
 					_id: {
 						$in: ids

@@ -1,6 +1,7 @@
 {
 	"parserOptions": {
-		"sourceType": "module"
+		"sourceType": "module",
+		"ecmaVersion": 2017
 	},
 	"env": {
 		"browser": true,
@@ -67,13 +68,14 @@
 		"curly": [2, "all"],
 		"eqeqeq": [2, "allow-null"],
 		"new-cap":  [2, {
-			"capIsNewExceptions": ["Match.Optional", "Match.Maybe", "Match.ObjectIncluding"]
+			"capIsNewExceptions": ["Match.Optional", "Match.Maybe", "Match.ObjectIncluding", "Push.Configure"]
 		}],
 		"use-isnan": 2,
 		"valid-typeof": 2,
 		"linebreak-style": [2, "unix"],
 		"quotes": [2, "single"],
-		"semi": [2, "always"]
+		"semi": [2, "always"],
+		"prefer-const": 2
 	},
 	"globals": {
 		"_"                           : false,
@@ -92,6 +94,7 @@
 		"check"                       : false,
 		"CryptoJS"                    : false,
 		"Department"                  : false,
+		"DDPRateLimiter"              : false,
 		"EJSON"                       : false,
 		"Email"                       : false,
 		"FlowRouter"                  : false,
@@ -120,6 +123,7 @@
 		"RocketChatFile"              : false,
 		"RocketChatFileAvatarInstance": false,
 		"RoomHistoryManager"          : false,
+		"RoomManager"                 : false,
 		"s"                           : false,
 		"ServiceConfiguration"        : false,
 		"Session"                     : false,

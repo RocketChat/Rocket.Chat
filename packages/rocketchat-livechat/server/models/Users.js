@@ -133,11 +133,11 @@ RocketChat.models.Users.findVisitorByToken = function(token) {
  * @param {string} token - Visitor token
  */
 RocketChat.models.Users.setLivechatStatus = function(userId, status) {
-	let query = {
+	const query = {
 		'_id': userId
 	};
 
-	let update = {
+	const update = {
 		$set: {
 			'statusLivechat': status
 		}

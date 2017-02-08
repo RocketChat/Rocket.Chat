@@ -26,7 +26,7 @@ process.on('uncaughtException', Meteor.bindEnvironment((error) => {
 	throw error;
 }));
 
-let originalMeteorDebug = Meteor._debug;
+const originalMeteorDebug = Meteor._debug;
 Meteor._debug = function() {
 	notify(...arguments);
 	return originalMeteorDebug(...arguments);

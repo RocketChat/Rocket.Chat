@@ -253,7 +253,7 @@ class @ChatMessages
 				toastr.error(t('Message_deleting_blocked'))
 				return
 
-		Meteor.call 'deleteMessage', message, (error, result) ->
+		Meteor.call 'deleteMessage', { _id: message._id }, (error, result) ->
 			if error
 				return handleError(error)
 

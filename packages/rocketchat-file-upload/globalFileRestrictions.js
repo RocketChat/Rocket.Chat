@@ -8,7 +8,7 @@ Slingshot.fileRestrictions('rocketchat-uploads', {
 			throw new Meteor.Error(TAPi18n.__('error-invalid-file-type'));
 		}
 
-		var maxFileSize = RocketChat.settings.get('FileUpload_MaxFileSize');
+		const maxFileSize = RocketChat.settings.get('FileUpload_MaxFileSize');
 
 		if (maxFileSize && maxFileSize < file.size) {
 			throw new Meteor.Error(TAPi18n.__('File_exceeds_allowed_size_of_bytes', { size: filesize(maxFileSize) }));
