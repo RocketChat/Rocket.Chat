@@ -1,4 +1,3 @@
-/* globals isSetNotNull */
 Template.emojiInfo.helpers({
 	name() {
 		const emoji = Template.instance().emoji.get();
@@ -26,9 +25,9 @@ Template.emojiInfo.helpers({
 			back(name) {
 				instance.editingEmoji.set();
 
-				if (isSetNotNull(() => name)) {
+				if (name != null) {
 					const emoji = instance.emoji.get();
-					if (isSetNotNull(() => emoji.name) && emoji.name !== name) {
+					if (emoji != null && emoji.name != null && emoji.name !== name) {
 						return instance.loadedName.set(name);
 					}
 				}
@@ -38,15 +37,15 @@ Template.emojiInfo.helpers({
 });
 
 Template.emojiInfo.events({
-	['click .thumb'](e) {
+	'click .thumb'(e) {
 		$(e.currentTarget).toggleClass('bigger');
 	},
 
-	['click .delete'](e, instance) {
+	'click .delete'(e, instance) {
 		e.stopPropagation();
 		e.preventDefault();
 		const emoji = instance.emoji.get();
-		if (isSetNotNull(() => emoji)) {
+		if (emoji != null) {
 			const _id = emoji._id;
 			swal({
 				title: t('Are_you_sure'),
@@ -81,7 +80,7 @@ Template.emojiInfo.events({
 		}
 	},
 
-	['click .edit-emoji'](e, instance) {
+	'click .edit-emoji'(e, instance) {
 		e.stopPropagation();
 		e.preventDefault();
 
@@ -100,7 +99,7 @@ Template.emojiInfo.onCreated(function() {
 
 	this.autorun(() => {
 		const data = Template.currentData();
-		if (isSetNotNull(() => data.clear)) {
+		if (data != null && data.clear != null) {
 			this.clear = data.clear;
 		}
 	});
@@ -108,9 +107,9 @@ Template.emojiInfo.onCreated(function() {
 	this.autorun(() => {
 		const data = Template.currentData();
 		const emoji = this.emoji.get();
-		if (isSetNotNull(() => emoji.name)) {
+		if (emoji != null && emoji.name != null) {
 			this.loadedName.set(emoji.name);
-		} else if (isSetNotNull(() => data.name)) {
+		} else if (data != null && data.name != null) {
 			this.loadedName.set(data.name);
 		}
 	});
