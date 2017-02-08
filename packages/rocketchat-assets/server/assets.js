@@ -286,7 +286,7 @@ RocketChat.settings.add('Assets_SvgFavicon_Enable', true, {
 	i18nLabel: 'Enable_Svg_Favicon'
 });
 
-function fn(key, value) {
+function addAssetToSetting(key, value) {
 	return RocketChat.settings.add(`Assets_${key}`, {
 		defaultUrl: value.defaultUrl
 	}, {
@@ -301,7 +301,7 @@ function fn(key, value) {
 
 for (const key of Object.keys(assets)) {
 	const value = assets[key];
-	fn(key, value);
+	addAssetToSetting(key, value);
 }
 
 RocketChat.models.Settings.find().observe({
