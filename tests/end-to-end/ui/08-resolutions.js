@@ -19,6 +19,9 @@ describe('resolutions tests', ()=> {
 
 		after(()=> {
 			Global.setWindowSize(1450, 900);
+			sideNav.preferencesClose.waitForVisible(5000);
+			sideNav.preferencesClose.click();
+			sideNav.spotlightSearch.waitForVisible(5000);
 		});
 
 		describe('moving elements ', () => {
@@ -90,11 +93,6 @@ describe('resolutions tests', ()=> {
 
 			it('press the navbar button', () => {
 				sideNav.burgerBtn.click();
-			});
-
-			it('close the preferences menu', () => {
-				sideNav.preferencesClose.click();
-				sideNav.spotlightSearch.waitForVisible(5000);
 			});
 		});
 	});
