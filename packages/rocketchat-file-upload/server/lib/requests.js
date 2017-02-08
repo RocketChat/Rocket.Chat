@@ -1,22 +1,20 @@
 /* globals FileUpload, WebApp, Cookies */
-var protectedFiles;
+let protectedFiles;
 
 RocketChat.settings.get('FileUpload_ProtectFiles', function(key, value) {
 	protectedFiles = value;
 });
 
 WebApp.connectHandlers.use('/file-upload/', function(req, res, next) {
-	var file;
-
-	var match = /^\/([^\/]+)\/(.*)/.exec(req.url);
+	const match = /^\/([^\/]+)\/(.*)/.exec(req.url);
 
 	if (match[1]) {
-		file = RocketChat.models.Uploads.findOneById(match[1]);
+		const file = RocketChat.models.Uploads.findOneById(match[1]);
 
 		if (file) {
 			if (!Meteor.settings.public.sandstorm && protectedFiles) {
-				var cookie, rawCookies, ref, token, uid;
-				cookie = new Cookies();
+				let rawCookies, ref, token, uid;
+				const cookie = new Cookies();
 
 				if ((typeof req !== 'undefined' && req !== null ? (ref = req.headers) != null ? ref.cookie : void 0 : void 0) != null) {
 					rawCookies = req.headers.cookie;

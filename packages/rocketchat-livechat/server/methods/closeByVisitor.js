@@ -12,7 +12,7 @@ Meteor.methods({
 
 		const user = Meteor.user();
 
-		let language = (user && user.language) || RocketChat.settings.get('language') || 'en';
+		const language = (user && user.language) || RocketChat.settings.get('language') || 'en';
 
 		return RocketChat.Livechat.closeRoom({
 			user: user,

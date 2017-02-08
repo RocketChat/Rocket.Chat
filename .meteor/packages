@@ -50,6 +50,7 @@ rocketchat:channel-settings-mail-messages
 rocketchat:colors
 rocketchat:crowd
 rocketchat:custom-oauth
+rocketchat:custom-sounds
 rocketchat:emoji
 rocketchat:emoji-custom
 rocketchat:emoji-emojione
@@ -96,10 +97,12 @@ rocketchat:slashcommands-archive
 rocketchat:slashcommands-asciiarts
 rocketchat:slashcommands-create
 rocketchat:slashcommands-invite
+rocketchat:slashcommands-invite-all
 rocketchat:slashcommands-join
 rocketchat:slashcommands-kick
 rocketchat:slashcommands-leave
 rocketchat:slashcommands-me
+rocketchat:slashcommands-msg
 rocketchat:slashcommands-mute
 rocketchat:slashcommands-open
 rocketchat:slashcommands-topic

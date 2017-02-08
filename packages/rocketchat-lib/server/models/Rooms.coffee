@@ -397,6 +397,16 @@ class ModelRooms extends RocketChat.models._Base
 
 		return @update query, update
 
+	incMsgCountById: (_id, inc=1) ->
+		query =
+			_id: _id
+
+		update =
+			$inc:
+				msgs: inc
+
+		return @update query, update
+
 	incMsgCountAndSetLastMessageTimestampById: (_id, inc=1, lastMessageTimestamp) ->
 		query =
 			_id: _id

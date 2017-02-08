@@ -1,5 +1,5 @@
 /* globals FileUpload:true */
-const mime = Npm.require('mime-types');
+import mime from 'mime-type/with-db';
 
 FileUpload.handlers = {};
 
@@ -8,7 +8,7 @@ FileUpload.addHandler = function(store, handler) {
 };
 
 FileUpload.delete = function(fileId) {
-	let file = RocketChat.models.Uploads.findOneById(fileId);
+	const file = RocketChat.models.Uploads.findOneById(fileId);
 
 	if (!file) {
 		return;
