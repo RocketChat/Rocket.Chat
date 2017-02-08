@@ -1,4 +1,3 @@
-/* globals isSetNotNull */
 Template.soundInfo.helpers({
 	name() {
 		const sound = Template.instance().sound.get();
@@ -22,9 +21,9 @@ Template.soundInfo.helpers({
 			back(name) {
 				instance.editingSound.set();
 
-				if (isSetNotNull(() => name)) {
+				if (name != null) {
 					const sound = instance.sound.get();
-					if (isSetNotNull(() => sound.name) && sound.name !== name) {
+					if (sound.name != null && sound.name !== name) {
 						return instance.loadedName.set(name);
 					}
 				}
@@ -38,7 +37,7 @@ Template.soundInfo.events({
 		e.stopPropagation();
 		e.preventDefault();
 		const sound = instance.sound.get();
-		if (isSetNotNull(() => sound)) {
+		if (sound != null) {
 			const _id = sound._id;
 			swal({
 				title: t('Are_you_sure'),
@@ -91,7 +90,7 @@ Template.soundInfo.onCreated(function() {
 
 	this.autorun(() => {
 		const data = Template.currentData();
-		if (isSetNotNull(() => data.clear)) {
+		if (data.clear != null) {
 			this.clear = data.clear;
 		}
 	});
@@ -99,9 +98,9 @@ Template.soundInfo.onCreated(function() {
 	this.autorun(() => {
 		const data = Template.currentData();
 		const sound = this.sound.get();
-		if (isSetNotNull(() => sound.name)) {
+		if (sound.name != null) {
 			this.loadedName.set(sound.name);
-		} else if (isSetNotNull(() => data.name)) {
+		} else if (data.name != null) {
 			this.loadedName.set(data.name);
 		}
 	});

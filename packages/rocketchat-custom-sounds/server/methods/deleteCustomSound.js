@@ -1,4 +1,4 @@
-/* globals isSetNotNull, RocketChatFileCustomSoundsInstance */
+/* globals RocketChatFileCustomSoundsInstance */
 Meteor.methods({
 	deleteCustomSound(_id) {
 		let sound = null;
@@ -9,7 +9,7 @@ Meteor.methods({
 			throw new Meteor.Error('not_authorized');
 		}
 
-		if (!isSetNotNull(() => sound)) {
+		if (sound == null) {
 			throw new Meteor.Error('Custom_Sound_Error_Invalid_Sound', 'Invalid sound', { method: 'deleteCustomSound' });
 		}
 
