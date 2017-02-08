@@ -68,7 +68,7 @@ RocketChat.Livechat = {
 		return { room, newRoom };
 	},
 	sendMessage({ guest, message, roomInfo }) {
-		let { room, newRoom } = this.getRoom(guest, message, roomInfo);
+		const { room, newRoom } = this.getRoom(guest, message, roomInfo);
 		if (guest.name) {
 			message.alias = guest.name;
 		}
@@ -80,7 +80,7 @@ RocketChat.Livechat = {
 		check(token, String);
 
 		let userId;
-		let updateUser = {
+		const updateUser = {
 			$set: {
 				profile: {
 					guest: true,
@@ -165,7 +165,7 @@ RocketChat.Livechat = {
 	},
 
 	saveGuest({ _id, name, email, phone }) {
-		let updateData = {};
+		const updateData = {};
 
 		if (name) {
 			updateData.name = name;
@@ -186,7 +186,7 @@ RocketChat.Livechat = {
 	},
 
 	closeRoom({ user, room, comment }) {
-		let now = new Date();
+		const now = new Date();
 		RocketChat.models.Rooms.closeByRoomId(room._id, {
 			user: {
 				_id: user._id,
@@ -215,7 +215,7 @@ RocketChat.Livechat = {
 	},
 
 	getInitSettings() {
-		let settings = {};
+		const settings = {};
 
 		RocketChat.models.Settings.findNotHiddenPublic([
 			'Livechat_title',
@@ -296,7 +296,7 @@ RocketChat.Livechat = {
 
 			RocketChat.models.Rooms.changeAgentByRoomId(room._id, agent);
 
-			let subscriptionData = {
+			const subscriptionData = {
 				rid: room._id,
 				name: guest.name || guest.username,
 				alert: true,
@@ -332,7 +332,7 @@ RocketChat.Livechat = {
 
 	sendRequest(postData, callback, trying = 1) {
 		try {
-			let options = {
+			const options = {
 				headers: {
 					'X-RocketChat-Livechat-Token': RocketChat.settings.get('Livechat_secret_token')
 				},
@@ -359,7 +359,7 @@ RocketChat.Livechat = {
 		const ua = new UAParser();
 		ua.setUA(visitor.userAgent);
 
-		let postData = {
+		const postData = {
 			_id: room._id,
 			label: room.label,
 			topic: room.topic,

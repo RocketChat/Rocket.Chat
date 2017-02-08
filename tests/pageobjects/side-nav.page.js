@@ -1,9 +1,6 @@
 import Page from './Page';
 
 class SideNav extends Page {
-	get directMessageTarget() { return browser.element('.flex-nav input#who'); }
-	get saveDirectMessageBtn() { return browser.element('.save-direct-message'); }
-
 	get channelType() { return browser.element('label[for="channel-type"]'); }
 	get channelReadOnly() { return browser.element('label[for="channel-ro"]'); }
 	get channelName() { return browser.element('input#channel-name'); }
@@ -14,13 +11,11 @@ class SideNav extends Page {
 	get accountBoxUserName() { return browser.element('.account-box .data h4'); }
 	get accountBoxUserAvatar() { return browser.element('.account-box .avatar-image'); }
 
-	get newChannelBtn() { return browser.element('.rooms-list .add-room:nth-of-type(1)'); }
-	get newChannelIcon() { return browser.element('.rooms-list .add-room:nth-of-type(1) .icon-plus'); }
+	get newChannelBtn() { return browser.element('.toolbar-search__create-channel'); }
+	get newChannelIcon() { return browser.element('.toolbar-search__create-channel.icon-plus'); }
 	get moreChannels() { return browser.element('.rooms-list .more-channels'); }
 
 	get newDirectMessageBtn() { return browser.element('.rooms-list .add-room:nth-of-type(2)'); }
-	get newDirectMessageIcon() { return browser.element('.rooms-list .add-room:nth-of-type(2) .icon-plus'); }
-	get moreDirectMessages() { return browser.element('.rooms-list .more-direct-messages'); }
 
 	get general() { return browser.element('.rooms-list > .wrapper > ul [title="general"]'); }
 	get channelHoverIcon() { return browser.element('.rooms-list > .wrapper > ul [title="general"] .icon-eye-off'); }
@@ -39,6 +34,9 @@ class SideNav extends Page {
 	get profile() { return browser.element('.account-link:nth-of-type(2)'); }
 	get avatar() { return browser.element('.account-link:nth-of-type(3)'); }
 	get preferencesClose() { return browser.element('.side-nav .arrow.close'); }
+	get spotlightSearch() { return browser.element('.toolbar-search__input'); }
+	get spotlightSearchPopUp() { return browser.element('.toolbar .message-popup'); }
+	get channelLeave() { return browser.element('.leave-room'); }
 
 	openChannel(channelName) {
 		browser.click('.rooms-list > .wrapper > ul [title="'+channelName+'"]');
@@ -46,6 +44,25 @@ class SideNav extends Page {
 		browser.waitUntil(function() {
 			return browser.getText('.room-title') === channelName;
 		}, 5000);
+	}
+
+	searchChannel(channelName) {
+		this.spotlightSearch.waitForVisible(5000);
+		this.spotlightSearch.click();
+		this.spotlightSearch.setValue(channelName);
+		browser.waitForVisible('.room-title='+channelName, 10000);
+		browser.click('.room-title='+channelName);
+		browser.waitUntil(function() {
+			return browser.getText('.room-title') === channelName;
+		}, 5000);
+	}
+
+	getChannelFromSpotlight(channelName) {
+		this.spotlightSearch.waitForVisible(5000);
+		this.spotlightSearch.click();
+		this.spotlightSearch.setValue(channelName);
+		browser.waitForVisible('.room-title='+channelName, 5000);
+		return browser.element('.room-title='+channelName);
 	}
 
 	getChannelFromList(channelName) {

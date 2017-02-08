@@ -64,6 +64,7 @@ class MainContent extends Page {
 	get messagePopUpItems() { return browser.element('.message-popup-items'); }
 	get messagePopUpFirstItem() { return browser.element('.popup-item.selected'); }
 	get mentionAllPopUp() { return browser.element('.popup-item[data-id="all"]'); }
+	get joinChannelBtn() { return browser.element('.button.join'); }
 
 	sendMessage(text) {
 		this.setTextToInput(text);
@@ -116,10 +117,6 @@ class MainContent extends Page {
 
 	tryToMentionAll() {
 		this.addTextToInput('@all');
-		this.mentionAllPopUp.waitForVisible(5000);
-		browser.pause(100);
-		this.mentionAllPopUp.click();
-		this.mentionAllPopUp.waitForVisible(5000, true);
 		this.sendBtn.click();
 		this.waitForLastMessageEqualsText('Notify all in this room is not allowed');
 		this.lastMessage.getText().should.equal('Notify all in this room is not allowed');
