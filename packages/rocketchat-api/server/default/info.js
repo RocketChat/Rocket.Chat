@@ -3,15 +3,14 @@ RocketChat.API.default.addRoute('info', { authRequired: false }, {
 		const user = this.getLoggedInUser();
 
 		if (user && RocketChat.authz.hasRole(user._id, 'admin')) {
-			return {
+			return RocketChat.API.v1.success({
 				info: RocketChat.Info
-			};
+			});
 		}
 
 		return RocketChat.API.v1.success({
-			info: {
-				'version': RocketChat.Info.version
-			}
+			version: RocketChat.Info.version,
+			build: RocketChat.Info.build
 		});
 	}
 });
