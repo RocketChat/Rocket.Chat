@@ -10,6 +10,24 @@ class API extends Restivus {
 			$loki: 0,
 			meta: 0
 		};
+
+		this._config.defaultOptionsEndpoint = function() {
+			if (this.request.method === 'OPTIONS' && this.request.headers['access-control-request-method']) {
+				if (RocketChat.settings.get('API_Enable_CORS') === true) {
+					this.response.writeHead(200, {
+						'Access-Control-Allow-Origin': RocketChat.settings.get('API_CORS_Origin'),
+						'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept, X-User-Id, X-Auth-Token'
+					});
+				} else {
+					this.response.writeHead(405);
+					this.response.write('CORS not enabled. Go to "Admin > General > REST Api" to enable it.');
+				}
+			} else {
+				this.response.writeHead(404);
+			}
+
+			this.done();
+		};
 	}
 
 	addAuthMethod(method) {

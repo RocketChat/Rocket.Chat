@@ -1,7 +1,7 @@
 /* global WebAppHashing, WebAppInternals */
 
 import sizeOf from 'image-size';
-import mime from 'mime-types';
+import mime from 'mime-type/with-db';
 import crypto from 'crypto';
 
 mime.extensions['image/vnd.microsoft.icon'] = ['ico'];

@@ -42,7 +42,7 @@ RocketChat.models.Rooms.findLivechat = function(filter = {}, offset = 0, limit =
 RocketChat.models.Rooms.findLivechatByCode = function(code, fields) {
 	code = parseInt(code);
 
-	let options = {};
+	const options = {};
 
 	if (fields) {
 		options.fields = fields;

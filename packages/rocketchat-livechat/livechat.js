@@ -17,7 +17,7 @@ WebApp.connectHandlers.use('/livechat', Meteor.bindEnvironment((req, res, next) 
 			return domain.trim();
 		});
 
-		let referer = url.parse(req.headers.referer);
+		const referer = url.parse(req.headers.referer);
 		if (!_.contains(domainWhiteList, referer.host)) {
 			res.setHeader('X-FRAME-OPTIONS', 'DENY');
 			return next();

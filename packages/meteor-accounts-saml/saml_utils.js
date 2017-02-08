@@ -7,9 +7,6 @@ var crypto = Npm.require('crypto');
 var xmldom = Npm.require('xmldom');
 var querystring = Npm.require('querystring');
 var xmlbuilder = Npm.require('xmlbuilder');
-// var xmlenc = Npm.require('xml-encryption');
-// var xpath = xmlCrypto.xpath;
-// var Dom = xmldom.DOMParser;
 
 // var prefixMatch = new RegExp(/(?!xmlns)^.*:/);
 
