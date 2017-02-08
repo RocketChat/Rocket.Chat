@@ -282,6 +282,36 @@ RocketChat.API.v1.addRoute('groups.list', { authRequired: true }, {
 	}
 });
 
+RocketChat.API.v1.addRoute('groups.online', { authRequired: true }, {
+	get: function() {
+		const { query } = this.parseJsonQuery();
+		const ourQuery = Object.assign({}, query, { t: 'p' });
+
+		const room = RocketChat.models.Rooms.findOne(ourQuery);
+
+		if (room == null) {
+			return RocketChat.API.v1.failure('Group does not exists');
+		}
+
+		const online = RocketChat.models.Users.findUsersNotOffline({
+			fields: {
+				username: 1
+			}
+		}).fetch();
+
+		const onlineInRoom = [];
+		online.forEach(user => {
+			if (room.usernames.indexOf(user.username) !== -1) {
+				onlineInRoom.push(user.username);
+			}
+		});
+
+		return RocketChat.API.v1.success({
+			online: onlineInRoom
+		});
+	}
+});
+
 RocketChat.API.v1.addRoute('groups.open', { authRequired: true }, {
 	post: function() {
 		const findResult = findPrivateGroupByIdOrName({ roomId: this.bodyParams.roomId, userId: this.userId, checkedArchived: false });
