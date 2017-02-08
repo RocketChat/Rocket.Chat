@@ -38,11 +38,11 @@ Template.emojiInfo.helpers({
 });
 
 Template.emojiInfo.events({
-	['click .thumb'](e) {
+	'click .thumb'(e) {
 		$(e.currentTarget).toggleClass('bigger');
 	},
 
-	['click .delete'](e, instance) {
+	'click .delete'(e, instance) {
 		e.stopPropagation();
 		e.preventDefault();
 		const emoji = instance.emoji.get();
@@ -81,7 +81,7 @@ Template.emojiInfo.events({
 		}
 	},
 
-	['click .edit-emoji'](e, instance) {
+	'click .edit-emoji'(e, instance) {
 		e.stopPropagation();
 		e.preventDefault();
 

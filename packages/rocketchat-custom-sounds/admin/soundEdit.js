@@ -11,20 +11,20 @@ Template.soundEdit.helpers({
 });
 
 Template.soundEdit.events({
-	['click .cancel'](e, t) {
+	'click .cancel'(e, t) {
 		e.stopPropagation();
 		e.preventDefault();
 		delete Template.instance().soundFile;
 		t.cancel(t.find('form'));
 	},
 
-	['submit form'](e, t) {
+	'submit form'(e, t) {
 		e.stopPropagation();
 		e.preventDefault();
 		t.save(e.currentTarget);
 	},
 
-	['change input[type=file]'](ev) {
+	'change input[type=file]'(ev) {
 		const e = (isSetNotNull(() => ev.originalEvent)) ? ev.originalEvent : ev;
 		let files = e.target.files;
 		if (!isSetNotNull(() => e.target.files) || files.length === 0) {
