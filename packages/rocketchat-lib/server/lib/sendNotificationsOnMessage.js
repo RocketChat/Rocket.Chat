@@ -75,24 +75,24 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 	settings.dontNotifyMobileUsers = [];
 	settings.desktopNotificationDurations = {};
 	// Don't fetch all users if room exceeds max members
-	let maxMembersForNotification = RocketChat.settings.get('Notifications_Max_Room_Members');
-	let disableAllMessageNotifications = room.usernames.length > maxMembersForNotification && maxMembersForNotification !== 0;
-	let subscriptions = RocketChat.models.Subscriptions.findNotificationPreferencesByRoom(room._id, disableAllMessageNotifications);
-	let userIds = [];
+	const maxMembersForNotification = RocketChat.settings.get('Notifications_Max_Room_Members');
+	const disableAllMessageNotifications = room.usernames.length > maxMembersForNotification && maxMembersForNotification !== 0;
+	const subscriptions = RocketChat.models.Subscriptions.findNotificationPreferencesByRoom(room._id, disableAllMessageNotifications);
+	const userIds = [];
 	subscriptions.forEach((s) => {
 		userIds.push(s.u._id);
 	});
-	let userSettings = {};
+	const userSettings = {};
 	RocketChat.models.Users.findUsersByIds(userIds, { fields: { 'settings.preferences.desktopNotifications': 1, 'settings.preferences.mobileNotifications': 1 } }).forEach((user) => {
 		userSettings[user._id] = user.settings;
 	});
 
 	subscriptions.forEach((subscription) => {
-		let preferences = userSettings[subscription.u._id] ? userSettings[subscription.u._id].preferences || {} : {};
-		let userDesktopNotificationPreference = preferences.desktopNotifications !== 'default' ? preferences.desktopNotifications : undefined;
-		let userMobileNotificationPreference = preferences.mobileNotifications !== 'default' ? preferences.mobileNotifications : undefined;
+		const preferences = userSettings[subscription.u._id] ? userSettings[subscription.u._id].preferences || {} : {};
+		const userDesktopNotificationPreference = preferences.desktopNotifications !== 'default' ? preferences.desktopNotifications : undefined;
+		const userMobileNotificationPreference = preferences.mobileNotifications !== 'default' ? preferences.mobileNotifications : undefined;
 		// Set defaults if they don't exist
-		let {
+		const {
 			desktopNotifications = userDesktopNotificationPreference || RocketChat.settings.get('Desktop_Notifications_Default_Alert'),
 			mobilePushNotifications = userMobileNotificationPreference || RocketChat.settings.get('Mobile_Notifications_Default_Alert')
 		} = subscription;
