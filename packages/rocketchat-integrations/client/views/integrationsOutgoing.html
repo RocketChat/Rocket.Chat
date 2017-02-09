@@ -218,11 +218,11 @@
 								{{/if}}
 								{{#if shouldDisplayTriggerWords}}
 									<div class="input-line double-col">
-										<label>{{_ "Trigger Word Anywhere"}}</label>
+										<label>{{_ "Integration_Word_Trigger_Placement"}}</label>
 										<div>
 											<label><input type="radio" name="triggerWordAnywhere" value="1" checked="{{$eq data.triggerWordAnywhere true}}" /> {{_ "True"}}</label>
 											<label><input type="radio" name="triggerWordAnywhere" value="0" checked="{{$neq data.triggerWordAnywhere true}}" /> {{_ "False"}}</label>
-											<div class="settings-description">{{_ "Should the trigger word be anywhere? False means the trigger word can only be at the start."}}</div>
+											<div class="settings-description">{{_ "Integration_Word_Trigger_Placement_Description"}}</div>
 										</div>
 									</div>
 								{{/if}}
