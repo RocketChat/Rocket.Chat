@@ -182,37 +182,37 @@
 					{{#if hasTypeSelected}}
 						<div class="section section-collapsed">
 							<div class="section-title">
-								<div class="section-title-text">{{_ "Advanced Settings"}}</div>
+								<div class="section-title-text">{{_ "Integration_Advanced_Settings"}}</div>
 								<div class="section-title-right">
 									<button class="button primary expand"><span>{{_ "Expand"}}</span></button>
 								</div>
 							</div>
 							<div class="section-content">
 								<div class="input-line double-col">
-									<label>{{_ "Retry Failed Url Calls"}}</label>
+									<label>{{_ "Integration_Retry_Failed_Url_Calls"}}</label>
 									<div>
 										<label><input type="radio" name="retryFailedCalls" value="1" checked="{{$eq data.retryFailedCalls true}}" /> {{_ "True"}}</label>
 										<label><input type="radio" name="retryFailedCalls" value="0" checked="{{$neq data.retryFailedCalls true}}" /> {{_ "False"}}</label>
-										<div class="settings-description">{{_ "Should the integration try a reasonable amount of time if the call out to the url fails?"}}</div>
+										<div class="settings-description">{{_ "Integration_Retry_Failed_Url_Calls_Description"}}</div>
 									</div>
 								</div>
 								{{#if data.retryFailedCalls}}
 									<div class="input-line double-col">
-										<label>{{_ "Retry Count"}}</label>
+										<label>{{_ "Integration_Retry_Count"}}</label>
 										<div>
 											<input type="number" name="retryCount" value="{{data.retryCount}}" />
-											<div class="settings-description">{{_ "How many times should the integration be tried if the call to the url fails?"}}</div>
+											<div class="settings-description">{{_ "Integration_Retry_Count_Description"}}</div>
 										</div>
 									</div>
 									<div class="input-line double-col">
-										<label>{{_ "Retry Delay"}}</label>
+										<label>{{_ "Integration_Retry_Delay"}}</label>
 										<div>
 											<select name="retryDelay" class="required">
-												<option value="powers-of-ten" selected="{{$eq data.retryDelay 'powers-of-ten'}}" dir="auto">{{_ 'powers-of-ten'}}</option>
-												<option value="powers-of-two" selected="{{$eq data.retryDelay 'powers-of-two'}}" dir="auto">{{_ 'powers-of-two'}}</option>
-												<option value="increments-of-two" selected="{{$eq data.retryDelay 'increments-of-two'}}" dir="auto">{{_ 'increments-of-two'}}</option>
+												<option value="powers-of-ten" selected="{{$eq data.retryDelay 'powers-of-ten'}}" dir="auto">powers-of-ten</option>
+												<option value="powers-of-two" selected="{{$eq data.retryDelay 'powers-of-two'}}" dir="auto">powers-of-two</option>
+												<option value="increments-of-two" selected="{{$eq data.retryDelay 'increments-of-two'}}" dir="auto">increments-of-two</option>
 											</select>
-											<div class="settings-description">{{{_ "Which delay algorithm should the retrying use? <code class=\"inline\">10^x</code> or <code class=\"inline\">2^x</code> or <code class=\"inline\">x*2</code>"}}}</div>
+											<div class="settings-description">{{{_ "Integration_Retry_Delay_Description"}}}</div>
 										</div>
 									</div>
 								{{/if}}

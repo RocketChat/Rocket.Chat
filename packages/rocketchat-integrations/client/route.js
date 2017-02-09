@@ -52,13 +52,6 @@ FlowRouter.route('/admin/integrations/outgoing/:id?', {
 
 FlowRouter.route('/admin/integrations/outgoing/:id?/history', {
 	name: 'admin-integrations-outgoing-history',
-	subscriptions(params) {
-		this.register('integrations', Meteor.subscribe('integrations'));
-
-		if (params.id) {
-			this.register('integrationHistory', Meteor.subscribe('integrationHistory', params.id));
-		}
-	},
 	action(params) {
 		return BlazeLayout.render('main', {
 			center: 'integrationsOutgoingHistory',

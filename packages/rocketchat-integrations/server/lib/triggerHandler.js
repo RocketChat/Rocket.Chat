@@ -711,7 +711,7 @@ RocketChat.integrations.triggerHandler = new class RocketChatIntegrationHandler 
 							default:
 								const er = new Error('The integration\'s retryDelay setting is invalid.');
 								this.updateHistory({ historyId, step: 'failed-and-retry-delay-is-invalid', error: true, errorStack: er.stack });
-								break;
+								return;
 						}
 
 						logger.outgoing.info(`Trying the Integration ${trigger.name} to ${url} again in ${waitTime} milliseconds.`);

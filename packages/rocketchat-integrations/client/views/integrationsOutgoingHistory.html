@@ -40,13 +40,13 @@
 									</div>
 								</div>
 								<div class="input-line double-col">
-									<label>{{_ "Time_Started"}}</label>
+									<label>{{_ "Integration_Outgoing_WebHook_History_Time_Triggered"}}</label>
 									<div>
 										<input class="input-monitor" type="text" disabled value="{{formatDateDetail history._createdAt}}">
 									</div>
 								</div>
 								<div class="input-line double-col">
-									<label>{{_ "Time_Ended_Or_Erorred"}}</label>
+									<label>{{_ "Integration_Outgoing_WebHook_History_Time_Ended_Or_Error"}}</label>
 									<div>
 										<input class="input-monitor" type="text" disabled value="{{formatDateDetail history._updatedAt}}">
 									</div>
@@ -58,20 +58,36 @@
 									</div>
 								</div>
 								<div class="input-line double-col">
-									<label>{{_ "Step"}}</label>
+									<label>{{_ "Integration_Outgoing_WebHook_History_Trigger_Step"}}</label>
 									<div>
 										<input class="input-monitor" type="text" disabled value="{{history.step}}">
 									</div>
 								</div>
 								<div class="input-line double-col">
-									<label>{{_ "Data_In"}}</label>
+									<label>{{_ "Integration_Outgoing_WebHook_History_Data_Passed_To_Trigger"}}</label>
 									<div>
 										<pre><code class="code-colors hljs json">{{{ jsonStringify history.data }}}</code></pre>
 									</div>
 								</div>
+								{{#if hasProperty history 'prepareSentMessage'}}
+									<div class="input-line double-col">
+										<label>{{_ "Integration_Outgoing_WebHook_History_Messages_Sent_From_Prepare_Script"}}</label>
+										<div>
+											<pre><code class="code-colors hljs json">{{{ jsonStringify history.prepareSentMessage }}}</code></pre>
+										</div>
+									</div>
+								{{/if}}
+								{{#if hasProperty history 'processSentMessage'}}
+									<div class="input-line double-col">
+										<label>{{_ "Integration_Outgoing_WebHook_History_Messages_Sent_From_Process_Script"}}</label>
+										<div>
+											<pre><code class="code-colors hljs json">{{{ jsonStringify history.processSentMessage }}}</code></pre>
+										</div>
+									</div>
+								{{/if}}
 								{{#if hasProperty history 'url'}}
 									<div class="input-line double-col">
-										<label>{{_ "Http Url"}}</label>
+										<label>{{_ "URL"}}</label>
 										<div>
 											<pre><code class="code-colors hljs json">{{ history.url }}</code></pre>
 										</div>
@@ -79,7 +95,7 @@
 								{{/if}}
 								{{#if hasProperty history 'httpCallData'}}
 									<div class="input-line double-col">
-										<label>{{_ "Http Call Data"}}</label>
+										<label>{{_ "Integration_Outgoing_WebHook_History_Data_Passed_To_URL"}}</label>
 										<div>
 											<pre><code class="code-colors hljs json">{{{jsonStringify history.httpCallData }}}</code></pre>
 										</div>
@@ -87,7 +103,7 @@
 								{{/if}}
 								{{#if hasProperty history 'httpError'}}
 									<div class="input-line double-col">
-										<label>{{_ "Http Url Call Error"}}</label>
+										<label>{{_ "Integration_Outgoing_WebHook_History_Http_Response_Error"}}</label>
 										<div>
 											<pre><code class="code-colors hljs json">{{{ jsonStringify history.httpError }}}</code></pre>
 										</div>
@@ -95,7 +111,7 @@
 								{{/if}}
 								{{#if hasProperty history 'httpResult'}}
 									<div class="input-line double-col">
-										<label>{{_ "Http Result"}}</label>
+										<label>{{_ "Integration_Outgoing_WebHook_History_Http_Response"}}</label>
 										<div>
 											<pre><code class="code-colors hljs json">{{{ jsonStringify history.httpResult }}}</code></pre>
 										</div>
@@ -103,7 +119,7 @@
 								{{/if}}
 								{{#if hasProperty history 'errorStack'}}
 									<div class="input-line double-col">
-										<label>{{_ "Error StackTrace"}}</label>
+										<label>{{_ "Integration_Outgoing_WebHook_History_Error_Stacktrace"}}</label>
 										<div>
 											<pre><code class="code-colors hljs json">{{{ hljsStack history.errorStack }}}</code></pre>
 										</div>
