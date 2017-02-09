@@ -9,6 +9,11 @@ Template.channelSettings.helpers
 		return arr
 
 	valueOf: (obj, key) ->
+		if key is 't'
+			if obj[key] is 'c'
+				return false
+
+			return true
 		return obj?[key]
 
 	showSetting: (setting, room) ->
@@ -156,7 +161,7 @@ Template.channelSettings.onCreated ->
 			isToggle: true
 			processing: new ReactiveVar(false)
 			canView: (room) ->
-				if not room.t in ['c', 'p']
+				if room.t not in ['c', 'p']
 					return false
 				else if room.t is 'p' and not RocketChat.authz.hasAllPermission('create-c')
 					return false

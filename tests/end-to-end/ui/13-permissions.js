@@ -14,18 +14,19 @@ import {username, email, password, adminUsername, adminEmail, adminPassword} fro
 describe('Admin settings', () => {
 	before(() => {
 		checkIfUserIsAdmin(adminUsername, adminEmail, adminPassword);
-		sideNav.getChannelFromList('general').waitForVisible(5000);
-		sideNav.openChannel('general');
+		sideNav.spotlightSearch.waitForVisible(10000);
+		sideNav.searchChannel('general');
 		sideNav.accountBoxUserName.waitForVisible(5000);
 		sideNav.accountBoxUserName.click();
 		sideNav.admin.waitForVisible(5000);
 		sideNav.admin.click();
+		admin.infoRocketChatTable.waitForVisible(10000);
 	});
 
 	after(() => {
 		checkIfUserIsAdmin(adminUsername, adminEmail, adminPassword);
-		sideNav.getChannelFromList('general').waitForExist(5000);
-		sideNav.openChannel('general');
+		sideNav.spotlightSearch.waitForVisible(10000);
+		sideNav.searchChannel('general');
 		sideNav.accountBoxUserName.waitForVisible(5000);
 		sideNav.accountBoxUserName.click();
 		sideNav.admin.waitForVisible(5000);
@@ -167,27 +168,13 @@ describe('Admin settings', () => {
 			checkIfUserIsValid('adminCreated'+username, 'adminCreated'+email, password);
 		});
 
-		it('should not show the plus icon on channels ', () => {
+		it('should not show the plus icon on toolbar ', () => {
 			sideNav.newChannelIcon.isVisible().should.be.false;
 		});
 
-		it('when clicked should not show the new channel name input ', () => {
-			sideNav.newChannelBtn.click();
-			sideNav.channelName.isVisible().should.be.false;
-		});
-
-		it('should not show the plus icon on direct messages ', () => {
-			sideNav.newDirectMessageIcon.isVisible().should.be.false;
-		});
-
-		it('when clicked should not show the new direct message user input ', () => {
-			sideNav.newDirectMessageBtn.click();
-			sideNav.directMessageTarget.isVisible().should.be.false;
-		});
-
 		it('go to general', () => {
-			sideNav.getChannelFromList('general').waitForExist(5000);
-			sideNav.openChannel('general');
+			sideNav.spotlightSearch.waitForVisible(10000);
+			sideNav.searchChannel('general');
 			mainContent.messageInput.waitForVisible(5000);
 		});
 

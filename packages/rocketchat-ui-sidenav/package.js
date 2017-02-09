@@ -21,16 +21,13 @@ Package.onUse(function(api) {
 	]);
 
 	api.addFiles('side-nav/accountBox.html', 'client');
-	api.addFiles('side-nav/channels.html', 'client');
 	api.addFiles('side-nav/combined.html', 'client');
 	api.addFiles('side-nav/chatRoomItem.html', 'client');
-	api.addFiles('side-nav/createChannelFlex.html', 'client');
+	api.addFiles('side-nav/channels.html', 'client');
 	api.addFiles('side-nav/createCombinedFlex.html', 'client');
 	api.addFiles('side-nav/directMessages.html', 'client');
-	api.addFiles('side-nav/directMessagesFlex.html', 'client');
 	api.addFiles('side-nav/listChannelsFlex.html', 'client');
 	api.addFiles('side-nav/listCombinedFlex.html', 'client');
-	api.addFiles('side-nav/listDirectMessagesFlex.html', 'client');
 	api.addFiles('side-nav/listPrivateGroupsFlex.html', 'client');
 	api.addFiles('side-nav/privateGroups.html', 'client');
 	api.addFiles('side-nav/privateGroupsFlex.html', 'client');
@@ -41,16 +38,13 @@ Package.onUse(function(api) {
 	api.addFiles('side-nav/userStatus.html', 'client');
 
 	api.addFiles('side-nav/accountBox.coffee', 'client');
-	api.addFiles('side-nav/channels.coffee', 'client');
 	api.addFiles('side-nav/combined.coffee', 'client');
 	api.addFiles('side-nav/chatRoomItem.coffee', 'client');
-	api.addFiles('side-nav/createChannelFlex.coffee', 'client');
+	api.addFiles('side-nav/channels.coffee', 'client');
 	api.addFiles('side-nav/createCombinedFlex.coffee', 'client');
 	api.addFiles('side-nav/directMessages.coffee', 'client');
-	api.addFiles('side-nav/directMessagesFlex.coffee', 'client');
 	api.addFiles('side-nav/listChannelsFlex.coffee', 'client');
 	api.addFiles('side-nav/listCombinedFlex.coffee', 'client');
-	api.addFiles('side-nav/listDirectMessagesFlex.js', 'client');
 	api.addFiles('side-nav/listPrivateGroupsFlex.coffee', 'client');
 	api.addFiles('side-nav/privateGroups.coffee', 'client');
 	api.addFiles('side-nav/privateGroupsFlex.coffee', 'client');
@@ -58,9 +52,4 @@ Package.onUse(function(api) {
 	api.addFiles('side-nav/starredRooms.coffee', 'client');
 	api.addFiles('side-nav/toolbar.js', 'client');
 	api.addFiles('side-nav/unreadRooms.coffee', 'client');
-});
-
-Npm.depends({
-	'less': 'https://github.com/meteor/less.js/tarball/8130849eb3d7f0ecf0ca8d0af7c4207b0442e3f6',
-	'less-plugin-autoprefix': '1.4.2'
 });

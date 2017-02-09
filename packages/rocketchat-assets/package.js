@@ -8,7 +8,6 @@ Package.describe({
 Package.onUse(function(api) {
 	api.use([
 		'ecmascript',
-		'coffeescript',
 		'underscore',
 		'webapp',
 		'rocketchat:file',
@@ -16,7 +15,7 @@ Package.onUse(function(api) {
 		'webapp-hashing'
 	]);
 
-	api.addFiles('server/assets.coffee', 'server');
+	api.addFiles('server/assets.js', 'server');
 });
 
 Npm.depends({
