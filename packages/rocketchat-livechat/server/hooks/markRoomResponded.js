@@ -15,7 +15,7 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 	}
 
 	Meteor.defer(() => {
-		let now = new Date();
+		const now = new Date();
 		RocketChat.models.Rooms.setResponseByRoomId(room._id, {
 			user: {
 				_id: message.u._id,

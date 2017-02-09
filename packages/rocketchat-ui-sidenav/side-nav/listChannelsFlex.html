@@ -11,19 +11,19 @@
 					<form class="search-form" role="form">
 						<div class="input-line search">
 							<select class="c-select" id="show">
-								<option value="joined" selected="{{showSelected 'joined'}}">{{_ "Joined"}}</option>
-								<option value="all" selected="{{showSelected 'all'}}">{{_ "All"}}</option>
+								<option value="joined" selected="{{showSelected 'joined'}}" class="primary-background-color">{{_ "Joined"}}</option>
+								<option value="all" selected="{{showSelected 'all'}}" class="primary-background-color">{{_ "All"}}</option>
 							</select>
 							<i class="icon-comment secondary-font-color"></i>
 						</div>
 						<div class="input-line search">
 							<select class="c-select" id="sort-channels">
-								<option value="name" selected="{{sortChannelsSelected 'name'}}">{{_ "Name"}}</option>
-								<option value="msgs" selected="{{sortChannelsSelected 'msgs'}}">{{_ "Number_of_messages"}}</option>
+								<option value="name" selected="{{sortChannelsSelected 'name'}}" class="primary-background-color">{{_ "Name"}}</option>
+								<option value="msgs" selected="{{sortChannelsSelected 'msgs'}}" class="primary-background-color">{{_ "Number_of_messages"}}</option>
 							</select>
 							<select class="c-select" id="sort-subscriptions" style="display: none">
-								<option value="name" selected="{{sortSubscriptionsSelected 'name'}}">{{_ "Name"}}</option>
-								<option value="ls" selected="{{sortSubscriptionsSelected 'ls'}}">{{_ "Last_seen"}}</option>
+								<option value="name" selected="{{sortSubscriptionsSelected 'name'}}" class="primary-background-color">{{_ "Name"}}</option>
+								<option value="ls" selected="{{sortSubscriptionsSelected 'ls'}}" class="primary-background-color">{{_ "Last_seen"}}</option>
 							</select>
 							<i class="icon-sort-alt-up secondary-font-color"></i>
 						</div>

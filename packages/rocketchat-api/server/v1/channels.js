@@ -374,6 +374,39 @@ RocketChat.API.v1.addRoute('channels.list.joined', { authRequired: true }, {
 	}
 });
 
+RocketChat.API.v1.addRoute('channels.online', { authRequired: true }, {
+	get: function() {
+		const { query } = this.parseJsonQuery();
+		const ourQuery = Object.assign({}, query, { t: 'c' });
+
+		const room = RocketChat.models.Rooms.findOne(ourQuery);
+
+		if (room == null) {
+			return RocketChat.API.v1.failure('Channel does not exists');
+		}
+
+		const online = RocketChat.models.Users.findUsersNotOffline({
+			fields: {
+				username: 1
+			}
+		}).fetch();
+
+		const onlineInRoom = [];
+		online.forEach(user => {
+			if (room.usernames.indexOf(user.username) !== -1) {
+				onlineInRoom.push({
+					_id: user._id,
+					username: user.username
+				});
+			}
+		});
+
+		return RocketChat.API.v1.success({
+			online: onlineInRoom
+		});
+	}
+});
+
 RocketChat.API.v1.addRoute('channels.open', { authRequired: true }, {
 	post: function() {
 		const findResult = findChannelById({ roomId: this.bodyParams.roomId, checkedArchived: false });

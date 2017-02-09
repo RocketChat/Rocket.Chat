@@ -46,8 +46,49 @@ describe('Main Elements Render', function() {
 				sideNav.general.isVisible().should.be.true;
 			});
 
+			it('should show spotlight search bar', () => {
+				sideNav.spotlightSearch.isVisible().should.be.true;
+			});
+
 			it.skip('should not show eye icon on general', () => {
 				sideNav.channelHoverIcon.isVisible().should.be.true;
+			});
+		});
+
+		describe('spotlight search render', () => {
+			it('should show spotlight search bar', () => {
+				sideNav.spotlightSearch.isVisible().should.be.true;
+			});
+
+			it('should click the spotlight and show the channel list', () => {
+				sideNav.spotlightSearch.waitForVisible(5000);
+				sideNav.spotlightSearch.click();
+				sideNav.spotlightSearchPopUp.waitForVisible(5000);
+				sideNav.spotlightSearchPopUp.isVisible().should.be.true;
+			});
+
+			it('when the spotlight loses focus the list should disappear', () => {
+				sideNav.spotlightSearchPopUp.waitForVisible(5000);
+				sideNav.spotlightSearchPopUp.isVisible().should.be.true;
+				mainContent.messageInput.click();
+				sideNav.spotlightSearchPopUp.waitForVisible(5000, true);
+				sideNav.spotlightSearchPopUp.isVisible().should.be.false;
+			});
+
+			it('should add text to the spotlight and show the channel list', () => {
+				sideNav.spotlightSearch.waitForVisible(5000);
+				sideNav.spotlightSearch.setValue('rocket.cat');
+				sideNav.spotlightSearchPopUp.waitForVisible(5000);
+				sideNav.spotlightSearchPopUp.isVisible().should.be.true;
+			});
+
+			it('the text on the spotlight and the list should disappear when lost focus', () => {
+				sideNav.spotlightSearchPopUp.waitForVisible(5000);
+				sideNav.spotlightSearchPopUp.isVisible().should.be.true;
+				mainContent.messageInput.click();
+				sideNav.spotlightSearchPopUp.waitForVisible(5000, true);
+				sideNav.spotlightSearchPopUp.isVisible().should.be.false;
+				sideNav.spotlightSearch.getText().should.equal('');
 			});
 		});
 	});
