@@ -99,7 +99,7 @@ describe('user preferences', ()=> {
 		it('close the preferences menu', () => {
 			sideNav.preferencesClose.waitForVisible(5000);
 			sideNav.preferencesClose.click();
-			sideNav.accountBoxUserName.waitForVisible(5000);
+			sideNav.getChannelFromList('general').waitForVisible(5000);
 		});
 
 		it('open GENERAL', () => {
