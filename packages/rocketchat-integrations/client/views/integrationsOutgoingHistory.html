@@ -120,6 +120,11 @@
 							</div>
 						</div>
 					{{/each}}
+					{{#if hasMore}}
+						<div class="load-more">
+							{{> loading}}
+						</div>
+					{{/if}}
                 </div>
 			{{/unless}}
         </div>

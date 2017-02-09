@@ -3,6 +3,8 @@ import moment from 'moment';
 import toastr from 'toastr';
 
 Template.integrationsOutgoingHistory.onCreated(function _integrationsOutgoingHistoryOnCreated() {
+	this.hasMore = new ReactiveVar(false);
+	this.limit = new ReactiveVar(25);
 	this.autorun(() => {
 		const id = this.data && this.data.params && this.data.params().id;
 
@@ -21,6 +23,13 @@ Template.integrationsOutgoingHistory.onCreated(function _integrationsOutgoingHis
 					toastr.error(TAPi18n.__('No_integration_found'));
 					FlowRouter.go('admin-integrations');
 				}
+
+				const historySub = this.subscribe('integrationHistory', intRecord._id, this.limit.get());
+				if (historySub.ready()) {
+					if (ChatIntegrationHistory.find().count() > this.limit.get()) {
+						this.hasMore.set(true);
+					}
+				}
 			}
 		} else {
 			toastr.error(TAPi18n.__('No_integration_found'));
@@ -32,6 +41,10 @@ Template.integrationsOutgoingHistory.onCreated(function _integrationsOutgoingHis
 Template.integrationsOutgoingHistory.helpers({
 	hasPermission() {
 		return RocketChat.authz.hasAtLeastOnePermission(['manage-integrations', 'manage-own-integrations']);
+	},
+
+	hasMore() {
+		return Template.instance().hasMore.get();
 	},
 
 	histories() {
@@ -137,5 +150,11 @@ Template.integrationsOutgoingHistory.events({
 
 			toastr.success(TAPi18n.__('Integration_History_Cleared'));
 		});
-	}
+	},
+
+	'scroll .content': _.throttle((e, instance) => {
+		if (e.target.scrollTop >= e.target.scrollHeight - e.target.clientHeight) {
+			instance.limit.set(instance.limit.get() + 25);
+		}
+	}, 200)
 });

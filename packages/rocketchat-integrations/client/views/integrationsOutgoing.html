@@ -205,13 +205,14 @@
 										</div>
 									</div>
 									<div class="input-line double-col">
-										<label>{{_ "Retry Timeline"}}</label>
+										<label>{{_ "Retry Delay"}}</label>
 										<div>
-											<select name="retryTimeline" class="required">
-												<option value="powers-of-ten" selected="{{$eq data.retryTimeline 'powers-of-ten'}}" dir="auto">{{_ 'powers-of-ten'}}</option>
-												<option value="multipules-of-two" selected="{{$eq data.retryTimeline 'multipules-of-two'}}" dir="auto">{{_ 'multipules-of-two'}}</option>
+											<select name="retryDelay" class="required">
+												<option value="powers-of-ten" selected="{{$eq data.retryDelay 'powers-of-ten'}}" dir="auto">{{_ 'powers-of-ten'}}</option>
+												<option value="powers-of-two" selected="{{$eq data.retryDelay 'powers-of-two'}}" dir="auto">{{_ 'powers-of-two'}}</option>
+												<option value="increments-of-two" selected="{{$eq data.retryDelay 'increments-of-two'}}" dir="auto">{{_ 'increments-of-two'}}</option>
 											</select>
-											<div class="settings-description">{{{_ "Which algoritem should the retrying use? <code class=\"inline\">10^x</code> or <code class=\"inline\">x*2</code>?"}}}</div>
+											<div class="settings-description">{{{_ "Which delay algorithm should the retrying use? <code class=\"inline\">10^x</code> or <code class=\"inline\">2^x</code> or <code class=\"inline\">x*2</code>"}}}</div>
 										</div>
 									</div>
 								{{/if}}

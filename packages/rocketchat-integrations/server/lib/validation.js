@@ -80,7 +80,9 @@ function _verifyRetryInformation(integration) {
 		return;
 	}
 
-	integration.retryCount = integration.retryCount ? parseInt(integration.retryCount) : 6;
+	// Don't allow negative retry counts
+	integration.retryCount = integration.retryCount && parseInt(integration.retryCount) > 0 ? parseInt(integration.retryCount) : 4;
+	integration.retryDelay = !integration.retryDelay || !integration.retryDelay.trim() ? 'powers-of-ten' : integration.retryDelay.toLowerCase();
 }
 
 RocketChat.integrations.validateOutgoing = function _validateOutgoing(integration, userId) {

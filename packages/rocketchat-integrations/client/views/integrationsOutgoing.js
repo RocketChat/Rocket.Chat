@@ -7,7 +7,8 @@ Template.integrationsOutgoing.onCreated(function _integrationsOutgoingOnCreated(
 		username: 'rocket.cat',
 		token: Random.id(24),
 		retryFailedCalls: true,
-		retryCount: 6
+		retryCount: 6,
+		retryDelay: 'powers-of-ten'
 	});
 
 	this.updateRecord = () => {
@@ -28,7 +29,8 @@ Template.integrationsOutgoing.onCreated(function _integrationsOutgoingOnCreated(
 			targetRoom: $('[name=targetRoom]').val() ? $('[name=targetRoom]').val().trim() : undefined,
 			triggerWordAnywhere: $('[name=triggerWordAnywhere]').val() ? $('[name=triggerWordAnywhere]').val().trim() : undefined,
 			retryFailedCalls: $('[name=retryFailedCalls]:checked').val().trim() === '1',
-			retryCount: $('[name=retryCount]').val() ? $('[name=retryCount]').val().trim() : 6
+			retryCount: $('[name=retryCount]').val() ? $('[name=retryCount]').val().trim() : 6,
+			retryDelay: $('[name=retryDelay]').val() ? $('[name=retryDelay]').val().trim() : 'powers-of-ten'
 		});
 	};
 
@@ -308,9 +310,10 @@ Template.integrationsOutgoing.events({
 			}
 		}
 
-		let retryCount;
+		let retryCount, retryDelay;
 		if (retryFailedCalls === '1') {
 			retryCount = parseInt($('[name=retryCount]').val().trim());
+			retryDelay: $('[name=retryDelay]').val().trim();
 		}
 
 		const integration = {
@@ -331,6 +334,7 @@ Template.integrationsOutgoing.events({
 			impersonateUser: impersonateUser === '1',
 			retryFailedCalls: retryFailedCalls === '1',
 			retryCount: retryCount ? retryCount : 6,
+			retryDelay: retryDelay ? retryDelay : 'powers-of-ten',
 			triggerWordAnywhere: triggerWordAnywhere === '1'
 		};
 

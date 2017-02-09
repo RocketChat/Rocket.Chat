@@ -690,13 +690,33 @@ RocketChat.integrations.triggerHandler = new class RocketChatIntegrationHandler 
 				}
 
 				if (trigger.retryFailedCalls) {
-					if (tries < trigger.retryCount) {
+					if (tries < trigger.retryCount && trigger.retryDelay) {
 						this.updateHistory({ historyId, error: true, step: `going-to-retry-${tries + 1}` });
-						// Try again in 0.1s, 1s, 10s, 1m40s, 16m40s, 2h46m40s and 27h46m40s
-						const waitTime = Math.pow(10, tries+2);
+
+						let waitTime;
+
+						switch (trigger.retryDelay) {
+							case 'powers-of-ten':
+								// Try again in 0.1s, 1s, 10s, 1m40s, 16m40s, 2h46m40s, 27h46m40s, etc
+								waitTime = Math.pow(10, tries + 2);
+								break;
+							case 'powers-of-two':
+								// 2 seconds, 4 seconds, 8 seconds
+								waitTime = Math.pow(2, tries + 1) * 1000;
+								break;
+							case 'increments-of-two':
+								// 2 second, 4 seconds, 6 seconds, etc
+								waitTime = (tries + 1) * 2 * 1000;
+								break;
+							default:
+								const er = new Error('The integration\'s retryDelay setting is invalid.');
+								this.updateHistory({ historyId, step: 'failed-and-retry-delay-is-invalid', error: true, errorStack: er.stack });
+								break;
+						}
+
 						logger.outgoing.info(`Trying the Integration ${trigger.name} to ${url} again in ${waitTime} milliseconds.`);
 						Meteor.setTimeout(() => {
-							this.executeTriggerUrl(url, trigger, { event, message, room, owner, user }, historyId, tries+1);
+							this.executeTriggerUrl(url, trigger, { event, message, room, owner, user }, historyId, tries + 1);
 						}, waitTime);
 					} else {
 						this.updateHistory({ historyId, step: 'too-many-retries', error: true });
