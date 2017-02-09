@@ -61,9 +61,9 @@
 			sub = ChatSubscription.findOne({ rid: rid }, { fields: { audioNotification: 1 } });
 			if sub?.audioNotification isnt 'none'
 				if sub?.audioNotification
-					$("audio##{sub.audioNotification}")[0].play()
+					$("audio##{sub.audioNotification}")?[0]?.play?()
 				else if newMessageNotification isnt 'none'
-					$("audio##{newMessageNotification}")[0].play()
+					$("audio##{newMessageNotification}")?[0]?.play?()
 
 	newRoom: (rid, withSound = true) ->
 		Tracker.nonreactive ->
