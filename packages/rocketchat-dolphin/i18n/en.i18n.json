@@ -1,0 +1,6 @@
+{
+  "API_Dolphin_URL" : "Dolphin URL",
+  "Accounts_OAuth_Dolphin" : "Dolphin Login",
+  "Accounts_OAuth_Dolphin_id" : "Dolphin Key",
+  "Accounts_OAuth_Dolphin_secret" : "Dolphin Secret"
+}
