@@ -97,7 +97,7 @@ Template.message.helpers
 
 	reactions: ->
 		msgReactions = []
-		userUsername = Meteor.user().username
+		userUsername = Meteor.user()?.username
 
 		for emoji, reaction of @reactions
 			total = reaction.usernames.length

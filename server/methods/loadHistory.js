@@ -21,7 +21,7 @@ Meteor.methods({
 	loadHistory(rid, end, limit = 20, ls) {
 		check(rid, String);
 
-		if (!Meteor.userId()) {
+		if (!Meteor.userId() && !RocketChat.authz.hasAllPermission(undefined, 'preview-c-room')) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: 'loadHistory'
 			});
