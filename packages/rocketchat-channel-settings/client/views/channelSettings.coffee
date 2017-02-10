@@ -239,7 +239,7 @@ Template.channelSettings.onCreated ->
 
 		joinCode:
 			type: 'text'
-			label: 'Room_password'
+			label: 'Password'
 			canView: (room) => room.t is 'c' and RocketChat.authz.hasAllPermission('edit-room', room._id)
 			canEdit: (room) => RocketChat.authz.hasAllPermission('edit-room', room._id)
 			save: (value, room) ->
