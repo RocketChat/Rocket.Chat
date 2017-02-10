@@ -14,6 +14,7 @@ const toolbarSearch = {
 	},
 
 	focus() {
+		menu.open();
 		$('.toolbar-search__input').focus();
 	}
 };
