@@ -98,6 +98,7 @@ Package.onUse(function(api) {
 	api.addFiles('views/404/roomNotFound.coffee', 'client');
 	api.addFiles('views/app/burger.coffee', 'client');
 	api.addFiles('views/app/home.coffee', 'client');
+	api.addFiles('views/app/mobileMessageMenu.js', 'client');
 	api.addFiles('views/app/privateHistory.coffee', 'client');
 	api.addFiles('views/app/room.coffee', 'client');
 	api.addFiles('views/app/roomSearch.coffee', 'client');
