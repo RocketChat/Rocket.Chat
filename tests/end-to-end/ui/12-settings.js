@@ -44,7 +44,7 @@ var settingValue = {
 	value : undefined
 };
 
-describe.only('Changing settings via api', () => {
+describe('Changing settings via api', () => {
 	before((done) => {
 		checkIfUserIsValid(username, email, password);
 		sideNav.spotlightSearch.waitForVisible(10000);
@@ -59,6 +59,11 @@ describe.only('Changing settings via api', () => {
 				credentials['X-User-Id'] = res.body.data.userId;
 			})
 			.end(done);
+	});
+
+	after(() => {
+		sideNav.preferencesClose.waitForVisible(5000);
+		sideNav.preferencesClose.click();
 	});
 
 	it('/login', () => {
@@ -457,7 +462,7 @@ describe.only('Changing settings via api', () => {
 			loginPage.submit();
 
 			loginPage.registrationSucceededCard.waitForVisible(5000);
-			loginPage.registrationSucceededCard.getText().should.equal('Registration Succeeded');
+			loginPage.registrationSucceededCard.getText().toLowerCase().should.equal('registration succeeded');
 			loginPage.backToLoginButton.click();
 		});
 
@@ -474,6 +479,27 @@ describe.only('Changing settings via api', () => {
 		it('search the user', () => {
 			admin.usersFilter.click();
 			admin.usersFilter.setValue('setting'+username);
+		});
+
+		it('opens the user', () => {
+			const userEl = admin.getUserFromList('setting'+username);
+			userEl.waitForVisible(5000);
+			userEl.click();
+			flexTab.usersView.waitForVisible(5000);
+		});
+
+		it('should show the activate user btn', () => {
+			flexTab.usersActivate.waitForVisible(5000);
+			flexTab.usersActivate.isVisible().should.be.true;
+		});
+
+		it('should activate the user', () => {
+			flexTab.usersActivate.click();
+		});
+
+		it('should show the deactivate btn', () => {
+			flexTab.usersDeactivate.waitForVisible(5000);
+			flexTab.usersDeactivate.isVisible().should.be.true;
 		});
 
 		it('should change the Manually Approve New Users via api', (done) => {
