@@ -1,6 +1,9 @@
 function atLeastOne(userId, permissions = [], scope) {
 	return permissions.some((permissionId) => {
 		const permission = RocketChat.models.Permissions.findOne(permissionId);
+		if (!userId && permission.roles.includes('anonymous')) {
+			return true;
+		}
 		return RocketChat.models.Roles.isUserInRoles(userId, permission.roles, scope);
 	});
 }
@@ -8,15 +11,14 @@ function atLeastOne(userId, permissions = [], scope) {
 function all(userId, permissions = [], scope) {
 	return permissions.every((permissionId) => {
 		const permission = RocketChat.models.Permissions.findOne(permissionId);
+		if (!userId && permission.roles.includes('anonymous')) {
+			return true;
+		}
 		return RocketChat.models.Roles.isUserInRoles(userId, permission.roles, scope);
 	});
 }
 
 function hasPermission(userId, permissions, scope, strategy) {
-	if (!userId) {
-		return false;
-	}
-
 	permissions = [].concat(permissions);
 	return strategy(userId, permissions, scope);
 }

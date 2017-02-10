@@ -14,6 +14,10 @@ Template.flexTabBar.helpers({
 	},
 
 	visible() {
+		if (!Meteor.userId() && !this.anonymous) {
+			return 'hidden';
+		}
+
 		if (this.groups.indexOf(Template.instance().tabBar.currentGroup()) === -1) {
 			return 'hidden';
 		}

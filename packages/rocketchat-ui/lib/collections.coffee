@@ -14,3 +14,9 @@ RocketChat.models.Users = _.extend {}, RocketChat.models.Users, Meteor.users
 RocketChat.models.Subscriptions = _.extend {}, RocketChat.models.Subscriptions, @ChatSubscription
 RocketChat.models.Rooms = _.extend {}, RocketChat.models.Rooms, @ChatRoom
 RocketChat.models.Messages = _.extend {}, RocketChat.models.Messages, @ChatMessage
+
+Meteor.startup ->
+	Tracker.autorun ->
+		if !Meteor.userId() and RocketChat.authz.hasAllPermission('preview-c-room')
+			CachedChatRoom.ready.set(true)
+			CachedChatSubscription.ready.set(true)

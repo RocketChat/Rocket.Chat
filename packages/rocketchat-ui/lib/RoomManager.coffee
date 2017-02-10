@@ -80,8 +80,6 @@ Tracker.autorun ->
 			do (typeName, record) ->
 
 				user = Meteor.user()
-				unless user?.username
-					return
 
 				if record.ready is true
 					return
@@ -158,7 +156,7 @@ Tracker.autorun ->
 		if openedRooms[typeName].ready
 			closeOlderRooms()
 
-		if CachedChatSubscription.ready.get() is true && Meteor.userId()
+		if CachedChatSubscription.ready.get() is true
 
 			if openedRooms[typeName].active isnt true
 				openedRooms[typeName].active = true

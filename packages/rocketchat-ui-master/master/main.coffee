@@ -78,7 +78,7 @@ Template.main.helpers
 		return RocketChat.settings.get 'Site_Name'
 
 	logged: ->
-		if Meteor.userId()?
+		if Meteor.userId()? || RocketChat.authz.hasAllPermission('preview-c-room')
 			$('html').addClass("noscroll").removeClass("scroll")
 			return true
 		else
@@ -102,7 +102,7 @@ Template.main.helpers
 		return ready
 
 	hasUsername: ->
-		return Meteor.userId()? and Meteor.user().username?
+		return (Meteor.userId()? and Meteor.user().username?) || RocketChat.authz.hasAllPermission('preview-c-room')
 
 	requirePasswordChange: ->
 		return Meteor.user()?.requirePasswordChange is true
