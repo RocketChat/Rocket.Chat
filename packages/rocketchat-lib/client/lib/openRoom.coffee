@@ -10,7 +10,7 @@ currentTracker = undefined
 				return
 
 			user = Meteor.user()
-			unless user?.username
+			if not user?.username and !RocketChat.authz.hasAllPermission('preview-c-room')
 				return
 
 			currentTracker = undefined
