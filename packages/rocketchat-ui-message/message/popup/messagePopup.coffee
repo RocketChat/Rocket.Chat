@@ -108,7 +108,7 @@ Template.messagePopup.onCreated ->
 
 			template.enterValue()
 
-			if template.data.cls is 'search-results-list'
+			if template.data.cleanOnEnter
 				template.input.value = ''
 
 			event.preventDefault()
