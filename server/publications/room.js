@@ -54,7 +54,7 @@ Meteor.methods({
 	},
 
 	getRoomByTypeAndName(type, name) {
-		if (!Meteor.userId() && !RocketChat.authz.hasAllPermission(undefined, 'preview-c-room')) {
+		if (!Meteor.userId() && RocketChat.settings.get('Accounts_AllowAnonymousAccess') === false) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'getRoomByTypeAndName' });
 		}
 

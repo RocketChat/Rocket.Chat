@@ -17,6 +17,6 @@ RocketChat.models.Messages = _.extend {}, RocketChat.models.Messages, @ChatMessa
 
 Meteor.startup ->
 	Tracker.autorun ->
-		if !Meteor.userId() and RocketChat.authz.hasAllPermission('preview-c-room')
+		if !Meteor.userId() and RocketChat.settings.get('Accounts_AllowAnonymousAccess') is true
 			CachedChatRoom.ready.set(true)
 			CachedChatSubscription.ready.set(true)
