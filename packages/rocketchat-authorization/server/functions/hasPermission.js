@@ -13,6 +13,10 @@ function all(userId, permissions = [], scope) {
 }
 
 function hasPermission(userId, permissions, scope, strategy) {
+	if (!userId) {
+		return false;
+	}
+
 	permissions = [].concat(permissions);
 	return strategy(userId, permissions, scope);
 }
