@@ -17,7 +17,7 @@ Package.onUse(function(api) {
 	api.addFiles('katex.coffee');
 	api.addFiles('client/style.css', 'client');
 
-	var katexPath = 'lib/katex/';
+	var katexPath = 'node_modules/katex/dist/';
 	api.addFiles(katexPath + 'katex.min.css', 'client');
 
 	var _ = Npm.require('underscore');
