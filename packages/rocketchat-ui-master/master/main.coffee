@@ -102,7 +102,7 @@ Template.main.helpers
 		return ready
 
 	hasUsername: ->
-		return (Meteor.userId()? and Meteor.user().username?) || RocketChat.authz.hasAllPermission('preview-c-room')
+		return (Meteor.userId()? and Meteor.user().username?) || (!Meteor.userId()? && RocketChat.authz.hasAllPermission('preview-c-room'))
 
 	requirePasswordChange: ->
 		return Meteor.user()?.requirePasswordChange is true
