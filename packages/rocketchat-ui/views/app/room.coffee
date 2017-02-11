@@ -158,6 +158,9 @@ Template.room.helpers
 		if room.t isnt 'c'
 			return true
 
+		if RocketChat.settings.get('Accounts_AllowAnonymousAccess') is true
+			return true
+
 		if RocketChat.authz.hasAllPermission('preview-c-room')
 			return true
 

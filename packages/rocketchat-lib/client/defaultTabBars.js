@@ -19,7 +19,6 @@ RocketChat.TabBar.addButton({
 RocketChat.TabBar.addButton({
 	groups: ['channel', 'group'],
 	id: 'members-list',
-	anonymous: true,
 	i18nTitle: 'Members_List',
 	icon: 'icon-users',
 	template: 'membersList',

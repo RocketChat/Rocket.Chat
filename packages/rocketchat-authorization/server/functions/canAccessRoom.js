@@ -1,14 +1,18 @@
 /* globals RocketChat */
 RocketChat.authz.roomAccessValidators = [
 	function(room, user = {}) {
-		const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(room._id, user._id);
-		if (subscription) {
-			return subscription._room;
+		if (room.t === 'c') {
+			if (!user._id && RocketChat.settings.get('Accounts_AllowAnonymousAccess') === true) {
+				return true;
+			}
+
+			return RocketChat.authz.hasPermission(user._id, 'view-c-room');
 		}
 	},
 	function(room, user = {}) {
-		if (room.t === 'c') {
-			return RocketChat.authz.hasPermission(user._id, 'view-c-room') || RocketChat.authz.hasPermission(user._id, 'preview-c-room');
+		const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(room._id, user._id);
+		if (subscription) {
+			return subscription._room;
 		}
 	}
 ];
