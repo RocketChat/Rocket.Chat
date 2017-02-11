@@ -127,7 +127,10 @@ Template.toolbar.helpers({
 				resultsFromClient = collection.find(query, {limit: 20, sort: {unread: -1, ls: -1}}).fetch();
 
 				const resultsFromClientLength = resultsFromClient.length;
-				usernamesFromClient = [Meteor.user().username];
+				const user = Meteor.user();
+				if (user) {
+					usernamesFromClient = [Meteor.user().username];
+				}
 
 				for (let i = 0; i < resultsFromClientLength; i++) {
 					if (resultsFromClient[i].t === 'd') {
