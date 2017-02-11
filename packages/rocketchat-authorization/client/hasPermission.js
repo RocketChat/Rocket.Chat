@@ -31,6 +31,11 @@ function all(permissions = [], scope) {
 }
 
 function hasPermission(permissions, scope, strategy) {
+	const userId = Meteor.userId();
+	if (!userId) {
+		return false;
+	}
+
 	if (!RocketChat.authz.cachedCollection.ready.get()) {
 		return false;
 	}
