@@ -1,5 +1,13 @@
 Template.accountBox.helpers
 	myUserInfo: ->
+		if not Meteor.user()? and RocketChat.settings.get('Accounts_AllowAnonymousAccess')
+			return {
+				name: t('Anonymous')
+				status: 'online'
+				visualStatus: t('online')
+				username: 'anonymous'
+			}
+
 		visualStatus = "online"
 		username = Meteor.user()?.username
 		switch Session.get('user_' + username + '_status')
@@ -30,6 +38,9 @@ Template.accountBox.events
 		RocketChat.callbacks.run('userStatusManuallySet', event.currentTarget.dataset.status)
 
 	'click .account-box': (event) ->
+		if not Meteor.userId()? and RocketChat.settings.get('Accounts_AllowAnonymousAccess')
+			return
+
 		AccountBox.toggle()
 
 	'click #logout': (event) ->
