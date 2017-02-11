@@ -78,7 +78,7 @@ Template.main.helpers
 		return RocketChat.settings.get 'Site_Name'
 
 	logged: ->
-		if Meteor.userId()? || RocketChat.settings.get('Accounts_AllowAnonymousAccess') is true
+		if Meteor.userId()? || (RocketChat.settings.get('Accounts_AllowAnonymousAccess') is true && Session.get('forceLogin') isnt true)
 			$('html').addClass("noscroll").removeClass("scroll")
 			return true
 		else
