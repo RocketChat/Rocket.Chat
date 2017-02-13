@@ -45,6 +45,8 @@ Template.options.events({
 						departmentId = department._id;
 					}
 				}
+				Livechat.department = departmentId
+				
 				var guestData = {
 					token: visitor.getToken(),
 					department: departmentId
