@@ -69,7 +69,7 @@ RocketChat.theme = new class
 
 				RocketChat.settings.get '*', Meteor.bindEnvironment (key, value, initialLoad) =>
 					if key is 'theme-custom-css'
-						if value?.trim() isnt ''
+						if value?
 							@customCSS = value
 					else if /^theme-.+/.test(key) is true
 						name = key.replace /^theme-[a-z]+-/, ''

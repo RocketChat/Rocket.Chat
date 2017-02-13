@@ -2,6 +2,9 @@ import moment from 'moment'
 
 Template.messageAttachment.helpers
 	fixCordova: (url) ->
+		if url?.indexOf('data:image') is 0
+			return url
+
 		if Meteor.isCordova and url?[0] is '/'
 			url = Meteor.absoluteUrl().replace(/\/$/, '') + url
 			query = "rc_uid=#{Meteor.userId()}&rc_token=#{Meteor._localStorage.getItem('Meteor.loginToken')}"
