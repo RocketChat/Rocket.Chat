@@ -47,7 +47,7 @@ Template.options.events({
 				}
 				var guestData = {
 					token: visitor.getToken(),
-					department: Livechat.deparment || departmentId
+					department: departmentId
 				};
 				Meteor.call('livechat:setDepartmentForVisitor', guestData, (error) => {
 					if (error) {
