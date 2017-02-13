@@ -12,7 +12,6 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 	}
 
 	var user = RocketChat.models.Users.findOneById(message.u._id);
-	var userPreferences = user && user.settings && user.settings.preferences || {};
 
 	/*
 	Increment unread couter if direct messages
@@ -76,22 +75,27 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 	settings.dontNotifyMobileUsers = [];
 	settings.desktopNotificationDurations = {};
 
-	const notificationPreferencesByRoom = RocketChat.models.Subscriptions.findNotificationPreferencesByRoom(room._id);
-	notificationPreferencesByRoom.forEach(function(subscription) {
-		var desktopNotifications = subscription.desktopNotifications && subscription.desktopNotifications !== 'default' ? subscription.desktopNotifications : userPreferences.desktopNotifications;
-		if (desktopNotifications === 'all') {
-			settings.alwaysNotifyDesktopUsers.push(subscription.u._id);
-		} else if (desktopNotifications === 'nothing') {
-			settings.dontNotifyDesktopUsers.push(subscription.u._id);
-		}
+	const subscriptions = RocketChat.models.Subscriptions.findByRoomId(room._id);
+	subscriptions.forEach(function(subscription) {
+		if (subscription.u && subscription.u._id) {
+			const notifyUser = RocketChat.models.Users.findOneById(subscription.u._id);
+			const userPreferences = notifyUser && notifyUser.settings && notifyUser.settings.preferences || {};
+			const desktopNotifications = subscription.desktopNotifications && subscription.desktopNotifications !== 'default' ? subscription.desktopNotifications : userPreferences.desktopNotifications;
+			console.log(notifyUser.username, desktopNotifications, subscription.desktopNotifications, notifyUser.desktopNotifications);
+			if (desktopNotifications === 'all') {
+				settings.alwaysNotifyDesktopUsers.push(subscription.u._id);
+			} else if (desktopNotifications === 'nothing') {
+				settings.dontNotifyDesktopUsers.push(subscription.u._id);
+			}
 
-		var mobilePushNotifications = subscription.mobilePushNotifications && subscription.mobilePushNotifications !== 'default' ? subscription.mobilePushNotifications : userPreferences.mobilePushNotifications;
-		if (mobilePushNotifications === 'all') {
-			settings.alwaysNotifyMobileUsers.push(subscription.u._id);
-		} else if (mobilePushNotifications === 'nothing') {
-			settings.dontNotifyMobileUsers.push(subscription.u._id);
+			const mobilePushNotifications = subscription.mobilePushNotifications && subscription.mobilePushNotifications !== 'default' ? subscription.mobilePushNotifications : notifyUser.mobilePushNotifications;
+			if (mobilePushNotifications === 'all') {
+				settings.alwaysNotifyMobileUsers.push(subscription.u._id);
+			} else if (mobilePushNotifications === 'nothing') {
+				settings.dontNotifyMobileUsers.push(subscription.u._id);
+			}
+			settings.desktopNotificationDurations[subscription.u._id] = subscription.desktopNotificationDuration;
 		}
-		settings.desktopNotificationDurations[subscription.u._id] = subscription.desktopNotificationDuration;
 	});
 
 	userIdsToNotify = [];
