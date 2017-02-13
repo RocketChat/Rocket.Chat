@@ -49,7 +49,9 @@ Template.messageAttachment.helpers
 			return Meteor.user()?.settings?.preferences?.collapseMediaByDefault is true
 
 	time: ->
-		if moment(@ts).format(RocketChat.settings.get('Message_DateFormat')) == moment(Date.now()).format(RocketChat.settings.get('Message_DateFormat'))
+		messageDate = new Date(@ts)
+		today = new Date()
+		if messageDate.toDateString() is today.toDateString()
 			return moment(@ts).format(RocketChat.settings.get('Message_TimeFormat'))
 		else
 			return moment(@ts).format(RocketChat.settings.get('Message_TimeAndDateFormat'))
