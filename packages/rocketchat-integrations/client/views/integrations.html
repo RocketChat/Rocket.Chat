@@ -25,7 +25,7 @@
 											<i class="icon-login"></i>
 											<div class="admin-integrations-new-item-body">
 												<div class="admin-integrations-new-item-title">
-													Incoming WebHook {{#if name}}- {{name}}{{/if}}
+													{{_ "Incoming_WebHook"}} {{#if name}}- {{name}}{{/if}}
 												</div>
 												<div class="admin-integrations-new-item-description">
 													{{{_ "Post_to_s_as_s" channel username}}}
@@ -48,7 +48,7 @@
 											<i class="icon-login"></i>
 											<div class="admin-integrations-new-item-body">
 												<div class="admin-integrations-new-item-title">
-													Outgoing WebHook {{#if name}}- {{name}}{{/if}}
+													{{_ "Outgoing_WebHook"}} {{#if name}}- {{name}}{{/if}}
 												</div>
 												<div class="admin-integrations-new-item-description">
 													{{{_ "Created_at_s_by_s_triggered_by_s" (dateFormated _createdAt) _createdBy.username (eventTypeI18n event)}}}

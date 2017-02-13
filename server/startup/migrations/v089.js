@@ -1,5 +1,5 @@
 RocketChat.Migrations.add({
-	version: 88,
+	version: 89,
 	up() {
 		const outgoingIntegrations = RocketChat.models.Integrations.find({ type: 'webhook-outgoing' }, { fields: { name: 1 }}).fetch();
 
