@@ -62,6 +62,7 @@
   "Accounts_OAuth_Custom_Token_Path": "Token Path",
   "Accounts_OAuth_Custom_Token_Sent_Via": "Token Sent Via",
   "Accounts_OAuth_Custom_Username_Field": "Username field",
+	"Accounts_OAuth_Dolphin_Url": "Dolphin URL",
   "Accounts_OAuth_Facebook": "Facebook Login",
   "Accounts_OAuth_Facebook_callback_url": "Facebook Callback URL",
   "Accounts_OAuth_Facebook_id": "Facebook App Id",
