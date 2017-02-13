@@ -81,7 +81,6 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 			const notifyUser = RocketChat.models.Users.findOneById(subscription.u._id);
 			const userPreferences = notifyUser && notifyUser.settings && notifyUser.settings.preferences || {};
 			const desktopNotifications = subscription.desktopNotifications && subscription.desktopNotifications !== 'default' ? subscription.desktopNotifications : userPreferences.desktopNotifications;
-			console.log(notifyUser.username, desktopNotifications, subscription.desktopNotifications, notifyUser.desktopNotifications);
 			if (desktopNotifications === 'all') {
 				settings.alwaysNotifyDesktopUsers.push(subscription.u._id);
 			} else if (desktopNotifications === 'nothing') {
