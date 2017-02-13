@@ -15,16 +15,5 @@ Package.onUse(function(api) {
 	api.addFiles('login-button.css', 'client');
 	api.addFiles('startup.coffee', 'server');
 
-    // TAPi18n
 	api.use('templating', 'client');
-	var _ = Npm.require('underscore');
-	var fs = Npm.require('fs');
-	var tapi18nFiles = _.compact(_.map(fs.readdirSync('packages/rocketchat-dolphin/i18n'), function(filename) {
-		if (fs.statSync('packages/rocketchat-dolphin/i18n/' + filename).size > 16) {
-			return 'i18n/' + filename;
-		}
-	}));
-	api.use('tap:i18n@1.6.1', ['client', 'server']);
-	api.imply('tap:i18n');
-	api.addFiles(tapi18nFiles, ['client', 'server']);
 });
