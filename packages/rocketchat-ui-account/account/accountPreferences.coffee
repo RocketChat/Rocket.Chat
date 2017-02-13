@@ -45,6 +45,12 @@ Template.accountPreferences.helpers
 	desktopNotificationDuration: ->
 		return Meteor.user()?.settings?.preferences?.desktopNotificationDuration - 0
 
+	desktopNotifications: ->
+		return Meteor.user()?.settings?.preferences?.desktopNotifications or 'mentions'
+
+	mobilePushNotifications: ->
+		return Meteor.user()?.settings?.preferences?.mobilePushNotifications or 'mentions'
+
 Template.accountPreferences.onCreated ->
 	settingsTemplate = this.parentTemplate(3)
 	settingsTemplate.child ?= []
@@ -77,6 +83,8 @@ Template.accountPreferences.onCreated ->
 
 		data.newRoomNotification = $('select[name=newRoomNotification]').val()
 		data.newMessageNotification = $('select[name=newMessageNotification]').val()
+		data.desktopNotifications = $('select[name=desktopNotifications]').val()
+		data.mobilePushNotifications = $('select[name=mobilePushNotifications]').val()
 		data.useEmojis = $('input[name=useEmojis]:checked').val()
 		data.convertAsciiEmoji = $('input[name=convertAsciiEmoji]:checked').val()
 		data.saveMobileBandwidth = $('input[name=saveMobileBandwidth]:checked').val()

@@ -12,6 +12,7 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 	}
 
 	var user = RocketChat.models.Users.findOneById(message.u._id);
+	var userPreferences = user && user.settings && user.settings.preferences || {};
 
 	/*
 	Increment unread couter if direct messages
@@ -77,14 +78,17 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 
 	const notificationPreferencesByRoom = RocketChat.models.Subscriptions.findNotificationPreferencesByRoom(room._id);
 	notificationPreferencesByRoom.forEach(function(subscription) {
-		if (subscription.desktopNotifications === 'all') {
+		var desktopNotifications = subscription.desktopNotifications && subscription.desktopNotifications !== 'default' ? subscription.desktopNotifications : userPreferences.desktopNotifications;
+		if (desktopNotifications === 'all') {
 			settings.alwaysNotifyDesktopUsers.push(subscription.u._id);
-		} else if (subscription.desktopNotifications === 'nothing') {
+		} else if (desktopNotifications === 'nothing') {
 			settings.dontNotifyDesktopUsers.push(subscription.u._id);
 		}
-		if (subscription.mobilePushNotifications === 'all') {
+
+		var mobilePushNotifications = subscription.mobilePushNotifications && subscription.mobilePushNotifications !== 'default' ? subscription.mobilePushNotifications : userPreferences.mobilePushNotifications;
+		if (mobilePushNotifications === 'all') {
 			settings.alwaysNotifyMobileUsers.push(subscription.u._id);
-		} else if (subscription.mobilePushNotifications === 'nothing') {
+		} else if (mobilePushNotifications === 'nothing') {
 			settings.dontNotifyMobileUsers.push(subscription.u._id);
 		}
 		settings.desktopNotificationDurations[subscription.u._id] = subscription.desktopNotificationDuration;
