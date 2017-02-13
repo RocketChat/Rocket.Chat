@@ -22,14 +22,13 @@ Meteor.methods({
 		if (protectedFiles && !Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'sendFileMessage' });
 		}
-    const file = RocketChat.models.Uploads.findOneById(fileId);
-    const resourceURL = '/' + file.s3.bucket + '/' + file.s3.path + file._id;
-    const expires = parseInt(new Date().getTime() / 1000) + Math.max(5, S3expiryTimeSpan);
-    const StringToSign = 'GET\n\n\n' + expires +'\n'+resourceURL;
-    const signature = crypto.createHmac('sha1', S3secretKey).update(new Buffer(StringToSign, 'utf-8')).digest('base64');
-
-    return {
-      url:file.url + '?AWSAccessKeyId='+encodeURIComponent(S3accessKey)+'&Expires='+expires+'&Signature='+encodeURIComponent(signature)
-    }
+		const file = RocketChat.models.Uploads.findOneById(fileId);
+		const resourceURL = '/' + file.s3.bucket + '/' + file.s3.path + file._id;
+		const expires = parseInt(new Date().getTime() / 1000) + Math.max(5, S3expiryTimeSpan);
+		const StringToSign = 'GET\n\n\n' + expires +'\n'+resourceURL;
+		const signature = crypto.createHmac('sha1', S3secretKey).update(new Buffer(StringToSign, 'utf-8')).digest('base64');
+		return {
+			url:file.url + '?AWSAccessKeyId='+encodeURIComponent(S3accessKey)+'&Expires='+expires+'&Signature='+encodeURIComponent(signature)
+		}
 	}
 });
