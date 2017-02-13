@@ -4,8 +4,6 @@ ENV RC_VERSION develop
 
 MAINTAINER buildmaster@rocket.chat
 
-VOLUME /app/uploads
-
 RUN set -x \
  && curl -SLf "https://rocket.chat/releases/${RC_VERSION}/download" -o rocket.chat.tgz \
  && curl -SLf "https://rocket.chat/releases/${RC_VERSION}/asc" -o rocket.chat.tgz.asc \
@@ -14,14 +12,18 @@ RUN set -x \
  && rm rocket.chat.tgz rocket.chat.tgz.asc \
  && cd /app/bundle/programs/server \
  && npm install \
- && npm cache clear
+ && npm cache clear \
+ && chown rocketchat:rocketchat /app -R
 
 USER rocketchat
+
+VOLUME /app/uploads
 
 WORKDIR /app/bundle
 
 # needs a mongoinstance - defaults to container linking with alias 'mongo'
 ENV MONGO_URL=mongodb://mongo:27017/rocketchat \
+	MONGO_OPLOG_URL=mongodb://mongo:27017/local \
     HOME=/tmp \
     PORT=3000 \
     ROOT_URL=http://localhost:3000 \
