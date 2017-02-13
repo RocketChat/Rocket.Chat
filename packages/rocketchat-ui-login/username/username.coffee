@@ -52,3 +52,5 @@ Template.username.events
 			RocketChat.Button.reset(button)
 			instance.username.set(username)
 			RocketChat.callbacks.run('usernameSet')
+			RoomManager.closeAllRooms()
+			FlowRouter._current.route.callAction(FlowRouter._current)
