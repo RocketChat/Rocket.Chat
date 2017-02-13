@@ -14,6 +14,7 @@ const toolbarSearch = {
 	},
 
 	focus() {
+		menu.open();
 		$('.toolbar-search__input').focus();
 	}
 };
@@ -90,6 +91,7 @@ Template.toolbar.helpers({
 			template: 'toolbarSearchList',
 			emptyTemplate: 'toolbarSearchListEmpty',
 			input: '.toolbar-search__input',
+			cleanOnEnter: true,
 			closeOnEsc: false,
 			blurOnSelectItem: true,
 			isLoading: isLoading,

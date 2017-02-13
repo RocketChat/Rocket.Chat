@@ -72,5 +72,3 @@ const mobileMessageMenu = {
 };
 
 this.mobileMessageMenu = mobileMessageMenu;
-
-console.log('mobileMessageMenu');
