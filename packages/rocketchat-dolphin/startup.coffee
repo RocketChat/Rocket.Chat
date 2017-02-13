@@ -1,4 +1,4 @@
-RocketChat.settings.add 'API_Dolphin_URL', '', { type: 'string', group: 'OAuth', public: true, section: 'Dolphin', i18nLabel: 'Accounts_OAuth_Dolphin_Url' }
+RocketChat.settings.add 'Accounts_OAuth_Dolphin_URL', '', { type: 'string', group: 'OAuth', public: true, section: 'Dolphin', i18nLabel: 'URL' }
 RocketChat.settings.add 'Accounts_OAuth_Dolphin', false, { type: 'boolean', group: 'OAuth', section: 'Dolphin', i18nLabel: 'Accounts_OAuth_Custom_Enable' }
 RocketChat.settings.add 'Accounts_OAuth_Dolphin_id', '', { type: 'string', group: 'OAuth', section: 'Dolphin', i18nLabel: 'Accounts_OAuth_Custom_id' }
 RocketChat.settings.add 'Accounts_OAuth_Dolphin_secret', '', { type: 'string', group: 'OAuth', section: 'Dolphin', i18nLabel: 'Accounts_OAuth_Custom_Secret' }

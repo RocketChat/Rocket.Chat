@@ -20,22 +20,22 @@ class DolphinOnCreateUser
 
 if Meteor.isServer
 	Meteor.startup ->
-		RocketChat.models.Settings.find({ _id: 'API_Dolphin_URL' }).observe
+		RocketChat.models.Settings.find({ _id: 'Accounts_OAuth_Dolphin_URL' }).observe
 			added: (record) ->
-				config.serverURL = RocketChat.settings.get 'API_Dolphin_URL'
+				config.serverURL = RocketChat.settings.get 'Accounts_OAuth_Dolphin_URL'
 				Dolphin.configure config
 			changed: (record) ->
-				config.serverURL = RocketChat.settings.get 'API_Dolphin_URL'
+				config.serverURL = RocketChat.settings.get 'Accounts_OAuth_Dolphin_URL'
 				Dolphin.configure config
 
-	if RocketChat.settings.get 'API_Dolphin_URL'
+	if RocketChat.settings.get 'Accounts_OAuth_Dolphin_URL'
 		data =
 			buttonLabelText: RocketChat.settings.get 'Accounts_OAuth_Dolphin_button_label_text'
 			buttonColor: RocketChat.settings.get 'Accounts_OAuth_Dolphin_button_color'
 			buttonLabelColor: RocketChat.settings.get 'Accounts_OAuth_Dolphin_button_label_color'
 			clientId: RocketChat.settings.get 'Accounts_OAuth_Dolphin_id'
 			secret: RocketChat.settings.get 'Accounts_OAuth_Dolphin_secret'
-			serverURL: RocketChat.settings.get 'API_Dolphin_URL'
+			serverURL: RocketChat.settings.get 'Accounts_OAuth_Dolphin_URL'
 			loginStyle: RocketChat.settings.get 'Accounts_OAuth_Dolphin_login_style'
 
 		ServiceConfiguration.configurations.upsert {service: 'dolphin'}, $set: data
@@ -44,6 +44,6 @@ if Meteor.isServer
 else
 	Meteor.startup ->
 		Tracker.autorun ->
-			if RocketChat.settings.get 'API_Dolphin_URL'
-				config.serverURL = RocketChat.settings.get 'API_Dolphin_URL'
+			if RocketChat.settings.get 'Accounts_OAuth_Dolphin_URL'
+				config.serverURL = RocketChat.settings.get 'Accounts_OAuth_Dolphin_URL'
 				Dolphin.configure config
