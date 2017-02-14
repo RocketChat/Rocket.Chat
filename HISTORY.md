@@ -1,5 +1,37 @@
 # History
 
+## 0.52.0 - 2017-Fev-14
+
+### Meteor update to 1.4.2.6
+
+- Add admin section for managing sounds
+- Add appName as topic to push gateway
+- Add audio notification choices to subscriptions
+- Add Boonex Dolphin Oauth
+- Add date for attachments
+- Add detection mime-types for upload files
+- Add MONGO_OPLOG_URL to Dockerfile
+- Add open sidenav on cmd + p
+- Add REST API method to list online users in a room
+- Add user preferences for default new message sound
+- Allow empty description for roles
+- Allow pass inline image (base64) on attachments
+- Change npm module from mime-types to mime-type and mime-db
+- Change room "Code" label to "Password"
+- Fix admin info page selectable again
+- Fix clear toolbar search input on enter
+- Fix error when activating new users
+- Fix getLoggedInUser to get user by token
+- Fix message action menu on cordova
+- Fix oAuth buttons
+- Fix reset to default
+- Fix setting empty custom css
+- Fix sidenav logo position
+- Get user by token AND user id, make /api/info match expected properties
+- Remove build property from default info API; update tests to reflect removal
+- Remove the rate limiter for testing enviroment
+- Return user’s _id and username for `groups/channels.online`
+
 ## 0.51.0 - 2017-Fev-07
 
 ### Converted several Coffee Script files to JS

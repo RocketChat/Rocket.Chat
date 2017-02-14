@@ -196,8 +196,10 @@ Template.message.onViewRendered = (context) ->
 
 		else if previousNode?.dataset?
 			previousDataset = previousNode.dataset
+			previousMessageDate = new Date(parseInt(previousDataset.timestamp))
+			currentMessageDate = new Date(parseInt(currentDataset.timestamp))
 
-			if previousDataset.date isnt currentDataset.date
+			if previousMessageDate.toDateString() isnt currentMessageDate.toDateString()
 				$currentNode.addClass('new-day').removeClass('sequential')
 			else
 				$currentNode.removeClass('new-day')
