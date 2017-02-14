@@ -45,6 +45,9 @@ Template.accountPreferences.helpers
 	desktopNotificationDuration: ->
 		return Meteor.user()?.settings?.preferences?.desktopNotificationDuration - 0
 
+	showRoles: ->
+		return RocketChat.settings.get('UI_DisplayRoles');
+
 Template.accountPreferences.onCreated ->
 	settingsTemplate = this.parentTemplate(3)
 	settingsTemplate.child ?= []
@@ -83,6 +86,7 @@ Template.accountPreferences.onCreated ->
 		data.collapseMediaByDefault = $('input[name=collapseMediaByDefault]:checked').val()
 		data.viewMode = parseInt($('#viewMode').find('select').val())
 		data.hideUsernames = $('#hideUsernames').find('input:checked').val()
+		data.hideRoles = $('#hideRoles').find('input:checked').val()
 		data.hideFlexTab = $('#hideFlexTab').find('input:checked').val()
 		data.hideAvatars = $('#hideAvatars').find('input:checked').val()
 		data.mergeChannels = $('#mergeChannels').find('input:checked').val()
