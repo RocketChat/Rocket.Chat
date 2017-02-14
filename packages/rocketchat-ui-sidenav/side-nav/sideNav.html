@@ -34,6 +34,12 @@
 				</section>
 			</div>
 			<span class="arrow bottom"></span>
+		{{else}}
+			<div class="rooms-list" aria-label="{{_ "Channels"}}" role="region">
+				<div class="wrapper">
+					{{> channelsAnonymous}}
+				</div>
+			</div>
 		{{/if}}
 		<footer class="footer">
 			{{{footer}}}

@@ -38,6 +38,9 @@ const roomMap = (record) => {
 Meteor.methods({
 	'rooms/get'(updatedAt) {
 		if (!Meteor.userId()) {
+			if (RocketChat.settings.get('Accounts_AllowAnonymousAccess') === true) {
+				return RocketChat.models.Rooms.findByDefaultAndTypes(true, ['c'], options).fetch();
+			}
 			return [];
 		}
 
