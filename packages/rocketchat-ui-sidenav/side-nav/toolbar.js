@@ -129,7 +129,7 @@ Template.toolbar.helpers({
 				const resultsFromClientLength = resultsFromClient.length;
 				const user = Meteor.user();
 				if (user) {
-					usernamesFromClient = [Meteor.user().username];
+					usernamesFromClient = [user];
 				}
 
 				for (let i = 0; i < resultsFromClientLength; i++) {
