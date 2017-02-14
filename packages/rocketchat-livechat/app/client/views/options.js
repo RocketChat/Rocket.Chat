@@ -29,6 +29,11 @@ Template.options.events({
 				if (error) {
 					return console.log('Error ->', error);
 				}
+				swal({
+					title: t('Chat_ended'),
+					type: 'success',
+					timer: 2000
+				});
 			});
 		});
 	},
@@ -46,7 +51,7 @@ Template.options.events({
 					}
 				}
 				Livechat.department = departmentId
-				
+
 				var guestData = {
 					token: visitor.getToken(),
 					department: departmentId
@@ -55,6 +60,11 @@ Template.options.events({
 					if (error) {
 						return console.log('Error ->', error);
 					}
+					swal({
+						title: t('Department_switched'),
+						type: 'success',
+						timer: 2000
+					});
 				});
 		});
 	}
