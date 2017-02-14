@@ -1,0 +1,33 @@
+topic_from: from
+topic_to: to
+topic_depart: depart
+topic_arrive: arrive
+topic_product: product
+topic_what: what
+topic_train: train
+topic_when: when
+topic_start: start
+topic_end: end
+topic_location: location
+topic_date: date
+topic_card: BahnCard
+topic_class: Class
+bahnDe: Bahn.de
+bahn_de: Bahn.de
+community_bahn_de: Service-Community
+expedia: Expedia
+google: Google
+quixxit: Qixxit
+yelp: Yelp
+VKL: VKL
+googleMap: Google Maps
+bahnDeSearchbox: Bahn.de Search
+communityBahnDe: Service-Community
+topAnsweredQuestions: Top answered questions
+maps_google-FoodAndBeverages: Googe Maps Food and Beverage
+maps_google-WasTun: Googe Maps Suche
+ApplicationHelp: Application Support
+sapTransaction: SAP Transactions
+conversation: Previous conversation
+topic_supportType: Support type
+topic_keyword: Keyword
