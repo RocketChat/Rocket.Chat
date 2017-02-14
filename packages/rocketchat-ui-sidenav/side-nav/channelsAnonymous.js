@@ -1,7 +1,6 @@
 Template.channelsAnonymous.helpers({
 	isActive() {
 		const currentRoom = RocketChat.models.Rooms.findOne({ _id: Session.get('openedRoom') });
-		console.log(currentRoom);
 		if (currentRoom) {
 			return 'active';
 		}
