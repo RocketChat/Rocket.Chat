@@ -76,6 +76,17 @@ Template.toolbar.helpers({
 	results() {
 		return Template.instance().resultsList.get();
 	},
+	getPlaceholder() {
+		var placeholder = 'Search (CTRL+K)';
+
+		if (!Meteor.Device.isDesktop()) {
+			placeholder = 'Search';
+		} else if (window.navigator.platform.toLowerCase().includes('mac')) {
+			placeholder = 'Search (CMD+K)';
+		}
+
+		return placeholder;
+	},
 	popupConfig() {
 		const open = new ReactiveVar(false);
 
