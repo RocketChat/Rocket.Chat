@@ -28,7 +28,7 @@ Meteor.methods({
 		const StringToSign = 'GET\n\n\n' + expires +'\n'+resourceURL;
 		const signature = crypto.createHmac('sha1', S3secretKey).update(new Buffer(StringToSign, 'utf-8')).digest('base64');
 		return {
-			url:file.url + '?AWSAccessKeyId='+encodeURIComponent(S3accessKey)+'&Expires='+expires+'&Signature='+encodeURIComponent(signature)
+			url:file.url + '?AWSAccessKeyId='+encodeURIComponent(S3accessKey)+'&Expires='+expires+'&Signature='+encodeURIComponent(signature);
 		}
 	}
 });
