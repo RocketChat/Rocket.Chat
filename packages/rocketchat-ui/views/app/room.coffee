@@ -292,10 +292,16 @@ Template.room.events
 		, 10
 
 	"click .flex-tab .user-image > button" : (e, instance) ->
+		if not Meteor.userId()?
+			return
+
 		instance.tabBar.open()
 		instance.setUserDetail @username
 
 	'click .user-card-message': (e, instance) ->
+		if not Meteor.userId()?
+			return
+
 		roomData = Session.get('roomData' + this._arguments[1].rid)
 
 		if RocketChat.Layout.isEmbedded()
@@ -351,6 +357,9 @@ Template.room.events
 		RocketChat.MessageAction.hideDropDown()
 
 	"click .mention-link": (e, instance) ->
+		if not Meteor.userId()?
+			return
+
 		channel = $(e.currentTarget).data('channel')
 		if channel?
 			if RocketChat.Layout.isEmbedded()
