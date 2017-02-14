@@ -188,10 +188,19 @@ class ModelRooms extends RocketChat.models._Base
 
 		return @find query, options
 
-	findByNameAndType: (name, type, username, options) ->
+	findByNameAndType: (name, type, options) ->
 		query =
 			t: type
 			name: name
+
+		return @find query, options
+
+	findByNameAndTypeNotDefault: (name, type, options) ->
+		query =
+			t: type
+			name: name
+			default:
+				$ne: true
 
 		return @find query, options
 
