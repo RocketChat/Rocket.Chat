@@ -16,11 +16,18 @@ RocketChat.models.Rooms.updateSurveyFeedbackById = function(_id, surveyFeedback)
 	return this.update(query, update);
 };
 
-RocketChat.models.Rooms.updateLivechatDataByToken = function(token, key, value) {
+RocketChat.models.Rooms.updateLivechatDataByToken = function(token, key, value, overwrite = true) {
 	const query = {
 		'v.token': token,
 		open: true
 	};
+
+	if (!overwrite) {
+		const room = this.findOne(query, { fields: { livechatData: 1 } });
+		if (room.livechatData && typeof room.livechatData[key] !== 'undefined') {
+			return true;
+		}
+	}
 
 	const update = {
 		$set: {
