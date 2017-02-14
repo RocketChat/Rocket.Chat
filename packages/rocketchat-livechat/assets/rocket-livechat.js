@@ -74,8 +74,11 @@
 		});
 	};
 
-	var setCustomField = function(key, value) {
-		callHook('setCustomField', [ key, value ]);
+	var setCustomField = function(key, value, overwrite) {
+		if (typeof overwrite === 'undefined') {
+			overwrite = true;
+		}
+		callHook('setCustomField', [ key, value, overwrite ]);
 	};
 
 	var setTheme = function(theme) {
