@@ -19,7 +19,7 @@ Template.chatRoomItem.helpers
 		return RocketChat.roomTypes.getIcon this.t
 
 	active: ->
-		if Session.get('openedRoom') is this.rid
+		if Session.get('openedRoom') and (Session.get('openedRoom') is this.rid or Session.get('openedRoom') is this._id)
 			return 'active'
 
 	canLeave: ->
