@@ -77,7 +77,7 @@ Template.toolbar.helpers({
 		return Template.instance().resultsList.get();
 	},
 	getPlaceholder() {
-		var placeholder = 'Search (CTRL+K)';
+		var placeholder = 'Search (Ctrl+K)';
 
 		if (!Meteor.Device.isDesktop()) {
 			placeholder = 'Search';
