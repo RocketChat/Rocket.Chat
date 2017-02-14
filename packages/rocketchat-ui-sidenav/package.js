@@ -24,6 +24,7 @@ Package.onUse(function(api) {
 	api.addFiles('side-nav/combined.html', 'client');
 	api.addFiles('side-nav/chatRoomItem.html', 'client');
 	api.addFiles('side-nav/channels.html', 'client');
+	api.addFiles('side-nav/channels-anonymous.html', 'client');
 	api.addFiles('side-nav/createCombinedFlex.html', 'client');
 	api.addFiles('side-nav/directMessages.html', 'client');
 	api.addFiles('side-nav/listChannelsFlex.html', 'client');
@@ -41,6 +42,7 @@ Package.onUse(function(api) {
 	api.addFiles('side-nav/combined.coffee', 'client');
 	api.addFiles('side-nav/chatRoomItem.coffee', 'client');
 	api.addFiles('side-nav/channels.coffee', 'client');
+	api.addFiles('side-nav/channels-anonymous.js', 'client');
 	api.addFiles('side-nav/createCombinedFlex.coffee', 'client');
 	api.addFiles('side-nav/directMessages.coffee', 'client');
 	api.addFiles('side-nav/listChannelsFlex.coffee', 'client');
