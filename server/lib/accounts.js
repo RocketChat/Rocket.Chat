@@ -95,6 +95,13 @@ Accounts.insertUserDoc = _.wrap(Accounts.insertUserDoc, function(insertUserDoc, 
 
 	delete user.globalRoles;
 
+	if (!(user.services && user.services.password)) {
+		const defaultAuthServiceRoles = (RocketChat.settings.get('Accounts_Registration_AuthenticationServices_Default_Roles') + '').split(',');
+		if (defaultAuthServiceRoles.length > 0) {
+			roles = roles.concat(_.map(defaultAuthServiceRoles, s.trim));
+		}
+	}
+
 	if (!user.type) {
 		user.type = 'user';
 	}
