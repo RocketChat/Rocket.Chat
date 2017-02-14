@@ -77,12 +77,14 @@ Template.toolbar.helpers({
 		return Template.instance().resultsList.get();
 	},
 	getPlaceholder() {
-		var placeholder = 'Search (Ctrl+K)';
+		var placeholder = TAPi18n.__('Search');
 
 		if (!Meteor.Device.isDesktop()) {
-			placeholder = 'Search';
+			return placeholder;
 		} else if (window.navigator.platform.toLowerCase().includes('mac')) {
-			placeholder = 'Search (CMD+K)';
+			placeholder = placeholder+' (CMD+K)';
+		} else {
+			placeholder = placeholder+' (Ctrl+K)';
 		}
 
 		return placeholder;
