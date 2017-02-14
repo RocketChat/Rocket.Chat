@@ -38,34 +38,34 @@ Template.options.events({
 		});
 	},
 	'change .switch-department'(e, instance) {
-			Meteor.call('livechat:closeByVisitor', (error) => {
+		Meteor.call('livechat:closeByVisitor', (error) => {
+			if (error) {
+				return console.log('Error ->', error);
+			}
+
+			var departmentId = instance.$('select[name=department]').val();
+			if (!departmentId) {
+				var department = Department.findOne({ showOnRegistration: true });
+				if (department) {
+					departmentId = department._id;
+				}
+			}
+			Livechat.department = departmentId;
+
+			var guestData = {
+				token: visitor.getToken(),
+				department: departmentId
+			};
+			Meteor.call('livechat:setDepartmentForVisitor', guestData, (error) => {
 				if (error) {
 					return console.log('Error ->', error);
 				}
-
-				var departmentId = instance.$('select[name=department]').val();
-				if (!departmentId) {
-					var department = Department.findOne({ showOnRegistration: true });
-					if (department) {
-						departmentId = department._id;
-					}
-				}
-				Livechat.department = departmentId
-
-				var guestData = {
-					token: visitor.getToken(),
-					department: departmentId
-				};
-				Meteor.call('livechat:setDepartmentForVisitor', guestData, (error) => {
-					if (error) {
-						return console.log('Error ->', error);
-					}
-					swal({
-						title: t('Department_switched'),
-						type: 'success',
-						timer: 2000
-					});
+				swal({
+					title: t('Department_switched'),
+					type: 'success',
+					timer: 2000
 				});
+			});
 		});
 	}
 });

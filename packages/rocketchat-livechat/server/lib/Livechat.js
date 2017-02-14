@@ -162,7 +162,7 @@ RocketChat.Livechat = {
 	},
 	setDepartmentForGuest({ token, department } = {}) {
 		check(token, String);
-		
+
 		const updateUser = {
 			$set: {
 				department: department
