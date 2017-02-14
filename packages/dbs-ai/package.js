@@ -22,6 +22,7 @@ Package.onUse(function (api) {
 	api.use('templating', 'client');
 	api.use('less@2.5.1');
 	api.use('rocketchat:lib');
+	api.use('dbs:common');
 
 	api.addAssets('assets/stylesheets/redlink.less', 'server');
 
