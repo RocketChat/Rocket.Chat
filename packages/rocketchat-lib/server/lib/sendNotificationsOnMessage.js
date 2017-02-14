@@ -75,19 +75,26 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 	settings.dontNotifyMobileUsers = [];
 	settings.desktopNotificationDurations = {};
 
-	const notificationPreferencesByRoom = RocketChat.models.Subscriptions.findNotificationPreferencesByRoom(room._id);
-	notificationPreferencesByRoom.forEach(function(subscription) {
-		if (subscription.desktopNotifications === 'all') {
-			settings.alwaysNotifyDesktopUsers.push(subscription.u._id);
-		} else if (subscription.desktopNotifications === 'nothing') {
-			settings.dontNotifyDesktopUsers.push(subscription.u._id);
+	const subscriptions = RocketChat.models.Subscriptions.findByRoomId(room._id);
+	subscriptions.forEach(function(subscription) {
+		if (subscription.u && subscription.u._id) {
+			const notifyUser = RocketChat.models.Users.findOneById(subscription.u._id);
+			const userPreferences = notifyUser && notifyUser.settings && notifyUser.settings.preferences || {};
+			const desktopNotifications = subscription.desktopNotifications && subscription.desktopNotifications !== 'default' ? subscription.desktopNotifications : userPreferences.desktopNotifications;
+			if (desktopNotifications === 'all') {
+				settings.alwaysNotifyDesktopUsers.push(subscription.u._id);
+			} else if (desktopNotifications === 'nothing') {
+				settings.dontNotifyDesktopUsers.push(subscription.u._id);
+			}
+
+			const mobilePushNotifications = subscription.mobilePushNotifications && subscription.mobilePushNotifications !== 'default' ? subscription.mobilePushNotifications : notifyUser.mobilePushNotifications;
+			if (mobilePushNotifications === 'all') {
+				settings.alwaysNotifyMobileUsers.push(subscription.u._id);
+			} else if (mobilePushNotifications === 'nothing') {
+				settings.dontNotifyMobileUsers.push(subscription.u._id);
+			}
+			settings.desktopNotificationDurations[subscription.u._id] = subscription.desktopNotificationDuration;
 		}
-		if (subscription.mobilePushNotifications === 'all') {
-			settings.alwaysNotifyMobileUsers.push(subscription.u._id);
-		} else if (subscription.mobilePushNotifications === 'nothing') {
-			settings.dontNotifyMobileUsers.push(subscription.u._id);
-		}
-		settings.desktopNotificationDurations[subscription.u._id] = subscription.desktopNotificationDuration;
 	});
 
 	userIdsToNotify = [];

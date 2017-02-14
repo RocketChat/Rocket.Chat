@@ -23,7 +23,7 @@ Template.pushNotificationsFlexTab.helpers({
 				desktopNotifications: 1
 			}
 		});
-		return sub ? sub.desktopNotifications : '';
+		return sub ? sub.desktopNotifications || 'default' : 'default';
 	},
 	mobilePushNotifications() {
 		var sub = ChatSubscription.findOne({
@@ -33,7 +33,7 @@ Template.pushNotificationsFlexTab.helpers({
 				mobilePushNotifications: 1
 			}
 		});
-		return sub ? sub.mobilePushNotifications : '';
+		return sub ? sub.mobilePushNotifications || 'default' : 'default';
 	},
 	emailNotifications() {
 		var sub = ChatSubscription.findOne({
@@ -43,7 +43,7 @@ Template.pushNotificationsFlexTab.helpers({
 				emailNotifications: 1
 			}
 		});
-		return sub ? sub.emailNotifications : '';
+		return sub ? sub.emailNotifications || 'default' : 'default';
 	},
 	showEmailMentions() {
 		var sub = ChatSubscription.findOne({
@@ -63,7 +63,7 @@ Template.pushNotificationsFlexTab.helpers({
 				unreadAlert: 1
 			}
 		});
-		return sub ? sub.unreadAlert : 'default';
+		return sub ? sub.unreadAlert || 'default' : 'default';
 	},
 	unreadAlertText() {
 		var sub = ChatSubscription.findOne({
@@ -124,11 +124,7 @@ Template.pushNotificationsFlexTab.helpers({
 				case 'mentions':
 					return t('Mentions');
 				default:
-					if (field === 'emailNotifications') {
-						return t('Use_account_preference');
-					} else {
-						return t('Mentions');
-					}
+					return t('Use_account_preference');
 			}
 		}
 	},

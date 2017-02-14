@@ -25,7 +25,7 @@
 						</div>
 					</div>
 					<div class="section">
-						<h1>{{_ "Messages"}}</h1>
+						<h1>{{_ "Default_Notifications"}}</h1>
 						<div class="section-content border-component-color">
 							<div class="input-line double-col">
 								<label>{{_ "Desktop_Notifications"}}</label>
@@ -43,6 +43,16 @@
 								</div>
 							</div>
 							<div class="input-line double-col">
+								<label>{{_ "Show_Desktop_Notification"}}</label>
+								<div>
+									<select name="desktopNotifications">
+										<option value="all" selected="{{$eq desktopNotifications 'all'}}">{{_ "All_messages"}}</option>
+										<option value="mentions" selected="{{$eq desktopNotifications 'mentions'}}">{{_ "Mentions_default"}}</option>
+										<option value="nothing" selected="{{$eq desktopNotifications 'nothing'}}">{{_ "Nothing"}}</option>
+									</select>
+								</div>
+							</div>
+							<div class="input-line double-col">
 								<label>{{_ "Notification_Duration"}}</label>
 								<div>
 									{{#if desktopNotificationDuration}}
@@ -52,6 +62,26 @@
 									{{/if}}
 								</div>
 							</div>
+							<div class="input-line double-col">
+								<label>{{_ "Mobile_Push"}}</label>
+								<div>
+									<select name="mobilePushNotifications">
+										<option value="all" selected="{{$eq mobilePushNotifications 'all'}}">{{_ "All_messages"}}</option>
+										<option value="mentions" selected="{{$eq mobilePushNotifications 'mentions'}}">{{_ "Mentions_default"}}</option>
+										<option value="nothing" selected="{{$eq mobilePushNotifications 'nothing'}}">{{_ "Nothing"}}</option>
+									</select>
+								</div>
+							</div>
+							<div class="input-line double-col" id="emailNotificationMode">
+								<label>{{_ "Email_Notification_Mode"}}</label>
+								<div>
+									<select class="input-monitor" name="emailNotificationMode">
+										<option value="disabled" selected="{{selected 'emailNotificationMode' 'disabled' false}}">{{_ "Email_Notification_Mode_Disabled"}}</option>
+										<option value="all" selected="{{selected 'emailNotificationMode' 'all' true}}">{{_ "Email_Notification_Mode_All"}}</option>
+									</select>
+									<div class="info">{{_ "You_need_to_verifiy_your_email_address_to_get_notications"}}</div>
+								</div>
+							</div>
 							<div class="input-line double-col" id="unreadAlert">
 								<label>{{_ "Unread_Alert"}}</label>
 								<div>
@@ -59,6 +89,11 @@
 									<label><input type="radio" name="unreadAlert" value="0" checked="{{checked 'unreadAlert' false}}"/> {{_ "Off"}}</label>
 								</div>
 							</div>
+						</div>
+					</div>
+					<div class="section">
+						<h1>{{_ "Messages"}}</h1>
+						<div class="section-content border-component-color">
 							<div class="input-line double-col">
 								<label>{{_ "Use_Emojis"}}</label>
 								<div>
@@ -140,16 +175,6 @@
 									</select>
 									<div class="info">{{_ "View_mode_info"}}</div>
 								</div>
-							</div>
-							<div class="input-line double-col" id="emailNotificationMode">
-								<label>{{_ "Email_Notification_Mode"}}</label>
-								<div>
-									<select class="input-monitor" name="emailNotificationMode">
-										<option value="disabled" selected="{{selected 'emailNotificationMode' 'disabled' false}}">{{_ "Email_Notification_Mode_Disabled"}}</option>
-										<option value="all" selected="{{selected 'emailNotificationMode' 'all' true}}">{{_ "Email_Notification_Mode_All"}}</option>
-									</select>
-								</div>
-								<div class="info">{{_ "You_need_to_verifiy_your_email_address_to_get_notications"}}</div>
 							</div>
 						</div>
 					</div>

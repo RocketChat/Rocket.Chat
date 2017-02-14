@@ -17,6 +17,14 @@ Meteor.methods({
 				preferences.newMessageNotification = settings.newMessageNotification;
 			}
 
+			if (settings.desktopNotifications) {
+				preferences.desktopNotifications = settings.desktopNotifications;
+			}
+
+			if (settings.mobilePushNotifications) {
+				preferences.mobilePushNotifications = settings.mobilePushNotifications;
+			}
+
 			if (settings.useEmojis) {
 				preferences.useEmojis = settings.useEmojis === '1' ? true : false;
 			}
