@@ -16,6 +16,7 @@
 * [Desktop apps](#desktop-apps)
 * [Deployment](#deployment)
    * [Snaps](#instant-server-intallation-with-snaps)
+   * [layershift Jelastic PaaS](#layershift-jelastic-paas)
    * [Sandstorm.io](#sandstormio) 
    * [DPlatform](#dplatform) 
    * [IndieHosters](#indiehosters)
@@ -90,6 +91,12 @@ Installing snaps is very quick.  By running that command you have your full Rock
 Our snap features a built-in reverse proxy that can request and maintain free letsencrypt SSL certificates. You can go from zero to a public-facing SSL-secured Rocket.Chat server in less than 5 minutes.
 
 Find out more information about our snaps [here](https://rocket.chat/docs/installation/manual-installation/ubuntu/snaps/)
+
+## layershift Jelastic PaaS
+
+[![layershift PaaS powered by Jelastic](https://github.com/Sing-Li/bbug/raw/master/images/layershift.png)](http://jps.layershift.com/rocketchat/deploy.html)
+
+Instantly deploy your Rocket.Chat server. Painless SSL. Automatically scale your server cluster based on usage demand.
 
 ## Sandstorm.io
 Host your own Rocket.Chat server in four seconds flat:

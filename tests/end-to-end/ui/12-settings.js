@@ -2,6 +2,7 @@
 /* globals expect */
 /* eslint no-unused-vars: 0 */
 
+import loginPage from '../../pageobjects/login.page';
 import supertest from 'supertest';
 const request = supertest('http://localhost:3000');
 const prefix = '/api/v1/';
@@ -9,9 +10,10 @@ const prefix = '/api/v1/';
 import flexTab from '../../pageobjects/flex-tab.page';
 import mainContent from '../../pageobjects/main-content.page';
 import sideNav from '../../pageobjects/side-nav.page';
+import admin from '../../pageobjects/administration.page';
 
 //test data imports
-import {checkIfUserIsValid} from '../../data/checks';
+import {checkIfUserIsValid, checkIfUserIsAdmin} from '../../data/checks';
 import {targetUser, imgURL} from '../../data/interactions.js';
 
 import {adminUsername, adminEmail, adminPassword, username, email, password} from '../../data/user.js';
@@ -57,6 +59,11 @@ describe('Changing settings via api', () => {
 				credentials['X-User-Id'] = res.body.data.userId;
 			})
 			.end(done);
+	});
+
+	after(() => {
+		sideNav.preferencesClose.waitForVisible(5000);
+		sideNav.preferencesClose.click();
 	});
 
 	it('/login', () => {
@@ -418,6 +425,93 @@ describe('Changing settings via api', () => {
 					})
 					.end(done);
 			});
+		});
+	});
+
+	describe('Manually Approve New Users', () => {
+		before(() => {
+			sideNav.accountBoxUserName.waitForVisible(5000);
+			sideNav.accountBoxUserName.click();
+			sideNav.logout.waitForVisible(5000);
+			sideNav.logout.click();
+
+			loginPage.open();
+		});
+
+		it('should change the Manually Approve New Users via api', (done) => {
+			request.post(api('settings/Accounts_ManuallyApproveNewUsers'))
+				.set(credentials)
+				.send({'value' : true})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+
+		it('register the user', () => {
+			loginPage.registerButton.waitForVisible(5000);
+			loginPage.registerButton.click();
+			loginPage.nameField.waitForVisible(5000);
+			loginPage.nameField.setValue('setting'+username);
+			loginPage.emailField.setValue('setting'+email);
+			loginPage.passwordField.setValue(password);
+			loginPage.confirmPasswordField.setValue(password);
+
+			loginPage.submit();
+
+			loginPage.registrationSucceededCard.waitForVisible(5000);
+			loginPage.registrationSucceededCard.getText().toLowerCase().should.equal('registration succeeded');
+			loginPage.backToLoginButton.click();
+		});
+
+		it('login as admin and go to users', () => {
+			checkIfUserIsAdmin(adminUsername, adminEmail, adminPassword);
+			sideNav.accountBoxUserName.click();
+			sideNav.admin.waitForVisible(5000);
+			sideNav.admin.click();
+			admin.usersLink.waitForVisible(5000);
+			admin.usersLink.click();
+			admin.usersFilter.waitForVisible(5000);
+		});
+
+		it('search the user', () => {
+			admin.usersFilter.click();
+			admin.usersFilter.setValue('setting'+username);
+		});
+
+		it('opens the user', () => {
+			const userEl = admin.getUserFromList('setting'+username);
+			userEl.waitForVisible(5000);
+			userEl.click();
+			flexTab.usersView.waitForVisible(5000);
+		});
+
+		it('should show the activate user btn', () => {
+			flexTab.usersActivate.waitForVisible(5000);
+			flexTab.usersActivate.isVisible().should.be.true;
+		});
+
+		it('should activate the user', () => {
+			flexTab.usersActivate.click();
+		});
+
+		it('should show the deactivate btn', () => {
+			flexTab.usersDeactivate.waitForVisible(5000);
+			flexTab.usersDeactivate.isVisible().should.be.true;
+		});
+
+		it('should change the Manually Approve New Users via api', (done) => {
+			request.post(api('settings/Accounts_ManuallyApproveNewUsers'))
+				.set(credentials)
+				.send({'value' : false})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
 		});
 	});
 });
