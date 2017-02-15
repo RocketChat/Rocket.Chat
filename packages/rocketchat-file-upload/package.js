@@ -39,6 +39,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/config/configFileUploadGridFS.js', 'server');
 
 	api.addFiles('server/methods/sendFileMessage.js', 'server');
+	api.addFiles('server/methods/getS3FileUrl.js', 'server');
 
 	api.addFiles('server/startup/settings.js', 'server');
 
