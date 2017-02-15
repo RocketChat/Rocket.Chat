@@ -58,7 +58,7 @@ const mobileMessageMenu = {
 				return false;
 			}
 
-			Meteor.call('reportMessage', message, inputValue);
+			Meteor.call('reportMessage', message._id, inputValue);
 
 			swal({
 				title: TAPi18n.__('Report_sent'),
