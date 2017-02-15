@@ -113,7 +113,8 @@ Accounts.insertUserDoc = _.wrap(Accounts.insertUserDoc, function(insertUserDoc, 
 
 	if (roles.length === 0) {
 		const hasAdmin = RocketChat.models.Users.findOne({
-			roles: 'admin'
+			roles: 'admin',
+			type: 'user'
 		}, {
 			fields: {
 				_id: 1
