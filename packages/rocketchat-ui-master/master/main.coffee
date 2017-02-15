@@ -7,7 +7,7 @@ Template.body.onRendered ->
 		if e.keyCode is 80 and (e.ctrlKey is true or e.metaKey is true) and e.shiftKey is false
 			e.preventDefault()
 			e.stopPropagation()
-			toolbarSearch.focus()
+			toolbarSearch.focus(true)
 
 		unread = Session.get('unread')
 		if e.keyCode is 27 and e.shiftKey is true and unread? and unread isnt ''
