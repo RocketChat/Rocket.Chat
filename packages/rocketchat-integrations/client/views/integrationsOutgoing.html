@@ -1,22 +1,22 @@
 <template name="integrationsOutgoing">
-    <section class="page-container page-home page-static page-settings">
-        <header class="fixed-title border-component-color">
-            {{> burger}}
-            <h2>
-                <span class="room-title">{{pageTitle}}</span>
-            </h2>
-            <div class="submit">
+	<section class="page-container page-home page-static page-settings">
+		<header class="fixed-title border-component-color">
+			{{> burger}}
+			<h2>
+				<span class="room-title">{{pageTitle}}</span>
+			</h2>
+			<div class="submit">
 				<button class="button history" disabled="{{not showHistoryButton}}"><i class="icon-history"></i>{{_ "History"}}</button>
 				<button class="button danger delete" disabled="{{not canDelete}}"><i class="icon-trash"></i> <span>{{_ "Delete"}}</span></button>
-                <button class="button primary save" disabled="{{not hasTypeSelected}}"><i class="icon-paper-plane"></i> <span>{{_ "Save_changes"}}</span></button>
-            </div>
-        </header>
-        <div class="content background-transparent-dark">
+				<button class="button primary save" disabled="{{not hasTypeSelected}}"><i class="icon-paper-plane"></i> <span>{{_ "Save_changes"}}</span></button>
+			</div>
+		</header>
+		<div class="content background-transparent-dark">
 			<a href="{{pathFor "admin-integrations"}}"><i class="icon-angle-left"></i> {{_ "Back_to_integrations"}}</a><br><br>
-            {{#unless hasPermission}}
-                <p>{{_ "You_are_not_authorized_to_view_this_page"}}</p>
-            {{else}}
-                <div class="rocket-form">
+			{{#unless hasPermission}}
+				<p>{{_ "You_are_not_authorized_to_view_this_page"}}</p>
+			{{else}}
+				<div class="rocket-form">
 					<div class="section">
 						<div class="section-title">
 							<div class="section-title-text">{{_ "Webhook Details"}}</div>
@@ -229,8 +229,8 @@
 							</div>
 						</div>
 					{{/if}}
-                </div>
+				</div>
 			{{/unless}}
-        </div>
-    </section>
+		</div>
+	</section>
 </template>
