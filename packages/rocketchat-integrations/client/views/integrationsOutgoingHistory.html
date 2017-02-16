@@ -1,23 +1,23 @@
 <template name="integrationsOutgoingHistory">
-    <section class="page-container page-home page-static page-settings">
-        <header class="fixed-title border-component-color">
-            {{> burger}}
-            <h2>
-                <span class="room-title">{{pageTitle}}</span>
-            </h2>
+	<section class="page-container page-home page-static page-settings">
+		<header class="fixed-title border-component-color">
+			{{> burger}}
+			<h2>
+				<span class="room-title">{{pageTitle}}</span>
+			</h2>
 			{{#if hasPermission}}
 				<div class="submit">
 					<button class="button danger clear-history"><i class="icon-history"></i>{{_ "clear_history"}}</button>
 				</div>
 			{{/if}}
-        </header>
-        <div class="content background-transparent-dark">
-            {{#unless hasPermission}}
-                <p>{{_ "You_are_not_authorized_to_view_this_page"}}</p>
-            {{else}}
+		</header>
+		<div class="content background-transparent-dark">
+			{{#unless hasPermission}}
+				<p>{{_ "You_are_not_authorized_to_view_this_page"}}</p>
+			{{else}}
 				<a href="{{pathFor "admin-integrations-outgoing" id=integrationId}}"><i class="icon-angle-left"></i> {{_ "Back_to_integration_detail"}}</a><br><br>
 
-                <div class="rocket-form">
+				<div class="rocket-form">
 					{{#each history in histories}}
 						<div class="section section-collapsed">
 							<div class="section-title">
@@ -141,8 +141,8 @@
 							{{> loading}}
 						</div>
 					{{/if}}
-                </div>
+				</div>
 			{{/unless}}
-        </div>
-    </section>
+		</div>
+	</section>
 </template>
