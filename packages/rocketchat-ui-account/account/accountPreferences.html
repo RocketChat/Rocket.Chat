@@ -139,6 +139,17 @@
 									<label><input type="radio" name="mergeChannels" value="-1" checked="{{checked 'mergeChannels' undefined true}}" /> {{_ "Default"}}</label>
 								</div>
 							</div>
+							<div class="input-line double-col" id="sendOnEnter">
+								<label>{{_ "Enter_Behaviour"}}</label>
+								<div>
+									<select class="input-monitor" name="sendOnEnter">
+										<option value="normal" selected="{{selected 'sendOnEnter' 'normal' true}}">{{_ "Enter_Normal"}}</option>
+										<option value="alternative" selected="{{selected 'sendOnEnter' 'alternative'}}">{{_ "Enter_Alternative"}}</option>
+										<option value="desktop" selected="{{selected 'sendOnEnter' 'desktop'}}">{{_ "Only_On_Desktop"}}</option>
+									</select>
+									<div class="info">{{_ "Enter_Behaviour_Description"}}</div>
+								</div>
+							</div>
 							<div class="input-line double-col" id="viewMode">
 								<label>{{_ "View_mode"}}</label>
 								<div>
