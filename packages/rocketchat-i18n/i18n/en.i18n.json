@@ -213,6 +213,7 @@
   "AutoLinker_Urls_TLD": "AutoLinker TLD URLs",
   "AutoLinker_Urls_www": "AutoLinker 'www' URLs",
   "AutoLinker_UrlsRegExp": "AutoLinker URL Regular Expression",
+  "AutoTranslate_GoogleAPIKey": "Google API Key",
   "Available": "Available",
   "Available_agents": "Available agents",
   "Avatar": "Avatar",
