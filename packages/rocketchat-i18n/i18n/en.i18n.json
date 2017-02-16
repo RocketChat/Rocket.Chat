@@ -1235,6 +1235,7 @@
   "Send_invitation_email": "Send invitation email",
   "Send_invitation_email_error": "You haven't provided any valid email address.",
   "Send_invitation_email_info": "You can send multiple email invitations at once.",
+  "Send_invitation_email_success": "You have successfully sent an invitation email to the following addresses:",
   "Send_On_Enter": "Send message on enter",
   "Send_On_Enter_Description": "This changes what happens when enter is pressed on a message",
   "Send_request_on_chat_close": "Send request on chat close",
