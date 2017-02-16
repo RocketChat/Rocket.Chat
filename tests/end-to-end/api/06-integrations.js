@@ -23,7 +23,8 @@ describe('integrations', function() {
 				triggerWords: ['!guggy'],
 				alias: 'guggy',
 				avatar: 'http://res.guggy.com/logo_128.png',
-				emoji: ':ghost:'
+				emoji: ':ghost:',
+				event: 'sendMessage'
 			})
 			.expect('Content-Type', 'application/json')
 			.expect(200)
@@ -34,6 +35,7 @@ describe('integrations', function() {
 				expect(res.body).to.have.deep.property('integration.type', 'webhook-outgoing');
 				expect(res.body).to.have.deep.property('integration.enabled', true);
 				expect(res.body).to.have.deep.property('integration.username', 'rocket.cat');
+				expect(res.body).to.have.deep.property('integration.event', 'sendMessage');
 			})
 			.end(done);
 	});
