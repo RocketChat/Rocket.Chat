@@ -9,12 +9,13 @@ RUN set -x \
  && curl -SLf "https://rocket.chat/releases/${RC_VERSION}/asc" -o rocket.chat.tgz.asc \
  && mkdir /app \
  && gpg --verify rocket.chat.tgz.asc \
+ && mkdir -p /app \
  && tar -zxf rocket.chat.tgz -C /app \
  && rm rocket.chat.tgz rocket.chat.tgz.asc \
  && cd /app/bundle/programs/server \
  && npm install \
  && npm cache clear \
- && chown rocketchat:rocketchat /app -R
+ && chown -R rocketchat:rocketchat /app
 
 USER rocketchat
 
@@ -24,7 +25,7 @@ WORKDIR /app/bundle
 
 # needs a mongoinstance - defaults to container linking with alias 'mongo'
 ENV MONGO_URL=mongodb://mongo:27017/rocketchat \
-	MONGO_OPLOG_URL=mongodb://mongo:27017/local \
+    MONGO_OPLOG_URL=mongodb://mongo:27017/local \
     HOME=/tmp \
     PORT=3000 \
     ROOT_URL=http://localhost:3000 \

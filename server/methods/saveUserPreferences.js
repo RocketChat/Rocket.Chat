@@ -58,6 +58,7 @@ Meteor.methods({
 			preferences.desktopNotificationDuration = settings.desktopNotificationDuration - 0;
 			preferences.viewMode = settings.viewMode || 0;
 			preferences.hideUsernames = settings.hideUsernames === '1';
+			preferences.hideRoles = settings.hideRoles === '1';
 			preferences.hideAvatars = settings.hideAvatars === '1';
 			preferences.hideFlexTab = settings.hideFlexTab === '1';
 			preferences.highlights = settings.highlights;

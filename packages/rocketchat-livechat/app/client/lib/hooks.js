@@ -8,8 +8,8 @@ var api = {
 		Meteor.call('livechat:pageVisited', visitor.getToken(), info);
 	},
 
-	setCustomField: function(key, value) {
-		CustomFields.setCustomField(visitor.getToken(), key, value);
+	setCustomField: function(key, value, overwrite = true) {
+		CustomFields.setCustomField(visitor.getToken(), key, value, overwrite);
 	},
 
 	setTheme: function(theme) {
