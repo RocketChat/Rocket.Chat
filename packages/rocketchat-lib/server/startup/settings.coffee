@@ -32,6 +32,7 @@ RocketChat.settings.addGroup 'Accounts', ->
 		@add 'Accounts_RegistrationForm_SecretURL', Random.id(), { type: 'string' }
 		@add 'Accounts_RegistrationForm_LinkReplacementText', 'New user registration is currently disabled', { type: 'string', public: true }
 		@add 'Accounts_Registration_AuthenticationServices_Enabled', true, { type: 'boolean', public: true }
+		@add 'Accounts_Registration_AuthenticationServices_Default_Roles', 'user', { type: 'string', enableQuery: { _id: 'Accounts_Registration_AuthenticationServices_Enabled', value: true } }
 		@add 'Accounts_PasswordReset', true, { type: 'boolean', public: true }
 
 		@add 'Accounts_CustomFields', '', { type: 'code', public: true, i18nLabel: 'Custom_Fields' }
