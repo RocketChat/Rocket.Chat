@@ -16,7 +16,7 @@
 * [Desktop apps](#desktop-apps)
 * [Deployment](#deployment)
    * [Snaps](#instant-server-intallation-with-snaps)
-   * [layershift Jelastic PaaS](#layershift-jelastic-paas)
+   * [Layershift](#layershift)
    * [Sandstorm.io](#sandstormio) 
    * [DPlatform](#dplatform) 
    * [IndieHosters](#indiehosters)
@@ -92,11 +92,13 @@ Our snap features a built-in reverse proxy that can request and maintain free le
 
 Find out more information about our snaps [here](https://rocket.chat/docs/installation/manual-installation/ubuntu/snaps/)
 
-## layershift Jelastic PaaS
+## Layershift
 
-[![layershift PaaS powered by Jelastic](https://github.com/Sing-Li/bbug/raw/master/images/layershift.png)](http://jps.layershift.com/rocketchat/deploy.html)
+Instantly deploy your Rocket.Chat server for free on next generation auto-scaling PaaS.
 
-Instantly deploy your Rocket.Chat server. Painless SSL. Automatically scale your server cluster based on usage demand.
+[![Layershift Hosting](https://github.com/Sing-Li/bbug/raw/master/images/layershift.png)](http://jps.layershift.com/rocketchat/deploy.html)
+
+Painless SSL. Automatically scale your server cluster based on usage demand.
 
 ## Sandstorm.io
 Host your own Rocket.Chat server in four seconds flat:
@@ -106,7 +108,7 @@ Host your own Rocket.Chat server in four seconds flat:
 
 ## DPlatform
 
-Easiest way to install a ready-to-run Rocket.Chat server on a Linux machine, VM, or VPS - [@j8r's   DPlatform](https://github.com/j8r/DPlatform), now in Alpha! 
+Easiest way to install a ready-to-run Rocket.Chat server on a Linux machine, VM, or VPS
 
 [![DP deploy](https://raw.githubusercontent.com/DFabric/DPlatform-ShellCore/gh-pages/img/deploy.png)](https://dfabric.github.io/DPlatform-ShellCore)
 
