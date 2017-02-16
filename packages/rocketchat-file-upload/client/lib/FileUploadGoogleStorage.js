@@ -1,6 +1,6 @@
 /* globals FileUpload, FileUploadBase, Slingshot */
 
-FileUpload.AmazonS3 = class FileUploadAmazonS3 extends FileUploadBase {
+FileUpload.GoogleCloudStorage = class FileUploadGoogleCloudStorage extends FileUploadBase {
 	constructor(meta, file) {
 		super(meta, file);
 		this.uploader = new Slingshot.Upload('rocketchat-uploads', { rid: meta.rid });
@@ -36,7 +36,7 @@ FileUpload.AmazonS3 = class FileUploadAmazonS3 extends FileUploadBase {
 				file._id = downloadUrl.substr(downloadUrl.lastIndexOf('/') + 1);
 				file.url = downloadUrl;
 
-				Meteor.call('sendFileMessage', this.meta.rid, 's3', file, () => {
+				Meteor.call('sendFileMessage', this.meta.rid, 'googleCloudStorage', file, () => {
 					Meteor.setTimeout(() => {
 						const uploading = Session.get('uploading');
 						if (uploading !== null) {
