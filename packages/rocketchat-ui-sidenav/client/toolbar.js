@@ -88,6 +88,19 @@ Template.toolbar.helpers({
 	results() {
 		return Template.instance().resultsList.get();
 	},
+	getPlaceholder() {
+		var placeholder = TAPi18n.__('Search');
+
+		if (!Meteor.Device.isDesktop()) {
+			return placeholder;
+		} else if (window.navigator.platform.toLowerCase().includes('mac')) {
+			placeholder = placeholder+' (CMD+K)';
+		} else {
+			placeholder = placeholder+' (Ctrl+K)';
+		}
+
+		return placeholder;
+	},
 	popupConfig() {
 		const open = new ReactiveVar(false);
 

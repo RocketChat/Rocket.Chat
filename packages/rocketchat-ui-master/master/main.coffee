@@ -4,7 +4,7 @@ Template.body.onRendered ->
 	clipboard = new Clipboard('.clipboard')
 
 	$(document.body).on 'keydown', (e) ->
-		if e.keyCode is 80 and (e.ctrlKey is true or e.metaKey is true) and e.shiftKey is false
+		if e.keyCode in [80, 75] and (e.ctrlKey is true or e.metaKey is true) and e.shiftKey is false
 			e.preventDefault()
 			e.stopPropagation()
 			toolbarSearch.focus(true)
