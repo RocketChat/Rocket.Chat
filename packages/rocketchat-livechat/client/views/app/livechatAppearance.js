@@ -3,6 +3,8 @@
 import moment from 'moment';
 import toastr from 'toastr';
 
+const LivechatAppearance = new Mongo.Collection('livechatAppearance');
+
 Template.livechatAppearance.helpers({
 	previewState() {
 		return Template.instance().previewState.get();
@@ -61,7 +63,7 @@ Template.livechatAppearance.helpers({
 		return Template.instance().offlineUnavailableMessage.get().replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1<br>$2');
 	},
 	emailOffline() {
-		return RocketChat.settings.get('Livechat_offline_email');
+		return Template.instance().offlineEmail.get();
 	},
 	sampleColor() {
 		if (Template.instance().previewState.get().indexOf('offline') !== -1) {
@@ -146,6 +148,8 @@ Template.livechatAppearance.helpers({
 });
 
 Template.livechatAppearance.onCreated(function() {
+	this.subscribe('livechat:appearance');
+
 	this.previewState = new ReactiveVar('opened');
 
 	this.title = new ReactiveVar(null);
@@ -157,30 +161,43 @@ Template.livechatAppearance.onCreated(function() {
 	this.offlineSuccessMessage = new ReactiveVar(null);
 	this.titleOffline = new ReactiveVar(null);
 	this.colorOffline = new ReactiveVar(null);
+	this.offlineEmail = new ReactiveVar(null);
 
 	this.autorun(() => {
-		this.title.set(RocketChat.settings.get('Livechat_title'));
+		const setting = LivechatAppearance.findOne('Livechat_title');
+		this.title.set(setting && setting.value);
 	});
 	this.autorun(() => {
-		this.color.set(RocketChat.settings.get('Livechat_title_color'));
+		const setting = LivechatAppearance.findOne('Livechat_title_color');
+		this.color.set(setting && setting.value);
 	});
 	this.autorun(() => {
-		this.displayOfflineForm.set(RocketChat.settings.get('Livechat_display_offline_form'));
+		const setting = LivechatAppearance.findOne('Livechat_display_offline_form');
+		this.displayOfflineForm.set(setting && setting.value);
 	});
 	this.autorun(() => {
-		this.offlineUnavailableMessage.set(RocketChat.settings.get('Livechat_offline_form_unavailable'));
+		const setting = LivechatAppearance.findOne('Livechat_offline_form_unavailable');
+		this.offlineUnavailableMessage.set(setting && setting.value);
 	});
 	this.autorun(() => {
-		this.offlineMessage.set(RocketChat.settings.get('Livechat_offline_message'));
+		const setting = LivechatAppearance.findOne('Livechat_offline_message');
+		this.offlineMessage.set(setting && setting.value);
 	});
 	this.autorun(() => {
-		this.offlineSuccessMessage.set(RocketChat.settings.get('Livechat_offline_success_message'));
+		const setting = LivechatAppearance.findOne('Livechat_offline_success_message');
+		this.offlineSuccessMessage.set(setting && setting.value);
 	});
 	this.autorun(() => {
-		this.titleOffline.set(RocketChat.settings.get('Livechat_offline_title'));
+		const setting = LivechatAppearance.findOne('Livechat_offline_title');
+		this.titleOffline.set(setting && setting.value);
 	});
 	this.autorun(() => {
-		this.colorOffline.set(RocketChat.settings.get('Livechat_offline_title_color'));
+		const setting = LivechatAppearance.findOne('Livechat_offline_title_color');
+		this.colorOffline.set(setting && setting.value);
+	});
+	this.autorun(() => {
+		const setting = LivechatAppearance.findOne('Livechat_offline_email');
+		this.offlineEmail.set(setting && setting.value);
 	});
 });
 
@@ -198,14 +215,29 @@ Template.livechatAppearance.events({
 	'click .reset-settings'(e, instance) {
 		e.preventDefault();
 
-		instance.title.set(RocketChat.settings.get('Livechat_title'));
-		instance.color.set(RocketChat.settings.get('Livechat_title_color'));
-		instance.displayOfflineForm.set(RocketChat.settings.get('Livechat_display_offline_form'));
-		instance.offlineUnavailableMessage.set(RocketChat.settings.get('Livechat_offline_form_unavailable'));
-		instance.offlineMessage.set(RocketChat.settings.get('Livechat_offline_message'));
-		instance.offlineSuccessMessage.set(RocketChat.settings.get('Livechat_offline_success_message'));
-		instance.titleOffline.set(RocketChat.settings.get('Livechat_offline_title'));
-		instance.colorOffline.set(RocketChat.settings.get('Livechat_offline_title_color'));
+		const settingTitle = LivechatAppearance.findOne('Livechat_title');
+		instance.title.set(settingTitle && settingTitle.value);
+
+		const settingTitleColor = LivechatAppearance.findOne('Livechat_title_color');
+		instance.color.set(settingTitleColor && settingTitleColor.value);
+
+		const settingDiplayOffline = LivechatAppearance.findOne('Livechat_display_offline_form');
+		instance.displayOfflineForm.set(settingDiplayOffline && settingDiplayOffline.value);
+
+		const settingFormUnavailable = LivechatAppearance.findOne('Livechat_offline_form_unavailable');
+		instance.offlineUnavailableMessage.set(settingFormUnavailable && settingFormUnavailable.value);
+
+		const settingOfflineMessage = LivechatAppearance.findOne('Livechat_offline_message');
+		instance.offlineMessage.set(settingOfflineMessage && settingOfflineMessage.value);
+
+		const settingOfflineSuccess = LivechatAppearance.findOne('Livechat_offline_success_message');
+		instance.offlineSuccessMessage.set(settingOfflineSuccess && settingOfflineSuccess.value);
+
+		const settingOfflineTitle = LivechatAppearance.findOne('Livechat_offline_title');
+		instance.titleOffline.set(settingOfflineTitle && settingOfflineTitle.value);
+
+		const settingOfflineTitleColor = LivechatAppearance.findOne('Livechat_offline_title_color');
+		instance.colorOffline.set(settingOfflineTitleColor && settingOfflineTitleColor.value);
 	},
 	'submit .rocket-form'(e, instance) {
 		e.preventDefault();
@@ -248,7 +280,8 @@ Template.livechatAppearance.events({
 				value: instance.$('#emailOffline').val()
 			}
 		];
-		RocketChat.settings.batchSet(settings, (err/*, success*/) => {
+
+		Meteor.call('livechat:saveAppearance', settings, (err/*, success*/) => {
 			if (err) {
 				return handleError(err);
 			}
