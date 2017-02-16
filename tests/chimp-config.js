@@ -112,7 +112,7 @@ module.exports = {
 		timeout: 40000,
 		reporter: 'min',
 		slow: 100,
-		retries: 3,
+		//retries: 3,
 		bail: false // bail after first test failure
 	},
 

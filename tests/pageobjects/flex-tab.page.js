@@ -83,6 +83,10 @@ class FlexTab extends Page {
 	get usersAddUserRandomPassword() { return browser.element('#randomPassword'); }
 	get emojiNewAliases() { return browser.element('#aliases'); }
 	get emojiNewImageInput() { return browser.element('#image'); }
+	get usersView() { return browser.element('.user-view'); }
+	get usersEditUser() { return browser.element('.user-view .edit-user'); }
+	get usersActivate() { return browser.element('.button.activate'); }
+	get usersDeactivate() { return browser.element('.button.deactivate'); }
 
 	getUserEl(username) { return browser.element(`.flex-tab button[title="${username}"] > p`); }
 
