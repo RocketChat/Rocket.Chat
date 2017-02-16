@@ -99,6 +99,8 @@
   "Accounts_OAuth_Wordpress_id": "WordPress Id",
   "Accounts_OAuth_Wordpress_secret": "WordPress Secret",
   "Accounts_PasswordReset": "Password Reset",
+  "Accounts_Registration_AuthenticationServices_Default_Roles": "Default Roles for Authentication Services",
+  "Accounts_Registration_AuthenticationServices_Default_Roles_Description": "Default roles (comma-separated) users will be given when registering through authentication services",
   "Accounts_Registration_AuthenticationServices_Enabled": "Registration with Authentication Services",
   "Accounts_RegistrationForm": "Registration Form",
   "Accounts_RegistrationForm_Disabled": "Disabled",
