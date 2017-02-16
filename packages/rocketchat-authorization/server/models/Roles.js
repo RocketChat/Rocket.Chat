@@ -47,8 +47,9 @@ class ModelRoles extends RocketChat.models._Base {
 			const roleScope = (role && role.scope) || 'Users';
 			const model = RocketChat.models[roleScope];
 
-			return model && model.addRolesByUserId && model.addRolesByUserId(userId, roleName, scope);
+			model && model.addRolesByUserId && model.addRolesByUserId(userId, roleName, scope);
 		}
+		return true;
 	}
 
 	removeUserRoles(userId, roles, scope) {
@@ -58,8 +59,9 @@ class ModelRoles extends RocketChat.models._Base {
 			const roleScope = (role && role.scope) || 'Users';
 			const model = RocketChat.models[roleScope];
 
-			return model && model.removeRolesByUserId && model.removeRolesByUserId(userId, roleName, scope);
+			model && model.removeRolesByUserId && model.removeRolesByUserId(userId, roleName, scope);
 		}
+		return true;
 	}
 }
 
