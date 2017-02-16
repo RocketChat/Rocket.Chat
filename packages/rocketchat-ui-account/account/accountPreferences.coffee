@@ -29,7 +29,7 @@ Template.accountPreferences.helpers
 
 	selected: (property, value, defaultValue) ->
 		if not Meteor.user()?.settings?.preferences?[property]
-			return defaultValue
+			return defaultValue is true
 		else
 			return Meteor.user()?.settings?.preferences?[property] == value
 

@@ -337,7 +337,7 @@ class @ChatMessages
 		this.resize(input)
 
 		if k is 13
-			if sendOnEnter is 'normal' || (sendOnEnter is 'desktop' and Meteor.Device.isDesktop())
+			if not sendOnEnter? || sendOnEnter is 'normal' || (sendOnEnter is 'desktop' and Meteor.Device.isDesktop())
 				if not event.shiftKey and not event.ctrlKey and not event.altKey and not event.metaKey # Enter without shift/ctrl/alt
 					event.preventDefault()
 					event.stopPropagation()
