@@ -88,7 +88,7 @@ const createGoogleStorageDirective = _.debounce(() => {
 			GoogleAccessId: accessId,
 			GoogleSecretKey: secret,
 			key: function _googleCloudStorageKey(file, metaContext) {
-				const path = RocketChat.hostname + '/' + metaContext.rid + '/' + this.userId + '/';
+				const path = RocketChat.settings.get('uniqueID') + '/' + metaContext.rid + '/' + this.userId + '/';
 				const fileId = RocketChat.models.Uploads.insertFileInit(metaContext.rid, this.userId, 'googleCloudStorage', file, { googleCloudStorage: { bucket, path }});
 
 				return path + fileId;
