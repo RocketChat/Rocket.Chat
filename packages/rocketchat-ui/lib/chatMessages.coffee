@@ -330,21 +330,24 @@ class @ChatMessages
 		this.hasValue.set input.value isnt ''
 
 	keydown: (rid, event) ->
+		sendOnEnter = Meteor.user()?.settings?.preferences?.sendOnEnter
 		input = event.currentTarget
 		$input = $(input)
 		k = event.which
 		this.resize(input)
+
 		if k is 13
-			if not event.shiftKey and not event.ctrlKey and not event.altKey and not event.metaKey # Enter without shift/ctrl/alt
-				event.preventDefault()
-				event.stopPropagation()
-				if this.editing.id
-					this.update(this.editing.id, rid, input)
-				else
-					this.send(rid, input)
-				return
-			else if not event.shiftKey
-				return input.value +='\n'
+			if sendOnEnter is 1 || (sendOnEnter is 2 and Meteor.Device.isDesktop())
+				if not event.shiftKey and not event.ctrlKey and not event.altKey and not event.metaKey # Enter without shift/ctrl/alt
+					event.preventDefault()
+					event.stopPropagation()
+					if this.editing.id
+						this.update(this.editing.id, rid, input)
+					else
+						this.send(rid, input)
+					return
+				else if not event.shiftKey
+					return input.value +='\n'
 
 
 		if k is 9 # Tab

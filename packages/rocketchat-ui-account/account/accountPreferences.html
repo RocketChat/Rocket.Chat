@@ -142,9 +142,12 @@
 							<div class="input-line double-col" id="sendOnEnter">
 								<label>{{_ "Send_On_Enter"}}</label>
 								<div>
-									<label><input type="radio" name="sendOnEnter" value="1" checked="{{checked 'sendOnEnter' true true}}" /> {{_ "True"}}</label>
-									<label><input type="radio" name="sendOnEnter" value="0" checked="{{checked 'sendOnEnter' false}}" /> {{_ "False"}}</label>
-									<label><input type="radio" name="sendOnEnter" value="2" checked="{{checked 'sendOnEnter' true}}" /> {{_ "Only_On_Desktop"}}</label>
+									<select class="input-monitor" name="sendOnEnter">
+										<option value="1" selected="{{selected 'sendOnEnter' 1 true}}">{{_ "True"}}</option>
+										<option value="0" selected="{{selected 'sendOnEnter' 0 false}}">{{_ "False"}}</option>
+										<option value="2" selected="{{selected 'sendOnEnter' 2 false}}">{{_ "Only_On_Desktop"}}</option>
+									</select>
+									<div class="info">{{_ "Send_On_Enter_Description"}}</div>
 								</div>
 							</div>
 							<div class="input-line double-col" id="viewMode">
