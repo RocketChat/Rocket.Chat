@@ -30,6 +30,9 @@ Template.uploadedFilesList.helpers
 		return '/file-upload/' + @_id + '/' + @name
 
 	fixCordova: (url) ->
+		if url?.indexOf('data:image') is 0
+			return url
+
 		if Meteor.isCordova and url?[0] is '/'
 			url = Meteor.absoluteUrl().replace(/\/$/, '') + url
 			query = "rc_uid=#{Meteor.userId()}&rc_token=#{Meteor._localStorage.getItem('Meteor.loginToken')}"

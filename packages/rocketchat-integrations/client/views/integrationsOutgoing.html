@@ -1,145 +1,236 @@
 <template name="integrationsOutgoing">
-	<div class="permissions-manager">
-		{{#if hasPermission}}
+	<section class="page-container page-home page-static page-settings">
+		<header class="fixed-title border-component-color">
+			{{> burger}}
+			<h2>
+				<span class="room-title">{{pageTitle}}</span>
+			</h2>
+			<div class="submit">
+				<button class="button history" disabled="{{not showHistoryButton}}"><i class="icon-history"></i>{{_ "History"}}</button>
+				<button class="button danger delete" disabled="{{not canDelete}}"><i class="icon-trash"></i> <span>{{_ "Delete"}}</span></button>
+				<button class="button primary save" disabled="{{not hasTypeSelected}}"><i class="icon-paper-plane"></i> <span>{{_ "Save_changes"}}</span></button>
+			</div>
+		</header>
+		<div class="content background-transparent-dark">
 			<a href="{{pathFor "admin-integrations"}}"><i class="icon-angle-left"></i> {{_ "Back_to_integrations"}}</a><br><br>
-			<div class="rocket-form">
-				<div class="section">
-					<div class="section-content">
-						<div class="input-line double-col">
-							<label>{{_ "Enabled"}}</label>
-							<div>
-								<label><input type="radio" name="enabled" value="1" checked="{{$eq data.enabled true}}" /> {{_ "True"}}</label>
-								<label><input type="radio" name="enabled" value="0" checked="{{$neq data.enabled true}}" /> {{_ "False"}}</label>
+			{{#unless hasPermission}}
+				<p>{{_ "You_are_not_authorized_to_view_this_page"}}</p>
+			{{else}}
+				<div class="rocket-form">
+					<div class="section">
+						<div class="section-title">
+							<div class="section-title-text">{{_ "Webhook Details"}}</div>
+							<div class="section-title-right">
+								<button class="button primary collapse"><span>{{_ "Collapse"}}</span></button>
 							</div>
 						</div>
-						<div class="input-line double-col">
-							<label>{{_ "Name"}} ({{_ "optional"}})</label>
-							<div>
-								<input type="text" name="name" value="{{data.name}}" placeholder="{{_ 'Optional'}}" />
-								<div class="settings-description">{{_ "You_should_name_it_to_easily_manage_your_integrations"}}</div>
+						<div class="section-content">
+							<div class="input-line double-col">
+								<label>{{_ "Event_Trigger"}}</label>
+								<div>
+									<select name="event" class="required">
+										<option value=""></option>
+										{{#each eventTypes}}
+											<option value="{{value}}" selected="{{$eq data.event value}}" dir="auto">{{_ label}}</option>
+										{{/each}}
+									</select>
+									<div class="settings-description">{{_ "Event_Trigger_Description"}}</div>
+								</div>
 							</div>
-						</div>
-						<div class="input-line double-col">
-							<label>{{_ "Channel"}}</label>
-							<div>
-								<input type="text" name="channel" value="{{data.channel}}" placeholder="{{_ 'User_or_channel_name'}}" />
-								<div class="settings-description">{{_ "Channel_to_listen_on"}}</div>
-								<div class="settings-description">{{{_ "Start_with_s_for_user_or_s_for_channel_Eg_s_or_s" "@" "#" "@john" "#general"}}}</div>
-								<div class="settings-description">{{{_ "Integrations_for_all_channels"}}}</div>
-							</div>
-						</div>
-						<div class="input-line double-col">
-							<label>{{_ "Trigger_Words"}} ({{_ "optional"}})</label>
-							<div>
-								<input type="text" name="triggerWords" value="{{join data.triggerWords ','}}" />
-								<div class="settings-description">{{_ "When a line starts with one of these words, post to the URL(s) below"}}</div>
-								<div class="settings-description">{{_ "Separate multiple words with commas"}}</div>
-							</div>
-						</div>
-						<div class="input-line double-col">
-							<label>{{_ "URLs"}}</label>
-							<div>
-								<textarea name="urls" style="height: 100px;">{{join data.urls "\n"}}</textarea>
-								<div class="settings-description">{{_ "Enter as many URLs as you like, one per line, please"}}</div>
-							</div>
-						</div>
-						<div class="input-line double-col">
-							<label>{{_ "Impersonate_user"}}</label>
-							<div>
-								<label><input type="radio" name="impersonateUser" value="1" checked="{{$eq data.impersonateUser true}}" /> {{_ "True"}}</label>
-								<label><input type="radio" name="impersonateUser" value="0" checked="{{$neq data.impersonateUser true}}" /> {{_ "False"}}</label>
-								<div class="settings-description">{{_ "Impersonate_user_description"}}</div>
-							</div>
-						</div>
-						<div class="input-line double-col">
-							<label>{{_ "Post_as"}}</label>
-							<div>
-								<input type="text" name="username" value="{{data.username}}" />
-								<div class="settings-description">{{_ "Choose_the_username_that_this_integration_will_post_as"}}</div>
-								<div class="settings-description">{{_ "Should_exists_a_user_with_this_username"}}</div>
-							</div>
-						</div>
-						<div class="input-line double-col">
-							<label>{{_ "Alias"}} ({{_ "optional"}})</label>
-							<div>
-								<input type="text" name="alias" value="{{data.alias}}" placeholder="{{_ 'Optional'}}" />
-								<div class="settings-description">{{_ "Choose_the_alias_that_will_appear_before_the_username_in_messages"}}</div>
-							</div>
-						</div>
-						<div class="input-line double-col">
-							<label>{{_ "Avatar_URL"}} ({{_ "optional"}})</label>
-							<div>
-								<input type="url" name="avatar" value="{{data.avatar}}" placeholder="{{_ 'Optional'}}" />
-								<div class="settings-description">{{_ "You_can_change_a_different_avatar_too"}}</div>
-								<div class="settings-description">{{_ "Should_be_a_URL_of_an_image"}}</div>
-							</div>
-						</div>
-						<div class="input-line double-col">
-							<label>{{_ "Emoji"}} ({{_ "optional"}})</label>
-							<div>
-								<input type="text" name="emoji" value="{{data.emoji}}" placeholder="{{_ 'Optional'}}" />
-								<div class="settings-description">{{_ "You_can_use_an_emoji_as_avatar"}}</div>
-								<div class="settings-description">{{{_ "Example_s" ":ghost:"}}}</div>
-							</div>
-						</div>
-						<div class="input-line double-col">
-							<label>Token ({{_ "optional"}})</label>
-							<div>
-								<input type="text" name="token" value="{{data.token}}" />
-							</div>
-						</div>
-						<div class="input-line double-col">
-							<label>{{_ "Script_Enabled"}}</label>
-							<div>
-								<label><input type="radio" name="scriptEnabled" value="1" checked="{{$eq data.scriptEnabled true}}" /> {{_ "True"}}</label>
-								<label><input type="radio" name="scriptEnabled" value="0" checked="{{$neq data.scriptEnabled true}}" /> {{_ "False"}}</label>
-							</div>
-						</div>
-						<div class="input-line double-col">
-							<label>{{_ "Script"}}</label>
-							<div>
-								<div class="code-mirror-box">
-									<div class="title">
-										{{_ "Script"}}
-									</div>
-									{{> CodeMirror name="script" options=editorOptions code=data.script }}
-									<div class="buttons">
-										<button class="button primary button-fullscreen">Full Screen</button>
-										<button class="button primary button-restore">Exit Full Screen</button>
+							{{#if hasTypeSelected}}
+								<div class="input-line double-col">
+									<label>{{_ "Enabled"}}</label>
+									<div>
+										<label><input type="radio" name="enabled" value="1" checked="{{$eq data.enabled true}}" /> {{_ "True"}}</label>
+										<label><input type="radio" name="enabled" value="0" checked="{{$neq data.enabled true}}" /> {{_ "False"}}</label>
 									</div>
 								</div>
-								{{#if data.scriptError}}
-									<div class="code-error-box">
-										<div class="title color-content-background-color background-error-color">
-											{{data.scriptError.name}}
+								<div class="input-line double-col">
+									<label>{{_ "Name"}} ({{_ "optional"}})</label>
+									<div>
+										<input type="text" name="name" value="{{data.name}}" placeholder="{{_ 'Optional'}}" />
+										<div class="settings-description">{{_ "You_should_name_it_to_easily_manage_your_integrations"}}</div>
+									</div>
+								</div>
+								{{#if shouldDisplayChannel}}
+									<div class="input-line double-col">
+										<label>{{_ "Channel"}}</label>
+										<div>
+											<input type="text" name="channel" value="{{data.channel}}" placeholder="{{_ 'User_or_channel_name'}}" />
+											<div class="settings-description">{{_ "Channel_to_listen_on"}}</div>
+											<div class="settings-description">{{{_ "Start_with_s_for_user_or_s_for_channel_Eg_s_or_s" "@" "#" "@john" "#general"}}}</div>
+											<div class="settings-description">{{{_ "Integrations_for_all_channels"}}}</div>
 										</div>
-										<pre class="script-error background-transparent-lightest error-color error-border">{{data.scriptError.message}}</pre>
+									</div>
+								{{/if}}
+								{{#if shouldDisplayTriggerWords}}
+									<div class="input-line double-col">
+										<label>{{_ "Trigger_Words"}} ({{_ "optional"}})</label>
+										<div>
+											<input type="text" name="triggerWords" value="{{join data.triggerWords ','}}" />
+											<div class="settings-description">{{_ "When a line starts with one of these words, post to the URL(s) below"}}</div>
+											<div class="settings-description">{{_ "Separate multiple words with commas"}}</div>
+										</div>
+									</div>
+								{{/if}}
+								{{#if shouldDisplayTargetRoom}}
+									<div class="input-line double-col">
+										<label>{{_ "TargetRoom"}}</label>
+										<div>
+											<input type="text" name="targetRoom" value="{{data.targetRoom}}" placeholder="{{_ 'User_or_channel_name'}}" />
+											<div class="settings-description">{{_ "TargetRoom_Description"}}</div>
+											<div class="settings-description">{{{_ "Start_with_s_for_user_or_s_for_channel_Eg_s_or_s" "@" "#" "@john" "#general"}}}</div>
+										</div>
+									</div>
+								{{/if}}
+								<div class="input-line double-col">
+									<label>{{_ "URLs"}}</label>
+									<div>
+										<textarea name="urls" style="height: 100px;">{{join data.urls "\n"}}</textarea>
+										<div class="settings-description">{{_ "Enter as many URLs as you like, one per line, please"}}</div>
+									</div>
+								</div>
+								<div class="input-line double-col">
+									<label>{{_ "Impersonate_user"}}</label>
+									<div>
+										<label><input type="radio" name="impersonateUser" value="1" checked="{{$eq data.impersonateUser true}}" /> {{_ "True"}}</label>
+										<label><input type="radio" name="impersonateUser" value="0" checked="{{$neq data.impersonateUser true}}" /> {{_ "False"}}</label>
+										<div class="settings-description">{{_ "Impersonate_user_description"}}</div>
+									</div>
+								</div>
+								<div class="input-line double-col">
+									<label>{{_ "Post_as"}}</label>
+									<div>
+										<input type="text" name="username" value="{{data.username}}" />
+										<div class="settings-description">{{_ "Choose_the_username_that_this_integration_will_post_as"}}</div>
+										<div class="settings-description">{{_ "Should_exists_a_user_with_this_username"}}</div>
+									</div>
+								</div>
+								<div class="input-line double-col">
+									<label>{{_ "Alias"}} ({{_ "optional"}})</label>
+									<div>
+										<input type="text" name="alias" value="{{data.alias}}" placeholder="{{_ 'Optional'}}" />
+										<div class="settings-description">{{_ "Choose_the_alias_that_will_appear_before_the_username_in_messages"}}</div>
+									</div>
+								</div>
+								<div class="input-line double-col">
+									<label>{{_ "Avatar_URL"}} ({{_ "optional"}})</label>
+									<div>
+										<input type="url" name="avatar" value="{{data.avatar}}" placeholder="{{_ 'Optional'}}" />
+										<div class="settings-description">{{_ "You_can_change_a_different_avatar_too"}}</div>
+										<div class="settings-description">{{_ "Should_be_a_URL_of_an_image"}}</div>
+									</div>
+								</div>
+								<div class="input-line double-col">
+									<label>{{_ "Emoji"}} ({{_ "optional"}})</label>
+									<div>
+										<input type="text" name="emoji" value="{{data.emoji}}" placeholder="{{_ 'Optional'}}" />
+										<div class="settings-description">{{_ "You_can_use_an_emoji_as_avatar"}}</div>
+										<div class="settings-description">{{{_ "Example_s" ":ghost:"}}}</div>
+									</div>
+								</div>
+								<div class="input-line double-col">
+									<label>Token ({{_ "optional"}})</label>
+									<div>
+										<input type="text" name="token" value="{{data.token}}" />
+									</div>
+								</div>
+								<div class="input-line double-col">
+									<label>{{_ "Script_Enabled"}}</label>
+									<div>
+										<label><input type="radio" name="scriptEnabled" value="1" checked="{{$eq data.scriptEnabled true}}" /> {{_ "True"}}</label>
+										<label><input type="radio" name="scriptEnabled" value="0" checked="{{$neq data.scriptEnabled true}}" /> {{_ "False"}}</label>
+									</div>
+								</div>
+								<div class="input-line double-col">
+									<label>{{_ "Script"}}</label>
+									<div>
+										<div class="code-mirror-box">
+											<div class="title">
+												{{_ "Script"}}
+											</div>
+											{{> CodeMirror name="script" options=editorOptions code=data.script }}
+											<div class="buttons">
+												<button class="button primary button-fullscreen">Full Screen</button>
+												<button class="button primary button-restore">Exit Full Screen</button>
+											</div>
+										</div>
+										{{#if data.scriptError}}
+											<div class="code-error-box">
+												<div class="title color-content-background-color background-error-color">
+													{{data.scriptError.name}}
+												</div>
+												<pre class="script-error background-transparent-lightest error-color error-border">{{data.scriptError.message}}</pre>
+											</div>
+										{{/if}}
+									</div>
+								</div>
+								<div class="input-line double-col">
+									<label>{{_ "Responding"}}</label>
+									<div>
+										<div class="settings-description">{{{_ "If the handler wishes to post a response back into the channel, the following JSON should be returned as the body of the response:"}}}</div>
+										<pre><code class="code-colors hljs json json-example">{{{exampleJson}}}</code></pre>
+										<div class="settings-description">{{{_ "Empty bodies or bodies with an empty text property will simply be ignored. Non-200 responses will be retried a reasonable number of times. A response will be posted using the alias and avatar specified above. You can override these informations as in the example above."}}}</div>
+									</div>
+								</div>
+								<div class="input-line message-example">
+									{{#nrr nrrargs 'message' example}}{{/nrr}}
+								</div>
+							{{/if}}
+						</div>
+					</div>
+					{{#if hasTypeSelected}}
+						<div class="section section-collapsed">
+							<div class="section-title">
+								<div class="section-title-text">{{_ "Integration_Advanced_Settings"}}</div>
+								<div class="section-title-right">
+									<button class="button primary expand"><span>{{_ "Expand"}}</span></button>
+								</div>
+							</div>
+							<div class="section-content">
+								<div class="input-line double-col">
+									<label>{{_ "Integration_Retry_Failed_Url_Calls"}}</label>
+									<div>
+										<label><input type="radio" name="retryFailedCalls" value="1" checked="{{$eq data.retryFailedCalls true}}" /> {{_ "True"}}</label>
+										<label><input type="radio" name="retryFailedCalls" value="0" checked="{{$neq data.retryFailedCalls true}}" /> {{_ "False"}}</label>
+										<div class="settings-description">{{_ "Integration_Retry_Failed_Url_Calls_Description"}}</div>
+									</div>
+								</div>
+								{{#if data.retryFailedCalls}}
+									<div class="input-line double-col">
+										<label>{{_ "Integration_Retry_Count"}}</label>
+										<div>
+											<input type="number" name="retryCount" value="{{data.retryCount}}" />
+											<div class="settings-description">{{_ "Integration_Retry_Count_Description"}}</div>
+										</div>
+									</div>
+									<div class="input-line double-col">
+										<label>{{_ "Integration_Retry_Delay"}}</label>
+										<div>
+											<select name="retryDelay" class="required">
+												<option value="powers-of-ten" selected="{{$eq data.retryDelay 'powers-of-ten'}}" dir="auto">powers-of-ten</option>
+												<option value="powers-of-two" selected="{{$eq data.retryDelay 'powers-of-two'}}" dir="auto">powers-of-two</option>
+												<option value="increments-of-two" selected="{{$eq data.retryDelay 'increments-of-two'}}" dir="auto">increments-of-two</option>
+											</select>
+											<div class="settings-description">{{{_ "Integration_Retry_Delay_Description"}}}</div>
+										</div>
+									</div>
+								{{/if}}
+								{{#if shouldDisplayTriggerWords}}
+									<div class="input-line double-col">
+										<label>{{_ "Integration_Word_Trigger_Placement"}}</label>
+										<div>
+											<label><input type="radio" name="triggerWordAnywhere" value="1" checked="{{$eq data.triggerWordAnywhere true}}" /> {{_ "True"}}</label>
+											<label><input type="radio" name="triggerWordAnywhere" value="0" checked="{{$neq data.triggerWordAnywhere true}}" /> {{_ "False"}}</label>
+											<div class="settings-description">{{_ "Integration_Word_Trigger_Placement_Description"}}</div>
+										</div>
 									</div>
 								{{/if}}
 							</div>
 						</div>
-						<div class="input-line double-col">
-							<label>{{_ "Responding"}}</label>
-							<div>
-								<div class="settings-description">{{{_ "If the handler wishes to post a response back into the channel, the following JSON should be returned as the body of the response:"}}}</div>
-								<pre><code class="code-colors hljs json json-example">{{{exampleJson}}}</code></pre>
-								<div class="settings-description">{{{_ "Empty bodies or bodies with an empty text property will simply be ignored. Non-200 responses will be retried a reasonable number of times. A response will be posted using the alias and avatar specified above. You can override these informations as in the example above."}}}</div>
-							</div>
-						</div>
-						<div class="input-line message-example">
-							{{#nrr nrrargs 'message' example}}{{/nrr}}
-						</div>
-					</div>
-				</div>
-				<div class="submit">
-					{{#if data.token}}
-						<button class="button danger delete"><i class="icon-trash"></i><span>{{_ "Delete"}}</span></button>
 					{{/if}}
-					<button class="button primary save"><i class="icon-send"></i><span>{{_ "Save_changes"}}</span></button>
 				</div>
-			</div>
-		{{else}}
-			{{_ "Not_authorized"}}
-		{{/if}}
-	</div>
+			{{/unless}}
+		</div>
+	</section>
 </template>

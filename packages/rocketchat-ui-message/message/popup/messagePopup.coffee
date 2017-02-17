@@ -108,6 +108,9 @@ Template.messagePopup.onCreated ->
 
 			template.enterValue()
 
+			if template.data.cleanOnEnter
+				template.input.value = ''
+
 			event.preventDefault()
 			event.stopPropagation()
 			return
