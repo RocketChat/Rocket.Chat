@@ -3,7 +3,7 @@
 # https://github.com/Khan/KaTeX
 ###
 
-import katex from './client/katex/katex.min.js'
+katex = require('katex')
 
 class Katex
 	constructor: ->
