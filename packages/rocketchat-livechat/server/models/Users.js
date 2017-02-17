@@ -166,10 +166,17 @@ RocketChat.models.Users.openOffice = function() {
 	});
 };
 
-RocketChat.models.Users.updateLivechatDataByToken = function(token, key, value) {
+RocketChat.models.Users.updateLivechatDataByToken = function(token, key, value, overwrite = true) {
 	const query = {
 		'profile.token': token
 	};
+
+	if (!overwrite) {
+		const user = this.findOne(query, { fields: { livechatData: 1 } });
+		if (user.livechatData && typeof user.livechatData[key] !== 'undefined') {
+			return true;
+		}
+	}
 
 	const update = {
 		$set: {

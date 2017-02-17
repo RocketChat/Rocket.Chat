@@ -40,6 +40,7 @@ Template.offlineForm.events({
 				return instance.showError(error.reason);
 			} else {
 				instance.messageSent.set(true);
+				parentCall('callback', ['offline-form-submit', data]);
 			}
 		});
 	}
