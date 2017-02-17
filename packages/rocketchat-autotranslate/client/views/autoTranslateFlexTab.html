@@ -1,0 +1,50 @@
+<template name="autoTranslateFlexTab">
+	<div class="content">
+		<div class="list-view autotranslate">
+			<div class="title">
+				<h2>{{_ "Auto_Translate"}}</h2>
+			</div>
+			<form>
+				<ul class="list clearfix">
+					<li>
+						<label>{{_ "Enabled"}}</label>
+						<div>
+							{{#if editing 'autoTranslate'}}
+								<label>
+									<select name="autoTranslate">
+										<option value="" selected="{{$eq autoTranslate false}}">{{_ "False"}}</option>
+										<option value="1" selected="{{$eq autoTranslate true}}">{{_ "True"}}</option>
+									</select>
+								</label>
+								<button type="button" class="button cancel">{{_ "Cancel"}}</button>
+								<button type="button" class="button primary save">{{_ "Save"}}</button>
+							{{else}}
+								<span class="current-setting">{{autoTranslateValue}} <i class="icon-pencil" data-edit="autoTranslate"></i></span>
+							{{/if}}
+						</div>
+					</li>
+					{{#if $eq autoTranslate true}}
+						<li>
+							<label>{{_ "Target_Language"}}</label>
+							<div>
+								{{#if editing 'autoTranslateLanguage'}}
+									<label>
+										<select name="autoTranslateLanguage">
+											{{#each supportedLanguages}}
+												<option value="{{language}}" selected={{$eq language autoTranslateLanguage}}>{{$or name language}}</option>
+											{{/each}}
+										</select>
+									</label>
+									<button type="button" class="button cancel">{{_ "Cancel"}}</button>
+									<button type="button" class="button primary save">{{_ "Save"}}</button>
+								{{else}}
+									<span class="current-setting">{{autoTranslateLanguage}} <i class="icon-pencil" data-edit="autoTranslateLanguage"></i></span>
+								{{/if}}
+							</div>
+						</li>
+					{{/if}}
+				</ul>
+			</form>
+		</div>
+	</div>
+</template>
