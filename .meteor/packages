@@ -97,6 +97,7 @@ rocketchat:slackbridge
 rocketchat:slashcommands-archive
 rocketchat:slashcommands-asciiarts
 rocketchat:slashcommands-create
+rocketchat:slashcommands-gif
 rocketchat:slashcommands-invite
 rocketchat:slashcommands-invite-all
 rocketchat:slashcommands-join
