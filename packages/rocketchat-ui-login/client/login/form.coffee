@@ -97,6 +97,8 @@ Template.loginForm.events
 							instance.state.set 'login'
 						else if error?.error is 'error-user-is-not-activated'
 							instance.state.set 'wait-activation'
+						else
+							Session.set 'forceLogin', false
 
 			else
 				loginMethod = 'loginWithPassword'
@@ -112,6 +114,7 @@ Template.loginForm.events
 						else
 							toastr.error t 'User_not_found_or_incorrect_password'
 						return
+					Session.set 'forceLogin', false
 					if Meteor.user()?.language?
 						localStorage.setItem('userLanguage', Meteor.user().language)
 						setLanguage(Meteor.user().language)
