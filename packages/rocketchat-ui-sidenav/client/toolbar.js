@@ -9,13 +9,25 @@ Meteor.startup(() => {
 });
 
 const toolbarSearch = {
+	shortcut: false,
 	clear() {
-		$('.toolbar-search__input').val('');
-	},
+		const $inputMessage = $('textarea.input-message');
 
-	focus() {
+		if (0 === $inputMessage.length) {
+			return;
+		}
+
+		$inputMessage.focus();
+		$('.toolbar-search__input').val('');
+
+		if (this.shortcut) {
+			menu.close();
+		}
+	},
+	focus(fromShortcut) {
 		menu.open();
 		$('.toolbar-search__input').focus();
+		this.shortcut = fromShortcut;
 	}
 };
 
@@ -80,6 +92,19 @@ Template.toolbar.helpers({
 	},
 	results() {
 		return Template.instance().resultsList.get();
+	},
+	getPlaceholder() {
+		var placeholder = TAPi18n.__('Search');
+
+		if (!Meteor.Device.isDesktop()) {
+			return placeholder;
+		} else if (window.navigator.platform.toLowerCase().includes('mac')) {
+			placeholder = placeholder+' (CMD+K)';
+		} else {
+			placeholder = placeholder+' (Ctrl+K)';
+		}
+
+		return placeholder;
 	},
 	popupConfig() {
 		const open = new ReactiveVar(false);
@@ -174,14 +199,12 @@ Template.toolbar.events({
 			e.preventDefault();
 			e.stopPropagation();
 
-			const $inputMessage = $('textarea.input-message');
-
-			if (0 === $inputMessage.length) {
-				return;
-			}
-
-			$inputMessage.focus();
+			toolbarSearch.clear();
 		}
+	},
+
+	'click .toolbar-search__input'() {
+		toolbarSearch.shortcut = false;
 	},
 
 	'click .toolbar-search__create-channel, touchend .toolbar-search__create-channel'(e) {
