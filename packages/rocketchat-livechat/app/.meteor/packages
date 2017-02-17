@@ -34,7 +34,6 @@ mizzao:timesync
 reactive-var
 accounts-password
 tap:i18n
-# kevohagan:sweetalert
 smoral:sweetalert
 ecmascript
 es5-shim
