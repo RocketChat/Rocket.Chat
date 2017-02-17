@@ -2,7 +2,7 @@
 
 import filesize from 'filesize';
 
-Slingshot.fileRestrictions('rocketchat-uploads', {
+const slingShotConfig = {
 	authorize: function(file/*, metaContext*/) {
 		//Deny uploads if user is not logged in.
 		if (!this.userId) {
@@ -23,4 +23,7 @@ Slingshot.fileRestrictions('rocketchat-uploads', {
 	},
 	maxSize: 0,
 	allowedFileTypes: null
-});
+};
+
+Slingshot.fileRestrictions('rocketchat-uploads', slingShotConfig);
+Slingshot.fileRestrictions('rocketchat-uploads-gs', slingShotConfig);

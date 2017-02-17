@@ -3,7 +3,7 @@
 FileUpload.GoogleCloudStorage = class FileUploadGoogleCloudStorage extends FileUploadBase {
 	constructor(meta, file) {
 		super(meta, file);
-		this.uploader = new Slingshot.Upload('rocketchat-uploads', { rid: meta.rid });
+		this.uploader = new Slingshot.Upload('rocketchat-uploads-gs', { rid: meta.rid });
 	}
 
 	start() {

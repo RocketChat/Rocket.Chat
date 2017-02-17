@@ -341,10 +341,7 @@ class @ChatMessages
 				if not event.shiftKey and not event.ctrlKey and not event.altKey and not event.metaKey # Enter without shift/ctrl/alt
 					event.preventDefault()
 					event.stopPropagation()
-					if this.editing.id
-						this.update(this.editing.id, rid, input)
-					else
-						this.send(rid, input)
+					this.send(rid, input)
 					return
 				else if not event.shiftKey
 					return input.value +='\n'
@@ -352,10 +349,7 @@ class @ChatMessages
 				if event.shiftKey or event.ctrlKey or event.altKey or event.metaKey # Enter with shift/ctrl/alt
 					event.preventDefault()
 					event.stopPropagation()
-					if this.editing.id
-						this.update(this.editing.id, rid, input)
-					else
-						this.send(rid, input)
+					this.send(rid, input)
 					return
 
 
