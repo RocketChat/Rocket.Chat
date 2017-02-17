@@ -6,9 +6,28 @@ Package.describe({
 });
 
 Package.onUse(function(api) {
-	api.use([ 'ecmascript', 'rocketchat:lib' ]);
-	api.use([ 'templating', 'kadira:flow-router'], 'client');
+	api.use([
+		'ecmascript',
+		'ddp-rate-limiter',
+		'less',
+		'rocketchat:lib'
+	]);
 
-	// api.addFiles([ 'client/loadScript.js', 'client/trackEvents.js' ], 'client');
-	api.addFiles([ 'server/settings.js', 'server/autotranslate.js', 'server/models/Messages.js' ], 'server');
+	api.use('templating', 'client');
+
+	api.addFiles([
+		'client/stylesheets/autotranslate.less',
+		'client/lib/tabBar.js',
+		'client/views/autoTranslateFlexTab.html',
+		'client/views/autoTranslateFlexTab.js'
+	], 'client');
+
+	api.addFiles([
+		'server/settings.js',
+		'server/autotranslate.js',
+		'server/models/Messages.js',
+		'server/models/Subscriptions.js',
+		'server/methods/saveSettings.js',
+		'server/methods/getSupportedLanguages.js'
+	], 'server');
 });
