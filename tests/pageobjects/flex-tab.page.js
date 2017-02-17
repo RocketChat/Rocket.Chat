@@ -13,6 +13,7 @@ class FlexTab extends Page {
 	get startVideoCall() { return browser.element('.start-video-call'); }
 	get startAudioCall() { return browser.element('.start-audio-call'); }
 	get showAll() { return browser.element('.see-all'); }
+	get membersUserInfo() { return browser.element('.flex-tab-container .info'); }
 
 	get channelTab() { return browser.element('.flex-tab-bar .tab-button:not(.hidden) .icon-info-circled'); }
 	get channelSettings() { return browser.element('.channel-settings'); }
@@ -114,9 +115,11 @@ class FlexTab extends Page {
 	}
 
 	setUserOwner(user) {
-		const userEl = this.getUserEl(user);
-		userEl.waitForVisible();
-		userEl.click();
+		if (!this.membersUserInfo.isVisible()) {
+			const userEl = this.getUserEl(user);
+			userEl.waitForVisible();
+			userEl.click();
+		}
 		this.setOwnerBtn.waitForVisible(5000);
 		this.setOwnerBtn.click();
 		this.viewAllBtn.click();
@@ -124,9 +127,11 @@ class FlexTab extends Page {
 	}
 
 	setUserModerator(user) {
-		const userEl = this.getUserEl(user);
-		userEl.waitForVisible();
-		userEl.click();
+		if (!this.membersUserInfo.isVisible()) {
+			const userEl = this.getUserEl(user);
+			userEl.waitForVisible();
+			userEl.click();
+		}
 		this.setModeratorBtn.waitForVisible();
 		this.setModeratorBtn.click();
 		this.viewAllBtn.click();
@@ -134,15 +139,16 @@ class FlexTab extends Page {
 	}
 
 	muteUser(user) {
-		const userEl = this.getUserEl(user);
-		userEl.waitForVisible(5000);
-		userEl.click();
+		if (!this.membersUserInfo.isVisible()) {
+			const userEl = this.getUserEl(user);
+			userEl.waitForVisible();
+			userEl.click();
+		}
 		this.muteUserBtn.waitForVisible(5000);
 		this.muteUserBtn.click();
 		Global.confirmPopup();
 		this.viewAllBtn.click();
 		browser.pause(100);
-
 	}
 }
 
