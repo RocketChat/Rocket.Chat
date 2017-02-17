@@ -155,7 +155,7 @@ Template.admin.helpers
 		return TempSettings.find(query).count() > 0
 
 	isSettingChanged: (id) ->
-		return RocketChat.TempSettings.findOne({_id: id}, {fields: {changed: 1}}).changed
+		return TempSettings.findOne({_id: id}, {fields: {changed: 1}}).changed
 
 	translateSection: (section) ->
 		if section.indexOf(':') > -1
@@ -319,6 +319,11 @@ Template.admin.events
 		settings.forEach (setting) ->
 			defaultValue = getDefaultSetting(setting._id)
 			setFieldValue(setting._id, defaultValue.packageValue, defaultValue.type, defaultValue.editor)
+
+			TempSettings.update {_id: setting._id},
+			$set:
+				value: defaultValue.packageValue
+				changed: RocketChat.settings.collectionPrivate.findOne(setting._id).value isnt defaultValue.packageValue
 
 	"click .submit .save": (e, t) ->
 		group = FlowRouter.getParam('group')

@@ -4,7 +4,7 @@ Template.message.helpers
 	isBot: ->
 		return 'bot' if this.bot?
 	roleTags: ->
-		unless RocketChat.settings.get('UI_DisplayRoles')
+		if not RocketChat.settings.get('UI_DisplayRoles') or Meteor.user()?.settings?.preferences?.hideRoles
 			return []
 		roles = _.union(UserRoles.findOne(this.u?._id)?.roles, RoomRoles.findOne({'u._id': this.u?._id, rid: this.rid })?.roles)
 		return RocketChat.models.Roles.find({ _id: { $in: roles }, description: { $exists: 1, $ne: '' } }, { fields: { description: 1 } })
@@ -196,8 +196,10 @@ Template.message.onViewRendered = (context) ->
 
 		else if previousNode?.dataset?
 			previousDataset = previousNode.dataset
+			previousMessageDate = new Date(parseInt(previousDataset.timestamp))
+			currentMessageDate = new Date(parseInt(currentDataset.timestamp))
 
-			if previousDataset.date isnt currentDataset.date
+			if previousMessageDate.toDateString() isnt currentMessageDate.toDateString()
 				$currentNode.addClass('new-day').removeClass('sequential')
 			else
 				$currentNode.removeClass('new-day')
