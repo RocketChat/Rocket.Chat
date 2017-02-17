@@ -71,7 +71,7 @@ FileUpload.addHandler('googleCloudStorage', {
 });
 
 const createGoogleStorageDirective = _.debounce(() => {
-	const directiveName = 'rocketchat-uploads';
+	const directiveName = 'rocketchat-uploads-gs';
 
 	const type = RocketChat.settings.get('FileUpload_Storage_Type');
 	const bucket = RocketChat.settings.get('FileUpload_GoogleStorage_Bucket');
