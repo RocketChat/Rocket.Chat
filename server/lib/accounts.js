@@ -95,6 +95,13 @@ Accounts.insertUserDoc = _.wrap(Accounts.insertUserDoc, function(insertUserDoc, 
 
 	delete user.globalRoles;
 
+	if (!user.services || !user.services.password) {
+		const defaultAuthServiceRoles = String(RocketChat.settings.get('Accounts_Registration_AuthenticationServices_Default_Roles')).split(',');
+		if (defaultAuthServiceRoles.length > 0) {
+			roles = roles.concat(defaultAuthServiceRoles.map(s => s.trim()));
+		}
+	}
+
 	if (!user.type) {
 		user.type = 'user';
 	}
@@ -113,7 +120,8 @@ Accounts.insertUserDoc = _.wrap(Accounts.insertUserDoc, function(insertUserDoc, 
 
 	if (roles.length === 0) {
 		const hasAdmin = RocketChat.models.Users.findOne({
-			roles: 'admin'
+			roles: 'admin',
+			type: 'user'
 		}, {
 			fields: {
 				_id: 1
@@ -128,9 +136,6 @@ Accounts.insertUserDoc = _.wrap(Accounts.insertUserDoc, function(insertUserDoc, 
 	}
 
 	RocketChat.authz.addUserRoles(_id, roles);
-	Meteor.defer(function() {
-		return RocketChat.callbacks.run('afterCreateUser', options, user);
-	});
 
 	return _id;
 });
