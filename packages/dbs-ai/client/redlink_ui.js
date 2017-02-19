@@ -1,7 +1,7 @@
 RocketChat.TabBar.removeButton('external-search');
 
 RocketChat.TabBar.addButton({
-	groups: ['livechat', 'channel'],
+	groups: ['live', 'channel'],
 	id: 'external-search',
 	i18nTitle: 'Knowledge_Base',
 	icon: 'icon-lightbulb',
