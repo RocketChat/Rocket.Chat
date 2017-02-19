@@ -1,7 +1,7 @@
 {
 	"name": "Rocket.Chat",
 	"description": "The Ultimate Open Source WebChat Platform",
-	"version": "0.52.0-develop",
+	"version": "0.53.0-develop",
 	"author": {
 		"name": "Rocket.Chat",
 		"url": "https://rocket.chat/"
@@ -41,7 +41,8 @@
 		"test": "node .scripts/start.js",
 		"deploy": "npm run build && pm2 startOrRestart pm2.json",
 		"chimp-watch": "chimp --ddp=http://localhost:3000 --watch --mocha --path=tests/end-to-end",
-		"chimp-test": "chimp tests/chimp-config.js"
+		"chimp-test": "chimp tests/chimp-config.js",
+		"postinstall": "cd packages/rocketchat-katex && npm i"
 	},
 	"license": "MIT",
 	"repository": {
@@ -53,7 +54,7 @@
 		"email": "support@rocket.chat"
 	},
 	"devDependencies": {
-		"chimp": "^0.47.1",
+		"chimp": "^0.47.2",
 		"eslint": "^3.15.0",
 		"stylelint": "^7.8.0",
 		"supertest": "^3.0.0"

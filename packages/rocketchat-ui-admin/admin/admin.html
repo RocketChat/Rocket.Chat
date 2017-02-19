@@ -179,7 +179,7 @@
 														{{> inputAutocomplete settings=autocompleteRoom id=_id name=_id class="search autocomplete" autocomplete="off" disabled=isDisabled.disabled}}
 														<ul class="selected-rooms">
 															{{#each selectedRooms}}
-																<li class="remove-room" data-setting={{../_id}}>{{name}} <i class="icon-cancel secondary-font-color"></i></li>
+																<li class="remove-room" data-setting={{_id}}>{{name}} <i class="icon-cancel secondary-font-color"></i></li>
 															{{/each}}
 														</ul>
 													</div>
@@ -202,7 +202,7 @@
 										</div>
 									{{/each}}
 
-									{{#unless $eq ../../_id 'Assets'}}
+									{{#unless $eq ../_id 'Assets'}}
 										<div class="input-line double-col">
 											<label class="setting-label">{{_ "Reset_section_settings"}}</label>
 											<div class="setting-field">
@@ -225,11 +225,11 @@
 						{{/each}}
 
 						<div class="submit">
-							{{#if $eq ../../_id 'OAuth'}}
+							{{#if $eq _id 'OAuth'}}
 								<button class="button secondary refresh-oauth"><span>{{_ "Refresh_oauth_services"}}</span></button>
 								<button class="button secondary add-custom-oauth"><span>{{_ "Add_custom_oauth"}}</span></button>
 							{{/if}}
-							{{#if $eq ../../_id 'Assets'}}
+							{{#if $eq _id 'Assets'}}
 								<button class="button refresh-clients"><span>{{_ "Apply_and_refresh_all_clients"}}</span></button>
 							{{/if}}
 						</div>

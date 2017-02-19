@@ -1,9 +1,11 @@
 RocketChat.Migrations.add({
 	version: 87,
 	up: function() {
-		RocketChat.models.Users.find({}, {username: 1, name: 1}).forEach((user) => {
-			RocketChat.models.Messages.updateAllNamesByUserId(user._id, user.name);
-			RocketChat.models.Subscriptions.setRealNameForDirectRoomsWithUsername(user.username, user.name);
-		});
+		if (RocketChat && RocketChat.models && RocketChat.models.Users) {
+			RocketChat.models.Users.update({ 'settings.preferences.newMessageNotification': false }, { $set: { 'settings.preferences.newMessageNotification': 'none' } }, { multi: true });
+			RocketChat.models.Users.update({ 'settings.preferences.newMessageNotification': true }, { $unset: { 'settings.preferences.newMessageNotification': 1 } }, { multi: true });
+			RocketChat.models.Users.update({ 'settings.preferences.newRoomNotification': false }, { $set: { 'settings.preferences.newRoomNotification': 'none' } }, { multi: true });
+			RocketChat.models.Users.update({ 'settings.preferences.newRoomNotification': true }, { $unset: { 'settings.preferences.newRoomNotification': 1 } }, { multi: true });
+		}
 	}
 });

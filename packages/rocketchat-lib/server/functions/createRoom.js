@@ -88,6 +88,10 @@ RocketChat.createRoom = function(type, name, owner, members, readOnly, extraData
 		Meteor.defer(() => {
 			RocketChat.callbacks.run('afterCreateChannel', owner, room);
 		});
+	} else if (type === 'p') {
+		Meteor.defer(() => {
+			RocketChat.callbacks.run('afterCreatePrivateGroup', owner, room);
+		});
 	}
 
 	return {
