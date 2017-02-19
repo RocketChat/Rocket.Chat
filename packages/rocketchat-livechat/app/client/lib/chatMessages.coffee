@@ -94,6 +94,8 @@ class @ChatMessages
 						ChatMessage.update result._id, _.omit(result, '_id')
 						Livechat.room = result.rid
 
+						parentCall('callback', 'chat-started');
+
 			if not Meteor.userId()
 				guest = {
 					token: visitor.getToken()

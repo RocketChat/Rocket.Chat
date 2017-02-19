@@ -104,35 +104,35 @@ Meteor.startup(function() {
 	RocketChat.settings.add('Livechat_webhookUrl', false, {
 		type: 'string',
 		group: 'Livechat',
-		section: 'CRM Integration',
+		section: 'CRM_Integration',
 		i18nLabel: 'Webhook_URL'
 	});
 
 	RocketChat.settings.add('Livechat_secret_token', false, {
 		type: 'string',
 		group: 'Livechat',
-		section: 'CRM Integration',
+		section: 'CRM_Integration',
 		i18nLabel: 'Secret_token'
 	});
 
 	RocketChat.settings.add('Livechat_webhook_on_close', false, {
 		type: 'boolean',
 		group: 'Livechat',
-		section: 'CRM Integration',
+		section: 'CRM_Integration',
 		i18nLabel: 'Send_request_on_chat_close'
 	});
 
 	RocketChat.settings.add('Livechat_webhook_on_offline_msg', false, {
 		type: 'boolean',
 		group: 'Livechat',
-		section: 'CRM Integration',
+		section: 'CRM_Integration',
 		i18nLabel: 'Send_request_on_offline_messages'
 	});
 
 	RocketChat.settings.add('Livechat_Knowledge_Enabled', false, {
 		type: 'boolean',
 		group: 'Livechat',
-		section: 'Knowledge Base',
+		section: 'Knowledge_Base',
 		public: true,
 		i18nLabel: 'Enabled'
 	});
@@ -140,7 +140,7 @@ Meteor.startup(function() {
 	RocketChat.settings.add('Livechat_Knowledge_Apiai_Key', '', {
 		type: 'string',
 		group: 'Livechat',
-		section: 'Knowledge Base',
+		section: 'Knowledge_Base',
 		public: true,
 		i18nLabel: 'Apiai_Key'
 	});
@@ -148,7 +148,7 @@ Meteor.startup(function() {
 	RocketChat.settings.add('Livechat_Knowledge_Apiai_Language', 'en', {
 		type: 'string',
 		group: 'Livechat',
-		section: 'Knowledge Base',
+		section: 'Knowledge_Base',
 		public: true,
 		i18nLabel: 'Apiai_Language'
 	});

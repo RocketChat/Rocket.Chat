@@ -7,13 +7,15 @@ RocketChat.API.v1.addRoute('integrations.create', { authRequired: true }, {
 			username: String,
 			urls: [String],
 			channel: String,
+			event: String,
 			triggerWords: Match.Maybe([String]),
 			alias: Match.Maybe(String),
 			avatar: Match.Maybe(String),
 			emoji: Match.Maybe(String),
 			token: Match.Maybe(String),
 			scriptEnabled: Boolean,
-			script: Match.Maybe(String)
+			script: Match.Maybe(String),
+			targetChannel: Match.Maybe(String)
 		}));
 
 		let integration;
@@ -29,6 +31,37 @@ RocketChat.API.v1.addRoute('integrations.create', { authRequired: true }, {
 		}
 
 		return RocketChat.API.v1.success({ integration });
+	}
+});
+
+RocketChat.API.v1.addRoute('integrations.history', { authRequired: true }, {
+	get: function() {
+		if (!RocketChat.authz.hasPermission(this.userId, 'manage-integrations')) {
+			return RocketChat.API.v1.unauthorized();
+		}
+
+		if (!this.queryParams.id || this.queryParams.id.trim() === '') {
+			return RocketChat.API.v1.failure('Invalid integration id.');
+		}
+
+		const id = this.queryParams.id;
+		const { offset, count } = this.getPaginationItems();
+		const { sort, fields, query } = this.parseJsonQuery();
+
+		const ourQuery = Object.assign({}, query, { 'integration._id': id });
+		const history = RocketChat.models.IntegrationHistory.find(ourQuery, {
+			sort: sort ? sort : { _updatedAt: -1 },
+			skip: offset,
+			limit: count,
+			fields
+		}).fetch();
+
+		return RocketChat.API.v1.success({
+			history,
+			offset,
+			items: history.length,
+			total: RocketChat.models.IntegrationHistory.find(ourQuery).count()
+		});
 	}
 });
 
