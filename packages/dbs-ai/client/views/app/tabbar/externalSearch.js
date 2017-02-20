@@ -370,7 +370,7 @@ Template.reisebuddy_externalSearch.onCreated(function () {
 			self.externalMessages.set(extMsg[0]);
 		}
 
-		if(self.roomId){
+		/*if(self.roomId){
 			self.subscribe('p2phelp:helpRequest', self.roomId);
 			const helpRequest = RocketChat.models.HelpRequests.findOneByRoomId(self.roomId);
 			self.helpRequest.set(helpRequest);
@@ -384,6 +384,6 @@ Template.reisebuddy_externalSearch.onCreated(function () {
 					}
 				});
 			}
-		}
+		}*/
 	});
 });
