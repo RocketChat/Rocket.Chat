@@ -8,7 +8,7 @@ Meteor.methods({
 		check(field, String);
 		check(value, String);
 
-		if (['autoTranslate', 'autoTranslateLanguage'].indexOf(field) === -1) {
+		if (['autoTranslate', 'autoTranslateLanguage', 'autoTranslateDisplay'].indexOf(field) === -1) {
 			throw new Meteor.Error('error-invalid-settings', 'Invalid settings field', { method: 'saveAutoTranslateSettings' });
 		}
 
@@ -20,6 +20,9 @@ Meteor.methods({
 		switch (field) {
 			case 'autoTranslate':
 				RocketChat.models.Subscriptions.updateAutoTranslateById(subscription._id, value === '1' ? true : false);
+				break;
+			case 'autoTranslateDisplay':
+				RocketChat.models.Subscriptions.updateAutoTranslateDisplayById(subscription._id, value === '1' ? true : false);
 				break;
 			case 'autoTranslateLanguage':
 				RocketChat.models.Subscriptions.updateAutoTranslateLanguageById(subscription._id, value);

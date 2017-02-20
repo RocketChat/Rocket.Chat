@@ -13,6 +13,17 @@ Template.autoTranslateFlexTab.helpers({
 		return sub && sub.autoTranslate ? true : false;
 	},
 
+	autoTranslateDisplay() {
+		const sub = ChatSubscription.findOne({
+			rid: Session.get('openedRoom')
+		}, {
+			fields: {
+				autoTranslateDisplay: 1
+			}
+		});
+		return sub && sub.autoTranslateDisplay ? true : false;
+	},
+
 	autoTranslateValue() {
 		const sub = ChatSubscription.findOne({
 			rid: Session.get('openedRoom')
@@ -35,7 +46,7 @@ Template.autoTranslateFlexTab.helpers({
 		const autoTranslateLanguage = sub && sub.autoTranslateLanguage;
 		const supportedLanguages = Template.instance().supportedLanguages.get();
 		const language = _.findWhere(supportedLanguages, { language: autoTranslateLanguage });
-		return language && (language.name || language.language) || autoTranslateLanguage;
+		return language && language.language || autoTranslateLanguage || (Meteor.user() && Meteor.user().language);
 	},
 
 	editing(field) {
@@ -44,6 +55,12 @@ Template.autoTranslateFlexTab.helpers({
 
 	supportedLanguages() {
 		return Template.instance().supportedLanguages.get();
+	},
+
+	languageName(language) {
+		const supportedLanguages = Template.instance().supportedLanguages.get();
+		language = _.findWhere(supportedLanguages, { language: language });
+		return language && language.name;
 	}
 });
 
@@ -56,15 +73,13 @@ Template.autoTranslateFlexTab.onCreated(function() {
 	});
 
 	this.validateSetting = (field) => {
-		const value = this.$('select[name='+ field +']').val();
+		let value;
 		switch (field) {
 			case 'autoTranslate':
-				if (['', '1'].indexOf(value) === -1) {
-					toastr.error(t('Invalid_setting_s'), value || '');
-					return false;
-				}
+			case 'autoTranslateDisplay':
 				return true;
 			case 'autoTranslateLanguage':
+				value = this.$('select[name='+ field +']').val();
 				if (!_.findWhere(this.supportedLanguages.get(), { language: value })) {
 					toastr.error(t('Invalid_setting_s', value || ''));
 					return false;
@@ -75,7 +90,17 @@ Template.autoTranslateFlexTab.onCreated(function() {
 
 	this.saveSetting = () => {
 		const field = this.editing.get();
-		const value = this.$('select[name='+field+']').val();
+		let value;
+		switch (field) {
+			case 'autoTranslate':
+			case 'autoTranslateDisplay':
+				value = this.$('input[name='+field+']').prop('checked') ? '1' : '0';
+				break;
+			case 'autoTranslateLanguage':
+				value = this.$('select[name='+ field +']').val();
+				break;
+		}
+
 		if (this.validateSetting(field)) {
 			Meteor.call('autoTranslate.saveSettings', Session.get('openedRoom'), field, value, (err/*, result*/) => {
 				if (err) {
@@ -99,6 +124,11 @@ Template.autoTranslateFlexTab.events({
 		e.preventDefault();
 		instance.editing.set($(e.currentTarget).data('edit'));
 		setTimeout(function() { instance.$('input.editing').focus().select(); }, 100);
+	},
+
+	'change [type=checkbox]'(e, instance) {
+		instance.editing.set($(e.currentTarget).attr('name'));
+		instance.saveSetting();
 	},
 
 	'click .cancel'(e, instance) {

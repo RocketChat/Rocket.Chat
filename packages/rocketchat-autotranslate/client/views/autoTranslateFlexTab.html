@@ -9,18 +9,10 @@
 					<li>
 						<label>{{_ "Enabled"}}</label>
 						<div>
-							{{#if editing 'autoTranslate'}}
-								<label>
-									<select name="autoTranslate">
-										<option value="" selected="{{$eq autoTranslate false}}">{{_ "False"}}</option>
-										<option value="1" selected="{{$eq autoTranslate true}}">{{_ "True"}}</option>
-									</select>
-								</label>
-								<button type="button" class="button cancel">{{_ "Cancel"}}</button>
-								<button type="button" class="button primary save">{{_ "Save"}}</button>
-							{{else}}
-								<span class="current-setting">{{autoTranslateValue}} <i class="icon-pencil" data-edit="autoTranslate"></i></span>
-							{{/if}}
+							<div class="input checkbox toggle">
+								<input type="checkbox" id="autoTranslate" name="autoTranslate" value="1" checked="{{$eq autoTranslate true}}" />
+								<label for="autoTranslate"></label>
+							</div>
 						</div>
 					</li>
 					{{#if $eq autoTranslate true}}
@@ -38,8 +30,17 @@
 									<button type="button" class="button cancel">{{_ "Cancel"}}</button>
 									<button type="button" class="button primary save">{{_ "Save"}}</button>
 								{{else}}
-									<span class="current-setting">{{autoTranslateLanguage}} <i class="icon-pencil" data-edit="autoTranslateLanguage"></i></span>
+									<span class="current-setting">{{languageName autoTranslateLanguage}} <i class="icon-pencil" data-edit="autoTranslateLanguage"></i></span>
 								{{/if}}
+							</div>
+						</li>
+						<li>
+							<label>{{_ "Display_translated_text"}}</label>
+							<div>
+								<div class="input checkbox toggle">
+									<input type="checkbox" id="autoTranslateDisplay" name="autoTranslateDisplay" value="1" checked="{{$eq autoTranslateDisplay true}}"/>
+									<label for="autoTranslateDisplay"></label>
+								</div>
 							</div>
 						</li>
 					{{/if}}
