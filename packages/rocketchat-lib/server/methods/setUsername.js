@@ -44,6 +44,9 @@ Meteor.methods({
 
 		if (!user.username) {
 			Meteor.runAsUser(user._id, () => Meteor.call('joinDefaultChannels', joinDefaultChannelsSilenced));
+			Meteor.defer(function() {
+				return RocketChat.callbacks.run('afterCreateUser', RocketChat.models.Users.findOneById(user._id));
+			});
 		}
 
 		return username;
