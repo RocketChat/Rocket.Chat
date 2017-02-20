@@ -44,6 +44,9 @@ Template.livechatWindow.helpers({
 	},
 	isOpened() {
 		return Livechat.isWidgetOpened();
+	},
+	showWidget() {
+		return Livechat.online || Livechat.displayOfflineForm;
 	}
 });
 
