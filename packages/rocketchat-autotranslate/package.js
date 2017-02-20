@@ -17,6 +17,7 @@ Package.onUse(function(api) {
 
 	api.addFiles([
 		'client/stylesheets/autotranslate.less',
+		'client/lib/autotranslate.js',
 		'client/lib/tabBar.js',
 		'client/views/autoTranslateFlexTab.html',
 		'client/views/autoTranslateFlexTab.js'
