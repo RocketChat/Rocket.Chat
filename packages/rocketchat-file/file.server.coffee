@@ -32,22 +32,22 @@ detectGM = ->
 			RocketChat.Info.GraphicsMagick =
 				enabled: false
 
-		exec 'convert -version', Meteor.bindEnvironment (error, stdout, stderr) ->
-			if not error? and stdout.indexOf('ImageMagick') > -1
-				if RocketChatFile.enabled isnt true
-					# Enable GM to work with ImageMagick if no GraphicsMagick
-					RocketChatFile.gm = RocketChatFile.gm.subClass({imageMagick: true})
-					RocketChatFile.enable()
+	exec 'convert -version', Meteor.bindEnvironment (error, stdout, stderr) ->
+		if not error? and stdout.indexOf('ImageMagick') > -1
+			if RocketChatFile.enabled isnt true
+				# Enable GM to work with ImageMagick if no GraphicsMagick
+				RocketChatFile.gm = RocketChatFile.gm.subClass({imageMagick: true})
+				RocketChatFile.enable()
 
-				RocketChat.Info.ImageMagick =
-					enabled: true
-					version: stdout
-			else
-				if RocketChatFile.enabled isnt true
-					RocketChatFile.disable()
+			RocketChat.Info.ImageMagick =
+				enabled: true
+				version: stdout
+		else
+			if RocketChatFile.enabled isnt true
+				RocketChatFile.disable()
 
-				RocketChat.Info.ImageMagick =
-					enabled: false
+			RocketChat.Info.ImageMagick =
+				enabled: false
 
 detectGM()
 
