@@ -130,9 +130,5 @@ describe('user preferences', ()=> {
 			flexTab.memberRealName.waitForVisible(5000);
 			flexTab.memberRealName.getText().should.equal('EditedRealName'+username);
 		});
-
-		it('close the flexTab', () => {
-			flexTab.membersTab.click();
-		});
 	});
 });
