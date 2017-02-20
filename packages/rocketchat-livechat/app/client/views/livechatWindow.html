@@ -1,50 +1,52 @@
 <template name="livechatWindow">
 	{{#if livechatStarted}}
-		<div class="livechat-room {{#if popoutActive}}popout{{/if}}">
-			<div class="title" style="background-color:{{color}}; color: {{fontColor}}">
-				<div class="toolbar">
-					&nbsp;
-					{{#unless popoutActive}}
-						{{#if isOpened}}
-							<svg class="minimize" title="Minimize" viewBox="0 0 448 448" xmlns="http://www.w3.org/2000/svg">
-								<path d="M448 328v48c0 22-18 40-40 40h-368c-22 0-40-18-40-40v-48c0-22 18-40 40-40h368c22 0 40 18 40 40z"></path>
+		{{#if showWidget}}
+			<div class="livechat-room {{#if popoutActive}}popout{{/if}}">
+				<div class="title" style="background-color:{{color}}; color: {{fontColor}}">
+					<div class="toolbar">
+						&nbsp;
+						{{#unless popoutActive}}
+							{{#if isOpened}}
+								<svg class="minimize" title="Minimize" viewBox="0 0 448 448" xmlns="http://www.w3.org/2000/svg">
+									<path d="M448 328v48c0 22-18 40-40 40h-368c-22 0-40-18-40-40v-48c0-22 18-40 40-40h368c22 0 40 18 40 40z"></path>
+								</svg>
+							{{else}}
+								<svg class="maximize" title="Maximize" viewBox="0 0 448 448" xmlns="http://www.w3.org/2000/svg">
+									<path d="M64 352h320v-192h-320v192zM448 72v304c0 22-18 40-40 40h-368c-22 0-40-18-40-40v-304c0-22 18-40 40-40h368c22 0 40 18 40 40z"></path>
+								</svg>
+							{{/if}}
+						{{/unless}}
+						{{#if soundActive}}
+							<svg class="sound" title="Toggle notification sound" viewBox="0 0 1792 1792" xmlns="http://www.w3.org/2000/svg">
+								<path d="M912 1696q0-16-16-16-59 0-101.5-42.5t-42.5-101.5q0-16-16-16t-16 16q0 73 51.5 124.5t124.5 51.5q16 0 16-16zm816-288q0 52-38 90t-90 38h-448q0 106-75 181t-181 75-181-75-75-181h-448q-52 0-90-38t-38-90q50-42 91-88t85-119.5 74.5-158.5 50-206 19.5-260q0-152 117-282.5t307-158.5q-8-19-8-39 0-40 28-68t68-28 68 28 28 68q0 20-8 39 190 28 307 158.5t117 282.5q0 139 19.5 260t50 206 74.5 158.5 85 119.5 91 88z" />
 							</svg>
 						{{else}}
-							<svg class="maximize" title="Maximize" viewBox="0 0 448 448" xmlns="http://www.w3.org/2000/svg">
-								<path d="M64 352h320v-192h-320v192zM448 72v304c0 22-18 40-40 40h-368c-22 0-40-18-40-40v-304c0-22 18-40 40-40h368c22 0 40 18 40 40z"></path>
+							<svg class="sound" title="Toggle notification sound" viewBox="0 0 1792 1792" xmlns="http://www.w3.org/2000/svg">
+								<path d="M1430 852q61 356 298 556 0 52-38 90t-90 38h-448q0 106-75 181t-181 75-180.5-74.5-75.5-180.5zm-534 860q16 0 16-16t-16-16q-59 0-101.5-42.5t-42.5-101.5q0-16-16-16t-16 16q0 73 51.5 124.5t124.5 51.5zm1002-1600q8 10 7.5 23.5t-10.5 22.5l-1872 1622q-10 8-23.5 7t-21.5-11l-84-96q-8-10-7.5-23.5t10.5-21.5l186-161q-19-32-19-66 50-42 91-88t85-119.5 74.5-158.5 50-206 19.5-260q0-152 117-282.5t307-158.5q-8-19-8-39 0-40 28-68t68-28 68 28 28 68q0 20-8 39 124 18 219 82.5t148 157.5l418-363q10-8 23.5-7t21.5 11z" />
 							</svg>
 						{{/if}}
-					{{/unless}}
-					{{#if soundActive}}
-						<svg class="sound" title="Toggle notification sound" viewBox="0 0 1792 1792" xmlns="http://www.w3.org/2000/svg">
-							<path d="M912 1696q0-16-16-16-59 0-101.5-42.5t-42.5-101.5q0-16-16-16t-16 16q0 73 51.5 124.5t124.5 51.5q16 0 16-16zm816-288q0 52-38 90t-90 38h-448q0 106-75 181t-181 75-181-75-75-181h-448q-52 0-90-38t-38-90q50-42 91-88t85-119.5 74.5-158.5 50-206 19.5-260q0-152 117-282.5t307-158.5q-8-19-8-39 0-40 28-68t68-28 68 28 28 68q0 20-8 39 190 28 307 158.5t117 282.5q0 139 19.5 260t50 206 74.5 158.5 85 119.5 91 88z" />
-						</svg>
+						{{#unless popoutActive}}
+							<svg class="popout" aria-label="{{_ "Open in a new window"}}" viewBox="0 0 448 448" xmlns="http://www.w3.org/2000/svg">
+								<path d="M320 232v-120c0-8.75-7.25-16-16-16h-120c-6.5 0-12.25 4-14.75 9.75-2.5 6-1.25 13 3.5 17.5l36 36-133.5 133.5c-6.25 6.25-6.25 16.25 0 22.5l25.5 25.5c6.25 6.25 16.25 6.25 22.5 0l133.5-133.5 36 36c3 3.25 7 4.75 11.25 4.75 2 0 4.25-0.5 6.25-1.25 5.75-2.5 9.75-8.25 9.75-14.75zM384 104v240c0 39.75-32.25 72-72 72h-240c-39.75 0-72-32.25-72-72v-240c0-39.75 32.25-72 72-72h240c39.75 0 72 32.25 72 72z"></path>
+							</svg>
+						{{/unless}}
+					</div>
+					<h1>{{title}}</h1>
+				</div>
+				{{#if livechatOnline}}
+					{{#if showRegisterForm}}
+						{{> register}}
 					{{else}}
-						<svg class="sound" title="Toggle notification sound" viewBox="0 0 1792 1792" xmlns="http://www.w3.org/2000/svg">
-							<path d="M1430 852q61 356 298 556 0 52-38 90t-90 38h-448q0 106-75 181t-181 75-180.5-74.5-75.5-180.5zm-534 860q16 0 16-16t-16-16q-59 0-101.5-42.5t-42.5-101.5q0-16-16-16t-16 16q0 73 51.5 124.5t124.5 51.5zm1002-1600q8 10 7.5 23.5t-10.5 22.5l-1872 1622q-10 8-23.5 7t-21.5-11l-84-96q-8-10-7.5-23.5t10.5-21.5l186-161q-19-32-19-66 50-42 91-88t85-119.5 74.5-158.5 50-206 19.5-260q0-152 117-282.5t307-158.5q-8-19-8-39 0-40 28-68t68-28 68 28 28 68q0 20-8 39 124 18 219 82.5t148 157.5l418-363q10-8 23.5-7t21.5 11z" />
-						</svg>
+						{{> messages}}
 					{{/if}}
-					{{#unless popoutActive}}
-						<svg class="popout" aria-label="{{_ "Open in a new window"}}" viewBox="0 0 448 448" xmlns="http://www.w3.org/2000/svg">
-							<path d="M320 232v-120c0-8.75-7.25-16-16-16h-120c-6.5 0-12.25 4-14.75 9.75-2.5 6-1.25 13 3.5 17.5l36 36-133.5 133.5c-6.25 6.25-6.25 16.25 0 22.5l25.5 25.5c6.25 6.25 16.25 6.25 22.5 0l133.5-133.5 36 36c3 3.25 7 4.75 11.25 4.75 2 0 4.25-0.5 6.25-1.25 5.75-2.5 9.75-8.25 9.75-14.75zM384 104v240c0 39.75-32.25 72-72 72h-240c-39.75 0-72-32.25-72-72v-240c0-39.75 32.25-72 72-72h240c39.75 0 72 32.25 72 72z"></path>
-						</svg>
-					{{/unless}}
-				</div>
-				<h1>{{title}}</h1>
-			</div>
-			{{#if livechatOnline}}
-				{{#if showRegisterForm}}
-					{{> register}}
 				{{else}}
-					{{> messages}}
+					<div class="offline">
+						{{> offlineForm (offlineData)}}
+					</div>
 				{{/if}}
-			{{else}}
-				<div class="offline">
-					{{> offlineForm (offlineData)}}
-				</div>
-			{{/if}}
-			{{> poweredBy }}
-		</div>
+				{{> poweredBy }}
+			</div>
+		{{/if}}
 	{{/if}}
 	{{#if videoCalling}}
 		{{> videoCall}}
