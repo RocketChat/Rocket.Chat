@@ -27,12 +27,12 @@ Meteor.startup(function() {
 				if (RocketChat.Layout.isEmbedded()) {
 					if (!hasFocus && messageIsInOpenedRoom) {
 						// Play a sound and show a notification.
-						KonchatNotification.newMessage();
+						KonchatNotification.newMessage(notification.payload.rid);
 						KonchatNotification.showDesktop(notification);
 					}
 				} else if (!(hasFocus && messageIsInOpenedRoom)) {
 					// Play a sound and show a notification.
-					KonchatNotification.newMessage();
+					KonchatNotification.newMessage(notification.payload.rid);
 					KonchatNotification.showDesktop(notification);
 				}
 			});

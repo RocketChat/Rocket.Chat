@@ -13,10 +13,10 @@ session@1.1.7
 ddp@1.2.5
 livedata@1.0.18
 mongo@1.1.14
-blaze@2.1.8
-ui@1.0.11
-spacebars@1.0.12
-templating@1.2.14_1
+blaze
+ui
+spacebars
+templating
 check@1.2.4
 underscore@1.0.10
 jquery@1.11.10
