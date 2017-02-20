@@ -22,7 +22,8 @@ const fields = {
 	blocked: 1,
 	blocker: 1,
 	autoTranslate: 1,
-	autoTranslateLanguage: 1
+	autoTranslateLanguage: 1,
+	autoTranslateDisplay: 1
 };
 
 Meteor.methods({

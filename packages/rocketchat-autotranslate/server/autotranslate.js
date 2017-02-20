@@ -3,6 +3,7 @@ class AutoTranslate {
 		this.languages = [];
 		this.enabled = RocketChat.settings.get('AutoTranslate_Enabled');
 		this.apiKey = RocketChat.settings.get('AutoTranslate_GoogleAPIKey');
+		this.supportedLanguages = {};
 		RocketChat.callbacks.add('afterSaveMessage', this.translateMessage.bind(this), RocketChat.callbacks.priority.MEDIUM, 'AutoTranslate');
 	}
 
@@ -66,10 +67,8 @@ class AutoTranslate {
 	translateMessage(message, room) {
 		if (this.enabled && this.apiKey && message.msg) {
 			Meteor.defer(() => {
-				// console.log(RocketChat.models.Subscriptions.getAutoTranslateLanguages());
-
 				const translations = {};
-				const targetLanguages = ['pt', 'es'];
+				const targetLanguages = RocketChat.models.Subscriptions.getAutoTranslateLanguagesByRoom(room._id);
 
 				message.html = s.escapeHTML(String(message.msg));
 				message = this.tokenize(message);
@@ -94,20 +93,33 @@ class AutoTranslate {
 
 	getSupportedLanguages(target) {
 		if (this.enabled && this.apiKey) {
+			if (this.supportedLanguages[target]) {
+				return this.supportedLanguages[target];
+			}
+
 			let result;
 			const params = { key: this.apiKey };
 			if (target) {
 				params.target = target;
 			}
+
 			try {
 				result = HTTP.get('https://translation.googleapis.com/language/translate/v2/languages', { params: params });
 			} catch (e) {
 				if (e.response && e.response.statusCode === 400 && e.response.data && e.response.data.error && e.response.data.error.status === 'INVALID_ARGUMENT') {
 					delete params.target;
-					result = HTTP.get('https://translation.googleapis.com/language/translate/v2/languages', { params: params });
+					target = 'en';
+					if (!this.supportedLanguages[target]) {
+						result = HTTP.get('https://translation.googleapis.com/language/translate/v2/languages', { params: params });
+					}
 				}
 			} finally {
-				return result && result.data && result.data.data && result.data.data.languages;
+				if (this.supportedLanguages[target]) {
+					return this.supportedLanguages[target];
+				} else {
+					this.supportedLanguages[target || 'en'] = result && result.data && result.data.data && result.data.data.languages;
+					return this.supportedLanguages[target || 'en'];
+				}
 			}
 		}
 	}
