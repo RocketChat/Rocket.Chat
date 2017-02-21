@@ -482,6 +482,8 @@
 	var hookQueue = [];
 	var ready = false;
 	var smallScreen = false;
+	var bodyStyle;
+	var scrollPosition;
 
 	var widgetWidth = '320px';
 	var widgetHeightOpened = '350px';
@@ -532,7 +534,8 @@
 		}
 
 		if (smallScreen) {
-			document.body.style.cssText = 'overflow: auto; height: auto; width: auto; position: static';
+			document.body.style.cssText = bodyStyle;
+			document.body.scrollTop = scrollPosition;
 		}
 
 		widget.dataset.state = 'closed';
@@ -548,7 +551,9 @@
 		}
 
 		if (smallScreen) {
-			document.body.style.cssText = 'overflow: hidden; height: 100%; width: 100%; position: fixed';
+			scrollPosition = document.body.scrollTop;
+			bodyStyle = document.body.style.cssText;
+			document.body.style.cssText += 'overflow: hidden; height: 100%; width: 100%; position: fixed; top:' + scrollPosition + 'px;';
 		}
 
 		widget.dataset.state = 'opened';
