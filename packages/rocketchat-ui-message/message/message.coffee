@@ -38,6 +38,15 @@ Template.message.helpers
 				return 'color-info-font-color'
 
 			return 'system'
+
+	hasTranslation: ->
+		subscription = RocketChat.models.Subscriptions.findOne({ rid: Session.get('openedRoom') }, { fields: { autoTranslate: 1, autoTranslateLanguage: 1, autoTranslateDisplay: 1 } });
+		if RocketChat.settings.get('AutoTranslate_Enabled') and subscription?.autoTranslate is true and subscription.autoTranslateDisplay is true and subscription.autoTranslateLanguage?
+			return this.u?._id isnt Meteor.userId() and this.translations?[subscription.autoTranslateLanguage]
+
+	showOriginal: ->
+		return this.autoTranslateShowOriginal
+
 	edited: ->
 		return Template.instance().wasEdited
 
