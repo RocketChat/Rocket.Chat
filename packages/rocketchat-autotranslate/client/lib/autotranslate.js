@@ -4,7 +4,7 @@ Meteor.startup(function() {
 			RocketChat.callbacks.add('renderMessage', (message) => {
 				if (message.u._id !== Meteor.userId()) {
 					const subscription = RocketChat.models.Subscriptions.findOne({ rid: message.rid }, { fields: { autoTranslate: 1, autoTranslateLanguage: 1, autoTranslateDisplay: 1 } });
-					if (subscription && subscription.autoTranslate === true && subscription.autoTranslateDisplay === true && subscription.autoTranslateLanguage) {
+					if (subscription && subscription.autoTranslate === true && subscription.autoTranslateDisplay === true && subscription.autoTranslateLanguage && !message.autoTranslateShowOriginal) {
 						const autoTranslateLanguage = subscription.autoTranslateLanguage;
 						if (!message.translations) {
 							message.translations = {};
