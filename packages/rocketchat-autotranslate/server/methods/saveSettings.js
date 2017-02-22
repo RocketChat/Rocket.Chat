@@ -4,6 +4,10 @@ Meteor.methods({
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'saveAutoTranslateSettings' });
 		}
 
+		if (!RocketChat.authz.hasPermission(Meteor.userId(), 'auto-translate')) {
+			throw new Meteor.Error('error-action-now-allowed', 'Auto-Translate is not allowed', { method: 'autoTranslate.saveSettings'});
+		}
+
 		check(rid, String);
 		check(field, String);
 		check(value, String);

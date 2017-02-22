@@ -57,11 +57,12 @@ RocketChat.models.Subscriptions.updateAutoTranslateDisplayById = function(_id, a
 
 	return this.update(query, update);
 };
-RocketChat.models.Subscriptions.getAutoTranslateLanguagesByRoom = function(rid) {
+RocketChat.models.Subscriptions.getAutoTranslateLanguagesByRoomAndNotUser = function(rid, userId) {
 	const subscriptionsRaw = RocketChat.models.Subscriptions.model.rawCollection();
 	const distinct = Meteor.wrapAsync(subscriptionsRaw.distinct, subscriptionsRaw);
 	const query = {
 		rid: rid,
+		'u._id': { $ne: userId },
 		autoTranslate: true
 	};
 	return distinct('autoTranslateLanguage', query);

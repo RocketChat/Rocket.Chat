@@ -1,10 +1,10 @@
 Meteor.startup(function() {
 	Tracker.autorun(function() {
-		if (RocketChat.settings.get('AutoTranslate_Enabled')) {
+		if (RocketChat.settings.get('AutoTranslate_Enabled') && RocketChat.authz.hasAtLeastOnePermission(['auto-translate'])) {
 			RocketChat.callbacks.add('renderMessage', (message) => {
 				if (message.u._id !== Meteor.userId()) {
 					const subscription = RocketChat.models.Subscriptions.findOne({ rid: message.rid }, { fields: { autoTranslate: 1, autoTranslateLanguage: 1, autoTranslateDisplay: 1 } });
-					if (subscription && subscription.autoTranslate === true && subscription.autoTranslateDisplay === true && subscription.autoTranslateLanguage && !message.autoTranslateShowOriginal) {
+					if (subscription && subscription.autoTranslate === true && subscription.autoTranslateLanguage && !!subscription.autoTranslateDisplay !== !!message.autoTranslateShowInverse) {
 						const autoTranslateLanguage = subscription.autoTranslateLanguage;
 						if (!message.translations) {
 							message.translations = {};
