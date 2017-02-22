@@ -1,4 +1,6 @@
-/* global ChatIntegrations, ChatIntegrationHistory, hljs */
+/* global ChatIntegrations, ChatIntegrationHistory */
+
+import hljs from 'highlight.js';
 import moment from 'moment';
 import toastr from 'toastr';
 
