@@ -27,6 +27,7 @@ Package.onUse(function(api) {
 	api.addFiles([
 		'server/settings.js',
 		'server/autotranslate.js',
+		'server/permissions.js',
 		'server/models/Messages.js',
 		'server/models/Subscriptions.js',
 		'server/methods/saveSettings.js',

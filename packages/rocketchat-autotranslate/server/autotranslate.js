@@ -68,7 +68,7 @@ class AutoTranslate {
 		if (this.enabled && this.apiKey && message.msg) {
 			Meteor.defer(() => {
 				const translations = {};
-				const targetLanguages = RocketChat.models.Subscriptions.getAutoTranslateLanguagesByRoom(room._id);
+				const targetLanguages = RocketChat.models.Subscriptions.getAutoTranslateLanguagesByRoomAndNotUser(room._id, message.u && message.u._id);
 
 				message.html = s.escapeHTML(String(message.msg));
 				message = this.tokenize(message);
