@@ -106,6 +106,12 @@ Template.autoTranslateFlexTab.onCreated(function() {
 				if (err) {
 					return handleError(err);
 				}
+
+				// Update all visible messages to reflect this setting
+				if (field === 'autoTranslate' || field === 'autoTranslateDisplay') {
+					RocketChat.models.Messages.update({ rid: Session.get('openedRoom') }, { $unset: { autoTranslateShowInverse: 1 }, $set: { random: Random.id() } }, { multi: true });
+				}
+
 				this.editing.set();
 			});
 		}

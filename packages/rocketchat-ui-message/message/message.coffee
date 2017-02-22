@@ -40,8 +40,9 @@ Template.message.helpers
 			return 'system'
 
 	showTranslated: ->
-		subscription = RocketChat.models.Subscriptions.findOne({ rid: Session.get('openedRoom') }, { fields: { autoTranslate: 1, autoTranslateLanguage: 1, autoTranslateDisplay: 1 } });
-		return this.u?._id isnt Meteor.userId() and not this.autoTranslateShowOriginal and subscription?.autoTranslate is true and subscription.autoTranslateDisplay is true and subscription.autoTranslateLanguage and RocketChat.settings.get('AutoTranslate_Enabled')
+		if RocketChat.settings.get('AutoTranslate_Enabled') and this.u?._id isnt Meteor.userId() and !RocketChat.MessageTypes.isSystemMessage(this)
+			subscription = RocketChat.models.Subscriptions.findOne({ rid: this.rid }, { fields: { autoTranslate: 1, autoTranslateLanguage: 1, autoTranslateDisplay: 1 } });
+			return subscription.autoTranslate && !!subscription?.autoTranslateDisplay isnt !!this.autoTranslateShowInverse
 
 	edited: ->
 		return Template.instance().wasEdited
