@@ -34,10 +34,13 @@ Template.body.onRendered ->
 			return
 		if /input|textarea|select/i.test(target.tagName)
 			return
-		$inputMessage = $('textarea.input-message')
-		if 0 == $inputMessage.length
+		if target.id is 'pswp'
 			return
-		$inputMessage.focus()
+
+		inputMessage = $('textarea.input-message')
+		if inputMessage.length is 0
+			return
+		inputMessage.focus()
 
 	$(document.body).on 'click', 'a', (e) ->
 		link = e.currentTarget
