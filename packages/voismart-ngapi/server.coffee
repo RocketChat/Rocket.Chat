@@ -13,6 +13,7 @@ _cached_token = {}
 			password: password
 			api: true
 			request_date: (new Date).toString()
+			user_flags: 'chat'
 			browser_tz: tz
 
 	logout: (token) ->
