@@ -84,7 +84,7 @@ class AutoTranslate {
 					}
 				});
 				if (!_.isEmpty(translations)) {
-					RocketChat.models.Messages.setTranslations(message._id, translations);
+					RocketChat.models.Messages.addTranslations(message._id, translations);
 				}
 			});
 		}
