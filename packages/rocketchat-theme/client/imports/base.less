@@ -2952,6 +2952,50 @@ label.required::after {
 			line-height: 1em;
 		}
 
+		ul, ol {
+			padding: 0 0 0 24px;
+		}
+
+		ul {
+			list-style-type: disc;
+		}
+
+		ol {
+			list-style-type: decimal;
+		}
+
+		> * + * {
+			margin-top: 10px;
+		}
+
+		table {
+			display: block;
+			width: 100%;
+			overflow: auto;
+
+			tr {
+				background-color: #fff;
+				border-top: 1px solid #ccc;
+
+				th {
+					font-weight: 600;
+				}
+
+				th, td {
+					padding: 6px 13px;
+					border: 1px solid #ddd;
+				}
+			}
+		}
+
+		hr {
+			height: 3px;
+			padding: 0;
+			margin: 12px 0;
+			background-color: #e7e7e7;
+			border: 0;
+		}
+
 		blockquote.sandstorm-grain {
 			img {
 				width: 50px;

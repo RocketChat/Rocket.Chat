@@ -87,20 +87,25 @@
 			{{#if allowedToSend}}
 				{{#if showFormattingTips}}
 				<div class="formatting-tips" aria-hidden="true" dir="auto">
-					{{#if showMarkdown}}
-					<b>*{{_ "bold"}}*</b>
-					<i>_{{_ "italics"}}_</i>
-					<span>~<strike>{{_ "strike"}}</strike>~</span>
+					{{#if markdownParserOriginal}}
+						<b>*{{_ "bold"}}*</b>
+						<i>_{{_ "italics"}}_</i>
+						<span>~<strike>{{_ "strike"}}</strike>~</span>
 					{{/if}}
-					{{#if showMarkdownCode}}
-					<code class="code-colors inline">`{{_ "inline_code"}}`</code>
-					<code class="code-colors inline"><span class="hidden-br"><br></span>```<span class="hidden-br"><br></span><i class="icon-level-down"></i>{{_ "multi"}}<span class="hidden-br"><br></span><i class="icon-level-down"></i>{{_ "line"}}<span class="hidden-br"><br></span><i class="icon-level-down"></i>```</code>
+					{{#if markdownParserMarked}}
+						<b>**{{_ "bold"}}**</b>
+						<i>_{{_ "italics"}}_</i>
+						<span>~~<strike>{{_ "strike"}}</strike>~~</span>
+					{{/if}}
+					{{#if showMarkdown}}
+						<code class="code-colors inline">`{{_ "inline_code"}}`</code>
+						<code class="code-colors inline"><span class="hidden-br"><br></span>```<span class="hidden-br"><br></span><i class="icon-level-down"></i>{{_ "multi"}}<span class="hidden-br"><br></span><i class="icon-level-down"></i>{{_ "line"}}<span class="hidden-br"><br></span><i class="icon-level-down"></i>```</code>
 					{{/if}}
 					{{#if katexSyntax}}
-					<span><a href="https://github.com/Khan/KaTeX/wiki/Function-Support-in-KaTeX" target="_blank">{{katexSyntax}}</a></span>
+						<span><a href="https://github.com/Khan/KaTeX/wiki/Function-Support-in-KaTeX" target="_blank">{{katexSyntax}}</a></span>
 					{{/if}}
 					{{#if showMarkdown}}
-					<q><span class="hidden-br"><br></span>&gt;{{_ "quote"}}</q>
+						<q><span class="hidden-br"><br></span>&gt;{{_ "quote"}}</q>
 					{{/if}}
 				</div>
 				{{/if}}

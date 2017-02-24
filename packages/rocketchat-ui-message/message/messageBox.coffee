@@ -11,7 +11,6 @@ katexSyntax = ->
 Template.messageBox.helpers
 	roomName: ->
 		roomData = Session.get('roomData' + this._id)
-		return '' unless roomData
 
 		if roomData.t is 'd'
 			return ChatSubscription.findOne({ rid: this._id }, { fields: { name: 1 } })?.name
@@ -19,8 +18,10 @@ Template.messageBox.helpers
 			return roomData.name
 	showMarkdown: ->
 		return RocketChat.Markdown
-	showMarkdownCode: ->
-		return RocketChat.MarkdownCode
+	markdownParserOriginal: ->
+		return RocketChat.Markdown && 'original' == RocketChat.settings.get('Markdown_Parser')
+	markdownParserMarked: ->
+		return RocketChat.Markdown && 'marked' == RocketChat.settings.get('Markdown_Parser')
 	showKatex: ->
 		return RocketChat.katex
 	katexSyntax: ->
