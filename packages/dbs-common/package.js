@@ -16,7 +16,5 @@ Package.onUse(function (api) {
 	api.addFiles('lib/testing.js', 'server');
 	api.addFiles('client/lib/globalTemplateHelpers.js', 'client');
 
-	api.addFiles('server/config.js', 'server');
-
 	api.export('_dbs');
 });
