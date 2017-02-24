@@ -11,6 +11,7 @@ katexSyntax = ->
 Template.messageBox.helpers
 	roomName: ->
 		roomData = Session.get('roomData' + this._id)
+		return '' unless roomData
 
 		if roomData.t is 'd'
 			return ChatSubscription.findOne({ rid: this._id }, { fields: { name: 1 } })?.name
