@@ -201,6 +201,10 @@ Template.toolbar.events({
 		} else {
 			e.preventDefault();
 		}
+	},
+
+	'click .toolbar-search__icon--cancel, blur .toolbar-search__input'() {
+		toolbarSearch.clear();
 	}
 });
 
