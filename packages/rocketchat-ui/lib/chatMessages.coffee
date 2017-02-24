@@ -118,8 +118,10 @@ class @ChatMessages
 		this.$input.closest('.message-form').addClass('editing')
 
 		this.input.focus()
-
-		this.input.value = msg
+		if message.attachments? and message.attachments[0].description?
+			this.input.value = message.attachments[0].description
+		else
+			this.input.value = msg
 
 		cursor_pos = if editingNext then 0 else -1
 		this.$input.setCursorPosition(cursor_pos)
