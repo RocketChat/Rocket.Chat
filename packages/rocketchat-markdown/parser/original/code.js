@@ -27,8 +27,8 @@ const blockCode = (message) => {
 	}
 
 	if (count % 2 > 0) {
-		message.html = message.html + "\n```";
-		message.msg = message.msg + "\n```";
+		message.html = message.html + '\n```';
+		message.msg = message.msg + '\n```';
 	}
 
 	let msgParts = message.html.replace(/<br>/gm, '\n').split(/^\s*(```(?:[a-zA-Z]+)?(?:(?:.|\n)*?)```)(?:\n)?$/gm);
@@ -48,6 +48,7 @@ const blockCode = (message) => {
 			code = _.unescapeHTML(codeMatch[2]);
 		}
 
+		let result = null;
 		lang = _.trim(lang);
 		if (hljs.listLanguages().includes(lang)) {
 			result = hljs.highlight(lang, code);
