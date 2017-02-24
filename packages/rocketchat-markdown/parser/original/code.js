@@ -4,7 +4,7 @@
  */
 import { Random } from 'meteor/random';
 import { _ } from 'meteor/underscore';
-import { hljs }  from 'meteor/simple:highlight.js';
+import hljs from 'highlight.js';
 
 const inlineCode = (message) => {
 	message.html = message.html.replace(/(^|&gt;|[ >_*~])\`([^`\r\n]+)\`([<_*~]|\B|\b|$)/gm, (match, p1, p2, p3) => {

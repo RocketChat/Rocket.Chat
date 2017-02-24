@@ -220,7 +220,6 @@ service-configuration@1.0.11
 session@1.1.7
 sha@1.0.9
 shell-server@0.2.2
-simple:highlight.js@1.2.0
 simple:json-routes@2.1.0
 smoral:sweetalert@1.1.1
 spacebars@1.0.13

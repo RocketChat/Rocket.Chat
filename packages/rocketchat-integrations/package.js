@@ -11,7 +11,6 @@ Package.onUse(function(api) {
 	api.use('underscore');
 	api.use('ecmascript');
 	api.use('babel-compiler');
-	api.use('simple:highlight.js');
 	api.use('rocketchat:lib');
 	api.use('rocketchat:authorization');
 	api.use('rocketchat:api');
