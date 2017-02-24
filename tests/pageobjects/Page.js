@@ -11,12 +11,5 @@ class Page {
 
 		this.body.waitForExist();
 	}
-
-	setWindowSize(width, height) {
-		browser.windowHandleSize({
-			width: width,
-			height: height
-		});
-	}
 }
 module.exports = Page;

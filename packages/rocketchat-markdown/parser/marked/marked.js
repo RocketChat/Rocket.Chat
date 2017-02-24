@@ -1,6 +1,6 @@
 import { Random } from 'meteor/random';
 import { _ } from 'meteor/underscore';
-import { hljs } from 'meteor/simple:highlight.js';
+import hljs from 'highlight.js';
 import _marked from 'marked';
 
 const renderer = new _marked.Renderer();
@@ -44,18 +44,8 @@ renderer.code = function(code, lang, escaped) {
 };
 
 renderer.codespan = function(text) {
-	text = `<code class="code-colors inline">${text}</code>`;
-	if (_.isString(msg)) {
-		return text;
-	}
-	const token = `=&=${Random.id()}=&=`;
-	msg.tokens.push({
-		token,
-		text
-	});
-	return token;
+	return `<code class="code-colors inline">${text}</code>`;
 };
-
 
 renderer.blockquote = function(quote) {
 	return `<blockquote class="background-transparent-darker-before">${quote}</blockquote>`;
