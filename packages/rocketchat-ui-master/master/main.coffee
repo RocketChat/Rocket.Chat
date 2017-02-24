@@ -229,7 +229,10 @@ Template.main.onRendered ->
 				$('.input-message').focus()
 		, 100
 
+
 	Tracker.autorun ->
+		swal.setDefaults({cancelButtonText: t('Cancel')})
+
 		prefs = Meteor.user()?.settings?.preferences
 		if prefs?.hideUsernames
 			$(document.body).on('mouseleave', 'button.thumb', (e) ->

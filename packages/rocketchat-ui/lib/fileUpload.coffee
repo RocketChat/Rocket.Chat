@@ -84,6 +84,8 @@ readAsArrayBuffer = (file, callback) ->
 				showCancelButton: true
 				closeOnConfirm: false
 				closeOnCancel: false
+				confirmButtonText: t('Send')
+				cancelButtonText: t('Cancel')
 				html: true
 			, (isConfirm) ->
 				consume()
