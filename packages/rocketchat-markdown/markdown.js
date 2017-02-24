@@ -11,10 +11,10 @@ import { original } from './parser/original/original.js';
 
 const parsers = {
 	original,
-	marked,
+	marked
 };
 
-const Markdown = (message) => {
+const markdown = (message) => {
 	const parser = RocketChat.settings.get('Markdown_Parser');
 	if (typeof parsers[parser] === 'function') {
 		return parsers[parser](message);
@@ -22,11 +22,11 @@ const Markdown = (message) => {
 	return parsers['original'](message);
 };
 
-RocketChat.Markdown = Markdown;
-RocketChat.callbacks.add('renderMessage', Markdown, RocketChat.callbacks.priority.HIGH, 'markdown');
+RocketChat.markdown = markdown;
+RocketChat.callbacks.add('renderMessage', markdown, RocketChat.callbacks.priority.HIGH, 'markdown');
 
 if (Meteor.isClient) {
 	Blaze.registerHelper('RocketChatMarkdown', (text) => {
-		return RocketChat.Markdown(text);
+		return RocketChat.markdown(text);
 	});
 }
