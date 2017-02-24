@@ -177,7 +177,7 @@ Template.message.onCreated ->
 				msg = renderMessageBody msg
 
 		if isSystemMessage
-			return RocketChat.Markdown msg
+			return RocketChat.markdown msg
 		else
 			return msg
 

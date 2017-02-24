@@ -18,17 +18,17 @@ Template.messageBox.helpers
 		else
 			return roomData.name
 	showMarkdown: ->
-		return RocketChat.Markdown
+		return RocketChat.markdown
 	markdownParserOriginal: ->
-		return RocketChat.Markdown && 'original' == RocketChat.settings.get('Markdown_Parser')
+		return RocketChat.markdown && 'original' == RocketChat.settings.get('Markdown_Parser')
 	markdownParserMarked: ->
-		return RocketChat.Markdown && 'marked' == RocketChat.settings.get('Markdown_Parser')
+		return RocketChat.markdown && 'marked' == RocketChat.settings.get('Markdown_Parser')
 	showKatex: ->
 		return RocketChat.katex
 	katexSyntax: ->
 		return katexSyntax()
 	showFormattingTips: ->
-		return RocketChat.settings.get('Message_ShowFormattingTips') and (RocketChat.Markdown or RocketChat.MarkdownCode or katexSyntax())
+		return RocketChat.settings.get('Message_ShowFormattingTips') and (RocketChat.markdown or katexSyntax())
 	canJoin: ->
 		return RocketChat.roomTypes.verifyShowJoinLink @_id
 	joinCodeRequired: ->
