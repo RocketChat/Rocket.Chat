@@ -112,9 +112,9 @@ Template.autoTranslateFlexTab.onCreated(function() {
 
 				const query = { rid: this.data.rid, 'u._id': { $ne: Meteor.userId() } };
 				if (field === 'autoTranslateLanguage') {
-					query.$or = [ { [`translations.${previousLanguage}`]: { $exists: 1 } }, { [`translations.${value}`]: { $exists: 1 } } ];
+					query.$or = [ { [`translations.${previousLanguage}`]: { $exists: 1 } }, { [`translations.${value}`]: { $exists: 1 } }, { [`attachments.translations.${previousLanguage}`]: { $exists: 1 } }, { [`attachments.translations.${value}`]: { $exists: 1 } } ];
 				} else {
-					query[`translations.${subscription.autoTranslateLanguage}`] = { $exists: 1 };
+					query.$or = [ { [`translations.${subscription.autoTranslateLanguage}`]: { $exists: 1 } }, { [`attachments.translations.${subscription.autoTranslateLanguage}`]: { $exists: 1 } } ];
 				}
 
 				const update = { $set: { random: Random.id() } };
@@ -130,7 +130,6 @@ Template.autoTranslateFlexTab.onCreated(function() {
 					query.autoTranslateShowInverse = true;
 				}
 
-				console.log(query, RocketChat.models.Messages.find(query).fetch(), update);
 				RocketChat.models.Messages.update(query, update, { multi: true });
 				this.editing.set();
 			});
