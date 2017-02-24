@@ -52,16 +52,28 @@ Meteor.methods({
 
 			message = RocketChat.callbacks.run('beforeSaveMessage', message);
 
-			ChatMessage.update({
-				_id: message._id,
-				'u._id': Meteor.userId()
-			}, {
-				$set: {
-					'editedAt': message.editedAt,
-					'editedBy': message.editedBy,
-					msg: message.msg
-				}
-			});
+			if (originalMessage.attachments[0].description) {
+				ChatMessage.update({
+					_id: message._id,
+					'u._id': Meteor.userId()
+				}, {
+					$set: {
+						'editedAt': message.editedAt,
+						'editedBy': message.editedBy
+					}
+				});
+			} else {
+				ChatMessage.update({
+					_id: message._id,
+					'u._id': Meteor.userId()
+				}, {
+					$set: {
+						'editedAt': message.editedAt,
+						'editedBy': message.editedBy,
+						msg: message.msg
+					}
+				});
+			}
 		});
 	}
 });

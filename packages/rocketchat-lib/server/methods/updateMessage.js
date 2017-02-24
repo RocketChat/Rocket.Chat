@@ -33,6 +33,12 @@ Meteor.methods({
 			}
 		}
 
+		if (originalMessage.attachments && originalMessage.attachments.description) {
+			message.attachments = originalMessage.attachments;
+			message.attachments[0].description = message.msg;
+			message.msg = originalMessage.msg;
+		}
+
 		message.u = originalMessage.u;
 
 		return RocketChat.updateMessage(message, Meteor.user());
