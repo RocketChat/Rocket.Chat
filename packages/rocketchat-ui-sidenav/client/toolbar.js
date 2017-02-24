@@ -203,7 +203,7 @@ Template.toolbar.events({
 		}
 	},
 
-	'click .toolbar-search__icon--cancel, blur .toolbar-search__input'() {
+	'blur .toolbar-search__input'() {
 		toolbarSearch.clear();
 	}
 });
