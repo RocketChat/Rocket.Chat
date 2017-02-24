@@ -17,8 +17,6 @@ renderMessageBody = function(msg) {
 		}
 	}
 
-	msg.html = message.html.replace(/\n/gm, '<br/>');
-
 	return msg.html;
 };
 
