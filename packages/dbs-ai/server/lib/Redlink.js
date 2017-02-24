@@ -82,6 +82,27 @@ class RedlinkAdapter {
 	}
 
 	onMessage(message, context = {}) {
+
+		//private methods
+		/** This method adapts the service response.
+		 * It is intended to make it easier for the consumer to digest the results provided by the AI
+		 * @param prepareResponse
+		 * @returns prepareResponse
+		 * @private
+		 */
+		const _postprocessPrepare = function(prepareResponse){
+			prepareResponse.queryTemplates.filter((template) => template.queryType === "Sonstiges")
+				.forEach((template)=>template.queries
+					.forEach((query)=>{switch (query.creator) {
+						case 'Hasso-MLT':
+							query.creator = 'Konversationen';
+							query.displayTitle = 'Ähnliches';
+							break;
+					}
+				}));
+			return prepareResponse;
+		};
+
 		const knowledgeProviderResultCursor = this.getKnowledgeProviderCursor(message.rid);
 		const latestKnowledgeProviderResult = knowledgeProviderResultCursor.fetch()[0];
 
@@ -103,7 +124,7 @@ class RedlinkAdapter {
 					rid: message.rid,
 					knowledgeProvider: "redlink",
 					originMessage: {_id: message._id, ts: message.ts},
-					result: responseRedlinkPrepare.data,
+					result: _postprocessPrepare(responseRedlinkPrepare.data),
 					ts: new Date()
 				});
 
@@ -127,6 +148,34 @@ class RedlinkAdapter {
 				return latestKnowledgeProviderResult.inlineResults[_getKeyForBuffer(templateIndex, creator)];
 			}
 		};
+
+		/**
+		 * We might have modified a prepare resonse earlier.
+		 * If we want to revert this adaptation
+		 * @param queryTemplates
+		 * @private
+		 */
+		const _preprocessTemplates = function(queryTemplates){
+			queryTemplates.filter((template) => template.queryType === "Sonstiges")
+				.forEach((template)=>template.queries
+					.forEach((query)=>{switch (query.creator) {
+						case 'Konversationen':
+							query.creator = 'Hasso-MLT';
+							break;
+					}
+					}));
+			return queryTemplates;
+		};
+
+		const _postprocessResultResponse = function(results){
+			results.forEach((result)=>{
+				switch (result.creator){
+					case 'Hasso-MLT':
+						result.creator = 'Konversationen';
+				}
+			});
+			return results;
+		};
 		// ---------------- private methods
 
 		var results = [];
@@ -148,9 +197,16 @@ class RedlinkAdapter {
 				options.data = {
 						messages: latestKnowledgeProviderResult.result.messages,
 						tokens: latestKnowledgeProviderResult.result.tokens,
-						queryTemplates: latestKnowledgeProviderResult.result.queryTemplates,
+						queryTemplates: _preprocessTemplates(latestKnowledgeProviderResult.result.queryTemplates),
 						context: latestKnowledgeProviderResult.result.context
 					};
+
+				//adapt creator
+				switch (creator){
+					case 'Konversationen':
+						creator = 'Hasso-MLT';
+						break;
+				}
 
 				const responseRedlinkResult = HTTP.post(this.properties.url + '/result/' + creator + '/?templateIdx=' + templateIndex, options);
 				if (responseRedlinkResult.data && responseRedlinkResult.statusCode === 200) {
@@ -183,6 +239,15 @@ class RedlinkAdapter {
 						});
 						results.reduce((result)=>!!result.messages);
 					}
+
+					results = _postprocessResultResponse(results);
+
+					//adapt creator
+					switch (creator){
+						case 'Hasso-MLT':
+							creator = 'Konversationen';
+							break;
+					};
 
 					//buffer the results
 					let inlineResultsMap = latestKnowledgeProviderResult.inlineResults || {};

@@ -1,7 +1,7 @@
 /**
  * Notifies the knowledgeProvider about the end of a livechat conversation
  */
-RocketChat.callbacks.add('closeReisebuddyLivechat', function (room, closeProps) {
+RocketChat.callbacks.add('closeAISupportedLivechat', function (room, closeProps) {
 	try {
 		const knowledgeAdapter = _dbs.getKnowledgeAdapter();
 		if (knowledgeAdapter && knowledgeAdapter.onClose) {

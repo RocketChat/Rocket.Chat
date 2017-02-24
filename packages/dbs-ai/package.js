@@ -29,6 +29,7 @@ Package.onUse(function (api) {
 	api.addAssets('assets/icons/sapTransaction.png', 'client');
 	api.addAssets('assets/icons/peerToPeerHelp.png', 'client');
 	api.addAssets('assets/icons/communication.png', 'client');
+	api.addAssets('assets/icons/Konversationen.png', 'client');
 
 	api.addFiles('server/config.js', 'server');
 	addDirectory(api, 'server/methods', 'server');
@@ -39,12 +40,13 @@ Package.onUse(function (api) {
 	addDirectory(api,'client/views/app/tabbar', 'client');
 
 	//i18n
-	var _ = Npm.require('underscore');
-	var fs = Npm.require('fs');
-	var tapi18nFiles = _.compact(_.map(fs.readdirSync('packages/dbs-ai/i18n'), function(filename) {
-		return 'i18n/' + filename;
-	}));
-	api.addFiles(tapi18nFiles);
+	api.use('tap:i18n@1.8.2', ["client", "server"]);
 
-	api.use('tap:i18n');
+	var fs = Npm.require('fs');
+	var _ = Npm.require('underscore');
+	var workingDir = process.env.PWD || '.';
+	fs.readdirSync(workingDir + '/packages/dbs-ai/i18n').forEach(function(filename) {
+		console.log('loaded i18n', filename);
+		api.addFiles('i18n/' + filename, ["client", "server"]);
+	});
 });

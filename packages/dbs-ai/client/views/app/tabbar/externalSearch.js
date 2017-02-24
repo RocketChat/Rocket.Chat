@@ -27,7 +27,7 @@ for (var tpl in Template) {
 	}
 }
 
-Template.reisebuddy_externalSearch.helpers({
+Template.dbsAI_externalSearch.helpers({
 	messages() {
 		return RocketChat.models.LivechatExternalMessage.findByRoomId(this.rid, {ts: 1});
 	},
@@ -61,7 +61,7 @@ Template.reisebuddy_externalSearch.helpers({
 					filledQuerySlots.push(slot);
 				});
 
-				extendedQueryTpl.filledQuerySlots = filledQuerySlots;
+				extendedQueryTpl.filledQuerySlots = filledQuerySlots.filter( (slot) => {slot.role != 'topic'}); //topic represents the template itself
 				extendedQueryTpl.forItem = function (itm) {
 					let returnValue = {
 						htmlId: Meteor.uuid(),
@@ -128,7 +128,7 @@ Template.reisebuddy_externalSearch.helpers({
 });
 
 
-Template.reisebuddy_externalSearch.events({
+Template.dbsAI_externalSearch.events({
 	/**
 	 * Notifies that a query was confirmed by an agent (aka. clicked)
 	 */
@@ -356,7 +356,7 @@ Template.reisebuddy_externalSearch.events({
 	}
 });
 
-Template.reisebuddy_externalSearch.onCreated(function () {
+Template.dbsAI_externalSearch.onCreated(function () {
 	this.externalMessages = new ReactiveVar([]);
 	this.helpRequest = new ReactiveVar({});
 	this.roomId = null;

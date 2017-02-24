@@ -5,7 +5,7 @@ RocketChat.TabBar.addButton({
 	id: 'external-search',
 	i18nTitle: 'Knowledge_Base',
 	icon: 'icon-lightbulb',
-	template: 'reisebuddy_externalSearch',
+	template: 'dbsAI_externalSearch',
 	order: 0,
 	initialOpen: true
 });

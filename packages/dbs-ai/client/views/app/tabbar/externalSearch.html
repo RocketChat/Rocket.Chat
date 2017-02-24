@@ -1,8 +1,8 @@
-<template name="reisebuddy_externalSearch">
+<template name="dbsAI_externalSearch">
     <div class="content external-search-content">
         <div class="title">
             <h2><span class="title-icon"><img
-                    src="/packages/reisebuddy_livechat/assets/icons/buld-grey.png"></span>{{_ "Knowledge_Base"}}</h2>
+                    src="/packages/dbs_ai/assets/icons/peerToPeerHelp.png"></span>{{_ "Knowledge_Base"}}</h2>
         </div>
 <!--		{{#let helpRequest=helpRequestByRoom }}
 			{{#if helpRequest}}
@@ -47,11 +47,27 @@
         <div class="knowledge-title">{{queryType}}</div>
         <div class="knowledge-informations-wrapper">
 			{{#each filledQuerySlots }}
-                <div class="knowledge-base-label">{{role}}</div>
-                <div class="knowledge-base-value">{{clientValue}}</div>
+				<div>
+                <span class="knowledge-base-label">{{role}}</span>
+                <span class="knowledge-base-value">{{clientValue}}</span>
+				</div>
 			{{/each}}
         </div>
     </div>
+</template>
+
+<template name="dynamic_redlink_Sonstiges">
+	<div class="query-template">
+		<div class="knowledge-title">{{text 'Hilfe'}}</div>
+		<div class="knowledge-informations-wrapper">
+			{{#each filledQuerySlots }}
+				<div>
+					<span class="knowledge-base-label">{{role}}</span>
+					<span class="knowledge-base-value">{{clientValue}}</span>
+				</div>
+			{{/each}}
+		</div>
+	</div>
 </template>
 
 <template name="dynamic_redlink_Produkt">
