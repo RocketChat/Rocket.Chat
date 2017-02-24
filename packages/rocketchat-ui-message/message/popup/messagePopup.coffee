@@ -271,8 +271,6 @@ Template.messagePopup.events
 
 		toolbarSearch.clear();
 
-		console.log 'CLICK'
-
 
 Template.messagePopup.helpers
 	isOpen: ->
