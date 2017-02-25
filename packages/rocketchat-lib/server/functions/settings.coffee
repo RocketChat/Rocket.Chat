@@ -17,8 +17,8 @@ RocketChat.settings._sorter = {}
 RocketChat.settings.add = (_id, value, options = {}) ->
 	# console.log '[functions] RocketChat.settings.add -> '.green, 'arguments:', arguments
 
-	if not _id or not value?
-		if not process?.env?['OVERWRITE_SETTING_' + _id]?
+	if not _id or
+		not value? and not process?.env?['OVERWRITE_SETTING_' + _id]?
 			return false
 
 	RocketChat.settings._sorter[options.group] ?= 0
