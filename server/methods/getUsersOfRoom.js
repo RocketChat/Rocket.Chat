@@ -26,11 +26,18 @@ Meteor.methods({
 			return record._user.username;
 		};
 
+		var names = {};
+
 		const records = RocketChat.models.Subscriptions.findByRoomId(roomId).fetch();
+
+		records.filter(filter).forEach(function(record) {
+			names[record._user.username] = record._user.name;
+		});
 
 		return {
 			total: records.length,
-			records: records.filter(filter).map(map)
+			records: records.filter(filter).map(map),
+			names: names
 		};
 	}
 });

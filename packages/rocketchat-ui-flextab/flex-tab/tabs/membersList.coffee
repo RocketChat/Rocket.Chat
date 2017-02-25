@@ -17,11 +17,19 @@ Template.membersList.helpers
 	roomUsers: ->
 		onlineUsers = RoomManager.onlineUsers.get()
 		roomUsernames = Template.instance().users.get()
+		namesOfUsers = Template.instance().names.get()
 		room = ChatRoom.findOne(this.rid)
 		roomMuted = room?.muted or []
 		userUtcOffset = Meteor.user().utcOffset
 		totalOnline = 0
+		prefs = Meteor.user()?.settings?.preferences
+
 		users = roomUsernames.map (username) ->
+			name = ''
+
+			if prefs?.showNames
+				name = namesOfUsers[username]
+
 			if onlineUsers[username]?
 				totalOnline++
 				utcOffset = onlineUsers[username].utcOffset
@@ -36,6 +44,7 @@ Template.membersList.helpers
 
 			return {
 				username: username
+				name: name
 				status: onlineUsers[username]?.status
 				muted: username in roomMuted
 				utcOffset: utcOffset
@@ -137,6 +146,7 @@ Template.membersList.onCreated ->
 	@showDetail = new ReactiveVar false
 
 	@users = new ReactiveVar []
+	@names = new ReactiveVar []
 	@total = new ReactiveVar
 	@loading = new ReactiveVar true
 
@@ -149,6 +159,7 @@ Template.membersList.onCreated ->
 		Meteor.call 'getUsersOfRoom', this.data.rid, this.showAllUsers.get(), (error, users) =>
 			@users.set users.records
 			@total.set users.total
+			@names.set users.names
 			@loading.set false
 
 	@clearUserDetail = =>
