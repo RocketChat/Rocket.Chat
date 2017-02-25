@@ -58,6 +58,28 @@ Template.redlinkQuery.helpers({
 			}
 			return options;
 		}
+	},
+	getCreatorText(){
+		const instance = Template.instance();
+		if(instance.data.query.replacedCreator === 'Hasso-MLT' || instance.data.query.creator === 'Hasso-Search'){
+			return "";
+		} else {
+			return TAPi18n.__(instance.data.query.replacedCreator);
+		}
+	},
+	getQueryDisplayTitle(){
+		const instance = Template.instance();
+		if(instance.data.query.replacedCreator === 'Hasso-MLT'){
+			return 'Ähnliche Fragen';
+		}
+		if(instance.data.query.replacedCreator === 'Hasso-Search'){
+			return instance.data.query.displayTitle
+				.replace("Conversationen zum", "Zum")
+				.replace(/[|]/g, "");
+		}
+
+		// else
+		return instance.data.query.displayTitle;
 	}
 });
 

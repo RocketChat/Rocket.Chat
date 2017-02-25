@@ -10,13 +10,13 @@
                 <div class="query-results-not-supported"></div>
 			{{/if}}
             <a class="query-item-url" href="{{query.url}}" target="_blank">
-                <span class="query-servicename">{{query.displayTitle}}</span>
+                <span class="query-servicename">{{getQueryDisplayTitle}}</span>
                 <span class="icon-wrapper"><i class="icon-link-ext"></i></span>
             </a>
             <a href="{{query.url}}" target="_blank" class="query-item-logo" title="{{text query.creator}}"><img
                     src="/packages/dbs_ai/assets/icons/{{query.replacedCreator}}.png"
                     onerror="this.onerror=null; this.src='/packages/dbs_ai/assets/icons/fallback_logo.png';">
-                <span class="creator_label">{{_ query.replacedCreator}}</span></a>
+                <span class="creator_label">{{getCreatorText}}</span></a>
         </div>
 
 		{{#if and query.inlineResultSupport hasResult}}

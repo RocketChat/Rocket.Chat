@@ -91,15 +91,6 @@ class RedlinkAdapter {
 		 * @private
 		 */
 		const _postprocessPrepare = function(prepareResponse){
-			prepareResponse.queryTemplates.filter((template) => template.queryType === "Sonstiges")
-				.forEach((template)=>template.queries
-					.forEach((query)=>{switch (query.creator) {
-						case 'Hasso-MLT':
-							query.creator = 'Konversationen';
-							query.displayTitle = 'Ähnliches';
-							break;
-					}
-				}));
 			return prepareResponse;
 		};
 
@@ -144,6 +135,7 @@ class RedlinkAdapter {
 		};
 
 		const _getBufferedResults = function (latestKnowledgeProviderResult, templateIndex, creator) {
+
 			if (latestKnowledgeProviderResult && latestKnowledgeProviderResult.knowledgeProvider === 'redlink' && latestKnowledgeProviderResult.inlineResults) {
 				return latestKnowledgeProviderResult.inlineResults[_getKeyForBuffer(templateIndex, creator)];
 			}
@@ -156,24 +148,10 @@ class RedlinkAdapter {
 		 * @private
 		 */
 		const _preprocessTemplates = function(queryTemplates){
-			queryTemplates.filter((template) => template.queryType === "Sonstiges")
-				.forEach((template)=>template.queries
-					.forEach((query)=>{switch (query.creator) {
-						case 'Konversationen':
-							query.creator = 'Hasso-MLT';
-							break;
-					}
-					}));
 			return queryTemplates;
 		};
 
 		const _postprocessResultResponse = function(results){
-			results.forEach((result)=>{
-				switch (result.creator){
-					case 'Hasso-MLT':
-						result.creator = 'Konversationen';
-				}
-			});
 			return results;
 		};
 		// ---------------- private methods
@@ -200,13 +178,6 @@ class RedlinkAdapter {
 						queryTemplates: _preprocessTemplates(latestKnowledgeProviderResult.result.queryTemplates),
 						context: latestKnowledgeProviderResult.result.context
 					};
-
-				//adapt creator
-				switch (creator){
-					case 'Konversationen':
-						creator = 'Hasso-MLT';
-						break;
-				}
 
 				const responseRedlinkResult = HTTP.post(this.properties.url + '/result/' + creator + '/?templateIdx=' + templateIndex, options);
 				if (responseRedlinkResult.data && responseRedlinkResult.statusCode === 200) {
@@ -241,13 +212,6 @@ class RedlinkAdapter {
 					}
 
 					results = _postprocessResultResponse(results);
-
-					//adapt creator
-					switch (creator){
-						case 'Hasso-MLT':
-							creator = 'Konversationen';
-							break;
-					};
 
 					//buffer the results
 					let inlineResultsMap = latestKnowledgeProviderResult.inlineResults || {};

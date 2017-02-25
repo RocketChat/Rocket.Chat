@@ -29,7 +29,8 @@ Package.onUse(function (api) {
 	api.addAssets('assets/icons/sapTransaction.png', 'client');
 	api.addAssets('assets/icons/peerToPeerHelp.png', 'client');
 	api.addAssets('assets/icons/communication.png', 'client');
-	api.addAssets('assets/icons/Konversationen.png', 'client');
+	api.addAssets('assets/icons/Hasso-MLT.png', 'client');
+	api.addAssets('assets/icons/Hasso-Search.png', 'client');
 
 	api.addFiles('server/config.js', 'server');
 	addDirectory(api, 'server/methods', 'server');
@@ -40,13 +41,25 @@ Package.onUse(function (api) {
 	addDirectory(api,'client/views/app/tabbar', 'client');
 
 	//i18n
-	api.use('tap:i18n@1.8.2', ["client", "server"]);
+	const _ = Npm.require('underscore');
+	const fs = Npm.require('fs');
+	var tapi18nFiles = _.compact(_.map(fs.readdirSync('packages/dbs-ai/i18n'), function(filename) {
+		if (fs.statSync('packages/dbs-ai/i18n/' + filename).size > 16) {
+			return 'i18n/' + filename;
+		}
+	}));
+	api.use('tap:i18n@1.8.2', ['client', 'server']);
+	api.imply('tap:i18n');
+	api.addFiles(tapi18nFiles, ['client', 'server']);
 
-	var fs = Npm.require('fs');
-	var _ = Npm.require('underscore');
-	var workingDir = process.env.PWD || '.';
-	fs.readdirSync(workingDir + '/packages/dbs-ai/i18n').forEach(function(filename) {
-		console.log('loaded i18n', filename);
-		api.addFiles('i18n/' + filename, ["client", "server"]);
-	});
+	//
+	// api.use('tap:i18n@1.8.2', ["client", "server"]);
+    //
+	// var fs = Npm.require('fs');
+	// var _ = Npm.require('underscore');
+	// var workingDir = process.env.PWD || '.';
+	// fs.readdirSync(workingDir + '/packages/dbs-ai/i18n').forEach(function(filename) {
+	// 	console.log('loaded i18n', filename);
+	// 	api.addFiles('i18n/' + filename, ["client", "server"]);
+	// });
 });
