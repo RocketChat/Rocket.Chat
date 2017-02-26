@@ -106,6 +106,10 @@ RocketChat.settings.addGroup 'General', ->
 		@add 'UTF8_Names_Validation', '[0-9a-zA-Z-_.]+', { type: 'string', public: true, i18nDescription: 'UTF8_Names_Validation_Description'}
 		@add 'UTF8_Names_Slugify', true, { type: 'boolean', public: true }
 
+	@section 'Group_Limit', ->
+		@add 'Group_Limit_Enable', false, {type: 'boolean', public: true}
+		@add 'Group_Limit_Number', 9, {type: 'int', public: true, i18nDescription: 'Group_Limit_Description', enableQuery: {_id: 'Group_Limit_Enable', value: true}}
+
 	@section 'Reporting', ->
 		@add 'Statistics_reporting', true, { type: 'boolean' }
 
