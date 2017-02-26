@@ -19,6 +19,12 @@ Template.redlinkInlineResult.helpers({
 			case 'VKL':
 				templateSuffix = "VKL_community";
 				break;
+			case 'Hasso-MLT':
+				templateSuffix = "Hasso_MLT";
+				break;
+			case 'Hasso-Search':
+				templateSuffix = "Hasso_Search";
+				break;
 			default:
 				if (!!Template['redlinkInlineResult_' + instance.data.result.creator]) {
 					templateSuffix = instance.data.result.creator;
@@ -97,7 +103,7 @@ Template.redlinkInlineResult_VKL_community.onCreated(function () {
 	});
 });
 
-//-------------------------------------- Peer-to-Peer-Helpdesk --------------------------------
+//-------------------------------------- Assistify --------------------------------
 Template.redlinkInlineResult_conversation.helpers({
 	classExpanded(){
 		const instance = Template.instance();
@@ -135,3 +141,14 @@ Template.redlinkInlineResult_conversation.onCreated(function () {
 		expanded: false
 	});
 });
+
+
+// Template.redlinkInlineResult_Hasso_MLT.onCreated(function (){
+// 	let instance = this;
+//
+// 	instance.data.conversation = {};
+//
+//
+// 	// transform the result into a form which can be used by the generic communication template
+//
+// });

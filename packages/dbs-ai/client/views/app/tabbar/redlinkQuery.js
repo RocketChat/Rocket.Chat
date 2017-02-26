@@ -61,7 +61,7 @@ Template.redlinkQuery.helpers({
 	},
 	getCreatorText(){
 		const instance = Template.instance();
-		if(instance.data.query.replacedCreator === 'Hasso-MLT' || instance.data.query.creator === 'Hasso-Search'){
+		if(instance.data.query.creator === 'Hasso-MLT' || instance.data.query.creator === 'Hasso-Search'){
 			return "";
 		} else {
 			return TAPi18n.__(instance.data.query.replacedCreator);
@@ -69,10 +69,10 @@ Template.redlinkQuery.helpers({
 	},
 	getQueryDisplayTitle(){
 		const instance = Template.instance();
-		if(instance.data.query.replacedCreator === 'Hasso-MLT'){
+		if(instance.data.query.creator === 'Hasso-MLT'){
 			return 'Ähnliche Fragen';
 		}
-		if(instance.data.query.replacedCreator === 'Hasso-Search'){
+		if(instance.data.query.creator === 'Hasso-Search'){
 			return instance.data.query.displayTitle
 				.replace("Conversationen zum", "Zum")
 				.replace(/[|]/g, "");

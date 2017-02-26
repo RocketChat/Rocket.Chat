@@ -29,8 +29,8 @@ Package.onUse(function (api) {
 	api.addAssets('assets/icons/sapTransaction.png', 'client');
 	api.addAssets('assets/icons/peerToPeerHelp.png', 'client');
 	api.addAssets('assets/icons/communication.png', 'client');
-	api.addAssets('assets/icons/Hasso-MLT.png', 'client');
-	api.addAssets('assets/icons/Hasso-Search.png', 'client');
+	api.addAssets('assets/icons/Hasso_MLT.png', 'client');
+	api.addAssets('assets/icons/Hasso_Search.png', 'client');
 
 	api.addFiles('server/config.js', 'server');
 	addDirectory(api, 'server/methods', 'server');
@@ -51,15 +51,5 @@ Package.onUse(function (api) {
 	api.use('tap:i18n@1.8.2', ['client', 'server']);
 	api.imply('tap:i18n');
 	api.addFiles(tapi18nFiles, ['client', 'server']);
-
-	//
-	// api.use('tap:i18n@1.8.2', ["client", "server"]);
-    //
-	// var fs = Npm.require('fs');
-	// var _ = Npm.require('underscore');
-	// var workingDir = process.env.PWD || '.';
-	// fs.readdirSync(workingDir + '/packages/dbs-ai/i18n').forEach(function(filename) {
-	// 	console.log('loaded i18n', filename);
-	// 	api.addFiles('i18n/' + filename, ["client", "server"]);
-	// });
+	console.log('Loaded tapi-files', JSON.stringify(tapi18nFiles, 2, ""));
 });

@@ -109,7 +109,7 @@ Template.dbsAI_externalSearch.helpers({
 		const instance = Template.instance();
 		$(queries).each(function (indx, queryItem) {
 			if(queries[indx].creator && typeof queries[indx].creator == "string") {
-				queries[indx].replacedCreator = queries[indx].creator.replace(/\./g, "_");
+				queries[indx].replacedCreator = queries[indx].creator.replace(/\.|-/g, "_");
 			} else {
 				queries[indx].replacedCreator = "";
 			}
