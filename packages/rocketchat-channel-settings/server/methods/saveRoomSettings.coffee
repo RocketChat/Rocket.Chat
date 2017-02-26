@@ -23,6 +23,11 @@ Meteor.methods
 			if setting is 'roomType' and value isnt room.t and value is 'p' and not RocketChat.authz.hasPermission(@userId, 'create-p')
 				throw new Meteor.Error 'error-action-not-allowed', 'Changing a public channel to a private room is not allowed', { method: 'saveRoomSettings', action: 'Change_Room_Type' }
 
+			groupLimitEnable = RocketChat.settings.get 'Group_Limit_Enable'
+			groupLimit = RocketChat.settings.get 'Group_Limit_Number'
+			if setting is 'roomType' and value isnt room.t and value is 'p' and groupLimitEnable and room.usernames.length > groupLimit
+				throw new Meteor.Error 'error-group-limit-exceeded', TAPi18n.__('error-group-limit-exceeded'), { method: 'saveRoomSettings', action: 'Change_Room_Type' }
+
 			switch setting
 				when 'roomName'
 					name = RocketChat.saveRoomName rid, value, Meteor.user()
