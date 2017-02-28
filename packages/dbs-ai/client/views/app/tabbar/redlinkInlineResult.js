@@ -104,6 +104,23 @@ Template.redlinkInlineResult_VKL_community.onCreated(function () {
 });
 
 //-------------------------------------- Assistify --------------------------------
+Template.inlineResultMessage.helpers({
+	getOriginatorClass(message){
+		if(message.user){
+			switch(message.user.displayName.toLowerCase()){
+				case 'seeker':
+					return 'seeker';
+				case 'provider':
+					return 'provider';
+				default:
+					return 'unknown';
+			}
+		}
+
+	}
+});
+
+
 Template.redlinkInlineResult_conversation.helpers({
 	classExpanded(){
 		const instance = Template.instance();
@@ -143,12 +160,72 @@ Template.redlinkInlineResult_conversation.onCreated(function () {
 });
 
 
-// Template.redlinkInlineResult_Hasso_MLT.onCreated(function (){
-// 	let instance = this;
-//
-// 	instance.data.conversation = {};
-//
-//
-// 	// transform the result into a form which can be used by the generic communication template
-//
-// });
+Template.redlinkInlineResult_Hasso_MLT.events({
+	'click .result-item-wrapper .js-toggle-result-preview-expanded': function (event, instance) {
+		const current = instance.state.get('expanded');
+		instance.state.set('expanded', !current);
+	}});
+
+Template.redlinkInlineResult_Hasso_MLT.helpers({
+	classExpanded(){
+		const instance = Template.instance();
+		return instance.state.get('expanded') ? 'expanded' : 'collapsed';
+	},
+	getResultTitle(){
+		const instance = Template.instance();
+		if(instance.state.get('expanded') && instance.state.get('conversationLoaded')){
+			return instance.state.get('conversation').messages[0].content;
+		} else {
+			return instance.data.result.content
+		}
+	},
+	originQuestion(){
+		const instance = Template.instance();
+		if(instance.state.get('conversation')){
+			return instance.state.get('conversation').messages[0].content;
+		}
+	},
+	latestResponse(){
+		const instance = Template.instance();
+		if(instance.state.get('conversation')){
+			return instance.state.get('conversation').messages.filter((message) => message.user && message.user.displayName === 'Provider').pop().text;
+		}
+	},
+
+	subsequentCommunication(){
+		const instance = Template.instance();
+		if(instance.state.get('conversation')) {
+			return instance.state.get('conversation').messages.slice(1);
+		}
+	}
+});
+
+Template.redlinkInlineResult_Hasso_MLT.onCreated(function (){
+	let instance = this;
+
+	this.state = new ReactiveDict();
+	this.state.setDefault({
+		expanded: false,
+		conversation: {},
+		conversationLoaded: false
+	});
+
+
+	instance.autorun(()=> {
+
+		if(instance.state.get('expanded')){
+			Meteor.call('redlink:getStoredConversation', instance.data.result.conversationId,
+				(err, conversation)=>{
+				if(!err){
+					instance.state.set('conversation', conversation);
+					instance.state.set('conversationLoaded', true);
+				} else {
+					console.error(err);
+				}}
+			);
+		}
+
+	});
+	// transform the result into a form which can be used by the generic communication template
+
+});

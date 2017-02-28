@@ -49,14 +49,15 @@
             color: #666;
             font-size: 14px;
         }
+	  .collapsed > div.query-preview-result-body {
+		display: none;
+	  }
         .query-template-wrapper {
             position: relative;
             margin: 0 15px 10px;
             max-height: 2000px;
             transition: max-height .25s ease-in-out;
             &.collapsed {
-                max-height: 36px;
-                overflow: hidden;
                 .icon-up-open::before {
                     content: '\e855'
                 }
@@ -506,8 +507,6 @@
                         transition: max-height .25s ease-in-out;
                         border-bottom: 1px solid #ccc;
                         &.collapsed {
-                            max-height: 35px;
-                            overflow: hidden;
                             .icon-up-open::before {
                                 content: '\e855'
                             }

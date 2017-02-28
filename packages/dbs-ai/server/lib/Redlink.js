@@ -258,7 +258,10 @@ class RedlinkAdapter {
 	getStoredConversation(conversationId){
 		let options = this.options;
 
-		const conversation = HTTP.get(this.properties.url + '/store/' + conversationId, options);
+		const response = HTTP.get(this.properties.url + '/store/' + conversationId, options);
+		if(response.statusCode === 200){
+			return response.data;
+		}
 	}
 
 	onClose(room) { //async
