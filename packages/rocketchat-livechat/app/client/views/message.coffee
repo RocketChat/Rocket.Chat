@@ -1,5 +1,6 @@
-Template.message.helpers
+import moment from 'moment'
 
+Template.message.helpers
 	own: ->
 		return 'own' if this.u?._id is Meteor.userId()
 
@@ -23,7 +24,7 @@ Template.message.helpers
 			when 'au' then t('User_added_by', { user_added: this.msg, user_by: this.u.username })
 			when 'ru' then t('User_removed_by', { user_removed: this.msg, user_by: this.u.username })
 			when 'ul' then tr('User_left', { context: this.u.gender }, { user_left: this.u.username })
-			when 'uj' then tr('User_joined_channel', { context: this.u.gender }, { user: this.u.username })
+			when 'uj' then tr('User_joined', { context: this.u.gender }, { user: this.u.username })
 			when 'wm' then t('Welcome', { user: this.u.username })
 			when 'livechat-close' then t('Conversation_finished')
 			# when 'rtc' then RocketChat.callbacks.run 'renderRtcMessage', this
@@ -34,10 +35,16 @@ Template.message.helpers
 				# message = RocketChat.callbacks.run 'renderMessage', this
 				message = this
 				this.html = message.html.replace /\n/gm, '<br/>'
-				return this.html
+				return livechatAutolinker.link this.html
 
 	system: ->
 		return 'system' if this.t in ['s', 'p', 'f', 'r', 'au', 'ru', 'ul', 'wm', 'uj', 'livechat-close']
+
+	sender: ->
+		agent = Livechat.agent
+		if agent && @u.username is agent.username
+			return agent.name or agent.username
+		return @u.username
 
 
 Template.message.onViewRendered = (context) ->

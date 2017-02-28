@@ -19,9 +19,9 @@ const pkgdef :Spk.PackageDefinition = (
 
 		appTitle = (defaultText = "Rocket.Chat"),
 
-		appVersion = 31,  # Increment this for every release.
+		appVersion = 57,  # Increment this for every release.
 
-		appMarketingVersion = (defaultText = "0.31.0"),
+		appMarketingVersion = (defaultText = "0.53.0-develop"),
 		# Human-readable representation of appVersion. Should match the way you
 		# identify versions of your app in documentation and marketing.
 
@@ -82,11 +82,21 @@ const pkgdef :Spk.PackageDefinition = (
 		]
 	),
 
-	alwaysInclude = [ "." ]
+	alwaysInclude = [ "." ],
 	# This says that we always want to include all files from the source map.
 	# (An alternative is to automatically detect dependencies by watching what
 	# the app opens while running in dev mode. To see what that looks like,
 	# run `spk init` without the -A option.)
+
+	bridgeConfig = (
+		viewInfo = (
+			eventTypes = [
+				(name = "message", verbPhrase = (defaultText = "sent message")),
+				(name = "privateMessage", verbPhrase = (defaultText = "sent private message"), requiredPermission = (explicitList = void)),
+			]
+		),
+		saveIdentityCaps = true,
+	),
 );
 
 const myCommand :Spk.Manifest.Command = (

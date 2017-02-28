@@ -1,3 +1,4 @@
+import toastr from 'toastr'
 Template.adminImportPrepare.helpers
 	isAdmin: ->
 		return RocketChat.authz.hasRole(Meteor.userId(), 'admin')
@@ -22,6 +23,8 @@ Template.adminImportPrepare.helpers
 Template.adminImportPrepare.events
 	'change .import-file-input': (event, template) ->
 		importer = @
+		return if not importer.key
+
 		e = event.originalEvent or event
 		files = e.target.files
 		if not files or files.length is 0
@@ -29,22 +32,24 @@ Template.adminImportPrepare.events
 
 		for blob in files
 			template.preparing.set true
-			if not importer.fileTypeRegex.test blob.type
-				toastr.error t('Invalid_Import_File_Type')
-				template.preparing.set false
-				return
 
 			reader = new FileReader()
 			reader.readAsDataURL(blob)
 			reader.onloadend = ->
 				Meteor.call 'prepareImport', importer.key, reader.result, blob.type, blob.name, (error, data) ->
 					if error
-						console.warn 'Errored out preparing the import:', error
-						handleError(error)
+						toastr.error t('Invalid_Import_File_Type')
+						template.preparing.set false
+						return
+
+					if !data
+						console.warn 'The importer ' + importer.key + ' is not set up correctly, as it did not return any data.'
+						toastr.error t('Importer_not_setup')
+						template.preparing.set false
 						return
 
 					if data.step
-						console.warn 'Invalid file.'
+						console.warn 'Invalid file, contains `data.step`.', data
 						toastr.error t('Invalid_Export_File', importer.key)
 						template.preparing.set false
 						return
@@ -124,21 +129,24 @@ Template.adminImportPrepare.onCreated ->
 			console.warn 'Invalid progress information.', progress
 
 	# Load the initial progress to determine what we need to do
-	Meteor.call 'getImportProgress', FlowRouter.getParam('importer'), (error, progress) ->
-		if error
-			console.warn 'Error while getting the import progress:', error
-			handleError error
-			return
+	if FlowRouter.getParam('importer')
+		Meteor.call 'getImportProgress', FlowRouter.getParam('importer'), (error, progress) ->
+			if error
+				console.warn 'Error while getting the import progress:', error
+				handleError error
+				return
 
-		# if the progress isnt defined, that means there currently isn't an instance
-		# of the importer, so we need to create it
-		if progress is undefined
-			Meteor.call 'setupImporter', FlowRouter.getParam('importer'), (err, data) ->
-				if err
-					handleError(err)
-				instance.preparing.set false
-				loadSelection(data)
-		else
-			# Otherwise, we might need to do something based upon the current step
-			# of the import
-			loadSelection(progress)
+			# if the progress isnt defined, that means there currently isn't an instance
+			# of the importer, so we need to create it
+			if progress is undefined
+				Meteor.call 'setupImporter', FlowRouter.getParam('importer'), (err, data) ->
+					if err
+						handleError(err)
+					instance.preparing.set false
+					loadSelection(data)
+			else
+				# Otherwise, we might need to do something based upon the current step
+				# of the import
+				loadSelection(progress)
+	else
+		FlowRouter.go '/admin/import'

@@ -9,16 +9,16 @@ FileSystemStore = new UploadFS.store.Local({
 });
 
 FileUpload.FileSystem = class FileUploadFileSystem extends FileUploadBase {
-	constructor(meta, file, data) {
-		super(meta, file, data);
+	constructor(meta, file) {
+		super(meta, file);
 		this.handler = new UploadFS.Uploader({
 			store: FileSystemStore,
-			data: data,
+			data: file,
 			file: meta,
 			onError: (err) => {
 				var uploading = Session.get('uploading');
 				if (uploading != null) {
-					let item = _.findWhere(uploading, {
+					const item = _.findWhere(uploading, {
 						id: this.id
 					});
 					if (item != null) {
@@ -29,7 +29,7 @@ FileUpload.FileSystem = class FileUploadFileSystem extends FileUploadBase {
 				}
 			},
 			onComplete: (fileData) => {
-				var file = _.pick(fileData, '_id', 'type', 'size', 'name', 'identify');
+				var file = _.pick(fileData, '_id', 'type', 'size', 'name', 'identify', 'description');
 
 				file.url = fileData.url.replace(Meteor.absoluteUrl(), '/');
 
@@ -37,7 +37,7 @@ FileUpload.FileSystem = class FileUploadFileSystem extends FileUploadBase {
 					Meteor.setTimeout(() => {
 						var uploading = Session.get('uploading');
 						if (uploading != null) {
-							let item = _.findWhere(uploading, {
+							const item = _.findWhere(uploading, {
 								id: this.id
 							});
 							return Session.set('uploading', _.without(uploading, item));
@@ -46,14 +46,17 @@ FileUpload.FileSystem = class FileUploadFileSystem extends FileUploadBase {
 				});
 			}
 		});
+
+		this.handler.onProgress = (file, progress) => {
+			this.onProgress(progress);
+		};
 	}
+
 	start() {
 		return this.handler.start();
 	}
 
-	getProgress() {
-		return this.handler.getProgress();
-	}
+	onProgress() {}
 
 	stop() {
 		return this.handler.stop();

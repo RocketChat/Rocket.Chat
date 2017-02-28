@@ -1,11 +1,11 @@
 /* globals FileSystemStore:true, FileUpload, UploadFS, RocketChatFile */
 
-let storeName = 'fileSystem';
+const storeName = 'fileSystem';
 
 FileSystemStore = null;
 
-let createFileSystemStore = _.debounce(function() {
-	let stores = UploadFS.getStores();
+const createFileSystemStore = _.debounce(function() {
+	const stores = UploadFS.getStores();
 	if (stores[storeName]) {
 		delete stores[storeName];
 	}
@@ -17,26 +17,29 @@ let createFileSystemStore = _.debounce(function() {
 			onCheck: FileUpload.validateFileUpload
 		}),
 		transformWrite: function(readStream, writeStream, fileId, file) {
-			var identify, stream;
-			if (RocketChatFile.enabled === false || !/^image\/.+/.test(file.type)) {
+			if (RocketChatFile.enabled === false || !/^image\/((x-windows-)?bmp|p?jpeg|png)$/.test(file.type)) {
 				return readStream.pipe(writeStream);
 			}
-			stream = void 0;
-			identify = function(err, data) {
-				var ref;
+
+			let stream = void 0;
+
+			const identify = function(err, data) {
 				if (err != null) {
 					return stream.pipe(writeStream);
 				}
+
 				file.identify = {
 					format: data.format,
 					size: data.size
 				};
-				if ((data.Orientation != null) && ((ref = data.Orientation) !== '' && ref !== 'Unknown' && ref !== 'Undefined')) {
+
+				if ([null, undefined, '', 'Unknown', 'Undefined'].indexOf(data.Orientation) === -1) {
 					return RocketChatFile.gm(stream).autoOrient().stream().pipe(writeStream);
 				} else {
 					return stream.pipe(writeStream);
 				}
 			};
+
 			stream = RocketChatFile.gm(readStream).identify(identify).stream();
 			return;
 		}
@@ -45,17 +48,18 @@ let createFileSystemStore = _.debounce(function() {
 
 RocketChat.settings.get('FileUpload_FileSystemPath', createFileSystemStore);
 
-var fs = Npm.require('fs');
+const fs = Npm.require('fs');
 
 FileUpload.addHandler(storeName, {
 	get(file, req, res) {
-		let filePath = FileSystemStore.getFilePath(file._id, file);
+		const filePath = FileSystemStore.getFilePath(file._id, file);
 
 		try {
-			let stat = Meteor.wrapAsync(fs.stat)(filePath);
+			const stat = Meteor.wrapAsync(fs.stat)(filePath);
 
 			if (stat && stat.isFile()) {
-				res.setHeader('Content-Disposition', 'attachment; filename="' + encodeURIComponent(file.name) + '"');
+				file = FileUpload.addExtensionTo(file);
+				res.setHeader('Content-Disposition', `attachment; filename*=UTF-8''${encodeURIComponent(file.name)}`);
 				res.setHeader('Last-Modified', file.uploadedAt.toUTCString());
 				res.setHeader('Content-Type', file.type);
 				res.setHeader('Content-Length', file.size);
@@ -68,6 +72,7 @@ FileUpload.addHandler(storeName, {
 			return;
 		}
 	},
+
 	delete(file) {
 		return FileSystemStore.delete(file._id);
 	}

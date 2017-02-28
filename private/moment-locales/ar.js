@@ -1,12 +1,13 @@
 //! moment.js locale configuration
-//! Locale: Arabic (ar)
-//! Author: Abdel Said: https://github.com/abdelsaid
-//! Changes in months, weekdays: Ahmed Elkhatib
+//! locale : Arabic [ar]
+//! author : Abdel Said: https://github.com/abdelsaid
+//! changes in months, weekdays: Ahmed Elkhatib
 //! Native plural forms: forabi https://github.com/forabi
 
-(function (global, factory) {
-   typeof exports === 'object' && typeof module !== 'undefined' ? factory(require('../moment')) :
-   typeof define === 'function' && define.amd ? define(['moment'], factory) :
+;(function (global, factory) {
+   typeof exports === 'object' && typeof module !== 'undefined'
+       && typeof require === 'function' ? factory(require('../moment')) :
+   typeof define === 'function' && define.amd ? define(['../moment'], factory) :
    factory(global.moment)
 }(this, function (moment) { 'use strict';
 
@@ -72,13 +73,14 @@
         weekdays : 'الأحد_الإثنين_الثلاثاء_الأربعاء_الخميس_الجمعة_السبت'.split('_'),
         weekdaysShort : 'أحد_إثنين_ثلاثاء_أربعاء_خميس_جمعة_سبت'.split('_'),
         weekdaysMin : 'ح_ن_ث_ر_خ_ج_س'.split('_'),
+        weekdaysParseExact : true,
         longDateFormat : {
             LT : 'HH:mm',
             LTS : 'HH:mm:ss',
             L : 'D/\u200FM/\u200FYYYY',
             LL : 'D MMMM YYYY',
-            LLL : 'D MMMM YYYY LT',
-            LLLL : 'dddd D MMMM YYYY LT'
+            LLL : 'D MMMM YYYY HH:mm',
+            LLLL : 'dddd D MMMM YYYY HH:mm'
         },
         meridiemParse: /ص|م/,
         isPM : function (input) {

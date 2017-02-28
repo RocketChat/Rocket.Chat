@@ -15,16 +15,28 @@ var fiber = Npm.require('fibers');
 var connect = Npm.require('connect');
 RoutePolicy.declare('/_saml/', 'network');
 
+/**
+ * Fetch SAML provider configs for given 'provider'.
+ */
+function getSamlProviderConfig(provider) {
+	if (! provider) {
+		throw new Meteor.Error('no-saml-provider',
+														'SAML internal error',
+														{ method: 'getSamlProviderConfig' });
+	}
+	var samlProvider = function(element) {
+		return (element.provider === provider);
+	};
+	return Accounts.saml.settings.providers.filter(samlProvider)[0];
+}
+
 Meteor.methods({
 	samlLogout: function(provider) {
 		// Make sure the user is logged in before initiate SAML SLO
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'samlLogout' });
 		}
-		var samlProvider = function(element) {
-			return (element.provider === provider);
-		};
-		var providerConfig = Accounts.saml.settings.providers.filter(samlProvider)[0];
+		var providerConfig = getSamlProviderConfig(provider);
 
 		if (Accounts.saml.settings.debug) {
 			console.log('Logout request from ' + JSON.stringify(providerConfig));
@@ -110,6 +122,8 @@ Accounts.registerLoginHandler(function(loginRequest) {
 				if (username) {
 					newUser.username = username;
 				}
+			} else if (loginResult.profile.username) {
+				newUser.username = loginResult.profile.username;
 			}
 
 			var userId = Accounts.insertUserDoc({}, newUser);
@@ -183,7 +197,8 @@ var samlUrlToObject = function(url) {
 		return null;
 	}
 
-	var splitPath = url.split('/');
+	var splitUrl = url.split('?');
+	var splitPath = splitUrl[0].split('/');
 
 	// Any non-saml request will continue down the default
 	// middlewares.
@@ -318,12 +333,22 @@ var middleware = function(req, res, next) {
 
 					var credentialToken = profile.inResponseToId || profile.InResponseTo || samlObject.credentialToken;
 					if (!credentialToken) {
-						throw new Error('Unable to determine credentialToken');
+						// No credentialToken in IdP-initiated SSO
+						var saml_idp_credentialToken = Random.id();
+						Accounts.saml._loginResultForCredentialToken[saml_idp_credentialToken] = {
+							profile: profile
+						};
+						var url = Meteor.absoluteUrl('home') + '?saml_idp_credentialToken='+saml_idp_credentialToken;
+						res.writeHead(302, {
+							'Location': url
+						});
+						res.end();
+					} else {
+						Accounts.saml._loginResultForCredentialToken[credentialToken] = {
+							profile: profile
+						};
+						closePopup(res);
 					}
-					Accounts.saml._loginResultForCredentialToken[credentialToken] = {
-						profile: profile
-					};
-					closePopup(res);
 				});
 				break;
 			default:

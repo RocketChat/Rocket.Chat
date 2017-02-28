@@ -19,8 +19,23 @@ RocketChat.models.Users.setOperator = function(_id, operator) {
  */
 RocketChat.models.Users.findOnlineAgents = function() {
 	var query = {
-		statusConnection: { $ne: 'offline' },
+		status: {
+			$exists: true,
+			$ne: 'offline'
+		},
 		statusLivechat: 'available',
+		roles: 'livechat-agent'
+	};
+
+	return this.find(query);
+};
+
+/**
+ * Gets all agents
+ * @return
+ */
+RocketChat.models.Users.findAgents = function() {
+	var query = {
 		roles: 'livechat-agent'
 	};
 
@@ -34,7 +49,10 @@ RocketChat.models.Users.findOnlineAgents = function() {
  */
 RocketChat.models.Users.findOnlineUserFromList = function(userList) {
 	var query = {
-		statusConnection: { $ne: 'offline' },
+		status: {
+			$exists: true,
+			$ne: 'offline'
+		},
 		statusLivechat: 'available',
 		roles: 'livechat-agent',
 		username: {
@@ -51,7 +69,10 @@ RocketChat.models.Users.findOnlineUserFromList = function(userList) {
  */
 RocketChat.models.Users.getNextAgent = function() {
 	var query = {
-		statusConnection: { $ne: 'offline' },
+		status: {
+			$exists: true,
+			$ne: 'offline'
+		},
 		statusLivechat: 'available',
 		roles: 'livechat-agent'
 	};
@@ -71,10 +92,10 @@ RocketChat.models.Users.getNextAgent = function() {
 	};
 
 	var user = findAndModify(query, sort, update);
-	if (user) {
+	if (user && user.value) {
 		return {
-			agentId: user._id,
-			username: user.username
+			agentId: user.value._id,
+			username: user.value.username
 		};
 	} else {
 		return null;
@@ -112,11 +133,11 @@ RocketChat.models.Users.findVisitorByToken = function(token) {
  * @param {string} token - Visitor token
  */
 RocketChat.models.Users.setLivechatStatus = function(userId, status) {
-	let query = {
+	const query = {
 		'_id': userId
 	};
 
-	let update = {
+	const update = {
 		$set: {
 			'statusLivechat': status
 		}
@@ -125,10 +146,37 @@ RocketChat.models.Users.setLivechatStatus = function(userId, status) {
 	return this.update(query, update);
 };
 
-RocketChat.models.Users.updateLivechatDataByToken = function(token, key, value) {
+/**
+ * change all livechat agents livechat status to "not-available"
+ */
+RocketChat.models.Users.closeOffice = function() {
+	self = this;
+	self.findAgents().forEach(function(agent) {
+		self.setLivechatStatus(agent._id, 'not-available');
+	});
+};
+
+/**
+ * change all livechat agents livechat status to "available"
+ */
+RocketChat.models.Users.openOffice = function() {
+	self = this;
+	self.findAgents().forEach(function(agent) {
+		self.setLivechatStatus(agent._id, 'available');
+	});
+};
+
+RocketChat.models.Users.updateLivechatDataByToken = function(token, key, value, overwrite = true) {
 	const query = {
 		'profile.token': token
 	};
+
+	if (!overwrite) {
+		const user = this.findOne(query, { fields: { livechatData: 1 } });
+		if (user.livechatData && typeof user.livechatData[key] !== 'undefined') {
+			return true;
+		}
+	}
 
 	const update = {
 		$set: {
@@ -171,5 +219,79 @@ RocketChat.models.Users.getNextVisitorUsername = function() {
 
 	const livechatCount = findAndModify(query, null, update);
 
-	return 'guest-' + (livechatCount.value + 1);
+	return 'guest-' + (livechatCount.value.value + 1);
+};
+
+RocketChat.models.Users.saveGuestById = function(_id, data) {
+	const setData = {};
+	const unsetData = {};
+
+	if (data.name) {
+		if (!_.isEmpty(s.trim(data.name))) {
+			setData.name = s.trim(data.name);
+		} else {
+			unsetData.name = 1;
+		}
+	}
+
+	if (data.email) {
+		if (!_.isEmpty(s.trim(data.email))) {
+			setData.visitorEmails = [
+				{ address: s.trim(data.email) }
+			];
+		} else {
+			unsetData.visitorEmails = 1;
+		}
+	}
+
+	if (data.phone) {
+		if (!_.isEmpty(s.trim(data.phone))) {
+			setData.phone = [
+				{ phoneNumber: s.trim(data.phone) }
+			];
+		} else {
+			unsetData.phone = 1;
+		}
+	}
+
+	const update = {};
+
+	if (!_.isEmpty(setData)) {
+		update.$set = setData;
+	}
+
+	if (!_.isEmpty(unsetData)) {
+		update.$unset = unsetData;
+	}
+
+	if (_.isEmpty(update)) {
+		return true;
+	}
+
+	return this.update({ _id }, update);
+};
+
+RocketChat.models.Users.findOneGuestByEmailAddress = function(emailAddress) {
+	const query = {
+		'visitorEmails.address': new RegExp('^' + s.escapeRegExp(emailAddress) + '$', 'i')
+	};
+
+	return this.findOne(query);
+};
+
+RocketChat.models.Users.getAgentInfo = function(agentId) {
+	const query = {
+		_id: agentId
+	};
+
+	const options = {
+		fields: {
+			name: 1,
+			username: 1,
+			emails: 1,
+			customFields: 1
+		}
+	};
+
+	return this.findOne(query, options);
 };

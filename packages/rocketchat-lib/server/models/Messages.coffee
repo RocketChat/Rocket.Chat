@@ -1,6 +1,6 @@
 RocketChat.models.Messages = new class extends RocketChat.models._Base
 	constructor: ->
-		@_initModel 'message'
+		super('message')
 
 		@tryEnsureIndex { 'rid': 1, 'ts': 1 }
 		@tryEnsureIndex { 'ts': 1 }
@@ -13,14 +13,9 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base
 		@tryEnsureIndex { 'file._id': 1 }, { sparse: 1 }
 		@tryEnsureIndex { 'mentions.username': 1 }, { sparse: 1 }
 		@tryEnsureIndex { 'pinned': 1 }, { sparse: 1 }
-
-
-	# FIND ONE
-	findOneById: (_id, options) ->
-		query =
-			_id: _id
-
-		return @findOne query, options
+		@tryEnsureIndex { 'snippeted': 1 }, { sparse: 1 }
+		@tryEnsureIndex { 'location': '2dsphere' }
+		@tryEnsureIndex { 'slackBotId': 1, 'slackTs': 1 }, { sparse: 1 }
 
 	# FIND
 	findByMention: (username, options) ->
@@ -41,7 +36,21 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base
 		query =
 			_hidden:
 				$ne: true
+
 			rid: roomId
+
+		return @find query, options
+
+	findVisibleByRoomIdNotContainingTypes: (roomId, types, options) ->
+		query =
+			_hidden:
+				$ne: true
+
+			rid: roomId
+
+		if Match.test(types, [String]) and types.length > 0
+			query.t =
+				$nin: types
 
 		return @find query, options
 
@@ -72,6 +81,16 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base
 
 		return @find query, options
 
+	findVisibleByRoomIdBeforeTimestampInclusive: (roomId, timestamp, options) ->
+		query =
+			_hidden:
+				$ne: true
+			rid: roomId
+			ts:
+				$lte: timestamp
+
+		return @find query, options
+
 	findVisibleByRoomIdBetweenTimestamps: (roomId, afterTimestamp, beforeTimestamp, options) ->
 		query =
 			_hidden:
@@ -80,6 +99,46 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base
 			ts:
 				$gt: afterTimestamp
 				$lt: beforeTimestamp
+
+		return @find query, options
+
+	findVisibleByRoomIdBetweenTimestampsInclusive: (roomId, afterTimestamp, beforeTimestamp, options) ->
+		query =
+			_hidden:
+				$ne: true
+			rid: roomId
+			ts:
+				$gte: afterTimestamp
+				$lte: beforeTimestamp
+
+		return @find query, options
+
+	findVisibleByRoomIdBeforeTimestampNotContainingTypes: (roomId, timestamp, types, options) ->
+		query =
+			_hidden:
+				$ne: true
+			rid: roomId
+			ts:
+				$lt: timestamp
+
+		if Match.test(types, [String]) and types.length > 0
+			query.t =
+				$nin: types
+
+		return @find query, options
+
+	findVisibleByRoomIdBetweenTimestampsNotContainingTypes: (roomId, afterTimestamp, beforeTimestamp, types, options) ->
+		query =
+			_hidden:
+				$ne: true
+			rid: roomId
+			ts:
+				$gt: afterTimestamp
+				$lt: beforeTimestamp
+
+		if Match.test(types, [String]) and types.length > 0
+			query.t =
+				$nin: types
 
 		return @find query, options
 
@@ -113,6 +172,14 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base
 
 		return @find query, options
 
+	findSnippetedByRoom: (roomId, options) ->
+		query =
+			_hidden: { $ne: true }
+			snippeted: true
+			rid: roomId
+
+		return @find query, options
+
 	getLastTimestamp: (options = {}) ->
 		query = { ts: { $exists: 1 } }
 		options.sort = { ts: -1 }
@@ -128,6 +195,19 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base
 
 		return @find query, options
 
+	findOneBySlackBotIdAndSlackTs: (slackBotId, slackTs) ->
+		query =
+			slackBotId: slackBotId
+			slackTs: slackTs
+
+		return @findOne query
+
+	findOneBySlackTs: (slackTs) ->
+		query =
+			slackTs: slackTs
+
+		return @findOne query
+
 	cloneAndSaveAsHistoryById: (_id) ->
 		me = RocketChat.models.Users.findOneById Meteor.userId()
 		record = @findOneById _id
@@ -137,13 +217,7 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base
 		record.editedBy =
 			_id: Meteor.userId()
 			username: me.username
-		record.pinned = record.pinned
-		record.pinnedAt = record.pinnedAt
-		record.pinnedBy =
-			_id: record.pinnedBy?._id
-			username: record.pinnedBy?.username
 		delete record._id
-
 		return @insert record
 
 	# UPDATE
@@ -157,8 +231,7 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base
 
 		return @update query, update
 
-	setAsDeletedById: (_id) ->
-		me = RocketChat.models.Users.findOneById Meteor.userId()
+	setAsDeletedByIdAndUser: (_id, user) ->
 		query =
 			_id: _id
 
@@ -169,22 +242,39 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base
 				urls: []
 				mentions: []
 				attachments: []
+				reactions: []
 				editedAt: new Date()
 				editedBy:
-					_id: Meteor.userId()
-					username: me.username
+					_id: user._id
+					username: user.username
 
 		return @update query, update
 
-	setPinnedByIdAndUserId: (_id, pinnedBy, pinned=true) ->
+	setPinnedByIdAndUserId: (_id, pinnedBy, pinned=true, pinnedAt=0) ->
 		query =
 			_id: _id
 
 		update =
 			$set:
 				pinned: pinned
-				pinnedAt: new Date
+				pinnedAt: pinnedAt || new Date
 				pinnedBy: pinnedBy
+
+		return @update query, update
+
+	setSnippetedByIdAndUserId: (message, snippetName, snippetedBy, snippeted=true, snippetedAt=0) ->
+		query =
+			_id: message._id
+
+		msg = "```" + message.msg + "```"
+
+		update =
+			$set:
+				msg: msg
+				snippeted: snippeted
+				snippetedAt: snippetedAt || new Date
+				snippetedBy: snippetedBy
+				snippetName: snippetName
 
 		return @update query, update
 
@@ -262,12 +352,26 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base
 		update =
 			$set:
 				attachments: attachments
-		console.log(query, update);
+
+		return @update query, update
+
+	setSlackBotIdAndSlackTs: (_id, slackBotId, slackTs) ->
+		query =
+			_id: _id
+
+		update =
+			$set:
+				slackBotId: slackBotId
+				slackTs: slackTs
+
 		return @update query, update
 
 
 	# INSERT
 	createWithTypeRoomIdMessageAndUser: (type, roomId, message, user, extraData) ->
+		room = RocketChat.models.Rooms.findOneById roomId, { fields: { sysMes: 1 }}
+		if room?.sysMes is false
+			return
 		record =
 			t: type
 			rid: roomId
@@ -281,6 +385,7 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base
 		_.extend record, extraData
 
 		record._id = @insertOrUpsert record
+		RocketChat.models.Rooms.incMsgCountById(room._id, 1)
 		return record
 
 	createUserJoinWithRoomIdAndUser: (roomId, user, extraData) ->

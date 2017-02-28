@@ -1,5 +1,6 @@
 Meteor.methods({
 	getUserRoles() {
+
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'getUserRoles' });
 		}
@@ -19,8 +20,8 @@ Meteor.methods({
 
 		// Security issue: we should not send all user's roles to all clients, only the 'public' roles
 		// We must remove all roles that are not part of the query from the returned users
-		let users = RocketChat.models.Users.findUsersInRoles(roleIds, null, options).fetch();
-		for (let user of users) {
+		const users = RocketChat.models.Users.findUsersInRoles(roleIds, null, options).fetch();
+		for (const user of users) {
 			user.roles = _.intersection(user.roles, roleIds);
 		}
 		return users;

@@ -1,39 +1,62 @@
-RocketChat.theme.addPublicColor "primary-background-color", "#04436a"
-RocketChat.theme.addPublicColor "primary-font-color", "#444444"
-RocketChat.theme.addPublicColor "secondary-background-color", "#f4f4f4"
-RocketChat.theme.addPublicColor "secondary-font-color", "#7f7f7f"
-RocketChat.theme.addPublicColor "tertiary-background-color", "#eaeaea"
-RocketChat.theme.addPublicColor "tertiary-font-color", "rgba(255, 255, 255, 0.6)"
-RocketChat.theme.addPublicColor "quaternary-font-color", "#ffffff"
 
-RocketChat.theme.addPublicColor "action-buttons-color", "#13679a"
-RocketChat.theme.addPublicColor "active-channel-background-color", "rgba(255, 255, 255, 0.075)"
-RocketChat.theme.addPublicColor "active-channel-font-color", "rgba(255, 255, 255, 0.75)"
-RocketChat.theme.addPublicColor "blockquote-background", "#cccccc"
-RocketChat.theme.addPublicColor "clean-buttons-color", "rgba(0, 0, 0, 0.25)"
-RocketChat.theme.addPublicColor "code-background", "#f8f8f8"
-RocketChat.theme.addPublicColor "code-border", "#cccccc"
-RocketChat.theme.addPublicColor "code-color", "#333333"
-RocketChat.theme.addPublicColor "content-background-color", "#ffffff"
-RocketChat.theme.addPublicColor "custom-scrollbar-color", "rgba(255, 255, 255, 0.05)"
-RocketChat.theme.addPublicColor "info-active-font-color", "#ff0000"
-RocketChat.theme.addPublicColor "info-font-color", "#aaaaaa"
-RocketChat.theme.addPublicColor "input-font-color", "rgba(255, 255, 255, 0.85)"
-RocketChat.theme.addPublicColor "link-font-color", "#008ce3"
-RocketChat.theme.addPublicColor "message-hover-background-color", "rgba(0, 0, 0, 0.025)"
-RocketChat.theme.addPublicColor "smallprint-font-color", "#c2e7ff"
-RocketChat.theme.addPublicColor "smallprint-hover-color", "#ffffff"
-RocketChat.theme.addPublicColor "status-away", "#fcb316"
-RocketChat.theme.addPublicColor "status-busy", "#d30230"
-RocketChat.theme.addPublicColor "status-offline", "rgba(150, 150, 150, 0.50)"
-RocketChat.theme.addPublicColor "status-online", "#35ac19"
-RocketChat.theme.addPublicColor "unread-notification-color", "#1dce73"
+# TODO: Define registers/getters/setters for packages to work with established
+# 			heirarchy of colors instead of making duplicate definitions
+# TODO: Settings pages to show simple separation of major/minor/addon colors
+# TODO: Get major colours as swatches for minor colors in minicolors plugin
+# TODO: Minicolors settings to use rgb for alphas, hex otherwise
+# TODO: Add setting toggle to use defaults for minor colours and hide settings
 
+# New colors, used for shades on solid backgrounds
+# Defined range of transparencies reduces random colour variances
+alphaColors=
+  'transparent-darkest': 'rgba(0,0,0,0.5)'
+  'transparent-darker': 'rgba(0,0,0,0.15)'
+  'transparent-dark': 'rgba(0,0,0,0.05)'
+  'transparent-light': 'rgba(255,255,255,0.10)'
+  'transparent-lighter': 'rgba(255,255,255,0.30)'
+  'transparent-lightest': 'rgba(255,255,255,0.60)'
 
-RocketChat.settings.add "theme-custom-css", '',
-	group: 'Layout'
-	type: 'code'
-	code: 'text/x-less'
-	multiline: true
-	section: 'Custom CSS'
-	public: false
+# Major colors form the core of the scheme
+# Names changed to reflect usage, comments show pre-refactor names
+majorColors=
+  'content-background-color': '#FFFFFF'
+  'primary-background-color': '#04436A'
+  'primary-font-color': '#444444'
+  'primary-action-color': '#13679A' # was action-buttons-color
+  'secondary-background-color': '#F4F4F4'
+  'secondary-font-color': '#A0A0A0'
+  'secondary-action-color': '#DDDDDD'
+  'component-color': '#EAEAEA'
+  'success-color': '#4dff4d'
+  'pending-color': '#FCB316'
+  'error-color': '#BC2031'
+  'selection-color': '#02ACEC',
+  'attention-color': '#9C27B0'
+
+# Minor colours implement major colours by default, but can be overruled
+minorColors=
+  'tertiary-background-color': '@component-color'
+  'tertiary-font-color': '@transparent-lightest'
+  'link-font-color': '@primary-action-color'
+  'info-font-color': '@secondary-font-color'
+  'custom-scrollbar-color': '@transparent-darker'
+  'status-online': '@success-color'
+  'status-away': '@pending-color'
+  'status-busy': '@error-color'
+  'status-offline': '@transparent-darker'
+
+# Bulk-add settings for color scheme
+for key, value of majorColors
+  RocketChat.theme.addPublicColor key, value, 'Colors'
+for key, value of minorColors
+  RocketChat.theme.addPublicColor key, value, 'Colors (minor)', 'expression'
+
+RocketChat.theme.addPublicFont 'body-font-family', "-apple-system, BlinkMacSystemFont, Roboto, 'Helvetica Neue', Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Meiryo UI'"
+
+RocketChat.settings.add 'theme-custom-css', '',
+  group: 'Layout'
+  type: 'code'
+  code: 'text/x-less'
+  multiline: true
+  section: 'Custom CSS'
+  public: false

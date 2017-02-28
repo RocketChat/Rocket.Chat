@@ -5,15 +5,13 @@ Package.describe({
 });
 
 Package.onUse(function(api) {
-	api.versionsFrom('1.0');
-
-	api.use('coffeescript');
+	api.use('ecmascript');
 	api.use('rocketchat:lib');
 	api.use('rocketchat:custom-oauth');
 
 	api.use('templating', 'client');
 
-	api.addFiles('common.coffee');
+	api.addFiles('common.js');
 	api.addFiles('github-enterprise-login-button.css', 'client');
-	api.addFiles('startup.coffee', 'server');
+	api.addFiles('startup.js', 'server');
 });

@@ -1,3 +1,5 @@
+import moment from 'moment';
+
 Template.visitorHistory.helpers({
 	historyLoaded() {
 		return !Template.instance().loadHistory.ready();
@@ -14,8 +16,14 @@ Template.visitorHistory.helpers({
 		});
 	},
 
-	date() {
-		return moment(this.ts).format('L LTS');
+	title() {
+		let title = moment(this.ts).format('L LTS');
+
+		if (this.label) {
+			title += ' - ' + this.label;
+		}
+
+		return title;
 	}
 });
 

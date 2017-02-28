@@ -18,11 +18,11 @@ getDescription = (self) ->
 Template.oembedUrlWidget.helpers
 	description: ->
 		description = getDescription this
-		return new Handlebars.SafeString description if _.isString description
+		return Blaze._escape(description) if _.isString description
 
 	title: ->
 		title = getTitle this
-		return new Handlebars.SafeString title if _.isString title
+		return Blaze._escape(title) if _.isString title
 
 	target: ->
 		if not this.parsedUrl?.host || !document?.location?.host || this.parsedUrl.host isnt document.location.host
@@ -34,7 +34,18 @@ Template.oembedUrlWidget.helpers
 
 		decodedOgImage = @meta.ogImage?.replace?(/&amp;/g, '&')
 
-		return decodedOgImage or this.meta.twitterImage
+		url = this.meta.msapplicationTileImage or decodedOgImage or this.meta.twitterImage
+
+		if not url?
+			return
+
+		if url.indexOf('//') is 0
+			url = "#{this.parsedUrl.protocol}#{url}"
+
+		else if url.indexOf('/') is 0 and this.parsedUrl?.host?
+			url = "#{this.parsedUrl.protocol}//#{this.parsedUrl.host}#{url}"
+
+		return url
 
 	show: ->
 		return getDescription(this)? or getTitle(this)?

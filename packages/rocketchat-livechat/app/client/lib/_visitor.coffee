@@ -4,6 +4,7 @@ msgStream = new Meteor.Streamer 'room-messages'
 	token = new ReactiveVar null
 	room = new ReactiveVar null
 	roomToSubscribe = new ReactiveVar null
+	roomSubscribed = null
 
 	register = ->
 		if not localStorage.getItem 'visitorToken'
@@ -25,27 +26,32 @@ msgStream = new Meteor.Streamer 'room-messages'
 
 		return roomId
 
-	getRoomToSubscribe = ->
-		return roomToSubscribe.get()
-
-	setRoomToSubscribe = (rid) ->
-		room.set(rid)
-		return roomToSubscribe.set(rid)
+	isSubscribed = (roomId) ->
+		return roomSubscribed is roomId
 
 	subscribeToRoom = (roomId) ->
+		if roomSubscribed?
+			return if roomSubscribed is roomId
+
+		roomSubscribed = roomId
+
 		msgStream.on roomId, (msg) ->
 			if msg.t is 'command'
-				if msg.msg is 'survey'
-					unless $('body #survey').length
-						Blaze.render(Template.survey, $('body').get(0))
-			else
+				Commands[msg.msg]?()
+			else if msg.t isnt 'livechat_video_call'
 				ChatMessage.upsert { _id: msg._id }, msg
+
+				if msg.t is 'livechat-close'
+					parentCall('callback', 'chat-ended')
+
+				# notification sound
+				if Session.equals('sound', true)
+					if msg.u._id isnt Meteor.user()._id
+						$('#chatAudioNotification')[0].play();
 
 	register: register
 	getToken: getToken
 	setRoom: setRoom
 	getRoom: getRoom
-	setRoomToSubscribe: setRoomToSubscribe
-	getRoomToSubscribe: getRoomToSubscribe
-
 	subscribeToRoom: subscribeToRoom
+	isSubscribed: isSubscribed

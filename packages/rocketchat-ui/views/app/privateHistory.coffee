@@ -1,3 +1,5 @@
+import moment from 'moment'
+
 Template.privateHistory.helpers
 	history: ->
 		items = ChatSubscription.find { name: { $regex: Session.get('historyFilter'), $options: 'i' }, t: { $in: ['d', 'c', 'p'] }, archived: { $ne: true } }, {'sort': { 'ts': -1 } }
