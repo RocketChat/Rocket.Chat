@@ -6,10 +6,9 @@ Package.describe({
 });
 
 Package.onUse(function(api) {
-	api.versionsFrom('1.0');
-
 	api.use([
 		'coffeescript',
+		'ecmascript',
 		'rocketchat:lib',
 		'dburles:google-maps@1.1.5'
 	]);

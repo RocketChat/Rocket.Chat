@@ -1,3 +1,4 @@
+import toastr from 'toastr'
 Template.adminInviteUser.helpers
 	isAdmin: ->
 		return RocketChat.authz.hasRole(Meteor.userId(), 'admin')
@@ -22,7 +23,7 @@ Template.adminInviteUser.events
 	'click .cancel': (e, instance) ->
 		instance.clearForm()
 		instance.inviteEmails.set []
-		RocketChat.TabBar.closeFlex()
+		Template.currentData().tabBar.close()
 
 Template.adminInviteUser.onCreated ->
 	@inviteEmails = new ReactiveVar []

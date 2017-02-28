@@ -1,0 +1,31 @@
+<template name="emojiEdit">
+	{{#unless hasPermission 'manage-emoji'}}
+		<p>{{_ "You_are_not_authorized_to_view_this_page"}}</p>
+	{{else}}
+		<div class="about clearfix">
+			<form class="edit-form" autocomplete="off">
+				{{#if emoji}}
+					<h3>{{emoji.name}}</h3>
+				{{else}}
+					<h3>{{_ "Custom_Emoji_Add"}}</h3>
+				{{/if}}
+				<div class="input-line">
+					<label for="name">{{_ "Name"}}</label>
+					<input type="text" id="name" autocomplete="off" value="{{emoji.name}}" class="content-background-color">
+				</div>
+				<div class="input-line">
+					<label for="aliases">{{_ "Aliases"}}</label>
+					<input type="text" id="aliases" autocomplete="off" value="{{emoji.aliases}}"  class="content-background-color">
+				</div>
+				<div class="input-line">
+					<label for="image">{{_ "Image"}}</label>
+					<input id="image" type="file" />
+				</div>
+				<nav>
+					<button class='button button-block cancel' type="button"><span>{{_ "Cancel"}}</span></button>
+					<button class='button button-block primary save'><span>{{_ "Save"}}</span></button>
+				</nav>
+			</form>
+		</div>
+	{{/unless}}
+</template>

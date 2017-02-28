@@ -6,37 +6,41 @@ Package.describe({
 });
 
 Package.onUse(function(api) {
-	api.versionsFrom('1.0');
-
 	api.use('rocketchat:lib');
 	api.use('rocketchat:logger');
+	api.use('rocketchat:assets');
 	api.use('coffeescript');
+	api.use('ecmascript');
+	api.use('less');
 	api.use('underscore');
 	api.use('webapp');
 	api.use('webapp-hashing');
-
 	api.use('templating', 'client');
 
-
+	// Server side files
 	api.addFiles('server/server.coffee', 'server');
 	api.addFiles('server/variables.coffee', 'server');
 
-	api.addFiles('client/minicolors/jquery.minicolors.css', 'client');
-	api.addFiles('client/minicolors/jquery.minicolors.js', 'client');
+	// Colorpicker
+	api.addFiles('client/vendor/jscolor.js', 'client');
 
+	// Photoswipe
+	api.addFiles('client/vendor/photoswipe.less', 'client');
 
-	api.addAssets('assets/stylesheets/global/_variables.less', 'server');
-	api.addAssets('assets/stylesheets/utils/_colors.import.less', 'server');
-	api.addAssets('assets/stylesheets/utils/_keyframes.import.less', 'server');
-	api.addAssets('assets/stylesheets/utils/_lesshat.import.less', 'server');
-	api.addAssets('assets/stylesheets/utils/_preloader.import.less', 'server');
-	api.addAssets('assets/stylesheets/utils/_reset.import.less', 'server');
-	api.addAssets('assets/stylesheets/utils/_chatops.less', 'server');
-	api.addAssets('assets/stylesheets/animation.css', 'server');
-	api.addAssets('assets/stylesheets/base.less', 'server');
-	api.addAssets('assets/stylesheets/fontello.css', 'server');
-	api.addAssets('assets/stylesheets/rtl.less', 'server');
-	api.addAssets('assets/stylesheets/swipebox.min.css', 'server');
+	// Fontello
+	api.addFiles('client/vendor/fontello/css/fontello.css', 'client');
+	api.addAssets('client/vendor/fontello/font/fontello.eot', 'client');
+	api.addAssets('client/vendor/fontello/font/fontello.svg', 'client');
+	api.addAssets('client/vendor/fontello/font/fontello.ttf', 'client');
+	api.addAssets('client/vendor/fontello/font/fontello.woff', 'client');
+	api.addAssets('client/vendor/fontello/font/fontello.woff2', 'client');
+
+	// Compiled stylesheets
+	api.addFiles('client/main.less', 'client');
+
+	// Run-time stylesheets
+	api.addAssets('server/lesshat.less', 'server');
+	api.addAssets('server/colors.less', 'server');
 });
 
 Npm.depends({

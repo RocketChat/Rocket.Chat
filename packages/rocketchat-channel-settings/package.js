@@ -6,14 +6,13 @@ Package.describe({
 });
 
 Package.onUse(function(api) {
-	api.versionsFrom('1.0');
-
 	api.use([
 		'coffeescript',
+		'ecmascript',
 		'reactive-var',
 		'tracker',
 		'templating',
-		'less@2.5.0',
+		'less',
 		'rocketchat:lib'
 	]);
 
@@ -21,17 +20,23 @@ Package.onUse(function(api) {
 		'client/lib/ChannelSettings.coffee',
 		'client/startup/messageTypes.coffee',
 		'client/startup/tabBar.coffee',
-		'client/startup/trackSettingsChange.coffee',
+		'client/startup/trackSettingsChange.js',
 		'client/views/channelSettings.html',
 		'client/views/channelSettings.coffee',
 		'client/stylesheets/channel-settings.less'
 	], 'client');
 
 	api.addFiles([
+		'server/functions/saveReactWhenReadOnly.js',
 		'server/functions/saveRoomType.coffee',
 		'server/functions/saveRoomTopic.coffee',
 		'server/functions/saveRoomName.coffee',
+		'server/functions/saveRoomReadOnly.coffee',
+		'server/functions/saveRoomDescription.coffee',
+		'server/functions/saveRoomSystemMessages.coffee',
 		'server/methods/saveRoomSettings.coffee',
-		'server/models/Messages.coffee'
+		'server/models/Messages.coffee',
+		'server/models/Rooms.coffee',
+		'server/startup.js'
 	], 'server');
 });

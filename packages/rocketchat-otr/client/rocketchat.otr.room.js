@@ -1,3 +1,4 @@
+import toastr from 'toastr';
 /* globals crypto */
 
 RocketChat.OTR.Room = class {
@@ -71,19 +72,20 @@ RocketChat.OTR.Room = class {
 		return RocketChat.OTR.crypto.generateKey({
 			name: 'ECDH',
 			namedCurve: 'P-256'
-		}, false, ['deriveKey', 'deriveBits']).then((keyPair) => {
-			this.keyPair = keyPair;
-			return RocketChat.OTR.crypto.exportKey('jwk', keyPair.publicKey);
-		})
-		.then((exportedPublicKey) => {
-			this.exportedPublicKey = exportedPublicKey;
+		}, false, ['deriveKey', 'deriveBits'])
+			.then((keyPair) => {
+				this.keyPair = keyPair;
+				return RocketChat.OTR.crypto.exportKey('jwk', keyPair.publicKey);
+			})
+			.then((exportedPublicKey) => {
+				this.exportedPublicKey = exportedPublicKey;
 
-			// Once we have generated new keys, it's safe to delete old messages
-			Meteor.call('deleteOldOTRMessages', this.roomId);
-		})
-		.catch((e) => {
-			toastr.error(e);
-		});
+				// Once we have generated new keys, it's safe to delete old messages
+				Meteor.call('deleteOldOTRMessages', this.roomId);
+			})
+			.catch((e) => {
+				toastr.error(e);
+			});
 	}
 
 	importPublicKey(publicKey) {
@@ -159,14 +161,15 @@ RocketChat.OTR.Room = class {
 		return RocketChat.OTR.crypto.decrypt({
 			name: 'AES-GCM',
 			iv: iv
-		}, this.sessionKey, cipherText).then((data) => {
-			data = EJSON.parse(new TextDecoder('UTF-8').decode(new Uint8Array(data)));
-			return data;
-		})
-		.catch((e) => {
-			toastr.error(e);
-			return message;
-		});
+		}, this.sessionKey, cipherText)
+			.then((data) => {
+				data = EJSON.parse(new TextDecoder('UTF-8').decode(new Uint8Array(data)));
+				return data;
+			})
+			.catch((e) => {
+				toastr.error(e);
+				return message;
+			});
 	}
 
 	onUserStream(type, data) {
@@ -175,7 +178,7 @@ RocketChat.OTR.Room = class {
 			case 'handshake':
 				let timeout = null;
 
-				let establishConnection = () => {
+				const establishConnection = () => {
 					this.establishing.set(true);
 					Meteor.clearTimeout(timeout);
 					this.generateKeyPair().then(() => {
@@ -199,7 +202,7 @@ RocketChat.OTR.Room = class {
 					}
 
 					swal({
-						title: '<i class=\'icon-key alert-icon\'></i>' + TAPi18n.__('OTR'),
+						title: '<i class=\'icon-key alert-icon success-color\'></i>' + TAPi18n.__('OTR'),
 						text: TAPi18n.__('Username_wants_to_start_otr_Do_you_want_to_accept', { username: user.username }),
 						html: true,
 						showCancelButton: true,
@@ -234,7 +237,7 @@ RocketChat.OTR.Room = class {
 					this.reset();
 					const user = Meteor.users.findOne(this.peerId);
 					swal({
-						title: '<i class=\'icon-key alert-icon\'></i>' + TAPi18n.__('OTR'),
+						title: '<i class=\'icon-key alert-icon success-color\'></i>' + TAPi18n.__('OTR'),
 						text: TAPi18n.__('Username_denied_the_OTR_session', { username: user.username }),
 						html: true
 					});
@@ -246,7 +249,7 @@ RocketChat.OTR.Room = class {
 					this.reset();
 					const user = Meteor.users.findOne(this.peerId);
 					swal({
-						title: '<i class=\'icon-key alert-icon\'></i>' + TAPi18n.__('OTR'),
+						title: '<i class=\'icon-key alert-icon success-color\'></i>' + TAPi18n.__('OTR'),
 						text: TAPi18n.__('Username_ended_the_OTR_session', { username: user.username }),
 						html: true
 					});

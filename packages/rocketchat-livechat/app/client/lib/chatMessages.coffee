@@ -1,3 +1,4 @@
+import toastr from 'toastr'
 class @ChatMessages
 	init: (node) ->
 		this.editing = {}
@@ -75,20 +76,35 @@ class @ChatMessages
 			rid ?= visitor.getRoom(true)
 
 			sendMessage = (callback) ->
-				msgObject = { _id: Random.id(), rid: rid, msg: msg, token: visitor.getToken() }
+				msgObject = {
+					_id: Random.id(),
+					rid: rid,
+					msg: msg,
+					token: visitor.getToken()
+				}
 				MsgTyping.stop(rid)
 
 				Meteor.call 'sendMessageLivechat', msgObject, (error, result) ->
 					if error
 						ChatMessage.update msgObject._id, { $set: { error: true } }
 						showError error.reason
-					else if result.newRoom and result.rid?
+
+					if result?.rid? and not visitor.isSubscribed(result.rid)
+						Livechat.connecting = result.showConnecting
 						ChatMessage.update result._id, _.omit(result, '_id')
-						visitor.subscribeToRoom(result.rid)
-						visitor.setRoom(result.rid)
+						Livechat.room = result.rid
+
+						parentCall('callback', 'chat-started');
 
 			if not Meteor.userId()
-				Meteor.call 'livechat:registerGuest', { token: visitor.getToken() }, (error, result) ->
+				guest = {
+					token: visitor.getToken()
+				}
+
+				if Livechat.department
+					guest.department = Livechat.department
+
+				Meteor.call 'livechat:registerGuest', guest, (error, result) ->
 					if error?
 						return showError error.reason
 
@@ -165,7 +181,7 @@ class @ChatMessages
 		input = event.currentTarget
 		k = event.which
 		this.resize(input)
-		if k is 13 and not event.shiftKey
+		if k is 13 and not event.shiftKey and not event.ctrlKey and not event.altKey # Enter without shift/ctrl/alt
 			event.preventDefault()
 			event.stopPropagation()
 			if this.editing.id

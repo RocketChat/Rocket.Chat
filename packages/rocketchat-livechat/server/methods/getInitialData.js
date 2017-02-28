@@ -10,7 +10,11 @@ Meteor.methods({
 			departments: [],
 			online: true,
 			offlineColor: null,
-			offlineMessage: null
+			offlineMessage: null,
+			offlineSuccessMessage: null,
+			offlineUnavailableMessage: null,
+			displayOfflineForm: null,
+			videoCall: null
 		};
 
 		const room = RocketChat.models.Rooms.findOpenByVisitorToken(visitorToken, {
@@ -20,7 +24,8 @@ Meteor.methods({
 				cl: 1,
 				u: 1,
 				usernames: 1,
-				v: 1
+				v: 1,
+				servedBy: 1
 			}
 		}).fetch();
 
@@ -37,9 +42,18 @@ Meteor.methods({
 		info.offlineTitle = initSettings.Livechat_offline_title;
 		info.offlineColor = initSettings.Livechat_offline_title_color;
 		info.offlineMessage = initSettings.Livechat_offline_message;
+		info.offlineSuccessMessage = initSettings.Livechat_offline_success_message;
+		info.offlineUnavailableMessage = initSettings.Livechat_offline_form_unavailable;
+		info.displayOfflineForm = initSettings.Livechat_display_offline_form;
+		info.language = initSettings.Language;
+		info.videoCall = initSettings.Livechat_videocall_enabled === true && initSettings.Jitsi_Enabled === true;
+		info.transcript = initSettings.Livechat_enable_transcript;
+		info.transcriptMessage = initSettings.Livechat_transcript_message;
 
-		RocketChat.models.LivechatTrigger.find().forEach((trigger) => {
-			info.triggers.push(trigger);
+		info.agentData = room && room[0] && room[0].servedBy && RocketChat.models.Users.getAgentInfo(room[0].servedBy._id);
+
+		RocketChat.models.LivechatTrigger.findEnabled().forEach((trigger) => {
+			info.triggers.push(_.pick(trigger, '_id', 'actions', 'conditions'));
 		});
 
 		RocketChat.models.LivechatDepartment.findEnabledWithAgents().forEach((department) => {

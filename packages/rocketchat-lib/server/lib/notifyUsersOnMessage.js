@@ -1,6 +1,18 @@
+import moment from 'moment';
+
 RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
-	// skips this callback if the message was edited
-	if (message.editedAt) {
+	// skips this callback if the message was edited and increments it if the edit was way in the past (aka imported)
+	if (message.editedAt && Math.abs(moment(message.editedAt).diff()) > 60000) {
+		//TODO: Review as I am not sure how else to get around this as the incrementing of the msgs count shouldn't be in this callback
+		RocketChat.models.Rooms.incMsgCountById(message.rid, 1);
+		return message;
+	} else if (message.editedAt) {
+		// skips this callback if the message was edited
+		return message;
+	}
+
+	if (message.ts && Math.abs(moment(message.ts).diff()) > 60000) {
+		RocketChat.models.Rooms.incMsgCountById(message.rid, 1);
 		return message;
 	}
 
@@ -43,13 +55,17 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 				if (!toAll && mention._id === 'all') {
 					toAll = true;
 				}
-				mentionIds.push(mention._id);
+				if (mention._id !== message.u._id) {
+					mentionIds.push(mention._id);
+				}
 			});
 		}
 
 		highlights.forEach(function(user) {
 			if (user && user.settings && user.settings.preferences && messageContainsHighlight(message, user.settings.preferences.highlights)) {
-				highlightsIds.push(user._id);
+				if (user._id !== message.u._id) {
+					highlightsIds.push(user._id);
+				}
 			}
 		});
 
@@ -65,8 +81,8 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 
 	// Update all other subscriptions to alert their owners but witout incrementing
 	// the unread counter, as it is only for mentions and direct messages
-	RocketChat.models.Subscriptions.setAlertForRoomIdExcludingUserId(message.rid, message.u._id, true);
+	RocketChat.models.Subscriptions.setAlertForRoomIdExcludingUserId(message.rid, message.u._id);
 
 	return message;
 
-}, RocketChat.callbacks.priority.LOW);
+}, RocketChat.callbacks.priority.LOW, 'notifyUsersOnMessage');

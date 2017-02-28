@@ -2,6 +2,7 @@
 	.reactions {
 		padding: 0;
 		margin-top: 4px;
+
 		> li {
 			cursor: pointer;
 			position: relative;
@@ -9,18 +10,19 @@
 			line-height: 20px;
 			display: inline-block;
 			border-radius: 5px;
-			border: 1px solid #E7E7E7;
-			background-color: #FCFCFC;
+			border: 1px solid #e7e7e7;
+			background-color: #fcfcfc;
 			padding: 0 4px 0 2px;
-			color: #aaa;
+			color: #aaaaaa;
 
 			.reaction-emoji {
+				.emoji,
 				.emojione {
 					min-width: 16px;
 					min-height: 16px;
 					width: 16px;
 					height: 16px;
-					margin: -.2ex .15em .2ex;
+					margin: -0.2ex 0.15em 0.2ex;
 				}
 			}
 
@@ -43,15 +45,14 @@
 			&.add-reaction {
 				visibility: hidden;
 				margin-left: 10px;
-				color: #888;
+				color: #888888;
 				opacity: 0;
 				padding: 0 2px;
-
-				.transition(opacity 0.2s ease);
+				transition: opacity 0.2s ease;
 
 				html.rtl & {
 					margin-right: 10px;
-					margin-left: 0px;
+					margin-left: 0;
 				}
 			}
 

@@ -1,6 +1,6 @@
-RocketChat.models.Rooms = new class extends RocketChat.models._Base
+class ModelRooms extends RocketChat.models._Base
 	constructor: ->
-		@_initModel 'room'
+		super(arguments...)
 
 		@tryEnsureIndex { 'name': 1 }, { unique: 1, sparse: 1 }
 		@tryEnsureIndex { 'default': 1 }
@@ -8,11 +8,24 @@ RocketChat.models.Rooms = new class extends RocketChat.models._Base
 		@tryEnsureIndex { 't': 1 }
 		@tryEnsureIndex { 'u._id': 1 }
 
+		this.cache.ignoreUpdatedFields.push('msgs', 'lm')
+		this.cache.ensureIndex(['t', 'name'], 'unique')
+		this.cache.options = {fields: {usernames: 0}}
 
-	# FIND ONE
-	findOneById: (_id, options) ->
+	findOneByIdOrName: (_idOrName, options) ->
+		query = {
+			$or: [{
+				_id: _idOrName
+			}, {
+				name: _idOrName
+			}]
+		}
+
+		return this.findOne(query, options)
+
+	findOneByImportId: (_id, options) ->
 		query =
-			_id: _id
+			importIds: _id
 
 		return @findOne query, options
 
@@ -29,14 +42,14 @@ RocketChat.models.Rooms = new class extends RocketChat.models._Base
 
 		return @findOne query, options
 
-	findOneByIdContainigUsername: (_id, username, options) ->
+	findOneByIdContainingUsername: (_id, username, options) ->
 		query =
 			_id: _id
 			usernames: username
 
 		return @findOne query, options
 
-	findOneByNameAndTypeNotContainigUsername: (name, type, username, options) ->
+	findOneByNameAndTypeNotContainingUsername: (name, type, username, options) ->
 		query =
 			name: name
 			t: type
@@ -47,6 +60,7 @@ RocketChat.models.Rooms = new class extends RocketChat.models._Base
 
 
 	# FIND
+
 	findById: (roomId, options) ->
 		return @find { _id: roomId }, options
 
@@ -72,6 +86,47 @@ RocketChat.models.Rooms = new class extends RocketChat.models._Base
 
 		return @find query, options
 
+	findBySubscriptionUserId: (userId, options) ->
+		if this.useCache
+			data = RocketChat.models.Subscriptions.findByUserId(userId).fetch()
+			data = data.map (item) ->
+				if item._room
+					return item._room
+				console.log('Empty Room for Subscription', item);
+				return {}
+			return this.arrayToCursor this.processQueryOptionsOnResult(data, options)
+
+		data = RocketChat.models.Subscriptions.findByUserId(userId, {fields: {rid: 1}}).fetch()
+		data = data.map (item) -> item.rid
+
+		query =
+			_id:
+				$in: data
+
+		this.find query, options
+
+	findBySubscriptionUserIdUpdatedAfter: (userId, _updatedAt, options) ->
+		if this.useCache
+			data = RocketChat.models.Subscriptions.findByUserId(userId).fetch()
+			data = data.map (item) ->
+				if item._room
+					return item._room
+				console.log('Empty Room for Subscription', item);
+				return {}
+			data = data.filter (item) -> item._updatedAt > _updatedAt
+			return this.arrayToCursor this.processQueryOptionsOnResult(data, options)
+
+		ids = RocketChat.models.Subscriptions.findByUserId(userId, {fields: {rid: 1}}).fetch()
+		ids = ids.map (item) -> item.rid
+
+		query =
+			_id:
+				$in: ids
+			_updatedAt:
+				$gt: _updatedAt
+
+		this.find query, options
+
 	findByNameContaining: (name, options) ->
 		nameRegex = new RegExp s.trim(s.escapeRegExp(name)), "i"
 
@@ -82,6 +137,39 @@ RocketChat.models.Rooms = new class extends RocketChat.models._Base
 				t: 'd'
 				usernames: nameRegex
 			]
+
+		return @find query, options
+
+	findByNameContainingTypesWithUsername: (name, types, options) ->
+		nameRegex = new RegExp s.trim(s.escapeRegExp(name)), "i"
+
+		$or = []
+		for type in types
+			obj = {name: nameRegex, t: type.type}
+			if type.username?
+				obj.usernames = type.username
+			if type.ids?
+				obj._id = $in: type.ids
+			$or.push obj
+
+		query =
+			$or: $or
+
+		return @find query, options
+
+	findContainingTypesWithUsername: (types, options) ->
+
+		$or = []
+		for type in types
+			obj = {t: type.type}
+			if type.username?
+				obj.usernames = type.username
+			if type.ids?
+				obj._id = $in: type.ids
+			$or.push obj
+
+		query =
+			$or: $or
 
 		return @find query, options
 
@@ -97,6 +185,15 @@ RocketChat.models.Rooms = new class extends RocketChat.models._Base
 				t: 'd'
 				usernames: nameRegex
 			]
+
+		return @find query, options
+
+	findByNameAndTypeNotContainingUsername: (name, type, username, options) ->
+		query =
+			t: type
+			name: name
+			usernames:
+				$ne: username
 
 		return @find query, options
 
@@ -123,14 +220,14 @@ RocketChat.models.Rooms = new class extends RocketChat.models._Base
 
 		return @find query, options
 
-	findByTypeContainigUsername: (type, username, options) ->
+	findByTypeContainingUsername: (type, username, options) ->
 		query =
 			t: type
 			usernames: username
 
 		return @find query, options
 
-	findByTypeContainigUsernames: (type, username, options) ->
+	findByTypeContainingUsernames: (type, username, options) ->
 		query =
 			t: type
 			usernames: { $all: [].concat(username) }
@@ -147,20 +244,23 @@ RocketChat.models.Rooms = new class extends RocketChat.models._Base
 
 		return @find query, options
 
-	findByContainigUsername: (username, options) ->
+	findByContainingUsername: (username, options) ->
 		query =
 			usernames: username
 
 		return @find query, options
 
 	findByTypeAndName: (type, name, options) ->
+		if this.useCache
+			return this.cache.findByIndex('t,name', [type, name], options)
+
 		query =
 			name: name
 			t: type
 
 		return @find query, options
 
-	findByTypeAndNameContainigUsername: (type, name, username, options) ->
+	findByTypeAndNameContainingUsername: (type, name, username, options) ->
 		query =
 			name: name
 			t: type
@@ -175,12 +275,23 @@ RocketChat.models.Rooms = new class extends RocketChat.models._Base
 		if archivationstate
 			query.archived = true
 		else
-			query.archived = { $ne: true }
+			query.archived = { $ne: true }
 
 		return @find query, options
 
-
 	# UPDATE
+	addImportIds: (_id, importIds) ->
+		importIds = [].concat(importIds);
+		query =
+			_id: _id
+
+		update =
+			$addToSet:
+				importIds:
+					$each: importIds
+
+		return @update query, update
+
 	archiveById: (_id) ->
 		query =
 			_id: _id
@@ -201,13 +312,16 @@ RocketChat.models.Rooms = new class extends RocketChat.models._Base
 
 		return @update query, update
 
-	addUsernameById: (_id, username) ->
+	addUsernameById: (_id, username, muted) ->
 		query =
 			_id: _id
 
 		update =
 			$addToSet:
 				usernames: username
+
+		if muted
+			update.$addToSet.muted = username
 
 		return @update query, update
 
@@ -254,7 +368,8 @@ RocketChat.models.Rooms = new class extends RocketChat.models._Base
 		return @update query, update
 
 	removeUsernameFromAll: (username) ->
-		query = {}
+		query =
+			usernames: username
 
 		update =
 			$pull:
@@ -279,6 +394,16 @@ RocketChat.models.Rooms = new class extends RocketChat.models._Base
 		update =
 			$set:
 				name: name
+
+		return @update query, update
+
+	incMsgCountById: (_id, inc=1) ->
+		query =
+			_id: _id
+
+		update =
+			$inc:
+				msgs: inc
 
 		return @update query, update
 
@@ -323,6 +448,24 @@ RocketChat.models.Rooms = new class extends RocketChat.models._Base
 				"u.username": username
 
 		return @update query, update, { multi: true }
+
+	setJoinCodeById: (_id, joinCode) ->
+		query =
+			_id: _id
+
+		if joinCode?.trim() isnt ''
+			update =
+				$set:
+					joinCodeRequired: true
+					joinCode: joinCode
+		else
+			update =
+				$set:
+					joinCodeRequired: false
+				$unset:
+					joinCode: 1
+
+		return @update query, update
 
 	setUserById: (_id, user) ->
 		query =
@@ -456,3 +599,5 @@ RocketChat.models.Rooms = new class extends RocketChat.models._Base
 			usernames: username
 
 		return @remove query
+
+RocketChat.models.Rooms = new ModelRooms('room', true)

@@ -7,9 +7,6 @@ var crypto = Npm.require('crypto');
 var xmldom = Npm.require('xmldom');
 var querystring = Npm.require('querystring');
 var xmlbuilder = Npm.require('xmlbuilder');
-// var xmlenc = Npm.require('xml-encryption');
-// var xpath = xmlCrypto.xpath;
-// var Dom = xmldom.DOMParser;
 
 // var prefixMatch = new RegExp(/(?!xmlns)^.*:/);
 
@@ -166,15 +163,6 @@ SAML.prototype.requestToUrl = function(request, operation, callback) {
 			target += '?';
 		}
 
-		var samlRequest = {
-			SAMLRequest: base64
-		};
-
-		if (self.options.privateCert) {
-			samlRequest.SigAlg = 'http://www.w3.org/2000/09/xmldsig#rsa-sha1';
-			samlRequest.Signature = self.signRequest(querystring.stringify(samlRequest));
-		}
-
 		// TBD. We should really include a proper RelayState here
 		var relayState;
 		if (operation === 'logout') {
@@ -183,7 +171,18 @@ SAML.prototype.requestToUrl = function(request, operation, callback) {
 		} else {
 			relayState = self.options.provider;
 		}
-		target += querystring.stringify(samlRequest) + '&RelayState=' + relayState;
+
+		var samlRequest = {
+			SAMLRequest: base64,
+			RelayState: relayState
+		};
+
+		if (self.options.privateCert) {
+			samlRequest.SigAlg = 'http://www.w3.org/2000/09/xmldsig#rsa-sha1';
+			samlRequest.Signature = self.signRequest(querystring.stringify(samlRequest));
+		}
+
+		target += querystring.stringify(samlRequest);
 
 		if (Meteor.settings.debug) {
 			console.log('requestToUrl: ' + target);
@@ -309,7 +308,7 @@ SAML.prototype.validateLogoutResponse = function(samlResponse, callback) {
 
 SAML.prototype.validateResponse = function(samlResponse, relayState, callback) {
 	var self = this;
-	var xml = new Buffer(samlResponse, 'base64').toString('ascii');
+	var xml = new Buffer(samlResponse, 'base64').toString('utf8');
 	// We currently use RelayState to save SAML provider
 	if (Meteor.settings.debug) {
 		console.log('Validating response with relay state: ' + xml);
@@ -350,7 +349,7 @@ SAML.prototype.validateResponse = function(samlResponse, relayState, callback) {
 
 			var issuer = self.getElement(assertion[0], 'Issuer');
 			if (issuer) {
-				profile.issuer = issuer[0];
+				profile.issuer = issuer[0]._;
 			}
 
 			var subject = self.getElement(assertion[0], 'Subject');

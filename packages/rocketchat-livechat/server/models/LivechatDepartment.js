@@ -3,8 +3,12 @@
  */
 class LivechatDepartment extends RocketChat.models._Base {
 	constructor() {
-		super();
-		this._initModel('livechat_department');
+		super('livechat_department');
+
+		this.tryEnsureIndex({
+			numAgents: 1,
+			enabled: 1
+		});
 	}
 
 	// FIND
@@ -20,17 +24,16 @@ class LivechatDepartment extends RocketChat.models._Base {
 		return this.find(query, options);
 	}
 
-	createOrUpdateDepartment(_id, enabled, name, description, agents, extraData) {
+	createOrUpdateDepartment(_id, { enabled, name, description, showOnRegistration }, agents) {
 		agents = [].concat(agents);
 
 		var record = {
 			enabled: enabled,
 			name: name,
 			description: description,
-			numAgents: agents.length
+			numAgents: agents.length,
+			showOnRegistration: showOnRegistration
 		};
-
-		_.extend(record, extraData);
 
 		if (_id) {
 			this.update({ _id: _id }, { $set: record });
@@ -51,8 +54,8 @@ class LivechatDepartment extends RocketChat.models._Base {
 				agentId: agent.agentId,
 				departmentId: _id,
 				username: agent.username,
-				count: parseInt(agent.count),
-				order: parseInt(agent.order)
+				count: agent.count ? parseInt(agent.count) : 0,
+				order: agent.order ? parseInt(agent.order) : 0
 			});
 		});
 

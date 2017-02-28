@@ -1,22 +1,24 @@
 this.CustomFields = (function() {
-	var queue = [];
+	var queue = {};
 	var initiated = false;
 
-	var setCustomField = function(token, key, value) {
+	var setCustomField = function(token, key, value, overwrite = true) {
 		if (!initiated) {
-			return queue.push([token, key, value]);
+			// queue by key
+			queue[key] = { token, value, overwrite };
+			return;
 		}
-		Meteor.call('livechat:setCustomField', token, key, value);
+		Meteor.call('livechat:setCustomField', token, key, value, overwrite);
 	};
 
 	var init = function() {
 		Tracker.autorun(function() {
 			if (Meteor.userId()) {
 				initiated = true;
-				queue.forEach(function(params) {
-					setCustomField.apply(this, params);
+				Object.keys(queue).forEach((key) => {
+					setCustomField.call(this, queue[key].token, key, queue[key].value, queue[key].overwrite);
 				});
-				queue = [];
+				queue = {};
 			} else {
 				initiated = false;
 			}

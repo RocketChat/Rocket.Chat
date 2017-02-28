@@ -3,8 +3,7 @@
  */
 class LivechatDepartmentAgents extends RocketChat.models._Base {
 	constructor() {
-		super();
-		this._initModel('livechat_department_agents');
+		super('livechat_department_agents');
 	}
 
 	findByDepartmentId(departmentId) {
@@ -48,7 +47,7 @@ class LivechatDepartmentAgents extends RocketChat.models._Base {
 
 		var sort = {
 			count: 1,
-			sort: 1,
+			order: 1,
 			username: 1
 		};
 		var update = {
@@ -61,14 +60,62 @@ class LivechatDepartmentAgents extends RocketChat.models._Base {
 		var findAndModify = Meteor.wrapAsync(collectionObj.findAndModify, collectionObj);
 
 		var agent = findAndModify(query, sort, update);
-		if (agent) {
+		if (agent && agent.value) {
 			return {
-				agentId: agent.agentId,
-				username: agent.username
+				agentId: agent.value.agentId,
+				username: agent.value.username
 			};
 		} else {
 			return null;
 		}
+	}
+
+	getOnlineForDepartment(departmentId) {
+		var agents = this.findByDepartmentId(departmentId).fetch();
+
+		if (agents.length === 0) {
+			return [];
+		}
+
+		var onlineUsers = RocketChat.models.Users.findOnlineUserFromList(_.pluck(agents, 'username'));
+
+		var onlineUsernames = _.pluck(onlineUsers.fetch(), 'username');
+
+		var query = {
+			departmentId: departmentId,
+			username: {
+				$in: onlineUsernames
+			}
+		};
+
+		var depAgents = this.find(query);
+
+		if (depAgents) {
+			return depAgents;
+		} else {
+			return [];
+		}
+	}
+
+	findUsersInQueue(usersList) {
+		const query = {};
+
+		if (!_.isEmpty(usersList)) {
+			query.username = {
+				$in: usersList
+			};
+		}
+
+		const options = {
+			sort: {
+				departmentId: 1,
+				count: 1,
+				order: 1,
+				username: 1
+			}
+		};
+
+		return this.find(query, options);
 	}
 }
 

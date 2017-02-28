@@ -6,8 +6,8 @@ Package.describe({
 });
 
 Package.on_use(function(api) {
-	api.versionsFrom('1.1.0.2');
 	api.use(['rocketchat:lib'], 'server');
+	api.use(['ecmascript'], 'server');
 	api.use(['coffeescript'], 'server');
 	api.use(['routepolicy', 'webapp', 'underscore', 'service-configuration'], 'server');
 	api.use(['http', 'accounts-base'], ['client', 'server']);
@@ -23,6 +23,5 @@ Npm.depends({
 	'xmldom': '0.1.19',
 	'connect': '2.7.10',
 	'xmlbuilder': '2.6.4',
-	'querystring': '0.2.0',
-	'xml-encryption': '0.7.2'
+	'querystring': '0.2.0'
 });

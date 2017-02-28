@@ -6,8 +6,6 @@ Package.describe({
 
 Package.onUse(function(api) {
 
-	api.versionsFrom('1.0');
-
 	// Server libs
 	api.use('rocketchat:logger', 'server');
 
@@ -20,10 +18,11 @@ Package.onUse(function(api) {
 	api.use('reactive-var');
 	api.use('http');
 	api.use('tracker');
+	api.use('check');
 
-	api.imply('facebook');
-	api.imply('twitter');
-	api.imply('google');
+	api.imply('facebook-oauth');
+	api.imply('twitter-oauth');
+	api.imply('google-oauth');
 	api.imply('oauth');
 
 	// Server files

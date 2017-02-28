@@ -1,11 +1,12 @@
 //! moment.js locale configuration
-//! locale : latvian (lv)
+//! locale : Latvian [lv]
 //! author : Kristaps Karlsons : https://github.com/skakri
 //! author : Jānis Elmeris : https://github.com/JanisE
 
-(function (global, factory) {
-   typeof exports === 'object' && typeof module !== 'undefined' ? factory(require('../moment')) :
-   typeof define === 'function' && define.amd ? define(['moment'], factory) :
+;(function (global, factory) {
+   typeof exports === 'object' && typeof module !== 'undefined'
+       && typeof require === 'function' ? factory(require('../moment')) :
+   typeof define === 'function' && define.amd ? define(['../moment'], factory) :
    factory(global.moment)
 }(this, function (moment) { 'use strict';
 
@@ -28,11 +29,11 @@
     function format(forms, number, withoutSuffix) {
         if (withoutSuffix) {
             // E.g. "21 minūte", "3 minūtes".
-            return number % 10 === 1 && number !== 11 ? forms[2] : forms[3];
+            return number % 10 === 1 && number % 100 !== 11 ? forms[2] : forms[3];
         } else {
             // E.g. "21 minūtes" as in "pēc 21 minūtes".
             // E.g. "3 minūtēm" as in "pēc 3 minūtēm".
-            return number % 10 === 1 && number !== 11 ? forms[0] : forms[1];
+            return number % 10 === 1 && number % 100 !== 11 ? forms[0] : forms[1];
         }
     }
     function relativeTimeWithPlural(number, withoutSuffix, key) {
@@ -51,13 +52,14 @@
         weekdays : 'svētdiena_pirmdiena_otrdiena_trešdiena_ceturtdiena_piektdiena_sestdiena'.split('_'),
         weekdaysShort : 'Sv_P_O_T_C_Pk_S'.split('_'),
         weekdaysMin : 'Sv_P_O_T_C_Pk_S'.split('_'),
+        weekdaysParseExact : true,
         longDateFormat : {
             LT : 'HH:mm',
-            LTS : 'LT:ss',
+            LTS : 'HH:mm:ss',
             L : 'DD.MM.YYYY.',
             LL : 'YYYY. [gada] D. MMMM',
-            LLL : 'YYYY. [gada] D. MMMM, LT',
-            LLLL : 'YYYY. [gada] D. MMMM, dddd, LT'
+            LLL : 'YYYY. [gada] D. MMMM, HH:mm',
+            LLLL : 'YYYY. [gada] D. MMMM, dddd, HH:mm'
         },
         calendar : {
             sameDay : '[Šodien pulksten] LT',

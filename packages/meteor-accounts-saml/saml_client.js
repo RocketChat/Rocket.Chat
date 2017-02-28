@@ -1,24 +1,72 @@
+/* globals cordova */
+
 if (!Accounts.saml) {
 	Accounts.saml = {};
 }
 
+// Override the standard logout behaviour.
+//
+// If we find a samlProvider, and we are using single
+// logout we will initiate logout from rocketchat via saml.
+// If not using single logout, we just do the standard logout.
+//
+// TODO: This may need some work as it is not clear if we are really
+// logging out of the idp when doing the standard logout.
+
+var MeteorLogout = Meteor.logout;
+
+Meteor.logout = function() {
+	var samlService = ServiceConfiguration.configurations.findOne({service: 'saml'});
+	if (samlService) {
+		var provider = samlService.clientConfig && samlService.clientConfig.provider;
+		if (provider) {
+			if (samlService.idpSLORedirectURL) {
+				return Meteor.logoutWithSaml({ provider: provider });
+			}
+		}
+	}
+	return MeteorLogout.apply(Meteor, arguments);
+};
+
 var openCenteredPopup = function(url, width, height) {
-	var screenX = typeof window.screenX !== 'undefined' ? window.screenX : window.screenLeft;
-	var screenY = typeof window.screenY !== 'undefined' ? window.screenY : window.screenTop;
-	var outerWidth = typeof window.outerWidth !== 'undefined' ? window.outerWidth : document.body.clientWidth;
-	var outerHeight = typeof window.outerHeight !== 'undefined' ? window.outerHeight : (document.body.clientHeight - 22);
-	// XXX what is the 22?
+	var newwindow;
 
-	// Use `outerWidth - width` and `outerHeight - height` for help in
-	// positioning the popup centered relative to the current window
-	var left = screenX + (outerWidth - width) / 2;
-	var top = screenY + (outerHeight - height) / 2;
-	var features = ('width=' + width + ',height=' + height +
-		',left=' + left + ',top=' + top + ',scrollbars=yes');
+	if (typeof cordova !== 'undefined' && typeof cordova.InAppBrowser !== 'undefined') {
+		newwindow = cordova.InAppBrowser.open(url, '_blank');
+		newwindow.closed = false;
 
-	var newwindow = window.open(url, 'Login', features);
-	if (newwindow.focus) {
-		newwindow.focus();
+		var intervalId = setInterval(function() {
+			newwindow.executeScript({
+				'code': 'document.getElementsByTagName("script")[0].textContent'
+			}, function(data) {
+				if (data && data.length > 0 && data[0] === 'window.close()') {
+					newwindow.close();
+					newwindow.closed = true;
+				}
+			});
+		}, 100);
+
+		newwindow.addEventListener('exit', function() {
+			clearInterval(intervalId);
+		});
+	} else {
+		var screenX = typeof window.screenX !== 'undefined' ? window.screenX : window.screenLeft;
+		var screenY = typeof window.screenY !== 'undefined' ? window.screenY : window.screenTop;
+		var outerWidth = typeof window.outerWidth !== 'undefined' ? window.outerWidth : document.body.clientWidth;
+		var outerHeight = typeof window.outerHeight !== 'undefined' ? window.outerHeight : (document.body.clientHeight - 22);
+		// XXX what is the 22?
+
+		// Use `outerWidth - width` and `outerHeight - height` for help in
+		// positioning the popup centered relative to the current window
+		var left = screenX + (outerWidth - width) / 2;
+		var top = screenY + (outerHeight - height) / 2;
+		var features = ('width=' + width + ',height=' + height +
+			',left=' + left + ',top=' + top + ',scrollbars=yes');
+
+		newwindow = window.open(url, 'Login', features);
+		if (newwindow.focus) {
+			newwindow.focus();
+		}
 	}
 	return newwindow;
 };
@@ -50,6 +98,7 @@ Accounts.saml.initiateLogin = function(options, callback, dimensions) {
 	}, 100);
 };
 
+
 Meteor.loginWithSaml = function(options, callback) {
 	options = options || {};
 	var credentialToken = Random.id();
@@ -69,9 +118,12 @@ Meteor.loginWithSaml = function(options, callback) {
 Meteor.logoutWithSaml = function(options/*, callback*/) {
 	//Accounts.saml.idpInitiatedSLO(options, callback);
 	Meteor.call('samlLogout', options.provider, function(err, result) {
-		console.log('LOC ' + result);
+		if (err || !result) {
+			MeteorLogout.apply(Meteor);
+			return;
+		}
 		// A nasty bounce: 'result' has the SAML LogoutRequest but we need a proper 302 to redirected from the server.
 		//window.location.replace(Meteor.absoluteUrl('_saml/sloRedirect/' + options.provider + '/?redirect='+result));
-		window.location.replace(Meteor.absoluteUrl('_saml/sloRedirect/' + options.provider + '/?redirect='+encodeURIComponent(result)));
+		window.location.replace(Meteor.absoluteUrl('_saml/sloRedirect/' + options.provider + '/?redirect=' + encodeURIComponent(result)));
 	});
 };

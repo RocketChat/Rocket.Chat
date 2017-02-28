@@ -1,3 +1,6 @@
+import moment from 'moment'
+import toastr from 'toastr'
+
 RocketChat.MessageAction = new class
 	buttons = new ReactiveVar {}
 
@@ -51,18 +54,56 @@ RocketChat.MessageAction = new class
 	resetButtons = ->
 		buttons.set {}
 
+	getPermaLink = (msgId) ->
+		roomData = ChatSubscription.findOne({rid: Session.get('openedRoom')})
+		if roomData
+			routePath = RocketChat.roomTypes.getRouteLink(roomData.t, roomData)
+		else
+			routePath = document.location.pathname
+		return Meteor.absoluteUrl().replace(/\/$/, '') + routePath + '?msg=' + msgId
+
+	hideDropDown = () ->
+		$('.message-dropdown:visible').hide()
+
 	addButton: addButton
 	removeButton: removeButton
 	updateButton: updateButton
 	getButtons: getButtons
 	getButtonById: getButtonById
 	resetButtons: resetButtons
+	getPermaLink: getPermaLink
+	hideDropDown: hideDropDown
 
 Meteor.startup ->
 
 	$(document).click (event) =>
-		if !$(event.target).closest('.message-cog-container').length and !$(event.target).is('.message-cog-container')
-			$('.message-dropdown:visible').hide()
+		target = $(event.target)
+		if !target.closest('.message-cog-container').length and !target.is('.message-cog-container')
+			RocketChat.MessageAction.hideDropDown()
+
+	RocketChat.MessageAction.addButton
+		id: 'reply-message'
+		icon: 'icon-reply'
+		i18nLabel: 'Reply'
+		context: [
+			'message'
+			'message-mobile'
+		]
+		action: (event, instance) ->
+			message = @_arguments[1]
+			input = instance.find('.input-message')
+			url = RocketChat.MessageAction.getPermaLink(message._id)
+			text = '[ ](' + url + ') @' + message.u.username + ' '
+			if input.value
+				input.value += if input.value.endsWith(' ') then '' else ' '
+			input.value += text
+			input.focus()
+			RocketChat.MessageAction.hideDropDown()
+		validation: (message) ->
+			if not RocketChat.models.Subscriptions.findOne({ rid: message.rid })?
+				return false
+			return true
+		order: 1
 
 	RocketChat.MessageAction.addButton
 		id: 'edit-message'
@@ -73,21 +114,16 @@ Meteor.startup ->
 			'message-mobile'
 		]
 		action: (e, instance) ->
-			console.log e
-			console.log e.currentTarget
 			message = $(e.currentTarget).closest('.message')[0]
-			console.log message
 			chatMessages[Session.get('openedRoom')].edit(message)
-			$("\##{message.id} .message-dropdown").hide()
+			RocketChat.MessageAction.hideDropDown()
 			input = instance.find('.input-message')
 			Meteor.setTimeout ->
 				input.focus()
 				input.updateAutogrow()
 			, 200
 		validation: (message) ->
-			room = RocketChat.models.Rooms.findOne({ _id: message.rid })
-
-			if Array.isArray(room.usernames) && room.usernames.indexOf(Meteor.user().username) is -1
+			if not RocketChat.models.Subscriptions.findOne({ rid: message.rid })?
 				return false
 
 			hasPermission = RocketChat.authz.hasAtLeastOnePermission('edit-message', message.rid)
@@ -103,7 +139,7 @@ Meteor.startup ->
 				return currentTsDiff < blockEditInMinutes
 			else
 				return true
-		order: 1
+		order: 2
 
 	RocketChat.MessageAction.addButton
 		id: 'delete-message'
@@ -115,14 +151,10 @@ Meteor.startup ->
 		]
 		action: (event, instance) ->
 			message = @_arguments[1]
-			msg = $(event.currentTarget).closest('.message')[0]
-			$("\##{msg.id} .message-dropdown").hide()
-
+			RocketChat.MessageAction.hideDropDown()
 			chatMessages[Session.get('openedRoom')].confirmDeleteMsg(message)
 		validation: (message) ->
-			room = RocketChat.models.Rooms.findOne({ _id: message.rid })
-
-			if Array.isArray(room.usernames) && room.usernames.indexOf(Meteor.user().username) is -1
+			if not RocketChat.models.Subscriptions.findOne({ rid: message.rid })?
 				return false
 
 			hasPermission = RocketChat.authz.hasAtLeastOnePermission('delete-message', message.rid)
@@ -138,7 +170,7 @@ Meteor.startup ->
 				return currentTsDiff < blockDeleteInMinutes
 			else
 				return true
-		order: 2
+		order: 3
 
 	RocketChat.MessageAction.addButton
 		id: 'permalink'
@@ -151,18 +183,19 @@ Meteor.startup ->
 		]
 		action: (event, instance) ->
 			message = @_arguments[1]
-			msg = $(event.currentTarget).closest('.message')[0]
-			$("\##{msg.id} .message-dropdown").hide()
-			$(event.currentTarget).attr('data-clipboard-text', document.location.origin + document.location.pathname + '?msg=' + msg.id);
+			permalink = RocketChat.MessageAction.getPermaLink(message._id)
+			RocketChat.MessageAction.hideDropDown()
+			if Meteor.isCordova
+				cordova.plugins.clipboard.copy(permalink);
+			else
+				$(event.currentTarget).attr('data-clipboard-text', permalink);
 			toastr.success(TAPi18n.__('Copied'))
 		validation: (message) ->
-			room = RocketChat.models.Rooms.findOne({ _id: message.rid })
-
-			if Array.isArray(room.usernames) && room.usernames.indexOf(Meteor.user().username) is -1
+			if not RocketChat.models.Subscriptions.findOne({ rid: message.rid })?
 				return false
-			
+
 			return true
-		order: 3
+		order: 4
 
 	RocketChat.MessageAction.addButton
 		id: 'copy'
@@ -175,18 +208,18 @@ Meteor.startup ->
 		]
 		action: (event, instance) ->
 			message = @_arguments[1].msg
-			msg = $(event.currentTarget).closest('.message')[0]
-			$("\##{msg.id} .message-dropdown").hide()
-			$(event.currentTarget).attr('data-clipboard-text', message)
+			RocketChat.MessageAction.hideDropDown()
+			if Meteor.isCordova
+				cordova.plugins.clipboard.copy(message);
+			else
+				$(event.currentTarget).attr('data-clipboard-text', message)
 			toastr.success(TAPi18n.__('Copied'))
 		validation: (message) ->
-			room = RocketChat.models.Rooms.findOne({ _id: message.rid })
-
-			if Array.isArray(room.usernames) && room.usernames.indexOf(Meteor.user().username) is -1
+			if not RocketChat.models.Subscriptions.findOne({ rid: message.rid })?
 				return false
-				
+
 			return true
-		order: 4
+		order: 5
 
 	RocketChat.MessageAction.addButton
 		id: 'quote-message'
@@ -199,16 +232,16 @@ Meteor.startup ->
 		action: (event, instance) ->
 			message = @_arguments[1]
 			input = instance.find('.input-message')
-			url = Meteor.absoluteUrl().replace(/\/$/, '') + document.location.pathname + '?msg=' + message._id
+			url = RocketChat.MessageAction.getPermaLink(message._id)
 			text = '[ ](' + url + ') '
-			input.value = text
+			if input.value
+				input.value += if input.value.endsWith(' ') then '' else ' '
+			input.value += text
 			input.focus()
-			$(input).keyup()
+			RocketChat.MessageAction.hideDropDown()
 		validation: (message) ->
-			room = RocketChat.models.Rooms.findOne({ _id: message.rid })
-
-			if Array.isArray(room.usernames) && room.usernames.indexOf(Meteor.user().username) is -1
+			if not RocketChat.models.Subscriptions.findOne({ rid: message.rid })?
 				return false
-			
+
 			return true
-		order: 5
+		order: 6

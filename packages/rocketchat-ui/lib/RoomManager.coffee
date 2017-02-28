@@ -42,7 +42,7 @@ Tracker.autorun ->
 	if Meteor.userId()
 		RocketChat.Notifications.onUser 'message', (msg) ->
 			msg.u =
-				username: 'rocketbot'
+				username: 'rocket.cat'
 			msg.private = true
 
 			ChatMessage.upsert { _id: msg._id }, msg
@@ -50,22 +50,13 @@ Tracker.autorun ->
 
 @RoomManager = new class
 	openedRooms = {}
-	subscription = null
 	msgStream = new Meteor.Streamer 'room-messages'
 	onlineUsers = new ReactiveVar {}
 
 	Dep = new Tracker.Dependency
 
-	init = ->
-		subscription = Meteor.subscribe('subscription')
-		return subscription
-
 	close = (typeName) ->
 		if openedRooms[typeName]
-			if openedRooms[typeName].sub?
-				for sub in openedRooms[typeName].sub
-					sub.stop()
-
 			if openedRooms[typeName].rid?
 				msgStream.removeAllListeners openedRooms[typeName].rid
 				RocketChat.Notifications.unRoom openedRooms[typeName].rid, 'deleteMessage', onDeleteMessageStream
@@ -92,14 +83,10 @@ Tracker.autorun ->
 				unless user?.username
 					return
 
-				record.sub = [
-					Meteor.subscribe 'room', typeName
-				]
-
 				if record.ready is true
 					return
 
-				ready = record.sub[0].ready() and subscription.ready()
+				ready = CachedChatRoom.ready.get() and CachedChatSubscription.ready.get() is true
 
 				if ready is true
 					type = typeName.substr(0, 1)
@@ -136,6 +123,8 @@ Tracker.autorun ->
 
 										RocketChat.callbacks.run 'streamMessage', msg
 
+										window.fireGlobalEvent('new-message', msg);
+
 							RocketChat.Notifications.onRoom openedRooms[typeName].rid, 'deleteMessage', onDeleteMessageStream
 
 				Dep.changed()
@@ -169,7 +158,7 @@ Tracker.autorun ->
 		if openedRooms[typeName].ready
 			closeOlderRooms()
 
-		if subscription.ready() && Meteor.userId()
+		if CachedChatSubscription.ready.get() is true && Meteor.userId()
 
 			if openedRooms[typeName].active isnt true
 				openedRooms[typeName].active = true
@@ -235,14 +224,13 @@ Tracker.autorun ->
 			topOffset = $(item).offset().top + scrollTop
 			percent = 100 / totalHeight * topOffset
 			if $(item).hasClass('mention-link-all')
-				ticksBar.append('<div class="tick tick-all" style="top: '+percent+'%;"></div>')
+				ticksBar.append('<div class="tick background-attention-color" style="top: '+percent+'%;"></div>')
 			else
-				ticksBar.append('<div class="tick" style="top: '+percent+'%;"></div>')
+				ticksBar.append('<div class="tick background-primary-action-color" style="top: '+percent+'%;"></div>')
 
 	open: open
 	close: close
 	closeAllRooms: closeAllRooms
-	init: init
 	getDomOfRoom: getDomOfRoom
 	existsDomOfRoom: existsDomOfRoom
 	msgStream: msgStream
@@ -251,7 +239,9 @@ Tracker.autorun ->
 	onlineUsers: onlineUsers
 	updateMentionsMarksOfRoom: updateMentionsMarksOfRoom
 	getOpenedRoomByRid: getOpenedRoomByRid
+	computation: computation
 
 
 RocketChat.callbacks.add 'afterLogoutCleanUp', ->
 	RoomManager.closeAllRooms()
+, RocketChat.callbacks.priority.MEDIUM, 'roommanager-after-logout-cleanup'

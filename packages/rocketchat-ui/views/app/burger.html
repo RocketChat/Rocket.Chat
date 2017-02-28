@@ -1,10 +1,10 @@
 <template name="burger">
-	<div class="burger">
+	<div class="burger {{isMenuOpen}}">
 		<i></i>
 		<i></i>
 		<i></i>
 		{{#if unread}}
-			<div class="unread-burger-alert">
+			<div class="unread-burger-alert color-error-contrast background-error-color">
 				{{unread}}
 			</div>
 		{{/if}}

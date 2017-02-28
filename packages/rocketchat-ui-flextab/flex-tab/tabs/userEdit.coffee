@@ -1,3 +1,4 @@
+import toastr from 'toastr'
 Template.userEdit.helpers
 	canEditOrAdd: ->
 		return (Template.instance().user and RocketChat.authz.hasAtLeastOnePermission('edit-other-user-info')) or (not Template.instance().user and RocketChat.authz.hasAtLeastOnePermission('create-user'))
@@ -38,13 +39,15 @@ Template.userEdit.events
 Template.userEdit.onCreated ->
 	@user = this.data?.user
 
+	tabBar = Template.currentData().tabBar
+
 	@cancel = (form, username) =>
 		form.reset()
 		this.$('input[type=checkbox]').prop('checked', true);
 		if @user
 			@data.back(username)
 		else
-			RocketChat.TabBar.closeFlex()
+			tabBar.close()
 
 	@getUserData = =>
 		userData = { _id: @user?._id }
@@ -56,7 +59,7 @@ Template.userEdit.onCreated ->
 		userData.requirePasswordChange = this.$("#changePassword:checked").length > 0
 		userData.joinDefaultChannels = this.$("#joinDefaultChannels:checked").length > 0
 		userData.sendWelcomeEmail = this.$("#sendWelcomeEmail:checked").length > 0
-		userData.role = this.$("#role").val()
+		userData.roles = [this.$("#role").val()] if this.$("#role").val()
 		return userData
 
 	@validate = =>
@@ -78,6 +81,12 @@ Template.userEdit.onCreated ->
 	@save = (form) =>
 		if this.validate()
 			userData = this.getUserData()
+
+			if @user?
+				for key, value of userData when key not in ['_id']
+					if value is @user[key]
+						delete userData[key]
+
 			Meteor.call 'insertOrUpdateUser', userData, (error, result) =>
 				if result
 					if userData._id

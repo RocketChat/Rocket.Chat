@@ -1,28 +1,32 @@
 <template name="livechatDepartments">
-	<div class="list">
-		<table>
-			<thead>
-				<tr>
-					<th width="25%">{{_ "Name"}}</th>
-					<th width="25%">{{_ "Description"}}</th>
-					<th width="25%">{{_ "Num_Agents"}}</th>
-					<th width="25%">{{_ "Enabled"}}</th>
-					<th>{{_ "Delete"}}</th>
-				</tr>
-			</thead>
-			<tbody>
-				{{#each departments}}
-					<tr class="department-info row-link" data-id="{{_id}}">
-						<td>{{name}}</td>
-						<td>{{description}}</td>
-						<td>{{numAgents}}</td>
-						<td>{{#if enabled}}{{_ "Yes"}}{{else}}{{_ "No"}}{{/if}}</td>
-						<td><a href="#remove" class="remove-department"><i class="icon-trash"></i></a></td>
+	{{#requiresPermission 'view-livechat-manager'}}
+		<div class="list">
+			<table>
+				<thead>
+					<tr>
+						<th width="20%">{{_ "Name"}}</th>
+						<th width="30%">{{_ "Description"}}</th>
+						<th width="10%">{{_ "Num_Agents"}}</th>
+						<th width="20%">{{_ "Enabled"}}</th>
+						<th width="20%">{{_ "Show_on_registration_page"}}</th>
+						<th>{{_ "Delete"}}</th>
 					</tr>
-				{{/each}}
-			</tbody>
-		</table>
-	</div>
+				</thead>
+				<tbody>
+					{{#each departments}}
+						<tr class="department-info row-link" data-id="{{_id}}">
+							<td>{{name}}</td>
+							<td>{{description}}</td>
+							<td>{{numAgents}}</td>
+							<td>{{#if enabled}}{{_ "Yes"}}{{else}}{{_ "No"}}{{/if}}</td>
+							<td>{{#if showOnRegistration}}{{_ "Yes"}}{{else}}{{_ "No"}}{{/if}}</td>
+							<td><a href="#remove" class="remove-department"><i class="icon-trash"></i></a></td>
+						</tr>
+					{{/each}}
+				</tbody>
+			</table>
+		</div>
 
-	<a href="{{pathFor 'livechat-department-new'}}" class="button primary">{{_ "New_Department"}}</a>
+		<a href="{{pathFor 'livechat-department-new'}}" class="button primary">{{_ "New_Department"}}</a>
+	{{/requiresPermission}}
 </template>

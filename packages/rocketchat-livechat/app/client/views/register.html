@@ -1,24 +1,30 @@
 <template name="register">
-	<form id="livechat-registration" class="livechat-form">
-		<div class="error">
+	<div class="livechat-form">
+		<div class="error error-color error-background">
 			<span>{{{error}}}</span>
 		</div>
 
-		<label>
+		<p class="welcome">
 			{{{welcomeMessage}}}
-		</label>
-		<input type="text" name="name" id="guestName" placeholder="{{_ "Name"}}">
-		<input type="email" name="email" id="guestEmail" placeholder="{{_ "Email"}}">
+		</p>
+		<form id="livechat-registration">
+			<input type="text" name="name" id="guestName" placeholder="{{_ "Name"}}">
+			<input type="email" name="email" id="guestEmail" placeholder="{{_ "Email"}}">
 
-		{{#if hasDepartments}}
-			<select name="department">
-				<option value="">{{_ "Select_a_department"}}</option>
-				{{#each departments}}
-					<option value="{{_id}}">{{name}}</option>
-				{{/each}}
-			</select>
-		{{/if}}
-		<button type="submit" id="btnEntrar" class="button"> {{_ "Start_Chat"}} </button>
+			{{#if showDepartments}}
+				<select name="department">
+					<option value="">{{_ "Select_a_department"}}</option>
+					{{#each departments}}
+						<option value="{{_id}}" selected="{{selectedDepartment}}">{{name}}</option>
+					{{/each}}
+				</select>
+			{{/if}}
+			<button type="submit" id="btnEntrar" class="button"> {{_ "Start_Chat"}} </button>
 
-	</form>
+			{{#if videoCallEnabled}}
+				<br>
+				<button type="submit" class="button request-video"> {{_ "Request_video_chat"}} </button>
+			{{/if}}
+		</form>
+	</div>
 </template>

@@ -39,6 +39,18 @@ class Twilio {
 			body: '<Response></Response>'
 		};
 	}
+	error(error) {
+		let message = '';
+		if (error.reason) {
+			message = `<Message>${error.reason}</Message>`;
+		}
+		return {
+			headers: {
+				'Content-Type': 'text/xml'
+			},
+			body: `<Response>${message}</Response>`
+		};
+	}
 }
 
 RocketChat.SMS.registerService('twilio', Twilio);
