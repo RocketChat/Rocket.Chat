@@ -3,7 +3,11 @@
 
 Template.videoFlexTab.helpers({
 	openInNewWindow() {
-		return RocketChat.settings.get('Jitsi_Open_New_Window');
+		if (Meteor.isCordova) {
+			return true;
+		} else {
+			return RocketChat.settings.get('Jitsi_Open_New_Window');
+		}
 	}
 });
 
@@ -16,13 +20,13 @@ Template.videoFlexTab.onRendered(function() {
 
 	let timeOut = null;
 
-	const width = 'auto';
-	const height = 500;
+	let width = 'auto';
+	let height = 500;
 
-	const configOverwrite = {
+	let configOverwrite = {
 		desktopSharingChromeExtId: RocketChat.settings.get('Jitsi_Chrome_Extension')
 	};
-	const interfaceConfigOverwrite = {};
+	let interfaceConfigOverwrite = {};
 
 	let jitsiRoomActive = null;
 
@@ -40,11 +44,11 @@ Template.videoFlexTab.onRendered(function() {
 	this.autorun(() => {
 		if (RocketChat.settings.get('Jitsi_Enabled')) {
 			if (this.tabBar.getState() === 'opened') {
-				const roomId = Session.get('openedRoom');
+				let roomId = Session.get('openedRoom');
 
-				const domain = RocketChat.settings.get('Jitsi_Domain');
-				const jitsiRoom = RocketChat.settings.get('Jitsi_URL_Room_Prefix') + CryptoJS.MD5(RocketChat.settings.get('uniqueID') + roomId).toString();
-				const noSsl = RocketChat.settings.get('Jitsi_SSL') ? false : true;
+				let domain = RocketChat.settings.get('Jitsi_Domain');
+				let jitsiRoom = RocketChat.settings.get('Jitsi_URL_Room_Prefix') + CryptoJS.MD5(RocketChat.settings.get('uniqueID') + roomId).toString();
+				let noSsl = RocketChat.settings.get('Jitsi_SSL') ? false : true;
 
 				if (jitsiRoomActive !== null && jitsiRoomActive !== jitsiRoom) {
 					jitsiRoomActive = null;
@@ -61,21 +65,28 @@ Template.videoFlexTab.onRendered(function() {
 
 					RocketChat.TabBar.updateButton('video', { class: 'red' });
 
-					if (RocketChat.settings.get('Jitsi_Open_New_Window')) {
+					if (RocketChat.settings.get('Jitsi_Open_New_Window') || Meteor.isCordova) {
 						Meteor.call('jitsi:updateTimeout', roomId);
 
 						timeOut = Meteor.setInterval(() => Meteor.call('jitsi:updateTimeout', roomId), 10*1000);
 
-						const newWindow = window.open((noSsl ? 'http://' : 'https://') + domain + '/' + jitsiRoom, jitsiRoom);
+						if (Meteor.isCordova) {
+							const newWindow = window.open((noSsl ? 'http://' : 'https://') + domain + '/' + jitsiRoom, '_system');
+							closePanel();
+							clearInterval(timeOut);
+						} else {
+							const newWindow = window.open((noSsl ? 'http://' : 'https://') + domain + '/' + jitsiRoom, jitsiRoom);
+							let closeInterval = setInterval(() => {
+								if (newWindow.closed !== false) {
+									closePanel();
+									clearInterval(closeInterval);
+									clearInterval(timeOut);
+								}
+							}, 300);
+						}
 						newWindow.focus();
 
-						const closeInterval = setInterval(() => {
-							if (newWindow.closed !== false) {
-								closePanel();
-								clearInterval(closeInterval);
-								clearInterval(timeOut);
-							}
-						}, 300);
+
 
 					// Lets make sure its loaded before we try to show it.
 					} else if (typeof JitsiMeetExternalAPI !== 'undefined') {
@@ -114,3 +125,4 @@ Template.videoFlexTab.onRendered(function() {
 		}
 	});
 });
+
