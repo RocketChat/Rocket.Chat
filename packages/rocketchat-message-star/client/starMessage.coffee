@@ -3,9 +3,7 @@ Meteor.methods
 		if not Meteor.userId()
 			return false
 
-		room = RocketChat.models.Rooms.findOne({ _id: message.rid })
-
-		if Array.isArray(room.usernames) && room.usernames.indexOf(Meteor.user().username) is -1
+		if not RocketChat.models.Subscriptions.findOne({ rid: message.rid })?
 			return false
 
 		if not RocketChat.settings.get 'Message_AllowStarring'

@@ -1,11 +1,13 @@
+import moment from 'moment'
+
 Template.message.helpers
 	isBot: ->
 		return 'bot' if this.bot?
 	roleTags: ->
-		unless RocketChat.settings.get('UI_DisplayRoles')
+		if not RocketChat.settings.get('UI_DisplayRoles') or Meteor.user()?.settings?.preferences?.hideRoles
 			return []
 		roles = _.union(UserRoles.findOne(this.u?._id)?.roles, RoomRoles.findOne({'u._id': this.u?._id, rid: this.rid })?.roles)
-		return _.compact(_.map(roles, (role) -> return RocketChat.models.Roles.findOne({ _id: role, description: { $exists: 1 } })?.description));
+		return RocketChat.models.Roles.find({ _id: { $in: roles }, description: { $exists: 1, $ne: '' } }, { fields: { description: 1 } })
 	isGroupable: ->
 		return 'false' if this.groupable is false
 	isSequential: ->
@@ -14,7 +16,7 @@ Template.message.helpers
 		if this.avatar? and this.avatar[0] is '@'
 			return this.avatar.replace(/^@/, '')
 	getEmoji: (emoji) ->
-		return emojione.toImage emoji
+		return renderEmoji emoji
 	own: ->
 		return 'own' if this.u?._id is Meteor.userId()
 	timestamp: ->
@@ -30,17 +32,18 @@ Template.message.helpers
 			return 'temp'
 	body: ->
 		return Template.instance().body
-
-	system: ->
+	system: (returnClass) ->
 		if RocketChat.MessageTypes.isSystemMessage(this)
-			return 'system'
+			if returnClass
+				return 'color-info-font-color'
 
+			return 'system'
 	edited: ->
 		return Template.instance().wasEdited
 
 	editTime: ->
 		if Template.instance().wasEdited
-			return moment(@editedAt).format('LL LT') #TODO profile pref for 12hr/24hr clock?
+			return moment(@editedAt).format(RocketChat.settings.get('Message_DateFormat') + ' ' + RocketChat.settings.get('Message_TimeFormat'))
 	editedBy: ->
 		return "" unless Template.instance().wasEdited
 		# try to return the username of the editor,
@@ -88,7 +91,7 @@ Template.message.helpers
 	hasOembed: ->
 		return false unless this.urls?.length > 0 and Template.oembedBaseWidget? and RocketChat.settings.get 'API_Embed'
 
-		return false unless this.u?.username not in RocketChat.settings.get('API_EmbedDisabledFor')?.split(',')
+		return false unless this.u?.username not in RocketChat.settings.get('API_EmbedDisabledFor')?.split(',').map (username) -> username.trim()
 
 		return true
 
@@ -128,18 +131,9 @@ Template.message.helpers
 	hideReactions: ->
 		return 'hidden' if _.isEmpty(@reactions)
 
-
 	actionLinks: ->
-		msgActionLinks = []
-
-		for key, actionLink of @actionLinks
-			
-			#make this more generic? i.e. label is the first arg...etc?
-			msgActionLinks.push
-				label: actionLink.label
-				id: key
-
-		return msgActionLinks
+		# remove 'method_id' and 'params' properties
+		return _.map(@actionLinks, (actionLink, key) -> _.extend({ id: key }, _.omit(actionLink, 'method_id', 'params')))
 
 	hideActionLinks: ->
 		return 'hidden' if _.isEmpty(@actionLinks)
@@ -149,8 +143,12 @@ Template.message.helpers
 		return
 
 	hideCog: ->
-		room = RocketChat.models.Rooms.findOne({ _id: this.rid });
-		return 'hidden' if room.usernames.indexOf(Meteor.user().username) == -1
+		subscription = RocketChat.models.Subscriptions.findOne({ rid: this.rid });
+		return 'hidden' if not subscription?
+
+	hideUsernames: ->
+		prefs = Meteor.user()?.settings?.preferences
+		return if prefs?.hideUsernames
 
 Template.message.onCreated ->
 	msg = Template.currentData()
@@ -191,7 +189,6 @@ Template.message.onViewRendered = (context) ->
 		previousNode = currentNode.previousElementSibling
 		nextNode = currentNode.nextElementSibling
 		$currentNode = $(currentNode)
-		$previousNode = $(previousNode)
 		$nextNode = $(nextNode)
 
 		unless previousNode?
@@ -199,8 +196,10 @@ Template.message.onViewRendered = (context) ->
 
 		else if previousNode?.dataset?
 			previousDataset = previousNode.dataset
+			previousMessageDate = new Date(parseInt(previousDataset.timestamp))
+			currentMessageDate = new Date(parseInt(currentDataset.timestamp))
 
-			if previousDataset.date isnt currentDataset.date
+			if previousMessageDate.toDateString() isnt currentMessageDate.toDateString()
 				$currentNode.addClass('new-day').removeClass('sequential')
 			else
 				$currentNode.removeClass('new-day')
@@ -235,4 +234,4 @@ Template.message.onViewRendered = (context) ->
 			else
 				if templateInstance?.firstNode && templateInstance?.atBottom is false
 					newMessage = templateInstance?.find(".new-message")
-					newMessage?.className = "new-message"
+					newMessage?.className = "new-message background-primary-action-color color-content-background-color "

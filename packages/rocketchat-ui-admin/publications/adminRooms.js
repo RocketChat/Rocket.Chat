@@ -17,6 +17,7 @@ Meteor.publish('adminRooms', function(filter, types, limit) {
 			u: 1,
 			usernames: 1,
 			muted: 1,
+			ro: 1,
 			default: 1,
 			topic: 1,
 			msgs: 1,
@@ -30,10 +31,13 @@ Meteor.publish('adminRooms', function(filter, types, limit) {
 	};
 	filter = _.trim(filter);
 	if (filter && types.length) {
+		// CACHE: can we stop using publications here?
 		return RocketChat.models.Rooms.findByNameContainingAndTypes(filter, types, options);
 	} else if (types.length) {
+		// CACHE: can we stop using publications here?
 		return RocketChat.models.Rooms.findByTypes(types, options);
 	} else {
+		// CACHE: can we stop using publications here?
 		return RocketChat.models.Rooms.findByNameContaining(filter, options);
 	}
 });

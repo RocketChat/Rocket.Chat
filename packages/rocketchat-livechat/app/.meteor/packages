@@ -33,8 +33,10 @@ momentjs:moment
 mizzao:timesync
 reactive-var
 accounts-password
-standard-minifiers
 tap:i18n
-kevohagan:sweetalert
+smoral:sweetalert
 ecmascript
 es5-shim
+standard-minifier-css
+standard-minifier-js
+shell-server

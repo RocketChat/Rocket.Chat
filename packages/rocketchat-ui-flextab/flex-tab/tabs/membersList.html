@@ -6,31 +6,40 @@
 				{{#with roomUsers}}
 					<div class="title">
 						<h2>{{_ "Members_List"}}</h2>
-						<p>
-							{{{_ "Showing_online_users" total_showing=totalShowing total=total}}}
-							<button class="see-all">{{seeAll}}</button>
-						</p>
 						{{> videoButtons}}
 						{{#if canAddUser}}
 							<div class="control">
 								<div class="search-form">
 									<div class="input-line search">
-										{{> inputAutocomplete settings=autocompleteSettingsAddUser id="user-add-search" class="search" placeholder=tAddUsers}}
-										<i class="icon-plus"></i>
+										{{> inputAutocomplete settings=autocompleteSettingsAddUser id="user-add-search" class="search content-background-color" placeholder=tAddUsers}}
+										<i class="icon-plus secondary-font-color"></i>
 									</div>
 								</div>
 							</div>
 						{{/if}}
+						<p>
+							{{#unless loading}}
+								{{{_ "Showing_online_users" total_showing=totalShowing online=totalOnline total=total}}}
+								<button class="see-all">{{seeAll}}</button>
+							{{/unless}}
+						</p>
 					</div>
 					<ul class='list clearfix lines'>
-						{{#each users}}
-							<li class='user-image user-card-room status-{{status}}'>
-								<button data-username="{{username}}" tabindex="0" title="{{username}}">
-									{{> avatar username=username}}
-									<p>{{username}} {{utcOffset}}</p>
-								</button>
-							</li>
-						{{/each}}
+						{{#if loading}}
+							{{> loading}}
+						{{else}}
+							{{#each users}}
+								<li class='user-image user-card-room status-{{status}}'>
+									<button data-username="{{username}}" tabindex="0" title="{{username}}">
+										{{> avatar username=username}}
+										<p>{{username}} {{utcOffset}}</p>
+										{{#if muted}}
+											<i class="icon-mute" title="{{_ "User_muted"}}"></i>
+										{{/if}}
+									</button>
+								</li>
+							{{/each}}
+						{{/if}}
 					</ul>
 					{{#if hasMore}}
 						<button class="button show-more-users">{{_ "Show_more"}}</button>

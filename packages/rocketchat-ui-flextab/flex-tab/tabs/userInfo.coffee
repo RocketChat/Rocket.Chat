@@ -1,3 +1,6 @@
+import moment from 'moment'
+import toastr from 'toastr'
+
 Template.userInfo.helpers
 	name: ->
 		user = Template.instance().user.get()
@@ -42,7 +45,7 @@ Template.userInfo.helpers
 	userTime: ->
 		user = Template.instance().user.get()
 		if user.utcOffset?
-			return Template.instance().now.get().utcOffset(user.utcOffset).format('LT')
+			return Template.instance().now.get().utcOffset(user.utcOffset).format(RocketChat.settings.get('Message_TimeFormat'))
 
 	canRemoveUser: ->
 		return RocketChat.authz.hasAllPermission('remove-user', Session.get('openedRoom'))
@@ -103,43 +106,33 @@ Template.userInfo.helpers
 						instance.loadedUsername.set username
 		}
 
+	roleTags: ->
+		uid = Template.instance().user.get()?._id
+		roles = _.union(UserRoles.findOne(uid)?.roles, RoomRoles.findOne({'u._id': uid, rid: Session.get('openedRoom') })?.roles)
+		return RocketChat.models.Roles.find({ _id: { $in: roles }, description: { $exists: 1 } }, { fields: { description: 1 } })
+
+	isDirect: ->
+		room = ChatRoom.findOne(Session.get('openedRoom'))
+
+		return room?.t is 'd'
+
+	isBlocker: ->
+		subscription = ChatSubscription.findOne({rid:Session.get('openedRoom'), 'u._id': Meteor.userId()}, { fields: { blocker: 1 } });
+		return subscription.blocker
+
 Template.userInfo.events
 	'click .thumb': (e) ->
 		$(e.currentTarget).toggleClass('bigger')
 
-	'click .pvt-msg': (e) ->
+	'click .pvt-msg': (e, instance) ->
 		Meteor.call 'createDirectMessage', @username, (error, result) =>
 			if error
 				return handleError(error)
 
 			if result?.rid?
-				FlowRouter.go('direct', { username: @username })
-
-	"click .flex-tab  .video-remote" : (e) ->
-		if RocketChat.TabBar.isFlexOpen()
-			if (!Session.get('rtcLayoutmode'))
-				Session.set('rtcLayoutmode', 1)
-			else
-				t = Session.get('rtcLayoutmode')
-				t = (t + 1) % 4
-				console.log  'setting rtcLayoutmode to ' + t  if window.rocketDebug
-				Session.set('rtcLayoutmode', t)
-
-	"click .flex-tab  .video-self" : (e) ->
-		if (Session.get('rtcLayoutmode') == 3)
-			console.log 'video-self clicked in layout3' if window.rocketDebug
-			i = document.getElementById("fullscreendiv")
-			if i.requestFullscreen
-				i.requestFullscreen()
-			else
-				if i.webkitRequestFullscreen
-					i.webkitRequestFullscreen()
-				else
-					if i.mozRequestFullScreen
-						i.mozRequestFullScreen()
-					else
-						if i.msRequestFullscreen
-							i.msRequestFullscreen()
+				FlowRouter.go 'direct', { username: @username }, FlowRouter.current().queryParams, ->
+					if window.matchMedia("(max-width: 500px)").matches
+						instance.tabBar.close()
 
 	'click .back': (e, instance) ->
 		instance.clear()
@@ -325,7 +318,7 @@ Template.userInfo.events
 						timer: 2000
 						showConfirmButton: false
 
-					RocketChat.TabBar.closeFlex()
+					instance.tabBar.close()
 
 	'click .edit-user': (e, instance) ->
 		e.stopPropagation()
@@ -333,16 +326,33 @@ Template.userInfo.events
 
 		instance.editingUser.set instance.user.get()._id
 
+	'click .block-user': (e, instance) ->
+		e.stopPropagation()
+		e.preventDefault()
+
+		Meteor.call 'blockUser', { rid: Session.get('openedRoom'), blocked: instance.user.get()._id }, (error, result) ->
+			if result
+				toastr.success t('User_is_blocked')
+			if error
+				handleError(error)
+
+	'click .unblock-user': (e, instance) ->
+		e.stopPropagation()
+		e.preventDefault()
+
+		Meteor.call 'unblockUser', { rid: Session.get('openedRoom'), blocked: instance.user.get()._id }, (error, result) ->
+			if result
+				toastr.success t('User_is_unblocked')
+			if error
+				handleError(error)
+
 Template.userInfo.onCreated ->
 	@now = new ReactiveVar moment()
-
 	@user = new ReactiveVar
-
 	@editingUser = new ReactiveVar
-
 	@loadingUserInfo = new ReactiveVar true
-
 	@loadedUsername = new ReactiveVar
+	@tabBar = Template.currentData().tabBar
 
 	Meteor.setInterval =>
 		@now.set moment()
@@ -380,4 +390,3 @@ Template.userInfo.onCreated ->
 		user = Meteor.users.findOne(filter)
 
 		@user.set user
-

@@ -7,5 +7,5 @@ Template.registerHelper 'match', (source, regex) ->
 	return new RegExp(regex).test(source)
 
 Template.oembedBaseWidget.onCreated () ->
-	if this.data?.parsedUrl?.host is 'open.spotify.com' and this.data?.meta?.ogAudio?
+	if this.data?.parsedUrl?.host is 'open.spotify.com' and (this.data?.meta?.ogType is 'music.song' or this.data?.meta?.ogType is 'music.album')
 		this.data._overrideTemplate = 'oembedSpotifyWidget'

@@ -13,30 +13,22 @@ class Markdown
 			else
 				return message
 
-		# Support `text`
-		if _.isString message
-			msg = msg.replace(/(^|&gt;|[ >_*~])\`([^`\r\n]+)\`([<_*~]|\B|\b|$)/gm, '$1<span class="copyonly">`</span><span><code class="inline">$2</code></span><span class="copyonly">`</span>$3')
-		else
-			message.tokens ?= []
-			msg = msg.replace /(^|&gt;|[ >_*~])\`([^`\r\n]+)\`([<_*~]|\B|\b|$)/gm, (match, p1, p2, p3, offset, text) ->
-				token = "=&=#{Random.id()}=&="
-
-				message.tokens.push
-					token: token
-					text: "#{p1}<span class=\"copyonly\">`</span><span><code class=\"inline\">#{p2}</code></span><span class=\"copyonly\">`</span>#{p3}"
-
-				return token
-
 		schemes = RocketChat.settings.get('Markdown_SupportSchemesForLink').split(',').join('|')
 
 		# Support ![alt text](http://image url)
-		msg = msg.replace(new RegExp("!\\[([^\\]]+)\\]\\(((?:#{schemes}):\\/\\/[^\\)]+)\\)", 'gm'), '<a href="$2" title="$1" class="swipebox" target="_blank"><div class="inline-image" style="background-image: url($2);"></div></a>')
+		msg = msg.replace new RegExp("!\\[([^\\]]+)\\]\\(((?:#{schemes}):\\/\\/[^\\)]+)\\)", 'gm'), (match, title, url) ->
+			target = if url.indexOf(Meteor.absoluteUrl()) is 0 then '' else '_blank'
+			return '<a href="' + url + '" title="' + title + '" target="' + target + '"><div class="inline-image" style="background-image: url(' + url + ');"></div></a>'
 
 		# Support [Text](http://link)
-		msg = msg.replace(new RegExp("\\[([^\\]]+)\\]\\(((?:#{schemes}):\\/\\/[^\\)]+)\\)", 'gm'), '<a href="$2" target="_blank">$1</a>')
+		msg = msg.replace new RegExp("\\[([^\\]]+)\\]\\(((?:#{schemes}):\\/\\/[^\\)]+)\\)", 'gm'), (match, title, url) ->
+			target = if url.indexOf(Meteor.absoluteUrl()) is 0 then '' else '_blank'
+			return '<a href="' + url + '" target="' + target + '">' + title + '</a>'
 
 		# Support <http://link|Text>
-		msg = msg.replace(new RegExp("(?:<|&lt;)((?:#{schemes}):\\/\\/[^\\|]+)\\|(.+?)(?=>|&gt;)(?:>|&gt;)", 'gm'), '<a href="$1" target="_blank">$2</a>')
+		msg = msg.replace new RegExp("(?:<|&lt;)((?:#{schemes}):\\/\\/[^\\|]+)\\|(.+?)(?=>|&gt;)(?:>|&gt;)", 'gm'), (match, url, title) ->
+			target = if url.indexOf(Meteor.absoluteUrl()) is 0 then '' else '_blank'
+			return '<a href="' + url + '" target="' + target + '">' + title + '</a>'
 
 		if RocketChat.settings.get('Markdown_Headers')
 			# Support # Text for h1
@@ -64,17 +56,17 @@ class Markdown
 		# >>>
 		# Text
 		# <<<
-		msg = msg.replace(/(?:&gt;){3}\n+([\s\S]*?)\n+(?:&lt;){3}/g, '<blockquote><span class="copyonly">&gt;&gt;&gt;</span>$1<span class="copyonly">&lt;&lt;&lt;</span></blockquote>')
+		msg = msg.replace(/(?:&gt;){3}\n+([\s\S]*?)\n+(?:&lt;){3}/g, '<blockquote class="background-transparent-darker-before"><span class="copyonly">&gt;&gt;&gt;</span>$1<span class="copyonly">&lt;&lt;&lt;</span></blockquote>')
 
 		# Support >Text for quote
-		msg = msg.replace(/^&gt;(.*)$/gm, '<blockquote><span class="copyonly">&gt;</span>$1</blockquote>')
+		msg = msg.replace(/^&gt;(.*)$/gm, '<blockquote class="background-transparent-darker-before"><span class="copyonly">&gt;</span>$1</blockquote>')
 
 		# Remove white-space around blockquote (prevent <br>). Because blockquote is block element.
-		msg = msg.replace(/\s*<blockquote>/gm, '<blockquote>')
+		msg = msg.replace(/\s*<blockquote class="background-transparent-darker-before">/gm, '<blockquote class="background-transparent-darker-before">')
 		msg = msg.replace(/<\/blockquote>\s*/gm, '</blockquote>')
 
 		# Remove new-line between blockquotes.
-		msg = msg.replace(/<\/blockquote>\n<blockquote>/gm, '</blockquote><blockquote>')
+		msg = msg.replace(/<\/blockquote>\n<blockquote/gm, '</blockquote><blockquote')
 
 		if not _.isString message
 			message.html = msg
@@ -85,8 +77,9 @@ class Markdown
 
 		return message
 
-RocketChat.callbacks.add 'renderMessage', Markdown, RocketChat.callbacks.priority.HIGH
+
 RocketChat.Markdown = Markdown
+RocketChat.callbacks.add 'renderMessage', Markdown, RocketChat.callbacks.priority.HIGH, 'markdown'
 
 if Meteor.isClient
 	Blaze.registerHelper 'RocketChatMarkdown', (text) ->

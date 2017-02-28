@@ -29,11 +29,11 @@ if Meteor.isCordova
 			if notification.payload.host is Meteor.absoluteUrl()
 				switch notification.payload.type
 					when 'c'
-						FlowRouter.go 'channel', name: notification.payload.name
+						FlowRouter.go 'channel', { name: notification.payload.name }, FlowRouter.current().queryParams
 					when 'p'
-						FlowRouter.go 'group', name: notification.payload.name
+						FlowRouter.go 'group', { name: notification.payload.name }, FlowRouter.current().queryParams
 					when 'd'
-						FlowRouter.go 'direct', username: notification.payload.sender.username
+						FlowRouter.go 'direct', { username: notification.payload.sender.username }, FlowRouter.current().queryParams
 			else
 				path = ''
 				switch notification.payload.type

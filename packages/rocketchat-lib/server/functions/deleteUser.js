@@ -4,7 +4,7 @@ RocketChat.deleteUser = function(userId) {
 
 	RocketChat.models.Messages.removeByUserId(userId); // Remove user messages
 	RocketChat.models.Subscriptions.findByUserId(userId).forEach((subscription) => {
-		let room = RocketChat.models.Rooms.findOneById(subscription.rid);
+		const room = RocketChat.models.Rooms.findOneById(subscription.rid);
 		if (room) {
 			if (room.t !== 'c' && room.usernames.length === 1) {
 				RocketChat.models.Rooms.removeById(subscription.rid); // Remove non-channel rooms with only 1 user (the one being deleted)
@@ -24,6 +24,8 @@ RocketChat.deleteUser = function(userId) {
 	if (user.avatarOrigin === 'upload' || user.avatarOrigin === 'url') {
 		RocketChatFileAvatarInstance.deleteFile(encodeURIComponent(user.username + '.jpg'));
 	}
+
+	RocketChat.models.Integrations.disableByUserId(userId); // Disables all the integrations which rely on the user being deleted.
 
 	RocketChat.models.Users.removeById(userId); // Remove user from users database
 };

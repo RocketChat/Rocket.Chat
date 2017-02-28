@@ -18,9 +18,16 @@ getIntegrationScript = (integration) ->
 				return store[key] = val
 			get: (key) ->
 				return store[key]
+		HTTP: (method, url, options) ->
+			try
+				return {} =
+					result: HTTP.call method, url, options
+			catch e
+				return {} =
+					error: e
 
 	try
-		logger.incoming.info 'will evaluate script'
+		logger.incoming.info 'Will evaluate script of Trigger', integration.name
 		logger.incoming.debug script
 
 		vmScript = vm.createScript script, 'script.js'
@@ -34,13 +41,14 @@ getIntegrationScript = (integration) ->
 
 			return compiledScripts[integration._id].script
 	catch e
-		logger.incoming.error "[Error evaluating Script:]"
+		logger.incoming.error '[Error evaluating Script in Trigger', integration.name, ':]'
 		logger.incoming.error script.replace(/^/gm, '  ')
 		logger.incoming.error "[Stack:]"
 		logger.incoming.error e.stack.replace(/^/gm, '  ')
 		throw RocketChat.API.v1.failure 'error-evaluating-script'
 
 	if not sandbox.Script?
+		logger.incoming.error '[Class "Script" not in Trigger', integration.name, ']'
 		throw RocketChat.API.v1.failure 'class-script-not-found'
 
 
@@ -49,8 +57,22 @@ Api = new Restivus
 	apiPath: 'hooks/'
 	auth:
 		user: ->
-			if @bodyParams?.payload?
-				@bodyParams = JSON.parse @bodyParams.payload
+			payloadKeys = Object.keys @bodyParams
+			payloadIsWrapped = @bodyParams?.payload? and payloadKeys.length == 1
+
+			if payloadIsWrapped and @request.headers['content-type'] is 'application/x-www-form-urlencoded'
+				try
+					@bodyParams = JSON.parse @bodyParams.payload
+				catch e
+					return {
+						error: {
+							statusCode: 400
+							body: {
+								success: false
+								error: e.message
+							}
+						}
+					}
 
 			@integration = RocketChat.models.Integrations.findOne
 				_id: @request.params.integrationId
@@ -67,7 +89,7 @@ Api = new Restivus
 
 
 createIntegration = (options, user) ->
-	logger.incoming.info 'Add integration'
+	logger.incoming.info 'Add integration', options.name
 	logger.incoming.debug options
 
 	Meteor.runAsUser user._id, =>
@@ -111,7 +133,7 @@ removeIntegration = (options, user) ->
 
 
 executeIntegrationRest = ->
-	logger.incoming.info 'Post integration'
+	logger.incoming.info 'Post integration', @integration.name
 	logger.incoming.debug '@urlParams', @urlParams
 	logger.incoming.debug '@bodyParams', @bodyParams
 
@@ -152,23 +174,42 @@ executeIntegrationRest = ->
 				username: @user.username
 
 		try
-			result = script.process_incoming_request({ request: request })
+			sandbox =
+				_: _
+				s: s
+				console: console
+				Store:
+					set: (key, val) ->
+						return store[key] = val
+					get: (key) ->
+						return store[key]
+				HTTP: (method, url, options) ->
+					try
+						return {} =
+							result: HTTP.call method, url, options
+					catch e
+						return {} =
+							error: e
+				script: script
+				request: request
+			result = vm.runInNewContext('script.process_incoming_request({ request: request })', sandbox, { timeout: 3000 })
 
 			if result?.error?
 				return RocketChat.API.v1.failure result.error
 
 			@bodyParams = result?.content
 
+			logger.incoming.debug '[Process Incoming Request result of Trigger', @integration.name, ':]'
 			logger.incoming.debug 'result', @bodyParams
 		catch e
-			logger.incoming.error "[Error running Script:]"
+			logger.incoming.error '[Error running Script in Trigger', @integration.name, ':]'
 			logger.incoming.error @integration.scriptCompiled.replace(/^/gm, '  ')
 			logger.incoming.error "[Stack:]"
 			logger.incoming.error e.stack.replace(/^/gm, '  ')
 			return RocketChat.API.v1.failure 'error-running-script'
 
 	if not @bodyParams?
-		RocketChat.API.v1.failure 'body-empty'
+		return RocketChat.API.v1.failure 'body-empty'
 
 	@bodyParams.bot =
 		i: @integration._id
@@ -234,17 +275,6 @@ integrationInfoRest = ->
 		statusCode: 200
 		body:
 			success: true
-
-
-RocketChat.API.v1.addRoute 'integrations.create', authRequired: true,
-	post: ->
-		return createIntegration @bodyParams, @user
-
-
-RocketChat.API.v1.addRoute 'integrations.remove', authRequired: true,
-	post: ->
-		return removeIntegration @bodyParams, @user
-
 
 Api.addRoute ':integrationId/:userId/:token', authRequired: true, {post: executeIntegrationRest, get: executeIntegrationRest}
 Api.addRoute ':integrationId/:token', authRequired: true, {post: executeIntegrationRest, get: executeIntegrationRest}

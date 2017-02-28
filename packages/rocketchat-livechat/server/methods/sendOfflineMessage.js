@@ -1,6 +1,18 @@
 /* globals DDPRateLimiter */
+const dns = Npm.require('dns');
+
 Meteor.methods({
 	'livechat:sendOfflineMessage'(data) {
+		check(data, {
+			name: String,
+			email: String,
+			message: String
+		});
+
+		if (!RocketChat.settings.get('Livechat_display_offline_form')) {
+			return false;
+		}
+
 		const header = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Header') || '');
 		const footer = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Footer') || '');
 
@@ -20,6 +32,16 @@ Meteor.methods({
 			fromEmail = RocketChat.settings.get('From_Email');
 		}
 
+		if (RocketChat.settings.get('Livechat_validate_offline_email')) {
+			const emailDomain = data.email.substr(data.email.lastIndexOf('@') + 1);
+
+			try {
+				Meteor.wrapAsync(dns.resolveMx)(emailDomain);
+			} catch (e) {
+				throw new Meteor.Error('error-invalid-email-address', 'Invalid email address', { method: 'livechat:sendOfflineMessage' });
+			}
+		}
+
 		Meteor.defer(() => {
 			Email.send({
 				to: RocketChat.settings.get('Livechat_offline_email'),
@@ -28,6 +50,10 @@ Meteor.methods({
 				subject: `Livechat offline message from ${data.name}: ${(data.message + '').substring(0, 20)}`,
 				html: header + html + footer
 			});
+		});
+
+		Meteor.defer(() => {
+			RocketChat.callbacks.run('livechat.offlineMessage', data);
 		});
 
 		return true;

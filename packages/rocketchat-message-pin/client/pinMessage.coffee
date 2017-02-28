@@ -6,9 +6,7 @@ Meteor.methods
 		if not RocketChat.settings.get 'Message_AllowPinning'
 			return false
 
-		room = RocketChat.models.Rooms.findOne({ _id: message.rid })
-
-		if Array.isArray(room.usernames) && room.usernames.indexOf(Meteor.user().username) is -1
+		if not RocketChat.models.Subscriptions.findOne({ rid: message.rid })?
 			return false
 
 		ChatMessage.update
@@ -23,9 +21,7 @@ Meteor.methods
 		if not RocketChat.settings.get 'Message_AllowPinning'
 			return false
 
-		room = RocketChat.models.Rooms.findOne({ _id: message.rid })
-
-		if Array.isArray(room.usernames) && room.usernames.indexOf(Meteor.user().username) is -1
+		if not RocketChat.models.Subscriptions.findOne({ rid: message.rid })?
 			return false
 
 		ChatMessage.update

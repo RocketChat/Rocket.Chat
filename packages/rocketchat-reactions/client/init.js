@@ -4,10 +4,10 @@ Template.room.events({
 		event.stopPropagation();
 		const data = Blaze.getData(event.currentTarget);
 
-		let user = Meteor.user();
-		let room = RocketChat.models.Rooms.findOne({ _id: data._arguments[1].rid });
+		const user = Meteor.user();
+		const room = RocketChat.models.Rooms.findOne({ _id: data._arguments[1].rid });
 
-		if (Array.isArray(room.muted) && room.muted.indexOf(user.username) !== -1) {
+		if (Array.isArray(room.muted) && room.muted.indexOf(user.username) !== -1 && !room.reactWhenReadOnly) {
 			return false;
 		}
 
@@ -54,12 +54,14 @@ Meteor.startup(function() {
 			});
 		},
 		validation(message) {
-			let room = RocketChat.models.Rooms.findOne({ _id: message.rid });
-			let user = Meteor.user();
+			const room = RocketChat.models.Rooms.findOne({ _id: message.rid });
+			const user = Meteor.user();
 
-			if (Array.isArray(room.muted) && room.muted.indexOf(user.username) !== -1) {
+			if (Array.isArray(room.muted) && room.muted.indexOf(user.username) !== -1 && !room.reactWhenReadOnly) {
 				return false;
-			} else if (Array.isArray(room.usernames) && room.usernames.indexOf(user.username) === -1) {
+			} else if (!RocketChat.models.Subscriptions.findOne({ rid: message.rid })) {
+				return false;
+			} else if (message.private) {
 				return false;
 			}
 

@@ -5,14 +5,13 @@ Package.describe({
 });
 
 Package.onUse(function(api) {
-	api.versionsFrom('1.0');
-
 	api.use([
+		'ecmascript',
 		'coffeescript',
 		'ddp-rate-limiter',
 		'kadira:flow-router',
 		'rocketchat:lib',
-		'rocketchat:authorization@0.0.1'
+		'rocketchat:authorization'
 	]);
 
 	api.use('templating', 'client');

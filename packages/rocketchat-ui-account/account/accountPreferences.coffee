@@ -1,4 +1,14 @@
+import toastr from 'toastr'
 Template.accountPreferences.helpers
+	audioAssets: ->
+		return RocketChat.CustomSounds && RocketChat.CustomSounds.getList && RocketChat.CustomSounds.getList() || [];
+
+	newMessageNotification: ->
+		return Meteor.user()?.settings?.preferences?.newMessageNotification || 'chime'
+
+	newRoomNotification: ->
+		return Meteor.user()?.settings?.preferences?.newRoomNotification || 'door'
+
 	languages: ->
 		languages = TAPi18n.getLanguages()
 		result = []
@@ -19,7 +29,7 @@ Template.accountPreferences.helpers
 
 	selected: (property, value, defaultValue) ->
 		if not Meteor.user()?.settings?.preferences?[property]
-			return defaultValue
+			return defaultValue is true
 		else
 			return Meteor.user()?.settings?.preferences?[property] == value
 
@@ -31,6 +41,12 @@ Template.accountPreferences.helpers
 
 	desktopNotificationDisabled: ->
 		return (KonchatNotification.notificationStatus.get() is 'denied') or (window.Notification && Notification.permission is "denied")
+
+	desktopNotificationDuration: ->
+		return Meteor.user()?.settings?.preferences?.desktopNotificationDuration - 0
+
+	showRoles: ->
+		return RocketChat.settings.get('UI_DisplayRoles');
 
 Template.accountPreferences.onCreated ->
 	settingsTemplate = this.parentTemplate(3)
@@ -62,17 +78,25 @@ Template.accountPreferences.onCreated ->
 			data.language = selectedLanguage
 			reload = true
 
-		data.newRoomNotification = $('input[name=newRoomNotification]:checked').val()
-		data.newMessageNotification = $('input[name=newMessageNotification]:checked').val()
+		data.newRoomNotification = $('select[name=newRoomNotification]').val()
+		data.newMessageNotification = $('select[name=newMessageNotification]').val()
 		data.useEmojis = $('input[name=useEmojis]:checked').val()
 		data.convertAsciiEmoji = $('input[name=convertAsciiEmoji]:checked').val()
 		data.saveMobileBandwidth = $('input[name=saveMobileBandwidth]:checked').val()
 		data.collapseMediaByDefault = $('input[name=collapseMediaByDefault]:checked').val()
-		data.compactView = $('input[name=compactView]:checked').val()
+		data.viewMode = parseInt($('#viewMode').find('select').val())
+		data.hideUsernames = $('#hideUsernames').find('input:checked').val()
+		data.hideRoles = $('#hideRoles').find('input:checked').val()
+		data.hideFlexTab = $('#hideFlexTab').find('input:checked').val()
+		data.hideAvatars = $('#hideAvatars').find('input:checked').val()
+		data.mergeChannels = $('#mergeChannels').find('input:checked').val()
+		data.sendOnEnter = $('#sendOnEnter').find('select').val()
 		data.unreadRoomsMode = $('input[name=unreadRoomsMode]:checked').val()
 		data.autoImageLoad = $('input[name=autoImageLoad]:checked').val()
 		data.emailNotificationMode = $('select[name=emailNotificationMode]').val()
 		data.highlights = _.compact(_.map($('[name=highlights]').val().split(','), (e) -> return _.trim(e)))
+		data.desktopNotificationDuration = $('input[name=desktopNotificationDuration]').val()
+		data.unreadAlert = $('#unreadAlert').find('input:checked').val()
 
 		Meteor.call 'saveUserPreferences', data, (error, results) ->
 			if results
@@ -103,8 +127,19 @@ Template.accountPreferences.events
 
 	'click .test-notifications': ->
 		KonchatNotification.notify
+			duration: $('input[name=desktopNotificationDuration]').val()
 			payload:
 				sender:
 					username: 'rocket.cat'
 			title: TAPi18n.__('Desktop_Notification_Test')
 			text: TAPi18n.__('This_is_a_desktop_notification')
+
+	'change .audio': (e) ->
+		e.preventDefault()
+		audio = $(e.currentTarget).val()
+		if audio is 'none'
+			return
+
+		if audio
+			$audio = $('audio#' + audio)
+			$audio?[0]?.play()

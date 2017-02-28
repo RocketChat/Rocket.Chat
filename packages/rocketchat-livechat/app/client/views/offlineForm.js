@@ -4,6 +4,13 @@ Template.offlineForm.helpers({
 	},
 	messageSent() {
 		return Template.instance().messageSent.get();
+	},
+	offlineSuccessMessage() {
+		if (!_.isEmpty(this.offlineSuccessMessage)) {
+			return this.offlineSuccessMessage.replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1<br>$2');
+		} else {
+			return TAPi18n.__('Thanks_We_ll_get_back_to_you_soon');
+		}
 	}
 });
 
@@ -13,7 +20,7 @@ Template.offlineForm.events({
 
 		const form = event.currentTarget;
 
-		let data = {
+		const data = {
 			name: form.elements['name'].value,
 			email: form.elements['email'].value,
 			message: form.elements['message'].value
@@ -33,6 +40,7 @@ Template.offlineForm.events({
 				return instance.showError(error.reason);
 			} else {
 				instance.messageSent.set(true);
+				parentCall('callback', ['offline-form-submit', data]);
 			}
 		});
 	}

@@ -23,6 +23,8 @@ LDAP = class LDAP {
 		self.options = {
 			host: RocketChat.settings.get('LDAP_Host'),
 			port: RocketChat.settings.get('LDAP_Port'),
+			connect_timeout: RocketChat.settings.get('LDAP_Connect_Timeout'),
+			idle_timeout: RocketChat.settings.get('LDAP_Idle_Timeout'),
 			encryption: RocketChat.settings.get('LDAP_Encryption'),
 			ca_cert: RocketChat.settings.get('LDAP_CA_Cert'),
 			reject_unauthorized: RocketChat.settings.get('LDAP_Reject_Unauthorized') || false,
@@ -34,7 +36,13 @@ LDAP = class LDAP {
 			domain_search_filter: RocketChat.settings.get('LDAP_Domain_Search_Filter'),
 			domain_search_user_id: RocketChat.settings.get('LDAP_Domain_Search_User_ID'),
 			domain_search_object_class: RocketChat.settings.get('LDAP_Domain_Search_Object_Class'),
-			domain_search_object_category: RocketChat.settings.get('LDAP_Domain_Search_Object_Category')
+			domain_search_object_category: RocketChat.settings.get('LDAP_Domain_Search_Object_Category'),
+			group_filter_enabled: RocketChat.settings.get('LDAP_Group_Filter_Enable'),
+			group_filter_object_class: RocketChat.settings.get('LDAP_Group_Filter_ObjectClass'),
+			group_filter_group_id_attribute: RocketChat.settings.get('LDAP_Group_Filter_Group_Id_Attribute'),
+			group_filter_group_member_attribute: RocketChat.settings.get('LDAP_Group_Filter_Group_Member_Attribute'),
+			group_filter_group_member_format: RocketChat.settings.get('LDAP_Group_Filter_Group_Member_Format'),
+			group_filter_group_name: RocketChat.settings.get('LDAP_Group_Filter_Group_Name')
 		};
 
 		self.connectSync = Meteor.wrapAsync(self.connectAsync, self);
@@ -50,9 +58,9 @@ LDAP = class LDAP {
 
 		const connectionOptions = {
 			url: `${self.options.host}:${self.options.port}`,
-			timeout: 1000 * 5,
-			connectTimeout: 1000 * 10,
-			idleTimeout: 1000 * 10,
+			timeout: 1000 * 60 * 10,
+			connectTimeout: self.options.connect_timeout,
+			idleTimeout: self.options.idle_timeout,
 			reconnect: false
 		};
 
@@ -102,7 +110,7 @@ LDAP = class LDAP {
 			// Set host parameter for tls.connect which is used by ldapjs starttls. This shouldn't be needed in newer nodejs versions (e.g v5.6.0).
 			// https://github.com/RocketChat/Rocket.Chat/issues/2035
 			// https://github.com/mcavage/node-ldapjs/issues/349
-			tlsOptions.host = [self.options.host];
+			tlsOptions.host = self.options.host;
 
 			logger.connection.info('Starting TLS');
 			logger.connection.debug('tlsOptions', tlsOptions);
@@ -162,7 +170,7 @@ LDAP = class LDAP {
 			};
 		}
 
-		let filter = ['(&'];
+		const filter = ['(&'];
 
 		if (self.options.domain_search_object_category !== '') {
 			filter.push(`(objectCategory=${self.options.domain_search_object_category})`);
@@ -236,7 +244,7 @@ LDAP = class LDAP {
 
 		self.bindIfNecessary();
 
-		let Unique_Identifier_Field = RocketChat.settings.get('LDAP_Unique_Identifier_Field').split(',');
+		const Unique_Identifier_Field = RocketChat.settings.get('LDAP_Unique_Identifier_Field').split(',');
 
 		let filter;
 
@@ -307,6 +315,44 @@ LDAP = class LDAP {
 
 		return result[0];
 	}
+
+	isUserInGroup(username) {
+		const self = this;
+
+		if (!self.options.group_filter_enabled) {
+			return true;
+		}
+
+		const filter = ['(&'];
+
+		if (self.options.group_filter_object_class !== '') {
+			filter.push(`(objectclass=${self.options.group_filter_object_class})`);
+		}
+
+		if (self.options.group_filter_group_member_attribute !== '') {
+			filter.push(`(${self.options.group_filter_group_member_attribute}=${self.options.group_filter_group_member_format})`);
+		}
+
+		if (self.options.group_filter_group_id_attribute !== '') {
+			filter.push(`(${self.options.group_filter_group_id_attribute}=${self.options.group_filter_group_name})`);
+		}
+		filter.push(')');
+
+		const searchOptions = {
+			filter: filter.join('').replace(/#{username}/g, username),
+			scope: 'sub'
+		};
+
+		logger.search.debug('Group filter LDAP:', searchOptions.filter);
+
+		const result = self.searchAllSync(self.options.domain_base, searchOptions);
+
+		if (!Array.isArray(result) || result.length === 0) {
+			return false;
+		}
+		return true;
+	}
+
 
 	searchAllAsync(domain_base, options, callback) {
 		const self = this;

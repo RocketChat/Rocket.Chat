@@ -1,36 +1,46 @@
 /* globals FileUpload, FileUploadBase, Slingshot */
 
 FileUpload.AmazonS3 = class FileUploadAmazonS3 extends FileUploadBase {
-	constructor(meta, file, data) {
-		super(meta, file, data);
+	constructor(meta, file) {
+		super(meta, file);
 		this.uploader = new Slingshot.Upload('rocketchat-uploads', { rid: meta.rid });
 	}
+
 	start() {
 		this.uploader.send(this.file, (error, downloadUrl) => {
-			var file, item, uploading;
+			if (this.computation) {
+				this.computation.stop();
+			}
 
 			if (error) {
-				uploading = Session.get('uploading');
-				if (uploading !== null) {
-					item = _.findWhere(uploading, {
-						id: this.id
-					});
-					if (item !== null) {
-						item.error = error.error;
-						item.percentage = 0;
-					}
-					Session.set('uploading', uploading);
+				let uploading = Session.get('uploading');
+				if (!Array.isArray(uploading)) {
+					uploading = [];
 				}
+
+				const item = _.findWhere(uploading, { id: this.id });
+
+				if (_.isObject(item)) {
+					item.error = error.error;
+					item.percentage = 0;
+				} else {
+					uploading.push({
+						error: error.error,
+						percentage: 0
+					});
+				}
+
+				Session.set('uploading', uploading);
 			} else {
-				file = _.pick(this.meta, 'type', 'size', 'name', 'identify');
+				const file = _.pick(this.meta, 'type', 'size', 'name', 'identify', 'description');
 				file._id = downloadUrl.substr(downloadUrl.lastIndexOf('/') + 1);
 				file.url = downloadUrl;
 
 				Meteor.call('sendFileMessage', this.meta.rid, 's3', file, () => {
 					Meteor.setTimeout(() => {
-						uploading = Session.get('uploading');
+						const uploading = Session.get('uploading');
 						if (uploading !== null) {
-							item = _.findWhere(uploading, {
+							const item = _.findWhere(uploading, {
 								id: this.id
 							});
 							return Session.set('uploading', _.without(uploading, item));
@@ -39,11 +49,13 @@ FileUpload.AmazonS3 = class FileUploadAmazonS3 extends FileUploadBase {
 				});
 			}
 		});
+
+		this.computation = Tracker.autorun(() => {
+			this.onProgress(this.uploader.progress());
+		});
 	}
 
-	getProgress() {
-		return this.uploader.progress();
-	}
+	onProgress() {}
 
 	stop() {
 		if (this.uploader && this.uploader.xhr) {

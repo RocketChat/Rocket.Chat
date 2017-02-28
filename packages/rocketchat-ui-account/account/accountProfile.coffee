@@ -1,3 +1,4 @@
+import toastr from 'toastr'
 Template.accountProfile.helpers
 	allowDeleteOwnAccount: ->
 		return RocketChat.settings.get('Accounts_AllowDeleteOwnAccount')
@@ -29,6 +30,9 @@ Template.accountProfile.helpers
 	passwordChangeDisabled: ->
 		return t('Password_Change_Disabled')
 
+	customFields: ->
+		return Meteor.user().customFields
+
 Template.accountProfile.onCreated ->
 	settingsTemplate = this.parentTemplate(3)
 	settingsTemplate.child ?= []
@@ -54,7 +58,7 @@ Template.accountProfile.onCreated ->
 
 		data = { currentPassword: currentPassword }
 
-		if _.trim $('#password').val()
+		if _.trim($('#password').val()) and RocketChat.settings.get("Accounts_AllowPasswordChange")
 			data.newPassword = $('#password').val()
 
 		if _.trim $('#realname').val()
@@ -78,7 +82,11 @@ Template.accountProfile.onCreated ->
 			else
 				data.email = _.trim $('#email').val()
 
-		Meteor.call 'saveUserProfile', data, (error, results) ->
+		customFields = {}
+		$('[data-customfield=true]').each () ->
+			customFields[this.name] = $(this).val() or ''
+
+		Meteor.call 'saveUserProfile', data, customFields, (error, results) ->
 			if results
 				toastr.remove();
 				toastr.success t('Profile_saved_successfully')
@@ -98,7 +106,9 @@ Template.accountProfile.onRendered ->
 
 Template.accountProfile.events
 	'click .submit button': (e, instance) ->
-		unless s.trim Meteor.user()?.services?.password?.bcrypt
+		user = Meteor.user()
+		reqPass = ((_.trim($('#email').val()) isnt user?.emails?[0]?.address) or _.trim($('#password').val())) and s.trim(user?.services?.password?.bcrypt)
+		unless reqPass
 			return instance.save()
 
 		swal
@@ -107,7 +117,9 @@ Template.accountProfile.events
 			type: "input",
 			inputType: "password",
 			showCancelButton: true,
-			closeOnConfirm: false
+			closeOnConfirm: false,
+			confirmButtonText: t('Save'),
+			cancelButtonText: t('Cancel')
 
 		, (typedPassword) =>
 			if typedPassword
@@ -134,7 +146,9 @@ Template.accountProfile.events
 				type: "input",
 				inputType: "password",
 				showCancelButton: true,
-				closeOnConfirm: false
+				closeOnConfirm: false,
+				confirmButtonText: t('Delete')
+				cancelButtonText: t('Cancel')
 
 			, (typedPassword) =>
 				if typedPassword
@@ -155,7 +169,9 @@ Template.accountProfile.events
 				text: t("If_you_are_sure_type_in_your_username"),
 				type: "input",
 				showCancelButton: true,
-				closeOnConfirm: false
+				closeOnConfirm: false,
+				confirmButtonText: t('Delete')
+				cancelButtonText: t('Cancel')
 
 			, (deleteConfirmation) =>
 				if deleteConfirmation is Meteor.user()?.username

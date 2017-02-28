@@ -1,4 +1,6 @@
 /* globals FileUpload:true */
+import mime from 'mime-type/with-db';
+
 FileUpload.handlers = {};
 
 FileUpload.addHandler = function(store, handler) {
@@ -6,7 +8,7 @@ FileUpload.addHandler = function(store, handler) {
 };
 
 FileUpload.delete = function(fileId) {
-	let file = RocketChat.models.Uploads.findOneById(fileId);
+	const file = RocketChat.models.Uploads.findOneById(fileId);
 
 	if (!file) {
 		return;
@@ -25,4 +27,17 @@ FileUpload.get = function(file, req, res, next) {
 		res.end();
 		return;
 	}
+};
+
+FileUpload.addExtensionTo = function(file) {
+	if (mime.lookup(file.name) === file.type) {
+		return file;
+	}
+
+	const ext = mime.extension(file.type);
+	if (ext && false === new RegExp(`\.${ext}$`, 'i').test(file.name)) {
+		file.name = `${file.name}.${ext}`;
+	}
+
+	return file;
 };

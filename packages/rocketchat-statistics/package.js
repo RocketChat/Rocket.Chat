@@ -6,9 +6,9 @@ Package.describe({
 });
 
 Package.onUse(function(api) {
-	api.versionsFrom('1.0');
-
 	api.use([
+		'mongo',
+		'ecmascript',
 		'coffeescript',
 		'rocketchat:lib'
 	]);
@@ -17,8 +17,7 @@ Package.onUse(function(api) {
 	api.addFiles('lib/rocketchat.coffee', [ 'client', 'server' ]);
 	api.addFiles([
 		'server/models/Statistics.coffee',
-		'server/models/MRStatistics.coffee',
-		'server/functions/get.coffee',
+		'server/functions/get.js',
 		'server/functions/save.coffee',
 		'server/methods/getStatistics.coffee'
 	], 'server');

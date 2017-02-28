@@ -15,4 +15,7 @@ Template.oembedBaseWidget.helpers
 		if this.meta?.oembedHtml?
 			return 'oembedFrameWidget'
 
+		if this.meta?.sandstorm?.grain?
+			return 'oembedSandstormGrain'
+
 		return 'oembedUrlWidget'

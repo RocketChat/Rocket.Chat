@@ -1,3 +1,5 @@
+import moment from 'moment'
+
 Template.adminInfo.helpers
 	isReady: ->
 		return Template.instance().ready.get()

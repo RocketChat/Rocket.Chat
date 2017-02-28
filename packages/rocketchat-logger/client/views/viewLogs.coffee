@@ -1,3 +1,5 @@
+import moment from 'moment'
+
 Template.viewLogs.onCreated ->
 	@subscribe 'stdout'
 	@atBottom = true
@@ -12,7 +14,7 @@ Template.viewLogs.helpers
 
 	ansispan: (string) ->
 		string = ansispan(string.replace(/\s/g, '&nbsp;').replace(/(\\n|\n)/g, '<br>'))
-		string = string.replace(/(.\d{8}-\d\d:\d\d:\d\d\.\d\d\d\(?.{0,2}\)?)/, '<span class="time">$1</span>')
+		string = string.replace(/(.\d{8}-\d\d:\d\d:\d\d\.\d\d\d\(?.{0,2}\)?)/, '<span class="terminal-time">$1</span>')
 		return string
 
 	formatTS: (date) ->
@@ -32,8 +34,9 @@ Template.viewLogs.onRendered ->
 
 	template = this
 
-	template.isAtBottom = ->
-		if wrapper.scrollTop >= wrapper.scrollHeight - wrapper.clientHeight
+	template.isAtBottom = (scrollThreshold) ->
+		if not scrollThreshold? then scrollThreshold = 0
+		if wrapper.scrollTop + scrollThreshold >= wrapper.scrollHeight - wrapper.clientHeight
 			newLogs.className = "new-logs not"
 			return true
 		return false
@@ -43,7 +46,7 @@ Template.viewLogs.onRendered ->
 		newLogs.className = "new-logs not"
 
 	template.checkIfScrollIsAtBottom = ->
-		template.atBottom = template.isAtBottom()
+		template.atBottom = template.isAtBottom(100)
 		readMessage.enable()
 		readMessage.read()
 
@@ -96,3 +99,8 @@ Template.viewLogs.onRendered ->
 		Meteor.setTimeout ->
 			template.checkIfScrollIsAtBottom()
 		, 2000
+
+	wrapper.addEventListener 'scroll', ->
+		template.atBottom = false
+		Meteor.defer ->
+			template.checkIfScrollIsAtBottom()

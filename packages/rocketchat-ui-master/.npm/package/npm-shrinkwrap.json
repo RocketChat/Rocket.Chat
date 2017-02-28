@@ -1,0 +1,29 @@
+{
+  "dependencies": {
+    "clipboard": {
+      "version": "1.5.12",
+      "resolved": "https://registry.npmjs.org/clipboard/-/clipboard-1.5.12.tgz",
+      "from": "clipboard@1.5.12"
+    },
+    "delegate": {
+      "version": "3.1.0",
+      "resolved": "https://registry.npmjs.org/delegate/-/delegate-3.1.0.tgz",
+      "from": "delegate@>=3.1.0 <4.0.0"
+    },
+    "good-listener": {
+      "version": "1.2.0",
+      "resolved": "https://registry.npmjs.org/good-listener/-/good-listener-1.2.0.tgz",
+      "from": "good-listener@>=1.1.6 <2.0.0"
+    },
+    "select": {
+      "version": "1.1.0",
+      "resolved": "https://registry.npmjs.org/select/-/select-1.1.0.tgz",
+      "from": "select@>=1.0.6 <2.0.0"
+    },
+    "tiny-emitter": {
+      "version": "1.1.0",
+      "resolved": "https://registry.npmjs.org/tiny-emitter/-/tiny-emitter-1.1.0.tgz",
+      "from": "tiny-emitter@>=1.0.0 <2.0.0"
+    }
+  }
+}

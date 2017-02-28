@@ -97,4 +97,16 @@ Meteor.startup ->
 		data: (message) ->
 			return { username: message.msg, role: message.role, user_by: message.u.username }
 
+	RocketChat.MessageTypes.registerType
+		id: 'room-archived'
+		system: true
+		message: 'This_room_has_been_archived_by__username_'
+		data: (message) ->
+			return { username: message.u.username }
 
+	RocketChat.MessageTypes.registerType
+		id: 'room-unarchived'
+		system: true
+		message: 'This_room_has_been_unarchived_by__username_'
+		data: (message) ->
+			return { username: message.u.username }

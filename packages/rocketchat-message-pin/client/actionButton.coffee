@@ -1,3 +1,4 @@
+import toastr from 'toastr'
 Meteor.startup ->
 	RocketChat.MessageAction.addButton
 		id: 'pin-message'
@@ -15,9 +16,7 @@ Meteor.startup ->
 				if error
 					return handleError(error)
 		validation: (message) ->
-			room = RocketChat.models.Rooms.findOne({ _id: message.rid })
-
-			if Array.isArray(room.usernames) && room.usernames.indexOf(Meteor.user().username) is -1
+			if not RocketChat.models.Subscriptions.findOne({ rid: message.rid })?
 				return false
 			else if message.pinned or not RocketChat.settings.get('Message_AllowPinning')
 				return false
@@ -41,9 +40,7 @@ Meteor.startup ->
 				if error
 					return handleError(error)
 		validation: (message) ->
-			room = RocketChat.models.Rooms.findOne({ _id: message.rid })
-
-			if Array.isArray(room.usernames) && room.usernames.indexOf(Meteor.user().username) is -1
+			if not RocketChat.models.Subscriptions.findOne({ rid: message.rid })?
 				return false
 			else if not message.pinned or not RocketChat.settings.get('Message_AllowPinning')
 				return false
@@ -60,14 +57,12 @@ Meteor.startup ->
 		]
 		action: (event, instance) ->
 			message = @_arguments[1]
-			$('.message-dropdown:visible').hide()
+			RocketChat.MessageAction.hideDropDown()
 			RoomHistoryManager.getSurroundingMessages(message, 50)
 		validation: (message) ->
-			room = RocketChat.models.Rooms.findOne({ _id: message.rid })
-
-			if Array.isArray(room.usernames) && room.usernames.indexOf(Meteor.user().username) is -1
+			if not RocketChat.models.Subscriptions.findOne({ rid: message.rid })?
 				return false
-				
+
 			return true
 		order: 100
 
@@ -81,15 +76,12 @@ Meteor.startup ->
 		]
 		action: (event, instance) ->
 			message = @_arguments[1]
-			msg = $(event.currentTarget).closest('.message')[0]
-			$("\##{msg.id} .message-dropdown").hide()
-			$(event.currentTarget).attr('data-clipboard-text', document.location.origin + document.location.pathname + '?msg=' + msg.id);
+			RocketChat.MessageAction.hideDropDown()
+			$(event.currentTarget).attr('data-clipboard-text', RocketChat.MessageAction.getPermaLink(message._id));
 			toastr.success(TAPi18n.__('Copied'))
 		validation: (message) ->
-			room = RocketChat.models.Rooms.findOne({ _id: message.rid })
-
-			if Array.isArray(room.usernames) && room.usernames.indexOf(Meteor.user().username) is -1
+			if not RocketChat.models.Subscriptions.findOne({ rid: message.rid })?
 				return false
-				
+
 			return true
 		order: 101

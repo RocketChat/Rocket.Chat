@@ -60,6 +60,22 @@ AccountBox.addRoute({
 }, livechatManagerRoutes);
 
 AccountBox.addRoute({
+	name: 'livechat-trigger-edit',
+	path: '/triggers/:_id/edit',
+	sideNav: 'livechatFlex',
+	i18nPageTitle: 'Edit_Trigger',
+	pageTemplate: 'livechatTriggersForm'
+}, livechatManagerRoutes);
+
+AccountBox.addRoute({
+	name: 'livechat-trigger-new',
+	path: '/triggers/new',
+	sideNav: 'livechatFlex',
+	i18nPageTitle: 'New_Trigger',
+	pageTemplate: 'livechatTriggersForm'
+}, livechatManagerRoutes);
+
+AccountBox.addRoute({
 	name: 'livechat-installation',
 	path: '/installation',
 	sideNav: 'livechatFlex',
@@ -73,6 +89,14 @@ AccountBox.addRoute({
 	sideNav: 'livechatFlex',
 	i18nPageTitle: 'Appearance',
 	pageTemplate: 'livechatAppearance'
+}, livechatManagerRoutes);
+
+AccountBox.addRoute({
+	name: 'livechat-officeHours',
+	path: '/officeHours',
+	sideNav: 'livechatFlex',
+	i18nPageTitle: 'Office_Hours',
+	pageTemplate: 'livechatOfficeHours'
 }, livechatManagerRoutes);
 
 AccountBox.addRoute({
@@ -98,3 +122,20 @@ AccountBox.addRoute({
 	i18nPageTitle: 'New_Custom_Field',
 	pageTemplate: 'livechatCustomFieldForm'
 }, livechatManagerRoutes);
+
+AccountBox.addRoute({
+	name: 'livechat-integrations',
+	path: '/integrations',
+	sideNav: 'livechatFlex',
+	i18nPageTitle: 'Integrations',
+	pageTemplate: 'livechatIntegrations'
+}, livechatManagerRoutes);
+
+AccountBox.addRoute({
+	name: 'livechat-queue',
+	path: '/livechat-queue',
+	i18nPageTitle: 'Livechat_Queue',
+	pageTemplate: 'livechatQueue'
+});
+
+

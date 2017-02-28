@@ -3,19 +3,44 @@ querystring = Npm.require('querystring')
 request = HTTPInternals.NpmModules.request.module
 iconv = Npm.require('iconv-lite')
 ipRangeCheck = Npm.require('ip-range-check')
+he = Npm.require('he')
+jschardet = Npm.require('jschardet')
 
 OEmbed = {}
 
 # Detect encoding
-getCharset = (body) ->
-	binary = body.toString 'binary'
-	matches = binary.match /<meta\b[^>]*charset=["']?([\w\-]+)/i
-	if matches
-		return matches[1]
-	return 'utf-8'
+# Priority:
+#   Detected == HTTP Header > Detected == HTML meta > HTTP Header > HTML meta > Detected > Default (utf-8)
+#   See also: https://www.w3.org/International/questions/qa-html-encoding-declarations.en#quickanswer
+getCharset = (contentType, body) ->
+	contentType = contentType || ''
+	binary = body.toString('binary')
 
-toUtf8 = (body) ->
-	return iconv.decode body, getCharset(body)
+	detected = jschardet.detect(binary)
+	if detected.confidence > 0.8
+		detectedCharset = detected.encoding.toLowerCase()
+
+	m1 = contentType.match(/charset=([\w\-]+)/i)
+	if m1
+		httpHeaderCharset = m1[1].toLowerCase()
+
+	m2 = binary.match(/<meta\b[^>]*charset=["']?([\w\-]+)/i)
+	if m2
+		htmlMetaCharset = m2[1].toLowerCase()
+
+	if detectedCharset
+		if detectedCharset == httpHeaderCharset
+			result = httpHeaderCharset
+		else if detectedCharset == htmlMetaCharset
+			result = htmlMetaCharset
+
+	unless result
+		result = httpHeaderCharset || htmlMetaCharset || detectedCharset
+
+	return result || 'utf-8'
+
+toUtf8 = (contentType, body) ->
+	return iconv.decode(body, getCharset(contentType, body))
 
 getUrlContent = (urlObj, redirectCount = 5, callback) ->
 	if _.isString(urlObj)
@@ -25,6 +50,10 @@ getUrlContent = (urlObj, redirectCount = 5, callback) ->
 
 	ignoredHosts = RocketChat.settings.get('API_EmbedIgnoredHosts').replace(/\s/g, '').split(',') or []
 	if parsedUrl.hostname in ignoredHosts or ipRangeCheck(parsedUrl.hostname, ignoredHosts)
+		return callback()
+
+	safePorts = RocketChat.settings.get('API_EmbedSafePorts').replace(/\s/g, '').split(',') or []
+	if parsedUrl.port and safePorts.length > 0 and parsedUrl.port not in safePorts
 		return callback()
 
 	data = RocketChat.callbacks.run 'oembed:beforeGetUrlContent',
@@ -44,14 +73,17 @@ getUrlContent = (urlObj, redirectCount = 5, callback) ->
 			'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2227.0 Safari/537.36'
 
 	headers = null
+	statusCode = null
+	error = null
 	chunks = []
 	chunksTotalLength = 0
 
 	stream = request opts
 	stream.on 'response', (response) ->
+		statusCode = response.statusCode
+		headers = response.headers
 		if response.statusCode isnt 200
 			return stream.abort()
-		headers = response.headers
 
 	stream.on 'data', (chunk) ->
 		chunks.push chunk
@@ -60,19 +92,23 @@ getUrlContent = (urlObj, redirectCount = 5, callback) ->
 			stream.abort()
 
 	stream.on 'end', Meteor.bindEnvironment ->
+		if error?
+			return callback null, {
+				error: error
+				parsedUrl: parsedUrl
+			}
+
 		buffer = Buffer.concat(chunks)
 
 		callback null, {
 			headers: headers
-			body: toUtf8 buffer
+			body: toUtf8(headers['content-type'], buffer)
 			parsedUrl: parsedUrl
+			statusCode: statusCode
 		}
 
-	stream.on 'error', (error) ->
-		callback null, {
-			error: error
-			parsedUrl: parsedUrl
-		}
+	stream.on 'error', (err) ->
+		error = err
 
 OEmbed.getUrlMeta = (url, withFragment) ->
 	getUrlContentSync = Meteor.wrapAsync getUrlContent
@@ -101,20 +137,20 @@ OEmbed.getUrlMeta = (url, withFragment) ->
 
 	if content?.body?
 		metas = {}
-		content.body.replace /<title>((.|\n)+?)<\/title>/gmi, (meta, title) ->
-			metas.pageTitle = title
+		content.body.replace /<title[^>]*>([^<]*)<\/title>/gmi, (meta, title) ->
+			metas.pageTitle ?= he.unescape title
 
-		content.body.replace /<meta[^>]*(?:name|property)=[']([^']*)['][^>]*content=[']([^']*)['][^>]*>/gmi, (meta, name, value) ->
-			metas[changeCase.camelCase(name)] = value
+		content.body.replace /<meta[^>]*(?:name|property)=[']([^']*)['][^>]*\scontent=[']([^']*)['][^>]*>/gmi, (meta, name, value) ->
+			metas[changeCase.camelCase(name)] ?= he.unescape value
 
-		content.body.replace /<meta[^>]*(?:name|property)=["]([^"]*)["][^>]*content=["]([^"]*)["][^>]*>/gmi, (meta, name, value) ->
-			metas[changeCase.camelCase(name)] = value
+		content.body.replace /<meta[^>]*(?:name|property)=["]([^"]*)["][^>]*\scontent=["]([^"]*)["][^>]*>/gmi, (meta, name, value) ->
+			metas[changeCase.camelCase(name)] ?= he.unescape value
 
-		content.body.replace /<meta[^>]*content=[']([^']*)['][^>]*(?:name|property)=[']([^']*)['][^>]*>/gmi, (meta, value, name) ->
-			metas[changeCase.camelCase(name)] = value
+		content.body.replace /<meta[^>]*\scontent=[']([^']*)['][^>]*(?:name|property)=[']([^']*)['][^>]*>/gmi, (meta, value, name) ->
+			metas[changeCase.camelCase(name)] ?= he.unescape value
 
-		content.body.replace /<meta[^>]*content=["]([^"]*)["][^>]*(?:name|property)=["]([^"]*)["][^>]*>/gmi, (meta, value, name) ->
-			metas[changeCase.camelCase(name)] = value
+		content.body.replace /<meta[^>]*\scontent=["]([^"]*)["][^>]*(?:name|property)=["]([^"]*)["][^>]*>/gmi, (meta, value, name) ->
+			metas[changeCase.camelCase(name)] ?= he.unescape value
 
 
 		if metas.fragment is '!' and not withFragment?
@@ -126,6 +162,9 @@ OEmbed.getUrlMeta = (url, withFragment) ->
 		headers = {}
 		for header, value of content.headers
 			headers[changeCase.camelCase(header)] = value
+
+	if content?.statusCode isnt 200
+		return data
 
 	data = RocketChat.callbacks.run 'oembed:afterParseContent',
 		meta: metas
@@ -165,19 +204,26 @@ getRelevantHeaders = (headersObj) ->
 getRelevantMetaTags = (metaObj) ->
 	tags = {}
 	for key, value of metaObj
-		if /^(og|fb|twitter|oembed).+|description|title|pageTitle$/.test(key.toLowerCase()) and value?.trim() isnt ''
+		if /^(og|fb|twitter|oembed|msapplication).+|description|title|pageTitle$/.test(key.toLowerCase()) and value?.trim() isnt ''
 			tags[key] = value
 
 	if Object.keys(tags).length > 0
 		return tags
 	return
 
-OEmbed.RocketUrlParser = (message) ->
+OEmbed.rocketUrlParser = (message) ->
 	if Array.isArray message.urls
 		attachments = []
 		changed = false
 		message.urls.forEach (item) ->
 			if item.ignoreParse is true then return
+			if item.url.startsWith "grain://"
+				changed = true
+				item.meta =
+					sandstorm:
+						grain: item.sandstormViewInfo
+				return
+
 			if not /^https?:\/\//i.test item.url then return
 
 			data = OEmbed.getUrlMetaWithCache item.url
@@ -205,6 +251,6 @@ OEmbed.RocketUrlParser = (message) ->
 
 RocketChat.settings.get 'API_Embed', (key, value) ->
 	if value
-		RocketChat.callbacks.add 'afterSaveMessage', OEmbed.RocketUrlParser, RocketChat.callbacks.priority.LOW, 'API_Embed'
+		RocketChat.callbacks.add 'afterSaveMessage', OEmbed.rocketUrlParser, RocketChat.callbacks.priority.LOW, 'API_Embed'
 	else
 		RocketChat.callbacks.remove 'afterSaveMessage', 'API_Embed'

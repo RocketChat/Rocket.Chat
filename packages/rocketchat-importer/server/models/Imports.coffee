@@ -1,3 +1,3 @@
 Importer.Imports = new class Importer.Imports extends RocketChat.models._Base
 	constructor: ->
-		@_initModel 'import'
+		super('import')
