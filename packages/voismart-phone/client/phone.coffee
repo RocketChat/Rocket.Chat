@@ -484,6 +484,7 @@ RocketChat.Phone = new class
 				if d.direction.name == 'outbound'
 					putNotification(msg, d.params.destination_number)
 				else
+				    d.stopRinging()
 					putNotification(msg, d.params.caller_id_number, d.params.caller_id_name)
 				WebNotifications.closeNotification 'phone'
 				RocketChat.TabBar.updateButton('phone', { class: 'red' })
@@ -583,6 +584,7 @@ RocketChat.Phone = new class
 			ringFile: 'sounds/bell_ring2.wav',
 			iceServers: _iceConfig?.iceServers,
 			forceRelay: _iceConfig?.forceRelay,
+			tagRinger: "phoneringer",
 			tag: "phonestream"
 			audioParams: {
 				googEchoCancellation: true,

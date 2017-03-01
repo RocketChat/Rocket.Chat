@@ -252,7 +252,6 @@
         }
 
         var element = self.options.useAudio;
-        console.log("REMOTE STREAM", stream, element);
 
         element = FSRTCattachMediaStream(element, stream);
         self.options.useAudio = element;

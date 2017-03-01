@@ -72,6 +72,7 @@
             passwd: null,
             socketUrl: null,
             tag: null,
+			tagRinger: null,
             localTag: null,
             videoParams: {},
             audioParams: {},
@@ -105,6 +106,7 @@
         verto.dialogs = {};
         verto.callbacks = callbacks || {};
         verto.eventSUBS = {};
+		verto.refRingerTimeout = null;
 
         verto.rpcClient = new $.JsonRpcClient({
             login: verto.options.login,
@@ -137,8 +139,9 @@
             tag = tag();
         }
 
-        if (verto.options.ringFile && verto.options.tag) {
-            verto.ringer = $("#" + tag);
+        if (verto.options.ringFile && verto.options.tagRinger) {
+			var tagRinger = verto.options.tagRinger
+            verto.ringer = $("#" + tagRinger);
             verto.playing = false;
             verto.paused = true;
             verto.ringer.get(0).onplay = function () {
@@ -2318,10 +2321,14 @@
     $.verto.dialog.prototype.stopRinging = function () {
         var dialog = this;
         if (dialog.verto.ringer) {
-            if (!dialog.verto.ringer.get(0).paused && !dialog.verto.paused && dialog.state.name === 'ringing') {
+            if (!dialog.verto.ringer.get(0).paused && !dialog.verto.paused) {
                 dialog.verto.ringer.get(0).pause();
                 dialog.verto.ringer.get(0).currentTime = 0;
             }
+			if (dialog.verto.refRingerTimeout !== null && dialog.state.name !== 'ringing') {
+				 clearTimeout(dialog.verto.refRingerTimeout);
+				 dialog.verto.refRingerTimeout = null;
+			}
         }
     };
 
@@ -2331,7 +2338,7 @@
         if (dialog.verto.ringer) {
             if (dialog.verto.ringer.get(0).paused && !dialog.verto.playing)
                 dialog.verto.ringer.attr("src", dialog.verto.options.ringFile)[0].play();
-            setTimeout(function () {
+            dialog.verto.refRingerTimeout = setTimeout(function () {
                 dialog.stopRinging();
                 if (dialog.state == $.verto.enum.state.ringing) {
                     dialog.indicateRing();
