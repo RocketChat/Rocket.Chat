@@ -369,6 +369,8 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base
 
 	# INSERT
 	createWithTypeRoomIdMessageAndUser: (type, roomId, message, user, extraData) ->
+		if user.guestId
+			return
 		room = RocketChat.models.Rooms.findOneById roomId, { fields: { sysMes: 1 }}
 		if room?.sysMes is false
 			return

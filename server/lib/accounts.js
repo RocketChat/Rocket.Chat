@@ -60,7 +60,9 @@ Accounts.onCreateUser(function(options, user = {}) {
 	RocketChat.callbacks.run('beforeCreateUser', options, user);
 
 	user.status = 'offline';
-	user.active = !RocketChat.settings.get('Accounts_ManuallyApproveNewUsers');
+	// Only guests are allowed to have empty password
+	const isGuest = options.email.match(/@rocket-chat\.guest/) && options.password === '';
+	user.active = !RocketChat.settings.get('Accounts_ManuallyApproveNewUsers') || isGuest;
 
 	if (!user.name) {
 		if (options.profile && options.profile.name) {
@@ -112,9 +114,12 @@ Accounts.insertUserDoc = _.wrap(Accounts.insertUserDoc, function(insertUserDoc, 
 		_id: _id
 	});
 
+	const isGuest = user.emails[0] && user.emails[0].address.match(/@rocket-chat\.guest/);
+
 	if (user.username && options.joinDefaultChannels !== false && user.joinDefaultChannels !== false) {
 		Meteor.runAsUser(_id, function() {
-			return Meteor.call('joinDefaultChannels', options.joinDefaultChannelsSilenced);
+			const silencedJoin = (isGuest ? true : options.joinDefaultChannelsSilenced);
+			return Meteor.call('joinDefaultChannels', silencedJoin);
 		});
 	}
 
@@ -133,6 +138,10 @@ Accounts.insertUserDoc = _.wrap(Accounts.insertUserDoc, function(insertUserDoc, 
 		} else {
 			roles.push('admin');
 		}
+	}
+
+	if (isGuest) {
+		roles = ['guest'];
 	}
 
 	RocketChat.authz.addUserRoles(_id, roles);

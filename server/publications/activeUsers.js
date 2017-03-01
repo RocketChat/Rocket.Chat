@@ -7,7 +7,8 @@ Meteor.publish('activeUsers', function() {
 		fields: {
 			username: 1,
 			status: 1,
-			utcOffset: 1
+			utcOffset: 1,
+			guestId: 1
 		}
 	});
 });

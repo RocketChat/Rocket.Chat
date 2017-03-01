@@ -8,6 +8,9 @@ Meteor.methods
 		if not Meteor.userId()
 			throw new Meteor.Error('error-invalid-user', "Invalid user", { method: 'sendMessage' })
 
+		if Meteor.user().guestId
+			throw new Meteor.Error('error-invalid-user', "Guests cannot send messages", { method: 'sendMessage' })
+
 		if message.ts
 			tsDiff = Math.abs(moment(message.ts).diff())
 			if tsDiff > 60000

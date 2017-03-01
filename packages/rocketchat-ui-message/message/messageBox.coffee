@@ -9,6 +9,10 @@ katexSyntax = ->
 	return false
 
 Template.messageBox.helpers
+	guestDisabled: ->
+		return if Meteor.user().guestId then 'disabled' else ''
+	placeholder: ->
+		return if Meteor.user().guestId then t('Login_Or_Register_Message_Box') else t('Message')
 	roomName: ->
 		roomData = Session.get('roomData' + this._id)
 		return '' unless roomData
@@ -87,6 +91,8 @@ Template.messageBox.helpers
 		return RocketChat.settings.get('FileUpload_MediaTypeWhiteList')
 
 	showFileUpload: ->
+		if Meteor.user().guestId
+			return false
 		if (RocketChat.settings.get('FileUpload_Enabled'))
 			roomData = Session.get('roomData' + this._id)
 			if roomData?.t is 'd'
@@ -98,13 +104,13 @@ Template.messageBox.helpers
 
 
 	showMic: ->
-		return Template.instance().showMicButton.get()
+		return Template.instance().showMicButton.get() and not Meteor.user().guestId
 
 	showVRec: ->
-		return Template.instance().showVideoRec.get()
+		return Template.instance().showVideoRec.get() and not Meteor.user().guestId
 
 	showSend: ->
-		if not Template.instance().isMessageFieldEmpty.get()
+		if not Template.instance().isMessageFieldEmpty.get() and not Meteor.user().guestId
 			return 'show-send'
 
 	showLocation: ->

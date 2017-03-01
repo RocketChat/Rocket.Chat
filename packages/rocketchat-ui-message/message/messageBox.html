@@ -5,7 +5,7 @@
 			{{#if allowedToSend}}
 			<div class="message-input border-component-color">
 				<div class="input-message-container content-background-color">
-					<textarea dir="auto" name="msg" maxlength="{{maxMessageLength}}" class="message-form-text input-message autogrow-short" placeholder="{{_ 'Message'}}"></textarea>
+					<textarea dir="auto" name="msg" maxlength="{{maxMessageLength}}" {{guestDisabled}} class="message-form-text input-message autogrow-short" placeholder="{{placeholder}}"></textarea>
 
 					<div class="inner-left-toolbar">
 						<i class="emoji-picker-icon icon-people"></i>

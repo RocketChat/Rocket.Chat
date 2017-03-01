@@ -104,7 +104,8 @@ class ModelUsers extends RocketChat.models._Base
 				username: {
 					$nin: exceptions
 				}
-			}]
+			}],
+			guestId: { $exists: false }
 		}
 
 		return @find query, options
@@ -123,7 +124,8 @@ class ModelUsers extends RocketChat.models._Base
 				{
 					username: { $nin: exceptions }
 				}
-			]
+			],
+			guestId: { $exists: false }
 
 		return @find query, options
 
@@ -244,6 +246,13 @@ class ModelUsers extends RocketChat.models._Base
 		update =
 			$set:
 				name: name
+
+		return @update _id, update
+
+	setGuestId: (_id, guestId) ->
+		update =
+			$set:
+				guestId: guestId
 
 		return @update _id, update
 

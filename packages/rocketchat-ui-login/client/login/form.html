@@ -104,6 +104,11 @@
 								<button type="button" class="forgot-password">{{_ 'Forgot_password'}}</button>
 							</div>
 						{{/if}}
+						{{#if guestLoginAllowed}}
+							<div>
+								<button type="button" class="login-as-guest">{{_ 'Login_As_Guest'}}</button>
+							</div>
+						{{/if}}
 					{{/if}}
 				{{/if}}
 			{{/if}}

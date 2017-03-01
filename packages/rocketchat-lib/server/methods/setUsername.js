@@ -28,6 +28,13 @@ Meteor.methods({
 			throw new Meteor.Error('username-invalid', `${_.escape(username)} is not a valid username, use only letters, numbers, dots, hyphens and underscores`);
 		}
 
+		const guestPrefix = RocketChat.settings.get('Accounts_GuestNamePrefix');
+		const guestPostfix = RocketChat.settings.get('Accounts_GuestNamePostfix');
+
+		if (user.guestId) {
+			username = guestPrefix + username + guestPostfix;
+		}
+
 		if (user.username !== undefined) {
 			if (!username.toLowerCase() === user.username.toLowerCase()) {
 				if (!RocketChat.checkUsernameAvailability(username)) {
