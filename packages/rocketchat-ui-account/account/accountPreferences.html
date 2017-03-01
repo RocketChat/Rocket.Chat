@@ -108,6 +108,13 @@
 									<label><input type="radio" name="hideUsernames" value="0" checked="{{checked 'hideUsernames' false true}}" /> {{_ "False"}}</label>
 								</div>
 							</div>
+							<div class="input-line double-col" id="showNames">
+								<label>{{_ "Show_names"}}</label>
+								<div>
+									<label><input type="radio" name="showNames" value="1" checked="{{checked 'showNames' true}}" /> {{_ "True"}}</label>
+									<label><input type="radio" name="showNames" value="0" checked="{{checked 'showNames' false true}}" /> {{_ "False"}}</label>
+								</div>
+							</div>
 							{{#if showRoles}}
 								<div class="input-line double-col" id="hideRoles">
 									<label>{{_ "Hide_roles"}}</label>
