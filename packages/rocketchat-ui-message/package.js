@@ -22,24 +22,24 @@ Package.onUse(function(api) {
 		'rocketchat:ui-account'
 	]);
 
-	api.addFiles('message/message.html', 'client');
-	api.addFiles('message/messageBox.html', 'client');
-	api.addFiles('message/messageDropdown.html', 'client');
-	api.addFiles('message/popup/messagePopup.html', 'client');
-	api.addFiles('message/popup/messagePopupChannel.html', 'client');
-	api.addFiles('message/popup/messagePopupConfig.html', 'client');
-	api.addFiles('message/popup/messagePopupEmoji.html', 'client');
-	api.addFiles('message/popup/messagePopupSlashCommand.html', 'client');
-	api.addFiles('message/popup/messagePopupUser.html', 'client');
+	api.addFiles('client/message.html', 'client');
+	api.addFiles('client/messageBox.html', 'client');
+	api.addFiles('client/messageDropdown.html', 'client');
+	api.addFiles('client/popup/messagePopup.html', 'client');
+	api.addFiles('client/popup/messagePopupChannel.html', 'client');
+	api.addFiles('client/popup/messagePopupConfig.html', 'client');
+	api.addFiles('client/popup/messagePopupEmoji.html', 'client');
+	api.addFiles('client/popup/messagePopupSlashCommand.html', 'client');
+	api.addFiles('client/popup/messagePopupUser.html', 'client');
 
-	api.addFiles('message/message.coffee', 'client');
-	api.addFiles('message/messageBox.coffee', 'client');
-	api.addFiles('message/popup/messagePopup.coffee', 'client');
-	api.addFiles('message/popup/messagePopupChannel.js', 'client');
-	api.addFiles('message/popup/messagePopupConfig.coffee', 'client');
-	api.addFiles('message/popup/messagePopupEmoji.coffee', 'client');
+	api.addFiles('client/message.coffee', 'client');
+	api.addFiles('client/messageBox.coffee', 'client');
+	api.addFiles('client/popup/messagePopup.coffee', 'client');
+	api.addFiles('client/popup/messagePopupChannel.js', 'client');
+	api.addFiles('client/popup/messagePopupConfig.coffee', 'client');
+	api.addFiles('client/popup/messagePopupEmoji.coffee', 'client');
 
-	api.addFiles('message/renderMessageBody.js', 'client');
+	api.addFiles('client/renderMessageBody.js', 'client');
 
 	api.export('renderMessageBody');
 });
