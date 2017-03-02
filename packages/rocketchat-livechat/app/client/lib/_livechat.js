@@ -13,6 +13,7 @@ this.Livechat = new (class Livechat {
 		this._title = new ReactiveVar('Rocket.Chat');
 		this._registrationForm = new ReactiveVar(true);
 		this._showSwitchDepartmentForm = new ReactiveVar(false);
+		this._allowSwitchingDepartments = new ReactiveVar(false);
 		this._offlineMessage = new ReactiveVar('');
 		this._offlineUnavailableMessage = new ReactiveVar('');
 		this._displayOfflineForm = new ReactiveVar(true);
@@ -76,6 +77,9 @@ this.Livechat = new (class Livechat {
 	get showSwitchDepartmentForm() {
 		return this._showSwitchDepartmentForm.get();
 	}
+	get allowSwitchingDepartments() {
+		return this._allowSwitchingDepartments.get();
+	}
 	get offlineMessage() {
 		return this._offlineMessage.get();
 	}
@@ -115,6 +119,9 @@ this.Livechat = new (class Livechat {
 	}
 	set showSwitchDepartmentForm(value) {
 		this._showSwitchDepartmentForm.set(value);
+	}
+	set allowSwitchingDepartments(value) {
+		this._allowSwitchingDepartments.set(value);
 	}
 	set offlineMessage(value) {
 		this._offlineMessage.set(value);
