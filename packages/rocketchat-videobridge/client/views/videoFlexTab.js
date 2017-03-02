@@ -69,7 +69,7 @@ Template.videoFlexTab.onRendered(function() {
 						Meteor.call('jitsi:updateTimeout', roomId);
 
 						timeOut = Meteor.setInterval(() => Meteor.call('jitsi:updateTimeout', roomId), 10*1000);
-						const newWindow;
+						const newWindow = null;
 						if (Meteor.isCordova) {
 							newWindow = window.open((noSsl ? 'http://' : 'https://') + domain + '/' + jitsiRoom, '_system');
 							closePanel();
@@ -84,7 +84,9 @@ Template.videoFlexTab.onRendered(function() {
 								}
 							}, 300);
 						}
-						newWindow.focus();
+						if (newWindow) {
+							newWindow.focus();
+						}
 
 
 
