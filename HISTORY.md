@@ -1,5 +1,37 @@
 # History
 
+## 0.53.0 - 2017-Mar-01
+
+- Add 'Unread Messages' to i18n translation files
+- Add CMD/Ctrl+k (#6034)
+- Add default oauth role (#6028)
+- Add getS3Url (#5410)
+- Add livechat events (#6070)
+- Add minified version of livechat widget code (#6071)
+- Add new behavior to ESC on toolbar search (#6056)
+- Add option to not overwrite livechat custom fields
+- Add preference for Enter key (#6075)
+- Add support for uploads to Google Cloud Storage (#6060)
+- Add the admin missing settings sections to i18n translation files
+- Add translate sweetalert buttons on send files and update password
+- Add user preference to hide roles
+- Fix codemiror css (#6058)
+- Fix ctrl/alt/cmd+enter line break (#6057)
+- Fix keydown when photoswipe is open
+- Fix livechat appearance page by not saving settings directly from client (#6077)
+- Fix livechat knowledge base by properly initiating it's model
+- Fix livechat widget being displayed when offline
+- Fix renamed template folder to `client` to allows faster hot-reloads
+- Fix the directive conflicts for aws and google storage (#6084)
+- Fix the edit message (#6086)
+- Fix to remove error-color class when creating new channel
+- Fix undefined exception in the channelSettings flex-tab
+- Fix updating a message with @all by copying "u" property
+- Improve outgoing webhooks and add history (#5823)
+- Improve report abuse to pass the message id instead of message object
+- Use highlight.js from npm
+- Use katex from npm (#5962)
+
 ## 0.52.0 - 2017-Fev-14
 
 ### Meteor update to 1.4.2.6

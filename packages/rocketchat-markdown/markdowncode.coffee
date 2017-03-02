@@ -2,6 +2,7 @@
 # MarkdownCode is a named function that will parse `inline code` and ```codeblock``` syntaxes
 # @param {Object} message - The message object
 ###
+import hljs from 'highlight.js';
 
 class MarkdownCode
 	constructor: (message) ->
