@@ -126,7 +126,7 @@ Template.livechatWindow.onCreated(function() {
 			result.departments.forEach((department) => {
 				Department.insert(department);
 			});
-			Livechat.allowSwitchingDepartments = result.allowSwitchingDepartments
+			Livechat.allowSwitchingDepartments = result.allowSwitchingDepartments;
 			Livechat.ready();
 		}
 	});

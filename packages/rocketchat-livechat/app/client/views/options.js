@@ -2,7 +2,7 @@
 
 Template.options.helpers({
 	showDepartments() {
-		return Livechat.allowSwitchingDepartments;
+		return Livechat.allowSwitchingDepartments && Department.find({ showOnRegistration: true }).count() > 1;
 	},
 	departments() {
 		return Department.find({ showOnRegistration: true });
@@ -37,7 +37,7 @@ Template.options.events({
 			});
 		});
 	},
-	'click .switch-department'(e, instance) {
+	'click .switch-department'() {
 		swal({
 			text: t('Are_you_sure_do_you_want_end_this_chat'),
 			title: '',
