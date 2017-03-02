@@ -186,8 +186,8 @@ class AutoTranslate {
 						if (message.attachments.hasOwnProperty(index)) {
 							const attachment = message.attachments[index];
 							const translations = {};
-							if (attachment.description) {
-								const query = `q=${encodeURIComponent(attachment.description)}`;
+							if (attachment.description || attachment.text) {
+								const query = `q=${encodeURIComponent(attachment.description || attachment.text)}`;
 								targetLanguages.forEach(language => {
 									const result = HTTP.get('https://translation.googleapis.com/language/translate/v2', { params: { key: this.apiKey, target: language }, query: query });
 									if (result.statusCode === 200 && result.data && result.data.data && result.data.data.translations && Array.isArray(result.data.data.translations) && result.data.data.translations.length > 0) {
@@ -196,7 +196,7 @@ class AutoTranslate {
 									}
 								});
 								if (!_.isEmpty(translations)) {
-									RocketChat.models.Messages.addAttachmentDescriptionTranslations(message._id, index, translations);
+									RocketChat.models.Messages.addAttachmentTranslations(message._id, index, translations);
 								}
 							}
 						}
