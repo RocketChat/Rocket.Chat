@@ -51,7 +51,7 @@ Meteor.methods({
 			};
 
 			message = RocketChat.callbacks.run('beforeSaveMessage', message);
-			var messageObject = {$set: {'editedAt': message.editedAt, 'editedBy': message.editedBy, msg: message.msg}};
+			var messageObject = {'editedAt': message.editedAt, 'editedBy': message.editedBy, msg: message.msg};
 
 			if (originalMessage.attachments) {
 				if (originalMessage.attachments[0].description !== undefined) {
@@ -61,7 +61,7 @@ Meteor.methods({
 			ChatMessage.update({
 				_id: message._id,
 				'u._id': Meteor.userId()
-			}, messageObject);
+			}, {$set : messageObject});
 		});
 	}
 });
