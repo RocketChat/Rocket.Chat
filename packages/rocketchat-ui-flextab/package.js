@@ -20,17 +20,17 @@ Package.onUse(function(api) {
 		'rocketchat:lib'
 	]);
 
-	api.addFiles('flex-tab/flexTabBar.html', 'client');
-	api.addFiles('flex-tab/tabs/membersList.html', 'client');
-	api.addFiles('flex-tab/tabs/messageSearch.html', 'client');
-	api.addFiles('flex-tab/tabs/uploadedFilesList.html', 'client');
-	api.addFiles('flex-tab/tabs/userEdit.html', 'client');
-	api.addFiles('flex-tab/tabs/userInfo.html', 'client');
+	api.addFiles('client/flexTabBar.html', 'client');
+	api.addFiles('client/tabs/membersList.html', 'client');
+	api.addFiles('client/tabs/messageSearch.html', 'client');
+	api.addFiles('client/tabs/uploadedFilesList.html', 'client');
+	api.addFiles('client/tabs/userEdit.html', 'client');
+	api.addFiles('client/tabs/userInfo.html', 'client');
 
-	api.addFiles('flex-tab/flexTabBar.js', 'client');
-	api.addFiles('flex-tab/tabs/membersList.coffee', 'client');
-	api.addFiles('flex-tab/tabs/messageSearch.coffee', 'client');
-	api.addFiles('flex-tab/tabs/uploadedFilesList.coffee', 'client');
-	api.addFiles('flex-tab/tabs/userEdit.coffee', 'client');
-	api.addFiles('flex-tab/tabs/userInfo.coffee', 'client');
+	api.addFiles('client/flexTabBar.js', 'client');
+	api.addFiles('client/tabs/membersList.coffee', 'client');
+	api.addFiles('client/tabs/messageSearch.coffee', 'client');
+	api.addFiles('client/tabs/uploadedFilesList.coffee', 'client');
+	api.addFiles('client/tabs/userEdit.coffee', 'client');
+	api.addFiles('client/tabs/userInfo.coffee', 'client');
 });
