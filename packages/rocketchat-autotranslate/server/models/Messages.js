@@ -7,7 +7,7 @@ RocketChat.models.Messages.addTranslations = function(messageId, translations) {
 	return this.update({ _id: messageId }, { $set: updateObj });
 };
 
-RocketChat.models.Messages.addAttachmentDescriptionTranslations = function(messageId, attachmentIndex, translations) {
+RocketChat.models.Messages.addAttachmentTranslations = function(messageId, attachmentIndex, translations) {
 	const updateObj = {};
 	Object.keys(translations).forEach((key) => {
 		const translation = translations[key];
