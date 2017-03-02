@@ -1,5 +1,5 @@
 Meteor.methods({
-	'autoTranslate.saveSettings': function(rid, field, value) {
+	'autoTranslate.saveSettings': function(rid, field, value, options) {
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'saveAutoTranslateSettings' });
 		}
@@ -24,6 +24,9 @@ Meteor.methods({
 		switch (field) {
 			case 'autoTranslate':
 				RocketChat.models.Subscriptions.updateAutoTranslateById(subscription._id, value === '1' ? true : false);
+				if (!subscription.autoTranslateLanguage && options.defaultLanguage) {
+					RocketChat.models.Subscriptions.updateAutoTranslateLanguageById(subscription._id, options.defaultLanguage);
+				}
 				break;
 			case 'autoTranslateLanguage':
 				RocketChat.models.Subscriptions.updateAutoTranslateLanguageById(subscription._id, value);
