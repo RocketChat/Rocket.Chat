@@ -15,7 +15,7 @@ userCanDrop = (_id) ->
 
 Template.room.helpers
 	isTranslated: ->
-		sub = ChatSubscription.findOne { rid: this._id }, { fields: { autoTranslate: 1, autoTranslateDisplay: 1, autoTranslateLanguage: 1 } }
+		sub = ChatSubscription.findOne { rid: this._id }, { fields: { autoTranslate: 1, autoTranslateLanguage: 1 } }
 		return RocketChat.settings.get('AutoTranslate_Enabled') and sub?.autoTranslate is true and sub.autoTranslateLanguage?
 
 	embeddedVersion: ->

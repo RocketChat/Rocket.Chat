@@ -8,7 +8,7 @@
 				<form>
 					<ul class="list clearfix">
 						<li>
-							<label>{{_ "Enabled"}}</label>
+							<label>{{_ "Automatic_Translation"}}</label>
 							<div>
 								<div class="input checkbox toggle">
 									<input type="checkbox" id="autoTranslate" name="autoTranslate" value="1" checked="{{$eq autoTranslate true}}" />
@@ -16,38 +16,27 @@
 								</div>
 							</div>
 						</li>
-						{{#if $eq autoTranslate true}}
-							<li>
-								<label>{{_ "Target_Language"}}</label>
-								<div>
-									{{#if editing 'autoTranslateLanguage'}}
-										<label>
-											<select name="autoTranslateLanguage">
-												{{#each supportedLanguages}}
-													<option value="{{language}}" selected={{$eq language autoTranslateLanguage}}>{{$or name language}}</option>
-												{{/each}}
-											</select>
-										</label>
-										<div class="alert">
-											{{_ "AutoTranslate_Change_Language_Description"}}
-										</div>
-										<button type="button" class="button cancel">{{_ "Cancel"}}</button>
-										<button type="button" class="button primary save">{{_ "Save"}}</button>
-									{{else}}
-										<span class="current-setting">{{languageName autoTranslateLanguage}} <i class="icon-pencil" data-edit="autoTranslateLanguage"></i></span>
-									{{/if}}
-								</div>
-							</li>
-							<li>
-								<label>{{_ "Display_translated_text"}}</label>
-								<div>
-									<div class="input checkbox toggle">
-										<input type="checkbox" id="autoTranslateDisplay" name="autoTranslateDisplay" value="1" checked="{{$eq autoTranslateDisplay true}}"/>
-										<label for="autoTranslateDisplay"></label>
+						<li>
+							<label>{{_ "Language"}}</label>
+							<div>
+								{{#if editing 'autoTranslateLanguage'}}
+									<label>
+										<select name="autoTranslateLanguage">
+											{{#each supportedLanguages}}
+												<option value="{{language}}" selected={{$eq language autoTranslateLanguage}}>{{$or name language}}</option>
+											{{/each}}
+										</select>
+									</label>
+									<div class="alert">
+										{{_ "AutoTranslate_Change_Language_Description"}}
 									</div>
-								</div>
-							</li>
-						{{/if}}
+									<button type="button" class="button cancel">{{_ "Cancel"}}</button>
+									<button type="button" class="button primary save">{{_ "Save"}}</button>
+								{{else}}
+									<span class="current-setting">{{languageName autoTranslateLanguage}} <i class="icon-pencil" data-edit="autoTranslateLanguage"></i></span>
+								{{/if}}
+							</div>
+						</li>
 					</ul>
 				</form>
 			</div>

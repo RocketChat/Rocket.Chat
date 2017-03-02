@@ -14,9 +14,6 @@ Meteor.startup(function() {
 					const subscription = RocketChat.models.Subscriptions.findOne({ rid: message.rid, 'u._id': Meteor.userId() });
 					RocketChat.MessageAction.hideDropDown();
 					if ((!message.translations || !message.translations[subscription && subscription.autoTranslateLanguage]) && !_.find(message.attachments, attachment => { return attachment.translations && attachment.translations[subscription.autoTranslateLanguage]; })) {
-						if (!subscription.autoTranslateDisplay) {
-							RocketChat.AutoTranslate.messageIdsToWait[message._id] = true;
-						}
 						RocketChat.models.Messages.update({ _id: message._id }, { $set: { autoTranslateFetching: true } });
 						Meteor.call('autoTranslate.translateMessage', message);
 					} else if (message.autoTranslateShowInverse) {
@@ -27,8 +24,7 @@ Meteor.startup(function() {
 				},
 
 				validation(message) {
-					const subscription = RocketChat.models.Subscriptions.findOne({ rid: message.rid, 'u._id': Meteor.userId() });
-					return message && message.u && message.u._id !== Meteor.userId() && subscription.autoTranslate === true && subscription.autoTranslateLanguage;
+					return message && message.u && message.u._id !== Meteor.userId();
 				},
 
 				order: 90
