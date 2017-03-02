@@ -27,7 +27,7 @@ class AutoTranslate {
 			message.tokens = [];
 		}
 		let count = message.tokens.length;
-		message.msg = message.msg.replace(/:\w+:/g, function(match) {
+		message.msg = message.msg.replace(/:[+\w\d]+:/g, function(match) {
 			const token = `<i class=notranslate>{${count++}}</i>`;
 			message.tokens.push({
 				token: token,
