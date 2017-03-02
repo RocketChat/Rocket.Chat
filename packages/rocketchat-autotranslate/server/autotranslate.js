@@ -5,6 +5,13 @@ class AutoTranslate {
 		this.apiKey = RocketChat.settings.get('AutoTranslate_GoogleAPIKey');
 		this.supportedLanguages = {};
 		RocketChat.callbacks.add('afterSaveMessage', this.translateMessage.bind(this), RocketChat.callbacks.priority.MEDIUM, 'AutoTranslate');
+
+		RocketChat.settings.get('AutoTranslate_Enabled', (key, value) => {
+			this.enabled = value;
+		});
+		RocketChat.settings.get('AutoTranslate_GoogleAPIKey', (key, value) => {
+			this.apiKey = value;
+		});
 	}
 
 	tokenize(message) {
