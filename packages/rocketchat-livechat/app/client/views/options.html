@@ -2,15 +2,8 @@
 	<div class="options-menu content-background-color {{show}}">
 		<ul>
 			{{#if showDepartments}}
-				<li>
-					<select name="department" class="switch-department">
-						<option value="">{{_ "Select_a_department"}}</option>
-						{{#each departments}}
-							<option value="{{_id}}" selected="{{selectedDepartment}}">{{name}}</option>
-						{{/each}}
-					</select>
-				</li>
-			{{/if}}	
+				<li><button class="switch-department"><i class="icon-cancel"></i> {{_ "Switch_department"}}</button></li>
+			{{/if}}
 			<li><button class="end-chat"><i class="icon-cancel"></i> {{_ "End_chat"}}</button></li>
 		</ul>
 	</div>

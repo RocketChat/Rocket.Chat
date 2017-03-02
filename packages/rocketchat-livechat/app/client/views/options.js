@@ -37,7 +37,32 @@ Template.options.events({
 			});
 		});
 	},
-	'change .switch-department'(e, instance) {
+	'click .switch-department'(e, instance) {
+		swal({
+			text: t('Are_you_sure_do_you_want_end_this_chat'),
+			title: '',
+			type: 'warning',
+			showCancelButton: true,
+			confirmButtonColor: '#DD6B55',
+			confirmButtonText: t('Yes'),
+			cancelButtonText: t('No'),
+			closeOnConfirm: true,
+			html: false
+		}, () => {
+			Meteor.call('livechat:closeByVisitor', (error) => {
+				if (error) {
+					return console.log('Error ->', error);
+				}
+				swal({
+					title: t('Chat_ended'),
+					type: 'success',
+					timer: 2000
+				});
+				Livechat.showSwitchDepartmentForm = true;
+			});
+		});
+	},
+	'change .switch-department2'(e, instance) {
 		Meteor.call('livechat:closeByVisitor', (error) => {
 			if (error) {
 				return console.log('Error ->', error);

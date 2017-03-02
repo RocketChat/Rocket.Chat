@@ -1,0 +1,10 @@
+<template name="switchDepartment">
+  <div class="livechat-form">
+    <select name="department" class="switch-department-select">
+      <option value="">{{_ "Select_a_department"}}</option>
+      {{#each departments}}
+      <option value="{{_id}}" selected="{{selectedDepartment}}">{{name}}</option>
+      {{/each}}
+    </select>
+  </div>
+</template>

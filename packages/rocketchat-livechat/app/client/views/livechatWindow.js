@@ -22,6 +22,9 @@ Template.livechatWindow.helpers({
 		}
 		return Livechat.registrationForm;
 	},
+	showSwitchDepartmentForm() {
+		return Livechat.showSwitchDepartmentForm;
+	},
 	livechatStarted() {
 		return Livechat.online !== null;
 	},
