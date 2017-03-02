@@ -104,7 +104,7 @@ Template.autoTranslateFlexTab.onCreated(function() {
 		}
 
 		if (this.validateSetting(field)) {
-			Meteor.call('autoTranslate.saveSettings', this.data.rid, field, value, (err/*, result*/) => {
+			Meteor.call('autoTranslate.saveSettings', this.data.rid, field, value, { defaultLanguage: Meteor.user().language || window.defaultUserLanguage() }, (err/*, result*/) => {
 				if (err) {
 					return handleError(err);
 				}
