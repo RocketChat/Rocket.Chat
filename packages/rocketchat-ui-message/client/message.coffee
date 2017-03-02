@@ -41,8 +41,8 @@ Template.message.helpers
 
 	showTranslated: ->
 		if RocketChat.settings.get('AutoTranslate_Enabled') and this.u?._id isnt Meteor.userId() and !RocketChat.MessageTypes.isSystemMessage(this)
-			subscription = RocketChat.models.Subscriptions.findOne({ rid: this.rid }, { fields: { autoTranslate: 1, autoTranslateLanguage: 1, autoTranslateDisplay: 1 } });
-			return subscription.autoTranslate && !!subscription?.autoTranslateDisplay isnt !!this.autoTranslateShowInverse && (this.autoTranslateFetching || this.translations && this.translations[subscription.autoTranslateLanguage] || _.find(this.attachments, (attachment) -> attachment.translations && attachment.translations[subscription.autoTranslateLanguage] ))
+			subscription = RocketChat.models.Subscriptions.findOne({ rid: this.rid }, { fields: { autoTranslate: 1, autoTranslateLanguage: 1 } });
+			return ((subscription.autoTranslate && !this.autoTranslateShowInverse) || (!subscription.autoTranslate && this.autoTranslateShowInverse)) && (this.autoTranslateFetching || this.translations && this.translations[subscription.autoTranslateLanguage] || _.find(this.attachments, (attachment) -> attachment.translations && attachment.translations[subscription.autoTranslateLanguage] ))
 
 	edited: ->
 		return Template.instance().wasEdited

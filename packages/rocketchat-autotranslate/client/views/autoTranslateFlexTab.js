@@ -13,17 +13,6 @@ Template.autoTranslateFlexTab.helpers({
 		return sub && sub.autoTranslate ? true : false;
 	},
 
-	autoTranslateDisplay() {
-		const sub = ChatSubscription.findOne({
-			rid: Template.instance().rid
-		}, {
-			fields: {
-				autoTranslateDisplay: 1
-			}
-		});
-		return sub && sub.autoTranslateDisplay ? true : false;
-	},
-
 	autoTranslateValue() {
 		const sub = ChatSubscription.findOne({
 			rid: Template.instance().rid
@@ -43,10 +32,15 @@ Template.autoTranslateFlexTab.helpers({
 				autoTranslateLanguage: 1
 			}
 		});
-		const autoTranslateLanguage = sub && sub.autoTranslateLanguage;
+		const autoTranslateLanguage = sub && sub.autoTranslateLanguage || Meteor.user().language || window.defaultUserLanguage() || '';
 		const supportedLanguages = Template.instance().supportedLanguages.get();
-		const language = _.findWhere(supportedLanguages, { language: autoTranslateLanguage });
-		return language && language.language || autoTranslateLanguage || (Meteor.user() && Meteor.user().language);
+		let language = _.findWhere(supportedLanguages, { language: autoTranslateLanguage });
+		if (language) {
+			return language.language;
+		} else if (autoTranslateLanguage.indexOf('-') !== -1) {
+			language = _.findWhere(supportedLanguages, { language: autoTranslateLanguage.substr(0, 2) });
+			return language && language.language;
+		}
 	},
 
 	editing(field) {
@@ -57,10 +51,17 @@ Template.autoTranslateFlexTab.helpers({
 		return Template.instance().supportedLanguages.get();
 	},
 
-	languageName(language) {
-		const supportedLanguages = Template.instance().supportedLanguages.get();
-		language = _.findWhere(supportedLanguages, { language: language });
-		return language && language.name;
+	languageName(targetLanguage) {
+		if (targetLanguage) {
+			const supportedLanguages = Template.instance().supportedLanguages.get();
+			let language = _.findWhere(supportedLanguages, { language: targetLanguage });
+			if (language) {
+				return language.name;
+			} else if (targetLanguage.indexOf('-') !== -1) {
+				language = _.findWhere(supportedLanguages, { language: targetLanguage.substr(0, 2) });
+				return language && language.name;
+			}
+		}
 	}
 });
 
@@ -77,7 +78,6 @@ Template.autoTranslateFlexTab.onCreated(function() {
 		let value;
 		switch (field) {
 			case 'autoTranslate':
-			case 'autoTranslateDisplay':
 				return true;
 			case 'autoTranslateLanguage':
 				value = this.$('select[name='+ field +']').val();
@@ -96,7 +96,6 @@ Template.autoTranslateFlexTab.onCreated(function() {
 		let value;
 		switch (field) {
 			case 'autoTranslate':
-			case 'autoTranslateDisplay':
 				value = this.$('input[name='+field+']').prop('checked') ? '1' : '0';
 				break;
 			case 'autoTranslateLanguage':
@@ -117,20 +116,19 @@ Template.autoTranslateFlexTab.onCreated(function() {
 					query.$or = [ { [`translations.${subscription.autoTranslateLanguage}`]: { $exists: 1 } }, { [`attachments.translations.${subscription.autoTranslateLanguage}`]: { $exists: 1 } } ];
 				}
 
-				const update = { $set: { random: Random.id() } };
-
-				if (field === 'autoTranslateDisplay' && value === '0') {
+				if (field === 'autoTranslate' && value === '0') {
 					RocketChat.models.Messages.update(query, { $unset: { autoTranslateShowInverse: 1 } }, { multi: true });
 				}
 
-				const display = field === 'autoTranslateDisplay' ? true : subscription.autoTranslateDisplay;
+				const display = field === 'autoTranslate' ? true : subscription.autoTranslate;
 				if (display) {
 					query.autoTranslateShowInverse = { $ne: true };
 				} else {
 					query.autoTranslateShowInverse = true;
 				}
 
-				RocketChat.models.Messages.update(query, update, { multi: true });
+				RocketChat.models.Messages.update(query, { $set: { random: Random.id() } }, { multi: true });
+
 				this.editing.set();
 			});
 		}
