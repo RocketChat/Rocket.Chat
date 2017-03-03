@@ -14,8 +14,9 @@ Meteor.startup(function() {
 					const subscription = RocketChat.models.Subscriptions.findOne({ rid: message.rid, 'u._id': Meteor.userId() });
 					RocketChat.MessageAction.hideDropDown();
 					if ((!message.translations || !message.translations[subscription && subscription.autoTranslateLanguage]) && !_.find(message.attachments, attachment => { return attachment.translations && attachment.translations[subscription.autoTranslateLanguage]; })) {
+						RocketChat.AutoTranslate.messageIdsToWait[message._id] = true;
 						RocketChat.models.Messages.update({ _id: message._id }, { $set: { autoTranslateFetching: true } });
-						Meteor.call('autoTranslate.translateMessage', message);
+						Meteor.call('autoTranslate.translateMessage', message, subscription.autoTranslateLanguage);
 					} else if (message.autoTranslateShowInverse) {
 						RocketChat.models.Messages.update({ _id: message._id }, { $unset: { autoTranslateShowInverse: true } });
 					} else {

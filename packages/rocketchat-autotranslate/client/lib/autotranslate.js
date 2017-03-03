@@ -1,4 +1,6 @@
 RocketChat.AutoTranslate = {
+	messageIdsToWait: {},
+
 	translateAttachments(attachments, language) {
 		for (const attachment of attachments) {
 			if (attachment.text && attachment.translations && attachment.translations[language]) {
@@ -48,8 +50,9 @@ RocketChat.AutoTranslate = {
 					const subscription = RocketChat.models.Subscriptions.findOne({ rid: message.rid }, { fields: { autoTranslate: 1, autoTranslateLanguage: 1 } });
 					if (subscription && subscription.autoTranslate === true && subscription.autoTranslateLanguage && ((message.msg && (!message.translations || !message.translations[subscription.autoTranslateLanguage])) || (message.attachments && !_.find(message.attachments, attachment => { return attachment.translations && attachment.translations[subscription.autoTranslateLanguage]; })))) {
 						RocketChat.models.Messages.update({ _id: message._id }, { $set: { autoTranslateFetching: true } });
-					} else {
-						RocketChat.models.Messages.update({ _id: message._id, autoTranslateFetching: true }, { $unset: { autoTranslateFetching: 1 } });
+					} else if (this.messageIdsToWait[message._id] !== undefined && subscription.autoTranslate !== true) {
+						RocketChat.models.Messages.update({ _id: message._id }, { $set: { autoTranslateShowInverse: true } });
+						delete this.messageIdsToWait[message._id];
 					}
 				}, RocketChat.callbacks.priority.HIGH - 3, 'autotranslate-stream');
 			} else {
