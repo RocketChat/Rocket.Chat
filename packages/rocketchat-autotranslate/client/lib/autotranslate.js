@@ -46,10 +46,11 @@ RocketChat.AutoTranslate = {
 
 				RocketChat.callbacks.add('streamMessage', (message) => {
 					const subscription = RocketChat.models.Subscriptions.findOne({ rid: message.rid }, { fields: { autoTranslate: 1, autoTranslateLanguage: 1 } });
-					if (subscription && subscription.autoTranslate === true && subscription.autoTranslateLanguage && (!message.translations || !message.translations[subscription.autoTranslateLanguage] || (message.attachments && !_.find(message.attachments, attachment => { return attachment.translations && attachment.translations[subscription.autoTranslateLanguage]; })))) {
+					if (subscription && subscription.autoTranslate === true && subscription.autoTranslateLanguage && ((message.msg && (!message.translations || !message.translations[subscription.autoTranslateLanguage])) || (message.attachments && !_.find(message.attachments, attachment => { return attachment.translations && attachment.translations[subscription.autoTranslateLanguage]; })))) {
 						RocketChat.models.Messages.update({ _id: message._id }, { $set: { autoTranslateFetching: true } });
+					} else {
+						RocketChat.models.Messages.update({ _id: message._id, autoTranslateFetching: true }, { $unset: { autoTranslateFetching: 1 } });
 					}
-					RocketChat.models.Messages.update({ _id: message._id, autoTranslateFetching: true }, { $set: { autoTranslateShowInverse: true }, $unset: { autoTranslateFetching: 1 } });
 				}, RocketChat.callbacks.priority.HIGH - 3, 'autotranslate-stream');
 			} else {
 				RocketChat.callbacks.remove('renderMessage', 'autotranslate');
