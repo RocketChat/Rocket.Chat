@@ -10,7 +10,7 @@ Meteor.methods({
 
 		Meteor.setTimeout(() => {
 			Meteor.setTimeout(() => {
-				console.warn("process.exit() timed out, aborting...");
+				console.warn('Call to process.exit() timed out, aborting.');
 				process.abort();
 			}
 			, 1000);
