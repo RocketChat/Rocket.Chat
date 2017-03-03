@@ -118,8 +118,10 @@ class @ChatMessages
 		this.$input.closest('.message-form').addClass('editing')
 
 		this.input.focus()
-
-		this.input.value = msg
+		if message.attachments? and message.attachments[0].description?
+			this.input.value = message.attachments[0].description
+		else
+			this.input.value = msg
 
 		cursor_pos = if editingNext then 0 else -1
 		this.$input.setCursorPosition(cursor_pos)
@@ -208,7 +210,9 @@ class @ChatMessages
 		# If edited message was emptied we ask for deletion
 		else if this.editing.element
 			message = this.getMessageById this.editing.id
-
+			if message.attachments? and message.attachments[0].description?
+				this.update(this.editing.id, rid, '', true)
+				return
 			# Restore original message in textbox in case delete is canceled
 			this.resetToDraft this.editing.id
 
@@ -269,8 +273,8 @@ class @ChatMessages
 			if error
 				return handleError(error)
 
-	update: (id, rid, msg) ->
-		if _.trim(msg) isnt ''
+	update: (id, rid, msg, isDescription) ->
+		if _.trim(msg) isnt '' or isDescription is true
 			Meteor.call 'updateMessage', { _id: id, msg: msg, rid: rid }
 			this.clearEditing()
 			this.stopTyping(rid)
