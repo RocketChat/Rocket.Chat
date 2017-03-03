@@ -9,7 +9,7 @@ let msg = null;
 
 renderer.code = function(code, lang, escaped) {
 	if (this.options.highlight) {
-		var out = this.options.highlight(code, lang);
+		const out = this.options.highlight(code, lang);
 		if (out != null && out !== code) {
 			escaped = true;
 			code = out;
