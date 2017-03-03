@@ -24,10 +24,12 @@ Package.onUse(function(api) {
 		'rocketchat:lib',
 		'meteorhacks:inject-initial'
 	]);
-	api.addFiles('master/main.html', 'client');
-	api.addFiles('master/loading.html', 'client');
-	api.addFiles('master/error.html', 'client');
-	api.addFiles('master/logoLayout.html', 'client');
-	api.addFiles('master/main.coffee', 'client');
+
+	api.addFiles('client/main.html', 'client');
+	api.addFiles('client/loading.html', 'client');
+	api.addFiles('client/error.html', 'client');
+	api.addFiles('client/logoLayout.html', 'client');
+	api.addFiles('client/main.coffee', 'client');
+
 	api.addFiles('server/inject.js', 'server');
 });
