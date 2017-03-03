@@ -66,7 +66,7 @@ Template.videoFlexTab.onRendered(function() {
 
 						timeOut = Meteor.setInterval(() => Meteor.call('jitsi:updateTimeout', roomId), 10*1000);
 
-						const newWindow = window.open((noSsl ? 'http://' : 'https://') + domain + '/' + jitsiRoom, jitsiRoom);
+						const newWindow = window.open((noSsl ? 'http://' : 'https://') + domain + '/' + jitsiRoom, '_system');
 						newWindow.focus();
 
 						const closeInterval = setInterval(() => {
