@@ -1,7 +1,6 @@
 /* globals Google */
 
 function getIdentity(accessToken) {
-	console.log('accessToken', accessToken);
 	try {
 		return HTTP.get(
 			'https://www.googleapis.com/oauth2/v1/userinfo',
@@ -23,6 +22,14 @@ function getScopes(accessToken) {
 
 
 RocketChat.registerAccessTokenService('google', function(options) {
+	check(options, {
+		accessToken: String,
+		idToken: String,
+		expiresAt: Match.Integer,
+		scope: Match.Maybe(String),
+		identity: Match.Maybe(Object)
+	});
+
 	const identity = options.identity || getIdentity(options.accessToken);
 
 	const serviceData = {
