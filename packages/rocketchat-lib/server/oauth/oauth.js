@@ -14,9 +14,9 @@ Accounts.registerLoginHandler(function(options) {
 		return undefined; // don't handle
 	}
 
-	check(options.oauth, {
+	check(options, Match.ObjectIncluding({
 		serviceName: String
-	});
+	}));
 
 	const service = AccessTokenServices[options.serviceName];
 
