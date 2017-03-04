@@ -17,10 +17,12 @@ Meteor.methods({
 
 		const user = RocketChat.models.Users.findOneById(userId);
 
-		if (user && user.username) {
+		if (user) {
 			RocketChat.models.Users.setUserActive(userId, active);
 
-			RocketChat.models.Subscriptions.setArchivedByUsername(user.username, !active);
+			if (user.username) {
+				RocketChat.models.Subscriptions.setArchivedByUsername(user.username, !active);
+			}
 
 			if (active === false) {
 				RocketChat.models.Users.unsetLoginTokens(userId);

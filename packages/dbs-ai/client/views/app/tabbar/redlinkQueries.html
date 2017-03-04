@@ -1,0 +1,15 @@
+<template name="redlinkQueries">
+    <!--A container including all queries which expands the most relevant's query preview-->
+    <div class="knowledge-queries-wrapper">
+
+        <div class="queries-spinner">
+				<span class="icon-wrapper">
+					<i class="icon-spinner"></i>
+				</span>
+        </div>
+
+		{{#each query in queries}}
+			{{> redlinkQuery (queryContext query @index)}}
+		{{/each}}
+    </div>
+</template>

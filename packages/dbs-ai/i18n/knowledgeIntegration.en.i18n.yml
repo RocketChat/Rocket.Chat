@@ -1,0 +1,22 @@
+knowledge_provider_usage_unknown: Unknown
+knowledge_provider_usage_perfect: Perfectly recognized
+knowledge_provider_usage_helpful: Helpful
+knowledge_provider_usage_not_used: Not used
+knowledge_provider_usage_useless: Not helpful
+results_community_bahn_de: Top community results
+results_bahn_de: Possible connections
+results: Top results
+duration: Duration
+track_changes: Track changes
+products: Products
+price_low: Standard price
+price_standard: Flex price
+connection_details: Details
+copy_to_message: Send
+connection_not_available: Connection not available
+
+Livechat_Knowledge_Source : Knowledge source
+Livechat_Knowledge_Source_APIAI : API.ai
+Livechat_Knowledge_Source_Redlink : Redlink
+Livechat_Knowledge_Redlink_URL : URL of  Redlink service
+Livechat_Knowledge_Redlink_Auth_Token : Basic-Auth token

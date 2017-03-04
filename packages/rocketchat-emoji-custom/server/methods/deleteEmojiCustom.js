@@ -1,4 +1,4 @@
-/* globals isSetNotNull, RocketChatFileEmojiCustomInstance */
+/* globals RocketChatFileEmojiCustomInstance */
 Meteor.methods({
 	deleteEmojiCustom(emojiID) {
 		let emoji = null;
@@ -9,7 +9,7 @@ Meteor.methods({
 			throw new Meteor.Error('not_authorized');
 		}
 
-		if (!isSetNotNull(() => emoji)) {
+		if (emoji == null) {
 			throw new Meteor.Error('Custom_Emoji_Error_Invalid_Emoji', 'Invalid emoji', { method: 'deleteEmojiCustom' });
 		}
 

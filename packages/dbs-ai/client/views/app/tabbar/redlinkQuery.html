@@ -1,0 +1,41 @@
+<template name="redlinkQuery">
+    <!--Represents a single proposed query which might include a preview-->
+    <div class="query-item-wrapper {{classExpanded}}">
+        <div class="query-item clearfix" data-template-index="{{templateIndex}}" data-query-index="{{queryIndex}}">
+			{{#if and query.inlineResultSupport hasResult}}
+                <div class="js-toggle-results-expanded query-results-toggle">
+                    <span class="icon-up-open"></span>
+                </div>
+			{{else}}
+                <div class="query-results-not-supported"></div>
+			{{/if}}
+            <a class="query-item-url" href="{{query.url}}" target="_blank">
+                <span class="query-servicename">{{getQueryDisplayTitle}}</span>
+                <span class="icon-wrapper"><i class="icon-link-ext"></i></span>
+            </a>
+            <a href="{{query.url}}" target="_blank" class="query-item-logo" title="{{text query.creator}}"><img
+                    src="/packages/dbs_ai/assets/icons/{{query.replacedCreator}}.png"
+                    onerror="this.onerror=null; this.src='/packages/dbs_ai/assets/icons/fallback_logo.png';">
+                <span class="creator_label">{{getCreatorText}}</span></a>
+        </div>
+
+		{{#if and query.inlineResultSupport hasResult}}
+			{{#unless isDirty}}
+                <div class="query-preview">
+                    <div class="query-preview-headline-wrapper clearfix">
+                        <h4 class="query-preview-headline">{{queryPreviewHeadline}}</h4>
+					</div>
+                    <div class="clearfix">
+						{{#let navigationOptions=navigationOptions}}
+							{{> Template.dynamic template=navigationOptions.template data=navigationOptions }}
+						{{/let}}
+                    </div>
+                </div>
+			{{else}}
+                <div class="results-dirty">
+					<span class="icon-wrapper"><i class="icon-spinner"></i></span>
+				</div>
+			{{/unless}}
+		{{/if}}
+    </div>
+</template>

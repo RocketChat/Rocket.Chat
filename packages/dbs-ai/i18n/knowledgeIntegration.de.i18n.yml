@@ -1,0 +1,22 @@
+knowledge_provider_usage_unknown: Die Wissensbasis...
+knowledge_provider_usage_perfect: hat alles perfekt erkannt
+knowledge_provider_usage_helpful: war hilfreich
+knowledge_provider_usage_not_used: wurde nicht verwendet
+knowledge_provider_usage_useless: war nicht hilfreich
+results_community_bahn_de: Top Community Ergebnisse
+results_bahn_de: Mögliche Verbindungen
+results: Top Ergebnisse
+duration: Dauer
+track_changes: Umstiege
+products: Produkte
+price_low: Sparpreis
+price_standard: Flexpreis
+connection_details: Details
+copy_to_message: Senden
+connection_not_available: Verbindung nicht buchbar
+
+Livechat_Knowledge_Source : Wissensquelle
+Livechat_Knowledge_Source_APIAI : API.ai
+Livechat_Knowledge_Source_Redlink : Redlink
+Livechat_Knowledge_Redlink_URL : URL des Redlink-Service
+Livechat_Knowledge_Redlink_Auth_Token : Basic-Auth Token
