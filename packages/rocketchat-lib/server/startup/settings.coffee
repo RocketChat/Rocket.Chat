@@ -88,6 +88,9 @@ RocketChat.settings.addGroup 'OAuth', ->
 		@add 'Accounts_OAuth_Twitter_secret', '', { type: 'string', enableQuery: enableQuery }
 		@add 'Accounts_OAuth_Twitter_callback_url', '_oauth/twitter', { type: 'relativeUrl', readonly: true, force: true, enableQuery: enableQuery }
 
+	@section 'Proxy', ->
+		@add 'Accounts_OAuth_Proxy_host', 'https://oauth-proxy.rocket.chat', { type: 'string', public: true }
+		@add 'Accounts_OAuth_Proxy_services', '', { type: 'string', public: true }
 
 RocketChat.settings.addGroup 'General', ->
 
