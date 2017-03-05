@@ -44,6 +44,7 @@ rocketchat:api
 rocketchat:assets
 rocketchat:authorization
 rocketchat:autolinker
+rocketchat:autotranslate
 rocketchat:bot-helpers
 rocketchat:cas
 rocketchat:channel-settings
