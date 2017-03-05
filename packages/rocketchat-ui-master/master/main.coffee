@@ -4,10 +4,10 @@ Template.body.onRendered ->
 	clipboard = new Clipboard('.clipboard')
 
 	$(document.body).on 'keydown', (e) ->
-		if e.keyCode is 80 and (e.ctrlKey is true or e.metaKey is true) and e.shiftKey is false
+		if e.keyCode in [80, 75] and (e.ctrlKey is true or e.metaKey is true) and e.shiftKey is false
 			e.preventDefault()
 			e.stopPropagation()
-			toolbarSearch.focus()
+			toolbarSearch.focus(true)
 
 		unread = Session.get('unread')
 		if e.keyCode is 27 and e.shiftKey is true and unread? and unread isnt ''
@@ -34,10 +34,13 @@ Template.body.onRendered ->
 			return
 		if /input|textarea|select/i.test(target.tagName)
 			return
-		$inputMessage = $('textarea.input-message')
-		if 0 == $inputMessage.length
+		if target.id is 'pswp'
 			return
-		$inputMessage.focus()
+
+		inputMessage = $('textarea.input-message')
+		if inputMessage.length is 0
+			return
+		inputMessage.focus()
 
 	$(document.body).on 'click', 'a', (e) ->
 		link = e.currentTarget
@@ -226,7 +229,10 @@ Template.main.onRendered ->
 				$('.input-message').focus()
 		, 100
 
+
 	Tracker.autorun ->
+		swal.setDefaults({cancelButtonText: t('Cancel')})
+
 		prefs = Meteor.user()?.settings?.preferences
 		if prefs?.hideUsernames
 			$(document.body).on('mouseleave', 'button.thumb', (e) ->

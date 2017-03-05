@@ -12,7 +12,6 @@ Package.onUse(function(api) {
 		'underscore',
 		'templating',
 		'underscorestring:underscore.string',
-		'simple:highlight.js',
 		'rocketchat:lib'
 	]);
 

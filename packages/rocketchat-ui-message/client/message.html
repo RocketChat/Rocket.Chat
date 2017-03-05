@@ -1,0 +1,94 @@
+<template name="message">
+	<li id="{{_id}}" class="message background-transparent-dark-hover {{isSequential}} {{system}} {{t}} {{own}} {{isTemp}} {{chatops}} {{customClass}}" data-username="{{u.username}}" data-groupable="{{isGroupable}}" data-date="{{date}}" data-timestamp="{{timestamp}}">
+		{{#if avatar}}
+			{{#if avatarFromUsername}}
+				<button class="thumb user-card-message" data-username="{{u.username}}" tabindex="1">{{> avatar username=avatarFromUsername}}</button>
+			{{else}}
+				<button class="thumb user-card-message" data-username="{{u.username}}" tabindex="1">
+					<div class="avatar">
+						<div class="avatar-image" style="background-image:url({{avatar}});"></div>
+					</div>
+				</button>
+			{{/if}}
+		{{else}}
+			{{#if emoji}}
+				<button class="thumb user-card-message" data-username="{{u.username}}" tabindex="1">
+					<div class="avatar">
+						{{{getEmoji emoji}}}
+					</div>
+				</button>
+			{{else}}
+				<button class="thumb user-card-message" data-username="{{u.username}}" tabindex="1">{{> avatar username=u.username}}</button>
+			{{/if}}
+		{{/if}}
+		{{#if alias}}
+			<button type="button" class="user user-card-message color-primary-font-color" data-username="{{u.username}}" tabindex="1">{{alias}} <span class="message-alias border-component-color color-info-font-color">@{{u.username}}</span></button>
+		{{else}}
+			<button type="button" class="user user-card-message color-primary-font-color" data-username="{{u.username}}" tabindex="1">{{u.username}}</button>
+		{{/if}}
+		<span class="info border-component-color color-info-font-color">
+		{{#each roleTags}}
+			<span class="role-tag background-info-font-color" data-role="{{description}}">{{description}}</span>
+		{{/each}}
+		{{#if isBot}}
+			<span class="is-bot background-info-font-color">BOT</span>
+		{{/if}}
+		<span class="time" title='{{date}} {{time}}'>{{time}}</span>
+		{{#if edited}}
+			<span class="edited" title='{{_ "edited"}} {{_ "at"}} {{editTime}} {{_ "by"}} {{editedBy}}'>
+				<i class="icon-edit" aria-label="{{_ "Edited"}}"></i>
+				<button class="thumb thumb-small user-card-message" data-username="{{editedBy}}" tabindex="1">{{> avatar username=editedBy}}</button>
+			</span>
+		{{/if}}
+		{{#if private}}
+			<span class="private">{{_ "Only_you_can_see_this_message"}}</span>
+		{{/if}}
+			<div class="message-cog-container {{hideCog}}">
+				<i class="icon-cog message-cog" aria-label="{{_ "Actions"}}"></i>
+			</div>
+		</span>
+		<div class="body color-primary-font-color {{system true}}" dir="auto" data-unread-text="{{_ "Unread_Messages"}}">
+			{{{body}}}
+			{{#if hasOembed}}
+				{{#each urls}}
+					{{injectIndex . @index}} {{> oembedBaseWidget}}
+				{{/each}}
+			{{/if}}
+			{{#each attachments}}
+				{{injectIndex . @index}} {{> messageAttachment}}
+			{{/each}}
+		</div>
+		<ul class="actionLinks {{hideActionLinks}}">
+			{{#each actionLink in actionLinks}}
+				<li class="color-primary-action-color">
+					<span class="action-link" data-actionlink="{{actionLink.id}}">
+						{{#if actionLink.icon}}
+							<i class="{{actionLink.icon}}"></i>
+						{{/if}}
+						{{#if actionLink.i18nLabel}}
+							{{_ actionLink.i18nLabel}}
+						{{else}}
+							{{actionLink.label}}
+						{{/if}}
+					</span>
+				</li>
+			{{/each}}
+		</ul>
+		<ul class="reactions {{hideReactions}}">
+			{{#each reaction in reactions}}
+				<li data-emoji="{{reaction.emoji}}" {{markUserReaction reaction}}>
+					<span class="reaction-emoji">{{> renderEmoji reaction.emoji}}</span>
+					<span class="reaction-count">{{reaction.count}}</span>
+					<ul class="people">
+						<span style="font-weight: bold;">
+							{{reaction.usernames}} <span style="color: #aaa;">{{reaction.reaction}}</span>
+						</span>
+					</ul>
+				</li>
+			{{/each}}
+			<li class="add-reaction">
+				<span class="icon-people-plus"></span>
+			</li>
+		</ul>
+	</li>
+</template>

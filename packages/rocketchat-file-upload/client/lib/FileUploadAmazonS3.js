@@ -18,9 +18,8 @@ FileUpload.AmazonS3 = class FileUploadAmazonS3 extends FileUploadBase {
 					uploading = [];
 				}
 
-				const item = _.findWhere(uploading, {
-					id: this.id
-				});
+				const item = _.findWhere(uploading, { id: this.id });
+
 				if (_.isObject(item)) {
 					item.error = error.error;
 					item.percentage = 0;
@@ -30,6 +29,7 @@ FileUpload.AmazonS3 = class FileUploadAmazonS3 extends FileUploadBase {
 						percentage: 0
 					});
 				}
+
 				Session.set('uploading', uploading);
 			} else {
 				const file = _.pick(this.meta, 'type', 'size', 'name', 'identify', 'description');
