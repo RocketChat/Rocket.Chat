@@ -121,7 +121,7 @@ Template.messageBox.events
 	'click .join': (event) ->
 		event.stopPropagation()
 		event.preventDefault()
-		Meteor.call 'joinRoom', @_id, Template.instance().$('[name=joinCode]').val(), (err) ->
+		Meteor.call 'joinRoom', @_id, Template.instance().$('[name=joinCode]').val(), (err) =>
 			if err?
 				toastr.error t(err.reason)
 
