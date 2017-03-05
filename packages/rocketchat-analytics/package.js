@@ -1,7 +1,7 @@
 Package.describe({
-	name: 'rocketchat:piwik',
-	version: '0.0.1',
-	summary: 'Piwik integeration for Rocket.Chat',
+	name: 'rocketchat:analytics',
+	version: '0.0.2',
+	summary: 'Analytics integeration for Rocket.Chat',
 	git: ''
 });
 
