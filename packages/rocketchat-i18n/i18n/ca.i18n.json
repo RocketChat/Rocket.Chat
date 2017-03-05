@@ -154,6 +154,8 @@
   "Analytics_features_messages_Description": "Monitoritza esdeveniments personalitzats relacionats amb accions que els usuaris fan als missatges.",
   "Analytics_features_rooms_Description": "Monitoritza esdeveniments personalitzats relacionats amb accions en un canal o grup (crear, abandonar, eliminar...).",
   "Analytics_features_users_Description": "Monitoritza esdeveniments personalitzats relacionats amb la gestió d'usuaris (reset de contrasenya, canvis d'avatar, etc.).",
+  "Analytics_Google": "Google Analytics",
+  "Analytics_Google_id": "Tracking ID",
   "and": "i",
   "And_more": "I __length__ més",
   "Animals_and_Nature": "Animals i natura",
