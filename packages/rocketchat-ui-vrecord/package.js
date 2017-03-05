@@ -21,8 +21,8 @@ Package.onUse(function(api) {
 	api.addFiles('client/vrecord.less', 'client');
 
 	api.addFiles('client/vrecord.html', 'client');
-	api.addFiles('client/vrecord.coffee', 'client');
+	api.addFiles('client/vrecord.js', 'client');
 	api.addFiles('client/VRecDialog.coffee', 'client');
 
-	api.addFiles('server/settings.coffee', 'server');
+	api.addFiles('server/settings.js', 'server');
 });

@@ -39,6 +39,7 @@ standard-minifier-js
 tracker
 
 rocketchat:action-links
+rocketchat:analytics
 rocketchat:api
 rocketchat:assets
 rocketchat:authorization
@@ -89,7 +90,6 @@ rocketchat:migrations
 rocketchat:oauth2-server-config
 rocketchat:oembed
 rocketchat:otr
-rocketchat:piwik
 rocketchat:push-notifications
 rocketchat:reactions
 rocketchat:sandstorm
