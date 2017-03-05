@@ -117,7 +117,9 @@ Template.accountProfile.events
 			type: "input",
 			inputType: "password",
 			showCancelButton: true,
-			closeOnConfirm: false
+			closeOnConfirm: false,
+			confirmButtonText: t('Save'),
+			cancelButtonText: t('Cancel')
 
 		, (typedPassword) =>
 			if typedPassword
@@ -144,7 +146,9 @@ Template.accountProfile.events
 				type: "input",
 				inputType: "password",
 				showCancelButton: true,
-				closeOnConfirm: false
+				closeOnConfirm: false,
+				confirmButtonText: t('Delete')
+				cancelButtonText: t('Cancel')
 
 			, (typedPassword) =>
 				if typedPassword
@@ -165,7 +169,9 @@ Template.accountProfile.events
 				text: t("If_you_are_sure_type_in_your_username"),
 				type: "input",
 				showCancelButton: true,
-				closeOnConfirm: false
+				closeOnConfirm: false,
+				confirmButtonText: t('Delete')
+				cancelButtonText: t('Cancel')
 
 			, (deleteConfirmation) =>
 				if deleteConfirmation is Meteor.user()?.username
