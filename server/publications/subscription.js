@@ -20,7 +20,9 @@ const fields = {
 	unreadAlert: 1,
 	_updatedAt: 1,
 	blocked: 1,
-	blocker: 1
+	blocker: 1,
+	autoTranslate: 1,
+	autoTranslateLanguage: 1
 };
 
 Meteor.methods({
