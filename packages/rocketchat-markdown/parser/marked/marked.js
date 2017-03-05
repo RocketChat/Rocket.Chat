@@ -44,30 +44,36 @@ renderer.code = function(code, lang, escaped) {
 };
 
 renderer.codespan = function(text) {
-	return `<code class="code-colors inline">${text}</code>`;
+	text = `<code class="code-colors inline">${text}</code>`;
+	if (_.isString(msg)) {
+		return text;
+	}
+	const token = `=&=${Random.id()}=&=`;
+	msg.tokens.push({
+		token,
+		text
+	});
+	return token;
 };
 
 renderer.blockquote = function(quote) {
 	return `<blockquote class="background-transparent-darker-before">${quote}</blockquote>`;
 };
 
-_marked.setOptions({
-	gfm: RocketChat.settings.get('Markdown_Marked_GFM'),
-	tables: RocketChat.settings.get('Markdown_Marked_Tables'),
-	breaks: RocketChat.settings.get('Markdown_Marked_Breaks'),
-	pedantic: RocketChat.settings.get('Markdown_Marked_Pedantic'),
-	smartLists: RocketChat.settings.get('Markdown_Marked_SmartLists'),
-	smartypants: RocketChat.settings.get('Markdown_Marked_Smartypants'),
-	sanitize: false,
-	renderer,
-	highlight: function(code, lang) {
-		code = _.unescapeHTML(code);
-		if (hljs.listLanguages().includes(lang)) {
-			return hljs.highlight(lang, code).value;
-		}
-		return hljs.highlightAuto(code).value;
+const highlight = function(code, lang) {
+	code = _.unescapeHTML(code);
+	if (hljs.listLanguages().includes(lang)) {
+		return hljs.highlight(lang, code).value;
 	}
-});
+	return hljs.highlightAuto(code).value;
+};
+
+let gfm = null;
+let tables = null;
+let breaks = null;
+let pedantic = null;
+let smartLists = null;
+let smartypants = null;
 
 export const marked = (message) => {
 	msg = message;
@@ -85,7 +91,23 @@ export const marked = (message) => {
 		msg.tokens = [];
 	}
 
-	text = _marked(text.replace(/&gt;/g, '>')).replace(/=&amp;=/g, '=&=');
+	if (gfm == null) { gfm = RocketChat.settings.get('Markdown_Marked_GFM'); }
+	if (tables == null) { tables = RocketChat.settings.get('Markdown_Marked_Tables'); }
+	if (breaks == null) { breaks = RocketChat.settings.get('Markdown_Marked_Breaks'); }
+	if (pedantic == null) { pedantic = RocketChat.settings.get('Markdown_Marked_Pedantic'); }
+	if (smartLists == null) { smartLists = RocketChat.settings.get('Markdown_Marked_SmartLists'); }
+	if (smartypants == null) { smartypants = RocketChat.settings.get('Markdown_Marked_Smartypants'); }
+
+	text = _marked(_.unescape(text), {
+		gfm,
+		tables,
+		breaks,
+		pedantic,
+		smartLists,
+		smartypants,
+		renderer,
+		highlight
+	}).replace(/=&amp;=/g, '=&=');
 
 	if (!_.isString(msg)) {
 		msg.html = text;
