@@ -3,11 +3,6 @@ Package.describe({
   version: '1.2.11'
 });
 
-Cordova.depends({
-  'cordova-plugin-file': '4.1.1',
-  'cordova-plugin-file-transfer': '1.5.1'
-});
-
 Package.onUse(function (api) {
   api.use([
     'webapp',
