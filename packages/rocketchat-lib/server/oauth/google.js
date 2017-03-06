@@ -22,13 +22,13 @@ function getScopes(accessToken) {
 
 
 RocketChat.registerAccessTokenService('google', function(options) {
-	check(options, {
+	check(options, Match.ObjectIncluding({
 		accessToken: String,
 		idToken: String,
-		expiresAt: Match.Integer,
+		expiresIn: Match.Integer,
 		scope: Match.Maybe(String),
 		identity: Match.Maybe(Object)
-	});
+	}));
 
 	const identity = options.identity || getIdentity(options.accessToken);
 

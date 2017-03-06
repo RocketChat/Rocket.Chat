@@ -361,7 +361,7 @@
   "Custom_Sound_Info": "Informazioni Suono Personalizzato",
   "Custom_Sound_Saved_Successfully": "Suono personalizzato salvato con successo",
   "Custom_Translations": "Traduzioni personalizzate",
-  "Custom_Translations_Description": "Dovrebbe essere un JSON valido dove le chiavi sono i campi che contengono il dizionario delle impostazioni del campo. Esempio:</br><code>{\n \"en\": {\n  \"key\": \"translation\"\n },\n \"pt\": {\n  \"key\": \"tradução\"\n }\n}</code> ",
+  "Custom_Translations_Description": "Dovrebbe essere un JSON valido dove le chiavi sono i campi che contengono il dizionario delle impostazioni del campo. Esempio:</br><code>{\n \"en\": {\n  \"Channels\": \"Rooms\"\n },\n \"pt\": {\n  \"Channels\": \"Salas\"\n }\n}</code> ",
   "CustomSoundsFilesystem": "Filesystem suoni personalizzati",
   "Dashboard": "Dashboard",
   "Date": "Data",
