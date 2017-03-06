@@ -25,7 +25,10 @@ Template.sideNav.helpers({
 	},
 
 	canShowRoomType() {
-		const userPref = Meteor.user().settings.preferences.mergeChannels;
+		let userPref = undefined;
+		if (Meteor.user().settings && Meteor.user().settings.preferences && Meteor.user().settings.preferences.mergeChannels) {
+			userPref = Meteor.user().settings.preferences.mergeChannels;
+		}
 		const globalPref = RocketChat.settings.get('UI_Merge_Channels_Groups');
 		const mergeChannels = (userPref != null) ? userPref : globalPref;
 		if (mergeChannels) {
@@ -36,7 +39,10 @@ Template.sideNav.helpers({
 	},
 
 	templateName() {
-		const userPref = Meteor.user().settings.preferences.mergeChannels;
+		let userPref = undefined;
+		if (Meteor.user().settings && Meteor.user().settings.preferences && Meteor.user().settings.preferences.mergeChannels) {
+			userPref = Meteor.user().settings.preferences.mergeChannels;
+		}
 		const globalPref = RocketChat.settings.get('UI_Merge_Channels_Groups');
 		const mergeChannels = (userPref != null) ? userPref : globalPref;
 		if (mergeChannels) {

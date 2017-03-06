@@ -48,7 +48,7 @@ Package.onUse(function(api) {
 	api.addFiles('client/listPrivateGroupsFlex.coffee', 'client');
 	api.addFiles('client/privateGroups.coffee', 'client');
 	api.addFiles('client/privateGroupsFlex.js', 'client');
-	api.addFiles('client/sideNav.coffee', 'client');
+	api.addFiles('client/sideNav.js', 'client');
 	api.addFiles('client/starredRooms.coffee', 'client');
 	api.addFiles('client/toolbar.js', 'client');
 	api.addFiles('client/unreadRooms.coffee', 'client');
