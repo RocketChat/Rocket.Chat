@@ -77,16 +77,25 @@ Template.HelpRequestActions.events({
 	'click .close-helprequest': function (event, instance) {
 		event.preventDefault();
 
-		const helpRequest = instance.data;
-
-		new Template.HelpRequestActions.dialogs.ClosingDialog(helpRequest).display().then(function (form) {
-			let closingProps = form;
-
-			if(closingProps.tags) {
-				closingProps.tags = form.tags.split(',');
+		swal(_.extend({
+			title: t('Closing_chat'),
+			type: 'input',
+			inputPlaceholder: t('Please_add_a_comment'),
+			showCancelButton: true,
+			closeOnConfirm: false,
+			roomId: instance.data.roomId
+		}), (inputValue) => {
+			if (!inputValue) {
+				swal.showInputError(t('Please_add_a_comment_to_close_the_room'));
+				return false;
 			}
 
-			Meteor.call('assistify:closeHelpRequest', helpRequest._id, closingProps, function (error) {
+			if (s.trim(inputValue) === '') {
+				swal.showInputError(t('Please_add_a_comment_to_close_the_room'));
+				return false;
+			}
+
+			Meteor.call('assistify:closeRoom', this.roomId, inputValue, function(error) {
 				if (error) {
 					return handleError(error);
 				}
@@ -98,7 +107,7 @@ Template.HelpRequestActions.events({
 					showConfirmButton: false
 				});
 			});
-		}).catch(() => {});
+		});
 	}
 });
 
