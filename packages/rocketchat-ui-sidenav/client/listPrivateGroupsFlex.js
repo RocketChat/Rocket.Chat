@@ -69,8 +69,6 @@ Template.listPrivateGroupsFlex.onCreated(function() {
 			}
 		}
 
-		const query = { t: { $in: ['p']}, f: { $ne: true }, archived: { $ne: true } };
-
 		this.groups.set(RocketChat.models.Subscriptions.find({
 			name: new RegExp(s.trim(s.escapeRegExp(this.nameFilter.get())), 'i'),
 			t: 'p',
