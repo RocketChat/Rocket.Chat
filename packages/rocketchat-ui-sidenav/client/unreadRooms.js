@@ -1,6 +1,6 @@
 Template.unreadRooms.helpers({
 	hasUnread() {
-		if (Meteor.user().settings && Meteor.user().settings.preferences.unreadRoomsMode && (Template.instance().unreadRooms.count() > 0)) {
+		if ((Meteor.user().settings && Meteor.user().settings.preferences && Meteor.user().settings.preferences.unreadRoomsMode) && (Template.instance().unreadRooms.count() > 0)) {
 			return 'has-unread';
 		}
 	},

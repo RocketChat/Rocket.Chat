@@ -8,7 +8,7 @@ Template.starredRooms.helpers({
 	rooms() {
 		const query = { f: true, open: true };
 
-		if (Meteor.user().settings && Meteor.user().settings.preferences.unreadRoomsMode) {
+		if (Meteor.user().settings && Meteor.user().settings.preferences && Meteor.user().settings.preferences.unreadRoomsMode) {
 			query.alert =
 				{$ne: true};
 		}
