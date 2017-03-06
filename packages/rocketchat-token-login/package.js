@@ -13,11 +13,7 @@ Package.onUse(function(api) {
 
 	api.use('rocketchat:lib');
 	api.use('accounts-base');
-	api.use('underscore');
 	api.use('ecmascript');
-	api.use('reactive-var');
-	api.use('tracker');
-	api.use('check');
 
 	// Server files
 	api.addFiles('server/login_token_server.js', 'server');
