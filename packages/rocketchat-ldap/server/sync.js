@@ -74,7 +74,7 @@ getDataToSyncUserData = function getDataToSyncUserData(ldapUser, user) {
 
 			switch (userField) {
 				case 'email':
-					if (_.isObject(ldapUser.object[ldapField] === 'object')) {
+					if (_.isObject(ldapUser.object[ldapField])) {
 						_.map(ldapUser.object[ldapField], function(item) {
 							emailList.push({ address: item, verified: true });
 						});

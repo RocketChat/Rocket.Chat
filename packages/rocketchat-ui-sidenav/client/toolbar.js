@@ -202,6 +202,10 @@ Template.toolbar.events({
 		} else {
 			e.preventDefault();
 		}
+	},
+
+	'blur .toolbar-search__input'() {
+		toolbarSearch.clear();
 	}
 });
 

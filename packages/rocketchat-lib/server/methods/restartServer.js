@@ -8,8 +8,15 @@ Meteor.methods({
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'restart_server' });
 		}
 
-		Meteor.setTimeout(() => process.exit(1)
-		, 2000);
+		Meteor.setTimeout(() => {
+			Meteor.setTimeout(() => {
+				console.warn('Call to process.exit() timed out, aborting.');
+				process.abort();
+			}
+			, 1000);
+			process.exit(1);
+		}
+		, 1000);
 
 		return {
 			message: 'The_server_will_restart_in_s_seconds',
