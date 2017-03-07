@@ -2,6 +2,7 @@
 # MarkdownCode is a named function that will parse `inline code` and ```codeblock``` syntaxes
 # @param {Object} message - The message object
 ###
+import hljs from 'highlight.js';
 
 class MarkdownCode
 	constructor: (message) ->
@@ -24,6 +25,7 @@ class MarkdownCode
 			message.tokens.push
 				token: token
 				text: "#{p1}<span class=\"copyonly\">`</span><span><code class=\"code-colors inline\">#{p2}</code></span><span class=\"copyonly\">`</span>#{p3}"
+				noHtml: match
 
 			return token
 
@@ -71,6 +73,7 @@ class MarkdownCode
 						highlight: true
 						token: token
 						text: "<pre><code class='code-colors hljs " + result.language + "'><span class='copyonly'>```<br></span>" + result.value + "<span class='copyonly'><br>```</span></code></pre>"
+						noHtml: "```\n#{s.stripTags(result.value)}\n```"
 
 					msgParts[index] = token
 				else

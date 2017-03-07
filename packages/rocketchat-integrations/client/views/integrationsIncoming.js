@@ -1,4 +1,6 @@
-/* global ChatIntegrations, hljs */
+/* global ChatIntegrations */
+
+import hljs from 'highlight.js';
 import toastr from 'toastr';
 
 Template.integrationsIncoming.onCreated(function _incomingIntegrationsOnCreated() {
