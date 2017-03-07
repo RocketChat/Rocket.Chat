@@ -117,7 +117,8 @@ Template.messageBox.helpers
 		return Meteor.settings.public.sandstorm && !Meteor.isCordova
 
 firefoxPasteUpload = (fn) ->
-	if !navigator.userAgent.match(/Firefox\/(\d+)\.\d/)
+	user = navigator.userAgent.match(/Firefox\/(\d+)\.\d/)
+	if !user or user[1] > 49
 		return fn
 	return (event, instance) ->
 		if (event.originalEvent.ctrlKey or event.originalEvent.metaKey) and (event.keyCode == 86)
