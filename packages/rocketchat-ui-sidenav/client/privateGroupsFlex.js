@@ -76,7 +76,7 @@ Template.privateGroupsFlex.events({
 		return SideNav.leaveArrow();
 	},
 
-	'keydown input[type="text"]'(e, instance) {
+	'keydown input[type="text"]'() {
 		return Template.instance().error.set([]);
 	},
 
@@ -98,7 +98,7 @@ Template.privateGroupsFlex.events({
 		const readOnly = instance.find('#channel-ro').checked;
 		instance.groupName.set(name);
 		if (!err) {
-			return Meteor.call('createPrivateGroup', name, instance.selectedUsers.get(), readOnly, function(err, result) {
+			return Meteor.call('createPrivateGroup', name, instance.selectedUsers.get(), readOnly, function(err) {
 				if (err) {
 					if (err.error === 'error-invalid-name') {
 						instance.error.set({ invalid: true });
