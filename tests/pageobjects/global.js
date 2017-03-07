@@ -7,9 +7,20 @@ class Global {
 
 	confirmPopup() {
 		this.sweetAlertConfirm.waitForVisible(5000);
-		browser.pause(1000);
+		browser.pause(500);
 		this.sweetAlertConfirm.click();
 		this.sweetAlert.waitForVisible(5000, true);
+	}
+
+	setWindowSize(width, height) {
+		browser.windowHandleSize({
+			width: width,
+			height: height
+		});
+	}
+
+	dismissToast() {
+		this.toastAlert.click();
 	}
 }
 

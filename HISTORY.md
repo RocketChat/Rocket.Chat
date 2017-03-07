@@ -1,5 +1,69 @@
 # History
 
+## 0.53.0 - 2017-Mar-01
+
+- Add 'Unread Messages' to i18n translation files
+- Add CMD/Ctrl+k (#6034)
+- Add default oauth role (#6028)
+- Add getS3Url (#5410)
+- Add livechat events (#6070)
+- Add minified version of livechat widget code (#6071)
+- Add new behavior to ESC on toolbar search (#6056)
+- Add option to not overwrite livechat custom fields
+- Add preference for Enter key (#6075)
+- Add support for uploads to Google Cloud Storage (#6060)
+- Add the admin missing settings sections to i18n translation files
+- Add translate sweetalert buttons on send files and update password
+- Add user preference to hide roles
+- Fix codemiror css (#6058)
+- Fix ctrl/alt/cmd+enter line break (#6057)
+- Fix keydown when photoswipe is open
+- Fix livechat appearance page by not saving settings directly from client (#6077)
+- Fix livechat knowledge base by properly initiating it's model
+- Fix livechat widget being displayed when offline
+- Fix renamed template folder to `client` to allows faster hot-reloads
+- Fix the directive conflicts for aws and google storage (#6084)
+- Fix the edit message (#6086)
+- Fix to remove error-color class when creating new channel
+- Fix undefined exception in the channelSettings flex-tab
+- Fix updating a message with @all by copying "u" property
+- Improve outgoing webhooks and add history (#5823)
+- Improve report abuse to pass the message id instead of message object
+- Use highlight.js from npm
+- Use katex from npm (#5962)
+
+## 0.52.0 - 2017-Fev-14
+
+### Meteor update to 1.4.2.6
+
+- Add admin section for managing sounds
+- Add appName as topic to push gateway
+- Add audio notification choices to subscriptions
+- Add Boonex Dolphin Oauth
+- Add date for attachments
+- Add detection mime-types for upload files
+- Add MONGO_OPLOG_URL to Dockerfile
+- Add open sidenav on cmd + p
+- Add REST API method to list online users in a room
+- Add user preferences for default new message sound
+- Allow empty description for roles
+- Allow pass inline image (base64) on attachments
+- Change npm module from mime-types to mime-type and mime-db
+- Change room "Code" label to "Password"
+- Fix admin info page selectable again
+- Fix clear toolbar search input on enter
+- Fix error when activating new users
+- Fix getLoggedInUser to get user by token
+- Fix message action menu on cordova
+- Fix oAuth buttons
+- Fix reset to default
+- Fix setting empty custom css
+- Fix sidenav logo position
+- Get user by token AND user id, make /api/info match expected properties
+- Remove build property from default info API; update tests to reflect removal
+- Remove the rate limiter for testing enviroment
+- Return user’s _id and username for `groups/channels.online`
+
 ## 0.51.0 - 2017-Fev-07
 
 ### Converted several Coffee Script files to JS

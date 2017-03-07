@@ -1,4 +1,5 @@
 import Page from './Page';
+import Global from './global';
 
 class FlexTab extends Page {
 	get membersTab() { return browser.element('.flex-tab-bar .icon-users'); }
@@ -12,6 +13,8 @@ class FlexTab extends Page {
 	get startVideoCall() { return browser.element('.start-video-call'); }
 	get startAudioCall() { return browser.element('.start-audio-call'); }
 	get showAll() { return browser.element('.see-all'); }
+	get membersUserInfo() { return browser.element('.flex-tab-container .info'); }
+	get avatarImage() { return browser.element('.flex-tab-container .avatar-image'); }
 
 	get channelTab() { return browser.element('.flex-tab-bar .tab-button:not(.hidden) .icon-info-circled'); }
 	get channelSettings() { return browser.element('.channel-settings'); }
@@ -83,18 +86,12 @@ class FlexTab extends Page {
 	get usersAddUserRandomPassword() { return browser.element('#randomPassword'); }
 	get emojiNewAliases() { return browser.element('#aliases'); }
 	get emojiNewImageInput() { return browser.element('#image'); }
+	get usersView() { return browser.element('.user-view'); }
+	get usersEditUser() { return browser.element('.user-view .edit-user'); }
+	get usersActivate() { return browser.element('.button.activate'); }
+	get usersDeactivate() { return browser.element('.button.deactivate'); }
 
 	getUserEl(username) { return browser.element(`.flex-tab button[title="${username}"] > p`); }
-
-	confirmPopup() {
-		this.confirmBtn.waitForVisible(5000);
-		this.confirmBtn.click();
-		this.sweetAlertOverlay.waitForVisible(5000, true);
-	}
-
-	dismissToast() {
-		this.toastAlert.click();
-	}
 
 	archiveChannel() {
 		this.archiveBtn.waitForVisible();
@@ -111,6 +108,74 @@ class FlexTab extends Page {
 		browser.click('.-autocomplete-item');
 	}
 
+	operateFlexTab(desiredTab, desiredState) {
+		//desiredState true=open false=closed
+		switch (desiredTab) {
+			case 'info':
+				if ((!this.channelSettings.isVisible() && desiredState) || (this.channelSettings.isVisible() && !desiredState)) {
+					this.channelTab.waitForVisible(5000);
+					this.channelTab.click();
+					this.channelSettings.waitForVisible(5000, !desiredState);
+				}
+				break;
+
+			case 'search':
+				if ((!this.messageSearchBar.isVisible() && desiredState) || (this.messageSearchBar.isVisible() && !desiredState)) {
+					this.searchTab.waitForVisible(5000);
+					this.searchTab.click();
+					this.messageSearchBar.waitForVisible(5000, !desiredState);
+				}
+				break;
+
+			case 'members':
+				if ((!this.avatarImage.isVisible() && desiredState) || (this.userSearchBar.isVisible() && !desiredState)) {
+					this.membersTab.waitForVisible(5000);
+					this.membersTab.click();
+					this.avatarImage.waitForVisible(5000, !desiredState);
+				}
+				break;
+
+			case 'notifications':
+				if ((!this.notificationsSettings.isVisible() && desiredState) || (this.notificationsSettings.isVisible() && !desiredState)) {
+					this.notificationsTab.waitForVisible(5000);
+					this.notificationsTab.click();
+					this.notificationsSettings.waitForVisible(5000, !desiredState);
+				}
+				break;
+			case 'files':
+				if ((!this.filesTabContent.isVisible() && desiredState) || (this.filesTabContent.isVisible() && !desiredState)) {
+					this.filesTab.waitForVisible(5000);
+					this.filesTab.click();
+					this.filesTabContent.waitForVisible(5000, !desiredState);
+				}
+				break;
+
+			case 'mentions':
+				if ((!this.mentionsTabContent.isVisible() && desiredState) || (this.mentionsTabContent.isVisible() && !desiredState)) {
+					this.mentionsTab.waitForVisible(5000);
+					this.mentionsTab.click();
+					this.mentionsTabContent.waitForVisible(5000, !desiredState);
+				}
+				break;
+
+			case 'starred':
+				if ((!this.starredTabContent.isVisible() && desiredState) || (this.starredTabContent.isVisible() && !desiredState)) {
+					this.starredTab.waitForVisible(5000);
+					this.starredTab.click();
+					this.starredTabContent.waitForVisible(5000, !desiredState);
+				}
+				break;
+
+			case 'pinned':
+				if ((!this.pinnedTabContent.isVisible() && desiredState) || (this.pinnedTabContent.isVisible() && !desiredState)) {
+					this.pinnedTab.waitForVisible(5000);
+					this.pinnedTab.click();
+					this.pinnedTabContent.waitForVisible(5000, !desiredState);
+				}
+				break;
+		}
+	}
+
 	removePeopleFromChannel(user) {
 		const userEl = this.getUserEl(user);
 		userEl.waitForVisible();
@@ -119,9 +184,11 @@ class FlexTab extends Page {
 	}
 
 	setUserOwner(user) {
-		const userEl = this.getUserEl(user);
-		userEl.waitForVisible();
-		userEl.click();
+		if (!this.membersUserInfo.isVisible()) {
+			const userEl = this.getUserEl(user);
+			userEl.waitForVisible();
+			userEl.click();
+		}
 		this.setOwnerBtn.waitForVisible(5000);
 		this.setOwnerBtn.click();
 		this.viewAllBtn.click();
@@ -129,9 +196,11 @@ class FlexTab extends Page {
 	}
 
 	setUserModerator(user) {
-		const userEl = this.getUserEl(user);
-		userEl.waitForVisible();
-		userEl.click();
+		if (!this.membersUserInfo.isVisible()) {
+			const userEl = this.getUserEl(user);
+			userEl.waitForVisible();
+			userEl.click();
+		}
 		this.setModeratorBtn.waitForVisible();
 		this.setModeratorBtn.click();
 		this.viewAllBtn.click();
@@ -139,16 +208,16 @@ class FlexTab extends Page {
 	}
 
 	muteUser(user) {
-		const userEl = this.getUserEl(user);
-		if (this.showAll.isVisible()) {
-			this.muteUserBtn.waitForVisible(5000);
-			this.muteUserBtn.click();
-		} else {
-			userEl.waitForVisible(5000);
+		if (!this.membersUserInfo.isVisible()) {
+			const userEl = this.getUserEl(user);
+			userEl.waitForVisible();
 			userEl.click();
-			this.muteUserBtn.waitForVisible(5000);
-			this.muteUserBtn.click();
 		}
+		this.muteUserBtn.waitForVisible(5000);
+		this.muteUserBtn.click();
+		Global.confirmPopup();
+		this.viewAllBtn.click();
+		browser.pause(100);
 	}
 }
 

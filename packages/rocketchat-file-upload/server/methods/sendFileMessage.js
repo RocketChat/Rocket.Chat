@@ -46,17 +46,24 @@ Meteor.methods({
 			attachment.video_size = file.size;
 		}
 
-		const msg = Object.assign({
+		const user = Meteor.user();
+		let msg = Object.assign({
 			_id: Random.id(),
 			rid: roomId,
+			ts: new Date(),
 			msg: '',
 			file: {
-				_id: file._id
+				_id: file._id,
+				name: file.name
 			},
 			groupable: false,
 			attachments: [attachment]
 		}, msgData);
 
-		return Meteor.call('sendMessage', msg);
+		msg = Meteor.call('sendMessage', msg);
+
+		Meteor.defer(() => RocketChat.callbacks.run('afterFileUpload', { user, room, message: msg }));
+
+		return msg;
 	}
 });

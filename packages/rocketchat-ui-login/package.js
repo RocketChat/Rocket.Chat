@@ -22,26 +22,26 @@ Package.onUse(function(api) {
 
 	api.use('kadira:flow-router', 'client');
 
-	api.addFiles('routes.js', 'client');
+	api.addFiles('client/routes.js', 'client');
 
-	api.addFiles('reset-password/resetPassword.html', 'client');
-	api.addFiles('reset-password/resetPassword.js', 'client');
+	api.addFiles('client/reset-password/resetPassword.html', 'client');
+	api.addFiles('client/reset-password/resetPassword.js', 'client');
 
-	api.addFiles('login/footer.html', 'client');
-	api.addFiles('login/form.html', 'client');
-	api.addFiles('login/header.html', 'client');
-	api.addFiles('login/layout.html', 'client');
-	api.addFiles('login/layout.js', 'client');
-	api.addFiles('login/services.html', 'client');
-	api.addFiles('login/social.html', 'client');
+	api.addFiles('client/login/footer.html', 'client');
+	api.addFiles('client/login/form.html', 'client');
+	api.addFiles('client/login/header.html', 'client');
+	api.addFiles('client/login/layout.html', 'client');
+	api.addFiles('client/login/layout.js', 'client');
+	api.addFiles('client/login/services.html', 'client');
+	api.addFiles('client/login/social.html', 'client');
 
-	api.addFiles('username/layout.html', 'client');
-	api.addFiles('username/username.html', 'client');
+	api.addFiles('client/username/layout.html', 'client');
+	api.addFiles('client/username/username.html', 'client');
 
-	api.addFiles('login/footer.coffee', 'client');
-	api.addFiles('login/form.coffee', 'client');
-	api.addFiles('login/header.coffee', 'client');
-	api.addFiles('login/services.coffee', 'client');
-	api.addFiles('login/social.coffee', 'client');
-	api.addFiles('username/username.coffee', 'client');
+	api.addFiles('client/login/footer.coffee', 'client');
+	api.addFiles('client/login/form.coffee', 'client');
+	api.addFiles('client/login/header.coffee', 'client');
+	api.addFiles('client/login/services.coffee', 'client');
+	api.addFiles('client/login/social.coffee', 'client');
+	api.addFiles('client/username/username.coffee', 'client');
 });
