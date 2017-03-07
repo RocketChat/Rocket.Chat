@@ -36,7 +36,6 @@ Meteor.startup ->
 			f = -> _installExtension(browser)
 			_extensionPopupTimer = Meteor.setTimeout f, 90*1000
 			_extensionAlertInstalled = true
-			console.warn('added ext. timer', _extensionPopupTimer)
 
 			window.addEventListener 'message', (event) ->
 				if (event.source != window) or (event.data.name != 'rocketchat_presence')
@@ -54,12 +53,10 @@ Meteor.startup ->
 				else if event.data.type == "extension_enabled"
 					# disable UserPresence and use extension
 					if not RocketChat.VoismartPresenceExtensionInstalled
-						console.warn('disabling timer', _extensionPopupTimer)
 						RocketChat.VoismartPresenceExtensionInstalled = true
 						if _extensionPopupTimer
 							Meteor.clearTimeout(_extensionPopupTimer)
 							_extensionPopupTimer = undefined
-						console.warn('disabled timer', _extensionPopupTimer)
 						UserPresence.stopTimer()
 						UserPresence.startTimer = ->
 						_userPresenceDisabled = true
