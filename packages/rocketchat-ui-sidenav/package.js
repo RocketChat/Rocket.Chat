@@ -41,7 +41,7 @@ Package.onUse(function(api) {
 	api.addFiles('client/combined.coffee', 'client');
 	api.addFiles('client/chatRoomItem.coffee', 'client');
 	api.addFiles('client/channels.coffee', 'client');
-	api.addFiles('client/createCombinedFlex.coffee', 'client');
+	api.addFiles('client/createCombinedFlex.js', 'client');
 	api.addFiles('client/directMessages.coffee', 'client');
 	api.addFiles('client/listChannelsFlex.coffee', 'client');
 	api.addFiles('client/listCombinedFlex.coffee', 'client');
