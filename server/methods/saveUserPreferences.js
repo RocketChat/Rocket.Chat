@@ -55,6 +55,11 @@ Meteor.methods({
 				preferences.unreadAlert = settings.unreadAlert === '1' ? true : false;
 			}
 
+			if (settings.colorBlind) {
+				preferences.colorBlind = settings.colorBlind === '1' ? true : false;
+			}
+
+
 			preferences.desktopNotificationDuration = settings.desktopNotificationDuration - 0;
 			preferences.viewMode = settings.viewMode || 0;
 			preferences.hideUsernames = settings.hideUsernames === '1';

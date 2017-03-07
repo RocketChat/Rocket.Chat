@@ -214,6 +214,18 @@
 							</div>
 						</div>
 					</div>
+					<div class="section">
+						<h1>{{_ "Accessibility"}}</h1>
+						<div class="section-content border-component-color">
+							<div class="input-line double-col" id="colorBlind">
+								<label for="language">{{_ "Color_Blind"}}</label>
+								<div>
+									<label><input type="radio" name="colorBlind" value="1" checked="{{checked 'colorBlind' true }}" /> {{_ "True"}}</label>
+									<label><input type="radio" name="colorBlind" value="0" checked="{{checked 'colorBlind' false true}}" /> {{_ "False"}}</label>
+								</div>
+							</div>
+						</div>
+					</div>
 				</fieldset>
 				<div class="submit">
 					<button class="button primary save"><i class="icon-send"></i><span>{{_ "Save_changes"}}</span></button>

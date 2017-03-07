@@ -2,6 +2,8 @@ Template.accountBox.helpers
 	myUserInfo: ->
 		visualStatus = "online"
 		username = Meteor.user()?.username
+		colorBlind = Meteor.user()?.settings?.preferences?.colorBlind
+		status = Session.get('user_' + username + '_status')
 		switch Session.get('user_' + username + '_status')
 			when "away"
 				visualStatus = t("away")
@@ -11,11 +13,13 @@ Template.accountBox.helpers
 				visualStatus = t("invisible")
 		return {
 			name: Session.get('user_' + username + '_name')
-			status: Session.get('user_' + username + '_status')
+			status: if colorBlind then status + '-color-blind' else status
 			visualStatus: visualStatus
 			_id: Meteor.userId()
 			username: username
 		}
+
+		
 
 	showAdminOption: ->
 		return RocketChat.authz.hasAtLeastOnePermission( ['view-statistics', 'view-room-administration', 'view-user-administration', 'view-privileged-setting' ]) or RocketChat.AdminBox.getOptions().length > 0
