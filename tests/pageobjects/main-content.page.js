@@ -115,6 +115,12 @@ class MainContent extends Page {
 		}, 2000);
 	}
 
+	waitForLastMessageUserEqualsText(text) {
+		browser.waitUntil(function() {
+			return browser.getText('.message:last-child .user-card-message:nth-of-type(2)') === text;
+		}, 2000);
+	}
+
 	tryToMentionAll() {
 		this.addTextToInput('@all');
 		this.sendBtn.click();

@@ -170,8 +170,8 @@ function messageActionsTest() {
 					mainContent.sendBtn.click();
 				});
 
-				it.skip('checks if the message was replied', () => {
-					mainContent.lastMessageTextAttachment.waitForExist(5000);
+				it('checks if the message was replied', () => {
+					mainContent.lastMessageTextAttachment.waitForVisible(5000);
 					mainContent.lastMessageTextAttachment.getText().should.equal(mainContent.beforeLastMessage.getText());
 				});
 			});
@@ -308,7 +308,7 @@ describe('Messaging in different channels', () => {
 	describe('Messaging in created direct message', () => {
 		before(()=>{
 			if (!directMessageCreated) {
-				sideNav.startDirectMessage(targetUser);
+				sideNav.searchChannel(targetUser);
 				setDirectMessageCreated(true);
 				console.log('	Direct message not found, creating one...');
 			}
