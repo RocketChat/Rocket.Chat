@@ -166,7 +166,7 @@ Template.messageBox.events
 				e.preventDefault()
 				files.push
 					file: item.getAsFile()
-					name: 'Clipboard - ' + moment().format('L, LTS')
+					name: 'Clipboard - ' + moment().format(RocketChat.settings.get('Message_TimeAndDateFormat'))
 
 		if files.length
 			fileUpload files
