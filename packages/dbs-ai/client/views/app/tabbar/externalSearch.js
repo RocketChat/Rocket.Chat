@@ -41,8 +41,8 @@ Template.dbsAI_externalSearch.helpers({
 		var knowledgebaseSuggestions = RocketChat.models.LivechatExternalMessage.findByRoomId(Template.currentData().rid,
 			{ts: -1}).fetch(), filledTemplate = [];
 		if (knowledgebaseSuggestions.length > 0) {
-			const tokens = knowledgebaseSuggestions[0].result.tokens;
-			$(knowledgebaseSuggestions[0].result.queryTemplates).each(function (indexTpl, queryTpl) {
+			const tokens = knowledgebaseSuggestions[0].prepareResult.tokens;
+			$(knowledgebaseSuggestions[0].prepareResult.queryTemplates).each(function (indexTpl, queryTpl) {
 				let extendedQueryTpl = queryTpl, filledQuerySlots = [];
 
 				/* tokens und queryTemplates mergen */
@@ -135,7 +135,7 @@ Template.dbsAI_externalSearch.events({
 	'click .knowledge-queries-wrapper .query-item a ': function (event, instance) {
 		const query = $(event.target).closest('.query-item');
 		let externalMsg = instance.externalMessages.get();
-		externalMsg.result.queryTemplates[query.data('templateIndex')].queries[query.data('queryIndex')].state = 'Confirmed';
+		externalMsg.prepareResult.queryTemplates[query.data('templateIndex')].queries[query.data('queryIndex')].state = 'Confirmed';
 		instance.externalMessages.set(externalMsg);
 		Meteor.call('updateKnowledgeProviderResult', instance.externalMessages.get(),(err) => {
 			if (err) {//TODO logging error
@@ -176,7 +176,7 @@ Template.dbsAI_externalSearch.events({
 	'click .query-template-tools-wrapper .icon-ok': function (event, instance) {
 		const query = $(event.target).closest('.query-template-wrapper');
 		let externalMsg = instance.externalMessages.get();
-		externalMsg.result.queryTemplates[query.data('templateIndex')].state = 'Confirmed';
+		externalMsg.prepareResult.queryTemplates[query.data('templateIndex')].state = 'Confirmed';
 		instance.externalMessages.set(externalMsg);
 		Meteor.call('updateKnowledgeProviderResult', instance.externalMessages.get(), (err) => {
 			if (err) {//TODO logging error
@@ -189,7 +189,7 @@ Template.dbsAI_externalSearch.events({
 	'click .query-template-tools-wrapper .icon-cancel': function (event, instance) {
 		const query = $(event.target).closest('.query-template-wrapper');
 		let externalMsg = instance.externalMessages.get();
-		externalMsg.result.queryTemplates[query.data('templateIndex')].state = 'Rejected';
+		externalMsg.prepareResult.queryTemplates[query.data('templateIndex')].state = 'Rejected';
 		instance.externalMessages.set(externalMsg);
 		Meteor.call('updateKnowledgeProviderResult', instance.externalMessages.get(), (err) => {
 			if (err) {//TODO logging error
@@ -252,11 +252,11 @@ Template.dbsAI_externalSearch.events({
 				saveValue
 		};
 
-		externalMsg.result.tokens.push(newToken);
-		externalMsg.result.queryTemplates[inputWrapper.data('parentTplIndex')].querySlots = _.map(externalMsg.result.queryTemplates[inputWrapper.data('parentTplIndex')].querySlots,
+		externalMsg.prepareResult.tokens.push(newToken);
+		externalMsg.prepareResult.queryTemplates[inputWrapper.data('parentTplIndex')].querySlots = _.map(externalMsg.prepareResult.queryTemplates[inputWrapper.data('parentTplIndex')].querySlots,
 			(query) => {
 				if (query.role === inputWrapper.data('slotRole')) {
-					query.tokenIndex = externalMsg.result.tokens.length - 1;
+					query.tokenIndex = externalMsg.prepareResult.tokens.length - 1;
 				}
 				return query;
 			});
@@ -288,14 +288,14 @@ Template.dbsAI_externalSearch.events({
 			templateIndex = field.attr('data-parent-tpl-index'),
 			slotRole = field.attr('data-slot-role');
 		let externalMsg = instance.externalMessages.get();
-		externalMsg.result.queryTemplates[templateIndex].querySlots = _.map(externalMsg.result.queryTemplates[templateIndex].querySlots,
+		externalMsg.prepareResult.queryTemplates[templateIndex].querySlots = _.map(externalMsg.prepareResult.queryTemplates[templateIndex].querySlots,
 			(query) => {
 				if (query.role === slotRole) {
 					query.tokenIndex = -1;
 				}
 				return query;
 			});
-		externalMsg.result.tokens[field.attr('data-token-index')].state = "Rejected";
+		externalMsg.prepareResult.tokens[field.attr('data-token-index')].state = "Rejected";
 		instance.externalMessages.set(externalMsg);
 		Meteor.call('updateKnowledgeProviderResult', instance.externalMessages.get(), (err) => {
 			instance.$(".knowledge-input-wrapper.active").removeClass("active");
@@ -310,10 +310,10 @@ Template.dbsAI_externalSearch.events({
 	'click .knowledge-base-tooltip .chat-item:not(.disabled)': function (event, inst) {
 		event.preventDefault();
 		const rlData = _.first(RocketChat.models.LivechatExternalMessage.findByRoomId(inst.roomId, {ts: -1}).fetch());
-		if (rlData && rlData.result) {
+		if (rlData && rlData.prepareResult) {
 			const input = inst.$(event.target).closest('.field-with-label'),
 				slotRole = input.attr('data-slot-role');
-			const qSlot = _.find(rlData.result.queryTemplates[input.attr('data-parent-tpl-index')].querySlots, (slot) => {
+			const qSlot = _.find(rlData.prepareResult.queryTemplates[input.attr('data-parent-tpl-index')].querySlots, (slot) => {
 				return slot.role == slotRole;
 			});
 			if (qSlot && qSlot.inquiryMessage) {
@@ -338,7 +338,7 @@ Template.dbsAI_externalSearch.events({
 		}
 		changeBtn.addClass("spinner");
 		let externalMsg = instance.externalMessages.get();
-		externalMsg.result.queryTemplates[left.data('parentTplIndex')].querySlots = _.map(externalMsg.result.queryTemplates[left.data('parentTplIndex')].querySlots,
+		externalMsg.prepareResult.queryTemplates[left.data('parentTplIndex')].querySlots = _.map(externalMsg.prepareResult.queryTemplates[left.data('parentTplIndex')].querySlots,
 			(query) => {
 				if (query.tokenIndex === leftTokenIndex) {
 					query.tokenIndex = rightTokenIndex;

@@ -16,7 +16,7 @@ class RedlinkAdapter {
 
 	createRedlinkStub(rid, latestKnowledgeProviderResult) {
 		const latestRedlinkResult = (latestKnowledgeProviderResult && latestKnowledgeProviderResult.knowledgeProvider === 'redlink')
-			? latestKnowledgeProviderResult.result
+			? latestKnowledgeProviderResult.prepareResult
 			: {};
 		return {
 			id: latestRedlinkResult.id ? latestRedlinkResult.id : rid,
@@ -38,7 +38,7 @@ class RedlinkAdapter {
 			// therefore we need to validate we're operating with a Redlink-result
 
 			analyzedUntil = latestKnowledgeProviderResult.originMessage ? latestKnowledgeProviderResult.originMessage.ts : 0;
-			conversation = latestKnowledgeProviderResult.result.messages ? latestKnowledgeProviderResult.result.messages : [];
+			conversation = latestKnowledgeProviderResult.prepareResult.messages ? latestKnowledgeProviderResult.prepareResult.messages : [];
 		}
 
 		const room = RocketChat.models.Rooms.findOneById(rid);
@@ -60,7 +60,7 @@ class RedlinkAdapter {
 		try {
 			SystemLogger.debug("sending update to redlinkk with: " + JSON.stringify(modifiedRedlinkResult));
 			let options = this.options;
-			options.data = modifiedRedlinkResult.result;
+			options.data = modifiedRedlinkResult.prepareResult;
 			const responseRedlinkQuery = HTTP.post(this.properties.url + '/query', options);
 			SystemLogger.debug("recieved update to redlinkk with: " + JSON.stringify(responseRedlinkQuery));
 			RocketChat.models.LivechatExternalMessage.update(
@@ -118,7 +118,7 @@ class RedlinkAdapter {
 					rid: message.rid,
 					knowledgeProvider: "redlink",
 					originMessage: {_id: message._id, ts: message.ts},
-					result: _postprocessPrepare(responseRedlinkPrepare.data),
+					prepareResult: _postprocessPrepare(responseRedlinkPrepare.data),
 					ts: new Date()
 				});
 
@@ -176,10 +176,10 @@ class RedlinkAdapter {
 				this.options.data = this.options;
 
 				options.data = {
-						messages: latestKnowledgeProviderResult.result.messagescl,
-						tokens: latestKnowledgeProviderResult.result.tokens,
-						queryTemplates: _preprocessTemplates(latestKnowledgeProviderResult.result.queryTemplates),
-						context: latestKnowledgeProviderResult.result.context
+						messages: latestKnowledgeProviderResult.prepareResult.messagescl,
+						tokens: latestKnowledgeProviderResult.prepareResult.tokens,
+						queryTemplates: _preprocessTemplates(latestKnowledgeProviderResult.prepareResult.queryTemplates),
+						context: latestKnowledgeProviderResult.prepareResult.context
 					};
 
 
