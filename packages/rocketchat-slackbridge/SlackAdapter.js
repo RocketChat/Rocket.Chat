@@ -1,7 +1,6 @@
-/* globals logger SB_SlackAdapter */
-/* exported SB_SlackAdapter */
+/* globals logger*/
 
-class SlackAdapter {
+export default class SlackAdapter {
 
 	constructor(slackBridge) {
 		logger.slack.debug('constructor');
@@ -43,6 +42,7 @@ class SlackAdapter {
 	 * Unregister for slack events and disconnect from Slack
 	 */
 	disconnect() {
+		logger.slack.debug('Disconnect');
 		this.rtm.disconnect && this.rtm.disconnect;
 	}
 
@@ -414,6 +414,9 @@ class SlackAdapter {
 				case 'channel_join':
 					this.processChannelJoin(slackMessage);
 					break;
+				case 'file_share':
+					this.processFileShare(slackMessage);
+					break;
 				default:
 					//Keeping backwards compatability for now, refactor later
 					this.processNewMessage(slackMessage, isImporting);
@@ -652,6 +655,43 @@ class SlackAdapter {
 		}
 	}
 
+	processFileShare(slackMessage) {
+		if (! RocketChat.settings.get('SlackBridge_FileUpload_Enabled')) {
+			return;
+		}
+
+		if (slackMessage.file && slackMessage.file.url_private_download !== undefined) {
+			const rocketChannel = this.rocket.getChannel(slackMessage);
+			const rocketUser = this.rocket.getUser(slackMessage.user); //RocketChat.models.Users.findOneById('rocket.cat', { fields: { username: 1 } });
+
+			/*
+
+
+			const details = {
+				//message_id: `slack-${slackMessage.ts.replace(/\./g, '-')}`,
+				message_id: this.rocket.createRocketID(slackMessage.channel, slackMessage.ts),
+				name: slackMessage.file.name,
+				size: slackMessage.file.size,
+				type: slackMessage.file.mimetype,
+				rid: rocketChannel._id
+			};
+			return this.uploadFileFromSlack(details, slackMessage.file.url_private_download, rocketUser, rocketChannel, new Date(parseInt(slackMessage.ts.split('.')[0]) * 1000), false);
+			*/
+
+			//Hack to notify that a file was attempted to be uploaded
+			delete slackMessage.subtype;
+			slackMessage.text = 'Uploaded a file: ' + slackMessage.file.permalink;
+			const ts = new Date(parseInt(slackMessage.ts.split('.')[0]) * 1000);
+			const msgDataDefaults = {
+				_id: this.rocket.createRocketID(slackMessage.channel, slackMessage.ts),
+				ts: ts,
+				updatedBySlack: true
+			};
+
+			this.rocket.createAndSaveMessage(rocketChannel, rocketUser, slackMessage, msgDataDefaults, false);
+		}
+	}
+
 	/*
 	 https://api.slack.com/events/message/message_deleted
 	 */
@@ -835,18 +875,6 @@ class SlackAdapter {
 					RocketChat.unarchiveRoom(rocketChannel);
 				}
 				return;
-			case 'file_share':
-				if (slackMessage.file && slackMessage.file.url_private_download !== undefined) {
-					const details = {
-						message_id: `slack-${slackMessage.ts.replace(/\./g, '-')}`,
-						name: slackMessage.file.name,
-						size: slackMessage.file.size,
-						type: slackMessage.file.mimetype,
-						rid: rocketChannel._id
-					};
-					return this.uploadFileFromSlack(details, slackMessage.file.url_private_download, rocketUser, rocketChannel, new Date(parseInt(slackMessage.ts.split('.')[0]) * 1000), isImporting);
-				}
-				break;
 			case 'file_comment':
 				logger.slack.error('File comment not implemented');
 				return;
@@ -1080,6 +1108,4 @@ class SlackAdapter {
 	}
 
 }
-
-SB_SlackAdapter = SlackAdapter;
 

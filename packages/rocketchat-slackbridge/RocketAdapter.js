@@ -1,7 +1,6 @@
-/* globals logger SB_RocketAdapter */
-/* exported SB_RocketAdapter */
+/* globals logger*/
 
-class RocketAdapter {
+export default class RocketAdapter {
 	constructor(slackBridge) {
 		logger.rocket.debug('constructor');
 		this.slackBridge = slackBridge;
@@ -118,6 +117,10 @@ class RocketAdapter {
 				return rocketMessage;
 			}
 
+			if (rocketMessage.file) {
+				return this.processFileShare(rocketMessage);
+			}
+
 			//A new message from Rocket.Chat
 			this.processSendMessage(rocketMessage);
 		} catch (err) {
@@ -153,6 +156,17 @@ class RocketAdapter {
 			//This was a change from Rocket.Chat
 			const slackChannel = this.slack.getSlackChannel(rocketMessage.rid);
 			this.slack.postMessageUpdate(slackChannel, rocketMessage);
+		}
+	}
+
+	processFileShare(rocketMessage) {
+		if (! RocketChat.settings.get('SlackBridge_FileUpload_Enabled')) {
+			return;
+		}
+
+		if (rocketMessage.file.name) {
+			rocketMessage.msg = 'Uploaded a file: ' + rocketMessage.file.name;
+			this.slack.postMessage(this.slack.getSlackChannel(rocketMessage.rid), rocketMessage);
 		}
 	}
 
@@ -418,5 +432,3 @@ class RocketAdapter {
 	}
 
 }
-
-SB_RocketAdapter = RocketAdapter;
