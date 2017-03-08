@@ -15,14 +15,14 @@ class Join
 		channel = channel.replace('#', '')
 
 		user = Meteor.users.findOne Meteor.userId()
-		room = RocketChat.models.Rooms.findOneByNameAndType(channel, 'c')
+		room = RocketChat.models.Rooms.findOneByNameAndType channel, 'c'
 		
-		RocketChat.Notifications.notifyUser Meteor.userId(), 'message', {
-			_id: Random.id()
-			rid: item.rid
-			ts: new Date
-			msg: TAPi18n.__('Channel_doesnt_exist', { postProcess: 'sprintf', sprintf: [ channel ] }, user.language)
-		} if not room
+		if not room
+			RocketChat.Notifications.notifyUser Meteor.userId(), 'message',
+				_id: Random.id()
+				rid: item.rid
+				ts: new Date
+				msg: TAPi18n.__('Channel_doesnt_exist', { postProcess: 'sprintf', sprintf: [ channel ] }, user.language)
 			
 		throw new Meteor.Error('error-user-already-in-room', 'You are already in the channel', {
 			method: 'slashCommands'
