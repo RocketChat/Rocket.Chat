@@ -370,13 +370,13 @@ Template.dbsAI_externalSearch.onCreated(function () {
 			self.externalMessages.set(extMsg[0]);
 		}
 
-		/*if(self.roomId){
-			self.subscribe('p2phelp:helpRequest', self.roomId);
+		if(self.roomId){
+			self.subscribe('assistify:helpRequest', self.roomId);
 			const helpRequest = RocketChat.models.HelpRequests.findOneByRoomId(self.roomId);
 			self.helpRequest.set(helpRequest);
 
 			if(!helpRequest){ //todo remove after PoC: Non-reactive method call
-				Meteor.call('p2phelp:helpRequestByRoomId', self.roomId,(err, result) => {
+				Meteor.call('assistify:helpRequestByRoomId', self.roomId,(err, result) => {
 					if(!err){
 						self.helpRequest.set(result);
 					} else {
@@ -384,6 +384,6 @@ Template.dbsAI_externalSearch.onCreated(function () {
 					}
 				});
 			}
-		}*/
+		}
 	});
 });
