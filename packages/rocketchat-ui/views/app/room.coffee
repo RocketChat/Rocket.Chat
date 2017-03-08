@@ -301,7 +301,7 @@ Template.room.events
 			e.stopPropagation()
 			return
 
-		if roomData.t in ['c', 'p', 'd']
+		if roomData.t in ['c', 'p', 'd', 'r']
 			instance.setUserDetail this._arguments[1].u.username
 
 		instance.tabBar.setTemplate('membersList')

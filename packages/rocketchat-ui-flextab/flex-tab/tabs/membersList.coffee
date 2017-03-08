@@ -3,7 +3,7 @@ Template.membersList.helpers
 		return t('Add_users')
 
 	isGroupChat: ->
-		return ChatRoom.findOne(this.rid, { reactive: false })?.t in ['c', 'p']
+		return ChatRoom.findOne(this.rid, { reactive: false })?.t in ['c', 'p', 'r']
 
 	isDirectChat: ->
 		return ChatRoom.findOne(this.rid, { reactive: false })?.t is 'd'
@@ -103,8 +103,8 @@ Template.membersList.helpers
 			tabBar: Template.currentData().tabBar
 			username: Template.instance().userDetail.get()
 			clear: Template.instance().clearUserDetail
-			showAll: room?.t in ['c', 'p']
-			hideAdminControls: room?.t in ['c', 'p', 'd']
+			showAll: room?.t in ['c', 'p', 'r']
+			hideAdminControls: room?.t in ['c', 'p', 'd', 'r']
 			video: room?.t in ['d']
 		}
 
@@ -120,7 +120,7 @@ Template.membersList.events
 
 		roomData = Session.get('roomData' + template.data.rid)
 
-		if roomData.t in ['c', 'p']
+		if roomData.t in ['c', 'p', 'r']
 			Meteor.call 'addUserToRoom', { rid: roomData._id, username: doc.username }, (error, result) ->
 				if error
 					return handleError(error)

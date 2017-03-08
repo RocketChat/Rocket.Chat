@@ -23,6 +23,7 @@ Package.onUse(function (api) {
 	api.addFiles('server/api.js', 'server');
 	api.addFiles('server/routes.js', 'server');
 	api.addFiles('config.js', 'server');
+	api.addFiles('startup/customRoomTypes.js');
 
 	// Models
 	api.addFiles('server/models/Users.js', ['server', 'client']);
@@ -36,6 +37,7 @@ Package.onUse(function (api) {
 	//Methods
 	api.addFiles('server/methods/helpRequestByRoomId.js', 'server');
 	api.addFiles('server/methods/closeHelpRequest.js', 'server');
+	api.addFiles('server/methods/createRequest.js', 'server');
 
 	// Hooks
 	api.addFiles('server/hooks/sendMessageToKnowledgeAdapter.js', 'server');
@@ -47,9 +49,15 @@ Package.onUse(function (api) {
 	api.addFiles('client/views/HelpRequestContextParameter.js', 'client');
 	api.addFiles('client/views/HelpRequestActions.html', 'client');
 	api.addFiles('client/views/HelpRequestActions.js', 'client');
+	api.addFiles('client/views/AssistifyCreateChannel.html', 'client');
+	api.addFiles('client/views/AssistifyCreateChannel.js', 'client');
 
 	//Assets
 	api.addAssets('assets/stylesheets/helpRequestContext.less', 'server'); //has to be done on the server, it exposes the completed css to the client
+
+	//global UI modifications
+	api.addFiles('client/ui.js', 'client');
+
 
 	//i18n
 	var _ = Npm.require('underscore');
