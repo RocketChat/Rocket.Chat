@@ -63,6 +63,7 @@ rocketchat:file
 rocketchat:file-upload
 rocketchat:github-enterprise
 rocketchat:gitlab
+rocketchat:google-vision
 rocketchat:highlight-words
 rocketchat:iframe-login
 rocketchat:importer
