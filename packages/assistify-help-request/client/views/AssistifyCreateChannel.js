@@ -1,3 +1,5 @@
+import toastr from 'toastr';
+
 Template.AssistifyCreateChannel.helpers({});
 
 Template.AssistifyCreateChannel.events({
@@ -23,13 +25,13 @@ Template.AssistifyCreateChannel.events({
 					console.log(err);
 					switch (err.error) {
 						case 'error-invalid-name':
-							instance.error.set({invalid: true});
+							toastr.error(TAPi18n.__('Invalid_room_name', name));
 							return;
 						case 'error-duplicate-channel-name':
-							instance.error.set({duplicate: true});
+							toastr.error(TAPi18n.__('Duplicate_channel_name', name));
 							return;
 						case 'error-archived-duplicate-name':
-							instance.error.set({archivedduplicate: true});
+							toastr.error(TAPi18n.__('Duplicate_archived_channel_name', name));
 							return;
 						default:
 							return handleError(err)
@@ -43,7 +45,7 @@ Template.AssistifyCreateChannel.events({
 			});
 		} else {
 			console.log(err);
-			instance.error.set({ fields: ["request-name"] })
+			toastr.error(TAPi18n.__('The_field_is_required', TAPi18n.__('request-name')));
 		}
 	}
 });
