@@ -14,6 +14,16 @@ userCanDrop = (_id) ->
 	return !RocketChat.roomTypes.readOnly _id, Meteor.user()
 
 Template.room.helpers
+	sentimentSmile: ->
+		room = ChatRoom.findOne this._id
+
+		if room.sentiment >= 0.3
+			return ':)'
+		else if room.sentiment >= -0.3
+			return ':|'
+		else if room.sentiment < -0.3
+			return ':('
+
 	isTranslated: ->
 		sub = ChatSubscription.findOne { rid: this._id }, { fields: { autoTranslate: 1, autoTranslateLanguage: 1 } }
 		return RocketChat.settings.get('AutoTranslate_Enabled') and sub?.autoTranslate is true and sub.autoTranslateLanguage?
