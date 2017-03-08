@@ -1,7 +1,6 @@
-/* globals logger SB_RocketAdapter */
-/* exported SB_RocketAdapter */
+/* globals logger*/
 
-class RocketAdapter {
+export default class RocketAdapter {
 	constructor(slackBridge) {
 		logger.rocket.debug('constructor');
 		this.slackBridge = slackBridge;
@@ -55,6 +54,9 @@ class RocketAdapter {
 
 	onSetReaction(rocketMsgID, reaction) {
 		try {
+			if (! this.slackBridge.isReactionsEnabled) {
+				return;
+			}
 			logger.rocket.debug('onRocketSetReaction');
 
 			if (rocketMsgID && reaction) {
@@ -78,6 +80,9 @@ class RocketAdapter {
 
 	onUnSetReaction(rocketMsgID, reaction) {
 		try {
+			if (! this.slackBridge.isReactionsEnabled) {
+				return;
+			}
 			logger.rocket.debug('onRocketUnSetReaction');
 
 			if (rocketMsgID && reaction) {
@@ -418,5 +423,3 @@ class RocketAdapter {
 	}
 
 }
-
-SB_RocketAdapter = RocketAdapter;

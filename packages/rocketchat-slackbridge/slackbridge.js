@@ -1,4 +1,7 @@
-/* globals logger SB_SlackAdapter SB_RocketAdapter*/
+/* globals logger*/
+
+import SlackAdapter from './SlackAdapter.js';
+import RocketAdapter from './RocketAdapter.js';
 
 /**
  * SlackBridge interfaces between this Rocket installation and a remote Slack installation.
@@ -6,12 +9,18 @@
 class SlackBridge {
 
 	constructor() {
-		this.slack = new SB_SlackAdapter(this);
-		this.rocket = new SB_RocketAdapter(this);
+		this.slack = new SlackAdapter(this);
+		this.rocket = new RocketAdapter(this);
 		this.reactionsMap = new Map();	//Sync object between rocket and slack
 		this.connected = false;
 		this.rocket.setSlack(this.slack);
 		this.slack.setRocket(this.rocket);
+
+		//Settings that we cache versus looking up at runtime
+		this.apiToken = {};
+		this.aliasFormat = {};
+		this.excludeBotnames = {};
+		this.isReactionsEnabled = {};
 
 		this.processSettings();
 	}
@@ -80,6 +89,11 @@ class SlackBridge {
 			logger.class.debug('Setting: ' + key, value);
 		});
 
+		//Reactions
+		RocketChat.settings.get('SlackBridge_Reactions_Enabled', (key, value) => {
+			this.isReactionsEnabled = value;
+			logger.class.debug('Setting: ' + key, value);
+		});
 
 		//Is this entire SlackBridge enabled
 		RocketChat.settings.get('SlackBridge_Enabled', (key, value) => {

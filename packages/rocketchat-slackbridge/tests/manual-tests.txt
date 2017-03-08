@@ -1,5 +1,9 @@
 Config:
-
+Reactions:
+* Disabled (default)
+** Try to react to Slack and Rocket messages
+* Enable it
+** Try to react to Slack and Rocket messages
 
 
 Sending Message
