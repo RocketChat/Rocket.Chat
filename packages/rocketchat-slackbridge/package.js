@@ -15,8 +15,13 @@ Package.onUse(function(api) {
 
 	api.addFiles('logger.js', 'server');
 	api.addFiles('settings.js', 'server');
+	api.addFiles('rocket.js', 'server');
+	api.addFiles('slack.js', 'server');
 	api.addFiles('slackbridge.js', 'server');
 	api.addFiles('slashcommand/slackbridge_import.server.js', 'server');
+
+	api.export("SB_SlackAdapter", 'server');
+	api.export("SB_RocketAdapter", 'server');
 });
 
 Npm.depends({
