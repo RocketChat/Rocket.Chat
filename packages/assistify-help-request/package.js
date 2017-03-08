@@ -43,14 +43,16 @@ Package.onUse(function (api) {
 	api.addFiles('server/hooks/sendMessageToKnowledgeAdapter.js', 'server');
 
 	//Templates
-	api.addFiles('client/views/HelpRequestContext.html', 'client');
-	api.addFiles('client/views/HelpRequestContext.js', 'client');
-	api.addFiles('client/views/HelpRequestContextParameter.html', 'client');
-	api.addFiles('client/views/HelpRequestContextParameter.js', 'client');
-	api.addFiles('client/views/HelpRequestActions.html', 'client');
-	api.addFiles('client/views/HelpRequestActions.js', 'client');
-	api.addFiles('client/views/AssistifyCreateChannel.html', 'client');
-	api.addFiles('client/views/AssistifyCreateChannel.js', 'client');
+	api.addFiles('client/views/tabbar/HelpRequestContext.html', 'client');
+	api.addFiles('client/views/tabbar/HelpRequestContext.js', 'client');
+	api.addFiles('client/views/tabbar/HelpRequestContextParameter.html', 'client');
+	api.addFiles('client/views/tabbar/HelpRequestContextParameter.js', 'client');
+	api.addFiles('client/views/tabbar/HelpRequestActions.html', 'client');
+	api.addFiles('client/views/tabbar/HelpRequestActions.js', 'client');
+	api.addFiles('client/views/sideNav/AssistifyCreateChannel.html', 'client');
+	api.addFiles('client/views/sideNav/AssistifyCreateChannel.js', 'client');
+	api.addFiles('client/views/sideNav/requests.html', 'client');
+	api.addFiles('client/views/sideNav/requests.js', 'client');
 
 	//Assets
 	api.addAssets('assets/stylesheets/helpRequestContext.less', 'server'); //has to be done on the server, it exposes the completed css to the client

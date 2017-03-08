@@ -8,8 +8,8 @@
  * is asked by the one who started the request (the owner)
  * Experts shall join the room (automagically) and help to get it resolved
  */
-RocketChat.roomTypes.add('r', 80, {
-	template: 'channels',
+RocketChat.roomTypes.add('r', 0, {
+	template: 'requests',
 	icon: 'icon-question-circle-o',
 	route: {
 		name: 'request',
