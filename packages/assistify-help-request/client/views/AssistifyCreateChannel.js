@@ -53,10 +53,8 @@ Template.AssistifyCreateChannel.events({
 Template.AssistifyCreateChannel.onCreated(function () {
 	instance = this;
 	instance.requestRoomName = new ReactiveVar('');
-	instance.error = new ReactiveVar([]);
 
 	instance.clearForm = function () {
-		instance.error.set([]);
 		instance.requestRoomName.set('');
 		instance.find('#request-name').value = '';
 	};
