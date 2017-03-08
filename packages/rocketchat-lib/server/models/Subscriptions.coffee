@@ -312,7 +312,6 @@ class ModelSubscriptions extends RocketChat.models._Base
 		update =
 			$set:
 				alert: true
-				open: true
 
 		return @update query, update, { multi: true }
 
