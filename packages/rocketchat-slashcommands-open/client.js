@@ -1,7 +1,7 @@
 function Open(command, params /*, item*/) {
 	const dict = {
-		'#': 'c',
-		'@': 'd'
+		'#': ['c', 'p'],
+		'@': ['d']
 	};
 	var room, subscription, type;
 
@@ -18,7 +18,9 @@ function Open(command, params /*, item*/) {
 	};
 
 	if (type) {
-		query['t'] = type;
+		query['t'] = {
+			$in: type
+		};
 	}
 
 	subscription = ChatSubscription.findOne(query);
@@ -27,7 +29,7 @@ function Open(command, params /*, item*/) {
 		RocketChat.roomTypes.openRouteLink(subscription.t, subscription, FlowRouter.current().queryParams);
 	}
 
-	if (type && type !== 'd') {
+	if (type && type.indexOf('d') === -1) {
 		return;
 	}
 	return Meteor.call('createDirectMessage', room, function(err) {
