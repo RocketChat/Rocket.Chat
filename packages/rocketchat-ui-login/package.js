@@ -43,5 +43,5 @@ Package.onUse(function(api) {
 	api.addFiles('client/login/header.coffee', 'client');
 	api.addFiles('client/login/services.coffee', 'client');
 	api.addFiles('client/login/social.coffee', 'client');
-	api.addFiles('client/username/username.coffee', 'client');
+	api.addFiles('client/username/username.js', 'client');
 });
