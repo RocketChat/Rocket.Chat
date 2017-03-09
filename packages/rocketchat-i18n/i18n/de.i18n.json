@@ -1328,4 +1328,31 @@
   "your_message_optional": "ihre optionale Nachricht",
   "Your_password_is_wrong": "Falsches Passwort",
   "Your_push_was_sent_to_s_devices": "Die Push-Nachricht wurde an %s Geräte gesendet."
+  ,
+  "Assistify_Show_Standard_Features": "Standard Rocket.Chat Features"
+  ,
+  "Assistify_Bot_Username": "Bot Benutzername",
+  "Assistify_Bot_Automated_Response_Threshold": "Schwellwert für Bot-Antwort"
+  ,
+  "Request": "Anfrage",
+  "Requests": "Anfragen",
+  "New_request": "Neue Anfrage",
+  "More_requests": "Weitere Anfragen",
+  "No_requests_yet": "Keine Anfragen bisher",
+  "Assistify_room_count": "Letzte Nummer"
+	,
+  "SystemContext": "System-Kontext",
+  "system": "System",
+  "release": "Version",
+  "transaction": "Transaktion",
+  "application": "Anwendung",
+  "gui_title": "GUI-Titel",
+  "Close_HelpRequest": "Hilfe beenden"
+	,
+  "ApplicationHelp": "Anwendungshilfe",
+  "sapTransaction": "SAP Transaktionen",
+  "conversation": "Vorherige Konversationen",
+  "topic_supportType": "Art der Hilfe",
+  "topic_keyword": "Stichwort",
+  "help": "Hilfe!"
 }
