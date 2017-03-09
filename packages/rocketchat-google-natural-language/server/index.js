@@ -2,9 +2,9 @@ import './settings.js';
 import './models/Rooms.js';
 
 const getMessageSentiment = function(message) {
-	const Language = Npm.require('@google-cloud/language');
+	const googleLanguage = Npm.require('@google-cloud/language');
 
-	const languageClient = Language({
+	const languageClient = googleLanguage({
 		credentials: JSON.parse(RocketChat.settings.get('GoogleNaturalLanguage_ServiceAccount'))
 	});
 
