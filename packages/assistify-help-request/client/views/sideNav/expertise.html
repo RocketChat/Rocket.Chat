@@ -1,0 +1,13 @@
+<template name="expertise">
+	<h3 class="add-room background-transparent-darker-hover {{isActive}}">
+		{{_ "Expertise"}} <span class="room-count-small">({{rooms.count}})</span>
+	</h3>
+	<ul>
+		{{#each rooms}}
+			{{> chatRoomItem }}
+		{{else}}
+			<p class="empty">{{_ "No_expertise_yet" }}</p>
+		{{/each}}
+	</ul>
+	<button class="more more-channels background-transparent-darker-hover">{{_ "More_expertise"}}...</button>
+</template>

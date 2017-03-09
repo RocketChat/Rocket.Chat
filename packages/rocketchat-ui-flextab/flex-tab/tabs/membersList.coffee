@@ -3,7 +3,7 @@ Template.membersList.helpers
 		return t('Add_users')
 
 	isGroupChat: ->
-		return ChatRoom.findOne(this.rid, { reactive: false })?.t in ['c', 'p', 'r']
+		return ChatRoom.findOne(this.rid, { reactive: false })?.t in ['c', 'p', 'r', 'e']
 
 	isDirectChat: ->
 		return ChatRoom.findOne(this.rid, { reactive: false })?.t is 'd'
@@ -68,6 +68,8 @@ Template.membersList.helpers
 		return switch roomData.t
 			when 'p' then RocketChat.authz.hasAtLeastOnePermission ['add-user-to-any-p-room', 'add-user-to-joined-room'], this._id
 			when 'c' then RocketChat.authz.hasAtLeastOnePermission ['add-user-to-any-c-room', 'add-user-to-joined-room'], this._id
+			when 'e' then RocketChat.authz.hasAtLeastOnePermission ['add-user-to-any-p-room', 'add-user-to-joined-room'], this._id
+			when 'r' then RocketChat.authz.hasAtLeastOnePermission ['add-user-to-any-c-room', 'add-user-to-joined-room'], this._id
 			else false
 
 	autocompleteSettingsAddUser: ->
@@ -103,7 +105,7 @@ Template.membersList.helpers
 			tabBar: Template.currentData().tabBar
 			username: Template.instance().userDetail.get()
 			clear: Template.instance().clearUserDetail
-			showAll: room?.t in ['c', 'p', 'r']
+			showAll: room?.t in ['c', 'p', 'r', 'e']
 			hideAdminControls: room?.t in ['c', 'p', 'd', 'r']
 			video: room?.t in ['d']
 		}
@@ -120,7 +122,7 @@ Template.membersList.events
 
 		roomData = Session.get('roomData' + template.data.rid)
 
-		if roomData.t in ['c', 'p', 'r']
+		if roomData.t in ['c', 'p', 'r', 'e']
 			Meteor.call 'addUserToRoom', { rid: roomData._id, username: doc.username }, (error, result) ->
 				if error
 					return handleError(error)

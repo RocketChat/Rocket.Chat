@@ -1,14 +1,9 @@
 <template name="AssistifyCreateChannel">
 	<div class="wrapper">
 		<h4>{{_ "Assistify" }}</h4>
-		<div class="input-line no-icon">
-			<span>{{_ "Request"}}</span>
-			<input type="text" id="request-name" class="required" dir="auto" placeholder="{{_ 'Enter_name_here'}}">
-		</div>
-		<div class="input-submit">
-			<button class="button primary save-request">{{_ "Create" }}</button>
-			<button class="button cancel-request">{{_ "Cancel" }}</button>
-		</div>
+		{{> AssistifyCreateRequest}}
+		<div style="min-height: 30px"></div>
+		{{> AssistifyCreateExpertise}}
 	</div>
 	<div style="min-height: 50px"></div>
 </template>

@@ -1,0 +1,23 @@
+<template name="AssistifyCreateExpertise">
+	<div class="input-line no-icon">
+		<span>{{_ "Expertise"}}</span>
+		<input type="text" id="expertise" class="required" dir="auto" placeholder="{{_ 'Enter_name_here'}}">
+	</div>
+
+	<div class="input-line no-icon">
+		<label class="color-tertiary-font-color" for="experts">{{_ "Select_users"}}</label>
+		{{> inputAutocomplete settings=autocompleteSettings id="experts" class="search" placeholder=(_ "Search_by_username") autocomplete="off"}}
+		<ul class="selected-users">
+			{{#each selectedUsers}}
+				<li class="background-transparent-darker">{{.}} <i
+						class="icon-cancel remove-expert"></i>
+				</li>
+			{{/each}}
+		</ul>
+	</div>
+
+	<div class="input-submit">
+		<button class="button primary save-expertise">{{_ "Create" }}</button>
+		<button class="button cancel-expertise">{{_ "Cancel" }}</button>
+	</div>
+</template>

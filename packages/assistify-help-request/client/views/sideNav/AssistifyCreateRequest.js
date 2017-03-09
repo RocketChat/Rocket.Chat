@@ -1,8 +1,8 @@
 import toastr from 'toastr';
 
-Template.AssistifyCreateChannel.helpers({});
+Template.AssistifyCreateRequest.helpers({});
 
-Template.AssistifyCreateChannel.events({
+Template.AssistifyCreateRequest.events({
 	'keydown #request-name': function (e, instance) {
 		if ($(e.currentTarget).val().trim() != '' && e.keyCode == 13) {
 			instance.$('.save-request').click();
@@ -50,7 +50,7 @@ Template.AssistifyCreateChannel.events({
 	}
 });
 
-Template.AssistifyCreateChannel.onCreated(function () {
+Template.AssistifyCreateRequest.onCreated(function () {
 	instance = this;
 	instance.requestRoomName = new ReactiveVar('');
 

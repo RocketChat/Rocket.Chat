@@ -6,7 +6,7 @@
 /**
  * A request is a channel which has a dedicated aim: resolve an issue which
  * is asked by the one who started the request (the owner)
- * Experts shall join the room (automagically) and help to get it resolved
+ * Expertise shall join the room (automagically) and help to get it resolved
  */
 RocketChat.roomTypes.add('r', 0, {
 	template: 'requests',
@@ -40,33 +40,34 @@ RocketChat.roomTypes.add('r', 0, {
 	}
 });
 
-// /**
-//  *
-//  */
-// RocketChat.roomTypes.add('e', 30, {
-// 	template: 'privateGroups',
-// 	icon: 'icon-lightbulb',
-// 	route: {
-// 		name: 'experts',
-// 		path: '/experts/:name',
-// 		action(params) {
-// 			return openRoom('p', params.name);
-// 		}
-// 	},
-//
-// 	findRoom(identifier) {
-// 		const query = {
-// 			t: 'e',
-// 			name: identifier
-// 		};
-// 		return ChatRoom.findOne(query);
-// 	},
-//
-// 	roomName(roomData) {
-// 		return roomData.name;
-// 	},
-//
-// 	condition() {
-// 		return RocketChat.authz.hasAllPermission('view-p-room'); //todo: Own authorization
-// 	}
-// });
+/**
+ *	An expert group is a private group of people who know something
+ *	An expert group is being added to a request-channel on creation based on naming conventions
+ */
+RocketChat.roomTypes.add('e', 1, {
+	template: 'expertise',
+	icon: 'icon-lightbulb',
+	route: {
+		name: 'expertise',
+		path: '/expertise/:name',
+		action(params) {
+			return openRoom('e', params.name);
+		}
+	},
+
+	findRoom(identifier) {
+		const query = {
+			t: 'e',
+			name: identifier
+		};
+		return ChatRoom.findOne(query);
+	},
+
+	roomName(roomData) {
+		return roomData.name;
+	},
+
+	condition() {
+		return RocketChat.authz.hasAllPermission('view-p-room'); //todo: Own authorization
+	}
+});

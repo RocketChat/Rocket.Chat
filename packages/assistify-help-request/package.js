@@ -33,11 +33,13 @@ Package.onUse(function (api) {
 
 	api.addFiles('server/publications/Rooms.js', 'server');
 	api.addFiles('server/publications/HelpRequests.js', 'server');
+	api.addFiles('server/publications/Expertise.js', 'server');
 
 	//Methods
 	api.addFiles('server/methods/helpRequestByRoomId.js', 'server');
 	api.addFiles('server/methods/closeHelpRequest.js', 'server');
 	api.addFiles('server/methods/createRequest.js', 'server');
+	api.addFiles('server/methods/createExpertise.js', 'server');
 
 	// Hooks
 	api.addFiles('server/hooks/sendMessageToKnowledgeAdapter.js', 'server');
@@ -50,9 +52,14 @@ Package.onUse(function (api) {
 	api.addFiles('client/views/tabbar/HelpRequestActions.html', 'client');
 	api.addFiles('client/views/tabbar/HelpRequestActions.js', 'client');
 	api.addFiles('client/views/sideNav/AssistifyCreateChannel.html', 'client');
-	api.addFiles('client/views/sideNav/AssistifyCreateChannel.js', 'client');
+	api.addFiles('client/views/sideNav/AssistifyCreateRequest.html', 'client');
+	api.addFiles('client/views/sideNav/AssistifyCreateRequest.js', 'client');
+	api.addFiles('client/views/sideNav/AssistifyCreateExpertise.html', 'client');
+	api.addFiles('client/views/sideNav/AssistifyCreateExpertise.js', 'client');
 	api.addFiles('client/views/sideNav/requests.html', 'client');
 	api.addFiles('client/views/sideNav/requests.js', 'client');
+	api.addFiles('client/views/sideNav/expertise.html', 'client');
+	api.addFiles('client/views/sideNav/expertise.js', 'client');
 
 	//Assets
 	api.addAssets('assets/stylesheets/helpRequestContext.less', 'server'); //has to be done on the server, it exposes the completed css to the client
