@@ -1,4 +1,7 @@
 Template.createCombinedFlex.helpers
+	showStandardFeatures: ->
+		return RocketChat.settings.get('Assistify_Show_Standard_Features')
+
 	selectedUsers: ->
 		return Template.instance().selectedUsers.get()
 
