@@ -17,5 +17,6 @@ Package.onUse(function(api) {
 		'rocketchat:lib'
 	]);
 
+	api.addFiles('client/googlevision.js', 'client');
 	api.addFiles(['server/settings.js', 'server/googlevision.js'], 'server');
 });
