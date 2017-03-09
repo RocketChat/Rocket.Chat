@@ -1,7 +1,6 @@
-/* globals logger SB_RocketAdapter */
-/* exported SB_RocketAdapter */
+/* globals logger*/
 
-class RocketAdapter {
+export default class RocketAdapter {
 	constructor(slackBridge) {
 		logger.rocket.debug('constructor');
 		this.slackBridge = slackBridge;
@@ -418,5 +417,3 @@ class RocketAdapter {
 	}
 
 }
-
-SB_RocketAdapter = RocketAdapter;

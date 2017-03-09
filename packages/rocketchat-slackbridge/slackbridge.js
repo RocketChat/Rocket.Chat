@@ -1,4 +1,7 @@
-/* globals logger SB_SlackAdapter SB_RocketAdapter*/
+/* globals logger*/
+
+import SlackAdapter from './SlackAdapter.js';
+import RocketAdapter from './RocketAdapter.js';
 
 /**
  * SlackBridge interfaces between this Rocket installation and a remote Slack installation.
@@ -6,8 +9,8 @@
 class SlackBridge {
 
 	constructor() {
-		this.slack = new SB_SlackAdapter(this);
-		this.rocket = new SB_RocketAdapter(this);
+		this.slack = new SlackAdapter(this);
+		this.rocket = new RocketAdapter(this);
 		this.reactionsMap = new Map();	//Sync object between rocket and slack
 		this.connected = false;
 		this.rocket.setSlack(this.slack);

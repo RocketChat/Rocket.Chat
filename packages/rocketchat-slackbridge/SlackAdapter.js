@@ -1,7 +1,6 @@
-/* globals logger SB_SlackAdapter */
-/* exported SB_SlackAdapter */
+/* globals logger*/
 
-class SlackAdapter {
+export default class SlackAdapter {
 
 	constructor(slackBridge) {
 		logger.slack.debug('constructor');
@@ -1080,6 +1079,4 @@ class SlackAdapter {
 	}
 
 }
-
-SB_SlackAdapter = SlackAdapter;
 
