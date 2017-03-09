@@ -17,4 +17,14 @@ Package.onUse(function (api) {
 
 	//Server
 	api.addFiles('config.js', 'server');
+
+	//i18n
+	api.use('tap:i18n');
+
+	var _ = Npm.require('underscore');
+	var fs = Npm.require('fs');
+	var tapi18nFiles = _.compact(_.map(fs.readdirSync('packages/assistify/i18n'), function(filename) {
+		return 'i18n/' + filename;
+	}));
+	api.addFiles(tapi18nFiles);
 });

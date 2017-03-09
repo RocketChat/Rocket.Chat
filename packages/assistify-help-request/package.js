@@ -62,14 +62,14 @@ Package.onUse(function (api) {
 
 
 	//i18n
+	api.use('tap:i18n');
+
 	var _ = Npm.require('underscore');
 	var fs = Npm.require('fs');
 	var tapi18nFiles = _.compact(_.map(fs.readdirSync('packages/assistify-help-request/i18n'), function(filename) {
 		return 'i18n/' + filename;
 	}));
 	api.addFiles(tapi18nFiles);
-
-	api.use('tap:i18n');
 
 	//global exports
 	api.export('helpRequest');
