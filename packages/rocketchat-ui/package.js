@@ -71,6 +71,7 @@ Package.onUse(function(api) {
 
 	// TEXTAREA CURSOR MANAGEMENT
 	api.addFiles('client/lib/textarea-cursor/set-cursor-position.js', 'client');
+	api.addFiles('client/lib/esc.js', 'client');
 
 	// TEMPLATE FILES
 	api.addFiles('client/views/cmsPage.html', 'client');

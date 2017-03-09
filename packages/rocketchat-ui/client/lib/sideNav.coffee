@@ -41,8 +41,8 @@
 		highestZidx = 0
 		highestZidxElem = undefined
 		_.each sideNavDivs, (ele) ->
-			zIndex = window.getComputedStyle(ele).zIndex
-			if Number(zIndex).toString() != 'NaN' and Number(zIndex) > highestZidx
+			zIndex = Number(window.getComputedStyle(ele).zIndex)
+			if Number(zIndex) > highestZidx
 				highestZidx = Number(zIndex)
 				highestZidxElem = ele
 			return
