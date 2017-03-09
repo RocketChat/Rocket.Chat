@@ -580,6 +580,24 @@ describe('Admin Login', () => {
 				});
 			});
 
+			describe('group limit', () => {
+				before(() => {
+					admin.generalButtonExpandGroupLimit.waitForVisible(5000);
+					admin.generalButtonExpandGroupLimit.click();
+					admin.generalGroupLimitEnableTrue.waitForVisible(5000);
+					admin.generalGroupLimitEnableTrue.scroll();
+				});
+
+				it('should show group limit enable checkboxes', () => {
+					admin.generalGroupLimitEnableTrue.isVisible().should.be.true;
+					admin.generalGroupLimitEnableFalse.isVisible().should.be.true;
+				});
+
+				it('should show group limit number', () => {
+					admin.generalGroupLimitNumber.isVisible().should.be.true;
+				});
+			});
+
 			describe('iframe', () => {
 				before(() => {
 					admin.generalButtonExpandIframe.waitForVisible(5000);
