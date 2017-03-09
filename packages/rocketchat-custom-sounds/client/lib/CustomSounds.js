@@ -10,6 +10,10 @@ class CustomSounds {
 	}
 
 	add(sound) {
+		if (Meteor.isCordova) {
+			return;
+		}
+
 		if (!sound.src) {
 			sound.src = this.getURL(sound);
 		}
