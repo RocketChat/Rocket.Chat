@@ -190,7 +190,7 @@ Template.phone.events
 								convert_status = "icon-down"
 							when "missed"
 								convert_status = "icon-forward"
-						repr_res.push({'number': record.number, 'status': convert_status, 'start_time': convert_date})
+						repr_res.push({'number': record.number, 'status': convert_status, 'start_time': convert_date, 'name': record.name})
 					instance.listRegistry.set({'calls': repr_res})
 		else
 			instance.listRegistry.set([])

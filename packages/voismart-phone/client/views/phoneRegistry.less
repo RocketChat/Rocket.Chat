@@ -20,10 +20,23 @@
     .phone-registry-record-number {
         padding: 2px;
         font-size: 0.9em;
+        max-width:80%;
         cursor: pointer;
     }
 
-    .phone-registry-record-number:hover {
+  .phone-registry-record-name {
+        padding: 2px;
+        font-style: oblique;
+        font-size: 0.9em;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width:95%;
+        display:inline-block;
+    }
+
+    .phone-registry-record-number>span:hover {
+        display:inline;
         background-color: lightgray
     }
 

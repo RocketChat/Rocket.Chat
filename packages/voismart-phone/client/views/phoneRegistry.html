@@ -8,6 +8,11 @@
 			<div class="phone-registry-record-info">
 				<span> <i class={{status}}></i>&nbsp;{{start_time}}</span>
 			</div>
+			{{#if name}}
+			    <div class="phone-registry-record-name">
+				    <span>{{name}}</span>
+			    </div>
+			{{/if}}
 			<div class="phone-registry-record-number">
 				<span>{{number}}</span>
 			</div>
