@@ -12,7 +12,7 @@ Meteor.startup( () => {
 		}
 
 		//help request supplied
-		if (!(typeof room.t !== 'undefined' && room.t === 'c' && room.helpRequestId)) {
+		if (!(typeof room.t !== 'undefined' && room.t === 'r')) {
 			return message;
 		}
 
@@ -33,9 +33,11 @@ Meteor.startup( () => {
 
 			const helpRequest = RocketChat.models.HelpRequests.findOneById(room.helpRequestId);
 			let context = {};
-			context.contextType = 'ApplicationHelp';
-			context.environmentType = helpRequest.supportArea;
-			context.environment = helpRequest.environment;
+			if(helpRequest) { //there might be rooms without help request objects if they have been created inside the chat-application
+				context.contextType = 'ApplicationHelp';
+				context.environmentType = helpRequest.supportArea;
+				context.environment = helpRequest.environment;
+			}
 			try {
 				knowledgeAdapter.onMessage(message, context);
 			}

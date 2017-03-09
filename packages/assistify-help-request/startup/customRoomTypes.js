@@ -10,7 +10,7 @@
  */
 RocketChat.roomTypes.add('r', 0, {
 	template: 'requests',
-	icon: 'icon-question-circle-o',
+	icon: 'icon-attention',
 	route: {
 		name: 'request',
 		path: '/request/:name',

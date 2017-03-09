@@ -123,7 +123,7 @@ class HelpRequestApi {
 		let helpRequestId = "";
 		try {
 			Meteor.runAsUser(seekerUser._id, () => {
-				channel = Meteor.call('createChannel', 'Assistify_' + HelpRequestApi.getNextAssistifyRoomCode(), providerUsers.map((user) => user.username));
+				channel = Meteor.call('createRequest', 'Assistify_' + HelpRequestApi.getNextAssistifyRoomCode(), providerUsers.map((user) => user.username));
 				const room = RocketChat.models.Rooms.findOneById(channel.rid);
 				helpRequestId = RocketChat.models.HelpRequests.createForSupportArea(support_area, channel.rid, message, environment);
 				//propagate help-id to room in order to identify it as a "helped" room

@@ -1,5 +1,5 @@
 Meteor.methods({
-	createRequest(name) {
+	createRequest(name, members=[]) {
 		check(name, String);
 
 		if (!Meteor.userId()) {
@@ -10,6 +10,6 @@ Meteor.methods({
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'createRequest' });
 		}
 
-		return RocketChat.createRoom('r', name, Meteor.user() && Meteor.user().username, [], false, {});
+		return RocketChat.createRoom('r', name, Meteor.user() && Meteor.user().username, members, false, {});
 	}
 });
