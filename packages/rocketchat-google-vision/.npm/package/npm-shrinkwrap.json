@@ -422,6 +422,11 @@
           "version": "2.74.0",
           "resolved": "https://registry.npmjs.org/request/-/request-2.74.0.tgz",
           "from": "request@>=2.74.0 <2.75.0"
+        },
+        "tunnel-agent": {
+          "version": "0.4.3",
+          "resolved": "https://registry.npmjs.org/tunnel-agent/-/tunnel-agent-0.4.3.tgz",
+          "from": "tunnel-agent@>=0.4.1 <0.5.0"
         }
       }
     },
@@ -1265,7 +1270,7 @@
     "har-validator": {
       "version": "4.2.1",
       "resolved": "https://registry.npmjs.org/har-validator/-/har-validator-4.2.1.tgz",
-      "from": "har-validator@>=4.2.0 <4.3.0"
+      "from": "har-validator@>=4.2.1 <4.3.0"
     },
     "has-ansi": {
       "version": "2.0.0",
@@ -1638,9 +1643,9 @@
       "from": "punycode@>=1.4.1 <2.0.0"
     },
     "qs": {
-      "version": "6.3.2",
-      "resolved": "https://registry.npmjs.org/qs/-/qs-6.3.2.tgz",
-      "from": "qs@>=6.3.0 <6.4.0"
+      "version": "6.4.0",
+      "resolved": "https://registry.npmjs.org/qs/-/qs-6.4.0.tgz",
+      "from": "qs@>=6.4.0 <6.5.0"
     },
     "readable-stream": {
       "version": "2.2.3",
@@ -1653,8 +1658,8 @@
       "from": "repeating@>=1.1.0 <2.0.0"
     },
     "request": {
-      "version": "2.80.0",
-      "resolved": "https://registry.npmjs.org/request/-/request-2.80.0.tgz",
+      "version": "2.81.0",
+      "resolved": "https://registry.npmjs.org/request/-/request-2.81.0.tgz",
       "from": "request@>=2.79.0 <3.0.0"
     },
     "retry-request": {
@@ -1677,10 +1682,20 @@
           "resolved": "https://registry.npmjs.org/node-uuid/-/node-uuid-1.4.7.tgz",
           "from": "node-uuid@~1.4.7"
         },
+        "qs": {
+          "version": "6.3.2",
+          "resolved": "https://registry.npmjs.org/qs/-/qs-6.3.2.tgz",
+          "from": "qs@>=6.3.0 <6.4.0"
+        },
         "request": {
           "version": "2.76.0",
           "resolved": "https://registry.npmjs.org/request/-/request-2.76.0.tgz",
           "from": "request@2.76.0"
+        },
+        "tunnel-agent": {
+          "version": "0.4.3",
+          "resolved": "https://registry.npmjs.org/tunnel-agent/-/tunnel-agent-0.4.3.tgz",
+          "from": "tunnel-agent@>=0.4.1 <0.5.0"
         }
       }
     },
@@ -1789,9 +1804,9 @@
       "from": "tough-cookie@>=2.3.0 <2.4.0"
     },
     "tunnel-agent": {
-      "version": "0.4.3",
-      "resolved": "https://registry.npmjs.org/tunnel-agent/-/tunnel-agent-0.4.3.tgz",
-      "from": "tunnel-agent@>=0.4.1 <0.5.0"
+      "version": "0.6.0",
+      "resolved": "https://registry.npmjs.org/tunnel-agent/-/tunnel-agent-0.6.0.tgz",
+      "from": "tunnel-agent@>=0.6.0 <0.7.0"
     },
     "tweetnacl": {
       "version": "0.14.5",
