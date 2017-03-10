@@ -24,27 +24,28 @@ RocketChat.sendMessage = (user, message, room, upsert = false) ->
 			message.urls = urls.map (url) -> url: url
 
 	message = RocketChat.callbacks.run 'beforeSaveMessage', message
+	if message
 
-	# Avoid saving sandstormSessionId to the database
-	sandstormSessionId = null
-	if message.sandstormSessionId
-		sandstormSessionId = message.sandstormSessionId
-		delete message.sandstormSessionId
+		# Avoid saving sandstormSessionId to the database
+		sandstormSessionId = null
+		if message.sandstormSessionId
+			sandstormSessionId = message.sandstormSessionId
+			delete message.sandstormSessionId
 
-	if message._id? and upsert
-		_id = message._id
-		delete message._id
-		RocketChat.models.Messages.upsert {_id: _id, 'u._id': message.u._id}, message
-		message._id = _id
-	else
-		message._id = RocketChat.models.Messages.insert message
+		if message._id? and upsert
+			_id = message._id
+			delete message._id
+			RocketChat.models.Messages.upsert {_id: _id, 'u._id': message.u._id}, message
+			message._id = _id
+		else
+			message._id = RocketChat.models.Messages.insert message
 
-	###
-	Defer other updates as their return is not interesting to the user
-	###
-	Meteor.defer ->
-		# Execute all callbacks
-		message.sandstormSessionId = sandstormSessionId
-		RocketChat.callbacks.run 'afterSaveMessage', message, room
+		###
+		Defer other updates as their return is not interesting to the user
+		###
+		Meteor.defer ->
+			# Execute all callbacks
+			message.sandstormSessionId = sandstormSessionId
+			RocketChat.callbacks.run 'afterSaveMessage', message, room
 
-	return message
+		return message

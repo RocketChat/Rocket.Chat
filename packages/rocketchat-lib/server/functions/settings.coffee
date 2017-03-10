@@ -24,7 +24,7 @@ RocketChat.settings.add = (_id, value, options = {}) ->
 
 	options.packageValue = value
 	options.valueSource = 'packageValue'
-	options.hidden = false
+	options.hidden = options.hidden || false
 	options.blocked = options.blocked || false
 	options.sorter ?= RocketChat.settings._sorter[options.group]++
 
