@@ -1619,8 +1619,8 @@
       "from": "pump@>=1.0.0 <2.0.0",
       "dependencies": {
         "end-of-stream": {
-          "version": "1.1.0",
-          "resolved": "https://registry.npmjs.org/end-of-stream/-/end-of-stream-1.1.0.tgz",
+          "version": "1.2.0",
+          "resolved": "https://registry.npmjs.org/end-of-stream/-/end-of-stream-1.2.0.tgz",
           "from": "end-of-stream@>=1.1.0 <2.0.0",
           "dependencies": {
             "once": {

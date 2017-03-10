@@ -8,9 +8,6 @@ RocketChat.GoogleVision = {
 			});
 		}
 		if (googleVision.safeSearch && googleVision.safeSearch.adult === true) {
-			if (RocketChat.settings.get('GoogleVision_Block_Adult_Images')) {
-				attributes.title_link = attributes.image_url = 'http://farm3.static.flickr.com/2726/4156187118_79cf2afb81_o.jpg';
-			}
 			labels.push({ label: 'NSFW', bgColor: 'red', fontColor: 'white' });
 		}
 		if (googleVision.safeSearch && googleVision.safeSearch.violence === true) {
