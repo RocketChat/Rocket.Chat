@@ -630,12 +630,19 @@
 	&.available {
 		opacity: 1;
 	}
+
+	&.not-available {
+		ul{
+			display: none;
+		}
+	}
 }
 
 .livechat-status {
 	float: right;
 	margin-right: 10px;
 	font-size: 20px;
+	cursor:pointer;
 }
 
 .external-message {
