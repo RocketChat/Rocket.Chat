@@ -11,9 +11,12 @@ Npm.depends({
 
 Package.onUse(function(api) {
 	api.use('ecmascript');
-	api.use('rocketchat:lib');
 	api.use('http');
+	api.use('templating', 'client');
 
-	// api.mainModule('client/index.js', 'client');
+	api.use('rocketchat:lib');
+	api.use('rocketchat:ui', 'client');
+
+	api.mainModule('client/index.js', 'client');
 	api.mainModule('server/index.js', 'server');
 });
