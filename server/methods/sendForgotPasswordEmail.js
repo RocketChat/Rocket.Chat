@@ -5,9 +5,6 @@ Meteor.methods({
 		email = email.trim();
 
 		const user = RocketChat.models.Users.findOneByEmailAddress(email);
-		if (!user) {
-			throw new Meteor.Error('error-invalid-email-address', 'Invalid email address', { method: 'sendForgotPasswordEmail' });
-		}
 
 		if (user) {
 			const regex = new RegExp(`^${s.escapeRegExp(email)}$`, 'i');
