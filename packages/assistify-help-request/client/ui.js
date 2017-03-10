@@ -8,7 +8,7 @@ RocketChat.TabBar.addGroup('starred-messages', ['request', 'expertise']);
 RocketChat.TabBar.addGroup('push-notifications', ['request', 'expertise']);
 
 RocketChat.TabBar.addButton({
-	groups: ['request', 'expertise'],
+	groups: ['request', 'expertise', 'live'],
 	id: 'external-search',
 	i18nTitle: 'Knowledge_Base',
 	icon: 'icon-lightbulb',
