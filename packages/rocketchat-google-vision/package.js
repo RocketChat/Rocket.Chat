@@ -18,5 +18,5 @@ Package.onUse(function(api) {
 	]);
 
 	api.addFiles('client/googlevision.js', 'client');
-	api.addFiles(['server/settings.js', 'server/googlevision.js'], 'server');
+	api.addFiles(['server/settings.js', 'server/googlevision.js', 'server/models/Messages.js'], 'server');
 });

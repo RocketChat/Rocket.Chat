@@ -26,13 +26,14 @@ RocketChat.callbacks.priority =
 # @param {String} hook - The name of the hook
 # @param {Function} callback - The callback function
 ###
-RocketChat.callbacks.add = (hook, callback, priority, id) ->
+RocketChat.callbacks.add = (hook, callback, priority, id, errorHandler) ->
 	# if callback array doesn't exist yet, initialize it
 	priority ?= RocketChat.callbacks.priority.MEDIUM
 	unless _.isNumber priority
 		priority = RocketChat.callbacks.priority.MEDIUM
 	callback.priority = priority
 	callback.id = id or Random.id()
+	callback.errorHandler = errorHandler
 	RocketChat.callbacks[hook] ?= []
 
 	if RocketChat.callbacks.showTime is true
@@ -77,11 +78,21 @@ RocketChat.callbacks.run = (hook, item, constant) ->
 
 		# if the hook exists, and contains callbacks to run
 		result = _.sortBy(callbacks, (callback) -> return callback.priority or RocketChat.callbacks.priority.MEDIUM).reduce (result, callback) ->
+
+			# if previous callbacks throw an error, skip is set to true
+			return if skip
+
 			# console.log(callback.name);
 			if RocketChat.callbacks.showTime is true or RocketChat.callbacks.showTotalTime is true
 				time = Date.now()
 
-			callbackResult = callback result, constant
+			try
+				callbackResult = callback result, constant
+			catch error
+				if callback.errorHandler
+					callback.errorHandler(error)
+				skip = true
+				return
 
 			if RocketChat.callbacks.showTime is true or RocketChat.callbacks.showTotalTime is true
 				currentTime = Date.now() - time
