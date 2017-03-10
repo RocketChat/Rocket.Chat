@@ -38,28 +38,6 @@ Template.options.events({
 		});
 	},
 	'click .switch-department'() {
-		swal({
-			text: t('Are_you_sure_do_you_want_end_this_chat'),
-			title: '',
-			type: 'warning',
-			showCancelButton: true,
-			confirmButtonColor: '#DD6B55',
-			confirmButtonText: t('Yes'),
-			cancelButtonText: t('No'),
-			closeOnConfirm: true,
-			html: false
-		}, () => {
-			Meteor.call('livechat:closeByVisitor', (error) => {
-				if (error) {
-					return console.log('Error ->', error);
-				}
-				swal({
-					title: t('Chat_ended'),
-					type: 'success',
-					timer: 2000
-				});
-				Livechat.showSwitchDepartmentForm = true;
-			});
-		});
+		Livechat.showSwitchDepartmentForm = true;
 	}
 });
