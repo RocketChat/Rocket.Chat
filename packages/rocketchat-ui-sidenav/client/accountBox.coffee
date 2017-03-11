@@ -4,9 +4,8 @@ Template.accountBox.helpers
 		username = Meteor.user()?.username
 		colorBlind = Meteor.user()?.settings?.preferences?.colorBlind
 		status = Session.get('user_' + username + '_status')
-		if (colorBlind){
+		if colorBlind
 			status += '-color-blind'
-		}
 		switch Session.get('user_' + username + '_status')
 			when "away"
 				visualStatus = t("away")
