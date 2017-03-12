@@ -851,7 +851,7 @@
   "Only_you_can_see_this_message": "Nur Sie können diese Nachricht sehen.",
   "Oops!": "Hoppla",
   "Open": "Öffnen",
-  "Open_Livechats": "Öffne Livechats",
+  "Open_Livechats": "Offene Livechats",
   "Opened": "Geöffnet",
   "Opens_a_channel_group_or_direct_message": "Eröffnet einen Kanal, eine Gruppe oder Direktnachrichten",
   "optional": "optional",
@@ -1339,7 +1339,11 @@
   "New_request": "Neue Anfrage",
   "More_requests": "Weitere Anfragen",
   "No_requests_yet": "Keine Anfragen bisher",
-  "Assistify_room_count": "Letzte Nummer"
+  "Assistify_room_count": "Letzte Nummer",
+  "New_request_for_expertise": "Neue Anfrage zum Thema"
+	,
+  "Expertise_needs_experts": "Bitte Experten auswählen, um eine Expertise zu definieren",
+  "No_expertise_yet": "Noch in keiner Expertengruppe"
 	,
   "SystemContext": "System-Kontext",
   "system": "System",
