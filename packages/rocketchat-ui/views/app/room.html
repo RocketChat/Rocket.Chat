@@ -19,6 +19,11 @@
 						<span class="room-topic">{{{RocketChatMarkdown roomTopic}}}</span>
 					</h2>
 				</header>
+					{{#if showAnnouncement}}
+                        <div class="fixed-title announcement">
+							{{{RocketChatMarkdown roomAnnouncement}}}
+                        </div>
+					{{/if}}
 				{{/unless}}
 				<div class="container-bars {{containerBarsShow unreadData uploading}}">
 					{{#with unreadData}}
