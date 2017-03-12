@@ -1,11 +1,11 @@
 import toastr from 'toastr';
 
 Template.AssistifyCreateExpertise.helpers({
-	selectedUsers: function(){
+	selectedUsers: function () {
 		const instance = Template.instance();
 		return instance.selectedUsers.get();
 	},
-	autocompleteSettings: function() {
+	autocompleteSettings: function () {
 		return {
 			limit: 10,
 			// inputDelay: 300
@@ -22,7 +22,7 @@ Template.AssistifyCreateExpertise.helpers({
 						exceptions: Template.instance().selectedUsers.get()
 					},
 					selector(match) {
-						return { term: match };
+						return {term: match};
 					},
 					sort: 'username'
 				}
@@ -44,16 +44,16 @@ Template.AssistifyCreateExpertise.events({
 	'click .remove-expert'(e, instance) {
 		let self = this;
 
-		let users = Template.instance().selectedUsers.get();
-		users = _.reject(Template.instance().selectedUsers.get(), _id => _id === self.valueOf());
+		let users = instance().selectedUsers.get();
+		users = _.reject(instance().selectedUsers.get(), _id => _id === self.valueOf());
 
-		Template.instance().selectedUsers.set(users);
+		instance().selectedUsers.set(users);
 
 		return $('#experts').focus();
 	},
 
 
-	'keyup #expertise': function(e, instance) {
+	'keyup #expertise': function (e, instance) {
 		if (e.keyCode == 13) {
 			instance.$('#experts').focus();
 		}
@@ -66,7 +66,9 @@ Template.AssistifyCreateExpertise.events({
 	},
 
 	'click .cancel-expertise': function (event, instance) {
-		SideNav.closeFlex(()=>{instance.clearForm()});
+		SideNav.closeFlex(() => {
+			instance.clearForm()
+		});
 	},
 
 	'click .save-expertise': function (event, instance) {
@@ -74,7 +76,7 @@ Template.AssistifyCreateExpertise.events({
 		const name = instance.find('#expertise').value.toLowerCase().trim();
 		instance.expertiseRoomName.set(name);
 
-		if(name){
+		if (name) {
 			Meteor.call('createExpertise', name, instance.selectedUsers.get(), (err, result) => {
 				if (err) {
 					console.log(err);
@@ -97,9 +99,11 @@ Template.AssistifyCreateExpertise.events({
 				}
 
 				// we're done, so close side navigation and navigate to created request-channel
-				SideNav.closeFlex(()=>{instance.clearForm()});
-				RocketChat.callbacks.run('aftercreateCombined', { _id: result.rid, name: name });
-				FlowRouter.go('expertise', { name: name }, FlowRouter.current().queryParams);
+				SideNav.closeFlex(() => {
+					instance.clearForm()
+				});
+				RocketChat.callbacks.run('aftercreateCombined', {_id: result.rid, name: name});
+				FlowRouter.go('expertise', {name: name}, FlowRouter.current().queryParams);
 			});
 		} else {
 			console.log(err);
