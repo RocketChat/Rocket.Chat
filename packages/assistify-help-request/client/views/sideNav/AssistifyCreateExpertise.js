@@ -18,9 +18,9 @@ Template.AssistifyCreateExpertise.helpers({
 					template: Template.userSearch,
 					noMatchTemplate: Template.userSearchEmpty,
 					matchAll: true,
-					// filter: {
-					// 	exceptions: [Meteor.user().username].concat(Template.instance().selectedUsers.get())
-					// },
+					filter: {
+						exceptions: Template.instance().selectedUsers.get()
+					},
 					selector(match) {
 						return { term: match };
 					},

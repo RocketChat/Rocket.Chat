@@ -1329,7 +1329,8 @@
   "Your_password_is_wrong": "Falsches Passwort",
   "Your_push_was_sent_to_s_devices": "Die Push-Nachricht wurde an %s Geräte gesendet."
   ,
-  "Assistify_Show_Standard_Features": "Standard Rocket.Chat Features"
+  "Assistify_Show_Standard_Features": "Standard Rocket.Chat Features",
+  "Create_new_standard_channel": "Neuen einfachen Kanal erstellen",
   ,
   "Assistify_Bot_Username": "Bot Benutzername",
   "Assistify_Bot_Automated_Response_Threshold": "Schwellwert für Bot-Antwort"

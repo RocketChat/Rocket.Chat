@@ -7,13 +7,15 @@
 	<div class="input-line no-icon">
 		<label class="color-tertiary-font-color" for="experts">{{_ "Select_users"}}</label>
 		{{> inputAutocomplete settings=autocompleteSettings id="experts" class="search" placeholder=(_ "Search_by_username") autocomplete="off"}}
-		<ul class="selected-users">
-			{{#each selectedUsers}}
-				<li class="background-transparent-darker">{{.}} <i
-						class="icon-cancel remove-expert"></i>
-				</li>
-			{{/each}}
-		</ul>
+		{{#if selectedUsers}}
+			<ul class="selected-users">
+				{{#each selectedUsers}}
+					<li class="background-transparent-darker">{{.}} <i
+							class="icon-cancel remove-expert"></i>
+					</li>
+				{{/each}}
+			</ul>
+		{{/if}}
 	</div>
 
 	<div class="input-submit">
