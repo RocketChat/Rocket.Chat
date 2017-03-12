@@ -8,7 +8,7 @@
  * is asked by the one who started the request (the owner)
  * Expertise shall join the room (automagically) and help to get it resolved
  */
-RocketChat.roomTypes.add('r', 0, {
+RocketChat.roomTypes.add('r', 6, { //5 is livechat
 	template: 'requests',
 	icon: 'icon-attention',
 	route: {
@@ -44,7 +44,7 @@ RocketChat.roomTypes.add('r', 0, {
  *	An expert group is a private group of people who know something
  *	An expert group is being added to a request-channel on creation based on naming conventions
  */
-RocketChat.roomTypes.add('e', 1, {
+RocketChat.roomTypes.add('e', 15, { //20 = private messages
 	template: 'expertise',
 	icon: 'icon-lightbulb',
 	route: {

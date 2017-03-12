@@ -1,8 +1,36 @@
 import toastr from 'toastr';
 
-Template.AssistifyCreateRequest.helpers({});
+Template.AssistifyCreateRequest.helpers({
+	autocompleteExpertiseSettings() {
+		return {
+			limit: 10,
+			// inputDelay: 300
+			rules: [
+				{
+					// @TODO maybe change this 'collection' and/or template
+					collection: 'expertise',
+					subscription: 'autocompleteExpertise', //a server side publication providing the query
+					field: 'name',
+					template: Template.roomSearch,
+					noMatchTemplate: Template.roomSearchEmpty,
+					matchAll: true,
+					selector(match) {
+						return { name: match };
+					},
+					sort: 'name'
+				}
+			]
+		};
+	}
+});
 
 Template.AssistifyCreateRequest.events({
+	'autocompleteselect #expertise-search'(event, instance, doc) {
+		instance.expertise.set(doc.name);
+
+		return instance.find('.save-request').focus();
+	},
+
 	'keydown #request-name': function (e, instance) {
 		if ($(e.currentTarget).val().trim() != '' && e.keyCode == 13) {
 			instance.$('.save-request').click();
@@ -16,11 +44,12 @@ Template.AssistifyCreateRequest.events({
 
 	'click .save-request': function (event, instance) {
 		event.preventDefault();
-		const name = instance.find('#request-name').value.toLowerCase().trim();
+		// const name = instance.find('#request-name').value.toLowerCase().trim();
+		const expertise = instance.find('#expertise-search').value.toLowerCase().trim();
 		instance.requestRoomName.set(name);
 
-		if(name){
-			Meteor.call('createRequest', name, (err, result) => {
+		if(name || expertise){
+			Meteor.call('createRequest', name, expertise, (err, result) => {
 				if (err) {
 					console.log(err);
 					switch (err.error) {
@@ -41,7 +70,8 @@ Template.AssistifyCreateRequest.events({
 				// we're done, so close side navigation and navigate to created request-channel
 				SideNav.closeFlex(()=>{instance.clearForm()});
 				RocketChat.callbacks.run('aftercreateCombined', { _id: result.rid, name: name });
-				FlowRouter.go('request', { name: name }, FlowRouter.current().queryParams);
+				const roomCreated = RocketChat.models.Rooms.findOne({_id: result.rid});
+				FlowRouter.go('request', { name: roomCreated.name }, FlowRouter.current().queryParams);
 			});
 		} else {
 			console.log(err);
@@ -53,10 +83,12 @@ Template.AssistifyCreateRequest.events({
 Template.AssistifyCreateRequest.onCreated(function () {
 	instance = this;
 	instance.requestRoomName = new ReactiveVar('');
+	instance.expertise = new ReactiveVar('');
 
 	instance.clearForm = function () {
 		instance.requestRoomName.set('');
-		instance.find('#request-name').value = '';
+		instance.expertise.set('');
+		instance.find('#expertise-search').value = '';
 	};
 
 

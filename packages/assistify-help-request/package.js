@@ -61,11 +61,14 @@ Package.onUse(function (api) {
 	api.addFiles('client/views/sideNav/expertise.html', 'client');
 	api.addFiles('client/views/sideNav/expertise.js', 'client');
 
+	//Libraries
+	// api.addFiles('client/lib/collections.js', 'client');
+
 	//Assets
 	api.addAssets('assets/stylesheets/helpRequestContext.less', 'server'); //has to be done on the server, it exposes the completed css to the client
 
 	//global UI modifications
-	api.addFiles('client/ui.js', 'client');
+	api.addFiles('client/views/tabbar/tabbarConfig.js', 'client');
 
 
 	//i18n

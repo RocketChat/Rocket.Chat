@@ -42,6 +42,7 @@ class RedlinkAdapter {
 		}
 
 		const room = RocketChat.models.Rooms.findOneById(rid);
+		const owner = room.v || room.u; //livechat or regular room
 		RocketChat.models.Messages.find({
 			rid: rid,
 			_hidden: {$ne: true},
@@ -50,7 +51,7 @@ class RedlinkAdapter {
 			conversation.push({
 				content: visibleMessage.msg,
 				time: visibleMessage.ts,
-				origin: (room.v._id === visibleMessage.u._id) ? 'User' : 'Agent' //in livechat, the owner of the room is the user
+				origin: (owner._id === visibleMessage.u._id) ? 'User' : 'Agent' //in livechat, the owner of the room is the user
 			});
 		});
 		return conversation;
