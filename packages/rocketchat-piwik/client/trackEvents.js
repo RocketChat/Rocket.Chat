@@ -44,6 +44,12 @@ RocketChat.callbacks.add('roomTopicChanged', (room) => {
 	}
 }, RocketChat.callbacks.priority.MEDIUM, 'piwik-room-topic-changed');
 
+RocketChat.callbacks.add('roomAnnouncementChanged', (room) => {
+	if (window._paq && RocketChat.settings.get('PiwikAnalytics_features_rooms')) {
+		window._paq.push(['trackEvent', 'Room', 'Changed Announcement', room.name + ' (' + room._id + ')' ]);
+	}
+}, RocketChat.callbacks.priority.MEDIUM, 'piwik-room-topic-changed');
+
 RocketChat.callbacks.add('roomTypeChanged', (room) => {
 	if (window._paq && RocketChat.settings.get('PiwikAnalytics_features_rooms')) {
 		window._paq.push(['trackEvent', 'Room', 'Changed Room Type', room.name + ' (' + room._id + ')' ]);
