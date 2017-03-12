@@ -50,6 +50,13 @@ Meteor.methods({
 			members = getExperts(expertise);
 		}
 
-		return RocketChat.createRoom('r', name, Meteor.user() && Meteor.user().username, members, false, {});
+		const roomCreateResult = RocketChat.createRoom('r', name, Meteor.user() && Meteor.user().username, members, false, {});
+
+		const room = RocketChat.models.Rooms.findOneById(roomCreateResult.rid);
+		const helpRequestId = RocketChat.models.HelpRequests.createForSupportArea(expertise, roomCreateResult.rid);
+		//propagate help-id to room in order to identify it as a "helped" room
+		RocketChat.models.Rooms.addHelpRequestInfo(room, helpRequestId);
+
+		return roomCreateResult;
 	}
 });

@@ -95,17 +95,22 @@ Template.HelpRequestActions.events({
 				return false;
 			}
 
-			Meteor.call('assistify:closeRoom', this.roomId, inputValue, function(error) {
+			Meteor.call('assistify:closeHelpRequest', this.roomId, {comment: inputValue}, function(error) {
 				if (error) {
 					return handleError(error);
+				} else {
+					swal({
+						title: t('Chat_closed'),
+						text: t('Chat_closed_successfully'),
+						type: 'success',
+						timer: 1000,
+						showConfirmButton: false
+					});
+
+					instance.helpRequest.set(
+						RocketChat.models.HelpRequests.findOneByRoomId(Template.currentData())
+					);
 				}
-				swal({
-					title: t('Chat_closed'),
-					text: t('Chat_closed_successfully'),
-					type: 'success',
-					timer: 1000,
-					showConfirmButton: false
-				});
 			});
 		});
 	}

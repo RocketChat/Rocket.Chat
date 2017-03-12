@@ -1,11 +1,12 @@
 <template name="HelpRequestContext">
-
-    <div class="help-request-context">
-        <div class="title">{{_ 'SystemContext'}}</div>
-        <ul class="context-parameters-wrapper">
-			{{#each contextParameter in relevantParameters}}
-				{{> HelpRequestContextParameter parameter=contextParameter}}
-			{{/each}}
-        </ul>
-    </div>
+	{{#if relevantParameters }}
+		<div class="help-request-context">
+			<div class="title">{{_ 'SystemContext'}}</div>
+			<ul class="context-parameters-wrapper">
+				{{#each contextParameter in relevantParameters}}
+					{{> HelpRequestContextParameter parameter=contextParameter}}
+				{{/each}}
+			</ul>
+		</div>
+	{{/if}}
 </template>

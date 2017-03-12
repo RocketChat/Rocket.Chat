@@ -41,7 +41,7 @@ class HelpRequest extends RocketChat.models._Base {
 	}
 
 //---------------------------- CREATE
-	createForSupportArea(supportArea, roomId, question, environment) {
+	createForSupportArea(supportArea, roomId, question="", environment={}) {
 		const helpRequest = {
 			createdOn: new Date(),
 			supportArea: supportArea,
