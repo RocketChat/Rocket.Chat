@@ -2,6 +2,10 @@
 
 import moment from 'moment';
 import toastr from 'toastr';
+import hljs from 'highlight.js';
+import 'highlight.js/styles/github.css';
+
+hljs.initHighlightingOnLoad();
 
 if (window.DISABLE_ANIMATION) {
 	toastr.options.timeOut = 1;

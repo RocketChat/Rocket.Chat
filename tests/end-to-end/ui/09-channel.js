@@ -123,20 +123,19 @@ describe('channel', ()=> {
 		describe('Adding a user to the room', () => {
 			before(()=> {
 				if (Global.toastAlert.isVisible()) {
-					flexTab.dismissToast();
+					Global.dismissToast();
 					Global.toastAlert.waitForVisible(5000, true);
 				}
-				flexTab.membersTab.waitForVisible();
-				flexTab.membersTab.click();
+				flexTab.operateFlexTab('members', true);
 			});
 
 			after(()=> {
 				if (Global.toastAlert.isVisible()) {
-					flexTab.dismissToast();
+					Global.dismissToast();
 					Global.toastAlert.waitForVisible(5000, true);
 				}
-				flexTab.membersTab.waitForVisible();
-				flexTab.membersTab.click();
+				flexTab.operateFlexTab('members', false);
+
 			});
 
 			it('add people to the room', () => {
@@ -149,19 +148,19 @@ describe('channel', ()=> {
 			describe('Channel name edit', ()=> {
 				before(()=> {
 					if (Global.toastAlert.isVisible()) {
-						flexTab.dismissToast();
+						Global.dismissToast();
 						Global.toastAlert.waitForVisible(5000, true);
 					}
-					flexTab.channelTab.waitForVisible();
-					flexTab.channelTab.click();
+					flexTab.operateFlexTab('info', true);
+
 				});
 
 				after(()=> {
 					if (Global.toastAlert.isVisible()) {
-						flexTab.dismissToast();
+						Global.dismissToast();
 						Global.toastAlert.waitForVisible(5000, true);
 					}
-					flexTab.channelTab.waitForVisible(5000);
+					flexTab.operateFlexTab('info', false);
 				});
 
 				it('should show the old name', ()=> {
@@ -191,17 +190,15 @@ describe('channel', ()=> {
 
 			describe('Channel topic edit', ()=> {
 				before(()=> {
-					flexTab.channelTab.waitForVisible();
-					flexTab.channelTab.click();
+					flexTab.operateFlexTab('info', true);
 				});
 
 				after(()=> {
 					if (Global.toastAlert.isVisible()) {
-						flexTab.dismissToast();
+						Global.dismissToast();
 						Global.toastAlert.waitForVisible(5000, true);
 					}
-					flexTab.channelTab.waitForVisible();
-					flexTab.channelTab.click();
+					flexTab.operateFlexTab('info', false);
 				});
 
 				it('click the edit topic', ()=> {
@@ -225,17 +222,15 @@ describe('channel', ()=> {
 
 			describe('Channel description edit', ()=> {
 				before(()=> {
-					flexTab.channelTab.waitForVisible();
-					flexTab.channelTab.click();
+					flexTab.operateFlexTab('info', true);
 				});
 
 				after(()=> {
 					if (Global.toastAlert.isVisible()) {
-						flexTab.dismissToast();
+						Global.dismissToast();
 						Global.toastAlert.waitForVisible(5000, true);
 					}
-					flexTab.channelTab.waitForVisible();
-					flexTab.channelTab.click();
+					flexTab.operateFlexTab('info', false);
 				});
 
 				it('click the edit description', ()=> {
@@ -259,23 +254,35 @@ describe('channel', ()=> {
 		});
 
 		describe('Members tab usage', () => {
+			describe('User muted', () => {
+				before(()=> {
+					flexTab.operateFlexTab('members', true);
+				});
+
+				after(()=> {
+					flexTab.operateFlexTab('members', false);
+				});
+
+				it('mute rocket cat', ()=> {
+					flexTab.muteUser(targetUser);
+				});
+			});
+
 			describe('Owner added', () => {
 				before(()=> {
 					if (Global.toastAlert.isVisible()) {
-						flexTab.dismissToast();
+						Global.dismissToast();
 						Global.toastAlert.waitForVisible(5000, true);
 					}
-					flexTab.membersTab.waitForVisible();
-					flexTab.membersTab.click();
+					flexTab.operateFlexTab('members', true);
 				});
 
 				after(()=> {
 					if (Global.toastAlert.isVisible()) {
-						flexTab.dismissToast();
+						Global.dismissToast();
 						Global.toastAlert.waitForVisible(5000, true);
 					}
-					flexTab.membersTab.waitForVisible();
-					flexTab.membersTab.click();
+					flexTab.operateFlexTab('members', false);
 				});
 
 				it('sets rocket cat as owner', ()=> {
@@ -284,7 +291,7 @@ describe('channel', ()=> {
 
 				it('dismiss the toast', ()=> {
 					if (Global.toastAlert.isVisible()) {
-						flexTab.dismissToast();
+						Global.dismissToast();
 						Global.toastAlert.waitForVisible(5000, true);
 					}
 				});
@@ -301,20 +308,19 @@ describe('channel', ()=> {
 			describe('Moderator added', () => {
 				before(()=> {
 					if (Global.toastAlert.isVisible()) {
-						flexTab.dismissToast();
+						Global.dismissToast();
 						Global.toastAlert.waitForVisible(5000, true);
 					}
-					flexTab.membersTab.waitForVisible();
-					flexTab.membersTab.click();
+					flexTab.operateFlexTab('members', true);
+
 				});
 
 				after(()=> {
 					if (Global.toastAlert.isVisible()) {
-						flexTab.dismissToast();
+						Global.dismissToast();
 						Global.toastAlert.waitForVisible(5000, true);
 					}
-					flexTab.membersTab.waitForVisible();
-					flexTab.membersTab.click();
+					flexTab.operateFlexTab('members', false);
 				});
 
 				it('sets rocket cat as moderator', ()=> {
@@ -323,7 +329,7 @@ describe('channel', ()=> {
 
 				it('dismiss the toast', ()=> {
 					if (Global.toastAlert.isVisible()) {
-						flexTab.dismissToast();
+						Global.dismissToast();
 						Global.toastAlert.waitForVisible(5000, true);
 					}
 				});
@@ -374,29 +380,6 @@ describe('channel', ()=> {
 					sideNav.getChannelFromList('NAME-EDITED-'+publicChannelName).isVisible().should.be.true;
 				});
 			});
-
-
-			describe.skip('User muted', () => {
-				before(()=> {
-					flexTab.membersTab.waitForVisible(5000);
-					flexTab.membersTab.click();
-				});
-
-				after(()=> {
-					flexTab.membersTab.waitForVisible();
-					flexTab.membersTab.click();
-				});
-
-				it('mute rocket cat', ()=> {
-					flexTab.muteUser(targetUser);
-				});
-
-				it('confirms the popup', ()=> {
-					flexTab.confirmPopup();
-				});
-			});
-
-
 		});
 	});
 });

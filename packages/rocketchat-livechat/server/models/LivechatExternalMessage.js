@@ -3,7 +3,7 @@ class LivechatExternalMessage extends RocketChat.models._Base {
 		super('livechat_external_message');
 
 		if (Meteor.isClient) {
-				this._initModel('livechat_external_message');
+			this._initModel('livechat_external_message');
 		}
 	}
 
