@@ -269,6 +269,8 @@ Template.messagePopup.events
 
 		template.open.set false
 
+		toolbarSearch.clear();
+
 
 Template.messagePopup.helpers
 	isOpen: ->

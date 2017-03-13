@@ -34,6 +34,11 @@
 			<span class="is-bot background-info-font-color">BOT</span>
 		{{/if}}
 		<span class="time" title='{{date}} {{time}}'>{{time}}</span>
+		{{#if showTranslated}}
+			<span class="translated">
+				<i class="icon-language {{#if autoTranslateFetching}}loading{{/if}}" aria-label="{{_ "Translated"}}"></i>
+			</span>
+		{{/if}}
 		{{#if edited}}
 			<span class="edited" title='{{_ "edited"}} {{_ "at"}} {{editTime}} {{_ "by"}} {{editedBy}}'>
 				<i class="icon-edit" aria-label="{{_ "Edited"}}"></i>
