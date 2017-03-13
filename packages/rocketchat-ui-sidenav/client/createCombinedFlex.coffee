@@ -84,7 +84,7 @@ Template.createCombinedFlex.events
 
 	'click .save-channel': (e, instance) ->
 		err = SideNav.validate()
-		name = instance.find('#channel-name').value.toLowerCase().trim()
+		name = instance.find('#channel-name').value.toLowerCase().trim().replace(/</g, "&lt;").replace(/>/g, "&gt;")
 		privateGroup = instance.find('#channel-type').checked
 		readOnly = instance.find('#channel-ro').checked
 		createRoute = if privateGroup then 'createPrivateGroup' else 'createChannel'
