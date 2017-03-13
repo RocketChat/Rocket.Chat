@@ -130,6 +130,7 @@ Template.redlinkQuery.onCreated(function () {
 				ClientResultFactory.getInstance(instance.data.query.creator, instance.data.query.url)
 					.executeQuery([], (results)=>{
 						instance.state.set('results',results);
+						instance.state.set('status', 'fetched');
 					});
 			}
 		}
