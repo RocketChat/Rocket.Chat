@@ -6,7 +6,7 @@ Template.redlinkQueries.helpers({
 		}
 		const queriesWithInlineSupport = instance.data.queries
 			.filter(hasInlineSupport);
-		
+
 		return {
 			query: query,
 			maxConfidence: Math.max(...queriesWithInlineSupport.map((query) => query.confidence)),
@@ -14,6 +14,9 @@ Template.redlinkQueries.helpers({
 			templateIndex: instance.data.templateIndex,
 			queryIndex: queryIndex
 		}
+	},
+	dbSearchResult(query, index){
+		return query.creator == "dbsearch";
 	}
 });
 
