@@ -108,6 +108,7 @@ const myCommand :Spk.Manifest.Command = (
 		(key = "SANDSTORM", value = "1"),
 		(key = "Statistics_reporting", value = "false"),
 		(key = "Accounts_AllowUserAvatarChange", value = "false"),
-		(key = "Accounts_AllowUserProfileChange", value = "false")
+		(key = "Accounts_AllowUserProfileChange", value = "false"),
+		(key = "BABEL_CACHE_DIR", value = "/var/babel_cache")
 	]
 );
