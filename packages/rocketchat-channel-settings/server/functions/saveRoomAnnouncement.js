@@ -10,4 +10,4 @@ RocketChat.saveRoomAnnouncement = function(rid, roomAnnouncement, user, sendMess
 	}
 
 	return updated;
-}
+};
