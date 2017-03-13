@@ -39,10 +39,11 @@ Template.redlinkQuery.helpers({
 		const instance = Template.instance();
 		const results = instance.state.get('results');
 		if (results) {
-			const creator = results[0].creator; //all results have got the same creator
+			const creator = instance.state.get('creator'); //all results have got the same creator
 			let options = {
 				results: results,
-				roomId: instance.data.roomId
+				roomId: instance.data.roomId,
+				creator : instance.state.get('creator')
 			};
 
 			switch (creator) {
@@ -123,16 +124,18 @@ Template.redlinkQuery.onCreated(function () {
 				Meteor.call('redlink:retrieveResults', instance.data.roomId, instance.data.templateIndex, instance.data.query.creator, (err, results)=> {
 					instance.state.set('results', results);
 					instance.state.set('status', 'fetched');
+					instance.state.set('creator', instance.data.query.creator);
 				});
 			}
 			if(Template.redlinkQuery.clientResult(instance.data.query.creator)){
 				instance.state.set('status', 'dirty');
-				ClientResultFactory.getInstance(instance.data.query.creator, instance.data.query.url)
-					.executeQuery([], (results)=>{
-						instance.state.set('results',results);
-					});
+				let crf = new ClientResultFactory().getInstance(instance.data.query.creator, instance.data.query.url);
+				crf.executeSearch([], (callback) => {
+					instance.state.set('results', callback.response.docs);
+					instance.state.set('status', 'fetched');
+					instance.state.set('creator', instance.data.query.creator);
+				});
 			}
 		}
 	})
-
 });

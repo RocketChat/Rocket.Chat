@@ -7,6 +7,7 @@ class redlinkResultContainerHelpers {
 		const instance = Template.instance();
 		const results = instance.data.results;
 		const stepping = instance.data.stepping;
+		const creator = instance.data.creator;
 		const totalLength = results.length;
 
 		let offset = instance.state.get('currentOffset');
