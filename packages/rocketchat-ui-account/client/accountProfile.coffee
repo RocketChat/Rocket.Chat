@@ -53,10 +53,10 @@ Template.accountProfile.onCreated ->
 				instance.clearForm()
 				return
 
-	@save = (currentPassword) ->
+	@save = (typedPassword) ->
 		instance = @
 
-		data = { currentPassword: currentPassword }
+		data = { typedPassword: typedPassword }
 
 		if _.trim($('#password').val()) and RocketChat.settings.get("Accounts_AllowPasswordChange")
 			data.newPassword = $('#password').val()

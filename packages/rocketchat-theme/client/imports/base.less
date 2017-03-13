@@ -491,6 +491,46 @@ blockquote {
 	}
 }
 
+@-ms-keyframes spinh {
+	from {
+		-ms-transform: rotateY(0deg);
+	}
+
+	to {
+		-ms-transform: rotateY(360deg);
+	}
+}
+
+@-moz-keyframes spinh {
+	from {
+		-moz-transform: rotateY(0deg);
+	}
+
+	to {
+		-moz-transform: rotateY(360deg);
+	}
+}
+
+@-webkit-keyframes spinh {
+	from {
+		-webkit-transform: rotateY(0deg);
+	}
+
+	to {
+		-webkit-transform: rotateY(360deg);
+	}
+}
+
+@keyframes spinh {
+	from {
+		transform: rotateY(0deg);
+	}
+
+	to {
+		transform: rotateY(360deg);
+	}
+}
+
 .rocket-h2 {
 	font-weight: 300;
 	text-transform: uppercase;
@@ -528,6 +568,7 @@ body {
 	height: 100%;
 	width: 100%;
 	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
 	line-height: 1rem;
 	padding: 0;
 	overflow: visible;
@@ -1634,6 +1675,7 @@ label.required::after {
 	right: 0;
 	opacity: 0;
 	transition: opacity 0.3s;
+	cursor: pointer;
 }
 
 .toolbar-search__input {

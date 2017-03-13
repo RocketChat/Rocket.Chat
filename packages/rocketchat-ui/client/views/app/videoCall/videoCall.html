@@ -3,7 +3,7 @@
 		{{#if videoActive}}
 			<div class="webrtc-video {{#if overlay}}webrtc-video-overlay background-transparent-darker{{/if}}">
 				<div class="main-video background-transparent-darker">
-					<video src="{{mainVideoUrl}}" autoplay muted="true" class="webrtc-video-element {{#if $eq mainVideoUrl selfVideoUrl}}video-flip{{/if}}"></video>
+					<video src="{{mainVideoUrl}}" autoplay muted="true" class="webrtc-video-element {{#if $eq mainVideoUrl selfVideoUrl}}{{#unless screenShareEnabled}}video-flip{{/unless}}{{/if}}"></video>
 					<div class="background-transparent-darker">{{mainVideoUsername}}</div>
 				</div>
 				<div class="videos">
