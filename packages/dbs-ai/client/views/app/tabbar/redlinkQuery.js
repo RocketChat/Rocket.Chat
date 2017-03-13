@@ -1,3 +1,5 @@
+import {ClientResultFactory} from '../../../lib/ClientResultProvider.js'
+
 Template.redlinkQuery.helpers({
 	hasResult(){
 		const results = Template.instance().state.get('results');
@@ -90,6 +92,13 @@ Template.redlinkQuery.events({
 	}
 });
 
+Template.redlinkQuery.clientResult = function(creator){
+	switch(creator) {
+		case 'dbsearch': return true;
+		default: return false;
+	}
+};
+
 Template.redlinkQuery.onCreated(function () {
 	const instance = this;
 
@@ -115,6 +124,13 @@ Template.redlinkQuery.onCreated(function () {
 					instance.state.set('results', results);
 					instance.state.set('status', 'fetched');
 				});
+			}
+			if(Template.redlinkQuery.clientResult(instance.data.query.creator)){
+				instance.state.set('status', 'dirty');
+				ClientResultFactory.getInstance(instance.data.query.creator, instance.data.query.url)
+					.executeQuery([], (results)=>{
+						instance.state.set('results',results);
+					});
 			}
 		}
 	})
