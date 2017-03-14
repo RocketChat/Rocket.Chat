@@ -5,7 +5,7 @@
  */
 Meteor.publish('assistify:room', function ({rid: roomId}) {
 	if (!this.userId) {
-		return this.error(new Meteor.Error('error-not-authorized', 'Not authorized', {publish: 'livechat:visitorInfo'}));
+		return this.error(new Meteor.Error('error-not-authorized', 'Not authorized'));
 	}
 
 	// todo: add permission

@@ -33,19 +33,29 @@ Package.onUse(function (api) {
 	api.addAssets('assets/icons/Hasso_Search.png', 'client');
 	api.addAssets('assets/icons/dbsearch.png', 'client');
 
+	//Common business logic
+	addDirectory(api, 'methods');
+	api.addFiles('models/Messages.js');
+
+
+
+	//Server business logic
 	api.addFiles('server/config.js', 'server');
-	addDirectory(api, 'server/methods', 'server');
 	addDirectory(api, 'server/lib', 'server');
 	addDirectory(api, 'server/hooks', 'server');
 
+	//Client business logic
 	api.addFiles('client/redlink_ui.js', 'client');
 	api.addFiles('client/lib/ClientResultProvider.js', 'client');
+	api.addFiles('client/lib/collections.js', 'client');
+
+	//client views
 	addDirectory(api,'client/views/app/tabbar', 'client');
 
 	//i18n
 	const _ = Npm.require('underscore');
 	const fs = Npm.require('fs');
-	var tapi18nFiles = _.compact(_.map(fs.readdirSync('packages/dbs-ai/i18n'), function(filename) {
+	var tapi18nFiles = _.compact(_.map(fs.readdirSync('packages/dbs-ai/i18n'), function (filename) {
 		if (fs.statSync('packages/dbs-ai/i18n/' + filename).size > 16) {
 			return 'i18n/' + filename;
 		}

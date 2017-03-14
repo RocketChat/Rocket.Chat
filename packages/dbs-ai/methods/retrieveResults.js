@@ -1,9 +1,12 @@
 Meteor.methods({
 	'redlink:retrieveResults'(roomId, templateIndex, creator){
+
+		if(Meteor.isServer) {
 			const adapter = _dbs.RedlinkAdapterFactory.getInstance();
 			results = adapter.getQueryResults(roomId, templateIndex, creator);
 
-		return results;
+			return results;
+		}
 		//
 		// ein paar offline-fähige Testdaten
 		// return [

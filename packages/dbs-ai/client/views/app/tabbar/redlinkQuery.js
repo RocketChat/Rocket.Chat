@@ -116,6 +116,7 @@ Template.redlinkQuery.onCreated(function () {
 			//subscribe to the external messages for the room in order to re-fetch the results once the result
 			// of the knowledge provider changes
 			this.subscribe('livechat:externalMessages', Template.currentData().roomId);
+			instance.state.set('creator', instance.data.query.creator);
 
 			//issue a request to the redlink results-service and buffer the potential results in a reactive variable
 			//which then can be forwarded to the results-template
@@ -124,7 +125,6 @@ Template.redlinkQuery.onCreated(function () {
 				Meteor.call('redlink:retrieveResults', instance.data.roomId, instance.data.templateIndex, instance.data.query.creator, (err, results)=> {
 					instance.state.set('results', results);
 					instance.state.set('status', 'fetched');
-					instance.state.set('creator', instance.data.query.creator);
 				});
 			}
 			if(Template.redlinkQuery.clientResult(instance.data.query.creator)){
@@ -133,7 +133,6 @@ Template.redlinkQuery.onCreated(function () {
 				crf.executeSearch([], (callback) => {
 					instance.state.set('results', callback.response.docs);
 					instance.state.set('status', 'fetched');
-					instance.state.set('creator', instance.data.query.creator);
 				});
 			}
 		}

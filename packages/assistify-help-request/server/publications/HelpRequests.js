@@ -18,7 +18,8 @@ Meteor.publish('assistify:helpRequests', function (roomId) {
 	const room = RocketChat.models.Rooms.findOneById(roomId, {fields: {helpRequestId: 1}});
 
 	if(room.helpRequestId) {
-		return RocketChat.models.HelpRequests.findByRoomId(room.helpRequestId, {
+		// this.ready();
+		return RocketChat.models.HelpRequests.findByRoomId(room._id, {
 			fields: {
 				_id: 1,
 				roomId: 1,

@@ -77,7 +77,7 @@
 <!--Assistify-specific result templates-->
 
 <template name="inlineResultMessage">
-	<li class="conversationMessage"><span class="{{getOriginatorClass message}}">{{{message.content}}}</span></li>
+	<li class="conversationMessage"><span class="{{getOriginatorClass message}} {{getSelectedClass}}">{{{message.content}}}</span></li>
 </template>
 
 <template name="redlinkInlineResult_sapTransaction">
@@ -105,6 +105,7 @@
 					{{#if link}}
 						<a href="{{link}}" target="_blank"><i class="icon-link-ext"></i></a>
 					{{/if}}
+				<span class="js-send-message icon-mail"></span>
 				<span class="js-toggle-result-preview-expanded icon-up-open"></span>
 			</span>
 		</div>

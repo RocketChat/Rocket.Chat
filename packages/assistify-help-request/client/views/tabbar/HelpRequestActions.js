@@ -122,7 +122,7 @@ Template.HelpRequestActions.onCreated( function() {
 		if (Template.currentData().roomId && this.helpRequest.get()) {
 			this.subscribe('assistify:helpRequests', Template.currentData().roomId);
 			this.helpRequest.set(
-				RocketChat.models.HelpRequests.findOneByRoomId(Template.currentData())
+				RocketChat.models.HelpRequests.findOneByRoomId(Template.currentData().roomId)
 			);
 		}
 	});
