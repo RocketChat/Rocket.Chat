@@ -7,6 +7,7 @@ import { _ } from 'meteor/underscore';
 import hljs from 'highlight.js';
 
 const inlineCode = (message) => {
+	// Support `text`
 	message.html = message.html.replace(/(^|&gt;|[ >_*~])\`([^`\r\n]+)\`([<_*~]|\B|\b|$)/gm, (match, p1, p2, p3) => {
 		const token = `=&=${Random.id()}=&=`;
 		message.tokens.push({
@@ -20,8 +21,10 @@ const inlineCode = (message) => {
 };
 
 const blockCode = (message) => {
+	// Count occurencies of ```
 	const count = (message.html.match(/```/g) || []).length;
 
+	// Check if we need to add a final ```
 	if (!count) {
 		return message;
 	}
@@ -34,11 +37,13 @@ const blockCode = (message) => {
 	// Separate text in code blocks and non code blocks
 	let msgParts = message.html.replace(/<br>/gm, '\n').split(/^.*(```(?:[a-zA-Z]+)?(?:(?:.|\n)*?)```)(.*\n?)$/gm);
 	msgParts = msgParts.map((part) => {
+		// Verify if this part is code
 		const codeMatch = part.match(/^```(\w*[\n\ ]?)([\s\S]*?)```+?$/);
 		if (null == codeMatch) {
 			return part;
 		}
 
+		// Process highlight if this part is code
 		const singleLine = codeMatch[0].indexOf('\n') === -1;
 		let code = null, lang = null;
 		if (singleLine) {
@@ -67,6 +72,7 @@ const blockCode = (message) => {
 		return token;
 	});
 
+	// Re-mount message
 	message.html = msgParts.join('');
 
 	return message;
