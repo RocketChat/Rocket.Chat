@@ -31,7 +31,8 @@ const blockCode = (message) => {
 		message.msg = message.msg + '\n```';
 	}
 
-	let msgParts = message.html.replace(/<br>/gm, '\n').split(/^\s*(```(?:[a-zA-Z]+)?(?:(?:.|\n)*?)```)(?:\n)?$/gm);
+	// Separate text in code blocks and non code blocks
+	let msgParts = message.html.replace(/<br>/gm, '\n').split(/^.*(```(?:[a-zA-Z]+)?(?:(?:.|\n)*?)```)(.*\n?)$/gm);
 	msgParts = msgParts.map((part) => {
 		const codeMatch = part.match(/^```(\w*[\n\ ]?)([\s\S]*?)```+?$/);
 		if (null == codeMatch) {

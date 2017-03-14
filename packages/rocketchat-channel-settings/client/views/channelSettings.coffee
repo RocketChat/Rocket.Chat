@@ -238,7 +238,7 @@ Template.channelSettings.onCreated ->
 								showConfirmButton: false
 							RocketChat.callbacks.run action, room
 					else
-						$(".channel-settings form [name='archived']").prop('checked', room.archived)
+						$(".channel-settings form [name='archived']").prop('checked', !!room.archived)
 
 		joinCode:
 			type: 'text'

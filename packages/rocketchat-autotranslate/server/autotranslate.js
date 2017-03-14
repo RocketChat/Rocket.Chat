@@ -153,9 +153,14 @@ class AutoTranslate {
 		return message.msg;
 	}
 
-	translateMessage(message, room) {
+	translateMessage(message, room, targetLanguage) {
 		if (this.enabled && this.apiKey) {
-			const targetLanguages = RocketChat.models.Subscriptions.getAutoTranslateLanguagesByRoomAndNotUser(room._id, message.u && message.u._id);
+			let targetLanguages;
+			if (targetLanguage) {
+				targetLanguages = [ targetLanguage ];
+			} else {
+				targetLanguages = RocketChat.models.Subscriptions.getAutoTranslateLanguagesByRoomAndNotUser(room._id, message.u && message.u._id);
+			}
 			if (message.msg) {
 				Meteor.defer(() => {
 					const translations = {};
@@ -167,8 +172,19 @@ class AutoTranslate {
 					let msgs = targetMessage.msg.split('\n');
 					msgs = msgs.map(msg => encodeURIComponent(msg));
 					const query = `q=${msgs.join('&q=')}`;
+
+					const supportedLanguages = this.getSupportedLanguages('en');
 					targetLanguages.forEach(language => {
-						const result = HTTP.get('https://translation.googleapis.com/language/translate/v2', { params: { key: this.apiKey, target: language }, query: query });
+						if (language.indexOf('-') !== -1 && !_.findWhere(supportedLanguages, { language })) {
+							language = language.substr(0, 2);
+						}
+						let result;
+						try {
+							result = HTTP.get('https://translation.googleapis.com/language/translate/v2', { params: { key: this.apiKey, target: language }, query: query });
+						} catch (e) {
+							console.log('Error translating message', e);
+							return message;
+						}
 						if (result.statusCode === 200 && result.data && result.data.data && result.data.data.translations && Array.isArray(result.data.data.translations) && result.data.data.translations.length > 0) {
 							const txt = result.data.data.translations.map(translation => translation.translatedText).join('\n');
 							translations[language] = this.deTokenize(Object.assign({}, targetMessage, { msg: txt }));
@@ -188,7 +204,11 @@ class AutoTranslate {
 							const translations = {};
 							if (attachment.description || attachment.text) {
 								const query = `q=${encodeURIComponent(attachment.description || attachment.text)}`;
+								const supportedLanguages = this.getSupportedLanguages('en');
 								targetLanguages.forEach(language => {
+									if (language.indexOf('-') !== -1 && !_.findWhere(supportedLanguages, { language })) {
+										language = language.substr(0, 2);
+									}
 									const result = HTTP.get('https://translation.googleapis.com/language/translate/v2', { params: { key: this.apiKey, target: language }, query: query });
 									if (result.statusCode === 200 && result.data && result.data.data && result.data.data.translations && Array.isArray(result.data.data.translations) && result.data.data.translations.length > 0) {
 										const txt = result.data.data.translations.map(translation => translation.translatedText).join('\n');
@@ -223,7 +243,7 @@ class AutoTranslate {
 				result = HTTP.get('https://translation.googleapis.com/language/translate/v2/languages', { params: params });
 			} catch (e) {
 				if (e.response && e.response.statusCode === 400 && e.response.data && e.response.data.error && e.response.data.error.status === 'INVALID_ARGUMENT') {
-					delete params.target;
+					params.target = 'en';
 					target = 'en';
 					if (!this.supportedLanguages[target]) {
 						result = HTTP.get('https://translation.googleapis.com/language/translate/v2/languages', { params: params });

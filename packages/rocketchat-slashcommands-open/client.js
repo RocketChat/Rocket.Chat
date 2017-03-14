@@ -1,29 +1,45 @@
-function Open(command, params/*, item*/) {
+function Open(command, params /*, item*/) {
+	const dict = {
+		'#': ['c', 'p'],
+		'@': ['d']
+	};
 	var room, subscription, type;
+
 	if (command !== 'open' || !Match.test(params, String)) {
 		return;
 	}
+
 	room = params.trim();
-	if (room.indexOf('#') !== -1) {
-		type = 'c';
-	}
-	if (room.indexOf('@') !== -1) {
-		type = 'd';
-	}
-	room = room.replace('#', '');
-	room = room.replace('@', '');
+	type = dict[room[0]];
+	room = room.replace(/#|@/, '');
 
 	var query = {
 		name: room
 	};
+
 	if (type) {
-		query['t'] = type;
+		query['t'] = {
+			$in: type
+		};
 	}
+
 	subscription = ChatSubscription.findOne(query);
 
 	if (subscription) {
 		RocketChat.roomTypes.openRouteLink(subscription.t, subscription, FlowRouter.current().queryParams);
 	}
+
+	if (type && type.indexOf('d') === -1) {
+		return;
+	}
+	return Meteor.call('createDirectMessage', room, function(err) {
+		if (err) {
+			return;
+		}
+		subscription = RocketChat.models.Subscriptions.findOne(query);
+		RocketChat.roomTypes.openRouteLink(subscription.t, subscription, FlowRouter.current().queryParams);
+	});
+
 }
 
 RocketChat.slashCommands.add('open', Open, {
