@@ -102,8 +102,8 @@
 		<div class="query-preview-result-title clearfix">
 			<span class="result-title-wrapper">{{getResultTitle}}</span>
 			<span class="icon-wrapper">
-					{{#if link}}<a href="{{link}}" target="_blank"><i
-							class="icon-link-ext"></i></a>
+					{{#if link}}
+						<a href="{{link}}" target="_blank"><i class="icon-link-ext"></i></a>
 					{{/if}}
 				<span class="js-toggle-result-preview-expanded icon-up-open"></span>
 			</span>
@@ -114,7 +114,19 @@
 					{{> inlineResultMessage message=message}}
 				{{/each}}
 			</ul>
-
 		</div>
+	</div>
+</template>
+
+<template name="redlinkInlineResult_dbsearch">
+	<div class="result-item-wrapper {{classExpanded}}">
+		<div class="query-preview-result-title clearfix">
+			<span class="result-title-wrapper">{{result.dbsearch_title_s}}</span>
+			<span class="icon-wrapper">
+				<a href="{{result.dbsearch_link_s}}" target="_blank"><i class="icon-link-ext"></i></a>
+				<span class="js-toggle-result-preview-expanded icon-up-open"></span>
+			</span>
+		</div>
+		<div class="query-preview-result-body">{{result.body}}</div>
 	</div>
 </template>

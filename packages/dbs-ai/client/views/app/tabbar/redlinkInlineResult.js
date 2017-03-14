@@ -9,7 +9,8 @@ Template.redlinkInlineResult.helpers({
 		const instance = Template.instance();
 
 		let templateSuffix = "generic";
-		switch (instance.data.result.creator) {
+		const creator = instance.data.creator;
+		switch (instance.data.creator) {
 			case 'bahn.de':
 				templateSuffix = "bahn_de";
 				break;
@@ -26,8 +27,8 @@ Template.redlinkInlineResult.helpers({
 				templateSuffix = "Hasso";
 				break;
 			default:
-				if (!!Template['redlinkInlineResult_' + instance.data.result.creator]) {
-					templateSuffix = instance.data.result.creator;
+				if (!!Template['redlinkInlineResult_' + creator]) {
+					templateSuffix = creator;
 				} else {
 					templateSuffix = "generic";
 				}
@@ -39,7 +40,8 @@ Template.redlinkInlineResult.helpers({
 		const instance = Template.instance();
 		return {
 			result: instance.data.result,
-			roomId: instance.data.roomId
+			roomId: instance.data.roomId,
+			creator: instance.data.creator
 		}
 	}
 });
@@ -124,7 +126,8 @@ Template.redlinkInlineResult_Hasso.events({
 	'click .result-item-wrapper .js-toggle-result-preview-expanded': function (event, instance) {
 		const current = instance.state.get('expanded');
 		instance.state.set('expanded', !current);
-	}});
+	}
+});
 
 Template.redlinkInlineResult_Hasso.helpers({
 	classExpanded(){
@@ -187,4 +190,27 @@ Template.redlinkInlineResult_Hasso.onCreated(function (){
 
 	});
 
+});
+
+Template.redlinkInlineResult_dbsearch.onCreated(function (){
+
+	this.state = new ReactiveDict();
+	this.state.setDefault({
+		expanded: false,
+	});
+});
+
+Template.redlinkInlineResult_dbsearch.helpers({
+	classExpanded(){
+		const instance = Template.instance();
+		return instance.state.get('expanded') ? 'expanded' : 'collapsed';
+	}
+});
+
+Template.redlinkInlineResult_dbsearch.events({
+
+	'click .result-item-wrapper .js-toggle-result-preview-expanded': function (event, instance) {
+		const current = instance.state.get('expanded');
+		instance.state.set('expanded', !current);
+	}
 });

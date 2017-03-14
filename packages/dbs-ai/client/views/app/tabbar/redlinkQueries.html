@@ -14,10 +14,6 @@
 				<!-- do redlink query template -->
 				{{> redlinkQuery (queryContext query @index)}}
 			{{/if}}
-			{{#if dbSearchResult (query @index)}}
-				<!-- // do something but query tenmplates -->
-				{{> clientResultQuery (queryContext query @index)}}
-			{{/if}}
 		{{/each}}
     </div>
 </template>
