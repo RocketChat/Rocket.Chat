@@ -48,6 +48,7 @@ class FlexTab extends Page {
 	get archiveSave() { return browser.element('.save'); }
 	get editNameBtn() { return browser.element('[data-edit="name"]'); }
 	get editTopicBtn() { return browser.element('[data-edit="topic"]'); }
+	get editAnnouncementBtn() { return browser.element('[data-edit="announcement"]'); }
 	get editDescriptionBtn() { return browser.element('[data-edit="description"]'); }
 	get editNotificationBtn() { return browser.element('[data-edit="desktopNotifications"]'); }
 	get editMobilePushBtn() { return browser.element('[data-edit="mobilePushNotifications"]'); }
@@ -56,10 +57,12 @@ class FlexTab extends Page {
 
 	get editNameTextInput() { return browser.element('.channel-settings input[name="name"]'); }
 	get editTopicTextInput() { return browser.element('.channel-settings input[name="topic"]'); }
+	get editAnnouncementTextInput() { return browser.element('.channel-settings input[name="announcement"]'); }
 	get editDescriptionTextInput() { return browser.element('.channel-settings input[name="description"]'); }
 	get firstSetting() { return browser.element('.clearfix li:nth-child(1) .current-setting'); }
 	get secondSetting() { return browser.element('.clearfix li:nth-child(2) .current-setting'); }
 	get thirdSetting() { return browser.element('.clearfix li:nth-child(3) .current-setting'); }
+	get fourthSetting() { return browser.element('.clearfix li:nth-child(4) .current-setting'); }
 	get editNameTextInput() { return browser.element('.channel-settings input[name="name"]'); }
 	get editNameSave() { return browser.element('.channel-settings .save'); }
 	get memberUserName() { return browser.element('.info h3'); }
