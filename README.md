@@ -23,6 +23,7 @@
    * [Ubuntu 16.04](#ubuntu-1604)
    * [Cloudron.io](#cloudronio) 
    * [Heroku](#heroku)
+   * [Helm Kubernetes](#helm-kubernetes)
   * [Scalingo](#scalingo)
   * [Sloppy.io](#sloppyio)
   * [Docker](#docker)
@@ -136,6 +137,9 @@ Install Rocket.Chat on [Cloudron](https://cloudron.io) Smartserver:
 Host your own Rocket.Chat server for **FREE** with [One-Click Deploy](https://heroku.com/deploy)
 
 [![Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy?template=https://github.com/RocketChat/Rocket.Chat/tree/master)
+
+## Helm Kubernetes
+Deploy on Kubernetes using the official [helm chart](https://github.com/kubernetes/charts/pull/752).
 
 ## Scalingo
 Deploy your own Rocket.Chat server instantly on [Scalingo](https://scalingo.com)
