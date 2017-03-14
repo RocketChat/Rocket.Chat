@@ -120,7 +120,7 @@ Template.autoTranslateFlexTab.onCreated(function() {
 					RocketChat.models.Messages.update(query, { $unset: { autoTranslateShowInverse: 1 } }, { multi: true });
 				}
 
-				const display = field === 'autoTranslate' ? true : subscription.autoTranslate;
+				const display = field === 'autoTranslate' ? true : subscription && subscription.autoTranslate;
 				if (display) {
 					query.autoTranslateShowInverse = { $ne: true };
 				} else {
