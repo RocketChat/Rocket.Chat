@@ -3,7 +3,8 @@ import {ClientResultFactory} from '../../../lib/ClientResultProvider.js'
 Template.redlinkQuery.helpers({
 	hasResult(){
 		const instance = Template.instance();
-		const results = instance.state.get('results');
+		const results = instance.state.get('results') || [];
+		console.log(instance.data.query.creator, results.length, 'results');
 		if (results) {
 			return results.length > 0;
 		} else {
@@ -44,7 +45,7 @@ Template.redlinkQuery.helpers({
 			let options = {
 				results: results,
 				roomId: instance.data.roomId,
-				creator : instance.state.get('creator')
+				creator: instance.state.get('creator')
 			};
 
 			switch (creator) {
@@ -65,7 +66,7 @@ Template.redlinkQuery.helpers({
 	},
 	getCreatorText(){
 		const instance = Template.instance();
-		if(instance.data.query.creator === 'Hasso-MLT' || instance.data.query.creator === 'Hasso-Search'){
+		if (instance.data.query.creator === 'Hasso-MLT' || instance.data.query.creator === 'Hasso-Search') {
 			return "";
 		} else {
 			return TAPi18n.__(instance.data.query.replacedCreator);
@@ -73,10 +74,10 @@ Template.redlinkQuery.helpers({
 	},
 	getQueryDisplayTitle(){
 		const instance = Template.instance();
-		if(instance.data.query.creator === 'Hasso-MLT'){
+		if (instance.data.query.creator === 'Hasso-MLT') {
 			return 'Ähnliche Fragen';
 		}
-		if(instance.data.query.creator === 'Hasso-Search'){
+		if (instance.data.query.creator === 'Hasso-Search') {
 			return instance.data.query.displayTitle
 				.replace("Conversationen zum", "Zum")
 				.replace(/[|]/g, "");
@@ -94,10 +95,12 @@ Template.redlinkQuery.events({
 	}
 });
 
-Template.redlinkQuery.clientResult = function(creator){
-	switch(creator) {
-		case 'dbsearch': return true;
-		default: return false;
+Template.redlinkQuery.clientResult = function (creator) {
+	switch (creator) {
+		case 'dbsearch':
+			return true;
+		default:
+			return false;
 	}
 };
 
@@ -111,8 +114,10 @@ Template.redlinkQuery.onCreated(function () {
 		status: 'initial'
 	});
 
+	this.results = new ReactiveVar([]); //in order to separate asynchronously updating state and
+
 	// Asynchronously load the results.
-	instance.autorun(()=> {
+	instance.autorun(() => {
 		if (instance.data && instance.data.query && instance.data.roomId) {
 			//subscribe to the external messages for the room in order to re-fetch the results once the result
 			// of the knowledge provider changes
@@ -123,20 +128,24 @@ Template.redlinkQuery.onCreated(function () {
 			//which then can be forwarded to the results-template
 			if (instance.data.query.inlineResultSupport) {
 				instance.state.set('status', 'dirty');
-				Meteor.call('redlink:retrieveResults', instance.data.roomId, instance.data.templateIndex, instance.data.query.creator, (err, results)=> {
+				Meteor.call('redlink:retrieveResults', instance.data.roomId, instance.data.templateIndex, instance.data.query.creator, (err, results) => {
 					instance.state.set('results', results);
 					instance.state.set('status', 'fetched');
 				});
 			}
-			if(Template.redlinkQuery.clientResult(instance.data.query.creator)){
+			if (Template.redlinkQuery.clientResult(instance.data.query.creator)) {
 				instance.state.set('status', 'dirty');
 				let crf = new ClientResultFactory().getInstance(instance.data.query.creator, instance.data.query.url);
 				this.roomId = Template.currentData().roomId;
 				this.instance = instance; //in order to pass the actual template instance to the callback in the next call
-				crf.executeSearch([], (callback) => {
-					this.instance.state.set('results', callback.response.docs);
-					this.instance.state.set('status', 'fetched');
-				});
+
+				crf.executeSearch([])
+					.then(function (response) {
+						Meteor.setTimeout(() => {
+							instance.state.set('results', response.response.docs);
+							instance.state.set('status', 'fetched');
+						}, 500);
+					});
 			}
 		}
 	})

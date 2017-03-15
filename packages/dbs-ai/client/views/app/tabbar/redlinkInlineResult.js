@@ -9,7 +9,7 @@ Template.redlinkInlineResult.helpers({
 		const instance = Template.instance();
 
 		let templateSuffix = "generic";
-		switch (instance.data.result.creator) {
+		switch (instance.data.creator) {
 			case 'bahn.de':
 				templateSuffix = "bahn_de";
 				break;
@@ -26,8 +26,8 @@ Template.redlinkInlineResult.helpers({
 				templateSuffix = "Hasso";
 				break;
 			default:
-				if (!!Template['redlinkInlineResult_' + instance.data.result.creator]) {
-					templateSuffix = instance.data.result.creator;
+				if (!!Template['redlinkInlineResult_' + instance.data.creator]) {
+					templateSuffix = instance.data.creator;
 				} else {
 					templateSuffix = "generic";
 				}
