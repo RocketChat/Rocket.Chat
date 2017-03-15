@@ -12,7 +12,7 @@ Meteor.startup(function () {
 	RocketChat.settings.add('Livechat_Knowledge_Source', '', {
 		type: 'select',
 		group: 'dbsAI',
-		section: 'Knowledge Base',
+		section: 'Knowledge_Base',
 		values: [
 			{ key: '0', i18nLabel: 'Livechat_Knowledge_Source_APIAI'},
 			{ key: '1', i18nLabel: 'Livechat_Knowledge_Source_Redlink'}
@@ -24,7 +24,7 @@ Meteor.startup(function () {
 	RocketChat.settings.add('Livechat_Knowledge_Redlink_URL', '', {
 		type: 'string',
 		group: 'dbsAI',
-		section: 'Knowledge Base',
+		section: 'Knowledge_Base',
 		public: true,
 		i18nLabel: 'Livechat_Knowledge_Redlink_URL'
 	});
@@ -34,7 +34,7 @@ Meteor.startup(function () {
 	RocketChat.settings.add('Livechat_Knowledge_Redlink_Auth_Token', '', {
 		type: 'string',
 		group: 'dbsAI',
-		section: 'Knowledge Base',
+		section: 'Knowledge_Base',
 		public: true,
 		i18nLabel: 'Livechat_Knowledge_Redlink_Auth_Token'
 	});
@@ -42,7 +42,7 @@ Meteor.startup(function () {
 	RocketChat.settings.add('Livechat_Knowledge_Redlink_Domain', 'demo.assistify.de', {
 		type: 'string',
 		group: 'dbsAI',
-		section: 'Knowledge Base',
+		section: 'Knowledge_Base',
 		public: true,
 		i18nLabel: 'Livechat_Knowledge_Redlink_Domain'
 	});
