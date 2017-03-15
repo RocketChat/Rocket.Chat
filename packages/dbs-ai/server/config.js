@@ -1,6 +1,14 @@
 Meteor.startup(function () {
 	RocketChat.settings.addGroup('dbsAI');
 
+	RocketChat.settings.add('Livechat_Knowledge_Enabled', false, {
+		type: 'boolean',
+		group: 'dbsAI',
+		section: 'Knowledge_Base',
+		public: true,
+		i18nLabel: 'Enabled'
+	});
+
 	RocketChat.settings.add('Livechat_Knowledge_Source', '', {
 		type: 'select',
 		group: 'dbsAI',
