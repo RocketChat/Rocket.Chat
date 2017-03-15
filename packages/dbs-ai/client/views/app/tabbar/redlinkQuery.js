@@ -4,7 +4,6 @@ Template.redlinkQuery.helpers({
 	hasResult(){
 		const instance = Template.instance();
 		const results = instance.state.get('results') || [];
-		console.log(instance.data.query.creator, results.length, 'results');
 		if (results) {
 			return results.length > 0;
 		} else {
@@ -113,8 +112,6 @@ Template.redlinkQuery.onCreated(function () {
 		results: [],
 		status: 'initial'
 	});
-
-	this.results = new ReactiveVar([]); //in order to separate asynchronously updating state and
 
 	// Asynchronously load the results.
 	instance.autorun(() => {
