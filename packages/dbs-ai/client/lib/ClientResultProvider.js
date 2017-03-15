@@ -15,7 +15,7 @@ class SolrProvider {
 
 	/**
 	 * Executes an asynchronous data retrieval and hands it over to the callback as single parameter
-	 * @param cb
+	 * @return Promise
 	 */
 	executeSearch(queryParameters) {
 		console.log("executeSearch " + this.endpointUrl);
@@ -27,9 +27,9 @@ class SolrProvider {
 					success: function (data) {
 						resolve(SolrProvider.transformResponse(data));
 					},
-					error: (errorCode) => {
+					error: function(error){
 						//temporär wenn nicht im Intranet: JSON statisch erzeugen
-						var data = {
+						var mockData = {
 							"responseHeader": {
 								"status": 0,
 								"QTime": 1431,
@@ -878,7 +878,13 @@ class SolrProvider {
 								}
 							}
 						};
-						resolve(SolrProvider.transformResponse(data));
+
+						let mock = false;
+						if(mock) {
+							resolve(SolrProvider.transformResponse(mockData));
+						} else {
+							reject(new Error('no-dbsearch-result'));
+						}
 					}
 				});
 			}

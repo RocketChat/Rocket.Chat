@@ -1,18 +1,55 @@
 import {ClientResultFactory} from '../../../lib/ClientResultProvider.js'
 
+Template.redlinkQuery._hasResult = function (instance) {
+	const results = instance.state.get('results') || [];
+	if (results) {
+		return results.length > 0;
+	} else {
+		return false;
+	}
+};
+
+Template.redlinkQuery._fetched = function (instance) {
+	return instance.state.get('status') === 'fetched';
+};
+
 Template.redlinkQuery.helpers({
-	hasResult(){
+	hasError(){
 		const instance = Template.instance();
-		const results = instance.state.get('results') || [];
-		if (results) {
-			return results.length > 0;
-		} else {
-			return false;
+		return Template.redlinkQuery._fetched(instance) && instance.state.get('error');
+	},
+
+	errorText(){
+		const instance = Template.instance();
+		const error = instance.state.get('error');
+		if (error) {
+			const translatedText = TAPi18n.__(error);
+			if (translatedText === error) {
+				//translation was not succesful - provide a nicer but generic message
+				return TAPi18n.__('oops_error');
+			} else {
+				return translatedText;
+			}
 		}
 	},
 
+	hasResult(){
+		const instance = Template.instance();
+		return Template.redlinkQuery._hasResult(instance);
+	},
+
 	isDirty(){
-		return Template.instance().state.get('status') === 'dirty'
+		return Template.instance().state.get('status') === 'dirty';
+	},
+
+	fetched(){
+		const instance = Template.instance();
+		Template.redlinkQuery._fetched(instance);
+	},
+
+	noResultFetched(){
+		const instance = Template.instance();
+		return Template.redlinkQuery._fetched(instance) && !Template.redlinkQuery._hasResult(instance)
 	},
 
 	classExpanded(){
@@ -110,7 +147,8 @@ Template.redlinkQuery.onCreated(function () {
 	this.state.setDefault({
 		resultsExpanded: instance.data.query.inlineResultSupport && ( instance.data.maxConfidence === instance.data.query.confidence ),
 		results: [],
-		status: 'initial'
+		status: 'initial',
+		error: ''
 	});
 
 	// Asynchronously load the results.
@@ -141,7 +179,12 @@ Template.redlinkQuery.onCreated(function () {
 						Meteor.setTimeout(() => {
 							instance.state.set('results', response.response.docs);
 							instance.state.set('status', 'fetched');
+							instance.state.set('error', null);
 						}, 500);
+					})
+					.catch(function (err) {
+						instance.state.set('error', "cannot-retrieve-" + instance.data.query.creator + "-results");
+						instance.state.set('status', 'fetched');
 					});
 			}
 		}

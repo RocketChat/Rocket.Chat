@@ -39,7 +39,13 @@
 		{{else}}
 			{{#if query.inlineResultSupport}}
 				<div class="query-preview-headline-wrapper clearfix">
-					<div class="no-results">{{_ 'No_results'}}</div>
+					{{# if hasError}}
+						<div class="no-results error">{{errorText}}</div>
+					{{else}}
+						{{#if noResultFetched}}
+							<div class="no-results">{{_ 'No_results'}}</div>
+						{{/if}}
+					{{/if}}
 				</div>
 			{{/if}}
 		{{/if}}

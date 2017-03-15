@@ -32,3 +32,6 @@ conversation: Vorherige Konversationen
 topic_supportType: Art der Hilfe
 topic_keyword: Stichwort
 help: Hilfe!
+oops_error: Oops, da hat etwas nicht geklappt. Sorry!
+cannot-retrieve-dbsearch-results: Konnte DB Search nicht erreichen. Bist Du im Intranet?
+no_results: Leider keine Ergebnisse
