@@ -16,9 +16,6 @@ Template.redlinkQueries.helpers({
 			templateIndex: instance.data.templateIndex,
 			queryIndex: queryIndex
 		}
-	},
-	dbSearchResult(query, index){
-		return query.creator == "dbsearch";
 	}
 });
 

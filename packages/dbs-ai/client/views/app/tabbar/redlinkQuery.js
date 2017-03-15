@@ -2,7 +2,8 @@ import {ClientResultFactory} from '../../../lib/ClientResultProvider.js'
 
 Template.redlinkQuery.helpers({
 	hasResult(){
-		const results = Template.instance().state.get('results');
+		const instance = Template.instance();
+		const results = instance.state.get('results');
 		if (results) {
 			return results.length > 0;
 		} else {
@@ -130,9 +131,11 @@ Template.redlinkQuery.onCreated(function () {
 			if(Template.redlinkQuery.clientResult(instance.data.query.creator)){
 				instance.state.set('status', 'dirty');
 				let crf = new ClientResultFactory().getInstance(instance.data.query.creator, instance.data.query.url);
+				this.roomId = Template.currentData().roomId;
+				this.instance = instance; //in order to pass the actual template instance to the callback in the next call
 				crf.executeSearch([], (callback) => {
-					instance.state.set('results', callback.response.docs);
-					instance.state.set('status', 'fetched');
+					this.instance.state.set('results', callback.response.docs);
+					this.instance.state.set('status', 'fetched');
 				});
 			}
 		}
