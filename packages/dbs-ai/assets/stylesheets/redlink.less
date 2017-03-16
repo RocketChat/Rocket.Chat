@@ -311,7 +311,7 @@
 					  	margin-top: 0px;
                         img {
 						  width: 20px;
-						  margin-top: 3px;
+						  margin-top: 7px;
 						  margin-bottom: -3px;
                         }
                         .creator_label {
@@ -548,7 +548,7 @@
                             float: left;
                             width: 85%;
 						  	overflow: hidden;
-						  padding-top: 3px;
+						  	padding-top: 3px;
                         }
                         .icon-wrapper {
                             float: right;
@@ -568,15 +568,28 @@
                         .conversationMessages {
                             .conversationMessage {
                                 text-align: left;
-                                padding-bottom: 10px;
+                                padding-bottom: 5px;
 							  	overflow: hidden;
                                 .provider{
-                                    padding-left: 2em;
+								  	margin-left: 2em;
+                                    padding: 3px;
+								  	cursor: pointer;
+								  	border-radius: 3px;
+								  	border: 1px solid #bbbbbb;
+								  	text-align: right;
+
                                 }
+							  	.provider:hover {
+									background-color: #eeeeee;
+							  	}
+							  .provider:active {
+								background-color: #ebedb6;
+							  }
                                 .seeker{
                                     font-style: italic;
-                                }
-							  	.selected{
+
+								}
+							  	.selected, .selected:hover{
 								  	background-color: #ebedb6;
 								}
                             }

@@ -61,14 +61,16 @@ Template.redlinkQuery.helpers({
 		const instance = Template.instance();
 		const results = instance.state.get('results');
 		if (results) {
-			const creator = results[0].creator; //all results have got the same creator
+			const creator = instance.state.get('creator'); //all results have got the same creator
 			switch (creator) {
 				case 'community.bahn.de':
 					return t('results_community_bahn_de');
 				case 'bahn.de':
 					return t('results_bahn_de');
+				case 'dbsearch':
+					return t('dbsearch');
 				default:
-					return t('results');
+					return t(results);
 			}
 		}
 	},

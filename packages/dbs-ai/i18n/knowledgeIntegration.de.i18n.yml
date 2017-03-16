@@ -5,6 +5,8 @@ knowledge_provider_usage_not_used: wurde nicht verwendet
 knowledge_provider_usage_useless: war nicht hilfreich
 results_community_bahn_de: Top Community Ergebnisse
 results_bahn_de: Mögliche Verbindungen
+dbsearch: DB Search
+results_dbsearch: DB Search
 results: Top Ergebnisse
 duration: Dauer
 track_changes: Umstiege

@@ -77,7 +77,9 @@
 <!--Assistify-specific result templates-->
 
 <template name="inlineResultMessage">
-	<li class="conversationMessage"><span class="{{getOriginatorClass message}} {{getSelectedClass}}">{{{message.content}}}</span></li>
+	<li class="conversationMessage">
+		<div class="messagePart {{getOriginatorClass message}} {{getSelectedClass}}">{{{message.content}}}</div>
+	</li>
 </template>
 
 <template name="redlinkInlineResult_sapTransaction">

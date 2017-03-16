@@ -5,6 +5,8 @@ knowledge_provider_usage_not_used: Not used
 knowledge_provider_usage_useless: Not helpful
 results_community_bahn_de: Top community results
 results_bahn_de: Possible connections
+dbsearch: DB Search
+results_dbsearch: DB Search
 results: Top results
 duration: Duration
 track_changes: Track changes
