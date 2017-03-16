@@ -29,6 +29,7 @@ Package.onUse(function(api) {
 	api.use('ddp-rate-limiter');
 	api.use('underscore');
 	api.use('mongo');
+	api.use('oauth');
 	api.use('underscorestring:underscore.string@3.3.4');
 	api.use('matb33:collection-hooks');
 	api.use('service-configuration');
@@ -110,6 +111,10 @@ Package.onUse(function(api) {
 	api.addFiles('server/models/Uploads.coffee', 'server');
 	api.addFiles('server/models/Users.coffee', 'server');
 
+	api.addFiles('server/oauth/oauth.js', 'server');
+	api.addFiles('server/oauth/google.js', 'server');
+	api.addFiles('server/oauth/proxy.js', 'server');
+
 	api.addFiles('server/startup/statsTracker.js', 'server');
 
 	// CACHE
@@ -168,6 +173,7 @@ Package.onUse(function(api) {
 
 	// CLIENT LIB
 	api.addFiles('client/Notifications.coffee', 'client');
+	api.addFiles('client/OAuthProxy.js', 'client');
 	api.addFiles('client/lib/TabBar.js', 'client');
 	api.addFiles('client/lib/RocketChatTabBar.js', 'client');
 	api.addFiles('client/lib/cachedCollection.js', 'client');

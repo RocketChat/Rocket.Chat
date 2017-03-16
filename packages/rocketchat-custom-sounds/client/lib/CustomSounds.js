@@ -1,15 +1,19 @@
 class CustomSounds {
 	constructor() {
 		this.list = new ReactiveVar({});
-		this.add({ _id: 'beep', name: 'Beep', extension: 'mp3', src: '/sounds/beep.mp3' });
-		this.add({ _id: 'chelle', name: 'Chelle', extension: 'mp3', src: '/sounds/chelle.mp3' });
-		this.add({ _id: 'ding', name: 'Ding', extension: 'mp3', src: '/sounds/ding.mp3' });
-		this.add({ _id: 'droplet', name: 'Droplet', extension: 'mp3', src: '/sounds/droplet.mp3' });
-		this.add({ _id: 'highbell', name: 'Highbell', extension: 'mp3', src: '/sounds/highbell.mp3' });
-		this.add({ _id: 'seasons', name: 'Seasons', extension: 'mp3', src: '/sounds/seasons.mp3' });
+		this.add({ _id: 'beep', name: 'Beep', extension: 'mp3', src: 'sounds/beep.mp3' });
+		this.add({ _id: 'chelle', name: 'Chelle', extension: 'mp3', src: 'sounds/chelle.mp3' });
+		this.add({ _id: 'ding', name: 'Ding', extension: 'mp3', src: 'sounds/ding.mp3' });
+		this.add({ _id: 'droplet', name: 'Droplet', extension: 'mp3', src: 'sounds/droplet.mp3' });
+		this.add({ _id: 'highbell', name: 'Highbell', extension: 'mp3', src: 'sounds/highbell.mp3' });
+		this.add({ _id: 'seasons', name: 'Seasons', extension: 'mp3', src: 'sounds/seasons.mp3' });
 	}
 
 	add(sound) {
+		if (Meteor.isCordova) {
+			return;
+		}
+
 		if (!sound.src) {
 			sound.src = this.getURL(sound);
 		}
