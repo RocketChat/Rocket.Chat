@@ -40,7 +40,7 @@ WebApp.connectHandlers.use('/file-upload/', function(req, res, next) {
 				}
 			}
 
-            res.header('Content-Security-Policy', 'default-src \'none\'');
+			res.header('Content-Security-Policy', 'default-src \'none\'');
 
 			return FileUpload.get(file, req, res, next);
 		}
