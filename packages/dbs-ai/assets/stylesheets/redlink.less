@@ -30,18 +30,12 @@
         position: relative;
         padding-bottom: 20px;
         &:after {
-            content: " ";
-            position: absolute;
-            border-bottom: 1px solid #666;
-            left: 10px;
-            right: 10px;
-            bottom: 0;
+		  border: none;
         }
         .knowledge-title, .queries-title {
             background-color: #ccc;
             font-weight: 700;
             padding: 10px;
-            margin-bottom: 8px;
             font-size: 15px;
         }
         .queries-title {
@@ -85,7 +79,11 @@
                 }
             }
 
-            .query-template-tools-wrapper {
+		  &.collapsed > div.knowledge-queries-wrapper {
+			display: none;
+		  }
+
+		  .query-template-tools-wrapper {
                 position: absolute;
                 right: 5px;
                 top: 10px;
@@ -305,14 +303,15 @@
                         float: left;
                         line-height: 20px;
                         margin-top: 2px;
-                        margin-left: 33px;
+                        margin-left: 25px;
                         img {
-                            width: 20px;
-                            margin: 0 4px;
+						  width: 20px;
+						  margin-top: 3px;
+						  margin-bottom: -3px;
                         }
                         .creator_label {
                             position: relative;
-                            top: -4px;
+                            top: -2px;
                             color: #666;
                             font-weight: bold;
                             font-size: 15px;
@@ -326,6 +325,7 @@
                     }
                     .query-item-url {
                         margin-right: 5px;
+					  margin-top: 1px;
                         background-color: #e2e2e2;
                         &:hover {
                             color: #444;
@@ -356,7 +356,6 @@
 				  background-color: white;
 				  border: 1px solid #ccc;
 				  border-top: none;
-				  margin: 0px 0px 5px;
 				  padding: 5px;
 				  font-style: italic;
 				  text-align: center;
