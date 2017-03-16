@@ -527,7 +527,9 @@ RocketChat.integrations.triggerHandler = new class RocketChatIntegrationHandler 
 					}
 					break;
 			}
-		} else if (this.triggers.__any) {
+		}
+
+		if (this.triggers.__any) {
 			//For outgoing integration which don't rely on rooms.
 			for (const trigger of Object.values(this.triggers.__any)) {
 				triggersToExecute.push(trigger);
@@ -569,6 +571,7 @@ RocketChat.integrations.triggerHandler = new class RocketChatIntegrationHandler 
 
 				// Stop if there are triggerWords but none match
 				if (!word) {
+					logger.outgoing.debug(`The trigger word which "${trigger.name}" was expecting could not be found, not executing.`);
 					return;
 				}
 			}
