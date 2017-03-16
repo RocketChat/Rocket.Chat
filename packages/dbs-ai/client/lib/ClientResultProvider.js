@@ -35,8 +35,7 @@ class SolrProvider {
 					}
 				});
 			}
-			}
-		)
+		})
 	}
 
 	static transformResponse(data) {
@@ -48,6 +47,8 @@ class SolrProvider {
 				for (var i = 0; i < hl['dbsearch_highlight_t_de'].length; i++) {
 					body += hl['dbsearch_highlight_t_de'][i] + " ";
 				}
+			} else {
+				body = doc.dbsearch_excerpt_s;
 			}
 			doc['body'] = body;
 		}
