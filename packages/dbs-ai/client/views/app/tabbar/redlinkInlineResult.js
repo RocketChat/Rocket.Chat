@@ -275,5 +275,36 @@ Template.redlinkInlineResult_dbsearch.events({
 		if(!instance.state.get('expanded')){
 			Template.redlinkQueries.utilities.resultsInteractionCleanup();
 		}
+	},
+	'click .js-send-message': function(event, instance){
+
+		/* buffer metadata of messages which are _about to be sent_
+		 * This is necessary as the results or queries displayed may be entered into the message-area,
+		 * but only one the message is actually sent, the metadata becomes effective for this new message
+		 * - and only by then we know the message-id for which this metadata is actually valid
+		 */
+		Session.set('messageMetadata', {
+			user: Meteor.user(),
+			room: instance.data.roomId,
+			metadata: {
+				origin: "historicConversation",
+				searchLink: instance.data.result.dbsearch_link_s
+			}
+		});
+
+		//create a text-response
+		let textToInsert = "";
+		const selectedMessages = instance.findAll('.selected');
+		if(selectedMessages.length > 0){
+			textToInsert = selectedMessages.reduce(function(concat, elem) {
+					return concat + " " + elem.textContent;
+				},
+				'');
+		} else {
+			textToInsert = instance.data.result.dbsearch_link_s;
+		}
+
+		$('#chat-window-' + instance.data.roomId + ' .input-message').val(textToInsert).focus();
 	}
+
 });

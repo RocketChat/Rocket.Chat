@@ -42,15 +42,23 @@ class SolrProvider {
 		for (var j = 0; j < data.response.docs.length; j++) {
 			var doc = data.response.docs[j];
 			var hl = data.highlighting[doc.id];
-			var body = "";
+			var results = new Array();
+			var body;
 			if (hl && hl['dbsearch_highlight_t_de'] && hl['dbsearch_highlight_t_de'].length > 0) {
-				for (var i = 0; i < hl['dbsearch_highlight_t_de'].length; i++) {
-					body += hl['dbsearch_highlight_t_de'][i] + " ";
-				}
+				body = hl['dbsearch_highlight_t_de'];
 			} else {
-				body = doc.dbsearch_excerpt_s;
+				body = [ doc.dbsearch_excerpt_s ];
 			}
-			doc['body'] = body;
+			for (var i = 0; i < body.length; i++) {
+				var message = {
+					content: body[i],
+					user: {
+						displayName: 'provider'
+					}
+				};
+				results.push(message);
+			}
+			doc['body'] = results;
 		}
 		console.log(data);
 		return data;
