@@ -15,13 +15,11 @@
                 <div class="external-message">
 					{{#each filledQueryTemplate}}
                         <div class="query-template-wrapper {{state}} {{collapsed}}" data-template-index="{{@index}}">
-                            <span class="query-template-tools-wrapper"><span
-                                    class="query-template-tools-icon icon-up-open"
-                                    title="Anfrage ein-/ausblende"></span><span
-                                    class="query-template-tools-icon icon-ok"
-                                    title="Passt die Anfrage zur Konversation?"></span><span
-                                    class="query-template-tools-icon icon-cancel"
-                                    title="Anfrage passt nicht, verwerfen!"></span></span>
+                            <span class="query-template-tools-wrapper">
+								<span class="query-template-tools-icon icon-ok" title="Passt die Anfrage zur Konversation?"></span>
+								<span class="query-template-tools-icon icon-cancel" title="Anfrage passt nicht, verwerfen!"></span>
+								<span class="query-template-tools-icon icon-up-open" title="Anfrage ein-/ausblende"></span>
+							</span>
 							{{#if dynamicTemplateExists}}
 								{{>UI.dynamic template=queryTemplate}}
 							{{else}}

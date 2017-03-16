@@ -89,8 +89,11 @@
                 top: 10px;
                 z-index: 10;
                 .query-template-tools-icon {
-                    padding: 10px 5px;
+                    // padding: 10px 5px;
                     cursor: pointer;
+				  	&.icon-up-open {
+					  padding-right: 5px;
+					}
                 }
             }
 
@@ -270,7 +273,7 @@
                 transition: max-height .25s ease-in-out;
                 margin: 0 0 -1px;
                 &.collapsed {
-                    max-height: 39px;
+                    max-height: 50px;
                     overflow: hidden;
                     .icon-up-open::before {
                         content: '\e855'
@@ -280,7 +283,7 @@
                     }
                 }
                 .query-item {
-                    padding: 5px;
+                    padding: 10px;
                     border: 1px solid #CCC;
                     position: relative;
                     .query-servicename {
@@ -301,9 +304,8 @@
                     }
                     .query-item-logo {
                         float: left;
-                        line-height: 20px;
-                        margin-top: 2px;
-                        margin-left: 25px;
+					  	line-height: 0px;
+					  	margin-top: 0px;
                         img {
 						  width: 20px;
 						  margin-top: 3px;
@@ -319,13 +321,15 @@
                     }
                     .query-item-url, .query-results-toggle {
                         display: inline-block;
-                        padding: 4px;
+					  	padding: 5px;
+					  	padding-right: 2px;
                         color: #666;
                         float: right;
+					  	cursor: pointer;
                     }
                     .query-item-url {
-                        margin-right: 5px;
-					  margin-top: 1px;
+					  	margin-right: -6px;
+					  	margin-top: 1px;
                         background-color: #e2e2e2;
                         &:hover {
                             color: #444;
@@ -336,7 +340,7 @@
                             cursor: pointer;
                             padding: 3px;
                         }
-                        position: absolute;
+                        // position: absolute;
                     }
                 }
 
@@ -520,19 +524,28 @@
                                 content: '\e855'
                             }
                         }
+					  	.icon-mail-link {
+							cursor: pointer;
+							padding: 2px 0;
+							display: block;
+							float: right;
+						  	padding-right: 4px;
+					  	}
                         .icon-up-open {
-                            display: block;
+						  	display: block;
+						  	padding: 2px 0;
 						  	float: right;
-                            cursor: pointer;
+						  	cursor: pointer;
                         }
                     }
                     .query-preview-result-title {
-                        padding: 10px 15px;
+					  	padding: 10px;
                         font-style: italic;
                         .result-title-wrapper {
                             float: left;
                             width: 85%;
 						  	overflow: hidden;
+						  padding-top: 3px;
                         }
                         .icon-wrapper {
                             float: right;
@@ -541,13 +554,14 @@
                             .icon-link-ext {
                                 font-size: 15px;
                                 color: #444;
-							  	padding-top: 2px;
+							  	padding-top: 4px;
 							  	display: inline-block;
+							  	margin-right: 3px;
                             }
                         }
                     }
                     .query-preview-result-body {
-                        padding: 10px 15px;
+					  	padding: 0px 10px 10px 10px;
                         .conversationMessages {
                             .conversationMessage {
                                 text-align: left;
