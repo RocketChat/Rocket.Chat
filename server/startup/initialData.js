@@ -106,6 +106,22 @@ Meteor.startup(function() {
 			}
 		}
 
+		if (typeof process.env.INITIAL_USER === 'string' && process.env.INITIAL_USER.length > 0) {
+			try {
+				const initialUser = JSON.parse(process.env.INITIAL_USER);
+
+				if (!initialUser._id) {
+					console.log('No _id provided; Ignoring environment variable INITIAL_USER'.red);
+				} else if (!RocketChat.models.Users.findOneById(initialUser._id)) {
+					console.log('Inserting initial user:'.green);
+					console.log(JSON.stringify(initialUser, null, 2).green);
+					RocketChat.models.Users.create(initialUser);
+				}
+			} catch (e) {
+				console.log('Error processing environment variable INITIAL_USER'.red, e);
+			}
+		}
+
 		if (_.isEmpty(RocketChat.authz.getUsersInRole('admin').fetch())) {
 			const oldestUser = RocketChat.models.Users.findOne({
 				_id: {
