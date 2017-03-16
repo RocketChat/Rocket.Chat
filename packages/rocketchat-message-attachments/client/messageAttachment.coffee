@@ -60,20 +60,17 @@ Template.messageAttachment.helpers
 		data.index = previousIndex + '.attachments.' + index
 		return
 
-    safeLoadImageAttachment: (url) ->
-        host = ''
-        url = fixCordova(url)
-        if (url.indexOf("://") > -1) {
-            host = url.split('/')[2]
-        } else {
-            host = url.split('/')[0]
-        }
+	safeLoadImageAttachment: (url) ->
+		host = ''
+		url = fixCordova(url)
+		if url.indexOf("://") > -1
+			host = url.split('/')[2]
+		else
+			host = url.split('/')[0]
 
-        host = host.split(':')[0]
+		host = host.split(':')[0]
 
-        if (host != window.location.hostname) {
-            return ''
-        } else {
-            return url
-        }
- 
+		if host != window.location.hostname
+			return ''
+		else
+			return url
