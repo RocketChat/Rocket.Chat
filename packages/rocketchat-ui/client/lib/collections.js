@@ -1,4 +1,4 @@
-this.ChatMessage = new Meteor.Collection(null);
+this.ChatMessage = new Mongo.Collection(null);
 this.CachedChatRoom = new RocketChat.CachedCollection({ name: 'rooms' });
 this.ChatRoom = this.CachedChatRoom.collection;
 
@@ -6,9 +6,9 @@ this.CachedChatSubscription = new RocketChat.CachedCollection({ name: 'subscript
 this.ChatSubscription = this.CachedChatSubscription.collection;
 this.UserRoles = new Mongo.Collection(null);
 this.RoomRoles = new Mongo.Collection(null);
-this.UserAndRoom = new Meteor.Collection(null);
-this.CachedChannelList = new Meteor.Collection(null);
-this.CachedUserList = new Meteor.Collection(null);
+this.UserAndRoom = new Mongo.Collection(null);
+this.CachedChannelList = new Mongo.Collection(null);
+this.CachedUserList = new Mongo.Collection(null);
 
 RocketChat.models.Users = _.extend({}, RocketChat.models.Users, Meteor.users);
 RocketChat.models.Subscriptions = _.extend({}, RocketChat.models.Subscriptions, this.ChatSubscription);
