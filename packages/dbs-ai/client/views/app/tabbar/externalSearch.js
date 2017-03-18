@@ -358,32 +358,30 @@ Template.dbsAI_externalSearch.events({
 
 Template.dbsAI_externalSearch.onCreated(function () {
 	this.externalMessages = new ReactiveVar([]);
-	this.helpRequest = new ReactiveVar({});
-	this.roomId = null;
+	this.helpRequest = new ReactiveVar(null);
 
 	const instance = this;
 	this.autorun(() => {
-		instance.roomId = Template.currentData().rid;
-		instance.subscribe('livechat:externalMessages', instance.roomId);
-		const extMsg = RocketChat.models.LivechatExternalMessage.findByRoomId(instance.roomId, {ts: -1}).fetch();
+		instance.subscribe('livechat:externalMessages', instance.data.rid);
+		const extMsg = RocketChat.models.LivechatExternalMessage.findByRoomId(instance.data.rid, {ts: -1}).fetch();
 		if (extMsg.length > 0) {
 			instance.externalMessages.set(extMsg[0]);
 		}
 
-		if(instance.roomId){
-			instance.subscribe('assistify:helpRequest', instance.roomId);
-			const helpRequest = RocketChat.models.HelpRequests.findOneByRoomId(instance.roomId);
-			instance.helpRequest.set(helpRequest);
+		if(instance.data.rid){
+			// instance.subscribe('assistify:helpRequest', instance.data.rid);
+			// const helpRequest = RocketChat.models.HelpRequests.findOneByRoomId(instance.roomId);
+			// instance.helpRequest.set(helpRequest);
 
-			// if(!helpRequest){ //todo remove after PoC: Non-reactive method call
-			// 	Meteor.call('assistify:helpRequestByRoomId', instance.roomId,(err, result) => {
-			// 		if(!err){
-			// 			instance.helpRequest.set(result);
-			// 		} else {
-			// 			console.log(err);
-			// 		}
-			// 	});
-			// }
+			if(!instance.helpRequest.get()){ //todo remove after PoC: Non-reactive method call
+				Meteor.call('assistify:helpRequestByRoomId', instance.data.rid,(err, result) => {
+					if(!err){
+						instance.helpRequest.set(result);
+					} else {
+						console.log(err);
+					}
+				});
+			}
 		}
 	});
 });

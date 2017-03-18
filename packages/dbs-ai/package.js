@@ -27,7 +27,7 @@ Package.onUse(function (api) {
 	api.addAssets('assets/stylesheets/redlink.less', 'server');
 
 	api.addAssets('assets/icons/sapTransaction.png', 'client');
-	api.addAssets('assets/icons/peerToPeerHelp.png', 'client');
+	api.addAssets('assets/icons/assistify.png', 'client');
 	api.addAssets('assets/icons/communication.png', 'client');
 	api.addAssets('assets/icons/Hasso_MLT.png', 'client');
 	api.addAssets('assets/icons/Hasso_Search.png', 'client');

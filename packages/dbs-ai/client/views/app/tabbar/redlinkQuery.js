@@ -122,7 +122,7 @@ Template.redlinkQuery.helpers({
 						if($.inArray(el, uniqueKeywords) === -1) uniqueKeywords.push(el);
 					});
 				}
-				text.full = TAPi18n.__('similar_to_topic') + ' "' + uniqueKeywords.reduce((act, val)=>{
+				text.full = TAPi18n.__('similar_to') + ' "' + uniqueKeywords.reduce((act, val)=>{
 					if(act){
 						return act + ", " + val;
 					} else {
