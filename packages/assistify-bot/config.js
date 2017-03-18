@@ -3,6 +3,7 @@ Meteor.startup(()=> {
 		group: 'Assistify',
 		i18nLabel: 'Assistify_Bot_Username',
 		type: 'string',
+		section: 'Bot',
 		public: true
 	});
 
@@ -10,6 +11,7 @@ Meteor.startup(()=> {
 		group: 'Assistify',
 		i18nLabel: 'Assistify_Bot_Automated_Response_Threshold',
 		type: 'int',
+		section: 'Bot',
 		public: true
 	});
 });
