@@ -24,6 +24,7 @@ Package.onUse(function (api) {
 	api.addFiles('server/routes.js', 'server');
 	api.addFiles('config.js', 'server');
 	api.addFiles('startup/customRoomTypes.js');
+	api.addFiles('startup/rolesAndPermissions.js');
 
 	// Models
 	api.addFiles('server/models/Users.js', ['server', 'client']);
