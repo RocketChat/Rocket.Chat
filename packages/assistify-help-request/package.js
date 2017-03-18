@@ -44,6 +44,8 @@ Package.onUse(function (api) {
 	// Hooks
 	api.addFiles('server/hooks/sendMessageToKnowledgeAdapter.js', 'server');
 
+	///////// Client
+
 	//Templates
 	api.addFiles('client/views/tabbar/HelpRequestContext.html', 'client');
 	api.addFiles('client/views/tabbar/HelpRequestContext.js', 'client');
@@ -64,23 +66,14 @@ Package.onUse(function (api) {
 	//Libraries
 	// api.addFiles('client/lib/collections.js', 'client');
 
+	//Hooks
+	api.addFiles('client/hooks/openAiTab.js', 'client');
+
 	//Assets
 	api.addAssets('assets/stylesheets/helpRequestContext.less', 'server'); //has to be done on the server, it exposes the completed css to the client
 
 	//global UI modifications
 	api.addFiles('client/views/tabbar/tabbarConfig.js', 'client');
 
-
-	//i18n
-	api.use('tap:i18n');
-
-	var _ = Npm.require('underscore');
-	var fs = Npm.require('fs');
-	var tapi18nFiles = _.compact(_.map(fs.readdirSync('packages/assistify-help-request/i18n'), function(filename) {
-		return 'i18n/' + filename;
-	}));
-	api.addFiles(tapi18nFiles);
-
-	//global exports
-	api.export('helpRequest');
+	//i18n in Rocket.Chat-package (packages/rocketchat-i18n/i18n
 });

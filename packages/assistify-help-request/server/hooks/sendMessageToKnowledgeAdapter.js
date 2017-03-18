@@ -12,7 +12,7 @@ Meteor.startup( () => {
 		}
 
 		//help request supplied
-		if (!(typeof room.t !== 'undefined' && room.t === 'r')) {
+		if (!(typeof room.t !== 'undefined' && (room.t === 'r' || room.t === 'e'))) {
 			return message;
 		}
 

@@ -13,7 +13,7 @@ RocketChat.TabBar.addGroup('uploaded-files-list',['request', 'expertise']);
 
 RocketChat.TabBar.addButton({
 	groups: ['request', 'expertise', 'live'],
-	id: 'external-search',
+	id: 'dbsai',
 	i18nTitle: 'Knowledge_Base',
 	icon: 'icon-lightbulb',
 	template: 'dbsAI_externalSearch',
