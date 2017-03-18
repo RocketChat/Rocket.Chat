@@ -1,0 +1,16 @@
+SystemContext: System context
+system: System
+release: Version
+transaction: Transaction
+application: Application
+gui_title: GUI-Title
+Close_HelpRequest: Help completed
+Expertise_needs_experts: Bitte Experten auswählen, um eine Expertise zu definieren
+No_expertise_yet: Noch in keiner Expertengruppe
+Request: Anfrage
+Requests: Anfragen
+New_request: Neue Anfrage
+More_requests: Weitere Anfragen
+No_requests_yet: Keine Anfragen bisher
+Asssitify_room_count: Letzte Raumnummer
+New_request_for_expertise: Neue Anfrage zum Thema

@@ -104,21 +104,51 @@ Template.redlinkQuery.helpers({
 	},
 	getCreatorText(){
 		const instance = Template.instance();
-		if (instance.data.query.creator === 'Hasso-MLT' || instance.data.query.creator === 'Hasso-Search') {
-			return "";
-		} else {
-			return TAPi18n.__(instance.data.query.replacedCreator);
+		let text = {
+			full: '',
+			shortened: ''
+		};
+		switch (instance.data.query.creator) {
+			case 'Hasso-MLT':
+				text.full = TAPi18n.__('similar_requests');
+				break;
+			case 'Hasso-Search':
+				const keywordsStart = instance.data.query.displayTitle.search(new RegExp("\\[","g")) + 1;
+				const keywordsEnd = instance.data.query.displayTitle.search(new RegExp("\\]","g"));
+				let keywords = instance.data.query.displayTitle.substr(keywordsStart, keywordsEnd - keywordsStart).split(',');
+				let uniqueKeywords = [];
+				if(Array.isArray(keywords)) {
+					$.each(keywords, function(i, el){ //use jQuery instead of ES Array.Each() due to better compatibility
+						if($.inArray(el, uniqueKeywords) === -1) uniqueKeywords.push(el);
+					});
+				}
+				text.full = TAPi18n.__('similar_to_topic') + ' "' + uniqueKeywords.reduce((act, val)=>{
+					if(act){
+						return act + ", " + val;
+					} else {
+						return val;
+					}
+				}, "") + '"';
+				break;
+			default:
+				text.full = TAPi18n.__(instance.data.query.replacedCreator);
 		}
+
+		text.short = text.full.slice(0, 28);
+		if(text.short !== text.full){
+			text.short += '...';
+		}
+
+		return text;
 	},
-	getQueryDisplayTitle(){
+	getQueryDisplayTitle()
+	{
 		const instance = Template.instance();
 		if (instance.data.query.creator === 'Hasso-MLT') {
-			return 'Ähnliche Fragen';
+			return '';
 		}
 		if (instance.data.query.creator === 'Hasso-Search') {
-			return instance.data.query.displayTitle
-				.replace("Conversationen zum", "Zum")
-				.replace(/[|]/g, "");
+			return '';
 		}
 
 		// else

@@ -1341,39 +1341,4 @@
   "your_message_optional": "ihre optionale Nachricht",
   "Your_password_is_wrong": "Falsches Passwort",
   "Your_push_was_sent_to_s_devices": "Die Push-Nachricht wurde an %s Geräte gesendet."
-  ,
-  "Assistify_Show_Standard_Features": "Standard Rocket.Chat Features",
-  "Create_new_standard_channel": "Neuen einfachen Kanal erstellen"
-  ,
-  "Assistify_Bot_Username": "Bot Benutzername",
-  "Assistify_Bot_Automated_Response_Threshold": "Schwellwert für Bot-Antwort"
-  ,
-  "Request": "Anfrage",
-  "Requests": "Anfragen",
-  "New_request": "Neue Anfrage",
-  "More_requests": "Weitere Anfragen",
-  "No_requests_yet": "Keine Anfragen bisher",
-  "Assistify_room_count": "Letzte Nummer",
-  "New_request_for_expertise": "Neue Anfrage zum Thema"
-	,
-  "Expertise_needs_experts": "Bitte Experten auswählen, um eine Expertise zu definieren",
-  "No_expertise_yet": "Noch in keiner Expertengruppe"
-	,
-  "SystemContext": "System-Kontext",
-  "system": "System",
-  "release": "Version",
-  "transaction": "Transaktion",
-  "application": "Anwendung",
-  "gui_title": "GUI-Titel",
-  "Close_HelpRequest": "Hilfe beenden"
-	,
-  "ApplicationHelp": "Anwendungshilfe",
-  "sapTransaction": "SAP Transaktionen",
-  "conversation": "Vorherige Konversationen",
-  "topic_supportType": "Art der Hilfe",
-  "topic_keyword": "Stichwort",
-  "help": "Hilfe!",
-  "oops_error": "Oops, da hat etwas nicht geklappt. Sorry!",
-  "‌cannot-retrieve-dbsearch-results": "Konnte DB Search nicht erreichen. Bist Du im Intranet?",
-  "no_results": "Leider keine Ergebnisse"
 }

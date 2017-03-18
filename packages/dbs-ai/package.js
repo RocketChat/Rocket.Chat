@@ -37,8 +37,6 @@ Package.onUse(function (api) {
 	addDirectory(api, 'methods');
 	api.addFiles('models/Messages.js');
 
-
-
 	//Server business logic
 	api.addFiles('server/config.js', 'server');
 	addDirectory(api, 'server/lib', 'server');
@@ -52,16 +50,5 @@ Package.onUse(function (api) {
 	//client views
 	addDirectory(api,'client/views/app/tabbar', 'client');
 
-	//i18n
-	const _ = Npm.require('underscore');
-	const fs = Npm.require('fs');
-	var tapi18nFiles = _.compact(_.map(fs.readdirSync('packages/dbs-ai/i18n'), function (filename) {
-		if (fs.statSync('packages/dbs-ai/i18n/' + filename).size > 16) {
-			return 'i18n/' + filename;
-		}
-	}));
-	api.use('tap:i18n@1.8.2', ['client', 'server']);
-	api.imply('tap:i18n');
-	api.addFiles(tapi18nFiles, ['client', 'server']);
-	console.log('Loaded tapi-files', JSON.stringify(tapi18nFiles, 2, ""));
+	//i18n in Rocket.Chat-package (packages/rocketchat-i18n/i18n
 });
