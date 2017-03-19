@@ -13,7 +13,7 @@ Meteor.startup(()=> {
 	}
 
 	const defaultRoles = [
-		{ name: 'expert',    scope: 'Users',         description: 'Expert' }
+		{ name: 'expert',    scope: 'Subscription',         description: 'Expert' } //scope obviously has something to do with what access is enabled with this role. No clear idea what though
 	];
 
 	for (const role of defaultRoles) {
