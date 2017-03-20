@@ -229,7 +229,6 @@ Template.main.onRendered ->
 				$('.input-message').focus()
 		, 100
 
-
 	Tracker.autorun ->
 		swal.setDefaults({cancelButtonText: t('Cancel')})
 
@@ -249,3 +248,6 @@ Template.main.onRendered ->
 		else
 			$(document.body).off('mouseenter', 'button.thumb')
 			$(document.body).off('mouseleave', 'button.thumb')
+
+Meteor.startup ->
+	fireGlobalEvent 'startup', true
