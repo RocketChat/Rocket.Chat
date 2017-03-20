@@ -577,48 +577,59 @@
 							  	background-size: 20px;
 							  	cursor: pointer;
 							  	&.selected {
-								  background: url(/packages/dbs_ai/assets/icons/selected-circle.png) no-repeat 3px center;
-								  background-size: 20px;
+									background: url(/packages/dbs_ai/assets/icons/selected-circle.png) no-repeat 3px center;
+									background-size: 20px;
+								}
+								.messagePart {
+									clear: both;
+									float: left;
+									padding: 6px 10px 7px;
+									border-radius: 10px;
+									background: #dfdee5;
+									margin: 6px 0;
+									font-size: 12px;
+									line-height: 1.4;
+									position: relative;
+									text-shadow: 0 1px 1px rgba(0,0,0,0.2);
+									width: 280px;
+								}
+								.messagePart {
+									&.provider {
+										float: right;
+										color: #fff;
+										background-color: #389FF9;
+									}
 								}
 							}
-						  	.messagePart {
-								clear: both;
-								float: left;
-								padding: 6px 10px 7px;
-								border-radius: 10px 10px 10px 0;
-								background: #dfdee5;
-								margin: 6px 0;
-								font-size: 12px;
-								line-height: 1.4;
-								position: relative;
-								text-shadow: 0 1px 1px rgba(0,0,0,0.2);
-								width: 280px;
-							}
-						  	.messagePart::before {
-								content: '';
-								position: absolute;
-								bottom: -6px;
-								border-top: 6px solid #DFDEE5;
-								left: 0;
-								border-right: 7px solid transparent;
-							}
-						  	.messagePart {
-							  	&.provider {
-									float: right;
-									color: #fff;
-									background-color: #389FF9;
-									border-radius: 10px 10px 0 10px;
-							  	}
-							}
-						  	.messagePart {
-							  	&.provider::before {
-									left: auto;
-									right: 0;
-									border-right: none;
-									border-left: 5px solid transparent;
-									border-top: 4px solid #389FF9;
-									bottom: -4px;
-							  	}
+						  	&.hassoResults {
+								.conversationMessage {
+									.messagePart {
+									  	border-radius: 10px 10px 0px 0;
+									}
+									.messagePart {
+										&.provider {
+										  	border-radius: 10px 10px 0px 10px;
+										}
+									}
+									.messagePart::before {
+										content: '';
+										position: absolute;
+										bottom: -6px;
+										border-top: 6px solid #DFDEE5;
+										left: 0;
+										border-right: 7px solid transparent;
+									}
+									.messagePart {
+										&.provider::before {
+											left: auto;
+											right: 0;
+											border-right: none;
+											border-left: 5px solid transparent;
+											border-top: 4px solid #389FF9;
+											bottom: -4px;
+										}
+									}
+								}
 							}
 						}
                     }
