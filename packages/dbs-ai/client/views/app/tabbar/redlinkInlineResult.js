@@ -1,3 +1,4 @@
+import toastr from 'toastr';
 Template.redlinkInlineResult._copyReplySuggestion = function (event, instance) {
 	if (instance.data.result.replySuggestion) {
 		$('#chat-window-' + instance.data.roomId + ' .input-message').val(instance.data.result.replySuggestion);
@@ -182,7 +183,15 @@ Template.redlinkInlineResult_Hasso.events({
 				},
 				'');
 		} else {
-			textToInsert = TAPi18n.__('Link_provided') + instance.data.result.conversationId;
+			//translate GUID of the conversation provided into a link
+			const originRoom = RocketChat.models.Rooms.findOne({_id: instance.data.result.conversationId});
+			if(originRoom) {
+				const routeLink = RocketChat.roomTypes.getRouteLink(originRoom.t, originRoom);
+				const roomLink = Meteor.absoluteUrl() + routeLink.slice(1, routeLink.length);
+				textToInsert = TAPi18n.__('Link_provided') + " " + roomLink;
+			} else {
+				 return toastr.info(TAPi18n.__('No_room_link_possible'));
+			}
 		}
 
 		$('#chat-window-' + instance.data.roomId + ' .input-message').val(textToInsert).focus();
