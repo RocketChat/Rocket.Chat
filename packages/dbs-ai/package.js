@@ -32,6 +32,8 @@ Package.onUse(function (api) {
 	api.addAssets('assets/icons/Hasso_MLT.png', 'client');
 	api.addAssets('assets/icons/Hasso_Search.png', 'client');
 	api.addAssets('assets/icons/dbsearch.png', 'client');
+	api.addAssets('assets/icons/deselected-circle.png', 'client');
+	api.addAssets('assets/icons/selected-circle.png', 'client');
 
 	//Common business logic
 	addDirectory(api, 'methods');
