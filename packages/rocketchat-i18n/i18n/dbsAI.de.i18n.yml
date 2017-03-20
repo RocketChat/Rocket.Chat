@@ -36,7 +36,6 @@ help: Hilfe!
 oops_error: Oops, da hat etwas nicht geklappt. Sorry!
 cannot-retrieve-dbsearch-results: Konnte DB Search nicht erreichen. Bist Du im Intranet?
 no_results: Leider keine Ergebnisse
-
 knowledge_provider_usage_unknown: Die Wissensbasis...
 knowledge_provider_usage_perfect: hat alles perfekt erkannt
 knowledge_provider_usage_helpful: war hilfreich
@@ -55,14 +54,14 @@ price_standard: Flexpreis
 connection_details: Details
 copy_to_message: Senden
 connection_not_available: Verbindung nicht buchbar
-
-DBS_AI_Source : Wissensquelle
-DBS_AI_Source_APIAI : API.ai
-DBS_AI_Source_Redlink : Redlink
-DBS_AI_Redlink_URL : URL des Redlink-Service
-DBS_AI_Redlink_Auth_Token : Basic-Auth Token
+DBS_AI_Source: Wissensquelle
+DBS_AI_Source_APIAI: API.ai
+DBS_AI_Source_Redlink: Redlink
+DBS_AI_Redlink_URL: URL des Redlink-Service
+DBS_AI_Redlink_Auth_Token: Basic-Auth Token
 DBS_AI_Redlink_Domain: Domäne für Nachrichten
 Assistify_AI_DBSearch_Suffix: Eigener Such-Suffix
-
 similar_to: Ähnliches zu
 similar_requests: Ähnliche Anfragen
+Link_provided: Ich habe hier eine ähnliche Konversation gefunden
+No_room_link_possible: Die originale Konversation fand nicht über diesen Chat statt. Daher kann ich sie leider nicht verlinken. Bitte wähle einzelne Nachtichten aus.
