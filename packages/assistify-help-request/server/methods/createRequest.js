@@ -36,7 +36,7 @@ Meteor.methods({
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'createRequest' });
 		}
 
-		if (!RocketChat.authz.hasPermission(Meteor.userId(), 'create-c')) {
+		if (!RocketChat.authz.hasPermission(Meteor.userId(), 'create-r')) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'createRequest' });
 		}
 

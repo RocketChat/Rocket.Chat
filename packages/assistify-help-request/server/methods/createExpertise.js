@@ -7,7 +7,7 @@ Meteor.methods({
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'createExpertise' });
 		}
 
-		if (!RocketChat.authz.hasPermission(Meteor.userId(), 'create-p')) {
+		if (!RocketChat.authz.hasPermission(Meteor.userId(), 'create-e')) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'createExpertise' });
 		}
 
