@@ -10,6 +10,7 @@
 			var self = this;
 			var $self = $(self);
 			var minHeight = $self.height();
+			var maxHeight = minHeight * 5;
 			var noFlickerPad = $self.hasClass('autogrow-short') ? 0 : parseInt($self.css('lineHeight')) || 0;
 			var settings = $.extend({
 				preGrowCallback: null,
@@ -47,8 +48,13 @@
 					});
 
 				// Did enter get pressed?  Resize in this keydown event so that the flicker doesn't occur.
-				if (event && event.data && event.data.event === 'keydown' && event.keyCode === 13 && (event.shiftKey || event.ctrlKey || event.altKey)) {
-					val += '<br />';
+				if (self.outerHeight()> maxHeight) {
+					return
+				} else {
+					if (event && event.data && event.data.event === 'keydown' && event.keyCode === 13 && (event.shiftKey || event.ctrlKey || event.altKey)) {
+						val += '<br /> ';
+					}
+
 				}
 
 				shadow.css('width', $self.width());
