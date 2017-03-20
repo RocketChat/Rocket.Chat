@@ -35,7 +35,7 @@ RocketChat.addUserToRoom = function(rid, user, inviter, silenced) {
 		}
 	}
 
-	if (room.t === 'c' || room.t === 'p' || room.t === 'e') {
+	if (room.t === 'c' || room.t === 'p') {
 		Meteor.defer(function() {
 			RocketChat.callbacks.run('afterJoinRoom', user, room);
 		});
