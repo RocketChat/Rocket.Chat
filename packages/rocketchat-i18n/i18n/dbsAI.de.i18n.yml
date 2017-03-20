@@ -56,12 +56,12 @@ connection_details: Details
 copy_to_message: Senden
 connection_not_available: Verbindung nicht buchbar
 
-Assistify_AI_Source : Wissensquelle
-Assistify_AI_Source_APIAI : API.ai
-Assistify_AI_Source_Redlink : Redlink
-Assistify_AI_Redlink_URL : URL des Redlink-Service
-Assistify_AI_Redlink_Auth_Token : Basic-Auth Token
-Assistify_AI_Redlink_Domain: Domäne für Nachrichten
+DBS_AI_Source : Wissensquelle
+DBS_AI_Source_APIAI : API.ai
+DBS_AI_Source_Redlink : Redlink
+DBS_AI_Redlink_URL : URL des Redlink-Service
+DBS_AI_Redlink_Auth_Token : Basic-Auth Token
+DBS_AI_Redlink_Domain: Domäne für Nachrichten
 Assistify_AI_DBSearch_Suffix: Eigener Such-Suffix
 
 similar_to: Ähnliches zu

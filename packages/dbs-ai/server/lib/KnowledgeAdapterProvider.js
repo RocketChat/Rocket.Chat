@@ -4,7 +4,7 @@ _dbs.getKnowledgeAdapter = function () {
 	const KNOWLEDGE_SRC_APIAI = "0";
 	const KNOWLEDGE_SRC_REDLINK = "1";
 
-	RocketChat.settings.get('Assistify_AI_Source', function (key, value) {
+	RocketChat.settings.get('DBS_AI_Source', function (key, value) {
 		knowledgeSource = value;
 	});
 
@@ -40,7 +40,7 @@ _dbs.getKnowledgeAdapter = function () {
  * Refreshes the adapter instances on change of the configuration - the redlink-adapter factory does that on its own
  */
 Meteor.autorun(()=> {
-	RocketChat.settings.get('Assistify_AI_Source', function (key, value) {
+	RocketChat.settings.get('DBS_AI_Source', function (key, value) {
 		_dbs.apiaiAdapter = undefined;
 	});
 

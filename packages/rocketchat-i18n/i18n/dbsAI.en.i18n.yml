@@ -52,12 +52,12 @@ connection_details: Details
 copy_to_message: Send
 connection_not_available: Connection not available
 
-Assistify_AI_Source : Knowledge source
-Assistify_AI_Source_APIAI : API.ai
-Assistify_AI_Source_Redlink : Redlink
-Assistify_AI_Redlink_URL : URL of  Redlink service
-Assistify_AI_Redlink_Auth_Token : Basic-Auth token
-Assistify_AI_Redlink_Domain: Domain for messages
+DBS_AI_Source : Knowledge source
+DBS_AI_Source_APIAI : API.ai
+DBS_AI_Source_Redlink : Redlink
+DBS_AI_Redlink_URL : URL of  Redlink service
+DBS_AI_Redlink_Auth_Token : Basic-Auth token
+DBS_AI_Redlink_Domain: Domain for messages
 Assistify_AI_DBSearch_Suffix: Custom search suffix
 
 similar_to: Similar to

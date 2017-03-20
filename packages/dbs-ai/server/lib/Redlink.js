@@ -4,12 +4,12 @@ class RedlinkAdapter {
 		this.properties.url = this.properties.url.toLowerCase();
 
 		this.options = {};
-		this.options.headers={};
+		this.options.headers = {};
 		this.options.headers['content-Type'] = 'application/json; charset=utf-8';
 		if (this.properties.token) {
 			this.options.headers['authorization'] = 'basic ' + this.properties.token;
 		}
-		if(this.properties.url.substring(0, 4) === 'https'){
+		if (this.properties.url.substring(0, 4) === 'https') {
 			this.options.cert = '~/.nodeCaCerts/' + this.properties.url.replace('https', '');
 		}
 	}
@@ -91,7 +91,7 @@ class RedlinkAdapter {
 		 * @returns prepareResponse
 		 * @private
 		 */
-		const _postprocessPrepare = function(prepareResponse){
+		const _postprocessPrepare = function (prepareResponse) {
 			return prepareResponse;
 		};
 
@@ -106,8 +106,8 @@ class RedlinkAdapter {
 			let options = this.options;
 			this.options.data = requestBody;
 
-			if(RocketChat.settings.get('Assistify_AI_Redlink_Domain')){
-				options.data.context.domain = RocketChat.settings.get('Assistify_AI_Redlink_Domain');
+			if (RocketChat.settings.get('DBS_AI_Redlink_Domain')) {
+				options.data.context.domain = RocketChat.settings.get('DBS_AI_Redlink_Domain');
 			}
 			const responseRedlinkPrepare = HTTP.post(this.properties.url + '/prepare', options);
 
@@ -151,11 +151,11 @@ class RedlinkAdapter {
 		 * @param queryTemplates
 		 * @private
 		 */
-		const _preprocessTemplates = function(queryTemplates){
+		const _preprocessTemplates = function (queryTemplates) {
 			return queryTemplates;
 		};
 
-		const _postprocessResultResponse = function(results){
+		const _postprocessResultResponse = function (results) {
 			return results;
 		};
 		// ---------------- private methods
@@ -177,22 +177,22 @@ class RedlinkAdapter {
 				this.options.data = this.options;
 
 				options.data = {
-						messages: latestKnowledgeProviderResult.prepareResult.messagescl,
-						tokens: latestKnowledgeProviderResult.prepareResult.tokens,
-						queryTemplates: _preprocessTemplates(latestKnowledgeProviderResult.prepareResult.queryTemplates),
-						context: latestKnowledgeProviderResult.prepareResult.context
-					};
+					messages: latestKnowledgeProviderResult.prepareResult.messagescl,
+					tokens: latestKnowledgeProviderResult.prepareResult.tokens,
+					queryTemplates: _preprocessTemplates(latestKnowledgeProviderResult.prepareResult.queryTemplates),
+					context: latestKnowledgeProviderResult.prepareResult.context
+				};
 
 
-				if(RocketChat.settings.get('Assistify_AI_Redlink_Domain')){
-					options.data.context.domain = RocketChat.settings.get('Assistify_AI_Redlink_Domain');
+				if (RocketChat.settings.get('DBS_AI_Redlink_Domain')) {
+					options.data.context.domain = RocketChat.settings.get('DBS_AI_Redlink_Domain');
 				}
 				const responseRedlinkResult = HTTP.post(this.properties.url + '/result/' + creator + '/?templateIdx=' + templateIndex, options);
 				if (responseRedlinkResult.data && responseRedlinkResult.statusCode === 200) {
 					results = responseRedlinkResult.data;
 
 					if (creator === 'conversation') {
-						results.forEach(function (result)						{
+						results.forEach(function (result) {
 							// Some dirty string operations to convert the snippet to javascript objects
 							let transformedSnippet = JSON.stringify(result.snippet);
 							transformedSnippet = transformedSnippet.slice(1, transformedSnippet.length - 1); //remove quotes in the beginning and at the end
@@ -212,11 +212,11 @@ class RedlinkAdapter {
 							try {
 								const messages = JSON.parse(transformedSnippet);
 								result.messages = messages;
-							} catch(err){
-								console.error('Error parsing conversation',err)
-								}
+							} catch (err) {
+								console.error('Error parsing conversation', err)
+							}
 						});
-						results.reduce((result)=>!!result.messages);
+						results.reduce((result) => !!result.messages);
 					}
 
 					results = _postprocessResultResponse(results);
@@ -256,11 +256,11 @@ class RedlinkAdapter {
 		return RocketChat.models.LivechatExternalMessage.findByRoomId(roomId, {ts: -1});
 	}
 
-	getStoredConversation(conversationId){
+	getStoredConversation(conversationId) {
 		let options = this.options;
 
 		const response = HTTP.get(this.properties.url + '/store/' + conversationId, options);
-		if(response.statusCode === 200){
+		if (response.statusCode === 200) {
 			return response.data;
 		}
 	}
@@ -273,12 +273,21 @@ class RedlinkAdapter {
 			// latestKnowledgeProviderResult.helpful = room.rbInfo.knowledgeProviderUsage;
 
 			let options = this.options;
-			this.options.data = latestKnowledgeProviderResult;
-
-			if(RocketChat.settings.get('Assistify_AI_Redlink_Domain')){
-				options.data.context.domain = RocketChat.settings.get('Assistify_AI_Redlink_Domain');
+			options.data = latestKnowledgeProviderResult;
+			if (RocketChat.settings.get('DBS_AI_Redlink_Domain')) {
+				if(!options.data.context){
+					options.data.context = {};
+				}
+				options.data.context.domain = RocketChat.settings.get('DBS_AI_Redlink_Domain');
 			}
-			HTTP.post(this.properties.url + '/store', options);
+			try {
+				const responseStore = HTTP.post(this.properties.url + '/store', options);
+				if (responseStore.statusCode === 200) {
+					return responseStore.data;
+				}
+			} catch (err) {
+				console.error('Error on Store', err);
+			}
 		}
 	}
 }
@@ -299,18 +308,17 @@ class RedlinkAdapterFactory {
 		/**
 		 * Refreshes the adapter instances on change of the configuration
 		 */
-		Meteor.autorun(()=> {
-			RocketChat.settings.get('Assistify_AI_Source', function (key, value) {
-				this.singleton = undefined;
-			});
-
-			RocketChat.settings.get('Assistify_AI_Redlink_URL', function (key, value) {
-				this.singleton = undefined;
-			});
-
-			RocketChat.settings.get('Assistify_AI_Redlink_Auth_Token', function (key, value) {
-				this.singleton = undefined;
-			});
+		var factory = this;
+		this.settingsHandle = RocketChat.models.Settings.findByIds(['DBS_AI_Source', 'DBS_AI_Redlink_URL', 'DBS_AI_Redlink_Auth_Token']).observeChanges({
+			added(id, fields) {
+				factory.singleton = undefined;
+			},
+			changed(id, fields) {
+				factory.singleton = undefined;
+			},
+			removed(id) {
+				factory.singleton = undefined;
+			}
 		});
 	};
 
@@ -324,9 +332,9 @@ class RedlinkAdapterFactory {
 				language: ''
 			};
 
-			adapterProps.url = RocketChat.settings.get('Assistify_AI_Redlink_URL');
+			adapterProps.url = RocketChat.settings.get('DBS_AI_Redlink_URL');
 
-			adapterProps.token = RocketChat.settings.get('Assistify_AI_Redlink_Auth_Token');
+			adapterProps.token = RocketChat.settings.get('DBS_AI_Redlink_Auth_Token');
 
 			if (_dbs.mockInterfaces()) { //use mock
 				this.singleton = new RedlinkMock(adapterProps);
