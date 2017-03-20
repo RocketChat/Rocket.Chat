@@ -18,7 +18,8 @@ class SolrProvider {
 	 * @return Promise
 	 */
 	executeSearch(queryParameters) {
-		const customSuffix = RocketChat.settings.get('Assistify_AI_DBSearch_Suffix');
+		let customSuffix = RocketChat.settings.get('Assistify_AI_DBSearch_Suffix') || "";
+		customSuffix = customSuffix.replace(/\r\n|\r|\n/g, '');
 		console.log("executeSearch " + this.endpointUrl + customSuffix);
 		return new Promise(function (resolve, reject) {
 			if(mock) {
