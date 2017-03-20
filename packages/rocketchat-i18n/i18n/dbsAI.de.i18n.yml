@@ -56,12 +56,13 @@ connection_details: Details
 copy_to_message: Senden
 connection_not_available: Verbindung nicht buchbar
 
-Livechat_Knowledge_Source : Wissensquelle
-Livechat_Knowledge_Source_APIAI : API.ai
-Livechat_Knowledge_Source_Redlink : Redlink
-Livechat_Knowledge_Redlink_URL : URL des Redlink-Service
-Livechat_Knowledge_Redlink_Auth_Token : Basic-Auth Token
-Livechat_Knowledge_Redlink_Domain: Domäne für Nachrichten
+Assistify_AI_Source : Wissensquelle
+Assistify_AI_Source_APIAI : API.ai
+Assistify_AI_Source_Redlink : Redlink
+Assistify_AI_Redlink_URL : URL des Redlink-Service
+Assistify_AI_Redlink_Auth_Token : Basic-Auth Token
+Assistify_AI_Redlink_Domain: Domäne für Nachrichten
+Assistify_AI_DBSearch_Suffix: Eigener Such-Suffix
 
 similar_to: Ähnliches zu
 similar_requests: Ähnliche Anfragen

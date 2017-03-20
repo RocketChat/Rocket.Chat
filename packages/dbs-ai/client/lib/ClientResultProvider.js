@@ -18,13 +18,14 @@ class SolrProvider {
 	 * @return Promise
 	 */
 	executeSearch(queryParameters) {
-		console.log("executeSearch " + this.endpointUrl);
+		const customSuffix = RocketChat.settings.get('Assistify_AI_DBSearch_Suffix');
+		console.log("executeSearch " + this.endpointUrl + customSuffix);
 		return new Promise(function (resolve, reject) {
 			if(mock) {
 				resolve(SolrProvider.transformResponse(mockData));
 			} else {
 				$.ajax({
-					url: this.endpointUrl,
+					url: this.endpointUrl + customSuffix,
 					dataType: "jsonp",
 					jsonp: 'json.wrf',
 					success: function (data) {

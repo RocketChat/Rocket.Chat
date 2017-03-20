@@ -52,12 +52,13 @@ connection_details: Details
 copy_to_message: Send
 connection_not_available: Connection not available
 
-Livechat_Knowledge_Source : Knowledge source
-Livechat_Knowledge_Source_APIAI : API.ai
-Livechat_Knowledge_Source_Redlink : Redlink
-Livechat_Knowledge_Redlink_URL : URL of  Redlink service
-Livechat_Knowledge_Redlink_Auth_Token : Basic-Auth token
-Livechat_Knowledge_Redlink_Domain: Domain for messages
+Assistify_AI_Source : Knowledge source
+Assistify_AI_Source_APIAI : API.ai
+Assistify_AI_Source_Redlink : Redlink
+Assistify_AI_Redlink_URL : URL of  Redlink service
+Assistify_AI_Redlink_Auth_Token : Basic-Auth token
+Assistify_AI_Redlink_Domain: Domain for messages
+Assistify_AI_DBSearch_Suffix: Custom search suffix
 
 similar_to: Similar to
 similar_requests: Similar requests

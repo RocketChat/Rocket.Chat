@@ -106,8 +106,8 @@ class RedlinkAdapter {
 			let options = this.options;
 			this.options.data = requestBody;
 
-			if(RocketChat.settings.get('Livechat_Knowledge_Redlink_Domain')){
-				options.data.context.domain = RocketChat.settings.get('Livechat_Knowledge_Redlink_Domain');
+			if(RocketChat.settings.get('Assistify_AI_Redlink_Domain')){
+				options.data.context.domain = RocketChat.settings.get('Assistify_AI_Redlink_Domain');
 			}
 			const responseRedlinkPrepare = HTTP.post(this.properties.url + '/prepare', options);
 
@@ -184,8 +184,8 @@ class RedlinkAdapter {
 					};
 
 
-				if(RocketChat.settings.get('Livechat_Knowledge_Redlink_Domain')){
-					options.data.context.domain = RocketChat.settings.get('Livechat_Knowledge_Redlink_Domain');
+				if(RocketChat.settings.get('Assistify_AI_Redlink_Domain')){
+					options.data.context.domain = RocketChat.settings.get('Assistify_AI_Redlink_Domain');
 				}
 				const responseRedlinkResult = HTTP.post(this.properties.url + '/result/' + creator + '/?templateIdx=' + templateIndex, options);
 				if (responseRedlinkResult.data && responseRedlinkResult.statusCode === 200) {
@@ -275,8 +275,8 @@ class RedlinkAdapter {
 			let options = this.options;
 			this.options.data = latestKnowledgeProviderResult;
 
-			if(RocketChat.settings.get('Livechat_Knowledge_Redlink_Domain')){
-				options.data.context.domain = RocketChat.settings.get('Livechat_Knowledge_Redlink_Domain');
+			if(RocketChat.settings.get('Assistify_AI_Redlink_Domain')){
+				options.data.context.domain = RocketChat.settings.get('Assistify_AI_Redlink_Domain');
 			}
 			HTTP.post(this.properties.url + '/store', options);
 		}
@@ -300,15 +300,15 @@ class RedlinkAdapterFactory {
 		 * Refreshes the adapter instances on change of the configuration
 		 */
 		Meteor.autorun(()=> {
-			RocketChat.settings.get('Livechat_Knowledge_Source', function (key, value) {
+			RocketChat.settings.get('Assistify_AI_Source', function (key, value) {
 				this.singleton = undefined;
 			});
 
-			RocketChat.settings.get('Livechat_Knowledge_Redlink_URL', function (key, value) {
+			RocketChat.settings.get('Assistify_AI_Redlink_URL', function (key, value) {
 				this.singleton = undefined;
 			});
 
-			RocketChat.settings.get('Livechat_Knowledge_Redlink_Auth_Token', function (key, value) {
+			RocketChat.settings.get('Assistify_AI_Redlink_Auth_Token', function (key, value) {
 				this.singleton = undefined;
 			});
 		});
@@ -324,9 +324,9 @@ class RedlinkAdapterFactory {
 				language: ''
 			};
 
-			adapterProps.url = RocketChat.settings.get('Livechat_Knowledge_Redlink_URL');
+			adapterProps.url = RocketChat.settings.get('Assistify_AI_Redlink_URL');
 
-			adapterProps.token = RocketChat.settings.get('Livechat_Knowledge_Redlink_Auth_Token');
+			adapterProps.token = RocketChat.settings.get('Assistify_AI_Redlink_Auth_Token');
 
 			if (_dbs.mockInterfaces()) { //use mock
 				this.singleton = new RedlinkMock(adapterProps);

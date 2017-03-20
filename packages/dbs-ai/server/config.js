@@ -1,7 +1,7 @@
 Meteor.startup(function () {
 	RocketChat.settings.addGroup('dbsAI');
 
-	RocketChat.settings.add('Livechat_Knowledge_Enabled', false, {
+	RocketChat.settings.add('Assistify_AI_Enabled', false, {
 		type: 'boolean',
 		group: 'dbsAI',
 		section: 'Knowledge_Base',
@@ -9,42 +9,50 @@ Meteor.startup(function () {
 		i18nLabel: 'Enabled'
 	});
 
-	RocketChat.settings.add('Livechat_Knowledge_Source', '', {
+	RocketChat.settings.add('Assistify_AI_Source', '', {
 		type: 'select',
 		group: 'dbsAI',
 		section: 'Knowledge_Base',
 		values: [
-			{ key: '0', i18nLabel: 'Livechat_Knowledge_Source_APIAI'},
-			{ key: '1', i18nLabel: 'Livechat_Knowledge_Source_Redlink'}
+			{ key: '0', i18nLabel: 'Assistify_AI_Source_APIAI'},
+			{ key: '1', i18nLabel: 'Assistify_AI_Source_Redlink'}
 		],
 		public: true,
-		i18nLabel: 'Livechat_Knowledge_Source'
+		i18nLabel: 'Assistify_AI_Source'
 	});
 
-	RocketChat.settings.add('Livechat_Knowledge_Redlink_URL', '', {
+	RocketChat.settings.add('Assistify_AI_Redlink_URL', '', {
 		type: 'string',
 		group: 'dbsAI',
 		section: 'Knowledge_Base',
 		public: true,
-		i18nLabel: 'Livechat_Knowledge_Redlink_URL'
+		i18nLabel: 'Assistify_AI_Redlink_URL'
 	});
 
 	/* Currently, Redlink does not offer hashed API_keys, but uses simple password-auth
 	 * This is of course far from perfect and is hopeully going to change sometime later */
-	RocketChat.settings.add('Livechat_Knowledge_Redlink_Auth_Token', '', {
+	RocketChat.settings.add('Assistify_AI_Redlink_Auth_Token', '', {
 		type: 'string',
 		group: 'dbsAI',
 		section: 'Knowledge_Base',
 		public: true,
-		i18nLabel: 'Livechat_Knowledge_Redlink_Auth_Token'
+		i18nLabel: 'Assistify_AI_Redlink_Auth_Token'
 	});
 
-	RocketChat.settings.add('Livechat_Knowledge_Redlink_Domain', 'demo.assistify.de', {
+	RocketChat.settings.add('Assistify_AI_Redlink_Domain', RocketChat.settings.get('Site_Url'), {
 		type: 'string',
 		group: 'dbsAI',
 		section: 'Knowledge_Base',
 		public: true,
-		i18nLabel: 'Livechat_Knowledge_Redlink_Domain'
+		i18nLabel: 'Assistify_AI_Redlink_Domain'
+	});
+
+	RocketChat.settings.add('Assistify_AI_DBSearch_Suffix','', {
+		type: 'code',
+		group: 'dbsAI',
+		section: 'Knowledge_Base',
+		public: true,
+		i18nLabel: 'Assistify_AI_DBSearch_Suffix'
 	});
 });
 

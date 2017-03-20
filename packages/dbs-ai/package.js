@@ -21,7 +21,7 @@ Package.onUse(function (api) {
 	api.use(['ecmascript', 'underscore']);
 	api.use('templating', 'client');
 	api.use('less@2.5.1');
-	api.use('rocketchat:lib');
+	api.use('rocketchat:lib'); //in order to make general setting load earlier
 	api.use('dbs:common');
 
 	api.addAssets('assets/stylesheets/redlink.less', 'server');
