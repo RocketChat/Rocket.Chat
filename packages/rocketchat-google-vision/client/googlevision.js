@@ -1,27 +1,27 @@
 RocketChat.GoogleVision = {
-	getVisionAttributes(googleVision) {
+	getVisionAttributes(attachment) {
 		const attributes = {};
 		const labels = [];
-		if (googleVision.labels && googleVision.labels.length > 0) {
-			googleVision.labels.forEach(label => {
+		if (attachment.labels && attachment.labels.length > 0) {
+			attachment.labels.forEach(label => {
 				labels.push({ label });
 			});
 		}
-		if (googleVision.safeSearch && googleVision.safeSearch.adult === true) {
+		if (attachment.safeSearch && attachment.safeSearch[0] && attachment.safeSearch[0].adult === true) {
 			labels.push({ label: 'NSFW', bgColor: 'red', fontColor: 'white' });
 		}
-		if (googleVision.safeSearch && googleVision.safeSearch.violence === true) {
+		if (attachment.safeSearch && attachment.safeSearch.violence === true) {
 			labels.push({ label: 'Violence', bgColor: 'red', fontColor: 'white' });
 		}
-		if (googleVision.properties && googleVision.properties.colors && googleVision.properties.colors.length > 0) {
-			attributes.color = '#' + googleVision.properties.colors[0];
+		if (attachment.colors && attachment.colors.length > 0) {
+			attributes.color = '#' + attachment.colors[0];
 		}
-		if (googleVision.logos && googleVision.logos.length > 0) {
-			labels.push({ label: `Logo: ${googleVision.logos[0]}` });
+		if (attachment.logos && attachment.logos.length > 0) {
+			labels.push({ label: `Logo: ${attachment.logos[0]}` });
 		}
-		if (googleVision.faces && googleVision.faces.length > 0) {
+		if (attachment.faces && attachment.faces.length > 0) {
 			let faceCount = 0;
-			googleVision.faces.forEach(face => {
+			attachment.faces.forEach(face => {
 				const faceAttributes = [];
 				if (face.joy) {
 					faceAttributes.push('Joy');
@@ -54,9 +54,7 @@ RocketChat.GoogleVision = {
 						for (const index in message.attachments) {
 							if (message.attachments.hasOwnProperty(index)) {
 								const attachment = message.attachments[index];
-								if (attachment.googleVision) {
-									message.attachments[index] = Object.assign(message.attachments[index], this.getVisionAttributes(attachment.googleVision));
-								}
+								message.attachments[index] = Object.assign(message.attachments[index], this.getVisionAttributes(attachment));
 							}
 						}
 					}
@@ -68,9 +66,7 @@ RocketChat.GoogleVision = {
 						for (const index in message.attachments) {
 							if (message.attachments.hasOwnProperty(index)) {
 								const attachment = message.attachments[index];
-								if (attachment.googleVision) {
-									message.attachments[index] = Object.assign(message.attachments[index], this.getVisionAttributes(attachment.googleVision));
-								}
+								message.attachments[index] = Object.assign(message.attachments[index], this.getVisionAttributes(attachment));
 							}
 						}
 					}

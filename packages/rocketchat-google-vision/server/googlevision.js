@@ -108,7 +108,7 @@ class GoogleVision {
 					const bucketFile = bucket.file(`${file.googleCloudStorage.path}${file._id}`);
 					this.visionClient.detect(bucketFile, visionTypes, Meteor.bindEnvironment((error, results) => {
 						if (!error) {
-							console.log(RocketChat.models.Messages.setGoogleVision(message._id, results, visionTypes.length === 1 ? visionTypes[0] : undefined));
+							console.log(RocketChat.models.Messages.setGoogleVisionData(message._id, this.getAnnotations(visionTypes, results)));
 						} else {
 							console.trace('GoogleVision error: ', error.stack);
 						}
@@ -118,6 +118,32 @@ class GoogleVision {
 				}
 			}
 		}
+	}
+
+	getAnnotations(visionTypes, visionData) {
+		if (visionTypes.length === 1) {
+			visionData = {};
+			visionData[`${visionTypes[0]}`] = visionData;
+		}
+		const results = {};
+		for (const index in visionData) {
+			if (visionData.hasOwnProperty(index)) {
+				switch (index) {
+					case 'faces':
+					case 'landmarks':
+					case 'labels':
+					case 'safeSearch':
+					case 'similar':
+					case 'logos':
+						results[index] = (results[index] || []).concat(visionData[index] || []);
+						break;
+					case 'properties':
+						results['colors'] = visionData[index]['colors'];
+						break;
+				}
+			}
+		}
+		return results;
 	}
 }
 
