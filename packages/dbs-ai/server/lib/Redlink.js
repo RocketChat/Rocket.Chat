@@ -273,7 +273,7 @@ class RedlinkAdapter {
 			// latestKnowledgeProviderResult.helpful = room.rbInfo.knowledgeProviderUsage;
 
 			let options = this.options;
-			options.data = latestKnowledgeProviderResult;
+			options.data = latestKnowledgeProviderResult.prepareResult;
 			if (RocketChat.settings.get('DBS_AI_Redlink_Domain')) {
 				if(!options.data.context){
 					options.data.context = {};
