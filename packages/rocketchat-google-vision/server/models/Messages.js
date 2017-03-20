@@ -1,9 +1,9 @@
-RocketChat.models.Messages.setGoogleVision = function(messageId, googleVision, visionType) {
+RocketChat.models.Messages.setGoogleVisionData = function(messageId, visionData) {
 	const updateObj = {};
-	if (visionType) {
-		updateObj[`attachments.0.googleVision.${visionType}`] = googleVision;
-	} else {
-		updateObj['attachments.0.googleVision'] = googleVision;
+	for (const index in visionData) {
+		if (visionData.hasOwnProperty(index)) {
+			updateObj[`attachments.0.${index}`] = visionData[index];
+		}
 	}
 
 	return this.update({ _id: messageId }, { $set: updateObj });
