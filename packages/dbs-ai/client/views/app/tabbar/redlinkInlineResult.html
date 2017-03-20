@@ -77,9 +77,9 @@
 <!--Assistify-specific result templates-->
 
 <template name="inlineResultMessage">
-	<li class="conversationMessage">
-		<div class="messagePart {{getOriginatorClass message}} {{getSelectedClass}}">{{{message.content}}}</div>
-	</li>
+	<div class="conversationMessage {{getSelectedClass}}">
+		<div class="messagePart {{getOriginatorClass message}}">{{{message.content}}}</div>
+	</div>
 </template>
 
 <template name="redlinkInlineResult_sapTransaction">
@@ -134,11 +134,11 @@
 			</span>
 		</div>
 		<div class="query-preview-result-body">
-			<ul class="conversationMessages">
+			<div class="conversationMessages">
 				{{#each message in result.body}}
 					{{> inlineResultMessage message=message}}
 				{{/each}}
-			</ul>
+			</div>
 		</div>
 	</div>
 </template>

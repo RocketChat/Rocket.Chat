@@ -6,7 +6,7 @@
     }
 }
 .flex-tab-container .flex-tab .content {
-  overflow-y: scroll;
+  	overflow-y: scroll;
 }
 
 .external-search-content {
@@ -25,7 +25,6 @@
         -webkit-animation: spin 2s 20 linear;
         -o-animation: spin 2s 20 linear;
         animation: spin 2s 20 linear;
-
     }
 
     .external-message {
@@ -33,7 +32,7 @@
         position: relative;
         padding-bottom: 20px;
         &:after {
-		  border: none;
+		  	border: none;
         }
         .knowledge-title, .queries-title {
             background-color: #ccc;
@@ -46,9 +45,9 @@
             color: #666;
             font-size: 14px;
         }
-	  .collapsed > div.query-preview-result-body {
-		display: none;
-	  }
+	  	.collapsed > div.query-preview-result-body {
+			display: none;
+	  	}
         .query-template-wrapper {
             position: relative;
             margin: 0 15px 10px;
@@ -82,11 +81,11 @@
                 }
             }
 
-		  &.collapsed > div.knowledge-queries-wrapper {
-			display: none;
-		  }
+		  	&.collapsed > div.knowledge-queries-wrapper {
+				display: none;
+		  	}
 
-		  .query-template-tools-wrapper {
+		  	.query-template-tools-wrapper {
                 position: absolute;
                 right: 5px;
                 top: 10px;
@@ -95,7 +94,7 @@
                     // padding: 10px 5px;
                     cursor: pointer;
 				  	&.icon-up-open {
-					  padding-right: 5px;
+					  	padding-right: 5px;
 					}
                 }
             }
@@ -310,9 +309,9 @@
 					  	line-height: 0px;
 					  	margin-top: 0px;
                         img {
-						  width: 20px;
-						  margin-top: 7px;
-						  margin-bottom: -3px;
+						  	width: 20px;
+						  	margin-top: 7px;
+						  	margin-bottom: -3px;
                         }
                         .creator_label {
                             position: relative;
@@ -360,12 +359,12 @@
                     }
                 }
 				.no-results {
-				  background-color: white;
-				  border: 1px solid #ccc;
-				  border-top: none;
-				  padding: 5px;
-				  font-style: italic;
-				  text-align: center;
+				  	background-color: white;
+				  	border: 1px solid #ccc;
+				  	border-top: none;
+				  	padding: 5px;
+				  	font-style: italic;
+				  	text-align: center;
 				}
                 .query-preview {
                     margin-bottom: 0px;
@@ -566,34 +565,62 @@
                     .query-preview-result-body {
 					  	padding: 0px 10px 10px 10px;
                         .conversationMessages {
-                            .conversationMessage {
-                                text-align: left;
-                                padding-bottom: 5px;
-							  	overflow: hidden;
-                                .provider{
-								  	margin-left: 2em;
-                                    padding: 3px;
-								  	cursor: pointer;
-								  	border-radius: 3px;
-								  	border: 1px solid #bbbbbb;
-								  	text-align: right;
-
-                                }
-							  	.provider:hover {
-									background-color: #eeeeee;
+						  	overflow: hidden;
+						  	width: auto;
+						  	height: auto;
+						  	.conversationMessage {
+								overflow: hidden;
+								width: auto;
+								height: auto;
+							  	padding-left: 30px;
+							  	background: url(/packages/dbs_ai/assets/icons/deselected-circle.png) no-repeat 3px center;
+							  	background-size: 20px;
+							  	cursor: pointer;
+							  	&.selected {
+								  background: url(/packages/dbs_ai/assets/icons/selected-circle.png) no-repeat 3px center;
+								  background-size: 20px;
+								}
+							}
+						  	.messagePart {
+								clear: both;
+								float: left;
+								padding: 6px 10px 7px;
+								border-radius: 10px 10px 10px 0;
+								background: #dfdee5;
+								margin: 6px 0;
+								font-size: 12px;
+								line-height: 1.4;
+								position: relative;
+								text-shadow: 0 1px 1px rgba(0,0,0,0.2);
+								width: 280px;
+							}
+						  	.messagePart::before {
+								content: '';
+								position: absolute;
+								bottom: -6px;
+								border-top: 6px solid #DFDEE5;
+								left: 0;
+								border-right: 7px solid transparent;
+							}
+						  	.messagePart {
+							  	&.provider {
+									float: right;
+									color: #fff;
+									background-color: #389FF9;
+									border-radius: 10px 10px 0 10px;
 							  	}
-							  .provider:active {
-								background-color: #ebedb6;
-							  }
-                                .seeker{
-                                    font-style: italic;
-
-								}
-							  	.selected, .selected:hover{
-								  	background-color: #ebedb6;
-								}
-                            }
-                        }
+							}
+						  	.messagePart {
+							  	&.provider::before {
+									left: auto;
+									right: 0;
+									border-right: none;
+									border-left: 5px solid transparent;
+									border-top: 4px solid #389FF9;
+									bottom: -4px;
+							  	}
+							}
+						}
                     }
                 }
             }
