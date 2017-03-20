@@ -42,7 +42,7 @@ class MarkdownCode
 				message.msg = message.msg + "\n```"
 
 			# Separate text in code blocks and non code blocks
-			msgParts = message.html.split(/^\s*(```(?:[a-zA-Z]+)?(?:(?:.|\n)*?)```)(?:\n)?$/gm)
+			msgParts = message.html.split(/(^.*)(```(?:[a-zA-Z]+)?(?:(?:.|\n)*?)```)(.*\n?)$/gm)
 
 			for part, index in msgParts
 				# Verify if this part is code
