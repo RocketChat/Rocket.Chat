@@ -3,13 +3,13 @@
 var knowledgeEnabled = false;
 var apiaiKey = '';
 var apiaiLanguage = 'en';
-RocketChat.settings.get('Livechat_Knowledge_Enabled', function(key, value) {
+RocketChat.settings.get('DBS_AI_Enabled', function(key, value) {
 	knowledgeEnabled = value;
 });
-RocketChat.settings.get('Livechat_Knowledge_Apiai_Key', function(key, value) {
+RocketChat.settings.get('Assistify_AI_Apiai_Key', function(key, value) {
 	apiaiKey = value;
 });
-RocketChat.settings.get('Livechat_Knowledge_Apiai_Language', function(key, value) {
+RocketChat.settings.get('Assistify_AI_Apiai_Language', function(key, value) {
 	apiaiLanguage = value;
 });
 

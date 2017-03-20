@@ -145,7 +145,7 @@ Meteor.startup(function() {
 		i18nLabel: 'Apiai_Key'
 	});
 
-	RocketChat.settings.add('Livechat_Knowledge_Apiai_Language', 'en', {
+	RocketChat.settings.add('Livechat_Knowledge_Language', 'en', {
 		type: 'string',
 		group: 'Livechat',
 		section: 'Knowledge_Base',

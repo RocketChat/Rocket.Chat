@@ -1,0 +1,12 @@
+<template name="requests">
+	<h3 class="add-room background-transparent-darker-hover {{isActive}}">
+		{{_ "Requests"}} <span class="room-count-small">({{rooms.count}})</span>
+	</h3>
+	<ul>
+		{{#each rooms}}
+			{{> chatRoomItem }}
+		{{else}}
+			<p class="empty">{{_ "No_requests_yet" }}</p>
+		{{/each}}
+	</ul>
+</template>
