@@ -7,7 +7,7 @@ RocketChat.callbacks.add('afterSaveMessage', function (message, room) {
 	}
 
 	let knowledgeEnabled = false;
-	RocketChat.settings.get('Assistify_AI_Enabled', function (key, value) {
+	RocketChat.settings.get('DBS_AI_Enabled', function (key, value) {
 		knowledgeEnabled = value;
 	});
 

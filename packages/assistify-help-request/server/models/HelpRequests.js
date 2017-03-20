@@ -62,6 +62,8 @@ class HelpRequest extends RocketChat.models._Base {
 								closingProperties: closingProperties
 						}};
 
+
+
 		return this.update(query, update);
 	}
 

@@ -15,6 +15,7 @@ Package.onUse(function (api) {
 	api.use(['assistify']);
 	api.use('rocketchat:lib'); //In order to be able to attach to RocketChat-Global
 	api.use('rocketchat:livechat'); //Due to external messages
+	api.use('rocketchat:authorization'); //In order to create custom permissions
 	api.use(['nimble:restivus', 'rocketchat:authorization', 'rocketchat:api'], 'server');
 	api.use('templating', 'client');
 
@@ -24,7 +25,7 @@ Package.onUse(function (api) {
 	api.addFiles('server/routes.js', 'server');
 	api.addFiles('config.js', 'server');
 	api.addFiles('startup/customRoomTypes.js');
-	api.addFiles('startup/rolesAndPermissions.js');
+	api.addFiles('startup/rolesAndPermissions.js', 'server');
 
 	// Models
 	api.addFiles('server/models/Users.js', ['server', 'client']);

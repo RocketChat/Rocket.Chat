@@ -1,7 +1,8 @@
 /**
  * Notifies the knowledgeProvider about the end of a livechat conversation
  */
-RocketChat.callbacks.add('livechat.closeRoom', function (room, closeProps={}) {
+
+const _callbackOnClose = function (room, closeProps={}) {
 	try {
 		const knowledgeAdapter = _dbs.getKnowledgeAdapter();
 		if (knowledgeAdapter && knowledgeAdapter.onClose) {
@@ -16,4 +17,7 @@ RocketChat.callbacks.add('livechat.closeRoom', function (room, closeProps={}) {
 	let updatedRBInfo = room.rbInfo ? room.rbInfo : {};
 	updatedRBInfo.knowledgeProviderUsage = closeProps.knowledgeProviderUsage;
 
-}, RocketChat.callbacks.priority.LOW);
+};
+
+RocketChat.callbacks.add('livechat.closeRoom', _callbackOnClose, RocketChat.callbacks.priority.LOW);
+RocketChat.callbacks.add('assistify.closeRoom', _callbackOnClose, RocketChat.callbacks.priority.LOW);
