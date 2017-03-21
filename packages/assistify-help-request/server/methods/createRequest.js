@@ -36,9 +36,9 @@ Meteor.methods({
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'createRequest' });
 		}
 
-		if (!RocketChat.authz.hasPermission(Meteor.userId(), 'create-r')) {
-			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'createRequest' });
-		}
+		// if (!RocketChat.authz.hasPermission(Meteor.userId(), 'create-r')) {
+		// 	throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'createRequest' });
+		// }
 
 		// If an expertise has been selected, that means that a new room shall be created which addresses the
 		// experts of this expertise. A new room name shall be created

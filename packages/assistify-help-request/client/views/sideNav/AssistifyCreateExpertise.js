@@ -28,6 +28,12 @@ Template.AssistifyCreateExpertise.helpers({
 				}
 			]
 		};
+	},
+	canCreateExpertise: function () {
+		// as custom authorization leads to a streamer-exception, it has been disabled.
+		// Check whether the user is in the expert's channel as lightweight workaround
+		const instance = Template.instance();
+		return instance.isExpert.get();
 	}
 });
 
@@ -117,6 +123,16 @@ Template.AssistifyCreateExpertise.onCreated(function () {
 	instance.expertiseRoomName = new ReactiveVar('');
 	instance.selectedUsers = new ReactiveVar([]);
 	instance.selectedUserNames = {};
+	instance.isExpert = new ReactiveVar(false);
+
+	Meteor.call('getExperts', function (err, experts) {
+		if (err) {
+			instance.isExpert.set(false);
+			//todo handle error
+		} else {
+			instance.isExpert.set(experts.indexOf(Meteor.user().username) != -1);
+		}
+	});
 
 	instance.clearForm = function () {
 		instance.expertiseRoomName.set('');

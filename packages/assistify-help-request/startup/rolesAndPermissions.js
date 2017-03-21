@@ -1,4 +1,4 @@
-const _createRolesAndPermissions = function(){
+const _createRolesAndPermissions = function () {
 	const permissions = [
 		{_id: 'create-r', roles: ['admin', 'user', 'bot', 'guest', 'expert']},
 		{_id: 'create-e', roles: ['admin', 'expert', 'bot']},
@@ -13,33 +13,43 @@ const _createRolesAndPermissions = function(){
 	}
 
 	const defaultRoles = [
-		{ name: 'expert',    scope: 'Subscription',         description: 'Expert' } //scope obviously has something to do with what access is enabled with this role. No clear idea what though
+		{name: 'expert', scope: 'Subscription', description: 'Expert'} //scope obviously has something to do with what access is enabled with this role. No clear idea what though
 	];
 
 	for (const role of defaultRoles) {
-		RocketChat.models.Roles.upsert({ _id: role.name }, { $setOnInsert: { scope: role.scope, description: role.description || '', protected: true } });
+		RocketChat.models.Roles.upsert({_id: role.name}, {
+			$setOnInsert: {
+				scope: role.scope,
+				description: role.description || '',
+				protected: true
+			}
+		});
 	}
 };
 
 const _registerExpertsChannelCallback = function () {
-	RocketChat.callbacks.add('afterJoinRoom', function(user, room){
+	RocketChat.callbacks.add('afterJoinRoom', function (user, room) {
 		const expertRoomName = RocketChat.settings.get('Assistify_Expert_Channel').toLowerCase();
 
-		if(room.name === expertRoomName){
+		if (room.name === expertRoomName) {
 			RocketChat.authz.addUserRoles(user._id, 'expert');
 		}
 	});
 
-	RocketChat.callbacks.add('afterLeaveRoom', function(user, room){
+	RocketChat.callbacks.add('afterLeaveRoom', function (user, room) {
 		const expertRoomName = RocketChat.settings.get('Assistify_Expert_Channel').toLowerCase();
 
-		if(room.name === expertRoomName){
+		if (room.name === expertRoomName) {
 			RocketChat.authz.removeUserFromRoles(user._id, 'expert');
 		}
 	});
 };
 
-Meteor.startup(()=> {
+Meteor.startup(() => {
+
+	// Adding custom permissions leads to exceptions in streamer => Disabled for the time being
+	return; //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
 	_createRolesAndPermissions();
 
 	_registerExpertsChannelCallback();
