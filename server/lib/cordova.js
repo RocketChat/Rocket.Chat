@@ -197,6 +197,7 @@ function configurePush() {
 					}
 
 					if (app.token.apn) {
+						options.topic = app.appName;
 						return sendPush('apn', app.token.apn, options);
 					}
 

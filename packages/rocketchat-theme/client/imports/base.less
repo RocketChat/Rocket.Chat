@@ -202,7 +202,7 @@ blockquote {
 		}
 
 		&::after {
-			content: "unread messages";
+			content: attr(data-unread-text);
 			display: block;
 			position: absolute;
 			right: 0;
@@ -344,6 +344,7 @@ blockquote {
 			padding: 0.6rem 0.7rem;
 			text-align: left;
 			border-width: 0 0 1px;
+			user-select: text;
 		}
 
 		th {
@@ -431,7 +432,7 @@ blockquote {
 
 		> div {
 			float: left;
-			width: 70%;
+			width: 67%;
 
 			label {
 				display: inline-block;
@@ -490,6 +491,46 @@ blockquote {
 	}
 }
 
+@-ms-keyframes spinh {
+	from {
+		-ms-transform: rotateY(0deg);
+	}
+
+	to {
+		-ms-transform: rotateY(360deg);
+	}
+}
+
+@-moz-keyframes spinh {
+	from {
+		-moz-transform: rotateY(0deg);
+	}
+
+	to {
+		-moz-transform: rotateY(360deg);
+	}
+}
+
+@-webkit-keyframes spinh {
+	from {
+		-webkit-transform: rotateY(0deg);
+	}
+
+	to {
+		-webkit-transform: rotateY(360deg);
+	}
+}
+
+@keyframes spinh {
+	from {
+		transform: rotateY(0deg);
+	}
+
+	to {
+		transform: rotateY(360deg);
+	}
+}
+
 .rocket-h2 {
 	font-weight: 300;
 	text-transform: uppercase;
@@ -527,6 +568,7 @@ body {
 	height: 100%;
 	width: 100%;
 	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
 	line-height: 1rem;
 	padding: 0;
 	overflow: visible;
@@ -1422,7 +1464,6 @@ label.required::after {
 			display: inline-block;
 			max-width: 222px;
 			max-height: 43px;
-			margin-bottom: -10px;
 		}
 	}
 
@@ -1617,6 +1658,7 @@ label.required::after {
 
 .toolbar-search {
 	position: relative;
+	width: 100%;
 }
 
 .toolbar-search__icon {
@@ -1633,6 +1675,7 @@ label.required::after {
 	right: 0;
 	opacity: 0;
 	transition: opacity 0.3s;
+	cursor: pointer;
 }
 
 .toolbar-search__input {
@@ -2482,6 +2525,7 @@ label.required::after {
 		border-radius: 0;
 		padding: 25px 0 0 8px;
 		direction: rtl;
+		text-align: left;
 
 		.popup-item {
 			white-space: nowrap;
@@ -3019,6 +3063,10 @@ body:not(.is-cordova) {
 		min-height: 26px;
 		padding: 5px 15px 0 37px;
 
+		&:not(.system) .message-cog-container {
+			display: inline-block;
+		}
+
 		.body {
 			display: inline;
 
@@ -3085,10 +3133,6 @@ body:not(.is-cordova) {
 				}
 			}
 		}
-	}
-
-	.message-cog-container {
-		display: inline-block;
 	}
 }
 
@@ -4691,8 +4735,7 @@ body:not(.is-cordova) {
 
 	.buttons {
 		text-align: right;
-		border-width: 0 1px 1px;
-		background-color: #f7f7f7;
+		margin-top: 10px;
 	}
 
 	&.code-mirror-box-fullscreen {

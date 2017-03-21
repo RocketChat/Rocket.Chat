@@ -29,14 +29,6 @@ describe('miscellaneous', function() {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('version');
-					expect(res.body).to.have.deep.property('build.date');
-					expect(res.body).to.have.deep.property('build.nodeVersion');
-					expect(res.body).to.have.deep.property('build.arch');
-					expect(res.body).to.have.deep.property('build.platform');
-					expect(res.body).to.have.deep.property('build.osRelease');
-					expect(res.body).to.have.deep.property('build.totalMemory');
-					expect(res.body).to.have.deep.property('build.freeMemory');
-					expect(res.body).to.have.deep.property('build.cpus');
 				})
 				.end(done);
 		});

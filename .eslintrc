@@ -55,6 +55,7 @@
 		"space-before-function-paren": [2, "never"],
 		"space-before-blocks": [2, "always"],
 		"indent": [2, "tab", {"SwitchCase": 1}],
+		"eol-last": [2, "always"],
 		"comma-dangle": [2, "never"],
 		"keyword-spacing": 2,
 		"block-spacing": 2,

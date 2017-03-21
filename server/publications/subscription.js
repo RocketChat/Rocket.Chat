@@ -12,6 +12,7 @@ const fields = {
 	roles: 1,
 	unread: 1,
 	archived: 1,
+	audioNotification: 1,
 	desktopNotifications: 1,
 	desktopNotificationDuration: 1,
 	mobilePushNotifications: 1,
@@ -19,7 +20,9 @@ const fields = {
 	unreadAlert: 1,
 	_updatedAt: 1,
 	blocked: 1,
-	blocker: 1
+	blocker: 1,
+	autoTranslate: 1,
+	autoTranslateLanguage: 1
 };
 
 Meteor.methods({
