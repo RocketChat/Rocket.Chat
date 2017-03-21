@@ -11,5 +11,5 @@ Importer.addImporter('hipchatenterprise', Importer.HipChatEnterprise, {
 			href: 'https://github.com/RocketChat/Rocket.Chat/issues/new'
 		}
 	],
-	fileTypeRegex: new RegExp('application\/.*?gzip')
+	mimeType: 'application/gzip'
 });

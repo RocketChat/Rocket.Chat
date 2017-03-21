@@ -133,11 +133,11 @@ RocketChat.models.Users.findVisitorByToken = function(token) {
  * @param {string} token - Visitor token
  */
 RocketChat.models.Users.setLivechatStatus = function(userId, status) {
-	let query = {
+	const query = {
 		'_id': userId
 	};
 
-	let update = {
+	const update = {
 		$set: {
 			'statusLivechat': status
 		}
@@ -166,10 +166,17 @@ RocketChat.models.Users.openOffice = function() {
 	});
 };
 
-RocketChat.models.Users.updateLivechatDataByToken = function(token, key, value) {
+RocketChat.models.Users.updateLivechatDataByToken = function(token, key, value, overwrite = true) {
 	const query = {
 		'profile.token': token
 	};
+
+	if (!overwrite) {
+		const user = this.findOne(query, { fields: { livechatData: 1 } });
+		if (user.livechatData && typeof user.livechatData[key] !== 'undefined') {
+			return true;
+		}
+	}
 
 	const update = {
 		$set: {

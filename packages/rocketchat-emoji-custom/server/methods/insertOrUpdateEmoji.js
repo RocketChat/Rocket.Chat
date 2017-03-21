@@ -14,8 +14,8 @@ Meteor.methods({
 
 		//allow all characters except colon, whitespace, comma, >, <, &, ", ', /, \, (, )
 		//more practical than allowing specific sets of characters; also allows foreign languages
-		let nameValidation = /[\s,:><&"'\/\\\(\)]/;
-		let aliasValidation = /[:><&"'\/\\\(\)]/;
+		const nameValidation = /[\s,:><&"'\/\\\(\)]/;
+		const aliasValidation = /[:><&"'\/\\\(\)]/;
 
 		//silently strip colon; this allows for uploading :emojiname: as emojiname
 		emojiData.name = emojiData.name.replace(/:/g, '');
@@ -40,12 +40,12 @@ Meteor.methods({
 
 		if (emojiData._id) {
 			matchingResults = RocketChat.models.EmojiCustom.findByNameOrAliasExceptID(emojiData.name, emojiData._id).fetch();
-			for (let alias of emojiData.aliases) {
+			for (const alias of emojiData.aliases) {
 				matchingResults = matchingResults.concat(RocketChat.models.EmojiCustom.findByNameOrAliasExceptID(alias, emojiData._id).fetch());
 			}
 		} else {
 			matchingResults = RocketChat.models.EmojiCustom.findByNameOrAlias(emojiData.name).fetch();
-			for (let alias of emojiData.aliases) {
+			for (const alias of emojiData.aliases) {
 				matchingResults = matchingResults.concat(RocketChat.models.EmojiCustom.findByNameOrAlias(alias).fetch());
 			}
 		}
@@ -56,15 +56,15 @@ Meteor.methods({
 
 		if (!emojiData._id) {
 			//insert emoji
-			let createEmoji = {
+			const createEmoji = {
 				name: emojiData.name,
 				aliases: emojiData.aliases,
 				extension: emojiData.extension
 			};
 
-			let _id = RocketChat.models.EmojiCustom.create(createEmoji);
+			const _id = RocketChat.models.EmojiCustom.create(createEmoji);
 
-			RocketChat.Notifications.notifyAll('updateEmojiCustom', {emojiData: createEmoji});
+			RocketChat.Notifications.notifyLogged('updateEmojiCustom', {emojiData: createEmoji});
 
 			return _id;
 		} else {
@@ -77,10 +77,10 @@ Meteor.methods({
 
 				RocketChat.models.EmojiCustom.setExtension(emojiData._id, emojiData.extension);
 			} else if (emojiData.name !== emojiData.previousName) {
-				let rs = RocketChatFileEmojiCustomInstance.getFileWithReadStream(encodeURIComponent(`${emojiData.previousName}.${emojiData.previousExtension}`));
+				const rs = RocketChatFileEmojiCustomInstance.getFileWithReadStream(encodeURIComponent(`${emojiData.previousName}.${emojiData.previousExtension}`));
 				if (rs !== null) {
 					RocketChatFileEmojiCustomInstance.deleteFile(encodeURIComponent(`${emojiData.name}.${emojiData.extension}`));
-					let ws = RocketChatFileEmojiCustomInstance.createWriteStream(encodeURIComponent(`${emojiData.name}.${emojiData.previousExtension}`), rs.contentType);
+					const ws = RocketChatFileEmojiCustomInstance.createWriteStream(encodeURIComponent(`${emojiData.name}.${emojiData.previousExtension}`), rs.contentType);
 					ws.on('end', Meteor.bindEnvironment(() =>
 						RocketChatFileEmojiCustomInstance.deleteFile(encodeURIComponent(`${emojiData.previousName}.${emojiData.previousExtension}`))
 						));
@@ -98,7 +98,7 @@ Meteor.methods({
 				RocketChat.models.EmojiCustom.setAliases(emojiData._id, []);
 			}
 
-			RocketChat.Notifications.notifyAll('updateEmojiCustom', {emojiData});
+			RocketChat.Notifications.notifyLogged('updateEmojiCustom', {emojiData});
 
 			return true;
 		}

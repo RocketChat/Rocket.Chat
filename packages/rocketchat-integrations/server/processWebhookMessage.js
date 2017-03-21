@@ -1,84 +1,31 @@
-function retrieveRoomInfo({ currentUserId, channel, ignoreEmpty=false }) {
-	const room = RocketChat.models.Rooms.findOneByIdOrName(channel);
-	if (!_.isObject(room) && !ignoreEmpty) {
-		throw new Meteor.Error('invalid-channel');
-	}
+this.processWebhookMessage = function(messageObj, user, defaultValues = { channel: '', alias: '', avatar: '', emoji: '' }) {
+	const sentData = [];
+	const channels = [].concat(messageObj.channel || messageObj.roomId || defaultValues.channel);
 
-	if (room && room.t === 'c') {
-		Meteor.runAsUser(currentUserId, function() {
-			return Meteor.call('joinRoom', room._id);
-		});
-	}
+	for (const channel of channels) {
+		const channelType = channel[0];
 
-	return room;
-}
-
-function retrieveDirectMessageInfo({ currentUserId, channel, findByUserIdOnly=false }) {
-	let roomUser = undefined;
-
-	if (findByUserIdOnly) {
-		roomUser = RocketChat.models.Users.findOneById(channel);
-	} else {
-		roomUser = RocketChat.models.Users.findOne({
-			$or: [{ _id: channel }, { username: channel }]
-		});
-	}
-
-	if (!_.isObject(roomUser)) {
-		throw new Meteor.Error('invalid-channel');
-	}
-
-	const rid = [currentUserId, roomUser._id].sort().join('');
-	let room = RocketChat.models.Rooms.findOneById({ $in: [rid, channel] });
-
-	if (!room) {
-		Meteor.runAsUser(currentUserId, function() {
-			Meteor.call('createDirectMessage', roomUser.username);
-			room = RocketChat.models.Rooms.findOneById(rid);
-		});
-	}
-
-	return room;
-}
-
-this.processWebhookMessage = function(messageObj, user, defaultValues) {
-	var attachment, channel, channels, channelType, i, len, message, ref, room, ret;
-	ret = [];
-
-	if (!defaultValues) {
-		defaultValues = {
-			channel: '',
-			alias: '',
-			avatar: '',
-			emoji: ''
-		};
-	}
-
-	channel = messageObj.channel || messageObj.roomId || defaultValues.channel;
-
-	channels = [].concat(channel);
-
-	for (channel of channels) {
-		channelType = channel[0];
-
-		channel = channel.substr(1);
+		let channelValue = channel.substr(1);
+		let room;
 
 		switch (channelType) {
 			case '#':
-				room = retrieveRoomInfo({ currentUserId: user._id, channel });
+				room = RocketChat.getRoomByNameOrIdWithOptionToJoin({ currentUserId: user._id, nameOrId: channelValue, joinChannel: true });
 				break;
 			case '@':
-				room = retrieveDirectMessageInfo({ currentUserId: user._id, channel });
+				room = RocketChat.getRoomByNameOrIdWithOptionToJoin({ currentUserId: user._id, nameOrId: channelValue, type: 'd' });
 				break;
 			default:
+				channelValue = channelType + channelValue;
+
 				//Try to find the room by id or name if they didn't include the prefix.
-				room = retrieveRoomInfo({ currentUserId: user._id, channel: channelType + channel, ignoreEmpty: true });
+				room = RocketChat.getRoomByNameOrIdWithOptionToJoin({ currentUserId: user._id, nameOrId: channelValue, joinChannel: true, errorOnEmpty: false });
 				if (room) {
 					break;
 				}
 
 				//We didn't get a room, let's try finding direct messages
-				room = retrieveDirectMessageInfo({ currentUserId: user._id, channel: channelType + channel, findByUserIdOnly: true });
+				room = RocketChat.getRoomByNameOrIdWithOptionToJoin({ currentUserId: user._id, nameOrId: channelValue, type: 'd', tryDirectByUserIdOnly: true });
 				if (room) {
 					break;
 				}
@@ -92,7 +39,7 @@ this.processWebhookMessage = function(messageObj, user, defaultValues) {
 			messageObj.attachments = undefined;
 		}
 
-		message = {
+		const message = {
 			alias: messageObj.username || messageObj.alias || defaultValues.alias,
 			msg: _.trim(messageObj.text || messageObj.msg || ''),
 			attachments: messageObj.attachments,
@@ -112,9 +59,8 @@ this.processWebhookMessage = function(messageObj, user, defaultValues) {
 		}
 
 		if (_.isArray(message.attachments)) {
-			ref = message.attachments;
-			for (i = 0, len = ref.length; i < len; i++) {
-				attachment = ref[i];
+			for (let i = 0; i < message.attachments.length; i++) {
+				const attachment = message.attachments[i];
 				if (attachment.msg) {
 					attachment.text = _.trim(attachment.msg);
 					delete attachment.msg;
@@ -122,8 +68,9 @@ this.processWebhookMessage = function(messageObj, user, defaultValues) {
 			}
 		}
 
-		var messageReturn = RocketChat.sendMessage(user, message, room);
-		ret.push({ channel: channel, message: messageReturn });
+		const messageReturn = RocketChat.sendMessage(user, message, room);
+		sentData.push({ channel: channel, message: messageReturn });
 	}
-	return ret;
+
+	return sentData;
 };

@@ -1,21 +1,26 @@
 import moment from 'moment'
 
-Template.messageAttachment.helpers
-	fixCordova: (url) ->
-		if Meteor.isCordova and url?[0] is '/'
-			url = Meteor.absoluteUrl().replace(/\/$/, '') + url
-			query = "rc_uid=#{Meteor.userId()}&rc_token=#{Meteor._localStorage.getItem('Meteor.loginToken')}"
-			if url.indexOf('?') is -1
-				url = url + '?' + query
-			else
-				url = url + '&' + query
+fixCordova = (url) ->
+	if url?.indexOf('data:image') is 0
+		return url
 
-		if Meteor.settings.public.sandstorm or url.match /^(https?:)?\/\//i
-			return url
-		else if navigator.userAgent.indexOf('Electron') > -1
-			return __meteor_runtime_config__.ROOT_URL_PATH_PREFIX + url
+	if Meteor.isCordova and url?[0] is '/'
+		url = Meteor.absoluteUrl().replace(/\/$/, '') + url
+		query = "rc_uid=#{Meteor.userId()}&rc_token=#{Meteor._localStorage.getItem('Meteor.loginToken')}"
+		if url.indexOf('?') is -1
+			url = url + '?' + query
 		else
-			return Meteor.absoluteUrl().replace(/\/$/, '') + __meteor_runtime_config__.ROOT_URL_PATH_PREFIX + url
+			url = url + '&' + query
+
+	if Meteor.settings.public.sandstorm or url.match /^(https?:)?\/\//i
+		return url
+	else if navigator.userAgent.indexOf('Electron') > -1
+		return __meteor_runtime_config__.ROOT_URL_PATH_PREFIX + url
+	else
+		return Meteor.absoluteUrl().replace(/\/$/, '') + __meteor_runtime_config__.ROOT_URL_PATH_PREFIX + url
+
+Template.messageAttachment.helpers
+	fixCordova: fixCordova
 
 	parsedText: ->
 		renderMessageBody { msg: this.text }
@@ -46,8 +51,28 @@ Template.messageAttachment.helpers
 			return Meteor.user()?.settings?.preferences?.collapseMediaByDefault is true
 
 	time: ->
-		return moment(@ts).format(RocketChat.settings.get('Message_TimeFormat'))
+		messageDate = new Date(@ts)
+		today = new Date()
+		if messageDate.toDateString() is today.toDateString()
+			return moment(@ts).format(RocketChat.settings.get('Message_TimeFormat'))
+		else
+			return moment(@ts).format(RocketChat.settings.get('Message_TimeAndDateFormat'))
 
 	injectIndex: (data, previousIndex, index) ->
 		data.index = previousIndex + '.attachments.' + index
 		return
+
+	safeLoadImageAttachment: (url) ->
+		host = ''
+		url = fixCordova(url)
+		if url.indexOf("://") > -1
+			host = url.split('/')[2]
+		else
+			host = url.split('/')[0]
+
+		host = host.split(':')[0]
+
+		if host != window.location.hostname
+			return ''
+		else
+			return url

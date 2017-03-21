@@ -12,22 +12,34 @@ class ModelSubscriptions extends RocketChat.models._Base
 		@tryEnsureIndex { 'unread': 1 }
 		@tryEnsureIndex { 'ts': 1 }
 		@tryEnsureIndex { 'ls': 1 }
+		@tryEnsureIndex { 'audioNotification': 1 }, { sparse: 1 }
 		@tryEnsureIndex { 'desktopNotifications': 1 }, { sparse: 1 }
 		@tryEnsureIndex { 'mobilePushNotifications': 1 }, { sparse: 1 }
 		@tryEnsureIndex { 'emailNotifications': 1 }, { sparse: 1 }
+		@tryEnsureIndex { 'autoTranslate': 1 }, { sparse: 1 }
+		@tryEnsureIndex { 'autoTranslateLanguage': 1 }, { sparse: 1 }
 
 		this.cache.ensureIndex('rid', 'array')
 		this.cache.ensureIndex('u._id', 'array')
 		this.cache.ensureIndex(['rid', 'u._id'], 'unique')
+		this.cache.ensureIndex(['name', 'u._id'], 'unique')
 
 
 	# FIND ONE
 	findOneByRoomIdAndUserId: (roomId, userId) ->
 		if this.useCache
 			return this.cache.findByIndex('rid,u._id', [roomId, userId]).fetch()
-
 		query =
 			rid: roomId
+			"u._id": userId
+
+		return @findOne query
+
+	findOneByRoomNameAndUserId: (roomName, userId) ->
+		if this.useCache
+			return this.cache.findByIndex('name,u._id', [roomName, userId]).fetch()
+		query =
+			name: roomName
 			"u._id": userId
 
 		return @findOne query

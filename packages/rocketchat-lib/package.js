@@ -11,7 +11,8 @@ Npm.depends({
 	'node-dogstatsd': '0.0.6',
 	'localforage': '1.4.2',
 	'lokijs': '1.4.1',
-	'bugsnag': '1.8.0'
+	'bugsnag': '1.8.0',
+	'prom-client': '7.0.1'
 });
 
 Package.onUse(function(api) {
@@ -28,6 +29,7 @@ Package.onUse(function(api) {
 	api.use('ddp-rate-limiter');
 	api.use('underscore');
 	api.use('mongo');
+	api.use('oauth');
 	api.use('underscorestring:underscore.string@3.3.4');
 	api.use('matb33:collection-hooks');
 	api.use('service-configuration');
@@ -49,6 +51,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/lib/debug.js', 'server');
 
 	// COMMON LIB
+	api.addFiles('lib/getURL.js');
 	api.addFiles('lib/settings.coffee');
 	api.addFiles('lib/configLogger.coffee');
 	api.addFiles('lib/callbacks.coffee');
@@ -61,6 +64,7 @@ Package.onUse(function(api) {
 	api.addFiles('lib/MessageTypes.coffee');
 
 	api.addFiles('server/lib/bugsnag.js', 'server');
+	api.addFiles('server/lib/metrics.js', 'server');
 
 	api.addFiles('server/lib/RateLimiter.coffee', 'server');
 
@@ -75,6 +79,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/functions/deleteMessage.js', 'server');
 	api.addFiles('server/functions/deleteUser.js', 'server');
 	api.addFiles('server/functions/getFullUserData.js', 'server');
+	api.addFiles('server/functions/getRoomByNameOrIdWithOptionToJoin.js', 'server');
 	api.addFiles('server/functions/removeUserFromRoom.js', 'server');
 	api.addFiles('server/functions/saveUser.js', 'server');
 	api.addFiles('server/functions/saveCustomFields.js', 'server');
@@ -88,6 +93,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/functions/Notifications.coffee', 'server');
 
 	// SERVER LIB
+	api.addFiles('server/lib/PushNotification.js', 'server');
 	api.addFiles('server/lib/defaultBlockedDomainsList.js', 'server');
 	api.addFiles('server/lib/notifyUsersOnMessage.js', 'server');
 	api.addFiles('server/lib/roomTypes.coffee', 'server');
@@ -105,6 +111,10 @@ Package.onUse(function(api) {
 	api.addFiles('server/models/Uploads.coffee', 'server');
 	api.addFiles('server/models/Users.coffee', 'server');
 
+	api.addFiles('server/oauth/oauth.js', 'server');
+	api.addFiles('server/oauth/google.js', 'server');
+	api.addFiles('server/oauth/proxy.js', 'server');
+
 	api.addFiles('server/startup/statsTracker.js', 'server');
 
 	// CACHE
@@ -114,41 +124,43 @@ Package.onUse(function(api) {
 	api.addFiles('server/publications/settings.coffee', 'server');
 
 	// SERVER METHODS
-	api.addFiles('server/methods/addOAuthService.coffee', 'server');
+	api.addFiles('server/methods/addOAuthService.js', 'server');
 	api.addFiles('server/methods/refreshOAuthService.js', 'server');
-	api.addFiles('server/methods/addUserToRoom.coffee', 'server');
-	api.addFiles('server/methods/archiveRoom.coffee', 'server');
+	api.addFiles('server/methods/addUserToRoom.js', 'server');
+	api.addFiles('server/methods/addUsersToRoom.js', 'server');
+	api.addFiles('server/methods/archiveRoom.js', 'server');
 	api.addFiles('server/methods/blockUser.js', 'server');
-	api.addFiles('server/methods/checkRegistrationSecretURL.coffee', 'server');
-	api.addFiles('server/methods/createChannel.coffee', 'server');
-	api.addFiles('server/methods/createPrivateGroup.coffee', 'server');
+	api.addFiles('server/methods/checkRegistrationSecretURL.js', 'server');
+	api.addFiles('server/methods/cleanChannelHistory.js', 'server');
+	api.addFiles('server/methods/createChannel.js', 'server');
+	api.addFiles('server/methods/createPrivateGroup.js', 'server');
 	api.addFiles('server/methods/deleteMessage.coffee', 'server');
 	api.addFiles('server/methods/deleteUserOwnAccount.js', 'server');
+	api.addFiles('server/methods/filterBadWords.js', ['server']);
+	api.addFiles('server/methods/filterATAllTag.js', 'server');
+	api.addFiles('server/methods/getChannelHistory.js', 'server');
 	api.addFiles('server/methods/getFullUserData.js', 'server');
 	api.addFiles('server/methods/getRoomRoles.js', 'server');
+	api.addFiles('server/methods/getServerInfo.js', 'server');
 	api.addFiles('server/methods/getUserRoles.js', 'server');
-	api.addFiles('server/methods/joinRoom.coffee', 'server');
-	api.addFiles('server/methods/joinDefaultChannels.coffee', 'server');
-	api.addFiles('server/methods/leaveRoom.coffee', 'server');
-	api.addFiles('server/methods/removeOAuthService.coffee', 'server');
+	api.addFiles('server/methods/insertOrUpdateUser.js', 'server');
+	api.addFiles('server/methods/joinDefaultChannels.js', 'server');
+	api.addFiles('server/methods/joinRoom.js', 'server');
+	api.addFiles('server/methods/leaveRoom.js', 'server');
+	api.addFiles('server/methods/removeOAuthService.js', 'server');
+	api.addFiles('server/methods/restartServer.js', 'server');
 	api.addFiles('server/methods/robotMethods.coffee', 'server');
 	api.addFiles('server/methods/saveSetting.js', 'server');
 	api.addFiles('server/methods/sendInvitationEmail.coffee', 'server');
 	api.addFiles('server/methods/sendMessage.coffee', 'server');
 	api.addFiles('server/methods/sendSMTPTestEmail.coffee', 'server');
-	api.addFiles('server/methods/setAdminStatus.coffee', 'server');
-	api.addFiles('server/methods/setRealName.coffee', 'server');
-	api.addFiles('server/methods/setUsername.coffee', 'server');
-	api.addFiles('server/methods/insertOrUpdateUser.coffee', 'server');
+	api.addFiles('server/methods/setAdminStatus.js', 'server');
+	api.addFiles('server/methods/setRealName.js', 'server');
+	api.addFiles('server/methods/setUsername.js', 'server');
 	api.addFiles('server/methods/setEmail.js', 'server');
-	api.addFiles('server/methods/restartServer.coffee', 'server');
-	api.addFiles('server/methods/unarchiveRoom.coffee', 'server');
+	api.addFiles('server/methods/unarchiveRoom.js', 'server');
 	api.addFiles('server/methods/unblockUser.js', 'server');
-	api.addFiles('server/methods/updateMessage.coffee', 'server');
-	api.addFiles('server/methods/filterBadWords.js', ['server']);
-	api.addFiles('server/methods/filterATAllTag.js', 'server');
-	api.addFiles('server/methods/getChannelHistory.js', 'server');
-	api.addFiles('server/methods/cleanChannelHistory.js', 'server');
+	api.addFiles('server/methods/updateMessage.js', 'server');
 
 	// SERVER STARTUP
 	api.addFiles('server/startup/settingsOnLoadCdnPrefix.coffee', 'server');
@@ -161,6 +173,9 @@ Package.onUse(function(api) {
 
 	// CLIENT LIB
 	api.addFiles('client/Notifications.coffee', 'client');
+	api.addFiles('client/OAuthProxy.js', 'client');
+	api.addFiles('client/lib/TabBar.js', 'client');
+	api.addFiles('client/lib/RocketChatTabBar.js', 'client');
 	api.addFiles('client/lib/cachedCollection.js', 'client');
 	api.addFiles('client/lib/openRoom.coffee', 'client');
 	api.addFiles('client/lib/roomExit.coffee', 'client');
@@ -172,7 +187,6 @@ Package.onUse(function(api) {
 	// CLIENT METHODS
 	api.addFiles('client/methods/sendMessage.coffee', 'client');
 	api.addFiles('client/AdminBox.coffee', 'client');
-	api.addFiles('client/TabBar.coffee', 'client');
 	api.addFiles('client/MessageAction.coffee', 'client');
 
 	api.addFiles('client/defaultTabBars.js', 'client');
@@ -186,13 +200,14 @@ Package.onUse(function(api) {
 	api.addFiles('client/views/customFieldsForm.html', 'client');
 	api.addFiles('client/views/customFieldsForm.js', 'client');
 
-	api.addFiles('startup/defaultRoomTypes.coffee');
+	api.addFiles('startup/defaultRoomTypes.js');
 
 	// VERSION
 	api.addFiles('rocketchat.info');
 
 	// EXPORT
 	api.export('RocketChat');
+	api.export('RocketChatTabBar');
 
 	api.imply('tap:i18n');
 });

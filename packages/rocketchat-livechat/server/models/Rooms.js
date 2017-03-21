@@ -16,11 +16,18 @@ RocketChat.models.Rooms.updateSurveyFeedbackById = function(_id, surveyFeedback)
 	return this.update(query, update);
 };
 
-RocketChat.models.Rooms.updateLivechatDataByToken = function(token, key, value) {
+RocketChat.models.Rooms.updateLivechatDataByToken = function(token, key, value, overwrite = true) {
 	const query = {
 		'v.token': token,
 		open: true
 	};
+
+	if (!overwrite) {
+		const room = this.findOne(query, { fields: { livechatData: 1 } });
+		if (room.livechatData && typeof room.livechatData[key] !== 'undefined') {
+			return true;
+		}
+	}
 
 	const update = {
 		$set: {
@@ -42,22 +49,22 @@ RocketChat.models.Rooms.findLivechat = function(filter = {}, offset = 0, limit =
 RocketChat.models.Rooms.findLivechatByCode = function(code, fields) {
 	code = parseInt(code);
 
-	let options = {};
+	const options = {};
 
 	if (fields) {
 		options.fields = fields;
 	}
 
-	if (this.useCache) {
-		return this.cache.findByIndex('t,code', ['l', code], options);
-	}
+	// if (this.useCache) {
+	// 	return this.cache.findByIndex('t,code', ['l', code], options).fetch();
+	// }
 
 	const query = {
 		t: 'l',
 		code: code
 	};
 
-	return this.find(query, options);
+	return this.findOne(query, options);
 };
 
 /**

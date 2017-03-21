@@ -9,7 +9,7 @@ Meteor.methods
 			if importer.importerInstance
 				return importer.importerInstance.getProgress()
 			else
-				importer.importerInstance = new importer.importer importer.name, importer.description, importer.fileTypeRegex
+				importer.importerInstance = new importer.importer importer.name, importer.description, importer.mimeType
 				return importer.importerInstance.getProgress()
 		else
 			console.warn "Tried to setup #{name} as an importer."

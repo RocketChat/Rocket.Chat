@@ -1,14 +1,14 @@
 RocketChat.addUserToRoom = function(rid, user, inviter, silenced) {
-	let now = new Date();
-	let room = RocketChat.models.Rooms.findOneById(rid);
+	const now = new Date();
+	const room = RocketChat.models.Rooms.findOneById(rid);
 
 	// Check if user is already in room
-	let subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(rid, user._id);
+	const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(rid, user._id);
 	if (subscription) {
 		return;
 	}
 
-	if (room.t === 'c') {
+	if (room.t === 'c' || room.t === 'p') {
 		RocketChat.callbacks.run('beforeJoinRoom', user, room);
 	}
 
@@ -35,7 +35,7 @@ RocketChat.addUserToRoom = function(rid, user, inviter, silenced) {
 		}
 	}
 
-	if (room.t === 'c') {
+	if (room.t === 'c' || room.t === 'p') {
 		Meteor.defer(function() {
 			RocketChat.callbacks.run('afterJoinRoom', user, room);
 		});

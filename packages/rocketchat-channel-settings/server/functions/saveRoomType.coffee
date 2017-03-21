@@ -3,7 +3,15 @@ RocketChat.saveRoomType = (rid, roomType, user, sendMessage=true) ->
 		throw new Meteor.Error 'invalid-room', 'Invalid room', { function: 'RocketChat.saveRoomType' }
 
 	if roomType not in ['c', 'p']
-		throw new Meteor.Error 'error-invalid-room-type', 'error-invalid-room-type', { type: roomType }
+		throw new Meteor.Error 'error-invalid-room-type', 'error-invalid-room-type', { function: 'RocketChat.saveRoomType', type: roomType }
+
+	room = RocketChat.models.Rooms.findOneById(rid);
+
+	if not room?
+		throw new Meteor.Error 'error-invalid-room', 'error-invalid-room', { function: 'RocketChat.saveRoomType', _id: rid }
+
+	if room.t is 'd'
+		throw new Meteor.Error 'error-direct-room', 'Can\'t change type of direct rooms', { function: 'RocketChat.saveRoomType' }
 
 	result = RocketChat.models.Rooms.setTypeById(rid, roomType) and RocketChat.models.Subscriptions.updateTypeByRoomId(rid, roomType)
 
