@@ -4,6 +4,24 @@ class Global {
 	get sweetAlertConfirm() { return browser.element('.sweet-alert .sa-confirm-button-container'); }
 	get sweetAlertPasswordField() { return browser.element('.sweet-alert [type="password"]'); }
 	get toastAlert() { return browser.element('.toast'); }
+
+	confirmPopup() {
+		this.sweetAlertConfirm.waitForVisible(5000);
+		browser.pause(500);
+		this.sweetAlertConfirm.click();
+		this.sweetAlert.waitForVisible(5000, true);
+	}
+
+	setWindowSize(width, height) {
+		browser.windowHandleSize({
+			width: width,
+			height: height
+		});
+	}
+
+	dismissToast() {
+		this.toastAlert.click();
+	}
 }
 
 module.exports = new Global();

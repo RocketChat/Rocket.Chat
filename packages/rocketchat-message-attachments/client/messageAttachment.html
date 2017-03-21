@@ -66,8 +66,8 @@
 					<div class="attachment-image">
 					{{#if loadImage}}
 						<figure>
-							<div class="inline-image" style="background-image: url('{{fixCordova image_url}}');">
-								<img src="{{fixCordova image_url}}" height="{{getImageHeight image_dimensions.height}}" class="gallery-item" data-title="{{title}}" data-description="{{description}}">
+							<div class="inline-image" style="background-image: url('{{safeLoadImageAttachment image_url}}');">
+								<img src="{{safeLoadImageAttachment image_url}}" height="{{getImageHeight image_dimensions.height}}" class="gallery-item" data-title="{{title}}" data-description="{{description}}">
 							</div>
 							{{#if description}}
 								<figcaption class="attachment-description">{{description}}</figcaption>
@@ -87,7 +87,7 @@
 				{{#unless collapsed}}
 					<div class="attachment-audio">
 						<audio controls>
-							<source src="{{fixCordova audio_url}}" type="{{audio_type}}">
+							<source src="{{fixCordova audio_url}}" type="{{audio_type}}" data-description="{{description}}">
 							Your browser does not support the audio element.
 						</audio>
 					</div>
@@ -98,7 +98,7 @@
 				{{#unless collapsed}}
 					<div class="attachment-video">
 						<video controls class="inline-video">
-							<source src="{{fixCordova video_url}}" type="{{video_type}}">
+							<source src="{{fixCordova video_url}}" type="{{video_type}}" data-description="{{description}}">
 							Your browser does not support the video element.
 						</video>
 					</div>
@@ -127,6 +127,12 @@
 					</div>
 				{{/unless}}
 			{{/if}}
+
+			{{#unless image_url}}
+				{{#if description}}
+					<div class="attachment-description">{{description}}</div>
+				{{/if}}
+			{{/unless}}
 
 			{{#each attachments}}
 				{{injectIndex . ../index @index}} {{> messageAttachment}}

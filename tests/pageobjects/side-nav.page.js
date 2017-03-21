@@ -7,6 +7,7 @@ class SideNav extends Page {
 	get saveChannelBtn() { return browser.element('.save-channel'); }
 
 	get messageInput() { return browser.element('.input-message'); }
+	get burgerBtn() { return browser.element('.burger'); }
 
 	get accountBoxUserName() { return browser.element('.account-box .data h4'); }
 	get accountBoxUserAvatar() { return browser.element('.account-box .avatar-image'); }
@@ -30,11 +31,13 @@ class SideNav extends Page {
 	get logout() { return browser.element('#logout'); }
 	get sideNavBar() { return browser.element('.side-nav '); }
 
-	get preferences() { return browser.element('.account-link:nth-of-type(1)'); }
-	get profile() { return browser.element('.account-link:nth-of-type(2)'); }
-	get avatar() { return browser.element('.account-link:nth-of-type(3)'); }
+	get preferences() { return browser.element('[href="/account/preferences"]'); }
+	get profile() { return browser.element('[href="/account/profile"]'); }
+	get avatar() { return browser.element('[href="/changeavatar"]'); }
 	get preferencesClose() { return browser.element('.side-nav .arrow.close'); }
 	get spotlightSearch() { return browser.element('.toolbar-search__input'); }
+	get spotlightSearchPopUp() { return browser.element('.toolbar .message-popup'); }
+	get channelLeave() { return browser.element('.leave-room'); }
 
 	openChannel(channelName) {
 		browser.click('.rooms-list > .wrapper > ul [title="'+channelName+'"]');
@@ -53,6 +56,14 @@ class SideNav extends Page {
 		browser.waitUntil(function() {
 			return browser.getText('.room-title') === channelName;
 		}, 5000);
+	}
+
+	getChannelFromSpotlight(channelName) {
+		this.spotlightSearch.waitForVisible(5000);
+		this.spotlightSearch.click();
+		this.spotlightSearch.setValue(channelName);
+		browser.waitForVisible('.room-title='+channelName, 5000);
+		return browser.element('.room-title='+channelName);
 	}
 
 	getChannelFromList(channelName) {
@@ -94,17 +105,6 @@ class SideNav extends Page {
 		browser.waitForVisible('[title="'+user+'"]');
 		browser.click('[title="'+user+'"]');
 		this.removeUserBtn.click();
-	}
-
-	startDirectMessage(user) {
-		this.newDirectMessageBtn.waitForVisible(3000);
-		this.newDirectMessageBtn.click();
-		this.directMessageTarget.waitForVisible(3000);
-		this.directMessageTarget.setValue(user);
-		browser.waitForVisible('.-autocomplete-item', 5000);
-		browser.click('.-autocomplete-item');
-		this.saveDirectMessageBtn.click();
-		browser.waitForExist('[title="'+user+'"]', 5000);
 	}
 }
 
