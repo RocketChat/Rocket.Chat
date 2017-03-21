@@ -48,13 +48,8 @@
 					});
 
 				// Did enter get pressed?  Resize in this keydown event so that the flicker doesn't occur.
-				if (self.outerHeight()> maxHeight) {
-					return
-				} else {
-					if (event && event.data && event.data.event === 'keydown' && event.keyCode === 13 && (event.shiftKey || event.ctrlKey || event.altKey)) {
-						val += '<br /> ';
-					}
-
+				if (event && event.data && event.data.event === 'keydown' && event.keyCode === 13 && (event.shiftKey || event.ctrlKey || event.altKey)) {
+					val += '<br />';
 				}
 
 				shadow.css('width', $self.width());
