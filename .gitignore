@@ -41,6 +41,7 @@
 .meteor/meteorite
 .meteor/dev_bundle
 packages/rocketchat-livechat/app/.meteor/dev_bundle
+packages/rocketchat-livechat/assets/rocketchat-livechat.min.js
 .mule
 .pmd
 .project

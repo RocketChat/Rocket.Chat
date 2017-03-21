@@ -20,8 +20,8 @@ class BotHelpers {
 		fieldsSetting.forEach((n) => {
 			this.userFields[n.trim()] = 1;
 		});
-		this._allUsers = Meteor.users.find(this.queries.users, { fields: this.userFields });
-		this._onlineUsers = Meteor.users.find({ $and: [this.queries.users, this.queries.online] }, { fields: this.userFields });
+		this._allUsers = RocketChat.models.Users.find(this.queries.users, { fields: this.userFields });
+		this._onlineUsers = RocketChat.models.Users.find({ $and: [this.queries.users, this.queries.online] }, { fields: this.userFields });
 	}
 
 	// request methods or props as arguments to Meteor.call

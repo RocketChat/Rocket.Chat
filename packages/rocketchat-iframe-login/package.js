@@ -20,9 +20,9 @@ Package.onUse(function(api) {
 	api.use('tracker');
 	api.use('check');
 
-	api.imply('facebook');
-	api.imply('twitter');
-	api.imply('google');
+	api.imply('facebook-oauth');
+	api.imply('twitter-oauth');
+	api.imply('google-oauth');
 	api.imply('oauth');
 
 	// Server files

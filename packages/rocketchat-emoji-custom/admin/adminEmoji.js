@@ -1,7 +1,7 @@
-/* globals isSetNotNull, RocketChatTabBar */
+/* globals RocketChatTabBar */
 Template.adminEmoji.helpers({
 	isReady() {
-		if (isSetNotNull(() => Template.instance().ready)) {
+		if (Template.instance().ready != null) {
 			return Template.instance().ready.get();
 		}
 		return undefined;
@@ -10,14 +10,14 @@ Template.adminEmoji.helpers({
 		return Template.instance().customemoji();
 	},
 	isLoading() {
-		if (isSetNotNull(() => Template.instance().ready)) {
+		if (Template.instance().ready != null) {
 			if (!Template.instance().ready.get()) {
 				return 'btn-loading';
 			}
 		}
 	},
 	hasMore() {
-		if (isSetNotNull(() => Template.instance().limit)) {
+		if (Template.instance().limit != null) {
 			if (typeof Template.instance().customemoji === 'function') {
 				return Template.instance().limit.get() === Template.instance().customemoji().length;
 			}
@@ -61,13 +61,13 @@ Template.adminEmoji.onCreated(function() {
 	});
 
 	this.autorun(function() {
-		const limit = (isSetNotNull(() => instance.limit))? instance.limit.get() : 0;
+		const limit = (instance.limit != null) ? instance.limit.get() : 0;
 		const subscription = instance.subscribe('fullEmojiData', '', limit);
 		instance.ready.set(subscription.ready());
 	});
 
 	this.customemoji = function() {
-		const filter = (isSetNotNull(() => instance.filter))? _.trim(instance.filter.get()) : '';
+		const filter = (instance.filter != null) ? _.trim(instance.filter.get()) : '';
 
 		let query = {};
 
@@ -76,7 +76,7 @@ Template.adminEmoji.onCreated(function() {
 			query = { $or: [ { name: filterReg }, {aliases: filterReg } ] };
 		}
 
-		const limit = (isSetNotNull(() => instance.limit))? instance.limit.get() : 0;
+		const limit = (instance.limit != null) ? instance.limit.get() : 0;
 
 		return RocketChat.models.EmojiCustom.find(query, { limit: limit, sort: { name: 1 }}).fetch();
 	};
@@ -90,7 +90,7 @@ Template.adminEmoji.onRendered(() =>
 );
 
 Template.adminEmoji.events({
-	['keydown #emoji-filter'](e) {
+	'keydown #emoji-filter'(e) {
 		//stop enter key
 		if (e.which === 13) {
 			e.stopPropagation();
@@ -98,19 +98,19 @@ Template.adminEmoji.events({
 		}
 	},
 
-	['keyup #emoji-filter'](e, t) {
+	'keyup #emoji-filter'(e, t) {
 		e.stopPropagation();
 		e.preventDefault();
 		t.filter.set(e.currentTarget.value);
 	},
 
-	['click .emoji-info'](e, instance) {
+	'click .emoji-info'(e, instance) {
 		e.preventDefault();
 		instance.tabBarData.set(RocketChat.models.EmojiCustom.findOne({_id: this._id}));
 		instance.tabBar.open('admin-emoji-info');
 	},
 
-	['click .load-more'](e, t) {
+	'click .load-more'(e, t) {
 		e.preventDefault();
 		e.stopPropagation();
 		t.limit.set(t.limit.get() + 50);
