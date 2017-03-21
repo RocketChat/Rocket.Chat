@@ -94,7 +94,7 @@ Template.livechatOfficeHours.events({
 			if (err) {
 				return handleError(err);
 			}
-			toastr.success(t('Office_Hours_updated'));
+			toastr.success(t('Office_hours_updated'));
 		});
 	}
 });
