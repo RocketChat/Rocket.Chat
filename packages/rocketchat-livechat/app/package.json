@@ -20,10 +20,10 @@
     "email": "support@rocket.chat"
   },
   "dependencies": {
-    "autolinker": "^1.4.0",
-    "jquery": "^2.1.0",
-    "babel-runtime": "^6.20.0",
-    "bcrypt": "^1.0.1",
+    "autolinker": "^1.4.2",
+    "jquery": "^3.1.1",
+    "babel-runtime": "^6.23.0",
+    "bcrypt": "^1.0.2",
     "moment": "^2.17.1",
     "toastr": "^2.1.2"
   }

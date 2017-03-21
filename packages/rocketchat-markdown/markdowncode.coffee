@@ -2,6 +2,7 @@
 # MarkdownCode is a named function that will parse `inline code` and ```codeblock``` syntaxes
 # @param {Object} message - The message object
 ###
+import hljs from 'highlight.js';
 
 class MarkdownCode
 	constructor: (message) ->
@@ -23,7 +24,8 @@ class MarkdownCode
 
 			message.tokens.push
 				token: token
-				text: "#{p1}<span class=\"copyonly\">`</span><span><code class=\"inline\">#{p2}</code></span><span class=\"copyonly\">`</span>#{p3}"
+				text: "#{p1}<span class=\"copyonly\">`</span><span><code class=\"code-colors inline\">#{p2}</code></span><span class=\"copyonly\">`</span>#{p3}"
+				noHtml: match
 
 			return token
 
@@ -40,11 +42,11 @@ class MarkdownCode
 				message.msg = message.msg + "\n```"
 
 			# Separate text in code blocks and non code blocks
-			msgParts = message.html.split(/^\s*(```(?:[a-zA-Z]+)?(?:(?:.|\n)*?)```)(?:\n)?$/gm)
+			msgParts = message.html.split(/(^.*)(```(?:[a-zA-Z]+)?(?:(?:.|\n)*?)```)(.*\n?)$/gm)
 
 			for part, index in msgParts
 				# Verify if this part is code
-				codeMatch = part.match(/^```(\w*[\n\ ]?)([\s\S]*?)```+?$/)
+				codeMatch = part.match(/^```(.*[\n\ ]?)([\s\S]*?)```+?$/)
 
 				if codeMatch?
 					# Process highlight if this part is code
@@ -70,7 +72,8 @@ class MarkdownCode
 					message.tokens.push
 						highlight: true
 						token: token
-						text: "<pre><code class='hljs " + result.language + "'><span class='copyonly'>```<br></span>" + result.value + "<span class='copyonly'><br>```</span></code></pre>"
+						text: "<pre><code class='code-colors hljs " + result.language + "'><span class='copyonly'>```<br></span>" + result.value + "<span class='copyonly'><br>```</span></code></pre>"
+						noHtml: "```\n#{s.stripTags(result.value)}\n```"
 
 					msgParts[index] = token
 				else

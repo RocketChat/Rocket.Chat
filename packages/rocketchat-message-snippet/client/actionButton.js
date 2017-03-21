@@ -9,7 +9,7 @@ Meteor.startup(function() {
 			'message-mobile'
 		],
 		action: function() {
-			let message = this._arguments[1];
+			const message = this._arguments[1];
 
 			swal({
 				title: 'Create a Snippet',

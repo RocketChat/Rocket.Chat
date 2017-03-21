@@ -2,6 +2,10 @@
 
 import moment from 'moment';
 import toastr from 'toastr';
+import hljs from 'highlight.js';
+import 'highlight.js/styles/github.css';
+
+hljs.initHighlightingOnLoad();
 
 if (window.DISABLE_ANIMATION) {
 	toastr.options.timeOut = 1;
@@ -72,7 +76,7 @@ Meteor.startup(function() {
 	};
 
 	Meteor.subscribe('userData', function() {
-		const userLanguage = Meteor.user() ? Meteor.user().language : window.defaultUserLanguage();
+		const userLanguage = Meteor.user() && Meteor.user().language ? Meteor.user().language : window.defaultUserLanguage();
 
 		if (localStorage.getItem('userLanguage') !== userLanguage) {
 			localStorage.setItem('userLanguage', userLanguage);

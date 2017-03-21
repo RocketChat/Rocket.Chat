@@ -5,7 +5,7 @@ RocketChat.models._CacheControl = new Meteor.EnvironmentVariable();
 
 class ModelsBase {
 	constructor(nameOrModel, useCache) {
-		this._db = new ModelsBaseDb(nameOrModel);
+		this._db = new ModelsBaseDb(nameOrModel, this);
 		this.model = this._db.model;
 		this.collectionName = this._db.collectionName;
 		this.name = this._db.name;
@@ -39,6 +39,20 @@ class ModelsBase {
 		return this.useCache === true ? 'cache' : '_db';
 	}
 
+	arrayToCursor(data) {
+		return {
+			fetch() {
+				return data;
+			},
+			count() {
+				return data.length;
+			},
+			forEach(fn) {
+				return data.forEach(fn);
+			}
+		};
+	}
+
 	setUpdatedAt(/*record, checkQuery, query*/) {
 		return this._db.setUpdatedAt(...arguments);
 	}
@@ -54,6 +68,24 @@ class ModelsBase {
 	findOne() {
 		try {
 			return this[this.origin].findOne(...arguments);
+		} catch (e) {
+			console.error('Exception on find', e, ...arguments);
+		}
+	}
+
+	findOneById() {
+		try {
+			return this[this.origin].findOneById(...arguments);
+		} catch (e) {
+			console.error('Exception on find', e, ...arguments);
+		}
+	}
+
+	findOneByIds(ids, options) {
+		check(ids, [String]);
+
+		try {
+			return this[this.origin].findOneByIds(ids, options);
 		} catch (e) {
 			console.error('Exception on find', e, ...arguments);
 		}

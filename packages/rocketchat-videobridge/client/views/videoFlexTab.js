@@ -3,22 +3,30 @@
 
 Template.videoFlexTab.helpers({
 	openInNewWindow() {
-		return RocketChat.settings.get('Jitsi_Open_New_Window');
+		if (Meteor.isCordova) {
+			return true;
+		} else {
+			return RocketChat.settings.get('Jitsi_Open_New_Window');
+		}
 	}
 });
 
 Template.videoFlexTab.onCreated(function() {
+	this.tabBar = Template.currentData().tabBar;
+});
+
+Template.videoFlexTab.onRendered(function() {
 	this.api = null;
 
 	let timeOut = null;
 
-	let width = 'auto';
-	let height = 500;
+	const width = 'auto';
+	const height = 500;
 
-	let configOverwrite = {
+	const configOverwrite = {
 		desktopSharingChromeExtId: RocketChat.settings.get('Jitsi_Chrome_Extension')
 	};
-	let interfaceConfigOverwrite = {};
+	const interfaceConfigOverwrite = {};
 
 	let jitsiRoomActive = null;
 
@@ -27,7 +35,7 @@ Template.videoFlexTab.onCreated(function() {
 		$('.flex-tab').css('max-width', '');
 		$('.main-content').css('right', '');
 
-		RocketChat.TabBar.closeFlex();
+		this.tabBar.close();
 
 		RocketChat.TabBar.updateButton('video', { class: '' });
 	};
@@ -35,12 +43,12 @@ Template.videoFlexTab.onCreated(function() {
 	this.timeout = null;
 	this.autorun(() => {
 		if (RocketChat.settings.get('Jitsi_Enabled')) {
-			if (RocketChat.TabBar.isFlexOpen() && RocketChat.TabBar.getTemplate() === 'videoFlexTab') {
-				let roomId = Session.get('openedRoom');
+			if (this.tabBar.getState() === 'opened') {
+				const roomId = Session.get('openedRoom');
 
-				let domain = RocketChat.settings.get('Jitsi_Domain');
-				let jitsiRoom = 'RocketChat' + CryptoJS.MD5(RocketChat.settings.get('uniqueID') + roomId).toString();
-				let noSsl = RocketChat.settings.get('Jitsi_SSL') ? false : true;
+				const domain = RocketChat.settings.get('Jitsi_Domain');
+				const jitsiRoom = RocketChat.settings.get('Jitsi_URL_Room_Prefix') + CryptoJS.MD5(RocketChat.settings.get('uniqueID') + roomId).toString();
+				const noSsl = RocketChat.settings.get('Jitsi_SSL') ? false : true;
 
 				if (jitsiRoomActive !== null && jitsiRoomActive !== jitsiRoom) {
 					jitsiRoomActive = null;
@@ -57,28 +65,37 @@ Template.videoFlexTab.onCreated(function() {
 
 					RocketChat.TabBar.updateButton('video', { class: 'red' });
 
-					if (RocketChat.settings.get('Jitsi_Open_New_Window')) {
+					if (RocketChat.settings.get('Jitsi_Open_New_Window') || Meteor.isCordova) {
 						Meteor.call('jitsi:updateTimeout', roomId);
 
 						timeOut = Meteor.setInterval(() => Meteor.call('jitsi:updateTimeout', roomId), 10*1000);
+						var newWindow = null;
+						if (Meteor.isCordova) {
+							newWindow = window.open((noSsl ? 'http://' : 'https://') + domain + '/' + jitsiRoom, '_system');
+							closePanel();
+							clearInterval(timeOut);
+						} else {
+							newWindow = window.open((noSsl ? 'http://' : 'https://') + domain + '/' + jitsiRoom, jitsiRoom);
+							const closeInterval = setInterval(() => {
+								if (newWindow.closed !== false) {
+									closePanel();
+									clearInterval(closeInterval);
+									clearInterval(timeOut);
+								}
+							}, 300);
+						}
+						if (newWindow) {
+							newWindow.focus();
+						}
 
-						const newWindow = window.open((noSsl ? 'http://' : 'https://') + domain + '/' + jitsiRoom, jitsiRoom);
-						newWindow.focus();
 
-						let closeInterval = setInterval(() => {
-							if (newWindow.closed !== false) {
-								closePanel();
-								clearInterval(closeInterval);
-								clearInterval(timeOut);
-							}
-						}, 300);
 
 					// Lets make sure its loaded before we try to show it.
 					} else if (typeof JitsiMeetExternalAPI !== 'undefined') {
 
 						// Keep it from showing duplicates when re-evaluated on variable change.
 						if (!$('[id^=jitsiConference]').length) {
-							this.api = new JitsiMeetExternalAPI(domain, jitsiRoom, width, height, document.getElementById('videoContainer'), configOverwrite, interfaceConfigOverwrite, noSsl);
+							this.api = new JitsiMeetExternalAPI(domain, jitsiRoom, width, height, this.$('.video-container').get(0), configOverwrite, interfaceConfigOverwrite, noSsl);
 
 							/*
 							* Hack to send after frame is loaded.
@@ -110,3 +127,4 @@ Template.videoFlexTab.onCreated(function() {
 		}
 	});
 });
+

@@ -94,8 +94,8 @@ Template.messages.events({
 		return instance.chatMessages.keydown(visitor.getRoom(), event, instance);
 	},
 	'click .send-button': function(event, instance) {
-		let input = instance.find('.input-message');
-		let sent = instance.chatMessages.send(visitor.getRoom(), input);
+		const input = instance.find('.input-message');
+		const sent = instance.chatMessages.send(visitor.getRoom(), input);
 		input.focus();
 		instance.updateMessageInputHeight(input);
 
@@ -145,8 +145,7 @@ Template.messages.onCreated(function() {
 		// even if the scrollHeight become bigger than that it should never exceed that.
 		// Account for no text in the textarea when increasing the height.
 		// If there is no text, reset the height.
-		let inputScrollHeight;
-		inputScrollHeight = $(input).prop('scrollHeight');
+		const inputScrollHeight = $(input).prop('scrollHeight');
 		if (inputScrollHeight > 28) {
 			return $(input).height($(input).val() === '' ? '15px' : (inputScrollHeight >= 200 ? inputScrollHeight - 50 : inputScrollHeight - 20));
 		}
@@ -156,7 +155,7 @@ Template.messages.onCreated(function() {
 		if (!this.showOptions.get()) {
 			return;
 		}
-		let target = $(event.target);
+		const target = $(event.target);
 		if (!target.closest('.options-menu').length && !target.is('.options-menu') && !target.closest('.toggle-options').length && !target.is('.toggle-options')) {
 			this.showOptions.set(false);
 		}

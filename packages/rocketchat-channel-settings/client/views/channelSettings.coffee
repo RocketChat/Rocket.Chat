@@ -9,6 +9,11 @@ Template.channelSettings.helpers
 		return arr
 
 	valueOf: (obj, key) ->
+		if key is 't'
+			if obj[key] is 'c'
+				return false
+
+			return true
 		return obj?[key]
 
 	showSetting: (setting, room) ->
@@ -29,7 +34,7 @@ Template.channelSettings.helpers
 		return Template.instance().settings[field].processing.get() or !RocketChat.authz.hasAllPermission('edit-room', room._id)
 
 	channelSettings: ->
-		return RocketChat.ChannelSettings.getOptions()
+		return RocketChat.ChannelSettings.getOptions(Template.currentData())
 
 	unscape: (value) ->
 		return s.unescapeHTML value
@@ -156,7 +161,7 @@ Template.channelSettings.onCreated ->
 			isToggle: true
 			processing: new ReactiveVar(false)
 			canView: (room) ->
-				if not room.t in ['c', 'p']
+				if room.t not in ['c', 'p']
 					return false
 				else if room.t is 'p' and not RocketChat.authz.hasAllPermission('create-c')
 					return false
@@ -190,11 +195,14 @@ Template.channelSettings.onCreated ->
 		reactWhenReadOnly:
 			type: 'boolean'
 			label: 'React_when_read_only'
+			processing: new ReactiveVar(false)
 			canView: (room) => room.t isnt 'd' and room.ro
 			canEdit: (room) => RocketChat.authz.hasAllPermission('set-react-when-readonly', room._id)
 			save: (value, room) ->
+				@processing.set(true)
 				Meteor.call 'saveRoomSettings', room._id, 'reactWhenReadOnly', value, (err, result) ->
 					return handleError err if err
+					@processing.set(false)
 					toastr.success TAPi18n.__ 'React_when_read_only_changed_successfully'
 
 		archived:
@@ -230,17 +238,17 @@ Template.channelSettings.onCreated ->
 								showConfirmButton: false
 							RocketChat.callbacks.run action, room
 					else
-						$(".channel-settings form [name='archived']").prop('checked', room.archived)
+						$(".channel-settings form [name='archived']").prop('checked', !!room.archived)
 
 		joinCode:
 			type: 'text'
-			label: 'Code'
+			label: 'Password'
 			canView: (room) => room.t is 'c' and RocketChat.authz.hasAllPermission('edit-room', room._id)
 			canEdit: (room) => RocketChat.authz.hasAllPermission('edit-room', room._id)
 			save: (value, room) ->
 				Meteor.call 'saveRoomSettings', room._id, 'joinCode', value, (err, result) ->
 					return handleError err if err
-					toastr.success TAPi18n.__ 'Room_code_changed_successfully'
+					toastr.success TAPi18n.__ 'Room_password_changed_successfully'
 					RocketChat.callbacks.run 'roomCodeChanged', room
 
 

@@ -51,17 +51,17 @@ Meteor.methods({
 			};
 
 			message = RocketChat.callbacks.run('beforeSaveMessage', message);
+			var messageObject = {'editedAt': message.editedAt, 'editedBy': message.editedBy, msg: message.msg};
 
+			if (originalMessage.attachments) {
+				if (originalMessage.attachments[0].description !== undefined) {
+					delete messageObject.$set.msg;
+				}
+			}
 			ChatMessage.update({
 				_id: message._id,
 				'u._id': Meteor.userId()
-			}, {
-				$set: {
-					'editedAt': message.editedAt,
-					'editedBy': message.editedBy,
-					msg: message.msg
-				}
-			});
+			}, {$set : messageObject});
 		});
 	}
 });

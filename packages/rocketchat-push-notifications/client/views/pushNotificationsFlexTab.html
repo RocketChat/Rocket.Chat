@@ -25,6 +25,27 @@
 					</li>
 					{{#if $eq mute 'nothing'}}
 						<li>
+							<label>{{_ "Audio"}}</label>
+							<div>
+								{{#if editing 'audioNotification'}}
+									<label>
+										<select name="audioNotification" class="audio">
+											<option value="none" selected="{{$eq audioNotification 'none'}}">{{_ "None"}}</option>
+											<option value="" selected="{{$eq audioNotification ''}}">{{_ "Use_account_preference"}} ({{_ "Default"}})</option>
+											<option value="chime" selected="{{$eq audioNotification 'chime'}}">Chime</option>
+											{{#each audioAssets}}
+												<option value="{{_id}}" selected="{{$eq audioNotification _id}}">{{name}}</option>
+											{{/each}}
+										</select>
+									</label>
+									<button type="button" class="button cancel">{{_ "Cancel"}}</button>
+									<button type="button" class="button primary save">{{_ "Save"}}</button>
+								{{else}}
+									<span class="current-setting">{{audioValue}} <i class="icon-play-circled" data-play="{{audioNotification}}"></i> <i class="icon-pencil" data-edit="audioNotification"></i></span>
+								{{/if}}
+							</div>
+						</li>
+						<li>
 							<label>{{_ "Desktop"}}</label>
 							<div>
 								{{#if editing 'desktopNotifications'}}
@@ -86,7 +107,7 @@
 						</li>
 						{{#unless emailVerified}}
 						<li>
-							<div class="alert alert-warning">
+							<div class="alert alert-warning pending-background pending-border">
 								{{_ "You_wont_receive_email_notifications_because_you_have_not_verified_your_email"}}
 							</div>
 						</li>

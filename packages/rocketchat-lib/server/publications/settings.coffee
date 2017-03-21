@@ -41,7 +41,7 @@ RocketChat.models.Settings.cache.on 'changed', (type, setting) ->
 	if setting.public is true
 		RocketChat.Notifications.notifyAllInThisInstance 'public-settings-changed', type, _.pick(setting, '_id', 'value')
 
-	RocketChat.Notifications.notifyAllInThisInstance 'private-settings-changed', type, setting
+	RocketChat.Notifications.notifyLoggedInThisInstance 'private-settings-changed', type, setting
 
 
 RocketChat.Notifications.streamAll.allowRead 'private-settings-changed', ->
