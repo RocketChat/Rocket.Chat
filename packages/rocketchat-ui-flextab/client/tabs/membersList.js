@@ -58,10 +58,12 @@ Template.membersList.helpers({
 		// sortBy is stable, so we can do this
 		users = _.sortBy(users, u => u.status == null);
 
+		let hasMore = undefined;
 		const usersLimit = Template.instance().usersLimit.get();
-		const hasMore = users.length > usersLimit;
-		users = _.first(users, usersLimit);
-
+		if (usersLimit) {
+			hasMore = users.length > usersLimit;
+			users = _.first(users, usersLimit);
+		}
 		const totalShowing = users.length;
 
 		const ret = {

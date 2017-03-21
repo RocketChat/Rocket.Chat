@@ -33,7 +33,7 @@ Template.uploadedFilesList.helpers({
 	},
 
 	canDelete() {
-		return RocketChat.authz.hasAtLeastOnePermission('delete-message', this.rid) || (RocketChat.settings.get('Message_AllowDeleting') && (this.userId === Meteor.userId()));
+		return RocketChat.authz.hasAtLeastOnePermission('delete-message', this.rid) || (RocketChat.settings && RocketChat.settings.get('Message_AllowDeleting') && (this.userId === Meteor.userId()));
 	},
 
 	url() {
@@ -55,7 +55,7 @@ Template.uploadedFilesList.helpers({
 			}
 		}
 
-		if (Meteor.settings.public.sandstorm || url.match(/^(https?:)?\/\//i)) {
+		if ((Meteor.settings && Meteor.settings.public && Meteor.settings.sandstorm) || url.match(/^(https?:)?\/\//i)) {
 			return url;
 		} else if (navigator.userAgent.indexOf('Electron') > -1) {
 			return __meteor_runtime_config__.ROOT_URL_PATH_PREFIX + url;

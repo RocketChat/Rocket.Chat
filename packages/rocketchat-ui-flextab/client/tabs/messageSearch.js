@@ -22,7 +22,10 @@ Template.messageSearch.helpers({
 	},
 
 	searchResultMessages() {
-		return Template.instance().searchResult.get().messages;
+		const searchResult = Template.instance().searchResult.get();
+		if (searchResult) {
+			return searchResult.messages;
+		}
 	},
 
 	hasMore() {
@@ -70,14 +73,17 @@ Template.messageSearch.events({
 		e.stopPropagation();
 		e.preventDefault();
 		const message_id = $(e.currentTarget).closest('.message').attr('id');
+		const searchResult = t.searchResult.get();
 		RocketChat.MessageAction.hideDropDown();
 		t.$(`\#${message_id} .message-dropdown`).remove();
-		const message = _.findWhere(t.searchResult.get().messages, { _id: message_id });
-		const actions = RocketChat.MessageAction.getButtons(message, 'search');
-		const el = Blaze.toHTMLWithData(Template.messageDropdown, { actions });
-		t.$(`\#${message_id} .message-cog-container`).append(el);
-		const dropDown = t.$(`\#${message_id} .message-dropdown`);
-		return dropDown.show();
+		if (searchResult) {
+			const message = _.findWhere(searchResult.messages, { _id: message_id });
+			const actions = RocketChat.MessageAction.getButtons(message, 'search');
+			const el = Blaze.toHTMLWithData(Template.messageDropdown, { actions });
+			t.$(`\#${message_id} .message-cog-container`).append(el);
+			const dropDown = t.$(`\#${message_id} .message-dropdown`);
+			return dropDown.show();
+		}
 	},
 
 	'click .load-more button'(e, t) {
