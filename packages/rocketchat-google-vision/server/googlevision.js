@@ -122,7 +122,7 @@ class GoogleVision {
 
 	getAnnotations(visionTypes, visionData) {
 		if (visionTypes.length === 1) {
-			_visionData = {};
+			const _visionData = {};
 			_visionData[`${visionTypes[0]}`] = visionData;
 			visionData = _visionData;
 		}
@@ -139,6 +139,7 @@ class GoogleVision {
 						break;
 					case 'safeSearch':
 						results['safeSearch'] = visionData['safeSearch'];
+						break;
 					case 'properties':
 						results['colors'] = visionData[index]['colors'];
 						break;
