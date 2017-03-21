@@ -36,7 +36,7 @@ Package.onUse(function(api) {
 	api.addFiles('client/lib/accounts.coffee', 'client');
 	api.addFiles('client/lib/avatar.coffee', 'client');
 	api.addFiles('client/lib/chatMessages.coffee', 'client');
-	api.addFiles('client/lib/collections.coffee', 'client');
+	api.addFiles('client/lib/collections.js', 'client');
 	api.addFiles('client/lib/customEventPolyfill.js', 'client');
 	api.addFiles('client/lib/fileUpload.coffee', 'client');
 	api.addFiles('client/lib/fireEvent.js', 'client');
