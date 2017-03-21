@@ -2,22 +2,22 @@ import toastr from 'toastr';
 /* globals LivechatIntegration */
 Template.livechatIntegrations.helpers({
 	webhookUrl() {
-		let setting = LivechatIntegration.findOne('Livechat_webhookUrl');
+		const setting = LivechatIntegration.findOne('Livechat_webhookUrl');
 		return setting && setting.value;
 	},
 	secretToken() {
-		let setting = LivechatIntegration.findOne('Livechat_secret_token');
+		const setting = LivechatIntegration.findOne('Livechat_secret_token');
 		return setting && setting.value;
 	},
 	disableTest() {
 		return Template.instance().disableTest.get();
 	},
 	sendOnCloseChecked() {
-		let setting = LivechatIntegration.findOne('Livechat_webhook_on_close');
+		const setting = LivechatIntegration.findOne('Livechat_webhook_on_close');
 		return setting && setting.value;
 	},
 	sendOnOfflineChecked() {
-		let setting = LivechatIntegration.findOne('Livechat_webhook_on_offline_msg');
+		const setting = LivechatIntegration.findOne('Livechat_webhook_on_offline_msg');
 		return setting && setting.value;
 	}
 });
@@ -26,7 +26,7 @@ Template.livechatIntegrations.onCreated(function() {
 	this.disableTest = new ReactiveVar(true);
 
 	this.autorun(() => {
-		let webhook = LivechatIntegration.findOne('Livechat_webhookUrl');
+		const webhook = LivechatIntegration.findOne('Livechat_webhookUrl');
 		this.disableTest.set(!webhook || _.isEmpty(webhook.value));
 	});
 
@@ -35,7 +35,7 @@ Template.livechatIntegrations.onCreated(function() {
 
 Template.livechatIntegrations.events({
 	'change #webhookUrl, blur #webhookUrl'(e, instance) {
-		let setting = LivechatIntegration.findOne('Livechat_webhookUrl');
+		const setting = LivechatIntegration.findOne('Livechat_webhookUrl');
 		instance.disableTest.set(!setting || e.currentTarget.value !== setting.value);
 	},
 	'click .test'(e, instance) {
@@ -51,10 +51,10 @@ Template.livechatIntegrations.events({
 	'click .reset-settings'(e, instance) {
 		e.preventDefault();
 
-		let webhookUrl = LivechatIntegration.findOne('Livechat_webhookUrl');
-		let secretToken = LivechatIntegration.findOne('Livechat_secret_token');
-		let webhookOnClose = LivechatIntegration.findOne('Livechat_webhook_on_close');
-		let webhookOnOfflineMsg = LivechatIntegration.findOne('Livechat_webhook_on_offline_msg');
+		const webhookUrl = LivechatIntegration.findOne('Livechat_webhookUrl');
+		const secretToken = LivechatIntegration.findOne('Livechat_secret_token');
+		const webhookOnClose = LivechatIntegration.findOne('Livechat_webhook_on_close');
+		const webhookOnOfflineMsg = LivechatIntegration.findOne('Livechat_webhook_on_offline_msg');
 
 		instance.$('#webhookUrl').val(webhookUrl && webhookUrl.value);
 		instance.$('#secretToken').val(secretToken && secretToken.value);

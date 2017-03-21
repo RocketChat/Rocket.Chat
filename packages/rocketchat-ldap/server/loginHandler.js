@@ -12,7 +12,7 @@ function fallbackDefaultAccountSystem(bind, username, password) {
 		}
 	}
 
-	logger.info('Fallback to default account systen', username);
+	logger.info('Fallback to default account system', username);
 
 	const loginRequest = {
 		user: username,
@@ -83,7 +83,7 @@ Accounts.registerLoginHandler('ldap', function(loginRequest) {
 	// Look to see if user already exists
 	let userQuery;
 
-	let Unique_Identifier_Field = getLdapUserUniqueID(ldapUser);
+	const Unique_Identifier_Field = getLdapUserUniqueID(ldapUser);
 	let user;
 
 	if (Unique_Identifier_Field) {

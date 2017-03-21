@@ -34,7 +34,10 @@ Template.oembedUrlWidget.helpers
 
 		decodedOgImage = @meta.ogImage?.replace?(/&amp;/g, '&')
 
-		url = decodedOgImage or this.meta.twitterImage
+		url = this.meta.msapplicationTileImage or decodedOgImage or this.meta.twitterImage
+
+		if not url?
+			return
 
 		if url.indexOf('//') is 0
 			url = "#{this.parsedUrl.protocol}#{url}"

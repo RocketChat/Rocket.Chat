@@ -12,5 +12,4 @@ class Page {
 		this.body.waitForExist();
 	}
 }
-
 module.exports = Page;

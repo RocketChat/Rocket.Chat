@@ -19,8 +19,6 @@ Meteor.publish 'oauthClient', (clientId) ->
 
 
 RocketChat.API.v1.addAuthMethod ->
-	console.log @request.method, @request.url
-
 	headerToken = @request.headers['authorization']
 	getToken = @request.query.access_token
 
@@ -54,5 +52,4 @@ RocketChat.API.v1.addAuthMethod ->
 		# console.log 'user not found'.red
 		return
 
-	return user: user
-
+	return user: _.omit(user, '$loki')

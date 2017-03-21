@@ -14,6 +14,14 @@ Meteor.startup(function() {
 		i18nLabel: 'Display_offline_form'
 	});
 
+	RocketChat.settings.add('Livechat_validate_offline_email', true, {
+		type: 'boolean',
+		group: 'Livechat',
+		public: true,
+		section: 'Offline',
+		i18nLabel: 'Validate_email_address'
+	});
+
 	RocketChat.settings.add('Livechat_offline_form_unavailable', '', {
 		type: 'string',
 		group: 'Livechat',
@@ -96,35 +104,35 @@ Meteor.startup(function() {
 	RocketChat.settings.add('Livechat_webhookUrl', false, {
 		type: 'string',
 		group: 'Livechat',
-		section: 'CRM Integration',
+		section: 'CRM_Integration',
 		i18nLabel: 'Webhook_URL'
 	});
 
 	RocketChat.settings.add('Livechat_secret_token', false, {
 		type: 'string',
 		group: 'Livechat',
-		section: 'CRM Integration',
+		section: 'CRM_Integration',
 		i18nLabel: 'Secret_token'
 	});
 
 	RocketChat.settings.add('Livechat_webhook_on_close', false, {
 		type: 'boolean',
 		group: 'Livechat',
-		section: 'CRM Integration',
+		section: 'CRM_Integration',
 		i18nLabel: 'Send_request_on_chat_close'
 	});
 
 	RocketChat.settings.add('Livechat_webhook_on_offline_msg', false, {
 		type: 'boolean',
 		group: 'Livechat',
-		section: 'CRM Integration',
+		section: 'CRM_Integration',
 		i18nLabel: 'Send_request_on_offline_messages'
 	});
 
 	RocketChat.settings.add('Livechat_Knowledge_Enabled', false, {
 		type: 'boolean',
 		group: 'Livechat',
-		section: 'Knowledge Base',
+		section: 'Knowledge_Base',
 		public: true,
 		i18nLabel: 'Enabled'
 	});
@@ -132,7 +140,7 @@ Meteor.startup(function() {
 	RocketChat.settings.add('Livechat_Knowledge_Apiai_Key', '', {
 		type: 'string',
 		group: 'Livechat',
-		section: 'Knowledge Base',
+		section: 'Knowledge_Base',
 		public: true,
 		i18nLabel: 'Apiai_Key'
 	});
@@ -140,7 +148,7 @@ Meteor.startup(function() {
 	RocketChat.settings.add('Livechat_Knowledge_Apiai_Language', 'en', {
 		type: 'string',
 		group: 'Livechat',
-		section: 'Knowledge Base',
+		section: 'Knowledge_Base',
 		public: true,
 		i18nLabel: 'Apiai_Language'
 	});
@@ -219,4 +227,11 @@ Meteor.startup(function() {
 		enableQuery: { _id: 'Livechat_Routing_Method', value: 'Guest_Pool' }
 	});
 
+	RocketChat.settings.add('Livechat_AllowedDomainsList', '', {
+		type: 'string',
+		group: 'Livechat',
+		public: true,
+		i18nLabel: 'Livechat_AllowedDomainsList',
+		i18nDescription: 'Domains_allowed_to_embed_the_livechat_widget'
+	});
 });

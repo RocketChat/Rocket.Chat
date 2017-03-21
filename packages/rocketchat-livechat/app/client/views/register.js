@@ -26,7 +26,7 @@ Template.register.events({
 		var $email, $name;
 		e.preventDefault();
 
-		let start = () => {
+		const start = () => {
 			instance.hideError();
 			if (instance.request === 'video') {
 				LivechatVideoCall.request();
@@ -56,6 +56,7 @@ Template.register.events({
 				if (error != null) {
 					return instance.showError(error.reason);
 				}
+				parentCall('callback', ['pre-chat-form-submit', _.omit(guest, 'token')]);
 				Meteor.loginWithToken(result.token, function(error) {
 					if (error) {
 						return instance.showError(error.reason);

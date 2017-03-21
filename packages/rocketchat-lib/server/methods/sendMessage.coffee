@@ -50,6 +50,7 @@ Meteor.methods
 		if Meteor.settings.public.sandstorm
 			message.sandstormSessionId = this.connection.sandstormSessionId()
 
+		RocketChat.metrics.messagesSent.inc() # This line needs to be moved to it's proper place. See the comments on: https://github.com/RocketChat/Rocket.Chat/pull/5736
 		RocketChat.sendMessage user, message, room
 
 # Limit a user, who does not have the "bot" role, to sending 5 msgs/second
