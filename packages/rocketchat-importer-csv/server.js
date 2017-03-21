@@ -19,7 +19,7 @@ Importer.CSV = class ImporterCSV extends Importer.Base {
 		let tempChannels = [];
 		let tempUsers = [];
 		const tempMessages = new Map();
-		for (let entry of zipEntries) {
+		for (const entry of zipEntries) {
 			this.logger.debug(`Entry: ${entry.entryName}`);
 
 			//Ignore anything that has `__MACOSX` in it's name, as sadly these things seem to mess everything up
@@ -98,12 +98,12 @@ Importer.CSV = class ImporterCSV extends Importer.Base {
 		// Save the messages records to the import record for `startImport` usage
 		super.updateProgress(Importer.ProgressStep.PREPARING_MESSAGES);
 		let messagesCount = 0;
-		for (let [channel, messagesMap] of tempMessages.entries()) {
+		for (const [channel, messagesMap] of tempMessages.entries()) {
 			if (!this.messages.get(channel)) {
 				this.messages.set(channel, new Map());
 			}
 
-			for (let [msgGroupData, msgs] of messagesMap.entries()) {
+			for (const [msgGroupData, msgs] of messagesMap.entries()) {
 				messagesCount += msgs.length;
 				super.updateRecord({ 'messagesstatus': `${channel}/${msgGroupData}` });
 
@@ -141,8 +141,8 @@ Importer.CSV = class ImporterCSV extends Importer.Base {
 		const started = Date.now();
 
 		//Ensure we're only going to import the users that the user has selected
-		for (let user of importSelection.users) {
-			for (let u of this.users.users) {
+		for (const user of importSelection.users) {
+			for (const u of this.users.users) {
 				if (u.id === user.user_id) {
 					u.do_import = user.do_import;
 				}
@@ -151,8 +151,8 @@ Importer.CSV = class ImporterCSV extends Importer.Base {
 		this.collection.update({ _id: this.users._id }, { $set: { 'users': this.users.users }});
 
 		//Ensure we're only importing the channels the user has selected.
-		for (let channel of importSelection.channels) {
-			for (let c of this.channels.channels) {
+		for (const channel of importSelection.channels) {
+			for (const c of this.channels.channels) {
 				if (c.id === channel.channel_id) {
 					c.do_import = channel.do_import;
 				}
@@ -164,7 +164,7 @@ Importer.CSV = class ImporterCSV extends Importer.Base {
 		Meteor.defer(() => {
 			super.updateProgress(Importer.ProgressStep.IMPORTING_USERS);
 			//Import the users
-			for (let u of this.users.users) {
+			for (const u of this.users.users) {
 				if (!u.do_import) {
 					continue;
 				}
@@ -198,13 +198,13 @@ Importer.CSV = class ImporterCSV extends Importer.Base {
 
 			//Import the channels
 			super.updateProgress(Importer.ProgressStep.IMPORTING_CHANNELS);
-			for (let c of this.channels.channels) {
+			for (const c of this.channels.channels) {
 				if (!c.do_import) {
 					continue;
 				}
 
 				Meteor.runAsUser(startedByUserId, () => {
-					let existantRoom = RocketChat.models.Rooms.findOneByName(c.name);
+					const existantRoom = RocketChat.models.Rooms.findOneByName(c.name);
 					//If the room exists or the name of it is 'general', then we don't need to create it again
 					if (existantRoom || c.name.toUpperCase() === 'GENERAL') {
 						c.rocketId = c.name.toUpperCase() === 'GENERAL' ? 'GENERAL' : existantRoom._id;
@@ -212,7 +212,7 @@ Importer.CSV = class ImporterCSV extends Importer.Base {
 					} else {
 						//Find the rocketchatId of the user who created this channel
 						let creatorId = startedByUserId;
-						for (let u of this.users.users) {
+						for (const u of this.users.users) {
 							if (u.username === c.creator && u.do_import) {
 								creatorId = u.rocketId;
 							}
@@ -234,7 +234,7 @@ Importer.CSV = class ImporterCSV extends Importer.Base {
 
 			//Import the Messages
 			super.updateProgress(Importer.ProgressStep.IMPORTING_MESSAGES);
-			for (let [ch, messagesMap] of this.messages.entries()) {
+			for (const [ch, messagesMap] of this.messages.entries()) {
 				const csvChannel = this.getChannelFromName(ch);
 				if (!csvChannel.do_import) {
 					continue;
@@ -242,9 +242,9 @@ Importer.CSV = class ImporterCSV extends Importer.Base {
 
 				const room = RocketChat.models.Rooms.findOneById(csvChannel.rocketId, { fields: { usernames: 1, t: 1, name: 1 } });
 				Meteor.runAsUser(startedByUserId, () => {
-					for (let [msgGroupData, msgs] of messagesMap.entries()) {
+					for (const [msgGroupData, msgs] of messagesMap.entries()) {
 						super.updateRecord({ 'messagesstatus': `${ch}/${msgGroupData}.${msgs.messages.length}` });
-						for (let msg of msgs.messages) {
+						for (const msg of msgs.messages) {
 							if (isNaN(new Date(parseInt(msg.ts)))) {
 								this.logger.warn(`Timestamp on a message in ${ch}/${msgGroupData} is invalid`);
 								super.addCountCompleted(1);
@@ -290,7 +290,7 @@ Importer.CSV = class ImporterCSV extends Importer.Base {
 	}
 
 	getChannelFromName(channelName) {
-		for (let ch of this.channels.channels) {
+		for (const ch of this.channels.channels) {
 			if (ch.name === channelName) {
 				return ch;
 			}
@@ -298,7 +298,7 @@ Importer.CSV = class ImporterCSV extends Importer.Base {
 	}
 
 	getUserFromUsername(username) {
-		for (let u of this.users.users) {
+		for (const u of this.users.users) {
 			if (u.username === username) {
 				return RocketChat.models.Users.findOneById(u.rocketId, { fields: { username: 1 }});
 			}

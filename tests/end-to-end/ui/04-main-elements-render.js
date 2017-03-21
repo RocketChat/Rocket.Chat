@@ -12,8 +12,8 @@ import {username, email, password} from '../../data/user.js';
 describe('Main Elements Render', function() {
 	before(()=>{
 		checkIfUserIsValid(username, email, password);
-		sideNav.getChannelFromList('general').waitForExist(5000);
-		sideNav.openChannel('general');
+		sideNav.spotlightSearch.waitForVisible(10000);
+		sideNav.searchChannel('general');
 	});
 
 	describe('side nav bar', () => {
@@ -42,20 +42,49 @@ describe('Main Elements Render', function() {
 				sideNav.newDirectMessageBtn.isVisible().should.be.true;
 			});
 
-			it('should show the plus icon', () => {
-				sideNav.newDirectMessageIcon.isVisible().should.be.true;
-			});
-
-			it('should show the "More Direct Messages" button', () => {
-				sideNav.moreDirectMessages.isVisible().should.be.true;
-			});
-
 			it('should show "general" channel', () => {
 				sideNav.general.isVisible().should.be.true;
 			});
 
-			it.skip('should not show eye icon on general', () => {
-				sideNav.channelHoverIcon.isVisible().should.be.true;
+			it('should show spotlight search bar', () => {
+				sideNav.spotlightSearch.isVisible().should.be.true;
+			});
+		});
+
+		describe('spotlight search render', () => {
+			it('should show spotlight search bar', () => {
+				sideNav.spotlightSearch.isVisible().should.be.true;
+			});
+
+			it('should click the spotlight and show the channel list', () => {
+				sideNav.spotlightSearch.waitForVisible(5000);
+				sideNav.spotlightSearch.click();
+				sideNav.spotlightSearchPopUp.waitForVisible(5000);
+				sideNav.spotlightSearchPopUp.isVisible().should.be.true;
+			});
+
+			it('when the spotlight loses focus the list should disappear', () => {
+				sideNav.spotlightSearchPopUp.waitForVisible(5000);
+				sideNav.spotlightSearchPopUp.isVisible().should.be.true;
+				mainContent.messageInput.click();
+				sideNav.spotlightSearchPopUp.waitForVisible(5000, true);
+				sideNav.spotlightSearchPopUp.isVisible().should.be.false;
+			});
+
+			it('should add text to the spotlight and show the channel list', () => {
+				sideNav.spotlightSearch.waitForVisible(5000);
+				sideNav.spotlightSearch.setValue('rocket.cat');
+				sideNav.spotlightSearchPopUp.waitForVisible(5000);
+				sideNav.spotlightSearchPopUp.isVisible().should.be.true;
+			});
+
+			it('the text on the spotlight and the list should disappear when lost focus', () => {
+				sideNav.spotlightSearchPopUp.waitForVisible(5000);
+				sideNav.spotlightSearchPopUp.isVisible().should.be.true;
+				mainContent.messageInput.click();
+				sideNav.spotlightSearchPopUp.waitForVisible(5000, true);
+				sideNav.spotlightSearchPopUp.isVisible().should.be.false;
+				sideNav.spotlightSearch.getText().should.equal('');
 			});
 		});
 	});
@@ -195,11 +224,11 @@ describe('Main Elements Render', function() {
 			});
 			describe('Room Info Tab', () => {
 				before(()=> {
-					flexTab.channelTab.click();
+					flexTab.operateFlexTab('info', true);
 				});
 
 				after(()=> {
-					flexTab.channelTab.click();
+					flexTab.operateFlexTab('info', false);
 				});
 
 				it('should show the room info button', () => {
@@ -220,11 +249,11 @@ describe('Main Elements Render', function() {
 
 			describe('Search Tab', () => {
 				before(()=> {
-					flexTab.searchTab.click();
+					flexTab.operateFlexTab('search', true);
 				});
 
 				after(()=> {
-					flexTab.searchTab.click();
+					flexTab.operateFlexTab('search', false);
 				});
 
 				it('should show the message search  button', () => {
@@ -238,37 +267,35 @@ describe('Main Elements Render', function() {
 
 			describe('Members Tab', () => {
 				before(()=> {
-					flexTab.membersTab.click();
+					flexTab.operateFlexTab('members', true);
 				});
 
 				after(()=> {
-					flexTab.membersTab.click();
+					flexTab.operateFlexTab('members', false);
 				});
 
 				it('should show the members tab button', () => {
+					flexTab.membersTab.waitForVisible(5000);
 					flexTab.membersTab.isVisible().should.be.true;
 				});
 
 				it('should show the members content', () => {
+					flexTab.membersTabContent.waitForVisible(5000);
 					flexTab.membersTabContent.isVisible().should.be.true;
 				});
 
-				it.skip('should show the members search bar', () => {
-					flexTab.userSearchBar.isVisible().should.be.true;
-				});
-
-				it.skip('should show the show all link', () => {
+				it('should show the show all link', () => {
 					flexTab.showAll.isVisible().should.be.true;
 				});
 			});
 
 			describe('Notifications Tab', () => {
 				before(()=> {
-					flexTab.notificationsTab.click();
+					flexTab.operateFlexTab('notifications', true);
 				});
 
 				after(()=> {
-					flexTab.notificationsTab.click();
+					flexTab.operateFlexTab('notifications', false);
 				});
 
 				it('should show the notifications button', () => {
@@ -282,11 +309,11 @@ describe('Main Elements Render', function() {
 
 			describe('Files Tab', () => {
 				before(()=> {
-					flexTab.filesTab.click();
+					flexTab.operateFlexTab('files', true);
 				});
 
 				after(()=> {
-					flexTab.filesTab.click();
+					flexTab.operateFlexTab('files', false);
 				});
 
 				it('should show the files button', () => {
@@ -300,11 +327,11 @@ describe('Main Elements Render', function() {
 
 			describe('Mentions Tab', () => {
 				before(()=> {
-					flexTab.mentionsTab.click();
+					flexTab.operateFlexTab('mentions', true);
 				});
 
 				after(()=> {
-					flexTab.mentionsTab.click();
+					flexTab.operateFlexTab('mentions', false);
 				});
 
 				it('should show the mentions button', () => {
@@ -318,11 +345,11 @@ describe('Main Elements Render', function() {
 
 			describe('Starred Messages Tab', () => {
 				before(()=> {
-					flexTab.starredTab.click();
+					flexTab.operateFlexTab('starred', true);
 				});
 
 				after(()=> {
-					flexTab.starredTab.click();
+					flexTab.operateFlexTab('starred', false);
 				});
 
 				it('should show the starred messages button', () => {
@@ -336,11 +363,11 @@ describe('Main Elements Render', function() {
 
 			describe('Pinned Messages Tab', () => {
 				before(()=> {
-					flexTab.pinnedTab.click();
+					flexTab.operateFlexTab('pinned', true);
 				});
 
 				after(()=> {
-					flexTab.pinnedTab.click();
+					flexTab.operateFlexTab('pinned', false);
 				});
 
 				it('should show the pinned button', () => {

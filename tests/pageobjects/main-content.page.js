@@ -64,6 +64,7 @@ class MainContent extends Page {
 	get messagePopUpItems() { return browser.element('.message-popup-items'); }
 	get messagePopUpFirstItem() { return browser.element('.popup-item.selected'); }
 	get mentionAllPopUp() { return browser.element('.popup-item[data-id="all"]'); }
+	get joinChannelBtn() { return browser.element('.button.join'); }
 
 	sendMessage(text) {
 		this.setTextToInput(text);
@@ -112,6 +113,19 @@ class MainContent extends Page {
 		browser.waitUntil(function() {
 			return browser.getText('.message:last-child .body') === text;
 		}, 2000);
+	}
+
+	waitForLastMessageUserEqualsText(text) {
+		browser.waitUntil(function() {
+			return browser.getText('.message:last-child .user-card-message:nth-of-type(2)') === text;
+		}, 2000);
+	}
+
+	tryToMentionAll() {
+		this.addTextToInput('@all');
+		this.sendBtn.click();
+		this.waitForLastMessageEqualsText('Notify all in this room is not allowed');
+		this.lastMessage.getText().should.equal('Notify all in this room is not allowed');
 	}
 
 	//do one of the message actions, based on the "action" parameter inserted.

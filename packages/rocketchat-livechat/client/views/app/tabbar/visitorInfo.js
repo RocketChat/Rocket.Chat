@@ -30,27 +30,27 @@ Template.visitorInfo.helpers({
 	},
 
 	customFields() {
-		let fields = [];
+		const fields = [];
 		let livechatData = {};
 		const user = Template.instance().user.get();
 		if (user) {
 			livechatData = _.extend(livechatData, user.livechatData);
 		}
 
-		let data = Template.currentData();
+		const data = Template.currentData();
 		if (data && data.rid) {
-			let room = RocketChat.models.Rooms.findOne(data.rid);
+			const room = RocketChat.models.Rooms.findOne(data.rid);
 			if (room) {
 				livechatData = _.extend(livechatData, room.livechatData);
 			}
 		}
 
 		if (!_.isEmpty(livechatData)) {
-			for (let _id in livechatData) {
+			for (const _id in livechatData) {
 				if (livechatData.hasOwnProperty(_id)) {
-					let customFields = Template.instance().customFields.get();
+					const customFields = Template.instance().customFields.get();
 					if (customFields) {
-						let field = _.findWhere(customFields, { _id: _id });
+						const field = _.findWhere(customFields, { _id: _id });
 						if (field && field.visibility !== 'hidden') {
 							fields.push({ label: field.label, value: livechatData[_id] });
 						}
@@ -229,7 +229,7 @@ Template.visitorInfo.onCreated(function() {
 
 	if (currentData && currentData.rid) {
 		this.autorun(() => {
-			let room = ChatRoom.findOne(currentData.rid);
+			const room = ChatRoom.findOne(currentData.rid);
 			if (room && room.v && room.v._id) {
 				this.visitorId.set(room.v._id);
 			} else {

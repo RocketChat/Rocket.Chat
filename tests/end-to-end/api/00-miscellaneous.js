@@ -6,7 +6,9 @@ import {getCredentials, api, login, request, credentials} from '../../data/api-d
 import {adminEmail} from '../../data/user.js';
 import supertest from 'supertest';
 
-describe('miscellaneous', () => {
+describe('miscellaneous', function() {
+	this.retries(0);
+
 	before((done) => {
 		request.post(api('login'))
 		.send(login)
@@ -27,14 +29,6 @@ describe('miscellaneous', () => {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('version');
-					expect(res.body).to.have.deep.property('build.date');
-					expect(res.body).to.have.deep.property('build.nodeVersion');
-					expect(res.body).to.have.deep.property('build.arch');
-					expect(res.body).to.have.deep.property('build.platform');
-					expect(res.body).to.have.deep.property('build.osRelease');
-					expect(res.body).to.have.deep.property('build.totalMemory');
-					expect(res.body).to.have.deep.property('build.freeMemory');
-					expect(res.body).to.have.deep.property('build.cpus');
 				})
 				.end(done);
 		});

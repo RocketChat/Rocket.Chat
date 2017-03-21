@@ -6,7 +6,9 @@ import {getCredentials, api, login, request, credentials, integration, log } fro
 import {adminEmail, password} from '../../data/user.js';
 import supertest from 'supertest';
 
-describe('integrations', () => {
+describe('integrations', function() {
+	this.retries(0);
+
 	it('/integrations.create', (done) => {
 		request.post(api('integrations.create'))
 			.set(credentials)
@@ -21,7 +23,8 @@ describe('integrations', () => {
 				triggerWords: ['!guggy'],
 				alias: 'guggy',
 				avatar: 'http://res.guggy.com/logo_128.png',
-				emoji: ':ghost:'
+				emoji: ':ghost:',
+				event: 'sendMessage'
 			})
 			.expect('Content-Type', 'application/json')
 			.expect(200)
@@ -32,6 +35,7 @@ describe('integrations', () => {
 				expect(res.body).to.have.deep.property('integration.type', 'webhook-outgoing');
 				expect(res.body).to.have.deep.property('integration.enabled', true);
 				expect(res.body).to.have.deep.property('integration.username', 'rocket.cat');
+				expect(res.body).to.have.deep.property('integration.event', 'sendMessage');
 			})
 			.end(done);
 	});

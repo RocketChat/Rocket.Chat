@@ -16,6 +16,7 @@
 * [Desktop apps](#desktop-apps)
 * [Deployment](#deployment)
    * [Snaps](#instant-server-intallation-with-snaps)
+   * [Layershift](#layershift)
    * [Sandstorm.io](#sandstormio) 
    * [DPlatform](#dplatform) 
    * [IndieHosters](#indiehosters)
@@ -87,7 +88,17 @@ sudo snap install rocketchat-server
 
 Installing snaps is very quick.  By running that command you have your full Rocket.Chat server up and running.  Snaps are secure.  They are isolated with all of their dependencies.  Snaps also auto update when we release new versions. 
 
+Our snap features a built-in reverse proxy that can request and maintain free letsencrypt SSL certificates. You can go from zero to a public-facing SSL-secured Rocket.Chat server in less than 5 minutes.
+
 Find out more information about our snaps [here](https://rocket.chat/docs/installation/manual-installation/ubuntu/snaps/)
+
+## Layershift
+
+Instantly deploy your Rocket.Chat server for free on next generation auto-scaling PaaS.
+
+[![Layershift Hosting](https://github.com/Sing-Li/bbug/raw/master/images/layershift.png)](http://jps.layershift.com/rocketchat/deploy.html)
+
+Painless SSL. Automatically scale your server cluster based on usage demand.
 
 ## Sandstorm.io
 Host your own Rocket.Chat server in four seconds flat:
@@ -97,7 +108,7 @@ Host your own Rocket.Chat server in four seconds flat:
 
 ## DPlatform
 
-Easiest way to install a ready-to-run Rocket.Chat server on a Linux machine, VM, or VPS - [@j8r's   DPlatform](https://github.com/j8r/DPlatform), now in Alpha! 
+Easiest way to install a ready-to-run Rocket.Chat server on a Linux machine, VM, or VPS
 
 [![DP deploy](https://raw.githubusercontent.com/DFabric/DPlatform-ShellCore/gh-pages/img/deploy.png)](https://dfabric.github.io/DPlatform-ShellCore)
 

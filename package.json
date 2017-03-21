@@ -1,41 +1,33 @@
 {
 	"name": "Rocket.Chat",
 	"description": "The Ultimate Open Source WebChat Platform",
-	"version": "0.51.0-develop",
+	"version": "0.53.0",
 	"author": {
 		"name": "Rocket.Chat",
 		"url": "https://rocket.chat/"
 	},
-	"contributors": [
-		{
-			"name": "Aaron Ogle",
-			"email": "aaron.ogle@rocket.chat"
-		},
-		{
-			"name": "Bradley Hilton",
-			"email": "bradley.hilton@rocket.chat"
-		},
-		{
-			"name": "Diego Sampaio",
-			"email": "diego.sampaio@rocket.chat"
-		},
-		{
-			"name": "Gabriel Engel",
-			"email": "gabriel.engel@rocket.chat"
-		},
-		{
-			"name": "Marcelo Schmidt",
-			"email": "marcelo.schmidt@rocket.chat"
-		},
-		{
-			"name": "Rodrigo Nascimento",
-			"email": "rodrigo.nascimento@rocket.chat"
-		},
-		{
-			"name": "Sing Li",
-			"email": "sing.li@rocket.chat"
-		}
-	],
+	"contributors": [{
+		"name": "Aaron Ogle",
+		"email": "aaron.ogle@rocket.chat"
+	}, {
+		"name": "Bradley Hilton",
+		"email": "bradley.hilton@rocket.chat"
+	}, {
+		"name": "Diego Sampaio",
+		"email": "diego.sampaio@rocket.chat"
+	}, {
+		"name": "Gabriel Engel",
+		"email": "gabriel.engel@rocket.chat"
+	}, {
+		"name": "Marcelo Schmidt",
+		"email": "marcelo.schmidt@rocket.chat"
+	}, {
+		"name": "Rodrigo Nascimento",
+		"email": "rodrigo.nascimento@rocket.chat"
+	}, {
+		"name": "Sing Li",
+		"email": "sing.li@rocket.chat"
+	}],
 	"keywords": [
 		"rocketchat",
 		"rocket",
@@ -44,11 +36,13 @@
 	"scripts": {
 		"start": "meteor npm i && meteor",
 		"lint": "eslint .",
+		"lint-fix": "eslint . --fix",
 		"stylelint": "stylelint **/*.less",
 		"test": "node .scripts/start.js",
 		"deploy": "npm run build && pm2 startOrRestart pm2.json",
 		"chimp-watch": "chimp --ddp=http://localhost:3000 --watch --mocha --path=tests/end-to-end",
-		"chimp-test": "chimp tests/chimp-config.js"
+		"chimp-test": "chimp tests/chimp-config.js",
+		"postinstall": "cd packages/rocketchat-katex && npm i"
 	},
 	"license": "MIT",
 	"repository": {
@@ -60,23 +54,25 @@
 		"email": "support@rocket.chat"
 	},
 	"devDependencies": {
-		"chimp": "^0.47.1",
-		"eslint": "^3.14.1",
-		"stylelint": "^7.7.1",
-		"supertest": "^2.0.1"
+		"chimp": "^0.47.2",
+		"eslint": "^3.17.0",
+		"stylelint": "^7.9.0",
+		"supertest": "^3.0.0"
 	},
 	"dependencies": {
-		"jquery": "^3.1.1",
-		"babel-runtime": "^6.22.0",
+		"babel-runtime": "^6.23.0",
 		"bcrypt": "^1.0.2",
+		"codemirror": "^5.24.2",
+		"file-type": "^4.1.0",
+		"highlight.js": "^9.9.0",
+		"jquery": "^3.1.1",
+		"mime-db": "^1.26.0",
+		"mime-type": "^3.0.4",
 		"moment": "^2.17.1",
 		"moment-timezone": "^0.5.11",
-		"toastr": "^2.1.2",
-		"mime-types": "^2.1.14",
-		"file-type": "^4.1.0",
-		"semver": "^5.3.0",
-		"codemirror": "^5.23.0",
 		"photoswipe": "^4.1.1",
-		"prom-client": "^7.0.1"
+		"prom-client": "^7.1.0",
+		"semver": "^5.3.0",
+		"toastr": "^2.1.2"
 	}
 }

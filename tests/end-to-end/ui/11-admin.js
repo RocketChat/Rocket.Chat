@@ -12,15 +12,13 @@ import {adminUsername, adminEmail, adminPassword} from '../../data/user.js';
 describe('Admin Login', () => {
 	before(() => {
 		checkIfUserIsAdmin(adminUsername, adminEmail, adminPassword);
-		sideNav.getChannelFromList('general').waitForExist(5000);
-		sideNav.openChannel('general');
+		sideNav.spotlightSearch.waitForVisible(10000);
+		sideNav.searchChannel('general');
 	});
 
 	after(() => {
 		sideNav.preferencesClose.waitForVisible(5000);
 		sideNav.preferencesClose.click();
-		sideNav.getChannelFromList('general').waitForExist(5000);
-		sideNav.openChannel('general');
 	});
 
 	describe('Admin view', () => {
@@ -210,7 +208,7 @@ describe('Admin Login', () => {
 			});
 
 
-			it.skip('should show rocket.cat', () => {
+			it('should show rocket.cat', () => {
 			//it cant find the user if there is too many users
 				admin.usersRocketCat.isVisible().should.be.true;
 			});

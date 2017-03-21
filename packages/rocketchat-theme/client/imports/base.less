@@ -202,7 +202,7 @@ blockquote {
 		}
 
 		&::after {
-			content: "unread messages";
+			content: attr(data-unread-text);
 			display: block;
 			position: absolute;
 			right: 0;
@@ -344,6 +344,7 @@ blockquote {
 			padding: 0.6rem 0.7rem;
 			text-align: left;
 			border-width: 0 0 1px;
+			user-select: text;
 		}
 
 		th {
@@ -431,7 +432,7 @@ blockquote {
 
 		> div {
 			float: left;
-			width: 70%;
+			width: 67%;
 
 			label {
 				display: inline-block;
@@ -490,6 +491,46 @@ blockquote {
 	}
 }
 
+@-ms-keyframes spinh {
+	from {
+		-ms-transform: rotateY(0deg);
+	}
+
+	to {
+		-ms-transform: rotateY(360deg);
+	}
+}
+
+@-moz-keyframes spinh {
+	from {
+		-moz-transform: rotateY(0deg);
+	}
+
+	to {
+		-moz-transform: rotateY(360deg);
+	}
+}
+
+@-webkit-keyframes spinh {
+	from {
+		-webkit-transform: rotateY(0deg);
+	}
+
+	to {
+		-webkit-transform: rotateY(360deg);
+	}
+}
+
+@keyframes spinh {
+	from {
+		transform: rotateY(0deg);
+	}
+
+	to {
+		transform: rotateY(360deg);
+	}
+}
+
 .rocket-h2 {
 	font-weight: 300;
 	text-transform: uppercase;
@@ -527,6 +568,7 @@ body {
 	height: 100%;
 	width: 100%;
 	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
 	line-height: 1rem;
 	padding: 0;
 	overflow: visible;
@@ -1324,7 +1366,7 @@ label.required::after {
 	.rooms-list {
 		direction: rtl;
 		position: absolute;
-		top: @header-min-height;
+		top: @header-min-height + @toolbar-height;
 		bottom: @footer-min-height;
 		width: 100%;
 		overflow-x: hidden;
@@ -1337,7 +1379,6 @@ label.required::after {
 			padding-left: 8px;
 			padding-bottom: 1em;
 			position: relative;
-			padding-top: 50px;
 		}
 	}
 
@@ -1372,7 +1413,7 @@ label.required::after {
 		top: 0;
 		left: 0;
 		width: 100%;
-		z-index: 2;
+		z-index: 3;
 		cursor: pointer;
 		min-height: @header-min-height;
 		height: @header-min-height;
@@ -1423,7 +1464,6 @@ label.required::after {
 			display: inline-block;
 			max-width: 222px;
 			max-height: 43px;
-			margin-bottom: -10px;
 		}
 	}
 
@@ -1434,22 +1474,12 @@ label.required::after {
 	}
 
 	h3 {
-		&:extend(.small-title);
-		cursor: pointer;
 		position: relative;
 		text-transform: uppercase;
 		font-weight: 500;
 		margin: 25px 0 0;
 		line-height: 28px;
 		padding-left: 10px;
-
-		&.add-room {
-			i {
-				position: absolute;
-				right: 6px;
-				top: 1px;
-			}
-		}
 	}
 
 	.unread {
@@ -1587,11 +1617,11 @@ label.required::after {
 		-webkit-justify-content: center;
 
 		&.top-unread-rooms {
-			top: 105px;
+			top: @header-min-height + @toolbar-height;
 		}
 
 		&.bottom-unread-rooms {
-			bottom: 70px;
+			bottom: @footer-min-height;
 		}
 
 		i {
@@ -1614,16 +1644,21 @@ label.required::after {
 }
 
 .toolbar {
-	position: fixed;
-	width: 244px;
-	z-index: 3;
-	top: 60px;
-	padding-top: 10px;
+	position: absolute;
+	width: 100%;
+	z-index: 2;
+	top: @header-min-height;
+	height: @toolbar-height;
+}
+
+.toolbar-wrapper {
+	margin: 10px 8px;
+	display: flex;
 }
 
 .toolbar-search {
-	padding-right: 8px;
 	position: relative;
+	width: 100%;
 }
 
 .toolbar-search__icon {
@@ -1637,9 +1672,10 @@ label.required::after {
 
 .toolbar-search__icon--cancel {
 	left: auto;
-	right: 8px;
+	right: 0;
 	opacity: 0;
 	transition: opacity 0.3s;
+	cursor: pointer;
 }
 
 .toolbar-search__input {
@@ -1647,6 +1683,20 @@ label.required::after {
 
 	&:focus + .toolbar-search__icon--cancel {
 		opacity: 1;
+	}
+}
+
+.toolbar-search__buttons {
+	display: flex;
+	align-items: center;
+	margin-left: 5px;
+
+	i {
+		width: 25px;
+		height: 25px;
+		line-height: 25px;
+		text-align: center;
+		cursor: pointer;
 	}
 }
 
@@ -2468,21 +2518,44 @@ label.required::after {
 	}
 
 	&.search-results-list {
-		top: 25px;
-		height: calc(~"100vh - 200px");
+		top: 0;
+		height: calc(~"100vh -" @header-min-height + @toolbar-height + @footer-min-height);
 		overflow-y: auto;
 		box-shadow: none;
 		border-radius: 0;
+		padding: 25px 0 0 8px;
+		direction: rtl;
+		text-align: left;
 
 		.popup-item {
 			white-space: nowrap;
 			overflow: hidden;
 			text-overflow: ellipsis;
 			padding-left: 6px;
+			position: relative;
+			direction: ltr;
+			height: 30px;
+
+			i::before {
+				margin-right: 0;
+			}
+		}
+
+		.room-title {
+			line-height: 30px;
+			font-size: 15px;
+		}
+
+		.bold {
+			font-weight: 700;
 		}
 
 		.unread {
 			top: 8px;
+		}
+
+		.loading-animation {
+			position: relative;
 		}
 	}
 }
@@ -2990,6 +3063,10 @@ body:not(.is-cordova) {
 		min-height: 26px;
 		padding: 5px 15px 0 37px;
 
+		&:not(.system) .message-cog-container {
+			display: inline-block;
+		}
+
 		.body {
 			display: inline;
 
@@ -3056,10 +3133,6 @@ body:not(.is-cordova) {
 				}
 			}
 		}
-	}
-
-	.message-cog-container {
-		display: inline-block;
 	}
 }
 
@@ -4029,7 +4102,9 @@ body:not(.is-cordova) {
 }
 
 .social-login {
-	margin-bottom: 20px;
+	margin-bottom: 16px;
+	margin-left: -4px;
+	flex-wrap: wrap;
 
 	h3 {
 		&:extend(.rocket-h3);
@@ -4040,8 +4115,12 @@ body:not(.is-cordova) {
 	.button {
 		line-height: 22px;
 		font-size: 18px;
-		-webkit-flex-grow: 1;
 		flex-grow: 1;
+		margin-bottom: 4px;
+
+		&:first-child {
+			margin-left: 4px;
+		}
 	}
 }
 
@@ -4071,9 +4150,9 @@ body:not(.is-cordova) {
 			top: 0;
 			right: 0;
 			z-index: 20;
-			width: 520px;
 			padding: 10px;
 			max-width: 100%;
+			max-height: 150px;
 		}
 	}
 
@@ -4656,8 +4735,7 @@ body:not(.is-cordova) {
 
 	.buttons {
 		text-align: right;
-		border-width: 0 1px 1px;
-		background-color: #f7f7f7;
+		margin-top: 10px;
 	}
 
 	&.code-mirror-box-fullscreen {
@@ -4842,6 +4920,11 @@ a + br.only-after-a {
 	}
 }
 
+.user-info.deactivated {
+	text-decoration: line-through;
+	opacity: 0.8;
+}
+
 // MEDIA QUERIES
 
 @media all and(max-width: 1100px) {
@@ -4949,7 +5032,7 @@ a + br.only-after-a {
 	}
 
 	.social-login {
-		margin-bottom: 10px;
+		margin-bottom: 6px;
 	}
 
 	.message-form textarea {

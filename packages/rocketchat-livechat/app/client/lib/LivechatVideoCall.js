@@ -46,7 +46,7 @@ LivechatVideoCall = new (class LivechatVideoCall {
 
 	start(domain, room) {
 		Meteor.defer(() => {
-			let interfaceConfig = {};
+			const interfaceConfig = {};
 			interfaceConfig['TOOLBAR_BUTTONS'] = '[""]';
 			interfaceConfig['APP_NAME'] = '"Livechat"';
 			interfaceConfig['INITIAL_TOOLBAR_TIMEOUT'] = '5000';
