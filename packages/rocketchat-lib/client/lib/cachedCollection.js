@@ -101,7 +101,7 @@ class CachedCollection {
 		version = 6,
 		maxCacheTime = 60*60*24*30
 	}) {
-		this.collection = collection || new Meteor.Collection(null);
+		this.collection = collection || new Mongo.Collection(null);
 
 		this.ready = new ReactiveVar(false);
 		this.name = name;

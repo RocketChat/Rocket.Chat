@@ -1,5 +1,5 @@
 import toastr from 'toastr'
-TempSettings = new Meteor.Collection null
+TempSettings = new Mongo.Collection null
 RocketChat.TempSettings = TempSettings
 
 getDefaultSetting = (settingId) ->
