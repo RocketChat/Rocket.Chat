@@ -4,7 +4,7 @@ import moment from 'moment';
 
 Template.livechatOfficeHours.helpers({
 	days() {
-		return LivechatOfficeHour.find();
+		return LivechatOfficeHour.find({}, { sort: { code: 1 } });
 	},
 	startName(day) {
 		return day.day + '_start';
