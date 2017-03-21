@@ -26,7 +26,7 @@ Template.sideNav.helpers({
 
 	canShowRoomType() {
 		let userPref = undefined;
-		if (Meteor.user().settings && Meteor.user().settings.preferences && Meteor.user().settings.preferences.mergeChannels) {
+		if (Meteor.user() && Meteor.user().settings && Meteor.user().settings.preferences && Meteor.user().settings.preferences.mergeChannels) {
 			userPref = Meteor.user().settings.preferences.mergeChannels;
 		}
 		const globalPref = RocketChat.settings.get('UI_Merge_Channels_Groups');
