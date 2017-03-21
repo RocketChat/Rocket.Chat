@@ -5,10 +5,7 @@ Package.describe({
 });
 
 Package.onUse(function(api) {
-	api.use([
-		'coffeescript'
-	], 'client');
-	api.addFiles([
-		'favico.js'
-	], 'client');
+	api.use('coffeescript', 'client');
+
+	api.addFiles('favico.js', 'client');
 });
