@@ -8,7 +8,7 @@ Template.directMessages.helpers({
 	rooms() {
 		const query = { t: { $in: ['d']}, f: { $ne: true }, open: true };
 
-		if (Meteor.user().settings && Meteor.user().settings.preferences && Meteor.user().settings.preferences.unreadRoomsMode) {
+		if (Meteor.user() && Meteor.user().settings && Meteor.user().settings.preferences && Meteor.user().settings.preferences.unreadRoomsMode) {
 			query.alert =
 				{$ne: true};
 		}
