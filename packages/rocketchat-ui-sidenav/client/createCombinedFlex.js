@@ -102,7 +102,7 @@ Template.createCombinedFlex.events({
 
 	'click .save-channel'(e, instance) {
 		const err = SideNav.validate();
-		const name = instance.find('#channel-name').value.toLowerCase().trim();
+		const name = instance.find('#channel-name').value.toLowerCase().trim().replace(/</g, '&lt;').replace(/>/g, '&gt;');
 		const privateGroup = instance.find('#channel-type').checked;
 		const readOnly = instance.find('#channel-ro').checked;
 		const createRoute = privateGroup ? 'createPrivateGroup' : 'createChannel';
