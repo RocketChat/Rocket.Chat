@@ -58,6 +58,7 @@ RocketChat.callbacks.add 'oembed:beforeGetUrlContent', (data) ->
 			data.urlObj.pathname = consumerUrl.pathname
 			data.urlObj.query = consumerUrl.query
 			delete data.urlObj.search
+			delete data.urlObj.host
 
 	return data
 , RocketChat.callbacks.priority.MEDIUM, 'oembed-providers-before'

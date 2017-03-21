@@ -920,7 +920,7 @@
 - Remove redundant Debug_level settings
 - Remove the smicolon on end of 25 line (#3419)
 - Send livechat webhooks
-- Use <button/> rather than <i/> for tab buttons.
+- Use `<button/>` rather than `<i/>` for tab buttons.
 
 ## 0.32.0 - 2016-May-30
 
