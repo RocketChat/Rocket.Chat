@@ -1,5 +1,9 @@
 # History
 
+## NEXT
+
+- [NEW] Permission `join-without-join-code` assigned to admins and bots by default (#6139)
+
 ## 0.54.0 - 2017-Mar-22
 
 ### Meteor update to 1.4.3.1
