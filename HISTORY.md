@@ -1,5 +1,9 @@
 # History
 
+## NEXT
+
+- [FIX] Images on attachments were not loading except for uploaded files.
+
 ## 0.54.0 - 2017-Mar-22
 
 ### Meteor update to 1.4.3.1
