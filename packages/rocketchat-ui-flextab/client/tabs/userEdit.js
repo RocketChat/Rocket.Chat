@@ -14,10 +14,7 @@ Template.userEdit.helpers({
 	},
 
 	role() {
-		const models = RocketChat.models;
-		if (models) {
-			return models.Roles.find({}, { sort: { description: 1, _id: 1 } });
-		}
+		return RocketChat.models.Roles.find({}, { sort: { description: 1, _id: 1 } });
 	},
 
 	selectUserRole() {
