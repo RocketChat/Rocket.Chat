@@ -43,24 +43,25 @@ Template.userInfo.helpers({
 	},
 
 	canDirectMessage(username) {
-		return RocketChat.authz.hasAllPermission('create-d') && (Meteor.user && Meteor.user.username !== username);
+		const user = Meteor.user();
+		return RocketChat.authz.hasAllPermission('create-d') && user && user.username !== username;
 	},
 
 	linkedinUsername() {
 		const user = Template.instance().user.get();
-		if (user.services && user.services.linkedin && user.services.linkedin.publicProfileUrl) {
+		if (user && user.services && user.services.linkedin && user.services.linkedin.publicProfileUrl) {
 			return s.strRight(user.services.linkedin.publicProfileUrl), '/in/';
 		}
 	},
 
 	servicesMeteor() {
 		const user = Template.instance().user.get();
-		return (user.services != null ? user.services['meteor-developer'] : undefined);
+		return user && user.services && user.services['meteor-developer'];
 	},
 
 	userTime() {
 		const user = Template.instance().user.get();
-		if (user.utcOffset != null) {
+		if (user && user.utcOffset != null) {
 			return Template.instance().now.get().utcOffset(user.utcOffset).format(RocketChat.settings.get('Message_TimeFormat'));
 		}
 	},
@@ -77,7 +78,7 @@ Template.userInfo.helpers({
 		const room = ChatRoom.findOne(Session.get('openedRoom'));
 		const user = Template.instance().user.get();
 
-		return _.isArray(room != null ? room.muted : undefined) && (room.muted.indexOf(user != null ? user.username : undefined) !== -1);
+		return _.isArray(room && room.muted) && (room.muted.indexOf(user && user.username) !== -1);
 	},
 
 	canSetModerator() {
@@ -127,7 +128,7 @@ Template.userInfo.helpers({
 
 	active() {
 		const user = Template.instance().user.get();
-		return (user != null ? user.active : undefined);
+		return user && user.active;
 	},
 
 	editingUser() {
@@ -152,11 +153,15 @@ Template.userInfo.helpers({
 	},
 
 	roleTags() {
-		const uid = Template.instance().user.get()._id;
-		if (uid) {
-			const roles = _.union(UserRoles.findOne(uid).roles, RoomRoles.findOne({'u._id': uid, rid: Session.get('openedRoom') }).roles);
-			if (roles) {
+		const user = Template.instance().user.get();
+		if (user && user._id) {
+			const userRoles = UserRoles.findOne(user._id) || {};
+			const roomRoles = RoomRoles.findOne({'u._id': user._id, rid: Session.get('openedRoom') }) || {};
+			if (userRoles.roles || roomRoles.roles) {
+				const roles = _.union(userRoles.roles || [], roomRoles.roles || []);
 				return RocketChat.models.Roles.find({ _id: { $in: roles }, description: { $exists: 1 } }, { fields: { description: 1 } });
+			} else {
+				return [];
 			}
 		}
 	},
@@ -203,7 +208,8 @@ Template.userInfo.events({
 		e.preventDefault();
 		const rid = Session.get('openedRoom');
 		const room = ChatRoom.findOne(rid);
-		if (RocketChat.authz.hasAllPermission('remove-user', rid)) {
+		const user = instance.user.get();
+		if (user && RocketChat.authz.hasAllPermission('remove-user', rid)) {
 			return swal({
 				title: t('Are_you_sure'),
 				text: t('The_user_will_be_removed_from_s', room.name),
@@ -215,7 +221,7 @@ Template.userInfo.events({
 				closeOnConfirm: false,
 				html: false
 			}, () => {
-				return Meteor.call('removeUserFromRoom', { rid, username: instance.user.get().username }, (err) => {
+				return Meteor.call('removeUserFromRoom', { rid, username: user.username }, (err) => {
 					if (err) {
 						return handleError(err);
 					}
@@ -241,7 +247,8 @@ Template.userInfo.events({
 		e.preventDefault();
 		const rid = Session.get('openedRoom');
 		const room = ChatRoom.findOne(rid);
-		if (RocketChat.authz.hasAllPermission('mute-user', rid)) {
+		const user = instance.user.get();
+		if (user && RocketChat.authz.hasAllPermission('mute-user', rid)) {
 			return swal({
 				title: t('Are_you_sure'),
 				text: t('The_user_wont_be_able_to_type_in_s', room.name),
@@ -253,7 +260,7 @@ Template.userInfo.events({
 				closeOnConfirm: false,
 				html: false
 			}, () => {
-				return Meteor.call('muteUserInRoom', { rid, username: instance.user.get().username }, function(err) {
+				return Meteor.call('muteUserInRoom', { rid, username: user.username }, function(err) {
 					if (err) {
 						return handleError(err);
 					}
@@ -290,64 +297,72 @@ Template.userInfo.events({
 	'click .set-moderator'(e, t) {
 		e.preventDefault();
 		const user = t.user.get();
-		const userModerator = RoomRoles.findOne({ rid: Session.get('openedRoom'), 'u._id': user._id, roles: 'moderator' }, { fields: { _id: 1 } });
-		if (user && userModerator == null) {
-			return Meteor.call('addRoomModerator', Session.get('openedRoom'), user._id, (err) => {
-				if (err) {
-					return handleError(err);
-				}
+		if (user) {
+			const userModerator = RoomRoles.findOne({ rid: Session.get('openedRoom'), 'u._id': user._id, roles: 'moderator' }, { fields: { _id: 1 } });
+			if (userModerator == null) {
+				return Meteor.call('addRoomModerator', Session.get('openedRoom'), user._id, (err) => {
+					if (err) {
+						return handleError(err);
+					}
 
-				const room = ChatRoom.findOne(Session.get('openedRoom'));
-				return toastr.success(TAPi18n.__('User__username__is_now_a_moderator_of__room_name_', { username: this.username, room_name: room.name }));
-			});
+					const room = ChatRoom.findOne(Session.get('openedRoom'));
+					return toastr.success(TAPi18n.__('User__username__is_now_a_moderator_of__room_name_', { username: this.username, room_name: room.name }));
+				});
+			}
 		}
 	},
 
 	'click .unset-moderator'(e, t) {
 		e.preventDefault();
 		const user = t.user.get();
-		const userModerator = RoomRoles.findOne({ rid: Session.get('openedRoom'), 'u._id': user._id, roles: 'moderator' }, { fields: { _id: 1 } });
-		if (user && userModerator != null) {
-			return Meteor.call('removeRoomModerator', Session.get('openedRoom'), user._id, (err) => {
-				if (err) {
-					return handleError(err);
-				}
+		if (user) {
+			const userModerator = RoomRoles.findOne({ rid: Session.get('openedRoom'), 'u._id': user._id, roles: 'moderator' }, { fields: { _id: 1 } });
+			if (userModerator != null) {
+				return Meteor.call('removeRoomModerator', Session.get('openedRoom'), user._id, (err) => {
+					if (err) {
+						return handleError(err);
+					}
 
-				const room = ChatRoom.findOne(Session.get('openedRoom'));
-				return toastr.success(TAPi18n.__('User__username__removed_from__room_name__moderators', { username: this.username, room_name: room.name }));
-			});
+					const room = ChatRoom.findOne(Session.get('openedRoom'));
+					return toastr.success(TAPi18n.__('User__username__removed_from__room_name__moderators', { username: this.username, room_name: room.name }));
+				});
+			}
 		}
 	},
 
 	'click .set-owner'(e, t) {
 		e.preventDefault();
 		const user = t.user.get();
-		const userOwner = RoomRoles.findOne({ rid: Session.get('openedRoom'), 'u._id': user._id, roles: 'owner' }, { fields: { _id: 1 } });
-		if (user && userOwner == null) {
-			return Meteor.call('addRoomOwner', Session.get('openedRoom'), user._id, (err) => {
-				if (err) {
-					return handleError(err);
-				}
+		if (user) {
+			const userOwner = RoomRoles.findOne({ rid: Session.get('openedRoom'), 'u._id': user._id, roles: 'owner' }, { fields: { _id: 1 } });
+			if (userOwner == null) {
+				return Meteor.call('addRoomOwner', Session.get('openedRoom'), user._id, (err) => {
+					if (err) {
+						return handleError(err);
+					}
 
-				const room = ChatRoom.findOne(Session.get('openedRoom'));
-				return toastr.success(TAPi18n.__('User__username__is_now_a_owner_of__room_name_', { username: this.username, room_name: room.name }));
-			});
+					const room = ChatRoom.findOne(Session.get('openedRoom'));
+					return toastr.success(TAPi18n.__('User__username__is_now_a_owner_of__room_name_', { username: this.username, room_name: room.name }));
+				});
+			}
 		}
 	},
 
 	'click .unset-owner'(e, t) {
 		e.preventDefault();
 		const user = t.user.get();
-		const userOwner = RoomRoles.findOne({ rid: Session.get('openedRoom'), 'u._id': user._id, roles: 'owner' }, { fields: { _id: 1 } });
-		if (user && userOwner != null) {
-			return Meteor.call('removeRoomOwner', Session.get('openedRoom'), user._id, (err) => {
-				if (err) {
-					return handleError(err);
-				}
+		if (user) {
+			const userOwner = RoomRoles.findOne({ rid: Session.get('openedRoom'), 'u._id': user._id, roles: 'owner' }, { fields: { _id: 1 } });
+			if (userOwner != null) {
+				return Meteor.call('removeRoomOwner', Session.get('openedRoom'), user._id, (err) => {
+					if (err) {
+						return handleError(err);
+					}
 
-				const room = ChatRoom.findOne(Session.get('openedRoom'));
-				return toastr.success(TAPi18n.__('User__username__removed_from__room_name__owners', { username: this.username, room_name: room.name }));
-			});
+					const room = ChatRoom.findOne(Session.get('openedRoom'));
+					return toastr.success(TAPi18n.__('User__username__removed_from__room_name__owners', { username: this.username, room_name: room.name }));
+				});
+			}
 		}
 	},
 
@@ -419,35 +434,37 @@ Template.userInfo.events({
 		e.stopPropagation();
 		e.preventDefault();
 		const user = instance.user.get();
-		return swal({
-			title: t('Are_you_sure'),
-			text: t('Delete_User_Warning'),
-			type: 'warning',
-			showCancelButton: true,
-			confirmButtonColor: '#DD6B55',
-			confirmButtonText: t('Yes_delete_it'),
-			cancelButtonText: t('Cancel'),
-			closeOnConfirm: false,
-			html: false
-		}, function() {
-			swal.disableButtons();
-			return Meteor.call('deleteUser', user._id, function(error) {
-				if (error) {
-					handleError(error);
-					return swal.enableButtons();
-				} else {
-					swal({
-						title: t('Deleted'),
-						text: t('User_has_been_deleted'),
-						type: 'success',
-						timer: 2000,
-						showConfirmButton: false
-					});
+		if (user) {
+			return swal({
+				title: t('Are_you_sure'),
+				text: t('Delete_User_Warning'),
+				type: 'warning',
+				showCancelButton: true,
+				confirmButtonColor: '#DD6B55',
+				confirmButtonText: t('Yes_delete_it'),
+				cancelButtonText: t('Cancel'),
+				closeOnConfirm: false,
+				html: false
+			}, function() {
+				swal.disableButtons();
+				return Meteor.call('deleteUser', user._id, function(error) {
+					if (error) {
+						handleError(error);
+						return swal.enableButtons();
+					} else {
+						swal({
+							title: t('Deleted'),
+							text: t('User_has_been_deleted'),
+							type: 'success',
+							timer: 2000,
+							showConfirmButton: false
+						});
 
-					return instance.tabBar.close();
-				}
+						return instance.tabBar.close();
+					}
+				});
 			});
-		});
+		}
 	},
 
 	'click .edit-user'(e, instance) {
@@ -505,7 +522,7 @@ Template.userInfo.onCreated(function() {
 	this.autorun(() => {
 		username = this.loadedUsername.get();
 
-		if ((username == null)) {
+		if (username == null) {
 			this.loadingUserInfo.set(false);
 			return;
 		}
