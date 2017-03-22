@@ -1,5 +1,9 @@
 # History
 
+## NEXT
+
+- [NEW] Add option on Channel Settings: Hide Notifications and Hide Unread Room Status (#2707, #2143)
+
 ## 0.53.0 - 2017-Mar-01
 
 - Add 'Unread Messages' to i18n translation files
@@ -253,7 +257,7 @@
 
 ### Now uses NodeJS 4.7.0
 
-- Fix integration payload JSON.parse 
+- Fix integration payload JSON.parse
 
 ## 0.48.0 - 2016-Dec-12
 
@@ -983,7 +987,7 @@
 - Removing presence status computation from new room sound tracker
 - Right sidebar animation cancelled on tab button clicked
 - Save room's name as the livechat visitor name
-- Use HTML emails instead of Text- 
+- Use HTML emails instead of Text-
 
 ## 0.30.0 - 2016-May-09
 
@@ -1232,7 +1236,7 @@
 - Fix ROOT_URL_PATH_PREFIX and add tab base
 - Fix text selection for cordova
 - Fix to package file/versions: - Do not depend on specific version of ostrio:cookies to use newer versions with fixes - Update all packages with latest versions
-- Improve the unread mark calculator 
+- Improve the unread mark calculator
 - Misc fixes to allow running from subdirectory rather than root (/)
 - Move i18n files to inside the lib package
 - Prevent to open message menu for long press in links on mobile
