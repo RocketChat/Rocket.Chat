@@ -1,5 +1,10 @@
 # History
 
+## NEXT
+
+- [NEW] Integrations, both incoming and outgoing, now have access to the models. Example: `Users.findOneById(id)` (#6336)
+- [FIX] Incoming integrations would break when trying to use the `Store` feature.
+
 ## 0.53.0 - 2017-Mar-01
 
 - Add 'Unread Messages' to i18n translation files
