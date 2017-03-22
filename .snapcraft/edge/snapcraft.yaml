@@ -7,7 +7,7 @@
 # 5.  `snapcraft snap`
 
 name: rocketchat-server
-version: 0.53.0
+version: 0.54.0
 summary: Rocket.Chat server
 description: Have your own Slack like online chat, built with Meteor. https://rocket.chat/
 confinement: strict
@@ -32,7 +32,7 @@ apps:
 parts:
     node:
         plugin: nodejs
-        node-engine: 4.7.3
+        node-engine: 4.8.1
         node-packages:
             - promise
             - fibers
