@@ -50,7 +50,7 @@ Meteor.methods({
 			members = getExperts(expertise);
 		}
 
-		const roomCreateResult = RocketChat.createRoom('r', name, Meteor.user() && Meteor.user().username, members, false, {});
+		const roomCreateResult = RocketChat.createRoom('r', name, Meteor.user() && Meteor.user().username, members, false, {expertise: expertise});
 
 		const room = RocketChat.models.Rooms.findOneById(roomCreateResult.rid);
 		const helpRequestId = RocketChat.models.HelpRequests.createForSupportArea(expertise, roomCreateResult.rid);
