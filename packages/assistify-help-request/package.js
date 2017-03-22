@@ -42,6 +42,7 @@ Package.onUse(function (api) {
 	api.addFiles('server/methods/closeHelpRequest.js', 'server');
 	api.addFiles('server/methods/createRequest.js', 'server');
 	api.addFiles('server/methods/createExpertise.js', 'server');
+	api.addFiles('server/methods/getExperts.js', 'server');
 
 	// Hooks
 	api.addFiles('server/hooks/sendMessageToKnowledgeAdapter.js', 'server');

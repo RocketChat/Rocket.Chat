@@ -12,9 +12,9 @@ Meteor.publish('assistify:helpRequests', function (roomId) {
 
 	const room = RocketChat.models.Rooms.findOneById(roomId, {fields: {helpRequestId: 1}});
 	const user = RocketChat.models.Users.findOne({_id: this.userId});
-	if (!RocketChat.authz.hasPermission(this.userId, 'view-r-rooms') && !(room.usernames.indexOf(user.username) > -1)) {
-		return this.error(new Meteor.Error('error-not-authorized', 'Not authorized', {publish: 'assistify:helpRequests'}));
-	}
+	// if (!RocketChat.authz.hasPermission(this.userId, 'view-r-rooms') && !(room.usernames.indexOf(user.username) > -1)) {
+	// 	return this.error(new Meteor.Error('error-not-authorized', 'Not authorized', {publish: 'assistify:helpRequests'}));
+	// }
 
 
 	if(room.helpRequestId) {
