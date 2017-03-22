@@ -7,7 +7,6 @@ Package.describe({
 
 Package.onUse(function(api) {
 	api.use([
-		'coffeescript',
 		'ecmascript',
 		'rocketchat:lib',
 		'dburles:google-maps@1.1.5'
