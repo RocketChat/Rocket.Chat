@@ -91,9 +91,10 @@ Accounts.registerLoginHandler 'orchestraNG', (loginRequest) ->
 		# try looking for one with the same id and replace it
 		# this is needed if the username was renamed
 		user = Meteor.users.findOne ng_id: ngUser.ng_id
+
+	ngUser.emails = [address: ngUser.email, "verified": true]
+	delete ngUser.email
 	if user
-		ngUser.emails = [address: ngUser.email, "verified": true]
-		delete ngUser.email
 		Meteor.users.update user._id, $set: ngUser
 		Accounts.setPassword user._id, loginRequest.ngPassword, logout: false
 		logger.info "\"#{loginRequest.username}\" authenticated successfully"
