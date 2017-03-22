@@ -199,7 +199,7 @@ Template.channelSettings.onCreated ->
 			canView: (room) => room.t isnt 'd' and room.ro
 			canEdit: (room) => RocketChat.authz.hasAllPermission('set-react-when-readonly', room._id)
 			save: (value, room) ->
-        @processing.set(true)
+				@processing.set(true)
 				Meteor.call 'saveRoomSettings', room._id, 'reactWhenReadOnly', value, (err, result) =>
 					return handleError err if err
 					@processing.set(false)
