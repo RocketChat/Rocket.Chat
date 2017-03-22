@@ -77,7 +77,7 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 
 	const notificationPreferencesByRoom = RocketChat.models.Subscriptions.findNotificationPreferencesByRoom(room._id);
 	notificationPreferencesByRoom.forEach(function(subscription) {
-		if (subscription.mute && subscription.mute !== 'nothing') {
+		if (subscription.disableNotifications) {
 			settings.dontNotifyDesktopUsers.push(subscription.u._id);
 			settings.dontNotifyMobileUsers.push(subscription.u._id);
 		} else {
