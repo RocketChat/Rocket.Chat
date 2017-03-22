@@ -6,8 +6,11 @@ Template.privateGroups.helpers
 		query = { t: { $in: ['p']}, f: { $ne: true }, open: true }
 
 		if Meteor.user()?.settings?.preferences?.unreadRoomsMode
-			query.alert =
-				$ne: true
+			query.$or = [
+				alert: $ne: true
+			,
+				hideUnreadStatus: true
+			]
 
 		return ChatSubscription.find query, { sort: 't': 1, 'name': 1 }
 

@@ -154,7 +154,8 @@ RocketChat.models.Subscriptions.findNotificationPreferencesByRoom = function(roo
 			{audioNotification: {$exists: true}},
 			{desktopNotifications: {$exists: true}},
 			{desktopNotificationDuration: {$exists: true}},
-			{mobilePushNotifications: {$exists: true}}
+			{mobilePushNotifications: {$exists: true}},
+			{disableNotifications: {$exists: true}}
 		]
 	};
 
