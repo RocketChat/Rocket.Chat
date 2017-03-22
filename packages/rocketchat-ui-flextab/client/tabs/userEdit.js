@@ -14,7 +14,10 @@ Template.userEdit.helpers({
 	},
 
 	role() {
-		return RocketChat.models.Roles.find({}, { sort: { description: 1, _id: 1 } });
+		const models = RocketChat.models;
+		if (models) {
+			return models.Roles.find({}, { sort: { description: 1, _id: 1 } });
+		}
 	},
 
 	selectUserRole() {
@@ -106,10 +109,12 @@ Template.userEdit.onCreated(function() {
 
 			if (this.user != null) {
 				for (const key in userData) {
-					const value = userData[key];
-					if (!['_id'].includes(key)) {
-						if (value === this.user[key]) {
-							delete userData[key];
+					if (key) {
+						const value = userData[key];
+						if (!['_id'].includes(key)) {
+							if (value === this.user[key]) {
+								delete userData[key];
+							}
 						}
 					}
 				}
@@ -129,8 +134,7 @@ Template.userEdit.onCreated(function() {
 				if (error) {
 					return handleError(error);
 				}
-			}
-			);
+			});
 		}
 	};
 });
