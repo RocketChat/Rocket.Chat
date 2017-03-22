@@ -10,5 +10,6 @@ Template.unreadRooms.onCreated ->
 		query =
 			alert: true
 			open: true
+			hideUnreadStatus: { $ne: true }
 
 		@unreadRooms = ChatSubscription.find query, { sort: 't': 1, 'name': 1 }

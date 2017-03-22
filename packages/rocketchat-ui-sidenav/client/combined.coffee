@@ -11,8 +11,11 @@ Template.combined.helpers
 			query.f = { $ne: true }
 
 		if Meteor.user()?.settings?.preferences?.unreadRoomsMode
-			query.alert =
-				$ne: true
+			query.$or = [
+				alert: $ne: true
+			,
+				hideUnreadStatus: true
+			]
 
 		return ChatSubscription.find query, { sort: 'name': 1 }
 
