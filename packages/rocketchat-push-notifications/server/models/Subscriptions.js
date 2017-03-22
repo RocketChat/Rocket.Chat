@@ -82,14 +82,28 @@ RocketChat.models.Subscriptions.updateUnreadAlertById = function(_id, unreadAler
 	return this.update(query, update);
 };
 
-RocketChat.models.Subscriptions.updateMuteById = function(_id, mute) {
+RocketChat.models.Subscriptions.updateDisableNotificationsById = function(_id, disableNotifications) {
 	const query = {
 		_id: _id
 	};
 
 	const update = {
 		$set: {
-			mute
+			disableNotifications
+		}
+	};
+
+	return this.update(query, update);
+};
+
+RocketChat.models.Subscriptions.updateHideUnreadStatusById = function(_id, hideUnreadStatus) {
+	const query = {
+		_id: _id
+	};
+
+	const update = {
+		$set: {
+			hideUnreadStatus
 		}
 	};
 

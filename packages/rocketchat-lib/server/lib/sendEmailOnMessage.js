@@ -63,7 +63,7 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 	messageHTML = messageHTML.replace(/\n/gm, '<br/>');
 
 	RocketChat.models.Subscriptions.findWithSendEmailByRoomId(room._id).forEach((sub) => {
-		if (sub.mute && sub.mute !== 'nothing') {
+		if (sub.disableNotifications) {
 			delete usersToSendEmail[sub.u._id];
 		} else {
 			switch (sub.emailNotifications) {
