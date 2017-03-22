@@ -99,7 +99,7 @@ Template.createCombinedFlex.events
 		# check group limit
 		if privateGroup and RocketChat.settings.get 'Group_Limit_Enable'
 			limit = RocketChat.settings.get 'Group_Limit_Number'
-			if instance.selectedUsers.get().length > limit
+			if instance.selectedUsers.get().length + 1 > limit # we have to count the creator in
 				instance.error.set({grouplimitexceed: true})
 				return
 
