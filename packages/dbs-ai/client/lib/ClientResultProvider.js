@@ -68,7 +68,6 @@ class SolrProvider {
 }
 
 let mock = true;
-
 //temporär wenn nicht im Intranet: JSON statisch erzeugen
 var mockData = {
 	"responseHeader": {
