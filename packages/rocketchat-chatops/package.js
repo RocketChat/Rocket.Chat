@@ -7,7 +7,6 @@ Package.describe({
 
 Package.onUse(function(api) {
 	api.use([
-		'coffeescript',
 		'ecmascript',
 		'rocketchat:lib',
 		'dburles:google-maps@1.1.5'
@@ -16,19 +15,19 @@ Package.onUse(function(api) {
 	api.use('templating', 'client');
 
 	api.addFiles([
-		'client/startup.coffee',
-		'client/tabBar.coffee',
+		'client/startup.js',
+		'client/tabBar.js',
 		'client/views/chatops.html',
-		'client/views/chatops.coffee',
+		'client/views/chatops.js',
 		'client/views/codemirror.html',
-		'client/views/codemirror.coffee',
+		'client/views/codemirror.js',
 		'client/views/droneflight.html',
-		'client/views/droneflight.coffee',
+		'client/views/droneflight.js',
 		'client/views/dynamicUI.html',
 		'client/views/stylesheets/chatops.css'
 	], 'client');
 
 	api.addFiles([
-		'server/settings.coffee'
+		'server/settings.js'
 	], 'server');
 });
