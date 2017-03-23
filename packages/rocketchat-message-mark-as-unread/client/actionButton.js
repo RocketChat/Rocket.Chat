@@ -1,0 +1,30 @@
+Meteor.startup(function() {
+	return RocketChat.MessageAction.addButton({
+		id: 'mark-message-as-unread',
+		icon: 'icon-flag',
+		i18nLabel: 'Mark_as_unread',
+		context: ['message', 'message-mobile'],
+		action: function() {
+			var message = this._arguments[1];
+			RocketChat.MessageAction.hideDropDown();
+			return Meteor.call('unreadMessages', message, function(error) {
+				var subscription;
+				if (error) {
+					return handleError(error);
+				}
+				subscription = ChatSubscription.findOne({
+					rid: message.rid
+				});
+				if (subscription == null) {
+					return;
+				}
+				RoomManager.close(subscription.t + subscription.name);
+				return FlowRouter.go('home');
+			});
+		},
+		validation: function(message) {
+			return message.u._id !== Meteor.user()._id;
+		},
+		order: 22
+	});
+});
