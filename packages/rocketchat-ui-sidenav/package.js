@@ -41,14 +41,14 @@ Package.onUse(function(api) {
 	api.addFiles('client/combined.js', 'client');
 	api.addFiles('client/chatRoomItem.js', 'client');
 	api.addFiles('client/channels.js', 'client');
-	api.addFiles('client/createCombinedFlex.coffee', 'client');
+	api.addFiles('client/createCombinedFlex.js', 'client');
 	api.addFiles('client/directMessages.js', 'client');
 	api.addFiles('client/listChannelsFlex.js', 'client');
 	api.addFiles('client/listCombinedFlex.js', 'client');
 	api.addFiles('client/listPrivateGroupsFlex.js', 'client');
 	api.addFiles('client/privateGroups.js', 'client');
-	api.addFiles('client/privateGroupsFlex.coffee', 'client');
-	api.addFiles('client/sideNav.coffee', 'client');
+	api.addFiles('client/privateGroupsFlex.js', 'client');
+	api.addFiles('client/sideNav.js', 'client');
 	api.addFiles('client/starredRooms.js', 'client');
 	api.addFiles('client/toolbar.js', 'client');
 	api.addFiles('client/unreadRooms.js', 'client');
