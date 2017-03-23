@@ -187,14 +187,7 @@ RocketChat.integrations.triggerHandler = new class RocketChatIntegrationHandler 
 		return message;
 	}
 
-	getIntegrationScript(integration) {
-		const compiledScript = this.compiledScripts[integration._id];
-		if (compiledScript && +compiledScript._updatedAt === +integration._updatedAt) {
-			return compiledScript.script;
-		}
-
-		const script = integration.scriptCompiled;
-		const store = {};
+	buildSandbox(store = {}) {
 		const sandbox = {
 			_, s, console, moment,
 			Store: {
@@ -211,6 +204,22 @@ RocketChat.integrations.triggerHandler = new class RocketChatIntegrationHandler 
 				}
 			}
 		};
+
+		Object.keys(RocketChat.models).filter(k => !k.startsWith('_')).forEach(k => {
+			sandbox[k] = RocketChat.models[k];
+		});
+
+		return { store, sandbox };
+	}
+
+	getIntegrationScript(integration) {
+		const compiledScript = this.compiledScripts[integration._id];
+		if (compiledScript && +compiledScript._updatedAt === +integration._updatedAt) {
+			return compiledScript.script;
+		}
+
+		const script = integration.scriptCompiled;
+		const { store, sandbox } = this.buildSandbox();
 
 		let vmScript;
 		try {
@@ -275,26 +284,10 @@ RocketChat.integrations.triggerHandler = new class RocketChatIntegrationHandler 
 		}
 
 		try {
-			const store = this.compiledScripts[integration._id].store;
-			const sandbox = {
-				_, s, console, moment,
-				Store: {
-					set: (key, val) => store[key] = val,
-					get: (key) => store[key]
-				},
-				HTTP: (method, url, options) => {
-					try {
-						return {
-							result: HTTP.call(method, url, options)
-						};
-					} catch (error) {
-						return { error };
-					}
-				},
-				script,
-				method,
-				params
-			};
+			const { sandbox } = this.buildSandbox(this.compiledScripts[integration._id].store);
+			sandbox.script = script;
+			sandbox.method = method;
+			sandbox.params = params;
 
 			this.updateHistory({ historyId, step: `execute-script-before-running-${method}` });
 			const result = this.vm.runInNewContext('script[method](params)', sandbox, { timeout: 3000 });

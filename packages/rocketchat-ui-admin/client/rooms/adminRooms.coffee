@@ -53,6 +53,7 @@ Template.adminRooms.onCreated ->
 	});
 
 	RocketChat.ChannelSettings.addOption
+		group: ['admin-room']
 		id: 'make-default'
 		template: 'channelSettingsDefault'
 		data: ->

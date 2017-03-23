@@ -4,6 +4,9 @@ Meteor.methods
 		if not Meteor.userId()
 			throw new Meteor.Error 'error-invalid-user', 'Invalid user', { method: 'startImport' }
 
+		if not RocketChat.authz.hasPermission(Meteor.userId(), 'run-import')
+			throw new Meteor.Error('error-action-not-allowed', 'Importing is not allowed', { method: 'setupImporter'});
+
 		if Importer.Importers[name]?.importerInstance?
 			usersSelection = input.users.map (user) ->
 				return new Importer.SelectionUser user.user_id, user.username, user.email, user.is_deleted, user.is_bot, user.do_import

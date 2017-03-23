@@ -115,8 +115,9 @@ RocketChat.models.Rooms.findByVisitorId = function(visitorId) {
 	return this.find(query);
 };
 
-RocketChat.models.Rooms.findOneOpenByVisitorId = function(visitorId) {
+RocketChat.models.Rooms.findOneOpenByVisitorId = function(visitorId, roomId) {
 	const query = {
+		_id: roomId,
 		open: true,
 		'v._id': visitorId
 	};
