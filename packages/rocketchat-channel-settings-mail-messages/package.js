@@ -13,7 +13,8 @@ Package.onUse(function(api) {
 		'reactive-var',
 		'less',
 		'rocketchat:lib',
-		'rocketchat:channel-settings'
+		'rocketchat:channel-settings',
+		'mongo'
 	]);
 
 	api.addFiles([
