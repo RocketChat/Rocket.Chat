@@ -6,6 +6,10 @@ Meteor.methods({
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'prepareImport' });
 		}
 
+		if (!RocketChat.authz.hasPermission(Meteor.userId(), 'run-import')) {
+			throw new Meteor.Error('error-action-not-allowed', 'Importing is not allowed', { method: 'setupImporter'});
+		}
+
 		check(name, String);
 		check(dataURI, String);
 		check(fileName, String);
