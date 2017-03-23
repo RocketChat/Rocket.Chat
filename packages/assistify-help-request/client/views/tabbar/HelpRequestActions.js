@@ -5,11 +5,14 @@ Template.HelpRequestActions.helpers({
 	},
 
 	isLivechat() {
-		return ChatSubscription.findOne({rid: Session.get('openedRoom')}).t === 'l';
+		const instance = Template.instance();
+		const room = ChatSubscription.findOne({rid: instance.data.rid});
+		return room.t === 'l';
 	},
 
 	livechatOpen() {
-		const room = ChatRoom.findOne({ _id: Session.get('openedRoom')});
+		const instance = Template.instance();
+		const room = ChatSubscription.findOne({rid: instance.data.rid});
 		return room.open;
 	},
 });
@@ -104,7 +107,7 @@ Template.HelpRequestActions.events({
 				return false;
 			}
 
-			Meteor.call('assistify:closeHelpRequest', this.roomId, {comment: inputValue}, function(error) {
+			Meteor.call('assistify:closeHelpRequest', this.roomId, {comment: inputValue}, function (error) {
 				if (error) {
 					return handleError(error);
 				} else {
@@ -143,7 +146,7 @@ Template.HelpRequestActions.events({
 				return false;
 			}
 
-			Meteor.call('livechat:closeRoom', this.rid, inputValue, function(error/*, result*/) {
+			Meteor.call('livechat:closeRoom', this.rid, inputValue, function (error/*, result*/) {
 				if (error) {
 					return handleError(error);
 				}
@@ -159,7 +162,7 @@ Template.HelpRequestActions.events({
 	}
 });
 
-Template.HelpRequestActions.onCreated( function() {
+Template.HelpRequestActions.onCreated(function () {
 	this.helpRequest = new ReactiveVar(null);
 
 	this.autorun(() => {
@@ -167,9 +170,9 @@ Template.HelpRequestActions.onCreated( function() {
 			// const helpRequest = RocketChat.models.HelpRequests.findOneByRoomId(instance.roomId);
 			// instance.helpRequest.set(helpRequest);
 
-			if(!instance.helpRequest.get()){ //todo remove after PoC: Non-reactive method call
-				Meteor.call('assistify:helpRequestByRoomId', Template.currentData().roomId,(err, result) => {
-					if(!err){
+			if (!instance.helpRequest.get()) { //todo remove after PoC: Non-reactive method call
+				Meteor.call('assistify:helpRequestByRoomId', Template.currentData().roomId, (err, result) => {
+					if (!err) {
 						instance.helpRequest.set(result);
 					} else {
 						console.log(err);
