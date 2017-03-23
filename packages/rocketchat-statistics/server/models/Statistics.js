@@ -20,10 +20,6 @@ RocketChat.models.Statistics = new class extends RocketChat.models._Base {
 			},
 			limit: 1
 		};
-		return __guard__(this.find({}, options).fetch(), x => x[0]);
+		return this.find({}, options).fetch() && this.find({}, options).fetch()[0];
 	}
 };
-
-function __guard__(value, transform) {
-  return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
-}
