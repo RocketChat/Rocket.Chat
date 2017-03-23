@@ -15,13 +15,11 @@ const config = {
 
 const Dolphin = new CustomOAuth('dolphin', config);
 
-class DolphinOnCreateUser {
-	constructor(options, user) {
-		if (user && user.services && user.services.dolphin && user.services.dolphin.NickName) {
-			user.username = user.services.dolphin.NickName;
-		}
-		return user;
+function DolphinOnCreateUser(options, user) {
+	if (user && user.services && user.services.dolphin && user.services.dolphin.NickName) {
+		user.username = user.services.dolphin.NickName;
 	}
+	return user;
 }
 
 if (Meteor.isServer) {
