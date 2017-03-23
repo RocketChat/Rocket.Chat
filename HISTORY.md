@@ -2,6 +2,8 @@
 
 ## NEXT
 
+## 0.54.1 - 2017-Mar-23
+
 - [FIX] Images on attachments were not loading except for uploaded files.
 
 ## 0.54.0 - 2017-Mar-22
