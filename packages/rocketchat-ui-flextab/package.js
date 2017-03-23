@@ -32,5 +32,7 @@ Package.onUse(function(api) {
 	api.addFiles('client/tabs/messageSearch.js', 'client');
 	api.addFiles('client/tabs/uploadedFilesList.js', 'client');
 	api.addFiles('client/tabs/userEdit.js', 'client');
-	api.addFiles('client/tabs/userInfo.coffee', 'client');
+	api.addFiles('client/tabs/userInfo.js', 'client');
+	api.addFiles('client/tabs/userEdit.coffee', 'client');
+	api.addFiles('client/tabs/userInfo.js', 'client');
 });

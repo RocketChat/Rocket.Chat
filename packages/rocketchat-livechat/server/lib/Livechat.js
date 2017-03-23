@@ -160,7 +160,21 @@ RocketChat.Livechat = {
 
 		return userId;
 	},
+	setDepartmentForGuest({ token, department } = {}) {
+		check(token, String);
 
+		const updateUser = {
+			$set: {
+				department: department
+			}
+		};
+
+		const user = RocketChat.models.Users.getVisitorByToken(token, { fields: { _id: 1 } });
+		if (user) {
+			return Meteor.users.update(user._id, updateUser);
+		}
+		return false;
+	},
 	saveGuest({ _id, name, email, phone }) {
 		const updateData = {};
 
@@ -219,6 +233,7 @@ RocketChat.Livechat = {
 			'Livechat_title_color',
 			'Livechat_enabled',
 			'Livechat_registration_form',
+			'Livechat_allow_switching_departments',
 			'Livechat_offline_title',
 			'Livechat_offline_title_color',
 			'Livechat_offline_message',

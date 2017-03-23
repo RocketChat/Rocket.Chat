@@ -1,5 +1,6 @@
 Meteor.startup ->
 	RocketChat.ChannelSettings.addOption
+		group: ['room']
 		id: 'mail-messages'
 		template: 'channelSettingsMailMessages'
 		validation: ->

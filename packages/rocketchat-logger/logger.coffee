@@ -64,7 +64,7 @@ Template.prototype.onCreated = wrapLifeCycle Template.prototype.onCreated, 'onCr
 Template.prototype.onRendered = wrapLifeCycle Template.prototype.onRendered, 'onRendered', 'green'
 Template.prototype.onDestroyed = wrapLifeCycle Template.prototype.onDestroyed, 'onDestroyed', 'red'
 
-# stdout = new Meteor.Collection 'stdout'
+# stdout = new Mongo.Collection 'stdout'
 
 # Meteor.subscribe 'stdout'
 

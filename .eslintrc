@@ -143,6 +143,8 @@
 		"Triggers"                    : false,
 		"UAParser"                    : false,
 		"visitor"                     : false,
-		"WebApp"                      : false
+		"WebApp"                      : false,
+		"VideoRecorder"               : false,
+		"VRecDialog"                  : false
 	}
 }
