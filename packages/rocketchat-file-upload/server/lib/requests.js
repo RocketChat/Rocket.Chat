@@ -1,4 +1,6 @@
-/* globals FileUpload, WebApp, Cookies */
+/* globals FileUpload, WebApp */
+import { Cookies } from 'meteor/ostrio:cookies';
+
 let protectedFiles;
 
 RocketChat.settings.get('FileUpload_ProtectFiles', function(key, value) {
@@ -14,7 +16,6 @@ WebApp.connectHandlers.use('/file-upload/', function(req, res, next) {
 		if (file) {
 			if (!Meteor.settings.public.sandstorm && protectedFiles) {
 				let rawCookies, ref, token, uid;
-				import { Cookies } from 'meteor/ostrio:cookies';
 				const cookie = new Cookies();
 
 				if ((typeof req !== 'undefined' && req !== null ? (ref = req.headers) != null ? ref.cookie : void 0 : void 0) != null) {
