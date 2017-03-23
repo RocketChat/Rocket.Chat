@@ -6,20 +6,20 @@ RocketChat.Migrations.add({
 		// source collection is dropped after data migration
 		const toMigrate = [
 			{
-				source: new Meteor.Collection('data.ChatRoom'),
+				source: new Mongo.Collection('data.ChatRoom'),
 				target: RocketChat.models.Rooms.model
 			}, {
-				source: new Meteor.Collection('data.ChatSubscription'),
+				source: new Mongo.Collection('data.ChatSubscription'),
 				target: RocketChat.models.Subscriptions.model
 			}, {
-				source: new Meteor.Collection('data.ChatMessage'),
+				source: new Mongo.Collection('data.ChatMessage'),
 				target: RocketChat.models.Messages.model
 			}, {
-				source: new Meteor.Collection('settings'),
+				source: new Mongo.Collection('settings'),
 				target: RocketChat.models.Settings.model
 			}, {
 				// this collection may not exit
-				source: new Meteor.Collection('oembed_cache'),
+				source: new Mongo.Collection('oembed_cache'),
 				target: RocketChat.models.OEmbedCache.model
 			}
 		];

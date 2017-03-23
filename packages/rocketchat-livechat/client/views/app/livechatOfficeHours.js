@@ -4,7 +4,7 @@ import moment from 'moment';
 
 Template.livechatOfficeHours.helpers({
 	days() {
-		return LivechatOfficeHour.find();
+		return LivechatOfficeHour.find({}, { sort: { code: 1 } });
 	},
 	startName(day) {
 		return day.day + '_start';
@@ -94,7 +94,7 @@ Template.livechatOfficeHours.events({
 			if (err) {
 				return handleError(err);
 			}
-			toastr.success(t('Office_Hours_updated'));
+			toastr.success(t('Office_hours_updated'));
 		});
 	}
 });

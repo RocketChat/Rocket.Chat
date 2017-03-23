@@ -18,7 +18,6 @@ class LivechatOfficeHour extends RocketChat.models._Base {
 			this.insert({'day' : 'Friday', 'start' : '08:00', 'finish' : '20:00', 'code' : 5, 'open' : true });
 			this.insert({'day' : 'Saturday', 'start' : '08:00', 'finish' : '20:00', 'code' : 6, 'open' : false });
 			this.insert({'day' : 'Sunday', 'start' : '08:00', 'finish' : '20:00', 'code' : 0, 'open' : false });
-
 		}
 	}
 

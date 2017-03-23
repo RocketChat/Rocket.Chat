@@ -1,1 +1,1 @@
-@PinnedMessage = new Meteor.Collection 'rocketchat_pinned_message'
+@PinnedMessage = new Mongo.Collection 'rocketchat_pinned_message'
