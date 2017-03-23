@@ -3,34 +3,25 @@
  * @param {Object} message - The message object
  */
 
-let process = undefined;
-class Spotify {
-	static initClass() {
-		process = function(message, source, callback) {
-			if (_.trim(source)) {
-				// Separate text in code blocks and non code blocks
-				const msgParts = source.split(/(```\w*[\n ]?[\s\S]*?```+?)|(`(?:[^`]+)`)/);
+const process = function(message, source, callback) {
+	if (_.trim(source)) {
+		// Separate text in code blocks and non code blocks
+		const msgParts = source.split(/(```\w*[\n ]?[\s\S]*?```+?)|(`(?:[^`]+)`)/);
 
-				return (() => {
-					const result = [];
-					for (let index = 0; index < msgParts.length; index++) {
-					// Verify if this part is code
-						const part = msgParts[index];
-						let item;
-						if (((part != null ? part.length : undefined) != null) > 0) {
-							const codeMatch = part.match(/(?:```(\w*)[\n ]?([\s\S]*?)```+?)|(?:`(?:[^`]+)`)/);
-							if ((codeMatch == null)) {
-								item = callback(message, msgParts, index, part);
-							}
-						}
-						result.push(item);
-					}
-					return result;
-				})();
+		for (let index = 0; index < msgParts.length; index++) {
+			// Verify if this part is code
+			const part = msgParts[index];
+
+			if (((part != null ? part.length > 0 : undefined) != null)) {
+				const codeMatch = part.match(/(?:```(\w*)[\n ]?([\s\S]*?)```+?)|(?:`(?:[^`]+)`)/);
+				if (codeMatch == null) {
+					callback(message, msgParts, index, part);
+				}
 			}
-		};
+		}
 	}
-
+};
+class Spotify {
 	static transform(message) {
 		let urls = [];
 		if (Array.isArray(message.urls)) {
@@ -41,18 +32,16 @@ class Spotify {
 
 		process(message, message.msg, function(message, msgParts, index, part) {
 			const re = /(?:^|\s)spotify:([^:\s]+):([^:\s]+)(?::([^:\s]+))?(?::(\S+))?(?:\s|$)/g;
-			return (() => {
-				let match;
-				const result = [];
-				while ((match = re.exec(part))) {
-					const data = _.filter(match.slice(1), value => value != null);
-					const path = _.map(data, value => _.escape(value)).join('/');
-					const url = `https://open.spotify.com/${path}`;
-					urls.push({'url': url, 'source': `spotify:${data.join(':')}`});
-					result.push(changed = true);
-				}
-				return result;
-			})();
+
+			let match;
+			while ((match = re.exec(part))) {
+				const data = _.filter(match.slice(1), value => value != null);
+				const path = _.map(data, value => _.escape(value)).join('/');
+				const url = `https://open.spotify.com/${path}`;
+				urls.push({'url': url, 'source': `spotify:${data.join(':')}`});
+				changed = true;
+			}
+
 		});
 
 		// Re-mount message
@@ -80,7 +69,6 @@ class Spotify {
 		return message;
 	}
 }
-Spotify.initClass();
 
 RocketChat.callbacks.add('beforeSaveMessage', Spotify.transform, RocketChat.callbacks.priority.LOW, 'spotify-save');
 RocketChat.callbacks.add('renderMessage', Spotify.render, RocketChat.callbacks.priority.MEDIUM, 'spotify-render');

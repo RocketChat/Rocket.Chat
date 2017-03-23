@@ -8,7 +8,7 @@ Template.registerHelper('replace', function(source, find, replace, option) {
 Template.registerHelper('match', (source, regex) => new RegExp(regex).test(source));
 
 Template.oembedBaseWidget.onCreated(function() {
-	if (this.data && (this.data.meta && /(music.song|music.album)/.test(this.data.meta.ogType)) && this.data.parsedUrl && this.data.parsedUrl.host === 'open.spotify.com') {
+	if (this.data && (this.data.meta && /^(music\.song|music\.album)$/.test(this.data.meta.ogType)) && this.data.parsedUrl && this.data.parsedUrl.host === 'open.spotify.com') {
 		return this.data._overrideTemplate = 'oembedSpotifyWidget';
 	}
 });
