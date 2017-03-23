@@ -205,7 +205,10 @@ class RedlinkAdapter {
 				this.options.data = this.options;
 
 				options.data = {
-					messages: latestKnowledgeProviderResult.prepareResult.messagescl,
+					id: latestKnowledgeProviderResult.id,
+					meta: latestKnowledgeProviderResult.meta,
+					user: latestKnowledgeProviderResult.user,
+					messages: latestKnowledgeProviderResult.prepareResult.messages,
 					tokens: latestKnowledgeProviderResult.prepareResult.tokens,
 					queryTemplates: _preprocessTemplates(latestKnowledgeProviderResult.prepareResult.queryTemplates),
 					context: latestKnowledgeProviderResult.prepareResult.context
@@ -300,7 +303,7 @@ class RedlinkAdapter {
 								prepareResult: responseStore.data
 							}
 						});
-					return externalMessageId;
+					return latestKnowledgeProviderResult._id;
 				}
 			} catch (err) {
 				SystemLogger.error('Error on Store', err);
