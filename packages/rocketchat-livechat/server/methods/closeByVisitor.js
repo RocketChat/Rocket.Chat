@@ -1,10 +1,10 @@
 Meteor.methods({
-	'livechat:closeByVisitor'() {
+	'livechat:closeByVisitor'(roomId) {
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-not-authorized', 'Not authorized', { method: 'livechat:closeByVisitor' });
 		}
 
-		const room = RocketChat.models.Rooms.findOneOpenByVisitorId(Meteor.userId());
+		const room = RocketChat.models.Rooms.findOneOpenByVisitorId(Meteor.userId(), roomId);
 
 		if (!room || !room.open) {
 			return false;

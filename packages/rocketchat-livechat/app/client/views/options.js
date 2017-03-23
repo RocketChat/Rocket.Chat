@@ -11,7 +11,7 @@ Template.options.events({
 			closeOnConfirm: false,
 			html: false
 		}, () => {
-			Meteor.call('livechat:closeByVisitor', (error) => {
+			Meteor.call('livechat:closeByVisitor', visitor.getRoom(), (error) => {
 				if (error) {
 					return console.log('Error ->', error);
 				}
