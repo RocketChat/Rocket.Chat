@@ -66,8 +66,8 @@
 					<div class="attachment-image">
 					{{#if loadImage}}
 						<figure>
-							<div class="inline-image" style="background-image: url('{{safeLoadImageAttachment image_url}}');">
-								<img src="{{safeLoadImageAttachment image_url}}" height="{{getImageHeight image_dimensions.height}}" class="gallery-item" data-title="{{title}}" data-description="{{description}}">
+							<div class="inline-image" style="background-image: url('{{fixCordova image_url}}');">
+								<img src="{{fixCordova image_url}}" height="{{getImageHeight image_dimensions.height}}" class="gallery-item" data-title="{{title}}" data-description="{{description}}">
 							</div>
 							{{#if description}}
 								<figcaption class="attachment-description">{{description}}</figcaption>
