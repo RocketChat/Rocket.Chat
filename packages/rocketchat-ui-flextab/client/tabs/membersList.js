@@ -119,7 +119,7 @@ Template.membersList.helpers({
 		let videoActive = undefined;
 		if (webrtc && webrtc.localUrl && webrtc.localUrl.get()) {
 			videoActive = webrtc.localUrl.get();
-		} else if (webrtc && webrtc.remoteItems && webrtc.remoteItems.get().length > 0) {
+		} else if (webrtc && webrtc.remoteItems && webrtc.remoteItems.get() && webrtc.remoteItems.get().length > 0) {
 			videoActive = webrtc.remoteItems.get();
 		}
 		return Template.instance().showDetail.get() && !videoActive;
