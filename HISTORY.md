@@ -4,6 +4,9 @@
 
 - [NEW] Integrations, both incoming and outgoing, now have access to the models. Example: `Users.findOneById(id)` (#6336)
 - [FIX] Incoming integrations would break when trying to use the `Store` feature.
+
+## 0.54.1 - 2017-Mar-23
+
 - [FIX] Images on attachments were not loading except for uploaded files.
 
 ## 0.54.0 - 2017-Mar-22
@@ -75,7 +78,6 @@
 - Use highlight.js from npm
 - Use katex from npm (#5962)
 - Uses figure caption for images
->>>>>>> develop
 
 ## 0.53.0 - 2017-Mar-01
 

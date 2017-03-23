@@ -1235,6 +1235,8 @@
   "Room_has_been_deleted": "Room has been deleted",
   "Room_has_been_archived": "Room has been archived",
   "Room_has_been_unarchived": "Room has been unarchived",
+  "Room_type_of_default_rooms_cant_be_changed": "This is a default room and the type can not be changed, please consult with your administrator.",
+  "Room_default_change_to_private_will_be_default_no_more": "This is a default channel and changing it to a private group will cause it to no longer be a default channel. Do you want to proceed?",
   "Room_Info": "Room Info",
   "room_is_blocked": "This room is blocked",
   "room_is_read_only": "This room is read only",
