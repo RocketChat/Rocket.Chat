@@ -36,8 +36,18 @@
 			sideNav.find("header").removeClass "hover"
 
 	focusInput = ->
+		sideNavDivs = _.filter document.querySelectorAll('aside.side-nav')[0].children, (ele) ->
+			ele.tagName == 'DIV' and !ele.classList.contains('hidden')
+		highestZidx = 0
+		highestZidxElem = undefined
+		_.each sideNavDivs, (ele) ->
+			zIndex = Number(window.getComputedStyle(ele).zIndex)
+			if Number(zIndex) > highestZidx
+				highestZidx = Number(zIndex)
+				highestZidxElem = ele
+			return
 		setTimeout ->
-			sideNav.find("input[type='text']:first")?.focus()
+			highestZidxElem.querySelector('input')?.focus()
 		, 200
 		return
 
