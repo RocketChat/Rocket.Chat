@@ -1,1 +1,1 @@
-@StarredMessage = new Meteor.Collection 'rocketchat_starred_message'
+@StarredMessage = new Mongo.Collection 'rocketchat_starred_message'
