@@ -23,7 +23,7 @@ const Kick = function(command, params, {rid}) {
 			}, user.language)
 		});
 	}
-	if ([].indexOf.call(room.usernames || [], username) < 0) {
+	if ((room.usernames || []).includes(username) === false) {
 		return RocketChat.Notifications.notifyUser(Meteor.userId(), 'message', {
 			_id: Random.id(),
 			rid,
