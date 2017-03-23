@@ -151,6 +151,7 @@
   "All_messages": "All messages",
   "Allow_Invalid_SelfSigned_Certs": "Allow Invalid Self-Signed Certs",
   "Allow_Invalid_SelfSigned_Certs_Description": "Allow invalid and self-signed SSL certificate's for link validation and previews.",
+  "Allow_switching_departments":"Allow visitor to switch departments",
   "Always_open_in_new_window": "Always open in new window",
   "Analytics_features_enabled": "Features Enabled",
   "Analytics_features_messages_Description": "Tracks custom events related to actions a user does on messages.",
