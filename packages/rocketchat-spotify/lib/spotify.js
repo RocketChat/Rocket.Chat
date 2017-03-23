@@ -44,7 +44,7 @@ class Spotify {
 			return (() => {
 				let match;
 				const result = [];
-				while (match = re.exec(part)) {
+				while ((match = re.exec(part))) {
 					const data = _.filter(match.slice(1), value => value != null);
 					const path = _.map(data, value => _.escape(value)).join('/');
 					const url = `https://open.spotify.com/${path}`;
