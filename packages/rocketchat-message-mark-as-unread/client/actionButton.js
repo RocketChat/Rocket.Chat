@@ -21,7 +21,7 @@ Meteor.startup(() => {
 				return FlowRouter.go('home');
 			});
 		},
-		validation: function(message) {
+		validation(message) {
 			return message.u._id !== Meteor.user()._id;
 		},
 		order: 22
