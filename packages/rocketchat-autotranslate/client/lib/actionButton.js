@@ -11,11 +11,12 @@ Meteor.startup(function() {
 				],
 				action() {
 					const message = this._arguments[1];
-					const subscription = RocketChat.models.Subscriptions.findOne({ rid: message.rid, 'u._id': Meteor.userId() });
+					const language = RocketChat.AutoTranslate.getLanguage(message.rid);
 					RocketChat.MessageAction.hideDropDown();
-					if ((!message.translations || !message.translations[subscription && subscription.autoTranslateLanguage]) && !_.find(message.attachments, attachment => { return attachment.translations && attachment.translations[subscription.autoTranslateLanguage]; })) {
+					if ((!message.translations || !message.translations[language])) { //} && !_.find(message.attachments, attachment => { return attachment.translations && attachment.translations[language]; })) {
+						RocketChat.AutoTranslate.messageIdsToWait[message._id] = true;
 						RocketChat.models.Messages.update({ _id: message._id }, { $set: { autoTranslateFetching: true } });
-						Meteor.call('autoTranslate.translateMessage', message);
+						Meteor.call('autoTranslate.translateMessage', message, language);
 					} else if (message.autoTranslateShowInverse) {
 						RocketChat.models.Messages.update({ _id: message._id }, { $unset: { autoTranslateShowInverse: true } });
 					} else {
