@@ -5,22 +5,22 @@ import toastr from 'toastr';
 Template.userInfo.helpers({
 	name() {
 		const user = Template.instance().user.get();
-		return user.name ? user.name : TAPi18n.__('Unnamed');
+		return user && user.name ? user.name : TAPi18n.__('Unnamed');
 	},
 
 	username() {
 		const user = Template.instance().user.get();
-		return user.username;
+		return user && user.username;
 	},
 
 	email() {
 		const user = Template.instance().user.get();
-		return user.emails && user.emails[0] && user.emails[0].address;
+		return user && user.emails && user.emails[0] && user.emails[0].address;
 	},
 
 	utc() {
 		const user = Template.instance().user.get();
-		if (user.utcOffset != null) {
+		if (user && user.utcOffset != null) {
 			if (user.utcOffset > 0) {
 				return `+${user.utcOffset}`;
 			}
@@ -30,14 +30,14 @@ Template.userInfo.helpers({
 
 	lastLogin() {
 		const user = Template.instance().user.get();
-		if (user.lastLogin) {
+		if (user && user.lastLogin) {
 			return moment(user.lastLogin).format('LLL');
 		}
 	},
 
 	createdAt() {
 		const user = Template.instance().user.get();
-		if (user.createdAt) {
+		if (user && user.createdAt) {
 			return moment(user.createdAt).format('LLL');
 		}
 	},
@@ -282,7 +282,7 @@ Template.userInfo.events({
 		const rid = Session.get('openedRoom');
 		const user = t.user.get();
 		//const room = ChatRoom.findOne(rid); // never used
-		if (rid && user && RocketChat.authz.hasAllPermission('mute-user', rid)) {
+		if (user && RocketChat.authz.hasAllPermission('mute-user', rid)) {
 			return Meteor.call('unmuteUserInRoom', { rid, username: user.username }, function(err) {
 				if (err) {
 					return handleError(err);
@@ -554,9 +554,9 @@ Template.userInfo.onCreated(function() {
 	return this.autorun(() => {
 		let filter;
 		data = Template.currentData();
-		if (data.username != null) {
+		if (data && data.username != null) {
 			filter = { username: data.username };
-		} else if (data._id != null) {
+		} else if (data && data._id != null) {
 			filter = { _id: data._id };
 		}
 
