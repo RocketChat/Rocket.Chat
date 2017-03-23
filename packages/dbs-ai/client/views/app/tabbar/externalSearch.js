@@ -37,6 +37,9 @@ Template.dbsAI_externalSearch.helpers({
 	queryTemplate() {
 		return 'dynamic_redlink_' + this.queryType;
 	},
+	isLivechat(){
+		return ChatSubscription.findOne({rid: Session.get('openedRoom')}).t === 'l';
+	},
 	filledQueryTemplate() {
 		var knowledgebaseSuggestions = RocketChat.models.LivechatExternalMessage.findByRoomId(Template.currentData().rid,
 			{ts: -1}).fetch(), filledTemplate = [];

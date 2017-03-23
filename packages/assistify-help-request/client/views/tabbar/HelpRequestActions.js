@@ -1,8 +1,17 @@
 Template.HelpRequestActions.helpers({
 	helprequestOpen() {
 		const instance = Template.instance();
-		return instance.data.resolutionStatus != 'resolved';
-	}
+		return instance.data.resolutionStatus && instance.data.resolutionStatus != 'resolved'; //undefined in livechats
+	},
+
+	isLivechat() {
+		return ChatSubscription.findOne({rid: Session.get('openedRoom')}).t === 'l';
+	},
+
+	livechatOpen() {
+		const room = ChatRoom.findOne({ _id: Session.get('openedRoom')});
+		return room.open;
+	},
 });
 
 Template.HelpRequestActions.dialogs = {
@@ -113,17 +122,60 @@ Template.HelpRequestActions.events({
 				}
 			});
 		});
+	},
+	'click .close-livechat': function (event, instance) {
+		event.preventDefault();
+
+		swal({
+			title: t('Closing_chat'),
+			type: 'input',
+			inputPlaceholder: t('Please_add_a_comment'),
+			showCancelButton: true,
+			closeOnConfirm: false
+		}, (inputValue) => {
+			if (!inputValue) {
+				swal.showInputError(t('Please_add_a_comment_to_close_the_room'));
+				return false;
+			}
+
+			if (s.trim(inputValue) === '') {
+				swal.showInputError(t('Please_add_a_comment_to_close_the_room'));
+				return false;
+			}
+
+			Meteor.call('livechat:closeRoom', this.rid, inputValue, function(error/*, result*/) {
+				if (error) {
+					return handleError(error);
+				}
+				swal({
+					title: t('Chat_closed'),
+					text: t('Chat_closed_successfully'),
+					type: 'success',
+					timer: 1000,
+					showConfirmButton: false
+				});
+			});
+		});
 	}
 });
 
 Template.HelpRequestActions.onCreated( function() {
-	this.helpRequest = new ReactiveVar({});
+	this.helpRequest = new ReactiveVar(null);
+
 	this.autorun(() => {
 		if (Template.currentData().roomId && this.helpRequest.get()) {
-			this.subscribe('assistify:helpRequests', Template.currentData().roomId);
-			this.helpRequest.set(
-				RocketChat.models.HelpRequests.findOneByRoomId(Template.currentData().roomId)
-			);
+			// const helpRequest = RocketChat.models.HelpRequests.findOneByRoomId(instance.roomId);
+			// instance.helpRequest.set(helpRequest);
+
+			if(!instance.helpRequest.get()){ //todo remove after PoC: Non-reactive method call
+				Meteor.call('assistify:helpRequestByRoomId', Template.currentData().roomId,(err, result) => {
+					if(!err){
+						instance.helpRequest.set(result);
+					} else {
+						console.log(err);
+					}
+				});
+			}
 		}
 	});
 });

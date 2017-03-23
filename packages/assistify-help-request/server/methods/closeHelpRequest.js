@@ -10,7 +10,9 @@ Meteor.methods({
 				RocketChat.models.Subscriptions.removeByRoomIdAndUserId(roomId,nonOwner.u._id);
 			});
 
-			RocketChat.callbacks.run('assistify.closeRoom', room, closingProps);
+			Meteor.defer(() => {
+				RocketChat.callbacks.run('assistify.closeRoom', room, closingProps);
+			});
 		}
 	}
 });
