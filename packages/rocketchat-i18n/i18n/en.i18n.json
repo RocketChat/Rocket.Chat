@@ -641,6 +641,7 @@
   "How_responsive_was_the_chat_agent": "How responsive was the chat agent?",
   "How_satisfied_were_you_with_this_chat": "How satisfied were you with this chat?",
   "How_to_handle_open_sessions_when_agent_goes_offline": "How to handle open sessions when agent goes offline",
+  "If_this_email_is_registered": "If this email is registered, we'll send instructions on how to reset your password. If you do not receive an email shortly, please come back and try again.",
   "If_you_are_sure_type_in_your_password": "If you are sure type in your password:",
   "If_you_are_sure_type_in_your_username": "If you are sure type in your username:",
   "Iframe_Integration": "Iframe Integration",
