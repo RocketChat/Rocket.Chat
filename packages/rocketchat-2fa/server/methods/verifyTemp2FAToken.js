@@ -9,8 +9,7 @@ Meteor.methods({
 		const user = Meteor.user();
 
 		if (!user.services || !user.services.totp || !user.services.totp.tempSecret) {
-			console.error('errour');
-			return false;
+			throw new Meteor.Error('invalid-totp');
 		}
 
 		const verified = speakeasy.totp.verify({
@@ -20,8 +19,17 @@ Meteor.methods({
 		});
 
 		if (verified) {
-			RocketChat.models.Users.enable2FAAndSetSecretByUserId(Meteor.userId(), user.services.totp.tempSecret);
+			// generate 10 backup codes
+			const codes = [];
+			const hashedCodes = [];
+			for (let i = 0; i < 10; i++) {
+				const code = Random.id(8);
+				codes.push(code);
+				hashedCodes.push(SHA256(code));
+			}
+
+			RocketChat.models.Users.enable2FAAndSetSecretAndCodesByUserId(Meteor.userId(), user.services.totp.tempSecret, hashedCodes);
+			return { codes };
 		}
-		return verified;
 	}
 });
