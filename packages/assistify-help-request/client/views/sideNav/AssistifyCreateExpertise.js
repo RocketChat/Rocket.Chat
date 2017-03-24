@@ -33,7 +33,13 @@ Template.AssistifyCreateExpertise.helpers({
 		// as custom authorization leads to a streamer-exception, it has been disabled.
 		// Check whether the user is in the expert's channel as lightweight workaround
 		const instance = Template.instance();
-		return instance.isExpert.get();
+		const isExpert = instance.isExpert.get();
+		const error = instance.error.get();
+		if(!isExpert && error && error.error === 'no-expert-room-defined'){
+			toastr.info(TAPi18n.__('no-expert-room-defined'));
+			return false;
+		}
+		return isExpert;
 	}
 });
 
@@ -124,13 +130,17 @@ Template.AssistifyCreateExpertise.onCreated(function () {
 	instance.selectedUsers = new ReactiveVar([]);
 	instance.selectedUserNames = {};
 	instance.isExpert = new ReactiveVar(false);
+	instance.error = new ReactiveVar(null)
 
 	Meteor.call('getExperts', function (err, experts) {
 		if (err) {
+			instance.error.set(err);
 			instance.isExpert.set(false);
-			//todo handle error
 		} else {
-			instance.isExpert.set(experts.indexOf(Meteor.user().username) != -1);
+			instance.error.set(null);
+			if(experts) {
+				instance.isExpert.set(experts.indexOf(Meteor.user().username) != -1);
+			}
 		}
 	});
 
