@@ -1,6 +1,6 @@
 RocketChat.Migrations.add({
 	version: 63,
-	up: function() {
+	up() {
 		const forward = RocketChat.models.Settings.findOne({ _id:'Livechat_forward_open_chats' });
 		const timeout = RocketChat.models.Settings.findOne({ _id:'Livechat_forward_open_chats_timeout' });
 

@@ -73,8 +73,8 @@ Meteor.methods({
 function sendPush(service, token, options, tries = 0) {
 	const data = {
 		data: {
-			token: token,
-			options: options
+			token,
+			options
 		}
 	};
 
@@ -117,7 +117,7 @@ function configurePush() {
 
 	if (RocketChat.settings.get('Push_enable') === true) {
 		Push.allow({
-			send: function(userId/*, notification*/) {
+			send(userId/*, notification*/) {
 				return RocketChat.authz.hasRole(userId, 'admin');
 			}
 		});
@@ -156,8 +156,8 @@ function configurePush() {
 		}
 
 		Push.Configure({
-			apn: apn,
-			gcm: gcm,
+			apn,
+			gcm,
 			production: RocketChat.settings.get('Push_production'),
 			sendInterval: 1000,
 			sendBatchSize: 10

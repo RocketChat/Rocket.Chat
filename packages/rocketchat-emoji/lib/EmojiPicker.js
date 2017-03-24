@@ -56,8 +56,8 @@ RocketChat.EmojiPicker = {
 		const left = sourcePos.left;
 		const top = (sourcePos.top - this.height - 5);
 		const cssProperties = {
-			top: top,
-			left: left
+			top,
+			left
 		};
 
 		if (top < 0) {

@@ -136,8 +136,8 @@ SAML.prototype.generateLogoutRequest = function(options) {
 		console.log(request);
 	}
 	return {
-		request: request,
-		id: id
+		request,
+		id
 	};
 };
 
@@ -236,10 +236,10 @@ SAML.prototype.validateSignature = function(xml, cert) {
 	const sig = new xmlCrypto.SignedXml();
 
 	sig.keyInfoProvider = {
-		getKeyInfo: function(/*key*/) {
+		getKeyInfo(/*key*/) {
 			return '<X509Data></X509Data>';
 		},
-		getKey: function(/*keyInfo*/) {
+		getKey(/*keyInfo*/) {
 			return self.certToPEM(cert);
 		}
 	};

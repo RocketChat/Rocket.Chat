@@ -119,8 +119,8 @@ export class CustomOAuth {
 
 		try {
 			const response = HTTP.get(this.identityPath, {
-				headers: headers,
-				params: params
+				headers,
+				params
 			});
 
 			let data;
@@ -199,13 +199,13 @@ export class CustomOAuth {
 
 			const serviceData = {
 				_OAuthCustom: true,
-				accessToken: accessToken
+				accessToken
 			};
 
 			_.extend(serviceData, identity);
 
 			const data = {
-				serviceData: serviceData,
+				serviceData,
 				options: {
 					profile: {
 						name: identity.name || identity.username || identity.nickname || identity.CharacterName || identity.userName || identity.preferred_username || (identity.user && identity.user.name)

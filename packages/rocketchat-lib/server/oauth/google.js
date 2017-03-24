@@ -50,7 +50,7 @@ RocketChat.registerAccessTokenService('google', function(options) {
 	}
 
 	return {
-		serviceData: serviceData,
+		serviceData,
 		options: {
 			profile: {
 				name: identity.name

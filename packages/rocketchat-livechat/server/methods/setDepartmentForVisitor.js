@@ -1,8 +1,8 @@
 Meteor.methods({
-	'livechat:setDepartmentForVisitor': function({ token, department } = {}) {
+	'livechat:setDepartmentForVisitor'({ token, department } = {}) {
 		RocketChat.Livechat.setDepartmentForGuest.call(this, {
-			token: token,
-			department: department
+			token,
+			department
 		});
 
 		// update visited page history to not expire

@@ -13,7 +13,7 @@ function findDirectMessageRoomById(roomId, userId) {
 }
 
 RocketChat.API.v1.addRoute(['dm.close', 'im.close'], { authRequired: true }, {
-	post: function() {
+	post() {
 		const findResult = findDirectMessageRoomById(this.bodyParams.roomId, this.userId);
 
 		//The find method returns either with the dm or the failure
@@ -34,7 +34,7 @@ RocketChat.API.v1.addRoute(['dm.close', 'im.close'], { authRequired: true }, {
 });
 
 RocketChat.API.v1.addRoute(['dm.history', 'im.history'], { authRequired: true }, {
-	get: function() {
+	get() {
 		const findResult = findDirectMessageRoomById(this.queryParams.roomId, this.userId);
 
 		//The find method returns either with the group or the failure
@@ -79,7 +79,7 @@ RocketChat.API.v1.addRoute(['dm.history', 'im.history'], { authRequired: true },
 });
 
 RocketChat.API.v1.addRoute(['dm.messages.others', 'im.messages.others'], { authRequired: true }, {
-	get: function() {
+	get() {
 		if (RocketChat.settings.get('API_Enable_Direct_Message_History_EndPoint') !== true) {
 			throw new Meteor.Error('error-endpoint-disabled', 'This endpoint is disabled', { route: '/api/v1/im.messages.others' });
 		}
@@ -119,7 +119,7 @@ RocketChat.API.v1.addRoute(['dm.messages.others', 'im.messages.others'], { authR
 });
 
 RocketChat.API.v1.addRoute(['dm.list', 'im.list'], { authRequired: true }, {
-	get: function() {
+	get() {
 		const { offset, count } = this.getPaginationItems();
 		const { sort, fields } = this.parseJsonQuery();
 		let rooms = _.pluck(RocketChat.models.Subscriptions.findByTypeAndUserId('d', this.userId).fetch(), '_room');
@@ -142,7 +142,7 @@ RocketChat.API.v1.addRoute(['dm.list', 'im.list'], { authRequired: true }, {
 });
 
 RocketChat.API.v1.addRoute(['dm.list.everyone', 'im.list.everyone'], { authRequired: true }, {
-	get: function() {
+	get() {
 		if (!RocketChat.authz.hasPermission(this.userId, 'view-room-administration')) {
 			return RocketChat.API.v1.unauthorized();
 		}
@@ -169,7 +169,7 @@ RocketChat.API.v1.addRoute(['dm.list.everyone', 'im.list.everyone'], { authRequi
 });
 
 RocketChat.API.v1.addRoute(['dm.open', 'im.open'], { authRequired: true }, {
-	post: function() {
+	post() {
 		const findResult = findDirectMessageRoomById(this.bodyParams.roomId, this.userId);
 
 		//The find method returns either with the group or the failure
@@ -190,7 +190,7 @@ RocketChat.API.v1.addRoute(['dm.open', 'im.open'], { authRequired: true }, {
 });
 
 RocketChat.API.v1.addRoute(['dm.setTopic', 'im.setTopic'], { authRequired: true }, {
-	post: function() {
+	post() {
 		if (!this.bodyParams.topic || !this.bodyParams.topic.trim()) {
 			return RocketChat.API.v1.failure('The bodyParam "topic" is required');
 		}

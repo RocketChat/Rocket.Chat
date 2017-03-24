@@ -74,7 +74,7 @@ RocketChat.Livechat = {
 		}
 
 		// return messages;
-		return _.extend(RocketChat.sendMessage(guest, message, room), { newRoom: newRoom, showConnecting: this.showConnecting() });
+		return _.extend(RocketChat.sendMessage(guest, message, room), { newRoom, showConnecting: this.showConnecting() });
 	},
 	registerGuest({ token, name, email, department, phone, loginToken, username } = {}) {
 		check(token, String);
@@ -84,7 +84,7 @@ RocketChat.Livechat = {
 			$set: {
 				profile: {
 					guest: true,
-					token: token
+					token
 				}
 			}
 		};
@@ -119,9 +119,9 @@ RocketChat.Livechat = {
 				updateUser.$set.name = name;
 
 				const userData = {
-					username: username,
+					username,
 					globalRoles: ['livechat-guest'],
-					department: department,
+					department,
 					type: 'visitor',
 					joinDefaultChannels: false
 				};
@@ -165,7 +165,7 @@ RocketChat.Livechat = {
 
 		const updateUser = {
 			$set: {
-				department: department
+				department
 			}
 		};
 

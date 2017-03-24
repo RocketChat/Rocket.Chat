@@ -317,9 +317,9 @@ class ModelsBaseDb extends EventEmitter {
 					action: 'update:query',
 					id: undefined,
 					data: {
-						query: query,
-						update: update,
-						options: options
+						query,
+						update,
+						options
 					},
 					oplog: false
 				});
@@ -370,7 +370,7 @@ class ModelsBaseDb extends EventEmitter {
 			const _id = args[0]._id;
 			delete args[0]._id;
 			args.unshift({
-				_id: _id
+				_id
 			});
 
 			this.upsert(...args);

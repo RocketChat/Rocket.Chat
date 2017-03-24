@@ -32,7 +32,7 @@ Meteor.startup(function() {
 	this.RocketChatFileAvatarInstance = new RocketChatStore({
 		name: 'avatars',
 		absolutePath: path,
-		transformWrite: transformWrite
+		transformWrite
 	});
 
 	return WebApp.connectHandlers.use('/avatar/', Meteor.bindEnvironment(function(req, res/*, next*/) {

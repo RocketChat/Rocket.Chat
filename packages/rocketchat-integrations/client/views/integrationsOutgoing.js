@@ -322,7 +322,7 @@ Template.integrationsOutgoing.events({
 		const integration = {
 			event: event !== '' ? event : undefined,
 			enabled: enabled === '1',
-			username: username,
+			username,
 			channel: channel !== '' ? channel : undefined,
 			targetRoom: targetRoom !== '' ? targetRoom : undefined,
 			alias: alias !== '' ? alias : undefined,

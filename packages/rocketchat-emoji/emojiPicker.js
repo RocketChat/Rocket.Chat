@@ -150,7 +150,7 @@ Template.emojiPicker.helpers({
 	activeCategory(category) {
 		return Template.instance().currentCategory.get() === category ? 'active' : '';
 	},
-	categoryName: categoryName,
+	categoryName,
 	/**
 	 * Returns currently active emoji category hash
 	 *

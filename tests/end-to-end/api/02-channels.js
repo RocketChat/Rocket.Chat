@@ -11,7 +11,7 @@ function getRoomInfo(roomId) {
 		request.get(api('channels.info'))
 			.set(credentials)
 			.query({
-				roomId: roomId
+				roomId
 			})
 			.end((err, req) => {
 				resolve(req.body);

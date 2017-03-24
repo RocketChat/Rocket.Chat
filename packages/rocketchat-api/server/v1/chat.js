@@ -1,6 +1,6 @@
 /* global processWebhookMessage */
 RocketChat.API.v1.addRoute('chat.delete', { authRequired: true }, {
-	post: function() {
+	post() {
 		check(this.bodyParams, Match.ObjectIncluding({
 			msgId: String,
 			roomId: String,
@@ -29,7 +29,7 @@ RocketChat.API.v1.addRoute('chat.delete', { authRequired: true }, {
 });
 
 RocketChat.API.v1.addRoute('chat.postMessage', { authRequired: true }, {
-	post: function() {
+	post() {
 		const messageReturn = processWebhookMessage(this.bodyParams, this.user)[0];
 
 		if (!messageReturn) {
@@ -45,7 +45,7 @@ RocketChat.API.v1.addRoute('chat.postMessage', { authRequired: true }, {
 });
 
 RocketChat.API.v1.addRoute('chat.update', { authRequired: true }, {
-	post: function() {
+	post() {
 		check(this.bodyParams, Match.ObjectIncluding({
 			roomId: String,
 			msgId: String,

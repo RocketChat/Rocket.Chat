@@ -19,7 +19,7 @@ RocketChat.Migrations.add({
 			message.urls = message.urls.map((url) => {
 				if (_.isString(url)) {
 					return {
-						url: url
+						url
 					};
 				}
 				return url;

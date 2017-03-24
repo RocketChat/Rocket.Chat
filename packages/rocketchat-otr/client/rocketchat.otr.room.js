@@ -20,7 +20,7 @@ RocketChat.OTR.Room = class {
 		this.establishing.set(true);
 		this.firstPeer = true;
 		this.generateKeyPair().then(() => {
-			RocketChat.Notifications.notifyUser(this.peerId, 'otr', 'handshake', { roomId: this.roomId, userId: this.userId, publicKey: EJSON.stringify(this.exportedPublicKey), refresh: refresh });
+			RocketChat.Notifications.notifyUser(this.peerId, 'otr', 'handshake', { roomId: this.roomId, userId: this.userId, publicKey: EJSON.stringify(this.exportedPublicKey), refresh });
 		});
 	}
 
@@ -122,7 +122,7 @@ RocketChat.OTR.Room = class {
 
 		return RocketChat.OTR.crypto.encrypt({
 			name: 'AES-GCM',
-			iv: iv
+			iv
 		}, this.sessionKey, data).then((cipherText) => {
 			cipherText = new Uint8Array(cipherText);
 			const output = new Uint8Array(iv.length + cipherText.length);
@@ -147,7 +147,7 @@ RocketChat.OTR.Room = class {
 			text: message.msg,
 			userId: this.userId,
 			ack: Random.id((Random.fraction()+1)*20),
-			ts: ts
+			ts
 		}));
 		const enc = this.encryptText(data);
 		return enc;
@@ -160,7 +160,7 @@ RocketChat.OTR.Room = class {
 
 		return RocketChat.OTR.crypto.decrypt({
 			name: 'AES-GCM',
-			iv: iv
+			iv
 		}, this.sessionKey, cipherText)
 			.then((data) => {
 				data = EJSON.parse(new TextDecoder('UTF-8').decode(new Uint8Array(data)));

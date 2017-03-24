@@ -21,7 +21,7 @@ Meteor.logout = function() {
 		const provider = samlService.clientConfig && samlService.clientConfig.provider;
 		if (provider) {
 			if (samlService.idpSLORedirectURL) {
-				return Meteor.logoutWithSaml({ provider: provider });
+				return Meteor.logoutWithSaml({ provider });
 			}
 		}
 	}
@@ -108,7 +108,7 @@ Meteor.loginWithSaml = function(options, callback) {
 		Accounts.callLoginMethod({
 			methodArguments: [{
 				saml: true,
-				credentialToken: credentialToken
+				credentialToken
 			}],
 			userCallback: callback
 		});

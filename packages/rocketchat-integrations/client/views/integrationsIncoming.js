@@ -221,7 +221,7 @@ Template.integrationsIncoming.events({
 
 		const integration = {
 			enabled: enabled === '1',
-			channel: channel,
+			channel,
 			alias: alias !== '' ? alias : undefined,
 			emoji: emoji !== '' ? emoji : undefined,
 			avatar: avatar !== '' ? avatar : undefined,
