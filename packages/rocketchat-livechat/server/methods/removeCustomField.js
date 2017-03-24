@@ -6,7 +6,7 @@ Meteor.methods({
 
 		check(_id, String);
 
-		var customField = RocketChat.models.LivechatCustomField.findOneById(_id, { fields: { _id: 1 } });
+		const customField = RocketChat.models.LivechatCustomField.findOneById(_id, { fields: { _id: 1 } });
 
 		if (!customField) {
 			throw new Meteor.Error('error-invalid-custom-field', 'Custom field not found', { method: 'livechat:removeCustomField' });

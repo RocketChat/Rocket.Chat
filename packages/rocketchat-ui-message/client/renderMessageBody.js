@@ -1,15 +1,13 @@
 /* global renderMessageBody:true */
 
 renderMessageBody = function(msg) {
-	var message;
-
 	msg.html = msg.msg;
 
 	if (_.trim(msg.html) !== '') {
 		msg.html = _.escapeHTML(msg.html);
 	}
 
-	message = RocketChat.callbacks.run('renderMessage', msg);
+	const message = RocketChat.callbacks.run('renderMessage', msg);
 
 	if (message.tokens && message.tokens.length > 0) {
 		for (const {token, text} of message.tokens) {

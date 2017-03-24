@@ -70,9 +70,9 @@ LDAP = class LDAP {
 
 		if (self.options.ca_cert && self.options.ca_cert !== '') {
 			// Split CA cert into array of strings
-			var chainLines = RocketChat.settings.get('LDAP_CA_Cert').split('\n');
-			var cert = [];
-			var ca = [];
+			const chainLines = RocketChat.settings.get('LDAP_CA_Cert').split('\n');
+			let cert = [];
+			const ca = [];
 			chainLines.forEach(function(line) {
 				cert.push(line);
 				if (line.match(/-END CERTIFICATE-/)) {

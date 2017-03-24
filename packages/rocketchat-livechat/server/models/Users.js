@@ -4,7 +4,7 @@
  * @param {boolean} operator - Flag to set as operator or not
  */
 RocketChat.models.Users.setOperator = function(_id, operator) {
-	var update = {
+	const update = {
 		$set: {
 			operator: operator
 		}
@@ -18,7 +18,7 @@ RocketChat.models.Users.setOperator = function(_id, operator) {
  * @return
  */
 RocketChat.models.Users.findOnlineAgents = function() {
-	var query = {
+	const query = {
 		status: {
 			$exists: true,
 			$ne: 'offline'
@@ -35,7 +35,7 @@ RocketChat.models.Users.findOnlineAgents = function() {
  * @return
  */
 RocketChat.models.Users.findAgents = function() {
-	var query = {
+	const query = {
 		roles: 'livechat-agent'
 	};
 
@@ -48,7 +48,7 @@ RocketChat.models.Users.findAgents = function() {
  * @return
  */
 RocketChat.models.Users.findOnlineUserFromList = function(userList) {
-	var query = {
+	const query = {
 		status: {
 			$exists: true,
 			$ne: 'offline'
@@ -68,7 +68,7 @@ RocketChat.models.Users.findOnlineUserFromList = function(userList) {
  * @return {object} User from db
  */
 RocketChat.models.Users.getNextAgent = function() {
-	var query = {
+	const query = {
 		status: {
 			$exists: true,
 			$ne: 'offline'
@@ -77,21 +77,21 @@ RocketChat.models.Users.getNextAgent = function() {
 		roles: 'livechat-agent'
 	};
 
-	var collectionObj = this.model.rawCollection();
-	var findAndModify = Meteor.wrapAsync(collectionObj.findAndModify, collectionObj);
+	const collectionObj = this.model.rawCollection();
+	const findAndModify = Meteor.wrapAsync(collectionObj.findAndModify, collectionObj);
 
-	var sort = {
+	const sort = {
 		livechatCount: 1,
 		username: 1
 	};
 
-	var update = {
+	const update = {
 		$inc: {
 			livechatCount: 1
 		}
 	};
 
-	var user = findAndModify(query, sort, update);
+	const user = findAndModify(query, sort, update);
 	if (user && user.value) {
 		return {
 			agentId: user.value._id,
@@ -107,7 +107,7 @@ RocketChat.models.Users.getNextAgent = function() {
  * @param {string} token - Visitor token
  */
 RocketChat.models.Users.getVisitorByToken = function(token, options) {
-	var query = {
+	const query = {
 		'profile.guest': true,
 		'profile.token': token
 	};
@@ -120,7 +120,7 @@ RocketChat.models.Users.getVisitorByToken = function(token, options) {
  * @param {string} token - Visitor token
  */
 RocketChat.models.Users.findVisitorByToken = function(token) {
-	var query = {
+	const query = {
 		'profile.guest': true,
 		'profile.token': token
 	};

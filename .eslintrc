@@ -48,6 +48,7 @@
 			"vars": "all",
 			"args": "after-used"
 		}],
+		"no-var": 2,
 		"one-var": [2, "never"],
 		"no-lonely-if": 2,
 		"no-trailing-spaces": 2,

@@ -5,6 +5,7 @@
 - [NEW] Permission `join-without-join-code` assigned to admins and bots by default (#6139)
 - [NEW] Integrations, both incoming and outgoing, now have access to the models. Example: `Users.findOneById(id)` (#6336)
 - [FIX] Incoming integrations would break when trying to use the `Store` feature.
+- [FIX] Auto Translate bug on Room Preview (#6355)
 
 ## 0.54.1 - 2017-Mar-23
 
@@ -333,7 +334,7 @@
 
 ### Now uses NodeJS 4.7.0
 
-- Fix integration payload JSON.parse 
+- Fix integration payload JSON.parse
 
 ## 0.48.0 - 2016-Dec-12
 
@@ -1063,7 +1064,7 @@
 - Removing presence status computation from new room sound tracker
 - Right sidebar animation cancelled on tab button clicked
 - Save room's name as the livechat visitor name
-- Use HTML emails instead of Text- 
+- Use HTML emails instead of Text-
 
 ## 0.30.0 - 2016-May-09
 
@@ -1312,7 +1313,7 @@
 - Fix ROOT_URL_PATH_PREFIX and add tab base
 - Fix text selection for cordova
 - Fix to package file/versions: - Do not depend on specific version of ostrio:cookies to use newer versions with fixes - Update all packages with latest versions
-- Improve the unread mark calculator 
+- Improve the unread mark calculator
 - Misc fixes to allow running from subdirectory rather than root (/)
 - Move i18n files to inside the lib package
 - Prevent to open message menu for long press in links on mobile

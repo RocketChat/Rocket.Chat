@@ -1,11 +1,9 @@
 Meteor.methods({
 	sendMessageLivechat: function(message) {
-		var guest;
-
 		check(message.rid, String);
 		check(message.token, String);
 
-		guest = Meteor.users.findOne(Meteor.userId(), {
+		const guest = Meteor.users.findOne(Meteor.userId(), {
 			fields: {
 				name: 1,
 				username: 1,

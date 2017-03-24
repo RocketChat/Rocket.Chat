@@ -224,7 +224,7 @@ class ModelsBaseCache extends EventEmitter {
 			localRecords = [localRecords];
 		}
 
-		for (var i = 0; i < localRecords.length; i++) {
+		for (let i = 0; i < localRecords.length; i++) {
 			const localRecord = localRecords[i];
 			if (multi === true && !localRecord[field]) {
 				localRecord[field] = [];
@@ -281,7 +281,7 @@ class ModelsBaseCache extends EventEmitter {
 			localRecords = [localRecords];
 		}
 
-		for (var i = 0; i < localRecords.length; i++) {
+		for (let i = 0; i < localRecords.length; i++) {
 			const localRecord = localRecords[i];
 
 			if (multi === true) {

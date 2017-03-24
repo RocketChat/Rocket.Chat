@@ -40,7 +40,7 @@ const login = {
 	password: adminPassword
 };
 
-var settingValue = {
+const settingValue = {
 	value : undefined
 };
 

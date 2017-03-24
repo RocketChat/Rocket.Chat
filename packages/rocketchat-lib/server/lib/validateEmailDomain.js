@@ -1,9 +1,9 @@
 const dns = Npm.require('dns');
 
-var emailDomainBlackList = [];
-var emailDomainWhiteList = [];
-var useDefaultBlackList = false;
-var useDNSDomainCheck = false;
+let emailDomainBlackList = [];
+let emailDomainWhiteList = [];
+let useDefaultBlackList = false;
+let useDNSDomainCheck = false;
 
 RocketChat.settings.get('Accounts_BlockedDomainsList', function(key, value) {
 	emailDomainBlackList = _.map(value.split(','), (domain) => domain.trim());

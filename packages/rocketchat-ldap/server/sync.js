@@ -154,7 +154,7 @@ syncUserData = function syncUserData(user, ldapUser) {
 };
 
 addLdapUser = function addLdapUser(ldapUser, username, password) {
-	var userObject = {
+	const userObject = {
 		username: username
 	};
 

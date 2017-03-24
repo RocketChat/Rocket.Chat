@@ -28,7 +28,7 @@ Template.visitorHistory.helpers({
 });
 
 Template.visitorHistory.onCreated(function() {
-	var currentData = Template.currentData();
+	const currentData = Template.currentData();
 	this.visitorId = new ReactiveVar();
 
 	this.autorun(() => {

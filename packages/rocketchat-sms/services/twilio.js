@@ -23,7 +23,7 @@ class Twilio {
 		};
 	}
 	send(fromNumber, toNumber, message) {
-		var client = Npm.require('twilio')(this.accountSid, this.authToken);
+		const client = Npm.require('twilio')(this.accountSid, this.authToken);
 
 		client.messages.create({
 			to: toNumber,

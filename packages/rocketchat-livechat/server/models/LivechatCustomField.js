@@ -14,7 +14,7 @@ class LivechatCustomField extends RocketChat.models._Base {
 	}
 
 	createOrUpdateCustomField(_id, field, label, scope, visibility, extraData) {
-		var record = {
+		const record = {
 			label: label,
 			scope: scope,
 			visibility: visibility
