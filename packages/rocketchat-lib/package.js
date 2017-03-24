@@ -17,7 +17,6 @@ Npm.depends({
 
 Package.onUse(function(api) {
 	api.use('ecmascript');
-	api.use('rate-limit');
 	api.use('session');
 	api.use('reactive-var');
 	api.use('reactive-dict');
@@ -42,6 +41,7 @@ Package.onUse(function(api) {
 	api.use('rocketchat:authorization', {unordered: true});
 	api.use('rocketchat:push-notifications', {unordered: true});
 
+	api.use('rate-limit', 'server');
 	api.use('templating', 'client');
 	api.use('kadira:flow-router');
 
