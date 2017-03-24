@@ -1,5 +1,5 @@
 /* globals CustomFields, Livechat */
-var api = {
+const api = {
 	pageVisited: function(info) {
 		if (info.change === 'url') {
 			Triggers.processRequest(info);
@@ -41,7 +41,7 @@ var api = {
 window.addEventListener('message', function(msg) {
 	if (typeof msg.data === 'object' && msg.data.src !== undefined && msg.data.src === 'rocketchat') {
 		if (api[msg.data.fn] !== undefined && typeof api[msg.data.fn] === 'function') {
-			var args = [].concat(msg.data.args || []);
+			const args = [].concat(msg.data.args || []);
 			api[msg.data.fn].apply(null, args);
 		}
 	}
