@@ -1,17 +1,30 @@
 Meteor.methods({
 	messageSearch: function(text, rid, limit) {
-		var from, mention, options, query, r, result, currentUserName, currentUserId, currentUserTimezoneOffset;
+		const result = {
+			messages: [],
+			users: [],
+			channels: []
+		};
+		const query = {};
+		const options = {
+			sort: {
+				ts: -1
+			},
+			limit: limit || 20
+		};
+
 		check(text, String);
 		check(rid, String);
 		check(limit, Match.Optional(Number));
-		currentUserId = Meteor.userId();
+
+		const currentUserId = Meteor.userId();
 		if (!currentUserId) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: 'messageSearch'
 			});
 		}
-		currentUserName = Meteor.user().username;
-		currentUserTimezoneOffset = Meteor.user().utcOffset;
+		const currentUserName = Meteor.user().username;
+		const currentUserTimezoneOffset = Meteor.user().utcOffset;
 
 		// I would place these methods at the bottom of the file for clarity but travis doesn't appreciate that.
 		// (no-use-before-define)
@@ -67,10 +80,9 @@ Meteor.methods({
 
 		function filterOnDate(_, day, month, year) {
 			month--;
-			var date, dayAfter;
-			date = new Date(year, month, day);
+			const date = new Date(year, month, day);
 			date.setUTCHours(date.getUTCHours() + date.getTimezoneOffset()/60 + currentUserTimezoneOffset);
-			dayAfter = new Date(date);
+			const dayAfter = new Date(date);
 			dayAfter.setDate(dayAfter.getDate() + 1);
 			delete query.ts;
 			query.ts = {
@@ -92,21 +104,9 @@ Meteor.methods({
 		/*
 		 text = 'from:rodrigo mention:gabriel chat'
 		 */
-		result = {
-			messages: [],
-			users: [],
-			channels: []
-		};
-		query = {};
-		options = {
-			sort: {
-				ts: -1
-			},
-			limit: limit || 20
-		};
 
 		// Query for senders
-		from = [];
+		const from = [];
 		text = text.replace(/from:([a-z0-9.-_]+)/ig, function(match, username) {
 			if (username === 'me' && !from.includes(currentUserName)) {
 				username = currentUserName;
@@ -121,7 +121,7 @@ Meteor.methods({
 			};
 		}
 		// Query for senders
-		mention = [];
+		const mention = [];
 		text = text.replace(/mention:([a-z0-9.-_]+)/ig, function(match, username) {
 			mention.push(username);
 			return '';
@@ -154,7 +154,7 @@ Meteor.methods({
 		text = text.trim().replace(/\s\s/g, ' ');
 		if (text !== '') {
 			if (/^\/.+\/[imxs]*$/.test(text)) {
-				r = text.split('/');
+				const r = text.split('/');
 				query.msg = {
 					$regex: r[1],
 					$options: r[2]

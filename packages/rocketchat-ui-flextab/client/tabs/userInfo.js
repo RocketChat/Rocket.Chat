@@ -196,8 +196,7 @@ Template.userInfo.events({
 					}
 				});
 			}
-		}
-		);
+		});
 	},
 
 	'click .back'(e, instance) {
@@ -234,10 +233,8 @@ Template.userInfo.events({
 					});
 
 					return instance.clear();
-				}
-				);
-			}
-			);
+				});
+			});
 		} else {
 			return toastr.error(TAPi18n.__('error-not-allowed'));
 		}
@@ -272,8 +269,7 @@ Template.userInfo.events({
 						showConfirmButton: false
 					});
 				});
-			}
-			);
+			});
 		}
 	},
 
@@ -506,7 +502,6 @@ Template.userInfo.events({
 });
 
 Template.userInfo.onCreated(function() {
-	let data, user, username;
 	this.now = new ReactiveVar(moment());
 	this.user = new ReactiveVar;
 	this.editingUser = new ReactiveVar;
@@ -520,7 +515,7 @@ Template.userInfo.onCreated(function() {
 	, 30000);
 
 	this.autorun(() => {
-		username = this.loadedUsername.get();
+		const username = this.loadedUsername.get();
 
 		if (username == null) {
 			this.loadingUserInfo.set(false);
@@ -531,38 +526,33 @@ Template.userInfo.onCreated(function() {
 
 		return this.subscribe('fullUserData', username, 1, () => {
 			return this.loadingUserInfo.set(false);
-		}
-		);
-	}
-	);
+		});
+	});
 
 	this.autorun(() => {
-		data = Template.currentData();
+		const data = Template.currentData();
 		if (data.clear != null) {
 			return this.clear = data.clear;
 		}
-	}
-	);
+	});
 
 	this.autorun(() => {
-		data = Template.currentData();
-		user = this.user.get();
+		const data = Template.currentData();
+		const user = this.user.get();
 		return this.loadedUsername.set((user != null ? user.username : undefined) || (data != null ? data.username : undefined));
-	}
-	);
+	});
 
 	return this.autorun(() => {
 		let filter;
-		data = Template.currentData();
+		const data = Template.currentData();
 		if (data && data.username != null) {
 			filter = { username: data.username };
 		} else if (data && data._id != null) {
 			filter = { _id: data._id };
 		}
 
-		user = Meteor.users.findOne(filter);
+		const user = Meteor.users.findOne(filter);
 
 		return this.user.set(user);
-	}
-	);
+	});
 });
