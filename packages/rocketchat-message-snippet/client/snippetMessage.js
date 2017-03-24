@@ -1,5 +1,5 @@
 Meteor.methods({
-	snippetMessage: function(message) {
+	snippetMessage(message) {
 		if (typeof Meteor.userId() === 'undefined' || Meteor.userId() === null) {
 			return false;
 		}

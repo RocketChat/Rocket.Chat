@@ -13,7 +13,7 @@ Meteor.methods({
 		RocketChat.models.Rooms.removeUsernameById(rid, username);
 
 		// find inquiry corresponding to room
-		const inquiry = RocketChat.models.LivechatInquiry.findOne({rid: rid});
+		const inquiry = RocketChat.models.LivechatInquiry.findOne({rid});
 
 		// mark inquiry as open
 		return RocketChat.models.LivechatInquiry.openInquiry(inquiry._id);

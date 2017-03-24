@@ -69,15 +69,15 @@ describe('user preferences', ()=> {
 		});
 
 		it('change the name field', ()=> {
-			preferencesMainContent.changeRealName('EditedRealName'+username);
+			preferencesMainContent.changeRealName(`EditedRealName${ username }`);
 		});
 
 		it('change the Username field', ()=> {
-			preferencesMainContent.changeUsername('EditedUserName'+username);
+			preferencesMainContent.changeUsername(`EditedUserName${ username }`);
 		});
 
 		it.skip('change the email field', ()=> {
-			preferencesMainContent.changeEmail('EditedUserEmail'+username+'@gmail.com');
+			preferencesMainContent.changeEmail(`EditedUserEmail${ username }@gmail.com`);
 		});
 
 		it('save the settings', ()=> {
@@ -112,23 +112,23 @@ describe('user preferences', ()=> {
 		});
 
 		it.skip('the name on the last message should be the edited one', () => {
-			mainContent.waitForLastMessageUserEqualsText('EditedUserName'+username);
-			mainContent.lastMessageUser.getText().should.equal('EditedUserName'+username);
+			mainContent.waitForLastMessageUserEqualsText(`EditedUserName${ username }`);
+			mainContent.lastMessageUser.getText().should.equal(`EditedUserName${ username }`);
 		});
 
 		it('the name on the nav bar should be the edited one', () => {
-			sideNav.accountBoxUserName.getText().should.equal('EditedUserName'+username);
+			sideNav.accountBoxUserName.getText().should.equal(`EditedUserName${ username }`);
 		});
 
 		it.skip('the user name on the members flex tab should be the edited one', () => {
 			mainContent.lastMessageUser.click();
 			flexTab.memberUserName.waitForVisible(5000);
-			flexTab.memberUserName.getText().should.equal('EditedUserName'+username);
+			flexTab.memberUserName.getText().should.equal(`EditedUserName${ username }`);
 		});
 
 		it.skip('the real name on the members flex tab should be the edited one', () => {
 			flexTab.memberRealName.waitForVisible(5000);
-			flexTab.memberRealName.getText().should.equal('EditedRealName'+username);
+			flexTab.memberRealName.getText().should.equal(`EditedRealName${ username }`);
 		});
 	});
 });

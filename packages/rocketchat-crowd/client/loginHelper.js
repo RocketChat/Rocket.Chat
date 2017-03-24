@@ -9,12 +9,12 @@ Meteor.loginWithCrowd = function(username, password, callback) {
 	password = args.shift();
 	const loginRequest = {
 		crowd: true,
-		username: username,
+		username,
 		crowdPassword: password
 	};
 	Accounts.callLoginMethod({
 		methodArguments: [loginRequest],
-		userCallback: function(error) {
+		userCallback(error) {
 			if (error) {
 				if (callback) {
 					callback(error);

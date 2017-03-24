@@ -25,9 +25,9 @@ Meteor.methods({
 				}
 			}
 		} else if (!name) {
-			throw new Meteor.Error('error-importer-not-defined', `No Importer Found: "${name}"`, { method: 'prepareImport' });
+			throw new Meteor.Error('error-importer-not-defined', `No Importer Found: "${ name }"`, { method: 'prepareImport' });
 		} else {
-			throw new Meteor.Error('error-importer-not-defined', `The importer, "${name}", was not defined correctly, it is missing the Import class.`, { method: 'prepareImport' });
+			throw new Meteor.Error('error-importer-not-defined', `The importer, "${ name }", was not defined correctly, it is missing the Import class.`, { method: 'prepareImport' });
 		}
 	}
 });

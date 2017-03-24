@@ -162,7 +162,7 @@ Template.pushNotificationsFlexTab.onCreated(function() {
 			case 'audioNotification':
 				return true;
 			default:
-				const value = this.$('input[name='+ field +']:checked').val();
+				const value = this.$(`input[name=${ field }]:checked`).val();
 				if (['all', 'mentions', 'nothing', 'default'].indexOf(value) === -1) {
 					toastr.error(t('Invalid_notification_setting_s', value || ''));
 					return false;
@@ -176,10 +176,10 @@ Template.pushNotificationsFlexTab.onCreated(function() {
 		let value;
 		switch (field) {
 			case 'audioNotification':
-				value = this.$('select[name='+field+']').val();
+				value = this.$(`select[name=${ field }]`).val();
 				break;
 			default:
-				value = this.$('input[name='+ field +']:checked').val();
+				value = this.$(`input[name=${ field }]:checked`).val();
 				break;
 		}
 		const duration = $('input[name=duration]').val();
@@ -231,14 +231,14 @@ Template.pushNotificationsFlexTab.events({
 		e.preventDefault();
 		let audio = $(e.currentTarget).data('play');
 		if (audio && audio !== 'none') {
-			const $audio = $('audio#' + audio);
+			const $audio = $(`audio#${ audio }`);
 			if ($audio && $audio[0] && $audio[0].play) {
 				$audio[0].play();
 			}
 		} else {
 			audio = Meteor.user() && Meteor.user().settings && Meteor.user().settings.preferences && Meteor.user().settings.preferences.newMessageNotification || 'chime';
 			if (audio && audio !== 'none') {
-				const $audio = $('audio#' + audio);
+				const $audio = $(`audio#${ audio }`);
 				if ($audio && $audio[0] && $audio[0].play) {
 					$audio[0].play();
 				}
@@ -250,7 +250,7 @@ Template.pushNotificationsFlexTab.events({
 		e.preventDefault();
 		const audio = $(e.currentTarget).val();
 		if (audio && audio !== 'none') {
-			const $audio = $('audio#' + audio);
+			const $audio = $(`audio#${ audio }`);
 			if ($audio && $audio[0] && $audio[0].play) {
 				$audio[0].play();
 			}

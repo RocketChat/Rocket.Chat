@@ -5,7 +5,7 @@
  */
 RocketChat.models.Rooms.setJitsiTimeout = function(_id, time) {
 	const query = {
-		_id: _id
+		_id
 	};
 
 	const update = {
