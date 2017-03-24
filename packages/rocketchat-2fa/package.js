@@ -20,6 +20,7 @@ Package.onUse(function(api) {
 	// api.mainModule('rocketchat-2fa.js');
 
 	api.use([
+		'accounts-base',
 		'ecmascript',
 		'templating',
 		'rocketchat:lib'
@@ -29,4 +30,5 @@ Package.onUse(function(api) {
 	api.addFiles('client/TOTPPassword.js', 'client');
 
 	// api.addFiles('server/methods/enable2fa.js', 'server');
+	api.addFiles('server/loginHandler.js', 'server');
 });

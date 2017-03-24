@@ -1,8 +1,46 @@
+import toastr from 'toastr';
+
+function reportError(error, callback) {
+	if (callback) {
+		callback(error);
+	} else {
+		throw error;
+	}
+}
+
+Meteor.loginWithPasswordAndTOTP = function(selector, password, code, callback) {
+	if (typeof selector === 'string') {
+		if (selector.indexOf('@') === -1) {
+			selector = {username: selector};
+		} else {
+			selector = {email: selector};
+		}
+	}
+
+	Accounts.callLoginMethod({
+		methodArguments: [{
+			totp: {
+				login: {
+					user: selector,
+					password: Accounts._hashPassword(password)
+				},
+				code
+			}
+		}],
+		userCallback: function(error) {
+			if (error) {
+				reportError(error, callback);
+			} else {
+				callback && callback();
+			}
+		}
+	});
+};
+
 const loginWithPassword = Meteor.loginWithPassword;
 
 Meteor.loginWithPassword = function(email, password, cb) {
 	loginWithPassword(email, password, (error) => {
-		console.log(error);
 		if (!error || error.error !== 'totp-required') {
 			return cb(error);
 		}
@@ -13,15 +51,22 @@ Meteor.loginWithPassword = function(email, password, cb) {
 			type: 'input',
 			inputType: 'text',
 			showCancelButton: true,
-			closeOnConfirm: false,
+			closeOnConfirm: true,
 			confirmButtonText: t('Verify'),
 			cancelButtonText: t('Cancel')
-		}, (code, ...args) => {
+		}, (code) => {
 			if (code === false) {
 				return cb();
 			}
 
-			console.log(code, ...args);
+			Meteor.loginWithPasswordAndTOTP(email, password, code, (error) => {
+				if (error && error.error === 'totp-invalid') {
+					toastr.error(t('Invalid_two_factor_code'));
+					cb();
+				} else {
+					cb(error);
+				}
+			});
 		});
 	});
 };
