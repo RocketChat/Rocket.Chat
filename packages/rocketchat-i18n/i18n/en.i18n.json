@@ -739,6 +739,7 @@
   "Invalid_room_name": "<strong>%s</strong> is not a valid room name,<br/> use only letters, numbers, hyphens and underscores",
   "Invalid_secret_URL_message": "The URL provided is invalid.",
   "Invalid_setting_s": "Invalid setting: %s",
+  "Invalid_two_factor_code": "Invalid two factor code",
   "invisible": "invisible",
   "Invisible": "Invisible",
   "Invitation": "Invitation",
