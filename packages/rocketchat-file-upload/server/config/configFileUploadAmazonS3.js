@@ -7,11 +7,11 @@ const generateURL = function(file) {
 	if (!file || !file.s3) {
 		return;
 	}
-	const resourceURL = '/' + file.s3.bucket + '/' + file.s3.path + file._id;
+	const resourceURL = `/${ file.s3.bucket }/${ file.s3.path }${file._id}`;
 	const expires = parseInt(new Date().getTime() / 1000) + Math.max(5, S3expiryTimeSpan);
-	const StringToSign = 'GET\n\n\n' + expires +'\n'+resourceURL;
+	const StringToSign = `GET\n\n\n${ expires }\n${resourceURL}`;
 	const signature = crypto.createHmac('sha1', S3secretKey).update(new Buffer(StringToSign, 'utf-8')).digest('base64');
-	return file.url + '?AWSAccessKeyId='+encodeURIComponent(S3accessKey)+'&Expires='+expires+'&Signature='+encodeURIComponent(signature);
+	return `${file.url }?AWSAccessKeyId=${encodeURIComponent(S3accessKey)}&Expires=${expires}&Signature=${encodeURIComponent(signature)}`;
 };
 
 FileUpload.addHandler('s3', {
@@ -60,7 +60,7 @@ const createS3Directive = _.debounce(() => {
 			AWSAccessKeyId: accessKey,
 			AWSSecretAccessKey: secretKey,
 			key: function(file, metaContext) {
-				const path = RocketChat.hostname + '/' + metaContext.rid + '/' + this.userId + '/';
+				const path = `${RocketChat.hostname }/${ metaContext.rid }/${ this.userId }/`;
 
 				const upload = { s3: {
 					bucket,

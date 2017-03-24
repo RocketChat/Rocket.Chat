@@ -51,8 +51,8 @@ Template.livechatDepartmentForm.events({
 		var departmentAgents = [];
 
 		instance.selectedAgents.get().forEach((agent) => {
-			agent.count = instance.$('.count-' + agent.agentId).val();
-			agent.order = instance.$('.order-' + agent.agentId).val();
+			agent.count = instance.$(`.count-${ agent.agentId}`).val();
+			agent.order = instance.$(`.order-${ agent.agentId}`).val();
 
 			departmentAgents.push(agent);
 		});

@@ -9,7 +9,7 @@ function LennyFace(command, params, item) {
 		var msg;
 
 		msg = item;
-		msg.msg = params + ' ( ͡° ͜ʖ ͡°)';
+		msg.msg = `${ params } ( ͡° ͜ʖ ͡°)`;
 		Meteor.call('sendMessage', msg);
 	}
 }

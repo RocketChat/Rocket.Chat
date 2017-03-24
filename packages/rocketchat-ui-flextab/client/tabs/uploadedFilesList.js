@@ -49,9 +49,9 @@ Template.uploadedFilesList.helpers({
 			url = Meteor.absoluteUrl().replace(/\/$/, '') + url;
 			const query = `rc_uid=${Meteor.userId()}&rc_token=${Meteor._localStorage.getItem('Meteor.loginToken')}`;
 			if (url.indexOf('?') === -1) {
-				url = url + '?' + query;
+				url = `${url }?${ query}`;
 			} else {
-				url = url + '&' + query;
+				url = `${url }&${ query}`;
 			}
 		}
 

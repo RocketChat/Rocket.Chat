@@ -25,7 +25,7 @@ export class CustomOAuth {
 
 		this.userAgent = 'Meteor';
 		if (Meteor.release) {
-			this.userAgent += '/' + Meteor.release;
+			this.userAgent += `/${ Meteor.release}`;
 		}
 
 		Accounts.oauth.registerService(this.name);
@@ -79,7 +79,7 @@ export class CustomOAuth {
 		let response = undefined;
 		try {
 			response = HTTP.post(this.tokenPath, {
-				auth: config.clientId + ':' + OAuth.openSecret(config.secret),
+				auth: `${config.clientId }:${ OAuth.openSecret(config.secret)}`,
 				headers: {
 					Accept: 'application/json',
 					'User-Agent': this.userAgent
@@ -112,7 +112,7 @@ export class CustomOAuth {
 		};
 
 		if (this.tokenSentVia === 'header') {
-			headers['Authorization'] = 'Bearer ' + accessToken;
+			headers['Authorization'] = `Bearer ${ accessToken}`;
 		} else {
 			params['access_token'] = accessToken;
 		}

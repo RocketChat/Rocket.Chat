@@ -18,13 +18,13 @@ Package.onUse(function(api) {
 	api.addFiles('client/style.css', 'client');
 
 	var katexPath = 'node_modules/katex/dist/';
-	api.addFiles(katexPath + 'katex.min.css', 'client');
+	api.addFiles(`${katexPath }katex.min.css`, 'client');
 
 	var _ = Npm.require('underscore');
 	var fs = Npm.require('fs');
 
-	var fontsPath = katexPath + 'fonts/';
-	var fontFiles = _.map(fs.readdirSync('packages/rocketchat-katex/' + fontsPath), function(filename) {
+	var fontsPath = `${katexPath }fonts/`;
+	var fontFiles = _.map(fs.readdirSync(`packages/rocketchat-katex/${ fontsPath}`), function(filename) {
 		return fontsPath + filename;
 	});
 

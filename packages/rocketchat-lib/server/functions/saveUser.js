@@ -30,7 +30,7 @@ RocketChat.saveUser = function(userId, userData) {
 	let nameValidation;
 
 	try {
-		nameValidation = new RegExp('^' + RocketChat.settings.get('UTF8_Names_Validation') + '$');
+		nameValidation = new RegExp(`^${ RocketChat.settings.get('UTF8_Names_Validation') }$`);
 	} catch (e) {
 		nameValidation = new RegExp('^[0-9a-zA-Z-_.]+$');
 	}
@@ -115,7 +115,7 @@ RocketChat.saveUser = function(userId, userData) {
 				try {
 					Email.send(email);
 				} catch (error) {
-					throw new Meteor.Error('error-email-send-failed', 'Error trying to send email: ' + error.message, { function: 'RocketChat.saveUser', message: error.message });
+					throw new Meteor.Error('error-email-send-failed', `Error trying to send email: ${ error.message}`, { function: 'RocketChat.saveUser', message: error.message });
 				}
 			});
 		}

@@ -3,7 +3,7 @@
 const baseName = 'rocketchat_';
 import {EventEmitter} from 'events';
 
-const trash = new Mongo.Collection(baseName + '_trash');
+const trash = new Mongo.Collection(`${baseName }_trash`);
 try {
 	trash._ensureIndex({ collection: 1 });
 	trash._ensureIndex({ _deletedAt: 1 }, { expireAfterSeconds: 60 * 60 * 24 * 30 });

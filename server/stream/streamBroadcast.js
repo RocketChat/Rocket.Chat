@@ -93,7 +93,7 @@ function startMatrixBroadcast() {
 			let instance = `${record.extraInformation.host}:${record.extraInformation.port}`;
 
 			if (record.extraInformation.host === process.env.INSTANCE_IP && RocketChat.isDocker() === false) {
-				instance = 'localhost:' + record.extraInformation.port;
+				instance = `localhost:${ record.extraInformation.port}`;
 			}
 
 			const query = {

@@ -41,7 +41,7 @@ Meteor.methods({
 			html = html + singleMessage;
 		});
 
-		html = html + '</div>';
+		html = `${html }</div>`;
 
 		let fromEmail = RocketChat.settings.get('From_Email').match(/\b[A-Z0-9._%+-]+@(?:[A-Z0-9-]+\.)+[A-Z]{2,4}\b/i);
 

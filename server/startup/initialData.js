@@ -49,7 +49,7 @@ Meteor.startup(function() {
 					adminUser.name = process.env.ADMIN_NAME;
 				}
 
-				console.log(('Name: ' + adminUser.name).green);
+				console.log((`Name: ${ adminUser.name}`).green);
 
 				if (process.env.ADMIN_EMAIL) {
 					const re = /^[^@].*@[^@]+$/i;
@@ -61,7 +61,7 @@ Meteor.startup(function() {
 								verified: true
 							}];
 
-							console.log(('Email: ' + process.env.ADMIN_EMAIL).green);
+							console.log((`Email: ${ process.env.ADMIN_EMAIL}`).green);
 						} else {
 							console.log('Email provided already exists; Ignoring environment variables ADMIN_EMAIL'.red);
 						}
@@ -74,7 +74,7 @@ Meteor.startup(function() {
 					let nameValidation;
 
 					try {
-						nameValidation = new RegExp('^' + RocketChat.settings.get('UTF8_Names_Validation') + '$');
+						nameValidation = new RegExp(`^${ RocketChat.settings.get('UTF8_Names_Validation') }$`);
 					} catch (error) {
 						nameValidation = new RegExp('^[0-9a-zA-Z-_.]+$');
 					}
@@ -90,7 +90,7 @@ Meteor.startup(function() {
 					}
 				}
 
-				console.log(('Username: ' + adminUser.username).green);
+				console.log((`Username: ${ adminUser.username}`).green);
 
 				adminUser.type = 'user';
 
@@ -98,7 +98,7 @@ Meteor.startup(function() {
 
 				Accounts.setPassword(id, process.env.ADMIN_PASS);
 
-				console.log(('Password: ' + process.env.ADMIN_PASS).green);
+				console.log((`Password: ${ process.env.ADMIN_PASS}`).green);
 
 				RocketChat.authz.addUserRoles(id, 'admin');
 			} else {

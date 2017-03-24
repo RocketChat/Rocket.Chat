@@ -33,7 +33,7 @@ function getEmojisByCategory(category) {
 					let tone = '';
 
 					if (actualTone > 0 && RocketChat.emoji.packages[emojiPackage].toneList.hasOwnProperty(emoji)) {
-						tone = '_tone' + actualTone;
+						tone = `_tone${ actualTone}`;
 					}
 
 					//set correctPackage here to allow for recent emojis to work properly
@@ -70,7 +70,7 @@ function getEmojisBySearchTerm(searchTerm) {
 			emoji = emoji.replace(/:/g, '');
 
 			if (actualTone > 0 && RocketChat.emoji.packages[emojiPackage].toneList.hasOwnProperty(emoji)) {
-				tone = '_tone' + actualTone;
+				tone = `_tone${ actualTone}`;
 			}
 
 			let emojiFound = false;
@@ -139,7 +139,7 @@ Template.emojiPicker.helpers({
 		}
 	},
 	currentTone() {
-		return 'tone-' + Template.instance().tone;
+		return `tone-${ Template.instance().tone}`;
 	},
 	/**
 	 * Returns true if a given emoji category is active
@@ -199,7 +199,7 @@ Template.emojiPicker.events({
 		let newTone;
 
 		if (tone > 0) {
-			newTone = '_tone' + tone;
+			newTone = `_tone${ tone}`;
 		} else {
 			newTone = '';
 		}
@@ -209,7 +209,7 @@ Template.emojiPicker.events({
 				if (RocketChat.emoji.packages[emojiPackage].hasOwnProperty('toneList')) {
 					for (const emoji in RocketChat.emoji.packages[emojiPackage].toneList) {
 						if (RocketChat.emoji.packages[emojiPackage].toneList.hasOwnProperty(emoji)) {
-							$('.emoji-'+emoji).html(RocketChat.emoji.packages[emojiPackage].render(':' + emoji + newTone + ':'));
+							$(`.emoji-${emoji}`).html(RocketChat.emoji.packages[emojiPackage].render(`:${ emoji }${newTone }:`));
 						}
 					}
 				}
@@ -232,7 +232,7 @@ Template.emojiPicker.events({
 		for (const emojiPackage in RocketChat.emoji.packages) {
 			if (RocketChat.emoji.packages.hasOwnProperty(emojiPackage)) {
 				if (actualTone > 0 && RocketChat.emoji.packages[emojiPackage].toneList.hasOwnProperty(emoji)) {
-					tone = '_tone' + actualTone;
+					tone = `_tone${ actualTone}`;
 				}
 			}
 		}
@@ -272,8 +272,8 @@ Template.emojiPicker.onCreated(function() {
 	});
 
 	this.setCurrentTone = (newTone) => {
-		$('.current-tone').removeClass('tone-' + this.tone);
-		$('.current-tone').addClass('tone-' + newTone);
+		$('.current-tone').removeClass(`tone-${ this.tone}`);
+		$('.current-tone').addClass(`tone-${ newTone}`);
 		this.tone = newTone;
 	};
 });

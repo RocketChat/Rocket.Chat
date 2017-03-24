@@ -34,7 +34,7 @@ Template.chatRoomItem.helpers({
 	},
 
 	canLeave() {
-		const roomData = Session.get('roomData' + this.rid);
+		const roomData = Session.get(`roomData${ this.rid}`);
 
 		if (!roomData) { return false; }
 

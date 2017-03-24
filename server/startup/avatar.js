@@ -21,7 +21,7 @@ Meteor.startup(function() {
 		}
 		const height = RocketChat.settings.get('Accounts_AvatarSize');
 		const width = height;
-		return RocketChatFile.gm(readStream, file.fileName).background('#ffffff').resize(width, height + '^').gravity('Center').crop(width, height).extent(width, height).stream('jpeg').pipe(writeStream);
+		return RocketChatFile.gm(readStream, file.fileName).background('#ffffff').resize(width, `${height }^`).gravity('Center').crop(width, height).extent(width, height).stream('jpeg').pipe(writeStream);
 	}
 
 	let path = '~/uploads';
@@ -114,7 +114,7 @@ Meteor.startup(function() {
 				initials = initials.toUpperCase();
 			}
 
-			const svg = '<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n<svg xmlns=\"http://www.w3.org/2000/svg\" pointer-events=\"none\" width=\"50\" height=\"50\" style=\"width: 50px; height: 50px; background-color: ' + color + ';\">\n	<text text-anchor=\"middle\" y=\"50%\" x=\"50%\" dy=\"0.36em\" pointer-events=\"auto\" fill=\"#ffffff\" font-family=\"Helvetica, Arial, Lucida Grande, sans-serif\" style=\"font-weight: 400; font-size: 28px;\">\n		' + initials + '\n	</text>\n</svg>';
+			const svg = `<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n<svg xmlns=\"http://www.w3.org/2000/svg\" pointer-events=\"none\" width=\"50\" height=\"50\" style=\"width: 50px; height: 50px; background-color: ${ color };\">\n	<text text-anchor=\"middle\" y=\"50%\" x=\"50%\" dy=\"0.36em\" pointer-events=\"auto\" fill=\"#ffffff\" font-family=\"Helvetica, Arial, Lucida Grande, sans-serif\" style=\"font-weight: 400; font-size: 28px;\">\n		${ initials }\n	</text>\n</svg>`;
 			res.write(svg);
 			res.end();
 

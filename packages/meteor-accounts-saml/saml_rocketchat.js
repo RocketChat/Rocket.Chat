@@ -90,20 +90,20 @@ Meteor.methods({
 
 const getSamlConfigs = function(service) {
 	return {
-		buttonLabelText: RocketChat.settings.get(service.key + '_button_label_text'),
-		buttonLabelColor: RocketChat.settings.get(service.key + '_button_label_color'),
-		buttonColor: RocketChat.settings.get(service.key + '_button_color'),
+		buttonLabelText: RocketChat.settings.get(`${service.key }_button_label_text`),
+		buttonLabelColor: RocketChat.settings.get(`${service.key }_button_label_color`),
+		buttonColor: RocketChat.settings.get(`${service.key }_button_color`),
 		clientConfig: {
-			provider: RocketChat.settings.get(service.key + '_provider')
+			provider: RocketChat.settings.get(`${service.key }_provider`)
 		},
-		entryPoint: RocketChat.settings.get(service.key + '_entry_point'),
-		idpSLORedirectURL: RocketChat.settings.get(service.key + '_idp_slo_redirect_url'),
-		generateUsername: RocketChat.settings.get(service.key + '_generate_username'),
-		issuer: RocketChat.settings.get(service.key + '_issuer'),
+		entryPoint: RocketChat.settings.get(`${service.key }_entry_point`),
+		idpSLORedirectURL: RocketChat.settings.get(`${service.key }_idp_slo_redirect_url`),
+		generateUsername: RocketChat.settings.get(`${service.key }_generate_username`),
+		issuer: RocketChat.settings.get(`${service.key }_issuer`),
 		secret: {
-			privateKey: RocketChat.settings.get(service.key + '_private_key'),
-			publicCert: RocketChat.settings.get(service.key + '_public_cert'),
-			cert: RocketChat.settings.get(service.key + '_cert')
+			privateKey: RocketChat.settings.get(`${service.key }_private_key`),
+			publicCert: RocketChat.settings.get(`${service.key }_public_cert`),
+			cert: RocketChat.settings.get(`${service.key }_cert`)
 		}
 	};
 };

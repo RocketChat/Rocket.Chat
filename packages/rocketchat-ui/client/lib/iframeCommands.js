@@ -19,7 +19,7 @@ const commands = {
 			}, event.origin);
 		};
 
-		const siteUrl = Meteor.settings.Site_Url + '/';
+		const siteUrl = `${Meteor.settings.Site_Url }/`;
 		if (typeof data.redirectUrl !== 'string' || !data.redirectUrl.startsWith(siteUrl)) {
 			data.redirectUrl = null;
 		}
@@ -28,7 +28,7 @@ const commands = {
 			const customOauth = ServiceConfiguration.configurations.findOne({service: data.service});
 
 			if (customOauth) {
-				const customLoginWith = Meteor['loginWith' + _.capitalize(customOauth.service, true)];
+				const customLoginWith = Meteor[`loginWith${ _.capitalize(customOauth.service, true)}`];
 				const customRedirectUri = data.redirectUrl || siteUrl;
 				customLoginWith.call(Meteor, {'redirectUrl': customRedirectUri}, customOAuthCallback);
 			}

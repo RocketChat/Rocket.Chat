@@ -22,7 +22,7 @@ RocketChat.Migrations.add({
 
 			if (nameParts && nameParts.length > 1) {
 				extension = nameParts.pop();
-				url = url + '.' + extension;
+				url = `${url }.${ extension}`;
 			}
 
 			const record = {

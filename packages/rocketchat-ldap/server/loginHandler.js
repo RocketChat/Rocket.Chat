@@ -69,7 +69,7 @@ Accounts.registerLoginHandler('ldap', function(loginRequest) {
 			return fallbackDefaultAccountSystem(self, loginRequest.username, loginRequest.ldapPass);
 		}
 
-		throw new Meteor.Error('LDAP-login-error', 'LDAP Authentication failed with provided username ['+loginRequest.username+']');
+		throw new Meteor.Error('LDAP-login-error', `LDAP Authentication failed with provided username [${loginRequest.username}]`);
 	}
 
 	let username;
@@ -111,7 +111,7 @@ Accounts.registerLoginHandler('ldap', function(loginRequest) {
 	if (user) {
 		if (user.ldap !== true && RocketChat.settings.get('LDAP_Merge_Existing_Users') !== true) {
 			logger.info('User exists without "ldap: true"');
-			throw new Meteor.Error('LDAP-login-error', 'LDAP Authentication succeded, but there\'s already an existing user with provided username ['+username+'] in Mongo.');
+			throw new Meteor.Error('LDAP-login-error', `LDAP Authentication succeded, but there's already an existing user with provided username [${username}] in Mongo.`);
 		}
 
 		logger.info('Logging user');

@@ -178,9 +178,9 @@ RocketChat.integrations.triggerHandler = new class RocketChatIntegrationHandler 
 		};
 
 		if (tmpRoom.t === 'd') {
-			message.channel = '@' + tmpRoom._id;
+			message.channel = `@${ tmpRoom._id}`;
 		} else {
-			message.channel = '#' + tmpRoom._id;
+			message.channel = `#${ tmpRoom._id}`;
 		}
 
 		message = processWebhookMessage(message, user, defaultValues);
@@ -461,8 +461,8 @@ RocketChat.integrations.triggerHandler = new class RocketChatIntegrationHandler 
 					const id = room._id.replace(message.u._id, '');
 					const username = _.without(room.usernames, message.u.username)[0];
 
-					if (this.triggers['@'+id]) {
-						for (const trigger of Object.values(this.triggers['@'+id])) {
+					if (this.triggers[`@${id}`]) {
+						for (const trigger of Object.values(this.triggers[`@${id}`])) {
 							triggersToExecute.push(trigger);
 						}
 					}
@@ -473,8 +473,8 @@ RocketChat.integrations.triggerHandler = new class RocketChatIntegrationHandler 
 						}
 					}
 
-					if (id !== username && this.triggers['@'+username]) {
-						for (const trigger of Object.values(this.triggers['@'+username])) {
+					if (id !== username && this.triggers[`@${username}`]) {
+						for (const trigger of Object.values(this.triggers[`@${username}`])) {
 							triggersToExecute.push(trigger);
 						}
 					}
@@ -487,14 +487,14 @@ RocketChat.integrations.triggerHandler = new class RocketChatIntegrationHandler 
 						}
 					}
 
-					if (this.triggers['#'+room._id]) {
-						for (const trigger of Object.values(this.triggers['#'+room._id])) {
+					if (this.triggers[`#${room._id}`]) {
+						for (const trigger of Object.values(this.triggers[`#${room._id}`])) {
 							triggersToExecute.push(trigger);
 						}
 					}
 
-					if (room._id !== room.name && this.triggers['#'+room.name]) {
-						for (const trigger of Object.values(this.triggers['#'+room.name])) {
+					if (room._id !== room.name && this.triggers[`#${room.name}`]) {
+						for (const trigger of Object.values(this.triggers[`#${room.name}`])) {
 							triggersToExecute.push(trigger);
 						}
 					}
@@ -507,14 +507,14 @@ RocketChat.integrations.triggerHandler = new class RocketChatIntegrationHandler 
 						}
 					}
 
-					if (this.triggers['#'+room._id]) {
-						for (const trigger of Object.values(this.triggers['#'+room._id])) {
+					if (this.triggers[`#${room._id}`]) {
+						for (const trigger of Object.values(this.triggers[`#${room._id}`])) {
 							triggersToExecute.push(trigger);
 						}
 					}
 
-					if (room._id !== room.name && this.triggers['#'+room.name]) {
-						for (const trigger of Object.values(this.triggers['#'+room.name])) {
+					if (room._id !== room.name && this.triggers[`#${room.name}`]) {
+						for (const trigger of Object.values(this.triggers[`#${room.name}`])) {
 							triggersToExecute.push(trigger);
 						}
 					}

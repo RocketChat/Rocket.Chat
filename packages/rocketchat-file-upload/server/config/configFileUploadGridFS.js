@@ -106,11 +106,11 @@ const readFromGridFS = function(storeName, fileId, file, headers, req, res) {
 		delete headers['Content-Type'];
 		delete headers['Content-Disposition'];
 		delete headers['Last-Modified'];
-		headers['Content-Range'] = 'bytes */' + file.size;
+		headers['Content-Range'] = `bytes */${ file.size}`;
 		res.writeHead(416, headers);
 		res.end();
 	} else if (range) {
-		headers['Content-Range'] = 'bytes ' + range.start + '-' + range.stop + '/' + file.size;
+		headers['Content-Range'] = `bytes ${ range.start }-${ range.stop }/${ file.size}`;
 		delete headers['Content-Length'];
 		headers['Content-Length'] = range.stop - range.start + 1;
 		res.writeHead(206, headers);

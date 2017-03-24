@@ -80,7 +80,7 @@ Template.autoTranslateFlexTab.onCreated(function() {
 			case 'autoTranslate':
 				return true;
 			case 'autoTranslateLanguage':
-				value = this.$('select[name='+ field +']').val();
+				value = this.$(`select[name=${ field }]`).val();
 				if (!_.findWhere(this.supportedLanguages.get(), { language: value })) {
 					toastr.error(t('Invalid_setting_s', value || ''));
 					return false;
@@ -96,10 +96,10 @@ Template.autoTranslateFlexTab.onCreated(function() {
 		let value;
 		switch (field) {
 			case 'autoTranslate':
-				value = this.$('input[name='+field+']').prop('checked') ? '1' : '0';
+				value = this.$(`input[name=${field}]`).prop('checked') ? '1' : '0';
 				break;
 			case 'autoTranslateLanguage':
-				value = this.$('select[name='+ field +']').val();
+				value = this.$(`select[name=${ field }]`).val();
 				break;
 		}
 

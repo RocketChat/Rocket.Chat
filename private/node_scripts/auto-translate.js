@@ -16,8 +16,8 @@ googleTranslate.getSupportedLanguages(function(err, langs) {
 	}
 
 	async.eachSeries(['../../packages/rocketchat-lib/i18n/', '../../packages/rocketchat-livechat/app/i18n/'], function(path, callback) {
-		console.log('Translating files in: ' + path);
-		var enContents = fs.readFileSync(path + 'en.i18n.json', 'utf-8');
+		console.log(`Translating files in: ${ path}`);
+		var enContents = fs.readFileSync(`${path }en.i18n.json`, 'utf-8');
 		var enUnsorted = JSON.parse(enContents);
 		var en = {};
 		_.keys(enUnsorted).sort(function(a, b) {
@@ -29,7 +29,7 @@ googleTranslate.getSupportedLanguages(function(err, langs) {
 		}).forEach(function(key) {
 			en[key] = enUnsorted[key];
 		});
-		fs.writeFileSync(path + 'en.i18n.json', JSON.stringify(en, null, '  ').replace(/": "/g, '" : "'), 'utf8');
+		fs.writeFileSync(`${path }en.i18n.json`, JSON.stringify(en, null, '  ').replace(/": "/g, '" : "'), 'utf8');
 
 		var files = fs.readdirSync(path);
 		async.eachSeries(files, function(file, callback) {
@@ -48,7 +48,7 @@ googleTranslate.getSupportedLanguages(function(err, langs) {
 
 			for (var key in en) {
 				if (en.hasOwnProperty(key)) {
-					key = key + '';
+					key = `${key }`;
 					if (destJson[key]) {
 						newContent[key] = destJson[key];
 					} else {

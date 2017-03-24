@@ -78,7 +78,7 @@ function sendPush(service, token, options, tries = 0) {
 		}
 	};
 
-	return HTTP.post(RocketChat.settings.get('Push_gateway') + `/push/${service}/send`, data, function(error, response) {
+	return HTTP.post(`${RocketChat.settings.get('Push_gateway') }/push/${service}/send`, data, function(error, response) {
 		if (response && response.statusCode === 406) {
 			console.log('removing push token', token);
 			Push.appCollection.remove({

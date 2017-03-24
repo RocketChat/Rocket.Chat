@@ -198,7 +198,7 @@ Accounts.validateNewUser(function(user) {
 
 	if (user.emails && user.emails.length > 0) {
 		const email = user.emails[0].address;
-		const inWhiteList = domainWhiteList.some(domain => email.match('@' + RegExp.escape(domain) + '$'));
+		const inWhiteList = domainWhiteList.some(domain => email.match(`@${ RegExp.escape(domain) }$`));
 
 		if (inWhiteList === false) {
 			throw new Meteor.Error('error-invalid-domain');

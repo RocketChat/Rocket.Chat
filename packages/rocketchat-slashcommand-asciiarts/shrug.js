@@ -9,7 +9,7 @@ function Shrug(command, params, item) {
 		var msg;
 
 		msg = item;
-		msg.msg = params + ' ¯\\_(ツ)_/¯';
+		msg.msg = `${ params } ¯\\_(ツ)_/¯`;
 		Meteor.call('sendMessage', msg);
 	}
 }

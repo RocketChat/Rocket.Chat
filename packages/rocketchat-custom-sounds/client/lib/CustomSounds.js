@@ -30,7 +30,7 @@ class CustomSounds {
 		const list = this.list.get();
 		delete list[sound._id];
 		this.list.set(list);
-		$('#' + sound._id).remove();
+		$(`#${ sound._id}`).remove();
 	}
 
 	update(sound) {

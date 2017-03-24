@@ -74,6 +74,7 @@
 		"use-isnan": 2,
 		"valid-typeof": 2,
 		"linebreak-style": [2, "unix"],
+		"prefer-template": 2,
 		"quotes": [2, "single"],
 		"semi": [2, "always"],
 		"prefer-const": 2

@@ -352,7 +352,7 @@ RocketChat.Livechat = {
 			};
 			return HTTP.post(RocketChat.settings.get('Livechat_webhookUrl'), options);
 		} catch (e) {
-			RocketChat.Livechat.logger.webhook.error('Response error on ' + trying + ' try ->', e);
+			RocketChat.Livechat.logger.webhook.error(`Response error on ${ trying } try ->`, e);
 			// try 10 times after 10 seconds each
 			if (trying < 10) {
 				RocketChat.Livechat.logger.webhook.warn('Will try again in 10 seconds ...');
@@ -388,8 +388,8 @@ RocketChat.Livechat = {
 				phone: null,
 				department: visitor.department,
 				ip: visitor.ip,
-				os: ua.getOS().name && (ua.getOS().name + ' ' + ua.getOS().version),
-				browser: ua.getBrowser().name && (ua.getBrowser().name + ' ' + ua.getBrowser().version),
+				os: ua.getOS().name && (`${ua.getOS().name } ${ ua.getOS().version}`),
+				browser: ua.getBrowser().name && (`${ua.getBrowser().name } ${ ua.getBrowser().version}`),
 				customFields: visitor.livechatData
 			},
 			agent: {

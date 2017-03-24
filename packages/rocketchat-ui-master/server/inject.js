@@ -98,7 +98,7 @@ RocketChat.settings.get('Accounts_ForgetUserSessionOnWindowClose', (key, value) 
 					}
 				</script>
 			`;
-			return html.replace(/<\/body>/, script + '\n</body>');
+			return html.replace(/<\/body>/, `${script }\n</body>`);
 		});
 	} else {
 		Inject.rawModHtml(key, (html) => {

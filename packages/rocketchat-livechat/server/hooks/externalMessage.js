@@ -42,7 +42,7 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 				},
 				headers: {
 					'Content-Type': 'application/json; charset=utf-8',
-					'Authorization': 'Bearer ' + apiaiKey
+					'Authorization': `Bearer ${ apiaiKey}`
 				}
 			});
 
