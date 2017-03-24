@@ -46,7 +46,7 @@ class RedlinkAdapter {
 		RocketChat.models.Messages.find({
 			rid: rid,
 			_hidden: {$ne: true},
-			t: {$ne: "command"},
+			t: {$exists: false}, //commands and other automated messages have got a type
 			ts: {$gt: new Date(analyzedUntil)}
 		}).forEach(visibleMessage => {
 			conversation.push({
