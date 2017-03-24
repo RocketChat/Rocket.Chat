@@ -24,4 +24,4 @@ BUILT_FILE=Rocket.Chat_build_${GIT_BRANCH}.tar.gz
 mv ../build_rocket_chat_assistify_0.tar.gz ${BUILT_FILE}
 
 ### echo "======= Publishing tarball (only if built on AWS) ======="
-### aws s3 --regio eu-central-1 cp ${BUILT_FILE} s3://202234909779-assistify-eu-central-1-sources/rocketchat/
+aws s3 cp ${BUILT_FILE} s3://202234909779-assistify-eu-central-1-sources/rocketchat/ --region eu-central-1 --acl bucket-owner-full-control
