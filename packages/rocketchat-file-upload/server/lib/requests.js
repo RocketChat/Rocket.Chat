@@ -15,10 +15,12 @@ WebApp.connectHandlers.use('/file-upload/', function(req, res, next) {
 
 		if (file) {
 			if (!Meteor.settings.public.sandstorm && protectedFiles) {
-				let rawCookies, ref, token, uid;
+				let rawCookies;
+				let token;
+				let uid;
 				const cookie = new Cookies();
 
-				if ((typeof req !== 'undefined' && req !== null ? (ref = req.headers) != null ? ref.cookie : void 0 : void 0) != null) {
+				if (req.headers && req.headers.cookie != null) {
 					rawCookies = req.headers.cookie;
 				}
 

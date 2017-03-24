@@ -10,8 +10,9 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 		return message;
 	}
 
-	var emailSubject, usersToSendEmail = {};
-	var directMessage = room.t === 'd';
+	let emailSubject;
+	const usersToSendEmail = {};
+	const directMessage = room.t === 'd';
 
 	if (directMessage) {
 		usersToSendEmail[message.rid.replace(message.u._id, '')] = 1;
