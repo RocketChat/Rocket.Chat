@@ -6,7 +6,7 @@
 RocketChat.models.Users.setOperator = function(_id, operator) {
 	const update = {
 		$set: {
-			operator: operator
+			operator
 		}
 	};
 

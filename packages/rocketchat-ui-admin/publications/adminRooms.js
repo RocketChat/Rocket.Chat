@@ -23,7 +23,7 @@ Meteor.publish('adminRooms', function(filter, types, limit) {
 			msgs: 1,
 			archived: 1
 		},
-		limit: limit,
+		limit,
 		sort: {
 			default: -1,
 			name: 1

@@ -15,7 +15,7 @@ const commands = {
 		const customOAuthCallback = (response) => {
 			event.source.postMessage({
 				event: 'custom-oauth-callback',
-				response: response
+				response
 			}, event.origin);
 		};
 

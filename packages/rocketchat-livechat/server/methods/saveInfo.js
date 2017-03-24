@@ -1,7 +1,7 @@
 /* eslint new-cap: [2, {"capIsNewExceptions": ["Match.ObjectIncluding", "Match.Optional"]}] */
 
 Meteor.methods({
-	'livechat:saveInfo': function(guestData, roomData) {
+	'livechat:saveInfo'(guestData, roomData) {
 		if (!Meteor.userId() || !RocketChat.authz.hasPermission(Meteor.userId(), 'view-l-room')) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'livechat:saveInfo' });
 		}

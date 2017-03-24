@@ -78,7 +78,8 @@
 		"linebreak-style": [2, "unix"],
 		"quotes": [2, "single"],
 		"semi": [2, "always"],
-		"prefer-const": 2
+		"prefer-const": 2,
+		"object-shorthand": 2
 	},
 	"globals": {
 		"_"                           : false,

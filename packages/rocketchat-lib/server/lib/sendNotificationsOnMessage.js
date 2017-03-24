@@ -278,7 +278,7 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 					title += ' @ #' + room.name;
 				}
 				RocketChat.Notifications.notifyUser(usersOfMentionId, 'notification', {
-					title: title,
+					title,
 					text: message.msg,
 					duration: settings.desktopNotificationDurations[usersOfMentionId],
 					payload: {

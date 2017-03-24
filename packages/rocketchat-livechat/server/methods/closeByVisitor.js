@@ -15,8 +15,8 @@ Meteor.methods({
 		const language = (user && user.language) || RocketChat.settings.get('language') || 'en';
 
 		return RocketChat.Livechat.closeRoom({
-			user: user,
-			room: room,
+			user,
+			room,
 			comment: TAPi18n.__('Closed_by_visitor', { lng: language })
 		});
 	}

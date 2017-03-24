@@ -26,7 +26,7 @@ class LivechatOfficeHour extends RocketChat.models._Base {
 	 */
 	updateHours(day, newStart, newFinish, newOpen) {
 		this.update({
-			'day': day
+			day
 		}, {
 			$set: {
 				start: newStart,

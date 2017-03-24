@@ -155,7 +155,7 @@ syncUserData = function syncUserData(user, ldapUser) {
 
 addLdapUser = function addLdapUser(ldapUser, username, password) {
 	const userObject = {
-		username: username
+		username
 	};
 
 	const userData = getDataToSyncUserData(ldapUser, {});
@@ -210,7 +210,7 @@ sync = function sync() {
 				const username = slug(getLdapUsername(ldapUser));
 				// Look to see if user already exists
 				const userQuery = {
-					username: username
+					username
 				};
 
 				logger.debug('userQuery', userQuery);

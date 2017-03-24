@@ -1,6 +1,6 @@
 RocketChat.Migrations.add({
 	version: 38,
-	up: function() {
+	up() {
 		if (RocketChat && RocketChat.settings && RocketChat.settings.get) {
 			const allowPinning = RocketChat.settings.get('Message_AllowPinningByAnyone');
 

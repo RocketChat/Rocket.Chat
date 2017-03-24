@@ -33,7 +33,7 @@ RocketChat.Migrations.add({
 				complete: true,
 				uploading: false,
 				store: 'rocketchat_uploads',
-				extension: extension,
+				extension,
 				userId: cfsRecord.userId,
 				uploadedAt: cfsRecord.updatedAt,
 				url: Meteor.absoluteUrl() + url

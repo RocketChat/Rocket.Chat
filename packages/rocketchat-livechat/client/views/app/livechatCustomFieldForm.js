@@ -28,8 +28,8 @@ Template.livechatCustomFieldForm.events({
 		$btn.html(t('Saving'));
 
 		const customFieldData = {
-			field: field,
-			label: label,
+			field,
+			label,
 			scope: scope.trim(),
 			visibility: visibility.trim()
 		};

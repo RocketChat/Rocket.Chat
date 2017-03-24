@@ -42,7 +42,7 @@ const casTicket = function(req, token, callback) {
 			logger.error('error when trying to validate: ' + err.message);
 		} else if (status) {
 			logger.info('Validated user: ' + username);
-			const user_info = { username: username };
+			const user_info = { username };
 
 			// CAS 2.0 attributes handling
 			if (details && details.attributes) {
