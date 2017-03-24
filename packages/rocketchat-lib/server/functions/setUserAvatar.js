@@ -1,5 +1,6 @@
 RocketChat.setUserAvatar = function(user, dataURI, contentType, service) {
-	let encoding, image;
+	let encoding;
+	let image;
 
 	if (service === 'initials') {
 		return RocketChat.models.Users.setAvatarOrigin(user._id, service);
