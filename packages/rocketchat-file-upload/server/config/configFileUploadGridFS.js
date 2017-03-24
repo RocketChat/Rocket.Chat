@@ -25,7 +25,9 @@ ExtractRange.prototype._transform = function(chunk, enc, cb) {
 	} else if (this.bytes_read + chunk.length < this.start) {
 		// this chunk is still before the start byte
 	} else {
-		let start, stop;
+		let start;
+		let stop;
+
 		if (this.start <= this.bytes_read) {
 			start = 0;
 		} else {
