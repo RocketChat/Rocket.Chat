@@ -11,5 +11,6 @@ Package.registerBuildPlugin({
 });
 
 Package.onUse(function(api) {
+	api.use('ecmascript');
 	api.use('isobuild:compiler-plugin@1.0.0');
 });

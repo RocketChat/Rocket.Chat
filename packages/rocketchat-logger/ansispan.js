@@ -5,7 +5,7 @@ ansispan = function(str) {
 	str = str.replace(/</g, '&lt;');
 
 	Object.keys(ansispan.foregroundColors).forEach(function(ansi) {
-		var span = '<span style="color: ' + ansispan.foregroundColors[ansi] + '">';
+		const span = '<span style="color: ' + ansispan.foregroundColors[ansi] + '">';
 
 		//
 		// `\033[Xm` == `\033[0;Xm` sets foreground color to `X`.

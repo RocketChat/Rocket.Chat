@@ -2,7 +2,7 @@ RocketChat.Migrations.add({
 	version: 51,
 	up: function() {
 		RocketChat.models.Rooms.find({ t: 'l', 'v.token': { $exists: true }, label: { $exists: false }}).forEach(function(room) {
-			var user = RocketChat.models.Users.findOne({ 'profile.token': room.v.token });
+			const user = RocketChat.models.Users.findOne({ 'profile.token': room.v.token });
 			if (user) {
 				RocketChat.models.Rooms.update({ _id: room._id }, {
 					$set: {

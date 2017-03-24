@@ -14,7 +14,7 @@ import {checkIfUserIsValid, publicChannelCreated, privateChannelCreated, directM
 
 //Test data
 const message = 'message from '+username;
-var currentTest = 'none';
+let currentTest = 'none';
 
 function messagingTest() {
 	describe('Normal message', ()=> {

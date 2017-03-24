@@ -6,9 +6,7 @@
 
 function Unflip(command, params, item) {
 	if (command === 'unflip') {
-		var msg;
-
-		msg = item;
+		const msg = item;
 		msg.msg = params + ' ┬─┬﻿ ノ( ゜-゜ノ)';
 		Meteor.call('sendMessage', msg);
 	}

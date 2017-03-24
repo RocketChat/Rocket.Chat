@@ -3,21 +3,21 @@ import toastr from 'toastr';
 
 Template.channelSettingsDefault.helpers({
 	canMakeDefault() {
-		var room = AdminChatRoom.findOne(this.rid, { fields: { t: 1 }});
+		const room = AdminChatRoom.findOne(this.rid, { fields: { t: 1 }});
 		return room && room.t === 'c';
 	},
 	editing(field) {
 		return Template.instance().editing.get() === field;
 	},
 	roomDefault() {
-		var room = AdminChatRoom.findOne(this.rid, { fields: { default: 1 }});
+		const room = AdminChatRoom.findOne(this.rid, { fields: { default: 1 }});
 
 		if (room) {
 			return room.default;
 		}
 	},
 	defaultDescription() {
-		var room = AdminChatRoom.findOne(this.rid, { fields: { default: 1 }});
+		const room = AdminChatRoom.findOne(this.rid, { fields: { default: 1 }});
 		if (room && room.default) {
 			return t('True');
 		} else {

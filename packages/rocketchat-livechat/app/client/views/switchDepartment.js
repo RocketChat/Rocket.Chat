@@ -26,7 +26,7 @@ Template.switchDepartment.events({
 		e.stopPropagation();
 		e.preventDefault();
 
-		var departmentId = instance.$('.switch-department-select').val();
+		const departmentId = instance.$('.switch-department-select').val();
 		if (!departmentId) {
 			instance.error.set(t('Please_choose_a_department'));
 			return;

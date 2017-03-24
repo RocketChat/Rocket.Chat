@@ -55,7 +55,7 @@ Meteor.methods({
 
 		function filterBeforeDate(_, day, month, year) {
 			month--;
-			var beforeDate = new Date(year, month, day);
+			const beforeDate = new Date(year, month, day);
 			beforeDate.setHours(beforeDate.getUTCHours() + beforeDate.getTimezoneOffset()/60 + currentUserTimezoneOffset);
 			query.ts = {
 				$lte: beforeDate
@@ -66,7 +66,7 @@ Meteor.methods({
 		function filterAfterDate(_, day, month, year) {
 			month--;
 			day++;
-			var afterDate = new Date(year, month, day);
+			const afterDate = new Date(year, month, day);
 			afterDate.setUTCHours(afterDate.getUTCHours() + afterDate.getTimezoneOffset()/60 + currentUserTimezoneOffset);
 			if (query.ts) {
 				query.ts.$gte = afterDate;

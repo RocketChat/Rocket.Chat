@@ -16,7 +16,7 @@ Template.pushNotificationsFlexTab.helpers({
 		return sub ? sub.audioNotification || '' : '';
 	},
 	desktopNotifications() {
-		var sub = ChatSubscription.findOne({
+		const sub = ChatSubscription.findOne({
 			rid: Session.get('openedRoom')
 		}, {
 			fields: {
@@ -26,7 +26,7 @@ Template.pushNotificationsFlexTab.helpers({
 		return sub ? sub.desktopNotifications : '';
 	},
 	mobilePushNotifications() {
-		var sub = ChatSubscription.findOne({
+		const sub = ChatSubscription.findOne({
 			rid: Session.get('openedRoom')
 		}, {
 			fields: {
@@ -36,7 +36,7 @@ Template.pushNotificationsFlexTab.helpers({
 		return sub ? sub.mobilePushNotifications : '';
 	},
 	emailNotifications() {
-		var sub = ChatSubscription.findOne({
+		const sub = ChatSubscription.findOne({
 			rid: Session.get('openedRoom')
 		}, {
 			fields: {
@@ -46,7 +46,7 @@ Template.pushNotificationsFlexTab.helpers({
 		return sub ? sub.emailNotifications : '';
 	},
 	showEmailMentions() {
-		var sub = ChatSubscription.findOne({
+		const sub = ChatSubscription.findOne({
 			rid: Session.get('openedRoom')
 		}, {
 			fields: {
@@ -56,7 +56,7 @@ Template.pushNotificationsFlexTab.helpers({
 		return sub && sub.t !== 'd';
 	},
 	unreadAlert() {
-		var sub = ChatSubscription.findOne({
+		const sub = ChatSubscription.findOne({
 			rid: Session.get('openedRoom')
 		}, {
 			fields: {
@@ -66,7 +66,7 @@ Template.pushNotificationsFlexTab.helpers({
 		return sub ? sub.unreadAlert : 'default';
 	},
 	unreadAlertText() {
-		var sub = ChatSubscription.findOne({
+		const sub = ChatSubscription.findOne({
 			rid: Session.get('openedRoom')
 		}, {
 			fields: {
@@ -105,7 +105,7 @@ Template.pushNotificationsFlexTab.helpers({
 		}
 	},
 	subValue(field) {
-		var sub = ChatSubscription.findOne({
+		const sub = ChatSubscription.findOne({
 			rid: Session.get('openedRoom')
 		}, {
 			fields: {

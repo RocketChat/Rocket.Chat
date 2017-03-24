@@ -26,7 +26,7 @@ Template.resetPassword.events({
 	'submit #login-card': function(event, instance) {
 		event.preventDefault();
 
-		var button = instance.$('button.resetpass');
+		const button = instance.$('button.resetpass');
 		RocketChat.Button.loading(button);
 
 		if (Meteor.userId()) {

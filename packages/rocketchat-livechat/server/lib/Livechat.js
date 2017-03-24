@@ -32,8 +32,8 @@ RocketChat.Livechat = {
 		}
 	},
 	getRoom(guest, message, roomInfo) {
-		var room = RocketChat.models.Rooms.findOneById(message.rid);
-		var newRoom = false;
+		let room = RocketChat.models.Rooms.findOneById(message.rid);
+		let newRoom = false;
 
 		if (room && !room.open) {
 			message.rid = Random.id();
@@ -43,7 +43,7 @@ RocketChat.Livechat = {
 		if (room == null) {
 			// if no department selected verify if there is at least one active and pick the first
 			if (!guest.department) {
-				var departments = RocketChat.models.LivechatDepartment.findEnabledWithAgents();
+				const departments = RocketChat.models.LivechatDepartment.findEnabledWithAgents();
 				if (departments.count() > 0) {
 					departments.forEach((dept) => {
 						if (!guest.department && dept.showOnRegistration) {
@@ -104,7 +104,7 @@ RocketChat.Livechat = {
 				username = RocketChat.models.Users.getNextVisitorUsername();
 			}
 
-			var existingUser = null;
+			let existingUser = null;
 
 			if (s.trim(email) !== '' && (existingUser = RocketChat.models.Users.findOneGuestByEmailAddress(email))) {
 				if (loginToken) {
@@ -118,7 +118,7 @@ RocketChat.Livechat = {
 			} else {
 				updateUser.$set.name = name;
 
-				var userData = {
+				const userData = {
 					username: username,
 					globalRoles: ['livechat-guest'],
 					department: department,
@@ -512,7 +512,7 @@ RocketChat.Livechat = {
 	removeDepartment(_id) {
 		check(_id, String);
 
-		var department = RocketChat.models.LivechatDepartment.findOneById(_id, { fields: { _id: 1 } });
+		const department = RocketChat.models.LivechatDepartment.findOneById(_id, { fields: { _id: 1 } });
 
 		if (!department) {
 			throw new Meteor.Error('department-not-found', 'Department not found', { method: 'livechat:removeDepartment' });

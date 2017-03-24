@@ -1,5 +1,5 @@
 /* globals Template, isSetNotNull */
-var emojiCategories = {};
+const emojiCategories = {};
 /**
  * Turns category hash to a nice readable translated name
  * @param {string} category hash
