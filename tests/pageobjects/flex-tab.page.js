@@ -91,7 +91,7 @@ class FlexTab extends Page {
 	get usersActivate() { return browser.element('.button.activate'); }
 	get usersDeactivate() { return browser.element('.button.deactivate'); }
 
-	getUserEl(username) { return browser.element(`.flex-tab button[title="${username}"] > p`); }
+	getUserEl(username) { return browser.element(`.flex-tab button[title="${ username }"] > p`); }
 
 	archiveChannel() {
 		this.archiveBtn.waitForVisible();

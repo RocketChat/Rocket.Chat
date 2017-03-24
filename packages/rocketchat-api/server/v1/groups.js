@@ -12,11 +12,11 @@ function findPrivateGroupByIdOrName({ roomId, roomName, userId, checkedArchived 
 	}
 
 	if (!roomSub || roomSub.t !== 'p') {
-		throw new Meteor.Error('error-room-not-found', `No private group by the id of: ${roomId}`);
+		throw new Meteor.Error('error-room-not-found', `No private group by the id of: ${ roomId }`);
 	}
 
 	if (checkedArchived && roomSub.archived) {
-		throw new Meteor.Error('error-room-archived', `The private group, ${roomSub.name}, is archived`);
+		throw new Meteor.Error('error-room-archived', `The private group, ${ roomSub.name }, is archived`);
 	}
 
 	return roomSub;
@@ -68,7 +68,7 @@ RocketChat.API.v1.addRoute('groups.close', { authRequired: true }, {
 		const findResult = findPrivateGroupByIdOrName({ roomId: this.bodyParams.roomId, userId: this.userId, checkedArchived: false });
 
 		if (!findResult.open) {
-			return RocketChat.API.v1.failure(`The private group with an id "${this.bodyParams.roomId}" is already closed to the sender`);
+			return RocketChat.API.v1.failure(`The private group with an id "${ this.bodyParams.roomId }" is already closed to the sender`);
 		}
 
 		Meteor.runAsUser(this.userId, () => {
@@ -141,7 +141,7 @@ RocketChat.API.v1.addRoute('groups.getIntegrations', { authRequired: true }, {
 			includeAllPrivateGroups = this.queryParams.includeAllPrivateGroups === 'true';
 		}
 
-		const channelsToSearch = [`#${findResult.name}`];
+		const channelsToSearch = [`#${ findResult.name }`];
 		if (includeAllPrivateGroups) {
 			channelsToSearch.push('all_private_groups');
 		}
@@ -320,7 +320,7 @@ RocketChat.API.v1.addRoute('groups.open', { authRequired: true }, {
 		const findResult = findPrivateGroupByIdOrName({ roomId: this.bodyParams.roomId, userId: this.userId, checkedArchived: false });
 
 		if (findResult.open) {
-			return RocketChat.API.v1.failure(`The private group, ${this.bodyParams.name}, is already open for the sender`);
+			return RocketChat.API.v1.failure(`The private group, ${ this.bodyParams.name }, is already open for the sender`);
 		}
 
 		Meteor.runAsUser(this.userId, () => {

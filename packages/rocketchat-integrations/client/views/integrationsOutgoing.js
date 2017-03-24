@@ -205,7 +205,7 @@ Template.integrationsOutgoing.events({
 	},
 
 	'click .button.history': () => {
-		FlowRouter.go(`/admin/integrations/outgoing/${FlowRouter.getParam('id')}/history`);
+		FlowRouter.go(`/admin/integrations/outgoing/${ FlowRouter.getParam('id') }/history`);
 	},
 
 	'click .expand': (e) => {

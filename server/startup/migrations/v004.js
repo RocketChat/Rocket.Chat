@@ -48,7 +48,7 @@ RocketChat.Migrations.add({
 					$ne: room._id
 				}
 			}).forEach((item) => {
-				const name = room.name + '-' + Random.id(2).toLowerCase();
+				const name = `${ room.name }-${ Random.id(2).toLowerCase() }`;
 
 				RocketChat.models.Rooms.setNameById(item._id, name);
 

@@ -36,7 +36,7 @@ Template.CodeMirror.rendered = function() {
 
 Template.CodeMirror.destroyed = function() {
 	delete CodeMirrors[this.data.id || 'code-mirror-textarea'];
-	this.$('#' + (this.data.id || 'code-mirror-textarea')).next('.CodeMirror').remove();
+	this.$(`#${ this.data.id || 'code-mirror-textarea' }`).next('.CodeMirror').remove();
 };
 
 Template.CodeMirror.helpers({

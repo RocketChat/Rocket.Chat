@@ -28,7 +28,7 @@ class AutoTranslate {
 		}
 		let count = message.tokens.length;
 		message.msg = message.msg.replace(/:[+\w\d]+:/g, function(match) {
-			const token = `<i class=notranslate>{${count++}}</i>`;
+			const token = `<i class=notranslate>{${ count++ }}</i>`;
 			message.tokens.push({
 				token,
 				text: match
@@ -48,14 +48,14 @@ class AutoTranslate {
 		const schemes = RocketChat.settings.get('Markdown_SupportSchemesForLink').split(',').join('|');
 
 		// Support ![alt text](http://image url) and [text](http://link)
-		message.msg = message.msg.replace(new RegExp(`(!?\\[)([^\\]]+)(\\]\\((?:${schemes}):\\/\\/[^\\)]+\\))`, 'gm'), function(match, pre, text, post) {
-			const pretoken = `<i class=notranslate>{${count++}}</i>`;
+		message.msg = message.msg.replace(new RegExp(`(!?\\[)([^\\]]+)(\\]\\((?:${ schemes }):\\/\\/[^\\)]+\\))`, 'gm'), function(match, pre, text, post) {
+			const pretoken = `<i class=notranslate>{${ count++ }}</i>`;
 			message.tokens.push({
 				token: pretoken,
 				text: pre
 			});
 
-			const posttoken = `<i class=notranslate>{${count++}}</i>`;
+			const posttoken = `<i class=notranslate>{${ count++ }}</i>`;
 			message.tokens.push({
 				token: posttoken,
 				text: post
@@ -65,14 +65,14 @@ class AutoTranslate {
 		});
 
 		// Support <http://link|Text>
-		message.msg = message.msg.replace(new RegExp(`((?:<|&lt;)(?:${schemes}):\\/\\/[^\\|]+\\|)(.+?)(?=>|&gt;)((?:>|&gt;))`, 'gm'), function(match, pre, text, post) {
-			const pretoken = `<i class=notranslate>{${count++}}</i>`;
+		message.msg = message.msg.replace(new RegExp(`((?:<|&lt;)(?:${ schemes }):\\/\\/[^\\|]+\\|)(.+?)(?=>|&gt;)((?:>|&gt;))`, 'gm'), function(match, pre, text, post) {
+			const pretoken = `<i class=notranslate>{${ count++ }}</i>`;
 			message.tokens.push({
 				token: pretoken,
 				text: pre
 			});
 
-			const posttoken = `<i class=notranslate>{${count++}}</i>`;
+			const posttoken = `<i class=notranslate>{${ count++ }}</i>`;
 			message.tokens.push({
 				token: posttoken,
 				text: post
@@ -99,7 +99,7 @@ class AutoTranslate {
 			if (message.tokens.hasOwnProperty(tokenIndex)) {
 				const token = message.tokens[tokenIndex].token;
 				if (token.indexOf('notranslate') === -1) {
-					const newToken = `<i class=notranslate>{${count++}}</i>`;
+					const newToken = `<i class=notranslate>{${ count++ }}</i>`;
 					message.msg = message.msg.replace(token, newToken);
 					message.tokens[tokenIndex].token = newToken;
 				}
@@ -117,8 +117,8 @@ class AutoTranslate {
 
 		if (message.mentions && message.mentions.length > 0) {
 			message.mentions.forEach(mention => {
-				message.msg = message.msg.replace(new RegExp(`(@${mention.username})`, 'gm'), match => {
-					const token = `<i class=notranslate>{${count++}}</i>`;
+				message.msg = message.msg.replace(new RegExp(`(@${ mention.username })`, 'gm'), match => {
+					const token = `<i class=notranslate>{${ count++ }}</i>`;
 					message.tokens.push({
 						token,
 						text: match
@@ -130,8 +130,8 @@ class AutoTranslate {
 
 		if (message.channels && message.channels.length > 0) {
 			message.channels.forEach(channel => {
-				message.msg = message.msg.replace(new RegExp(`(#${channel.name})`, 'gm'), match => {
-					const token = `<i class=notranslate>{${count++}}</i>`;
+				message.msg = message.msg.replace(new RegExp(`(#${ channel.name })`, 'gm'), match => {
+					const token = `<i class=notranslate>{${ count++ }}</i>`;
 					message.tokens.push({
 						token,
 						text: match
@@ -171,7 +171,7 @@ class AutoTranslate {
 
 					let msgs = targetMessage.msg.split('\n');
 					msgs = msgs.map(msg => encodeURIComponent(msg));
-					const query = `q=${msgs.join('&q=')}`;
+					const query = `q=${ msgs.join('&q=') }`;
 
 					const supportedLanguages = this.getSupportedLanguages('en');
 					targetLanguages.forEach(language => {
@@ -203,7 +203,7 @@ class AutoTranslate {
 							const attachment = message.attachments[index];
 							const translations = {};
 							if (attachment.description || attachment.text) {
-								const query = `q=${encodeURIComponent(attachment.description || attachment.text)}`;
+								const query = `q=${ encodeURIComponent(attachment.description || attachment.text) }`;
 								const supportedLanguages = this.getSupportedLanguages('en');
 								targetLanguages.forEach(language => {
 									if (language.indexOf('-') !== -1 && !_.findWhere(supportedLanguages, { language })) {
