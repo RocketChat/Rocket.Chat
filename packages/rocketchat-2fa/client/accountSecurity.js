@@ -10,7 +10,8 @@ Template.accountSecurity.helpers({
 		return Template.instance().imageData.get();
 	},
 	isEnabled() {
-		return false;
+		const user = Meteor.user();
+		return user && user.services && user.services.totp && user.services.totp.enabled;
 	},
 	isRegistering() {
 		return Template.instance().state.get() === 'registering';
@@ -22,13 +23,21 @@ Template.accountSecurity.events({
 		console.log('enable it');
 
 		Meteor.call('enable2fa', (error, result) => {
-			// instance.showImage.set(true);
-
-			console.log('result ->', result);
-
 			instance.imageData.set(qrcode(result.url, { size: 200 }));
 
 			instance.state.set('registering');
+
+			Meteor.defer(() => {
+				instance.find('#testCode').focus();
+			});
+		});
+	},
+
+	'click .disable-2fa'() {
+		Meteor.call('disable2fa', (error, result) => {
+			if (result) {
+				swal('disabled');
+			}
 		});
 	},
 
@@ -36,11 +45,9 @@ Template.accountSecurity.events({
 		event.preventDefault();
 
 		Meteor.call('verifyTemp2FAToken', instance.find('#testCode').value, (error, result) => {
-			// instance.showImage.set(true);
-			if (error) {
-
-			}
 			if (result) {
+				instance.find('#testCode').value = '';
+				instance.state.set();
 				swal('ok');
 			}
 		});
