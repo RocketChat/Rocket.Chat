@@ -30,9 +30,13 @@ Package.onUse(function(api) {
 	api.addFiles('client/accountSecurity.js', 'client');
 	api.addFiles('client/TOTPPassword.js', 'client');
 
+	api.addFiles('server/lib/totp.js', 'server');
+
 	api.addFiles('server/methods/disable2fa.js', 'server');
 	api.addFiles('server/methods/enable2fa.js', 'server');
 	api.addFiles('server/methods/verifyTemp2FAToken.js', 'server');
+
 	api.addFiles('server/models/users.js', 'server');
+
 	api.addFiles('server/loginHandler.js', 'server');
 });

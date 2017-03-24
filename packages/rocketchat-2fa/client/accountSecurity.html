@@ -16,15 +16,17 @@
 								<button class="button danger disable-2fa">{{_ "Disable_two-factor_authentication"}}</button>
 							{{else}}
 								{{#unless isRegistering}}
-									{{_ "Two-factor_authentication_is_currently_disabled"}}
+									<p>{{_ "Two-factor_authentication_is_currently_disabled"}}</p>
 
 									<button class="button primary enable-2fa">{{_ "Enable_two-factor_authentication"}}</button>
 								{{else}}
+									<p>{{_ "Scan_QR_code"}}</p>
+
 									<img src="{{imageData}}">
 
-									<form class="verify-code">
-										<input type="text" id="testCode">
-										<button class="button primary">{{_ "Verify"}}</button>
+									<form class="inline verify-code">
+										<input type="text" id="testCode" placeholder="{{_ "Enter_authentication_code"}}">
+										<button type="submit" class="button primary">{{_ "Verify"}}</button>
 									</form>
 								{{/unless}}
 							{{/if}}
