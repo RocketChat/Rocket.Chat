@@ -37,8 +37,8 @@ class Spotify {
 			while ((match = re.exec(part))) {
 				const data = _.filter(match.slice(1), value => value != null);
 				const path = _.map(data, value => _.escape(value)).join('/');
-				const url = `https://open.spotify.com/${path}`;
-				urls.push({'url': url, 'source': `spotify:${data.join(':')}`});
+				const url = `https://open.spotify.com/${ path }`;
+				urls.push({url, 'source': `spotify:${ data.join(':') }`});
 				changed = true;
 			}
 
@@ -58,8 +58,8 @@ class Spotify {
 				for (const item of Array.from(message.urls)) {
 					if (item.source) {
 						const quotedSource = item.source.replace(/[\\^$.*+?()[\]{}|]/g, '\\$&');
-						const re = new RegExp(`(^|\\s)${quotedSource}(\\s|$)`, 'g');
-						msgParts[index] = part.replace(re, `$1<a href="${item.url}" target="_blank">${item.source}</a>$2`);
+						const re = new RegExp(`(^|\\s)${ quotedSource }(\\s|$)`, 'g');
+						msgParts[index] = part.replace(re, `$1<a href="${ item.url }" target="_blank">${ item.source }</a>$2`);
 					}
 				}
 				return message.html = msgParts.join('');

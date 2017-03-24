@@ -82,7 +82,7 @@ Template.adminSounds.onCreated(function() {
 
 		const limit = (instance.limit != null) ? instance.limit.get() : 0;
 
-		return RocketChat.models.CustomSounds.find(query, { limit: limit, sort: { name: 1 }}).fetch();
+		return RocketChat.models.CustomSounds.find(query, { limit, sort: { name: 1 }}).fetch();
 	};
 });
 
@@ -124,7 +124,7 @@ Template.adminSounds.events({
 	'click .icon-play-circled'(e) {
 		e.preventDefault();
 		e.stopPropagation();
-		const $audio = $('audio#' + this._id);
+		const $audio = $(`audio#${ this._id }`);
 		if ($audio && $audio[0] && $audio[0].play) {
 			$audio[0].play();
 		}

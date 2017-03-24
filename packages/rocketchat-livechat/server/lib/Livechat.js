@@ -74,7 +74,7 @@ RocketChat.Livechat = {
 		}
 
 		// return messages;
-		return _.extend(RocketChat.sendMessage(guest, message, room), { newRoom: newRoom, showConnecting: this.showConnecting() });
+		return _.extend(RocketChat.sendMessage(guest, message, room), { newRoom, showConnecting: this.showConnecting() });
 	},
 	registerGuest({ token, name, email, department, phone, loginToken, username } = {}) {
 		check(token, String);
@@ -84,7 +84,7 @@ RocketChat.Livechat = {
 			$set: {
 				profile: {
 					guest: true,
-					token: token
+					token
 				}
 			}
 		};
@@ -119,9 +119,9 @@ RocketChat.Livechat = {
 				updateUser.$set.name = name;
 
 				const userData = {
-					username: username,
+					username,
 					globalRoles: ['livechat-guest'],
-					department: department,
+					department,
 					type: 'visitor',
 					joinDefaultChannels: false
 				};
@@ -165,7 +165,7 @@ RocketChat.Livechat = {
 
 		const updateUser = {
 			$set: {
-				department: department
+				department
 			}
 		};
 
@@ -253,7 +253,7 @@ RocketChat.Livechat = {
 	},
 
 	saveRoomInfo(roomData, guestData) {
-		if (!RocketChat.models.Rooms.saveRoomById(roomData._id, roomData)) {
+		if ((roomData.topic != null || roomData.tags != null) && !RocketChat.models.Rooms.setTopicAndTagsById(roomData._id, roomData.topic, roomData.tags)) {
 			return false;
 		}
 
@@ -352,7 +352,7 @@ RocketChat.Livechat = {
 			};
 			return HTTP.post(RocketChat.settings.get('Livechat_webhookUrl'), options);
 		} catch (e) {
-			RocketChat.Livechat.logger.webhook.error('Response error on ' + trying + ' try ->', e);
+			RocketChat.Livechat.logger.webhook.error(`Response error on ${ trying } try ->`, e);
 			// try 10 times after 10 seconds each
 			if (trying < 10) {
 				RocketChat.Livechat.logger.webhook.warn('Will try again in 10 seconds ...');
@@ -388,8 +388,8 @@ RocketChat.Livechat = {
 				phone: null,
 				department: visitor.department,
 				ip: visitor.ip,
-				os: ua.getOS().name && (ua.getOS().name + ' ' + ua.getOS().version),
-				browser: ua.getBrowser().name && (ua.getBrowser().name + ' ' + ua.getBrowser().version),
+				os: ua.getOS().name && (`${ ua.getOS().name } ${ ua.getOS().version }`),
+				browser: ua.getBrowser().name && (`${ ua.getBrowser().name } ${ ua.getBrowser().version }`),
 				customFields: visitor.livechatData
 			},
 			agent: {

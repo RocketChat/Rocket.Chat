@@ -7,7 +7,7 @@
 function Tableflip(command, params, item) {
 	if (command === 'tableflip') {
 		const msg = item;
-		msg.msg = params + ' (╯°□°）╯︵ ┻━┻';
+		msg.msg = `${ params } (╯°□°）╯︵ ┻━┻`;
 		Meteor.call('sendMessage', msg);
 	}
 }

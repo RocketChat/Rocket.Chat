@@ -26,7 +26,7 @@ class LivechatOfficeHour extends RocketChat.models._Base {
 	 */
 	updateHours(day, newStart, newFinish, newOpen) {
 		this.update({
-			'day': day
+			day
 		}, {
 			$set: {
 				start: newStart,
@@ -56,8 +56,8 @@ class LivechatOfficeHour extends RocketChat.models._Base {
 			return false;
 		}
 
-		const start = moment.utc(todaysOfficeHours.day + ':' + todaysOfficeHours.start, 'dddd:HH:mm');
-		const finish = moment.utc(todaysOfficeHours.day + ':' + todaysOfficeHours.finish, 'dddd:HH:mm');
+		const start = moment.utc(`${ todaysOfficeHours.day }:${ todaysOfficeHours.start }`, 'dddd:HH:mm');
+		const finish = moment.utc(`${ todaysOfficeHours.day }:${ todaysOfficeHours.finish }`, 'dddd:HH:mm');
 
 		// console.log(finish.isBefore(start));
 		if (finish.isBefore(start)) {
@@ -86,7 +86,7 @@ class LivechatOfficeHour extends RocketChat.models._Base {
 			return false;
 		}
 
-		const start = moment.utc(todaysOfficeHours.day + ':' + todaysOfficeHours.start, 'dddd:HH:mm');
+		const start = moment.utc(`${ todaysOfficeHours.day }:${ todaysOfficeHours.start }`, 'dddd:HH:mm');
 
 		return start.isSame(currentTime, 'minute');
 	}
@@ -101,7 +101,7 @@ class LivechatOfficeHour extends RocketChat.models._Base {
 			return false;
 		}
 
-		const finish = moment.utc(todaysOfficeHours.day + ':' + todaysOfficeHours.finish, 'dddd:HH:mm');
+		const finish = moment.utc(`${ todaysOfficeHours.day }:${ todaysOfficeHours.finish }`, 'dddd:HH:mm');
 
 		return finish.isSame(currentTime, 'minute');
 	}

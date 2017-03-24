@@ -1,6 +1,6 @@
 RocketChat.Migrations.add({
 	version: 68,
-	up: function() {
+	up() {
 		const GoogleSiteVerification_id = RocketChat.models.Settings.findOne({ _id: 'GoogleSiteVerification_id' });
 
 		if (GoogleSiteVerification_id && GoogleSiteVerification_id.value) {

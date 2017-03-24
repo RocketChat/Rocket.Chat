@@ -1,5 +1,5 @@
 Meteor.methods({
-	sendMessageLivechat: function(message) {
+	sendMessageLivechat(message) {
 		check(message.rid, String);
 		check(message.token, String);
 
@@ -11,6 +11,6 @@ Meteor.methods({
 			}
 		});
 
-		return RocketChat.Livechat.sendMessage({ guest: guest, message: message });
+		return RocketChat.Livechat.sendMessage({ guest, message });
 	}
 });

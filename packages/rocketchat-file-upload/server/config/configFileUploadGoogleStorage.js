@@ -25,9 +25,9 @@ function generateGetURL({ file }) {
 	}
 
 	const expires = new Date().getTime() + 120000;
-	const signature = crypto.createSign('RSA-SHA256').update(`GET\n\n\n${expires}\n/${file.googleCloudStorage.bucket}/${parts.path}`).sign(parts.secret, 'base64');
+	const signature = crypto.createSign('RSA-SHA256').update(`GET\n\n\n${ expires }\n/${ file.googleCloudStorage.bucket }/${ parts.path }`).sign(parts.secret, 'base64');
 
-	return `${file.url}?GoogleAccessId=${parts.accessId}&Expires=${expires}&Signature=${encodeURIComponent(signature)}`;
+	return `${ file.url }?GoogleAccessId=${ parts.accessId }&Expires=${ expires }&Signature=${ encodeURIComponent(signature) }`;
 }
 
 function generateDeleteUrl({ file }) {
@@ -38,9 +38,9 @@ function generateDeleteUrl({ file }) {
 	}
 
 	const expires = new Date().getTime() + 5000;
-	const signature = crypto.createSign('RSA-SHA256').update(`DELETE\n\n\n${expires}\n/${file.googleCloudStorage.bucket}/${encodeURIComponent(parts.path)}`).sign(parts.secret, 'base64');
+	const signature = crypto.createSign('RSA-SHA256').update(`DELETE\n\n\n${ expires }\n/${ file.googleCloudStorage.bucket }/${ encodeURIComponent(parts.path) }`).sign(parts.secret, 'base64');
 
-	return `https://${file.googleCloudStorage.bucket}.storage.googleapis.com/${encodeURIComponent(parts.path)}?GoogleAccessId=${parts.accessId}&Expires=${expires}&Signature=${encodeURIComponent(signature)}`;
+	return `https://${ file.googleCloudStorage.bucket }.storage.googleapis.com/${ encodeURIComponent(parts.path) }?GoogleAccessId=${ parts.accessId }&Expires=${ expires }&Signature=${ encodeURIComponent(signature) }`;
 }
 
 FileUpload.addHandler('googleCloudStorage', {
@@ -88,7 +88,7 @@ const createGoogleStorageDirective = _.debounce(() => {
 			GoogleAccessId: accessId,
 			GoogleSecretKey: secret,
 			key: function _googleCloudStorageKey(file, metaContext) {
-				const path = RocketChat.settings.get('uniqueID') + '/' + metaContext.rid + '/' + this.userId + '/';
+				const path = `${ RocketChat.settings.get('uniqueID') }/${ metaContext.rid }/${ this.userId }/`;
 				const fileId = RocketChat.models.Uploads.insertFileInit(metaContext.rid, this.userId, 'googleCloudStorage', file, { googleCloudStorage: { bucket, path }});
 
 				return path + fileId;

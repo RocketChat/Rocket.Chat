@@ -1,10 +1,10 @@
 //Action Links namespace creation.
 RocketChat.actionLinks = {
 	actions: {},
-	register: function(name, funct) {
+	register(name, funct) {
 		RocketChat.actionLinks.actions[name] = funct;
 	},
-	getMessage: function(name, messageId) {
+	getMessage(name, messageId) {
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { function: 'actionLinks.getMessage' });
 		}

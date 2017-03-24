@@ -26,7 +26,7 @@ this.CustomFields = (function() {
 	};
 
 	return {
-		init: init,
-		setCustomField: setCustomField
+		init,
+		setCustomField
 	};
 }());
