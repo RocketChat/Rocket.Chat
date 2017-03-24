@@ -16,13 +16,13 @@ Npm.depends({
 });
 
 Package.onUse(function(api) {
+	api.use('ecmascript');
 	api.use('rate-limit');
 	api.use('session');
 	api.use('reactive-var');
 	api.use('reactive-dict');
 	api.use('accounts-base');
 	api.use('coffeescript');
-	api.use('ecmascript');
 	api.use('random');
 	api.use('check');
 	api.use('tracker');
