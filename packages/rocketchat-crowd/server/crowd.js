@@ -105,7 +105,7 @@ const CROWD = class CROWD {
 			return;
 		}
 
-		var self = this;
+		const self = this;
 		logger.info('Sync started');
 
 		const users = RocketChat.models.Users.findCrowdUsers();
@@ -129,7 +129,7 @@ const CROWD = class CROWD {
 	}
 
 	addNewUser(crowdUser) {
-		var userQuery = {
+		const userQuery = {
 			crowd: true,
 			username: crowdUser.username
 		};

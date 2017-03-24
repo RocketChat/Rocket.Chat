@@ -2,9 +2,9 @@ RocketChat.Migrations.add({
 	version: 40,
 	up: function() {
 		RocketChat.models.Settings.find({ _id: /Accounts_OAuth_Custom_/, i18nLabel: 'Accounts_OAuth_Custom_Enable' }).forEach(function(customOauth) {
-			var parts = customOauth._id.split('_');
-			var name = parts[3];
-			var id = 'Accounts_OAuth_Custom_' + name + '_token_sent_via';
+			const parts = customOauth._id.split('_');
+			const name = parts[3];
+			const id = 'Accounts_OAuth_Custom_' + name + '_token_sent_via';
 			if (!RocketChat.models.Settings.findOne({ _id: id })) {
 				RocketChat.models.Settings.insert({
 					'_id': id,

@@ -14,7 +14,7 @@ class LivechatPageVisited extends RocketChat.models._Base {
 
 	saveByToken(token, pageInfo) {
 		// keep history of unregistered visitors for 1 month
-		var keepHistoryMiliseconds = 2592000000;
+		const keepHistoryMiliseconds = 2592000000;
 
 		return this.insert({
 			token: token,

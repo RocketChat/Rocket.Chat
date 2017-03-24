@@ -3,7 +3,7 @@ RocketChat.Migrations.add({
 	up: function() {
 		if (RocketChat && RocketChat.models && RocketChat.models.Settings) {
 
-			var RocketBot_Enabled = RocketChat.models.Settings.findOne({
+			const RocketBot_Enabled = RocketChat.models.Settings.findOne({
 				_id: 'RocketBot_Enabled'
 			});
 			if (RocketBot_Enabled) {
@@ -19,7 +19,7 @@ RocketChat.Migrations.add({
 				});
 			}
 
-			var RocketBot_Name = RocketChat.models.Settings.findOne({
+			const RocketBot_Name = RocketChat.models.Settings.findOne({
 				_id: 'RocketBot_Name'
 			});
 			if (RocketBot_Name) {

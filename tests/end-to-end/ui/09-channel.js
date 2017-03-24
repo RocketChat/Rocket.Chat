@@ -183,7 +183,7 @@ describe('channel', ()=> {
 				});
 
 				it('should show the new name', ()=> {
-					var channelName = sideNav.getChannelFromList('NAME-EDITED-'+publicChannelName);
+					const channelName = sideNav.getChannelFromList('NAME-EDITED-'+publicChannelName);
 					channelName.getText().should.equal('NAME-EDITED-'+publicChannelName);
 				});
 			});

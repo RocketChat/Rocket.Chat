@@ -29,7 +29,7 @@ WebApp.connectHandlers.use('/snippet/download', function(req, res) {
 		res.end();
 		return false;
 	}
-	var match = /^\/([^\/]+)\/(.*)/.exec(req.url);
+	const match = /^\/([^\/]+)\/(.*)/.exec(req.url);
 
 	if (match[1]) {
 		const snippet = RocketChat.models.Messages.findOne(

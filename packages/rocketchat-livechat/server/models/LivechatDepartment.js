@@ -27,7 +27,7 @@ class LivechatDepartment extends RocketChat.models._Base {
 	createOrUpdateDepartment(_id, { enabled, name, description, showOnRegistration }, agents) {
 		agents = [].concat(agents);
 
-		var record = {
+		const record = {
 			enabled: enabled,
 			name: name,
 			description: description,
@@ -41,8 +41,8 @@ class LivechatDepartment extends RocketChat.models._Base {
 			_id = this.insert(record);
 		}
 
-		var savedAgents = _.pluck(RocketChat.models.LivechatDepartmentAgents.findByDepartmentId(_id).fetch(), 'agentId');
-		var agentsToSave = _.pluck(agents, 'agentId');
+		const savedAgents = _.pluck(RocketChat.models.LivechatDepartmentAgents.findByDepartmentId(_id).fetch(), 'agentId');
+		const agentsToSave = _.pluck(agents, 'agentId');
 
 		// remove other agents
 		_.difference(savedAgents, agentsToSave).forEach((agentId) => {
@@ -70,7 +70,7 @@ class LivechatDepartment extends RocketChat.models._Base {
 	}
 
 	findEnabledWithAgents() {
-		var query = {
+		const query = {
 			numAgents: { $gt: 0 },
 			enabled: true
 		};

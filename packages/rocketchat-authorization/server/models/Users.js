@@ -5,7 +5,7 @@ RocketChat.models.Users.roleBaseQuery = function(userId) {
 RocketChat.models.Users.findUsersInRoles = function(roles, scope, options) {
 	roles = [].concat(roles);
 
-	var query = {
+	const query = {
 		roles: { $in: roles }
 	};
 
