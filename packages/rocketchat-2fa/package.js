@@ -26,6 +26,7 @@ Package.onUse(function(api) {
 	]);
 	api.addFiles('client/accountSecurity.html', 'client');
 	api.addFiles('client/accountSecurity.js', 'client');
+	api.addFiles('client/TOTPPassword.js', 'client');
 
-	api.addFiles('server/methods/enable2fa.js', 'server');
+	// api.addFiles('server/methods/enable2fa.js', 'server');
 });
