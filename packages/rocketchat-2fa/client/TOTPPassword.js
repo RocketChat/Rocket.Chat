@@ -27,7 +27,7 @@ Meteor.loginWithPasswordAndTOTP = function(selector, password, code, callback) {
 				code
 			}
 		}],
-		userCallback: function(error) {
+		userCallback(error) {
 			if (error) {
 				reportError(error, callback);
 			} else {
