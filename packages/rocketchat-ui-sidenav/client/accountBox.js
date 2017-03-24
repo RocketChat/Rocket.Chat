@@ -16,9 +16,9 @@ Template.accountBox.helpers({
 		return {
 			name: Session.get('user_' + username + '_name'),
 			status: Session.get('user_' + username + '_status'),
-			visualStatus: visualStatus,
+			visualStatus,
 			_id: Meteor.userId(),
-			username: username
+			username
 		};
 	},
 

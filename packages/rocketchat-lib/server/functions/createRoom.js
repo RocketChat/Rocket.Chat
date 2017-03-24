@@ -42,7 +42,7 @@ RocketChat.createRoom = function(type, name, owner, members, readOnly, extraData
 	if (type === 'c') {
 		RocketChat.callbacks.run('beforeCreateChannel', owner, {
 			t: 'c',
-			name: name,
+			name,
 			ts: now,
 			ro: readOnly === true,
 			sysMes: readOnly !== true,

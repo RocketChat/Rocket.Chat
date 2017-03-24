@@ -4,7 +4,7 @@ RocketChat.emoji.packages.emojiCustom = {
 	toneList: {},
 	list: [],
 
-	render: function(html) {
+	render(html) {
 		const regShortNames = new RegExp('<object[^>]*>.*?<\/object>|<span[^>]*>.*?<\/span>|<(?:object|embed|svg|img|div|span|p|a)[^>]*>|(' + RocketChat.emoji.packages.emojiCustom.list.join('|') + ')', 'gi');
 
 		// replace regular shortnames first

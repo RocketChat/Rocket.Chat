@@ -19,7 +19,7 @@ if (process.env.SANDSTORM === '1') {
 	};
 
 	Meteor.methods({
-		sandstormClaimRequest: function(token, serializedDescriptor) {
+		sandstormClaimRequest(token, serializedDescriptor) {
 			const descriptor = Capnp.parsePacked(Powerbox.PowerboxDescriptor, new Buffer(serializedDescriptor, 'base64'));
 			const grainTitle = Capnp.parse(Grain.UiView.PowerboxTag, descriptor.tags[0].value).title;
 			const sessionId = this.connection.sandstormSessionId();
@@ -34,13 +34,13 @@ if (process.env.SANDSTORM === '1') {
 			const appIconUrl = asset.protocol + '://' + asset.hostPath;
 			return {
 				token: newToken,
-				appTitle: appTitle,
-				appIconUrl: appIconUrl,
-				grainTitle: grainTitle,
+				appTitle,
+				appIconUrl,
+				grainTitle,
 				descriptor: descriptor.tags[0].value.toString('base64')
 			};
 		},
-		sandstormOffer: function(token, serializedDescriptor) {
+		sandstormOffer(token, serializedDescriptor) {
 			RocketChat.Sandstorm.offerUiView(token, serializedDescriptor,
 				this.connection.sandstormSessionId());
 		}

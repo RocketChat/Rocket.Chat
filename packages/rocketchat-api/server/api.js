@@ -131,7 +131,7 @@ const getUserAuth = function _getUserAuth() {
 	const invalidResults = [undefined, null, false];
 	return {
 		token: 'services.resume.loginTokens.hashedToken',
-		user: function() {
+		user() {
 			if (this.bodyParams && this.bodyParams.payload) {
 				this.bodyParams = JSON.parse(this.bodyParams.payload);
 			}

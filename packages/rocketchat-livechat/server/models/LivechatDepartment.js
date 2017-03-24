@@ -13,13 +13,13 @@ class LivechatDepartment extends RocketChat.models._Base {
 
 	// FIND
 	findOneById(_id, options) {
-		const query = { _id: _id };
+		const query = { _id };
 
 		return this.findOne(query, options);
 	}
 
 	findByDepartmentId(_id, options) {
-		const query = { _id: _id };
+		const query = { _id };
 
 		return this.find(query, options);
 	}
@@ -28,15 +28,15 @@ class LivechatDepartment extends RocketChat.models._Base {
 		agents = [].concat(agents);
 
 		const record = {
-			enabled: enabled,
-			name: name,
-			description: description,
+			enabled,
+			name,
+			description,
 			numAgents: agents.length,
-			showOnRegistration: showOnRegistration
+			showOnRegistration
 		};
 
 		if (_id) {
-			this.update({ _id: _id }, { $set: record });
+			this.update({ _id }, { $set: record });
 		} else {
 			_id = this.insert(record);
 		}
@@ -59,12 +59,12 @@ class LivechatDepartment extends RocketChat.models._Base {
 			});
 		});
 
-		return _.extend(record, { _id: _id });
+		return _.extend(record, { _id });
 	}
 
 	// REMOVE
 	removeById(_id) {
-		const query = { _id: _id };
+		const query = { _id };
 
 		return this.remove(query);
 	}

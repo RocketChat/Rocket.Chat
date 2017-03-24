@@ -2,8 +2,8 @@ const AccessTokenServices = {};
 
 RocketChat.registerAccessTokenService = function(serviceName, handleAccessTokenRequest) {
 	AccessTokenServices[serviceName] = {
-		serviceName: serviceName,
-		handleAccessTokenRequest: handleAccessTokenRequest
+		serviceName,
+		handleAccessTokenRequest
 	};
 };
 

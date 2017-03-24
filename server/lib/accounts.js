@@ -109,7 +109,7 @@ Accounts.insertUserDoc = _.wrap(Accounts.insertUserDoc, function(insertUserDoc, 
 	const _id = insertUserDoc.call(Accounts, options, user);
 
 	user = Meteor.users.findOne({
-		_id: _id
+		_id
 	});
 
 	if (user.username && options.joinDefaultChannels !== false && user.joinDefaultChannels !== false) {

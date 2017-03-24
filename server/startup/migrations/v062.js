@@ -1,6 +1,6 @@
 RocketChat.Migrations.add({
 	version: 62,
-	up: function() {
+	up() {
 		RocketChat.models.Settings.remove({ _id: 'Atlassian Crowd', type: 'group' });
 	}
 });

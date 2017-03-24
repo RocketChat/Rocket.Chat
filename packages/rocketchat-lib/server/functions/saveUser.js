@@ -81,7 +81,7 @@ RocketChat.saveUser = function(userId, userData) {
 			updateUser.$set['emails.0.verified'] = true;
 		}
 
-		Meteor.users.update({ _id: _id }, updateUser);
+		Meteor.users.update({ _id }, updateUser);
 
 		if (userData.sendWelcomeEmail) {
 			const header = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Header') || '');
@@ -108,7 +108,7 @@ RocketChat.saveUser = function(userId, userData) {
 			const email = {
 				to: userData.email,
 				from: RocketChat.settings.get('From_Email'),
-				subject: subject,
+				subject,
 				html: header + html + footer
 			};
 

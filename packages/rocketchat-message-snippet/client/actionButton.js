@@ -8,7 +8,7 @@ Meteor.startup(function() {
 			'message',
 			'message-mobile'
 		],
-		action: function() {
+		action() {
 			const message = this._arguments[1];
 
 			swal({
@@ -37,7 +37,7 @@ Meteor.startup(function() {
 			});
 
 		},
-		validation: function(message) {
+		validation(message) {
 			if (RocketChat.models.Subscriptions.findOne({ rid: message.rid, 'u._id': Meteor.userId() }) === undefined) {
 				return false;
 			}

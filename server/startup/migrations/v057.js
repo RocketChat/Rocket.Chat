@@ -1,6 +1,6 @@
 RocketChat.Migrations.add({
 	version: 57,
-	up: function() {
+	up() {
 		RocketChat.models.Messages.find({ _id: /slack-([a-zA-Z0-9]+)S([0-9]+-[0-9]+)/ }).forEach(function(message) {
 			const oldId = message._id;
 			message._id = message._id.replace(/slack-([a-zA-Z0-9]+)S([0-9]+-[0-9]+)/, 'slack-$1-$2');

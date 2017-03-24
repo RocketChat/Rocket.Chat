@@ -38,7 +38,7 @@ class Spotify {
 				const data = _.filter(match.slice(1), value => value != null);
 				const path = _.map(data, value => _.escape(value)).join('/');
 				const url = `https://open.spotify.com/${path}`;
-				urls.push({'url': url, 'source': `spotify:${data.join(':')}`});
+				urls.push({url, 'source': `spotify:${data.join(':')}`});
 				changed = true;
 			}
 

@@ -31,7 +31,7 @@ RocketChat.Migrations.add({
 				rid: item._id
 			}, {
 				$set: {
-					name: name
+					name
 				}
 			}, {
 				multi: true
@@ -56,7 +56,7 @@ RocketChat.Migrations.add({
 					rid: item._id
 				}, {
 					$set: {
-						name: name
+						name
 					}
 				}, {
 					multi: true

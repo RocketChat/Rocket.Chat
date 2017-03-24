@@ -6,7 +6,7 @@ const logger = new Logger('LDAPHandler', {});
 function fallbackDefaultAccountSystem(bind, username, password) {
 	if (typeof username === 'string') {
 		if (username.indexOf('@') === -1) {
-			username = {username: username};
+			username = {username};
 		} else {
 			username = {email: username};
 		}
@@ -99,7 +99,7 @@ Accounts.registerLoginHandler('ldap', function(loginRequest) {
 
 	if (!user) {
 		userQuery = {
-			username: username
+			username
 		};
 
 		logger.debug('userQuery', userQuery);

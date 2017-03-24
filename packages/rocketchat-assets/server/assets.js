@@ -268,12 +268,12 @@ RocketChat.Assets = new (class {
 			where: 'client',
 			type: 'asset',
 			content: file.buffer,
-			extension: extension,
+			extension,
 			url: `/assets/${assetKey}.${extension}?${hash}`,
 			size: file.length,
 			uploadDate: file.uploadDate,
 			contentType: file.contentType,
-			hash: hash
+			hash
 		};
 	}
 });
