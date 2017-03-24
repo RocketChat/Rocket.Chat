@@ -1,6 +1,6 @@
 RocketChat.Migrations.add({
 	version: 49,
-	up: function() {
+	up() {
 
 		let count = 1;
 

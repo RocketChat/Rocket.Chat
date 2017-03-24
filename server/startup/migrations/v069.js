@@ -1,6 +1,6 @@
 RocketChat.Migrations.add({
 	version: 69,
-	up: function() {
+	up() {
 		RocketChat.models.Settings.update({
 			'_id': 'theme-color-custom-scrollbar-color',
 			'value': 'rgba(255, 255, 255, 0.05)'

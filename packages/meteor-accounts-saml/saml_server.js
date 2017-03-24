@@ -31,7 +31,7 @@ function getSamlProviderConfig(provider) {
 }
 
 Meteor.methods({
-	samlLogout: function(provider) {
+	samlLogout(provider) {
 		// Make sure the user is logged in before initiate SAML SLO
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'samlLogout' });
@@ -58,8 +58,8 @@ Meteor.methods({
 		const _saml = new SAML(providerConfig);
 
 		const request = _saml.generateLogoutRequest({
-			nameID: nameID,
-			sessionIndex: sessionIndex
+			nameID,
+			sessionIndex
 		});
 
 		// request.request: actual XML SAML Request
@@ -335,7 +335,7 @@ const middleware = function(req, res, next) {
 						// No credentialToken in IdP-initiated SSO
 						const saml_idp_credentialToken = Random.id();
 						Accounts.saml._loginResultForCredentialToken[saml_idp_credentialToken] = {
-							profile: profile
+							profile
 						};
 						const url = Meteor.absoluteUrl('home') + '?saml_idp_credentialToken='+saml_idp_credentialToken;
 						res.writeHead(302, {
@@ -344,7 +344,7 @@ const middleware = function(req, res, next) {
 						res.end();
 					} else {
 						Accounts.saml._loginResultForCredentialToken[credentialToken] = {
-							profile: profile
+							profile
 						};
 						closePopup(res);
 					}

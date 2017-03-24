@@ -29,7 +29,7 @@ describe('Users', function() {
 				email: apiEmail,
 				name: apiUsername,
 				username: apiUsername,
-				password: password,
+				password,
 				active: true,
 				roles: ['user'],
 				joinDefaultChannels: true,
@@ -137,7 +137,7 @@ describe('Users', function() {
 					email: apiEmail,
 					name: 'edited'+apiUsername,
 					username: 'edited'+apiUsername,
-					password: password,
+					password,
 					active: true,
 					roles: ['user']
 				}

@@ -28,7 +28,7 @@ Template.otrFlexTab.helpers({
 });
 
 Template.otrFlexTab.events({
-	'click button.start': function(e, t) {
+	'click button.start'(e, t) {
 		e.preventDefault();
 		const otr = RocketChat.OTR.getInstanceByRoomId(this.rid);
 		if (otr) {
@@ -39,7 +39,7 @@ Template.otrFlexTab.events({
 			}, 10000);
 		}
 	},
-	'click button.refresh': function(e, t) {
+	'click button.refresh'(e, t) {
 		e.preventDefault();
 		const otr = RocketChat.OTR.getInstanceByRoomId(this.rid);
 		if (otr) {
@@ -51,7 +51,7 @@ Template.otrFlexTab.events({
 			}, 10000);
 		}
 	},
-	'click button.end': function(e/*, t*/) {
+	'click button.end'(e/*, t*/) {
 		e.preventDefault();
 		const otr = RocketChat.OTR.getInstanceByRoomId(this.rid);
 		if (otr) {

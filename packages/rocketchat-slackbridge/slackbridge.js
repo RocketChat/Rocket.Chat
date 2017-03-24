@@ -985,7 +985,7 @@ class SlackBridge {
 				if (pin.message) {
 					const user = this.findRocketUser(pin.message.user);
 					const msgObj = {
-						rid: rid,
+						rid,
 						t: 'message_pinned',
 						msg: '',
 						u: {

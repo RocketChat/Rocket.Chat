@@ -58,10 +58,10 @@ const createS3Directive = _.debounce(() => {
 			delete Slingshot._directives[directiveName];
 		}
 		const config = {
-			bucket: bucket,
+			bucket,
 			AWSAccessKeyId: accessKey,
 			AWSSecretAccessKey: secretKey,
-			key: function(file, metaContext) {
+			key(file, metaContext) {
 				const path = RocketChat.hostname + '/' + metaContext.rid + '/' + this.userId + '/';
 
 				const upload = { s3: {
