@@ -55,7 +55,7 @@ RocketChat.API.v1.addRoute('users.getAvatar', { authRequired: false }, {
 	get() {
 		const user = this.getUserFromParams();
 
-		const url = RocketChat.getURL(`/avatar/${user.username}`, { cdn: false, full: true });
+		const url = RocketChat.getURL(`/avatar/${ user.username }`, { cdn: false, full: true });
 		this.response.setHeader('Location', url);
 
 		return {
@@ -95,7 +95,7 @@ RocketChat.API.v1.addRoute('users.info', { authRequired: true }, {
 		});
 
 		if (!result || result.length !== 1) {
-			return RocketChat.API.v1.failure(`Failed to get the user data for the userId of "${user._id}".`);
+			return RocketChat.API.v1.failure(`Failed to get the user data for the userId of "${ user._id }".`);
 		}
 
 		return RocketChat.API.v1.success({

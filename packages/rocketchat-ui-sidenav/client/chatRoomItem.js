@@ -16,7 +16,7 @@ Template.chatRoomItem.helpers({
 
 	userStatus() {
 		const userStatus = RocketChat.roomTypes.getUserStatus(this.t, this.rid);
-		return `status-${userStatus || 'offline'}`;
+		return `status-${ userStatus || 'offline' }`;
 	},
 
 	name() {
@@ -34,7 +34,7 @@ Template.chatRoomItem.helpers({
 	},
 
 	canLeave() {
-		const roomData = Session.get('roomData' + this.rid);
+		const roomData = Session.get(`roomData${ this.rid }`);
 
 		if (!roomData) { return false; }
 
