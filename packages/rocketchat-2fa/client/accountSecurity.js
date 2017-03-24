@@ -21,8 +21,6 @@ Template.accountSecurity.helpers({
 
 Template.accountSecurity.events({
 	'click .enable-2fa'(event, instance) {
-		console.log('enable it');
-
 		Meteor.call('enable2fa', (error, result) => {
 			instance.imageData.set(qrcode(result.url, { size: 200 }));
 
@@ -35,10 +33,31 @@ Template.accountSecurity.events({
 	},
 
 	'click .disable-2fa'() {
-		Meteor.call('disable2fa', (error) => {
-			if (error) {
-				toastr.error(t(error.error));
+		swal({
+			title: t('Two-factor_authentication'),
+			text: t('Open_your_authentication_app_and_enter_the_code'),
+			type: 'input',
+			inputType: 'text',
+			showCancelButton: true,
+			closeOnConfirm: true,
+			confirmButtonText: t('Verify'),
+			cancelButtonText: t('Cancel')
+		}, (code) => {
+			if (code === false) {
+				return;
 			}
+
+			Meteor.call('disable2fa', code, (error, result) => {
+				if (error) {
+					return toastr.error(t(error.error));
+				}
+
+				if (result) {
+					toastr.success(t('Two-factor_authentication_disabled'));
+				} else {
+					return toastr.error(t('Invalid_two_factor_code'));
+				}
+			});
 		});
 	},
 
@@ -50,6 +69,8 @@ Template.accountSecurity.events({
 				instance.find('#testCode').value = '';
 				instance.state.set();
 				toastr.success(t('Two-factor_authentication_enabled'));
+			} else {
+				toastr.error(t('Invalid_two_factor_code'));
 			}
 		});
 	}
