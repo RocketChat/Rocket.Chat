@@ -16,7 +16,9 @@ Package.onUse(function(api) {
 		'accounts-base',
 		'ecmascript',
 		'templating',
-		'rocketchat:lib'
+		'rocketchat:lib',
+		'sha',
+		'random'
 	]);
 
 	api.addFiles('client/accountSecurity.html', 'client');
