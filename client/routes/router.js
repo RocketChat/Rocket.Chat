@@ -84,7 +84,7 @@ FlowRouter.route('/account/:group?', {
 			params.group = 'Preferences';
 		}
 		params.group = _.capitalize(params.group, true);
-		BlazeLayout.render('main', { center: `account${params.group}` });
+		BlazeLayout.render('main', { center: `account${ params.group }` });
 	}
 });
 

@@ -44,7 +44,7 @@ Meteor.startup(() => {
 
 		galleryOptions.index = images.index;
 		galleryOptions.addCaptionHTMLFn = function(item, captionEl) {
-			captionEl.children[0].innerHTML = `${item.title}<br/><small>${item.description}</small> `;
+			captionEl.children[0].innerHTML = `${ item.title }<br/><small>${ item.description }</small> `;
 			return true;
 		};
 

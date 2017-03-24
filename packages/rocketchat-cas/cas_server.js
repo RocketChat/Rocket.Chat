@@ -29,19 +29,19 @@ const casTicket = function(req, token, callback) {
 	const baseUrl = RocketChat.settings.get('CAS_base_url');
 	const cas_version = parseFloat(RocketChat.settings.get('CAS_version'));
 	const appUrl = Meteor.absoluteUrl().replace(/\/$/, '') + __meteor_runtime_config__.ROOT_URL_PATH_PREFIX;
-	logger.debug('Using CAS_base_url: ' + baseUrl);
+	logger.debug(`Using CAS_base_url: ${ baseUrl }`);
 
 	const cas = new CAS({
 		base_url: baseUrl,
 		version: cas_version,
-		service: appUrl + '/_cas/' + token
+		service: `${ appUrl }/_cas/${ token }`
 	});
 
 	cas.validate(ticketId, function(err, status, username, details) {
 		if (err) {
-			logger.error('error when trying to validate: ' + err.message);
+			logger.error(`error when trying to validate: ${ err.message }`);
 		} else if (status) {
-			logger.info('Validated user: ' + username);
+			logger.info(`Validated user: ${ username }`);
 			const user_info = { username };
 
 			// CAS 2.0 attributes handling
@@ -50,7 +50,7 @@ const casTicket = function(req, token, callback) {
 			}
 			_casCredentialTokens[token] = user_info;
 		} else {
-			logger.error('Unable to validate ticket: ' + ticketId);
+			logger.error(`Unable to validate ticket: ${ ticketId }`);
 		}
 		//logger.debug("Receveied response: " + JSON.stringify(details, null , 4));
 
@@ -87,7 +87,7 @@ const middleware = function(req, res, next) {
 		});
 
 	} catch (err) {
-		logger.error('Unexpected error : ' + err.message);
+		logger.error(`Unexpected error : ${ err.message }`);
 		closePopup(res);
 	}
 };
@@ -169,21 +169,21 @@ Accounts.registerLoginHandler(function(options) {
 			// Source is our String to interpolate
 			if (_.isString(source)) {
 				_.each(ext_attrs, function(value, ext_name) {
-					source = source.replace('%' + ext_name + '%', ext_attrs[ext_name]);
+					source = source.replace(`%${ ext_name }%`, ext_attrs[ext_name]);
 				});
 
 				int_attrs[int_name] = source;
-				logger.debug('Sourced internal attribute: ' + int_name + ' = ' + source);
+				logger.debug(`Sourced internal attribute: ${ int_name } = ${ source }`);
 			}
 		});
 	}
 
 	// Search existing user by its external service id
-	logger.debug('Looking up user by id: ' + result.username);
+	logger.debug(`Looking up user by id: ${ result.username }`);
 	let user = Meteor.users.findOne({ 'services.cas.external_id': result.username });
 
 	if (user) {
-		logger.debug('Using existing user for \'' + result.username + '\' with id: ' + user._id);
+		logger.debug(`Using existing user for '${ result.username }' with id: ${ user._id }`);
 		if (sync_enabled) {
 			logger.debug('Syncing user attributes');
 			// Update name
@@ -228,15 +228,15 @@ Accounts.registerLoginHandler(function(options) {
 		}
 
 		// Create the user
-		logger.debug('User "' + result.username + '" does not exist yet, creating it');
+		logger.debug(`User "${ result.username }" does not exist yet, creating it`);
 		const userId = Accounts.insertUserDoc({}, newUser);
 
 		// Fetch and use it
 		user = Meteor.users.findOne(userId);
-		logger.debug('Created new user for \'' + result.username + '\' with id: ' + user._id);
+		logger.debug(`Created new user for '${ result.username }' with id: ${ user._id }`);
 		//logger.debug(JSON.stringify(user, undefined, 4));
 
-		logger.debug('Joining user to attribute channels: ' + int_attrs.rooms);
+		logger.debug(`Joining user to attribute channels: ${ int_attrs.rooms }`);
 		if (int_attrs.rooms) {
 			_.each(int_attrs.rooms.split(','), function(room_name) {
 				if (room_name) {
