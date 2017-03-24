@@ -1,5 +1,3 @@
-import speakeasy from 'speakeasy';
-
 Accounts.registerLoginHandler('totp', function(options) {
 	if (!options.totp || !options.totp.code) {
 		return;
@@ -16,11 +14,7 @@ RocketChat.callbacks.add('onValidateLogin', (login) => {
 			throw new Meteor.Error('totp-required', 'TOTP Required');
 		}
 
-		const verified = speakeasy.totp.verify({
-			secret: login.user.services.totp.secret,
-			encoding: 'base32',
-			token: totp.code
-		});
+		const verified = RocketChat.TOTP.verify(login.user.services.totp.secret, totp.code);
 
 		if (verified !== true) {
 			throw new Meteor.Error('totp-invalid', 'TOTP Invalid');
