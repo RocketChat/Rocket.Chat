@@ -18,8 +18,8 @@ Package.onUse(function(api) {
 	api.use('templating', 'client');
 
 	// Server side files
-	api.addFiles('server/server.coffee', 'server');
-	api.addFiles('server/variables.coffee', 'server');
+	api.addFiles('server/server.js', 'server');
+	api.addFiles('server/variables.js', 'server');
 
 	// Colorpicker
 	api.addFiles('client/vendor/jscolor.js', 'client');
