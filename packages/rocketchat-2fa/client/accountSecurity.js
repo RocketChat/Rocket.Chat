@@ -1,3 +1,4 @@
+import toastr from 'toastr';
 import qrcode from 'yaqrcode';
 
 window.qrcode = qrcode;
@@ -34,9 +35,9 @@ Template.accountSecurity.events({
 	},
 
 	'click .disable-2fa'() {
-		Meteor.call('disable2fa', (error, result) => {
-			if (result) {
-				swal('disabled');
+		Meteor.call('disable2fa', (error) => {
+			if (error) {
+				toastr.error(t(error.error));
 			}
 		});
 	},
@@ -48,7 +49,7 @@ Template.accountSecurity.events({
 			if (result) {
 				instance.find('#testCode').value = '';
 				instance.state.set();
-				swal('ok');
+				toastr.success(t('Two-factor_authentication_enabled'));
 			}
 		});
 	}
