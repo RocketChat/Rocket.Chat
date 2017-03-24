@@ -6,8 +6,8 @@ class PushNotification {
 	}
 
 	hash(str) {
-		let hash = 0,
-			i = str.length;
+		let hash = 0;
+		let i = str.length;
 
 		while (i) {
 			hash = ((hash << 5) - hash) + str.charCodeAt(--i);

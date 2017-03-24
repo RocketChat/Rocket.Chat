@@ -285,7 +285,8 @@ Template.integrationsOutgoing.events({
 			return toastr.error(TAPi18n.__('You_should_inform_one_url_at_least'));
 		}
 
-		let triggerWords, triggerWordAnywhere;
+		let triggerWords;
+		let triggerWordAnywhere;
 		if (RocketChat.integrations.outgoingEvents[event].use.triggerWords) {
 			triggerWords = $('[name=triggerWords]').val().trim();
 			triggerWords = triggerWords.split(',').filter((word) => word.trim() !== '');
@@ -311,10 +312,11 @@ Template.integrationsOutgoing.events({
 			}
 		}
 
-		let retryCount, retryDelay;
+		let retryCount;
+		let retryDelay;
 		if (retryFailedCalls === '1') {
 			retryCount = parseInt($('[name=retryCount]').val().trim());
-			retryDelay: $('[name=retryDelay]').val().trim();
+			retryDelay = $('[name=retryDelay]').val().trim();
 		}
 
 		const integration = {
