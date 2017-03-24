@@ -11,7 +11,7 @@ WebApp.connectHandlers.use('/livechat', Meteor.bindEnvironment((req, res, next) 
 	}
 	res.setHeader('content-type', 'text/html; charset=utf-8');
 
-	var domainWhiteList = RocketChat.settings.get('Livechat_AllowedDomainsList');
+	let domainWhiteList = RocketChat.settings.get('Livechat_AllowedDomainsList');
 	if (req.headers.referer && !_.isEmpty(domainWhiteList.trim())) {
 		domainWhiteList = _.map(domainWhiteList.split(','), function(domain) {
 			return domain.trim();

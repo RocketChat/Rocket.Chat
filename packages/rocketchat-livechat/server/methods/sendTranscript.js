@@ -20,21 +20,21 @@ Meteor.methods({
 		const header = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Header') || '');
 		const footer = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Footer') || '');
 
-		var html = '<div> <hr>';
+		let html = '<div> <hr>';
 		messages.forEach(message => {
 			if (message.t && ['command', 'livechat-close', 'livechat_video_call'].indexOf(message.t) !== -1) {
 				return;
 			}
 
-			var author;
+			let author;
 			if (message.u._id === Meteor.userId()) {
 				author = TAPi18n.__('You', { lng: userLanguage });
 			} else {
 				author = message.u.username;
 			}
 
-			var datetime = moment(message.ts).locale(userLanguage).format('LLL');
-			var singleMessage = `
+			const datetime = moment(message.ts).locale(userLanguage).format('LLL');
+			const singleMessage = `
 				<p><strong>${author}</strong>  <em>${datetime}</em></p>
 				<p>${message.msg}</p>
 			`;

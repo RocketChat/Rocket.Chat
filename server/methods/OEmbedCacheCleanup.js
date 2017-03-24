@@ -6,8 +6,8 @@ Meteor.methods({
 			});
 		}
 
-		var date = new Date();
-		var expirationDays = RocketChat.settings.get('API_EmbedCacheExpirationDays');
+		const date = new Date();
+		const expirationDays = RocketChat.settings.get('API_EmbedCacheExpirationDays');
 		date.setDate(date.getDate() - expirationDays);
 		RocketChat.models.OEmbedCache.removeAfterDate(date);
 		return {

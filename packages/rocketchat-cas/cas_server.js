@@ -1,21 +1,21 @@
 /* globals RoutePolicy, logger */
 /* jshint newcap: false */
 
-var fiber = Npm.require('fibers');
-var url = Npm.require('url');
-var CAS = Npm.require('cas');
+const fiber = Npm.require('fibers');
+const url = Npm.require('url');
+const CAS = Npm.require('cas');
 
-var _casCredentialTokens = {};
+const _casCredentialTokens = {};
 
 RoutePolicy.declare('/_cas/', 'network');
 
-var closePopup = function(res) {
+const closePopup = function(res) {
 	res.writeHead(200, {'Content-Type': 'text/html'});
-	var content = '<html><head><script>window.close()</script></head></html>';
+	const content = '<html><head><script>window.close()</script></head></html>';
 	res.end(content, 'utf-8');
 };
 
-var casTicket = function(req, token, callback) {
+const casTicket = function(req, token, callback) {
 
 	// get configuration
 	if (!RocketChat.settings.get('CAS_enabled')) {
@@ -24,14 +24,14 @@ var casTicket = function(req, token, callback) {
 	}
 
 	// get ticket and validate.
-	var parsedUrl = url.parse(req.url, true);
-	var ticketId = parsedUrl.query.ticket;
-	var baseUrl = RocketChat.settings.get('CAS_base_url');
-	var cas_version = parseFloat(RocketChat.settings.get('CAS_version'));
-	var appUrl = Meteor.absoluteUrl().replace(/\/$/, '') + __meteor_runtime_config__.ROOT_URL_PATH_PREFIX;
+	const parsedUrl = url.parse(req.url, true);
+	const ticketId = parsedUrl.query.ticket;
+	const baseUrl = RocketChat.settings.get('CAS_base_url');
+	const cas_version = parseFloat(RocketChat.settings.get('CAS_version'));
+	const appUrl = Meteor.absoluteUrl().replace(/\/$/, '') + __meteor_runtime_config__.ROOT_URL_PATH_PREFIX;
 	logger.debug('Using CAS_base_url: ' + baseUrl);
 
-	var cas = new CAS({
+	const cas = new CAS({
 		base_url: baseUrl,
 		version: cas_version,
 		service: appUrl + '/_cas/' + token
@@ -42,7 +42,7 @@ var casTicket = function(req, token, callback) {
 			logger.error('error when trying to validate: ' + err.message);
 		} else if (status) {
 			logger.info('Validated user: ' + username);
-			var user_info = { username: username };
+			const user_info = { username: username };
 
 			// CAS 2.0 attributes handling
 			if (details && details.attributes) {
@@ -60,12 +60,12 @@ var casTicket = function(req, token, callback) {
 	return;
 };
 
-var middleware = function(req, res, next) {
+const middleware = function(req, res, next) {
 	// Make sure to catch any exceptions because otherwise we'd crash
 	// the runner
 	try {
-		var barePath = req.url.substring(0, req.url.indexOf('?'));
-		var splitPath = barePath.split('/');
+		const barePath = req.url.substring(0, req.url.indexOf('?'));
+		const splitPath = barePath.split('/');
 
 		// Any non-cas request will continue down the default
 		// middlewares.
@@ -75,7 +75,7 @@ var middleware = function(req, res, next) {
 		}
 
 		// get auth token
-		var credentialToken = splitPath[2];
+		const credentialToken = splitPath[2];
 		if (!credentialToken) {
 			closePopup(res);
 			return;
@@ -101,15 +101,15 @@ WebApp.connectHandlers.use(function(req, res, next) {
 	}).run();
 });
 
-var _hasCredential = function(credentialToken) {
+const _hasCredential = function(credentialToken) {
 	return _.has(_casCredentialTokens, credentialToken);
 };
 
 /*
  * Retrieve token and delete it to avoid replaying it.
  */
-var _retrieveCredential = function(credentialToken) {
-	var result = _casCredentialTokens[credentialToken];
+const _retrieveCredential = function(credentialToken) {
+	const result = _casCredentialTokens[credentialToken];
 	delete _casCredentialTokens[credentialToken];
 	return result;
 };
@@ -130,18 +130,18 @@ Accounts.registerLoginHandler(function(options) {
 		'no matching login attempt found');
 	}
 
-	var result = _retrieveCredential(options.cas.credentialToken);
-	var syncUserDataFieldMap = RocketChat.settings.get('CAS_Sync_User_Data_FieldMap').trim();
-	var cas_version = parseFloat(RocketChat.settings.get('CAS_version'));
-	var sync_enabled = RocketChat.settings.get('CAS_Sync_User_Data_Enabled');
+	const result = _retrieveCredential(options.cas.credentialToken);
+	const syncUserDataFieldMap = RocketChat.settings.get('CAS_Sync_User_Data_FieldMap').trim();
+	const cas_version = parseFloat(RocketChat.settings.get('CAS_version'));
+	const sync_enabled = RocketChat.settings.get('CAS_Sync_User_Data_Enabled');
 
 	// We have these
-	var ext_attrs = {
+	const ext_attrs = {
 		username: result.username
 	};
 
 	// We need these
-	var int_attrs = {
+	const int_attrs = {
 		email: undefined,
 		name: undefined,
 		username: undefined,
@@ -180,7 +180,7 @@ Accounts.registerLoginHandler(function(options) {
 
 	// Search existing user by its external service id
 	logger.debug('Looking up user by id: ' + result.username);
-	var user = Meteor.users.findOne({ 'services.cas.external_id': result.username });
+	let user = Meteor.users.findOne({ 'services.cas.external_id': result.username });
 
 	if (user) {
 		logger.debug('Using existing user for \'' + result.username + '\' with id: ' + user._id);
@@ -199,7 +199,7 @@ Accounts.registerLoginHandler(function(options) {
 	} else {
 
 		// Define new user
-		var newUser = {
+		const newUser = {
 			username: result.username,
 			active: true,
 			globalRoles: ['user'],
@@ -229,7 +229,7 @@ Accounts.registerLoginHandler(function(options) {
 
 		// Create the user
 		logger.debug('User "' + result.username + '" does not exist yet, creating it');
-		var userId = Accounts.insertUserDoc({}, newUser);
+		const userId = Accounts.insertUserDoc({}, newUser);
 
 		// Fetch and use it
 		user = Meteor.users.findOne(userId);
@@ -240,7 +240,7 @@ Accounts.registerLoginHandler(function(options) {
 		if (int_attrs.rooms) {
 			_.each(int_attrs.rooms.split(','), function(room_name) {
 				if (room_name) {
-					var room = RocketChat.models.Rooms.findOneByNameAndType(room_name, 'c');
+					let room = RocketChat.models.Rooms.findOneByNameAndType(room_name, 'c');
 					if (!room) {
 						room = RocketChat.models.Rooms.createWithIdTypeAndName(Random.id(), 'c', room_name);
 					}

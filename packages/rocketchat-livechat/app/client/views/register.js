@@ -37,15 +37,15 @@ Template.register.events({
 		if (!($name.val().trim() && $email.val().trim())) {
 			return instance.showError(TAPi18n.__('Please_fill_name_and_email'));
 		} else {
-			var departmentId = instance.$('select[name=department]').val();
+			let departmentId = instance.$('select[name=department]').val();
 			if (!departmentId) {
-				var department = Department.findOne({ showOnRegistration: true });
+				const department = Department.findOne({ showOnRegistration: true });
 				if (department) {
 					departmentId = department._id;
 				}
 			}
 
-			var guest = {
+			const guest = {
 				token: visitor.getToken(),
 				name: $name.val(),
 				email: $email.val(),
