@@ -164,6 +164,12 @@ Accounts.validateLoginAttempt(function(login) {
 		}
 	}
 
+	if (login.type === 'password' && login.user.services && login.user.services.totp && login.user.services.totp.enabled === true) {
+		console.log(login);
+		// Verify OTP
+		throw new Meteor.Error('totp-required', 'TOTP Required');
+	}
+
 	RocketChat.models.Users.updateLastLoginById(login.user._id);
 	Meteor.defer(function() {
 		return RocketChat.callbacks.run('afterValidateLogin', login);
