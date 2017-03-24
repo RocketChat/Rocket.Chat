@@ -122,7 +122,8 @@ function configurePush() {
 			}
 		});
 
-		let apn, gcm;
+		let apn;
+		let gcm;
 
 		if (RocketChat.settings.get('Push_enable_gateway') === false) {
 			gcm = {
