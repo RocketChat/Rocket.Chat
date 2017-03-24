@@ -11,7 +11,8 @@ Package.describe({
 });
 
 Npm.depends({
-	speakeasy: '2.0.0'
+	speakeasy: '2.0.0',
+	yaqrcode: '0.2.1'
 });
 
 Package.onUse(function(api) {
@@ -29,6 +30,8 @@ Package.onUse(function(api) {
 	api.addFiles('client/accountSecurity.js', 'client');
 	api.addFiles('client/TOTPPassword.js', 'client');
 
-	// api.addFiles('server/methods/enable2fa.js', 'server');
+	api.addFiles('server/methods/enable2fa.js', 'server');
+	api.addFiles('server/methods/verifyTemp2FAToken.js', 'server');
+	api.addFiles('server/models/users.js', 'server');
 	api.addFiles('server/loginHandler.js', 'server');
 });

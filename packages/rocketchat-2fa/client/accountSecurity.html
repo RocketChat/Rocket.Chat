@@ -12,9 +12,22 @@
 					<div class="section">
 						<h1>{{_ "Two-Factor_Authentication_App"}}</h1>
 						<div class="section-content border-component-color">
-							{{_ "Two-factor_authentication_is_currently_disabled"}}
+							{{#if isEnabled}}
+								done.
+							{{else}}
+								{{#unless isRegistering}}
+									{{_ "Two-factor_authentication_is_currently_disabled"}}
 
-							<button class="button primary enable-2fa">{{_ "Enable_two-factor_authentication"}}</button>
+									<button class="button primary enable-2fa">{{_ "Enable_two-factor_authentication"}}</button>
+								{{else}}
+									<img src="{{imageData}}">
+
+									<form class="verify-code">
+										<input type="text" id="testCode">
+										<button class="button primary">{{_ "Verify"}}</button>
+									</form>
+								{{/unless}}
+							{{/if}}
 						</div>
 					</div>
 					<div class="section">
