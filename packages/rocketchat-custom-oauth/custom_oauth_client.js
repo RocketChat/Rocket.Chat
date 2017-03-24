@@ -87,10 +87,10 @@ export class CustomOAuth {
 
 		OAuth.launchLogin({
 			loginService: this.name,
-			loginStyle: loginStyle,
-			loginUrl: loginUrl,
-			credentialRequestCompleteCallback: credentialRequestCompleteCallback,
-			credentialToken: credentialToken,
+			loginStyle,
+			loginUrl,
+			credentialRequestCompleteCallback,
+			credentialToken,
 			popupOptions: {
 				width: 900,
 				height: 450

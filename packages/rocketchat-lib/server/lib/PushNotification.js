@@ -29,7 +29,7 @@ class PushNotification {
 			from: 'push',
 			badge: 1,
 			sound: 'default',
-			title: title,
+			title,
 			text: message,
 			payload,
 			query: usersTo,

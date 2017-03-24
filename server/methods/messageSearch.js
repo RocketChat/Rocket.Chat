@@ -1,5 +1,5 @@
 Meteor.methods({
-	messageSearch: function(text, rid, limit) {
+	messageSearch(text, rid, limit) {
 		var from, mention, options, query, r, result, currentUserName, currentUserId, currentUserTimezoneOffset;
 		check(text, String);
 		check(rid, String);

@@ -119,9 +119,9 @@ Template.toolbar.helpers({
 			cleanOnEnter: true,
 			closeOnEsc: false,
 			blurOnSelectItem: true,
-			isLoading: isLoading,
-			open: open,
-			getFilter: function(collection, filter, cb) {
+			isLoading,
+			open,
+			getFilter(collection, filter, cb) {
 				filterText = filter;
 
 				const type = {
@@ -168,8 +168,8 @@ Template.toolbar.helpers({
 				}
 			},
 
-			getValue: function(_id, collection, records) {
-				const doc = _.findWhere(records, {_id: _id});
+			getValue(_id, collection, records) {
+				const doc = _.findWhere(records, {_id});
 
 				RocketChat.roomTypes.openRouteLink(doc.t, doc, FlowRouter.current().queryParams);
 				menu.close();

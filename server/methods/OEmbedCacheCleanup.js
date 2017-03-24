@@ -1,5 +1,5 @@
 Meteor.methods({
-	OEmbedCacheCleanup: function() {
+	OEmbedCacheCleanup() {
 		if (Meteor.userId() && !RocketChat.authz.hasRole(Meteor.userId(), 'admin')) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'OEmbedCacheCleanup'

@@ -56,7 +56,7 @@ function inviteAll(type) {
 			} else {
 				Meteor.call('addUsersToRoom', {
 					rid: targetChannel._id,
-					users: users
+					users
 				});
 			}
 			return RocketChat.Notifications.notifyUser(Meteor.userId(), 'message', {

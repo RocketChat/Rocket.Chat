@@ -50,7 +50,7 @@ Template.visitorInfo.helpers({
 				if (livechatData.hasOwnProperty(_id)) {
 					const customFields = Template.instance().customFields.get();
 					if (customFields) {
-						const field = _.findWhere(customFields, { _id: _id });
+						const field = _.findWhere(customFields, { _id });
 						if (field && field.visibility !== 'hidden') {
 							fields.push({ label: field.label, value: livechatData[_id] });
 						}

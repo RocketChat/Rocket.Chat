@@ -1,5 +1,5 @@
 Meteor.methods({
-	addAllUserToRoom: function(rid) {
+	addAllUserToRoom(rid) {
 
 		check (rid, String);
 

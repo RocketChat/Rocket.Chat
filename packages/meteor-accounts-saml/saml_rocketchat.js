@@ -136,8 +136,8 @@ const configureSamlService = function(samlConfigs) {
 		idpSLORedirectURL: samlConfigs.idpSLORedirectURL,
 		issuer: samlConfigs.issuer,
 		cert: samlConfigs.secret.cert,
-		privateCert: privateCert,
-		privateKey: privateKey
+		privateCert,
+		privateKey
 	};
 };
 

@@ -86,14 +86,14 @@ Template.messages.helpers({
 });
 
 Template.messages.events({
-	'keyup .input-message': function(event, instance) {
+	'keyup .input-message'(event, instance) {
 		instance.chatMessages.keyup(visitor.getRoom(), event, instance);
 		instance.updateMessageInputHeight(event.currentTarget);
 	},
-	'keydown .input-message': function(event, instance) {
+	'keydown .input-message'(event, instance) {
 		return instance.chatMessages.keydown(visitor.getRoom(), event, instance);
 	},
-	'click .send-button': function(event, instance) {
+	'click .send-button'(event, instance) {
 		const input = instance.find('.input-message');
 		const sent = instance.chatMessages.send(visitor.getRoom(), input);
 		input.focus();
@@ -101,17 +101,17 @@ Template.messages.events({
 
 		return sent;
 	},
-	'click .new-message': function(event, instance) {
+	'click .new-message'(event, instance) {
 		instance.atBottom = true;
 		return instance.find('.input-message').focus();
 	},
-	'click .error': function(event) {
+	'click .error'(event) {
 		return $(event.currentTarget).removeClass('show');
 	},
-	'click .toggle-options': function(event, instance) {
+	'click .toggle-options'(event, instance) {
 		instance.showOptions.set(!instance.showOptions.get());
 	},
-	'click .video-button': function(event) {
+	'click .video-button'(event) {
 		event.preventDefault();
 
 		if (!Meteor.userId()) {

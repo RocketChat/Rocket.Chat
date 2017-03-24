@@ -42,7 +42,7 @@ var casTicket = function(req, token, callback) {
 			logger.error('error when trying to validate: ' + err.message);
 		} else if (status) {
 			logger.info('Validated user: ' + username);
-			var user_info = { username: username };
+			var user_info = { username };
 
 			// CAS 2.0 attributes handling
 			if (details && details.attributes) {

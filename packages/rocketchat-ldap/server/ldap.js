@@ -250,7 +250,7 @@ LDAP = class LDAP {
 
 		if (attribute) {
 			filter = new self.ldapjs.filters.EqualityFilter({
-				attribute: attribute,
+				attribute,
 				value: new Buffer(id, 'hex')
 			});
 		} else {
@@ -262,11 +262,11 @@ LDAP = class LDAP {
 				}));
 			});
 
-			filter = new self.ldapjs.filters.OrFilter({filters: filters});
+			filter = new self.ldapjs.filters.OrFilter({filters});
 		}
 
 		const searchOptions = {
-			filter: filter,
+			filter,
 			scope: 'sub'
 		};
 

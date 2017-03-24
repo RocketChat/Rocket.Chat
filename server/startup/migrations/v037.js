@@ -1,6 +1,6 @@
 RocketChat.Migrations.add({
 	version: 37,
-	up: function() {
+	up() {
 		if (RocketChat && RocketChat.models && RocketChat.models.Permissions) {
 
 			// Find permission add-user (changed it to create-user)

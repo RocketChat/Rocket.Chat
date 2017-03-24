@@ -1,6 +1,6 @@
 RocketChat.Migrations.add({
 	version: 40,
-	up: function() {
+	up() {
 		RocketChat.models.Settings.find({ _id: /Accounts_OAuth_Custom_/, i18nLabel: 'Accounts_OAuth_Custom_Enable' }).forEach(function(customOauth) {
 			var parts = customOauth._id.split('_');
 			var name = parts[3];

@@ -11,7 +11,7 @@ class LivechatExternalMessage extends RocketChat.models._Base {
 	findByRoomId(roomId, sort = { ts: -1 }) {
 		const query = { rid: roomId };
 
-		return this.find(query, { sort: sort });
+		return this.find(query, { sort });
 	}
 }
 

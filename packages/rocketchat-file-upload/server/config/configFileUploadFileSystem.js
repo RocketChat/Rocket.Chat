@@ -16,7 +16,7 @@ const createFileSystemStore = _.debounce(function() {
 		filter: new UploadFS.Filter({
 			onCheck: FileUpload.validateFileUpload
 		}),
-		transformWrite: function(readStream, writeStream, fileId, file) {
+		transformWrite(readStream, writeStream, fileId, file) {
 			if (RocketChatFile.enabled === false || !/^image\/((x-windows-)?bmp|p?jpeg|png)$/.test(file.type)) {
 				return readStream.pipe(writeStream);
 			}

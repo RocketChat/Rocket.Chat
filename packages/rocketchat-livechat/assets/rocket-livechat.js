@@ -148,7 +148,7 @@
 		for (key in listeners) {
 			if (listeners.hasOwnProperty(key) && indexOfListener(listeners[key], listener) === -1) {
 				listeners[key].push(listenerIsWrapped ? listener : {
-					listener: listener,
+					listener,
 					once: false
 				});
 			}
@@ -172,7 +172,7 @@
 	 */
 	proto.addOnceListener = function addOnceListener(evt, listener) {
 		return this.addListener(evt, {
-			listener: listener,
+			listener,
 			once: true
 		});
 	};
@@ -565,7 +565,7 @@
 	};
 
 	var api = {
-		ready: function() {
+		ready() {
 			ready = true;
 			if (hookQueue.length > 0) {
 				hookQueue.forEach(function(hookParams) {
@@ -574,32 +574,32 @@
 				hookQueue = [];
 			}
 		},
-		toggleWindow: function(/*forceClose*/) {
+		toggleWindow(/*forceClose*/) {
 			if (widget.dataset.state === 'closed') {
 				openWidget();
 			} else {
 				closeWidget();
 			}
 		},
-		openPopout: function() {
+		openPopout() {
 			closeWidget();
 			var popup = window.open(config.url + '?mode=popout', 'livechat-popout', 'width=400, height=450, toolbars=no');
 			popup.focus();
 		},
-		openWidget: function() {
+		openWidget() {
 			openWidget();
 		},
-		removeWidget: function() {
+		removeWidget() {
 			document.getElementsByTagName('body')[0].removeChild(widget);
 		},
-		callback: function(eventName, data) {
+		callback(eventName, data) {
 			emitCallback(eventName, data);
 		}
 	};
 
 	var pageVisited = function(change) {
 		callHook('pageVisited', {
-			change: change,
+			change,
 			location: JSON.parse(JSON.stringify(document.location)),
 			title: document.title
 		});
@@ -717,19 +717,19 @@
 	// exports
 	w.RocketChat.livechat = {
 		// methods
-		pageVisited: pageVisited,
-		setCustomField: setCustomField,
-		setTheme: setTheme,
-		setDepartment: setDepartment,
-		clearDepartment: clearDepartment,
+		pageVisited,
+		setCustomField,
+		setTheme,
+		setDepartment,
+		clearDepartment,
 
 		// callbacks
-		onChatMaximized: function(fn) { registerCallback('chat-maximized', fn); },
-		onChatMinimized: function(fn) { registerCallback('chat-minimized', fn); },
-		onChatStarted: function(fn) { registerCallback('chat-started', fn); },
-		onChatEnded: function(fn) { registerCallback('chat-ended', fn); },
-		onPrechatFormSubmit: function(fn) { registerCallback('pre-chat-form-submit', fn); },
-		onOfflineFormSubmit: function(fn) { registerCallback('offline-form-submit', fn); }
+		onChatMaximized(fn) { registerCallback('chat-maximized', fn); },
+		onChatMinimized(fn) { registerCallback('chat-minimized', fn); },
+		onChatStarted(fn) { registerCallback('chat-started', fn); },
+		onChatEnded(fn) { registerCallback('chat-ended', fn); },
+		onPrechatFormSubmit(fn) { registerCallback('pre-chat-form-submit', fn); },
+		onOfflineFormSubmit(fn) { registerCallback('offline-form-submit', fn); }
 	};
 
 	// proccess queue

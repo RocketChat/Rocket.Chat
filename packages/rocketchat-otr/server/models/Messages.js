@@ -4,7 +4,7 @@ RocketChat.models.Messages.deleteOldOTRMessages = function(roomId, ts) {
 };
 
 RocketChat.models.Messages.updateOTRAck = function(_id, otrAck) {
-	var query = { _id: _id };
-	var update = { $set: { otrAck: otrAck } };
+	var query = { _id };
+	var update = { $set: { otrAck } };
 	return this.update(query, update);
 };

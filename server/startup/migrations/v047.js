@@ -1,6 +1,6 @@
 RocketChat.Migrations.add({
 	version: 47,
-	up: function() {
+	up() {
 		if (RocketChat && RocketChat.models && RocketChat.models.Settings) {
 			var autolinkerUrls = RocketChat.models.Settings.findOne({ _id: 'AutoLinker_Urls' });
 			if (autolinkerUrls) {

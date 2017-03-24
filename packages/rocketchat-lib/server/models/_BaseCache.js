@@ -173,27 +173,27 @@ class ModelsBaseCache extends EventEmitter {
 		}
 
 		RocketChat.models[join].cache.on('inserted', (record) => {
-			this.processRemoteJoinInserted({join, field, link, multi, record: record});
+			this.processRemoteJoinInserted({join, field, link, multi, record});
 		});
 
 		RocketChat.models[join].cache.on('beforeupdate', (record, diff) => {
 			if (diff[link.remote]) {
-				this.processRemoteJoinRemoved({join, field, link, multi, record: record});
+				this.processRemoteJoinRemoved({join, field, link, multi, record});
 			}
 		});
 
 		RocketChat.models[join].cache.on('updated', (record, diff) => {
 			if (diff[link.remote]) {
-				this.processRemoteJoinInserted({join, field, link, multi, record: record});
+				this.processRemoteJoinInserted({join, field, link, multi, record});
 			}
 		});
 
 		RocketChat.models[join].cache.on('removed', (record) => {
-			this.processRemoteJoinRemoved({join, field, link, multi, record: record});
+			this.processRemoteJoinRemoved({join, field, link, multi, record});
 		});
 
 		this.on('inserted', (localRecord) => {
-			this.processLocalJoinInserted({join, field, link, multi, localRecord: localRecord});
+			this.processLocalJoinInserted({join, field, link, multi, localRecord});
 		});
 
 		this.on('beforeupdate', (localRecord, diff) => {
@@ -208,7 +208,7 @@ class ModelsBaseCache extends EventEmitter {
 
 		this.on('updated', (localRecord, diff) => {
 			if (diff[link.local]) {
-				this.processLocalJoinInserted({join, field, link, multi, localRecord: localRecord});
+				this.processLocalJoinInserted({join, field, link, multi, localRecord});
 			}
 		});
 	}
@@ -307,8 +307,8 @@ class ModelsBaseCache extends EventEmitter {
 		}
 
 		this.indexes[fields.join(',')] = {
-			type: type,
-			fields: fields,
+			type,
+			fields,
 			data: {}
 		};
 	}
