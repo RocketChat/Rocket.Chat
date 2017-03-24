@@ -5,6 +5,10 @@
 - [NEW] Permission `join-without-join-code` assigned to admins and bots by default (#6139)
 - [NEW] Integrations, both incoming and outgoing, now have access to the models. Example: `Users.findOneById(id)` (#6336)
 - [FIX] Incoming integrations would break when trying to use the `Store` feature.
+
+## 0.54.2 - 2017-Mar-24
+
+- [FIX] LiveChat permissions
 - [FIX] Auto Translate bug on Room Preview (#6355)
 
 ## 0.54.1 - 2017-Mar-23
