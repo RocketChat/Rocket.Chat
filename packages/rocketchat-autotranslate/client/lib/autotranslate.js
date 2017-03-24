@@ -7,7 +7,7 @@ RocketChat.AutoTranslate = {
 		if (rid) {
 			subscription = RocketChat.models.Subscriptions.findOne({ rid: rid }, { fields: { autoTranslateLanguage: 1 } });
 		}
-		const language = subscription.autoTranslateLanguage || Meteor.user().language || window.defaultUserLanguage();
+		const language = subscription && subscription.autoTranslateLanguage || Meteor.user().language || window.defaultUserLanguage();
 		if (language.indexOf('-') !== -1) {
 			if (!_.findWhere(this.supportedLanguages, { language })) {
 				return language.substr(0, 2);
