@@ -6,6 +6,7 @@ Package.describe({
 });
 
 Package.onUse(function(api) {
+	api.use('ecmascript');
 	api.use('templating', 'client');
 
 	const fs = Npm.require('fs');
