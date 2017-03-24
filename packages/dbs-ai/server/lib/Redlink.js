@@ -46,6 +46,7 @@ class RedlinkAdapter {
 		RocketChat.models.Messages.find({
 			rid: rid,
 			_hidden: {$ne: true},
+			t: {$ne: "command"},
 			ts: {$gt: new Date(analyzedUntil)}
 		}).forEach(visibleMessage => {
 			conversation.push({
