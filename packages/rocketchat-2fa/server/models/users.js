@@ -11,13 +11,14 @@ RocketChat.models.Users.disable2FAAndSetTempSecretByUserId = function(userId, te
 	});
 };
 
-RocketChat.models.Users.enable2FAAndSetSecretByUserId = function(userId, secret) {
+RocketChat.models.Users.enable2FAAndSetSecretAndCodesByUserId = function(userId, secret, backupCodes) {
 	return this.update({
 		_id: userId
 	}, {
 		$set: {
 			'services.totp.enabled': true,
-			'services.totp.secret': secret
+			'services.totp.secret': secret,
+			'services.totp.hashedBackup': backupCodes
 		},
 		$unset: {
 			'services.totp.tempSecret': 1

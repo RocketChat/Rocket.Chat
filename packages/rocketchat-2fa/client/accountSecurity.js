@@ -66,6 +66,11 @@ Template.accountSecurity.events({
 
 		Meteor.call('verifyTemp2FAToken', instance.find('#testCode').value, (error, result) => {
 			if (result) {
+				swal({
+					title: t('Backup_codes'),
+					text: t('Make_sure_you_have_a_copy_of_your_codes') + '\n' + result.codes.join('  ')
+				});
+
 				instance.find('#testCode').value = '';
 				instance.state.set();
 				toastr.success(t('Two-factor_authentication_enabled'));
