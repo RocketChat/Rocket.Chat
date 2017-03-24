@@ -107,28 +107,26 @@ Template.redlinkInlineResult_VKL_community.onCreated(function () {
 //-------------------------------------- Assistify --------------------------------
 Template.inlineResultMessage.helpers({
 	getOriginatorClass(message){
-		if(message.user){
-			switch(message.user.displayName.toLowerCase()){
-				case 'seeker':
-					return 'seeker';
-				case 'provider':
-					return 'provider';
-				default:
-					return 'unknown';
-			}
+		switch (message.origin) {
+			case 'User':
+				return 'seeker';
+			case 'Agent':
+				return 'provider';
+			default:
+				return 'unknown';
 		}
 	},
 	getSelectedClass(){
 		const instance = Template.instance();
 
-		if(instance.selected.get()){
+		if (instance.selected.get()) {
 			return 'selected';
 		}
 	}
 });
 
 Template.inlineResultMessage.events({
-	'click .conversationMessage': function(event, instance) {
+	'click .conversationMessage': function (event, instance) {
 		const current = instance.selected.get();
 
 		instance.selected.set(!current);
@@ -142,7 +140,7 @@ Template.inlineResultMessage.events({
 	}
 });
 
-Template.inlineResultMessage.onCreated(function(){
+Template.inlineResultMessage.onCreated(function () {
 	const instance = this;
 
 	instance.selected = new ReactiveVar(false);
@@ -154,17 +152,17 @@ Template.redlinkInlineResult_Hasso.events({
 		const current = instance.state.get('expanded');
 		instance.state.set('expanded', !current);
 
-		if(!instance.state.get('expanded')){
+		if (!instance.state.get('expanded')) {
 			Template.redlinkQueries.utilities.resultsInteractionCleanup();
 		}
 	},
-	'click .js-send-message': function(event, instance){
+	'click .js-send-message': function (event, instance) {
 
 		/* buffer metadata of messages which are _about to be sent_
-		* This is necessary as the results or queries displayed may be entered into the message-area,
-		* but only one the message is actually sent, the metadata becomes effective for this new message
-		* - and only by then we know the message-id for which this metadata is actually valid
-		*/
+		 * This is necessary as the results or queries displayed may be entered into the message-area,
+		 * but only one the message is actually sent, the metadata becomes effective for this new message
+		 * - and only by then we know the message-id for which this metadata is actually valid
+		 */
 		Session.set('messageMetadata', {
 			user: Meteor.user(),
 			room: instance.data.roomId,
@@ -177,20 +175,20 @@ Template.redlinkInlineResult_Hasso.events({
 		//create a text-response
 		let textToInsert = "";
 		const selectedMessages = instance.findAll('.selected');
-		if(selectedMessages.length > 0){
-			textToInsert = selectedMessages.reduce(function(concat, elem) {
+		if (selectedMessages.length > 0) {
+			textToInsert = selectedMessages.reduce(function (concat, elem) {
 					return concat + " " + elem.textContent;
 				},
 				'');
 		} else {
 			//translate GUID of the conversation provided into a link
 			const originRoom = RocketChat.models.Rooms.findOne({_id: instance.data.result.conversationId});
-			if(originRoom) {
+			if (originRoom) {
 				const routeLink = RocketChat.roomTypes.getRouteLink(originRoom.t, originRoom);
 				const roomLink = Meteor.absoluteUrl() + routeLink.slice(1, routeLink.length);
 				textToInsert = TAPi18n.__('Link_provided') + " " + roomLink;
 			} else {
-				 return toastr.info(TAPi18n.__('No_room_link_possible'));
+				return toastr.info(TAPi18n.__('No_room_link_possible'));
 			}
 		}
 
@@ -205,7 +203,7 @@ Template.redlinkInlineResult_Hasso.helpers({
 	},
 	getResultTitle(){
 		const instance = Template.instance();
-		if(instance.state.get('expanded') && instance.state.get('conversationLoaded')){
+		if (instance.state.get('expanded') && instance.state.get('conversationLoaded')) {
 			return instance.state.get('conversation').messages[0].content;
 		} else {
 			return instance.data.result.content
@@ -213,26 +211,26 @@ Template.redlinkInlineResult_Hasso.helpers({
 	},
 	originQuestion(){
 		const instance = Template.instance();
-		if(instance.state.get('conversation') && instance.state.get('conversationLoaded')){
+		if (instance.state.get('conversation') && instance.state.get('conversationLoaded')) {
 			return instance.state.get('conversation').messages[0].content;
 		}
 	},
 	latestResponse(){
 		const instance = Template.instance();
-		if(instance.state.get('conversation') && instance.state.get('conversationLoaded')){
+		if (instance.state.get('conversation') && instance.state.get('conversationLoaded')) {
 			return instance.state.get('conversation').messages.filter((message) => message.user && message.user.displayName === 'Provider').pop().text;
 		}
 	},
 
 	subsequentCommunication(){
 		const instance = Template.instance();
-		if(instance.state.get('conversation') && instance.state.get('conversationLoaded')) {
+		if (instance.state.get('conversation') && instance.state.get('conversationLoaded')) {
 			return instance.state.get('conversation').messages.slice(1);
 		}
 	}
 });
 
-Template.redlinkInlineResult_Hasso.onCreated(function (){
+Template.redlinkInlineResult_Hasso.onCreated(function () {
 	let instance = this;
 
 	this.state = new ReactiveDict();
@@ -243,24 +241,25 @@ Template.redlinkInlineResult_Hasso.onCreated(function (){
 	});
 
 
-	instance.autorun(()=> {
+	instance.autorun(() => {
 
-		if(instance.state.get('expanded')){
+		if (instance.state.get('expanded')) {
 			Meteor.call('redlink:getStoredConversation', instance.data.result.conversationId,
-				(err, conversation)=>{
-				if(!err){
-					instance.state.set('conversation', conversation);
-					instance.state.set('conversationLoaded', true);
-				} else {
-					console.error(err);
-				}}
+				(err, conversation) => {
+					if (!err) {
+						instance.state.set('conversation', conversation);
+						instance.state.set('conversationLoaded', true);
+					} else {
+						console.error(err);
+					}
+				}
 			);
 		}
 
 	});
 });
 
-Template.redlinkInlineResult_dbsearch.onCreated(function (){
+Template.redlinkInlineResult_dbsearch.onCreated(function () {
 
 	this.state = new ReactiveDict();
 	this.state.setDefault({
@@ -281,11 +280,11 @@ Template.redlinkInlineResult_dbsearch.events({
 		const current = instance.state.get('expanded');
 		instance.state.set('expanded', !current);
 
-		if(!instance.state.get('expanded')){
+		if (!instance.state.get('expanded')) {
 			Template.redlinkQueries.utilities.resultsInteractionCleanup();
 		}
 	},
-	'click .js-send-message': function(event, instance){
+	'click .js-send-message': function (event, instance) {
 
 		/* buffer metadata of messages which are _about to be sent_
 		 * This is necessary as the results or queries displayed may be entered into the message-area,
@@ -304,8 +303,8 @@ Template.redlinkInlineResult_dbsearch.events({
 		//create a text-response
 		let textToInsert = "";
 		const selectedMessages = instance.findAll('.selected');
-		if(selectedMessages.length > 0){
-			textToInsert = selectedMessages.reduce(function(concat, elem) {
+		if (selectedMessages.length > 0) {
+			textToInsert = selectedMessages.reduce(function (concat, elem) {
 					return concat + " " + elem.textContent;
 				},
 				'');
