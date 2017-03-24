@@ -192,7 +192,7 @@ Template.redlinkInlineResult_Hasso.events({
 			}
 		}
 
-		$('#chat-window-' + instance.data.roomId + ' .input-message').val(textToInsert).focus();
+		$('#chat-window-' + instance.data.roomId + ' .input-message').val(textToInsert.trim()).focus();
 	}
 });
 
