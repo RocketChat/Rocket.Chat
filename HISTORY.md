@@ -8,6 +8,7 @@
 
 ## 0.54.2 - 2017-Mar-24
 
+- [FIX] LiveChat permissions
 - [FIX] Auto Translate bug on Room Preview (#6355)
 
 ## 0.54.1 - 2017-Mar-23
