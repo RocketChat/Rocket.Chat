@@ -24,3 +24,15 @@ RocketChat.models.Users.enable2FAAndSetSecretByUserId = function(userId, secret)
 		}
 	});
 };
+
+RocketChat.models.Users.disable2FAByUserId = function(userId) {
+	return this.update({
+		_id: userId
+	}, {
+		$set: {
+			'services.totp': {
+				enabled: false
+			}
+		}
+	});
+};

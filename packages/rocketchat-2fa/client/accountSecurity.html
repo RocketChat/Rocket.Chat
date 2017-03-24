@@ -13,7 +13,7 @@
 						<h1>{{_ "Two-Factor_Authentication_App"}}</h1>
 						<div class="section-content border-component-color">
 							{{#if isEnabled}}
-								done.
+								<button class="button danger disable-2fa">{{_ "Disable_two-factor_authentication"}}</button>
 							{{else}}
 								{{#unless isRegistering}}
 									{{_ "Two-factor_authentication_is_currently_disabled"}}
@@ -28,16 +28,6 @@
 									</form>
 								{{/unless}}
 							{{/if}}
-						</div>
-					</div>
-					<div class="section">
-						<h1>{{_ "Backup_Codes"}}</h1>
-						<div class="section-content border-component-color">
-							<div class="input-line double-col">
-								<label>{{_ "Desktop_Notifications"}}</label>
-								<div>
-								</div>
-							</div>
 						</div>
 					</div>
 				</fieldset>
