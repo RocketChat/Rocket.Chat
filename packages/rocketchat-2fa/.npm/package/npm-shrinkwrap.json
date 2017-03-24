@@ -9,6 +9,11 @@
       "version": "2.0.0",
       "resolved": "https://registry.npmjs.org/speakeasy/-/speakeasy-2.0.0.tgz",
       "from": "speakeasy@2.0.0"
+    },
+    "yaqrcode": {
+      "version": "0.2.1",
+      "resolved": "https://registry.npmjs.org/yaqrcode/-/yaqrcode-0.2.1.tgz",
+      "from": "yaqrcode@0.2.1"
     }
   }
 }
