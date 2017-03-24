@@ -1,7 +1,9 @@
 /* globals Slingshot, FileUpload, AWS, SystemLogger */
 const crypto = Npm.require('crypto');
 
-let S3accessKey, S3secretKey, S3expiryTimeSpan;
+let S3accessKey;
+let S3secretKey;
+let S3expiryTimeSpan;
 
 const generateURL = function(file) {
 	if (!file || !file.s3) {
