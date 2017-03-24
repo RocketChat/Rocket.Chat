@@ -25,9 +25,15 @@ Meteor.methods({
 
 		const blockEditInMinutes = RocketChat.settings.get('Message_AllowEditing_BlockEditInMinutes');
 		if (Match.test(blockEditInMinutes, Number) && blockEditInMinutes !== 0) {
-			let currentTsDiff, msgTs;
-			if (Match.test(originalMessage.ts, Number)) { msgTs = moment(originalMessage.ts); }
-			if (msgTs) { currentTsDiff = moment().diff(msgTs, 'minutes'); }
+			let currentTsDiff;
+			let msgTs;
+
+			if (Match.test(originalMessage.ts, Number)) {
+				msgTs = moment(originalMessage.ts);
+			}
+			if (msgTs) {
+				currentTsDiff = moment().diff(msgTs, 'minutes');
+			}
 			if (currentTsDiff > blockEditInMinutes) {
 				throw new Meteor.Error('error-message-editing-blocked', 'Message editing is blocked', { method: 'updateMessage' });
 			}

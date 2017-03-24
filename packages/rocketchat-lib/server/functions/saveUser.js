@@ -87,7 +87,8 @@ RocketChat.saveUser = function(userId, userData) {
 			const header = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Header') || '');
 			const footer = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Footer') || '');
 
-			let subject, html;
+			let subject;
+			let html;
 
 			if (RocketChat.settings.get('Accounts_UserAddedEmail_Customized')) {
 				subject = RocketChat.settings.get('Accounts_UserAddedEmailSubject');
