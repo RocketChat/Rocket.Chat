@@ -168,12 +168,12 @@ Template.messages.onRendered(function() {
 });
 
 Template.messages.onRendered(function() {
-	var messages, newMessage, onscroll, template;
-	messages = this.find('.messages');
-	newMessage = this.find('.new-message');
-	template = this;
+	const messages = this.find('.messages');
+	const newMessage = this.find('.new-message');
+	const template = this;
+
 	if (messages) {
-		onscroll = _.throttle(function() {
+		const onscroll = _.throttle(function() {
 			template.atBottom = messages.scrollTop >= messages.scrollHeight - messages.clientHeight;
 		}, 200);
 		Meteor.setInterval(function() {

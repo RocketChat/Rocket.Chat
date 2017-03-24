@@ -1,5 +1,8 @@
 const crypto = Npm.require('crypto');
-let protectedFiles, S3accessKey, S3secretKey, S3expiryTimeSpan;
+let protectedFiles;
+let S3accessKey;
+let S3secretKey;
+let S3expiryTimeSpan;
 
 RocketChat.settings.get('FileUpload_ProtectFiles', function(key, value) {
 	protectedFiles = value;
