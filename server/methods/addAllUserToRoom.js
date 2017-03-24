@@ -21,8 +21,7 @@ Meteor.methods({
 			const users = RocketChat.models.Users.find().fetch();
 			const now = new Date();
 			users.forEach(function(user) {
-				var subscription;
-				subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(rid, user._id);
+				const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(rid, user._id);
 				if (subscription != null) {
 					return;
 				}

@@ -121,7 +121,7 @@ RocketChat.EmojiPicker = {
 	updateRecent() {
 		const total = RocketChat.emoji.packages.base.emojisByCategory.recent.length;
 		let html = '';
-		for (var i = 0; i < total; i++) {
+		for (let i = 0; i < total; i++) {
 			const emoji = RocketChat.emoji.packages.base.emojisByCategory.recent[i];
 
 			if (isSetNotNull(() => RocketChat.emoji.list[`:${emoji}:`])) {

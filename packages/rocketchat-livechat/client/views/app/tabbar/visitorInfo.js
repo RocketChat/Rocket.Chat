@@ -5,7 +5,7 @@ Template.visitorInfo.helpers({
 	user() {
 		const user = Template.instance().user.get();
 		if (user && user.userAgent) {
-			var ua = new UAParser();
+			const ua = new UAParser();
 			ua.setUA(user.userAgent);
 
 			user.os = ua.getOS().name + ' ' + ua.getOS().version;
@@ -225,7 +225,7 @@ Template.visitorInfo.onCreated(function() {
 		}
 	});
 
-	var currentData = Template.currentData();
+	const currentData = Template.currentData();
 
 	if (currentData && currentData.rid) {
 		this.autorun(() => {

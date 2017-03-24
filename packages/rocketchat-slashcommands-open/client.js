@@ -12,7 +12,7 @@ function Open(command, params /*, item*/) {
 	const type = dict[room[0]];
 	room = room.replace(/#|@/, '');
 
-	var query = {
+	const query = {
 		name: room
 	};
 

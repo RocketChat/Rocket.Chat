@@ -1,7 +1,7 @@
 Meteor.methods({
 	'livechat:registerGuest'({ token, name, email, department } = {}) {
-		var stampedToken = Accounts._generateStampedLoginToken();
-		var hashStampedToken = Accounts._hashStampedToken(stampedToken);
+		const stampedToken = Accounts._generateStampedLoginToken();
+		const hashStampedToken = Accounts._hashStampedToken(stampedToken);
 
 		const userId = RocketChat.Livechat.registerGuest.call(this, {
 			token,

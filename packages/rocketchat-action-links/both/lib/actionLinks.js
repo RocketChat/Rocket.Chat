@@ -9,12 +9,12 @@ RocketChat.actionLinks = {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { function: 'actionLinks.getMessage' });
 		}
 
-		var message = RocketChat.models.Messages.findOne({ _id: messageId });
+		const message = RocketChat.models.Messages.findOne({ _id: messageId });
 		if (!message) {
 			throw new Meteor.Error('error-invalid-message', 'Invalid message', { function: 'actionLinks.getMessage' });
 		}
 
-		var room = RocketChat.models.Rooms.findOne({ _id: message.rid });
+		const room = RocketChat.models.Rooms.findOne({ _id: message.rid });
 		if (Array.isArray(room.usernames) && room.usernames.indexOf(Meteor.user().username) === -1) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { function: 'actionLinks.getMessage' });
 		}

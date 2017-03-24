@@ -93,7 +93,7 @@ RocketChat.QueueMethods = {
 			}
 		});
 
-		var inquiry = {
+		const inquiry = {
 			rid: message.rid,
 			message: message.msg,
 			name: guest.name || guest.username,

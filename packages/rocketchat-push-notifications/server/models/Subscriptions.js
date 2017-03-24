@@ -134,7 +134,7 @@ RocketChat.models.Subscriptions.findNotificationPreferencesByRoom = function(roo
 };
 
 RocketChat.models.Subscriptions.findWithSendEmailByRoomId = function(roomId) {
-	var query = {
+	const query = {
 		rid: roomId,
 		emailNotifications: {
 			$exists: true

@@ -66,7 +66,7 @@ Template.livechatIntegrations.events({
 	'submit .rocket-form'(e, instance) {
 		e.preventDefault();
 
-		var settings = {
+		const settings = {
 			'Livechat_webhookUrl': s.trim(instance.$('#webhookUrl').val()),
 			'Livechat_secret_token': s.trim(instance.$('#secretToken').val()),
 			'Livechat_webhook_on_close': instance.$('#sendOnClose').get(0).checked,

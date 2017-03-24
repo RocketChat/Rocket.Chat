@@ -89,7 +89,7 @@ Template.toolbar.helpers({
 		return Template.instance().resultsList.get();
 	},
 	getPlaceholder() {
-		var placeholder = TAPi18n.__('Search');
+		let placeholder = TAPi18n.__('Search');
 
 		if (!Meteor.Device.isDesktop()) {
 			return placeholder;

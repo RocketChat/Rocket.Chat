@@ -45,7 +45,7 @@ class SlackBridge {
 		if (this.connected === false) {
 			this.connected = true;
 			logger.connection.info('Connecting via token: ', this.apiToken);
-			var RtmClient = this.slackClient.RtmClient;
+			const RtmClient = this.slackClient.RtmClient;
 			this.rtm = new RtmClient(this.apiToken);
 			this.rtm.start();
 			this.registerForSlackEvents();
@@ -267,7 +267,7 @@ class SlackBridge {
 
 	addAliasToRocketMsg(rocketUserName, rocketMsgObj) {
 		if (this.aliasFormat) {
-			var alias = this.util.format(this.aliasFormat, rocketUserName);
+			const alias = this.util.format(this.aliasFormat, rocketUserName);
 
 			if (alias !== rocketUserName) {
 				rocketMsgObj.alias = alias;
@@ -588,7 +588,7 @@ class SlackBridge {
 	uploadFileFromSlack(details, slackFileURL, rocketUser, rocketChannel, timeStamp, isImporting) {
 		const url = Npm.require('url');
 		const requestModule = /https/i.test(slackFileURL) ? Npm.require('https') : Npm.require('http');
-		var parsedUrl = url.parse(slackFileURL, true);
+		const parsedUrl = url.parse(slackFileURL, true);
 		parsedUrl.headers = { 'Authorization': 'Bearer ' + this.apiToken };
 		requestModule.get(parsedUrl, Meteor.bindEnvironment((stream) => {
 			const fileId = Meteor.fileStore.create(details);
@@ -662,7 +662,7 @@ class SlackBridge {
 	}
 
 	registerForSlackEvents() {
-		var CLIENT_EVENTS = this.slackClient.CLIENT_EVENTS;
+		const CLIENT_EVENTS = this.slackClient.CLIENT_EVENTS;
 		this.rtm.on(CLIENT_EVENTS.RTM.AUTHENTICATED, () => {
 			logger.connection.info('Connected to Slack');
 		});
@@ -675,7 +675,7 @@ class SlackBridge {
 			this.disconnect();
 		});
 
-		var RTM_EVENTS = this.slackClient.RTM_EVENTS;
+		const RTM_EVENTS = this.slackClient.RTM_EVENTS;
 
 		/**
 		* Event fired when someone messages a channel the bot is in
