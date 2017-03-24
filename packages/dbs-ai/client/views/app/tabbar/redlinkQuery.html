@@ -3,7 +3,7 @@
 		<!--Represents a single proposed query which might include a preview-->
 		<div class="query-item-wrapper {{classExpanded}}">
 			<div class="query-item clearfix" data-template-index="{{templateIndex}}" data-query-index="{{queryIndex}}">
-				{{#if query.inlineResultSupport}}
+				{{#if isInlineResult query}}
 					<div class="js-toggle-results-expanded query-results-toggle">
 						<span class="icon-up-open" title="Wissensquelle ein-/ausblenden"></span>
 					</div>
@@ -23,25 +23,27 @@
 				{{/let}}
 			</div>
 
-			{{#if and query.inlineResultSupport hasResult}}
-				{{#unless isDirty}}
-					<div class="query-preview">
-						<div class="query-preview-headline-wrapper clearfix">
-							<h4 class="query-preview-headline">{{queryPreviewHeadline}}</h4>
+			{{#if isInlineResult query}}
+				{{#if hasResult}}
+					{{#unless isDirty}}
+						<div class="query-preview">
+							<div class="query-preview-headline-wrapper clearfix">
+								<h4 class="query-preview-headline">{{queryPreviewHeadline}}</h4>
+							</div>
+							<div class="clearfix">
+								{{#let navigationOptions=navigationOptions}}
+									{{> Template.dynamic template=navigationOptions.template data=navigationOptions }}
+								{{/let}}
+							</div>
 						</div>
-						<div class="clearfix">
-							{{#let navigationOptions=navigationOptions}}
-								{{> Template.dynamic template=navigationOptions.template data=navigationOptions }}
-							{{/let}}
+					{{else}}
+						<div class="results-dirty">
+							<span class="icon-wrapper"><i class="icon-spinner"></i></span>
 						</div>
-					</div>
-				{{else}}
-					<div class="results-dirty">
-						<span class="icon-wrapper"><i class="icon-spinner"></i></span>
-					</div>
-				{{/unless}}
+					{{/unless}}
+				{{/if}}
 			{{else}}
-				{{#if query.inlineResultSupport}}
+				{{#if isInlineResult query}}
 					<div class="query-preview-headline-wrapper clearfix">
 						{{# if hasError}}
 							<div class="no-results error">{{errorText}}</div>

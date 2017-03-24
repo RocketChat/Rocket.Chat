@@ -16,6 +16,11 @@ Template.redlinkQueries.helpers({
 			templateIndex: instance.data.templateIndex,
 			queryIndex: queryIndex
 		}
+	},
+	isInlineResult(query) {
+		// TODO: dirty hack, need to handle client triggered results having an inline result in some better way
+		if (query) return query.inlineResultSupport || query.creator == "dbsearch";
+		return false;
 	}
 });
 

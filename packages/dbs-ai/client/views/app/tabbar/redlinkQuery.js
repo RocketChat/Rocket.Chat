@@ -141,8 +141,7 @@ Template.redlinkQuery.helpers({
 
 		return text;
 	},
-	getQueryDisplayTitle()
-	{
+	getQueryDisplayTitle() {
 		const instance = Template.instance();
 		if (instance.data.query.creator === 'Hasso-MLT') {
 			return '';
@@ -153,6 +152,11 @@ Template.redlinkQuery.helpers({
 
 		// else
 		return instance.data.query.displayTitle;
+	},
+	isInlineResult(query) {
+		// TODO: dirty hack, need to handle client triggered results having an inline result in some better way
+		if (query) return query.inlineResultSupport || query.creator == "dbsearch";
+		return false;
 	}
 });
 
