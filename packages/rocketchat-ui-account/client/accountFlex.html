@@ -10,15 +10,18 @@
 				<li>
 					<a href="{{pathFor 'account' group='preferences'}}" class="account-link">{{_ "Preferences"}}</a>
 				</li>
+				{{#if allowUserProfileChange}}
 				<li>
-					{{#if allowUserProfileChange}}
-						<a href="{{pathFor 'account' group='profile'}}" class="account-link">{{_ "Profile"}}</a>
-					{{/if}}
+					<a href="{{pathFor 'account' group='profile'}}" class="account-link">{{_ "Profile"}}</a>
 				</li>
+				{{/if}}
+				{{#if allowUserAvatarChange}}
 				<li>
-					{{#if allowUserAvatarChange}}
-						<a href="{{pathFor 'changeAvatar'}}" class="account-link">{{_ "Avatar"}}</a>
-					{{/if}}
+					<a href="{{pathFor 'changeAvatar'}}" class="account-link">{{_ "Avatar"}}</a>
+				</li>
+				{{/if}}
+				<li>
+					<a href="{{pathFor 'account' group='security'}}" class="account-link">{{_ "Security"}}</a>
 				</li>
 			</ul>
 		</div>

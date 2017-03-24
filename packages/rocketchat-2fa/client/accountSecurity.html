@@ -1,0 +1,37 @@
+<template name="accountSecurity">
+	<section class="page-container page-home page-static">
+		<header class="fixed-title border-component-color">
+			{{> burger}}
+			<h2>
+				<span class="room-title">{{_ "Security"}}</span>
+			</h2>
+		</header>
+		<div class="content">
+			<div class="rocket-form">
+				<fieldset>
+					<div class="section">
+						<h1>{{_ "Two-Factor_Authentication_App"}}</h1>
+						<div class="section-content border-component-color">
+							{{_ "Two-factor_authentication_is_currently_disabled"}}
+
+							<button class="button primary enable-2fa">{{_ "Enable_two-factor_authentication"}}</button>
+						</div>
+					</div>
+					<div class="section">
+						<h1>{{_ "Backup_Codes"}}</h1>
+						<div class="section-content border-component-color">
+							<div class="input-line double-col">
+								<label>{{_ "Desktop_Notifications"}}</label>
+								<div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</fieldset>
+				<div class="submit">
+					<button class="button primary save"><i class="icon-send"></i><span>{{_ "Save_changes"}}</span></button>
+				</div>
+			</div>
+		</div>
+	</section>
+</template>
