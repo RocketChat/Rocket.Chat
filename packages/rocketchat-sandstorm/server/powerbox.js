@@ -31,7 +31,7 @@ if (process.env.SANDSTORM === '1') {
 			const viewInfo = waitPromise(cap.getViewInfo());
 			const appTitle = viewInfo.appTitle;
 			const asset = waitPromise(viewInfo.grainIcon.getUrl());
-			const appIconUrl = asset.protocol + '://' + asset.hostPath;
+			const appIconUrl = `${ asset.protocol }://${ asset.hostPath }`;
 			return {
 				token: newToken,
 				appTitle,

@@ -14,5 +14,5 @@ RocketChat.getURL = (path, { cdn = true, full = false } = {}) => {
 		basePath = pathPrefix;
 	}
 
-	return basePath + '/' + finalPath;
+	return `${ basePath }/${ finalPath }`;
 };
