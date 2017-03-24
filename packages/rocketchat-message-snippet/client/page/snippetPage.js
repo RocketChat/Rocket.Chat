@@ -2,10 +2,10 @@
 import moment from 'moment';
 
 Template.snippetPage.helpers({
-	snippet: function() {
+	snippet() {
 		return SnippetedMessages.findOne({ _id: FlowRouter.getParam('snippetId') });
 	},
-	snippetContent: function() {
+	snippetContent() {
 		const message = SnippetedMessages.findOne({ _id: FlowRouter.getParam('snippetId') });
 		if (message === undefined) {
 			return null;

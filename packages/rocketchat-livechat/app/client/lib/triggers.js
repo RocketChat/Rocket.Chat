@@ -88,10 +88,10 @@ this.Triggers = (function() {
 	};
 
 	return {
-		init: init,
-		processRequest: processRequest,
-		setTriggers: setTriggers,
-		setDisabled: setDisabled,
-		setEnabled: setEnabled
+		init,
+		processRequest,
+		setTriggers,
+		setDisabled,
+		setEnabled
 	};
 }());

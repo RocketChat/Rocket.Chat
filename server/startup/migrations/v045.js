@@ -1,6 +1,6 @@
 RocketChat.Migrations.add({
 	version: 45,
-	up: function() {
+	up() {
 
 		// finds the latest created visitor
 		const lastVisitor = RocketChat.models.Users.find({ type: 'visitor' }, { fields: { username: 1 }, sort: { createdAt: -1 }, limit: 1 }).fetch();

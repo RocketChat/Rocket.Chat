@@ -4,10 +4,10 @@ import supertest from 'supertest';
 export const request = supertest('http://localhost:3000');
 const prefix = '/api/v1/';
 
-export const apiUsername = 'api'+username;
-export const apiEmail = 'api'+email;
-export const apiPublicChannelName= 'api'+publicChannelName;
-export const apiPrivateChannelName = 'api'+privateChannelName;
+export const apiUsername = `api${ username }`;
+export const apiEmail = `api${ email }`;
+export const apiPublicChannelName= `api${ publicChannelName }`;
+export const apiPrivateChannelName = `api${ privateChannelName }`;
 
 export const targetUser = {};
 export const channel = {};

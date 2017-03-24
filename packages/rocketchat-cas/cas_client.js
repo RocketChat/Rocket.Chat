@@ -10,7 +10,7 @@ const openCenteredPopup = function(url, width, height) {
 	// positioning the popup centered relative to the current window
 	const left = screenX + (outerWidth - width) / 2;
 	const top = screenY + (outerHeight - height) / 2;
-	const features = ('width=' + width + ',height=' + height + ',left=' + left + ',top=' + top + ',scrollbars=yes');
+	const features = (`width=${ width },height=${ height },left=${ left },top=${ top },scrollbars=yes`);
 
 	const newwindow = window.open(url, 'Login', features);
 	if (newwindow.focus) {
@@ -33,7 +33,7 @@ Meteor.loginWithCas = function(options, callback) {
 	}
 
 	const appUrl = Meteor.absoluteUrl().replace(/\/$/, '') + __meteor_runtime_config__.ROOT_URL_PATH_PREFIX;
-	const loginUrl = login_url + '?service=' + appUrl + '/_cas/' + credentialToken;
+	const loginUrl = `${ login_url }?service=${ appUrl }/_cas/${ credentialToken }`;
 
 	const popup = openCenteredPopup(
 		loginUrl,
@@ -52,7 +52,7 @@ Meteor.loginWithCas = function(options, callback) {
 		popup.addEventListener('exit', function() {
 			// check auth on server.
 			Accounts.callLoginMethod({
-				methodArguments: [{ cas: { credentialToken: credentialToken } }],
+				methodArguments: [{ cas: { credentialToken } }],
 				userCallback: callback
 			});
 		});
@@ -77,7 +77,7 @@ Meteor.loginWithCas = function(options, callback) {
 
 				// check auth on server.
 				Accounts.callLoginMethod({
-					methodArguments: [{ cas: { credentialToken: credentialToken } }],
+					methodArguments: [{ cas: { credentialToken } }],
 					userCallback: callback
 				});
 			}

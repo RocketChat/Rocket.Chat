@@ -16,13 +16,13 @@ RocketChat.Migrations.add({
 		}).forEach((cfsRecord) => {
 			const nameParts = cfsRecord.original.name && cfsRecord.original.name.split('.');
 			let extension = '';
-			let url = `ufs/rocketchat_uploads/${cfsRecord._id}`;
+			let url = `ufs/rocketchat_uploads/${ cfsRecord._id }`;
 
 			console.log('migrating file', url);
 
 			if (nameParts && nameParts.length > 1) {
 				extension = nameParts.pop();
-				url = url + '.' + extension;
+				url = `${ url }.${ extension }`;
 			}
 
 			const record = {
@@ -33,7 +33,7 @@ RocketChat.Migrations.add({
 				complete: true,
 				uploading: false,
 				store: 'rocketchat_uploads',
-				extension: extension,
+				extension,
 				userId: cfsRecord.userId,
 				uploadedAt: cfsRecord.updatedAt,
 				url: Meteor.absoluteUrl() + url
@@ -70,19 +70,19 @@ RocketChat.Migrations.add({
 
 			RocketChat.models.Messages.find({
 				$or: [{
-					'urls.url': `https://demo.rocket.chat/cfs/files/Files/${cfsRecord._id}`
+					'urls.url': `https://demo.rocket.chat/cfs/files/Files/${ cfsRecord._id }`
 				}, {
-					'urls.url': `https://rocket.chat/cfs/files/Files/${cfsRecord._id}`
+					'urls.url': `https://rocket.chat/cfs/files/Files/${ cfsRecord._id }`
 				}]
 			}).forEach((message) => {
 				for (const urlsItem of message.urls) {
-					if (urlsItem.url === (`https://demo.rocket.chat/cfs/files/Files/${cfsRecord._id}`) || urlsItem.url === (`https://rocket.chat/cfs/files/Files/${cfsRecord._id}`)) {
+					if (urlsItem.url === (`https://demo.rocket.chat/cfs/files/Files/${ cfsRecord._id }`) || urlsItem.url === (`https://rocket.chat/cfs/files/Files/${ cfsRecord._id }`)) {
 						urlsItem.url = Meteor.absoluteUrl() + url;
 						if (urlsItem.parsedUrl && urlsItem.parsedUrl.pathname) {
-							urlsItem.parsedUrl.pathname = `/${url}`;
+							urlsItem.parsedUrl.pathname = `/${ url }`;
 						}
-						message.msg = message.msg.replace(`https://demo.rocket.chat/cfs/files/Files/${cfsRecord._id}`, Meteor.absoluteUrl() + url);
-						message.msg = message.msg.replace(`https://rocket.chat/cfs/files/Files/${cfsRecord._id}`, Meteor.absoluteUrl() + url);
+						message.msg = message.msg.replace(`https://demo.rocket.chat/cfs/files/Files/${ cfsRecord._id }`, Meteor.absoluteUrl() + url);
+						message.msg = message.msg.replace(`https://rocket.chat/cfs/files/Files/${ cfsRecord._id }`, Meteor.absoluteUrl() + url);
 					}
 				}
 

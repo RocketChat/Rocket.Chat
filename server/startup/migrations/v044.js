@@ -1,6 +1,6 @@
 RocketChat.Migrations.add({
 	version: 44,
-	up: function() {
+	up() {
 		if (RocketChat && RocketChat.models && RocketChat.models.Users) {
 			RocketChat.models.Users.find({ $or: [ { 'settings.preferences.disableNewRoomNotification': { $exists: 1 } }, { 'settings.preferences.disableNewMessageNotification': { $exists: 1 } } ] }).forEach(function(user) {
 				const newRoomNotification = !(user && user.settings && user.settings.preferences && user.settings.preferences.disableNewRoomNotification);

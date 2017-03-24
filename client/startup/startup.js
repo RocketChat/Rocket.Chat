@@ -69,7 +69,7 @@ Meteor.startup(function() {
 		language = language.toLowerCase();
 		if (language !== 'en') {
 			Meteor.call('loadLocale', language, (err, localeFn) => {
-				Function(localeFn).call({moment: moment});
+				Function(localeFn).call({moment});
 				moment.locale(language);
 			});
 		}

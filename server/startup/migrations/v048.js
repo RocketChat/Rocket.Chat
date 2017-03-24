@@ -1,6 +1,6 @@
 RocketChat.Migrations.add({
 	version: 48,
-	up: function() {
+	up() {
 		if (RocketChat && RocketChat.models && RocketChat.models.Settings) {
 
 			const RocketBot_Enabled = RocketChat.models.Settings.findOne({
