@@ -39,7 +39,7 @@ RocketChat.roomTypes.add('l', 5, {
 
 	getUserStatus(roomId) {
 		let guestName;
-		const room = Session.get(`roomData${ roomId}`);
+		const room = Session.get(`roomData${ roomId }`);
 
 		if (room) {
 			guestName = room.v && room.v.username;

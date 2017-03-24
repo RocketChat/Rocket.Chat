@@ -135,8 +135,8 @@ describe('Users', function() {
 				userId: targetUser._id,
 				data :{
 					email: apiEmail,
-					name: `edited${apiUsername}`,
-					username: `edited${apiUsername}`,
+					name: `edited${ apiUsername }`,
+					username: `edited${ apiUsername }`,
 					password: password,
 					active: true,
 					roles: ['user']
@@ -146,10 +146,10 @@ describe('Users', function() {
 			.expect(200)
 			.expect((res) => {
 				expect(res.body).to.have.property('success', true);
-				expect(res.body).to.have.deep.property('user.username', `edited${apiUsername}`);
+				expect(res.body).to.have.deep.property('user.username', `edited${ apiUsername }`);
 				expect(res.body).to.have.deep.property('user.emails[0].address', apiEmail);
 				expect(res.body).to.have.deep.property('user.active', true);
-				expect(res.body).to.have.deep.property('user.name', `edited${apiUsername}`);
+				expect(res.body).to.have.deep.property('user.name', `edited${ apiUsername }`);
 			})
 			.end(done);
 	});

@@ -179,7 +179,7 @@ class SlackBridge {
 	findRocketUser(slackUserID) {
 		const rocketUser = RocketChat.models.Users.findOneByImportId(slackUserID);
 		if (rocketUser && !this.userTags[slackUserID]) {
-			this.userTags[slackUserID] = { slack: `<@${slackUserID}>`, rocket: `@${rocketUser.username}` };
+			this.userTags[slackUserID] = { slack: `<@${ slackUserID }>`, rocket: `@${ rocketUser.username }` };
 		}
 		return rocketUser;
 	}
@@ -257,7 +257,7 @@ class SlackBridge {
 			}
 			RocketChat.models.Users.addImportIds(rocketUserData.rocketId, importIds);
 			if (!this.userTags[slackUserID]) {
-				this.userTags[slackUserID] = { slack: `<@${slackUserID}>`, rocket: `@${rocketUserData.name}` };
+				this.userTags[slackUserID] = { slack: `<@${ slackUserID }>`, rocket: `@${ rocketUserData.name }` };
 			}
 			return RocketChat.models.Users.findOneById(rocketUserData.rocketId);
 		}
@@ -355,7 +355,7 @@ class SlackBridge {
 				}
 
 				//Stash this away to key off it later so we don't send it back to Slack
-				this.reactionsMap.set(`unset${rocketMsg._id}${rocketReaction}`, rocketUser);
+				this.reactionsMap.set(`unset${ rocketMsg._id }${ rocketReaction }`, rocketUser);
 				logger.class.debug('Removing reaction from Slack');
 				Meteor.runAsUser(rocketUser._id, () => {
 					Meteor.call('setReaction', rocketReaction, rocketMsg._id);
@@ -398,7 +398,7 @@ class SlackBridge {
 				}
 
 				//Stash this away to key off it later so we don't send it back to Slack
-				this.reactionsMap.set(`set${rocketMsg._id}${rocketReaction}`, rocketUser);
+				this.reactionsMap.set(`set${ rocketMsg._id }${ rocketReaction }`, rocketUser);
 				logger.class.debug('Adding reaction from Slack');
 				Meteor.runAsUser(rocketUser._id, () => {
 					Meteor.call('setReaction', rocketReaction, rocketMsg._id);
@@ -452,7 +452,7 @@ class SlackBridge {
 				return rocketMsgObj;
 			case 'me_message':
 				return this.addAliasToRocketMsg(rocketUser.username, {
-					msg: `_${this.convertSlackMsgTxtToRocketTxtFormat(slackMessage.text)}_`
+					msg: `_${ this.convertSlackMsgTxtToRocketTxtFormat(slackMessage.text) }_`
 				});
 			case 'channel_join':
 				if (isImporting) {
@@ -528,7 +528,7 @@ class SlackBridge {
 			case 'file_share':
 				if (slackMessage.file && slackMessage.file.url_private_download !== undefined) {
 					const details = {
-						message_id: `slack-${slackMessage.ts.replace(/\./g, '-')}`,
+						message_id: `slack-${ slackMessage.ts.replace(/\./g, '-') }`,
 						name: slackMessage.file.name,
 						size: slackMessage.file.size,
 						type: slackMessage.file.mimetype,
@@ -562,7 +562,7 @@ class SlackBridge {
 					};
 
 					if (!isImporting) {
-						RocketChat.models.Messages.setPinnedByIdAndUserId(`slack-${slackMessage.attachments[0].channel_id}-${slackMessage.attachments[0].ts.replace(/\./g, '-')}`, rocketMsgObj.u, true, new Date(parseInt(slackMessage.ts.split('.')[0]) * 1000));
+						RocketChat.models.Messages.setPinnedByIdAndUserId(`slack-${ slackMessage.attachments[0].channel_id }-${ slackMessage.attachments[0].ts.replace(/\./g, '-') }`, rocketMsgObj.u, true, new Date(parseInt(slackMessage.ts.split('.')[0]) * 1000));
 					}
 
 					return rocketMsgObj;
@@ -589,7 +589,7 @@ class SlackBridge {
 		const url = Npm.require('url');
 		const requestModule = /https/i.test(slackFileURL) ? Npm.require('https') : Npm.require('http');
 		var parsedUrl = url.parse(slackFileURL, true);
-		parsedUrl.headers = { 'Authorization': `Bearer ${ this.apiToken}` };
+		parsedUrl.headers = { 'Authorization': `Bearer ${ this.apiToken }` };
 		requestModule.get(parsedUrl, Meteor.bindEnvironment((stream) => {
 			const fileId = Meteor.fileStore.create(details);
 			if (fileId) {
@@ -600,7 +600,7 @@ class SlackBridge {
 					} else {
 						const url = file.url.replace(Meteor.absoluteUrl(), '/');
 						const attachment = {
-							title: `File Uploaded: ${file.name}`,
+							title: `File Uploaded: ${ file.name }`,
 							title_link: url
 						};
 
@@ -1000,7 +1000,7 @@ class SlackBridge {
 						}]
 					};
 
-					RocketChat.models.Messages.setPinnedByIdAndUserId(`slack-${pin.channel}-${pin.message.ts.replace(/\./g, '-')}`, msgObj.u, true, new Date(parseInt(pin.message.ts.split('.')[0]) * 1000));
+					RocketChat.models.Messages.setPinnedByIdAndUserId(`slack-${ pin.channel }-${ pin.message.ts.replace(/\./g, '-') }`, msgObj.u, true, new Date(parseInt(pin.message.ts.split('.')[0]) * 1000));
 				}
 			}
 		}
@@ -1071,7 +1071,7 @@ class SlackBridge {
 		logger.class.debug('onRocketSetReaction');
 
 		if (rocketMsgID && reaction) {
-			if (this.reactionsMap.delete(`set${rocketMsgID}${reaction}`)) {
+			if (this.reactionsMap.delete(`set${ rocketMsgID }${ reaction }`)) {
 				//This was a Slack reaction, we don't need to tell Slack about it
 				return;
 			}
@@ -1088,7 +1088,7 @@ class SlackBridge {
 		logger.class.debug('onRocketUnSetReaction');
 
 		if (rocketMsgID && reaction) {
-			if (this.reactionsMap.delete(`unset${rocketMsgID}${reaction}`)) {
+			if (this.reactionsMap.delete(`unset${ rocketMsgID }${ reaction }`)) {
 				//This was a Slack unset reaction, we don't need to tell Slack about it
 				return;
 			}
@@ -1199,7 +1199,7 @@ class SlackBridge {
 			const postResult = HTTP.post('https://slack.com/api/chat.postMessage', { params: data });
 			if (postResult.statusCode === 200 && postResult.data && postResult.data.message && postResult.data.message.bot_id && postResult.data.message.ts) {
 				RocketChat.models.Messages.setSlackBotIdAndSlackTs(rocketMessage._id, postResult.data.message.bot_id, postResult.data.message.ts);
-				logger.class.debug(`RocketMsgID=${ rocketMessage._id } SlackMsgID=${ postResult.data.message.ts } SlackBotID=${ postResult.data.message.bot_id}`);
+				logger.class.debug(`RocketMsgID=${ rocketMessage._id } SlackMsgID=${ postResult.data.message.ts } SlackBotID=${ postResult.data.message.bot_id }`);
 			}
 		}
 	}
@@ -1357,7 +1357,7 @@ class SlackBridge {
 	}
 
 	createRocketID(slackChannel, ts) {
-		return `slack-${slackChannel}-${ts.replace(/\./g, '-')}`;
+		return `slack-${ slackChannel }-${ ts.replace(/\./g, '-') }`;
 	}
 
 }

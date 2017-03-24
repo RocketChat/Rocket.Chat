@@ -180,7 +180,7 @@ RocketChat.models.Users.updateLivechatDataByToken = function(token, key, value, 
 
 	const update = {
 		$set: {
-			[`livechatData.${key}`]: value
+			[`livechatData.${ key }`]: value
 		}
 	};
 
@@ -219,7 +219,7 @@ RocketChat.models.Users.getNextVisitorUsername = function() {
 
 	const livechatCount = findAndModify(query, null, update);
 
-	return `guest-${ livechatCount.value.value + 1}`;
+	return `guest-${ livechatCount.value.value + 1 }`;
 };
 
 RocketChat.models.Users.saveGuestById = function(_id, data) {

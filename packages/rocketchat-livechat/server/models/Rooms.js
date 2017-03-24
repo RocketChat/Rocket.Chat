@@ -31,7 +31,7 @@ RocketChat.models.Rooms.updateLivechatDataByToken = function(token, key, value, 
 
 	const update = {
 		$set: {
-			[`livechatData.${key}`]: value
+			[`livechatData.${ key }`]: value
 		}
 	};
 

@@ -46,7 +46,7 @@ export class CustomOAuth {
 	}
 
 	configureLogin() {
-		const loginWithService = `loginWith${ s.capitalize(this.name)}`;
+		const loginWithService = `loginWith${ s.capitalize(this.name) }`;
 
 		Meteor[loginWithService] = (options, callback) => {
 			// support a callback without options
@@ -78,12 +78,12 @@ export class CustomOAuth {
 		const credentialToken = Random.secret();
 		const loginStyle = OAuth._loginStyle(this.name, config, options);
 
-		const loginUrl = `${this.authorizePath
+		const loginUrl = `${ this.authorizePath
 			}?client_id=${ config.clientId
 			}&redirect_uri=${ OAuth._redirectUri(this.name, config)
 			}&response_type=code` +
 			`&state=${ OAuth._stateParam(loginStyle, credentialToken, options.redirectUrl)
-			}&scope=${ this.scope}`;
+			}&scope=${ this.scope }`;
 
 		OAuth.launchLogin({
 			loginService: this.name,

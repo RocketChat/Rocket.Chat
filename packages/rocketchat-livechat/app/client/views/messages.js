@@ -56,7 +56,7 @@ Template.messages.helpers({
 		return {
 			multi: true,
 			selfTyping: MsgTyping.selfTyping.get(),
-			users: usernames.join(` ${t('and')} `)
+			users: usernames.join(` ${ t('and') } `)
 		};
 	},
 	agentData() {

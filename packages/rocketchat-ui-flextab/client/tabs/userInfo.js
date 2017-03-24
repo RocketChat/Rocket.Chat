@@ -22,7 +22,7 @@ Template.userInfo.helpers({
 		const user = Template.instance().user.get();
 		if (user && user.utcOffset != null) {
 			if (user.utcOffset > 0) {
-				return `+${user.utcOffset}`;
+				return `+${ user.utcOffset }`;
 			}
 			return user.utcOffset;
 		}

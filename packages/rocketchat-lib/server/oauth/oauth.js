@@ -22,7 +22,7 @@ Accounts.registerLoginHandler(function(options) {
 
 	// Skip everything if there's no service set by the oauth middleware
 	if (!service) {
-		throw new Error(`Unexpected AccessToken service ${options.serviceName}`);
+		throw new Error(`Unexpected AccessToken service ${ options.serviceName }`);
 	}
 
 	// Make sure we're configured
@@ -38,7 +38,7 @@ Accounts.registerLoginHandler(function(options) {
 			type: 'oauth',
 			error: new Meteor.Error(
 				Accounts.LoginCancelledError.numericError,
-				`No registered oauth service found for: ${service.serviceName}`
+				`No registered oauth service found for: ${ service.serviceName }`
 			)
 		};
 	}

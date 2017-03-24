@@ -32,7 +32,7 @@ Meteor.startup(function() {
 					if (error) {
 						return handleError(error);
 					}
-					swal('Nice!', `Snippet '${filename}' created.`, 'success');
+					swal('Nice!', `Snippet '${ filename }' created.`, 'success');
 				});
 			});
 

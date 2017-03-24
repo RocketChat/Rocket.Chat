@@ -96,7 +96,7 @@ Template.autoTranslateFlexTab.onCreated(function() {
 		let value;
 		switch (field) {
 			case 'autoTranslate':
-				value = this.$(`input[name=${field}]`).prop('checked') ? '1' : '0';
+				value = this.$(`input[name=${ field }]`).prop('checked') ? '1' : '0';
 				break;
 			case 'autoTranslateLanguage':
 				value = this.$(`select[name=${ field }]`).val();
@@ -111,9 +111,9 @@ Template.autoTranslateFlexTab.onCreated(function() {
 
 				const query = { rid: this.data.rid, 'u._id': { $ne: Meteor.userId() } };
 				if (field === 'autoTranslateLanguage') {
-					query.$or = [ { [`translations.${previousLanguage}`]: { $exists: 1 } }, { [`translations.${value}`]: { $exists: 1 } }, { [`attachments.translations.${previousLanguage}`]: { $exists: 1 } }, { [`attachments.translations.${value}`]: { $exists: 1 } } ];
+					query.$or = [ { [`translations.${ previousLanguage }`]: { $exists: 1 } }, { [`translations.${ value }`]: { $exists: 1 } }, { [`attachments.translations.${ previousLanguage }`]: { $exists: 1 } }, { [`attachments.translations.${ value }`]: { $exists: 1 } } ];
 				} else {
-					query.$or = [ { [`translations.${subscription.autoTranslateLanguage}`]: { $exists: 1 } }, { [`attachments.translations.${subscription.autoTranslateLanguage}`]: { $exists: 1 } } ];
+					query.$or = [ { [`translations.${ subscription.autoTranslateLanguage }`]: { $exists: 1 } }, { [`attachments.translations.${ subscription.autoTranslateLanguage }`]: { $exists: 1 } } ];
 				}
 
 				if (field === 'autoTranslate' && value === '0') {

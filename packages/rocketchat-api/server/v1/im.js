@@ -6,7 +6,7 @@ function findDirectMessageRoomById(roomId, userId) {
 	const roomSub = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(roomId, userId);
 
 	if (!roomSub || roomSub.t !== 'd') {
-		return RocketChat.API.v1.failure(`No direct message room found by the id of: ${roomId}`);
+		return RocketChat.API.v1.failure(`No direct message room found by the id of: ${ roomId }`);
 	}
 
 	return roomSub;
@@ -22,7 +22,7 @@ RocketChat.API.v1.addRoute(['dm.close', 'im.close'], { authRequired: true }, {
 		}
 
 		if (!findResult.open) {
-			return RocketChat.API.v1.failure(`The direct message room, ${this.bodyParams.name}, is already closed to the sender`);
+			return RocketChat.API.v1.failure(`The direct message room, ${ this.bodyParams.name }, is already closed to the sender`);
 		}
 
 		Meteor.runAsUser(this.userId, () => {
@@ -95,7 +95,7 @@ RocketChat.API.v1.addRoute(['dm.messages.others', 'im.messages.others'], { authR
 
 		const room = RocketChat.models.Rooms.findOneById(roomId);
 		if (!room || room.t !== 'd') {
-			throw new Meteor.Error('error-room-not-found', `No direct message room found by the id of: ${roomId}`);
+			throw new Meteor.Error('error-room-not-found', `No direct message room found by the id of: ${ roomId }`);
 		}
 
 		const { offset, count } = this.getPaginationItems();
@@ -178,7 +178,7 @@ RocketChat.API.v1.addRoute(['dm.open', 'im.open'], { authRequired: true }, {
 		}
 
 		if (findResult.open) {
-			return RocketChat.API.v1.failure(`The direct message room, ${this.bodyParams.name}, is already open for the sender`);
+			return RocketChat.API.v1.failure(`The direct message room, ${ this.bodyParams.name }, is already open for the sender`);
 		}
 
 		Meteor.runAsUser(this.userId, () => {

@@ -388,8 +388,8 @@ RocketChat.Livechat = {
 				phone: null,
 				department: visitor.department,
 				ip: visitor.ip,
-				os: ua.getOS().name && (`${ua.getOS().name } ${ ua.getOS().version}`),
-				browser: ua.getBrowser().name && (`${ua.getBrowser().name } ${ ua.getBrowser().version}`),
+				os: ua.getOS().name && (`${ ua.getOS().name } ${ ua.getOS().version }`),
+				browser: ua.getBrowser().name && (`${ ua.getBrowser().name } ${ ua.getBrowser().version }`),
 				customFields: visitor.livechatData
 			},
 			agent: {

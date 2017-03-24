@@ -114,7 +114,7 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 	let push_room;
 	if (RocketChat.settings.get('Push_show_username_room')) {
 		push_username = user.username;
-		push_room = `#${ room.name}`;
+		push_room = `#${ room.name }`;
 	} else {
 		push_username = '';
 		push_room = '';
@@ -134,12 +134,12 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 		// Always notify Sandstorm
 		if (userOfMention != null) {
 			RocketChat.Sandstorm.notify(message, [userOfMention._id],
-				`@${ user.username }: ${ message.msg}`, 'privateMessage');
+				`@${ user.username }: ${ message.msg }`, 'privateMessage');
 
 		}
 		if ((userOfMention != null) && canBeNotified(userOfMentionId, 'mobile')) {
 			RocketChat.Notifications.notifyUser(userOfMention._id, 'notification', {
-				title: `@${ user.username}`,
+				title: `@${ user.username }`,
 				text: message.msg,
 				duration: settings.desktopNotificationDurations[userOfMention._id],
 				payload: {
@@ -287,9 +287,9 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 		if (userIdsToNotify.length > 0) {
 			for (j = 0, len1 = userIdsToNotify.length; j < len1; j++) {
 				usersOfMentionId = userIdsToNotify[j];
-				let title = `@${ user.username}`;
+				let title = `@${ user.username }`;
 				if (room.name) {
-					title += ` @ #${ room.name}`;
+					title += ` @ #${ room.name }`;
 				}
 				RocketChat.Notifications.notifyUser(usersOfMentionId, 'notification', {
 					title: title,
@@ -332,10 +332,10 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 		const allUserIdsToNotify = _.unique(userIdsToNotify.concat(userIdsToPushNotify));
 		if (room.t === 'p') {
 			RocketChat.Sandstorm.notify(message, allUserIdsToNotify,
-				`@${ user.username }: ${ message.msg}`, 'privateMessage');
+				`@${ user.username }: ${ message.msg }`, 'privateMessage');
 		} else {
 			RocketChat.Sandstorm.notify(message, allUserIdsToNotify,
-				`@${ user.username }: ${ message.msg}`, 'message');
+				`@${ user.username }: ${ message.msg }`, 'message');
 		}
 	}
 

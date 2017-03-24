@@ -7,11 +7,11 @@ function findChannelById({ roomId, checkedArchived = true }) {
 	const room = RocketChat.models.Rooms.findOneById(roomId, { fields: RocketChat.API.v1.defaultFieldsToExclude });
 
 	if (!room || room.t !== 'c') {
-		throw new Meteor.Error('error-room-not-found', `No channel found by the id of: ${roomId}`);
+		throw new Meteor.Error('error-room-not-found', `No channel found by the id of: ${ roomId }`);
 	}
 
 	if (checkedArchived && room.archived) {
-		throw new Meteor.Error('error-room-archived', `The channel, ${room.name}, is archived`);
+		throw new Meteor.Error('error-room-archived', `The channel, ${ room.name }, is archived`);
 	}
 
 	return room;
@@ -106,11 +106,11 @@ RocketChat.API.v1.addRoute('channels.close', { authRequired: true }, {
 		const sub = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(findResult._id, this.userId);
 
 		if (!sub) {
-			return RocketChat.API.v1.failure(`The user/callee is not in the channel "${findResult.name}.`);
+			return RocketChat.API.v1.failure(`The user/callee is not in the channel "${ findResult.name }.`);
 		}
 
 		if (!sub.open) {
-			return RocketChat.API.v1.failure(`The channel, ${findResult.name}, is already closed to the sender`);
+			return RocketChat.API.v1.failure(`The channel, ${ findResult.name }, is already closed to the sender`);
 		}
 
 		Meteor.runAsUser(this.userId, () => {
@@ -185,7 +185,7 @@ RocketChat.API.v1.addRoute('channels.getIntegrations', { authRequired: true }, {
 		}
 
 		let ourQuery = {
-			channel: `#${findResult.name}`
+			channel: `#${ findResult.name }`
 		};
 
 		if (includeAllPublicChannels) {
@@ -414,11 +414,11 @@ RocketChat.API.v1.addRoute('channels.open', { authRequired: true }, {
 		const sub = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(findResult._id, this.userId);
 
 		if (!sub) {
-			return RocketChat.API.v1.failure(`The user/callee is not in the channel "${findResult.name}".`);
+			return RocketChat.API.v1.failure(`The user/callee is not in the channel "${ findResult.name }".`);
 		}
 
 		if (sub.open) {
-			return RocketChat.API.v1.failure(`The channel, ${findResult.name}, is already open to the sender`);
+			return RocketChat.API.v1.failure(`The channel, ${ findResult.name }, is already open to the sender`);
 		}
 
 		Meteor.runAsUser(this.userId, () => {
@@ -612,7 +612,7 @@ RocketChat.API.v1.addRoute('channels.unarchive', { authRequired: true }, {
 		const findResult = findChannelById({ roomId: this.bodyParams.roomId, checkedArchived: false });
 
 		if (!findResult.archived) {
-			return RocketChat.API.v1.failure(`The channel, ${findResult.name}, is not archived`);
+			return RocketChat.API.v1.failure(`The channel, ${ findResult.name }, is not archived`);
 		}
 
 		Meteor.runAsUser(this.userId, () => {

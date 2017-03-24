@@ -52,10 +52,10 @@ Meteor.methods({
 
 		Push.send({
 			from: 'push',
-			title: `@${user.username}`,
+			title: `@${ user.username }`,
 			text: TAPi18n.__('This_is_a_push_test_messsage'),
 			apn: {
-				text: `@${user.username}:\n${TAPi18n.__('This_is_a_push_test_messsage')}`
+				text: `@${ user.username }:\n${ TAPi18n.__('This_is_a_push_test_messsage') }`
 			},
 			sound: 'default',
 			query: {
@@ -78,7 +78,7 @@ function sendPush(service, token, options, tries = 0) {
 		}
 	};
 
-	return HTTP.post(`${RocketChat.settings.get('Push_gateway') }/push/${service}/send`, data, function(error, response) {
+	return HTTP.post(`${ RocketChat.settings.get('Push_gateway') }/push/${ service }/send`, data, function(error, response) {
 		if (response && response.statusCode === 406) {
 			console.log('removing push token', token);
 			Push.appCollection.remove({
@@ -95,7 +95,7 @@ function sendPush(service, token, options, tries = 0) {
 			return;
 		}
 
-		SystemLogger.error(`Error sending push to gateway (${tries} try) ->`, error);
+		SystemLogger.error(`Error sending push to gateway (${ tries } try) ->`, error);
 
 		if (tries <= 6) {
 			const milli = Math.pow(10, tries + 2);
@@ -174,7 +174,7 @@ function configurePush() {
 					throw new Error('Push.send: option "text" not a string');
 				}
 				if (RocketChat.settings.get('Push_debug')) {
-					console.log(`Push: send message "${options.title}" via query`, options.query);
+					console.log(`Push: send message "${ options.title }" via query`, options.query);
 				}
 
 				const query = {

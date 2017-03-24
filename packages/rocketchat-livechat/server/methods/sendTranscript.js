@@ -35,13 +35,13 @@ Meteor.methods({
 
 			var datetime = moment(message.ts).locale(userLanguage).format('LLL');
 			var singleMessage = `
-				<p><strong>${author}</strong>  <em>${datetime}</em></p>
-				<p>${message.msg}</p>
+				<p><strong>${ author }</strong>  <em>${ datetime }</em></p>
+				<p>${ message.msg }</p>
 			`;
 			html = html + singleMessage;
 		});
 
-		html = `${html }</div>`;
+		html = `${ html }</div>`;
 
 		let fromEmail = RocketChat.settings.get('From_Email').match(/\b[A-Z0-9._%+-]+@(?:[A-Z0-9-]+\.)+[A-Z]{2,4}\b/i);
 

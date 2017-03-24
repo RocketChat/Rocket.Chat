@@ -42,13 +42,13 @@ class Twilio {
 	error(error) {
 		let message = '';
 		if (error.reason) {
-			message = `<Message>${error.reason}</Message>`;
+			message = `<Message>${ error.reason }</Message>`;
 		}
 		return {
 			headers: {
 				'Content-Type': 'text/xml'
 			},
-			body: `<Response>${message}</Response>`
+			body: `<Response>${ message }</Response>`
 		};
 	}
 }

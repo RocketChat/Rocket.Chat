@@ -10,7 +10,7 @@ RocketChat.Migrations.add({
 					'_id': id,
 					'type': 'select',
 					'group': 'OAuth',
-					'section': `Custom OAuth: ${ name}`,
+					'section': `Custom OAuth: ${ name }`,
 					'i18nLabel': 'Accounts_OAuth_Custom_Token_Sent_Via',
 					'persistent': true,
 					'values': [

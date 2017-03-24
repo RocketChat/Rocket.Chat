@@ -13,7 +13,7 @@ import {checkIfUserIsValid, publicChannelCreated, privateChannelCreated, directM
 
 
 //Test data
-const message = `message from ${username}`;
+const message = `message from ${ username }`;
 var currentTest = 'none';
 
 function messagingTest() {
@@ -208,7 +208,7 @@ function messageActionsTest() {
 			});
 
 			describe('Message quote', () => {
-				const message = `Message for quote Tests - ${ Date.now()}`;
+				const message = `Message for quote Tests - ${ Date.now() }`;
 
 				before(() => {
 					mainContent.sendMessage(message);

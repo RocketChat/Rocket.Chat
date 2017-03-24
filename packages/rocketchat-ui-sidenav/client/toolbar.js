@@ -94,9 +94,9 @@ Template.toolbar.helpers({
 		if (!Meteor.Device.isDesktop()) {
 			return placeholder;
 		} else if (window.navigator.platform.toLowerCase().includes('mac')) {
-			placeholder = `${placeholder} (CMD+K)`;
+			placeholder = `${ placeholder } (CMD+K)`;
 		} else {
-			placeholder = `${placeholder} (Ctrl+K)`;
+			placeholder = `${ placeholder } (Ctrl+K)`;
 		}
 
 		return placeholder;
@@ -214,9 +214,9 @@ Template.toolbarSearchList.helpers({
 	},
 	userStatus() {
 		if (this.t === 'd') {
-			return `status-${ Session.get(`user_${this.name}_status`) || 'offline'}`;
+			return `status-${ Session.get(`user_${ this.name }_status`) || 'offline' }`;
 		} else {
-			return `status-${ RocketChat.roomTypes.getUserStatus(this.t, this.rid || this._id) || 'offline'}`;
+			return `status-${ RocketChat.roomTypes.getUserStatus(this.t, this.rid || this._id) || 'offline' }`;
 		}
 	}
 });

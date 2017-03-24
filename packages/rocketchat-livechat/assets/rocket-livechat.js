@@ -583,7 +583,7 @@
 		},
 		openPopout: function() {
 			closeWidget();
-			var popup = window.open(`${config.url }?mode=popout`, 'livechat-popout', 'width=400, height=450, toolbars=no');
+			var popup = window.open(`${ config.url }?mode=popout`, 'livechat-popout', 'width=400, height=450, toolbars=no');
 			popup.focus();
 		},
 		openWidget: function() {
@@ -651,8 +651,8 @@
 		var chatWidget = document.createElement('div');
 		chatWidget.dataset.state = 'closed';
 		chatWidget.className = 'rocketchat-widget';
-		chatWidget.innerHTML = `${'<div class="rocketchat-container" style="width:100%;height:100%">' +
-			'<iframe id="rocketchat-iframe" src="'}${ url }" style="width:100%;height:100%;border:none;background-color:transparent" allowTransparency="true"></iframe> ` +
+		chatWidget.innerHTML = `${ '<div class="rocketchat-container" style="width:100%;height:100%">' +
+			'<iframe id="rocketchat-iframe" src="' }${ url }" style="width:100%;height:100%;border:none;background-color:transparent" allowTransparency="true"></iframe> ` +
 			'</div><div class="rocketchat-overlay"></div>';
 
 		chatWidget.style.position = 'fixed';
