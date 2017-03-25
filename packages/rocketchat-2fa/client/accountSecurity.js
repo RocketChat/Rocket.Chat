@@ -68,7 +68,7 @@ Template.accountSecurity.events({
 			if (result) {
 				swal({
 					title: t('Backup_codes'),
-					text: t('Make_sure_you_have_a_copy_of_your_codes') + '\n' + result.codes.join('  ')
+					text: `${ t('Make_sure_you_have_a_copy_of_your_codes') }\n${ result.codes.join('  ') }`
 				});
 
 				instance.find('#testCode').value = '';
