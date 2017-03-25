@@ -30,13 +30,13 @@ RocketChat.saveUser = function(userId, userData) {
 	let nameValidation;
 
 	try {
-		nameValidation = new RegExp('^' + RocketChat.settings.get('UTF8_Names_Validation') + '$');
+		nameValidation = new RegExp(`^${ RocketChat.settings.get('UTF8_Names_Validation') }$`);
 	} catch (e) {
 		nameValidation = new RegExp('^[0-9a-zA-Z-_.]+$');
 	}
 
 	if (userData.username && !nameValidation.test(userData.username)) {
-		throw new Meteor.Error('error-input-is-not-a-valid-field', `${_.escape(userData.username)} is not a valid username`, { method: 'insertOrUpdateUser', input: userData.username, field: 'Username' });
+		throw new Meteor.Error('error-input-is-not-a-valid-field', `${ _.escape(userData.username) } is not a valid username`, { method: 'insertOrUpdateUser', input: userData.username, field: 'Username' });
 	}
 
 	if (!userData._id && !userData.password) {
@@ -45,11 +45,11 @@ RocketChat.saveUser = function(userId, userData) {
 
 	if (!userData._id) {
 		if (!RocketChat.checkUsernameAvailability(userData.username)) {
-			throw new Meteor.Error('error-field-unavailable', `${_.escape(userData.username)} is already in use :(`, { method: 'insertOrUpdateUser', field: userData.username });
+			throw new Meteor.Error('error-field-unavailable', `${ _.escape(userData.username) } is already in use :(`, { method: 'insertOrUpdateUser', field: userData.username });
 		}
 
 		if (userData.email && !RocketChat.checkEmailAvailability(userData.email)) {
-			throw new Meteor.Error('error-field-unavailable', `${_.escape(userData.email)} is already in use :(`, { method: 'insertOrUpdateUser', field: userData.email });
+			throw new Meteor.Error('error-field-unavailable', `${ _.escape(userData.email) } is already in use :(`, { method: 'insertOrUpdateUser', field: userData.email });
 		}
 
 		RocketChat.validateEmailDomain(userData.email);
@@ -81,13 +81,14 @@ RocketChat.saveUser = function(userId, userData) {
 			updateUser.$set['emails.0.verified'] = true;
 		}
 
-		Meteor.users.update({ _id: _id }, updateUser);
+		Meteor.users.update({ _id }, updateUser);
 
 		if (userData.sendWelcomeEmail) {
 			const header = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Header') || '');
 			const footer = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Footer') || '');
 
-			let subject, html;
+			let subject;
+			let html;
 
 			if (RocketChat.settings.get('Accounts_UserAddedEmail_Customized')) {
 				subject = RocketChat.settings.get('Accounts_UserAddedEmailSubject');
@@ -107,7 +108,7 @@ RocketChat.saveUser = function(userId, userData) {
 			const email = {
 				to: userData.email,
 				from: RocketChat.settings.get('From_Email'),
-				subject: subject,
+				subject,
 				html: header + html + footer
 			};
 
@@ -115,7 +116,7 @@ RocketChat.saveUser = function(userId, userData) {
 				try {
 					Email.send(email);
 				} catch (error) {
-					throw new Meteor.Error('error-email-send-failed', 'Error trying to send email: ' + error.message, { function: 'RocketChat.saveUser', message: error.message });
+					throw new Meteor.Error('error-email-send-failed', `Error trying to send email: ${ error.message }`, { function: 'RocketChat.saveUser', message: error.message });
 				}
 			});
 		}

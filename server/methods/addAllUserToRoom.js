@@ -1,27 +1,27 @@
 Meteor.methods({
-	addAllUserToRoom: function(rid) {
+	addAllUserToRoom(rid) {
 
 		check (rid, String);
 
 		if (RocketChat.authz.hasRole(this.userId, 'admin') === true) {
-			var now, room, users;
-			var userCount = RocketChat.models.Users.find().count();
+			const userCount = RocketChat.models.Users.find().count();
 			if (userCount > RocketChat.settings.get('API_User_Limit')) {
 				throw new Meteor.Error('error-user-limit-exceeded', 'User Limit Exceeded', {
 					method: 'addAllToRoom'
 				});
 			}
-			room = RocketChat.models.Rooms.findOneById(rid);
+
+			const room = RocketChat.models.Rooms.findOneById(rid);
 			if (room == null) {
 				throw new Meteor.Error('error-invalid-room', 'Invalid room', {
 					method: 'addAllToRoom'
 				});
 			}
-			users = RocketChat.models.Users.find().fetch();
-			now = new Date();
+
+			const users = RocketChat.models.Users.find().fetch();
+			const now = new Date();
 			users.forEach(function(user) {
-				var subscription;
-				subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(rid, user._id);
+				const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(rid, user._id);
 				if (subscription != null) {
 					return;
 				}

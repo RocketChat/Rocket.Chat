@@ -7,7 +7,6 @@ Package.describe({
 
 Package.onUse(function(api) {
 	api.use([
-		'coffeescript',
 		'ecmascript',
 		'templating',
 		'underscore',
@@ -15,8 +14,8 @@ Package.onUse(function(api) {
 		'rocketchat:lib'
 	]);
 
-	api.addFiles('lib/client/widget.coffee', 'client');
+	api.addFiles('lib/client/widget.js', 'client');
 	api.addFiles('lib/client/oembedSpotifyWidget.html', 'client');
 
-	api.addFiles('lib/spotify.coffee', ['server', 'client']);
+	api.addFiles('lib/spotify.js', ['server', 'client']);
 });

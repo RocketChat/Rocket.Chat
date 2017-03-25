@@ -1,6 +1,6 @@
 RocketChat.Migrations.add({
 	version: 86,
-	up: function() {
+	up() {
 		// Disabled this migration for it was not updating any user
 	}
 });

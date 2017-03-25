@@ -13,12 +13,12 @@ describe 'rocketchat:lib Server | Models | Base', ->
 	it 'should provide a basename for collections', ->
 		expect(typeof this.obj._baseName()).toBe('string')
 
-	it 'should carry a Meteor.Collection object when initialized', ->
+	it 'should carry a Mongo.Collection object when initialized', ->
 		expect(this.obj.model).toBeFalsy()
 		expect(this.obj._initModel('carry')).toBeTruthy()
 		expect(typeof this.obj.model).toBe('object')
 
-	it 'should apply a basename to the Meteor.Collection created', ->
+	it 'should apply a basename to the Mongo.Collection created', ->
 		name = 'apply'
 		expect(this.obj._initModel(name)).toBeTruthy()
 		expect(this.obj.model._name).toBe(this.obj._baseName() + name)

@@ -76,7 +76,7 @@ RocketChat.roomTypes.add('d', 20, {
 		const subscription = RocketChat.models.Subscriptions.findOne({rid: roomId});
 		if (subscription == null) { return; }
 
-		return Session.get(`user_${subscription.name}_status`);
+		return Session.get(`user_${ subscription.name }_status`);
 	}
 });
 

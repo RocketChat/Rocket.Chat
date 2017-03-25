@@ -3,17 +3,16 @@ function Open(command, params /*, item*/) {
 		'#': ['c', 'p'],
 		'@': ['d']
 	};
-	var room, subscription, type;
 
 	if (command !== 'open' || !Match.test(params, String)) {
 		return;
 	}
 
-	room = params.trim();
-	type = dict[room[0]];
+	let room = params.trim();
+	const type = dict[room[0]];
 	room = room.replace(/#|@/, '');
 
-	var query = {
+	const query = {
 		name: room
 	};
 
@@ -23,7 +22,7 @@ function Open(command, params /*, item*/) {
 		};
 	}
 
-	subscription = ChatSubscription.findOne(query);
+	const subscription = ChatSubscription.findOne(query);
 
 	if (subscription) {
 		RocketChat.roomTypes.openRouteLink(subscription.t, subscription, FlowRouter.current().queryParams);
@@ -36,7 +35,7 @@ function Open(command, params /*, item*/) {
 		if (err) {
 			return;
 		}
-		subscription = RocketChat.models.Subscriptions.findOne(query);
+		const subscription = RocketChat.models.Subscriptions.findOne(query);
 		RocketChat.roomTypes.openRouteLink(subscription.t, subscription, FlowRouter.current().queryParams);
 	});
 

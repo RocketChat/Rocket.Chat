@@ -7,12 +7,12 @@ Accounts.config(accountsConfig);
 
 Accounts.emailTemplates.siteName = RocketChat.settings.get('Site_Name');
 
-Accounts.emailTemplates.from = `${RocketChat.settings.get('Site_Name')} <${RocketChat.settings.get('From_Email')}>`;
+Accounts.emailTemplates.from = `${ RocketChat.settings.get('Site_Name') } <${ RocketChat.settings.get('From_Email') }>`;
 
 const verifyEmailHtml = Accounts.emailTemplates.verifyEmail.text;
 
 Accounts.emailTemplates.verifyEmail.html = function(user, url) {
-	url = url.replace(Meteor.absoluteUrl(), `${Meteor.absoluteUrl()}login/`);
+	url = url.replace(Meteor.absoluteUrl(), `${ Meteor.absoluteUrl() }login/`);
 	return verifyEmailHtml(user, url);
 };
 
@@ -109,7 +109,7 @@ Accounts.insertUserDoc = _.wrap(Accounts.insertUserDoc, function(insertUserDoc, 
 	const _id = insertUserDoc.call(Accounts, options, user);
 
 	user = Meteor.users.findOne({
-		_id: _id
+		_id
 	});
 
 	if (user.username && options.joinDefaultChannels !== false && user.joinDefaultChannels !== false) {
@@ -198,7 +198,7 @@ Accounts.validateNewUser(function(user) {
 
 	if (user.emails && user.emails.length > 0) {
 		const email = user.emails[0].address;
-		const inWhiteList = domainWhiteList.some(domain => email.match('@' + RegExp.escape(domain) + '$'));
+		const inWhiteList = domainWhiteList.some(domain => email.match(`@${ RegExp.escape(domain) }$`));
 
 		if (inWhiteList === false) {
 			throw new Meteor.Error('error-invalid-domain');

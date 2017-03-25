@@ -32,8 +32,8 @@ RocketChat.Livechat = {
 		}
 	},
 	getRoom(guest, message, roomInfo) {
-		var room = RocketChat.models.Rooms.findOneById(message.rid);
-		var newRoom = false;
+		let room = RocketChat.models.Rooms.findOneById(message.rid);
+		let newRoom = false;
 
 		if (room && !room.open) {
 			message.rid = Random.id();
@@ -43,7 +43,7 @@ RocketChat.Livechat = {
 		if (room == null) {
 			// if no department selected verify if there is at least one active and pick the first
 			if (!guest.department) {
-				var departments = RocketChat.models.LivechatDepartment.findEnabledWithAgents();
+				const departments = RocketChat.models.LivechatDepartment.findEnabledWithAgents();
 				if (departments.count() > 0) {
 					departments.forEach((dept) => {
 						if (!guest.department && dept.showOnRegistration) {
@@ -74,7 +74,7 @@ RocketChat.Livechat = {
 		}
 
 		// return messages;
-		return _.extend(RocketChat.sendMessage(guest, message, room), { newRoom: newRoom, showConnecting: this.showConnecting() });
+		return _.extend(RocketChat.sendMessage(guest, message, room), { newRoom, showConnecting: this.showConnecting() });
 	},
 	registerGuest({ token, name, email, department, phone, loginToken, username } = {}) {
 		check(token, String);
@@ -84,7 +84,7 @@ RocketChat.Livechat = {
 			$set: {
 				profile: {
 					guest: true,
-					token: token
+					token
 				}
 			}
 		};
@@ -104,7 +104,7 @@ RocketChat.Livechat = {
 				username = RocketChat.models.Users.getNextVisitorUsername();
 			}
 
-			var existingUser = null;
+			let existingUser = null;
 
 			if (s.trim(email) !== '' && (existingUser = RocketChat.models.Users.findOneGuestByEmailAddress(email))) {
 				if (loginToken) {
@@ -118,10 +118,10 @@ RocketChat.Livechat = {
 			} else {
 				updateUser.$set.name = name;
 
-				var userData = {
-					username: username,
+				const userData = {
+					username,
 					globalRoles: ['livechat-guest'],
-					department: department,
+					department,
 					type: 'visitor',
 					joinDefaultChannels: false
 				};
@@ -160,7 +160,21 @@ RocketChat.Livechat = {
 
 		return userId;
 	},
+	setDepartmentForGuest({ token, department } = {}) {
+		check(token, String);
 
+		const updateUser = {
+			$set: {
+				department
+			}
+		};
+
+		const user = RocketChat.models.Users.getVisitorByToken(token, { fields: { _id: 1 } });
+		if (user) {
+			return Meteor.users.update(user._id, updateUser);
+		}
+		return false;
+	},
 	saveGuest({ _id, name, email, phone }) {
 		const updateData = {};
 
@@ -219,6 +233,7 @@ RocketChat.Livechat = {
 			'Livechat_title_color',
 			'Livechat_enabled',
 			'Livechat_registration_form',
+			'Livechat_allow_switching_departments',
 			'Livechat_offline_title',
 			'Livechat_offline_title_color',
 			'Livechat_offline_message',
@@ -238,7 +253,7 @@ RocketChat.Livechat = {
 	},
 
 	saveRoomInfo(roomData, guestData) {
-		if (!RocketChat.models.Rooms.saveRoomById(roomData._id, roomData)) {
+		if ((roomData.topic != null || roomData.tags != null) && !RocketChat.models.Rooms.setTopicAndTagsById(roomData._id, roomData.topic, roomData.tags)) {
 			return false;
 		}
 
@@ -337,7 +352,7 @@ RocketChat.Livechat = {
 			};
 			return HTTP.post(RocketChat.settings.get('Livechat_webhookUrl'), options);
 		} catch (e) {
-			RocketChat.Livechat.logger.webhook.error('Response error on ' + trying + ' try ->', e);
+			RocketChat.Livechat.logger.webhook.error(`Response error on ${ trying } try ->`, e);
 			// try 10 times after 10 seconds each
 			if (trying < 10) {
 				RocketChat.Livechat.logger.webhook.warn('Will try again in 10 seconds ...');
@@ -373,8 +388,8 @@ RocketChat.Livechat = {
 				phone: null,
 				department: visitor.department,
 				ip: visitor.ip,
-				os: ua.getOS().name && (ua.getOS().name + ' ' + ua.getOS().version),
-				browser: ua.getBrowser().name && (ua.getBrowser().name + ' ' + ua.getBrowser().version),
+				os: ua.getOS().name && (`${ ua.getOS().name } ${ ua.getOS().version }`),
+				browser: ua.getBrowser().name && (`${ ua.getBrowser().name } ${ ua.getBrowser().version }`),
 				customFields: visitor.livechatData
 			},
 			agent: {
@@ -497,7 +512,7 @@ RocketChat.Livechat = {
 	removeDepartment(_id) {
 		check(_id, String);
 
-		var department = RocketChat.models.LivechatDepartment.findOneById(_id, { fields: { _id: 1 } });
+		const department = RocketChat.models.LivechatDepartment.findOneById(_id, { fields: { _id: 1 } });
 
 		if (!department) {
 			throw new Meteor.Error('department-not-found', 'Department not found', { method: 'livechat:removeDepartment' });

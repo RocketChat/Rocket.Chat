@@ -189,7 +189,7 @@ class @ChatMessages
 							if commandOptions.clientOnly
 								commandOptions.callback(command, param, msgObject)
 							else
-								Meteor.call 'slashCommand', {cmd: command, params: param, msg: msgObject }
+								Meteor.call 'slashCommand', {cmd: command, params: param, msg: msgObject }, (err, result) -> commandOptions.result?(err, result, {cmd: command, params: param, msg: msgObject })
 							return
 
 						if !RocketChat.settings.get('Message_AllowUnrecognizedSlashCommand')
