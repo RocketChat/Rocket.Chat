@@ -22,21 +22,21 @@ export const original = (message) => {
 	const schemes = RocketChat.settings.get('Markdown_SupportSchemesForLink').split(',').join('|');
 
 	// Support ![alt text](http://image url)
-	msg = msg.replace(new RegExp(`!\\[([^\\]]+)\\]\\(((?:${schemes}):\\/\\/[^\\)]+)\\)`, 'gm'), (match, title, url) => {
+	msg = msg.replace(new RegExp(`!\\[([^\\]]+)\\]\\(((?:${ schemes }):\\/\\/[^\\)]+)\\)`, 'gm'), (match, title, url) => {
 		const target = url.indexOf(Meteor.absoluteUrl()) === 0 ? '' : '_blank';
-		return `<a href="${_.escapeHTML(url)}" title="${_.escapeHTML(title)}" target="${_.escapeHTML(target)}"><div class="inline-image" style="background-image: url(${_.escapeHTML(url)})"></div></a>`;
+		return `<a href="${ _.escapeHTML(url) }" title="${ _.escapeHTML(title) }" target="${ _.escapeHTML(target) }"><div class="inline-image" style="background-image: url(${ _.escapeHTML(url) })"></div></a>`;
 	});
 
 	// Support [Text](http://link)
-	msg = msg.replace(new RegExp(`\\[([^\\]]+)\\]\\(((?:${schemes}):\\/\\/[^\\)]+)\\)`, 'gm'), (match, title, url) => {
+	msg = msg.replace(new RegExp(`\\[([^\\]]+)\\]\\(((?:${ schemes }):\\/\\/[^\\)]+)\\)`, 'gm'), (match, title, url) => {
 		const target = url.indexOf(Meteor.absoluteUrl()) === 0 ? '' : '_blank';
-		return `<a href="${_.escapeHTML(url)}" target="${_.escapeHTML(target)}">${_.escapeHTML(title)}</a>`;
+		return `<a href="${ _.escapeHTML(url) }" target="${ _.escapeHTML(target) }">${ _.escapeHTML(title) }</a>`;
 	});
 
 	// Support <http://link|Text>
-	msg = msg.replace(new RegExp(`(?:<|&lt;)((?:${schemes}):\\/\\/[^\\|]+)\\|(.+?)(?=>|&gt;)(?:>|&gt;)`, 'gm'), (match, url, title) => {
+	msg = msg.replace(new RegExp(`(?:<|&lt;)((?:${ schemes }):\\/\\/[^\\|]+)\\|(.+?)(?=>|&gt;)(?:>|&gt;)`, 'gm'), (match, url, title) => {
 		const target = url.indexOf(Meteor.absoluteUrl()) === 0 ? '' : '_blank';
-		return `<a href="${_.escapeHTML(url)}" target="${_.escapeHTML(target)}">${_.escapeHTML(title)}</a>`;
+		return `<a href="${ _.escapeHTML(url) }" target="${ _.escapeHTML(target) }">${ _.escapeHTML(title) }</a>`;
 	});
 
 	if (RocketChat.settings.get('Markdown_Headers')) {
