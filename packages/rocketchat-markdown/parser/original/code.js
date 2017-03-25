@@ -9,10 +9,10 @@ import hljs from 'highlight.js';
 const inlineCode = (message) => {
 	// Support `text`
 	message.html = message.html.replace(/(^|&gt;|[ >_*~])\`([^`\r\n]+)\`([<_*~]|\B|\b|$)/gm, (match, p1, p2, p3) => {
-		const token = `=&=${Random.id()}=&=`;
+		const token = `=&=${ Random.id() }=&=`;
 		message.tokens.push({
 			token,
-			text: `${p1}<span class="copyonly">\`</span><span><code class="code-colors inline">${p2}</code></span><span class="copyonly">\`</span>${p3}`
+			text: `${ p1 }<span class="copyonly">\`</span><span><code class="code-colors inline">${ p2 }</code></span><span class="copyonly">\`</span>${ p3 }`
 		});
 		return token;
 	});
@@ -30,8 +30,8 @@ const blockCode = (message) => {
 	}
 
 	if (count % 2 > 0) {
-		message.html = message.html + '\n```';
-		message.msg = message.msg + '\n```';
+		message.html = `${ message.html }\n\`\`\``;
+		message.msg = `${ message.msg }\n\`\`\``;
 	}
 
 	// Separate text in code blocks and non code blocks
@@ -45,7 +45,8 @@ const blockCode = (message) => {
 
 		// Process highlight if this part is code
 		const singleLine = codeMatch[0].indexOf('\n') === -1;
-		let code = null, lang = null;
+		let code = null;
+		let lang = null;
 		if (singleLine) {
 			lang = '';
 			code = _.unescapeHTML(codeMatch[1] + codeMatch[2]);
@@ -62,11 +63,11 @@ const blockCode = (message) => {
 			result = hljs.highlightAuto(lang + code);
 		}
 
-		const token = `=&=${Random.id()}=&=`;
+		const token = `=&=${ Random.id() }=&=`;
 		message.tokens.push({
 			highlight: true,
 			token,
-			text: `<pre><code class='code-colors hljs ${result.language}'><span class='copyonly'>\`\`\`<br></span>${result.value}<span class='copyonly'><br>\`\`\`</span></code></pre>`
+			text: `<pre><code class='code-colors hljs ${ result.language }'><span class='copyonly'>\`\`\`<br></span>${ result.value }<span class='copyonly'><br>\`\`\`</span></code></pre>`
 		});
 
 		return token;
