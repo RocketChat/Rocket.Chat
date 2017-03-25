@@ -19,22 +19,16 @@ renderer.code = function(code, lang, escaped) {
 	let text = null;
 
 	if (!lang) {
-		text = '<pre><code class="code-colors hljs">'
-			+ (escaped ? code : escape(code, true))
-			+ '</code></pre>';
+		text = `<pre><code class="code-colors hljs">${ (escaped ? code : escape(code, true)) }</code></pre>`;
 	} else {
-		text = '<pre><code class="code-colors hljs '
-			+ escape(lang, true)
-			+ '">'
-			+ (escaped ? code : escape(code, true))
-			+ '</code></pre>';
+		text = `<pre><code class="code-colors hljs ${ escape(lang, true) }">${ (escaped ? code : escape(code, true)) }</code></pre>`;
 	}
 
 	if (_.isString(msg)) {
 		return text;
 	}
 
-	const token = `=&=${Random.id()}=&=`;
+	const token = `=&=${ Random.id() }=&=`;
 	msg.tokens.push({
 		highlight: true,
 		token,
@@ -44,11 +38,11 @@ renderer.code = function(code, lang, escaped) {
 };
 
 renderer.codespan = function(text) {
-	text = `<code class="code-colors inline">${text}</code>`;
+	text = `<code class="code-colors inline">${ text }</code>`;
 	if (_.isString(msg)) {
 		return text;
 	}
-	const token = `=&=${Random.id()}=&=`;
+	const token = `=&=${ Random.id() }=&=`;
 	msg.tokens.push({
 		token,
 		text
@@ -57,7 +51,7 @@ renderer.codespan = function(text) {
 };
 
 renderer.blockquote = function(quote) {
-	return `<blockquote class="background-transparent-darker-before">${quote}</blockquote>`;
+	return `<blockquote class="background-transparent-darker-before">${ quote }</blockquote>`;
 };
 
 const highlight = function(code, lang) {
