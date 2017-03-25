@@ -28,9 +28,9 @@ Package.onUse(function(api) {
 	api.addFiles('client/tabs/userInfo.html', 'client');
 
 	api.addFiles('client/flexTabBar.js', 'client');
-	api.addFiles('client/tabs/membersList.coffee', 'client');
-	api.addFiles('client/tabs/messageSearch.coffee', 'client');
-	api.addFiles('client/tabs/uploadedFilesList.coffee', 'client');
-	api.addFiles('client/tabs/userEdit.coffee', 'client');
-	api.addFiles('client/tabs/userInfo.coffee', 'client');
+	api.addFiles('client/tabs/membersList.js', 'client');
+	api.addFiles('client/tabs/messageSearch.js', 'client');
+	api.addFiles('client/tabs/uploadedFilesList.js', 'client');
+	api.addFiles('client/tabs/userEdit.js', 'client');
+	api.addFiles('client/tabs/userInfo.js', 'client');
 });

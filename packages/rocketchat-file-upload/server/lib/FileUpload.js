@@ -35,8 +35,8 @@ FileUpload.addExtensionTo = function(file) {
 	}
 
 	const ext = mime.extension(file.type);
-	if (ext && false === new RegExp(`\.${ext}$`, 'i').test(file.name)) {
-		file.name = `${file.name}.${ext}`;
+	if (ext && false === new RegExp(`\.${ ext }$`, 'i').test(file.name)) {
+		file.name = `${ file.name }.${ ext }`;
 	}
 
 	return file;

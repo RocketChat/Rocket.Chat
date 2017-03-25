@@ -16,7 +16,7 @@ RocketChat.callbacks.add('renderMessage', (message) => {
 			message.html = RocketChat.emoji.packages[emojiPackage].render(message.html);
 		});
 
-		const checkEmojiOnly = $(`<div>${message.html}</div>`);
+		const checkEmojiOnly = $(`<div>${ message.html }</div>`);
 		let emojiOnly = true;
 		for (const childNode in checkEmojiOnly[0].childNodes) {
 			if (checkEmojiOnly[0].childNodes.hasOwnProperty(childNode)) {
