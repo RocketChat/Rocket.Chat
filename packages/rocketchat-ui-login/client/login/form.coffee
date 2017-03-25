@@ -73,7 +73,7 @@ Template.loginForm.events
 					else
 						RocketChat.Button.reset(button)
 						RocketChat.callbacks.run('userForgotPasswordEmailRequested');
-						toastr.success t('We_have_sent_password_email')
+						toastr.success t('If_this_email_is_registered')
 						instance.state.set 'login'
 				return
 

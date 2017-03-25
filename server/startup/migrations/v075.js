@@ -1,13 +1,13 @@
 RocketChat.Migrations.add({
 	version: 71.1,
-	up: function() {
+	up() {
 		ServiceConfiguration.configurations.remove({});
 	}
 });
 
 RocketChat.Migrations.add({
 	version: 75,
-	up: function() {
+	up() {
 		ServiceConfiguration.configurations.remove({});
 	}
 });

@@ -20,17 +20,17 @@ Importer.CSV = class ImporterCSV extends Importer.Base {
 		let tempUsers = [];
 		const tempMessages = new Map();
 		for (const entry of zipEntries) {
-			this.logger.debug(`Entry: ${entry.entryName}`);
+			this.logger.debug(`Entry: ${ entry.entryName }`);
 
 			//Ignore anything that has `__MACOSX` in it's name, as sadly these things seem to mess everything up
 			if (entry.entryName.indexOf('__MACOSX') > -1) {
-				this.logger.debug(`Ignoring the file: ${entry.entryName}`);
+				this.logger.debug(`Ignoring the file: ${ entry.entryName }`);
 				continue;
 			}
 
 			//Directories are ignored, since they are "virtual" in a zip file
 			if (entry.isDirectory) {
-				this.logger.debug(`Ignoring the directory entry: ${entry.entryName}`);
+				this.logger.debug(`Ignoring the directory entry: ${ entry.entryName }`);
 				continue;
 			}
 
@@ -73,7 +73,7 @@ Importer.CSV = class ImporterCSV extends Importer.Base {
 				try {
 					msgs = this.csvParser(entry.getData().toString());
 				} catch (e) {
-					this.logger.warn(`The file ${entry.entryName} contains invalid syntax`, e);
+					this.logger.warn(`The file ${ entry.entryName } contains invalid syntax`, e);
 					continue;
 				}
 
@@ -105,15 +105,15 @@ Importer.CSV = class ImporterCSV extends Importer.Base {
 
 			for (const [msgGroupData, msgs] of messagesMap.entries()) {
 				messagesCount += msgs.length;
-				super.updateRecord({ 'messagesstatus': `${channel}/${msgGroupData}` });
+				super.updateRecord({ 'messagesstatus': `${ channel }/${ msgGroupData }` });
 
 				if (Importer.Base.getBSONSize(msgs) > Importer.Base.MaxBSONSize) {
 					Importer.Base.getBSONSafeArraysFromAnArray(msgs).forEach((splitMsg, i) => {
-						const messagesId = this.collection.insert({ 'import': this.importRecord._id, 'importer': this.name, 'type': 'messages', 'name': `${channel}/${msgGroupData}.${i}`, 'messages': splitMsg });
-						this.messages.get(channel).set(`${msgGroupData}.${i}`, this.collection.findOne(messagesId));
+						const messagesId = this.collection.insert({ 'import': this.importRecord._id, 'importer': this.name, 'type': 'messages', 'name': `${ channel }/${ msgGroupData }.${ i }`, 'messages': splitMsg });
+						this.messages.get(channel).set(`${ msgGroupData }.${ i }`, this.collection.findOne(messagesId));
 					});
 				} else {
-					const messagesId = this.collection.insert({ 'import': this.importRecord._id, 'importer': this.name, 'type': 'messages', 'name': `${channel}/${msgGroupData}`, 'messages': msgs });
+					const messagesId = this.collection.insert({ 'import': this.importRecord._id, 'importer': this.name, 'type': 'messages', 'name': `${ channel }/${ msgGroupData }`, 'messages': msgs });
 					this.messages.get(channel).set(msgGroupData, this.collection.findOne(messagesId));
 				}
 			}
@@ -124,7 +124,7 @@ Importer.CSV = class ImporterCSV extends Importer.Base {
 
 		//Ensure we have some users, channels, and messages
 		if (tempUsers.length === 0 || tempChannels.length === 0 || messagesCount === 0) {
-			this.logger.warn(`The loaded users count ${tempUsers.length}, the loaded channels ${tempChannels.length}, and the loaded messages ${messagesCount}`);
+			this.logger.warn(`The loaded users count ${ tempUsers.length }, the loaded channels ${ tempChannels.length }, and the loaded messages ${ messagesCount }`);
 			super.updateProgress(Importer.ProgressStep.ERROR);
 			return super.getProgress();
 		}
@@ -243,10 +243,10 @@ Importer.CSV = class ImporterCSV extends Importer.Base {
 				const room = RocketChat.models.Rooms.findOneById(csvChannel.rocketId, { fields: { usernames: 1, t: 1, name: 1 } });
 				Meteor.runAsUser(startedByUserId, () => {
 					for (const [msgGroupData, msgs] of messagesMap.entries()) {
-						super.updateRecord({ 'messagesstatus': `${ch}/${msgGroupData}.${msgs.messages.length}` });
+						super.updateRecord({ 'messagesstatus': `${ ch }/${ msgGroupData }.${ msgs.messages.length }` });
 						for (const msg of msgs.messages) {
 							if (isNaN(new Date(parseInt(msg.ts)))) {
-								this.logger.warn(`Timestamp on a message in ${ch}/${msgGroupData} is invalid`);
+								this.logger.warn(`Timestamp on a message in ${ ch }/${ msgGroupData } is invalid`);
 								super.addCountCompleted(1);
 								continue;
 							}
@@ -254,7 +254,7 @@ Importer.CSV = class ImporterCSV extends Importer.Base {
 							const creator = this.getUserFromUsername(msg.username);
 							if (creator) {
 								const msgObj = {
-									_id: `csv-${csvChannel.id}-${msg.ts}`,
+									_id: `csv-${ csvChannel.id }-${ msg.ts }`,
 									ts: new Date(parseInt(msg.ts)),
 									msg: msg.text,
 									rid: room._id,
@@ -276,7 +276,7 @@ Importer.CSV = class ImporterCSV extends Importer.Base {
 			super.updateProgress(Importer.ProgressStep.FINISHING);
 			super.updateProgress(Importer.ProgressStep.DONE);
 			const timeTook = Date.now() - started;
-			this.logger.log(`CSV Import took ${timeTook} milliseconds.`);
+			this.logger.log(`CSV Import took ${ timeTook } milliseconds.`);
 		});
 
 		return super.getProgress();

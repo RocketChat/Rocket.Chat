@@ -6,6 +6,8 @@ Template.adminFlex.onCreated ->
 		RocketChat.settings.collectionPrivate = RocketChat.settings.cachedCollectionPrivate.collection
 		RocketChat.settings.cachedCollectionPrivate.init()
 
+label = ->
+	return TAPi18n.__(@i18nLabel or @_id)
 
 Template.adminFlex.helpers
 	groups: ->
@@ -27,11 +29,14 @@ Template.adminFlex.helpers
 			if groups.length > 0
 				query._id =
 					$in: groups
+		RocketChat.settings.collectionPrivate.find(query).fetch()
+		.map (el) =>
+			el.label = label.apply(el)
+			return el
+		.sort (a, b) =>
+			if a.label.toLowerCase() >= b.label.toLowerCase() then 1 else -1
 
-		return RocketChat.settings.collectionPrivate.find(query, { sort: { sort: 1, i18nLabel: 1 } }).fetch()
-
-	label: ->
-		return TAPi18n.__(@i18nLabel or @_id)
+	label: label
 
 	adminBoxOptions: ->
 		return RocketChat.AdminBox.getOptions()

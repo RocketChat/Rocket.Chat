@@ -38,7 +38,7 @@ const blockCode = (message) => {
 	let msgParts = message.html.replace(/<br>/gm, '\n').split(/^.*(```(?:[a-zA-Z]+)?(?:(?:.|\n)*?)```)(.*\n?)$/gm);
 	msgParts = msgParts.map((part) => {
 		// Verify if this part is code
-		const codeMatch = part.match(/^```(\w*[\n\ ]?)([\s\S]*?)```+?$/);
+		const codeMatch = part.match(/^```(.*[\n\ ]?)([\s\S]*?)```+?$/);
 		if (null == codeMatch) {
 			return part;
 		}

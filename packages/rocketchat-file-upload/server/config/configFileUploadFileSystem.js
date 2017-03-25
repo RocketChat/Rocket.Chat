@@ -16,7 +16,7 @@ const createFileSystemStore = _.debounce(function() {
 		filter: new UploadFS.Filter({
 			onCheck: FileUpload.validateFileUpload
 		}),
-		transformWrite: function(readStream, writeStream, fileId, file) {
+		transformWrite(readStream, writeStream, fileId, file) {
 			if (RocketChatFile.enabled === false || !/^image\/((x-windows-)?bmp|p?jpeg|png)$/.test(file.type)) {
 				return readStream.pipe(writeStream);
 			}
@@ -59,7 +59,7 @@ FileUpload.addHandler(storeName, {
 
 			if (stat && stat.isFile()) {
 				file = FileUpload.addExtensionTo(file);
-				res.setHeader('Content-Disposition', `attachment; filename*=UTF-8''${encodeURIComponent(file.name)}`);
+				res.setHeader('Content-Disposition', `attachment; filename*=UTF-8''${ encodeURIComponent(file.name) }`);
 				res.setHeader('Last-Modified', file.uploadedAt.toUTCString());
 				res.setHeader('Content-Type', file.type);
 				res.setHeader('Content-Length', file.size);

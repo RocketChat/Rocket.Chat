@@ -17,7 +17,7 @@ class ModelPermissions extends RocketChat.models._Base {
 	}
 
 	createOrUpdate(name, roles) {
-		this.upsert({ _id: name }, { $set: { roles: roles } });
+		this.upsert({ _id: name }, { $set: { roles } });
 	}
 
 	addRole(permission, role) {

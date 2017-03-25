@@ -42,7 +42,7 @@ Meteor.methods({
 			sort: {
 				ts: -1
 			},
-			limit: limit
+			limit
 		};
 
 		if (!RocketChat.settings.get('Message_ShowEditedStatus')) {
@@ -87,9 +87,9 @@ Meteor.methods({
 		}
 
 		return {
-			messages: messages,
-			firstUnread: firstUnread,
-			unreadNotLoaded: unreadNotLoaded
+			messages,
+			firstUnread,
+			unreadNotLoaded
 		};
 	}
 });

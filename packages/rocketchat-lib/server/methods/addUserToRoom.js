@@ -1,5 +1,5 @@
 Meteor.methods({
-	addUserToRoom: function(data) {
+	addUserToRoom(data) {
 		return Meteor.call('addUsersToRoom', {
 			rid: data.rid,
 			users: [ data.username ]
