@@ -14,7 +14,12 @@ Template.combined.helpers
 			query.alert =
 				$ne: true
 
-		return ChatSubscription.find query, { sort: 'name': 1 }
+		if Session.equals('RoomSortType', 'name')
+			sort = {sort: 'name': 1 }
+		else
+			sort = {sort: 'la': -1 }
+
+		return ChatSubscription.find query, sort
 
 Template.combined.events
 	'click .more-channels': ->

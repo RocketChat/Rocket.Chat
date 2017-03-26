@@ -11,4 +11,9 @@ Template.unreadRooms.onCreated ->
 			alert: true
 			open: true
 
-		@unreadRooms = ChatSubscription.find query, { sort: 't': 1, 'name': 1 }
+		if Session.equals('RoomSortType', 'name')
+			sort = {sort: 't': 1, 'name': 1 }
+		else
+			sort = {sort: 'la': -1 }
+
+		@unreadRooms = ChatSubscription.find query, sort

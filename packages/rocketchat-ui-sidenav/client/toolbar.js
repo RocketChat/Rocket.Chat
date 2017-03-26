@@ -177,6 +177,14 @@ Template.toolbar.helpers({
 		};
 
 		return config;
+	},
+
+	sortByNameSelected() {
+		return Session.equals('RoomSortType', 'name') ? 'selected' : '';
+	},
+
+	sortByActivitySelected() {
+		return Session.equals('RoomSortType', 'activity') ? 'selected' : '';
 	}
 });
 
@@ -205,6 +213,14 @@ Template.toolbar.events({
 
 	'blur .toolbar-search__input'() {
 		toolbarSearch.clear();
+	},
+
+	'click .toolbar-sort-button'(e) {
+		const sortBy = $(e.currentTarget).attr('sortBy');
+		if (!Session.equals('RoomSortType', sortBy)) {
+			Session.set('RoomSortType', sortBy);
+			localStorage.setItem('RoomSortType', sortBy);
+		}
 	}
 });
 

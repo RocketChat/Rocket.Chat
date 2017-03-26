@@ -23,6 +23,12 @@ Meteor.startup(function() {
 
 	Session.setDefault('AvatarRandom', 0);
 
+	// Initialize room sort type
+	if (!localStorage.getItem('RoomSortType')) {
+		localStorage.setItem('RoomSortType', 'name');
+	}
+	Session.set('RoomSortType', localStorage.getItem('RoomSortType'));
+
 	window.lastMessageWindow = {};
 	window.lastMessageWindowHistory = {};
 

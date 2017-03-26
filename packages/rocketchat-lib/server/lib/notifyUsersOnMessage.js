@@ -39,6 +39,9 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 		return has;
 	}
 
+	// update last activity time
+	RocketChat.models.Subscriptions.updateLastActivityTimeByRoomId(message.rid);
+
 	if (room.t != null && room.t === 'd') {
 		// Update the other subscriptions
 		RocketChat.models.Subscriptions.incUnreadOfDirectForRoomIdExcludingUserId(message.rid, message.u._id, 1);

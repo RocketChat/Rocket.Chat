@@ -22,7 +22,8 @@ const fields = {
 	blocked: 1,
 	blocker: 1,
 	autoTranslate: 1,
-	autoTranslateLanguage: 1
+	autoTranslateLanguage: 1,
+	la: 1 // last activity time
 };
 
 Meteor.methods({
