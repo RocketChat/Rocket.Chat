@@ -21,7 +21,7 @@ Template.unreadRooms.onCreated(function() {
 		if (Session.equals('RoomSortType', 'name')) {
 			sort = { sort: { 't': 1, 'name': 1 }};
 		} else {
-			sort = { sort: { 'la': -1 }}
+			sort = { sort: { 'la': -1 }};
 		}
 
 		return this.unreadRooms = ChatSubscription.find(query, sort);

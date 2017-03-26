@@ -17,7 +17,7 @@ Template.directMessages.helpers({
 		if (Session.equals('RoomSortType', 'name')) {
 			sort = { sort: { 't': 1, 'name': 1 }};
 		} else {
-			sort = { sort: { 'la': -1 }}
+			sort = { sort: { 'la': -1 }};
 		}
 
 		return ChatSubscription.find(query, sort);
