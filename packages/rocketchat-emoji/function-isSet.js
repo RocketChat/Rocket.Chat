@@ -1,7 +1,7 @@
 /* globals isSet:true, isSetNotNull:true */
 //http://stackoverflow.com/a/26990347 function isSet() from Gajus
 isSet = function(fn) {
-	var value;
+	let value;
 	try {
 		value = fn();
 	} catch (e) {
@@ -12,7 +12,7 @@ isSet = function(fn) {
 };
 
 isSetNotNull = function(fn) {
-	var value;
+	let value;
 	try {
 		value = fn();
 	} catch (e) {

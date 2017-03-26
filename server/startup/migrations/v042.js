@@ -27,9 +27,9 @@ RocketChat.Migrations.add({
 
 				if (oldFile) {
 					const extension = RocketChat.Assets.mime.extension(oldFile.contentType);
-					RocketChat.settings.removeById(`Assets_${from}`);
-					RocketChat.settings.updateById(`Assets_${to}`, {
-						url: `/assets/${to}.${extension}`,
+					RocketChat.settings.removeById(`Assets_${ from }`);
+					RocketChat.settings.updateById(`Assets_${ to }`, {
+						url: `/assets/${ to }.${ extension }`,
 						defaultUrl: RocketChat.Assets.assets[to].defaultUrl
 					});
 

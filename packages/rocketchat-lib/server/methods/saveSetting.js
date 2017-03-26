@@ -1,5 +1,5 @@
 Meteor.methods({
-	saveSetting: function(_id, value, editor) {
+	saveSetting(_id, value, editor) {
 		if (Meteor.userId() === null) {
 			throw new Meteor.Error('error-action-not-allowed', 'Editing settings is not allowed', {
 				method: 'saveSetting'

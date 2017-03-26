@@ -8,7 +8,7 @@ Meteor.publish('livechat:customFields', function(_id) {
 	}
 
 	if (s.trim(_id)) {
-		return RocketChat.models.LivechatCustomField.find({ _id: _id });
+		return RocketChat.models.LivechatCustomField.find({ _id });
 	}
 
 	return RocketChat.models.LivechatCustomField.find();
