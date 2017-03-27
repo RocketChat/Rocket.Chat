@@ -6,13 +6,13 @@ Template.HelpRequestActions.helpers({
 
 	isLivechat() {
 		const instance = Template.instance();
-		const room = ChatSubscription.findOne({rid: instance.data.rid});
+		const room = ChatSubscription.findOne({rid: instance.data.roomId});
 		return room.t === 'l';
 	},
 
 	livechatOpen() {
 		const instance = Template.instance();
-		const room = ChatSubscription.findOne({rid: instance.data.rid});
+		const room = ChatSubscription.findOne({rid: instance.data.roomId});
 		return room.open;
 	},
 });
