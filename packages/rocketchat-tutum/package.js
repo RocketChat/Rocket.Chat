@@ -6,10 +6,8 @@ Package.describe({
 
 Package.onUse(function(api) {
 	api.use('ecmascript');
-	api.use('coffeescript');
 	api.use('rocketchat:lib');
-
-	api.addFiles('startup.coffee', 'server');
+	api.addFiles('startup.js', 'server');
 });
 
 Npm.depends({

@@ -1,6 +1,6 @@
 FlowRouter.route('/reset-password/:token', {
 	name: 'resetPassword',
-	action: function() {
+	action() {
 		BlazeLayout.render('loginLayout', {center: 'resetPassword'});
 	}
 });

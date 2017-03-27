@@ -57,7 +57,7 @@ LDAP = class LDAP {
 		let replied = false;
 
 		const connectionOptions = {
-			url: `${self.options.host}:${self.options.port}`,
+			url: `${ self.options.host }:${ self.options.port }`,
 			timeout: 1000 * 60 * 10,
 			connectTimeout: self.options.connect_timeout,
 			idleTimeout: self.options.idle_timeout,
@@ -70,9 +70,9 @@ LDAP = class LDAP {
 
 		if (self.options.ca_cert && self.options.ca_cert !== '') {
 			// Split CA cert into array of strings
-			var chainLines = RocketChat.settings.get('LDAP_CA_Cert').split('\n');
-			var cert = [];
-			var ca = [];
+			const chainLines = RocketChat.settings.get('LDAP_CA_Cert').split('\n');
+			let cert = [];
+			const ca = [];
 			chainLines.forEach(function(line) {
 				cert.push(line);
 				if (line.match(/-END CERTIFICATE-/)) {
@@ -84,10 +84,10 @@ LDAP = class LDAP {
 		}
 
 		if (self.options.encryption === 'ssl') {
-			connectionOptions.url = `ldaps://${connectionOptions.url}`;
+			connectionOptions.url = `ldaps://${ connectionOptions.url }`;
 			connectionOptions.tlsOptions = tlsOptions;
 		} else {
-			connectionOptions.url = `ldap://${connectionOptions.url}`;
+			connectionOptions.url = `ldap://${ connectionOptions.url }`;
 		}
 
 		logger.connection.info('Connecting', connectionOptions.url);
@@ -173,24 +173,24 @@ LDAP = class LDAP {
 		const filter = ['(&'];
 
 		if (self.options.domain_search_object_category !== '') {
-			filter.push(`(objectCategory=${self.options.domain_search_object_category})`);
+			filter.push(`(objectCategory=${ self.options.domain_search_object_category })`);
 		}
 
 		if (self.options.domain_search_object_class !== '') {
-			filter.push(`(objectclass=${self.options.domain_search_object_class})`);
+			filter.push(`(objectclass=${ self.options.domain_search_object_class })`);
 		}
 
 		if (self.options.domain_search_filter !== '') {
-			filter.push(`(${self.options.domain_search_filter})`);
+			filter.push(`(${ self.options.domain_search_filter })`);
 		}
 
 		const domain_search_user_id = self.options.domain_search_user_id.split(',');
 		if (domain_search_user_id.length === 1) {
-			filter.push(`(${domain_search_user_id[0]}=#{username})`);
+			filter.push(`(${ domain_search_user_id[0] }=#{username})`);
 		} else {
 			filter.push('(|');
 			domain_search_user_id.forEach((item) => {
-				filter.push(`(${item}=#{username})`);
+				filter.push(`(${ item }=#{username})`);
 			});
 			filter.push(')');
 		}
@@ -250,7 +250,7 @@ LDAP = class LDAP {
 
 		if (attribute) {
 			filter = new self.ldapjs.filters.EqualityFilter({
-				attribute: attribute,
+				attribute,
 				value: new Buffer(id, 'hex')
 			});
 		} else {
@@ -262,11 +262,11 @@ LDAP = class LDAP {
 				}));
 			});
 
-			filter = new self.ldapjs.filters.OrFilter({filters: filters});
+			filter = new self.ldapjs.filters.OrFilter({filters});
 		}
 
 		const searchOptions = {
-			filter: filter,
+			filter,
 			scope: 'sub'
 		};
 
@@ -326,15 +326,15 @@ LDAP = class LDAP {
 		const filter = ['(&'];
 
 		if (self.options.group_filter_object_class !== '') {
-			filter.push(`(objectclass=${self.options.group_filter_object_class})`);
+			filter.push(`(objectclass=${ self.options.group_filter_object_class })`);
 		}
 
 		if (self.options.group_filter_group_member_attribute !== '') {
-			filter.push(`(${self.options.group_filter_group_member_attribute}=${self.options.group_filter_group_member_format})`);
+			filter.push(`(${ self.options.group_filter_group_member_attribute }=${ self.options.group_filter_group_member_format })`);
 		}
 
 		if (self.options.group_filter_group_id_attribute !== '') {
-			filter.push(`(${self.options.group_filter_group_id_attribute}=${self.options.group_filter_group_name})`);
+			filter.push(`(${ self.options.group_filter_group_id_attribute }=${ self.options.group_filter_group_name })`);
 		}
 		filter.push(')');
 

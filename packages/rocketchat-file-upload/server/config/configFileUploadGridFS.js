@@ -25,7 +25,9 @@ ExtractRange.prototype._transform = function(chunk, enc, cb) {
 	} else if (this.bytes_read + chunk.length < this.start) {
 		// this chunk is still before the start byte
 	} else {
-		let start, stop;
+		let start;
+		let stop;
+
 		if (this.start <= this.bytes_read) {
 			start = 0;
 		} else {
@@ -106,11 +108,11 @@ const readFromGridFS = function(storeName, fileId, file, headers, req, res) {
 		delete headers['Content-Type'];
 		delete headers['Content-Disposition'];
 		delete headers['Last-Modified'];
-		headers['Content-Range'] = 'bytes */' + file.size;
+		headers['Content-Range'] = `bytes */${ file.size }`;
 		res.writeHead(416, headers);
 		res.end();
 	} else if (range) {
-		headers['Content-Range'] = 'bytes ' + range.start + '-' + range.stop + '/' + file.size;
+		headers['Content-Range'] = `bytes ${ range.start }-${ range.stop }/${ file.size }`;
 		delete headers['Content-Length'];
 		headers['Content-Length'] = range.stop - range.start + 1;
 		res.writeHead(206, headers);
@@ -126,7 +128,7 @@ FileUpload.addHandler('rocketchat_uploads', {
 	get(file, req, res) {
 		file = FileUpload.addExtensionTo(file);
 		const headers = {
-			'Content-Disposition': `attachment; filename*=UTF-8''${encodeURIComponent(file.name)}`,
+			'Content-Disposition': `attachment; filename*=UTF-8''${ encodeURIComponent(file.name) }`,
 			'Last-Modified': file.uploadedAt.toUTCString(),
 			'Content-Type': file.type,
 			'Content-Length': file.size

@@ -23,7 +23,7 @@ RocketChat.Migrations.add({
 		if (WebRTC_TURN_Server) {
 			servers += ', ';
 			if (WebRTC_TURN_Username != null) {
-				servers += encodeURIComponent(WebRTC_TURN_Username) + ':' + encodeURIComponent(WebRTC_TURN_Password) + '@';
+				servers += `${ encodeURIComponent(WebRTC_TURN_Username) }:${ encodeURIComponent(WebRTC_TURN_Password) }@`;
 			}
 			servers += WebRTC_TURN_Server;
 		}

@@ -1,18 +1,18 @@
 import moment from 'moment';
 
 Template.snippetMessage.helpers({
-	time: function() {
+	time() {
 		return moment(this.ts).format(RocketChat.settings.get('Message_TimeFormat'));
 	},
-	date: function() {
+	date() {
 		return moment(this.ts).format(RocketChat.settings.get('Message_DateFormat'));
 	},
-	own: function() {
+	own() {
 		if (this.u !== undefined && this.u && this.u._id === Meteor.userId()) {
 			return 'own';
 		}
 	},
-	body: function() {
-		return `<a href="/snippet/${this._id}/${this.snippetName}">${this.snippetName}</a>`;
+	body() {
+		return `<a href="/snippet/${ this._id }/${ this.snippetName }">${ this.snippetName }</a>`;
 	}
 });

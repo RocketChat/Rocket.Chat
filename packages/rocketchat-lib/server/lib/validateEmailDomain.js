@@ -1,9 +1,9 @@
 const dns = Npm.require('dns');
 
-var emailDomainBlackList = [];
-var emailDomainWhiteList = [];
-var useDefaultBlackList = false;
-var useDNSDomainCheck = false;
+let emailDomainBlackList = [];
+let emailDomainWhiteList = [];
+let useDefaultBlackList = false;
+let useDNSDomainCheck = false;
 
 RocketChat.settings.get('Accounts_BlockedDomainsList', function(key, value) {
 	emailDomainBlackList = _.map(value.split(','), (domain) => domain.trim());
@@ -21,7 +21,7 @@ RocketChat.settings.get('Accounts_UseDNSDomainCheck', function(key, value) {
 RocketChat.validateEmailDomain = function(email) {
 	const emailValidation = /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
 	if (!emailValidation.test(email)) {
-		throw new Meteor.Error('error-invalid-email', 'Invalid email ' + email, { function: 'RocketChat.validateEmailDomain', email: email });
+		throw new Meteor.Error('error-invalid-email', `Invalid email ${ email }`, { function: 'RocketChat.validateEmailDomain', email });
 	}
 
 	const emailDomain = email.substr(email.lastIndexOf('@') + 1);

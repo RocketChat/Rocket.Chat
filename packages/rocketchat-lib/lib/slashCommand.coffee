@@ -1,14 +1,14 @@
 RocketChat.slashCommands =
 	commands: {}
 
-RocketChat.slashCommands.add = (command, callback, options) ->
+RocketChat.slashCommands.add = (command, callback, options, result) ->
 	RocketChat.slashCommands.commands[command] =
 		command: command
 		callback: callback
 		params: options?.params
 		description: options?.description
 		clientOnly: options?.clientOnly or false
-
+		result: result
 	return
 
 RocketChat.slashCommands.run = (command, params, item) ->

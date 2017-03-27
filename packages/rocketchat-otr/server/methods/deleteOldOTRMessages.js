@@ -1,5 +1,5 @@
 Meteor.methods({
-	deleteOldOTRMessages: function(roomId) {
+	deleteOldOTRMessages(roomId) {
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'deleteOldOTRMessages' });
 		}

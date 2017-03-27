@@ -33,7 +33,7 @@
 							</thead>
 							<tbody>
 								{{#each users}}
-								<tr class="user-info row-link">
+								<tr class="user-info row-link {{#if not active}}deactivated{{/if}}">
 									<td class="border-component-color">
 										<div class="user-image status-{{status}}">
 											{{> avatar username=username}}
