@@ -61,13 +61,5 @@ Template.HelpRequestContext.helpers({
 });
 
 Template.HelpRequestContext.onCreated(function () {
-	this.helpRequest = new ReactiveVar({});
-	this.autorun(() => {
-		if (Template.currentData().rid && this.helpRequest.get()) {
-			this.subscribe('assistify:helpRequests', Template.currentData().rid);
-			this.helpRequest.set(
-				RocketChat.models.HelpRequests.findOneByRoomId(Template.currentData())
-			);
-		}
-	});
+
 });

@@ -1,5 +1,5 @@
 Meteor.methods({
-	createRequest(name, expertise="", members=[]) {
+	createRequest(name, expertise="", members=[], environment) {
 		check(name, String);
 		check(expertise, String);
 
@@ -53,7 +53,7 @@ Meteor.methods({
 		const roomCreateResult = RocketChat.createRoom('r', name, Meteor.user() && Meteor.user().username, members, false, {expertise: expertise});
 
 		const room = RocketChat.models.Rooms.findOneById(roomCreateResult.rid);
-		const helpRequestId = RocketChat.models.HelpRequests.createForSupportArea(expertise, roomCreateResult.rid);
+		const helpRequestId = RocketChat.models.HelpRequests.createForSupportArea(expertise, roomCreateResult.rid, "", environment);
 		//propagate help-id to room in order to identify it as a "helped" room
 		RocketChat.models.Rooms.addHelpRequestInfo(room, helpRequestId);
 
