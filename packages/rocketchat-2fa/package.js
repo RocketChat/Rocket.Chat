@@ -28,10 +28,10 @@ Package.onUse(function(api) {
 	api.addFiles('server/lib/totp.js', 'server');
 
 	api.addFiles('server/methods/checkCodesRemaining.js', 'server');
-	api.addFiles('server/methods/disable2fa.js', 'server');
-	api.addFiles('server/methods/enable2fa.js', 'server');
+	api.addFiles('server/methods/disable.js', 'server');
+	api.addFiles('server/methods/enable.js', 'server');
 	api.addFiles('server/methods/regenerateCodes.js', 'server');
-	api.addFiles('server/methods/verifyTemp2FAToken.js', 'server');
+	api.addFiles('server/methods/validateTempToken.js', 'server');
 
 	api.addFiles('server/models/users.js', 'server');
 
