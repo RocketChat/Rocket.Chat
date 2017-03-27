@@ -8,16 +8,6 @@
 
 // New colors, used for shades on solid backgrounds
 // Defined range of transparencies reduces random colour variances
-let value;
-const alphaColors= {
-	'transparent-darkest': 'rgba(0,0,0,0.5)',
-	'transparent-darker': 'rgba(0,0,0,0.15)',
-	'transparent-dark': 'rgba(0,0,0,0.05)',
-	'transparent-light': 'rgba(255,255,255,0.10)',
-	'transparent-lighter': 'rgba(255,255,255,0.30)',
-	'transparent-lightest': 'rgba(255,255,255,0.60)'
-};
-
 // Major colors form the core of the scheme
 // Names changed to reflect usage, comments show pre-refactor names
 const majorColors= {
@@ -50,6 +40,7 @@ const minorColors= {
 };
 
 // Bulk-add settings for color scheme
+let value;
 Object.keys(majorColors).forEach((key) => {
 	value = majorColors[key];
 	RocketChat.theme.addPublicColor(key, value, 'Colors');
