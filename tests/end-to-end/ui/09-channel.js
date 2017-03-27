@@ -175,7 +175,7 @@ describe('channel', ()=> {
 
 				it('edit the name input', ()=> {
 					flexTab.editNameTextInput.waitForVisible();
-					flexTab.editNameTextInput.setValue('NAME-EDITED-'+publicChannelName);
+					flexTab.editNameTextInput.setValue(`NAME-EDITED-${ publicChannelName }`);
 				});
 
 				it('save the name', ()=> {
@@ -183,8 +183,8 @@ describe('channel', ()=> {
 				});
 
 				it('should show the new name', ()=> {
-					var channelName = sideNav.getChannelFromList('NAME-EDITED-'+publicChannelName);
-					channelName.getText().should.equal('NAME-EDITED-'+publicChannelName);
+					const channelName = sideNav.getChannelFromList(`NAME-EDITED-${ publicChannelName }`);
+					channelName.getText().should.equal(`NAME-EDITED-${ publicChannelName }`);
 				});
 			});
 
@@ -345,7 +345,7 @@ describe('channel', ()=> {
 
 			describe('channel quit and enter', () => {
 				it('leave the channel', () => {
-					const channel = sideNav.getChannelFromList('NAME-EDITED-'+publicChannelName);
+					const channel = sideNav.getChannelFromList(`NAME-EDITED-${ publicChannelName }`);
 					channel.click();
 					channel.moveToObject();
 					sideNav.channelLeave.waitForVisible(5000);
@@ -364,20 +364,20 @@ describe('channel', ()=> {
 				});
 
 				it('should not show the channel on the list', () => {
-					sideNav.getChannelFromList('NAME-EDITED-'+publicChannelName).waitForVisible(5000, true);
-					sideNav.getChannelFromList('NAME-EDITED-'+publicChannelName).isVisible().should.be.false;
+					sideNav.getChannelFromList(`NAME-EDITED-${ publicChannelName }`).waitForVisible(5000, true);
+					sideNav.getChannelFromList(`NAME-EDITED-${ publicChannelName }`).isVisible().should.be.false;
 				});
 
 				it('should search and enter the channel with the spotlight', () => {
-					sideNav.searchChannel('NAME-EDITED-'+publicChannelName);
+					sideNav.searchChannel(`NAME-EDITED-${ publicChannelName }`);
 					mainContent.joinChannelBtn.waitForVisible(5000);
 					mainContent.joinChannelBtn.click();
 
 				});
 
 				it('should show the channel on the list', () => {
-					sideNav.getChannelFromList('NAME-EDITED-'+publicChannelName).waitForVisible(10000);
-					sideNav.getChannelFromList('NAME-EDITED-'+publicChannelName).isVisible().should.be.true;
+					sideNav.getChannelFromList(`NAME-EDITED-${ publicChannelName }`).waitForVisible(10000);
+					sideNav.getChannelFromList(`NAME-EDITED-${ publicChannelName }`).isVisible().should.be.true;
 				});
 			});
 		});

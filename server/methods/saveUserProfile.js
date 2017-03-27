@@ -16,29 +16,23 @@ Meteor.methods({
 
 		const user = RocketChat.models.Users.findOneById(Meteor.userId());
 
-		function checkPassword(user = {}, currentPassword) {
-			if (user.services && user.services.password && user.services.password.bcrypt && user.services.password.bcrypt.trim()) {
+		function checkPassword(user = {}, typedPassword) {
+			if (!(user.services && user.services.password && user.services.password.bcrypt && user.services.password.bcrypt.trim())) {
 				return true;
 			}
 
-			if (!currentPassword) {
-				return false;
-			}
-
 			const passCheck = Accounts._checkPassword(user, {
-				digest: currentPassword,
+				digest: typedPassword,
 				algorithm: 'sha-256'
 			});
 
 			if (passCheck.error) {
 				return false;
 			}
-
 			return true;
 		}
-
 		if ((settings.newPassword) && RocketChat.settings.get('Accounts_AllowPasswordChange') === true) {
-			if (!checkPassword(user, settings.currentPassword)) {
+			if (!checkPassword(user, settings.typedPassword)) {
 				throw new Meteor.Error('error-invalid-password', 'Invalid password', {
 					method: 'saveUserProfile'
 				});
@@ -58,7 +52,7 @@ Meteor.methods({
 		}
 
 		if (settings.email) {
-			if (!checkPassword(user, settings.currentPassword)) {
+			if (!checkPassword(user, settings.typedPassword)) {
 				throw new Meteor.Error('error-invalid-password', 'Invalid password', {
 					method: 'saveUserProfile'
 				});

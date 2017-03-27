@@ -1,5 +1,6 @@
 import toastr from 'toastr'
 import mime from 'mime-type/with-db'
+import moment from 'moment'
 
 katexSyntax = ->
 	if RocketChat.katex.katex_enabled()
@@ -165,7 +166,7 @@ Template.messageBox.events
 				e.preventDefault()
 				files.push
 					file: item.getAsFile()
-					name: 'Clipboard'
+					name: 'Clipboard - ' + moment().format(RocketChat.settings.get('Message_TimeAndDateFormat'))
 
 		if files.length
 			fileUpload files

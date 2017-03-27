@@ -6,14 +6,13 @@ Package.describe({
 });
 
 Package.on_use(function(api) {
-	api.use(['rocketchat:lib'], 'server');
-	api.use(['ecmascript'], 'server');
-	api.use(['coffeescript'], 'server');
+	api.use('rocketchat:lib', 'server');
+	api.use('ecmascript');
 	api.use(['routepolicy', 'webapp', 'underscore', 'service-configuration'], 'server');
 	api.use(['http', 'accounts-base'], ['client', 'server']);
 
 	api.add_files(['saml_server.js', 'saml_utils.js'], 'server');
-	api.add_files(['saml_rocketchat.coffee'], 'server');
+	api.add_files(['saml_rocketchat.js'], 'server');
 	api.add_files('saml_client.js', 'client');
 });
 

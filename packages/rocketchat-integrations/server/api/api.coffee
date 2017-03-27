@@ -1,18 +1,14 @@
 vm = Npm.require('vm')
+moment = require('moment')
 
 compiledScripts = {}
 
-getIntegrationScript = (integration) ->
-	compiledScript = compiledScripts[integration._id]
-	if compiledScript? and +compiledScript._updatedAt is +integration._updatedAt
-		return compiledScript.script
-
-	script = integration.scriptCompiled
-	vmScript = undefined
+buildSandbox = (store = {}) ->
 	sandbox =
 		_: _
 		s: s
-		console: console
+		console: console,
+		moment: moment,
 		Store:
 			set: (key, val) ->
 				return store[key] = val
@@ -26,17 +22,36 @@ getIntegrationScript = (integration) ->
 				return {} =
 					error: e
 
+	Object.keys(RocketChat.models).filter((k) ->
+		return !k.startsWith('_')
+	).forEach (k) =>
+		sandbox[k] = RocketChat.models[k]
+
+	return {} =
+		store: store,
+		sandbox: sandbox
+
+getIntegrationScript = (integration) ->
+	compiledScript = compiledScripts[integration._id]
+	if compiledScript? and +compiledScript._updatedAt is +integration._updatedAt
+		return compiledScript.script
+
+	script = integration.scriptCompiled
+	vmScript = undefined
+	sandboxItems = buildSandbox()
+
 	try
 		logger.incoming.info 'Will evaluate script of Trigger', integration.name
 		logger.incoming.debug script
 
 		vmScript = vm.createScript script, 'script.js'
 
-		vmScript.runInNewContext sandbox
+		vmScript.runInNewContext sandboxItems.sandbox
 
-		if sandbox.Script?
+		if sandboxItems.sandbox.Script?
 			compiledScripts[integration._id] =
-				script: new sandbox.Script()
+				script: new sandboxItems.sandbox.Script()
+				store: sandboxItems.store
 				_updatedAt: integration._updatedAt
 
 			return compiledScripts[integration._id].script
@@ -47,7 +62,7 @@ getIntegrationScript = (integration) ->
 		logger.incoming.error e.stack.replace(/^/gm, '  ')
 		throw RocketChat.API.v1.failure 'error-evaluating-script'
 
-	if not sandbox.Script?
+	if not sandboxItems.sandbox.Script?
 		logger.incoming.error '[Class "Script" not in Trigger', integration.name, ']'
 		throw RocketChat.API.v1.failure 'class-script-not-found'
 
@@ -133,9 +148,9 @@ removeIntegration = (options, user) ->
 
 
 executeIntegrationRest = ->
-	logger.incoming.info 'Post integration', @integration.name
-	logger.incoming.debug '@urlParams', @urlParams
-	logger.incoming.debug '@bodyParams', @bodyParams
+	logger.incoming.info 'Post integration:', @integration.name
+	logger.incoming.debug '@urlParams:', @urlParams
+	logger.incoming.debug '@bodyParams:', @bodyParams
 
 	if @integration.enabled isnt true
 		return {} =
@@ -148,13 +163,13 @@ executeIntegrationRest = ->
 		avatar: @integration.avatar
 		emoji: @integration.emoji
 
-
 	if @integration.scriptEnabled is true and @integration.scriptCompiled? and @integration.scriptCompiled.trim() isnt ''
 		script = undefined
 		try
 			script = getIntegrationScript(@integration)
 		catch e
-			return e
+			logger.incoming.warn e
+			return RocketChat.API.v1.failure e.message
 
 		request =
 			url:
@@ -174,24 +189,11 @@ executeIntegrationRest = ->
 				username: @user.username
 
 		try
-			sandbox =
-				_: _
-				s: s
-				console: console
-				Store:
-					set: (key, val) ->
-						return store[key] = val
-					get: (key) ->
-						return store[key]
-				HTTP: (method, url, options) ->
-					try
-						return {} =
-							result: HTTP.call method, url, options
-					catch e
-						return {} =
-							error: e
-				script: script
-				request: request
+			sandboxItems = buildSandbox(compiledScripts[@integration._id].store)
+			sandbox = sandboxItems.sandbox
+			sandbox.script = script
+			sandbox.request = request
+
 			result = vm.runInNewContext('script.process_incoming_request({ request: request })', sandbox, { timeout: 3000 })
 
 			if result?.error?

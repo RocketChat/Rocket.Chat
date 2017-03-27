@@ -1,8 +1,8 @@
 this.CustomFields = (function() {
-	var queue = {};
-	var initiated = false;
+	let queue = {};
+	let initiated = false;
 
-	var setCustomField = function(token, key, value, overwrite = true) {
+	const setCustomField = function(token, key, value, overwrite = true) {
 		if (!initiated) {
 			// queue by key
 			queue[key] = { token, value, overwrite };
@@ -11,7 +11,7 @@ this.CustomFields = (function() {
 		Meteor.call('livechat:setCustomField', token, key, value, overwrite);
 	};
 
-	var init = function() {
+	const init = function() {
 		Tracker.autorun(function() {
 			if (Meteor.userId()) {
 				initiated = true;
@@ -26,7 +26,7 @@ this.CustomFields = (function() {
 	};
 
 	return {
-		init: init,
-		setCustomField: setCustomField
+		init,
+		setCustomField
 	};
 }());
