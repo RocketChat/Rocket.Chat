@@ -1,4 +1,4 @@
-@stdout = new Meteor.Collection 'stdout'
+@stdout = new Mongo.Collection 'stdout'
 
 Meteor.startup ->
 	RocketChat.AdminBox.addOption

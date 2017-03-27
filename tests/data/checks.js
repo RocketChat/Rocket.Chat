@@ -2,9 +2,9 @@ import loginPage from '../pageobjects/login.page';
 import mainContent from '../pageobjects/main-content.page';
 import sideNav from '../pageobjects/side-nav.page';
 
-export var publicChannelCreated = false;
-export var privateChannelCreated = false;
-export var directMessageCreated = false;
+export let publicChannelCreated = false;
+export let privateChannelCreated = false;
+export let directMessageCreated = false;
 
 export function setPublicChannelCreated(status) {
 	publicChannelCreated = status;

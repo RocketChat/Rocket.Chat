@@ -10,7 +10,7 @@ RocketChat.settings.get('Bugsnag_api_key', (key, value) => {
 
 const notify = function(message, stack) {
 	if (typeof stack === 'string') {
-		message += ' ' + stack;
+		message += ` ${ stack }`;
 	}
 	let options = {};
 	if (RocketChat.Info) {

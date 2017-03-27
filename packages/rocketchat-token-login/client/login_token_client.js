@@ -3,7 +3,7 @@ Meteor.loginWithLoginToken = function(token) {
 		methodArguments: [{
 			loginToken: token
 		}],
-		userCallback: function(error) {
+		userCallback(error) {
 			if (!error) {
 				FlowRouter.go('/');
 			}
@@ -13,7 +13,7 @@ Meteor.loginWithLoginToken = function(token) {
 
 FlowRouter.route('/login-token/:token', {
 	name: 'tokenLogin',
-	action: function() {
+	action() {
 		BlazeLayout.render('loginLayout');
 		Meteor.loginWithLoginToken(this.getParam('token'));
 	}

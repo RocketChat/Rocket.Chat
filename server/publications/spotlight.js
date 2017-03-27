@@ -1,5 +1,5 @@
 Meteor.methods({
-	spotlight: function(text, usernames, type = {users: true, rooms: true}) {
+	spotlight(text, usernames, type = {users: true, rooms: true}) {
 		const result = {
 			users: [],
 			rooms: []

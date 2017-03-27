@@ -11,8 +11,8 @@ function inviteAll(type) {
 			return;
 		}
 
-		const regexp = /#?([\d-_\w]+)/g,
-			[, channel] = regexp.exec(params.trim());
+		const regexp = /#?([\d-_\w]+)/g;
+		const [, channel] = regexp.exec(params.trim());
 
 		if (!channel) {
 			return;
@@ -56,7 +56,7 @@ function inviteAll(type) {
 			} else {
 				Meteor.call('addUsersToRoom', {
 					rid: targetChannel._id,
-					users: users
+					users
 				});
 			}
 			return RocketChat.Notifications.notifyUser(Meteor.userId(), 'message', {

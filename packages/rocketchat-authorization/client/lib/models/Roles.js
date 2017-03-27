@@ -1,4 +1,4 @@
-RocketChat.models.Roles = new Meteor.Collection('rocketchat_roles');
+RocketChat.models.Roles = new Mongo.Collection('rocketchat_roles');
 
 Object.assign(RocketChat.models.Roles, {
 	findUsersInRole(name, scope, options) {
