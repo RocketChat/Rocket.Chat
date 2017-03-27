@@ -2,7 +2,7 @@ Template.accountBox.helpers({
 	myUserInfo() {
 		let visualStatus = 'online';
 		const username = Meteor.user() && Meteor.user().username;
-		switch (Session.get('user_' + username + '_status')) {
+		switch (Session.get(`user_${ username }_status`)) {
 			case 'away':
 				visualStatus = t('away');
 				break;
@@ -14,8 +14,8 @@ Template.accountBox.helpers({
 				break;
 		}
 		return {
-			name: Session.get('user_' + username + '_name'),
-			status: Session.get('user_' + username + '_status'),
+			name: Session.get(`user_${ username }_name`),
+			status: Session.get(`user_${ username }_status`),
 			visualStatus,
 			_id: Meteor.userId(),
 			username

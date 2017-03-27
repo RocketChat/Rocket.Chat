@@ -140,8 +140,8 @@ syncUserData = function syncUserData(user, ldapUser) {
 		if (avatar) {
 			logger.info('Syncing user avatar');
 			const rs = RocketChatFile.bufferToStream(avatar);
-			RocketChatFileAvatarInstance.deleteFile(encodeURIComponent(`${user.username}.jpg`));
-			const ws = RocketChatFileAvatarInstance.createWriteStream(encodeURIComponent(`${user.username}.jpg`), 'image/jpeg');
+			RocketChatFileAvatarInstance.deleteFile(encodeURIComponent(`${ user.username }.jpg`));
+			const ws = RocketChatFileAvatarInstance.createWriteStream(encodeURIComponent(`${ user.username }.jpg`), 'image/jpeg');
 			ws.on('end', Meteor.bindEnvironment(function() {
 				Meteor.setTimeout(function() {
 					RocketChat.models.Users.setAvatarOrigin(user._id, 'ldap');
@@ -165,7 +165,7 @@ addLdapUser = function addLdapUser(ldapUser, username, password) {
 	} else if (ldapUser.object.mail && ldapUser.object.mail.indexOf('@') > -1) {
 		userObject.email = ldapUser.object.mail;
 	} else if (RocketChat.settings.get('LDAP_Default_Domain') !== '') {
-		userObject.email = username + '@' + RocketChat.settings.get('LDAP_Default_Domain');
+		userObject.email = `${ username }@${ RocketChat.settings.get('LDAP_Default_Domain') }`;
 	} else {
 		const error = new Meteor.Error('LDAP-login-error', 'LDAP Authentication succeded, there is no email to create an account. Have you tried setting your Default Domain in LDAP Settings?');
 		logger.error(error);

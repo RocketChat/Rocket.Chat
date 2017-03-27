@@ -90,7 +90,7 @@ function traceMethodCalls(target) {
 	setInterval(function() {
 		for (const property in target._stats) {
 			if (target._stats.hasOwnProperty(property) && target._stats[property].time > 0) {
-				const tags = [`property:${property}`, `collection:${target.collectionName}`];
+				const tags = [`property:${ property }`, `collection:${ target.collectionName }`];
 				RocketChat.statsTracker.timing('cache.methods.time', target._stats[property].avg, tags);
 				RocketChat.statsTracker.increment('cache.methods.totalTime', target._stats[property].time, tags);
 				RocketChat.statsTracker.increment('cache.methods.count', target._stats[property].calls, tags);
@@ -168,7 +168,7 @@ class ModelsBaseCache extends EventEmitter {
 
 	join({join, field, link, multi}) {
 		if (!RocketChat.models[join]) {
-			console.log(`Invalid cache model ${join}`);
+			console.log(`Invalid cache model ${ join }`);
 			return;
 		}
 
@@ -240,8 +240,8 @@ class ModelsBaseCache extends EventEmitter {
 				localRecord[field] = record;
 			}
 
-			this.emit(`join:${field}:inserted`, localRecord, record);
-			this.emit(`join:${field}:changed`, 'inserted', localRecord, record);
+			this.emit(`join:${ field }:inserted`, localRecord, record);
+			this.emit(`join:${ field }:changed`, 'inserted', localRecord, record);
 		}
 	}
 
@@ -265,8 +265,8 @@ class ModelsBaseCache extends EventEmitter {
 				localRecord[field] = record;
 			}
 
-			this.emit(`join:${field}:inserted`, localRecord, record);
-			this.emit(`join:${field}:changed`, 'inserted', localRecord, record);
+			this.emit(`join:${ field }:inserted`, localRecord, record);
+			this.emit(`join:${ field }:changed`, 'inserted', localRecord, record);
 		}
 	}
 
@@ -296,8 +296,8 @@ class ModelsBaseCache extends EventEmitter {
 				localRecord[field] = undefined;
 			}
 
-			this.emit(`join:${field}:removed`, localRecord, record);
-			this.emit(`join:${field}:changed`, 'removed', localRecord, record);
+			this.emit(`join:${ field }:removed`, localRecord, record);
+			this.emit(`join:${ field }:changed`, 'removed', localRecord, record);
 		}
 	}
 
@@ -324,7 +324,7 @@ class ModelsBaseCache extends EventEmitter {
 	addToIndex(indexName, record) {
 		const index = this.indexes[indexName];
 		if (!index) {
-			console.error(`Index not defined ${indexName}`);
+			console.error(`Index not defined ${ indexName }`);
 			return;
 		}
 
@@ -359,7 +359,7 @@ class ModelsBaseCache extends EventEmitter {
 	removeFromIndex(indexName, record) {
 		const index = this.indexes[indexName];
 		if (!this.indexes[indexName]) {
-			console.error(`Index not defined ${indexName}`);
+			console.error(`Index not defined ${ indexName }`);
 			return;
 		}
 
@@ -448,7 +448,7 @@ class ModelsBaseCache extends EventEmitter {
 			this.insert(data[i]);
 		}
 		console.log(String(data.length), 'records load from', this.collectionName);
-		RocketChat.statsTracker.timing('cache.load', RocketChat.statsTracker.now() - time, [`collection:${this.collectionName}`]);
+		RocketChat.statsTracker.timing('cache.load', RocketChat.statsTracker.now() - time, [`collection:${ this.collectionName }`]);
 
 		this.startSync();
 		this.loaded = true;
