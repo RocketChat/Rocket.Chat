@@ -1,17 +1,9 @@
-
-
 const Grid = Npm.require('gridfs-stream');
-
 const stream = Npm.require('stream');
-
 const fs = Npm.require('fs');
-
 const path = Npm.require('path');
-
 const mkdirp = Npm.require('mkdirp');
-
 const gm = Npm.require('gm');
-
 const exec = Npm.require('child_process').exec;
 
 Grid.tryParseObjectId = function() {
