@@ -37,3 +37,13 @@ RocketChat.models.Users.disable2FAByUserId = function(userId) {
 		}
 	});
 };
+
+RocketChat.models.Users.update2FABackupCodesByUserId = function(userId, backupCodes) {
+	return this.update({
+		_id: userId
+	}, {
+		$set: {
+			'services.totp.hashedBackup': backupCodes
+		}
+	});
+};
