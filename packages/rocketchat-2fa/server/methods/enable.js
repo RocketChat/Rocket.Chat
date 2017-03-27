@@ -1,5 +1,5 @@
 Meteor.methods({
-	enable2fa() {
+	'2fa:enable'() {
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('not-authorized');
 		}

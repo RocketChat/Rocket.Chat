@@ -1,5 +1,5 @@
 Meteor.methods({
-	verifyTemp2FAToken(userToken) {
+	'2fa:validateTempToken'(userToken) {
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('not-authorized');
 		}
