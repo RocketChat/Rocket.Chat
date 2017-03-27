@@ -14,7 +14,12 @@ RocketChat.callbacks.add('onValidateLogin', (login) => {
 			throw new Meteor.Error('totp-required', 'TOTP Required');
 		}
 
-		const verified = RocketChat.TOTP.verify(login.user.services.totp.secret, totp.code);
+		const verified = RocketChat.TOTP.verify({
+			secret: login.user.services.totp.secret,
+			token: totp.code,
+			userId: login.user._id,
+			backupTokens: login.user.services.totp.hashedBackup
+		});
 
 		if (verified !== true) {
 			throw new Meteor.Error('totp-invalid', 'TOTP Invalid');

@@ -1,24 +1,26 @@
 Meteor.methods({
-	verifyTemp2FAToken(userToken) {
+	'2fa:regenerateCodes'(userToken) {
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('not-authorized');
 		}
 
 		const user = Meteor.user();
 
-		if (!user.services || !user.services.totp || !user.services.totp.tempSecret) {
+		if (!user.services || !user.services.totp || !user.services.totp.enabled) {
 			throw new Meteor.Error('invalid-totp');
 		}
 
 		const verified = RocketChat.TOTP.verify({
-			secret: user.services.totp.tempSecret,
-			token: userToken
+			secret: user.services.totp.secret,
+			token: userToken,
+			userId: Meteor.userId(),
+			backupTokens: user.services.totp.hashedBackup
 		});
 
 		if (verified) {
 			const { codes, hashedCodes } = RocketChat.TOTP.generateCodes();
 
-			RocketChat.models.Users.enable2FAAndSetSecretAndCodesByUserId(Meteor.userId(), user.services.totp.tempSecret, hashedCodes);
+			RocketChat.models.Users.update2FABackupCodesByUserId(Meteor.userId(), hashedCodes);
 			return { codes };
 		}
 	}
