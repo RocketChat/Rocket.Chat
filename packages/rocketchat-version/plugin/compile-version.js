@@ -1,12 +1,9 @@
 //let Future, VersionCompiler, async, exec, os;
+
 let VersionCompiler = undefined;
-
 const exec = Npm.require('child_process').exec;
-
 const os = Npm.require('os');
-
 const Future = Npm.require('fibers/future');
-
 const async = Npm.require('async');
 
 Plugin.registerCompiler({
@@ -21,11 +18,10 @@ VersionCompiler = (function() {
 	VersionCompiler.prototype.processFilesForTarget = function(files) {
 		const future = new Future;
 		const processFile = function(file, cb) {
-			let output;
 			if (!file.getDisplayPath().match(/rocketchat\.info$/)) {
 				return cb();
 			}
-			output = JSON.parse(file.getContentsAsString());
+			let output = JSON.parse(file.getContentsAsString());
 			output.build = {
 				date: new Date().toISOString(),
 				nodeVersion: process.version,
@@ -54,18 +50,12 @@ VersionCompiler = (function() {
 					};
 				}
 				return exec('git describe --abbrev=0 --tags', function(err, result) {
-					let ref;
-					if (err == null) {
-						if ((ref = output.commit) != null) {
-							ref.tag = result.replace('\n', '');
-						}
+					if (err == null && output.commit != null) {
+						output.commit.tag = result.replace('\n', '');
 					}
 					return exec('git rev-parse --abbrev-ref HEAD', function(err, result) {
-						let ref1;
-						if (err == null) {
-							if ((ref1 = output.commit) != null) {
-								ref1.branch = result.replace('\n', '');
-							}
+						if (err == null && output.commit != null) {
+							output.commit.branch = result.replace('\n', '');
 						}
 						output = `RocketChat.Info = ${ JSON.stringify(output, null, 4) };`;
 						file.addJavaScript({
