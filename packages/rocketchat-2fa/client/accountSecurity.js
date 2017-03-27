@@ -26,7 +26,7 @@ Template.accountSecurity.helpers({
 
 Template.accountSecurity.events({
 	'click .enable-2fa'(event, instance) {
-		Meteor.call('enable2fa', (error, result) => {
+		Meteor.call('2fa:enable', (error, result) => {
 			instance.imageData.set(qrcode(result.url, { size: 200 }));
 
 			instance.state.set('registering');
@@ -52,7 +52,7 @@ Template.accountSecurity.events({
 				return;
 			}
 
-			Meteor.call('disable2fa', code, (error, result) => {
+			Meteor.call('2fa:disable', code, (error, result) => {
 				if (error) {
 					return toastr.error(t(error.error));
 				}
@@ -69,7 +69,7 @@ Template.accountSecurity.events({
 	'submit .verify-code'(event, instance) {
 		event.preventDefault();
 
-		Meteor.call('verifyTemp2FAToken', instance.find('#testCode').value, (error, result) => {
+		Meteor.call('2fa:validateTempToken', instance.find('#testCode').value, (error, result) => {
 			if (result) {
 				instance.showBackupCodes(result.codes);
 
