@@ -19,7 +19,7 @@ RocketChat._setEmail = function(userId, email) {
 
 	// Check email availability
 	if (!RocketChat.checkEmailAvailability(email)) {
-		throw new Meteor.Error('error-field-unavailable', email + ' is already in use :(', { function: '_setEmail', field: email });
+		throw new Meteor.Error('error-field-unavailable', `${ email } is already in use :(`, { function: '_setEmail', field: email });
 	}
 
 	// Set new email

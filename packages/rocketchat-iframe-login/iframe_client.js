@@ -59,9 +59,9 @@ class IframeLogin {
 		}
 
 		if (window.cordova) {
-			iframeUrl += separator + 'client=cordova';
+			iframeUrl += `${ separator }client=cordova`;
 		} else if (navigator.userAgent.indexOf('Electron') > -1) {
-			iframeUrl += separator + 'client=electron';
+			iframeUrl += `${ separator }client=electron`;
 		}
 
 		HTTP.call(this.apiMethod, this.apiUrl, options, (error, result) => {
