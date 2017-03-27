@@ -43,9 +43,10 @@ class HelpRequestApi {
 	}
 
 	static getUrlForRoom(room) {
-		const siteUrl = RocketChat.settings.get('Site_Url');
+		const routeLink = RocketChat.roomTypes.getRouteLink(room.t, room);
+		const roomLink = Meteor.absoluteUrl() + routeLink.slice(1, routeLink.length);
 
-		return siteUrl + 'channel/' + room.name;
+		return roomLink;
 	}
 
 	_findUsers(userDescriptions) {
