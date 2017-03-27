@@ -1,6 +1,6 @@
 RocketChat.Migrations.add({
 	version: 65,
-	up: function() {
+	up() {
 		if (RocketChat && RocketChat.models && RocketChat.models.Settings) {
 
 			// New color settings - start with old settings as defaults

@@ -7,13 +7,13 @@ Template.livechatOfficeHours.helpers({
 		return LivechatOfficeHour.find({}, { sort: { code: 1 } });
 	},
 	startName(day) {
-		return day.day + '_start';
+		return `${ day.day }_start`;
 	},
 	finishName(day) {
-		return day.day + '_finish';
+		return `${ day.day }_finish`;
 	},
 	openName(day) {
-		return day.day + '_open';
+		return `${ day.day }_open`;
 	},
 	start(day) {
 		return Template.instance().dayVars[day.day].start.get();

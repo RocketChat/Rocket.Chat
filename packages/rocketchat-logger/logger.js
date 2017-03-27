@@ -1,43 +1,47 @@
 const Template = Package.templating.Template;
 
 Template.log = false;
+
 Template.logMatch = /.*/;
 
 Template.enableLogs = function(log) {
 	Template.logMatch = /.*/;
-	Template.log = true;
 	if (log === false) {
 		return Template.log = false;
-	}
-	if (log instanceof RegExp) {
-		return Template.logMatch = log;
+	} else {
+		Template.log = true;
+		if (log instanceof RegExp) {
+			return Template.logMatch = log;
+		}
 	}
 };
 
 const wrapHelpersAndEvents = function(original, prefix, color) {
 	return function(dict) {
+
 		const template = this;
-		const func = (name, fn) => {
-			if (!fn instanceof Function) {
-				return;
+		const fn1 = function(name, fn) {
+			if (fn instanceof Function) {
+				return dict[name] = function() {
+
+					const result = fn.apply(this, arguments);
+					if (Template.log === true) {
+						const completeName = `${ prefix }:${ template.viewName.replace('Template.', '') }.${ name }`;
+						if (Template.logMatch.test(completeName)) {
+							console.log(`%c${ completeName }`, `color: ${ color }`, {
+								args: arguments,
+								scope: this,
+								result
+							});
+						}
+					}
+					return result;
+				};
 			}
-			return dict[name] = function() {
-				const result = fn.apply(this, arguments);
-				if (Template.log !== false) {
-					return;
-				}
-				const completeName = prefix + ':' + (template.viewName.replace('Template.', '')) + '.' + name;
-				if (!Template.logMatch.test(completeName)) {
-					return;
-				}
-				console.log('%c' + completeName, 'color: ' + color, {
-					args: arguments,
-					scope: this,
-					result
-				});
-			};
 		};
-		Object.keys(dict).forEach(key => func(key, dict[key]));
+		_.each(name, (fn, name) => {
+			fn1(name, fn);
+		});
 		return original.call(template, dict);
 	};
 };
@@ -52,18 +56,17 @@ const wrapLifeCycle = function(original, prefix, color) {
 		if (fn instanceof Function) {
 			const wrap = function() {
 				const result = fn.apply(this, arguments);
-				if (Template.log !== true) {
-					return;
+				if (Template.log === true) {
+					const completeName = `${ prefix }:${ template.viewName.replace('Template.', '') }.${ name }`;
+					if (Template.logMatch.test(completeName)) {
+						console.log(`%c${ completeName }`, `color: ${ color }; font-weight: bold`, {
+							args: arguments,
+							scope: this,
+							result
+						});
+					}
 				}
-				const completeName = prefix + ':' + (template.viewName.replace('Template.', ''));
-				if (!Template.logMatch.test(completeName)) {
-					return;
-				}
-				console.log('%c' + completeName, 'color: ' + color + '; font-weight: bold', {
-					args: arguments,
-					scope: this,
-					result: result
-				});
+				return result;
 			};
 			return original.call(template, wrap);
 		} else {

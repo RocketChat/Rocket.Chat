@@ -19,7 +19,7 @@ RocketChat._setEmail = function(userId, email) {
 
 	// Check email availability
 	if (!RocketChat.checkEmailAvailability(email)) {
-		throw new Meteor.Error('error-field-unavailable', email + ' is already in use :(', { function: '_setEmail', field: email });
+		throw new Meteor.Error('error-field-unavailable', `${ email } is already in use :(`, { function: '_setEmail', field: email });
 	}
 
 	// Set new email
@@ -29,5 +29,5 @@ RocketChat._setEmail = function(userId, email) {
 };
 
 RocketChat.setEmail = RocketChat.RateLimiter.limitFunction(RocketChat._setEmail, 1, 60000, {
-	0: function(userId) { return !userId || !RocketChat.authz.hasPermission(userId, 'edit-other-user-info'); } // Administrators have permission to change others emails, so don't limit those
+	0(userId) { return !userId || !RocketChat.authz.hasPermission(userId, 'edit-other-user-info'); } // Administrators have permission to change others emails, so don't limit those
 });

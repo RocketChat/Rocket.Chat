@@ -90,17 +90,17 @@ class _Logger {
 			this[type] = function(...args) {
 				return self._log.call(self, {
 					section: this.__section,
-					type: type,
+					type,
 					level: typeConfig.level,
 					method: typeConfig.name,
 					'arguments': args
 				});
 			};
 
-			self[`${type}_box`] = function(...args) {
+			self[`${ type }_box`] = function(...args) {
 				return self._log.call(self, {
 					section: this.__section,
-					type: type,
+					type,
 					box: true,
 					level: typeConfig.level,
 					method: typeConfig.name,
@@ -120,18 +120,18 @@ class _Logger {
 					return self._log.call(self, {
 						section: this.__section,
 						type: typeConfig.type,
-						level: typeConfig.level || defaultTypes[typeConfig.type] ? defaultTypes[typeConfig.type].level : null,
-						method: method,
+						level: typeConfig.level != null ? typeConfig.level : defaultTypes[typeConfig.type] && defaultTypes[typeConfig.type].level,
+						method,
 						'arguments': args
 					});
 				};
-				this[`${method}_box`] = function(args) {
+				this[`${ method }_box`] = function(...args) {
 					return self._log.call(self, {
 						section: this.__section,
 						type: typeConfig.type,
 						box: true,
-						level: typeConfig.level || defaultTypes[typeConfig.type] ? defaultTypes[typeConfig.type].level : null,
-						method: method,
+						level: typeConfig.level != null ? typeConfig.level : defaultTypes[typeConfig.type] && defaultTypes[typeConfig.type].level,
+						method,
 						'arguments': args
 					});
 				};
@@ -142,11 +142,11 @@ class _Logger {
 				this[section] = {};
 				_.each(defaultTypes, (typeConfig, type) => {
 					self[section][type] = () => self[type].apply({__section: name}, arguments);
-					self[section][`${type}_box`] = () => self[`${type}_box`].apply({__section: name}, arguments);
+					self[section][`${ type }_box`] = () => self[`${ type }_box`].apply({__section: name}, arguments);
 				});
 				_.each(this.config.methods, (typeConfig, method) => {
 					self[section][method] = () => self[method].apply({__section: name}, arguments);
-					self[section][`${method}_box`] = () => self[`${method}_box`].apply({__section: name}, arguments);
+					self[section][`${ method }_box`] = () => self[`${ method }_box`].apply({__section: name}, arguments);
 				});
 			});
 		}
@@ -154,7 +154,10 @@ class _Logger {
 		LoggerManager.register(this);
 	}
 	getPrefix(options) {
-		let prefix = `${this.name} ➔ ${options.section}` + options.section ? `.${options.method}` : '';
+		let prefix = `${ this.name } ➔ ${ options.method }`;
+		if (options.section) {
+			prefix = `${ this.name } ➔ ${ options.section }.${ options.method }`;
+		}
 		const details = this._getCallerDetails();
 		const detailParts = [];
 		if (details['package'] && (LoggerManager.showPackage === true || options.type === 'error')) {
@@ -162,7 +165,7 @@ class _Logger {
 		}
 		if (LoggerManager.showFileAndLine === true || options.type === 'error') {
 			if ((details.file != null) && (details.line != null)) {
-				detailParts.push(`${details.file}:${details.line}`);
+				detailParts.push(`${ details.file }:${ details.line }`);
 			} else {
 				if (details.file != null) {
 					detailParts.push(details.file);
@@ -177,7 +180,7 @@ class _Logger {
 			prefix = prefix[defaultTypes[options.type].color];
 		}
 		if (detailParts.length > 0) {
-			prefix = `${detailParts.join(' ')} ${prefix}`;
+			prefix = `${ detailParts.join(' ') } ${ prefix }`;
 		}
 		return prefix;
 	}
@@ -234,18 +237,18 @@ class _Logger {
 
 		len = Math.max.apply(null, message.map(line => line.length));
 
-		const topLine = '+--' + s.pad('', len, '-') + '--+';
-		const separator = '|  ' + s.pad('', len, '') + '  |';
+		const topLine = `+--${ s.pad('', len, '-') }--+`;
+		const separator = `|  ${ s.pad('', len, '') }  |`;
 		let lines = [];
 
 		lines.push(topLine);
 		if (title) {
-			lines.push('|  ' + s.lrpad(title, len) + '  |');
+			lines.push(`|  ${ s.lrpad(title, len) }  |`);
 			lines.push(topLine);
 		}
 		lines.push(separator);
 
-		lines = [...lines, ...message.map(line => '|  ' + s.rpad(line, len) + '  |')];
+		lines = [...lines, ...message.map(line => `|  ${ s.rpad(line, len) }  |`)];
 
 		lines.push(separator);
 		lines.push(topLine);
@@ -257,7 +260,9 @@ class _Logger {
 			LoggerManager.addToQueue(this, arguments);
 			return;
 		}
-		options.level = options.level || 1;
+		if (options.level == null) {
+			options.level = 1;
+		}
 
 		if (LoggerManager.logLevel < options.level) {
 			return;

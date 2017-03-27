@@ -1,9 +1,10 @@
 import moment from 'moment';
 // TODO: remove this globals
 /* globals ansispan stdout readMessage*/
+
 Template.viewLogs.onCreated(function() {
 	this.subscribe('stdout');
-	this.atBottom = true;
+	return this.atBottom = true;
 });
 
 Template.viewLogs.helpers({
@@ -40,7 +41,7 @@ Template.viewLogs.onRendered(function() {
 	const wrapperUl = this.find('.terminal');
 	const newLogs = this.find('.new-logs');
 	const template = this;
-	template.isAtBottom = (scrollThreshold) => {
+	template.isAtBottom = function(scrollThreshold) {
 		if (scrollThreshold == null) {
 			scrollThreshold = 0;
 		}
@@ -50,7 +51,7 @@ Template.viewLogs.onRendered(function() {
 		}
 		return false;
 	};
-	template.sendToBottom = () => {
+	template.sendToBottom = function() {
 		wrapper.scrollTop = wrapper.scrollHeight - wrapper.clientHeight;
 		return newLogs.className = 'new-logs not';
 	};
@@ -59,7 +60,7 @@ Template.viewLogs.onRendered(function() {
 		readMessage.enable();
 		return readMessage.read();
 	};
-	template.sendToBottomIfNecessary = () => {
+	template.sendToBottomIfNecessary = function() {
 		if (template.atBottom === true && template.isAtBottom() !== true) {
 			return template.sendToBottom();
 		} else if (template.atBottom === false) {
@@ -69,47 +70,55 @@ Template.viewLogs.onRendered(function() {
 	template.sendToBottomIfNecessaryDebounced = _.debounce(template.sendToBottomIfNecessary, 10);
 	template.sendToBottomIfNecessary();
 	if (window.MutationObserver == null) {
-		wrapperUl.addEventListener('DOMSubtreeModified', () => template.sendToBottomIfNecessaryDebounced());
+		wrapperUl.addEventListener('DOMSubtreeModified', function() {
+			return template.sendToBottomIfNecessaryDebounced();
+		});
 	} else {
-		const observer = new MutationObserver((mutations) => {
-			mutations.forEach(() => template.sendToBottomIfNecessaryDebounced());
+		const observer = new MutationObserver(function(mutations) {
+			return mutations.forEach(function() {
+				return template.sendToBottomIfNecessaryDebounced();
+			});
 		});
 		observer.observe(wrapperUl, {
 			childList: true
 		});
 	}
-	template.onWindowResize = () => {
-		Meteor.defer(() => {
+	template.onWindowResize = function() {
+		return Meteor.defer(function() {
 			return template.sendToBottomIfNecessaryDebounced();
 		});
 	};
 	window.addEventListener('resize', template.onWindowResize);
-	wrapper.addEventListener('mousewheel', () => {
+	wrapper.addEventListener('mousewheel', function() {
 		template.atBottom = false;
-		Meteor.defer(() => {
+		return Meteor.defer(function() {
 			return template.checkIfScrollIsAtBottom();
 		});
 	});
-	wrapper.addEventListener('wheel', () => {
+	wrapper.addEventListener('wheel', function() {
 		template.atBottom = false;
-		Meteor.defer(() => template.checkIfScrollIsAtBottom());
-	});
-	wrapper.addEventListener('touchstart', () => {
-		template.atBottom = false;
-	});
-	wrapper.addEventListener('touchend', () => {
-		Meteor.defer(() => {
+		return Meteor.defer(function() {
 			return template.checkIfScrollIsAtBottom();
 		});
-		Meteor.setTimeout(() => {
+	});
+	wrapper.addEventListener('touchstart', function() {
+		return template.atBottom = false;
+	});
+	wrapper.addEventListener('touchend', function() {
+		Meteor.defer(function() {
+			return template.checkIfScrollIsAtBottom();
+		});
+		Meteor.setTimeout(function() {
 			return template.checkIfScrollIsAtBottom();
 		}, 1000);
-		Meteor.setTimeout(() => {
+		return Meteor.setTimeout(function() {
 			return template.checkIfScrollIsAtBottom();
 		}, 2000);
 	});
-	wrapper.addEventListener('scroll', () => {
+	return wrapper.addEventListener('scroll', function() {
 		template.atBottom = false;
-		Meteor.defer(() => template.checkIfScrollIsAtBottom());
+		return Meteor.defer(function() {
+			return template.checkIfScrollIsAtBottom();
+		});
 	});
 });

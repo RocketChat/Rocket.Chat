@@ -11,7 +11,7 @@ const packagePath = path.join(path.resolve('.'), 'packages', 'rocketchat-livecha
 const pluginPath = path.join(packagePath, 'plugin');
 
 if (process.platform === 'win32') {
-	shell.exec(pluginPath+'/build.bat');
+	shell.exec(`${ pluginPath }/build.bat`);
 } else {
-	shell.exec('sh '+pluginPath+'/build.sh');
+	shell.exec(`sh ${ pluginPath }/build.sh`);
 }

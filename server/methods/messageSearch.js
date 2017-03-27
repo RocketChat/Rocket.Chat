@@ -1,5 +1,5 @@
 Meteor.methods({
-	messageSearch: function(text, rid, limit) {
+	messageSearch(text, rid, limit) {
 		const result = {
 			messages: [],
 			users: [],

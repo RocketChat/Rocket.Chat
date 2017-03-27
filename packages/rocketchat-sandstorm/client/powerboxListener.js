@@ -21,7 +21,7 @@ if (Meteor.settings.public.sandstorm) {
 		const rpcId = Math.random().toString();
 		callbackMap[rpcId] = cb;
 		window.parent.postMessage({ powerboxRequest: {
-			rpcId: rpcId,
+			rpcId,
 			query: [interfaces[interfaceName]]
 		}}, '*');
 	};

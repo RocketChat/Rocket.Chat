@@ -38,9 +38,9 @@ Template.membersList.helpers({
 					if (utcOffset === userUtcOffset) {
 						utcOffset = '';
 					} else if (utcOffset > 0) {
-						utcOffset = `+${utcOffset}`;
+						utcOffset = `+${ utcOffset }`;
 					} else {
-						utcOffset = `(UTC ${utcOffset})`;
+						utcOffset = `(UTC ${ utcOffset })`;
 					}
 				}
 			}
@@ -79,7 +79,7 @@ Template.membersList.helpers({
 	},
 
 	canAddUser() {
-		const roomData = Session.get(`roomData${this._id}`);
+		const roomData = Session.get(`roomData${ this._id }`);
 		if (!roomData) { return ''; }
 		return (() => {
 			switch (roomData.t) {
@@ -150,7 +150,7 @@ Template.membersList.events({
 
 	'autocompleteselect #user-add-search'(event, template, doc) {
 
-		const roomData = Session.get(`roomData${template.data.rid}`);
+		const roomData = Session.get(`roomData${ template.data.rid }`);
 
 		if (['c', 'p'].includes(roomData.t)) {
 			return Meteor.call('addUserToRoom', { rid: roomData._id, username: doc.username }, function(error) {

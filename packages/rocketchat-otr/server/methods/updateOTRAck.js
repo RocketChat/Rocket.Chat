@@ -1,5 +1,5 @@
 Meteor.methods({
-	updateOTRAck: function(_id, ack) {
+	updateOTRAck(_id, ack) {
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'updateOTRAck' });
 		}
