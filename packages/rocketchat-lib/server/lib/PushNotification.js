@@ -2,7 +2,7 @@
 class PushNotification {
 	getNotificationId(roomId) {
 		const serverId = RocketChat.settings.get('uniqueID');
-		return this.hash(`${serverId}|${roomId}`); // hash
+		return this.hash(`${ serverId }|${ roomId }`); // hash
 	}
 
 	hash(str) {
@@ -19,10 +19,10 @@ class PushNotification {
 	send({ roomName, roomId, username, message, usersTo, payload }) {
 		let title;
 		if (roomName && roomName !== '') {
-			title = `${roomName}`;
-			message = `${username}: ${message}`;
+			title = `${ roomName }`;
+			message = `${ username }: ${ message }`;
 		} else {
-			title = `${username}`;
+			title = `${ username }`;
 		}
 		const icon = RocketChat.settings.get('Assets_favicon_192').url || RocketChat.settings.get('Assets_favicon_192').defaultUrl;
 		const config = {
