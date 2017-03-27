@@ -54,7 +54,7 @@ export const VRecDialog = new __initClass__(class {
 			top = 10;
 		}
 
-		return dialog.css({ top: top + 'px', left: left + 'px' });
+		return dialog.css({ top: `${ top }px`, left: `${ left }px` });
 	}
 
 	initializeCamera() {
