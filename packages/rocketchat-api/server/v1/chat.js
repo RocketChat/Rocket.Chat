@@ -10,7 +10,7 @@ RocketChat.API.v1.addRoute('chat.delete', { authRequired: true }, {
 		const msg = RocketChat.models.Messages.findOneById(this.bodyParams.msgId, { fields: { u: 1, rid: 1 }});
 
 		if (!msg) {
-			return RocketChat.API.v1.failure(`No message found with the id of "${this.bodyParams.msgId}".`);
+			return RocketChat.API.v1.failure(`No message found with the id of "${ this.bodyParams.msgId }".`);
 		}
 
 		if (this.bodyParams.roomId !== msg.rid) {
@@ -56,7 +56,7 @@ RocketChat.API.v1.addRoute('chat.update', { authRequired: true }, {
 
 		//Ensure the message exists
 		if (!msg) {
-			return RocketChat.API.v1.failure(`No message found with the id of "${this.bodyParams.msgId}".`);
+			return RocketChat.API.v1.failure(`No message found with the id of "${ this.bodyParams.msgId }".`);
 		}
 
 		if (this.bodyParams.roomId !== msg.rid) {

@@ -24,7 +24,7 @@ Meteor.methods({
 		if (firstUnreadMessage.ts >= lastSeen) {
 			return logger.connection.debug('Provided message is already marked as unread');
 		}
-		logger.connection.debug('Updating unread  message of ' + originalMessage.ts + ' as the first unread');
+		logger.connection.debug(`Updating unread  message of ${ originalMessage.ts } as the first unread`);
 		return RocketChat.models.Subscriptions.setAsUnreadByRoomIdAndUserId(originalMessage.rid, Meteor.userId(), originalMessage.ts);
 	}
 });
