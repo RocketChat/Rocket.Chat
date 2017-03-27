@@ -3,7 +3,6 @@
  * @param {Object} message - The message object
  */
 
-
 function MapView(message) {
 
 		// get MapView settings
@@ -17,9 +16,9 @@ function MapView(message) {
 
 			// confirm we have an api key set, and generate the html required for the mapview
 		if (mv_googlekey && mv_googlekey.length) {
-			message.html = `<a href="https://maps.google.com/maps?daddr=${latitude},${longitude}" target="_blank"><img src="https://maps.googleapis.com/maps/api/staticmap?zoom=14&size=250x250&markers=color:gray%7Clabel:%7C${latitude},${longitude}&key=${mv_googlekey}" /></a>`;
+			message.html = `<a href="https://maps.google.com/maps?daddr=${ latitude },${ longitude }" target="_blank"><img src="https://maps.googleapis.com/maps/api/staticmap?zoom=14&size=250x250&markers=color:gray%7Clabel:%7C${ latitude },${ longitude }&key=${ mv_googlekey }" /></a>`;
 		} else {
-			message.html = `<a href="https://maps.google.com/maps?daddr=${latitude},${longitude}" target="_blank">${TAPi18n.__('Shared_Location')}</a>`;
+			message.html = `<a href="https://maps.google.com/maps?daddr=${ latitude },${ longitude }" target="_blank">${ TAPi18n.__('Shared_Location') }</a>`;
 		}
 	}
 
