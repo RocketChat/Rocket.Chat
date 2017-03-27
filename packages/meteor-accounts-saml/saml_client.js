@@ -60,8 +60,8 @@ const openCenteredPopup = function(url, width, height) {
 		// positioning the popup centered relative to the current window
 		const left = screenX + (outerWidth - width) / 2;
 		const top = screenY + (outerHeight - height) / 2;
-		const features = ('width=' + width + ',height=' + height +
-			',left=' + left + ',top=' + top + ',scrollbars=yes');
+		const features = (`width=${ width },height=${ height
+			},left=${ left },top=${ top },scrollbars=yes`);
 
 		newwindow = window.open(url, 'Login', features);
 		if (newwindow.focus) {
@@ -74,7 +74,7 @@ const openCenteredPopup = function(url, width, height) {
 Accounts.saml.initiateLogin = function(options, callback, dimensions) {
 	// default dimensions that worked well for facebook and google
 	const popup = openCenteredPopup(
-		Meteor.absoluteUrl('_saml/authorize/' + options.provider + '/' + options.credentialToken), (dimensions && dimensions.width) || 650, (dimensions && dimensions.height) || 500);
+		Meteor.absoluteUrl(`_saml/authorize/${ options.provider }/${ options.credentialToken }`), (dimensions && dimensions.width) || 650, (dimensions && dimensions.height) || 500);
 
 	const checkPopupOpen = setInterval(function() {
 		let popupClosed;
@@ -124,6 +124,6 @@ Meteor.logoutWithSaml = function(options/*, callback*/) {
 		}
 		// A nasty bounce: 'result' has the SAML LogoutRequest but we need a proper 302 to redirected from the server.
 		//window.location.replace(Meteor.absoluteUrl('_saml/sloRedirect/' + options.provider + '/?redirect='+result));
-		window.location.replace(Meteor.absoluteUrl('_saml/sloRedirect/' + options.provider + '/?redirect=' + encodeURIComponent(result)));
+		window.location.replace(Meteor.absoluteUrl(`_saml/sloRedirect/${ options.provider }/?redirect=${ encodeURIComponent(result) }`));
 	});
 };
