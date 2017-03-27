@@ -38,6 +38,19 @@
 						</div>
 					</div>
 				</fieldset>
+
+
+				{{#if isEnabled}}
+					<fieldset>
+						<div class="section">
+							<h1>{{_ "Backup_codes"}}</h1>
+							<div class="section-content border-component-color">
+								<p>{{codesRemaining}}</p>
+								<button class="button regenerate-codes">{{_ "Regenerate_codes"}}</button>
+							</div>
+						</div>
+					</fieldset>
+				{{/if}}
 			</div>
 		</div>
 	</section>

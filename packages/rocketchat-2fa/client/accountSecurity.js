@@ -16,6 +16,11 @@ Template.accountSecurity.helpers({
 	},
 	isRegistering() {
 		return Template.instance().state.get() === 'registering';
+	},
+	codesRemaining() {
+		if (Template.instance().codesRemaining.get()) {
+			return t('You_have_n_codes_remaining', { number: Template.instance().codesRemaining.get() });
+		}
 	}
 });
 
@@ -66,10 +71,7 @@ Template.accountSecurity.events({
 
 		Meteor.call('verifyTemp2FAToken', instance.find('#testCode').value, (error, result) => {
 			if (result) {
-				swal({
-					title: t('Backup_codes'),
-					text: `${ t('Make_sure_you_have_a_copy_of_your_codes') }\n${ result.codes.join('  ') }`
-				});
+				instance.showBackupCodes(result.codes);
 
 				instance.find('#testCode').value = '';
 				instance.state.set();
@@ -77,6 +79,35 @@ Template.accountSecurity.events({
 			} else {
 				toastr.error(t('Invalid_two_factor_code'));
 			}
+		});
+	},
+
+	'click .regenerate-codes'(event, instance) {
+		swal({
+			title: t('Two-factor_authentication'),
+			text: t('Open_your_authentication_app_and_enter_the_code'),
+			type: 'input',
+			inputType: 'text',
+			showCancelButton: true,
+			closeOnConfirm: false,
+			confirmButtonText: t('Verify'),
+			cancelButtonText: t('Cancel')
+		}, (code) => {
+			if (code === false) {
+				return;
+			}
+
+			Meteor.call('2fa:regenerateCodes', code, (error, result) => {
+				if (error) {
+					return toastr.error(t(error.error));
+				}
+
+				if (result) {
+					instance.showBackupCodes(result.codes);
+				} else {
+					return toastr.error(t('Invalid_two_factor_code'));
+				}
+			});
 		});
 	}
 });
@@ -86,4 +117,24 @@ Template.accountSecurity.onCreated(function() {
 	this.imageData = new ReactiveVar();
 
 	this.state = new ReactiveVar();
+
+	this.codesRemaining = new ReactiveVar();
+
+	this.showBackupCodes = (userCodes) => {
+		const backupCodes = userCodes.map((value, index) => {
+			return (index + 1) % 4 === 0 && index < 11 ? `${ value }\n` : `${ value } `;
+		}).join('');
+		const codes = `<code class="text-center allow-text-selection">${ backupCodes }</code>`;
+		swal({
+			title: t('Backup_codes'),
+			text: `${ t('Make_sure_you_have_a_copy_of_your_codes', { codes }) }`,
+			html: true
+		});
+	};
+
+	Meteor.call('2fa:checkCodesRemaining', (error, result) => {
+		if (result) {
+			this.codesRemaining.set(result.remaining);
+		}
+	});
 });

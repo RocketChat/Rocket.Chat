@@ -6,7 +6,12 @@ Meteor.methods({
 
 		const user = Meteor.user();
 
-		const verified = RocketChat.TOTP.verify(user.services.totp.secret, code);
+		const verified = RocketChat.TOTP.verify({
+			secret: user.services.totp.secret,
+			token: code,
+			userId: Meteor.userId(),
+			backupTokens: user.services.totp.hashedBackup
+		});
 
 		if (!verified) {
 			return false;
