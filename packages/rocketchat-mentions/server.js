@@ -3,7 +3,7 @@
 * @param {Object} message - The message object
 */
 
-const MentionsServer = function(message) {
+function MentionsServer(message) {
 	const msgMentionRegex = new RegExp(`(?:^|\\s|\\n)(?:@)(${ RocketChat.settings.get('UTF8_Names_Validation') })`, 'g');
 	const mentionsAll = [];
 	const userMentions = [];
@@ -44,6 +44,6 @@ const MentionsServer = function(message) {
 		}
 	}
 	return message;
-};
+}
 
 RocketChat.callbacks.add('beforeSaveMessage', MentionsServer, RocketChat.callbacks.priority.HIGH, 'mentions');
