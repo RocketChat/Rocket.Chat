@@ -3,7 +3,7 @@
 * Msg is a named function that will replace /msg commands
 */
 
-const Msg = function Msg(command, params, item) {
+function Msg(command, params, item) {
 	if (command !== 'msg' || !Match.test(params, String)) {
 		return;
 	}
@@ -41,6 +41,6 @@ const Msg = function Msg(command, params, item) {
 		msg: message
 	};
 	Meteor.call('sendMessage', msgObject);
-};
+}
 
 RocketChat.slashCommands.add('msg', Msg);
