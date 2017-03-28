@@ -1100,7 +1100,7 @@
   "optional": "optional",
   "Use_minor_colors": "Use minor color palette (defaults inherit major colors)",
   "or": "or",
-  "Open_your_authentication_app_and_enter_the_code": "Open your authentication app and enter the code",
+  "Open_your_authentication_app_and_enter_the_code": "Open your authentication app and enter the code. You can also use one of your backup codes.",
   "Order": "Order",
   "OS_Arch": "OS Arch",
   "OS_Cpus": "OS CPU Count",
