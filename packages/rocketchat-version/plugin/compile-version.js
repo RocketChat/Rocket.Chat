@@ -1,10 +1,10 @@
 //let Future, VersionCompiler, async, exec, os;
 
 let VersionCompiler = undefined;
-const exec = Npm.require('child_process').exec;
-const os = Npm.require('os');
-const Future = Npm.require('fibers/future');
-const async = Npm.require('async');
+import {exec} from 'child_process';
+import os from 'os';
+import Future from 'fibers/future';
+import async from 'async';
 
 Plugin.registerCompiler({
 	extensions: ['info']
@@ -12,10 +12,10 @@ Plugin.registerCompiler({
 	return new VersionCompiler();
 });
 
-VersionCompiler = (function() {
-	function VersionCompiler() {}
+VersionCompiler = (class {
+	constructor() {}
 
-	VersionCompiler.prototype.processFilesForTarget = function(files) {
+	processFilesForTarget(files) {
 		const future = new Future;
 		const processFile = function(file, cb) {
 			if (!file.getDisplayPath().match(/rocketchat\.info$/)) {
@@ -69,8 +69,5 @@ VersionCompiler = (function() {
 		};
 		async.each(files, processFile, future.resolver());
 		return future.wait();
-	};
-
-	return VersionCompiler;
-
-}());
+	}
+});
