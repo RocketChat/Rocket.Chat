@@ -1,8 +1,4 @@
-function __initClass__(c) {
-	c.initClass();
-	return c;
-}
-export const VRecDialog = new __initClass__(class {
+export const VRecDialog = class {
 	static initClass() {
 		this.prototype.opened = false;
 		this.prototype.initiated = false;
@@ -64,4 +60,4 @@ export const VRecDialog = new __initClass__(class {
 		}
 		return VideoRecorder.start(this.video);
 	}
-});
+};
