@@ -1,4 +1,4 @@
-export const VRecDialog = class {
+export const VRecDialog = new class {
 	static initClass() {
 		this.prototype.opened = false;
 		this.prototype.initiated = false;
