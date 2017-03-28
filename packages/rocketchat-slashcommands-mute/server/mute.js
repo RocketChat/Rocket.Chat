@@ -3,7 +3,7 @@
 * Mute is a named function that will replace /mute commands
 */
 
-const	Mute = function Mute(command, params, item) {
+RocketChat.slashCommands.add('mute', function Mute(command, params, item) {
 	if (command !== 'mute' || !Match.test(params, String)) {
 		return;
 	}
@@ -26,7 +26,7 @@ const	Mute = function Mute(command, params, item) {
 		});
 		return;
 	}
-	if ((room.usernames || []).contains(username)) {
+	if ((room.usernames || []).includes(username)) {
 		RocketChat.Notifications.notifyUser(Meteor.userId(), 'message', {
 			_id: Random.id(),
 			rid: item.rid,
@@ -40,8 +40,6 @@ const	Mute = function Mute(command, params, item) {
 	}
 	Meteor.call('muteUserInRoom', {
 		rid: item.rid,
-		username: username
+		username
 	});
-};
-
-RocketChat.slashCommands.add('mute', Mute);
+});

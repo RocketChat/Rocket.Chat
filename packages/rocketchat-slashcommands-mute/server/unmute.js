@@ -3,7 +3,7 @@
 * Unmute is a named function that will replace /unmute commands
 */
 
-const	Unmute = function Unmute(command, params, item) {
+RocketChat.slashCommands.add('unmute', function Unmute(command, params, item) {
 
 	if (command !== 'unmute' || !Match.test(params, String)) {
 		return;
@@ -26,7 +26,7 @@ const	Unmute = function Unmute(command, params, item) {
 			}, user.language)
 		});
 	}
-	if ((room.usernames || []).contains(username)) {
+	if ((room.usernames || []).includes(username)) {
 		return RocketChat.Notifications.notifyUser(Meteor.userId(), 'message', {
 			_id: Random.id(),
 			rid: item.rid,
@@ -39,8 +39,6 @@ const	Unmute = function Unmute(command, params, item) {
 	}
 	Meteor.call('unmuteUserInRoom', {
 		rid: item.rid,
-		username: username
+		username
 	});
-};
-
-RocketChat.slashCommands.add('unmute', Unmute);
+});
