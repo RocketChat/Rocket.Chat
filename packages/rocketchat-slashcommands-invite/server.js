@@ -5,15 +5,13 @@
 */
 
 
-const	Invite = function Invite(command, params, item) {
+function Invite(command, params, item) {
 
 	if (command !== 'invite' || !Match.test(params, String)) {
 		return;
 	}
-	let usernames = params.replace(/@/g, '').split(/[\s,]/).filter(function(a) {
-		return '' !== a;
-	});
-	if (0 === usernames.length) {
+	let usernames = params.replace(/@/g, '').split(/[\s,]/).filter((a) => a !== '');
+	if (usernames.length === 0) {
 		return;
 	}
 	const users = Meteor.users.find({
@@ -22,7 +20,7 @@ const	Invite = function Invite(command, params, item) {
 		}
 	});
 	const currentUser = Meteor.users.findOne(Meteor.userId());
-	if (0 === users.count()) {
+	if (users.count() === 0) {
 		RocketChat.Notifications.notifyUser(Meteor.userId(), 'message', {
 			_id: Random.id(),
 			rid: item.rid,
@@ -49,7 +47,7 @@ const	Invite = function Invite(command, params, item) {
 		});
 		return false;
 	});
-	if (0 === usernames.length) {
+	if (usernames.length === 0) {
 		return;
 	}
 	users.forEach(function(user) {
@@ -77,7 +75,7 @@ const	Invite = function Invite(command, params, item) {
 			}
 		}
 	});
-};
+}
 
 RocketChat.slashCommands.add('invite', Invite);
 
