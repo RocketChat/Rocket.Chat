@@ -1,4 +1,4 @@
-RocketChat.slashCommands.add('join', void 0, {
+RocketChat.slashCommands.add('join', null, {
 	description: 'Join_the_given_channel',
 	params: '#channel'
 }, function(err, result, params) {
