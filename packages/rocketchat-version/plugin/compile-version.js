@@ -1,5 +1,3 @@
-//let Future, VersionCompiler, async, exec, os;
-
 let VersionCompiler = undefined;
 import {exec} from 'child_process';
 import os from 'os';
