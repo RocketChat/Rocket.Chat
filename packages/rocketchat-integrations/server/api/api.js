@@ -1,15 +1,11 @@
 /* globals Api Meteor Restivus logger processWebhookMessage*/
 // TODO: remove globals
-const vm = Npm.require('vm');
-
+import vm from 'vm';
 import moment from 'moment';
 
 const compiledScripts = {};
 
-const buildSandbox = function(store) {
-	if (store == null) {
-		store = {};
-	}
+const buildSandbox = function(store = {}) {
 	const sandbox = {
 		_,
 		s,
@@ -50,12 +46,11 @@ const getIntegrationScript = function(integration) {
 		return compiledScript.script;
 	}
 	const script = integration.scriptCompiled;
-	let vmScript = null;
 	const sandboxItems = buildSandbox();
 	try {
 		logger.incoming.info('Will evaluate script of Trigger', integration.name);
 		logger.incoming.debug(script);
-		vmScript = vm.createScript(script, 'script.js');
+		const vmScript = vm.createScript(script, 'script.js');
 		vmScript.runInNewContext(sandboxItems.sandbox);
 		if (sandboxItems.sandbox.Script != null) {
 			compiledScripts[integration._id] = {
@@ -183,8 +178,7 @@ const executeIntegrationRest = function() {
 		let script;
 		try {
 			script = getIntegrationScript(this.integration);
-		} catch (error) {
-			const e = error;
+		} catch (e) {
 			logger.incoming.warn(e);
 			return RocketChat.API.v1.failure(e.message);
 		}
@@ -215,18 +209,17 @@ const executeIntegrationRest = function() {
 			const result = vm.runInNewContext('script.process_incoming_request({ request: request })', sandbox, {
 				timeout: 3000
 			});
-			if (result && result.console.error) {
+			if (result && result.error) {
 				return RocketChat.API.v1.failure(result.error);
 			}
-			this.bodyParams = result != null ? result.content : null;
+			this.bodyParams = result && result.content;
 			logger.incoming.debug('[Process Incoming Request result of Trigger', this.integration.name, ':]');
 			logger.incoming.debug('result', this.bodyParams);
-		} catch (error) {
-			const e = error;
+		} catch ({stack}) {
 			logger.incoming.error('[Error running Script in Trigger', this.integration.name, ':]');
 			logger.incoming.error(this.integration.scriptCompiled.replace(/^/gm, '  '));
 			logger.incoming.error('[Stack:]');
-			logger.incoming.error(e.stack.replace(/^/gm, '  '));
+			logger.incoming.error(stack.replace(/^/gm, '  '));
 			return RocketChat.API.v1.failure('error-running-script');
 		}
 	}
@@ -242,9 +235,8 @@ const executeIntegrationRest = function() {
 			return RocketChat.API.v1.failure('unknown-error');
 		}
 		return RocketChat.API.v1.success();
-	} catch (error) {
-		const e = error;
-		return RocketChat.API.v1.failure(e.error);
+	} catch ({error}) {
+		return RocketChat.API.v1.failure(error);
 	}
 };
 
