@@ -13,5 +13,5 @@ this.getAvatarUrlFromUsername = function(username) {
 	} else if (Meteor.isCordova) {
 		path = Meteor.absoluteUrl().replace(/\/$/, '');
 	}
-	return `${ path }/avatar/${ (encodeURIComponent(username)) }?_dc=${ random }`;
+	return `${ path }/avatar/${ encodeURIComponent(username) }?_dc=${ random }`;
 };
