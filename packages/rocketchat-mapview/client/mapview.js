@@ -11,8 +11,7 @@ function MapView(message) {
 	if (message.location) {
 
 			// GeoJSON is reversed - ie. [lng, lat]
-		const longitude = message.location.coordinates[0];
-		const latitude = message.location.coordinates[1];
+		const [longitude, latitude] = message.location.coordinates;
 
 			// confirm we have an api key set, and generate the html required for the mapview
 		if (mv_googlekey && mv_googlekey.length) {
