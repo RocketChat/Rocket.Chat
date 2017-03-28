@@ -5,7 +5,7 @@
 */
 
 
-const Join = function(command, params, item) {
+RocketChat.slashCommands.add('join', function Join(command, params, item) {
 
 	if (command !== 'join' || !Match.test(params, String)) {
 		return;
@@ -28,12 +28,10 @@ const Join = function(command, params, item) {
 			}, user.language)
 		});
 	}
-	if (room.usernames.indexOf(user.username) > -1) {
+	if (room.usernames.includes(user.username)) {
 		throw new Meteor.Error('error-user-already-in-room', 'You are already in the channel', {
 			method: 'slashCommands'
 		});
 	}
 	Meteor.call('joinRoom', room._id);
-};
-
-RocketChat.slashCommands.add('join', Join);
+});
