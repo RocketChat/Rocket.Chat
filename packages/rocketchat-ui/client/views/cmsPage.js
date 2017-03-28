@@ -1,12 +1,11 @@
 Template.cmsPage.onCreated(function() {
 	this.page = new ReactiveVar('');
-	return Meteor.autorun((function(_this) {
-		return function() {
-			if (Session.get('cmsPage') != null) {
-				return _this.page.set(RocketChat.settings.get(Session.get('cmsPage')));
-			}
-		};
-	})(this));
+	return Meteor.autorun(() => {
+		const cmsPage = Session.get('cmsPage');
+		if (cmsPage != null) {
+			return this.page.set(RocketChat.settings.get(cmsPage));
+		}
+	});
 });
 
 Template.cmsPage.helpers({
