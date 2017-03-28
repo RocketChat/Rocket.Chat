@@ -1,13 +1,16 @@
 import moment from 'moment';
-
+const colors = {
+	good: '#35AC19',
+	warning: '#FCB316',
+	danger: '#D30230'
+};
 const fixCordova = function(url) {
-	let query;
 	if (url && url.indexOf('data:image') === 0) {
 		return url;
 	}
 	if (Meteor.isCordova && (url && url[0] === '/')) {
 		url = Meteor.absoluteUrl().replace(/\/$/, '') + url;
-		query = `rc_uid=${ Meteor.userId() }&rc_token=${ Meteor._localStorage.getItem('Meteor.loginToken') }`;
+		const query = `rc_uid=${ Meteor.userId() }&rc_token=${ Meteor._localStorage.getItem('Meteor.loginToken') }`;
 		if (url.indexOf('?') === -1) {
 			url = `${ url }?${ query }`;
 		} else {
@@ -42,20 +45,11 @@ Template.messageAttachment.helpers({
 		}
 		return true;
 	},
-	getImageHeight(height) {
-		return height || 200;
+	getImageHeight(height = 200) {
+		return height;
 	},
 	color() {
-		switch (this.color) {
-			case 'good':
-				return '#35AC19';
-			case 'warning':
-				return '#FCB316';
-			case 'danger':
-				return '#D30230';
-			default:
-				return this.color;
-		}
+		return colors[this.color] || this.color;
 	},
 	collapsed() {
 		if (this.collapsed != null) {
