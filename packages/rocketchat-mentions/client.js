@@ -3,8 +3,8 @@
  * @param {Object} message - The message object
  */
 
-const MentionsClient = function MentionsClient(message) {
-	let msg = message.html;
+function MentionsClient(message) {
+	let msg = (message && message.html) || '';
 	if (!msg.trim()) {
 		return message;
 	}
@@ -33,7 +33,7 @@ const MentionsClient = function MentionsClient(message) {
 	});
 	message.html = msg;
 	return message;
-};
+}
 
 
 RocketChat.callbacks.add('renderMessage', MentionsClient, RocketChat.callbacks.priority.MEDIUM, 'mentions-message');
