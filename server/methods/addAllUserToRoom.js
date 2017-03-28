@@ -1,8 +1,8 @@
 Meteor.methods({
-	addAllUserToRoom(rid, activeUsersOnly) {
+	addAllUserToRoom(rid, activeUsersOnly = false) {
 
 		check (rid, String);
-		check (activeUsersOnly, Match.Maybe(Boolean));
+		check (activeUsersOnly, Boolean);
 
 		if (RocketChat.authz.hasRole(this.userId, 'admin') === true) {
 			const userCount = RocketChat.models.Users.find().count();
