@@ -3,7 +3,7 @@
  * Me is a named function that will replace /me commands
  * @param {Object} message - The message object
  */
-const Me = function(command, params, item) {
+RocketChat.slashCommands.add('me', function Me(command, params, item) {
 	if (command !== 'me') {
 		return;
 	}
@@ -12,9 +12,7 @@ const Me = function(command, params, item) {
 		msg.msg = `_${ params }_`;
 		Meteor.call('sendMessage', msg);
 	}
-};
-
-RocketChat.slashCommands.add('me', Me, {
+}, {
 	description: 'Displays_action_text',
 	params: 'your_message'
 });
