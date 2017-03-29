@@ -30,6 +30,7 @@ Package.onUse(function(api) {
 		'server/functions/saveReactWhenReadOnly.js',
 		'server/functions/saveRoomType.coffee',
 		'server/functions/saveRoomTopic.coffee',
+		'server/functions/saveRoomAnnouncement.js',
 		'server/functions/saveRoomName.coffee',
 		'server/functions/saveRoomReadOnly.coffee',
 		'server/functions/saveRoomDescription.coffee',
