@@ -132,9 +132,14 @@ Template.accountSecurity.onCreated(function() {
 		});
 	};
 
-	Meteor.call('2fa:checkCodesRemaining', (error, result) => {
-		if (result) {
-			this.codesRemaining.set(result.remaining);
+	this.autorun(() => {
+		const user = Meteor.user();
+		if (user && user.services && user.services.totp && user.services.totp.enabled) {
+			Meteor.call('2fa:checkCodesRemaining', (error, result) => {
+				if (result) {
+					this.codesRemaining.set(result.remaining);
+				}
+			});
 		}
 	});
 });
