@@ -1,6 +1,7 @@
 import toastr from 'toastr'
 import mime from 'mime-type/with-db'
 import moment from 'moment'
+import {VRecDialog} from 'meteor/rocketchat:ui-vrecord'
 
 katexSyntax = ->
 	if RocketChat.katex.katex_enabled()
