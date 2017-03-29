@@ -1,6 +1,7 @@
 import toastr from 'toastr'
 import mime from 'mime-type/with-db'
 import moment from 'moment'
+import {VRecDialog} from 'meteor/rocketchat:ui-vrecord'
 
 katexSyntax = ->
 	if RocketChat.katex.katex_enabled()
@@ -117,6 +118,45 @@ Template.messageBox.helpers
 	showSandstorm: ->
 		return Meteor.settings.public.sandstorm && !Meteor.isCordova
 
+firefoxPasteUpload = (fn) ->
+	user = navigator.userAgent.match(/Firefox\/(\d+)\.\d/)
+	if !user or user[1] > 49
+		return fn
+	return (event, instance) ->
+		if (event.originalEvent.ctrlKey or event.originalEvent.metaKey) and (event.keyCode == 86)
+			textarea = instance.find("textarea")
+			selectionStart = textarea.selectionStart
+			selectionEnd = textarea.selectionEnd
+			contentEditableDiv = instance.find('#msg_contenteditable')
+			contentEditableDiv.focus()
+			Meteor.setTimeout ->
+				pastedImg = contentEditableDiv.querySelector 'img'
+				textareaContent = textarea.value
+				startContent = textareaContent.substring(0, selectionStart)
+				endContent = textareaContent.substring(selectionEnd)
+				restoreSelection = (pastedText) ->
+					textarea.value = startContent + pastedText + endContent
+					textarea.selectionStart = selectionStart + pastedText.length
+					textarea.selectionEnd = textarea.selectionStart
+				contentEditableDiv.innerHTML = '' if pastedImg
+				textarea.focus
+				return if (!pastedImg || contentEditableDiv.innerHTML.length > 0)
+					[].slice.call(contentEditableDiv.querySelectorAll("br")).forEach (el) ->
+						contentEditableDiv.replaceChild(new Text("\n") , el)
+						restoreSelection(contentEditableDiv.innerText)
+				imageSrc = pastedImg.getAttribute("src")
+				if imageSrc.match(/^data:image/)
+					fetch(imageSrc)
+					.then((img)->
+						return img.blob())
+					.then (blob)->
+						fileUpload [{
+							file: blob
+							name: 'Clipboard'
+						}]
+			, 150
+		fn?.apply @, arguments
+
 
 Template.messageBox.events
 	'click .join': (event) ->
@@ -158,7 +198,6 @@ Template.messageBox.events
 
 		if not e.originalEvent.clipboardData?
 			return
-
 		items = e.originalEvent.clipboardData.items
 		files = []
 		for item in items
@@ -173,8 +212,8 @@ Template.messageBox.events
 		else
 			instance.isMessageFieldEmpty.set(false)
 
-	'keydown .input-message': (event) ->
-		chatMessages[@_id].keydown(@_id, event, Template.instance())
+	'keydown .input-message': firefoxPasteUpload((event, instance) ->
+		chatMessages[@_id].keydown(@_id, event, Template.instance()))
 
 	'input .input-message': (event) ->
 		chatMessages[@_id].valueChanged(@_id, event, Template.instance())

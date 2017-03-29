@@ -8,20 +8,25 @@
 		<div class="main-content-flex">
 			<section class="messages-container flex-tab-main-content {{adminClass}}" id="{{windowId}}" aria-label="{{_ "Channel"}}">
 				{{#unless embeddedVersion}}
-				<header class="fixed-title content-background-color border-component-color">
-					{{> burger}}
-					<h2>
-						{{#if showToggleFavorite}}
-							<a href="#favorite" class="toggle-favorite"><i class="{{favorite}}" aria-label="{{_ favoriteLabel}}"></i></a>
-						{{/if}}
-						<i class="{{roomIcon}} status-{{userStatus}}"></i>
-						<span class="room-title">{{roomName}}</span>
-						{{#if isTranslated}}
-							<i class="icon-language" aria-label="{{_ "Translated"}}"></i>
-						{{/if}}
-						<span class="room-topic">{{{RocketChatMarkdown roomTopic}}}</span>
-					</h2>
-				</header>
+					<header class="fixed-title content-background-color border-component-color">
+						{{> burger}}
+						<h2>
+							{{#if showToggleFavorite}}
+								<a href="#favorite" class="toggle-favorite"><i class="{{favorite}}" aria-label="{{_ favoriteLabel}}"></i></a>
+							{{/if}}
+							<i class="{{roomIcon}} status-{{userStatus}}"></i>
+							<span class="room-title">{{roomName}}</span>
+							{{#if isTranslated}}
+								<i class="icon-language" aria-label="{{_ "Translated"}}"></i>
+							{{/if}}
+							<span class="room-topic">{{{RocketChatMarkdown roomTopic}}}</span>
+						</h2>
+					</header>
+					{{#if showAnnouncement}}
+						<div class="fixed-title announcement">
+							{{{RocketChatMarkdown roomAnnouncement}}}
+						</div>
+					{{/if}}
 				{{/unless}}
 				<div class="container-bars {{containerBarsShow unreadData uploading}}">
 					{{#with unreadData}}
