@@ -21,7 +21,7 @@ Package.onUse(function(api) {
 
 	api.addFiles('client/vrecord.html', 'client');
 	api.addFiles('client/vrecord.js', 'client');
-	api.addFiles('client/VRecDialog.js', 'client');
 
 	api.addFiles('server/settings.js', 'server');
+	api.mainModule('client/VRecDialog.js', 'client');
 });
