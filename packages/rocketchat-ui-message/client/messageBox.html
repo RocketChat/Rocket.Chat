@@ -5,6 +5,7 @@
 			{{#if allowedToSend}}
 			<div class="message-input border-component-color">
 				<div class="input-message-container content-background-color">
+					<div id="msg_contenteditable" contenteditable="true" style="height: 0; width: 0; overflow: hidden"></div>
 					<textarea dir="auto" name="msg" maxlength="{{maxMessageLength}}" class="message-form-text input-message autogrow-short" placeholder="{{_ 'Message'}}"></textarea>
 
 					<div class="inner-left-toolbar">
