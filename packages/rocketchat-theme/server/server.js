@@ -1,8 +1,9 @@
 /* globals WebAppHashing */
 
-const less = Npm.require('less');
-const Autoprefixer = Npm.require('less-plugin-autoprefix');
-const crypto = Npm.require('crypto');
+import less from 'less';
+import Autoprefixer from 'less-plugin-autoprefix';
+import crypto from 'crypto';
+
 const logger = new Logger('rocketchat:theme', {
 	methods: {
 		stop_rendering: {
@@ -12,14 +13,11 @@ const logger = new Logger('rocketchat:theme', {
 });
 
 WebApp.rawConnectHandlers.use(function(req, res, next) {
-	let css;
-	let hash;
-
 	const path = req.url.split('?')[0];
 	const prefix = __meteor_runtime_config__.ROOT_URL_PATH_PREFIX || '';
-	if (path === (`${ prefix }/__cordova/theme.css`) || path === (`${ prefix }/theme.css`)) {
-		css = RocketChat.theme.getCss();
-		hash = crypto.createHash('sha1').update(css).digest('hex');
+	if (path === `${ prefix }/__cordova/theme.css` || path === `${ prefix }/theme.css`) {
+		const css = RocketChat.theme.getCss();
+		const hash = crypto.createHash('sha1').update(css).digest('hex');
 		res.setHeader('Content-Type', 'text/css; charset=UTF-8');
 		res.setHeader('ETag', `"${ hash }"`);
 		res.write(css);
@@ -32,12 +30,10 @@ WebApp.rawConnectHandlers.use(function(req, res, next) {
 const calculateClientHash = WebAppHashing.calculateClientHash;
 
 WebAppHashing.calculateClientHash = function(manifest, includeFilter, runtimeConfigOverride) {
-	let hash;
-	let themeManifestItem;
 	const css = RocketChat.theme.getCss();
 	if (css.trim() !== '') {
-		hash = crypto.createHash('sha1').update(css).digest('hex');
-		themeManifestItem = _.find(manifest, function(item) {
+		const hash = crypto.createHash('sha1').update(css).digest('hex');
+		let themeManifestItem = _.find(manifest, function(item) {
 			return item.path === 'app/theme.css';
 		});
 		if (themeManifestItem == null) {
@@ -63,49 +59,42 @@ RocketChat.theme = new class {
 		this.customCSS = '';
 		RocketChat.settings.add('css', '');
 		RocketChat.settings.addGroup('Layout');
-		RocketChat.settings.onload('css', Meteor.bindEnvironment(() => {
-			return function(key, value, initialLoad) {
-				if (!initialLoad) {
-					return Meteor.startup(function() {
-						return process.emit('message', {
-							refresh: 'client'
-						});
+		RocketChat.settings.onload('css', Meteor.bindEnvironment((key, value, initialLoad) => {
+			if (!initialLoad) {
+				Meteor.startup(function() {
+					process.emit('message', {
+						refresh: 'client'
 					});
-				}
-			};
-		})(this));
+				});
+			}
+		}));
 		this.compileDelayed = _.debounce(Meteor.bindEnvironment(this.compile.bind(this)), 100);
 		Meteor.startup(() => {
-			return function() {
-				return RocketChat.settings.onAfterInitialLoad(function() {
-					return RocketChat.settings.get('*', Meteor.bindEnvironment(function(key, value) {
-						let name;
-						if (key === 'theme-custom-css' && value != null) {
-							this.customCSS = value;
-						} else if (/^theme-.+/.test(key) === true) {
-							name = key.replace(/^theme-[a-z]+-/, '');
-							if (this.variables[name] != null) {
-								this.variables[name].value = value;
-							}
-						} else {
-							return;
+			RocketChat.settings.onAfterInitialLoad(() => {
+				RocketChat.settings.get('*', Meteor.bindEnvironment((key, value) => {
+					if (key === 'theme-custom-css' && value != null) {
+						this.customCSS = value;
+					} else if (/^theme-.+/.test(key) === true) {
+						const name = key.replace(/^theme-[a-z]+-/, '');
+						if (this.variables[name] != null) {
+							this.variables[name].value = value;
 						}
-						return this.compileDelayed();
-					}));
-				});
-			};
+					} else {
+						return;
+					}
+					this.compileDelayed();
+				}));
+			});
 		});
 	}
 
 	compile() {
 
-		let content = [this.getVariablesAsLess(), ...Object.keys(this.files || []).map((key) => {
-			const file = this.files[key];
-			return Assets.getText(file);
-		}), ...Object.keys(this.packageCallbacks || []).map((key)=>{
-			const value = this.packageCallback[key];
-			return value();
-		}).filter(value => _.isString(value))];
+		let content = [this.getVariablesAsLess()];
+
+		content.push(...this.files.map((name) => Assets.getText(name)));
+
+		content.push(...this.packageCallbacks.map(name => name()));
 
 		content.push(this.customCSS);
 		content = content.join('\n');
@@ -130,26 +119,22 @@ RocketChat.theme = new class {
 		});
 	}
 
-	addVariable(type, name, value, section, persist, editor, allowedTypes) {
-		let config;
-		if (persist == null) {
-			persist = true;
-		}
+	addVariable(type, name, value, section, persist = true, editor, allowedTypes) {
 		this.variables[name] = {
 			type,
 			value
 		};
-		if (persist === true) {
-			config = {
-				group: 'Layout',
-				type,
-				editor: editor || type,
-				section,
-				'public': false,
-				allowedTypes
-			};
-			return RocketChat.settings.add(`theme-${ type }-${ name }`, value, config);
-		}
+
+		const config = {
+			group: 'Layout',
+			type,
+			editor: editor || type,
+			section,
+			'public': false,
+			allowedTypes
+		};
+		return RocketChat.settings.add(`theme-${ type }-${ name }`, value, config);
+
 	}
 
 	addPublicColor(name, value, section, editor) {
@@ -171,7 +156,7 @@ RocketChat.theme = new class {
 	}
 
 	getVariablesAsLess() {
-		return Object.keys(this.variables).map((obj, name) => {
+		return Object.keys(this.variables).map((name) => {
 			const variable = this.variables[name];
 			return `@${ name }: ${ variable.value };`;
 		}).join('\n');

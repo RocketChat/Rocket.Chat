@@ -40,14 +40,14 @@ const minorColors= {
 };
 
 // Bulk-add settings for color scheme
-let value;
+
 Object.keys(majorColors).forEach((key) => {
-	value = majorColors[key];
+	const value = majorColors[key];
 	RocketChat.theme.addPublicColor(key, value, 'Colors');
 });
 
 Object.keys(minorColors).forEach((key) => {
-	value = minorColors[key];
+	const value = minorColors[key];
 	RocketChat.theme.addPublicColor(key, value, 'Colors (minor)', 'expression');
 });
 
