@@ -4,8 +4,7 @@ import vm from 'vm';
 import moment from 'moment';
 
 const compiledScripts = {};
-
-const buildSandbox = function(store = {}) {
+function buildSandbox(store = {}) {
 	const sandbox = {
 		_,
 		s,
@@ -32,30 +31,26 @@ const buildSandbox = function(store = {}) {
 		}
 	};
 
-	Object.keys(RocketChat.models).filter(function(k) {
-		return !k.startsWith('_');
-	}).forEach((k) => {
-		return sandbox[k] = RocketChat.models[k];
-	});
+	Object.keys(RocketChat.models).filter((k) => !k.startsWith('_')).forEach((k) => sandbox[k] = RocketChat.models[k]);
 	return { store, sandbox	};
-};
+}
 
-const getIntegrationScript = function(integration) {
+function getIntegrationScript(integration) {
 	const compiledScript = compiledScripts[integration._id];
 	if ((compiledScript != null) && +compiledScript._updatedAt === +integration._updatedAt) {
 		return compiledScript.script;
 	}
 	const script = integration.scriptCompiled;
-	const sandboxItems = buildSandbox();
+	const {sandbox, store} = buildSandbox();
 	try {
 		logger.incoming.info('Will evaluate script of Trigger', integration.name);
 		logger.incoming.debug(script);
 		const vmScript = vm.createScript(script, 'script.js');
-		vmScript.runInNewContext(sandboxItems.sandbox);
-		if (sandboxItems.sandbox.Script != null) {
+		vmScript.runInNewContext(sandbox);
+		if (sandbox.Script != null) {
 			compiledScripts[integration._id] = {
-				script: new sandboxItems.sandbox.Script(),
-				store: sandboxItems.store,
+				script: new sandbox.Script(),
+				store,
 				_updatedAt: integration._updatedAt
 			};
 			return compiledScripts[integration._id].script;
@@ -67,11 +62,11 @@ const getIntegrationScript = function(integration) {
 		logger.incoming.error(stack.replace(/^/gm, '  '));
 		throw RocketChat.API.v1.failure('error-evaluating-script');
 	}
-	if (sandboxItems.sandbox.Script == null) {
+	if (sandbox.Script == null) {
 		logger.incoming.error('[Class "Script" not in Trigger', integration.name, ']');
 		throw RocketChat.API.v1.failure('class-script-not-found');
 	}
-};
+}
 
 Api = new Restivus({
 	enableCors: true,
@@ -111,7 +106,7 @@ Api = new Restivus({
 	}
 });
 
-const createIntegration = function(options, user) {
+function createIntegration(options, user) {
 	logger.incoming.info('Add integration', options.name);
 	logger.incoming.debug(options);
 	Meteor.runAsUser(user._id, function() {
@@ -144,9 +139,9 @@ const createIntegration = function(options, user) {
 		}
 	});
 	return RocketChat.API.v1.success();
-};
+}
 
-const removeIntegration = function(options, user) {
+function removeIntegration(options, user) {
 	logger.incoming.info('Remove integration');
 	logger.incoming.debug(options);
 	const integrationToRemove = RocketChat.models.Integrations.findOne({
@@ -156,9 +151,9 @@ const removeIntegration = function(options, user) {
 		return Meteor.call('deleteOutgoingIntegration', integrationToRemove._id);
 	});
 	return RocketChat.API.v1.success();
-};
+}
 
-const executeIntegrationRest = function() {
+function executeIntegrationRest() {
 	logger.incoming.info('Post integration:', this.integration.name);
 	logger.incoming.debug('@urlParams:', this.urlParams);
 	logger.incoming.debug('@bodyParams:', this.bodyParams);
@@ -174,7 +169,7 @@ const executeIntegrationRest = function() {
 		avatar: this.integration.avatar,
 		emoji: this.integration.emoji
 	};
-	if (this.integration.scriptEnabled === true && (this.integration.scriptCompiled != null) && this.integration.scriptCompiled.trim() !== '') {
+	if (this.integration.scriptEnabled === true && this.integration.scriptCompiled && this.integration.scriptCompiled.trim() !== '') {
 		let script;
 		try {
 			script = getIntegrationScript(this.integration);
@@ -202,8 +197,7 @@ const executeIntegrationRest = function() {
 			}
 		};
 		try {
-			const sandboxItems = buildSandbox(compiledScripts[this.integration._id].store);
-			const sandbox = sandboxItems.sandbox;
+			const {sandbox} = buildSandbox(compiledScripts[this.integration._id].store);
 			sandbox.script = script;
 			sandbox.request = request;
 			const result = vm.runInNewContext('script.process_incoming_request({ request: request })', sandbox, {
@@ -238,17 +232,17 @@ const executeIntegrationRest = function() {
 	} catch ({error}) {
 		return RocketChat.API.v1.failure(error);
 	}
-};
+}
 
-const addIntegrationRest = function() {
+function addIntegrationRest() {
 	return createIntegration(this.bodyParams, this.user);
-};
+}
 
-const removeIntegrationRest = function() {
+function removeIntegrationRest() {
 	return removeIntegration(this.bodyParams, this.user);
-};
+}
 
-const integrationSampleRest = function() {
+function integrationSampleRest() {
 	logger.incoming.info('Sample Integration');
 	return {
 		statusCode: 200,
@@ -283,9 +277,9 @@ const integrationSampleRest = function() {
 			}
 		]
 	};
-};
+}
 
-const integrationInfoRest = function() {
+function integrationInfoRest() {
 	logger.incoming.info('Info integration');
 	return {
 		statusCode: 200,
@@ -293,66 +287,46 @@ const integrationInfoRest = function() {
 			success: true
 		}
 	};
-};
+}
 
-Api.addRoute(':integrationId/:userId/:token', {
-	authRequired: true
-}, {
+Api.addRoute(':integrationId/:userId/:token', { authRequired: true }, {
 	post: executeIntegrationRest,
 	get: executeIntegrationRest
 });
 
-Api.addRoute(':integrationId/:token', {
-	authRequired: true
-}, {
+Api.addRoute(':integrationId/:token', { authRequired: true }, {
 	post: executeIntegrationRest,
 	get: executeIntegrationRest
 });
 
-Api.addRoute('sample/:integrationId/:userId/:token', {
-	authRequired: true
-}, {
+Api.addRoute('sample/:integrationId/:userId/:token', { authRequired: true }, {
 	get: integrationSampleRest
 });
 
-Api.addRoute('sample/:integrationId/:token', {
-	authRequired: true
-}, {
+Api.addRoute('sample/:integrationId/:token', { authRequired: true }, {
 	get: integrationSampleRest
 });
 
-Api.addRoute('info/:integrationId/:userId/:token', {
-	authRequired: true
-}, {
+Api.addRoute('info/:integrationId/:userId/:token', { authRequired: true }, {
 	get: integrationInfoRest
 });
 
-Api.addRoute('info/:integrationId/:token', {
-	authRequired: true
-}, {
+Api.addRoute('info/:integrationId/:token', { authRequired: true }, {
 	get: integrationInfoRest
 });
 
-Api.addRoute('add/:integrationId/:userId/:token', {
-	authRequired: true
-}, {
+Api.addRoute('add/:integrationId/:userId/:token', { authRequired: true }, {
 	post: addIntegrationRest
 });
 
-Api.addRoute('add/:integrationId/:token', {
-	authRequired: true
-}, {
+Api.addRoute('add/:integrationId/:token', { authRequired: true }, {
 	post: addIntegrationRest
 });
 
-Api.addRoute('remove/:integrationId/:userId/:token', {
-	authRequired: true
-}, {
+Api.addRoute('remove/:integrationId/:userId/:token', { authRequired: true }, {
 	post: removeIntegrationRest
 });
 
-Api.addRoute('remove/:integrationId/:token', {
-	authRequired: true
-}, {
+Api.addRoute('remove/:integrationId/:token', { authRequired: true }, {
 	post: removeIntegrationRest
 });
