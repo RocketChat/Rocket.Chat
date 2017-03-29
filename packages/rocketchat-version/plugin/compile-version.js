@@ -1,24 +1,16 @@
-let VersionCompiler = undefined;
 import {exec} from 'child_process';
 import os from 'os';
 import Future from 'fibers/future';
 import async from 'async';
 
-Plugin.registerCompiler({
-	extensions: ['info']
-}, function() {
-	return new VersionCompiler();
-});
-
-VersionCompiler = (class {
-	constructor() {}
-
+class VersionCompiler {
 	processFilesForTarget(files) {
 		const future = new Future;
 		const processFile = function(file, cb) {
 			if (!file.getDisplayPath().match(/rocketchat\.info$/)) {
 				return cb();
 			}
+
 			let output = JSON.parse(file.getContentsAsString());
 			output.build = {
 				date: new Date().toISOString(),
@@ -30,6 +22,7 @@ VersionCompiler = (class {
 				freeMemory: os.freemem(),
 				cpus: os.cpus().length
 			};
+
 			if (process.env.TRAVIS_BUILD_NUMBER) {
 				output.travis = {
 					buildNumber: process.env.TRAVIS_BUILD_NUMBER,
@@ -37,7 +30,8 @@ VersionCompiler = (class {
 					tag: process.env.TRAVIS_TAG
 				};
 			}
-			return exec('git log --pretty=format:\'%H%n%ad%n%an%n%s\' -n 1', function(err, result) {
+
+			exec('git log --pretty=format:\'%H%n%ad%n%an%n%s\' -n 1', function(err, result) {
 				if (err == null) {
 					result = result.split('\n');
 					output.commit = {
@@ -47,11 +41,13 @@ VersionCompiler = (class {
 						subject: result.join('\n')
 					};
 				}
-				return exec('git describe --abbrev=0 --tags', function(err, result) {
+
+				exec('git describe --abbrev=0 --tags', function(err, result) {
 					if (err == null && output.commit != null) {
 						output.commit.tag = result.replace('\n', '');
 					}
-					return exec('git rev-parse --abbrev-ref HEAD', function(err, result) {
+
+					exec('git rev-parse --abbrev-ref HEAD', function(err, result) {
 						if (err == null && output.commit != null) {
 							output.commit.branch = result.replace('\n', '');
 						}
@@ -60,12 +56,19 @@ VersionCompiler = (class {
 							data: output,
 							path: `${ file.getPathInPackage() }.js`
 						});
-						return cb();
+						cb();
 					});
 				});
 			});
 		};
+
 		async.each(files, processFile, future.resolver());
 		return future.wait();
 	}
+}
+
+Plugin.registerCompiler({
+	extensions: ['info']
+}, function() {
+	return new VersionCompiler();
 });
