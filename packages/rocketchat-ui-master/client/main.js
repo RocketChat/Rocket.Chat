@@ -1,5 +1,9 @@
 /* globals toolbarSearch, menu, isRtl, fireGlobalEvent, CachedChatSubscription */
+import Clipboard from 'clipboard';
+
 Template.body.onRendered(function() {
+	new Clipboard('.clipboard');
+
 	$(document.body).on('keydown', function(e) {
 		if ((e.keyCode === 80 || e.keyCode === 75) && (e.ctrlKey === true || e.metaKey === true) && e.shiftKey === false) {
 			e.preventDefault();
@@ -30,22 +34,16 @@ Template.body.onRendered(function() {
 						ls: 1
 					}
 				});
-				fetch = subscriptions.fetch();
-				const results = [];
 
-				Object.keys(fetch).forEach((key) =>{
-					const subscription = fetch[key];
+				subscriptions.forEach((subscription) =>{
 					if (subscription.alert || subscription.unread > 0) {
-						results.push(Meteor.call('readMessages', subscription.rid));
-					} else {
-						results.push(null);
+						Meteor.call('readMessages', subscription.rid);
 					}
 				});
-
-				return results;
 			});
 		}
 	});
+
 	$(document.body).on('keydown', function(e) {
 		const target = e.target;
 		if (e.ctrlKey === true || e.metaKey === true) {
@@ -140,7 +138,7 @@ Template.main.helpers({
 	},
 	requirePasswordChange() {
 		const user = Meteor.user();
-		return (user ? user.requirePasswordChange : null) === true;
+		return user && user.requirePasswordChange === true;
 	},
 	CustomScriptLoggedOut() {
 		const script = RocketChat.settings.get('Custom_Script_Logged_Out') || '';
@@ -172,8 +170,8 @@ Template.main.events({
 		if (document.body.clientWidth > 780) {
 			return;
 		}
-		t.touchstartX = null;
-		t.touchstartY = null;
+		t.touchstartX = undefined;
+		t.touchstartY = undefined;
 		t.movestarted = false;
 		t.blockmove = false;
 		t.isRtl = isRtl(localStorage.getItem('userLanguage'));
@@ -186,7 +184,7 @@ Template.main.events({
 	},
 	'touchmove'(e, t) {
 		if (t.touchstartX != null) {
-			const touch = e.originalEvent.touches[0];
+			const [touch] = e.originalEvent.touches;
 			const diffX = touch.clientX - t.touchstartX;
 			const diffY = touch.clientY - t.touchstartY;
 			const absX = Math.abs(diffX);
@@ -277,9 +275,9 @@ Template.main.onRendered(function() {
 			cancelButtonText: t('Cancel')
 		});
 		const user = Meteor.user();
-		const settings = user.settings;
-		const prefs = user ? settings ? settings.preferences : null : null;
-		if (prefs != null ? prefs.hideUsernames : null) {
+		const settings = user && user.settings;
+		const prefs = settings && settings.preferences;
+		if (prefs && prefs.hideUsernames != null) {
 			$(document.body).on('mouseleave', 'button.thumb', function() {
 				return RocketChat.tooltip.hide();
 			});
