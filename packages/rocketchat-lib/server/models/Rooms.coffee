@@ -500,6 +500,16 @@ class ModelRooms extends RocketChat.models._Base
 
 		return @update query, update
 
+	setAnnouncementById: (_id, announcement) ->
+		query =
+			_id: _id
+
+		update =
+			$set:
+				announcement: announcement
+
+		return @update query, update
+
 	muteUsernameByRoomId: (_id, username) ->
 		query =
 			_id: _id
