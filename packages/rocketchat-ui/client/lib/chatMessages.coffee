@@ -15,6 +15,7 @@ class @ChatMessages
 
 	resize: ->
 		dif = (if RocketChat.Layout.isEmbedded() then 0 else 60) + $(".messages-container").find("footer").outerHeight()
+		dif += if $(".announcement").length > 0 then 40 else 0
 		$(".messages-box").css
 			height: "calc(100% - #{dif}px)"
 
