@@ -144,7 +144,7 @@ const assets = {
 		}
 	},
 	safari_pinned: {
-		label: 'safari pinneed tab (svg)',
+		label: 'safari pinned tab (svg)',
 		defaultUrl: 'images/logo/safari-pinned-tab.svg',
 		constraints: {
 			type: 'image',
