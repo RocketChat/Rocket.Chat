@@ -361,8 +361,8 @@ Meteor.publish('stdout', function() {
 	});
 
 	this.ready();
-	StdOut.on('write', function(string, item) {
-		return this.added('stdout', item.id, {
+	StdOut.on('write', (string, item) => {
+		this.added('stdout', item.id, {
 			string: item.string,
 			ts: item.ts
 		});
