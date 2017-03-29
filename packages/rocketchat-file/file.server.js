@@ -1,12 +1,13 @@
-const Grid = Npm.require('gridfs-stream');
-const stream = Npm.require('stream');
-const fs = Npm.require('fs');
-const path = Npm.require('path');
-const mkdirp = Npm.require('mkdirp');
-const gm = Npm.require('gm');
-const exec = Npm.require('child_process').exec;
+import Grid from 'gridfs-stream';
+import stream from 'stream';
+import fs from 'fs';
+import path from 'path';
+import mkdirp from 'mkdirp';
+import gm from 'gm';
+import {exec} from 'child_process';
 
-Grid.tryParseObjectId = function() {
+// Fix problem with usernames being converted to object id
+Grid.prototype.tryParseObjectId = function() {
 	return false;
 };
 //TODO: REMOVE RocketChatFile from globals
@@ -43,6 +44,7 @@ const detectGM = function() {
 		return exec('convert -version', Meteor.bindEnvironment(function(error, stdout) {
 			if ((error == null) && stdout.indexOf('ImageMagick') > -1) {
 				if (RocketChatFile.enabled !== true) {
+					// Enable GM to work with ImageMagick if no GraphicsMagick
 					RocketChatFile.gm = RocketChatFile.gm.subClass({
 						imageMagick: true
 					});
@@ -93,15 +95,9 @@ RocketChatFile.addPassThrough = function(st, fn) {
 };
 
 RocketChatFile.GridFS = class {
-	constructor(config) {
-		if (config == null) {
-			config = {};
-		}
-		let name = config.name;
-		const transformWrite = config.transformWrite;
-		if (name == null) {
-			name = 'file';
-		}
+	constructor(config = {}) {
+		const {name = 'file', transformWrite} = config;
+
 		this.name = name;
 		this.transformWrite = transformWrite;
 		const mongo = Package.mongo.MongoInternals.NpmModule;
@@ -193,7 +189,7 @@ RocketChatFile.GridFS = class {
 	deleteFile(fileName) {
 		const file = this.findOne(fileName);
 		if (file == null) {
-			return null;
+			return undefined;
 		}
 		return this.remove(fileName);
 	}
@@ -202,15 +198,10 @@ RocketChatFile.GridFS = class {
 };
 
 RocketChatFile.FileSystem = class {
-	constructor(config) {
-		if (config == null) {
-			config = {};
-		}
-		let absolutePath = config.absolutePath;
-		const transformWrite = config.transformWrite;
-		if (absolutePath == null) {
-			absolutePath = '~/uploads';
-		}
+	constructor(config = {}) {
+		let {absolutePath = '~/uploads'} = config;
+		const {transformWrite} = config;
+
 		this.transformWrite = transformWrite;
 		if (absolutePath.split(path.sep)[0] === '~') {
 			const homepath = process.env.HOME || process.env.HOMEPATH || process.env.USERPROFILE;
@@ -263,6 +254,7 @@ RocketChatFile.FileSystem = class {
 			const rs = this.createReadStream(fileName);
 			return {
 				readStream: rs,
+				// contentType: file.contentType
 				length: stat.size
 			};
 		} catch (error1) {
