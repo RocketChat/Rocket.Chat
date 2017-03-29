@@ -22,6 +22,20 @@ function findPrivateGroupByIdOrName({ roomId, roomName, userId, checkedArchived 
 	return roomSub;
 }
 
+RocketChat.API.v1.addRoute('groups.addAll', { authRequired: true }, {
+	post() {
+		const findResult = findPrivateGroupByIdOrName({ roomId: this.bodyParams.roomId, userId: this.userId });
+
+		Meteor.runAsUser(this.userId, () => {
+			Meteor.call('addAllUserToRoom', findResult.rid, this.bodyParams.activeUsersOnly);
+		});
+
+		return RocketChat.API.v1.success({
+			group: RocketChat.models.Rooms.findOneById(findResult.rid, { fields: RocketChat.API.v1.defaultFieldsToExclude })
+		});
+	}
+});
+
 RocketChat.API.v1.addRoute('groups.addModerator', { authRequired: true }, {
 	post() {
 		const findResult = findPrivateGroupByIdOrName({ roomId: this.bodyParams.roomId, userId: this.userId });
