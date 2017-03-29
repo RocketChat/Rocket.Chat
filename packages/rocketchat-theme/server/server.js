@@ -124,23 +124,21 @@ RocketChat.theme = new class {
 			type,
 			value
 		};
-
-		const config = {
-			group: 'Layout',
-			type,
-			editor: editor || type,
-			section,
-			'public': false,
-			allowedTypes
-		};
-		return RocketChat.settings.add(`theme-${ type }-${ name }`, value, config);
+		if (persist) {
+			const config = {
+				group: 'Layout',
+				type,
+				editor: editor || type,
+				section,
+				'public': false,
+				allowedTypes
+			};
+			return RocketChat.settings.add(`theme-${ type }-${ name }`, value, config);
+		}
 
 	}
 
-	addPublicColor(name, value, section, editor) {
-		if (editor == null) {
-			editor = 'color';
-		}
+	addPublicColor(name, value, section, editor = 'color') {
 		return this.addVariable('color', name, value, section, true, editor, ['color', 'expression']);
 	}
 
