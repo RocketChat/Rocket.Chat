@@ -221,6 +221,7 @@ Template.channelSettings.onCreated ->
 		reactWhenReadOnly:
 			type: 'boolean'
 			label: 'React_when_read_only'
+			isToggle: true
 			processing: new ReactiveVar(false)
 			canView: (room) => room.t isnt 'd' and room.ro
 			canEdit: (room) => RocketChat.authz.hasAllPermission('set-react-when-readonly', room._id)
