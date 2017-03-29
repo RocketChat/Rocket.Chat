@@ -29,7 +29,7 @@ Package.onUse(function(api) {
 
 	api.use('kadira:flow-router', 'client');
 
-	api.addFiles('getAvatarUrlFromUsername.coffee');
+	api.addFiles('getAvatarUrlFromUsername.js');
 
 	// LIB FILES
 	api.addFiles('client/lib/accountBox.coffee', 'client');
