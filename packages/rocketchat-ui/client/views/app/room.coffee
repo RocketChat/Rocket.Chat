@@ -90,6 +90,19 @@ Template.room.helpers
 		return '' unless roomData
 		return roomData.topic
 
+	showAnnouncement: ->
+		roomData = Session.get('roomData' + this._id)
+		return false unless roomData
+		Meteor.defer =>
+			if window.chatMessages and window.chatMessages[roomData._id]
+				window.chatMessages[roomData._id].resize()
+		return roomData.announcement isnt undefined and roomData.announcement isnt ''
+
+	roomAnnouncement: ->
+		roomData = Session.get('roomData' + this._id)
+		return '' unless roomData
+		return roomData.announcement
+
 	roomIcon: ->
 		roomData = Session.get('roomData' + this._id)
 		return '' unless roomData?.t
