@@ -1,4 +1,3 @@
-/* globals HandleSlashCommand */
 const SharedSecret = [];
 
 if (Meteor.isServer) {
