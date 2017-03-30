@@ -8,11 +8,10 @@ Package.describe({
 Package.onUse(function(api) {
 	api.use([
 		'ecmascript',
-		'coffeescript',
 		'rocketchat:lib'
 	]);
 
 	api.use(['jparker:crypto-aes'], ['server', 'client']);
 
-	api.addFiles('sharedsecret.coffee', ['server', 'client']);
+	api.addFiles('sharedsecret.js', ['server', 'client']);
 });
