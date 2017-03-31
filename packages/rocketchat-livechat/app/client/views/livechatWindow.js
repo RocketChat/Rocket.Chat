@@ -22,6 +22,9 @@ Template.livechatWindow.helpers({
 		}
 		return Livechat.registrationForm;
 	},
+	showSwitchDepartmentForm() {
+		return Livechat.showSwitchDepartmentForm;
+	},
 	livechatStarted() {
 		return Livechat.online !== null;
 	},
@@ -123,7 +126,7 @@ Template.livechatWindow.onCreated(function() {
 			result.departments.forEach((department) => {
 				Department.insert(department);
 			});
-
+			Livechat.allowSwitchingDepartments = result.allowSwitchingDepartments;
 			Livechat.ready();
 		}
 	});

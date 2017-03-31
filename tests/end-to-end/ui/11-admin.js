@@ -141,7 +141,7 @@ describe('Admin Login', () => {
 			});
 
 			describe('filter checkbox', () => {
-				var checkbox = 1;
+				let checkbox = 1;
 				before(() => {
 					admin.roomsFilter.setValue('');
 					//add value triggers a key event that changes search±±±±±±±±±

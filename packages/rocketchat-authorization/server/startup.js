@@ -32,6 +32,7 @@ Meteor.startup(function() {
 		{ _id: 'edit-other-user-password',      roles : ['admin'] },
 		{ _id: 'edit-privileged-setting',       roles : ['admin'] },
 		{ _id: 'edit-room',                     roles : ['admin', 'owner', 'moderator'] },
+		{ _id: 'join-without-join-code',        roles : ['admin', 'bot'] },
 		{ _id: 'manage-assets',                 roles : ['admin'] },
 		{ _id: 'manage-emoji',                  roles : ['admin'] },
 		{ _id: 'manage-integrations',           roles : ['admin'] },

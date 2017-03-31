@@ -1,4 +1,4 @@
-var logger = new Logger('Meteor', {
+const logger = new Logger('Meteor', {
 	methods: {
 		method: {
 			type: 'debug'
@@ -9,16 +9,16 @@ var logger = new Logger('Meteor', {
 	}
 });
 
-var wrapMethods = function(name, originalHandler, methodsMap) {
+const wrapMethods = function(name, originalHandler, methodsMap) {
 	methodsMap[name] = function() {
-		var args = name === 'ufsWrite' ? Array.prototype.slice.call(arguments, 1) : arguments;
+		const args = name === 'ufsWrite' ? Array.prototype.slice.call(arguments, 1) : arguments;
 		logger.method(name, '-> userId:', Meteor.userId(), ', arguments: ', args);
 
 		return originalHandler.apply(this, arguments);
 	};
 };
 
-var originalMeteorMethods = Meteor.methods;
+const originalMeteorMethods = Meteor.methods;
 
 Meteor.methods = function(methodMap) {
 	_.each(methodMap, function(handler, name) {
@@ -27,7 +27,7 @@ Meteor.methods = function(methodMap) {
 	originalMeteorMethods(methodMap);
 };
 
-var originalMeteorPublish = Meteor.publish;
+const originalMeteorPublish = Meteor.publish;
 
 Meteor.publish = function(name, func) {
 	return originalMeteorPublish(name, function() {

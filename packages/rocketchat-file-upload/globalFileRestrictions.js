@@ -3,7 +3,7 @@
 import filesize from 'filesize';
 
 const slingShotConfig = {
-	authorize: function(file/*, metaContext*/) {
+	authorize(file/*, metaContext*/) {
 		//Deny uploads if user is not logged in.
 		if (!this.userId) {
 			throw new Meteor.Error('login-required', 'Please login before posting files');

@@ -18,7 +18,7 @@ Meteor.methods({
 		};
 
 		// add subscription
-		var subscriptionData = {
+		const subscriptionData = {
 			rid: inquiry.rid,
 			name: inquiry.name,
 			alert: true,

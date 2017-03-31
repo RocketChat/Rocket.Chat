@@ -17,7 +17,8 @@ Package.onUse(function(api) {
 		'coffeescript',
 		'underscore',
 		'rocketchat:lib',
-		'rocketchat:assets'
+		'rocketchat:assets',
+		'rocketchat:2fa'
 	]);
 
 	api.use('kadira:flow-router', 'client');
@@ -43,5 +44,5 @@ Package.onUse(function(api) {
 	api.addFiles('client/login/header.coffee', 'client');
 	api.addFiles('client/login/services.coffee', 'client');
 	api.addFiles('client/login/social.coffee', 'client');
-	api.addFiles('client/username/username.coffee', 'client');
+	api.addFiles('client/username/username.js', 'client');
 });

@@ -5,17 +5,17 @@ Template.visitorInfo.helpers({
 	user() {
 		const user = Template.instance().user.get();
 		if (user && user.userAgent) {
-			var ua = new UAParser();
+			const ua = new UAParser();
 			ua.setUA(user.userAgent);
 
-			user.os = ua.getOS().name + ' ' + ua.getOS().version;
+			user.os = `${ ua.getOS().name } ${ ua.getOS().version }`;
 			if (['Mac OS', 'iOS'].indexOf(ua.getOS().name) !== -1) {
 				user.osIcon = 'icon-apple';
 			} else {
-				user.osIcon = 'icon-' + ua.getOS().name.toLowerCase();
+				user.osIcon = `icon-${ ua.getOS().name.toLowerCase() }`;
 			}
-			user.browser = ua.getBrowser().name + ' ' + ua.getBrowser().version;
-			user.browserIcon = 'icon-' + ua.getBrowser().name.toLowerCase();
+			user.browser = `${ ua.getBrowser().name } ${ ua.getBrowser().version }`;
+			user.browserIcon = `icon-${ ua.getBrowser().name.toLowerCase() }`;
 		}
 
 		return user;
@@ -50,7 +50,7 @@ Template.visitorInfo.helpers({
 				if (livechatData.hasOwnProperty(_id)) {
 					const customFields = Template.instance().customFields.get();
 					if (customFields) {
-						const field = _.findWhere(customFields, { _id: _id });
+						const field = _.findWhere(customFields, { _id });
 						if (field && field.visibility !== 'hidden') {
 							fields.push({ label: field.label, value: livechatData[_id] });
 						}
@@ -225,7 +225,7 @@ Template.visitorInfo.onCreated(function() {
 		}
 	});
 
-	var currentData = Template.currentData();
+	const currentData = Template.currentData();
 
 	if (currentData && currentData.rid) {
 		this.autorun(() => {
