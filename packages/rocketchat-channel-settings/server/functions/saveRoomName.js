@@ -1,6 +1,5 @@
 
 RocketChat.saveRoomName = function(rid, name, user, sendMessage = true) {
-	debugger
 	const room = RocketChat.models.Rooms.findOneById(rid);
 	if (room.t !== 'c' && room.t !== 'p') {
 		throw new Meteor.Error('error-not-allowed', 'Not allowed', {
