@@ -16,7 +16,13 @@ oauth2server.routes.get '/oauth/userinfo', (req, res, next) ->
 
 	token = oauth2server.oauth.model.AccessTokens.findOne accessToken: accessToken
 
+	if not token?
+		return res.sendStatus(401).send('Invalid Token')
+
 	user = RocketChat.models.Users.findOneById(token.userId);
+
+	if not user?
+		return res.sendStatus(401).send('Invalid Token')
 
 	res.send
 		sub: user._id
