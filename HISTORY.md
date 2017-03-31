@@ -7,6 +7,7 @@
 - [NEW] Option to enable `Two Factor Authentication` in user's account preference
 - [FIX] Incoming integrations would break when trying to use the `Store` feature.
 - [FIX] Outgoing webhooks which have an error and they're retrying would still retry even if the integration was disabled. (#4835)
+- [FIX] Removed Deprecated Package rocketchat:sharedsecret.
 
 ## 0.54.2 - 2017-Mar-24
 
