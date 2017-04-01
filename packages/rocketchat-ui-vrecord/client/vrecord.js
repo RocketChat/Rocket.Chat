@@ -1,4 +1,5 @@
-/* globals VideoRecorder, VRecDialog, fileUpload */
+/* globals VideoRecorder, fileUpload */
+import {VRecDialog} from './VRecDialog';
 
 Template.vrecDialog.helpers({
 	recordIcon() {
