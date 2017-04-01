@@ -95,7 +95,7 @@ const CROWD = class CROWD {
 		};
 
 		if (crowdUser.displayname) {
-			RocketChat._setRealName(user._id, crowdUser.displayname);
+			RocketChat._setRealName(id, crowdUser.displayname);
 		}
 
 		Meteor.users.update(id, {
