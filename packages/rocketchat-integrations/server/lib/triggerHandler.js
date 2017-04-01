@@ -54,6 +54,16 @@ RocketChat.integrations.triggerHandler = new class RocketChatIntegrationHandler 
 		}
 	}
 
+	isTriggerEnabled(trigger) {
+		for (const trig of Object.values(this.triggers)) {
+			if (trig[trigger._id]) {
+				return trig[trigger._id].enabled;
+			}
+		}
+
+		return false;
+	}
+
 	updateHistory({ historyId, step, integration, event, data, triggerWord, ranPrepareScript, prepareSentMessage, processSentMessage, resultMessage, finished, url, httpCallData, httpError, httpResult, error, errorStack }) {
 		const history = {
 			type: 'outgoing-webhook',
@@ -532,7 +542,7 @@ RocketChat.integrations.triggerHandler = new class RocketChatIntegrationHandler 
 		logger.outgoing.debug(`Found ${ triggersToExecute.length } to iterate over and see if the match the event.`);
 
 		for (const triggerToExecute of triggersToExecute) {
-			logger.outgoing.debug(`Is ${ triggerToExecute.name } enabled, ${ triggerToExecute.enabled }, and what is the event? ${ triggerToExecute.event }`);
+			logger.outgoing.debug(`Is "${ triggerToExecute.name }" enabled, ${ triggerToExecute.enabled }, and what is the event? ${ triggerToExecute.event }`);
 			if (triggerToExecute.enabled === true && triggerToExecute.event === event) {
 				this.executeTrigger(triggerToExecute, argObject);
 			}
@@ -546,6 +556,11 @@ RocketChat.integrations.triggerHandler = new class RocketChatIntegrationHandler 
 	}
 
 	executeTriggerUrl(url, trigger, { event, message, room, owner, user }, theHistoryId, tries = 0) {
+		if (!this.isTriggerEnabled(trigger)) {
+			logger.outgoing.warn(`The trigger "${ trigger.name }" is no longer enabled, stopping execution of it at try: ${ tries }`);
+			return;
+		}
+
 		logger.outgoing.debug(`Starting to execute trigger: ${ trigger.name } (${ trigger._id })`);
 
 		let word;
