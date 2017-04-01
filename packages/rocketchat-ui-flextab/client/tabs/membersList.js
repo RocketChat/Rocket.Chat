@@ -138,7 +138,7 @@ Template.membersList.helpers({
 		};
 	},
 	displayName() {
-		if (RocketChat.settings.get('UI_Use_Real_Name')) {
+		if (RocketChat.settings.get('UI_Use_Real_Name') && this.user.name) {
 			return this.user.name;
 		}
 
