@@ -146,6 +146,17 @@ Template.channelSettings.onCreated ->
 					toastr.success TAPi18n.__ 'Room_topic_changed_successfully'
 					RocketChat.callbacks.run 'roomTopicChanged', room
 
+		announcement:
+			type: 'markdown'
+			label: 'Announcement'
+			canView: (room) => true
+			canEdit: (room) => RocketChat.authz.hasAllPermission('edit-room', room._id)
+			save: (value, room) ->
+				Meteor.call 'saveRoomSettings', room._id, 'roomAnnouncement', value, (err, result) ->
+					return handleError err if err
+					toastr.success TAPi18n.__ 'Room_announcement_changed_successfully'
+					RocketChat.callbacks.run 'roomAnnouncementChanged', room
+
 		description:
 			type: 'text'
 			label: 'Description'
@@ -221,6 +232,7 @@ Template.channelSettings.onCreated ->
 		reactWhenReadOnly:
 			type: 'boolean'
 			label: 'React_when_read_only'
+			isToggle: true
 			processing: new ReactiveVar(false)
 			canView: (room) => room.t isnt 'd' and room.ro
 			canEdit: (room) => RocketChat.authz.hasAllPermission('set-react-when-readonly', room._id)

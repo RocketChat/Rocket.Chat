@@ -164,6 +164,8 @@ Accounts.validateLoginAttempt(function(login) {
 		}
 	}
 
+	login = RocketChat.callbacks.run('onValidateLogin', login);
+
 	RocketChat.models.Users.updateLastLoginById(login.user._id);
 	Meteor.defer(function() {
 		return RocketChat.callbacks.run('afterValidateLogin', login);
