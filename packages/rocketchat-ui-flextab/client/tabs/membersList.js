@@ -38,7 +38,7 @@ Template.membersList.helpers({
 					if (utcOffset === userUtcOffset) {
 						utcOffset = '';
 					} else if (utcOffset > 0) {
-						utcOffset = `+${ utcOffset }`;
+						utcOffset = `(UTC +${ utcOffset })`;
 					} else {
 						utcOffset = `(UTC ${ utcOffset })`;
 					}
