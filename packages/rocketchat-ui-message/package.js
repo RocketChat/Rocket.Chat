@@ -19,7 +19,8 @@ Package.onUse(function(api) {
 		'underscore',
 		'tracker',
 		'rocketchat:lib',
-		'rocketchat:ui-account'
+		'rocketchat:ui-account',
+		'rocketchat:ui-vrecord'
 	]);
 
 	api.addFiles('client/message.html', 'client');

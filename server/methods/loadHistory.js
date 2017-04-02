@@ -42,7 +42,7 @@ Meteor.methods({
 			sort: {
 				ts: -1
 			},
-			limit: limit
+			limit
 		};
 
 		if (!RocketChat.settings.get('Message_ShowEditedStatus')) {
@@ -71,7 +71,7 @@ Meteor.methods({
 		if (ls != null) {
 			const firstMessage = messages[messages.length - 1];
 
-			if ((firstMessage != null ? firstMessage.ts : void 0) > ls) {
+			if ((firstMessage != null ? firstMessage.ts : undefined) > ls) {
 				delete options.limit;
 
 				const unreadMessages = RocketChat.models.Messages.findVisibleByRoomIdBetweenTimestampsNotContainingTypes(rid, ls, firstMessage.ts, hideMessagesOfType, {
@@ -87,9 +87,9 @@ Meteor.methods({
 		}
 
 		return {
-			messages: messages,
-			firstUnread: firstUnread,
-			unreadNotLoaded: unreadNotLoaded
+			messages,
+			firstUnread,
+			unreadNotLoaded
 		};
 	}
 });

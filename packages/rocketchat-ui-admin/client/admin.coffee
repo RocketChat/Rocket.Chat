@@ -1,5 +1,5 @@
 import toastr from 'toastr'
-TempSettings = new Meteor.Collection null
+TempSettings = new Mongo.Collection null
 RocketChat.TempSettings = TempSettings
 
 getDefaultSetting = (settingId) ->
@@ -251,15 +251,14 @@ Template.admin.helpers
 		}
 
 	selectedRooms: ->
-		console.log(this._id)
 		return Template.instance().selectedRooms.get()[this._id] or []
 
 	getColorVariable: (color) ->
 		return color.replace(/theme-color-/, '@')
 
-	isDefaultValue: (settingId) ->
-		setting = TempSettings.findOne({_id: settingId}, {fields: {value: 1, packageValue: 1}})
-		return setting.value is setting.packageValue
+	showResetButton: ->
+		setting = TempSettings.findOne({ _id: @_id }, { fields: { value: 1, packageValue: 1 } })
+		return @type isnt 'asset' and setting.value isnt setting.packageValue and not @blocked
 
 Template.admin.events
 	"change .input-monitor, keyup .input-monitor": _.throttle((e, t) ->

@@ -1,11 +1,11 @@
 RocketChat.models.Subscriptions.updateAudioNotificationById = function(_id, audioNotification) {
 	const query = {
-		_id: _id
+		_id
 	};
 
 	const update = {
 		$set: {
-			audioNotification: audioNotification
+			audioNotification
 		}
 	};
 
@@ -14,7 +14,7 @@ RocketChat.models.Subscriptions.updateAudioNotificationById = function(_id, audi
 
 RocketChat.models.Subscriptions.updateDesktopNotificationsById = function(_id, desktopNotifications) {
 	const query = {
-		_id: _id
+		_id
 	};
 
 	const update = {};
@@ -22,7 +22,7 @@ RocketChat.models.Subscriptions.updateDesktopNotificationsById = function(_id, d
 	if (desktopNotifications === 'default') {
 		update.$unset = { desktopNotifications: 1 };
 	} else {
-		update.$set = { desktopNotifications: desktopNotifications };
+		update.$set = { desktopNotifications };
 	}
 
 	return this.update(query, update);
@@ -30,7 +30,7 @@ RocketChat.models.Subscriptions.updateDesktopNotificationsById = function(_id, d
 
 RocketChat.models.Subscriptions.updateDesktopNotificationDurationById = function(_id, value) {
 	const query = {
-		_id: _id
+		_id
 	};
 
 	const update = {
@@ -44,7 +44,7 @@ RocketChat.models.Subscriptions.updateDesktopNotificationDurationById = function
 
 RocketChat.models.Subscriptions.updateMobilePushNotificationsById = function(_id, mobilePushNotifications) {
 	const query = {
-		_id: _id
+		_id
 	};
 
 	const update = {};
@@ -52,7 +52,7 @@ RocketChat.models.Subscriptions.updateMobilePushNotificationsById = function(_id
 	if (mobilePushNotifications === 'default') {
 		update.$unset = { mobilePushNotifications: 1 };
 	} else {
-		update.$set = { mobilePushNotifications: mobilePushNotifications };
+		update.$set = { mobilePushNotifications };
 	}
 
 	return this.update(query, update);
@@ -60,12 +60,12 @@ RocketChat.models.Subscriptions.updateMobilePushNotificationsById = function(_id
 
 RocketChat.models.Subscriptions.updateEmailNotificationsById = function(_id, emailNotifications) {
 	const query = {
-		_id: _id
+		_id
 	};
 
 	const update = {
 		$set: {
-			emailNotifications: emailNotifications
+			emailNotifications
 		}
 	};
 
@@ -74,7 +74,7 @@ RocketChat.models.Subscriptions.updateEmailNotificationsById = function(_id, ema
 
 RocketChat.models.Subscriptions.updateUnreadAlertById = function(_id, unreadAlert) {
 	const query = {
-		_id: _id
+		_id
 	};
 
 	const update = {
@@ -141,7 +141,7 @@ RocketChat.models.Subscriptions.findNotificationPreferencesByRoom = function(roo
 };
 
 RocketChat.models.Subscriptions.findWithSendEmailByRoomId = function(roomId) {
-	var query = {
+	const query = {
 		rid: roomId,
 		emailNotifications: {
 			$exists: true

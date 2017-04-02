@@ -4,12 +4,12 @@
 RocketChat.Sandstorm = {};
 
 if (process.env.SANDSTORM === '1') {
-	var Future = Npm.require('fibers/future');
-	var Capnp = Npm.require('capnp');
-	var SandstormHttpBridge = Npm.require('sandstorm/sandstorm-http-bridge.capnp').SandstormHttpBridge;
+	const Future = Npm.require('fibers/future');
+	const Capnp = Npm.require('capnp');
+	const SandstormHttpBridge = Npm.require('sandstorm/sandstorm-http-bridge.capnp').SandstormHttpBridge;
 
-	var capnpConnection = null;
-	var httpBridge = null;
+	let capnpConnection = null;
+	let httpBridge = null;
 
 	getHttpBridge = function() {
 		if (!httpBridge) {

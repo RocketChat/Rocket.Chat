@@ -1776,6 +1776,26 @@ label.required::after {
 	}
 }
 
+.announcement {
+	margin-top: 61px;
+	height: 40px;
+	line-height: 40px;
+	overflow: hidden;
+	font-size: 1.2em;
+	background-color: #04436a;
+	color: white;
+	text-align: center;
+	display: block;
+
+	~ .container-bars {
+		top: 95px;
+	}
+
+	~ .messages-box {
+		margin-top: 100px;
+	}
+}
+
 .cms-page {
 	max-width: 800px;
 	margin: 40px auto;
@@ -2371,7 +2391,8 @@ label.required::after {
 			padding-bottom: 9px;
 			padding-left: 49px;
 			border-radius: 0;
-			overflow-y: hidden;
+			overflow-y: auto;
+			max-height: 155px;
 			resize: none;
 			line-height: 16px;
 			border-width: 0 1px 0 0;
@@ -4782,8 +4803,12 @@ body:not(.is-cordova) {
 	}
 }
 
-.sweet-alert .sa-input-error {
-	top: 19px;
+.sweet-alert {
+	margin-left: -239px !important;
+
+	.sa-input-error {
+		top: 19px;
+	}
 }
 
 .one-passsword {
@@ -4918,6 +4943,11 @@ a + br.only-after-a {
 			}
 		}
 	}
+}
+
+.user-info.deactivated {
+	text-decoration: line-through;
+	opacity: 0.8;
 }
 
 // MEDIA QUERIES
