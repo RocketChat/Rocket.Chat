@@ -318,7 +318,7 @@
   "Custom_Script_Logged_Out": "Prilagođena skripta za odjavljene korisnike",
   "Custom_Sound_Error_Invalid_Sound": "Nevaljan zvuk",
   "Custom_Translations": "Prilagođeni prijevodi",
-  "Custom_Translations_Description": "Treba biti ispravan JSON gdje su ključevi jezici koji zadrže riječnik ključeva i prijevoda. Npr: \n <code>{\n \"en\": {\n  \"key\": \"translation\"\n },\n \"pt\": {\n  \"key\": \"tradução\"\n }\n}</code>",
+  "Custom_Translations_Description": "Treba biti ispravan JSON gdje su ključevi jezici koji zadrže riječnik ključeva i prijevoda. Npr: \n <code>{\n \"en\": {\n  \"Channels\": \"Rooms\"\n },\n \"pt\": {\n  \"Channels\": \"Salas\"\n }\n}</code>",
   "Dashboard": "Kontrolna ploča",
   "Date": "Datum",
   "Date_From": "Od",
