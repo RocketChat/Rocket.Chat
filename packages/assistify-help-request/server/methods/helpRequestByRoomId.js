@@ -13,9 +13,9 @@ Meteor.methods({
 					}
 				});
 				const user = RocketChat.models.Users.findOne({_id: Meteor.userId()});
-				if (!RocketChat.authz.hasPermission(Meteor.userId(), 'view-r-rooms') && !(room.usernames.indexOf(user.username) > -1)) {
-					throw new Meteor.Error('error-not-authorized', 'Not authorized', {publish: 'assistify:helpRequests'});
-				}
+				// if (!RocketChat.authz.hasPermission(Meteor.userId(), 'view-r-rooms') && !(room.usernames.indexOf(user.username) > -1)) {
+				// 	throw new Meteor.Error('error-not-authorized', 'Not authorized', {publish: 'assistify:helpRequests'});
+				// }
 
 				return helpRequest;
 			}

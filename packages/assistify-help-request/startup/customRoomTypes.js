@@ -10,7 +10,7 @@
  */
 RocketChat.roomTypes.add('r', 6, { //5 is livechat
 	template: 'requests',
-	icon: 'icon-attention',
+	icon: 'icon-help',
 	route: {
 		name: 'request',
 		path: '/request/:name',

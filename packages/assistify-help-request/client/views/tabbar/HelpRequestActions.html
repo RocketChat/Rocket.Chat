@@ -8,4 +8,13 @@
         </div>
     </div>
 	{{/if}}
+	{{#if and isLivechat livechatOpen}}
+		<div class="help-request-actions">
+			<div class="list-view">
+				<nav class="centered-buttons">
+					<button class='button close-livechat button-block'><span><i class='icon-logout'></i> {{_ "Close_HelpRequest"}}</span></button>
+				</nav>
+			</div>
+		</div>
+	{{/if}}
 </template>

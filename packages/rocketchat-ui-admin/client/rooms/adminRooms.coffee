@@ -12,7 +12,7 @@ Template.adminRooms.helpers
 	roomCount: ->
 		return Template.instance().rooms?().count()
 	name: ->
-		if @t is 'c' or @t is 'p'
+		if @t is 'c' or @t is 'p' or @t is 'r' or @t is 'e'
 			return @name
 		else if @t is 'd'
 			return @usernames.join ' x '
@@ -23,6 +23,10 @@ Template.adminRooms.helpers
 			return TAPi18n.__ 'Direct Message'
 		if @t is 'p'
 			return TAPi18n.__ 'Private Group'
+		if @t is 'r'
+			return TAPi18n.__ 'Request'
+		if @t is 'e'
+			return TAPi18n.__ 'Expertise'
 	default: ->
 		if this.default
 			return t('True')
@@ -65,7 +69,7 @@ Template.adminRooms.onCreated ->
 		types = instance.types.get()
 
 		if types.length is 0
-			types = ['c', 'd', 'p']
+			types = ['c', 'd', 'p', 'r', 'e']
 
 		limit = instance.limit.get()
 		subscription = instance.subscribe 'adminRooms', filter, types, limit

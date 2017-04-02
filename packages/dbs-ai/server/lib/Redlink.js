@@ -46,6 +46,7 @@ class RedlinkAdapter {
 		RocketChat.models.Messages.find({
 			rid: rid,
 			_hidden: {$ne: true},
+			t: {$exists: false}, //commands and other automated messages have got a type
 			ts: {$gt: new Date(analyzedUntil)}
 		}).forEach(visibleMessage => {
 			conversation.push({
@@ -78,11 +79,11 @@ class RedlinkAdapter {
 				});
 
 		} catch (err) {
-			console.error('Updating redlink results (via QUERY) did not succeed -> ', JSON.stringify(err));
+			SystemLogger.error('Updating redlink results (via QUERY) did not succeed -> ', JSON.stringify(err));
 		}
 	}
 
-	onMessage(message, context = {}) {
+	onMessage(message, context = {}, additionalKeywords = []) {
 
 		//private methods
 		/** This method adapts the service response.
@@ -95,6 +96,23 @@ class RedlinkAdapter {
 			return prepareResponse;
 		};
 
+		const _getAdditionalTokens = function (additionalKeywords) {
+			let tokens = [];
+
+			additionalKeywords.forEach((keyword) => {
+				tokens.push({
+					"confidence": 1,
+					"messageIdx": -1,
+					"start": -1,
+					"end": -1,
+					"origin": "Agent",
+					"state": "Suggested",
+					"type": "Keyword",
+					"value": keyword
+				})
+			})
+		};
+
 		const knowledgeProviderResultCursor = this.getKnowledgeProviderCursor(message.rid);
 		const latestKnowledgeProviderResult = knowledgeProviderResultCursor.fetch()[0];
 
@@ -102,6 +120,9 @@ class RedlinkAdapter {
 		requestBody.messages = this.getConversation(message.rid, latestKnowledgeProviderResult);
 
 		requestBody.context = context;
+		// requestBody.tokens = requestBody.tokens.concat(_getAdditionalTokens(additionalKeywords));
+		// requestBody.tokens = _dbs.unique(requestBody.tokens);
+
 		try {
 			let options = this.options;
 			this.options.data = requestBody;
@@ -109,26 +130,34 @@ class RedlinkAdapter {
 			if (RocketChat.settings.get('DBS_AI_Redlink_Domain')) {
 				options.data.context.domain = RocketChat.settings.get('DBS_AI_Redlink_Domain');
 			}
+			SystemLogger.debug('PREPARE', JSON.stringify(options, "", 2));
 			const responseRedlinkPrepare = HTTP.post(this.properties.url + '/prepare', options);
 
 			if (responseRedlinkPrepare.data && responseRedlinkPrepare.statusCode === 200) {
-
+				SystemLogger.debug('PREPARE RESULT', JSON.stringify(responseRedlinkPrepare, "", 2));
 				this.purgePreviousResults(knowledgeProviderResultCursor);
 
-				const externalMessageId = RocketChat.models.LivechatExternalMessage.insert({
-					rid: message.rid,
-					knowledgeProvider: "redlink",
-					originMessage: {_id: message._id, ts: message.ts},
-					prepareResult: _postprocessPrepare(responseRedlinkPrepare.data),
-					ts: new Date()
-				});
+				const updateId = latestKnowledgeProviderResult ? latestKnowledgeProviderResult._id : Random.id();
+				const updatedDocs = RocketChat.models.LivechatExternalMessage.update({
+						_id: updateId
+					},
+					{
+						rid: message.rid,
+						knowledgeProvider: "redlink",
+						originMessage: {_id: message._id, ts: message.ts},
+						prepareResult: _postprocessPrepare(responseRedlinkPrepare.data),
+						ts: new Date()
+					},
+					{
+						upsert: true
+					});
 
-				const externalMessage = RocketChat.models.LivechatExternalMessage.findOneById(externalMessageId);
+				const externalMessage = RocketChat.models.LivechatExternalMessage.findOneById(updateId);
 
-				Meteor.defer(() => RocketChat.callbacks.run('afterExternalMessage', externalMessage));
+				Meteor.defer(() => RocketChat.callbacks.run('afterExternalMessage',externalMessage));
 			}
-		} catch (e) {
-			console.error('Redlink-Prepare/Query with results from prepare did not succeed -> ', e);
+		} catch(e) {
+			SystemLogger.error('Redlink-Prepare/Query with results from prepare did not succeed -> ', e);
 		}
 	}
 
@@ -177,7 +206,10 @@ class RedlinkAdapter {
 				this.options.data = this.options;
 
 				options.data = {
-					messages: latestKnowledgeProviderResult.prepareResult.messagescl,
+					id: latestKnowledgeProviderResult.id,
+					meta: latestKnowledgeProviderResult.meta,
+					user: latestKnowledgeProviderResult.user,
+					messages: latestKnowledgeProviderResult.prepareResult.messages,
 					tokens: latestKnowledgeProviderResult.prepareResult.tokens,
 					queryTemplates: _preprocessTemplates(latestKnowledgeProviderResult.prepareResult.queryTemplates),
 					context: latestKnowledgeProviderResult.prepareResult.context
@@ -187,37 +219,11 @@ class RedlinkAdapter {
 				if (RocketChat.settings.get('DBS_AI_Redlink_Domain')) {
 					options.data.context.domain = RocketChat.settings.get('DBS_AI_Redlink_Domain');
 				}
+				SystemLogger.debug('RESULTS requested for', creator, ": ", JSON.stringify(options, "", 2));
 				const responseRedlinkResult = HTTP.post(this.properties.url + '/result/' + creator + '/?templateIdx=' + templateIndex, options);
 				if (responseRedlinkResult.data && responseRedlinkResult.statusCode === 200) {
+					SystemLogger.debug('RESULTS RETRIEVED for', creator, ": ", JSON.stringify(responseRedlinkResult, "", 2));
 					results = responseRedlinkResult.data;
-
-					if (creator === 'conversation') {
-						results.forEach(function (result) {
-							// Some dirty string operations to convert the snippet to javascript objects
-							let transformedSnippet = JSON.stringify(result.snippet);
-							transformedSnippet = transformedSnippet.slice(1, transformedSnippet.length - 1); //remove quotes in the beginning and at the end
-
-							if (transformedSnippet) {
-								transformedSnippet = '[' + transformedSnippet;
-								transformedSnippet = transformedSnippet.replace(/\\n/g, '');
-								transformedSnippet = transformedSnippet.replace(/<div class=\\"message seeker\\">/g, '{"origin": "seeker", "text": "');
-								transformedSnippet = transformedSnippet.replace(/<div class=\\"message provider\\">/g, '{"origin": "provider", "text": "');
-								transformedSnippet = transformedSnippet.replace(/<\/div>/g, '"},');
-								transformedSnippet = transformedSnippet.trim();
-								if (transformedSnippet.endsWith(',')) {
-									transformedSnippet = transformedSnippet.slice(0, transformedSnippet.length - 1);
-								}
-								transformedSnippet = transformedSnippet + ']';
-							}
-							try {
-								const messages = JSON.parse(transformedSnippet);
-								result.messages = messages;
-							} catch (err) {
-								console.error('Error parsing conversation', err)
-							}
-						});
-						results.reduce((result) => !!result.messages);
-					}
 
 					results = _postprocessResultResponse(results);
 
@@ -236,10 +242,10 @@ class RedlinkAdapter {
 						});
 
 				} else {
-					console.error("Couldn't  read result from Redlink");
+					SystemLogger.error("Couldn't  read result from Redlink");
 				}
 			} catch (err) {
-				console.error('Retrieving Query-resuls from Redlink did not succeed -> ', err);
+				SystemLogger.error('Retrieving Query-resuls from Redlink did not succeed -> ', err);
 			}
 		}
 		return results;
@@ -274,19 +280,34 @@ class RedlinkAdapter {
 
 			let options = this.options;
 			options.data = latestKnowledgeProviderResult.prepareResult;
+
+			//mark result as closed. This is necessary in order to make it searchable
+			options.data.meta.status = 'Complete';
+
 			if (RocketChat.settings.get('DBS_AI_Redlink_Domain')) {
-				if(!options.data.context){
+				if (!options.data.context) {
 					options.data.context = {};
 				}
 				options.data.context.domain = RocketChat.settings.get('DBS_AI_Redlink_Domain');
 			}
 			try {
+				SystemLogger.debug('STORE:', JSON.stringify(options, "", 2));
 				const responseStore = HTTP.post(this.properties.url + '/store', options);
 				if (responseStore.statusCode === 200) {
-					return responseStore.data;
+					SystemLogger.debug('STORED as', JSON.stringify(responseStore, "", 2));
+					const externalMessageId = RocketChat.models.LivechatExternalMessage.update(
+						{
+							_id: latestKnowledgeProviderResult._id
+						},
+						{
+							$set: {
+								prepareResult: responseStore.data
+							}
+						});
+					return latestKnowledgeProviderResult._id;
 				}
 			} catch (err) {
-				console.error('Error on Store', err);
+				SystemLogger.error('Error on Store', err);
 			}
 		}
 	}
@@ -308,7 +329,7 @@ class RedlinkAdapterFactory {
 		/**
 		 * Refreshes the adapter instances on change of the configuration
 		 */
-		var factory = this;
+		const factory = this;
 		this.settingsHandle = RocketChat.models.Settings.findByIds(['DBS_AI_Source', 'DBS_AI_Redlink_URL', 'DBS_AI_Redlink_Auth_Token']).observeChanges({
 			added(id, fields) {
 				factory.singleton = undefined;

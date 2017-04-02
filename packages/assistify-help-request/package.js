@@ -42,6 +42,8 @@ Package.onUse(function (api) {
 	api.addFiles('server/methods/closeHelpRequest.js', 'server');
 	api.addFiles('server/methods/createRequest.js', 'server');
 	api.addFiles('server/methods/createExpertise.js', 'server');
+	api.addFiles('server/methods/getExperts.js', 'server');
+	api.addFiles('server/methods/requestsList.js', 'server');
 
 	// Hooks
 	api.addFiles('server/hooks/sendMessageToKnowledgeAdapter.js', 'server');
@@ -64,6 +66,8 @@ Package.onUse(function (api) {
 	api.addFiles('client/views/sideNav/requests.js', 'client');
 	api.addFiles('client/views/sideNav/expertise.html', 'client');
 	api.addFiles('client/views/sideNav/expertise.js', 'client');
+	api.addFiles('client/views/sideNav/listRequestsFlex.html', 'client');
+	api.addFiles('client/views/sideNav/listRequestsFlex.js', 'client');
 
 	//Libraries
 	// api.addFiles('client/lib/collections.js', 'client');

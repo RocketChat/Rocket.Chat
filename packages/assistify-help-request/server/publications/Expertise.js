@@ -19,7 +19,7 @@ Meteor.publish('autocompleteExpertise', function (selector, limit = 50) {
 		}
 	};
 
-	const cursorHandle = RocketChat.models.Rooms.findByNameContainingTypesWithUsername(selector.name, [{type: 'e'}], options).observeChanges({
+	const cursorHandle = RocketChat.models.Rooms.findByNameContainingTypesAndTags(selector.name, [{type: 'e'}], options).observeChanges({
 		added: function (_id, record) {
 			return pub.added('autocompleteRecords', _id, record);
 		},

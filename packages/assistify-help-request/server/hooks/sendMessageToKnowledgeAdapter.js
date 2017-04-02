@@ -1,4 +1,5 @@
 /* globals SystemLogger */
+
 Meteor.startup( () => {
 	RocketChat.callbacks.add('afterSaveMessage', function (message, room) {
 
@@ -39,7 +40,7 @@ Meteor.startup( () => {
 				context.environment = helpRequest.environment;
 			}
 			try {
-				knowledgeAdapter.onMessage(message, context);
+				knowledgeAdapter.onMessage(message, context, room.expertise ? [room.expertise] : []);
 			}
 			catch (e) {
 				SystemLogger.error('Error using knowledge provider ->', e);

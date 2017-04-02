@@ -19,11 +19,6 @@ RocketChat.callbacks.add('afterSaveMessage', function (message, room) {
 		return message;
 	}
 
-	// if the message hasn't a token, it was not sent by the visitor, so ignore it
-	if (!message.token) {
-		return message;
-	}
-
 	const knowledgeAdapter = _dbs.getKnowledgeAdapter();
 	if (!knowledgeAdapter) {
 		return;

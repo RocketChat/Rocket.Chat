@@ -10,7 +10,7 @@
 
 		{{#each query in queries}}
 			<!-- // inline result supported? -->
-			{{#if query.inlineResultSupport}}
+			{{#if isInlineResult query}}
 				<!-- do redlink query template -->
 				{{> redlinkQuery (queryContext query @index)}}
 			{{/if}}

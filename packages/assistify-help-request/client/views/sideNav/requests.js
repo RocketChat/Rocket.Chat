@@ -31,9 +31,9 @@ Template.requests.helpers({
 	}
 });
 
-Template.channels.events({
-	'click .more-channels': function () {
-		SideNav.setFlex("listChannelsFlex");
+Template.requests.events({
+	'click .js-more-requests': function () {
+		SideNav.setFlex("listRequestsFlex");
 		SideNav.openFlex();
 	}
 });
