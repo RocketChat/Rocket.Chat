@@ -59,7 +59,7 @@ Template.loginServices.helpers({
 
 Template.loginServices.events({
 	'click .external-login'(e) {
-		if (this.service && this.service.service == null) {
+		if (this.service == null || this.service.service == null) {
 			return;
 		}
 		const loadingIcon = $(e.currentTarget).find('.loading-icon');
