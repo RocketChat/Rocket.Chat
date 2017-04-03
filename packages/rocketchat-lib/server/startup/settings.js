@@ -1,7 +1,11 @@
+// Insert server unique id if it doesn't exist
 RocketChat.settings.add('uniqueID', process.env.DEPLOYMENT_ID || Random.id(), {
 	'public': true,
 	hidden: true
 });
+
+// When you define a setting and want to add a description, you don't need to automatically define the i18nDescription
+// if you add a node to the i18n.json with the same setting name but with `_Description` it will automatically work.
 
 RocketChat.settings.addGroup('Accounts', function() {
 	this.add('Accounts_AllowDeleteOwnAccount', false, {
