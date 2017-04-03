@@ -247,8 +247,7 @@ Template.channelSettings.onCreated(function() {
 				}
 			},
 			canView(room) {
-				let ref;
-				if ((ref = room.t) !== 'c' && ref !== 'p') {
+				if (['c', 'p'].includes(room.t) === false) {
 					return false;
 				} else if (room.t === 'p' && !RocketChat.authz.hasAllPermission('create-c')) {
 					return false;
@@ -362,10 +361,9 @@ Template.channelSettings.onCreated(function() {
 					closeOnConfirm: false,
 					html: false
 				}, function(confirmed) {
-					let action;
 					swal.disableButtons();
 					if (confirmed) {
-						action = value ? 'archiveRoom' : 'unarchiveRoom';
+						const action = value ? 'archiveRoom' : 'unarchiveRoom';
 						return Meteor.call(action, room._id, function(err) {
 							if (err) {
 								swal.enableButtons();

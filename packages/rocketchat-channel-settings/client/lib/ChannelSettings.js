@@ -3,7 +3,7 @@ RocketChat.ChannelSettings = new class {
 		this.options = new ReactiveVar({});
 	}
 	addOption(config) {
-		if (!(config && config.id)) {
+		if (config == null || config.id == null) {
 			return false;
 		}
 		return Tracker.nonreactive(() => {
@@ -16,8 +16,8 @@ RocketChat.ChannelSettings = new class {
 	getOptions(currentData, group) {
 		const allOptions = _.toArray(this.options.get());
 		const allowedOptions = _.compact(_.map(allOptions, function(option) {
-			if ((option.validation == null) || option.validation()) {
-				option.data = Object.assign(option.data || {}, currentData);
+			if (option.validation == null || option.validation()) {
+				option.data = Object.assign({}, option.data, currentData);
 				return option;
 			}
 		})).filter(function(option) {
