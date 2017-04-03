@@ -6,7 +6,7 @@ Template.mailMessagesInstructions.helpers({
 	},
 	email() {
 		const {emails} = Meteor.user();
-		return emails && emails[0].address;
+		return emails && emails[0] && emails[0].address;
 	},
 	roomName() {
 		const room = ChatRoom.findOne(Session.get('openedRoom'));
@@ -64,12 +64,11 @@ Template.mailMessagesInstructions.events({
 			const rfcMailPatternWithName = /^(?:.*<)?([a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*)(?:>?)$/;
 			const emails = t.$('input[name=to_emails]').val().trim().split(',');
 			const erroredEmails = [];
-			for (let j = 0, len = emails.length; j < len; j++) {
-				const email = emails[j];
+			emails.forEach((email) => {
 				if (!rfcMailPatternWithName.test(email.trim())) {
 					erroredEmails.push(email.trim());
 				}
-			}
+			});
 			t.erroredEmails.set(erroredEmails);
 			if (erroredEmails.length > 0) {
 				t.$('.error-invalid-emails').show();
