@@ -24,6 +24,7 @@ Meteor.methods({
 
 		const map = (record) => {
 			return {
+				_id: record._user._id,
 				username: record._user.username,
 				name: record._user.name
 			};
