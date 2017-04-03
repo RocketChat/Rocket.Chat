@@ -482,10 +482,11 @@ class ModelRooms extends RocketChat.models._Base
 	setTypeById: (_id, type) ->
 		query =
 			_id: _id
-
 		update =
 			$set:
 				t: type
+		if type == 'p'
+			update.$unset = {default: ''}
 
 		return @update query, update
 
@@ -496,6 +497,16 @@ class ModelRooms extends RocketChat.models._Base
 		update =
 			$set:
 				topic: topic
+
+		return @update query, update
+
+	setAnnouncementById: (_id, announcement) ->
+		query =
+			_id: _id
+
+		update =
+			$set:
+				announcement: announcement
 
 		return @update query, update
 
@@ -529,19 +540,19 @@ class ModelRooms extends RocketChat.models._Base
 
 		return @update query, update
 
-	saveRoomById: (_id, data) ->
+	setTopicAndTagsById: (_id, topic, tags) ->
 		setData = {}
 		unsetData = {}
 
-		if data.topic?
-			if not _.isEmpty(s.trim(data.topic))
-				setData.topic = s.trim(data.topic)
+		if topic?
+			if not _.isEmpty(s.trim(topic))
+				setData.topic = s.trim(topic)
 			else
 				unsetData.topic = 1
 
-		if data.tags?
-			if not _.isEmpty(s.trim(data.tags))
-				setData.tags = s.trim(data.tags).split(',').map((tag) => return s.trim(tag))
+		if tags?
+			if not _.isEmpty(s.trim(tags))
+				setData.tags = s.trim(tags).split(',').map((tag) => return s.trim(tag))
 			else
 				unsetData.tags = 1
 
@@ -552,6 +563,9 @@ class ModelRooms extends RocketChat.models._Base
 
 		if not _.isEmpty unsetData
 			update.$unset = unsetData
+
+		if _.isEmpty update
+			return
 
 		return @update { _id: _id }, update
 

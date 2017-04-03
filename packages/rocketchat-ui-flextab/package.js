@@ -15,7 +15,6 @@ Package.onUse(function(api) {
 		'mongo',
 		'ecmascript',
 		'templating',
-		'coffeescript',
 		'underscore',
 		'rocketchat:lib'
 	]);
@@ -28,12 +27,11 @@ Package.onUse(function(api) {
 	api.addFiles('flex-tab/tabs/userEdit.html', 'client');
 	api.addFiles('flex-tab/tabs/userInfo.html', 'client');
 
-
 	api.addFiles('flex-tab/flexTabBar.js', 'client');
 	api.addFiles('flex-tab/tabs/keyboardShortcuts.coffee', 'client');
-	api.addFiles('flex-tab/tabs/membersList.coffee', 'client');
-	api.addFiles('flex-tab/tabs/messageSearch.coffee', 'client');
-	api.addFiles('flex-tab/tabs/uploadedFilesList.coffee', 'client');
-	api.addFiles('flex-tab/tabs/userEdit.coffee', 'client');
-	api.addFiles('flex-tab/tabs/userInfo.coffee', 'client');
+	api.addFiles('client/tabs/membersList.js', 'client');
+	api.addFiles('client/tabs/messageSearch.js', 'client');
+	api.addFiles('client/tabs/uploadedFilesList.js', 'client');
+	api.addFiles('client/tabs/userEdit.js', 'client');
+	api.addFiles('client/tabs/userInfo.js', 'client');
 });

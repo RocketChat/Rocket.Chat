@@ -20,6 +20,16 @@ Meteor.startup ->
 			}
 
 	RocketChat.MessageTypes.registerType
+		id: 'room_changed_announcement'
+		system: true
+		message: 'room_changed_announcement'
+		data: (message) ->
+			return {
+				user_by: message.u?.username
+				room_announcement: message.msg
+			}
+
+	RocketChat.MessageTypes.registerType
 		id: 'room_changed_description'
 		system: true
 		message: 'room_changed_description'

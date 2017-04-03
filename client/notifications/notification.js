@@ -19,20 +19,20 @@ Meteor.startup(function() {
 				const messageIsInOpenedRoom = openedRoomId === notification.payload.rid;
 
 				fireGlobalEvent('notification', {
-					notification: notification,
+					notification,
 					fromOpenedRoom: messageIsInOpenedRoom,
-					hasFocus: hasFocus
+					hasFocus
 				});
 
 				if (RocketChat.Layout.isEmbedded()) {
 					if (!hasFocus && messageIsInOpenedRoom) {
 						// Play a sound and show a notification.
-						KonchatNotification.newMessage();
+						KonchatNotification.newMessage(notification.payload.rid);
 						KonchatNotification.showDesktop(notification);
 					}
 				} else if (!(hasFocus && messageIsInOpenedRoom)) {
 					// Play a sound and show a notification.
-					KonchatNotification.newMessage();
+					KonchatNotification.newMessage(notification.payload.rid);
 					KonchatNotification.showDesktop(notification);
 				}
 			});

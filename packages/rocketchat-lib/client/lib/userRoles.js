@@ -8,7 +8,7 @@ Meteor.startup(function() {
 					return handleError(error);
 				}
 
-				for (let record of results) {
+				for (const record of results) {
 					UserRoles.upsert({ _id: record._id }, record);
 				}
 			});

@@ -16,9 +16,9 @@ FileUpload.FileSystem = class FileUploadFileSystem extends FileUploadBase {
 			data: file,
 			file: meta,
 			onError: (err) => {
-				var uploading = Session.get('uploading');
+				const uploading = Session.get('uploading');
 				if (uploading != null) {
-					let item = _.findWhere(uploading, {
+					const item = _.findWhere(uploading, {
 						id: this.id
 					});
 					if (item != null) {
@@ -29,15 +29,15 @@ FileUpload.FileSystem = class FileUploadFileSystem extends FileUploadBase {
 				}
 			},
 			onComplete: (fileData) => {
-				var file = _.pick(fileData, '_id', 'type', 'size', 'name', 'identify', 'description');
+				const file = _.pick(fileData, '_id', 'type', 'size', 'name', 'identify', 'description');
 
 				file.url = fileData.url.replace(Meteor.absoluteUrl(), '/');
 
 				Meteor.call('sendFileMessage', this.meta.rid, null, file, () => {
 					Meteor.setTimeout(() => {
-						var uploading = Session.get('uploading');
+						const uploading = Session.get('uploading');
 						if (uploading != null) {
-							let item = _.findWhere(uploading, {
+							const item = _.findWhere(uploading, {
 								id: this.id
 							});
 							return Session.set('uploading', _.without(uploading, item));

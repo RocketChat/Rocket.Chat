@@ -75,7 +75,7 @@ RocketChat.settings.get('Assets_SvgFavicon_Enable', (key, value) => {
 
 	if (value) {
 		Inject.rawHead(key,
-			`${standardFavicons}
+			`${ standardFavicons }
 			<link rel="icon" sizes="any" type="image/svg+xml" href="assets/favicon.svg" />`);
 	} else {
 		Inject.rawHead(key, standardFavicons);
@@ -83,9 +83,9 @@ RocketChat.settings.get('Assets_SvgFavicon_Enable', (key, value) => {
 });
 
 RocketChat.settings.get('theme-color-primary-background-color', (key, value = '#04436a') => {
-	Inject.rawHead(key, `<style>body { background-color: ${value};}</style>` +
-						`<meta name="msapplication-TileColor" content="${value}" />` +
-						`<meta name="theme-color" content="${value}" />`);
+	Inject.rawHead(key, `<style>body { background-color: ${ value };}</style>` +
+						`<meta name="msapplication-TileColor" content="${ value }" />` +
+						`<meta name="theme-color" content="${ value }" />`);
 });
 
 RocketChat.settings.get('Accounts_ForgetUserSessionOnWindowClose', (key, value) => {
@@ -98,7 +98,7 @@ RocketChat.settings.get('Accounts_ForgetUserSessionOnWindowClose', (key, value) 
 					}
 				</script>
 			`;
-			return html.replace(/<\/body>/, script + '\n</body>');
+			return html.replace(/<\/body>/, `${ script }\n</body>`);
 		});
 	} else {
 		Inject.rawModHtml(key, (html) => {
@@ -109,31 +109,31 @@ RocketChat.settings.get('Accounts_ForgetUserSessionOnWindowClose', (key, value) 
 
 RocketChat.settings.get('Site_Name', (key, value = 'Rocket.Chat') => {
 	Inject.rawHead(key,
-		`<title>${value}</title>` +
-		`<meta name="application-name" content="${value}">` +
-		`<meta name="apple-mobile-web-app-title" content="${value}">`);
+		`<title>${ value }</title>` +
+		`<meta name="application-name" content="${ value }">` +
+		`<meta name="apple-mobile-web-app-title" content="${ value }">`);
 });
 
 RocketChat.settings.get('Meta_language', (key, value = '') => {
 	Inject.rawHead(key,
-		`<meta http-equiv="content-language" content="${value}">` +
-		`<meta name="language" content="${value}">`);
+		`<meta http-equiv="content-language" content="${ value }">` +
+		`<meta name="language" content="${ value }">`);
 });
 
 RocketChat.settings.get('Meta_robots', (key, value = '') => {
-	Inject.rawHead(key, `<meta name="robots" content="${value}">`);
+	Inject.rawHead(key, `<meta name="robots" content="${ value }">`);
 });
 
 RocketChat.settings.get('Meta_msvalidate01', (key, value = '') => {
-	Inject.rawHead(key, `<meta name="msvalidate.01" content="${value}">`);
+	Inject.rawHead(key, `<meta name="msvalidate.01" content="${ value }">`);
 });
 
 RocketChat.settings.get('Meta_google-site-verification', (key, value = '') => {
-	Inject.rawHead(key, `<meta name="google-site-verification" content="${value}" />`);
+	Inject.rawHead(key, `<meta name="google-site-verification" content="${ value }" />`);
 });
 
 RocketChat.settings.get('Meta_fb_app_id', (key, value = '') => {
-	Inject.rawHead(key, `<meta property="fb:app_id" content="${value}">`);
+	Inject.rawHead(key, `<meta property="fb:app_id" content="${ value }">`);
 });
 
 RocketChat.settings.get('Meta_custom', (key, value = '') => {
@@ -150,6 +150,6 @@ Meteor.defer(() => {
 	if (/\/$/.test(baseUrl) === false) {
 		baseUrl += '/';
 	}
-	Inject.rawHead('base', `<base href="${baseUrl}">`);
+	Inject.rawHead('base', `<base href="${ baseUrl }">`);
 });
 
