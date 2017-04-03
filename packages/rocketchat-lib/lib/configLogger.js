@@ -1,19 +1,21 @@
 /* globals LoggerManager */
+function log(fn = () => {}) {
+	return typeof LoggerManager !== 'undefined' && fn(LoggerManager);
+}
+
 RocketChat.settings.get('Log_Package', function(key, value) {
-	return (typeof LoggerManager !== 'undefined') && LoggerManager !== null && (LoggerManager.showPackage = value);
+	return log(LoggerManager => LoggerManager.showPackage = value);
 });
 
 RocketChat.settings.get('Log_File', function(key, value) {
-	return typeof LoggerManager !== 'undefined' && LoggerManager !== null && (LoggerManager.showFileAndLine = value);
+	return log(LoggerManager => LoggerManager.showFileAndLine = value);
 });
 
 RocketChat.settings.get('Log_Level', function(key, value) {
 	if (value != null) {
-		if (typeof LoggerManager !== 'undefined' && LoggerManager !== null) {
-			LoggerManager.logLevel = parseInt(value);
-		}
+		log(LoggerManager => LoggerManager.logLevel = parseInt(value));
 		Meteor.setTimeout(() => {
-			return typeof LoggerManager !== 'undefined' && LoggerManager !== null && LoggerManager.enable(true);
+			return log(LoggerManager => LoggerManager.enable(true));
 		}, 200);
 	}
 });
