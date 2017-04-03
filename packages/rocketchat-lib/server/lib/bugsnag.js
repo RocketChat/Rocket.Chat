@@ -10,7 +10,7 @@ RocketChat.settings.get('Bugsnag_api_key', (key, value) => {
 
 const notify = function(message, stack) {
 	if (typeof stack === 'string') {
-		message += ' ' + stack;
+		message += ` ${ stack }`;
 	}
 	let options = {};
 	if (RocketChat.Info) {
@@ -26,7 +26,7 @@ process.on('uncaughtException', Meteor.bindEnvironment((error) => {
 	throw error;
 }));
 
-let originalMeteorDebug = Meteor._debug;
+const originalMeteorDebug = Meteor._debug;
 Meteor._debug = function() {
 	notify(...arguments);
 	return originalMeteorDebug(...arguments);

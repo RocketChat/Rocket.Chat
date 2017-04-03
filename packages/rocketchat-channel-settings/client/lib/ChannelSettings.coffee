@@ -17,13 +17,14 @@ RocketChat.ChannelSettings = new class
 			opts[config.id] = config
 			options.set opts
 
-	getOptions = (currentData) ->
+	getOptions = (currentData, group) ->
 		allOptions = _.toArray options.get()
 		allowedOptions = _.compact _.map allOptions, (option) ->
 			if not option.validation? or option.validation()
 				option.data = Object.assign (option.data or {}), currentData
 				return option
-
+		allowedOptions = allowedOptions.filter (option) ->
+			!group or !option.group or option.group?.indexOf(group) > -1
 		return _.sortBy allowedOptions, 'order'
 
 	addOption: addOption
