@@ -8,10 +8,7 @@ this.SideNav = new class {
 		this.openQueue = [];
 	}
 
-	toggleArrow(status) {
-		if (status == null) {
-			status = null;
-		}
+	toggleArrow(status = null) {
 		if (status === 0) {
 			this.arrow.addClass('close');
 			this.arrow.removeClass('top');
@@ -45,11 +42,8 @@ this.SideNav = new class {
 			return typeof callback === 'function' && callback();
 		}, 500);
 	}
-	closeFlex(callback) {
+	closeFlex(callback = null) {
 		let subscription;
-		if (callback == null) {
-			callback = null;
-		}
 		if (!RocketChat.roomTypes.getTypes().filter(function(i) {
 			return i.route;
 		}).map(function(i) {
