@@ -1,8 +1,5 @@
 
 RocketChat.saveRoomType = function(rid, roomType, user, sendMessage = true) {
-	if (sendMessage == null) {
-		sendMessage = true;
-	}
 	if (!Match.test(rid, String)) {
 		throw new Meteor.Error('invalid-room', 'Invalid room', {
 			'function': 'RocketChat.saveRoomType'
@@ -26,9 +23,9 @@ RocketChat.saveRoomType = function(rid, roomType, user, sendMessage = true) {
 			'function': 'RocketChat.saveRoomType'
 		});
 	}
-	let message;
 	const result = RocketChat.models.Rooms.setTypeById(rid, roomType) && RocketChat.models.Subscriptions.updateTypeByRoomId(rid, roomType);
 	if (result && sendMessage) {
+		let message;
 		if (roomType === 'c') {
 			message = TAPi18n.__('Channel', {
 				lng: user && user.language || RocketChat.settings.get('language') || 'en'

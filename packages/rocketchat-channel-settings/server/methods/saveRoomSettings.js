@@ -10,7 +10,7 @@ Meteor.methods({
 				method: 'saveRoomSettings'
 			});
 		}
-		if (setting !== 'roomName' && setting !== 'roomTopic' && setting !== 'roomAnnouncement' && setting !== 'roomDescription' && setting !== 'roomType' && setting !== 'readOnly' && setting !== 'reactWhenReadOnly' && setting !== 'systemMessages' && setting !== 'default' && setting !== 'joinCode') {
+		if (!['roomName', 'roomTopic', 'roomAnnouncement', 'roomDescription', 'roomType', 'readOnly', 'reactWhenReadOnly', 'systemMessages', 'default', 'joinCode'].some((s) => s === setting)) {
 			throw new Meteor.Error('error-invalid-settings', 'Invalid settings provided', {
 				method: 'saveRoomSettings'
 			});
