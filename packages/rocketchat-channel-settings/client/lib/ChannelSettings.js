@@ -2,6 +2,14 @@ RocketChat.ChannelSettings = new class {
 	constructor() {
 		this.options = new ReactiveVar({});
 	}
+
+/*
+	 * Adds an option in Channel Settings
+	 * @config (object)
+	 *   id: option id (required)
+	 *   template (string): template name to render (required)
+	 *   validation (function): if option should be displayed
+ */
 	addOption(config) {
 		if (config == null || config.id == null) {
 			return false;
