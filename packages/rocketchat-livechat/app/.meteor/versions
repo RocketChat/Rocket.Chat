@@ -46,7 +46,7 @@ meteorspark:util@0.2.0
 minifier-css@1.2.16
 minifier-js@1.2.18
 minimongo@1.0.21
-mizzao:timesync@0.4.0
+mizzao:timesync@0.5.0
 modules@0.7.9
 modules-runtime@0.7.9
 momentjs:moment@2.18.1
