@@ -33,7 +33,7 @@
   "Accounts_BlockedDomainsList_Description": "Lista de domínios bloqueados, separados por vírgulas ",
   "Accounts_BlockedUsernameList": "Lista de nomes de usuário bloqueados",
   "Accounts_BlockedUsernameList_Description": "Lista de nomes de usuários bloqueados, separada por vírgulas (não diferencia maiúsculas)",
-  "Accounts_CustomFields_Description": "Deve ser um JSON válido onde as chaves são os nomes de campos contendo um dicionário de configuração de campos. Exemplo:</br><code>{\n \"role\": {\n  \"type\": \"select\",\n  \"defaultValue\": \"estudante\",\n  \"options\": [\"professor\", \"estudante\"],\n  \"required\": true,\n  \"modifyRecordField\": {\n   \"array\": true,\n   \"field\": \"roles\"\n  }\n },\n \"twitter\": {\n  \"type\": \"text\",\n  \"required\": true,\n  \"minLength\": 2,\n  \"maxLength\": 10\n }\n}</code> ",
+  "Accounts_CustomFields_Description": "Deve ser um JSON válido onde as chaves são os nomes de campos contendo um dicionário de configuração de campos. Exemplo:<br/><code>{\n \"role\": {\n  \"type\": \"select\",\n  \"defaultValue\": \"estudante\",\n  \"options\": [\"professor\", \"estudante\"],\n  \"required\": true,\n  \"modifyRecordField\": {\n   \"array\": true,\n   \"field\": \"roles\"\n  }\n },\n \"twitter\": {\n  \"type\": \"text\",\n  \"required\": true,\n  \"minLength\": 2,\n  \"maxLength\": 10\n }\n}</code> ",
   "Accounts_denyUnverifiedEmail": "Proibir e-mail não verificado",
   "Accounts_EmailVerification": "Verificação de E-mail",
   "Accounts_EmailVerification_Description": "Certifique-se de que as configurações de SMTP estão corretas para usar este recurso",

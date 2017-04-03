@@ -33,7 +33,7 @@
   "Accounts_BlockedDomainsList_Description": "Kommata getrennte Liste von geblockten Domains",
   "Accounts_BlockedUsernameList": "Liste gesperrter Benutzernamen",
   "Accounts_BlockedUsernameList_Description": "Komma-getrennte Liste gesperrter Benutzernamen (case-insensitive)",
-  "Accounts_CustomFields_Description": "Valides JSON erwartet, in dem die Schlüssel die Feldnamen repräsentieren und ein Verzeichnis von Feldeinstellungen beinhalten. Beispiel: </br>\n<code>{\n \"role\": {\n  \"type\": \"select\",\n  \"defaultValue\": \"student\",\n  \"options\": [\"teacher\", \"student\"],\n  \"required\": true,\n  \"modifyRecordField\": {\n   \"array\": true,\n   \"field\": \"roles\"\n  }\n },\n \"twitter\": {\n  \"type\": \"text\",\n  \"required\": true,\n  \"minLength\": 2,\n  \"maxLength\": 10\n }\n}</code>",
+  "Accounts_CustomFields_Description": "Valides JSON erwartet, in dem die Schlüssel die Feldnamen repräsentieren und ein Verzeichnis von Feldeinstellungen beinhalten. Beispiel: <br/>\n<code>{\n \"role\": {\n  \"type\": \"select\",\n  \"defaultValue\": \"student\",\n  \"options\": [\"teacher\", \"student\"],\n  \"required\": true,\n  \"modifyRecordField\": {\n   \"array\": true,\n   \"field\": \"roles\"\n  }\n },\n \"twitter\": {\n  \"type\": \"text\",\n  \"required\": true,\n  \"minLength\": 2,\n  \"maxLength\": 10\n }\n}</code>",
   "Accounts_denyUnverifiedEmail": "Nicht verifizierte E-Mail-Adressen ablehnen",
   "Accounts_EmailVerification": "E-Mail-Verifizierung",
   "Accounts_EmailVerification_Description": "Um diese Funktion nutzen zu können, stellen Sie bitte sicher, dass ihre SMTP-Einstellungen korrekt sind.",
