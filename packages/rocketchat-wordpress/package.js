@@ -12,6 +12,6 @@ Package.onUse(function(api) {
 	api.use('templating', 'client');
 
 	api.addFiles('common.js');
-	api.addFiles('wordpress-login-button.css', 'client');
+	api.addFiles('client/wordpress-login-button.css', 'client');
 	api.addFiles('startup.js', 'server');
 });
