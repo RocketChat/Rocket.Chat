@@ -197,7 +197,7 @@ Template.loginForm.onCreated(function() {
 		for (const field in formObj) {
 			if (formObj.hasOwnProperty(field)) {
 				const value = formObj[field];
-				if (customFields[field]) {
+				if (customFields[field] == null) {
 					continue;
 				}
 				const customField = customFields[field];
