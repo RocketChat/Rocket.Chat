@@ -70,6 +70,8 @@ Template.livechatWindow.events({
 Template.livechatWindow.onCreated(function() {
 	Session.set({sound: true});
 
+	const availableLanguages = TAPi18n.getLanguages();
+
 	const defaultAppLanguage = () => {
 		let lng = window.navigator.userLanguage || window.navigator.language || 'en';
 		const regexp = /([a-z]{2}-)([a-z]{2})/;
@@ -118,7 +120,13 @@ Template.livechatWindow.onCreated(function() {
 				Livechat.agent = result.agentData;
 			}
 
-			TAPi18n.setLanguage((result.language || defaultAppLanguage()).split('-').shift());
+			let language = result.language || defaultAppLanguage();
+
+			if (!availableLanguages[language]) {
+				language = language.split('-').shift();
+			}
+
+			TAPi18n.setLanguage(language);
 
 			Triggers.setTriggers(result.triggers);
 			Triggers.init();
