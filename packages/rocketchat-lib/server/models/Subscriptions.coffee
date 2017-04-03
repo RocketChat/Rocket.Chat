@@ -402,7 +402,6 @@ class ModelSubscriptions extends RocketChat.models._Base
 			alert: false
 			unread: 0
 			ts: room.ts
-			la: new Date
 			rid: room._id
 			name: room.name
 			t: room.t
