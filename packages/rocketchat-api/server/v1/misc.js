@@ -32,6 +32,9 @@ RocketChat.API.v1.addRoute('me', { authRequired: true }, {
 	}
 });
 
+let onlineCache = 0;
+let onlineCacheDate = 0;
+const cacheInvalid = 60000; // 1 minute
 RocketChat.API.v1.addRoute('shield.svg', { authRequired: false }, {
 	get() {
 		const { type, channel, name, icon } = this.queryParams;
@@ -49,8 +52,11 @@ RocketChat.API.v1.addRoute('shield.svg', { authRequired: false }, {
 		let text;
 		switch (type) {
 			case 'online':
-				const count = RocketChat.models.Users.findUsersNotOffline().count();
-				text = `${ count } Online`;
+				if (Date.now() - onlineCacheDate > cacheInvalid) {
+					onlineCache = RocketChat.models.Users.findUsersNotOffline().count();
+					onlineCacheDate = Date.now();
+				}
+				text = `${ onlineCache } ${ TAPi18n.__('Online') }`;
 				break;
 			case 'channel':
 				if (!channel) {
