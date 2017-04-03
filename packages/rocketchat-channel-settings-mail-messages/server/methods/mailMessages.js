@@ -33,7 +33,7 @@ Meteor.methods({
 		if (data.to_users.length > 0) {
 			_.each(data.to_users, (username) => {
 				const user = RocketChat.models.Users.findOneByUsername(username);
-				if (user && user.emails && user.emails[0].address) {
+				if (user && user.emails && user.emails[0] && user.emails[0].address) {
 					emails.push(user.emails[0].address);
 				} else {
 					missing.push(username);
