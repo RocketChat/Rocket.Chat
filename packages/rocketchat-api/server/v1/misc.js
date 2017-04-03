@@ -59,7 +59,7 @@ RocketChat.API.v1.addRoute('shield.svg', { authRequired: false }, {
 				text = `#${ channel }`;
 				break;
 			default:
-				text = 'JOIN CHAT';
+				text = TAPi18n.__('Join_Chat').toUpperCase();
 		}
 		const iconSize = hideIcon ? 7 : 24;
 		const leftSize = name ? name.length * 6 + 7 + iconSize : iconSize;
