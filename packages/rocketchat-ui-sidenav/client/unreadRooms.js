@@ -17,13 +17,10 @@ Template.unreadRooms.onCreated(function() {
 			open: true
 		};
 
-		let sort;
-		if (Session.equals('RoomSortType', 'name')) {
-			sort = { sort: { 't': 1, 'name': 1 }};
-		} else {
-			sort = { sort: { 'la': -1 }};
+		let subscriptions = ChatSubscription.find(query, { sort: { 't': 1, 'name': 1 }}).fetch();
+		if (Session.equals('RoomSortType', 'activity')) {
+			subscriptions = RocketChat.SubscriptionUtil.sortSubscriptionsByActivity(subscriptions);
 		}
-
-		return this.unreadRooms = ChatSubscription.find(query, sort);
+		return this.unreadRooms = subscriptions;
 	});
 });

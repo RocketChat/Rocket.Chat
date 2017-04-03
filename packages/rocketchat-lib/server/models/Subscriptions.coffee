@@ -395,16 +395,6 @@ class ModelSubscriptions extends RocketChat.models._Base
 
 		return @update query, update, { multi: true }
 
-	updateLastActivityTimeByRoomId: (rid) ->
-		query =
-			rid: rid
-
-		update =
-			$set:
-				la: new Date
-
-		return @update query, update, { multi: true }
-
 	# INSERT
 	createWithRoomAndUser: (room, user, extraData) ->
 		subscription =

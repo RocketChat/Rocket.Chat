@@ -19,14 +19,11 @@ Template.combined.helpers({
 			query.alert = {$ne: true};
 		}
 
-		let sort;
-		if (Session.equals('RoomSortType', 'name')) {
-			sort = { sort: { 'name': 1 }};
-		} else {
-			sort = { sort: { 'la': -1 }};
+		let subscriptions = ChatSubscription.find(query, { sort: {'name': 1 }}).fetch();
+		if (Session.equals('RoomSortType', 'activity')) {
+			subscriptions = RocketChat.SubscriptionUtil.sortSubscriptionsByActivity(subscriptions);
 		}
-
-		return ChatSubscription.find(query, sort);
+		return subscriptions;
 	}});
 
 Template.combined.events({

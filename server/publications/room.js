@@ -12,6 +12,7 @@ const options = {
 		jitsiTimeout: 1,
 		description: 1,
 		default: 1,
+		lm: 1,
 
 		// @TODO create an API to register this fields based on room type
 		livechatData: 1,

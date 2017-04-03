@@ -15,7 +15,8 @@ Meteor.startup(function() {
 				jitsiTimeout: 1,
 				description: 1,
 				sysMes: 1,
-				joinCodeRequired: 1
+				joinCodeRequired: 1,
+				lm: 1
 			}
 		};
 
@@ -50,7 +51,8 @@ Meteor.startup(function() {
 				reactWhenReadOnly: 1,
 				jitsiTimeout: 1,
 				description: 1,
-				sysMes: 1
+				sysMes: 1,
+				lm: 1
 			}
 		};
 
@@ -72,7 +74,8 @@ Meteor.startup(function() {
 				u: 1,
 				usernames: 1,
 				topic: 1,
-				jitsiTimeout: 1
+				jitsiTimeout: 1,
+				lm: 1
 			}
 		};
 
