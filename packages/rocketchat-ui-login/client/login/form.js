@@ -194,21 +194,24 @@ Template.loginForm.onCreated(function() {
 			return;
 		}
 
-		Object.keys(formObj).map((field) => {
-			const value = formObj[field];
-			if (customFields[field]) {
+		for (const field in formObj) {
+			if (formObj.hasOwnProperty(field)) {
+				const value = formObj[field];
+				if (customFields[field]) {
+					continue;
+				}
 				const customField = customFields[field];
 				if (customField.required === true && !value) {
 					return validationObj[field] = t('Field_required');
 				}
-				if (customField.maxLength != null && value.length > customField.maxLength) {
+				if ((customField.maxLength != null) && value.length > customField.maxLength) {
 					return validationObj[field] = t('Max_length_is', customField.maxLength);
 				}
-				if (customField.minLength && value.length < customField.minLength) {
+				if ((customField.minLength != null) && value.length < customField.minLength) {
 					return validationObj[field] = t('Min_length_is', customField.minLength);
 				}
 			}
-		});
+		}
 	};
 	this.validate = function() {
 		const formData = $('#login-card').serializeArray();
