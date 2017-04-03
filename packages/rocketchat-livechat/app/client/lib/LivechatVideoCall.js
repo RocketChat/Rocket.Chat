@@ -7,7 +7,7 @@ LivechatVideoCall = new (class LivechatVideoCall {
 
 		if (typeof JitsiMeetExternalAPI === 'undefined') {
 			const prefix = __meteor_runtime_config__.ROOT_URL_PATH_PREFIX || '';
-			$.getScript(`${prefix}/packages/rocketchat_videobridge/client/public/external_api.js`);
+			$.getScript(`${ prefix }/packages/rocketchat_videobridge/client/public/external_api.js`);
 		}
 	}
 
@@ -46,7 +46,7 @@ LivechatVideoCall = new (class LivechatVideoCall {
 
 	start(domain, room) {
 		Meteor.defer(() => {
-			let interfaceConfig = {};
+			const interfaceConfig = {};
 			interfaceConfig['TOOLBAR_BUTTONS'] = '[""]';
 			interfaceConfig['APP_NAME'] = '"Livechat"';
 			interfaceConfig['INITIAL_TOOLBAR_TIMEOUT'] = '5000';

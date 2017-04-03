@@ -1,5 +1,211 @@
 # History
 
+## NEXT
+
+- [NEW] Permission `join-without-join-code` assigned to admins and bots by default (#6139)
+- [NEW] Integrations, both incoming and outgoing, now have access to the models. Example: `Users.findOneById(id)` (#6336)
+- [NEW] Option to enable `Two Factor Authentication` in user's account preference
+- [FIX] Incoming integrations would break when trying to use the `Store` feature.
+- [FIX] Outgoing webhooks which have an error and they're retrying would still retry even if the integration was disabled. (#4835)
+- [FIX] Removed Deprecated Package rocketchat:sharedsecret.
+
+## 0.54.2 - 2017-Mar-24
+
+- [FIX] LiveChat permissions
+- [FIX] Auto Translate bug on Room Preview (#6355)
+
+## 0.54.1 - 2017-Mar-23
+
+- [FIX] Images on attachments were not loading except for uploaded files.
+
+## 0.54.0 - 2017-Mar-22
+
+### Meteor update to 1.4.3.1
+
+- Add `CMD/Ctrl+k` to initial text of search field (#6034)
+- Add `getS3Url` API (#5410)
+- Add `Unread Messages` to i18n files
+- Add all room owners to post in read only and change set to setOnInsert for read only permissions so they don't get blown away on server restart
+- Add auto translate packae (#6269)
+- Add create user with JSON via env INITIAL_USER
+- Add date to tile of uploads from clipboard (#6270)
+- Add datetime to default filename on clipboard uploads (#6270)
+- Add default oauth role (#6028)
+- Add flex tab and autotranslate options
+- Add icon to room name to show it's being translated
+- Add livechat events (#6070)
+- Add login via OAuth access token (only Google for now)
+- Add login with one time token
+- Add minified version of livechat widget code (#6071)
+- Add option to not overwrite livechat custom fields
+- Add proxy OAuth requests
+- Add setting for Enter key (#6075)
+- Add startup event for iframe integrations
+- Add support for Google Analytics
+- Add the missing settings sections to i18n
+- Add uploads to Google Cloud Storage (#6060)
+- Add user preference to hide roles
+- Fix behavior to ESC on toolbar search (#6056)
+- Fix clear toolbar search input correctly
+- Fix codemiror css (#6058)
+- Fix ctrl/alt/cmd+enter line break (#6057)
+- Fix embed from youtu.be fixed
+- Fix firefox font smoothing to be consistent with chrome
+- Fix http missing from links when starting blockquotes (#6273)
+- Fix incorrect isObject check on the ldap server sync, closes #5973
+- Fix Integration scripts work with Sandstorm
+- Fix Invalid password while setting new password (#6226)
+- Fix jitsi video chat on mobile
+- Fix keydown when photoswipe is open
+- Fix livechat appearance page by not saving settings directly from client (#6077)
+- Fix livechat knowledge base by properly initiating it's model
+- Fix livechat widget being displayed when offline
+- Fix login logo on subdir (#5825 and #5104)
+- Fix screen sharing so it doesn't flip anymore
+- Fix the directive conflicts for aws and google storage (#6084)
+- Fix the edit message (#6086)
+- Fix the outgoing integrations not being triggered for archived channel event
+- Fix the problem where user can't see messages (old or new) after joining a channel with preview turned off until a reload of the page
+- Fix to allows faster hot-reloads when developing
+- Fix to force process to abort if process.exit() times out
+- Fix UI Bug when archiving channel (#6334)
+- Fix undefined exception in the channelSettings flex-tab
+- Fix updating a message with @all by copying "u" property
+- Improve deactivated users look to be different in admin users list
+- Improve multiline codeblock parsing
+- Improve outgoing webhooks and add history (#5823)
+- Improve report abuse to pass the message id instead of message object
+- Remove error-color class when creating new channel
+- Save default user language when enabling auto translate
+- Show file description for all files
+- Slashcommand /open now works event if you never talked with the user
+- Sort admin menu by translated string
+- Sync with new autoupdate
+- Translate alert buttons on send files and update password
+- Translate attachments
+- Translate other items like attchment description
+- Use highlight.js from npm
+- Use katex from npm (#5962)
+- Uses figure caption for images
+
+## 0.53.0 - 2017-Mar-01
+
+- Add 'Unread Messages' to i18n translation files
+- Add CMD/Ctrl+k (#6034)
+- Add default oauth role (#6028)
+- Add getS3Url (#5410)
+- Add livechat events (#6070)
+- Add minified version of livechat widget code (#6071)
+- Add new behavior to ESC on toolbar search (#6056)
+- Add option to not overwrite livechat custom fields
+- Add preference for Enter key (#6075)
+- Add support for uploads to Google Cloud Storage (#6060)
+- Add the admin missing settings sections to i18n translation files
+- Add translate sweetalert buttons on send files and update password
+- Add user preference to hide roles
+- Fix codemiror css (#6058)
+- Fix ctrl/alt/cmd+enter line break (#6057)
+- Fix keydown when photoswipe is open
+- Fix livechat appearance page by not saving settings directly from client (#6077)
+- Fix livechat knowledge base by properly initiating it's model
+- Fix livechat widget being displayed when offline
+- Fix renamed template folder to `client` to allows faster hot-reloads
+- Fix the directive conflicts for aws and google storage (#6084)
+- Fix the edit message (#6086)
+- Fix to remove error-color class when creating new channel
+- Fix undefined exception in the channelSettings flex-tab
+- Fix updating a message with @all by copying "u" property
+- Improve outgoing webhooks and add history (#5823)
+- Improve report abuse to pass the message id instead of message object
+- Use highlight.js from npm
+- Use katex from npm (#5962)
+
+## 0.52.0 - 2017-Fev-14
+
+### Meteor update to 1.4.2.6
+
+- Add admin section for managing sounds
+- Add appName as topic to push gateway
+- Add audio notification choices to subscriptions
+- Add Boonex Dolphin Oauth
+- Add date for attachments
+- Add detection mime-types for upload files
+- Add MONGO_OPLOG_URL to Dockerfile
+- Add open sidenav on cmd + p
+- Add REST API method to list online users in a room
+- Add user preferences for default new message sound
+- Allow empty description for roles
+- Allow pass inline image (base64) on attachments
+- Change npm module from mime-types to mime-type and mime-db
+- Change room "Code" label to "Password"
+- Fix admin info page selectable again
+- Fix clear toolbar search input on enter
+- Fix error when activating new users
+- Fix getLoggedInUser to get user by token
+- Fix message action menu on cordova
+- Fix oAuth buttons
+- Fix reset to default
+- Fix setting empty custom css
+- Fix sidenav logo position
+- Get user by token AND user id, make /api/info match expected properties
+- Remove build property from default info API; update tests to reflect removal
+- Remove the rate limiter for testing enviroment
+- Return user’s _id and username for `groups/channels.online`
+
+## 0.51.0 - 2017-Fev-07
+
+### Converted several Coffee Script files to JS
+
+- Add .node_version.txt to be included in edge channel
+- Add add-user-to-any-room permission (#5683)
+- Add cache for roles and permissions
+- Add create channel icon to toolbar
+- Add integration name to info logs
+- Add missing required sessionId to api.ai call on externalMessage
+- Add navigation toolbar search
+- Add notification reply when supported
+- Add permissions for adding to each room type
+- Add prometheus monitoring foundation
+- Add query modifier $all to Loki
+- Add rest api to get the statistics
+- Add RocketChat.i18nValidation
+- Add serviceData id based on Rocket.Chat _id
+- Add settings to enable API CORS
+- Add social login buttons wrap
+- Add the http to the incoming webhooks, as that's very useful
+- Add the message counts per room type to the stats
+- Add the owner param to the piwik trackEvents
+- Add toolbar search
+- Fix cache $ne operator
+- Fix color on online status to improve accessibility (#3625)
+- Fix flex-nav select color on windows
+- Fix lag when typing on admin inputs
+- Fix loading animation to show onlywhen room is loading new messages
+- Fix login logo size to max height 150px and remove fixed width
+- Fix message cog on compact view
+- Fix Openshift Templates
+- Fix passing the data to the placeholder replacement (#5914)
+- Fix running afterCreateChannel callbacks
+- Fix screen share to work on electron app
+- Fix several event method to ES6 object notation
+- Fix show send button on paste
+- Fix so internal hubot user name should be lower-case
+- Fix to disallow to change type of direct rooms. Add migration
+- Fix to don’t report gravitar 404 as server error
+- Fix to go back to last room when close admin view
+- Fix to hide utc offset if in same timezone
+- Fix to Omit fields from oauth account provided by rocket.chat
+- Fix to return correct error when parsing json on api
+- Fix toolbar search click
+- Refactor livechat sidenav
+- Remove "Private" button for direct messages
+- Remove xml-encryption module
+- Upgrade jquery to v3
+
+## 0.50.1 - 2017-Jan-24
+
+- Fix cache $ne operator
+
 ## 0.50.0 - 2017-Jan-24
 
 - Add APIs for users.register and users.getAvatar
@@ -135,7 +341,7 @@
 
 ### Now uses NodeJS 4.7.0
 
-- Fix integration payload JSON.parse 
+- Fix integration payload JSON.parse
 
 ## 0.48.0 - 2016-Dec-12
 
@@ -802,7 +1008,7 @@
 - Remove redundant Debug_level settings
 - Remove the smicolon on end of 25 line (#3419)
 - Send livechat webhooks
-- Use <button/> rather than <i/> for tab buttons.
+- Use `<button/>` rather than `<i/>` for tab buttons.
 
 ## 0.32.0 - 2016-May-30
 
@@ -865,7 +1071,7 @@
 - Removing presence status computation from new room sound tracker
 - Right sidebar animation cancelled on tab button clicked
 - Save room's name as the livechat visitor name
-- Use HTML emails instead of Text- 
+- Use HTML emails instead of Text-
 
 ## 0.30.0 - 2016-May-09
 
@@ -1114,7 +1320,7 @@
 - Fix ROOT_URL_PATH_PREFIX and add tab base
 - Fix text selection for cordova
 - Fix to package file/versions: - Do not depend on specific version of ostrio:cookies to use newer versions with fixes - Update all packages with latest versions
-- Improve the unread mark calculator 
+- Improve the unread mark calculator
 - Misc fixes to allow running from subdirectory rather than root (/)
 - Move i18n files to inside the lib package
 - Prevent to open message menu for long press in links on mobile

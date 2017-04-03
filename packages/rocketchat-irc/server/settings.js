@@ -31,7 +31,7 @@ Meteor.startup(function() {
 		});
 
 // Expandable box for modifying regular expressions for IRC interaction
-		this.section('Regular Expressions', function() {
+		this.section('Regular_Expressions', function() {
 			this.add('IRC_RegEx_successLogin', 'Welcome to the freenode Internet Relay Chat Network', {
 				type: 'string',
 				i18nLabel: 'Login Successful',

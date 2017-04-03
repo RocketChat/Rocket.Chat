@@ -6,9 +6,9 @@ Meteor.methods({
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'actionLinkHandler' });
 		}
 
-		var message = RocketChat.actionLinks.getMessage(name, messageId);
+		const message = RocketChat.actionLinks.getMessage(name, messageId);
 
-		var actionLink = message.actionLinks[name];
+		const actionLink = message.actionLinks[name];
 
 		RocketChat.actionLinks.actions[actionLink.method_id](message, actionLink.params);
 	}

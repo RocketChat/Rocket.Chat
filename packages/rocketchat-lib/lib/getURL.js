@@ -4,7 +4,7 @@ RocketChat.getURL = (path, { cdn = true, full = false } = {}) => {
 
 	let basePath;
 
-	let finalPath = _.ltrim(_.trim(path), '/');
+	const finalPath = _.ltrim(_.trim(path), '/');
 
 	if (cdn && cdnPrefix !== '') {
 		basePath = cdnPrefix + pathPrefix;
@@ -14,5 +14,5 @@ RocketChat.getURL = (path, { cdn = true, full = false } = {}) => {
 		basePath = pathPrefix;
 	}
 
-	return basePath + '/' + finalPath;
+	return `${ basePath }/${ finalPath }`;
 };

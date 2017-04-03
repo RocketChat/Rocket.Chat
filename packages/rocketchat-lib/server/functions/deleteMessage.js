@@ -1,7 +1,7 @@
 /* globals FileUpload */
 RocketChat.deleteMessage = function(message, user) {
-	let keepHistory = RocketChat.settings.get('Message_KeepHistory');
-	let showDeletedStatus = RocketChat.settings.get('Message_ShowDeletedStatus');
+	const keepHistory = RocketChat.settings.get('Message_KeepHistory');
+	const showDeletedStatus = RocketChat.settings.get('Message_ShowDeletedStatus');
 	let deletedMsg;
 
 	if (keepHistory) {

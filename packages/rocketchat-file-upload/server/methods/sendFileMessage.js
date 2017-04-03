@@ -20,10 +20,10 @@ Meteor.methods({
 
 		RocketChat.models.Uploads.updateFileComplete(file._id, Meteor.userId(), _.omit(file, '_id'));
 
-		const fileUrl = '/file-upload/' + file._id + '/' + file.name;
+		const fileUrl = `/file-upload/${ file._id }/${ file.name }`;
 
 		const attachment = {
-			title: `${TAPi18n.__('Attachment_File_Uploaded')}: ${file.name}`,
+			title: `${ TAPi18n.__('Attachment_File_Uploaded') }: ${ file.name }`,
 			description: file.description,
 			title_link: fileUrl,
 			title_link_download: true
@@ -46,17 +46,24 @@ Meteor.methods({
 			attachment.video_size = file.size;
 		}
 
-		const msg = Object.assign({
+		const user = Meteor.user();
+		let msg = Object.assign({
 			_id: Random.id(),
 			rid: roomId,
+			ts: new Date(),
 			msg: '',
 			file: {
-				_id: file._id
+				_id: file._id,
+				name: file.name
 			},
 			groupable: false,
 			attachments: [attachment]
 		}, msgData);
 
-		return Meteor.call('sendMessage', msg);
+		msg = Meteor.call('sendMessage', msg);
+
+		Meteor.defer(() => RocketChat.callbacks.run('afterFileUpload', { user, room, message: msg }));
+
+		return msg;
 	}
 });

@@ -5,7 +5,7 @@ const logger = new Logger('CROWD', {});
 function fallbackDefaultAccountSystem(bind, username, password) {
 	if (typeof username === 'string') {
 		if (username.indexOf('@') === -1) {
-			username = {username: username};
+			username = {username};
 		} else {
 			username = {email: username};
 		}
@@ -29,7 +29,7 @@ const CROWD = class CROWD {
 		const AtlassianCrowd = Npm.require('atlassian-crowd');
 
 		let url = RocketChat.settings.get('CROWD_URL');
-		let urlLastChar = url.slice(-1);
+		const urlLastChar = url.slice(-1);
 
 		if (urlLastChar !== '/') {
 			url += '/';
@@ -76,7 +76,7 @@ const CROWD = class CROWD {
 			displayname: userResponse['display-name'],
 			username: userResponse.name,
 			email: userResponse.email,
-			password: password,
+			password,
 			active: userResponse.active
 		};
 
@@ -105,7 +105,7 @@ const CROWD = class CROWD {
 			return;
 		}
 
-		var self = this;
+		const self = this;
 		logger.info('Sync started');
 
 		const users = RocketChat.models.Users.findCrowdUsers();
@@ -129,7 +129,7 @@ const CROWD = class CROWD {
 	}
 
 	addNewUser(crowdUser) {
-		var userQuery = {
+		const userQuery = {
 			crowd: true,
 			username: crowdUser.username
 		};
@@ -222,7 +222,7 @@ RocketChat.settings.get('CROWD_Sync_User_Data', function(key, value) {
 });
 
 Meteor.methods({
-	crowd_test_connection:function() {
+	crowd_test_connection() {
 		const user = Meteor.user();
 		if (!user) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'crowd_test_connection' });
@@ -236,7 +236,7 @@ Meteor.methods({
 			throw new Meteor.Error('crowd_disabled');
 		}
 
-		let crowd = new CROWD();
+		const crowd = new CROWD();
 
 		try {
 			crowd.checkConnection();

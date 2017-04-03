@@ -8,8 +8,8 @@ Meteor.startup(function() {
 			'message',
 			'message-mobile'
 		],
-		action: function() {
-			let message = this._arguments[1];
+		action() {
+			const message = this._arguments[1];
 
 			swal({
 				title: 'Create a Snippet',
@@ -32,12 +32,12 @@ Meteor.startup(function() {
 					if (error) {
 						return handleError(error);
 					}
-					swal('Nice!', `Snippet '${filename}' created.`, 'success');
+					swal('Nice!', `Snippet '${ filename }' created.`, 'success');
 				});
 			});
 
 		},
-		validation: function(message) {
+		validation(message) {
 			if (RocketChat.models.Subscriptions.findOne({ rid: message.rid, 'u._id': Meteor.userId() }) === undefined) {
 				return false;
 			}

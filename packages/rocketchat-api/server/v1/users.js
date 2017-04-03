@@ -1,5 +1,5 @@
 RocketChat.API.v1.addRoute('users.create', { authRequired: true }, {
-	post: function() {
+	post() {
 		check(this.bodyParams, {
 			email: String,
 			name: String,
@@ -36,7 +36,7 @@ RocketChat.API.v1.addRoute('users.create', { authRequired: true }, {
 });
 
 RocketChat.API.v1.addRoute('users.delete', { authRequired: true }, {
-	post: function() {
+	post() {
 		if (!RocketChat.authz.hasPermission(this.userId, 'delete-user')) {
 			return RocketChat.API.v1.unauthorized();
 		}
@@ -52,10 +52,10 @@ RocketChat.API.v1.addRoute('users.delete', { authRequired: true }, {
 });
 
 RocketChat.API.v1.addRoute('users.getAvatar', { authRequired: false }, {
-	get: function() {
+	get() {
 		const user = this.getUserFromParams();
 
-		const url = RocketChat.getURL(`/avatar/${user.username}`, { cdn: false, full: true });
+		const url = RocketChat.getURL(`/avatar/${ user.username }`, { cdn: false, full: true });
 		this.response.setHeader('Location', url);
 
 		return {
@@ -66,7 +66,7 @@ RocketChat.API.v1.addRoute('users.getAvatar', { authRequired: false }, {
 });
 
 RocketChat.API.v1.addRoute('users.getPresence', { authRequired: true }, {
-	get: function() {
+	get() {
 		//BLAHHHHHHHHHH :'(
 		if ((this.queryParams.userId && this.userId !== this.queryParams.userId) || (this.queryParams.username && this.user.username !== this.queryParams.username) || (this.queryParams.user && this.user.username !== this.queryParams.user)) {
 			const user = this.getUserFromParams();
@@ -86,7 +86,7 @@ RocketChat.API.v1.addRoute('users.getPresence', { authRequired: true }, {
 });
 
 RocketChat.API.v1.addRoute('users.info', { authRequired: true }, {
-	get: function() {
+	get() {
 		const user = this.getUserFromParams();
 
 		let result;
@@ -95,7 +95,7 @@ RocketChat.API.v1.addRoute('users.info', { authRequired: true }, {
 		});
 
 		if (!result || result.length !== 1) {
-			return RocketChat.API.v1.failure(`Failed to get the user data for the userId of "${user._id}".`);
+			return RocketChat.API.v1.failure(`Failed to get the user data for the userId of "${ user._id }".`);
 		}
 
 		return RocketChat.API.v1.success({
@@ -105,7 +105,7 @@ RocketChat.API.v1.addRoute('users.info', { authRequired: true }, {
 });
 
 RocketChat.API.v1.addRoute('users.list', { authRequired: true }, {
-	get: function() {
+	get() {
 		const { offset, count } = this.getPaginationItems();
 		const { sort, fields, query } = this.parseJsonQuery();
 
@@ -148,7 +148,7 @@ RocketChat.API.v1.addRoute('users.list', { authRequired: true }, {
 });
 
 RocketChat.API.v1.addRoute('users.register', { authRequired: false }, {
-	post: function() {
+	post() {
 		if (this.userId) {
 			return RocketChat.API.v1.failure('Logged in users can not register again.');
 		}
@@ -171,7 +171,7 @@ RocketChat.API.v1.addRoute('users.register', { authRequired: false }, {
 
 //TODO: Make this route work with support for usernames
 RocketChat.API.v1.addRoute('users.setAvatar', { authRequired: true }, {
-	post: function() {
+	post() {
 		check(this.bodyParams, { avatarUrl: Match.Maybe(String), userId: Match.Maybe(String) });
 
 		if (typeof this.bodyParams.userId !== 'undefined' && this.userId !== this.bodyParams.userId && !RocketChat.authz.hasPermission(this.userId, 'edit-other-user-info')) {
@@ -212,7 +212,7 @@ RocketChat.API.v1.addRoute('users.setAvatar', { authRequired: true }, {
 });
 
 RocketChat.API.v1.addRoute('users.update', { authRequired: true }, {
-	post: function() {
+	post() {
 		check(this.bodyParams, {
 			userId: String,
 			data: Match.ObjectIncluding({

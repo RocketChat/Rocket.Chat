@@ -22,6 +22,9 @@ Template.livechatWindow.helpers({
 		}
 		return Livechat.registrationForm;
 	},
+	showSwitchDepartmentForm() {
+		return Livechat.showSwitchDepartmentForm;
+	},
 	livechatStarted() {
 		return Livechat.online !== null;
 	},
@@ -44,6 +47,9 @@ Template.livechatWindow.helpers({
 	},
 	isOpened() {
 		return Livechat.isWidgetOpened();
+	},
+	showWidget() {
+		return Livechat.online || Livechat.displayOfflineForm;
 	}
 });
 
@@ -66,7 +72,7 @@ Template.livechatWindow.onCreated(function() {
 
 	const defaultAppLanguage = () => {
 		let lng = window.navigator.userLanguage || window.navigator.language || 'en';
-		let regexp = /([a-z]{2}-)([a-z]{2})/;
+		const regexp = /([a-z]{2}-)([a-z]{2})/;
 		if (regexp.test(lng)) {
 			lng = lng.replace(regexp, function(match, ...parts) {
 				return parts[0] + parts[1].toUpperCase();
@@ -120,7 +126,7 @@ Template.livechatWindow.onCreated(function() {
 			result.departments.forEach((department) => {
 				Department.insert(department);
 			});
-
+			Livechat.allowSwitchingDepartments = result.allowSwitchingDepartments;
 			Livechat.ready();
 		}
 	});

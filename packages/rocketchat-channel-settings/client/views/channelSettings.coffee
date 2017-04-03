@@ -31,10 +31,10 @@ Template.channelSettings.helpers
 		return Template.instance().editing.get() is field
 
 	isDisabled: (field, room) ->
-		return Template.instance().settings[field].processing.get() or !RocketChat.authz.hasAllPermission('edit-room', room._id)
+		return Template.instance().settings[field].disabled?(room) or Template.instance().settings[field].processing.get() or !RocketChat.authz.hasAllPermission('edit-room', room._id)
 
 	channelSettings: ->
-		return RocketChat.ChannelSettings.getOptions(Template.currentData())
+		return RocketChat.ChannelSettings.getOptions(Template.currentData(), 'room')
 
 	unscape: (value) ->
 		return s.unescapeHTML value
@@ -45,7 +45,8 @@ Template.channelSettings.helpers
 
 	readOnly: ->
 		return  ChatRoom.findOne(@rid, { fields: { ro: 1 }})?.ro
-
+	has: (v, key) ->
+		v?[key]?
 	readOnlyDescription: ->
 		readOnly = ChatRoom.findOne(@rid, { fields: { ro: 1 }})?.ro
 		if readOnly is true
@@ -145,6 +146,17 @@ Template.channelSettings.onCreated ->
 					toastr.success TAPi18n.__ 'Room_topic_changed_successfully'
 					RocketChat.callbacks.run 'roomTopicChanged', room
 
+		announcement:
+			type: 'markdown'
+			label: 'Announcement'
+			canView: (room) => true
+			canEdit: (room) => RocketChat.authz.hasAllPermission('edit-room', room._id)
+			save: (value, room) ->
+				Meteor.call 'saveRoomSettings', room._id, 'roomAnnouncement', value, (err, result) ->
+					return handleError err if err
+					toastr.success TAPi18n.__ 'Room_announcement_changed_successfully'
+					RocketChat.callbacks.run 'roomAnnouncementChanged', room
+
 		description:
 			type: 'text'
 			label: 'Description'
@@ -160,6 +172,14 @@ Template.channelSettings.onCreated ->
 			label: 'Private'
 			isToggle: true
 			processing: new ReactiveVar(false)
+			disabled: (room) =>
+				room.default and not RocketChat.authz.hasRole( Meteor.userId(), 'admin')
+			message: (room) =>
+				#if the user can change but the channel is default
+				if RocketChat.authz.hasAllPermission('edit-room', room._id) and room.default
+					# if you are an admin, even so you can change
+					unless RocketChat.authz.hasRole( Meteor.userId(), 'admin')
+						return 'Room_type_of_default_rooms_cant_be_changed'
 			canView: (room) ->
 				if room.t not in ['c', 'p']
 					return false
@@ -168,16 +188,33 @@ Template.channelSettings.onCreated ->
 				else if room.t is 'c' and not RocketChat.authz.hasAllPermission('create-p')
 					return false
 				return true
-			canEdit: (room) => RocketChat.authz.hasAllPermission('edit-room', room._id)
+			canEdit: (room) => ( RocketChat.authz.hasAllPermission('edit-room', room._id) and not room.default) or RocketChat.authz.hasRole( Meteor.userId(), 'admin')
 			save: (value, room) ->
-				@processing.set(true)
-				value = if value then 'p' else 'c'
-				RocketChat.callbacks.run 'roomTypeChanged', room
-				Meteor.call 'saveRoomSettings', room._id, 'roomType', value, (err, result) =>
-					return handleError err if err
-					@processing.set(false)
-					toastr.success TAPi18n.__ 'Room_type_changed_successfully'
+				saveRoomSettings = =>
+					@processing.set(true)
+					value = if value then 'p' else 'c'
+					RocketChat.callbacks.run 'roomTypeChanged', room
+					Meteor.call 'saveRoomSettings', room._id, 'roomType', value, (err, result) =>
+						return handleError err if err
+						@processing.set(false)
+						toastr.success TAPi18n.__ 'Room_type_changed_successfully'
 
+				if room.default
+					if RocketChat.authz.hasRole Meteor.userId(), 'admin'
+						swal {
+							title: t('Room_default_change_to_private_will_be_default_no_more')
+							type: 'warning'
+							showCancelButton: true
+							confirmButtonColor: '#DD6B55'
+							confirmButtonText: t('Yes')
+							cancelButtonText: t('Cancel')
+							closeOnConfirm: true
+							html: false
+						}, (confirmed) =>
+							return saveRoomSettings() if confirmed
+					$(".channel-settings form [name='t']").prop('checked', !!room.type == 'p')
+				else
+					saveRoomSettings()
 		ro:
 			type: 'boolean'
 			label: 'Read_only'
@@ -195,11 +232,15 @@ Template.channelSettings.onCreated ->
 		reactWhenReadOnly:
 			type: 'boolean'
 			label: 'React_when_read_only'
+			isToggle: true
+			processing: new ReactiveVar(false)
 			canView: (room) => room.t isnt 'd' and room.ro
 			canEdit: (room) => RocketChat.authz.hasAllPermission('set-react-when-readonly', room._id)
 			save: (value, room) ->
-				Meteor.call 'saveRoomSettings', room._id, 'reactWhenReadOnly', value, (err, result) ->
+				@processing.set(true)
+				Meteor.call 'saveRoomSettings', room._id, 'reactWhenReadOnly', value, (err, result) =>
 					return handleError err if err
+					@processing.set(false)
 					toastr.success TAPi18n.__ 'React_when_read_only_changed_successfully'
 
 		archived:
@@ -235,17 +276,17 @@ Template.channelSettings.onCreated ->
 								showConfirmButton: false
 							RocketChat.callbacks.run action, room
 					else
-						$(".channel-settings form [name='archived']").prop('checked', room.archived)
+						$(".channel-settings form [name='archived']").prop('checked', !!room.archived)
 
 		joinCode:
 			type: 'text'
-			label: 'Code'
+			label: 'Password'
 			canView: (room) => room.t is 'c' and RocketChat.authz.hasAllPermission('edit-room', room._id)
 			canEdit: (room) => RocketChat.authz.hasAllPermission('edit-room', room._id)
 			save: (value, room) ->
 				Meteor.call 'saveRoomSettings', room._id, 'joinCode', value, (err, result) ->
 					return handleError err if err
-					toastr.success TAPi18n.__ 'Room_code_changed_successfully'
+					toastr.success TAPi18n.__ 'Room_password_changed_successfully'
 					RocketChat.callbacks.run 'roomCodeChanged', room
 
 
