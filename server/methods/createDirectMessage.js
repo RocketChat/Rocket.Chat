@@ -63,6 +63,7 @@ Meteor.methods({
 			},
 			$setOnInsert: {
 				name: to.username,
+				fname: to.name,
 				t: 'd',
 				alert: false,
 				unread: 0,
@@ -78,16 +79,17 @@ Meteor.methods({
 		}
 
 		RocketChat.models.Subscriptions.upsert({
-			rid: rid,
+			rid,
 			$and: [{'u._id': me._id}] // work around to solve problems with upsert and dot
 		}, upsertSubscription);
 
 		RocketChat.models.Subscriptions.upsert({
-			rid: rid,
+			rid,
 			$and: [{'u._id': to._id}] // work around to solve problems with upsert and dot
 		}, {
 			$setOnInsert: {
 				name: me.username,
+				fname: me.name,
 				t: 'd',
 				open: false,
 				alert: false,
@@ -100,7 +102,7 @@ Meteor.methods({
 		});
 
 		return {
-			rid: rid
+			rid
 		};
 	}
 });

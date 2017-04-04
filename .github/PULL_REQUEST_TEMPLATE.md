@@ -1,3 +1,8 @@
+<!-- INSTRUCTION: Your Pull Request name should start with one of the following tags -->
+<!-- [NEW] For new features -->
+<!-- [FIX] For bug fixes -->
+<!-- [BREAK] For pull requests including breaking changes -->
+
 <!-- INSTRUCTION: Keep the line below to notify all core developers about this new PR -->
 @RocketChat/core 
 

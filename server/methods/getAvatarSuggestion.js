@@ -8,7 +8,7 @@ function getAvatarSuggestionForUser(user) {
 	if (user.services.facebook && user.services.facebook.id && RocketChat.settings.get('Accounts_OAuth_Facebook')) {
 		avatars.push({
 			service: 'facebook',
-			url: 'https://graph.facebook.com/' + user.services.facebook.id + '/picture?type=large'
+			url: `https://graph.facebook.com/${ user.services.facebook.id }/picture?type=large`
 		});
 	}
 
@@ -22,7 +22,7 @@ function getAvatarSuggestionForUser(user) {
 	if (user.services.github && user.services.github.username && RocketChat.settings.get('Accounts_OAuth_Github')) {
 		avatars.push({
 			service: 'github',
-			url: 'https://avatars.githubusercontent.com/' + user.services.github.username + '?s=200'
+			url: `https://avatars.githubusercontent.com/${ user.services.github.username }?s=200`
 		});
 	}
 
@@ -90,7 +90,7 @@ function getAvatarSuggestionForUser(user) {
 			});
 
 			if (result.statusCode === 200) {
-				let blob = 'data:' + result.headers['content-type'] + ';base64,';
+				let blob = `data:${ result.headers['content-type'] };base64,`;
 				blob += Buffer.from(result.content, 'binary').toString('base64');
 				avatar.blob = blob;
 				avatar.contentType = result.headers['content-type'];

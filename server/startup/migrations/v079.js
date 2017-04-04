@@ -1,6 +1,6 @@
 RocketChat.Migrations.add({
 	version: 79,
-	up: function() {
+	up() {
 		const integrations = RocketChat.models.Integrations.find({type: 'webhook-incoming'}).fetch();
 
 		for (const integration of integrations) {

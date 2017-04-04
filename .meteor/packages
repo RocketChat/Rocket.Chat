@@ -38,6 +38,7 @@ standard-minifier-css@1.3.3
 standard-minifier-js@1.2.2
 tracker@1.1.2
 
+rocketchat:2fa
 rocketchat:action-links
 rocketchat:analytics
 rocketchat:api
