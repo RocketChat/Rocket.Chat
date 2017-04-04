@@ -7,16 +7,6 @@ const logger = new Logger('rocketchat:lib', {
 	}
 });
 
-function debounce(fn, delay) {
-	let timer = null;
-	return () => {
-		if (timer != null) {
-			Meteor.clearTimeout(timer);
-		}
-		return timer = Meteor.setTimeout(fn, delay);
-	};
-}
-
 function _OAuthServicesUpdate() {
 	const services = RocketChat.settings.get(/^(Accounts_OAuth_|Accounts_OAuth_Custom-)[a-z0-9_]+$/i);
 	services.forEach((service) => {
@@ -82,7 +72,7 @@ function _OAuthServicesUpdate() {
 	});
 }
 
-const OAuthServicesUpdate = debounce(_OAuthServicesUpdate, 2000);
+const OAuthServicesUpdate = _.debounce(Meteor.bindEnvironment(_OAuthServicesUpdate), 2000);
 
 function OAuthServicesRemove(_id) {
 	const serviceName = _id.replace('Accounts_OAuth_Custom-', '');
