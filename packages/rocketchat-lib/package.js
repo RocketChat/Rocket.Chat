@@ -59,9 +59,9 @@ Package.onUse(function(api) {
 	api.addFiles('lib/placeholders.js');
 	api.addFiles('lib/promises.coffee');
 	api.addFiles('lib/roomTypesCommon.coffee');
-	api.addFiles('lib/slashCommand.coffee');
-	api.addFiles('lib/Message.coffee');
-	api.addFiles('lib/MessageTypes.coffee');
+	api.addFiles('lib/slashCommand.js');
+	api.addFiles('lib/Message.js');
+	api.addFiles('lib/MessageTypes.js');
 
 	api.addFiles('server/lib/bugsnag.js', 'server');
 	api.addFiles('server/lib/metrics.js', 'server');
@@ -170,7 +170,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/startup/settings.js', 'server');
 
 	// COMMON STARTUP
-	api.addFiles('lib/startup/settingsOnLoadSiteUrl.coffee');
+	api.addFiles('lib/startup/settingsOnLoadSiteUrl.js');
 
 	// CLIENT LIB
 	api.addFiles('client/Notifications.coffee', 'client');
