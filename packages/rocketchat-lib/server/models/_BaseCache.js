@@ -230,18 +230,24 @@ class ModelsBaseCache extends EventEmitter {
 				localRecord[field] = [];
 			}
 
+			if (typeof link.where === 'function' && link.where(localRecord, record) === false) {
+				continue;
+			}
+
+			let mutableRecord = record;
+
 			if (typeof link.transform === 'function') {
-				record = link.transform(localRecord, record);
+				mutableRecord = link.transform(localRecord, mutableRecord);
 			}
 
 			if (multi === true) {
-				localRecord[field].push(record);
+				localRecord[field].push(mutableRecord);
 			} else {
-				localRecord[field] = record;
+				localRecord[field] = mutableRecord;
 			}
 
-			this.emit(`join:${ field }:inserted`, localRecord, record);
-			this.emit(`join:${ field }:changed`, 'inserted', localRecord, record);
+			this.emit(`join:${ field }:inserted`, localRecord, mutableRecord);
+			this.emit(`join:${ field }:changed`, 'inserted', localRecord, mutableRecord);
 		}
 	}
 
@@ -254,6 +260,10 @@ class ModelsBaseCache extends EventEmitter {
 
 		for (let i = 0; i < records.length; i++) {
 			let record = records[i];
+
+			if (typeof link.where === 'function' && link.where(localRecord, record) === false) {
+				continue;
+			}
 
 			if (typeof link.transform === 'function') {
 				record = link.transform(localRecord, record);
