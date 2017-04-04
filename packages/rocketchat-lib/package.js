@@ -173,29 +173,29 @@ Package.onUse(function(api) {
 	api.addFiles('lib/startup/settingsOnLoadSiteUrl.js');
 
 	// CLIENT LIB
-	api.addFiles('client/Notifications.coffee', 'client');
+	api.addFiles('client/Notifications.js', 'client');
 	api.addFiles('client/OAuthProxy.js', 'client');
 	api.addFiles('client/lib/TabBar.js', 'client');
 	api.addFiles('client/lib/RocketChatTabBar.js', 'client');
 	api.addFiles('client/lib/cachedCollection.js', 'client');
 	api.addFiles('client/lib/openRoom.coffee', 'client');
-	api.addFiles('client/lib/roomExit.coffee', 'client');
-	api.addFiles('client/lib/settings.coffee', 'client');
+	api.addFiles('client/lib/roomExit.js', 'client');
+	api.addFiles('client/lib/settings.js', 'client');
 	api.addFiles('client/lib/roomTypes.coffee', 'client');
 	api.addFiles('client/lib/userRoles.js', 'client');
 	api.addFiles('client/lib/Layout.js', 'client');
 
 	// CLIENT METHODS
-	api.addFiles('client/methods/sendMessage.coffee', 'client');
+	api.addFiles('client/methods/sendMessage.js', 'client');
 	api.addFiles('client/AdminBox.js', 'client');
-	api.addFiles('client/MessageAction.coffee', 'client');
+	api.addFiles('client/MessageAction.js', 'client');
 
 	api.addFiles('client/defaultTabBars.js', 'client');
 	api.addFiles('client/CustomTranslations.js', 'client');
 
 	// CLIENT MODELS
-	api.addFiles('client/models/_Base.coffee', 'client');
-	api.addFiles('client/models/Uploads.coffee', 'client');
+	api.addFiles('client/models/_Base.js', 'client');
+	api.addFiles('client/models/Uploads.js', 'client');
 
 	// CLIENT VIEWS
 	api.addFiles('client/views/customFieldsForm.html', 'client');
