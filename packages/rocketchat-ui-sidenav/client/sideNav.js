@@ -58,8 +58,26 @@ Template.sideNav.events({
 		return SideNav.closeFlex();
 	},
 
-	'click .arrow'() {
+	'click .arrow.account'() {
 		return SideNav.toggleCurrent();
+	},
+
+	'click .arrow.list'(event) {
+		console.log(event);
+		console.log(event.target);
+		const el = event.target;
+		if (el.dataset.state === 'open') {
+			el.dataset.state = 'closed';
+			$(el).removeClass('top');
+			$(el).addClass('bottom');
+		} else {
+			el.dataset.state = 'open';
+			$(el).removeClass('bottom');
+			$(el).addClass('top');
+		}
+
+		console.log(el.dataset.type);
+		return $(`.${ el.dataset.type }`).toggle();
 	},
 
 	'mouseenter .header'() {
