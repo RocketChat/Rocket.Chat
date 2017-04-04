@@ -69,6 +69,9 @@ Accounts.onCreateUser(function(options, user = {}) {
 			} else if (options.profile.firstName && options.profile.lastName) {
 				// LinkedIn format
 				user.name = `${ options.profile.firstName } ${ options.profile.lastName }`;
+			} else if (options.profile.firstName) {
+				// LinkedIn format
+				user.name = options.profile.firstName;
 			}
 		}
 	}
