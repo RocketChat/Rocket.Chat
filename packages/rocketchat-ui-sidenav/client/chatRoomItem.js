@@ -20,6 +20,10 @@ Template.chatRoomItem.helpers({
 	},
 
 	name() {
+		if (RocketChat.settings.get('UI_Use_Real_Name') && this.fname) {
+			return this.fname;
+		}
+
 		return this.name;
 	},
 
