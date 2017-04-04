@@ -63,8 +63,13 @@ Accounts.onCreateUser(function(options, user = {}) {
 	user.active = !RocketChat.settings.get('Accounts_ManuallyApproveNewUsers');
 
 	if (!user.name) {
-		if (options.profile && options.profile.name) {
-			user.name = options.profile.name;
+		if (options.profile) {
+			if (options.profile.name) {
+				user.name = options.profile.name;
+			} else if (options.profile.firstName && options.profile.lastName) {
+				// LinkedIn format
+				user.name = `${ options.profile.firstName } ${ options.profile.lastName }`;
+			}
 		}
 	}
 
