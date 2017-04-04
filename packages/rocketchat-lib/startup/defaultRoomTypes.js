@@ -1,13 +1,4 @@
 /* globals openRoom */
-
-function getRoomName(room) {
-	if (RocketChat.settings.get('UI_Use_Real_Name') && room.fname) {
-		return room.fname;
-	}
-
-	return room.name;
-}
-
 RocketChat.roomTypes.add(null, 0, {
 	template: 'starredRooms',
 	icon: 'icon-star'
@@ -32,7 +23,9 @@ RocketChat.roomTypes.add('c', 10, {
 		return ChatRoom.findOne(query);
 	},
 
-	roomName: getRoomName,
+	roomName(roomData) {
+		return roomData.name;
+	},
 
 	condition() {
 		return RocketChat.authz.hasAtLeastOnePermission(['view-c-room', 'view-joined-room']);
@@ -70,7 +63,22 @@ RocketChat.roomTypes.add('d', 20, {
 	},
 
 	roomName(roomData) {
-		return getRoomName(ChatSubscription.findOne({ rid: roomData._id }, { fields: { name: 1, fname: 1 } }));
+		const subscription = ChatSubscription.findOne({ rid: roomData._id }, { fields: { name: 1, fname: 1 } });
+		if (!subscription) {
+			return '';
+		}
+		if (RocketChat.settings.get('UI_Use_Real_Name') && subscription.fname) {
+			return subscription.fname;
+		}
+
+		return subscription.name;
+	},
+
+	secondaryRoomName(roomData) {
+		if (RocketChat.settings.get('UI_Use_Real_Name')) {
+			const subscription = ChatSubscription.findOne({ rid: roomData._id }, { fields: { name: 1 } });
+			return subscription && subscription.name;
+		}
 	},
 
 	condition() {
@@ -104,7 +112,9 @@ RocketChat.roomTypes.add('p', 30, {
 		return ChatRoom.findOne(query);
 	},
 
-	roomName: getRoomName,
+	roomName(roomData) {
+		return roomData.name;
+	},
 
 	condition() {
 		return RocketChat.authz.hasAllPermission('view-p-room');
