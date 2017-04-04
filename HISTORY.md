@@ -8,6 +8,7 @@
 - [FIX] Incoming integrations would break when trying to use the `Store` feature.
 - [FIX] Outgoing webhooks which have an error and they're retrying would still retry even if the integration was disabled. (#4835)
 - [FIX] Removed Deprecated Package rocketchat:sharedsecret.
+- [BREAK] `getUsersOfRoom` API to return array of objects with user and username, instead of array of strings
 
 ## 0.54.2 - 2017-Mar-24
 
