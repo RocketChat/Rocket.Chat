@@ -32,16 +32,14 @@ Template.pinnedMessages.onCreated(function() {
 	this.hasMore = new ReactiveVar(true);
 	this.limit = new ReactiveVar(50);
 	return this.autorun(() => {
-		return function() {
-			const data = Template.currentData();
-			return this.subscribe('pinnedMessages', data.rid, this.limit.get(), function() {
-				if (PinnedMessage.find({
-					rid: data.rid
-				}).count() < this.limit.get()) {
-					return this.hasMore.set(false);
-				}
-			});
-		};
+		const data = Template.currentData();
+		return this.subscribe('pinnedMessages', data.rid, this.limit.get(), function() {
+			if (PinnedMessage.find({
+				rid: data.rid
+			}).count() < this.limit.get()) {
+				return this.hasMore.set(false);
+			}
+		});
 	});
 });
 
