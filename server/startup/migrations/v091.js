@@ -18,8 +18,6 @@ RocketChat.Migrations.add({
 			const name = `${ user.services.linkedin.firstName } ${ user.services.linkedin.lastName }`;
 
 			RocketChat.models.Users.setName(user._id, name);
-			RocketChat.models.Messages.updateAllNamesByUserId(user._id, name);
-			RocketChat.models.Subscriptions.setRealNameForDirectRoomsWithUsername(user.username, name);
 		});
 	}
 });

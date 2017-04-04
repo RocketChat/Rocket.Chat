@@ -243,17 +243,6 @@ class ModelSubscriptions extends RocketChat.models._Base
 
 		return @update query, update, { multi: true }
 
-	setRealNameForDirectRoomsWithUsername: (username, name) ->
-		query =
-			name: username
-			t: "d"
-
-		update =
-			$set:
-				fname: name
-
-		return @update query, update, { multi: true }
-
 	setNameForDirectRoomsWithOldName: (oldName, name) ->
 		query =
 			name: oldName
