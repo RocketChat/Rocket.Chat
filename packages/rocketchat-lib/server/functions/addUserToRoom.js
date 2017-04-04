@@ -27,8 +27,7 @@ RocketChat.addUserToRoom = function(rid, user, inviter, silenced) {
 				ts: now,
 				u: {
 					_id: inviter._id,
-					username: inviter.username,
-					name: inviter.name
+					username: inviter.username
 				}
 			});
 		} else {
