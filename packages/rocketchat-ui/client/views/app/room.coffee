@@ -83,13 +83,13 @@ Template.room.helpers
 		roomData = Session.get('roomData' + this._id)
 		return '' unless roomData
 
-		return RocketChat.roomTypes.getRoomName roomData?.t, roomData
+		return RocketChat.roomTypes.getRoomName roomData.t, roomData
 
 	secondaryName: ->
 		roomData = Session.get('roomData' + this._id)
-		return '' unless roomData and RocketChat.settings.get('UI_Use_Real_Name') and roomData.t is 'd'
+		return '' unless roomData
 
-		return RocketChat.roomTypes.getRoomName(roomData.t, roomData).name
+		return RocketChat.roomTypes.getSecondaryRoomName roomData.t, roomData
 
 	roomTopic: ->
 		roomData = Session.get('roomData' + this._id)
