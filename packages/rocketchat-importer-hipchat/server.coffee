@@ -221,7 +221,7 @@ Importer.HipChat = class Importer.HipChat extends Importer.Base
 
 	getRocketUser: (hipchatId) =>
 		for user in @users.users when user.user_id is hipchatId
-			return RocketChat.models.Users.findOneById user.rocketId, { fields: { username: 1 }}
+			return RocketChat.models.Users.findOneById user.rocketId, { fields: { username: 1, name: 1 }}
 
 	convertHipChatMessageToRocketChat: (message) =>
 		if message?

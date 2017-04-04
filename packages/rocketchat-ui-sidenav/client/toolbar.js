@@ -58,7 +58,8 @@ const getFromServer = (cb, type) => {
 				resultsFromServer.push({
 					_id: results.users[i]._id,
 					t: 'd',
-					name: results.users[i].username
+					name: results.users[i].username,
+					fname: results.users[i].name
 				});
 			}
 		}
@@ -217,6 +218,14 @@ Template.toolbarSearchList.helpers({
 			return `status-${ Session.get(`user_${ this.name }_status`) || 'offline' }`;
 		} else {
 			return `status-${ RocketChat.roomTypes.getUserStatus(this.t, this.rid || this._id) || 'offline' }`;
+		}
+	},
+
+	displayName() {
+		if (RocketChat.settings.get('UI_Use_Real_Name') && this.fname) {
+			return this.fname;
+		} else {
+			return this.name;
 		}
 	}
 });

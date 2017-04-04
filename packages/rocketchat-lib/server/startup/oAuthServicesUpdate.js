@@ -7,19 +7,8 @@ const logger = new Logger('rocketchat:lib', {
 	}
 });
 
-function debounce(fn, delay) {
-	let timer = null;
-	return () => {
-		if (timer != null) {
-			Meteor.clearTimeout(timer);
-		}
-		return timer = Meteor.setTimeout(fn, delay);
-	};
-}
-
 function _OAuthServicesUpdate() {
 	const services = RocketChat.settings.get(/^(Accounts_OAuth_|Accounts_OAuth_Custom-)[a-z0-9_]+$/i);
-	const results = [];
 	services.forEach((service) => {
 		logger.oauth_updated(service.key);
 		let serviceName = service.key.replace('Accounts_OAuth_', '');
@@ -70,20 +59,20 @@ function _OAuthServicesUpdate() {
 				data.consumerKey = data.clientId;
 				delete data.clientId;
 			}
-			results.push(ServiceConfiguration.configurations.upsert({
+			ServiceConfiguration.configurations.upsert({
 				service: serviceName.toLowerCase()
 			}, {
 				$set: data
-			}));
+			});
 		} else {
-			results.push(ServiceConfiguration.configurations.remove({
+			ServiceConfiguration.configurations.remove({
 				service: serviceName.toLowerCase()
-			}));
+			});
 		}
 	});
 }
 
-const OAuthServicesUpdate = debounce(_OAuthServicesUpdate, 2000);
+const OAuthServicesUpdate = _.debounce(Meteor.bindEnvironment(_OAuthServicesUpdate), 2000);
 
 function OAuthServicesRemove(_id) {
 	const serviceName = _id.replace('Accounts_OAuth_Custom-', '');
