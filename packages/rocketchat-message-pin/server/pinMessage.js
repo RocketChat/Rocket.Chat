@@ -16,12 +16,13 @@ Meteor.methods({
 			return false;
 		}
 		let originalMessage = RocketChat.models.Messages.findOneById(message._id);
-		if (!(originalMessage && originalMessage._id)) {
+		if (originalMessage == null || originalMessage._id == null) {
 			throw new Meteor.Error('error-invalid-message', 'Message you are pinning was not found', {
 				method: 'pinMessage',
 				action: 'Message_pinning'
 			});
 		}
+		//If we keep history of edits, insert a new message to store history information
 		if (RocketChat.settings.get('Message_KeepHistory')) {
 			RocketChat.models.Messages.cloneAndSaveAsHistoryById(message._id);
 		}
@@ -65,12 +66,13 @@ Meteor.methods({
 
 		let originalMessage = RocketChat.models.Messages.findOneById(message._id);
 
-		if (!(originalMessage && originalMessage._id)) {
+		if (originalMessage == null || originalMessage._id == null) {
 			throw new Meteor.Error('error-invalid-message', 'Message you are unpinning was not found', {
 				method: 'unpinMessage',
 				action: 'Message_pinning'
 			});
 		}
+		//If we keep history of edits, insert a new message to store history information
 		if (RocketChat.settings.get('Message_KeepHistory')) {
 			RocketChat.models.Messages.cloneAndSaveAsHistoryById(originalMessage._id);
 		}
