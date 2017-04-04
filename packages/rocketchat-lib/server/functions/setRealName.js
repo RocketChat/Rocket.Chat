@@ -14,6 +14,13 @@ RocketChat._setRealName = function(userId, name) {
 	// Set new name
 	RocketChat.models.Users.setName(user._id, name);
 	user.name = name;
+
+	RocketChat.Notifications.notifyLogged('Users:NameChanged', {
+		_id: user._id,
+		name: user.name,
+		username: user.username
+	});
+
 	return user;
 };
 
