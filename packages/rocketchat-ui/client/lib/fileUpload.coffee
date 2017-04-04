@@ -6,29 +6,37 @@ readAsDataURL = (file, callback) ->
 	reader.readAsDataURL file
 
 getUploadPreview = (file, callback) ->
-	if file.file.type.indexOf('audio') > -1 or file.file.type.indexOf('video') > -1 or file.file.type.indexOf('image') > -1
-		file.type = file.file.type.split('/')[0]
-
-		readAsDataURL file.file, (content) ->
-			callback(file, content)
-	else
+	# If greater then 10MB don't try and show a preview
+	if file.file.size > 10 * 1000000
 		callback(file, null)
+	else
+		if file.file.type.indexOf('audio') > -1 or file.file.type.indexOf('video') > -1 or file.file.type.indexOf('image') > -1
+			file.type = file.file.type.split('/')[0]
+
+			readAsDataURL file.file, (content) ->
+				callback(file, content)
+		else
+			callback(file, null)
 
 formatBytes = (bytes, decimals) ->
-  if bytes == 0
-    return '0 Bytes'
-  k = 1000
-  dm = decimals + 1 or 3
-  sizes = [
-    'Bytes'
-    'KB'
-    'MB'
-    'GB'
-    'TB'
-    'PB'
-  ]
-  i = Math.floor(Math.log(bytes) / Math.log(k))
-  parseFloat((bytes / k ** i).toFixed(dm)) + ' ' + sizes[i]
+	if bytes == 0
+		return '0 Bytes'
+
+	k = 1000
+	dm = decimals + 1 or 3
+
+	sizes = [
+		'Bytes'
+		'KB'
+		'MB'
+		'GB'
+		'TB'
+		'PB'
+	]
+
+	i = Math.floor(Math.log(bytes) / Math.log(k))
+
+	parseFloat((bytes / k ** i).toFixed(dm)) + ' ' + sizes[i]
 
 readAsArrayBuffer = (file, callback) ->
 	reader = new FileReader()
