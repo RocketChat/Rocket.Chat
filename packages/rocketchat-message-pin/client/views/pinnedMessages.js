@@ -33,7 +33,7 @@ Template.pinnedMessages.onCreated(function() {
 	this.limit = new ReactiveVar(50);
 	return this.autorun(() => {
 		const data = Template.currentData();
-		return this.subscribe('pinnedMessages', data.rid, this.limit.get(), function() {
+		return this.subscribe('pinnedMessages', data.rid, this.limit.get(), () => {
 			if (PinnedMessage.find({
 				rid: data.rid
 			}).count() < this.limit.get()) {
