@@ -17,6 +17,14 @@ Template.message.helpers
 			return this.avatar.replace(/^@/, '')
 	getEmoji: (emoji) ->
 		return renderEmoji emoji
+	getName: ->
+		if this.alias
+			return this.alias
+		if RocketChat.settings.get('UI_Use_Real_Name') and this.u?.name
+			return this.u.name
+		return this.u?.username
+	showUsername: ->
+		return this.alias or (RocketChat.settings.get('UI_Use_Real_Name') and this.u?.name)
 	own: ->
 		return 'own' if this.u?._id is Meteor.userId()
 	timestamp: ->
@@ -43,7 +51,7 @@ Template.message.helpers
 		if RocketChat.settings.get('AutoTranslate_Enabled') and this.u?._id isnt Meteor.userId() and !RocketChat.MessageTypes.isSystemMessage(this)
 			subscription = RocketChat.models.Subscriptions.findOne({ rid: this.rid, 'u._id': Meteor.userId() }, { fields: { autoTranslate: 1, autoTranslateLanguage: 1 } });
 			language = RocketChat.AutoTranslate.getLanguage(this.rid);
-			return this.autoTranslateFetching || (subscription.autoTranslate isnt this.autoTranslateShowInverse && this.translations && this.translations[language]) # || _.find(this.attachments, (attachment) -> attachment.translations && attachment.translations[language] && attachment.author_name isnt Meteor.user().username )
+			return this.autoTranslateFetching || (subscription?.autoTranslate isnt this.autoTranslateShowInverse && this.translations && this.translations[language]) # || _.find(this.attachments, (attachment) -> attachment.translations && attachment.translations[language] && attachment.author_name isnt Meteor.user().username )
 
 	edited: ->
 		return Template.instance().wasEdited

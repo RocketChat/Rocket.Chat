@@ -10,6 +10,10 @@ class CustomSounds {
 	}
 
 	add(sound) {
+		if (Meteor.isCordova) {
+			return;
+		}
+
 		if (!sound.src) {
 			sound.src = this.getURL(sound);
 		}
@@ -26,11 +30,11 @@ class CustomSounds {
 		const list = this.list.get();
 		delete list[sound._id];
 		this.list.set(list);
-		$('#' + sound._id).remove();
+		$(`#${ sound._id }`).remove();
 	}
 
 	update(sound) {
-		const audio = $(`#${sound._id}`);
+		const audio = $(`#${ sound._id }`);
 		if (audio && audio[0]) {
 			const list = this.list.get();
 			list[sound._id] = sound;
@@ -44,7 +48,7 @@ class CustomSounds {
 
 	getURL(sound) {
 		const path = (Meteor.isCordova) ? Meteor.absoluteUrl().replace(/\/$/, '') : __meteor_runtime_config__.ROOT_URL_PATH_PREFIX || '';
-		return `${path}/custom-sounds/${sound._id}.${sound.extension}?_dc=${sound.random || 0}`;
+		return `${ path }/custom-sounds/${ sound._id }.${ sound.extension }?_dc=${ sound.random || 0 }`;
 	}
 
 	getList() {

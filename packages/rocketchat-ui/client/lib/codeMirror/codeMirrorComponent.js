@@ -5,15 +5,15 @@ import 'codemirror/lib/codemirror.css';
 import CodeMirror from 'codemirror/lib/codemirror.js';
 
 Template.CodeMirror.rendered = function() {
-	var options = this.data.options || { lineNumbers: true };
-	var textarea = this.find('textarea');
-	var editor = CodeMirror.fromTextArea(textarea, options);
+	const options = this.data.options || { lineNumbers: true };
+	const textarea = this.find('textarea');
+	const editor = CodeMirror.fromTextArea(textarea, options);
 
 	CodeMirrors[this.data.id || 'code-mirror-textarea'] = editor;
 
-	var self = this;
+	const self = this;
 	editor.on('change', function(doc) {
-		var val = doc.getValue();
+		const val = doc.getValue();
 		textarea.value = val;
 		if (self.data.reactiveVar) {
 			Session.set(self.data.reactiveVar, val);
@@ -22,7 +22,7 @@ Template.CodeMirror.rendered = function() {
 
 	if (this.data.reactiveVar) {
 		this.autorun(function() {
-			var val = Session.get(self.data.reactiveVar) || '';
+			const val = Session.get(self.data.reactiveVar) || '';
 			if (val !== editor.getValue()) {
 				editor.setValue(val);
 			}
@@ -36,7 +36,7 @@ Template.CodeMirror.rendered = function() {
 
 Template.CodeMirror.destroyed = function() {
 	delete CodeMirrors[this.data.id || 'code-mirror-textarea'];
-	this.$('#' + (this.data.id || 'code-mirror-textarea')).next('.CodeMirror').remove();
+	this.$(`#${ this.data.id || 'code-mirror-textarea' }`).next('.CodeMirror').remove();
 };
 
 Template.CodeMirror.helpers({

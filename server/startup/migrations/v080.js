@@ -1,6 +1,6 @@
 RocketChat.Migrations.add({
 	version: 80,
-	up: function() {
+	up() {
 		const query = {
 			type: 'webhook-outgoing',
 			$or: [{

@@ -21,13 +21,13 @@ Meteor.publish('messages', function(rid/*, start*/) {
 	});
 
 	const cursorHandle = cursor.observeChanges({
-		added: function(_id, record) {
+		added(_id, record) {
 			record.starred = _.findWhere(record.starred, {
 				_id: publication.userId
 			});
 			return publication.added('rocketchat_message', _id, record);
 		},
-		changed: function(_id, record) {
+		changed(_id, record) {
 			record.starred = _.findWhere(record.starred, {
 				_id: publication.userId
 			});
@@ -42,12 +42,12 @@ Meteor.publish('messages', function(rid/*, start*/) {
 	});
 
 	const cursorDeleteHandle = cursorDelete.observeChanges({
-		added: function(_id/*, record*/) {
+		added(_id/*, record*/) {
 			return publication.added('rocketchat_message', _id, {
 				_hidden: true
 			});
 		},
-		changed: function(_id/*, record*/) {
+		changed(_id/*, record*/) {
 			return publication.added('rocketchat_message', _id, {
 				_hidden: true
 			});

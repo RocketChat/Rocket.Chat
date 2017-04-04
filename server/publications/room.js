@@ -7,6 +7,7 @@ const options = {
 		u: 1,
 		// usernames: 1,
 		topic: 1,
+		announcement: 1,
 		muted: 1,
 		archived: 1,
 		jitsiTimeout: 1,

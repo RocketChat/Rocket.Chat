@@ -28,7 +28,7 @@ Meteor.methods({
 		}
 
 		if (['c', 'p'].includes(room.t) === false) {
-			throw new Meteor.Error('error-invalid-room-type', `${room.t} is not a valid room type`, {
+			throw new Meteor.Error('error-invalid-room-type', `${ room.t } is not a valid room type`, {
 				method: 'muteUserInRoom',
 				type: room.t
 			});
@@ -49,7 +49,8 @@ Meteor.methods({
 		RocketChat.models.Messages.createUserMutedWithRoomIdAndUser(data.rid, mutedUser, {
 			u: {
 				_id: fromUser._id,
-				username: fromUser.username
+				username: fromUser.username,
+				name: fromUser.name
 			}
 		});
 
