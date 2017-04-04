@@ -38,6 +38,9 @@
 						{{> register}}
 					{{else}}
 						{{> messages}}
+						{{#if showSwitchDepartmentForm}}
+							{{> switchDepartment}}
+						{{/if}}
 					{{/if}}
 				{{else}}
 					<div class="offline">

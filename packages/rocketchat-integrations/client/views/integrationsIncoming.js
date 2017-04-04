@@ -26,8 +26,8 @@ Template.integrationsIncoming.helpers({
 			}
 
 			if (data) {
-				const completeToken = `${data._id}/${data.token}`;
-				data.url = Meteor.absoluteUrl(`hooks/${completeToken}`);
+				const completeToken = `${ data._id }/${ data.token }`;
+				data.url = Meteor.absoluteUrl(`hooks/${ completeToken }`);
 				data.completeToken = completeToken;
 				Template.instance().record.set(data);
 				return data;
@@ -118,7 +118,7 @@ Template.integrationsIncoming.helpers({
 			}
 		});
 
-		return `curl -X POST -H 'Content-Type: application/json' --data 'payload=${JSON.stringify(data)}' ${record.url}`;
+		return `curl -X POST -H 'Content-Type: application/json' --data 'payload=${ JSON.stringify(data) }' ${ record.url }`;
 	},
 
 	editorOptions() {
@@ -221,7 +221,7 @@ Template.integrationsIncoming.events({
 
 		const integration = {
 			enabled: enabled === '1',
-			channel: channel,
+			channel,
 			alias: alias !== '' ? alias : undefined,
 			emoji: emoji !== '' ? emoji : undefined,
 			avatar: avatar !== '' ? avatar : undefined,
