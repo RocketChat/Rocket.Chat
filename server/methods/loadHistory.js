@@ -62,6 +62,10 @@ Meteor.methods({
 			message.starred = _.findWhere(message.starred, {
 				_id: fromId
 			});
+			if (message.u && message.u._id) {
+				const user = RocketChat.models.Users.findOneById(message.u._id);
+				message.u.name = user && user.name;
+			}
 			return message;
 		});
 
