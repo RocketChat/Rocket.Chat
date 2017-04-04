@@ -52,7 +52,7 @@ class ErrorHandler {
 			const user = RocketChat.models.Users.findOneById('rocket.cat');
 
 			if (stack) {
-				message = message + '\n```\n' + stack + '\n```';
+				message = `${ message }\n\`\`\`\n${ stack }\n\`\`\``;
 			}
 
 			RocketChat.sendMessage(user, { msg: message }, { _id: this.rid });

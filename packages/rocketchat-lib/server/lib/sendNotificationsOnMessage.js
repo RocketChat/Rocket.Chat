@@ -11,7 +11,7 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 		return message;
 	}
 
-	var user = RocketChat.models.Users.findOneById(message.u._id);
+	const user = RocketChat.models.Users.findOneById(message.u._id);
 
 	/*
 	Increment unread couter if direct messages
@@ -27,7 +27,7 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 	 * @returns {boolean}
      */
 	function canBeNotified(id, type) {
-		var types = {
+		const types = {
 			mobile: [ 'dontNotifyDesktopUsers', 'alwaysNotifyDesktopUsers' ],
 			desktop: [ 'dontNotifyMobileUsers', 'alwaysNotifyMobileUsers' ]
 		};
@@ -46,9 +46,9 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 	function messageContainsHighlight(message, highlights) {
 		if (! highlights || highlights.length === 0) { return false; }
 
-		var has = false;
+		let has = false;
 		highlights.some(function(highlight) {
-			var regexp = new RegExp(s.escapeRegExp(highlight), 'i');
+			const regexp = new RegExp(s.escapeRegExp(highlight), 'i');
 			if (regexp.test(message.msg)) {
 				has = true;
 				return true;
@@ -103,7 +103,7 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 	let push_room;
 	if (RocketChat.settings.get('Push_show_username_room')) {
 		push_username = user.username;
-		push_room = '#' + room.name;
+		push_room = `#${ room.name }`;
 	} else {
 		push_username = '';
 		push_room = '';
@@ -123,12 +123,12 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 		// Always notify Sandstorm
 		if (userOfMention != null) {
 			RocketChat.Sandstorm.notify(message, [userOfMention._id],
-				'@' + user.username + ': ' + message.msg, 'privateMessage');
+				`@${ user.username }: ${ message.msg }`, 'privateMessage');
 
 		}
 		if ((userOfMention != null) && canBeNotified(userOfMentionId, 'mobile')) {
 			RocketChat.Notifications.notifyUser(userOfMention._id, 'notification', {
-				title: '@' + user.username,
+				title: RocketChat.settings.get('UI_Use_Real_Name') ? user.name : `@${ user.username }`,
 				text: message.msg,
 				duration: settings.desktopNotificationDurations[userOfMention._id],
 				payload: {
@@ -273,12 +273,12 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 
 		if (userIdsToNotify.length > 0) {
 			for (const usersOfMentionId of userIdsToNotify) {
-				let title = '@' + user.username;
+				let title = `@${ user.username }`;
 				if (room.name) {
-					title += ' @ #' + room.name;
+					title += ` @ #${ room.name }`;
 				}
 				RocketChat.Notifications.notifyUser(usersOfMentionId, 'notification', {
-					title: title,
+					title,
 					text: message.msg,
 					duration: settings.desktopNotificationDurations[usersOfMentionId],
 					payload: {
@@ -318,10 +318,10 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 		const allUserIdsToNotify = _.unique(userIdsToNotify.concat(userIdsToPushNotify));
 		if (room.t === 'p') {
 			RocketChat.Sandstorm.notify(message, allUserIdsToNotify,
-				'@' + user.username + ': ' + message.msg, 'privateMessage');
+				`@${ user.username }: ${ message.msg }`, 'privateMessage');
 		} else {
 			RocketChat.Sandstorm.notify(message, allUserIdsToNotify,
-				'@' + user.username + ': ' + message.msg, 'message');
+				`@${ user.username }: ${ message.msg }`, 'message');
 		}
 	}
 

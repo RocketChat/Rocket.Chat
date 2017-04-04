@@ -26,7 +26,7 @@ RocketChat.Migrations.add({
 			const {image, contentType} = RocketChatFile.dataURIParse(dataURI);
 
 			const rs = RocketChatFile.bufferToStream(new Buffer(image, 'base64'));
-			const ws = RocketChatFileAvatarInstance.createWriteStream(`${user.username}.jpg`, contentType);
+			const ws = RocketChatFileAvatarInstance.createWriteStream(`${ user.username }.jpg`, contentType);
 
 			ws.on('end', Meteor.bindEnvironment(function() {
 				return RocketChat.models.Users.setAvatarOrigin(user._id, service);

@@ -78,6 +78,6 @@ Meteor.startup(function() {
 			});
 		}
 
-		document.title = unread === '' ? siteName : `(${unread}) ${siteName}`;
+		document.title = unread === '' ? siteName : `(${ unread }) ${ siteName }`;
 	});
 });

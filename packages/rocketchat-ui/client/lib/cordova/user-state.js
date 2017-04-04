@@ -1,6 +1,6 @@
 /* globals UserPresence, readMessage */
 
-var timer = undefined;
+let timer = undefined;
 if (Meteor.isCordova) {
 	document.addEventListener('pause', () => {
 		UserPresence.setAway();

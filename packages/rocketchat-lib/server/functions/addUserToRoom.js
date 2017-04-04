@@ -12,7 +12,7 @@ RocketChat.addUserToRoom = function(rid, user, inviter, silenced) {
 		RocketChat.callbacks.run('beforeJoinRoom', user, room);
 	}
 
-	var muted = room.ro && !RocketChat.authz.hasPermission(user._id, 'post-readonly');
+	const muted = room.ro && !RocketChat.authz.hasPermission(user._id, 'post-readonly');
 	RocketChat.models.Rooms.addUsernameById(rid, user.username, muted);
 	RocketChat.models.Subscriptions.createWithRoomAndUser(room, user, {
 		ts: now,
@@ -27,7 +27,8 @@ RocketChat.addUserToRoom = function(rid, user, inviter, silenced) {
 				ts: now,
 				u: {
 					_id: inviter._id,
-					username: inviter.username
+					username: inviter.username,
+					name: inviter.name
 				}
 			});
 		} else {

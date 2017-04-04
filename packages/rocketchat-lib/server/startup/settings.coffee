@@ -181,6 +181,11 @@ RocketChat.settings.addGroup 'Email', ->
 		@add 'Verification_Email', '', { type: 'code', code: 'text/html', multiline: true, i18nLabel: 'Body', i18nDescription: 'Verification_Description', enableQuery: { _id: 'Verification_Customized', value: true }, i18nDefaultQuery: { _id: 'Verification_Customized', value: false } }
 
 RocketChat.settings.addGroup 'Message', ->
+
+	@section 'Message_Attachments', ->
+		@add 'Message_Attachments_GroupAttach', false, { type: 'boolean', public: true, i18nDescription: 'Message_Attachments_GroupAttachDescription' }
+		@add 'Message_AudioRecorderEnabled', true, { type: 'boolean', public: true, i18nDescription: 'Message_AudioRecorderEnabledDescription' }
+
 	@add 'Message_AllowEditing', true, { type: 'boolean', public: true }
 	@add 'Message_AllowEditing_BlockEditInMinutes', 0, { type: 'int', public: true, i18nDescription: 'Message_AllowEditing_BlockEditInMinutesDescription' }
 	@add 'Message_AllowDeleting', true, { type: 'boolean', public: true }
@@ -196,7 +201,6 @@ RocketChat.settings.addGroup 'Message', ->
 	@add 'Message_MaxAllowedSize', 5000, { type: 'int', public: true }
 	@add 'Message_ShowFormattingTips', true, { type: 'boolean', public: true }
 	@add 'Message_SetNameToAliasEnabled', false, { type: 'boolean', public: false, i18nDescription: 'Message_SetNameToAliasEnabled_Description' }
-	@add 'Message_AudioRecorderEnabled', true, { type: 'boolean', public: true, i18nDescription: 'Message_AudioRecorderEnabledDescription' }
 	@add 'Message_GroupingPeriod', 300, { type: 'int', public: true, i18nDescription: 'Message_GroupingPeriodDescription' }
 	@add 'API_Embed', true, { type: 'boolean', public: true }
 	@add 'API_EmbedCacheExpirationDays', 30, { type: 'int', public: false }
@@ -263,6 +267,7 @@ RocketChat.settings.addGroup 'Layout', ->
 		@add 'UI_DisplayRoles', true, { type: 'boolean', public: true }
 		@add 'UI_Merge_Channels_Groups', true, { type: 'boolean', public: true }
 		@add 'UI_Use_Name_Avatar', false, { type: 'boolean', public: true }
+		@add 'UI_Use_Real_Name', false, { type: 'boolean', public: true }
 
 
 RocketChat.settings.addGroup 'Logs', ->

@@ -50,7 +50,7 @@ Template.livechatTriggersForm.events({
 		$('.each-condition').each(function() {
 			data.conditions.push({
 				name: $('.trigger-condition', this).val(),
-				value: $('.' + $('.trigger-condition', this).val() + '-value').val()
+				value: $(`.${ $('.trigger-condition', this).val() }-value`).val()
 			});
 		});
 
@@ -66,7 +66,7 @@ Template.livechatTriggersForm.events({
 			} else {
 				data.actions.push({
 					name: $('.trigger-action', this).val(),
-					value: $('.' + $('.trigger-action', this).val() + '-value').val()
+					value: $(`.${ $('.trigger-action', this).val() }-value`).val()
 				});
 			}
 		});

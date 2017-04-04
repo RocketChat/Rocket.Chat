@@ -29,7 +29,7 @@ WebApp.connectHandlers.use('/snippet/download', function(req, res) {
 		res.end();
 		return false;
 	}
-	var match = /^\/([^\/]+)\/(.*)/.exec(req.url);
+	const match = /^\/([^\/]+)\/(.*)/.exec(req.url);
 
 	if (match[1]) {
 		const snippet = RocketChat.models.Messages.findOne(
@@ -45,7 +45,7 @@ WebApp.connectHandlers.use('/snippet/download', function(req, res) {
 			return false;
 		}
 
-		res.setHeader('Content-Disposition', `attachment; filename*=UTF-8''${encodeURIComponent(snippet.snippetName)}`);
+		res.setHeader('Content-Disposition', `attachment; filename*=UTF-8''${ encodeURIComponent(snippet.snippetName) }`);
 		res.setHeader('Content-Type', 'application/octet-stream');
 
 		// Removing the ``` contained in the msg.

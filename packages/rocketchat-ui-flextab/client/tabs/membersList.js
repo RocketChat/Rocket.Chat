@@ -23,37 +23,37 @@ Template.membersList.helpers({
 
 	roomUsers() {
 		const onlineUsers = RoomManager.onlineUsers.get();
-		const roomUsernames = Template.instance().users.get();
+		const roomUsers = Template.instance().users.get();
 		const room = ChatRoom.findOne(this.rid);
 		const roomMuted = (room != null ? room.muted : undefined) || [];
 		const userUtcOffset = Meteor.user().utcOffset;
 		let totalOnline = 0;
-		let users = roomUsernames.map(function(username) {
+		let users = roomUsers.map(function(user) {
 			let utcOffset;
-			if (onlineUsers[username] != null) {
+			if (onlineUsers[user.username] != null) {
 				totalOnline++;
-				({ utcOffset } = onlineUsers[username]);
+				({ utcOffset } = onlineUsers[user.username]);
 
 				if (utcOffset != null) {
 					if (utcOffset === userUtcOffset) {
 						utcOffset = '';
 					} else if (utcOffset > 0) {
-						utcOffset = `+${utcOffset}`;
+						utcOffset = `(UTC +${ utcOffset })`;
 					} else {
-						utcOffset = `(UTC ${utcOffset})`;
+						utcOffset = `(UTC ${ utcOffset })`;
 					}
 				}
 			}
 
 			return {
-				username,
-				status: (onlineUsers[username] != null ? onlineUsers[username].status : undefined),
-				muted: Array.from(roomMuted).includes(username),
+				user,
+				status: (onlineUsers[user.username] != null ? onlineUsers[user.username].status : undefined),
+				muted: Array.from(roomMuted).includes(user.username),
 				utcOffset
 			};
 		});
 
-		users = _.sortBy(users, 'username');
+		users = _.sortBy(users, u => u.user.username);
 		// show online users first.
 		// sortBy is stable, so we can do this
 		users = _.sortBy(users, u => u.status == null);
@@ -79,7 +79,7 @@ Template.membersList.helpers({
 	},
 
 	canAddUser() {
-		const roomData = Session.get(`roomData${this._id}`);
+		const roomData = Session.get(`roomData${ this._id }`);
 		if (!roomData) { return ''; }
 		return (() => {
 			switch (roomData.t) {
@@ -136,6 +136,13 @@ Template.membersList.helpers({
 			hideAdminControls: ['c', 'p', 'd'].includes(room != null ? room.t : undefined),
 			video: ['d'].includes(room != null ? room.t : undefined)
 		};
+	},
+	displayName() {
+		if (RocketChat.settings.get('UI_Use_Real_Name') && this.user.name) {
+			return this.user.name;
+		}
+
+		return this.user.username;
 	}});
 
 Template.membersList.events({
@@ -150,7 +157,7 @@ Template.membersList.events({
 
 	'autocompleteselect #user-add-search'(event, template, doc) {
 
-		const roomData = Session.get(`roomData${template.data.rid}`);
+		const roomData = Session.get(`roomData${ template.data.rid }`);
 
 		if (['c', 'p'].includes(roomData.t)) {
 			return Meteor.call('addUserToRoom', { rid: roomData._id, username: doc.username }, function(error) {
