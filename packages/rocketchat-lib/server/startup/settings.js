@@ -1,7 +1,11 @@
+// Insert server unique id if it doesn't exist
 RocketChat.settings.add('uniqueID', process.env.DEPLOYMENT_ID || Random.id(), {
 	'public': true,
 	hidden: true
 });
+
+// When you define a setting and want to add a description, you don't need to automatically define the i18nDescription
+// if you add a node to the i18n.json with the same setting name but with `_Description` it will automatically work.
 
 RocketChat.settings.addGroup('Accounts', function() {
 	this.add('Accounts_AllowDeleteOwnAccount', false, {
@@ -656,6 +660,18 @@ RocketChat.settings.addGroup('Email', function() {
 });
 
 RocketChat.settings.addGroup('Message', function() {
+	this.section('Message_Attachments', function() {
+		this.add('Message_Attachments_GroupAttach', false, {
+			type: 'boolean',
+			'public': true,
+			i18nDescription: 'Message_Attachments_GroupAttachDescription'
+		});
+		this.add('Message_AudioRecorderEnabled', true, {
+			type: 'boolean',
+			'public': true,
+			i18nDescription: 'Message_AudioRecorderEnabledDescription'
+		});
+	});
 	this.add('Message_AllowEditing', true, {
 		type: 'boolean',
 		'public': true
@@ -717,11 +733,6 @@ RocketChat.settings.addGroup('Message', function() {
 		type: 'boolean',
 		'public': false,
 		i18nDescription: 'Message_SetNameToAliasEnabled_Description'
-	});
-	this.add('Message_AudioRecorderEnabled', true, {
-		type: 'boolean',
-		'public': true,
-		i18nDescription: 'Message_AudioRecorderEnabledDescription'
 	});
 	this.add('Message_GroupingPeriod', 300, {
 		type: 'int',
@@ -966,7 +977,11 @@ RocketChat.settings.addGroup('Layout', function() {
 			type: 'boolean',
 			'public': true
 		});
-		return this.add('UI_Use_Name_Avatar', false, {
+		this.add('UI_Use_Name_Avatar', false, {
+			type: 'boolean',
+			'public': true
+		});
+		this.add('UI_Use_Real_Name', false, {
 			type: 'boolean',
 			'public': true
 		});
