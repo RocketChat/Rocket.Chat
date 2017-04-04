@@ -44,7 +44,7 @@ Meteor.methods({
 		}
 
 		if (settings.realname) {
-			Meteor.call('setRealName', settings.realname);
+			RocketChat.setRealName(Meteor.userId(), settings.realname);
 		}
 
 		if (settings.username) {
