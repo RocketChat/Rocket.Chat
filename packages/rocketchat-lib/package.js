@@ -45,7 +45,7 @@ Package.onUse(function(api) {
 	api.use('templating', 'client');
 	api.use('kadira:flow-router');
 
-	api.addFiles('lib/core.coffee');
+	api.addFiles('lib/core.js');
 
 	// DEBUGGER
 	api.addFiles('server/lib/debug.js', 'server');
@@ -53,7 +53,6 @@ Package.onUse(function(api) {
 	// COMMON LIB
 	api.addFiles('lib/getURL.js');
 	api.addFiles('lib/settings.coffee');
-	api.addFiles('lib/configLogger.coffee');
 	api.addFiles('lib/callbacks.coffee');
 	api.addFiles('lib/fileUploadRestrictions.js');
 	api.addFiles('lib/placeholders.js');
@@ -87,12 +86,14 @@ Package.onUse(function(api) {
 	api.addFiles('server/functions/settings.coffee', 'server');
 	api.addFiles('server/functions/setUserAvatar.js', 'server');
 	api.addFiles('server/functions/setUsername.coffee', 'server');
+	api.addFiles('server/functions/setRealName.js', 'server');
 	api.addFiles('server/functions/setEmail.js', 'server');
 	api.addFiles('server/functions/unarchiveRoom.js', 'server');
 	api.addFiles('server/functions/updateMessage.js', 'server');
 	api.addFiles('server/functions/Notifications.coffee', 'server');
 
 	// SERVER LIB
+	api.addFiles('server/lib/configLogger.js', 'server');
 	api.addFiles('server/lib/PushNotification.js', 'server');
 	api.addFiles('server/lib/defaultBlockedDomainsList.js', 'server');
 	api.addFiles('server/lib/notifyUsersOnMessage.js', 'server');
@@ -104,7 +105,7 @@ Package.onUse(function(api) {
 	// SERVER MODELS
 	api.addFiles('server/models/_Base.js', 'server');
 	api.addFiles('server/models/Messages.coffee', 'server');
-	api.addFiles('server/models/Reports.coffee', 'server');
+	api.addFiles('server/models/Reports.js', 'server');
 	api.addFiles('server/models/Rooms.coffee', 'server');
 	api.addFiles('server/models/Settings.coffee', 'server');
 	api.addFiles('server/models/Subscriptions.coffee', 'server');
@@ -121,7 +122,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/startup/cache/CacheLoad.js', 'server');
 
 	// SERVER PUBLICATIONS
-	api.addFiles('server/publications/settings.coffee', 'server');
+	api.addFiles('server/publications/settings.js', 'server');
 
 	// SERVER METHODS
 	api.addFiles('server/methods/addOAuthService.js', 'server');
@@ -163,10 +164,10 @@ Package.onUse(function(api) {
 	api.addFiles('server/methods/updateMessage.js', 'server');
 
 	// SERVER STARTUP
-	api.addFiles('server/startup/settingsOnLoadCdnPrefix.coffee', 'server');
-	api.addFiles('server/startup/settingsOnLoadSMTP.coffee', 'server');
-	api.addFiles('server/startup/oAuthServicesUpdate.coffee', 'server');
-	api.addFiles('server/startup/settings.coffee', 'server');
+	api.addFiles('server/startup/settingsOnLoadCdnPrefix.js', 'server');
+	api.addFiles('server/startup/settingsOnLoadSMTP.js', 'server');
+	api.addFiles('server/startup/oAuthServicesUpdate.js', 'server');
+	api.addFiles('server/startup/settings.js', 'server');
 
 	// COMMON STARTUP
 	api.addFiles('lib/startup/settingsOnLoadSiteUrl.coffee');
@@ -186,7 +187,7 @@ Package.onUse(function(api) {
 
 	// CLIENT METHODS
 	api.addFiles('client/methods/sendMessage.coffee', 'client');
-	api.addFiles('client/AdminBox.coffee', 'client');
+	api.addFiles('client/AdminBox.js', 'client');
 	api.addFiles('client/MessageAction.coffee', 'client');
 
 	api.addFiles('client/defaultTabBars.js', 'client');

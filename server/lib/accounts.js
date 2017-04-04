@@ -63,8 +63,16 @@ Accounts.onCreateUser(function(options, user = {}) {
 	user.active = !RocketChat.settings.get('Accounts_ManuallyApproveNewUsers');
 
 	if (!user.name) {
-		if (options.profile && options.profile.name) {
-			user.name = options.profile.name;
+		if (options.profile) {
+			if (options.profile.name) {
+				user.name = options.profile.name;
+			} else if (options.profile.firstName && options.profile.lastName) {
+				// LinkedIn format
+				user.name = `${ options.profile.firstName } ${ options.profile.lastName }`;
+			} else if (options.profile.firstName) {
+				// LinkedIn format
+				user.name = options.profile.firstName;
+			}
 		}
 	}
 
@@ -95,7 +103,7 @@ Accounts.insertUserDoc = _.wrap(Accounts.insertUserDoc, function(insertUserDoc, 
 
 	delete user.globalRoles;
 
-	if (!user.services || !user.services.password) {
+	if (user.services && !user.services.password) {
 		const defaultAuthServiceRoles = String(RocketChat.settings.get('Accounts_Registration_AuthenticationServices_Default_Roles')).split(',');
 		if (defaultAuthServiceRoles.length > 0) {
 			roles = roles.concat(defaultAuthServiceRoles.map(s => s.trim()));

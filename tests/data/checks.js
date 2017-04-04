@@ -35,7 +35,7 @@ export function checkIfUserIsValid(username, email, password) {
 			browser.click('.submit > button');
 			mainContent.mainContent.waitForExist(5000);
 		}
-	} else if (sideNav.accountBoxUserName.getText() !== username) {
+	} else if (sideNav.accountBoxUserName.getAttribute('data-username') !== username) {
 		//if the logged user is not the right one
 		console.log('	Wrong logged user. Changing user...');
 		sideNav.accountBoxUserName.waitForVisible(5000);

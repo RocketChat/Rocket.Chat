@@ -15,7 +15,7 @@
 * [Mobile apps](#mobile-apps)
 * [Desktop apps](#desktop-apps)
 * [Deployment](#deployment)
-   * [Snaps](#instant-server-intallation-with-snaps)
+   * [Snaps](#instant-server-installation-with-snaps)
    * [Layershift](#layershift)
    * [Sandstorm.io](#sandstormio) 
    * [DPlatform](#dplatform) 
@@ -76,7 +76,7 @@ Now compatible with all Android devices as old as version 4.0.x - [download here
 
 # Deployment
 
-## Instant Server Intallation with Snaps
+## Instant Server Installation with Snaps
  
 Install Rocket.Chat in seconds on Linux (Ubuntu and others) with:
 
