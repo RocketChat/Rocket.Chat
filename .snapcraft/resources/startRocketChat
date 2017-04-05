@@ -2,7 +2,7 @@
 
 function start_rocketchat {
 	echo "Checking if oplog has been enabled, and enabling if not"
-	mongo $SNAP/bin/initreplset.js
+	LC_ALL=C mongo $SNAP/bin/initreplset.js
 
 	export BABEL_CACHE_DIR=/tmp 
 	export ROOT_URL=http://localhost 
