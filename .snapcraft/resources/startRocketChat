@@ -27,7 +27,7 @@ function try_start {
         	else
 			if [[ "$try_times" == 5 || "$try_times" > 5 ]]; then
 		                echo "Was unable to connect to Mongo.  Please make sure Mongo has started successfully: sudo systemctl status snap.rocketchat-server.rocketchat-mongo to view logs: sudo journalctl -u snap.rocketchat-server.rocketchat-mongo"
-               			 exit 1;
+               			exit 1;
         		fi
 
 			((try_times += 1))
