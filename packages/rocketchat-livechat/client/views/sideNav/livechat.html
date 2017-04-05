@@ -1,45 +1,49 @@
 <template name="livechat">
 	<div class="livechat-section {{livechatAvailable}}">
-		<h3 class="{{isActive}}">
-			{{#with available}}
-				<i class="livechat-status {{status}} {{icon}}" title="{{hint}}"></i>
-			{{/with}}
-			{{_ "Livechat"}}
-		</h3>
-
-		{{#if guestPool}}
-			{{#if isLivechatAvailable}}
-				<h3 class="{{isActive}}">
-					{{_ "Incoming_Livechats"}}
-				</h3>
-				<ul class="inquiries">
-					{{#each inquiries}}
-						{{> chatRoomItem }}
-					{{else}}
-						<li class="empty">{{_ "No_livechats" }}</li>
-					{{/each}}
-				</ul>
-			{{/if}}
-
+		<div class="list-wrapper">
 			<h3 class="{{isActive}}">
-				{{_ "Open_Livechats"}}
+				{{#with available}}
+					<i class="livechat-status {{status}} {{icon}}" title="{{hint}}"></i>
+				{{/with}}
+				{{_ "Livechat"}}
 			</h3>
-		{{/if}}
+			<span class="arrow list top" data-type="live-chat-list" data-state="open"></span>
+		</div>
+		<div class="live-chat-list">
+			{{#if guestPool}}
+				{{#if isLivechatAvailable}}
+					<h3 class="{{isActive}}">
+						{{_ "Incoming_Livechats"}}
+					</h3>
+					<ul class="inquiries">
+						{{#each inquiries}}
+							{{> chatRoomItem }}
+						{{else}}
+							<li class="empty">{{_ "No_livechats" }}</li>
+						{{/each}}
+					</ul>
+				{{/if}}
 
-		<ul>
-			{{#if showQueueLink}}
-				<li class="{{activeLivechatQueue}}">
-					<a href="{{pathFor 'livechat-queue'}}">
-						<i class="icon-th-list"></i>
-						{{_ "Queue"}}
-					</a>
-				</li>
+				<h3 class="{{isActive}}">
+					{{_ "Open_Livechats"}}
+				</h3>
 			{{/if}}
-			{{#each rooms}}
-				{{> chatRoomItem }}
-			{{else}}
-				<li class="empty">{{_ "No_livechats" }}</li>
-			{{/each}}
-		</ul>
+
+			<ul>
+				{{#if showQueueLink}}
+					<li class="{{activeLivechatQueue}}">
+						<a href="{{pathFor 'livechat-queue'}}">
+							<i class="icon-th-list"></i>
+							{{_ "Queue"}}
+						</a>
+					</li>
+				{{/if}}
+				{{#each rooms}}
+					{{> chatRoomItem }}
+				{{else}}
+					<li class="empty">{{_ "No_livechats" }}</li>
+				{{/each}}
+			</ul>
+		</div>
 	</div>
 </template>

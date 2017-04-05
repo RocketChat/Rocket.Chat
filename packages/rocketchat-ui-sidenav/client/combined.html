@@ -1,9 +1,11 @@
 <template name="combined">
-	<h3 class="add-room {{isActive}}">
-		{{_ "Channels"}} <span class="room-count-small">({{rooms.count}})</span>
+	<div class="list-wrapper">
+		<h3 class="add-room {{isActive}}">
+			{{_ "Channels"}} <span class="room-count-small">({{rooms.count}})</span>
+		</h3>
 		<span class="arrow list top" data-type="combined-list" data-state="open"></span>
-	</h3>
-	<div class="channel-list">
+	</div>
+	<div class="combined-list">
 		<ul>
 			{{#each rooms}}
 				{{> chatRoomItem }}
