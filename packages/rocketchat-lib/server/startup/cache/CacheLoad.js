@@ -41,6 +41,9 @@ RocketChat.models.Subscriptions.cache.hasOne('Users', {
 			return subscription.t === 'd';
 		},
 		transform(subscription, user) {
+			if (user == null || subscription == null) {
+				return undefined;
+			}
 			// Prevent client cache for old subscriptions with new names
 			// Cuz when a user change his name, the subscription's _updateAt
 			// will not change
