@@ -16,6 +16,7 @@
 * [Desktop apps](#desktop-apps)
 * [Deployment](#deployment)
    * [Snaps](#instant-server-installation-with-snaps)
+   * [RocketChatLauncher](#launcher)
    * [Layershift](#layershift)
    * [Sandstorm.io](#sandstormio) 
    * [DPlatform](#dplatform) 
@@ -91,6 +92,12 @@ Installing snaps is very quick.  By running that command you have your full Rock
 Our snap features a built-in reverse proxy that can request and maintain free letsencrypt SSL certificates. You can go from zero to a public-facing SSL-secured Rocket.Chat server in less than 5 minutes.
 
 Find out more information about our snaps [here](https://rocket.chat/docs/installation/manual-installation/ubuntu/snaps/)
+
+## RocketChatLauncher
+
+Focus on your team/community and not on servers or code - the Launcher provides RocketChat-as-a-Service on a monthly subscription model.
+
+[![RocketChatLauncher](https://rocketchatlauncher.com/wp-content/uploads/2017/03/cropped-rcl-small-type.png)](https://rocketchatlauncher.com)
 
 ## Layershift
 
