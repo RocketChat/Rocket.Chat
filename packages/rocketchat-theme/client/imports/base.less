@@ -876,6 +876,7 @@ label.required::after {
 	width: 25px;
 	height: 25px;
 	z-index: 100;
+	cursor: pointer;
 	.calc(top, ~"50% - 13px");
 
 	&::before,
@@ -940,9 +941,10 @@ label.required::after {
 	}
 
 	&.list{
-		padding-left: 450px;
+		right: 0;
 		position: absolute;
 		z-index: 2;
+		margin-right: 10px;
 	}
 }
 
@@ -1648,7 +1650,7 @@ label.required::after {
 		}
 	}
 
-	.list-wrapper{
+	.title-wrapper{
 		position: relative;
 	}
 }

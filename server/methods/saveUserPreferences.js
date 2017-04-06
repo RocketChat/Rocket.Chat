@@ -63,6 +63,7 @@ Meteor.methods({
 			preferences.hideFlexTab = settings.hideFlexTab === '1';
 			preferences.highlights = settings.highlights;
 			preferences.sendOnEnter = settings.sendOnEnter;
+			preferences.collapseChannels = settings.collapseChannels === '1';
 
 			RocketChat.models.Users.setPreferences(Meteor.userId(), preferences);
 

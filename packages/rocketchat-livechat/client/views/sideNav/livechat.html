@@ -1,15 +1,18 @@
 <template name="livechat">
 	<div class="livechat-section {{livechatAvailable}}">
-		<div class="list-wrapper">
+		<div class="title-wrapper">
 			<h3 class="{{isActive}}">
 				{{#with available}}
-					<i class="livechat-status {{status}} {{icon}}" title="{{hint}}"></i>
+					<i class="livechat-status {{status}} {{icon}} {{moveButton}}" title="{{hint}}"></i>
+					{{collapsible}}
 				{{/with}}
 				{{_ "Livechat"}}
 			</h3>
-			<span class="arrow list top" data-type="live-chat-list" data-state="open"></span>
+			{{#if collapsible}}
+				<span class="arrow list top" data-type="live-chat-list" data-state="open"></span>
+			{{/if}}
 		</div>
-		<div class="live-chat-list">
+		<div class="channel-wrapper live-chat-list">
 			{{#if guestPool}}
 				{{#if isLivechatAvailable}}
 					<h3 class="{{isActive}}">

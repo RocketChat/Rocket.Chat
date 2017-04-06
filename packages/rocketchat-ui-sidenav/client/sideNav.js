@@ -50,6 +50,10 @@ Template.sideNav.helpers({
 		} else {
 			return this.template;
 		}
+	},
+
+	collapseChannel() {
+		return {collapsible : Meteor.user().settings.preferences.collapseChannels};
 	}
 });
 
@@ -63,8 +67,6 @@ Template.sideNav.events({
 	},
 
 	'click .arrow.list'(event) {
-		console.log(event);
-		console.log(event.target);
 		const el = event.target;
 		if (el.dataset.state === 'open') {
 			el.dataset.state = 'closed';
@@ -76,7 +78,6 @@ Template.sideNav.events({
 			$(el).addClass('top');
 		}
 
-		console.log(el.dataset.type);
 		return $(`.${ el.dataset.type }`).toggle();
 	},
 
@@ -102,4 +103,12 @@ Template.sideNav.onRendered(function() {
 	menu.init();
 
 	return Meteor.defer(() => menu.updateUnreadBars());
+});
+
+Template.sideNav.onCreated(function() {
+	this.autorun(() => {
+		if (!Meteor.user().settings.preferences.collapseChannels) {
+			return $('.channel-wrapper').show();
+		}
+	});
 });
