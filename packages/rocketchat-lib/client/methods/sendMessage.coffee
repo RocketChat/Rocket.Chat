@@ -9,9 +9,13 @@ Meteor.methods
 			else
 				message.ts = new Date(Date.now() + TimeSync.serverOffset())
 
+			user = Meteor.user()
 			message.u =
 				_id: Meteor.userId()
-				username: Meteor.user().username
+				username: user.username
+
+			if RocketChat.settings.get('UI_Use_Real_Name')
+				message.u.name = user.name
 
 			message.temp = true
 
