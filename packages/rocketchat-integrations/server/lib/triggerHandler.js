@@ -590,7 +590,6 @@ RocketChat.integrations.triggerHandler = new class RocketChatIntegrationHandler 
 		}
 
 		if (message && message.editedAt && !trigger.runOnEdits) {
-			console.log(`The trigger "${ trigger.name }"'s run on edits is disabled and the message was edited.`);
 			logger.outgoing.debug(`The trigger "${ trigger.name }"'s run on edits is disabled and the message was edited.`);
 			return;
 		}
