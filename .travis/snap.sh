@@ -38,7 +38,7 @@ GIT_SSH_COMMAND="ssh -i launchpadkey" git clone -b $CHANNEL git+ssh://rocket.cha
 
 # Rarely will change, but just incase we copy it all
 cp -r resources buildinfo launchpad/
-sed /#{RC_VERSION}/$RC_VERSION/ $CHANNEL/snapcraft.yaml > launchpad/snapcraft.yaml
+sed s/#{RC_VERSION}/$RC_VERSION/ $CHANNEL/snapcraft.yaml > launchpad/snapcraft.yaml
 
 cd launchpad
 git add resources snapcraft.yaml buildinfo
