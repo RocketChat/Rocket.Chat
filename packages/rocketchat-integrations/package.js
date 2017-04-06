@@ -8,7 +8,6 @@ Package.describe({
 
 Package.onUse(function(api) {
 	api.use('mongo');
-	api.use('coffeescript');
 	api.use('underscore');
 	api.use('ecmascript');
 	api.use('babel-compiler');
@@ -65,7 +64,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/methods/clearIntegrationHistory.js', 'server');
 
 	// api
-	api.addFiles('server/api/api.coffee', 'server');
+	api.addFiles('server/api/api.js', 'server');
 
 	api.addFiles('server/lib/triggerHandler.js', 'server');
 	api.addFiles('server/triggers.js', 'server');

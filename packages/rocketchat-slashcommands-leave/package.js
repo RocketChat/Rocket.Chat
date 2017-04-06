@@ -8,8 +8,7 @@ Package.describe({
 Package.onUse(function(api) {
 	api.use([
 		'ecmascript',
-		'coffeescript',
 		'rocketchat:lib'
 	]);
-	api.addFiles('leave.coffee');
+	api.addFiles('leave.js');
 });

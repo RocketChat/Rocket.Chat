@@ -12,16 +12,21 @@ Meteor.methods({
 		const regex = new RegExp(s.trim(s.escapeRegExp(text)), 'i');
 
 		if (type.users === true && RocketChat.authz.hasPermission(this.userId, 'view-d-room')) {
-			result.users = RocketChat.models.Users.findByActiveUsersUsernameExcept(text, usernames, {
+			const userQuery = {
 				limit: 5,
 				fields: {
 					username: 1,
+					name: 1,
 					status: 1
 				},
-				sort: {
-					username: 1
-				}
-			}).fetch();
+				sort: {}
+			};
+			if (RocketChat.settings.get('UI_Use_Real_Name')) {
+				userQuery.sort.name = 1;
+			} else {
+				userQuery.sort.username = 1;
+			}
+			result.users = RocketChat.models.Users.findByActiveUsersExcept(text, usernames, userQuery).fetch();
 		}
 
 		if (type.rooms === true && RocketChat.authz.hasPermission(this.userId, 'view-c-room')) {

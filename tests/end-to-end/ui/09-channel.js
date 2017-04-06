@@ -220,6 +220,38 @@ describe('channel', ()=> {
 				});
 			});
 
+			describe('Channel announcement edit', ()=> {
+				before(()=> {
+					flexTab.operateFlexTab('info', true);
+				});
+
+				after(()=> {
+					if (Global.toastAlert.isVisible()) {
+						Global.dismissToast();
+						Global.toastAlert.waitForVisible(5000, true);
+					}
+					flexTab.operateFlexTab('info', false);
+				});
+
+				it('click the edit announcement', ()=> {
+					flexTab.editAnnouncementBtn.waitForVisible(5000);
+					flexTab.editAnnouncementBtn.click();
+				});
+
+				it('edit the announcement input', ()=> {
+					flexTab.editAnnouncementTextInput.waitForVisible(5000);
+					flexTab.editAnnouncementTextInput.setValue('ANNOUNCEMENT EDITED');
+				});
+
+				it('save the announcement', ()=> {
+					flexTab.editNameSave.click();
+				});
+
+				it('should show the new announcement', ()=> {
+					flexTab.thirdSetting.getText().should.equal('ANNOUNCEMENT EDITED');
+				});
+			});
+
 			describe('Channel description edit', ()=> {
 				before(()=> {
 					flexTab.operateFlexTab('info', true);
@@ -248,7 +280,7 @@ describe('channel', ()=> {
 				});
 
 				it('should show the new description', ()=> {
-					flexTab.thirdSetting.getText().should.equal('DESCRIPTION EDITED');
+					flexTab.fourthSetting.getText().should.equal('DESCRIPTION EDITED');
 				});
 			});
 		});

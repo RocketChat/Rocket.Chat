@@ -1,7 +1,8 @@
 Meteor.methods({
-	addAllUserToRoom(rid) {
+	addAllUserToRoom(rid, activeUsersOnly = false) {
 
 		check (rid, String);
+		check (activeUsersOnly, Boolean);
 
 		if (RocketChat.authz.hasRole(this.userId, 'admin') === true) {
 			const userCount = RocketChat.models.Users.find().count();
@@ -18,7 +19,12 @@ Meteor.methods({
 				});
 			}
 
-			const users = RocketChat.models.Users.find().fetch();
+			const userFilter = {};
+			if (activeUsersOnly === true) {
+				userFilter.active = true;
+			}
+
+			const users = RocketChat.models.Users.find(userFilter).fetch();
 			const now = new Date();
 			users.forEach(function(user) {
 				const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(rid, user._id);
