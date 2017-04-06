@@ -22,7 +22,7 @@ RocketChat.API.v1.addRoute('channels.addAll', { authRequired: true }, {
 		const findResult = findChannelById({ roomId: this.bodyParams.roomId });
 
 		Meteor.runAsUser(this.userId, () => {
-			Meteor.call('addAllUserToRoom', findResult._id);
+			Meteor.call('addAllUserToRoom', findResult._id, this.bodyParams.activeUsersOnly);
 		});
 
 		return RocketChat.API.v1.success({

@@ -17,10 +17,14 @@ Meteor.methods({
 			name = _.trim(name);
 		}
 
-		if (!RocketChat.models.Users.setName(Meteor.userId(), name)) {
+		if (!RocketChat.setRealName(Meteor.userId(), name)) {
 			throw new Meteor.Error('error-could-not-change-name', 'Could not change name', { method: 'setRealName' });
 		}
 
 		return name;
 	}
+});
+
+RocketChat.RateLimiter.limitMethod('setRealName', 1, 1000, {
+	userId: () => true
 });

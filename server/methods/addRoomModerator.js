@@ -44,7 +44,8 @@ Meteor.methods({
 		RocketChat.models.Messages.createSubscriptionRoleAddedWithRoomIdAndUser(rid, user, {
 			u: {
 				_id: fromUser._id,
-				username: fromUser.username
+				username: fromUser.username,
+				name: fromUser.name
 			},
 			role: 'moderator'
 		});
@@ -55,7 +56,8 @@ Meteor.methods({
 				_id: 'moderator',
 				u: {
 					_id: user._id,
-					username: user.username
+					username: user.username,
+					name: fromUser.name
 				},
 				scope: rid
 			});

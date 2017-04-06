@@ -54,6 +54,12 @@ if (!window._paq || window.ga) {
 		}
 	}, RocketChat.callbacks.priority.MEDIUM, 'analytics-room-topic-changed');
 
+	RocketChat.callbacks.add('roomAnnouncementChanged', (room) => {
+		if (RocketChat.settings.get('Analytics_features_rooms')) {
+			trackEvent('Room', 'Changed Announcement', `${ room.name } (${ room._id })`);
+		}
+	}, RocketChat.callbacks.priority.MEDIUM, 'analytics-room-announcement-changed');
+
 	RocketChat.callbacks.add('roomTypeChanged', (room) => {
 		if (RocketChat.settings.get('Analytics_features_rooms')) {
 			trackEvent('Room', 'Changed Room Type', `${ room.name } (${ room._id })`);
