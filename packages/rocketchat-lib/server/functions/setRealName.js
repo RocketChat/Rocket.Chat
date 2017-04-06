@@ -11,16 +11,18 @@ RocketChat._setRealName = function(userId, name) {
 		return user;
 	}
 
-	const previousName = user.name;
-
-	if (previousName) {
-		RocketChat.models.Messages.updateAllNamesByUserId(user._id, name);
-		RocketChat.models.Subscriptions.setRealNameForDirectRoomsWithUsername(user.username, name);
-	}
-
 	// Set new name
 	RocketChat.models.Users.setName(user._id, name);
 	user.name = name;
+
+	if (RocketChat.settings.get('UI_Use_Real_Name') === true) {
+		RocketChat.Notifications.notifyLogged('Users:NameChanged', {
+			_id: user._id,
+			name: user.name,
+			username: user.username
+		});
+	}
+
 	return user;
 };
 
