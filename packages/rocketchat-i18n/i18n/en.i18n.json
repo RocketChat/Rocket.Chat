@@ -730,6 +730,8 @@
   "Integration_Retry_Count_Description": "How many times should the integration be tried if the call to the url fails?",
   "Integration_Retry_Delay": "Retry Delay",
   "Integration_Retry_Delay_Description": "Which delay algorithm should the retrying use? <code class=\"inline\">10^x</code> or <code class=\"inline\">2^x</code> or <code class=\"inline\">x*2</code>",
+  "Integration_Run_When_Message_Is_Edited": "Run On Edits",
+  "Integration_Run_When_Message_Is_Edited_Description": "Should the integration run when the message is edited? Setting this to false will cause the integration to only run on <strong>new</strong> messages.",
   "Integration_Word_Trigger_Placement": "Word Placement Anywhere",
   "Integration_Word_Trigger_Placement_Description": "Should the Word be Triggered when placed anywhere in the sentence other than the beginning?",
   "Integration_updated": "Integration has been updated.",
