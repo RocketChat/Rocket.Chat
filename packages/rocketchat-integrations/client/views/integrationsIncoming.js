@@ -118,7 +118,7 @@ Template.integrationsIncoming.helpers({
 			}
 		});
 
-		return `curl -X POST -H 'Content-Type: application/json' --data 'payload=${ JSON.stringify(data) }' ${ record.url }`;
+		return `curl -X POST -H 'Content-Type: application/json' --data '${ JSON.stringify(data) }' ${ record.url }`;
 	},
 
 	editorOptions() {
