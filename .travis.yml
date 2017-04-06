@@ -5,8 +5,8 @@ services:
 branches:
   only:
   - develop
-  - experimental
-  - "/^(\\d+\\.)?(\\d+\\.)?(\\*|\\d+)$/"
+  - release-candidate
+  - "/^\\d+\\.\\d+\\.\\d+(-rc\\.\\d+)?$/"
 git:
   depth: 1
 node_js:
@@ -86,7 +86,7 @@ deploy:
 after_deploy:
 - ".travis/docker.sh"
 - ".travis/update-releases.sh"
-- ".travis/snap.sh"
+#- ".travis/snap.sh"
 env:
   global:
   - DISPLAY=:99.0
