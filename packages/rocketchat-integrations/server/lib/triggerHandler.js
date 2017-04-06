@@ -389,6 +389,10 @@ RocketChat.integrations.triggerHandler = new class RocketChatIntegrationHandler 
 				if (message.bot) {
 					data.bot = message.bot;
 				}
+
+				if (message.editedAt) {
+					data.isEdited = true;
+				}
 				break;
 			case 'fileUploaded':
 				data.channel_id = room._id;
@@ -583,6 +587,12 @@ RocketChat.integrations.triggerHandler = new class RocketChatIntegrationHandler 
 					return;
 				}
 			}
+		}
+
+		if (message && message.editedAt && !trigger.runOnEdits) {
+			console.log(`The trigger "${ trigger.name }"'s run on edits is disabled and the message was edited.`);
+			logger.outgoing.debug(`The trigger "${ trigger.name }"'s run on edits is disabled and the message was edited.`);
+			return;
 		}
 
 		const historyId = this.updateHistory({ step: 'start-execute-trigger-url', integration: trigger, event });
