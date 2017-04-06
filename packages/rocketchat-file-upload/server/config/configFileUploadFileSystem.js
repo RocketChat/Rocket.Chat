@@ -21,7 +21,7 @@ const createFileSystemStore = _.debounce(function() {
 				return readStream.pipe(writeStream);
 			}
 
-			let stream = void 0;
+			let stream = undefined;
 
 			const identify = function(err, data) {
 				if (err != null) {

@@ -43,7 +43,8 @@ Meteor.methods({
 		RocketChat.models.Messages.createUserUnmutedWithRoomIdAndUser(data.rid, unmutedUser, {
 			u: {
 				_id: fromUser._id,
-				username: fromUser.username
+				username: fromUser.username,
+				name: fromUser.name
 			}
 		});
 

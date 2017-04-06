@@ -137,6 +137,13 @@ Template.adminRoomInfo.onCreated ->
 							return handleError(err)
 						toastr.success TAPi18n.__ 'Room_topic_changed_successfully'
 						RocketChat.callbacks.run 'roomTopicChanged', AdminChatRoom.findOne(rid)
+			when 'roomAnnouncement'
+				if @validateRoomTopic(rid)
+					Meteor.call 'saveRoomSettings', rid, 'roomAnnouncement', @$('input[name=roomAnnouncement]').val(), (err, result) ->
+						if err
+							return handleError(err)
+						toastr.success TAPi18n.__ 'Room_announcement_changed_successfully'
+						RocketChat.callbacks.run 'roomAnnouncementChanged', AdminChatRoom.findOne(rid)
 			when 'roomType'
 				val = @$('input[name=roomType]:checked').val()
 				if @validateRoomType(rid)

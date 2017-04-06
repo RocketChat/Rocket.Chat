@@ -58,7 +58,8 @@ Meteor.methods({
 		RocketChat.models.Messages.createUserRemovedWithRoomIdAndUser(data.rid, removedUser, {
 			u: {
 				_id: fromUser._id,
-				username: fromUser.username
+				username: fromUser.username,
+				name: fromUser.name
 			}
 		});
 

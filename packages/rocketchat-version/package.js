@@ -6,8 +6,8 @@ Package.describe({
 
 Package.registerBuildPlugin({
 	name: 'compileVersion',
-	use: ['coffeescript'],
-	sources: ['plugin/compile-version.coffee']
+	use: ['ecmascript'],
+	sources: ['plugin/compile-version.js']
 });
 
 Package.onUse(function(api) {

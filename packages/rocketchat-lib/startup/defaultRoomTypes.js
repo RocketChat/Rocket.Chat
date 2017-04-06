@@ -25,7 +25,7 @@ RocketChat.roomTypes.add('c', 10, {
 	},
 
 	roomName(roomData) {
-		return roomData.name;
+		return { name: roomData.name };
 	},
 
 	condition() {
@@ -64,8 +64,7 @@ RocketChat.roomTypes.add('d', 20, {
 	},
 
 	roomName(roomData) {
-		const room = ChatSubscription.findOne({ rid: roomData._id }, { fields: { name: 1 } });
-		return room && room.name;
+		return ChatSubscription.findOne({ rid: roomData._id }, { fields: { name: 1, fname: 1 } });
 	},
 
 	condition() {
@@ -100,7 +99,7 @@ RocketChat.roomTypes.add('p', 30, {
 	},
 
 	roomName(roomData) {
-		return roomData.name;
+		return { name: roomData.name };
 	},
 
 	condition() {
