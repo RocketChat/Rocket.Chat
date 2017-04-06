@@ -22,7 +22,8 @@ const options = {
 		open: 1,
 		v: 1,
 		label: 1,
-		ro: 1
+		ro: 1,
+		sentiment: 1
 	}
 };
 

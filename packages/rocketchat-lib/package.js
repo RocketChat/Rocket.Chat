@@ -53,7 +53,6 @@ Package.onUse(function(api) {
 	// COMMON LIB
 	api.addFiles('lib/getURL.js');
 	api.addFiles('lib/settings.coffee');
-	api.addFiles('lib/configLogger.js');
 	api.addFiles('lib/callbacks.coffee');
 	api.addFiles('lib/fileUploadRestrictions.js');
 	api.addFiles('lib/placeholders.js');
@@ -94,6 +93,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/functions/Notifications.coffee', 'server');
 
 	// SERVER LIB
+	api.addFiles('server/lib/configLogger.js', 'server');
 	api.addFiles('server/lib/PushNotification.js', 'server');
 	api.addFiles('server/lib/defaultBlockedDomainsList.js', 'server');
 	api.addFiles('server/lib/notifyUsersOnMessage.js', 'server');
