@@ -1,4 +1,12 @@
-import mentions from './mentions';
-const {MentionsClient} = mentions(RocketChat);
-RocketChat.callbacks.add('renderMessage', MentionsClient, RocketChat.callbacks.priority.MEDIUM, 'mentions-message');
-RocketChat.callbacks.add('renderMentions', MentionsClient, RocketChat.callbacks.priority.MEDIUM, 'mentions-mentions');
+import Mentions from './mentions';
+const MentionsClient = new Mentions({
+	pattern() {
+		return RocketChat.settings.get('UTF8_Names_Validation');
+	},
+	me() {
+		const me = Meteor.user();
+		return me && me.username;
+	}
+});
+RocketChat.callbacks.add('renderMessage', (message) => MentionsClient.parse(message), RocketChat.callbacks.priority.MEDIUM, 'mentions-message');
+RocketChat.callbacks.add('renderMentions', (message) => MentionsClient.parse(message), RocketChat.callbacks.priority.MEDIUM, 'mentions-mentions');
