@@ -86,7 +86,7 @@ deploy:
 after_deploy:
 - ".travis/docker.sh"
 - ".travis/update-releases.sh"
-#- ".travis/snap.sh"
+- ".travis/snap.sh"
 env:
   global:
   - DISPLAY=:99.0
