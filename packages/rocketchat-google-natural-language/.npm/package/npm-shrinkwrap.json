@@ -307,8 +307,8 @@
       }
     },
     "google-p12-pem": {
-      "version": "0.1.1",
-      "resolved": "https://registry.npmjs.org/google-p12-pem/-/google-p12-pem-0.1.1.tgz",
+      "version": "0.1.2",
+      "resolved": "https://registry.npmjs.org/google-p12-pem/-/google-p12-pem-0.1.2.tgz",
       "from": "google-p12-pem@>=0.1.0 <0.2.0"
     },
     "google-proto-files": {
@@ -1276,9 +1276,9 @@
       "from": "nan@>=2.0.0 <3.0.0"
     },
     "node-forge": {
-      "version": "0.6.49",
-      "resolved": "https://registry.npmjs.org/node-forge/-/node-forge-0.6.49.tgz",
-      "from": "node-forge@>=0.6.46 <0.7.0"
+      "version": "0.7.1",
+      "resolved": "https://registry.npmjs.org/node-forge/-/node-forge-0.7.1.tgz",
+      "from": "node-forge@>=0.7.1 <0.8.0"
     },
     "number-is-nan": {
       "version": "1.0.1",
