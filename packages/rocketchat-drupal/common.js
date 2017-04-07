@@ -8,10 +8,14 @@ const config = {
 	identityPath: '/oauth2/UserInfo',
 	authorizePath: '/oauth2/authorize',
 	tokenPath: '/oauth2/token',
-	// addAutopublishFields: {
-	// 	forLoggedInUser: ['services.github-enterprise'],
-	// 	forOtherUsers: ['services.github-enterprise.username']
-	// }
+	scope: 'openid email profile offline_access',
+	tokenSentVia: "payload",
+	usernameField: "preferred_username",
+	mergeUsers: true,
+	addAutopublishFields: {
+		forLoggedInUser: ['services.drupal'],
+		forOtherUsers: ['services.drupal.name']
+	}
 };
 
 const Drupal = new CustomOAuth('drupal', config);
