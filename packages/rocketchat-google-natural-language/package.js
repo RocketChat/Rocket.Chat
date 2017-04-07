@@ -6,7 +6,7 @@ Package.describe({
 });
 
 Npm.depends({
-	'@google-cloud/language': '0.8.0'
+	'@google-cloud/language': '0.10.0'
 });
 
 Package.onUse(function(api) {
