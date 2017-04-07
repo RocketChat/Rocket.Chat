@@ -15,7 +15,7 @@
 * [Mobile apps](#mobile-apps)
 * [Desktop apps](#desktop-apps)
 * [Deployment](#deployment)
-   * [Snaps](#instant-server-intallation-with-snaps)
+   * [Snaps](#instant-server-installation-with-snaps)
    * [Layershift](#layershift)
    * [Sandstorm.io](#sandstormio) 
    * [DPlatform](#dplatform) 
@@ -76,7 +76,7 @@ Now compatible with all Android devices as old as version 4.0.x - [download here
 
 # Deployment
 
-## Instant Server Intallation with Snaps
+## Instant Server Installation with Snaps
  
 Install Rocket.Chat in seconds on Linux (Ubuntu and others) with:
 
@@ -417,11 +417,15 @@ Thanks to our core team
 [Sing Li](https://github.com/Sing-Li),
 and to hundreds of awesome [contributors](https://github.com/RocketChat/Rocket.Chat/graphs/contributors).
 
+![Emoji One](https://cloud.githubusercontent.com/assets/1986378/24772858/47290a70-1ae9-11e7-9a5a-2913d0002c94.png)
+
 Emoji provided free by [Emoji One](http://emojione.com)
 
-Performance monitoring provided by [Kadira](https://kadira.io)
+![BrowserStack](https://cloud.githubusercontent.com/assets/1986378/24772879/57d57b88-1ae9-11e7-98b4-4af824b47933.png)
 
-Hosting powered by [Rackspace](https://rackspace.com)
+Testing with [BrowserStack](https://www.browserstack.com)
+
+
 
 # Donate
 

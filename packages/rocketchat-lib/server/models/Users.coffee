@@ -10,6 +10,8 @@ class ModelUsers extends RocketChat.models._Base
 		@tryEnsureIndex { 'statusConnection': 1 }, { sparse: 1 }
 		@tryEnsureIndex { 'type': 1 }
 
+		this.cache.ensureIndex('username', 'unique')
+
 	findOneByImportId: (_id, options) ->
 		return @findOne { importIds: _id }, options
 
@@ -109,7 +111,7 @@ class ModelUsers extends RocketChat.models._Base
 
 		return @find query, options
 
-	findByActiveUsersUsernameExcept: (searchTerm, exceptions = [], options = {}) ->
+	findByActiveUsersExcept: (searchTerm, exceptions = [], options = {}) ->
 		if not _.isArray exceptions
 			exceptions = [ exceptions ]
 
@@ -118,7 +120,14 @@ class ModelUsers extends RocketChat.models._Base
 			$and: [
 				{
 					active: true
-					username: termRegex
+					$or: [
+						{
+							username: termRegex
+						}
+						{
+							name: termRegex
+						}
+					]
 				}
 				{
 					username: { $nin: exceptions }
