@@ -2,7 +2,7 @@ accounts-base@1.2.16
 accounts-password@1.3.5
 aldeed:simple-schema@1.5.3
 allow-deny@1.0.5
-babel-compiler@6.18.0
+babel-compiler@6.18.1
 babel-runtime@1.0.1
 base64@1.0.10
 binary-heap@1.0.10
@@ -22,7 +22,7 @@ ddp-rate-limiter@1.0.7
 ddp-server@1.3.14
 deps@1.0.12
 diff-sequence@1.0.7
-ecmascript@0.7.1
+ecmascript@0.7.2
 ecmascript-runtime@0.3.15
 ejson@1.0.13
 email@1.2.0
