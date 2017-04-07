@@ -128,7 +128,7 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 		}
 		if ((userOfMention != null) && canBeNotified(userOfMentionId, 'mobile')) {
 			RocketChat.Notifications.notifyUser(userOfMention._id, 'notification', {
-				title: `@${ user.username }`,
+				title: RocketChat.settings.get('UI_Use_Real_Name') ? user.name : `@${ user.username }`,
 				text: message.msg,
 				duration: settings.desktopNotificationDurations[userOfMention._id],
 				payload: {

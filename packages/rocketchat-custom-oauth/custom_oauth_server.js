@@ -98,10 +98,17 @@ export class CustomOAuth {
 			throw _.extend(error, {response: err.response});
 		}
 
-		if (response.data.error) { //if the http response was a json object with an error attribute
-			throw new Error(`Failed to complete OAuth handshake with ${ this.name } at ${ this.tokenPath }. ${ response.data.error }`);
+		let data;
+		if (response.data) {
+			data = response.data;
 		} else {
-			return response.data.access_token;
+			data = JSON.parse(response.content);
+		}
+
+		if (data.error) { //if the http response was a json object with an error attribute
+			throw new Error(`Failed to complete OAuth handshake with ${ this.name } at ${ this.tokenPath }. ${ data.error }`);
+		} else {
+			return data.access_token;
 		}
 	}
 
