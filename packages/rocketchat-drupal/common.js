@@ -9,8 +9,8 @@ const config = {
 	authorizePath: '/oauth2/authorize',
 	tokenPath: '/oauth2/token',
 	scope: 'openid email profile offline_access',
-	tokenSentVia: "payload",
-	usernameField: "preferred_username",
+	tokenSentVia: 'payload',
+	usernameField: 'preferred_username',
 	mergeUsers: true,
 	addAutopublishFields: {
 		forLoggedInUser: ['services.drupal'],
