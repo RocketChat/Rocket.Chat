@@ -169,6 +169,22 @@ RocketChat.API.v1.addRoute('users.register', { authRequired: false }, {
 	}
 });
 
+RocketChat.API.v1.addRoute('users.resetAvatar', { authRequired: true }, {
+	post() {
+		const user = this.getUserFromParams();
+
+		if (user._id === this.userId) {
+			Meteor.runAsUser(this.userId, () => Meteor.call('resetAvatar'));
+		} else if (RocketChat.authz.hasPermission(this.userId, 'edit-other-user-info')) {
+			Meteor.runAsUser(user._id, () => Meteor.call('resetAvatar'));
+		} else {
+			return RocketChat.API.v1.unauthorized();
+		}
+
+		return RocketChat.API.v1.success();
+	}
+});
+
 //TODO: Make this route work with support for usernames
 RocketChat.API.v1.addRoute('users.setAvatar', { authRequired: true }, {
 	post() {
