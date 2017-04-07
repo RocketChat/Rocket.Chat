@@ -53,7 +53,9 @@ Template.sideNav.helpers({
 	},
 
 	collapseChannel() {
-		return {collapsible : Meteor.user().settings.preferences.collapseChannels};
+		return {
+			collapsible: Meteor.user().settings.preferences.collapseChannels
+		};
 	}
 });
 
@@ -107,7 +109,8 @@ Template.sideNav.onRendered(function() {
 
 Template.sideNav.onCreated(function() {
 	this.autorun(() => {
-		if (!Meteor.user().settings.preferences.collapseChannels) {
+		const user = Meteor.user();
+		if (!(user && user.settings && user.settings.preferences && user.settings.preferences.collapseChannels)) {
 			return $('.channel-wrapper').show();
 		}
 	});
