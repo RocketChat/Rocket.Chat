@@ -188,7 +188,7 @@ Accounts.registerLoginHandler(function(options) {
 			logger.debug('Syncing user attributes');
 			// Update name
 			if (int_attrs.name) {
-				Meteor.users.update(user, { $set: { name: int_attrs.name }});
+				RocketChat._setRealName(user._id, int_attrs.name);
 			}
 
 			// Update email

@@ -78,7 +78,7 @@ const defaultTypes = {
 
 class _Logger {
 	constructor(name, config = {}) {
-		self = this;
+		const self = this;
 		this.name = name;
 
 		this.config = Object.assign({}, config);
@@ -141,12 +141,12 @@ class _Logger {
 			_.each(this.config.sections, (name, section) => {
 				this[section] = {};
 				_.each(defaultTypes, (typeConfig, type) => {
-					self[section][type] = () => self[type].apply({__section: name}, arguments);
-					self[section][`${ type }_box`] = () => self[`${ type }_box`].apply({__section: name}, arguments);
+					self[section][type] = (...args) => this[type].apply({__section: name}, args);
+					self[section][`${ type }_box`] = (...args) => this[`${ type }_box`].apply({__section: name}, args);
 				});
 				_.each(this.config.methods, (typeConfig, method) => {
-					self[section][method] = () => self[method].apply({__section: name}, arguments);
-					self[section][`${ method }_box`] = () => self[`${ method }_box`].apply({__section: name}, arguments);
+					self[section][method] = (...args) => self[method].apply({__section: name}, args);
+					self[section][`${ method }_box`] = (...args) => self[`${ method }_box`].apply({__section: name}, args);
 				});
 			});
 		}

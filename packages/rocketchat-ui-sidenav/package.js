@@ -14,7 +14,6 @@ Package.onUse(function(api) {
 	api.use([
 		'ecmascript',
 		'templating',
-		'coffeescript',
 		'underscore',
 		'rocketchat:lib',
 		'rocketchat:ui'

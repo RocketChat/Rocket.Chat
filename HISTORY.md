@@ -4,7 +4,11 @@
 
 - [NEW] Permission `join-without-join-code` assigned to admins and bots by default (#6139)
 - [NEW] Integrations, both incoming and outgoing, now have access to the models. Example: `Users.findOneById(id)` (#6336)
+- [NEW] Option to enable `Two Factor Authentication` in user's account preference
 - [FIX] Incoming integrations would break when trying to use the `Store` feature.
+- [FIX] Outgoing webhooks which have an error and they're retrying would still retry even if the integration was disabled. (#4835)
+- [FIX] Removed Deprecated Package rocketchat:sharedsecret.
+- [BREAK] `getUsersOfRoom` API to return array of objects with user and username, instead of array of strings
 
 ## 0.54.2 - 2017-Mar-24
 

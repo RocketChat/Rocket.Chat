@@ -16,6 +16,12 @@
 							{{/if}}
 							<i class="{{roomIcon}} status-{{userStatus}}"></i>
 							<span class="room-title">{{roomName}}</span>
+							{{#if secondaryName}}
+								<span class="secondary-name">@{{secondaryName}}</span>
+							{{/if}}
+							{{#if sentimentSmile}}
+								<span class="sentiment">{{sentimentSmile}}</span>
+							{{/if}}
 							{{#if isTranslated}}
 								<i class="icon-language" aria-label="{{_ "Translated"}}"></i>
 							{{/if}}

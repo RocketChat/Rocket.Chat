@@ -15,7 +15,6 @@ Package.onUse(function(api) {
 		'mongo',
 		'ecmascript',
 		'templating',
-		'coffeescript',
 		'underscore',
 		'rocketchat:lib'
 	]);

@@ -58,10 +58,16 @@ Meteor.methods({
 			records = RocketChat.models.Messages.findVisibleByRoomIdNotContainingTypes(rid, hideMessagesOfType, options).fetch();
 		}
 
+		const UI_Use_Real_Name = RocketChat.settings.get('UI_Use_Real_Name') === true;
+
 		const messages = records.map((message) => {
 			message.starred = _.findWhere(message.starred, {
 				_id: fromId
 			});
+			if (message.u && message.u._id && UI_Use_Real_Name) {
+				const user = RocketChat.models.Users.findOneById(message.u._id);
+				message.u.name = user && user.name;
+			}
 			return message;
 		});
 
