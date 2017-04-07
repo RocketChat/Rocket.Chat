@@ -1,9 +1,23 @@
 RocketChat.Migrations.add({
 	version: 91,
 	up() {
-		RocketChat.models.Users.find({}, {username: 1, name: 1}).forEach((user) => {
-			RocketChat.models.Messages.updateAllNamesByUserId(user._id, user.name);
-			RocketChat.models.Subscriptions.setRealNameForDirectRoomsWithUsername(user.username, user.name);
+		const query = {
+			'services.linkedin': {
+				$exists: 1
+			},
+			$or: [{
+				name: {
+					$exists: 0
+				}
+			}, {
+				name: null
+			}]
+		};
+
+		RocketChat.models.Users.find(query, {'services.linkedin.firstName': 1, username: 1}).forEach((user) => {
+			const name = `${ user.services.linkedin.firstName } ${ user.services.linkedin.lastName }`;
+
+			RocketChat.models.Users.setName(user._id, name);
 		});
 	}
 });

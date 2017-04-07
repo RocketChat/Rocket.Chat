@@ -45,6 +45,12 @@ msgStream.allowEmit('__my_messages__', function(eventName, msg, options) {
 Meteor.startup(function() {
 	function publishMessage(type, record) {
 		if (record._hidden !== true && (record.imported == null)) {
+			const UI_Use_Real_Name = RocketChat.settings.get('UI_Use_Real_Name') === true;
+
+			if (record.u && record.u._id && UI_Use_Real_Name) {
+				const user = RocketChat.models.Users.findOneById(record.u._id);
+				record.u.name = user && user.name;
+			}
 			msgStream.emitWithoutBroadcast('__my_messages__', record, {});
 			return msgStream.emitWithoutBroadcast(record.rid, record);
 		}

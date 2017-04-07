@@ -21,6 +21,7 @@ class ModelSubscriptions extends RocketChat.models._Base
 
 		this.cache.ensureIndex('rid', 'array')
 		this.cache.ensureIndex('u._id', 'array')
+		this.cache.ensureIndex('name', 'array')
 		this.cache.ensureIndex(['rid', 'u._id'], 'unique')
 		this.cache.ensureIndex(['name', 'u._id'], 'unique')
 
@@ -239,17 +240,6 @@ class ModelSubscriptions extends RocketChat.models._Base
 		update =
 			$set:
 				"u.username": username
-
-		return @update query, update, { multi: true }
-
-	setRealNameForDirectRoomsWithUsername: (username, name) ->
-		query =
-			name: username
-			t: "d"
-
-		update =
-			$set:
-				fname: name
 
 		return @update query, update, { multi: true }
 

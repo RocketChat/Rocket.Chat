@@ -54,7 +54,7 @@ Template.loginForm.helpers({
 		return RocketChat.settings.get('Accounts_PasswordPlaceholder') || t('Password');
 	},
 	hasOnePassword() {
-		return (OnePassword && OnePassword.findLoginForUrl) && (device && device.platform && device.platform.toLocaleLowerCase() === 'ios');
+		return typeof OnePassword !== 'undefined' && OnePassword.findLoginForUrl && typeof device !== 'undefined' && device.platform && device.platform.toLocaleLowerCase() === 'ios';
 	}
 });
 
@@ -151,7 +151,7 @@ Template.loginForm.events({
 		return RocketChat.callbacks.run('loginPageStateChange', Template.instance().state.get());
 	},
 	'click .one-passsword'() {
-		if (OnePassword && OnePassword.findLoginForUrl) {
+		if (typeof OnePassword === 'undefined' || OnePassword.findLoginForUrl == null) {
 			return;
 		}
 		const succesCallback = function(credentials) {

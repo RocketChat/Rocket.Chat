@@ -57,6 +57,11 @@ Template.loginServices.helpers({
 	}
 });
 
+const longinMethods = {
+	'meteor-developer': 'MeteorDeveloperAccount',
+	'linkedin': 'LinkedIn'
+};
+
 Template.loginServices.events({
 	'click .external-login'(e) {
 		if (this.service == null || this.service.service == null) {
@@ -80,7 +85,7 @@ Template.loginServices.events({
 				}
 			});
 		} else {
-			const loginWithService = `loginWith${ this.service.service === 'meteor-developer' ? 'MeteorDeveloperAccount' : _.capitalize(this.service.service) }`;
+			const loginWithService = `loginWith${ longinMethods[this.service.service] || _.capitalize(this.service.service) }`;
 			const serviceConfig = this.service.clientConfig || {};
 			return Meteor[loginWithService](serviceConfig, function(error) {
 				loadingIcon.addClass('hidden');

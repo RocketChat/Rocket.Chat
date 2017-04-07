@@ -63,7 +63,6 @@ Meteor.methods({
 			},
 			$setOnInsert: {
 				name: to.username,
-				fname: to.name,
 				t: 'd',
 				alert: false,
 				unread: 0,
@@ -89,7 +88,6 @@ Meteor.methods({
 		}, {
 			$setOnInsert: {
 				name: me.username,
-				fname: me.name,
 				t: 'd',
 				open: false,
 				alert: false,
