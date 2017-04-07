@@ -77,6 +77,8 @@ meteor@1.6.1
 meteor-base@1.0.4
 meteor-developer-oauth@1.2.0
 meteorhacks:inject-initial@1.0.4
+meteorhacks:kadira@2.30.2
+meteorhacks:meteorx@1.4.1
 meteorspark:util@0.2.0
 minifier-css@1.2.16
 minifier-js@1.2.18
