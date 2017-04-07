@@ -1,8 +1,30 @@
+<a name="0.55.0-rc.1"></a>
+# 0.55.0-rc.1 (2017-04-07)
+
+
+### New Features
+
+- [#6616](https://github.com/RocketChat/Rocket.Chat/pull/6616) 'users.resetAvatar' rest api endpoint
+
+
+### Bug Fixes
+
+- [#6617](https://github.com/RocketChat/Rocket.Chat/pull/6617) arguments logger
+- [#6620](https://github.com/RocketChat/Rocket.Chat/pull/6620) Incorrect curl command being generated on incoming integrations
+
+
+
 <a name="0.55.0-rc.0"></a>
 # 0.55.0-rc.0 (2017-04-06)
 
 
+### BREACKING CHANGES
+ - :hand: `getUsersOfRoom` API to return array of objects with user and username, instead of array of strings
+
+
 ### New Features
+- :hand: Permission `join-without-join-code` assigned to admins and bots by default (#6139)
+- :hand: Integrations, both incoming and outgoing, now have access to the models. Example: `Users.findOneById(id)` (#6336)
 
 - [#6565](https://github.com/RocketChat/Rocket.Chat/pull/6565) Add shield.svg api route to generate custom shields/badges
 - [#6554](https://github.com/RocketChat/Rocket.Chat/pull/6554) Added oauth2 userinfo endpoint
@@ -12,6 +34,9 @@
 
 
 ### Bug Fixes
+- :hand: Incoming integrations would break when trying to use the `Store` feature.
+- :hand: Outgoing webhooks which have an error and they're retrying would still retry even if the integration was disabled. (#4835)
+- :hand: Removed Deprecated Package rocketchat:sharedsecret.
 
 - [#6590](https://github.com/RocketChat/Rocket.Chat/pull/6590) Accounts from LinkedIn OAuth without name
 - [#6531](https://github.com/RocketChat/Rocket.Chat/pull/6531) can not get access_token when using custom oauth
@@ -69,19 +94,6 @@
 - [#3851](https://github.com/RocketChat/Rocket.Chat/pull/3851) Use real name instead of username for messages and direct messages list
 </details>
 
-
-
-# History
-
-## NEXT
-
-- [NEW] Permission `join-without-join-code` assigned to admins and bots by default (#6139)
-- [NEW] Integrations, both incoming and outgoing, now have access to the models. Example: `Users.findOneById(id)` (#6336)
-- [NEW] Option to enable `Two Factor Authentication` in user's account preference
-- [FIX] Incoming integrations would break when trying to use the `Store` feature.
-- [FIX] Outgoing webhooks which have an error and they're retrying would still retry even if the integration was disabled. (#4835)
-- [FIX] Removed Deprecated Package rocketchat:sharedsecret.
-- [BREAK] `getUsersOfRoom` API to return array of objects with user and username, instead of array of strings
 
 ## 0.54.2 - 2017-Mar-24
 
