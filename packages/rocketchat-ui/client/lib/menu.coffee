@@ -11,9 +11,9 @@
 	open: ->
 		Session.set("isMenuOpen", true)
 		if isRtl localStorage.getItem "userLanguage"
-			@mainContent?.css('transform', 'translateX(-260px)')
+			@mainContent?.css('transform', 'translateX(-100%)')
 		else
-			@mainContent?.css('transform', 'translateX(260px)')
+			@mainContent?.css('transform', 'translateX(100%)')
 
 	close: ->
 		Session.set("isMenuOpen", false)

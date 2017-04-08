@@ -5005,6 +5005,55 @@ a + br.only-after-a {
 			}
 		}
 	}
+
+	.side-nav {
+		width: 100%;
+
+		.flex-nav {
+			width: 100%;
+		}
+
+		ul a {
+			font-size: 18px;
+			padding: 18px 25px 18px 6px;
+		}
+
+		.unread {
+			top: 18px;
+			font-size: 16px;
+			padding: 2px 2px;
+		}
+
+		ul li:not(:last-child) {
+			border-bottom: solid 1px rgba(0,0,0,0.1);
+		}
+
+		.message-popup-items .popup-item {
+			height: 48px;
+			line-height: 50px;
+		}
+
+		.message-popup-items .popup-item:not(:last-child) {
+			border-bottom: solid 1px rgba(0,0,0,0.1);
+		}
+
+		.footer {
+			display: none;
+		}
+
+		.rooms-list {
+			bottom: 0px;
+		}
+	}
+
+	.account-box .options {
+		width: 100%;
+		height: 100%;
+	}
+
+	.toolbar-sort i {
+		width: 30px;
+	}
 }
 
 @media all and(max-width: 500px) {

@@ -153,6 +153,7 @@ Template.main.events
 			diffY = touch.clientY - t.touchstartY
 			absX = Math.abs(diffX)
 			absY = Math.abs(diffY)
+			width = document.body.clientWidth
 
 			if t.movestarted isnt true and t.blockmove isnt true and absY > 5
 				t.blockmove = true
@@ -162,22 +163,22 @@ Template.main.events
 
 				if t.isRtl
 					if menu.isOpen()
-						t.diff = -260 + diffX
+						t.diff = -width + diffX
 					else
 						t.diff = diffX
 
-					if t.diff < -260
-						t.diff = -260
+					if t.diff < -width
+						t.diff = -width
 					if t.diff > 0
 						t.diff = 0
 				else
 					if menu.isOpen()
-						t.diff = 260 + diffX
+						t.diff = width + diffX
 					else
 						t.diff = diffX
 
-					if t.diff > 260
-						t.diff = 260
+					if t.diff > width
+						t.diff = width
 					if t.diff < 0
 						t.diff = 0
 
