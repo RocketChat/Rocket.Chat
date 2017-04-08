@@ -19,7 +19,7 @@ Template.listPrivateGroupsFlex.events({
 	},
 
 	'click .channel-link'() {
-		menu.close();
+		window.menu.close();
 		return SideNav.closeFlex();
 	},
 
