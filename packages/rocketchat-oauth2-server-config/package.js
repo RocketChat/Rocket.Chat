@@ -7,6 +7,7 @@ Package.describe({
 Package.onUse(function(api) {
 	api.use('webapp');
 	api.use('coffeescript');
+	api.use('mongo');
 	api.use('ecmascript');
 	api.use('rocketchat:lib');
 	api.use('rocketchat:api');

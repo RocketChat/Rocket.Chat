@@ -1,5 +1,5 @@
 RocketChat.API.v1.addRoute('integrations.create', { authRequired: true }, {
-	post: function() {
+	post() {
 		check(this.bodyParams, Match.ObjectIncluding({
 			type: String,
 			name: String,
@@ -35,7 +35,7 @@ RocketChat.API.v1.addRoute('integrations.create', { authRequired: true }, {
 });
 
 RocketChat.API.v1.addRoute('integrations.history', { authRequired: true }, {
-	get: function() {
+	get() {
 		if (!RocketChat.authz.hasPermission(this.userId, 'manage-integrations')) {
 			return RocketChat.API.v1.unauthorized();
 		}
@@ -66,7 +66,7 @@ RocketChat.API.v1.addRoute('integrations.history', { authRequired: true }, {
 });
 
 RocketChat.API.v1.addRoute('integrations.list', { authRequired: true }, {
-	get: function() {
+	get() {
 		if (!RocketChat.authz.hasPermission(this.userId, 'manage-integrations')) {
 			return RocketChat.API.v1.unauthorized();
 		}
@@ -83,7 +83,7 @@ RocketChat.API.v1.addRoute('integrations.list', { authRequired: true }, {
 		}).fetch();
 
 		return RocketChat.API.v1.success({
-			integrations: integrations,
+			integrations,
 			offset,
 			items: integrations.length,
 			total: RocketChat.models.Integrations.find(ourQuery).count()
@@ -92,7 +92,7 @@ RocketChat.API.v1.addRoute('integrations.list', { authRequired: true }, {
 });
 
 RocketChat.API.v1.addRoute('integrations.remove', { authRequired: true }, {
-	post: function() {
+	post() {
 		check(this.bodyParams, Match.ObjectIncluding({
 			type: String,
 			target_url: Match.Maybe(String),
@@ -122,7 +122,7 @@ RocketChat.API.v1.addRoute('integrations.remove', { authRequired: true }, {
 				});
 
 				return RocketChat.API.v1.success({
-					integration: integration
+					integration
 				});
 			default:
 				return RocketChat.API.v1.failure('Invalid integration type.');

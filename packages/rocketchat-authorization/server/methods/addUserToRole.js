@@ -40,9 +40,9 @@ Meteor.methods({
 				_id: roleName,
 				u: {
 					_id: user._id,
-					username: username
+					username
 				},
-				scope: scope
+				scope
 			});
 		}
 

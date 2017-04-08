@@ -6,9 +6,9 @@ Package.describe({
 });
 
 Package.onUse(function(api) {
-	api.use([
-		'rocketchat:lib'
-	]);
+	api.use('rocketchat:lib');
+	api.use('ecmascript');
+
 	api.addFiles('client.js', ['client']);
 	api.addFiles('style.css', ['client']);
 	api.addFiles('settings.js', ['server']);

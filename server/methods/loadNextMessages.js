@@ -43,7 +43,7 @@ Meteor.methods({
 		});
 
 		return {
-			messages: messages
+			messages
 		};
 	}
 });
