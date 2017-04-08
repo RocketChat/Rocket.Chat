@@ -19,6 +19,7 @@ Template.listPrivateGroupsFlex.events({
 	},
 
 	'click .channel-link'() {
+		menu.close();
 		return SideNav.closeFlex();
 	},
 

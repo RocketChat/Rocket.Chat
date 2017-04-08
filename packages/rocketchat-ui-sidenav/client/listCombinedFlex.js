@@ -37,6 +37,7 @@ Template.listCombinedFlex.events({
 	},
 
 	'click .channel-link'() {
+		menu.close();
 		return SideNav.closeFlex();
 	},
 
