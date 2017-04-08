@@ -11,7 +11,7 @@ Template.home.onRendered(function() {
 	const width = document.body.clientWidth;
 	if (width <= 780) { // on mobile devices, show room list directly
 		Meteor.defer(function() {
-			menu.open();
+			window.menu.open();
 		});
 	}
 });
