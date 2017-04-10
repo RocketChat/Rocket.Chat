@@ -138,6 +138,7 @@ rocketchat:crowd@1.0.0
 rocketchat:custom-oauth@1.0.0
 rocketchat:custom-sounds@1.0.0
 rocketchat:dolphin@0.0.2
+rocketchat:drupal@0.0.1
 rocketchat:emoji@1.0.0
 rocketchat:emoji-custom@1.0.0
 rocketchat:emoji-emojione@0.0.1
@@ -252,3 +253,4 @@ webapp@1.3.15
 webapp-hashing@1.0.9
 yasaricli:slugify@0.0.7
 yasinuslu:blaze-meta@0.3.3
+
