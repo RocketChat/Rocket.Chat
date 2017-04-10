@@ -77,6 +77,7 @@ meteor@1.6.1
 meteor-base@1.0.4
 meteor-developer-oauth@1.2.0
 meteorhacks:inject-initial@1.0.4
+meteorhacks:meteorx@1.4.1
 meteorspark:util@0.2.0
 minifier-css@1.2.16
 minifier-js@1.2.18
@@ -176,6 +177,7 @@ rocketchat:message-pin@0.0.1
 rocketchat:message-snippet@0.0.1
 rocketchat:message-star@0.0.1
 rocketchat:migrations@0.0.1
+rocketchat:monitoring@2.30.2_2
 rocketchat:oauth2-server@2.0.0
 rocketchat:oauth2-server-config@1.0.0
 rocketchat:oembed@0.0.1
