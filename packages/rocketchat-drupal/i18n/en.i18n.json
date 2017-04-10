@@ -1,8 +1,0 @@
-{
-"API_Drupal_URL": "Drupal Server URL",
-"API_Drupal_URL_Description": "Example: https://domain.com (excluding trailing slash)",
-"Accounts_OAuth_Drupal": "Drupal Login Enabled",
-"Accounts_OAuth_Drupal_callback_url": "Drupal oAuth2 Redirect URI",
-"Accounts_OAuth_Drupal_id": "Drupal oAuth2 Client ID",
-"Accounts_OAuth_Drupal_secret": "Drupal oAuth2 Client Secret"
-}
