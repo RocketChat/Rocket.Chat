@@ -1,3 +1,30 @@
+<a name="0.55.0-rc.2"></a>
+# 0.55.0-rc.2 (2017-04-10)
+
+
+### New Features
+
+- [#6634](https://github.com/RocketChat/Rocket.Chat/pull/6634) Add monitoring package
+- [#6632](https://github.com/RocketChat/Rocket.Chat/pull/6632) Drupal oAuth Integration for Rocketchat
+
+
+### Bug Fixes
+
+- [#6648](https://github.com/RocketChat/Rocket.Chat/pull/6648) Do not escaping markdown on message attachments
+- [#6651](https://github.com/RocketChat/Rocket.Chat/pull/6651) Encode avatar url to prevent CSS injection
+- [#6650](https://github.com/RocketChat/Rocket.Chat/pull/6650) Improve markdown code
+
+
+<details>
+<summary>Others</summary>
+
+- [#6649](https://github.com/RocketChat/Rocket.Chat/pull/6649) Added Deploy method and platform to stats
+- [#6647](https://github.com/RocketChat/Rocket.Chat/pull/6647) LingoHub based on develop
+- [#6631](https://github.com/RocketChat/Rocket.Chat/pull/6631) meteor update
+</details>
+
+
+
 <a name="0.55.0-rc.1"></a>
 # 0.55.0-rc.1 (2017-04-07)
 
