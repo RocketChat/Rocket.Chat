@@ -1,6 +1,8 @@
 import moment from 'moment'
 
 Template.message.helpers
+	encodeURI: (text) ->
+		return encodeURI(text)
 	isBot: ->
 		return 'bot' if this.bot?
 	roleTags: ->
