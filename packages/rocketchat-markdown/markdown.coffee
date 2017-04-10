@@ -83,4 +83,4 @@ RocketChat.callbacks.add 'renderMessage', Markdown, RocketChat.callbacks.priorit
 
 if Meteor.isClient
 	Blaze.registerHelper 'RocketChatMarkdown', (text) ->
-		return RocketChat.Markdown text
+		return RocketChat.Markdown _.escapeHTML text
