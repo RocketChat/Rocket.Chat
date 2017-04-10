@@ -117,7 +117,7 @@ describe('user preferences', ()=> {
 		});
 
 		it('the name on the nav bar should be the edited one', () => {
-			sideNav.accountBoxUserName.getText().should.equal(`EditedUserName${ username }`);
+			sideNav.accountBoxUserName.getText().should.equal(`EditedRealName${ username }`);
 		});
 
 		it.skip('the user name on the members flex tab should be the edited one', () => {
