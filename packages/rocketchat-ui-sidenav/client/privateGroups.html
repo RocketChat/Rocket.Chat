@@ -1,22 +1,24 @@
 <template name="privateGroups">
-	<div class="title-wrapper">
-		<h3 class="add-room background-transparent-darker-hover {{isActive}}">
-			{{_ "Private_Groups"}} <span class="room-count-small">({{rooms.count}})</span>
-		</h3>
-		{{#if collapsible}}
-			<span class="arrow list top" data-type="private-list" data-state="open"></span>
-		{{/if}}
-	</div>
-	<div class="channel-wrapper private-list">
-		<ul>
-			{{#each rooms}}
-				{{> chatRoomItem }}
-			{{else}}
-				<p class="empty">{{_ "No_groups_yet" }}</p>
-			{{/each}}
-		</ul>
-		{{#if $gt total totalOpen}}
-			<button class="more more-groups background-transparent-darker-hover">{{_ "More_groups"}}...</button>
-		{{/if}}
+	<div class="private-wrapper">
+		<div class="title-wrapper">
+			<h3 class="add-room background-transparent-darker-hover {{isActive}}">
+				{{_ "Private_Groups"}} <span class="room-count-small">({{rooms.count}})</span>
+			</h3>
+			{{#if collapsible}}
+				<span class="arrow list top" data-type="private-list" data-state="open"></span>
+			{{/if}}
+		</div>
+		<div class="channel-wrapper private-list">
+			<ul>
+				{{#each rooms}}
+					{{> chatRoomItem }}
+				{{else}}
+					<p class="empty">{{_ "No_groups_yet" }}</p>
+				{{/each}}
+			</ul>
+			{{#if $gt total totalOpen}}
+				<button class="more more-groups background-transparent-darker-hover">{{_ "More_groups"}}...</button>
+			{{/if}}
+		</div>
 	</div>
 </template>

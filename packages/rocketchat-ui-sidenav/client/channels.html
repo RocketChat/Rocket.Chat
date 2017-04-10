@@ -1,20 +1,22 @@
 <template name="channels">
-	<div class="title-wrapper">
-		<h3 class="add-room background-transparent-darker-hover {{isActive}}">
-			{{_ "Channels"}} <span class="room-count-small">({{rooms.count}})</span>
-		</h3>
-		{{#if collapsible}}
-			<span class="arrow list top" data-type="channel-list" data-state="open"></span>
-		{{/if}}
-	</div>
-	<div class="channel-wrapper channel-list">
-		<ul>
-			{{#each rooms}}
-				{{> chatRoomItem }}
-			{{else}}
-				<p class="empty">{{_ "No_channels_yet" }}</p>
-			{{/each}}
-		</ul>
-		<button class="more more-channels background-transparent-darker-hover">{{_ "More_channels"}}...</button>
+	<div class="channel-wrapper">
+		<div class="title-wrapper">
+			<h3 class="add-room background-transparent-darker-hover {{isActive}}">
+				{{_ "Channels"}} <span class="room-count-small">({{rooms.count}})</span>
+			</h3>
+			{{#if collapsible}}
+				<span class="arrow list top" data-type="channel-list" data-state="open"></span>
+			{{/if}}
+		</div>
+		<div class="channel-wrapper channel-list">
+			<ul>
+				{{#each rooms}}
+					{{> chatRoomItem }}
+				{{else}}
+					<p class="empty">{{_ "No_channels_yet" }}</p>
+				{{/each}}
+			</ul>
+			<button class="more more-channels background-transparent-darker-hover">{{_ "More_channels"}}...</button>
+		</div>
 	</div>
 </template>

@@ -14,12 +14,12 @@ class SideNav extends Page {
 
 	get newChannelBtn() { return browser.element('.toolbar-search__create-channel'); }
 	get newChannelIcon() { return browser.element('.toolbar-search__create-channel.icon-plus'); }
-	get moreChannels() { return browser.element('.rooms-list .more-channels'); }
+	get moreChannels() { return browser.element('.rooms-list .combined-wrapper .more-channels'); }
 
-	get newDirectMessageBtn() { return browser.element('.rooms-list .add-room:nth-of-type(2)'); }
+	get newDirectMessageBtn() { return browser.element('.rooms-list .dm-wrapper .title-wrapper'); }
 
-	get general() { return browser.element('.rooms-list > .wrapper > ul [title="general"]'); }
-	get channelHoverIcon() { return browser.element('.rooms-list > .wrapper > ul [title="general"] .icon-eye-off'); }
+	get general() { return browser.element('.rooms-list .combined-wrapper .combined-list [title="general"]'); }
+	get channelHoverIcon() { return browser.element('.rooms-list .wrapper ul [title="general"] .icon-eye-off'); }
 
 	get userOptions() { return browser.element('.options'); }
 	get statusOnline() { return browser.element('.online'); }
@@ -40,7 +40,7 @@ class SideNav extends Page {
 	get channelLeave() { return browser.element('.leave-room'); }
 
 	openChannel(channelName) {
-		browser.click(`.rooms-list > .wrapper > ul [title="${ channelName }"]`);
+		browser.click(`.wrapper [title="${ channelName }"]`);
 		this.messageInput.waitForExist(5000);
 		browser.waitUntil(function() {
 			return browser.getText('.room-title') === channelName;
@@ -67,7 +67,7 @@ class SideNav extends Page {
 	}
 
 	getChannelFromList(channelName) {
-		return browser.element(`.rooms-list > .wrapper > ul [title="${ channelName }"]`);
+		return browser.element(`.wrapper [title="${ channelName }"]`);
 	}
 
 	createChannel(channelName, isPrivate, isReadOnly) {
