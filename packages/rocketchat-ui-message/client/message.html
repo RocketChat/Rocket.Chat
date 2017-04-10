@@ -6,7 +6,7 @@
 			{{else}}
 				<button class="thumb user-card-message" data-username="{{u.username}}" tabindex="1">
 					<div class="avatar">
-						<div class="avatar-image" style="background-image:url({{avatar}});"></div>
+						<div class="avatar-image" style="background-image:url({{encodeURI avatar}});"></div>
 					</div>
 				</button>
 			{{/if}}

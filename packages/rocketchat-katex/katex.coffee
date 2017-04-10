@@ -144,7 +144,7 @@ class Katex
 				message.tokens ?= []
 
 				render_func = (latex, displayMode) =>
-					token = "=&=#{Random.id()}=&="
+					token = "=!=#{Random.id()}=!="
 
 					message.tokens.push
 						token: token
