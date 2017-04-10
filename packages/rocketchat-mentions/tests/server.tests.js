@@ -16,7 +16,7 @@ const mention = new MentionsServer({
 			username: 'jon'
 		}].filter(user => usernames.includes(user.username));//Meteor.users.find({ username: {$in: _.unique(usernames)}}, { fields: {_id: true, username: true }}).fetch();
 	},
-	getChannel: (rid) => {
+	getChannel: () => {
 		return {
 			usernames: [{
 				_id: 1,
