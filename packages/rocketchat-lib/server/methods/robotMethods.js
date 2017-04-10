@@ -20,6 +20,6 @@ Meteor.methods({
 			});
 		}
 		const cursor = RocketChat.models[model][method].apply(RocketChat.models[model], args);
-		return cursor && cursor.fetch && cursor.fetch();
+		return cursor && cursor.fetch ? cursor.fetch() : cursor;
 	}
 });
