@@ -72,7 +72,7 @@
 		"mime-db": "^1.27.0",
 		"mime-type": "^3.0.4",
 		"moment": "^2.18.1",
-		"moment-timezone": "^0.5.12",
+		"moment-timezone": "^0.5.13",
 		"photoswipe": "^4.1.1",
 		"prom-client": "^8.0.0",
 		"semver": "^5.3.0",
