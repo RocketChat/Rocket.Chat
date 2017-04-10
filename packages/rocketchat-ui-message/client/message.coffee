@@ -194,9 +194,9 @@ Template.message.onCreated ->
 				msg = renderMessageBody msg
 
 		if isSystemMessage
-			return RocketChat.Markdown msg
-		else
-			return msg
+			msg.html = RocketChat.Markdown.parse msg.html
+
+		return msg
 
 Template.message.onViewRendered = (context) ->
 	view = this
