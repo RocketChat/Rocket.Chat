@@ -342,7 +342,7 @@ Importer.Slack = class Importer.Slack extends Importer.Base
 
 	getRocketUser: (slackId) =>
 		for user in @users.users when user.id is slackId
-			return RocketChat.models.Users.findOneById user.rocketId, { fields: { username: 1 }}
+			return RocketChat.models.Users.findOneById user.rocketId, { fields: { username: 1, name: 1 }}
 
 	convertSlackMessageToRocketChat: (message) =>
 		if message?
