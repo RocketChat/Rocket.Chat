@@ -110,7 +110,7 @@ module.exports = {
 		tags: '',
 		grep: null,
 		timeout: 40000,
-		// reporter: 'min',
+		reporter: 'min',
 		slow: 100,
 		//retries: 3,
 		bail: false // bail after first test failure
