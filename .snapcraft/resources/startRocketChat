@@ -4,12 +4,14 @@ function start_rocketchat {
 	echo "Checking if oplog has been enabled, and enabling if not"
 	LC_ALL=C mongo $SNAP/bin/initreplset.js
 
-	export BABEL_CACHE_DIR=/tmp 
-	export ROOT_URL=http://localhost 
-	export PORT=3000 
-	export MONGO_URL=mongodb://localhost:27017/parties 
+	export DEPLOY_METHOD=snap
+	export NODE_ENV=production
+	export BABEL_CACHE_DIR=/tmp
+	export ROOT_URL=http://localhost
+	export PORT=3000
+	export MONGO_URL=mongodb://localhost:27017/parties
 	export MONGO_OPLOG_URL=mongodb://localhost:27017/local
-	export Accounts_AvatarStorePath=$SNAP_COMMON/uploads 
+	export Accounts_AvatarStorePath=$SNAP_COMMON/uploads
 
 	node $SNAP/main.js
 }

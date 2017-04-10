@@ -132,6 +132,9 @@ rocketchat:videobridge
 rocketchat:webrtc
 rocketchat:wordpress
 rocketchat:message-snippet
+rocketchat:google-natural-language
+rocketchat:drupal
+rocketchat:monitoring
 #rocketchat:chatops
 
 konecty:change-case
@@ -169,6 +172,3 @@ underscorestring:underscore.string
 yasaricli:slugify
 yasinuslu:blaze-meta
 deepwell:bootstrap-datepicker2
-rocketchat:google-natural-language
-rocketchat:drupal
-
