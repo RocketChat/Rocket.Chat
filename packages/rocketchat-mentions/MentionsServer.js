@@ -8,16 +8,20 @@ export default class MentionsServer extends Mentions {
 		super(args);
 		this.messageMaxAll = args.messageMaxAll;
 		this.getChannel = args.getChannel;
+		this.getChannels = args.getChannels;
 		this.getUsers = args.getUsers;
-	}
-	getChannels(channels) {
-		return RocketChat.models.Rooms.find({ name: {$in: _.unique(channels)}, t: 'c'	}, { fields: {_id: 1, name: 1 }}).fetch();
 	}
 	set getUsers(m) {
 		this._getUsers = m;
 	}
 	get getUsers() {
 		return typeof this._getUsers === 'function' ? this._getUsers : () => this._getUsers;
+	}
+	set getChannels(m) {
+		this._getChannels = m;
+	}
+	get getChannels() {
+		return typeof this._getChannels === 'function' ? this._getChannels : () => this._getChannels;
 	}
 	set getChannel(m) {
 		this._getChannel = m;
@@ -54,25 +58,19 @@ export default class MentionsServer extends Mentions {
 			});
 		});
 		mentions = userMentions.length ? this.getUsers(userMentions) : [];
-
 		return [...mentionsAll, ...mentions];
 	}
-	getChannelbyMentions(message) {
-		let channels = message.msg.match(this.channelMentionRegex);
-		if (channels) {
-			channels = channels.map(c => c.trim().substr(1));
-			return this.getChannels(channels);
-		}
+	getChannelbyMentions({msg}) {
+		const channels = this.getChannelMentions(msg);
+		return this.getChannels(channels.map(c => c.trim().substr(1)));
 	}
 	execute(message) {
 		const mentionsAll = this.getUsersByMentions(message);
 		const channels = this.getChannelbyMentions(message);
-		if (mentionsAll.length !== 0) {
-			message.mentions = mentionsAll;
-		}
-		if (channels.length !== 0) {
-			message.channels = channels;
-		}
+
+		message.mentions = mentionsAll;
+
+		message.channels = channels;
 		return message;
 	}
 }
