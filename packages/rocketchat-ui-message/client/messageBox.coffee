@@ -85,6 +85,12 @@ Template.messageBox.helpers
 			users: usernames.join " #{t 'and'} "
 		}
 
+	groupAttachHidden: ->
+		return 'hidden' if RocketChat.settings.get('Message_Attachments_GroupAttach')
+
+	fileUploadEnabled: ->
+		return RocketChat.settings.get('FileUpload_Enabled')
+
 	fileUploadAllowedMediaTypes: ->
 		return RocketChat.settings.get('FileUpload_MediaTypeWhiteList')
 
@@ -243,6 +249,10 @@ Template.messageBox.events
 				name: file.name
 
 		fileUpload filesToUpload
+
+	"click .message-buttons.share": (e, t) ->
+		t.$('.share-items').toggleClass('hidden')
+		t.$('.message-buttons.share').toggleClass('active')
 
 	'click .message-form .message-buttons.location': (event, instance) ->
 		roomId = @_id
