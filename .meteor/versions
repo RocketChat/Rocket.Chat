@@ -178,7 +178,7 @@ rocketchat:message-pin@0.0.1
 rocketchat:message-snippet@0.0.1
 rocketchat:message-star@0.0.1
 rocketchat:migrations@0.0.1
-rocketchat:monitoring@2.30.2_2
+rocketchat:monitoring@2.30.2_3
 rocketchat:oauth2-server@2.0.0
 rocketchat:oauth2-server-config@1.0.0
 rocketchat:oembed@0.0.1
@@ -253,4 +253,3 @@ webapp@1.3.15
 webapp-hashing@1.0.9
 yasaricli:slugify@0.0.7
 yasinuslu:blaze-meta@0.3.3
-
