@@ -1,3 +1,13 @@
+<a name="0.55.0-rc.3"></a>
+# 0.55.0-rc.3 (2017-04-11)
+
+
+### Bug Fixes
+
+- [#6658](https://github.com/RocketChat/Rocket.Chat/pull/6658) Revert unwanted UI changes
+
+
+
 <a name="0.55.0-rc.2"></a>
 # 0.55.0-rc.2 (2017-04-10)
 
