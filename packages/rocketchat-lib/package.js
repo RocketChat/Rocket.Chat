@@ -52,13 +52,13 @@ Package.onUse(function(api) {
 
 	// COMMON LIB
 	api.addFiles('lib/getURL.js');
-	api.addFiles('lib/settings.coffee');
+	api.addFiles('lib/settings.js');
 	api.addFiles('lib/configLogger.js');
-	api.addFiles('lib/callbacks.coffee');
+	api.addFiles('lib/callbacks.js');
 	api.addFiles('lib/fileUploadRestrictions.js');
 	api.addFiles('lib/placeholders.js');
-	api.addFiles('lib/promises.coffee');
-	api.addFiles('lib/roomTypesCommon.coffee');
+	api.addFiles('lib/promises.js');
+	api.addFiles('lib/roomTypesCommon.js');
 	api.addFiles('lib/slashCommand.js');
 	api.addFiles('lib/Message.js');
 	api.addFiles('lib/MessageTypes.js');
@@ -178,10 +178,10 @@ Package.onUse(function(api) {
 	api.addFiles('client/lib/TabBar.js', 'client');
 	api.addFiles('client/lib/RocketChatTabBar.js', 'client');
 	api.addFiles('client/lib/cachedCollection.js', 'client');
-	api.addFiles('client/lib/openRoom.coffee', 'client');
+	api.addFiles('client/lib/openRoom.js', 'client');
 	api.addFiles('client/lib/roomExit.js', 'client');
 	api.addFiles('client/lib/settings.js', 'client');
-	api.addFiles('client/lib/roomTypes.coffee', 'client');
+	api.addFiles('client/lib/roomTypes.js', 'client');
 	api.addFiles('client/lib/userRoles.js', 'client');
 	api.addFiles('client/lib/Layout.js', 'client');
 
