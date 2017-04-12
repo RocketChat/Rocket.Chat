@@ -47,7 +47,7 @@ Package.onUse(function(api) {
 	api.addFiles('client/oembedSandstormGrain.html', 'client');
 	api.addFiles('client/oembedSandstormGrain.coffee', 'client');
 
-	api.addFiles('server/server.coffee', 'server');
+	api.addFiles('server/server.js', 'server');
 	api.addFiles('server/providers.coffee', 'server');
 	api.addFiles('server/jumpToMessage.js', 'server');
 	api.addFiles('server/models/OEmbedCache.coffee', 'server');
