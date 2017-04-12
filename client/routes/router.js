@@ -154,3 +154,10 @@ FlowRouter.route('/register/:hash', {
 		// 	BlazeLayout.render 'logoLayout', { render: 'invalidSecretURL' }
 	}
 });
+
+FlowRouter.notFound = {
+  action() {
+    BlazeLayout.render('_404');
+  }
+};
+
