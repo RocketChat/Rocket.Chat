@@ -323,29 +323,32 @@ SystemLogger = new Logger('System', { // eslint-disable-line no-undef
 });
 
 
-class StdOut extends EventEmitter {
+const StdOut = new class extends EventEmitter {
 	constructor() {
 		super();
 		const write = process.stdout.write;
 		this.queue = [];
-		process.stdout.write = (string) => {
-			write.apply(process.stdout, arguments);
+		process.stdout.write = (...args) => {
+			write.apply(process.stdout, args);
 			const date = new Date;
-			string = processString(string, date);
+			const string = processString(args[0], date);
 			const item = {
 				id: Random.id(),
 				string,
 				ts: date
 			};
 			this.queue.push(item);
-			const limit = RocketChat.settings.get('Log_View_Limit');
-			if (limit && this.queue.length > limit) {
-				this.queue.shift();
+
+			if (typeof RocketChat !== 'undefined') {
+				const limit = RocketChat.settings.get('Log_View_Limit');
+				if (limit && this.queue.length > limit) {
+					this.queue.shift();
+				}
 			}
 			this.emit('write', string, item);
 		};
 	}
-}
+};
 
 
 Meteor.publish('stdout', function() {
