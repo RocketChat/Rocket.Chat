@@ -1,3 +1,20 @@
+<a name="0.55.0-rc.4"></a>
+# 0.55.0-rc.4 (2017-04-13)
+
+
+### New Features
+
+- [#6681](https://github.com/RocketChat/Rocket.Chat/pull/6681) Expose Livechat to Incoming Integrations and allow response
+
+
+### Bug Fixes
+
+- [#6659](https://github.com/RocketChat/Rocket.Chat/pull/6659) Administrators being rate limited when editing users data
+- [#6680](https://github.com/RocketChat/Rocket.Chat/pull/6680) Downgrade email package to from 1.2.0 to 1.1.18
+- [#6682](https://github.com/RocketChat/Rocket.Chat/pull/6682) Fix Logger stdout publication
+
+
+
 <a name="0.55.0-rc.3"></a>
 # 0.55.0-rc.3 (2017-04-11)
 
