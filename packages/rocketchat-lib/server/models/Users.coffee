@@ -10,6 +10,8 @@ class ModelUsers extends RocketChat.models._Base
 		@tryEnsureIndex { 'statusConnection': 1 }, { sparse: 1 }
 		@tryEnsureIndex { 'type': 1 }
 
+		this.cache.ensureIndex('username', 'unique')
+
 	findOneByImportId: (_id, options) ->
 		return @findOne { importIds: _id }, options
 
@@ -128,7 +130,7 @@ class ModelUsers extends RocketChat.models._Base
 					]
 				}
 				{
-					username: { $nin: exceptions }
+					username: { $exists: true, $nin: exceptions }
 				}
 			]
 

@@ -17,7 +17,7 @@
   "Account_SID": "계정 SID",
   "Accounts": "계정",
   "Accounts_AllowDeleteOwnAccount": "사용자가 자신의 계정을 삭제할 수있습니다.",
-  "Accounts_AllowedDomainsList": "허용 가능한 도메인 목록",
+  "Accounts_AllowedDomainsList": "허용된 도메인 목록",
   "Accounts_AllowedDomainsList_Description": "허용된 도메인을 쉼표(,)로 구분하기",
   "Accounts_AllowEmailChange": "이메일 변경을 허용합니다",
   "Accounts_AllowPasswordChange": "암호 변경 허용",
