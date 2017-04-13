@@ -1,6 +1,4 @@
 /*globals HTTPInternals, changeCase */
-const indexOf = [].indexOf || function(item) { for (let i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) { return i; } } return -1; };
-
 const URL = Npm.require('url');
 
 const querystring = Npm.require('querystring');
@@ -17,6 +15,10 @@ const jschardet = Npm.require('jschardet');
 
 const OEmbed = {};
 
+//  Detect encoding
+//  Priority:
+//  Detected == HTTP Header > Detected == HTML meta > HTTP Header > HTML meta > Detected > Default (utf-8)
+//  See also: https://www.w3.org/International/questions/qa-html-encoding-declarations.en#quickanswer
 const getCharset = function(contentType, body) {
 	let detectedCharset;
 	let httpHeaderCharset;
@@ -56,8 +58,6 @@ const toUtf8 = function(contentType, body) {
 };
 
 const getUrlContent = function(urlObj, redirectCount, callback) {
-	let ref;
-	let ref1;
 	if (redirectCount == null) {
 		redirectCount = 5;
 	}
@@ -67,13 +67,15 @@ const getUrlContent = function(urlObj, redirectCount, callback) {
 
 	const parsedUrl = _.pick(urlObj, ['host', 'hash', 'pathname', 'protocol', 'port', 'query', 'search', 'hostname']);
 	const ignoredHosts = RocketChat.settings.get('API_EmbedIgnoredHosts').replace(/\s/g, '').split(',') || [];
-	if ((ref = parsedUrl.hostname, indexOf.call(ignoredHosts, ref) >= 0) || ipRangeCheck(parsedUrl.hostname, ignoredHosts)) {
+	if (ignoredHosts.includes(parsedUrl.hostname) || ipRangeCheck(parsedUrl.hostname, ignoredHosts)) {
 		return callback();
 	}
+
 	const safePorts = RocketChat.settings.get('API_EmbedSafePorts').replace(/\s/g, '').split(',') || [];
-	if (parsedUrl.port && safePorts.length > 0 && (ref1 = parsedUrl.port, indexOf.call(safePorts, ref1) < 0)) {
+	if (parsedUrl.port && safePorts.length > 0 && (!safePorts.includes(parsedUrl.port))) {
 		return callback();
 	}
+
 	const data = RocketChat.callbacks.run('oembed:beforeGetUrlContent', {
 		urlObj,
 		parsedUrl
@@ -182,11 +184,10 @@ OEmbed.getUrlMeta = function(url, withFragment) {
 
 	if (content && content.headers) {
 		headers = {};
-		const ref = content.headers;
-		for (const header in ref) {
-			const value = ref[header];
-			headers[changeCase.camelCase(header)] = value;
-		}
+		const headerObj = content.headers;
+		Object.keys(headerObj).forEach((header) => {
+			headers[changeCase.camelCase(header)] = headerObj[header];
+		});
 	}
 	if (content && content.statusCode !== 200) {
 		return;
@@ -218,13 +219,14 @@ OEmbed.getUrlMetaWithCache = function(url, withFragment) {
 
 const getRelevantHeaders = function(headersObj) {
 	const headers = {};
-	for (const key in headersObj) {
+	Object.keys(headersObj).forEach((key) => {
 		const value = headersObj[key];
-		let ref;
-		if (((ref = key.toLowerCase()) === 'contenttype' || ref === 'contentlength') && (value != null ? value.trim() : void 0) !== '') {
+		const lowerCaseKey = key.toLowerCase();
+		if ((lowerCaseKey === 'contenttype' || lowerCaseKey === 'contentlength') && (value && value.trim() !== '')) {
 			headers[key] = value;
 		}
-	}
+	});
+
 	if (Object.keys(headers).length > 0) {
 		return headers;
 	}
@@ -232,12 +234,13 @@ const getRelevantHeaders = function(headersObj) {
 
 const getRelevantMetaTags = function(metaObj) {
 	const tags = {};
-	for (const key in metaObj) {
+	Object.keys(metaObj).forEach((key) => {
 		const value = metaObj[key];
-		if (/^(og|fb|twitter|oembed|msapplication).+|description|title|pageTitle$/.test(key.toLowerCase()) && (value != null ? value.trim() : void 0) !== '') {
+		if (/^(og|fb|twitter|oembed|msapplication).+|description|title|pageTitle$/.test(key.toLowerCase()) && (value && value.trim() !== '')) {
 			tags[key] = value;
 		}
-	}
+	});
+
 	if (Object.keys(tags).length > 0) {
 		return tags;
 	}
