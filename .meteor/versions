@@ -4,7 +4,7 @@ accounts-github@1.2.1
 accounts-google@1.1.2
 accounts-meteor-developer@1.2.1
 accounts-oauth@1.1.15
-accounts-password@1.3.5
+accounts-password@1.3.4
 accounts-twitter@1.2.1
 aldeed:simple-schema@1.5.3
 allow-deny@1.0.5
@@ -37,7 +37,7 @@ ecmascript@0.7.2
 ecmascript-runtime@0.3.15
 edgee:slingshot@0.7.1
 ejson@1.0.13
-email@1.2.0
+email@1.1.18
 emojione:emojione@2.2.6
 facebook-oauth@1.3.0
 fastclick@1.0.13
