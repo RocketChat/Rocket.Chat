@@ -26,7 +26,7 @@ function MentionsServer(message) {
 				username: mention
 			});
 		});
-		mentions = userMentions.length ? Meteor.users.find({ username: {$in: _.unique(userMentions)}}, { fields: {_id: true, username: true }}).fetch() : [];
+		mentions = userMentions.length ? Meteor.users.find({ username: {$in: _.unique(userMentions)}}, { fields: {_id: true, username: true, name: true }}).fetch() : [];
 
 		const verifiedMentions = [...mentionsAll, ...mentions];
 		if (verifiedMentions.length !== 0) {
