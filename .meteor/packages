@@ -16,7 +16,7 @@ coffeescript@1.11.1_4
 ddp-rate-limiter@1.0.7
 ecmascript@0.6.3
 ejson@1.0.13
-email@1.1.18
+email@=1.1.18
 fastclick@1.0.13
 http@1.2.12
 jquery@1.11.10
