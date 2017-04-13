@@ -1,3 +1,15 @@
+<a name="0.55.0-rc.5"></a>
+# 0.55.0-rc.5 (2017-04-13)
+
+
+### Bug Fixes
+
+- [#6684](https://github.com/RocketChat/Rocket.Chat/pull/6684) Allow question on OAuth token path
+- [#6683](https://github.com/RocketChat/Rocket.Chat/pull/6683) Error when returning undefined from incoming intergation’s script
+- [#6686](https://github.com/RocketChat/Rocket.Chat/pull/6686) Update server cache indexes on record updates
+
+
+
 <a name="0.55.0-rc.4"></a>
 # 0.55.0-rc.4 (2017-04-13)
 
