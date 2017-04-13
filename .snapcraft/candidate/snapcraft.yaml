@@ -49,7 +49,7 @@ parts:
     rocketchat-server:
         plugin: dump
         after: [mongodb]
-        source: https://rocket.chat/releases/develop/download
+        source: https://rocket.chat/releases/release-candidate/download
         source-type: tar
         stage-packages:
             - graphicsmagick
