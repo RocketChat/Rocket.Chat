@@ -81,3 +81,4 @@ this.roomTypesCommon = class {
 		return FlowRouter.go(this.roomTypes[roomType].route.name, routeData, queryParams);
 	}
 };
+export default this.roomTypesCommon;
