@@ -208,9 +208,11 @@ function executeIntegrationRest() {
 				return RocketChat.API.v1.failure(result.error);
 			}
 			this.bodyParams = result && result.content;
-			this.response = typeof result !== 'undefined' && result.response;
-			if (result.user) {
-				this.user = result.user;
+			if (typeof result !== 'undefined') {
+				this.response = result.response;
+				if (result.user) {
+					this.user = result.user;
+				}
 			}
 			logger.incoming.debug('[Process Incoming Request result of Trigger', this.integration.name, ':]');
 			logger.incoming.debug('result', this.bodyParams);
