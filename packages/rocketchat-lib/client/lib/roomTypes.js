@@ -13,6 +13,9 @@ RocketChat.roomTypes = new class extends roomTypesCommon {
 	getRoomName(roomType, roomData) {
 		return this.roomTypes[roomType] && this.roomTypes[roomType].roomName && this.roomTypes[roomType].roomName(roomData);
 	}
+	getSecondaryRoomName(roomType, roomData) {
+		return this.roomTypes[roomType] && typeof this.roomTypes[roomType].secondaryRoomName === 'function' && this.roomTypes[roomType].secondaryRoomName(roomData);
+	}
 	getIdentifiers(e) {
 		const except = [].concat(e);
 		const list = _.reject(this.roomTypesOrder, (t) => except.indexOf(t.identifier) !== -1);
