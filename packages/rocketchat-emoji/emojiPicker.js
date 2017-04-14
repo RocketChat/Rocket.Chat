@@ -24,7 +24,7 @@ function getEmojisByCategory(category) {
 	const t = Template.instance();
 	const actualTone = t.tone;
 	let html = '';
-	for (const emojiPackage in RocketChat.emoji.packages) {
+	for (let emojiPackage in RocketChat.emoji.packages) {
 		if (RocketChat.emoji.packages.hasOwnProperty(emojiPackage)) {
 			if (RocketChat.emoji.packages[emojiPackage].emojisByCategory.hasOwnProperty(category)) {
 				const total = RocketChat.emoji.packages[emojiPackage].emojisByCategory[category].length;
@@ -133,7 +133,9 @@ Template.emojiPicker.helpers({
 		}
 
 		if (searchTerm.length > 0) {
-			return getEmojisBySearchTerm(searchTerm);
+			if (t.currentCategory.get() === category) {
+				return getEmojisBySearchTerm(searchTerm);
+			}
 		} else {
 			return getEmojisByCategory(category);
 		}
@@ -266,6 +268,7 @@ Template.emojiPicker.onCreated(function() {
 
 	this.currentCategory = new ReactiveVar(recent.length > 0 ? 'recent' : 'people');
 	this.currentSearchTerm = new ReactiveVar('');
+	this.currentResults = new ReactiveVar('');
 
 	recent.forEach((emoji) => {
 		RocketChat.emoji.packages.base.emojisByCategory.recent.push(emoji);
