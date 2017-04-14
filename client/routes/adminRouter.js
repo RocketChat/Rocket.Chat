@@ -12,6 +12,13 @@ FlowRouter.route('/admin/rooms', {
 	}
 });
 
+FlowRouter.route('/admin/apps', {
+	name: 'admin-apps',
+	action() {
+		BlazeLayout.render('main', {center: 'adminApps'});
+	}
+});
+
 FlowRouter.route('/admin/info', {
 	name: 'admin-info',
 	action() {

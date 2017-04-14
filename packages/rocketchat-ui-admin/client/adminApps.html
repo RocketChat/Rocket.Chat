@@ -1,0 +1,32 @@
+<template name="adminApps">
+	<section class="page-container page-list">
+		<header class="fixed-title border-component-color">
+			{{> burger}}
+			<h2>
+				<span class="room-title">{{_ "Apps"}}</span>
+			</h2>
+		</header>
+		<div class="content">
+					<h1>{{_ "Rocket.Chat"}}</h1><br>
+				<hr><br>
+					<h2>{{_"Mobile apps"}}</h2>
+				<table class="secondary-background-color">
+					<tr class="admin-table-row">
+						<th class="content-background-color border-component-color"><a href="https://play.google.com/store/apps/details?id=com.konecty.rocket.chat"><img src="https://designpieces.com/wp-content/uploads/2016/02/google-play-badge.png" style="width: 400px;"></a></th>
+						<th class="content-background-color border-component-color"><a href="https://itunes.apple.com/us/app/rocket.chat/id1028869439?mt=8"><img src="http://s3.amazonaws.com/chd-data/data/youzign/items/176/media/app-store-logo.png" style="width: 400px;"></a></th>
+					</tr>
+					
+					
+					</table>
+					<h2>{{_"Desktop apps"}}</h2>
+					<br>
+					<table class="secondary-background-color">
+					<tr class="admin-table-row">
+					<th class="content-background-color border-component-color"><a target="_blank" href="https://itunes.apple.com/app/rocket.chat/id1086818840">Get Rocket.Chat for Mac OSX</a></th>
+					<th class="content-background-color border-component-color"><a href="https://github.com/RocketChat/Rocket.Chat.Electron/releases/download/2.5.0/rocketchat-Setup-2.5.0.exe">Get Rocket.Chat for Windows</a></th>
+					<th class="content-background-color border-component-color"><a href="https://github.com/RocketChat/Rocket.Chat.Electron/releases/download/2.5.0/rocketchat_2.5.0_amd64.deb">Get Rocket.Chat for Ubuntu</a></th>
+					</tr>
+					</table>
+					</div>
+	</section>
+</template>
