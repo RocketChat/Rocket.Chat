@@ -189,7 +189,7 @@ Template.main.events({
 			const diffY = touch.clientY - t.touchstartY;
 			const absX = Math.abs(diffX);
 			const absY = Math.abs(diffY);
-			const width = document.body.clientWidth;
+			const width = window.matchMedia('(max-width: 780px)').matches ? 780 : 260;
 			if (t.movestarted !== true && t.blockmove !== true && absY > 5) {
 				t.blockmove = true;
 			}

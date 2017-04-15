@@ -8,8 +8,7 @@ Template.home.helpers({
 });
 
 Template.home.onRendered(function() {
-	const width = document.body.clientWidth;
-	if (width <= 780) { // on mobile devices, show room list directly
+	if (window.matchMedia('(max-width: 780px)').matches) { // on mobile devices, show room list directly
 		Meteor.defer(function() {
 			window.menu.open();
 		});
