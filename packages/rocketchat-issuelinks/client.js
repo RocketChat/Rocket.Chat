@@ -6,7 +6,7 @@
 function IssueLink(message) {
 	if (_.trim(message.html) && RocketChat.settings.get('IssueLinks_Enabled')) {
 		message.html = message.html.replace(/(?:^|\s|\n)(#[0-9]+)\b/g, function(match, issueNumber) {
-			var url = RocketChat.settings.get('IssueLinks_Template').replace('%s', issueNumber.substring(1));
+			const url = RocketChat.settings.get('IssueLinks_Template').replace('%s', issueNumber.substring(1));
 			return match.replace(issueNumber, `<a href="${ url }" target="_blank">${ issueNumber }</a>`);
 		});
 	}
