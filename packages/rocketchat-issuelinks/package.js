@@ -1,7 +1,7 @@
 Package.describe({
 	name: 'rocketchat:issuelinks',
 	version: '0.0.1',
-	summary: 'Message pre-processor that will add links to issue numbers.',
+	summary: 'Message pre-processor that adds links to issue numbers.',
 	git: ''
 });
 
