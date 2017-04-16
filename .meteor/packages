@@ -74,6 +74,7 @@ rocketchat:importer-slack
 rocketchat:integrations
 rocketchat:internal-hubot
 rocketchat:irc
+rocketchat:issuelinks
 rocketchat:katex
 rocketchat:ldap
 rocketchat:lib
