@@ -1,3 +1,13 @@
+<a name="0.55.0-rc.6"></a>
+# 0.55.0-rc.6 (2017-04-17)
+
+
+### Bug Fixes
+
+- [#6704](https://github.com/RocketChat/Rocket.Chat/pull/6704) Fix message types
+
+
+
 <a name="0.55.0-rc.5"></a>
 # 0.55.0-rc.5 (2017-04-13)
 
