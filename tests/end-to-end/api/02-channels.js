@@ -11,7 +11,7 @@ function getRoomInfo(roomId) {
 		request.get(api('channels.info'))
 			.set(credentials)
 			.query({
-				roomId: roomId
+				roomId
 			})
 			.end((err, req) => {
 				resolve(req.body);
@@ -383,14 +383,14 @@ describe('channels', function() {
 			.set(credentials)
 			.send({
 				roomId: channel._id,
-				name: 'EDITED'+apiPublicChannelName
+				name: `EDITED${ apiPublicChannelName }`
 			})
 			.expect('Content-Type', 'application/json')
 			.expect(200)
 			.expect((res) => {
 				expect(res.body).to.have.property('success', true);
 				expect(res.body).to.have.deep.property('channel._id');
-				expect(res.body).to.have.deep.property('channel.name', 'EDITED'+apiPublicChannelName);
+				expect(res.body).to.have.deep.property('channel.name', `EDITED${ apiPublicChannelName }`);
 				expect(res.body).to.have.deep.property('channel.t', 'c');
 				expect(res.body).to.have.deep.property('channel.msgs', roomInfo.channel.msgs + 1);
 			})
@@ -424,7 +424,7 @@ describe('channels', function() {
 			.expect((res) => {
 				expect(res.body).to.have.property('success', true);
 				expect(res.body).to.have.deep.property('channel._id');
-				expect(res.body).to.have.deep.property('channel.name', 'EDITED'+apiPublicChannelName);
+				expect(res.body).to.have.deep.property('channel.name', `EDITED${ apiPublicChannelName }`);
 				expect(res.body).to.have.deep.property('channel.t', 'c');
 			})
 			.end(done);
@@ -444,7 +444,7 @@ describe('channels', function() {
 			.expect((res) => {
 				expect(res.body).to.have.property('success', true);
 				expect(res.body).to.have.deep.property('channel._id');
-				expect(res.body).to.have.deep.property('channel.name', 'EDITED'+apiPublicChannelName);
+				expect(res.body).to.have.deep.property('channel.name', `EDITED${ apiPublicChannelName }`);
 				expect(res.body).to.have.deep.property('channel.t', 'c');
 				expect(res.body).to.have.deep.property('channel.msgs', roomInfo.channel.msgs);
 			})
@@ -465,7 +465,7 @@ describe('channels', function() {
 			.expect((res) => {
 				expect(res.body).to.have.property('success', true);
 				expect(res.body).to.have.deep.property('channel._id');
-				expect(res.body).to.have.deep.property('channel.name', 'EDITED'+apiPublicChannelName);
+				expect(res.body).to.have.deep.property('channel.name', `EDITED${ apiPublicChannelName }`);
 				expect(res.body).to.have.deep.property('channel.t', 'c');
 				expect(res.body).to.have.deep.property('channel.msgs', roomInfo.channel.msgs);
 			})
@@ -485,7 +485,7 @@ describe('channels', function() {
 			.expect((res) => {
 				expect(res.body).to.have.property('success', true);
 				expect(res.body).to.have.deep.property('channel._id');
-				expect(res.body).to.have.deep.property('channel.name', 'EDITED'+apiPublicChannelName);
+				expect(res.body).to.have.deep.property('channel.name', `EDITED${ apiPublicChannelName }`);
 				expect(res.body).to.have.deep.property('channel.t', 'c');
 				expect(res.body).to.have.deep.property('channel.msgs', roomInfo.channel.msgs + 1);
 			})
@@ -506,7 +506,7 @@ describe('channels', function() {
 			.expect((res) => {
 				expect(res.body).to.have.property('success', true);
 				expect(res.body).to.have.deep.property('channel._id');
-				expect(res.body).to.have.deep.property('channel.name', 'EDITED'+apiPublicChannelName);
+				expect(res.body).to.have.deep.property('channel.name', `EDITED${ apiPublicChannelName }`);
 				expect(res.body).to.have.deep.property('channel.t', 'p');
 				expect(res.body).to.have.deep.property('channel.msgs', roomInfo.channel.msgs + 1);
 			})

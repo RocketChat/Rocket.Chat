@@ -175,7 +175,7 @@ describe('channel', ()=> {
 
 				it('edit the name input', ()=> {
 					flexTab.editNameTextInput.waitForVisible();
-					flexTab.editNameTextInput.setValue('NAME-EDITED-'+publicChannelName);
+					flexTab.editNameTextInput.setValue(`NAME-EDITED-${ publicChannelName }`);
 				});
 
 				it('save the name', ()=> {
@@ -183,8 +183,8 @@ describe('channel', ()=> {
 				});
 
 				it('should show the new name', ()=> {
-					var channelName = sideNav.getChannelFromList('NAME-EDITED-'+publicChannelName);
-					channelName.getText().should.equal('NAME-EDITED-'+publicChannelName);
+					const channelName = sideNav.getChannelFromList(`NAME-EDITED-${ publicChannelName }`);
+					channelName.getText().should.equal(`NAME-EDITED-${ publicChannelName }`);
 				});
 			});
 
@@ -220,6 +220,38 @@ describe('channel', ()=> {
 				});
 			});
 
+			describe('Channel announcement edit', ()=> {
+				before(()=> {
+					flexTab.operateFlexTab('info', true);
+				});
+
+				after(()=> {
+					if (Global.toastAlert.isVisible()) {
+						Global.dismissToast();
+						Global.toastAlert.waitForVisible(5000, true);
+					}
+					flexTab.operateFlexTab('info', false);
+				});
+
+				it('click the edit announcement', ()=> {
+					flexTab.editAnnouncementBtn.waitForVisible(5000);
+					flexTab.editAnnouncementBtn.click();
+				});
+
+				it('edit the announcement input', ()=> {
+					flexTab.editAnnouncementTextInput.waitForVisible(5000);
+					flexTab.editAnnouncementTextInput.setValue('ANNOUNCEMENT EDITED');
+				});
+
+				it('save the announcement', ()=> {
+					flexTab.editNameSave.click();
+				});
+
+				it('should show the new announcement', ()=> {
+					flexTab.thirdSetting.getText().should.equal('ANNOUNCEMENT EDITED');
+				});
+			});
+
 			describe('Channel description edit', ()=> {
 				before(()=> {
 					flexTab.operateFlexTab('info', true);
@@ -248,7 +280,7 @@ describe('channel', ()=> {
 				});
 
 				it('should show the new description', ()=> {
-					flexTab.thirdSetting.getText().should.equal('DESCRIPTION EDITED');
+					flexTab.fourthSetting.getText().should.equal('DESCRIPTION EDITED');
 				});
 			});
 		});
@@ -345,7 +377,7 @@ describe('channel', ()=> {
 
 			describe('channel quit and enter', () => {
 				it('leave the channel', () => {
-					const channel = sideNav.getChannelFromList('NAME-EDITED-'+publicChannelName);
+					const channel = sideNav.getChannelFromList(`NAME-EDITED-${ publicChannelName }`);
 					channel.click();
 					channel.moveToObject();
 					sideNav.channelLeave.waitForVisible(5000);
@@ -364,20 +396,20 @@ describe('channel', ()=> {
 				});
 
 				it('should not show the channel on the list', () => {
-					sideNav.getChannelFromList('NAME-EDITED-'+publicChannelName).waitForVisible(5000, true);
-					sideNav.getChannelFromList('NAME-EDITED-'+publicChannelName).isVisible().should.be.false;
+					sideNav.getChannelFromList(`NAME-EDITED-${ publicChannelName }`).waitForVisible(5000, true);
+					sideNav.getChannelFromList(`NAME-EDITED-${ publicChannelName }`).isVisible().should.be.false;
 				});
 
 				it('should search and enter the channel with the spotlight', () => {
-					sideNav.searchChannel('NAME-EDITED-'+publicChannelName);
+					sideNav.searchChannel(`NAME-EDITED-${ publicChannelName }`);
 					mainContent.joinChannelBtn.waitForVisible(5000);
 					mainContent.joinChannelBtn.click();
 
 				});
 
 				it('should show the channel on the list', () => {
-					sideNav.getChannelFromList('NAME-EDITED-'+publicChannelName).waitForVisible(10000);
-					sideNav.getChannelFromList('NAME-EDITED-'+publicChannelName).isVisible().should.be.true;
+					sideNav.getChannelFromList(`NAME-EDITED-${ publicChannelName }`).waitForVisible(10000);
+					sideNav.getChannelFromList(`NAME-EDITED-${ publicChannelName }`).isVisible().should.be.true;
 				});
 			});
 		});

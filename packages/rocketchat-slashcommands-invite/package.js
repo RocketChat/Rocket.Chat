@@ -9,13 +9,12 @@ Package.onUse(function(api) {
 
 	api.use([
 		'ecmascript',
-		'coffeescript',
 		'check',
 		'rocketchat:lib'
 	]);
 
 	api.use('templating', 'client');
 
-	api.addFiles('client.coffee', 'client');
-	api.addFiles('server.coffee', 'server');
+	api.addFiles('client.js', 'client');
+	api.addFiles('server.js', 'server');
 });

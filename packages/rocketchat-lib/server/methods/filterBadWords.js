@@ -1,10 +1,10 @@
-var Filter = Npm.require('bad-words');
+const Filter = Npm.require('bad-words');
 
 RocketChat.callbacks.add('beforeSaveMessage', function(message) {
 
 	if (RocketChat.settings.get('Message_AllowBadWordsFilter')) {
-		var badWordsList = RocketChat.settings.get('Message_BadWordsFilterList');
-		var options;
+		const badWordsList = RocketChat.settings.get('Message_BadWordsFilterList');
+		let options;
 
 		// Add words to the blacklist
 		if (!!badWordsList && badWordsList.length) {
@@ -12,7 +12,7 @@ RocketChat.callbacks.add('beforeSaveMessage', function(message) {
 				list: badWordsList.split(',')
 			};
 		}
-		var filter = new Filter(options);
+		const filter = new Filter(options);
 		message.msg = filter.clean(message.msg);
 	}
 

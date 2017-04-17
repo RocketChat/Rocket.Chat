@@ -28,6 +28,6 @@ RocketChat.Migrations.add({
 			}
 		});
 
-		return console.log(`Removed duplicated usernames from ${count} rooms`);
+		return console.log(`Removed duplicated usernames from ${ count } rooms`);
 	}
 });

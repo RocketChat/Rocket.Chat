@@ -7,7 +7,7 @@ Meteor.methods({
 		const user = RocketChat.models.Users.findOneByEmailAddress(email);
 
 		if (user) {
-			const regex = new RegExp(`^${s.escapeRegExp(email)}$`, 'i');
+			const regex = new RegExp(`^${ s.escapeRegExp(email) }$`, 'i');
 			email = (user.emails || []).map(item => item.address).find(userEmail => regex.test(userEmail));
 
 			if (RocketChat.settings.get('Forgot_Password_Customized')) {
@@ -28,7 +28,7 @@ Meteor.methods({
 			try {
 				Accounts.sendResetPasswordEmail(user._id, email);
 			} catch (error) {
-				throw new Meteor.Error('error-email-send-failed', `Error trying to send email: ${error.message}`, {
+				throw new Meteor.Error('error-email-send-failed', `Error trying to send email: ${ error.message }`, {
 					method: 'registerUser',
 					message: error.message
 				});

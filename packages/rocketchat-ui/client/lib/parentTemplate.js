@@ -5,7 +5,7 @@
  */
 
 Blaze.TemplateInstance.prototype.parentTemplate = function(levels) {
-	var view = Blaze.currentView;
+	let view = Blaze.currentView;
 	if (typeof levels === 'undefined') {
 		levels = 1;
 	}

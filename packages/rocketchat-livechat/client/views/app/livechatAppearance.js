@@ -242,7 +242,7 @@ Template.livechatAppearance.events({
 	'submit .rocket-form'(e, instance) {
 		e.preventDefault();
 
-		var settings = [
+		const settings = [
 			{
 				_id: 'Livechat_title',
 				value: _.trim(instance.title.get())

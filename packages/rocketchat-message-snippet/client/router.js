@@ -1,7 +1,7 @@
 /* global FlowRouter, BlazeLayout */
 FlowRouter.route('/snippet/:snippetId/:snippetName', {
 	name: 'snippetView',
-	action: function() {
+	action() {
 		BlazeLayout.render('main', {center: 'snippetPage', flexTabBar: null });
 	},
 	triggersEnter: [ function() {

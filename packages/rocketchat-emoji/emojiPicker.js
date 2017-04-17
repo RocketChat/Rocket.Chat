@@ -1,5 +1,5 @@
 /* globals Template, isSetNotNull */
-var emojiCategories = {};
+const emojiCategories = {};
 /**
  * Turns category hash to a nice readable translated name
  * @param {string} category hash
@@ -33,16 +33,16 @@ function getEmojisByCategory(category) {
 					let tone = '';
 
 					if (actualTone > 0 && RocketChat.emoji.packages[emojiPackage].toneList.hasOwnProperty(emoji)) {
-						tone = '_tone' + actualTone;
+						tone = `_tone${ actualTone }`;
 					}
 
 					//set correctPackage here to allow for recent emojis to work properly
-					if (isSetNotNull(() => RocketChat.emoji.list[`:${emoji}:`].emojiPackage)) {
-						const correctPackage = RocketChat.emoji.list[`:${emoji}:`].emojiPackage;
+					if (isSetNotNull(() => RocketChat.emoji.list[`:${ emoji }:`].emojiPackage)) {
+						const correctPackage = RocketChat.emoji.list[`:${ emoji }:`].emojiPackage;
 
-						const image = RocketChat.emoji.packages[correctPackage].render(`:${emoji}${tone}:`);
+						const image = RocketChat.emoji.packages[correctPackage].render(`:${ emoji }${ tone }:`);
 
-						html += `<li class="emoji-${emoji}" data-emoji="${emoji}" title="${emoji}">${image}</li>`;
+						html += `<li class="emoji-${ emoji }" data-emoji="${ emoji }" title="${ emoji }">${ image }</li>`;
 					}
 				}
 			}
@@ -70,7 +70,7 @@ function getEmojisBySearchTerm(searchTerm) {
 			emoji = emoji.replace(/:/g, '');
 
 			if (actualTone > 0 && RocketChat.emoji.packages[emojiPackage].toneList.hasOwnProperty(emoji)) {
-				tone = '_tone' + actualTone;
+				tone = `_tone${ actualTone }`;
 			}
 
 			let emojiFound = false;
@@ -86,8 +86,8 @@ function getEmojisBySearchTerm(searchTerm) {
 			}
 
 			if (emojiFound) {
-				const image = RocketChat.emoji.packages[emojiPackage].render(`:${emoji}${tone}:`);
-				html += `<li class="emoji-${emoji}" data-emoji="${emoji}" title="${emoji}">${image}</li>`;
+				const image = RocketChat.emoji.packages[emojiPackage].render(`:${ emoji }${ tone }:`);
+				html += `<li class="emoji-${ emoji }" data-emoji="${ emoji }" title="${ emoji }">${ image }</li>`;
 			}
 		}
 	}
@@ -129,7 +129,7 @@ Template.emojiPicker.helpers({
 
 		//clear dynamic categories to prevent duplication issues
 		if (category === 'recent' || category === 'rocket') {
-			$(`.${category}.emoji-list`).empty();
+			$(`.${ category }.emoji-list`).empty();
 		}
 
 		if (searchTerm.length > 0) {
@@ -139,7 +139,7 @@ Template.emojiPicker.helpers({
 		}
 	},
 	currentTone() {
-		return 'tone-' + Template.instance().tone;
+		return `tone-${ Template.instance().tone }`;
 	},
 	/**
 	 * Returns true if a given emoji category is active
@@ -150,7 +150,7 @@ Template.emojiPicker.helpers({
 	activeCategory(category) {
 		return Template.instance().currentCategory.get() === category ? 'active' : '';
 	},
-	categoryName: categoryName,
+	categoryName,
 	/**
 	 * Returns currently active emoji category hash
 	 *
@@ -199,7 +199,7 @@ Template.emojiPicker.events({
 		let newTone;
 
 		if (tone > 0) {
-			newTone = '_tone' + tone;
+			newTone = `_tone${ tone }`;
 		} else {
 			newTone = '';
 		}
@@ -209,7 +209,7 @@ Template.emojiPicker.events({
 				if (RocketChat.emoji.packages[emojiPackage].hasOwnProperty('toneList')) {
 					for (const emoji in RocketChat.emoji.packages[emojiPackage].toneList) {
 						if (RocketChat.emoji.packages[emojiPackage].toneList.hasOwnProperty(emoji)) {
-							$('.emoji-'+emoji).html(RocketChat.emoji.packages[emojiPackage].render(':' + emoji + newTone + ':'));
+							$(`.emoji-${ emoji }`).html(RocketChat.emoji.packages[emojiPackage].render(`:${ emoji }${ newTone }:`));
 						}
 					}
 				}
@@ -232,7 +232,7 @@ Template.emojiPicker.events({
 		for (const emojiPackage in RocketChat.emoji.packages) {
 			if (RocketChat.emoji.packages.hasOwnProperty(emojiPackage)) {
 				if (actualTone > 0 && RocketChat.emoji.packages[emojiPackage].toneList.hasOwnProperty(emoji)) {
-					tone = '_tone' + actualTone;
+					tone = `_tone${ actualTone }`;
 				}
 			}
 		}
@@ -272,8 +272,8 @@ Template.emojiPicker.onCreated(function() {
 	});
 
 	this.setCurrentTone = (newTone) => {
-		$('.current-tone').removeClass('tone-' + this.tone);
-		$('.current-tone').addClass('tone-' + newTone);
+		$('.current-tone').removeClass(`tone-${ this.tone }`);
+		$('.current-tone').addClass(`tone-${ newTone }`);
 		this.tone = newTone;
 	};
 });

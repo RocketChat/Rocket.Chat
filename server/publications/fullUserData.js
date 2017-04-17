@@ -5,8 +5,8 @@ Meteor.publish('fullUserData', function(filter, limit) {
 
 	const result = RocketChat.getFullUserData({
 		userId: this.userId,
-		filter: filter,
-		limit: limit
+		filter,
+		limit
 	});
 
 	if (!result) {

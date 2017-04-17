@@ -11,7 +11,7 @@ Template.adminRoomInfo.helpers
 	roomType: ->
 		return AdminChatRoom.findOne(@rid, { fields: { t: 1 }})?.t
 	channelSettings: ->
-		return RocketChat.ChannelSettings.getOptions()
+		return RocketChat.ChannelSettings.getOptions(null, 'admin-room')
 	roomTypeDescription: ->
 		roomType = AdminChatRoom.findOne(@rid, { fields: { t: 1 }})?.t
 		if roomType is 'c'
@@ -137,13 +137,35 @@ Template.adminRoomInfo.onCreated ->
 							return handleError(err)
 						toastr.success TAPi18n.__ 'Room_topic_changed_successfully'
 						RocketChat.callbacks.run 'roomTopicChanged', AdminChatRoom.findOne(rid)
-			when 'roomType'
-				if @validateRoomType(rid)
-					RocketChat.callbacks.run 'roomTypeChanged', AdminChatRoom.findOne(rid)
-					Meteor.call 'saveRoomSettings', rid, 'roomType', @$('input[name=roomType]:checked').val(), (err, result) ->
+			when 'roomAnnouncement'
+				if @validateRoomTopic(rid)
+					Meteor.call 'saveRoomSettings', rid, 'roomAnnouncement', @$('input[name=roomAnnouncement]').val(), (err, result) ->
 						if err
 							return handleError(err)
-						toastr.success TAPi18n.__ 'Room_type_changed_successfully'
+						toastr.success TAPi18n.__ 'Room_announcement_changed_successfully'
+						RocketChat.callbacks.run 'roomAnnouncementChanged', AdminChatRoom.findOne(rid)
+			when 'roomType'
+				val = @$('input[name=roomType]:checked').val()
+				if @validateRoomType(rid)
+					RocketChat.callbacks.run 'roomTypeChanged', AdminChatRoom.findOne(rid)
+					saveRoomSettings = =>
+						Meteor.call 'saveRoomSettings', rid, 'roomType', val, (err, result) ->
+							if err
+								return handleError(err)
+								toastr.success TAPi18n.__ 'Room_type_changed_successfully'
+					unless AdminChatRoom.findOne(rid, { fields: { default: 1 }}).default
+						return saveRoomSettings()
+					swal
+						title: t('Room_default_change_to_private_will_be_default_no_more')
+						type: 'warning'
+						showCancelButton: true
+						confirmButtonColor: '#DD6B55'
+						confirmButtonText: t('Yes')
+						cancelButtonText: t('Cancel')
+						closeOnConfirm: true
+						html: false
+						(confirmed) =>
+							return !confirmed || saveRoomSettings()
 			when 'archivationState'
 				if @$('input[name=archivationState]:checked').val() is 'true'
 					if AdminChatRoom.findOne(rid)?.archived isnt true
