@@ -84,7 +84,7 @@ RocketChat.models.Subscriptions.updateUnreadAlertById = function(_id, unreadAler
 
 RocketChat.models.Subscriptions.updateDisableNotificationsById = function(_id, disableNotifications) {
 	const query = {
-		_id: _id
+		_id
 	};
 
 	const update = {
@@ -98,7 +98,7 @@ RocketChat.models.Subscriptions.updateDisableNotificationsById = function(_id, d
 
 RocketChat.models.Subscriptions.updateHideUnreadStatusById = function(_id, hideUnreadStatus) {
 	const query = {
-		_id: _id
+		_id
 	};
 
 	const update = {
