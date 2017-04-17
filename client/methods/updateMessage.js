@@ -51,7 +51,7 @@ Meteor.methods({
 			};
 
 			message = RocketChat.callbacks.run('beforeSaveMessage', message);
-			var messageObject = {'editedAt': message.editedAt, 'editedBy': message.editedBy, msg: message.msg};
+			const messageObject = {'editedAt': message.editedAt, 'editedBy': message.editedBy, msg: message.msg};
 
 			if (originalMessage.attachments) {
 				if (originalMessage.attachments[0].description !== undefined) {

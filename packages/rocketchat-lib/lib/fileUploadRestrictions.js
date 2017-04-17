@@ -1,5 +1,5 @@
 RocketChat.fileUploadMediaWhiteList = function() {
-	var mediaTypeWhiteList = RocketChat.settings.get('FileUpload_MediaTypeWhiteList');
+	const mediaTypeWhiteList = RocketChat.settings.get('FileUpload_MediaTypeWhiteList');
 
 	if (!mediaTypeWhiteList || mediaTypeWhiteList === '*') {
 		return;
@@ -10,13 +10,12 @@ RocketChat.fileUploadMediaWhiteList = function() {
 };
 
 RocketChat.fileUploadIsValidContentType = function(type) {
-	var list, wildCardGlob, wildcards;
-	list = RocketChat.fileUploadMediaWhiteList();
+	const list = RocketChat.fileUploadMediaWhiteList();
 	if (!list || _.contains(list, type)) {
 		return true;
 	} else {
-		wildCardGlob = '/*';
-		wildcards = _.filter(list, function(item) {
+		const wildCardGlob = '/*';
+		const wildcards = _.filter(list, function(item) {
 			return item.indexOf(wildCardGlob) > 0;
 		});
 		if (_.contains(wildcards, type.replace(/(\/.*)$/, wildCardGlob))) {

@@ -1776,6 +1776,26 @@ label.required::after {
 	}
 }
 
+.announcement {
+	margin-top: 61px;
+	height: 40px;
+	line-height: 40px;
+	overflow: hidden;
+	font-size: 1.2em;
+	background-color: #04436a;
+	color: white;
+	text-align: center;
+	display: block;
+
+	~ .container-bars {
+		top: 95px;
+	}
+
+	~ .messages-box {
+		margin-top: 100px;
+	}
+}
+
 .cms-page {
 	max-width: 800px;
 	margin: 40px auto;
@@ -2320,6 +2340,62 @@ label.required::after {
 			position: relative;
 			display: flex;
 
+			> .share-items {
+				display: flex;
+				position: relative;
+
+				input {
+					position: absolute;
+					top: 0;
+					left: 0;
+					right: 0;
+					bottom: 0;
+					overflow: hidden;
+					opacity: 0;
+					cursor: pointer;
+				}
+
+				input::-webkit-file-upload-button {
+					cursor: pointer;
+				}
+
+				i {
+					font-size: 18px;
+				}
+
+				> .message-buttons {
+					height: 35px;
+					width: 35px;
+					text-align: center;
+					border: 0;
+					cursor: pointer;
+					display: flex;
+					align-items: center;
+					justify-content: center;
+					position: relative;
+					overflow: hidden;
+
+					input {
+						position: absolute;
+						top: 0;
+						left: 0;
+						right: 0;
+						bottom: 0;
+						overflow: hidden;
+						opacity: 0;
+						cursor: pointer;
+					}
+
+					input::-webkit-file-upload-button {
+						cursor: pointer;
+					}
+
+					i {
+						font-size: 18px;
+					}
+				}
+			}
+
 			.input-message-container {
 				position: relative;
 				width: 100%;
@@ -2327,7 +2403,7 @@ label.required::after {
 				.inner-left-toolbar {
 					position: absolute;
 					left: 13px;
-					top: 9px;
+					top: 8px;
 				}
 			}
 
@@ -2344,6 +2420,8 @@ label.required::after {
 
 				i {
 					font-size: 18px;
+					transform: rotate(0deg);
+					transition: transform 0.3s ease-out;
 				}
 
 				input {
@@ -2371,7 +2449,8 @@ label.required::after {
 			padding-bottom: 9px;
 			padding-left: 49px;
 			border-radius: 0;
-			overflow-y: hidden;
+			overflow-y: auto;
+			max-height: 155px;
 			resize: none;
 			line-height: 16px;
 			border-width: 0 1px 0 0;
@@ -2493,6 +2572,11 @@ label.required::after {
 		.message:hover:not(.system) .message-action {
 			display: inline-block;
 		}
+	}
+
+	.secondary-name {
+		color: #666666;
+		font-size: 15px;
 	}
 }
 
@@ -4782,8 +4866,12 @@ body:not(.is-cordova) {
 	}
 }
 
-.sweet-alert .sa-input-error {
-	top: 19px;
+.sweet-alert {
+	margin-left: -239px !important;
+
+	.sa-input-error {
+		top: 19px;
+	}
 }
 
 .one-passsword {

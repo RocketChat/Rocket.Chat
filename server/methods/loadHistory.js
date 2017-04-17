@@ -42,7 +42,7 @@ Meteor.methods({
 			sort: {
 				ts: -1
 			},
-			limit: limit
+			limit
 		};
 
 		if (!RocketChat.settings.get('Message_ShowEditedStatus')) {
@@ -58,10 +58,16 @@ Meteor.methods({
 			records = RocketChat.models.Messages.findVisibleByRoomIdNotContainingTypes(rid, hideMessagesOfType, options).fetch();
 		}
 
+		const UI_Use_Real_Name = RocketChat.settings.get('UI_Use_Real_Name') === true;
+
 		const messages = records.map((message) => {
 			message.starred = _.findWhere(message.starred, {
 				_id: fromId
 			});
+			if (message.u && message.u._id && UI_Use_Real_Name) {
+				const user = RocketChat.models.Users.findOneById(message.u._id);
+				message.u.name = user && user.name;
+			}
 			return message;
 		});
 
@@ -71,7 +77,7 @@ Meteor.methods({
 		if (ls != null) {
 			const firstMessage = messages[messages.length - 1];
 
-			if ((firstMessage != null ? firstMessage.ts : void 0) > ls) {
+			if ((firstMessage != null ? firstMessage.ts : undefined) > ls) {
 				delete options.limit;
 
 				const unreadMessages = RocketChat.models.Messages.findVisibleByRoomIdBetweenTimestampsNotContainingTypes(rid, ls, firstMessage.ts, hideMessagesOfType, {
@@ -87,9 +93,9 @@ Meteor.methods({
 		}
 
 		return {
-			messages: messages,
-			firstUnread: firstUnread,
-			unreadNotLoaded: unreadNotLoaded
+			messages,
+			firstUnread,
+			unreadNotLoaded
 		};
 	}
 });

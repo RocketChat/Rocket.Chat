@@ -1,6 +1,6 @@
 RocketChat.Migrations.add({
 	version: 77,
-	up: function() {
+	up() {
 		if (RocketChat && RocketChat.models && RocketChat.models.Rooms) {
 			RocketChat.models.Rooms.find({
 				t: 'l',
