@@ -202,7 +202,7 @@ Template.pushNotificationsFlexTab.onCreated(function() {
 				break;
 			case 'hideUnreadStatus':
 			case 'disableNotifications':
-				value = this.$('input[name='+ field +']:checked').val() ? '1' : '0';
+				value = this.$(`input[name=${ field }]:checked`).val() ? '1' : '0';
 				break;
 			default:
 				value = this.$(`input[name=${ field }]:checked`).val();
