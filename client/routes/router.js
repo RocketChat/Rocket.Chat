@@ -157,7 +157,7 @@ FlowRouter.route('/register/:hash', {
 
 FlowRouter.notFound = {
 	action() {
-	BlazeLayout.render('pageNotFound');
+		BlazeLayout.render('pageNotFound');
 }
 };
 
