@@ -27,9 +27,9 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 	function messageContainsHighlight(message, highlights) {
 		if (! highlights || highlights.length === 0) { return false; }
 
-		var has = false;
+		let has = false;
 		highlights.some(function(highlight) {
-			var regexp = new RegExp(s.escapeRegExp(highlight), 'i');
+			const regexp = new RegExp(s.escapeRegExp(highlight), 'i');
 			if (regexp.test(message.msg)) {
 				has = true;
 				return true;
@@ -43,12 +43,10 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 		// Update the other subscriptions
 		RocketChat.models.Subscriptions.incUnreadOfDirectForRoomIdExcludingUserId(message.rid, message.u._id, 1);
 	} else {
-		var mentionIds, toAll, highlightsIds, highlights;
-
-		mentionIds = [];
-		highlightsIds = [];
-		toAll = false;
-		highlights = RocketChat.models.Users.findUsersByUsernamesWithHighlights(room.usernames, { fields: { '_id': 1, 'settings.preferences.highlights': 1 }}).fetch();
+		let toAll = false;
+		const mentionIds = [];
+		const highlightsIds = [];
+		const highlights = RocketChat.models.Users.findUsersByUsernamesWithHighlights(room.usernames, { fields: { '_id': 1, 'settings.preferences.highlights': 1 }}).fetch();
 
 		if (message.mentions != null) {
 			message.mentions.forEach(function(mention) {

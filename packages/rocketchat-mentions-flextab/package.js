@@ -7,6 +7,7 @@ Package.describe({
 
 Package.onUse(function(api) {
 	api.use([
+		'mongo',
 		'ecmascript',
 		'coffeescript',
 		'underscore',

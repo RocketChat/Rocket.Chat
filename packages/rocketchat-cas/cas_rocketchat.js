@@ -27,7 +27,7 @@ Meteor.startup(function() {
 	});
 });
 
-var timer;
+let timer;
 
 function updateServices(/*record*/) {
 	if (typeof timer !== 'undefined') {
@@ -35,7 +35,7 @@ function updateServices(/*record*/) {
 	}
 
 	timer = Meteor.setTimeout(function() {
-		var data = {
+		const data = {
 			// These will pe passed to 'node-cas' as options
 			enabled:          RocketChat.settings.get('CAS_enabled'),
 			base_url:         RocketChat.settings.get('CAS_base_url'),

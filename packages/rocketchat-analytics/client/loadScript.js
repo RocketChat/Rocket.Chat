@@ -15,7 +15,7 @@ Template.body.onRendered(() => {
 				window._paq.push(['trackPageView']);
 				window._paq.push(['enableLinkTracking']);
 				(() => {
-					window._paq.push(['setTrackerUrl', piwikUrl + 'piwik.php']);
+					window._paq.push(['setTrackerUrl', `${ piwikUrl }piwik.php`]);
 					window._paq.push(['setSiteId', Number.parseInt(piwikSiteId)]);
 					const d = document;
 					const g = d.createElement('script');
@@ -23,7 +23,7 @@ Template.body.onRendered(() => {
 					g.type = 'text/javascript';
 					g.async = true;
 					g.defer = true;
-					g.src = piwikUrl + 'piwik.js';
+					g.src = `${ piwikUrl }piwik.js`;
 					s.parentNode.insertBefore(g, s);
 				})();
 			}

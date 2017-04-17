@@ -6,7 +6,7 @@ Package.describe({
 
 Package.onUse(function(api) {
 	api.use([
-		'coffeescript',
+		'mongo',
 		'ecmascript',
 		'underscore',
 		'less',
@@ -16,20 +16,20 @@ Package.onUse(function(api) {
 	api.use('templating', 'client');
 
 	api.addFiles([
-		'client/lib/PinnedMessage.coffee',
-		'client/actionButton.coffee',
+		'client/lib/PinnedMessage.js',
+		'client/actionButton.js',
 		'client/messageType.js',
-		'client/pinMessage.coffee',
-		'client/tabBar.coffee',
+		'client/pinMessage.js',
+		'client/tabBar.js',
 		'client/views/pinnedMessages.html',
-		'client/views/pinnedMessages.coffee',
+		'client/views/pinnedMessages.js',
 		'client/views/stylesheets/messagepin.less'
 	], 'client');
 
 	api.addFiles([
-		'server/settings.coffee',
-		'server/pinMessage.coffee',
-		'server/publications/pinnedMessages.coffee',
-		'server/startup/indexes.coffee'
+		'server/settings.js',
+		'server/pinMessage.js',
+		'server/publications/pinnedMessages.js',
+		'server/startup/indexes.js'
 	], 'server');
 });
