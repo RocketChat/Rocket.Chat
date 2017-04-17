@@ -115,8 +115,6 @@ RocketChat.EmojiPicker = {
 
 		window.localStorage.setItem('emoji.recent', this.recent);
 		RocketChat.emoji.packages.base.emojisByCategory.recent = this.recent;
-
-		this.updateRecent();
 	},
 	updateRecent() {
 		const total = RocketChat.emoji.packages.base.emojisByCategory.recent.length;
