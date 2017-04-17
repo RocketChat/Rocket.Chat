@@ -13,7 +13,7 @@ Package.onUse(function(api) {
 	api.use('templating', 'client');
 
 	api.addFiles('adapter.js', 'client');
-	api.addFiles('WebRTCClass.coffee', 'client');
+	api.addFiles('WebRTCClass.js', 'client');
 	api.addFiles('screenShare.coffee', 'client');
 
 	api.addFiles('server/settings.coffee', 'server');
