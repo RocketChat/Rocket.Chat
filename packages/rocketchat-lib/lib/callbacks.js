@@ -73,7 +73,7 @@ RocketChat.callbacks.remove = function(hookName, id) {
 
 RocketChat.callbacks.run = function(hook, item, constant) {
 	const callbacks = RocketChat.callbacks[hook];
-	if (!callbacks && callbacks.length) {
+	if (callbacks && callbacks.length) {
 		let totalTime = 0;
 		const result = _.sortBy(callbacks, function(callback) {
 			return callback.priority || RocketChat.callbacks.priority.MEDIUM;

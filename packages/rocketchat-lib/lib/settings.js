@@ -28,7 +28,7 @@ RocketChat.settings = {
 					callback(key, value);
 				});
 			}
-			return Meteor.settings[_id] && callback(_id, Meteor.settings[_id]);
+			return Meteor.settings[_id] != null && callback(_id, Meteor.settings[_id]);
 		} else {
 			if (!Meteor.settings) {
 				return;
