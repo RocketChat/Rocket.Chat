@@ -56,7 +56,6 @@ function updateEmojiPickerList() {
 		html += `<li class="emoji-${ entry }" data-emoji="${ entry }">${ renderedEmoji }</li>`;
 	}
 	$('.rocket.emoji-list').empty().append(html);
-	RocketChat.EmojiPicker.updateRecent();
 }
 
 deleteEmojiCustom = function(emojiData) {
