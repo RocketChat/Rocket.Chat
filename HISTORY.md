@@ -1,14 +1,211 @@
-# History
+<a name="0.56.0-develop"></a>
+# 0.56.0-develop (2017-04-18)
 
-## NEXT
 
-- [NEW] Permission `join-without-join-code` assigned to admins and bots by default (#6139)
-- [NEW] Integrations, both incoming and outgoing, now have access to the models. Example: `Users.findOneById(id)` (#6336)
-- [NEW] Option to enable `Two Factor Authentication` in user's account preference
-- [FIX] Incoming integrations would break when trying to use the `Store` feature.
-- [FIX] Outgoing webhooks which have an error and they're retrying would still retry even if the integration was disabled. (#4835)
-- [FIX] Removed Deprecated Package rocketchat:sharedsecret.
-- [BREAK] `getUsersOfRoom` API to return array of objects with user and username, instead of array of strings
+### New Features
+
+- [#6615](https://github.com/RocketChat/Rocket.Chat/pull/6615) Add a setting to not run outgoing integrations on message edits
+- [#6692](https://github.com/RocketChat/Rocket.Chat/pull/6692) Use tokenSentVia parameter for clientid/secret to token endpoint
+
+
+### Bug Fixes
+
+- [#6709](https://github.com/RocketChat/Rocket.Chat/pull/6709) emoji picker exception
+- [#6709](https://github.com/RocketChat/Rocket.Chat/pull/6709) emoji picker exception
+- [#6704](https://github.com/RocketChat/Rocket.Chat/pull/6704) Fix message types
+
+
+<details>
+<summary>Others</summary>
+
+- [#6703](https://github.com/RocketChat/Rocket.Chat/pull/6703) LingoHub based on develop
+- [#6706](https://github.com/RocketChat/Rocket.Chat/pull/6706) meteor update to 1.4.4
+</details>
+
+
+
+<a name="0.55.0"></a>
+# 0.55.0 (2017-04-18)
+
+
+### Bug Fixes
+
+- [#6709](https://github.com/RocketChat/Rocket.Chat/pull/6709) emoji picker exception
+
+
+
+<a name="0.55.0-rc.6"></a>
+# 0.55.0-rc.6 (2017-04-17)
+
+
+### Bug Fixes
+
+- [#6704](https://github.com/RocketChat/Rocket.Chat/pull/6704) Fix message types
+
+
+
+<a name="0.55.0-rc.5"></a>
+# 0.55.0-rc.5 (2017-04-13)
+
+
+### Bug Fixes
+
+- [#6684](https://github.com/RocketChat/Rocket.Chat/pull/6684) Allow question on OAuth token path
+- [#6683](https://github.com/RocketChat/Rocket.Chat/pull/6683) Error when returning undefined from incoming intergation’s script
+- [#6686](https://github.com/RocketChat/Rocket.Chat/pull/6686) Update server cache indexes on record updates
+
+
+
+<a name="0.55.0-rc.4"></a>
+# 0.55.0-rc.4 (2017-04-13)
+
+
+### New Features
+
+- [#6681](https://github.com/RocketChat/Rocket.Chat/pull/6681) Expose Livechat to Incoming Integrations and allow response
+
+
+### Bug Fixes
+
+- [#6659](https://github.com/RocketChat/Rocket.Chat/pull/6659) Administrators being rate limited when editing users data
+- [#6680](https://github.com/RocketChat/Rocket.Chat/pull/6680) Downgrade email package to from 1.2.0 to 1.1.18
+- [#6682](https://github.com/RocketChat/Rocket.Chat/pull/6682) Fix Logger stdout publication
+
+
+
+<a name="0.55.0-rc.3"></a>
+# 0.55.0-rc.3 (2017-04-11)
+
+
+### Bug Fixes
+
+- [#6658](https://github.com/RocketChat/Rocket.Chat/pull/6658) Revert unwanted UI changes
+
+
+
+<a name="0.55.0-rc.2"></a>
+# 0.55.0-rc.2 (2017-04-10)
+
+
+### New Features
+
+- [#6634](https://github.com/RocketChat/Rocket.Chat/pull/6634) Add monitoring package
+- [#6632](https://github.com/RocketChat/Rocket.Chat/pull/6632) Drupal oAuth Integration for Rocketchat
+
+
+### Bug Fixes
+
+- [#6648](https://github.com/RocketChat/Rocket.Chat/pull/6648) Do not escaping markdown on message attachments
+- [#6651](https://github.com/RocketChat/Rocket.Chat/pull/6651) Encode avatar url to prevent CSS injection
+- [#6650](https://github.com/RocketChat/Rocket.Chat/pull/6650) Improve markdown code
+
+
+<details>
+<summary>Others</summary>
+
+- [#6649](https://github.com/RocketChat/Rocket.Chat/pull/6649) Added Deploy method and platform to stats
+- [#6647](https://github.com/RocketChat/Rocket.Chat/pull/6647) LingoHub based on develop
+- [#6631](https://github.com/RocketChat/Rocket.Chat/pull/6631) meteor update
+</details>
+
+
+
+<a name="0.55.0-rc.1"></a>
+# 0.55.0-rc.1 (2017-04-07)
+
+
+### New Features
+
+- [#6616](https://github.com/RocketChat/Rocket.Chat/pull/6616) 'users.resetAvatar' rest api endpoint
+
+
+### Bug Fixes
+
+- [#6617](https://github.com/RocketChat/Rocket.Chat/pull/6617) arguments logger
+- [#6620](https://github.com/RocketChat/Rocket.Chat/pull/6620) Incorrect curl command being generated on incoming integrations
+
+
+
+<a name="0.55.0-rc.0"></a>
+# 0.55.0-rc.0 (2017-04-06)
+
+
+### BREACKING CHANGES
+ - :hand: `getUsersOfRoom` API to return array of objects with user and username, instead of array of strings
+
+
+### New Features
+- :hand: Permission `join-without-join-code` assigned to admins and bots by default (#6139)
+- :hand: Integrations, both incoming and outgoing, now have access to the models. Example: `Users.findOneById(id)` (#6336)
+
+- [#6565](https://github.com/RocketChat/Rocket.Chat/pull/6565) Add shield.svg api route to generate custom shields/badges
+- [#6554](https://github.com/RocketChat/Rocket.Chat/pull/6554) Added oauth2 userinfo endpoint
+- [#6577](https://github.com/RocketChat/Rocket.Chat/pull/6577) resolve merge share function
+- [#6608](https://github.com/RocketChat/Rocket.Chat/pull/6608) Switch Snaps to use oplog
+- [#6476](https://github.com/RocketChat/Rocket.Chat/pull/6476) Two Factor Auth
+
+
+### Bug Fixes
+- :hand: Incoming integrations would break when trying to use the `Store` feature.
+- :hand: Outgoing webhooks which have an error and they're retrying would still retry even if the integration was disabled. (#4835)
+- :hand: Removed Deprecated Package rocketchat:sharedsecret.
+
+- [#6590](https://github.com/RocketChat/Rocket.Chat/pull/6590) Accounts from LinkedIn OAuth without name
+- [#6531](https://github.com/RocketChat/Rocket.Chat/pull/6531) can not get access_token when using custom oauth
+- [#6594](https://github.com/RocketChat/Rocket.Chat/pull/6594) Do not add default roles for users without services field
+- [#6598](https://github.com/RocketChat/Rocket.Chat/pull/6598) Large files crashed browser when trying to show preview
+- [#6600](https://github.com/RocketChat/Rocket.Chat/pull/6600) messageBox: put "joinCodeRequired" back
+- [#6575](https://github.com/RocketChat/Rocket.Chat/pull/6575) Usage of subtagged languages
+- [#6562](https://github.com/RocketChat/Rocket.Chat/pull/6562) UTC offset missing UTC text when positive
+
+
+<details>
+<summary>Others</summary>
+
+- [#6597](https://github.com/RocketChat/Rocket.Chat/pull/6597) Add `fname` to subscriptions in memory
+- [#6614](https://github.com/RocketChat/Rocket.Chat/pull/6614) Add candidate snap channel
+- [#6458](https://github.com/RocketChat/Rocket.Chat/pull/6458) Add ESLint rule `one-var`
+- [#6280](https://github.com/RocketChat/Rocket.Chat/pull/6280) Clipboard [Firefox version < 50]
+- [#6503](https://github.com/RocketChat/Rocket.Chat/pull/6503) Convert File Package to js
+- [#6471](https://github.com/RocketChat/Rocket.Chat/pull/6471) convert mapview package to js
+- [#6576](https://github.com/RocketChat/Rocket.Chat/pull/6576) Convert Message Pin Package to JS
+- [#6539](https://github.com/RocketChat/Rocket.Chat/pull/6539) convert rocketchat-ui part 2
+- [#6446](https://github.com/RocketChat/Rocket.Chat/pull/6446) Convert Tutum Package to JS
+- [#6561](https://github.com/RocketChat/Rocket.Chat/pull/6561) Convert Ui-Login Package to Js
+- [#6498](https://github.com/RocketChat/Rocket.Chat/pull/6498) Convert Ui-Master Package to Js
+- [#6473](https://github.com/RocketChat/Rocket.Chat/pull/6473) Convert ui-vrecord Package to JS
+- [#6494](https://github.com/RocketChat/Rocket.Chat/pull/6494) Convert Version Package to JS
+- [#6499](https://github.com/RocketChat/Rocket.Chat/pull/6499) Convert Wordpress Package to js
+- [#6496](https://github.com/RocketChat/Rocket.Chat/pull/6496) converted getAvatarUrlFromUsername
+- [#6500](https://github.com/RocketChat/Rocket.Chat/pull/6500) converted messageAttachment coffee to js
+- [#6467](https://github.com/RocketChat/Rocket.Chat/pull/6467) converted rocketchat-mentions coffee to js
+- [#6497](https://github.com/RocketChat/Rocket.Chat/pull/6497) converted slashcommand-invite coffee to js
+- [#6469](https://github.com/RocketChat/Rocket.Chat/pull/6469) converted slashcommand-join coffee to js
+- [#6470](https://github.com/RocketChat/Rocket.Chat/pull/6470) converted slashcommand-leave coffee to js
+- [#6468](https://github.com/RocketChat/Rocket.Chat/pull/6468) converted slashcommand-me coffee to js
+- [#6501](https://github.com/RocketChat/Rocket.Chat/pull/6501) converted slashcommand-msg coffee to js
+- [#6474](https://github.com/RocketChat/Rocket.Chat/pull/6474) converted slashcommands-mute coffee to js
+- [#6505](https://github.com/RocketChat/Rocket.Chat/pull/6505) Create groups.addAll endpoint and add activeUsersOnly param.
+- [#6584](https://github.com/RocketChat/Rocket.Chat/pull/6584) dependencies upgrade
+- [#6479](https://github.com/RocketChat/Rocket.Chat/pull/6479) ESLint add rule `no-void`
+- [#6591](https://github.com/RocketChat/Rocket.Chat/pull/6591) Fix recently introduced bug: OnePassword not defined
+- [#6574](https://github.com/RocketChat/Rocket.Chat/pull/6574) LingoHub based on develop
+- [#6567](https://github.com/RocketChat/Rocket.Chat/pull/6567) LingoHub based on develop
+- [#6585](https://github.com/RocketChat/Rocket.Chat/pull/6585) Move room display name logic to roomType definition
+- [#6571](https://github.com/RocketChat/Rocket.Chat/pull/6571) Move wordpress packages client files to client folder
+- [#6351](https://github.com/RocketChat/Rocket.Chat/pull/6351) New feature: Room announcement
+- [#6596](https://github.com/RocketChat/Rocket.Chat/pull/6596) Only configure LoggerManager on server
+- [#6298](https://github.com/RocketChat/Rocket.Chat/pull/6298) POC Google Natural Language integration
+- [#6543](https://github.com/RocketChat/Rocket.Chat/pull/6543) Remove coffeescript package from ui-flextab
+- [#6542](https://github.com/RocketChat/Rocket.Chat/pull/6542) Remove coffeescript package from ui-sidenav
+- [#6540](https://github.com/RocketChat/Rocket.Chat/pull/6540) Remove Deprecated Shared Secret Package
+- [#6551](https://github.com/RocketChat/Rocket.Chat/pull/6551) rocketchat-channel-settings coffee to js
+- [#6541](https://github.com/RocketChat/Rocket.Chat/pull/6541) rocketchat-channel-settings-mail-messages coffee to js
+- [#6553](https://github.com/RocketChat/Rocket.Chat/pull/6553) rocketchat-lib part1
+- [#6504](https://github.com/RocketChat/Rocket.Chat/pull/6504) rocketchat-ui coffee to js part1
+- [#3851](https://github.com/RocketChat/Rocket.Chat/pull/3851) Use real name instead of username for messages and direct messages list
+</details>
+
 
 ## 0.54.2 - 2017-Mar-24
 
