@@ -1,7 +1,7 @@
 {
 	"name": "Rocket.Chat",
 	"description": "The Ultimate Open Source WebChat Platform",
-	"version": "0.55.0-develop",
+	"version": "0.55.0",
 	"author": {
 		"name": "Rocket.Chat",
 		"url": "https://rocket.chat/"
@@ -44,7 +44,7 @@
 		"chimp-test": "chimp tests/chimp-config.js",
 		"postinstall": "cd packages/rocketchat-katex && npm i",
 		"version": "node .scripts/version.js",
-		"release": "conventional-changelog --config .github/changelog.js -i HISTORY.md -s"
+		"release": "npm run version && conventional-changelog --config .github/changelog.js -i HISTORY.md -s"
 	},
 	"license": "MIT",
 	"repository": {
