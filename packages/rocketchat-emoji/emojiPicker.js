@@ -6,7 +6,7 @@ const emojiCategories = {};
  * @return {string} readable and translated
  */
 function categoryName(category) {
-	for (let emojiPackage in RocketChat.emoji.packages) {
+	for (const emojiPackage in RocketChat.emoji.packages) {
 		if (RocketChat.emoji.packages.hasOwnProperty(emojiPackage)) {
 			if (RocketChat.emoji.packages[emojiPackage].emojiCategories.hasOwnProperty(category)) {
 				return RocketChat.emoji.packages[emojiPackage].emojiCategories[category];
@@ -24,7 +24,7 @@ function getEmojisByCategory(category) {
 	const t = Template.instance();
 	const actualTone = t.tone;
 	let html = '';
-	for (let emojiPackage in RocketChat.emoji.packages) {
+	for (const emojiPackage in RocketChat.emoji.packages) {
 		if (RocketChat.emoji.packages.hasOwnProperty(emojiPackage)) {
 			if (RocketChat.emoji.packages[emojiPackage].emojisByCategory.hasOwnProperty(category)) {
 				const total = RocketChat.emoji.packages[emojiPackage].emojisByCategory[category].length;
@@ -74,7 +74,7 @@ function getEmojisBySearchTerm(searchTerm) {
 
 			let emojiFound = false;
 
-			for (let key in RocketChat.emoji.packages[emojiPackage].emojisByCategory) {
+			for (const key in RocketChat.emoji.packages[emojiPackage].emojisByCategory) {
 				if (RocketChat.emoji.packages[emojiPackage].emojisByCategory.hasOwnProperty(key)) {
 					const contents = RocketChat.emoji.packages[emojiPackage].emojisByCategory[key];
 					if (contents.indexOf(emoji) !== -1) {
@@ -97,9 +97,9 @@ function getEmojisBySearchTerm(searchTerm) {
 Template.emojiPicker.helpers({
 	category() {
 		const categories = [];
-		for (let emojiPackage in RocketChat.emoji.packages) {
+		for (const emojiPackage in RocketChat.emoji.packages) {
 			if (RocketChat.emoji.packages.hasOwnProperty(emojiPackage)) {
-				for (let key in RocketChat.emoji.packages[emojiPackage].emojisByCategory) {
+				for (const key in RocketChat.emoji.packages[emojiPackage].emojisByCategory) {
 					if (RocketChat.emoji.packages[emojiPackage].emojisByCategory.hasOwnProperty(key)) {
 						categories.push(key);
 					}
@@ -110,7 +110,7 @@ Template.emojiPicker.helpers({
 	},
 	emojiByCategory(category) {
 		let emojisByCategory = [];
-		for (let emojiPackage in RocketChat.emoji.packages) {
+		for (const emojiPackage in RocketChat.emoji.packages) {
 			if (RocketChat.emoji.packages.hasOwnProperty(emojiPackage)) {
 				if (RocketChat.emoji.packages[emojiPackage].emojisByCategory.hasOwnProperty(category)) {
 					emojisByCategory = emojisByCategory.concat(RocketChat.emoji.packages[emojiPackage].emojisByCategory[category]);
@@ -206,7 +206,7 @@ Template.emojiPicker.events({
 			newTone = '';
 		}
 
-		for (let emojiPackage in RocketChat.emoji.packages) {
+		for (const emojiPackage in RocketChat.emoji.packages) {
 			if (RocketChat.emoji.packages.hasOwnProperty(emojiPackage)) {
 				if (RocketChat.emoji.packages[emojiPackage].hasOwnProperty('toneList')) {
 					for (let emoji in RocketChat.emoji.packages[emojiPackage].toneList) {
@@ -231,7 +231,7 @@ Template.emojiPicker.events({
 		const actualTone = instance.tone;
 		let tone = '';
 
-		for (let emojiPackage in RocketChat.emoji.packages) {
+		for (const emojiPackage in RocketChat.emoji.packages) {
 			if (RocketChat.emoji.packages.hasOwnProperty(emojiPackage)) {
 				if (actualTone > 0 && RocketChat.emoji.packages[emojiPackage].toneList.hasOwnProperty(emoji)) {
 					tone = `_tone${ actualTone }`;
