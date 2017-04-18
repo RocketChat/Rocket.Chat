@@ -115,21 +115,33 @@ RocketChat.EmojiPicker = {
 
 		window.localStorage.setItem('emoji.recent', this.recent);
 		RocketChat.emoji.packages.base.emojisByCategory.recent = this.recent;
+		this.updateRecent();
 	},
 	updateRecent() {
-		const total = RocketChat.emoji.packages.base.emojisByCategory.recent.length;
-		let html = '';
-		for (let i = 0; i < total; i++) {
-			const emoji = RocketChat.emoji.packages.base.emojisByCategory.recent[i];
-
-			if (isSetNotNull(() => RocketChat.emoji.list[`:${ emoji }:`])) {
-				const emojiPackage = RocketChat.emoji.list[`:${ emoji }:`].emojiPackage;
-				const renderedEmoji = RocketChat.emoji.packages[emojiPackage].render(`:${ emoji }:`);
-				html += `<li class="emoji-${ emoji }" data-emoji="${ emoji }">${ renderedEmoji }</li>`;
-			} else {
-				this.recent = _.without(this.recent, emoji);
-			}
+		const instance = Template.instance();
+		if(instance) {
+			instance.recentNeedsUpdate.set(true);
+		} else {
+			this.refreshDynamicEmojiLists();
 		}
-		$('.recent.emoji-list').empty().append(html);
+	},
+	refreshDynamicEmojiLists() {
+		const dynamicEmojiLists = [
+			{ name: 'recent',
+				source: RocketChat.emoji.packages.base.emojisByCategory.recent
+			},
+			{ name: 'rocket',
+				source: RocketChat.emoji.packages.emojiCustom.emojisByCategory.rocket
+		}];
+		dynamicEmojiLists.forEach(({name, source}) => {
+			if(source) {
+				for (let i = 0; i < source.length; i++) {
+					const emoji = source[i];
+					if (!RocketChat.emoji.list[`:${ emoji }:`]) {
+						source = _.without(source, emoji);
+					}
+				}
+			}
+		});
 	}
 };
