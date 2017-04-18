@@ -1,3 +1,13 @@
+<a name="0.55.0"></a>
+# 0.55.0 (2017-04-18)
+
+
+### Bug Fixes
+
+- [#6709](https://github.com/RocketChat/Rocket.Chat/pull/6709) emoji picker exception
+
+
+
 <a name="0.55.0-rc.6"></a>
 # 0.55.0-rc.6 (2017-04-17)
 
