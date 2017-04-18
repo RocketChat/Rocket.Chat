@@ -127,7 +127,7 @@ Template.emojiPicker.helpers({
 		const searchTerm = t.currentSearchTerm.get();
 		const activeCategory = t.currentCategory.get();
 		//this will cause the reflow when recent list gets updated
-		const recentNeedsUpdate = t.recentNeedsUpdate.get();
+		t.recentNeedsUpdate.get();
 
 		//we only need to replace the active category, since switching tabs resets the filter
 		if (activeCategory !== category) {
