@@ -1,3 +1,29 @@
+<a name="0.56.0-develop"></a>
+# 0.56.0-develop (2017-04-18)
+
+
+### New Features
+
+- [#6615](https://github.com/RocketChat/Rocket.Chat/pull/6615) Add a setting to not run outgoing integrations on message edits
+- [#6692](https://github.com/RocketChat/Rocket.Chat/pull/6692) Use tokenSentVia parameter for clientid/secret to token endpoint
+
+
+### Bug Fixes
+
+- [#6709](https://github.com/RocketChat/Rocket.Chat/pull/6709) emoji picker exception
+- [#6709](https://github.com/RocketChat/Rocket.Chat/pull/6709) emoji picker exception
+- [#6704](https://github.com/RocketChat/Rocket.Chat/pull/6704) Fix message types
+
+
+<details>
+<summary>Others</summary>
+
+- [#6703](https://github.com/RocketChat/Rocket.Chat/pull/6703) LingoHub based on develop
+- [#6706](https://github.com/RocketChat/Rocket.Chat/pull/6706) meteor update to 1.4.4
+</details>
+
+
+
 <a name="0.55.0"></a>
 # 0.55.0 (2017-04-18)
 
