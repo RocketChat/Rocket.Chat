@@ -277,7 +277,7 @@ blockquote {
 		overflow-y: scroll;
 		margin-top: 60px;
 		-webkit-overflow-scrolling: touch;
-		.calc(height, ~'100% - 60px');
+		height: calc(~'100% - 60px');
 
 		fieldset {
 			margin-bottom: 1em;
@@ -620,7 +620,7 @@ input.input-forward {
 
 input.input-forward.show {
 	visibility: visible;
-	.calc(width, ~'100% - 48px');
+	width: calc(~'100% - 48px');
 }
 
 input.search {
@@ -876,7 +876,7 @@ label.required::after {
 	width: 25px;
 	height: 25px;
 	z-index: 100;
-	.calc(top, ~"50% - 13px");
+	top: calc(~"50% - 13px");
 
 	&::before,
 	&::after {
@@ -885,8 +885,8 @@ label.required::after {
 		width: 2px;
 		height: 10px;
 		position: absolute;
-		.calc(top, ~"50% - 5px");
-		.calc(left, ~"50% - 5px");
+		top: calc(~"50% - 5px");
+		left: calc(~"50% - 5px");
 	}
 
 	&::before {
@@ -1044,7 +1044,7 @@ label.required::after {
 			height: 100%;
 			.flex-center;
 			flex-flow: row nowrap;
-			.calc(width, ~"100% - 60px");
+			width: calc(~"100% - 60px");
 		}
 
 		h4 {
@@ -1072,7 +1072,7 @@ label.required::after {
 		overflow-y: auto;
 		-webkit-overflow-scrolling: touch;
 		direction: rtl;
-		.calc(height, ~'100% - ' @header-min-height + @footer-min-height);
+		height: calc(~'100% - ' @header-min-height + @footer-min-height);
 		transition: transform 0.3s cubic-bezier(0.5, 0, 0.1, 1);
 		z-index: 99;
 
@@ -1098,7 +1098,7 @@ label.required::after {
 				z-index: 5;
 				position: absolute;
 				left: 18px;
-				.calc(top, ~"50% - 8px");
+				top: calc(~"50% - 8px");
 			}
 		}
 
@@ -1236,7 +1236,7 @@ label.required::after {
 		direction: rtl;
 		position: absolute;
 		top: @header-min-height;
-		.calc(height, ~"100% - " @header-min-height + @footer-min-height);
+		height: calc(~"100% - " @header-min-height + @footer-min-height);
 		width: 100%;
 		overflow-x: hidden;
 		overflow-y: auto;
@@ -1761,7 +1761,7 @@ label.required::after {
 	}
 
 	input[type='text'] {
-		.calc(width, ~'100% - 100px');
+		width: calc(~'100% - 100px');
 		vertical-align: top;
 		margin-top: -4px;
 		margin-left: -3px;
@@ -2685,7 +2685,7 @@ label.required::after {
 	margin: 60px 20px 0 0;
 	overflow: hidden;
 	width: 100%;
-	.calc(height, ~'100% - 120px');
+	height: calc(~'100% - 120px');
 
 	.message-cog-container {
 		.message-action {
@@ -2809,11 +2809,10 @@ label.required::after {
 			display: block;
 			position: absolute;
 			top: -30px;
-			left: 0;
+			left: calc(~"50% - 70px");
 			font-size: 12px;
 			font-weight: 600;
 			text-align: center;
-			.calc(left, ~"50% - 70px");
 			z-index: 10;
 			padding: 0 10px;
 			min-width: 140px;
@@ -3841,7 +3840,7 @@ body:not(.is-cordova) {
 			text-overflow: ellipsis;
 			position: relative;
 			padding-left: 10px;
-			.calc(width, ~"100% - 45px");
+			width: calc(~"100% - 45px");
 		}
 	}
 
@@ -3909,7 +3908,7 @@ body:not(.is-cordova) {
 			main {
 				position: absolute;
 				overflow-y: scroll;
-				.calc(height, ~'100% - 112px');
+				height: calc(~'100% - 112px');
 			}
 		}
 	}
