@@ -119,7 +119,7 @@ RocketChat.EmojiPicker = {
 	},
 	updateRecent() {
 		const instance = Template.instance();
-		if(instance) {
+		if (instance) {
 			instance.recentNeedsUpdate.set(true);
 		} else {
 			this.refreshDynamicEmojiLists();
@@ -127,18 +127,16 @@ RocketChat.EmojiPicker = {
 	},
 	refreshDynamicEmojiLists() {
 		const dynamicEmojiLists = [
-			{ name: 'recent',
-				source: RocketChat.emoji.packages.base.emojisByCategory.recent
-			},
-			{ name: 'rocket',
-				source: RocketChat.emoji.packages.emojiCustom.emojisByCategory.rocket
-		}];
-		dynamicEmojiLists.forEach(({name, source}) => {
-			if(source) {
-				for (let i = 0; i < source.length; i++) {
-					const emoji = source[i];
+			RocketChat.emoji.packages.base.emojisByCategory.recent,
+			RocketChat.emoji.packages.emojiCustom.emojisByCategory.rocket
+		];
+
+		dynamicEmojiLists.forEach((category) => {
+			if (category) {
+				for (let i = 0; i < category.length; i++) {
+					const emoji = category[i];
 					if (!RocketChat.emoji.list[`:${ emoji }:`]) {
-						source = _.without(source, emoji);
+						category = _.without(category, emoji);
 					}
 				}
 			}
