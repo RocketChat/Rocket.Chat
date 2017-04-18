@@ -66,7 +66,7 @@
 		"babel-runtime": "^6.23.0",
 		"bcrypt": "^1.0.2",
 		"codemirror": "^5.25.0",
-		"file-type": "^4.1.0",
+		"file-type": "^4.2.0",
 		"highlight.js": "^9.10.0",
 		"jquery": "^3.2.1",
 		"mime-db": "^1.27.0",
