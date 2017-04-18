@@ -126,6 +126,8 @@ Template.emojiPicker.helpers({
 		const t = Template.instance();
 		const searchTerm = t.currentSearchTerm.get();
 		const activeCategory = t.currentCategory.get();
+		//this will cause the reflow when recent list gets updated
+		const recentNeedsUpdate = t.recentNeedsUpdate.get();
 
 		//we only need to replace the active category, since switching tabs resets the filter
 		if (activeCategory !== category) {
@@ -263,7 +265,7 @@ Template.emojiPicker.events({
 Template.emojiPicker.onCreated(function() {
 	this.tone = RocketChat.EmojiPicker.getTone();
 	const recent = RocketChat.EmojiPicker.getRecent();
-
+	this.recentNeedsUpdate = new ReactiveVar(false);
 	this.currentCategory = new ReactiveVar(recent.length > 0 ? 'recent' : 'people');
 	this.currentSearchTerm = new ReactiveVar('');
 
@@ -276,4 +278,10 @@ Template.emojiPicker.onCreated(function() {
 		$('.current-tone').addClass(`tone-${ newTone }`);
 		this.tone = newTone;
 	};
+
+	this.autorun(() => {
+		if (this.recentNeedsUpdate.get()) {
+			this.recentNeedsUpdate.set(false);
+		}
+	});
 });
