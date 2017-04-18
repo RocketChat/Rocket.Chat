@@ -1,4 +1,4 @@
-/* globals Blaze, isSetNotNull, Template */
+/* globals Blaze, Template */
 RocketChat.EmojiPicker = {
 	width: 390,
 	height: 238,
