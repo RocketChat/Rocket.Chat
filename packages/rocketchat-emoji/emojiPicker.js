@@ -209,7 +209,7 @@ Template.emojiPicker.events({
 		for (const emojiPackage in RocketChat.emoji.packages) {
 			if (RocketChat.emoji.packages.hasOwnProperty(emojiPackage)) {
 				if (RocketChat.emoji.packages[emojiPackage].hasOwnProperty('toneList')) {
-					for (let emoji in RocketChat.emoji.packages[emojiPackage].toneList) {
+					for (const emoji in RocketChat.emoji.packages[emojiPackage].toneList) {
 						if (RocketChat.emoji.packages[emojiPackage].toneList.hasOwnProperty(emoji)) {
 							$(`.emoji-${ emoji }`).html(RocketChat.emoji.packages[emojiPackage].render(`:${ emoji }${ newTone }:`));
 						}
