@@ -77,22 +77,30 @@ export class CustomOAuth {
 		}
 
 		let response = undefined;
+
+		const allOptions = {
+			headers: {
+				'User-Agent': this.userAgent, // http://doc.gitlab.com/ce/api/users.html#Current-user
+				Accept: 'application/json'
+			},
+			params: {
+				code: query.code,
+				redirect_uri: OAuth._redirectUri(this.name, config),
+				grant_type: 'authorization_code',
+				state: query.state
+			}
+		};
+
+		// Only send clientID / secret once on header or payload.
+		if (this.tokenSentVia === 'header') {
+			allOptions['auth'] = `${ config.clientId }:${ OAuth.openSecret(config.secret) }`;
+		} else {
+			allOptions['params']['client_secret'] = OAuth.openSecret(config.secret);
+			allOptions['params']['client_id'] = config.clientId;
+		}
+
 		try {
-			response = HTTP.post(this.tokenPath, {
-				auth: `${ config.clientId }:${ OAuth.openSecret(config.secret) }`,
-				headers: {
-					Accept: 'application/json',
-					'User-Agent': this.userAgent
-				},
-				params: {
-					code: query.code,
-					client_id: config.clientId,
-					client_secret: OAuth.openSecret(config.secret),
-					redirect_uri: OAuth._redirectUri(this.name, config),
-					grant_type: 'authorization_code',
-					state: query.state
-				}
-			});
+			response = HTTP.post(this.tokenPath, allOptions);
 		} catch (err) {
 			const error = new Error(`Failed to complete OAuth handshake with ${ this.name } at ${ this.tokenPath }. ${ err.message }`);
 			throw _.extend(error, {response: err.response});
