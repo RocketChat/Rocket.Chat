@@ -27,6 +27,12 @@
 				{{/if}}
 
 				{{#if hasPermission 'view-user-administration'}}
+				<li>
+					<a href="{{pathFor 'admin-status'}}" class="admin-link">{{_ "Status"}}</a>
+				</li>
+				{{/if}}
+
+				{{#if hasPermission 'view-user-administration'}}
 					<li>
 						<a href="{{pathFor 'admin-users'}}" class="admin-link">{{_ "Users"}}</a>
 					</li>

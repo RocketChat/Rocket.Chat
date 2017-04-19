@@ -26,6 +26,13 @@ FlowRouter.route('/admin/info', {
 	}
 });
 
+FlowRouter.route('/admin/status', {
+	name: 'admin-status',
+	action() {
+		BlazeLayout.render('main', {center: 'adminStatus'});
+	}
+});
+
 FlowRouter.route('/admin/import', {
 	name: 'admin-import',
 	action() {
