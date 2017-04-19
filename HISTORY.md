@@ -1,3 +1,13 @@
+<a name="0.55.1"></a>
+## 0.55.1 (2017-04-19)
+
+
+### Bug Fixes
+
+- [#6734](https://github.com/RocketChat/Rocket.Chat/pull/6734) Bug with incoming integration (0.55.1)
+
+
+
 <a name="0.55.0"></a>
 # 0.55.0 (2017-04-18)
 
