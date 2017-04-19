@@ -2,13 +2,6 @@
 //
 // version: v4.1.0 (2016-07-19)
 
-.box-sizing(...) {
-	@process: ~`(function(n){return n=n||"content-box"})((function(){var r="@{arguments}";return r=r.replace(/^\[|\]$/g,"")})())`;
-	-webkit-box-sizing: @process;
-	-moz-box-sizing: @process;
-	box-sizing: @process;
-}
-
 .transform-origin(...) {
 	@process: ~`(function(e){e=e||"50% 50% 0";var t=/\d/gi,r=/(?:\s|^)(\.?\d+\.?\d*)(?![^(]*\)|\w|%|\.)/gi;return/^[^, ]*,/.test(e)&&(e=e.replace(/(?:,)(?![^(]*\))/g,"")),t.test(e)&&(e=e.replace(r,function(e){return 0==e&&e||e+"%"})),e})((function(){var r="@{arguments}";return r=r.replace(/^\[|\]$/g,"")})())`;
 	-webkit-transform-origin: @process;
