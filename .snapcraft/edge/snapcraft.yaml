@@ -98,3 +98,8 @@ parts:
         source-commit: 53e117802fedd5915eeb32907873d8786a4b2936
         snap:
             - bin/caddy
+        after: [go]
+    go:
+        source-tag: go1.8
+        stage:
+        - bin
