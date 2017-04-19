@@ -3914,18 +3914,18 @@ body:not(.is-cordova) {
 	}
 
 	&.opened {
-		.animation(fadeIn .1s ease-out forwards);
+		animation: fadeIn .1s ease-out forwards;
 
 		.modal {
-			.animation(modalEnter .35s cubic-bezier(.5, 0, .1, 1) forwards .1s);
+			animation: modalEnter .35s cubic-bezier(.5, 0, .1, 1) forwards .1s;
 		}
 	}
 
 	&.closed {
-		.animation(fadeOut .2s ease-out forwards);
+		animation: fadeOut .2s ease-out forwards;
 
 		.modal {
-			.animation(modalExit .25s cubic-bezier(.5, 0, .1, 1) forwards);
+			animation: modalExit .25s cubic-bezier(.5, 0, .1, 1) forwards;
 		}
 	}
 

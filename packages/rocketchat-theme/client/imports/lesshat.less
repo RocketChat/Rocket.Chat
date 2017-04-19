@@ -2,14 +2,6 @@
 //
 // version: v4.1.0 (2016-07-19)
 
-.animation(...) {
-	@process: ~`(function(e){return e=e||"none",/^[^, ]*,/.test(e)&&(e=e.replace(/(?:,)(?![^(]*\))/g,"")),e})((function(){var r="@{arguments}";return r=r.replace(/^\[|\]$/g,"")})())`;
-	-webkit-animation: @process;
-	-moz-animation: @process;
-	-o-animation: @process;
-	animation: @process;
-}
-
 .box-sizing(...) {
 	@process: ~`(function(n){return n=n||"content-box"})((function(){var r="@{arguments}";return r=r.replace(/^\[|\]$/g,"")})())`;
 	-webkit-box-sizing: @process;
