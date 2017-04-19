@@ -3,7 +3,7 @@
 Template.chatRoomItem.helpers({
 
 	alert() {
-		if ((FlowRouter.getParam('_id') !== this.rid) || !document.hasFocus()) {
+		if (!this.hideUnreadStatus && (FlowRouter.getParam('_id') !== this.rid || !document.hasFocus())) {
 			return this.alert;
 		}
 	},
