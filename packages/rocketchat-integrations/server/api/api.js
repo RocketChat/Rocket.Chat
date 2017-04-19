@@ -209,7 +209,7 @@ function executeIntegrationRest() {
 			}
 			this.bodyParams = result && result.content;
 			if (typeof result !== 'undefined') {
-				this.response = result.response;
+				this.scriptResponse = result.response;
 				if (result.user) {
 					this.user = result.user;
 				}
@@ -235,10 +235,10 @@ function executeIntegrationRest() {
 		if (_.isEmpty(message)) {
 			return RocketChat.API.v1.failure('unknown-error');
 		}
-		if (this.response) {
-			logger.incoming.debug('response', this.response);
+		if (this.scriptResponse) {
+			logger.incoming.debug('response', this.scriptResponse);
 		}
-		return RocketChat.API.v1.success(this.response);
+		return RocketChat.API.v1.success(this.scriptResponse);
 	} catch ({error}) {
 		return RocketChat.API.v1.failure(error);
 	}

@@ -38,7 +38,6 @@ Package.onUse(function(api) {
 	api.addFiles('client/main.less', 'client');
 
 	// Run-time stylesheets
-	api.addAssets('server/lesshat.less', 'server');
 	api.addAssets('server/colors.less', 'server');
 });
 
