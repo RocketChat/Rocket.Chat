@@ -2204,7 +2204,7 @@ label.required::after {
 	&.show {
 		opacity: 1;
 		visibility: visible;
-		transform: translateY(0px);
+		transform: translateY(0);
 	}
 
 	> div {
@@ -3777,7 +3777,7 @@ body:not(.is-cordova) {
 	&.selected {
 		.avatar {
 			&::after {
-				transform: scaleX(1)
+				transform: scaleX(1);
 			}
 		}
 	}
@@ -3914,18 +3914,18 @@ body:not(.is-cordova) {
 	}
 
 	&.opened {
-		animation: fadeIn .1s ease-out forwards;
+		animation: fadeIn 0.1s ease-out forwards;
 
 		.modal {
-			animation: modalEnter .35s cubic-bezier(.5, 0, .1, 1) forwards .1s;
+			animation: modalEnter 0.35s cubic-bezier(0.5, 0, 0.1, 1) forwards 0.1s;
 		}
 	}
 
 	&.closed {
-		animation: fadeOut .2s ease-out forwards;
+		animation: fadeOut 0.2s ease-out forwards;
 
 		.modal {
-			animation: modalExit .25s cubic-bezier(.5, 0, .1, 1) forwards;
+			animation: modalExit 0.25s cubic-bezier(0.5, 0, 0.1, 1) forwards;
 		}
 	}
 
