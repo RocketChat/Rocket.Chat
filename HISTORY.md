@@ -2,7 +2,6 @@
 
 ## NEXT
 
-- [NEW] Add option on Channel Settings: Hide Notifications and Hide Unread Room Status (#2707, #2143)
 - [NEW] Permission `join-without-join-code` assigned to admins and bots by default (#6139)
 - [NEW] Integrations, both incoming and outgoing, now have access to the models. Example: `Users.findOneById(id)` (#6336)
 - [NEW] Option to enable `Two Factor Authentication` in user's account preference
