@@ -154,6 +154,3 @@ FlowRouter.route('/register/:hash', {
 		// 	BlazeLayout.render 'logoLayout', { render: 'invalidSecretURL' }
 	}
 });
-
-
-
