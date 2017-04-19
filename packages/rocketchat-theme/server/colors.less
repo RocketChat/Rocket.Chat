@@ -716,7 +716,10 @@ a:hover {
 		}
 
 		&.attention {
-			.blink(@selection-color);
+			animation-duration: 1000ms;
+			animation-name: blink;
+			animation-iteration-count: infinite;
+			animation-direction: alternate;
 		}
 	}
 
@@ -866,5 +869,15 @@ label.required::after {
 .flex-tab {
 	.loading-animation > div {
 		background-color: @primary-font-color;
+	}
+}
+
+@keyframes blink {
+	from {
+		color: @selection-color;
+	}
+
+	to {
+		opacity: inherit;
 	}
 }
