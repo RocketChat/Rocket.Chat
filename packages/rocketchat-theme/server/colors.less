@@ -494,7 +494,11 @@ a:hover {
 
 .messages-container {
 	.edit-room-title {
-		.linkColors(@secondary-font-color, @primary-font-color);
+		color: @secondary-font-color;
+
+		&:hover {
+			color: @primary-font-color;
+		}
 	}
 
 	.footer {
@@ -583,7 +587,11 @@ a:hover {
 	}
 
 	a {
-		.linkColors(@link-font-color, darken(@link-font-color, 10%));
+		color: @link-font-color;
+
+		&:hover {
+			color: darken(@link-font-color, 10%);
+		}
 	}
 
 	.mention-link {
@@ -607,7 +615,11 @@ a:hover {
 .side-nav {
 	a,
 	.info {
-		.linkColors(@tertiary-font-color, @tertiary-font-color);
+		color: @tertiary-font-color;
+
+		&:hover {
+			color: @tertiary-font-color;
+		}
 	}
 
 	.arrow::before,
@@ -854,7 +866,11 @@ i.status-offline {
 }
 
 .alert-link {
-	.linkColors(@link-font-color, darken(@link-font-color, 10%));
+	color: @link-font-color;
+
+	&:hover {
+		color: darken(@link-font-color, 10%);
+	}
 }
 
 label.required::after {
