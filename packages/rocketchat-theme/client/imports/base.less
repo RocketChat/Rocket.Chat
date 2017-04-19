@@ -861,11 +861,11 @@ label.required::after {
 			}
 
 			&:nth-child(1) {
-				.transform(translate(-25%, 3px) rotate(-45deg) scale(0.5, 1));
+				transform: translate(-25%, 3px) rotate(-45deg) scale(0.5, 1);
 			}
 
 			&:nth-child(3) {
-				.transform(translate(-25%, -3px) rotate(45deg) scale(0.5, 1));
+				transform: translate(-25%, -3px) rotate(45deg) scale(0.5, 1);
 			}
 		}
 	}
@@ -890,52 +890,52 @@ label.required::after {
 	}
 
 	&::before {
-		.transform(rotate(135deg) translateX(-4px));
+		transform: rotate(135deg) translateX(-4px);
 		transition: transform 0.185s ease-out, background 0.15s ease-out;
 	}
 
 	&::after {
-		.transform(rotate(-135deg) translateX(-4px));
+		transform: rotate(-135deg) translateX(-4px);
 		transition: transform 0.185s ease-out, background 0.15s ease-out;
 	}
 
 	&.left {
 		&::before {
-			.transform(rotate(45deg) translateY(-4px));
+			transform: rotate(45deg) translateY(-4px);
 		}
 
 		&::after {
-			.transform(rotate(-45deg) translateY(4px));
+			transform: rotate(-45deg) translateY(4px);
 		}
 	}
 
 	&.top {
 		&::before {
-			.transform(rotate(-135deg) translateX(2px) translateY(-2px));
+			transform: rotate(-135deg) translateX(2px) translateY(-2px);
 		}
 
 		&::after {
-			.transform(rotate(135deg) translateX(-2px) translateY(-2px));
+			transform: rotate(135deg) translateX(-2px) translateY(-2px);
 		}
 	}
 
 	&.bottom {
 		&::before {
-			.transform(rotate(-45deg) translateX(-2px) translateY(-2px));
+			transform: rotate(-45deg) translateX(-2px) translateY(-2px);
 		}
 
 		&::after {
-			.transform(rotate(45deg) translateX(2px) translateY(-2px));
+			transform: rotate(45deg) translateX(2px) translateY(-2px);
 		}
 	}
 
 	&.close {
 		&::before {
-			.transform(rotate(-135deg) translateX(0) translateY(0));
+			transform: rotate(-135deg) translateX(0) translateY(0);
 		}
 
 		&::after {
-			.transform(rotate(135deg) translateX(0) translateY(0));
+			transform: rotate(135deg) translateX(0) translateY(0);
 		}
 	}
 }
@@ -1077,7 +1077,7 @@ label.required::after {
 		z-index: 99;
 
 		&.animated-hidden {
-			.transform(translateY(-100%) translateY(-50px));
+			transform: translateY(-100%) translateY(-50px);
 		}
 
 		> .wrapper {
@@ -1159,12 +1159,12 @@ label.required::after {
 	transition: transform 0.15s cubic-bezier(0.5, 0, 0.1, 1);
 
 	&.animated-hidden {
-		.transform(translateX(-100%));
+		transform: translateX(-100%);
 
 		header,
 		footer,
 		.content {
-			.transform(translateX(-100%));
+			transform: translateX(-100%);
 		}
 	}
 
@@ -1513,14 +1513,14 @@ label.required::after {
 				right: -18px;
 				top: 2px;
 				opacity: 0;
-				.transform(translateX(-10px));
+				transform: translateX(-10px);
 				transition: opacity 0.15s ease 0.35s, transform 0.12s ease-out 0.35s;
 			}
 
 			&:hover {
 				.opt {
 					opacity: 1;
-					.transform(translateX(0));
+					transform: translateX(0);
 				}
 			}
 
@@ -1585,7 +1585,7 @@ label.required::after {
 
 			&.fixed {
 				opacity: 1;
-				.transform(translateX(0));
+				transform: translateX(0);
 			}
 		}
 
@@ -2197,14 +2197,14 @@ label.required::after {
 		0 1px 1px 0 rgba(0, 0, 0, 0.2),
 		0 2px 10px 0 rgba(0, 0, 0, 0.16);
 	transition: transform 0.4s ease, visibility 0.3s ease, opacity 0.3s ease;
-	.transform(translateY(-10px));
+	transform: translateY(-10px);
 	opacity: 0;
 	visibility: hidden;
 
 	&.show {
 		opacity: 1;
 		visibility: visible;
-		.transform(translateY(0px));
+		transform: translateY(0px);
 	}
 
 	> div {
@@ -2723,10 +2723,10 @@ label.required::after {
 		left: 50%;
 		z-index: 16;
 		transition: transform 0.3s ease-out;
-		.transform(translateY(0));
+		transform: translateY(0);
 
 		&.not {
-			.transform(translateY(150%));
+			transform: translateY(150%);
 		}
 	}
 
@@ -2744,10 +2744,10 @@ label.required::after {
 		border-top-left-radius: 4px;
 		border-top-right-radius: 4px;
 		transition: transform 0.3s ease-out;
-		.transform(translateY(0));
+		transform: translateY(0);
 
 		&.not {
-			.transform(translateY(150%));
+			transform: translateY(150%);
 		}
 
 		button {
@@ -3262,7 +3262,7 @@ body:not(.is-cordova) {
 				width: 30px;
 				border-width: 0 0 1px;
 				cursor: pointer;
-				.transform(translateX(-27px));
+				transform: translateX(-27px);
 				transition: transform 0.25s ease-out 0.475s, background 0.075s ease-out 0.5s;
 
 				i {
@@ -3320,7 +3320,7 @@ body:not(.is-cordova) {
 			}
 
 			> .animated-hidden {
-				.transform(translateX(100%));
+				transform: translateX(100%);
 				opacity: 0;
 			}
 
@@ -3777,7 +3777,7 @@ body:not(.is-cordova) {
 	&.selected {
 		.avatar {
 			&::after {
-				.transform(scaleX(1))
+				transform: scaleX(1)
 			}
 		}
 	}
@@ -4524,7 +4524,7 @@ body:not(.is-cordova) {
 
 		button.more {
 			width: 60px;
-			.transform(translateX(-57px));
+			transform: translateX(-57px);
 		}
 	}
 
@@ -4776,10 +4776,10 @@ body:not(.is-cordova) {
 	bottom: 8px;
 	left: 50%;
 	transition: transform 0.3s ease-out;
-	.transform(translateY(0));
+	transform: translateY(0);
 
 	&.not {
-		.transform(translateY(150%));
+		transform: translateY(150%);
 	}
 }
 
