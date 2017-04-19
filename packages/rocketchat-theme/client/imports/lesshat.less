@@ -2,15 +2,6 @@
 //
 // version: v4.1.0 (2016-07-19)
 
-.transform-origin(...) {
-	@process: ~`(function(e){e=e||"50% 50% 0";var t=/\d/gi,r=/(?:\s|^)(\.?\d+\.?\d*)(?![^(]*\)|\w|%|\.)/gi;return/^[^, ]*,/.test(e)&&(e=e.replace(/(?:,)(?![^(]*\))/g,"")),t.test(e)&&(e=e.replace(r,function(e){return 0==e&&e||e+"%"})),e})((function(){var r="@{arguments}";return r=r.replace(/^\[|\]$/g,"")})())`;
-	-webkit-transform-origin: @process;
-	-moz-transform-origin: @process;
-	-ms-transform-origin: @process;
-	-o-transform-origin: @process;
-	transform-origin: @process;
-}
-
 .transform-style(...) {
 	@process: ~`(function(n){return n=n||"flat"})((function(){var r="@{arguments}";return r=r.replace(/^\[|\]$/g,"")})())`;
 	-webkit-transform-style: @process;
