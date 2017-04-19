@@ -10,17 +10,7 @@ import supertest from 'supertest';
 describe('Users', function() {
 	this.retries(0);
 
-	before((done) => {
-		request.post(api('login'))
-		.send(login)
-		.expect('Content-Type', 'application/json')
-		.expect(200)
-		.expect((res) => {
-			credentials['X-Auth-Token'] = res.body.data.authToken;
-			credentials['X-User-Id'] = res.body.data.userId;
-		})
-		.end(done);
-	});
+	before(done => getCredentials(done));
 
 	it('/users.create', (done) => {
 		request.post(api('users.create'))
