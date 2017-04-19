@@ -11,7 +11,7 @@
 *,
 *::before,
 *::after {
-	.box-sizing(border-box);
+	box-sizing: border-box;
 }
 
 *:not(input):not(textarea),
@@ -277,7 +277,7 @@ blockquote {
 		overflow-y: scroll;
 		margin-top: 60px;
 		-webkit-overflow-scrolling: touch;
-		.calc(height, ~'100% - 60px');
+		height: calc(~'100% - 60px');
 
 		fieldset {
 			margin-bottom: 1em;
@@ -620,7 +620,7 @@ input.input-forward {
 
 input.input-forward.show {
 	visibility: visible;
-	.calc(width, ~'100% - 48px');
+	width: calc(~'100% - 48px');
 }
 
 input.search {
@@ -857,15 +857,15 @@ label.required::after {
 			&:nth-child(1),
 			&:nth-child(3) {
 				opacity: 1;
-				.transform-origin(50%, 50%, 0);
+				transform-origin: 50%, 50%, 0;
 			}
 
 			&:nth-child(1) {
-				.transform(translate(-25%, 3px) rotate(-45deg) scale(0.5, 1));
+				transform: translate(-25%, 3px) rotate(-45deg) scale(0.5, 1);
 			}
 
 			&:nth-child(3) {
-				.transform(translate(-25%, -3px) rotate(45deg) scale(0.5, 1));
+				transform: translate(-25%, -3px) rotate(45deg) scale(0.5, 1);
 			}
 		}
 	}
@@ -877,8 +877,7 @@ label.required::after {
 	height: 25px;
 	z-index: 100;
 	cursor: pointer;
-	.calc(top, ~"50% - 13px");
-
+	top: calc(~"50% - 13px");
 	&::before,
 	&::after {
 		content: " ";
@@ -886,57 +885,57 @@ label.required::after {
 		width: 2px;
 		height: 10px;
 		position: absolute;
-		.calc(top, ~"50% - 5px");
-		.calc(left, ~"50% - 5px");
+		top: calc(~"50% - 5px");
+		left: calc(~"50% - 5px");
 	}
 
 	&::before {
-		.transform(rotate(135deg) translateX(-4px));
+		transform: rotate(135deg) translateX(-4px);
 		transition: transform 0.185s ease-out, background 0.15s ease-out;
 	}
 
 	&::after {
-		.transform(rotate(-135deg) translateX(-4px));
+		transform: rotate(-135deg) translateX(-4px);
 		transition: transform 0.185s ease-out, background 0.15s ease-out;
 	}
 
 	&.left {
 		&::before {
-			.transform(rotate(45deg) translateY(-4px));
+			transform: rotate(45deg) translateY(-4px);
 		}
 
 		&::after {
-			.transform(rotate(-45deg) translateY(4px));
+			transform: rotate(-45deg) translateY(4px);
 		}
 	}
 
 	&.top {
 		&::before {
-			.transform(rotate(-135deg) translateX(2px) translateY(-2px));
+			transform: rotate(-135deg) translateX(2px) translateY(-2px);
 		}
 
 		&::after {
-			.transform(rotate(135deg) translateX(-2px) translateY(-2px));
+			transform: rotate(135deg) translateX(-2px) translateY(-2px);
 		}
 	}
 
 	&.bottom {
 		&::before {
-			.transform(rotate(-45deg) translateX(-2px) translateY(-2px));
+			transform: rotate(-45deg) translateX(-2px) translateY(-2px);
 		}
 
 		&::after {
-			.transform(rotate(45deg) translateX(2px) translateY(-2px));
+			transform: rotate(45deg) translateX(2px) translateY(-2px);
 		}
 	}
 
 	&.close {
 		&::before {
-			.transform(rotate(-135deg) translateX(0) translateY(0));
+			transform: rotate(-135deg) translateX(0) translateY(0);
 		}
 
 		&::after {
-			.transform(rotate(135deg) translateX(0) translateY(0));
+			transform: rotate(135deg) translateX(0) translateY(0);
 		}
 	}
 
@@ -1052,7 +1051,7 @@ label.required::after {
 			height: 100%;
 			.flex-center;
 			flex-flow: row nowrap;
-			.calc(width, ~"100% - 60px");
+			width: calc(~"100% - 60px");
 		}
 
 		h4 {
@@ -1080,12 +1079,12 @@ label.required::after {
 		overflow-y: auto;
 		-webkit-overflow-scrolling: touch;
 		direction: rtl;
-		.calc(height, ~'100% - ' @header-min-height + @footer-min-height);
+		height: calc(~'100% - ' @header-min-height + @footer-min-height);
 		transition: transform 0.3s cubic-bezier(0.5, 0, 0.1, 1);
 		z-index: 99;
 
 		&.animated-hidden {
-			.transform(translateY(-100%) translateY(-50px));
+			transform: translateY(-100%) translateY(-50px);
 		}
 
 		> .wrapper {
@@ -1106,7 +1105,7 @@ label.required::after {
 				z-index: 5;
 				position: absolute;
 				left: 18px;
-				.calc(top, ~"50% - 8px");
+				top: calc(~"50% - 8px");
 			}
 		}
 
@@ -1167,12 +1166,12 @@ label.required::after {
 	transition: transform 0.15s cubic-bezier(0.5, 0, 0.1, 1);
 
 	&.animated-hidden {
-		.transform(translateX(-100%));
+		transform: translateX(-100%);
 
 		header,
 		footer,
 		.content {
-			.transform(translateX(-100%));
+			transform: translateX(-100%);
 		}
 	}
 
@@ -1244,7 +1243,7 @@ label.required::after {
 		direction: rtl;
 		position: absolute;
 		top: @header-min-height;
-		.calc(height, ~"100% - " @header-min-height + @footer-min-height);
+		height: calc(~"100% - " @header-min-height + @footer-min-height);
 		width: 100%;
 		overflow-x: hidden;
 		overflow-y: auto;
@@ -1521,14 +1520,14 @@ label.required::after {
 				right: -18px;
 				top: 2px;
 				opacity: 0;
-				.transform(translateX(-10px));
+				transform: translateX(-10px);
 				transition: opacity 0.15s ease 0.35s, transform 0.12s ease-out 0.35s;
 			}
 
 			&:hover {
 				.opt {
 					opacity: 1;
-					.transform(translateX(0));
+					transform: translateX(0);
 				}
 			}
 
@@ -1593,7 +1592,7 @@ label.required::after {
 
 			&.fixed {
 				opacity: 1;
-				.transform(translateX(0));
+				transform: translateX(0);
 			}
 		}
 
@@ -1773,7 +1772,7 @@ label.required::after {
 	}
 
 	input[type='text'] {
-		.calc(width, ~'100% - 100px');
+		width: calc(~'100% - 100px');
 		vertical-align: top;
 		margin-top: -4px;
 		margin-left: -3px;
@@ -2209,14 +2208,14 @@ label.required::after {
 		0 1px 1px 0 rgba(0, 0, 0, 0.2),
 		0 2px 10px 0 rgba(0, 0, 0, 0.16);
 	transition: transform 0.4s ease, visibility 0.3s ease, opacity 0.3s ease;
-	.transform(translateY(-10px));
+	transform: translateY(-10px);
 	opacity: 0;
 	visibility: hidden;
 
 	&.show {
 		opacity: 1;
 		visibility: visible;
-		.transform(translateY(0px));
+		transform: translateY(0);
 	}
 
 	> div {
@@ -2697,7 +2696,7 @@ label.required::after {
 	margin: 60px 20px 0 0;
 	overflow: hidden;
 	width: 100%;
-	.calc(height, ~'100% - 120px');
+	height: calc(~'100% - 120px');
 
 	.message-cog-container {
 		.message-action {
@@ -2735,10 +2734,10 @@ label.required::after {
 		left: 50%;
 		z-index: 16;
 		transition: transform 0.3s ease-out;
-		.transform(translateY(0));
+		transform: translateY(0);
 
 		&.not {
-			.transform(translateY(150%));
+			transform: translateY(150%);
 		}
 	}
 
@@ -2756,10 +2755,10 @@ label.required::after {
 		border-top-left-radius: 4px;
 		border-top-right-radius: 4px;
 		transition: transform 0.3s ease-out;
-		.transform(translateY(0));
+		transform: translateY(0);
 
 		&.not {
-			.transform(translateY(150%));
+			transform: translateY(150%);
 		}
 
 		button {
@@ -2821,11 +2820,10 @@ label.required::after {
 			display: block;
 			position: absolute;
 			top: -30px;
-			left: 0;
+			left: calc(~"50% - 70px");
 			font-size: 12px;
 			font-weight: 600;
 			text-align: center;
-			.calc(left, ~"50% - 70px");
 			z-index: 10;
 			padding: 0 10px;
 			min-width: 140px;
@@ -3275,11 +3273,11 @@ body:not(.is-cordova) {
 				width: 30px;
 				border-width: 0 0 1px;
 				cursor: pointer;
-				.transform(translateX(-27px));
+				transform: translateX(-27px);
 				transition: transform 0.25s ease-out 0.475s, background 0.075s ease-out 0.5s;
 
 				i {
-					.transform-origin(50%, 50%, 0);
+					transform-origin: 50%, 50%, 0;
 					transition: transform 0.3s ease-out;
 					height: 12.5px;
 					vertical-align: top;
@@ -3333,7 +3331,7 @@ body:not(.is-cordova) {
 			}
 
 			> .animated-hidden {
-				.transform(translateX(100%));
+				transform: translateX(100%);
 				opacity: 0;
 			}
 
@@ -3790,7 +3788,7 @@ body:not(.is-cordova) {
 	&.selected {
 		.avatar {
 			&::after {
-				.transform(scaleX(1))
+				transform: scaleX(1);
 			}
 		}
 	}
@@ -3853,7 +3851,7 @@ body:not(.is-cordova) {
 			text-overflow: ellipsis;
 			position: relative;
 			padding-left: 10px;
-			.calc(width, ~"100% - 45px");
+			width: calc(~"100% - 45px");
 		}
 	}
 
@@ -3921,24 +3919,24 @@ body:not(.is-cordova) {
 			main {
 				position: absolute;
 				overflow-y: scroll;
-				.calc(height, ~'100% - 112px');
+				height: calc(~'100% - 112px');
 			}
 		}
 	}
 
 	&.opened {
-		.animation(fadeIn .1s ease-out forwards);
+		animation: fadeIn 0.1s ease-out forwards;
 
 		.modal {
-			.animation(modalEnter .35s cubic-bezier(.5, 0, .1, 1) forwards .1s);
+			animation: modalEnter 0.35s cubic-bezier(0.5, 0, 0.1, 1) forwards 0.1s;
 		}
 	}
 
 	&.closed {
-		.animation(fadeOut .2s ease-out forwards);
+		animation: fadeOut 0.2s ease-out forwards;
 
 		.modal {
-			.animation(modalExit .25s cubic-bezier(.5, 0, .1, 1) forwards);
+			animation: modalExit 0.25s cubic-bezier(0.5, 0, 0.1, 1) forwards;
 		}
 	}
 
@@ -4537,7 +4535,7 @@ body:not(.is-cordova) {
 
 		button.more {
 			width: 60px;
-			.transform(translateX(-57px));
+			transform: translateX(-57px);
 		}
 	}
 
@@ -4789,10 +4787,10 @@ body:not(.is-cordova) {
 	bottom: 8px;
 	left: 50%;
 	transition: transform 0.3s ease-out;
-	.transform(translateY(0));
+	transform: translateY(0);
 
 	&.not {
-		.transform(translateY(150%));
+		transform: translateY(150%);
 	}
 }
 
