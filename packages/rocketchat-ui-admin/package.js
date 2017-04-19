@@ -37,7 +37,6 @@ Package.onUse(function(api) {
 	api.addFiles('client/users/adminUserEdit.html', 'client');
 	api.addFiles('client/users/adminUserInfo.html', 'client');
 	api.addFiles('client/users/adminUsers.html', 'client');
-	api.addFiles('client/users/adminUserStatus.html', 'client');
 
 	// coffee files
 	api.addFiles('client/admin.coffee', 'client');
