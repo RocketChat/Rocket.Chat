@@ -51,8 +51,9 @@ class Katex {
 			}
 		];
 	}
+	// Searches for the first opening delimiter in the string from a given position
 
-	find_opening_delimiter(str, start) {
+	find_opening_delimiter(str, start) { // Search the string for each opening delimiter
 		const matches = (() => {
 			const map = this.delimiters_map;
 			const results = [];
@@ -209,7 +210,7 @@ class Katex {
 					message.tokens = [];
 				}
 				render_func = (latex, displayMode) => {
-					const token = `=&=${ Random.id() }=&=`;
+					const token = `=!=${ Random.id() }=!=`;
 					message.tokens.push({
 						token,
 						text: this.render_latex(latex, displayMode)
