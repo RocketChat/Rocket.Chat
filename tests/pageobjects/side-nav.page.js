@@ -67,7 +67,6 @@ class SideNav extends Page {
 	}
 
 	getChannelFromList(channelName) {
-		browser.element(`.wrapper [title="${ channelName }"]`).waitForVisible(5000);
 		return browser.element(`.wrapper [title="${ channelName }"]`);
 	}
 
