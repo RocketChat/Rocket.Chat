@@ -107,6 +107,5 @@
 		"value-list-comma-space-after": "always-single-line",
 		"value-list-comma-space-before": "never",
 		"value-list-max-empty-lines": 0,
-	},
-	"ignoreFiles": "packages/rocketchat-livechat/app/client/stylesheets/utils/_lesshat.import.less"
+	}
 }
