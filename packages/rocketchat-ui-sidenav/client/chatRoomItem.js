@@ -32,7 +32,7 @@ Template.chatRoomItem.helpers({
 	},
 
 	active() {
-		if (Session.get('openedRoom') === this.rid) {
+		if (Session.get('openedRoom') && Session.get('openedRoom') === this.rid || Session.get('openedRoom') === this._id) {
 			return 'active';
 		}
 	},
