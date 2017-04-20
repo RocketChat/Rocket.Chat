@@ -21,7 +21,7 @@ Template.loginForm.helpers({
 	},
 	btnLoginSave() {
 		if (Template.instance().loading.get()) {
-			return `${t('Please_wait')}...`;
+			return `${ t('Please_wait') }...`;
 		}
 		switch (Template.instance().state.get()) {
 			case 'register':
@@ -64,8 +64,7 @@ Template.loginForm.helpers({
 Template.loginForm.events({
 	'submit #login-card'(event, instance) {
 		event.preventDefault();
-		const button = $(event.target).find('button.login');
-		button.focus();
+		$(event.target).find('button.login').focus();
 		instance.loading.set(true);
 		const formData = instance.validate();
 		const state = instance.state.get();
