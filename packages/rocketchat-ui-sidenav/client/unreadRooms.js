@@ -14,7 +14,8 @@ Template.unreadRooms.onCreated(function() {
 	return this.autorun(() => {
 		const query = {
 			alert: true,
-			open: true
+			open: true,
+			hideUnreadStatus: { $ne: true }
 		};
 
 		return this.unreadRooms = ChatSubscription.find(query, { sort: { 't': 1, 'name': 1 }});
