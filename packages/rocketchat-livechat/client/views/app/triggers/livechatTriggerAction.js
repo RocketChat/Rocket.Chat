@@ -12,7 +12,7 @@ Template.livechatTriggerAction.helpers({
 Template.livechatTriggerAction.events({
 	'change .trigger-action'(e, instance) {
 		instance.$('.trigger-action-value ').addClass('hidden');
-		instance.$('.' + e.currentTarget.value).removeClass('hidden');
+		instance.$(`.${ e.currentTarget.value }`).removeClass('hidden');
 	}
 });
 

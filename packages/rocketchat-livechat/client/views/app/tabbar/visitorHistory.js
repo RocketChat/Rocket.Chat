@@ -20,7 +20,7 @@ Template.visitorHistory.helpers({
 		let title = moment(this.ts).format('L LTS');
 
 		if (this.label) {
-			title += ' - ' + this.label;
+			title += ` - ${ this.label }`;
 		}
 
 		return title;
@@ -28,7 +28,7 @@ Template.visitorHistory.helpers({
 });
 
 Template.visitorHistory.onCreated(function() {
-	var currentData = Template.currentData();
+	const currentData = Template.currentData();
 	this.visitorId = new ReactiveVar();
 
 	this.autorun(() => {

@@ -1,5 +1,5 @@
 Meteor.methods({
-	spotlight: function(text, usernames, type = {users: true, rooms: true}) {
+	spotlight(text, usernames, type = {users: true, rooms: true}) {
 		const result = {
 			users: [],
 			rooms: []
@@ -16,17 +16,6 @@ Meteor.methods({
 			}
 		};
 
-		const userOptions = {
-			limit: 5,
-			fields: {
-				username: 1,
-				status: 1
-			},
-			sort: {
-				username: 1
-			}
-		};
-
 		const regex = new RegExp(s.trim(s.escapeRegExp(text)), 'i');
 
 		if (this.userId == null) {
@@ -37,7 +26,23 @@ Meteor.methods({
 		}
 
 		if (type.users === true && RocketChat.authz.hasPermission(this.userId, 'view-d-room')) {
-			result.users = RocketChat.models.Users.findByActiveUsersUsernameExcept(text, usernames, userOptions).fetch();
+			const userOptions = {
+				limit: 5,
+				fields: {
+					username: 1,
+					name: 1,
+					status: 1
+				},
+				sort: {}
+			};
+
+			if (RocketChat.settings.get('UI_Use_Real_Name')) {
+				userOptions.sort.name = 1;
+			} else {
+				userOptions.sort.username = 1;
+			}
+
+			result.users = RocketChat.models.Users.findByActiveUsersExcept(text, usernames, userOptions).fetch();
 		}
 
 		if (type.rooms === true && RocketChat.authz.hasPermission(this.userId, 'view-c-room')) {

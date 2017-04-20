@@ -4,16 +4,16 @@ import moment from 'moment';
 
 Template.livechatOfficeHours.helpers({
 	days() {
-		return LivechatOfficeHour.find();
+		return LivechatOfficeHour.find({}, { sort: { code: 1 } });
 	},
 	startName(day) {
-		return day.day + '_start';
+		return `${ day.day }_start`;
 	},
 	finishName(day) {
-		return day.day + '_finish';
+		return `${ day.day }_finish`;
 	},
 	openName(day) {
-		return day.day + '_open';
+		return `${ day.day }_open`;
 	},
 	start(day) {
 		return Template.instance().dayVars[day.day].start.get();
@@ -42,9 +42,9 @@ Template.livechatOfficeHours.helpers({
 
 Template.livechatOfficeHours.events({
 	'change .preview-settings, keydown .preview-settings'(e, instance) {
-		var temp = e.currentTarget.name.split('_');
+		const temp = e.currentTarget.name.split('_');
 
-		var newTime = moment(e.currentTarget.value, 'HH:mm');
+		const newTime = moment(e.currentTarget.value, 'HH:mm');
 
 		// check if start and stop do not cross
 		if (temp[1] === 'start') {
@@ -62,7 +62,7 @@ Template.livechatOfficeHours.events({
 		}
 	},
 	'change .dayOpenCheck input'(e, instance) {
-		var temp = e.currentTarget.name.split('_');
+		const temp = e.currentTarget.name.split('_');
 		instance.dayVars[temp[0]][temp[1]].set(e.target.checked);
 	},
 	'change .preview-settings, keyup .preview-settings'(e, instance) {
@@ -76,11 +76,11 @@ Template.livechatOfficeHours.events({
 		e.preventDefault();
 
 		// convert all times to utc then update them in db
-		for (var d in instance.dayVars) {
+		for (const d in instance.dayVars) {
 			if (instance.dayVars.hasOwnProperty(d)) {
-				var day = instance.dayVars[d];
-				var start_utc = moment(day.start.get(), 'HH:mm').utc().format('HH:mm');
-				var finish_utc = moment(day.finish.get(), 'HH:mm').utc().format('HH:mm');
+				const day = instance.dayVars[d];
+				const start_utc = moment(day.start.get(), 'HH:mm').utc().format('HH:mm');
+				const finish_utc = moment(day.finish.get(), 'HH:mm').utc().format('HH:mm');
 
 				Meteor.call('livechat:saveOfficeHours', d, start_utc, finish_utc, day.open.get(), function(err /*,result*/) {
 					if (err) {
@@ -94,7 +94,7 @@ Template.livechatOfficeHours.events({
 			if (err) {
 				return handleError(err);
 			}
-			toastr.success(t('Office_Hours_updated'));
+			toastr.success(t('Office_hours_updated'));
 		});
 	}
 });

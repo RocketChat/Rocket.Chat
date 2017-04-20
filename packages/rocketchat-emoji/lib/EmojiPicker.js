@@ -1,4 +1,4 @@
-/* globals Blaze, isSetNotNull, Template */
+/* globals Blaze, Template */
 RocketChat.EmojiPicker = {
 	width: 390,
 	height: 238,
@@ -56,8 +56,8 @@ RocketChat.EmojiPicker = {
 		const left = sourcePos.left;
 		const top = (sourcePos.top - this.height - 5);
 		const cssProperties = {
-			top: top,
-			left: left
+			top,
+			left
 		};
 
 		if (top < 0) {
@@ -115,23 +115,31 @@ RocketChat.EmojiPicker = {
 
 		window.localStorage.setItem('emoji.recent', this.recent);
 		RocketChat.emoji.packages.base.emojisByCategory.recent = this.recent;
-
 		this.updateRecent();
 	},
 	updateRecent() {
-		const total = RocketChat.emoji.packages.base.emojisByCategory.recent.length;
-		let html = '';
-		for (var i = 0; i < total; i++) {
-			const emoji = RocketChat.emoji.packages.base.emojisByCategory.recent[i];
-
-			if (isSetNotNull(() => RocketChat.emoji.list[`:${emoji}:`])) {
-				const emojiPackage = RocketChat.emoji.list[`:${emoji}:`].emojiPackage;
-				const renderedEmoji = RocketChat.emoji.packages[emojiPackage].render(`:${emoji}:`);
-				html += `<li class="emoji-${emoji}" data-emoji="${emoji}">${renderedEmoji}</li>`;
-			} else {
-				this.recent = _.without(this.recent, emoji);
-			}
+		const instance = Template.instance();
+		if (instance) {
+			instance.recentNeedsUpdate.set(true);
+		} else {
+			this.refreshDynamicEmojiLists();
 		}
-		$('.recent.emoji-list').empty().append(html);
+	},
+	refreshDynamicEmojiLists() {
+		const dynamicEmojiLists = [
+			RocketChat.emoji.packages.base.emojisByCategory.recent,
+			RocketChat.emoji.packages.emojiCustom.emojisByCategory.rocket
+		];
+
+		dynamicEmojiLists.forEach((category) => {
+			if (category) {
+				for (let i = 0; i < category.length; i++) {
+					const emoji = category[i];
+					if (!RocketChat.emoji.list[`:${ emoji }:`]) {
+						category = _.without(category, emoji);
+					}
+				}
+			}
+		});
 	}
 };

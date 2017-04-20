@@ -1,1 +1,1 @@
-@MentionedMessage = new Meteor.Collection 'rocketchat_mentioned_message'
+@MentionedMessage = new Mongo.Collection 'rocketchat_mentioned_message'

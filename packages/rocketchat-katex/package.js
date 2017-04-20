@@ -17,14 +17,14 @@ Package.onUse(function(api) {
 	api.addFiles('katex.coffee');
 	api.addFiles('client/style.css', 'client');
 
-	var katexPath = 'node_modules/katex/dist/';
-	api.addFiles(katexPath + 'katex.min.css', 'client');
+	const katexPath = 'node_modules/katex/dist/';
+	api.addFiles(`${ katexPath }katex.min.css`, 'client');
 
-	var _ = Npm.require('underscore');
-	var fs = Npm.require('fs');
+	const _ = Npm.require('underscore');
+	const fs = Npm.require('fs');
 
-	var fontsPath = katexPath + 'fonts/';
-	var fontFiles = _.map(fs.readdirSync('packages/rocketchat-katex/' + fontsPath), function(filename) {
+	const fontsPath = `${ katexPath }fonts/`;
+	const fontFiles = _.map(fs.readdirSync(`packages/rocketchat-katex/${ fontsPath }`), function(filename) {
 		return fontsPath + filename;
 	});
 

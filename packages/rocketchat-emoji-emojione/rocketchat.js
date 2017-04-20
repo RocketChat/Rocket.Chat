@@ -12,7 +12,7 @@ RocketChat.emoji.packages.emojione.render = function(emoji) {
 
 //http://stackoverflow.com/a/26990347 function isSet() from Gajus
 function isSetNotNull(fn) {
-	var value;
+	let value;
 	try {
 		value = fn();
 	} catch (e) {

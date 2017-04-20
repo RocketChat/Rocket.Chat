@@ -97,7 +97,7 @@ WebApp.httpServer.addListener('request', function(req, res) {
 		let host = req.headers['host'] || url.parse(Meteor.absoluteUrl()).hostname;
 		host = host.replace(/:\d+$/, '');
 		res.writeHead(302, {
-			'Location': 'https://' + host + req.url
+			'Location': `https://${ host }${ req.url }`
 		});
 		res.end();
 		return;

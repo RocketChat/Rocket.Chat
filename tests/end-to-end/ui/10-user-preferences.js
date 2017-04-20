@@ -12,7 +12,7 @@ import {imgURL} from '../../data/interactions.js';
 import {checkIfUserIsValid} from '../../data/checks';
 
 
-describe.skip('user preferences', ()=> {
+describe('user preferences', ()=> {
 	before(() => {
 		checkIfUserIsValid(username, email, password);
 		sideNav.spotlightSearch.waitForVisible(10000);
@@ -63,21 +63,21 @@ describe.skip('user preferences', ()=> {
 
 	});
 	//it gives off a "Too Many Requests Error" due the 60 seconds username change restriction
-	describe.skip('user info change', ()=> {
+	describe('user info change', ()=> {
 		it('click on the profile link', ()=> {
 			sideNav.profile.click();
 		});
 
 		it('change the name field', ()=> {
-			preferencesMainContent.changeRealName('EditedRealName'+username);
+			preferencesMainContent.changeRealName(`EditedRealName${ username }`);
 		});
 
 		it('change the Username field', ()=> {
-			preferencesMainContent.changeUsername('EditedUserName'+username);
+			preferencesMainContent.changeUsername(`EditedUserName${ username }`);
 		});
 
 		it.skip('change the email field', ()=> {
-			preferencesMainContent.changeEmail('EditedUserEmail'+username+'@gmail.com');
+			preferencesMainContent.changeEmail(`EditedUserEmail${ username }@gmail.com`);
 		});
 
 		it('save the settings', ()=> {
@@ -97,7 +97,9 @@ describe.skip('user preferences', ()=> {
 		});
 
 		it('close the preferences menu', () => {
+			sideNav.preferencesClose.waitForVisible(5000);
 			sideNav.preferencesClose.click();
+			sideNav.getChannelFromList('general').waitForVisible(5000);
 		});
 
 		it('open GENERAL', () => {
@@ -106,30 +108,27 @@ describe.skip('user preferences', ()=> {
 
 		it('send a message to be tested', () => {
 			mainContent.sendMessage('HI');
+			mainContent.waitForLastMessageEqualsText('HI');
 		});
 
-		it('the name on the last message should be the edited one', () => {
-			mainContent.lastMessageUser.getText().should.equal('EditedUserName'+username);
+		it.skip('the name on the last message should be the edited one', () => {
+			mainContent.waitForLastMessageUserEqualsText(`EditedUserName${ username }`);
+			mainContent.lastMessageUser.getText().should.equal(`EditedUserName${ username }`);
 		});
 
 		it('the name on the nav bar should be the edited one', () => {
-			sideNav.accountBoxUserName.getText().should.equal('EditedUserName'+username);
+			sideNav.accountBoxUserName.getText().should.equal(`EditedRealName${ username }`);
 		});
 
-		it('click on the last message ', () => {
+		it.skip('the user name on the members flex tab should be the edited one', () => {
 			mainContent.lastMessageUser.click();
+			flexTab.memberUserName.waitForVisible(5000);
+			flexTab.memberUserName.getText().should.equal(`EditedUserName${ username }`);
 		});
 
-		it('the user name on the members flex tab should be the edited one', () => {
-			flexTab.memberUserName.getText().should.equal('EditedUserName'+username);
-		});
-
-		it('the real name on the members flex tab should be the edited one', () => {
-			flexTab.memberRealName.getText().should.equal('EditedRealName'+username);
-		});
-
-		it('close the flexTab', () => {
-			flexTab.membersTab.click();
+		it.skip('the real name on the members flex tab should be the edited one', () => {
+			flexTab.memberRealName.waitForVisible(5000);
+			flexTab.memberRealName.getText().should.equal(`EditedRealName${ username }`);
 		});
 	});
 });

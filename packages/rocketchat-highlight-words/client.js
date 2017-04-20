@@ -17,7 +17,7 @@ function HighlightWordsClient(message) {
 	if (Array.isArray(to_highlight)) {
 		to_highlight.forEach((highlight) => {
 			if (!_.isBlank(highlight)) {
-				return msg = msg.replace(new RegExp('(^|\\b|[\\s\\n\\r\\t.,،\'\\\"\\+!?:-])(' + s.escapeRegExp(highlight) + ')($|\\b|[\\s\\n\\r\\t.,،\'\\\"\\+!?:-])(?![^<]*>|[^<>]*<\\/)', 'gmi'), '$1<span class="highlight-text">$2</span>$3');
+				return msg = msg.replace(new RegExp(`(^|\\b|[\\s\\n\\r\\t.,،'\\\"\\+!?:-])(${ s.escapeRegExp(highlight) })($|\\b|[\\s\\n\\r\\t.,،'\\\"\\+!?:-])(?![^<]*>|[^<>]*<\\/)`, 'gmi'), '$1<span class="highlight-text">$2</span>$3');
 			}
 		});
 	}

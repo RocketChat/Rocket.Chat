@@ -16,9 +16,12 @@ class ModelSubscriptions extends RocketChat.models._Base
 		@tryEnsureIndex { 'desktopNotifications': 1 }, { sparse: 1 }
 		@tryEnsureIndex { 'mobilePushNotifications': 1 }, { sparse: 1 }
 		@tryEnsureIndex { 'emailNotifications': 1 }, { sparse: 1 }
+		@tryEnsureIndex { 'autoTranslate': 1 }, { sparse: 1 }
+		@tryEnsureIndex { 'autoTranslateLanguage': 1 }, { sparse: 1 }
 
 		this.cache.ensureIndex('rid', 'array')
 		this.cache.ensureIndex('u._id', 'array')
+		this.cache.ensureIndex('name', 'array')
 		this.cache.ensureIndex(['rid', 'u._id'], 'unique')
 		this.cache.ensureIndex(['name', 'u._id'], 'unique')
 

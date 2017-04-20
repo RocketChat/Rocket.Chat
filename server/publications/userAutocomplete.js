@@ -23,13 +23,13 @@ Meteor.publish('userAutocomplete', function(selector) {
 	const exceptions = selector.exceptions || [];
 
 	const cursorHandle = RocketChat.models.Users.findActiveByUsernameOrNameRegexWithExceptions(selector.term, exceptions, options).observeChanges({
-		added: function(_id, record) {
+		added(_id, record) {
 			return pub.added('autocompleteRecords', _id, record);
 		},
-		changed: function(_id, record) {
+		changed(_id, record) {
 			return pub.changed('autocompleteRecords', _id, record);
 		},
-		removed: function(_id, record) {
+		removed(_id, record) {
 			return pub.removed('autocompleteRecords', _id, record);
 		}
 	});
