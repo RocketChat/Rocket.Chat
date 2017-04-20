@@ -1,7 +1,4 @@
-Meteor.publish('mentionedMessages', function(rid, limit) {
-	if (limit == null) {
-		limit = 50;
-	}
+Meteor.publish('mentionedMessages', function(rid, limit = 50) {
 	if (!this.userId) {
 		return this.ready();
 	}

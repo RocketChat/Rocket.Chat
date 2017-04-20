@@ -32,10 +32,9 @@ Template.mentionsFlexTab.onCreated(function() {
 	this.hasMore = new ReactiveVar(true);
 	this.limit = new ReactiveVar(50);
 	return this.autorun(() => {
-		return this.subscribe('mentionedMessages', this.data.rid, this.limit.get(), function() {
-			if (MentionedMessage.find({
-				rid: this.data.rid
-			}).count() < this.limit.get()) {
+		const mentionedMessageFind = MentionedMessage.find({ rid: this.data.rid });
+		return this.subscribe('mentionedMessages', this.data.rid, this.limit.get(), () => {
+			if (mentionedMessageFind.count() < this.limit.get()) {
 				return this.hasMore.set(false);
 			}
 		});
