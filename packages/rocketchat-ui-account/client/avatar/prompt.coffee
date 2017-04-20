@@ -1,4 +1,6 @@
 import toastr from 'toastr'
+import mime from 'mime-type/with-db'
+
 Template.avatarPrompt.onCreated ->
 	self = this
 	self.suggestions = new ReactiveVar
@@ -38,7 +40,7 @@ Template.avatarPrompt.helpers
 		return '@'+Meteor.user()?.username
 
 Template.avatarPrompt.events
-	'click .select-service': ->
+	'click .select-service': (event, instance) ->
 		if @service is 'initials'
 			Meteor.call 'resetAvatar', (err) ->
 				if err?.details?.timeToReset?
@@ -60,13 +62,29 @@ Template.avatarPrompt.events
 			else
 				toastr.error t('Please_enter_value_for_url')
 		else
-			tmpService = @service
-			Meteor.call 'setAvatarFromService', @blob, @contentType, @service, (err) ->
-				if err?.details?.timeToReset?
-					toastr.error t('error-too-many-requests', { seconds: parseInt(err.details.timeToReset / 1000) })
-				else
-					toastr.success t('Avatar_changed_successfully')
-					RocketChat.callbacks.run('userAvatarSet', tmpService)
+			files = instance.find('input[type=file]').files
+			if not files or files.length is 0
+				files = e.dataTransfer?.files or []
+
+			for file in files
+				Object.defineProperty(file, 'type', { value: mime.lookup(file.name) })
+
+			record =
+				name: files[0].name
+				size: files[0].size
+				type: files[0].type
+				# description: document.getElementById('file-description').value
+
+			upload = fileUploadHandler 'rocketchat-avatars', record, files[0]
+
+			# upload.onProgress = (progress) ->
+			# 	console.log 'progress ->', progress
+
+			upload.start (error, result) ->
+				if result
+					Meteor.call 'saveAvatarFile', result, () =>
+						toastr.success t('Avatar_changed_successfully')
+						RocketChat.callbacks.run('userAvatarSet', @service)
 
 	'click .login-with-service': (event, template) ->
 		loginWithService = "loginWith#{_.capitalize(this)}"
