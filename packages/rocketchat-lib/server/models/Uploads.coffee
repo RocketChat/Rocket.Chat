@@ -29,9 +29,8 @@ RocketChat.models.Uploads = new class extends RocketChat.models._Base
 
 		return @find fileQuery, fileOptions
 
-	insertFileInit: (roomId, userId, store, file, extra) ->
+	insertFileInit: (userId, store, file, extra) ->
 		fileData =
-			rid: roomId
 			userId: userId
 			store: store
 			complete: false
@@ -46,6 +45,23 @@ RocketChat.models.Uploads = new class extends RocketChat.models._Base
 			file = @model.direct.insert fileData
 		else
 			file = @insert fileData
+
+		return file
+
+	insertFileInitByUsername: (username, userId, store, file, extra) ->
+		fileData =
+			_id: username
+			userId: userId
+			store: store
+			complete: false
+			uploading: true
+			progress: 0
+			extension: s.strRightBack(file.name, '.')
+			uploadedAt: new Date()
+
+		_.extend(fileData, file, extra);
+
+		file = @insertOrUpsert fileData
 
 		return file
 
@@ -65,9 +81,40 @@ RocketChat.models.Uploads = new class extends RocketChat.models._Base
 
 		update.$set = _.extend file, update.$set
 
-		if @model.direct?.insert?
+		if @model.direct?.update?
 			result = @model.direct.update filter, update
 		else
 			result = @update filter, update
 
 		return result
+
+	updateFileCompleteByUsername: (username, userId, url) ->
+		if not username
+			return
+
+		filter =
+			username: username
+			userId: userId
+
+		update =
+			$set:
+				complete: true
+				uploading: false
+				progress: 1
+				url: url
+
+		if @model.direct?.update?
+			result = @model.direct.update filter, update
+		else
+			result = @update filter, update
+
+		return result
+
+	findOneByUsername: (username) ->
+		return @findOne username: username
+
+	deleteFile: (fileId) ->
+		if @model.direct?.remove?
+			return @model.direct.remove { _id: fileId }
+		else
+			return @remove { _id: fileId }

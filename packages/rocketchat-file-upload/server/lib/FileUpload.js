@@ -16,7 +16,7 @@ FileUpload.delete = function(fileId) {
 
 	this.handlers[file.store].delete(file);
 
-	return RocketChat.models.Uploads.remove(file._id);
+	return RocketChat.models.Uploads.deleteFile(file._id);
 };
 
 FileUpload.get = function(file, req, res, next) {
