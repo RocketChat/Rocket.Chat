@@ -58,14 +58,14 @@ Package.onUse(function(api) {
 	api.addFiles('lib/placeholders.js');
 	api.addFiles('lib/promises.coffee');
 	api.addFiles('lib/roomTypesCommon.coffee');
-	api.addFiles('lib/slashCommand.coffee');
-	api.addFiles('lib/Message.coffee');
-	api.addFiles('lib/MessageTypes.coffee');
+	api.addFiles('lib/slashCommand.js');
+	api.addFiles('lib/Message.js');
+	api.addFiles('lib/MessageTypes.js');
 
 	api.addFiles('server/lib/bugsnag.js', 'server');
 	api.addFiles('server/lib/metrics.js', 'server');
 
-	api.addFiles('server/lib/RateLimiter.coffee', 'server');
+	api.addFiles('server/lib/RateLimiter.js', 'server');
 
 	// SERVER FUNCTIONS
 	api.addFiles('server/functions/isDocker.js', 'server');
@@ -97,7 +97,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/lib/PushNotification.js', 'server');
 	api.addFiles('server/lib/defaultBlockedDomainsList.js', 'server');
 	api.addFiles('server/lib/notifyUsersOnMessage.js', 'server');
-	api.addFiles('server/lib/roomTypes.coffee', 'server');
+	api.addFiles('server/lib/roomTypes.js', 'server');
 	api.addFiles('server/lib/sendEmailOnMessage.js', 'server');
 	api.addFiles('server/lib/sendNotificationsOnMessage.js', 'server');
 	api.addFiles('server/lib/validateEmailDomain.js', 'server');
@@ -135,7 +135,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/methods/cleanChannelHistory.js', 'server');
 	api.addFiles('server/methods/createChannel.js', 'server');
 	api.addFiles('server/methods/createPrivateGroup.js', 'server');
-	api.addFiles('server/methods/deleteMessage.coffee', 'server');
+	api.addFiles('server/methods/deleteMessage.js', 'server');
 	api.addFiles('server/methods/deleteUserOwnAccount.js', 'server');
 	api.addFiles('server/methods/filterBadWords.js', ['server']);
 	api.addFiles('server/methods/filterATAllTag.js', 'server');
@@ -150,11 +150,11 @@ Package.onUse(function(api) {
 	api.addFiles('server/methods/leaveRoom.js', 'server');
 	api.addFiles('server/methods/removeOAuthService.js', 'server');
 	api.addFiles('server/methods/restartServer.js', 'server');
-	api.addFiles('server/methods/robotMethods.coffee', 'server');
+	api.addFiles('server/methods/robotMethods.js', 'server');
 	api.addFiles('server/methods/saveSetting.js', 'server');
-	api.addFiles('server/methods/sendInvitationEmail.coffee', 'server');
+	api.addFiles('server/methods/sendInvitationEmail.js', 'server');
 	api.addFiles('server/methods/sendMessage.coffee', 'server');
-	api.addFiles('server/methods/sendSMTPTestEmail.coffee', 'server');
+	api.addFiles('server/methods/sendSMTPTestEmail.js', 'server');
 	api.addFiles('server/methods/setAdminStatus.js', 'server');
 	api.addFiles('server/methods/setRealName.js', 'server');
 	api.addFiles('server/methods/setUsername.js', 'server');
@@ -170,7 +170,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/startup/settings.js', 'server');
 
 	// COMMON STARTUP
-	api.addFiles('lib/startup/settingsOnLoadSiteUrl.coffee');
+	api.addFiles('lib/startup/settingsOnLoadSiteUrl.js');
 
 	// CLIENT LIB
 	api.addFiles('client/Notifications.coffee', 'client');

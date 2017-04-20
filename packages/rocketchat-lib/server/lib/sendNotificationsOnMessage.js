@@ -66,15 +66,20 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 
 	const notificationPreferencesByRoom = RocketChat.models.Subscriptions.findNotificationPreferencesByRoom(room._id);
 	notificationPreferencesByRoom.forEach(function(subscription) {
-		if (subscription.desktopNotifications === 'all') {
-			settings.alwaysNotifyDesktopUsers.push(subscription.u._id);
-		} else if (subscription.desktopNotifications === 'nothing') {
+		if (subscription.disableNotifications) {
 			settings.dontNotifyDesktopUsers.push(subscription.u._id);
-		}
-		if (subscription.mobilePushNotifications === 'all') {
-			settings.alwaysNotifyMobileUsers.push(subscription.u._id);
-		} else if (subscription.mobilePushNotifications === 'nothing') {
 			settings.dontNotifyMobileUsers.push(subscription.u._id);
+		} else {
+			if (subscription.desktopNotifications === 'all') {
+				settings.alwaysNotifyDesktopUsers.push(subscription.u._id);
+			} else if (subscription.desktopNotifications === 'nothing') {
+				settings.dontNotifyDesktopUsers.push(subscription.u._id);
+			}
+			if (subscription.mobilePushNotifications === 'all') {
+				settings.alwaysNotifyMobileUsers.push(subscription.u._id);
+			} else if (subscription.mobilePushNotifications === 'nothing') {
+				settings.dontNotifyMobileUsers.push(subscription.u._id);
+			}
 		}
 		settings.desktopNotificationDurations[subscription.u._id] = subscription.desktopNotificationDuration;
 	});
