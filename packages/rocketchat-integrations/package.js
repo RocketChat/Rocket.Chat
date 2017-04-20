@@ -7,11 +7,10 @@ Package.describe({
 });
 
 Package.onUse(function(api) {
-	api.use('coffeescript');
+	api.use('mongo');
 	api.use('underscore');
 	api.use('ecmascript');
 	api.use('babel-compiler');
-	api.use('simple:highlight.js');
 	api.use('rocketchat:lib');
 	api.use('rocketchat:authorization');
 	api.use('rocketchat:api');
@@ -65,7 +64,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/methods/clearIntegrationHistory.js', 'server');
 
 	// api
-	api.addFiles('server/api/api.coffee', 'server');
+	api.addFiles('server/api/api.js', 'server');
 
 	api.addFiles('server/lib/triggerHandler.js', 'server');
 	api.addFiles('server/triggers.js', 'server');

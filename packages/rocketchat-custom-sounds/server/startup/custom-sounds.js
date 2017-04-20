@@ -9,10 +9,10 @@ Meteor.startup(function() {
 	const RocketChatStore = RocketChatFile[storeType];
 
 	if (RocketChatStore == null) {
-		throw new Error(`Invalid RocketChatStore type [${storeType}]`);
+		throw new Error(`Invalid RocketChatStore type [${ storeType }]`);
 	}
 
-	console.log(`Using ${storeType} for custom sounds storage`.green);
+	console.log(`Using ${ storeType } for custom sounds storage`.green);
 
 	let path = '~/uploads';
 	if (RocketChat.settings.get('CustomSounds_FileSystemPath') != null) {

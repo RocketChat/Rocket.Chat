@@ -34,6 +34,7 @@ class PreferencesMainContent extends Page {
 	changeAvatarUpload(url) {
 		this.avatarFileInput.chooseFile(url);
 		this.useUploadedAvatar.click();
+		browser.pause(1000);
 	}
 }
 

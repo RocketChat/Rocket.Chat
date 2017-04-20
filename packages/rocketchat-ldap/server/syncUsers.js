@@ -1,7 +1,7 @@
 /* globals sync */
 
 Meteor.methods({
-	ldap_sync_users: function() {
+	ldap_sync_users() {
 		const user = Meteor.user();
 		if (!user) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'ldap_sync_users' });
