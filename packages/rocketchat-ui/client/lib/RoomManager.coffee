@@ -20,6 +20,14 @@ Tracker.autorun ->
 
 	connectionWasOnline = connected
 
+# Reload rooms after login
+currentUsername = undefined
+Tracker.autorun (c) ->
+	user = Meteor.user()
+	if currentUsername is undefined and user?.username?
+		currentUsername = user.username
+		RoomManager.closeAllRooms()
+		FlowRouter._current.route.callAction(FlowRouter._current)
 
 Meteor.startup ->
 	ChatMessage.find().observe
@@ -80,8 +88,6 @@ Tracker.autorun ->
 			do (typeName, record) ->
 
 				user = Meteor.user()
-				unless user?.username
-					return
 
 				if record.ready is true
 					return
@@ -158,7 +164,7 @@ Tracker.autorun ->
 		if openedRooms[typeName].ready
 			closeOlderRooms()
 
-		if CachedChatSubscription.ready.get() is true && Meteor.userId()
+		if CachedChatSubscription.ready.get() is true
 
 			if openedRooms[typeName].active isnt true
 				openedRooms[typeName].active = true
