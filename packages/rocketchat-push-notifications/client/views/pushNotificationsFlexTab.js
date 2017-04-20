@@ -15,6 +15,26 @@ Template.pushNotificationsFlexTab.helpers({
 		});
 		return sub ? sub.audioNotification || '' : '';
 	},
+	disableNotifications() {
+		const sub = ChatSubscription.findOne({
+			rid: Session.get('openedRoom')
+		}, {
+			fields: {
+				disableNotifications: 1
+			}
+		});
+		return sub ? sub.disableNotifications || false : false;
+	},
+	hideUnreadStatus() {
+		const sub = ChatSubscription.findOne({
+			rid: Session.get('openedRoom')
+		}, {
+			fields: {
+				hideUnreadStatus: 1
+			}
+		});
+		return sub ? sub.hideUnreadStatus || false : false;
+	},
 	desktopNotifications() {
 		const sub = ChatSubscription.findOne({
 			rid: Session.get('openedRoom')
@@ -160,6 +180,8 @@ Template.pushNotificationsFlexTab.onCreated(function() {
 	this.validateSetting = (field) => {
 		switch (field) {
 			case 'audioNotification':
+			case 'hideUnreadStatus':
+			case 'disableNotifications':
 				return true;
 			default:
 				const value = this.$(`input[name=${ field }]:checked`).val();
@@ -177,6 +199,10 @@ Template.pushNotificationsFlexTab.onCreated(function() {
 		switch (field) {
 			case 'audioNotification':
 				value = this.$(`select[name=${ field }]`).val();
+				break;
+			case 'hideUnreadStatus':
+			case 'disableNotifications':
+				value = this.$(`input[name=${ field }]:checked`).val() ? '1' : '0';
 				break;
 			default:
 				value = this.$(`input[name=${ field }]:checked`).val();
@@ -255,5 +281,11 @@ Template.pushNotificationsFlexTab.events({
 				$audio[0].play();
 			}
 		}
+	},
+
+	'change input[type=checkbox]'(e, instance) {
+		e.preventDefault();
+		instance.editing.set($(e.currentTarget).attr('name'));
+		instance.saveSetting();
 	}
 });

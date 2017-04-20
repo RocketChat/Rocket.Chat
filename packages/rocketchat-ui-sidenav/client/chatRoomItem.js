@@ -3,7 +3,7 @@
 Template.chatRoomItem.helpers({
 
 	alert() {
-		if ((FlowRouter.getParam('_id') !== this.rid) || !document.hasFocus()) {
+		if (!this.hideUnreadStatus && (FlowRouter.getParam('_id') !== this.rid || !document.hasFocus())) {
 			return this.alert;
 		}
 	},
@@ -32,7 +32,7 @@ Template.chatRoomItem.helpers({
 	},
 
 	active() {
-		if (Session.get('openedRoom') === this.rid) {
+		if (Session.get('openedRoom') && Session.get('openedRoom') === this.rid || Session.get('openedRoom') === this._id) {
 			return 'active';
 		}
 	},

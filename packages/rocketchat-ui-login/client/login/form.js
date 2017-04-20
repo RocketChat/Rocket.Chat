@@ -108,6 +108,8 @@ Template.loginForm.events({
 							return instance.state.set('login');
 						} else if (error && error.error === 'error-user-is-not-activated') {
 							return instance.state.set('wait-activation');
+						} else {
+							Session.set('forceLogin', false);
 						}
 					});
 				});
@@ -130,6 +132,7 @@ Template.loginForm.events({
 						}
 						return;
 					}
+					Session.set('forceLogin', false);
 					if (user && user.language) {
 						localStorage.setItem('userLanguage', user.language);
 						return setLanguage(Meteor.user().language);
