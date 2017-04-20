@@ -82,6 +82,34 @@ RocketChat.models.Subscriptions.updateUnreadAlertById = function(_id, unreadAler
 	return this.update(query, update);
 };
 
+RocketChat.models.Subscriptions.updateDisableNotificationsById = function(_id, disableNotifications) {
+	const query = {
+		_id
+	};
+
+	const update = {
+		$set: {
+			disableNotifications
+		}
+	};
+
+	return this.update(query, update);
+};
+
+RocketChat.models.Subscriptions.updateHideUnreadStatusById = function(_id, hideUnreadStatus) {
+	const query = {
+		_id
+	};
+
+	const update = {
+		$set: {
+			hideUnreadStatus
+		}
+	};
+
+	return this.update(query, update);
+};
+
 RocketChat.models.Subscriptions.findAlwaysNotifyDesktopUsersByRoomId = function(roomId) {
 	const query = {
 		rid: roomId,
@@ -126,7 +154,8 @@ RocketChat.models.Subscriptions.findNotificationPreferencesByRoom = function(roo
 			{audioNotification: {$exists: true}},
 			{desktopNotifications: {$exists: true}},
 			{desktopNotificationDuration: {$exists: true}},
-			{mobilePushNotifications: {$exists: true}}
+			{mobilePushNotifications: {$exists: true}},
+			{disableNotifications: {$exists: true}}
 		]
 	};
 
