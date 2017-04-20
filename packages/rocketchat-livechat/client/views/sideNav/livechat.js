@@ -90,7 +90,8 @@ Template.livechat.helpers({
 		}
 	},
 	moveButton() {
-		if (Template.instance().data.collapsible) {
+		const instance = Template.instance();
+		if (instance.data && instance.data.collapsible) {
 			return 'collapsible';
 		}
 	}
