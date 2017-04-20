@@ -67,7 +67,14 @@ class SideNav extends Page {
 	}
 
 	getChannelFromList(channelName) {
+		browser.element(`.wrapper [title="${ channelName }"]`).waitForVisible(5000);
 		return browser.element(`.wrapper [title="${ channelName }"]`);
+	}
+
+	waitForChannelName(channelName) {
+		browser.waitUntil(() => {
+			return browser.getText(`.wrapper [title="${ channelName }"]`) === channelName;
+		}, 5000);
 	}
 
 	createChannel(channelName, isPrivate, isReadOnly) {
