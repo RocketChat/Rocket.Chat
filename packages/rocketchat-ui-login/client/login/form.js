@@ -20,7 +20,7 @@ Template.loginForm.helpers({
 		return state.indexOf(Template.instance().state.get()) > -1;
 	},
 	btnLoginSave() {
-		if(Template.instance().loading.get()) {
+		if (Template.instance().loading.get()) {
 			return `${t('Please_wait')}...`;
 		}
 		switch (Template.instance().state.get()) {
@@ -277,10 +277,10 @@ Template.loginForm.onRendered(function() {
 	Session.set('loginDefaultState');
 	return Tracker.autorun(() => {
 		RocketChat.callbacks.run('loginPageStateChange', this.state.get());
-		if(this.loading.get()) {
+		if (this.loading.get()) {
 			Meteor.setTimeout(() => {
 				this.loading.set(false);
-			}, 1000)
+			}, 1000);
 		}
 		switch (this.state.get()) {
 			case 'login':
