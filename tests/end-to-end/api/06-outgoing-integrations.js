@@ -6,7 +6,7 @@ import {getCredentials, api, login, request, credentials, integration, log } fro
 import {adminEmail, password} from '../../data/user.js';
 import supertest from 'supertest';
 
-describe('integrations', function() {
+describe('Outgoing Integrations', function() {
 	this.retries(0);
 
 	it('/integrations.create', (done) => {
