@@ -57,10 +57,8 @@ const toUtf8 = function(contentType, body) {
 	return iconv.decode(body, getCharset(contentType, body));
 };
 
-const getUrlContent = function(urlObj, redirectCount, callback) {
-	if (redirectCount == null) {
-		redirectCount = 5;
-	}
+const getUrlContent = function(urlObj, redirectCount = 5, callback) {
+
 	if (_.isString(urlObj)) {
 		urlObj = URL.parse(urlObj);
 	}
@@ -180,6 +178,7 @@ OEmbed.getUrlMeta = function(url, withFragment) {
 		}
 	}
 	let headers = undefined;
+	let data = undefined;
 
 
 	if (content && content.headers) {
@@ -190,9 +189,9 @@ OEmbed.getUrlMeta = function(url, withFragment) {
 		});
 	}
 	if (content && content.statusCode !== 200) {
-		return;
+		return data;
 	}
-	const data = RocketChat.callbacks.run('oembed:afterParseContent', {
+	data = RocketChat.callbacks.run('oembed:afterParseContent', {
 		meta: metas,
 		headers,
 		parsedUrl: content.parsedUrl,
