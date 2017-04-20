@@ -1,36 +1,19 @@
 /* globals FileUpload, FileUploadBase, Slingshot */
 
 FileUpload.AmazonS3 = class FileUploadAmazonS3 extends FileUploadBase {
-	constructor(meta, file) {
+	constructor(directive, meta, file) {
 		super(meta, file);
-		this.uploader = new Slingshot.Upload('rocketchat-uploads', { rid: meta.rid });
+		this.uploader = new Slingshot.Upload(directive, meta);
 	}
 
-	start() {
+	start(callback) {
 		this.uploader.send(this.file, (error, downloadUrl) => {
 			if (this.computation) {
 				this.computation.stop();
 			}
 
 			if (error) {
-				let uploading = Session.get('uploading');
-				if (!Array.isArray(uploading)) {
-					uploading = [];
-				}
-
-				const item = _.findWhere(uploading, { id: this.id });
-
-				if (_.isObject(item)) {
-					item.error = error.error;
-					item.percentage = 0;
-				} else {
-					uploading.push({
-						error: error.error,
-						percentage: 0
-					});
-				}
-
-				Session.set('uploading', uploading);
+				return callback.call(this, error);
 			} else {
 				const file = _.pick(this.meta, 'type', 'size', 'name', 'identify', 'description');
 				file._id = downloadUrl.substr(downloadUrl.lastIndexOf('/') + 1);
@@ -38,13 +21,7 @@ FileUpload.AmazonS3 = class FileUploadAmazonS3 extends FileUploadBase {
 
 				Meteor.call('sendFileMessage', this.meta.rid, 's3', file, () => {
 					Meteor.setTimeout(() => {
-						const uploading = Session.get('uploading');
-						if (uploading !== null) {
-							const item = _.findWhere(uploading, {
-								id: this.id
-							});
-							return Session.set('uploading', _.without(uploading, item));
-						}
+						callback.call(this, null, file);
 					}, 2000);
 				});
 			}

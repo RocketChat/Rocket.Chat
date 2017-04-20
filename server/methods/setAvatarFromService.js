@@ -19,6 +19,13 @@ Meteor.methods({
 		const user = Meteor.user();
 
 		return RocketChat.setUserAvatar(user, dataURI, contentType, service);
+	},
+
+	saveAvatarFile(file) {
+		const user = RocketChat.models.Users.findOneById(Meteor.userId());
+		// console.log('user ->', user);
+		// console.log('file ->', file);
+		RocketChat.models.Uploads.updateFileCompleteByUsername(user.username, Meteor.userId(), file.url);
 	}
 });
 
