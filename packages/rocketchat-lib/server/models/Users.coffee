@@ -130,7 +130,7 @@ class ModelUsers extends RocketChat.models._Base
 					]
 				}
 				{
-					username: { $nin: exceptions }
+					username: { $exists: true, $nin: exceptions }
 				}
 			]
 

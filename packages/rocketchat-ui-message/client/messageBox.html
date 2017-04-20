@@ -8,7 +8,7 @@
 
 					<div class="input-message-container">
 
-						<textarea dir="auto" name="msg" maxlength="{{maxMessageLength}}" class="input-message autogrow-short" placeholder="{{_ 'Message'}}"></textarea>
+						<textarea dir="auto" name="msg" maxlength="{{maxMessageLength}}" class="message-form-text input-message autogrow-short" placeholder="{{_ 'Message'}}"></textarea>
 
 						<div class="inner-left-toolbar">
 							<i class="emoji-picker-icon icon-people secondary-font-color"></i>
@@ -142,6 +142,11 @@
 				{{/if}}
 				<button class="button join"><span><i class="icon-login"></i> {{_ "join"}}</span></button>
 			</div>
+			{{/if}}
+			{{#if isAnonymous}}
+				<div>
+					<button class="button register"><span><i class="icon-login"></i> {{_ "Register_or_login_to_send_messages"}}</span></button>
+				</div>
 			{{/if}}
 		{{/with}}
 	{{/if}}

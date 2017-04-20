@@ -23,6 +23,7 @@ Package.onUse(function(api) {
 	api.addFiles('client/combined.html', 'client');
 	api.addFiles('client/chatRoomItem.html', 'client');
 	api.addFiles('client/channels.html', 'client');
+	api.addFiles('client/channelsAnonymous.html', 'client');
 	api.addFiles('client/createCombinedFlex.html', 'client');
 	api.addFiles('client/directMessages.html', 'client');
 	api.addFiles('client/listChannelsFlex.html', 'client');
@@ -40,6 +41,7 @@ Package.onUse(function(api) {
 	api.addFiles('client/combined.js', 'client');
 	api.addFiles('client/chatRoomItem.js', 'client');
 	api.addFiles('client/channels.js', 'client');
+	api.addFiles('client/channelsAnonymous.js', 'client');
 	api.addFiles('client/createCombinedFlex.js', 'client');
 	api.addFiles('client/directMessages.js', 'client');
 	api.addFiles('client/listChannelsFlex.js', 'client');
