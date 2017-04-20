@@ -146,6 +146,11 @@ Deploy your own Rocket.Chat server instantly on [Scalingo](https://scalingo.com)
 ## Sloppy.io
 Host your docker container at [sloppy.io](http://sloppy.io). Get an account and use the [quickstarter](https://github.com/sloppyio/quickstarters/tree/master/rocketchat)
 
+###
+Host this application at [myrskyt.com](https://myrskyt.com). You can create an account and begin hosting with this button:
+
+<a href="https://myrskyt.com/container/deploy/https://github.com/myrskyt/python-sample"><img src="https://myrskyt.com/static/img/button.jpg" height="40" width="155"></a>
+
 
 ## Docker
 [Deploy with docker compose](https://rocket.chat/docs/installation/docker-containers/docker-compose)
