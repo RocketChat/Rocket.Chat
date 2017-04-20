@@ -70,6 +70,12 @@ class SideNav extends Page {
 		return browser.element(`.wrapper [title="${ channelName }"]`);
 	}
 
+	waitForChannelName(channelName) {
+		browser.waitUntil(() => {
+			return browser.getText(`.wrapper [title="${ channelName }"]`) === channelName;
+		}, 5000);
+	}
+
 	createChannel(channelName, isPrivate, isReadOnly) {
 		this.newChannelBtn.waitForVisible(10000);
 		this.newChannelBtn.click();
