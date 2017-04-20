@@ -20,6 +20,9 @@ Template.loginForm.helpers({
 		return state.indexOf(Template.instance().state.get()) > -1;
 	},
 	btnLoginSave() {
+		if(Template.instance().loading.get()) {
+			return `${t('Please_wait')}...`;
+		}
 		switch (Template.instance().state.get()) {
 			case 'register':
 				return t('Register');
@@ -63,25 +66,26 @@ Template.loginForm.events({
 		event.preventDefault();
 		const button = $(event.target).find('button.login');
 		button.focus();
-		RocketChat.Button.loading(button);
+		instance.loading.set(true);
 		const formData = instance.validate();
+		const state = instance.state.get();
 		if (formData) {
-			if (instance.state.get() === 'email-verification') {
+			if (state === 'email-verification') {
 				Meteor.call('sendConfirmationEmail', s.trim(formData.email), () => {
-					RocketChat.Button.reset(button);
+					instance.loading.set(false);
 					RocketChat.callbacks.run('userConfirmationEmailRequested');
 					toastr.success(t('We_have_sent_registration_email'));
 					return instance.state.set('login');
 				});
 				return;
 			}
-			if (instance.state.get() === 'forgot-password') {
+			if (state === 'forgot-password') {
 				Meteor.call('sendForgotPasswordEmail', s.trim(formData.email), (err) => {
 					if (err) {
 						handleError(err);
 						return instance.state.set('login');
 					} else {
-						RocketChat.Button.reset(button);
+						instance.loading.set(false);
 						RocketChat.callbacks.run('userForgotPasswordEmailRequested');
 						toastr.success(t('If_this_email_is_registered'));
 						return instance.state.set('login');
@@ -89,10 +93,10 @@ Template.loginForm.events({
 				});
 				return;
 			}
-			if (instance.state.get() === 'register') {
+			if (state === 'register') {
 				formData.secretURL = FlowRouter.getParam('hash');
 				return Meteor.call('registerUser', formData, function(error) {
-					RocketChat.Button.reset(button);
+					instance.loading.set(false);
 					if (error != null) {
 						if (error.reason === 'Email already exists.') {
 							toastr.error(t('Email_already_exists'));
@@ -121,7 +125,7 @@ Template.loginForm.events({
 				}
 				return Meteor[loginMethod](s.trim(formData.emailOrUsername), formData.pass, function(error) {
 					const user = Meteor.user();
-					RocketChat.Button.reset(button);
+					instance.loading.set(false);
 					if (error != null) {
 						if (error.error === 'no-valid-email') {
 							instance.state.set('email-verification');
@@ -168,6 +172,7 @@ Template.loginForm.events({
 Template.loginForm.onCreated(function() {
 	const instance = this;
 	this.customFields = new ReactiveVar;
+	this.loading = new ReactiveVar(false);
 	Tracker.autorun(() => {
 		const Accounts_CustomFields = RocketChat.settings.get('Accounts_CustomFields');
 		if (typeof Accounts_CustomFields === 'string' && Accounts_CustomFields.trim() !== '') {
@@ -220,23 +225,23 @@ Template.loginForm.onCreated(function() {
 		formData.forEach((field) => {
 			formObj[field.name] = field.value;
 		});
-
-		if (instance.state.get() !== 'login') {
+		const state = instance.state.get();
+		if (state !== 'login') {
 			if (!(formObj['email'] && /\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]+\b/i.test(formObj['email']))) {
 				validationObj['email'] = t('Invalid_email');
 			}
 		}
-		if (instance.state.get() === 'login') {
+		if (state === 'login') {
 			if (!formObj['emailOrUsername']) {
 				validationObj['emailOrUsername'] = t('Invalid_email');
 			}
 		}
-		if (instance.state.get() !== 'forgot-password') {
+		if (state !== 'forgot-password') {
 			if (!formObj['pass']) {
 				validationObj['pass'] = t('Invalid_pass');
 			}
 		}
-		if (instance.state.get() === 'register') {
+		if (state === 'register') {
 			if (RocketChat.settings.get('Accounts_RequireNameForSignUp') && !formObj['name']) {
 				validationObj['name'] = t('Invalid_name');
 			}
@@ -249,8 +254,6 @@ Template.loginForm.onCreated(function() {
 		$('#login-card input.error, #login-card select.error').removeClass('error');
 		$('#login-card .input-error').text('');
 		if (!_.isEmpty(validationObj)) {
-			const button = $('#login-card').find('button.login');
-			RocketChat.Button.reset(button);
 			$('#login-card h2').addClass('error');
 
 			Object.keys(validationObj).forEach((key) => {
@@ -258,7 +261,7 @@ Template.loginForm.onCreated(function() {
 				$(`#login-card input[name=${ key }], #login-card select[name=${ key }]`).addClass('error');
 				$(`#login-card input[name=${ key }]~.input-error, #login-card select[name=${ key }]~.input-error`).text(value);
 			});
-
+			instance.loading.set(false);
 			return false;
 		}
 		return formObj;
@@ -274,6 +277,11 @@ Template.loginForm.onRendered(function() {
 	Session.set('loginDefaultState');
 	return Tracker.autorun(() => {
 		RocketChat.callbacks.run('loginPageStateChange', this.state.get());
+		if(this.loading.get()) {
+			Meteor.setTimeout(() => {
+				this.loading.set(false);
+			}, 1000)
+		}
 		switch (this.state.get()) {
 			case 'login':
 			case 'forgot-password':
