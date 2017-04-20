@@ -1,8 +1,8 @@
 RocketChat.Migrations.add({
 	version: 49,
-	up: function() {
+	up() {
 
-		var count = 1;
+		let count = 1;
 
 		RocketChat.models.Rooms.find({ t: 'l' }, { sort: { ts: 1 }, fields: { _id: 1 } }).forEach(function(room) {
 			RocketChat.models.Rooms.update({ _id: room._id }, { $set: { code: count } });

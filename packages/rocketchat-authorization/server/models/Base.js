@@ -34,7 +34,7 @@ RocketChat.models._Base.prototype.removeRolesByUserId = function(userId, roles, 
 	const query = this.roleBaseQuery(userId, scope);
 	const update = {
 		$pullAll: {
-			roles: roles
+			roles
 		}
 	};
 	return this.update(query, update);

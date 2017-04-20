@@ -58,7 +58,8 @@ const getFromServer = (cb, type) => {
 				resultsFromServer.push({
 					_id: results.users[i]._id,
 					t: 'd',
-					name: results.users[i].username
+					name: results.users[i].username,
+					fname: results.users[i].name
 				});
 			}
 		}
@@ -94,14 +95,14 @@ Template.toolbar.helpers({
 		return Template.instance().resultsList.get();
 	},
 	getPlaceholder() {
-		var placeholder = TAPi18n.__('Search');
+		let placeholder = TAPi18n.__('Search');
 
 		if (!Meteor.Device.isDesktop()) {
 			return placeholder;
 		} else if (window.navigator.platform.toLowerCase().includes('mac')) {
-			placeholder = placeholder+' (CMD+K)';
+			placeholder = `${ placeholder } (CMD+K)`;
 		} else {
-			placeholder = placeholder+' (Ctrl+K)';
+			placeholder = `${ placeholder } (Ctrl+K)`;
 		}
 
 		return placeholder;
@@ -124,9 +125,9 @@ Template.toolbar.helpers({
 			cleanOnEnter: true,
 			closeOnEsc: false,
 			blurOnSelectItem: true,
-			isLoading: isLoading,
-			open: open,
-			getFilter: function(collection, filter, cb) {
+			isLoading,
+			open,
+			getFilter(collection, filter, cb) {
 				filterText = filter;
 
 				const type = {
@@ -181,8 +182,8 @@ Template.toolbar.helpers({
 				}
 			},
 
-			getValue: function(_id, collection, records) {
-				const doc = _.findWhere(records, {_id: _id});
+			getValue(_id, collection, records) {
+				const doc = _.findWhere(records, {_id});
 
 				RocketChat.roomTypes.openRouteLink(doc.t, doc, FlowRouter.current().queryParams);
 				menu.close();
@@ -214,6 +215,10 @@ Template.toolbar.events({
 		} else {
 			e.preventDefault();
 		}
+	},
+
+	'blur .toolbar-search__input'() {
+		toolbarSearch.clear();
 	}
 });
 
@@ -223,9 +228,17 @@ Template.toolbarSearchList.helpers({
 	},
 	userStatus() {
 		if (this.t === 'd') {
-			return 'status-' + (Session.get(`user_${this.name}_status`) || 'offline');
+			return `status-${ Session.get(`user_${ this.name }_status`) || 'offline' }`;
 		} else {
-			return 'status-' + (RocketChat.roomTypes.getUserStatus(this.t, this.rid || this._id) || 'offline');
+			return `status-${ RocketChat.roomTypes.getUserStatus(this.t, this.rid || this._id) || 'offline' }`;
+		}
+	},
+
+	displayName() {
+		if (RocketChat.settings.get('UI_Use_Real_Name') && this.fname) {
+			return this.fname;
+		} else {
+			return this.name;
 		}
 	}
 });

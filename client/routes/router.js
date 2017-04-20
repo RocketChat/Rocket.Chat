@@ -60,7 +60,7 @@ FlowRouter.route('/home', {
 					saml: true,
 					credentialToken: queryParams.saml_idp_credentialToken
 				}],
-				userCallback: function() { BlazeLayout.render('main', {center: 'home'}); }
+				userCallback() { BlazeLayout.render('main', {center: 'home'}); }
 			});
 		} else {
 			BlazeLayout.render('main', {center: 'home'});
@@ -84,7 +84,7 @@ FlowRouter.route('/account/:group?', {
 			params.group = 'Preferences';
 		}
 		params.group = _.capitalize(params.group, true);
-		BlazeLayout.render('main', { center: `account${params.group}` });
+		BlazeLayout.render('main', { center: `account${ params.group }` });
 	}
 });
 

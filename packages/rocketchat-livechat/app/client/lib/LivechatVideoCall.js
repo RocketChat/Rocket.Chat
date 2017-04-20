@@ -7,7 +7,7 @@ LivechatVideoCall = new (class LivechatVideoCall {
 
 		if (typeof JitsiMeetExternalAPI === 'undefined') {
 			const prefix = __meteor_runtime_config__.ROOT_URL_PATH_PREFIX || '';
-			$.getScript(`${prefix}/packages/rocketchat_videobridge/client/public/external_api.js`);
+			$.getScript(`${ prefix }/packages/rocketchat_videobridge/client/public/external_api.js`);
 		}
 	}
 

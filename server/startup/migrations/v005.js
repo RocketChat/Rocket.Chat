@@ -45,7 +45,7 @@ RocketChat.Migrations.add({
 					}
 				}
 			}
-			console.log(`Adding: username ${newUserName} to all user ${user._id}`);
+			console.log(`Adding: username ${ newUserName } to all user ${ user._id }`);
 			return RocketChat.models.Users.setUsername(user._id, newUserName);
 		});
 
@@ -58,7 +58,7 @@ RocketChat.Migrations.add({
 
 			newId = ids.sort().join('');
 			if (newId !== room._id) {
-				console.log(`Fixing: _id ${room._id} to ${newId}`);
+				console.log(`Fixing: _id ${ room._id } to ${ newId }`);
 				RocketChat.models.Subscriptions.update({
 					rid: room._id
 				}, {
@@ -105,7 +105,7 @@ RocketChat.Migrations.add({
 		RocketChat.models.Users.find({}, {
 			username: 1
 		}).forEach((user) => {
-			console.log(`Adding: u.username ${user.username} to all document`);
+			console.log(`Adding: u.username ${ user.username } to all document`);
 			RocketChat.models.Rooms.update({
 				'u._id': user._id
 			}, {

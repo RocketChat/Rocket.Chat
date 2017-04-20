@@ -1,5 +1,5 @@
 /* globals Template, isSetNotNull */
-var emojiCategories = {};
+const emojiCategories = {};
 /**
  * Turns category hash to a nice readable translated name
  * @param {string} category hash
@@ -33,16 +33,15 @@ function getEmojisByCategory(category) {
 					let tone = '';
 
 					if (actualTone > 0 && RocketChat.emoji.packages[emojiPackage].toneList.hasOwnProperty(emoji)) {
-						tone = '_tone' + actualTone;
+						tone = `_tone${ actualTone }`;
 					}
 
 					//set correctPackage here to allow for recent emojis to work properly
-					if (isSetNotNull(() => RocketChat.emoji.list[`:${emoji}:`].emojiPackage)) {
-						const correctPackage = RocketChat.emoji.list[`:${emoji}:`].emojiPackage;
+					if (isSetNotNull(() => RocketChat.emoji.list[`:${ emoji }:`].emojiPackage)) {
+						const correctPackage = RocketChat.emoji.list[`:${ emoji }:`].emojiPackage;
+						const image = RocketChat.emoji.packages[correctPackage].render(`:${ emoji }${ tone }:`);
 
-						const image = RocketChat.emoji.packages[correctPackage].render(`:${emoji}${tone}:`);
-
-						html += `<li class="emoji-${emoji}" data-emoji="${emoji}" title="${emoji}">${image}</li>`;
+						html += `<li class="emoji-${ emoji }" data-emoji="${ emoji }" title="${ emoji }">${ image }</li>`;
 					}
 				}
 			}
@@ -70,7 +69,7 @@ function getEmojisBySearchTerm(searchTerm) {
 			emoji = emoji.replace(/:/g, '');
 
 			if (actualTone > 0 && RocketChat.emoji.packages[emojiPackage].toneList.hasOwnProperty(emoji)) {
-				tone = '_tone' + actualTone;
+				tone = `_tone${ actualTone }`;
 			}
 
 			let emojiFound = false;
@@ -86,8 +85,8 @@ function getEmojisBySearchTerm(searchTerm) {
 			}
 
 			if (emojiFound) {
-				const image = RocketChat.emoji.packages[emojiPackage].render(`:${emoji}${tone}:`);
-				html += `<li class="emoji-${emoji}" data-emoji="${emoji}" title="${emoji}">${image}</li>`;
+				const image = RocketChat.emoji.packages[emojiPackage].render(`:${ emoji }${ tone }:`);
+				html += `<li class="emoji-${ emoji }" data-emoji="${ emoji }" title="${ emoji }">${ image }</li>`;
 			}
 		}
 	}
@@ -126,10 +125,13 @@ Template.emojiPicker.helpers({
 	emojiList(category) {
 		const t = Template.instance();
 		const searchTerm = t.currentSearchTerm.get();
+		const activeCategory = t.currentCategory.get();
+		//this will cause the reflow when recent list gets updated
+		t.recentNeedsUpdate.get();
 
-		//clear dynamic categories to prevent duplication issues
-		if (category === 'recent' || category === 'rocket') {
-			$(`.${category}.emoji-list`).empty();
+		//we only need to replace the active category, since switching tabs resets the filter
+		if (activeCategory !== category) {
+			return;
 		}
 
 		if (searchTerm.length > 0) {
@@ -139,7 +141,7 @@ Template.emojiPicker.helpers({
 		}
 	},
 	currentTone() {
-		return 'tone-' + Template.instance().tone;
+		return `tone-${ Template.instance().tone }`;
 	},
 	/**
 	 * Returns true if a given emoji category is active
@@ -150,7 +152,7 @@ Template.emojiPicker.helpers({
 	activeCategory(category) {
 		return Template.instance().currentCategory.get() === category ? 'active' : '';
 	},
-	categoryName: categoryName,
+	categoryName,
 	/**
 	 * Returns currently active emoji category hash
 	 *
@@ -199,7 +201,7 @@ Template.emojiPicker.events({
 		let newTone;
 
 		if (tone > 0) {
-			newTone = '_tone' + tone;
+			newTone = `_tone${ tone }`;
 		} else {
 			newTone = '';
 		}
@@ -209,7 +211,7 @@ Template.emojiPicker.events({
 				if (RocketChat.emoji.packages[emojiPackage].hasOwnProperty('toneList')) {
 					for (const emoji in RocketChat.emoji.packages[emojiPackage].toneList) {
 						if (RocketChat.emoji.packages[emojiPackage].toneList.hasOwnProperty(emoji)) {
-							$('.emoji-'+emoji).html(RocketChat.emoji.packages[emojiPackage].render(':' + emoji + newTone + ':'));
+							$(`.emoji-${ emoji }`).html(RocketChat.emoji.packages[emojiPackage].render(`:${ emoji }${ newTone }:`));
 						}
 					}
 				}
@@ -232,7 +234,7 @@ Template.emojiPicker.events({
 		for (const emojiPackage in RocketChat.emoji.packages) {
 			if (RocketChat.emoji.packages.hasOwnProperty(emojiPackage)) {
 				if (actualTone > 0 && RocketChat.emoji.packages[emojiPackage].toneList.hasOwnProperty(emoji)) {
-					tone = '_tone' + actualTone;
+					tone = `_tone${ actualTone }`;
 				}
 			}
 		}
@@ -263,7 +265,7 @@ Template.emojiPicker.events({
 Template.emojiPicker.onCreated(function() {
 	this.tone = RocketChat.EmojiPicker.getTone();
 	const recent = RocketChat.EmojiPicker.getRecent();
-
+	this.recentNeedsUpdate = new ReactiveVar(false);
 	this.currentCategory = new ReactiveVar(recent.length > 0 ? 'recent' : 'people');
 	this.currentSearchTerm = new ReactiveVar('');
 
@@ -272,8 +274,14 @@ Template.emojiPicker.onCreated(function() {
 	});
 
 	this.setCurrentTone = (newTone) => {
-		$('.current-tone').removeClass('tone-' + this.tone);
-		$('.current-tone').addClass('tone-' + newTone);
+		$('.current-tone').removeClass(`tone-${ this.tone }`);
+		$('.current-tone').addClass(`tone-${ newTone }`);
 		this.tone = newTone;
 	};
+
+	this.autorun(() => {
+		if (this.recentNeedsUpdate.get()) {
+			this.recentNeedsUpdate.set(false);
+		}
+	});
 });

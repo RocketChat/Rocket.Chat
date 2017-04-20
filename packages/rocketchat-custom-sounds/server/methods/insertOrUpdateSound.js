@@ -19,7 +19,7 @@ Meteor.methods({
 		soundData.name = soundData.name.replace(/:/g, '');
 
 		if (nameValidation.test(soundData.name)) {
-			throw new Meteor.Error('error-input-is-not-a-valid-field', `${soundData.name} is not a valid name`, { method: 'insertOrUpdateSound', input: soundData.name, field: 'Name' });
+			throw new Meteor.Error('error-input-is-not-a-valid-field', `${ soundData.name } is not a valid name`, { method: 'insertOrUpdateSound', input: soundData.name, field: 'Name' });
 		}
 
 		let matchingResults = [];
@@ -48,7 +48,7 @@ Meteor.methods({
 		} else {
 			//update sound
 			if (soundData.newFile) {
-				RocketChatFileCustomSoundsInstance.deleteFile(`${soundData._id}.${soundData.previousExtension}`);
+				RocketChatFileCustomSoundsInstance.deleteFile(`${ soundData._id }.${ soundData.previousExtension }`);
 			}
 
 			if (soundData.name !== soundData.previousName) {

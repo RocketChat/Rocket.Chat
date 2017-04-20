@@ -78,11 +78,8 @@
 		"number-no-trailing-zeros": true,
 		"property-case": "lower",
 		"property-no-unknown": true,
-		"rule-nested-empty-line-before": [ "always", {
+		"rule-empty-line-before": [ "always", {
 			except: ["first-nested"],
-			ignore: ["after-comment"],
-		} ],
-		"rule-non-nested-empty-line-before": [ "always", {
 			ignore: ["after-comment"],
 		} ],
 		"selector-attribute-brackets-space-inside": "never",

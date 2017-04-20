@@ -9,10 +9,10 @@ Meteor.startup(function() {
 	const RocketChatStore = RocketChatFile[storeType];
 
 	if (RocketChatStore == null) {
-		throw new Error(`Invalid RocketChatStore type [${storeType}]`);
+		throw new Error(`Invalid RocketChatStore type [${ storeType }]`);
 	}
 
-	console.log(`Using ${storeType} for custom emoji storage`.green);
+	console.log(`Using ${ storeType } for custom emoji storage`.green);
 
 	let path = '~/uploads';
 	if (RocketChat.settings.get('EmojiUpload_FileSystemPath') != null) {
@@ -61,9 +61,9 @@ Meteor.startup(function() {
 			const initials = '?';
 
 			const svg = `<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<svg xmlns="http://www.w3.org/2000/svg" pointer-events="none" width="50" height="50" style="width: 50px; height: 50px; background-color: ${color};">
+<svg xmlns="http://www.w3.org/2000/svg" pointer-events="none" width="50" height="50" style="width: 50px; height: 50px; background-color: ${ color };">
 	<text text-anchor="middle" y="50%" x="50%" dy="0.36em" pointer-events="auto" fill="#ffffff" font-family="Helvetica, Arial, Lucida Grande, sans-serif" style="font-weight: 400; font-size: 28px;">
-		${initials}
+		${ initials }
 	</text>
 </svg>`;
 
