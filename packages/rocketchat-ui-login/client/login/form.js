@@ -276,11 +276,6 @@ Template.loginForm.onRendered(function() {
 	Session.set('loginDefaultState');
 	return Tracker.autorun(() => {
 		RocketChat.callbacks.run('loginPageStateChange', this.state.get());
-		if (this.loading.get()) {
-			Meteor.setTimeout(() => {
-				this.loading.set(false);
-			}, 1000);
-		}
 		switch (this.state.get()) {
 			case 'login':
 			case 'forgot-password':
