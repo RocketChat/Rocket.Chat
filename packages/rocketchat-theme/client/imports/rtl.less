@@ -179,12 +179,12 @@
 			}
 
 			&.animated-hidden {
-				.transform(translateX(100%));
+				transform: translateX(100%);
 
 				header,
 				footer,
 				.content {
-					.transform(translateX(100%));
+					transform: translateX(100%);
 				}
 			}
 		}
@@ -370,7 +370,7 @@
 
 			.more {
 				.right(0);
-				.transform(translateX(27px));
+				transform: translateX(27px);
 			}
 
 			.search-form {
@@ -393,7 +393,7 @@
 		.flex-tab {
 			.control {
 				.more {
-					.transform(translateX(0));
+					transform: translateX(0);
 				}
 			}
 		}
@@ -494,7 +494,7 @@
 				right: @rooms-box-width;
 
 				.flex-tab {
-					.transform(translateX(calc(~'100% + 40px')));
+					transform: translateX(calc(~'100% + 40px'));
 				}
 			}
 		}
@@ -523,11 +523,11 @@
 		&.menu-opened {
 			i {
 				&:nth-child(1) {
-					.transform(translate(25%, 3px) rotate(45deg) scale(0.5, 1));
+					transform: translate(25%, 3px) rotate(45deg) scale(0.5, 1);
 				}
 
 				&:nth-child(3) {
-					.transform(translate(25%, -3px) rotate(-45deg) scale(0.5, 1));
+					transform: translate(25%, -3px) rotate(-45deg) scale(0.5, 1);
 				}
 			}
 		}
@@ -536,54 +536,54 @@
 	.arrow {
 		&::before,
 		&::after {
-			.calc(right, ~"50% - 5px");
+			right: calc(~"50% - 5px");
 		}
 
 		&::before {
-			.transform(rotate(135deg) translateX(4px));
+			transform: rotate(135deg) translateX(4px);
 		}
 
 		&::after {
-			.transform(rotate(-135deg) translateX(4px));
+			transform: rotate(-135deg) translateX(4px);
 		}
 
 		&.left {
 			&::before {
-				.transform(rotate(-45deg) translateY(-4px));
+				transform: rotate(-45deg) translateY(-4px);
 			}
 
 			&::after {
-				.transform(rotate(45deg) translateY(4px));
+				transform: rotate(45deg) translateY(4px);
 			}
 		}
 
 		&.top {
 			&::before {
-				.transform(rotate(45deg) translateX(-2px) translateY(2px));
+				transform: rotate(45deg) translateX(-2px) translateY(2px);
 			}
 
 			&::after {
-				.transform(rotate(-45deg) translateX(2px) translateY(2px));
+				transform: rotate(-45deg) translateX(2px) translateY(2px);
 			}
 		}
 
 		&.bottom {
 			&::before {
-				.transform(rotate(-45deg) translateX(-2px) translateY(-2px));
+				transform: rotate(-45deg) translateX(-2px) translateY(-2px);
 			}
 
 			&::after {
-				.transform(rotate(45deg) translateX(2px) translateY(-2px));
+				transform: rotate(45deg) translateX(2px) translateY(-2px);
 			}
 		}
 
 		&.close {
 			&::before {
-				.transform(rotate(-45deg));
+				transform: rotate(-45deg);
 			}
 
 			&::after {
-				.transform(rotate(45deg));
+				transform: rotate(45deg);
 			}
 		}
 	}

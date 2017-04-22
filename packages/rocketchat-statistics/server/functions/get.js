@@ -59,6 +59,11 @@ RocketChat.statistics.get = function _getStatistics() {
 		uptime: process.uptime()
 	};
 
+	statistics.deploy = {
+		method: process.env.DEPLOY_METHOD || 'tar',
+		platform: process.env.DEPLOY_PLATFORM || 'selfinstall'
+	};
+
 	statistics.migration = RocketChat.Migrations._getControl();
 	statistics.instanceCount = InstanceStatus.getCollection().find({ _updatedAt: { $gt: new Date(Date.now() - process.uptime() * 1000 - 2000) }}).count();
 

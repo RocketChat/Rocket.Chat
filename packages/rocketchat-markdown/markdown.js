@@ -14,19 +14,34 @@ const parsers = {
 	marked
 };
 
-const markdown = (message) => {
-	const parser = RocketChat.settings.get('Markdown_Parser');
-	if (typeof parsers[parser] === 'function') {
-		return parsers[parser](message);
+class MarkdownClass {
+	parse(message) {
+		return this.parseNotEscaped(_.escapeHTML(message));
 	}
-	return parsers['original'](message);
+
+	parseNotEscaped(message) {
+		const parser = RocketChat.settings.get('Markdown_Parser');
+		if (typeof parsers[parser] === 'function') {
+			return parsers[parser](message);
+		}
+		return parsers['original'](message);
+	}
+}
+
+const Markdown = new MarkdownClass;
+RocketChat.Markdown = Markdown;
+
+// renderMessage already did html escape
+const MarkdownMessage = (message) => {
+	if (_.trim(message != null ? message.html : undefined)) {
+		message = Markdown.parseNotEscaped(message);
+	}
+
+	return message;
 };
 
-RocketChat.markdown = markdown;
-RocketChat.callbacks.add('renderMessage', markdown, RocketChat.callbacks.priority.HIGH, 'markdown');
+RocketChat.callbacks.add('renderMessage', MarkdownMessage, RocketChat.callbacks.priority.HIGH, 'markdown');
 
 if (Meteor.isClient) {
-	Blaze.registerHelper('RocketChatMarkdown', (text) => {
-		return RocketChat.markdown(text);
-	});
+	Blaze.registerHelper('RocketChatMarkdown', text => Markdown.parse(text));
 }
