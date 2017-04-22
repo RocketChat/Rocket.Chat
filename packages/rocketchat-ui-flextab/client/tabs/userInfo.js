@@ -46,6 +46,11 @@ Template.userInfo.helpers({
 		const user = Meteor.user();
 		return RocketChat.authz.hasAllPermission('create-d') && user && user.username !== username;
 	},
+	
+	isSelf(username) {
+		const user = Meteor.user();
+		return user && user.username === username;
+	},
 
 	linkedinUsername() {
 		const user = Template.instance().user.get();
