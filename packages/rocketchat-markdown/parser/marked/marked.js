@@ -19,21 +19,22 @@ renderer.code = function(code, lang, escaped) {
 	let text = null;
 
 	if (!lang) {
-		text = `<pre><code class="code-colors hljs">${ (escaped ? code : escape(code, true)) }</code></pre>`;
+		text = `<pre><code class="code-colors hljs">${ (escaped ? code : _.escapeHTML(code, true)) }</code></pre>`;
 	} else {
-		text = `<pre><code class="code-colors hljs ${ escape(lang, true) }">${ (escaped ? code : escape(code, true)) }</code></pre>`;
+		text = `<pre><code class="code-colors hljs ${ escape(lang, true) }">${ (escaped ? code : _.escapeHTML(code, true)) }</code></pre>`;
 	}
 
 	if (_.isString(msg)) {
 		return text;
 	}
 
-	const token = `=&=${ Random.id() }=&=`;
+	const token = `=!=${ Random.id() }=!=`;
 	msg.tokens.push({
 		highlight: true,
 		token,
 		text
 	});
+
 	return token;
 };
 
@@ -42,11 +43,13 @@ renderer.codespan = function(text) {
 	if (_.isString(msg)) {
 		return text;
 	}
-	const token = `=&=${ Random.id() }=&=`;
+
+	const token = `=!=${ Random.id() }=!=`;
 	msg.tokens.push({
 		token,
 		text
 	});
+
 	return token;
 };
 
@@ -55,11 +58,15 @@ renderer.blockquote = function(quote) {
 };
 
 const highlight = function(code, lang) {
-	code = _.unescapeHTML(code);
-	if (hljs.listLanguages().includes(lang)) {
-		return hljs.highlight(lang, code).value;
+	if (!lang) {
+		return code;
 	}
-	return hljs.highlightAuto(code).value;
+	try {
+		return hljs.highlight(lang, code).value;
+	} catch (e) {
+		// Unknown language
+		return code;
+	}
 };
 
 let gfm = null;
@@ -92,7 +99,7 @@ export const marked = (message) => {
 	if (smartLists == null) { smartLists = RocketChat.settings.get('Markdown_Marked_SmartLists'); }
 	if (smartypants == null) { smartypants = RocketChat.settings.get('Markdown_Marked_Smartypants'); }
 
-	text = _marked(_.unescape(text), {
+	text = _marked(_.unescapeHTML(text), {
 		gfm,
 		tables,
 		breaks,
@@ -101,7 +108,7 @@ export const marked = (message) => {
 		smartypants,
 		renderer,
 		highlight
-	}).replace(/=&amp;=/g, '=&=');
+	});
 
 	if (!_.isString(msg)) {
 		msg.html = text;

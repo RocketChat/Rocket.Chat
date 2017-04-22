@@ -230,18 +230,24 @@ class ModelsBaseCache extends EventEmitter {
 				localRecord[field] = [];
 			}
 
+			if (typeof link.where === 'function' && link.where(localRecord, record) === false) {
+				continue;
+			}
+
+			let mutableRecord = record;
+
 			if (typeof link.transform === 'function') {
-				record = link.transform(localRecord, record);
+				mutableRecord = link.transform(localRecord, mutableRecord);
 			}
 
 			if (multi === true) {
-				localRecord[field].push(record);
+				localRecord[field].push(mutableRecord);
 			} else {
-				localRecord[field] = record;
+				localRecord[field] = mutableRecord;
 			}
 
-			this.emit(`join:${ field }:inserted`, localRecord, record);
-			this.emit(`join:${ field }:changed`, 'inserted', localRecord, record);
+			this.emit(`join:${ field }:inserted`, localRecord, mutableRecord);
+			this.emit(`join:${ field }:changed`, 'inserted', localRecord, mutableRecord);
 		}
 	}
 
@@ -254,6 +260,10 @@ class ModelsBaseCache extends EventEmitter {
 
 		for (let i = 0; i < records.length; i++) {
 			let record = records[i];
+
+			if (typeof link.where === 'function' && link.where(localRecord, record) === false) {
+				continue;
+			}
 
 			if (typeof link.transform === 'function') {
 				record = link.transform(localRecord, record);
@@ -753,6 +763,7 @@ class ModelsBaseCache extends EventEmitter {
 			console.error('Cache.updateDiffById: No record', this.collectionName, id, diff);
 			return;
 		}
+		this.removeFromAllIndexes(record);
 
 		const updatedFields = _.without(Object.keys(diff), ...this.ignoreUpdatedFields);
 
@@ -767,6 +778,7 @@ class ModelsBaseCache extends EventEmitter {
 		}
 
 		this.collection.update(record);
+		this.addToAllIndexes(record);
 
 		if (updatedFields.length > 0) {
 			this.emit('updated', record, diff);
@@ -781,6 +793,8 @@ class ModelsBaseCache extends EventEmitter {
 				delete record.$set.usernames;
 			}
 		}
+
+		this.removeFromAllIndexes(record);
 
 		const topLevelFields = Object.keys(update).map(field => field.split('.')[0]);
 		const updatedFields = _.without(topLevelFields, ...this.ignoreUpdatedFields);
@@ -904,6 +918,7 @@ class ModelsBaseCache extends EventEmitter {
 		}
 
 		this.collection.update(record);
+		this.addToAllIndexes(record);
 
 		if (updatedFields.length > 0) {
 			this.emit('updated', record, record);

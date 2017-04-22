@@ -7,17 +7,17 @@
 # 5.  `snapcraft snap`
 
 name: rocketchat-server
-version: 0.55.0-develop
+version: #{RC_VERSION}
 summary: Rocket.Chat server
 description: Have your own Slack like online chat, built with Meteor. https://rocket.chat/
 confinement: strict
 apps:
     rocketchat-server:
-        command: env BABEL_CACHE_DIR=/tmp ROOT_URL=http://localhost PORT=3000 MONGO_URL=mongodb://localhost:27017/parties Accounts_AvatarStorePath=$SNAP_COMMON/uploads node $SNAP/main.js
+        command: startRocketChat
         daemon: simple
         plugs: [network, network-bind]
     rocketchat-mongo:
-        command: env LC_ALL=C mongod --bind_ip 127.0.0.1 --smallfiles --dbpath=$SNAP_COMMON
+        command: startmongo
         daemon: simple
         plugs: [network, network-bind]
     rocketchat-caddy:
@@ -84,10 +84,10 @@ parts:
         organize:
             rcbackup: bin/rcbackup
             startmongo: bin/startmongo
-            initmongo: bin/initmongo
+            startRocketChat: bin/startRocketChat
+            initreplset.js: bin/initreplset.js
             Caddyfile: bin/Caddyfile
             initcaddy: bin/initcaddy
-            initmongoreplset.js: bin/initmongoreplset.js
         snap:
             - bin
     caddy:
@@ -98,3 +98,8 @@ parts:
         source-commit: 53e117802fedd5915eeb32907873d8786a4b2936
         snap:
             - bin/caddy
+        after: [go]
+    go:
+        source-tag: go1.8
+        stage:
+        - bin

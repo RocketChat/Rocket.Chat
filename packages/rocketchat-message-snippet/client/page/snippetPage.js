@@ -11,7 +11,7 @@ Template.snippetPage.helpers({
 			return null;
 		}
 		message.html = message.msg;
-		const markdown = RocketChat.markdown(message);
+		const markdown = RocketChat.Markdown.parse(message);
 		return markdown.tokens[0].text;
 	},
 	date() {

@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { RocketChat } from 'meteor/rocketchat:lib';
 
-Meteor.startup(function() {
+Meteor.startup(() => {
 	RocketChat.settings.add('Markdown_Parser', 'original', {
 		type: 'select',
 		values: [{
@@ -13,7 +13,7 @@ Meteor.startup(function() {
 		}],
 		group: 'Message',
 		section: 'Markdown',
-		'public': true
+		public: true
 	});
 
 	const enableQueryOriginal = {_id: 'Markdown_Parser', value: 'original'};
@@ -21,14 +21,14 @@ Meteor.startup(function() {
 		type: 'boolean',
 		group: 'Message',
 		section: 'Markdown',
-		'public': true,
+		public: true,
 		enableQuery: enableQueryOriginal
 	});
 	RocketChat.settings.add('Markdown_SupportSchemesForLink', 'http,https', {
 		type: 'string',
 		group: 'Message',
 		section: 'Markdown',
-		'public': true,
+		public: true,
 		i18nDescription: 'Markdown_SupportSchemesForLink_Description',
 		enableQuery: enableQueryOriginal
 	});
@@ -38,28 +38,28 @@ Meteor.startup(function() {
 		type: 'boolean',
 		group: 'Message',
 		section: 'Markdown',
-		'public': true,
+		public: true,
 		enableQuery: enableQueryMarked
 	});
 	RocketChat.settings.add('Markdown_Marked_Tables', true, {
 		type: 'boolean',
 		group: 'Message',
 		section: 'Markdown',
-		'public': true,
+		public: true,
 		enableQuery: enableQueryMarked
 	});
 	RocketChat.settings.add('Markdown_Marked_Breaks', true, {
 		type: 'boolean',
 		group: 'Message',
 		section: 'Markdown',
-		'public': true,
+		public: true,
 		enableQuery: enableQueryMarked
 	});
 	RocketChat.settings.add('Markdown_Marked_Pedantic', false, {
 		type: 'boolean',
 		group: 'Message',
 		section: 'Markdown',
-		'public': true,
+		public: true,
 		enableQuery: [{
 			_id: 'Markdown_Parser',
 			value: 'marked'
@@ -72,14 +72,14 @@ Meteor.startup(function() {
 		type: 'boolean',
 		group: 'Message',
 		section: 'Markdown',
-		'public': true,
+		public: true,
 		enableQuery: enableQueryMarked
 	});
 	RocketChat.settings.add('Markdown_Marked_Smartypants', true, {
 		type: 'boolean',
 		group: 'Message',
 		section: 'Markdown',
-		'public': true,
+		public: true,
 		enableQuery: enableQueryMarked
 	});
 });

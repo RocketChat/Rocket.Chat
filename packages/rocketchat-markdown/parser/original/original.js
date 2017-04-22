@@ -22,13 +22,13 @@ export const original = (message) => {
 	const schemes = RocketChat.settings.get('Markdown_SupportSchemesForLink').split(',').join('|');
 
 	// Support ![alt text](http://image url)
-	msg = msg.replace(new RegExp(`!\\[([^\\]]+)\\]\\(((?:${ schemes }):\\/\\/[^\\)]+)\\)`, 'gm'), (match, title, url) => {
+	msg = msg.replace(new RegExp(`!\\[([^\\]]+)\\]\\(((?:${ schemes }):\\/\\/[^\\)]+)\\)`, 'gm'), function(match, title, url) {
 		const target = url.indexOf(Meteor.absoluteUrl()) === 0 ? '' : '_blank';
-		return `<a href="${ _.escapeHTML(url) }" title="${ _.escapeHTML(title) }" target="${ _.escapeHTML(target) }"><div class="inline-image" style="background-image: url(${ _.escapeHTML(url) })"></div></a>`;
+		return `<a href="${ _.escapeHTML(url) }" title="${ _.escapeHTML(title) }" target="${ _.escapeHTML(target) }"><div class="inline-image" style="background-image: url(${ _.escapeHTML(url) });"></div></a>`;
 	});
 
 	// Support [Text](http://link)
-	msg = msg.replace(new RegExp(`\\[([^\\]]+)\\]\\(((?:${ schemes }):\\/\\/[^\\)]+)\\)`, 'gm'), (match, title, url) => {
+	msg = msg.replace(new RegExp(`\\[([^\\]]+)\\]\\(((?:${ schemes }):\\/\\/[^\\)]+)\\)`, 'gm'), function(match, title, url) {
 		const target = url.indexOf(Meteor.absoluteUrl()) === 0 ? '' : '_blank';
 		return `<a href="${ _.escapeHTML(url) }" target="${ _.escapeHTML(target) }">${ _.escapeHTML(title) }</a>`;
 	});
@@ -41,16 +41,16 @@ export const original = (message) => {
 
 	if (RocketChat.settings.get('Markdown_Headers')) {
 		// Support # Text for h1
-		msg = msg.replace(/(?:^|\n)# (([\S\w\d-_\/\*\.,\\][ \u00a0\u1680\u180e\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]?)+)\n?/gm, '<h1>$1</h1>');
+		msg = msg.replace(/^# (([\S\w\d-_\/\*\.,\\][ \u00a0\u1680\u180e\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]?)+)/gm, '<h1>$1</h1>');
 
 		// Support # Text for h2
-		msg = msg.replace(/(?:^|\n)## (([\S\w\d-_\/\*\.,\\][ \u00a0\u1680\u180e\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]?)+)\n?/gm, '<h2>$1</h2>');
+		msg = msg.replace(/^## (([\S\w\d-_\/\*\.,\\][ \u00a0\u1680\u180e\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]?)+)/gm, '<h2>$1</h2>');
 
 		// Support # Text for h3
-		msg = msg.replace(/(?:^|\n)### (([\S\w\d-_\/\*\.,\\][ \u00a0\u1680\u180e\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]?)+)\n?/gm, '<h3>$1</h3>');
+		msg = msg.replace(/^### (([\S\w\d-_\/\*\.,\\][ \u00a0\u1680\u180e\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]?)+)/gm, '<h3>$1</h3>');
 
 		// Support # Text for h4
-		msg = msg.replace(/(?:^|\n)#### (([\S\w\d-_\/\*\.,\\][ \u00a0\u1680\u180e\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]?)+)\n?/gm, '<h4>$1</h4>');
+		msg = msg.replace(/^#### (([\S\w\d-_\/\*\.,\\][ \u00a0\u1680\u180e\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]?)+)/gm, '<h4>$1</h4>');
 	}
 
 	// Support *text* to make bold
@@ -90,9 +90,7 @@ export const original = (message) => {
 	// Support code blocks and inline code
 	message = code(message);
 
-	if (window && window.rocketDebug) {
-		console.log('Markdown', message);
-	}
+	if (typeof window !== 'undefined' && window !== null ? window.rocketDebug : undefined) { console.log('Markdown', msg); }
 
 	return message;
 };

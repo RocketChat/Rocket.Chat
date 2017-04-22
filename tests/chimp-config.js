@@ -25,10 +25,10 @@ module.exports = {
 // 	singleSnippetPerFile: true,
 // 	recommendedFilenameSeparator: '_',
 // 	chai: false,
-// 	screenshotsOnError: isCI(),
-// 	screenshotsPath: '.screenshots',
-// 	captureAllStepScreenshots: false,
-// 	saveScreenshotsToDisk: true,
+	screenshotsOnError: true,
+	screenshotsPath: '.screenshots',
+	captureAllStepScreenshots: false,
+	saveScreenshotsToDisk: true,
 // 	// Note: With a large viewport size and captureAllStepScreenshots enabled,
 // 	// you may run out of memory. Use browser.setViewportSize to make the
 // 	// viewport size smaller.
@@ -110,10 +110,10 @@ module.exports = {
 		tags: '',
 		grep: null,
 		timeout: 40000,
-		reporter: 'min',
+		reporter: 'spec',
 		slow: 100,
 		//retries: 3,
-		bail: false // bail after first test failure
+		bail: true // bail after first test failure
 	},
 
 // 	// - - - - JASMINE  - - - -
