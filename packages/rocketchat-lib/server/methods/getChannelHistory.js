@@ -49,8 +49,14 @@ Meteor.methods({
 			records = RocketChat.models.Messages.findVisibleByRoomIdBetweenTimestamps(rid, oldest, latest, options).fetch();
 		}
 
+		const UI_Use_Real_Name = RocketChat.settings.get('UI_Use_Real_Name') === true;
+
 		const messages = _.map(records, (message) => {
 			message.starred = _.findWhere(message.starred, { _id: fromUserId });
+			if (message.u && message.u._id && UI_Use_Real_Name) {
+				const user = RocketChat.models.Users.findOneById(message.u._id);
+				message.u.name = user && user.name;
+			}
 			return message;
 		});
 

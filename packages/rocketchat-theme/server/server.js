@@ -55,7 +55,7 @@ RocketChat.theme = new class {
 	constructor() {
 		this.variables = {};
 		this.packageCallbacks = [];
-		this.files = ['server/lesshat.less', 'server/colors.less'];
+		this.files = ['server/colors.less'];
 		this.customCSS = '';
 		RocketChat.settings.add('css', '');
 		RocketChat.settings.addGroup('Layout');

@@ -20,13 +20,3 @@ Package.onUse(function(api) {
 	api.addFiles('settings.js', 'server');
 	api.mainModule('markdown.js');
 });
-
-Package.onTest(function(api) {
-	api.use([
-		'sanjo:jasmine@0.20.2',
-		'rocketchat:lib',
-		'rocketchat:markdown'
-	]);
-
-	api.addFiles('tests/jasmine/client/unit/markdown.spec.coffee', 'client');
-});
