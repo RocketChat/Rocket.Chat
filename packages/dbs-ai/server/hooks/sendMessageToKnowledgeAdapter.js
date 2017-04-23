@@ -1,4 +1,6 @@
-/* globals _dbs, SystemLogger */
+/* globals RocketChat, _dbs, SystemLogger */
+
+RocketChat.callbacks.remove('afterSaveMessage', 'externalWebHook');
 
 RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 	// skips this callback if the message was edited
@@ -33,4 +35,4 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 	});
 
 	return message;
-}, RocketChat.callbacks.priority.LOW);
+}, RocketChat.callbacks.priority.LOW, 'dbsAI_OnMessage');

@@ -1,3 +1,5 @@
+/* globals Restivus */
+
 /**
  * Restful API endpoints for interaction with external systems
  */
