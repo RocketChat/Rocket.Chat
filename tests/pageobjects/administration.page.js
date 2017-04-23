@@ -117,7 +117,7 @@ class Administration extends Page {
 	get generalUTF8NamesSlugReset() { return browser.element('.reset-setting[data-setting="UTF8_Names_Slugify"]'); }
 
 	checkUserList(user) {
-		const element = browser.element('td=adminCreated'+user);
+		const element = browser.element(`td=adminCreated${ user }`);
 		element.waitForVisible(5000);
 		browser.pause(500);
 		const result = element.isVisible();
@@ -125,7 +125,7 @@ class Administration extends Page {
 	}
 
 	getUserFromList(user) {
-		const element = browser.element('td='+user);
+		const element = browser.element(`td=${ user }`);
 		element.waitForVisible(5000);
 		return element;
 	}

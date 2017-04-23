@@ -20,7 +20,7 @@ class MarkdownCode
 	@handle_inlinecode: (message) ->
 		# Support `text`
 		message.html = message.html.replace /(^|&gt;|[ >_*~])\`([^`\r\n]+)\`([<_*~]|\B|\b|$)/gm, (match, p1, p2, p3, offset, text) ->
-			token = "=&=#{Random.id()}=&="
+			token = "=!=#{Random.id()}=!="
 
 			message.tokens.push
 				token: token
@@ -67,7 +67,7 @@ class MarkdownCode
 					else
 						result = hljs.highlight s.trim(lang), code
 
-					token = "=&=#{Random.id()}=&="
+					token = "=!=#{Random.id()}=!="
 
 					message.tokens.push
 						highlight: true

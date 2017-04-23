@@ -1,0 +1,21 @@
+<template name="switchDepartment">
+	{{#modal}}
+		<div class="switch-department-form livechat-form">
+			<div class="error error-color error-background {{showError}}">
+				<span>{{{error}}}</span>
+			</div>
+			<form>
+				<h2>{{_ "Choose_a_new_department"}}</h2>
+				<select name="department" class="switch-department-select">
+					<option value="">{{_ "Select_a_department"}}</option>
+					{{#each departments}}
+						<option value="{{_id}}">{{name}}</option>
+					{{/each}}
+				</select>
+
+				<button type="submit" id="btnOk" class="button"> {{_ "Change"}} </button>
+				<button type="button" id="btnCancel" class="button secondary"> {{_ "Cancel"}} </button>
+			</form>
+		</div>
+	{{/modal}}
+</template>

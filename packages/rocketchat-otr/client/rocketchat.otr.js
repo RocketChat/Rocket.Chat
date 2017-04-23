@@ -17,8 +17,7 @@ class OTR {
 			return this.instancesByRoomId[roomId];
 		}
 
-		var subscription;
-		subscription = RocketChat.models.Subscriptions.findOne({
+		const subscription = RocketChat.models.Subscriptions.findOne({
 			rid: roomId
 		});
 

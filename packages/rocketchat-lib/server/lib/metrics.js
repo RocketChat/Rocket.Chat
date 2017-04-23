@@ -1,4 +1,4 @@
-var client = require('prom-client');
+const client = require('prom-client');
 
 RocketChat.promclient = client;
 

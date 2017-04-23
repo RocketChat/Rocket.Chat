@@ -3,7 +3,7 @@
 const baseName = 'rocketchat_';
 import {EventEmitter} from 'events';
 
-const trash = new Mongo.Collection(baseName + '_trash');
+const trash = new Mongo.Collection(`${ baseName }_trash`);
 try {
 	trash._ensureIndex({ collection: 1 });
 	trash._ensureIndex({ _deletedAt: 1 }, { expireAfterSeconds: 60 * 60 * 24 * 30 });
@@ -317,9 +317,9 @@ class ModelsBaseDb extends EventEmitter {
 					action: 'update:query',
 					id: undefined,
 					data: {
-						query: query,
-						update: update,
-						options: options
+						query,
+						update,
+						options
 					},
 					oplog: false
 				});
@@ -370,7 +370,7 @@ class ModelsBaseDb extends EventEmitter {
 			const _id = args[0]._id;
 			delete args[0]._id;
 			args.unshift({
-				_id: _id
+				_id
 			});
 
 			this.upsert(...args);
