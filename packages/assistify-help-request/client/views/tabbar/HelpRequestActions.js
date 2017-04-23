@@ -1,7 +1,7 @@
 Template.HelpRequestActions.helpers({
 	helprequestOpen() {
 		const instance = Template.instance();
-		return instance.data.resolutionStatus && instance.data.resolutionStatus != 'resolved'; //undefined in livechats
+		return instance.data.resolutionStatus && instance.data.resolutionStatus !== 'resolved'; //undefined in livechats
 	},
 
 	isLivechat() {
@@ -14,7 +14,7 @@ Template.HelpRequestActions.helpers({
 		const instance = Template.instance();
 		const room = ChatSubscription.findOne({rid: instance.data.roomId});
 		return room.open;
-	},
+	}
 });
 
 Template.HelpRequestActions.dialogs = {
@@ -32,8 +32,8 @@ Template.HelpRequestActions.dialogs = {
 		 * @return Promise (keep in mind that native es6-promises aren't cancelable. So always provide a then & catch)
 		 */
 		display() {
-			var self = this;
-			return new Promise(function (resolve, reject) {
+			const self = this;
+			return new Promise(function(resolve, reject) {
 				swal.withForm(_.extend({
 					title: t('Closing_chat'),
 					text: '',
@@ -41,52 +41,47 @@ Template.HelpRequestActions.dialogs = {
 						id: 'comment',
 						value: self.room.comment,
 						type: 'input',
-						label: t("comment"),
+						label: t('comment'),
 						placeholder: t('Please_add_a_comment')
 					}, {
 						id: 'tags',
-						value: self.room.tags ? self.room.tags.join(", ") : "",
+						value: self.room.tags ? self.room.tags.join(', ') : '',
 						type: 'input',
 						placeholder: t('Please_add_a_tag')
 					}, {
 						id: 'knowledgeProviderUsage',
 						type: 'select',
 						options: [
-							{value: 'Unknown', text: t("knowledge_provider_usage_unknown")},
-							{value: 'Perfect', text: t("knowledge_provider_usage_perfect")},
-							{value: 'Helpful', text: t("knowledge_provider_usage_helpful")},
-							{value: 'NotUsed', text: t("knowledge_provider_usage_not_used")},
-							{value: 'Useless', text: t("knowledge_provider_usage_useless")}
+							{value: 'Unknown', text: t('knowledge_provider_usage_unknown')},
+							{value: 'Perfect', text: t('knowledge_provider_usage_perfect')},
+							{value: 'Helpful', text: t('knowledge_provider_usage_helpful')},
+							{value: 'NotUsed', text: t('knowledge_provider_usage_not_used')},
+							{value: 'Useless', text: t('knowledge_provider_usage_useless')}
 						]
 					}],
 					showCancelButton: true,
 					closeOnConfirm: false
-				}, self.properties), function (isConfirm) {
+				}, self.properties), function(isConfirm) {
 					if (!isConfirm) { //on cancel
 						$('.swal-form').remove(); //possible bug? why I have to do this manually
 						reject();
 						return false;
 					}
-					let form = this.swalForm;
-					for (let key in form) {
-						if (!form.hasOwnProperty(key)) {
-							continue;
-						}
-					}
+					const form = this.swalForm;
 					resolve(form);
 				});
 			}).then((r) => {
 				$('.sa-input-error').show();
 				return r;
 			}).catch((reason) => {
-				throw reason
+				throw reason;
 			});
 		}
 	}
 };
 
 Template.HelpRequestActions.events({
-	'click .close-helprequest': function (event, instance) {
+	'click .close-helprequest': function(event, instance) {
 		event.preventDefault();
 
 		swal(_.extend({
@@ -107,7 +102,7 @@ Template.HelpRequestActions.events({
 				return false;
 			}
 
-			Meteor.call('assistify:closeHelpRequest', this.roomId, {comment: inputValue}, function (error) {
+			Meteor.call('assistify:closeHelpRequest', this.roomId, {comment: inputValue}, function(error) {
 				if (error) {
 					return handleError(error);
 				} else {
@@ -126,7 +121,7 @@ Template.HelpRequestActions.events({
 			});
 		});
 	},
-	'click .close-livechat': function (event, instance) {
+	'click .close-livechat': function(event) {
 		event.preventDefault();
 
 		swal({
@@ -146,7 +141,7 @@ Template.HelpRequestActions.events({
 				return false;
 			}
 
-			Meteor.call('livechat:closeRoom', this.rid, inputValue, function (error/*, result*/) {
+			Meteor.call('livechat:closeRoom', this.rid, inputValue, function(error/*, result*/) {
 				if (error) {
 					return handleError(error);
 				}
@@ -162,7 +157,8 @@ Template.HelpRequestActions.events({
 	}
 });
 
-Template.HelpRequestActions.onCreated(function () {
+Template.HelpRequestActions.onCreated(function() {
+	const instance = this;
 	this.helpRequest = new ReactiveVar(null);
 
 	this.autorun(() => {

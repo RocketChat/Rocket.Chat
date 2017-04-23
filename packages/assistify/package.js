@@ -9,7 +9,7 @@ Package.describe({
 	documentation: 'README.md'
 });
 
-Package.onUse(function (api) {
+Package.onUse(function(api) {
 	api.versionsFrom('1.4.2.6');
 	api.use('ecmascript');
 	api.use('dbs:ai');

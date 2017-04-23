@@ -1,10 +1,12 @@
+/* globals _dbs */
+
 class ApiAiAdapter {
 	constructor(adapterProps) {
 		this.properties = adapterProps;
 		this.headers = {
 			'Content-Type': 'application/json; charset=utf-8',
 			'Authorization': 'Bearer ' + this.properties.token
-		}
+		};
 	}
 
 	onMessage(message) {

@@ -1,9 +1,9 @@
-const _createRolesAndPermissions = function () {
+const _createRolesAndPermissions = function() {
 	const permissions = [
 		{_id: 'create-r', roles: ['admin', 'user', 'bot', 'guest', 'expert']},
 		{_id: 'create-e', roles: ['admin', 'expert', 'bot']},
 		{_id: 'view-r-room', roles: ['admin', 'user', 'bot', 'expert']}, //guests shall not view other requests
-		{_id: 'view-e-room', roles: ['admin', 'user', 'bot', 'expert']},
+		{_id: 'view-e-room', roles: ['admin', 'user', 'bot', 'expert']}
 	];
 
 	for (const permission of permissions) {
@@ -27,8 +27,8 @@ const _createRolesAndPermissions = function () {
 	}
 };
 
-const _registerExpertsChannelCallback = function () {
-	RocketChat.callbacks.add('afterJoinRoom', function (user, room) {
+const _registerExpertsChannelCallback = function() {
+	RocketChat.callbacks.add('afterJoinRoom', function(user, room) {
 		const expertRoomName = RocketChat.settings.get('Assistify_Expert_Channel').toLowerCase();
 
 		if (room.name === expertRoomName) {
@@ -36,7 +36,7 @@ const _registerExpertsChannelCallback = function () {
 		}
 	});
 
-	RocketChat.callbacks.add('afterLeaveRoom', function (user, room) {
+	RocketChat.callbacks.add('afterLeaveRoom', function(user, room) {
 		const expertRoomName = RocketChat.settings.get('Assistify_Expert_Channel').toLowerCase();
 
 		if (room.name === expertRoomName) {
@@ -48,9 +48,7 @@ const _registerExpertsChannelCallback = function () {
 Meteor.startup(() => {
 
 	// Adding custom permissions leads to exceptions in streamer => Disabled for the time being
-	return; //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-
-	_createRolesAndPermissions();
-
-	_registerExpertsChannelCallback();
+	// _createRolesAndPermissions();
+    //
+	// _registerExpertsChannelCallback();
 });

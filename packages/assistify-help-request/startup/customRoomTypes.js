@@ -1,3 +1,5 @@
+/* globals openRoom */
+
 /**
  * Help requests need two additional room types
  * @see packages/rocketchat-lib/startup/defaultRoomTypes.js

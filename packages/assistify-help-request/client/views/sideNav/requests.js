@@ -1,23 +1,23 @@
 Template.requests.helpers({
-	isActive: function () {
+	isActive: function() {
 		if (ChatSubscription.findOne({
-				t: {$in: ['r']},
-				f: {$ne: true},
-				open: true,
-				rid: Session.get('openedRoom')
-			}, {fields: {_id: 1}})) {
+			t: {$in: ['r']},
+			f: {$ne: true},
+			open: true,
+			rid: Session.get('openedRoom')
+		}, {fields: {_id: 1}})) {
 			return 'active';
 		}
 	},
 
-	rooms: function () {
-		let query = {
+	rooms: function() {
+		const query = {
 			t: {$in: ['r']},
 			open: true
 		};
 
 		if (RocketChat.settings.get('Favorite_Rooms')) {
-			query.f = {$ne: true}
+			query.f = {$ne: true};
 		}
 
 		const user = Meteor.user();
@@ -27,13 +27,13 @@ Template.requests.helpers({
 			};
 		}
 
-		return ChatSubscription.find(query, {sort: {'t': 1, 'name': 1}})
+		return ChatSubscription.find(query, {sort: {'t': 1, 'name': 1}});
 	}
 });
 
 Template.requests.events({
-	'click .js-more-requests': function () {
-		SideNav.setFlex("listRequestsFlex");
+	'click .js-more-requests': function() {
+		SideNav.setFlex('listRequestsFlex');
 		SideNav.openFlex();
 	}
 });

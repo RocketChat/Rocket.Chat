@@ -1,10 +1,11 @@
-Meteor.methods({
-	'redlink:getStoredConversation'(conversationId){
-		if(Meteor.isServer) {
-			const adapter = _dbs.RedlinkAdapterFactory.getInstance();
-			const conversation = adapter.getStoredConversation(conversationId);
+/* globals _dbs */
 
-			return conversation;
+Meteor.methods({
+	'redlink:getStoredConversation'(conversationId) {
+		if (Meteor.isServer) {
+			const adapter = _dbs.RedlinkAdapterFactory.getInstance();
+
+			return adapter.getStoredConversation(conversationId);
 		}
 	}
 });

@@ -1,12 +1,14 @@
+/* globals RocketChat, SystemLogger, _dbs */
+
 /**
  * Notifies the knowledgeProvider about the end of a livechat conversation
  */
 
-const _callbackOnClose = function (room, closeProps = {}) {
+const _callbackOnClose = function(room) {
 	try {
 		const knowledgeAdapter = _dbs.getKnowledgeAdapter();
 		if (knowledgeAdapter && knowledgeAdapter.onClose) {
-				knowledgeAdapter.onClose(room);
+			knowledgeAdapter.onClose(room);
 		} else {
 			SystemLogger.warn('No knowledge provider configured');
 		}

@@ -1,7 +1,7 @@
 class HelpRequest extends RocketChat.models._Base {
 	constructor() {
 		super('helpRequest');
-		if(Meteor.isClient) {
+		if (Meteor.isClient) {
 			this._initModel('helpRequest');
 		}
 
@@ -23,11 +23,11 @@ class HelpRequest extends RocketChat.models._Base {
 
 //----------------------------- FIND
 	findById(_id, options) {
-		return this.find({_id: _id}, options)
+		return this.find({_id: _id}, options);
 	}
 
 	findByIds(_ids, options) {
-		return this.find({_id: {$in: [].concat(_ids)}}, options)
+		return this.find({_id: {$in: [].concat(_ids)}}, options);
 	}
 
 	findBySupportArea(supportArea, options) {
@@ -41,14 +41,14 @@ class HelpRequest extends RocketChat.models._Base {
 	}
 
 //---------------------------- CREATE
-	createForSupportArea(supportArea, roomId, question="", environment={}) {
+	createForSupportArea(supportArea, roomId, question='', environment={}) {
 		const helpRequest = {
 			createdOn: new Date(),
 			supportArea: supportArea,
 			roomId: roomId,
 			question: question,
 			environment: environment,
-			resolutionStatus: HelpRequest.RESOLUTION_STATUS.open,
+			resolutionStatus: HelpRequest.RESOLUTION_STATUS.open
 		};
 
 		return this.insert(helpRequest);
@@ -58,9 +58,9 @@ class HelpRequest extends RocketChat.models._Base {
 	close(_id, closingProperties={}) {
 		const query = {_id: _id};
 		const update = {$set: {
-								resolutionStatus: HelpRequest.RESOLUTION_STATUS.resolved,
-								closingProperties: closingProperties
-						}};
+			resolutionStatus: HelpRequest.RESOLUTION_STATUS.resolved,
+			closingProperties: closingProperties
+		}};
 
 
 

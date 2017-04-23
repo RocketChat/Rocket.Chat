@@ -1,3 +1,5 @@
+/* globals _dbs, SystemLogger, RocketChat */
+
 class RedlinkAdapter {
 	constructor(adapterProps) {
 		this.properties = adapterProps;
@@ -14,7 +16,7 @@ class RedlinkAdapter {
 		}
 	}
 
-	createRedlinkStub(rid, latestKnowledgeProviderResult) {
+	static createRedlinkStub(rid, latestKnowledgeProviderResult) {
 		const latestRedlinkResult = (latestKnowledgeProviderResult && latestKnowledgeProviderResult.knowledgeProvider === 'redlink')
 			? latestKnowledgeProviderResult.prepareResult
 			: {};
@@ -25,7 +27,7 @@ class RedlinkAdapter {
 			messages: latestRedlinkResult.messages ? latestRedlinkResult.messages : [],
 			tokens: latestRedlinkResult.tokens ? latestRedlinkResult.tokens : [],
 			queryTemplates: latestRedlinkResult.queryTemplates ? latestRedlinkResult.queryTemplates : []
-		}
+		};
 	}
 
 	getConversation(rid, latestKnowledgeProviderResult) {
@@ -60,11 +62,11 @@ class RedlinkAdapter {
 
 	onResultModified(modifiedRedlinkResult) {
 		try {
-			SystemLogger.debug("sending update to redlinkk with: " + JSON.stringify(modifiedRedlinkResult));
-			let options = this.options;
+			SystemLogger.debug('sending update to redlinkk with: ' + JSON.stringify(modifiedRedlinkResult));
+			const options = this.options;
 			options.data = modifiedRedlinkResult.prepareResult;
 			const responseRedlinkQuery = HTTP.post(this.properties.url + '/query', options);
-			SystemLogger.debug("recieved update to redlinkk with: " + JSON.stringify(responseRedlinkQuery));
+			SystemLogger.debug('received update to redlinkk with: ' + JSON.stringify(responseRedlinkQuery));
 			RocketChat.models.LivechatExternalMessage.update(
 				{
 					_id: modifiedRedlinkResult._id
@@ -74,7 +76,7 @@ class RedlinkAdapter {
 						result: responseRedlinkQuery.data
 					},
 					$unset: {
-						inlineResults: ""
+						inlineResults: ''
 					}
 				});
 
@@ -83,7 +85,7 @@ class RedlinkAdapter {
 		}
 	}
 
-	onMessage(message, context = {}, additionalKeywords = []) {
+	onMessage(message, context = {}) { //todo: add additionalKeywords from expertise room configuration
 
 		//private methods
 		/** This method adapts the service response.
@@ -92,58 +94,61 @@ class RedlinkAdapter {
 		 * @returns prepareResponse
 		 * @private
 		 */
-		const _postprocessPrepare = function (prepareResponse) {
+		const _postprocessPrepare = function(prepareResponse) {
 			return prepareResponse;
-		};
-
-		const _getAdditionalTokens = function (additionalKeywords) {
-			let tokens = [];
-
-			additionalKeywords.forEach((keyword) => {
-				tokens.push({
-					"confidence": 1,
-					"messageIdx": -1,
-					"start": -1,
-					"end": -1,
-					"origin": "Agent",
-					"state": "Suggested",
-					"type": "Keyword",
-					"value": keyword
-				})
-			})
 		};
 
 		const knowledgeProviderResultCursor = this.getKnowledgeProviderCursor(message.rid);
 		const latestKnowledgeProviderResult = knowledgeProviderResultCursor.fetch()[0];
 
-		const requestBody = this.createRedlinkStub(message.rid, latestKnowledgeProviderResult);
+		const requestBody = RedlinkAdapter.createRedlinkStub(message.rid, latestKnowledgeProviderResult);
 		requestBody.messages = this.getConversation(message.rid, latestKnowledgeProviderResult);
 
 		requestBody.context = context;
+		/*
+		In future it is likely for expertises to define keywords which are implicitly being used as keyword tokens
+		As this is currently not used, commented below. Either delete (with separate commit) or uncomment in future
+		 */
+		// const _getAdditionalTokens = function (additionalKeywords) {
+		// 	let tokens = [];
+		//
+		// 	additionalKeywords.forEach((keyword) => {
+		// 		tokens.push({
+		// 			"confidence": 1,
+		// 			"messageIdx": -1,
+		// 			"start": -1,
+		// 			"end": -1,
+		// 			"origin": "Agent",
+		// 			"state": "Suggested",
+		// 			"type": "Keyword",
+		// 			"value": keyword
+		// 		})
+		// 	})
+		// };
 		// requestBody.tokens = requestBody.tokens.concat(_getAdditionalTokens(additionalKeywords));
 		// requestBody.tokens = _dbs.unique(requestBody.tokens);
 
 		try {
-			let options = this.options;
+			const options = this.options;
 			this.options.data = requestBody;
 
 			if (RocketChat.settings.get('DBS_AI_Redlink_Domain')) {
 				options.data.context.domain = RocketChat.settings.get('DBS_AI_Redlink_Domain');
 			}
-			SystemLogger.debug('PREPARE', JSON.stringify(options, "", 2));
+			SystemLogger.debug('PREPARE', JSON.stringify(options, '', 2));
 			const responseRedlinkPrepare = HTTP.post(this.properties.url + '/prepare', options);
 
 			if (responseRedlinkPrepare.data && responseRedlinkPrepare.statusCode === 200) {
-				SystemLogger.debug('PREPARE RESULT', JSON.stringify(responseRedlinkPrepare, "", 2));
+				SystemLogger.debug('PREPARE RESULT', JSON.stringify(responseRedlinkPrepare, '', 2));
 				this.purgePreviousResults(knowledgeProviderResultCursor);
 
 				const updateId = latestKnowledgeProviderResult ? latestKnowledgeProviderResult._id : Random.id();
-				const updatedDocs = RocketChat.models.LivechatExternalMessage.update({
-						_id: updateId
-					},
+				RocketChat.models.LivechatExternalMessage.update({
+					_id: updateId
+				},
 					{
 						rid: message.rid,
-						knowledgeProvider: "redlink",
+						knowledgeProvider: 'redlink',
 						originMessage: {_id: message._id, ts: message.ts},
 						prepareResult: _postprocessPrepare(responseRedlinkPrepare.data),
 						ts: new Date()
@@ -154,20 +159,20 @@ class RedlinkAdapter {
 
 				const externalMessage = RocketChat.models.LivechatExternalMessage.findOneById(updateId);
 
-				Meteor.defer(() => RocketChat.callbacks.run('afterExternalMessage',externalMessage));
+				Meteor.defer(() => RocketChat.callbacks.run('afterExternalMessage', externalMessage));
 			}
-		} catch(e) {
+		} catch (e) {
 			SystemLogger.error('Redlink-Prepare/Query with results from prepare did not succeed -> ', e);
 		}
 	}
 
 	getQueryResults(roomId, templateIndex, creator) {
 		// ---------------- private methods
-		const _getKeyForBuffer = function (templateIndex, creator) {
+		const _getKeyForBuffer = function(templateIndex, creator) {
 			return templateIndex + '-' + creator.replace(/\./g, '_');
 		};
 
-		const _getBufferedResults = function (latestKnowledgeProviderResult, templateIndex, creator) {
+		const _getBufferedResults = function(latestKnowledgeProviderResult, templateIndex, creator) {
 
 			if (latestKnowledgeProviderResult && latestKnowledgeProviderResult.knowledgeProvider === 'redlink' && latestKnowledgeProviderResult.inlineResults) {
 				return latestKnowledgeProviderResult.inlineResults[_getKeyForBuffer(templateIndex, creator)];
@@ -180,16 +185,16 @@ class RedlinkAdapter {
 		 * @param queryTemplates
 		 * @private
 		 */
-		const _preprocessTemplates = function (queryTemplates) {
+		const _preprocessTemplates = function(queryTemplates) {
 			return queryTemplates;
 		};
 
-		const _postprocessResultResponse = function (results) {
+		const _postprocessResultResponse = function(results) {
 			return results;
 		};
 		// ---------------- private methods
 
-		var results = [];
+		let results = [];
 
 		const latestKnowledgeProviderResult = this.getKnowledgeProviderCursor(roomId).fetch()[0];
 
@@ -202,7 +207,7 @@ class RedlinkAdapter {
 		if (!results) {
 			try {
 
-				let options = this.options;
+				const options = this.options;
 				this.options.data = this.options;
 
 				options.data = {
@@ -219,16 +224,16 @@ class RedlinkAdapter {
 				if (RocketChat.settings.get('DBS_AI_Redlink_Domain')) {
 					options.data.context.domain = RocketChat.settings.get('DBS_AI_Redlink_Domain');
 				}
-				SystemLogger.debug('RESULTS requested for', creator, ": ", JSON.stringify(options, "", 2));
+				SystemLogger.debug('RESULTS requested for', creator, ': ', JSON.stringify(options, '', 2));
 				const responseRedlinkResult = HTTP.post(this.properties.url + '/result/' + creator + '/?templateIdx=' + templateIndex, options);
 				if (responseRedlinkResult.data && responseRedlinkResult.statusCode === 200) {
-					SystemLogger.debug('RESULTS RETRIEVED for', creator, ": ", JSON.stringify(responseRedlinkResult, "", 2));
+					SystemLogger.debug('RESULTS RETRIEVED for', creator, ': ', JSON.stringify(responseRedlinkResult, '', 2));
 					results = responseRedlinkResult.data;
 
 					results = _postprocessResultResponse(results);
 
 					//buffer the results
-					let inlineResultsMap = latestKnowledgeProviderResult.inlineResults || {};
+					const inlineResultsMap = latestKnowledgeProviderResult.inlineResults || {};
 					inlineResultsMap[_getKeyForBuffer(templateIndex, creator)] = results;
 
 					RocketChat.models.LivechatExternalMessage.update(
@@ -242,7 +247,7 @@ class RedlinkAdapter {
 						});
 
 				} else {
-					SystemLogger.error("Couldn't  read result from Redlink");
+					SystemLogger.error('Couldn\'t  read result from Redlink');
 				}
 			} catch (err) {
 				SystemLogger.error('Retrieving Query-resuls from Redlink did not succeed -> ', err);
@@ -263,7 +268,7 @@ class RedlinkAdapter {
 	}
 
 	getStoredConversation(conversationId) {
-		let options = this.options;
+		const options = this.options;
 
 		const response = HTTP.get(this.properties.url + '/store/' + conversationId, options);
 		if (response.statusCode === 200) {
@@ -274,11 +279,11 @@ class RedlinkAdapter {
 	onClose(room) { //async
 
 		const knowledgeProviderResultCursor = this.getKnowledgeProviderCursor(room._id);
-		let latestKnowledgeProviderResult = knowledgeProviderResultCursor.fetch()[0];
+		const latestKnowledgeProviderResult = knowledgeProviderResultCursor.fetch()[0];
 		if (latestKnowledgeProviderResult) {
 			// latestKnowledgeProviderResult.helpful = room.rbInfo.knowledgeProviderUsage;
 
-			let options = this.options;
+			const options = this.options;
 			options.data = latestKnowledgeProviderResult.prepareResult;
 
 			//mark result as closed. This is necessary in order to make it searchable
@@ -291,11 +296,11 @@ class RedlinkAdapter {
 				options.data.context.domain = RocketChat.settings.get('DBS_AI_Redlink_Domain');
 			}
 			try {
-				SystemLogger.debug('STORE:', JSON.stringify(options, "", 2));
+				SystemLogger.debug('STORE:', JSON.stringify(options, '', 2));
 				const responseStore = HTTP.post(this.properties.url + '/store', options);
 				if (responseStore.statusCode === 200) {
-					SystemLogger.debug('STORED as', JSON.stringify(responseStore, "", 2));
-					const externalMessageId = RocketChat.models.LivechatExternalMessage.update(
+					SystemLogger.debug('STORED as', JSON.stringify(responseStore, '', 2));
+					RocketChat.models.LivechatExternalMessage.update(
 						{
 							_id: latestKnowledgeProviderResult._id
 						},
@@ -329,25 +334,26 @@ class RedlinkAdapterFactory {
 		/**
 		 * Refreshes the adapter instances on change of the configuration
 		 */
+			//todo: validate it works
 		const factory = this;
 		this.settingsHandle = RocketChat.models.Settings.findByIds(['DBS_AI_Source', 'DBS_AI_Redlink_URL', 'DBS_AI_Redlink_Auth_Token']).observeChanges({
-			added(id, fields) {
+			added() {
 				factory.singleton = undefined;
 			},
-			changed(id, fields) {
+			changed() {
 				factory.singleton = undefined;
 			},
-			removed(id) {
+			removed() {
 				factory.singleton = undefined;
 			}
 		});
-	};
+	}
 
 	static getInstance() {
 		if (this.singleton) {
-			return this.singleton
+			return this.singleton;
 		} else {
-			var adapterProps = {
+			const adapterProps = {
 				url: '',
 				token: '',
 				language: ''

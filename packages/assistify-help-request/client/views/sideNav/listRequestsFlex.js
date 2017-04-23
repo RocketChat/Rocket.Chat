@@ -1,3 +1,8 @@
+
+function __guard__(value, transform) {
+	return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
+}
+
 /**
  * Left-handside panel allowing to find requests which are currently not subscribed to
  * Adapted copy of packages/rocketchat-ui-sidenav/client/listChannelsFlex.coffee
@@ -37,8 +42,8 @@ Template.listRequestsFlex.events({
 	},
 
 	'click footer .create'() {
-		if (RocketChat.authz.hasAtLeastOnePermission( 'create-p')) {
-			return SideNav.setFlex("createRequestFlex");
+		if (RocketChat.authz.hasAtLeastOnePermission('create-p')) {
+			return SideNav.setFlex('createRequestFlex');
 		}
 	},
 
@@ -51,10 +56,10 @@ Template.listRequestsFlex.events({
 	},
 
 	'scroll .content': _.throttle(function(e, t) {
-			if (t.hasMore.get() && (e.target.scrollTop >= (e.target.scrollHeight - e.target.clientHeight))) {
-				return t.limit.set(t.limit.get() + 50);
-			}
+		if (t.hasMore.get() && (e.target.scrollTop >= (e.target.scrollHeight - e.target.clientHeight))) {
+			return t.limit.set(t.limit.get() + 50);
 		}
+	}
 		, 200),
 
 	'submit .search-form'(e) {
@@ -73,7 +78,7 @@ Template.listRequestsFlex.events({
 	},
 
 	'change #show'(e, instance) {
-		let show = $(e.currentTarget).val();
+		const show = $(e.currentTarget).val();
 		if (show === 'joined') {
 			instance.$('#sort-channels').hide();
 			instance.$('#sort-subscriptions').show();
@@ -95,46 +100,42 @@ Template.listRequestsFlex.onCreated(function() {
 	this.show = new ReactiveVar('all');
 
 	return this.autorun(() => {
-			if (this.show.get() === 'joined') {
-				this.hasMore.set(true);
-				let options =  { fields: { name: 1 } };
-				if (_.isNumber(this.limit.get())) {
-					options.limit = this.limit.get();
-				}
-				if (_.trim(this.sortSubscriptions.get())) {
-					switch (this.sortSubscriptions.get()) {
-						case 'name':
-							options.sort = { name: 1 };
-							break;
-						case 'ls':
-							options.sort = { ls: -1 };
-							break;
-					}
-				}
-				this.channelsList.set(RocketChat.models.Subscriptions.find({
-						name: new RegExp(s.trim(s.escapeRegExp(this.nameFilter.get())), "i"),
-						t: 'c'
-					}, options).fetch()
-				);
-				if (this.channelsList.get().length < this.limit.get()) {
-					return this.hasMore.set(false);
-				}
-			} else {
-				return Meteor.call('requestsList', this.nameFilter.get(), 'public', this.limit.get(), this.sortChannels.get(), (err, result) => {
-						if (result) {
-							this.hasMore.set(true);
-							this.channelsList.set(result.channels);
-							if (result.channels.length < this.limit.get()) {
-								return this.hasMore.set(false);
-							}
-						}
-					}
-				);
+		if (this.show.get() === 'joined') {
+			this.hasMore.set(true);
+			const options = { fields: { name: 1 } };
+			if (_.isNumber(this.limit.get())) {
+				options.limit = this.limit.get();
 			}
+			if (_.trim(this.sortSubscriptions.get())) {
+				switch (this.sortSubscriptions.get()) {
+					case 'name':
+						options.sort = { name: 1 };
+						break;
+					case 'ls':
+						options.sort = { ls: -1 };
+						break;
+				}
+			}
+			this.channelsList.set(RocketChat.models.Subscriptions.find({
+				name: new RegExp(s.trim(s.escapeRegExp(this.nameFilter.get())), 'i'),
+				t: 'c'
+			}, options).fetch()
+				);
+			if (this.channelsList.get().length < this.limit.get()) {
+				return this.hasMore.set(false);
+			}
+		} else {
+			return Meteor.call('requestsList', this.nameFilter.get(), 'public', this.limit.get(), this.sortChannels.get(), (err, result) => {
+				if (result) {
+					this.hasMore.set(true);
+					this.channelsList.set(result.channels);
+					if (result.channels.length < this.limit.get()) {
+						return this.hasMore.set(false);
+					}
+				}
+			}
+				);
 		}
+	}
 	);
 });
-
-function __guard__(value, transform) {
-	return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
-}

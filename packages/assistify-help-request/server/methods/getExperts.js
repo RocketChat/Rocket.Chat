@@ -1,5 +1,7 @@
+/* globals SystemLogger */
+
 Meteor.methods({
-	getExperts(){
+	getExperts() {
 		const expertRoomName = RocketChat.settings.get('Assistify_Expert_Channel');
 		SystemLogger.debug('Expert Channel:', expertRoomName);
 
@@ -7,8 +9,7 @@ Meteor.methods({
 
 		if (!room) {
 			throw new Meteor.Error('no-expert-room-defined');
-		}
-		else {
+		}		else {
 			return room.usernames;
 		}
 	}

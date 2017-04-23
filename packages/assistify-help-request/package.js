@@ -1,15 +1,15 @@
 Package.describe({
-  name: 'assistify:help-request',
-  version: '0.0.1',
-  summary: 'Adds rooms which are to be closed once the initial question has been resolved',
+	name: 'assistify:help-request',
+	version: '0.0.1',
+	summary: 'Adds rooms which are to be closed once the initial question has been resolved',
   // URL to the Git repository containing the source code for this package.
-  git: '',
+	git: '',
   // By default, Meteor will default to using README.md for documentation.
   // To avoid submitting documentation, set this field to null.
-  documentation: 'README.md'
+	documentation: 'README.md'
 });
 
-Package.onUse(function (api) {
+Package.onUse(function(api) {
 	api.versionsFrom('1.2.1');
 	api.use(['ecmascript', 'underscore', 'coffeescript', 'less@2.5.1']);
 	api.use(['assistify']);
@@ -70,7 +70,7 @@ Package.onUse(function (api) {
 	api.addFiles('client/views/sideNav/listRequestsFlex.js', 'client');
 
 	//Libraries
-	// api.addFiles('client/lib/collections.js', 'client');
+	api.addFiles('client/lib/collections.js', 'client');
 
 	//Hooks
 	api.addFiles('client/hooks/openAiTab.js', 'client');

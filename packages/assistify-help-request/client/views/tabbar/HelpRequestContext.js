@@ -3,10 +3,10 @@ Template.HelpRequestContext.helpers({
 	 * Create a set of name-value-pairs which are being used to visualize the context from which the question has been asked
 	 * @returns {Array}
 	 */
-	relevantParameters(){
+	relevantParameters() {
 		const instance = Template.instance();
 		const environment = instance.data.environment;
-		let relevantParameters = [];
+		const relevantParameters = [];
 
 		if (environment) {
 			let value = '';
@@ -20,15 +20,10 @@ Template.HelpRequestContext.helpers({
 			}
 			if (environment.tcode) {
 				name = 'transaction';
-			} else {
-				if (environment.program) {
-					name = 'program';
-				} else {
-					if (environment.wd_application) {
-						name = 'application'
-					}
-				}
-
+			} else if (environment.program) {
+				name = 'program';
+			} else if (environment.wd_application) {
+				name = 'application';
 			}
 
 			if (name) {
@@ -42,7 +37,7 @@ Template.HelpRequestContext.helpers({
 			if (environment.system) {
 				let systemInfo = environment.system;
 				if (environment.client) {
-					systemInfo = systemInfo + "(" + environment.client + ")";
+					systemInfo = systemInfo + '(' + environment.client + ')';
 				}
 
 				if (environment.release) {
@@ -52,7 +47,7 @@ Template.HelpRequestContext.helpers({
 				relevantParameters.push({
 					name: 'system',
 					value: systemInfo
-				})
+				});
 			}
 		}
 
@@ -60,6 +55,6 @@ Template.HelpRequestContext.helpers({
 	}
 });
 
-Template.HelpRequestContext.onCreated(function () {
+Template.HelpRequestContext.onCreated(function() {
 
 });

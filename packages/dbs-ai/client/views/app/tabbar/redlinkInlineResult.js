@@ -1,65 +1,71 @@
+/* globals _dbs */
+
 import toastr from 'toastr';
-Template.redlinkInlineResult._copyReplySuggestion = function (event, instance) {
+import { ReactiveDict } from 'meteor/reactive-dict';
+
+Template.redlinkInlineResult._copyReplySuggestion = function(event, instance) {
 	if (instance.data.result.replySuggestion) {
 		$('#chat-window-' + instance.data.roomId + ' .input-message').val(instance.data.result.replySuggestion);
 	}
 };
 
 Template.redlinkInlineResult.helpers({
-	templateName(){
+	templateName() {
 		const instance = Template.instance();
 
-		let templateSuffix = "generic";
+		let templateSuffix = 'generic';
 		switch (instance.data.creator) {
 			case 'bahn.de':
-				templateSuffix = "bahn_de";
+				templateSuffix = 'bahn_de';
 				break;
 			case 'community.bahn.de':
-				templateSuffix = "VKL_community";
+				templateSuffix = 'VKL_community';
 				break;
 			case 'VKL':
-				templateSuffix = "VKL_community";
+				templateSuffix = 'VKL_community';
 				break;
 			case 'Hasso-MLT':
-				templateSuffix = "Hasso";
+				templateSuffix = 'Hasso';
 				break;
 			case 'Hasso-Search':
-				templateSuffix = "Hasso";
+				templateSuffix = 'Hasso';
 				break;
 			default:
-				if (!!Template['redlinkInlineResult_' + instance.data.creator]) {
+				if (Template['redlinkInlineResult_' + instance.data.creator]) {
 					templateSuffix = instance.data.creator;
 				} else {
-					templateSuffix = "generic";
+					templateSuffix = 'generic';
 				}
 				break;
 		}
 		return 'redlinkInlineResult_' + templateSuffix;
 	},
-	templateData(){
+	templateData() {
 		const instance = Template.instance();
 		return {
 			result: instance.data.result,
 			roomId: instance.data.roomId
-		}
+		};
 	}
 });
 
 Template.redlinkInlineResult.events({
-	'click .js-copy-reply-suggestion': function (event, instance) {
-		return Template.redlinkInlineResult._copyReplySuggestion(event, instance)
+	'click .js-copy-reply-suggestion': function(event, instance) {
+		return Template.redlinkInlineResult._copyReplySuggestion(event, instance);
 	}
 });
 
 //----------------------------------- Generic helper as fallback ------------------------------
 
 Template.redlinkInlineResult_generic.helpers({
-	relevantKeyValues(){
+	relevantKeyValues() {
 		const instance = Template.instance();
 
-		let keyValuePairs = [];
-		for (key in instance.data.result) {
-			keyValuePairs.push({key: key, value: instance.data.result[key]});
+		const keyValuePairs = [];
+		for (const key in instance.data.result) {
+			if (Object.prototype.hasOwnProperty.call(instance.data.result, key)) {
+				keyValuePairs.push({key: key, value: instance.data.result[key]});
+			}
 		}
 
 		return keyValuePairs;
@@ -69,35 +75,33 @@ Template.redlinkInlineResult_generic.helpers({
 //------------------------------------- Bahn.de -----------------------------------------------
 
 Template.redlinkInlineResult_bahn_de.events({
-	'click .js-copy-reply-suggestion': function (event, instance) {
-		return Template.redlinkInlineResult._copyReplySuggestion(event, instance)
+	'click .js-copy-reply-suggestion': function(event, instance) {
+		return Template.redlinkInlineResult._copyReplySuggestion(event, instance);
 	}
 });
 
 Template.redlinkInlineResult_bahn_de.helpers({
-	durationformat(val){
+	durationformat(val) {
 		return new _dbs.Duration(val * 60 * 1000).toHHMMSS();
 	}
 });
 
 //----------------------------------- VKL and community ---------------------------------------
 Template.redlinkInlineResult_VKL_community.helpers({
-	classExpanded(){
+	classExpanded() {
 		const instance = Template.instance();
 		return instance.state.get('expanded') ? 'expanded' : 'collapsed';
 	}
 });
 
 Template.redlinkInlineResult_VKL_community.events({
-	'click .result-item-wrapper .js-toggle-result-preview-expanded': function (event, instance) {
+	'click .result-item-wrapper .js-toggle-result-preview-expanded': function(event, instance) {
 		const current = instance.state.get('expanded');
 		instance.state.set('expanded', !current);
-	},
+	}
 });
 
-Template.redlinkInlineResult_VKL_community.onCreated(function () {
-	const instance = this;
-
+Template.redlinkInlineResult_VKL_community.onCreated(function() {
 	this.state = new ReactiveDict();
 	this.state.setDefault({
 		expanded: false
@@ -106,7 +110,7 @@ Template.redlinkInlineResult_VKL_community.onCreated(function () {
 
 //-------------------------------------- Assistify --------------------------------
 Template.inlineResultMessage.helpers({
-	getOriginatorClass(message){
+	getOriginatorClass(message) {
 		switch (message.origin) {
 			case 'User':
 				return 'seeker';
@@ -116,7 +120,7 @@ Template.inlineResultMessage.helpers({
 				return 'unknown';
 		}
 	},
-	getSelectedClass(){
+	getSelectedClass() {
 		const instance = Template.instance();
 
 		if (instance.selected.get()) {
@@ -126,21 +130,21 @@ Template.inlineResultMessage.helpers({
 });
 
 Template.inlineResultMessage.events({
-	'click .conversationMessage': function (event, instance) {
+	'click .conversationMessage': function(event, instance) {
 		const current = instance.selected.get();
 
 		instance.selected.set(!current);
 
 		if (instance.selected.get()) {
 			Template.redlinkQueries.utilities.addCleanupActivity(() => {
-				instance.selected.set(false)
+				instance.selected.set(false);
 			});
 
 		}
 	}
 });
 
-Template.inlineResultMessage.onCreated(function () {
+Template.inlineResultMessage.onCreated(function() {
 	const instance = this;
 
 	instance.selected = new ReactiveVar(false);
@@ -148,7 +152,7 @@ Template.inlineResultMessage.onCreated(function () {
 
 
 Template.redlinkInlineResult_Hasso.events({
-	'click .result-item-wrapper .js-toggle-result-preview-expanded': function (event, instance) {
+	'click .result-item-wrapper .js-toggle-result-preview-expanded': function(event, instance) {
 		const current = instance.state.get('expanded');
 		instance.state.set('expanded', !current);
 
@@ -156,7 +160,7 @@ Template.redlinkInlineResult_Hasso.events({
 			Template.redlinkQueries.utilities.resultsInteractionCleanup();
 		}
 	},
-	'click .js-send-message': function (event, instance) {
+	'click .js-send-message': function(event, instance) {
 
 		/* buffer metadata of messages which are _about to be sent_
 		 * This is necessary as the results or queries displayed may be entered into the message-area,
@@ -167,18 +171,18 @@ Template.redlinkInlineResult_Hasso.events({
 			user: Meteor.user(),
 			room: instance.data.roomId,
 			metadata: {
-				origin: "historicConversation",
+				origin: 'historicConversation',
 				conversationId: instance.data.result.conversationId
 			}
 		});
 
 		//create a text-response
-		let textToInsert = "";
+		let textToInsert = '';
 		const selectedMessages = instance.findAll('.selected');
 		if (selectedMessages.length > 0) {
-			textToInsert = selectedMessages.reduce(function (concat, elem) {
-					return concat + " " + elem.textContent;
-				},
+			textToInsert = selectedMessages.reduce(function(concat, elem) {
+				return concat + ' ' + elem.textContent;
+			},
 				'');
 		} else {
 			//translate GUID of the conversation provided into a link
@@ -186,7 +190,7 @@ Template.redlinkInlineResult_Hasso.events({
 			if (originRoom) {
 				const routeLink = RocketChat.roomTypes.getRouteLink(originRoom.t, originRoom);
 				const roomLink = Meteor.absoluteUrl() + routeLink.slice(1, routeLink.length);
-				textToInsert = TAPi18n.__('Link_provided') + " " + roomLink;
+				textToInsert = TAPi18n.__('Link_provided') + ' ' + roomLink;
 			} else {
 				return toastr.info(TAPi18n.__('No_room_link_possible'));
 			}
@@ -197,32 +201,32 @@ Template.redlinkInlineResult_Hasso.events({
 });
 
 Template.redlinkInlineResult_Hasso.helpers({
-	classExpanded(){
+	classExpanded() {
 		const instance = Template.instance();
 		return instance.state.get('expanded') ? 'expanded' : 'collapsed';
 	},
-	getResultTitle(){
+	getResultTitle() {
 		const instance = Template.instance();
 		if (instance.state.get('expanded') && instance.state.get('conversationLoaded')) {
 			return instance.state.get('conversation').messages[0].content;
 		} else {
-			return instance.data.result.content
+			return instance.data.result.content;
 		}
 	},
-	originQuestion(){
+	originQuestion() {
 		const instance = Template.instance();
 		if (instance.state.get('conversation') && instance.state.get('conversationLoaded')) {
 			return instance.state.get('conversation').messages[0].content;
 		}
 	},
-	latestResponse(){
+	latestResponse() {
 		const instance = Template.instance();
 		if (instance.state.get('conversation') && instance.state.get('conversationLoaded')) {
 			return instance.state.get('conversation').messages.filter((message) => message.user && message.user.displayName === 'Provider').pop().text;
 		}
 	},
 
-	subsequentCommunication(){
+	subsequentCommunication() {
 		const instance = Template.instance();
 		if (instance.state.get('conversation') && instance.state.get('conversationLoaded')) {
 			return instance.state.get('conversation').messages.slice(1);
@@ -230,8 +234,8 @@ Template.redlinkInlineResult_Hasso.helpers({
 	}
 });
 
-Template.redlinkInlineResult_Hasso.onCreated(function () {
-	let instance = this;
+Template.redlinkInlineResult_Hasso.onCreated(function() {
+	const instance = this;
 
 	this.state = new ReactiveDict();
 	this.state.setDefault({
@@ -259,16 +263,16 @@ Template.redlinkInlineResult_Hasso.onCreated(function () {
 	});
 });
 
-Template.redlinkInlineResult_dbsearch.onCreated(function () {
+Template.redlinkInlineResult_dbsearch.onCreated(function() {
 
 	this.state = new ReactiveDict();
 	this.state.setDefault({
-		expanded: false,
+		expanded: false
 	});
 });
 
 Template.redlinkInlineResult_dbsearch.helpers({
-	classExpanded(){
+	classExpanded() {
 		const instance = Template.instance();
 		return instance.state.get('expanded') ? 'expanded' : 'collapsed';
 	}
@@ -276,7 +280,7 @@ Template.redlinkInlineResult_dbsearch.helpers({
 
 Template.redlinkInlineResult_dbsearch.events({
 
-	'click .result-item-wrapper .js-toggle-result-preview-expanded': function (event, instance) {
+	'click .result-item-wrapper .js-toggle-result-preview-expanded': function(event, instance) {
 		const current = instance.state.get('expanded');
 		instance.state.set('expanded', !current);
 
@@ -284,7 +288,7 @@ Template.redlinkInlineResult_dbsearch.events({
 			Template.redlinkQueries.utilities.resultsInteractionCleanup();
 		}
 	},
-	'click .js-send-message': function (event, instance) {
+	'click .js-send-message': function(event, instance) {
 
 		/* buffer metadata of messages which are _about to be sent_
 		 * This is necessary as the results or queries displayed may be entered into the message-area,
@@ -295,18 +299,18 @@ Template.redlinkInlineResult_dbsearch.events({
 			user: Meteor.user(),
 			room: instance.data.roomId,
 			metadata: {
-				origin: "historicConversation",
+				origin: 'historicConversation',
 				searchLink: instance.data.result.dbsearch_link_s
 			}
 		});
 
 		//create a text-response
-		let textToInsert = "";
+		let textToInsert = '';
 		const selectedMessages = instance.findAll('.selected');
 		if (selectedMessages.length > 0) {
-			textToInsert = selectedMessages.reduce(function (concat, elem) {
-					return concat + " " + elem.textContent;
-				},
+			textToInsert = selectedMessages.reduce(function(concat, elem) {
+				return concat + ' ' + elem.textContent;
+			},
 				'');
 		} else {
 			textToInsert = instance.data.result.dbsearch_link_s;

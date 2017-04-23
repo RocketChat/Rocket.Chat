@@ -1,17 +1,18 @@
+import { ReactiveDict } from 'meteor/reactive-dict';
+
 /**
  * Generic helper for all containers displaying results
  * Might serve as superclass
  */
-class redlinkResultContainerHelpers {
+class RedlinkResultContainerHelpers {
 	visibleResults() {
 		const instance = Template.instance();
 		const results = instance.data.results;
 		const stepping = instance.data.stepping;
-		const creator = instance.data.creator;
 		const totalLength = results.length;
 
 		let offset = instance.state.get('currentOffset');
-		if(offset >= totalLength){
+		if (offset >= totalLength) {
 			//start over immediately
 			offset = 0;
 			offset = instance.state.set('currentOffset', 0);
@@ -30,7 +31,7 @@ class redlinkResultContainerHelpers {
 		const offset = instance.state.get('currentOffset');
 		const stepping = instance.data.stepping;
 
-		return Math.ceil((offset/(totalLength))*(totalLength/stepping)) + 1
+		return Math.ceil((offset/(totalLength))*(totalLength/stepping)) + 1;
 	}
 
 	totalPages() {
@@ -38,16 +39,16 @@ class redlinkResultContainerHelpers {
 		const results = instance.data.results;
 		const stepping = instance.data.stepping;
 
-		return Math.ceil(results.length/stepping)
+		return Math.ceil(results.length/stepping);
 	}
 
-	resultsCount(){
+	resultsCount() {
 		const instance = Template.instance();
 		const results = instance.data.results;
-		if (results) return results.length;
+		if (results) { return results.length; }
 	}
 
-	needsNavigation(){
+	needsNavigation() {
 		const instance = Template.instance();
 		const results = instance.data.results;
 		const stepping = instance.data.stepping;
@@ -58,11 +59,11 @@ class redlinkResultContainerHelpers {
 
 //----------------------------------- Slider ---------------------------------------
 
-Template.redlinkResultContainer_Slider.helpers(new redlinkResultContainerHelpers());
+Template.redlinkResultContainer_Slider.helpers(new RedlinkResultContainerHelpers());
 
 Template.redlinkResultContainer_Slider.events({
 
-	'click .js-next-result': function (event, instance) {
+	'click .js-next-result': function(event, instance) {
 		const currentOffset = instance.state.get('currentOffset');
 		if (currentOffset < instance.data.results.length - 1) {
 			instance.state.set('currentOffset', currentOffset + instance.data.stepping);
@@ -71,7 +72,7 @@ Template.redlinkResultContainer_Slider.events({
 		}
 	},
 
-	'click .js-previous-result': function (event, instance) {
+	'click .js-previous-result': function(event, instance) {
 		const currentOffset = instance.state.get('currentOffset');
 		if (currentOffset > 0) {
 			if (currentOffset >= instance.data.stepping) {
@@ -85,8 +86,7 @@ Template.redlinkResultContainer_Slider.events({
 	}
 });
 
-Template.redlinkResultContainer_Slider.onCreated(function () {
-	const instance = this;
+Template.redlinkResultContainer_Slider.onCreated(function() {
 	this.state = new ReactiveDict();
 
 	this.state.setDefault({

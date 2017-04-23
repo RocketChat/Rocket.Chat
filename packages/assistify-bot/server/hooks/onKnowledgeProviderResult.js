@@ -1,12 +1,14 @@
+/* globals _dbs */
+
 Meteor.startup(() => {
 	/*
 	Trigger a bot to reply with the most relevant result one AI has retrieved results
 	Do this only once in order to avoid user-frustration
 	*/
-	RocketChat.callbacks.add('afterExternalMessage', function (externalMessage) {
+	RocketChat.callbacks.add('afterExternalMessage', function(externalMessage) {
 
 		const helpRequest = RocketChat.models.HelpRequests.findOneByRoomId(externalMessage.rid);
-		if(!helpRequest || helpRequest.latestBotReply){
+		if (!helpRequest || helpRequest.latestBotReply) {
 			return;
 		}
 
@@ -23,7 +25,7 @@ Meteor.startup(() => {
 									return {
 										overallScore: query.confidence * (result.score || 1),
 										replySuggestion: result.replySuggestion
-									}
+									};
 								})
 							);
 						}
@@ -34,17 +36,17 @@ Meteor.startup(() => {
 			if (totalResults.length > 0) {
 				// AI believes it can contribute to the conversation => create a bot-response
 				const mostRelevantResult = totalResults.reduce((best, current) => current.overallScore > best.overallScore ? current : best,
-																{
-																	overallScore: 0,
-																	replySuggestion: ""
-																});
+					{
+						overallScore: 0,
+						replySuggestion: ''
+					});
 				const scoreThreshold = RocketChat.settings.get('Assistify_Bot_Automated_Response_Threshold');
-				if(mostRelevantResult.replySuggestion && (mostRelevantResult.overallScore * 1000) >= scoreThreshold ) { //multiply by 1000 to simplify configuration
+				if (mostRelevantResult.replySuggestion && (mostRelevantResult.overallScore * 1000) >= scoreThreshold) { //multiply by 1000 to simplify configuration
 					const botUsername = RocketChat.settings.get('Assistify_Bot_Username');
 					const botUser = RocketChat.models.Users.findOneByUsername(botUsername);
 
 					if (!botUser) {
-						throw new Meteor.Error('Erroneous Bot-Configuration: Check username')
+						throw new Meteor.Error('Erroneous Bot-Configuration: Check username');
 					}
 					try {
 
@@ -63,5 +65,5 @@ Meteor.startup(() => {
 				}
 			}
 		}
-	}, RocketChat.callbacks.priority.LOW)
+	}, RocketChat.callbacks.priority.LOW);
 });

@@ -1,13 +1,13 @@
-/* globals SystemLogger */
+/* globals _dbs, SystemLogger */
 
-RocketChat.callbacks.add('afterSaveMessage', function (message, room) {
+RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 	// skips this callback if the message was edited
 	if (message.editedAt) {
 		return message;
 	}
 
 	let knowledgeEnabled = false;
-	RocketChat.settings.get('DBS_AI_Enabled', function (key, value) {
+	RocketChat.settings.get('DBS_AI_Enabled', function(key, value) {
 		knowledgeEnabled = value;
 	});
 
@@ -27,8 +27,7 @@ RocketChat.callbacks.add('afterSaveMessage', function (message, room) {
 	Meteor.defer(() => {
 		try {
 			knowledgeAdapter.onMessage(message);
-		}
-		catch (e) {
+		}		catch (e) {
 			SystemLogger.error('Error using knowledge provider ->', e);
 		}
 	});

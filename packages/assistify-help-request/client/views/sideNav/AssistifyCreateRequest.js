@@ -1,3 +1,4 @@
+/* globals RocketChat, FlowRouter, TAPi18n, console */
 import toastr from 'toastr';
 
 Template.AssistifyCreateRequest.helpers({
@@ -15,7 +16,7 @@ Template.AssistifyCreateRequest.helpers({
 					noMatchTemplate: Template.roomSearchEmpty,
 					matchAll: true,
 					selector(match) {
-						return { name: match };
+						return {name: match};
 					},
 					sort: 'name'
 				}
@@ -25,30 +26,34 @@ Template.AssistifyCreateRequest.helpers({
 });
 
 Template.AssistifyCreateRequest.events({
-	'autocompleteselect #expertise-search'(event, instance, doc) {
+	'autocompleteselect #expertise-search': function(event, instance, doc) {
 		instance.expertise.set(doc.name);
 
 		return instance.find('.save-request').focus();
 	},
 
-	'keydown #request-name': function (e, instance) {
-		if ($(e.currentTarget).val().trim() != '' && e.keyCode == 13) {
+	'keydown #request-name': function(event, instance) {
+		if ($(event.currentTarget).val().trim() !== '' && event.keyCode === 13) {
 			instance.$('.save-request').click();
-			SideNav.closeFlex(()=>{instance.clearForm()});
+			SideNav.closeFlex(() => {
+				instance.clearForm();
+			});
 		}
 	},
 
-	'click .cancel-request': function (event, instance) {
-		SideNav.closeFlex(()=>{instance.clearForm()});
+	'click .cancel-request': function(event, instance) {
+		SideNav.closeFlex(() => {
+			instance.clearForm();
+		});
 	},
 
-	'click .save-request': function (event, instance) {
+	'click .save-request': function(event, instance) {
 		event.preventDefault();
 		// const name = instance.find('#request-name').value.toLowerCase().trim();
 		const expertise = instance.find('#expertise-search').value.toLowerCase().trim();
 		instance.requestRoomName.set(name);
 
-		if(name || expertise){
+		if (name || expertise) {
 			Meteor.call('createRequest', name, expertise, (err, result) => {
 				if (err) {
 					console.log(err);
@@ -63,33 +68,32 @@ Template.AssistifyCreateRequest.events({
 							toastr.error(TAPi18n.__('Duplicate_archived_channel_name', name));
 							return;
 						default:
-							return handleError(err)
+							return handleError(err);
 					}
 				}
 
 				// we're done, so close side navigation and navigate to created request-channel
-				SideNav.closeFlex(()=>{instance.clearForm()});
-				RocketChat.callbacks.run('aftercreateCombined', { _id: result.rid, name: name });
+				SideNav.closeFlex(() => {
+					instance.clearForm();
+				});
+				RocketChat.callbacks.run('aftercreateCombined', {_id: result.rid, name: name});
 				const roomCreated = RocketChat.models.Rooms.findOne({_id: result.rid});
-				FlowRouter.go('request', { name: roomCreated.name }, FlowRouter.current().queryParams);
+				FlowRouter.go('request', {name: roomCreated.name}, FlowRouter.current().queryParams);
 			});
 		} else {
-			console.log(err);
 			toastr.error(TAPi18n.__('The_field_is_required', TAPi18n.__('request-name')));
 		}
 	}
 });
 
-Template.AssistifyCreateRequest.onCreated(function () {
-	instance = this;
+Template.AssistifyCreateRequest.onCreated(function() {
+	const instance = this;
 	instance.requestRoomName = new ReactiveVar('');
 	instance.expertise = new ReactiveVar('');
 
-	instance.clearForm = function () {
+	instance.clearForm = function() {
 		instance.requestRoomName.set('');
 		instance.expertise.set('');
 		instance.find('#expertise-search').value = '';
 	};
-
-
 });
