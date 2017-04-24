@@ -8,7 +8,6 @@ Package.describe({
 Package.onUse(function(api) {
 	api.use('rocketchat:lib');
 	api.use('ecmascript');
-	api.use('coffeescript');
 
 	api.use('templating', 'client');
 	api.mainModule('client/WebRTCClass.js', 'client');
