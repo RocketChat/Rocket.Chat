@@ -27,7 +27,6 @@ class WebRTCTransportClass {
 			return;
 		}
 		this.log('WebRTCTransportClass - onUser', type, data);
-		console.log(this.callbacks);
 		const onRemoteCall = this.callbacks['onRemoteCall'];
 		const onRemoteJoin = this.callbacks['onRemoteJoin'];
 		const onRemoteCandidate = this.callbacks['onRemoteCandidate'];
@@ -222,6 +221,8 @@ class WebRTCClass {
 		this.transport.onRemoteDescription(this.onRemoteDescription.bind(this));
 		this.transport.onRemoteStatus(this.onRemoteStatus.bind(this));
 		Meteor.setInterval(this.checkPeerConnections.bind(this), 1000);
+
+		//Meteor.setInterval(this.broadcastStatus.bind(@), 1000);
 	}
 
 	log() {
@@ -251,8 +252,6 @@ class WebRTCClass {
 
 		Object.keys(peerConnections).forEach((id) => {
 			const peerConnection = peerConnections[id];
-			console.log(peerConnection);
-			// const remoteStreams = peerConnection.getRemoteStreams();
 
 			peerConnection.getRemoteStreams().forEach((remoteStream) => {
 				const item = {
@@ -322,6 +321,7 @@ class WebRTCClass {
    */
 
 	onRemoteStatus(data) {
+		//this.log(onRemoteStatus, arguments);
 		this.callInProgress.set(true);
 		Meteor.clearTimeout(this.callInProgressTimeout);
 		this.callInProgressTimeout = Meteor.setTimeout(this.resetCallInProgress.bind(this), 2000);
@@ -811,6 +811,15 @@ class WebRTCClass {
 		}
 		this.log('onRemoteJoin', arguments);
 		let peerConnection = this.getPeerConnection(data.from);
+
+		// needsRefresh = false
+		// if peerConnection.iceConnectionState isnt 'new'
+		// needsAudio = data.media.audio is true and peerConnection.remoteMedia.audio isnt true
+		// needsVideo = data.media.video is true and peerConnection.remoteMedia.video isnt true
+		// needsRefresh = needsAudio or needsVideo or data.media.desktop isnt peerConnection.remoteMedia.desktop
+
+		// # if peerConnection.signalingState is "have-local-offer" or needsRefresh
+
 		if (peerConnection.signalingState !== 'checking') {
 			this.stopPeerConnection(data.from);
 			peerConnection = this.getPeerConnection(data.from);
@@ -854,7 +863,9 @@ class WebRTCClass {
 
 
 	onRemoteOffer(data) {
-		if (this.active !== true) { return; }
+		if (this.active !== true) {
+			return;
+		}
 
 		this.log('onRemoteOffer', arguments);
 		let peerConnection = this.getPeerConnection(data.from);
