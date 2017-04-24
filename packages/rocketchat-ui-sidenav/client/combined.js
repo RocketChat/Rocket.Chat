@@ -16,7 +16,10 @@ Template.combined.helpers({
 		}
 
 		if (Meteor.user() && Meteor.user().settings && Meteor.user().settings.preferences && Meteor.user().settings.preferences.unreadRoomsMode) {
-			query.alert = {$ne: true};
+			query.$or = [
+				{ alert: { $ne: true } },
+				{ hideUnreadStatus: true }
+			];
 		}
 
 		return ChatSubscription.find(query, { sort: { 'name': 1 }});

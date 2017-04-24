@@ -30,7 +30,7 @@ Template.messageBox.helpers
 	showFormattingTips: ->
 		return RocketChat.settings.get('Message_ShowFormattingTips') and (RocketChat.Markdown or RocketChat.MarkdownCode or katexSyntax())
 	canJoin: ->
-		return RocketChat.roomTypes.verifyShowJoinLink @_id
+		return Meteor.userId()? and RocketChat.roomTypes.verifyShowJoinLink @_id
 	joinCodeRequired: ->
 		return Session.get('roomData' + this._id)?.joinCodeRequired
 	subscribed: ->
@@ -124,6 +124,9 @@ Template.messageBox.helpers
 	showSandstorm: ->
 		return Meteor.settings.public.sandstorm && !Meteor.isCordova
 
+	isAnonymous: ->
+		return not Meteor.userId()? and RocketChat.settings.get('Accounts_AllowAnonymousAccess') is true
+
 firefoxPasteUpload = (fn) ->
 	user = navigator.userAgent.match(/Firefox\/(\d+)\.\d/)
 	if !user or user[1] > 49
@@ -177,6 +180,11 @@ Template.messageBox.events
 				RoomManager.getOpenedRoomByRid(@_id).ready = false
 				RoomHistoryManager.getRoom(@_id).loaded = undefined
 				RoomManager.computation.invalidate()
+
+	'click .register': (event) ->
+		event.stopPropagation()
+		event.preventDefault()
+		Session.set('forceLogin', true)
 
 	'focus .input-message': (event, instance) ->
 		KonchatNotification.removeRoomNotification @_id
