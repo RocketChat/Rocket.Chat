@@ -26,6 +26,6 @@ window.addEventListener('message', function(e) {
 		}
 	}
 	if (e.data.sourceId != null) {
-		return typeof ChromeScreenShare.screenCallback === 'function' ? ChromeScreenShare.screenCallback(e.data.sourceId) : void 0;
+		return typeof ChromeScreenShare.screenCallback === 'function' && ChromeScreenShare.screenCallback(e.data.sourceId);
 	}
 });
