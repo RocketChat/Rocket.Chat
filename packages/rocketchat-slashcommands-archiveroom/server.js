@@ -14,6 +14,11 @@ function Archive(command, params, item) {
 		room = RocketChat.models.Rooms.findOneByName(channel);
 	}
 
+	// You can not archive direct messages.
+	if (room.t === 'd') {
+		return;
+	}
+
 	const user = Meteor.users.findOne(Meteor.userId());
 
 	if (room.archived) {
