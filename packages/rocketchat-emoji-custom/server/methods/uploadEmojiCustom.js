@@ -10,8 +10,8 @@ Meteor.methods({
 		const file = new Buffer(binaryContent, 'binary');
 
 		const rs = RocketChatFile.bufferToStream(file);
-		RocketChatFileEmojiCustomInstance.deleteFile(encodeURIComponent(`${emojiData.name}.${emojiData.extension}`));
-		const ws = RocketChatFileEmojiCustomInstance.createWriteStream(encodeURIComponent(`${emojiData.name}.${emojiData.extension}`), contentType);
+		RocketChatFileEmojiCustomInstance.deleteFile(encodeURIComponent(`${ emojiData.name }.${ emojiData.extension }`));
+		const ws = RocketChatFileEmojiCustomInstance.createWriteStream(encodeURIComponent(`${ emojiData.name }.${ emojiData.extension }`), contentType);
 		ws.on('end', Meteor.bindEnvironment(() =>
 			Meteor.setTimeout(() => RocketChat.Notifications.notifyLogged('updateEmojiCustom', {emojiData})
 			, 500)

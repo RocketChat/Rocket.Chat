@@ -12,7 +12,7 @@ Template.room.events({
 		}
 
 		RocketChat.EmojiPicker.open(event.currentTarget, (emoji) => {
-			Meteor.call('setReaction', ':' + emoji + ':', data._arguments[1]._id);
+			Meteor.call('setReaction', `:${ emoji }:`, data._arguments[1]._id);
 		});
 	},
 
@@ -50,7 +50,7 @@ Meteor.startup(function() {
 			event.stopPropagation();
 
 			RocketChat.EmojiPicker.open(event.currentTarget, (emoji) => {
-				Meteor.call('setReaction', ':' + emoji + ':', data._arguments[1]._id);
+				Meteor.call('setReaction', `:${ emoji }:`, data._arguments[1]._id);
 			});
 		},
 		validation(message) {

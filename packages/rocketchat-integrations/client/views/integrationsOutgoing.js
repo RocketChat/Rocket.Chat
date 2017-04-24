@@ -205,7 +205,7 @@ Template.integrationsOutgoing.events({
 	},
 
 	'click .button.history': () => {
-		FlowRouter.go(`/admin/integrations/outgoing/${FlowRouter.getParam('id')}/history`);
+		FlowRouter.go(`/admin/integrations/outgoing/${ FlowRouter.getParam('id') }/history`);
 	},
 
 	'click .expand': (e) => {
@@ -285,7 +285,8 @@ Template.integrationsOutgoing.events({
 			return toastr.error(TAPi18n.__('You_should_inform_one_url_at_least'));
 		}
 
-		let triggerWords, triggerWordAnywhere;
+		let triggerWords;
+		let triggerWordAnywhere;
 		if (RocketChat.integrations.outgoingEvents[event].use.triggerWords) {
 			triggerWords = $('[name=triggerWords]').val().trim();
 			triggerWords = triggerWords.split(',').filter((word) => word.trim() !== '');
@@ -311,16 +312,17 @@ Template.integrationsOutgoing.events({
 			}
 		}
 
-		let retryCount, retryDelay;
+		let retryCount;
+		let retryDelay;
 		if (retryFailedCalls === '1') {
 			retryCount = parseInt($('[name=retryCount]').val().trim());
-			retryDelay: $('[name=retryDelay]').val().trim();
+			retryDelay = $('[name=retryDelay]').val().trim();
 		}
 
 		const integration = {
 			event: event !== '' ? event : undefined,
 			enabled: enabled === '1',
-			username: username,
+			username,
 			channel: channel !== '' ? channel : undefined,
 			targetRoom: targetRoom !== '' ? targetRoom : undefined,
 			alias: alias !== '' ? alias : undefined,

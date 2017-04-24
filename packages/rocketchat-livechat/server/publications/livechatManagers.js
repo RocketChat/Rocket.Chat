@@ -7,9 +7,9 @@ Meteor.publish('livechat:managers', function() {
 		return this.error(new Meteor.Error('error-not-authorized', 'Not authorized', { publish: 'livechat:managers' }));
 	}
 
-	var self = this;
+	const self = this;
 
-	var handle = RocketChat.authz.getUsersInRole('livechat-manager').observeChanges({
+	const handle = RocketChat.authz.getUsersInRole('livechat-manager').observeChanges({
 		added(id, fields) {
 			self.added('managerUsers', id, fields);
 		},

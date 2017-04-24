@@ -192,13 +192,11 @@
 													<div class="settings-alert pending-color pending-background pending-border"><i class="icon-attention secondary-font-color"></i>{{{_ alert}}}</div>
 												{{/if}}
 											</div>
-											{{#unless $eq type 'asset'}}
-												{{#unless isDefaultValue _id}}
-													<button text="{{_ 'Reset'}}" data-setting="{{_id}}" class="reset-setting button danger">
-														<i class="icon-ccw secondary-font-color color-error-contrast"></i>
-													</button>
-												{{/unless}}
-											{{/unless}}
+											{{#if showResetButton}}
+												<button text="{{_ 'Reset'}}" data-setting="{{_id}}" class="reset-setting button danger">
+													<i class="icon-ccw secondary-font-color color-error-contrast"></i>
+												</button>
+											{{/if}}
 										</div>
 									{{/each}}
 

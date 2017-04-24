@@ -10,17 +10,7 @@ import supertest from 'supertest';
 describe('Users', function() {
 	this.retries(0);
 
-	before((done) => {
-		request.post(api('login'))
-		.send(login)
-		.expect('Content-Type', 'application/json')
-		.expect(200)
-		.expect((res) => {
-			credentials['X-Auth-Token'] = res.body.data.authToken;
-			credentials['X-User-Id'] = res.body.data.userId;
-		})
-		.end(done);
-	});
+	before(done => getCredentials(done));
 
 	it('/users.create', (done) => {
 		request.post(api('users.create'))
@@ -29,7 +19,7 @@ describe('Users', function() {
 				email: apiEmail,
 				name: apiUsername,
 				username: apiUsername,
-				password: password,
+				password,
 				active: true,
 				roles: ['user'],
 				joinDefaultChannels: true,
@@ -135,9 +125,9 @@ describe('Users', function() {
 				userId: targetUser._id,
 				data :{
 					email: apiEmail,
-					name: 'edited'+apiUsername,
-					username: 'edited'+apiUsername,
-					password: password,
+					name: `edited${ apiUsername }`,
+					username: `edited${ apiUsername }`,
+					password,
 					active: true,
 					roles: ['user']
 				}
@@ -146,10 +136,10 @@ describe('Users', function() {
 			.expect(200)
 			.expect((res) => {
 				expect(res.body).to.have.property('success', true);
-				expect(res.body).to.have.deep.property('user.username', 'edited'+apiUsername);
+				expect(res.body).to.have.deep.property('user.username', `edited${ apiUsername }`);
 				expect(res.body).to.have.deep.property('user.emails[0].address', apiEmail);
 				expect(res.body).to.have.deep.property('user.active', true);
-				expect(res.body).to.have.deep.property('user.name', 'edited'+apiUsername);
+				expect(res.body).to.have.deep.property('user.name', `edited${ apiUsername }`);
 			})
 			.end(done);
 	});

@@ -3,7 +3,7 @@
 const logger = new Logger('SyncedCron');
 
 SyncedCron.config({
-	logger: function(opts) {
+	logger(opts) {
 		return logger[opts.level].call(logger, opts.message);
 	},
 	collectionName: 'rocketchat_cron_history'
@@ -36,17 +36,17 @@ Meteor.startup(function() {
 
 		SyncedCron.add({
 			name: 'Generate and save statistics',
-			schedule: function(parser) {
-				return parser.cron(new Date().getMinutes() + ' * * * *');
+			schedule(parser) {
+				return parser.cron(`${ new Date().getMinutes() } * * * *`);
 			},
 			job: generateStatistics
 		});
 
 		SyncedCron.add({
 			name: 'Cleanup OEmbed cache',
-			schedule: function(parser) {
+			schedule(parser) {
 				const now = new Date();
-				return parser.cron(now.getMinutes() + ' ' + now.getHours() + ' * * *');
+				return parser.cron(`${ now.getMinutes() } ${ now.getHours() } * * *`);
 			},
 			job: cleanupOEmbedCache
 		});

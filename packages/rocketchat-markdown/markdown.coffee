@@ -3,16 +3,11 @@
 # @param {Object} message - The message object
 ###
 
-class Markdown
-	constructor: (message) ->
-		msg = message
+Markdown = new class MarkdownClass
+	parse: (text) ->
+		@parseNotEscaped(_.escapeHTML(text))
 
-		if not _.isString message
-			if _.trim message?.html
-				msg = message.html
-			else
-				return message
-
+	parseNotEscaped: (msg) ->
 		schemes = RocketChat.settings.get('Markdown_SupportSchemesForLink').split(',').join('|')
 
 		# Support ![alt text](http://image url)
@@ -68,19 +63,22 @@ class Markdown
 		# Remove new-line between blockquotes.
 		msg = msg.replace(/<\/blockquote>\n<blockquote/gm, '</blockquote><blockquote')
 
-		if not _.isString message
-			message.html = msg
-		else
-			message = msg
+		console.log 'Markdown', msg if window?.rocketDebug
 
-		console.log 'Markdown', message if window?.rocketDebug
-
-		return message
+		return msg
 
 
 RocketChat.Markdown = Markdown
-RocketChat.callbacks.add 'renderMessage', Markdown, RocketChat.callbacks.priority.HIGH, 'markdown'
+
+# renderMessage already did html escape
+MarkdownMessage = (message) ->
+	if _.trim message?.html
+		message.html = Markdown.parseNotEscaped(message.html)
+
+	return message
+
+RocketChat.callbacks.add 'renderMessage', MarkdownMessage, RocketChat.callbacks.priority.HIGH, 'markdown'
 
 if Meteor.isClient
 	Blaze.registerHelper 'RocketChatMarkdown', (text) ->
-		return RocketChat.Markdown text
+		return Markdown.parse text

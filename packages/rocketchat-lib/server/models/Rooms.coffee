@@ -482,10 +482,11 @@ class ModelRooms extends RocketChat.models._Base
 	setTypeById: (_id, type) ->
 		query =
 			_id: _id
-
 		update =
 			$set:
 				t: type
+		if type == 'p'
+			update.$unset = {default: ''}
 
 		return @update query, update
 
@@ -496,6 +497,16 @@ class ModelRooms extends RocketChat.models._Base
 		update =
 			$set:
 				topic: topic
+
+		return @update query, update
+
+	setAnnouncementById: (_id, announcement) ->
+		query =
+			_id: _id
+
+		update =
+			$set:
+				announcement: announcement
 
 		return @update query, update
 

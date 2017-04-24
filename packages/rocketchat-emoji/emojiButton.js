@@ -8,10 +8,10 @@ Template.messageBox.events({
 			RocketChat.EmojiPicker.open(event.currentTarget, (emoji) => {
 				const input = $(event.currentTarget).parent().parent().find('.input-message');
 
-				const emojiValue = ':' + emoji + ':';
+				const emojiValue = `:${ emoji }:`;
 
-				var caretPos = input.prop('selectionStart');
-				var textAreaTxt = input.val();
+				const caretPos = input.prop('selectionStart');
+				const textAreaTxt = input.val();
 
 				input.val(textAreaTxt.substring(0, caretPos) + emojiValue + textAreaTxt.substring(caretPos));
 

@@ -3,6 +3,9 @@ Meteor.methods
 		if not Meteor.userId()
 			throw new Meteor.Error 'error-invalid-user', 'Invalid user', { method: 'setupImporter' }
 
+		if not RocketChat.authz.hasPermission(Meteor.userId(), 'run-import')
+			throw new Meteor.Error('error-action-not-allowed', 'Importing is not allowed', { method: 'setupImporter'});
+
 		if Importer.Importers[name]?.importer?
 			importer = Importer.Importers[name]
 			# If they currently have progress, get it and return the progress.

@@ -10,8 +10,9 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 		return message;
 	}
 
-	var emailSubject, usersToSendEmail = {};
-	var directMessage = room.t === 'd';
+	let emailSubject;
+	const usersToSendEmail = {};
+	const directMessage = room.t === 'd';
 
 	if (directMessage) {
 		usersToSendEmail[message.rid.replace(message.u._id, '')] = 1;
@@ -33,22 +34,22 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 		});
 	}
 
-	var getMessageLink = (room, sub) => {
-		var roomPath = RocketChat.roomTypes.getRouteLink(room.t, sub);
-		var path = Meteor.absoluteUrl(roomPath ? roomPath.replace(/^\//, '') : '');
-		var style = [
+	const getMessageLink = (room, sub) => {
+		const roomPath = RocketChat.roomTypes.getRouteLink(room.t, sub);
+		const path = Meteor.absoluteUrl(roomPath ? roomPath.replace(/^\//, '') : '');
+		const style = [
 			'color: #fff;',
 			'padding: 9px 12px;',
 			'border-radius: 4px;',
 			'background-color: #04436a;',
 			'text-decoration: none;'
 		].join(' ');
-		var message = TAPi18n.__('Offline_Link_Message');
+		const message = TAPi18n.__('Offline_Link_Message');
 		return `<p style="text-align:center;margin-bottom:8px;"><a style="${ style }" href="${ path }">${ message }</a>`;
 	};
 
-	var divisorMessage = '<hr style="margin: 20px auto; border: none; border-bottom: 1px solid #dddddd;">';
-	var messageHTML = s.escapeHTML(message.msg);
+	const divisorMessage = '<hr style="margin: 20px auto; border: none; border-bottom: 1px solid #dddddd;">';
+	let messageHTML = s.escapeHTML(message.msg);
 
 	message = RocketChat.callbacks.run('renderMessage', message);
 	if (message.tokens && message.tokens.length > 0) {
@@ -58,8 +59,8 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 		});
 	}
 
-	var header = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Header') || '');
-	var footer = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Footer') || '');
+	const header = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Header') || '');
+	const footer = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Footer') || '');
 	messageHTML = messageHTML.replace(/\n/gm, '<br/>');
 
 	RocketChat.models.Subscriptions.findWithSendEmailByRoomId(room._id).forEach((sub) => {
@@ -80,11 +81,11 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 		}
 	});
 
-	var userIdsToSendEmail = Object.keys(usersToSendEmail);
+	const userIdsToSendEmail = Object.keys(usersToSendEmail);
 
-	var defaultLink;
+	let defaultLink;
 
-	var linkByUser = {};
+	const linkByUser = {};
 	if (RocketChat.roomTypes.hasCustomLink(room.t)) {
 		RocketChat.models.Subscriptions.findByRoomIdAndUserIds(room._id, userIdsToSendEmail).forEach((sub) => {
 			linkByUser[sub.u._id] = getMessageLink(room, sub);
@@ -94,10 +95,10 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 	}
 
 	if (userIdsToSendEmail.length > 0) {
-		var usersOfMention = RocketChat.models.Users.getUsersToSendOfflineEmail(userIdsToSendEmail).fetch();
+		const usersOfMention = RocketChat.models.Users.getUsersToSendOfflineEmail(userIdsToSendEmail).fetch();
 
 		if (usersOfMention && usersOfMention.length > 0) {
-			var siteName = RocketChat.settings.get('Site_Name');
+			const siteName = RocketChat.settings.get('Site_Name');
 
 			usersOfMention.forEach((user) => {
 				if (user.settings && user.settings.preferences && user.settings.preferences.emailNotificationMode && user.settings.preferences.emailNotificationMode === 'disabled' && usersToSendEmail[user._id] !== 'force') {

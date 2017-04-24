@@ -101,13 +101,13 @@ class CachedCollection {
 		version = 6,
 		maxCacheTime = 60*60*24*30
 	}) {
-		this.collection = collection || new Meteor.Collection(null);
+		this.collection = collection || new Mongo.Collection(null);
 
 		this.ready = new ReactiveVar(false);
 		this.name = name;
-		this.methodName = methodName || `${name}/get`;
-		this.syncMethodName = syncMethodName || `${name}/get`;
-		this.eventName = eventName || `${name}-changed`;
+		this.methodName = methodName || `${ name }/get`;
+		this.syncMethodName = syncMethodName || `${ name }/get`;
+		this.eventName = eventName || `${ name }-changed`;
 		this.eventType = eventType;
 		this.useSync = useSync;
 		this.useCache = useCache;
@@ -136,16 +136,16 @@ class CachedCollection {
 
 	log(...args) {
 		if (this.debug === true) {
-			console.log(`CachedCollection ${this.name} =>`, ...args);
+			console.log(`CachedCollection ${ this.name } =>`, ...args);
 		}
 	}
 
 	countQueries() {
-		this.log(`${Object.keys(this.collection._collection.queries).length} queries`);
+		this.log(`${ Object.keys(this.collection._collection.queries).length } queries`);
 	}
 
 	recomputeCollectionQueries() {
-		this.log(`recomputing ${Object.keys(this.collection._collection.queries).length} queries`);
+		this.log(`recomputing ${ Object.keys(this.collection._collection.queries).length } queries`);
 		_.each(this.collection._collection.queries, (query) => {
 			this.collection._collection._recomputeResults(query);
 		});
@@ -179,7 +179,7 @@ class CachedCollection {
 			}
 
 			if (data && data.records && data.records.length > 0) {
-				this.log(`${data.records.length} records loaded from cache`);
+				this.log(`${ data.records.length } records loaded from cache`);
 				data.records.forEach((record) => {
 					record.__cache__ = true;
 					this.collection.upsert({ _id: record._id }, _.omit(record, '_id'));
@@ -201,7 +201,7 @@ class CachedCollection {
 
 	loadFromServer(callback = () => {}) {
 		Meteor.call(this.methodName, (error, data) => {
-			this.log(`${data.length} records loaded from server`);
+			this.log(`${ data.length } records loaded from server`);
 			data.forEach((record) => {
 				delete record.$loki;
 				this.collection.upsert({ _id: record._id }, _.omit(record, '_id'));
@@ -232,18 +232,18 @@ class CachedCollection {
 			return false;
 		}
 
-		this.log(`syncing from ${this.updatedAt}`);
+		this.log(`syncing from ${ this.updatedAt }`);
 
 		Meteor.call(this.syncMethodName, this.updatedAt, (error, data) => {
 			let changes = [];
 
 			if (data.update && data.update.length > 0) {
-				this.log(`${data.update.length} records updated in sync`);
+				this.log(`${ data.update.length } records updated in sync`);
 				changes.push(...data.update);
 			}
 
 			if (data.remove && data.remove.length > 0) {
-				this.log(`${data.remove.length} records removed in sync`);
+				this.log(`${ data.remove.length } records removed in sync`);
 				changes.push(...data.remove);
 			}
 

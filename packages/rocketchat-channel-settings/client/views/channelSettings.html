@@ -75,6 +75,17 @@
 											{{/unless}}
 										</div>
 									</li>
+									{{# if has $value 'message' }}
+										{{#let message=($value.message room)}}
+											{{#if message}}
+												<li>
+													<div class="alert alert-warning pending-background pending-border">
+														{{_ message}}
+													</div>
+												</li>
+											{{/if}}
+										{{/let}}
+									{{/if}}
 								{{/let}}
 							{{/if}}
 						{{/each}}

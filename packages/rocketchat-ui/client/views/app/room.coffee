@@ -83,12 +83,31 @@ Template.room.helpers
 		roomData = Session.get('roomData' + this._id)
 		return '' unless roomData
 
-		return RocketChat.roomTypes.getRoomName roomData?.t, roomData
+		return RocketChat.roomTypes.getRoomName roomData.t, roomData
+
+	secondaryName: ->
+		roomData = Session.get('roomData' + this._id)
+		return '' unless roomData
+
+		return RocketChat.roomTypes.getSecondaryRoomName roomData.t, roomData
 
 	roomTopic: ->
 		roomData = Session.get('roomData' + this._id)
 		return '' unless roomData
 		return roomData.topic
+
+	showAnnouncement: ->
+		roomData = Session.get('roomData' + this._id)
+		return false unless roomData
+		Meteor.defer =>
+			if window.chatMessages and window.chatMessages[roomData._id]
+				window.chatMessages[roomData._id].resize()
+		return roomData.announcement isnt undefined and roomData.announcement isnt ''
+
+	roomAnnouncement: ->
+		roomData = Session.get('roomData' + this._id)
+		return '' unless roomData
+		return roomData.announcement
 
 	roomIcon: ->
 		roomData = Session.get('roomData' + this._id)
@@ -294,7 +313,7 @@ Template.room.events
 
 	"click .flex-tab .user-image > button" : (e, instance) ->
 		instance.tabBar.open()
-		instance.setUserDetail @username
+		instance.setUserDetail @user.username
 
 	'click .user-card-message': (e, instance) ->
 		roomData = Session.get('roomData' + this._arguments[1].rid)

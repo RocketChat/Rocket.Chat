@@ -15,7 +15,7 @@ function usernameIsAvaliable(username) {
 	}
 
 	return !RocketChat.models.Users.findOneByUsername({
-		$regex: new RegExp(`^${username}$`, 'i')
+		$regex: new RegExp(`^${ username }$`, 'i')
 	});
 }
 
@@ -98,8 +98,8 @@ function generateSuggestion(user) {
 	let index = 0;
 	while (!username) {
 		index++;
-		if (usernameIsAvaliable(`${usernames[0]}-${index}`)) {
-			username = `${usernames[0]}-${index}`;
+		if (usernameIsAvaliable(`${ usernames[0] }-${ index }`)) {
+			username = `${ usernames[0] }-${ index }`;
 		}
 	}
 

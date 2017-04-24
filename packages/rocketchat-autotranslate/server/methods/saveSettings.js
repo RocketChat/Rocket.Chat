@@ -1,5 +1,5 @@
 Meteor.methods({
-	'autoTranslate.saveSettings': function(rid, field, value, options) {
+	'autoTranslate.saveSettings'(rid, field, value, options) {
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'saveAutoTranslateSettings' });
 		}
