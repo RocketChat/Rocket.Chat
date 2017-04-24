@@ -1,8 +1,8 @@
 {
   "dependencies": {
     "ajv": {
-      "version": "4.11.6",
-      "resolved": "https://registry.npmjs.org/ajv/-/ajv-4.11.6.tgz",
+      "version": "4.11.7",
+      "resolved": "https://registry.npmjs.org/ajv/-/ajv-4.11.7.tgz",
       "from": "ajv@>=4.9.1 <5.0.0"
     },
     "ansi-regex": {

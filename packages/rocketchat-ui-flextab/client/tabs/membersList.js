@@ -6,7 +6,7 @@ Template.membersList.helpers({
 	},
 
 	isGroupChat() {
-		return ['c', 'p'].includes(ChatRoom.findOne(this.rid, { reactive: false }).t);
+		return ['c', 'p', 'r', 'e'].includes(ChatRoom.findOne(this.rid, { reactive: false }).t);
 	},
 
 	isDirectChat() {
@@ -85,6 +85,8 @@ Template.membersList.helpers({
 			switch (roomData.t) {
 				case 'p': return RocketChat.authz.hasAtLeastOnePermission(['add-user-to-any-p-room', 'add-user-to-joined-room'], this._id);
 				case 'c': return RocketChat.authz.hasAtLeastOnePermission(['add-user-to-any-c-room', 'add-user-to-joined-room'], this._id);
+				case 'e': return RocketChat.authz.hasAtLeastOnePermission(['add-user-to-any-p-room', 'add-user-to-joined-room'], this._id);
+				case 'r': return RocketChat.authz.hasAtLeastOnePermission(['add-user-to-any-c-room', 'add-user-to-joined-room'], this._id);
 				default: return false;
 			}
 		})();
@@ -132,8 +134,8 @@ Template.membersList.helpers({
 			tabBar: Template.currentData().tabBar,
 			username: Template.instance().userDetail.get(),
 			clear: Template.instance().clearUserDetail,
-			showAll: ['c', 'p'].includes(room != null ? room.t : undefined),
-			hideAdminControls: ['c', 'p', 'd'].includes(room != null ? room.t : undefined),
+			showAll: ['c', 'p', 'r', 'e'].includes(room != null ? room.t : undefined),
+			hideAdminControls: ['c', 'p', 'd', 'r'].includes(room != null ? room.t : undefined),
 			video: ['d'].includes(room != null ? room.t : undefined)
 		};
 	},
@@ -159,7 +161,7 @@ Template.membersList.events({
 
 		const roomData = Session.get(`roomData${ template.data.rid }`);
 
-		if (['c', 'p'].includes(roomData.t)) {
+		if (['c', 'p', 'r', 'e'].includes(roomData.t)) {
 			return Meteor.call('addUserToRoom', { rid: roomData._id, username: doc.username }, function(error) {
 				if (error) {
 					return handleError(error);

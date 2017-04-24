@@ -1,4 +1,8 @@
 Template.createCombinedFlex.helpers({
+	showStandardFeatures() {
+		return RocketChat.settings.get('Assistify_Show_Standard_Features');
+	},
+
 	selectedUsers() {
 		return Template.instance().selectedUsers.get();
 	},
@@ -32,7 +36,7 @@ Template.createCombinedFlex.helpers({
 						exceptions: [Meteor.user().username].concat(Template.instance().selectedUsers.get())
 					},
 					selector(match) {
-						return { term: match };
+						return {term: match};
 					},
 					sort: 'username'
 				}
@@ -109,19 +113,19 @@ Template.createCombinedFlex.events({
 		const successRoute = privateGroup ? 'group' : 'channel';
 		instance.roomName.set(name);
 		if (!err) {
-			return Meteor.call(createRoute, name, instance.selectedUsers.get(), readOnly, function(err, result) {
+			return Meteor.call(createRoute, name, instance.selectedUsers.get(), readOnly, function (err, result) {
 				if (err) {
 					console.log(err);
 					if (err.error === 'error-invalid-name') {
-						instance.error.set({ invalid: true });
+						instance.error.set({invalid: true});
 						return;
 					}
 					if (err.error === 'error-duplicate-channel-name') {
-						instance.error.set({ duplicate: true });
+						instance.error.set({duplicate: true});
 						return;
 					}
 					if (err.error === 'error-archived-duplicate-name') {
-						instance.error.set({ archivedduplicate: true });
+						instance.error.set({archivedduplicate: true});
 						return;
 					} else {
 						return handleError(err);
@@ -131,26 +135,26 @@ Template.createCombinedFlex.events({
 				SideNav.closeFlex(() => instance.clearForm());
 
 				if (!privateGroup) {
-					RocketChat.callbacks.run('aftercreateCombined', { _id: result.rid, name });
+					RocketChat.callbacks.run('aftercreateCombined', {_id: result.rid, name});
 				}
 
-				return FlowRouter.go(successRoute, { name }, FlowRouter.current().queryParams);
+				return FlowRouter.go(successRoute, {name}, FlowRouter.current().queryParams);
 			});
 		} else {
 			console.log(err);
-			return instance.error.set({ fields: err });
+			return instance.error.set({fields: err});
 		}
 	}
 });
 
-Template.createCombinedFlex.onCreated(function() {
+Template.createCombinedFlex.onCreated(function () {
 	const instance = this;
 	instance.selectedUsers = new ReactiveVar([]);
 	instance.selectedUserNames = {};
 	instance.error = new ReactiveVar([]);
 	instance.roomName = new ReactiveVar('');
 
-	return instance.clearForm = function() {
+	return instance.clearForm = function () {
 		instance.error.set([]);
 		instance.roomName.set('');
 		instance.selectedUsers.set([]);
