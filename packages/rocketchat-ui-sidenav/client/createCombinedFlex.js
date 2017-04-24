@@ -113,7 +113,7 @@ Template.createCombinedFlex.events({
 		const successRoute = privateGroup ? 'group' : 'channel';
 		instance.roomName.set(name);
 		if (!err) {
-			return Meteor.call(createRoute, name, instance.selectedUsers.get(), readOnly, function (err, result) {
+			return Meteor.call(createRoute, name, instance.selectedUsers.get(), readOnly, function(err, result) {
 				if (err) {
 					console.log(err);
 					if (err.error === 'error-invalid-name') {
@@ -147,14 +147,14 @@ Template.createCombinedFlex.events({
 	}
 });
 
-Template.createCombinedFlex.onCreated(function () {
+Template.createCombinedFlex.onCreated(function() {
 	const instance = this;
 	instance.selectedUsers = new ReactiveVar([]);
 	instance.selectedUserNames = {};
 	instance.error = new ReactiveVar([]);
 	instance.roomName = new ReactiveVar('');
 
-	return instance.clearForm = function () {
+	return instance.clearForm = function() {
 		instance.error.set([]);
 		instance.roomName.set('');
 		instance.selectedUsers.set([]);

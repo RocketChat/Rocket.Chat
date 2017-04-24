@@ -43,7 +43,8 @@ Template.dbsAI_externalSearch.helpers({
 	},
 	filledQueryTemplate() {
 		const knowledgebaseSuggestions = RocketChat.models.LivechatExternalMessage.findByRoomId(Template.currentData().rid,
-			{ts: -1}).fetch(), filledTemplate = [];
+			{ts: -1}).fetch();
+		const filledTemplate = [];
 		if (knowledgebaseSuggestions.length > 0) {
 			const tokens = knowledgebaseSuggestions[0].prepareResult.tokens;
 			$(knowledgebaseSuggestions[0].prepareResult.queryTemplates).each(function(indexTpl, queryTpl) {
@@ -202,11 +203,11 @@ Template.dbsAI_externalSearch.events({
 	},
 
 	'keydup .knowledge-base-value, keydown .knowledge-base-value'(event) {
-		const inputWrapper = $(event.currentTarget).closest('.field-with-label'),
-			ENTER_KEY = 13,
-			ESC_KEY = 27,
-			TAB_KEY = 9,
-			keycode = event.keyCode;
+		const inputWrapper = $(event.currentTarget).closest('.field-with-label');
+		const ENTER_KEY = 13;
+		const ESC_KEY = 27;
+		const TAB_KEY = 9;
+		const keycode = event.keyCode;
 		if (inputWrapper.hasClass('editing')) {
 			switch (keycode) {
 				case ENTER_KEY:
@@ -223,16 +224,17 @@ Template.dbsAI_externalSearch.events({
 		}
 	},
 	'click .knowledge-input-wrapper .icon-cancel'(event) {
-		const inputWrapper = $(event.currentTarget).closest('.field-with-label'),
-			inputField = inputWrapper.find('.knowledge-base-value');
+		const inputWrapper = $(event.currentTarget).closest('.field-with-label');
+		const inputField = inputWrapper.find('.knowledge-base-value');
 		inputWrapper.removeClass('editing');
 		inputField.val($(event.currentTarget).data('initValue'));
 	},
 	'click .knowledge-input-wrapper .icon-floppy'(event, instance) {
 		event.preventDefault();
-		const inputWrapper = $(event.currentTarget).closest('.field-with-label'),
-			templateWrapper = $(event.currentTarget).closest('.query-template-wrapper'),
-			inputField = inputWrapper.find('.knowledge-base-value');
+		const inputWrapper = $(event.currentTarget).closest('.field-with-label');
+		const templateWrapper = $(event.currentTarget).closest('.query-template-wrapper');
+		const inputField = inputWrapper.find('.knowledge-base-value');
+
 		inputWrapper.removeClass('editing');
 		templateWrapper.addClass('spinner');
 		const saveValue = inputField.val();
@@ -274,8 +276,8 @@ Template.dbsAI_externalSearch.events({
 	},
 	'click .knowledge-base-tooltip .edit-item, click .knowledge-base-value, click .knowledge-base-label'(event) {
 		event.preventDefault();
-		const inputWrapper = $(event.currentTarget).closest('.field-with-label'),
-			inputField = inputWrapper.find('.knowledge-base-value');
+		const inputWrapper = $(event.currentTarget).closest('.field-with-label');
+		const inputField = inputWrapper.find('.knowledge-base-value');
 
 		if (!inputWrapper.hasClass('editing')) {
 			$('.field-with-label.editing').removeClass('editing');
@@ -288,9 +290,9 @@ Template.dbsAI_externalSearch.events({
 	 */
 	'click .knowledge-base-tooltip .delete-item'(event, instance) {
 		event.preventDefault();
-		const field = $(event.target).closest('.field-with-label'),
-			templateIndex = field.attr('data-parent-tpl-index'),
-			slotRole = field.attr('data-slot-role');
+		const field = $(event.target).closest('.field-with-label');
+		const templateIndex = field.attr('data-parent-tpl-index');
+		const slotRole = field.attr('data-slot-role');
 		const externalMsg = instance.externalMessages.get();
 		externalMsg.prepareResult.queryTemplates[templateIndex].querySlots = _.map(externalMsg.prepareResult.queryTemplates[templateIndex].querySlots,
 			(query) => {
@@ -315,8 +317,8 @@ Template.dbsAI_externalSearch.events({
 		event.preventDefault();
 		const rlData = _.first(RocketChat.models.LivechatExternalMessage.findByRoomId(inst.roomId, {ts: -1}).fetch());
 		if (rlData && rlData.prepareResult) {
-			const input = inst.$(event.target).closest('.field-with-label'),
-				slotRole = input.attr('data-slot-role');
+			const input = inst.$(event.target).closest('.field-with-label');
+			const slotRole = input.attr('data-slot-role');
 			const qSlot = _.find(rlData.prepareResult.queryTemplates[input.attr('data-parent-tpl-index')].querySlots, (slot) => {
 				return slot.role === slotRole;
 			});
@@ -332,11 +334,11 @@ Template.dbsAI_externalSearch.events({
 	 * Switches the tokens between two slots within a query template.
 	 */
 	'click .external-message .icon-wrapper .icon-exchange'(event, instance) {
-		const changeBtn = $(event.target).parent().closest('.icon-wrapper'),
-			left = changeBtn.prevAll('.field-with-label'),
-			right = changeBtn.nextAll('.field-with-label'),
-			leftTokenIndex = parseInt(left.attr('data-token-index')),
-			rightTokenIndex = parseInt(right.attr('data-token-index'));
+		const changeBtn = $(event.target).parent().closest('.icon-wrapper');
+		const left = changeBtn.prevAll('.field-with-label');
+		const right = changeBtn.nextAll('.field-with-label');
+		const leftTokenIndex = parseInt(left.attr('data-token-index'));
+		const rightTokenIndex = parseInt(right.attr('data-token-index'));
 		if (changeBtn.hasClass('spinner')) {
 			return;
 		}
