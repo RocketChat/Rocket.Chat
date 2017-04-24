@@ -197,8 +197,7 @@ class WebRTCClass
 		for id, peerConnection of @peerConnections
 			console.log peerConnection
 			for remoteStream in peerConnection.getRemoteStreams()
-				console.log	peerConnection.getRemoteStreams()
-				item =	peerConnection.getRemoteStreams()
+				item =
 					id: id
 					url: URL.createObjectURL(remoteStream)
 					state: peerConnection.iceConnectionState
