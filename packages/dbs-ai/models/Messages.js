@@ -5,7 +5,7 @@
 // import {_} from 'underscore';
 
 _.extend(RocketChat.models.Messages, {
-	addMetadata: function(message, metadata) {
+	addMetadata(message, metadata) {
 		const query = { _id: message._id };
 
 		const update = {

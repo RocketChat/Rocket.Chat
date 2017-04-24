@@ -117,13 +117,13 @@ class HelpRequestApi {
 		const seekerUser = this._findUsers([seeker])[0];
 		const providerUsers = this._findUsers(providers);
 		if (!seekerUser) {
-			throw new Meteor.Error('Invalid user ' + JSON.stringify(seeker) + ' provided');
+			throw new Meteor.Error(`Invalid user ${ JSON.stringify(seeker) } provided`);
 		}
 
 		let channel = {};
 		try {
 			Meteor.runAsUser(seekerUser._id, () => {
-				channel = Meteor.call('createRequest', 'Assistify_' + HelpRequestApi.getNextAssistifyRoomCode(), '', providerUsers.map((user) => user.username), environment);
+				channel = Meteor.call('createRequest', `Assistify_${ HelpRequestApi.getNextAssistifyRoomCode() }`, '', providerUsers.map((user) => user.username), environment);
 				try {
 					if (message) {
 						RocketChat.sendMessage({

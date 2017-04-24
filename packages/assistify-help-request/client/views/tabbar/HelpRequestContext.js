@@ -16,7 +16,7 @@ Template.HelpRequestContext.helpers({
 			name = '';
 			value = environment.tcode || environment.program || environment.wd_application;
 			if (environment.title) {
-				value = value + ' - ' + environment.title;
+				value = `${ value } - ${ environment.title }`;
 			}
 			if (environment.tcode) {
 				name = 'transaction';
@@ -37,11 +37,11 @@ Template.HelpRequestContext.helpers({
 			if (environment.system) {
 				let systemInfo = environment.system;
 				if (environment.client) {
-					systemInfo = systemInfo + '(' + environment.client + ')';
+					systemInfo = `${ systemInfo }(${ environment.client })`;
 				}
 
 				if (environment.release) {
-					systemInfo = systemInfo + ', ' + t('release') + ': ' + environment.release;
+					systemInfo = `${ systemInfo }, ${ t('release') }: ${ environment.release }`;
 				}
 
 				relevantParameters.push({

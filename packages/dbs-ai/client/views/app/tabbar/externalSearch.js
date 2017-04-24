@@ -7,11 +7,11 @@ for (const tpl in Template) {
 			});
 			this.$('.datetime-field').each(function(indx, inputFieldItem) {
 				$.datetimepicker.setDateFormatter({
-					parseDate: function(date, format) {
+					parseDate(date, format) {
 						const d = moment(date, format);
 						return d.isValid() ? d.toDate() : false;
 					},
-					formatDate: function(date, format) {
+					formatDate(date, format) {
 						return moment(date).format(format);
 					}
 				});
@@ -32,10 +32,10 @@ Template.dbsAI_externalSearch.helpers({
 		return RocketChat.models.LivechatExternalMessage.findByRoomId(this.rid, {ts: 1});
 	},
 	dynamicTemplateExists() {
-		return !!Template['dynamic_redlink_' + this.queryType];
+		return !!Template[`dynamic_redlink_${ this.queryType }`];
 	},
 	queryTemplate() {
-		return 'dynamic_redlink_' + this.queryType;
+		return `dynamic_redlink_${ this.queryType }`;
 	},
 	isLivechat() {
 		const instance = Template.instance();
@@ -73,7 +73,7 @@ Template.dbsAI_externalSearch.helpers({
 						item: '?',
 						itemStyle: 'empty-style',
 						inquiryStyle: 'disabled',
-						label: 'topic_' + itm,
+						label: `topic_${ itm }`,
 						parentTplIndex: indexTpl //todo replace with looping index in html
 					};
 					if (typeof extendedQueryTpl.filledQuerySlots === 'object') {
@@ -88,7 +88,7 @@ Template.dbsAI_externalSearch.helpers({
 								returnValue.itemStyle = '';
 							}
 							if (returnValue.tokenType === 'Date') {
-								returnValue.itemStyle = returnValue.itemStyle + ' datetime-field';
+								returnValue.itemStyle = `${ returnValue.itemStyle } datetime-field`;
 							}
 						}
 					}
@@ -120,9 +120,9 @@ Template.dbsAI_externalSearch.helpers({
 			}
 		});
 		return {
-			queries: queries,
+			queries,
 			roomId: instance.data.rid,
-			templateIndex: templateIndex
+			templateIndex
 		};
 	},
 	helpRequestByRoom() {
@@ -136,7 +136,7 @@ Template.dbsAI_externalSearch.events({
 	/**
 	 * Notifies that a query was confirmed by an agent (aka. clicked)
 	 */
-	'click .knowledge-queries-wrapper .query-item a ': function(event, instance) {
+	'click .knowledge-queries-wrapper .query-item a '(event, instance) {
 		const query = $(event.target).closest('.query-item');
 		const externalMsg = instance.externalMessages.get();
 		externalMsg.prepareResult.queryTemplates[query.data('templateIndex')].queries[query.data('queryIndex')].state = 'Confirmed';
@@ -149,7 +149,7 @@ Template.dbsAI_externalSearch.events({
 	/**
 	 * Hide datetimepicker when right mouse clicked
 	 */
-	'mousedown .field-with-label': function(event) {
+	'mousedown .field-with-label'(event) {
 		if (event.button === 2) {
 			$('body').addClass('suppressDatetimepicker');
 			setTimeout(() => {
@@ -161,7 +161,7 @@ Template.dbsAI_externalSearch.events({
 	/*
 	 * open contextmenu with "-edit, -delete and -nachfragen"
 	 * */
-	'contextmenu .field-with-label': function(event, instance) {
+	'contextmenu .field-with-label'(event, instance) {
 		event.preventDefault();
 		instance.$('.knowledge-input-wrapper.active').removeClass('active');
 		instance.$(event.currentTarget).find('.knowledge-input-wrapper').addClass('active');
@@ -171,13 +171,13 @@ Template.dbsAI_externalSearch.events({
 			}
 		});
 	},
-	'click .query-template-tools-wrapper .icon-up-open': function(event) {
+	'click .query-template-tools-wrapper .icon-up-open'(event) {
 		$(event.currentTarget).closest('.query-template-wrapper').toggleClass('collapsed');
 	},
 	/**
 	 * Mark a template as confirmed
 	 */
-	'click .query-template-tools-wrapper .icon-ok': function(event, instance) {
+	'click .query-template-tools-wrapper .icon-ok'(event, instance) {
 		const query = $(event.target).closest('.query-template-wrapper');
 		const externalMsg = instance.externalMessages.get();
 		externalMsg.prepareResult.queryTemplates[query.data('templateIndex')].state = 'Confirmed';
@@ -190,7 +190,7 @@ Template.dbsAI_externalSearch.events({
 	/**
 	 * Mark a template as rejected.
 	 */
-	'click .query-template-tools-wrapper .icon-cancel': function(event, instance) {
+	'click .query-template-tools-wrapper .icon-cancel'(event, instance) {
 		const query = $(event.target).closest('.query-template-wrapper');
 		const externalMsg = instance.externalMessages.get();
 		externalMsg.prepareResult.queryTemplates[query.data('templateIndex')].state = 'Rejected';
@@ -201,7 +201,7 @@ Template.dbsAI_externalSearch.events({
 		});
 	},
 
-	'keydup .knowledge-base-value, keydown .knowledge-base-value': function(event) {
+	'keydup .knowledge-base-value, keydown .knowledge-base-value'(event) {
 		const inputWrapper = $(event.currentTarget).closest('.field-with-label'),
 			ENTER_KEY = 13,
 			ESC_KEY = 27,
@@ -222,13 +222,13 @@ Template.dbsAI_externalSearch.events({
 			inputWrapper.addClass('editing');
 		}
 	},
-	'click .knowledge-input-wrapper .icon-cancel': function(event) {
+	'click .knowledge-input-wrapper .icon-cancel'(event) {
 		const inputWrapper = $(event.currentTarget).closest('.field-with-label'),
 			inputField = inputWrapper.find('.knowledge-base-value');
 		inputWrapper.removeClass('editing');
 		inputField.val($(event.currentTarget).data('initValue'));
 	},
-	'click .knowledge-input-wrapper .icon-floppy': function(event, instance) {
+	'click .knowledge-input-wrapper .icon-floppy'(event, instance) {
 		event.preventDefault();
 		const inputWrapper = $(event.currentTarget).closest('.field-with-label'),
 			templateWrapper = $(event.currentTarget).closest('.query-template-wrapper'),
@@ -272,7 +272,7 @@ Template.dbsAI_externalSearch.events({
 			}
 		});
 	},
-	'click .knowledge-base-tooltip .edit-item, click .knowledge-base-value, click .knowledge-base-label': function(event) {
+	'click .knowledge-base-tooltip .edit-item, click .knowledge-base-value, click .knowledge-base-label'(event) {
 		event.preventDefault();
 		const inputWrapper = $(event.currentTarget).closest('.field-with-label'),
 			inputField = inputWrapper.find('.knowledge-base-value');
@@ -286,7 +286,7 @@ Template.dbsAI_externalSearch.events({
 	/**
 	 * Deletes a token from a queryTemplate and mark it as rejected.
 	 */
-	'click .knowledge-base-tooltip .delete-item': function(event, instance) {
+	'click .knowledge-base-tooltip .delete-item'(event, instance) {
 		event.preventDefault();
 		const field = $(event.target).closest('.field-with-label'),
 			templateIndex = field.attr('data-parent-tpl-index'),
@@ -311,7 +311,7 @@ Template.dbsAI_externalSearch.events({
 	/**
 	 * Writes the inqury of an queryTemplateSlot to the chatWindowInputField.
 	 */
-	'click .knowledge-base-tooltip .chat-item:not(.disabled)': function(event, inst) {
+	'click .knowledge-base-tooltip .chat-item:not(.disabled)'(event, inst) {
 		event.preventDefault();
 		const rlData = _.first(RocketChat.models.LivechatExternalMessage.findByRoomId(inst.roomId, {ts: -1}).fetch());
 		if (rlData && rlData.prepareResult) {
@@ -321,8 +321,8 @@ Template.dbsAI_externalSearch.events({
 				return slot.role === slotRole;
 			});
 			if (qSlot && qSlot.inquiryMessage) {
-				const inputBox = $('#chat-window-' + inst.roomId + ' .input-message');
-				const initialInputBoxValue = inputBox.val() ? inputBox.val() + ' ' : '';
+				const inputBox = $(`#chat-window-${ inst.roomId } .input-message`);
+				const initialInputBoxValue = inputBox.val() ? `${ inputBox.val() } ` : '';
 				inputBox.val(initialInputBoxValue + qSlot.inquiryMessage).focus().trigger('keyup');
 				inst.$('.knowledge-input-wrapper.active').removeClass('active');
 			}
@@ -331,7 +331,7 @@ Template.dbsAI_externalSearch.events({
 	/**
 	 * Switches the tokens between two slots within a query template.
 	 */
-	'click .external-message .icon-wrapper .icon-exchange': function(event, instance) {
+	'click .external-message .icon-wrapper .icon-exchange'(event, instance) {
 		const changeBtn = $(event.target).parent().closest('.icon-wrapper'),
 			left = changeBtn.prevAll('.field-with-label'),
 			right = changeBtn.nextAll('.field-with-label'),

@@ -11,17 +11,17 @@ class SolrProvider {
 	executeSearch() {
 		let customSuffix = RocketChat.settings.get('Assistify_AI_DBSearch_Suffix') || '';
 		customSuffix = customSuffix.replace(/\r\n|\r|\n/g, '');
-		console.log('executeSearch ' + this.endpointUrl + customSuffix);
+		console.log(`executeSearch ${ this.endpointUrl }${ customSuffix }`);
 		const that = this;
 		return new Promise(function(resolve, reject) {
 			$.ajax({
 				url: that.endpointUrl + customSuffix,
 				dataType: 'jsonp',
 				jsonp: 'json.wrf',
-				success: function(data) {
+				success(data) {
 					resolve(SolrProvider.transformResponse(data));
 				},
-				error: function(error) {
+				error(error) {
 					console.log(error);
 					reject(new Error('no-dbsearch-result'));
 				}

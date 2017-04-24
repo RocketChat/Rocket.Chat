@@ -84,7 +84,7 @@ Template.redlinkQuery.helpers({
 		if (results) {
 			const creator = instance.state.get('creator'); //all results have got the same creator
 			const options = {
-				results: results,
+				results,
 				roomId: instance.data.roomId,
 				creator: instance.state.get('creator')
 			};
@@ -125,13 +125,13 @@ Template.redlinkQuery.helpers({
 						if ($.inArray(el, uniqueKeywords) === -1) { uniqueKeywords.push(el); }
 					});
 				}
-				text.full = TAPi18n.__('similar_to') + ' "' + uniqueKeywords.reduce((act, val)=>{
+				text.full = `${ TAPi18n.__('similar_to') } "${ uniqueKeywords.reduce((act, val)=>{
 					if (act) {
-						return act + ', ' + val;
+						return `${ act }, ${ val }`;
 					} else {
 						return val;
 					}
-				}, '') + '"';
+				}, '') }"`;
 				break;
 			default:
 				text.full = TAPi18n.__(instance.data.query.replacedCreator);
@@ -164,7 +164,7 @@ Template.redlinkQuery.helpers({
 });
 
 Template.redlinkQuery.events({
-	'click .js-toggle-results-expanded': function(event, instance) {
+	'click .js-toggle-results-expanded'(event, instance) {
 		const current = instance.state.get('resultsExpanded');
 		instance.state.set('resultsExpanded', !current);
 	}
@@ -223,7 +223,7 @@ Template.redlinkQuery.onCreated(function() {
 					})
 					.catch(function(err) {
 						console.log(err);
-						instance.state.set('error', 'cannot-retrieve-' + instance.data.query.creator + '-results');
+						instance.state.set('error', `cannot-retrieve-${ instance.data.query.creator }-results`);
 						instance.state.set('status', 'fetched');
 					});
 			}

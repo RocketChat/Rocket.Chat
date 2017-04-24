@@ -63,7 +63,7 @@ Template.redlinkResultContainer_Slider.helpers(new RedlinkResultContainerHelpers
 
 Template.redlinkResultContainer_Slider.events({
 
-	'click .js-next-result': function(event, instance) {
+	'click .js-next-result'(event, instance) {
 		const currentOffset = instance.state.get('currentOffset');
 		if (currentOffset < instance.data.results.length - 1) {
 			instance.state.set('currentOffset', currentOffset + instance.data.stepping);
@@ -72,7 +72,7 @@ Template.redlinkResultContainer_Slider.events({
 		}
 	},
 
-	'click .js-previous-result': function(event, instance) {
+	'click .js-previous-result'(event, instance) {
 		const currentOffset = instance.state.get('currentOffset');
 		if (currentOffset > 0) {
 			if (currentOffset >= instance.data.stepping) {

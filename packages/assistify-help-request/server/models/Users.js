@@ -5,7 +5,7 @@
 // var _ = Npm.require('underscore');
 
 RocketChat.models.Users.findByEmailAddresses = function(emailAddresses, options) {
-	const query = {'emails.address': {$in: emailAddresses.map((emailAddress) => new RegExp('^' + s.escapeRegExp(emailAddress) + '$', 'i'))}};
+	const query = {'emails.address': {$in: emailAddresses.map((emailAddress) => new RegExp(`^${ s.escapeRegExp(emailAddress) }$`, 'i'))}};
 
 	return this.find(query, options);
 };

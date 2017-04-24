@@ -26,13 +26,13 @@ Template.AssistifyCreateRequest.helpers({
 });
 
 Template.AssistifyCreateRequest.events({
-	'autocompleteselect #expertise-search': function(event, instance, doc) {
+	'autocompleteselect #expertise-search'(event, instance, doc) {
 		instance.expertise.set(doc.name);
 
 		return instance.find('.save-request').focus();
 	},
 
-	'keydown #request-name': function(event, instance) {
+	'keydown #request-name'(event, instance) {
 		if ($(event.currentTarget).val().trim() !== '' && event.keyCode === 13) {
 			instance.$('.save-request').click();
 			SideNav.closeFlex(() => {
@@ -41,13 +41,13 @@ Template.AssistifyCreateRequest.events({
 		}
 	},
 
-	'click .cancel-request': function(event, instance) {
+	'click .cancel-request'(event, instance) {
 		SideNav.closeFlex(() => {
 			instance.clearForm();
 		});
 	},
 
-	'click .save-request': function(event, instance) {
+	'click .save-request'(event, instance) {
 		event.preventDefault();
 		// const name = instance.find('#request-name').value.toLowerCase().trim();
 		const expertise = instance.find('#expertise-search').value.toLowerCase().trim();
@@ -76,7 +76,7 @@ Template.AssistifyCreateRequest.events({
 				SideNav.closeFlex(() => {
 					instance.clearForm();
 				});
-				RocketChat.callbacks.run('aftercreateCombined', {_id: result.rid, name: name});
+				RocketChat.callbacks.run('aftercreateCombined', {_id: result.rid, name});
 				const roomCreated = RocketChat.models.Rooms.findOne({_id: result.rid});
 				FlowRouter.go('request', {name: roomCreated.name}, FlowRouter.current().queryParams);
 			});

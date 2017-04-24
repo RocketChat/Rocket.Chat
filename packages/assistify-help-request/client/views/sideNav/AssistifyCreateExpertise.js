@@ -2,11 +2,11 @@
 import toastr from 'toastr';
 
 Template.AssistifyCreateExpertise.helpers({
-	selectedUsers: function() {
+	selectedUsers() {
 		const instance = Template.instance();
 		return instance.selectedUsers.get();
 	},
-	autocompleteSettings: function() {
+	autocompleteSettings() {
 		return {
 			limit: 10,
 			// inputDelay: 300
@@ -30,7 +30,7 @@ Template.AssistifyCreateExpertise.helpers({
 			]
 		};
 	},
-	canCreateExpertise: function() {
+	canCreateExpertise() {
 		// as custom authorization leads to a streamer-exception, it has been disabled.
 		// Check whether the user is in the expert's channel as lightweight workaround
 		const instance = Template.instance();
@@ -66,7 +66,7 @@ Template.AssistifyCreateExpertise.events({
 	},
 
 
-	'keyup #expertise': function(e, instance) {
+	'keyup #expertise'(e, instance) {
 		if (e.keyCode === 13) {
 			instance.$('#experts').focus();
 		}
@@ -78,13 +78,13 @@ Template.AssistifyCreateExpertise.events({
 		}
 	},
 
-	'click .cancel-expertise': function(event, instance) {
+	'click .cancel-expertise'(event, instance) {
 		SideNav.closeFlex(() => {
 			instance.clearForm();
 		});
 	},
 
-	'click .save-expertise': function(event, instance) {
+	'click .save-expertise'(event, instance) {
 		event.preventDefault();
 		const name = instance.find('#expertise').value.toLowerCase().trim();
 		instance.expertiseRoomName.set(name);
@@ -115,8 +115,8 @@ Template.AssistifyCreateExpertise.events({
 				SideNav.closeFlex(() => {
 					instance.clearForm();
 				});
-				RocketChat.callbacks.run('aftercreateCombined', {_id: result.rid, name: name});
-				FlowRouter.go('expertise', {name: name}, FlowRouter.current().queryParams);
+				RocketChat.callbacks.run('aftercreateCombined', {_id: result.rid, name});
+				FlowRouter.go('expertise', {name}, FlowRouter.current().queryParams);
 			});
 		} else {
 			toastr.error(TAPi18n.__('The_field_is_required', TAPi18n.__('expertise')));

@@ -11,19 +11,19 @@ class HelpRequest extends RocketChat.models._Base {
 
 //-------------------------- FIND ONE
 	findOneById(_id, options) {
-		const query = {_id: _id};
+		const query = {_id};
 		return this.findOne(query, options);
 	}
 
 	findOneByRoomId(roomId, options) {
-		const query = {roomId: roomId};
+		const query = {roomId};
 		return this.findOne(query, options);
 	}
 
 
 //----------------------------- FIND
 	findById(_id, options) {
-		return this.find({_id: _id}, options);
+		return this.find({_id}, options);
 	}
 
 	findByIds(_ids, options) {
@@ -31,12 +31,12 @@ class HelpRequest extends RocketChat.models._Base {
 	}
 
 	findBySupportArea(supportArea, options) {
-		const query = {supportArea: supportArea};
+		const query = {supportArea};
 		return this.find(query, options);
 	}
 
 	findByRoomId(roomId, options) {
-		const query = {roomId: roomId};
+		const query = {roomId};
 		return this.find(query, options);
 	}
 
@@ -44,10 +44,10 @@ class HelpRequest extends RocketChat.models._Base {
 	createForSupportArea(supportArea, roomId, question='', environment={}) {
 		const helpRequest = {
 			createdOn: new Date(),
-			supportArea: supportArea,
-			roomId: roomId,
-			question: question,
-			environment: environment,
+			supportArea,
+			roomId,
+			question,
+			environment,
 			resolutionStatus: HelpRequest.RESOLUTION_STATUS.open
 		};
 
@@ -56,10 +56,10 @@ class HelpRequest extends RocketChat.models._Base {
 
 //---------------------------- UPDATE
 	close(_id, closingProperties={}) {
-		const query = {_id: _id};
+		const query = {_id};
 		const update = {$set: {
 			resolutionStatus: HelpRequest.RESOLUTION_STATUS.resolved,
-			closingProperties: closingProperties
+			closingProperties
 		}};
 
 
@@ -68,7 +68,7 @@ class HelpRequest extends RocketChat.models._Base {
 	}
 
 	registerBotResponse(_id, botMessage) {
-		const query = {_id: _id};
+		const query = {_id};
 		const update = {$set: {latestBotReply: botMessage}};
 
 		return this.update(query, update);
@@ -76,7 +76,7 @@ class HelpRequest extends RocketChat.models._Base {
 
 //----------------------------- REMOVE
 	removeById(_id) {
-		const query = {_id: _id};
+		const query = {_id};
 		return this.remove(query);
 	}
 }

@@ -5,7 +5,7 @@
  * Global helper for DB-specific functions
  */
 _dbs = {
-	unique: function(arrayArgument) {
+	unique(arrayArgument) {
 		return arrayArgument.filter((elem, pos, arr) => {
 			return arr.indexOf(elem) === pos;
 		});

@@ -10,11 +10,11 @@ Template.redlinkQueries.helpers({
 			.filter(hasInlineSupport);
 
 		return {
-			query: query,
+			query,
 			maxConfidence: Math.max(...queriesWithInlineSupport.map((query) => query.confidence)),
 			roomId: instance.data.roomId,
 			templateIndex: instance.data.templateIndex,
-			queryIndex: queryIndex
+			queryIndex
 		};
 	},
 	isInlineResult(query) {
@@ -48,12 +48,12 @@ Template.redlinkQueries.onCreated(function() {
 
 Template.redlinkQueries.utilities = {
 	cleanupCallbacks:[],
-	resultsInteractionCleanup: function() {
+	resultsInteractionCleanup() {
 		if (this.cleanupCallbacks) {
 			this.cleanupCallbacks.forEach((cb)=>cb());
 		}
 	},
-	addCleanupActivity: function(cb) {
+	addCleanupActivity(cb) {
 		this.cleanupCallbacks.push(cb);
 	}
 };

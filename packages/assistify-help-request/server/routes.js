@@ -81,7 +81,7 @@ API.addRoute('helpDiscussion', {
 			helpRequest.HelpRequestApi.validateHelpDiscussionPostRequest(this.bodyParams);
 		} catch (err) {
 			console.log('Assistify rejected malformed request:', JSON.stringify(this.request.body, ' ', 2));
-			throw new Meteor.Error('Malformed request:' + JSON.stringify(err, ' ', 2));
+			throw new Meteor.Error(`Malformed request:${ JSON.stringify(err, ' ', 2) }`);
 		}
 
 		// if (!this.request.headers['X-Auth-Token'])) { //todo: Check authorization - or is this done by Restivus once setting another parameter?

@@ -5,7 +5,7 @@ class ApiAiAdapter {
 		this.properties = adapterProps;
 		this.headers = {
 			'Content-Type': 'application/json; charset=utf-8',
-			'Authorization': 'Bearer ' + this.properties.token
+			'Authorization': `Bearer ${ this.properties.token }`
 		};
 	}
 

@@ -1,7 +1,7 @@
 /* globals _dbs */
 
 Meteor.methods({
-	'updateKnowledgeProviderResult': function(modifiedKnowledgeProviderResult) {
+	'updateKnowledgeProviderResult'(modifiedKnowledgeProviderResult) {
 		if (Meteor.isServer) {
 			if (!modifiedKnowledgeProviderResult) {
 				return;

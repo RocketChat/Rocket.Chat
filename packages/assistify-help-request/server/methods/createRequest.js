@@ -43,14 +43,14 @@ Meteor.methods({
 		// If an expertise has been selected, that means that a new room shall be created which addresses the
 		// experts of this expertise. A new room name shall be created
 		if (expertise && !name) {
-			name = expertise + '-' + getNextId(expertise);
+			name = `${ expertise }-${ getNextId(expertise) }`;
 		}
 
 		if (expertise) {
 			members = getExperts(expertise);
 		}
 
-		const roomCreateResult = RocketChat.createRoom('r', name, Meteor.user() && Meteor.user().username, members, false, {expertise: expertise});
+		const roomCreateResult = RocketChat.createRoom('r', name, Meteor.user() && Meteor.user().username, members, false, {expertise});
 
 		const room = RocketChat.models.Rooms.findOneById(roomCreateResult.rid);
 		const helpRequestId = RocketChat.models.HelpRequests.createForSupportArea(expertise, roomCreateResult.rid, '', environment);

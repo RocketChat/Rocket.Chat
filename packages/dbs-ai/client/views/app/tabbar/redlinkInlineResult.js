@@ -5,7 +5,7 @@ import { ReactiveDict } from 'meteor/reactive-dict';
 
 Template.redlinkInlineResult._copyReplySuggestion = function(event, instance) {
 	if (instance.data.result.replySuggestion) {
-		$('#chat-window-' + instance.data.roomId + ' .input-message').val(instance.data.result.replySuggestion);
+		$(`#chat-window-${ instance.data.roomId } .input-message`).val(instance.data.result.replySuggestion);
 	}
 };
 
@@ -31,14 +31,14 @@ Template.redlinkInlineResult.helpers({
 				templateSuffix = 'Hasso';
 				break;
 			default:
-				if (Template['redlinkInlineResult_' + instance.data.creator]) {
+				if (Template[`redlinkInlineResult_${ instance.data.creator }`]) {
 					templateSuffix = instance.data.creator;
 				} else {
 					templateSuffix = 'generic';
 				}
 				break;
 		}
-		return 'redlinkInlineResult_' + templateSuffix;
+		return `redlinkInlineResult_${ templateSuffix }`;
 	},
 	templateData() {
 		const instance = Template.instance();
@@ -50,7 +50,7 @@ Template.redlinkInlineResult.helpers({
 });
 
 Template.redlinkInlineResult.events({
-	'click .js-copy-reply-suggestion': function(event, instance) {
+	'click .js-copy-reply-suggestion'(event, instance) {
 		return Template.redlinkInlineResult._copyReplySuggestion(event, instance);
 	}
 });
@@ -64,7 +64,7 @@ Template.redlinkInlineResult_generic.helpers({
 		const keyValuePairs = [];
 		for (const key in instance.data.result) {
 			if (Object.prototype.hasOwnProperty.call(instance.data.result, key)) {
-				keyValuePairs.push({key: key, value: instance.data.result[key]});
+				keyValuePairs.push({key, value: instance.data.result[key]});
 			}
 		}
 
@@ -75,7 +75,7 @@ Template.redlinkInlineResult_generic.helpers({
 //------------------------------------- Bahn.de -----------------------------------------------
 
 Template.redlinkInlineResult_bahn_de.events({
-	'click .js-copy-reply-suggestion': function(event, instance) {
+	'click .js-copy-reply-suggestion'(event, instance) {
 		return Template.redlinkInlineResult._copyReplySuggestion(event, instance);
 	}
 });
@@ -95,7 +95,7 @@ Template.redlinkInlineResult_VKL_community.helpers({
 });
 
 Template.redlinkInlineResult_VKL_community.events({
-	'click .result-item-wrapper .js-toggle-result-preview-expanded': function(event, instance) {
+	'click .result-item-wrapper .js-toggle-result-preview-expanded'(event, instance) {
 		const current = instance.state.get('expanded');
 		instance.state.set('expanded', !current);
 	}
@@ -130,7 +130,7 @@ Template.inlineResultMessage.helpers({
 });
 
 Template.inlineResultMessage.events({
-	'click .conversationMessage': function(event, instance) {
+	'click .conversationMessage'(event, instance) {
 		const current = instance.selected.get();
 
 		instance.selected.set(!current);
@@ -152,7 +152,7 @@ Template.inlineResultMessage.onCreated(function() {
 
 
 Template.redlinkInlineResult_Hasso.events({
-	'click .result-item-wrapper .js-toggle-result-preview-expanded': function(event, instance) {
+	'click .result-item-wrapper .js-toggle-result-preview-expanded'(event, instance) {
 		const current = instance.state.get('expanded');
 		instance.state.set('expanded', !current);
 
@@ -160,7 +160,7 @@ Template.redlinkInlineResult_Hasso.events({
 			Template.redlinkQueries.utilities.resultsInteractionCleanup();
 		}
 	},
-	'click .js-send-message': function(event, instance) {
+	'click .js-send-message'(event, instance) {
 
 		/* buffer metadata of messages which are _about to be sent_
 		 * This is necessary as the results or queries displayed may be entered into the message-area,
@@ -181,7 +181,7 @@ Template.redlinkInlineResult_Hasso.events({
 		const selectedMessages = instance.findAll('.selected');
 		if (selectedMessages.length > 0) {
 			textToInsert = selectedMessages.reduce(function(concat, elem) {
-				return concat + ' ' + elem.textContent;
+				return `${ concat } ${ elem.textContent }`;
 			},
 				'');
 		} else {
@@ -190,13 +190,13 @@ Template.redlinkInlineResult_Hasso.events({
 			if (originRoom) {
 				const routeLink = RocketChat.roomTypes.getRouteLink(originRoom.t, originRoom);
 				const roomLink = Meteor.absoluteUrl() + routeLink.slice(1, routeLink.length);
-				textToInsert = TAPi18n.__('Link_provided') + ' ' + roomLink;
+				textToInsert = `${ TAPi18n.__('Link_provided') } ${ roomLink }`;
 			} else {
 				return toastr.info(TAPi18n.__('No_room_link_possible'));
 			}
 		}
 
-		$('#chat-window-' + instance.data.roomId + ' .input-message').val(textToInsert.trim()).focus();
+		$(`#chat-window-${ instance.data.roomId } .input-message`).val(textToInsert.trim()).focus();
 	}
 });
 
@@ -280,7 +280,7 @@ Template.redlinkInlineResult_dbsearch.helpers({
 
 Template.redlinkInlineResult_dbsearch.events({
 
-	'click .result-item-wrapper .js-toggle-result-preview-expanded': function(event, instance) {
+	'click .result-item-wrapper .js-toggle-result-preview-expanded'(event, instance) {
 		const current = instance.state.get('expanded');
 		instance.state.set('expanded', !current);
 
@@ -288,7 +288,7 @@ Template.redlinkInlineResult_dbsearch.events({
 			Template.redlinkQueries.utilities.resultsInteractionCleanup();
 		}
 	},
-	'click .js-send-message': function(event, instance) {
+	'click .js-send-message'(event, instance) {
 
 		/* buffer metadata of messages which are _about to be sent_
 		 * This is necessary as the results or queries displayed may be entered into the message-area,
@@ -309,14 +309,14 @@ Template.redlinkInlineResult_dbsearch.events({
 		const selectedMessages = instance.findAll('.selected');
 		if (selectedMessages.length > 0) {
 			textToInsert = selectedMessages.reduce(function(concat, elem) {
-				return concat + ' ' + elem.textContent;
+				return `${ concat } ${ elem.textContent }`;
 			},
 				'');
 		} else {
 			textToInsert = instance.data.result.dbsearch_link_s;
 		}
 
-		$('#chat-window-' + instance.data.roomId + ' .input-message').val(textToInsert).focus();
+		$(`#chat-window-${ instance.data.roomId } .input-message`).val(textToInsert).focus();
 	}
 
 });

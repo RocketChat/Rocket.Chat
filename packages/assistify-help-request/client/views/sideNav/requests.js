@@ -1,5 +1,5 @@
 Template.requests.helpers({
-	isActive: function() {
+	isActive() {
 		if (ChatSubscription.findOne({
 			t: {$in: ['r']},
 			f: {$ne: true},
@@ -10,7 +10,7 @@ Template.requests.helpers({
 		}
 	},
 
-	rooms: function() {
+	rooms() {
 		const query = {
 			t: {$in: ['r']},
 			open: true
@@ -32,7 +32,7 @@ Template.requests.helpers({
 });
 
 Template.requests.events({
-	'click .js-more-requests': function() {
+	'click .js-more-requests'() {
 		SideNav.setFlex('listRequestsFlex');
 		SideNav.openFlex();
 	}

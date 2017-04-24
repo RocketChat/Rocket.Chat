@@ -81,7 +81,7 @@ Template.HelpRequestActions.dialogs = {
 };
 
 Template.HelpRequestActions.events({
-	'click .close-helprequest': function(event, instance) {
+	'click .close-helprequest'(event, instance) {
 		event.preventDefault();
 
 		swal(_.extend({
@@ -121,7 +121,7 @@ Template.HelpRequestActions.events({
 			});
 		});
 	},
-	'click .close-livechat': function(event) {
+	'click .close-livechat'(event) {
 		event.preventDefault();
 
 		swal({

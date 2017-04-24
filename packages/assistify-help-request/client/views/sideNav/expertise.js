@@ -1,5 +1,5 @@
 Template.expertise.helpers({
-	isActive: function() {
+	isActive() {
 		if (ChatSubscription.findOne({
 			t: {$in: ['e']},
 			f: {$ne: true},
@@ -10,7 +10,7 @@ Template.expertise.helpers({
 		}
 	},
 
-	rooms: function() {
+	rooms() {
 		const query = {
 			t: {$in: ['e']},
 			open: true
@@ -32,7 +32,7 @@ Template.expertise.helpers({
 });
 
 Template.expertise.events({
-	'click .more-channels': function() {
+	'click .more-channels'() {
 		SideNav.setFlex('listChannelsFlex');
 		SideNav.openFlex();
 	}

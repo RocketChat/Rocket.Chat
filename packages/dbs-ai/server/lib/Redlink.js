@@ -9,10 +9,10 @@ class RedlinkAdapter {
 		this.options.headers = {};
 		this.options.headers['content-Type'] = 'application/json; charset=utf-8';
 		if (this.properties.token) {
-			this.options.headers['authorization'] = 'basic ' + this.properties.token;
+			this.options.headers['authorization'] = `basic ${ this.properties.token }`;
 		}
 		if (this.properties.url.substring(0, 4) === 'https') {
-			this.options.cert = '~/.nodeCaCerts/' + this.properties.url.replace('https', '');
+			this.options.cert = `~/.nodeCaCerts/${ this.properties.url.replace('https', '') }`;
 		}
 	}
 
@@ -46,7 +46,7 @@ class RedlinkAdapter {
 		const room = RocketChat.models.Rooms.findOneById(rid);
 		const owner = room.v || room.u; //livechat or regular room
 		RocketChat.models.Messages.find({
-			rid: rid,
+			rid,
 			_hidden: {$ne: true},
 			t: {$exists: false}, //commands and other automated messages have got a type
 			ts: {$gt: new Date(analyzedUntil)}
@@ -62,11 +62,11 @@ class RedlinkAdapter {
 
 	onResultModified(modifiedRedlinkResult) {
 		try {
-			SystemLogger.debug('sending update to redlinkk with: ' + JSON.stringify(modifiedRedlinkResult));
+			SystemLogger.debug(`sending update to redlinkk with: ${ JSON.stringify(modifiedRedlinkResult) }`);
 			const options = this.options;
 			options.data = modifiedRedlinkResult.prepareResult;
-			const responseRedlinkQuery = HTTP.post(this.properties.url + '/query', options);
-			SystemLogger.debug('received update to redlinkk with: ' + JSON.stringify(responseRedlinkQuery));
+			const responseRedlinkQuery = HTTP.post(`${ this.properties.url }/query`, options);
+			SystemLogger.debug(`received update to redlinkk with: ${ JSON.stringify(responseRedlinkQuery) }`);
 			RocketChat.models.LivechatExternalMessage.update(
 				{
 					_id: modifiedRedlinkResult._id
@@ -136,7 +136,7 @@ class RedlinkAdapter {
 				options.data.context.domain = RocketChat.settings.get('DBS_AI_Redlink_Domain');
 			}
 			SystemLogger.debug('PREPARE', JSON.stringify(options, '', 2));
-			const responseRedlinkPrepare = HTTP.post(this.properties.url + '/prepare', options);
+			const responseRedlinkPrepare = HTTP.post(`${ this.properties.url }/prepare`, options);
 
 			if (responseRedlinkPrepare.data && responseRedlinkPrepare.statusCode === 200) {
 				SystemLogger.debug('PREPARE RESULT', JSON.stringify(responseRedlinkPrepare, '', 2));
@@ -169,7 +169,7 @@ class RedlinkAdapter {
 	getQueryResults(roomId, templateIndex, creator) {
 		// ---------------- private methods
 		const _getKeyForBuffer = function(templateIndex, creator) {
-			return templateIndex + '-' + creator.replace(/\./g, '_');
+			return `${ templateIndex }-${ creator.replace(/\./g, '_') }`;
 		};
 
 		const _getBufferedResults = function(latestKnowledgeProviderResult, templateIndex, creator) {
@@ -225,7 +225,7 @@ class RedlinkAdapter {
 					options.data.context.domain = RocketChat.settings.get('DBS_AI_Redlink_Domain');
 				}
 				SystemLogger.debug('RESULTS requested for', creator, ': ', JSON.stringify(options, '', 2));
-				const responseRedlinkResult = HTTP.post(this.properties.url + '/result/' + creator + '/?templateIdx=' + templateIndex, options);
+				const responseRedlinkResult = HTTP.post(`${ this.properties.url }/result/${ creator }/?templateIdx=${ templateIndex }`, options);
 				if (responseRedlinkResult.data && responseRedlinkResult.statusCode === 200) {
 					SystemLogger.debug('RESULTS RETRIEVED for', creator, ': ', JSON.stringify(responseRedlinkResult, '', 2));
 					results = responseRedlinkResult.data;
@@ -270,7 +270,7 @@ class RedlinkAdapter {
 	getStoredConversation(conversationId) {
 		const options = this.options;
 
-		const response = HTTP.get(this.properties.url + '/store/' + conversationId, options);
+		const response = HTTP.get(`${ this.properties.url }/store/${ conversationId }`, options);
 		if (response.statusCode === 200) {
 			return response.data;
 		}
@@ -297,7 +297,7 @@ class RedlinkAdapter {
 			}
 			try {
 				SystemLogger.debug('STORE:', JSON.stringify(options, '', 2));
-				const responseStore = HTTP.post(this.properties.url + '/store', options);
+				const responseStore = HTTP.post(`${ this.properties.url }/store`, options);
 				if (responseStore.statusCode === 200) {
 					SystemLogger.debug('STORED as', JSON.stringify(responseStore, '', 2));
 					RocketChat.models.LivechatExternalMessage.update(

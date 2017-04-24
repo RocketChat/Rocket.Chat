@@ -4,19 +4,19 @@
 // var _ = Npm.require('underscore');
 
 _.extend(RocketChat.models.Rooms, {
-	addHelpRequestInfo: function(room, helpRequestId) {
+	addHelpRequestInfo(room, helpRequestId) {
 		const query = {_id: room._id};
 
 		const update = {
 			$set: {
-				helpRequestId: helpRequestId,
+				helpRequestId,
 				v: room.u //Depict the owner of the room as visitor, similar like in livechat
 			}
 		};
 
 		return this.update(query, update);
 	},
-	findByNameContainingTypesAndTags: function(name, types, options) {
+	findByNameContainingTypesAndTags(name, types, options) {
 		const nameRegex = new RegExp(s.trim(s.escapeRegExp(name)), 'i');
 
 		const $or = [];

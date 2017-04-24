@@ -11,7 +11,7 @@ function addDirectory(api, pathInPackage, environment) {
 	const _ = Npm.require('underscore');
 	const fs = Npm.require('fs');
 	const files = _.compact(_.map(fs.readdirSync(PACKAGE_PATH + pathInPackage), function(filename) {
-		return pathInPackage + '/' + filename;
+		return `${ pathInPackage }/${ filename }`;
 	}));
 	api.addFiles(files, environment);
 }
