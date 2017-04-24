@@ -22,7 +22,11 @@ Template.combined.helpers({
 			];
 		}
 
-		return ChatSubscription.find(query, { sort: { 'name': 1 }});
+		let subscriptions = ChatSubscription.find(query, { sort: {'name': 1 }}).fetch();
+		if (Session.equals('RoomSortType', 'activity')) {
+			subscriptions = RocketChat.SubscriptionUtil.sortSubscriptionsByActivity(subscriptions);
+		}
+		return subscriptions;
 	}});
 
 Template.combined.events({

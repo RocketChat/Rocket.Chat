@@ -24,8 +24,11 @@ Template.channels.helpers({
 			];
 		}
 
-		return ChatSubscription.find(
-			query, { sort: { 't': 1, 'name': 1 }});
+		let subscriptions = ChatSubscription.find(query, { sort: { 't': 1, 'name': 1 }}).fetch();
+		if (Session.equals('RoomSortType', 'activity')) {
+			subscriptions = RocketChat.SubscriptionUtil.sortSubscriptionsByActivity(subscriptions);
+		}
+		return subscriptions;
 	}
 });
 

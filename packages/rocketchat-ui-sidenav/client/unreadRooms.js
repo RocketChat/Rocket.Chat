@@ -1,6 +1,6 @@
 Template.unreadRooms.helpers({
 	hasUnread() {
-		if ((Meteor.user() && Meteor.user().settings && Meteor.user().settings.preferences && Meteor.user().settings.preferences.unreadRoomsMode) && (Template.instance().unreadRooms.count() > 0)) {
+		if ((Meteor.user() && Meteor.user().settings && Meteor.user().settings.preferences && Meteor.user().settings.preferences.unreadRoomsMode) && (Template.instance().unreadRooms.length > 0)) {
 			return 'has-unread';
 		}
 	},
@@ -18,6 +18,10 @@ Template.unreadRooms.onCreated(function() {
 			hideUnreadStatus: { $ne: true }
 		};
 
-		return this.unreadRooms = ChatSubscription.find(query, { sort: { 't': 1, 'name': 1 }});
+		let subscriptions = ChatSubscription.find(query, { sort: { 't': 1, 'name': 1 }}).fetch();
+		if (Session.equals('RoomSortType', 'activity')) {
+			subscriptions = RocketChat.SubscriptionUtil.sortSubscriptionsByActivity(subscriptions);
+		}
+		return this.unreadRooms = subscriptions;
 	});
 });

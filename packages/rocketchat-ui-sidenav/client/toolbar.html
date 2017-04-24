@@ -12,6 +12,10 @@
 				</div>
 			{{/if}}
 		</div>
+        <div class="toolbar-sort">
+            <i class="icon-sort-name-up {{#if sortByNameSelected}}selected{{/if}} toolbar-sort-button" sortBy="name"></i>
+            <i class="icon-recent {{#if sortByActivitySelected}}selected{{/if}} toolbar-sort-button" sortBy="activity"></i>
+        </div>
 
 		{{> messagePopup popupConfig}}
 	</div>

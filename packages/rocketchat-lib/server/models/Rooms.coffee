@@ -8,7 +8,7 @@ class ModelRooms extends RocketChat.models._Base
 		@tryEnsureIndex { 't': 1 }
 		@tryEnsureIndex { 'u._id': 1 }
 
-		this.cache.ignoreUpdatedFields.push('msgs', 'lm')
+		this.cache.ignoreUpdatedFields.push('msgs')
 		this.cache.ensureIndex(['t', 'name'], 'unique')
 		this.cache.options = {fields: {usernames: 0}}
 
