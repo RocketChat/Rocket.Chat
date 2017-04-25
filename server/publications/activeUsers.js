@@ -5,6 +5,10 @@ Meteor.publish('activeUsers', function() {
 		return this.ready();
 	}
 
+	if (RocketChat.authz.hasPermission(this.userId, 'view-user-list') !== true) {
+		return this.ready();
+	}
+
 	return RocketChat.models.Users.findUsersNotOffline({
 		fields: {
 			username: 1,

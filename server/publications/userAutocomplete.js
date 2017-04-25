@@ -10,6 +10,10 @@ Meteor.publish('userAutocomplete', function(selector) {
 		return this.ready();
 	}
 
+	if (RocketChat.authz.hasPermission(this.userId, 'view-user-list') !== true) {
+		return this.ready();
+	}
+
 	const options = {
 		fields: {
 			name: 1,
