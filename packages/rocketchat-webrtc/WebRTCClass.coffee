@@ -377,8 +377,13 @@ class WebRTCClass
 				, (isConfirm) =>
 					if isConfirm
 						if @navigator is 'chrome'
-							chrome.webstore.install undefined, refresh, ->
-								window.open('https://chrome.google.com/webstore/detail/rocketchat-screen-share/nocfbnnmjnndkbipkabodnheejiegccf')
+							url = 'https://chrome.google.com/webstore/detail/rocketchat-screen-share/nocfbnnmjnndkbipkabodnheejiegccf'
+							try
+								chrome.webstore.install url, refresh, ->
+									window.open(url)
+									refresh()
+							catch e
+								window.open(url)
 								refresh()
 						else if @navigator is 'firefox'
 							window.open('https://addons.mozilla.org/en-GB/firefox/addon/rocketchat-screen-share/')
