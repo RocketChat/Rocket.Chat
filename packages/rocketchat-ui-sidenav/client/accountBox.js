@@ -1,6 +1,6 @@
 Template.accountBox.helpers({
 	myUserInfo() {
-		if (Meteor.user() == null && RocketChat.settings.get('Accounts_AllowAnonymousAccess')) {
+		if (Meteor.user() == null && RocketChat.settings.get('Accounts_AllowAnonymousRead')) {
 			return {
 				name: t('Anonymous'),
 				status: 'online',
@@ -50,7 +50,7 @@ Template.accountBox.events({
 	},
 
 	'click .account-box'() {
-		if (Meteor.userId() == null && RocketChat.settings.get('Accounts_AllowAnonymousAccess')) {
+		if (Meteor.userId() == null && RocketChat.settings.get('Accounts_AllowAnonymousRead')) {
 			return;
 		}
 

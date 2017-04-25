@@ -28,7 +28,7 @@ RocketChat.roomTypes.add('c', 10, {
 	},
 
 	condition() {
-		return RocketChat.authz.hasAtLeastOnePermission(['view-c-room', 'view-joined-room']) || RocketChat.settings.get('Accounts_AllowAnonymousAccess') === true;
+		return RocketChat.authz.hasAtLeastOnePermission(['view-c-room', 'view-joined-room']) || RocketChat.settings.get('Accounts_AllowAnonymousRead') === true;
 	},
 
 	showJoinLink(roomId) {
