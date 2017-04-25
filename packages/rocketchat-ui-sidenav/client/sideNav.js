@@ -55,9 +55,7 @@ Template.sideNav.helpers({
 	collapseChannel() {
 		const user = Meteor.user();
 		if (user && user.settings && user.settings.preferences && user.settings.preferences.collapseChannels) {
-			return {
-				collapsible: Meteor.user().settings.preferences.collapseChannels
-			};
+			return { collapsible: Meteor.user().settings.preferences.collapseChannels };
 		}
 	}
 });
