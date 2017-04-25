@@ -6,7 +6,7 @@ currentTracker = undefined
 	Meteor.defer ->
 		currentTracker = Tracker.autorun (c) ->
 			user = Meteor.user()
-			if (user? and not user.username?) or (not user? and RocketChat.settings.get('Accounts_AllowAnonymousAccess') is false)
+			if (user? and not user.username?) or (not user? and RocketChat.settings.get('Accounts_AllowAnonymousRead') is false)
 				BlazeLayout.render 'main'
 				return
 
