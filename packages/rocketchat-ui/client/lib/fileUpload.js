@@ -145,7 +145,7 @@ fileUpload = function(filesToUpload) {
 					description: document.getElementById('file-description').value
 				};
 
-				const upload = fileUploadHandler('rocketchat-uploads', record, file.file);
+				const upload = fileUploadHandler('rocketchat-uploads-gs', record, file.file);
 
 				let uploading = Session.get('uploading') || [];
 				uploading.push({

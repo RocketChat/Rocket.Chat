@@ -43,6 +43,25 @@ function generateDeleteUrl({ file }) {
 	return `https://${ file.googleCloudStorage.bucket }.storage.googleapis.com/${ encodeURIComponent(parts.path) }?GoogleAccessId=${ parts.accessId }&Expires=${ expires }&Signature=${ encodeURIComponent(signature) }`;
 }
 
+function createDirective(directiveName, { key, bucket, accessId, secret }) {
+	if (Slingshot._directives[directiveName]) {
+		delete Slingshot._directives[directiveName];
+	}
+
+	const config = {
+		bucket,
+		GoogleAccessId: accessId,
+		GoogleSecretKey: secret,
+		key
+	};
+
+	try {
+		Slingshot.createDirective(directiveName, Slingshot.GoogleCloud, config);
+	} catch (e) {
+		console.error('Error configuring GoogleCloudStorage ->', e.message);
+	}
+}
+
 FileUpload.addHandler('googleCloudStorage', {
 	get(file, req, res) {
 		const fileUrl = generateGetURL({ file });
@@ -71,7 +90,43 @@ FileUpload.addHandler('googleCloudStorage', {
 });
 
 const createGoogleStorageDirective = _.debounce(() => {
-	const directiveName = 'rocketchat-uploads-gs';
+	const directives = [
+		{
+			name: 'rocketchat-uploads-gs',
+			key: function _googleCloudStorageKey(file, metaContext) {
+				const path = `${ RocketChat.settings.get('uniqueID') }/${ metaContext.rid }/${ this.userId }/`;
+				const upload = {
+					rid: metaContext.rid,
+					googleCloudStorage: {
+						bucket: RocketChat.settings.get('FileUpload_GoogleStorage_Bucket'),
+						path
+					}
+				};
+				const fileId = RocketChat.models.Uploads.insertFileInit(this.userId, 'googleCloudStorage', file, upload);
+
+				return path + fileId;
+			}
+		},
+		{
+			name: 'rocketchat-avatars-gs',
+			key(file/*, metaContext*/) {
+				const path = `${ RocketChat.settings.get('uniqueID') }/avatars/`;
+
+				const user = RocketChat.models.Users.findOneById(this.userId);
+
+				const upload = {
+					username: user && user.username,
+					googleCloudStorage: {
+						bucket: RocketChat.settings.get('FileUpload_GoogleStorage_Bucket'),
+						path
+					}
+				};
+				RocketChat.models.Uploads.insertFileInitByUsername(user.username, this.userId, 'googleCloudStorage', file, upload);
+
+				return path + user.username;
+			}
+		}
+	];
 
 	const type = RocketChat.settings.get('FileUpload_Storage_Type');
 	const bucket = RocketChat.settings.get('FileUpload_GoogleStorage_Bucket');
@@ -79,29 +134,16 @@ const createGoogleStorageDirective = _.debounce(() => {
 	const secret = RocketChat.settings.get('FileUpload_GoogleStorage_Secret');
 
 	if (type === 'GoogleCloudStorage' && !_.isEmpty(secret) && !_.isEmpty(accessId) && !_.isEmpty(bucket)) {
-		if (Slingshot._directives[directiveName]) {
-			delete Slingshot._directives[directiveName];
-		}
-
-		const config = {
-			bucket,
-			GoogleAccessId: accessId,
-			GoogleSecretKey: secret,
-			key: function _googleCloudStorageKey(file, metaContext) {
-				const path = `${ RocketChat.settings.get('uniqueID') }/${ metaContext.rid }/${ this.userId }/`;
-				const fileId = RocketChat.models.Uploads.insertFileInit(metaContext.rid, this.userId, 'googleCloudStorage', file, { googleCloudStorage: { bucket, path }});
-
-				return path + fileId;
-			}
-		};
-
-		try {
-			Slingshot.createDirective(directiveName, Slingshot.GoogleCloud, config);
-		} catch (e) {
-			SystemLogger.error('Error configuring GoogleCloudStorage ->', e.message);
-		}
+		directives.forEach((conf) => {
+			console.log('conf.name ->', conf.name);
+			createDirective(conf.name, { key: conf.key, bucket, accessId, secret });
+		});
 	} else {
-		delete Slingshot._directives[directiveName];
+		directives.forEach((conf) => {
+			if (Slingshot._directives[conf.name]) {
+				delete Slingshot._directives[conf.name];
+			}
+		});
 	}
 }, 500);
 
