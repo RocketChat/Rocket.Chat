@@ -8,11 +8,11 @@ Meteor.methods({
 		check(field, String);
 		check(value, String);
 
-		if (['audioNotification', 'desktopNotifications', 'mobilePushNotifications', 'emailNotifications', 'unreadAlert'].indexOf(field) === -1) {
+		if (['audioNotification', 'desktopNotifications', 'mobilePushNotifications', 'emailNotifications', 'unreadAlert', 'disableNotifications', 'hideUnreadStatus'].indexOf(field) === -1) {
 			throw new Meteor.Error('error-invalid-settings', 'Invalid settings field', { method: 'saveNotificationSettings' });
 		}
 
-		if (field !== 'audioNotification' && ['all', 'mentions', 'nothing', 'default'].indexOf(value) === -1) {
+		if (field !== 'audioNotification' && field !== 'hideUnreadStatus' && field !== 'disableNotifications' && ['all', 'mentions', 'nothing', 'default'].indexOf(value) === -1) {
 			throw new Meteor.Error('error-invalid-settings', 'Invalid settings value', { method: 'saveNotificationSettings' });
 		}
 
@@ -36,6 +36,12 @@ Meteor.methods({
 				break;
 			case 'unreadAlert':
 				RocketChat.models.Subscriptions.updateUnreadAlertById(subscription._id, value);
+				break;
+			case 'disableNotifications':
+				RocketChat.models.Subscriptions.updateDisableNotificationsById(subscription._id, value === '1' ? true : false);
+				break;
+			case 'hideUnreadStatus':
+				RocketChat.models.Subscriptions.updateHideUnreadStatusById(subscription._id, value === '1' ? true : false);
 				break;
 		}
 
