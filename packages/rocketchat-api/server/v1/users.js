@@ -269,7 +269,7 @@ RocketChat.API.v1.addRoute('users.createToken', { authRequired: true }, {
 		const user = this.getUserFromParams();
 		let data;
 		Meteor.runAsUser(this.userId, () => {
-			data = Meteor.call('createToken', {user});
+			data = Meteor.call('createToken', user._id);
 		});
 		return data ? RocketChat.API.v1.success({data}) : RocketChat.API.v1.unauthorized();
 	}
