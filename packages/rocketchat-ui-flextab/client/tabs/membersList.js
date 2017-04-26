@@ -53,7 +53,11 @@ Template.membersList.helpers({
 			};
 		});
 
-		users = _.sortBy(users, u => u.user.username);
+		if (RocketChat.settings.get('UI_Use_Real_Name')) {
+			users = _.sortBy(users, u => u.user.name);
+		} else {
+			users = _.sortBy(users, u => u.user.username);
+		}
 		// show online users first.
 		// sortBy is stable, so we can do this
 		users = _.sortBy(users, u => u.status == null);
