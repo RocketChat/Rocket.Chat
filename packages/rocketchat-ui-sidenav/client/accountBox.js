@@ -3,6 +3,7 @@ Template.accountBox.helpers({
 		if (Meteor.user() == null && RocketChat.settings.get('Accounts_AllowAnonymousRead')) {
 			return {
 				name: t('Anonymous'),
+				fname: t('Anonymous'),
 				status: 'online',
 				visualStatus: t('online'),
 				username: 'anonymous'
@@ -24,12 +25,12 @@ Template.accountBox.helpers({
 				break;
 		}
 		return {
-			name: Session.get(`user_${ username }_name`),
+			name: Session.get(`user_${ username }_name`) || username,
 			status: Session.get(`user_${ username }_status`),
 			visualStatus,
 			_id: Meteor.userId(),
 			username,
-			fname: name
+			fname: name || username
 		};
 	},
 
