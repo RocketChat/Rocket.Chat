@@ -5,7 +5,6 @@
 import {getCredentials, api, login, request, credentials, apiEmail, apiUsername, targetUser, log} from '../../data/api-data.js';
 import {adminEmail, password} from '../../data/user.js';
 import {imgURL} from '../../data/interactions.js';
-import supertest from 'supertest';
 
 describe('Users', function() {
 	this.retries(0);
@@ -142,5 +141,111 @@ describe('Users', function() {
 				expect(res.body).to.have.deep.property('user.name', `edited${ apiUsername }`);
 			})
 			.end(done);
+	});
+
+	describe('/users.createToken', () => {
+		let user;
+		beforeEach((done) => {
+			const username = `user.test.${ Date.now() }`;
+			const email = `${ username }@rocket.chat`;
+			request.post(api('users.create'))
+				.set(credentials)
+				.send({ email, name: username, username, password })
+				.end((err, res) => {
+					user = res.body.user;
+					done();
+				});
+		});
+
+		let userCredentials;
+		beforeEach((done) => {
+			request.post(api('login'))
+				.send({
+					user: user.username,
+					password
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					userCredentials = {};
+					userCredentials['X-Auth-Token'] = res.body.data.authToken;
+					userCredentials['X-User-Id'] = res.body.data.userId;
+				})
+				.end(done);
+		});
+		afterEach(done => {
+			request.post(api('users.delete')).set(credentials).send({
+				userId: user._id
+			}).end(done);
+			user = undefined;
+		});
+
+		describe('logged as admin', () => {
+			it('should return the user id and a new token', (done) => {
+				request.post(api('users.createToken'))
+				.set(credentials)
+				.send({
+					username: user.username
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.deep.property('data.userId', user._id);
+					expect(res.body).to.have.deep.property('data.authToken');
+				})
+				.end(done);
+			});
+		});
+
+		describe('logged as itself', () => {
+			it('should return the user id and a new token', (done) => {
+				request.post(api('users.createToken'))
+				.set(userCredentials)
+				.send({
+					username: user.username
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.deep.property('data.userId', user._id);
+					expect(res.body).to.have.deep.property('data.authToken');
+				})
+				.end(done);
+			});
+		});
+
+		describe('As an user not allowed', () => {
+			it('should return 401 unauthorized', (done) => {
+				request.post(api('users.createToken'))
+				.set(userCredentials)
+				.send({
+					username: 'rocket.cat'
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('errorType');
+					expect(res.body).to.have.property('error');
+				})
+				.end(done);
+			});
+		});
+
+		describe('Not logged in', () => {
+			it('should return 401 unauthorized', (done) => {
+				request.post(api('users.createToken'))
+				.send({
+					username: user.username
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(401)
+				.expect((res) => {
+					expect(res.body).to.have.property('message');
+				})
+				.end(done);
+			});
+		});
 	});
 });
