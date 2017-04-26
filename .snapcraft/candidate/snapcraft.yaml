@@ -11,6 +11,7 @@ version: #{RC_VERSION}
 summary: Rocket.Chat server
 description: Have your own Slack like online chat, built with Meteor. https://rocket.chat/
 confinement: strict
+assumes: [snapd2.21]
 apps:
     rocketchat-server:
         command: startRocketChat
