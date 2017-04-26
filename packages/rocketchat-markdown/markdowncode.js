@@ -51,7 +51,7 @@ class MarkdownCode {
 			}
 
 			// Separate text in code blocks and non code blocks
-			const msgParts = message.html.split(/(^.*)(```(?:[a-zA-Z]+)?(?:(?:.|\n)*?)```)(.*\n?)$/gm);
+			const msgParts = message.html.split(/^\s*(```(?:[a-zA-Z]+)?(?:(?:.|\n)*?)```)(?:\n)?$/gm);
 
 			for (let index = 0; index < msgParts.length; index++) {
 				// Verify if this part is code
