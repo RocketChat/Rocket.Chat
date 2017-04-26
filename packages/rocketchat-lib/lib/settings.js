@@ -63,10 +63,7 @@ RocketChat.settings = {
 		return _(actions).reduceRight(_.wrap, (err, success) => callback(err, success))();
 	},
 	load(key, value, initialLoad) {
-		Object.keys({
-			'*': 1,
-			[key]: 1
-		}).forEach(key => {
+		['*', key].forEach(key => {
 			if (RocketChat.settings.callbacks[key]) {
 				RocketChat.settings.callbacks[key].forEach(callback => callback(key, value, initialLoad));
 			}

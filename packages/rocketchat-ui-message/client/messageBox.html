@@ -143,6 +143,11 @@
 				<button class="button join"><span><i class="icon-login"></i> {{_ "join"}}</span></button>
 			</div>
 			{{/if}}
+			{{#if isAnonymous}}
+				<div>
+					<button class="button register"><span><i class="icon-login"></i> {{_ "Register_or_login_to_send_messages"}}</span></button>
+				</div>
+			{{/if}}
 		{{/with}}
 	{{/if}}
 </template>
