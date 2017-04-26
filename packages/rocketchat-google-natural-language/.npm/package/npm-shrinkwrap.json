@@ -268,8 +268,8 @@
       "from": "generate-object-property@>=1.1.0 <2.0.0"
     },
     "getpass": {
-      "version": "0.1.6",
-      "resolved": "https://registry.npmjs.org/getpass/-/getpass-0.1.6.tgz",
+      "version": "0.1.7",
+      "resolved": "https://registry.npmjs.org/getpass/-/getpass-0.1.7.tgz",
       "from": "getpass@>=0.1.1 <0.2.0",
       "dependencies": {
         "assert-plus": {
