@@ -8,5 +8,25 @@ RocketChat.Migrations.add({
 				RocketChat.models.Settings.update({ _id: 'Accounts_AllowAnonymousRead' }, { $set: { value: setting.value } });
 			}
 		}
+
+		const query = {
+			_id: {
+				$in: [
+					'view-c-room',
+					'view-history',
+					'view-joined-room',
+					'view-p-room',
+					'preview-c-room'
+				]
+			}
+		};
+
+		const update = {
+			$addToSet: {
+				roles: 'anonymous'
+			}
+		};
+
+		RocketChat.models.Permissions.update(query, update, { multi: true });
 	}
 });
