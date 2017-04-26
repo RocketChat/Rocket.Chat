@@ -1,5 +1,14 @@
 Template.accountBox.helpers({
 	myUserInfo() {
+		if (Meteor.user() == null && RocketChat.settings.get('Accounts_AllowAnonymousAccess')) {
+			return {
+				name: t('Anonymous'),
+				status: 'online',
+				visualStatus: t('online'),
+				username: 'anonymous'
+			};
+		}
+
 		let visualStatus = 'online';
 		const user = Meteor.user() || {};
 		const { name, username } = user;
@@ -41,6 +50,10 @@ Template.accountBox.events({
 	},
 
 	'click .account-box'() {
+		if (Meteor.userId() == null && RocketChat.settings.get('Accounts_AllowAnonymousAccess')) {
+			return;
+		}
+
 		return AccountBox.toggle();
 	},
 
