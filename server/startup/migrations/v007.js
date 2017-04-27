@@ -14,12 +14,12 @@ RocketChat.Migrations.add({
 		const count = query.count();
 
 		query.forEach((message, index) => {
-			console.log(`${index + 1} / ${count}`);
+			console.log(`${ index + 1 } / ${ count }`);
 
 			message.urls = message.urls.map((url) => {
 				if (_.isString(url)) {
 					return {
-						url: url
+						url
 					};
 				}
 				return url;

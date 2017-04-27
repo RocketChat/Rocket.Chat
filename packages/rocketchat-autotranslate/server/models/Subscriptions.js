@@ -1,13 +1,13 @@
 RocketChat.models.Subscriptions.updateAutoTranslateById = function(_id, autoTranslate) {
 	const query = {
-		_id: _id
+		_id
 	};
 
 	let update;
 	if (autoTranslate) {
 		update = {
 			$set: {
-				autoTranslate: autoTranslate
+				autoTranslate
 			}
 		};
 	} else {
@@ -23,12 +23,12 @@ RocketChat.models.Subscriptions.updateAutoTranslateById = function(_id, autoTran
 
 RocketChat.models.Subscriptions.updateAutoTranslateLanguageById = function(_id, autoTranslateLanguage) {
 	const query = {
-		_id: _id
+		_id
 	};
 
 	const update = {
 		$set: {
-			autoTranslateLanguage: autoTranslateLanguage
+			autoTranslateLanguage
 		}
 	};
 
@@ -39,7 +39,7 @@ RocketChat.models.Subscriptions.getAutoTranslateLanguagesByRoomAndNotUser = func
 	const subscriptionsRaw = RocketChat.models.Subscriptions.model.rawCollection();
 	const distinct = Meteor.wrapAsync(subscriptionsRaw.distinct, subscriptionsRaw);
 	const query = {
-		rid: rid,
+		rid,
 		'u._id': { $ne: userId },
 		autoTranslate: true
 	};

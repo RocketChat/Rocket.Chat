@@ -16,6 +16,9 @@ RocketChat.roomTypes = new class roomTypesClient extends roomTypesCommon
 	getRoomName: (roomType, roomData) ->
 		return @roomTypes[roomType]?.roomName roomData
 
+	getSecondaryRoomName: (roomType, roomData) ->
+		return @roomTypes[roomType]?.secondaryRoomName?(roomData)
+
 	getIdentifiers: (except) ->
 		except = [].concat except
 		list = _.reject @roomTypesOrder, (t) -> return except.indexOf(t.identifier) isnt -1
@@ -43,7 +46,9 @@ RocketChat.roomTypes = new class roomTypesClient extends roomTypesCommon
 		unless user
 			return room?.ro;
 
-		return room?.ro is true and Array.isArray(room?.muted) and room?.muted.indexOf(user.username) != -1
+		userOwner = RoomRoles.findOne({ rid: roomId, "u._id": user._id, roles: 'owner' }, { fields: { _id: 1 } })
+
+		return room?.ro is true and Array.isArray(room?.muted) and room?.muted.indexOf(user.username) != -1 and !userOwner
 
 	archived: (roomId) ->
 		fields = { archived: 1 }

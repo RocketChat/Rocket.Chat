@@ -3,9 +3,9 @@ Meteor.startup(function() {
 		id: 'message_snippeted',
 		system: true,
 		message: 'Snippeted_a_message',
-		data: function(message) {
-			const snippetLink = `<a href="/snippet/${message.snippetId}/${message.snippetName}">${message.snippetName}</a>`;
-			return { snippetLink: snippetLink };
+		data(message) {
+			const snippetLink = `<a href="/snippet/${ message.snippetId }/${ message.snippetName }">${ message.snippetName }</a>`;
+			return { snippetLink };
 		}
 	});
 });

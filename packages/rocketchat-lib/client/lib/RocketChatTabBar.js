@@ -49,7 +49,7 @@ RocketChatTabBar = class RocketChatTabBar {
 				button = RocketChat.TabBar.getButton(button);
 			}
 			if (button.width) {
-				$('.flex-tab').css('width', `${button.width}px`);
+				$('.flex-tab').css('width', `${ button.width }px`);
 			} else {
 				$('.flex-tab').css('width', '');
 			}

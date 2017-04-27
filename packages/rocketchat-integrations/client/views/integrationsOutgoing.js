@@ -9,7 +9,8 @@ Template.integrationsOutgoing.onCreated(function _integrationsOutgoingOnCreated(
 		token: Random.id(24),
 		retryFailedCalls: true,
 		retryCount: 6,
-		retryDelay: 'powers-of-ten'
+		retryDelay: 'powers-of-ten',
+		runOnEdits: true
 	});
 
 	this.updateRecord = () => {
@@ -31,7 +32,8 @@ Template.integrationsOutgoing.onCreated(function _integrationsOutgoingOnCreated(
 			triggerWordAnywhere: $('[name=triggerWordAnywhere]').val() ? $('[name=triggerWordAnywhere]').val().trim() : undefined,
 			retryFailedCalls: $('[name=retryFailedCalls]:checked').val().trim() === '1',
 			retryCount: $('[name=retryCount]').val() ? $('[name=retryCount]').val().trim() : 6,
-			retryDelay: $('[name=retryDelay]').val() ? $('[name=retryDelay]').val().trim() : 'powers-of-ten'
+			retryDelay: $('[name=retryDelay]').val() ? $('[name=retryDelay]').val().trim() : 'powers-of-ten',
+			runOnEdits: $('[name=runOnEdits]:checked').val().trim() === '1'
 		});
 	};
 
@@ -205,7 +207,7 @@ Template.integrationsOutgoing.events({
 	},
 
 	'click .button.history': () => {
-		FlowRouter.go(`/admin/integrations/outgoing/${FlowRouter.getParam('id')}/history`);
+		FlowRouter.go(`/admin/integrations/outgoing/${ FlowRouter.getParam('id') }/history`);
 	},
 
 	'click .expand': (e) => {
@@ -285,12 +287,15 @@ Template.integrationsOutgoing.events({
 			return toastr.error(TAPi18n.__('You_should_inform_one_url_at_least'));
 		}
 
-		let triggerWords, triggerWordAnywhere;
+		let triggerWords;
+		let triggerWordAnywhere;
+		let runOnEdits;
 		if (RocketChat.integrations.outgoingEvents[event].use.triggerWords) {
 			triggerWords = $('[name=triggerWords]').val().trim();
 			triggerWords = triggerWords.split(',').filter((word) => word.trim() !== '');
 
 			triggerWordAnywhere = $('[name=triggerWordAnywhere]').val().trim();
+			runOnEdits = $('[name=runOnEdits]:checked').val().trim();
 		}
 
 		let channel;
@@ -311,16 +316,17 @@ Template.integrationsOutgoing.events({
 			}
 		}
 
-		let retryCount, retryDelay;
+		let retryCount;
+		let retryDelay;
 		if (retryFailedCalls === '1') {
 			retryCount = parseInt($('[name=retryCount]').val().trim());
-			retryDelay: $('[name=retryDelay]').val().trim();
+			retryDelay = $('[name=retryDelay]').val().trim();
 		}
 
 		const integration = {
 			event: event !== '' ? event : undefined,
 			enabled: enabled === '1',
-			username: username,
+			username,
 			channel: channel !== '' ? channel : undefined,
 			targetRoom: targetRoom !== '' ? targetRoom : undefined,
 			alias: alias !== '' ? alias : undefined,
@@ -336,7 +342,8 @@ Template.integrationsOutgoing.events({
 			retryFailedCalls: retryFailedCalls === '1',
 			retryCount: retryCount ? retryCount : 6,
 			retryDelay: retryDelay ? retryDelay : 'powers-of-ten',
-			triggerWordAnywhere: triggerWordAnywhere === '1'
+			triggerWordAnywhere: triggerWordAnywhere === '1',
+			runOnEdits: runOnEdits === '1'
 		};
 
 		const params = Template.instance().data.params? Template.instance().data.params() : undefined;

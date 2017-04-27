@@ -11,7 +11,7 @@ WebApp.connectHandlers.use('/livechat', Meteor.bindEnvironment((req, res, next) 
 	}
 	res.setHeader('content-type', 'text/html; charset=utf-8');
 
-	var domainWhiteList = RocketChat.settings.get('Livechat_AllowedDomainsList');
+	let domainWhiteList = RocketChat.settings.get('Livechat_AllowedDomainsList');
 	if (req.headers.referer && !_.isEmpty(domainWhiteList.trim())) {
 		domainWhiteList = _.map(domainWhiteList.split(','), function(domain) {
 			return domain.trim();
@@ -23,22 +23,22 @@ WebApp.connectHandlers.use('/livechat', Meteor.bindEnvironment((req, res, next) 
 			return next();
 		}
 
-		res.setHeader('X-FRAME-OPTIONS', `ALLOW-FROM ${referer.protocol}//${referer.host}`);
+		res.setHeader('X-FRAME-OPTIONS', `ALLOW-FROM ${ referer.protocol }//${ referer.host }`);
 	}
 
 	const head = Assets.getText('public/head.html');
 
 	const html = `<html>
 		<head>
-			<link rel="stylesheet" type="text/css" class="__meteor-css__" href="/livechat/livechat.css?_dc=${Autoupdate.autoupdateVersion}">
+			<link rel="stylesheet" type="text/css" class="__meteor-css__" href="/livechat/livechat.css?_dc=${ Autoupdate.autoupdateVersion }">
 			<script type="text/javascript">
-				__meteor_runtime_config__ = ${JSON.stringify(__meteor_runtime_config__)};
+				__meteor_runtime_config__ = ${ JSON.stringify(__meteor_runtime_config__) };
 			</script>
 
-			${head}
+			${ head }
 		</head>
 		<body>
-			<script type="text/javascript" src="/livechat/livechat.js?_dc=${Autoupdate.autoupdateVersion}"></script>
+			<script type="text/javascript" src="/livechat/livechat.js?_dc=${ Autoupdate.autoupdateVersion }"></script>
 		</body>
 	</html>`;
 

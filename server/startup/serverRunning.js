@@ -18,20 +18,20 @@ Meteor.startup(function() {
 
 	return Meteor.setTimeout(function() {
 		let msg = [
-			`Rocket.Chat Version: ${RocketChat.Info.version}`,
-			`     NodeJS Version: ${process.versions.node} - ${process.arch}`,
-			`           Platform: ${process.platform}`,
-			`       Process Port: ${process.env.PORT}`,
-			`           Site URL: ${RocketChat.settings.get('Site_Url')}`,
-			`   ReplicaSet OpLog: ${oplogState}`
+			`Rocket.Chat Version: ${ RocketChat.Info.version }`,
+			`     NodeJS Version: ${ process.versions.node } - ${ process.arch }`,
+			`           Platform: ${ process.platform }`,
+			`       Process Port: ${ process.env.PORT }`,
+			`           Site URL: ${ RocketChat.settings.get('Site_Url') }`,
+			`   ReplicaSet OpLog: ${ oplogState }`
 		];
 
 		if (RocketChat.Info.commit && RocketChat.Info.commit.hash) {
-			msg.push(`        Commit Hash: ${RocketChat.Info.commit.hash.substr(0, 10)}`);
+			msg.push(`        Commit Hash: ${ RocketChat.Info.commit.hash.substr(0, 10) }`);
 		}
 
 		if (RocketChat.Info.commit && RocketChat.Info.commit.branch) {
-			msg.push(`      Commit Branch: ${RocketChat.Info.commit.branch}`);
+			msg.push(`      Commit Branch: ${ RocketChat.Info.commit.branch }`);
 		}
 
 		msg = msg.join('\n');
@@ -40,7 +40,7 @@ Meteor.startup(function() {
 			return SystemLogger.startup_box(msg, 'SERVER RUNNING');
 		}
 
-		msg += ['', '', 'YOUR CURRENT NODEJS VERSION IS NOT SUPPORTED,', `PLEASE UPGRADE / DOWNGRADE TO VERSION ${desiredNodeVersionMajor}.X.X`].join('\n');
+		msg += ['', '', 'YOUR CURRENT NODEJS VERSION IS NOT SUPPORTED,', `PLEASE UPGRADE / DOWNGRADE TO VERSION ${ desiredNodeVersionMajor }.X.X`].join('\n');
 
 		SystemLogger.error_box(msg, 'SERVER ERROR');
 

@@ -25,7 +25,7 @@ export class CustomOAuth {
 
 		this.userAgent = 'Meteor';
 		if (Meteor.release) {
-			this.userAgent += '/' + Meteor.release;
+			this.userAgent += `/${ Meteor.release }`;
 		}
 
 		Accounts.oauth.registerService(this.name);
@@ -77,31 +77,46 @@ export class CustomOAuth {
 		}
 
 		let response = undefined;
+
+		const allOptions = {
+			headers: {
+				'User-Agent': this.userAgent, // http://doc.gitlab.com/ce/api/users.html#Current-user
+				Accept: 'application/json'
+			},
+			params: {
+				code: query.code,
+				redirect_uri: OAuth._redirectUri(this.name, config),
+				grant_type: 'authorization_code',
+				state: query.state
+			}
+		};
+
+		// Only send clientID / secret once on header or payload.
+		if (this.tokenSentVia === 'header') {
+			allOptions['auth'] = `${ config.clientId }:${ OAuth.openSecret(config.secret) }`;
+		} else {
+			allOptions['params']['client_secret'] = OAuth.openSecret(config.secret);
+			allOptions['params']['client_id'] = config.clientId;
+		}
+
 		try {
-			response = HTTP.post(this.tokenPath, {
-				auth: config.clientId + ':' + OAuth.openSecret(config.secret),
-				headers: {
-					Accept: 'application/json',
-					'User-Agent': this.userAgent
-				},
-				params: {
-					code: query.code,
-					client_id: config.clientId,
-					client_secret: OAuth.openSecret(config.secret),
-					redirect_uri: OAuth._redirectUri(this.name, config),
-					grant_type: 'authorization_code',
-					state: query.state
-				}
-			});
+			response = HTTP.post(this.tokenPath, allOptions);
 		} catch (err) {
-			const error = new Error(`Failed to complete OAuth handshake with ${this.name} at ${this.tokenPath}. ${err.message}`);
+			const error = new Error(`Failed to complete OAuth handshake with ${ this.name } at ${ this.tokenPath }. ${ err.message }`);
 			throw _.extend(error, {response: err.response});
 		}
 
-		if (response.data.error) { //if the http response was a json object with an error attribute
-			throw new Error(`Failed to complete OAuth handshake with ${this.name} at ${this.tokenPath}. ${response.data.error}`);
+		let data;
+		if (response.data) {
+			data = response.data;
 		} else {
-			return response.data.access_token;
+			data = JSON.parse(response.content);
+		}
+
+		if (data.error) { //if the http response was a json object with an error attribute
+			throw new Error(`Failed to complete OAuth handshake with ${ this.name } at ${ this.tokenPath }. ${ data.error }`);
+		} else {
+			return data.access_token;
 		}
 	}
 
@@ -112,15 +127,15 @@ export class CustomOAuth {
 		};
 
 		if (this.tokenSentVia === 'header') {
-			headers['Authorization'] = 'Bearer ' + accessToken;
+			headers['Authorization'] = `Bearer ${ accessToken }`;
 		} else {
 			params['access_token'] = accessToken;
 		}
 
 		try {
 			const response = HTTP.get(this.identityPath, {
-				headers: headers,
-				params: params
+				headers,
+				params
 			});
 
 			let data;
@@ -135,7 +150,7 @@ export class CustomOAuth {
 
 			return data;
 		} catch (err) {
-			const error = new Error(`Failed to fetch identity from ${this.name} at ${this.identityPath}. ${err.message}`);
+			const error = new Error(`Failed to fetch identity from ${ this.name } at ${ this.identityPath }. ${ err.message }`);
 			throw _.extend(error, {response: err.response});
 		}
 	}
@@ -199,13 +214,13 @@ export class CustomOAuth {
 
 			const serviceData = {
 				_OAuthCustom: true,
-				accessToken: accessToken
+				accessToken
 			};
 
 			_.extend(serviceData, identity);
 
 			const data = {
-				serviceData: serviceData,
+				serviceData,
 				options: {
 					profile: {
 						name: identity.name || identity.username || identity.nickname || identity.CharacterName || identity.userName || identity.preferred_username || (identity.user && identity.user.name)
@@ -229,14 +244,14 @@ export class CustomOAuth {
 		if (this.usernameField.indexOf('#{') > -1) {
 			username = this.usernameField.replace(/#{(.+?)}/g, function(match, field) {
 				if (!data[field]) {
-					throw new Meteor.Error('field_not_found', `Username template item "${field}" not found in data`, data);
+					throw new Meteor.Error('field_not_found', `Username template item "${ field }" not found in data`, data);
 				}
 				return data[field];
 			});
 		} else {
 			username = data[this.usernameField];
 			if (!username) {
-				throw new Meteor.Error('field_not_found', `Username field "${this.usernameField}" not found in data`, data);
+				throw new Meteor.Error('field_not_found', `Username field "${ this.usernameField }" not found in data`, data);
 			}
 		}
 
@@ -263,10 +278,10 @@ export class CustomOAuth {
 				}
 
 				if (this.mergeUsers !== true) {
-					throw new Meteor.Error('CustomOAuth', `User with username ${user.username} already exists`);
+					throw new Meteor.Error('CustomOAuth', `User with username ${ user.username } already exists`);
 				}
 
-				const serviceIdKey = `services.${serviceName}.id`;
+				const serviceIdKey = `services.${ serviceName }.id`;
 				const update = {
 					$set: {
 						[serviceIdKey]: serviceData.id

@@ -40,7 +40,7 @@ const login = {
 	password: adminPassword
 };
 
-var settingValue = {
+const settingValue = {
 	value : undefined
 };
 
@@ -454,15 +454,15 @@ describe('Changing settings via api', () => {
 			loginPage.registerButton.waitForVisible(5000);
 			loginPage.registerButton.click();
 			loginPage.nameField.waitForVisible(5000);
-			loginPage.nameField.setValue('setting'+username);
-			loginPage.emailField.setValue('setting'+email);
+			loginPage.nameField.setValue(`setting${ username }`);
+			loginPage.emailField.setValue(`setting${ email }`);
 			loginPage.passwordField.setValue(password);
 			loginPage.confirmPasswordField.setValue(password);
 
 			loginPage.submit();
 
 			loginPage.registrationSucceededCard.waitForVisible(5000);
-			loginPage.registrationSucceededCard.getText().toLowerCase().should.equal('registration succeeded');
+			loginPage.registrationSucceededCard.getAttribute('data-i18n').should.equal('Registration_Succeeded');
 			loginPage.backToLoginButton.click();
 		});
 
@@ -478,11 +478,11 @@ describe('Changing settings via api', () => {
 
 		it('search the user', () => {
 			admin.usersFilter.click();
-			admin.usersFilter.setValue('setting'+username);
+			admin.usersFilter.setValue(`setting${ username }`);
 		});
 
 		it('opens the user', () => {
-			const userEl = admin.getUserFromList('setting'+username);
+			const userEl = admin.getUserFromList(`setting${ username }`);
 			userEl.waitForVisible(5000);
 			userEl.click();
 			flexTab.usersView.waitForVisible(5000);
