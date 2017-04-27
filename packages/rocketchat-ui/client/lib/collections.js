@@ -17,7 +17,7 @@ RocketChat.models.Messages = _.extend({}, RocketChat.models.Messages, this.ChatM
 
 Meteor.startup(() => {
 	Tracker.autorun(() => {
-		if (!Meteor.userId() && RocketChat.settings.get('Accounts_AllowAnonymousAccess') === true) {
+		if (!Meteor.userId() && RocketChat.settings.get('Accounts_AllowAnonymousRead') === true) {
 			this.CachedChatRoom.init();
 			this.CachedChatSubscription.ready.set(true);
 		}

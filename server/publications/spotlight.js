@@ -19,7 +19,7 @@ Meteor.methods({
 		const regex = new RegExp(s.trim(s.escapeRegExp(text)), 'i');
 
 		if (this.userId == null) {
-			if (RocketChat.settings.get('Accounts_AllowAnonymousAccess') === true) {
+			if (RocketChat.settings.get('Accounts_AllowAnonymousRead') === true) {
 				result.rooms = RocketChat.models.Rooms.findByNameAndTypeNotDefault(regex, 'c', roomOptions).fetch();
 			}
 			return result;
