@@ -75,7 +75,7 @@ Template.avatarPrompt.events
 				type: files[0].type
 				# description: document.getElementById('file-description').value
 
-			upload = fileUploadHandler 'rocketchat-avatars-gs', record, files[0]
+			upload = fileUploadHandler 'avatar', record, files[0]
 
 			# upload.onProgress = (progress) ->
 			# 	console.log 'progress ->', progress
