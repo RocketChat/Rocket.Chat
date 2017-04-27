@@ -2,7 +2,7 @@
 RocketChat.authz.roomAccessValidators = [
 	function(room, user = {}) {
 		if (room.t === 'c') {
-			if (!user._id && RocketChat.settings.get('Accounts_AllowAnonymousAccess') === true) {
+			if (!user._id && RocketChat.settings.get('Accounts_AllowAnonymousRead') === true) {
 				return true;
 			}
 
