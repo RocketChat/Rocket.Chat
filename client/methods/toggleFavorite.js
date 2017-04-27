@@ -5,11 +5,11 @@ Meteor.methods({
 		}
 
 		ChatSubscription.update({
-			rid: rid,
+			rid,
 			'u._id': Meteor.userId()
 		}, {
 			$set: {
-				f: f
+				f
 			}
 		});
 	}

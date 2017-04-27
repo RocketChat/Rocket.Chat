@@ -89,9 +89,9 @@ describe('Admin settings', () => {
 		});
 
 		it('create a user', () => {
-			flexTab.usersAddUserName.setValue('adminCreated'+username);
-			flexTab.usersAddUserUsername.setValue('adminCreated'+username);
-			flexTab.usersAddUserEmail.setValue('adminCreated'+email);
+			flexTab.usersAddUserName.setValue(`adminCreated${ username }`);
+			flexTab.usersAddUserUsername.setValue(`adminCreated${ username }`);
+			flexTab.usersAddUserEmail.setValue(`adminCreated${ email }`);
 			flexTab.usersAddUserVerifiedCheckbox.click();
 			flexTab.usersAddUserPassword.setValue(password);
 			flexTab.usersAddUserChangePasswordCheckbox.click();
@@ -165,7 +165,7 @@ describe('Admin settings', () => {
 			sideNav.preferencesClose.waitForVisible(5000);
 			sideNav.preferencesClose.click();
 
-			checkIfUserIsValid('adminCreated'+username, 'adminCreated'+email, password);
+			checkIfUserIsValid(`adminCreated${ username }`, `adminCreated${ email }`, password);
 		});
 
 		it('should not show the plus icon on toolbar ', () => {

@@ -138,6 +138,11 @@ RocketChat.integrations.validateOutgoing = function _validateOutgoing(integratio
 		}
 	}
 
+	if (typeof integration.runOnEdits !== 'undefined') {
+		// Verify this value is only true/false
+		integration.runOnEdits = integration.runOnEdits === true;
+	}
+
 	_verifyUserHasPermissionForChannels(integration, userId, channels);
 	_verifyRetryInformation(integration);
 

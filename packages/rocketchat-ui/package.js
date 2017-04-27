@@ -29,19 +29,19 @@ Package.onUse(function(api) {
 
 	api.use('kadira:flow-router', 'client');
 
-	api.addFiles('getAvatarUrlFromUsername.coffee');
+	api.addFiles('getAvatarUrlFromUsername.js');
 
 	// LIB FILES
-	api.addFiles('client/lib/accountBox.coffee', 'client');
-	api.addFiles('client/lib/accounts.coffee', 'client');
-	api.addFiles('client/lib/avatar.coffee', 'client');
+	api.addFiles('client/lib/accountBox.js', 'client');
+	api.addFiles('client/lib/accounts.js', 'client');
+	api.addFiles('client/lib/avatar.js', 'client');
 	api.addFiles('client/lib/chatMessages.coffee', 'client');
-	api.addFiles('client/lib/collections.coffee', 'client');
+	api.addFiles('client/lib/collections.js', 'client');
 	api.addFiles('client/lib/customEventPolyfill.js', 'client');
 	api.addFiles('client/lib/fileUpload.coffee', 'client');
 	api.addFiles('client/lib/fireEvent.js', 'client');
 	api.addFiles('client/lib/iframeCommands.js', 'client');
-	api.addFiles('client/lib/menu.coffee', 'client');
+	api.addFiles('client/lib/menu.js', 'client');
 	api.addFiles('client/lib/modal.coffee', 'client');
 	api.addFiles('client/lib/Modernizr.js', 'client');
 	api.addFiles('client/lib/msgTyping.coffee', 'client');
@@ -51,15 +51,15 @@ Package.onUse(function(api) {
 	api.addFiles('client/lib/rocket.coffee', 'client');
 	api.addFiles('client/lib/RoomHistoryManager.coffee', 'client');
 	api.addFiles('client/lib/RoomManager.coffee', 'client');
-	api.addFiles('client/lib/sideNav.coffee', 'client');
-	api.addFiles('client/lib/tapi18n.coffee', 'client');
+	api.addFiles('client/lib/sideNav.js', 'client');
+	api.addFiles('client/lib/tapi18n.js', 'client');
 	api.addFiles('client/lib/textarea-autogrow.js', 'client');
 
 	api.addFiles('client/lib/codeMirror/codeMirror.js', 'client');
 
 	// LIB CORDOVA
-	api.addFiles('client/lib/cordova/facebook-login.coffee', 'client');
-	api.addFiles('client/lib/cordova/keyboard-fix.coffee', 'client');
+	api.addFiles('client/lib/cordova/facebook-login.js', 'client');
+	api.addFiles('client/lib/cordova/keyboard-fix.js', 'client');
 	api.addFiles('client/lib/cordova/push.coffee', 'client');
 	api.addFiles('client/lib/cordova/urls.coffee', 'client');
 	api.addFiles('client/lib/cordova/user-state.js', 'client');
@@ -71,6 +71,7 @@ Package.onUse(function(api) {
 
 	// TEXTAREA CURSOR MANAGEMENT
 	api.addFiles('client/lib/textarea-cursor/set-cursor-position.js', 'client');
+	api.addFiles('client/lib/esc.js', 'client');
 
 	// TEMPLATE FILES
 	api.addFiles('client/views/cmsPage.html', 'client');
@@ -93,18 +94,18 @@ Package.onUse(function(api) {
 	api.addFiles('client/views/app/videoCall/videoCall.html', 'client');
 	api.addFiles('client/views/app/photoswipe.html', 'client');
 
-	api.addFiles('client/views/cmsPage.coffee', 'client');
-	api.addFiles('client/views/fxos.coffee', 'client');
-	api.addFiles('client/views/modal.coffee', 'client');
-	api.addFiles('client/views/404/roomNotFound.coffee', 'client');
-	api.addFiles('client/views/app/burger.coffee', 'client');
-	api.addFiles('client/views/app/home.coffee', 'client');
+	api.addFiles('client/views/cmsPage.js', 'client');
+	api.addFiles('client/views/fxos.js', 'client');
+	api.addFiles('client/views/modal.js', 'client');
+	api.addFiles('client/views/404/roomNotFound.js', 'client');
+	api.addFiles('client/views/app/burger.js', 'client');
+	api.addFiles('client/views/app/home.js', 'client');
 	api.addFiles('client/views/app/mobileMessageMenu.js', 'client');
-	api.addFiles('client/views/app/privateHistory.coffee', 'client');
+	api.addFiles('client/views/app/privateHistory.js', 'client');
 	api.addFiles('client/views/app/room.coffee', 'client');
-	api.addFiles('client/views/app/roomSearch.coffee', 'client');
-	api.addFiles('client/views/app/secretURL.coffee', 'client');
-	api.addFiles('client/views/app/videoCall/videoButtons.coffee', 'client');
-	api.addFiles('client/views/app/videoCall/videoCall.coffee', 'client');
+	api.addFiles('client/views/app/roomSearch.js', 'client');
+	api.addFiles('client/views/app/secretURL.js', 'client');
+	api.addFiles('client/views/app/videoCall/videoButtons.js', 'client');
+	api.addFiles('client/views/app/videoCall/videoCall.js', 'client');
 	api.addFiles('client/views/app/photoswipe.js', 'client');
 });

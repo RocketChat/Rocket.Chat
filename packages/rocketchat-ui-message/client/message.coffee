@@ -1,6 +1,8 @@
 import moment from 'moment'
 
 Template.message.helpers
+	encodeURI: (text) ->
+		return encodeURI(text)
 	isBot: ->
 		return 'bot' if this.bot?
 	roleTags: ->
@@ -17,6 +19,14 @@ Template.message.helpers
 			return this.avatar.replace(/^@/, '')
 	getEmoji: (emoji) ->
 		return renderEmoji emoji
+	getName: ->
+		if this.alias
+			return this.alias
+		if RocketChat.settings.get('UI_Use_Real_Name') and this.u?.name
+			return this.u.name
+		return this.u?.username
+	showUsername: ->
+		return this.alias or (RocketChat.settings.get('UI_Use_Real_Name') and this.u?.name)
 	own: ->
 		return 'own' if this.u?._id is Meteor.userId()
 	timestamp: ->
@@ -104,7 +114,7 @@ Template.message.helpers
 
 	reactions: ->
 		msgReactions = []
-		userUsername = Meteor.user().username
+		userUsername = Meteor.user()?.username
 
 		for emoji, reaction of @reactions
 			total = reaction.usernames.length
@@ -184,9 +194,9 @@ Template.message.onCreated ->
 				msg = renderMessageBody msg
 
 		if isSystemMessage
-			return RocketChat.Markdown msg
-		else
-			return msg
+			msg.html = RocketChat.Markdown.parse msg.html
+
+		return msg
 
 Template.message.onViewRendered = (context) ->
 	view = this

@@ -481,6 +481,9 @@
 	var iframe;
 	var hookQueue = [];
 	var ready = false;
+	var smallScreen = false;
+	var bodyStyle;
+	var scrollPosition;
 
 	var widgetWidth = '320px';
 	var widgetHeightOpened = '350px';
@@ -529,6 +532,12 @@
 		if (widget.dataset.state === 'closed') {
 			return;
 		}
+
+		if (smallScreen) {
+			document.body.style.cssText = bodyStyle;
+			document.body.scrollTop = scrollPosition;
+		}
+
 		widget.dataset.state = 'closed';
 		widget.style.height = widgetHeightClosed;
 		callHook('widgetClosed');
@@ -540,6 +549,13 @@
 		if (widget.dataset.state === 'opened') {
 			return;
 		}
+
+		if (smallScreen) {
+			scrollPosition = document.body.scrollTop;
+			bodyStyle = document.body.style.cssText;
+			document.body.style.cssText += 'overflow: hidden; height: 100%; width: 100%; position: fixed; top:' + scrollPosition + 'px;';
+		}
+
 		widget.dataset.state = 'opened';
 		widget.style.height = widgetHeightOpened;
 		callHook('widgetOpened');
@@ -664,6 +680,7 @@
 
 		var mediaqueryresponse = function(mql) {
 			if (mql.matches) {
+				smallScreen = true;
 				chatWidget.style.left = '0';
 				chatWidget.style.right = '0';
 				chatWidget.style.width = '100%';
@@ -674,7 +691,7 @@
 			}
 		};
 
-		var mql = window.matchMedia('screen and (max-device-width: 480px) and (orientation: portrait)');
+		var mql = window.matchMedia('screen and (max-device-width: 480px)');
 		mediaqueryresponse(mql);
 		mql.addListener(mediaqueryresponse);
 

@@ -1,11 +1,9 @@
 Meteor.methods({
-	sendMessageLivechat: function(message) {
-		var guest;
-
+	sendMessageLivechat(message) {
 		check(message.rid, String);
 		check(message.token, String);
 
-		guest = Meteor.users.findOne(Meteor.userId(), {
+		const guest = Meteor.users.findOne(Meteor.userId(), {
 			fields: {
 				name: 1,
 				username: 1,
@@ -13,6 +11,6 @@ Meteor.methods({
 			}
 		});
 
-		return RocketChat.Livechat.sendMessage({ guest: guest, message: message });
+		return RocketChat.Livechat.sendMessage({ guest, message });
 	}
 });

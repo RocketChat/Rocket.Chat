@@ -65,7 +65,7 @@ Template.permissionsRole.helpers({
 					noMatchTemplate: Template.roomSearchEmpty,
 					matchAll: true,
 					sort: 'name',
-					selector: function(match) {
+					selector(match) {
 						return {
 							name: match
 						};
@@ -90,7 +90,7 @@ Template.permissionsRole.helpers({
 					filter: {
 						exceptions: instance.usersInRole.get() && instance.usersInRole.get().fetch()
 					},
-					selector: function(match) {
+					selector(match) {
 						return {
 							term: match
 						};

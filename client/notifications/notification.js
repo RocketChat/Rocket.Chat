@@ -19,9 +19,9 @@ Meteor.startup(function() {
 				const messageIsInOpenedRoom = openedRoomId === notification.payload.rid;
 
 				fireGlobalEvent('notification', {
-					notification: notification,
+					notification,
 					fromOpenedRoom: messageIsInOpenedRoom,
-					hasFocus: hasFocus
+					hasFocus
 				});
 
 				if (RocketChat.Layout.isEmbedded()) {
