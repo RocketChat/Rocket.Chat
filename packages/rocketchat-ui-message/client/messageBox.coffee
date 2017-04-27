@@ -124,8 +124,11 @@ Template.messageBox.helpers
 	showSandstorm: ->
 		return Meteor.settings.public.sandstorm && !Meteor.isCordova
 
-	isAnonymous: ->
-		return not Meteor.userId()? and RocketChat.settings.get('Accounts_AllowAnonymousAccess') is true
+	anonymousRead: ->
+		return not Meteor.userId()? and RocketChat.settings.get('Accounts_AllowAnonymousRead') is true
+
+	anonymousWrite: ->
+		return not Meteor.userId()? and RocketChat.settings.get('Accounts_AllowAnonymousRead') is true and RocketChat.settings.get('Accounts_AllowAnonymousWrite') is true
 
 firefoxPasteUpload = (fn) ->
 	user = navigator.userAgent.match(/Firefox\/(\d+)\.\d/)
@@ -185,6 +188,15 @@ Template.messageBox.events
 		event.stopPropagation()
 		event.preventDefault()
 		Session.set('forceLogin', true)
+
+	'click .register-anonymous': (event) ->
+		event.stopPropagation()
+		event.preventDefault()
+
+		Meteor.call 'registerUser', {}, (error, loginData) ->
+			if loginData && loginData.token
+				Meteor.loginWithToken loginData.token
+
 
 	'focus .input-message': (event, instance) ->
 		KonchatNotification.removeRoomNotification @_id
