@@ -48,6 +48,9 @@
 			"vars": "all",
 			"args": "after-used"
 		}],
+		"no-void": 2,
+		"no-var": 2,
+		"one-var": [2, "never"],
 		"no-lonely-if": 2,
 		"no-trailing-spaces": 2,
 		"complexity": [1, 31],
@@ -69,14 +72,17 @@
 		"curly": [2, "all"],
 		"eqeqeq": [2, "allow-null"],
 		"new-cap":  [2, {
-			"capIsNewExceptions": ["Match.Optional", "Match.Maybe", "Match.ObjectIncluding", "Push.Configure"]
+			"capIsNewExceptions": ["Match.Optional", "Match.Maybe", "Match.ObjectIncluding", "Push.Configure", "SHA256"]
 		}],
 		"use-isnan": 2,
 		"valid-typeof": 2,
 		"linebreak-style": [2, "unix"],
+		"prefer-template": 2,
+		"template-curly-spacing": [2, "always"],
 		"quotes": [2, "single"],
 		"semi": [2, "always"],
-		"prefer-const": 2
+		"prefer-const": 2,
+		"object-shorthand": 2
 	},
 	"globals": {
 		"_"                           : false,
@@ -143,6 +149,8 @@
 		"Triggers"                    : false,
 		"UAParser"                    : false,
 		"visitor"                     : false,
-		"WebApp"                      : false
+		"WebApp"                      : false,
+		"VideoRecorder"               : false,
+		"VRecDialog"                  : false
 	}
 }

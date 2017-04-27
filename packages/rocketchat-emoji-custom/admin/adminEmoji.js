@@ -78,7 +78,7 @@ Template.adminEmoji.onCreated(function() {
 
 		const limit = (instance.limit != null) ? instance.limit.get() : 0;
 
-		return RocketChat.models.EmojiCustom.find(query, { limit: limit, sort: { name: 1 }}).fetch();
+		return RocketChat.models.EmojiCustom.find(query, { limit, sort: { name: 1 }}).fetch();
 	};
 });
 

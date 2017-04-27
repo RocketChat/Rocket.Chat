@@ -5,7 +5,7 @@ Meteor.methods({
 		}
 
 		ChatSubscription.remove({
-			rid: rid,
+			rid,
 			'u._id': Meteor.userId()
 		});
 

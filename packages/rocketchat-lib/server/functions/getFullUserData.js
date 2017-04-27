@@ -33,8 +33,8 @@ RocketChat.getFullUserData = function({userId, filter, limit}) {
 	}
 
 	const options = {
-		fields: fields,
-		limit: limit,
+		fields,
+		limit,
 		sort: { username: 1 }
 	};
 

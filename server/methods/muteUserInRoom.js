@@ -28,7 +28,7 @@ Meteor.methods({
 		}
 
 		if (['c', 'p'].includes(room.t) === false) {
-			throw new Meteor.Error('error-invalid-room-type', `${room.t} is not a valid room type`, {
+			throw new Meteor.Error('error-invalid-room-type', `${ room.t } is not a valid room type`, {
 				method: 'muteUserInRoom',
 				type: room.t
 			});

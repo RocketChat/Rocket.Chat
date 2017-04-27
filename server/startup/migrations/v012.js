@@ -28,7 +28,7 @@ RocketChat.Migrations.add({
 					}
 				});
 
-				return console.log(`Set ${oldestUser.username} as admin for being the oldest user`);
+				return console.log(`Set ${ oldestUser.username } as admin for being the oldest user`);
 			}
 		}
 	}

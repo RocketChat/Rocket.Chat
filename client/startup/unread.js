@@ -5,7 +5,7 @@ Meteor.startup(function() {
 		let unreadCount = 0;
 		let unreadAlert = false;
 
-		const subscriptions = ChatSubscription.find({open: true}, { fields: { unread: 1, alert: 1, rid: 1, t: 1, name: 1, ls: 1, unreadAlert: 1 } });
+		const subscriptions = ChatSubscription.find({open: true, hideUnreadStatus: { $ne: true }}, { fields: { unread: 1, alert: 1, rid: 1, t: 1, name: 1, ls: 1, unreadAlert: 1 } });
 
 		let openedRoomId = undefined;
 		Tracker.nonreactive(function() {
@@ -78,6 +78,6 @@ Meteor.startup(function() {
 			});
 		}
 
-		document.title = unread === '' ? siteName : `(${unread}) ${siteName}`;
+		document.title = unread === '' ? siteName : `(${ unread }) ${ siteName }`;
 	});
 });

@@ -1,6 +1,7 @@
 import toastr from 'toastr'
 import mime from 'mime-type/with-db'
 import moment from 'moment'
+import {VRecDialog} from 'meteor/rocketchat:ui-vrecord'
 
 katexSyntax = ->
 	if RocketChat.katex.katex_enabled()
@@ -29,7 +30,7 @@ Template.messageBox.helpers
 	showFormattingTips: ->
 		return RocketChat.settings.get('Message_ShowFormattingTips') and (RocketChat.Markdown or RocketChat.MarkdownCode or katexSyntax())
 	canJoin: ->
-		return RocketChat.roomTypes.verifyShowJoinLink @_id
+		return Meteor.userId()? and RocketChat.roomTypes.verifyShowJoinLink @_id
 	joinCodeRequired: ->
 		return Session.get('roomData' + this._id)?.joinCodeRequired
 	subscribed: ->
@@ -84,6 +85,12 @@ Template.messageBox.helpers
 			users: usernames.join " #{t 'and'} "
 		}
 
+	groupAttachHidden: ->
+		return 'hidden' if RocketChat.settings.get('Message_Attachments_GroupAttach')
+
+	fileUploadEnabled: ->
+		return RocketChat.settings.get('FileUpload_Enabled')
+
 	fileUploadAllowedMediaTypes: ->
 		return RocketChat.settings.get('FileUpload_MediaTypeWhiteList')
 
@@ -117,6 +124,51 @@ Template.messageBox.helpers
 	showSandstorm: ->
 		return Meteor.settings.public.sandstorm && !Meteor.isCordova
 
+	anonymousRead: ->
+		return not Meteor.userId()? and RocketChat.settings.get('Accounts_AllowAnonymousRead') is true
+
+	anonymousWrite: ->
+		return not Meteor.userId()? and RocketChat.settings.get('Accounts_AllowAnonymousRead') is true and RocketChat.settings.get('Accounts_AllowAnonymousWrite') is true
+
+firefoxPasteUpload = (fn) ->
+	user = navigator.userAgent.match(/Firefox\/(\d+)\.\d/)
+	if !user or user[1] > 49
+		return fn
+	return (event, instance) ->
+		if (event.originalEvent.ctrlKey or event.originalEvent.metaKey) and (event.keyCode == 86)
+			textarea = instance.find("textarea")
+			selectionStart = textarea.selectionStart
+			selectionEnd = textarea.selectionEnd
+			contentEditableDiv = instance.find('#msg_contenteditable')
+			contentEditableDiv.focus()
+			Meteor.setTimeout ->
+				pastedImg = contentEditableDiv.querySelector 'img'
+				textareaContent = textarea.value
+				startContent = textareaContent.substring(0, selectionStart)
+				endContent = textareaContent.substring(selectionEnd)
+				restoreSelection = (pastedText) ->
+					textarea.value = startContent + pastedText + endContent
+					textarea.selectionStart = selectionStart + pastedText.length
+					textarea.selectionEnd = textarea.selectionStart
+				contentEditableDiv.innerHTML = '' if pastedImg
+				textarea.focus
+				return if (!pastedImg || contentEditableDiv.innerHTML.length > 0)
+					[].slice.call(contentEditableDiv.querySelectorAll("br")).forEach (el) ->
+						contentEditableDiv.replaceChild(new Text("\n") , el)
+						restoreSelection(contentEditableDiv.innerText)
+				imageSrc = pastedImg.getAttribute("src")
+				if imageSrc.match(/^data:image/)
+					fetch(imageSrc)
+					.then((img)->
+						return img.blob())
+					.then (blob)->
+						fileUpload [{
+							file: blob
+							name: 'Clipboard'
+						}]
+			, 150
+		fn?.apply @, arguments
+
 
 Template.messageBox.events
 	'click .join': (event) ->
@@ -131,6 +183,20 @@ Template.messageBox.events
 				RoomManager.getOpenedRoomByRid(@_id).ready = false
 				RoomHistoryManager.getRoom(@_id).loaded = undefined
 				RoomManager.computation.invalidate()
+
+	'click .register': (event) ->
+		event.stopPropagation()
+		event.preventDefault()
+		Session.set('forceLogin', true)
+
+	'click .register-anonymous': (event) ->
+		event.stopPropagation()
+		event.preventDefault()
+
+		Meteor.call 'registerUser', {}, (error, loginData) ->
+			if loginData && loginData.token
+				Meteor.loginWithToken loginData.token
+
 
 	'focus .input-message': (event, instance) ->
 		KonchatNotification.removeRoomNotification @_id
@@ -158,7 +224,6 @@ Template.messageBox.events
 
 		if not e.originalEvent.clipboardData?
 			return
-
 		items = e.originalEvent.clipboardData.items
 		files = []
 		for item in items
@@ -173,8 +238,8 @@ Template.messageBox.events
 		else
 			instance.isMessageFieldEmpty.set(false)
 
-	'keydown .input-message': (event) ->
-		chatMessages[@_id].keydown(@_id, event, Template.instance())
+	'keydown .input-message': firefoxPasteUpload((event, instance) ->
+		chatMessages[@_id].keydown(@_id, event, Template.instance()))
 
 	'input .input-message': (event) ->
 		chatMessages[@_id].valueChanged(@_id, event, Template.instance())
@@ -204,6 +269,10 @@ Template.messageBox.events
 				name: file.name
 
 		fileUpload filesToUpload
+
+	"click .message-buttons.share": (e, t) ->
+		t.$('.share-items').toggleClass('hidden')
+		t.$('.message-buttons.share').toggleClass('active')
 
 	'click .message-form .message-buttons.location': (event, instance) ->
 		roomId = @_id

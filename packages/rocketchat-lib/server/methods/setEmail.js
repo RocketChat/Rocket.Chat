@@ -1,5 +1,5 @@
 Meteor.methods({
-	setEmail: function(email) {
+	setEmail(email) {
 
 		check (email, String);
 
@@ -26,5 +26,5 @@ Meteor.methods({
 });
 
 RocketChat.RateLimiter.limitMethod('setEmail', 1, 1000, {
-	userId: function(/*userId*/) { return true; }
+	userId(/*userId*/) { return true; }
 });

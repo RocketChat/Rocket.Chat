@@ -1,12 +1,12 @@
 /* globals msgStream */
 function SlackBridgeImport(command, params, item) {
-	var channel, room, user;
 	if (command !== 'slackbridge-import' || !Match.test(params, String)) {
 		return;
 	}
-	room = RocketChat.models.Rooms.findOneById(item.rid);
-	channel = room.name;
-	user = Meteor.users.findOne(Meteor.userId());
+
+	const room = RocketChat.models.Rooms.findOneById(item.rid);
+	const channel = room.name;
+	const user = Meteor.users.findOne(Meteor.userId());
 
 	msgStream.emit(item.rid, {
 		_id: Random.id(),

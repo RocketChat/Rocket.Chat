@@ -6,7 +6,7 @@ function getIdentity(accessToken) {
 			}
 		}).data;
 	} catch (error) {
-		throw _.extend(new Error(`Failed to fetch identity from Facebook. ${error.message}`), {
+		throw _.extend(new Error(`Failed to fetch identity from Facebook. ${ error.message }`), {
 			response: error.response
 		});
 	}

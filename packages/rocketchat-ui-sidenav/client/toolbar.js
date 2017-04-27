@@ -58,13 +58,19 @@ const getFromServer = (cb, type) => {
 				resultsFromServer.push({
 					_id: results.users[i]._id,
 					t: 'd',
-					name: results.users[i].username
+					name: results.users[i].username,
+					fname: results.users[i].name
 				});
 			}
 		}
 
 		if (roomsLength) {
 			for (let i = 0; i < roomsLength; i++) {
+				const alreadyOnClient = resultsFromClient.find(item => item._id === results.rooms[i]._id);
+				if (alreadyOnClient) {
+					continue;
+				}
+
 				resultsFromServer.push({
 					_id: results.rooms[i]._id,
 					t: results.rooms[i].t,
@@ -89,14 +95,14 @@ Template.toolbar.helpers({
 		return Template.instance().resultsList.get();
 	},
 	getPlaceholder() {
-		var placeholder = TAPi18n.__('Search');
+		let placeholder = TAPi18n.__('Search');
 
 		if (!Meteor.Device.isDesktop()) {
 			return placeholder;
 		} else if (window.navigator.platform.toLowerCase().includes('mac')) {
-			placeholder = placeholder+' (CMD+K)';
+			placeholder = `${ placeholder } (CMD+K)`;
 		} else {
-			placeholder = placeholder+' (Ctrl+K)';
+			placeholder = `${ placeholder } (Ctrl+K)`;
 		}
 
 		return placeholder;
@@ -112,16 +118,16 @@ Template.toolbar.helpers({
 
 		const config = {
 			cls: 'search-results-list',
-			collection: RocketChat.models.Subscriptions,
+			collection: Meteor.userId() ? RocketChat.models.Subscriptions : RocketChat.models.Rooms,
 			template: 'toolbarSearchList',
 			emptyTemplate: 'toolbarSearchListEmpty',
 			input: '.toolbar-search__input',
 			cleanOnEnter: true,
 			closeOnEsc: false,
 			blurOnSelectItem: true,
-			isLoading: isLoading,
-			open: open,
-			getFilter: function(collection, filter, cb) {
+			isLoading,
+			open,
+			getFilter(collection, filter, cb) {
 				filterText = filter;
 
 				const type = {
@@ -135,6 +141,11 @@ Template.toolbar.helpers({
 					}
 				};
 
+				if (!Meteor.userId()) {
+					query._id = query.rid;
+					delete query.rid;
+				}
+
 				if (filterText[0] === '#') {
 					filterText = filterText.slice(1);
 					type.users = false;
@@ -147,12 +158,19 @@ Template.toolbar.helpers({
 					query.t = 'd';
 				}
 
-				query.name = new RegExp((RegExp.escape(filterText)), 'i');
+				const searchQuery = new RegExp((RegExp.escape(filterText)), 'i');
+				query.$or = [
+					{ name: searchQuery },
+					{ fname: searchQuery }
+				];
 
 				resultsFromClient = collection.find(query, {limit: 20, sort: {unread: -1, ls: -1}}).fetch();
 
 				const resultsFromClientLength = resultsFromClient.length;
-				usernamesFromClient = [Meteor.user().username];
+				const user = Meteor.user();
+				if (user) {
+					usernamesFromClient = [user];
+				}
 
 				for (let i = 0; i < resultsFromClientLength; i++) {
 					if (resultsFromClient[i].t === 'd') {
@@ -163,13 +181,13 @@ Template.toolbar.helpers({
 				cb(resultsFromClient);
 
 				// Use `filter` here to get results for `#` or `@` filter only
-				if (filter.trim() !== '' && resultsFromClient.length < 20) {
+				if (resultsFromClient.length < 20) {
 					getFromServerDebounced(cb, type);
 				}
 			},
 
-			getValue: function(_id, collection, records) {
-				const doc = _.findWhere(records, {_id: _id});
+			getValue(_id, collection, records) {
+				const doc = _.findWhere(records, {_id});
 
 				RocketChat.roomTypes.openRouteLink(doc.t, doc, FlowRouter.current().queryParams);
 				menu.close();
@@ -214,9 +232,17 @@ Template.toolbarSearchList.helpers({
 	},
 	userStatus() {
 		if (this.t === 'd') {
-			return 'status-' + (Session.get(`user_${this.name}_status`) || 'offline');
+			return `status-${ Session.get(`user_${ this.name }_status`) || 'offline' }`;
 		} else {
-			return 'status-' + (RocketChat.roomTypes.getUserStatus(this.t, this.rid || this._id) || 'offline');
+			return `status-${ RocketChat.roomTypes.getUserStatus(this.t, this.rid || this._id) || 'offline' }`;
+		}
+	},
+
+	displayName() {
+		if (RocketChat.settings.get('UI_Use_Real_Name') && this.fname) {
+			return this.fname;
+		} else {
+			return this.name;
 		}
 	}
 });

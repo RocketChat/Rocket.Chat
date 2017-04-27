@@ -23,7 +23,11 @@ Meteor.methods({
 		};
 
 		const map = (record) => {
-			return record._user.username;
+			return {
+				_id: record._user._id,
+				username: record._user.username,
+				name: record._user.name
+			};
 		};
 
 		const records = RocketChat.models.Subscriptions.findByRoomId(roomId).fetch();

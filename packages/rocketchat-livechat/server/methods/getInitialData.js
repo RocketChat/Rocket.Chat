@@ -1,6 +1,6 @@
 Meteor.methods({
 	'livechat:getInitialData'(visitorToken) {
-		var info = {
+		const info = {
 			enabled: null,
 			title: null,
 			color: null,
@@ -8,6 +8,7 @@ Meteor.methods({
 			room: null,
 			triggers: [],
 			departments: [],
+			allowSwitchingDepartments: null,
 			online: true,
 			offlineColor: null,
 			offlineMessage: null,
@@ -59,6 +60,7 @@ Meteor.methods({
 		RocketChat.models.LivechatDepartment.findEnabledWithAgents().forEach((department) => {
 			info.departments.push(department);
 		});
+		info.allowSwitchingDepartments = initSettings.Livechat_allow_switching_departments;
 
 		info.online = RocketChat.models.Users.findOnlineAgents().count() > 0;
 
