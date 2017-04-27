@@ -16,7 +16,7 @@ this.VideoRecorder = new class {
 			return (cb != null ? cb.call(this) : undefined);
 		};
 
-		if ((navigator.getUserMedia == null)) {
+		if (navigator.getUserMedia == null) {
 			return cb(false);
 		}
 
@@ -25,7 +25,7 @@ this.VideoRecorder = new class {
 
 	record() {
 		this.chunks = [];
-		if ((this.stream == null)) {
+		if (this.stream == null) {
 			return;
 		}
 		this.mediaRecorder = new MediaRecorder(this.stream);
@@ -56,7 +56,7 @@ this.VideoRecorder = new class {
 		if (this.started) {
 			this.stopRecording();
 
-			if (this.stream != null) {
+			if (this.stream) {
 				const vtracks = this.stream.getVideoTracks();
 				for (const vtrack of Array.from(vtracks)) {
 					vtrack.stop();
@@ -68,7 +68,7 @@ this.VideoRecorder = new class {
 				}
 			}
 
-			if (this.videoel != null) {
+			if (this.videoel) {
 				this.videoel.pause;
 				this.videoel.src = '';
 			}
@@ -77,7 +77,7 @@ this.VideoRecorder = new class {
 			this.cameraStarted.set(false);
 			this.recordingAvailable.set(false);
 
-			if ((cb != null) && (this.chunks != null)) {
+			if (cb && this.chunks) {
 				const blob = new Blob(this.chunks, { 'type' :  'video/webm' });
 				cb(blob);
 			}
@@ -89,7 +89,7 @@ this.VideoRecorder = new class {
 	}
 
 	stopRecording() {
-		if (this.started && this.recording && this.mediaRecorder != null) {
+		if (this.started && this.recording && this.mediaRecorder) {
 			this.mediaRecorder.stop();
 			this.recording.set(false);
 			return delete this.mediaRecorder;

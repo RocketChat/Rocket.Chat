@@ -36,7 +36,7 @@ export const MsgTyping = (function() {
 	const stop = function(room) {
 		renew = true;
 		selfTyping.set(false);
-		if ((timeouts != null ? timeouts[room] : undefined) != null) {
+		if (timeouts && timeouts[room]) {
 			clearTimeout(timeouts[room]);
 			timeouts[room] = null;
 		}
