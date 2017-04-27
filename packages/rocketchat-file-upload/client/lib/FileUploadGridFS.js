@@ -1,38 +1,24 @@
 /* globals FileUploadBase, UploadFS, FileUpload:true */
 FileUpload.GridFS = class FileUploadGridFS extends FileUploadBase {
-	constructor(meta, file) {
+	constructor(directive, meta, file) {
 		super(meta, file);
+		this.store = directive === 'avatar' ? Meteor.fileStoreAvatar : Meteor.fileStore;
+	}
+
+	start(callback) {
 		this.handler = new UploadFS.Uploader({
-			store: Meteor.fileStore,
-			data: file,
-			file: meta,
+			store: this.store,
+			data: this.file,
+			file: this.meta,
 			onError: (err) => {
-				const uploading = Session.get('uploading');
-				if (uploading != null) {
-					const item = _.findWhere(uploading, {
-						id: this.id
-					});
-					if (item != null) {
-						item.error = err.reason;
-						item.percentage = 0;
-					}
-					return Session.set('uploading', uploading);
-				}
+				return callback(err);
 			},
 			onComplete: (fileData) => {
 				const file = _.pick(fileData, '_id', 'type', 'size', 'name', 'identify', 'description');
-
 				file.url = fileData.url.replace(Meteor.absoluteUrl(), '/');
-
 				Meteor.call('sendFileMessage', this.meta.rid, null, file, () => {
 					Meteor.setTimeout(() => {
-						const uploading = Session.get('uploading');
-						if (uploading != null) {
-							const item = _.findWhere(uploading, {
-								id: this.id
-							});
-							return Session.set('uploading', _.without(uploading, item));
-						}
+						return callback(null, file);
 					}, 2000);
 				});
 			}
@@ -41,9 +27,7 @@ FileUpload.GridFS = class FileUploadGridFS extends FileUploadBase {
 		this.handler.onProgress = (file, progress) => {
 			this.onProgress(progress);
 		};
-	}
 
-	start() {
 		return this.handler.start();
 	}
 
