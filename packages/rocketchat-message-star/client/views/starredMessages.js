@@ -31,17 +31,14 @@ Template.starredMessages.helpers({
 Template.starredMessages.onCreated(function() {
 	this.hasMore = new ReactiveVar(true);
 	this.limit = new ReactiveVar(50);
-	return this.autorun(() => {
-		return () => {
-			const sub = this.subscribe('starredMessages', this.data.rid, this.limit.get());
-			if (sub.ready()) {
-				if (StarredMessage.find({
-					rid: this.data.rid
-				}).count() < this.limit.get()) {
-					return this.hasMore.set(false);
-				}
+	this.autorun(() => {
+		const sub = this.subscribe('starredMessages', this.data.rid, this.limit.get());
+		const findStarredMessage = StarredMessage.find({ rid: this.data.rid });
+		if (sub.ready()) {
+			if (findStarredMessage.count() < this.limit.get()) {
+				return this.hasMore.set(false);
 			}
-		};
+		}
 	});
 });
 
