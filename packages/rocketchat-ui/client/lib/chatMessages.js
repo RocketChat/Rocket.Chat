@@ -83,21 +83,20 @@ this.ChatMessages = class ChatMessages {
 	}
 
 	editByIndex(index) {
-		if (!this.editing.element && (index != null)) { return false; }
+		if (!this.editing.element && index) { return false; }
 
 		const msgs = this.wrapper.get(0).querySelectorAll('.own:not(.system)');
-		if ((index == null)) { index = msgs.length - 1; }
+		if (index == null) { index = msgs.length - 1; }
 
 		if (!msgs[index]) { return false; }
 
 		const element = msgs[index];
 		this.edit(element, index);
-
 		return true;
 	}
 
 	edit(element, index) {
-		if ((index == null)) { index = this.getEditingIndex(element); }
+		index = index != null ? index : this.getEditingIndex(element);
 
 		const message = this.getMessageById(element.getAttribute('id'));
 
@@ -105,7 +104,7 @@ this.ChatMessages = class ChatMessages {
 		const editAllowed = RocketChat.settings.get('Message_AllowEditing');
 		const editOwn = message && message.u && message.u._id === Meteor.userId();
 
-		if (!hasPermission && (!editAllowed || !editOwn)) { return; }
+		if (!hasPermission && !editAllowed || !editOwn) { return; }
 		if (element.classList.contains('system')) { return; }
 
 		const blockEditInMinutes = RocketChat.settings.get('Message_AllowEditing_BlockEditInMinutes');
@@ -121,7 +120,7 @@ this.ChatMessages = class ChatMessages {
 
 		const draft = this.getMessageDraft(message._id);
 		let msg = draft && draft.draft;
-		if (msg == null) { ({ msg } = message); }
+		msg = msg || message.msg;
 
 		const editingNext = this.editing.index < index;
 
@@ -138,7 +137,7 @@ this.ChatMessages = class ChatMessages {
 		this.$input.closest('.message-form').addClass('editing');
 
 		this.input.focus();
-		if ((message.attachments != null) && (message.attachments[0].description != null)) {
+		if (message.attachments && message.attachments[0].description) {
 			this.input.value = message.attachments[0].description;
 		} else {
 			this.input.value = msg;
@@ -175,8 +174,7 @@ this.ChatMessages = class ChatMessages {
 		* * @param {Element} input DOM element
 		* * @param {function?} done callback
 		*/
-	send(rid, input, done) {
-		if (done == null) { done = function() {}; }
+	send(rid, input, done = function() {}) {
 		if (_.trim(input.value) !== '') {
 			readMessage.enable();
 			readMessage.readNow();
@@ -210,16 +208,16 @@ this.ChatMessages = class ChatMessages {
 					//Check if message starts with /command
 				if (msg[0] === '/') {
 					const match = msg.match(/^\/([^\s]+)(?:\s+(.*))?$/m);
-					if (match != null) {
+					if (match) {
 						let command;
 						if (RocketChat.slashCommands.commands[match[1]]) {
 							const commandOptions = RocketChat.slashCommands.commands[match[1]];
 							command = match[1];
-							const param = (match[2] != null) ? match[2] : '';
+							const param = match[2] || '';
 							if (commandOptions.clientOnly) {
 								commandOptions.callback(command, param, msgObject);
 							} else {
-								Meteor.call('slashCommand', {cmd: command, params: param, msg: msgObject }, (err, result) => typeof commandOptions.result === 'function' ? commandOptions.result(err, result, {cmd: command, params: param, msg: msgObject }) : undefined);
+								Meteor.call('slashCommand', {cmd: command, params: param, msg: msgObject }, (err, result) => typeof commandOptions.result === 'function' && commandOptions.result(err, result, {cmd: command, params: param, msg: msgObject }));
 							}
 							return;
 						}
@@ -258,8 +256,7 @@ this.ChatMessages = class ChatMessages {
 		}
 	}
 
-	confirmDeleteMsg(message, done) {
-		if (done == null) { done = function() {}; }
+	confirmDeleteMsg(message, done = function() {}) {
 		if (RocketChat.MessageTypes.isSystemMessage(message)) { return; }
 		swal({
 			title: t('Are_you_sure'),
@@ -352,7 +349,7 @@ this.ChatMessages = class ChatMessages {
 	}
 
 	bindEvents() {
-		if (this.wrapper != null ? this.wrapper.length : undefined) {
+		if (this.wrapper && this.wrapper.length) {
 			return $('.input-message').autogrow({
 				postGrowCallback: () => {
 					return this.resize();
@@ -366,7 +363,7 @@ this.ChatMessages = class ChatMessages {
 		if (!value) { return; }
 		const re = new RegExp(value, 'i');
 		const user = Meteor.users.findOne({username: re});
-		if (user != null) {
+		if (user) {
 			return input.value = input.value.replace(value, `@${ user.username } `);
 		}
 	}
@@ -411,7 +408,7 @@ this.ChatMessages = class ChatMessages {
 		this.resize(input);
 
 		if (k === 13) {
-			if (sendOnEnter == null || sendOnEnter === 'normal' || (sendOnEnter === 'desktop' && Meteor.Device.isDesktop())) {
+			if (sendOnEnter == null || sendOnEnter === 'normal' || sendOnEnter === 'desktop' && Meteor.Device.isDesktop()) {
 				if (!event.shiftKey && !event.ctrlKey && !event.altKey && !event.metaKey) { // Enter without shift/ctrl/alt
 					event.preventDefault();
 					event.stopPropagation();
@@ -452,7 +449,7 @@ this.ChatMessages = class ChatMessages {
 				event.stopPropagation();
 				return;
 			}
-		} else if ((k === 38) || (k === 40)) { // Arrow Up or down
+		} else if (k === 38 || k === 40) { // Arrow Up or down
 			if (event.shiftKey) { return true; }
 
 			const cursor_pos = input.selectionEnd;
@@ -504,7 +501,7 @@ this.ChatMessages = class ChatMessages {
 	}
 
 	isMessageTooLong(message) {
-		return (message != null ? message.length : undefined) > this.messageMaxSize;
+		return message && message.length > this.messageMaxSize;
 	}
 
 	isEmpty() {

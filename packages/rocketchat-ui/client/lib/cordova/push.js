@@ -26,7 +26,7 @@ if (Meteor.isCordova) {
 	Push.addListener('startup', function(notification) {
 		// Meteor.call 'log', 'CLIENT', 'startup', arguments
 
-		if ((notification.payload != null ? notification.payload.rid : undefined) != null) {
+		if (notification.payload && notification.payload.rid) {
 			if (notification.payload.host === Meteor.absoluteUrl()) {
 				switch (notification.payload.type) {
 					case 'c':
@@ -56,7 +56,7 @@ if (Meteor.isCordova) {
 				}
 
 				return Servers.startServer(host, path, function(err) {
-					if (err != null) {
+					if (err) {
 						// TODO err
 						return console.log(err);
 					}
@@ -67,7 +67,7 @@ if (Meteor.isCordova) {
 
 
 	Meteor.startup(() =>
-		Tracker.autorun(function() {
+		Tracker.autorun(() => {
 			if (RocketChat.settings.get('Push_enable') === true) {
 
 				Push.Configure({

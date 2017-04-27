@@ -1,7 +1,7 @@
-Meteor.startup(function() {
+Meteor.startup(() => {
 	if (!Meteor.isCordova) { return; }
 	// Handle click events for all external URLs
-	$(document).on('deviceready', function() {
+	$(document).on('deviceready', () => {
 		// const platform = device.platform.toLowerCase();
 		$(document).on('click', function(e) {
 			const $link = $(e.target).closest('a[href]');

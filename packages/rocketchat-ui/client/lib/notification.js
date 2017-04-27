@@ -81,7 +81,7 @@ const KonchatNotification = {
 			const user = Meteor.user();
 			const newMessageNotification = user && user.settings && user.settings.preferences && user.settings.preferences.newMessageNotification || 'chime';
 			const sub = ChatSubscription.findOne({ rid }, { fields: { audioNotification: 1 } });
-			if ((sub && sub.audioNotification) !== 'none') {
+			if (sub && sub.audioNotification !== 'none') {
 				if (sub && sub.audioNotification) {
 					const [audio] = $(`audio#${ sub.audioNotification }`);
 					return audio && audio.play && audio.play();
@@ -93,8 +93,7 @@ const KonchatNotification = {
 		}
 	},
 
-	newRoom(rid, withSound) {
-		if (withSound == null) { withSound = true; }
+	newRoom(rid/*, withSound = true*/) {
 		Tracker.nonreactive(function() {
 			let newRoomSound = Session.get('newRoomSound');
 			if (newRoomSound != null) {
@@ -119,7 +118,7 @@ const KonchatNotification = {
 Tracker.autorun(function() {
 	const user = Meteor.user();
 	const newRoomNotification = user && user.settings && user.settings.preferences && user.settings.preferences.newRoomNotification || 'door';
-	if ((Session.get('newRoomSound') || []) > 0) {
+	if ((Session.get('newRoomSound') || []).length > 0) {
 		Tracker.nonreactive(function() {
 			if (!Session.equals(`user_${ Meteor.userId() }_status`, 'busy') && newRoomNotification !== 'none') {
 				const [audio] = $(`audio#${ newRoomNotification }`);
