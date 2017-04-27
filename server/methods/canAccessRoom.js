@@ -5,7 +5,7 @@ Meteor.methods({
 
 		let user;
 
-		if (!userId && RocketChat.settings.get('Accounts_AllowAnonymousAccess') === false) {
+		if (!userId && RocketChat.settings.get('Accounts_AllowAnonymousRead') === false) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: 'canAccessRoom'
 			});
