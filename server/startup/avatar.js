@@ -62,7 +62,7 @@ Meteor.startup(function() {
 						return;
 					}
 				}
-				file = RocketChat.models.Uploads.findOneByName(`${ username }.avatar`);
+				file = RocketChat.models.Avatars.findOneByName(username);
 			}
 
 			if (file) {

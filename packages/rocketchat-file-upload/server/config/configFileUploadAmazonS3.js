@@ -105,7 +105,8 @@ const configureSlingshot = _.debounce(() => {
 						path
 					}
 				};
-				RocketChat.models.Uploads.insertAvatarFileInit(user.username, this.userId, 's3', file, upload);
+				delete file.name;
+				RocketChat.models.Avatars.insertAvatarFileInit(user.username, this.userId, 's3', file, upload);
 
 				return path + user.username;
 			}

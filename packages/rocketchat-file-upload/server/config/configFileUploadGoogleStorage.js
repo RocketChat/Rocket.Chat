@@ -121,7 +121,8 @@ const createGoogleStorageDirective = _.debounce(() => {
 						path
 					}
 				};
-				RocketChat.models.Uploads.insertAvatarFileInit(user.username, this.userId, 'googleCloudStorage', file, upload);
+				delete file.name;
+				RocketChat.models.Avatars.insertAvatarFileInit(user.username, this.userId, 'googleCloudStorage', file, upload);
 
 				return path + user.username;
 			}
