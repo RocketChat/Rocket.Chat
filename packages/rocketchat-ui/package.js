@@ -42,7 +42,7 @@ Package.onUse(function(api) {
 	api.addFiles('client/lib/fireEvent.js', 'client');
 	api.addFiles('client/lib/iframeCommands.js', 'client');
 	api.addFiles('client/lib/menu.js', 'client');
-	api.addFiles('client/lib/modal.coffee', 'client');
+	api.addFiles('client/lib/modal.js', 'client');
 	api.addFiles('client/lib/Modernizr.js', 'client');
 	api.addFiles('client/lib/msgTyping.js', 'client');
 	api.addFiles('client/lib/notification.js', 'client');
