@@ -2,7 +2,7 @@ import roomTypesCommon from '../../lib/roomTypesCommon';
 
 RocketChat.roomTypes = new class extends roomTypesCommon {
 	checkCondition(roomType) {
-		return (roomType.condition == null) || roomType.condition();
+		return roomType.condition == null || roomType.condition();
 	}
 	getTypes() {
 		return _.sortBy(this.roomTypesOrder, 'order').map((type) => this.roomTypes[type.identifier]);
@@ -71,15 +71,9 @@ RocketChat.roomTypes = new class extends roomTypesCommon {
 		return room && room.archived === true;
 	}
 	verifyCanSendMessage(roomId) {
-		const room = ChatRoom.findOne({
-			_id: roomId
-		}, {
-			fields: {
-				t: 1
-			}
-		});
+		const room = ChatRoom.findOne({	_id: roomId }, { fields: { t: 1 }});
 
-		if (room && !room.t) {
+		if (!room || !room.t) {
 			return;
 		}
 
@@ -97,7 +91,7 @@ RocketChat.roomTypes = new class extends roomTypesCommon {
 				t: 1
 			}
 		});
-		if (room && !room.t) {
+		if (!room || !room.t) {
 			return;
 		}
 		const roomType = room.t;
@@ -107,14 +101,8 @@ RocketChat.roomTypes = new class extends roomTypesCommon {
 		return this.roomTypes[roomType].showJoinLink(roomId);
 	}
 	getNotSubscribedTpl(roomId) {
-		const room = ChatRoom.findOne({
-			_id: roomId
-		}, {
-			fields: {
-				t: 1
-			}
-		});
-		if (room && !room.t) {
+		const room = ChatRoom.findOne({ _id: roomId }, { fields: { t: 1 }});
+		if (!room || !room.t) {
 			return;
 		}
 		const roomType = room.t;
