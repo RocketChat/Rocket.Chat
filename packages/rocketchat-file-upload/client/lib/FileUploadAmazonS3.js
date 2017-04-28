@@ -3,7 +3,12 @@
 FileUpload.AmazonS3 = class FileUploadAmazonS3 extends FileUploadBase {
 	constructor(directive, meta, file) {
 		super(meta, file);
-		this.uploader = new Slingshot.Upload(directive, meta);
+		this.directive = directive;
+		const directives = {
+			'upload': 'rocketchat-uploads',
+			'avatar': 'rocketchat-avatars'
+		};
+		this.uploader = new Slingshot.Upload(directives[directive], meta);
 	}
 
 	start(callback) {
@@ -18,6 +23,10 @@ FileUpload.AmazonS3 = class FileUploadAmazonS3 extends FileUploadBase {
 				const file = _.pick(this.meta, 'type', 'size', 'name', 'identify', 'description');
 				file._id = downloadUrl.substr(downloadUrl.lastIndexOf('/') + 1);
 				file.url = downloadUrl;
+
+				if (this.directive === 'avatar') {
+					return callback(null, file);
+				}
 
 				Meteor.call('sendFileMessage', this.meta.rid, 's3', file, () => {
 					Meteor.setTimeout(() => {

@@ -3,7 +3,12 @@
 FileUpload.GoogleCloudStorage = class FileUploadGoogleCloudStorage extends FileUploadBase {
 	constructor(directive, meta, file) {
 		super(meta, file);
-		this.uploader = new Slingshot.Upload(directive, { rid: meta.rid });
+		this.directive = directive;
+		const directives = {
+			'upload': 'rocketchat-uploads-gs',
+			'avatar': 'rocketchat-avatars-gs'
+		};
+		this.uploader = new Slingshot.Upload(directives[directive], { rid: meta.rid });
 	}
 
 	start(callback) {
@@ -18,6 +23,10 @@ FileUpload.GoogleCloudStorage = class FileUploadGoogleCloudStorage extends FileU
 				const file = _.pick(this.meta, 'type', 'size', 'name', 'identify', 'description');
 				file._id = downloadUrl.substr(downloadUrl.lastIndexOf('/') + 1);
 				file.url = downloadUrl;
+
+				if (this.directive === 'avatar') {
+					return callback(null, file);
+				}
 
 				Meteor.call('sendFileMessage', this.meta.rid, 'googleCloudStorage', file, () => {
 					Meteor.setTimeout(() => {

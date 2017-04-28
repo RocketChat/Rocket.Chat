@@ -48,23 +48,6 @@ RocketChat.models.Uploads = new class extends RocketChat.models._Base
 
 		return file
 
-	insertAvatarFileInit: (name, userId, store, file, extra) ->
-		fileData =
-			name: "#{name}.avatar"
-			userId: userId
-			store: store
-			complete: false
-			uploading: true
-			progress: 0
-			extension: s.strRightBack(file.name, '.')
-			uploadedAt: new Date()
-
-		_.extend(fileData, file, extra);
-
-		file = @insertOrUpsert fileData
-
-		return file
-
 	updateFileComplete: (fileId, userId, file) ->
 		if not fileId
 			return
@@ -88,42 +71,8 @@ RocketChat.models.Uploads = new class extends RocketChat.models._Base
 
 		return result
 
-	# @TODO deprecated
-	updateFileCompleteByNameAndUserId: (name, userId, url) ->
-		if not name
-			return
-
-		filter =
-			name: name
-			userId: userId
-
-		update =
-			$set:
-				complete: true
-				uploading: false
-				progress: 1
-				url: url
-
-		if @model.direct?.update?
-			result = @model.direct.update filter, update
-		else
-			result = @update filter, update
-
-		return result
-
-	findOneByName: (name) ->
-		return @findOne name: name
-
 	deleteFile: (fileId) ->
 		if @model.direct?.remove?
 			return @model.direct.remove { _id: fileId }
 		else
 			return @remove { _id: fileId }
-
-	updateFileNameById: (fileId, name) ->
-		filter = _id: fileId
-		update = $set: name: name
-		if @model.direct?.update?
-			return @model.direct.update filter, update
-		else
-			return @update filter, update
