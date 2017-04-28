@@ -139,3 +139,31 @@ FileUpload.addHandler('rocketchat_uploads', {
 		return Meteor.fileStore.delete(file._id);
 	}
 });
+
+FileUpload.addHandler('rocketchat_uploads_avatar', {
+	get(file, req, res) {
+		const reqModifiedHeader = req.headers['if-modified-since'];
+		if (reqModifiedHeader) {
+			if (reqModifiedHeader === (file.uploadedAt && file.uploadedAt.toUTCString())) {
+				res.setHeader('Last-Modified', reqModifiedHeader);
+				res.writeHead(304);
+				res.end();
+				return;
+			}
+		}
+
+		file = FileUpload.addExtensionTo(file);
+		const headers = {
+			'Cache-Control': 'public, max-age=0',
+			'Expires': '-1',
+			'Content-Disposition': 'inline',
+			'Last-Modified': file.uploadedAt.toUTCString(),
+			'Content-Type': file.type,
+			'Content-Length': file.size
+		};
+		return readFromGridFS(file.store, file._id, file, headers, req, res);
+	},
+	delete(file) {
+		return Meteor.fileStore.delete(file._id);
+	}
+});
