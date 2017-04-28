@@ -22,10 +22,37 @@ Meteor.methods({
 	},
 
 	saveAvatarFile(file) {
+		check(file, Match.ObjectIncluding({
+			_id: String
+		}));
+
+		if (!Meteor.userId()) {
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+				method: 'setAvatarFromService'
+			});
+		}
+
+		if (!RocketChat.settings.get('Accounts_AllowUserAvatarChange')) {
+			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
+				method: 'setAvatarFromService'
+			});
+		}
+
 		const user = RocketChat.models.Users.findOneById(Meteor.userId());
-		// console.log('user ->', user);
-		// console.log('file ->', file);
-		RocketChat.models.Uploads.updateFileCompleteByUsername(user.username, Meteor.userId(), file.url);
+		const fileSaved = RocketChat.models.Uploads.findOneById(file._id);
+
+		if (fileSaved.userId !== user._id) {
+			// this file is not user's avatar
+			throw new Meteor.Error('invalid-avatar');
+		}
+
+		// just returns if file already complete (case for GridFS)
+		if (fileSaved.complete) {
+			return true;
+		}
+
+		RocketChat.models.Uploads.updateFileCompleteByNameAndUserId(`${ user.username }.avatar`, Meteor.userId(), file.url);
+		return true;
 	}
 });
 

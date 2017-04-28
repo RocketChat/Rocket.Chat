@@ -2,6 +2,7 @@
 FileUpload.GridFS = class FileUploadGridFS extends FileUploadBase {
 	constructor(directive, meta, file) {
 		super(meta, file);
+		this.directive = directive;
 		this.store = directive === 'avatar' ? Meteor.fileStoreAvatar : Meteor.fileStore;
 	}
 
@@ -15,6 +16,9 @@ FileUpload.GridFS = class FileUploadGridFS extends FileUploadBase {
 			},
 			onComplete: (fileData) => {
 				const file = _.pick(fileData, '_id', 'type', 'size', 'name', 'identify', 'description');
+				if (this.directive === 'avatar') {
+					return callback(null, file);
+				}
 				file.url = fileData.url.replace(Meteor.absoluteUrl(), '/');
 				Meteor.call('sendFileMessage', this.meta.rid, null, file, () => {
 					Meteor.setTimeout(() => {

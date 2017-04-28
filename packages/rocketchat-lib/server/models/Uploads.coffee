@@ -48,9 +48,9 @@ RocketChat.models.Uploads = new class extends RocketChat.models._Base
 
 		return file
 
-	insertFileInitByUsername: (username, userId, store, file, extra) ->
+	insertAvatarFileInit: (name, userId, store, file, extra) ->
 		fileData =
-			_id: username
+			name: "#{name}.avatar"
 			userId: userId
 			store: store
 			complete: false
@@ -88,12 +88,13 @@ RocketChat.models.Uploads = new class extends RocketChat.models._Base
 
 		return result
 
-	updateFileCompleteByUsername: (username, userId, url) ->
-		if not username
+	# @TODO deprecated
+	updateFileCompleteByNameAndUserId: (name, userId, url) ->
+		if not name
 			return
 
 		filter =
-			username: username
+			name: name
 			userId: userId
 
 		update =
@@ -110,11 +111,19 @@ RocketChat.models.Uploads = new class extends RocketChat.models._Base
 
 		return result
 
-	findOneByUsername: (username) ->
-		return @findOne username: username
+	findOneByName: (name) ->
+		return @findOne name: name
 
 	deleteFile: (fileId) ->
 		if @model.direct?.remove?
 			return @model.direct.remove { _id: fileId }
 		else
 			return @remove { _id: fileId }
+
+	updateFileNameById: (fileId, name) ->
+		filter = _id: fileId
+		update = $set: name: name
+		if @model.direct?.update?
+			return @model.direct.update filter, update
+		else
+			return @update filter, update
