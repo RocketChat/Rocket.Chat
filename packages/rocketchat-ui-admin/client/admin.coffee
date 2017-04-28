@@ -126,6 +126,7 @@ Template.admin.helpers
 			enableQuery = [enableQuery]
 
 		found = 0
+		console.log enableQuery
 		for item in enableQuery
 			if TempSettings.findOne(item)?
 				found++
