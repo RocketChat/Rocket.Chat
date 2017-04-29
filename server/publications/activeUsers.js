@@ -7,12 +7,12 @@ Meteor.publish('activeUsers', function() {
 
 	if (RocketChat.authz.hasPermission(this.userId, 'view-user-list') !== true) {
 		return RocketChat.models.Users.findUsersNotOfflineInSubscribedRooms(this.username, {
-      fields: {
-        username: 1,
-        status: 1,
-        utcOffset: 1
-      }
-    });
+			fields: {
+			username: 1,
+			status: 1,
+			utcOffset: 1
+			}
+		});
 	}
 
 	return RocketChat.models.Users.findUsersNotOffline({
