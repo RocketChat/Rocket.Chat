@@ -27,7 +27,7 @@ FlowRouter.route('/', {
 		Tracker.autorun(function(c) {
 			if (FlowRouter.subsReady() === true) {
 				Meteor.defer(function() {
-					if (Meteor.user().defaultRoom) {
+					if (Meteor.user() && Meteor.user().defaultRoom) {
 						const room = Meteor.user().defaultRoom.split('/');
 						FlowRouter.go(room[0], { name: room[1] }, FlowRouter.current().queryParams);
 					} else {
