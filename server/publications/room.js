@@ -40,6 +40,9 @@ const roomMap = (record) => {
 Meteor.methods({
 	'rooms/get'(updatedAt) {
 		if (!Meteor.userId()) {
+			if (RocketChat.settings.get('Accounts_AllowAnonymousRead') === true) {
+				return RocketChat.models.Rooms.findByDefaultAndTypes(true, ['c'], options).fetch();
+			}
 			return [];
 		}
 
@@ -56,7 +59,7 @@ Meteor.methods({
 	},
 
 	getRoomByTypeAndName(type, name) {
-		if (!Meteor.userId()) {
+		if (!Meteor.userId() && RocketChat.settings.get('Accounts_AllowAnonymousRead') === false) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'getRoomByTypeAndName' });
 		}
 
