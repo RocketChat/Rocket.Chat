@@ -49,7 +49,7 @@ parts:
             lib/node_modules: node_modules
     rocketchat-server:
         plugin: dump
-        after: [mongodb]
+        after: [node]
         source: https://rocket.chat/releases/latest/download
         source-type: tar
         stage-packages:
@@ -60,22 +60,15 @@ parts:
             - .node_version.txt
             - usr
             - lib
-        snap:
-            - programs
-            - main.js
-            - .node_version.txt
-            - usr
-            - lib
     mongodb:
-        source: https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu1604-3.2.7.tgz
+        build-packages:
+            - wget
+        source: ./
+        prepare: ./resources/preparemongo
         plugin: dump
         stage-packages:
             - libssl1.0.0
-        stage:
-            - usr
-            - bin
-            - lib
-        snap:
+        prime:
             - usr
             - bin
             - lib
@@ -89,18 +82,12 @@ parts:
             initreplset.js: bin/initreplset.js
             Caddyfile: bin/Caddyfile
             initcaddy: bin/initcaddy
-        snap:
+        prime:
             - bin
     caddy:
-        plugin: go
-        go-importpath:  github.com/mholt/caddy
-        source: https://github.com/mholt/caddy
-        source-type: git
-        source-commit: 53e117802fedd5915eeb32907873d8786a4b2936
-        snap:
-            - bin/caddy
-        after: [go]
-    go:
-        source-tag: go1.8
-        stage:
-        - bin
+        prepare: ./resources/preparecaddy
+        plugin: dump
+        source: ./
+        prime:
+            - caddy
+        after: [mongodb]
