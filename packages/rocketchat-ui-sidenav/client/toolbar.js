@@ -66,6 +66,11 @@ const getFromServer = (cb, type) => {
 
 		if (roomsLength) {
 			for (let i = 0; i < roomsLength; i++) {
+				const alreadyOnClient = resultsFromClient.find(item => item._id === results.rooms[i]._id);
+				if (alreadyOnClient) {
+					continue;
+				}
+
 				resultsFromServer.push({
 					_id: results.rooms[i]._id,
 					t: results.rooms[i].t,
@@ -113,7 +118,7 @@ Template.toolbar.helpers({
 
 		const config = {
 			cls: 'search-results-list',
-			collection: RocketChat.models.Subscriptions,
+			collection: Meteor.userId() ? RocketChat.models.Subscriptions : RocketChat.models.Rooms,
 			template: 'toolbarSearchList',
 			emptyTemplate: 'toolbarSearchListEmpty',
 			input: '.toolbar-search__input',
@@ -136,6 +141,11 @@ Template.toolbar.helpers({
 					}
 				};
 
+				if (!Meteor.userId()) {
+					query._id = query.rid;
+					delete query.rid;
+				}
+
 				if (filterText[0] === '#') {
 					filterText = filterText.slice(1);
 					type.users = false;
@@ -148,12 +158,19 @@ Template.toolbar.helpers({
 					query.t = 'd';
 				}
 
-				query.name = new RegExp((RegExp.escape(filterText)), 'i');
+				const searchQuery = new RegExp((RegExp.escape(filterText)), 'i');
+				query.$or = [
+					{ name: searchQuery },
+					{ fname: searchQuery }
+				];
 
 				resultsFromClient = collection.find(query, {limit: 20, sort: {unread: -1, ls: -1}}).fetch();
 
 				const resultsFromClientLength = resultsFromClient.length;
-				usernamesFromClient = [Meteor.user().username];
+				const user = Meteor.user();
+				if (user) {
+					usernamesFromClient = [user];
+				}
 
 				for (let i = 0; i < resultsFromClientLength; i++) {
 					if (resultsFromClient[i].t === 'd') {
@@ -164,7 +181,7 @@ Template.toolbar.helpers({
 				cb(resultsFromClient);
 
 				// Use `filter` here to get results for `#` or `@` filter only
-				if (filter.trim() !== '' && resultsFromClient.length < 20) {
+				if (resultsFromClient.length < 20) {
 					getFromServerDebounced(cb, type);
 				}
 			},
