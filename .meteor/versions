@@ -71,12 +71,13 @@ less@2.7.9
 livedata@1.0.18
 localstorage@1.0.12
 logging@1.1.17
-matb33:collection-hooks@0.8.4
+matb33:collection-hooks@0.9.0-rc.1
 mdg:validation-error@0.5.1
 meteor@1.6.1
 meteor-base@1.0.4
 meteor-developer-oauth@1.2.0
 meteorhacks:inject-initial@1.0.4
+meteorhacks:kadira@2.30.3
 meteorhacks:meteorx@1.4.1
 meteorspark:util@0.2.0
 minifier-css@1.2.16

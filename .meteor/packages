@@ -172,3 +172,5 @@ underscorestring:underscore.string
 yasaricli:slugify
 yasinuslu:blaze-meta
 deepwell:bootstrap-datepicker2
+meteorhacks:kadira
+matb33:collection-hooks@0.9.0-rc.1

@@ -10,6 +10,7 @@ Package.onUse(function(api) {
 	api.use('ecmascript');
 	api.use('rocketchat:lib');
 	api.use('rocketchat:logger');
+	api.use('matb33:collection-hooks');
 
 	api.addFiles('slashcommand/slackbridge_import.client.js', 'client');
 
