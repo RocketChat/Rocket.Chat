@@ -40,13 +40,18 @@ RocketChat.setUserAvatar = function(user, dataURI, contentType, service) {
 	}
 
 	const rs = RocketChatFile.bufferToStream(new Buffer(image, encoding));
-	RocketChatFileAvatarInstance.deleteFile(encodeURIComponent(`${ user.username }.jpg`));
-	const ws = RocketChatFileAvatarInstance.createWriteStream(encodeURIComponent(`${ user.username }.jpg`), contentType);
-	ws.on('end', Meteor.bindEnvironment(function() {
+	const fileStore = FileUpload.getStore('Avatars');
+	fileStore.deleteByName(user.username);
+
+	const file = {
+		userId: user._id,
+		type: contentType
+	};
+
+	fileStore.insert(file, rs, () => {
 		Meteor.setTimeout(function() {
 			RocketChat.models.Users.setAvatarOrigin(user._id, service);
 			RocketChat.Notifications.notifyLogged('updateAvatar', {username: user.username});
 		}, 500);
-	}));
-	rs.pipe(ws);
+	});
 };

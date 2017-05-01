@@ -1,5 +1,6 @@
 /* globals Slingshot, FileUpload, AWS */
-const crypto = Npm.require('crypto');
+import crypto from 'crypto';
+import { FileUploadClass } from '../lib/FileUpload';
 
 let S3accessKey;
 let S3secretKey;
@@ -16,7 +17,9 @@ const generateURL = function(file) {
 	return `${ file.url }?AWSAccessKeyId=${ encodeURIComponent(S3accessKey) }&Expires=${ expires }&Signature=${ encodeURIComponent(signature) }`;
 };
 
-FileUpload.addHandler('s3', {
+new FileUploadClass({
+	name: 'S3:Uploads',
+
 	get(file, req, res) {
 		const fileUrl = generateURL(file);
 
@@ -26,6 +29,7 @@ FileUpload.addHandler('s3', {
 		}
 		res.end();
 	},
+
 	delete(file) {
 		const s3 = new AWS.S3();
 		const request = s3.deleteObject({
