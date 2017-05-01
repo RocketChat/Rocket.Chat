@@ -41,3 +41,13 @@ FileUpload.addExtensionTo = function(file) {
 
 	return file;
 };
+
+FileUpload.avatarTransformWrite = function(readStream, writeStream, fileId, file) {
+	if (RocketChatFile.enabled === false || RocketChat.settings.get('Accounts_AvatarResize') !== true) {
+		return readStream.pipe(writeStream);
+	}
+	const height = RocketChat.settings.get('Accounts_AvatarSize');
+	const width = height;
+	return RocketChatFile.gm(readStream).background('#ffffff').resize(width, `${ height }^`).gravity('Center').crop(width, height).extent(width, height).stream('jpeg').pipe(writeStream);
+};
+
