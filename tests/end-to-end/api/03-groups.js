@@ -298,6 +298,21 @@ describe('groups', function() {
 			.end(done);
 	});
 
+	it('/groups.close', (done) => {
+		request.post(api('groups.close'))
+			.set(credentials)
+			.send({
+				roomName: apiPrivateChannelName
+			})
+			.expect('Content-Type', 'application/json')
+			.expect(400)
+			.expect((res) => {
+				expect(res.body).to.have.property('success', false);
+				expect(res.body).to.have.property('error', `The private group, ${ apiPrivateChannelName }, is already closed to the sender`);
+			})
+			.end(done);
+	});
+
 	it('/groups.open', (done) => {
 		request.post(api('groups.open'))
 			.set(credentials)
