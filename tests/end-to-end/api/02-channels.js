@@ -320,6 +320,21 @@ describe('channels', function() {
 			.end(done);
 	});
 
+	it('/channels.close', (done) => {
+		request.post(api('channels.close'))
+			.set(credentials)
+			.send({
+				roomName: apiPublicChannelName
+			})
+			.expect('Content-Type', 'application/json')
+			.expect(400)
+			.expect((res) => {
+				expect(res.body).to.have.property('success', false);
+				expect(res.body).to.have.property('error', `The channel, ${ apiPublicChannelName }, is already closed to the sender`);
+			})
+			.end(done);
+	});
+
 	it('/channels.open', (done) => {
 		request.post(api('channels.open'))
 			.set(credentials)
