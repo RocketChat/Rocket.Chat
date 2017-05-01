@@ -1,6 +1,7 @@
-/* globals FileUpload, Slingshot, SystemLogger */
+/* globals FileUpload, Slingshot */
 
-const crypto = Npm.require('crypto');
+import crypto from 'crypto';
+import { FileUploadClass } from '../lib/FileUpload';
 
 function generateUrlParts({ file }) {
 	const accessId = RocketChat.settings.get('FileUpload_GoogleStorage_AccessId');
@@ -62,7 +63,9 @@ function createDirective(directiveName, { key, bucket, accessId, secret }) {
 	}
 }
 
-FileUpload.addHandler('googleCloudStorage', {
+new FileUploadClass({
+	name: 'googleCloudStorage',
+
 	get(file, req, res) {
 		const fileUrl = generateGetURL({ file });
 
@@ -72,11 +75,14 @@ FileUpload.addHandler('googleCloudStorage', {
 		}
 		res.end();
 	},
+
 	delete(file) {
 		if (!file || !file.googleCloudStorage) {
 			console.warn('Failed to delete a file which is uploaded to Google Cloud Storage, the file and googleCloudStorage properties are not defined.');
 			return;
 		}
+
+		// RocketChat.models.Uploads.deleteFile(file._id);
 
 		const url = generateDeleteUrl({ file });
 
