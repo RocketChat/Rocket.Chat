@@ -1,4 +1,4 @@
-/* globals FileUploadBase, UploadFS, FileUpload:true, FileSystemStore:true */
+/* globals FileUploadBase, UploadFS, FileUpload:true, FileSystemStore:true, FileSystemStoreAvatar:true */
 
 FileSystemStore = new UploadFS.store.Local({
 	collection: RocketChat.models.Uploads.model,
@@ -8,51 +8,41 @@ FileSystemStore = new UploadFS.store.Local({
 	})
 });
 
+FileSystemStoreAvatar = new UploadFS.store.Local({
+	collection: RocketChat.models.Avatars.model,
+	name: 'fileSystemAvatar',
+	filter: new UploadFS.Filter({
+		onCheck: FileUpload.validateFileUpload
+	})
+});
+
 FileUpload.FileSystem = class FileUploadFileSystem extends FileUploadBase {
-	constructor(meta, file) {
+	constructor(directive, meta, file) {
 		super(meta, file);
+		console.log('filesystem', {directive, meta, file});
+		this.store = directive === 'avatar' ? FileSystemStoreAvatar : FileSystemStore;
+	}
+
+	start(callback) {
 		this.handler = new UploadFS.Uploader({
-			store: FileSystemStore,
-			data: file,
-			file: meta,
+			store: this.store,
+			data: this.file,
+			file: this.meta,
 			onError: (err) => {
-				const uploading = Session.get('uploading');
-				if (uploading != null) {
-					const item = _.findWhere(uploading, {
-						id: this.id
-					});
-					if (item != null) {
-						item.error = err.reason;
-						item.percentage = 0;
-					}
-					return Session.set('uploading', uploading);
-				}
+				return callback(err);
 			},
 			onComplete: (fileData) => {
 				const file = _.pick(fileData, '_id', 'type', 'size', 'name', 'identify', 'description');
 
 				file.url = fileData.url.replace(Meteor.absoluteUrl(), '/');
-
-				Meteor.call('sendFileMessage', this.meta.rid, null, file, () => {
-					Meteor.setTimeout(() => {
-						const uploading = Session.get('uploading');
-						if (uploading != null) {
-							const item = _.findWhere(uploading, {
-								id: this.id
-							});
-							return Session.set('uploading', _.without(uploading, item));
-						}
-					}, 2000);
-				});
+				return callback(null, file, 'fs');
 			}
 		});
 
 		this.handler.onProgress = (file, progress) => {
 			this.onProgress(progress);
 		};
-	}
 
-	start() {
 		return this.handler.start();
 	}
 
