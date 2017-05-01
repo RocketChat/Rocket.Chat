@@ -2,7 +2,7 @@
 
 FileSystemStore = new UploadFS.store.Local({
 	collection: RocketChat.models.Uploads.model,
-	name: 'fileSystem',
+	name: 'FileSystem:Uploads',
 	filter: new UploadFS.Filter({
 		onCheck: FileUpload.validateFileUpload
 	})
@@ -10,7 +10,7 @@ FileSystemStore = new UploadFS.store.Local({
 
 FileSystemStoreAvatar = new UploadFS.store.Local({
 	collection: RocketChat.models.Avatars.model,
-	name: 'fileSystemAvatar',
+	name: 'FileSystem:Avatars',
 	filter: new UploadFS.Filter({
 		onCheck: FileUpload.validateFileUpload
 	})

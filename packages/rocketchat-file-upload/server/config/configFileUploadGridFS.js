@@ -1,7 +1,10 @@
 /* globals FileUpload, UploadFS */
-const stream = Npm.require('stream');
-const zlib = Npm.require('zlib');
-const util = Npm.require('util');
+import stream from 'stream';
+import zlib from 'zlib';
+import util from 'util';
+
+import { FileUploadClass } from '../lib/FileUpload';
+
 const logger = new Logger('FileUpload');
 
 function ExtractRange(options) {
@@ -124,7 +127,18 @@ const readFromGridFS = function(storeName, fileId, file, headers, req, res) {
 	}
 };
 
-FileUpload.addHandler('rocketchat_uploads', {
+const insert = function(file, stream, cb) {
+	const fileId = this.store.create(file);
+
+	this.store.write(stream, fileId, cb);
+};
+
+new FileUploadClass({
+	name: 'GridFS:Uploads',
+	getStore() {
+		return Meteor.fileStore;
+	},
+
 	get(file, req, res) {
 		file = FileUpload.addExtensionTo(file);
 		const headers = {
@@ -135,12 +149,16 @@ FileUpload.addHandler('rocketchat_uploads', {
 		};
 		return readFromGridFS(file.store, file._id, file, headers, req, res);
 	},
-	delete(file) {
-		return Meteor.fileStore.delete(file._id);
-	}
+
+	insert
 });
 
-FileUpload.addHandler('rocketchat_uploads_avatar', {
+new FileUploadClass({
+	name: 'GridFS:Avatars',
+	getStore() {
+		return Meteor.fileStoreAvatar
+	},
+
 	get(file, req, res) {
 		const reqModifiedHeader = req.headers['if-modified-since'];
 		if (reqModifiedHeader) {
@@ -163,7 +181,6 @@ FileUpload.addHandler('rocketchat_uploads_avatar', {
 		};
 		return readFromGridFS(file.store, file._id, file, headers, req, res);
 	},
-	delete(file) {
-		return Meteor.fileStore.delete(file._id);
-	}
+
+	insert
 });
