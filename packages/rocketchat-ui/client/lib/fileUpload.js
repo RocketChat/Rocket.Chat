@@ -145,7 +145,7 @@ fileUpload = function(filesToUpload) {
 					description: document.getElementById('file-description').value
 				};
 
-				const upload = fileUploadHandler('rocketchat-uploads-gs', record, file.file);
+				const upload = fileUploadHandler('upload', record, file.file);
 
 				let uploading = Session.get('uploading') || [];
 				uploading.push({
@@ -166,7 +166,7 @@ fileUpload = function(filesToUpload) {
 					}
 				};
 
-				upload.start(function(error, file) {
+				upload.start(function(error, file, storage) {
 					if (error) {
 						let uploading = Session.get('uploading');
 						if (!Array.isArray(uploading)) {
@@ -187,14 +187,21 @@ fileUpload = function(filesToUpload) {
 
 						Session.set('uploading', uploading);
 						return;
-					} else if (file) {
-						const uploading = Session.get('uploading');
-						if (uploading !== null) {
-							const item = _.findWhere(uploading, {
-								id: this.id
-							});
-							return Session.set('uploading', _.without(uploading, item));
-						}
+					}
+
+
+					if (file) {
+						Meteor.call('sendFileMessage', roomId, storage, file, () => {
+							Meteor.setTimeout(() => {
+								const uploading = Session.get('uploading');
+								if (uploading !== null) {
+									const item = _.findWhere(uploading, {
+										id: this.id
+									});
+									return Session.set('uploading', _.without(uploading, item));
+								}
+							}, 2000);
+						});
 					}
 				});
 
