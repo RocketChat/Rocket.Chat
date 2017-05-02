@@ -75,7 +75,8 @@ Template.emailsAdd.onRendered ->
 		locale: moment.locale(),
 		toolbarPlacement: 'top',
 		showTodayButton: true,
-		showClose: true
+		showClose: true,
+		defaultDate: Date()
 		})
 
 Template.emailsItem.onRendered ->
