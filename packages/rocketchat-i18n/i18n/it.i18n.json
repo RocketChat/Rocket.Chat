@@ -520,6 +520,8 @@
   "History": "Storico",
   "Host": "Server",
   "hours": "ore",
+  "hour": "ora",
+  "Hour": "Ora",
   "Hours": "Ore",
   "How_friendly_was_the_chat_agent": "Quanto é stato intuitivo l'operatore chat?",
   "How_knowledgeable_was_the_chat_agent": "Quanto é stato semplice l'operatore chat?",

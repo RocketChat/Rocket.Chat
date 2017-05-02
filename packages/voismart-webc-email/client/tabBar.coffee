@@ -70,7 +70,13 @@ Template.emailsAdd.events
 				RocketChat.TabBar.closeFlex()
 
 Template.emailsAdd.onRendered ->
-	$('#datetimepicker4').datetimepicker({format:'DD-MM-YYYY HH:mm', locale: moment.locale()})
+	$('#datetimepicker4').datetimepicker({
+		format: 'DD-MM-YYYY HH:mm',
+		locale: moment.locale(),
+		toolbarPlacement: 'top',
+		showTodayButton: true,
+		showClose: true
+		})
 
 Template.emailsItem.onRendered ->
 	$('input').jqBootstrapValidation()
