@@ -7,6 +7,7 @@ FileUpload.AmazonS3 = class FileUploadAmazonS3 extends FileUploadBase {
 			'upload': 'rocketchat-uploads',
 			'avatar': 'rocketchat-avatars'
 		};
+		this.directive = directive;
 		this.uploader = new Slingshot.Upload(directives[directive], meta);
 	}
 
@@ -23,7 +24,7 @@ FileUpload.AmazonS3 = class FileUploadAmazonS3 extends FileUploadBase {
 				file._id = downloadUrl.substr(downloadUrl.lastIndexOf('/') + 1);
 				file.url = downloadUrl;
 
-				return callback(null, file, 's3');
+				return callback(null, file, this.directive === 'avatar' ? 'S3:Avatars' : 'S3:Uploads');
 			}
 		});
 

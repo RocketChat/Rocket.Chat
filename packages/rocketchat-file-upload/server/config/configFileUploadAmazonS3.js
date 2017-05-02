@@ -17,27 +17,37 @@ const generateURL = function(file) {
 	return `${ file.url }?AWSAccessKeyId=${ encodeURIComponent(S3accessKey) }&Expires=${ expires }&Signature=${ encodeURIComponent(signature) }`;
 };
 
+const getFile = function(file, req, res) {
+	const fileUrl = generateURL(file);
+
+	if (fileUrl) {
+		res.setHeader('Location', fileUrl);
+		res.writeHead(302);
+	}
+	res.end();
+};
+
+const deleteFile = function(file) {
+	const s3 = new AWS.S3();
+	const request = s3.deleteObject({
+		Bucket: file.s3.bucket,
+		Key: file.s3.path + file._id
+	});
+	request.send();
+};
+
 new FileUploadClass({
 	name: 'S3:Uploads',
 
-	get(file, req, res) {
-		const fileUrl = generateURL(file);
+	get: getFile,
+	delete: deleteFile
+});
 
-		if (fileUrl) {
-			res.setHeader('Location', fileUrl);
-			res.writeHead(302);
-		}
-		res.end();
-	},
+new FileUploadClass({
+	name: 'S3:Avatars',
 
-	delete(file) {
-		const s3 = new AWS.S3();
-		const request = s3.deleteObject({
-			Bucket: file.s3.bucket,
-			Key: file.s3.path + file._id
-		});
-		request.send();
-	}
+	get: getFile,
+	delete: deleteFile
 });
 
 function createDirective(directiveName, { key, bucket, accessKey, secretKey, region, acl, cdn, bucketUrl}) {
@@ -89,7 +99,7 @@ const configureSlingshot = _.debounce(() => {
 						path
 					}
 				};
-				const fileId = RocketChat.models.Uploads.insertFileInit(this.userId, 's3', file, upload);
+				const fileId = RocketChat.models.Uploads.insertFileInit(this.userId, 'S3:Uploads', file, upload);
 
 				return path + fileId;
 			}
@@ -110,7 +120,7 @@ const configureSlingshot = _.debounce(() => {
 					}
 				};
 				delete file.name;
-				RocketChat.models.Avatars.insertAvatarFileInit(user.username, this.userId, 's3', file, upload);
+				RocketChat.models.Avatars.insertAvatarFileInit(user.username, this.userId, 'S3:Avatars', file, upload);
 
 				return path + user.username;
 			}
