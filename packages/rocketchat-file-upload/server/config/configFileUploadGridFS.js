@@ -156,7 +156,7 @@ new FileUploadClass({
 new FileUploadClass({
 	name: 'GridFS:Avatars',
 	getStore() {
-		return Meteor.fileStoreAvatar
+		return Meteor.fileStoreAvatar;
 	},
 
 	get(file, req, res) {
