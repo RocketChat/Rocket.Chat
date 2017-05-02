@@ -1,0 +1,72 @@
+<template name="webCollaborationEmail">
+    <div class="content">
+        <div class="title">
+            <h2>{{_ "Ask_sessions_av_email"}}</h2>
+        </div>
+        <div>
+            {{> emailsAdd}}
+        </div>
+    </div>
+</template>
+
+<template name="emailsAdd">
+    <form class="form-group webcemail-content">
+       <div class='col-sm-12'>
+            <div class="form-group">
+                <button type="button" class="btn button-webcemail-invite btn-primary add-btn-participant">{{_ "Add"}}</button>
+                <button type="button" class="btn button-webcemail-invite btn-primary add-btn-channel-participants">{{_ "Add_channel_user"}}</button>
+            </div>
+            <div class="form-group">
+                <button type="button" class="btn button-webcemail-invite btn-primary remove-btn-participants">{{_ "Remove_all_participants"}}</button>
+                <button type="button" id="invite_button" class="btn button-webcemail-invite btn-primary btn-invite-participants" disabled>{{_ "Invite"}}</button>
+            </div>
+        </div>
+        <div class='col-sm-12'>
+            <div class="form-group">
+                <div class='input-group date' id='datetimepicker4'>
+                    <span class="input-group-addon">
+                        <span class="glyphicon glyphicon-calendar"></span>
+                    </span>
+                    <input type='text' class="form-control date_calendar" name="date_time" required/>
+                </div>
+                <div class="input-group spinner">
+                    <span class="input-group-addon">
+                        <span class="glyphicon glyphicon-time"></span>
+                    </span>
+                     <div class="selectContainer">
+                        <select class="form-control date_duration">
+                            <option selected="selected" value="10">10 {{_ "minutes"}}</option>
+                            <option value="15">15 {{_ "minutes"}}</option>
+                            <option value="20">20 {{_ "minutes"}}</option>
+                            <option value="25">25 {{_ "minutes"}}</option>
+                            <option value="30">30 {{_ "minutes"}}</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class='col-sm-12'>
+                    {{#each emailInputs}}
+                        {{> emailsItem}}
+                    {{/each}}
+        </div>
+    </form>
+</template>
+
+<template name="emailsItem">
+    <form id="form_emails_item">
+    <div class="form-inline emailsItem">
+        <div class="form-group">
+            <div class='input-group emailsItem control-group controls' emailId='{{emailId}}'>
+                <span class="input-group-addon">
+                    <span class="glyphicon glyphicon-envelope"></span>
+                </span>
+                <input emailId='{{emailId}}' type="email" aria-required="true" aria-invalid="false" value="{{value}}" class="email_input" name="email_address" id="name" placeholder="Email..." required="">
+             </div>
+        </div>
+        <div class="form-group">
+            <a type="button" class="btn btn-danger btn-large delete-btn">-</a>
+        </div>
+    </div>
+    </form>
+</template>

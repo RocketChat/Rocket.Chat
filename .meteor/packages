@@ -164,6 +164,7 @@ yasinuslu:blaze-meta
 deepwell:bootstrap-datepicker2
 voismart:disable-cordova-otr
 voismart:webc
+voismart:webc-email
 voismart:ngapi
 voismart:ngpresence
 voismart:nglogin
@@ -171,3 +172,6 @@ voismart:user-call
 voismart:phone
 voismart:webnotifications
 remcoder:chronos
+hypno:bootstrap3-datetimepicker
+twbs:bootstrap
+mrt:jqbootstrapvalidation

@@ -1504,5 +1504,13 @@
   "Presence_Extension_Configuration_Part1": "After installation, configure your extension by clicking on it:",
   "Presence_Extension_Configuration_Part2": "and then insert the URL \"%s\" in the first field and the desired away time in the second.",
   "Presence_Extension_Popup_Blocker": "Check your popup blocker if the installation page is not shown.",
-  "Phone_Use_Desk": "Use desk phone"
+  "Phone_Use_Desk": "Use desk phone",
+  "Add_channel_user": "Invite channel",
+  "Remove_all_participants": "Remove all",
+  "Invite": "Invite",
+  "New_session_webc": "New Web Collaboration session",
+  "New_session_webc_email": "New Web Collaboration by email",
+  "New_audio_session": "New Audio Conference session",
+  "Ask_sessions_av": "Request A/V sessions",
+  "Ask_sessions_av_email": "Request A/V sessions by email"
 }

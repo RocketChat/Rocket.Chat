@@ -70,6 +70,12 @@ _cached_token = {}
 			token: token
 			data: JSON.stringify([{number_to_call: number}])
 
+	create_live_bbb: (token, attendees, start_ts, duration, public_number) ->
+		url = @server + '/jsondata/extjs/bbbHandler/create_live_bbb'
+		@_doFormPost url,
+			token: token
+			data: JSON.stringify([{attendees: attendees, start_ts: start_ts, duration: duration, public_number:public_number}])
+
 	_doPost: (url, data) ->
 		try
 			response = Meteor.http.post url, data
@@ -135,3 +141,6 @@ _cached_token = {}
 
 	clickAndDial: (number) ->
 		super(_cached_token[@username], number)
+
+	create_live_bbb: (attendees, start_ts, duration, public_number) ->
+		super(_cached_token[@username], attendees, start_ts, duration, public_number)

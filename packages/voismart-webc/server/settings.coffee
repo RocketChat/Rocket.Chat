@@ -5,3 +5,4 @@ Meteor.startup ->
         @add 'Webc_Domain', '', { type: 'string', public: true }
         @add 'Webc_Username', '', { type: 'string', public: true }
         @add 'Webc_Password', '', { type: 'string', public: true }
+        @add 'Webc_PhoneNumber', '', { type: 'string', public: true }
