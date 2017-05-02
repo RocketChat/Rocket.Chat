@@ -130,7 +130,7 @@ RocketChat.API.v1.addRoute('groups.create', { authRequired: true }, {
 
 RocketChat.API.v1.addRoute('groups.delete', { authRequired: true }, {
 	post() {
-		const findResult = findPrivateGroupByIdOrName({ roomId: this.bodyParams.roomId, userId: this.userId, checkedArchived: false });
+		const findResult = findPrivateGroupByIdOrName({ roomId: this.bodyParams.roomId, roomName: this.bodyParams.roomName, userId: this.userId, checkedArchived: false });
 
 		Meteor.runAsUser(this.userId, () => {
 			Meteor.call('eraseRoom', findResult.rid);
