@@ -196,7 +196,7 @@ fileUpload = function(filesToUpload) {
 								const uploading = Session.get('uploading');
 								if (uploading !== null) {
 									const item = _.findWhere(uploading, {
-										id: this.id
+										id: upload.id
 									});
 									return Session.set('uploading', _.without(uploading, item));
 								}
