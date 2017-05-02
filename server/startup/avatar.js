@@ -1,39 +1,5 @@
 /* globals FileUpload */
 Meteor.startup(function() {
-	let storeType = 'GridFS';
-
-	if (RocketChat.settings.get('Accounts_AvatarStoreType')) {
-		storeType = RocketChat.settings.get('Accounts_AvatarStoreType');
-	}
-
-	const RocketChatStore = RocketChatFile[storeType];
-
-	if (!RocketChatStore) {
-		throw new Error(`Invalid RocketChatStore type [${ storeType }]`);
-	}
-
-	console.log((`Using ${ storeType } for Avatar storage`).green);
-
-	function transformWrite(file, readStream, writeStream) {
-		if (RocketChatFile.enabled === false || RocketChat.settings.get('Accounts_AvatarResize') !== true) {
-			return readStream.pipe(writeStream);
-		}
-		const height = RocketChat.settings.get('Accounts_AvatarSize');
-		const width = height;
-		return RocketChatFile.gm(readStream, file.fileName).background('#ffffff').resize(width, `${ height }^`).gravity('Center').crop(width, height).extent(width, height).stream('jpeg').pipe(writeStream);
-	}
-
-	let path = '~/uploads';
-	if (RocketChat.settings.get('Accounts_AvatarStorePath') && RocketChat.settings.get('Accounts_AvatarStorePath').trim() !== '') {
-		path = RocketChat.settings.get('Accounts_AvatarStorePath');
-	}
-
-	this.RocketChatFileAvatarInstance = new RocketChatStore({
-		name: 'avatars',
-		absolutePath: path,
-		transformWrite
-	});
-
 	WebApp.connectHandlers.use('/avatar/', Meteor.bindEnvironment(function(req, res/*, next*/) {
 		const params = {
 			username: decodeURIComponent(req.url.replace(/^\//, '').replace(/\?.*$/, ''))
