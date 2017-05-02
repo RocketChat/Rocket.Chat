@@ -36,10 +36,12 @@
                      <div class="selectContainer">
                         <select class="form-control date_duration">
                             <option selected="selected" value="10">10 {{_ "minutes"}}</option>
-                            <option value="15">15 {{_ "minutes"}}</option>
                             <option value="20">20 {{_ "minutes"}}</option>
-                            <option value="25">25 {{_ "minutes"}}</option>
                             <option value="30">30 {{_ "minutes"}}</option>
+                            <option value="45">45 {{_ "minutes"}}</option>
+                            <option value="60">60 {{_ "minutes"}}</option>
+                            <option value="90">90 {{_ "minutes"}}</option>
+                            <option value="120">120 {{_ "minutes"}}</option>
                         </select>
                     </div>
                 </div>
@@ -55,17 +57,17 @@
 
 <template name="emailsItem">
     <form id="form_emails_item">
-    <div class="form-inline emailsItem">
+    <div class="emailsItem">
         <div class="form-group">
             <div class='input-group emailsItem control-group controls' emailId='{{emailId}}'>
                 <span class="input-group-addon">
                     <span class="glyphicon glyphicon-envelope"></span>
                 </span>
                 <input emailId='{{emailId}}' type="email" aria-required="true" aria-invalid="false" value="{{value}}" class="email_input" name="email_address" id="name" placeholder="Email..." required="">
+                <div class="form-group clear-delete-btn">
+                    <a type="button" class="btn btn-danger btn-large delete-btn">-</a>
+                </div>
              </div>
-        </div>
-        <div class="form-group">
-            <a type="button" class="btn btn-danger btn-large delete-btn">-</a>
         </div>
     </div>
     </form>
