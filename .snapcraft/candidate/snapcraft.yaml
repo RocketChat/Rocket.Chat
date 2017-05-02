@@ -25,6 +25,10 @@ apps:
         command: env LC_ALL=C caddy -conf=$SNAP_DATA/Caddyfile -host=localhost:8080
         daemon: simple
         plugs: [network, network-bind]
+    mongo:
+        command: env LC_ALL=C mongo
+    restoredb:
+        command: env LC_ALL=C restoredb
     backupdb:
         command: env LC_ALL=c rcbackup
         plugs: [network]
@@ -77,6 +81,7 @@ parts:
         source: resources/
         organize:
             rcbackup: bin/rcbackup
+            restoredb: bin/restoredb
             startmongo: bin/startmongo
             startRocketChat: bin/startRocketChat
             initreplset.js: bin/initreplset.js
@@ -89,5 +94,7 @@ parts:
         plugin: dump
         source: ./
         prime:
-            - caddy
+            - bin
+        organize:
+            caddy: bin/caddy
         after: [mongodb]
