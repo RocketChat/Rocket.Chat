@@ -69,15 +69,17 @@
 <template name="emailsItem">
 	<form id="form_emails_item">
 		<div class="emailsItem">
-			<div class="form-group">
-				<div class='input-group emailsItem control-group controls' emailId='{{emailId}}'>
+			<div class="form-group email-list">
+				<div class='input-group align-pad emailsItem control-group controls' emailId='{{emailId}}'>
 					<span class="input-group-addon">
                     <span class="glyphicon glyphicon-envelope"></span>
 					</span>
 					<input emailId='{{emailId}}' type="email" aria-required="true" aria-invalid="false" value="{{value}}" class="email_input"
 					 name="email_address" id="name" placeholder="Email..." required="">
 					<div class="form-group clear-delete-btn">
-						<a type="button" class="btn btn-danger btn-large delete-btn">-</a>
+						<a type="button" class="btn btn-danger btn-large delete-btn">
+							<span class="glyphicon glyphicon-trash"></span>
+						</a>
 					</div>
 				</div>
 			</div>
