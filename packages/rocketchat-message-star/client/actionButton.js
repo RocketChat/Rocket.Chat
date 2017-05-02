@@ -15,13 +15,11 @@ Meteor.startup(function() {
 			});
 		},
 		validation(message) {
-			if (RocketChat.models.Subscriptions.findOne({ rid: message.rid }) == null) {
+			if (RocketChat.models.Subscriptions.findOne({ rid: message.rid }) == null && RocketChat.settings.get('Message_AllowStarring')) {
 				return false;
 			}
 
-			const starred = _.findWhere(message.starred, {_id: Meteor.userId()});
-
-			return RocketChat.settings.get('Message_AllowStarring') && !starred;
+			return !_.findWhere(message.starred, {_id: Meteor.userId()});
 		},
 		order: 10
 	});
@@ -40,13 +38,11 @@ Meteor.startup(function() {
 			});
 		},
 		validation(message) {
-			if (RocketChat.models.Subscriptions.findOne({ rid: message.rid }) == null) {
+			if (RocketChat.models.Subscriptions.findOne({ rid: message.rid }) == null && RocketChat.settings.get('Message_AllowStarring')) {
 				return false;
 			}
 
-			const starred = _.findWhere(message.starred, {_id: Meteor.userId()});
-
-			return RocketChat.settings.get('Message_AllowStarring') && Boolean(starred);
+			return Boolean(_.findWhere(message.starred, {_id: Meteor.userId()}));
 		},
 		order: 10
 	});
