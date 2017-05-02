@@ -76,7 +76,7 @@ Template.emailsAdd.onRendered ->
 		toolbarPlacement: 'top',
 		showTodayButton: true,
 		showClose: true,
-		defaultDate: Date()
+		defaultDate: moment()
 		})
 
 Template.emailsItem.onRendered ->
