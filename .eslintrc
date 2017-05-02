@@ -105,6 +105,7 @@
 		"EJSON"                       : false,
 		"Email"                       : false,
 		"FlowRouter"                  : false,
+		"FileUpload"                  : false,
 		"HTTP"                        : false,
 		"getNextAgent"                : false,
 		"handleError"                 : false,
