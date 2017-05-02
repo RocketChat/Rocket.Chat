@@ -23,7 +23,7 @@ FileUpload.GoogleCloudStorage = class FileUploadGoogleCloudStorage extends FileU
 				file._id = downloadUrl.substr(downloadUrl.lastIndexOf('/') + 1);
 				file.url = downloadUrl;
 
-				return callback(null, file, 'googleCloudStorage');
+				return callback(null, file, 'GoogleCloudStorage:Uploads');
 			}
 		});
 
