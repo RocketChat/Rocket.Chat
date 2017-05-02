@@ -18,7 +18,10 @@ Meteor.startup(function() {
 			if (RocketChat.models.Subscriptions.findOne({ rid: message.rid }) == null) {
 				return false;
 			}
-			return RocketChat.settings.get('Message_AllowStarring') && !message.starred;
+
+			const starred = _.findWhere(message.starred, {_id: Meteor.userId()});
+
+			return RocketChat.settings.get('Message_AllowStarring') && !starred;
 		},
 		order: 10
 	});
@@ -40,7 +43,10 @@ Meteor.startup(function() {
 			if (RocketChat.models.Subscriptions.findOne({ rid: message.rid }) == null) {
 				return false;
 			}
-			return RocketChat.settings.get('Message_AllowStarring') && message.starred;
+
+			const starred = _.findWhere(message.starred, {_id: Meteor.userId()});
+
+			return RocketChat.settings.get('Message_AllowStarring') && Boolean(starred);
 		},
 		order: 10
 	});
