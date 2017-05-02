@@ -37,14 +37,14 @@ const deleteFile = function(file) {
 };
 
 new FileUploadClass({
-	name: 'S3:Uploads',
+	name: 'AmazonS3:Uploads',
 
 	get: getFile,
 	delete: deleteFile
 });
 
 new FileUploadClass({
-	name: 'S3:Avatars',
+	name: 'AmazonS3:Avatars',
 
 	get: getFile,
 	delete: deleteFile
@@ -99,7 +99,7 @@ const configureSlingshot = _.debounce(() => {
 						path
 					}
 				};
-				const fileId = RocketChat.models.Uploads.insertFileInit(this.userId, 'S3:Uploads', file, upload);
+				const fileId = RocketChat.models.Uploads.insertFileInit(this.userId, 'AmazonS3:Uploads', file, upload);
 
 				return path + fileId;
 			}
@@ -120,7 +120,7 @@ const configureSlingshot = _.debounce(() => {
 					}
 				};
 				delete file.name;
-				RocketChat.models.Avatars.insertAvatarFileInit(user.username, this.userId, 'S3:Avatars', file, upload);
+				RocketChat.models.Avatars.insertAvatarFileInit(user.username, this.userId, 'AmazonS3:Avatars', file, upload);
 
 				return path + user.username;
 			}

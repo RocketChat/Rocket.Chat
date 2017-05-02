@@ -63,36 +63,46 @@ function createDirective(directiveName, { key, bucket, accessId, secret }) {
 	}
 }
 
-new FileUploadClass({
-	name: 'googleCloudStorage',
+const getFile = function(file, req, res) {
+	const fileUrl = generateGetURL({ file });
 
-	get(file, req, res) {
-		const fileUrl = generateGetURL({ file });
-
-		if (fileUrl) {
-			res.setHeader('Location', fileUrl);
-			res.writeHead(302);
-		}
-		res.end();
-	},
-
-	delete(file) {
-		if (!file || !file.googleCloudStorage) {
-			console.warn('Failed to delete a file which is uploaded to Google Cloud Storage, the file and googleCloudStorage properties are not defined.');
-			return;
-		}
-
-		// RocketChat.models.Uploads.deleteFile(file._id);
-
-		const url = generateDeleteUrl({ file });
-
-		if (_.isEmpty(url)) {
-			console.warn('Failed to delete a file which is uploaded to Google Cloud Storage, failed to generate a delete url.');
-			return;
-		}
-
-		HTTP.call('DELETE', url);
+	if (fileUrl) {
+		res.setHeader('Location', fileUrl);
+		res.writeHead(302);
 	}
+	res.end();
+};
+
+const deleteFile = function(file) {
+	if (!file || !file.googleCloudStorage) {
+		console.warn('Failed to delete a file which is uploaded to Google Cloud Storage, the file and googleCloudStorage properties are not defined.');
+		return;
+	}
+
+	// RocketChat.models.Uploads.deleteFile(file._id);
+
+	const url = generateDeleteUrl({ file });
+
+	if (_.isEmpty(url)) {
+		console.warn('Failed to delete a file which is uploaded to Google Cloud Storage, failed to generate a delete url.');
+		return;
+	}
+
+	HTTP.call('DELETE', url);
+};
+
+new FileUploadClass({
+	name: 'GoogleCloudStorage:Uploads',
+
+	get: getFile,
+	delete: deleteFile
+});
+
+new FileUploadClass({
+	name: 'GoogleCloudStorage:Avatars',
+
+	get: getFile,
+	delete: deleteFile
 });
 
 const createGoogleStorageDirective = _.debounce(() => {
@@ -108,7 +118,7 @@ const createGoogleStorageDirective = _.debounce(() => {
 						path
 					}
 				};
-				const fileId = RocketChat.models.Uploads.insertFileInit(this.userId, 'googleCloudStorage', file, upload);
+				const fileId = RocketChat.models.Uploads.insertFileInit(this.userId, 'GoogleCloudStorage:Uploads', file, upload);
 
 				return path + fileId;
 			}
@@ -128,7 +138,7 @@ const createGoogleStorageDirective = _.debounce(() => {
 					}
 				};
 				delete file.name;
-				RocketChat.models.Avatars.insertAvatarFileInit(user.username, this.userId, 'googleCloudStorage', file, upload);
+				RocketChat.models.Avatars.insertAvatarFileInit(user.username, this.userId, 'GoogleCloudStorage:Avatars', file, upload);
 
 				return path + user.username;
 			}
