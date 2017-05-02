@@ -6,7 +6,7 @@ Meteor.startup ->
 				groups: ['channel', 'privategroup'],
 				id: 'webcollaborationemail',
 				i18nTitle: 'WebCollaborationEmail',
-				icon: 'icon-mail',
+				icon: 'icon-mail-alt',
 				template: 'webCollaborationEmail',
 				order: 11
 			})
