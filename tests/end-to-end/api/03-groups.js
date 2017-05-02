@@ -408,4 +408,46 @@ describe('groups', function() {
 			})
 			.end(done);
 	});
+
+	describe('/groups.delete', () => {
+		let testGroup;
+		it('/groups.create', (done) => {
+			request.post(api('groups.create'))
+				.set(credentials)
+				.send({
+					name: `group.test.${ Date.now() }`
+				})
+				.end((err, res) => {
+					testGroup = res.body.group;
+					done();
+				});
+		});
+		it('/groups.delete', (done) => {
+			request.post(api('groups.delete'))
+				.set(credentials)
+				.send({
+					roomName: testGroup.name
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+		it('/groups.info', (done) => {
+			request.get(api('groups.info'))
+				.set(credentials)
+				.query({
+					roomId: testGroup._id
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'error-room-not-found');
+				})
+				.end(done);
+		});
+	});
 });

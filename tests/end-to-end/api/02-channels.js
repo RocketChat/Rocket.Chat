@@ -502,4 +502,46 @@ describe('channels', function() {
 			})
 			.end(done);
 	});
+
+	describe('/channels.delete', () => {
+		let testChannel;
+		it('/channels.create', (done) => {
+			request.post(api('channels.create'))
+				.set(credentials)
+				.send({
+					name: `channel.test.${ Date.now() }`
+				})
+				.end((err, res) => {
+					testChannel = res.body.channel;
+					done();
+				});
+		});
+		it('/channels.delete', (done) => {
+			request.post(api('channels.delete'))
+				.set(credentials)
+				.send({
+					roomName: testChannel.name
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+		it('/channels.info', (done) => {
+			request.get(api('channels.info'))
+				.set(credentials)
+				.query({
+					roomId: testChannel._id
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'error-room-not-found');
+				})
+				.end(done);
+		});
+	});
 });

@@ -162,7 +162,7 @@ RocketChat.API.v1.addRoute('channels.create', { authRequired: true }, {
 
 RocketChat.API.v1.addRoute('channels.delete', { authRequired: true }, {
 	post() {
-		const findResult = findChannelByIdOrName({ roomId: this.bodyParams.roomId, checkedArchived: false });
+		const findResult = findChannelByIdOrName({ roomId: this.bodyParams.roomId, roomName: this.bodyParams.roomName, checkedArchived: false });
 
 		//The find method returns either with the group or the failur
 
