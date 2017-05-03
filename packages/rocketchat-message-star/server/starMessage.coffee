@@ -12,3 +12,8 @@ Meteor.methods
 			return false
 
 		RocketChat.models.Messages.updateUserStarById(message._id, Meteor.userId(), message.starred)
+
+		if message.starred
+			RocketChat.callbacks.run('setStarMessage', message)
+		else
+			RocketChat.callbacks.run('unsetStarMessage', message)
