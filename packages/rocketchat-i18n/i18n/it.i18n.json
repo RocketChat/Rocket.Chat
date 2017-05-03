@@ -1441,6 +1441,9 @@
   "New_session_webc": "Nuova sessione di Web Collaboration",
   "New_session_webc_email": "Nuova sessione di Web Collaboration con email",
   "New_audio_session": "Nuova sessione di Audio Conferenza",
-  "Ask_sessions_av": "Richiedi sessioni A/V",
-  "Ask_sessions_av_email": "Richiedi sessioni A/V tramite email"
+  "Ask_sessions_av": "Richiedi sessione immediata",
+  "Ask_sessions_av_email": "Invita a sessione di collaboration",
+  "Webc_when": "Data e ora di inizio",
+  "Webc_duration": "Durata",
+  "Webc_remove": "Elimina partecipante"
 }

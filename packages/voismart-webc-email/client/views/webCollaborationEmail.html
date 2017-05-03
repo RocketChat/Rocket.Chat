@@ -1,8 +1,29 @@
 <template name="webCollaborationEmail">
 	<div class="content">
 		<div class="title">
+			<h2>{{_ "Ask_sessions_av"}}</h2>
+		</div>
+
+		<div class="form-group">
+			<div class='col-sm-12'>
+				<div class="button-webcemail-half-cnt">
+					<button class='button button-block' id="webc_tryme"><span><i class='icon-share'></i>{{_ "New_session_webc"}}</span></button>
+				</div>
+				<div class="button-webcemail-half-cnt">
+					<button class='button button-block' id="webc-audioconf"><span><i class='icon-share'></i>{{_ "New_audio_session"}}</span></button>
+				</div>
+			</div>
+		</div>
+		<div class="form-group button-webcemail-full-cnt">
+			<div class='col-sm-12'>
+				<hr style="border: 1px solid #aaa; border-radius: 5px;" />
+			</div>
+		</div>
+
+		<div class="title" style="float: left;">
 			<h2>{{_ "Ask_sessions_av_email"}}</h2>
 		</div>
+
 		<div>
 			{{> emailsAdd}}
 		</div>
@@ -33,13 +54,13 @@
 			<div class="form-group">
 				<div class='input-group date align-pad' id='datetimepicker4'>
 					<span class="input-group-addon">
-                        <span class="glyphicon glyphicon-calendar"></span>
+                        <span class="glyphicon glyphicon-calendar" title='{{_ "Webc_when"}}'></span>
 					</span>
 					<input type='text' class="form-control date_calendar" name="date_time" required/>
 				</div>
 				<div class="input-group align-pad">
 					<span class="input-group-addon">
-                        <span class="glyphicon glyphicon-time"></span>
+                        <span class="glyphicon glyphicon-time" title='{{_ "Webc_duration"}}'></span>
 					</span>
 					<div class="selectContainer">
 						<select class="form-control date_duration">
@@ -78,7 +99,7 @@
 					 name="email_address" id="name" placeholder="Email..." required="">
 					<div class="form-group clear-delete-btn">
 						<a type="button" class="btn btn-danger btn-large delete-btn">
-							<span class="glyphicon glyphicon-trash"></span>
+							<span class="glyphicon glyphicon-trash" title='{{_ "Webc_remove"}}'></span>
 						</a>
 					</div>
 				</div>
