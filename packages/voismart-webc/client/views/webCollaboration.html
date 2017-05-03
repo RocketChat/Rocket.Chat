@@ -1,11 +1,109 @@
 <template name="webCollaboration">
-    <div class="content">
-        <div class="title">
+	<div class="content">
+		<div class="title">
 			<h2>{{_ "Ask_sessions_av"}}</h2>
-        </div>
-        <nav>
-			<button class='button button-block' id="webc_tryme"><span><i class='icon-share'></i>{{_ "New_session_webc"}}</span></button>
-			<button class='button button-block' id="webc-audioconf"><span><i class='icon-share'></i>{{_ "New_audio_session"}}</span></button>
-        </nav>
-    </div>
+		</div>
+
+		<div class="form-group">
+			<div class='col-sm-12'>
+				<div class="button-webcemail-half-cnt">
+					<button class='button button-block' id="webc_tryme"><span><i class='icon-share'></i>{{_ "New_session_webc"}}</span></button>
+				</div>
+				<div class="button-webcemail-half-cnt">
+					<button class='button button-block' id="webc-audioconf"><span><i class='icon-share'></i>{{_ "New_audio_session"}}</span></button>
+				</div>
+			</div>
+		</div>
+		<div class="form-group button-webcemail-full-cnt">
+			<div class='col-sm-12'>
+				<hr style="border: 1px solid #aaa; border-radius: 5px;" />
+			</div>
+		</div>
+
+		<div class="title" style="float: left;">
+			<h2>{{_ "Ask_sessions_av_email"}}</h2>
+		</div>
+
+		<div>
+			{{> emailsAdd}}
+		</div>
+	</div>
+</template>
+
+<template name="emailsAdd">
+	<form class="form-group webcemail-content">
+		<div class='col-sm-12'>
+			<div class="form-group">
+				<div class="button-webcemail-third-cnt">
+					<button type="button" class="btn button-webcemail-full btn-primary add-btn-participant">{{_ "Add"}}</button>
+				</div>
+				<div class="button-webcemail-third-cnt">
+					<button type="button" class="btn button-webcemail-full btn-primary add-btn-channel-participants">{{_ "Add_channel_user"}}</button>
+				</div>
+				<div class="button-webcemail-third-cnt">
+					<button type="button" class="btn button-webcemail-full btn-primary remove-btn-participants">{{_ "Remove_all_participants"}}</button>
+				</div>
+			</div>
+			<div class="form-group">
+				<div class="button-webcemail-full-cnt">
+					<button type="button" id="invite_button" class="btn button-webcemail-full btn-success btn-invite-participants" disabled>{{_ "Invite"}}</button>
+				</div>
+			</div>
+		</div>
+		<div class='col-sm-12'>
+			<div class="form-group">
+				<div class='input-group date align-pad' id='datetimepicker4'>
+					<span class="input-group-addon">
+                        <span class="glyphicon glyphicon-calendar" title='{{_ "Webc_when"}}'></span>
+					</span>
+					<input type='text' class="form-control date_calendar" name="date_time" required/>
+				</div>
+				<div class="input-group align-pad">
+					<span class="input-group-addon">
+                        <span class="glyphicon glyphicon-time" title='{{_ "Webc_duration"}}'></span>
+					</span>
+					<div class="selectContainer">
+						<select class="form-control date_duration">
+                            <option value="15">15 {{_ "minutes"}}</option>
+                            <option value="30">30 {{_ "minutes"}}</option>
+                            <option value="45">45 {{_ "minutes"}}</option>
+                            <option value="60" selected="selected">1 {{_ "hour"}}</option>
+                            <option value="90">1 {{_ "hour"}} 30 {{_ "minutes"}}</option>
+                            <option value="120">2 {{_ "hours"}}</option>
+							<option value="180">3 {{_ "hours"}}</option>
+							<option value="240">4 {{_ "hours"}}</option>
+							<option value="300">5 {{_ "hours"}}</option>
+							<option value="360">6 {{_ "hours"}}</option>
+							<option value="420">7 {{_ "hours"}}</option>
+							<option value="480">8 {{_ "hours"}}</option>
+                        </select>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class='col-sm-12'>
+			{{#each emailInputs}} {{> emailsItem}} {{/each}}
+		</div>
+	</form>
+</template>
+
+<template name="emailsItem">
+	<form id="form_emails_item">
+		<div class="emailsItem">
+			<div class="form-group email-list">
+				<div class='input-group align-pad emailsItem control-group controls' emailId='{{emailId}}'>
+					<span class="input-group-addon">
+                    <span class="glyphicon glyphicon-envelope"></span>
+					</span>
+					<input emailId='{{emailId}}' type="email" aria-required="true" aria-invalid="false" value="{{value}}" class="email_input"
+					 name="email_address" id="name" placeholder="Email..." required="">
+					<div class="form-group clear-delete-btn">
+						<a type="button" class="btn btn-danger btn-large delete-btn">
+							<span class="glyphicon glyphicon-trash" title='{{_ "Webc_remove"}}'></span>
+						</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</form>
 </template>
