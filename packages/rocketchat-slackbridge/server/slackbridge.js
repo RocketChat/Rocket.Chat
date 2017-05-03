@@ -470,7 +470,6 @@ class SlackBridge {
 				logger.class.debug('Send message to Rocket.Chat');
 				RocketChat.sendMessage(rocketUser, rocketMsgObj, rocketChannel, true);
 			}
-			console.log(rocketMsgObj);
 		}
 	}
 
@@ -889,7 +888,7 @@ class SlackBridge {
 							if (details.comment) {
 								msg.msg = details.comment;
 							}
-							console.log(msg);
+
 							return RocketChat.sendMessage(rocketUser, msg, rocketChannel, true);
 						}
 					});
@@ -1514,10 +1513,7 @@ class SlackBridge {
 							channels: slackChannel.id
 						};
 
-						console.log(data);
-
 						const postResult = HTTP.post('https://slack.com/api/files.upload', { params: data });
-						console.log(postResult);
 
 					}));
 				}
@@ -1532,7 +1528,7 @@ class SlackBridge {
 					const dateTime = m.format('MMMM Do, YYYY h:mm A');
 					const fallback = `[${dateTime}] ${rocketAttachment.author_name}: ${rocketAttachment.text}`;
 					const text = this.convertRocketTextToSlackMsgTxtFormat(rocketAttachment.text);
-					console.log(rocketAttachment);
+
 					slackAttachments.push({
 						fallback: fallback,
 						color: '#D0D0D0',
@@ -1741,7 +1737,6 @@ class SlackBridge {
 
 		this.slackEventAdapter.on(EVENTS.STAR_ADDED, Meteor.bindEnvironment((slackEvent) => {
 			logger.events.debug('OnSlackEvent-STAR_ADDED: ', slackEvent);
-			console.log(slackEvent);
 			if (slackEvent) {
 				this.onSlackStarAdded(slackEvent);
 			}
@@ -1749,7 +1744,6 @@ class SlackBridge {
 
 		this.slackEventAdapter.on(EVENTS.STAR_REMOVED, Meteor.bindEnvironment((slackEvent) => {
 			logger.events.debug('OnSlackEvent-STAR_REMOVED: ', slackEvent);
-			console.log(slackEvent);
 			if (slackEvent) {
 				this.onSlackstarRemoved(slackEvent);
 			}
