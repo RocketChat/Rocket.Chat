@@ -9,7 +9,7 @@ fi
 backup_file=${1}
 if [[ ! -f ${backup_file} ]]
 then
-    echo "[-] Usage: snap run rocketchat-server.rcrestore ${SNAP_COMMON}/backup_file.tgz"
+    echo "[-] Usage: snap run rocketchat-server.restoredb ${SNAP_COMMON}/backup_file.tgz"
     exit
 fi
 
