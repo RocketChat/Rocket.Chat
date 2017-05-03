@@ -97,9 +97,13 @@ Template.emailsAdd.events
 		start_ts = m.unix()
 		duration = t.find(".date_duration").value
 		duration_seconds = parseInt(duration, 10 ) * 60
-		Meteor.call 'webcByEmailRequest', Session.get('openedRoom'), emails, start_ts, "#{duration_seconds}", RocketChat.settings.get('Webc_PhoneNumber'), (error, result) ->
+		Meteor.call 'webcByEmailRequest', Session.get('openedRoom'), emails, start_ts, "#{duration_seconds}", RocketChat.settings.get('Webc_PhoneNumber'), (error, result) =>
 			if not result?
-				return
+				reason = "500"
+				if error and error.reason
+					reason = error.reason
+				msg = "Error in WebCollabRequest (" + reason + ")"
+				toastr.error msg
 			else
 				$("#invite_button").attr("disabled", true)
 				Session.set('emailInputs', [])

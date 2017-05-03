@@ -25,5 +25,10 @@ Meteor.methods
         try
             results = ng.create_live_bbb(attendees, start_ts, duration, public_number)
         catch e
-            return
+            if e instanceof Meteor.Error
+                throw e
+            if e.response?
+                throw new Meteor.Error('error-webc-http', e.response.statusCode)
+            else
+                throw new Meteor.Error('error-webcemail-generic', "Unhandled Error")
 
