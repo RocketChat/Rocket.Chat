@@ -17,4 +17,6 @@ else
         echo "Extracting ${pkg}..."
         dpkg-deb -R ${pkg} ./
     done
+
+    mv usr/bin bin
 fi
