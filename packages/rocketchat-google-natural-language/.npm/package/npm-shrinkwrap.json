@@ -41,8 +41,8 @@
       "from": "assert-plus@>=0.2.0 <0.3.0"
     },
     "async": {
-      "version": "2.3.0",
-      "resolved": "https://registry.npmjs.org/async/-/async-2.3.0.tgz",
+      "version": "2.4.0",
+      "resolved": "https://registry.npmjs.org/async/-/async-2.4.0.tgz",
       "from": "async@>=2.1.2 <3.0.0"
     },
     "asynckit": {

@@ -8,18 +8,28 @@ Package.describe({
 
 Package.onUse(function(api) {
 	api.use('ecmascript');
+	api.use('rocketchat:api');
 	api.use('rocketchat:lib');
+	api.use('rocketchat:file');
 	api.use('rocketchat:logger');
 	api.use('matb33:collection-hooks');
 
-	api.addFiles('slashcommand/slackbridge_import.client.js', 'client');
+	// client
+	api.addFiles('client/slashcommand/slackbridge_import.client.js', 'client');
 
-	api.addFiles('logger.js', 'server');
-	api.addFiles('settings.js', 'server');
-	api.addFiles('slackbridge.js', 'server');
-	api.addFiles('slashcommand/slackbridge_import.server.js', 'server');
+	// server
+	api.addFiles('server/api/api.js', 'server');
+
+	api.addFiles('server/models/Users.js');
+	api.addFiles('server/models/Messages.js');
+
+	api.addFiles('server/logger.js', 'server');
+	api.addFiles('server/settings.js', 'server');
+	api.addFiles('server/slackbridge.js', 'server');
+	api.addFiles('server/slashcommand/slackbridge_import.server.js', 'server');
 });
 
 Npm.depends({
-	'slack-client': '2.0.6'
+	'@slack/client': '3.9.0',
+	'@slack/events-api': '1.0.1'
 });

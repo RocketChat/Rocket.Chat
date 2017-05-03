@@ -6,6 +6,33 @@ Meteor.startup(function() {
 			public: true
 		});
 
+		this.add('SlackBridge_Client_ID', '', {
+			type: 'string',
+			enableQuery: {
+				_id: 'SlackBridge_Enabled',
+				value: true
+			},
+			i18nLabel: 'Client_ID'
+		});
+
+		this.add('SlackBridge_Client_Secret', '', {
+			type: 'string',
+			enableQuery: {
+				_id: 'SlackBridge_Enabled',
+				value: true
+			},
+			i18nLabel: 'Client_Secret'
+		});
+
+		this.add('SlackBridge_Verification_Token', '', {
+			type: 'string',
+			enableQuery: {
+				_id: 'SlackBridge_Enabled',
+				value: true
+			},
+			i18nLabel: 'Verification_Token'
+		});
+
 		this.add('SlackBridge_APIToken', '', {
 			type: 'string',
 			enableQuery: {
@@ -13,6 +40,15 @@ Meteor.startup(function() {
 				value: true
 			},
 			i18nLabel: 'API_Token'
+		});
+
+		this.add('SlackBridge_Event_API_Enabled', false, {
+			type: 'boolean',
+			enableQuery: {
+				_id: 'SlackBridge_Enabled',
+				value: true
+			},
+			i18nLabel: 'Event_API_Enabled'
 		});
 
 		this.add('SlackBridge_AliasFormat', '', {

@@ -463,6 +463,7 @@
   "Enable_Desktop_Notifications": "Enable Desktop Notifications",
   "Enable_two-factor_authentication": "Enable two-factor authentication",
   "Enabled": "Enabled",
+  "Event_API_Enabled": "Event API Enabled",
   "Enable_Svg_Favicon": "Enable SVG favicon",
   "Encrypted_message": "Encrypted message",
   "End_OTR": "End OTR",
@@ -1715,5 +1716,6 @@
   "your_message": "your message",
   "your_message_optional": "your message (optional)",
   "Your_password_is_wrong": "Your password is wrong!",
-  "Your_push_was_sent_to_s_devices": "Your push was sent to %s devices"
+  "Your_push_was_sent_to_s_devices": "Your push was sent to %s devices",
+  "Verification_Token": "Verification Token"
 }
