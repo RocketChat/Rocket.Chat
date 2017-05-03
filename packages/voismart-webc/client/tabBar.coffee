@@ -101,6 +101,7 @@ Template.emailsAdd.events
 			if not result?
 				return
 			else
+				$("#invite_button").attr("disabled", true)
 				Session.set('emailInputs', [])
 				RocketChat.TabBar.closeFlex()
 
