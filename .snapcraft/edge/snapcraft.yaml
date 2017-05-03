@@ -27,8 +27,10 @@ apps:
         plugs: [network, network-bind]
     mongo:
         command: env LC_ALL=C mongo
+        plugs: [network]
     restoredb:
         command: env LC_ALL=C restoredb
+        plugs: [network]
     backupdb:
         command: env LC_ALL=c rcbackup
         plugs: [network]

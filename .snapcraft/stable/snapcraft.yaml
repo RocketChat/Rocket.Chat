@@ -7,7 +7,7 @@
 # 5.  `snapcraft snap`
 
 name: rocketchat-server
-version: #{RC_VERSION}
+version: 0.55.1
 summary: Rocket.Chat server
 description: Have your own Slack like online chat, built with Meteor. https://rocket.chat/
 confinement: strict
@@ -27,8 +27,10 @@ apps:
         plugs: [network, network-bind]
     mongo:
         command: env LC_ALL=C mongo
+        plugs: [network]
     restoredb:
         command: env LC_ALL=C restoredb
+        plugs: [network]
     backupdb:
         command: env LC_ALL=c rcbackup
         plugs: [network]
