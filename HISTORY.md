@@ -1,3 +1,63 @@
+<a name="0.56.0-rc.0"></a>
+# 0.56.0-rc.0 (2017-05-04)
+
+
+### New Features
+
+- [#6881](https://github.com/RocketChat/Rocket.Chat/pull/6881) Add a pointer cursor to message images
+- [#6615](https://github.com/RocketChat/Rocket.Chat/pull/6615) Add a setting to not run outgoing integrations on message edits
+- [#5373](https://github.com/RocketChat/Rocket.Chat/pull/5373) Add option on Channel Settings: Hide Notifications and Hide Unread Room Status ([#2707](https://github.com/RocketChat/Rocket.Chat/issue/2707), [#2143](https://github.com/RocketChat/Rocket.Chat/issue/2143))
+- [#6807](https://github.com/RocketChat/Rocket.Chat/pull/6807) create a method 'create token'
+- [#6827](https://github.com/RocketChat/Rocket.Chat/pull/6827) Make channels.info accept roomName, just like groups.info
+- [#6797](https://github.com/RocketChat/Rocket.Chat/pull/6797) Option to allow to signup as anonymous
+- [#6722](https://github.com/RocketChat/Rocket.Chat/pull/6722) Remove lesshat
+- [#6842](https://github.com/RocketChat/Rocket.Chat/pull/6842) Snap ARM support
+- [#6692](https://github.com/RocketChat/Rocket.Chat/pull/6692) Use tokenSentVia parameter for clientid/secret to token endpoint
+
+
+### Bug Fixes
+
+- [#6845](https://github.com/RocketChat/Rocket.Chat/pull/6845) Added helper for testing if the current user matches the params
+- [#6737](https://github.com/RocketChat/Rocket.Chat/pull/6737) Archiving Direct Messages
+- [#6734](https://github.com/RocketChat/Rocket.Chat/pull/6734) Bug with incoming integration (0.55.1)
+- [#6768](https://github.com/RocketChat/Rocket.Chat/pull/6768) CSV importer: require that there is some data in the zip, not ALL data
+- [#6709](https://github.com/RocketChat/Rocket.Chat/pull/6709) emoji picker exception
+- [#6721](https://github.com/RocketChat/Rocket.Chat/pull/6721) Fix Caddy by forcing go 1.7 as needed by one of caddy's dependencies
+- [#6798](https://github.com/RocketChat/Rocket.Chat/pull/6798) Fix iframe wise issues
+- [#6704](https://github.com/RocketChat/Rocket.Chat/pull/6704) Fix message types
+- [#6760](https://github.com/RocketChat/Rocket.Chat/pull/6760) Hides nav buttons when selecting own profile
+- [#6747](https://github.com/RocketChat/Rocket.Chat/pull/6747) Incorrect error message when creating channel
+- [#6800](https://github.com/RocketChat/Rocket.Chat/pull/6800) Quoted and replied messages not retaining the original message's alias
+- [#6796](https://github.com/RocketChat/Rocket.Chat/pull/6796) REST API user.update throwing error due to rate limiting
+- [#6767](https://github.com/RocketChat/Rocket.Chat/pull/6767) Search full name on client side
+- [#6758](https://github.com/RocketChat/Rocket.Chat/pull/6758) Sort by real name if use real name setting is enabled
+- [#6861](https://github.com/RocketChat/Rocket.Chat/pull/6861) start/unstar message
+
+
+<details>
+<summary>Others</summary>
+
+- [#5986](https://github.com/RocketChat/Rocket.Chat/pull/5986) Anonymous use
+- [#6368](https://github.com/RocketChat/Rocket.Chat/pull/6368) Breaking long URLS to prevent overflow
+- [#6671](https://github.com/RocketChat/Rocket.Chat/pull/6671) Convert Katex Package to Js
+- [#6780](https://github.com/RocketChat/Rocket.Chat/pull/6780) Convert Mailer Package to Js
+- [#6694](https://github.com/RocketChat/Rocket.Chat/pull/6694) Convert markdown to js
+- [#6689](https://github.com/RocketChat/Rocket.Chat/pull/6689) Convert Mentions-Flextab Package to Js
+- [#6781](https://github.com/RocketChat/Rocket.Chat/pull/6781) Convert Message-Star Package to js 
+- [#6688](https://github.com/RocketChat/Rocket.Chat/pull/6688) Convert Oembed Package to Js
+- [#6672](https://github.com/RocketChat/Rocket.Chat/pull/6672) Converted rocketchat-lib 3
+- [#6654](https://github.com/RocketChat/Rocket.Chat/pull/6654) disable proxy configuration
+- [#6816](https://github.com/RocketChat/Rocket.Chat/pull/6816) LingoHub based on develop
+- [#6715](https://github.com/RocketChat/Rocket.Chat/pull/6715) LingoHub based on develop
+- [#6703](https://github.com/RocketChat/Rocket.Chat/pull/6703) LingoHub based on develop
+- [#6858](https://github.com/RocketChat/Rocket.Chat/pull/6858) Meteor update
+- [#6706](https://github.com/RocketChat/Rocket.Chat/pull/6706) meteor update to 1.4.4
+- [#6804](https://github.com/RocketChat/Rocket.Chat/pull/6804) Missing useful fields in admin user list [#5110](https://github.com/RocketChat/Rocket.Chat/issue/5110)
+- [#6593](https://github.com/RocketChat/Rocket.Chat/pull/6593) Rocketchat lib2
+</details>
+
+
+
 <a name="0.56.0-develop"></a>
 # 0.56.0-develop (2017-04-18)
 
