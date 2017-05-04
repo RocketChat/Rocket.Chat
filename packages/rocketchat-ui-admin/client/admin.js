@@ -21,7 +21,7 @@ const setFieldValue = function(settingId, value, type, editor) {
 			input.parents('.horizontal').find('select[name="color-editor"]').val(editor).change();
 			input.val(value).change();
 			if (editor === 'color') {
-				return new jscolor(input);
+				return new jscolor(input); //eslint-disable-line
 			}
 			break;
 		default:
@@ -131,36 +131,13 @@ Template.admin.helpers({
 					}
 				});
 			}
-			if (sections[setting.section || ''] == null) {
-				sections[setting.section] = [];
+			const settingSection = setting.section || '';
+			if (sections[settingSection] == null) {
+				sections[settingSection] = [];
 			}
-			sections[setting.section || ''].push(setting);
+			sections[settingSection].push(setting);
 		});
 
-		Object.keys(settings).forEach((key) =>{
-			const setting = settings[key];
-			if (setting.i18nDefaultQuery != null) {
-				if (_.isString(setting.i18nDefaultQuery)) {
-					i18nDefaultQuery = JSON.parse(setting.i18nDefaultQuery);
-				} else {
-					i18nDefaultQuery = setting.i18nDefaultQuery;
-				}
-				if (!_.isArray(i18nDefaultQuery)) {
-					i18nDefaultQuery = [i18nDefaultQuery];
-				}
-				Object.keys(i18nDefaultQuery).forEach((key) => {
-					const item = i18nDefaultQuery[key];
-					if (RocketChat.settings.collectionPrivate.findOne(item) != null) {
-						setting.value = TAPi18n.__(`${ setting._id }_Default`);
-					}
-				});
-
-			}
-			if (sections[setting.section || ''] == null) {
-				sections[setting.section] = [];
-			}
-			sections[setting.section || ''].push(setting);
-		});
 		group.sections = [];
 		Object.keys(sections).forEach((key) =>{
 			const value = sections[key];
@@ -548,7 +525,6 @@ Template.admin.events({
 		const name = this.section.replace('Custom OAuth: ', '');
 		const config = {
 			title: TAPi18n.__('Are_you_sure'),
-			type: 'input',
 			type: 'warning',
 			showCancelButton: true,
 			confirmButtonColor: '#DD6B55',
@@ -574,14 +550,14 @@ Template.admin.events({
 			}
 		}
 		const results = [];
-		for (i = 0, len = files.length; i < len; i++) {
-			blob = files[i];
+		Object.keys(files).forEach((key) => {
+			const blob = files[key];
 			toastr.info(TAPi18n.__('Uploading_file'));
-			reader = new FileReader();
+			const reader = new FileReader();
 			reader.readAsBinaryString(blob);
-			results.push(reader.onloadend = (function(_this) {
+			results.push(reader.onloadend = () => {
 				return function() {
-					return Meteor.call('setAsset', reader.result, blob.type, _this.asset, function(err, data) {
+					return Meteor.call('setAsset', reader.result, blob.type, this.asset, function(err) {
 						if (err != null) {
 							handleError(err);
 							console.log(err);
@@ -590,8 +566,8 @@ Template.admin.events({
 						return toastr.success(TAPi18n.__('File_uploaded'));
 					});
 				};
-			}(this)));
-		}
+			});
+		});
 		return results;
 	},
 	'click .expand'(e) {
@@ -605,12 +581,11 @@ Template.admin.events({
 		$(e.currentTarget).closest('.section').addClass('section-collapsed');
 		return $(e.currentTarget).closest('button').addClass('expand').removeClass('collapse').find('span').text(TAPi18n.__('Expand'));
 	},
-	'click button.action'(e) {
+	'click button.action'() {
 		if (this.type !== 'action') {
 			return;
 		}
 		return Meteor.call(this.value, function(err, data) {
-			let args;
 			if (err != null) {
 				err.details = _.extend(err.details || {}, {
 					errorTitle: 'Error'
@@ -618,28 +593,25 @@ Template.admin.events({
 				handleError(err);
 				return;
 			}
-			args = [data.message].concat(data.params);
+			const args = [data.message].concat(data.params);
 			return toastr.success(TAPi18n.__.apply(TAPi18n, args), TAPi18n.__('Success'));
 		});
 	},
 	'click .button-fullscreen'() {
-		let codeMirrorBox;
-		codeMirrorBox = $(`.code-mirror-box[data-editor-id="${ this._id }"]`);
+		const codeMirrorBox = $(`.code-mirror-box[data-editor-id="${ this._id }"]`);
 		codeMirrorBox.addClass('code-mirror-box-fullscreen content-background-color');
 		return codeMirrorBox.find('.CodeMirror')[0].CodeMirror.refresh();
 	},
 	'click .button-restore'() {
-		let codeMirrorBox;
-		codeMirrorBox = $(`.code-mirror-box[data-editor-id="${ this._id }"]`);
+		const codeMirrorBox = $(`.code-mirror-box[data-editor-id="${ this._id }"]`);
 		codeMirrorBox.removeClass('code-mirror-box-fullscreen content-background-color');
 		return codeMirrorBox.find('.CodeMirror')[0].CodeMirror.refresh();
 	},
 	'autocompleteselect .autocomplete'(event, instance, doc) {
-		let selectedRooms, value;
-		selectedRooms = instance.selectedRooms.get();
+		const selectedRooms = instance.selectedRooms.get();
 		selectedRooms[this.id] = (selectedRooms[this.id] || []).concat(doc);
 		instance.selectedRooms.set(selectedRooms);
-		value = selectedRooms[this.id];
+		const value = selectedRooms[this.id];
 		TempSettings.update({
 			_id: this.id
 		}, {
@@ -652,15 +624,14 @@ Template.admin.events({
 		return event.currentTarget.focus();
 	},
 	'click .remove-room'(event, instance) {
-		let docId, selectedRooms, settingId, value;
-		docId = this._id;
-		settingId = event.currentTarget.getAttribute('data-setting');
-		selectedRooms = instance.selectedRooms.get();
+		const docId = this._id;
+		const settingId = event.currentTarget.getAttribute('data-setting');
+		const selectedRooms = instance.selectedRooms.get();
 		selectedRooms[settingId] = _.reject(selectedRooms[settingId] || [], function(setting) {
 			return setting._id === docId;
 		});
 		instance.selectedRooms.set(selectedRooms);
-		value = selectedRooms[settingId];
+		const value = selectedRooms[settingId];
 		return TempSettings.update({
 			_id: settingId
 		}, {
@@ -678,8 +649,7 @@ Template.admin.onRendered(function() {
 		return SideNav.openFlex();
 	});
 	return Tracker.autorun(function() {
-		let hasColor;
-		hasColor = TempSettings.findOne({
+		const hasColor = TempSettings.findOne({
 			group: FlowRouter.getParam('group'),
 			type: 'color'
 		}, {
@@ -690,7 +660,7 @@ Template.admin.onRendered(function() {
 		if (hasColor) {
 			return Meteor.setTimeout(function() {
 				return $('.colorpicker-input').each(function(index, el) {
-					return new jscolor(el);
+					return new jscolor(el); //eslint-disable-line
 				});
 			}, 400);
 		}
