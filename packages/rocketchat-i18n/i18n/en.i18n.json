@@ -1717,5 +1717,6 @@
   "your_message_optional": "your message (optional)",
   "Your_password_is_wrong": "Your password is wrong!",
   "Your_push_was_sent_to_s_devices": "Your push was sent to %s devices",
-  "Verification_Token": "Verification Token"
+  "Verification_Token": "Verification Token",
+  "Verification_Token_Description": "Verification Token is required in order to use Slack's event API."
 }
