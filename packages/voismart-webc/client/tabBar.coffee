@@ -104,6 +104,9 @@ Template.emailsAdd.events
 					reason = error.reason
 				msg = "Error in WebCollabRequest (" + reason + ")"
 				toastr.error msg
+			if result and result.success?
+				msg = "Error in WebCollabRequest (" + result.msg + ")"
+				toastr.error msg
 			else
 				$("#invite_button").attr("disabled", true)
 				Session.set('emailInputs', [])
