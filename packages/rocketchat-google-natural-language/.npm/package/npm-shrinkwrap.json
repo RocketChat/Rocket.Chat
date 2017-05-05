@@ -1064,8 +1064,8 @@
       "from": "is-property@>=1.0.0 <2.0.0"
     },
     "is-stream-ended": {
-      "version": "0.1.0",
-      "resolved": "https://registry.npmjs.org/is-stream-ended/-/is-stream-ended-0.1.0.tgz",
+      "version": "0.1.2",
+      "resolved": "https://registry.npmjs.org/is-stream-ended/-/is-stream-ended-0.1.2.tgz",
       "from": "is-stream-ended@>=0.1.0 <0.2.0"
     },
     "is-typedarray": {
