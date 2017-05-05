@@ -1,3 +1,13 @@
+<a name="0.56.0-rc.1"></a>
+# 0.56.0-rc.1 (2017-05-05)
+
+
+### Bug Fixes
+
+- [#6896](https://github.com/RocketChat/Rocket.Chat/pull/6896) Users status on main menu always offline
+
+
+
 <a name="0.56.0-rc.0"></a>
 # 0.56.0-rc.0 (2017-05-04)
 
