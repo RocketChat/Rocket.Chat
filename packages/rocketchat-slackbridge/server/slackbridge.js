@@ -118,6 +118,7 @@ class SlackBridge {
 			slackMsgTxt = slackMsgTxt.replace(/:piggy:/g, ':pig:');
 			slackMsgTxt = slackMsgTxt.replace(/:uk:/g, ':gb:');
 			slackMsgTxt = slackMsgTxt.replace(/<(http[s]?:[^>]*)>/g, '$1');
+			slackMsgTxt = slackMsgTxt.replace(/(http[s]?:[^\|]*)(\|.*$)/g, '$1');
 
 			slackMsgTxt.replace(/(?:<@)([a-zA-Z0-9]+)(?:\|.+)?(?:>)/g, (match, userId) => {
 				if (!this.userTags[userId]) {
