@@ -1,4 +1,4 @@
-//Returns the private group subscription IF found otherwise it will reutrn the failure of why it didn't. Check the `statusCode` property
+//Returns the private group subscription IF found otherwise it will return the failure of why it didn't. Check the `statusCode` property
 function findPrivateGroupByIdOrName({ roomId, roomName, userId, checkedArchived = true }) {
 	if ((!roomId || !roomId.trim()) && (!roomName || !roomName.trim())) {
 		throw new Meteor.Error('error-roomid-param-not-provided', 'The parameter "roomId" or "roomName" is required');
