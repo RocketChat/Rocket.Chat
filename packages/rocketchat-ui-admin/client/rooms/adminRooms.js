@@ -1,4 +1,5 @@
-/*globals RocketChatTabBar */
+/*globals RocketChatTabBar, AdminChatRoom */
+
 this.AdminChatRoom = new Mongo.Collection('rocketchat_room');
 
 Template.adminRooms.helpers({
@@ -22,8 +23,8 @@ Template.adminRooms.helpers({
 		}
 	},
 	roomCount() {
-		const instance = Template.instance();
-		return instance.rooms() && instance.rooms().count();
+		const rooms = Template.instance().rooms();
+		return rooms && rooms.count();
 	},
 	name() {
 		if (this.t === 'c' || this.t === 'p') {
@@ -94,8 +95,11 @@ Template.adminRooms.onCreated(function() {
 		return instance.ready.set(subscription.ready());
 	});
 	this.rooms = function() {
-		let filter = _.trim((ref = instance.filter) != null ? ref.get() : void 0);
-		let types = (ref1 = instance.types) != null ? ref1.get() : void 0;
+		let filter;
+		if (instance.filter && instance.filter.get()) {
+			filter = _.trim(instance.filter.get());
+		}
+		let types = instance.types && instance.types.get();
 		if (!_.isArray(types)) {
 			types = [];
 		}
@@ -119,8 +123,9 @@ Template.adminRooms.onCreated(function() {
 				$in: types
 			};
 		}
+		const limit = instance.limit && instance.limit.get();
 		return AdminChatRoom.find(query, {
-			limit: (ref2 = instance.limit) != null ? ref2.get() : void 0,
+			limit,
 			sort: {
 				'default': -1,
 				name: 1
