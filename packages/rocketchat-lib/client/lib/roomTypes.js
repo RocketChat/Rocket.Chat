@@ -22,7 +22,7 @@ RocketChat.roomTypes = new class extends roomTypesCommon {
 		return _.map(list, (t) => t.identifier);
 	}
 	getUserStatus(roomType, roomId) {
-		this.roomTypes[roomType] && typeof this.roomTypes[roomType].getUserStatus === 'function' && this.roomTypes[roomType].getUserStatus(roomId);
+		return this.roomTypes[roomType] && typeof this.roomTypes[roomType].getUserStatus === 'function' && this.roomTypes[roomType].getUserStatus(roomId);
 	}
 	findRoom(roomType, identifier, user) {
 		return this.roomTypes[roomType] && this.roomTypes[roomType].findRoom(identifier, user);
