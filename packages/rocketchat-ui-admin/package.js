@@ -39,13 +39,13 @@ Package.onUse(function(api) {
 
 	// coffee files
 	api.addFiles('client/admin.js', 'client');
-	api.addFiles('client/adminFlex.coffee', 'client');
+	api.addFiles('client/adminFlex.js', 'client');
 	api.addFiles('client/adminInfo.js', 'client');
 
-	api.addFiles('client/rooms/adminRooms.coffee', 'client');
+	api.addFiles('client/rooms/adminRooms.js', 'client');
 
-	api.addFiles('client/users/adminInviteUser.coffee', 'client');
-	api.addFiles('client/users/adminUserChannels.coffee', 'client');
+	api.addFiles('client/users/adminInviteUser.js', 'client');
+	api.addFiles('client/users/adminUserChannels.js', 'client');
 	api.addFiles('client/users/adminUsers.js', 'client');
 
 	api.addFiles('publications/adminRooms.js', 'server');

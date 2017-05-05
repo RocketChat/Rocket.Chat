@@ -37,21 +37,18 @@ Template.adminFlex.helpers({
 				};
 			}
 		}
-		RocketChat.settings.collectionPrivate.find(query).fetch().map((al) => {
-			return function(el) {
-				console.log(el);
-				console.log(al);
-				el.label = label.apply(el);
-				return el;
-			};
-		}).sort(() => {
-			return function(a, b) {
-				if (a.label.toLowerCase() >= b.label.toLowerCase()) {
-					return 1;
-				} else {
-					return -1;
-				}
-			};
+		const fetch = RocketChat.settings.collectionPrivate.find(query).fetch();
+		console.log(fetch);
+
+		fetch.map((el) => {
+			el.label = label.apply(el);
+			return el;
+		}).sort((a, b) => {
+			if (a.label.toLowerCase() >= b.label.toLowerCase()) {
+				return 1;
+			} else {
+				return -1;
+			}
 		});
 	},
 	label,
