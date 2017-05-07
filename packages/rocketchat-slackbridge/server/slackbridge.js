@@ -162,7 +162,7 @@ class SlackBridge {
 			}
 
 			if (slackAttachment.text) {
-				attachment.text = slackAttachment.text;
+				attachment.text = this.convertSlackMsgTxtToRocketTxtFormat(slackAttachment.text);
 			}
 
 			if (slackAttachment.author_subname) {
