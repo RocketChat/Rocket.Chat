@@ -64,7 +64,11 @@ class SlackBridge {
 			this.connected = true;
 			logger.connection.info('Connecting via token: ', this.apiToken);
 			const RtmClient = this.slackClient.RtmClient;
-			this.rtm = new RtmClient(this.apiToken, {logLevel: 'debug'});
+			const rtmOptions = {};
+			if (Meteor.isDevelopment) {
+				rtmOptions.logLevel = 'debug';
+			}
+			this.rtm = new RtmClient(this.apiToken, rtmOptions);
 			// this.rtm.start();
 
 			Meteor.startup(() => {
