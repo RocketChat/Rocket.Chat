@@ -15,7 +15,6 @@ Package.onUse(function(api) {
 		'mongo',
 		'ecmascript',
 		'templating',
-		'coffeescript',
 		'underscore',
 		'tracker',
 		'rocketchat:lib',
@@ -33,7 +32,7 @@ Package.onUse(function(api) {
 	api.addFiles('client/popup/messagePopupSlashCommand.html', 'client');
 	api.addFiles('client/popup/messagePopupUser.html', 'client');
 
-	api.addFiles('client/message.coffee', 'client');
+	api.addFiles('client/message.js', 'client');
 	api.addFiles('client/messageBox.js', 'client');
 	api.addFiles('client/popup/messagePopup.js', 'client');
 	api.addFiles('client/popup/messagePopupChannel.js', 'client');
