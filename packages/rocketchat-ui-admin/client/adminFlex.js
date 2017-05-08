@@ -1,4 +1,4 @@
-/*globals menu */
+/* globals menu */
 Template.adminFlex.onCreated(function() {
 	this.settingsFilter = new ReactiveVar('');
 	if (RocketChat.settings.cachedCollectionPrivate == null) {
@@ -27,7 +27,7 @@ Template.adminFlex.helpers({
 			let groups = [];
 			records.forEach(function(record) {
 				if (filterRegex.test(TAPi18n.__(record.i18nLabel || record._id))) {
-					groups.push(record.group || record._id);
+					return groups.push(record.group || record._id);
 				}
 			});
 			groups = _.unique(groups);
@@ -37,13 +37,10 @@ Template.adminFlex.helpers({
 				};
 			}
 		}
-		const fetch = RocketChat.settings.collectionPrivate.find(query).fetch();
-		console.log(fetch);
-
-		fetch.map((el) => {
+		return RocketChat.settings.collectionPrivate.find(query).fetch().map(function(el) {
 			el.label = label.apply(el);
 			return el;
-		}).sort((a, b) => {
+		}).sort(function(a, b) {
 			if (a.label.toLowerCase() >= b.label.toLowerCase()) {
 				return 1;
 			} else {
