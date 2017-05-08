@@ -11,7 +11,7 @@
 	// window.addEventListener 'focus', ->
 		// readMessage.refreshUnreadMark(undefined, true)
 
-const readMessage = new  class {
+const readMessage = new class {
 	constructor() {
 		this.debug = false;
 		this.callbacks = [];
