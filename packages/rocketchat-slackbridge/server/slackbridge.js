@@ -766,6 +766,13 @@ class SlackBridge {
 				return;
 			case MSG_SUBTYPES.FILE_SHARE:
 				if (slackMessage.file && slackMessage.file.url_private_download !== undefined) {
+					const rocketMsg = RocketChat.models.Messages.findOneBySlackFileId(this.createRocketFileID(slackMessage.file.id));
+
+					if (rocketMsg) {
+						// do nothing, file already imported from Slack
+						return;
+					}
+
 					const details = {
 						message_id: this.createRocketID(slackMessage.channel, slackMessage.ts),
 						file_id: this.createRocketFileID(slackMessage.file.id),
