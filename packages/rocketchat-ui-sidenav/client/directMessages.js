@@ -7,12 +7,20 @@ Template.directMessages.helpers({
 
 	rooms() {
 		const query = { t: { $in: ['d']}, f: { $ne: true }, open: true };
+		const sort = { 't': 1 };
 
 		if (Meteor.user() && Meteor.user().settings && Meteor.user().settings.preferences && Meteor.user().settings.preferences.unreadRoomsMode) {
-			query.alert =
-				{$ne: true};
+			query.$or = [
+				{ alert: { $ne: true } },
+				{ hideUnreadStatus: true }
+			];
 		}
 
-		return ChatSubscription.find(query, { sort: { 't': 1, 'name': 1 }});
+		if (RocketChat.settings.get('UI_Use_Real_Name')) {
+			sort.fname = 1;
+		}
+		sort.name = 1;
+
+		return ChatSubscription.find(query, { sort });
 	}
 });

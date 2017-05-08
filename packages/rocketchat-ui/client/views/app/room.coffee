@@ -83,15 +83,13 @@ Template.room.helpers
 		roomData = Session.get('roomData' + this._id)
 		return '' unless roomData
 
-		room = RocketChat.roomTypes.getRoomName roomData?.t, roomData
-		return room.fname if RocketChat.settings.get('UI_Use_Real_Name') and room.fname
-		return room.name
+		return RocketChat.roomTypes.getRoomName roomData.t, roomData
 
 	secondaryName: ->
 		roomData = Session.get('roomData' + this._id)
-		return '' unless roomData and RocketChat.settings.get('UI_Use_Real_Name') and roomData.t is 'd'
+		return '' unless roomData
 
-		return RocketChat.roomTypes.getRoomName(roomData.t, roomData).name
+		return RocketChat.roomTypes.getSecondaryRoomName roomData.t, roomData
 
 	roomTopic: ->
 		roomData = Session.get('roomData' + this._id)
@@ -181,6 +179,9 @@ Template.room.helpers
 	canPreview: ->
 		room = Session.get('roomData' + this._id)
 		if room.t isnt 'c'
+			return true
+
+		if RocketChat.settings.get('Accounts_AllowAnonymousRead') is true
 			return true
 
 		if RocketChat.authz.hasAllPermission('preview-c-room')
@@ -314,10 +315,16 @@ Template.room.events
 		, 10
 
 	"click .flex-tab .user-image > button" : (e, instance) ->
+		if not Meteor.userId()?
+			return
+
 		instance.tabBar.open()
 		instance.setUserDetail @user.username
 
 	'click .user-card-message': (e, instance) ->
+		if not Meteor.userId()?
+			return
+
 		roomData = Session.get('roomData' + this._arguments[1].rid)
 
 		if RocketChat.Layout.isEmbedded()
@@ -373,6 +380,9 @@ Template.room.events
 		RocketChat.MessageAction.hideDropDown()
 
 	"click .mention-link": (e, instance) ->
+		if not Meteor.userId()?
+			return
+
 		channel = $(e.currentTarget).data('channel')
 		if channel?
 			if RocketChat.Layout.isEmbedded()

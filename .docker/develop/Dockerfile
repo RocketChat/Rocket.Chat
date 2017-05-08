@@ -24,7 +24,9 @@ VOLUME /app/uploads
 WORKDIR /app/bundle
 
 # needs a mongoinstance - defaults to container linking with alias 'mongo'
-ENV MONGO_URL=mongodb://mongo:27017/rocketchat \
+ENV DEPLOY_METHOD=docker \
+    NODE_ENV=production \
+    MONGO_URL=mongodb://mongo:27017/rocketchat \
     MONGO_OPLOG_URL=mongodb://mongo:27017/local \
     HOME=/tmp \
     PORT=3000 \
