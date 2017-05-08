@@ -19,7 +19,10 @@ setFieldValue = (settingId, value, type, editor) ->
 
 			if editor is 'color'
 				new jscolor(input)
-
+		when 'roomPick'
+			selectedRooms = Template.instance().selectedRooms.get()
+			selectedRooms[settingId] = value
+			Template.instance().selectedRooms.set(selectedRooms)
 		else
 			input.val(value).change()
 
