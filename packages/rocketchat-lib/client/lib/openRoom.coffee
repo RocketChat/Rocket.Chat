@@ -5,12 +5,13 @@ currentTracker = undefined
 
 	Meteor.defer ->
 		currentTracker = Tracker.autorun (c) ->
-			if RoomManager.open(type + name).ready() isnt true
-				BlazeLayout.render 'main', { modal: RocketChat.Layout.isEmbedded(), center: 'loading' }
+			user = Meteor.user()
+			if (user? and not user.username?) or (not user? and RocketChat.settings.get('Accounts_AllowAnonymousRead') is false)
+				BlazeLayout.render 'main'
 				return
 
-			user = Meteor.user()
-			unless user?.username
+			if RoomManager.open(type + name).ready() isnt true
+				BlazeLayout.render 'main', { modal: RocketChat.Layout.isEmbedded(), center: 'loading' }
 				return
 
 			currentTracker = undefined

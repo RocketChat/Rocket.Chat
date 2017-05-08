@@ -1,18 +1,28 @@
 Meteor.methods({
 	canAccessRoom(rid, userId) {
 		check(rid, String);
-		check(userId, String);
+		check(userId, Match.Maybe(String));
 
-		const user = RocketChat.models.Users.findOneById(userId, {
-			fields: {
-				username: 1
-			}
-		});
+		let user;
 
-		if (!user || !user.username) {
+		if (!userId && RocketChat.settings.get('Accounts_AllowAnonymousRead') === false) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: 'canAccessRoom'
 			});
+		}
+
+		if (userId) {
+			user = RocketChat.models.Users.findOneById(userId, {
+				fields: {
+					username: 1
+				}
+			});
+
+			if (!user || !user.username) {
+				throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+					method: 'canAccessRoom'
+				});
+			}
 		}
 
 		if (!rid) {
@@ -24,7 +34,9 @@ Meteor.methods({
 		const room = RocketChat.models.Rooms.findOneById(rid);
 		if (room) {
 			if (RocketChat.authz.canAccessRoom.call(this, room, user)) {
-				room.username = user.username;
+				if (user) {
+					room.username = user.username;
+				}
 				return room;
 			}
 

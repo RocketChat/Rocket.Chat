@@ -177,14 +177,12 @@ Meteor.startup(function() {
 			return chatMessages[Session.get('openedRoom')].confirmDeleteMsg(message);
 		},
 		validation(message) {
-			if (RocketChat.models.Subscriptions.findOne({
-				rid: message.rid
-			}) == null) {
+			if (RocketChat.models.Subscriptions.findOne({rid: message.rid}) == null) {
 				return false;
 			}
 			const hasPermission = RocketChat.authz.hasAtLeastOnePermission('delete-message', message.rid);
 			const isDeleteAllowed = RocketChat.settings.get('Message_AllowDeleting');
-			const deleteOwn = message.u && message.u_id === Meteor.userId();
+			const deleteOwn = message.u && message.u._id === Meteor.userId();
 			if (!(hasPermission || (isDeleteAllowed && deleteOwn))) {
 				return;
 			}

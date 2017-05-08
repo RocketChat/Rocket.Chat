@@ -32,16 +32,16 @@ Meteor.methods({
 				action: 'Delete_message'
 			});
 		}
-		let msgTs;
-		let currentTsDiff;
 		const blockDeleteInMinutes = RocketChat.settings.get('Message_AllowDeleting_BlockDeleteInMinutes');
-		if ((blockDeleteInMinutes != null) && blockDeleteInMinutes !== 0) {
-			if (originalMessage.ts != null) {
-				msgTs = moment(originalMessage.ts);
+		if (blockDeleteInMinutes != null && blockDeleteInMinutes !== 0) {
+			if (originalMessage.ts == null) {
+				return;
 			}
-			if (msgTs != null) {
-				currentTsDiff = moment().diff(msgTs, 'minutes');
+			const msgTs = moment(originalMessage.ts);
+			if (msgTs == null) {
+				return;
 			}
+			const currentTsDiff = moment().diff(msgTs, 'minutes');
 			if (currentTsDiff > blockDeleteInMinutes) {
 				throw new Meteor.Error('error-message-deleting-blocked', 'Message deleting is blocked', {
 					method: 'deleteMessage'

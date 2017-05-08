@@ -165,7 +165,7 @@ class CachedCollection {
 		}
 
 		localforage.getItem(this.name, (error, data) => {
-			if (data && (data.version < this.version || data.token !== this.getToken())) {
+			if (data && (data.version < this.version || data.token !== this.getToken() || this.getToken() === undefined)) {
 				this.clearCache();
 				callback(false);
 				return;
