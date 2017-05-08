@@ -1,6 +1,10 @@
+/* globals renderEmoji renderMessageBody*/
 import moment from 'moment';
 
 Template.message.helpers({
+	encodeURI(text) {
+		return encodeURI(text);
+	},
 	isBot() {
 		if (this.bot != null) {
 			return 'bot';
@@ -103,8 +107,8 @@ Template.message.helpers({
 		}
 	},
 	showTranslated() {
-		if (RocketChat.settings.get('AutoTranslate_Enabled') && ((ref = this.u) != null ? ref._id : void 0) !== Meteor.userId() && !RocketChat.MessageTypes.isSystemMessage(this)) {
-			subscription = RocketChat.models.Subscriptions.findOne({
+		if (RocketChat.settings.get('AutoTranslate_Enabled') && this.u && this.u._id !== Meteor.userId() && !RocketChat.MessageTypes.isSystemMessage(this)) {
+			const subscription = RocketChat.models.Subscriptions.findOne({
 				rid: this.rid,
 				'u._id': Meteor.userId()
 			}, {
@@ -114,7 +118,7 @@ Template.message.helpers({
 				}
 			});
 			const language = RocketChat.AutoTranslate.getLanguage(this.rid);
-			return this.autoTranslateFetching || ((subscription != null ? subscription.autoTranslate : void 0) !== this.autoTranslateShowInverse && this.translations && this.translations[language]);
+			return this.autoTranslateFetching || subscription && subscription.autoTranslate !== this.autoTranslateShowInverse && this.translations && this.translations[language];
 		}
 	},
 	edited() {
@@ -137,15 +141,17 @@ Template.message.helpers({
 	canEdit() {
 		const hasPermission = RocketChat.authz.hasAtLeastOnePermission('edit-message', this.rid);
 		const isEditAllowed = RocketChat.settings.get('Message_AllowEditing');
-		const editOwn = ((ref = this.u) != null ? ref._id : void 0) === Meteor.userId();
+		const editOwn = this.u && this.u._id === Meteor.userId();
 		if (!(hasPermission || (isEditAllowed && editOwn))) {
 			return;
 		}
 		const blockEditInMinutes = RocketChat.settings.get('Message_AllowEditing_BlockEditInMinutes');
-		if ((blockEditInMinutes != null) && blockEditInMinutes !== 0) {
+		if (blockEditInMinutes) {
+			let msgTs;
 			if (this.ts != null) {
 				msgTs = moment(this.ts);
 			}
+			let currentTsDiff;
 			if (msgTs != null) {
 				currentTsDiff = moment().diff(msgTs, 'minutes');
 			}
@@ -155,18 +161,19 @@ Template.message.helpers({
 		}
 	},
 	canDelete() {
-		let blockDeleteInMinutes, currentTsDiff, deleteOwn, hasPermission, isDeleteAllowed, msgTs, ref;
-		hasPermission = RocketChat.authz.hasAtLeastOnePermission('delete-message', this.rid);
-		isDeleteAllowed = RocketChat.settings.get('Message_AllowDeleting');
-		deleteOwn = ((ref = this.u) != null ? ref._id : void 0) === Meteor.userId();
+		const hasPermission = RocketChat.authz.hasAtLeastOnePermission('delete-message', this.rid);
+		const isDeleteAllowed = RocketChat.settings.get('Message_AllowDeleting');
+		const deleteOwn = this.u && this.u._id === Meteor.userId();
 		if (!(hasPermission || (isDeleteAllowed && deleteOwn))) {
 			return;
 		}
-		blockDeleteInMinutes = RocketChat.settings.get('Message_AllowDeleting_BlockDeleteInMinutes');
-		if ((blockDeleteInMinutes != null) && blockDeleteInMinutes !== 0) {
+		const blockDeleteInMinutes = RocketChat.settings.get('Message_AllowDeleting_BlockDeleteInMinutes');
+		if (blockDeleteInMinutes) {
+			let msgTs;
 			if (this.ts != null) {
 				msgTs = moment(this.ts);
 			}
+			let currentTsDiff;
 			if (msgTs != null) {
 				currentTsDiff = moment().diff(msgTs, 'minutes');
 			}
@@ -186,27 +193,20 @@ Template.message.helpers({
 		}
 	},
 	hasOembed() {
-		let ref, ref1, ref2, ref3;
-		if (!(((ref = this.urls) != null ? ref.length : void 0) > 0 && (Template.oembedBaseWidget != null) && RocketChat.settings.get('API_Embed'))) {
+		if (!(this.urls && this.urls.length > 0 && Template.oembedBaseWidget != null && RocketChat.settings.get('API_Embed'))) {
 			return false;
 		}
-		if (ref1 = (ref2 = this.u) != null ? ref2.username : void 0, indexOf.call((ref3 = RocketChat.settings.get('API_EmbedDisabledFor')) != null ? ref3.split(',').map(function(username) {
-			return username.trim();
-		}) : void 0, ref1) >= 0) {
+		if (!(RocketChat.settings.get('API_EmbedDisabledFor')||'').split(',').map(username => username.trim()).includes(this.u && this.u.username)) {
 			return false;
 		}
 		return true;
 	},
 	reactions() {
-		let emoji, msgReactions, reaction, ref, total, userUsername, usernames;
-		msgReactions = [];
-		userUsername = Meteor.user().username;
-		ref = this.reactions;
-		for (emoji in ref) {
-			reaction = ref[emoji];
-			total = reaction.usernames.length;
-			usernames = `@${ reaction.usernames.slice(0, 15).join(', @') }`;
-			usernames = usernames.replace(`@${ userUsername }`, t('You').toLowerCase());
+		const userUsername = Meteor.user().username;
+		return Object.keys(this.reactions||{}).map(emoji => {
+			const reaction = this.reactions[emoji];
+			const total = reaction.usernames.length;
+			let usernames = `@${ reaction.usernames.slice(0, 15).join(', @') }`.replace(`@${ userUsername }`, t('You').toLowerCase());
 			if (total > 15) {
 				usernames = `${ usernames } ${ t('And_more', {
 					length: total - 15
@@ -217,15 +217,14 @@ Template.message.helpers({
 			if (usernames[0] !== '@') {
 				usernames = usernames[0].toUpperCase() + usernames.substr(1);
 			}
-			msgReactions.push({
+			return {
 				emoji,
 				count: reaction.usernames.length,
 				usernames,
 				reaction: ` ${ t('Reacted_with').toLowerCase() } ${ emoji }`,
 				userReacted: reaction.usernames.indexOf(userUsername) > -1
-			});
-		}
-		return msgReactions;
+			};
+		});
 	},
 	markUserReaction(reaction) {
 		if (reaction.userReacted) {
@@ -256,73 +255,63 @@ Template.message.helpers({
 		data.index = index;
 	},
 	hideCog() {
-		let subscription;
-		subscription = RocketChat.models.Subscriptions.findOne({
+		const subscription = RocketChat.models.Subscriptions.findOne({
 			rid: this.rid
 		});
 		if (subscription == null) {
 			return 'hidden';
 		}
-	},
-	hideUsernames() {
-		let prefs, ref, ref1;
-		prefs = (ref = Meteor.user()) != null ? (ref1 = ref.settings) != null ? ref1.preferences : void 0 : void 0;
-		if (prefs != null ? prefs.hideUsernames : void 0) {
-
-		}
 	}
 });
 
 Template.message.onCreated(function() {
-	let msg;
-	msg = Template.currentData();
-	this.wasEdited = (msg.editedAt != null) && !RocketChat.MessageTypes.isSystemMessage(msg);
-	return this.body = (function() {
-		let isSystemMessage, messageType, ref;
-		isSystemMessage = RocketChat.MessageTypes.isSystemMessage(msg);
-		messageType = RocketChat.MessageTypes.getType(msg);
-		if ((messageType != null ? messageType.render : void 0) != null) {
-			msg = messageType.render(msg);
-		} else if ((messageType != null ? messageType.template : void 0) != null) {
+	let msg = Template.currentData();
 
-		} else if ((messageType != null ? messageType.message : void 0) != null) {
-			if ((typeof messageType.data === 'function' ? messageType.data(msg) : void 0) != null) {
+	this.wasEdited = (msg.editedAt != null) && !RocketChat.MessageTypes.isSystemMessage(msg);
+
+	return this.body = (() => {
+		const isSystemMessage = RocketChat.MessageTypes.isSystemMessage(msg);
+		const messageType = RocketChat.MessageTypes.getType(msg)||{};
+		if (messageType.render) {
+			msg = messageType.render(msg);
+		} else if (messageType.template) {
+			// render template
+		} else if (messageType.message) {
+			if (typeof messageType.data === 'function' && messageType.data(msg)) {
 				msg = TAPi18n.__(messageType.message, messageType.data(msg));
 			} else {
 				msg = TAPi18n.__(messageType.message);
 			}
-		} else if (((ref = msg.u) != null ? ref.username : void 0) === RocketChat.settings.get('Chatops_Username')) {
+		} else if (msg.u && msg.u.username === RocketChat.settings.get('Chatops_Username')) {
 			msg.html = msg.msg;
 			msg = RocketChat.callbacks.run('renderMentions', msg);
+				// console.log JSON.stringify message
 			msg = msg.html;
 		} else {
 			msg = renderMessageBody(msg);
 		}
+
 		if (isSystemMessage) {
-			return RocketChat.Markdown(msg);
-		} else {
-			return msg;
+			msg.html = RocketChat.Markdown.parse(msg.html);
 		}
-	}());
+		return msg;
+	})();
 });
 
 Template.message.onViewRendered = function(context) {
-	let view;
-	view = this;
 	return this._domrange.onAttached(function(domRange) {
-		let $currentNode, $nextNode, currentDataset, currentMessageDate, currentNode, newMessage, nextDataset, nextNode, previousDataset, previousMessageDate, previousNode, ref, templateInstance;
-		currentNode = domRange.lastNode();
-		currentDataset = currentNode.dataset;
-		previousNode = currentNode.previousElementSibling;
-		nextNode = currentNode.nextElementSibling;
-		$currentNode = $(currentNode);
-		$nextNode = $(nextNode);
+		const currentNode = domRange.lastNode();
+		const currentDataset = currentNode.dataset;
+		const previousNode = currentNode.previousElementSibling;
+		const nextNode = currentNode.nextElementSibling;
+		const $currentNode = $(currentNode);
+		const $nextNode = $(nextNode);
 		if (previousNode == null) {
 			$currentNode.addClass('new-day').removeClass('sequential');
-		} else if ((previousNode != null ? previousNode.dataset : void 0) != null) {
-			previousDataset = previousNode.dataset;
-			previousMessageDate = new Date(parseInt(previousDataset.timestamp));
-			currentMessageDate = new Date(parseInt(currentDataset.timestamp));
+		} else if (previousNode.dataset) {
+			const previousDataset = previousNode.dataset;
+			const previousMessageDate = new Date(parseInt(previousDataset.timestamp));
+			const currentMessageDate = new Date(parseInt(currentDataset.timestamp));
 			if (previousMessageDate.toDateString() !== currentMessageDate.toDateString()) {
 				$currentNode.addClass('new-day').removeClass('sequential');
 			} else {
@@ -336,8 +325,8 @@ Template.message.onViewRendered = function(context) {
 				$currentNode.addClass('sequential');
 			}
 		}
-		if ((nextNode != null ? nextNode.dataset : void 0) != null) {
-			nextDataset = nextNode.dataset;
+		if (nextNode && nextNode.dataset) {
+			const nextDataset = nextNode.dataset;
 			if (nextDataset.date !== currentDataset.date) {
 				$nextNode.addClass('new-day').removeClass('sequential');
 			} else {
@@ -352,12 +341,17 @@ Template.message.onViewRendered = function(context) {
 			}
 		}
 		if (nextNode == null) {
-			templateInstance = $(`#chat-window-${ context.rid }`)[0] ? (ref = Blaze.getView($(`#chat-window-${ context.rid }`)[0])) != null ? ref.templateInstance() : void 0 : null;
+			const [el] = $(`#chat-window-${ context.rid }`);
+			const view = el && Blaze.getView(el);
+			const templateInstance = view && view.templateInstance();
+			if (!templateInstance) {
+				return;
+			}
 			if (currentNode.classList.contains('own') === true) {
-				return templateInstance != null ? templateInstance.atBottom = true : void 0;
-			} else if ((templateInstance != null ? templateInstance.firstNode : void 0) && (templateInstance != null ? templateInstance.atBottom : void 0) === false) {
-				newMessage = templateInstance != null ? templateInstance.find('.new-message') : void 0;
-				return newMessage != null ? newMessage.className = 'new-message background-primary-action-color color-content-background-color ' : void 0;
+				return (templateInstance.atBottom = true);
+			} else if (templateInstance.firstNode && templateInstance.atBottom === false) {
+				const newMessage = templateInstance.find('.new-message');
+				return newMessage && (newMessage.className = 'new-message background-primary-action-color color-content-background-color ');
 			}
 		}
 	});

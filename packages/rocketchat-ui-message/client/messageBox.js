@@ -274,7 +274,7 @@ Template.messageBox.events({
 		if (e.originalEvent.clipboardData == null) {
 			return;
 		}
-		const items = e.originalEvent.clipboardData.items;
+		const items = [...e.originalEvent.clipboardData.items];
 		const files = items.map(item => {
 			if (item.kind === 'file' && item.type.indexOf('image/') !== -1) {
 				e.preventDefault();
@@ -283,7 +283,7 @@ Template.messageBox.events({
 					name: `Clipboard - ${ moment().format(RocketChat.settings.get('Message_TimeAndDateFormat')) }`
 				};
 			}
-		}).filter();
+		}).filter(e => e);
 		if (files.length) {
 			return fileUpload(files);
 		} else {
@@ -313,7 +313,7 @@ Template.messageBox.events({
 		if (!files || files.length === 0) {
 			files = (e.dataTransfer && e.dataTransfer.files) || [];
 		}
-		const filesToUpload = files.map(file => {
+		const filesToUpload = [...files].map(file => {
 			// `file.type = mime.lookup(file.name)` does not work.
 			Object.defineProperty(file, 'type', {
 				value: mime.lookup(file.name)
