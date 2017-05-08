@@ -14,14 +14,14 @@ Package.onUse(function(api) {
 
 	// Our files
 	api.addFiles([
-		'autocomplete.css',
-		'inputs.html',
-		'autocomplete-client.coffee',
-		'templates.coffee'
+		'client/autocomplete.css',
+		'client/inputs.html',
+		'client/autocomplete-client.coffee',
+		'client/templates.coffee'
 	], 'client');
 
 	api.addFiles([
-		'autocomplete-server.coffee'
+		'server/autocomplete-server.coffee'
 	], 'server');
 
 	api.export('Autocomplete', 'server');
