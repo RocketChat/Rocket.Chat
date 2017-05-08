@@ -903,8 +903,57 @@ class SlackBridge {
 		}));
 	}
 
-	uploadFileToSlack() {
-		//TODO:
+	/**
+	 * Uploads file from the storage to Slack
+	 * @param  {Object} file          file from storage
+	 * @param  {Object} slackChannel  Slack channel object
+	 * @param  {Object} rocketMessage Rocketchat message object
+	 */
+	uploadFileToSlack(file, slackChannel, rocketMessage) {
+		const Request = Npm.require('request');
+		const store = UploadFS.getStore(file.store);
+		const rs = store.getReadStream(file._id, file);
+
+		rs.on('data', Meteor.bindEnvironment((data) => {
+
+			// TODO: manage api token
+			const formData = {
+				token: this.apiToken,
+				filename: file.name,
+				filetype: file.type,
+				title: file.name,
+				channels: slackChannel.id,
+				file: {
+					value:  data,
+					options: {
+						filename: file.name,
+						contentType: file.type
+					}
+				}
+			};
+
+			if (file.description) {
+				formData.initial_comment = file.description;
+			}
+
+			Request.post({
+				url:'https://slack.com/api/files.upload',
+				formData: formData
+			}, Meteor.bindEnvironment((err, httpResponse, body) => {
+				if (err) {
+					throw new Error(err);
+				}
+
+				const response = JSON.parse(body);
+
+				// update rocket message
+				RocketChat.models.Messages.setSlackFileIdAndSlackTs(
+					rocketMessage._id,
+					this.createRocketFileID(response.file.id),
+					response.file.created);
+			}));
+
+		}));
 	}
 
 	registerForRocketEvents() {
@@ -1493,37 +1542,16 @@ class SlackBridge {
 
 			const rocketchat_room = RocketChat.models.Rooms.findOneById(rocketMessage.rid);
 
-			const slackAttachments = [];
-
 			if (rocketMessage.file && rocketMessage.attachments) {
 
 				const file = RocketChat.models.Uploads.findOneById(rocketMessage.file._id);
 				if (file.store === 'rocketchat_uploads' || file.store === 'fileSystem') {
-					const store = UploadFS.getStore(file.store);
-					const rs = store.getReadStream(file._id, file);
-
-					// TODO:
-					const fileContent= [];
-					rs.on('data', Meteor.bindEnvironment(function(chunk) {
-						return fileContent.push(chunk);
-					}));
-
-					const token = this.apiToken;
-					rs.on('end', Meteor.bindEnvironment(function() {
-						const data = {
-							token: token,
-							content: JSON.stringify(Buffer.concat(fileContent)),
-							filename: file.name,
-							title: file.description,
-							channels: slackChannel.id
-						};
-
-						const postResult = HTTP.post('https://slack.com/api/files.upload', { params: data });
-
-					}));
+					this.uploadFileToSlack(file, slackChannel, rocketMessage);
 				}
 
 			} else if (rocketMessage.attachments) {
+				const slackAttachments = [];
+
 				for (const rocketAttachment of rocketMessage.attachments) {
 					const authorIconUrl = Meteor.absoluteUrl().replace(/\/$/, '') + rocketAttachment.author_icon;
 
@@ -1545,9 +1573,9 @@ class SlackBridge {
 						footer: `Posted in #${rocketchat_room.name}`
 					});
 				}
-			}
 
-			this.postMessageToSlack(slackChannel, rocketMessage, slackAttachments);
+				this.postMessageToSlack(slackChannel, rocketMessage, slackAttachments);
+			}
 		}
 	}
 

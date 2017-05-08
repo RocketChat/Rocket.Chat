@@ -31,5 +31,6 @@ Package.onUse(function(api) {
 
 Npm.depends({
 	'@slack/client': '3.9.0',
-	'@slack/events-api': '1.0.1'
+	'@slack/events-api': '1.0.1',
+	'request': '2.81.0'
 });
