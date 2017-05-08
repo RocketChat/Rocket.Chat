@@ -29,6 +29,8 @@
 									<th class="content-background-color border-component-color" width="34%">{{_ "Name"}}</th>
 									<th class="content-background-color border-component-color" width="33%">{{_ "Username"}}</th>
 									<th class="content-background-color border-component-color" width="33%">{{_ "Email"}}</th>
+									<th class="content-background-color border-component-color" width="33%">{{_ "Roles"}}</th>
+									<th class="content-background-color border-component-color" width="33%">{{_ "Status"}}</th>
 								</tr>
 							</thead>
 							<tbody>
@@ -42,10 +44,13 @@
 									<td class="border-component-color">{{name}}</td>
 									<td class="border-component-color">{{username}}</td>
 									<td class="border-component-color">{{emailAddress}}</td>
+									<td class="border-component-color">{{roles}}</td>
+									<td class="border-component-color">{{status}}</td>
 								</tr>
 								{{/each}}
 							</tbody>
 						</table>
+
 						{{#if hasMore}}
 							<button class="button secondary load-more {{isLoading}}">{{_ "Load_more"}}</button>
 						{{/if}}
@@ -58,3 +63,4 @@
 		{{/with}}
 	</div>
 </template>
+

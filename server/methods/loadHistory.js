@@ -21,7 +21,7 @@ Meteor.methods({
 	loadHistory(rid, end, limit = 20, ls) {
 		check(rid, String);
 
-		if (!Meteor.userId()) {
+		if (!Meteor.userId() && RocketChat.settings.get('Accounts_AllowAnonymousRead') === false) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: 'loadHistory'
 			});
@@ -34,7 +34,9 @@ Meteor.methods({
 			return false;
 		}
 
-		if (room.t === 'c' && !RocketChat.authz.hasPermission(fromId, 'preview-c-room') && room.usernames.indexOf(room.username) === -1) {
+		const canAnonymous = RocketChat.settings.get('Accounts_AllowAnonymousRead');
+		const canPreview = RocketChat.authz.hasPermission(fromId, 'preview-c-room');
+		if (room.t === 'c' && !canAnonymous && !canPreview && room.usernames.indexOf(room.username) === -1) {
 			return false;
 		}
 
@@ -58,10 +60,16 @@ Meteor.methods({
 			records = RocketChat.models.Messages.findVisibleByRoomIdNotContainingTypes(rid, hideMessagesOfType, options).fetch();
 		}
 
+		const UI_Use_Real_Name = RocketChat.settings.get('UI_Use_Real_Name') === true;
+
 		const messages = records.map((message) => {
 			message.starred = _.findWhere(message.starred, {
 				_id: fromId
 			});
+			if (message.u && message.u._id && UI_Use_Real_Name) {
+				const user = RocketChat.models.Users.findOneById(message.u._id);
+				message.u.name = user && user.name;
+			}
 			return message;
 		});
 
