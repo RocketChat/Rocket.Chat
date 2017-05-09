@@ -70,7 +70,7 @@ getDataToSyncUserData = function getDataToSyncUserData(ldapUser, user) {
 			switch (userField) {
 				case 'email':
 					if (!ldapUser.object.hasOwnProperty(ldapField)) {
-						logger.debug(`user does not have attribute: ${ldapField}`);
+						logger.debug(`user does not have attribute: ${ ldapField }`);
 						return;
 					}
 
@@ -90,7 +90,7 @@ getDataToSyncUserData = function getDataToSyncUserData(ldapUser, user) {
 
 					if (match == null) {
 						if (!ldapUser.object.hasOwnProperty(ldapField)) {
-							logger.debug(`user does not have attribute: ${ldapField}`);
+							logger.debug(`user does not have attribute: ${ ldapField }`);
 							return;
 						}
 						tmpLdapField = ldapUser.object[ldapField];
@@ -101,12 +101,12 @@ getDataToSyncUserData = function getDataToSyncUserData(ldapUser, user) {
 							const tmplAttrName = match[1];
 
 							if (!ldapUser.object.hasOwnProperty(tmplAttrName)) {
-								logger.debug(`user does not have attribute: ${tmplAttrName}`);
+								logger.debug(`user does not have attribute: ${ tmplAttrName }`);
 								return;
 							}
 
 							const attrVal = ldapUser.object[tmplAttrName];
-							logger.debug(`replacing template var: ${tmplVar} with value from ldap: ${attrVal}`);
+							logger.debug(`replacing template var: ${ tmplVar } with value from ldap: ${ attrVal }`);
 							tmpLdapField = tmpLdapField.replace(tmplVar, attrVal);
 							match = templateRegex.exec(ldapField);
 						}
@@ -114,7 +114,7 @@ getDataToSyncUserData = function getDataToSyncUserData(ldapUser, user) {
 
 					if (user.name !== tmpLdapField) {
 						userData.name = tmpLdapField;
-						logger.debug(`user.name changed to: ${tmpLdapField}`);
+						logger.debug(`user.name changed to: ${ tmpLdapField }`);
 					}
 					break;
 			}
