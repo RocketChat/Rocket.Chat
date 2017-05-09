@@ -1,3 +1,13 @@
+<a name="0.56.0-rc.2"></a>
+# 0.56.0-rc.2 (2017-05-09)
+
+
+### Bug Fixes
+
+- [#6923](https://github.com/RocketChat/Rocket.Chat/pull/6923) Not showing unread count on electron app’s icon
+
+
+
 <a name="0.56.0-rc.1"></a>
 # 0.56.0-rc.1 (2017-05-05)
 
