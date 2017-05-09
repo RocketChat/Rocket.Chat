@@ -478,13 +478,13 @@ Template.admin.events({
 				files = [];
 			}
 		}
-		const results = [];
+
 		Object.keys(files).forEach(key => {
 			const blob = files[key];
 			toastr.info(TAPi18n.__('Uploading_file'));
 			const reader = new FileReader();
 			reader.readAsBinaryString(blob);
-			results.push(reader.onloadend = () => {
+			reader.onloadend = () => {
 				return Meteor.call('setAsset', reader.result, blob.type, this.asset, function(err) {
 					if (err != null) {
 						handleError(err);
@@ -493,9 +493,8 @@ Template.admin.events({
 					}
 					return toastr.success(TAPi18n.__('File_uploaded'));
 				});
-			});
+			};
 		});
-		return results;
 	},
 	'click .expand'(e) {
 		$(e.currentTarget).closest('.section').removeClass('section-collapsed');
