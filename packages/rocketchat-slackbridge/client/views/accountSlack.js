@@ -1,4 +1,10 @@
 
+Template.accountSlack.events({
+	'click .revoke-token'() {
+		Meteor.call('revokeSlackOAuthToken');
+	}
+});
+
 Template.accountSlack.helpers({
 	hasSlackAccount() {
 		const user = Meteor.user();

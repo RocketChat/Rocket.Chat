@@ -27,6 +27,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/api/api.js', 'server');
 
 	api.addFiles('server/methods/requestSlackOAuthToken.js', 'server');
+	api.addFiles('server/methods/revokeSlackOAuthToken.js', 'server');
 
 	api.addFiles('server/models/Users.js');
 	api.addFiles('server/models/Messages.js');
