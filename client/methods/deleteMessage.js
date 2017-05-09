@@ -10,10 +10,8 @@ Meteor.methods({
 		//We're now only passed in the `_id` property to lower the amount of data sent to the server
 		message = ChatMessage.findOne({ _id: message._id });
 
-    // should use only hasPermission and change delete-message to array of the
-    // two desired permissions?
 		const hasPermission = RocketChat.authz.hasAtLeastOnePermission('delete-message', message.rid);
-    const deleteAny = RocketChat.authz.hasAtLeastOnePermission('delete-any-message', message.rid);
+		const deleteAny = RocketChat.authz.hasAtLeastOnePermission('delete-any-message', message.rid);
 		const deleteAllowed = RocketChat.settings.get('Message_AllowDeleting');
 		let deleteOwn = false;
 
