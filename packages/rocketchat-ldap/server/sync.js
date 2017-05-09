@@ -65,8 +65,6 @@ getDataToSyncUserData = function getDataToSyncUserData(ldapUser, user) {
 	if (syncUserData && syncUserDataFieldMap) {
 		const fieldMap = JSON.parse(syncUserDataFieldMap);
 		const userData = {};
-
-
 		const emailList = [];
 		_.map(fieldMap, function(userField, ldapField) {
 			switch (userField) {
@@ -87,12 +85,12 @@ getDataToSyncUserData = function getDataToSyncUserData(ldapUser, user) {
 
 				case 'name':
 					const templateRegex = /#{(\w+)}/gi;
-					let match = templateRegex.exec(ldapField)
+					let match = templateRegex.exec(ldapField);
 					let tmpLdapField = ldapField;
 
 					if (match == null) {
 						if (!ldapUser.object.hasOwnProperty(ldapField)) {
-							logger.debug(`user does not have attribute: ${ldapField}`)
+							logger.debug(`user does not have attribute: ${ldapField}`);
 							return;
 						}
 						tmpLdapField = ldapUser.object[ldapField];
