@@ -68,16 +68,16 @@ getDataToSyncUserData = function getDataToSyncUserData(ldapUser, user) {
 
 
 		const emailList = [];
-		_.map(fieldMap, function (userField, ldapField) {
+		_.map(fieldMap, function(userField, ldapField) {
 			switch (userField) {
 				case 'email':
 					if (!ldapUser.object.hasOwnProperty(ldapField)) {
-						logger.debug('user does not have attribute: ' + ldapField)
+						logger.debug(`user does not have attribute: ${ldapField}`);
 						return;
 					}
 
 					if (_.isObject(ldapUser.object[ldapField])) {
-						_.map(ldapUser.object[ldapField], function (item) {
+						_.map(ldapUser.object[ldapField], function(item) {
 							emailList.push({ address: item, verified: true });
 						});
 					} else {
@@ -86,38 +86,37 @@ getDataToSyncUserData = function getDataToSyncUserData(ldapUser, user) {
 					break;
 
 				case 'name':
-					var templateRegex = /#{(\w+)}/gi;
-					var match = templateRegex.exec(ldapField)
-					var tmpLdapField = ldapField;
+					const templateRegex = /#{(\w+)}/gi;
+					let match = templateRegex.exec(ldapField)
+					let tmpLdapField = ldapField;
 
 					if (match == null) {
 						if (!ldapUser.object.hasOwnProperty(ldapField)) {
-							logger.debug('user does not have attribute: ' + ldapField)
+							logger.debug(`user does not have attribute: ${ldapField}`)
 							return;
 						}
 						tmpLdapField = ldapUser.object[ldapField];
-					}
-					else {
-						logger.debug('template found. replacing values')
+					} else {
+						logger.debug('template found. replacing values');
 						while (match != null) {
-							var tmplVar = match[0];
-							var tmplAttrName = match[1];
+							const tmplVar = match[0];
+							const tmplAttrName = match[1];
 
 							if (!ldapUser.object.hasOwnProperty(tmplAttrName)) {
-								logger.debug('user does not have attribute: ' + tmplAttrName)
+								logger.debug(`user does not have attribute: ${tmplAttrName}`);
 								return;
 							}
 
-							var attrVal = ldapUser.object[tmplAttrName];
-							logger.debug('replacing template var: ' + tmplVar + ' with value from ldap: ' + attrVal);
+							const attrVal = ldapUser.object[tmplAttrName];
+							logger.debug(`replacing template var: ${tmplVar} with value from ldap: ${attrVal}`);
 							tmpLdapField = tmpLdapField.replace(tmplVar, attrVal);
-							match = templateRegex.exec(ldapField)
+							match = templateRegex.exec(ldapField);
 						}
 					}
 
 					if (user.name !== tmpLdapField) {
 						userData.name = tmpLdapField;
-						logger.debug('user.name changed to: ' + tmpLdapField);
+						logger.debug(`user.name changed to: ${tmpLdapField}`);
 					}
 					break;
 			}
