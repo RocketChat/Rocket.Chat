@@ -23,7 +23,7 @@ Meteor.methods({
 				action: 'Delete_message'
 			});
 		}
-    const deleteAny = RocketChat.authz.hasPermission(Meteor.userId(), 'delete-any-message', originalMessage.rid);
+		const deleteAny = RocketChat.authz.hasPermission(Meteor.userId(), 'delete-any-message', originalMessage.rid);
 		return RocketChat.deleteMessage(originalMessage, Meteor.user());
 		const hasPermission = RocketChat.authz.hasPermission(Meteor.userId(), 'delete-message', originalMessage.rid);
 		const deleteAllowed = RocketChat.settings.get('Message_AllowDeleting');
