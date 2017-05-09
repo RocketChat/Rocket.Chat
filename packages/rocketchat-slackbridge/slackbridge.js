@@ -80,8 +80,9 @@ class SlackBridge {
 		if (!_.isEmpty(slackMsgTxt)) {
 			slackMsgTxt = slackMsgTxt.replace(/<!everyone>/g, '@all');
 			slackMsgTxt = slackMsgTxt.replace(/<!channel>/g, '@all');
-			slackMsgTxt = slackMsgTxt.replace(/&gt;/g, '<');
-			slackMsgTxt = slackMsgTxt.replace(/&lt;/g, '>');
+			slackMsgTxt = slackMsgTxt.replace(/<!here>/g, '@here');
+			slackMsgTxt = slackMsgTxt.replace(/&gt;/g, '>');
+			slackMsgTxt = slackMsgTxt.replace(/&lt;/g, '<');
 			slackMsgTxt = slackMsgTxt.replace(/&amp;/g, '&');
 			slackMsgTxt = slackMsgTxt.replace(/:simple_smile:/g, ':smile:');
 			slackMsgTxt = slackMsgTxt.replace(/:memo:/g, ':pencil:');
