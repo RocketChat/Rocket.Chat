@@ -74,14 +74,12 @@ Template.admin.onDestroyed(function() {
 Template.admin.helpers({
 	languages() {
 		const languages = TAPi18n.getLanguages();
-		let result = [];
-		Object.keys(languages).forEach((key) => {
-			const language = languages[key];
-			result.push(_.extend(language, {
-				key
-			}));
 
+		let result = Object.keys(languages).forEach(key => {
+			const language = languages[key];
+			return _.extend(language, { key });
 		});
+
 		result = _.sortBy(result, 'key');
 		result.unshift({
 			'name': 'Default',
@@ -103,17 +101,10 @@ Template.admin.helpers({
 		if (!group) {
 			return;
 		}
-		const settings = RocketChat.settings.collectionPrivate.find({
-			group: groupId
-		}, {
-			sort: {
-				section: 1,
-				sorter: 1,
-				i18nLabel: 1
-			}
-		}).fetch();
+		const settings = RocketChat.settings.collectionPrivate.find({ group: groupId }, { sort: { section: 1, sorter: 1, i18nLabel: 1 }}).fetch();
 		const sections = {};
-		Object.keys(settings).forEach((key) => {
+
+		Object.keys(settings).forEach(key => {
 			const setting = settings[key];
 			if (setting.i18nDefaultQuery != null) {
 				if (_.isString(setting.i18nDefaultQuery)) {
@@ -124,7 +115,7 @@ Template.admin.helpers({
 				if (!_.isArray(i18nDefaultQuery)) {
 					i18nDefaultQuery = [i18nDefaultQuery];
 				}
-				Object.keys(i18nDefaultQuery).forEach((key) => {
+				Object.keys(i18nDefaultQuery).forEach(key => {
 					const item = i18nDefaultQuery[key];
 					if (RocketChat.settings.collectionPrivate.findOne(item) != null) {
 						setting.value = TAPi18n.__(`${ setting._id }_Default`);
@@ -138,13 +129,12 @@ Template.admin.helpers({
 			sections[settingSection].push(setting);
 		});
 
-		group.sections = [];
-		Object.keys(sections).forEach((key) =>{
+		group.sections = Object.keys(sections).map(key =>{
 			const value = sections[key];
-			group.sections.push({
+			return {
 				section: key,
 				settings: value
-			});
+			};
 		});
 		return group;
 	},
@@ -171,7 +161,7 @@ Template.admin.helpers({
 		}
 		let found = 0;
 
-		Object.keys(enableQuery).forEach((key) =>{
+		Object.keys(enableQuery).forEach(key =>{
 			const item = enableQuery[key];
 			if (TempSettings.findOne(item) != null) {
 				found++;
@@ -262,10 +252,7 @@ Template.admin.helpers({
 	random() {
 		return Random.id();
 	},
-	getEditorOptions(readOnly) {
-		if (readOnly == null) {
-			readOnly = false;
-		}
+	getEditorOptions(readOnly = false) {
 		return {
 			lineNumbers: true,
 			mode: this.code || 'javascript',
@@ -312,8 +299,10 @@ Template.admin.helpers({
 	autocompleteRoom() {
 		return {
 			limit: 10,
+			//inputDelay: 300
 			rules: [
 				{
+					//@TODO maybe change this 'collection' and/or template
 					collection: 'CachedChannelList',
 					subscription: 'channelAndPrivateAutocomplete',
 					field: 'name',
@@ -337,22 +326,14 @@ Template.admin.helpers({
 		return color.replace(/theme-color-/, '@');
 	},
 	showResetButton() {
-		const setting = TempSettings.findOne({
-			_id: this._id
-		}, {
-			fields: {
-				value: 1,
-				packageValue: 1
-			}
-		});
+		const setting = TempSettings.findOne({ _id: this._id }, { fields: { value: 1, packageValue: 1 }});
 		return this.type !== 'asset' && setting.value !== setting.packageValue && !this.blocked;
 	}
 });
 
 Template.admin.events({
 	'change .input-monitor, keyup .input-monitor': _.throttle(function(e) {
-		let value;
-		value = _.trim($(e.target).val());
+		let value = _.trim($(e.target).val());
 		switch (this.type) {
 			case 'int':
 				value = parseInt(value);
@@ -371,13 +352,7 @@ Template.admin.events({
 	}, 500),
 	'change select[name=color-editor]'(e) {
 		const value = _.trim($(e.target).val());
-		return TempSettings.update({
-			_id: this._id
-		}, {
-			$set: {
-				editor: value
-			}
-		});
+		return TempSettings.update({ _id: this._id }, { $set: { editor: value }});
 	},
 	'click .submit .discard'() {
 		const group = FlowRouter.getParam('group');
@@ -386,22 +361,9 @@ Template.admin.events({
 			changed: true
 		};
 		const settings = TempSettings.find(query, {
-			fields: {
-				_id: 1,
-				value: 1,
-				packageValue: 1
-			}
-		}).fetch();
+			fields: { _id: 1, value: 1, packageValue: 1 }}).fetch();
 		return settings.forEach(function(setting) {
-			const oldSetting = RocketChat.settings.collectionPrivate.findOne({
-				_id: setting._id
-			}, {
-				fields: {
-					value: 1,
-					type: 1,
-					editor: 1
-				}
-			});
+			const oldSetting = RocketChat.settings.collectionPrivate.findOne({ _id: setting._id }, { fields: { value: 1, type: 1, editor: 1 }});
 			return setFieldValue(setting._id, oldSetting.value, oldSetting.type, oldSetting.editor);
 		});
 	},
@@ -420,32 +382,14 @@ Template.admin.events({
 		const group = FlowRouter.getParam('group');
 		const section = $(e.target).data('section');
 		if (section === '') {
-			settings = TempSettings.find({
-				group,
-				section: {
-					$exists: false
-				}
-			}, {
-				fields: {
-					_id: 1
-				}
-			}).fetch();
+			settings = TempSettings.find({ group, section: { $exists: false }}, { fields: { _id: 1 }}).fetch();
 		} else {
-			settings = TempSettings.find({
-				group,
-				section
-			}, {
-				fields: {
-					_id: 1
-				}
-			}).fetch();
+			settings = TempSettings.find({ group, section }, { fields: { _id: 1 }}).fetch();
 		}
 		return settings.forEach(function(setting) {
 			const defaultValue = getDefaultSetting(setting._id);
 			setFieldValue(setting._id, defaultValue.packageValue, defaultValue.type, defaultValue.editor);
-			return TempSettings.update({
-				_id: setting._id
-			}, {
+			return TempSettings.update({_id: setting._id }, {
 				$set: {
 					value: defaultValue.packageValue,
 					changed: RocketChat.settings.collectionPrivate.findOne(setting._id).value !== defaultValue.packageValue
@@ -455,29 +399,14 @@ Template.admin.events({
 	},
 	'click .submit .save'() {
 		const group = FlowRouter.getParam('group');
-		const query = {
-			group,
-			changed: true
-		};
-		const settings = TempSettings.find(query, {
-			fields: {
-				_id: 1,
-				value: 1,
-				editor: 1
-			}
-		}).fetch();
+		const query = { group, changed: true };
+		const settings = TempSettings.find(query, { fields: { _id: 1, value: 1, editor: 1 }}).fetch();
 		if (!_.isEmpty(settings)) {
 			return RocketChat.settings.batchSet(settings, function(err) {
 				if (err) {
 					return handleError(err);
 				}
-				TempSettings.update({
-					changed: true
-				}, {
-					$unset: {
-						changed: 1
-					}
-				});
+				TempSettings.update({ changed: true }, { $unset: { changed: 1 }});
 				return toastr.success(TAPi18n.__('Settings_updated'));
 			});
 		}
@@ -550,22 +479,20 @@ Template.admin.events({
 			}
 		}
 		const results = [];
-		Object.keys(files).forEach((key) => {
+		Object.keys(files).forEach(key => {
 			const blob = files[key];
 			toastr.info(TAPi18n.__('Uploading_file'));
 			const reader = new FileReader();
 			reader.readAsBinaryString(blob);
 			results.push(reader.onloadend = () => {
-				return function() {
-					return Meteor.call('setAsset', reader.result, blob.type, this.asset, function(err) {
-						if (err != null) {
-							handleError(err);
-							console.log(err);
-							return;
-						}
-						return toastr.success(TAPi18n.__('File_uploaded'));
-					});
-				};
+				return Meteor.call('setAsset', reader.result, blob.type, this.asset, function(err) {
+					if (err != null) {
+						handleError(err);
+						console.log(err);
+						return;
+					}
+					return toastr.success(TAPi18n.__('File_uploaded'));
+				});
 			});
 		});
 		return results;
@@ -612,9 +539,7 @@ Template.admin.events({
 		selectedRooms[this.id] = (selectedRooms[this.id] || []).concat(doc);
 		instance.selectedRooms.set(selectedRooms);
 		const value = selectedRooms[this.id];
-		TempSettings.update({
-			_id: this.id
-		}, {
+		TempSettings.update({ _id: this.id }, {
 			$set: {
 				value,
 				changed: RocketChat.settings.collectionPrivate.findOne(this.id).value !== value
@@ -632,9 +557,7 @@ Template.admin.events({
 		});
 		instance.selectedRooms.set(selectedRooms);
 		const value = selectedRooms[settingId];
-		return TempSettings.update({
-			_id: settingId
-		}, {
+		return TempSettings.update({ _id: settingId }, {
 			$set: {
 				value,
 				changed: RocketChat.settings.collectionPrivate.findOne(settingId).value !== value
@@ -652,11 +575,7 @@ Template.admin.onRendered(function() {
 		const hasColor = TempSettings.findOne({
 			group: FlowRouter.getParam('group'),
 			type: 'color'
-		}, {
-			fields: {
-				_id: 1
-			}
-		});
+		}, { fields: { _id: 1 }});
 		if (hasColor) {
 			return Meteor.setTimeout(function() {
 				return $('.colorpicker-input').each(function(index, el) {
