@@ -16,7 +16,7 @@ Package.onUse(function(api) {
 	api.addFiles([
 		'client/autocomplete.css',
 		'client/inputs.html',
-		'client/autocomplete-client.coffee',
+		'client/autocomplete-client.js',
 		'client/templates.coffee'
 	], 'client');
 

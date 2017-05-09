@@ -1,4 +1,4 @@
-/* globals Deps */
+/* globals Deps, getCaretCoordinates*/
 const AutoCompleteRecords = new Mongo.Collection('autocompleteRecords');
 
 const isServerSearch = function(rule) {
@@ -9,41 +9,51 @@ const validateRule = function(rule) {
 	if ((rule.subscription != null) && !Match.test(rule.collection, String)) {
 		throw new Error('Collection name must be specified as string for server-side search');
 	}
+	// XXX back-compat message, to be removed
 	if (rule.callback != null) {
 		return console.warn('autocomplete no longer supports callbacks; use event listeners instead.');
 	}
 };
 
 const isWholeField = function(rule) {
+	// either '' or null both count as whole field.
 	return !rule.token;
 };
 
 const getRegExp = function(rule) {
 	if (!isWholeField(rule)) {
+		// Expressions for the range from the last word break to the current cursor position
 		return new RegExp(`(^|\\b|\\s)${ rule.token }([\\w.]*)$`);
 	} else {
+		// Whole-field behavior - word characters or spaces
 		return new RegExp('(^)(.*)$');
 	}
 };
 
 const getFindParams = function(rule, filter, limit) {
+	// This is a different 'filter' - the selector from the settings
+	// We need to extend so that we don't copy over rule.filter
 	const selector = _.extend({}, rule.filter || {});
 	const options = {
 		limit
 	};
 	if (!filter) {
+		// Match anything, no sort, limit X
 		return [selector, options];
 	}
 	if (rule.sort && rule.field) {
 		const sortspec = {};
+		// Only sort if there is a filter, for faster performance on a match of anything
 		sortspec[rule.field] = 1;
 		options.sort = sortspec;
 	}
 	if (_.isFunction(rule.selector)) {
+		// Custom selector
 		_.extend(selector, rule.selector(filter));
 	} else {
 		selector[rule.field] = {
 			$regex: rule.matchAll ? filter : `^${ filter }`,
+			// default is case insensitive search - empty string is not the same as undefined!
 			$options: typeof rule.options === 'undefined' ? 'i' : rule.options
 		};
 	}
@@ -72,48 +82,59 @@ this.AutoComplete = class {
 			validateRule(rule);
 		});
 
-		this.expressions = (function() {
-			const results = [];
-			Object.keys(rules).forEach((key) => {
+		this.expressions = (() => {
+			return Object.keys(rules).map((key) => {
 				const rule = rules[key];
-				results.push(getRegExp(rule));
+				return getRegExp(rule);
 			});
-			return results;
-		});
+		})();
 		this.matched = -1;
 		this.loaded = true;
+
+		// Reactive dependencies for current matching rule and filter
 		this.ruleDep = new Deps.Dependency;
 		this.filterDep = new Deps.Dependency;
 		this.loadingDep = new Deps.Dependency;
+
+		// Autosubscribe to the record set published by the server based on the filter
+		// This will tear down server subscriptions when they are no longer being used.
 		this.sub = null;
-		this.comp = Deps.autorun((function(_this) {
-			return function() {
-				let filter, options, ref1, ref2, selector, subName;
-				if ((ref1 = _this.sub) != null) {
-					ref1.stop();
-				}
-				if (!((rule = _this.matchedRule()) && (filter = _this.getFilter()) !== null)) {
-					return;
-				}
-				if (!isServerSearch(rule)) {
-					_this.setLoaded(true);
-					return;
-				}
-				ref2 = getFindParams(rule, filter, _this.limit), selector = ref2[0], options = ref2[1];
-				_this.setLoaded(false);
-				subName = rule.subscription || 'autocomplete-recordset';
-				return _this.sub = Meteor.subscribe(subName, selector, options, rule.collection, function() {
-					return _this.setLoaded(true);
-				});
-			};
-		})(this));
+		this.comp = Deps.autorun(() => {
+			const rule = this.matchedRule();
+			const filter = this.getFilter();
+			if (this.sub) {
+				// Stop any existing sub immediately, don't wait
+				this.sub.stop();
+			}
+			if (!(rule && filter)) {
+				return;
+			}
+
+			// subscribe only for server-side collections
+			if (!isServerSearch(rule)) {
+				this.setLoaded(true);
+				return;
+			}
+			const params = getFindParams(rule, filter, this.limit);
+			const selector = params[0];
+			const options = params[1];
+
+			// console.debug 'Subscribing to <%s> in <%s>.<%s>', filter, rule.collection, rule.field
+			this.setLoaded(false);
+			const subName = rule.subscription || 'autocomplete-recordset';
+			this.sub = Meteor.subscribe(subName, selector, options, rule.collection, () => {
+				this.setLoaded(true);
+			});
+		});
 	}
 
 	teardown() {
+		// Stop the reactive computation we started for this autocomplete instance
 		return this.comp.stop();
 	}
 
 	matchedRule() {
+		// reactive getters and setters for @filter and the currently matched rule
 		this.ruleDep.depend();
 		if (this.matched >= 0) {
 			return this.rules[this.matched];
@@ -124,7 +145,7 @@ this.AutoComplete = class {
 
 	setMatchedRule(i) {
 		this.matched = i;
-		return this.ruleDep.changed();
+		this.ruleDep.changed();
 	}
 
 	getFilter() {
@@ -145,38 +166,42 @@ this.AutoComplete = class {
 
 	setLoaded(val) {
 		if (val === this.loaded) {
-			return;
+			return; //Don't cause redraws unnecessarily
 		}
 		this.loaded = val;
 		return this.loadingDep.changed();
 	}
 
 	onKeyUp() {
-		let breakLoop, i, matches, results, startpos, val;
 		if (!this.$element) {
-			return;
+			return; //Don't try to do this while loading
 		}
-		startpos = this.element.selectionStart;
-		val = this.getText().substring(0, startpos);
+		const startpos = this.element.selectionStart;
+		const val = this.getText().substring(0, startpos);
 
     /*
       Matching on multiple expressions.
       We always go from a matched state to an unmatched one
       before going to a different matched one.
      */
-		i = 0;
-		breakLoop = false;
-		results = [];
+		let i = 0;
+		let breakLoop = false;
 		while (i < this.expressions.length) {
-			matches = val.match(this.expressions[i]);
+			const matches = val.match(this.expressions[i]);
+
+			// matching -> not matching
 			if (!matches && this.matched === i) {
 				this.setMatchedRule(-1);
 				breakLoop = true;
 			}
+
+			// not matching -> matching
 			if (matches && this.matched === -1) {
 				this.setMatchedRule(i);
 				breakLoop = true;
 			}
+
+			// Did filter change?
 			if (matches && this.filter !== matches[2]) {
 				this.setFilter(matches[2]);
 				breakLoop = true;
@@ -184,54 +209,54 @@ this.AutoComplete = class {
 			if (breakLoop) {
 				break;
 			}
-			results.push(i++);
+			i++;
 		}
-		return results;
 	}
 
 	onKeyDown(e) {
-		if (this.matched === -1 || (this.constructor.KEYS.indexOf(e.keyCode) < 0)) {
+		if (this.matched === -1 || (this.KEYS.indexOf(e.keyCode) < 0)) {
 			return;
 		}
 		switch (e.keyCode) {
-			case 9:
-			case 13:
-				if (this.select()) {
+			case 9: //TAB
+			case 13: //ENTER
+				if (this.select()) { //Don't jump fields or submit if select successful
 					e.preventDefault();
 					e.stopPropagation();
 				}
 				break;
-			case 40:
+				// preventDefault needed below to avoid moving cursor when selecting
+			case 40: //DOWN
 				e.preventDefault();
 				this.next();
 				break;
-			case 38:
+			case 38: //UP
 				e.preventDefault();
 				this.prev();
 				break;
-			case 27:
+			case 27: //ESCAPE
 				this.$element.blur();
 				this.hideList();
 		}
 	}
 
 	onFocus() {
-		return Meteor.defer((function(_this) {
-			return function() {
-				return _this.onKeyUp();
-			};
-		})(this));
+		// We need to run onKeyUp after the focus resolves,
+		// or the caret position (selectionStart) will not be correct
+		return Meteor.defer(() => {
+			return this.onKeyUp();
+		});
 	}
 
 	onBlur() {
-		return Meteor.setTimeout((function(_this) {
-			return function() {
-				return _this.hideList();
-			};
-		}(this)), 500);
+		// We need to delay this so click events work
+		// TODO this is a bit of a hack, see if we can't be smarter
+		Meteor.setTimeout(() => {
+			return this.hideList();
+		}, 500);
 	}
 
-	onItemClick(doc, e) {
+	onItemClick(doc) {
 		return this.processSelection(doc, this.rules[this.matched]);
 	}
 
@@ -241,80 +266,94 @@ this.AutoComplete = class {
 	}
 
 	filteredList() {
-		let filter, options, ref, rule, selector;
-		filter = this.getFilter();
+		// @ruleDep.depend() # optional as long as we use depend on filter, because list will always get re-rendered
+		const filter = this.getFilter(); //Reactively depend on the filter
 		if (this.matched === -1) {
 			return null;
 		}
-		rule = this.rules[this.matched];
+		const rule = this.rules[this.matched];
+
+		// Don't display list unless we have a token or a filter (or both)
+		// Single field: nothing displayed until something is typed
 		if (!(rule.token || filter)) {
 			return null;
 		}
-		ref = getFindParams(rule, filter, this.limit), selector = ref[0], options = ref[1];
-		Meteor.defer((function(_this) {
-			return function() {
-				return _this.ensureSelection();
-			};
-		})(this));
+		const params = getFindParams(rule, filter, this.limit);
+		const selector = params[0];
+		const options = params[1];
+		Meteor.defer(() => {
+			return this.ensureSelection();
+		});
+
+		// if server collection, the server has already done the filtering work
 		if (isServerSearch(rule)) {
 			return AutoCompleteRecords.find({}, options);
 		}
+		// Otherwise, search on client
 		return rule.collection.find(selector, options);
 	}
 
 	isShowing() {
-		let rule, showing;
-		rule = this.matchedRule();
-		showing = (rule != null) && (rule.token || this.getFilter());
+		const rule = this.matchedRule();
+		// Same rules as above
+		const showing = rule && (rule.token || this.getFilter());
+
+		// Do this after the render
 		if (showing) {
-			Meteor.defer((function(_this) {
-				return function() {
-					_this.positionContainer();
-					return _this.ensureSelection();
-				};
-			})(this));
+			Meteor.defer(() => {
+				this.positionContainer();
+				return this.ensureSelection();
+			});
 		}
 		return showing;
 	}
 
+	// Replace text with currently selected item
 	select() {
-		let doc, node;
-		node = this.tmplInst.find('.-autocomplete-item.selected');
+		const node = this.tmplInst.find('.-autocomplete-item.selected');
 		if (node == null) {
 			return false;
 		}
-		doc = Blaze.getData(node);
+		const doc = Blaze.getData(node);
 		if (!doc) {
-			return false;
+			return false; //Don't select if nothing matched
+
 		}
 		this.processSelection(doc, this.rules[this.matched]);
 		return true;
 	}
 
 	processSelection(doc, rule) {
-		let replacement;
-		replacement = getField(doc, rule.field);
+		const replacement = getField(doc, rule.field);
 		if (!isWholeField(rule)) {
 			this.replace(replacement, rule);
 			this.hideList();
 		} else {
+
+			// Empty string or doesn't exist?
+			// Single-field replacement: replace whole field
 			this.setText(replacement);
+
+			// Field retains focus, but list is hidden unless another key is pressed
+			// Must be deferred or onKeyUp will trigger and match again
+			// TODO this is a hack; see above
 			this.onBlur();
 		}
 		this.$element.trigger('autocompleteselect', doc);
 	}
 
+
+	// Replace the appropriate region
 	replace(replacement) {
-		let finalFight, fullStuff, newPosition, posfix, separator, startpos, val;
-		startpos = this.element.selectionStart;
-		fullStuff = this.getText();
-		val = fullStuff.substring(0, startpos);
+		const startpos = this.element.selectionStart;
+		const fullStuff = this.getText();
+		let val = fullStuff.substring(0, startpos);
 		val = val.replace(this.expressions[this.matched], `$1${ this.rules[this.matched].token }${ replacement }`);
-		posfix = fullStuff.substring(startpos, fullStuff.length);
-		separator = (posfix.match(/^\s/) ? '' : ' ');
-		finalFight = val + separator + posfix;
+		const posfix = fullStuff.substring(startpos, fullStuff.length);
+		const separator = (posfix.match(/^\s/) ? '' : ' ');
+		const finalFight = val + separator + posfix;
 		this.setText(finalFight);
-		newPosition = val.length + 1;
+		const newPosition = val.length + 1;
 		this.element.setSelectionRange(newPosition, newPosition);
 	}
 
@@ -341,20 +380,24 @@ this.AutoComplete = class {
    */
 
 	positionContainer() {
-		let offset, pos, position, rule;
-		position = this.$element.position();
-		rule = this.matchedRule();
-		offset = getCaretCoordinates(this.element, this.element.selectionStart);
-		if ((rule != null) && isWholeField(rule)) {
+		// First render; Pick the first item and set css whenever list gets shown
+		let pos;
+		const position = this.$element.position();
+		const rule = this.matchedRule();
+		const offset = getCaretCoordinates(this.element, this.element.selectionStart);
+
+		// In whole-field positioning, we don't move the container and make it the
+		// full width of the field.
+		if (rule && isWholeField(rule)) {
 			pos = {
 				left: position.left,
-				width: this.$element.outerWidth()
+				width: this.$element.outerWidth() //position.offsetWidth
 			};
-		} else {
-			pos = {
-				left: position.left + offset.left
-			};
+		} else { //Normal positioning, at token word
+			pos = { left: position.left + offset.left };
 		}
+
+		// Position menu from top (above) or from bottom of caret (below, default)
 		if (this.position === 'top') {
 			pos.bottom = this.$element.offsetParent().height() - position.top - offset.top;
 		} else {
@@ -364,53 +407,54 @@ this.AutoComplete = class {
 	}
 
 	ensureSelection() {
-		let selectedItem;
-		selectedItem = this.tmplInst.$('.-autocomplete-item.selected');
+		// Re-render; make sure selected item is something in the list or none if list empty
+		const selectedItem = this.tmplInst.$('.-autocomplete-item.selected');
 		if (!selectedItem.length) {
+			// Select anything
 			return this.tmplInst.$('.-autocomplete-item:first-child').addClass('selected');
 		}
 	}
 
+	// Select next item in list
 	next() {
-		let currentItem, next;
-		currentItem = this.tmplInst.$('.-autocomplete-item.selected');
+		const currentItem = this.tmplInst.$('.-autocomplete-item.selected');
 		if (!currentItem.length) {
 			return;
 		}
 		currentItem.removeClass('selected');
-		next = currentItem.next();
+		const next = currentItem.next();
 		if (next.length) {
 			return next.addClass('selected');
-		} else {
+		} else { //End of list or lost selection; Go back to first item
 			return this.tmplInst.$('.-autocomplete-item:first-child').addClass('selected');
 		}
 	}
 
+	//Select previous item in list
 	prev() {
-		let currentItem, prev;
-		currentItem = this.tmplInst.$('.-autocomplete-item.selected');
+		const currentItem = this.tmplInst.$('.-autocomplete-item.selected');
 		if (!currentItem.length) {
-			return;
+			return; //Don't try to iterate an empty list
 		}
 		currentItem.removeClass('selected');
-		prev = currentItem.prev();
+		const prev = currentItem.prev();
 		if (prev.length) {
 			return prev.addClass('selected');
-		} else {
+		} else { //Beginning of list or lost selection; Go to end of list
 			return this.tmplInst.$('.-autocomplete-item:last-child').addClass('selected');
 		}
 	}
 
+	// This doesn't need to be reactive because list already changes reactively
+	// and will cause all of the items to re-render anyway
 	currentTemplate() {
 		return this.rules[this.matched].template;
 	}
 
-
-
 };
 
-const AutocompleteTest = {
-	records: AutoCompleteRecords,
-	getRegExp,
-	getFindParams
-};
+// AutocompleteTest = {
+// 	records: AutoCompleteRecords,
+// 	getRegExp,
+// 	getFindParams
+// };
