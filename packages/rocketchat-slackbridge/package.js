@@ -8,17 +8,25 @@ Package.describe({
 
 Package.onUse(function(api) {
 	api.use('ecmascript');
+	api.use('templating');
 	api.use('rocketchat:api');
 	api.use('rocketchat:lib');
 	api.use('rocketchat:file');
 	api.use('rocketchat:logger');
-	api.use('matb33:collection-hooks');
+	api.use('kadira:flow-router');
 
 	// client
+	api.addFiles('client/route.js', 'client');
+
+	api.addFiles('client/views/accountSlack.html', 'client');
+	api.addFiles('client/views/accountSlack.js', 'client');
+
 	api.addFiles('client/slashcommand/slackbridge_import.client.js', 'client');
 
 	// server
 	api.addFiles('server/api/api.js', 'server');
+
+	api.addFiles('server/methods/requestSlackOAuthToken.js', 'server');
 
 	api.addFiles('server/models/Users.js');
 	api.addFiles('server/models/Messages.js');
