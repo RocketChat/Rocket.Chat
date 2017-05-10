@@ -52,20 +52,20 @@ Package.onUse(function(api) {
 
 	// COMMON LIB
 	api.addFiles('lib/getURL.js');
-	api.addFiles('lib/settings.coffee');
-	api.addFiles('lib/callbacks.coffee');
+	api.addFiles('lib/settings.js');
+	api.addFiles('lib/callbacks.js');
 	api.addFiles('lib/fileUploadRestrictions.js');
 	api.addFiles('lib/placeholders.js');
-	api.addFiles('lib/promises.coffee');
-	api.addFiles('lib/roomTypesCommon.coffee');
-	api.addFiles('lib/slashCommand.coffee');
-	api.addFiles('lib/Message.coffee');
-	api.addFiles('lib/MessageTypes.coffee');
+	api.addFiles('lib/promises.js');
+	api.addFiles('lib/roomTypesCommon.js');
+	api.addFiles('lib/slashCommand.js');
+	api.addFiles('lib/Message.js');
+	api.addFiles('lib/MessageTypes.js');
 
 	api.addFiles('server/lib/bugsnag.js', 'server');
 	api.addFiles('server/lib/metrics.js', 'server');
 
-	api.addFiles('server/lib/RateLimiter.coffee', 'server');
+	api.addFiles('server/lib/RateLimiter.js', 'server');
 
 	// SERVER FUNCTIONS
 	api.addFiles('server/functions/isDocker.js', 'server');
@@ -97,7 +97,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/lib/PushNotification.js', 'server');
 	api.addFiles('server/lib/defaultBlockedDomainsList.js', 'server');
 	api.addFiles('server/lib/notifyUsersOnMessage.js', 'server');
-	api.addFiles('server/lib/roomTypes.coffee', 'server');
+	api.addFiles('server/lib/roomTypes.js', 'server');
 	api.addFiles('server/lib/sendEmailOnMessage.js', 'server');
 	api.addFiles('server/lib/sendNotificationsOnMessage.js', 'server');
 	api.addFiles('server/lib/validateEmailDomain.js', 'server');
@@ -134,8 +134,9 @@ Package.onUse(function(api) {
 	api.addFiles('server/methods/checkRegistrationSecretURL.js', 'server');
 	api.addFiles('server/methods/cleanChannelHistory.js', 'server');
 	api.addFiles('server/methods/createChannel.js', 'server');
+	api.addFiles('server/methods/createToken.js', 'server');
 	api.addFiles('server/methods/createPrivateGroup.js', 'server');
-	api.addFiles('server/methods/deleteMessage.coffee', 'server');
+	api.addFiles('server/methods/deleteMessage.js', 'server');
 	api.addFiles('server/methods/deleteUserOwnAccount.js', 'server');
 	api.addFiles('server/methods/filterBadWords.js', ['server']);
 	api.addFiles('server/methods/filterATAllTag.js', 'server');
@@ -150,11 +151,11 @@ Package.onUse(function(api) {
 	api.addFiles('server/methods/leaveRoom.js', 'server');
 	api.addFiles('server/methods/removeOAuthService.js', 'server');
 	api.addFiles('server/methods/restartServer.js', 'server');
-	api.addFiles('server/methods/robotMethods.coffee', 'server');
+	api.addFiles('server/methods/robotMethods.js', 'server');
 	api.addFiles('server/methods/saveSetting.js', 'server');
-	api.addFiles('server/methods/sendInvitationEmail.coffee', 'server');
+	api.addFiles('server/methods/sendInvitationEmail.js', 'server');
 	api.addFiles('server/methods/sendMessage.coffee', 'server');
-	api.addFiles('server/methods/sendSMTPTestEmail.coffee', 'server');
+	api.addFiles('server/methods/sendSMTPTestEmail.js', 'server');
 	api.addFiles('server/methods/setAdminStatus.js', 'server');
 	api.addFiles('server/methods/setRealName.js', 'server');
 	api.addFiles('server/methods/setUsername.js', 'server');
@@ -170,32 +171,32 @@ Package.onUse(function(api) {
 	api.addFiles('server/startup/settings.js', 'server');
 
 	// COMMON STARTUP
-	api.addFiles('lib/startup/settingsOnLoadSiteUrl.coffee');
+	api.addFiles('lib/startup/settingsOnLoadSiteUrl.js');
 
 	// CLIENT LIB
-	api.addFiles('client/Notifications.coffee', 'client');
+	api.addFiles('client/Notifications.js', 'client');
 	api.addFiles('client/OAuthProxy.js', 'client');
 	api.addFiles('client/lib/TabBar.js', 'client');
 	api.addFiles('client/lib/RocketChatTabBar.js', 'client');
 	api.addFiles('client/lib/cachedCollection.js', 'client');
-	api.addFiles('client/lib/openRoom.coffee', 'client');
-	api.addFiles('client/lib/roomExit.coffee', 'client');
-	api.addFiles('client/lib/settings.coffee', 'client');
-	api.addFiles('client/lib/roomTypes.coffee', 'client');
+	api.addFiles('client/lib/openRoom.js', 'client');
+	api.addFiles('client/lib/roomExit.js', 'client');
+	api.addFiles('client/lib/settings.js', 'client');
+	api.addFiles('client/lib/roomTypes.js', 'client');
 	api.addFiles('client/lib/userRoles.js', 'client');
 	api.addFiles('client/lib/Layout.js', 'client');
 
 	// CLIENT METHODS
-	api.addFiles('client/methods/sendMessage.coffee', 'client');
+	api.addFiles('client/methods/sendMessage.js', 'client');
 	api.addFiles('client/AdminBox.js', 'client');
-	api.addFiles('client/MessageAction.coffee', 'client');
+	api.addFiles('client/MessageAction.js', 'client');
 
 	api.addFiles('client/defaultTabBars.js', 'client');
 	api.addFiles('client/CustomTranslations.js', 'client');
 
 	// CLIENT MODELS
-	api.addFiles('client/models/_Base.coffee', 'client');
-	api.addFiles('client/models/Uploads.coffee', 'client');
+	api.addFiles('client/models/_Base.js', 'client');
+	api.addFiles('client/models/Uploads.js', 'client');
 
 	// CLIENT VIEWS
 	api.addFiles('client/views/customFieldsForm.html', 'client');

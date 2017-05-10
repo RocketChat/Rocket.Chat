@@ -111,7 +111,6 @@ Template.createCombinedFlex.events({
 		if (!err) {
 			return Meteor.call(createRoute, name, instance.selectedUsers.get(), readOnly, function(err, result) {
 				if (err) {
-					console.log(err);
 					if (err.error === 'error-invalid-name') {
 						instance.error.set({ invalid: true });
 						return;
@@ -137,7 +136,6 @@ Template.createCombinedFlex.events({
 				return FlowRouter.go(successRoute, { name }, FlowRouter.current().queryParams);
 			});
 		} else {
-			console.log(err);
 			return instance.error.set({ fields: err });
 		}
 	}
