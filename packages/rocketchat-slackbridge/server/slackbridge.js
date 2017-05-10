@@ -244,13 +244,13 @@ class SlackBridge {
 		const groups_reply = regex_reply.exec(rocketText);
 
 		if (groups_reply) {
-			return `${groups_reply[4]} ${groups_reply[2]} ${groups_reply[1]} ${groups_reply[5]}`;
+			return `${ groups_reply[4] } ${ groups_reply[2] } ${ groups_reply[1] } ${ groups_reply[5] }`;
 		} else {
 			const regex_quote = /(.*)\[(.*)\]\((http[s]?:[^>]*)\)(.*)/g;
 			const groups_quote = regex_quote.exec(rocketText);
 
 			if (groups_quote) {
-				return `${groups_quote[2]} ${groups_quote[1]} ${groups_quote[4]}`;
+				return `${ groups_quote[2] } ${ groups_quote[1] } ${ groups_quote[4] }`;
 			}
 		}
 		return rocketText;
@@ -945,7 +945,7 @@ class SlackBridge {
 
 			Request.post({
 				url:'https://slack.com/api/files.upload',
-				formData: formData
+				formData
 			}, Meteor.bindEnvironment((err, httpResponse, body) => {
 				if (err) {
 					throw new Error(err);
@@ -1677,18 +1677,18 @@ class SlackBridge {
 						const m = moment(date);
 						const ts = m.unix();
 						const dateTime = m.format('MMMM Do, YYYY h:mm A');
-						const fallback = `[${dateTime}] ${rocketAttachment.author_name}: ${rocketAttachment.text}`;
+						const fallback = `[${ dateTime }] ${ rocketAttachment.author_name }: ${ rocketAttachment.text }`;
 						const text = this.convertRocketTextToSlackMsgTxtFormat(rocketAttachment.text);
 
 						slackAttachments.push({
-							fallback: fallback,
+							fallback,
 							color: '#D0D0D0',
 							author_name: rocketAttachment.author_name,
 							author_link: rocketAttachment.message_link,
 							author_icon: authorIconUrl,
-							text: text,
-							ts: ts,
-							footer: `Posted in #${rocketchat_room.name}`
+							text,
+							ts,
+							footer: `Posted in #${ rocketchat_room.name }`
 						});
 					}
 				}

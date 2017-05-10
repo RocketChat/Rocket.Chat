@@ -26,13 +26,13 @@ function responseError(err, responseOptions = {}) {
 	}
 
 	return {
-		statusCode: statusCode,
-		headers: headers,
+		statusCode,
+		headers,
 		body: ' '
 	};
 }
 
-API = new Restivus({
+const API = new Restivus({
 	prettyJson: true,
 	enableCors: false,
 	apiPath: 'hooks/'

@@ -11,10 +11,10 @@ Meteor.methods({
 		const client_secret = RocketChat.settings.get('SlackBridge_Client_Secret');
 		const redirect_uri = RocketChat.settings.get('SlackBridge_OAuth_Redirect_Url');
 		const data = {
-			client_id: client_id,
-			client_secret: client_secret,
-			code: code,
-			redirect_uri: redirect_uri
+			client_id,
+			client_secret,
+			code,
+			redirect_uri
 		};
 
 		const postResult = HTTP.post('https://slack.com/api/oauth.access', { params: data });

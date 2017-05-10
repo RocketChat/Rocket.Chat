@@ -1,5 +1,5 @@
 FlowRouter.route('/account/slack/oauth/callback', {
-	action: function(params, queryParams) {
+	action(params, queryParams) {
 		if (queryParams.hasOwnProperty('code')) {
 			Meteor.call('requestSlackOAuthToken', queryParams.code);
 		}

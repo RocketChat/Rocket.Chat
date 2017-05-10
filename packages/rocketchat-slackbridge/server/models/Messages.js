@@ -9,22 +9,22 @@ RocketChat.models.Messages.setSlackFileId = function(_id, slackFileID) {
 		'file.imported_id': slackFileID
 	};
 
-	return this.update({ _id: _id }, { $set: updateObj });
+	return this.update({ _id }, { $set: updateObj });
 };
 
 RocketChat.models.Messages.setSlackTs = function(_id, slackTs) {
 	const updateObj = {
-		slackTs: slackTs
+		slackTs
 	};
 
-	return this.update({ _id: _id }, { $set: updateObj });
+	return this.update({ _id }, { $set: updateObj });
 };
 
 RocketChat.models.Messages.setSlackFileIdAndSlackTs = function(_id, slackFileID, slackTs) {
 	const updateObj = {
 		'file.imported_id': slackFileID,
-		slackTs: slackTs
+		slackTs
 	};
 
-	return this.update({ _id: _id }, { $set: updateObj });
+	return this.update({ _id }, { $set: updateObj });
 };
