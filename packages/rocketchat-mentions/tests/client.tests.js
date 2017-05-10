@@ -1,4 +1,5 @@
 /* eslint-env mocha */
+import 'babel-polyfill';
 import assert from 'assert';
 
 import Mentions from '../Mentions';

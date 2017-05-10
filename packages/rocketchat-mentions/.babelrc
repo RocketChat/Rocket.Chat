@@ -1,4 +1,0 @@
-{
-   "plugins": ["transform-runtime"],
-   "presets": ["es2015","es2016", "stage-1", "babel-polyfill"]
-}
