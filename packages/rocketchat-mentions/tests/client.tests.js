@@ -2,22 +2,23 @@
 import assert from 'assert';
 
 import Mentions from '../Mentions';
-const mention = new Mentions({
-	pattern: '[0-9a-zA-Z-_.]+',
-	me: () => 'me'
+let mention;
+beforeEach(function functionName() {
+	mention = new Mentions({
+		pattern: '[0-9a-zA-Z-_.]+',
+		me: () => 'me'
+	});
 });
-
 describe('Mention', function() {
 	describe('get pattern', () => {
 		const regexp = '[0-9a-zA-Z-_.]+';
+		beforeEach(() => mention.pattern = () => regexp);
 		describe('by function', function functionName() {
-			before(() => mention.pattern = () => regexp);
 			it(`should be equal to ${ regexp }`, ()=> {
 				assert.equal(regexp, mention.pattern);
 			});
 		});
 		describe('by const', function functionName() {
-			before(() => mention.pattern = regexp);
 			it(`should be equal to ${ regexp }`, ()=> {
 				assert.equal(regexp, mention.pattern);
 			});
@@ -26,13 +27,13 @@ describe('Mention', function() {
 	describe('get me', () => {
 		const me = 'me';
 		describe('by function', function functionName() {
-			before(() => mention.me = () => me);
+			beforeEach(() => mention.me = () => me);
 			it(`should be equal to ${ me }`, ()=> {
 				assert.equal(me, mention.me);
 			});
 		});
 		describe('by const', function functionName() {
-			before(() => mention.me = me);
+			beforeEach(() => mention.me = me);
 			it(`should be equal to ${ me }`, ()=> {
 				assert.equal(me, mention.me);
 			});
