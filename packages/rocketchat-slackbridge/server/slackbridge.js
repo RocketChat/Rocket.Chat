@@ -1424,15 +1424,19 @@ class SlackBridge {
 	}
 
 	onRocketSetStarMessage(rocketMessage) {
-		logger.class.error('onRocketSetStarMessage not implemented');
-		logger.class.error(rocketMessage);
-		//TODO: use user's access token to add star message
+		if (rocketMessage) {
+			const slackChannel = this.slackChannelMap[rocketMessage.rid];
+			const slackTS = this.getSlackTS(rocketMessage);
+			this.postStarAddedToSlack(rocketMessage, slackChannel, slackTS);
+		}
 	}
 
 	onRocketUnSetStarMessage(rocketMessage) {
-		logger.class.error('onRocketUnSetStarMessage not implemented');
-		logger.class.error(rocketMessage);
-		//TODO: use user's access token to remove star message
+		if (rocketMessage) {
+			const slackChannel = this.slackChannelMap[rocketMessage.rid];
+			const slackTS = this.getSlackTS(rocketMessage);
+			this.postStarRemoveToSlack(rocketMessage, slackChannel, slackTS);
+		}
 	}
 
 	onRocketMessage(rocketMessage) {
@@ -1493,6 +1497,58 @@ class SlackBridge {
 			const postResult = HTTP.post('https://slack.com/api/reactions.remove', { params: data });
 			if (postResult.statusCode === 200 && postResult.data && postResult.data.ok === true) {
 				logger.class.debug('Reaction removed from Slack');
+			}
+		}
+	}
+
+	postStarAddedToSlack(rocketMessage, slackChannel, slackTS) {
+		const user = RocketChat.models.Users.findOneById(rocketMessage.u._id);
+
+		if (user.settings && user.settings.slack && user.settings.slack.access_token) {
+			const data = {
+				token: user.settings.slack.access_token,
+				channel: slackChannel.id,
+				timestamp: slackTS
+			};
+
+			if (rocketMessage.file) {
+				const fileID = this.getSlackFileID(rocketMessage.file);
+
+				if (fileID) {
+					data.file = fileID;
+				}
+			}
+
+			logger.class.debug('Posting Add Star to Slack');
+			const postResult = HTTP.post('https://slack.com/api/stars.add', { params: data });
+			if (postResult.statusCode === 200 && postResult.data && postResult.data.ok === true) {
+				logger.class.debug('Star added to Slack');
+			}
+		}
+	}
+
+	postStarRemoveToSlack(rocketMessage, slackChannel, slackTS) {
+		const user = RocketChat.models.Users.findOneById(rocketMessage.u._id);
+
+		if (user.settings && user.settings.slack && user.settings.slack.access_token) {
+			const data = {
+				token: user.settings.slack.access_token,
+				channel: slackChannel.id,
+				timestamp: slackTS
+			};
+
+			if (rocketMessage.file) {
+				const fileID = this.getSlackFileID(rocketMessage.file);
+
+				if (fileID) {
+					data.file = fileID;
+				}
+			}
+
+			logger.class.debug('Posting Remove Star to Slack');
+			const postResult = HTTP.post('https://slack.com/api/stars.remove', { params: data });
+			if (postResult.statusCode === 200 && postResult.data && postResult.data.ok === true) {
+				logger.class.debug('Star removed from Slack');
 			}
 		}
 	}
