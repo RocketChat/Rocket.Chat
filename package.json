@@ -44,7 +44,8 @@
 		"chimp-test": "chimp tests/chimp-config.js",
 		"postinstall": "cd packages/rocketchat-katex && npm i",
 		"version": "node .scripts/version.js",
-		"release": "npm run version && conventional-changelog --config .github/changelog.js -i HISTORY.md -s"
+		"get-version": "node .scripts/get-version.js",
+		"release": "npm run get-version && conventional-changelog --config .github/changelog.js -i HISTORY.md -s"
 	},
 	"license": "MIT",
 	"repository": {
