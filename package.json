@@ -68,11 +68,14 @@
 		"email": "support@rocket.chat"
 	},
 	"devDependencies": {
+    "babel-mocha-es6-compiler": "^0.1.0",
+    "babel-plugin-array-includes": "^2.0.3",
 		"chimp": "^0.48.0",
+		"conventional-changelog": "^1.1.3",
+    "babel-mocha-es6-compiler": "^0.1.0",
 		"eslint": "^3.19.0",
 		"stylelint": "^7.10.1",
-		"supertest": "^3.0.0",
-		"conventional-changelog": "^1.1.3"
+		"supertest": "^3.0.0"
 	},
 	"dependencies": {
 		"babel-runtime": "^6.23.0",
