@@ -1553,32 +1553,59 @@ class SlackBridge {
 
 				const file = RocketChat.models.Uploads.findOneById(rocketMessage.file._id);
 				if (file.store === 'rocketchat_uploads' || file.store === 'fileSystem') {
-					this.uploadFileToSlack(file, slackChannel, rocketMessage);
+					const user = RocketChat.models.Users.findOneById(rocketMessage.u._id);
+
+					if (user.settings && user.settings.slack && user.settings.slack.access_token) {
+						// using user's access_token to upload file to Slack
+						this.uploadFileToSlack(file, user, slackChannel, rocketMessage);
+					} else {
+						// add fallback message
+						let routePath;
+						const roomData = RocketChat.models.Rooms.findOneById(rocketMessage.rid);
+
+						if (roomData) {
+							routePath = RocketChat.roomTypes.getRouteLink(roomData.t, roomData);
+						} else {
+							routePath = document.location.pathname;
+						}
+
+						const permalink = `${ Meteor.absoluteUrl().replace(/\/$/, '') }${ routePath }?msg=${ rocketMessage._id }`;
+
+						rocketMessage.msg = `Upload file to RocketChat ${ permalink }`;
+
+						// remove file attachments
+						delete rocketMessage.attachments;
+
+						// doesn't have user's access_token fallback to post message
+						this.postMessageToSlack(slackChannel, rocketMessage);
+					}
 				}
 
-			} else if (rocketMessage.attachments) {
+			} else {
 				const slackAttachments = [];
 
-				for (const rocketAttachment of rocketMessage.attachments) {
-					const authorIconUrl = Meteor.absoluteUrl().replace(/\/$/, '') + rocketAttachment.author_icon;
+				if (rocketMessage.attachments) {
+					for (const rocketAttachment of rocketMessage.attachments) {
+						const authorIconUrl = Meteor.absoluteUrl().replace(/\/$/, '') + rocketAttachment.author_icon;
 
-					const date = new Date(rocketAttachment.ts);
-					const m = moment(date);
-					const ts = m.unix();
-					const dateTime = m.format('MMMM Do, YYYY h:mm A');
-					const fallback = `[${dateTime}] ${rocketAttachment.author_name}: ${rocketAttachment.text}`;
-					const text = this.convertRocketTextToSlackMsgTxtFormat(rocketAttachment.text);
+						const date = new Date(rocketAttachment.ts);
+						const m = moment(date);
+						const ts = m.unix();
+						const dateTime = m.format('MMMM Do, YYYY h:mm A');
+						const fallback = `[${dateTime}] ${rocketAttachment.author_name}: ${rocketAttachment.text}`;
+						const text = this.convertRocketTextToSlackMsgTxtFormat(rocketAttachment.text);
 
-					slackAttachments.push({
-						fallback: fallback,
-						color: '#D0D0D0',
-						author_name: rocketAttachment.author_name,
-						author_link: rocketAttachment.message_link,
-						author_icon: authorIconUrl,
-						text: text,
-						ts: ts,
-						footer: `Posted in #${rocketchat_room.name}`
-					});
+						slackAttachments.push({
+							fallback: fallback,
+							color: '#D0D0D0',
+							author_name: rocketAttachment.author_name,
+							author_link: rocketAttachment.message_link,
+							author_icon: authorIconUrl,
+							text: text,
+							ts: ts,
+							footer: `Posted in #${rocketchat_room.name}`
+						});
+					}
 				}
 
 				this.postMessageToSlack(slackChannel, rocketMessage, slackAttachments);
