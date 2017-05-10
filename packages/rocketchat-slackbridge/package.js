@@ -12,7 +12,9 @@ Package.onUse(function(api) {
 	api.use('rocketchat:api');
 	api.use('rocketchat:lib');
 	api.use('rocketchat:file');
+	api.use('rocketchat:file-upload');
 	api.use('rocketchat:logger');
+	api.use('nimble:restivus');
 	api.use('kadira:flow-router');
 
 	// client
