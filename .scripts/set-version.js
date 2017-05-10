@@ -24,7 +24,7 @@ const files = [
 	'./package.json',
 	'./.sandstorm/sandstorm-pkgdef.capnp',
 	'./.travis/snap.sh',
-	'./.docker/Dockerfile.sh',
+	'./.docker/Dockerfile',
 	'./packages/rocketchat-lib/rocketchat.info'
 ];
 

@@ -1,3 +1,19 @@
+<a name="0.56.0-rc.3"></a>
+# 0.56.0-rc.3 (2017-05-10)
+
+
+### New Features
+
+- [#6940](https://github.com/RocketChat/Rocket.Chat/pull/6940) Add SMTP settings for Protocol and Pool
+- [#6938](https://github.com/RocketChat/Rocket.Chat/pull/6938) Improve CI/Docker build/release
+
+
+### Bug Fixes
+
+- [#6939](https://github.com/RocketChat/Rocket.Chat/pull/6939) Compile CSS color variables
+
+
+
 <a name="0.56.0-rc.2"></a>
 # 0.56.0-rc.2 (2017-05-09)
 
