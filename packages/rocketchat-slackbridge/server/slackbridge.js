@@ -1385,7 +1385,7 @@ class SlackBridge {
 	onRocketMessageDelete(rocketMessageDeleted) {
 		logger.class.debug('onRocketMessageDelete', rocketMessageDeleted);
 
-		this.postDeleteMessageToSlack(rocketMessageDeleted);
+		this.processRocketDeleteMessage(rocketMessageDeleted);
 	}
 
 	onRocketSetReaction(rocketMsgID, reaction) {
@@ -1497,19 +1497,48 @@ class SlackBridge {
 		}
 	}
 
-	postDeleteMessageToSlack(rocketMessage) {
-		if (rocketMessage) {
-			const data = {
-				token: this.apiToken,
-				ts: this.getSlackTS(rocketMessage),
-				channel: this.slackChannelMap[rocketMessage.rid].id,
-				as_user: true
-			};
+	postDeleteMessageToSlack(slackChannel, slackTS) {
+		// delete message
+		const data = {
+			token: this.apiToken,
+			ts: slackTS,
+			channel: slackChannel.id,
+			as_user: true
+		};
 
-			logger.class.debug('Post Delete Message to Slack', data);
-			const postResult = HTTP.post('https://slack.com/api/chat.delete', { params: data });
-			if (postResult.statusCode === 200 && postResult.data && postResult.data.ok === true) {
-				logger.class.debug('Message deleted on Slack');
+		logger.class.debug('Post Delete Message to Slack', data);
+		const postResult = HTTP.post('https://slack.com/api/chat.delete', { params: data });
+		if (postResult.statusCode === 200 && postResult.data && postResult.data.ok === true) {
+			logger.class.debug('Message deleted on Slack');
+		}
+	}
+
+	processRocketDeleteMessage(rocketMessage) {
+		if (rocketMessage) {
+
+			if (rocketMessage.file && rocketMessage.attachments) {
+				const user = RocketChat.models.Users.findOneById(rocketMessage.u._id);
+
+				if (user.settings && user.settings.slack && user.settings.slack.access_token) {
+					// using user's access_token to delete file to Slack
+					const data = {
+						token: user.settings.slack.access_token,
+						file: this.getSlackFileID(rocketMessage.file)
+					};
+
+					logger.class.debug('Post Delete File to Slack', data);
+					const postResult = HTTP.post('https://slack.com/api/files.delete', { params: data });
+					if (postResult.statusCode === 200 && postResult.data && postResult.data.ok === true) {
+						logger.class.debug('File deleted on Slack');
+					}
+				} else {
+					// doesn't have access_token, try to delete message
+					this.postDeleteMessageToSlack(this.slackChannelMap[rocketMessage.rid], this.getSlackTS(rocketMessage));
+				}
+
+			} else {
+				// delete message
+				this.postDeleteMessageToSlack(this.slackChannelMap[rocketMessage.rid], this.getSlackTS(rocketMessage));
 			}
 		}
 	}
@@ -1656,13 +1685,22 @@ class SlackBridge {
 			const rocketUser = RocketChat.models.Users.findOneById('rocket.cat', { fields: { username: 1 } });
 
 			if (rocketChannel && rocketUser) {
-				//Find the Rocket message to delete
-				let rocketMsgObj = RocketChat.models.Messages.findOneBySlackBotIdAndSlackTs(slackMessage.previous_message.bot_id, slackMessage.previous_message.ts);
+				let rocketMsgObj = null;
 
-				if (!rocketMsgObj) {
-					//Must have been a Slack originated msg
-					const _id = this.createRocketID(slackMessage.channel, slackMessage.previous_message.ts);
-					rocketMsgObj = RocketChat.models.Messages.findOneById(_id);
+				switch (slackMessage.previous_message.subtype) {
+					case 'file_share':
+						//Find the Rocket file to delete
+						rocketMsgObj = RocketChat.models.Messages.findOneBySlackFileId(this.createRocketFileID(slackMessage.previous_message.file.id));
+						break;
+					default:
+						//Find the Rocket message to delete
+						rocketMsgObj = RocketChat.models.Messages.findOneBySlackBotIdAndSlackTs(slackMessage.previous_message.bot_id, slackMessage.previous_message.ts);
+
+						if (!rocketMsgObj) {
+							//Must have been a Slack originated msg
+							const _id = this.createRocketID(slackMessage.channel, slackMessage.previous_message.ts);
+							rocketMsgObj = RocketChat.models.Messages.findOneById(_id);
+						}
 				}
 
 				if (rocketMsgObj) {
