@@ -63,6 +63,7 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 	settings.alwaysNotifyMobileUsers = [];
 	settings.dontNotifyMobileUsers = [];
 	settings.desktopNotificationDurations = {};
+
 	// Don't fetch all users if room exceeds max members
 	const maxMembersForNotification = RocketChat.settings.get('Notifications_Max_Room_Members');
 	const disableAllMessageNotifications = room.usernames.length > maxMembersForNotification && maxMembersForNotification !== 0;
@@ -77,24 +78,29 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 	});
 
 	subscriptions.forEach((subscription) => {
-		const preferences = userSettings[subscription.u._id] ? userSettings[subscription.u._id].preferences || {} : {};
-		const userDesktopNotificationPreference = preferences.desktopNotifications !== 'default' ? preferences.desktopNotifications : undefined;
-		const userMobileNotificationPreference = preferences.mobileNotifications !== 'default' ? preferences.mobileNotifications : undefined;
-		// Set defaults if they don't exist
-		const {
-			desktopNotifications = userDesktopNotificationPreference || RocketChat.settings.get('Desktop_Notifications_Default_Alert'),
-			mobilePushNotifications = userMobileNotificationPreference || RocketChat.settings.get('Mobile_Notifications_Default_Alert')
-		} = subscription;
-
-		if (desktopNotifications === 'all' && !disableAllMessageNotifications) {
-			settings.alwaysNotifyDesktopUsers.push(subscription.u._id);
-		} else if (desktopNotifications === 'nothing') {
+		if (subscription.disableNotifications) {
 			settings.dontNotifyDesktopUsers.push(subscription.u._id);
-		}
-		if (mobilePushNotifications === 'all' && !disableAllMessageNotifications) {
-			settings.alwaysNotifyMobileUsers.push(subscription.u._id);
-		} else if (mobilePushNotifications === 'nothing') {
 			settings.dontNotifyMobileUsers.push(subscription.u._id);
+		} else {
+			const preferences = userSettings[subscription.u._id] ? userSettings[subscription.u._id].preferences || {} : {};
+			const userDesktopNotificationPreference = preferences.desktopNotifications !== 'default' ? preferences.desktopNotifications : undefined;
+			const userMobileNotificationPreference = preferences.mobileNotifications !== 'default' ? preferences.mobileNotifications : undefined;
+			// Set defaults if they don't exist
+			const {
+				desktopNotifications = userDesktopNotificationPreference || RocketChat.settings.get('Desktop_Notifications_Default_Alert'),
+				mobilePushNotifications = userMobileNotificationPreference || RocketChat.settings.get('Mobile_Notifications_Default_Alert')
+			} = subscription;
+
+			if (desktopNotifications === 'all' && !disableAllMessageNotifications) {
+				settings.alwaysNotifyDesktopUsers.push(subscription.u._id);
+			} else if (desktopNotifications === 'nothing') {
+				settings.dontNotifyDesktopUsers.push(subscription.u._id);
+			}
+			if (mobilePushNotifications === 'all' && !disableAllMessageNotifications) {
+				settings.alwaysNotifyMobileUsers.push(subscription.u._id);
+			} else if (mobilePushNotifications === 'nothing') {
+				settings.dontNotifyMobileUsers.push(subscription.u._id);
+			}
 		}
 		settings.desktopNotificationDurations[subscription.u._id] = subscription.desktopNotificationDuration;
 	});
@@ -148,7 +154,7 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 		}
 		if ((userOfMention != null) && canBeNotified(userOfMentionId, 'mobile')) {
 			RocketChat.Notifications.notifyUser(userOfMention._id, 'notification', {
-				title: `@${ user.username }`,
+				title: RocketChat.settings.get('UI_Use_Real_Name') ? user.name : `@${ user.username }`,
 				text: message.msg,
 				duration: settings.desktopNotificationDurations[userOfMention._id],
 				payload: {

@@ -1,7 +1,18 @@
 Template.accountBox.helpers({
 	myUserInfo() {
+		if (Meteor.user() == null && RocketChat.settings.get('Accounts_AllowAnonymousRead')) {
+			return {
+				name: t('Anonymous'),
+				fname: t('Anonymous'),
+				status: 'online',
+				visualStatus: t('online'),
+				username: 'anonymous'
+			};
+		}
+
 		let visualStatus = 'online';
-		const username = Meteor.user() && Meteor.user().username;
+		const user = Meteor.user() || {};
+		const { name, username } = user;
 		switch (Session.get(`user_${ username }_status`)) {
 			case 'away':
 				visualStatus = t('away');
@@ -14,11 +25,12 @@ Template.accountBox.helpers({
 				break;
 		}
 		return {
-			name: Session.get(`user_${ username }_name`),
+			name: Session.get(`user_${ username }_name`) || username,
 			status: Session.get(`user_${ username }_status`),
 			visualStatus,
 			_id: Meteor.userId(),
-			username
+			username,
+			fname: name || username
 		};
 	},
 
@@ -39,6 +51,10 @@ Template.accountBox.events({
 	},
 
 	'click .account-box'() {
+		if (Meteor.userId() == null && RocketChat.settings.get('Accounts_AllowAnonymousRead')) {
+			return;
+		}
+
 		return AccountBox.toggle();
 	},
 

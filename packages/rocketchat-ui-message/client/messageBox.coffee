@@ -30,7 +30,7 @@ Template.messageBox.helpers
 	showFormattingTips: ->
 		return RocketChat.settings.get('Message_ShowFormattingTips') and (RocketChat.Markdown or RocketChat.MarkdownCode or katexSyntax())
 	canJoin: ->
-		return RocketChat.roomTypes.verifyShowJoinLink @_id
+		return Meteor.userId()? and RocketChat.roomTypes.verifyShowJoinLink @_id
 	joinCodeRequired: ->
 		return Session.get('roomData' + this._id)?.joinCodeRequired
 	subscribed: ->
@@ -85,6 +85,12 @@ Template.messageBox.helpers
 			users: usernames.join " #{t 'and'} "
 		}
 
+	groupAttachHidden: ->
+		return 'hidden' if RocketChat.settings.get('Message_Attachments_GroupAttach')
+
+	fileUploadEnabled: ->
+		return RocketChat.settings.get('FileUpload_Enabled')
+
 	fileUploadAllowedMediaTypes: ->
 		return RocketChat.settings.get('FileUpload_MediaTypeWhiteList')
 
@@ -117,6 +123,12 @@ Template.messageBox.helpers
 
 	showSandstorm: ->
 		return Meteor.settings.public.sandstorm && !Meteor.isCordova
+
+	anonymousRead: ->
+		return not Meteor.userId()? and RocketChat.settings.get('Accounts_AllowAnonymousRead') is true
+
+	anonymousWrite: ->
+		return not Meteor.userId()? and RocketChat.settings.get('Accounts_AllowAnonymousRead') is true and RocketChat.settings.get('Accounts_AllowAnonymousWrite') is true
 
 firefoxPasteUpload = (fn) ->
 	user = navigator.userAgent.match(/Firefox\/(\d+)\.\d/)
@@ -171,6 +183,20 @@ Template.messageBox.events
 				RoomManager.getOpenedRoomByRid(@_id).ready = false
 				RoomHistoryManager.getRoom(@_id).loaded = undefined
 				RoomManager.computation.invalidate()
+
+	'click .register': (event) ->
+		event.stopPropagation()
+		event.preventDefault()
+		Session.set('forceLogin', true)
+
+	'click .register-anonymous': (event) ->
+		event.stopPropagation()
+		event.preventDefault()
+
+		Meteor.call 'registerUser', {}, (error, loginData) ->
+			if loginData && loginData.token
+				Meteor.loginWithToken loginData.token
+
 
 	'focus .input-message': (event, instance) ->
 		KonchatNotification.removeRoomNotification @_id
@@ -243,6 +269,10 @@ Template.messageBox.events
 				name: file.name
 
 		fileUpload filesToUpload
+
+	"click .message-buttons.share": (e, t) ->
+		t.$('.share-items').toggleClass('hidden')
+		t.$('.message-buttons.share').toggleClass('active')
 
 	'click .message-form .message-buttons.location': (event, instance) ->
 		roomId = @_id

@@ -28,6 +28,20 @@
 @transparent-lightest: rgba(255, 255, 255, 0.6);
 
 /** ----------------------------------------------------------------------------
+ * Mixins
+ */
+
+.buttonColors(@color, @bg) {
+	color: @color;
+	background-color: @bg;
+
+	&:hover {
+		color: mix(@color, contrast(@bg), 60%);
+		background-color: mix(@bg, contrast(@color), 60%);
+	}
+}
+
+/** ----------------------------------------------------------------------------
  * Classes for variables
  */
 
@@ -243,7 +257,42 @@
  * Forms
  */
 
-.input-shade(@primary-font-color, @content-background-color);
+input,
+select,
+textarea {
+	color: @primary-font-color;
+	background-color: transparent;
+	border-color: mix(contrast(@content-background-color), @content-background-color, 10%);
+	border-style: solid;
+
+	&::placeholder {
+		color: mix(@primary-font-color, @content-background-color, 75%);
+	}
+
+	&[disabled] {
+		background-color: mix(contrast(@content-background-color), @content-background-color, 10%);
+	}
+}
+
+.disabled label,
+[disabled] label {
+	color: mix(@primary-font-color, @content-background-color, 75%);
+}
+
+.-autocomplete-container {
+	background-color: mix(contrast(@content-background-color), @content-background-color, 10%);
+}
+
+.-autocomplete-item.selected {
+	background-color: mix(contrast(@content-background-color), @content-background-color, 20%);
+}
+
+input[type="button"],
+input[type="submit"] {
+	color: @primary-font-color;
+	background: mix(contrast(@content-background-color), @content-background-color, 10%);
+	border-color: mix(contrast(@content-background-color), @content-background-color, 10%);
+}
 
 .toolbar-search__input {
 	&:focus {
@@ -260,7 +309,42 @@
 }
 
 .flex-nav {
-	.input-shade(@primary-background-contrast, @transparent-lighter);
+	input,
+	select,
+	textarea {
+		color: @primary-background-contrast;
+		background-color: transparent;
+		border-color: mix(contrast(@transparent-lighter), @transparent-lighter, 10%);
+		border-style: solid;
+
+		&::placeholder {
+			color: mix(@primary-background-contrast, @transparent-lighter, 75%);
+		}
+
+		&[disabled] {
+			background-color: mix(contrast(@transparent-lighter), @transparent-lighter, 10%);
+		}
+	}
+
+	.disabled label,
+	[disabled] label {
+		color: mix(@primary-background-contrast, @transparent-lighter, 75%);
+	}
+
+	.-autocomplete-container {
+		background-color: mix(contrast(@transparent-lighter), @transparent-lighter, 10%);
+	}
+
+	.-autocomplete-item.selected {
+		background-color: mix(contrast(@transparent-lighter), @transparent-lighter, 20%);
+	}
+
+	input[type="button"],
+	input[type="submit"] {
+		color: @primary-background-contrast;
+		background: mix(contrast(@transparent-lighter), @transparent-lighter, 10%);
+		border-color: mix(contrast(@transparent-lighter), @transparent-lighter, 10%);
+	}
 
 	input {
 		&:focus {
@@ -391,7 +475,7 @@ a:hover {
 
 .full-page,
 .page-loading {
-	.gradient(shade(@primary-background-color), @primary-background-color);
+	background: linear-gradient(to top, shade(@primary-background-color), @primary-background-color);
 
 	a {
 		color: @tertiary-font-color;
@@ -403,8 +487,6 @@ a:hover {
 }
 
 #login-card {
-	.input-shade(@primary-font-color, @content-background-color);
-
 	.input-text {
 		input:-webkit-autofill {
 			-webkit-box-shadow: 0 0 0 20px @content-background-color inset;
@@ -426,7 +508,11 @@ a:hover {
 
 .messages-container {
 	.edit-room-title {
-		.linkColors(@secondary-font-color, @primary-font-color);
+		color: @secondary-font-color;
+
+		&:hover {
+			color: @primary-font-color;
+		}
 	}
 
 	.footer {
@@ -515,7 +601,11 @@ a:hover {
 	}
 
 	a {
-		.linkColors(@link-font-color, darken(@link-font-color, 10%));
+		color: @link-font-color;
+
+		&:hover {
+			color: darken(@link-font-color, 10%);
+		}
 	}
 
 	.mention-link {
@@ -539,7 +629,11 @@ a:hover {
 .side-nav {
 	a,
 	.info {
-		.linkColors(@tertiary-font-color, @tertiary-font-color);
+		color: @tertiary-font-color;
+
+		&:hover {
+			color: @tertiary-font-color;
+		}
 	}
 
 	.arrow::before,
@@ -648,7 +742,10 @@ a:hover {
 		}
 
 		&.attention {
-			.blink(@selection-color);
+			animation-duration: 1000ms;
+			animation-name: blink;
+			animation-iteration-count: infinite;
+			animation-direction: alternate;
 		}
 	}
 
@@ -783,7 +880,11 @@ i.status-offline {
 }
 
 .alert-link {
-	.linkColors(@link-font-color, darken(@link-font-color, 10%));
+	color: @link-font-color;
+
+	&:hover {
+		color: darken(@link-font-color, 10%);
+	}
 }
 
 label.required::after {
@@ -798,5 +899,15 @@ label.required::after {
 .flex-tab {
 	.loading-animation > div {
 		background-color: @primary-font-color;
+	}
+}
+
+@keyframes blink {
+	from {
+		color: @selection-color;
+	}
+
+	to {
+		opacity: inherit;
 	}
 }
