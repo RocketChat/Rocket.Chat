@@ -917,16 +917,15 @@ class SlackBridge {
 	 * @param  {Object} slackChannel  Slack channel object
 	 * @param  {Object} rocketMessage Rocketchat message object
 	 */
-	uploadFileToSlack(file, slackChannel, rocketMessage) {
+	uploadFileToSlack(file, user, slackChannel, rocketMessage) {
 		const Request = Npm.require('request');
 		const store = UploadFS.getStore(file.store);
 		const rs = store.getReadStream(file._id, file);
 
 		rs.on('data', Meteor.bindEnvironment((data) => {
 
-			// TODO: manage api token
 			const formData = {
-				token: this.apiToken,
+				token: user.settings.slack.access_token,
 				filename: file.name,
 				filetype: file.type,
 				title: file.name,
