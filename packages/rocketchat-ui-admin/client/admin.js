@@ -75,7 +75,7 @@ Template.admin.helpers({
 	languages() {
 		const languages = TAPi18n.getLanguages();
 
-		let result = Object.keys(languages).forEach(key => {
+		let result = Object.keys(languages).map(key => {
 			const language = languages[key];
 			return _.extend(language, { key });
 		});
