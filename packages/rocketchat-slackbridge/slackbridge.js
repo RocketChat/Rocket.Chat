@@ -595,7 +595,6 @@ class SlackBridge {
 			const fileId = Meteor.fileStore.create(details);
 			if (fileId) {
 				Meteor.fileStore.write(stream, fileId, (err, file) => {
-					console.log('fileStore.write', file);
 					if (err) {
 						throw new Error(err);
 					} else {
