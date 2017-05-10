@@ -23,6 +23,11 @@
 				<li>
 					<a href="{{pathFor 'account' group='security'}}" class="account-link">{{_ "Security"}}</a>
 				</li>
+				{{#if slackBridgeEnabled}}
+				<li>
+					<a href="{{pathFor 'account' group='slack'}}" class="account-link">Slack</a>
+				</li>
+				{{/if}}
 			</ul>
 		</div>
 	</div>

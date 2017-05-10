@@ -15,7 +15,15 @@ Meteor.methods({
 		if (Array.isArray(room.usernames) && room.usernames.indexOf(Meteor.user().username) === -1) {
 			return false;
 		}
-		return RocketChat.models.Messages.updateUserStarById(message._id, Meteor.userId(), message.starred);
+		RocketChat.models.Messages.updateUserStarById(message._id, Meteor.userId(), message.starred);
+
+		if (message.starred) {
+			RocketChat.callbacks.run('setStarMessage', message);
+		} else {
+			RocketChat.callbacks.run('unsetStarMessage', message);
+		}
+
+		return message;
 	}
 });
 

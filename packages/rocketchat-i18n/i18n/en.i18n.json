@@ -465,6 +465,7 @@
   "Enable_Desktop_Notifications": "Enable Desktop Notifications",
   "Enable_two-factor_authentication": "Enable two-factor authentication",
   "Enabled": "Enabled",
+  "Event_API_Enabled": "Event API Enabled",
   "Enable_Svg_Favicon": "Enable SVG favicon",
   "Encrypted_message": "Encrypted message",
   "End_OTR": "End OTR",
@@ -1377,6 +1378,9 @@
   "SlackBridge_Out_Channels": "SlackBridge Out Channels",
   "SlackBridge_Out_Channels_Description": "Choose which channels will send messages back to Slack",
   "SlackBridge_finish": "SlackBridge has finished importing the messages at %s. Please reload to view all messages.",
+  "SlackBridge_OAuth_Scopes": "OAuth Scopes",
+  "SlackBridge_OAuth_Redirect_Url": "Redirect URL",
+  "SlackBridge_OAuth_Redirect_Url_Description": "Redirect URL must end with /account/slack/oauth/callback and match the one that you enter on Slack website E.g. www.yourdomain.com/account/slack/oauth/callback",
   "SlackBridge_Out_Enabled": "SlackBridge Out Enabled",
   "SlackBridge_Out_Enabled_Description": "Choose whether SlackBridge should also send your messages back to Slack",
   "SlackBridge_start": "@%s has started a SlackBridge import at `#%s`. We'll let you know when it's finished.",
@@ -1718,5 +1722,7 @@
   "your_message": "your message",
   "your_message_optional": "your message (optional)",
   "Your_password_is_wrong": "Your password is wrong!",
-  "Your_push_was_sent_to_s_devices": "Your push was sent to %s devices"
+  "Your_push_was_sent_to_s_devices": "Your push was sent to %s devices",
+  "Verification_Token": "Verification Token",
+  "Verification_Token_Description": "Verification Token is required in order to use Slack's event API."
 }
