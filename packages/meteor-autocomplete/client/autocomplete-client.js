@@ -452,9 +452,3 @@ this.AutoComplete = class {
 	}
 
 };
-
-// AutocompleteTest = {
-// 	records: AutoCompleteRecords,
-// 	getRegExp,
-// 	getFindParams
-// };
