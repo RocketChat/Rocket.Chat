@@ -462,7 +462,7 @@ describe('Changing settings via api', () => {
 			loginPage.submit();
 
 			loginPage.registrationSucceededCard.waitForVisible(5000);
-			loginPage.registrationSucceededCard.getText().toLowerCase().should.equal('registration succeeded');
+			loginPage.registrationSucceededCard.getAttribute('data-i18n').should.equal('Registration_Succeeded');
 			loginPage.backToLoginButton.click();
 		});
 
