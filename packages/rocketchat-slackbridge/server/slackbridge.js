@@ -114,6 +114,7 @@ class SlackBridge {
 		if (!_.isEmpty(slackMsgTxt)) {
 			slackMsgTxt = slackMsgTxt.replace(/@everyone/g, '@all');
 			slackMsgTxt = slackMsgTxt.replace(/@channel/g, '@all');
+			slackMsgTxt = slackMsgTxt.replace(/<!here>/g, '@here');
 			slackMsgTxt = slackMsgTxt.replace(/&gt;/g, '<');
 			slackMsgTxt = slackMsgTxt.replace(/&lt;/g, '>');
 			slackMsgTxt = slackMsgTxt.replace(/&amp;/g, '&');
@@ -845,13 +846,11 @@ class SlackBridge {
 		const parsedUrl = url.parse(slackFileURL, true);
 		parsedUrl.headers = { 'Authorization': `Bearer ${ this.apiToken }` };
 		requestModule.get(parsedUrl, Meteor.bindEnvironment((stream) => {
-
 			// Fixed userId undefined when call fireStore.create from API (no user authen)
 			Meteor.runAsUser(rocketUser._id, () => {
 				const fileId = Meteor.fileStore.create(details);
 				if (fileId) {
 					Meteor.fileStore.write(stream, fileId, (err, file) => {
-						console.log('fileStore.write', file);
 						if (err) {
 							throw new Error(err);
 						} else {
@@ -907,7 +906,6 @@ class SlackBridge {
 					});
 				}
 			});
-
 		}));
 	}
 
