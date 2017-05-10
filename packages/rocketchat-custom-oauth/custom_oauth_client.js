@@ -78,8 +78,10 @@ export class CustomOAuth {
 		const credentialToken = Random.secret();
 		const loginStyle = OAuth._loginStyle(this.name, config, options);
 
+		const separator = this.authorizePath.indexOf('?') !== -1 ? '&' : '?';
+
 		const loginUrl = `${ this.authorizePath
-			}?client_id=${ config.clientId
+			}${ separator }client_id=${ config.clientId
 			}&redirect_uri=${ OAuth._redirectUri(this.name, config)
 			}&response_type=code` +
 			`&state=${ OAuth._stateParam(loginStyle, credentialToken, options.redirectUrl)
