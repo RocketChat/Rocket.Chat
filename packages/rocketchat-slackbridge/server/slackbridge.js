@@ -1731,6 +1731,15 @@ class SlackBridge {
 		return slackTS;
 	}
 
+	getSlackFileID(rocketFile) {
+		//slack-F5AHCPHGQ
+		if (rocketFile.imported_id) {
+			return rocketFile.imported_id.replace('slack-', '');
+		}
+
+		return rocketFile._id;
+	}
+
 	getRocketChannel(slackMessage) {
 		return slackMessage.channel ? this.findRocketChannel(slackMessage.channel) || this.addRocketChannel(slackMessage.channel) : null;
 	}
