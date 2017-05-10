@@ -27,7 +27,6 @@ export default class {
 		return new RegExp(`#(${ this.pattern })`, 'gm');
 	}
 	replaceUsers(str, message, me) {
-		console.log(message.mentions);
 		return str.replace(this.userMentionRegex, (match, username) => {
 			if (['all', 'here'].includes(username)) {
 				return `<a class="mention-link mention-link-me mention-link-all background-attention-color">${ match }</a>`;
