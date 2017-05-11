@@ -164,7 +164,6 @@ class WebRTCClass {
 		this.TransportClass = WebRTCTransportClass;
 		this.selfId = selfId;
 		this.room = room;
-		this.config.iceServers = [];
 		let servers = RocketChat.settings.get('WebRTC_Servers');
 		if (servers && servers.trim() !== '') {
 			servers = servers.replace(/\s/g, '');
@@ -259,7 +258,6 @@ class WebRTCClass {
 					url: URL.createObjectURL(remoteStream),
 					state: peerConnection.iceConnectionState
 				};
-				console.log(item);
 				switch (peerConnection.iceConnectionState) {
 					case 'checking':
 						item.stateText = 'Connecting...';
@@ -421,10 +419,7 @@ class WebRTCClass {
 		return navigator.getUserMedia(media, onSuccessLocal, onError);
 	}
 
-	getUserMedia(media, onSuccess, onError) {
-		if (onError == null) {
-			onError = this.onError;
-		}
+	getUserMedia(media, onSuccess, onError = this.onError) {
 		if (media.desktop !== true) {
 			this._getUserMedia(media, onSuccess, onError);
 			return;
@@ -571,10 +566,7 @@ class WebRTCClass {
 		window.audioContext && window.audioContext.close();
 	}
 
-	setAudioEnabled(enabled) {
-		if (enabled == null) {
-			enabled = true;
-		}
+	setAudioEnabled(enabled = true) {
 		if (this.localStream != null) {
 			if (enabled === true && this.media.audio !== true) {
 				delete this.localStream;
@@ -600,10 +592,7 @@ class WebRTCClass {
 		return this.setAudioEnabled(true);
 	}
 
-	setVideoEnabled(enabled) {
-		if (enabled == null) {
-			enabled = true;
-		}
+	setVideoEnabled(enabled = true) {
 		if (this.localStream != null) {
 			if (enabled === true && this.media.video !== true) {
 				delete this.localStream;
@@ -629,10 +618,7 @@ class WebRTCClass {
 		return this.setScreenShareEnabled(true);
 	}
 
-	setScreenShareEnabled(enabled) {
-		if (enabled == null) {
-			enabled = true;
-		}
+	setScreenShareEnabled(enabled = true) {
 		if (this.localStream != null) {
 			this.media.desktop = enabled;
 			delete this.localStream;
@@ -659,10 +645,8 @@ class WebRTCClass {
 		this.active = false;
 		this.monitor = false;
 		this.remoteMonitoring = false;
-		if ((this.localStream != null) && typeof this.localStream !== 'undefined') {
-			this.localStream.getTracks().forEach(function(track) {
-				return track.stop();
-			});
+		if (this.localStream != null && typeof this.localStream !== 'undefined') {
+			this.localStream.getTracks().forEach(track => track.stop());
 		}
 		this.localUrl.set(undefined);
 		delete this.localStream;
@@ -676,10 +660,7 @@ class WebRTCClass {
   			video {Boolean}
    */
 
-	startCall(media) {
-		if (media == null) {
-			media = {};
-		}
+	startCall(media = {}) {
 		this.log('startCall', arguments);
 		this.media = media;
 		return this.getLocalUserMedia(() => {
@@ -690,10 +671,7 @@ class WebRTCClass {
 		});
 	}
 
-	startCallAsMonitor(media) {
-		if (media == null) {
-			media = {};
-		}
+	startCallAsMonitor(media = {}) {
 		this.log('startCallAsMonitor', arguments);
 		this.media = media;
 		this.active = true;
@@ -790,10 +768,7 @@ class WebRTCClass {
   				desktop {Boolean}
    */
 
-	joinCall(data) {
-		if (data == null) {
-			data = {};
-		}
+	joinCall(data = {}) {
 		if (data.media && data.media.audio) {
 			this.media.audio = data.media.audio;
 		}

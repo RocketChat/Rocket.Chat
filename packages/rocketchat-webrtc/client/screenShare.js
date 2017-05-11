@@ -8,9 +8,8 @@ this.ChromeScreenShare = {
 		ChromeScreenShare.screenCallback = callback;
 		if (navigator === 'electron') {
 			return fireGlobalEvent('get-sourceId', '*');
-		} else {
-			return window.postMessage('get-sourceId', '*');
 		}
+		return window.postMessage('get-sourceId', '*');
 	}
 };
 
@@ -21,9 +20,8 @@ window.addEventListener('message', function(e) {
 	if (e.data === 'PermissionDeniedError') {
 		if (ChromeScreenShare.screenCallback != null) {
 			return ChromeScreenShare.screenCallback('PermissionDeniedError');
-		} else {
-			throw new Error('PermissionDeniedError');
 		}
+		throw new Error('PermissionDeniedError');
 	}
 	if (e.data.sourceId != null) {
 		return typeof ChromeScreenShare.screenCallback === 'function' && ChromeScreenShare.screenCallback(e.data.sourceId);
