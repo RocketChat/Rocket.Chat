@@ -85,19 +85,15 @@ Template.accountPreferences.onCreated(function() {
 	let instance = this;
 	this.autorun(() => {
 		if (instance.useEmojis && instance.useEmojis.get()) {
-			return Tracker.afterFlush(function() {
-				return $('#convertAsciiEmoji').show();
-			});
+			Tracker.afterFlush(() => $('#convertAsciiEmoji').show());
 		} else {
-			return Tracker.afterFlush(function() {
-				return $('#convertAsciiEmoji').hide();
-			});
+			Tracker.afterFlush(() => $('#convertAsciiEmoji').hide());
 		}
 	});
 	this.clearForm = function() {
-		return this.find('#language').value = localStorage.getItem('userLanguage');
+		this.find('#language').value = localStorage.getItem('userLanguage');
 	};
-	return this.save = function() {
+	this.save = function() {
 		instance = this;
 		const data = {};
 		let reload = false;
@@ -128,13 +124,13 @@ Template.accountPreferences.onCreated(function() {
 		}));
 		data.desktopNotificationDuration = $('input[name=desktopNotificationDuration]').val();
 		data.unreadAlert = $('#unreadAlert').find('input:checked').val();
-		return Meteor.call('saveUserPreferences', data, function(error, results) {
+		Meteor.call('saveUserPreferences', data, function(error, results) {
 			if (results) {
 				toastr.success(t('Preferences_saved'));
 				instance.clearForm();
 				if (reload) {
 					setTimeout(function() {
-						return Meteor._reload.reload();
+						Meteor._reload.reload();
 					}, 1000);
 				}
 			}
@@ -146,29 +142,26 @@ Template.accountPreferences.onCreated(function() {
 });
 
 Template.accountPreferences.onRendered(function() {
-	return Tracker.afterFlush(function() {
+	Tracker.afterFlush(function() {
 		SideNav.setFlex('accountFlex');
-		return SideNav.openFlex();
+		SideNav.openFlex();
 	});
 });
 
 Template.accountPreferences.events({
 	'click .submit button'(e, t) {
-		return t.save();
+		t.save();
 	},
 	'change input[name=useEmojis]'(e, t) {
-		return t.useEmojis.set($(e.currentTarget).val() === '1');
+		t.useEmojis.set($(e.currentTarget).val() === '1');
 	},
 	'click .enable-notifications'() {
-		return KonchatNotification.getDesktopPermission();
+		KonchatNotification.getDesktopPermission();
 	},
 	'click .test-notifications'() {
-		return KonchatNotification.notify({
+		KonchatNotification.notify({
 			duration: $('input[name=desktopNotificationDuration]').val(),
-			payload: {
-				sender: {
-					username: 'rocket.cat'
-				}
+			payload: { sender: { username: 'rocket.cat' }
 			},
 			title: TAPi18n.__('Desktop_Notification_Test'),
 			text: TAPi18n.__('This_is_a_desktop_notification')
