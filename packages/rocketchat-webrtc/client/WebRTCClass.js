@@ -10,7 +10,7 @@ class WebRTCTransportClass {
 			switch (type) {
 				case 'status':
 					if (onRemoteStatus && onRemoteStatus.length) {
-						onRemoteStatus.forEach((fn) => fn(data));
+						onRemoteStatus.forEach(fn => fn(data));
 					}
 			}
 		});
@@ -18,7 +18,7 @@ class WebRTCTransportClass {
 
 	log() {
 		if (this.debug === true) {
-			return console.log.apply(console, arguments);
+			console.log.apply(console, arguments);
 		}
 	}
 
@@ -35,31 +35,29 @@ class WebRTCTransportClass {
 		switch (type) {
 			case 'call':
 				if (onRemoteCall && onRemoteCall.length) {
-					onRemoteCall.forEach((fn) => {
-						fn(data);
-					});
+					onRemoteCall.forEach(fn => fn(data));
 				}
 				break;
 			case 'join':
 				if (onRemoteJoin && onRemoteJoin.length) {
-					onRemoteJoin.forEach((fn) => fn(data));
+					onRemoteJoin.forEach(fn => fn(data));
 				}
 				break;
 			case 'candidate':
 				if (onRemoteCandidate && onRemoteCandidate.length) {
-					onRemoteCandidate.forEach((fn) => fn(data));
+					onRemoteCandidate.forEach(fn => fn(data));
 				}
 				break;
 			case 'description':
 				if (onRemoteDescription && onRemoteDescription.length) {
-					onRemoteDescription.forEach((fn) => fn(data));
+					onRemoteDescription.forEach(fn => fn(data));
 				}
 		}
 	}
 
 	startCall(data) {
 		this.log('WebRTCTransportClass - startCall', this.webrtcInstance.room, this.webrtcInstance.selfId);
-		return RocketChat.Notifications.notifyUsersOfRoom(this.webrtcInstance.room, 'webrtc', 'call', {
+		RocketChat.Notifications.notifyUsersOfRoom(this.webrtcInstance.room, 'webrtc', 'call', {
 			from: this.webrtcInstance.selfId,
 			room: this.webrtcInstance.room,
 			media: data.media,
@@ -70,14 +68,14 @@ class WebRTCTransportClass {
 	joinCall(data) {
 		this.log('WebRTCTransportClass - joinCall', this.webrtcInstance.room, this.webrtcInstance.selfId);
 		if (data.monitor === true) {
-			return RocketChat.Notifications.notifyUser(data.to, 'webrtc', 'join', {
+			RocketChat.Notifications.notifyUser(data.to, 'webrtc', 'join', {
 				from: this.webrtcInstance.selfId,
 				room: this.webrtcInstance.room,
 				media: data.media,
 				monitor: data.monitor
 			});
 		} else {
-			return RocketChat.Notifications.notifyUsersOfRoom(this.webrtcInstance.room, 'webrtc', 'join', {
+			RocketChat.Notifications.notifyUsersOfRoom(this.webrtcInstance.room, 'webrtc', 'join', {
 				from: this.webrtcInstance.selfId,
 				room: this.webrtcInstance.room,
 				media: data.media,
@@ -90,20 +88,20 @@ class WebRTCTransportClass {
 		data.from = this.webrtcInstance.selfId;
 		data.room = this.webrtcInstance.room;
 		this.log('WebRTCTransportClass - sendCandidate', data);
-		return RocketChat.Notifications.notifyUser(data.to, 'webrtc', 'candidate', data);
+		RocketChat.Notifications.notifyUser(data.to, 'webrtc', 'candidate', data);
 	}
 
 	sendDescription(data) {
 		data.from = this.webrtcInstance.selfId;
 		data.room = this.webrtcInstance.room;
 		this.log('WebRTCTransportClass - sendDescription', data);
-		return RocketChat.Notifications.notifyUser(data.to, 'webrtc', 'description', data);
+		RocketChat.Notifications.notifyUser(data.to, 'webrtc', 'description', data);
 	}
 
 	sendStatus(data) {
 		this.log('WebRTCTransportClass - sendStatus', data, this.webrtcInstance.room);
 		data.from = this.webrtcInstance.selfId;
-		return RocketChat.Notifications.notifyRoom(this.webrtcInstance.room, 'webrtc', 'status', data);
+		RocketChat.Notifications.notifyRoom(this.webrtcInstance.room, 'webrtc', 'status', data);
 	}
 
 	onRemoteCall(fn) {
@@ -111,7 +109,7 @@ class WebRTCTransportClass {
 		if (callbacks['onRemoteCall'] == null) {
 			callbacks['onRemoteCall'] = [];
 		}
-		return callbacks['onRemoteCall'].push(fn);
+		callbacks['onRemoteCall'].push(fn);
 	}
 
 	onRemoteJoin(fn) {
@@ -119,7 +117,7 @@ class WebRTCTransportClass {
 		if (callbacks['onRemoteJoin'] == null) {
 			callbacks['onRemoteJoin'] = [];
 		}
-		return callbacks['onRemoteJoin'].push(fn);
+		callbacks['onRemoteJoin'].push(fn);
 	}
 
 	onRemoteCandidate(fn) {
@@ -127,7 +125,7 @@ class WebRTCTransportClass {
 		if (callbacks['onRemoteCandidate'] == null) {
 			callbacks['onRemoteCandidate'] = [];
 		}
-		return callbacks['onRemoteCandidate'].push(fn);
+		callbacks['onRemoteCandidate'].push(fn);
 	}
 
 	onRemoteDescription(fn) {
@@ -135,7 +133,7 @@ class WebRTCTransportClass {
 		if (callbacks['onRemoteDescription'] == null) {
 			callbacks['onRemoteDescription'] = [];
 		}
-		return callbacks['onRemoteDescription'].push(fn);
+		callbacks['onRemoteDescription'].push(fn);
 	}
 
 	onRemoteStatus(fn) {
@@ -143,7 +141,7 @@ class WebRTCTransportClass {
 		if (callbacks['onRemoteStatus'] == null) {
 			callbacks['onRemoteStatus'] = [];
 		}
-		return callbacks['onRemoteStatus'].push(fn);
+		callbacks['onRemoteStatus'].push(fn);
 	}
 
 
@@ -169,7 +167,7 @@ class WebRTCClass {
 			servers = servers.replace(/\s/g, '');
 			servers = servers.split(',');
 
-			servers.forEach((server) => {
+			servers.forEach(server => {
 				server = server.split('@');
 				const serverConfig = {
 					urls: server.pop()
@@ -226,17 +224,17 @@ class WebRTCClass {
 
 	log() {
 		if (this.debug === true) {
-			return console.log.apply(console, arguments);
+			console.log.apply(console, arguments);
 		}
 	}
 
 	onError() {
-		return console.error.apply(console, arguments);
+		console.error.apply(console, arguments);
 	}
 
 	checkPeerConnections() {
 		const peerConnections = this.peerConnections;
-		Object.keys(peerConnections).forEach((id) => {
+		Object.keys(peerConnections).forEach(id => {
 			const peerConnection = peerConnections[id];
 			if (peerConnection.iceConnectionState !== 'connected' && peerConnection.iceConnectionState !== 'completed' && peerConnection.createdAt + 5000 < Date.now()) {
 				this.stopPeerConnection(id);
@@ -249,10 +247,10 @@ class WebRTCClass {
 		const itemsById = {};
 		const peerConnections = this.peerConnections;
 
-		Object.keys(peerConnections).forEach((id) => {
+		Object.keys(peerConnections).forEach(id => {
 			const peerConnection = peerConnections[id];
 
-			peerConnection.getRemoteStreams().forEach((remoteStream) => {
+			peerConnection.getRemoteStreams().forEach(remoteStream => {
 				const item = {
 					id,
 					url: URL.createObjectURL(remoteStream),
@@ -285,7 +283,7 @@ class WebRTCClass {
 	}
 
 	resetCallInProgress() {
-		return this.callInProgress.set(false);
+		this.callInProgress.set(false);
 	}
 
 	broadcastStatus() {
@@ -294,7 +292,7 @@ class WebRTCClass {
 		}
 		const remoteConnections = [];
 		const peerConnections = this.peerConnections;
-		Object.keys(peerConnections).forEach((id) => {
+		Object.keys(peerConnections).forEach(id => {
 			const peerConnection = peerConnections[id];
 			remoteConnections.push({
 				id,
@@ -302,7 +300,7 @@ class WebRTCClass {
 			});
 		});
 
-		return this.transport.sendStatus({
+		this.transport.sendStatus({
 			media: this.media,
 			remoteConnections
 		});
@@ -332,7 +330,7 @@ class WebRTCClass {
 		},
 			...data.remoteConnections];
 
-		remoteConnections.forEach((remoteConnection) => {
+		remoteConnections.forEach(remoteConnection => {
 			if (remoteConnection.id !== this.selfId && (this.peerConnections[remoteConnection.id] == null)) {
 				this.log('reconnecting with', remoteConnection.id);
 				this.onRemoteJoin({
@@ -359,7 +357,7 @@ class WebRTCClass {
 		this.peerConnections[id] = peerConnection;
 		const eventNames = ['icecandidate', 'addstream', 'removestream', 'iceconnectionstatechange', 'datachannel', 'identityresult', 'idpassertionerror', 'idpvalidationerror', 'negotiationneeded', 'peeridentity', 'signalingstatechange'];
 
-		eventNames.forEach((eventName) => {
+		eventNames.forEach(eventName => {
 			peerConnection.addEventListener(eventName, (e) => {
 				this.log(id, e.type, e);
 			});
@@ -385,8 +383,7 @@ class WebRTCClass {
 			this.updateRemoteItems();
 		});
 		peerConnection.addEventListener('iceconnectionstatechange', () => {
-			let ref;
-			if ((peerConnection.iceConnectionState === 'disconnected' || ref === 'closed') && peerConnection === this.peerConnections[id]) {
+			if ((peerConnection.iceConnectionState === 'disconnected' || peerConnection.iceConnectionState === 'closed') && peerConnection === this.peerConnections[id]) {
 				this.stopPeerConnection(id);
 				Meteor.setTimeout(() => {
 					if (Object.keys(this.peerConnections).length === 0) {
@@ -414,9 +411,9 @@ class WebRTCClass {
 				stream.volume = volume;
 				this.audioContext = audioContext;
 			}
-			return onSuccess(stream);
+			onSuccess(stream);
 		};
-		return navigator.getUserMedia(media, onSuccessLocal, onError);
+		navigator.getUserMedia(media, onSuccessLocal, onError);
 	}
 
 	getUserMedia(media, onSuccess, onError = this.onError) {
@@ -451,7 +448,7 @@ class WebRTCClass {
 							try {
 								chrome.webstore.install(url, refresh, function() {
 									window.open(url);
-									return refresh();
+									refresh();
 								});
 							} catch (_error) {
 								console.log(_error);
@@ -497,10 +494,10 @@ class WebRTCClass {
 			}
 		};
 		if (this.navigator === 'firefox' || (media.audio == null) || media.audio === false) {
-			return getScreen();
+			getScreen();
 		} else {
 			const getAudioSuccess = (audioStream) => {
-				return getScreen(audioStream);
+				getScreen(audioStream);
 			};
 			const getAudioError = () => {
 				getScreen();
@@ -528,17 +525,17 @@ class WebRTCClass {
 			this.videoEnabled.set(this.media.video === true);
 			this.audioEnabled.set(this.media.audio === true);
 			const peerConnections = this.peerConnections;
-			Object.keys(peerConnections).forEach((id) => {
+			Object.keys(peerConnections).forEach(id => {
 				const peerConnection = peerConnections[id];
 				peerConnection.addStream(stream);
 			});
-			return callback(null, this.localStream);
+			callback(null, this.localStream);
 		};
 		const onError = (error) => {
 			callback(false);
-			return this.onError(error);
+			this.onError(error);
 		};
-		return this.getUserMedia(this.media, onSuccess, onError);
+		this.getUserMedia(this.media, onSuccess, onError);
 	}
 
 
@@ -559,7 +556,7 @@ class WebRTCClass {
 	stopAllPeerConnections() {
 		const peerConnections = this.peerConnections;
 
-		Object.keys(peerConnections).forEach((id) => {
+		Object.keys(peerConnections).forEach(id => {
 			this.stopPeerConnection(id);
 		});
 
@@ -571,25 +568,25 @@ class WebRTCClass {
 			if (enabled === true && this.media.audio !== true) {
 				delete this.localStream;
 				this.media.audio = true;
-				return this.getLocalUserMedia(() => {
+				this.getLocalUserMedia(() => {
 					this.stopAllPeerConnections();
-					return this.joinCall();
+					this.joinCall();
 				});
 			} else {
 				this.localStream.getAudioTracks().forEach(function(audio) {
-					return audio.enabled = enabled;
+					audio.enabled = enabled;
 				});
-				return this.audioEnabled.set(enabled);
+				this.audioEnabled.set(enabled);
 			}
 		}
 	}
 
 	disableAudio() {
-		return this.setAudioEnabled(false);
+		this.setAudioEnabled(false);
 	}
 
 	enableAudio() {
-		return this.setAudioEnabled(true);
+		this.setAudioEnabled(true);
 	}
 
 	setVideoEnabled(enabled = true) {
@@ -597,48 +594,48 @@ class WebRTCClass {
 			if (enabled === true && this.media.video !== true) {
 				delete this.localStream;
 				this.media.video = true;
-				return this.getLocalUserMedia(() => {
+				this.getLocalUserMedia(() => {
 					this.stopAllPeerConnections();
-					return this.joinCall();
+					this.joinCall();
 				});
 			} else {
 				this.localStream.getVideoTracks().forEach(function(video) {
-					return video.enabled = enabled;
+					video.enabled = enabled;
 				});
-				return this.videoEnabled.set(enabled);
+				this.videoEnabled.set(enabled);
 			}
 		}
 	}
 
 	disableScreenShare() {
-		return this.setScreenShareEnabled(false);
+		this.setScreenShareEnabled(false);
 	}
 
 	enableScreenShare() {
-		return this.setScreenShareEnabled(true);
+		this.setScreenShareEnabled(true);
 	}
 
 	setScreenShareEnabled(enabled = true) {
 		if (this.localStream != null) {
 			this.media.desktop = enabled;
 			delete this.localStream;
-			return this.getLocalUserMedia((err) => {
+			this.getLocalUserMedia(err => {
 				if (err != null) {
 					return;
 				}
 				this.screenShareEnabled.set(enabled);
 				this.stopAllPeerConnections();
-				return this.joinCall();
+				this.joinCall();
 			});
 		}
 	}
 
 	disableVideo() {
-		return this.setVideoEnabled(false);
+		this.setVideoEnabled(false);
 	}
 
 	enableVideo() {
-		return this.setVideoEnabled(true);
+		this.setVideoEnabled(true);
 	}
 
 	stop() {
@@ -650,7 +647,7 @@ class WebRTCClass {
 		}
 		this.localUrl.set(undefined);
 		delete this.localStream;
-		return this.stopAllPeerConnections();
+		this.stopAllPeerConnections();
 	}
 
 
@@ -663,9 +660,9 @@ class WebRTCClass {
 	startCall(media = {}) {
 		this.log('startCall', arguments);
 		this.media = media;
-		return this.getLocalUserMedia(() => {
+		this.getLocalUserMedia(() => {
 			this.active = true;
-			return this.transport.startCall({
+			this.transport.startCall({
 				media: this.media
 			});
 		});
@@ -676,7 +673,7 @@ class WebRTCClass {
 		this.media = media;
 		this.active = true;
 		this.monitor = true;
-		return this.transport.startCall({
+		this.transport.startCall({
 			media: this.media,
 			monitor: true
 		});
@@ -696,7 +693,7 @@ class WebRTCClass {
 		if (this.autoAccept === true) {
 			FlowRouter.goToRoomById(data.room);
 			Meteor.defer(() => {
-				return this.joinCall({
+				this.joinCall({
 					to: data.from,
 					monitor: data.monitor,
 					media: data.media
@@ -734,7 +731,7 @@ class WebRTCClass {
 			icon = 'phone';
 			title = `Group audio call from ${ subscription.name }`;
 		}
-		return swal({
+		swal({
 			title: `<i class='icon-${ icon } alert-icon success-color'></i>${ title }`,
 			text: 'Do you want to accept?',
 			html: true,
@@ -744,15 +741,15 @@ class WebRTCClass {
 		}, (isConfirm) => {
 			if (isConfirm) {
 				FlowRouter.goToRoomById(data.room);
-				return Meteor.defer(() => {
-					return this.joinCall({
+				Meteor.defer(() => {
+					this.joinCall({
 						to: data.from,
 						monitor: data.monitor,
 						media: data.media
 					});
 				});
 			} else {
-				return this.stop();
+				this.stop();
 			}
 		});
 	}
@@ -813,7 +810,7 @@ class WebRTCClass {
 		}
 		const onOffer = offer => {
 			const onLocalDescription = () => {
-				return this.transport.sendDescription({
+				this.transport.sendDescription({
 					to: data.from,
 					type: 'offer',
 					ts: peerConnection.createdAt,
@@ -825,18 +822,18 @@ class WebRTCClass {
 				});
 			};
 
-			return peerConnection.setLocalDescription(new RTCSessionDescription(offer), onLocalDescription, this.onError);
+			peerConnection.setLocalDescription(new RTCSessionDescription(offer), onLocalDescription, this.onError);
 		};
 
 		if (data.monitor === true) {
-			return peerConnection.createOffer(onOffer, this.onError, {
+			peerConnection.createOffer(onOffer, this.onError, {
 				mandatory: {
 					OfferToReceiveAudio: data.media.audio,
 					OfferToReceiveVideo: data.media.video
 				}
 			});
 		} else {
-			return peerConnection.createOffer(onOffer, this.onError);
+			peerConnection.createOffer(onOffer, this.onError);
 		}
 	}
 
@@ -871,7 +868,7 @@ class WebRTCClass {
 
 		const onAnswer = answer => {
 			const onLocalDescription = () => {
-				return this.transport.sendDescription({
+				this.transport.sendDescription({
 					to: data.from,
 					type: 'answer',
 					ts: peerConnection.createdAt,
@@ -882,10 +879,10 @@ class WebRTCClass {
 				});
 			};
 
-			return peerConnection.setLocalDescription(new RTCSessionDescription(answer), onLocalDescription, this.onError);
+			peerConnection.setLocalDescription(new RTCSessionDescription(answer), onLocalDescription, this.onError);
 		};
 
-		return peerConnection.createAnswer(onAnswer, this.onError);
+		peerConnection.createAnswer(onAnswer, this.onError);
 	}
 
 
@@ -906,7 +903,7 @@ class WebRTCClass {
 		this.log('onRemoteCandidate', arguments);
 		const peerConnection = this.getPeerConnection(data.from);
 		if (peerConnection.iceConnectionState !== 'closed' && peerConnection.iceConnectionState !== 'failed' && peerConnection.iceConnectionState !== 'disconnected' && peerConnection.iceConnectionState !== 'completed') {
-			return peerConnection.addIceCandidate(new RTCIceCandidate(data.candidate));
+			peerConnection.addIceCandidate(new RTCIceCandidate(data.candidate));
 		}
 	}
 
@@ -935,13 +932,13 @@ class WebRTCClass {
 		const peerConnection = this.getPeerConnection(data.from);
 		if (data.type === 'offer') {
 			peerConnection.remoteMedia = data.media;
-			return this.onRemoteOffer({
+			this.onRemoteOffer({
 				from: data.from,
 				ts: data.ts,
 				description: data.description
 			});
 		} else {
-			return peerConnection.setRemoteDescription(new RTCSessionDescription(data.description));
+			peerConnection.setRemoteDescription(new RTCSessionDescription(data.description));
 		}
 	}
 
@@ -953,9 +950,7 @@ const WebRTC = new class {
 	}
 
 	getInstanceByRoomId(roomId) {
-		const subscription = ChatSubscription.findOne({
-			rid: roomId
-		});
+		const subscription = ChatSubscription.findOne({ rid: roomId });
 		if (!subscription) {
 			return;
 		}
@@ -981,14 +976,14 @@ const WebRTC = new class {
 };
 
 Meteor.startup(function() {
-	return Tracker.autorun(function() {
+	Tracker.autorun(function() {
 		if (Meteor.userId()) {
-			return RocketChat.Notifications.onUser('webrtc', (type, data) => {
+			RocketChat.Notifications.onUser('webrtc', (type, data) => {
 				if (data.room == null) {
 					return;
 				}
 				const webrtc = WebRTC.getInstanceByRoomId(data.room);
-				return webrtc.transport.onUserStream(type, data);
+				webrtc.transport.onUserStream(type, data);
 			});
 		}
 	});
