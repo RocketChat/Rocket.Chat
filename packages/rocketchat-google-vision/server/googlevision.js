@@ -51,7 +51,7 @@ class GoogleVision {
 			if (file && file.type && file.type.indexOf('image') !== -1 && file.store === 'googleCloudStorage' && file.googleCloudStorage) {
 				if (this.incCallCount(1)) {
 					const bucket = this.storageClient.bucket(file.googleCloudStorage.bucket);
-					const bucketFile = bucket.file(`${file.googleCloudStorage.path}${file._id}`);
+					const bucketFile = bucket.file(`${ file.googleCloudStorage.path }${ file._id }`);
 					const results = Meteor.wrapAsync(this.visionClient.detectSafeSearch, this.visionClient)(bucketFile);
 					if (results && results.adult === true) {
 						delete message.attachments[0];
@@ -105,7 +105,7 @@ class GoogleVision {
 			if (file && file.type && file.type.indexOf('image') !== -1 && file.store === 'googleCloudStorage' && file.googleCloudStorage) {
 				if (this.incCallCount(visionTypes.length)) {
 					const bucket = this.storageClient.bucket(file.googleCloudStorage.bucket);
-					const bucketFile = bucket.file(`${file.googleCloudStorage.path}${file._id}`);
+					const bucketFile = bucket.file(`${ file.googleCloudStorage.path }${ file._id }`);
 					this.visionClient.detect(bucketFile, visionTypes, Meteor.bindEnvironment((error, results) => {
 						if (!error) {
 							RocketChat.models.Messages.setGoogleVisionData(message._id, this.getAnnotations(visionTypes, results));
@@ -123,7 +123,7 @@ class GoogleVision {
 	getAnnotations(visionTypes, visionData) {
 		if (visionTypes.length === 1) {
 			const _visionData = {};
-			_visionData[`${visionTypes[0]}`] = visionData;
+			_visionData[`${ visionTypes[0] }`] = visionData;
 			visionData = _visionData;
 		}
 		const results = {};
