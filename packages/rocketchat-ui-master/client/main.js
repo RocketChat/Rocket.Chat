@@ -110,7 +110,7 @@ Template.main.helpers({
 		return RocketChat.settings.get('Site_Name');
 	},
 	logged() {
-		if (Meteor.userId() != null || (RocketChat.settings.get('Accounts_AllowAnonymousAccess') === true && Session.get('forceLogin') !== true)) {
+		if (Meteor.userId() != null || (RocketChat.settings.get('Accounts_AllowAnonymousRead') === true && Session.get('forceLogin') !== true)) {
 			$('html').addClass('noscroll').removeClass('scroll');
 			return true;
 		} else {
@@ -134,7 +134,7 @@ Template.main.helpers({
 		return ready;
 	},
 	hasUsername() {
-		return (Meteor.userId() != null && Meteor.user().username != null) || (Meteor.userId() == null && RocketChat.settings.get('Accounts_AllowAnonymousAccess') === true);
+		return (Meteor.userId() != null && Meteor.user().username != null) || (Meteor.userId() == null && RocketChat.settings.get('Accounts_AllowAnonymousRead') === true);
 	},
 	requirePasswordChange() {
 		const user = Meteor.user();
