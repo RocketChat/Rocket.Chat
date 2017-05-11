@@ -1,6 +1,6 @@
 Template.account.onRendered(function() {
-	return Tracker.afterFlush(function() {
+	Tracker.afterFlush(function() {
 		SideNav.setFlex('accountFlex');
-		return SideNav.openFlex();
+		SideNav.openFlex();
 	});
 });

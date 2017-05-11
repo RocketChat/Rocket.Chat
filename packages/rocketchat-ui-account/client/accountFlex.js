@@ -1,19 +1,19 @@
 /*globals menu */
 Template.accountFlex.events({
 	'mouseenter header'() {
-		return SideNav.overArrow();
+		SideNav.overArrow();
 	},
 	'mouseleave header'() {
-		return SideNav.leaveArrow();
+		SideNav.leaveArrow();
 	},
 	'click header'() {
-		return SideNav.closeFlex();
+		SideNav.closeFlex();
 	},
 	'click .cancel-settings'() {
-		return SideNav.closeFlex();
+		SideNav.closeFlex();
 	},
 	'click .account-link'() {
-		return menu.close();
+		menu.close();
 	}
 });
 
