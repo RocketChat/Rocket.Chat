@@ -257,3 +257,18 @@ function startStreamBroadcast() {
 Meteor.startup(function() {
 	return startStreamBroadcast();
 });
+
+Meteor.methods({
+	'instances/get'() {
+		if (!RocketChat.authz.hasPermission(Meteor.userId(), 'view-statistics')) {
+			throw new Meteor.Error('error-action-not-allowed', 'List instances is not allowed', {
+				method: 'instances/get'
+			});
+		}
+
+		return Object.keys(connections).map(address => {
+			const conn = connections[address];
+			return Object.assign({ address, currentStatus: conn._stream.currentStatus }, _.pick(conn, 'instanceRecord', 'broadcastAuth'));
+		});
+	}
+});
