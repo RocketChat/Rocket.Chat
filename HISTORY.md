@@ -1,3 +1,14 @@
+<a name="0.56.0-rc.5"></a>
+# 0.56.0-rc.5 (2017-05-11)
+
+
+### Bug Fixes
+
+- [#6935](https://github.com/RocketChat/Rocket.Chat/pull/6935) Error when trying to show preview of undefined filetype
+- [#6955](https://github.com/RocketChat/Rocket.Chat/pull/6955) Remove spaces from env PORT and INSTANCE_IP
+
+
+
 <a name="0.56.0-rc.4"></a>
 # 0.56.0-rc.4 (2017-05-11)
 
