@@ -14,13 +14,11 @@ Template.accountPreferences.helpers({
 	},
 	languages() {
 		const languages = TAPi18n.getLanguages();
-		const result = [];
 
-		Object.keys(languages).forEach((key) => {
+
+		const result = Object.keys(languages).map((key) => {
 			const language = languages[key];
-			result.push(_.extend(language, {
-				key
-			}));
+			return _.extend(language, { key });
 		});
 
 		return _.sortBy(result, 'key');
@@ -37,20 +35,22 @@ Template.accountPreferences.helpers({
 	},
 	checked(property, value, defaultValue) {
 		const user = Meteor.user();
+		const propertyeExists = !!(user && user.settings && user.settings.preferences && user.settings.preferences[property]);
 		let currentValue;
-		if (user && user.settings && user.settings.preferences && user.settings.preferences[property] && defaultValue === true) {
-			currentValue = value;
-		} else if (user && user.settings && user.settings.preferences && user.settings.preferences[property]) {
+		if (propertyeExists) {
 			currentValue = !!user.settings.preferences[property];
+		} else if (!propertyeExists && defaultValue === true) {
+			currentValue = value;
 		}
 		return currentValue === value;
 	},
 	selected(property, value, defaultValue) {
 		const user = Meteor.user();
-		if (!(user && user.settings && user.settings.preferences && user.settings.preferences[property])) {
-			return defaultValue === true;
+		const propertyeExists = !!(user && user.settings && user.settings.preferences && user.settings.preferences[property]);
+		if (propertyeExists) {
+			return user.settings.preferences[property] === value;
 		} else {
-			return (user && user.settings && user.settings.preferences && user.settings.preferences[property]) === value;
+			return defaultValue === true;
 		}
 	},
 	highlights() {
