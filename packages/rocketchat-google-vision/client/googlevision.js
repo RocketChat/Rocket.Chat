@@ -14,10 +14,10 @@ RocketChat.GoogleVision = {
 			labels.push({ label: 'Violence', bgColor: 'red', fontColor: 'white' });
 		}
 		if (attachment.colors && attachment.colors.length > 0) {
-			attributes.color = '#' + attachment.colors[0];
+			attributes.color = `#${ attachment.colors[0] }`;
 		}
 		if (attachment.logos && attachment.logos.length > 0) {
-			labels.push({ label: `Logo: ${attachment.logos[0]}` });
+			labels.push({ label: `Logo: ${ attachment.logos[0] }` });
 		}
 		if (attachment.faces && attachment.faces.length > 0) {
 			let faceCount = 0;
@@ -36,7 +36,7 @@ RocketChat.GoogleVision = {
 					faceAttributes.push('Surprise');
 				}
 				if (faceAttributes.length > 0) {
-					labels.push({ label: `Face ${++faceCount}: ${faceAttributes.join(', ')}` });
+					labels.push({ label: `Face ${ ++faceCount }: ${ faceAttributes.join(', ') }` });
 				}
 			});
 		}
