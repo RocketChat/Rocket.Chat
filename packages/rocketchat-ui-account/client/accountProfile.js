@@ -133,17 +133,15 @@ Template.accountProfile.events({
 			closeOnConfirm: false,
 			confirmButtonText: t('Save'),
 			cancelButtonText: t('Cancel')
-		}, () => {
-			return function(typedPassword) {
-				if (typedPassword) {
-					toastr.remove();
-					toastr.warning(t('Please_wait_while_your_profile_is_being_saved'));
-					return instance.save(SHA256(typedPassword));
-				} else {
-					swal.showInputError(t('You_need_to_type_in_your_password_in_order_to_do_this'));
-					return false;
-				}
-			};
+		}, (typedPassword) => {
+			if (typedPassword) {
+				toastr.remove();
+				toastr.warning(t('Please_wait_while_your_profile_is_being_saved'));
+				return instance.save(SHA256(typedPassword));
+			} else {
+				swal.showInputError(t('You_need_to_type_in_your_password_in_order_to_do_this'));
+				return false;
+			}
 		});
 	},
 	'click .logoutOthers button'() {
@@ -170,24 +168,22 @@ Template.accountProfile.events({
 				closeOnConfirm: false,
 				confirmButtonText: t('Delete'),
 				cancelButtonText: t('Cancel')
-			}, () => {
-				return function(typedPassword) {
-					if (typedPassword) {
-						toastr.remove();
-						toastr.warning(t('Please_wait_while_your_account_is_being_deleted'));
-						return Meteor.call('deleteUserOwnAccount', SHA256(typedPassword), function(error) {
-							if (error) {
-								toastr.remove();
-								return swal.showInputError(t('Your_password_is_wrong'));
-							} else {
-								return swal.close();
-							}
-						});
-					} else {
-						swal.showInputError(t('You_need_to_type_in_your_password_in_order_to_do_this'));
-						return false;
-					}
-				};
+			}, (typedPassword) => {
+				if (typedPassword) {
+					toastr.remove();
+					toastr.warning(t('Please_wait_while_your_account_is_being_deleted'));
+					return Meteor.call('deleteUserOwnAccount', SHA256(typedPassword), function(error) {
+						if (error) {
+							toastr.remove();
+							return swal.showInputError(t('Your_password_is_wrong'));
+						} else {
+							return swal.close();
+						}
+					});
+				} else {
+					swal.showInputError(t('You_need_to_type_in_your_password_in_order_to_do_this'));
+					return false;
+				}
 			});
 		} else {
 			return swal({
@@ -198,25 +194,23 @@ Template.accountProfile.events({
 				closeOnConfirm: false,
 				confirmButtonText: t('Delete'),
 				cancelButtonText: t('Cancel')
-			}, () => {
-				return function(deleteConfirmation) {
-					const user = Meteor.user();
-					if (deleteConfirmation === (user && user.username)) {
-						toastr.remove();
-						toastr.warning(t('Please_wait_while_your_account_is_being_deleted'));
-						return Meteor.call('deleteUserOwnAccount', deleteConfirmation, function(error) {
-							if (error) {
-								toastr.remove();
-								return swal.showInputError(t('Your_password_is_wrong'));
-							} else {
-								return swal.close();
-							}
-						});
-					} else {
-						swal.showInputError(t('You_need_to_type_in_your_username_in_order_to_do_this'));
-						return false;
-					}
-				};
+			}, (deleteConfirmation) => {
+				const user = Meteor.user();
+				if (deleteConfirmation === (user && user.username)) {
+					toastr.remove();
+					toastr.warning(t('Please_wait_while_your_account_is_being_deleted'));
+					return Meteor.call('deleteUserOwnAccount', deleteConfirmation, function(error) {
+						if (error) {
+							toastr.remove();
+							return swal.showInputError(t('Your_password_is_wrong'));
+						} else {
+							return swal.close();
+						}
+					});
+				} else {
+					swal.showInputError(t('You_need_to_type_in_your_username_in_order_to_do_this'));
+					return false;
+				}
 			});
 		}
 	},
@@ -225,16 +219,14 @@ Template.accountProfile.events({
 		e.preventDefault();
 		e.currentTarget.innerHTML = `${ e.currentTarget.innerHTML } ...`;
 		e.currentTarget.disabled = true;
-		return Meteor.call('sendConfirmationEmail', user.emails && user.emails[0] && user.emails[0].address(() => {
-			return function(error, results) {
-				if (results) {
-					toastr.success(t('Verification_email_sent'));
-				} else if (error) {
-					handleError(error);
-				}
-				e.currentTarget.innerHTML = e.currentTarget.innerHTML.replace(' ...', '');
-				return e.currentTarget.disabled = false;
-			};
+		return Meteor.call('sendConfirmationEmail', user.emails && user.emails[0] && user.emails[0].address((error, results) => {
+			if (results) {
+				toastr.success(t('Verification_email_sent'));
+			} else if (error) {
+				handleError(error);
+			}
+			e.currentTarget.innerHTML = e.currentTarget.innerHTML.replace(' ...', '');
+			return e.currentTarget.disabled = false;
 		}));
 	}
 });
