@@ -1,3 +1,13 @@
+<a name="0.56.0-rc.4"></a>
+# 0.56.0-rc.4 (2017-05-11)
+
+
+### New Features
+
+- [#6953](https://github.com/RocketChat/Rocket.Chat/pull/6953) Show info about multiple instances at admin page
+
+
+
 <a name="0.56.0-rc.3"></a>
 # 0.56.0-rc.3 (2017-05-10)
 
