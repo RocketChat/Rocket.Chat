@@ -23,6 +23,10 @@ setFieldValue = (settingId, value, type, editor) ->
 			selectedRooms = Template.instance().selectedRooms.get()
 			selectedRooms[settingId] = value
 			Template.instance().selectedRooms.set(selectedRooms)
+			TempSettings.update {_id: settingId},
+				$set:
+					value: value
+					changed: JSON.stringify(RocketChat.settings.collectionPrivate.findOne(settingId).value) isnt JSON.stringify(value)
 		else
 			input.val(value).change()
 
@@ -460,7 +464,7 @@ Template.admin.events
 		TempSettings.update {_id: this.id},
 			$set:
 				value: value
-				changed: RocketChat.settings.collectionPrivate.findOne(this.id).value isnt value
+				changed: JSON.stringify(RocketChat.settings.collectionPrivate.findOne(this.id).value) isnt JSON.stringify(value)
 		event.currentTarget.value = ''
 		event.currentTarget.focus()
 
@@ -474,7 +478,7 @@ Template.admin.events
 		TempSettings.update {_id: settingId},
 			$set:
 				value: value
-				changed: RocketChat.settings.collectionPrivate.findOne(settingId).value isnt value
+				changed: JSON.stringify(RocketChat.settings.collectionPrivate.findOne(settingId).value) isnt JSON.stringify(value)
 
 Template.admin.onRendered ->
 	Tracker.afterFlush ->
