@@ -5,6 +5,8 @@ Template.adminInfo.helpers
 		return Template.instance().ready.get()
 	statistics: ->
 		return Template.instance().statistics.get()
+	instances: ->
+		return Template.instance().instances.get()
 	inGB: (size) ->
 		if size > 1073741824
 			return _.numberFormat(size / 1024 / 1024 / 1024, 2) + ' GB'
@@ -52,13 +54,20 @@ Template.adminInfo.onRendered ->
 Template.adminInfo.onCreated ->
 	instance = @
 	@statistics = new ReactiveVar {}
+	@instances = new ReactiveVar []
 	@ready = new ReactiveVar false
 
 	if RocketChat.authz.hasAllPermission('view-statistics')
 		Meteor.call 'getStatistics', (error, statistics) ->
-			instance.ready.set true
 			if error
 				handleError(error)
 			else
 				instance.statistics.set statistics
+
+			Meteor.call 'instances/get', (error, instances) ->
+				instance.ready.set true
+				if error
+					handleError(error)
+				else
+					instance.instances.set instances
 
