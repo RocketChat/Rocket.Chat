@@ -2,6 +2,9 @@
 
 import {DDPCommon} from 'meteor/ddp-common';
 
+process.env.PORT = String(process.env.PORT).trim();
+process.env.INSTANCE_IP = String(process.env.INSTANCE_IP).trim();
+
 const connections = {};
 this.connections = connections;
 
