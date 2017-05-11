@@ -122,9 +122,9 @@ Importer.CSV = class ImporterCSV extends Importer.Base {
 		super.updateRecord({ 'count.messages': messagesCount, 'messagesstatus': null });
 		super.addCountToTotal(messagesCount);
 
-		//Ensure we have some users, channels, and messages
-		if (tempUsers.length === 0 || tempChannels.length === 0 || messagesCount === 0) {
-			this.logger.warn(`The loaded users count ${ tempUsers.length }, the loaded channels ${ tempChannels.length }, and the loaded messages ${ messagesCount }`);
+		//Ensure we have at least a single user, channel, or message
+		if (tempUsers.length === 0 && tempChannels.length === 0 && messagesCount === 0) {
+			this.logger.error('No users, channels, or messages found in the import file.');
 			super.updateProgress(Importer.ProgressStep.ERROR);
 			return super.getProgress();
 		}

@@ -250,8 +250,9 @@ class @ChatMessages
 		$('.sweet-alert').addClass 'visible'
 
 	deleteMsg: (message) ->
+		forceDelete = RocketChat.authz.hasAtLeastOnePermission('force-delete-message', message.rid)
 		blockDeleteInMinutes = RocketChat.settings.get 'Message_AllowDeleting_BlockDeleteInMinutes'
-		if blockDeleteInMinutes? and blockDeleteInMinutes isnt 0
+		if blockDeleteInMinutes? and blockDeleteInMinutes isnt 0 and forceDelete is false
 			msgTs = moment(message.ts) if message.ts?
 			currentTsDiff = moment().diff(msgTs, 'minutes') if msgTs?
 			if currentTsDiff > blockDeleteInMinutes

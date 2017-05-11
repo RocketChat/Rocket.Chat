@@ -5,7 +5,6 @@ services:
 branches:
   only:
   - develop
-  - release-candidate
   - "/^\\d+\\.\\d+\\.\\d+(-rc\\.\\d+)?$/"
 git:
   depth: 1

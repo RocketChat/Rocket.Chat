@@ -6,15 +6,14 @@ Package.describe({
 });
 
 Package.onUse(function(api) {
-	api.use('coffeescript');
 	api.use('ecmascript');
 	api.use('underscore');
 	api.use('templating');
 	api.use('underscorestring:underscore.string');
 	api.use('rocketchat:lib');
 
-	api.addFiles('settings.coffee', 'server');
-	api.addFiles('katex.coffee');
+	api.addFiles('settings.js', 'server');
+	api.addFiles('katex.js');
 	api.addFiles('client/style.css', 'client');
 
 	const katexPath = 'node_modules/katex/dist/';
