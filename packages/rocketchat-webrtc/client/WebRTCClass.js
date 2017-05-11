@@ -452,10 +452,15 @@ class WebRTCClass {
 				}, (isConfirm) => {
 					if (isConfirm) {
 						if (this.navigator === 'chrome') {
-							chrome.webstore.install(undefined, refresh, function() {
-								window.open('https://chrome.google.com/webstore/detail/rocketchat-screen-share/nocfbnnmjnndkbipkabodnheejiegccf');
-								refresh();
-							});
+							const url = 'https://chrome.google.com/webstore/detail/rocketchat-screen-share/nocfbnnmjnndkbipkabodnheejiegccf';
+							try {
+								chrome.webstore.install(url, refresh, function() {
+									window.open(url);
+									return refresh();
+								});
+							} catch (_error) {
+								console.log(_error);
+							}
 						} else if (this.navigator === 'firefox') {
 							window.open('https://addons.mozilla.org/en-GB/firefox/addon/rocketchat-screen-share/');
 							refresh();
