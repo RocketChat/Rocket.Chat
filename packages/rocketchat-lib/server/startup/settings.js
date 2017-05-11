@@ -8,9 +8,17 @@ RocketChat.settings.add('uniqueID', process.env.DEPLOYMENT_ID || Random.id(), {
 // if you add a node to the i18n.json with the same setting name but with `_Description` it will automatically work.
 
 RocketChat.settings.addGroup('Accounts', function() {
-	this.add('Accounts_AllowAnonymousAccess', false, {
+	this.add('Accounts_AllowAnonymousRead', false, {
 		type: 'boolean',
 		public: true
+	});
+	this.add('Accounts_AllowAnonymousWrite', false, {
+		type: 'boolean',
+		public: true,
+		enableQuery: {
+			_id: 'Accounts_AllowAnonymousRead',
+			value: true
+		}
 	});
 	this.add('Accounts_AllowDeleteOwnAccount', false, {
 		type: 'boolean',
@@ -62,7 +70,11 @@ RocketChat.settings.addGroup('Accounts', function() {
 		type: 'boolean',
 		'public': true
 	});
+
 	this.section('Registration', function() {
+		this.add('Accounts_DefaultUsernamePrefixSuggestion', 'user', {
+			type: 'string'
+		});
 		this.add('Accounts_RequireNameForSignUp', true, {
 			type: 'boolean',
 			'public': true
@@ -145,6 +157,7 @@ RocketChat.settings.addGroup('Accounts', function() {
 			i18nLabel: 'Custom_Fields'
 		});
 	});
+
 	this.section('Avatar', function() {
 		this.add('Accounts_AvatarResize', true, {
 			type: 'boolean'
@@ -468,6 +481,20 @@ RocketChat.settings.addGroup('Email', function() {
 		});
 	});
 	this.section('SMTP', function() {
+		this.add('SMTP_Protocol', 'smtp', {
+			type: 'select',
+			values: [
+				{
+					key: 'smtp',
+					i18nLabel: 'smtp'
+				}, {
+					key: 'smtps',
+					i18nLabel: 'smtps'
+				}
+			],
+			env: true,
+			i18nLabel: 'Protocol'
+		});
 		this.add('SMTP_Host', '', {
 			type: 'string',
 			env: true,
@@ -477,6 +504,11 @@ RocketChat.settings.addGroup('Email', function() {
 			type: 'string',
 			env: true,
 			i18nLabel: 'Port'
+		});
+		this.add('SMTP_Pool', true, {
+			type: 'boolean',
+			env: true,
+			i18nLabel: 'Pool'
 		});
 		this.add('SMTP_Username', '', {
 			type: 'string',
