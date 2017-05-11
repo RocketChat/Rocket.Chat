@@ -97,14 +97,12 @@ Template.avatarPrompt.events({
 		const loginWithService = `loginWith${ _.capitalize(this) }`;
 		const serviceConfig = {};
 		return Meteor[loginWithService](serviceConfig, function(error) {
-			if ((error && error.error) === 'github-no-public-email') {
-				alert(t('github_no_public_email'));
-				return;
-			}
-			console.log(error);
-			if (error != null) {
-				toastr.error(error.message);
-				return;
+			if (error && error.error) {
+				if (error.error === 'github-no-public-email') {
+					return alert(t('github_no_public_email'));
+				}
+				console.log(error);
+				return toastr.error(error.message);
 			}
 			return template.getSuggestions();
 		});
