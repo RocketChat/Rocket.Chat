@@ -6,12 +6,12 @@ const isServerSearch = function(rule) {
 };
 
 const validateRule = function(rule) {
-	if ((rule.subscription != null) && !Match.test(rule.collection, String)) {
+	if (rule.subscription != null && !Match.test(rule.collection, String)) {
 		throw new Error('Collection name must be specified as string for server-side search');
 	}
 	// XXX back-compat message, to be removed
-	if (rule.callback != null) {
-		return console.warn('autocomplete no longer supports callbacks; use event listeners instead.');
+	if (rule.callback) {
+		console.warn('autocomplete no longer supports callbacks; use event listeners instead.');
 	}
 };
 
@@ -62,14 +62,13 @@ const getFindParams = function(rule, filter, limit) {
 
 const getField = function(obj, str) {
 	const string = str.split('.');
-	string.forEach((key) => {
+	string.forEach(key => {
 		obj = obj[key];
 	});
 	return obj;
 };
 
 this.AutoComplete = class {
-
 	constructor(settings) {
 		this.KEYS = [40, 38, 13, 27, 9];
 		this.limit = settings.limit || 5;
@@ -77,13 +76,13 @@ this.AutoComplete = class {
 		this.rules = settings.rules;
 		const rules = this.rules;
 
-		Object.keys(rules).forEach((key) => {
+		Object.keys(rules).forEach(key => {
 			const rule = rules[key];
 			validateRule(rule);
 		});
 
 		this.expressions = (() => {
-			return Object.keys(rules).map((key) => {
+			return Object.keys(rules).map(key => {
 				const rule = rules[key];
 				return getRegExp(rule);
 			});
@@ -130,7 +129,7 @@ this.AutoComplete = class {
 
 	teardown() {
 		// Stop the reactive computation we started for this autocomplete instance
-		return this.comp.stop();
+		this.comp.stop();
 	}
 
 	matchedRule() {
@@ -169,7 +168,7 @@ this.AutoComplete = class {
 			return; //Don't cause redraws unnecessarily
 		}
 		this.loaded = val;
-		return this.loadingDep.changed();
+		this.loadingDep.changed();
 	}
 
 	onKeyUp() {
@@ -243,26 +242,24 @@ this.AutoComplete = class {
 	onFocus() {
 		// We need to run onKeyUp after the focus resolves,
 		// or the caret position (selectionStart) will not be correct
-		return Meteor.defer(() => {
-			return this.onKeyUp();
-		});
+		Meteor.defer(() => this.onKeyUp());
 	}
 
 	onBlur() {
 		// We need to delay this so click events work
 		// TODO this is a bit of a hack, see if we can't be smarter
 		Meteor.setTimeout(() => {
-			return this.hideList();
+			this.hideList();
 		}, 500);
 	}
 
 	onItemClick(doc) {
-		return this.processSelection(doc, this.rules[this.matched]);
+		this.processSelection(doc, this.rules[this.matched]);
 	}
 
 	onItemHover(doc, e) {
 		this.tmplInst.$('.-autocomplete-item').removeClass('selected');
-		return $(e.target).closest('.-autocomplete-item').addClass('selected');
+		$(e.target).closest('.-autocomplete-item').addClass('selected');
 	}
 
 	filteredList() {
@@ -281,9 +278,7 @@ this.AutoComplete = class {
 		const params = getFindParams(rule, filter, this.limit);
 		const selector = params[0];
 		const options = params[1];
-		Meteor.defer(() => {
-			return this.ensureSelection();
-		});
+		Meteor.defer(() => this.ensureSelection());
 
 		// if server collection, the server has already done the filtering work
 		if (isServerSearch(rule)) {
@@ -302,7 +297,7 @@ this.AutoComplete = class {
 		if (showing) {
 			Meteor.defer(() => {
 				this.positionContainer();
-				return this.ensureSelection();
+				this.ensureSelection();
 			});
 		}
 		return showing;
@@ -359,7 +354,7 @@ this.AutoComplete = class {
 
 	hideList() {
 		this.setMatchedRule(-1);
-		return this.setFilter(null);
+		this.setFilter(null);
 	}
 
 	getText() {
@@ -368,9 +363,9 @@ this.AutoComplete = class {
 
 	setText(text) {
 		if (this.$element.is('input,textarea')) {
-			return this.$element.val(text);
+			this.$element.val(text);
 		} else {
-			return this.$element.html(text);
+			this.$element.html(text);
 		}
 	}
 
@@ -403,7 +398,7 @@ this.AutoComplete = class {
 		} else {
 			pos.top = position.top + offset.top + parseInt(this.$element.css('font-size'));
 		}
-		return this.tmplInst.$('.-autocomplete-container').css(pos);
+		this.tmplInst.$('.-autocomplete-container').css(pos);
 	}
 
 	ensureSelection() {
@@ -411,7 +406,7 @@ this.AutoComplete = class {
 		const selectedItem = this.tmplInst.$('.-autocomplete-item.selected');
 		if (!selectedItem.length) {
 			// Select anything
-			return this.tmplInst.$('.-autocomplete-item:first-child').addClass('selected');
+			this.tmplInst.$('.-autocomplete-item:first-child').addClass('selected');
 		}
 	}
 
@@ -424,9 +419,9 @@ this.AutoComplete = class {
 		currentItem.removeClass('selected');
 		const next = currentItem.next();
 		if (next.length) {
-			return next.addClass('selected');
+			next.addClass('selected');
 		} else { //End of list or lost selection; Go back to first item
-			return this.tmplInst.$('.-autocomplete-item:first-child').addClass('selected');
+			this.tmplInst.$('.-autocomplete-item:first-child').addClass('selected');
 		}
 	}
 
@@ -439,9 +434,9 @@ this.AutoComplete = class {
 		currentItem.removeClass('selected');
 		const prev = currentItem.prev();
 		if (prev.length) {
-			return prev.addClass('selected');
+			prev.addClass('selected');
 		} else { //Beginning of list or lost selection; Go to end of list
-			return this.tmplInst.$('.-autocomplete-item:last-child').addClass('selected');
+			this.tmplInst.$('.-autocomplete-item:last-child').addClass('selected');
 		}
 	}
 

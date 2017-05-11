@@ -2,16 +2,16 @@
 //  Events on template instances, sent to the autocomplete class
 const acEvents = {
 	'keydown'(e, t) {
-		return t.ac.onKeyDown(e);
+		t.ac.onKeyDown(e);
 	},
 	'keyup'(e, t) {
-		return t.ac.onKeyUp(e);
+		t.ac.onKeyUp(e);
 	},
 	'focus'(e, t) {
-		return t.ac.onFocus(e);
+		t.ac.onFocus(e);
 	},
 	'blur'(e, t) {
-		return t.ac.onBlur(e);
+		t.ac.onBlur(e);
 	}
 };
 
@@ -20,7 +20,7 @@ Template.inputAutocomplete.events(acEvents);
 Template.textareaAutocomplete.events(acEvents);
 
 const attributes = function() {
-	return _.omit(this, 'settings'); //Render all but the settings parameter
+	_.omit(this, 'settings'); //Render all but the settings parameter
 
 };
 
@@ -34,7 +34,7 @@ const autocompleteHelpers = {
 		// Set nodes on render in the autocomplete class
 		this.onViewReady(function() {
 			ac.element = this.parentView.firstNode();
-			return ac.$element = $(ac.element);
+			ac.$element = $(ac.element);
 		});
 		return Blaze.With(ac, function() { //eslint-disable-line
 			return Template._autocompleteContainer;
@@ -47,12 +47,12 @@ Template.inputAutocomplete.helpers(autocompleteHelpers);
 Template.textareaAutocomplete.helpers(autocompleteHelpers);
 
 Template._autocompleteContainer.rendered = function() {
-	return this.data.tmplInst = this;
+	this.data.tmplInst = this;
 };
 
 Template._autocompleteContainer.destroyed = function() {
 	// Meteor._debug "autocomplete destroyed"
-	return this.data.teardown();
+	this.data.teardown();
 };
 
 
@@ -63,10 +63,10 @@ Template._autocompleteContainer.destroyed = function() {
 Template._autocompleteContainer.events({
 	// t.data is the AutoComplete instance; `this` is the data item
 	'click .-autocomplete-item'(e, t) {
-		return t.data.onItemClick(this, e);
+		t.data.onItemClick(this, e);
 	},
 	'mouseenter .-autocomplete-item'(e, t) {
-		return t.data.onItemHover(this, e);
+		t.data.onItemHover(this, e);
 	}
 });
 
