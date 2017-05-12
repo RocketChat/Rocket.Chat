@@ -79,17 +79,7 @@ Template.adminUsers.onCreated(function() {
 
 		if (filter) {
 			const filterReg = new RegExp(s.escapeRegExp(filter), 'i');
-			query = {
-				$or: [
-					{
-						username: filterReg
-					}, {
-						name: filterReg
-					}, {
-						'emails.address': filterReg
-					}
-				]
-			};
+			query = {$or: [{ username: filterReg }, { name: filterReg}, { 'emails.address': filterReg }]};
 		} else {
 			query = {};
 		}
@@ -103,9 +93,9 @@ Template.adminUsers.onCreated(function() {
 });
 
 Template.adminUsers.onRendered(function() {
-	return Tracker.afterFlush(function() {
+	Tracker.afterFlush(function() {
 		SideNav.setFlex('adminFlex');
-		return SideNav.openFlex();
+		SideNav.openFlex();
 	});
 });
 
@@ -113,29 +103,29 @@ Template.adminUsers.events({
 	'keydown #users-filter'(e) {
 		if (e.which === 13) {
 			e.stopPropagation();
-			return e.preventDefault();
+			e.preventDefault();
 		}
 	},
 	'keyup #users-filter'(e, t) {
 		e.stopPropagation();
 		e.preventDefault();
-		return t.filter.set(e.currentTarget.value);
+		t.filter.set(e.currentTarget.value);
 	},
 	'click .user-info'(e, instance) {
 		e.preventDefault();
 		instance.tabBarData.set(Meteor.users.findOne(this._id));
-		return instance.tabBar.open('admin-user-info');
+		instance.tabBar.open('admin-user-info');
 	},
 	'click .info-tabs button'(e) {
 		e.preventDefault();
 		$('.info-tabs button').removeClass('active');
 		$(e.currentTarget).addClass('active');
 		$('.user-info-content').hide();
-		return $($(e.currentTarget).attr('href')).show();
+		$($(e.currentTarget).attr('href')).show();
 	},
 	'click .load-more'(e, t) {
 		e.preventDefault();
 		e.stopPropagation();
-		return t.limit.set(t.limit.get() + 50);
+		t.limit.set(t.limit.get() + 50);
 	}
 });

@@ -14,18 +14,20 @@ const setFieldValue = function(settingId, value, type, editor) {
 	const input = $('.page-settings').find(`[name="${ settingId }"]`);
 	switch (type) {
 		case 'boolean':
-			return $('.page-settings').find(`[name="${ settingId }"][value="${ Number(value) }"]`).prop('checked', true).change();
+			$('.page-settings').find(`[name="${ settingId }"][value="${ Number(value) }"]`).prop('checked', true).change();
+			break;
 		case 'code':
-			return input.next()[0].CodeMirror.setValue(value);
+			input.next()[0].CodeMirror.setValue(value);
+			break;
 		case 'color':
 			input.parents('.horizontal').find('select[name="color-editor"]').val(editor).change();
 			input.val(value).change();
 			if (editor === 'color') {
-				return new jscolor(input); //eslint-disable-line
+				new jscolor(input); //eslint-disable-line
 			}
 			break;
 		default:
-			return input.val(value).change();
+			input.val(value).change();
 	}
 };
 
@@ -39,14 +41,14 @@ Template.admin.onCreated(function() {
 		RocketChat.settings.cachedCollectionPrivate.init();
 	}
 	this.selectedRooms = new ReactiveVar({});
-	return RocketChat.settings.collectionPrivate.find().observe({
+	RocketChat.settings.collectionPrivate.find().observe({
 		added: (data) => {
 			const selectedRooms = this.selectedRooms.get();
 			if (data.type === 'roomPick') {
 				selectedRooms[data._id] = data.value;
 				this.selectedRooms.set(selectedRooms);
 			}
-			return TempSettings.insert(data);
+			TempSettings.insert(data);
 		},
 		changed: (data) => {
 			const selectedRooms = this.selectedRooms.get();
@@ -54,7 +56,7 @@ Template.admin.onCreated(function() {
 				selectedRooms[data._id] = data.value;
 				this.selectedRooms.set(selectedRooms);
 			}
-			return TempSettings.update(data._id, data);
+			TempSettings.update(data._id, data);
 		},
 		removed: (data) => {
 			const selectedRooms = this.selectedRooms.get();
@@ -62,13 +64,13 @@ Template.admin.onCreated(function() {
 				delete selectedRooms[data._id];
 				this.selectedRooms.set(selectedRooms);
 			}
-			return TempSettings.remove(data._id);
+			TempSettings.remove(data._id);
 		}
 	});
 });
 
 Template.admin.onDestroyed(function() {
-	return TempSettings.remove({});
+	TempSettings.remove({});
 });
 
 Template.admin.helpers({
@@ -277,18 +279,11 @@ Template.admin.helpers({
 			}
 			const onChange = function() {
 				const value = codeMirror.getValue();
-				return TempSettings.update({
-					_id
-				}, {
-					$set: {
-						value,
-						changed: RocketChat.settings.collectionPrivate.findOne(_id).value !== value
-					}
-				});
+				TempSettings.update({ _id }, { $set: { value, changed: RocketChat.settings.collectionPrivate.findOne(_id).value !== value }});
 			};
 			const onChangeDelayed = _.debounce(onChange, 500);
 			codeMirror.on('change', onChangeDelayed);
-			return codeMirror.changeAdded = true;
+			codeMirror.changeAdded = true;
 		});
 	},
 	assetAccept(fileConstraints) {
@@ -341,7 +336,7 @@ Template.admin.events({
 			case 'boolean':
 				value = value === '1';
 		}
-		return TempSettings.update({
+		TempSettings.update({
 			_id: this._id
 		}, {
 			$set: {
@@ -352,7 +347,7 @@ Template.admin.events({
 	}, 500),
 	'change select[name=color-editor]'(e) {
 		const value = _.trim($(e.target).val());
-		return TempSettings.update({ _id: this._id }, { $set: { editor: value }});
+		TempSettings.update({ _id: this._id }, { $set: { editor: value }});
 	},
 	'click .submit .discard'() {
 		const group = FlowRouter.getParam('group');
@@ -362,9 +357,9 @@ Template.admin.events({
 		};
 		const settings = TempSettings.find(query, {
 			fields: { _id: 1, value: 1, packageValue: 1 }}).fetch();
-		return settings.forEach(function(setting) {
+		settings.forEach(function(setting) {
 			const oldSetting = RocketChat.settings.collectionPrivate.findOne({ _id: setting._id }, { fields: { value: 1, type: 1, editor: 1 }});
-			return setFieldValue(setting._id, oldSetting.value, oldSetting.type, oldSetting.editor);
+			setFieldValue(setting._id, oldSetting.value, oldSetting.type, oldSetting.editor);
 		});
 	},
 	'click .reset-setting'(e) {
@@ -374,7 +369,7 @@ Template.admin.events({
 			settingId = $(e.target).parent().data('setting');
 		}
 		const defaultValue = getDefaultSetting(settingId);
-		return setFieldValue(settingId, defaultValue.packageValue, defaultValue.type, defaultValue.editor);
+		setFieldValue(settingId, defaultValue.packageValue, defaultValue.type, defaultValue.editor);
 	},
 	'click .reset-group'(e) {
 		let settings;
@@ -386,10 +381,10 @@ Template.admin.events({
 		} else {
 			settings = TempSettings.find({ group, section }, { fields: { _id: 1 }}).fetch();
 		}
-		return settings.forEach(function(setting) {
+		settings.forEach(function(setting) {
 			const defaultValue = getDefaultSetting(setting._id);
 			setFieldValue(setting._id, defaultValue.packageValue, defaultValue.type, defaultValue.editor);
-			return TempSettings.update({_id: setting._id }, {
+			TempSettings.update({_id: setting._id }, {
 				$set: {
 					value: defaultValue.packageValue,
 					changed: RocketChat.settings.collectionPrivate.findOne(setting._id).value !== defaultValue.packageValue
@@ -402,18 +397,18 @@ Template.admin.events({
 		const query = { group, changed: true };
 		const settings = TempSettings.find(query, { fields: { _id: 1, value: 1, editor: 1 }}).fetch();
 		if (!_.isEmpty(settings)) {
-			return RocketChat.settings.batchSet(settings, function(err) {
+			RocketChat.settings.batchSet(settings, function(err) {
 				if (err) {
 					return handleError(err);
 				}
 				TempSettings.update({ changed: true }, { $unset: { changed: 1 }});
-				return toastr.success(TAPi18n.__('Settings_updated'));
+				toastr.success(TAPi18n.__('Settings_updated'));
 			});
 		}
 	},
 	'click .submit .refresh-clients'() {
-		return Meteor.call('refreshClients', function() {
-			return toastr.success(TAPi18n.__('Clients_will_refresh_in_a_few_seconds'));
+		Meteor.call('refreshClients', function() {
+			toastr.success(TAPi18n.__('Clients_will_refresh_in_a_few_seconds'));
 		});
 	},
 	'click .submit .add-custom-oauth'() {
@@ -425,7 +420,7 @@ Template.admin.events({
 			closeOnConfirm: true,
 			inputPlaceholder: TAPi18n.__('Custom_oauth_unique_name')
 		};
-		return swal(config, function(inputValue) {
+		swal(config, function(inputValue) {
 			if (inputValue === false) {
 				return false;
 			}
@@ -433,9 +428,9 @@ Template.admin.events({
 				swal.showInputError(TAPi18n.__('Name_cant_be_empty'));
 				return false;
 			}
-			return Meteor.call('addOAuthService', inputValue, function(err) {
+			Meteor.call('addOAuthService', inputValue, function(err) {
 				if (err) {
-					return handleError(err);
+					handleError(err);
 				}
 			});
 		});
@@ -461,12 +456,12 @@ Template.admin.events({
 			cancelButtonText: TAPi18n.__('Cancel'),
 			closeOnConfirm: true
 		};
-		return swal(config, function() {
-			return Meteor.call('removeOAuthService', name);
+		swal(config, function() {
+			Meteor.call('removeOAuthService', name);
 		});
 	},
 	'click .delete-asset'() {
-		return Meteor.call('unsetAsset', this.asset);
+		Meteor.call('unsetAsset', this.asset);
 	},
 	'change input[type=file]'(ev) {
 		const e = ev.originalEvent || ev;
@@ -499,19 +494,19 @@ Template.admin.events({
 	'click .expand'(e) {
 		$(e.currentTarget).closest('.section').removeClass('section-collapsed');
 		$(e.currentTarget).closest('button').removeClass('expand').addClass('collapse').find('span').text(TAPi18n.__('Collapse'));
-		return $('.CodeMirror').each(function(index, codeMirror) {
-			return codeMirror.CodeMirror.refresh();
+		$('.CodeMirror').each(function(index, codeMirror) {
+			codeMirror.CodeMirror.refresh();
 		});
 	},
 	'click .collapse'(e) {
 		$(e.currentTarget).closest('.section').addClass('section-collapsed');
-		return $(e.currentTarget).closest('button').addClass('expand').removeClass('collapse').find('span').text(TAPi18n.__('Expand'));
+		$(e.currentTarget).closest('button').addClass('expand').removeClass('collapse').find('span').text(TAPi18n.__('Expand'));
 	},
 	'click button.action'() {
 		if (this.type !== 'action') {
 			return;
 		}
-		return Meteor.call(this.value, function(err, data) {
+		Meteor.call(this.value, function(err, data) {
 			if (err != null) {
 				err.details = _.extend(err.details || {}, {
 					errorTitle: 'Error'
@@ -520,43 +515,38 @@ Template.admin.events({
 				return;
 			}
 			const args = [data.message].concat(data.params);
-			return toastr.success(TAPi18n.__.apply(TAPi18n, args), TAPi18n.__('Success'));
+			toastr.success(TAPi18n.__.apply(TAPi18n, args), TAPi18n.__('Success'));
 		});
 	},
 	'click .button-fullscreen'() {
 		const codeMirrorBox = $(`.code-mirror-box[data-editor-id="${ this._id }"]`);
 		codeMirrorBox.addClass('code-mirror-box-fullscreen content-background-color');
-		return codeMirrorBox.find('.CodeMirror')[0].CodeMirror.refresh();
+		codeMirrorBox.find('.CodeMirror')[0].CodeMirror.refresh();
 	},
 	'click .button-restore'() {
 		const codeMirrorBox = $(`.code-mirror-box[data-editor-id="${ this._id }"]`);
 		codeMirrorBox.removeClass('code-mirror-box-fullscreen content-background-color');
-		return codeMirrorBox.find('.CodeMirror')[0].CodeMirror.refresh();
+		codeMirrorBox.find('.CodeMirror')[0].CodeMirror.refresh();
 	},
 	'autocompleteselect .autocomplete'(event, instance, doc) {
 		const selectedRooms = instance.selectedRooms.get();
 		selectedRooms[this.id] = (selectedRooms[this.id] || []).concat(doc);
 		instance.selectedRooms.set(selectedRooms);
 		const value = selectedRooms[this.id];
-		TempSettings.update({ _id: this.id }, {
-			$set: {
-				value,
-				changed: RocketChat.settings.collectionPrivate.findOne(this.id).value !== value
-			}
-		});
+		TempSettings.update({ _id: this.id }, { $set: { value, changed: RocketChat.settings.collectionPrivate.findOne(this.id).value !== value }});
 		event.currentTarget.value = '';
-		return event.currentTarget.focus();
+		event.currentTarget.focus();
 	},
 	'click .remove-room'(event, instance) {
 		const docId = this._id;
 		const settingId = event.currentTarget.getAttribute('data-setting');
 		const selectedRooms = instance.selectedRooms.get();
 		selectedRooms[settingId] = _.reject(selectedRooms[settingId] || [], function(setting) {
-			return setting._id === docId;
+			setting._id === docId;
 		});
 		instance.selectedRooms.set(selectedRooms);
 		const value = selectedRooms[settingId];
-		return TempSettings.update({ _id: settingId }, {
+		TempSettings.update({ _id: settingId }, {
 			$set: {
 				value,
 				changed: RocketChat.settings.collectionPrivate.findOne(settingId).value !== value
@@ -568,17 +558,17 @@ Template.admin.events({
 Template.admin.onRendered(function() {
 	Tracker.afterFlush(function() {
 		SideNav.setFlex('adminFlex');
-		return SideNav.openFlex();
+		SideNav.openFlex();
 	});
-	return Tracker.autorun(function() {
+	Tracker.autorun(function() {
 		const hasColor = TempSettings.findOne({
 			group: FlowRouter.getParam('group'),
 			type: 'color'
 		}, { fields: { _id: 1 }});
 		if (hasColor) {
-			return Meteor.setTimeout(function() {
-				return $('.colorpicker-input').each(function(index, el) {
-					return new jscolor(el); //eslint-disable-line
+			Meteor.setTimeout(function() {
+				$('.colorpicker-input').each(function(index, el) {
+					new jscolor(el); //eslint-disable-line
 				});
 			}, 400);
 		}

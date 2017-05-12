@@ -92,7 +92,7 @@ Template.adminRooms.onCreated(function() {
 		}
 		const limit = instance.limit.get();
 		const subscription = instance.subscribe('adminRooms', filter, types, limit);
-		return instance.ready.set(subscription.ready());
+		instance.ready.set(subscription.ready());
 	});
 	this.rooms = function() {
 		let filter;
@@ -107,32 +107,15 @@ Template.adminRooms.onCreated(function() {
 		filter = _.trim(filter);
 		if (filter) {
 			const filterReg = new RegExp(s.escapeRegExp(filter), 'i');
-			query = {
-				$or: [
-					{
-						name: filterReg
-					}, {
-						t: 'd',
-						usernames: filterReg
-					}
-				]
-			};
+			query = { $or: [{ name: filterReg }, { t: 'd', usernames: filterReg } ]};
 		}
 		if (types.length) {
-			query['t'] = {
-				$in: types
-			};
+			query['t'] = { $in: types };
 		}
 		const limit = instance.limit && instance.limit.get();
-		return AdminChatRoom.find(query, {
-			limit,
-			sort: {
-				'default': -1,
-				name: 1
-			}
-		});
+		return AdminChatRoom.find(query, { limit, sort: { 'default': -1, name: 1}});
 	};
-	return this.getSearchTypes = function() {
+	this.getSearchTypes = function() {
 		return _.map($('[name=room-type]:checked'), function(input) {
 			return $(input).val();
 		});
@@ -140,9 +123,9 @@ Template.adminRooms.onCreated(function() {
 });
 
 Template.adminRooms.onRendered(function() {
-	return Tracker.afterFlush(function() {
+	Tracker.afterFlush(function() {
 		SideNav.setFlex('adminFlex');
-		return SideNav.openFlex();
+		SideNav.openFlex();
 	});
 });
 
@@ -150,27 +133,27 @@ Template.adminRooms.events({
 	'keydown #rooms-filter'(e) {
 		if (e.which === 13) {
 			e.stopPropagation();
-			return e.preventDefault();
+			e.preventDefault();
 		}
 	},
 	'keyup #rooms-filter'(e, t) {
 		e.stopPropagation();
 		e.preventDefault();
-		return t.filter.set(e.currentTarget.value);
+		t.filter.set(e.currentTarget.value);
 	},
 	'click .room-info'(e, instance) {
 		e.preventDefault();
 		Session.set('adminRoomsSelected', {
 			rid: this._id
 		});
-		return instance.tabBar.open('admin-room');
+		instance.tabBar.open('admin-room');
 	},
 	'click .load-more'(e, t) {
 		e.preventDefault();
 		e.stopPropagation();
-		return t.limit.set(t.limit.get() + 50);
+		t.limit.set(t.limit.get() + 50);
 	},
 	'change [name=room-type]'(e, t) {
-		return t.types.set(t.getSearchTypes());
+		t.types.set(t.getSearchTypes());
 	}
 });

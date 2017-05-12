@@ -7,6 +7,9 @@ Template.adminInfo.helpers({
 	statistics() {
 		return Template.instance().statistics.get();
 	},
+	instances() {
+		return Template.instance().instances.get();
+	},
 	inGB(size) {
 		if (size > 1073741824) {
 			return `${ _.numberFormat(size / 1024 / 1024 / 1024, 2) } GB`;
@@ -73,14 +76,24 @@ Template.adminInfo.onRendered(function() {
 Template.adminInfo.onCreated(function() {
 	const instance = this;
 	this.statistics = new ReactiveVar({});
+	this.instances = new ReactiveVar({});
 	this.ready = new ReactiveVar(false);
 	if (RocketChat.authz.hasAllPermission('view-statistics')) {
-		return Meteor.call('getStatistics', function(error, statistics) {
+		Meteor.call('getStatistics', function(error, statistics) {
 			instance.ready.set(true);
 			if (error) {
-				return handleError(error);
+				handleError(error);
 			} else {
-				return instance.statistics.set(statistics);
+				instance.statistics.set(statistics);
+			}
+		});
+
+		Meteor.call('instances/get', function(error, instances) {
+			instance.ready.set(true);
+			if (error) {
+				handleError(error);
+			} else {
+				instance.instances.set(instances);
 			}
 		});
 	}

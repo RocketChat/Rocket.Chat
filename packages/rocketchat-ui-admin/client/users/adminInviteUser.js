@@ -18,29 +18,29 @@ Template.adminInviteUser.events({
 			}
 		}));
 		if (validEmails.length) {
-			return Meteor.call('sendInvitationEmail', validEmails, function(error, result) {
+			Meteor.call('sendInvitationEmail', validEmails, function(error, result) {
 				if (result) {
 					instance.clearForm();
 					instance.inviteEmails.set(validEmails);
 				}
 				if (error) {
-					return handleError(error);
+					handleError(error);
 				}
 			});
 		} else {
-			return toastr.error(t('Send_invitation_email_error'));
+			toastr.error(t('Send_invitation_email_error'));
 		}
 	},
 	'click .cancel'(e, instance) {
 		instance.clearForm();
 		instance.inviteEmails.set([]);
-		return Template.currentData().tabBar.close();
+		Template.currentData().tabBar.close();
 	}
 });
 
 Template.adminInviteUser.onCreated(function() {
 	this.inviteEmails = new ReactiveVar([]);
-	return this.clearForm = function() {
-		return $('#inviteEmails').val('');
+	this.clearForm = function() {
+		$('#inviteEmails').val('');
 	};
 });
