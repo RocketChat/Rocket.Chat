@@ -11,18 +11,18 @@ Meteor.methods({
 		message = ChatMessage.findOne({ _id: message._id });
 
 		const hasPermission = RocketChat.authz.hasAtLeastOnePermission('delete-message', message.rid);
+		const forceDelete = RocketChat.authz.hasAtLeastOnePermission('force-delete-message', message.rid);
 		const deleteAllowed = RocketChat.settings.get('Message_AllowDeleting');
 		let deleteOwn = false;
+
 		if (message && message.u && message.u._id) {
 			deleteOwn = message.u._id === Meteor.userId();
 		}
-
-		if (!(hasPermission || (deleteAllowed && deleteOwn))) {
+		if (!(forceDelete || hasPermission || (deleteAllowed && deleteOwn))) {
 			return false;
 		}
-
 		const blockDeleteInMinutes = RocketChat.settings.get('Message_AllowDeleting_BlockDeleteInMinutes');
-		if (_.isNumber(blockDeleteInMinutes) && blockDeleteInMinutes !== 0) {
+		if (!(forceDelete) || (_.isNumber(blockDeleteInMinutes) && blockDeleteInMinutes !== 0)) {
 			if (message.ts) {
 				const msgTs = moment(message.ts);
 				if (msgTs) {
