@@ -134,7 +134,9 @@ const requestCredential = (serviceName, options = {}, callback) => {
 };
 
 window.addEventListener('message', (e) => {
+	console.log('#####', e.data);
 	if (! _.isObject(e.data)) {
+		
 		return;
 	}
 
