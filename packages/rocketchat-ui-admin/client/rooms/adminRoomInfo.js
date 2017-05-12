@@ -32,7 +32,6 @@ Template.adminRoomInfo.helpers({
 	},
 	roomName() {
 		const room = AdminChatRoom.findOne(this.rid, { fields: { name: 1 } });
-		console.log(room);
 		return room && room.name;
 	},
 	roomTopic() {
@@ -75,7 +74,7 @@ Template.adminRoomInfo.helpers({
 
 Template.adminRoomInfo.events({
 	'click .delete'() {
-		return swal({
+		swal({
 			title: t('Are_you_sure'),
 			text: t('Delete_Room_Warning'),
 			type: 'warning',
@@ -87,12 +86,12 @@ Template.adminRoomInfo.events({
 			html: false
 		}, () => {
 			swal.disableButtons();
-			return Meteor.call('eraseRoom', this.rid, function(error) {
+			Meteor.call('eraseRoom', this.rid, function(error) {
 				if (error) {
 					handleError(error);
-					return swal.enableButtons();
+					swal.enableButtons();
 				} else {
-					return swal({
+					swal({
 						title: t('Deleted'),
 						text: t('Room_has_been_deleted'),
 						type: 'success',
@@ -106,23 +105,23 @@ Template.adminRoomInfo.events({
 	'keydown input[type=text]'(e, t) {
 		if (e.keyCode === 13) {
 			e.preventDefault();
-			return t.saveSetting(this.rid);
+			t.saveSetting(this.rid);
 		}
 	},
 	'click [data-edit]'(e, t) {
 		e.preventDefault();
 		t.editing.set($(e.currentTarget).data('edit'));
 		return setTimeout((function() {
-			return t.$('input.editing').focus().select();
+			t.$('input.editing').focus().select();
 		}), 100);
 	},
 	'click .cancel'(e, t) {
 		e.preventDefault();
-		return t.editing.set();
+		t.editing.set();
 	},
 	'click .save'(e, t) {
 		e.preventDefault();
-		return t.saveSetting(this.rid);
+		t.saveSetting(this.rid);
 	}
 });
 
@@ -131,9 +130,7 @@ Template.adminRoomInfo.onCreated(function() {
 	this.validateRoomType = () => {
 		const type = this.$('input[name=roomType]:checked').val();
 		if (type !== 'c' && type !== 'p') {
-			toastr.error(t('error-invalid-room-type', {
-				type
-			}));
+			toastr.error(t('error-invalid-room-type', { type }));
 		}
 		return true;
 	};
@@ -161,7 +158,7 @@ Template.adminRoomInfo.onCreated(function() {
 	this.validateRoomTopic = () => {
 		return true;
 	};
-	return this.saveSetting = (rid) => {
+	this.saveSetting = (rid) => {
 		switch (this.editing.get()) {
 			case 'roomName':
 				if (this.validateRoomName(rid)) {
@@ -170,7 +167,7 @@ Template.adminRoomInfo.onCreated(function() {
 						if (err) {
 							return handleError(err);
 						}
-						return toastr.success(TAPi18n.__('Room_name_changed_successfully'));
+						toastr.success(TAPi18n.__('Room_name_changed_successfully'));
 					});
 				}
 				break;
@@ -181,7 +178,7 @@ Template.adminRoomInfo.onCreated(function() {
 							return handleError(err);
 						}
 						toastr.success(TAPi18n.__('Room_topic_changed_successfully'));
-						return RocketChat.callbacks.run('roomTopicChanged', AdminChatRoom.findOne(rid));
+						RocketChat.callbacks.run('roomTopicChanged', AdminChatRoom.findOne(rid));
 					});
 				}
 				break;
@@ -192,7 +189,7 @@ Template.adminRoomInfo.onCreated(function() {
 							return handleError(err);
 						}
 						toastr.success(TAPi18n.__('Room_announcement_changed_successfully'));
-						return RocketChat.callbacks.run('roomAnnouncementChanged', AdminChatRoom.findOne(rid));
+						RocketChat.callbacks.run('roomAnnouncementChanged', AdminChatRoom.findOne(rid));
 					});
 				}
 				break;
@@ -201,19 +198,15 @@ Template.adminRoomInfo.onCreated(function() {
 				if (this.validateRoomType(rid)) {
 					RocketChat.callbacks.run('roomTypeChanged', AdminChatRoom.findOne(rid));
 					const saveRoomSettings = function() {
-						return Meteor.call('saveRoomSettings', rid, 'roomType', val, function(err) {
+						Meteor.call('saveRoomSettings', rid, 'roomType', val, function(err) {
 							if (err) {
 								return handleError(err);
 							} else {
-								return toastr.success(TAPi18n.__('Room_type_changed_successfully'));
+								toastr.success(TAPi18n.__('Room_type_changed_successfully'));
 							}
 						});
 					};
-					if (!AdminChatRoom.findOne(rid, {
-						fields: {
-							'default': 1
-						}
-					})['default']) {
+					if (!AdminChatRoom.findOne(rid, { fields: { 'default': 1 }})['default']) {
 						return saveRoomSettings();
 					}
 					swal({
@@ -239,7 +232,7 @@ Template.adminRoomInfo.onCreated(function() {
 								return handleError(err);
 							}
 							toastr.success(TAPi18n.__('Room_archived'));
-							return RocketChat.callbacks.run('archiveRoom', AdminChatRoom.findOne(rid));
+							RocketChat.callbacks.run('archiveRoom', AdminChatRoom.findOne(rid));
 						});
 					}
 				} else if ((room && room.archived) === true) {
@@ -248,7 +241,7 @@ Template.adminRoomInfo.onCreated(function() {
 							return handleError(err);
 						}
 						toastr.success(TAPi18n.__('Room_unarchived'));
-						return RocketChat.callbacks.run('unarchiveRoom', AdminChatRoom.findOne(rid));
+						RocketChat.callbacks.run('unarchiveRoom', AdminChatRoom.findOne(rid));
 					});
 				}
 				break;
@@ -257,9 +250,9 @@ Template.adminRoomInfo.onCreated(function() {
 					if (err) {
 						return handleError(err);
 					}
-					return toastr.success(TAPi18n.__('Read_only_changed_successfully'));
+					toastr.success(TAPi18n.__('Read_only_changed_successfully'));
 				});
 		}
-		return this.editing.set();
+		this.editing.set();
 	};
 });
