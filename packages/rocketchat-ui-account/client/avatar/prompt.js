@@ -5,23 +5,20 @@ Template.avatarPrompt.onCreated(function() {
 	self.upload = new ReactiveVar;
 	self.getSuggestions = function() {
 		self.suggestions.set(undefined);
-		return Meteor.call('getAvatarSuggestion', function(error, avatars) {
-			return self.suggestions.set({
-				ready: true,
-				avatars
-			});
+		Meteor.call('getAvatarSuggestion', function(error, avatars) {
+			self.suggestions.set({ ready: true, avatars });
 		});
 	};
-	return self.getSuggestions();
+	self.getSuggestions();
 });
 
 Template.avatarPrompt.onRendered(function() {
-	return Tracker.afterFlush(function() {
+	Tracker.afterFlush(function() {
 		if (!RocketChat.settings.get('Accounts_AllowUserAvatarChange')) {
 			FlowRouter.go('home');
 		}
 		SideNav.setFlex('accountFlex');
-		return SideNav.openFlex();
+		SideNav.openFlex();
 	});
 });
 
@@ -48,47 +45,46 @@ Template.avatarPrompt.helpers({
 
 Template.avatarPrompt.events({
 	'click .select-service'() {
-		let tmpService;
 		if (this.service === 'initials') {
-			return Meteor.call('resetAvatar', function(err) {
+			Meteor.call('resetAvatar', function(err) {
 				if (err && err.details.timeToReset && err.details.timeToReset) {
-					return toastr.error(t('error-too-many-requests', {
+					toastr.error(t('error-too-many-requests', {
 						seconds: parseInt(err.details.timeToReset / 1000)
 					}));
 				} else {
 					toastr.success(t('Avatar_changed_successfully'));
-					return RocketChat.callbacks.run('userAvatarSet', 'initials');
+					RocketChat.callbacks.run('userAvatarSet', 'initials');
 				}
 			});
 		} else if (this.service === 'url') {
 			if (_.trim($('#avatarurl').val())) {
-				return Meteor.call('setAvatarFromService', $('#avatarurl').val(), '', this.service, function(err) {
+				Meteor.call('setAvatarFromService', $('#avatarurl').val(), '', this.service, function(err) {
 					if (err) {
 						if (err.details.timeToReset && err.details.timeToReset) {
-							return toastr.error(t('error-too-many-requests', {
+							toastr.error(t('error-too-many-requests', {
 								seconds: parseInt(err.details.timeToReset / 1000)
 							}));
 						} else {
-							return toastr.error(t('Avatar_url_invalid_or_error'));
+							toastr.error(t('Avatar_url_invalid_or_error'));
 						}
 					} else {
 						toastr.success(t('Avatar_changed_successfully'));
-						return RocketChat.callbacks.run('userAvatarSet', 'url');
+						RocketChat.callbacks.run('userAvatarSet', 'url');
 					}
 				});
 			} else {
-				return toastr.error(t('Please_enter_value_for_url'));
+				toastr.error(t('Please_enter_value_for_url'));
 			}
 		} else {
-			tmpService = this.service;
-			return Meteor.call('setAvatarFromService', this.blob, this.contentType, this.service, function(err) {
+			const tmpService = this.service;
+			Meteor.call('setAvatarFromService', this.blob, this.contentType, this.service, function(err) {
 				if (err && err.details.timeToReset && err.details.timeToReset) {
-					return toastr.error(t('error-too-many-requests', {
+					toastr.error(t('error-too-many-requests', {
 						seconds: parseInt(err.details.timeToReset / 1000)
 					}));
 				} else {
 					toastr.success(t('Avatar_changed_successfully'));
-					return RocketChat.callbacks.run('userAvatarSet', tmpService);
+					RocketChat.callbacks.run('userAvatarSet', tmpService);
 				}
 			});
 		}
@@ -96,7 +92,7 @@ Template.avatarPrompt.events({
 	'click .login-with-service'(event, template) {
 		const loginWithService = `loginWith${ _.capitalize(this) }`;
 		const serviceConfig = {};
-		return Meteor[loginWithService](serviceConfig, function(error) {
+		Meteor[loginWithService](serviceConfig, function(error) {
 			if (error && error.error) {
 				if (error.error === 'github-no-public-email') {
 					return alert(t('github_no_public_email'));
@@ -104,7 +100,7 @@ Template.avatarPrompt.events({
 				console.log(error);
 				return toastr.error(error.message);
 			}
-			return template.getSuggestions();
+			template.getSuggestions();
 		});
 	},
 	'change .avatar-file-input'(event, template) {
@@ -113,8 +109,7 @@ Template.avatarPrompt.events({
 		if (!files || files.length === 0) {
 			files = (e.dataTransfer && e.dataTransfer.files) || [];
 		}
-		console.log(files);
-		Object.keys(files).forEach((key) => {
+		Object.keys(files).forEach(key => {
 			const blob = files[key];
 			if (!/image\/.+/.test(blob.type)) {
 				return;
@@ -127,7 +122,7 @@ Template.avatarPrompt.events({
 					contentType: blob.type,
 					blob: reader.result
 				});
-				return RocketChat.callbacks.run('userAvatarSet', 'upload');
+				RocketChat.callbacks.run('userAvatarSet', 'upload');
 			};
 		});
 	}

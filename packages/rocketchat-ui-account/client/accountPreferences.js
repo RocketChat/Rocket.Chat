@@ -15,7 +15,6 @@ Template.accountPreferences.helpers({
 	languages() {
 		const languages = TAPi18n.getLanguages();
 
-
 		const result = Object.keys(languages).map((key) => {
 			const language = languages[key];
 			return _.extend(language, { key });
