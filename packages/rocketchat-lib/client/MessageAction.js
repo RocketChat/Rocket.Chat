@@ -180,14 +180,15 @@ Meteor.startup(function() {
 			if (RocketChat.models.Subscriptions.findOne({rid: message.rid}) == null) {
 				return false;
 			}
+			const forceDelete = RocketChat.authz.hasAtLeastOnePermission('force-delete-message', message.rid);
 			const hasPermission = RocketChat.authz.hasAtLeastOnePermission('delete-message', message.rid);
 			const isDeleteAllowed = RocketChat.settings.get('Message_AllowDeleting');
 			const deleteOwn = message.u && message.u._id === Meteor.userId();
-			if (!(hasPermission || (isDeleteAllowed && deleteOwn))) {
+			if (!(hasPermission || (isDeleteAllowed && deleteOwn) || forceDelete)) {
 				return;
 			}
 			const blockDeleteInMinutes = RocketChat.settings.get('Message_AllowDeleting_BlockDeleteInMinutes');
-			if ((blockDeleteInMinutes != null) && blockDeleteInMinutes !== 0) {
+			if ((blockDeleteInMinutes != null) && blockDeleteInMinutes !== 0 && !(forceDelete)) {
 				let msgTs;
 				if (message.ts != null) {
 					msgTs = moment(message.ts);
