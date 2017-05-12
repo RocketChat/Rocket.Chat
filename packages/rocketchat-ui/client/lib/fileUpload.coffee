@@ -9,6 +9,8 @@ getUploadPreview = (file, callback) ->
 	# If greater then 10MB don't try and show a preview
 	if file.file.size > 10 * 1000000
 		callback(file, null)
+	else if not file.file.type?
+		callback(file, null)
 	else
 		if file.file.type.indexOf('audio') > -1 or file.file.type.indexOf('video') > -1 or file.file.type.indexOf('image') > -1
 			file.type = file.file.type.split('/')[0]
