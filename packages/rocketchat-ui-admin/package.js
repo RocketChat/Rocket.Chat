@@ -15,7 +15,6 @@ Package.onUse(function(api) {
 		'mongo',
 		'ecmascript',
 		'templating',
-		'coffeescript',
 		'underscore',
 		'rocketchat:lib'
 	]);
@@ -37,7 +36,6 @@ Package.onUse(function(api) {
 	api.addFiles('client/users/adminUserInfo.html', 'client');
 	api.addFiles('client/users/adminUsers.html', 'client');
 
-	// coffee files
 	api.addFiles('client/admin.js', 'client');
 	api.addFiles('client/adminFlex.js', 'client');
 	api.addFiles('client/adminInfo.js', 'client');

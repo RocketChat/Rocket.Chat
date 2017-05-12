@@ -7,7 +7,7 @@ Template.adminFlex.onCreated(function() {
 			eventType: 'onLogged'
 		});
 		RocketChat.settings.collectionPrivate = RocketChat.settings.cachedCollectionPrivate.collection;
-		return RocketChat.settings.cachedCollectionPrivate.init();
+		RocketChat.settings.cachedCollectionPrivate.init();
 	}
 });
 
@@ -27,7 +27,7 @@ Template.adminFlex.helpers({
 			let groups = [];
 			records.forEach(function(record) {
 				if (filterRegex.test(TAPi18n.__(record.i18nLabel || record._id))) {
-					return groups.push(record.group || record._id);
+					groups.push(record.group || record._id);
 				}
 			});
 			groups = _.unique(groups);
@@ -56,21 +56,21 @@ Template.adminFlex.helpers({
 
 Template.adminFlex.events({
 	'mouseenter header'() {
-		return SideNav.overArrow();
+		SideNav.overArrow();
 	},
 	'mouseleave header'() {
-		return SideNav.leaveArrow();
+		SideNav.leaveArrow();
 	},
 	'click header'() {
-		return SideNav.closeFlex();
+		SideNav.closeFlex();
 	},
 	'click .cancel-settings'() {
-		return SideNav.closeFlex();
+		SideNav.closeFlex();
 	},
 	'click .admin-link'() {
-		return menu.close();
+		menu.close();
 	},
 	'keyup [name=settings-search]'(e, t) {
-		return t.settingsFilter.set(e.target.value);
+		t.settingsFilter.set(e.target.value);
 	}
 });
