@@ -919,8 +919,13 @@ class SlackBridge {
 		const Request = Npm.require('request');
 		const store = UploadFS.getStore(file.store);
 		const rs = store.getReadStream(file._id, file);
+		const buffers = [];
 
 		rs.on('data', Meteor.bindEnvironment((data) => {
+			buffers.push(data);
+		}));
+
+		rs.on('end', Meteor.bindEnvironment(() => {
 
 			const formData = {
 				token: user.settings.slack.access_token,
@@ -929,7 +934,7 @@ class SlackBridge {
 				title: file.name,
 				channels: slackChannel.id,
 				file: {
-					value:  data,
+					value: Buffer.concat(buffers),
 					options: {
 						filename: file.name,
 						contentType: file.type
