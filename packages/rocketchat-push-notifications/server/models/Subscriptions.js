@@ -163,8 +163,8 @@ RocketChat.models.Subscriptions.findNotificationPreferencesByRoom = function(roo
 			{desktopNotificationDuration: {$exists: true}},
 			{mobilePushNotifications: {$exists: true}},
 			{disableNotifications: {$exists: true}}
-		]
-	};
+		];
+	}
 
 	return this.find(query, { fields: { 'u._id': 1, desktopNotificationDuration: 1, desktopNotifications: 1, mobilePushNotifications: 1 } });
 };
