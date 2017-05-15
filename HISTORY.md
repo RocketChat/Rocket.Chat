@@ -1,3 +1,13 @@
+<a name="0.56.0-rc.7"></a>
+# 0.56.0-rc.7 (2017-05-15)
+
+
+### Bug Fixes
+
+- [#6968](https://github.com/RocketChat/Rocket.Chat/pull/6968) make channels.create API check for create-c
+
+
+
 <a name="0.56.0-rc.6"></a>
 # 0.56.0-rc.6 (2017-05-12)
 
