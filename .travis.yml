@@ -82,13 +82,13 @@ deploy:
     on:
       condition: "$TRAVIS_PULL_REQUEST=false"
       all_branches: true
-  - provider: releases
-    api-key: "$GITHUB_TOKEN"
-    file_glob: true
-    file: build/*
-    skip_cleanup: true
-    on:
-      tags: true
+  # - provider: releases
+  #   api-key: "$GITHUB_TOKEN"
+  #   file_glob: true
+  #   file: build/*
+  #   skip_cleanup: true
+  #   on:
+  #     tags: true
 
 after_deploy:
 - ".travis/docker.sh"
