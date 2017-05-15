@@ -68,6 +68,8 @@ class Actions {
 										if (answers.tag) {
 											// TODO: Add annotated tag
 											git.addTag(version);
+											// TODO: Push
+											// Useg GitHub api to create the release with history
 										}
 									});
 								});
