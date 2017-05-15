@@ -20,7 +20,7 @@ Template.inputAutocomplete.events(acEvents);
 Template.textareaAutocomplete.events(acEvents);
 
 const attributes = function() {
-	_.omit(this, 'settings'); //Render all but the settings parameter
+	return _.omit(this, 'settings'); //Render all but the settings parameter
 
 };
 
