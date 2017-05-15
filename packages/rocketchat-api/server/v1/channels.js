@@ -128,7 +128,7 @@ RocketChat.API.v1.addRoute('channels.close', { authRequired: true }, {
 
 RocketChat.API.v1.addRoute('channels.create', { authRequired: true }, {
 	post() {
-		if (!RocketChat.authz.hasPermission(this.userId, 'create-p')) {
+		if (!RocketChat.authz.hasPermission(this.userId, 'create-c')) {
 			return RocketChat.API.v1.unauthorized();
 		}
 
