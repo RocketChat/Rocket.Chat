@@ -57,7 +57,7 @@
 		"email": "support@rocket.chat"
 	},
 	"devDependencies": {
-		"chimp": "^0.48.0",
+		"chimp": "^0.49.0",
 		"eslint": "^3.19.0",
 		"stylelint": "^7.10.1",
 		"supertest": "^3.0.0",
