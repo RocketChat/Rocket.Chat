@@ -41,6 +41,9 @@ msgStream = new Meteor.Streamer 'room-messages'
 			else if msg.t isnt 'livechat_video_call'
 				ChatMessage.upsert { _id: msg._id }, msg
 
+				if msg.t is 'livechat-close'
+					parentCall('callback', 'chat-ended')
+
 				# notification sound
 				if Session.equals('sound', true)
 					if msg.u._id isnt Meteor.user()._id

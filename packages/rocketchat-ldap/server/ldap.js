@@ -36,7 +36,13 @@ LDAP = class LDAP {
 			domain_search_filter: RocketChat.settings.get('LDAP_Domain_Search_Filter'),
 			domain_search_user_id: RocketChat.settings.get('LDAP_Domain_Search_User_ID'),
 			domain_search_object_class: RocketChat.settings.get('LDAP_Domain_Search_Object_Class'),
-			domain_search_object_category: RocketChat.settings.get('LDAP_Domain_Search_Object_Category')
+			domain_search_object_category: RocketChat.settings.get('LDAP_Domain_Search_Object_Category'),
+			group_filter_enabled: RocketChat.settings.get('LDAP_Group_Filter_Enable'),
+			group_filter_object_class: RocketChat.settings.get('LDAP_Group_Filter_ObjectClass'),
+			group_filter_group_id_attribute: RocketChat.settings.get('LDAP_Group_Filter_Group_Id_Attribute'),
+			group_filter_group_member_attribute: RocketChat.settings.get('LDAP_Group_Filter_Group_Member_Attribute'),
+			group_filter_group_member_format: RocketChat.settings.get('LDAP_Group_Filter_Group_Member_Format'),
+			group_filter_group_name: RocketChat.settings.get('LDAP_Group_Filter_Group_Name')
 		};
 
 		self.connectSync = Meteor.wrapAsync(self.connectAsync, self);
@@ -51,7 +57,7 @@ LDAP = class LDAP {
 		let replied = false;
 
 		const connectionOptions = {
-			url: `${self.options.host}:${self.options.port}`,
+			url: `${ self.options.host }:${ self.options.port }`,
 			timeout: 1000 * 60 * 10,
 			connectTimeout: self.options.connect_timeout,
 			idleTimeout: self.options.idle_timeout,
@@ -64,9 +70,9 @@ LDAP = class LDAP {
 
 		if (self.options.ca_cert && self.options.ca_cert !== '') {
 			// Split CA cert into array of strings
-			var chainLines = RocketChat.settings.get('LDAP_CA_Cert').split('\n');
-			var cert = [];
-			var ca = [];
+			const chainLines = RocketChat.settings.get('LDAP_CA_Cert').split('\n');
+			let cert = [];
+			const ca = [];
 			chainLines.forEach(function(line) {
 				cert.push(line);
 				if (line.match(/-END CERTIFICATE-/)) {
@@ -78,10 +84,10 @@ LDAP = class LDAP {
 		}
 
 		if (self.options.encryption === 'ssl') {
-			connectionOptions.url = `ldaps://${connectionOptions.url}`;
+			connectionOptions.url = `ldaps://${ connectionOptions.url }`;
 			connectionOptions.tlsOptions = tlsOptions;
 		} else {
-			connectionOptions.url = `ldap://${connectionOptions.url}`;
+			connectionOptions.url = `ldap://${ connectionOptions.url }`;
 		}
 
 		logger.connection.info('Connecting', connectionOptions.url);
@@ -104,7 +110,7 @@ LDAP = class LDAP {
 			// Set host parameter for tls.connect which is used by ldapjs starttls. This shouldn't be needed in newer nodejs versions (e.g v5.6.0).
 			// https://github.com/RocketChat/Rocket.Chat/issues/2035
 			// https://github.com/mcavage/node-ldapjs/issues/349
-			tlsOptions.host = [self.options.host];
+			tlsOptions.host = self.options.host;
 
 			logger.connection.info('Starting TLS');
 			logger.connection.debug('tlsOptions', tlsOptions);
@@ -164,27 +170,27 @@ LDAP = class LDAP {
 			};
 		}
 
-		let filter = ['(&'];
+		const filter = ['(&'];
 
 		if (self.options.domain_search_object_category !== '') {
-			filter.push(`(objectCategory=${self.options.domain_search_object_category})`);
+			filter.push(`(objectCategory=${ self.options.domain_search_object_category })`);
 		}
 
 		if (self.options.domain_search_object_class !== '') {
-			filter.push(`(objectclass=${self.options.domain_search_object_class})`);
+			filter.push(`(objectclass=${ self.options.domain_search_object_class })`);
 		}
 
 		if (self.options.domain_search_filter !== '') {
-			filter.push(`(${self.options.domain_search_filter})`);
+			filter.push(`(${ self.options.domain_search_filter })`);
 		}
 
 		const domain_search_user_id = self.options.domain_search_user_id.split(',');
 		if (domain_search_user_id.length === 1) {
-			filter.push(`(${domain_search_user_id[0]}=#{username})`);
+			filter.push(`(${ domain_search_user_id[0] }=#{username})`);
 		} else {
 			filter.push('(|');
 			domain_search_user_id.forEach((item) => {
-				filter.push(`(${item}=#{username})`);
+				filter.push(`(${ item }=#{username})`);
 			});
 			filter.push(')');
 		}
@@ -238,13 +244,13 @@ LDAP = class LDAP {
 
 		self.bindIfNecessary();
 
-		let Unique_Identifier_Field = RocketChat.settings.get('LDAP_Unique_Identifier_Field').split(',');
+		const Unique_Identifier_Field = RocketChat.settings.get('LDAP_Unique_Identifier_Field').split(',');
 
 		let filter;
 
 		if (attribute) {
 			filter = new self.ldapjs.filters.EqualityFilter({
-				attribute: attribute,
+				attribute,
 				value: new Buffer(id, 'hex')
 			});
 		} else {
@@ -256,11 +262,11 @@ LDAP = class LDAP {
 				}));
 			});
 
-			filter = new self.ldapjs.filters.OrFilter({filters: filters});
+			filter = new self.ldapjs.filters.OrFilter({filters});
 		}
 
 		const searchOptions = {
-			filter: filter,
+			filter,
 			scope: 'sub'
 		};
 
@@ -309,6 +315,44 @@ LDAP = class LDAP {
 
 		return result[0];
 	}
+
+	isUserInGroup(username) {
+		const self = this;
+
+		if (!self.options.group_filter_enabled) {
+			return true;
+		}
+
+		const filter = ['(&'];
+
+		if (self.options.group_filter_object_class !== '') {
+			filter.push(`(objectclass=${ self.options.group_filter_object_class })`);
+		}
+
+		if (self.options.group_filter_group_member_attribute !== '') {
+			filter.push(`(${ self.options.group_filter_group_member_attribute }=${ self.options.group_filter_group_member_format })`);
+		}
+
+		if (self.options.group_filter_group_id_attribute !== '') {
+			filter.push(`(${ self.options.group_filter_group_id_attribute }=${ self.options.group_filter_group_name })`);
+		}
+		filter.push(')');
+
+		const searchOptions = {
+			filter: filter.join('').replace(/#{username}/g, username),
+			scope: 'sub'
+		};
+
+		logger.search.debug('Group filter LDAP:', searchOptions.filter);
+
+		const result = self.searchAllSync(self.options.domain_base, searchOptions);
+
+		if (!Array.isArray(result) || result.length === 0) {
+			return false;
+		}
+		return true;
+	}
+
 
 	searchAllAsync(domain_base, options, callback) {
 		const self = this;

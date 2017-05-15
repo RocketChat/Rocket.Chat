@@ -11,11 +11,12 @@
 			left: 0;
 			top: 0;
 			bottom: 0;
-			background-color: #ccc;
 		}
+
 		html.rtl & {
 			padding-left: 0;
 			padding-right: 15px;
+
 			.attachment-block-border {
 				left: auto;
 				right: 0;
@@ -30,7 +31,6 @@
 
 		> a {
 			font-weight: 600;
-			color: #444;
 		}
 
 		img {
@@ -39,16 +39,10 @@
 			margin-right: 2px;
 			margin-bottom: -2px;
 		}
+
 		.time {
 			font-weight: normal;
-			font-size: .8em;
-			color: #aaa;
-			a{
-				&:hover{
-					text-decoration: underline;
-				}
-				color: #aaa;
-			}
+			font-size: 0.8em;
 		}
 	}
 
@@ -69,6 +63,7 @@
 
 	.attachment-image {
 		margin-top: 4px;
+		line-height: 0;
 	}
 
 	.attachment-fields {
@@ -94,7 +89,8 @@
 	.attachment-thumb {
 		padding-right: 10px;
 		padding-top: 5px;
-		line-height: 0px;
+		line-height: 0;
+
 		html.rtl & {
 			padding-right: 5px;
 			padding-top: 10px;
@@ -120,10 +116,10 @@
 
 	.attachment-download-icon {
 		padding: 2px 5px;
-		border: 1px solid #ccc;
+		border-width: 1px;
 		border-radius: 5px;
 		margin-left: 5px;
-		color: #666;
+
 		html.rtl & {
 			margin-right: 5px;
 			margin-left: auto;

@@ -150,17 +150,20 @@ class WebRTCClass
 		@autoAccept = false
 
 		@navigator = undefined
-		if navigator.userAgent.toLocaleLowerCase().indexOf('chrome') > -1
+		userAgent = navigator.userAgent.toLocaleLowerCase();
+		if userAgent.indexOf('electron') isnt -1
+			@navigator = 'electron'
+		else if userAgent.indexOf('chrome') isnt -1
 			@navigator = 'chrome'
-		else if navigator.userAgent.toLocaleLowerCase().indexOf('firefox') > -1
+		else if userAgent.indexOf('firefox') isnt -1
 			@navigator = 'firefox'
-		else if navigator.userAgent.toLocaleLowerCase().indexOf('safari') > -1
+		else if userAgent.indexOf('safari') isnt -1
 			@navigator = 'safari'
 
-		@screenShareAvailable = @navigator in ['chrome', 'firefox']
+		@screenShareAvailable = @navigator in ['chrome', 'firefox', 'electron']
 
 		@media =
-			video: true
+			video: false
 			audio: true
 
 		@transport = new @transportClass @
@@ -228,10 +231,10 @@ class WebRTCClass
 		if @active isnt true or @monitor is true or @remoteMonitoring is true then return
 
 		remoteConnections = []
-		for id, peerConnections of @peerConnections
+		for id, peerConnection of @peerConnections
 			remoteConnections.push
 				id: id
-				media: peerConnections.remoteMedia
+				media: peerConnection.remoteMedia
 
 		@transport.sendStatus
 			media: @media
@@ -340,6 +343,8 @@ class WebRTCClass
 				stream.addTrack(peer.stream.getAudioTracks()[0])
 				stream.volume = volume
 
+				this.audioContext = audioContext
+
 			onSuccess(stream)
 
 		navigator.getUserMedia media, onSuccessLocal, onError
@@ -355,7 +360,7 @@ class WebRTCClass
 			return
 
 		getScreen = (audioStream) =>
-			if document.cookie.indexOf("rocketchatscreenshare=chrome") is -1 and not window.rocketchatscreenshare?
+			if document.cookie.indexOf("rocketchatscreenshare=chrome") is -1 and not window.rocketchatscreenshare? and @navigator isnt 'electron'
 				refresh = ->
 					swal
 						type: "warning"
@@ -394,8 +399,7 @@ class WebRTCClass
 						mediaSource: 'window'
 				@_getUserMedia media, getScreenSuccess, onError
 			else
-				ChromeScreenShare.getSourceId (id) =>
-					console.log id
+				ChromeScreenShare.getSourceId @navigator, (id) =>
 					media =
 						audio: false
 						video:
@@ -461,7 +465,8 @@ class WebRTCClass
 
 	stopAllPeerConnections: ->
 		for id, peerConnection of @peerConnections
-				@stopPeerConnection id
+			@stopPeerConnection id
+		window.audioContext?.close()
 
 	setAudioEnabled: (enabled=true) ->
 		if @localStream?
@@ -592,7 +597,7 @@ class WebRTCClass
 				title = "Group audio call from #{subscription.name}"
 
 		swal
-			title: "<i class='icon-#{icon} alert-icon'></i>#{title}"
+			title: "<i class='icon-#{icon} alert-icon success-color'></i>#{title}"
 			text: "Do you want to accept?"
 			html: true
 			showCancelButton: true

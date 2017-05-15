@@ -43,7 +43,7 @@ RocketChat.settings =
 
 		save = (setting) ->
 			return (callback) ->
-				Meteor.call 'saveSetting', setting._id, setting.value, callback
+				Meteor.call 'saveSetting', setting._id, setting.value, setting.editor, callback
 
 		actions = _.map settings, (setting) -> save(setting)
 		_(actions).reduceRight(_.wrap, (err, success) -> return callback err, success)()

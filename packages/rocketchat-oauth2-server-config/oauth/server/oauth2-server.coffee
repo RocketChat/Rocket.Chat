@@ -8,6 +8,33 @@ oauth2server = new OAuth2Server
 
 WebApp.connectHandlers.use oauth2server.app
 
+oauth2server.routes.get '/oauth/userinfo', (req, res, next) ->
+	if not req.headers.authorization?
+		return res.sendStatus(401).send('No token')
+
+	accessToken = req.headers.authorization.replace('Bearer ', '')
+
+	token = oauth2server.oauth.model.AccessTokens.findOne accessToken: accessToken
+
+	if not token?
+		return res.sendStatus(401).send('Invalid Token')
+
+	user = RocketChat.models.Users.findOneById(token.userId);
+
+	if not user?
+		return res.sendStatus(401).send('Invalid Token')
+
+	res.send
+		sub: user._id
+		name: user.name
+		email: user.emails[0].address
+		email_verified: user.emails[0].verified
+		department: ""
+		birthdate: ""
+		preffered_username: user.username
+		updated_at: user._updatedAt
+		picture: "#{Meteor.absoluteUrl()}avatar/#{user.username}"
+
 
 Meteor.publish 'oauthClient', (clientId) ->
 	unless @userId
@@ -19,8 +46,6 @@ Meteor.publish 'oauthClient', (clientId) ->
 
 
 RocketChat.API.v1.addAuthMethod ->
-	console.log @request.method, @request.url
-
 	headerToken = @request.headers['authorization']
 	getToken = @request.query.access_token
 
@@ -54,5 +79,4 @@ RocketChat.API.v1.addAuthMethod ->
 		# console.log 'user not found'.red
 		return
 
-	return user: user
-
+	return user: _.omit(user, '$loki')

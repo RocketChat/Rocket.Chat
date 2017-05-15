@@ -1,15 +1,29 @@
 function Create(command, params, item) {
-	var channel, room, user;
+	function getParams(str) {
+		const regex = /(--(\w+))+/g;
+		const result = [];
+		let m;
+		while ((m = regex.exec(str)) !== null) {
+			if (m.index === regex.lastIndex) {
+				regex.lastIndex++;
+			}
+			result.push(m[2]);
+		}
+		return result;
+	}
+
+	const regexp = /#?([\d-_\w]+)/g;
 	if (command !== 'create' || !Match.test(params, String)) {
 		return;
 	}
-	channel = params.trim();
+	let channel = regexp.exec(params.trim());
+	channel = channel ? channel[1] : '';
 	if (channel === '') {
 		return;
 	}
 
-	user = Meteor.users.findOne(Meteor.userId());
-	room = RocketChat.models.Rooms.findOneByName(channel);
+	const user = Meteor.users.findOne(Meteor.userId());
+	const room = RocketChat.models.Rooms.findOneByName(channel);
 	if (room != null) {
 		RocketChat.Notifications.notifyUser(Meteor.userId(), 'message', {
 			_id: Random.id(),
@@ -22,6 +36,11 @@ function Create(command, params, item) {
 		});
 		return;
 	}
+
+	if (getParams(params).indexOf('private') > -1) {
+		return Meteor.call('createPrivateGroup', channel, []);
+	}
+
 	Meteor.call('createChannel', channel, []);
 }
 

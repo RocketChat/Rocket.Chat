@@ -1,57 +1,68 @@
 <template name="integrations">
-	<div class="permissions-manager">
-		{{#if hasPermission}}
-			<a href="{{pathFor "admin-integrations-new"}}" class="button primary new-role">{{_ "New_integration"}}</a>
-
-			<div class="rocket-form">
-				<div class="section">
-					<div class="admin-integrations-new-panel">
-						{{#each integrations}}
-							{{#if $eq type 'webhook-incoming'}}
-								<a href="{{pathFor "admin-integrations-incoming" id=_id}}">
-									<div class="admin-integrations-new-item">
-										<i class="icon-login"></i>
-										<div class="admin-integrations-new-item-body">
-											<div class="admin-integrations-new-item-title">
-												Incoming WebHook {{#if name}}- {{name}}{{/if}}
+	<section class="page-container page-home page-static page-settings">
+		<header class="fixed-title border-component-color">
+			{{> burger}}
+			<h2>
+				<span class="room-title">{{pageTitle}}</span>
+			</h2>
+			{{#if hasPermission}}
+				<div class="submit">
+					<a href="{{pathFor "admin-integrations-new"}}" class="button primary new-role">{{_ "New_integration"}}</a>
+				</div>
+			{{/if}}
+		</header>
+		<div class="content background-transparent-dark">
+			{{#unless hasPermission}}
+				<p>{{_ "You_are_not_authorized_to_view_this_page"}}</p>
+			{{else}}
+				<div class="rocket-form">
+					<div class="section">
+						<div class="admin-integrations-new-panel">
+							{{#each integrations}}
+								{{#if $eq type 'webhook-incoming'}}
+									<a href="{{pathFor "admin-integrations-incoming" id=_id}}">
+										<div class="admin-integrations-new-item">
+											<i class="icon-login"></i>
+											<div class="admin-integrations-new-item-body">
+												<div class="admin-integrations-new-item-title">
+													{{_ "Incoming_WebHook"}} {{#if name}}- {{name}}{{/if}}
+												</div>
+												<div class="admin-integrations-new-item-description">
+													{{{_ "Post_to_s_as_s" channel username}}}
+												</div>
+												<div class="admin-integrations-new-item-description">
+													{{{_ "Created_at_s_by_s" (dateFormated _createdAt) _createdBy.username}}}
+												</div>
 											</div>
-											<div class="admin-integrations-new-item-description">
-												{{{_ "Post_to_s_as_s" channel username}}}
-											</div>
-											<div class="admin-integrations-new-item-description">
-												{{{_ "Created_at_s_by_s" (dateFormated _createdAt) _createdBy.username}}}
-											</div>
+											<i class="icon-angle-right"></i>
 										</div>
-										<i class="icon-angle-right"></i>
-									</div>
-								</a>
-							{{/if}}
-						{{else}}
-							<h1>{{_ "There_are_no_integrations"}}</h1>
-						{{/each}}
-						{{#each integrations}}
-							{{#if $eq type 'webhook-outgoing'}}
-								<a href="{{pathFor "admin-integrations-outgoing" id=_id}}">
-									<div class="admin-integrations-new-item">
-										<i class="icon-login"></i>
-										<div class="admin-integrations-new-item-body">
-											<div class="admin-integrations-new-item-title">
-												Outgoing WebHook {{#if name}}- {{name}}{{/if}}
+									</a>
+								{{/if}}
+							{{else}}
+								<h1>{{_ "There_are_no_integrations"}}</h1>
+							{{/each}}
+							{{#each integrations}}
+								{{#if $eq type 'webhook-outgoing'}}
+									<a href="{{pathFor "admin-integrations-outgoing" id=_id}}">
+										<div class="admin-integrations-new-item">
+											<i class="icon-login"></i>
+											<div class="admin-integrations-new-item-body">
+												<div class="admin-integrations-new-item-title">
+													{{_ "Outgoing_WebHook"}} {{#if name}}- {{name}}{{/if}}
+												</div>
+												<div class="admin-integrations-new-item-description">
+													{{{_ "Created_at_s_by_s_triggered_by_s" (dateFormated _createdAt) _createdBy.username (eventTypeI18n event)}}}
+												</div>
 											</div>
-											<div class="admin-integrations-new-item-description">
-												{{{_ "Created_at_s_by_s" (dateFormated _createdAt) _createdBy.username}}}
-											</div>
+											<i class="icon-angle-right"></i>
 										</div>
-										<i class="icon-angle-right"></i>
-									</div>
-								</a>
-							{{/if}}
-						{{/each}}
+									</a>
+								{{/if}}
+							{{/each}}
+						</div>
 					</div>
 				</div>
-			</div>
-		{{else}}
-			{{_ "Not_authorized"}}
-		{{/if}}
-	</div>
+			{{/unless}}
+		</div>
+	</section>
 </template>

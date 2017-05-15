@@ -92,7 +92,7 @@ RocketChat.callbacks.run = (hook, item, constant) ->
 					else
 						console.log String(currentTime), hook, callback.id, callback.stack?.split?('\n')[2]?.match(/\(.+\)/)?[0]
 
-			return callbackResult
+			return if typeof callbackResult == 'undefined' then result else callbackResult
 		, item
 
 		if RocketChat.callbacks.showTotalTime is true

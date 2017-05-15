@@ -28,7 +28,7 @@
 						dep.changed()
 
 	Tracker.autorun ->
-		if visitor.getRoom()
+		if visitor.getRoom() and Meteor.userId()
 			addStream visitor.getRoom()
 
 	start = (room) ->

@@ -6,20 +6,52 @@
 			}
 		}
 
-		form {
-			label {
-				display: block;
-				font-weight: bold;
-				margin-bottom: 5px;
-			}
+		label {
+			display: block;
+			font-weight: bold;
+			margin-bottom: 5px;
+			font-size: 14px;
+		}
 
-			div span {
-				font-size: 14px;
-				i.icon-pencil {
-					font-size: 12px;
-					margin-left: 3px;
-				}
+		.current-setting {
+			font-size: 14px;
+			width: calc(~"100% - 38px");
+			display: inline-block;
+			vertical-align: middle;
+			min-height: 20px;
+			cursor: pointer;
+			margin-top: 3px;
+
+			&[data-edit="false"] {
+				cursor: inherit;
+				user-select: initial;
 			}
+		}
+
+		.editing {
+			padding-right: 80px;
+			font-size: 14px;
+			margin: -2px 0 -1px -9px;
+		}
+
+		.buttons {
+			position: absolute;
+			top: -1px;
+			bottom: 0;
+			right: 10px;
+			border-radius: 0 4px 4px 0;
+
+			.button {
+				padding: 8px;
+			}
+		}
+
+		.button.edit {
+			padding: 8px;
+			font-size: 12px;
+			vertical-align: middle;
+			display: inline-block;
+			visibility: hidden;
 		}
 
 		.submit {
@@ -27,8 +59,40 @@
 			text-align: center;
 		}
 
-		[data-edit] {
-			cursor: pointer;
+		.boolean {
+			font-size: 0;
+
+			> label {
+				width: calc(~"100% - 45px");
+				display: inline-block;
+				vertical-align: middle;
+			}
+
+			.setting-block {
+				width: 40px;
+				display: inline-block;
+				vertical-align: middle;
+				margin-left: -5px;
+			}
+		}
+
+		.setting-block {
+			position: relative;
+			font-size: 0;
+
+			.loading-animation {
+				top: 30px;
+			}
+
+			&:hover {
+				.button.edit {
+					visibility: visible;
+				}
+			}
+		}
+
+		nav {
+			text-align: right;
 		}
 	}
 }

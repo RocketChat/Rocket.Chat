@@ -1,3 +1,5 @@
+import moment from 'moment'
+
 Template.oauthApps.onCreated ->
 	@subscribe 'oauthApps'
 

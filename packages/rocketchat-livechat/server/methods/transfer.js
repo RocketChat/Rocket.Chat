@@ -8,7 +8,7 @@ Meteor.methods({
 		check(transferData, {
 			roomId: String,
 			userId: Match.Optional(String),
-			deparmentId: Match.Optional(String)
+			departmentId: Match.Optional(String)
 		});
 
 		const room = RocketChat.models.Rooms.findOneById(transferData.roomId);
@@ -17,7 +17,7 @@ Meteor.methods({
 
 		const user = Meteor.user();
 
-		if (room.usernames.indexOf(user.username) === -1) {
+		if (room.usernames.indexOf(user.username) === -1 && !RocketChat.authz.hasRole(Meteor.userId(), 'livechat-manager')) {
 			throw new Meteor.Error('error-not-authorized', 'Not authorized', { method: 'livechat:transfer' });
 		}
 

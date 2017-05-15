@@ -8,10 +8,10 @@ Package.describe({
 Package.onUse(function(api) {
 	api.use([
 		'coffeescript',
+		'ecmascript',
 		'underscore',
 		'templating',
 		'underscorestring:underscore.string',
-		'simple:highlight.js',
 		'rocketchat:lib'
 	]);
 

@@ -11,12 +11,14 @@ Package.registerBuildPlugin({
 		'plugin/build-livechat.js'
 	],
 	npmDependencies: {
-		'shelljs': '0.5.1'
+		'shelljs': '0.5.1',
+		'uglify-js': '2.7.5'
 	}
 });
 
 Npm.depends({
-	'ua-parser-js': '0.7.10'
+	'ua-parser-js': '0.7.10',
+	'uglify-js': '2.7.5'
 });
 
 Package.onUse(function(api) {
@@ -27,6 +29,8 @@ Package.onUse(function(api) {
 	api.use('rocketchat:authorization');
 	api.use('rocketchat:logger');
 	api.use('rocketchat:api');
+	api.use('rocketchat:theme');
+	api.use('rocketchat:streamer');
 	api.use('konecty:user-presence');
 	api.use('rocketchat:ui');
 	api.use('kadira:flow-router', 'client');
@@ -50,9 +54,7 @@ Package.onUse(function(api) {
 	api.addFiles('client/ui.js', 'client');
 	api.addFiles('client/route.js', 'client');
 
-	// add stylesheets to theme compiler
-	api.addAssets('client/stylesheets/livechat.less', 'server');
-	api.addFiles('client/stylesheets/load.js', 'server');
+	api.addFiles('client/stylesheets/livechat.less', 'client');
 
 	// collections
 	api.addFiles('client/collections/AgentUsers.js', 'client');
@@ -91,6 +93,8 @@ Package.onUse(function(api) {
 	api.addFiles('client/views/app/livechatQueue.js', 'client');
 	api.addFiles('client/views/app/livechatTriggers.html', 'client');
 	api.addFiles('client/views/app/livechatTriggers.js', 'client');
+	api.addFiles('client/views/app/livechatTriggersForm.html', 'client');
+	api.addFiles('client/views/app/livechatTriggersForm.js', 'client');
 	api.addFiles('client/views/app/livechatUsers.html', 'client');
 	api.addFiles('client/views/app/livechatUsers.js', 'client');
 	api.addFiles('client/views/app/livechatOfficeHours.html', 'client');
@@ -132,6 +136,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/methods/closeByVisitor.js', 'server');
 	api.addFiles('server/methods/closeRoom.js', 'server');
 	api.addFiles('server/methods/getCustomFields.js', 'server');
+	api.addFiles('server/methods/getAgentData.js', 'server');
 	api.addFiles('server/methods/getInitialData.js', 'server');
 	api.addFiles('server/methods/loginByToken.js', 'server');
 	api.addFiles('server/methods/pageVisited.js', 'server');
@@ -141,6 +146,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/methods/removeDepartment.js', 'server');
 	api.addFiles('server/methods/removeManager.js', 'server');
 	api.addFiles('server/methods/removeTrigger.js', 'server');
+	api.addFiles('server/methods/saveAppearance.js', 'server');
 	api.addFiles('server/methods/saveCustomField.js', 'server');
 	api.addFiles('server/methods/saveDepartment.js', 'server');
 	api.addFiles('server/methods/saveInfo.js', 'server');
@@ -151,6 +157,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/methods/sendMessageLivechat.js', 'server');
 	api.addFiles('server/methods/sendOfflineMessage.js', 'server');
 	api.addFiles('server/methods/setCustomField.js', 'server');
+	api.addFiles('server/methods/setDepartmentForVisitor.js', 'server');
 	api.addFiles('server/methods/startVideoCall.js', 'server');
 	api.addFiles('server/methods/transfer.js', 'server');
 	api.addFiles('server/methods/webhookTest.js', 'server');
@@ -185,11 +192,13 @@ Package.onUse(function(api) {
 	api.addFiles('server/publications/departmentAgents.js', 'server');
 	api.addFiles('server/publications/externalMessages.js', 'server');
 	api.addFiles('server/publications/livechatAgents.js', 'server');
+	api.addFiles('server/publications/livechatAppearance.js', 'server');
 	api.addFiles('server/publications/livechatDepartments.js', 'server');
 	api.addFiles('server/publications/livechatIntegration.js', 'server');
 	api.addFiles('server/publications/livechatManagers.js', 'server');
 	api.addFiles('server/publications/livechatRooms.js', 'server');
 	api.addFiles('server/publications/livechatQueue.js', 'server');
+	api.addFiles('server/publications/livechatTriggers.js', 'server');
 	api.addFiles('server/publications/visitorHistory.js', 'server');
 	api.addFiles('server/publications/visitorInfo.js', 'server');
 	api.addFiles('server/publications/visitorPageVisited.js', 'server');
@@ -201,6 +210,10 @@ Package.onUse(function(api) {
 
 	// livechat app
 	api.addAssets('assets/demo.html', 'client');
-	api.addAssets('assets/rocket-livechat.js', 'client');
+
+	// DEPRECATED
+	api.addAssets('assets/rocket-livechat.js', 'client'); // this file is still added to not break currently installed livechat widgets
+
+	api.addAssets('assets/rocketchat-livechat.min.js', 'client');
 	api.addAssets('public/head.html', 'server');
 });

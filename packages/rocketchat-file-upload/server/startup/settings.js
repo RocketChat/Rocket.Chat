@@ -30,6 +30,9 @@ RocketChat.settings.addGroup('FileUpload', function() {
 			key: 'AmazonS3',
 			i18nLabel: 'AmazonS3'
 		}, {
+			key: 'GoogleCloudStorage',
+			i18nLabel: 'GoogleCloudStorage'
+		}, {
 			key: 'FileSystem',
 			i18nLabel: 'FileSystem'
 		}],
@@ -97,6 +100,34 @@ RocketChat.settings.addGroup('FileUpload', function() {
 		});
 	});
 
+	this.section('Google Cloud Storage', function() {
+		this.add('FileUpload_GoogleStorage_Bucket', '', {
+			type: 'string',
+			private: true,
+			enableQuery: {
+				_id: 'FileUpload_Storage_Type',
+				value: 'GoogleCloudStorage'
+			}
+		});
+		this.add('FileUpload_GoogleStorage_AccessId', '', {
+			type: 'string',
+			private: true,
+			enableQuery: {
+				_id: 'FileUpload_Storage_Type',
+				value: 'GoogleCloudStorage'
+			}
+		});
+		this.add('FileUpload_GoogleStorage_Secret', '', {
+			type: 'string',
+			multiline: true,
+			private: true,
+			enableQuery: {
+				_id: 'FileUpload_Storage_Type',
+				value: 'GoogleCloudStorage'
+			}
+		});
+	});
+
 	this.section('File System', function() {
 		this.add('FileUpload_FileSystemPath', '', {
 			type: 'string',
@@ -105,5 +136,10 @@ RocketChat.settings.addGroup('FileUpload', function() {
 				value: 'FileSystem'
 			}
 		});
+	});
+
+	this.add('FileUpload_Enabled_Direct', true, {
+		type: 'boolean',
+		public: true
 	});
 });

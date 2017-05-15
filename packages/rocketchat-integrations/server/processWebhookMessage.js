@@ -1,62 +1,37 @@
-this.processWebhookMessage = function(messageObj, user, defaultValues) {
-	var attachment, channel, channels, channelType, i, len, message, ref, rid, room, roomUser, ret;
-	ret = [];
+this.processWebhookMessage = function(messageObj, user, defaultValues = { channel: '', alias: '', avatar: '', emoji: '' }) {
+	const sentData = [];
+	const channels = [].concat(messageObj.channel || messageObj.roomId || defaultValues.channel);
 
-	if (!defaultValues) {
-		defaultValues = {
-			channel: '',
-			alias: '',
-			avatar: '',
-			emoji: ''
-		};
-	}
+	for (const channel of channels) {
+		const channelType = channel[0];
 
-	channel = messageObj.channel || defaultValues.channel;
-
-	channels = [].concat(channel);
-
-	for (channel of channels) {
-		channelType = channel[0];
-
-		channel = channel.substr(1);
+		let channelValue = channel.substr(1);
+		let room;
 
 		switch (channelType) {
 			case '#':
-				room = RocketChat.models.Rooms.findOneByIdOrName(channel);
-				if (!_.isObject(room)) {
-					throw new Meteor.Error('invalid-channel');
-				}
-				rid = room._id;
-				if (room.t === 'c') {
-					Meteor.runAsUser(user._id, function() {
-						return Meteor.call('joinRoom', room._id);
-					});
-				}
+				room = RocketChat.getRoomByNameOrIdWithOptionToJoin({ currentUserId: user._id, nameOrId: channelValue, joinChannel: true });
 				break;
 			case '@':
-				roomUser = RocketChat.models.Users.findOne({
-					$or: [
-						{
-							_id: channel
-						}, {
-							username: channel
-						}
-					]
-				}) || {};
-				rid = [user._id, roomUser._id].sort().join('');
-				room = RocketChat.models.Rooms.findOneById({$in: [rid, channel]});
-				if (!_.isObject(roomUser) && !_.isObject(room)) {
-					throw new Meteor.Error('invalid-channel');
-				}
-				if (!room) {
-					Meteor.runAsUser(user._id, function() {
-						Meteor.call('createDirectMessage', roomUser.username);
-						room = RocketChat.models.Rooms.findOneById(rid);
-					});
-				}
+				room = RocketChat.getRoomByNameOrIdWithOptionToJoin({ currentUserId: user._id, nameOrId: channelValue, type: 'd' });
 				break;
 			default:
-				throw new Meteor.Error('invalid-channel-type');
+				channelValue = channelType + channelValue;
+
+				//Try to find the room by id or name if they didn't include the prefix.
+				room = RocketChat.getRoomByNameOrIdWithOptionToJoin({ currentUserId: user._id, nameOrId: channelValue, joinChannel: true, errorOnEmpty: false });
+				if (room) {
+					break;
+				}
+
+				//We didn't get a room, let's try finding direct messages
+				room = RocketChat.getRoomByNameOrIdWithOptionToJoin({ currentUserId: user._id, nameOrId: channelValue, type: 'd', tryDirectByUserIdOnly: true });
+				if (room) {
+					break;
+				}
+
+				//No room, so throw an error
+				throw new Meteor.Error('invalid-channel');
 		}
 
 		if (messageObj.attachments && !_.isArray(messageObj.attachments)) {
@@ -64,7 +39,7 @@ this.processWebhookMessage = function(messageObj, user, defaultValues) {
 			messageObj.attachments = undefined;
 		}
 
-		message = {
+		const message = {
 			alias: messageObj.username || messageObj.alias || defaultValues.alias,
 			msg: _.trim(messageObj.text || messageObj.msg || ''),
 			attachments: messageObj.attachments,
@@ -84,9 +59,8 @@ this.processWebhookMessage = function(messageObj, user, defaultValues) {
 		}
 
 		if (_.isArray(message.attachments)) {
-			ref = message.attachments;
-			for (i = 0, len = ref.length; i < len; i++) {
-				attachment = ref[i];
+			for (let i = 0; i < message.attachments.length; i++) {
+				const attachment = message.attachments[i];
 				if (attachment.msg) {
 					attachment.text = _.trim(attachment.msg);
 					delete attachment.msg;
@@ -94,8 +68,9 @@ this.processWebhookMessage = function(messageObj, user, defaultValues) {
 			}
 		}
 
-		var messageReturn = RocketChat.sendMessage(user, message, room);
-		ret.push({ channel: channel, message: messageReturn });
+		const messageReturn = RocketChat.sendMessage(user, message, room);
+		sentData.push({ channel, message: messageReturn });
 	}
-	return ret;
+
+	return sentData;
 };

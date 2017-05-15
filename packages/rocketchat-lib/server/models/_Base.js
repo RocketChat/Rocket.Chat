@@ -1,252 +1,186 @@
-const {EventEmitter} = Npm.require('events');
+import ModelsBaseDb from './_BaseDb';
+import ModelsBaseCache from './_BaseCache';
 
-const baseName = 'rocketchat_';
+RocketChat.models._CacheControl = new Meteor.EnvironmentVariable();
 
-const trash = new Mongo.Collection(baseName + '_trash');
-try {
-	trash._ensureIndex({ collection: 1 });
-	trash._ensureIndex({ _deletedAt: 1 }, { expireAfterSeconds: 60 * 60 * 24 * 30 });
-} catch (e) {
-	console.log(e);
-}
+class ModelsBase {
+	constructor(nameOrModel, useCache) {
+		this._db = new ModelsBaseDb(nameOrModel, this);
+		this.model = this._db.model;
+		this.collectionName = this._db.collectionName;
+		this.name = this._db.name;
 
-class ModelsBase extends EventEmitter {
-	constructor(model) {
-		super();
+		this._useCache = useCache === true;
 
-		if (Match.test(model, String)) {
-			this.name = model;
-			this.collectionName = this.baseName + this.name;
-			this.model = new Mongo.Collection(this.collectionName);
-		} else {
-			this.name = model._name;
-			this.collectionName = this.name;
-			this.model = model;
+		this.cache = new ModelsBaseCache(this);
+		// TODO_CACHE: remove
+		this.on = this.cache.on.bind(this.cache);
+		this.emit = this.cache.emit.bind(this.cache);
+		this.getDynamicView = this.cache.getDynamicView.bind(this.cache);
+		this.processQueryOptionsOnResult = this.cache.processQueryOptionsOnResult.bind(this.cache);
+		// END_TODO_CACHE
+
+		this.db = this;
+
+		if (this._useCache) {
+			this.db = new this.constructor(this.model, false);
+		}
+	}
+
+	get useCache() {
+		if (RocketChat.models._CacheControl.get() === false) {
+			return false;
 		}
 
-		this.tryEnsureIndex({ '_updatedAt': 1 });
+		return this._useCache;
 	}
 
-	get baseName() {
-		return baseName;
+	get origin() {
+		return this.useCache === true ? 'cache' : '_db';
 	}
 
-	setUpdatedAt(record = {}, checkQuery = false, query) {
-		if (checkQuery === true) {
-			if (!query || Object.keys(query).length === 0) {
-				throw new Meteor.Error('Models._Base: Empty query');
+	arrayToCursor(data) {
+		return {
+			fetch() {
+				return data;
+			},
+			count() {
+				return data.length;
+			},
+			forEach(fn) {
+				return data.forEach(fn);
 			}
-		}
+		};
+	}
 
-		if (/(^|,)\$/.test(Object.keys(record).join(','))) {
-			record.$set = record.$set || {};
-			record.$set._updatedAt = new Date;
-		} else {
-			record._updatedAt = new Date;
-		}
-
-		return record;
+	setUpdatedAt(/*record, checkQuery, query*/) {
+		return this._db.setUpdatedAt(...arguments);
 	}
 
 	find() {
-		return this.model.find(...arguments);
+		try {
+			return this[this.origin].find(...arguments);
+		} catch (e) {
+			console.error('Exception on find', e, ...arguments);
+		}
 	}
 
 	findOne() {
-		return this.model.findOne(...arguments);
+		try {
+			return this[this.origin].findOne(...arguments);
+		} catch (e) {
+			console.error('Exception on find', e, ...arguments);
+		}
 	}
 
-	insert(record) {
-		this.setUpdatedAt(record);
-
-		const result = this.model.insert(...arguments);
-		record._id = result;
-		this.emit('insert', record);
-		this.emit('change', 'insert', record);
-		return result;
+	findOneById() {
+		try {
+			return this[this.origin].findOneById(...arguments);
+		} catch (e) {
+			console.error('Exception on find', e, ...arguments);
+		}
 	}
 
-	update(query, update, options = {}) {
-		this.setUpdatedAt(update, true, query);
+	findOneByIds(ids, options) {
+		check(ids, [String]);
 
-		if (options.upsert) {
-			return this.upsert(query, update);
+		try {
+			return this[this.origin].findOneByIds(ids, options);
+		} catch (e) {
+			console.error('Exception on find', e, ...arguments);
 		}
-
-		let ids = [];
-		if (options.multi === true) {
-			const updated = this.model.find(query, { fields: { _id: 1 } }).fetch();
-			if (updated) {
-				ids = ids.concat(updated);
-			}
-		} else {
-			const updated = this.model.findOne(query, { fields: { _id: 1 } });
-			if (updated) {
-				ids.push(updated);
-			}
-		}
-
-		const result = this.model.update(query, update, options);
-		const idQuery = { _id: { $in: _.pluck(ids, '_id') } };
-		this.emit('update', idQuery, update);
-		this.emit('change', 'update', idQuery, update);
-		return result;
 	}
 
-	upsert(query, update) {
-		this.setUpdatedAt(update, true, query);
-
-		const id = this.model.findOne(query, { fields: { _id: 1 } });
-		const result = this.model.upsert(...arguments);
-
-		let record = id;
-		if (result.insertedId) {
-			record = { _id: result.insertedId };
-		}
-
-		this.emit('update', record);
-		this.emit('change', 'update', record);
-		return result;
+	insert(/*record*/) {
+		return this._db.insert(...arguments);
 	}
 
-	remove(query) {
-		const records = this.model.find(query).fetch();
-
-		const ids = [];
-		for (const record of records) {
-			ids.push(record._id);
-
-			record._deletedAt = new Date;
-			record.__collection__ = this.name;
-
-			trash.upsert({_id: record._id}, _.omit(record, '_id'));
-		}
-
-		query = { _id: { $in: ids } };
-
-		this.emit('remove', records);
-		this.emit('change', 'remove', records);
-		return this.model.remove(query);
+	update(/*query, update, options*/) {
+		return this._db.update(...arguments);
 	}
 
-	insertOrUpsert(...args) {
-		if (args[0] && args[0]._id) {
-			const _id = args[0]._id;
-			delete args[0]._id;
-			args.unshift({
-				_id: _id
-			});
+	upsert(/*query, update*/) {
+		return this._db.upsert(...arguments);
+	}
 
-			this.upsert(...args);
-			return _id;
-		} else {
-			return this.insert(...args);
-		}
+	remove(/*query*/) {
+		return this._db.remove(...arguments);
+	}
+
+	insertOrUpsert() {
+		return this._db.insertOrUpsert(...arguments);
 	}
 
 	allow() {
-		return this.model.allow(...arguments);
+		return this._db.allow(...arguments);
 	}
 
 	deny() {
-		return this.model.deny(...arguments);
+		return this._db.deny(...arguments);
 	}
 
 	ensureIndex() {
-		return this.model._ensureIndex(...arguments);
+		return this._db.ensureIndex(...arguments);
 	}
 
 	dropIndex() {
-		return this.model._dropIndex(...arguments);
+		return this._db.dropIndex(...arguments);
 	}
 
 	tryEnsureIndex() {
-		try {
-			return this.ensureIndex(...arguments);
-		} catch (e) {
-			console.log(e);
-		}
+		return this._db.tryEnsureIndex(...arguments);
 	}
 
 	tryDropIndex() {
-		try {
-			return this.dropIndex(...arguments);
-		} catch (e) {
-			console.log(e);
-		}
+		return this._db.tryDropIndex(...arguments);
 	}
 
-	getChangedRecords(type, recordOrQuery, fields) {
-		if (type === 'insert') {
-			return [recordOrQuery];
-		}
-
-		if (type === 'remove') {
-			return recordOrQuery;
-		}
-
-		if (type === 'update') {
-			const options = {};
-			if (fields) {
-				options.fields = fields;
-			}
-			return this.find(recordOrQuery, options).fetch();
-		}
+	trashFind(/*query, options*/) {
+		return this._db.trashFind(...arguments);
 	}
 
-	trashFind(query, options) {
-		query.__collection__ = this.name;
-
-		return trash.find(query, options);
+	trashFindDeletedAfter(/*deletedAt, query, options*/) {
+		return this._db.trashFindDeletedAfter(...arguments);
 	}
 
-	trashFindDeletedAfter(deletedAt, query = {}, options) {
-		query.__collection__ = this.name;
-		query._deletedAt = {
-			$gt: deletedAt
-		};
+	// dinamicTrashFindAfter(method, deletedAt, ...args) {
+	// 	const scope = {
+	// 		find: (query={}) => {
+	// 			return this.trashFindDeletedAfter(deletedAt, query, { fields: {_id: 1, _deletedAt: 1} });
+	// 		}
+	// 	};
 
-		return trash.find(query, options);
-	}
+	// 	scope.model = {
+	// 		find: scope.find
+	// 	};
 
-	dinamicTrashFindAfter(method, deletedAt, ...args) {
-		const scope = {
-			find: (query={}) => {
-				return this.trashFindDeletedAfter(deletedAt, query, { fields: {_id: 1, _deletedAt: 1} });
-			}
-		};
+	// 	return this[method].apply(scope, args);
+	// }
 
-		scope.model = {
-			find: scope.find
-		};
+	// dinamicFindAfter(method, updatedAt, ...args) {
+	// 	const scope = {
+	// 		find: (query={}, options) => {
+	// 			query._updatedAt = {
+	// 				$gt: updatedAt
+	// 			};
 
-		return this[method].apply(scope, args);
-	}
+	// 			return this.find(query, options);
+	// 		}
+	// 	};
 
-	dinamicFindAfter(method, updatedAt, ...args) {
-		const scope = {
-			find: (query={}, options) => {
-				query._updatedAt = {
-					$gt: updatedAt
-				};
+	// 	scope.model = {
+	// 		find: scope.find
+	// 	};
 
-				return this.find(query, options);
-			}
-		};
+	// 	return this[method].apply(scope, args);
+	// }
 
-		scope.model = {
-			find: scope.find
-		};
-
-		return this[method].apply(scope, args);
-	}
-
-	dinamicFindChangesAfter(method, updatedAt, ...args) {
-		return {
-			update: this.dinamicFindAfter(method, updatedAt, ...args).fetch(),
-			remove: this.dinamicTrashFindAfter(method, updatedAt, ...args).fetch()
-		};
-	}
+	// dinamicFindChangesAfter(method, updatedAt, ...args) {
+	// 	return {
+	// 		update: this.dinamicFindAfter(method, updatedAt, ...args).fetch(),
+	// 		remove: this.dinamicTrashFindAfter(method, updatedAt, ...args).fetch()
+	// 	};
+	// }
 
 }
 

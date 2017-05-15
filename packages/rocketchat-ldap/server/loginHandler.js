@@ -6,13 +6,13 @@ const logger = new Logger('LDAPHandler', {});
 function fallbackDefaultAccountSystem(bind, username, password) {
 	if (typeof username === 'string') {
 		if (username.indexOf('@') === -1) {
-			username = {username: username};
+			username = {username};
 		} else {
 			username = {email: username};
 		}
 	}
 
-	logger.info('Fallback to default account systen', username);
+	logger.info('Fallback to default account system', username);
 
 	const loginRequest = {
 		user: username,
@@ -50,7 +50,11 @@ Accounts.registerLoginHandler('ldap', function(loginRequest) {
 		}
 
 		if (ldap.authSync(users[0].dn, loginRequest.ldapPass) === true) {
-			ldapUser = users[0];
+			if (ldap.isUserInGroup (loginRequest.username)) {
+				ldapUser = users[0];
+			} else {
+				throw new Error('User not in a valid group');
+			}
 		} else {
 			logger.info('Wrong password for', loginRequest.username);
 		}
@@ -65,7 +69,7 @@ Accounts.registerLoginHandler('ldap', function(loginRequest) {
 			return fallbackDefaultAccountSystem(self, loginRequest.username, loginRequest.ldapPass);
 		}
 
-		throw new Meteor.Error('LDAP-login-error', 'LDAP Authentication failed with provided username ['+loginRequest.username+']');
+		throw new Meteor.Error('LDAP-login-error', `LDAP Authentication failed with provided username [${ loginRequest.username }]`);
 	}
 
 	let username;
@@ -79,7 +83,7 @@ Accounts.registerLoginHandler('ldap', function(loginRequest) {
 	// Look to see if user already exists
 	let userQuery;
 
-	let Unique_Identifier_Field = getLdapUserUniqueID(ldapUser);
+	const Unique_Identifier_Field = getLdapUserUniqueID(ldapUser);
 	let user;
 
 	if (Unique_Identifier_Field) {
@@ -95,7 +99,7 @@ Accounts.registerLoginHandler('ldap', function(loginRequest) {
 
 	if (!user) {
 		userQuery = {
-			username: username
+			username
 		};
 
 		logger.debug('userQuery', userQuery);
@@ -107,7 +111,7 @@ Accounts.registerLoginHandler('ldap', function(loginRequest) {
 	if (user) {
 		if (user.ldap !== true && RocketChat.settings.get('LDAP_Merge_Existing_Users') !== true) {
 			logger.info('User exists without "ldap: true"');
-			throw new Meteor.Error('LDAP-login-error', 'LDAP Authentication succeded, but there\'s already an existing user with provided username ['+username+'] in Mongo.');
+			throw new Meteor.Error('LDAP-login-error', `LDAP Authentication succeded, but there's already an existing user with provided username [${ username }] in Mongo.`);
 		}
 
 		logger.info('Logging user');

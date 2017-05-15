@@ -1,3 +1,4 @@
+import toastr from 'toastr';
 Template.livechatCustomFieldForm.helpers({
 	customField() {
 		return Template.instance().customField.get();
@@ -7,13 +8,13 @@ Template.livechatCustomFieldForm.helpers({
 Template.livechatCustomFieldForm.events({
 	'submit #customField-form'(e, instance) {
 		e.preventDefault();
-		var $btn = instance.$('button.save');
+		const $btn = instance.$('button.save');
 
-		var _id = $(e.currentTarget).data('id');
-		var field = instance.$('input[name=field]').val();
-		var label = instance.$('input[name=label]').val();
-		var scope = instance.$('select[name=scope]').val();
-		var visibility = instance.$('select[name=visibility]').val();
+		const _id = $(e.currentTarget).data('id');
+		const field = instance.$('input[name=field]').val();
+		const label = instance.$('input[name=label]').val();
+		const scope = instance.$('select[name=scope]').val();
+		const visibility = instance.$('select[name=visibility]').val();
 
 		if (!/^[0-9a-zA-Z-_]+$/.test(field)) {
 			return toastr.error(t('error-invalid-custom-field-name'));
@@ -23,12 +24,12 @@ Template.livechatCustomFieldForm.events({
 			return toastr.error(t('Please_fill_a_label'));
 		}
 
-		var oldBtnValue = $btn.html();
+		const oldBtnValue = $btn.html();
 		$btn.html(t('Saving'));
 
-		var customFieldData = {
-			field: field,
-			label: label,
+		const customFieldData = {
+			field,
+			label,
 			scope: scope.trim(),
 			visibility: visibility.trim()
 		};
@@ -53,7 +54,7 @@ Template.livechatCustomFieldForm.events({
 Template.livechatCustomFieldForm.onCreated(function() {
 	this.customField = new ReactiveVar({});
 	this.autorun(() => {
-		var sub = this.subscribe('livechat:customFields', FlowRouter.getParam('_id'));
+		const sub = this.subscribe('livechat:customFields', FlowRouter.getParam('_id'));
 		if (sub.ready()) {
 			const customField = LivechatCustomField.findOne({ _id: FlowRouter.getParam('_id') });
 			if (customField) {

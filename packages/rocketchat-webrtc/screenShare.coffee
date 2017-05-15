@@ -1,12 +1,15 @@
 @ChromeScreenShare =
 	screenCallback: undefined
 
-	getSourceId: (callback) ->
+	getSourceId: (navigator, callback) ->
 		if not callback? then throw '"callback" parameter is mandatory.'
 
 		ChromeScreenShare.screenCallback = callback
-		window.postMessage('get-sourceId', '*')
 
+		if navigator is 'electron'
+			fireGlobalEvent('get-sourceId', '*')
+		else
+			window.postMessage('get-sourceId', '*')
 
 window.addEventListener 'message', (e) ->
 	if e.origin isnt window.location.origin

@@ -1,7 +1,7 @@
 Meteor.methods({
-	groupsList: function(nameFilter, limit, sort) {
+	groupsList(nameFilter, limit, sort) {
 
-		check(nameFilter, String);
+		check(nameFilter, Match.Optional(String));
 		check(limit, Match.Optional(Number));
 		check(sort, Match.Optional(String));
 
@@ -9,7 +9,7 @@ Meteor.methods({
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'groupsList' });
 		}
 
-		let options = {
+		const options = {
 			fields: { name: 1 },
 			sort: { name: 1 }
 		};
@@ -35,7 +35,7 @@ Meteor.methods({
 		if (nameFilter) {
 			return { groups: RocketChat.models.Rooms.findByTypeAndNameContainingUsername('p', new RegExp(s.trim(s.escapeRegExp(nameFilter)), 'i'), Meteor.user().username, options).fetch() };
 		} else {
-			let roomIds = _.pluck(RocketChat.models.Subscriptions.findByTypeAndUserId('p', Meteor.userId()).fetch(), 'rid');
+			const roomIds = _.pluck(RocketChat.models.Subscriptions.findByTypeAndUserId('p', Meteor.userId()).fetch(), 'rid');
 			return { groups: RocketChat.models.Rooms.findByIds(roomIds, options).fetch() };
 		}
 	}

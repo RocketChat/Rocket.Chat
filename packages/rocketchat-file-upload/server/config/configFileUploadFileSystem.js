@@ -1,11 +1,11 @@
 /* globals FileSystemStore:true, FileUpload, UploadFS, RocketChatFile */
 
-let storeName = 'fileSystem';
+const storeName = 'fileSystem';
 
 FileSystemStore = null;
 
-let createFileSystemStore = _.debounce(function() {
-	let stores = UploadFS.getStores();
+const createFileSystemStore = _.debounce(function() {
+	const stores = UploadFS.getStores();
 	if (stores[storeName]) {
 		delete stores[storeName];
 	}
@@ -16,12 +16,12 @@ let createFileSystemStore = _.debounce(function() {
 		filter: new UploadFS.Filter({
 			onCheck: FileUpload.validateFileUpload
 		}),
-		transformWrite: function(readStream, writeStream, fileId, file) {
+		transformWrite(readStream, writeStream, fileId, file) {
 			if (RocketChatFile.enabled === false || !/^image\/((x-windows-)?bmp|p?jpeg|png)$/.test(file.type)) {
 				return readStream.pipe(writeStream);
 			}
 
-			let stream = void 0;
+			let stream = undefined;
 
 			const identify = function(err, data) {
 				if (err != null) {
@@ -48,18 +48,18 @@ let createFileSystemStore = _.debounce(function() {
 
 RocketChat.settings.get('FileUpload_FileSystemPath', createFileSystemStore);
 
-var fs = Npm.require('fs');
+const fs = Npm.require('fs');
 
 FileUpload.addHandler(storeName, {
 	get(file, req, res) {
-		let filePath = FileSystemStore.getFilePath(file._id, file);
+		const filePath = FileSystemStore.getFilePath(file._id, file);
 
 		try {
-			let stat = Meteor.wrapAsync(fs.stat)(filePath);
+			const stat = Meteor.wrapAsync(fs.stat)(filePath);
 
 			if (stat && stat.isFile()) {
 				file = FileUpload.addExtensionTo(file);
-				res.setHeader('Content-Disposition', `attachment; filename*=UTF-8''${encodeURIComponent(file.name)}`);
+				res.setHeader('Content-Disposition', `attachment; filename*=UTF-8''${ encodeURIComponent(file.name) }`);
 				res.setHeader('Last-Modified', file.uploadedAt.toUTCString());
 				res.setHeader('Content-Type', file.type);
 				res.setHeader('Content-Length', file.size);
@@ -72,6 +72,7 @@ FileUpload.addHandler(storeName, {
 			return;
 		}
 	},
+
 	delete(file) {
 		return FileSystemStore.delete(file._id);
 	}

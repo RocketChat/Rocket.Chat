@@ -1,12 +1,12 @@
 RocketChat.removeUserFromRoom = function(rid, user) {
-	let room = RocketChat.models.Rooms.findOneById(rid);
+	const room = RocketChat.models.Rooms.findOneById(rid);
 
 	if (room) {
 		RocketChat.callbacks.run('beforeLeaveRoom', user, room);
 		RocketChat.models.Rooms.removeUsernameById(rid, user.username);
 
 		if (room.usernames.indexOf(user.username) !== -1) {
-			let removedUser = user;
+			const removedUser = user;
 			RocketChat.models.Messages.createUserLeaveWithRoomIdAndUser(rid, removedUser);
 		}
 

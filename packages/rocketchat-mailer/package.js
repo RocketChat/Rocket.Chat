@@ -6,6 +6,7 @@ Package.describe({
 
 Package.onUse(function(api) {
 	api.use([
+		'ecmascript',
 		'coffeescript',
 		'ddp-rate-limiter',
 		'kadira:flow-router',

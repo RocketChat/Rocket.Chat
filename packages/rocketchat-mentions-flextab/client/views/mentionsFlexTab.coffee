@@ -8,9 +8,6 @@ Template.mentionsFlexTab.helpers
 	message: ->
 		return _.extend(this, { customClass: 'mentions' })
 
-	notReadySubscription: ->
-		return 'notready' unless Template.instance().subscriptionsReady()
-
 	hasMore: ->
 		return Template.instance().hasMore.get()
 

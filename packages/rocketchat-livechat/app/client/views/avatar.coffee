@@ -4,7 +4,7 @@ Template.avatar.helpers
 		if not username? and this.userId?
 			username = Meteor.users.findOne(this.userId)?.username
 
-		if not username?
+		if not username? or Meteor.user()?.username is username
 			return
 
 		Session.get "avatar_random_#{username}"

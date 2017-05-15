@@ -12,20 +12,44 @@ class ModelSubscriptions extends RocketChat.models._Base
 		@tryEnsureIndex { 'unread': 1 }
 		@tryEnsureIndex { 'ts': 1 }
 		@tryEnsureIndex { 'ls': 1 }
+		@tryEnsureIndex { 'audioNotification': 1 }, { sparse: 1 }
 		@tryEnsureIndex { 'desktopNotifications': 1 }, { sparse: 1 }
 		@tryEnsureIndex { 'mobilePushNotifications': 1 }, { sparse: 1 }
 		@tryEnsureIndex { 'emailNotifications': 1 }, { sparse: 1 }
+		@tryEnsureIndex { 'autoTranslate': 1 }, { sparse: 1 }
+		@tryEnsureIndex { 'autoTranslateLanguage': 1 }, { sparse: 1 }
+
+		this.cache.ensureIndex('rid', 'array')
+		this.cache.ensureIndex('u._id', 'array')
+		this.cache.ensureIndex('name', 'array')
+		this.cache.ensureIndex(['rid', 'u._id'], 'unique')
+		this.cache.ensureIndex(['name', 'u._id'], 'unique')
+
 
 	# FIND ONE
 	findOneByRoomIdAndUserId: (roomId, userId) ->
+		if this.useCache
+			return this.cache.findByIndex('rid,u._id', [roomId, userId]).fetch()
 		query =
 			rid: roomId
 			"u._id": userId
 
 		return @findOne query
 
+	findOneByRoomNameAndUserId: (roomName, userId) ->
+		if this.useCache
+			return this.cache.findByIndex('name,u._id', [roomName, userId]).fetch()
+		query =
+			name: roomName
+			"u._id": userId
+
+		return @findOne query
+
 	# FIND
 	findByUserId: (userId, options) ->
+		if this.useCache
+			return this.cache.findByIndex('u._id', userId, options)
+
 		query =
 			"u._id": userId
 
@@ -71,8 +95,19 @@ class ModelSubscriptions extends RocketChat.models._Base
 		return @find query, options
 
 	findByRoomId: (roomId, options) ->
+		if this.useCache
+			return this.cache.findByIndex('rid', roomId, options)
+
 		query =
-			"rid": roomId
+			rid: roomId
+
+		return @find query, options
+
+	findByRoomIdAndNotUserId: (roomId, userId, options) ->
+		query =
+			rid: roomId
+			'u._id':
+				$ne: userId
 
 		return @find query, options
 
@@ -282,6 +317,44 @@ class ModelSubscriptions extends RocketChat.models._Base
 
 		return @update query, update, { multi: true }
 
+	setBlockedByRoomId: (rid, blocked, blocker) ->
+		query =
+			rid: rid
+			'u._id': blocked
+
+		update =
+			$set:
+				blocked: true
+
+		query2 =
+			rid: rid
+			'u._id': blocker
+
+		update2 =
+			$set:
+				blocker: true
+
+		return @update(query, update) and @update(query2, update2)
+
+	unsetBlockedByRoomId: (rid, blocked, blocker) ->
+		query =
+			rid: rid
+			'u._id': blocked
+
+		update =
+			$unset:
+				blocked: 1
+
+		query2 =
+			rid: rid
+			'u._id': blocker
+
+		update2 =
+			$unset:
+				blocker: 1
+
+		return @update(query, update) and @update(query2, update2)
+
 	updateTypeByRoomId: (roomId, type) ->
 		query =
 			rid: roomId
@@ -362,4 +435,4 @@ class ModelSubscriptions extends RocketChat.models._Base
 
 		return @remove query
 
-RocketChat.models.Subscriptions = new ModelSubscriptions('subscription')
+RocketChat.models.Subscriptions = new ModelSubscriptions('subscription', true)

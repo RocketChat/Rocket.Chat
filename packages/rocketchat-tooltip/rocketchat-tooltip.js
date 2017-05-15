@@ -48,9 +48,9 @@ RocketChat.tooltip = {
 	},
 
 	setPosition() {
-		let sourcePos = $(this.source).offset();
+		const sourcePos = $(this.source).offset();
 
-		let sourceWidth = $(this.source).outerWidth();
+		const sourceWidth = $(this.source).outerWidth();
 
 		const tip = $('.tooltip');
 
@@ -61,7 +61,7 @@ RocketChat.tooltip = {
 
 		if (left < 0) {
 			$('.tooltip .tooltip-arrow').css({
-				'margin-left': (left - 5) + 'px'
+				'margin-left': `${ left - 5 }px`
 			});
 			left = 0;
 		} else {
@@ -79,8 +79,8 @@ RocketChat.tooltip = {
 
 		return tip
 			.css({
-				top: top + 'px',
-				left: left + 'px'
+				top: `${ top }px`,
+				left: `${ left }px`
 			});
 	}
 };

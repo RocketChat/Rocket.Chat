@@ -1,3 +1,4 @@
+import toastr from 'toastr'
 Template.mailer.helpers
 	fromEmail: ->
 		return RocketChat.settings.get 'From_Email'

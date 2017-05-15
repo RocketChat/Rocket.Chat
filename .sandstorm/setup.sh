@@ -8,7 +8,7 @@ apt-get install build-essential git -y
 cd /opt/
 
 NODE_ENV=production
-PACKAGE=meteor-spk-0.3.0
+PACKAGE=meteor-spk-0.3.1
 PACKAGE_FILENAME="$PACKAGE.tar.xz"
 CACHE_TARGET="/host-dot-sandstorm/caches/${PACKAGE_FILENAME}"
 

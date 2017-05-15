@@ -2,13 +2,13 @@
 	{{#if hasPermission}}
 		<div class="section terminal">
 			{{#each logs}}
-				<div>
-					<!-- <span class="time">{{formatTS ts}}</span>  -->
+				<div class="terminal-line">
+					{{!-- <span class="terminal-time">{{formatTS ts}}</span> --}}
 					{{{ansispan string}}}
 				</div>
 			{{/each}}
 		</div>
-		<div class="new-logs not">
+		<div class="new-logs not color-primary-action-color">
 			<i class="icon-down-big"></i>
 			<span>{{_ "New_logs"}}</span>
 		</div>

@@ -1,12 +1,11 @@
-/* globals isSetNotNull */
 Template.emojiInfo.helpers({
 	name() {
-		let emoji = Template.instance().emoji.get();
+		const emoji = Template.instance().emoji.get();
 		return emoji.name;
 	},
 
 	aliases() {
-		let emoji = Template.instance().emoji.get();
+		const emoji = Template.instance().emoji.get();
 		return emoji.aliases;
 	},
 
@@ -19,15 +18,16 @@ Template.emojiInfo.helpers({
 	},
 
 	emojiToEdit() {
-		let instance = Template.instance();
+		const instance = Template.instance();
 		return {
+			tabBar: this.tabBar,
 			emoji: instance.emoji.get(),
 			back(name) {
 				instance.editingEmoji.set();
 
-				if (isSetNotNull(() => name)) {
-					let emoji = instance.emoji.get();
-					if (isSetNotNull(() => emoji.name) && emoji.name !== name) {
+				if (name != null) {
+					const emoji = instance.emoji.get();
+					if (emoji != null && emoji.name != null && emoji.name !== name) {
 						return instance.loadedName.set(name);
 					}
 				}
@@ -37,16 +37,16 @@ Template.emojiInfo.helpers({
 });
 
 Template.emojiInfo.events({
-	['click .thumb'](e) {
+	'click .thumb'(e) {
 		$(e.currentTarget).toggleClass('bigger');
 	},
 
-	['click .delete'](e, instance) {
+	'click .delete'(e, instance) {
 		e.stopPropagation();
 		e.preventDefault();
-		let emoji = instance.emoji.get();
-		if (isSetNotNull(() => emoji)) {
-			let _id = emoji._id;
+		const emoji = instance.emoji.get();
+		if (emoji != null) {
+			const _id = emoji._id;
 			swal({
 				title: t('Are_you_sure'),
 				text: t('Custom_Emoji_Delete_Warning'),
@@ -73,15 +73,14 @@ Template.emojiInfo.events({
 							showConfirmButton: false
 						});
 
-						RocketChat.TabBar.showGroup('adminEmoji');
-						RocketChat.TabBar.closeFlex();
+						instance.tabBar.close();
 					}
 				});
 			});
 		}
 	},
 
-	['click .edit-emoji'](e, instance) {
+	'click .edit-emoji'(e, instance) {
 		e.stopPropagation();
 		e.preventDefault();
 
@@ -96,25 +95,27 @@ Template.emojiInfo.onCreated(function() {
 
 	this.loadedName = new ReactiveVar();
 
+	this.tabBar = Template.currentData().tabBar;
+
 	this.autorun(() => {
-		let data = Template.currentData();
-		if (isSetNotNull(() => data.clear)) {
+		const data = Template.currentData();
+		if (data != null && data.clear != null) {
 			this.clear = data.clear;
 		}
 	});
 
 	this.autorun(() => {
-		let data = Template.currentData();
-		let emoji = this.emoji.get();
-		if (isSetNotNull(() => emoji.name)) {
+		const data = Template.currentData();
+		const emoji = this.emoji.get();
+		if (emoji != null && emoji.name != null) {
 			this.loadedName.set(emoji.name);
-		} else if (isSetNotNull(() => data.name)) {
+		} else if (data != null && data.name != null) {
 			this.loadedName.set(data.name);
 		}
 	});
 
 	this.autorun(() => {
-		let data = Template.currentData();
+		const data = Template.currentData();
 		this.emoji.set(data);
 	});
 });

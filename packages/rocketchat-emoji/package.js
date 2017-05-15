@@ -22,14 +22,14 @@ Package.onUse(function(api) {
 
 	api.addFiles('emojiPicker.html', 'client');
 	api.addFiles('emojiPicker.js', 'client');
+	api.addFiles('emojiPicker.less', 'client');
 
-	api.addAssets('emojiPicker.less', 'server');
-	api.addFiles('loadStylesheet.js', 'server');
 	api.addFiles('emoji.css', 'client');
 
 	api.addFiles('lib/emojiRenderer.js', 'client');
 	api.addFiles('lib/EmojiPicker.js', 'client');
 	api.addFiles('emojiButton.js', 'client');
+	api.addFiles('keyboardFix.js', 'client');
 
 	api.export('renderEmoji');
 });

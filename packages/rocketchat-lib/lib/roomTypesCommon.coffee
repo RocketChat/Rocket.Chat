@@ -60,3 +60,16 @@ class @roomTypesCommon
 
 		return FlowRouter.path @roomTypes[roomType].route.name, routeData
 
+	openRouteLink: (roomType, subData, queryParams) ->
+		unless @roomTypes[roomType]?
+			return false
+
+		routeData = {}
+
+		if @roomTypes[roomType]?.route?.link?
+			routeData = @roomTypes[roomType].route.link(subData)
+		else if subData?.name?
+			routeData = { name: subData.name }
+
+		return FlowRouter.go @roomTypes[roomType].route.name, routeData, queryParams
+

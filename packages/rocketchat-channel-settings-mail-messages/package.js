@@ -7,27 +7,27 @@ Package.describe({
 
 Package.onUse(function(api) {
 	api.use([
-		'coffeescript',
+		'ecmascript',
 		'templating',
 		'reactive-var',
 		'less',
 		'rocketchat:lib',
 		'rocketchat:channel-settings',
-		'momentjs:moment'
+		'mongo'
 	]);
 
 	api.addFiles([
-		'client/lib/startup.coffee',
+		'client/lib/startup.js',
 		'client/stylesheets/mail-messages.less',
 		'client/views/channelSettingsMailMessages.html',
-		'client/views/channelSettingsMailMessages.coffee',
+		'client/views/channelSettingsMailMessages.js',
 		'client/views/mailMessagesInstructions.html',
-		'client/views/mailMessagesInstructions.coffee'
+		'client/views/mailMessagesInstructions.js'
 	], 'client');
 
 
 	api.addFiles([
-		'server/lib/startup.coffee',
-		'server/methods/mailMessages.coffee'
+		'server/lib/startup.js',
+		'server/methods/mailMessages.js'
 	], 'server');
 });

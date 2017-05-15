@@ -1,3 +1,4 @@
+import toastr from 'toastr'
 Meteor.startup ->
 	RocketChat.MessageAction.addButton
 		id: 'star-message'

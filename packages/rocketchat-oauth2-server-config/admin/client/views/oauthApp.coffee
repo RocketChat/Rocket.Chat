@@ -1,3 +1,4 @@
+import toastr from 'toastr'
 Template.oauthApp.onCreated ->
 	@subscribe 'oauthApps'
 	@record = new ReactiveVar

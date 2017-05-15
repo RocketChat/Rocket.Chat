@@ -1,5 +1,5 @@
 Meteor.methods({
-	saveSetting: function(_id, value) {
+	saveSetting(_id, value, editor) {
 		if (Meteor.userId() === null) {
 			throw new Meteor.Error('error-action-not-allowed', 'Editing settings is not allowed', {
 				method: 'saveSetting'
@@ -15,7 +15,7 @@ Meteor.methods({
 		//Verify the _id passed in is a string.
 		check(_id, String);
 
-		const setting = RocketChat.models.Settings.findOneById(_id);
+		const setting = RocketChat.models.Settings.db.findOneById(_id);
 
 		//Verify the value is what it should be
 		switch (setting.type) {
@@ -33,7 +33,7 @@ Meteor.methods({
 				break;
 		}
 
-		RocketChat.settings.updateById(_id, value);
+		RocketChat.settings.updateById(_id, value, editor);
 		return true;
 	}
 });

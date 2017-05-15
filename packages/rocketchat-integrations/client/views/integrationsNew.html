@@ -1,44 +1,52 @@
 <template name="integrationsNew">
-	<div class="permissions-manager">
-		{{#if hasPermission}}
+	<section class="page-container page-home page-static page-settings">
+		<header class="fixed-title border-component-color">
+			{{> burger}}
+			<h2>
+				<span class="room-title">{{pageTitle}}</span>
+			</h2>
+		</header>
+		<div class="content background-transparent-dark">
 			<a href="{{pathFor "admin-integrations"}}"><i class="icon-angle-left"></i> {{_ "Back_to_integrations"}}</a><br><br>
+			{{#if hasPermission}}
 
-			<div class="rocket-form">
-				<div class="section">
-					<div class="admin-integrations-new-panel">
-						<a href="{{pathFor "admin-integrations-incoming"}}">
-							<div class="admin-integrations-new-item">
-								<i class="icon-login"></i>
-								<div class="admin-integrations-new-item-body">
-									<div class="admin-integrations-new-item-title">
-										Incoming WebHook
+				<div class="rocket-form">
+					<div class="section">
+						<div class="admin-integrations-new-panel">
+							<a href="{{pathFor "admin-integrations-incoming"}}">
+								<div class="admin-integrations-new-item">
+									<i class="icon-login"></i>
+									<div class="admin-integrations-new-item-body">
+										<div class="admin-integrations-new-item-title">
+											{{_ "Incoming_WebHook"}}
+										</div>
+										<div class="admin-integrations-new-item-description">
+											{{_ "Send_data_into_RocketChat_in_realtime"}}
+										</div>
 									</div>
-									<div class="admin-integrations-new-item-description">
-										{{_ "Send_data_into_RocketChat_in_realtime"}}
-									</div>
+									<i class="icon-angle-right"></i>
 								</div>
-								<i class="icon-angle-right"></i>
-							</div>
-						</a>
-						<a href="{{pathFor "admin-integrations-outgoing"}}">
-							<div class="admin-integrations-new-item">
-								<i class="icon-logout"></i>
-								<div class="admin-integrations-new-item-body">
-									<div class="admin-integrations-new-item-title">
-										Outgoing WebHook
+							</a>
+							<a href="{{pathFor "admin-integrations-outgoing"}}">
+								<div class="admin-integrations-new-item">
+									<i class="icon-logout"></i>
+									<div class="admin-integrations-new-item-body">
+										<div class="admin-integrations-new-item-title">
+											{{_ "Outgoing_WebHook"}}
+										</div>
+										<div class="admin-integrations-new-item-description">
+											{{_ "Outgoing_WebHook_Description"}}
+										</div>
 									</div>
-									<div class="admin-integrations-new-item-description">
-										Get data out of Rocket.Chat in real-time.
-									</div>
+									<i class="icon-angle-right"></i>
 								</div>
-								<i class="icon-angle-right"></i>
-							</div>
-						</a>
+							</a>
+						</div>
 					</div>
 				</div>
-			</div>
-		{{else}}
-			{{_ "Not_authorized"}}
-		{{/if}}
-	</div>
+			{{else}}
+				{{_ "Not_authorized"}}
+			{{/if}}
+		</div>
+	</section>
 </template>

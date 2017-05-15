@@ -4,7 +4,7 @@ Meteor.startup(function() {
 			RocketChat.OTR.crypto = window.crypto.subtle || window.crypto.webkitSubtle;
 			RocketChat.OTR.enabled.set(true);
 			RocketChat.TabBar.addButton({
-				groups: ['directmessage'],
+				groups: ['direct'],
 				id: 'otr',
 				i18nTitle: 'OTR',
 				icon: 'icon-key',

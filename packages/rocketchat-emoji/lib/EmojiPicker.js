@@ -1,4 +1,4 @@
-/* globals Blaze, isSetNotNull, Template */
+/* globals Blaze, Template */
 RocketChat.EmojiPicker = {
 	width: 390,
 	height: 238,
@@ -52,22 +52,31 @@ RocketChat.EmojiPicker = {
 		return this.recent;
 	},
 	setPosition() {
-		let sourcePos = $(this.source).offset();
-		let left = (sourcePos.left - this.width + 65);
-		let top = (sourcePos.top - this.height - 5);
+		const sourcePos = $(this.source).offset();
+		const left = sourcePos.left;
+		const top = (sourcePos.top - this.height - 5);
+		const cssProperties = {
+			top,
+			left
+		};
 
-		if (left < 0) {
-			left = 10;
-		}
 		if (top < 0) {
-			top = 10;
+			cssProperties.top = 10;
 		}
 
-		return $('.emoji-picker')
-			.css({
-				top: top + 'px',
-				left: left + 'px'
-			});
+		if (left < 35) {
+			cssProperties.left = 0;
+		} else {
+			const windowSize = $(window).width();
+			const pickerWidth = $('.emoji-picker').width();
+
+			if (left + pickerWidth > windowSize) {
+				const emojiButtonSize = $('.reaction-message.message-action').outerWidth();
+				cssProperties.left = left - pickerWidth + emojiButtonSize;
+			}
+		}
+
+		return $('.emoji-picker').css(cssProperties);
 	},
 	open(source, callback) {
 		if (!this.initiated) {
@@ -79,12 +88,10 @@ RocketChat.EmojiPicker = {
 		const containerEl = this.setPosition();
 		containerEl.addClass('show');
 
-		setTimeout(() => {
-			const emojiInput = containerEl.find('.emoji-filter input.search');
-			if (emojiInput) {
-				emojiInput.focus();
-			}
-		}, 100);
+		const emojiInput = containerEl.find('.emoji-filter input.search');
+		if (emojiInput) {
+			emojiInput.focus();
+		}
 		this.opened = true;
 	},
 	close() {
@@ -98,7 +105,7 @@ RocketChat.EmojiPicker = {
 		this.addRecent(emoji);
 	},
 	addRecent(emoji) {
-		let pos = this.recent.indexOf(emoji);
+		const pos = this.recent.indexOf(emoji);
 
 		if (pos !== -1) {
 			this.recent.splice(pos, 1);
@@ -108,23 +115,31 @@ RocketChat.EmojiPicker = {
 
 		window.localStorage.setItem('emoji.recent', this.recent);
 		RocketChat.emoji.packages.base.emojisByCategory.recent = this.recent;
-
 		this.updateRecent();
 	},
 	updateRecent() {
-		let total = RocketChat.emoji.packages.base.emojisByCategory.recent.length;
-		let html = '';
-		for (var i = 0; i < total; i++) {
-			let emoji = RocketChat.emoji.packages.base.emojisByCategory.recent[i];
-
-			if (isSetNotNull(() => RocketChat.emoji.list[`:${emoji}:`])) {
-				let emojiPackage = RocketChat.emoji.list[`:${emoji}:`].emojiPackage;
-				let renderedEmoji = RocketChat.emoji.packages[emojiPackage].render(`:${emoji}:`);
-				html += `<li class="emoji-${emoji}" data-emoji="${emoji}">${renderedEmoji}</li>`;
-			} else {
-				this.recent = _.without(this.recent, emoji);
-			}
+		const instance = Template.instance();
+		if (instance) {
+			instance.recentNeedsUpdate.set(true);
+		} else {
+			this.refreshDynamicEmojiLists();
 		}
-		$('.recent.emoji-list').empty().append(html);
+	},
+	refreshDynamicEmojiLists() {
+		const dynamicEmojiLists = [
+			RocketChat.emoji.packages.base.emojisByCategory.recent,
+			RocketChat.emoji.packages.emojiCustom.emojisByCategory.rocket
+		];
+
+		dynamicEmojiLists.forEach((category) => {
+			if (category) {
+				for (let i = 0; i < category.length; i++) {
+					const emoji = category[i];
+					if (!RocketChat.emoji.list[`:${ emoji }:`]) {
+						category = _.without(category, emoji);
+					}
+				}
+			}
+		});
 	}
 };

@@ -1,3 +1,6 @@
+import moment from 'moment';
+import 'moment-timezone';
+
 RocketChat.settings.addGroup('Smarsh', function addSettings() {
 	this.add('Smarsh_Enabled', false, {
 		type: 'boolean',

@@ -11,10 +11,7 @@ class ModelUsers extends RocketChat.models._Base
 		@tryEnsureIndex { 'type': 1 }
 		@tryEnsureIndex { 'phoneextension': 1 }
 
-
-	# FIND ONE
-	findOneById: (_id, options) ->
-		return @findOne _id, options
+		this.cache.ensureIndex('username', 'unique')
 
 	findOneByImportId: (_id, options) ->
 		return @findOne { importIds: _id }, options
@@ -69,6 +66,17 @@ class ModelUsers extends RocketChat.models._Base
 		return @find query, options
 
 	findUsersByUsernamesWithHighlights: (usernames, options) ->
+		if this.useCache
+			result =
+				fetch: () ->
+					return RocketChat.models.Users.getDynamicView('highlights').data().filter (record) ->
+						return usernames.indexOf(record.username) > -1
+				count: () ->
+					return result.fetch().length
+				forEach: (fn) ->
+					return result.fetch().forEach(fn)
+			return result
+
 		query =
 			username: { $in: usernames }
 			'settings.preferences.highlights.0':
@@ -104,7 +112,7 @@ class ModelUsers extends RocketChat.models._Base
 
 		return @find query, options
 
-	findByActiveUsersUsernameExcept: (searchTerm, exceptions = [], options = {}) ->
+	findByActiveUsersExcept: (searchTerm, exceptions = [], options = {}) ->
 		if not _.isArray exceptions
 			exceptions = [ exceptions ]
 
@@ -113,10 +121,17 @@ class ModelUsers extends RocketChat.models._Base
 			$and: [
 				{
 					active: true
-					username: termRegex
+					$or: [
+						{
+							username: termRegex
+						}
+						{
+							name: termRegex
+						}
+					]
 				}
 				{
-					username: { $nin: exceptions }
+					username: { $exists: true, $nin: exceptions }
 				}
 			]
 
@@ -176,6 +191,19 @@ class ModelUsers extends RocketChat.models._Base
 		return @find query, options
 
 	# UPDATE
+	addImportIds: (_id, importIds) ->
+		importIds = [].concat(importIds)
+
+		query =
+			_id: _id
+
+		update =
+			$addToSet:
+				importIds:
+					$each: importIds
+
+		return @update query, update
+
 	updateLastLoginById: (_id) ->
 		update =
 			$set:
@@ -341,7 +369,7 @@ class ModelUsers extends RocketChat.models._Base
 					address: s.trim(data.email)
 				]
 			else
-				unsetData.name = 1
+				unsetData.emails = 1
 
 		if data.phone?
 			if not _.isEmpty(s.trim(data.phone))
@@ -398,4 +426,4 @@ class ModelUsers extends RocketChat.models._Base
 
 		return @find query, { fields: { name: 1, username: 1, emails: 1, 'settings.preferences.emailNotificationMode': 1 } }
 
-RocketChat.models.Users = new ModelUsers(Meteor.users)
+RocketChat.models.Users = new ModelUsers(Meteor.users, true)

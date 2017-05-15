@@ -4,6 +4,7 @@
 
 [![Rocket.Chat](https://demo.rocket.chat/images/join-chat.svg)](https://demo.rocket.chat/)
 [![Build Status](https://img.shields.io/travis/RocketChat/Rocket.Chat/master.svg)](https://travis-ci.org/RocketChat/Rocket.Chat)
+[![Project Dependencies](https://david-dm.org/RocketChat/Rocket.Chat.svg)](https://david-dm.org/RocketChat/Rocket.Chat)
 [![Codacy Badge](https://api.codacy.com/project/badge/grade/8580571ba024426d9649e9ab389bd5dd)](https://www.codacy.com/app/RocketChat/Rocket-Chat)
 [![Coverage Status](https://coveralls.io/repos/RocketChat/Rocket.Chat/badge.svg)](https://coveralls.io/r/RocketChat/Rocket.Chat)
 [![Code Climate](https://codeclimate.com/github/RocketChat/Rocket.Chat/badges/gpa.svg)](https://codeclimate.com/github/RocketChat/Rocket.Chat)
@@ -14,13 +15,13 @@
 * [Mobile apps](#mobile-apps)
 * [Desktop apps](#desktop-apps)
 * [Deployment](#deployment)
-   * [Snaps](#snaps)
+   * [Snaps](#instant-server-installation-with-snaps)
+   * [Layershift](#layershift)
    * [Sandstorm.io](#sandstormio) 
    * [DPlatform](#dplatform) 
    * [IndieHosters](#indiehosters)
    * [Ubuntu 16.04](#ubuntu-1604)
    * [Cloudron.io](#cloudronio) 
-   * [Nitrous.io](#nitrousio)
    * [Heroku](#heroku)
   * [Scalingo](#scalingo)
   * [Sloppy.io](#sloppyio)
@@ -30,6 +31,7 @@
   * [Raspberry Pi 2](#raspberry-pi-2)
   * [Koozali SME](#koozali-sme)
   * [Ubuntu VPS](#ubuntu-vps)
+  * [Hyper.sh](#hypersh)
 * [About Rocket.Chat](#about-rocketchat)
   * [On the News](#on-the-news)
   * [Features](#features)
@@ -74,7 +76,7 @@ Now compatible with all Android devices as old as version 4.0.x - [download here
 
 # Deployment
 
-## Instant Server Intallation with Snaps
+## Instant Server Installation with Snaps
  
 Install Rocket.Chat in seconds on Linux (Ubuntu and others) with:
 
@@ -86,7 +88,17 @@ sudo snap install rocketchat-server
 
 Installing snaps is very quick.  By running that command you have your full Rocket.Chat server up and running.  Snaps are secure.  They are isolated with all of their dependencies.  Snaps also auto update when we release new versions. 
 
+Our snap features a built-in reverse proxy that can request and maintain free letsencrypt SSL certificates. You can go from zero to a public-facing SSL-secured Rocket.Chat server in less than 5 minutes.
+
 Find out more information about our snaps [here](https://rocket.chat/docs/installation/manual-installation/ubuntu/snaps/)
+
+## Layershift
+
+Instantly deploy your Rocket.Chat server for free on next generation auto-scaling PaaS.
+
+[![Layershift Hosting](https://github.com/Sing-Li/bbug/raw/master/images/layershift.png)](http://jps.layershift.com/rocketchat/deploy.html)
+
+Painless SSL. Automatically scale your server cluster based on usage demand.
 
 ## Sandstorm.io
 Host your own Rocket.Chat server in four seconds flat:
@@ -96,7 +108,7 @@ Host your own Rocket.Chat server in four seconds flat:
 
 ## DPlatform
 
-Easiest way to install a ready-to-run Rocket.Chat server on a Linux machine, VM, or VPS - [@j8r's   DPlatform](https://github.com/j8r/DPlatform), now in Alpha! 
+Easiest way to install a ready-to-run Rocket.Chat server on a Linux machine, VM, or VPS
 
 [![DP deploy](https://raw.githubusercontent.com/DFabric/DPlatform-ShellCore/gh-pages/img/deploy.png)](https://dfabric.github.io/DPlatform-ShellCore)
 
@@ -119,13 +131,6 @@ In under 30 seconds, your Rocket.Chat server will be up and running at `http://h
 Install Rocket.Chat on [Cloudron](https://cloudron.io) Smartserver:
 
 [![Install](https://cloudron.io/img/button.svg)](https://cloudron.io/button.html?app=chat.rocket.cloudronapp)
-
-## Nitrous.io
-**Free** development environment for Rocket.Chat in the cloud on [Nitrous.io](https://www.nitrous.io):
-
-<a href="https://www.nitrous.io/quickstart">
-  <img src="https://nitrous-image-icons.s3.amazonaws.com/quickstart.png" alt="Nitrous Quickstart" width=142 height=34>
-</a>
 
 ## Heroku
 Host your own Rocket.Chat server for **FREE** with [One-Click Deploy](https://heroku.com/deploy)
@@ -195,6 +200,9 @@ Add Rocket.Chat to this world famous time tested small enterprise server today:
 
 ## Ubuntu VPS
 Follow these [deployment instructions](https://rocket.chat/docs/installation/manual-installation/ubuntu/)
+
+## Hyper.sh
+Follow their [deployment instructions](https://rocket.chat/docs/installation/paas-deployments/hyper-sh/) to install a per-second billed Rocket.Chat instance on [Hyper.sh](https://rocket.chat/docs/installation/paas-deployments/hyper-sh/)
 
 # About Rocket.Chat
 
@@ -267,6 +275,7 @@ It is a great solution for communities and companies wanting to privately host t
 - Audio calls
 - Multi-users Audio Conference
 - Screensharing
+- Drupal 7.x and 8.x Plug-in ([download](https://www.drupal.org/project/rocket_chat)  and [source code](https://github.com/jelhouss/rocket_chat) )
 - XMPP bridge ([try it](https://demo.rocket.chat/channel/general))
 - REST APIs
 - Remote Locations Video Monitoring
@@ -291,7 +300,6 @@ It is a great solution for communities and companies wanting to privately host t
 - Native Android Application [Issue #271 - HELP WANTED](https://github.com/RocketChat/Rocket.Chat/issues/271)
 - Off the Record Messaging [Issue #36](https://github.com/RocketChat/Rocket.Chat/issues/36), [Issue #268](https://github.com/RocketChat/Rocket.Chat/issues/268)
 - Wordpress Plug-in  [Issue # 1920](https://github.com/RocketChat/Rocket.Chat/issues/1920)
-- Drupal Plug-in [Issue # 1921](https://github.com/RocketChat/Rocket.Chat/issues/1921)
 - Integration with PSTN (telephone networks)
 - API-enabled methods: [Issue #202](https://github.com/RocketChat/Rocket.Chat/issues/202), [Issue #454](https://github.com/RocketChat/Rocket.Chat/issues/454), [Issue #455](https://github.com/RocketChat/Rocket.Chat/issues/455), [Issue #759](https://github.com/RocketChat/Rocket.Chat/issues/759)
 - Scalable WebRTC broadcaster / media-server integration, [Issue #1118](https://github.com/RocketChat/Rocket.Chat/issues/1118)
@@ -316,6 +324,7 @@ Read about [how it all started](http://osdelivers.blackducksoftware.com/2016/06/
 
 [![Black Duck Open Source Rookie of the Year for 2015](https://raw.githubusercontent.com/Sing-Li/bbug/master/images/blackducksm.png)](https://info.blackducksoftware.com/OpenSourceRookies2015.html)
 
+[![Softpedia 100% Free and Clean Award for 2017](https://raw.githubusercontent.com/Sing-Li/bbug/master/images/softpedia.gif)](http://www.softpedia.com/get/Internet/Chat/Other-Chat-Tools/Rocket-Chat.shtml#status)
 
 ## Issues
 
@@ -365,7 +374,7 @@ Now just clone and start the app:
 ```sh
 git clone https://github.com/RocketChat/Rocket.Chat.git
 cd Rocket.Chat
-meteor
+meteor npm start
 ```
 
 If you are not a developer and just want to run the server - see [deployment methods](https://rocket.chat/docs/installation/paas-deployments/).
@@ -392,6 +401,9 @@ Already a JavaScript developer?  Familiar with Meteor?  [Pick an issue](https://
 
 A lot of work has already gone into Rocket.Chat, but we have much bigger plans for it!
 
+### Contributor License Agreement
+
+Please review and sign our CLA at https://cla-assistant.io/RocketChat/Rocket.Chat
 
 # Credits
 
@@ -405,11 +417,15 @@ Thanks to our core team
 [Sing Li](https://github.com/Sing-Li),
 and to hundreds of awesome [contributors](https://github.com/RocketChat/Rocket.Chat/graphs/contributors).
 
+![Emoji One](https://cloud.githubusercontent.com/assets/1986378/24772858/47290a70-1ae9-11e7-9a5a-2913d0002c94.png)
+
 Emoji provided free by [Emoji One](http://emojione.com)
 
-Performance monitoring provided by [Kadira](https://kadira.io)
+![BrowserStack](https://cloud.githubusercontent.com/assets/1986378/24772879/57d57b88-1ae9-11e7-98b4-4af824b47933.png)
 
-Hosting powered by [Rackspace](https://rackspace.com)
+Testing with [BrowserStack](https://www.browserstack.com)
+
+
 
 # Donate
 

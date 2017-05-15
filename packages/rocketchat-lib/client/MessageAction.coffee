@@ -1,3 +1,6 @@
+import moment from 'moment'
+import toastr from 'toastr'
+
 RocketChat.MessageAction = new class
 	buttons = new ReactiveVar {}
 
@@ -180,8 +183,12 @@ Meteor.startup ->
 		]
 		action: (event, instance) ->
 			message = @_arguments[1]
+			permalink = RocketChat.MessageAction.getPermaLink(message._id)
 			RocketChat.MessageAction.hideDropDown()
-			$(event.currentTarget).attr('data-clipboard-text', RocketChat.MessageAction.getPermaLink(message._id));
+			if Meteor.isCordova
+				cordova.plugins.clipboard.copy(permalink);
+			else
+				$(event.currentTarget).attr('data-clipboard-text', permalink);
 			toastr.success(TAPi18n.__('Copied'))
 		validation: (message) ->
 			if not RocketChat.models.Subscriptions.findOne({ rid: message.rid })?
@@ -202,7 +209,10 @@ Meteor.startup ->
 		action: (event, instance) ->
 			message = @_arguments[1].msg
 			RocketChat.MessageAction.hideDropDown()
-			$(event.currentTarget).attr('data-clipboard-text', message)
+			if Meteor.isCordova
+				cordova.plugins.clipboard.copy(message);
+			else
+				$(event.currentTarget).attr('data-clipboard-text', message)
 			toastr.success(TAPi18n.__('Copied'))
 		validation: (message) ->
 			if not RocketChat.models.Subscriptions.findOne({ rid: message.rid })?

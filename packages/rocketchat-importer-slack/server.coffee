@@ -1,6 +1,6 @@
 Importer.Slack = class Importer.Slack extends Importer.Base
-	constructor: (name, descriptionI18N, fileTypeRegex) ->
-		super(name, descriptionI18N, fileTypeRegex)
+	constructor: (name, descriptionI18N, mimeType) ->
+		super(name, descriptionI18N, mimeType)
 		@userTags = []
 		@bots = {}
 		@logger.debug('Constructed a new Slack Importer.')
@@ -86,7 +86,7 @@ Importer.Slack = class Importer.Slack extends Importer.Base
 		selectionUsers = tempUsers.map (user) ->
 			return new Importer.SelectionUser user.id, user.name, user.profile.email, user.deleted, user.is_bot, !user.is_bot
 		selectionChannels = tempChannels.map (channel) ->
-			return new Importer.SelectionChannel channel.id, channel.name, channel.is_archived, true
+			return new Importer.SelectionChannel channel.id, channel.name, channel.is_archived, true, false
 
 		@updateProgress Importer.ProgressStep.USER_SELECTION
 		return new Importer.Selection @name, selectionUsers, selectionChannels
@@ -126,16 +126,20 @@ Importer.Slack = class Importer.Slack extends Importer.Base
 							if user.profile.email
 								userId = Accounts.createUser { email: user.profile.email, password: Date.now() + user.name + user.profile.email.toUpperCase() }
 							else
-								userId = Accounts.createUser { username: user.name, password: Date.now() + user.name }
+								userId = Accounts.createUser { username: user.name, password: Date.now() + user.name, joinDefaultChannelsSilenced: true }
 							Meteor.runAsUser userId, () =>
-								Meteor.call 'setUsername', user.name
-								Meteor.call 'joinDefaultChannels', true
+								Meteor.call 'setUsername', user.name, {joinDefaultChannelsSilenced: true}
 								url = null
 								if user.profile.image_original
 									url = user.profile.image_original
 								else if user.profile.image_512
 									url = user.profile.image_512
-								Meteor.call 'setAvatarFromService', url, undefined, 'url'
+
+								try
+								  Meteor.call 'setAvatarFromService', url, undefined, 'url'
+								catch error
+								  this.logger.warn "Failed to set #{user.name}'s avatar from url #{url}"
+
 								# Slack's is -18000 which translates to Rocket.Chat's after dividing by 3600
 								if user.tz_offset
 									Meteor.call 'userSetUtcOffset', user.tz_offset / 3600
@@ -173,13 +177,9 @@ Importer.Slack = class Importer.Slack extends Importer.Base
 								if user?
 									users.push user.username
 
-							userId = ''
-							for user in @users.users when user.id is channel.creator
+							userId = startedByUserId
+							for user in @users.users when user.id is channel.creator and user.do_import
 								userId = user.rocketId
-
-							if userId is ''
-								@logger.warn "Failed to find the channel creator for #{channel.name}, setting it to the current running user."
-								userId = startedByUserId
 
 							Meteor.runAsUser userId, () =>
 								returned = Meteor.call 'createChannel', channel.name, users
@@ -191,10 +191,9 @@ Importer.Slack = class Importer.Slack extends Importer.Base
 
 							if not _.isEmpty channel.topic?.value
 								roomUpdate.topic = channel.topic.value
-								lastSetTopic = channel.topic.last_set
 
-							if not _.isEmpty(channel.purpose?.value) and channel.purpose.last_set > lastSetTopic
-								roomUpdate.topic = channel.purpose.value
+							if not _.isEmpty(channel.purpose?.value)
+								roomUpdate.description = channel.purpose.value
 
 							RocketChat.models.Rooms.update { _id: channel.rocketId }, { $set: roomUpdate, $addToSet: { importIds: channel.id } }
 
@@ -202,7 +201,7 @@ Importer.Slack = class Importer.Slack extends Importer.Base
 			@collection.update { _id: @channels._id }, { $set: { 'channels': @channels.channels }}
 
 			missedTypes = {}
-			ignoreTypes = { 'bot_add': true, 'file_comment': true, 'file_mention': true, 'channel_name': true }
+			ignoreTypes = { 'bot_add': true, 'file_comment': true, 'file_mention': true }
 			@updateProgress Importer.ProgressStep.IMPORTING_MESSAGES
 			for channel, messagesObj of @messages
 				do (channel, messagesObj) =>
@@ -230,7 +229,7 @@ Importer.Slack = class Importer.Slack extends Importer.Base
 													msg: "_#{@convertSlackMessageToRocketChat(message.text)}_"
 												_.extend msgObj, msgDataDefaults
 												RocketChat.sendMessage @getRocketUser(message.user), msgObj, room, true
-											else if message.subtype is 'bot_message'
+											else if message.subtype is 'bot_message' or message.subtype is 'slackbot_response'
 												botUser = RocketChat.models.Users.findOneById 'rocket.cat', { fields: { username: 1 }}
 												botUsername = if @bots[message.bot_id] then @bots[message.bot_id]?.name else message.username
 												msgObj =
@@ -243,16 +242,26 @@ Importer.Slack = class Importer.Slack extends Importer.Base
 												_.extend msgObj, msgDataDefaults
 
 												if message.edited?
-													msgObj.ets = new Date(parseInt(message.edited.ts.split('.')[0]) * 1000)
+													msgObj.editedAt = new Date(parseInt(message.edited.ts.split('.')[0]) * 1000)
+													editedBy = @getRocketUser(message.edited.user)
+													if editedBy?
+														msgObj.editedBy =
+															_id: editedBy._id
+															username: editedBy.username
 
 												if message.icons?
 													msgObj.emoji = message.icons.emoji
 
 												RocketChat.sendMessage botUser, msgObj, room, true
 											else if message.subtype is 'channel_purpose'
-												RocketChat.models.Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser 'room_changed_topic', room._id, message.purpose, @getRocketUser(message.user), msgDataDefaults
+												if @getRocketUser(message.user)?
+													RocketChat.models.Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser 'room_changed_description', room._id, message.purpose, @getRocketUser(message.user), msgDataDefaults
 											else if message.subtype is 'channel_topic'
-												RocketChat.models.Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser 'room_changed_topic', room._id, message.topic, @getRocketUser(message.user), msgDataDefaults
+												if @getRocketUser(message.user)?
+													RocketChat.models.Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser 'room_changed_topic', room._id, message.topic, @getRocketUser(message.user), msgDataDefaults
+											else if message.subtype is 'channel_name'
+												if @getRocketUser(message.user)?
+													RocketChat.models.Messages.createRoomRenamedWithRoomIdRoomNameAndUser room._id, message.name, @getRocketUser(message.user), msgDataDefaults
 											else if message.subtype is 'pinned_item'
 												if message.attachments
 													msgObj =
@@ -292,11 +301,29 @@ Importer.Slack = class Importer.Slack extends Importer.Base
 												_.extend msgObj, msgDataDefaults
 
 												if message.edited?
-													msgObj.ets = new Date(parseInt(message.edited.ts.split('.')[0]) * 1000)
+													msgObj.editedAt = new Date(parseInt(message.edited.ts.split('.')[0]) * 1000)
+													editedBy = @getRocketUser(message.edited.user)
+													if editedBy?
+														msgObj.editedBy =
+															_id: editedBy._id
+															username: editedBy.username
 
 												RocketChat.sendMessage @getRocketUser(message.user), msgObj, room, true
+
+									# Process the reactions
+									if RocketChat.models.Messages.findOneById(msgDataDefaults._id)? and message.reactions?.length > 0
+										for reaction in message.reactions
+											for u in reaction.users
+												rcUser = @getRocketUser(u)
+												if rcUser?
+													Meteor.runAsUser rcUser._id, () =>
+														Meteor.call 'setReaction', ":#{reaction.name}:", msgDataDefaults._id
+
 									@addCountCompleted 1
-			console.log missedTypes
+
+			if not _.isEmpty missedTypes
+				console.log 'Missed import types:', missedTypes
+
 			@updateProgress Importer.ProgressStep.FINISHING
 			for channel in @channels.channels when channel.do_import and channel.is_archived
 				do (channel) =>
@@ -315,14 +342,15 @@ Importer.Slack = class Importer.Slack extends Importer.Base
 
 	getRocketUser: (slackId) =>
 		for user in @users.users when user.id is slackId
-			return RocketChat.models.Users.findOneById user.rocketId, { fields: { username: 1 }}
+			return RocketChat.models.Users.findOneById user.rocketId, { fields: { username: 1, name: 1 }}
 
 	convertSlackMessageToRocketChat: (message) =>
 		if message?
 			message = message.replace /<!everyone>/g, '@all'
 			message = message.replace /<!channel>/g, '@all'
-			message = message.replace /&gt;/g, '<'
-			message = message.replace /&lt;/g, '>'
+			message = message.replace /<!here>/g, '@here'
+			message = message.replace /&gt;/g, '>'
+			message = message.replace /&lt;/g, '<'
 			message = message.replace /&amp;/g, '&'
 			message = message.replace /:simple_smile:/g, ':smile:'
 			message = message.replace /:memo:/g, ':pencil:'
@@ -340,6 +368,6 @@ Importer.Slack = class Importer.Slack extends Importer.Base
 		selectionUsers = @users.users.map (user) ->
 			return new Importer.SelectionUser user.id, user.name, user.profile.email, user.deleted, user.is_bot, !user.is_bot
 		selectionChannels = @channels.channels.map (channel) ->
-			return new Importer.SelectionChannel channel.id, channel.name, channel.is_archived, true
+			return new Importer.SelectionChannel channel.id, channel.name, channel.is_archived, true, false
 
 		return new Importer.Selection @name, selectionUsers, selectionChannels

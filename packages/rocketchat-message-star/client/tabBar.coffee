@@ -1,6 +1,6 @@
 Meteor.startup ->
 	RocketChat.TabBar.addButton({
-		groups: ['channel', 'privategroup', 'directmessage'],
+		groups: ['channel', 'group', 'direct'],
 		id: 'starred-messages',
 		i18nTitle: 'Starred_Messages',
 		icon: 'icon-star',

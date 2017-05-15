@@ -12,7 +12,6 @@ Package.onUse(function(api) {
 	api.use('underscore');
 	api.use('check');
 	api.use('mongo');
-	api.use('momentjs:moment');
 
 	api.addFiles('migrations.js', 'server');
 });

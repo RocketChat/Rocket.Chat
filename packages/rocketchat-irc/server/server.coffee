@@ -1,6 +1,6 @@
 # # #
 # Assign values
-# 
+#
 
 # Package availability
 IRC_AVAILABILITY = RocketChat.settings.get('IRC_Enabled');
@@ -19,7 +19,7 @@ IRC_HOST = RocketChat.settings.get('IRC_Host');
 ircClientMap = {}
 
 
-# # # 
+# # #
 # Core functionality
 #
 
@@ -237,7 +237,7 @@ class IrcClient
 		@sendRawMessage msg
 
 	initRoomList: ->
-		roomsCursor = RocketChat.models.Rooms.findByTypeContainigUsername 'c', @user.username,
+		roomsCursor = RocketChat.models.Rooms.findByTypeContainingUsername 'c', @user.username,
 			fields:
 				name: 1
 				t: 1
@@ -396,7 +396,7 @@ class IrcLogoutCleanUper
 
 
 # # #
-# Make magic happen 
+# Make magic happen
 #
 
 # Only proceed if the package has been enabled

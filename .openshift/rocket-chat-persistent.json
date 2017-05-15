@@ -165,6 +165,32 @@
             "status": {}
         },
         {
+            "kind": "ImageStream",
+            "apiVersion": "v1",
+            "metadata": {
+                "name": "rocketchat"
+            },
+            "spec": {
+                "dockerImageRepository": "docker.io/rocket.chat",
+                "tags": [
+                    {
+                        "name": "latest",
+                        "annotations": {
+                            "description": "Provides a Rocket.Chat application",
+                            "iconClass": "icon-nodejs",
+                            "tags": "rocketchat"
+                        },
+                        "from": {
+                            "kind": "ImageStreamTag",
+                            "name": "latest"
+                        },
+                        "generation": 1,
+                        "importPolicy": {}
+                    }
+                ]
+            }
+        },
+        {
             "kind": "DeploymentConfig",
             "apiVersion": "v1",
             "metadata": {
@@ -283,7 +309,6 @@
                 }
             },
             "spec": {
-                "host": "rocketchat-rocket-chat.rhel-cdk.10.1.2.2.xip.io",
                 "to": {
                     "kind": "Service",
                     "name": "rocketchat"

@@ -3,7 +3,7 @@ RocketChat.callbacks.add('livechat.offlineMessage', (data) => {
 		return data;
 	}
 
-	let postData = {
+	const postData = {
 		type: 'LivechatOfflineMessage',
 		sentAt: new Date(),
 		visitor: {

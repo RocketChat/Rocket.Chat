@@ -1,10 +1,9 @@
 @echo off
 
-SET METEOR_PRETTY_OUTPUT=0
 SET NODE_ENV="production"
 cd packages/rocketchat-livechat/app
 call meteor npm install --production
-call meteor build --directory .meteor/build/
+call meteor build --headless --directory .meteor/build/
 
 SET LIVECHAT_DIR="../../../public/livechat"
 SET BUILD_DIR=".meteor/build/bundle/programs/web.browser"

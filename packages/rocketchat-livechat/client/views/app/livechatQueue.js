@@ -12,9 +12,9 @@ Template.livechatQueue.helpers({
 	},
 
 	users() {
-		let users = [];
+		const users = [];
 
-		let showOffline = Template.instance().showOffline.get();
+		const showOffline = Template.instance().showOffline.get();
 
 		LivechatQueueUser.find({
 			departmentId: this._id
@@ -25,9 +25,9 @@ Template.livechatQueue.helpers({
 				username: 1
 			}
 		}).forEach((user) => {
-			let options = { fields: { _id: 1 } };
-			let userFilter = { _id: user.agentId, status: { $ne: 'offline' } };
-			let agentFilter = { _id: user.agentId, statusLivechat: 'available' };
+			const options = { fields: { _id: 1 } };
+			const userFilter = { _id: user.agentId, status: { $ne: 'offline' } };
+			const agentFilter = { _id: user.agentId, statusLivechat: 'available' };
 
 			if (showOffline[this._id] || (Meteor.users.findOne(userFilter, options) && AgentUsers.findOne(agentFilter, options))) {
 				users.push(user);
@@ -45,7 +45,7 @@ Template.livechatQueue.helpers({
 
 Template.livechatQueue.events({
 	'click .show-offline'(event, instance) {
-		let showOffline = instance.showOffline.get();
+		const showOffline = instance.showOffline.get();
 
 		showOffline[this._id] = event.currentTarget.checked;
 

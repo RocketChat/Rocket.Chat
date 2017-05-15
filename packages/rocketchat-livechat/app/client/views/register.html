@@ -1,6 +1,6 @@
 <template name="register">
 	<div class="livechat-form">
-		<div class="error">
+		<div class="error error-color error-background">
 			<span>{{{error}}}</span>
 		</div>
 
@@ -11,11 +11,11 @@
 			<input type="text" name="name" id="guestName" placeholder="{{_ "Name"}}">
 			<input type="email" name="email" id="guestEmail" placeholder="{{_ "Email"}}">
 
-			{{#if hasDepartments}}
+			{{#if showDepartments}}
 				<select name="department">
 					<option value="">{{_ "Select_a_department"}}</option>
 					{{#each departments}}
-						<option value="{{_id}}">{{name}}</option>
+						<option value="{{_id}}" selected="{{selectedDepartment}}">{{name}}</option>
 					{{/each}}
 				</select>
 			{{/if}}

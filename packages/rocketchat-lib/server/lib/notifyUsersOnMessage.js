@@ -1,10 +1,18 @@
+import moment from 'moment';
+
 RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
-	// skips this callback if the message was edited
-	if (message.editedAt) {
+	// skips this callback if the message was edited and increments it if the edit was way in the past (aka imported)
+	if (message.editedAt && Math.abs(moment(message.editedAt).diff()) > 60000) {
+		//TODO: Review as I am not sure how else to get around this as the incrementing of the msgs count shouldn't be in this callback
+		RocketChat.models.Rooms.incMsgCountById(message.rid, 1);
+		return message;
+	} else if (message.editedAt) {
+		// skips this callback if the message was edited
 		return message;
 	}
 
 	if (message.ts && Math.abs(moment(message.ts).diff()) > 60000) {
+		RocketChat.models.Rooms.incMsgCountById(message.rid, 1);
 		return message;
 	}
 
@@ -19,9 +27,9 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 	function messageContainsHighlight(message, highlights) {
 		if (! highlights || highlights.length === 0) { return false; }
 
-		var has = false;
+		let has = false;
 		highlights.some(function(highlight) {
-			var regexp = new RegExp(s.escapeRegExp(highlight), 'i');
+			const regexp = new RegExp(s.escapeRegExp(highlight), 'i');
 			if (regexp.test(message.msg)) {
 				has = true;
 				return true;
@@ -35,12 +43,10 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 		// Update the other subscriptions
 		RocketChat.models.Subscriptions.incUnreadOfDirectForRoomIdExcludingUserId(message.rid, message.u._id, 1);
 	} else {
-		var mentionIds, toAll, highlightsIds, highlights;
-
-		mentionIds = [];
-		highlightsIds = [];
-		toAll = false;
-		highlights = RocketChat.models.Users.findUsersByUsernamesWithHighlights(room.usernames, { fields: { '_id': 1, 'settings.preferences.highlights': 1 }}).fetch();
+		let toAll = false;
+		const mentionIds = [];
+		const highlightsIds = [];
+		const highlights = RocketChat.models.Users.findUsersByUsernamesWithHighlights(room.usernames, { fields: { '_id': 1, 'settings.preferences.highlights': 1 }}).fetch();
 
 		if (message.mentions != null) {
 			message.mentions.forEach(function(mention) {

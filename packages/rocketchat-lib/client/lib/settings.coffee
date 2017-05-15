@@ -3,7 +3,7 @@
 # @namespace RocketChat.settings
 ###
 
-RocketChat.settings.cachedCollection = new RocketChat.CachedCollection({ name: 'public-settings', eventType: 'onAll' })
+RocketChat.settings.cachedCollection = new RocketChat.CachedCollection({ name: 'public-settings', eventType: 'onAll', userRelated: false })
 RocketChat.settings.collection = RocketChat.settings.cachedCollection.collection
 RocketChat.settings.cachedCollection.init()
 
