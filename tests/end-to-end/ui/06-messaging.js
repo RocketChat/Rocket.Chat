@@ -46,10 +46,6 @@ function messagingTest() {
 			mainContent.fileUpload(imgURL);
 		});
 
-		it('should show the confirm button', () => {
-			mainContent.popupFileConfirmBtn.isVisible().should.be.true;
-		});
-
 		it('should show the cancel button', () => {
 			mainContent.popupFileCancelBtn.isVisible().should.be.true;
 		});
