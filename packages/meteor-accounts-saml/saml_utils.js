@@ -432,11 +432,37 @@ SAML.prototype.validateResponse = function(samlResponse, relayState, callback) {
 let decryptionCert;
 SAML.prototype.generateServiceProviderMetadata = function(callbackUrl) {
 
-	let keyDescriptor = null;
-
 	if (!decryptionCert) {
 		decryptionCert = this.options.privateCert;
 	}
+
+	if (!this.options.callbackUrl && !callbackUrl) {
+		throw new Error(
+			'Unable to generate service provider metadata when callbackUrl option is not set');
+	}
+
+	const metadata = {
+		'EntityDescriptor': {
+			'@xmlns': 'urn:oasis:names:tc:SAML:2.0:metadata',
+			'@xmlns:ds': 'http://www.w3.org/2000/09/xmldsig#',
+			'@entityID': this.options.issuer,
+			'SPSSODescriptor': {
+				'@protocolSupportEnumeration': 'urn:oasis:names:tc:SAML:2.0:protocol',
+				'SingleLogoutService': {
+					'@Binding': 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect',
+					'@Location': `${ Meteor.absoluteUrl() }_saml/logout/${ this.options.provider }/`,
+					'@ResponseLocation': `${ Meteor.absoluteUrl() }_saml/logout/${ this.options.provider }/`
+				},
+				'NameIDFormat': this.options.identifierFormat,
+				'AssertionConsumerService': {
+					'@index': '1',
+					'@isDefault': 'true',
+					'@Binding': 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST',
+					'@Location': callbackUrl
+				}
+			}
+		}
+	};
 
 	if (this.options.privateKey) {
 		if (!decryptionCert) {
@@ -448,7 +474,7 @@ SAML.prototype.generateServiceProviderMetadata = function(callbackUrl) {
 		decryptionCert = decryptionCert.replace(/-+END CERTIFICATE-+\r?\n?/, '');
 		decryptionCert = decryptionCert.replace(/\r\n/g, '\n');
 
-		keyDescriptor = {
+		metadata['EntityDescriptor']['SPSSODescriptor']['KeyDescriptor'] = {
 			'ds:KeyInfo': {
 				'ds:X509Data': {
 					'ds:X509Certificate': {
@@ -476,35 +502,6 @@ SAML.prototype.generateServiceProviderMetadata = function(callbackUrl) {
 			]
 		};
 	}
-
-	if (!this.options.callbackUrl && !callbackUrl) {
-		throw new Error(
-			'Unable to generate service provider metadata when callbackUrl option is not set');
-	}
-
-	const metadata = {
-		'EntityDescriptor': {
-			'@xmlns': 'urn:oasis:names:tc:SAML:2.0:metadata',
-			'@xmlns:ds': 'http://www.w3.org/2000/09/xmldsig#',
-			'@entityID': this.options.issuer,
-			'SPSSODescriptor': {
-				'@protocolSupportEnumeration': 'urn:oasis:names:tc:SAML:2.0:protocol',
-				'KeyDescriptor': keyDescriptor,
-				'SingleLogoutService': {
-					'@Binding': 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect',
-					'@Location': `${ Meteor.absoluteUrl() }_saml/logout/${ this.options.provider }/`,
-					'@ResponseLocation': `${ Meteor.absoluteUrl() }_saml/logout/${ this.options.provider }/`
-				},
-				'NameIDFormat': this.options.identifierFormat,
-				'AssertionConsumerService': {
-					'@index': '1',
-					'@isDefault': 'true',
-					'@Binding': 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST',
-					'@Location': callbackUrl
-				}
-			}
-		}
-	};
 
 	return xmlbuilder.create(metadata).end({
 		pretty: true,
