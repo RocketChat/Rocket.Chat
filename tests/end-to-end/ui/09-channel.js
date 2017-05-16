@@ -37,6 +37,7 @@ describe('channel', ()=> {
 
 				it('should start a direct message with rocket.cat', () => {
 					sideNav.searchChannel('rocket.cat');
+					mainContent.channelTitle.waitForVisible(5000);
 					mainContent.channelTitle.getText().should.equal('rocket.cat');
 				});
 			});
