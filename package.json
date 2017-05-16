@@ -45,7 +45,7 @@
 		"postinstall": "cd packages/rocketchat-katex && npm i",
 		"version": "node .scripts/version.js",
 		"set-version": "node .scripts/set-version.js",
-		"release": "npm run set-version && conventional-changelog --config .github/changelog.js -i HISTORY.md -s"
+		"release": "npm run set-version --silent"
 	},
 	"license": "MIT",
 	"repository": {
