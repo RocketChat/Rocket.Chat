@@ -42,10 +42,15 @@
       "resolved": "https://registry.npmjs.org/has-flag/-/has-flag-1.0.0.tgz",
       "from": "has-flag@>=1.0.0 <2.0.0"
     },
+    "js-base64": {
+      "version": "2.1.9",
+      "resolved": "https://registry.npmjs.org/js-base64/-/js-base64-2.1.9.tgz",
+      "from": "js-base64@>=2.1.9 <3.0.0"
+    },
     "postcss": {
-      "version": "6.0.1",
-      "resolved": "https://registry.npmjs.org/postcss/-/postcss-6.0.1.tgz",
-      "from": "postcss@6.0.1"
+      "version": "5.2.17",
+      "resolved": "https://registry.npmjs.org/postcss/-/postcss-5.2.17.tgz",
+      "from": "postcss@5.2.17"
     },
     "source-map": {
       "version": "0.5.6",

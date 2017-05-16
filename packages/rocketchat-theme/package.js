@@ -35,7 +35,8 @@ Package.onUse(function(api) {
 	api.addAssets('client/vendor/fontello/font/fontello.woff2', 'client');
 
 	// Compiled stylesheets
-	api.addFiles('client/main.less', 'client');
+	// api.addFiles('client/main.less', 'client');
+	api.addFiles('client/main.css', 'client');
 
 	// Run-time stylesheets
 	api.addAssets('server/colors.less', 'server');
