@@ -120,7 +120,8 @@ Template.message.helpers
 			total = reaction.usernames.length
 			usernames = '@' + reaction.usernames.slice(0, 15).join(', @')
 
-			usernames = usernames.replace('@'+userUsername, t('You').toLowerCase())
+			reg = new RegExp('@'+userUsername+'$')
+			usernames = usernames.replace(reg, t('You').toLowerCase())
 
 			if total > 15
 				usernames = usernames + ' ' + t('And_more', { length: total - 15 }).toLowerCase()
