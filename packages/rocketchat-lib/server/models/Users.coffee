@@ -189,6 +189,13 @@ class ModelUsers extends RocketChat.models._Base
 
 		return @find query, options
 
+	findUsersByIds: (ids, options) ->
+		query =
+			_id:
+				$in: ids
+
+		return @find query, options
+
 	# UPDATE
 	addImportIds: (_id, importIds) ->
 		importIds = [].concat(importIds)
