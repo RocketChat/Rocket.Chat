@@ -1,0 +1,6 @@
+{
+	"plugins": {
+		"postcss-cssnext": {}
+	},
+	"excludedPackages": ["deepwell:bootstrap-datepicker2"]
+}
