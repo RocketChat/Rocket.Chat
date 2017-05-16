@@ -1,19 +1,29 @@
-* {
-	&::before,
-	&::after {
-		box-sizing: border-box;
-	}
+*,
+*::before,
+*::after {
+	box-sizing: border-box;
+}
 
-	&:not(input):not(textarea) {
-		&::before,
-		&::after {
-			user-select: none;
-		}
-	}
+*:not(input):not(textarea),
+*:not(input):not(textarea)::before,
+*:not(input):not(textarea)::after {
+	user-select: none;
+}
+
+:focus {
+	outline: 0 !important;
+	outline-color: transparent;
+	outline-style: none;
 }
 
 .clearfix {
-	@apply(--clearfix);
+	clear: both;
+
+	&::after {
+		content: "";
+		display: table;
+		clear: both;
+	}
 }
 
 button {
@@ -38,12 +48,6 @@ button {
 .page-settings,
 .page-settings * {
 	user-select: text;
-}
-
-:focus {
-	outline: 0 !important;
-	outline-color: transparent;
-	outline-style: none;
 }
 
 a {
@@ -90,10 +94,16 @@ pre {
 }
 
 blockquote {
-	@apply --clearfix;
 	margin: 0.5em 0;
 	padding-left: 10px;
 	position: relative;
+	clear: both;
+
+	&::after {
+		content: "";
+		display: table;
+		clear: both;
+	}
 
 	&:first-child {
 		margin-top: 0;
@@ -220,22 +230,33 @@ blockquote {
 }
 
 .scrollable {
-	@apply(--fill-all);
 	overflow-y: scroll;
 	-webkit-overflow-scrolling: touch;
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	top: 0;
+	left: 0;
 }
 
 .page-container {
-	@apply(--fill-all);
 	overflow-y: hidden;
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	top: 0;
+	left: 0;
 
 	& .content {
-		@apply(--fill-all);
 		padding: 25px 40px;
 		overflow-y: scroll;
 		margin-top: 60px;
 		-webkit-overflow-scrolling: touch;
 		height: calc(100% - 60px);
+		position: absolute;
+		width: 100%;
+		top: 0;
+		left: 0;
 
 		& fieldset {
 			margin-bottom: 1em;
@@ -312,9 +333,15 @@ blockquote {
 }
 
 .input-line {
-	@apply(--clearfix);
 	display: block;
 	margin-bottom: 12px;
+	clear: both;
+
+	&::after {
+		content: "";
+		display: table;
+		clear: both;
+	}
 
 	&:nth-last-child(1) {
 		margin-bottom: 0;
@@ -794,7 +821,8 @@ label.required::after {
 	}
 
 	&[initials]::before {
-		@apply(--flex-center);
+		display: flex;
+		align-items: center;
 		content: attr(initials);
 		position: absolute;
 		font-size: 22px;
@@ -869,7 +897,8 @@ label.required::after {
 		}
 
 		& .data {
-			@apply(--flex-center);
+			display: flex;
+			align-items: center;
 			float: left;
 			position: relative;
 			padding: 0 25px 0 10px;
@@ -903,7 +932,7 @@ label.required::after {
 		overflow-y: auto;
 		-webkit-overflow-scrolling: touch;
 		direction: rtl;
-		height: calc(100% - var(--header-min-height) + var(--footer-min-height));
+		height: calc(100% - var(--header-min-height) - var(--footer-min-height));
 		transition: transform 0.3s cubic-bezier(0.5, 0, 0.1, 1);
 		z-index: 99;
 
@@ -1002,7 +1031,11 @@ label.required::after {
 	}
 
 	& > section {
-		@apply(--fill-all);
+		position: absolute;
+		width: 100%;
+		height: 100%;
+		top: 0;
+		left: 0;
 	}
 
 	& header {
@@ -1519,7 +1552,8 @@ label.required::after {
 }
 
 .fixed-title {
-	@apply(--flex-center);
+	display: flex;
+	align-items: center;
 	position: absolute;
 	flex-flow: row nowrap;
 	padding: 0 10px 0 20px;
@@ -3063,11 +3097,14 @@ body:not(.is-cordova) {
 		}
 
 		& .content {
-			@apply(--fill-all);
 			overflow-x: hidden;
 			overflow-y: auto;
 			top: auto;
 			-webkit-overflow-scrolling: touch;
+			position: absolute;
+			width: 100%;
+			height: 100%;
+			left: 0;
 
 			& > div {
 				transition: transform 0.45s cubic-bezier(0.5, 0, 0, 1), opacity 0.125s ease-out 0.1s;
@@ -3347,7 +3384,9 @@ body:not(.is-cordova) {
 		font-size: 13px;
 
 		& h4 {
-			@apply(--small-title);
+			font-size: 13px;
+			text-transform: uppercase;
+			font-weight: 600;
 			margin-bottom: 6px;
 		}
 
@@ -3552,10 +3591,16 @@ body:not(.is-cordova) {
 		}
 
 		& button {
-			@apply(--clearfix);
 			padding: 5px 0;
 			height: 30px;
 			display: block;
+			clear: both;
+
+			&::after {
+				content: "";
+				display: table;
+				clear: both;
+			}
 
 			& > div {
 				float: left;
@@ -3825,13 +3870,20 @@ body:not(.is-cordova) {
 	}
 
 	& h2 {
-		@apply(--rocket-h2);
+		font-weight: 300;
+		text-transform: uppercase;
+		font-size: 20px;
+		letter-spacing: -0.5px;
 		line-height: 24px;
 		margin: 0;
 	}
 
 	& h3 {
-		@apply(--rocket-h3);
+		font-weight: 300;
+		text-transform: uppercase;
+		font-size: 16px;
+		letter-spacing: -0.5px;
+		margin: 18px 0;
 	}
 
 	& img {
@@ -3914,7 +3966,10 @@ body:not(.is-cordova) {
 	flex-wrap: wrap;
 
 	& h3 {
-		@apply(--rocket-h3);
+		font-weight: 300;
+		text-transform: uppercase;
+		font-size: 16px;
+		letter-spacing: -0.5px;
 		margin-top: 0;
 		margin-bottom: 12px;
 	}
@@ -3932,7 +3987,8 @@ body:not(.is-cordova) {
 }
 
 .full-page {
-	@apply(--flex-center);
+	display: flex;
+	align-items: center;
 	flex-flow: row nowrap;
 	text-align: center;
 	margin: auto;
@@ -4002,11 +4058,19 @@ body:not(.is-cordova) {
 		}
 
 		& h2 {
-			@apply(--rocket-h2);
+			font-weight: 300;
+			text-transform: uppercase;
+			font-size: 20px;
+			letter-spacing: -0.5px;
+			margin: 18px 0;
 		}
 
 		& h3 {
-			@apply(--rocket-h3);
+			font-weight: 300;
+			text-transform: uppercase;
+			font-size: 16px;
+			letter-spacing: -0.5px;
+			margin: 18px 0;
 		}
 
 		& p {
@@ -4061,7 +4125,10 @@ body:not(.is-cordova) {
 }
 
 #particles-js {
-	@apply(--fill-all);
+	width: 100%;
+	height: 100%;
+	top: 0;
+	left: 0;
 	position: fixed;
 }
 
@@ -4086,7 +4153,8 @@ body:not(.is-cordova) {
 }
 
 .avatar-suggestion-item {
-	@apply(--flex-center);
+	display: flex;
+	align-items: center;
 	margin: 5px 0;
 	text-align: left;
 	flex-flow: row nowrap;
