@@ -57,7 +57,7 @@
 		"email": "support@rocket.chat"
 	},
 	"devDependencies": {
-		"chimp": "^0.48.0",
+		"chimp": "^0.49.0",
 		"eslint": "^3.19.0",
 		"stylelint": "^7.10.1",
 		"supertest": "^3.0.0",
@@ -70,7 +70,7 @@
 		"file-type": "^4.3.0",
 		"highlight.js": "^9.11.0",
 		"jquery": "^3.2.1",
-		"mime-db": "^1.27.0",
+		"mime-db": "^1.28.0",
 		"mime-type": "^3.0.4",
 		"moment": "^2.18.1",
 		"moment-timezone": "^0.5.13",
