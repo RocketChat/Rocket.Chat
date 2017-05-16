@@ -78,3 +78,41 @@
 		visibility: hidden;
 	}
 }
+
+@keyframes spin {
+	from {
+		transform: rotate(0deg);
+	}
+
+	to {
+		transform: rotate(360deg);
+	}
+}
+
+@keyframes spinh {
+	from {
+		transform: rotateY(0deg);
+	}
+
+	to {
+		transform: rotateY(360deg);
+	}
+}
+
+@keyframes dropdown-in {
+	0% {
+		display: none;
+		opacity: 0;
+	}
+
+	1% {
+		display: block;
+		opacity: 0;
+		transform: scale(0);
+	}
+
+	100% {
+		opacity: 1;
+		transform: scale(1);
+	}
+}

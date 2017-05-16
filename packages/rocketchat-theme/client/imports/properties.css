@@ -1,0 +1,24 @@
+:root {
+	--clearfix: {
+		clear: both;
+
+		&::after {
+			content: "";
+			display: table;
+			clear: both;
+		}
+	}
+
+	--fill-all: {
+		position: absolute;
+		width: 100%;
+		height: 100%;
+		top: 0;
+		left: 0;
+	}
+
+	--flex-center: {
+		display: flex;
+		align-items: center;
+	}
+}
