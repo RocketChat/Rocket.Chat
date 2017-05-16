@@ -876,6 +876,7 @@ label.required::after {
 	width: 25px;
 	height: 25px;
 	z-index: 100;
+	cursor: pointer;
 	top: calc(~"50% - 13px");
 
 	&::before,
@@ -937,6 +938,13 @@ label.required::after {
 		&::after {
 			transform: rotate(135deg) translateX(0) translateY(0);
 		}
+	}
+
+	&.list {
+		right: 0;
+		position: absolute;
+		z-index: 2;
+		margin-right: 10px;
 	}
 }
 
@@ -1640,6 +1648,10 @@ label.required::after {
 			max-height: 5000px;
 			opacity: 1;
 		}
+	}
+
+	.title-wrapper {
+		position: relative;
 	}
 }
 

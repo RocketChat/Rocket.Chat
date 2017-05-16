@@ -139,6 +139,15 @@
 									<label><input type="radio" name="mergeChannels" value="-1" checked="{{checked 'mergeChannels' undefined true}}" /> {{_ "Default"}}</label>
 								</div>
 							</div>
+
+							<div class="input-line double-col" id="collapseChannels">
+								<label>{{_ "Collapse_Channels"}}</label>
+								<div>
+									<label><input type="radio" name="collapseChannels" value="1" checked="{{checked 'collapseChannels' true}}"/> {{_ "True"}}</label>
+									<label><input type="radio" name="collapseChannels" value="0" checked="{{checked 'collapseChannels' false true}}"/> {{_ "False"}}</label>
+								</div>
+							</div>
+
 							<div class="input-line double-col" id="sendOnEnter">
 								<label>{{_ "Enter_Behaviour"}}</label>
 								<div>

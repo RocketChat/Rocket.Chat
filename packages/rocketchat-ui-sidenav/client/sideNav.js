@@ -50,6 +50,13 @@ Template.sideNav.helpers({
 		} else {
 			return this.template;
 		}
+	},
+
+	collapseChannel() {
+		const user = Meteor.user();
+		if (user && user.settings && user.settings.preferences && user.settings.preferences.collapseChannels) {
+			return { collapsible: Meteor.user().settings.preferences.collapseChannels };
+		}
 	}
 });
 
@@ -58,8 +65,23 @@ Template.sideNav.events({
 		return SideNav.closeFlex();
 	},
 
-	'click .arrow'() {
+	'click .arrow.account'() {
 		return SideNav.toggleCurrent();
+	},
+
+	'click .arrow.list'(event) {
+		const el = event.target;
+		if (el.dataset.state === 'open') {
+			el.dataset.state = 'closed';
+			$(el).removeClass('top');
+			$(el).addClass('bottom');
+		} else {
+			el.dataset.state = 'open';
+			$(el).removeClass('bottom');
+			$(el).addClass('top');
+		}
+
+		return $(`.${ el.dataset.type }`).toggle();
 	},
 
 	'mouseenter .header'() {
@@ -84,4 +106,13 @@ Template.sideNav.onRendered(function() {
 	menu.init();
 
 	return Meteor.defer(() => menu.updateUnreadBars());
+});
+
+Template.sideNav.onCreated(function() {
+	this.autorun(() => {
+		const user = Meteor.user();
+		if (!(user && user.settings && user.settings.preferences && user.settings.preferences.collapseChannels)) {
+			return $('.channel-wrapper').show();
+		}
+	});
 });

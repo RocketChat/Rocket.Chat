@@ -183,8 +183,7 @@ describe('channel', ()=> {
 				});
 
 				it('should show the new name', ()=> {
-					const channelName = sideNav.getChannelFromList(`NAME-EDITED-${ publicChannelName }`);
-					channelName.getText().should.equal(`NAME-EDITED-${ publicChannelName }`);
+					sideNav.waitForChannelName(`NAME-EDITED-${ publicChannelName }`);
 				});
 			});
 

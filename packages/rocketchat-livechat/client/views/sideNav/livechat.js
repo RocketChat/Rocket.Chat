@@ -88,6 +88,12 @@ Template.livechat.helpers({
 		if (FlowRouter.current().route.name === 'livechat-queue') {
 			return 'active';
 		}
+	},
+	moveButton() {
+		const instance = Template.instance();
+		if (instance.data && instance.data.collapsible) {
+			return 'collapsible';
+		}
 	}
 });
 

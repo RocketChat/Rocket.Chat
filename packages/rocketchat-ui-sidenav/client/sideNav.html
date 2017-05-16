@@ -10,11 +10,11 @@
 			</div>
 			<div class="rooms-list" aria-label="{{_ "Channels"}}" role="region">
 				<div class="wrapper">
-					{{> unreadRooms }}
+					{{> unreadRooms collapsible=collapseChannel.collapsible}}
 
 					{{#each roomType}}
 						{{#if canShowRoomType}}
-							{{> Template.dynamic template=templateName }}
+							{{> Template.dynamic template=templateName data=collapseChannel}}
 						{{/if}}
 					{{/each}}
 
@@ -33,7 +33,7 @@
 					{{> Template.dynamic template=flexTemplate data=flexData}}
 				</section>
 			</div>
-			<span class="arrow bottom"></span>
+			<span class="arrow account bottom"></span>
 		{{else}}
 			<div class="rooms-list" aria-label="{{_ "Channels"}}" role="region">
 				<div class="wrapper">

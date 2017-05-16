@@ -1,10 +1,19 @@
 <template name="starredRooms">
 	{{#if total}}
-		<h3 class="{{isActive}}"><i class="icon-star"></i>{{_ "Favorites"}} <span class="room-count-small">({{rooms.count}})</span></h3>
-		<ul>
-			{{#each rooms}}
-				{{> chatRoomItem }}
-			{{/each}}
-		</ul>
+		<div class="star-wrapper">
+			<div class="title-wrapper">
+				<h3 class="{{isActive}}"><i class="icon-star"></i>{{_ "Favorites"}} <span class="room-count-small">({{rooms.count}})</span></h3>
+				{{#if collapsible}}
+					<span class="arrow list top" data-type="star-list" data-state="open"></span>
+				{{/if}}
+			</div>
+			<div class="channel-wrapper star-list">
+				<ul>
+					{{#each rooms}}
+						{{> chatRoomItem }}
+					{{/each}}
+				</ul>
+			</div>
+		</div>
 	{{/if}}
 </template>
