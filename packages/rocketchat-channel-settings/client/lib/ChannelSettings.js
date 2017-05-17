@@ -25,7 +25,7 @@ RocketChat.ChannelSettings = new class {
 		const allOptions = _.toArray(this.options.get());
 		const allowedOptions = _.compact(_.map(allOptions, function(option) {
 			if (option.validation == null || option.validation()) {
-				option.data = Object.assign({}, option.data, currentData);
+				option.data = Object.assign({}, typeof option.data === 'function' ? option.data() : option.data, currentData);
 				return option;
 			}
 		})).filter(function(option) {

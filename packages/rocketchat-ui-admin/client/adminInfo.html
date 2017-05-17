@@ -226,6 +226,50 @@
 						</tr>
 					</table>
 
+					{{#if instances}}
+						<h3>{{_ "Broadcast_Connected_Instances"}}</h3>
+						{{#each instances}}
+							<table class="statistics-table secondary-background-color">
+								<tr class="admin-table-row">
+									<th class="content-background-color border-component-color">{{_ "Address"}}</th>
+									<td class="border-component-color">{{address}}</td>
+								</tr>
+								<tr class="admin-table-row">
+									<th class="content-background-color border-component-color">{{_ "Auth"}}</th>
+									<td class="border-component-color">{{broadcastAuth}}</td>
+								</tr>
+								<tr class="admin-table-row">
+									<th class="content-background-color border-component-color">{{_ "Current_Status"}} > {{_ "Connected"}}</th>
+									<td class="border-component-color">{{currentStatus.connected}}</td>
+								</tr>
+								<tr class="admin-table-row">
+									<th class="content-background-color border-component-color">{{_ "Current_Status"}} > {{_ "Retry_Count"}}</th>
+									<td class="border-component-color">{{currentStatus.retryCount}}</td>
+								</tr>
+								<tr class="admin-table-row">
+									<th class="content-background-color border-component-color">{{_ "Current_Status"}} > {{_ "Status"}}</th>
+									<td class="border-component-color">{{currentStatus.status}}</td>
+								</tr>
+								<tr class="admin-table-row">
+									<th class="content-background-color border-component-color">{{_ "Instance_Record"}} > {{_ "ID"}}</th>
+									<td class="border-component-color">{{instanceRecord._id}}</td>
+								</tr>
+								<tr class="admin-table-row">
+									<th class="content-background-color border-component-color">{{_ "Instance_Record"}} > {{_ "PID"}}</th>
+									<td class="border-component-color">{{instanceRecord.pid}}</td>
+								</tr>
+								<tr class="admin-table-row">
+									<th class="content-background-color border-component-color">{{_ "Instance_Record"}} > {{_ "Created_at"}}</th>
+									<td class="border-component-color">{{formatDate instanceRecord._createdAt}}</td>
+								</tr>
+								<tr class="admin-table-row">
+									<th class="content-background-color border-component-color">{{_ "Instance_Record"}} > {{_ "Updated_at"}}</th>
+									<td class="border-component-color">{{formatDate instanceRecord._updatedAt}}</td>
+								</tr>
+							</table>
+						{{/each}}
+					{{/if}}
+
 					<button type="button" class="button primary refresh">Refresh</button>
 				{{else}}
 					{{_ "Loading..."}}
