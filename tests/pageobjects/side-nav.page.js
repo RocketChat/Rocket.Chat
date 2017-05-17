@@ -43,6 +43,7 @@ class SideNav extends Page {
 		browser.click(`.rooms-list > .wrapper > ul [title="${ channelName }"]`);
 		this.messageInput.waitForExist(5000);
 		browser.waitUntil(function() {
+			browser.waitForVisible('.room-title', 5000);
 			return browser.getText('.room-title') === channelName;
 		}, 5000);
 	}
@@ -54,6 +55,7 @@ class SideNav extends Page {
 		browser.waitForVisible(`.room-title=${ channelName }`, 10000);
 		browser.click(`.room-title=${ channelName }`);
 		browser.waitUntil(function() {
+			browser.waitForVisible('.room-title', 5000);
 			return browser.getText('.room-title') === channelName;
 		}, 5000);
 	}
