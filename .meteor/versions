@@ -102,7 +102,7 @@ oauth1@1.1.11
 oauth2@1.1.11
 observe-sequence@1.0.16
 ordered-dict@1.0.9
-ostrio:cookies@2.2.0
+ostrio:cookies@2.2.1
 pauli:accounts-linkedin@2.1.2
 pauli:linkedin-oauth@1.1.0
 peerlibrary:aws-sdk@2.4.9_1
