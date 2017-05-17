@@ -1,3 +1,12 @@
+.webc-content {
+	padding-left: 20px;
+	padding-right: 20px;
+}
+
+.webc-title {
+	text-align: center;
+}
+
 .button-webcemail-third-cnt {
     padding: 2px;
     width: 33.333333333333%;
@@ -17,37 +26,87 @@
 
 .button-webcemail-full {
     width: 100%;
+	height: 50px;
+}
+
+.btn-invite-participants {
+	background-color: rgb(0, 128, 0) !important;
+}
+
+.btn-invite-participants[disabled] {
+	background-color: rgba(0, 128, 0, 0.5) !important;
 }
 
 .webcemail-content {
     margin-top: 10px;
 }
 
-input[type='email'].email_input {
-    border-top-left-radius: 0px;
-    border-bottom-left-radius: 0px;
+.webc-datetime-form {
+	position: relative;
+	margin-top: 10px;
+}
+
+.webc-email-form {
+	position: relative;
+}
+
+.input-line.webc-email {
+    margin-right: 50px;
+	margin-bottom: 10px;
+}
+
+.input-line.webc-email input {
+    padding-left: 30px;
+	background-color: white;
+}
+
+.input-line.webc-email i {
+    position: absolute;
+    top: 10px;
+    left: 7px;
+}
+
+.delete-btn {
+    background-color: red !important;
+}
+
+.delete-btn-cnt {
+    position: absolute;
+    top: 0px;
+    right: 0px;
+}
+
+.input-line.webc-datetime input {
+    padding-left: 30px;
+	background-color: white;
+}
+
+.input-line.webc-duration select {
+    padding-left: 30px;
+	background-color: white;
+}
+
+.input-line.webc-datetime i {
+    position: absolute;
+    top: 10px;
+    left: 7px;
+}
+
+.input-line.webc-duration i {
+    position: absolute;
+    top: 10px;
+    left: 7px;
 }
 
 input[aria-invalid='true'].email_input {
     border: 1px solid red !important;
 }
 
-.clear-delete-btn {
-    width: 1%;
-    display: table-cell;
-    //padding-left: 3px;
-    vertical-align: middle;
-}
-
-.clear-delete-btn a:hover {
-    text-decoration: none;
-}
-
-.input-group.align-pad {
+.webc-email-entry.align-pad {
     padding-right: 2px !important;
     padding-left: 2px !important;
 }
 
-.form-group.email-list {
+.webc-email-list {
     margin-bottom: 2px;
 }

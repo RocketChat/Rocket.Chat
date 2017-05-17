@@ -1,23 +1,20 @@
 <template name="webCollaboration">
-	<div class="content">
-		<div class="title">
+	<div class="content webc-content">
+		<div class="title webc-title">
 			<h2>{{_ "Ask_sessions_av"}}</h2>
 		</div>
 
-		<div class="form-group">
-			<div class='col-sm-12'>
-				<div class="button-webcemail-half-cnt">
-					<button class='button button-block' id="webc_tryme"><span><i class='icon-share'></i>{{_ "New_session_webc"}}</span></button>
-				</div>
-				<div class="button-webcemail-half-cnt">
-					<button class='button button-block' id="webc-audioconf"><span><i class='icon-share'></i>{{_ "New_audio_session"}}</span></button>
-				</div>
+		<div>
+			<div class="button-webcemail-half-cnt">
+				<button class='button primary button-block' id="webc_tryme"><span><i class='icon-share'></i>{{_ "New_session_webc"}}</span></button>
+			</div>
+			<div class="button-webcemail-half-cnt">
+				<button class='button primary button-block' id="webc-audioconf"><span><i class='icon-share'></i>{{_ "New_audio_session"}}</span></button>
 			</div>
 		</div>
-		<div class="form-group button-webcemail-full-cnt">
-			<div class='col-sm-12'>
-				<hr style="border: 1px solid #aaa; border-radius: 5px;" />
-			</div>
+
+		<div class="button-webcemail-full-cnt">
+			<hr style="border: 1px solid #aaa; border-radius: 5px;" />
 		</div>
 
 		<div class="title" style="float: left;">
@@ -31,39 +28,38 @@
 </template>
 
 <template name="emailsAdd">
-	<form class="form-group webcemail-content">
-		<div class='col-sm-12'>
-			<div class="form-group">
+	<div class="webcemail-content">
+
+		<div>
+			<div>
 				<div class="button-webcemail-third-cnt">
-					<button type="button" class="btn button-webcemail-full btn-primary add-btn-participant">{{_ "Add"}}</button>
+					<button type="button" class="button primary button-webcemail-full add-btn-participant">{{_ "Add"}}</button>
 				</div>
 				<div class="button-webcemail-third-cnt">
-					<button type="button" class="btn button-webcemail-full btn-primary add-btn-channel-participants">{{_ "Add_channel_user"}}</button>
+					<button type="button" class="button primary button-webcemail-full add-btn-channel-participants">{{_ "Add_channel_user"}}</button>
 				</div>
 				<div class="button-webcemail-third-cnt">
-					<button type="button" class="btn button-webcemail-full btn-primary remove-btn-participants">{{_ "Remove_all_participants"}}</button>
+					<button type="button" class="button primary button-webcemail-full remove-btn-participants">{{_ "Remove_all_participants"}}</button>
 				</div>
 			</div>
-			<div class="form-group">
+			<div>
 				<div class="button-webcemail-full-cnt">
-					<button type="button" id="invite_button" class="btn button-webcemail-full btn-success btn-invite-participants" disabled>{{_ "Invite"}}</button>
+					<button type="button" id="invite_button" class="button primary button-webcemail-full btn-invite-participants" disabled>{{_ "Invite"}}</button>
 				</div>
 			</div>
 		</div>
-		<div class='col-sm-12'>
-			<div class="form-group">
-				<div class='input-group date align-pad' id='datetimepicker4'>
-					<span class="input-group-addon">
-                        <span class="glyphicon glyphicon-calendar" title='{{_ "Webc_when"}}'></span>
-					</span>
-					<input type='text' class="form-control date_calendar" name="date_time" required/>
+
+		<div>
+			<div style="margin-bottom: 10px;">
+				<div class="webc-datetime-form">
+					<div class="input-line webc-datetime">
+						<input type='text' id="webc_date_time" name="date_time" required/>
+						<i class="icon-calendar" title='{{_ "Webc_when"}}'></i>
+					</div>
 				</div>
-				<div class="input-group align-pad">
-					<span class="input-group-addon">
-                        <span class="glyphicon glyphicon-time" title='{{_ "Webc_duration"}}'></span>
-					</span>
-					<div class="selectContainer">
-						<select class="form-control date_duration">
+				<div class="webc-datetime-form">
+					<div class="input-line webc-duration">
+						<select id="webc_duration">
                             <option value="15">15 {{_ "minutes"}}</option>
                             <option value="30">30 {{_ "minutes"}}</option>
                             <option value="45">45 {{_ "minutes"}}</option>
@@ -77,33 +73,39 @@
 							<option value="420">7 {{_ "hours"}}</option>
 							<option value="480">8 {{_ "hours"}}</option>
                         </select>
+						<i class="icon-clock" title='{{_ "Webc_duration"}}'></i>
 					</div>
 				</div>
 			</div>
 		</div>
-		<div class='col-sm-12'>
+
+		<div>
 			{{#each emailInputs}} {{> emailsItem}} {{/each}}
 		</div>
-	</form>
+
+	</div>
 </template>
 
 <template name="emailsItem">
-	<form id="form_emails_item">
-		<div class="emailsItem">
-			<div class="form-group email-list">
-				<div class='input-group align-pad emailsItem control-group controls' emailId='{{emailId}}'>
-					<span class="input-group-addon">
-                    <span class="glyphicon glyphicon-envelope"></span>
-					</span>
-					<input emailId='{{emailId}}' type="email" aria-required="true" aria-invalid="false" value="{{value}}" class="email_input"
-					 name="email_address" id="name" placeholder="Email..." required="">
-					<div class="form-group clear-delete-btn">
-						<a type="button" class="btn btn-danger btn-large delete-btn">
-							<span class="glyphicon glyphicon-trash" title='{{_ "Webc_remove"}}'></span>
-						</a>
-					</div>
+	<div class="">
+		<div class="webc-email-list">
+			<div class='webc-email-form align-pad' emailId='{{emailId}}'>
+
+				<div class="input-line webc-email">
+					<input emailId='{{emailId}}' type="email" aria-required="true" aria-invalid="true" value="{{value}}" class="email_input"
+					 name="email_address" id="name" placeholder="Email..." required>
+					<i class="icon-mail"></i>
+
 				</div>
+				<div class="delete-btn-cnt">
+					<button type="button" class="button primary delete-btn">
+						<span>
+							<i class="icon-trash" title='{{_ "Webc_remove"}}'></i>
+						</span>
+					</button>
+				</div>
+
 			</div>
 		</div>
-	</form>
+	</div>
 </template>

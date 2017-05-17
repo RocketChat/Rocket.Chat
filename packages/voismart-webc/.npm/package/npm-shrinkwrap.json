@@ -1,0 +1,9 @@
+{
+  "dependencies": {
+    "flatpickr": {
+      "version": "2.6.1",
+      "resolved": "https://registry.npmjs.org/flatpickr/-/flatpickr-2.6.1.tgz",
+      "from": "flatpickr@2.6.1"
+    }
+  }
+}
