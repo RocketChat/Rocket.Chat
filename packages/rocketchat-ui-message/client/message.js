@@ -206,7 +206,7 @@ Template.message.helpers({
 		return Object.keys(this.reactions||{}).map(emoji => {
 			const reaction = this.reactions[emoji];
 			const total = reaction.usernames.length;
-			let usernames = `@${ reaction.usernames.slice(0, 15).join(', @') }`.replace(`@${ userUsername }`, t('You').toLowerCase());
+			let usernames = reaction.usernames.slice(0, 15).map(username => username === userUsername ? t('You').toLowerCase() : `@${ userUsername }`).join(', ');
 			if (total > 15) {
 				usernames = `${ usernames } ${ t('And_more', {
 					length: total - 15
