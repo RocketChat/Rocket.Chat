@@ -2295,6 +2295,8 @@ label.required::after {
 			text-overflow: ellipsis;
 			max-width: 100%;
 			z-index: 10;
+			position: relative;
+			background-color: #ffffff;
 		}
 
 		& .formatting-tips {
@@ -3582,51 +3584,51 @@ body:not(.is-cordova) {
 		display: none;
 	}
 
-	& .lines & {
-		width: 100%;
-		margin: 0;
-
-		&::after {
-			display: none;
-		}
-
-		& button {
-			padding: 5px 0;
-			height: 30px;
-			display: block;
-			clear: both;
-
-			&::after {
-				content: "";
-				display: table;
-				clear: both;
-			}
-
-			& > div {
-				float: left;
-				width: var(--user-image-square);
-				height: var(--user-image-square);
-			}
-		}
-
-		& p {
-			float: left;
-			display: block;
-			line-height: var(--user-image-square);
-			font-size: 15px;
-			font-weight: 400;
-			overflow: hidden;
-			text-overflow: ellipsis;
-			position: relative;
-			padding-left: 10px;
-			width: calc(100% - 45px);
-		}
-	}
-
 	& button {
 		display: block;
 		width: 100%;
 		height: 100%;
+	}
+}
+
+.lines .user-image {
+	width: 100%;
+	margin: 0;
+
+	&::after {
+		display: none;
+	}
+
+	& button {
+		padding: 5px 0;
+		height: 30px;
+		display: block;
+		clear: both;
+
+		&::after {
+			content: "";
+			display: table;
+			clear: both;
+		}
+
+		& > div {
+			float: left;
+			width: var(--user-image-square);
+			height: var(--user-image-square);
+		}
+	}
+
+	& p {
+		float: left;
+		display: block;
+		line-height: var(--user-image-square);
+		font-size: 15px;
+		font-weight: 400;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		position: relative;
+		padding-left: 10px;
+		width: calc(100% - 45px);
 	}
 }
 
