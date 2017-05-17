@@ -9,8 +9,10 @@ Template.privateGroups.helpers({
 		const query = { t: { $in: ['p']}, f: { $ne: true }, open: true };
 
 		if (Meteor.user() && Meteor.user().settings && Meteor.user().settings.preferences && Meteor.user().settings.preferences.unreadRoomsMode) {
-			query.alert =
-				{$ne: true};
+			query.$or = [
+				{ alert: { $ne: true } },
+				{ hideUnreadStatus: true }
+			];
 		}
 
 		return ChatSubscription.find(query, { sort: { 't': 1, 'name': 1 }});

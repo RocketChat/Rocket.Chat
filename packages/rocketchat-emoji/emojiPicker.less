@@ -1,5 +1,3 @@
-@import "lesshat.less";
-
 .emoji-picker-icon {
 	cursor: pointer;
 	font-size: 18px;
@@ -10,7 +8,7 @@
 
 	&:hover {
 		&::before {
-			.transform(scale(1.2));
+			transform: scale(1.2);
 		}
 	}
 }
@@ -73,7 +71,7 @@
 				transition: transform 0.2s ease;
 
 				&:hover {
-					.transform(scale(1.2));
+					transform: scale(1.2);
 					background-color: #dddddd;
 				}
 			}
@@ -123,12 +121,12 @@
 			top: 25px;
 			z-index: 1;
 			transition: transform 0.2s ease, visibility 0.2s ease, opacity 0.2s ease;
-			.transform(translateY(-20px));
+			transform: translateY(-20px);
 			opacity: 0;
 			visibility: hidden;
 
 			&.show {
-				.transform(translateY(0px));
+				transform: translateY(0);
 				opacity: 1;
 				display: block;
 				visibility: visible;
