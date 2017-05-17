@@ -6,17 +6,17 @@
 		<div class="phone-video" id="phone-video">
 			<nav>
 				<div class="phone-utility-buttons">
-					<button class='button' id="phone-redial" title="{{_ 'Redial'}}"><i class="icon-arrows-cw"></i></button>
-					<button class='button' id="phone-clear" title="{{_ 'Clear'}}"><i class="icon-eraser"></i></button>
-					<button class='button' id="phone_settings" title="{{_ 'Settings'}}"><i class="icon-tools"></i></button>
-					<button class='button' id="phone_personal_registry" title="{{_ 'Registry'}}"><i class="icon-list"></i></button>
+					<button class='button primary' id="phone-redial" title="{{_ 'Redial'}}"><i class="icon-arrows-cw"></i></button>
+					<button class='button primary' id="phone-clear" title="{{_ 'Clear'}}"><i class="icon-eraser"></i></button>
+					<button class='button primary' id="phone_settings" title="{{_ 'Settings'}}"><i class="icon-tools"></i></button>
+					<button class='button primary' id="phone_personal_registry" title="{{_ 'Registry'}}"><i class="icon-list"></i></button>
 				</div>
 				{{#if displayCallStatus}}
 				<div class="phone-utility-buttons">
-					<button class='button {{onHold}}' id="phone-hold" title="{{_ 'Hold_Toggle'}}"><i class="icon-h-sigh"></i></button>
-					<button class='button {{isMuted}}' id="phone-mute" title="{{_ 'Mute'}}"><i class="icon-mute"></i></button>
-					<button class='button' id="phone-transfer" title="{{_ 'Transfer'}}"><i class="icon-fork"></i></button>
-					<button class='button' id="phone-fullscreen" title="{{_ 'Fullscreen'}}"><i class="icon-resize-full"></i></button>
+					<button class='button primary {{onHold}}' id="phone-hold" title="{{_ 'Hold_Toggle'}}"><i class="icon-h-sigh"></i></button>
+					<button class='button primary {{isMuted}}' id="phone-mute" title="{{_ 'Mute'}}"><i class="icon-mute"></i></button>
+					<button class='button primary' id="phone-transfer" title="{{_ 'Transfer'}}"><i class="icon-fork"></i></button>
+					<button class='button primary' id="phone-fullscreen" title="{{_ 'Fullscreen'}}"><i class="icon-resize-full"></i></button>
 				</div>
 				{{/if}}
 			</nav>
@@ -47,47 +47,47 @@
 			</div>
 			{{#if callIsActive}}
 			<div class="call-buttons-container">
-                <button class='button red-hook red-hook-big' id="phone-hangup"><i class="icon-phone"></i></button>
+                <button class='button primary red-hook red-hook-big' id="phone-hangup"><i class="icon-phone"></i></button>
 			</div>
 			{{/if}}
 			{{#if callIsRinging}}
 			<div class="call-buttons-container">
-				<button class='button green-hook' id="phone-dial"><i class="icon-phone"></i></button>
+				<button class='button primary green-hook' id="phone-dial"><i class="icon-phone"></i></button>
 				{{#if videoEnabled}}
-				<button class='button green-hook' id="phone-video-dial"><i class="icon-videocam"></i></button>
+				<button class='button primary green-hook' id="phone-video-dial"><i class="icon-videocam"></i></button>
 				{{/if}}
-                <button class='button red-hook' id="phone-hangup"><i class="icon-phone"></i></button>
+                <button class='button primary red-hook' id="phone-hangup"><i class="icon-phone"></i></button>
 			</div>
 			{{/if}}
 			{{#if callIsIdle}}
 			<div class="call-buttons-container">
-				<button class='button green-hook' id="phone-dial"><i class="icon-phone"></i></button>
+				<button class='button primary green-hook' id="phone-dial"><i class="icon-phone"></i></button>
 				{{#if videoEnabled}}
-				<button class='button green-hook' id="phone-video-dial"><i class="icon-videocam"></i></button>
+				<button class='button primary green-hook' id="phone-video-dial"><i class="icon-videocam"></i></button>
 				{{/if}}
 			</div>
 			{{/if}}
 		</div>
         <nav>
             <div class="phone-call-buttons">
-                <button class='button dialkey' value="1">1</button>
-                <button class='button dialkey' value="2">2</button>
-                <button class='button dialkey' value="3">3</button>
+                <button class='button primary dialkey' value="1">1</button>
+                <button class='button primary dialkey' value="2">2</button>
+                <button class='button primary dialkey' value="3">3</button>
             </div>
             <div class="phone-call-buttons">
-                <button class='button dialkey' value="4">4</button>
-                <button class='button dialkey' value="5">5</button>
-                <button class='button dialkey' value="6">6</button>
+                <button class='button primary dialkey' value="4">4</button>
+                <button class='button primary dialkey' value="5">5</button>
+                <button class='button primary dialkey' value="6">6</button>
             </div>
             <div class="phone-call-buttons">
-                <button class='button dialkey' value="7">7</button>
-                <button class='button dialkey' value="8">8</button>
-                <button class='button dialkey' value="9">9</button>
+                <button class='button primary dialkey' value="7">7</button>
+                <button class='button primary dialkey' value="8">8</button>
+                <button class='button primary dialkey' value="9">9</button>
             </div>
             <div class="phone-call-buttons">
-                <button class='button dialkey' value="*"><i class="icon-asterisk"></i></button>
-                <button class='button dialkey' value="0">0</button>
-                <button class='button dialkey' value="#"><i class="icon-hash"></i></button>
+                <button class='button primary dialkey' value="*"><i class="icon-asterisk"></i></button>
+                <button class='button primary dialkey' value="0">0</button>
+                <button class='button primary dialkey' value="#"><i class="icon-hash"></i></button>
             </div>
         </nav>
 		<div>
