@@ -39,9 +39,7 @@ function messagingTest() {
 		}
 	});
 
-	describe('fileUpload', ()=> {
-		after(() => {
-		});
+	describe.only('fileUpload', ()=> {
 		it('send a attachment', () => {
 			mainContent.fileUpload(imgURL);
 		});
