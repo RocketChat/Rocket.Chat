@@ -7,7 +7,6 @@ Package.describe({
 
 Package.onUse(function(api) {
 	api.use([
-		'coffeescript',
 		'ecmascript',
 		'underscore',
 		'templating',
@@ -15,18 +14,17 @@ Package.onUse(function(api) {
 		'rocketchat:lib'
 	]);
 
-	api.addFiles('settings.coffee', 'server');
-	api.addFiles('markdown.coffee');
-	api.addFiles('markdowncode.coffee');
+	api.addFiles('settings.js', 'server');
+	api.addFiles('markdown.js');
+	api.addFiles('markdowncode.js');
 });
 
 Package.onTest(function(api) {
 	api.use([
-		'coffeescript',
 		'sanjo:jasmine@0.20.2',
 		'rocketchat:lib',
 		'rocketchat:markdown'
 	]);
 
-	api.addFiles('tests/jasmine/client/unit/markdown.spec.coffee', 'client');
+	api.addFiles('tests/jasmine/client/unit/markdown.spec.js', 'client');
 });
