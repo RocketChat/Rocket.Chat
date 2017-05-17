@@ -1,4 +1,4 @@
-/* eslint new-cap: false */
+/* eslint new-cap: 0 */
 
 Meteor.methods({
 	saveSetting(_id, value, editor) {
