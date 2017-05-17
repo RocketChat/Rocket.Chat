@@ -1,4 +1,5 @@
-const crypto = Npm.require('crypto');
+import AWS4 from '../lib/AWS4.js';
+
 let protectedFiles;
 let S3accessKey;
 let S3secretKey;
@@ -26,12 +27,22 @@ Meteor.methods({
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'sendFileMessage' });
 		}
 		const file = RocketChat.models.Uploads.findOneById(fileId);
-		const resourceURL = `/${ file.s3.bucket }/${ file.s3.path }${ file._id }`;
-		const expires = parseInt(new Date().getTime() / 1000) + Math.max(5, S3expiryTimeSpan);
-		const StringToSign = `GET\n\n\n${ expires }\n${ resourceURL }`;
-		const signature = crypto.createHmac('sha1', S3secretKey).update(new Buffer(StringToSign, 'utf-8')).digest('base64');
-		return {
-			url:`${ file.url }?AWSAccessKeyId=${ encodeURIComponent(S3accessKey) }&Expires=${ expires }&Signature=${ encodeURIComponent(signature) }`
+
+		const credential = {
+			accessKeyId: S3accessKey,
+			secretKey: S3secretKey
 		};
+
+		const req = {
+			bucket: file.s3.bucket,
+			region: file.s3.region,
+			path: `/${ file.s3.path }${ file._id }`,
+			url: file.url,
+			expire: Math.max(5, S3expiryTimeSpan)
+		};
+
+		const queryString = AWS4.sign(req, credential);
+
+		return `${ file.url }?${ queryString }`;
 	}
 });
