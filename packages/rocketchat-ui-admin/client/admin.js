@@ -542,7 +542,7 @@ Template.admin.events({
 		const settingId = event.currentTarget.getAttribute('data-setting');
 		const selectedRooms = instance.selectedRooms.get();
 		selectedRooms[settingId] = _.reject(selectedRooms[settingId] || [], function(setting) {
-			setting._id === docId;
+			return setting._id === docId;
 		});
 		instance.selectedRooms.set(selectedRooms);
 		const value = selectedRooms[settingId];
