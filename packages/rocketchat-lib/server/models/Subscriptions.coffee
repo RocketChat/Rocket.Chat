@@ -126,6 +126,14 @@ class ModelSubscriptions extends RocketChat.models._Base
 
 		return @find query
 
+	findUnreadByUserId: (userId) ->
+		query =
+			'u._id': userId
+			unread:
+				$gt: 0
+
+		return @find query, fields: unread: 1
+
 	# UPDATE
 	archiveByRoomId: (roomId) ->
 		query =

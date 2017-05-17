@@ -1,15 +1,5 @@
 RocketChat.API.v1.helperMethods.set('isUserFromParams', function _isUserFromParams() {
-	let params;
-
-	switch (this.request.method) {
-		case 'POST':
-		case 'PUT':
-			params = this.bodyParams;
-			break;
-		default:
-			params = this.queryParams;
-			break;
-	}
+	const params = this.requestParams();
 
 	return (!params.userId && !params.username && !params.user) ||
 		(params.userId && this.userId === params.userId) ||

@@ -45,7 +45,7 @@
 		"postinstall": "cd packages/rocketchat-katex && npm i",
 		"version": "node .scripts/version.js",
 		"set-version": "node .scripts/set-version.js",
-		"release": "npm run set-version && conventional-changelog --config .github/changelog.js -i HISTORY.md -s"
+		"release": "npm run set-version --silent"
 	},
 	"license": "MIT",
 	"repository": {
@@ -70,7 +70,7 @@
 		"file-type": "^4.3.0",
 		"highlight.js": "^9.11.0",
 		"jquery": "^3.2.1",
-		"mime-db": "^1.27.0",
+		"mime-db": "^1.28.0",
 		"mime-type": "^3.0.4",
 		"moment": "^2.18.1",
 		"moment-timezone": "^0.5.13",
