@@ -27,7 +27,7 @@ const setFieldValue = function(settingId, value, type, editor) {
 			}
 			break;
 		case 'roomPick':
-			let selectedRooms = Template.instance().selectedRooms.get();
+			const selectedRooms = Template.instance().selectedRooms.get();
 			selectedRooms[settingId] = value;
 			Template.instance().selectedRooms.set(selectedRooms);
 			TempSettings.update({ _id: settingId }, { $set: { value, changed: JSON.stringify(RocketChat.settings.collectionPrivate.findOne(settingId).value) !== JSON.stringify(value) } });
