@@ -18,7 +18,8 @@ Accounts.updateOrCreateUserFromExternalService = function(serviceName, serviceDa
 
 	if (serviceName === 'meteor-developer') {
 		if (Array.isArray(serviceData.emails)) {
-			serviceData.email = serviceData.emails.sort(a => a.primary !== true).filter(item => item.verified === true)[0];
+			const primaryEmail = serviceData.emails.sort(a => a.primary !== true).filter(item => item.verified === true)[0];
+			serviceData.email = primaryEmail && primaryEmail.address;
 		}
 	}
 
