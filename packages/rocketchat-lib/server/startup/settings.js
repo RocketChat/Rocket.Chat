@@ -481,6 +481,20 @@ RocketChat.settings.addGroup('Email', function() {
 		});
 	});
 	this.section('SMTP', function() {
+		this.add('SMTP_Protocol', 'smtp', {
+			type: 'select',
+			values: [
+				{
+					key: 'smtp',
+					i18nLabel: 'smtp'
+				}, {
+					key: 'smtps',
+					i18nLabel: 'smtps'
+				}
+			],
+			env: true,
+			i18nLabel: 'Protocol'
+		});
 		this.add('SMTP_Host', '', {
 			type: 'string',
 			env: true,
@@ -490,6 +504,11 @@ RocketChat.settings.addGroup('Email', function() {
 			type: 'string',
 			env: true,
 			i18nLabel: 'Port'
+		});
+		this.add('SMTP_Pool', true, {
+			type: 'boolean',
+			env: true,
+			i18nLabel: 'Pool'
 		});
 		this.add('SMTP_Username', '', {
 			type: 'string',
