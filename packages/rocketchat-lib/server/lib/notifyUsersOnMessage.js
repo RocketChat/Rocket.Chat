@@ -79,6 +79,7 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 
 	// Update all other subscriptions to alert their owners but witout incrementing
 	// the unread counter, as it is only for mentions and direct messages
+	// If a room is hidden, it will remain hidden
 	RocketChat.models.Subscriptions.setAlertForRoomIdExcludingUserId(message.rid, message.u._id);
 
 	return message;
