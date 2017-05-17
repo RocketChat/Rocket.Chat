@@ -1,6 +1,14 @@
 /* globals Push */
 import moment from 'moment';
 
+function getBadgeCount(userId) {
+	const subscriptions = RocketChat.models.Subscriptions.findUnreadByUserId(userId).fetch();
+
+	return subscriptions.reduce((unread, sub) => {
+		return sub.unread + unread;
+	}, 0);
+}
+
 RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 	// skips this callback if the message was edited
 	if (message.editedAt) {
@@ -152,6 +160,7 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 					roomId: message.rid,
 					username: push_username,
 					message: push_message,
+					badge: getBadgeCount(userOfMention._id),
 					payload: {
 						host: Meteor.absoluteUrl(),
 						rid: message.rid,
@@ -299,23 +308,25 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 
 		if (userIdsToPushNotify.length > 0) {
 			if (Push.enabled === true) {
-				RocketChat.PushNotification.send({
-					roomId: message.rid,
-					roomName: push_room,
-					username: push_username,
-					message: push_message,
-					payload: {
-						host: Meteor.absoluteUrl(),
-						rid: message.rid,
-						sender: message.u,
-						type: room.t,
-						name: room.name
-					},
-					usersTo: {
-						userId: {
-							$in: userIdsToPushNotify
+				// send a push notification for each user individually (to get his/her badge count)
+				userIdsToPushNotify.forEach((userIdToNotify) => {
+					RocketChat.PushNotification.send({
+						roomId: message.rid,
+						roomName: push_room,
+						username: push_username,
+						message: push_message,
+						badge: getBadgeCount(userIdToNotify),
+						payload: {
+							host: Meteor.absoluteUrl(),
+							rid: message.rid,
+							sender: message.u,
+							type: room.t,
+							name: room.name
+						},
+						usersTo: {
+							userId: userIdToNotify
 						}
-					}
+					});
 				});
 			}
 		}
