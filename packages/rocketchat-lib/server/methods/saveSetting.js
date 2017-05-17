@@ -1,3 +1,5 @@
+/* eslint new-cap: false */
+
 Meteor.methods({
 	saveSetting(_id, value, editor) {
 		if (Meteor.userId() === null) {
