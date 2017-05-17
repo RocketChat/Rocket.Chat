@@ -291,8 +291,9 @@ this.ChatMessages = class ChatMessages {
 	}
 
 	deleteMsg(message) {
+		const forceDelete = RocketChat.authz.hasAtLeastOnePermission('force-delete-message', message.rid);
 		const blockDeleteInMinutes = RocketChat.settings.get('Message_AllowDeleting_BlockDeleteInMinutes');
-		if ((blockDeleteInMinutes != null) && (blockDeleteInMinutes !== 0)) {
+		if (blockDeleteInMinutes && forceDelete === false) {
 			let msgTs;
 			if (message.ts != null) { msgTs = moment(message.ts); }
 			let currentTsDiff;
