@@ -48,9 +48,9 @@ Package.onUse(function(api) {
 	api.addFiles('client/lib/notification.js', 'client');
 	api.addFiles('client/lib/parentTemplate.js', 'client');
 	api.addFiles('client/lib/readMessages.js', 'client');
-	api.addFiles('client/lib/rocket.coffee', 'client');
-	api.addFiles('client/lib/RoomHistoryManager.coffee', 'client');
-	api.addFiles('client/lib/RoomManager.coffee', 'client');
+	api.addFiles('client/lib/rocket.js', 'client');
+	api.addFiles('client/lib/RoomHistoryManager.js', 'client');
+	api.addFiles('client/lib/RoomManager.js', 'client');
 	api.addFiles('client/lib/sideNav.js', 'client');
 	api.addFiles('client/lib/tapi18n.js', 'client');
 	api.addFiles('client/lib/textarea-autogrow.js', 'client');
