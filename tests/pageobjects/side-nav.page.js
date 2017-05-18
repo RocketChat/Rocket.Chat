@@ -16,7 +16,7 @@ class SideNav extends Page {
 	get newChannelIcon() { return browser.element('.toolbar-search__create-channel.icon-plus'); }
 	get moreChannels() { return browser.element('.rooms-list .more-channels'); }
 
-	get newDirectMessageBtn() { return browser.element('.rooms-list .add-room:nth-of-type(2)'); }
+	get newDirectMessageBtn() { return browser.element('.rooms-list .room-type:nth-of-type(2)'); }
 
 	get general() { return browser.element('.rooms-list > .wrapper > ul [title="general"]'); }
 	get channelHoverIcon() { return browser.element('.rooms-list > .wrapper > ul [title="general"] .icon-eye-off'); }
