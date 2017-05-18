@@ -8,7 +8,7 @@ Meteor.startup ->
 		enabled = RocketChat.settings.get('Webc_Enabled')
 		if enabled is true
 			RocketChat.TabBar.addButton({
-				groups: ['channel', 'privategroup'],
+				groups: ['channel', 'group'],
 				id: 'webcollaboration',
 				i18nTitle: 'WebCollaboration',
 				icon: 'icon-share',

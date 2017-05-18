@@ -5,7 +5,7 @@ Meteor.startup ->
 	Tracker.autorun ->
 		if RocketChat.settings.get('Phone_Enabled')
 			RocketChat.TabBar.addButton({
-				groups: ['channel', 'privategroup', 'directmessage'],
+				groups: ['channel', 'group', 'direct'],
 				id: 'phone',
 				i18nTitle: 'Phone',
 				icon: 'icon-phone',
