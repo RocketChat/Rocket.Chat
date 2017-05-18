@@ -351,7 +351,7 @@ RocketChat.Phone = new class
 	_curVideoW = null
 	_curVideoH = null
 
-	_tabBar = null
+	_tabBars = []
 
 	constructor: ->
 		if window.rocketDebug
@@ -457,9 +457,7 @@ RocketChat.Phone = new class
 					else
 						username = user.username
 
-					if _tabBar?
-						_tabBar.setTemplate "phone"
-						_tabBar.open()
+					openTabBar()
 
 					msg = TAPi18n.__("Incoming_call_from")
 					putNotification(msg, d.params.caller_id_number, d.params.caller_id_name)
@@ -535,6 +533,20 @@ RocketChat.Phone = new class
 				delete _dialogs[d.callID]
 				WebNotifications.closeNotification 'phone'
 				$("#phonestream").css('display', 'none')
+				Meteor.setTimeout ->
+					closeTabBar()
+				, 1000
+
+	closeTabBar = () ->
+		for tabBar in _tabBars
+			if tabBar? and tabBar.getTemplate() == "phone"
+				tabBar.close()
+
+	openTabBar = () ->
+		for tabBar in _tabBars
+			if tabBar?
+				tabBar.setTemplate "phone"
+				tabBar.open()
 
 	remap_hcause: (cause) ->
 		dflt = cause
@@ -937,7 +949,8 @@ RocketChat.Phone = new class
 		_started = false
 
 	setTabBar: (tabBar) ->
-		_tabBar = tabBar
+		console.warn  "setting tabBar to ", tabBar
+		_tabBars.push tabBar
 
 
 RocketChat.callbacks.add 'afterLogoutCleanUp', ->
