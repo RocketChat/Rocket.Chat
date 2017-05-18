@@ -51,5 +51,4 @@ Template.flexTabBar.events({
 
 Template.flexTabBar.onCreated(function() {
 	this.tabBar = Template.currentData().tabBar;
-	RocketChat.Phone.setTabBar(this.tabBar);
 });
