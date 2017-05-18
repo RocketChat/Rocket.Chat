@@ -500,7 +500,7 @@ RocketChat.Phone = new class
 				    d.stopRinging()
 					putNotification(msg, d.params.caller_id_number, d.params.caller_id_name)
 				WebNotifications.closeNotification 'phone'
-				RocketChat.TabBar.updateButton('phone', { class: 'red' })
+				RocketChat.TabBar.updateButton('phone', { class: 'phone-red' })
 
 			when 'hangup'
 				RocketChat.ToneGenerator.stop()
