@@ -949,7 +949,6 @@ RocketChat.Phone = new class
 		_started = false
 
 	setTabBar: (tabBar) ->
-		console.warn  "setting tabBar to ", tabBar
 		_tabBars.push tabBar
 
 
