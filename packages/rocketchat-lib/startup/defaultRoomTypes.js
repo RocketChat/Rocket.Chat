@@ -1,12 +1,12 @@
 /* globals openRoom */
 RocketChat.roomTypes.add(null, 0, {
-	template: 'starredRooms',
-	icon: 'icon-star'
+	icon: 'icon-star',
+	label: 'Favorites'
 });
 
 RocketChat.roomTypes.add('c', 10, {
-	template: 'channels',
 	icon: 'icon-hash',
+	label: 'Channels',
 	route: {
 		name: 'channel',
 		path: '/channel/:name',
@@ -37,8 +37,8 @@ RocketChat.roomTypes.add('c', 10, {
 });
 
 RocketChat.roomTypes.add('d', 20, {
-	template: 'directMessages',
 	icon: 'icon-at',
+	label: 'Direct_Messages',
 	route: {
 		name: 'direct',
 		path: '/direct/:username',
@@ -94,8 +94,8 @@ RocketChat.roomTypes.add('d', 20, {
 });
 
 RocketChat.roomTypes.add('p', 30, {
-	template: 'privateGroups',
 	icon: 'icon-lock',
+	label: 'Private_Groups',
 	route: {
 		name: 'group',
 		path: '/group/:name',
