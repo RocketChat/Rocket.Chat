@@ -26,6 +26,12 @@ const setFieldValue = function(settingId, value, type, editor) {
 				new jscolor(input); //eslint-disable-line
 			}
 			break;
+		case 'roomPick':
+			const selectedRooms = Template.instance().selectedRooms.get();
+			selectedRooms[settingId] = value;
+			Template.instance().selectedRooms.set(selectedRooms);
+			TempSettings.update({ _id: settingId }, { $set: { value, changed: JSON.stringify(RocketChat.settings.collectionPrivate.findOne(settingId).value) !== JSON.stringify(value) } });
+			break;
 		default:
 			input.val(value).change();
 	}
@@ -533,7 +539,7 @@ Template.admin.events({
 		selectedRooms[this.id] = (selectedRooms[this.id] || []).concat(doc);
 		instance.selectedRooms.set(selectedRooms);
 		const value = selectedRooms[this.id];
-		TempSettings.update({ _id: this.id }, { $set: { value, changed: RocketChat.settings.collectionPrivate.findOne(this.id).value !== value }});
+		TempSettings.update({ _id: this.id }, { $set: { value }});
 		event.currentTarget.value = '';
 		event.currentTarget.focus();
 	},
@@ -548,8 +554,7 @@ Template.admin.events({
 		const value = selectedRooms[settingId];
 		TempSettings.update({ _id: settingId }, {
 			$set: {
-				value,
-				changed: RocketChat.settings.collectionPrivate.findOne(settingId).value !== value
+				value
 			}
 		});
 	}
