@@ -11,6 +11,6 @@ Template.room.events
 				else
 					if user._id == Meteor.userId()
 						return
-				tabBar =  Template.instance().tabBar
+				tabBar = Template.instance().tabBar
 				tabBar.setTemplate "phone"
 				RocketChat.Phone.newCall(user.phoneextension, true)
