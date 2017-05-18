@@ -220,7 +220,7 @@ Template.room.helpers({
 
 	canPreview() {
 		const room = Session.get(`roomData${ this._id }`);
-		if (room.t !== 'c') {
+		if (room && room.t !== 'c') {
 			return true;
 		}
 
