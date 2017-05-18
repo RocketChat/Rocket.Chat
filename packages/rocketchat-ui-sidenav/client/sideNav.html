@@ -12,9 +12,9 @@
 				<div class="wrapper">
 					{{> unreadRooms }}
 
-					{{#each roomType}}
+					{{#each room in roomType}}
 						{{#if canShowRoomType}}
-							{{> Template.dynamic template=templateName }}
+							{{> roomList type=room.type identifier=room.identifier label=room.label }}
 						{{/if}}
 					{{/each}}
 
