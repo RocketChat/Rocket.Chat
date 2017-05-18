@@ -70,6 +70,7 @@ class MainContent extends Page {
 		this.setTextToInput(text);
 		this.sendBtn.click();
 		browser.waitUntil(function() {
+			browser.waitForVisible('.message:last-child .body', 5000);
 			return browser.getText('.message:last-child .body') === text;
 		}, 2000);
 	}
@@ -105,18 +106,21 @@ class MainContent extends Page {
 
 	waitForLastMessageTextAttachmentEqualsText(text) {
 		browser.waitUntil(function() {
+			browser.waitForVisible('.message:last-child .attachment-text', 5000);
 			return browser.getText('.message:last-child .attachment-text') === text;
 		}, 2000);
 	}
 
 	waitForLastMessageEqualsText(text) {
 		browser.waitUntil(function() {
+			browser.waitForVisible('.message:last-child .body', 5000);
 			return browser.getText('.message:last-child .body') === text;
 		}, 4000);
 	}
 
 	waitForLastMessageUserEqualsText(text) {
 		browser.waitUntil(function() {
+			browser.waitForVisible('.message:last-child .user-card-message:nth-of-type(2)', 5000);
 			return browser.getText('.message:last-child .user-card-message:nth-of-type(2)') === text;
 		}, 2000);
 	}
