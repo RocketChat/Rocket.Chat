@@ -57,7 +57,7 @@
     },
     "aws-sign2": {
       "version": "0.6.0",
-      "resolved": "http://registry.npmjs.org/aws-sign2/-/aws-sign2-0.6.0.tgz",
+      "resolved": "https://registry.npmjs.org/aws-sign2/-/aws-sign2-0.6.0.tgz",
       "from": "aws-sign2@>=0.6.0 <0.7.0"
     },
     "aws4": {
@@ -167,7 +167,7 @@
     },
     "core-util-is": {
       "version": "1.0.2",
-      "resolved": "http://registry.npmjs.org/core-util-is/-/core-util-is-1.0.2.tgz",
+      "resolved": "https://registry.npmjs.org/core-util-is/-/core-util-is-1.0.2.tgz",
       "from": "core-util-is@>=1.0.0 <1.1.0"
     },
     "create-error-class": {
@@ -1372,7 +1372,7 @@
       "dependencies": {
         "caseless": {
           "version": "0.11.0",
-          "resolved": "http://registry.npmjs.org/caseless/-/caseless-0.11.0.tgz",
+          "resolved": "https://registry.npmjs.org/caseless/-/caseless-0.11.0.tgz",
           "from": "caseless@>=0.11.0 <0.12.0"
         },
         "har-validator": {
@@ -1501,7 +1501,7 @@
     },
     "util-deprecate": {
       "version": "1.0.2",
-      "resolved": "http://registry.npmjs.org/util-deprecate/-/util-deprecate-1.0.2.tgz",
+      "resolved": "https://registry.npmjs.org/util-deprecate/-/util-deprecate-1.0.2.tgz",
       "from": "util-deprecate@>=1.0.1 <1.1.0"
     },
     "uuid": {
