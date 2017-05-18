@@ -136,6 +136,10 @@ Template.emailsAdd.onRendered ->
 
 	$('#webc_date_time').flatpickr(opts)
 
+Template.emailsItem.helpers
+	isValidEmail: (email) ->
+		return !email_re.test(email)
+
 Template.emailsItem.events
 	'keyup input': (e, t) ->
 		input = $(e.target)

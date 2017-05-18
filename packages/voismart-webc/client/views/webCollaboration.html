@@ -92,7 +92,7 @@
 			<div class='webc-email-form align-pad' emailId='{{emailId}}'>
 
 				<div class="input-line webc-email">
-					<input emailId='{{emailId}}' type="email" aria-required="true" aria-invalid="true" value="{{value}}" class="email_input"
+					<input emailId='{{emailId}}' type="email" aria-required="true" aria-invalid="{{isValidEmail value}}" value="{{value}}" class="email_input"
 					 name="email_address" id="name" placeholder="Email..." required>
 					<i class="icon-mail"></i>
 
