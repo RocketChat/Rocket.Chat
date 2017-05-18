@@ -345,6 +345,7 @@ RocketChat.Phone = new class
 	_curCall = null
 	_dialogs = {}
 	_callState = null
+	_isVideoCall = false
 
 	_curResolutions = null
 	_curVideoW = null
@@ -370,6 +371,8 @@ RocketChat.Phone = new class
 		else
 			useVideo = false
 			_videoTag.css('display', 'none')
+
+		_isVideoCall = useVideo
 
 		has_video = false
 		if _videoDevice and (_videoDevice != "none") and useVideo
@@ -682,8 +685,11 @@ RocketChat.Phone = new class
 
 	placeVideo: ->
 		_videoTag.appendTo($("#phone-video"))
-		if _curCall and _callState is 'active'
+		if _curCall and _callState is 'active' and _isVideoCall
 			_videoTag.css('display', 'block')
+			_videoTag[0].play()
+		else if _curCall and _callState is 'active' and !_isVideoCall
+			_videoTag.css('display', 'none')
 			_videoTag[0].play()
 		else
 			_videoTag.css('display', 'none')
@@ -769,6 +775,8 @@ RocketChat.Phone = new class
 		else
 			useVideo = false
 			_videoTag.css('display', 'none')
+
+		_isVideoCall = useVideo
 		Session.set("VoiSmart::Phone::lastUseVideo", useVideo)
 
 
