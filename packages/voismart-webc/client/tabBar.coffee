@@ -13,7 +13,7 @@ Meteor.startup ->
 				i18nTitle: 'WebCollaboration',
 				icon: 'icon-share',
 				template: 'webCollaboration',
-				order: 10
+				order: 11
 			})
 
 			if Meteor.userId()
