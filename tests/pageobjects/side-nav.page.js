@@ -18,7 +18,7 @@ class SideNav extends Page {
 
 	get newDirectMessageBtn() { return browser.element('.rooms-list .room-type:nth-of-type(2)'); }
 
-	get general() { return browser.element('.rooms-list > .wrapper > ul [title="general"]'); }
+	get general() { return browser.element('.rooms-list .room-type:not(.unread-rooms-mode) + ul .open-room[title="general"]'); }
 	get channelHoverIcon() { return browser.element('.rooms-list > .wrapper > ul [title="general"] .icon-eye-off'); }
 
 	get userOptions() { return browser.element('.options'); }
@@ -69,7 +69,7 @@ class SideNav extends Page {
 	}
 
 	getChannelFromList(channelName) {
-		return browser.element(`.rooms-list > .wrapper > ul [title="${ channelName }"]`);
+		return browser.element(`.rooms-list .room-type:not(.unread-rooms-mode) + ul .open-room[title="${ channelName }"]`);
 	}
 
 	createChannel(channelName, isPrivate, isReadOnly) {
