@@ -65,15 +65,15 @@ getDataToSyncUserData = function getDataToSyncUserData(ldapUser, user) {
 	if (syncUserData && syncUserDataFieldMap) {
 		const fieldMap = JSON.parse(syncUserDataFieldMap);
 		const userData = {};
-
 		const emailList = [];
 		_.map(fieldMap, function(userField, ldapField) {
-			if (!ldapUser.object.hasOwnProperty(ldapField)) {
-				return;
-			}
-
 			switch (userField) {
 				case 'email':
+					if (!ldapUser.object.hasOwnProperty(ldapField)) {
+						logger.debug(`user does not have attribute: ${ ldapField }`);
+						return;
+					}
+
 					if (_.isObject(ldapUser.object[ldapField])) {
 						_.map(ldapUser.object[ldapField], function(item) {
 							emailList.push({ address: item, verified: true });
@@ -84,8 +84,37 @@ getDataToSyncUserData = function getDataToSyncUserData(ldapUser, user) {
 					break;
 
 				case 'name':
-					if (user.name !== ldapUser.object[ldapField]) {
-						userData.name = ldapUser.object[ldapField];
+					const templateRegex = /#{(\w+)}/gi;
+					let match = templateRegex.exec(ldapField);
+					let tmpLdapField = ldapField;
+
+					if (match == null) {
+						if (!ldapUser.object.hasOwnProperty(ldapField)) {
+							logger.debug(`user does not have attribute: ${ ldapField }`);
+							return;
+						}
+						tmpLdapField = ldapUser.object[ldapField];
+					} else {
+						logger.debug('template found. replacing values');
+						while (match != null) {
+							const tmplVar = match[0];
+							const tmplAttrName = match[1];
+
+							if (!ldapUser.object.hasOwnProperty(tmplAttrName)) {
+								logger.debug(`user does not have attribute: ${ tmplAttrName }`);
+								return;
+							}
+
+							const attrVal = ldapUser.object[tmplAttrName];
+							logger.debug(`replacing template var: ${ tmplVar } with value from ldap: ${ attrVal }`);
+							tmpLdapField = tmpLdapField.replace(tmplVar, attrVal);
+							match = templateRegex.exec(ldapField);
+						}
+					}
+
+					if (user.name !== tmpLdapField) {
+						userData.name = tmpLdapField;
+						logger.debug(`user.name changed to: ${ tmpLdapField }`);
 					}
 					break;
 			}
