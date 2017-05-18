@@ -75,9 +75,9 @@ Template.userEdit.onCreated(function() {
 		userData.requirePasswordChange = this.$('#changePassword:checked').length > 0;
 		userData.joinDefaultChannels = this.$('#joinDefaultChannels:checked').length > 0;
 		userData.sendWelcomeEmail = this.$('#sendWelcomeEmail:checked').length > 0;
-		userData.phoneextension = this.trim(this.$("#phoneextension").val());
-		userData.phonelogin = this.trim(this.$("#phonelogin").val());
-		userData.phonepassword = this.trim(this.$("#phonepassword").val());
+		userData.phoneextension = s.trim(this.$("#phoneextension").val());
+		userData.phonelogin = s.trim(this.$("#phonelogin").val());
+		userData.phonepassword = s.trim(this.$("#phonepassword").val());
 		if (this.$('#role').val()) { userData.roles = [this.$('#role').val()]; }
 		return userData;
 	};
