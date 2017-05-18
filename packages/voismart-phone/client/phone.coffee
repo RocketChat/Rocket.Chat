@@ -303,6 +303,9 @@ Template.phone.onRendered ->
 		RocketChat.Phone.placeVideo()
 
 	@search = (searchvalue) =>
+		if RocketChat.Phone.isOnCall()
+			# do not start contact search while on call
+			return
 		if searchvalue
 			current_search = searchvalue
 		else
@@ -743,6 +746,9 @@ RocketChat.Phone = new class
 
 	isOnHold: () ->
 		return onHold.get()
+
+	isOnCall: () ->
+		return _curCall?
 
 	startDtmf: (key) ->
 		RocketChat.ToneGenerator.startDtmf(key)
