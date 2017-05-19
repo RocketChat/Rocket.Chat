@@ -16,5 +16,5 @@
 			]
 		}
 	},
-	"excludedPackages": ["deepwell:bootstrap-datepicker2"]
+	"excludedPackages": ["deepwell:bootstrap-datepicker2", "smoral:sweetalert"]
 }
