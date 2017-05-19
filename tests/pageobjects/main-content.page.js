@@ -15,7 +15,7 @@ class MainContent extends Page {
 	get channelTitle() { return browser.element('.room-title'); }
 	get popupFileName() { return browser.element('#file-name'); }
 	get popupFileDescription() { return browser.element('#file-description'); }
-	get popupFileConfirmBtn() { return browser.element('.sa-button-container .confirm'); }
+	get popupFileConfirmBtn() { return browser.element('.confirm'); }
 	get popup() { return browser.element('.sweet-alert') ; }
 	get popupFilePreview() { return browser.element('.upload-preview-file'); }
 	get popupFileTitle() { return browser.element('.upload-preview-title'); }
