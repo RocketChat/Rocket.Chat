@@ -15,8 +15,12 @@
 					{{/each}}
 				</ul>
 
-				{{#if hasMoreButton ..}}
+				{{#if hasMoreChannelsButton ..}}
 					<button class="more more-channels background-transparent-darker-hover">{{_ "More_channels"}}...</button>
+				{{/if}}
+
+				{{#if hasMoreGroupsButton ..}}
+					<button class="more more-groups background-transparent-darker-hover">{{_ "More_groups"}}...</button>
 				{{/if}}
 			{{/with}}
 		{{/if}}

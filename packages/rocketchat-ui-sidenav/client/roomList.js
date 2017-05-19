@@ -64,13 +64,17 @@ Template.roomList.helpers({
 		return classes;
 	},
 
-	hasMoreButton(room) {
-		return room.identifier === 'c' || room.identifier === 'p' || room.anonymous;
+	hasMoreChannelsButton(room) {
+		return room.identifier === 'c' || room.anonymous;
+	},
+
+	hasMoreGroupsButton(room) {
+		return room.identifier === 'p';
 	}
 });
 
 Template.roomList.events({
-	'click .more-channels'(e, t) {
+	'click .more'(e, t) {
 		if (t.data.identifier === 'p') {
 			SideNav.setFlex('listPrivateGroupsFlex');
 		} else if (t.data.isCombined) {
