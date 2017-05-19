@@ -123,6 +123,7 @@ Accounts.registerLoginHandler('ldap', function(loginRequest) {
 				'services.resume.loginTokens': Accounts._hashStampedToken(stampedToken)
 			}
 		});
+
 		syncUserData(user, ldapUser);
 
 		if (RocketChat.settings.get('LDAP_Login_Fallback') !== true) {
