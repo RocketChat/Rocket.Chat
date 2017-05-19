@@ -192,7 +192,7 @@ function messageActionsTest() {
 
 				it('delete the message', () => {
 					mainContent.selectAction('delete');
-					mainContent.popupFileConfirmBtn.waitForVisible(3000);
+					mainContent.popupFileConfirmBtn.waitForVisible(7000);
 					mainContent.popupFileConfirmBtn.click();
 					Global.sweetAlertOverlay.waitForVisible(3000, true);
 				});
