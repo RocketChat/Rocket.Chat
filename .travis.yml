@@ -4,7 +4,7 @@ services:
 - mongodb
 branches:
   only:
-  - develop
+  - develop2
   - "/^\\d+\\.\\d+\\.\\d+(-rc\\.\\d+)?$/"
 git:
   depth: 1
