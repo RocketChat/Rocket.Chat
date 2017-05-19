@@ -37,6 +37,7 @@ describe('channel', ()=> {
 
 				it('should start a direct message with rocket.cat', () => {
 					sideNav.searchChannel('rocket.cat');
+					mainContent.channelTitle.waitForVisible(5000);
 					mainContent.channelTitle.getText().should.equal('rocket.cat');
 				});
 			});
@@ -184,6 +185,7 @@ describe('channel', ()=> {
 
 				it('should show the new name', ()=> {
 					const channelName = sideNav.getChannelFromList(`NAME-EDITED-${ publicChannelName }`);
+					channelName.waitForVisible(5000);
 					channelName.getText().should.equal(`NAME-EDITED-${ publicChannelName }`);
 				});
 			});
