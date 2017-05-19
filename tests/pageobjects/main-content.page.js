@@ -16,6 +16,7 @@ class MainContent extends Page {
 	get popupFileName() { return browser.element('#file-name'); }
 	get popupFileDescription() { return browser.element('#file-description'); }
 	get popupFileConfirmBtn() { return browser.element('.sa-button-container .confirm'); }
+	get popup() { return browser.element('.sweet-salert') ; }
 	get popupFilePreview() { return browser.element('.upload-preview-file'); }
 	get popupFileTitle() { return browser.element('.upload-preview-title'); }
 	get popupFileCancelBtn() { return browser.element('.sa-button-container .cancel'); }
@@ -147,6 +148,7 @@ class MainContent extends Page {
 			case 'delete':
 				this.messageDelete.waitForVisible(5000);
 				this.messageDelete.click();
+				this.popup.waitForVisible(5000);
 				break;
 			case 'permalink':
 				this.messagePermalink.waitForVisible(5000);
