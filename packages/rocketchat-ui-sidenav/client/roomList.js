@@ -38,7 +38,7 @@ Template.roomList.helpers({
 	},
 
 	isActiveFavorite() {
-		if (!this.identifier && !this.unread) {
+		if (!this.identifier && !this.unread && !this.anonymous) {
 			return ChatSubscription.find({ f: true }).count();
 		}
 
