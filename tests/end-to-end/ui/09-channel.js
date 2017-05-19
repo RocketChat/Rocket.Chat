@@ -288,7 +288,7 @@ describe('channel', ()=> {
 		});
 
 		describe('Members tab usage', () => {
-			describe('User muted', () => {
+			describe.skip('User muted', () => {
 				before(()=> {
 					flexTab.operateFlexTab('members', true);
 				});
