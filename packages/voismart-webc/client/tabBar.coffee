@@ -1,3 +1,4 @@
+import toastr from 'toastr'
 import moment from 'moment'
 Flatpickr = require('./flatpickr-bridge.js').Flatpickr
 
