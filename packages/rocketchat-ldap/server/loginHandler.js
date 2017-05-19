@@ -126,7 +126,7 @@ Accounts.registerLoginHandler('ldap', function(loginRequest) {
 
 		syncUserData(user, ldapUser);
 
-		if (RocketChat.settings.get('LDAP_Login_Fallback') !== true) {
+		if (RocketChat.settings.get('LDAP_Login_Fallback') === true) {
 			Accounts.setPassword(user._id, loginRequest.ldapPass, {logout: false});
 		}
 
