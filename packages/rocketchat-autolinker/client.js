@@ -27,8 +27,9 @@ function AutoLinker(message) {
 							tag.setAttr('target', '');					// sets target to empty, instead of _blank
 							return tag;
 						}
-
-						return true;
+						const tag = match.buildTag();
+						tag.setInnerHtml("<b>" + tag.getInnerHtml() + "</b>");
+						return tag;
 					}
 				}
 
