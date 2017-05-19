@@ -277,7 +277,7 @@ Template.loginForm.onCreated(function() {
 
 Template.loginForm.onRendered(function() {
 	//Session.set('forceLogin', false);
-	console.log(Meteor.loginWithPassword(localStorage.name,localStorage.pass));
+	console.log(Meteor.loginWithPassword(localStorage.name, localStorage.pass));
 	console.log(localStorage.name);
 	Session.set('loginDefaultState');
 	return Tracker.autorun(() => {
