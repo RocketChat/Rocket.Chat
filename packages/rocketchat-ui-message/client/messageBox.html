@@ -106,12 +106,12 @@
 			{{#if allowedToSend}}
 				{{#if showFormattingTips}}
 					<div class="formatting-tips" aria-hidden="true" dir="auto">
-						{{#if markdownParserOriginal}}
+						{{#if markdownParser 'original'}}
 							<b>*{{_ "bold"}}*</b>
 							<i>_{{_ "italics"}}_</i>
 							<span>~<strike>{{_ "strike"}}</strike>~</span>
 						{{/if}}
-						{{#if markdownParserMarked}}
+						{{#if markdownParser 'marked'}}
 							<b>**{{_ "bold"}}**</b>
 							<i>_{{_ "italics"}}_</i>
 							<span>~~<strike>{{_ "strike"}}</strike>~~</span>
