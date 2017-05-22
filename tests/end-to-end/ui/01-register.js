@@ -6,42 +6,44 @@ describe('register', () => {
 	before(() => {
 		loginPage.open();
 		loginPage.gotToRegister();
+		// This Can Cause Timeouts erros if the server is slow so it should have a big wait
+		loginPage.nameField.waitForVisible(15000);
 	});
 
 	describe('render', () => {
-		it('should show name field', () => {
+		it('it should show name field', () => {
 			loginPage.nameField.isVisible().should.be.true;
 		});
 
-		it('should show email field', () => {
+		it('it should show email field', () => {
 			loginPage.emailField.isVisible().should.be.true;
 		});
 
-		it('should show password field', () => {
+		it('it should show password field', () => {
 			loginPage.passwordField.isVisible().should.be.true;
 		});
 
-		it('should show confirm password field', () => {
+		it('it should show confirm password field', () => {
 			loginPage.confirmPasswordField.isVisible().should.be.true;
 		});
 
-		it('should not show email / username field', () => {
+		it('it should not show email / username field', () => {
 			loginPage.emailOrUsernameField.isVisible().should.be.false;
 		});
 
-		it('should show submit button', () => {
+		it('it should show submit button', () => {
 			loginPage.submitButton.isVisible().should.be.true;
 		});
 
-		it('should not show register button', () => {
+		it('it should not show register button', () => {
 			loginPage.registerButton.isVisible().should.be.false;
 		});
 
-		it('should not show forgot password button', () => {
+		it('it should not show forgot password button', () => {
 			loginPage.forgotPasswordButton.isVisible().should.be.false;
 		});
 
-		it('should show back to login button', () => {
+		it('it should show back to login button', () => {
 			loginPage.backToLoginButton.isVisible().should.be.true;
 		});
 	});

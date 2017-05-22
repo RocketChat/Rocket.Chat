@@ -47,44 +47,44 @@ function messagingTest() {
 		});
 
 		it('should show the confirm button', () => {
-			mainContent.popupFileConfirmBtn.isVisible().should.be.true;
+			Global.sweetAlertConfirm.isVisible().should.be.true;
 		});
 
 		it('should show the cancel button', () => {
-			mainContent.popupFileCancelBtn.isVisible().should.be.true;
+			Global.sweetAlertCancel.isVisible().should.be.true;
 		});
 
 		it('should show the file preview', () => {
-			mainContent.popupFilePreview.isVisible().should.be.true;
+			Global.sweetAlertFilePreview.isVisible().should.be.true;
 		});
 
 		it('should show the confirm button', () => {
-			mainContent.popupFileConfirmBtn.isVisible().should.be.true;
+			Global.sweetAlertConfirm.isVisible().should.be.true;
 		});
 
 		it('should show the file title', () => {
-			mainContent.popupFileTitle.isVisible().should.be.true;
+			Global.sweetAlertFileTitle.isVisible().should.be.true;
 		});
 
 		it('should show the file name input', () => {
-			mainContent.popupFileName.isVisible().should.be.true;
+			Global.sweetAlertFileName.isVisible().should.be.true;
 		});
 
 		it('should fill the file name input', () => {
-			mainContent.popupFileName.setValue('File Name');
+			Global.sweetAlertFileName.setValue('File Name');
 		});
 
 		it('should show the file name input', () => {
-			mainContent.popupFileDescription.isVisible().should.be.true;
+			Global.sweetAlertFileDescription.isVisible().should.be.true;
 		});
 
 		it('should fill the file name input', () => {
-			mainContent.popupFileDescription.setValue('File Description');
+			Global.sweetAlertFileDescription.setValue('File Description');
 		});
 
 		it('click the confirm', () => {
-			mainContent.popupFileConfirmBtn.click();
-			mainContent.popupFileConfirmBtn.waitForVisible(5000, true);
+			Global.sweetAlertConfirm.click();
+			Global.sweetAlertConfirm.waitForVisible(5000, true);
 		});
 
 		it('should show the file in the message', () => {
@@ -198,7 +198,7 @@ function messageActionsTest() {
 
 				it('delete the message', () => {
 					mainContent.selectAction('delete');
-					mainContent.popupFileConfirmBtn.click();
+					Global.sweetAlertConfirm.click();
 					Global.sweetAlertOverlay.waitForVisible(3000, true);
 				});
 
