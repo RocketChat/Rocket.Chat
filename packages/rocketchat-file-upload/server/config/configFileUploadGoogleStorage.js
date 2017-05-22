@@ -91,6 +91,15 @@ const deleteFile = function(file) {
 	HTTP.call('DELETE', url);
 };
 
+// DEPRECATED: backwards compatibility (remove)
+new FileUploadClass({
+	name: 'googleCloudStorage',
+	model: 'Uploads',
+
+	get: getFile,
+	delete: deleteFile
+});
+
 new FileUploadClass({
 	name: 'GoogleCloudStorage:Uploads',
 

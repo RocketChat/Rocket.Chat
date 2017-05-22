@@ -121,6 +121,8 @@ const createFileSystemStore = _.debounce(function() {
 		transformWrite
 	});
 
+	UploadFS.getStores()['fileSystem'] = UploadFS.getStores()[FileSystemUploads.name];
+
 	FileSystemAvatars.store = new UploadFS.store.Local({
 		path: RocketChat.settings.get('FileUpload_FileSystemPath'), //'/tmp/uploads/photos',
 		collection: FileSystemAvatars.model.model,

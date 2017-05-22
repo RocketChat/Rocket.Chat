@@ -135,9 +135,6 @@ const insert = function(file, stream, cb) {
 
 new FileUploadClass({
 	name: 'GridFS:Uploads',
-	getStore() {
-		return Meteor.fileStore;
-	},
 
 	get(file, req, res) {
 		file = FileUpload.addExtensionTo(file);
@@ -155,9 +152,6 @@ new FileUploadClass({
 
 new FileUploadClass({
 	name: 'GridFS:Avatars',
-	getStore() {
-		return Meteor.fileStoreAvatar;
-	},
 
 	get(file, req, res) {
 		const reqModifiedHeader = req.headers['if-modified-since'];
