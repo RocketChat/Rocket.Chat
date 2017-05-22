@@ -63,7 +63,6 @@ class FlexTab extends Page {
 	get secondSetting() { return browser.element('.clearfix li:nth-child(2) .current-setting'); }
 	get thirdSetting() { return browser.element('.clearfix li:nth-child(3) .current-setting'); }
 	get fourthSetting() { return browser.element('.clearfix li:nth-child(4) .current-setting'); }
-	get editNameTextInput() { return browser.element('.channel-settings input[name="name"]'); }
 	get editNameSave() { return browser.element('.channel-settings .save'); }
 	get memberUserName() { return browser.element('.info h3'); }
 	get memberRealName() { return browser.element('.info p'); }
