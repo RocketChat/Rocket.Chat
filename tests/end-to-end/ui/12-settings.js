@@ -229,7 +229,7 @@ describe('Changing settings via api', () => {
 		it('should send a bad word', () => {
 			mainContent.setTextToInput('badword');
 			mainContent.sendBtn.click();
-			mainContent.lastMessage.getText().should.equal('*******');
+			mainContent.waitForLastMessageEqualsText('*******');
 		});
 
 		it('should change the bad words filter via api', (done) => {
