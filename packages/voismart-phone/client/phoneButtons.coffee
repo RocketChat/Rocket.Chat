@@ -1,3 +1,6 @@
+Template.phoneButtons.onCreated ->
+	this.tabBar = Template.currentData().tabBar
+
 Template.phoneButtons.helpers
 	phoneAvailable: ->
 		return RocketChat.settings.get('Phone_Enabled')
@@ -23,8 +26,9 @@ Template.phoneButtons.events
 				if user._id == Meteor.userId()
 					return
 
-				RocketChat.TabBar.setTemplate "phone", ->
-					RocketChat.Phone.newCall(user.phoneextension, true)
+				t.tabBar.setTemplate "phone"
+				t.tabBar.open()
+				RocketChat.Phone.newCall(user.phoneextension, true)
 
 	'click .start-phone-audiocall': (e, t) ->
 		Meteor.call 'phoneFindUserByQ', {username: t.data.username}, (error, user) =>
@@ -34,7 +38,8 @@ Template.phoneButtons.events
 				if user._id == Meteor.userId()
 					return
 				if !Meteor.isCordova
-					RocketChat.TabBar.setTemplate "phone", ->
-						RocketChat.Phone.newCall(user.phoneextension, false)
+					t.tabBar.setTemplate "phone"
+					t.tabBar.open()
+					RocketChat.Phone.newCall(user.phoneextension, false)
 				else
 					window.open 'voismart://call/' + user.phoneextension, '_blank'
