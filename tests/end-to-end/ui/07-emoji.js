@@ -7,7 +7,7 @@ import sideNav from '../../pageobjects/side-nav.page';
 import {username, email, password} from '../../data/user.js';
 import {checkIfUserIsValid} from '../../data/checks';
 
-describe('emoji', ()=> {
+describe('[Emoji Tests]', ()=> {
 	before(()=>{
 		checkIfUserIsValid(username, email, password);
 		sideNav.spotlightSearch.waitForVisible(10000);

@@ -8,7 +8,7 @@ import sideNav from '../../pageobjects/side-nav.page';
 import {username, email, password} from '../../data/user.js';
 import {checkIfUserIsValid} from '../../data/checks';
 
-describe('resolutions tests', ()=> {
+describe('[Resolution Testing]', ()=> {
 	describe('mobile render', ()=> {
 		before(()=> {
 			checkIfUserIsValid(username, email, password);
