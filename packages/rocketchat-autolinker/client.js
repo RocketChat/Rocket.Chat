@@ -28,7 +28,7 @@ function AutoLinker(message) {
 							return tag;
 						}
 						const tag = match.buildTag();
-						tag.setInnerHtml("<b>" + tag.getInnerHtml() + "</b>");
+						tag.setAttr('style', 'font-weight: bold');
 						return tag;
 					}
 				}
