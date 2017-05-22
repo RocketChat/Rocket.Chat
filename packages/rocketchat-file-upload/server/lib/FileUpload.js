@@ -1,3 +1,5 @@
+/* globals UploadFS */
+
 import mime from 'mime-type/with-db';
 
 Object.assign(FileUpload, {
@@ -52,7 +54,7 @@ export class FileUploadClass {
 	constructor({ name, model, store, get, insert, getStore }) {
 		this.name = name;
 		this.model = model || this.getModelFromName();
-		this._store = store;
+		this._store = store || UploadFS.getStore(name);
 		this.get = get;
 		this.insert = insert;
 
