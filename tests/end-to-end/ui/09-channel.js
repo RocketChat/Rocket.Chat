@@ -398,8 +398,8 @@ describe('channel', ()=> {
 				});
 
 				it('should not show the channel on the list', () => {
-					sideNav.getChannelFromList(`NAME-EDITED-${ publicChannelName }`).waitForVisible(5000, true);
-					sideNav.getChannelFromList(`NAME-EDITED-${ publicChannelName }`).isVisible().should.be.false;
+					sideNav.getChannelFromList(`NAME-EDITED-${ publicChannelName }`, true).waitForVisible(5000, true);
+					sideNav.getChannelFromList(`NAME-EDITED-${ publicChannelName }`, true).isVisible().should.be.false;
 				});
 
 				it('should search and enter the channel with the spotlight', () => {
