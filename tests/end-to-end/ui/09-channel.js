@@ -11,7 +11,7 @@ import {checkIfUserIsValid, publicChannelCreated, setPublicChannelCreated} from 
 import {publicChannelName} from '../../data/channel.js';
 import {targetUser} from '../../data/interactions.js';
 
-describe('channel', ()=> {
+describe('[Channel Tests]', ()=> {
 	before(() => {
 		checkIfUserIsValid(username, email, password);
 		if (!publicChannelCreated) {
@@ -31,11 +31,11 @@ describe('channel', ()=> {
 					sideNav.spotlightSearch.setValue('');
 				});
 
-				it('should search rocket cat', () => {
+				it('it should search rocket cat', () => {
 					sideNav.getChannelFromSpotlight('rocket.cat').isVisible().should.be.true;
 				});
 
-				it('should start a direct message with rocket.cat', () => {
+				it('it should start a direct message with rocket.cat', () => {
 					sideNav.searchChannel('rocket.cat');
 					mainContent.channelTitle.waitForVisible(5000);
 					mainContent.channelTitle.getText().should.equal('rocket.cat');
@@ -51,11 +51,11 @@ describe('channel', ()=> {
 					sideNav.spotlightSearch.setValue('');
 				});
 
-				it('should search general', () => {
+				it('it should search general', () => {
 					sideNav.getChannelFromSpotlight('general').isVisible().should.be.true;
 				});
 
-				it('should go to general', () => {
+				it('it should go to general', () => {
 					sideNav.searchChannel('general');
 					mainContent.channelTitle.getText().should.equal('general');
 				});
@@ -70,11 +70,11 @@ describe('channel', ()=> {
 					sideNav.spotlightSearch.setValue('');
 				});
 
-				it('should search the user created channel', () => {
+				it('it should search the user created channel', () => {
 					sideNav.getChannelFromSpotlight(publicChannelName).isVisible().should.be.true;
 				});
 
-				it('should go to the user created channel', () => {
+				it('it should go to the user created channel', () => {
 					sideNav.searchChannel(publicChannelName);
 					mainContent.channelTitle.getText().should.equal(publicChannelName);
 				});
@@ -86,30 +86,30 @@ describe('channel', ()=> {
 				mainContent.messageInput.click();
 			});
 			describe('rocket.cat', () => {
-				it('should show the rocket cat in the direct messages list', () => {
+				it('it should show the rocket cat in the direct messages list', () => {
 					sideNav.getChannelFromList('rocket.cat').isVisible().should.be.true;
 				});
 
-				it('should go to the rocket cat direct message', () => {
+				it('it should go to the rocket cat direct message', () => {
 					sideNav.openChannel('rocket.cat');
 				});
 			});
 
 			describe('general', () => {
-				it('should show the general in the channel list', () => {
+				it('it should show the general in the channel list', () => {
 					sideNav.getChannelFromList('general').isVisible().should.be.true;
 				});
 
-				it('should go to the general channel', () => {
+				it('it should go to the general channel', () => {
 					sideNav.openChannel('general');
 				});
 			});
 			describe('user created channel', () => {
-				it('should show the user created channel in the channel list', () => {
+				it('it should show the user created channel in the channel list', () => {
 					sideNav.getChannelFromList(publicChannelName).isVisible().should.be.true;
 				});
 
-				it('should go to the user created channel', () => {
+				it('it should go to the user created channel', () => {
 					sideNav.openChannel(publicChannelName);
 				});
 			});
@@ -164,7 +164,7 @@ describe('channel', ()=> {
 					flexTab.operateFlexTab('info', false);
 				});
 
-				it('should show the old name', ()=> {
+				it('it should show the old name', ()=> {
 					flexTab.firstSetting.waitForVisible();
 					flexTab.firstSetting.getText().should.equal(publicChannelName);
 				});
@@ -183,7 +183,7 @@ describe('channel', ()=> {
 					flexTab.editNameSave.click();
 				});
 
-				it('should show the new name', ()=> {
+				it('it should show the new name', ()=> {
 					const channelName = sideNav.getChannelFromList(`NAME-EDITED-${ publicChannelName }`);
 					channelName.waitForVisible(5000);
 					channelName.getText().should.equal(`NAME-EDITED-${ publicChannelName }`);
@@ -217,7 +217,7 @@ describe('channel', ()=> {
 					flexTab.editNameSave.click();
 				});
 
-				it('should show the new topic', ()=> {
+				it('it should show the new topic', ()=> {
 					flexTab.secondSetting.getText().should.equal('TOPIC EDITED');
 				});
 			});
@@ -249,7 +249,7 @@ describe('channel', ()=> {
 					flexTab.editNameSave.click();
 				});
 
-				it('should show the new announcement', ()=> {
+				it('it should show the new announcement', ()=> {
 					flexTab.thirdSetting.getText().should.equal('ANNOUNCEMENT EDITED');
 				});
 			});
@@ -281,7 +281,7 @@ describe('channel', ()=> {
 					flexTab.editNameSave.click();
 				});
 
-				it('should show the new description', ()=> {
+				it('it should show the new description', ()=> {
 					flexTab.fourthSetting.getText().should.equal('DESCRIPTION EDITED');
 				});
 			});
@@ -334,7 +334,7 @@ describe('channel', ()=> {
 					mainContent.lastMessageRoleAdded.isVisible().should.be.true;
 				});
 
-				it('should show the target username in owner add message', ()=> {
+				it('it should show the target username in owner add message', ()=> {
 					mainContent.lastMessage.getText().should.have.string(targetUser);
 				});
 			});
@@ -372,7 +372,7 @@ describe('channel', ()=> {
 					mainContent.lastMessageRoleAdded.isVisible().should.be.true;
 				});
 
-				it('should show the target username in moderator add message', ()=> {
+				it('it should show the target username in moderator add message', ()=> {
 					mainContent.lastMessage.getText().should.have.string(targetUser);
 				});
 			});
@@ -387,29 +387,29 @@ describe('channel', ()=> {
 					Global.sweetAlert.waitForVisible(5000);
 				});
 
-				it('should show the sweet alert popup', () => {
+				it('it should show the sweet alert popup', () => {
 					Global.sweetAlert.waitForVisible(5000);
 					Global.sweetAlert.isVisible().should.be.true;
 					Global.sweetAlertConfirm.isVisible().should.be.true;
 				});
 
-				it('should close the popup', () => {
+				it('it should close the popup', () => {
 					Global.confirmPopup();
 				});
 
-				it('should not show the channel on the list', () => {
+				it('it should not show the channel on the list', () => {
 					sideNav.getChannelFromList(`NAME-EDITED-${ publicChannelName }`, true).waitForVisible(5000, true);
 					sideNav.getChannelFromList(`NAME-EDITED-${ publicChannelName }`, true).isVisible().should.be.false;
 				});
 
-				it('should search and enter the channel with the spotlight', () => {
+				it('it should search and enter the channel with the spotlight', () => {
 					sideNav.searchChannel(`NAME-EDITED-${ publicChannelName }`);
 					mainContent.joinChannelBtn.waitForVisible(5000);
 					mainContent.joinChannelBtn.click();
 
 				});
 
-				it('should show the channel on the list', () => {
+				it('it should show the channel on the list', () => {
 					sideNav.getChannelFromList(`NAME-EDITED-${ publicChannelName }`).waitForVisible(10000);
 					sideNav.getChannelFromList(`NAME-EDITED-${ publicChannelName }`).isVisible().should.be.true;
 				});

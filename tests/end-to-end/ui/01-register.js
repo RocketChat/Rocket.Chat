@@ -2,12 +2,10 @@
 
 import loginPage from '../../pageobjects/login.page';
 
-describe('register', () => {
+describe('[Register Tests]', () => {
 	before(() => {
 		loginPage.open();
 		loginPage.gotToRegister();
-		// This Can Cause Timeouts erros if the server is slow so it should have a big wait
-		loginPage.nameField.waitForVisible(15000);
 	});
 
 	describe('render', () => {
