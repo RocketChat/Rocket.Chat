@@ -1630,16 +1630,23 @@ label.required::after {
 		}
 	}
 
-	.unread-rooms-mode {
+	.unread-rooms-mode,
+	.unread-rooms-mode + ul {
 		max-height: 0;
 		opacity: 0;
 		overflow: hidden;
+		margin: 0;
+	}
 
-		&.has-unread {
-			transition: max-height 1s ease-in, opacity 0.5s linear;
-			max-height: 5000px;
-			opacity: 1;
-		}
+	.unread-rooms-mode.has-unread {
+		margin: 25px 0 0;
+	}
+
+	.unread-rooms-mode.has-unread,
+	.unread-rooms-mode.has-unread + ul {
+		transition: max-height 1s ease-in, opacity 0.5s linear;
+		max-height: 5000px;
+		opacity: 1;
 	}
 }
 
