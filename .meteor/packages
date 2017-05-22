@@ -131,7 +131,7 @@ rocketchat:videobridge
 rocketchat:webrtc
 rocketchat:wordpress
 rocketchat:message-snippet
-rocketchat:google-natural-language
+#rocketchat:google-natural-language
 rocketchat:drupal
 rocketchat:monitoring
 #rocketchat:chatops
