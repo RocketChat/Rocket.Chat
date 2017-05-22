@@ -219,8 +219,8 @@ RocketChat.API.v1.addRoute('users.setAvatar', { authRequired: true }, {
 						callback();
 					}));
 
-					this.request.pipe(busboy);
 				}));
+				this.request.pipe(busboy);
 			})();
 		}
 
