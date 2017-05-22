@@ -1,4 +1,5 @@
-/* globals Slingshot, FileUpload, AWS, FileUploadClass */
+/* globals Slingshot, FileUpload, AWS */
+import { FileUploadClass } from '../lib/FileUpload';
 import AWS4 from '../lib/AWS4.js';
 
 let S3accessKey;
@@ -46,6 +47,15 @@ const deleteFile = function(file) {
 	});
 	request.send();
 };
+
+// DEPRECATED: backwards compatibility (remove)
+new FileUploadClass({
+	name: 's3',
+	model: 'Uploads',
+
+	get: getFile,
+	delete: deleteFile
+});
 
 new FileUploadClass({
 	name: 'AmazonS3:Uploads',
