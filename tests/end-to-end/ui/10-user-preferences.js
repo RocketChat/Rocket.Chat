@@ -12,7 +12,7 @@ import {imgURL} from '../../data/interactions.js';
 import {checkIfUserIsValid} from '../../data/checks';
 
 
-describe('user preferences', ()=> {
+describe('[User Preferences Tests]', ()=> {
 	before(() => {
 		checkIfUserIsValid(username, email, password);
 		sideNav.spotlightSearch.waitForVisible(10000);
