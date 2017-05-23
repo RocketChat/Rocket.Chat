@@ -11,7 +11,7 @@ import {checkIfUserIsValid, publicChannelCreated, setPublicChannelCreated} from 
 import {publicChannelName} from '../../data/channel.js';
 import {targetUser} from '../../data/interactions.js';
 
-describe('[Channel Tests]', ()=> {
+describe('[Channel]', ()=> {
 	before(() => {
 		checkIfUserIsValid(username, email, password);
 		if (!publicChannelCreated) {
@@ -20,9 +20,9 @@ describe('[Channel Tests]', ()=> {
 			console.log('public channel not found, creating one...');
 		}
 	});
-	describe('channel search', ()=> {
-		describe('searching with spotlightSearch', () => {
-			describe('rocket.cat', () => {
+	describe('[Search]', ()=> {
+		describe('[SpotlightSearch]', () => {
+			describe('rocket.cat:', () => {
 				beforeEach(() => {
 					sideNav.getChannelFromSpotlight('rocket.cat').waitForVisible(5000);
 				});
@@ -42,7 +42,7 @@ describe('[Channel Tests]', ()=> {
 				});
 			});
 
-			describe('general', () => {
+			describe('general:', () => {
 				beforeEach(() => {
 					sideNav.getChannelFromSpotlight('general').waitForVisible(5000);
 				});
@@ -61,7 +61,7 @@ describe('[Channel Tests]', ()=> {
 				});
 			});
 
-			describe('user created channel', () => {
+			describe('user created channel:', () => {
 				beforeEach(() => {
 					sideNav.getChannelFromSpotlight(publicChannelName).waitForVisible(5000);
 				});
@@ -81,11 +81,11 @@ describe('[Channel Tests]', ()=> {
 			});
 		});
 
-		describe('searching with sideNav channel list', () => {
+		describe('[SideNav Channel List]', () => {
 			before(() => {
 				mainContent.messageInput.click();
 			});
-			describe('rocket.cat', () => {
+			describe('rocket.cat:', () => {
 				it('it should show the rocket cat in the direct messages list', () => {
 					sideNav.getChannelFromList('rocket.cat').isVisible().should.be.true;
 				});
@@ -95,7 +95,7 @@ describe('[Channel Tests]', ()=> {
 				});
 			});
 
-			describe('general', () => {
+			describe('general:', () => {
 				it('it should show the general in the channel list', () => {
 					sideNav.getChannelFromList('general').isVisible().should.be.true;
 				});
@@ -104,7 +104,8 @@ describe('[Channel Tests]', ()=> {
 					sideNav.openChannel('general');
 				});
 			});
-			describe('user created channel', () => {
+
+			describe('user created channel:', () => {
 				it('it should show the user created channel in the channel list', () => {
 					sideNav.getChannelFromList(publicChannelName).isVisible().should.be.true;
 				});
@@ -116,12 +117,12 @@ describe('[Channel Tests]', ()=> {
 		});
 	});
 
-	describe('channel usage', ()=> {
+	describe('[Usage]', ()=> {
 		before(() => {
 			sideNav.openChannel(publicChannelName);
 		});
 
-		describe('Adding a user to the room', () => {
+		describe('Adding a user to the room:', () => {
 			before(()=> {
 				if (Global.toastAlert.isVisible()) {
 					Global.dismissToast();
@@ -139,13 +140,13 @@ describe('[Channel Tests]', ()=> {
 
 			});
 
-			it('add people to the room', () => {
+			it('it should add people to the room', () => {
 				flexTab.addPeopleToChannel(targetUser);
 			});
 
 		});
 
-		describe('Channel settings', ()=> {
+		describe('Channel settings:', ()=> {
 			describe('Channel name edit', ()=> {
 				before(()=> {
 					if (Global.toastAlert.isVisible()) {
@@ -169,17 +170,17 @@ describe('[Channel Tests]', ()=> {
 					flexTab.firstSetting.getText().should.equal(publicChannelName);
 				});
 
-				it('click the edit name', ()=> {
+				it('it should click the edit name', ()=> {
 					flexTab.editNameBtn.waitForVisible();
 					flexTab.editNameBtn.click();
 				});
 
-				it('edit the name input', ()=> {
+				it('it should edit the name input', ()=> {
 					flexTab.editNameTextInput.waitForVisible();
 					flexTab.editNameTextInput.setValue(`NAME-EDITED-${ publicChannelName }`);
 				});
 
-				it('save the name', ()=> {
+				it('it should save the name', ()=> {
 					flexTab.editNameSave.click();
 				});
 
@@ -203,17 +204,17 @@ describe('[Channel Tests]', ()=> {
 					flexTab.operateFlexTab('info', false);
 				});
 
-				it('click the edit topic', ()=> {
+				it('it should click the edit topic', ()=> {
 					flexTab.editTopicBtn.waitForVisible(5000);
 					flexTab.editTopicBtn.click();
 				});
 
-				it('edit the topic input', ()=> {
+				it('it should edit the topic input', ()=> {
 					flexTab.editTopicTextInput.waitForVisible(5000);
 					flexTab.editTopicTextInput.setValue('TOPIC EDITED');
 				});
 
-				it('save the topic', ()=> {
+				it('it should save the topic', ()=> {
 					flexTab.editNameSave.click();
 				});
 
@@ -235,17 +236,17 @@ describe('[Channel Tests]', ()=> {
 					flexTab.operateFlexTab('info', false);
 				});
 
-				it('click the edit announcement', ()=> {
+				it('it should click the edit announcement', ()=> {
 					flexTab.editAnnouncementBtn.waitForVisible(5000);
 					flexTab.editAnnouncementBtn.click();
 				});
 
-				it('edit the announcement input', ()=> {
+				it('it should edit the announcement input', ()=> {
 					flexTab.editAnnouncementTextInput.waitForVisible(5000);
 					flexTab.editAnnouncementTextInput.setValue('ANNOUNCEMENT EDITED');
 				});
 
-				it('save the announcement', ()=> {
+				it('it should save the announcement', ()=> {
 					flexTab.editNameSave.click();
 				});
 
@@ -267,17 +268,17 @@ describe('[Channel Tests]', ()=> {
 					flexTab.operateFlexTab('info', false);
 				});
 
-				it('click the edit description', ()=> {
+				it('it should click the edit description', ()=> {
 					flexTab.editDescriptionBtn.waitForVisible();
 					flexTab.editDescriptionBtn.click();
 				});
 
-				it('edit the description input', ()=> {
+				it('it should edit the description input', ()=> {
 					flexTab.editDescriptionTextInput.waitForVisible(5000);
 					flexTab.editDescriptionTextInput.setValue('DESCRIPTION EDITED');
 				});
 
-				it('save the description', ()=> {
+				it('it should save the description', ()=> {
 					flexTab.editNameSave.click();
 				});
 
@@ -287,7 +288,7 @@ describe('[Channel Tests]', ()=> {
 			});
 		});
 
-		describe('Members tab usage', () => {
+		describe('Members tab usage:', () => {
 			describe('User muted', () => {
 				before(()=> {
 					flexTab.operateFlexTab('members', true);
@@ -297,7 +298,7 @@ describe('[Channel Tests]', ()=> {
 					flexTab.operateFlexTab('members', false);
 				});
 
-				it('mute rocket cat', ()=> {
+				it('it should mute rocket cat', ()=> {
 					flexTab.muteUser(targetUser);
 				});
 			});
@@ -319,18 +320,18 @@ describe('[Channel Tests]', ()=> {
 					flexTab.operateFlexTab('members', false);
 				});
 
-				it('sets rocket cat as owner', ()=> {
+				it('it should set rocket cat as owner', ()=> {
 					flexTab.setUserOwner(targetUser);
 				});
 
-				it('dismiss the toast', ()=> {
+				it('it should dismiss the toast', ()=> {
 					if (Global.toastAlert.isVisible()) {
 						Global.dismissToast();
 						Global.toastAlert.waitForVisible(5000, true);
 					}
 				});
 
-				it('the last message should be a subscription role added', ()=> {
+				it('it should the last message should be a subscription role added', ()=> {
 					mainContent.lastMessageRoleAdded.isVisible().should.be.true;
 				});
 
@@ -357,18 +358,18 @@ describe('[Channel Tests]', ()=> {
 					flexTab.operateFlexTab('members', false);
 				});
 
-				it('sets rocket cat as moderator', ()=> {
+				it('it should set rocket cat as moderator', ()=> {
 					flexTab.setUserModerator(targetUser);
 				});
 
-				it('dismiss the toast', ()=> {
+				it('it should dismiss the toast', ()=> {
 					if (Global.toastAlert.isVisible()) {
 						Global.dismissToast();
 						Global.toastAlert.waitForVisible(5000, true);
 					}
 				});
 
-				it('the last message should be a subscription role added', ()=> {
+				it('it should be that the last message is a subscription role added', ()=> {
 					mainContent.lastMessageRoleAdded.isVisible().should.be.true;
 				});
 
@@ -378,7 +379,7 @@ describe('[Channel Tests]', ()=> {
 			});
 
 			describe('channel quit and enter', () => {
-				it('leave the channel', () => {
+				it('it should leave the channel', () => {
 					const channel = sideNav.getChannelFromList(`NAME-EDITED-${ publicChannelName }`);
 					channel.click();
 					channel.moveToObject();

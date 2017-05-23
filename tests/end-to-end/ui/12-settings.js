@@ -44,7 +44,7 @@ const settingValue = {
 	value : undefined
 };
 
-describe('[Api Setting Change Tests]', () => {
+describe('[Api Settings Change]', () => {
 	before((done) => {
 		checkIfUserIsValid(username, email, password);
 		sideNav.spotlightSearch.waitForVisible(10000);
@@ -71,7 +71,7 @@ describe('[Api Setting Change Tests]', () => {
 		expect(credentials).to.have.property('X-User-Id').with.length.at.least(1);
 	});
 
-	describe('message edit', () => {
+	describe('message edit:', () => {
 		it('it should change the message editing via api', (done) => {
 			request.post(api('settings/Message_AllowEditing'))
 				.set(credentials)
@@ -104,7 +104,7 @@ describe('[Api Setting Change Tests]', () => {
 		});
 	});
 
-	describe('message delete', () => {
+	describe('message delete:', () => {
 		it('it should change the message deleting via api', (done) => {
 			request.post(api('settings/Message_AllowDeleting'))
 				.set(credentials)
@@ -137,7 +137,7 @@ describe('[Api Setting Change Tests]', () => {
 		});
 	});
 
-	describe('block audio files', () => {
+	describe('block audio files:', () => {
 		it('it should change the message audio files via api', (done) => {
 			request.post(api('settings/Message_AudioRecorderEnabled'))
 				.set(credentials)
@@ -169,7 +169,7 @@ describe('[Api Setting Change Tests]', () => {
 		});
 	});
 
-	describe('block video files', () => {
+	describe('block video files:', () => {
 		it('it should change the message video files via api', (done) => {
 			request.post(api('settings/Message_VideoRecorderEnabled'))
 				.set(credentials)
@@ -201,7 +201,7 @@ describe('[Api Setting Change Tests]', () => {
 		});
 	});
 
-	describe('bad words filter', () => {
+	describe('bad words filter:', () => {
 		it('it should change the bad words filter via api', (done) => {
 			request.post(api('settings/Message_AllowBadWordsFilter'))
 				.set(credentials)
@@ -245,7 +245,7 @@ describe('[Api Setting Change Tests]', () => {
 		});
 	});
 
-	describe('block message pin', () => {
+	describe('block message pin:', () => {
 		it('it should change the message pin via api', (done) => {
 			request.post(api('settings/Message_AllowPinning'))
 				.set(credentials)
@@ -284,7 +284,7 @@ describe('[Api Setting Change Tests]', () => {
 		});
 	});
 
-	describe('block message star', () => {
+	describe('block message star:', () => {
 		it('it should change the message star via api', (done) => {
 			request.post(api('settings/Message_AllowStarring'))
 				.set(credentials)
@@ -323,7 +323,7 @@ describe('[Api Setting Change Tests]', () => {
 		});
 	});
 
-	describe('block file upload', () => {
+	describe('block file upload:', () => {
 		it('it should change the file upload via api', (done) => {
 			request.post(api('settings/FileUpload_Enabled'))
 				.set(credentials)
@@ -353,7 +353,7 @@ describe('[Api Setting Change Tests]', () => {
 		});
 	});
 
-	describe.skip('profile changes', () => {
+	describe.skip('profile changes:', () => {
 		before(() => {
 			sideNav.accountBoxUserName.click();
 			sideNav.account.waitForVisible(5000);
@@ -428,7 +428,7 @@ describe('[Api Setting Change Tests]', () => {
 		});
 	});
 
-	describe('Manually Approve New Users', () => {
+	describe('Manually Approve New Users:', () => {
 		before(() => {
 			sideNav.accountBoxUserName.waitForVisible(5000);
 			sideNav.accountBoxUserName.click();

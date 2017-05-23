@@ -9,15 +9,15 @@ import sideNav from '../../pageobjects/side-nav.page';
 import {checkIfUserIsValid} from '../../data/checks';
 import {username, email, password} from '../../data/user.js';
 
-describe('Main Elements Render', function() {
+describe('[Main Elements Render]', function() {
 	before(()=>{
 		checkIfUserIsValid(username, email, password);
 		sideNav.spotlightSearch.waitForVisible(10000);
 		sideNav.searchChannel('general');
 	});
 
-	describe('side nav bar', () => {
-		describe('render', () => {
+	describe('[Side Nav Bar]', () => {
+		describe('render:', () => {
 			it('it should show the logged username', () => {
 				sideNav.accountBoxUserName.isVisible().should.be.true;
 			});
@@ -47,7 +47,7 @@ describe('Main Elements Render', function() {
 			});
 		});
 
-		describe('spotlight search render', () => {
+		describe('spotlight search render:', () => {
 			it('it should show spotlight search bar', () => {
 				sideNav.spotlightSearch.isVisible().should.be.true;
 			});
@@ -59,7 +59,7 @@ describe('Main Elements Render', function() {
 				sideNav.spotlightSearchPopUp.isVisible().should.be.true;
 			});
 
-			it('when the spotlight loses focus the list should disappear', () => {
+			it('it should remove the list when the spotlight loses focus', () => {
 				sideNav.spotlightSearchPopUp.waitForVisible(5000);
 				sideNav.spotlightSearchPopUp.isVisible().should.be.true;
 				mainContent.messageInput.click();
@@ -74,7 +74,7 @@ describe('Main Elements Render', function() {
 				sideNav.spotlightSearchPopUp.isVisible().should.be.true;
 			});
 
-			it('the text on the spotlight and the list should disappear when lost focus', () => {
+			it('it should remove the text on the spotlight and the list when lost focus', () => {
 				sideNav.spotlightSearchPopUp.waitForVisible(5000);
 				sideNav.spotlightSearchPopUp.isVisible().should.be.true;
 				mainContent.messageInput.click();
@@ -85,8 +85,8 @@ describe('Main Elements Render', function() {
 		});
 	});
 
-	describe('user options', () => {
-		describe('render', () => {
+	describe('[User Options]', () => {
+		describe('render:', () => {
 			before(() => {
 				sideNav.accountBoxUserName.click();
 				sideNav.userOptions.waitForVisible(5000);
@@ -126,8 +126,8 @@ describe('Main Elements Render', function() {
 		});
 	});
 
-	describe('main content', () => {
-		describe('render', () => {
+	describe('[Main Content]', () => {
+		describe('render:', () => {
 			before(()=> {
 				sideNav.logout.waitForVisible(5000, true);
 				sideNav.getChannelFromList('general').waitForVisible(5000);
@@ -142,7 +142,7 @@ describe('Main Elements Render', function() {
 				mainContent.emptyFavoriteStar.isVisible().should.be.true;
 			});
 
-			it('clicks the star', () => {
+			it('it shouldclicks the star', () => {
 				mainContent.emptyFavoriteStar.click();
 			});
 
@@ -150,7 +150,7 @@ describe('Main Elements Render', function() {
 				mainContent.favoriteStar.isVisible().should.be.true;
 			});
 
-			it('clicks the star', () => {
+			it('it should click the star', () => {
 				mainContent.favoriteStar.click();
 			});
 
@@ -178,7 +178,7 @@ describe('Main Elements Render', function() {
 				mainContent.emojiBtn.isVisible().should.be.true;
 			});
 
-			it('adds some text to the input', () => {
+			it('it should add some text to the input', () => {
 				mainContent.addTextToInput('Some Text');
 			});
 
@@ -202,7 +202,7 @@ describe('Main Elements Render', function() {
 				mainContent.lastMessage.isVisible().should.be.true;
 			});
 
-			it('the last message should be from the loged user', () => {
+			it('it should be that the last message is from the loged user', () => {
 				mainContent.lastMessageUser.getText().should.equal(username);
 			});
 
@@ -212,13 +212,13 @@ describe('Main Elements Render', function() {
 		});
 	});
 
-	describe('flextab usage', () => {
-		describe('render', () => {
+	describe('[Flextab]', () => {
+		describe('[Render]', () => {
 			before(()=> {
 				sideNav.getChannelFromList('general').waitForVisible(5000);
 				sideNav.openChannel('general');
 			});
-			describe('Room Info Tab', () => {
+			describe('Room Info Tab:', () => {
 				before(()=> {
 					flexTab.operateFlexTab('info', true);
 				});
@@ -243,7 +243,7 @@ describe('Main Elements Render', function() {
 
 			});
 
-			describe('Search Tab', () => {
+			describe('Search Tab:', () => {
 				before(()=> {
 					flexTab.operateFlexTab('search', true);
 				});
@@ -261,7 +261,7 @@ describe('Main Elements Render', function() {
 				});
 			});
 
-			describe('Members Tab', () => {
+			describe('Members Tab:', () => {
 				before(()=> {
 					flexTab.operateFlexTab('members', true);
 				});
@@ -285,7 +285,7 @@ describe('Main Elements Render', function() {
 				});
 			});
 
-			describe('Notifications Tab', () => {
+			describe('Notifications Tab:', () => {
 				before(()=> {
 					flexTab.operateFlexTab('notifications', true);
 				});
@@ -303,7 +303,7 @@ describe('Main Elements Render', function() {
 				});
 			});
 
-			describe('Files Tab', () => {
+			describe('Files Tab:', () => {
 				before(()=> {
 					flexTab.operateFlexTab('files', true);
 				});
@@ -321,7 +321,7 @@ describe('Main Elements Render', function() {
 				});
 			});
 
-			describe('Mentions Tab', () => {
+			describe('Mentions Tab:', () => {
 				before(()=> {
 					flexTab.operateFlexTab('mentions', true);
 				});
@@ -339,7 +339,7 @@ describe('Main Elements Render', function() {
 				});
 			});
 
-			describe('Starred Messages Tab', () => {
+			describe('Starred Messages Tab:', () => {
 				before(()=> {
 					flexTab.operateFlexTab('starred', true);
 				});
@@ -357,7 +357,7 @@ describe('Main Elements Render', function() {
 				});
 			});
 
-			describe('Pinned Messages Tab', () => {
+			describe('Pinned Messages Tab:', () => {
 				before(()=> {
 					flexTab.operateFlexTab('pinned', true);
 				});

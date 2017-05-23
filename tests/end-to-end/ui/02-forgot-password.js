@@ -2,13 +2,13 @@
 
 import loginPage from '../../pageobjects/login.page';
 
-describe('[Forgot Password Tests]', () => {
+describe('[Forgot Password]', () => {
 	before(() => {
 		loginPage.open();
 		loginPage.gotToForgotPassword();
 	});
 
-	describe('render', () => {
+	describe('render:', () => {
 		it('it should not show name field', () => {
 			loginPage.nameField.isVisible().should.be.false;
 		});
@@ -46,7 +46,7 @@ describe('[Forgot Password Tests]', () => {
 		});
 	});
 
-	describe('email', () => {
+	describe('email:', () => {
 		it('it should be required', () => {
 			loginPage.submit();
 			loginPage.emailField.getAttribute('class').should.contain('error');
