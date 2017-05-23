@@ -8,7 +8,7 @@ class EmailSchedule {
 	sendScheduledEmail(messageDetails) {
 		const room = RocketChat.models.Rooms.findOneById(messageDetails.rid);
 
-		const message = RocketChat.models.Messages.findOneById(messageDetails.mid);
+		const message = RocketChat.models.Messages.findOneById(messageDetails._id);
 
 		if (room !== undefined && message !== undefined) {
 			RocketChat.sendEmailOnMessage(message, room);

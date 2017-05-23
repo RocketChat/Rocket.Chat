@@ -13,7 +13,7 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 	if (RocketChat.settings.get('Message_AllowEditing') === true && RocketChat.settings.get('Message_AllowEditing_BlockEditInMinutes') > 0) {
 		const details = {
 			'rid': message.rid,
-			'mid': message._id,
+			'_id': message._id,
 			'ts': message.ts
 		};
 		details.ts.setMinutes(details.ts.getMinutes() + RocketChat.settings.get('Message_AllowEditing_BlockEditInMinutes'));
