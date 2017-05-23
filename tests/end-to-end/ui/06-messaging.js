@@ -198,7 +198,6 @@ function messageActionsTest() {
 					mainContent.selectAction('delete');
 					Global.sweetAlertConfirm.click();
 					Global.sweetAlertOverlay.waitForVisible(3000, true);
-					false.should.be.true;
 				});
 
 				it('it should not show the deleted message', () => {
@@ -258,7 +257,7 @@ function messageActionsTest() {
 	});
 }
 
-describe.only('[Message]', () => {
+describe('[Message]', () => {
 	before(()=>{
 		checkIfUserIsValid(username, email, password);
 		sideNav.spotlightSearch.waitForVisible(10000);
