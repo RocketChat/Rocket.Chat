@@ -10,6 +10,30 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 		return message;
 	}
 
+	if (RocketChat.settings.get('Message_AllowEditing') === true && RocketChat.settings.get('Message_AllowEditing_BlockEditInMinutes') > 0) {
+		console.log('scheduling email..');
+		console.log(message);
+		var details = {
+			"rid": message.rid,
+			"mid": message._id,
+			"ts": message.ts
+		};
+		console.log(details);
+		console.log(details.ts);
+		details.ts.setMinutes(details.ts.getMinutes() + RocketChat.settings.get('Message_AllowEditing_BlockEditInMinutes'));
+		console.log(details.ts);
+
+		RocketChat.checkSchedule(details);
+		console.log("this done");
+	} else {
+		return RocketChat.sendEmailOnMessage(message, room);
+	}
+
+	return message;
+
+}, RocketChat.callbacks.priority.LOW, 'sendEmailOnMessage');
+
+RocketChat.sendEmailOnMessage = function(message, room) {
 	let emailSubject;
 	const usersToSendEmail = {};
 	const directMessage = room.t === 'd';
@@ -95,7 +119,9 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 			linkByUser[sub.u._id] = getMessageLink(room, sub);
 		});
 	} else {
-		defaultLink = getMessageLink(room, { name: room.name });
+		defaultLink = getMessageLink(room, {
+			name: room.name
+		});
 	}
 
 	if (userIdsToSendEmail.length > 0) {
@@ -133,7 +159,4 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 			});
 		}
 	}
-
-	return message;
-
-}, RocketChat.callbacks.priority.LOW, 'sendEmailOnMessage');
+}

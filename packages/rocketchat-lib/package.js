@@ -100,6 +100,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/lib/sendEmailOnMessage.js', 'server');
 	api.addFiles('server/lib/sendNotificationsOnMessage.js', 'server');
 	api.addFiles('server/lib/validateEmailDomain.js', 'server');
+	api.addFiles('server/lib/scheduleEmailMessage.js', 'server');
 
 	// SERVER MODELS
 	api.addFiles('server/models/_Base.js', 'server');
