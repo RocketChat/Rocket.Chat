@@ -10,7 +10,7 @@ import {username, email, password} from '../../data/user.js';
 
 
 //Basic usage test start
-describe('[User Creation Tests]', function() {
+describe('[User Creation]', function() {
 	this.retries(2);
 
 	before(() => {

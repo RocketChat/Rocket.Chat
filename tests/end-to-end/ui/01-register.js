@@ -2,13 +2,13 @@
 
 import loginPage from '../../pageobjects/login.page';
 
-describe('[Register Tests]', () => {
+describe('[Register]', () => {
 	before(() => {
 		loginPage.open();
 		loginPage.gotToRegister();
 	});
 
-	describe('render', () => {
+	describe('render:', () => {
 		it('it should show name field', () => {
 			loginPage.nameField.isVisible().should.be.true;
 		});
@@ -46,7 +46,7 @@ describe('[Register Tests]', () => {
 		});
 	});
 
-	describe('name', () => {
+	describe('name:', () => {
 		it('it should be required', () => {
 			loginPage.submit();
 			loginPage.nameField.getAttribute('class').should.contain('error');
@@ -54,7 +54,7 @@ describe('[Register Tests]', () => {
 		});
 	});
 
-	describe('email', () => {
+	describe('email:', () => {
 		it('it should be required', () => {
 			loginPage.submit();
 			loginPage.emailField.getAttribute('class').should.contain('error');
@@ -83,7 +83,7 @@ describe('[Register Tests]', () => {
 		});
 	});
 
-	describe('password', () => {
+	describe('password:', () => {
 		it('it should be required', () => {
 			loginPage.submit();
 			loginPage.passwordField.getAttribute('class').should.contain('error');
@@ -91,7 +91,7 @@ describe('[Register Tests]', () => {
 		});
 	});
 
-	describe('confirm-password', () => {
+	describe('confirm-password:', () => {
 		it('it should be invalid if different from password', () => {
 			loginPage.passwordField.setValue('password');
 			loginPage.submit();
