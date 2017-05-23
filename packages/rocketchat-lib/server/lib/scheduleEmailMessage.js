@@ -6,14 +6,13 @@ parser = later.parse;
 FutureEmails = new Meteor.Collection('future_emails');
 
 RocketChat.sendScheduledEmail = function(messageDetails) {
-	console.log('sending scheduled email');
-	console.log(messageDetails);
-	console.log(new Date());
-  var room = RocketChat.models.Rooms.findOneById(messageDetails.rid);
-  console.log(room);
-  console.log(RocketChat.models.Messages.findOneById(messageDetails.mid));
-  console.log("now sending");
-	RocketChat.sendEmailOnMessage(RocketChat.models.Messages.findOneById(messageDetails.mid), room);
+	var room = RocketChat.models.Rooms.findOneById(messageDetails.rid);
+
+	var message = RocketChat.models.Messages.findOneById(messageDetails.mid);
+
+	if (room != undefined && message != undefined) {
+		RocketChat.sendEmailOnMessage(message, room);
+	}
 }
 
 RocketChat.scheduleEmail = function(insertId, messageDetails) {
@@ -38,14 +37,11 @@ RocketChat.checkSchedule = function(messageDetails) {
 		var insertId = FutureEmails.insert(messageDetails);
 		RocketChat.scheduleEmail(insertId, messageDetails);
 	}
-	return true;
 }
 
 Meteor.startup(function() {
 	FutureEmails.find().forEach(function(details) {
 		if (details.ts < new Date()) {
-			console.log("sending pending email");
-			console.log(details);
 			RocketChat.sendScheduledEmail(details);
 			FutureEmails.remove(details._id);
 			SyncedCron.remove(details._id);
@@ -55,6 +51,4 @@ Meteor.startup(function() {
 	});
 
 	SyncedCron.start();
-
-	console.log('*******************************************************');
 });

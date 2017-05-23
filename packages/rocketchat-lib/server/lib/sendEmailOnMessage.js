@@ -11,20 +11,14 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 	}
 
 	if (RocketChat.settings.get('Message_AllowEditing') === true && RocketChat.settings.get('Message_AllowEditing_BlockEditInMinutes') > 0) {
-		console.log('scheduling email..');
-		console.log(message);
 		var details = {
 			"rid": message.rid,
 			"mid": message._id,
 			"ts": message.ts
 		};
-		console.log(details);
-		console.log(details.ts);
 		details.ts.setMinutes(details.ts.getMinutes() + RocketChat.settings.get('Message_AllowEditing_BlockEditInMinutes'));
-		console.log(details.ts);
 
 		RocketChat.checkSchedule(details);
-		console.log("this done");
 	} else {
 		return RocketChat.sendEmailOnMessage(message, room);
 	}
