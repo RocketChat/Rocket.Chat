@@ -19,7 +19,7 @@ function getRoomInfo(roomId) {
 	});
 }
 
-describe('channels', function() {
+describe('[Channels]', function() {
 	this.retries(0);
 
 	before(done => getCredentials(done));
@@ -518,7 +518,7 @@ describe('channels', function() {
 			.end(done);
 	});
 
-	describe('/channels.delete', () => {
+	describe('/channels.delete:', () => {
 		let testChannel;
 		it('/channels.create', (done) => {
 			request.post(api('channels.create'))
