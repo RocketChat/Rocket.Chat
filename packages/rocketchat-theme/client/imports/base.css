@@ -932,7 +932,7 @@ label.required::after {
 		overflow-y: auto;
 		-webkit-overflow-scrolling: touch;
 		direction: rtl;
-		height: calc(100% - var(--header-min-height) - var(--footer-min-height));
+		height: calc(100% - calc(var(--header-min-height) - var(--footer-min-height)));
 		transition: transform 0.3s cubic-bezier(0.5, 0, 0.1, 1);
 		z-index: 99;
 
@@ -1096,7 +1096,7 @@ label.required::after {
 		direction: rtl;
 		position: absolute;
 		top: var(--header-min-height);
-		height: calc(100% - var(--header-min-height) + var(--footer-min-height));
+		height: calc(100% - calc(var(--header-min-height) + var(--footer-min-height)));
 		width: 100%;
 		overflow-x: hidden;
 		overflow-y: auto;
@@ -2439,7 +2439,7 @@ label.required::after {
 
 	&.search-results-list {
 		top: 0;
-		height: calc(100vh - var(--header-min-height) + var(--toolbar-height) + var(--footer-min-height));
+		height: calc(100vh - calc(var(--header-min-height) + calc(var(--toolbar-height) + var(--footer-min-height))));
 		overflow-y: auto;
 		box-shadow: none;
 		border-radius: 0;
