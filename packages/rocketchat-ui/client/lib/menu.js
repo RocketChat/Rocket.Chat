@@ -41,7 +41,7 @@ this.menu = new class {
 
 	open() {
 		Session.set('isMenuOpen', true);
-		this.mainContent && this.mainContent.css('transform', `translateX(${ isRtl(localStorage.getItem('userLanguage'))?'-':'' }260px)`);
+		this.mainContent && this.mainContent.css('transform', `translateX(${ isRtl(localStorage.getItem('userLanguage'))?'-':'' }100%)`);
 	}
 
 	close() {

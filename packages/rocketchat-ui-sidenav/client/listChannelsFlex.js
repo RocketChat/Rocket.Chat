@@ -28,6 +28,7 @@ Template.listChannelsFlex.events({
 	},
 
 	'click .channel-link'() {
+		window.menu.close();
 		return SideNav.closeFlex();
 	},
 

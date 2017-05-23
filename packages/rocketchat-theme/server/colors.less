@@ -169,8 +169,14 @@
 	background-color: @transparent-darker;
 }
 
-.background-transparent-darker-hover:hover {
-	background-color: @transparent-darker;
+@media all and(min-width: 781px) {
+	.background-transparent-darker-hover:hover {
+		background-color: @transparent-darker;
+	}
+
+	.background-transparent-dark-hover:hover {
+		background-color: @transparent-dark;
+	}
 }
 
 .background-transparent-darker-before::before {
@@ -178,10 +184,6 @@
 }
 
 .background-transparent-dark {
-	background-color: @transparent-dark;
-}
-
-.background-transparent-dark-hover:hover {
 	background-color: @transparent-dark;
 }
 

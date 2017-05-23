@@ -189,6 +189,7 @@ Template.main.events({
 			const diffY = touch.clientY - t.touchstartY;
 			const absX = Math.abs(diffX);
 			const absY = Math.abs(diffY);
+			const width = window.matchMedia('(max-width: 780px)').matches ? 780 : 260;
 			if (t.movestarted !== true && t.blockmove !== true && absY > 5) {
 				t.blockmove = true;
 			}
@@ -196,24 +197,24 @@ Template.main.events({
 				t.movestarted = true;
 				if (t.isRtl) {
 					if (menu.isOpen()) {
-						t.diff = -260 + diffX;
+						t.diff = -width + diffX;
 					} else {
 						t.diff = diffX;
 					}
-					if (t.diff < -260) {
-						t.diff = -260;
+					if (t.diff < -width) {
+						t.diff = -width;
 					}
 					if (t.diff > 0) {
 						t.diff = 0;
 					}
 				} else {
 					if (menu.isOpen()) {
-						t.diff = 260 + diffX;
+						t.diff = width + diffX;
 					} else {
 						t.diff = diffX;
 					}
-					if (t.diff > 260) {
-						t.diff = 260;
+					if (t.diff > width) {
+						t.diff = width;
 					}
 					if (t.diff < 0) {
 						t.diff = 0;
