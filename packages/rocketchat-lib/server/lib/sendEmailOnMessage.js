@@ -18,9 +18,9 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 		};
 		details.ts.setMinutes(details.ts.getMinutes() + RocketChat.settings.get('Message_AllowEditing_BlockEditInMinutes'));
 
-		RocketChat.checkSchedule(details);
+		RocketChat.EmailSchedule.sendOrSchedule(details);
 	} else {
-		return RocketChat.sendEmailOnMessage(message, room);
+		RocketChat.sendEmailOnMessage(message, room);
 	}
 
 	return message;
