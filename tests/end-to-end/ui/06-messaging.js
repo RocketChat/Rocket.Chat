@@ -188,7 +188,7 @@ function messageActionsTest() {
 				});
 			});
 
-			describe('Delete:', () => {
+			describe.skip('Delete:', () => {
 				before(() => {
 					mainContent.sendMessage('Message for Message Delete Tests');
 					mainContent.openMessageActionMenu();
