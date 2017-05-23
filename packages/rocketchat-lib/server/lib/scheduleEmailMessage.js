@@ -23,7 +23,7 @@ class EmailSchedule {
 				return parser.recur().on(messageDetails.ts).fullDate();
 			},
 			job() {
-				this.sendScheduledEmail(messageDetails);
+				RocketChat.EmailSchedule.sendScheduledEmail(messageDetails);
 				FutureEmails.remove(insertId);
 				SyncedCron.remove(insertId);
 				return insertId;
@@ -34,16 +34,16 @@ class EmailSchedule {
 
 	sendOrSchedule(messageDetails) {
 		if (messageDetails.ts < new Date()) {
-			this.sendScheduledEmail(messageDetails);
+			RocketChat.EmailSchedule.sendScheduledEmail(messageDetails);
 		} else {
 			const insertId = FutureEmails.insert(messageDetails);
-			this.scheduleEmail(insertId, messageDetails);
+			RocketChat.EmailSchedule.scheduleEmail(insertId, messageDetails);
 		}
 		return true;
 	}
 }
 
-RocketChat.EmailSchedule = EmailSchedule;
+RocketChat.EmailSchedule = new EmailSchedule();
 
 Meteor.startup(function() {
 	FutureEmails.find().forEach(function(details) {
