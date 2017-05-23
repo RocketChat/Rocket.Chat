@@ -6,7 +6,7 @@ import {getCredentials, api, login, request, credentials, directMessage, log } f
 import {adminEmail, password} from '../../data/user.js';
 import supertest from 'supertest';
 
-describe('direct messages', function() {
+describe('[Direct Messages]', function() {
 	this.retries(0);
 
 	before(done => getCredentials(done));
