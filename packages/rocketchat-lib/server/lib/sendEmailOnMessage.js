@@ -11,10 +11,10 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 	}
 
 	if (RocketChat.settings.get('Message_AllowEditing') === true && RocketChat.settings.get('Message_AllowEditing_BlockEditInMinutes') > 0) {
-		var details = {
-			"rid": message.rid,
-			"mid": message._id,
-			"ts": message.ts
+		const details = {
+			'rid': message.rid,
+			'mid': message._id,
+			'ts': message.ts
 		};
 		details.ts.setMinutes(details.ts.getMinutes() + RocketChat.settings.get('Message_AllowEditing_BlockEditInMinutes'));
 
@@ -153,4 +153,4 @@ RocketChat.sendEmailOnMessage = function(message, room) {
 			});
 		}
 	}
-}
+};
