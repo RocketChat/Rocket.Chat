@@ -39,7 +39,7 @@ function messagingTest() {
 		}
 	});
 
-	describe('fileUpload:', ()=> {
+	describe.skip('fileUpload:', ()=> {
 		after(() => {
 		});
 		it('it should send a attachment', () => {
@@ -188,7 +188,7 @@ function messageActionsTest() {
 				});
 			});
 
-			describe('Delete:', () => {
+			describe.skip('Delete:', () => {
 				before(() => {
 					mainContent.sendMessage('Message for Message Delete Tests');
 					mainContent.openMessageActionMenu();
