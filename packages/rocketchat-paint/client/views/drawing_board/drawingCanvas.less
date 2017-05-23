@@ -1,0 +1,70 @@
+//@import '/lib/_.lessimport';
+@gray: #c0c0c0;
+@red: #d80030;
+@orange: #f88800;
+@redlight: #e7002a;
+
+.noselect {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+//the actual canvas
+#drawingBoard {
+  //max-width: 100%;
+  border: 1px solid #666;
+  box-shadow: 1px 1px 3px 1px rgba(0, 0, 0, 0.5);
+}
+
+//Where picture is going to be attached
+#__drawingCanvas {
+  .noselect;
+  position: relative;
+  left: 50px;
+  min-height: 540px;
+  //max-width: 85%;
+  //height: 85%;
+  //width: auto;
+  //margin: 10px;
+  background: #ffffff;
+  //border: 1px solid #666;
+  //box-shadow: 1px 1px 3px 1px rgba(0,0,0,0.5);
+}
+
+.drawingCanvasLoadingIndicator {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100px;
+  height: 100px;
+  line-height: 100px;
+  margin-top: -50px;
+  margin-left: -50px;
+  font-size: 64px;
+  text-align: center;
+}
+
+#cursorCanvas {
+  touch-action: none;
+  position: absolute;
+  cursor: url(/files/images/cursors/cursor.gif) 2 2, crosshair;
+  pointer-events: none;
+  z-index: 99
+}
+
+/*
+#__drawingBoard {
+  cursor: url(/files/images/cursors/cursor.gif) 2 2, crosshair;
+  //width: 1080px;
+  //height: 540px;
+  width: 100%;
+  position: absolute;
+  border: solid 1px #000000;
+  top: 0;
+  left: 50px;
+}
+*/

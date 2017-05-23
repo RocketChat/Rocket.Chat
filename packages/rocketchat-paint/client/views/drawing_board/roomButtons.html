@@ -1,0 +1,45 @@
+<template name="roomButtons">
+    <div class="roomTools">
+        <!-- todo: this should happen automatically with a loop  -->
+		{{#if currentUser}}
+			{{#each brushIdxes}}
+                <div class="_button __brush {{activeIf brush.index.get selectedBrushIndex '_selected'}}"
+                     data-index="{{brush.index.get}}">
+					{{#if displaySettingsIcon}}
+                        <i class="fa fa-cog"></i>
+					{{/if}}
+					{{#if typeIs 'standard'}}
+                        <i title="{{tool_name}}" class="{{tool_icon}}"></i>
+					{{/if}}
+					{{#if typeIs 'colorPicker'}}
+                        <i title="{{tool_name}}" class="{{tool_icon}}"></i>
+					{{/if}}
+					{{#if typeIs 'zoom'}}
+                        <i title="{{tool_name}}" class="{{tool_icon}}"></i>
+					{{/if}}
+					{{#if typeIs 'pan-move'}}
+                        <i title="{{tool_name}}" class="{{tool_icon}}"></i>
+					{{/if}}
+					{{#if typeIs 'eraser'}}
+                        <i title="eraser" class="fa fa-eraser"></i>
+					{{/if}}
+                </div>
+			{{/each}}
+            <div class="roomColorPicker">
+                <input type="text" id="colorPicker">
+            </div>
+
+            <div class="_button saveToCloud">
+                <i title="save" class="fa fa-save"></i>
+            </div>
+
+			{{#if canClear}}
+                <div class="_button clearBoard">
+                    <i title="clear" class="fa fa-trash"></i>
+                </div>
+			{{/if}}
+		{{/if}}
+
+
+    </div>
+</template>

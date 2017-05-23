@@ -41,8 +41,12 @@ email@1.2.1
 emojione:emojione@2.2.6
 facebook-oauth@1.3.0
 fastclick@1.0.13
+fortawesome:fontawesome@4.5.0
 francocatena:status@1.5.3
 geojson-utils@1.0.10
+github@1.1.9
+google@1.1.15
+hitchcott:panzoom@1.0.1
 github-oauth@1.2.0
 google-oauth@1.2.4
 hot-code-push@1.0.4
@@ -182,6 +186,8 @@ rocketchat:oauth2-server@2.0.0
 rocketchat:oauth2-server-config@1.0.0
 rocketchat:oembed@0.0.1
 rocketchat:otr@0.0.1
+rocketchat:paint@0.0.1
+rocketchat:piwik@0.0.1
 rocketchat:push-notifications@0.0.1
 rocketchat:reactions@0.0.1
 rocketchat:sandstorm@0.0.1
@@ -222,6 +228,7 @@ rocketchat:videobridge@0.2.0
 rocketchat:webrtc@0.0.1
 rocketchat:wordpress@0.0.1
 routepolicy@1.0.12
+ryanswapp:spectrum-colorpicker@0.0.1
 service-configuration@1.0.11
 session@1.1.7
 sha@1.0.9

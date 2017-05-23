@@ -1,0 +1,13 @@
+<template name="drawingBoard">
+    <div class="roomLayoutTools">
+		{{>roomButtons}}
+    </div>
+
+    <div id="drawingCanvas">
+    </div>
+
+    <div id="slider" class="">
+        <button class="closeSettings">X</button>
+		{{> Template.dynamic template=toolSettings }}
+    </div>
+</template>

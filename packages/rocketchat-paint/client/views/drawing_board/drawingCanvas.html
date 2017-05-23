@@ -1,0 +1,19 @@
+<template name="drawingCanvas">
+    <div id="__drawingCanvas">
+		{{#if Template.subscriptionsReady}}
+			{{#each cursors}}
+                <div class="boardCursor" style="left: {{position.x}}px; top: {{position.y}}px; z-index: 7777;">
+                    <span class="_inside"></span>
+                    <span class="_who">{{usernameById userId}}</span>
+                </div>
+			{{/each}}
+		{{else}}
+            <div class="drawingCanvasLoadingIndicator">
+                <span class="fa fa-refresh fa-spin"></span>
+            </div>
+		{{/if}}
+        <div class="localCursor">
+            <canvas id="cursorCanvas" width="100" height="100"></canvas>
+        </div>
+    </div>
+</template>

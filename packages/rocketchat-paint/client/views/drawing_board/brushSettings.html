@@ -1,0 +1,66 @@
+<template name="brushSettings">
+    <div class="content" id="brushSettings">
+        <div id="brushPreview"></div>
+
+        <div class="roomWidgetToolSetting">
+            <div class="_label">Size</div>
+            <div class="_range"><input type="range" min="1" max="100" step="1" value="{{brushValue 'size'}}"
+                                       class="__param" data-param="size"/></div>
+            <span id="size-value"></span>
+        </div>
+        <div class="roomWidgetToolSetting">
+            <div class="_label">Hardness</div>
+            <div class="_range"><input type="range" min="1" max="100" step="1" value="{{brushValue 'hardness'}}"
+                                       class="__param" data-param="hardness"/></div>
+            <span id="edge-value"></span>
+        </div>
+        <div class="roomWidgetToolSetting">
+            <div class="_label">Opacity</div>
+            <div class="_range"><input type="range" min="1" max="100" step="1" value="{{brushValue 'alpha'}}"
+                                       class="__param" data-param="alpha"/></div>
+            <span id="opacity-value"></span>
+        </div>
+        <div class="roomWidgetToolSetting">
+            <div class="_label">Flow</div>
+            <div class="_range"><input type="range" min="1" max="100" step="1" value="{{brushValue 'flow'}}"
+                                       class="__param" data-param="flow"/></div>
+            <span id="flow-value"></span>
+        </div>
+        <div id="blendModes">
+            <div class="_label">Blend Mode:</div>
+            <select class="BlendModes __param" data-param="mode">
+				{{#each blendModes}}
+                    <option value="{{key}}">{{mode}}</option>
+				{{/each}}
+            </select>
+
+        </div>
+
+        <div id="brushTextures">
+            <select class="Texture __param" data-param="texture">
+                <option value="0">Round Brush</option>
+				{{#each brushTextures}}
+                    <option value="{{key}}">{{name}}</option>
+				{{/each}}
+            </select>
+
+        </div>
+
+
+    </div>
+</template>
+
+
+<template name="scatterAndSpacing">
+    <div class="roomWidgetToolSetting">
+        <div class="_label">Spacing</div>
+        <div class="_range"><input type="range" min="1" max="100" step="1" value="{{brushValue 'spacing'}}"
+                                   class="__param" data-param="spacing"/></div>
+    </div>
+    <div class="roomWidgetToolSetting">
+        <div class="_label">Scatter</div>
+        <div class="_range"><input type="range" min="1" max="100" step="1" value="{{brushValue 'scatter'}}"
+                                   class="__param" data-param="scatter"/></div>
+    </div>
+
+</template>

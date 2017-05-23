@@ -1,0 +1,42 @@
+.boardCursor {
+  position: absolute;
+
+  width: 16px;
+  height: 16px;
+  margin-left: -8px;
+  margin-right: -8px;
+  border-radius: 32px;
+  border: 2px solid rgba(0, 10, 30, 0.25);
+  background: rgba(0, 0, 0, 0.125);
+
+  -webkit-transition: all 100ms;
+  -moz-transition: all 100ms;
+  -o-transition: all 100ms;
+  transition: all 100ms;
+
+  pointer-events: none;
+  touch-action: none;
+
+  ._inside {
+	position: absolute;
+	top: 2px;
+	left: 2px;
+	width: 8px;
+	height: 8px;
+	border: 2px solid rgba(0, 10, 30, 0.25);
+	border-radius: 32px;
+  }
+
+  ._who {
+	position: absolute;
+	display: inline-block;
+	top: -16px;
+	left: -44px;
+	width: 100px;
+	color: rgba(0, 10, 30, 0.5);
+	font-size: 10px;
+	line-height: 16px;
+	text-align: center;
+  }
+}
+
