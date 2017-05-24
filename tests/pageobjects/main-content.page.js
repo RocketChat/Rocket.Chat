@@ -3,26 +3,30 @@ import Page from './Page';
 class MainContent extends Page {
 
 	get mainContent() { return browser.element('.main-content'); }
-	get messageInput() { return browser.element('.input-message'); }
-	get sendBtn() { return browser.element('.message-buttons.send-button'); }
+
+	// Main Content Header (Channel Title Area)
 	get emptyFavoriteStar() { return browser.element('.toggle-favorite .icon-star-empty'); }
 	get favoriteStar() { return browser.element('.toggle-favorite .favorite-room'); }
+	get channelTitle() { return browser.element('.room-title'); }
+
+	//Main Content Footer (Message Input Area)
+	get messageInput() { return browser.element('.input-message'); }
+	get sendBtn() { return browser.element('.message-buttons.send-button'); }
 	get fileAttachmentBtn() { return browser.element('.message-buttons .icon-attach'); }
 	get fileAttachment() { return browser.element('.message-buttons input[type="file"]'); }
 	get recordBtn() { return browser.element('.message-buttons .icon-mic'); }
 	get videoCamBtn() { return browser.element('.message-buttons .icon-videocam'); }
 	get emojiBtn() { return browser.element('.inner-left-toolbar .emoji-picker-icon'); }
-	get channelTitle() { return browser.element('.room-title'); }
-	get popupFileConfirmBtn() { return browser.element('.sa-confirm-button-container .confirm'); }
-	get popupFileName() { return browser.element('#file-name'); }
-	get popupFileDescription() { return browser.element('#file-description'); }
-	get popupFileConfirmBtn() { return browser.element('.sa-confirm-button-container .confirm'); }
-	get popupFilePreview() { return browser.element('.upload-preview-file'); }
-	get popupFileTitle() { return browser.element('.upload-preview-title'); }
-	get popupFileCancelBtn() { return browser.element('.sa-button-container .cancel'); }
+	get messagePopUp() { return browser.element('.message-popup'); }
+	get messagePopUpTitle() { return browser.element('.message-popup-title'); }
+	get messagePopUpItems() { return browser.element('.message-popup-items'); }
+	get messagePopUpFirstItem() { return browser.element('.popup-item.selected'); }
+	get mentionAllPopUp() { return browser.element('.popup-item[data-id="all"]'); }
+	get joinChannelBtn() { return browser.element('.button.join'); }
+
+	// Messages
 	get lastMessageUser() { return browser.element('.message:last-child .user-card-message:nth-of-type(2)'); }
 	get lastMessage() { return browser.element('.message:last-child .body'); }
-	get lastMessageImg() { return browser.element('.message:last-child .body .inline-image'); }
 	get lastMessageDesc() { return browser.element('.message:last-child .body .attachment-description'); }
 	get lastMessageRoleAdded() { return browser.element('.message:last-child.subscription-role-added .body'); }
 	get beforeLastMessage() { return browser.element('.message:nth-last-child(2) .body'); }
@@ -42,6 +46,8 @@ class MainContent extends Page {
 	get messageReaction() { return browser.element('.message:last-child .message-dropdown .reaction-message'); }
 	get messagePin() { return browser.element('.message:last-child .message-dropdown .pin-message'); }
 	get messageClose() { return browser.element('.message:last-child .message-dropdown .message-dropdown-close'); }
+
+	// Emojis
 	get emojiPickerMainScreen() { return browser.element('.emoji-picker'); }
 	get emojiPickerPeopleIcon() { return browser.element('.emoji-picker .icon-people'); }
 	get emojiPickerNatureIcon() { return browser.element('.emoji-picker .icon-nature'); }
@@ -59,26 +65,24 @@ class MainContent extends Page {
 	get emojiPickerEmojiContainer() { return browser.element('.emoji-picker .emojis'); }
 	get emojiGrinning() { return browser.element('.emoji-picker .emoji-grinning'); }
 	get emojiSmile() { return browser.element('.emoji-picker .emoji-smile'); }
-	get messagePopUp() { return browser.element('.message-popup'); }
-	get messagePopUpTitle() { return browser.element('.message-popup-title'); }
-	get messagePopUpItems() { return browser.element('.message-popup-items'); }
-	get messagePopUpFirstItem() { return browser.element('.popup-item.selected'); }
-	get mentionAllPopUp() { return browser.element('.popup-item[data-id="all"]'); }
-	get joinChannelBtn() { return browser.element('.button.join'); }
 
+	// Sends a message and wait for the message to equal the text sent
 	sendMessage(text) {
 		this.setTextToInput(text);
 		this.sendBtn.click();
 		browser.waitUntil(function() {
+			browser.waitForVisible('.message:last-child .body', 5000);
 			return browser.getText('.message:last-child .body') === text;
 		}, 2000);
 	}
 
+	// adds text to the input
 	addTextToInput(text) {
 		this.messageInput.waitForVisible(5000);
 		this.messageInput.addValue(text);
 	}
 
+	// Clear and sets the text to the input
 	setTextToInput(text) {
 		this.messageInput.waitForVisible(5000);
 		this.messageInput.setValue(text);
@@ -88,6 +92,28 @@ class MainContent extends Page {
 	fileUpload(filePath) {
 		this.sendMessage('Prepare for the file');
 		this.fileAttachment.chooseFile(filePath);
+	}
+
+	waitForLastMessageEqualsText(text) {
+		browser.waitUntil(function() {
+			browser.waitForVisible('.message:last-child .body', 5000);
+			return browser.getText('.message:last-child .body') === text;
+		}, 4000);
+	}
+
+	waitForLastMessageTextAttachmentEqualsText(text) {
+		browser.waitUntil(function() {
+			browser.waitForVisible('.message:last-child .attachment-text', 5000);
+			return browser.getText('.message:last-child .attachment-text') === text;
+		}, 2000);
+	}
+
+	// Wait for the last message author username to equal the provided text
+	waitForLastMessageUserEqualsText(text) {
+		browser.waitUntil(function() {
+			browser.waitForVisible('.message:last-child .user-card-message:nth-of-type(2)', 5000);
+			return browser.getText('.message:last-child .user-card-message:nth-of-type(2)') === text;
+		}, 2000);
 	}
 
 	openMessageActionMenu() {
@@ -103,32 +129,13 @@ class MainContent extends Page {
 		this.settingSaveBtn.click();
 	}
 
-	waitForLastMessageTextAttachmentEqualsText(text) {
-		browser.waitUntil(function() {
-			return browser.getText('.message:last-child .attachment-text') === text;
-		}, 2000);
-	}
-
-	waitForLastMessageEqualsText(text) {
-		browser.waitUntil(function() {
-			return browser.getText('.message:last-child .body') === text;
-		}, 4000);
-	}
-
-	waitForLastMessageUserEqualsText(text) {
-		browser.waitUntil(function() {
-			return browser.getText('.message:last-child .user-card-message:nth-of-type(2)') === text;
-		}, 2000);
-	}
-
 	tryToMentionAll() {
 		this.addTextToInput('@all');
 		this.sendBtn.click();
 		this.waitForLastMessageEqualsText('Notify all in this room is not allowed');
-		this.lastMessage.getText().should.equal('Notify all in this room is not allowed');
 	}
 
-	//do one of the message actions, based on the "action" parameter inserted.
+	// Do one of the message actions, based on the "action" parameter inserted.
 	selectAction(action) {
 		switch (action) {
 			case 'edit':
