@@ -191,6 +191,8 @@ Template.room.helpers
 
 isSocialSharingOpen = false
 touchMoved = false
+lastTouchX = null
+lastTouchY = null
 
 Template.room.events
 	"click, touchend": (e, t) ->
@@ -203,6 +205,10 @@ Template.room.events
 			Template.instance().tabBar.close()
 
 	"touchstart .message": (e, t) ->
+		touches = e.originalEvent.touches
+		if touches && touches.length
+			lastTouchX = touches[0].pageX
+			lastTouchY = touches[0].pagey
 		touchMoved = false
 		isSocialSharingOpen = false
 		if e.originalEvent.touches.length isnt 1
@@ -276,7 +282,12 @@ Template.room.events
 				window.open(e.target.href)
 
 	"touchmove .message": (e, t) ->
-		touchMoved = true
+		touches = e.originalEvent.touches
+		if touches && touches.length
+			deltaX = Math.abs(lastTouchX - touches[0].pageX)
+			deltaY = Math.abs(lastTouchY - touches[0].pageY)
+			if deltaX > 5 or deltaY > 5
+				touchMoved = true
 		Meteor.clearTimeout t.touchtime
 
 	"touchcancel .message": (e, t) ->
