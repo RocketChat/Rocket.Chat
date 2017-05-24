@@ -197,7 +197,9 @@ function messageActionsTest() {
 					Global.sweetAlert.waitForVisible(15000);
 					Global.sweetAlertBtnContainer.waitForVisible(5000);
 					Global.sweetAlertConfirm.waitForVisible(5000);
-					Global.sweetAlertConfirm.click();
+					Global.sweetAlertConfirmButton.waitForVisible(5000);
+					Global.sweetAlertConfirmBtn.waitForVisible(5000);
+					Global.sweetAlertConfirmBtn.click();
 					Global.sweetAlertOverlay.waitForVisible(5000, true);
 				});
 
