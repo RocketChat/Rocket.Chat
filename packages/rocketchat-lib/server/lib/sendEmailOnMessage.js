@@ -10,7 +10,7 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 		return message;
 	}
 
-	if (RocketChat.settings.get('Message_AllowEditing') === true && RocketChat.settings.get('Message_AllowEditing_BlockEditInMinutes') > 0) {
+	if (RocketChat.settings.get('Message_EmailNotificationAfterEditingExpires') && RocketChat.settings.get('Message_AllowEditing') === true && RocketChat.settings.get('Message_AllowEditing_BlockEditInMinutes') > 0) {
 		const details = {
 			'rid': message.rid,
 			'_id': message._id,

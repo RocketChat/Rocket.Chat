@@ -717,6 +717,10 @@ RocketChat.settings.addGroup('Message', function() {
 		'public': true,
 		i18nDescription: 'Message_AllowEditing_BlockEditInMinutesDescription'
 	});
+	this.add('Message_EmailNotificationAfterEditingExpires', true, {
+		type: 'boolean',
+		'public': true
+	});
 	this.add('Message_AllowDeleting', true, {
 		type: 'boolean',
 		'public': true
