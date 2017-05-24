@@ -1,26 +1,15 @@
 import Page from './Page';
 
 class SideNav extends Page {
+	// New channel
 	get channelType() { return browser.element('label[for="channel-type"]'); }
 	get channelReadOnly() { return browser.element('label[for="channel-ro"]'); }
 	get channelName() { return browser.element('input#channel-name'); }
 	get saveChannelBtn() { return browser.element('.save-channel'); }
 
-	get messageInput() { return browser.element('.input-message'); }
-	get burgerBtn() { return browser.element('.burger'); }
-
+	// Account box
 	get accountBoxUserName() { return browser.element('.account-box .data h4'); }
 	get accountBoxUserAvatar() { return browser.element('.account-box .avatar-image'); }
-
-	get newChannelBtn() { return browser.element('.toolbar-search__create-channel'); }
-	get newChannelIcon() { return browser.element('.toolbar-search__create-channel.icon-plus'); }
-	get moreChannels() { return browser.element('.rooms-list .more-channels'); }
-
-	get newDirectMessageBtn() { return browser.element('.rooms-list .add-room:nth-of-type(2)'); }
-
-	get general() { return browser.element('.rooms-list > .wrapper > ul [title="general"]'); }
-	get channelHoverIcon() { return browser.element('.rooms-list > .wrapper > ul [title="general"] .icon-eye-off'); }
-
 	get userOptions() { return browser.element('.options'); }
 	get statusOnline() { return browser.element('.online'); }
 	get statusAway() { return browser.element('.away'); }
@@ -31,23 +20,38 @@ class SideNav extends Page {
 	get logout() { return browser.element('#logout'); }
 	get sideNavBar() { return browser.element('.side-nav '); }
 
+	// Toolbar
+	get spotlightSearch() { return browser.element('.toolbar-search__input'); }
+	get spotlightSearchPopUp() { return browser.element('.toolbar .message-popup'); }
+	get newChannelBtn() { return browser.element('.toolbar-search__create-channel'); }
+	get newChannelIcon() { return browser.element('.toolbar-search__create-channel.icon-plus'); }
+
+	// Rooms List
+	get general() { return browser.element('.rooms-list .room-type:not(.unread-rooms-mode) + ul .open-room[title="general"]'); }
+	get channelLeave() { return browser.element('.leave-room'); }
+	get channelHoverIcon() { return browser.element('.rooms-list > .wrapper > ul [title="general"] .icon-eye-off'); }
+	get moreChannels() { return browser.element('.rooms-list .more-channels'); }
+
+	// Account
 	get preferences() { return browser.element('[href="/account/preferences"]'); }
 	get profile() { return browser.element('[href="/account/profile"]'); }
 	get avatar() { return browser.element('[href="/changeavatar"]'); }
 	get preferencesClose() { return browser.element('.side-nav .arrow.close'); }
-	get spotlightSearch() { return browser.element('.toolbar-search__input'); }
-	get spotlightSearchPopUp() { return browser.element('.toolbar .message-popup'); }
-	get channelLeave() { return browser.element('.leave-room'); }
 
+	get burgerBtn() { return browser.element('.burger'); }
+
+	// Opens a channel via rooms list
 	openChannel(channelName) {
+		browser.waitForVisible(`.rooms-list > .wrapper > ul [title="${ channelName }"]`, 5000);
 		browser.click(`.rooms-list > .wrapper > ul [title="${ channelName }"]`);
-		this.messageInput.waitForExist(5000);
+		browser.waitForVisible('.input-message', 5000);
 		browser.waitUntil(function() {
 			browser.waitForVisible('.room-title', 5000);
 			return browser.getText('.room-title') === channelName;
 		}, 5000);
 	}
 
+	// Opens a channel via spotlight search
 	searchChannel(channelName) {
 		this.spotlightSearch.waitForVisible(5000);
 		this.spotlightSearch.click();
@@ -60,6 +64,7 @@ class SideNav extends Page {
 		}, 5000);
 	}
 
+	// Gets a channel from the spotlight search
 	getChannelFromSpotlight(channelName) {
 		this.spotlightSearch.waitForVisible(5000);
 		this.spotlightSearch.click();
@@ -68,18 +73,24 @@ class SideNav extends Page {
 		return browser.element(`.room-title=${ channelName }`);
 	}
 
-	getChannelFromList(channelName) {
-		return browser.element(`.rooms-list > .wrapper > ul [title="${ channelName }"]`);
+	// Gets a channel from the rooms list
+	getChannelFromList(channelName, reverse) {
+		if (reverse == null) {
+			browser.waitForVisible(`.rooms-list .room-type:not(.unread-rooms-mode) + ul .open-room[title="${ channelName }"]`, 5000);
+		}
+		return browser.element(`.rooms-list .room-type:not(.unread-rooms-mode) + ul .open-room[title="${ channelName }"]`);
 	}
 
 	createChannel(channelName, isPrivate, isReadOnly) {
 		this.newChannelBtn.waitForVisible(10000);
 		this.newChannelBtn.click();
 		this.channelName.waitForVisible(10000);
+
 		//workaround for incomplete setvalue bug
 		this.channelName.setValue(channelName);
 		this.channelName.setValue(channelName);
 		browser.pause(1000);
+
 		this.channelType.waitForVisible(10000);
 		if (isPrivate) {
 			this.channelType.click();
@@ -92,21 +103,6 @@ class SideNav extends Page {
 		browser.pause(500);
 		browser.waitForExist(`[title="${ channelName }"]`, 10000);
 		this.channelType.waitForVisible(5000, true);
-	}
-
-	addPeopleToChannel(user) {
-		this.membersTab.click();
-		this.userSearchBar.waitForVisible();
-		this.userSearchBar.setValue(user);
-		browser.waitForVisible('.-autocomplete-item');
-		browser.click('.-autocomplete-item');
-	}
-
-	removePeopleFromChannel(user) {
-		this.membersTab.click();
-		browser.waitForVisible(`[title="${ user }"]`);
-		browser.click(`[title="${ user }"]`);
-		this.removeUserBtn.click();
 	}
 }
 
