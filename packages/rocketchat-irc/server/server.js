@@ -85,9 +85,7 @@ class IrcClient {
 		// message order could not make sure here
 		this.isConnected = true;
 		const messageBuf = this.msgBuf;
-		messageBuf.forEach(msg => {
-			this.socket.write(msg);
-		});
+		messageBuf.forEach(msg => this.socket.write(msg));
 	}
 
 	onClose() {
@@ -329,8 +327,7 @@ class IrcClient {
 	}
 
 	createUserWhenNotExist(name) {
-		let user;
-		user = Meteor.users.findOne({ name });
+		let user = Meteor.users.findOne({ name });
 		if (!user) {
 			console.log('[irc] createNotExistUser ->'.yellow, 'userName:', name);
 			Meteor.call('registerUser', {
@@ -381,12 +378,11 @@ IrcClient.getByUid = function(uid) {
 };
 
 IrcClient.create = function(login) {
-	let ircClient;
 	if (login.user == null) {
 		return login;
 	}
 	if (!(login.user._id in ircClientMap)) {
-		ircClient = new IrcClient(login);
+		const ircClient = new IrcClient(login);
 		return async(ircClient.connect);
 	}
 	return login;
