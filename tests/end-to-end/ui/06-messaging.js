@@ -194,9 +194,13 @@ function messageActionsTest() {
 
 				it('it should delete the message', () => {
 					mainContent.selectAction('delete');
+					console.log(browser.log('browser'));
 					Global.sweetAlert.waitForVisible(15000);
+					console.log(browser.log('browser'));
 					Global.sweetAlertBtnContainer.waitForVisible(5000);
+					console.log(browser.log('browser'));
 					Global.sweetAlertConfirm.waitForVisible(5000);
+					console.log(browser.log('browser'));
 					Global.sweetAlertConfirmButton.waitForVisible(5000);
 					Global.sweetAlertConfirmBtn.waitForVisible(5000);
 					Global.sweetAlertConfirmBtn.click();
