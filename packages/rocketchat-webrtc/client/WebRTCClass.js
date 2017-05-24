@@ -436,7 +436,7 @@ class WebRTCClass {
 			const isChromeExtensionInstalled = this.navigator === 'chrome' && ChromeScreenShare.installed;
 			const isFirefoxExtensionInstalled = this.navigator === 'firefox' && window.rocketchatscreenshare != null;
 
-			if (!isChromeExtensionInstalled || !isFirefoxExtensionInstalled) {
+			if (!isChromeExtensionInstalled && !isFirefoxExtensionInstalled) {
 				swal({
 					type: 'warning',
 					title: TAPi18n.__('Screen_Share'),
@@ -456,6 +456,8 @@ class WebRTCClass {
 								});
 							} catch (_error) {
 								console.log(_error);
+								window.open(url);
+								refresh();
 							}
 						} else if (this.navigator === 'firefox') {
 							window.open('https://addons.mozilla.org/en-GB/firefox/addon/rocketchat-screen-share/');
