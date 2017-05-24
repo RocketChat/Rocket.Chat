@@ -426,13 +426,17 @@ class WebRTCClass {
 			return;
 		}
 		const getScreen = (audioStream) => {
-			if (document.cookie.indexOf('rocketchatscreenshare=chrome') === -1 && (window.rocketchatscreenshare == null) && this.navigator !== 'electron') {
-				const refresh = function() {
-					swal({
-						type: 'warning',
-						title: TAPi18n.__('Refresh_your_page_after_install_to_enable_screen_sharing')
-					});
-				};
+			const refresh = function() {
+				swal({
+					type: 'warning',
+					title: TAPi18n.__('Refresh_your_page_after_install_to_enable_screen_sharing')
+				});
+			};
+
+			const isChromeExtensionInstalled = this.navigator === 'chrome' && ChromeScreenShare.installed;
+			const isFirefoxExtensionInstalled = this.navigator === 'firefox' && window.rocketchatscreenshare != null;
+
+			if (!isChromeExtensionInstalled || !isFirefoxExtensionInstalled) {
 				swal({
 					type: 'warning',
 					title: TAPi18n.__('Screen_Share'),
@@ -461,6 +465,7 @@ class WebRTCClass {
 				});
 				return onError(false);
 			}
+
 			const getScreenSuccess = (stream) => {
 				if (audioStream != null) {
 					stream.addTrack(audioStream.getAudioTracks()[0]);
