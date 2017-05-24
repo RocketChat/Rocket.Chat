@@ -2,8 +2,7 @@ Meteor.startup ->
 	return unless Meteor.isCordova
 
 	# Handle click events for all external URLs
-	$(document).on 'deviceready', ->
-		platform = device.platform.toLowerCase()
+	document.addEventListener 'deviceready', ->
 		$(document).on 'click', (e) ->
 			$link = $(e.target).closest('a[href]')
 			return unless $link.length > 0
