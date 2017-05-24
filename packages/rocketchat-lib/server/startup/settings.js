@@ -719,7 +719,8 @@ RocketChat.settings.addGroup('Message', function() {
 	});
 	this.add('Message_EmailNotificationAfterEditingExpires', true, {
 		type: 'boolean',
-		'public': true
+		'public': true,
+		i18nDescription: 'Message_EmailNotificationAfterEditingExpiresDescription'
 	});
 	this.add('Message_AllowDeleting', true, {
 		type: 'boolean',
