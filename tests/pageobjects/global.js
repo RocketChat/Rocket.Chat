@@ -2,6 +2,7 @@ class Global {
 	// Sweet Alerts
 	get sweetAlertOverlay() { return browser.element('.sweet-overlay'); }
 	get sweetAlert() { return browser.element('.sweet-alert'); }
+	get sweetAlertBtnContainer() { return browser.element('.sweet-alert .sa-button-container'); }
 	get sweetAlertConfirm() { return browser.element('.sweet-alert .sa-confirm-button-container'); }
 	get sweetAlertCancel() { return browser.element('.sa-button-container .cancel'); }
 	get sweetAlertPasswordField() { return browser.element('.sweet-alert [type="password"]'); }
