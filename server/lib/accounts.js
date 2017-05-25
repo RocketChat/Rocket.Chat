@@ -98,9 +98,11 @@ Accounts.onCreateUser(function(options, user = {}) {
 			const footer = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Footer') || '');
 			const divisorMessage = '<hr style="margin: 20px auto; border: none; border-bottom: 1px solid #dddddd;">';
 			const siteName = RocketChat.settings.get('Site_Name');
-			const messageHTML = `<p>A user with email <b>${options.email}</b> has been registered. <br>Please check Administration -> Users to activate or delete it.`;
+			const messageHTML = RocketChat.placeholders.replace(TAPi18n.__('Accounts_Enrollment_Email_Approval_Needed_Default'), {
+				email: options.email
+			});
 
-			emailSubject = TAPi18n.__('User_Needs_Approval');
+			emailSubject = TAPi18n.__('Accounts_Enrollment_Email_Approval_Needed_Subject_Default');
 
 			RocketChat.models.Roles.findUsersInRole('admin').forEach(function (adminUser) {
 				email = {
