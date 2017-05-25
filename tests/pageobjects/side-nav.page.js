@@ -53,7 +53,7 @@ class SideNav extends Page {
 
 	// Opens a channel via spotlight search
 	searchChannel(channelName) {
-		browser.waitForVisible('.fixed-title .room-title', 5000);
+		browser.waitForVisible('.fixed-title .room-title', 15000);
 		const currentRoom = browser.element('.fixed-title .room-title').getText();
 		if (currentRoom !== channelName) {
 			this.spotlightSearch.waitForVisible(5000);
@@ -73,7 +73,7 @@ class SideNav extends Page {
 
 	// Gets a channel from the spotlight search
 	getChannelFromSpotlight(channelName) {
-		browser.waitForVisible('.fixed-title .room-title', 5000);
+		browser.waitForVisible('.fixed-title .room-title', 15000);
 		const currentRoom = browser.element('.fixed-title .room-title').getText();
 		if (currentRoom !== channelName) {
 			this.spotlightSearch.waitForVisible(5000);
