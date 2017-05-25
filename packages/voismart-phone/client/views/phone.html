@@ -95,10 +95,13 @@
 				{{> phoneSettings ""}}
 			{{/if}}
 		</div>
-		<div>
+		<div class='phone-search-container'>
+			{{#if contactsLoading}}
+				{{> loading}}
+			{{/if}}
 			{{#if searchResult}}
-            	{{> phoneSearch contacts=searchResult}}
-            {{/if}}
+				{{> phoneSearch contacts=searchResult}}
+			{{/if}}
 		</div>
 		<div>
 			{{#if showRegistry}}

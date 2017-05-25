@@ -280,6 +280,9 @@ Template.phone.helpers
 			start = now
 		return moment().startOf('day').seconds(now - start).format('HH:mm:ss')
 
+	contactsLoading: ->
+		RocketChat.Phone.getContactsLoading() > 0
+
 Template.phone.onCreated ->
 	@showSettings = new ReactiveVar false
 	@phoneDisplay = new ReactiveVar ""
@@ -312,11 +315,13 @@ Template.phone.onRendered ->
 			current_search = @$('#phone-display').val()
 
 		RocketChat.Phone.setSearchTerm(current_search)
+		RocketChat.Phone.increaseContactsLoadingMask()
 		Meteor.call 'getContacts', current_search, (error, results) =>
+			RocketChat.Phone.decreaseContactsLoadingMask()
 			if not results?
 				RocketChat.Phone.setSearchResult([])
 			else
-			    RocketChat.Phone.setSearchResult(results)
+				RocketChat.Phone.setSearchResult(results)
 
 
 RocketChat.Phone = new class
@@ -330,6 +335,7 @@ RocketChat.Phone = new class
 	searchResult = new ReactiveVar
 	enabledCamera = new ReactiveVar false
 	answered = new ReactiveVar false
+	contactsLoading = new ReactiveVar 0
 
 	_started = false
 	_login = undefined
@@ -684,6 +690,19 @@ RocketChat.Phone = new class
 
 	setSearchTerm: (term) ->
 		searchTerm.set(term)
+
+	increaseContactsLoadingMask: ->
+		contactsLoading.set(contactsLoading.get() + 1)
+
+	decreaseContactsLoadingMask: ->
+		v = contactsLoading.get()
+		if v > 0
+			contactsLoading.set(v-1)
+		else
+			contactsLoading.set(0)
+
+	getContactsLoading: ->
+		return contactsLoading.get()
 
 	setSearchResult: (results) ->
 		searchResult.set(results)

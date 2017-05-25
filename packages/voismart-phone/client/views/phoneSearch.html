@@ -1,38 +1,38 @@
 <template name="phoneSearch">
-        {{#if contacts}}
-            {{#each contacts}}
-            <div class="phone-search-content">
-                {{#if jpegPhoto}}
-                    <div class="thumb">
-                        <img src="data:image/jpeg;base64,{{jpegPhoto}}">
-                    </div>
-                {{else}}
-                    <div class="thumb">
+	{{#if contacts}}
+		{{#each contacts}}
+			<div class="phone-search-content">
+				{{#if jpegPhoto}}
+					<div class="thumb">
+						<img src="data:image/jpeg;base64,{{jpegPhoto}}">
+					</div>
+				{{else}}
+					<div class="thumb">
 						{{> avatar username=(urlify sn)}}
-                    </div>
-                {{/if}}
-                <div class="phone-search-contact">
-                    <div class="phone-search-contact-sn">
-                        <span>{{sn}}&nbsp;{{givenName}}</span>
-                    </div>
+					</div>
+				{{/if}}
+				<div class="phone-search-contact">
+					<div class="phone-search-contact-sn">
+						<span>{{sn}}&nbsp;{{givenName}}</span>
+					</div>
 
-                    {{#each telephone in telephoneNumber}}
-                        <div class="phone-search-contact-number">
-                            <span>{{telephone}}</span>
-                        </div>
-                    {{/each}}
-                    {{#each homephone in homePhone}}
-                        <div class="phone-search-contact-number">
-                            <span>{{homephone}}</span>
-                        </div>
-                    {{/each}}
-                    {{#each mobilephone in mobile}}
-                        <div class="phone-search-contact-number">
-                            <span>{{mobilephone}}</span>
-                        </div>
-                    {{/each}}
-                </div>
-            </div>
-            {{/each}}
-        {{/if}}
+					{{#each telephone in telephoneNumber}}
+						<div class="phone-search-contact-number">
+							<span>{{telephone}}</span>
+						</div>
+					{{/each}}
+					{{#each homephone in homePhone}}
+						<div class="phone-search-contact-number">
+							<span>{{homephone}}</span>
+						</div>
+					{{/each}}
+					{{#each mobilephone in mobile}}
+						<div class="phone-search-contact-number">
+							<span>{{mobilephone}}</span>
+						</div>
+					{{/each}}
+				</div>
+			</div>
+		{{/each}}
+	{{/if}}
 </template>
