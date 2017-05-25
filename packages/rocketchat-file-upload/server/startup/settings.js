@@ -30,14 +30,8 @@ RocketChat.settings.addGroup('FileUpload', function() {
 			key: 'AmazonS3',
 			i18nLabel: 'AmazonS3'
 		}, {
-			key: 'AmazonS3Server',
-			i18nLabel: 'AmazonS3Server'
-		}, {
 			key: 'GoogleCloudStorage',
 			i18nLabel: 'GoogleCloudStorage'
-		}, {
-			key: 'GoogleCloudStorageServer',
-			i18nLabel: 'GoogleCloudStorageServer'
 		}, {
 			key: 'FileSystem',
 			i18nLabel: 'FileSystem'

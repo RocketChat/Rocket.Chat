@@ -1,179 +1,161 @@
-/* globals FileUpload, Slingshot */
+/* globals FileUpload, UploadFS, RocketChatFile */
 
-import crypto from 'crypto';
+import fs from 'fs';
 import { FileUploadClass } from '../lib/FileUpload';
+import '../../ufs/GoogleStorage/server.js';
 
-function generateUrlParts({ file }) {
-	const accessId = RocketChat.settings.get('FileUpload_GoogleStorage_AccessId');
-	const secret = RocketChat.settings.get('FileUpload_GoogleStorage_Secret');
+const Future = Npm.require('fibers/future');
 
-	if (!file || !file.googleCloudStorage || _.isEmpty(accessId) || _.isEmpty(secret)) {
-		return;
-	}
+const insert = function(file, stream, cb) {
+	const fileId = this.store.create(file);
 
-	return {
-		accessId: encodeURIComponent(accessId),
-		secret,
-		path: file.googleCloudStorage.path + file._id
-	};
-}
-
-function generateGetURL({ file }) {
-	const parts = generateUrlParts({ file });
-
-	if (!parts) {
-		return;
-	}
-
-	const expires = new Date().getTime() + 120000;
-	const signature = crypto.createSign('RSA-SHA256').update(`GET\n\n\n${ expires }\n/${ file.googleCloudStorage.bucket }/${ parts.path }`).sign(parts.secret, 'base64');
-
-	return `${ file.url }?GoogleAccessId=${ parts.accessId }&Expires=${ expires }&Signature=${ encodeURIComponent(signature) }`;
-}
-
-function generateDeleteUrl({ file }) {
-	const parts = generateUrlParts({ file });
-
-	if (!parts) {
-		return;
-	}
-
-	const expires = new Date().getTime() + 5000;
-	const signature = crypto.createSign('RSA-SHA256').update(`DELETE\n\n\n${ expires }\n/${ file.googleCloudStorage.bucket }/${ encodeURIComponent(parts.path) }`).sign(parts.secret, 'base64');
-
-	return `https://${ file.googleCloudStorage.bucket }.storage.googleapis.com/${ encodeURIComponent(parts.path) }?GoogleAccessId=${ parts.accessId }&Expires=${ expires }&Signature=${ encodeURIComponent(signature) }`;
-}
-
-function createDirective(directiveName, { key, bucket, accessId, secret }) {
-	if (Slingshot._directives[directiveName]) {
-		delete Slingshot._directives[directiveName];
-	}
-
-	const config = {
-		bucket,
-		GoogleAccessId: accessId,
-		GoogleSecretKey: secret,
-		key
-	};
-
-	try {
-		Slingshot.createDirective(directiveName, Slingshot.GoogleCloud, config);
-	} catch (e) {
-		console.error('Error configuring GoogleCloudStorage ->', e.message);
-	}
-}
-
-const getFile = function(file, req, res) {
-	const fileUrl = generateGetURL({ file });
-
-	if (fileUrl) {
-		res.setHeader('Location', fileUrl);
-		res.writeHead(302);
-	}
-	res.end();
+	this.store.write(stream, fileId, cb);
 };
 
-const deleteFile = function(file) {
-	if (!file || !file.googleCloudStorage) {
-		console.warn('Failed to delete a file which is uploaded to Google Cloud Storage, the file and googleCloudStorage properties are not defined.');
-		return;
-	}
-
-	// RocketChat.models.Uploads.deleteFile(file._id);
-
-	const url = generateDeleteUrl({ file });
-
-	if (_.isEmpty(url)) {
-		console.warn('Failed to delete a file which is uploaded to Google Cloud Storage, failed to generate a delete url.');
-		return;
-	}
-
-	HTTP.call('DELETE', url);
-};
-
-// DEPRECATED: backwards compatibility (remove)
-new FileUploadClass({
-	name: 'googleCloudStorage',
-	model: 'Uploads',
-
-	get: getFile,
-	delete: deleteFile
-});
-
-new FileUploadClass({
-	name: 'GoogleCloudStorage:Uploads',
-
-	get: getFile,
-	delete: deleteFile
-});
-
-new FileUploadClass({
-	name: 'GoogleCloudStorage:Avatars',
-
-	get: getFile,
-	delete: deleteFile
-});
-
-const createGoogleStorageDirective = _.debounce(() => {
-	const directives = [
-		{
-			name: 'rocketchat-uploads-gs',
-			key: function _googleCloudStorageKey(file, metaContext) {
-				const path = `${ RocketChat.settings.get('uniqueID') }/${ metaContext.rid }/${ this.userId }/`;
-				const upload = {
-					rid: metaContext.rid,
-					googleCloudStorage: {
-						bucket: RocketChat.settings.get('FileUpload_GoogleStorage_Bucket'),
-						path
-					}
-				};
-				const fileId = RocketChat.models.Uploads.insertFileInit(this.userId, 'GoogleCloudStorage:Uploads', file, upload);
-
-				return path + fileId;
-			}
-		},
-		{
-			name: 'rocketchat-avatars-gs',
-			key(file/*, metaContext*/) {
-				const path = `${ RocketChat.settings.get('uniqueID') }/avatars/`;
-
-				const user = RocketChat.models.Users.findOneById(this.userId);
-
-				const upload = {
-					username: user && user.username,
-					googleCloudStorage: {
-						bucket: RocketChat.settings.get('FileUpload_GoogleStorage_Bucket'),
-						path
-					}
-				};
-				delete file.name;
-				RocketChat.models.Avatars.insertAvatarFileInit(user.username, this.userId, 'GoogleCloudStorage:Avatars', file, upload);
-
-				return path + user.username;
-			}
+const get = function(file, req, res) {
+	this.store.getRedirectURL(file, (err, fileUrl) => {
+		if (err) {
+			console.error(err);
 		}
-	];
 
-	const type = RocketChat.settings.get('FileUpload_Storage_Type');
+		if (fileUrl) {
+			res.setHeader('Location', fileUrl);
+			res.writeHead(302);
+		}
+		res.end();
+	});
+};
+
+const GoogleCloudStorageUploads = new FileUploadClass({
+	name: 'GoogleCloudStorage:Uploads',
+	// store setted bellow
+
+	get,
+	insert
+});
+
+const GoogleCloudStorageAvatars = new FileUploadClass({
+	name: 'GoogleCloudStorage:Avatars',
+	// store setted bellow
+
+	get,
+	insert
+});
+
+const onValidate = function(file) {
+	if (RocketChatFile.enabled === false || !/^image\/((x-windows-)?bmp|p?jpeg|png)$/.test(file.type)) {
+		return;
+	}
+
+	const tmpFile = UploadFS.getTempFilePath(file._id);
+
+	const fut = new Future();
+
+	const identify = Meteor.bindEnvironment((err, data) => {
+		if (err != null) {
+			console.error(err);
+			return fut.return();
+		}
+
+		file.identify = {
+			format: data.format,
+			size: data.size
+		};
+
+		if ([null, undefined, '', 'Unknown', 'Undefined'].includes(data.Orientation)) {
+			return fut.return();
+		}
+
+		RocketChatFile.gm(tmpFile).autoOrient().write(tmpFile, Meteor.bindEnvironment((err) => {
+			if (err != null) {
+				console.error(err);
+			}
+
+			const size = fs.lstatSync(tmpFile).size;
+			this.getCollection().direct.update({_id: file._id}, {$set: {size}});
+			fut.return();
+		}));
+	});
+
+	RocketChatFile.gm(tmpFile).identify(identify);
+
+	return fut.wait();
+};
+
+const configure = _.debounce(function() {
+	const stores = UploadFS.getStores();
+	delete stores[GoogleCloudStorageUploads.name];
+	delete stores[GoogleCloudStorageAvatars.name];
+
+	// const type = RocketChat.settings.get('FileUpload_Storage_Type');
 	const bucket = RocketChat.settings.get('FileUpload_GoogleStorage_Bucket');
 	const accessId = RocketChat.settings.get('FileUpload_GoogleStorage_AccessId');
 	const secret = RocketChat.settings.get('FileUpload_GoogleStorage_Secret');
+	const URLExpiryTimeSpan = RocketChat.settings.get('FileUpload_S3_URLExpiryTimeSpan');
 
-	if (type === 'GoogleCloudStorage' && !_.isEmpty(secret) && !_.isEmpty(accessId) && !_.isEmpty(bucket)) {
-		directives.forEach((conf) => {
-			console.log('conf.name ->', conf.name);
-			createDirective(conf.name, { key: conf.key, bucket, accessId, secret });
-		});
-	} else {
-		directives.forEach((conf) => {
-			if (Slingshot._directives[conf.name]) {
-				delete Slingshot._directives[conf.name];
+	const config = {
+		connection: {
+			credentials: {
+				client_email: accessId,
+				private_key: secret
 			}
-		});
-	}
+		},
+		bucket,
+		URLExpiryTimeSpan
+	};
+
+	GoogleCloudStorageUploads.store = new UploadFS.store.GoogleStorage(Object.assign({
+		collection: GoogleCloudStorageUploads.model.model,
+		filter: new UploadFS.Filter({
+			onCheck: FileUpload.validateFileUpload
+		}),
+		name: GoogleCloudStorageUploads.name,
+		onValidate
+	}, config));
+
+	GoogleCloudStorageAvatars.store = new UploadFS.store.GoogleStorage(Object.assign({
+		collection: GoogleCloudStorageAvatars.model.model,
+		name: GoogleCloudStorageAvatars.name,
+		onFinishUpload(file) {
+			// update file record to match user's username
+			const user = RocketChat.models.Users.findOneById(file.userId);
+			const oldAvatar = GoogleCloudStorageAvatars.model.findOneByName(user.username);
+			if (oldAvatar) {
+				try {
+					GoogleCloudStorageAvatars.deleteById(oldAvatar._id);
+				} catch (e) {
+					console.error(e);
+				}
+			}
+			GoogleCloudStorageAvatars.model.updateFileNameById(file._id, user.username);
+			// console.log('upload finished ->', file);
+		},
+		onValidate(file) {
+			if (RocketChatFile.enabled === false || RocketChat.settings.get('Accounts_AvatarResize') !== true) {
+				return;
+			}
+
+			const tmpFile = UploadFS.getTempFilePath(file._id);
+
+			const fut = new Future();
+
+			const height = RocketChat.settings.get('Accounts_AvatarSize');
+			const width = height;
+
+			RocketChatFile.gm(tmpFile).background('#ffffff').resize(width, `${ height }^`).gravity('Center').crop(width, height).extent(width, height).setFormat('jpeg').write(tmpFile, Meteor.bindEnvironment((err) => {
+				if (err != null) {
+					console.error(err);
+				}
+
+				const size = fs.lstatSync(tmpFile).size;
+				this.getCollection().direct.update({_id: file._id}, {$set: {size}});
+				fut.return();
+			}));
+
+			return fut.wait();
+		}
+	}, config));
+
 }, 500);
 
-RocketChat.settings.get('FileUpload_Storage_Type', createGoogleStorageDirective);
-RocketChat.settings.get('FileUpload_GoogleStorage_Bucket', createGoogleStorageDirective);
-RocketChat.settings.get('FileUpload_GoogleStorage_AccessId', createGoogleStorageDirective);
-RocketChat.settings.get('FileUpload_GoogleStorage_Secret', createGoogleStorageDirective);
+RocketChat.settings.get(/^FileUpload_GoogleStorage_/, configure);

@@ -1,43 +1,56 @@
-/* globals FileUpload, FileUploadBase, Slingshot */
+/* globals FileUpload, FileUploadBase, UploadFS, AmazonS3ServerStore:true, AmazonS3ServerStoreAvatar:true */
 
-FileUpload.AmazonS3 = class FileUploadAmazonS3 extends FileUploadBase {
+import '../../ufs/AmazonS3/client.js';
+
+AmazonS3ServerStore = new UploadFS.store.AmazonS3({
+	collection: RocketChat.models.Uploads.model,
+	name: 'AmazonS3Server:Uploads',
+	filter: new UploadFS.Filter({
+		onCheck: FileUpload.validateFileUpload
+	})
+});
+
+AmazonS3ServerStoreAvatar = new UploadFS.store.AmazonS3({
+	collection: RocketChat.models.Avatars.model,
+	name: 'AmazonS3Server:Avatars',
+	filter: new UploadFS.Filter({
+		onCheck: FileUpload.validateFileUpload
+	})
+});
+
+FileUpload.AmazonS3Server = class FileUploadAmazonS3Server extends FileUploadBase {
 	constructor(directive, meta, file) {
 		super(meta, file);
-		const directives = {
-			'upload': 'rocketchat-uploads',
-			'avatar': 'rocketchat-avatars'
-		};
-		this.directive = directive;
-		this.uploader = new Slingshot.Upload(directives[directive], meta);
+		console.log('AmazonS3Server', {directive, meta, file});
+		this.store = directive === 'avatar' ? AmazonS3ServerStoreAvatar : AmazonS3ServerStore;
 	}
 
 	start(callback) {
-		this.uploader.send(this.file, (error, downloadUrl) => {
-			if (this.computation) {
-				this.computation.stop();
-			}
+		this.handler = new UploadFS.Uploader({
+			store: this.store,
+			data: this.file,
+			file: this.meta,
+			onError: (err) => {
+				return callback(err);
+			},
+			onComplete: (fileData) => {
+				const file = _.pick(fileData, '_id', 'type', 'size', 'name', 'identify', 'description');
 
-			if (error) {
-				return callback.call(this, error);
-			} else {
-				const file = _.pick(this.meta, 'type', 'size', 'name', 'identify', 'description');
-				file._id = downloadUrl.substr(downloadUrl.lastIndexOf('/') + 1);
-				file.url = downloadUrl;
-
-				return callback(null, file, this.directive === 'avatar' ? 'AmazonS3:Avatars' : 'AmazonS3:Uploads');
+				file.url = fileData.url.replace(Meteor.absoluteUrl(), '/');
+				return callback(null, file, 'fs');
 			}
 		});
 
-		this.computation = Tracker.autorun(() => {
-			this.onProgress(this.uploader.progress());
-		});
+		this.handler.onProgress = (file, progress) => {
+			this.onProgress(progress);
+		};
+
+		return this.handler.start();
 	}
 
 	onProgress() {}
 
 	stop() {
-		if (this.uploader && this.uploader.xhr) {
-			this.uploader.xhr.abort();
-		}
+		return this.handler.stop();
 	}
 };
