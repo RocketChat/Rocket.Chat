@@ -1,12 +1,11 @@
 import {_} from 'meteor/underscore';
-// import {check} from 'meteor/check';
 import {Meteor} from 'meteor/meteor';
 import {UploadFS} from 'meteor/jalik:ufs';
 import S3 from 'aws-sdk/clients/s3';
 import stream from 'stream';
 
 /**
- * GridFS store
+ * AmazonS3 store
  * @param options
  * @constructor
  */
