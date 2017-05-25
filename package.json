@@ -78,6 +78,7 @@
 		"supertest": "^3.0.0"
 	},
 	"dependencies": {
+		"aws-sdk": "^2.55.0",
 		"babel-runtime": "^6.23.0",
 		"bcrypt": "^1.0.2",
 		"codemirror": "^5.25.2",
