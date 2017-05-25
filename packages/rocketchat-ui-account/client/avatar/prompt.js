@@ -96,7 +96,7 @@ Template.avatarPrompt.events({
 				// description: document.getElementById('file-description').value
 			};
 
-			const upload = fileUploadHandler('avatar', record, files[0]);
+			const upload = fileUploadHandler('Avatars', record, files[0]);
 
 			// upload.onProgress = (progress) ->
 			// 	console.log 'progress ->', progress
