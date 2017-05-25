@@ -1106,6 +1106,7 @@
   "Office_hours_updated": "Office hours updated",
   "Offline": "Offline",
   "Offline_DM_Email": "You have been direct messaged by __user__",
+  "User_Needs_Approval": "A new user registered and needs approval",
   "Offline_form": "Offline form",
   "Offline_form_unavailable_message": "Offline form unavailable message",
   "Offline_Link_Message": "GO TO MESSAGE",
