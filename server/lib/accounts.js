@@ -59,10 +59,8 @@ Accounts.emailTemplates.enrollAccount.html = function(user = {}/*, url*/) {
 };
 
 Accounts.emailTemplates.notifyAdmin.subject = function() {
-	let subject, siteName;
-
-	subject = TAPi18n.__('Accounts_Admin_Email_Approval_Needed_Subject_Default');
-	siteName = RocketChat.settings.get('Site_Name');
+	const subject = TAPi18n.__('Accounts_Admin_Email_Approval_Needed_Subject_Default');
+	const siteName = RocketChat.settings.get('Site_Name');
 
 	return `[${ siteName }] ${ subject }`;
 };
@@ -120,7 +118,7 @@ Accounts.onCreateUser(function(options, user = {}) {
 
 	if (!user.active) {
 		user.emails.some((email) => {
-			RocketChat.models.Roles.findUsersInRole('admin').forEach(function (adminUser) {
+			RocketChat.models.Roles.findUsersInRole('admin').forEach(function(adminUser) {
 				email = {
 					to: adminUser.emails[0].address,
 					from: RocketChat.settings.get('From_Email'),
