@@ -12,20 +12,29 @@ const insert = function(file, stream, cb) {
 	this.store.write(stream, fileId, cb);
 };
 
+const get = function(file, req, res) {
+	const fileUrl = this.store.getS3URL(file);
+
+	if (fileUrl) {
+		res.setHeader('Location', fileUrl);
+		res.writeHead(302);
+	}
+	res.end();
+};
+
 const AmazonS3ServerUploads = new FileUploadClass({
 	name: 'AmazonS3Server:Uploads',
 	// store setted bellow
 
-	get(file, req, res) {
-		const fileUrl = AmazonS3ServerUploads.store.getS3URL(file);
+	get,
+	insert
+});
 
-		if (fileUrl) {
-			res.setHeader('Location', fileUrl);
-			res.writeHead(302);
-		}
-		res.end();
-	},
+const AmazonS3ServerAvatars = new FileUploadClass({
+	name: 'AmazonS3Server:Avatars',
+	// store setted bellow
 
+	get,
 	insert
 });
 
@@ -72,6 +81,7 @@ const onValidate = function(file) {
 const configure = _.debounce(function() {
 	const stores = UploadFS.getStores();
 	delete stores[AmazonS3ServerUploads.name];
+	delete stores[AmazonS3ServerAvatars.name];
 
 	const Bucket = RocketChat.settings.get('FileUpload_S3_Bucket');
 	const Acl = RocketChat.settings.get('FileUpload_S3_Acl');
@@ -82,7 +92,7 @@ const configure = _.debounce(function() {
 	// const CDN = RocketChat.settings.get('FileUpload_S3_CDN');
 	// const BucketURL = RocketChat.settings.get('FileUpload_S3_BucketURL');
 
-	AmazonS3ServerUploads.store = new UploadFS.store.AmazonS3({
+	const config = {
 		connection: {
 			accessKeyId: AWSAccessKeyId,
 			secretAccessKey: AWSSecretAccessKey,
@@ -93,21 +103,60 @@ const configure = _.debounce(function() {
 			},
 			region: Region
 		},
-		URLExpiryTimeSpan,
+		URLExpiryTimeSpan
+	};
+
+	AmazonS3ServerUploads.store = new UploadFS.store.AmazonS3(Object.assign({
 		collection: AmazonS3ServerUploads.model.model,
 		filter: new UploadFS.Filter({
 			onCheck: FileUpload.validateFileUpload
 		}),
 		name: AmazonS3ServerUploads.name,
-		onFinishUpload(file) {
-			AmazonS3ServerUploads.model.update({_id: file._id}, {
-				$set: {
-					s3: file.s3
-				}
-			});
-		},
 		onValidate
-	});
+	}, config));
+
+	AmazonS3ServerAvatars.store = new UploadFS.store.AmazonS3(Object.assign({
+		collection: AmazonS3ServerAvatars.model.model,
+		name: AmazonS3ServerAvatars.name,
+		onFinishUpload(file) {
+			// update file record to match user's username
+			const user = RocketChat.models.Users.findOneById(file.userId);
+			const oldAvatar = AmazonS3ServerAvatars.model.findOneByName(user.username);
+			if (oldAvatar) {
+				try {
+					AmazonS3ServerAvatars.deleteById(oldAvatar._id);
+				} catch (e) {
+					console.error(e);
+				}
+			}
+			AmazonS3ServerAvatars.model.updateFileNameById(file._id, user.username);
+			// console.log('upload finished ->', file);
+		},
+		onValidate(file) {
+			if (RocketChatFile.enabled === false || RocketChat.settings.get('Accounts_AvatarResize') !== true) {
+				return;
+			}
+
+			const tmpFile = UploadFS.getTempFilePath(file._id);
+
+			const fut = new Future();
+
+			const height = RocketChat.settings.get('Accounts_AvatarSize');
+			const width = height;
+
+			RocketChatFile.gm(tmpFile).background('#ffffff').resize(width, `${ height }^`).gravity('Center').crop(width, height).extent(width, height).setFormat('jpeg').write(tmpFile, Meteor.bindEnvironment((err) => {
+				if (err != null) {
+					console.error(err);
+				}
+
+				const size = fs.lstatSync(tmpFile).size;
+				this.getCollection().direct.update({_id: file._id}, {$set: {size}});
+				fut.return();
+			}));
+
+			return fut.wait();
+		}
+	}, config));
 
 }, 500);
 
