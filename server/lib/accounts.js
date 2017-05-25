@@ -91,6 +91,32 @@ Accounts.onCreateUser(function(options, user = {}) {
 		}
 	}
 
+	if (!user.active) {
+		user.emails.some((email) => {
+
+			const header = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Header') || '');
+			const footer = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Footer') || '');
+			const divisorMessage = '<hr style="margin: 20px auto; border: none; border-bottom: 1px solid #dddddd;">';
+			const siteName = RocketChat.settings.get('Site_Name');
+			const messageHTML = `<p>A user with email <b>${options.email}</b> has been registered. <br>Please check Administration -> Users to activate or delete it.`;
+
+			emailSubject = TAPi18n.__('User_Needs_Approval');
+
+			RocketChat.models.Roles.findUsersInRole('admin').forEach(function (adminUser) {
+				email = {
+					to: adminUser.emails[0].address,
+					from: RocketChat.settings.get('From_Email'),
+					subject: `[${ siteName }] ${ emailSubject }`,
+					html: header + messageHTML + divisorMessage + footer
+				};
+			});
+
+			Meteor.defer(() => {
+				Email.send(email);
+			});
+		});
+	}
+
 	return user;
 });
 
