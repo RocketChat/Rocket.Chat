@@ -1,28 +1,28 @@
-/* globals FileUpload, FileUploadBase, UploadFS, AmazonS3ServerStore:true, AmazonS3ServerStoreAvatar:true */
+/* globals FileUpload, FileUploadBase, UploadFS, GoogleCloudStorageServerStore:true, GoogleCloudStorageServerStoreAvatar:true */
 
-import '../../ufs/AmazonS3/client.js';
+import '../../ufs/GoogleStorage/client.js';
 
-AmazonS3ServerStore = new UploadFS.store.AmazonS3({
+GoogleCloudStorageServerStore = new UploadFS.store.GoogleStorage({
 	collection: RocketChat.models.Uploads.model,
-	name: 'AmazonS3Server:Uploads',
+	name: 'GoogleCloudStorageServer:Uploads',
 	filter: new UploadFS.Filter({
 		onCheck: FileUpload.validateFileUpload
 	})
 });
 
-AmazonS3ServerStoreAvatar = new UploadFS.store.AmazonS3({
+GoogleCloudStorageServerStoreAvatar = new UploadFS.store.GoogleStorage({
 	collection: RocketChat.models.Avatars.model,
-	name: 'AmazonS3Server:Avatars',
+	name: 'GoogleCloudStorageServer:Avatars',
 	filter: new UploadFS.Filter({
 		onCheck: FileUpload.validateFileUpload
 	})
 });
 
-FileUpload.AmazonS3Server = class FileUploadAmazonS3Server extends FileUploadBase {
+FileUpload.GoogleCloudStorageServer = class FileUploadGoogleCloudStorageServer extends FileUploadBase {
 	constructor(directive, meta, file) {
 		super(meta, file);
-		console.log('AmazonS3Server', {directive, meta, file});
-		this.store = directive === 'avatar' ? AmazonS3ServerStoreAvatar : AmazonS3ServerStore;
+		console.log('GoogleCloudStorageServer', {directive, meta, file});
+		this.store = directive === 'avatar' ? GoogleCloudStorageServerStoreAvatar : GoogleCloudStorageServerStore;
 	}
 
 	start(callback) {

@@ -2,7 +2,7 @@
 
 import fs from 'fs';
 import { FileUploadClass } from '../lib/FileUpload';
-import '../../ufs/AmazonS3/server.js';
+import '../../ufs/GoogleStorage/server.js';
 
 const Future = Npm.require('fibers/future');
 
@@ -13,25 +13,29 @@ const insert = function(file, stream, cb) {
 };
 
 const get = function(file, req, res) {
-	const fileUrl = this.store.getS3URL(file);
+	this.store.getRedirectURL(file, (err, fileUrl) => {
+		if (err) {
+			console.error(err);
+		}
 
-	if (fileUrl) {
-		res.setHeader('Location', fileUrl);
-		res.writeHead(302);
-	}
-	res.end();
+		if (fileUrl) {
+			res.setHeader('Location', fileUrl);
+			res.writeHead(302);
+		}
+		res.end();
+	});
 };
 
-const AmazonS3ServerUploads = new FileUploadClass({
-	name: 'AmazonS3Server:Uploads',
+const GoogleCloudStorageServerUploads = new FileUploadClass({
+	name: 'GoogleCloudStorageServer:Uploads',
 	// store setted bellow
 
 	get,
 	insert
 });
 
-const AmazonS3ServerAvatars = new FileUploadClass({
-	name: 'AmazonS3Server:Avatars',
+const GoogleCloudStorageServerAvatars = new FileUploadClass({
+	name: 'GoogleCloudStorageServer:Avatars',
 	// store setted bellow
 
 	get,
@@ -80,56 +84,50 @@ const onValidate = function(file) {
 
 const configure = _.debounce(function() {
 	const stores = UploadFS.getStores();
-	delete stores[AmazonS3ServerUploads.name];
-	delete stores[AmazonS3ServerAvatars.name];
+	delete stores[GoogleCloudStorageServerUploads.name];
+	delete stores[GoogleCloudStorageServerAvatars.name];
 
-	const Bucket = RocketChat.settings.get('FileUpload_S3_Bucket');
-	const Acl = RocketChat.settings.get('FileUpload_S3_Acl');
-	const AWSAccessKeyId = RocketChat.settings.get('FileUpload_S3_AWSAccessKeyId');
-	const AWSSecretAccessKey = RocketChat.settings.get('FileUpload_S3_AWSSecretAccessKey');
+	// const type = RocketChat.settings.get('FileUpload_Storage_Type');
+	const bucket = RocketChat.settings.get('FileUpload_GoogleStorage_Bucket');
+	const accessId = RocketChat.settings.get('FileUpload_GoogleStorage_AccessId');
+	const secret = RocketChat.settings.get('FileUpload_GoogleStorage_Secret');
 	const URLExpiryTimeSpan = RocketChat.settings.get('FileUpload_S3_URLExpiryTimeSpan');
-	const Region = RocketChat.settings.get('FileUpload_S3_Region');
-	// const CDN = RocketChat.settings.get('FileUpload_S3_CDN');
-	// const BucketURL = RocketChat.settings.get('FileUpload_S3_BucketURL');
 
 	const config = {
 		connection: {
-			accessKeyId: AWSAccessKeyId,
-			secretAccessKey: AWSSecretAccessKey,
-			signatureVersion: 'v4',
-			params: {
-				Bucket,
-				ACL: Acl
-			},
-			region: Region
+			credentials: {
+				client_email: accessId,
+				private_key: secret
+			}
 		},
+		bucket,
 		URLExpiryTimeSpan
 	};
 
-	AmazonS3ServerUploads.store = new UploadFS.store.AmazonS3(Object.assign({
-		collection: AmazonS3ServerUploads.model.model,
+	GoogleCloudStorageServerUploads.store = new UploadFS.store.GoogleStorage(Object.assign({
+		collection: GoogleCloudStorageServerUploads.model.model,
 		filter: new UploadFS.Filter({
 			onCheck: FileUpload.validateFileUpload
 		}),
-		name: AmazonS3ServerUploads.name,
+		name: GoogleCloudStorageServerUploads.name,
 		onValidate
 	}, config));
 
-	AmazonS3ServerAvatars.store = new UploadFS.store.AmazonS3(Object.assign({
-		collection: AmazonS3ServerAvatars.model.model,
-		name: AmazonS3ServerAvatars.name,
+	GoogleCloudStorageServerAvatars.store = new UploadFS.store.GoogleStorage(Object.assign({
+		collection: GoogleCloudStorageServerAvatars.model.model,
+		name: GoogleCloudStorageServerAvatars.name,
 		onFinishUpload(file) {
 			// update file record to match user's username
 			const user = RocketChat.models.Users.findOneById(file.userId);
-			const oldAvatar = AmazonS3ServerAvatars.model.findOneByName(user.username);
+			const oldAvatar = GoogleCloudStorageServerAvatars.model.findOneByName(user.username);
 			if (oldAvatar) {
 				try {
-					AmazonS3ServerAvatars.deleteById(oldAvatar._id);
+					GoogleCloudStorageServerAvatars.deleteById(oldAvatar._id);
 				} catch (e) {
 					console.error(e);
 				}
 			}
-			AmazonS3ServerAvatars.model.updateFileNameById(file._id, user.username);
+			GoogleCloudStorageServerAvatars.model.updateFileNameById(file._id, user.username);
 			// console.log('upload finished ->', file);
 		},
 		onValidate(file) {
@@ -160,4 +158,4 @@ const configure = _.debounce(function() {
 
 }, 500);
 
-RocketChat.settings.get(/^FileUpload_S3_/, configure);
+RocketChat.settings.get(/^FileUpload_GoogleStorage_/, configure);
