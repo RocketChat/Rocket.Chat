@@ -4,6 +4,9 @@ import zlib from 'zlib';
 import util from 'util';
 
 import { FileUploadClass } from '../lib/FileUpload';
+import { Cookies } from 'meteor/ostrio:cookies';
+
+const cookie = new Cookies();
 
 const logger = new Logger('FileUpload');
 
@@ -126,6 +129,64 @@ const readFromGridFS = function(storeName, fileId, file, headers, req, res) {
 		ws.pipe(res);
 	}
 };
+
+const onRead = function(fileId, file, req, res) {
+	if (RocketChat.settings.get('FileUpload_ProtectFiles')) {
+		let uid;
+		let token;
+
+		if (req && req.headers && req.headers.cookie) {
+			const rawCookies = req.headers.cookie;
+
+			if (rawCookies) {
+				uid = cookie.get('rc_uid', rawCookies) ;
+				token = cookie.get('rc_token', rawCookies);
+			}
+		}
+
+		if (!uid) {
+			uid = req.query.rc_uid;
+			token = req.query.rc_token;
+		}
+
+		if (!uid || !token || !RocketChat.models.Users.findOneByIdAndLoginToken(uid, token)) {
+			res.writeHead(403);
+			return false;
+		}
+	}
+
+	res.setHeader('content-disposition', `attachment; filename="${ encodeURIComponent(file.name) }"`);
+	return true;
+};
+
+Meteor.fileStore = new UploadFS.store.GridFS({
+	collection: RocketChat.models.Uploads.model,
+	name: 'GridFS:Uploads',
+	collectionName: 'rocketchat_uploads',
+	filter: new UploadFS.Filter({
+		onCheck: FileUpload.validateFileUpload
+	}),
+	transformWrite: FileUpload.uploadsTransformWrite,
+
+	onRead
+});
+
+// DEPRECATED: backwards compatibility (remove)
+UploadFS.getStores()['rocketchat_uploads'] = UploadFS.getStores()['GridFS:Uploads'];
+
+Meteor.fileStoreAvatar = new UploadFS.store.GridFS({
+	collection: RocketChat.models.Avatars.model,
+	name: 'GridFS:Avatars',
+	collectionName: 'rocketchat_avatars',
+	// filter: new UploadFS.Filter({
+	// 	onCheck: FileUpload.validateFileUpload
+	// }),
+	transformWrite: FileUpload.avatarTransformWrite,
+	onFinishUpload: FileUpload.avatarsOnFinishUpload,
+
+	onRead
+});
+
 
 const insert = function(file, stream, cb) {
 	const fileId = this.store.create(file);

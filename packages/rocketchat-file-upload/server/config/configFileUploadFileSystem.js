@@ -78,34 +78,6 @@ const FileSystemAvatars = new FileUploadClass({
 });
 
 
-const transformWrite = function(readStream, writeStream, fileId, file) {
-	if (RocketChatFile.enabled === false || !/^image\/((x-windows-)?bmp|p?jpeg|png)$/.test(file.type)) {
-		return readStream.pipe(writeStream);
-	}
-
-	let stream = undefined;
-
-	const identify = function(err, data) {
-		if (err != null) {
-			return stream.pipe(writeStream);
-		}
-
-		file.identify = {
-			format: data.format,
-			size: data.size
-		};
-
-		if ([null, undefined, '', 'Unknown', 'Undefined'].indexOf(data.Orientation) === -1) {
-			return RocketChatFile.gm(stream).autoOrient().stream().pipe(writeStream);
-		} else {
-			return stream.pipe(writeStream);
-		}
-	};
-
-	stream = RocketChatFile.gm(readStream).identify(identify).stream();
-	return;
-};
-
 const createFileSystemStore = _.debounce(function() {
 	const stores = UploadFS.getStores();
 	delete stores['FileSystem:Uploads'];
@@ -118,7 +90,7 @@ const createFileSystemStore = _.debounce(function() {
 			onCheck: FileUpload.validateFileUpload
 		}),
 		name: FileSystemUploads.name,
-		transformWrite
+		transformWrite: FileUpload.uploadsTransformWrite
 	});
 
 	UploadFS.getStores()['fileSystem'] = UploadFS.getStores()[FileSystemUploads.name];
@@ -128,20 +100,7 @@ const createFileSystemStore = _.debounce(function() {
 		collection: FileSystemAvatars.model.model,
 		name: FileSystemAvatars.name,
 		transformWrite: FileUpload.avatarTransformWrite,
-		onFinishUpload(file) {
-			// update file record to match user's username
-			const user = RocketChat.models.Users.findOneById(file.userId);
-			const oldAvatar = FileSystemAvatars.model.findOneByName(user.username);
-			if (oldAvatar) {
-				try {
-					FileSystemAvatars.deleteById(oldAvatar._id);
-				} catch (e) {
-					console.error(e);
-				}
-			}
-			FileSystemAvatars.model.updateFileNameById(file._id, user.username);
-			// console.log('upload finished ->', file);
-		}
+		onFinishUpload: FileUpload.avatarsOnFinishUpload
 	});
 }, 500);
 
