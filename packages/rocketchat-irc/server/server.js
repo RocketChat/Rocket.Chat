@@ -1,3 +1,6 @@
+import net from 'net';
+import Lru from 'lru-cache';
+
 //////
 // Assign values
 
@@ -5,8 +8,6 @@
 const IRC_AVAILABILITY = RocketChat.settings.get('IRC_Enabled');
 
 // Cache prep
-const net = Npm.require('net');
-const Lru = Npm.require('lru-cache');
 const MESSAGE_CACHE_SIZE = RocketChat.settings.get('IRC_Message_Cache_Size');
 const ircReceiveMessageCache = Lru(MESSAGE_CACHE_SIZE);//eslint-disable-line
 const ircSendMessageCache = Lru(MESSAGE_CACHE_SIZE);//eslint-disable-line
