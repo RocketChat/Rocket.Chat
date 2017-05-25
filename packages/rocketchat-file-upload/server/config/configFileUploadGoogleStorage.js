@@ -4,12 +4,6 @@ import { FileUploadClass } from '../lib/FileUpload';
 import '../../ufs/GoogleStorage/server.js';
 
 
-const insert = function(file, stream, cb) {
-	const fileId = this.store.create(file);
-
-	this.store.write(stream, fileId, cb);
-};
-
 const get = function(file, req, res) {
 	this.store.getRedirectURL(file, (err, fileUrl) => {
 		if (err) {
@@ -26,18 +20,14 @@ const get = function(file, req, res) {
 
 const GoogleCloudStorageUploads = new FileUploadClass({
 	name: 'GoogleCloudStorage:Uploads',
+	get
 	// store setted bellow
-
-	get,
-	insert
 });
 
 const GoogleCloudStorageAvatars = new FileUploadClass({
 	name: 'GoogleCloudStorage:Avatars',
+	get
 	// store setted bellow
-
-	get,
-	insert
 });
 
 const configure = _.debounce(function() {
