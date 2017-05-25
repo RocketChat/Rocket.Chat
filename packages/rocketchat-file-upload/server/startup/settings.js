@@ -36,6 +36,9 @@ RocketChat.settings.addGroup('FileUpload', function() {
 			key: 'GoogleCloudStorage',
 			i18nLabel: 'GoogleCloudStorage'
 		}, {
+			key: 'GoogleCloudStorageServer',
+			i18nLabel: 'GoogleCloudStorageServer'
+		}, {
 			key: 'FileSystem',
 			i18nLabel: 'FileSystem'
 		}],
