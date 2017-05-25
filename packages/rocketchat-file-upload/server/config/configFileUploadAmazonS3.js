@@ -1,36 +1,19 @@
-/* globals Slingshot, FileUpload, AWS */
+/* globals FileUpload, UploadFS, RocketChatFile */
+
+import fs from 'fs';
 import { FileUploadClass } from '../lib/FileUpload';
-import AWS4 from '../lib/AWS4.js';
+import '../../ufs/AmazonS3/server.js';
 
-let S3accessKey;
-let S3secretKey;
-let S3expiryTimeSpan;
+const Future = Npm.require('fibers/future');
 
-const generateURL = function(file) {
-	if (!file || !file.s3) {
-		return;
-	}
+const insert = function(file, stream, cb) {
+	const fileId = this.store.create(file);
 
-	const credential = {
-		accessKeyId: S3accessKey,
-		secretKey: S3secretKey
-	};
-
-	const req = {
-		bucket: file.s3.bucket,
-		region: file.s3.region,
-		path: `/${ file.s3.path }${ file._id }`,
-		url: file.url,
-		expire: Math.max(5, S3expiryTimeSpan)
-	};
-
-	const queryString = AWS4.sign(req, credential);
-
-	return `${ file.url }?${ queryString }`;
+	this.store.write(stream, fileId, cb);
 };
 
-const getFile = function(file, req, res) {
-	const fileUrl = generateURL(file);
+const get = function(file, req, res) {
+	const fileUrl = this.store.getS3URL(file);
 
 	if (fileUrl) {
 		res.setHeader('Location', fileUrl);
@@ -39,165 +22,142 @@ const getFile = function(file, req, res) {
 	res.end();
 };
 
-const deleteFile = function(file) {
-	const s3 = new AWS.S3();
-	const request = s3.deleteObject({
-		Bucket: file.s3.bucket,
-		Key: file.s3.path + file._id
+const AmazonS3Uploads = new FileUploadClass({
+	name: 'AmazonS3:Uploads',
+	// store setted bellow
+
+	get,
+	insert
+});
+
+const AmazonS3Avatars = new FileUploadClass({
+	name: 'AmazonS3:Avatars',
+	// store setted bellow
+
+	get,
+	insert
+});
+
+const onValidate = function(file) {
+	if (RocketChatFile.enabled === false || !/^image\/((x-windows-)?bmp|p?jpeg|png)$/.test(file.type)) {
+		return;
+	}
+
+	const tmpFile = UploadFS.getTempFilePath(file._id);
+
+	const fut = new Future();
+
+	const identify = Meteor.bindEnvironment((err, data) => {
+		if (err != null) {
+			console.error(err);
+			return fut.return();
+		}
+
+		file.identify = {
+			format: data.format,
+			size: data.size
+		};
+
+		if ([null, undefined, '', 'Unknown', 'Undefined'].includes(data.Orientation)) {
+			return fut.return();
+		}
+
+		RocketChatFile.gm(tmpFile).autoOrient().write(tmpFile, Meteor.bindEnvironment((err) => {
+			if (err != null) {
+				console.error(err);
+			}
+
+			const size = fs.lstatSync(tmpFile).size;
+			this.getCollection().direct.update({_id: file._id}, {$set: {size}});
+			fut.return();
+		}));
 	});
-	request.send();
+
+	RocketChatFile.gm(tmpFile).identify(identify);
+
+	return fut.wait();
 };
 
-// DEPRECATED: backwards compatibility (remove)
-new FileUploadClass({
-	name: 's3',
-	model: 'Uploads',
+const configure = _.debounce(function() {
+	const stores = UploadFS.getStores();
+	delete stores[AmazonS3Uploads.name];
+	delete stores[AmazonS3Avatars.name];
 
-	get: getFile,
-	delete: deleteFile
-});
+	const Bucket = RocketChat.settings.get('FileUpload_S3_Bucket');
+	const Acl = RocketChat.settings.get('FileUpload_S3_Acl');
+	const AWSAccessKeyId = RocketChat.settings.get('FileUpload_S3_AWSAccessKeyId');
+	const AWSSecretAccessKey = RocketChat.settings.get('FileUpload_S3_AWSSecretAccessKey');
+	const URLExpiryTimeSpan = RocketChat.settings.get('FileUpload_S3_URLExpiryTimeSpan');
+	const Region = RocketChat.settings.get('FileUpload_S3_Region');
+	// const CDN = RocketChat.settings.get('FileUpload_S3_CDN');
+	// const BucketURL = RocketChat.settings.get('FileUpload_S3_BucketURL');
 
-new FileUploadClass({
-	name: 'AmazonS3:Uploads',
-
-	get: getFile,
-	delete: deleteFile
-});
-
-new FileUploadClass({
-	name: 'AmazonS3:Avatars',
-
-	get: getFile,
-	delete: deleteFile
-});
-
-function createDirective(directiveName, { key, bucket, accessKey, secretKey, region, acl, cdn, bucketUrl}) {
-	if (Slingshot._directives[directiveName]) {
-		delete Slingshot._directives[directiveName];
-	}
 	const config = {
-		bucket,
-		key,
-		AWSAccessKeyId: accessKey,
-		AWSSecretAccessKey: secretKey
+		connection: {
+			accessKeyId: AWSAccessKeyId,
+			secretAccessKey: AWSSecretAccessKey,
+			signatureVersion: 'v4',
+			params: {
+				Bucket,
+				ACL: Acl
+			},
+			region: Region
+		},
+		URLExpiryTimeSpan
 	};
 
-	if (!_.isEmpty(acl)) {
-		config.acl = acl;
-	}
+	AmazonS3Uploads.store = new UploadFS.store.AmazonS3(Object.assign({
+		collection: AmazonS3Uploads.model.model,
+		filter: new UploadFS.Filter({
+			onCheck: FileUpload.validateFileUpload
+		}),
+		name: AmazonS3Uploads.name,
+		onValidate
+	}, config));
 
-	if (!_.isEmpty(cdn)) {
-		config.cdn = cdn;
-	}
-
-	if (!_.isEmpty(region)) {
-		config.region = region;
-	}
-
-	if (!_.isEmpty(bucketUrl)) {
-		config.bucketUrl = bucketUrl;
-	}
-
-	try {
-		Slingshot.createDirective(directiveName, Slingshot.S3Storage, config);
-	} catch (e) {
-		console.error('Error configuring S3 ->', e.message);
-	}
-}
-
-const configureSlingshot = _.debounce(() => {
-	const directives = [
-		{
-			name: 'rocketchat-uploads',
-			key(file, metaContext) {
-				const path = `${ RocketChat.hostname }/${ metaContext.rid }/${ this.userId }/`;
-
-				const upload = {
-					rid: metaContext.rid,
-					s3: {
-						bucket: RocketChat.settings.get('FileUpload_S3_Bucket'),
-						region: RocketChat.settings.get('FileUpload_S3_Region'),
-						path
-					}
-				};
-				const fileId = RocketChat.models.Uploads.insertFileInit(this.userId, 'AmazonS3:Uploads', file, upload);
-
-				return path + fileId;
+	AmazonS3Avatars.store = new UploadFS.store.AmazonS3(Object.assign({
+		collection: AmazonS3Avatars.model.model,
+		name: AmazonS3Avatars.name,
+		onFinishUpload(file) {
+			// update file record to match user's username
+			const user = RocketChat.models.Users.findOneById(file.userId);
+			const oldAvatar = AmazonS3Avatars.model.findOneByName(user.username);
+			if (oldAvatar) {
+				try {
+					AmazonS3Avatars.deleteById(oldAvatar._id);
+				} catch (e) {
+					console.error(e);
+				}
 			}
+			AmazonS3Avatars.model.updateFileNameById(file._id, user.username);
+			// console.log('upload finished ->', file);
 		},
-		{
-			name: 'rocketchat-avatars',
-			key(file/*, metaContext*/) {
-				const path = `${ RocketChat.hostname }/avatars/`;
-
-				const user = RocketChat.models.Users.findOneById(this.userId);
-
-				const upload = {
-					username: user && user.username,
-					s3: {
-						bucket: RocketChat.settings.get('FileUpload_S3_Bucket'),
-						region: RocketChat.settings.get('FileUpload_S3_Region'),
-						path
-					}
-				};
-				delete file.name;
-				RocketChat.models.Avatars.insertAvatarFileInit(user.username, this.userId, 'AmazonS3:Avatars', file, upload);
-
-				return path + user.username;
+		onValidate(file) {
+			if (RocketChatFile.enabled === false || RocketChat.settings.get('Accounts_AvatarResize') !== true) {
+				return;
 			}
+
+			const tmpFile = UploadFS.getTempFilePath(file._id);
+
+			const fut = new Future();
+
+			const height = RocketChat.settings.get('Accounts_AvatarSize');
+			const width = height;
+
+			RocketChatFile.gm(tmpFile).background('#ffffff').resize(width, `${ height }^`).gravity('Center').crop(width, height).extent(width, height).setFormat('jpeg').write(tmpFile, Meteor.bindEnvironment((err) => {
+				if (err != null) {
+					console.error(err);
+				}
+
+				const size = fs.lstatSync(tmpFile).size;
+				this.getCollection().direct.update({_id: file._id}, {$set: {size}});
+				fut.return();
+			}));
+
+			return fut.wait();
 		}
-	];
+	}, config));
 
-	const type = RocketChat.settings.get('FileUpload_Storage_Type');
-	const bucket = RocketChat.settings.get('FileUpload_S3_Bucket');
-	const acl = RocketChat.settings.get('FileUpload_S3_Acl');
-	const accessKey = RocketChat.settings.get('FileUpload_S3_AWSAccessKeyId');
-	const secretKey = RocketChat.settings.get('FileUpload_S3_AWSSecretAccessKey');
-	const cdn = RocketChat.settings.get('FileUpload_S3_CDN');
-	const region = RocketChat.settings.get('FileUpload_S3_Region');
-	const bucketUrl = RocketChat.settings.get('FileUpload_S3_BucketURL');
-
-	AWS.config.update({
-		accessKeyId: RocketChat.settings.get('FileUpload_S3_AWSAccessKeyId'),
-		secretAccessKey: RocketChat.settings.get('FileUpload_S3_AWSSecretAccessKey')
-	});
-
-	if (type === 'AmazonS3' && !_.isEmpty(bucket) && !_.isEmpty(accessKey) && !_.isEmpty(secretKey)) {
-		directives.forEach((conf) => {
-			createDirective(conf.name, { key: conf.key, bucket, accessKey, secretKey, region, acl, cdn, bucketUrl});
-		});
-	} else {
-		directives.forEach((conf) => {
-			if (Slingshot._directives[conf.name]) {
-				delete Slingshot._directives[conf.name];
-			}
-		});
-	}
 }, 500);
 
-RocketChat.settings.get('FileUpload_Storage_Type', configureSlingshot);
-
-RocketChat.settings.get('FileUpload_S3_Bucket', configureSlingshot);
-
-RocketChat.settings.get('FileUpload_S3_Acl', configureSlingshot);
-
-RocketChat.settings.get('FileUpload_S3_AWSAccessKeyId', function(key, value) {
-	S3accessKey = value;
-	configureSlingshot();
-});
-
-RocketChat.settings.get('FileUpload_S3_AWSSecretAccessKey', function(key, value) {
-	S3secretKey = value;
-	configureSlingshot();
-});
-
-RocketChat.settings.get('FileUpload_S3_URLExpiryTimeSpan', function(key, value) {
-	S3expiryTimeSpan = value;
-	configureSlingshot();
-});
-
-RocketChat.settings.get('FileUpload_S3_CDN', configureSlingshot);
-
-RocketChat.settings.get('FileUpload_S3_Region', configureSlingshot);
-
-RocketChat.settings.get('FileUpload_S3_BucketURL', configureSlingshot);
+RocketChat.settings.get(/^FileUpload_S3_/, configure);
