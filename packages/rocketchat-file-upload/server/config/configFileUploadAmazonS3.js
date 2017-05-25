@@ -3,12 +3,6 @@
 import { FileUploadClass } from '../lib/FileUpload';
 import '../../ufs/AmazonS3/server.js';
 
-const insert = function(file, stream, cb) {
-	const fileId = this.store.create(file);
-
-	this.store.write(stream, fileId, cb);
-};
-
 const get = function(file, req, res) {
 	const fileUrl = this.store.getS3URL(file);
 
@@ -21,18 +15,14 @@ const get = function(file, req, res) {
 
 const AmazonS3Uploads = new FileUploadClass({
 	name: 'AmazonS3:Uploads',
+	get
 	// store setted bellow
-
-	get,
-	insert
 });
 
 const AmazonS3Avatars = new FileUploadClass({
 	name: 'AmazonS3:Avatars',
+	get
 	// store setted bellow
-
-	get,
-	insert
 });
 
 const configure = _.debounce(function() {

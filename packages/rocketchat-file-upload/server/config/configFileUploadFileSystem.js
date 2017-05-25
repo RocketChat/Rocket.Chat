@@ -3,12 +3,6 @@
 import fs from 'fs';
 import { FileUploadClass } from '../lib/FileUpload';
 
-const insert = function(file, stream, cb) {
-	const fileId = this.store.create(file);
-
-	this.store.write(stream, fileId, cb);
-};
-
 const FileSystemUploads = new FileUploadClass({
 	name: 'FileSystem:Uploads',
 	// store setted bellow
@@ -33,9 +27,7 @@ const FileSystemUploads = new FileUploadClass({
 			res.end();
 			return;
 		}
-	},
-
-	insert
+	}
 });
 
 const FileSystemAvatars = new FileUploadClass({
@@ -72,9 +64,7 @@ const FileSystemAvatars = new FileUploadClass({
 			res.end();
 			return;
 		}
-	},
-
-	insert
+	}
 });
 
 
