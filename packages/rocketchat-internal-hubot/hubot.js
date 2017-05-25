@@ -1,14 +1,31 @@
-CoffeeScript = Npm.require('coffee-script');
+/* eslint-disable no-use-before-define no-unused-vars */
+/* globals __meteor_bootstrap__ */
+const CoffeeScript = Npm.require('coffee-script');
 CoffeeScript.register();
 const Hubot = Npm.require('hubot');
-import fs from 'fs';
-import path from 'path';
-
 // Start a hubot, connected to our chat room.
 // 'use strict'
 
 // Log messages?
 const DEBUG = false;
+
+let InternalHubot = {};
+
+const sendHelper = Meteor.bindEnvironment((robot, envelope, strings, map) =>{
+	while (strings.length > 0) {
+		const string = strings.shift();
+		if (typeof(string) === 'function') {
+			string();
+		} else {
+			try {
+				map(string);
+			} catch (err) {
+				if (DEBUG) { console.error(`Hubot error: ${ err }`); }
+				robot.logger.error(`RocketChat send error: ${ err }`);
+			}
+		}
+	}
+});
 
 // Monkey-patch Hubot to support private messages
 Hubot.Response.prototype.priv = (...strings) => this.robot.adapter.priv(this.envelope, ...strings);
@@ -118,7 +135,7 @@ class RocketChatAdapter extends Hubot.Adapter {
 	// strings  - One more more Strings to set as the topic.
 	//
 	// Returns nothing.
-	topic(envelope, ...strings) {
+	topic(/*envelope, ...strings*/) {
 		if (DEBUG) { return console.log('ROCKETCHATADAPTER -> topic'.blue); }
 	}
 
@@ -128,7 +145,7 @@ class RocketChatAdapter extends Hubot.Adapter {
 	// strings  - One or more strings for each play message to send.
 	//
 	// Returns nothing
-	play(envelope, ...strings) {
+	play(/*envelope, ...strings*/) {
 		if (DEBUG) { return console.log('ROCKETCHATADAPTER -> play'.blue); }
 	}
 
@@ -194,25 +211,6 @@ class HubotScripts {
 		});
 	}
 }
-
-
-var sendHelper = Meteor.bindEnvironment((robot, envelope, strings, map) =>{
-	while (strings.length > 0) {
-		const string = strings.shift();
-		if (typeof(string) === 'function') {
-			string();
-		} else {
-			try {
-				map(string);
-			} catch (err) {
-				if (DEBUG) { console.error(`Hubot error: ${ err }`); }
-				robot.logger.error(`RocketChat send error: ${ err }`);
-			}
-		}
-	}
-});
-
-var InternalHubot = {};
 
 const init = _.debounce(Meteor.bindEnvironment(() => {
 	if (RocketChat.settings.get('InternalHubot_Enabled')) {
