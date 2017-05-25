@@ -11,6 +11,7 @@ Package.onUse(function(api) {
 	api.use('ecmascript');
 	api.use('rocketchat:file');
 	api.use('jalik:ufs');
+	api.use('jalik:ufs-gridfs');
 	api.use('jalik:ufs-local@0.2.5');
 	api.use('edgee:slingshot');
 	api.use('ostrio:cookies');
