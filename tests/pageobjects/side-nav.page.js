@@ -64,10 +64,14 @@ class SideNav extends Page {
 			// room.click();
 			browser.waitForVisible(`[name='${ channelName }']`, 5000);
 			browser.click(`[name='${ channelName }']`);
-			browser.waitUntil(function() {
-				browser.waitForVisible('.fixed-title .room-title', 8000);
-				return browser.getText('.fixed-title .room-title') === channelName;
-			}, 10000);
+			try {
+				browser.waitUntil(function() {
+					browser.waitForVisible('.fixed-title .room-title', 8000);
+					return browser.getText('.fixed-title .room-title') === channelName;
+				}, 10000);
+			} catch (error) {
+				this.openChannel(channelName);
+			}
 		}
 	}
 
