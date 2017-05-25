@@ -1,42 +1,56 @@
-/* globals FileUpload, FileUploadBase, Slingshot */
+/* globals FileUpload, FileUploadBase, UploadFS, GoogleCloudStorageServerStore:true, GoogleCloudStorageServerStoreAvatar:true */
 
-FileUpload.GoogleCloudStorage = class FileUploadGoogleCloudStorage extends FileUploadBase {
+import '../../ufs/GoogleStorage/client.js';
+
+GoogleCloudStorageServerStore = new UploadFS.store.GoogleStorage({
+	collection: RocketChat.models.Uploads.model,
+	name: 'GoogleCloudStorageServer:Uploads',
+	filter: new UploadFS.Filter({
+		onCheck: FileUpload.validateFileUpload
+	})
+});
+
+GoogleCloudStorageServerStoreAvatar = new UploadFS.store.GoogleStorage({
+	collection: RocketChat.models.Avatars.model,
+	name: 'GoogleCloudStorageServer:Avatars',
+	filter: new UploadFS.Filter({
+		onCheck: FileUpload.validateFileUpload
+	})
+});
+
+FileUpload.GoogleCloudStorageServer = class FileUploadGoogleCloudStorageServer extends FileUploadBase {
 	constructor(directive, meta, file) {
 		super(meta, file);
-		const directives = {
-			'upload': 'rocketchat-uploads-gs',
-			'avatar': 'rocketchat-avatars-gs'
-		};
-		this.uploader = new Slingshot.Upload(directives[directive], { rid: meta.rid });
+		console.log('GoogleCloudStorageServer', {directive, meta, file});
+		this.store = directive === 'avatar' ? GoogleCloudStorageServerStoreAvatar : GoogleCloudStorageServerStore;
 	}
 
 	start(callback) {
-		this.uploader.send(this.file, (error, downloadUrl) => {
-			if (this.computation) {
-				this.computation.stop();
-			}
+		this.handler = new UploadFS.Uploader({
+			store: this.store,
+			data: this.file,
+			file: this.meta,
+			onError: (err) => {
+				return callback(err);
+			},
+			onComplete: (fileData) => {
+				const file = _.pick(fileData, '_id', 'type', 'size', 'name', 'identify', 'description');
 
-			if (error) {
-				return callback.call(this, error);
-			} else {
-				const file = _.pick(this.meta, 'type', 'size', 'name', 'identify', 'description');
-				file._id = downloadUrl.substr(downloadUrl.lastIndexOf('/') + 1);
-				file.url = downloadUrl;
-
-				return callback(null, file, 'GoogleCloudStorage:Uploads');
+				file.url = fileData.url.replace(Meteor.absoluteUrl(), '/');
+				return callback(null, file, 'fs');
 			}
 		});
 
-		this.computation = Tracker.autorun(() => {
-			this.onProgress(this.uploader.progress());
-		});
+		this.handler.onProgress = (file, progress) => {
+			this.onProgress(progress);
+		};
+
+		return this.handler.start();
 	}
 
 	onProgress() {}
 
 	stop() {
-		if (this.uploader && this.uploader.xhr) {
-			this.uploader.xhr.abort();
-		}
+		return this.handler.stop();
 	}
 };
