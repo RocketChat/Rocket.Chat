@@ -512,7 +512,7 @@ RocketChat.settings.addGroup('Email', function() {
 			enableQuery: {
 				_id: 'SMTP_Protocol',
 				value: 'smtp'
-            }
+			}
 		});
 		this.add('SMTP_Pool', true, {
 			type: 'boolean',
