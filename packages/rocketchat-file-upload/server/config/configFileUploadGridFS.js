@@ -188,12 +188,6 @@ Meteor.fileStoreAvatar = new UploadFS.store.GridFS({
 });
 
 
-const insert = function(file, stream, cb) {
-	const fileId = this.store.create(file);
-
-	this.store.write(stream, fileId, cb);
-};
-
 new FileUploadClass({
 	name: 'GridFS:Uploads',
 
@@ -206,9 +200,7 @@ new FileUploadClass({
 			'Content-Length': file.size
 		};
 		return readFromGridFS(file.store, file._id, file, headers, req, res);
-	},
-
-	insert
+	}
 });
 
 new FileUploadClass({
@@ -235,7 +227,5 @@ new FileUploadClass({
 			'Content-Length': file.size
 		};
 		return readFromGridFS(file.store, file._id, file, headers, req, res);
-	},
-
-	insert
+	}
 });

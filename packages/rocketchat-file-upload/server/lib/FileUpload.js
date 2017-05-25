@@ -214,4 +214,10 @@ export class FileUploadClass {
 
 		return this.delete(file._id);
 	}
+
+	insert(file, stream, cb) {
+		const fileId = this.store.create(file);
+
+		this.store.write(stream, fileId, cb);
+	}
 }
