@@ -16,3 +16,8 @@ new UploadFS.store.GridFS({
 		onCheck: FileUpload.validateFileUpload
 	})
 });
+
+Tracker.autorun(function() {
+	document.cookie = `rc_uid=${ escape(Meteor.userId()) }; path=/`;
+	document.cookie = `rc_token=${ escape(Accounts._storedLoginToken()) }; path=/`;
+});
