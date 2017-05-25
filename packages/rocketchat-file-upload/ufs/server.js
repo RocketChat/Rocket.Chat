@@ -105,12 +105,8 @@ export class AmazonS3Store extends UploadFS.Store {
 					}
 				});
 
-				file.s3 = {
-					Key: this.getPath(file)
-				};
-
 				s3.putObject({
-					Key: file.s3.Key,
+					Key: this.getPath(file),
 					Body: writeStream,
 					ContentType: file.type
 
