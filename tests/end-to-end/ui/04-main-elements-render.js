@@ -27,6 +27,7 @@ describe('[Main Elements Render]', function() {
 			});
 
 			it('it should show the new channel button', () => {
+				sideNav.newChannelBtn.waitForVisible(5000);
 				sideNav.newChannelBtn.isVisible().should.be.true;
 			});
 
