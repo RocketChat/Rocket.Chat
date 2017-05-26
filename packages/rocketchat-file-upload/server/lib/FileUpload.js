@@ -7,6 +7,39 @@ import Future from 'fibers/future';
 Object.assign(FileUpload, {
 	handlers: {},
 
+	configureUploadsStore(store, name, options) {
+		const type = name.split(':').pop();
+		const stores = UploadFS.getStores();
+		delete stores[name];
+
+		return new UploadFS.store[store](Object.assign({
+			name
+		}, options, FileUpload[`default${ type }`]));
+	},
+
+	get defaultUploads() {
+		return {
+			collection: RocketChat.models.Uploads.model,
+			filter: new UploadFS.Filter({
+				onCheck: FileUpload.validateFileUpload
+			}),
+			// transformWrite: FileUpload.uploadsTransformWrite
+			onValidate: FileUpload.uploadsOnValidate
+		};
+	},
+
+	get defaultAvatars() {
+		return {
+			collection: RocketChat.models.Avatars.model,
+			// filter: new UploadFS.Filter({
+			// 	onCheck: FileUpload.validateFileUpload
+			// }),
+			// transformWrite: FileUpload.avatarTransformWrite,
+			onValidate: FileUpload.avatarsOnValidate,
+			onFinishUpload: FileUpload.avatarsOnFinishUpload
+		};
+	},
+
 	avatarTransformWrite(readStream, writeStream/*, fileId, file*/) {
 		if (RocketChatFile.enabled === false || RocketChat.settings.get('Accounts_AvatarResize') !== true) {
 			return readStream.pipe(writeStream);

@@ -159,31 +159,16 @@ const onRead = function(fileId, file, req, res) {
 	return true;
 };
 
-Meteor.fileStore = new UploadFS.store.GridFS({
-	collection: RocketChat.models.Uploads.model,
-	name: 'GridFS:Uploads',
+Meteor.fileStore = FileUpload.configureUploadsStore('GridFS', 'GridFS:Uploads', {
 	collectionName: 'rocketchat_uploads',
-	filter: new UploadFS.Filter({
-		onCheck: FileUpload.validateFileUpload
-	}),
-	transformWrite: FileUpload.uploadsTransformWrite,
-
 	onRead
 });
 
 // DEPRECATED: backwards compatibility (remove)
 UploadFS.getStores()['rocketchat_uploads'] = UploadFS.getStores()['GridFS:Uploads'];
 
-Meteor.fileStoreAvatar = new UploadFS.store.GridFS({
-	collection: RocketChat.models.Avatars.model,
-	name: 'GridFS:Avatars',
+Meteor.fileStoreAvatar = FileUpload.configureUploadsStore('GridFS', 'GridFS:Avatars', {
 	collectionName: 'rocketchat_avatars',
-	// filter: new UploadFS.Filter({
-	// 	onCheck: FileUpload.validateFileUpload
-	// }),
-	transformWrite: FileUpload.avatarTransformWrite,
-	onFinishUpload: FileUpload.avatarsOnFinishUpload,
-
 	onRead
 });
 
