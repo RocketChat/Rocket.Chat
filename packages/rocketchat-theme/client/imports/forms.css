@@ -3,7 +3,7 @@
 		min-height: 13px;
 		position: relative;
 
-		input {
+		& input {
 			position: absolute;
 			top: 0;
 			left: 0;
@@ -18,7 +18,7 @@
 			}
 		}
 
-		label {
+		& label {
 			cursor: pointer;
 			user-select: none;
 			padding-left: 20px;
@@ -52,7 +52,7 @@
 		min-height: 20px;
 		position: relative;
 
-		input {
+		& input {
 			position: absolute;
 			top: 0;
 			left: 0;
@@ -67,7 +67,7 @@
 			}
 		}
 
-		label {
+		& label {
 			cursor: pointer;
 			user-select: none;
 			display: block;
