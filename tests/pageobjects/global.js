@@ -2,7 +2,12 @@ class Global {
 	// Sweet Alerts
 	get sweetAlertOverlay() { return browser.element('.sweet-overlay'); }
 	get sweetAlert() { return browser.element('.sweet-alert'); }
+	get sweetAlertBtnContainer() { return browser.element('.sweet-alert .sa-button-container'); }
 	get sweetAlertConfirm() { return browser.element('.sweet-alert .sa-confirm-button-container'); }
+	get sweetAlertConfirmButton() { return browser.element('.sweet-alert .sa-confirm-button-container .confirm'); }
+	get sweetAlertConfirmBtn() { return browser.element('.sweet-alert .sa-confirm-button-container button'); }
+
+
 	get sweetAlertCancel() { return browser.element('.sa-button-container .cancel'); }
 	get sweetAlertPasswordField() { return browser.element('.sweet-alert [type="password"]'); }
 	get sweetAlertFileName() { return browser.element('#file-name'); }

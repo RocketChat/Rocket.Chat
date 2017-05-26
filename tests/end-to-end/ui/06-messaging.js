@@ -40,8 +40,6 @@ function messagingTest() {
 	});
 
 	describe.skip('fileUpload:', ()=> {
-		after(() => {
-		});
 		it('it should send a attachment', () => {
 			mainContent.fileUpload(imgURL);
 		});
@@ -188,7 +186,7 @@ function messageActionsTest() {
 				});
 			});
 
-			describe.skip('Delete:', () => {
+			describe('Delete:', () => {
 				before(() => {
 					mainContent.sendMessage('Message for Message Delete Tests');
 					mainContent.openMessageActionMenu();
@@ -196,8 +194,17 @@ function messageActionsTest() {
 
 				it('it should delete the message', () => {
 					mainContent.selectAction('delete');
-					Global.sweetAlertConfirm.click();
-					Global.sweetAlertOverlay.waitForVisible(3000, true);
+					console.log(browser.log('browser'));
+					Global.sweetAlert.waitForVisible(15000);
+					console.log(browser.log('browser'));
+					Global.sweetAlertBtnContainer.waitForVisible(5000);
+					console.log(browser.log('browser'));
+					Global.sweetAlertConfirm.waitForVisible(5000);
+					console.log(browser.log('browser'));
+					Global.sweetAlertConfirmButton.waitForVisible(5000);
+					Global.sweetAlertConfirmBtn.waitForVisible(5000);
+					Global.sweetAlertConfirmBtn.click();
+					Global.sweetAlertOverlay.waitForVisible(5000, true);
 				});
 
 				it('it should not show the deleted message', () => {
