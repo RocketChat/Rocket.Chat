@@ -79,7 +79,7 @@ Meteor.startup(function() {
 		i18nLabel: 'Permalink',
 		classes: 'clipboard',
 		context: ['pinned'],
-		action() {
+		action(event) {
 			const message = this._arguments[1];
 			RocketChat.MessageAction.hideDropDown();
 			$(event.currentTarget).attr('data-clipboard-text', RocketChat.MessageAction.getPermaLink(message._id));

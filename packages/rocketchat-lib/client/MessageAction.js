@@ -211,7 +211,7 @@ Meteor.startup(function() {
 		i18nLabel: 'Permalink',
 		classes: 'clipboard',
 		context: ['message', 'message-mobile'],
-		action() {
+		action(event) {
 			const message = this._arguments[1];
 			const permalink = RocketChat.MessageAction.getPermaLink(message._id);
 			RocketChat.MessageAction.hideDropDown();
@@ -238,7 +238,7 @@ Meteor.startup(function() {
 		i18nLabel: 'Copy',
 		classes: 'clipboard',
 		context: ['message', 'message-mobile'],
-		action() {
+		action(event) {
 			const message = this._arguments[1].msg;
 			RocketChat.MessageAction.hideDropDown();
 			if (Meteor.isCordova) {
