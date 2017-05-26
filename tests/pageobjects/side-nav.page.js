@@ -59,19 +59,13 @@ class SideNav extends Page {
 			this.spotlightSearch.waitForVisible(5000);
 			this.spotlightSearch.click();
 			this.spotlightSearch.setValue(channelName);
-			// const room = browser.selectByVisibleText('.search.room-title', channelName);
-			// room.waitForVisible(5000);
-			// room.click();
 			browser.waitForVisible(`[name='${ channelName }']`, 5000);
 			browser.click(`[name='${ channelName }']`);
-			try {
-				browser.waitUntil(function() {
-					browser.waitForVisible('.fixed-title .room-title', 8000);
-					return browser.getText('.fixed-title .room-title') === channelName;
-				}, 10000);
-			} catch (error) {
-				this.openChannel(channelName);
-			}
+			browser.waitUntil(function() {
+				browser.waitForVisible('.fixed-title .room-title', 8000);
+				return browser.getText('.fixed-title .room-title') === channelName;
+			}, 10000);
+
 		}
 	}
 
@@ -85,11 +79,6 @@ class SideNav extends Page {
 			this.spotlightSearch.setValue(channelName);
 			browser.waitForVisible(`[name='${ channelName }']`, 5000);
 			return browser.element(`[name='${ channelName }']`);
-			// const room = browser.selectByValue('.search.room-title', channelName);
-			// room.waitForVisible(5000);
-			// return room;
-			// return browser.element(`.room-title=${ channelName }`);
-
 		}
 	}
 
