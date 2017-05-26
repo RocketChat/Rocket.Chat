@@ -29,10 +29,6 @@ Package.onUse(function(api) {
 	api.addFiles('lib/FileUpload.js');
 	api.addFiles('lib/FileUploadBase.js');
 
-	api.addFiles('client/lib/FileUploadAmazonS3.js', 'client');
-	api.addFiles('client/lib/FileUploadFileSystem.js', 'client');
-	api.addFiles('client/lib/FileUploadGoogleStorage.js', 'client');
-	api.addFiles('client/lib/FileUploadGridFS.js', 'client');
 	api.addFiles('client/lib/fileUploadHandler.js', 'client');
 
 	api.addFiles('server/lib/FileUpload.js', 'server');
@@ -44,6 +40,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/config/configFileUploadGoogleStorage.js', 'server');
 	api.addFiles('server/config/configFileUploadGoogleStorage_Deprecated.js', 'server');
 	api.addFiles('server/config/configFileUploadGridFS.js', 'server');
+	api.addFiles('server/config/configStore.js', 'server');
 
 	api.addFiles('server/methods/sendFileMessage.js', 'server');
 	api.addFiles('server/methods/getS3FileUrl.js', 'server');
