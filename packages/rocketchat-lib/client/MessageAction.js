@@ -218,7 +218,6 @@ Meteor.startup(function() {
 			if (Meteor.isCordova) {
 				cordova.plugins.clipboard.copy(permalink);
 			} else {
-				console.log('permalink', $(event.currentTarget));
 				$(event.currentTarget).attr('data-clipboard-text', permalink);
 			}
 			return toastr.success(TAPi18n.__('Copied'));
