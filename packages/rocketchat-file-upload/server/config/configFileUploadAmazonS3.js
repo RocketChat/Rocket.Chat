@@ -1,4 +1,4 @@
-/* globals FileUpload, UploadFS, RocketChatFile */
+/* globals FileUpload, RocketChatFile */
 
 import { FileUploadClass } from '../lib/FileUpload';
 import '../../ufs/AmazonS3/server.js';
@@ -26,10 +26,6 @@ const AmazonS3Avatars = new FileUploadClass({
 });
 
 const configure = _.debounce(function() {
-	const stores = UploadFS.getStores();
-	delete stores[AmazonS3Uploads.name];
-	delete stores[AmazonS3Avatars.name];
-
 	const Bucket = RocketChat.settings.get('FileUpload_S3_Bucket');
 	const Acl = RocketChat.settings.get('FileUpload_S3_Acl');
 	const AWSAccessKeyId = RocketChat.settings.get('FileUpload_S3_AWSAccessKeyId');
@@ -53,22 +49,8 @@ const configure = _.debounce(function() {
 		URLExpiryTimeSpan
 	};
 
-	AmazonS3Uploads.store = new UploadFS.store.AmazonS3(Object.assign({
-		collection: AmazonS3Uploads.model.model,
-		filter: new UploadFS.Filter({
-			onCheck: FileUpload.validateFileUpload
-		}),
-		name: AmazonS3Uploads.name,
-		onValidate: FileUpload.uploadsOnValidate
-	}, config));
-
-	AmazonS3Avatars.store = new UploadFS.store.AmazonS3(Object.assign({
-		collection: AmazonS3Avatars.model.model,
-		name: AmazonS3Avatars.name,
-		onFinishUpload: FileUpload.avatarsOnFinishUpload,
-		onValidate: FileUpload.avatarsOnValidate
-	}, config));
-
+	AmazonS3Uploads.store = FileUpload.configureUploadsStore('AmazonS3', AmazonS3Uploads.name, config);
+	AmazonS3Avatars.store = FileUpload.configureUploadsStore('AmazonS3', AmazonS3Avatars.name, config);
 }, 500);
 
 RocketChat.settings.get(/^FileUpload_S3_/, configure);

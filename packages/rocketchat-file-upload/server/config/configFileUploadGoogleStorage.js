@@ -1,4 +1,4 @@
-/* globals FileUpload, UploadFS, RocketChatFile */
+/* globals FileUpload, RocketChatFile */
 
 import { FileUploadClass } from '../lib/FileUpload';
 import '../../ufs/GoogleStorage/server.js';
@@ -31,11 +31,6 @@ const GoogleCloudStorageAvatars = new FileUploadClass({
 });
 
 const configure = _.debounce(function() {
-	const stores = UploadFS.getStores();
-	delete stores[GoogleCloudStorageUploads.name];
-	delete stores[GoogleCloudStorageAvatars.name];
-
-	// const type = RocketChat.settings.get('FileUpload_Storage_Type');
 	const bucket = RocketChat.settings.get('FileUpload_GoogleStorage_Bucket');
 	const accessId = RocketChat.settings.get('FileUpload_GoogleStorage_AccessId');
 	const secret = RocketChat.settings.get('FileUpload_GoogleStorage_Secret');
@@ -52,22 +47,8 @@ const configure = _.debounce(function() {
 		URLExpiryTimeSpan
 	};
 
-	GoogleCloudStorageUploads.store = new UploadFS.store.GoogleStorage(Object.assign({
-		collection: GoogleCloudStorageUploads.model.model,
-		filter: new UploadFS.Filter({
-			onCheck: FileUpload.validateFileUpload
-		}),
-		name: GoogleCloudStorageUploads.name,
-		onValidate: FileUpload.uploadsOnValidate
-	}, config));
-
-	GoogleCloudStorageAvatars.store = new UploadFS.store.GoogleStorage(Object.assign({
-		collection: GoogleCloudStorageAvatars.model.model,
-		name: GoogleCloudStorageAvatars.name,
-		onFinishUpload: FileUpload.avatarsOnFinishUpload,
-		onValidate: FileUpload.avatarsOnValidate
-	}, config));
-
+	GoogleCloudStorageUploads.store = FileUpload.configureUploadsStore('GoogleStorage', GoogleCloudStorageUploads.name, config);
+	GoogleCloudStorageAvatars.store = FileUpload.configureUploadsStore('GoogleStorage', GoogleCloudStorageAvatars.name, config);
 }, 500);
 
 RocketChat.settings.get(/^FileUpload_GoogleStorage_/, configure);
