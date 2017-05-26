@@ -58,6 +58,9 @@ Template.loginForm.helpers({
 	},
 	hasOnePassword() {
 		return typeof OnePassword !== 'undefined' && OnePassword.findLoginForUrl && typeof device !== 'undefined' && device.platform && device.platform.toLocaleLowerCase() === 'ios';
+	},
+	manuallyApproveNewUsers() {
+		return RocketChat.settings.get('Accounts_ManuallyApproveNewUsers');
 	}
 });
 
