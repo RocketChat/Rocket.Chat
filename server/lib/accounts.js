@@ -118,17 +118,21 @@ Accounts.onCreateUser(function(options, user = {}) {
 
 	if (!user.active) {
 		user.emails.some((email) => {
-			RocketChat.models.Roles.findUsersInRole('admin').forEach(function(adminUser) {
-				email = {
-					to: adminUser.emails[0].address,
-					from: RocketChat.settings.get('From_Email'),
-					subject: Accounts.emailTemplates.notifyAdmin.subject(),
-					html: Accounts.emailTemplates.notifyAdmin.html(user)
-				};
+			const destinations = [];
 
-				Meteor.defer(() => {
-					Email.send(email);
-				});
+			RocketChat.models.Roles.findUsersInRole('admin').forEach(function(adminUser) {
+				destinations.push(`${ adminUser.name }<${ adminUser.emails[0].address }>`);
+			});
+
+			email = {
+				to: destinations,
+				from: RocketChat.settings.get('From_Email'),
+				subject: Accounts.emailTemplates.notifyAdmin.subject(),
+				html: Accounts.emailTemplates.notifyAdmin.html(user)
+			};
+
+			Meteor.defer(() => {
+				Email.send(email);
 			});
 		});
 	}
