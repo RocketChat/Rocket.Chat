@@ -73,6 +73,15 @@
 									</div>
 								</div>
 							{{/if}}
+							{{#if manuallyApproveNewUsers}}
+								<div class="input-line">
+									<label for="reason">{{_ "Reason_To_Join"}}</label>
+									<div>
+										<input type="text" name='reason' id="reason" />
+										<div class="input-error"></div>
+									</div>
+								</div>
+							{{/if}}
 						{{/if}}
 						{{#if state 'forgot-password' 'email-verification'}}
 							<div class="input-line">
