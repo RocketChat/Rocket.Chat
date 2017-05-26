@@ -48,7 +48,8 @@ describe('[Api Settings Change]', () => {
 	before((done) => {
 		checkIfUserIsValid(username, email, password);
 		sideNav.spotlightSearch.waitForVisible(10000);
-		sideNav.searchChannel('general');
+		sideNav.general.waitForVisible(5000);
+		sideNav.general.click();
 
 		request.post(api('login'))
 			.send(login)
