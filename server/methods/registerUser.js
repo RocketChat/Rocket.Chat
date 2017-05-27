@@ -32,7 +32,9 @@ Meteor.methods({
 
 		const userData = {
 			email: s.trim(formData.email.toLowerCase()),
-			password: formData.pass
+			password: formData.pass,
+			name: formData.name,
+			reason: formData.reason
 		};
 
 		// Check if user has already been imported and never logged in. If so, set password and let it through
