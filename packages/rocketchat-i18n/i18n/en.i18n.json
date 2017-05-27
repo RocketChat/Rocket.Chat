@@ -764,6 +764,7 @@
   "Invalid_name": "The name must not be empty",
   "Invalid_notification_setting_s": "Invalid notification setting: %s",
   "Invalid_pass": "The password must not be empty",
+  "Invalid_reason": "The reason to join must not be empty",
   "Invalid_room_name": "<strong>%s</strong> is not a valid room name,<br/> use only letters, numbers, hyphens and underscores",
   "Invalid_secret_URL_message": "The URL provided is invalid.",
   "Invalid_setting_s": "Invalid setting: %s",
