@@ -79,15 +79,6 @@ let smartypants = null;
 export const marked = (message) => {
 	msg = message;
 
-	let text = msg;
-	if (!_.isString(msg)) {
-		if (msg && _.trim(msg.html)) {
-			text = msg.html;
-		} else {
-			return msg;
-		}
-	}
-
 	if (!msg.tokens) {
 		msg.tokens = [];
 	}
@@ -99,7 +90,7 @@ export const marked = (message) => {
 	if (smartLists == null) { smartLists = RocketChat.settings.get('Markdown_Marked_SmartLists'); }
 	if (smartypants == null) { smartypants = RocketChat.settings.get('Markdown_Marked_Smartypants'); }
 
-	text = _marked(_.unescapeHTML(text), {
+	msg.html = _marked(_.unescapeHTML(msg.html), {
 		gfm,
 		tables,
 		breaks,
@@ -109,12 +100,6 @@ export const marked = (message) => {
 		renderer,
 		highlight
 	});
-
-	if (!_.isString(msg)) {
-		msg.html = text;
-	} else {
-		msg = text;
-	}
 
 	return msg;
 };
