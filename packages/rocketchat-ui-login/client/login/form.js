@@ -60,9 +60,7 @@ Template.loginForm.helpers({
 		return typeof OnePassword !== 'undefined' && OnePassword.findLoginForUrl && typeof device !== 'undefined' && device.platform && device.platform.toLocaleLowerCase() === 'ios';
 	},
 	manuallyApproveNewUsers() {
-		//TODO verify why it' s not getting this setting
-		//return RocketChat.settings.get('Accounts_ManuallyApproveNewUsers');
-		return true;
+		return RocketChat.settings.get('Accounts_ManuallyApproveNewUsers');
 	}
 });
 
