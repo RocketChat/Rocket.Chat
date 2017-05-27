@@ -60,7 +60,9 @@ Template.loginForm.helpers({
 		return typeof OnePassword !== 'undefined' && OnePassword.findLoginForUrl && typeof device !== 'undefined' && device.platform && device.platform.toLocaleLowerCase() === 'ios';
 	},
 	manuallyApproveNewUsers() {
-		return RocketChat.settings.get('Accounts_ManuallyApproveNewUsers');
+		//TODO verify why it' s not getting this setting
+		//return RocketChat.settings.get('Accounts_ManuallyApproveNewUsers');
+		return true;
 	}
 });
 
@@ -252,6 +254,9 @@ Template.loginForm.onCreated(function() {
 			}
 			if (RocketChat.settings.get('Accounts_RequirePasswordConfirmation') && formObj['confirm-pass'] !== formObj['pass']) {
 				validationObj['confirm-pass'] = t('Invalid_confirm_pass');
+			}
+			if (true && !formObj['reason']) {
+				validationObj['reason'] = t('Invalid_reason');
 			}
 			validateCustomFields(formObj, validationObj);
 		}
