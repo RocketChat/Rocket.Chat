@@ -15,8 +15,11 @@ const parsers = {
 };
 
 class MarkdownClass {
-	parse(message) {
-		return this.parseNotEscaped(_.escapeHTML(message));
+	parse(text) {
+		const message = {
+			html: _.escapeHTML(text)
+		};
+		return this.parseNotEscaped(message).html;
 	}
 
 	parseNotEscaped(message) {
