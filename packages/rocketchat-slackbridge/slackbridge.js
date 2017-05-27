@@ -1,4 +1,4 @@
-/* globals logger */
+/* globals logger, UploadFS */
 
 class SlackBridge {
 
@@ -592,9 +592,10 @@ class SlackBridge {
 		const parsedUrl = url.parse(slackFileURL, true);
 		parsedUrl.headers = { 'Authorization': `Bearer ${ this.apiToken }` };
 		requestModule.get(parsedUrl, Meteor.bindEnvironment((stream) => {
-			const fileId = Meteor.fileStore.create(details);
+			const fileStore = UploadFS.getStore('Uploads');
+			const fileId = fileStore.create(details);
 			if (fileId) {
-				Meteor.fileStore.write(stream, fileId, (err, file) => {
+				fileStore.write(stream, fileId, (err, file) => {
 					if (err) {
 						throw new Error(err);
 					} else {
