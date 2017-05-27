@@ -65,7 +65,7 @@ Accounts.emailTemplates.notifyAdmin.subject = function() {
 	return `[${ siteName }] ${ subject }`;
 };
 
-Accounts.emailTemplates.notifyAdmin.html = function(user = {}) {
+Accounts.emailTemplates.notifyAdmin.html = function(options = {}) {
 
 	let html;
 
@@ -75,7 +75,9 @@ Accounts.emailTemplates.notifyAdmin.html = function(user = {}) {
 	const footer = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Footer') || '');
 
 	html = RocketChat.placeholders.replace(html, {
-		email: user.emails[0].address
+		name: options.name,
+		email: options.email,
+		reason: options.reason
 	});
 
 	return header + html + footer;
@@ -128,7 +130,7 @@ Accounts.onCreateUser(function(options, user = {}) {
 				to: destinations,
 				from: RocketChat.settings.get('From_Email'),
 				subject: Accounts.emailTemplates.notifyAdmin.subject(),
-				html: Accounts.emailTemplates.notifyAdmin.html(user)
+				html: Accounts.emailTemplates.notifyAdmin.html(options)
 			};
 
 			Meteor.defer(() => {
