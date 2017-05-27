@@ -22,7 +22,6 @@ underscore@1.0.10
 jquery@1.11.10
 random@1.0.10
 ejson@1.0.13
-coffeescript
 rocketchat:streamer
 kadira:flow-router
 kadira:blaze-layout
