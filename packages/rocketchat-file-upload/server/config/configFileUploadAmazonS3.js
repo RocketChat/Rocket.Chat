@@ -4,7 +4,7 @@ import { FileUploadClass } from '../lib/FileUpload';
 import '../../ufs/AmazonS3/server.js';
 
 const get = function(file, req, res) {
-	const fileUrl = this.store.getS3URL(file);
+	const fileUrl = this.store.getRedirectURL(file);
 
 	if (fileUrl) {
 		res.setHeader('Location', fileUrl);

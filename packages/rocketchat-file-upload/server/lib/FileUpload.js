@@ -23,6 +23,9 @@ Object.assign(FileUpload, {
 			filter: new UploadFS.Filter({
 				onCheck: FileUpload.validateFileUpload
 			}),
+			getPath(file) {
+				return `${ RocketChat.settings.get('uniqueID') }/uploads/${ file.rid }/${ file.userId }/${ file._id }`;
+			},
 			// transformWrite: FileUpload.uploadsTransformWrite
 			onValidate: FileUpload.uploadsOnValidate
 		};
@@ -35,6 +38,9 @@ Object.assign(FileUpload, {
 			// 	onCheck: FileUpload.validateFileUpload
 			// }),
 			// transformWrite: FileUpload.avatarTransformWrite,
+			getPath(file) {
+				return `${ RocketChat.settings.get('uniqueID') }/avatars/${ file._id }`;
+			},
 			onValidate: FileUpload.avatarsOnValidate,
 			onFinishUpload: FileUpload.avatarsOnFinishUpload
 		};
