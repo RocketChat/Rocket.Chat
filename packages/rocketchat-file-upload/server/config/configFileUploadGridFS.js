@@ -159,7 +159,7 @@ const onRead = function(fileId, file, req, res) {
 	return true;
 };
 
-Meteor.fileStore = FileUpload.configureUploadsStore('GridFS', 'GridFS:Uploads', {
+FileUpload.configureUploadsStore('GridFS', 'GridFS:Uploads', {
 	collectionName: 'rocketchat_uploads',
 	onRead
 });
@@ -167,7 +167,7 @@ Meteor.fileStore = FileUpload.configureUploadsStore('GridFS', 'GridFS:Uploads', 
 // DEPRECATED: backwards compatibility (remove)
 UploadFS.getStores()['rocketchat_uploads'] = UploadFS.getStores()['GridFS:Uploads'];
 
-Meteor.fileStoreAvatar = FileUpload.configureUploadsStore('GridFS', 'GridFS:Avatars', {
+FileUpload.configureUploadsStore('GridFS', 'GridFS:Avatars', {
 	collectionName: 'rocketchat_avatars',
 	onRead
 });

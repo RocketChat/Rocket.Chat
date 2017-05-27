@@ -161,9 +161,10 @@ Importer.Base = class Importer.Base
 		requestModule = if /https/i.test(fileUrl) then Importer.Base.https else Importer.Base.http
 
 		requestModule.get fileUrl, Meteor.bindEnvironment((stream) ->
-			fileId = Meteor.fileStore.create details
+			fileStore = UploadFS.getStore('Uploads')
+			fileId = fileStore.create details
 			if fileId
-				Meteor.fileStore.write stream, fileId, (err, file) ->
+				fileStore.write stream, fileId, (err, file) ->
 					if err
 						throw new Error(err)
 					else
