@@ -15,7 +15,6 @@ Package.onUse(function(api) {
 	api.use('jalik:ufs-local@0.2.5');
 	api.use('edgee:slingshot');
 	api.use('ostrio:cookies');
-	api.use('peerlibrary:aws-sdk');
 	api.use('rocketchat:lib');
 	api.use('random');
 	api.use('accounts-base');

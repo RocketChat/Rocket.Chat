@@ -1,5 +1,4 @@
 import {_} from 'meteor/underscore';
-import {Meteor} from 'meteor/meteor';
 import {UploadFS} from 'meteor/jalik:ufs';
 import S3 from 'aws-sdk/clients/s3';
 import stream from 'stream';
@@ -29,97 +28,123 @@ export class AmazonS3Store extends UploadFS.Store {
 
 		const classOptions = options;
 
-		if (Meteor.isServer) {
-			const s3 = new S3(options.connection);
+		const s3 = new S3(options.connection);
 
-			this.getPath = function(file) {
-				return `${ RocketChat.hostname }/${ file.rid }/${ file.userId }/${ file._id }`;
+		options.getPath = options.getPath || function(file) {
+			return file._id;
+		};
+
+		this.getPath = function(file) {
+			if (file.AmazonS3) {
+				return file.AmazonS3.path;
+			}
+			// Compatibility
+			// TODO: Migration
+			if (file.s3) {
+				return file.s3.path + file._id;
+			}
+		};
+
+		this.getRedirectURL = function(file) {
+			const params = {
+				Key: this.getPath(file),
+				Expires: classOptions.URLExpiryTimeSpan
 			};
 
-			this.getS3URL = function(file) {
-				const params = {
-					Key: this.getPath(file),
-					Expires: classOptions.URLExpiryTimeSpan
-				};
+			return s3.getSignedUrl('getObject', params);
+		};
 
-				return s3.getSignedUrl('getObject', params);
+		/**
+		 * Creates the file in the collection
+		 * @param file
+		 * @param callback
+		 * @return {string}
+		 */
+		this.create = function(file, callback) {
+			check(file, Object);
+
+			file.AmazonS3 = {
+				path: this.options.getPath(file)
 			};
 
-			/**
-			 * Removes the file
-			 * @param fileId
-			 * @param callback
-			 */
-			this.delete = function(fileId, callback) {
-				const file = this.getCollection().findOne({_id: fileId});
-				const params = {
-					Key: this.getPath(file)
-				};
+			file.store = this.options.name; // assign store to file
+			return this.getCollection().insert(file, callback);
+		};
 
-				s3.deleteObject(params, (err, data) => {
-					if (err) {
-						console.error(err);
-					}
-
-					callback && callback(err, data);
-				});
+		/**
+		 * Removes the file
+		 * @param fileId
+		 * @param callback
+		 */
+		this.delete = function(fileId, callback) {
+			const file = this.getCollection().findOne({_id: fileId});
+			const params = {
+				Key: this.getPath(file)
 			};
 
-			/**
-			 * Returns the file read stream
-			 * @param fileId
-			 * @param file
-			 * @param options
-			 * @return {*}
-			 */
-			this.getReadStream = function(fileId, file, options = {}) {
-				const params = {
-					Key: this.getPath(file)
-				};
-
-				if (options.start && options.end) {
-					params.Range = `${ options.start } - ${ options.end }`;
+			s3.deleteObject(params, (err, data) => {
+				if (err) {
+					console.error(err);
 				}
 
-				return s3.getObject(params).createReadStream();
+				callback && callback(err, data);
+			});
+		};
+
+		/**
+		 * Returns the file read stream
+		 * @param fileId
+		 * @param file
+		 * @param options
+		 * @return {*}
+		 */
+		this.getReadStream = function(fileId, file, options = {}) {
+			const params = {
+				Key: this.getPath(file)
 			};
 
-			/**
-			 * Returns the file write stream
-			 * @param fileId
-			 * @param file
-			 * @param options
-			 * @return {*}
-			 */
-			this.getWriteStream = function(fileId, file/*, options*/) {
-				const writeStream = new stream.PassThrough();
-				writeStream.length = file.size;
+			if (options.start && options.end) {
+				params.Range = `${ options.start } - ${ options.end }`;
+			}
 
-				writeStream.on('newListener', (event, listener) => {
-					if (event === 'finish') {
-						process.nextTick(() => {
-							writeStream.removeListener(event, listener);
-							writeStream.on('real_finish', listener);
-						});
-					}
-				});
+			return s3.getObject(params).createReadStream();
+		};
 
-				s3.putObject({
-					Key: this.getPath(file),
-					Body: writeStream,
-					ContentType: file.type
+		/**
+		 * Returns the file write stream
+		 * @param fileId
+		 * @param file
+		 * @param options
+		 * @return {*}
+		 */
+		this.getWriteStream = function(fileId, file/*, options*/) {
+			const writeStream = new stream.PassThrough();
+			writeStream.length = file.size;
 
-				}, (error) => {
-					if (error) {
-						console.error(error);
-					}
+			writeStream.on('newListener', (event, listener) => {
+				if (event === 'finish') {
+					process.nextTick(() => {
+						writeStream.removeListener(event, listener);
+						writeStream.on('real_finish', listener);
+					});
+				}
+			});
 
-					writeStream.emit('real_finish');
-				});
+			s3.putObject({
+				Key: this.getPath(file),
+				Body: writeStream,
+				ContentType: file.type
 
-				return writeStream;
-			};
-		}
+			}, (error) => {
+				if (error) {
+					console.error(error);
+				}
+
+				writeStream.emit('real_finish');
+			});
+
+			return writeStream;
+		};
 	}
 }
 
