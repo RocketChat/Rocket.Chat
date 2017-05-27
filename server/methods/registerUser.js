@@ -17,6 +17,7 @@ Meteor.methods({
 				email: String,
 				pass: String,
 				name: String,
+				reason: String,
 				secretURL: Match.Optional(String)
 			}));
 		}
@@ -45,6 +46,7 @@ Meteor.methods({
 		}
 
 		RocketChat.models.Users.setName(userId, s.trim(formData.name));
+		RocketChat.models.Users.setReason(userId, s.trim(formData.reason));
 
 		RocketChat.saveCustomFields(userId, formData);
 
