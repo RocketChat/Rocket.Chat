@@ -14,10 +14,10 @@ Object.assign(FileUpload, {
 
 		return new UploadFS.store[store](Object.assign({
 			name
-		}, options, FileUpload[`default${ type }`]));
+		}, options, FileUpload[`default${ type }`]()));
 	},
 
-	get defaultUploads() {
+	defaultUploads() {
 		return {
 			collection: RocketChat.models.Uploads.model,
 			filter: new UploadFS.Filter({
@@ -31,7 +31,7 @@ Object.assign(FileUpload, {
 		};
 	},
 
-	get defaultAvatars() {
+	defaultAvatars() {
 		return {
 			collection: RocketChat.models.Avatars.model,
 			// filter: new UploadFS.Filter({
@@ -39,7 +39,7 @@ Object.assign(FileUpload, {
 			// }),
 			// transformWrite: FileUpload.avatarTransformWrite,
 			getPath(file) {
-				return `${ RocketChat.settings.get('uniqueID') }/avatars/${ file._id }`;
+				return `${ RocketChat.settings.get('uniqueID') }/avatars/${ file.userId }`;
 			},
 			onValidate: FileUpload.avatarsOnValidate,
 			onFinishUpload: FileUpload.avatarsOnFinishUpload
@@ -152,7 +152,6 @@ Object.assign(FileUpload, {
 		const user = RocketChat.models.Users.findOneById(file.userId);
 		const oldAvatar = RocketChat.models.Avatars.findOneByName(user.username);
 		if (oldAvatar) {
-			this.delete(oldAvatar._id);
 			RocketChat.models.Avatars.deleteFile(oldAvatar._id);
 		}
 		RocketChat.models.Avatars.updateFileNameById(file._id, user.username);
@@ -201,7 +200,10 @@ export class FileUploadClass {
 		this.model = model || this.getModelFromName();
 		this._store = store || UploadFS.getStore(name);
 		this.get = get;
-		this.insert = insert;
+
+		if (insert) {
+			this.insert = insert;
+		}
 
 		if (getStore) {
 			this.getStore = getStore;
