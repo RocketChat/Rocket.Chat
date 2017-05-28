@@ -180,6 +180,11 @@ Template.userInfo.helpers({
 	isBlocker() {
 		const subscription = ChatSubscription.findOne({rid:Session.get('openedRoom'), 'u._id': Meteor.userId()}, { fields: { blocker: 1 } });
 		return subscription.blocker;
+	},
+
+	shouldDisplayReason() {
+		const user = Template.instance().user.get();
+		return RocketChat.settings.get('Accounts_ManuallyApproveNewUsers') && user.active === false;
 	}
 });
 
