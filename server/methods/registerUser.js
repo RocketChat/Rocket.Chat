@@ -2,6 +2,7 @@ Meteor.methods({
 	registerUser(formData) {
 		const AllowAnonymousRead = RocketChat.settings.get('Accounts_AllowAnonymousRead');
 		const AllowAnonymousWrite = RocketChat.settings.get('Accounts_AllowAnonymousWrite');
+		const manuallyApproveNewUsers = RocketChat.settings.get('Accounts_ManuallyApproveNewUsers');
 		if (AllowAnonymousRead === true && AllowAnonymousWrite === true && formData.email == null) {
 			const userId = Accounts.insertUserDoc({}, {
 				globalRoles: [
@@ -17,9 +18,14 @@ Meteor.methods({
 				email: String,
 				pass: String,
 				name: String,
-				reason: String,
 				secretURL: Match.Optional(String)
 			}));
+
+			if (manuallyApproveNewUsers) {
+				check(formData, Match.ObjectIncluding({
+					reason: String
+				}));
+			}
 		}
 
 		if (RocketChat.settings.get('Accounts_RegistrationForm') === 'Disabled') {
@@ -33,9 +39,12 @@ Meteor.methods({
 		const userData = {
 			email: s.trim(formData.email.toLowerCase()),
 			password: formData.pass,
-			name: formData.name,
-			reason: formData.reason
+			name: formData.name
 		};
+
+		if (manuallyApproveNewUsers) {
+			userData.reason = formData.reason;
+		}
 
 		// Check if user has already been imported and never logged in. If so, set password and let it through
 		const importedUser = RocketChat.models.Users.findOneByEmailAddress(s.trim(formData.email.toLowerCase()));
@@ -48,7 +57,10 @@ Meteor.methods({
 		}
 
 		RocketChat.models.Users.setName(userId, s.trim(formData.name));
-		RocketChat.models.Users.setReason(userId, s.trim(formData.reason));
+
+		if (manuallyApproveNewUsers) {
+			RocketChat.models.Users.setReason(userId, s.trim(formData.reason));
+		}
 
 		RocketChat.saveCustomFields(userId, formData);
 
