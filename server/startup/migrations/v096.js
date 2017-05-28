@@ -40,5 +40,24 @@ RocketChat.Migrations.add({
 				}, {multi: true});
 			}
 		});
+
+		RocketChat.models.Uploads.model.direct.update({
+			store: 'fileSystem'
+		}, {
+			$set: {
+				store: 'FileSystem:Uploads'
+			}
+		}, {
+			multi: true
+		});
+		RocketChat.models.Uploads.model.direct.update({
+			store: 'rocketchat_uploads'
+		}, {
+			$set: {
+				store: 'GridFS:Uploads'
+			}
+		}, {
+			multi: true
+		});
 	}
 });
