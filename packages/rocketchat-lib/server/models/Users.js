@@ -9,6 +9,7 @@ class ModelUsers extends RocketChat.models._Base {
 		this.tryEnsureIndex({ 'active': 1 }, { sparse: 1 });
 		this.tryEnsureIndex({ 'statusConnection': 1 }, { sparse: 1 });
 		this.tryEnsureIndex({ 'type': 1 });
+		this.tryEnsureIndex({ 'reason': 1 });
 
 		this.cache.ensureIndex('username', 'unique');
 	}
