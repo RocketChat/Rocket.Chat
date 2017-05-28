@@ -184,7 +184,7 @@ Template.userInfo.helpers({
 
 	shouldDisplayReason() {
 		const user = Template.instance().user.get();
-		return RocketChat.settings.get('Accounts_ManuallyApproveNewUsers') && user.active === false;
+		return RocketChat.settings.get('Accounts_ManuallyApproveNewUsers') && user.active === false && user.reason;
 	}
 });
 
@@ -395,6 +395,9 @@ Template.userInfo.events({
 		if (user) {
 			return Meteor.call('setUserActiveStatus', user._id, true, function(error, result) {
 				if (result) {
+
+					Meteor.call('unsetUserReason', user._id);
+
 					toastr.success(t('User_has_been_activated'));
 				}
 				if (error) {
