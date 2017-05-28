@@ -26,7 +26,7 @@
 						{{#if hasPhone}}
 							{{#each phone}} <p class="secondary-font-color"><i class="icon-phone"></i> {{phoneNumber}}</p> {{/each}}
 						{{/if}}
-						{{#if lastLogin}} <p class="secondary-font-color"><i class="icon-calendar"></i> {{_ "Created_at"}}: {{createdAt}}</p> {{/if}}
+						{{#if createdAt}} <p class="secondary-font-color"><i class="icon-calendar"></i> {{_ "Created_at"}}: {{createdAt}}</p> {{/if}}
 						{{#if lastLogin}} <p class="secondary-font-color"><i class="icon-calendar"></i> {{_ "Last_login"}}: {{lastLogin}}</p> {{/if}}
 						{{#if services.facebook.id}} <p class="secondary-font-color"><i class="icon-facebook"></i><a href="{{services.facebook.link}}" target="_blank">{{services.facebook.name}}</a></p> {{/if}}
 						{{#if services.github.id}} <p class="secondary-font-color"><i class="icon-github-circled"></i><a href="https://www.github.com/{{services.github.username}}" target="_blank">{{services.github.username}}</a></p> {{/if}}
@@ -36,6 +36,11 @@
 						{{#if servicesMeteor.id}} <p class="secondary-font-color"><i class="icon-meteor"></i>{{servicesMeteor.username}}</p> {{/if}}
 						{{#if services.twitter.id}} <p class="secondary-font-color"><i class="icon-twitter"></i><a href="https://twitter.com/{{services.twitter.screenName}}" target="_blank">{{services.twitter.screenName}}</a></p> {{/if}}
 						{{#if services.wordpress.id}} <p class="secondary-font-color"><i class="icon-wordpress"></i>{{services.wordpress.user_login}}</p> {{/if}}
+					{{/if}}
+					{{#if shouldDisplayReason}}
+						<p class="secondary-font-color">
+							{{_ "Reason_To_Join"}}: {{user.reason}}
+						</p>
 					{{/if}}
 				</div>
 			</div>
