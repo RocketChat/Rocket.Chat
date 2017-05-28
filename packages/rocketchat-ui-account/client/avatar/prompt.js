@@ -51,7 +51,7 @@ Template.avatarPrompt.events({
 	'click .select-service'(event, instance) {
 		if (this.service === 'initials') {
 			Meteor.call('resetAvatar', function(err) {
-				if (err && err.details.timeToReset && err.details.timeToReset) {
+				if (err && err.details && err.details.timeToReset) {
 					toastr.error(t('error-too-many-requests', {
 						seconds: parseInt(err.details.timeToReset / 1000)
 					}));
@@ -79,7 +79,7 @@ Template.avatarPrompt.events({
 			} else {
 				toastr.error(t('Please_enter_value_for_url'));
 			}
-		} else {
+		} else if (this.service === 'upload') {
 			let files = instance.find('input[type=file]').files;
 			if (!files || files.length === 0) {
 				files = event.dataTransfer && event.dataTransfer.files || [];
@@ -103,10 +103,20 @@ Template.avatarPrompt.events({
 
 			upload.start((error, result) => {
 				if (result) {
-					Meteor.call('saveAvatarFile', result, () => {
-						toastr.success(t('Avatar_changed_successfully'));
-						RocketChat.callbacks.run('userAvatarSet', this.service);
-					});
+					toastr.success(t('Avatar_changed_successfully'));
+					RocketChat.callbacks.run('userAvatarSet', this.service);
+				}
+			});
+		} else {
+			const tmpService = this.service;
+			Meteor.call('setAvatarFromService', this.blob, this.contentType, this.service, function(err) {
+				if (err && err.details && err.details.timeToReset) {
+					toastr.error(t('error-too-many-requests', {
+						seconds: parseInt(err.details.timeToReset / 1000)
+					}));
+				} else {
+					toastr.success(t('Avatar_changed_successfully'));
+					RocketChat.callbacks.run('userAvatarSet', tmpService);
 				}
 			});
 		}
