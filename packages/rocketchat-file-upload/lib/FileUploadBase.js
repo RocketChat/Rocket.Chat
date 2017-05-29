@@ -19,8 +19,6 @@ FileUploadBase = class FileUploadBase {
 		this.id = Random.id();
 		this.meta = meta;
 		this.file = file;
-
-		console.log(store.options.name, {meta, file});
 		this.store = store;
 	}
 

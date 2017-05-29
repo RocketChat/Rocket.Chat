@@ -161,48 +161,45 @@ Importer.Base = class Importer.Base
 		requestModule = if /https/i.test(fileUrl) then Importer.Base.https else Importer.Base.http
 
 		requestModule.get fileUrl, Meteor.bindEnvironment((stream) ->
-			fileStore = UploadFS.getStore('Uploads')
-			fileId = fileStore.create details
-			if fileId
-				fileStore.write stream, fileId, (err, file) ->
-					if err
-						throw new Error(err)
-					else
-						url = file.url.replace(Meteor.absoluteUrl(), '/')
+			fileStore = FileUpload.getStore('Uploads')
 
-						attachment =
-							title: "File Uploaded: #{file.name}"
-							title_link: url
+			fileStore.insert details, stream, (err, file) ->
+				if err
+					throw new Error(err)
+				else
+					url = file.url.replace(Meteor.absoluteUrl(), '/')
 
-						if /^image\/.+/.test file.type
-							attachment.image_url = url
-							attachment.image_type = file.type
-							attachment.image_size = file.size
-							attachment.image_dimensions = file.identify?.size
+					attachment =
+						title: "File Uploaded: #{file.name}"
+						title_link: url
 
-						if /^audio\/.+/.test file.type
-							attachment.audio_url = url
-							attachment.audio_type = file.type
-							attachment.audio_size = file.size
+					if /^image\/.+/.test file.type
+						attachment.image_url = url
+						attachment.image_type = file.type
+						attachment.image_size = file.size
+						attachment.image_dimensions = file.identify?.size
 
-						if /^video\/.+/.test file.type
-							attachment.video_url = url
-							attachment.video_type = file.type
-							attachment.video_size = file.size
+					if /^audio\/.+/.test file.type
+						attachment.audio_url = url
+						attachment.audio_type = file.type
+						attachment.audio_size = file.size
 
-						msg =
-							rid: details.rid
-							ts: timeStamp
-							msg: ''
-							file:
-								_id: file._id
-							groupable: false
-							attachments: [attachment]
+					if /^video\/.+/.test file.type
+						attachment.video_url = url
+						attachment.video_type = file.type
+						attachment.video_size = file.size
 
-						if details.message_id? and (typeof details.message_id is 'string')
-							msg['_id'] = details.message_id
+					msg =
+						rid: details.rid
+						ts: timeStamp
+						msg: ''
+						file:
+							_id: file._id
+						groupable: false
+						attachments: [attachment]
 
-						RocketChat.sendMessage user, msg, room, true
-			else
-				@logger.error "Failed to create the store for #{fileUrl}!!!"
+					if details.message_id? and (typeof details.message_id is 'string')
+						msg['_id'] = details.message_id
+
+					RocketChat.sendMessage user, msg, room, true
 		)
