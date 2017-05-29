@@ -21,8 +21,6 @@
   "Accounts_AllowUserProfileChange": "Дозволите Усер Профиле Цханге",
   "Accounts_AvatarResize": "ресизе Аватари",
   "Accounts_AvatarSize": "аватар величина",
-  "Accounts_AvatarStorePath": "Аватар складиштења Пут",
-  "Accounts_AvatarStoreType": "Аватар Стораге Типе:",
   "Accounts_BlockedDomainsList": "Блокиран доменов",
   "Accounts_BlockedDomainsList_Description": "Зарезом одвојена листа блокираних домена",
   "Accounts_BlockedUsernameList": "Блокиран име Списак",

@@ -1,4 +1,4 @@
-/* globals FileUpload, UploadFS, RocketChatFile */
+/* globals FileUpload, UploadFS */
 
 import fs from 'fs';
 import { FileUploadClass } from '../lib/FileUpload';
