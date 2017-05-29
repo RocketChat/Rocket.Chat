@@ -289,7 +289,7 @@ describe('[Channel]', ()=> {
 		});
 
 		describe('Members tab usage:', () => {
-			describe.skip('User muted', () => {
+			describe('User muted', () => {
 				before(()=> {
 					flexTab.operateFlexTab('members', true);
 				});
@@ -378,7 +378,7 @@ describe('[Channel]', ()=> {
 				});
 			});
 
-			describe.skip('channel quit and enter', () => {
+			describe('channel quit and enter', () => {
 				it('it should leave the channel', () => {
 					const channel = sideNav.getChannelFromList(`NAME-EDITED-${ publicChannelName }`);
 					channel.click();
