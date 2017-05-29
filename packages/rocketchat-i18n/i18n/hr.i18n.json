@@ -27,8 +27,6 @@
   "Accounts_AllowUserProfileChange": "Dopusti Promjenu Profila",
   "Accounts_AvatarResize": "Promjeni veličinu Avatara",
   "Accounts_AvatarSize": "Veličina Avatara",
-  "Accounts_AvatarStorePath": "Putanja do spremišta Avatara ",
-  "Accounts_AvatarStoreType": "Tip Spremišta Avatara",
   "Accounts_BlockedDomainsList": "Popis blokiranih domena",
   "Accounts_BlockedDomainsList_Description": "Popis blokiranih domena odvojenih zarezom",
   "Accounts_BlockedUsernameList": "Popis blokiranih korisničkih imena",

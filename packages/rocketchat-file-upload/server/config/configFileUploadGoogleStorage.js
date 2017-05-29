@@ -1,4 +1,4 @@
-/* globals FileUpload, RocketChatFile */
+/* globals FileUpload */
 
 import { FileUploadClass } from '../lib/FileUpload';
 import '../../ufs/GoogleStorage/server.js';

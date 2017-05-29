@@ -169,25 +169,7 @@ RocketChat.settings.addGroup('Accounts', function() {
 				value: true
 			}
 		});
-		this.add('Accounts_AvatarStoreType', 'GridFS', {
-			type: 'select',
-			values: [
-				{
-					key: 'GridFS',
-					i18nLabel: 'GridFS'
-				}, {
-					key: 'FileSystem',
-					i18nLabel: 'FileSystem'
-				}
-			]
-		});
-		this.add('Accounts_AvatarStorePath', '', {
-			type: 'string',
-			enableQuery: {
-				_id: 'Accounts_AvatarStoreType',
-				value: 'FileSystem'
-			}
-		});
+
 		return this.add('Accounts_SetDefaultAvatar', true, {
 			type: 'boolean'
 		});
