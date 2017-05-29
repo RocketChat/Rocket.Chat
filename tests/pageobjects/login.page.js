@@ -46,7 +46,6 @@ class LoginPage extends Page {
 		this.emailField.setValue(email);
 		this.passwordField.setValue(password);
 		this.confirmPasswordField.setValue(password);
-		this.reasonField.setValue(reason);
 
 		this.submit();
 	}
