@@ -27,8 +27,6 @@
   "Accounts_AllowUserProfileChange": "Benutzern das Ändern des Profils erlauben",
   "Accounts_AvatarResize": "Größe des Profilbilds anpassen",
   "Accounts_AvatarSize": "Größe des Profilbilds",
-  "Accounts_AvatarStorePath": "Speicherpfad des Profilbilds",
-  "Accounts_AvatarStoreType": "Speichertyp des Profilbilds",
   "Accounts_BlockedDomainsList": "Liste geblockter Domains",
   "Accounts_BlockedDomainsList_Description": "Kommata getrennte Liste von geblockten Domains",
   "Accounts_BlockedUsernameList": "Liste gesperrter Benutzernamen",

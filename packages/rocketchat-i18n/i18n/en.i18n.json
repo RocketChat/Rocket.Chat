@@ -29,8 +29,6 @@
   "Accounts_AllowUserProfileChange": "Allow User Profile Change",
   "Accounts_AvatarResize": "Resize Avatars",
   "Accounts_AvatarSize": "Avatar Size",
-  "Accounts_AvatarStorePath": "Avatar Storage Path",
-  "Accounts_AvatarStoreType": "Avatar Storage Type",
   "Accounts_BlockedDomainsList": "Blocked Domains List",
   "Accounts_BlockedDomainsList_Description": "Comma-separated list of blocked domains",
   "Accounts_BlockedUsernameList": "Blocked Username List",
