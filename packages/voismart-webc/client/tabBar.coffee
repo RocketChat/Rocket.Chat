@@ -142,6 +142,10 @@ Template.emailsItem.helpers
 		return !email_re.test(email)
 
 Template.emailsItem.events
+	'keydown input': (e, t) ->
+		if e.keyCode == 13
+			e.preventDefault()
+
 	'keyup input': (e, t) ->
 		input = $(e.target)
 		if !email_re.test(input.val())
