@@ -5,7 +5,7 @@ import loginPage from '../../pageobjects/login.page';
 import mainContent from '../../pageobjects/main-content.page';
 
 //test data imports
-import {username, email, password} from '../../data/user.js';
+import {username, email, password, reason} from '../../data/user.js';
 
 
 
@@ -22,7 +22,7 @@ describe('[User Creation]', function() {
 	it('it should create user', () => {
 		loginPage.gotToRegister();
 
-		loginPage.registerNewUser({username, email, password});
+		loginPage.registerNewUser({username, email, password, reason});
 
 		loginPage.inputUsername.waitForExist(5000);
 
