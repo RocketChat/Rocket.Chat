@@ -8,6 +8,6 @@ Meteor.startup ->
 			return unless $link.length > 0
 			url = $link.attr('href')
 
-			if /^https?:\/\/.+/.test(url) is true
+			if /^https?:\/\/.+/i.test(url) is true
 				window.open url, '_system'
 				e.preventDefault()
