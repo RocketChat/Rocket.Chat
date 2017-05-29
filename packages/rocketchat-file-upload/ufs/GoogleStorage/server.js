@@ -48,6 +48,10 @@ export class GoogleStorageStore extends UploadFS.Store {
 		this.create = function(file, callback) {
 			check(file, Object);
 
+			if (file._id == null) {
+				file._id = Random.id();
+			}
+
 			file.GoogleStorage = {
 				path: this.options.getPath(file)
 			};

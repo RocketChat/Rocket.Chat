@@ -63,6 +63,10 @@ export class AmazonS3Store extends UploadFS.Store {
 		this.create = function(file, callback) {
 			check(file, Object);
 
+			if (file._id == null) {
+				file._id = Random.id();
+			}
+
 			file.AmazonS3 = {
 				path: this.options.getPath(file)
 			};
