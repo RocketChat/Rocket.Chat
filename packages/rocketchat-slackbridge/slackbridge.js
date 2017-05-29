@@ -1,4 +1,4 @@
-/* globals logger, UploadFS */
+/* globals logger */
 
 class SlackBridge {
 
