@@ -11,6 +11,7 @@ class LoginPage extends Page {
 	get emailField() { return browser.element('[name=email]'); }
 	get passwordField() { return browser.element('[name=pass]'); }
 	get confirmPasswordField() { return browser.element('[name=confirm-pass]'); }
+	get reasonField() { return browser.element('[reason]'); }
 	get inputUsername() { return browser.element('form#login-card input#username'); }
 
 	get emailOrUsernameInvalidText() { return browser.element('[name=emailOrUsername]~.input-error'); }
@@ -18,6 +19,7 @@ class LoginPage extends Page {
 	get emailInvalidText() { return browser.element('[name=email]~.input-error'); }
 	get passwordInvalidText() { return browser.element('[name=pass]~.input-error'); }
 	get confirmPasswordInvalidText() { return browser.element('[name=confirm-pass]~.input-error'); }
+	get reasonInvalidText() { return browser.element('[name=reason]~.input-error'); }
 	get registrationSucceededCard() { return browser.element('#login-card h2'); }
 
 	open() {
@@ -38,12 +40,13 @@ class LoginPage extends Page {
 		this.emailField.waitForVisible(15000);
 	}
 
-	registerNewUser({username, email, password}) {
+	registerNewUser({username, email, password, reason}) {
 		this.nameField.waitForVisible(5000);
 		this.nameField.setValue(username);
 		this.emailField.setValue(email);
 		this.passwordField.setValue(password);
 		this.confirmPasswordField.setValue(password);
+		this.reasonField.setValue(reason);
 
 		this.submit();
 	}
