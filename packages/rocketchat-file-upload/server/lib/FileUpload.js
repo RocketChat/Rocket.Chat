@@ -176,6 +176,10 @@ Object.assign(FileUpload, {
 		const storageType = RocketChat.settings.get('FileUpload_Storage_Type');
 		const handlerName = `${ storageType }:${ modelName }`;
 
+		return this.getStoreByName(handlerName);
+	},
+
+	getStoreByName(handlerName) {
 		if (this.handlers[handlerName] == null) {
 			console.error(`Upload handler "${ handlerName }" does not exists`);
 		}
@@ -244,7 +248,9 @@ export class FileUploadClass {
 			return;
 		}
 
-		return this.delete(file._id);
+		const store = FileUpload.getStoreByName(file.store);
+
+		return store.delete(file._id);
 	}
 
 	deleteByName(fileName) {
@@ -254,7 +260,9 @@ export class FileUploadClass {
 			return;
 		}
 
-		return this.delete(file._id);
+		const store = FileUpload.getStoreByName(file.store);
+
+		return store.delete(file._id);
 	}
 
 	insert(fileData, streamOrBuffer, cb) {
