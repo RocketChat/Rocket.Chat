@@ -75,49 +75,68 @@ RocketChat.Migrations.add({
 			'linkedin'
 		];
 
-		const avatarsFileStore = FileUpload.getStore('Avatars');
+		Meteor.setTimeout(function() {
+			Meteor.runAsUser('rocket.cat', function() {
+				const avatarsFileStore = FileUpload.getStore('Avatars');
 
-		const oldAvatarGridFS = new RocketChatFile.GridFS({
-			name: 'avatars'
-		});
-
-
-		RocketChat.models.Users.find({avatarOrigin: {$in: avatarOrigins}}, {avatarOrigin: 1, username: 1}).forEach((user) => {
-			const id = `${ user.username }.jpg`;
-			const gridFSAvatar = oldAvatarGridFS.getFileWithReadStream(id);
-
-			if (gridFSAvatar) {
-				const details = {
-					userId: user._id,
-					type: gridFSAvatar.contentType,
-					size: gridFSAvatar.length
-				};
-
-				avatarsFileStore.insert(details, gridFSAvatar.readStream, () => {
-					oldAvatarGridFS.deleteFile(id);
+				const oldAvatarGridFS = new RocketChatFile.GridFS({
+					name: 'avatars'
 				});
-			} else {
-				const avatarsPath = RocketChat.settings.get('Accounts_AvatarStorePath');
-				if (avatarsPath && avatarsPath.trim()) {
-					const filePath = path.join(avatarsPath, id);
-					const stat = fs.statSync(filePath);
-					if (stat && stat.isFile()) {
-						const rs = fs.createReadStream(filePath);
+
+				RocketChat.models.Users.find({avatarOrigin: {$in: avatarOrigins}}, {avatarOrigin: 1, username: 1}).forEach((user) => {
+					const id = `${ user.username }.jpg`;
+					const gridFSAvatar = oldAvatarGridFS.getFileWithReadStream(id);
+
+					if (gridFSAvatar) {
 						const details = {
 							userId: user._id,
-							type: 'image/jpeg',
-							size: stat.size
+							type: gridFSAvatar.contentType,
+							size: gridFSAvatar.length,
+							name: user.username
 						};
 
-						avatarsFileStore.insert(details, rs, () => {
-							fs.unlinkSync(filePath);
+						avatarsFileStore.insert(details, gridFSAvatar.readStream, (err) => {
+							if (err) {
+								console.log({err});
+							} else {
+								oldAvatarGridFS.deleteFile(id);
+							}
 						});
-					}
-				}
-			}
-		});
+					} else {
+						const avatarsPath = RocketChat.models.Settings.findOne({_id: 'Accounts_AvatarStorePath'}).value;
+						if (avatarsPath && avatarsPath.trim()) {
+							const filePath = path.join(avatarsPath, id);
+							try {
+								const stat = fs.statSync(filePath);
+								if (stat && stat.isFile()) {
+									const rs = fs.createReadStream(filePath);
+									const details = {
+										userId: user._id,
+										type: 'image/jpeg',
+										size: stat.size,
+										name: user.username
+									};
 
-		RocketChat.models.Settings.remove({_id: 'Accounts_AvatarStoreType'});
-		RocketChat.models.Settings.remove({_id: 'Accounts_AvatarStorePath'});
+									avatarsFileStore.insert(details, rs, (err) => {
+										if (err) {
+											console.log({err});
+										} else {
+											fs.unlinkSync(filePath);
+										}
+									});
+								}
+							} catch (e) {
+								console.log('Error migrating old avatars', e);
+							}
+						}
+					}
+				});
+
+				RocketChat.models.Settings.remove({_id: 'Accounts_AvatarStoreType'});
+				RocketChat.models.Settings.remove({_id: 'Accounts_AvatarStorePath'});
+
+				// TODO: Remove old collections
+			});
+		}, 1000);
 	}
 });
