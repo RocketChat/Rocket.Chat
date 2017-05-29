@@ -272,7 +272,7 @@ export class FileUploadClass {
 
 		try {
 			if (streamOrBuffer instanceof stream) {
-				stream.pipe(fs.createWriteStream(tmpFile));
+				streamOrBuffer.pipe(fs.createWriteStream(tmpFile));
 			} else if (streamOrBuffer instanceof Buffer) {
 				fs.writeFileSync(tmpFile, streamOrBuffer);
 			} else {
