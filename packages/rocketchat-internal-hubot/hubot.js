@@ -1,11 +1,9 @@
-/* eslint-disable no-use-before-define no-unused-vars */
 /* globals __meteor_bootstrap__ */
 const CoffeeScript = Npm.require('coffee-script');
 CoffeeScript.register();
 const Hubot = Npm.require('hubot');
 // Start a hubot, connected to our chat room.
 // 'use strict'
-
 // Log messages?
 const DEBUG = false;
 
@@ -167,21 +165,19 @@ class RocketChatAdapter extends Hubot.Adapter {
 	}
 }
 
-class InternalHubotReceiver {
-	constructor(message) {
-		if (DEBUG) { console.log(message); }
-		if (message.u.username !== InternalHubot.name) {
-			const room = RocketChat.models.Rooms.findOneById(message.rid);
+const InternalHubotReceiver = (message) => {
+	if (DEBUG) { console.log(message); }
+	if (message.u.username !== InternalHubot.name) {
+		const room = RocketChat.models.Rooms.findOneById(message.rid);
 
-			if (room.t === 'c') {
-				const InternalHubotUser = new Hubot.User(message.u.username, {room: message.rid});
-				const InternalHubotTextMessage = new Hubot.TextMessage(InternalHubotUser, message.msg, message._id);
-				InternalHubot.adapter.receive(InternalHubotTextMessage);
-			}
+		if (room.t === 'c') {
+			const InternalHubotUser = new Hubot.User(message.u.username, {room: message.rid});
+			const InternalHubotTextMessage = new Hubot.TextMessage(InternalHubotUser, message.msg, message._id);
+			InternalHubot.adapter.receive(InternalHubotTextMessage);
 		}
-		return message;
 	}
-}
+	return message;
+};
 
 class HubotScripts {
 	constructor(robot) {
@@ -197,13 +193,12 @@ class HubotScripts {
 		scriptsToLoad.forEach(scriptFile => {
 			try {
 				scriptFile = s.trim(scriptFile);
-			// Npm.require('hubot-scripts/src/scripts/'+scriptFile)(robot)
+				// delete require.cache[require.resolve(path+scriptFile)];
 				const fn = Npm.require(path+scriptFile);
-
 				if (typeof(fn) === 'function') { fn(robot); } else { fn.default(robot); }
-			// robot.loadFile __meteor_bootstrap__.serverDir+'/npm/node_modules/meteor/rocketchat_internal-hubot/node_modules/hubot-scripts/src/scripts', scriptFile
 				robot.parseHelp(path+scriptFile);
 				console.log(`Loaded ${ scriptFile }`.green);
+				console.log(Npm.resolve(path+scriptFile));
 			} catch (e) {
 				console.log(`can't load ${ scriptFile }`.red);
 				console.log(e);
@@ -237,6 +232,6 @@ Meteor.startup(function() {
 		userId(/*userId*/) { return true; }
 	});
 	Meteor.methods({
-		reloadInternalHubot: init
+		reloadInternalHubot: () => init()
 	});
 });

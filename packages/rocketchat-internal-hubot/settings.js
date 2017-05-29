@@ -5,8 +5,8 @@ RocketChat.settings.add('InternalHubot_Username', 'rocket.cat', { type: 'string'
 // RocketChat.settings.add('InternalHubot_ScriptsToLoad', 'hello.coffee,zen.coffee', { type: 'string', group: 'InternalHubot'});
 RocketChat.settings.add('InternalHubot_ScriptsToLoad', '', { type: 'string', group: 'InternalHubot'});
 RocketChat.settings.add('InternalHubot_PathToLoadCustomScripts', '', { type: 'string', group: 'InternalHubot'});
-RocketChat.settings.add('InternalHubot_reload', 'reloadInternalHubot', {
-	type: 'action',
-	group: 'InternalHubot',
-	actionText: 'reload'
-});
+// RocketChat.settings.add('InternalHubot_reload', 'reloadInternalHubot', {
+// 	type: 'action',
+// 	group: 'InternalHubot',
+// 	actionText: 'reload'
+// });
