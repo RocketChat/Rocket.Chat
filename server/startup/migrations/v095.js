@@ -5,7 +5,7 @@ RocketChat.Migrations.add({
 			const emailHeader = RocketChat.models.Settings.findOne({ _id: 'Email_Header' });
 			const emailFooter = RocketChat.models.Settings.findOne({ _id: 'Email_Footer' });
 			const startWithHTML = emailHeader.value.match(/^<html>/);
-			const endsWithHTML = emailFooter.value.match(/<\/hmtl>$/);
+			const endsWithHTML = emailFooter.value.match(/<\/html>$/);
 
 			if (!startWithHTML) {
 				RocketChat.models.Settings.update(
@@ -17,7 +17,7 @@ RocketChat.Migrations.add({
 			if (!endsWithHTML) {
 				RocketChat.models.Settings.update(
 					{ _id: 'Email_Footer' },
-					{ $set: { value: `${ emailFooter.value }</hmtl>`} }
+					{ $set: { value: `${ emailFooter.value }</html>`} }
 				);
 			}
 		}
