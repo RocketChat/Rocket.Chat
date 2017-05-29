@@ -1,6 +1,7 @@
 /* globals UploadFS */
 
 import fs from 'fs';
+import stream from 'stream';
 import mime from 'mime-type/with-db';
 import Future from 'fibers/future';
 
@@ -256,9 +257,33 @@ export class FileUploadClass {
 		return this.delete(file._id);
 	}
 
-	insert(file, stream, cb) {
-		const fileId = this.store.create(file);
+	insert(fileData, streamOrBuffer, cb) {
+		const fileId = this.store.create(fileData);
+		const token = this.store.createToken(fileId);
+		const tmpFile = UploadFS.getTempFilePath(fileId);
 
-		this.store.write(stream, fileId, cb);
+		try {
+			if (streamOrBuffer instanceof stream) {
+				stream.pipe(fs.createWriteStream(tmpFile));
+			} else if (streamOrBuffer instanceof Buffer) {
+				fs.writeFileSync(tmpFile, streamOrBuffer);
+			} else {
+				throw new Error('Invalid file type');
+			}
+
+			const file = Meteor.call('ufsComplete', fileId, this.name, token);
+
+			if (cb) {
+				cb(null, file);
+			}
+
+			return file;
+		} catch (e) {
+			if (cb) {
+				cb(e);
+			} else {
+				throw e;
+			}
+		}
 	}
 }
