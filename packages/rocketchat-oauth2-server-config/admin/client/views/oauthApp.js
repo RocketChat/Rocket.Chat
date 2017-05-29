@@ -14,13 +14,12 @@ Template.oauthApp.helpers({
 	},
 	data() {
 		let params;
-		let data;
 		const instance = Template.instance();
 		if (typeof instance.data.params === 'function') {
 			params = instance.data.params();
 		}
 		if (params && params.id) {
-			data = ChatOAuthApps.findOne({ _id: params.id });
+			const data = ChatOAuthApps.findOne({ _id: params.id });
 			if (data) {
 				data.authorization_url = Meteor.absoluteUrl('oauth/authorize');
 				data.access_token_url = Meteor.absoluteUrl('oauth/token');
