@@ -389,53 +389,43 @@ IrcClient.create = function(login) {
 	return login;
 };
 
-class IrcLoginer {
-	constructor(login) {
-		console.log('[irc] validateLogin -> '.yellow, login);
-		return IrcClient.create(login);
-	}
+function IrcLoginer(login) {
+	console.log('[irc] validateLogin -> '.yellow, login);
+	return IrcClient.create(login);
 }
 
-class IrcSender {
-	constructor(message) {
-		const name = message.u.username;
-		const timestamp = message.ts.getTime();
-		const cacheKey = `${ name }${ timestamp }`;
-		if (ircReceiveMessageCache.get(cacheKey)) {
-			return message;
-		}
-		const room = RocketChat.models.Rooms.findOneById(message.rid, { fields: { name: 1, usernames: 1, t: 1 }});
-		const ircClient = IrcClient.getByUid(message.u._id);
-		ircClient.sendMessage(room, message);
+
+function IrcSender(message) {
+	const name = message.u.username;
+	const timestamp = message.ts.getTime();
+	const cacheKey = `${ name }${ timestamp }`;
+	if (ircReceiveMessageCache.get(cacheKey)) {
 		return message;
 	}
-
+	const room = RocketChat.models.Rooms.findOneById(message.rid, { fields: { name: 1, usernames: 1, t: 1 }});
+	const ircClient = IrcClient.getByUid(message.u._id);
+	ircClient.sendMessage(room, message);
+	return message;
 }
 
-class IrcRoomJoiner {
-	constructor(user, room) {
-		const ircClient = IrcClient.getByUid(user._id);
-		ircClient.joinRoom(room);
-		return room;
-	}
 
+function IrcRoomJoiner(user, room) {
+	const ircClient = IrcClient.getByUid(user._id);
+	ircClient.joinRoom(room);
+	return room;
 }
 
-class IrcRoomLeaver {
-	constructor(user, room) {
-		const ircClient = IrcClient.getByUid(user._id);
-		ircClient.leaveRoom(room);
-		return room;
-	}
 
+function IrcRoomLeaver(user, room) {
+	const ircClient = IrcClient.getByUid(user._id);
+	ircClient.leaveRoom(room);
+	return room;
 }
 
-class IrcLogoutCleanUper {
-	constructor(user) {
-		const ircClient = IrcClient.getByUid(user._id);
-		ircClient.disconnect();
-		return user;
-	}
+function IrcLogoutCleanUper(user) {
+	const ircClient = IrcClient.getByUid(user._id);
+	ircClient.disconnect();
+	return user;
 }
 
 //////
