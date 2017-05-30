@@ -25,7 +25,5 @@ const slingShotConfig = {
 	allowedFileTypes: null
 };
 
-Slingshot.fileRestrictions('rocketchat-avatars', slingShotConfig);
 Slingshot.fileRestrictions('rocketchat-uploads', slingShotConfig);
 Slingshot.fileRestrictions('rocketchat-uploads-gs', slingShotConfig);
-Slingshot.fileRestrictions('rocketchat-avatars-gs', slingShotConfig);

@@ -33,13 +33,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/lib/FileUpload.js', 'server');
 	api.addFiles('server/lib/requests.js', 'server');
 
-	api.addFiles('server/config/configFileUploadAmazonS3.js', 'server');
-	api.addFiles('server/config/configFileUploadAmazonS3_Deprecated.js', 'server');
-	api.addFiles('server/config/configFileUploadFileSystem.js', 'server');
-	api.addFiles('server/config/configFileUploadGoogleStorage.js', 'server');
-	api.addFiles('server/config/configFileUploadGoogleStorage_Deprecated.js', 'server');
-	api.addFiles('server/config/configFileUploadGridFS.js', 'server');
-	api.addFiles('server/config/configStore.js', 'server');
+	api.addFiles('server/config/_configUploadStorage.js', 'server');
 
 	api.addFiles('server/methods/sendFileMessage.js', 'server');
 	api.addFiles('server/methods/getS3FileUrl.js', 'server');
