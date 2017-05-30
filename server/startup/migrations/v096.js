@@ -135,7 +135,10 @@ RocketChat.Migrations.add({
 				RocketChat.models.Settings.remove({_id: 'Accounts_AvatarStoreType'});
 				RocketChat.models.Settings.remove({_id: 'Accounts_AvatarStorePath'});
 
-				// TODO: Remove old collections
+				const avatarsFiles = new Mongo.Collection('avatars.files');
+				const avatarsChunks = new Mongo.Collection('avatars.chunks');
+				avatarsFiles.rawCollection().drop();
+				avatarsChunks.rawCollection().drop();
 			});
 		}, 1000);
 	}
