@@ -395,9 +395,6 @@ Template.userInfo.events({
 		if (user) {
 			return Meteor.call('setUserActiveStatus', user._id, true, function(error, result) {
 				if (result) {
-
-					Meteor.call('unsetUserReason', user._id);
-
 					toastr.success(t('User_has_been_activated'));
 				}
 				if (error) {
