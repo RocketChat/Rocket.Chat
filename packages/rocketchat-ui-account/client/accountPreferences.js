@@ -123,6 +123,7 @@ Template.accountPreferences.onCreated(function() {
 		}));
 		data.desktopNotificationDuration = $('input[name=desktopNotificationDuration]').val();
 		data.unreadAlert = $('#unreadAlert').find('input:checked').val();
+		data.offlineNotificationFrequency = parseInt($('select[name=offlineNotificationFrequency]').val());
 		Meteor.call('saveUserPreferences', data, function(error, results) {
 			if (results) {
 				toastr.success(t('Preferences_saved'));

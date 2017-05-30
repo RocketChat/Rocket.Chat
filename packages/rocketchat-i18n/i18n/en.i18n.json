@@ -1113,6 +1113,7 @@
   "Offline_Link_Message": "GO TO MESSAGE",
   "Offline_Mention_Email": "You have been mentioned by __user__ in #__room__",
   "Offline_message": "Offline message",
+  "Offline_Notification_Frequency": "Offline Notification Frequency",
   "Offline_success_message": "Offline success message",
   "Offline_unavailable": "Offline unavailable",
   "On": "On",
