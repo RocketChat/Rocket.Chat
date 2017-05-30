@@ -1780,6 +1780,8 @@
   "Ask_sessions_av": "Request instant session",
   "Ask_sessions_av_email": "Invite to collaboration session",
   "Webc_when": "Collaboration session start date/time",
+  "Webc_name": "Room name",
+  "Webc_RoomNamePrefix": "Conference for channel ",
   "Webc_duration": "Duration",
   "Webc_remove": "Remove participant"
 }

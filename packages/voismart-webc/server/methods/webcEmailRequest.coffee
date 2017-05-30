@@ -14,16 +14,17 @@ Meteor.methods
         console.log "will notify #{emails}"
         return emails
 
-    webcByEmailRequest: (rid, attendees, start_ts, duration, public_number) ->
+    webcByEmailRequest: (rid, attendees, start_ts, duration, public_number, room_name) ->
         domain = RocketChat.settings.get('OrchestraIntegration_Domain')
         user = RocketChat.models.Users.findOneById Meteor.userId()
         username = user.username + "@" + domain
         room = Meteor.call 'canAccessRoom', rid, user._id
         if not room
             return false
+        room_name = room_name or room.name or undefined
         ng = new NGApiAuto(username, RocketChat.settings.get('OrchestraIntegration_Server'))
         try
-            results = ng.create_live_bbb(attendees, start_ts, duration, public_number)
+            results = ng.create_live_bbb(attendees, start_ts, duration, public_number, room_name)
         catch e
             if e instanceof Meteor.Error
                 throw e

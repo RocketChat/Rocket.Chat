@@ -1687,6 +1687,8 @@
   "Ask_sessions_av": "Richiedi sessione immediata",
   "Ask_sessions_av_email": "Invita a sessione di collaboration",
   "Webc_when": "Data e ora di inizio",
+  "Webc_name": "Nome stanza",
+  "Webc_RoomNamePrefix": "Conference per il canale ",
   "Webc_duration": "Durata",
   "Webc_remove": "Elimina partecipante"
 }

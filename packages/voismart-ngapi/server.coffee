@@ -70,11 +70,11 @@ _cached_token = {}
 			token: token
 			data: JSON.stringify([{number_to_call: number}])
 
-	create_live_bbb: (token, attendees, start_ts, duration, public_number) ->
+	create_live_bbb: (token, attendees, start_ts, duration, public_number, room_name) ->
 		url = @server + '/jsondata/extjs/bbbHandler/create_live_bbb'
 		@_doFormPost url,
 			token: token
-			data: JSON.stringify([{attendees: attendees, start_ts: start_ts, duration: duration, public_number:public_number}])
+			data: JSON.stringify([{attendees: attendees, start_ts: start_ts, duration: duration, public_number:public_number, room_name:room_name}])
 
 	_doPost: (url, data) ->
 		try
@@ -142,5 +142,5 @@ _cached_token = {}
 	clickAndDial: (number) ->
 		super(_cached_token[@username], number)
 
-	create_live_bbb: (attendees, start_ts, duration, public_number) ->
-		super(_cached_token[@username], attendees, start_ts, duration, public_number)
+	create_live_bbb: (attendees, start_ts, duration, public_number, room_name) ->
+		super(_cached_token[@username], attendees, start_ts, duration, public_number, room_name)

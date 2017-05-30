@@ -72,6 +72,10 @@ Template.emailsAdd.onCreated ->
 	this.tabBar = Template.currentData().tabBar
 
 Template.emailsAdd.events
+	'keydown input': (e, t) ->
+		if e.keyCode == 13
+			e.preventDefault()
+
 	'click .add-btn-participant': (e, t) ->
 		emailInputs = Session.get('emailInputs')
 		emailInputs.unshift({emailId: Random.id()})
@@ -109,7 +113,8 @@ Template.emailsAdd.events
 		start_ts = m.unix()
 		duration = t.find("#webc_duration").value
 		duration_seconds = parseInt(duration, 10 ) * 60
-		Meteor.call 'webcByEmailRequest', Session.get('openedRoom'), emails, start_ts, "#{duration_seconds}", RocketChat.settings.get('Webc_PhoneNumber'), (error, result) =>
+		room_name = t.find("#webc_room_name").value
+		Meteor.call 'webcByEmailRequest', Session.get('openedRoom'), emails, start_ts, "#{duration_seconds}", RocketChat.settings.get('Webc_PhoneNumber'), room_name, (error, result) =>
 			if not result?
 				reason = "500"
 				if error and error.reason
@@ -199,3 +204,10 @@ Template.emailsAdd.helpers
 	emailInputs: ->
 		return Session.get('emailInputs')
 
+	defaultRoomName: ->
+		room = ChatRoom.findOne(this.rid) or {}
+		if room.name
+			name = TAPi18n.__("Webc_RoomNamePrefix") + room.name
+		else
+			name = 'Conference'
+		return name
