@@ -83,9 +83,18 @@ export class GoogleStorageStore extends UploadFS.Store {
 		 * @param options
 		 * @return {*}
 		 */
-		this.getReadStream = function(fileId, file/*, options = {}*/) {
-			// TODO range?
-			return this.bucket.file(this.getPath(file)).createReadStream();
+		this.getReadStream = function(fileId, file, options = {}) {
+			const config = {};
+
+			if (options.start != null) {
+				config.start = options.start;
+			}
+
+			if (options.end != null) {
+				config.end = options.end;
+			}
+
+			return this.bucket.file(this.getPath(file)).createReadStream(config);
 		};
 
 		/**
