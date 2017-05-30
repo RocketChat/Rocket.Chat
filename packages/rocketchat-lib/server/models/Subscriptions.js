@@ -168,6 +168,15 @@ class ModelSubscriptions extends RocketChat.models._Base {
 		return this.find(query, { fields: { unread: 1 } });
 	}
 
+	findUnreadByRoomIdAndUserId(roomId, userId) {
+		const query = {
+			'rid': roomId,
+			'u._id': userId
+		};
+
+		return this.findOne(query, { fields: { unread: 1 } }).unread;
+	}
+
 	// UPDATE
 	archiveByRoomId(roomId) {
 		const query =

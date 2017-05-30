@@ -134,6 +134,11 @@ RocketChat.sendEmailOnMessage = function(message, room) {
 					return;
 				}
 
+				// Check if message still unread
+				if (RocketChat.models.Subscriptions.findUnreadByRoomIdAndUserId(message.rid, user._id) === 0) {
+					return;
+				}
+
 				user.emails.some((email) => {
 					if (email.verified) {
 						email = {
