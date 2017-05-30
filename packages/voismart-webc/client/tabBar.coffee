@@ -74,7 +74,7 @@ Template.emailsAdd.onCreated ->
 Template.emailsAdd.events
 	'click .add-btn-participant': (e, t) ->
 		emailInputs = Session.get('emailInputs')
-		emailInputs.push({emailId: Random.id()})
+		emailInputs.unshift({emailId: Random.id()})
 		Session.set('emailInputs', emailInputs)
 		$("#invite_button").attr("disabled", true)
 
