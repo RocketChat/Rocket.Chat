@@ -119,23 +119,24 @@ Accounts.onCreateUser(function(options, user = {}) {
 	}
 
 	if (!user.active) {
-		user.emails.some((email) => {
-			const destinations = [];
+		const destinations = [];
+		let email = {};
 
-			RocketChat.models.Roles.findUsersInRole('admin').forEach(function(adminUser) {
+		RocketChat.models.Roles.findUsersInRole('admin').forEach(function(adminUser) {
+			if (adminUser.emails[0]) {
 				destinations.push(`${ adminUser.name }<${ adminUser.emails[0].address }>`);
-			});
+			}
+		});
 
-			email = {
-				to: destinations,
-				from: RocketChat.settings.get('From_Email'),
-				subject: Accounts.emailTemplates.notifyAdmin.subject(),
-				html: Accounts.emailTemplates.notifyAdmin.html(options)
-			};
+		email = {
+			to: destinations,
+			from: RocketChat.settings.get('From_Email'),
+			subject: Accounts.emailTemplates.notifyAdmin.subject(),
+			html: Accounts.emailTemplates.notifyAdmin.html(options)
+		};
 
-			Meteor.defer(() => {
-				Email.send(email);
-			});
+		Meteor.defer(() => {
+			Email.send(email);
 		});
 	}
 

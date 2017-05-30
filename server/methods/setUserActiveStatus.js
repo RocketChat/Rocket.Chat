@@ -26,6 +26,8 @@ Meteor.methods({
 
 			if (active === false) {
 				RocketChat.models.Users.unsetLoginTokens(userId);
+			} else {
+				RocketChat.models.Users.unsetReason(userId);
 			}
 
 			return true;
