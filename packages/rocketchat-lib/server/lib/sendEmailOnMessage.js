@@ -18,7 +18,7 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 		};
 		details.ts.setMinutes(details.ts.getMinutes() + RocketChat.settings.get('Message_AllowEditing_BlockEditInMinutes'));
 
-		RocketChat.EmailSchedule.sendOrSchedule(details);
+		RocketChat.EmailSchedule.sendOrScheduleNotification(details);
 	} else {
 		RocketChat.sendEmailOnMessage(message, room);
 	}
@@ -143,9 +143,14 @@ RocketChat.sendEmailOnMessage = function(message, room) {
 							html: header + messageHTML + divisorMessage + (linkByUser[user._id] || defaultLink) + footer
 						};
 
-						Meteor.defer(() => {
-							Email.send(email);
-						});
+						if (user.settings && user.settings.preferences && user.settings.preferences.offlineNotificationFrequency && user.settings.preferences.offlineNotificationFrequency > 0) {
+							email.ts = RocketChat.EmailSchedule.getDigestTiming(user.settings.preferences.offlineNotificationFrequency);
+							RocketChat.EmailSchedule.sendOrScheduleDigest(email);
+						} else {
+							Meteor.defer(() => {
+								Email.send(email);
+							});
+						}
 
 						return true;
 					}

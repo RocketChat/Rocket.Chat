@@ -1,9 +1,13 @@
+import moment from 'moment';
 import later from 'later';
 
-const FutureEmails = new Meteor.Collection('future_emails');
+// constains message details for which emails[updated message] are to be sent later
+const FutureNotificationEmails = new Meteor.Collection('future_notification_emails');
+// contains emails to be sent on desired frequency[ non-zero ]
+const FutureDigestEmails = new Meteor.Collection('future_digest_emails');
 
 RocketChat.EmailSchedule = new function() {
-	this.sendScheduledEmail = function(messageDetails) {
+	this.sendNotificationEmail = function(messageDetails) {
 		const room = RocketChat.models.Rooms.findOneById(messageDetails.rid);
 
 		const message = RocketChat.models.Messages.findOneById(messageDetails._id);
@@ -14,15 +18,15 @@ RocketChat.EmailSchedule = new function() {
 		return true;
 	};
 
-	this.scheduleEmail = function(insertId, messageDetails) {
+	this.scheduleNotificationEmail = function(insertId, messageDetails) {
 		global.SyncedCron.add({
 			name: insertId,
 			schedule() {
 				return later.parse.recur().on(messageDetails.ts).fullDate();
 			},
 			job() {
-				RocketChat.EmailSchedule.sendScheduledEmail(messageDetails);
-				FutureEmails.remove(insertId);
+				RocketChat.EmailSchedule.sendNotificationEmail(messageDetails);
+				FutureNotificationEmails.remove(insertId);
 				global.SyncedCron.remove(insertId);
 				return insertId;
 			}
@@ -30,25 +34,76 @@ RocketChat.EmailSchedule = new function() {
 		return true;
 	};
 
-	this.sendOrSchedule = function(messageDetails) {
+	this.sendOrScheduleNotification = function(messageDetails) {
 		if (messageDetails.ts < new Date()) {
-			RocketChat.EmailSchedule.sendScheduledEmail(messageDetails);
+			RocketChat.EmailSchedule.sendNotificationEmail(messageDetails);
 		} else {
-			const insertId = FutureEmails.insert(messageDetails);
-			RocketChat.EmailSchedule.scheduleEmail(insertId, messageDetails);
+			const insertId = FutureNotificationEmails.insert(messageDetails);
+			RocketChat.EmailSchedule.scheduleNotificationEmail(insertId, messageDetails);
 		}
 		return true;
+	};
+
+	this.sendDigestEmail = function(email) {
+		if (email !== undefined) {
+			delete email.ts;
+			delete email._id;
+			Meteor.defer(() => {
+				Email.send(email);
+			});
+		}
+		return true;
+	};
+
+	this.scheduleDigestEmail = function(insertId, email) {
+		global.SyncedCron.add({
+			name: insertId,
+			schedule() {
+				return later.parse.recur().on(email.ts).fullDate();
+			},
+			job() {
+				RocketChat.EmailSchedule.sendDigestEmail(email);
+				FutureDigestEmails.remove(insertId);
+				global.SyncedCron.remove(insertId);
+				return insertId;
+			}
+		});
+		return true;
+	};
+
+	this.sendOrScheduleDigest = function(email) {
+		if (email.ts < new Date()) {
+			RocketChat.EmailSchedule.sendDigestEmail(email);
+		} else {
+			const insertId = FutureDigestEmails.insert(email);
+			RocketChat.EmailSchedule.scheduleDigestEmail(insertId, email);
+		}
+		return true;
+	};
+
+	this.getDigestTiming = function(partitions) {
+		return moment(new Date()).startOf('day').add((Math.floor(moment(new Date()).hours()/partitions)+1)*partitions, 'hours').toDate();
 	};
 };
 
 Meteor.startup(function() {
-	FutureEmails.find().forEach(function(details) {
+	FutureNotificationEmails.find().forEach(function(details) {
 		if (details.ts < new Date()) {
-			RocketChat.EmailSchedule.sendScheduledEmail(details);
-			FutureEmails.remove(details._id);
+			RocketChat.EmailSchedule.sendNotificationEmail(details);
+			FutureNotificationEmails.remove(details._id);
 			global.SyncedCron.remove(details._id);
 		} else {
-			RocketChat.EmailSchedule.scheduleEmail(details._id, details);
+			RocketChat.EmailSchedule.scheduleNotificationEmail(details._id, details);
+		}
+	});
+
+	FutureDigestEmails.find().forEach(function(email) {
+		if (email.ts < new Date()) {
+			RocketChat.EmailSchedule.sendDigestEmail(email);
+			FutureDigestEmails.remove(email._id);
+			global.SyncedCron.remove(email._id);
+		} else {
+			RocketChat.EmailSchedule.scheduleDigestEmail(email._id, email);
 		}
 	});
 

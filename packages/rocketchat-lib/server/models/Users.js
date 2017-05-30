@@ -531,7 +531,7 @@ Find users to send a message by email if:
 			'emails.verified': true
 		};
 
-		return this.find(query, { fields: { name: 1, username: 1, emails: 1, 'settings.preferences.emailNotificationMode': 1 } });
+		return this.find(query, { fields: { name: 1, username: 1, emails: 1, 'settings.preferences.emailNotificationMode': 1, 'settings.preferences.offlineNotificationFrequency': 1 } });
 	}
 }
 

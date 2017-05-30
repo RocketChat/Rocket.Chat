@@ -1114,6 +1114,7 @@
   "Offline_Mention_Email": "You have been mentioned by __user__ in #__room__",
   "Offline_message": "Offline message",
   "Offline_Notification_Frequency": "Offline Notification Frequency",
+  "Offline_Notification_Frequency_Info": "Offline email notifications frequency per day",
   "Offline_success_message": "Offline success message",
   "Offline_unavailable": "Offline unavailable",
   "On": "On",
