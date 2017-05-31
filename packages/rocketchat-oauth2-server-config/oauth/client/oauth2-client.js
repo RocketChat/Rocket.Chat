@@ -47,13 +47,11 @@ Template.authorize.events({
 });
 
 Template.authorize.onRendered(function() {
-	this.autorun((c) => {
+	this.autorun(c => {
 		const user = Meteor.user();
-		if (user && user.oauth && user.oauth.authorizedClients) {
-			if (user.oauth.authorizedClients.indexOf(this.data.client_id() > -1)) {
-				c.stop();
-				$('button[type=submit]').click();
-			}
+		if (user && user.oauth && user.oauth.authorizedClients && user.oauth.authorizedClients.includes(this.data.client_id())) {
+			c.stop();
+			$('button[type=submit]').click();
 		}
 	});
 });
