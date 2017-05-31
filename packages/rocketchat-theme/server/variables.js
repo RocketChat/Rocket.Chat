@@ -39,6 +39,56 @@ const minorColors= {
 	'status-offline': '@transparent-darker'
 };
 
+const sidebar = [
+	{
+		class: 'sidebar-background',
+		property: 'background-color',
+		value: '#2f343d'
+	},
+	{
+		class: 'sidebar-content',
+		property: 'color',
+		value: '#6c727a'
+	},
+	{
+		class: 'sidebar-content-active',
+		property: 'background-color',
+		value: '#6c727a'
+	},
+	{
+		class: 'sidebar-content-unread',
+		property: 'color',
+		value: '#ffffff'
+	},
+	{
+		class: 'sidebar-content:hover',
+		property: 'background-color',
+		value: '#26282d'
+	},
+	{
+		class: 'sidebar-category-badge',
+		property: 'background-color',
+		value: '#414852'
+	},
+	{
+		class: 'sidebar-category-badge-content',
+		property: 'color',
+		value: '#ffffff'
+	},
+	{
+		class: 'sidebar-room-badge',
+		property: 'background-color',
+		value: '#414852'
+	},
+	{
+		class: 'sidebar-room-badge-content',
+		property: 'color',
+		value: '#ffffff'
+	}
+];
+
+sidebar.forEach(setting => RocketChat.theme.addPublicColor(setting.class, setting.value, 'Sidebar', 'color', setting.property));
+
 // Bulk-add settings for color scheme
 
 Object.keys(majorColors).forEach((key) => {
