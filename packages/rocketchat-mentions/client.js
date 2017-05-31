@@ -3,6 +3,9 @@ const MentionsClient = new Mentions({
 	pattern() {
 		return RocketChat.settings.get('UTF8_Names_Validation');
 	},
+	useRealName() {
+		return RocketChat.settings.get('UI_Use_Real_Name');
+	},
 	me() {
 		const me = Meteor.user();
 		return me && me.username;
