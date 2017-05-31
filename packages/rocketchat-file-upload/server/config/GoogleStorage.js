@@ -36,6 +36,10 @@ const configure = _.debounce(function() {
 	const secret = RocketChat.settings.get('FileUpload_GoogleStorage_Secret');
 	const URLExpiryTimeSpan = RocketChat.settings.get('FileUpload_S3_URLExpiryTimeSpan');
 
+	if (!bucket || !accessId || !secret) {
+		return;
+	}
+
 	const config = {
 		connection: {
 			credentials: {
