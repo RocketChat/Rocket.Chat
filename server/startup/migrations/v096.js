@@ -113,8 +113,7 @@ RocketChat.Migrations.add({
 									const details = {
 										userId: user._id,
 										type: 'image/jpeg',
-										size: stat.size,
-										name: user.username
+										size: stat.size
 									};
 
 									avatarsFileStore.insert(details, rs, (err) => {
