@@ -68,7 +68,9 @@ RocketChat._setUsername = function(userId, u) {
 
 		const fileStore = FileUpload.getStore('Avatars');
 		const file = fileStore.model.findOneByName(previousUsername);
-		fileStore.model.updateFileNameById(file._id, username);
+		if (file) {
+			fileStore.model.updateFileNameById(file._id, username);
+		}
 	}
 	// Set new username*
 	RocketChat.models.Users.setUsername(user._id, username);
