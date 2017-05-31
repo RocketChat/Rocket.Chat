@@ -1,6 +1,8 @@
 /* globals toolbarSearch, menu, isRtl, fireGlobalEvent, CachedChatSubscription */
 import Clipboard from 'clipboard';
 
+RocketChat.settings.collection.find({_id:/theme/}, {fields:{ value: 1 }}).observe({changed: (key) => { console.log(key); }});
+
 Template.body.onRendered(function() {
 	new Clipboard('.clipboard');
 
