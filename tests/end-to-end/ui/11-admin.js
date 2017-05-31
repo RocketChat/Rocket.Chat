@@ -13,7 +13,8 @@ describe('[Administration]', () => {
 	before(() => {
 		checkIfUserIsAdmin(adminUsername, adminEmail, adminPassword);
 		sideNav.spotlightSearch.waitForVisible(10000);
-		sideNav.searchChannel('general');
+		sideNav.general.waitForVisible(5000);
+		sideNav.general.click();
 	});
 
 	after(() => {
