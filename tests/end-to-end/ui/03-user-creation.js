@@ -22,7 +22,7 @@ describe('[User Creation]', function() {
 	it('it should create user', () => {
 		loginPage.gotToRegister();
 
-		loginPage.registerNewUser({username, email, password, reason});
+		loginPage.registerNewUser({username, email, password});
 
 		loginPage.inputUsername.waitForExist(5000);
 
