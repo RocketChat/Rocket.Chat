@@ -128,7 +128,7 @@ RocketChat.theme = new class {
 				type,
 				editor: editor || type,
 				section,
-				'public': false,
+				'public': true,
 				allowedTypes,
 				property
 			};
