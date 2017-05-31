@@ -16,7 +16,7 @@ import admin from '../../pageobjects/administration.page';
 import {checkIfUserIsValid, checkIfUserIsAdmin} from '../../data/checks';
 import {targetUser, imgURL} from '../../data/interactions.js';
 
-import {adminUsername, adminEmail, adminPassword, username, email, password} from '../../data/user.js';
+import {adminUsername, adminEmail, adminPassword, username, email, password, reason} from '../../data/user.js';
 
 function api(path) {
 	return prefix + path;
@@ -459,7 +459,7 @@ describe('[Api Settings Change]', () => {
 			loginPage.emailField.setValue(`setting${ email }`);
 			loginPage.passwordField.setValue(password);
 			loginPage.confirmPasswordField.setValue(password);
-			loginPage.reasonField.setValue(password);
+			loginPage.reasonField.setValue(reason);
 
 			loginPage.submit();
 
