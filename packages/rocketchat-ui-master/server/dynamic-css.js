@@ -16,6 +16,7 @@ export default () => {
 
 	const style = document.createElement('style');
 	style.type = 'text/css';
+	style.id = 'rocketchat-dynamic-css';
 
 	DynamicCss = typeof DynamicCss !=='undefined'? DynamicCss : {list:[]};
 
