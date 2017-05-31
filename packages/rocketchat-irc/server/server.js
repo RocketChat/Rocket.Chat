@@ -1,7 +1,7 @@
 import net from 'net';
 import Lru from 'lru-cache';
 
-//////
+///////
 // Assign values
 
 //Package availability
