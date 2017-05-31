@@ -11,7 +11,7 @@ class LoginPage extends Page {
 	get emailField() { return browser.element('[name=email]'); }
 	get passwordField() { return browser.element('[name=pass]'); }
 	get confirmPasswordField() { return browser.element('[name=confirm-pass]'); }
-	get reasonField() { return browser.element('[reason]'); }
+	get reasonField() { return browser.element('[name=reason]'); }
 	get inputUsername() { return browser.element('form#login-card input#username'); }
 
 	get emailOrUsernameInvalidText() { return browser.element('[name=emailOrUsername]~.input-error'); }
