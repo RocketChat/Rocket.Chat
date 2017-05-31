@@ -10,6 +10,9 @@ RocketChat.Livechat = {
 		}
 	}),
 
+	getBotAgent() {
+		return RocketChat.models.Users.getBotAgent();
+	},
 	getNextAgent(department) {
 		if (department) {
 			return RocketChat.models.LivechatDepartmentAgents.getNextAgentForDepartment(department);

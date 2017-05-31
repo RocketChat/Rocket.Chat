@@ -131,5 +131,63 @@ RocketChat.QueueMethods = {
 		RocketChat.models.Rooms.insert(room);
 
 		return room;
-	}
+	},
+	'Bot_First'(guest, message, roomInfo) {
+		let agent = RocketChat.Livechat.getBotAgent();
+		agent = agent ? agent : RocketChat.Livechat.getNextAgent(guest.department);
+		if (!agent) {
+			throw new Meteor.Error('no-agent-online', 'Sorry, no online agents');
+		}
+
+		const roomCode = RocketChat.models.Rooms.getNextLivechatRoomCode();
+
+		const room = _.extend({
+			_id: message.rid,
+			msgs: 1,
+			lm: new Date(),
+			code: roomCode,
+			label: guest.name || guest.username,
+			// usernames: [agent.username, guest.username],
+			t: 'l',
+			ts: new Date(),
+			v: {
+				_id: guest._id,
+				username: guest.username,
+				token: message.token
+			},
+			servedBy: {
+				_id: agent.agentId,
+				username: agent.username
+			},
+			cl: false,
+			open: true,
+			waitingResponse: true
+		}, roomInfo);
+		const subscriptionData = {
+			rid: message.rid,
+			name: guest.name || guest.username,
+			alert: true,
+			open: true,
+			unread: 1,
+			code: roomCode,
+			u: {
+				_id: agent.agentId,
+				username: agent.username
+			},
+			t: 'l',
+			desktopNotifications: 'all',
+			mobilePushNotifications: 'all',
+			emailNotifications: 'all'
+		};
+
+		RocketChat.models.Rooms.insert(room);
+		RocketChat.models.Subscriptions.insert(subscriptionData);
+
+		RocketChat.Livechat.stream.emit(room._id, {
+			type: 'agentData',
+			data: RocketChat.models.Users.getAgentInfo(agent.agentId)
+		});
+
+		return room;
+	},
 };

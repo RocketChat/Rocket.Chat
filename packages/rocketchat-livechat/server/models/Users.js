@@ -67,6 +67,45 @@ RocketChat.models.Users.findOnlineUserFromList = function(userList) {
  * Get next user agent in order
  * @return {object} User from db
  */
+RocketChat.models.Users.getBotAgent = function() {
+	const query = {
+        status: {
+			$exists: true,
+			$ne: 'offline'
+		},
+		statusLivechat: 'available',
+        roles: ['bot', 'livechat-agent']
+	};
+
+	const collectionObj = this.model.rawCollection();
+	const findAndModify = Meteor.wrapAsync(collectionObj.findAndModify, collectionObj);
+
+	const sort = {
+		livechatCount: 1,
+		username: 1
+	};
+
+	const update = {
+		$inc: {
+			livechatCount: 1
+		}
+	};
+
+	const user = findAndModify(query, sort, update);
+	if (user && user.value) {
+		return {
+			agentId: user.value._id,
+			username: user.value.username
+		};
+	} else {
+		return null;
+	}
+};
+
+/**
+ * Get next user agent in order
+ * @return {object} User from db
+ */
 RocketChat.models.Users.getNextAgent = function() {
 	const query = {
 		status: {
