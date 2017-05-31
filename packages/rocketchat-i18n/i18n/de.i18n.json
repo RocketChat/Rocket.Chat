@@ -755,7 +755,7 @@
   "LDAP_Sync_User_Data": "Daten synchronisieren",
   "LDAP_Sync_User_Data_Description": "Bei der Anmeldung die Benutzerdaten mit dem Server synchronisieren (Beispiel: Name, E-Mail).",
   "LDAP_Sync_User_Data_FieldMap": "Nutzerdaten-Feldkarte",
-  "LDAP_Sync_User_Data_FieldMap_Description": "Konfigurieren Sie, wie Benutzer-Account-Felder (wie die E-Mail-Adresse) aus einem LDAP-Datensatz (falls gefunden) geladen werden.<br/>Beispiel: {\"cn\":\"name\", \"mail\":\"email\"} nimmt einen von Menschen lesbaren Namen von dem cn-Attribut und die E-Mail-Adresse vom Mail-Attribut.<br/>Verfügbare Felder beinhalten den Namen und die E-Mail-Adresse.",
+  "LDAP_Sync_User_Data_FieldMap_Description": "Konfigurieren Sie, wie Benutzer-Account-Felder (wie die E-Mail-Adresse) aus einem LDAP-Datensatz (falls gefunden) geladen werden.<br/>Beispiel: {\"cn\":\"name\", \"mail\":\"email\"} nimmt einen von Menschen lesbaren Namen von dem cn-Attribut und die E-Mail-Adresse vom Mail-Attribut. Zusätzlich ist die Verwendung von Variablen möglich, wie z.B.: `{ \"#{givenName} #{sn}\": \"name\", \"mail\": \"email\" }`. Hierbei wird eine Kombination des Vor- und Nachnamens verwendet.<br/>Verfügbare Felder in Rocket.Chat sind `name` und `email`.",
   "LDAP_Sync_Users": "Benutzer synchronisieren",
   "LDAP_Test_Connection": "Testverbindung",
   "LDAP_Unique_Identifier_Field": "Eindeutige Kennung des Felds",
