@@ -1,6 +1,81 @@
 /* globals Push */
 import moment from 'moment';
 
+/**
+ * Replaces @username with full name
+ *
+ * @param {string} message The message to replace
+ * @param {object[]} mentions Array of mentions used to make replacements
+ *
+ * @returns {string}
+ */
+function replaceMentionedUsernamesWithFullNames(message, mentions) {
+	if (!mentions || !mentions.length) {
+		return message;
+	}
+	mentions.forEach((mention) => {
+		const user = RocketChat.models.Users.findOneById(mention._id);
+		if (user && user.name) {
+			message = message.replace(`@${ mention.username }`, user.name);
+		}
+	});
+	return message;
+}
+
+/**
+ * Send notification to user
+ *
+ * @param {string} userId The user to notify
+ * @param {object} user The sender
+ * @param {object} room The room send from
+ * @param {number} duration Duration of notification
+ */
+function notifyUser(userId, user, message, room, duration) {
+	const UI_Use_Real_Name = RocketChat.settings.get('UI_Use_Real_Name') === true;
+	if (UI_Use_Real_Name) {
+		message.msg = replaceMentionedUsernamesWithFullNames(message.msg, message.mentions);
+	}
+	let title = UI_Use_Real_Name ? user.name : `@${ user.username }`;
+	if (room.t !== 'd' && room.name) {
+		title += ` @ #${ room.name }`;
+	}
+	RocketChat.Notifications.notifyUser(userId, 'notification', {
+		title,
+		text: message.msg,
+		duration,
+		payload: {
+			_id: message._id,
+			rid: message.rid,
+			sender: message.u,
+			type: room.t,
+			name: room.name
+		}
+	});
+}
+
+/**
+ * Checks if a message contains a user highlight
+ *
+ * @param {string} message
+ * @param {array|undefined} highlights
+ *
+ * @returns {boolean}
+ */
+function messageContainsHighlight(message, highlights) {
+	if (! highlights || highlights.length === 0) { return false; }
+
+	let has = false;
+	highlights.some(function(highlight) {
+		const regexp = new RegExp(s.escapeRegExp(highlight), 'i');
+		if (regexp.test(message.msg)) {
+			has = true;
+			return true;
+		}
+	});
+
+	return has;
+}
+
 function getBadgeCount(userId) {
 	const subscriptions = RocketChat.models.Subscriptions.findUnreadByUserId(userId).fetch();
 
@@ -24,7 +99,13 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 	/*
 	Increment unread couter if direct messages
 	 */
-	const settings = {};
+	const settings = {
+		alwaysNotifyDesktopUsers: [],
+		dontNotifyDesktopUsers: [],
+		alwaysNotifyMobileUsers: [],
+		dontNotifyMobileUsers: [],
+		desktopNotificationDurations: {}
+	};
 
 	/**
 	 * Checks if a given user can be notified
@@ -42,35 +123,6 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 
 		return (settings[types[type][0]].indexOf(id) === -1 || settings[types[type][1]].indexOf(id) !== -1);
 	}
-
-	/**
-	 * Checks if a message contains a user highlight
-	 *
-	 * @param {string} message
-	 * @param {array|undefined} highlights
-	 *
-	 * @returns {boolean}
-	 */
-	function messageContainsHighlight(message, highlights) {
-		if (! highlights || highlights.length === 0) { return false; }
-
-		let has = false;
-		highlights.some(function(highlight) {
-			const regexp = new RegExp(s.escapeRegExp(highlight), 'i');
-			if (regexp.test(message.msg)) {
-				has = true;
-				return true;
-			}
-		});
-
-		return has;
-	}
-
-	settings.alwaysNotifyDesktopUsers = [];
-	settings.dontNotifyDesktopUsers = [];
-	settings.alwaysNotifyMobileUsers = [];
-	settings.dontNotifyMobileUsers = [];
-	settings.desktopNotificationDurations = {};
 
 	const notificationPreferencesByRoom = RocketChat.models.Subscriptions.findNotificationPreferencesByRoom(room._id);
 	notificationPreferencesByRoom.forEach(function(subscription) {
@@ -140,18 +192,8 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 
 		}
 		if ((userOfMention != null) && canBeNotified(userOfMentionId, 'mobile')) {
-			RocketChat.Notifications.notifyUser(userOfMention._id, 'notification', {
-				title: RocketChat.settings.get('UI_Use_Real_Name') ? user.name : `@${ user.username }`,
-				text: message.msg,
-				duration: settings.desktopNotificationDurations[userOfMention._id],
-				payload: {
-					_id: message._id,
-					rid: message.rid,
-					sender: message.u,
-					type: room.t,
-					name: room.name
-				}
-			});
+			const duration = settings.desktopNotificationDurations[userOfMention._id];
+			notifyUser(userOfMention._id, user, message, room, duration);
 		}
 
 		if ((userOfMention != null) && canBeNotified(userOfMentionId, 'desktop')) {
@@ -287,22 +329,8 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 
 		if (userIdsToNotify.length > 0) {
 			for (const usersOfMentionId of userIdsToNotify) {
-				let title = `@${ user.username }`;
-				if (room.name) {
-					title += ` @ #${ room.name }`;
-				}
-				RocketChat.Notifications.notifyUser(usersOfMentionId, 'notification', {
-					title,
-					text: message.msg,
-					duration: settings.desktopNotificationDurations[usersOfMentionId],
-					payload: {
-						_id: message._id,
-						rid: message.rid,
-						sender: message.u,
-						type: room.t,
-						name: room.name
-					}
-				});
+				const duration = settings.desktopNotificationDurations[usersOfMentionId];
+				notifyUser(usersOfMentionId, user, message, room, duration);
 			}
 		}
 
