@@ -4,8 +4,9 @@
 */
 import _ from 'underscore';
 export default class {
-	constructor({pattern, me}) {
+	constructor({pattern, useRealName, me}) {
 		this.pattern = pattern;
+		this.useRealName = useRealName;
 		this.me = me;
 	}
 	set me(m) {
@@ -19,6 +20,12 @@ export default class {
 	}
 	get pattern() {
 		return typeof this._pattern === 'function' ? this._pattern() : this._pattern;
+	}
+	set useRealName(s) {
+		this._useRealName = s;
+	}
+	get useRealName() {
+		return typeof this._useRealName === 'function' ? this._useRealName() : this._useRealName;
 	}
 	get userMentionRegex() {
 		return new RegExp(`@(${ this.pattern })`, 'gm');
@@ -36,7 +43,8 @@ export default class {
 			if (message.temp == null && mentionObj == null) {
 				return match;
 			}
-			const name = RocketChat.settings.get('UI_Use_Real_Name') && mentionObj && mentionObj.name;
+			const name = this.useRealName && mentionObj && mentionObj.name;
+			console.log({name});
 
 			return `<a class="mention-link ${ username === me ? 'mention-link-me background-primary-action-color':'' }" data-username="${ username }" title="${ name ? username : '' }">${ name || match }</a>`;
 		});
