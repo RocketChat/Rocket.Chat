@@ -73,7 +73,7 @@ class MainContent extends Page {
 		browser.waitUntil(function() {
 			browser.waitForVisible('.message:last-child .body', 5000);
 			return browser.getText('.message:last-child .body') === text;
-		}, 2000);
+		}, 5000);
 	}
 
 	// adds text to the input
@@ -98,14 +98,14 @@ class MainContent extends Page {
 		browser.waitUntil(function() {
 			browser.waitForVisible('.message:last-child .body', 5000);
 			return browser.getText('.message:last-child .body') === text;
-		}, 4000);
+		}, 5000);
 	}
 
 	waitForLastMessageTextAttachmentEqualsText(text) {
 		browser.waitUntil(function() {
 			browser.waitForVisible('.message:last-child .attachment-text', 5000);
 			return browser.getText('.message:last-child .attachment-text') === text;
-		}, 2000);
+		}, 5000);
 	}
 
 	// Wait for the last message author username to equal the provided text
@@ -113,7 +113,7 @@ class MainContent extends Page {
 		browser.waitUntil(function() {
 			browser.waitForVisible('.message:last-child .user-card-message:nth-of-type(2)', 5000);
 			return browser.getText('.message:last-child .user-card-message:nth-of-type(2)') === text;
-		}, 2000);
+		}, 5000);
 	}
 
 	openMessageActionMenu() {
