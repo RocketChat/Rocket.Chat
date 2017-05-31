@@ -46,31 +46,40 @@ class SideNav extends Page {
 		browser.click(`.rooms-list > .wrapper > ul [title="${ channelName }"]`);
 		browser.waitForVisible('.input-message', 5000);
 		browser.waitUntil(function() {
-			browser.waitForVisible('.room-title', 5000);
-			return browser.getText('.room-title') === channelName;
-		}, 5000);
+			browser.waitForVisible('.fixed-title .room-title', 8000);
+			return browser.getText('.fixed-title .room-title') === channelName;
+		}, 10000);
 	}
 
 	// Opens a channel via spotlight search
 	searchChannel(channelName) {
-		this.spotlightSearch.waitForVisible(5000);
-		this.spotlightSearch.click();
-		this.spotlightSearch.setValue(channelName);
-		browser.waitForVisible(`.room-title=${ channelName }`, 10000);
-		browser.click(`.room-title=${ channelName }`);
-		browser.waitUntil(function() {
-			browser.waitForVisible('.room-title', 5000);
-			return browser.getText('.room-title') === channelName;
-		}, 5000);
+		browser.waitForVisible('.fixed-title .room-title', 15000);
+		const currentRoom = browser.element('.fixed-title .room-title').getText();
+		if (currentRoom !== channelName) {
+			this.spotlightSearch.waitForVisible(5000);
+			this.spotlightSearch.click();
+			this.spotlightSearch.setValue(channelName);
+			browser.waitForVisible(`[name='${ channelName }']`, 5000);
+			browser.click(`[name='${ channelName }']`);
+			browser.waitUntil(function() {
+				browser.waitForVisible('.fixed-title .room-title', 8000);
+				return browser.getText('.fixed-title .room-title') === channelName;
+			}, 10000);
+
+		}
 	}
 
 	// Gets a channel from the spotlight search
 	getChannelFromSpotlight(channelName) {
-		this.spotlightSearch.waitForVisible(5000);
-		this.spotlightSearch.click();
-		this.spotlightSearch.setValue(channelName);
-		browser.waitForVisible(`.room-title=${ channelName }`, 5000);
-		return browser.element(`.room-title=${ channelName }`);
+		browser.waitForVisible('.fixed-title .room-title', 15000);
+		const currentRoom = browser.element('.fixed-title .room-title').getText();
+		if (currentRoom !== channelName) {
+			this.spotlightSearch.waitForVisible(5000);
+			this.spotlightSearch.click();
+			this.spotlightSearch.setValue(channelName);
+			browser.waitForVisible(`[name='${ channelName }']`, 5000);
+			return browser.element(`[name='${ channelName }']`);
+		}
 	}
 
 	// Gets a channel from the rooms list
