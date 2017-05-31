@@ -198,7 +198,6 @@ class HubotScripts {
 				if (typeof(fn) === 'function') { fn(robot); } else { fn.default(robot); }
 				robot.parseHelp(path+scriptFile);
 				console.log(`Loaded ${ scriptFile }`.green);
-				console.log(Npm.resolve(path+scriptFile));
 			} catch (e) {
 				console.log(`can't load ${ scriptFile }`.red);
 				console.log(e);
