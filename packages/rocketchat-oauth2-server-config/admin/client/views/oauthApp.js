@@ -13,18 +13,17 @@ Template.oauthApp.helpers({
 		return RocketChat.authz.hasAllPermission('manage-oauth-apps');
 	},
 	data() {
-		let params;
 		const instance = Template.instance();
 		if (typeof instance.data.params === 'function') {
-			params = instance.data.params();
-		}
-		if (params && params.id) {
-			const data = ChatOAuthApps.findOne({ _id: params.id });
-			if (data) {
-				data.authorization_url = Meteor.absoluteUrl('oauth/authorize');
-				data.access_token_url = Meteor.absoluteUrl('oauth/token');
-				Template.instance().record.set(data);
-				return data;
+			const params = instance.data.params();
+			if (params && params.id) {
+				const data = ChatOAuthApps.findOne({ _id: params.id });
+				if (data) {
+					data.authorization_url = Meteor.absoluteUrl('oauth/authorize');
+					data.access_token_url = Meteor.absoluteUrl('oauth/token');
+					Template.instance().record.set(data);
+					return data;
+				}
 			}
 		}
 		return Template.instance().record.curValue;
@@ -58,7 +57,6 @@ Template.oauthApp.events({
 		});
 	},
 	'click .submit > .save'() {
-		let params;
 		const instance = Template.instance();
 		const name = $('[name=name]').val().trim();
 		const active = $('[name=active]:checked').val().trim() === '1';
@@ -75,23 +73,22 @@ Template.oauthApp.events({
 			redirectUri
 		};
 		if (typeof instance.data.params === 'function') {
-			params = instance.data.params();
+			const params = instance.data.params();
+			if (params && params.id) {
+				return Meteor.call('updateOAuthApp', params.id, app, function(err) {
+					if (err != null) {
+						return handleError(err);
+					}
+					toastr.success(TAPi18n.__('Application_updated'));
+				});
+			}
 		}
-		if (params && params.id) {
-			Meteor.call('updateOAuthApp', params.id, app, function(err) {
-				if (err != null) {
-					return handleError(err);
-				}
-				toastr.success(TAPi18n.__('Application_updated'));
-			});
-		} else {
-			Meteor.call('addOAuthApp', app, function(err, data) {
-				if (err != null) {
-					return handleError(err);
-				}
-				toastr.success(TAPi18n.__('Application_added'));
-				FlowRouter.go('admin-oauth-app', { id: data._id });
-			});
-		}
+		Meteor.call('addOAuthApp', app, function(err, data) {
+			if (err != null) {
+				return handleError(err);
+			}
+			toastr.success(TAPi18n.__('Application_added'));
+			FlowRouter.go('admin-oauth-app', { id: data._id });
+		});
 	}
 });
