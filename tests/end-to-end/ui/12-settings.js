@@ -458,6 +458,7 @@ describe('[Api Settings Change]', () => {
 			loginPage.emailField.setValue(`setting${ email }`);
 			loginPage.passwordField.setValue(password);
 			loginPage.confirmPasswordField.setValue(password);
+			loginPage.reasonField.setValue(password);
 
 			loginPage.submit();
 
