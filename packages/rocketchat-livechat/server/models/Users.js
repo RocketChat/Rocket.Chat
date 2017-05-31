@@ -69,12 +69,12 @@ RocketChat.models.Users.findOnlineUserFromList = function(userList) {
  */
 RocketChat.models.Users.getBotAgent = function() {
 	const query = {
-        status: {
+		status: {
 			$exists: true,
 			$ne: 'offline'
 		},
 		statusLivechat: 'available',
-        roles: ['bot', 'livechat-agent']
+		roles: ['bot', 'livechat-agent']
 	};
 
 	const collectionObj = this.model.rawCollection();

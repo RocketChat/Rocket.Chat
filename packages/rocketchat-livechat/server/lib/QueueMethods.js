@@ -189,5 +189,5 @@ RocketChat.QueueMethods = {
 		});
 
 		return room;
-	},
+	}
 };
