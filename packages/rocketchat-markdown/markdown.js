@@ -90,4 +90,5 @@ RocketChat.callbacks.add('renderMessage', MarkdownMessage, RocketChat.callbacks.
 
 if (Meteor.isClient) {
 	Blaze.registerHelper('RocketChatMarkdown', text => Markdown.parse(text));
+	Blaze.registerHelper('RocketChatMarkdownUnescape', text => Markdown.parseNotEscaped(text));
 }
