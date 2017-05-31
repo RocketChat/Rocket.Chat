@@ -196,7 +196,7 @@ class IrcClient {
 		} else {
 			room = this.createDirectRoomWhenNotExist(source, this.user);
 		}
-		const message = { msg: content,ts: now };
+		const message = { msg: content, ts: now };
 		cacheKey = `${ source.username }${ timestamp }`;
 		ircReceiveMessageCache.set(cacheKey, true);
 		console.log('[irc] ircReceiveMessageCache.set -> '.yellow, 'key:', cacheKey);
