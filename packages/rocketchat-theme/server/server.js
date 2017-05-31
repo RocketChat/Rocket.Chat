@@ -117,7 +117,7 @@ RocketChat.theme = new class {
 		});
 	}
 
-	addVariable(type, name, value, section, persist = true, editor, allowedTypes) {
+	addVariable(type, name, value, section, persist = true, editor, allowedTypes, property) {
 		this.variables[name] = {
 			type,
 			value
@@ -129,15 +129,16 @@ RocketChat.theme = new class {
 				editor: editor || type,
 				section,
 				'public': false,
-				allowedTypes
+				allowedTypes,
+				property
 			};
 			return RocketChat.settings.add(`theme-${ type }-${ name }`, value, config);
 		}
 
 	}
 
-	addPublicColor(name, value, section, editor = 'color') {
-		return this.addVariable('color', name, value, section, true, editor, ['color', 'expression']);
+	addPublicColor(name, value, section, editor = 'color', property) {
+		return this.addVariable('color', name, value, section, true, editor, ['color', 'expression'], property);
 	}
 
 	addPublicFont(name, value) {
