@@ -32,10 +32,13 @@ export default class {
 				return `<a class="mention-link mention-link-me mention-link-all background-attention-color">${ match }</a>`;
 			}
 
-			if (message.temp == null && _.findWhere(message.mentions, {username}) == null) {
+			const mentionObj = _.findWhere(message.mentions, {username});
+			if (message.temp == null && mentionObj == null) {
 				return match;
 			}
-			return `<a class="mention-link ${ username === me ? 'mention-link-me background-primary-action-color':'' }" data-username="${ username }">${ match }</a>`;
+			const name = RocketChat.settings.get('UI_Use_Real_Name') && mentionObj && mentionObj.name;
+
+			return `<a class="mention-link ${ username === me ? 'mention-link-me background-primary-action-color':'' }" data-username="${ username }" title="${ name ? username : '' }">${ name || match }</a>`;
 		});
 	}
 	replaceChannels(str, message) {
