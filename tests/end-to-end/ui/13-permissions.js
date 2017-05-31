@@ -15,7 +15,8 @@ describe('[Permissions]', () => {
 	before(() => {
 		checkIfUserIsAdmin(adminUsername, adminEmail, adminPassword);
 		sideNav.spotlightSearch.waitForVisible(10000);
-		sideNav.searchChannel('general');
+		sideNav.general.waitForVisible(5000);
+		sideNav.general.click();
 		sideNav.accountBoxUserName.waitForVisible(5000);
 		sideNav.accountBoxUserName.click();
 		sideNav.admin.waitForVisible(5000);
@@ -26,7 +27,8 @@ describe('[Permissions]', () => {
 	after(() => {
 		checkIfUserIsAdmin(adminUsername, adminEmail, adminPassword);
 		sideNav.spotlightSearch.waitForVisible(10000);
-		sideNav.searchChannel('general');
+		sideNav.general.waitForVisible(5000);
+		sideNav.general.click();
 		sideNav.accountBoxUserName.waitForVisible(5000);
 		sideNav.accountBoxUserName.click();
 		sideNav.admin.waitForVisible(5000);
