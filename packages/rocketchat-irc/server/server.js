@@ -179,7 +179,6 @@ class IrcClient {
 	}
 
 	onReceiveMessage(source, target, content) {
-		let room;
 		const now = new Date;
 		const timestamp = now.getTime();
 		let cacheKey = [source, target, content].join(',');
@@ -191,15 +190,13 @@ class IrcClient {
 		}
 		console.log('[irc] onReceiveMessage -> '.yellow, 'source:', source, 'target:', target, 'content:', content);
 		source = this.createUserWhenNotExist(source);
+		let room;
 		if (target[0] === '#') {
 			room = RocketChat.models.Rooms.findOneByName(target.substring(1));
 		} else {
 			room = this.createDirectRoomWhenNotExist(source, this.user);
 		}
-		const message = {
-			msg: content,
-			ts: now
-		};
+		const message = { msg: content,ts: now };
 		cacheKey = `${ source.username }${ timestamp }`;
 		ircReceiveMessageCache.set(cacheKey, true);
 		console.log('[irc] ircReceiveMessageCache.set -> '.yellow, 'key:', cacheKey);
@@ -221,7 +218,6 @@ class IrcClient {
 		const appendMembers = _.difference(newMembers, oldMembers);
 		const removeMembers = _.difference(oldMembers, newMembers);
 		appendMembers.forEach(member => this.createUserWhenNotExist(member));
-
 		RocketChat.models.Rooms.removeUsernamesById(room._id, removeMembers);
 		RocketChat.models.Rooms.addUsernamesById(room._id, appendMembers);
 
@@ -268,26 +264,21 @@ class IrcClient {
 	initRoomList() {
 		const roomsCursor = RocketChat.models.Rooms.findByTypeContainingUsername('c', this.user.username, { fields: { name: 1, t: 1 }});
 		const rooms = roomsCursor.fetch();
-
-		rooms.forEach(room => {
-			this.joinRoom(room);
-		});
+		rooms.forEach(room => this.joinRoom(room));
 	}
 
 	joinRoom(room) {
-		let msg;
 		if (room.t !== 'c' || room.name === 'general') {
 			return;
 		}
 		if (this.isJoiningRoom) {
-			this.pendingJoinRoomBuf.push(room.name);
-		} else {
-			console.log('[irc] joinRoom -> '.yellow, 'roomName:', room.name, 'pendingJoinRoomBuf:', this.pendingJoinRoomBuf.join(','));
-			msg = `JOIN #${ room.name }\r\n`;
-			this.receiveMemberListBuf[room.name] = [];
-			this.sendRawMessage(msg);
-			this.isJoiningRoom = true;
+			return this.pendingJoinRoomBuf.push(room.name);
 		}
+		console.log('[irc] joinRoom -> '.yellow, 'roomName:', room.name, 'pendingJoinRoomBuf:', this.pendingJoinRoomBuf.join(','));
+		const msg = `JOIN #${ room.name }\r\n`;
+		this.receiveMemberListBuf[room.name] = [];
+		this.sendRawMessage(msg);
+		this.isJoiningRoom = true;
 	}
 
 	leaveRoom(room) {
@@ -328,23 +319,23 @@ class IrcClient {
 	}
 
 	createUserWhenNotExist(name) {
-		let user = Meteor.users.findOne({ name });
-		if (!user) {
-			console.log('[irc] createNotExistUser ->'.yellow, 'userName:', name);
-			Meteor.call('registerUser', {
-				email: `${ name }@rocketchat.org`,
-				pass: 'rocketchat',
-				name
-			});
-			Meteor.users.update({ name }, {
-				$set: {
-					status: 'online',
-					username: name
-				}
-			});
-			user = Meteor.users.findOne({ name });
+		const user = Meteor.users.findOne({ name });
+		if (user) {
+			return user;
 		}
-		return user;
+		console.log('[irc] createNotExistUser ->'.yellow, 'userName:', name);
+		Meteor.call('registerUser', {
+			email: `${ name }@rocketchat.org`,
+			pass: 'rocketchat',
+			name
+		});
+		Meteor.users.update({ name }, {
+			$set: {
+				status: 'online',
+				username: name
+			}
+		});
+		return Meteor.users.findOne({ name });
 	}
 
 	createDirectRoomWhenNotExist(source, target) {
