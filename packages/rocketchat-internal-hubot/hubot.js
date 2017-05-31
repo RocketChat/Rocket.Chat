@@ -184,22 +184,32 @@ class HubotScripts {
 		const modulesToLoad = [
 			'hubot-help/src/help.coffee'
 		];
+		const customPath = RocketChat.settings.get('InternalHubot_PathToLoadCustomScripts');
 		HubotScripts.load(`${ __meteor_bootstrap__.serverDir }/npm/node_modules/meteor/rocketchat_internal-hubot/node_modules/`, modulesToLoad, robot);
-		HubotScripts.load(RocketChat.settings.get('InternalHubot_PathToLoadCustomScripts'), RocketChat.settings.get('InternalHubot_ScriptsToLoad').split(',') || [], robot);
+		HubotScripts.load(customPath, RocketChat.settings.get('InternalHubot_ScriptsToLoad').split(',') || [], robot);
 	}
 
 	static load(path, scriptsToLoad, robot) {
-		if (!path || !scriptsToLoad) { return; }
+		if (!path || !scriptsToLoad) {
+			return;
+		}
 		scriptsToLoad.forEach(scriptFile => {
 			try {
 				scriptFile = s.trim(scriptFile);
+				if (scriptFile === '') {
+					return;
+				}
 				// delete require.cache[require.resolve(path+scriptFile)];
-				const fn = Npm.require(path+scriptFile);
-				if (typeof(fn) === 'function') { fn(robot); } else { fn.default(robot); }
-				robot.parseHelp(path+scriptFile);
+				const fn = Npm.require(path + scriptFile);
+				if (typeof(fn) === 'function') {
+					fn(robot);
+				} else {
+					fn.default(robot);
+				}
+				robot.parseHelp(path + scriptFile);
 				console.log(`Loaded ${ scriptFile }`.green);
 			} catch (e) {
-				console.log(`can't load ${ scriptFile }`.red);
+				console.log(`Can't load ${ scriptFile }`.red);
 				console.log(e);
 			}
 		});
@@ -227,10 +237,11 @@ Meteor.startup(function() {
 			return init();
 		}
 	});
-	RocketChat.RateLimiter.limitMethod('reloadInternalHubot', 1, 5000, {
-		userId(/*userId*/) { return true; }
-	});
-	Meteor.methods({
-		reloadInternalHubot: () => init()
-	});
+	// TODO useful when we have the ability to invalidate `require` cache
+	// RocketChat.RateLimiter.limitMethod('reloadInternalHubot', 1, 5000, {
+	// 	userId(/*userId*/) { return true; }
+	// });
+	// Meteor.methods({
+	// 	reloadInternalHubot: () => init()
+	// });
 });
