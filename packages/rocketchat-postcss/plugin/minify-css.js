@@ -198,9 +198,13 @@ class CssToolsMinifier {
 			return false;
 		}
 
+		const minifiedFiles = CssTools.minifyCss(merged.code);
+
 		if (files.length) {
-			files[0].addStylesheet({
-				data: CssTools.minifyCss(merged.code)[0]
+			minifiedFiles.forEach(minified => {
+				files[0].addStylesheet({
+					data: minified
+				});
 			});
 		}
 	}

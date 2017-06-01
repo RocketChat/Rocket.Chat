@@ -169,25 +169,7 @@ RocketChat.settings.addGroup('Accounts', function() {
 				value: true
 			}
 		});
-		this.add('Accounts_AvatarStoreType', 'GridFS', {
-			type: 'select',
-			values: [
-				{
-					key: 'GridFS',
-					i18nLabel: 'GridFS'
-				}, {
-					key: 'FileSystem',
-					i18nLabel: 'FileSystem'
-				}
-			]
-		});
-		this.add('Accounts_AvatarStorePath', '', {
-			type: 'string',
-			enableQuery: {
-				_id: 'Accounts_AvatarStoreType',
-				value: 'FileSystem'
-			}
-		});
+
 		return this.add('Accounts_SetDefaultAvatar', true, {
 			type: 'boolean'
 		});
@@ -467,7 +449,7 @@ RocketChat.settings.addGroup('General', function() {
 
 RocketChat.settings.addGroup('Email', function() {
 	this.section('Header_and_Footer', function() {
-		this.add('Email_Header', '<html><table border="0" cellspacing="0" cellpadding="0" width="100%" bgcolor="#f3f3f3" style="color:#4a4a4a;font-family: Helvetica,Arial,sans-serif;font-size:14px;line-height:20px;border-collapse:callapse;border-spacing:0;margin:0 auto"><tr><td style="padding:1em"><table border="0" cellspacing="0" cellpadding="0" align="center" width="100%" style="width:100%;margin:0 auto;max-width:800px"><tr><td bgcolor="#ffffff" style="background-color:#ffffff; border: 1px solid #DDD; font-size: 10pt; font-family: Helvetica,Arial,sans-serif;"><table width="100%" border="0" cellspacing="0" cellpadding="0"><tr><td style="background-color: #04436a;"><h1 style="font-family: Helvetica,Arial,sans-serif; padding: 0 1em; margin: 0; line-height: 70px; color: #FFF;">[Site_Name]</h1></td></tr><tr><td style="padding: 1em; font-size: 10pt; font-family: Helvetica,Arial,sans-serif;">', {
+		this.add('Email_Header', '<html><table border="0" cellspacing="0" cellpadding="0" width="100%" bgcolor="#f3f3f3" style="color:#4a4a4a;font-family: Helvetica,Arial,sans-serif;font-size:14px;line-height:20px;border-collapse:collapse;border-spacing:0;margin:0 auto"><tr><td style="padding:1em"><table border="0" cellspacing="0" cellpadding="0" align="center" width="100%" style="width:100%;margin:0 auto;max-width:800px"><tr><td bgcolor="#ffffff" style="background-color:#ffffff; border: 1px solid #DDD; font-size: 10pt; font-family: Helvetica,Arial,sans-serif;"><table width="100%" border="0" cellspacing="0" cellpadding="0"><tr><td style="background-color: #04436a;"><h1 style="font-family: Helvetica,Arial,sans-serif; padding: 0 1em; margin: 0; line-height: 70px; color: #FFF;">[Site_Name]</h1></td></tr><tr><td style="padding: 1em; font-size: 10pt; font-family: Helvetica,Arial,sans-serif;">', {
 			type: 'code',
 			code: 'text/html',
 			multiline: true,
@@ -504,6 +486,15 @@ RocketChat.settings.addGroup('Email', function() {
 			type: 'string',
 			env: true,
 			i18nLabel: 'Port'
+		});
+		this.add('SMTP_IgnoreTLS', false, {
+			type: 'boolean',
+			env: true,
+			i18nLabel: 'IgnoreTLS',
+			enableQuery: {
+				_id: 'SMTP_Protocol',
+				value: 'smtp'
+			}
 		});
 		this.add('SMTP_Pool', true, {
 			type: 'boolean',
