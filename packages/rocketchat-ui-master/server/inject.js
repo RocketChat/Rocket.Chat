@@ -1,5 +1,5 @@
 /* globals Inject */
-const variables = RocketChat.models.Settings.find({_id:/theme-/}, {fields: { value: 1 }}).fetch();
+const variables = RocketChat.models.Settings.find({_id:/theme-/}, {fields: { value: 1, property: 1, type: 1 }}).fetch();
 Inject.rawHead('dynamic-variables', `<script>
 DynamicCss = typeof DynamicCss !== 'undefined' ? DynamicCss : { };
 DynamicCss.list = ${ JSON.stringify(variables) };
