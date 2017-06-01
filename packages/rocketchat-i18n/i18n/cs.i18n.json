@@ -29,8 +29,6 @@
   "Accounts_AllowUserProfileChange": "Povolit úpravy profilu",
   "Accounts_AvatarResize": "Rozměry avataru",
   "Accounts_AvatarSize": "Velikost avataru",
-  "Accounts_AvatarStorePath": "Cesta k úložišti avatarů",
-  "Accounts_AvatarStoreType": "Typ úložiště avatarů",
   "Accounts_BlockedDomainsList": "Seznam blokovaných domén",
   "Accounts_BlockedDomainsList_Description": "Čárkami oddělený seznam blokovaných domén",
   "Accounts_BlockedUsernameList": "Zakázaná uživatelská jména",

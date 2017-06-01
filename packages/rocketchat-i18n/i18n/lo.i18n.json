@@ -21,8 +21,6 @@
   "Accounts_AllowUserProfileChange": "ອະນຸຍາດໃຫ້ການປ່ຽນແປງຂໍ້ມູນຂອງຜູ້ໃຊ້",
   "Accounts_AvatarResize": "ປັບຂະຫນາດນົດ",
   "Accounts_AvatarSize": "Avatar ຂະຫນາດ",
-  "Accounts_AvatarStorePath": "ເສັ້ນທາງກ້າວສູ່ຮູບສ່ວນຕົວການເກັບຮັກສາ",
-  "Accounts_AvatarStoreType": "Avatar ປະເພດການເກັບຮັກສາ",
   "Accounts_BlockedDomainsList": "ສະກັດຊີ Domains",
   "Accounts_BlockedDomainsList_Description": "ບັນຊີລາຍຊື່ຈຸດ, ແຍກຂອງໂດເມນກັດ",
   "Accounts_BlockedUsernameList": "ບັນຊີ Username ກັດ",
