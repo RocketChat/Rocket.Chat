@@ -28,8 +28,6 @@
   "Accounts_AllowUserProfileChange": "Разрешить пользователю изменять настройки профиля",
   "Accounts_AvatarResize": "Изменение размера аватара",
   "Accounts_AvatarSize": "Размер аватара",
-  "Accounts_AvatarStorePath": "Путь к хранилищу аватаров",
-  "Accounts_AvatarStoreType": "Тип хранилища аватаров",
   "Accounts_BlockedDomainsList": "Список запрещённых доменов",
   "Accounts_BlockedDomainsList_Description": "Список запрещённых доменов, разделенных запятой",
   "Accounts_BlockedUsernameList": "Список заблокированных пользователей",

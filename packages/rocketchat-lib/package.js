@@ -103,6 +103,7 @@ Package.onUse(function(api) {
 
 	// SERVER MODELS
 	api.addFiles('server/models/_Base.js', 'server');
+	api.addFiles('server/models/Avatars.js', 'server');
 	api.addFiles('server/models/Messages.js', 'server');
 	api.addFiles('server/models/Reports.js', 'server');
 	api.addFiles('server/models/Rooms.js', 'server');
@@ -196,6 +197,7 @@ Package.onUse(function(api) {
 
 	// CLIENT MODELS
 	api.addFiles('client/models/_Base.js', 'client');
+	api.addFiles('client/models/Avatars.js', 'client');
 	api.addFiles('client/models/Uploads.js', 'client');
 
 	// CLIENT VIEWS

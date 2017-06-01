@@ -21,8 +21,6 @@
   "Accounts_AllowUserProfileChange": "プロフィールの変更を許可する",
   "Accounts_AvatarResize": "アバターの大きさを変更する",
   "Accounts_AvatarSize": "アバターの大きさ",
-  "Accounts_AvatarStorePath": "アバターの保存先",
-  "Accounts_AvatarStoreType": "アバターの保存先ストレージ種類",
   "Accounts_BlockedDomainsList": "ブロックされたドメイン一覧",
   "Accounts_BlockedDomainsList_Description": "カンマ区切りのブロックされたドメイン一覧",
   "Accounts_BlockedUsernameList": "ブロックされたユーザー名の一覧",

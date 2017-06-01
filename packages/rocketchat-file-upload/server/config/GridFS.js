@@ -1,7 +1,13 @@
 /* globals FileUpload, UploadFS */
-const stream = Npm.require('stream');
-const zlib = Npm.require('zlib');
-const util = Npm.require('util');
+import stream from 'stream';
+import zlib from 'zlib';
+import util from 'util';
+
+import { FileUploadClass } from '../lib/FileUpload';
+import { Cookies } from 'meteor/ostrio:cookies';
+
+const cookie = new Cookies();
+
 const logger = new Logger('FileUpload');
 
 function ExtractRange(options) {
@@ -124,7 +130,52 @@ const readFromGridFS = function(storeName, fileId, file, headers, req, res) {
 	}
 };
 
-FileUpload.addHandler('rocketchat_uploads', {
+const onRead = function(fileId, file, req, res) {
+	if (RocketChat.settings.get('FileUpload_ProtectFiles')) {
+		let uid;
+		let token;
+
+		if (req && req.headers && req.headers.cookie) {
+			const rawCookies = req.headers.cookie;
+
+			if (rawCookies) {
+				uid = cookie.get('rc_uid', rawCookies) ;
+				token = cookie.get('rc_token', rawCookies);
+			}
+		}
+
+		if (!uid) {
+			uid = req.query.rc_uid;
+			token = req.query.rc_token;
+		}
+
+		if (!uid || !token || !RocketChat.models.Users.findOneByIdAndLoginToken(uid, token)) {
+			res.writeHead(403);
+			return false;
+		}
+	}
+
+	res.setHeader('content-disposition', `attachment; filename="${ encodeURIComponent(file.name) }"`);
+	return true;
+};
+
+FileUpload.configureUploadsStore('GridFS', 'GridFS:Uploads', {
+	collectionName: 'rocketchat_uploads',
+	onRead
+});
+
+// DEPRECATED: backwards compatibility (remove)
+UploadFS.getStores()['rocketchat_uploads'] = UploadFS.getStores()['GridFS:Uploads'];
+
+FileUpload.configureUploadsStore('GridFS', 'GridFS:Avatars', {
+	collectionName: 'rocketchat_avatars',
+	onRead
+});
+
+
+new FileUploadClass({
+	name: 'GridFS:Uploads',
+
 	get(file, req, res) {
 		file = FileUpload.addExtensionTo(file);
 		const headers = {
@@ -134,8 +185,32 @@ FileUpload.addHandler('rocketchat_uploads', {
 			'Content-Length': file.size
 		};
 		return readFromGridFS(file.store, file._id, file, headers, req, res);
-	},
-	delete(file) {
-		return Meteor.fileStore.delete(file._id);
+	}
+});
+
+new FileUploadClass({
+	name: 'GridFS:Avatars',
+
+	get(file, req, res) {
+		const reqModifiedHeader = req.headers['if-modified-since'];
+		if (reqModifiedHeader) {
+			if (reqModifiedHeader === (file.uploadedAt && file.uploadedAt.toUTCString())) {
+				res.setHeader('Last-Modified', reqModifiedHeader);
+				res.writeHead(304);
+				res.end();
+				return;
+			}
+		}
+
+		file = FileUpload.addExtensionTo(file);
+		const headers = {
+			'Cache-Control': 'public, max-age=0',
+			'Expires': '-1',
+			'Content-Disposition': 'inline',
+			'Last-Modified': file.uploadedAt.toUTCString(),
+			'Content-Type': file.type,
+			'Content-Length': file.size
+		};
+		return readFromGridFS(file.store, file._id, file, headers, req, res);
 	}
 });

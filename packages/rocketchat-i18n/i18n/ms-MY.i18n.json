@@ -21,8 +21,6 @@
   "Accounts_AllowUserProfileChange": "Benarkan Profil Pengguna Tukar",
   "Accounts_AvatarResize": "Saiz semula Avatars",
   "Accounts_AvatarSize": "avatar Saiz",
-  "Accounts_AvatarStorePath": "Avatar Storage Path",
-  "Accounts_AvatarStoreType": "Avatar Storage Jenis",
   "Accounts_BlockedDomainsList": "Senarai Domain Disekat",
   "Accounts_BlockedDomainsList_Description": "Senarai diasingkan koma bagi domain disekat",
   "Accounts_BlockedUsernameList": "Senarai Nama pengguna Disekat",
