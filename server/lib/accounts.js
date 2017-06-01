@@ -123,7 +123,7 @@ Accounts.onCreateUser(function(options, user = {}) {
 		let email = {};
 
 		RocketChat.models.Roles.findUsersInRole('admin').forEach(function(adminUser) {
-			if (adminUser.emails[0]) {
+			if (adminUser.emails && adminUser.emails[0] && adminUser.emails[0].address) {
 				destinations.push(`${ adminUser.name }<${ adminUser.emails[0].address }>`);
 			}
 		});
