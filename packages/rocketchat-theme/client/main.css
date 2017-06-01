@@ -1,8 +1,7 @@
-@import 'imports/reset.css';
-@import 'imports/variables.css';
-@import 'imports/properties.css';
-@import 'imports/keyframes.css';
-@import 'imports/forms.css';
-@import 'imports/base.css';
-@import 'imports/rtl.css';
-
+@import 'imports/general/reset.css';
+@import 'imports/general/variables.css';
+@import 'imports/general/keyframes.css';
+@import 'imports/general/forms.css';
+@import 'imports/general/base.css';
+@import 'imports/general/rtl.css';
+@import 'imports/sidebar.css';
