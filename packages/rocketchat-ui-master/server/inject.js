@@ -98,7 +98,7 @@ RocketChat.settings.get('Assets_SvgFavicon_Enable', (key, value) => {
 	}
 });
 
-RocketChat.settings.get('theme-color-primary-background-color', (key, value = '#04436a') => {
+RocketChat.settings.get('theme-color-sidebar-background', (key, value) => {
 	Inject.rawHead(key, `<style>body { background-color: ${ value };}</style>` +
 						`<meta name="msapplication-TileColor" content="${ value }" />` +
 						`<meta name="theme-color" content="${ value }" />`);
