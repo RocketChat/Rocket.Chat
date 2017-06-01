@@ -38,7 +38,7 @@ Package.onUse(function(api) {
 	api.addFiles('client/lib/chatMessages.js', 'client');
 	api.addFiles('client/lib/collections.js', 'client');
 	api.addFiles('client/lib/customEventPolyfill.js', 'client');
-	api.addFiles('client/lib/fileUpload.coffee', 'client');
+	api.addFiles('client/lib/fileUpload.js', 'client');
 	api.addFiles('client/lib/fireEvent.js', 'client');
 	api.addFiles('client/lib/iframeCommands.js', 'client');
 	api.addFiles('client/lib/menu.js', 'client');
@@ -108,4 +108,6 @@ Package.onUse(function(api) {
 	api.addFiles('client/views/app/videoCall/videoButtons.js', 'client');
 	api.addFiles('client/views/app/videoCall/videoCall.js', 'client');
 	api.addFiles('client/views/app/photoswipe.js', 'client');
+
+	api.export('fileUpload');
 });

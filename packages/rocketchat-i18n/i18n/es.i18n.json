@@ -27,8 +27,6 @@
   "Accounts_AllowUserProfileChange": "Permitir al Usuario modificar su Perfil",
   "Accounts_AvatarResize": "Cambiar el Tamaño de los Avatars",
   "Accounts_AvatarSize": "Tamaño de Avatar",
-  "Accounts_AvatarStorePath": "Ruta de almacenamiento de los avatares",
-  "Accounts_AvatarStoreType": "Tipo de Almacenamiento de Avatar",
   "Accounts_BlockedDomainsList": "Lista de dominios bloqueados",
   "Accounts_BlockedDomainsList_Description": "Lista de dominios bloqueados separada por comas",
   "Accounts_BlockedUsernameList": "Lista de nombres de usuario bloqueados",

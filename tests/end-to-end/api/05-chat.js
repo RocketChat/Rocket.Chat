@@ -57,6 +57,21 @@ describe('[Chat]', function() {
 			.end(done);
 	});
 
+	it('/chat.getMessage', (done) => {
+		request.get(api('chat.getMessage'))
+			.set(credentials)
+			.query({
+				msgId: message._id
+			})
+			.expect('Content-Type', 'application/json')
+			.expect(200)
+			.expect((res) => {
+				expect(res.body).to.have.property('success', true);
+				expect(res.body).to.have.deep.property('message._id', message._id);
+			})
+			.end(done);
+	});
+
 	it('/chat.update', (done) => {
 		request.post(api('chat.update'))
 			.set(credentials)
