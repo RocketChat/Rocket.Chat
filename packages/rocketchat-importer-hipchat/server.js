@@ -147,7 +147,7 @@ Importer.HipChat = Importer.HipChat = (function() {
 			});
 			this.collection.update({_id: this.users._id}, { $set: { 'users': this.users.users } });
 			importSelection.channels.forEach(channel =>
-				this.channels.channels.forEach(c => c.room_id === channel.channel_id && c.do_import = channel.do_import)
+				this.channels.channels.forEach(c => c.room_id === channel.channel_id && (c.do_import = channel.do_import))
 			);
 			this.collection.update({ _id: this.channels._id }, { $set: { 'channels': this.channels.channels }});
 			const startedByUserId = Meteor.userId();
