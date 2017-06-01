@@ -1,0 +1,60 @@
+/* Sidebar */
+:root {
+	--account-thumb-size: 56px;
+	--account-thumb-radius: 8px;
+	--account-status-bullet-size: 12px;
+}
+
+.sidebar {
+	position: fixed;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	width: var(--rooms-box-width);
+	height: auto;
+	overflow: visible;
+	z-index: 100;
+	will-change: transform;
+
+	&__header {
+		padding: 24px 24px 0;
+	}
+
+	&__account {
+		display: flex;
+		align-items: center;
+	}
+
+	&__account-thumb {
+		width: var(--account-thumb-size);
+		height: var(--account-thumb-size);
+
+		& .avatar {
+			border-radius: var(--account-thumb-radius);
+		}
+	}
+
+	&__account-data {
+		margin-left: 1rem;
+	}
+
+	&__account-name {
+		font-size: 1.375rem;
+		font-weight: 400;
+	}
+
+	&__account-status {
+		font-size: 1rem;
+		display: flex;
+		align-items: center;
+		margin-top: 6px;
+	}
+
+	&__account-status-bullet {
+		display: block;
+		width: var(--account-status-bullet-size);
+		height: var(--account-status-bullet-size);
+		border-radius: 50%;
+		margin-right: 0.5rem;
+	}
+}
