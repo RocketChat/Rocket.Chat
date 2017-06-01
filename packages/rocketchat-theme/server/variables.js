@@ -39,6 +39,37 @@ const minorColors= {
 	'status-offline': '@transparent-darker'
 };
 
+
+const general = [
+	{
+		class: 'general-success',
+		property: 'color',
+		value: '#2de0a5'
+	},
+	{
+		class: 'general-pending',
+		property: 'color',
+		value: '#ffd21f'
+	},
+	{
+		class: 'general-error',
+		property: 'color',
+		value: '#9b3b4b'
+	},
+	{
+		class: 'general-inactive',
+		property: 'color',
+		value: '#dedfe0'
+	},
+	{
+		class: 'general-selection',
+		property: 'color',
+		value: '#02acec'
+	}
+];
+
+general.forEach(setting => RocketChat.theme.addColor(setting.class, setting.value, 'General', setting.property));
+
 const sidebar = [
 	{
 		class: 'sidebar-background',
@@ -88,6 +119,21 @@ const sidebar = [
 ];
 
 sidebar.forEach(setting => RocketChat.theme.addColor(setting.class, setting.value, 'Sidebar', setting.property));
+
+const content = [
+	{
+		class: 'content-background',
+		property: 'background-color',
+		value: '#ffffff'
+	},
+	{
+		class: 'content-color',
+		property: 'color',
+		value: '#414852'
+	}
+];
+
+content.forEach(setting => RocketChat.theme.addColor(setting.class, setting.value, 'Content', setting.property));
 
 // Bulk-add settings for color scheme
 
