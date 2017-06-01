@@ -31,7 +31,6 @@ RocketChat.settings.init = function() {
 			RocketChat.settings.load(record._id, record.value, initialLoad);
 		},
 		changed(record) {
-			console.log('changed', record);
 			Meteor.settings[record._id] = record.value;
 			RocketChat.settings.dict.set(record._id, record.value);
 			RocketChat.settings.load(record._id, record.value, initialLoad);
