@@ -195,8 +195,9 @@ Importer.HipChat = Importer.HipChat = (function() {
 				this.collection.update({ _id: this.users._id }, { $set: { 'users': this.users.users }});
 				this.updateProgress(Importer.ProgressStep.IMPORTING_CHANNELS);
 				this.channels.channels.forEach(channel => {
-					if (!channel.do_import) { return }
-						
+					if (!channel.do_import) {
+						return;
+					}	
 					Meteor.runAsUser(startedByUserId, () => {
 						channel.name = channel.name.replace(/ /g, '');
 						const existantRoom = RocketChat.models.Rooms.findOneByName(channel.name);
