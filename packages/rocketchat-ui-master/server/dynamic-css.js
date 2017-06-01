@@ -1,3 +1,5 @@
+/* global DynamicCss */
+
 'use strict';
 export default () => {
 	const debounce = (func, wait, immediate) => {
@@ -20,11 +22,12 @@ export default () => {
 
 	DynamicCss = typeof DynamicCss !=='undefined'? DynamicCss : {list:[]};
 
-	const settingBackground = (setting) => `.${ setting._id }-background { background-color: ${ setting.value }; }`;
-	const settingColor = (setting) => `.${ setting._id }-color { color: ${ setting.value }; }`;
+	const colors = setting => setting._id.indexOf('theme-color') > -1 ? `.${ setting._id.replace('theme-color-', '') }{${ setting.property }:${ setting.value }}` : '';
+	const customCss = setting => setting._id.indexOf('theme-custom-css') > -1 ? setting.value : '';
+	const fontFamily = setting => setting._id.indexOf('theme-font-body-font-family') > -1 ? `body{${ setting.value }}` : '';
 
-	const properties = [settingBackground, settingColor];
-	const run = list => list.map(setting => properties.map(f => f(setting)).join('')).join('');
+	const properties = [fontFamily, colors, customCss];
+	const run = list => list.filter(setting => setting.value && setting.property || setting.type !== 'color').map(setting => properties.reduce((ret, f) => ret || f(setting), '')).join('\n');
 
 	DynamicCss.run = debounce(() => {
 		const list = typeof RocketChat !== 'undefined' ? RocketChat.settings.collection.find({_id:/theme/}).fetch() : [];

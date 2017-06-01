@@ -87,7 +87,7 @@ const sidebar = [
 	}
 ];
 
-sidebar.forEach(setting => RocketChat.theme.addPublicColor(setting.class, setting.value, 'Sidebar', 'color', setting.property));
+sidebar.forEach(setting => RocketChat.theme.addColor(setting.class, setting.value, 'Sidebar', setting.property));
 
 // Bulk-add settings for color scheme
 
@@ -106,8 +106,8 @@ RocketChat.theme.addPublicFont('body-font-family', '-apple-system, BlinkMacSyste
 RocketChat.settings.add('theme-custom-css', '', {
 	group: 'Layout',
 	type: 'code',
-	code: 'text/x-less',
+	code: 'text/css',
 	multiline: true,
 	section: 'Custom CSS',
-	public: false
+	public: true
 });
