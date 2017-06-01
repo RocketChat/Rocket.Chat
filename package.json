@@ -68,7 +68,7 @@
 		"bcrypt": "^1.0.2",
 		"codemirror": "^5.25.2",
 		"file-type": "^4.3.0",
-		"highlight.js": "git://github.com/isagalaev/highlight.js.git#d05317a8bc9ad2335bd4b7709e507314546836b1",
+		"highlight.js": "^9.12.0",
 		"jquery": "^3.2.1",
 		"mime-db": "^1.28.0",
 		"mime-type": "^3.0.4",
