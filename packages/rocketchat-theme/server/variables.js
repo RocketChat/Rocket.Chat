@@ -43,27 +43,27 @@ const minorColors= {
 const general = [
 	{
 		class: 'general-success',
-		property: 'color',
+		property: 'background-color',
 		value: '#2de0a5'
 	},
 	{
 		class: 'general-pending',
-		property: 'color',
+		property: 'background-color',
 		value: '#ffd21f'
 	},
 	{
 		class: 'general-error',
-		property: 'color',
+		property: 'background-color',
 		value: '#9b3b4b'
 	},
 	{
 		class: 'general-inactive',
-		property: 'color',
+		property: 'background-color',
 		value: '#dedfe0'
 	},
 	{
 		class: 'general-selection',
-		property: 'color',
+		property: 'background-color',
 		value: '#02acec'
 	}
 ];
@@ -79,7 +79,7 @@ const sidebar = [
 	{
 		class: 'sidebar-content',
 		property: 'color',
-		value: '#6c727a'
+		value: '#9d9fa3'
 	},
 	{
 		class: 'sidebar-content-active',
