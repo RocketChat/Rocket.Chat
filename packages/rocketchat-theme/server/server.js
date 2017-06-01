@@ -117,6 +117,19 @@ RocketChat.theme = new class {
 		});
 	}
 
+	addColor(name, value, section, property) {
+		const config = {
+			group: 'Colors',
+			type: 'color',
+			editor: 'color',
+			public: true,
+			property,
+			section
+		};
+
+		return RocketChat.settings.add(`theme-color-${ name }`, value, config);
+	}
+
 	addVariable(type, name, value, section, persist = true, editor, allowedTypes, property) {
 		this.variables[name] = {
 			type,

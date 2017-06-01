@@ -188,7 +188,7 @@ RocketChat.settings.addGroup('Accounts', function() {
 				value: 'FileSystem'
 			}
 		});
-		return this.add('Accounts_SetDefaultAvatar', true, {
+		this.add('Accounts_SetDefaultAvatar', true, {
 			type: 'boolean'
 		});
 	});
@@ -212,7 +212,7 @@ RocketChat.settings.addGroup('OAuth', function() {
 			type: 'string',
 			enableQuery
 		});
-		return this.add('Accounts_OAuth_Facebook_callback_url', '_oauth/facebook', {
+		this.add('Accounts_OAuth_Facebook_callback_url', '_oauth/facebook', {
 			type: 'relativeUrl',
 			readonly: true,
 			force: true,
@@ -236,7 +236,7 @@ RocketChat.settings.addGroup('OAuth', function() {
 			type: 'string',
 			enableQuery
 		});
-		return this.add('Accounts_OAuth_Google_callback_url', '_oauth/google', {
+		this.add('Accounts_OAuth_Google_callback_url', '_oauth/google', {
 			type: 'relativeUrl',
 			readonly: true,
 			force: true,
@@ -260,7 +260,7 @@ RocketChat.settings.addGroup('OAuth', function() {
 			type: 'string',
 			enableQuery
 		});
-		return this.add('Accounts_OAuth_Github_callback_url', '_oauth/github', {
+		this.add('Accounts_OAuth_Github_callback_url', '_oauth/github', {
 			type: 'relativeUrl',
 			readonly: true,
 			force: true,
@@ -284,7 +284,7 @@ RocketChat.settings.addGroup('OAuth', function() {
 			type: 'string',
 			enableQuery
 		});
-		return this.add('Accounts_OAuth_Linkedin_callback_url', '_oauth/linkedin', {
+		this.add('Accounts_OAuth_Linkedin_callback_url', '_oauth/linkedin', {
 			type: 'relativeUrl',
 			readonly: true,
 			force: true,
@@ -308,7 +308,7 @@ RocketChat.settings.addGroup('OAuth', function() {
 			type: 'string',
 			enableQuery
 		});
-		return this.add('Accounts_OAuth_Meteor_callback_url', '_oauth/meteor', {
+		this.add('Accounts_OAuth_Meteor_callback_url', '_oauth/meteor', {
 			type: 'relativeUrl',
 			readonly: true,
 			force: true,
@@ -332,19 +332,19 @@ RocketChat.settings.addGroup('OAuth', function() {
 			type: 'string',
 			enableQuery
 		});
-		return this.add('Accounts_OAuth_Twitter_callback_url', '_oauth/twitter', {
+		this.add('Accounts_OAuth_Twitter_callback_url', '_oauth/twitter', {
 			type: 'relativeUrl',
 			readonly: true,
 			force: true,
 			enableQuery
 		});
 	});
-	return this.section('Proxy', function() {
+	this.section('Proxy', function() {
 		this.add('Accounts_OAuth_Proxy_host', 'https://oauth-proxy.rocket.chat', {
 			type: 'string',
 			'public': true
 		});
-		return this.add('Accounts_OAuth_Proxy_services', '', {
+		this.add('Accounts_OAuth_Proxy_services', '', {
 			type: 'string',
 			'public': true
 		});
@@ -402,25 +402,25 @@ RocketChat.settings.addGroup('General', function() {
 			'public': true,
 			i18nDescription: 'UTF8_Names_Validation_Description'
 		});
-		return this.add('UTF8_Names_Slugify', true, {
+		this.add('UTF8_Names_Slugify', true, {
 			type: 'boolean',
 			'public': true
 		});
 	});
 	this.section('Reporting', function() {
-		return this.add('Statistics_reporting', true, {
+		this.add('Statistics_reporting', true, {
 			type: 'boolean'
 		});
 	});
 	this.section('Notifications', function() {
-		return this.add('Desktop_Notifications_Duration', 0, {
+		this.add('Desktop_Notifications_Duration', 0, {
 			type: 'int',
 			'public': true,
 			i18nDescription: 'Desktop_Notification_Durations_Description'
 		});
 	});
 	this.section('REST API', function() {
-		return this.add('API_User_Limit', 500, {
+		this.add('API_User_Limit', 500, {
 			type: 'int',
 			'public': true,
 			i18nDescription: 'API_User_Limit'
@@ -443,7 +443,7 @@ RocketChat.settings.addGroup('General', function() {
 			type: 'boolean',
 			'public': true
 		});
-		return this.add('Iframe_Integration_receive_origin', '*', {
+		this.add('Iframe_Integration_receive_origin', '*', {
 			type: 'string',
 			'public': true,
 			enableQuery: {
@@ -453,13 +453,13 @@ RocketChat.settings.addGroup('General', function() {
 		});
 	});
 	this.section('Translations', function() {
-		return this.add('Custom_Translations', '', {
+		this.add('Custom_Translations', '', {
 			type: 'code',
 			'public': true
 		});
 	});
-	return this.section('Stream_Cast', function() {
-		return this.add('Stream_Cast_Address', '', {
+	this.section('Stream_Cast', function() {
+		this.add('Stream_Cast_Address', '', {
 			type: 'string'
 		});
 	});
@@ -473,7 +473,7 @@ RocketChat.settings.addGroup('Email', function() {
 			multiline: true,
 			i18nLabel: 'Header'
 		});
-		return this.add('Email_Footer', '</td></tr></table></td></tr><tr><td border="0" cellspacing="0" cellpadding="0" width="100%" style="font-family: Helvetica,Arial,sans-serif; max-width: 800px; margin: 0 auto; padding: 1.5em; text-align: center; font-size: 8pt; color: #999;">Powered by <a href="https://rocket.chat" target="_blank">Rocket.Chat</a></td></tr></table></td></tr></table></html>', {
+		this.add('Email_Footer', '</td></tr></table></td></tr><tr><td border="0" cellspacing="0" cellpadding="0" width="100%" style="font-family: Helvetica,Arial,sans-serif; max-width: 800px; margin: 0 auto; padding: 1.5em; text-align: center; font-size: 8pt; color: #999;">Powered by <a href="https://rocket.chat" target="_blank">Rocket.Chat</a></td></tr></table></td></tr></table></html>', {
 			type: 'code',
 			code: 'text/html',
 			multiline: true,
@@ -533,7 +533,7 @@ RocketChat.settings.addGroup('Email', function() {
 			type: 'string',
 			placeholder: 'email@domain'
 		});
-		return this.add('SMTP_Test_Button', 'sendSMTPTestEmail', {
+		this.add('SMTP_Test_Button', 'sendSMTPTestEmail', {
 			type: 'action',
 			actionText: 'Send_a_test_mail_to_my_user'
 		});
@@ -555,7 +555,7 @@ RocketChat.settings.addGroup('Email', function() {
 				value: false
 			}
 		});
-		return this.add('Invitation_HTML', '', {
+		this.add('Invitation_HTML', '', {
 			type: 'code',
 			code: 'text/html',
 			multiline: true,
@@ -588,7 +588,7 @@ RocketChat.settings.addGroup('Email', function() {
 				value: false
 			}
 		});
-		return this.add('Accounts_Enrollment_Email', '', {
+		this.add('Accounts_Enrollment_Email', '', {
 			type: 'code',
 			code: 'text/html',
 			multiline: true,
@@ -620,7 +620,7 @@ RocketChat.settings.addGroup('Email', function() {
 				value: false
 			}
 		});
-		return this.add('Accounts_UserAddedEmail', '', {
+		this.add('Accounts_UserAddedEmail', '', {
 			type: 'code',
 			code: 'text/html',
 			multiline: true,
@@ -653,7 +653,7 @@ RocketChat.settings.addGroup('Email', function() {
 				value: false
 			}
 		});
-		return this.add('Forgot_Password_Email', '', {
+		this.add('Forgot_Password_Email', '', {
 			type: 'code',
 			code: 'text/html',
 			multiline: true,
@@ -669,7 +669,7 @@ RocketChat.settings.addGroup('Email', function() {
 			}
 		});
 	});
-	return this.section('Verification', function() {
+	this.section('Verification', function() {
 		this.add('Verification_Customized', false, {
 			type: 'boolean',
 			i18nLabel: 'Custom'
@@ -686,7 +686,7 @@ RocketChat.settings.addGroup('Email', function() {
 				value: false
 			}
 		});
-		return this.add('Verification_Email', '', {
+		this.add('Verification_Email', '', {
 			type: 'code',
 			code: 'text/html',
 			multiline: true,
@@ -840,7 +840,7 @@ RocketChat.settings.addGroup('Message', function() {
 		type: 'boolean',
 		'public': true
 	});
-	return this.add('Message_HideType_mute_unmute', false, {
+	this.add('Message_HideType_mute_unmute', false, {
 		type: 'boolean',
 		'public': true
 	});
@@ -862,7 +862,7 @@ RocketChat.settings.addGroup('Meta', function() {
 	this.add('Meta_msvalidate01', '', {
 		type: 'string'
 	});
-	return this.add('Meta_custom', '', {
+	this.add('Meta_custom', '', {
 		type: 'code',
 		code: 'text/html',
 		multiline: true
@@ -948,22 +948,24 @@ RocketChat.settings.addGroup('Push', function() {
 		this.add('Push_gcm_api_key', '', {
 			type: 'string'
 		});
-		return this.add('Push_gcm_project_number', '', {
+		this.add('Push_gcm_project_number', '', {
 			type: 'string',
 			'public': true
 		});
 	});
-	return this.section('Privacy', function() {
+	this.section('Privacy', function() {
 		this.add('Push_show_username_room', true, {
 			type: 'boolean',
 			'public': true
 		});
-		return this.add('Push_show_message', true, {
+		this.add('Push_show_message', true, {
 			type: 'boolean',
 			'public': true
 		});
 	});
 });
+
+RocketChat.settings.addGroup('Colors');
 
 RocketChat.settings.addGroup('Layout', function() {
 	this.section('Content', function() {
@@ -994,7 +996,7 @@ RocketChat.settings.addGroup('Layout', function() {
 			multiline: true,
 			'public': true
 		});
-		return this.add('Layout_Sidenav_Footer', '<img src="assets/logo" />', {
+		this.add('Layout_Sidenav_Footer', '<img src="assets/logo" />', {
 			type: 'code',
 			code: 'text/html',
 			'public': true,
@@ -1007,13 +1009,13 @@ RocketChat.settings.addGroup('Layout', function() {
 			multiline: true,
 			'public': true
 		});
-		return this.add('Custom_Script_Logged_In', '//Add your script', {
+		this.add('Custom_Script_Logged_In', '//Add your script', {
 			type: 'code',
 			multiline: true,
 			'public': true
 		});
 	});
-	return this.section('User_Interface', function() {
+	this.section('User_Interface', function() {
 		this.add('UI_DisplayRoles', true, {
 			type: 'boolean',
 			'public': true
@@ -1058,7 +1060,7 @@ RocketChat.settings.addGroup('Logs', function() {
 		type: 'boolean',
 		'public': true
 	});
-	return this.add('Log_View_Limit', 1000, {
+	this.add('Log_View_Limit', 1000, {
 		type: 'int'
 	});
 });
