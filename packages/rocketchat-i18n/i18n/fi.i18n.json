@@ -26,8 +26,6 @@
   "Accounts_AllowUserProfileChange": "Salli käyttäjän profiilin muutos",
   "Accounts_AvatarResize": "Muuta avatarien kokoa",
   "Accounts_AvatarSize": "Avatarin koko",
-  "Accounts_AvatarStorePath": "Avatarin tallennuspolku",
-  "Accounts_AvatarStoreType": "Avatarien tallennusmuoto",
   "Accounts_BlockedDomainsList": "Estettyjen verkkotunnusten lista",
   "Accounts_BlockedDomainsList_Description": "Pilkuilla eroteltu lista estetyistä verkkotunnuksista",
   "Accounts_BlockedUsernameList": "Estettyjen käyttäjätunnusten lista",
