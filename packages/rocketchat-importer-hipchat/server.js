@@ -1,7 +1,4 @@
 /* globals Importer */
-
-const bind = function(fn, me) { return function() { return fn.apply(me, arguments); }; };
-
 import moment from 'moment';
 
 import 'moment-timezone';
@@ -10,12 +7,6 @@ Importer.HipChat = Importer.HipChat = (function() {
 	class HipChat extends Importer.Base {
 		constructor(name, descriptionI18N, mimeType) {
 			super(name, descriptionI18N, mimeType);
-			this.getSelection = bind(this.getSelection, this);
-			this.convertHipChatMessageToRocketChat = bind(this.convertHipChatMessageToRocketChat, this);
-			this.getRocketUser = bind(this.getRocketUser, this);
-			this.getHipChatChannelFromName = bind(this.getHipChatChannelFromName, this);
-			this.startImport = bind(this.startImport, this);
-			this.prepare = bind(this.prepare, this);
 			this.logger.debug('Constructed a new Slack Importer.');
 			this.userTags = [];
 		}
@@ -30,45 +21,43 @@ Importer.HipChat = Importer.HipChat = (function() {
 			let tempUsers = [];
 			const tempMessages = {};
 
-			const fn = (entry) => {
+			zipEntries.forEach(entry => {
 				if (entry.entryName.indexOf('__MACOSX') > -1) {
 					this.logger.debug(`Ignoring the file: ${ entry.entryName }`);
 				}
-				if (!entry.isDirectory) {
-					if (entry.entryName.indexOf(Importer.HipChat.RoomPrefix) > -1) {
-						let roomName = entry.entryName.split(Importer.HipChat.RoomPrefix)[1];
-						if (roomName === 'list.json') {
-							this.updateProgress(Importer.ProgressStep.PREPARING_CHANNELS);
-							const tempRooms = JSON.parse(entry.getData().toString()).rooms;
-							tempRooms.forEach(room => {
-								room.name = _.slugify(room.name);
-							});
-						} else if (roomName.indexOf('/') > -1) {
-							const item = roomName.split('/');
-							roomName = _.slugify(item[0]);
-							const msgGroupData = item[1].split('.')[0];
-							if (!tempMessages[roomName]) {
-								tempMessages[roomName] = {};
-							}
-							try {
-								return tempMessages[roomName][msgGroupData] = JSON.parse(entry.getData().toString());
-							} catch (error) {
-								return this.logger.warn(`${ entry.entryName } is not a valid JSON file! Unable to import it.`);
-							}
+				if (entry.isDirectory) {
+					return;
+				}
+				if (entry.entryName.indexOf(Importer.HipChat.RoomPrefix) > -1) {
+					let roomName = entry.entryName.split(Importer.HipChat.RoomPrefix)[1];
+					if (roomName === 'list.json') {
+						this.updateProgress(Importer.ProgressStep.PREPARING_CHANNELS);
+						const tempRooms = JSON.parse(entry.getData().toString()).rooms;
+						tempRooms.forEach(room => {
+							room.name = _.slugify(room.name);
+						});
+					} else if (roomName.indexOf('/') > -1) {
+						const item = roomName.split('/');
+						roomName = _.slugify(item[0]);
+						const msgGroupData = item[1].split('.')[0];
+						if (!tempMessages[roomName]) {
+							tempMessages[roomName] = {};
 						}
-					} else if (entry.entryName.indexOf(Importer.HipChat.UsersPrefix) > -1) {
-						const usersName = entry.entryName.split(Importer.HipChat.UsersPrefix)[1];
-						if (usersName === 'list.json') {
-							this.updateProgress(Importer.ProgressStep.PREPARING_USERS);
-							return tempUsers = JSON.parse(entry.getData().toString()).users;
-						} else {
-							return this.logger.warn(`Unexpected file in the ${ this.name } import: ${ entry.entryName }`);
+						try {
+							return tempMessages[roomName][msgGroupData] = JSON.parse(entry.getData().toString());
+						} catch (error) {
+							return this.logger.warn(`${ entry.entryName } is not a valid JSON file! Unable to import it.`);
 						}
 					}
+				} else if (entry.entryName.indexOf(Importer.HipChat.UsersPrefix) > -1) {
+					const usersName = entry.entryName.split(Importer.HipChat.UsersPrefix)[1];
+					if (usersName === 'list.json') {
+						this.updateProgress(Importer.ProgressStep.PREPARING_USERS);
+						return tempUsers = JSON.parse(entry.getData().toString()).users;
+					} else {
+						return this.logger.warn(`Unexpected file in the ${ this.name } import: ${ entry.entryName }`);
+					}
 				}
-			};
-			zipEntries.forEach(entry => {
-				fn(entry);
 			});
 			const usersId = this.collection.insert({
 				'import': this.importRecord._id,
@@ -94,10 +83,9 @@ Importer.HipChat = Importer.HipChat = (function() {
 			this.addCountToTotal(tempRooms.length);
 			this.updateProgress(Importer.ProgressStep.PREPARING_MESSAGES);
 			let messagesCount = 0;
-			const fn1 = (channel, messagesObj) => {
-				if (!this.messages[channel]) {
-					this.messages[channel] = {};
-				}
+			Object.keys(tempMessages).forEach(channel => {
+				const messagesObj = tempMessages[channel];
+				this.messages[channel] = this.messages[channel] || {};
 				Object.keys(messagesObj).forEach(date => {
 					const msgs = messagesObj[date];
 					messagesCount += msgs.length;
@@ -126,10 +114,6 @@ Importer.HipChat = Importer.HipChat = (function() {
 						this.messages[channel][date] = this.collection.findOne(messagesId);
 					}
 				});
-			};
-			Object.keys(tempMessages).forEach(channel => {
-				const messagesObj = tempMessages[channel];
-				fn1(channel, messagesObj);
 			});
 			this.updateRecord({
 				'count.messages': messagesCount,
@@ -161,113 +145,88 @@ Importer.HipChat = Importer.HipChat = (function() {
 					}
 				});
 			});
-			this.collection.update({
-				_id: this.users._id
-			}, {
-				$set: {
-					'users': this.users.users
-				}
-			});
-			importSelection.channels.forEach(channel => {
-				this.channels.channels.forEach(c => {
-					if (c.room_id === channel.channel_id) {
-						c.do_import = channel.do_import;
-					}
-				});
-			});
-			this.collection.update({
-				_id: this.channels._id
-			}, {
-				$set: {
-					'channels': this.channels.channels
-				}
-			});
+			this.collection.update({_id: this.users._id}, { $set: { 'users': this.users.users } });
+			importSelection.channels.forEach(channel =>
+				this.channels.channels.forEach(c => c.room_id === channel.channel_id && c.do_import = channel.do_import)
+			);
+			this.collection.update({ _id: this.channels._id }, { $set: { 'channels': this.channels.channels }});
 			const startedByUserId = Meteor.userId();
 			Meteor.defer(() => {
 				this.updateProgress(Importer.ProgressStep.IMPORTING_USERS);
 				this.users.users.forEach(user => {
-					if (user.do_import) {
-						((user) => {
-							return Meteor.runAsUser(startedByUserId, () => {
-								const existantUser = RocketChat.models.Users.findOneByEmailAddress(user.email);
-								if (existantUser) {
-									user.rocketId = existantUser._id;
-									this.userTags.push({
-										hipchat: `@${ user.mention_name }`,
-										rocket: `@${ existantUser.username }`
-									});
-								} else {
-									const userId = Accounts.createUser({
-										email: user.email,
-										password: Date.now() + user.name + user.email.toUpperCase()
-									});
-									user.rocketId = userId;
-									this.userTags.push({
-										hipchat: `@${ user.mention_name }`,
-										rocket: `@${ user.mention_name }`
-									});
-									Meteor.runAsUser(userId, () => {
-										Meteor.call('setUsername', user.mention_name, {
-											joinDefaultChannelsSilenced: true
-										});
-										Meteor.call('setAvatarFromService', user.photo_url, undefined, 'url');
-										return Meteor.call('userSetUtcOffset', parseInt(moment().tz(user.timezone).format('Z').toString().split(':')[0]));
-									});
-									if (user.name != null) {
-										RocketChat.models.Users.setName(userId, user.name);
-									}
-									if (user.is_deleted) {
-										Meteor.call('setUserActiveStatus', userId, false);
-									}
-								}
-								return this.addCountCompleted(1);
+					if (!user.do_import) {
+						return;
+					}
+					Meteor.runAsUser(startedByUserId, () => {
+						const existantUser = RocketChat.models.Users.findOneByEmailAddress(user.email);
+						if (existantUser) {
+							user.rocketId = existantUser._id;
+							this.userTags.push({
+								hipchat: `@${ user.mention_name }`,
+								rocket: `@${ existantUser.username }`
 							});
-						})(user);
-					}
+						} else {
+							const userId = Accounts.createUser({
+								email: user.email,
+								password: Date.now() + user.name + user.email.toUpperCase()
+							});
+							user.rocketId = userId;
+							this.userTags.push({
+								hipchat: `@${ user.mention_name }`,
+								rocket: `@${ user.mention_name }`
+							});
+							Meteor.runAsUser(userId, () => {
+								Meteor.call('setUsername', user.mention_name, {
+									joinDefaultChannelsSilenced: true
+								});
+								Meteor.call('setAvatarFromService', user.photo_url, undefined, 'url');
+								return Meteor.call('userSetUtcOffset', parseInt(moment().tz(user.timezone).format('Z').toString().split(':')[0]));
+							});
+							if (user.name != null) {
+								RocketChat.models.Users.setName(userId, user.name);
+							}
+							if (user.is_deleted) {
+								Meteor.call('setUserActiveStatus', userId, false);
+							}
+						}
+						return this.addCountCompleted(1);
+					});
 				});
-				this.collection.update({
-					_id: this.users._id
-				}, {
-					$set: {
-						'users': this.users.users
-					}
-				});
+				this.collection.update({ _id: this.users._id }, { $set: { 'users': this.users.users }});
 				this.updateProgress(Importer.ProgressStep.IMPORTING_CHANNELS);
 				this.channels.channels.forEach(channel => {
-					if (channel.do_import) {
-						((channel) => {
-							return Meteor.runAsUser(startedByUserId, () => {
-								channel.name = channel.name.replace(/ /g, '');
-								const existantRoom = RocketChat.models.Rooms.findOneByName(channel.name);
-								if (existantRoom) {
-									channel.rocketId = existantRoom._id;
-								} else {
-									let userId = '';
-									this.users.users.forEach(user => {
-										if (user.user_id === channel.owner_user_id) {
-											userId = user.rocketId;
-										}
-									});
-									if (userId === '') {
-										this.logger.warn(`Failed to find the channel creator for ${ channel.name }, setting it to the current running user.`);
-										userId = startedByUserId;
-									}
-									Meteor.runAsUser(userId, () => {
-										const returned = Meteor.call('createChannel', channel.name, []);
-										return channel.rocketId = returned.rid;
-									});
-									RocketChat.models.Rooms.update({
-										_id: channel.rocketId
-									}, {
-										$set: {
-											'ts': new Date(channel.created * 1000)
-										}
-									});
+					if (!channel.do_import) { return }
+						
+					Meteor.runAsUser(startedByUserId, () => {
+						channel.name = channel.name.replace(/ /g, '');
+						const existantRoom = RocketChat.models.Rooms.findOneByName(channel.name);
+						if (existantRoom) {
+							channel.rocketId = existantRoom._id;
+						} else {
+							let userId = '';
+							this.users.users.forEach(user => {
+								if (user.user_id === channel.owner_user_id) {
+									userId = user.rocketId;
 								}
-								return this.addCountCompleted(1);
 							});
-						})(channel);
-					}
+							if (userId === '') {
+								this.logger.warn(`Failed to find the channel creator for ${ channel.name }, setting it to the current running user.`);
+								userId = startedByUserId;
+							}
+							Meteor.runAsUser(userId, () => {
+								const returned = Meteor.call('createChannel', channel.name, []);
+								return channel.rocketId = returned.rid;
+							});
+							RocketChat.models.Rooms.update({
+								_id: channel.rocketId
+							}, {
+								$set: {
+									'ts': new Date(channel.created * 1000)
+								}
+							});
+						}
+						return this.addCountCompleted(1);
+					});
 				});
 				this.collection.update({
 					_id: this.channels._id
@@ -278,8 +237,10 @@ Importer.HipChat = Importer.HipChat = (function() {
 				});
 				this.updateProgress(Importer.ProgressStep.IMPORTING_MESSAGES);
 				const nousers = {};
-				const fn = (channel, messagesObj) => {
-					return Meteor.runAsUser(startedByUserId, () => {
+
+				Object.keys(this.messages).forEach(channel => {
+					const messagesObj = this.messages[channel];
+					Meteor.runAsUser(startedByUserId, () => {
 						const hipchatChannel = this.getHipChatChannelFromName(channel);
 						if (hipchatChannel != null ? hipchatChannel.do_import : undefined) {
 							const room = RocketChat.models.Rooms.findOneById(hipchatChannel.rocketId, {
@@ -320,21 +281,14 @@ Importer.HipChat = Importer.HipChat = (function() {
 							});
 						}
 					});
-				};
-
-				Object.keys(this.messages).forEach(channel => {
-					const messagesObj = this.messages[channel];
-					fn(channel, messagesObj);
 				});
 				this.logger.warn('The following did not have users:', nousers);
 				this.updateProgress(Importer.ProgressStep.FINISHING);
 				this.channels.channels.forEach(channel => {
 					if (channel.do_import && channel.is_archived) {
-						((channel) => {
-							return Meteor.runAsUser(startedByUserId, () => {
-								return Meteor.call('archiveRoom', channel.rocketId);
-							});
-						})(channel);
+						Meteor.runAsUser(startedByUserId, () => {
+							return Meteor.call('archiveRoom', channel.rocketId);
+						});
 					}
 				});
 				this.updateProgress(Importer.ProgressStep.DONE);
@@ -345,24 +299,17 @@ Importer.HipChat = Importer.HipChat = (function() {
 		}
 
 		getHipChatChannelFromName(channelName) {
-			this.channels.channels.forEach(channel => {
-				if (channel.name === channelName) {
-					return channel;
-				}
-			});
+			return this.channels.channels.find(channel => channel.name === channelName);
 		}
 
 		getRocketUser(hipchatId) {
-			this.users.users.forEach(user => {
-				if (user.user_id === hipchatId) {
-					return RocketChat.models.Users.findOneById(user.rocketId, {
-						fields: {
-							username: 1,
-							name: 1
-						}
-					});
+			const user = this.users.users.find(user => user.user_id === hipchatId);
+			return user ? RocketChat.models.Users.findOneById(user.rocketId, {
+				fields: {
+					username: 1,
+					name: 1
 				}
-			});
+			}) : undefined;
 		}
 
 		convertHipChatMessageToRocketChat(message) {
