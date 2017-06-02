@@ -20,7 +20,6 @@ Package.onUse(function(api) {
 		'reactive-var',
 		'ecmascript',
 		'templating',
-		'coffeescript',
 		'underscore',
 		'rocketchat:lib',
 		'raix:push',
