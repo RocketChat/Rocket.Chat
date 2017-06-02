@@ -1,3 +1,20 @@
+<a name="0.57.0-rc.1"></a>
+# 0.57.0-rc.1 (2017-06-02)
+
+
+### Bug Fixes
+
+- [#7157](https://github.com/RocketChat/Rocket.Chat/pull/7157) Fix all reactions having the same username
+
+
+<details>
+<summary>Others</summary>
+
+- [#7154](https://github.com/RocketChat/Rocket.Chat/pull/7154) Remove missing CoffeeScript dependencies
+</details>
+
+
+
 <a name="0.57.0-rc.0"></a>
 # 0.57.0-rc.0 (2017-06-01)
 
@@ -55,7 +72,7 @@
 <details>
 <summary>Others</summary>
 
-- [#7094](https://github.com/RocketChat/Rocket.Chat/pull/7094) [FIX]Fix the failing tests 
+- [#7094](https://github.com/RocketChat/Rocket.Chat/pull/7094) [FIX]Fix the failing tests
 - [#7092](https://github.com/RocketChat/Rocket.Chat/pull/7092) [FIX]Fixed typo hmtl -> html
 - [#7145](https://github.com/RocketChat/Rocket.Chat/pull/7145) Convert file unsubscribe.coffee to js
 - [#7146](https://github.com/RocketChat/Rocket.Chat/pull/7146) Convert hipchat importer to js
@@ -73,7 +90,7 @@
 - [#7114](https://github.com/RocketChat/Rocket.Chat/pull/7114) LingoHub based on develop
 - [#7005](https://github.com/RocketChat/Rocket.Chat/pull/7005) LingoHub based on develop
 - [#6978](https://github.com/RocketChat/Rocket.Chat/pull/6978) LingoHub based on develop
-- [#7062](https://github.com/RocketChat/Rocket.Chat/pull/7062) Remove Useless Jasmine Tests 
+- [#7062](https://github.com/RocketChat/Rocket.Chat/pull/7062) Remove Useless Jasmine Tests
 - [#6914](https://github.com/RocketChat/Rocket.Chat/pull/6914) Rocketchat ui message
 - [#7006](https://github.com/RocketChat/Rocket.Chat/pull/7006) Rocketchat ui3
 - [#6987](https://github.com/RocketChat/Rocket.Chat/pull/6987) rocketchat-importer-slack coffee to js
