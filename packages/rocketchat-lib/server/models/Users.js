@@ -284,6 +284,16 @@ class ModelUsers extends RocketChat.models._Base {
 		return this.update(_id, update);
 	}
 
+	setChannels(_id) {
+		const update = {
+			$set: {
+				automatic_channels: []
+			}
+		};
+
+		return this.update(_id, update);
+	}
+
 	setEmailVerified(_id, email) {
 		const query = {
 			_id,

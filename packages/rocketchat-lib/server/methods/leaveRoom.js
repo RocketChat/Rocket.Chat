@@ -11,7 +11,6 @@ Meteor.methods({
 
 		const room = RocketChat.models.Rooms.findOneById(rid);
 		const user = Meteor.user();
-
 		if (room.t === 'd') {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'leaveRoom' });
 		}
@@ -27,6 +26,7 @@ Meteor.methods({
 				throw new Meteor.Error('error-you-are-last-owner', 'You are the last owner. Please set new owner before leaving the room.', { method: 'leaveRoom' });
 			}
 		}
+		RocketChat.leave_automatic_channel(room.name);
 
 		return RocketChat.removeUserFromRoom(rid, Meteor.user());
 	}
