@@ -73,7 +73,6 @@ const readFromGridFS = function(storeName, fileId, file, headers, req, res) {
 	const ws = new stream.PassThrough();
 
 	[rs, ws].forEach(stream => stream.on('error', function(err) {
-		console.log('error');
 		store.onReadError.call(store, err, fileId, file);
 		res.end();
 	}));
