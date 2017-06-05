@@ -215,10 +215,3 @@ Package.onUse(function(api) {
 
 	api.imply('tap:i18n');
 });
-
-Package.onTest(function(api) {
-	api.use('coffeescript');
-	api.use('sanjo:jasmine@0.20.2');
-	api.use('rocketchat:lib');
-	api.addFiles('tests/jasmine/server/unit/models/_Base.spec.coffee', 'server');
-});
