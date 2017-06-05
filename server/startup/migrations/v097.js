@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 
 RocketChat.Migrations.add({
-	version: 96,
+	version: 97,
 	up() {
 		const query = {
 			$or: [{
