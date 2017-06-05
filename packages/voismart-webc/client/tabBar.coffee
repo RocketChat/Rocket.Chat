@@ -68,6 +68,11 @@ Template.webCollaboration.events
 Template.emailsAdd.onCreated ->
 	Session.set('emailInputs', [])
 
+	Tracker.afterFlush () =>
+		console.error "flush"
+		$('.add-btn-participant').focus()
+
+
 Template.emailsAdd.onCreated ->
 	this.tabBar = Template.currentData().tabBar
 
