@@ -185,11 +185,9 @@ Object.assign(FileUpload, {
 
 	get(file, req, res, next) {
 		const store = this.getStoreByName(file.store);
-		// if (file.store && this.handlers && this.handlers[file.store] && this.handlers[file.store].get) {
-		if (store && store.get) {
+		if (store) {
 			return store.get(file, req, res, next);
 		}
-		// }
 		res.writeHead(404);
 		res.end();
 	}
