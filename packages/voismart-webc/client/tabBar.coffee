@@ -76,6 +76,14 @@ Template.emailsAdd.events
 		if e.keyCode == 13
 			e.preventDefault()
 
+	'focus .webc-roomname': (e, t) ->
+		# select all text on input focus
+		input = $(e.target)
+		input.one('mouseup', () ->
+			input.select()
+			false
+		)
+
 	'click .add-btn-participant': (e, t) ->
 		emailInputs = Session.get('emailInputs')
 		emailInputs.unshift({emailId: Random.id()})
