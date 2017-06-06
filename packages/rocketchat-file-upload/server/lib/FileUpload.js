@@ -53,7 +53,7 @@ Object.assign(FileUpload, {
 		}
 		const height = RocketChat.settings.get('Accounts_AvatarSize');
 		const width = height;
-		return RocketChatFile.gm(readStream).background('#ffffff').alpha('remove').resize(width, `${ height }^`).gravity('Center').crop(width, height).extent(width, height).stream('jpeg').pipe(writeStream);
+		return (file => RocketChat.Info.GraphicsMagick.enabled ? file: file.alpha('remove'))(RocketChatFile.gm(tempFilePath).background('#FFFFFF')).resize(width, `${ height }^`).gravity('Center').crop(width, height).extent(width, height).stream('jpeg').pipe(writeStream);
 	},
 
 	avatarsOnValidate(file) {
@@ -67,7 +67,7 @@ Object.assign(FileUpload, {
 		const width = height;
 		const future = new Future();
 
-		RocketChatFile.gm(tempFilePath).background('#FFFFFF').alpha('remove').resize(width, `${ height }^`).gravity('Center').crop(width, height).extent(width, height).setFormat('jpeg').write(tempFilePath, Meteor.bindEnvironment(err => {
+		(file => RocketChat.Info.GraphicsMagick.enabled ? file: file.alpha('remove'))(RocketChatFile.gm(tempFilePath).background('#FFFFFF')).resize(width, `${ height }^`).gravity('Center').crop(width, height).extent(width, height).setFormat('jpeg').write(tempFilePath, Meteor.bindEnvironment(err => {
 			if (err != null) {
 				console.error(err);
 			}
