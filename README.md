@@ -377,6 +377,8 @@ cd Rocket.Chat
 meteor npm start
 ```
 
+Note: First time on Meteor? Run ```meteor npm install``` before ```meteor```
+
 If you are not a developer and just want to run the server - see [deployment methods](https://rocket.chat/docs/installation/paas-deployments/).
 
 ## Branching Model
