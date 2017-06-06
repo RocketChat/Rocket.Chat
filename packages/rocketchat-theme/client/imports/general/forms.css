@@ -102,3 +102,10 @@
 		}
 	}
 }
+
+.rc-input {
+	font-size: 0.875rem;
+    padding: 0.4rem 0.75rem;
+    border-radius: 2px;
+    border-width: 2px;
+}
