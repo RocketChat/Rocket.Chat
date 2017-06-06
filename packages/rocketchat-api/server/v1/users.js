@@ -197,32 +197,34 @@ RocketChat.API.v1.addRoute('users.setAvatar', { authRequired: true }, {
 			return RocketChat.API.v1.unauthorized();
 		}
 
-		if (this.bodyParams.avatarUrl) {
-			RocketChat.setUserAvatar(user, this.bodyParams.avatarUrl, '', 'url');
-		} else {
-			const Busboy = Npm.require('busboy');
-			const busboy = new Busboy({ headers: this.request.headers });
+		Meteor.runAsUser(user._id, () => {
+			if (this.bodyParams.avatarUrl) {
+				RocketChat.setUserAvatar(user, this.bodyParams.avatarUrl, '', 'url');
+			} else {
+				const Busboy = Npm.require('busboy');
+				const busboy = new Busboy({ headers: this.request.headers });
 
-			Meteor.wrapAsync((callback) => {
-				busboy.on('file', Meteor.bindEnvironment((fieldname, file, filename, encoding, mimetype) => {
-					if (fieldname !== 'image') {
-						return callback(new Meteor.Error('invalid-field'));
-					}
+				Meteor.wrapAsync((callback) => {
+					busboy.on('file', Meteor.bindEnvironment((fieldname, file, filename, encoding, mimetype) => {
+						if (fieldname !== 'image') {
+							return callback(new Meteor.Error('invalid-field'));
+						}
 
-					const imageData = [];
-					file.on('data', Meteor.bindEnvironment((data) => {
-						imageData.push(data);
+						const imageData = [];
+						file.on('data', Meteor.bindEnvironment((data) => {
+							imageData.push(data);
+						}));
+
+						file.on('end', Meteor.bindEnvironment(() => {
+							RocketChat.setUserAvatar(user, Buffer.concat(imageData), mimetype, 'rest');
+							callback();
+						}));
+
 					}));
-
-					file.on('end', Meteor.bindEnvironment(() => {
-						RocketChat.setUserAvatar(user, Buffer.concat(imageData), mimetype, 'rest');
-						callback();
-					}));
-
-				}));
-				this.request.pipe(busboy);
-			})();
-		}
+					this.request.pipe(busboy);
+				})();
+			}
+		});
 
 		return RocketChat.API.v1.success();
 	}
