@@ -53,7 +53,7 @@ Object.assign(FileUpload, {
 		}
 		const height = RocketChat.settings.get('Accounts_AvatarSize');
 		const width = height;
-		return (file => RocketChat.Info.GraphicsMagick.enabled ? file: file.alpha('remove'))(RocketChatFile.gm(tempFilePath).background('#FFFFFF')).resize(width, `${ height }^`).gravity('Center').crop(width, height).extent(width, height).stream('jpeg').pipe(writeStream);
+		return (file => RocketChat.Info.GraphicsMagick.enabled ? file: file.alpha('remove'))(RocketChatFile.gm(readStream).background('#FFFFFF')).resize(width, `${ height }^`).gravity('Center').crop(width, height).extent(width, height).stream('jpeg').pipe(writeStream);
 	},
 
 	avatarsOnValidate(file) {
