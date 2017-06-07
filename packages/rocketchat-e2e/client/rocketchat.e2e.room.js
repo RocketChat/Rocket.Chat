@@ -84,7 +84,7 @@ RocketChat.E2E.Room = class {
 				Meteor.call('deleteOldOTRMessages', this.roomId);
 			})
 			.catch((e) => {
-				// toastr.error(e);
+				console.log(e);
 			});
 	}
 
@@ -168,6 +168,7 @@ RocketChat.E2E.Room = class {
 			})
 			.catch((e) => {
 				// toastr.error(e);
+				console.log(e);
 				return message;
 			});
 	}
