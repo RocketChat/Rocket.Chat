@@ -25,11 +25,10 @@ Package.onUse(function(api) {
 		'client/views/e2eFlexTab.js',
 		'client/tabBar.js',
 		'client/helper.js',
-		'client/store.js'
 	], 'client');
 
 	api.addFiles([
-		'server/settings.js',
+		'server/settings.js'
 		// 'server/models/Messages.js',
 		// 'server/methods/deleteOldOTRMessages.js',
 		// 'server/methods/updateOTRAck.js'

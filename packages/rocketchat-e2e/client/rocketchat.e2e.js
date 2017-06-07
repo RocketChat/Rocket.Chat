@@ -1,3 +1,31 @@
+function ab2str(buf) {
+	return RocketChat.signalUtils.toString(buf);
+}
+
+function str2ab(str) {
+	return RocketChat.signalUtils.toArrayBuffer(str);
+}
+
+function saveKeyToLS(keyID, keyPair) {
+	localStorage.setItem(keyID, JSON.stringify({'pubKey': ab2str(keyPair.pubKey), 'privKey': ab2str(keyPair.privKey)}));
+}
+
+function getKeyFromLS(keyID) {
+	const key = localStorage.getItem(keyID);
+	const keyPair = JSON.parse(key);
+	keyPair.pubKey = str2ab(keyPair.pubKey);
+	keyPair.privKey = str2ab(keyPair.privKey);
+	return keyPair;
+}
+
+function loadKeyGlobalsFromLS() {
+	RocketChat.E2E.registrationId = parseInt(localStorage.getItem('registrationId'));
+	RocketChat.E2E.identityKey = getKeyFromLS('identityKey');
+	RocketChat.E2E.preKey = getKeyFromLS('preKey' + RocketChat.E2E.registrationId);
+	RocketChat.E2E.signedPreKey = getKeyFromLS('signedPreKey' + RocketChat.E2E.registrationId);
+	RocketChat.E2E.signedPreKeySignature = str2ab(localStorage.getItem('signedPreKeySignature' + RocketChat.E2E.registrationId));
+}
+
 class E2E {
 	constructor() {
 		this.enabled = new ReactiveVar(false);
@@ -30,53 +58,25 @@ class E2E {
 	}
 
 	startClient() {
-		if (localStorage.getItem("registrationId") == null) {		// This is a new device.
-			var KeyHelper = libsignal.KeyHelper;
-			var registrationId = KeyHelper.generateRegistrationId();
-			localStorage.setItem("registrationId", registrationId);
+		if (localStorage.getItem('registrationId') == null) {		// This is a new device.
+			const KeyHelper = libsignal.KeyHelper;
+			const registrationId = KeyHelper.generateRegistrationId();
+			localStorage.setItem('registrationId', registrationId);
 			KeyHelper.generateIdentityKeyPair().then(function(identityKeyPair) {
-		      	saveKeyToLS("identityKey", identityKeyPair);
-		      
+				saveKeyToLS('identityKey', identityKeyPair);
+
 				KeyHelper.generatePreKey(registrationId).then(function(preKey) {
-					saveKeyToLS("preKey"+preKey.keyId, preKey.keyPair);
+					saveKeyToLS('preKey' + preKey.keyId, preKey.keyPair);
 				});
 
-				KeyHelper.generateSignedPreKey(getKeyFromLS("identityKey"), registrationId).then(function(signedPreKey) {
-					saveKeyToLS("signedPreKey"+signedPreKey.keyId, signedPreKey.keyPair);
-					localStorage.setItem("signedPreKeySignature"+registrationId, ab2str(signedPreKey.signature));
+				KeyHelper.generateSignedPreKey(getKeyFromLS('identityKey'), registrationId).then(function(signedPreKey) {
+					saveKeyToLS('signedPreKey' + signedPreKey.keyId, signedPreKey.keyPair);
+					localStorage.setItem('signedPreKeySignature' + registrationId, ab2str(signedPreKey.signature));
 				});
 			});
 		}
 		loadKeyGlobalsFromLS();
 	}
-}
-
-function loadKeyGlobalsFromLS() {
-	RocketChat.E2E.registrationId = parseInt(localStorage.getItem("registrationId"));
-	RocketChat.E2E.identityKey = getKeyFromLS("identityKey");
-	RocketChat.E2E.preKey = getKeyFromLS("preKey"+RocketChat.E2E.registrationId);
-	RocketChat.E2E.signedPreKey = getKeyFromLS("signedPreKey"+RocketChat.E2E.registrationId);
-	RocketChat.E2E.signedPreKeySignature = str2ab(localStorage.getItem("signedPreKeySignature"+RocketChat.E2E.registrationId));
-}
-
-function saveKeyToLS(keyID, keyPair) {
-	localStorage.setItem(keyID, JSON.stringify({"pubKey": ab2str(keyPair.pubKey), "privKey": ab2str(keyPair.privKey)}));
-}
-
-function getKeyFromLS(keyID) {
-	var key = localStorage.getItem(keyID);
-	var keyPair = JSON.parse(key);
-	keyPair.pubKey = str2ab(keyPair.pubKey);
-	keyPair.privKey = str2ab(keyPair.privKey);
-	return keyPair;
-}
-
-function ab2str(buf) {
-	return RocketChat.signalUtils.toString(buf);
-}
-
-function str2ab(str) {
-	return RocketChat.signalUtils.toArrayBuffer(str);
 }
 
 RocketChat.E2E = new E2E();
