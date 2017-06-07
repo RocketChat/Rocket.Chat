@@ -50,6 +50,7 @@ Meteor.startup(function() {
 		{ _id: 'user-generate-access-token',    roles : ['admin'] },
 		{ _id: 'view-d-room',                   roles : ['admin', 'user', 'bot'] },
 		{ _id: 'view-full-other-user-info',     roles : ['admin'] },
+		{ _id: 'view-login-other-user-info',    roles : ['admin'] },
 		{ _id: 'view-history',                  roles : ['admin', 'user', 'anonymous'] },
 		{ _id: 'view-joined-room',              roles : ['guest', 'bot', 'anonymous'] },
 		{ _id: 'view-join-code',                roles : ['admin'] },
