@@ -74,9 +74,9 @@ RocketChat.models.Users.getBotAgent = function() {
 			$ne: 'offline'
 		},
 		statusLivechat: 'available',
-        roles: {
-            $all: ['bot', 'livechat-agent']
-        }
+		roles: {
+			$all: ['bot', 'livechat-agent']
+		}
 	};
 
 	const collectionObj = this.model.rawCollection();
