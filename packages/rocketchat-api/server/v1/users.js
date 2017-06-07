@@ -115,8 +115,8 @@ RocketChat.API.v1.addRoute('users.list', { authRequired: true }, {
 				emails: 0,
 				phone: 0,
 				statusConnection: 0,
-				createdAt: 0,
-				lastLogin: 0,
+				//createdAt: 0,
+				//lastLogin: 0,
 				services: 0,
 				requirePasswordChange: 0,
 				requirePasswordChangeReason: 0,
@@ -125,6 +125,12 @@ RocketChat.API.v1.addRoute('users.list', { authRequired: true }, {
 				_updatedAt: 0,
 				customFields: 0
 			};
+			if (RocketChat.authz.hasPermission(userId, 'view-login-other-user-info')) {
+				fieldsToKeepFromRegularUsers = _.extend(fieldsToKeepFromRegularUsers, {
+					createdAt: 1,
+					lastLogin: 1
+				});
+			}
 		}
 
 		const ourQuery = Object.assign({}, query);
