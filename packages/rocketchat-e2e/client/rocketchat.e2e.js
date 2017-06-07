@@ -32,33 +32,43 @@ class E2E {
 	registerClient() {
 		var KeyHelper = libsignal.KeyHelper;
 		var registrationId = KeyHelper.generateRegistrationId();
-		// this.store = RocketChat.signalStore;
 		localStorage.setItem("registrationId", registrationId);
 		KeyHelper.generateIdentityKeyPair().then(function(identityKeyPair) {
-		  console.log(identityKeyPair.pubKey);
-		  console.log(JSON.stringify(identityKeyPair));
-		  console.log(JSON.parse(JSON.stringify(identityKeyPair)));
-	      localStorage.setItem("identityKey", identityKeyPair);
-	      // write_console(client + " - Generated Identity Key Pair: ",util.toString(identityKeyPair.pubKey));
-	      console.log(RocketChat.signalUtils.toString(identityKeyPair.pubKey));
-	      KeyHelper.generatePreKey(localStorage.getItem("registrationId")).then(function(preKey) {
-	          localStorage.setItem("prekey"+preKey.keyId, preKey.keyPair);
-	          // write_console(client + " - Generated Pre Key Pair: ",util.toString(preKey.keyPair.pubKey));
-	          console.log(RocketChat.signalUtils.toString(preKey.keyPair.pubKey));
+	      
+	      saveToLS("identityKey", identityKeyPair);
+	      
+	      KeyHelper.generatePreKey(registrationId).then(function(preKey) {
+	          saveToLS("prekey"+preKey.keyId, preKey.keyPair);
 	      });
 
-	      KeyHelper.generateSignedPreKey(this.store.get("identityKey"), localStorage.getItem("registrationId")).then(function(signedPreKey) {
-	          localStorage.setItem("signedprekey"+signedPreKey.keyId, signedPreKey.keyPair);
-	          localStorage.setItem("signedPreKeySignature"+localStorage.getItem("registrationId"), signedPreKey.signature)
-	          // write_console(client + " - Generated Signed Pre Key Pair: ",util.toString(signedPreKey.keyPair.pubKey));
-	          // keys_status[client] = 1;
-	          // if (keys_status["A"] == 1 && keys_status["B"] == 1) {
-	          //   start_session();
-	          // }
-	          console.log(RocketChat.signalUtils.toString(signedPreKey.keyPair.pubKey));
+	      KeyHelper.generateSignedPreKey(getFromLS("identityKey"), registrationId).then(function(signedPreKey) {
+	          saveToLS("signedprekey"+signedPreKey.keyId, signedPreKey.keyPair);
+	          localStorage.setItem("signedPreKeySignature"+registrationId, ab2str(signedPreKey.signature));
 	      });
-  });
+	  });
 	}
+
+
+}
+
+function saveToLS(keyID, keyPair) {
+  localStorage.setItem(keyID, JSON.stringify({"pubKey": ab2str(keyPair.pubKey), "privKey": ab2str(keyPair.privKey)}));
+}
+
+function getFromLS(keyID) {
+  var key = localStorage.getItem(keyID);
+  var keyPair = JSON.parse(key);
+  keyPair.pubKey = str2ab(keyPair.pubKey);
+  keyPair.privKey = str2ab(keyPair.privKey);
+  return keyPair;
+}
+
+function ab2str(buf) {
+  return RocketChat.signalUtils.toString(buf);
+}
+
+function str2ab(str) {
+  return RocketChat.signalUtils.toArrayBuffer(str);
 }
 
 RocketChat.E2E = new E2E();
