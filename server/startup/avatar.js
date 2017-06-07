@@ -18,8 +18,6 @@ Meteor.startup(function() {
 			let username = decodeURIComponent(match[1]);
 			let file;
 
-			username = username.replace(/\.jpg$/, '');
-
 			if (username[0] !== '@') {
 				if (Meteor.settings && Meteor.settings.public && Meteor.settings.public.sandstorm) {
 					const user = RocketChat.models.Users.findOneByUsername(username);
