@@ -16,9 +16,15 @@
 	overflow: visible;
 	z-index: 100;
 	will-change: transform;
+	display: flex;
+	flex-direction: column;
 
 	&__header {
 		padding: 24px 24px 32px;
+	}
+
+	& .unread-rooms {
+		display: none;
 	}
 }
 
@@ -99,6 +105,7 @@
 /* rooms list */
 .rooms-list {
 	padding: 0 16px 0 30px;
+	height: 100%;
 
 	&__list {
 		margin-bottom: 32px;
@@ -122,6 +129,7 @@
 	height: var(--room-item-height);
 	display: flex;
 	align-items: center;
+	border-radius: 2px;
 
 	&__link {
 		font-size: 1rem;
@@ -132,5 +140,13 @@
 
 	& .badge {
 		margin: 0 8px 0 3px;
+	}
+}
+
+.sidebar__footer {
+	padding: 24px;
+
+	& img {
+		width: 100%;
 	}
 }
