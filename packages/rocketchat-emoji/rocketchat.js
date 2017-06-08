@@ -1,7 +1,7 @@
 RocketChat.emoji = {
 	packages: {
 		base: {
-			emojiCategories: { recent: 'Frequently_Used' },
+			emojiCategories: { recent: TAPi18n.__('Frequently_Used') },
 			emojisByCategory: {
 				recent: []
 			},
