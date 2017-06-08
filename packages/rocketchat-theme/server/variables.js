@@ -39,6 +39,102 @@ const minorColors= {
 	'status-offline': '@transparent-darker'
 };
 
+
+const general = [
+	{
+		name: 'general-success',
+		properties: ['background-color'],
+		value: '#2de0a5'
+	},
+	{
+		name: 'general-pending',
+		properties: ['background-color'],
+		value: '#ffd21f'
+	},
+	{
+		name: 'general-error',
+		properties: ['background-color'],
+		value: '#9b3b4b'
+	},
+	{
+		name: 'general-inactive',
+		properties: ['background-color'],
+		value: '#dedfe0'
+	},
+	{
+		name: 'general-selection',
+		properties: ['background-color'],
+		value: '#02acec'
+	}
+];
+
+general.forEach(setting => RocketChat.theme.addColor(setting.name, setting.value, 'General', setting.properties));
+
+const sidebar = [
+	{
+		name: 'sidebar-background',
+		properties: ['background-color'],
+		value: '#2f343d'
+	},
+	{
+		name: 'sidebar-content',
+		properties: ['color'],
+		value: '#9d9fa3'
+	},
+	{
+		name: 'sidebar-content-active',
+		properties: ['background-color', 'color', 'border-color'],
+		value: '#6c727a'
+	},
+	{
+		name: 'sidebar-content-unread',
+		properties: ['color'],
+		value: '#ffffff'
+	},
+	{
+		name: 'sidebar-content-hover:hover',
+		properties: ['background-color'],
+		value: '#6c727a'
+	},
+	{
+		name: 'sidebar-category-badge',
+		properties: ['background-color'],
+		value: '#414852'
+	},
+	{
+		name: 'sidebar-category-badge-content',
+		properties: ['color'],
+		value: '#ffffff'
+	},
+	{
+		name: 'sidebar-room-badge',
+		properties: ['background-color'],
+		value: '#1d74f5'
+	},
+	{
+		name: 'sidebar-room-badge-content',
+		properties: ['color'],
+		value: '#ffffff'
+	}
+];
+
+sidebar.forEach(setting => RocketChat.theme.addColor(setting.name, setting.value, 'Sidebar', setting.properties));
+
+const content = [
+	{
+		name: 'content-background',
+		properties: ['background-color'],
+		value: '#ffffff'
+	},
+	{
+		name: 'content-color',
+		properties: ['color'],
+		value: '#414852'
+	}
+];
+
+content.forEach(setting => RocketChat.theme.addColor(setting.name, setting.value, 'Content', setting.properties));
+
 // Bulk-add settings for color scheme
 
 Object.keys(majorColors).forEach((key) => {
@@ -56,8 +152,8 @@ RocketChat.theme.addPublicFont('body-font-family', '-apple-system, BlinkMacSyste
 RocketChat.settings.add('theme-custom-css', '', {
 	group: 'Layout',
 	type: 'code',
-	code: 'text/x-less',
+	code: 'text/css',
 	multiline: true,
 	section: 'Custom CSS',
-	public: false
+	public: true
 });

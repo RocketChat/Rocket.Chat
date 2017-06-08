@@ -100,9 +100,9 @@ Template.toolbar.helpers({
 		if (!Meteor.Device.isDesktop()) {
 			return placeholder;
 		} else if (window.navigator.platform.toLowerCase().includes('mac')) {
-			placeholder = `${ placeholder } (CMD+K)`;
+			placeholder = `${ placeholder } (\u2318+K)`;
 		} else {
-			placeholder = `${ placeholder } (Ctrl+K)`;
+			placeholder = `${ placeholder } (\u2303+K)`;
 		}
 
 		return placeholder;
@@ -121,7 +121,7 @@ Template.toolbar.helpers({
 			collection: Meteor.userId() ? RocketChat.models.Subscriptions : RocketChat.models.Rooms,
 			template: 'toolbarSearchList',
 			emptyTemplate: 'toolbarSearchListEmpty',
-			input: '.toolbar-search__input',
+			input: '[role="search"] input',
 			cleanOnEnter: true,
 			closeOnEsc: false,
 			blurOnSelectItem: true,
@@ -199,7 +199,12 @@ Template.toolbar.helpers({
 });
 
 Template.toolbar.events({
-	'keyup .toolbar-search__input'(e) {
+	'submit form'(e) {
+		e.preventDefault();
+		return false;
+	},
+
+	'keyup [role="search"] input'(e) {
 		if (e.which === 27) {
 			e.preventDefault();
 			e.stopPropagation();
@@ -208,21 +213,21 @@ Template.toolbar.events({
 		}
 	},
 
-	'click .toolbar-search__input'() {
+	'click [role="search"] input'() {
 		toolbarSearch.shortcut = false;
 	},
 
-	'click .toolbar-search__create-channel, touchend .toolbar-search__create-channel'(e) {
+	'blur [role="search"] input'() {
+		toolbarSearch.clear();
+	},
+
+	'click [role="search"] button, touchend [role="search"] button'(e) {
 		if (RocketChat.authz.hasAtLeastOnePermission(['create-c', 'create-p'])) {
 			SideNav.setFlex('createCombinedFlex');
 			SideNav.openFlex();
 		} else {
 			e.preventDefault();
 		}
-	},
-
-	'blur .toolbar-search__input'() {
-		toolbarSearch.clear();
 	}
 });
 
