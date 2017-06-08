@@ -10,6 +10,18 @@ Meteor.startup(function() {
 			multi: true
 		});
 
+		RocketChat.models.Messages.update({
+			mentions: {
+				$elemMatch: { _id }
+			}
+		}, {
+			$set: {
+				'mentions.$.name': name
+			}
+		}, {
+			multi: true
+		});
+
 		RocketChat.models.Subscriptions.update({
 			name: username,
 			t: 'd'

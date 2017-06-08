@@ -117,13 +117,13 @@ RocketChat.theme = new class {
 		});
 	}
 
-	addColor(name, value, section, property) {
+	addColor(name, value, section, properties) {
 		const config = {
 			group: 'Colors',
 			type: 'color',
 			editor: 'color',
 			public: true,
-			property,
+			properties,
 			section
 		};
 

@@ -1,10 +1,11 @@
-/* Sidebar */
 :root {
 	--account-thumb-size: 56px;
 	--account-thumb-radius: 8px;
 	--account-status-bullet-size: 12px;
+	--room-item-height: 32px;
 }
 
+/* Sidebar */
 .sidebar {
 	position: fixed;
 	top: 0;
@@ -17,15 +18,18 @@
 	will-change: transform;
 
 	&__header {
-		padding: 24px 24px 0;
+		padding: 24px 24px 32px;
 	}
+}
 
-	&__account {
-		display: flex;
-		align-items: center;
-	}
+/* Sidebar Account */
 
-	&__account-thumb {
+.sidebar__account {
+	display: flex;
+	align-items: center;
+	margin-bottom: 40px;
+
+	&-thumb {
 		width: var(--account-thumb-size);
 		height: var(--account-thumb-size);
 
@@ -34,27 +38,99 @@
 		}
 	}
 
-	&__account-data {
+	&-data {
 		margin-left: 1rem;
 	}
 
-	&__account-name {
+	&-name {
 		font-size: 1.375rem;
 		font-weight: 400;
 	}
 
-	&__account-status {
+	&-status {
 		font-size: 1rem;
 		display: flex;
 		align-items: center;
-		margin-top: 6px;
+		margin-top: 0.5rem;
 	}
 
-	&__account-status-bullet {
+	&-status-bullet {
 		display: block;
 		width: var(--account-status-bullet-size);
 		height: var(--account-status-bullet-size);
 		border-radius: 50%;
 		margin-right: 0.5rem;
+	}
+}
+
+/* toolbar */
+.toolbar {
+	&__wrapper {
+		display: flex;
+	}
+
+	&__search {
+		position: relative;
+		display: flex;
+		align-items: center;
+		width: 100%;
+	}
+
+	&__search-input {
+		width: 100%;
+		padding-left: 32px;
+	}
+
+	&__search-icon {
+		position: absolute;
+		left: 8px;
+
+		&--right {
+			left: auto;
+			right: 8px;
+		}
+	}
+
+	&__search-buttons {
+		margin-left: 8px;
+	}
+}
+
+/* rooms list */
+.rooms-list {
+	padding: 0 16px 0 30px;
+
+	&__list {
+		margin-bottom: 32px;
+	}
+
+	&__type {
+		font-size: 0.75rem;
+		text-transform: uppercase;
+		font-weight: 400;
+		margin-bottom: 18px;
+	}
+
+	& .badge {
+		margin-left: 8px;
+	}
+}
+
+/* room item */
+.room-item {
+	cursor: pointer;
+	height: var(--room-item-height);
+	display: flex;
+	align-items: center;
+
+	&__link {
+		font-size: 1rem;
+		flex: 1;
+		line-height: var(--room-item-height);
+		transition: color 0.3s linear;
+	}
+
+	& .badge {
+		margin: 0 8px 0 3px;
 	}
 }

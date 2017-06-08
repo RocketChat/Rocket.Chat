@@ -42,98 +42,98 @@ const minorColors= {
 
 const general = [
 	{
-		class: 'general-success',
-		property: 'background-color',
+		name: 'general-success',
+		properties: ['background-color'],
 		value: '#2de0a5'
 	},
 	{
-		class: 'general-pending',
-		property: 'background-color',
+		name: 'general-pending',
+		properties: ['background-color'],
 		value: '#ffd21f'
 	},
 	{
-		class: 'general-error',
-		property: 'background-color',
+		name: 'general-error',
+		properties: ['background-color'],
 		value: '#9b3b4b'
 	},
 	{
-		class: 'general-inactive',
-		property: 'background-color',
+		name: 'general-inactive',
+		properties: ['background-color'],
 		value: '#dedfe0'
 	},
 	{
-		class: 'general-selection',
-		property: 'background-color',
+		name: 'general-selection',
+		properties: ['background-color'],
 		value: '#02acec'
 	}
 ];
 
-general.forEach(setting => RocketChat.theme.addColor(setting.class, setting.value, 'General', setting.property));
+general.forEach(setting => RocketChat.theme.addColor(setting.name, setting.value, 'General', setting.properties));
 
 const sidebar = [
 	{
-		class: 'sidebar-background',
-		property: 'background-color',
+		name: 'sidebar-background',
+		properties: ['background-color'],
 		value: '#2f343d'
 	},
 	{
-		class: 'sidebar-content',
-		property: 'color',
+		name: 'sidebar-content',
+		properties: ['color'],
 		value: '#9d9fa3'
 	},
 	{
-		class: 'sidebar-content-active',
-		property: 'background-color',
+		name: 'sidebar-content-active',
+		properties: ['background-color', 'color', 'border-color'],
 		value: '#6c727a'
 	},
 	{
-		class: 'sidebar-content-unread',
-		property: 'color',
+		name: 'sidebar-content-unread',
+		properties: ['color'],
 		value: '#ffffff'
 	},
 	{
-		class: 'sidebar-content:hover',
-		property: 'background-color',
-		value: '#26282d'
+		name: 'sidebar-content-hover:hover',
+		properties: ['background-color'],
+		value: '#6c727a'
 	},
 	{
-		class: 'sidebar-category-badge',
-		property: 'background-color',
+		name: 'sidebar-category-badge',
+		properties: ['background-color'],
 		value: '#414852'
 	},
 	{
-		class: 'sidebar-category-badge-content',
-		property: 'color',
+		name: 'sidebar-category-badge-content',
+		properties: ['color'],
 		value: '#ffffff'
 	},
 	{
-		class: 'sidebar-room-badge',
-		property: 'background-color',
-		value: '#414852'
+		name: 'sidebar-room-badge',
+		properties: ['background-color'],
+		value: '#1d74f5'
 	},
 	{
-		class: 'sidebar-room-badge-content',
-		property: 'color',
+		name: 'sidebar-room-badge-content',
+		properties: ['color'],
 		value: '#ffffff'
 	}
 ];
 
-sidebar.forEach(setting => RocketChat.theme.addColor(setting.class, setting.value, 'Sidebar', setting.property));
+sidebar.forEach(setting => RocketChat.theme.addColor(setting.name, setting.value, 'Sidebar', setting.properties));
 
 const content = [
 	{
-		class: 'content-background',
-		property: 'background-color',
+		name: 'content-background',
+		properties: ['background-color'],
 		value: '#ffffff'
 	},
 	{
-		class: 'content-color',
-		property: 'color',
+		name: 'content-color',
+		properties: ['color'],
 		value: '#414852'
 	}
 ];
 
-content.forEach(setting => RocketChat.theme.addColor(setting.class, setting.value, 'Content', setting.property));
+content.forEach(setting => RocketChat.theme.addColor(setting.name, setting.value, 'Content', setting.properties));
 
 // Bulk-add settings for color scheme
 

@@ -80,11 +80,13 @@
 		"supertest": "^3.0.0"
 	},
 	"dependencies": {
+		"@google-cloud/storage": "^1.1.1",
+		"aws-sdk": "^2.55.0",
 		"babel-runtime": "^6.23.0",
 		"bcrypt": "^1.0.2",
 		"codemirror": "^5.26.0",
 		"file-type": "^4.3.0",
-		"highlight.js": "^9.11.0",
+		"highlight.js": "^9.12.0",
 		"jquery": "^3.2.1",
 		"mime-db": "^1.28.0",
 		"mime-type": "^3.0.5",

@@ -172,16 +172,22 @@ syncUserData = function syncUserData(user, ldapUser) {
 		const avatar = ldapUser.raw.thumbnailPhoto || ldapUser.raw.jpegPhoto;
 		if (avatar) {
 			logger.info('Syncing user avatar');
+
 			const rs = RocketChatFile.bufferToStream(avatar);
-			RocketChatFileAvatarInstance.deleteFile(encodeURIComponent(`${ user.username }.jpg`));
-			const ws = RocketChatFileAvatarInstance.createWriteStream(encodeURIComponent(`${ user.username }.jpg`), 'image/jpeg');
-			ws.on('end', Meteor.bindEnvironment(function() {
+			const fileStore = FileUpload.getStore('Avatars');
+			fileStore.deleteByName(user.username);
+
+			const file = {
+				userId: user._id,
+				type: 'image/jpeg'
+			};
+
+			fileStore.insert(file, rs, () => {
 				Meteor.setTimeout(function() {
 					RocketChat.models.Users.setAvatarOrigin(user._id, 'ldap');
 					RocketChat.Notifications.notifyLogged('updateAvatar', {username: user.username});
 				}, 500);
-			}));
-			rs.pipe(ws);
+			});
 		}
 	}
 };

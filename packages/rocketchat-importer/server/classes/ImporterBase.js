@@ -190,59 +190,55 @@ Importer.Base = class Base {
 		const requestModule = /https/i.test(fileUrl) ? Importer.Base.https : Importer.Base.http;
 
 		return requestModule.get(fileUrl, Meteor.bindEnvironment(function(stream) {
-			const fileId = Meteor.fileStore.create(details);
-			if (fileId) {
-				return Meteor.fileStore.write(stream, fileId, function(err, file) {
-					if (err) {
-						throw new Error(err);
-					} else {
-						const url = file.url.replace(Meteor.absoluteUrl(), '/');
+			const fileStore = FileUpload.getStore('Uploads');
+			fileStore.insert(details, stream, function(err, file) {
+				if (err) {
+					throw new Error(err);
+				} else {
+					const url = file.url.replace(Meteor.absoluteUrl(), '/');
 
-						const attachment = {
-							title: `File Uploaded: ${ file.name }`,
-							title_link: url
-						};
+					const attachment = {
+						title: `File Uploaded: ${ file.name }`,
+						title_link: url
+					};
 
-						if (/^image\/.+/.test(file.type)) {
-							attachment.image_url = url;
-							attachment.image_type = file.type;
-							attachment.image_size = file.size;
-							attachment.image_dimensions = file.identify != null ? file.identify.size : undefined;
-						}
-
-						if (/^audio\/.+/.test(file.type)) {
-							attachment.audio_url = url;
-							attachment.audio_type = file.type;
-							attachment.audio_size = file.size;
-						}
-
-						if (/^video\/.+/.test(file.type)) {
-							attachment.video_url = url;
-							attachment.video_type = file.type;
-							attachment.video_size = file.size;
-						}
-
-						const msg = {
-							rid: details.rid,
-							ts: timeStamp,
-							msg: '',
-							file: {
-								_id: file._id
-							},
-							groupable: false,
-							attachments: [attachment]
-						};
-
-						if ((details.message_id != null) && (typeof details.message_id === 'string')) {
-							msg['_id'] = details.message_id;
-						}
-
-						return RocketChat.sendMessage(user, msg, room, true);
+					if (/^image\/.+/.test(file.type)) {
+						attachment.image_url = url;
+						attachment.image_type = file.type;
+						attachment.image_size = file.size;
+						attachment.image_dimensions = file.identify != null ? file.identify.size : undefined;
 					}
-				});
-			} else {
-				return this.logger.error(`Failed to create the store for ${ fileUrl }!!!`);
-			}
+
+					if (/^audio\/.+/.test(file.type)) {
+						attachment.audio_url = url;
+						attachment.audio_type = file.type;
+						attachment.audio_size = file.size;
+					}
+
+					if (/^video\/.+/.test(file.type)) {
+						attachment.video_url = url;
+						attachment.video_type = file.type;
+						attachment.video_size = file.size;
+					}
+
+					const msg = {
+						rid: details.rid,
+						ts: timeStamp,
+						msg: '',
+						file: {
+							_id: file._id
+						},
+						groupable: false,
+						attachments: [attachment]
+					};
+
+					if ((details.message_id != null) && (typeof details.message_id === 'string')) {
+						msg['_id'] = details.message_id;
+					}
+
+					return RocketChat.sendMessage(user, msg, room, true);
+				}
+			});
 		}));
 	}
 };
