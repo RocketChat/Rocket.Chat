@@ -32,9 +32,12 @@ Template.chatRoomItem.helpers({
 	},
 
 	active() {
+		console.log('ACTIVE');
 		if (Session.get('openedRoom') && Session.get('openedRoom') === this.rid || Session.get('openedRoom') === this._id) {
-			return 'room-item--active';
+			return true;
 		}
+
+		return false;
 	},
 
 	canLeave() {
