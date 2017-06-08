@@ -3,8 +3,8 @@
 Template.chatRoomItem.helpers({
 
 	alert() {
-		if (!this.hideUnreadStatus && (FlowRouter.getParam('_id') !== this.rid || !document.hasFocus())) {
-			return this.alert;
+		if (!this.hideUnreadStatus && (FlowRouter.getParam('_id') !== this.rid || !document.hasFocus()) && this.alert) {
+			return 'sidebar-content-unread';
 		}
 	},
 
@@ -16,7 +16,7 @@ Template.chatRoomItem.helpers({
 
 	userStatus() {
 		const userStatus = RocketChat.roomTypes.getUserStatus(this.t, this.rid);
-		return `status-${ userStatus || 'offline' }`;
+		return userStatus ? `status-${ userStatus }` : '';
 	},
 
 	name() {
@@ -33,7 +33,7 @@ Template.chatRoomItem.helpers({
 
 	active() {
 		if (Session.get('openedRoom') && Session.get('openedRoom') === this.rid || Session.get('openedRoom') === this._id) {
-			return 'active';
+			return 'room-item--active';
 		}
 	},
 

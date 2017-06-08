@@ -18,7 +18,7 @@ class SideNav extends Page {
 	get account() { return browser.element('#account'); }
 	get admin() { return browser.element('#admin'); }
 	get logout() { return browser.element('#logout'); }
-	get sideNavBar() { return browser.element('.side-nav '); }
+	get sideNavBar() { return browser.element('.sidebar'); }
 
 	// Toolbar
 	get spotlightSearch() { return browser.element('.toolbar-search__input'); }
@@ -36,7 +36,7 @@ class SideNav extends Page {
 	get preferences() { return browser.element('[href="/account/preferences"]'); }
 	get profile() { return browser.element('[href="/account/profile"]'); }
 	get avatar() { return browser.element('[href="/changeavatar"]'); }
-	get preferencesClose() { return browser.element('.side-nav .arrow.close'); }
+	get preferencesClose() { return browser.element('.sidebar .arrow.close'); }
 
 	get burgerBtn() { return browser.element('.burger'); }
 

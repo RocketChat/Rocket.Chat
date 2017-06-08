@@ -1,47 +1,63 @@
 /* globals Inject */
+const renderDynamicCssList = () => {
+	const variables = RocketChat.models.Settings.find({_id:/theme-/}, {fields: { value: 1, properties: 1, type: 1 }}).fetch();
 
-Inject.rawHead('page-loading', `
-<style>
+	Inject.rawHead('dynamic-variables',
+		`<script>
+			DynamicCss = typeof DynamicCss !== 'undefined' ? DynamicCss : { };
+			DynamicCss.list = ${ JSON.stringify(variables) };
+		</script>`);
+};
+
+renderDynamicCssList();
+
+RocketChat.models.Settings.find({_id:/theme-/}, {fields: { value: 1, properties: 1, type: 1 }}).observe({
+	changed: renderDynamicCssList
+});
+
+Inject.rawHead('dynamic', `<script>(${ require('./dynamic-css.js').default.toString() })()</script>`);
+
+Inject.rawHead('page-loading', `<style>
 .loading-animation {
-	top: 0;
-	right: 0;
-	bottom: 0;
-	left: 0;
-	display: flex;
-	align-items: center;
-	position: absolute;
-	justify-content: center;
-	text-align: center;
+ top: 0;
+ right: 0;
+ bottom: 0;
+ left: 0;
+ display: flex;
+ align-items: center;
+ position: absolute;
+ justify-content: center;
+ text-align: center;
 }
 .loading-animation > div {
-	width: 10px;
-	height: 10px;
-	margin: 2px;
-	border-radius: 100%;
-	display: inline-block;
-	background-color: rgba(255,255,255,0.6);
-	-webkit-animation: loading-bouncedelay 1.4s infinite ease-in-out both;
-	animation: loading-bouncedelay 1.4s infinite ease-in-out both;
+ width: 10px;
+ height: 10px;
+ margin: 2px;
+ border-radius: 100%;
+ display: inline-block;
+ background-color: rgba(255,255,255,0.6);
+ -webkit-animation: loading-bouncedelay 1.4s infinite ease-in-out both;
+ animation: loading-bouncedelay 1.4s infinite ease-in-out both;
 }
 .loading-animation .bounce1 {
-	-webkit-animation-delay: -0.32s;
-	animation-delay: -0.32s;
+ -webkit-animation-delay: -0.32s;
+ animation-delay: -0.32s;
 }
 .loading-animation .bounce2 {
-	-webkit-animation-delay: -0.16s;
-	animation-delay: -0.16s;
+ -webkit-animation-delay: -0.16s;
+ animation-delay: -0.16s;
 }
 @-webkit-keyframes loading-bouncedelay {
-	0%,
-	80%,
-	100% { -webkit-transform: scale(0) }
-	40% { -webkit-transform: scale(1.0) }
+ 0%,
+ 80%,
+ 100% { -webkit-transform: scale(0) }
+ 40% { -webkit-transform: scale(1.0) }
 }
 @keyframes loading-bouncedelay {
-	0%,
-	80%,
-	100% { transform: scale(0); }
-	40% { transform: scale(1.0); }
+ 0%,
+ 80%,
+ 100% { transform: scale(0); }
+ 40% { transform: scale(1.0); }
 }
 </style>`);
 
@@ -82,7 +98,7 @@ RocketChat.settings.get('Assets_SvgFavicon_Enable', (key, value) => {
 	}
 });
 
-RocketChat.settings.get('theme-color-primary-background-color', (key, value = '#04436a') => {
+RocketChat.settings.get('theme-color-sidebar-background', (key, value) => {
 	Inject.rawHead(key, `<style>body { background-color: ${ value };}</style>` +
 						`<meta name="msapplication-TileColor" content="${ value }" />` +
 						`<meta name="theme-color" content="${ value }" />`);
@@ -152,4 +168,3 @@ Meteor.defer(() => {
 	}
 	Inject.rawHead('base', `<base href="${ baseUrl }">`);
 });
-

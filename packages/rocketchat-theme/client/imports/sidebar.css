@@ -1,0 +1,136 @@
+:root {
+	--account-thumb-size: 56px;
+	--account-thumb-radius: 8px;
+	--account-status-bullet-size: 12px;
+	--room-item-height: 32px;
+}
+
+/* Sidebar */
+.sidebar {
+	position: fixed;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	width: var(--rooms-box-width);
+	height: auto;
+	overflow: visible;
+	z-index: 100;
+	will-change: transform;
+
+	&__header {
+		padding: 24px 24px 32px;
+	}
+}
+
+/* Sidebar Account */
+
+.sidebar__account {
+	display: flex;
+	align-items: center;
+	margin-bottom: 40px;
+
+	&-thumb {
+		width: var(--account-thumb-size);
+		height: var(--account-thumb-size);
+
+		& .avatar {
+			border-radius: var(--account-thumb-radius);
+		}
+	}
+
+	&-data {
+		margin-left: 1rem;
+	}
+
+	&-name {
+		font-size: 1.375rem;
+		font-weight: 400;
+	}
+
+	&-status {
+		font-size: 1rem;
+		display: flex;
+		align-items: center;
+		margin-top: 0.5rem;
+	}
+
+	&-status-bullet {
+		display: block;
+		width: var(--account-status-bullet-size);
+		height: var(--account-status-bullet-size);
+		border-radius: 50%;
+		margin-right: 0.5rem;
+	}
+}
+
+/* toolbar */
+.toolbar {
+	&__wrapper {
+		display: flex;
+	}
+
+	&__search {
+		position: relative;
+		display: flex;
+		align-items: center;
+		width: 100%;
+	}
+
+	&__search-input {
+		width: 100%;
+		padding-left: 32px;
+	}
+
+	&__search-icon {
+		position: absolute;
+		left: 8px;
+
+		&--right {
+			left: auto;
+			right: 8px;
+		}
+	}
+
+	&__search-buttons {
+		margin-left: 8px;
+	}
+}
+
+/* rooms list */
+.rooms-list {
+	padding: 0 16px 0 30px;
+
+	&__list {
+		margin-bottom: 32px;
+	}
+
+	&__type {
+		font-size: 0.75rem;
+		text-transform: uppercase;
+		font-weight: 400;
+		margin-bottom: 18px;
+	}
+
+	& .badge {
+		margin-left: 8px;
+	}
+}
+
+/* room item */
+.room-item {
+	cursor: pointer;
+	height: var(--room-item-height);
+	display: flex;
+	align-items: center;
+
+	&__link {
+		font-size: 1rem;
+		flex: 1;
+		line-height: var(--room-item-height);
+		transition: color 0.3s linear;
+	}
+
+	& .badge {
+		margin: 0 8px 0 3px;
+	}
+}
