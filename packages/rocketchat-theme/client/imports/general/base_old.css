@@ -902,7 +902,7 @@
 
 /* rooms-box */
 
-.rc-old .flex-nav {
+.rc-old.flex-nav {
 	position: fixed;
 	top: 0;
 	left: 0;
