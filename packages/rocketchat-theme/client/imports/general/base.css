@@ -26,6 +26,7 @@
 	}
 }
 
+/*
 button {
 	background: none;
 	border-width: 0;
@@ -36,6 +37,7 @@ button {
 	color: inherit;
 	font-style: inherit;
 }
+*/
 
 .text-right {
 	text-align: right;
@@ -461,6 +463,7 @@ input:focus {
 	box-shadow: 0 0 0;
 }
 
+/*
 textarea,
 select,
 input[type='text'],
@@ -479,6 +482,7 @@ input[type='password'] {
 	outline: none;
 	border-style: solid;
 }
+*/
 
 input {
 	& .input-forward {
@@ -1497,6 +1501,8 @@ label.required::after {
 	}
 }
 
+/*
+
 .toolbar {
 	position: absolute;
 	width: 100%;
@@ -1553,6 +1559,7 @@ label.required::after {
 		cursor: pointer;
 	}
 }
+*/
 
 .new-room-highlight a {
 	animation: highlight 2s infinite;

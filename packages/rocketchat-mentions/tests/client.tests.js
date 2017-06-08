@@ -25,6 +25,19 @@ describe('Mention', function() {
 			});
 		});
 	});
+	describe('get useRealName', () => {
+		beforeEach(() => mention.useRealName = () => true);
+		describe('by function', function functionName() {
+			it('should be true', () => {
+				assert.equal(true, mention.useRealName);
+			});
+		});
+		describe('by const', function functionName() {
+			it('should be true', () => {
+				assert.equal(true, mention.useRealName);
+			});
+		});
+	});
 	describe('get me', () => {
 		const me = 'me';
 		describe('by function', function functionName() {
@@ -151,7 +164,7 @@ describe('Mention', function() {
 
 });
 const message = {
-	mentions:[{username:'rocket.cat'}, {username:'admin'}, {username: 'me'}],
+	mentions:[{username:'rocket.cat', name: 'Rocket.Cat'}, {username:'admin', name: 'Admin'}, {username: 'me', name: 'Me'}],
 	channels: [{name: 'general'}, {name: 'rocket.cat'}]
 };
 describe('replace methods', function() {
@@ -163,12 +176,12 @@ describe('replace methods', function() {
 		const str2 = '@rocket.cat';
 		it(`shoud render for ${ str2 }`, () => {
 			const result = mention.replaceUsers('@rocket.cat', message, 'me');
-			assert.equal(result, `<a class="mention-link " data-username="${ str2.replace('@', '') }">${ str2 }</a>`);
+			assert.equal(result, `<a class="mention-link " data-username="${ str2.replace('@', '') }" title="">${ str2 }</a>`);
 		});
 
 		it(`shoud render for "hello ${ str2 }"`, () => {
 			const result = mention.replaceUsers(`hello ${ str2 }`, message, 'me');
-			assert.equal(result, `hello <a class="mention-link " data-username="${ str2.replace('@', '') }">${ str2 }</a>`);
+			assert.equal(result, `hello <a class="mention-link " data-username="${ str2.replace('@', '') }" title="">${ str2 }</a>`);
 		});
 		it('shoud render for unknow/private user "hello @unknow"', () => {
 			const result = mention.replaceUsers('hello @unknow', message, 'me');
@@ -176,9 +189,40 @@ describe('replace methods', function() {
 		});
 		it('shoud render for me', () => {
 			const result = mention.replaceUsers('hello @me', message, 'me');
-			assert.equal(result, 'hello <a class="mention-link mention-link-me background-primary-action-color" data-username="me">@me</a>');
+			assert.equal(result, 'hello <a class="mention-link mention-link-me background-primary-action-color" data-username="me" title="">@me</a>');
 		});
 	});
+
+	describe('replaceUsers (RealNames)', () => {
+		beforeEach(() => {
+			mention.useRealName = () => true;
+		});
+		it('shoud render for @all', () => {
+			const result = mention.replaceUsers('@all', message, 'me');
+			assert.equal('<a class="mention-link mention-link-me mention-link-all background-attention-color">@all</a>', result);
+		});
+
+		const str2 = '@rocket.cat';
+		const str2Name = 'Rocket.Cat';
+		it(`shoud render for ${ str2 }`, () => {
+			const result = mention.replaceUsers('@rocket.cat', message, 'me');
+			assert.equal(result, `<a class="mention-link " data-username="${ str2.replace('@', '') }" title="${ str2.replace('@', '') }">${ str2Name }</a>`);
+		});
+
+		it(`shoud render for "hello ${ str2 }"`, () => {
+			const result = mention.replaceUsers(`hello ${ str2 }`, message, 'me');
+			assert.equal(result, `hello <a class="mention-link " data-username="${ str2.replace('@', '') }" title="${ str2.replace('@', '') }">${ str2Name }</a>`);
+		});
+		it('shoud render for unknow/private user "hello @unknow"', () => {
+			const result = mention.replaceUsers('hello @unknow', message, 'me');
+			assert.equal(result, 'hello @unknow');
+		});
+		it('shoud render for me', () => {
+			const result = mention.replaceUsers('hello @me', message, 'me');
+			assert.equal(result, 'hello <a class="mention-link mention-link-me background-primary-action-color" data-username="me" title="me">Me</a>');
+		});
+	});
+
 	describe('replaceChannels', () => {
 		it('shoud render for #general', () => {
 			const result = mention.replaceChannels('#general', message, 'me');
@@ -198,6 +242,7 @@ describe('replace methods', function() {
 			assert.equal(result, 'hello #unknow');
 		});
 	});
+
 	describe('parse all', () => {
 		it('shoud render for #general', () => {
 			message.html = '#general';
@@ -207,7 +252,7 @@ describe('replace methods', function() {
 		it('shoud render for "#general and @rocket.cat', () => {
 			message.html = '#general and @rocket.cat';
 			const result = mention.parse(message, 'me');
-			assert.equal('<a class="mention-link" data-channel="general">#general</a> and <a class="mention-link " data-username="rocket.cat">@rocket.cat</a>', result.html);
+			assert.equal('<a class="mention-link" data-channel="general">#general</a> and <a class="mention-link " data-username="rocket.cat" title="">@rocket.cat</a>', result.html);
 		});
 		it('shoud render for "', () => {
 			message.html = '';
@@ -219,6 +264,31 @@ describe('replace methods', function() {
 			const result = mention.parse(message, 'me');
 			assert.equal('simple text', result.html);
 		});
+	});
 
+	describe('parse all (RealNames)', () => {
+		beforeEach(() => {
+			mention.useRealName = () => true;
+		});
+		it('shoud render for #general', () => {
+			message.html = '#general';
+			const result = mention.parse(message, 'me');
+			assert.equal('<a class="mention-link" data-channel="general">#general</a>', result.html);
+		});
+		it('shoud render for "#general and @rocket.cat', () => {
+			message.html = '#general and @rocket.cat';
+			const result = mention.parse(message, 'me');
+			assert.equal('<a class="mention-link" data-channel="general">#general</a> and <a class="mention-link " data-username="rocket.cat" title="rocket.cat">Rocket.Cat</a>', result.html);
+		});
+		it('shoud render for "', () => {
+			message.html = '';
+			const result = mention.parse(message, 'me');
+			assert.equal('', result.html);
+		});
+		it('shoud render for "simple text', () => {
+			message.html = 'simple text';
+			const result = mention.parse(message, 'me');
+			assert.equal('simple text', result.html);
+		});
 	});
 });

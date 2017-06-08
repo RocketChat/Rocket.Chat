@@ -11,21 +11,21 @@ Template.accountBox.helpers({
 		}
 
 		let visualStatus = 'online';
-		let bullet = 'general-success';
+		let bullet = 'general-success-background';
 		const user = Meteor.user() || {};
 		const { name, username } = user;
 		switch (Session.get(`user_${ username }_status`)) {
 			case 'away':
 				visualStatus = t('away');
-				bullet = 'general-pending';
+				bullet = 'general-pending-background';
 				break;
 			case 'busy':
 				visualStatus = t('busy');
-				bullet = 'general-error';
+				bullet = 'general-error-background';
 				break;
 			case 'offline':
 				visualStatus = t('invisible');
-				bullet = 'general-inactive';
+				bullet = 'general-inactive-background';
 				break;
 		}
 		return {

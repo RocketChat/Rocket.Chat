@@ -26,13 +26,17 @@ RocketChat.Migrations.add({
 			const {image, contentType} = RocketChatFile.dataURIParse(dataURI);
 
 			const rs = RocketChatFile.bufferToStream(new Buffer(image, 'base64'));
-			const ws = RocketChatFileAvatarInstance.createWriteStream(`${ user.username }.jpg`, contentType);
+			const fileStore = FileUpload.getStore('Avatars');
+			fileStore.deleteByName(user.username);
 
-			ws.on('end', Meteor.bindEnvironment(function() {
+			const file = {
+				userId: user._id,
+				type: contentType
+			};
+
+			fileStore.insert(file, rs, () => {
 				return RocketChat.models.Users.setAvatarOrigin(user._id, service);
-			}));
-
-			return rs.pipe(ws);
+			});
 		});
 	}
 });

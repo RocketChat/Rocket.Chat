@@ -1,19 +1,23 @@
 <template name="chatRoomItem">
-	<li class="link-room-{{rid}} {{active}} {{#if unread}}has-unread{{/if}} {{#if alert}}has-alert{{/if}}">
-		<a class="open-room sidebar-content" href="{{route}}" title="{{name}}">
+	{{#let unread=unread name=name route=route}}
+		<li class="room-item sidebar-content-hover-background {{active}}" data-room-id="{{rid}}">
+			<a class="room-item__link sidebar-content {{alert}}" href="{{route}}" title="{{name}}">
+				<i class="{{roomIcon}} {{userStatus}}" aria-label=""></i>
+				<span class='room-item__name {{archived}}'>{{name}}</span>
+
+				{{!-- {{#if $not unread}}
+					<span class='opt'>
+						<i class="icon-eye-off hide-room" title="{{_ "Hide_room"}}" aria-label="{{_ "Hide_room"}}"></i>
+						{{#if canLeave}}
+							<i class="icon-logout leave-room" title="{{_ "Leave_room"}}" aria-label="{{_ "Leave_room"}}"></i>
+						{{/if}}
+					</span>
+				{{/if}} --}}
+			</a>
+
 			{{#if unread}}
-				<span class="unread">{{unread}}</span>
+				<span class="badge sidebar-category-badge-content sidebar-room-badge-background">{{unread}}</span>
 			{{/if}}
-			<i class="{{roomIcon}} {{userStatus}}" aria-label=""></i>
-			<span class='name {{archived}}'>{{name}}</span>
-			{{#if $not unread}}
-				<span class='opt'>
-					<i class="icon-eye-off hide-room" title="{{_ "Hide_room"}}" aria-label="{{_ "Hide_room"}}"></i>
-					{{#if canLeave}}
-						<i class="icon-logout leave-room" title="{{_ "Leave_room"}}" aria-label="{{_ "Leave_room"}}"></i>
-					{{/if}}
-				</span>
-			{{/if}}
-		</a>
-	</li>
+		</li>
+	{{/let}}
 </template>

@@ -1,6 +1,6 @@
 /* globals Inject */
 const renderDynamicCssList = () => {
-	const variables = RocketChat.models.Settings.find({_id:/theme-/}, {fields: { value: 1, property: 1, type: 1 }}).fetch();
+	const variables = RocketChat.models.Settings.find({_id:/theme-/}, {fields: { value: 1, properties: 1, type: 1 }}).fetch();
 
 	Inject.rawHead('dynamic-variables',
 		`<script>
@@ -11,7 +11,7 @@ const renderDynamicCssList = () => {
 
 renderDynamicCssList();
 
-RocketChat.models.Settings.find({_id:/theme-/}, {fields: { value: 1, property: 1, type: 1 }}).observe({
+RocketChat.models.Settings.find({_id:/theme-/}, {fields: { value: 1, properties: 1, type: 1 }}).observe({
 	changed: renderDynamicCssList
 });
 
