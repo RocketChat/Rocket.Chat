@@ -9,6 +9,8 @@ Accounts.emailTemplates.siteName = RocketChat.settings.get('Site_Name');
 
 Accounts.emailTemplates.from = `${ RocketChat.settings.get('Site_Name') } <${ RocketChat.settings.get('From_Email') }>`;
 
+Accounts.emailTemplates.notifyAdmin = {};
+
 const verifyEmailHtml = Accounts.emailTemplates.verifyEmail.text;
 
 Accounts.emailTemplates.verifyEmail.html = function(user, url) {
@@ -56,6 +58,29 @@ Accounts.emailTemplates.enrollAccount.html = function(user = {}/*, url*/) {
 	return header + html + footer;
 };
 
+Accounts.emailTemplates.notifyAdmin.subject = function() {
+	const subject = TAPi18n.__('Accounts_Admin_Email_Approval_Needed_Subject_Default');
+	const siteName = RocketChat.settings.get('Site_Name');
+
+	return `[${ siteName }] ${ subject }`;
+};
+
+Accounts.emailTemplates.notifyAdmin.html = function(user = {}) {
+
+	let html;
+
+	html = TAPi18n.__('Accounts_Admin_Email_Approval_Needed_Default');
+
+	const header = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Header') || '');
+	const footer = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Footer') || '');
+
+	html = RocketChat.placeholders.replace(html, {
+		email: user.emails[0].address
+	});
+
+	return header + html + footer;
+};
+
 Accounts.onCreateUser(function(options, user = {}) {
 	RocketChat.callbacks.run('beforeCreateUser', options, user);
 
@@ -89,6 +114,23 @@ Accounts.onCreateUser(function(options, user = {}) {
 				}];
 			}
 		}
+	}
+
+	if (!user.active) {
+		user.emails.some((email) => {
+			RocketChat.models.Roles.findUsersInRole('admin').forEach(function(adminUser) {
+				email = {
+					to: adminUser.emails[0].address,
+					from: RocketChat.settings.get('From_Email'),
+					subject: Accounts.emailTemplates.notifyAdmin.subject(),
+					html: Accounts.emailTemplates.notifyAdmin.html(user)
+				};
+
+				Meteor.defer(() => {
+					Email.send(email);
+				});
+			});
+		});
 	}
 
 	return user;
