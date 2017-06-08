@@ -1,7 +1,7 @@
 <template name="chatRoomItem">
 	{{#let unread=unread name=name route=route}}
-		<li class="room-item sidebar-content-hover-background {{active}}" data-room-id="{{rid}}">
-			<a class="room-item__link sidebar-content {{alert}}" href="{{route}}" title="{{name}}">
+		<li class="room-item {{#if active}}sidebar-content-active-background{{else}}sidebar-content-hover-background{{/if}}" data-room-id="{{rid}}">
+			<a class="room-item__link sidebar-content {{alert}} {{#if active}}sidebar-content-unread{{/if}}" href="{{route}}" title="{{name}}">
 				<i class="{{roomIcon}} {{userStatus}}" aria-label=""></i>
 				<span class='room-item__name {{archived}}'>{{name}}</span>
 
