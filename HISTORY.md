@@ -1,4 +1,10 @@
 <a name="0.56.0"></a>
+# NEXT
+
+### Breaking Changes
+
+- [#7095](https://github.com/RocketChat/Rocket.Chat/pull/7095) Internal hubot does not load [hubot-scripts](https://github.com/github/hubot-scripts) anymore.
+
 # 0.56.0 (2017-05-15)
 
 ### New Features
@@ -51,7 +57,7 @@
 - [#6780](https://github.com/RocketChat/Rocket.Chat/pull/6780) Convert Mailer Package to Js
 - [#6694](https://github.com/RocketChat/Rocket.Chat/pull/6694) Convert markdown to js
 - [#6689](https://github.com/RocketChat/Rocket.Chat/pull/6689) Convert Mentions-Flextab Package to Js
-- [#6781](https://github.com/RocketChat/Rocket.Chat/pull/6781) Convert Message-Star Package to js 
+- [#6781](https://github.com/RocketChat/Rocket.Chat/pull/6781) Convert Message-Star Package to js
 - [#6688](https://github.com/RocketChat/Rocket.Chat/pull/6688) Convert Oembed Package to Js
 - [#6672](https://github.com/RocketChat/Rocket.Chat/pull/6672) Converted rocketchat-lib 3
 - [#6654](https://github.com/RocketChat/Rocket.Chat/pull/6654) disable proxy configuration
@@ -168,7 +174,7 @@
 - [#6780](https://github.com/RocketChat/Rocket.Chat/pull/6780) Convert Mailer Package to Js
 - [#6694](https://github.com/RocketChat/Rocket.Chat/pull/6694) Convert markdown to js
 - [#6689](https://github.com/RocketChat/Rocket.Chat/pull/6689) Convert Mentions-Flextab Package to Js
-- [#6781](https://github.com/RocketChat/Rocket.Chat/pull/6781) Convert Message-Star Package to js 
+- [#6781](https://github.com/RocketChat/Rocket.Chat/pull/6781) Convert Message-Star Package to js
 - [#6688](https://github.com/RocketChat/Rocket.Chat/pull/6688) Convert Oembed Package to Js
 - [#6672](https://github.com/RocketChat/Rocket.Chat/pull/6672) Converted rocketchat-lib 3
 - [#6654](https://github.com/RocketChat/Rocket.Chat/pull/6654) disable proxy configuration

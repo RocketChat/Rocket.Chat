@@ -29,12 +29,3 @@ Package.onUse(function(api) {
 
 	api.addAssets(fontFiles, 'client');
 });
-
-Package.onTest(function(api) {
-	api.use('coffeescript');
-	api.use('sanjo:jasmine@0.20.2');
-	api.use('rocketchat:lib');
-	api.use('rocketchat:katex');
-
-	api.addFiles('tests/jasmine/client/unit/katex.spec.coffee', 'client');
-});

@@ -103,9 +103,29 @@
 	}
 }
 
-.rc-input {
-	font-size: 0.875rem;
-    padding: 0.4rem 0.75rem;
-    border-radius: 2px;
-    border-width: 2px;
+:root {
+	--button-square-size: 36px;
+	--input-font-size: 0.875rem;
+}
+
+.rc-input,
+.rc-button {
+	font-size: var(--input-font-size);
+	padding: 0.563rem 0.75rem;
+	border-radius: 2px;
+	border-width: 1px;
+	border-style: solid;
+	background-color: transparent;
+}
+
+.rc-button {
+	cursor: pointer;
+
+	&--square {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		padding: 0;
+		flex: 0 0 var(--button-square-size);
+	}
 }

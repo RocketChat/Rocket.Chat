@@ -1,17 +1,17 @@
 <template name="toolbar">
-	<div class="sidebar__toolbar">
-		<div class="toolbar-wrapper">
-			<div class="toolbar-search">
-				<i class="toolbar-search__icon icon-search"></i>
-				<input type="text" name="toolbar-input" class="toolbar-search__input background-transparent-light color-content-background-color border-transparent-lighter" placeholder="{{getPlaceholder}}">
-				<i class="toolbar-search__icon toolbar-search__icon--cancel icon-cancel"></i>
+	<div class="toolbar">
+		<form class="toolbar__wrapper" role="search">
+			<div class="toolbar__search">
+				<i class="toolbar__search-icon icon-search sidebar-content-active"></i>
+				<input type="text" name="toolbar-input" class="toolbar__search-input rc-input sidebar-content-active sidebar-content-active-border" placeholder="{{getPlaceholder}}" toolbar-input>
+				<i class="toolbar__search-icon toolbar__search-icon--right icon-cancel sidebar-content-active"></i>
 			</div>
 			{{#if canCreate}}
-				<div class="toolbar-search__buttons">
-					<i class="toolbar-search__create-channel icon-plus"></i>
-				</div>
+				<button class="toolbar__search-buttons sidebar-content-active-border rc-button rc-button--square">
+					<i class="toolbar__search-create-channel sidebar-content-active icon-plus"></i>
+				</button>
 			{{/if}}
-		</div>
+		</form>
 
 		{{> messagePopup popupConfig}}
 	</div>
