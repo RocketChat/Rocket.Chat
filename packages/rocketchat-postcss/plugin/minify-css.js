@@ -73,7 +73,10 @@ const mergeCss = css => {
 		postCSS(isFileForPostCSS ? getPostCSSPlugins() : [])
 			.process(file.getContentsAsString(), {
 				from: process.cwd() + file._source.url.replace('_', '-'),
-				parser: getPostCSSParser()
+				parser: getPostCSSParser(),
+				map: {
+					inline: false
+				}
 			})
 			.then(result => {
 				result.warnings().forEach(warn => {
@@ -132,7 +135,6 @@ const mergeCss = css => {
 			};
 		}
 	});
-
 	const mergedCssAst = CssTools.mergeCssAsts(cssAsts, (filename, msg) => {
 		console.log(`${ filename }: warn: ${ msg }`);
 	});

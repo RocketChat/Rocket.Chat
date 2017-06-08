@@ -1,9 +1,9 @@
 <template name="sideNav">
-	<aside class="side-nav primary-background-color color-tertiary-font-color" role="navigation">
-		<header class="header">
+	<aside class="sidebar sidebar-background" role="navigation">
+		<header class="sidebar__header">
 			{{> accountBox }}
+			{{> toolbar}}
 		</header>
-		{{> toolbar}}
 		{{#if currentUser}}
 			<div class="unread-rooms background-primary-action-color color-primary-action-contrast top-unread-rooms hidden">
 				{{_ "More_unreads"}} <i class="icon-up-big"></i>

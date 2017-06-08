@@ -55,7 +55,7 @@ Template.sideNav.events({
 		return menu.updateUnreadBars();
 	},
 
-	'dropped .side-nav'(e) {
+	'dropped .sidebar'(e) {
 		return e.preventDefault();
 	}
 });
