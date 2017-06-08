@@ -21,8 +21,6 @@
   "Accounts_AllowUserProfileChange": "السماح بتعديل الملف الشخصي للعضو",
   "Accounts_AvatarResize": "تغيير حجم الصور الرمزية",
   "Accounts_AvatarSize": "حجم الصورة الرمزية",
-  "Accounts_AvatarStorePath": "مسار تخزين الصورة الرمزية",
-  "Accounts_AvatarStoreType": "نوع تخزين الصورة الرمزية",
   "Accounts_BlockedDomainsList": "محظور قائمة المجالات",
   "Accounts_BlockedDomainsList_Description": "قائمة مفصولة بفواصل من المجالات سدت",
   "Accounts_BlockedUsernameList": "قائمة اﻷسماء المحظورة",

@@ -29,8 +29,6 @@
   "Accounts_AllowUserProfileChange": "Permetre modificar el perfil d'usuari",
   "Accounts_AvatarResize": "Canviar la mida dels avatars",
   "Accounts_AvatarSize": "Mida d'avatar",
-  "Accounts_AvatarStorePath": "Ruta d'emmagatzematge dels avatars",
-  "Accounts_AvatarStoreType": "Tipus d'emmagatzematge dels avatars",
   "Accounts_BlockedDomainsList": "Llista de dominis bloquejats",
   "Accounts_BlockedDomainsList_Description": "Llista de dominis bloquejats separada per comes",
   "Accounts_BlockedUsernameList": "Llista de noms d'usuari bloquejats",

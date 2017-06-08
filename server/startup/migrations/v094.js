@@ -13,14 +13,26 @@ RocketChat.Migrations.add({
 					return true;
 				}
 			});
-			RocketChat.models.Users.update({
-				_id: user._id,
-				'emails.address.address': emailAddress
-			}, {
-				$set: {
-					'emails.$.address': emailAddress
-				}
-			});
+			const existingUser = RocketChat.models.Users.findOne({ 'emails.address': emailAddress }, { fields: { _id: 1 } });
+			if (existingUser) {
+				RocketChat.models.Users.update({
+					_id: user._id,
+					'emails.address.address': emailAddress
+				}, {
+					$unset: {
+						'emails.$': 1
+					}
+				});
+			} else {
+				RocketChat.models.Users.update({
+					_id: user._id,
+					'emails.address.address': emailAddress
+				}, {
+					$set: {
+						'emails.$.address': emailAddress
+					}
+				});
+			}
 		});
 	}
 });

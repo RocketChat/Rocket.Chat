@@ -10,7 +10,7 @@ RocketChat.sendMessage = function(user, message, room, upsert = false) {
 		message.msg = '';
 	}
 	message.rid = room._id;
-	if (room.usernames || room.usernames.length === 0) {
+	if (!room.usernames || room.usernames.length === 0) {
 		const updated_room = RocketChat.models.Rooms.findOneById(room._id);
 		if (updated_room != null) {
 			room = updated_room;
