@@ -1,13 +1,12 @@
 /* globals Commands */
 const msgStream = new Meteor.Streamer('room-messages');
 
-this.visitor = new class {
-	constructor() {
-		this.token = new ReactiveVar(null);
-		this.room = new ReactiveVar(null);
-		this.roomToSubscribe = new ReactiveVar(null);
-		this.roomSubscribed = null;
-	}
+export default {
+	id: new ReactiveVar(null),
+	token: new ReactiveVar(null),
+	room: new ReactiveVar(null),
+	roomToSubscribe: new ReactiveVar(null),
+	roomSubscribed: null,
 
 	register() {
 		if (!localStorage.getItem('visitorToken')) {
@@ -15,15 +14,23 @@ this.visitor = new class {
 		}
 
 		this.token.set(localStorage.getItem('visitorToken'));
-	}
+	},
+
+	getId() {
+		return this.id.get();
+	},
+
+	setId(id) {
+		return this.id.set(id);
+	},
 
 	getToken() {
 		return this.token.get();
-	}
+	},
 
 	setRoom(rid) {
 		this.room.set(rid);
-	}
+	},
 
 	getRoom(createOnEmpty = false) {
 		let roomId = this.room.get();
@@ -33,11 +40,11 @@ this.visitor = new class {
 		}
 
 		return roomId;
-	}
+	},
 
 	isSubscribed(roomId) {
 		return this.roomSubscribed === roomId;
-	}
+	},
 
 	subscribeToRoom(roomId) {
 		if (this.roomSubscribed && this.roomSubscribed === roomId) {
@@ -57,7 +64,7 @@ this.visitor = new class {
 				}
 
 				// notification sound
-				if (Session.equals('sound', true) && msg.u._id !== Meteor.userId()) {
+				if (Session.equals('sound', true) && msg.u._id !== this.getId()) {
 					$('#chatAudioNotification')[0].play();
 				}
 			}

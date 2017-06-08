@@ -1,4 +1,5 @@
 /* globals LivechatVideoCall, cordova, JitsiMeetExternalAPI */
+import visitor from '../../imports/client/visitor';
 
 LivechatVideoCall = new (class LivechatVideoCall {
 	constructor() {

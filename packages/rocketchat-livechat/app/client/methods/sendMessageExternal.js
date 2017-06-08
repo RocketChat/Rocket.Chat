@@ -1,3 +1,5 @@
+import visitor from '../../imports/client/visitor';
+
 Meteor.methods({
 	sendMessageLivechat(message) {
 		if (s.trim(message.msg) !== '') {
@@ -10,7 +12,7 @@ Meteor.methods({
 			const user = Meteor.user();
 
 			message.u = {
-				_id: Meteor.userId(),
+				_id: visitor.getId(),
 				username: user && user.username || 'visitor'
 			};
 

@@ -1,4 +1,5 @@
 /* globals Livechat, LivechatVideoCall, MsgTyping */
+import visitor from '../../imports/client/visitor';
 
 Template.messages.helpers({
 	messages() {
@@ -114,19 +115,14 @@ Template.messages.events({
 	'click .video-button'(event) {
 		event.preventDefault();
 
-		if (!Meteor.userId()) {
+		if (!visitor.getId()) {
 			Meteor.call('livechat:registerGuest', { token: visitor.getToken() }, (error, result) => {
 				if (error) {
 					return console.log(error.reason);
 				}
 
-				Meteor.loginWithToken(result.token, (error) => {
-					if (error) {
-						return console.log(error.reason);
-					}
-
-					LivechatVideoCall.request();
-				});
+				visitor.setId(result._id);
+				LivechatVideoCall.request();
 			});
 		} else {
 			LivechatVideoCall.request();

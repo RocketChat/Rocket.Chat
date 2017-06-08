@@ -12,7 +12,7 @@ Meteor.methods({
 		const userLanguage = user.language || RocketChat.settings.get('language') || 'en';
 
 		// allow to only user to send transcripts from their own chats
-		if (!room || room.t !== 'l' || !room.v || !user.profile || room.v.token !== user.profile.token) {
+		if (!room || room.t !== 'l' || !room.v || room.v.token !== user.token) {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room');
 		}
 

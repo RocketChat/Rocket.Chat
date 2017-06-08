@@ -1,4 +1,6 @@
 /* globals Notifications */
+import visitor from '../../imports/client/visitor';
+
 export const MsgTyping = (function() {
 	const timeout = 15000;
 	const timeouts = {};
@@ -34,7 +36,7 @@ export const MsgTyping = (function() {
 	};
 
 	Tracker.autorun(() => {
-		if (visitor.getRoom() && Meteor.userId()) {
+		if (visitor.getRoom() && visitor.getId()) {
 			addStream(visitor.getRoom());
 		}
 	});

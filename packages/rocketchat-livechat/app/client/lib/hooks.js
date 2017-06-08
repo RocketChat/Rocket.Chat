@@ -1,4 +1,6 @@
 /* globals CustomFields, Livechat */
+import visitor from '../../imports/client/visitor';
+
 const api = {
 	pageVisited(info) {
 		if (info.change === 'url') {

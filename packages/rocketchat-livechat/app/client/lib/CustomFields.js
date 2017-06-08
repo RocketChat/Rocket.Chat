@@ -1,3 +1,5 @@
+import visitor from '../../imports/client/visitor';
+
 this.CustomFields = (function() {
 	let queue = {};
 	let initiated = false;
@@ -13,7 +15,7 @@ this.CustomFields = (function() {
 
 	const init = function() {
 		Tracker.autorun(function() {
-			if (Meteor.userId()) {
+			if (visitor.getId()) {
 				initiated = true;
 				Object.keys(queue).forEach((key) => {
 					setCustomField.call(this, queue[key].token, key, queue[key].value, queue[key].overwrite);

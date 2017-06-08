@@ -1,4 +1,5 @@
 /* globals Department, Livechat, LivechatVideoCall */
+import visitor from '../../imports/client/visitor';
 
 Template.livechatWindow.helpers({
 	title() {
@@ -17,7 +18,7 @@ Template.livechatWindow.helpers({
 		return Session.get('sound');
 	},
 	showRegisterForm() {
-		if (Session.get('triggered') || Meteor.userId()) {
+		if (Session.get('triggered') || visitor.getId()) {
 			return false;
 		}
 		return Livechat.registrationForm;

@@ -1,12 +1,14 @@
+import visitor from '../../../imports/client/visitor';
+
 this.Notifications = new class {
 	constructor() {
-		this.logged = Meteor.userId() !== null;
+		this.logged = visitor.getId() !== null;
 		this.loginCb = [];
 		Tracker.autorun(() => {
-			if (Meteor.userId() !== null && this.logged === false) {
+			if (visitor.getId() !== null && this.logged === false) {
 				this.loginCb.forEach(cb => cb());
 			}
-			return this.logged = Meteor.userId() !== null;
+			return this.logged = visitor.getId() !== null;
 		});
 		this.debug = false;
 		this.streamAll = new Meteor.Streamer('notify-all');
@@ -61,7 +63,7 @@ this.Notifications = new class {
 		return this.streamRoom.on(`${ room }/${ eventName }`, callback);
 	}
 	onUser(eventName, callback) {
-		return this.streamUser.on(`${ Meteor.userId() }/${ eventName }`, callback);
+		return this.streamUser.on(`${ visitor.getId() }/${ eventName }`, callback);
 	}
 	unAll(callback) {
 		return this.streamAll.removeListener('notify', callback);
@@ -73,7 +75,7 @@ this.Notifications = new class {
 		return this.streamRoom.removeListener(`${ room }/${ eventName }`, callback);
 	}
 	unUser(callback) {
-		return this.streamUser.removeListener(Meteor.userId(), callback);
+		return this.streamUser.removeListener(visitor.getId(), callback);
 	}
 
 };
