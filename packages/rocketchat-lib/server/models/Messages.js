@@ -39,7 +39,8 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base {
 		const query={
 			'mentions.username': { $exists: true },
 			rid
-		}
+		};
+		
 		return this.find(query, options);
 	}
 
