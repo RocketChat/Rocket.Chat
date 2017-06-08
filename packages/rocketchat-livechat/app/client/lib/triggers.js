@@ -1,3 +1,5 @@
+import visitor from '../../imports/client/visitor';
+
 this.Triggers = (function() {
 	let triggers = [];
 	let initiated = false;
@@ -5,7 +7,7 @@ this.Triggers = (function() {
 	let enabled = true;
 
 	const fire = function(trigger) {
-		if (!enabled || Meteor.userId()) {
+		if (!enabled || visitor.getId()) {
 			return;
 		}
 		trigger.actions.forEach(function(action) {

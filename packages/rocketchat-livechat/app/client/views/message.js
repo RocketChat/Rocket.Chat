@@ -1,9 +1,11 @@
 /* globals Livechat, t, tr, livechatAutolinker */
 import moment from 'moment';
+import visitor from '../../imports/client/visitor';
 
 Template.message.helpers({
 	own() {
-		if (this.u && this.u._id === Meteor.userId()) {
+		console.log(this.u._id, visitor.getId());
+		if (this.u && this.u._id === visitor.getId()) {
 			return 'own';
 		}
 	},

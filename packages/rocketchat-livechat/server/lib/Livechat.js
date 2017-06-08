@@ -1,5 +1,6 @@
 /* globals HTTP */
 import UAParser from 'ua-parser-js';
+import LivechatVisitors from '../models/LivechatVisitors';
 
 RocketChat.Livechat = {
 	historyMonitorType: 'url',
@@ -58,11 +59,12 @@ RocketChat.Livechat = {
 			room = RocketChat.QueueMethods[routingMethod](guest, message, roomInfo);
 
 			newRoom = true;
-		} else {
-			room = Meteor.call('canAccessRoom', message.rid, guest._id);
 		}
-		if (!room) {
-			throw new Meteor.Error('cannot-acess-room');
+		console.log('getRoom.room ->', room);
+		console.log('getRoom.guest ->', guest);
+
+		if (room.v.token !== guest.token) {
+			throw new Meteor.Error('cannot-access-room');
 		}
 
 		return { room, newRoom };
@@ -76,53 +78,49 @@ RocketChat.Livechat = {
 		// return messages;
 		return _.extend(RocketChat.sendMessage(guest, message, room), { newRoom, showConnecting: this.showConnecting() });
 	},
-	registerGuest({ token, name, email, department, phone, loginToken, username } = {}) {
+	registerGuest({ token, name, email, department, phone, username } = {}) {
 		check(token, String);
 
 		let userId;
 		const updateUser = {
 			$set: {
-				profile: {
-					guest: true,
-					token
-				}
+				token
 			}
 		};
 
-		const user = RocketChat.models.Users.getVisitorByToken(token, { fields: { _id: 1 } });
+		const user = LivechatVisitors.getVisitorByToken(token, { fields: { _id: 1 } });
 
 		if (user) {
 			userId = user._id;
-			if (loginToken) {
-				if (!updateUser.$addToSet) {
-					updateUser.$addToSet = {};
-				}
-				updateUser.$addToSet['services.resume.loginTokens'] = loginToken;
-			}
+			// if (loginToken) {
+			// 	if (!updateUser.$addToSet) {
+			// 		updateUser.$addToSet = {};
+			// 	}
+			// 	updateUser.$addToSet['services.resume.loginTokens'] = loginToken;
+			// }
 		} else {
 			if (!username) {
-				username = RocketChat.models.Users.getNextVisitorUsername();
+				username = LivechatVisitors.getNextVisitorUsername();
 			}
 
 			let existingUser = null;
 
-			if (s.trim(email) !== '' && (existingUser = RocketChat.models.Users.findOneGuestByEmailAddress(email))) {
-				if (loginToken) {
-					if (!updateUser.$addToSet) {
-						updateUser.$addToSet = {};
-					}
-					updateUser.$addToSet['services.resume.loginTokens'] = loginToken;
-				}
+			if (s.trim(email) !== '' && (existingUser = LivechatVisitors.findOneGuestByEmailAddress(email))) {
+				// if (loginToken) {
+				// 	if (!updateUser.$addToSet) {
+				// 		updateUser.$addToSet = {};
+				// 	}
+				// 	updateUser.$addToSet['services.resume.loginTokens'] = loginToken;
+				// }
 
 				userId = existingUser._id;
 			} else {
-
 				const userData = {
 					username,
-					globalRoles: ['livechat-guest'],
-					department,
-					type: 'visitor',
-					joinDefaultChannels: false
+					// globalRoles: ['livechat-guest'],
+					department
+					// type: 'visitor',
+					// joinDefaultChannels: false
 				};
 
 				if (this.connection) {
@@ -131,15 +129,16 @@ RocketChat.Livechat = {
 					userData.host = this.connection.httpHeaders.host;
 				}
 
-				userId = Accounts.insertUserDoc({}, userData);
+				// userId = Accounts.insertUserDoc({}, userData);
 
-				if (loginToken) {
-					updateUser.$set.services = {
-						resume: {
-							loginTokens: [ loginToken ]
-						}
-					};
-				}
+				// if (loginToken) {
+				// 	updateUser.$set.services = {
+				// 		resume: {
+				// 			loginTokens: [ loginToken ]
+				// 		}
+				// 	};
+				// }
+				userId = LivechatVisitors.insert(userData);
 			}
 		}
 
@@ -156,10 +155,10 @@ RocketChat.Livechat = {
 		}
 
 		if (name) {
-			RocketChat._setRealName(userId, name);
+			updateUser.$set.name = name;
 		}
 
-		Meteor.users.update(userId, updateUser);
+		LivechatVisitors.updateById(userId, updateUser);
 
 		return userId;
 	},
@@ -172,7 +171,7 @@ RocketChat.Livechat = {
 			}
 		};
 
-		const user = RocketChat.models.Users.getVisitorByToken(token, { fields: { _id: 1 } });
+		const user = LivechatVisitors.getVisitorByToken(token, { fields: { _id: 1 } });
 		if (user) {
 			return Meteor.users.update(user._id, updateUser);
 		}
@@ -190,7 +189,7 @@ RocketChat.Livechat = {
 		if (phone) {
 			updateData.phone = phone;
 		}
-		const ret = RocketChat.models.Users.saveGuestById(_id, updateData);
+		const ret = LivechatVisitors.saveGuestById(_id, updateData);
 
 		Meteor.defer(() => {
 			RocketChat.callbacks.run('livechat.saveGuest', updateData);
@@ -534,7 +533,9 @@ RocketChat.Livechat = {
 };
 
 RocketChat.Livechat.stream = new Meteor.Streamer('livechat-room');
-RocketChat.Livechat.stream.allowRead('logged');
+
+// @TODO create a allow function
+RocketChat.Livechat.stream.allowRead('all');
 
 RocketChat.settings.get('Livechat_history_monitor_type', (key, value) => {
 	RocketChat.Livechat.historyMonitorType = value;

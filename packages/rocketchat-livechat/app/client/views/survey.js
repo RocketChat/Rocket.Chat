@@ -1,3 +1,5 @@
+import visitor from '../../imports/client/visitor';
+
 Template.survey.events({
 	'click button.skip'(e, instance) {
 		instance.$('#survey').remove();

@@ -1,5 +1,6 @@
 /* globals MsgTyping, showError, Livechat */
 import toastr from 'toastr';
+import visitor from '../../imports/client/visitor';
 
 this.ChatMessages = class ChatMessages {
 	init(node) {
@@ -61,7 +62,7 @@ this.ChatMessages = class ChatMessages {
 		}
 		this.clearEditing();
 		const id = element.getAttribute('id');
-		const message = ChatMessage.findOne({ _id: id, 'u._id': Meteor.userId() });
+		const message = ChatMessage.findOne({ _id: id, 'u._id': visitor.getId() });
 		this.input.value = message.msg;
 		this.editing.element = element;
 		this.editing.index = index || this.getEditingIndex(element);
@@ -125,7 +126,7 @@ this.ChatMessages = class ChatMessages {
 			});
 		};
 
-		if (!Meteor.userId()) {
+		if (!visitor.getId()) {
 			const guest = {
 				token: visitor.getToken()
 			};
@@ -139,13 +140,8 @@ this.ChatMessages = class ChatMessages {
 					return showError(error.reason);
 				}
 
-				Meteor.loginWithToken(result.token, (error) => {
-					if (error) {
-						return showError(error.reason);
-					}
-
-					sendMessage();
-				});
+				visitor.setId(result._id);
+				sendMessage();
 			});
 		} else {
 			sendMessage();
@@ -194,6 +190,7 @@ this.ChatMessages = class ChatMessages {
 
 			const re = new RegExp(value, 'i');
 
+			// @TODO verify if used
 			const user = Meteor.users.findOne({ username: re }, { fields: { username: 1 } });
 			if (user) {
 				input.value = input.value.replace(value, `@${ user.username } `);

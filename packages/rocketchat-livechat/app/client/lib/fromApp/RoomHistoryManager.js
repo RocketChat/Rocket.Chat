@@ -1,4 +1,7 @@
 /* globals readMessage UserRoles RoomRoles*/
+
+import visitor from '../../../imports/client/visitor';
+
 export const RoomHistoryManager = new class {
 	constructor() {
 		this.defaultLimit = 50;
@@ -40,7 +43,7 @@ export const RoomHistoryManager = new class {
 			ts = new Date();
 		}
 
-		Meteor.call('loadHistory', rid, ts, limit, undefined, (err, result) => {
+		Meteor.call('livechat:loadHistory', { token: visitor.getToken(), rid, ts, limit }, (err, result) => {
 			if (err) {
 				return;
 			}
