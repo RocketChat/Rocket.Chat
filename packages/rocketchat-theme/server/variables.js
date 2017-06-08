@@ -94,7 +94,7 @@ const sidebar = [
 	{
 		name: 'sidebar-content-hover:hover',
 		properties: ['background-color'],
-		value: '#6c727a'
+		value: '#414852'
 	},
 	{
 		name: 'sidebar-category-badge',
