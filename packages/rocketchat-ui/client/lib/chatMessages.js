@@ -477,9 +477,11 @@ this.ChatMessages = class ChatMessages {
 			return false;
 
 				// ctrl (command) + shift + k -> clear room messages
-		} else if (k === 75 && navigator && navigator.platform && event.shiftKey && (navigator.platform.indexOf('Mac') !== -1 && event.metaKey) || event.ctrlKey) {
-			return RoomHistoryManager.clear(rid);
 		}
+		// TODO
+		// else if (k === 75 && navigator && navigator.platform && event.shiftKey && (navigator.platform.indexOf('Mac') !== -1 ? event.metaKey : event.ctrlKey)) {
+		// 	return RoomHistoryManager.clear(rid);
+		// }
 	}
 
 	valueChanged(/*rid, event*/) {
