@@ -48,8 +48,10 @@
 						<div class="connection-status">
 							{{> status}}
 						</div>
-						<div class="main-content content-background-color {{#if modal}}main-modal{{/if}}">
-							{{> Template.dynamic template=center}}
+						<div class="rc-old">
+							<div class="main-content content-background-color {{#if modal}}main-modal{{/if}}">
+								{{> Template.dynamic template=center}}
+							</div>
 						</div>
 						{{#unless modal}}
 							{{> sideNav }}
