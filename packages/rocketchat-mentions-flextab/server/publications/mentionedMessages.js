@@ -7,7 +7,7 @@ Meteor.publish('mentionedMessages', function(rid, limit = 50) {
 	if (!user) {
 		return this.ready();
 	}
-	const cursorHandle = RocketChat.models.Messages.findVisibleByMentionAndRoomId(user.username, rid, {
+	const cursorHandle = RocketChat.models.Messages.findAllMentions(rid, {
 		sort: {
 			ts: -1
 		},
