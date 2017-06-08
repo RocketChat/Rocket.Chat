@@ -10,8 +10,9 @@
 			</div>
 			<div class="rooms-list" aria-label="{{_ "Channels"}}" role="region">
 				<div class="wrapper">
-					{{> roomList unread=true label="Unread_Rooms" }}
-
+					{{#if hasUnread}}
+						{{> roomList unread=true label="Unread_Rooms" }}
+					{{/if}}
 					{{#each roomType}}
 						{{#if canShowRoomType}}
 							{{> roomList identifier=identifier label=label isCombined=isCombined }}
