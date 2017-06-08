@@ -1,4 +1,5 @@
 /* globals Department, Livechat, LivechatVideoCall */
+import visitor from '../../imports/client/visitor';
 
 Template.register.helpers({
 	error() {
@@ -56,12 +57,8 @@ Template.register.events({
 					return instance.showError(error.reason);
 				}
 				parentCall('callback', ['pre-chat-form-submit', _.omit(guest, 'token')]);
-				Meteor.loginWithToken(result.token, function(error) {
-					if (error) {
-						return instance.showError(error.reason);
-					}
-					start();
-				});
+				visitor.setId(result._id);
+				start();
 			});
 		}
 	},

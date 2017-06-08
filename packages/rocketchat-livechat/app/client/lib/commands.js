@@ -1,4 +1,6 @@
 /* globals LivechatVideoCall, Livechat */
+import visitor from '../../imports/client/visitor';
+
 // Functions to call on messages of type 'command'
 this.Commands = {
 	survey() {
@@ -13,6 +15,7 @@ this.Commands = {
 
 	promptTranscript() {
 		if (Livechat.transcript) {
+			// @TODO get visitor email
 			const user = Meteor.user();
 			const email = user.visitorEmails && user.visitorEmails.length > 0 ? user.visitorEmails[0].address : '';
 

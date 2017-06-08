@@ -6,6 +6,7 @@ Template.avatar.helpers({
 			username = user && user.username;
 		}
 
+		// @TODO get visitor username
 		const currentUser = Meteor.users.findOne(Meteor.userId(), { fields: { username: 1 }});
 		if (!username || (currentUser && currentUser.username === username)) {
 			return;

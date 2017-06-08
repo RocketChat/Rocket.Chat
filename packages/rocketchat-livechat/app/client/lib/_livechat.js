@@ -1,3 +1,5 @@
+import visitor from '../../imports/client/visitor';
+
 this.Livechat = new (class Livechat {
 	constructor() {
 		this._online = new ReactiveVar(null);
@@ -30,12 +32,12 @@ this.Livechat = new (class Livechat {
 		this.stream = new Meteor.Streamer('livechat-room');
 
 		Tracker.autorun(() => {
-			if (this._room.get() && Meteor.userId()) {
+			if (this._room.get() && visitor.getId()) {
 				RoomHistoryManager.getMoreIfIsEmpty(this._room.get());
 				visitor.subscribeToRoom(this._room.get());
 				visitor.setRoom(this._room.get());
 
-				Meteor.call('livechat:getAgentData', this._room.get(), (error, result) => {
+				Meteor.call('livechat:getAgentData', { roomId: this._room.get(), token: visitor.getToken() }, (error, result) => {
 					if (!error) {
 						this._agent.set(result);
 					}
