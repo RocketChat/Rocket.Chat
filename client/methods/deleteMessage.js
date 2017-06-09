@@ -1,5 +1,4 @@
 import moment from 'moment';
-import toastr from 'toastr';
 
 Meteor.methods({
 	deleteMessage(message) {
