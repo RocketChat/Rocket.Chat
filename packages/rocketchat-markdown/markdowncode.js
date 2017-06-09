@@ -69,7 +69,7 @@ class MarkdownCode {
 						lang = '';
 						code = _.unescapeHTML(codeMatch[1] + codeMatch[2]);
 					} else {
-						lang = codeMatch[1];
+						lang = _.unescapeHTML(codeMatch[1]);
 						code = _.unescapeHTML(codeMatch[2]);
 					}
 
