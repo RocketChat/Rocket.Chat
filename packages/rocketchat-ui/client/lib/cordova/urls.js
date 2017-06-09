@@ -8,7 +8,7 @@ Meteor.startup(() => {
 			if (!($link.length > 0)) { return; }
 			const url = $link.attr('href');
 
-			if (/^https?:\/\/.+/.test(url) === true) {
+			if (/^https?:\/\/.+/i.test(url) === true) {
 				window.open(url, '_system');
 				return e.preventDefault();
 			}
