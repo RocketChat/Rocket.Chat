@@ -7,12 +7,11 @@
 				<i class="toolbar__search-icon toolbar__search-icon--right icon-cancel sidebar-content-active"></i>
 			</div>
 			{{#if canCreate}}
-				<button class="toolbar__search-buttons sidebar-content-active-border rc-button rc-button--square">
+				<button aria-label="{{ _ 'Create_A_New_Channel' }}" class="rc-tooltip toolbar__search-buttons sidebar-content-active-border rc-button rc-button--square">
 					<i class="toolbar__search-create-channel sidebar-content-active icon-plus"></i>
 				</button>
 			{{/if}}
 		</form>
-
 		{{> messagePopup popupConfig}}
 	</div>
 </template>
