@@ -35,15 +35,14 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base {
 		return this.find(query, options);
 	}
 
-	findAllMentions(rid,options){
+	findAllMentions(rid, options) {
 		const query={
 			'mentions.username': { $exists: true },
 			rid
 		};
-		
+
 		return this.find(query, options);
 	}
-
 
 	findVisibleByRoomId(roomId, options) {
 		const query = {
