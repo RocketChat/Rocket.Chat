@@ -31,6 +31,7 @@ Meteor.methods({
 				fields: {
 					username: 1,
 					name: 1,
+					tag: 1,
 					status: 1
 				},
 				sort: {}

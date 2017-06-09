@@ -1,4 +1,4 @@
-/* globals slug:true, slugify, LDAP, getLdapUsername:true, getLdapUserUniqueID:true, getDataToSyncUserData:true, syncUserData:true, sync:true, addLdapUser:true  */
+/* globals slug:true, slugify, LDAP, getLdapUsername:true, getLdapUserUniqueID:true, getDataToSyncUserData:true, syncUserData:true, sync:true, addLdapUser:true, templateHandler */
 
 const logger = new Logger('LDAPSync', {});
 
@@ -58,6 +58,38 @@ getLdapUserUniqueID = function getLdapUserUniqueID(ldapUser) {
 };
 
 
+templateHandler = function templateHandler(ldapUser, ldapField, func) {
+	const templateRegex = /#{(\w+)}/gi;
+	let match = templateRegex.exec(ldapField);
+	let tmpLdapField = ldapField;
+
+	if (match == null) {
+		if (!ldapUser.object.hasOwnProperty(ldapField)) {
+			logger.debug(`user does not have attribute: ${ ldapField }`);
+			return;
+		}
+		tmpLdapField = ldapUser.object[ldapField];
+	} else {
+		logger.debug('template found. replacing values');
+		while (match != null) {
+			const tmplVar = match[0];
+			const tmplAttrName = match[1];
+
+			if (!ldapUser.object.hasOwnProperty(tmplAttrName)) {
+				logger.debug(`user does not have attribute: ${ tmplAttrName }`);
+				return;
+			}
+
+			const attrVal = ldapUser.object[tmplAttrName];
+			logger.debug(`replacing template var: ${ tmplVar } with value from ldap: ${ attrVal }`);
+			tmpLdapField = tmpLdapField.replace(tmplVar, attrVal);
+			match = templateRegex.exec(ldapField);
+		}
+	}
+	func(tmpLdapField);
+};
+
+
 getDataToSyncUserData = function getDataToSyncUserData(ldapUser, user) {
 	const syncUserData = RocketChat.settings.get('LDAP_Sync_User_Data');
 	const syncUserDataFieldMap = RocketChat.settings.get('LDAP_Sync_User_Data_FieldMap').trim();
@@ -84,38 +116,23 @@ getDataToSyncUserData = function getDataToSyncUserData(ldapUser, user) {
 					break;
 
 				case 'name':
-					const templateRegex = /#{(\w+)}/gi;
-					let match = templateRegex.exec(ldapField);
-					let tmpLdapField = ldapField;
-
-					if (match == null) {
-						if (!ldapUser.object.hasOwnProperty(ldapField)) {
-							logger.debug(`user does not have attribute: ${ ldapField }`);
-							return;
-						}
-						tmpLdapField = ldapUser.object[ldapField];
-					} else {
-						logger.debug('template found. replacing values');
-						while (match != null) {
-							const tmplVar = match[0];
-							const tmplAttrName = match[1];
-
-							if (!ldapUser.object.hasOwnProperty(tmplAttrName)) {
-								logger.debug(`user does not have attribute: ${ tmplAttrName }`);
-								return;
+					templateHandler(ldapUser, ldapField,
+						function syncName(tmpLdapField) {
+							if (user.name !== tmpLdapField) {
+								userData.name = tmpLdapField;
+								logger.debug(`user.name changed to: ${ tmpLdapField }`);
 							}
+						});
+					break;
 
-							const attrVal = ldapUser.object[tmplAttrName];
-							logger.debug(`replacing template var: ${ tmplVar } with value from ldap: ${ attrVal }`);
-							tmpLdapField = tmpLdapField.replace(tmplVar, attrVal);
-							match = templateRegex.exec(ldapField);
-						}
-					}
-
-					if (user.name !== tmpLdapField) {
-						userData.name = tmpLdapField;
-						logger.debug(`user.name changed to: ${ tmpLdapField }`);
-					}
+				case 'tag':
+					templateHandler(ldapUser, ldapField,
+						function syncTag(tmpLdapField) {
+							if (user.tag !== tmpLdapField) {
+								userData.tag = tmpLdapField;
+								logger.debug(`user.tag changed to: ${ tmpLdapField }`);
+							}
+						});
 					break;
 			}
 		});
