@@ -1,6 +1,10 @@
  /* globals menu*/
 
 Template.sideNav.helpers({
+	hasUnread() {
+		const user = Meteor.user();
+		return user && user.settings && user.settings.preferences && user.settings.preferences.unreadRoomsMode;
+	},
 	flexTemplate() {
 		return SideNav.getFlex().template;
 	},
