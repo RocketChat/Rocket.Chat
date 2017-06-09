@@ -2,32 +2,32 @@
 	{{#if isLivechat}}
 		{{> livechat . }}
 	{{else}}
-		{{#if isActiveFavorite}}
-			{{#with rooms}}
-				<h3 class="rooms-list__type sidebar-content {{unreadClass ..}}">
-					{{_ ../label}}
-					{{#with count}}
-						{{#if .}}
-							<span class="badge sidebar-category-badge-background sidebar-category-badge-content">{{.}}</span>
-						{{/if}}
-					{{/with}}
-				</h3>
-				<ul class="rooms-list__list">
-					{{#each room in this}}
-						{{> chatRoomItem room }}
-					{{else}}
-						<p class="rooms-list__empty-room sidebar-content">{{_ "No_channels_yet" }}</p>
-					{{/each}}
-				</ul>
+		{{#with rooms}}
+			{{#if shouldAppear .. rooms}}
+					<h3 class="rooms-list__type sidebar-content">
+						{{_ ../label}}
+						{{#with count}}
+							{{#if .}}
+								<span class="badge sidebar-category-badge-background sidebar-category-badge-content">{{.}}</span>
+							{{/if}}
+						{{/with}}
+					</h3>
+					<ul class="rooms-list__list">
+						{{#each room in this}}
+							{{> chatRoomItem room }}
+						{{else}}
+							<p class="rooms-list__empty-room sidebar-content">{{_ "No_channels_yet" }}</p>
+						{{/each}}
+					</ul>
 
-				{{#if hasMoreChannelsButton ..}}
-					{{!--<button class="rooms-list__more">{{_ "More_channels"}}...</button>--}}
-				{{/if}}
+					{{#if hasMoreChannelsButton ..}}
+						{{!--<button class="rooms-list__more">{{_ "More_channels"}}...</button>--}}
+					{{/if}}
 
-				{{#if hasMoreGroupsButton ..}}
-					{{!--<button class="rooms-list__more">{{_ "More_groups"}}...</button>--}}
+					{{#if hasMoreGroupsButton ..}}
+						{{!--<button class="rooms-list__more">{{_ "More_groups"}}...</button>--}}
+					{{/if}}
 				{{/if}}
-			{{/with}}
-		{{/if}}
+		{{/with}}
 	{{/if}}
 </template>

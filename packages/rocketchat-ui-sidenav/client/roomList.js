@@ -49,21 +49,16 @@ Template.roomList.helpers({
 		return this.identifier === 'l';
 	},
 
-	unreadClass(room) {
-		let classes = '';
-
-		if (room.unread) {
-			const user = Meteor.user();
-			classes += 'unread-rooms-mode';
-
-			if ((user && user.settings && user.settings.preferences && user.settings.preferences.unreadRoomsMode) && (Template.instance().unreadRooms.count())) {
-				classes += ' has-unread';
-			}
-		}
-
-		return classes;
+	shouldAppear(group, rooms) {
+		/*
+		if is a normal group ('channel' 'private' 'direct')
+		or is favorite and has one room
+		or is unread and has one room
+		*/
+		const nonFavorite = group.identifier || group.unread;
+		const showNormalRooms = !group.unread || Template.instance().unreadRooms.count();
+		return showNormalRooms && nonFavorite || !group.unread && !this.anonymous && rooms.count();
 	},
-
 	hasMoreChannelsButton(room) {
 		return room.identifier === 'c' || room.anonymous;
 	},
