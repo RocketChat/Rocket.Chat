@@ -25,13 +25,15 @@ Package.onUse(function(api) {
 		'client/views/e2eFlexTab.js',
 		'client/tabBar.js',
 		'client/helper.js',
+		'client/store.js'
 	], 'client');
 
 	api.addFiles([
 		'server/settings.js',
 		'server/models/Users.js',
 		'server/methods/addKeyToChain.js',
-		'server/methods/fetchKeychain.js'
+		'server/methods/fetchKeychain.js',
+		'server/methods/emptyKeychain.js'
 		// 'server/methods/updateOTRAck.js'
 	], 'server');
 });

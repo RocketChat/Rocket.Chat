@@ -7,11 +7,14 @@ RocketChat.models.Users.addKeyToChain = function(key) {
 };
 
 RocketChat.models.Users.fetchKeychain = function(userId) {
-	// const query = { _id: userId };
-	// return this.update(query, update);
 	const identityKey = this.findOne({ _id: userId }).lastUsedIdentityKey;
 	const publicKeychain = this.findOne({ _id: userId }).publicKeychain;
-	console.log(identityKey);
-	console.log(publicKeychain);
 	return JSON.stringify({ 'lastUsedIdentityKey': identityKey, 'publicKeychain': publicKeychain });
+};
+
+RocketChat.models.Users.emptyKeychain = function() {
+	userId = Meteor.userId();
+	const query = { _id: userId };
+	this.update(query, { $set: { 'lastUsedIdentityKey': "" } });
+	this.update(query, { $set: { 'publicKeychain' : [ ] } });
 };

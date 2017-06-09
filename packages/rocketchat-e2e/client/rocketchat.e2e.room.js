@@ -1,6 +1,14 @@
 // import toastr from 'toastr';
 /* globals crypto */
 
+function ab2str(buf) {
+	return RocketChat.signalUtils.toString(buf);
+}
+
+function str2ab(str) {
+	return RocketChat.signalUtils.toArrayBuffer(str);
+}
+
 RocketChat.E2E.Room = class {
 	constructor(userId, roomId) {
 		this.userId = userId;
@@ -26,24 +34,55 @@ RocketChat.E2E.Room = class {
 		this.firstPeer = true;
 		let self = this;
 		Meteor.call('fetchKeychain', this.peerId, function(error, result) {
-			console.log(result);
 			key = JSON.parse(result);
-			console.log(key);
 			self.peerIdentityKey = key.lastUsedIdentityKey;
 			for (let i=0; i<key.publicKeychain.length; i++) {
 				if (key.publicKeychain[i][0] == self.peerIdentityKey) {
-					self.peerSignedPreKey = key.publicKeychain[i][1];
-					self.peerSignedSignature = key.publicKeychain[i][2];
-					self.peerPreKey = key.publicKeychain[i][3];
-					self.peerRegistrationKey = key.publicKeychain[i][4];
+					self.peerSignedPreKey = str2ab(key.publicKeychain[i][1]);
+					self.peerSignedSignature = str2ab(key.publicKeychain[i][2]);
+					self.peerPreKey = str2ab(key.publicKeychain[i][3]);
+					self.peerRegistrationId = key.publicKeychain[i][4];
 					break;
 				}
 			}
+			self.peerIdentityKey = str2ab(self.peerIdentityKey);
 			console.log("Obtained keys: "+self.peerIdentityKey + ", "+self.peerSignedPreKey);
-			// start_session();
+			self.start_session();
 		});
 		// RocketChat.Notifications.notifyUser(this.peerId, 'e2e', 'handshake', { roomId: this.roomId, userId: this.userId, refresh });
 	}
+
+
+	start_session() {
+		const bAddress   = new libsignal.SignalProtocolAddress(this.peerRegistrationId, 1);
+		console.log(this.peerIdentityKey);
+		const sessionBuilder = new libsignal.SessionBuilder(RocketChat.E2EStorage, bAddress);
+
+		var promise = sessionBuilder.processPreKey({
+			identityKey: this.peerIdentityKey,
+			registrationId : this.peerRegistrationId,
+			preKey:  {
+				keyId     : this.peerRegistrationId,
+				publicKey : this.peerPreKey
+			},
+			signedPreKey: {
+				keyId     : this.peerRegistrationId,
+				publicKey : this.peerSignedPreKey,
+				signature : this.peerSignedSignature
+			}
+		});
+
+		var self = this;
+		promise.then(function onsuccess() {
+			console.log("Successfully created session");
+			self.establishing.set(false);
+			self.established.set(true);
+		});
+
+		promise.catch(function onerror(error) {
+		});
+	}
+
 
 	acknowledge() {
 		RocketChat.Notifications.notifyUser(this.peerId, 'e2e', 'acknowledge', { roomId: this.roomId, userId: this.userId });
