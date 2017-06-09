@@ -4,7 +4,6 @@ import visitor from '../../imports/client/visitor';
 
 Template.message.helpers({
 	own() {
-		console.log(this.u._id, visitor.getId());
 		if (this.u && this.u._id === visitor.getId()) {
 			return 'own';
 		}
