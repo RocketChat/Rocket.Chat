@@ -28,9 +28,10 @@ Package.onUse(function(api) {
 	], 'client');
 
 	api.addFiles([
-		'server/settings.js'
-		// 'server/models/Messages.js',
-		// 'server/methods/deleteOldOTRMessages.js',
+		'server/settings.js',
+		'server/models/Users.js',
+		'server/methods/addKeyToChain.js',
+		'server/methods/fetchKeychain.js'
 		// 'server/methods/updateOTRAck.js'
 	], 'server');
 });

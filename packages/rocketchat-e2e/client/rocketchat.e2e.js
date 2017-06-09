@@ -21,9 +21,9 @@ function getKeyFromLS(keyID) {
 function loadKeyGlobalsFromLS() {
 	RocketChat.E2E.registrationId = parseInt(localStorage.getItem('registrationId'));
 	RocketChat.E2E.identityKey = getKeyFromLS('identityKey');
-	RocketChat.E2E.preKey = getKeyFromLS('preKey' + RocketChat.E2E.registrationId);
-	RocketChat.E2E.signedPreKey = getKeyFromLS('signedPreKey' + RocketChat.E2E.registrationId);
-	RocketChat.E2E.signedPreKeySignature = str2ab(localStorage.getItem('signedPreKeySignature' + RocketChat.E2E.registrationId));
+	RocketChat.E2E.preKey = getKeyFromLS('preKey');
+	RocketChat.E2E.signedPreKey = getKeyFromLS('signedPreKey');
+	RocketChat.E2E.signedPreKeySignature = str2ab(localStorage.getItem('signedPreKeySignature'));
 }
 
 class E2E {
@@ -66,16 +66,32 @@ class E2E {
 				saveKeyToLS('identityKey', identityKeyPair);
 
 				KeyHelper.generatePreKey(registrationId).then(function(preKey) {
-					saveKeyToLS('preKey' + preKey.keyId, preKey.keyPair);
+					saveKeyToLS('preKey', preKey.keyPair);
 				});
 
 				KeyHelper.generateSignedPreKey(getKeyFromLS('identityKey'), registrationId).then(function(signedPreKey) {
-					saveKeyToLS('signedPreKey' + signedPreKey.keyId, signedPreKey.keyPair);
-					localStorage.setItem('signedPreKeySignature' + registrationId, ab2str(signedPreKey.signature));
+					saveKeyToLS('signedPreKey', signedPreKey.keyPair);
+					localStorage.setItem('signedPreKeySignature', ab2str(signedPreKey.signature));
+					
+					loadKeyGlobalsFromLS();
+					Meteor.call('addKeyToChain', { 
+													"identityKey": ab2str(RocketChat.E2E.identityKey.pubKey), 
+													"preKey": ab2str(RocketChat.E2E.preKey.pubKey), 
+													"signedPreKey": ab2str(RocketChat.E2E.signedPreKey.pubKey),
+													"signedPreKeySignature": ab2str(RocketChat.E2E.signedPreKeySignature)
+												});
 				});
 			});
 		}
-		loadKeyGlobalsFromLS();
+		else {
+			loadKeyGlobalsFromLS();
+			Meteor.call('addKeyToChain', { 
+											"identityKey": ab2str(RocketChat.E2E.identityKey.pubKey), 
+											"preKey": ab2str(RocketChat.E2E.preKey.pubKey), 
+											"signedPreKey": ab2str(RocketChat.E2E.signedPreKey.pubKey),
+											"signedPreKeySignature": ab2str(RocketChat.E2E.signedPreKeySignature)
+										});
+		}
 	}
 }
 
