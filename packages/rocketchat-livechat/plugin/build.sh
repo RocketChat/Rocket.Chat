@@ -3,7 +3,7 @@ export LIVECHAT_DIR="../../../public/livechat"
 export BUILD_DIR="../build"
 export BUNDLE_DIR="../build/bundle/programs/web.browser"
 
-cd packages/rocketchat-livechat/app
+cd packages/rocketchat-livechat/.app
 meteor npm install --production
 meteor build --headless --directory $BUILD_DIR
 
