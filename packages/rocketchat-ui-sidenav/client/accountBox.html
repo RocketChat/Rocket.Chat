@@ -7,9 +7,12 @@
 				</div>
 				<div class="sidebar__account-data">
 					<h3 class="sidebar__account-name sidebar-content-unread" data-username="{{username}}">{{fname}}</h3>
-					<div class="sidebar__account-status">
+					<div class="sidebar__account-status sidebar-content">
 						<div class="sidebar__account-status-bullet {{bullet}}" title="{{visualStatus}}"></div>
-						<div class="sidebar__account-username sidebar-content">{{username}}</div>
+						<div class="sidebar__account-username">{{username}}</div>
+						<svg class="sidebar__account-arrow">
+							<use xlink:href="/images/icons.svg#arrow-down"></use>
+						</svg>
 					</div>
 				</div>
 			{{/if}}

@@ -33,8 +33,11 @@ Template.chatRoomItem.helpers({
 	},
 
 	roomIcon() {
-		const icon = RocketChat.roomTypes.getIcon(this.t);
-		return icon !== 'icon-at' ? icon : false;
+		switch (RocketChat.roomTypes.getIcon(this.t)) {
+			case 'icon-hash': return 'hashtag';
+			case 'icon-lock': return 'lock';
+			default: return false;
+		}
 	},
 
 	active() {

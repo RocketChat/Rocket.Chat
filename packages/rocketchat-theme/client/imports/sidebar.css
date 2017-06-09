@@ -14,7 +14,7 @@
 	width: var(--rooms-box-width);
 	height: auto;
 	overflow: visible;
-	z-index: 100;
+	z-index: 1000;
 	will-change: transform;
 	display: flex;
 	flex-direction: column;
@@ -48,9 +48,22 @@
 		margin-left: 1rem;
 	}
 
+	&-name,
+	&-username {
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
 	&-name {
 		font-size: 1.375rem;
 		font-weight: 400;
+		width: 160px;
+	}
+
+	&-username {
+		max-width: 124px;
+		margin-right: 8px;
 	}
 
 	&-status {
@@ -66,6 +79,12 @@
 		height: var(--account-status-bullet-size);
 		border-radius: 50%;
 		margin-right: 0.5rem;
+	}
+
+	&-arrow {
+		stroke: currentColor;
+		width: 8px;
+		height: 8px;
 	}
 }
 
@@ -85,26 +104,38 @@
 	&__search-input {
 		width: 100%;
 		padding-left: 32px;
-	}
 
-	&__search-icon {
-		position: absolute;
-		left: 8px;
-
-		&--right {
-			left: auto;
-			right: 8px;
+		&:focus + svg {
+			display: block;
 		}
 	}
 
 	&__search-buttons {
 		margin-left: 8px;
 	}
+
+	&__icon {
+		width: 13px;
+		height: 13px;
+		stroke: currentColor;
+
+		&-search {
+			position: absolute;
+			left: 8px;
+
+			&--right {
+				left: auto;
+				right: 8px;
+				cursor: pointer;
+				display: none;
+			}
+		}
+	}
 }
 
 /* rooms list */
 .rooms-list {
-	padding: 0 16px 0 30px;
+	padding: 0 8px;
 	height: 100%;
 
 	&__list {
@@ -118,6 +149,7 @@
 		text-transform: uppercase;
 		font-weight: 400;
 		margin-bottom: 18px;
+		margin-left: 22px;
 	}
 
 	& .badge {
@@ -132,6 +164,7 @@
 	display: flex;
 	align-items: center;
 	border-radius: 2px;
+	padding-left: 22px;
 
 	&__link {
 		font-size: 1rem;
@@ -148,11 +181,25 @@
 
 	&__room-icon,
 	&__user-thumb {
-		width: 20px;
 		margin-right: 6px;
 	}
 
+	&__room-icon {
+		stroke: currentColor;
+
+		&--hashtag {
+			width: 14px;
+			height: 14px;
+		}
+
+		&--lock {
+			width: 12px;
+			height: 18px;
+		}
+	}
+
 	&__user-thumb {
+		width: 20px;
 		height: 20px;
 	}
 
