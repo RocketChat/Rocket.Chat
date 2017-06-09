@@ -1,14 +1,20 @@
 <template name="toolbar">
 	<div class="toolbar">
-		<form class="toolbar__wrapper" role="search">
+		<form class="toolbar__wrapper sidebar-content-active" role="search">
 			<div class="toolbar__search">
-				<i class="toolbar__search-icon icon-search sidebar-content-active"></i>
+				<svg class="toolbar__icon toolbar__icon-search">
+					<use xlink:href="/images/icons.svg#magnifier"></use>
+				</svg>
 				<input type="text" name="toolbar-input" class="toolbar__search-input rc-input sidebar-content-active sidebar-content-active-border" placeholder="{{getPlaceholder}}" toolbar-input>
-				<i class="toolbar__search-icon toolbar__search-icon--right icon-cancel sidebar-content-active"></i>
+				<svg class="toolbar__icon toolbar__icon-search toolbar__icon-search--right">
+					<use xlink:href="/images/icons.svg#cross"></use>
+				</svg>
 			</div>
 			{{#if canCreate}}
 				<button class="toolbar__search-buttons sidebar-content-active-border rc-button rc-button--square">
-					<i class="toolbar__search-create-channel sidebar-content-active icon-plus"></i>
+					<svg class="toolbar__icon toolbar__search-create-channel">
+						<use xlink:href="/images/icons.svg#plus"></use>
+					</svg>
 				</button>
 			{{/if}}
 		</form>
