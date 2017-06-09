@@ -38,7 +38,6 @@ Meteor.publish = function(name, func) {
 };
 
 WebApp.rawConnectHandlers.use(function(req, res, next) {
-	const setHeader = res.setHeader;
 	res.setHeader('X-Instance-ID', InstanceStatus.id());
 	return next();
 });
