@@ -14,28 +14,49 @@ RocketChat.E2E.Room = class {
 		this.keyPair = null;
 		this.exportedPublicKey = null;
 		this.sessionKey = null;
+
+		this.peerIdentityKey = null;
+		this.peerPreKey = null;
+		this.peerSignedPreKey = null;
+		this.peerSignedSignature = null;
 	}
 
 	handshake(refresh) {
 		this.establishing.set(true);
 		this.firstPeer = true;
-		this.generateKeyPair().then(() => {
-			RocketChat.Notifications.notifyUser(this.peerId, 'otr', 'handshake', { roomId: this.roomId, userId: this.userId, publicKey: EJSON.stringify(this.exportedPublicKey), refresh });
+		let self = this;
+		Meteor.call('fetchKeychain', this.peerId, function(error, result) {
+			console.log(result);
+			key = JSON.parse(result);
+			console.log(key);
+			self.peerIdentityKey = key.lastUsedIdentityKey;
+			for (let i=0; i<key.publicKeychain.length; i++) {
+				if (key.publicKeychain[i][0] == self.peerIdentityKey) {
+					self.peerSignedPreKey = key.publicKeychain[i][1];
+					self.peerSignedSignature = key.publicKeychain[i][2];
+					self.peerPreKey = key.publicKeychain[i][3];
+					self.peerRegistrationKey = key.publicKeychain[i][4];
+					break;
+				}
+			}
+			console.log("Obtained keys: "+self.peerIdentityKey + ", "+self.peerSignedPreKey);
+			// start_session();
 		});
+		// RocketChat.Notifications.notifyUser(this.peerId, 'e2e', 'handshake', { roomId: this.roomId, userId: this.userId, refresh });
 	}
 
 	acknowledge() {
-		RocketChat.Notifications.notifyUser(this.peerId, 'otr', 'acknowledge', { roomId: this.roomId, userId: this.userId, publicKey: EJSON.stringify(this.exportedPublicKey) });
+		RocketChat.Notifications.notifyUser(this.peerId, 'e2e', 'acknowledge', { roomId: this.roomId, userId: this.userId });
 	}
 
 	deny() {
 		this.reset();
-		RocketChat.Notifications.notifyUser(this.peerId, 'otr', 'deny', { roomId: this.roomId, userId: this.userId });
+		RocketChat.Notifications.notifyUser(this.peerId, 'e2e', 'deny', { roomId: this.roomId, userId: this.userId });
 	}
 
 	end() {
 		this.reset();
-		RocketChat.Notifications.notifyUser(this.peerId, 'otr', 'end', { roomId: this.roomId, userId: this.userId });
+		RocketChat.Notifications.notifyUser(this.peerId, 'e2e', 'end', { roomId: this.roomId, userId: this.userId });
 	}
 
 	reset() {
@@ -182,16 +203,14 @@ RocketChat.E2E.Room = class {
 				const establishConnection = () => {
 					this.establishing.set(true);
 					Meteor.clearTimeout(timeout);
-					this.generateKeyPair().then(() => {
-						this.importPublicKey(data.publicKey).then(() => {
-							this.firstPeer = false;
-							FlowRouter.goToRoomById(data.roomId);
-							Meteor.defer(() => {
-								this.established.set(true);
-								this.acknowledge();
-							});
-						});
+					this.firstPeer = false;
+					FlowRouter.goToRoomById(data.roomId);
+					Meteor.defer(() => {
+						this.established.set(true);
+						this.acknowledge();
 					});
+					
+					
 				};
 
 				if (data.refresh && this.established.get()) {
@@ -203,7 +222,7 @@ RocketChat.E2E.Room = class {
 					}
 
 					swal({
-						title: `<i class='icon-key alert-icon success-color'></i>${ TAPi18n.__('E2E') }`,
+						title: `<i class='icon-key alert-icon success-color'></i>${ TAPi18n.__('OTR') }`,
 						text: TAPi18n.__('Username_wants_to_start_otr_Do_you_want_to_accept', { username: user.username }),
 						html: true,
 						showCancelButton: true,
@@ -228,9 +247,19 @@ RocketChat.E2E.Room = class {
 				break;
 
 			case 'acknowledge':
-				this.importPublicKey(data.publicKey).then(() => {
-					this.established.set(true);
-				});
+				this.established.set(true);
+				// GET THE OTHER'S KEY
+				Meteor.call('fetchKeychain', data.userId, function(error, key) {
+						this.peerIdentityKey = key.lastUsedIdentityKey;
+						for (let i=0; i<key.publicKeychain.length; i++) {
+							if (key.publicKeychain[i][0] == this.peerIdentityKey) {
+								this.peerSignedPreKey = key.publicKeychain[i][1];
+								this.peerSignedSignature = key.publicKeychain[i][2];
+								this.peerPreKey = key.publicKeychain[i][3];
+								break;
+							}
+						}
+					});
 				break;
 
 			case 'deny':

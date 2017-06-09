@@ -60,7 +60,7 @@ Template.e2eFlexTab.events({
 	}
 });
 
-Template.otrFlexTab.onCreated(function() {
+Template.e2eFlexTab.onCreated(function() {
 	this.timeout = null;
 	this.autorun(() => {
 		const e2e = RocketChat.E2E.getInstanceByRoomId(this.data.rid);

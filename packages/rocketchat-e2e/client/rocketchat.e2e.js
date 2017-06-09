@@ -78,7 +78,8 @@ class E2E {
 													"identityKey": ab2str(RocketChat.E2E.identityKey.pubKey), 
 													"preKey": ab2str(RocketChat.E2E.preKey.pubKey), 
 													"signedPreKey": ab2str(RocketChat.E2E.signedPreKey.pubKey),
-													"signedPreKeySignature": ab2str(RocketChat.E2E.signedPreKeySignature)
+													"signedPreKeySignature": ab2str(RocketChat.E2E.signedPreKeySignature),
+													"registrationId": RocketChat.E2E.registrationId
 												});
 				});
 			});
@@ -89,7 +90,8 @@ class E2E {
 											"identityKey": ab2str(RocketChat.E2E.identityKey.pubKey), 
 											"preKey": ab2str(RocketChat.E2E.preKey.pubKey), 
 											"signedPreKey": ab2str(RocketChat.E2E.signedPreKey.pubKey),
-											"signedPreKeySignature": ab2str(RocketChat.E2E.signedPreKeySignature)
+											"signedPreKeySignature": ab2str(RocketChat.E2E.signedPreKeySignature), 
+											"registrationId": RocketChat.E2E.registrationId
 										});
 		}
 	}
@@ -101,7 +103,7 @@ Meteor.startup(function() {
 	RocketChat.E2E.startClient();
 	Tracker.autorun(function() {
 		if (Meteor.userId()) {
-			RocketChat.Notifications.onUser('otr', (type, data) => {
+			RocketChat.Notifications.onUser('e2e', (type, data) => {
 				if (!data.roomId || !data.userId || data.userId === Meteor.userId()) {
 					return;
 				} else {
