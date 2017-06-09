@@ -72,7 +72,7 @@ general.forEach(setting => RocketChat.theme.addColor(setting.name, setting.value
 
 const sidebar = [
 	{
-		name: 'sidebar-background',
+		name: 'sidebar',
 		properties: ['background-color'],
 		value: '#2f343d'
 	},
@@ -122,7 +122,7 @@ sidebar.forEach(setting => RocketChat.theme.addColor(setting.name, setting.value
 
 const content = [
 	{
-		name: 'content-background',
+		name: 'content',
 		properties: ['background-color'],
 		value: '#ffffff'
 	},

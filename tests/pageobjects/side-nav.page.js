@@ -21,7 +21,7 @@ class SideNav extends Page {
 	get sideNavBar() { return browser.element('.sidebar'); }
 
 	// Toolbar
-	get spotlightSearch() { return browser.element('.toolbar-search__input'); }
+	get spotlightSearch() { return browser.element('.toolbar__search-input'); }
 	get spotlightSearchPopUp() { return browser.element('.toolbar .message-popup'); }
 	get newChannelBtn() { return browser.element('.toolbar-search__create-channel'); }
 	get newChannelIcon() { return browser.element('.toolbar-search__create-channel.icon-plus'); }

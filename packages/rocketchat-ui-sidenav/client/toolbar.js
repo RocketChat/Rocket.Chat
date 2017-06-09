@@ -18,7 +18,7 @@ const toolbarSearch = {
 		}
 
 		$inputMessage.focus();
-		$('.toolbar-search__input').val('');
+		$('.toolbar__search-input').val('');
 
 		if (this.shortcut) {
 			menu.close();
@@ -26,7 +26,7 @@ const toolbarSearch = {
 	},
 	focus(fromShortcut) {
 		menu.open();
-		$('.toolbar-search__input').focus();
+		$('.toolbar__search-input').focus();
 		this.shortcut = fromShortcut;
 	}
 };
@@ -217,6 +217,10 @@ Template.toolbar.events({
 		toolbarSearch.shortcut = false;
 	},
 
+	'click .toolbar__icon-search--right'() {
+		toolbarSearch.clear();
+	},
+
 	'blur [role="search"] input'() {
 		toolbarSearch.clear();
 	},
@@ -235,6 +239,7 @@ Template.toolbarSearchList.helpers({
 	icon() {
 		return RocketChat.roomTypes.getIcon(this.t);
 	},
+
 	userStatus() {
 		if (this.t === 'd') {
 			return `status-${ Session.get(`user_${ this.name }_status`) || 'offline' }`;

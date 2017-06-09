@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg xmlns="http://www.w3.org/2000/svg">
+<symbol id="arrow-down" viewBox="0 0 10 6"><title>arrow-down</title><path d="M8.657.828L4.828 4.657 1 .828" stroke-width="1.5" fill="none"/>
+</symbol>
+<symbol id="cross" viewBox="0 0 12 12"><title>cross</title><g stroke-width="1.5" fill="none" fill-rule="evenodd" stroke-linecap="square"><path d="M10.243 1.757l-8.486 8.486M1.757 1.757l8.486 8.486"/></g>
+</symbol>
+<symbol id="hashtag" viewBox="0 0 16 16"><title>hashtag</title><g stroke-width="1.5" fill="none" fill-rule="evenodd" stroke-linecap="square"><path d="M5 1v14M11 1v14M1 5h14M1 11h14"/></g>
+</symbol>
+<symbol id="lock" viewBox="0 0 14 20"><title>lock</title><g stroke-width="1.5" fill="none" fill-rule="evenodd"><path d="M1 9h12v10H1zM3 5c0-2.21 1.795-4 4-4 2.21 0 4 1.795 4 4v4H3V5z"/></g>
+</symbol>
+<symbol id="magnifier" viewBox="0 0 19 19"><title>magnifier</title><g transform="translate(1 1)" stroke-width="1.5" fill="none" fill-rule="evenodd"><circle cx="6.5" cy="6.5" r="6.5"/><path d="M17 17l-5-5" stroke-linecap="square"/></g>
+</symbol>
+<symbol id="plus" viewBox="0 0 14 14"><title>plus</title><g stroke-width="1.5" fill="none" fill-rule="evenodd" stroke-linecap="square"><path d="M7 1v12M13 7H1"/></g>
+</symbol></svg>

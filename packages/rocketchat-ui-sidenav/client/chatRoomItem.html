@@ -3,7 +3,9 @@
 		<li class="room-item {{#if active}}sidebar-content-active-background{{else}}sidebar-content-hover-background{{/if}}" data-room-id="{{rid}}">
 			<a class="room-item__link sidebar-content {{alert}} {{#if active}}sidebar-content-unread{{/if}}" href="{{route}}" title="{{name}}">
 				{{#if roomIcon}}
-					<i class="room-item__room-icon {{roomIcon}}" aria-label=""></i>
+					<svg class="room-item__room-icon room-item__room-icon--{{roomIcon}}">
+						<use xlink:href="/images/icons.svg#{{roomIcon}}"></use>
+					</svg>
 				{{else}}
 					<div class="room-item__user-status {{userStatus}}"></div>
 					<div class="room-item__user-thumb">
