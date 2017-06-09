@@ -15,8 +15,13 @@ Template.chatRoomItem.helpers({
 	},
 
 	userStatus() {
-		const userStatus = RocketChat.roomTypes.getUserStatus(this.t, this.rid);
-		return userStatus ? `status-${ userStatus }` : '';
+		switch (RocketChat.roomTypes.getUserStatus(this.t, this.rid)) {
+			case 'online': return 'general-success-background';
+			case 'away': return 'general-pending-background';
+			case 'busy': return 'general-error-background';
+			case 'offline': return 'general-inactive-background';
+			default: return 'general-inactive-background';
+		}
 	},
 
 	name() {
@@ -28,11 +33,11 @@ Template.chatRoomItem.helpers({
 	},
 
 	roomIcon() {
-		return RocketChat.roomTypes.getIcon(this.t);
+		const icon = RocketChat.roomTypes.getIcon(this.t);
+		return icon !== 'icon-at' ? icon : false;
 	},
 
 	active() {
-		console.log('ACTIVE');
 		if (Session.get('openedRoom') && Session.get('openedRoom') === this.rid || Session.get('openedRoom') === this._id) {
 			return true;
 		}

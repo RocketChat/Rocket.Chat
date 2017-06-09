@@ -41,7 +41,6 @@ body {
 	}
 }
 
-
 a {
 	cursor: pointer;
 	text-decoration: none;
@@ -62,7 +61,6 @@ button {
 	color: inherit;
 	font-style: inherit;
 }
-
 
 .avatar {
 	height: 100%;
