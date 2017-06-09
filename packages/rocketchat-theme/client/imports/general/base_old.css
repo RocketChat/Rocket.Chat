@@ -13,7 +13,6 @@
 	user-select: text;
 }
 
-
 .rc-old code {
 	border-radius: 4px;
 	border-width: 1px;
@@ -394,7 +393,6 @@
 	box-shadow: 0 0 0;
 }
 
-
 .rc-old textarea,
 .rc-old select,
 .rc-old input[type='text'],
@@ -413,7 +411,6 @@
 	outline: none;
 	border-style: solid;
 }
-
 
 .rc-old input {
 	& .input-forward {
@@ -732,7 +729,6 @@
 		}
 	}
 }
-
 
 .rc-old #rocket-chat {
 	display: block;
@@ -1396,8 +1392,6 @@
 	}
 }
 
-
-
 .rc-old .toolbar {
 	position: absolute;
 	width: 100%;
@@ -1454,7 +1448,6 @@
 		cursor: pointer;
 	}
 }
-
 
 .rc-old .new-room-highlight a {
 	animation: highlight 2s infinite;

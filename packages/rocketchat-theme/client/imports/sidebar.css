@@ -108,7 +108,9 @@
 	height: 100%;
 
 	&__list {
-		margin-bottom: 32px;
+		&:not(:last-child) {
+			margin-bottom: 32px;
+		}
 	}
 
 	&__type {
@@ -136,10 +138,30 @@
 		flex: 1;
 		line-height: var(--room-item-height);
 		transition: color 0.3s linear;
+		display: flex;
+		align-items: center;
 	}
 
 	& .badge {
 		margin: 0 8px 0 3px;
+	}
+
+	&__room-icon,
+	&__user-thumb {
+		width: 20px;
+		margin-right: 6px;
+	}
+
+	&__user-thumb {
+		height: 20px;
+	}
+
+	&__user-status {
+		width: 6px;
+		height: 6px;
+		border-radius: 50%;
+		margin-left: -16px;
+		margin-right: 10px;
 	}
 }
 
