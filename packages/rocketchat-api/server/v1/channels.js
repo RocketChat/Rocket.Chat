@@ -332,7 +332,7 @@ RocketChat.API.v1.addRoute('channels.leave', { authRequired: true }, {
 
 RocketChat.API.v1.addRoute('channels.list', { authRequired: true }, {
 	get: {
-		//This is defined as much  only to provide an example of how the routes can be defined :X
+		//This is defined as such only to provide an example of how the routes can be defined :X
 		action() {
 			const { offset, count } = this.getPaginationItems();
 			const { sort, fields, query } = this.parseJsonQuery();
