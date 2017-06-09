@@ -1,3 +1,4 @@
+/* global InstanceStatus */
 const logger = new Logger('Meteor', {
 	methods: {
 		method: {
