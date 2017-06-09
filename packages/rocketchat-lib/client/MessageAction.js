@@ -188,7 +188,7 @@ Meteor.startup(function() {
 				return;
 			}
 			const blockDeleteInMinutes = RocketChat.settings.get('Message_AllowDeleting_BlockDeleteInMinutes');
-			if ((blockDeleteInMinutes != null) && blockDeleteInMinutes !== 0 && !(forceDelete)) {
+			if ((blockDeleteInMinutes != null && blockDeleteInMinutes !== 0) || !(forceDelete)) {
 				let msgTs;
 				if (message.ts != null) {
 					msgTs = moment(message.ts);

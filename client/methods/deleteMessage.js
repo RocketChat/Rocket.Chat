@@ -28,7 +28,6 @@ Meteor.methods({
 				if (msgTs) {
 					const currentTsDiff = moment().diff(msgTs, 'minutes');
 					if (currentTsDiff > blockDeleteInMinutes) {
-						toastr.error(t('error-message-deleting-blocked'));
 						return false;
 					}
 				}
