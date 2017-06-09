@@ -15,6 +15,7 @@ Package.onUse(function(api) {
 		'tracker',
 		'reactive-var',
 		'rocketchat:lib',
+		'osxi:annyang',
 		'voismart:webnotifications',
         'voismart:ngapi'
 	]);

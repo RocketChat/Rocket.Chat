@@ -336,7 +336,7 @@ RocketChat.Phone = new class
 	enabledCamera = new ReactiveVar false
 	answered = new ReactiveVar false
 	contactsLoading = new ReactiveVar 0
-
+	language = undefined
 	_started = false
 	_login = undefined
 	_password = undefined
@@ -361,6 +361,24 @@ RocketChat.Phone = new class
 	_curVideoH = null
 
 	_tabBars = []
+
+	_useVocalCommand = JSON.parse(localStorage.getItem("VoiSmart::Phone:useVoiceCommands")) or false
+
+	commands = "#{TAPi18n.__("Call_speech")} *name": (name) ->
+		Meteor.call 'getContacts', (name), (error, user) =>
+			if error
+				console.error(error)
+			else
+				openTabBar()
+				if user.contacts.length > 0
+					if user.contacts?[0].telephoneNumber?[0]
+						return RocketChat.Phone.newCall user.contacts[0].telephoneNumber[0], false
+					else
+						msg = TAPi18n.__('Number_not_found')
+						toastr.error(msg)
+				else
+					msg = TAPi18n.__('User_not_found')
+					toastr.error(msg)
 
 	constructor: ->
 		if window.rocketDebug
@@ -919,6 +937,9 @@ RocketChat.Phone = new class
 	getUseDeskPhone: ->
 		return _useDeskPhone
 
+	getCommandVocal: ->
+		return _useVocalCommand
+
 	setUseDeskPhone: (value) ->
 		value = parseInt(value)
 		if value
@@ -937,7 +958,22 @@ RocketChat.Phone = new class
 	getVideoDevice: ->
 		return _videoDevice
 
+	startAnnyang = ->
+		annyang.addCommands commands
+		if language == 'it'
+			annyang.setLanguage('it-IT')
+			annyang.start()
+		else
+			annyang.setLanguage('en-GB')
+			annyang.start()
+
+
+
 	start: (login, password, server, iceConfig) ->
+		language = Meteor.user().language
+		if _useVocalCommand == true
+			startAnnyang()
+
 		console.log("Starting verto....") if window.rocketDebug
 
 		if _started and (login != _login or _password != password or _server != server)
@@ -976,6 +1012,14 @@ RocketChat.Phone = new class
 	setTabBar: (tabBar) ->
 		_tabBars.push tabBar
 
+	setUseVocalCommand: (value) ->
+		value = parseInt(value)
+		if value == 1
+			localStorage.setItem("VoiSmart::Phone:useVoiceCommands", JSON.stringify(true));
+			startAnnyang()
+		else
+			localStorage.setItem("VoiSmart::Phone:useVoiceCommands", JSON.stringify(false));
+			annyang.abort()
 
 RocketChat.callbacks.add 'afterLogoutCleanUp', ->
 	RocketChat.Phone.logout()

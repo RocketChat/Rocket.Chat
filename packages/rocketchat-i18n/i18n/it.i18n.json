@@ -1690,5 +1690,8 @@
   "Webc_name": "Nome stanza",
   "Webc_RoomNamePrefix": "Conference per il canale ",
   "Webc_duration": "Durata",
-  "Webc_remove": "Elimina partecipante"
+  "Webc_remove": "Elimina partecipante",
+  "Call_speech": "Chiama",
+  "Vocal_commands": "Chiamate vocali",
+  "Number_not_found": "L'utente selezionato non ha un numero di telefono"
 }

@@ -61,6 +61,12 @@ Template.phoneSettings.helpers
 
 		return res is checkValue
 
+	usevocalcommandesktop: (checkValue, isdefault) ->
+		res = RocketChat.Phone.getCommandVocal()
+		if not res and isdefault is true
+			res = checkValue
+		return res is checkValue
+
 Template.phoneSettings.events
 	'change #audioInDevice': (e, t) ->
 		value = _.trim $(e.target).val()
@@ -100,3 +106,6 @@ Template.phoneSettings.events
 		if window.rocketDebug
 			console.log value
 
+	'change #useVocalCommand': (e, t) ->
+		value = _.trim $(e.target).val()
+		RocketChat.Phone.setUseVocalCommand(value)
