@@ -11,14 +11,13 @@
 				</svg>
 			</div>
 			{{#if canCreate}}
-				<button class="toolbar__search-buttons sidebar-content-active-border rc-button rc-button--square">
+				<button class="toolbar__search-buttons sidebar-content-active-border rc-tooltip rc-button rc-button--square" aria-label="{{ _ 'Create_A_New_Channel' }}">
 					<svg class="toolbar__icon toolbar__search-create-channel">
 						<use xlink:href="/images/icons.svg#plus"></use>
 					</svg>
 				</button>
 			{{/if}}
 		</form>
-
 		{{> messagePopup popupConfig}}
 	</div>
 </template>
