@@ -57,6 +57,7 @@
 
 	&-name {
 		font-size: 1.375rem;
+		height: 1.375rem;
 		font-weight: 400;
 		width: 160px;
 	}
@@ -64,6 +65,7 @@
 	&-username {
 		max-width: 124px;
 		margin-right: 8px;
+		height: 1.1rem;
 	}
 
 	&-status {
