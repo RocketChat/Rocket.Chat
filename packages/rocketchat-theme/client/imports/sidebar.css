@@ -13,9 +13,9 @@
 	left: 0;
 	width: var(--rooms-box-width);
 	height: auto;
-	overflow: visible;
+	/*overflow: visible;
 	z-index: 1;
-	will-change: transform;
+	will-change: transform;*/
 	display: flex;
 	flex-direction: column;
 

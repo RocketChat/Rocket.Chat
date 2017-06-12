@@ -1564,8 +1564,6 @@
 	right: 0;
 	width: auto;
 	height: auto;
-	will-change: transform;
-	transition: right 0.25s cubic-bezier(0.5, 0, 0.1, 1);
 
 	&.main-modal {
 		left: 0;
@@ -4695,8 +4693,10 @@ body:not(.is-cordova) {
 
 @media (width <= 780px) {
 	.rc-old.main-content {
+		will-change: transform;
+		transition: right 0.25s cubic-bezier(0.5, 0, 0.1, 1), transform .1s linear;
+		z-index: 1;
 		left: 0;
-		z-index: 120;
 	}
 	.rc-old #rocket-chat {
 		& .burger {
