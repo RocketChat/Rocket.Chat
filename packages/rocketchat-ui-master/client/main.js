@@ -1,7 +1,15 @@
 /* globals toolbarSearch, menu, isRtl, fireGlobalEvent, CachedChatSubscription, DynamicCss */
 import Clipboard from 'clipboard';
-
+const map = (x, in_min, in_max, out_min, out_max) => (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
 RocketChat.settings.collection.find({_id:/theme/}, {fields:{ value: 1, properties: 1, type: 1 }}).observe({changed: () => { DynamicCss.run(); }});
+const sideNavW = menu.sideNavW;
+
+menu.onClose(function() {
+	this.mainContent.css('opacity', '1');
+});
+menu.onOpen(function() {
+	this.mainContent.css('opacity', '.5');
+});
 
 Template.body.onRendered(function() {
 	new Clipboard('.clipboard');
@@ -184,7 +192,9 @@ Template.main.events({
 			return t.wrapper = $('.messages-box > .wrapper');
 		}
 	},
-	'touchmove'(e, t) {
+	'touchmove':_.throttle((e, t) => {
+
+
 		if (t.touchstartX != null) {
 			const [touch] = e.originalEvent.touches;
 			const diffX = touch.clientX - t.touchstartX;
@@ -198,58 +208,60 @@ Template.main.events({
 				t.movestarted = true;
 				if (t.isRtl) {
 					if (menu.isOpen()) {
-						t.diff = -260 + diffX;
+						t.diff = -sideNavW + diffX;
 					} else {
 						t.diff = diffX;
 					}
-					if (t.diff < -260) {
-						t.diff = -260;
+					if (t.diff < -sideNavW) {
+						t.diff = -sideNavW;
 					}
 					if (t.diff > 0) {
 						t.diff = 0;
 					}
 				} else {
 					if (menu.isOpen()) {
-						t.diff = 260 + diffX;
+						t.diff = sideNavW + diffX;
 					} else {
 						t.diff = diffX;
 					}
-					if (t.diff > 260) {
-						t.diff = 260;
+					if (t.diff > sideNavW) {
+						t.diff = sideNavW;
 					}
 					if (t.diff < 0) {
 						t.diff = 0;
 					}
 				}
 				t.mainContent.addClass('notransition');
+				t.mainContent.css('opacity', `${ map(1 -(t.diff / sideNavW), 0, 1, .5, 1) }`);
 				t.mainContent.css('transform', `translate(${ t.diff }px)`);
 				return t.wrapper.css('overflow', 'hidden');
 			}
 		}
-	},
+	}, 50),
 	'touchend'(e, t) {
+		const [max, min] = [sideNavW * .76, sideNavW * .24];
 		if (t.movestarted === true) {
 			t.mainContent.removeClass('notransition');
 			t.wrapper.css('overflow', '');
 			if (t.isRtl) {
 				if (menu.isOpen()) {
-					if (t.diff >= -200) {
+					if (t.diff >= -max) {
 						return menu.close();
 					} else {
 						return menu.open();
 					}
-				} else if (t.diff <= -60) {
+				} else if (t.diff <= -min) {
 					return menu.open();
 				} else {
 					return menu.close();
 				}
 			} else if (menu.isOpen()) {
-				if (t.diff >= 200) {
+				if (t.diff >= max) {
 					return menu.open();
 				} else {
 					return menu.close();
 				}
-			} else if (t.diff >= 60) {
+			} else if (t.diff >= min) {
 				return menu.open();
 			} else {
 				return menu.close();
