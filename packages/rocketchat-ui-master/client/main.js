@@ -192,90 +192,84 @@ Template.main.events({
 			return t.wrapper = $('.messages-box > .wrapper');
 		}
 	},
-	'touchmove':_.throttle((e, t) => {
+	'touchmove':(e, t) => {
 
-
-		if (t.touchstartX != null) {
-			const [touch] = e.originalEvent.touches;
-			const diffX = touch.clientX - t.touchstartX;
-			const diffY = touch.clientY - t.touchstartY;
-			const absX = Math.abs(diffX);
-			const absY = Math.abs(diffY);
-			if (t.movestarted !== true && t.blockmove !== true && absY > 5) {
-				t.blockmove = true;
-			}
-			if (t.blockmove !== true && (t.movestarted === true || absX > 5)) {
-				t.movestarted = true;
-				if (t.isRtl) {
-					if (menu.isOpen()) {
-						t.diff = -sideNavW + diffX;
-					} else {
-						t.diff = diffX;
-					}
-					if (t.diff < -sideNavW) {
-						t.diff = -sideNavW;
-					}
-					if (t.diff > 0) {
-						t.diff = 0;
-					}
-				} else {
-					if (menu.isOpen()) {
-						t.diff = sideNavW + diffX;
-					} else {
-						t.diff = diffX;
-					}
-					if (t.diff > sideNavW) {
-						t.diff = sideNavW;
-					}
-					if (t.diff < 0) {
-						t.diff = 0;
-					}
-				}
-				t.mainContent.addClass('notransition');
-				t.mainContent.css('opacity', `${ map(1 -(t.diff / sideNavW), 0, 1, .5, 1) }`);
-				t.mainContent.css('transform', `translate(${ t.diff }px)`);
-				return t.wrapper.css('overflow', 'hidden');
-			}
+		if (t.touchstartX == null) {
+			return;
 		}
-	}, 50),
-	'touchend'(e, t) {
-		const [max, min] = [sideNavW * .76, sideNavW * .24];
-		if (t.movestarted === true) {
-			t.mainContent.removeClass('notransition');
-			t.wrapper.css('overflow', '');
+		const [touch] = e.originalEvent.touches;
+		const diffX = touch.clientX - t.touchstartX;
+		const diffY = touch.clientY - t.touchstartY;
+		const absX = Math.abs(diffX);
+		const absY = Math.abs(diffY);
+		if (t.movestarted !== true && t.blockmove !== true && absY > 5) {
+			t.blockmove = true;
+		}
+		if (t.blockmove !== true && (t.movestarted === true || absX > 5)) {
+			t.movestarted = true;
 			if (t.isRtl) {
 				if (menu.isOpen()) {
-					if (t.diff >= -max) {
-						return menu.close();
-					} else {
-						return menu.open();
-					}
-				} else if (t.diff <= -min) {
-					return menu.open();
+					t.diff = -sideNavW + diffX;
 				} else {
-					return menu.close();
+					t.diff = diffX;
 				}
-			} else if (menu.isOpen()) {
-				if (t.diff >= max) {
-					return menu.open();
+				if (t.diff < -sideNavW) {
+					t.diff = -sideNavW;
+				}
+				if (t.diff > 0) {
+					t.diff = 0;
+				}
+			} else {
+				if (menu.isOpen()) {
+					t.diff = sideNavW + diffX;
 				} else {
-					return menu.close();
+					t.diff = diffX;
 				}
-			} else if (t.diff >= min) {
+				if (t.diff > sideNavW) {
+					t.diff = sideNavW;
+				}
+				if (t.diff < 0) {
+					t.diff = 0;
+				}
+			}
+			t.mainContent.addClass('notransition');
+			t.mainContent.css('transition', 'none');
+			t.mainContent.css('opacity', `${ map(1 -(t.diff / sideNavW), 0, 1, .5, 1) }`);
+			t.mainContent.css('transform', `translate(${ t.diff }px)`);
+			return t.wrapper.css('overflow', 'hidden');
+		}
+	},
+	'touchend'(e, t) {
+		const [max, min] = [sideNavW * .76, sideNavW * .24];
+		if (t.movestarted !== true) {
+			return;
+	 	}
+		t.mainContent[0].style.transition = null;
+		t.wrapper.css('overflow', '');
+		if (t.isRtl) {
+			if (menu.isOpen()) {
+				return t.diff >= -max ? menu.close() : menu.open();
+			} else if (t.diff <= -min) {
 				return menu.open();
 			} else {
 				return menu.close();
 			}
+		} else if (menu.isOpen()) {
+			if (t.diff >= max) {
+				return menu.open();
+			} else {
+				return menu.close();
+			}
+		} else if (t.diff >= min) {
+			return menu.open();
+		} else {
+			return menu.close();
 		}
 	}
 });
 
 Template.main.onRendered(function() {
-	if (isRtl(localStorage.getItem('userLanguage'))) {
-		$('html').addClass('rtl');
-	} else {
-		$('html').removeClass('rtl');
-	}
+	document.body.classList[(isRtl(localStorage.getItem('userLanguage'))? 'add': 'remove')]('rtl');
 	$('#initial-page-loading').remove();
 	window.addEventListener('focus', function() {
 		return Meteor.setTimeout(function() {
