@@ -336,7 +336,6 @@ RocketChat.Phone = new class
 	enabledCamera = new ReactiveVar false
 	answered = new ReactiveVar false
 	contactsLoading = new ReactiveVar 0
-	language = undefined
 	_started = false
 	_login = undefined
 	_password = undefined
