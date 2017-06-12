@@ -17,7 +17,11 @@
 						{{{_ 'No_group_with_name_%s_was_found' name}}}
 					{{/if}}
 					{{#if $eq type 'd'}}
-						{{{_ 'No_user_with_username_%s_was_found' name}}}
+						{{#if sameUser }}
+							{{{_ 'Cannot_open_conversation_with_yourself' }}}
+						{{else}}
+							{{{_ 'No_user_with_username_%s_was_found' name}}}
+						{{/if}}
 					{{/if}}
 				{{/with}}
 			</div>
