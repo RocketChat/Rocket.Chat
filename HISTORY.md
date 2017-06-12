@@ -1,3 +1,17 @@
+<a name="0.57.0-rc.2"></a>
+# 0.57.0-rc.2 (2017-06-12)
+
+
+### Bug Fixes
+
+- [#7215](https://github.com/RocketChat/Rocket.Chat/pull/7215/) Fix the Zapier oAuth return url to the new one
+- [#7209](https://github.com/RocketChat/Rocket.Chat/pull/7209) "requirePasswordChange" property not being saved when set to false
+- [#7208](https://github.com/RocketChat/Rocket.Chat/pull/7208) Fix oembed previews not being shown
+- [#7200](https://github.com/RocketChat/Rocket.Chat/pull/7200) Fix editing others messages
+- [#7160](https://github.com/RocketChat/Rocket.Chat/pull/7160) Removing the kadira package install from example build script.
+
+
+
 <a name="0.57.0-rc.1"></a>
 # 0.57.0-rc.1 (2017-06-02)
 
