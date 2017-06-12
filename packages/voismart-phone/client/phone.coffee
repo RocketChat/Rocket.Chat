@@ -960,14 +960,16 @@ RocketChat.Phone = new class
 		return _videoDevice
 
 	startAnnyang = ->
-		commands = getVoiceCommands()
-		annyang.addCommands commands
-		if language == 'it'
-			annyang.setLanguage('it-IT')
-			annyang.start()
-		else
-			annyang.setLanguage('en-GB')
-			annyang.start()
+		if annyang
+			language = Meteor.user().language
+			commands = getVoiceCommands()
+			annyang.addCommands commands
+			if language == 'it'
+				annyang.setLanguage('it-IT')
+				annyang.start()
+			else
+				annyang.setLanguage('en-GB')
+				annyang.start()
 
 
 
@@ -975,7 +977,7 @@ RocketChat.Phone = new class
 		console.log("Starting verto....") if window.rocketDebug
 
 		if _started and (login != _login or _password != password or _server != server)
-			annyang.abort()
+			annyang?.abort()
 			_vertoHandle.logout()
 			_vertoHandle = undefined
 			_started = false
@@ -1000,10 +1002,10 @@ RocketChat.Phone = new class
 
 		$.verto.init({}, bootstrap)
 
-		console.log("Starting speech commands")
-		language = Meteor.user().language
-		if _useVocalCommand == true
-			startAnnyang()
+		if annyang
+			console.log("Starting speech commands")
+			if _useVocalCommand == true
+				startAnnyang()
 
 	logout: ->
 		if !_vertoHandle
@@ -1023,7 +1025,7 @@ RocketChat.Phone = new class
 			startAnnyang()
 		else
 			localStorage.setItem("VoiSmart::Phone:useVoiceCommands", JSON.stringify(false));
-			annyang.abort()
+			annyang?.abort()
 
 RocketChat.callbacks.add 'afterLogoutCleanUp', ->
 	RocketChat.Phone.logout()
