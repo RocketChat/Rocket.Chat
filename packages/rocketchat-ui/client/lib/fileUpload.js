@@ -45,10 +45,6 @@ function formatBytes(bytes, decimals) {
 	return `${ parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) } ${ sizes[i] }`;
 }
 
-function clearUploadError(id) {
-	const uploading = Session.get('uploading') || [];
-}
-
 fileUpload = function(filesToUpload) {
 	const roomId = Session.get('openedRoom');
 	const files = [].concat(filesToUpload);
