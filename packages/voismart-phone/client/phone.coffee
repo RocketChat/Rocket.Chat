@@ -364,21 +364,22 @@ RocketChat.Phone = new class
 
 	_useVocalCommand = JSON.parse(localStorage.getItem("VoiSmart::Phone:useVoiceCommands")) or false
 
-	commands = "#{TAPi18n.__("Call_speech")} *name": (name) ->
-		Meteor.call 'getContacts', (name), (error, user) =>
-			if error
-				console.error(error)
-			else
-				openTabBar()
-				if user.contacts.length > 0
-					if user.contacts?[0].telephoneNumber?[0]
-						return RocketChat.Phone.newCall user.contacts[0].telephoneNumber[0], false
-					else
-						msg = TAPi18n.__('Number_not_found')
-						toastr.error(msg)
+	getVoiceCommands = () ->
+		return "#{TAPi18n.__("Call_speech")} *name": (name) ->
+			Meteor.call 'getContacts', (name), (error, user) =>
+				if error
+					console.error(error)
 				else
-					msg = TAPi18n.__('User_not_found')
-					toastr.error(msg)
+					openTabBar()
+					if user.contacts.length > 0
+						if user.contacts?[0].telephoneNumber?[0]
+							return RocketChat.Phone.newCall user.contacts[0].telephoneNumber[0], false
+						else
+							msg = TAPi18n.__('Number_not_found')
+							toastr.error(msg)
+					else
+						msg = TAPi18n.__('User_not_found')
+						toastr.error(msg)
 
 	constructor: ->
 		if window.rocketDebug
@@ -959,6 +960,7 @@ RocketChat.Phone = new class
 		return _videoDevice
 
 	startAnnyang = ->
+		commands = getVoiceCommands()
 		annyang.addCommands commands
 		if language == 'it'
 			annyang.setLanguage('it-IT')
@@ -970,13 +972,10 @@ RocketChat.Phone = new class
 
 
 	start: (login, password, server, iceConfig) ->
-		language = Meteor.user().language
-		if _useVocalCommand == true
-			startAnnyang()
-
 		console.log("Starting verto....") if window.rocketDebug
 
 		if _started and (login != _login or _password != password or _server != server)
+			annyang.abort()
 			_vertoHandle.logout()
 			_vertoHandle = undefined
 			_started = false
@@ -1000,6 +999,11 @@ RocketChat.Phone = new class
 		getConfig()
 
 		$.verto.init({}, bootstrap)
+
+		console.log("Starting speech commands")
+		language = Meteor.user().language
+		if _useVocalCommand == true
+			startAnnyang()
 
 	logout: ->
 		if !_vertoHandle
