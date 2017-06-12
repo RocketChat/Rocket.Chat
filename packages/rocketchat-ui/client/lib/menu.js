@@ -1,6 +1,9 @@
 /* globals isRtl */
+const sideNavW = 280;
 this.menu = new class {
 	constructor() {
+		this._onOpen = [];
+		this._onClose = [];
 		this.updateUnreadBars = _.throttle(() => {
 			if (this.list == null) {
 				return;
@@ -28,6 +31,7 @@ this.menu = new class {
 				return $('.bottom-unread-rooms').addClass('hidden');
 			}
 		}, 200);
+		this.sideNavW = sideNavW;
 	}
 	init() {
 		this.mainContent = $('.main-content');
@@ -38,15 +42,26 @@ this.menu = new class {
 	isOpen() {
 		return Session.get('isMenuOpen');
 	}
-
+	onOpen(fn) {
+		if (typeof fn === 'function') {
+			this._onOpen.push(fn);
+		}
+	}
+	onClose(fn) {
+		if (typeof fn === 'function') {
+			this._onClose.push(fn);
+		}
+	}
 	open() {
 		Session.set('isMenuOpen', true);
-		this.mainContent && this.mainContent.css('transform', `translateX(${ isRtl(localStorage.getItem('userLanguage'))?'-':'' }260px)`);
+		this.mainContent && this.mainContent.css('transform', `translateX(${ isRtl(localStorage.getItem('userLanguage'))?'-':'' }${ this.sideNavW }px)`);
+		setTimeout(() => this._onOpen.forEach(fn => fn.apply(this)), 10);
 	}
 
 	close() {
 		Session.set('isMenuOpen', false);
 		this.mainContent && this.mainContent .css('transform', 'translateX(0)');
+		setTimeout(() => this._onClose.forEach(fn => fn.apply(this)), 10);
 	}
 
 	toggle() {
