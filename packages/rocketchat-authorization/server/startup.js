@@ -64,9 +64,11 @@ Meteor.startup(function() {
 		{ _id: 'preview-c-room',                roles : ['admin', 'user', 'anonymous'] }
 	];
 
+	permissions.forEach(o => { o.i18nLabel = `permission_${ o._id }_description` ; });
+
 	for (const permission of permissions) {
 		if (!RocketChat.models.Permissions.findOneById(permission._id)) {
-			RocketChat.models.Permissions.upsert(permission._id, {$set: permission });
+			RocketChat.models.Permissions.upsert(permission._id, {i18nLabel: permission.i18nLabel}, {$set: permission });
 		}
 	}
 

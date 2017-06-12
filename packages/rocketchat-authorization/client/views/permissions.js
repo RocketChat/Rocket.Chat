@@ -6,6 +6,7 @@ Template.permissions.helpers({
 	},
 
 	permission() {
+		console.log(ChatPermissions.find({}, {}).fetch());
 		return ChatPermissions.find({}, {
 			sort: {
 				_id: 1
@@ -19,6 +20,10 @@ Template.permissions.helpers({
 				return 'checked';
 			}
 		}
+	},
+
+	permissionName() {
+		return `permission_${ this._id }`;
 	},
 
 	hasPermission() {
