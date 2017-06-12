@@ -45,6 +45,10 @@ function formatBytes(bytes, decimals) {
 	return `${ parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) } ${ sizes[i] }`;
 }
 
+function clearUploadError(id) {
+	const uploading = Session.get('uploading') || [];
+}
+
 fileUpload = function(filesToUpload) {
 	const roomId = Session.get('openedRoom');
 	const files = [].concat(filesToUpload);
@@ -135,7 +139,7 @@ fileUpload = function(filesToUpload) {
 				html: true
 			}, function(isConfirm) {
 				consume();
-				if (isConfirm !== true) {
+				if (!isConfirm) {
 					return;
 				}
 
@@ -175,10 +179,10 @@ fileUpload = function(filesToUpload) {
 							uploading = [];
 						}
 
-						const item = _.findWhere(uploading, { id: this.id });
+						const item = _.findWhere(uploading, { id: upload.id });
 
 						if (_.isObject(item)) {
-							item.error = error.error;
+							item.error = error.message;
 							item.percentage = 0;
 						} else {
 							uploading.push({
