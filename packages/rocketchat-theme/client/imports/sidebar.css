@@ -39,6 +39,7 @@
 
 	&-data {
 		margin-left: 1rem;
+		position: relative;
 	}
 
 	&-name,
@@ -57,15 +58,16 @@
 
 	&-username {
 		max-width: 124px;
-		margin-right: 5px;
-		height: 1.1rem;
+		margin-right: 8px;
+		user-select: none;
 	}
 
 	&-status {
 		font-size: 1rem;
 		display: flex;
 		align-items: center;
-		margin-top: 0.5rem;
+		margin-top: 2px;
+		cursor: pointer;
 	}
 
 	&-status-bullet {
@@ -82,10 +84,8 @@
 		height: 8px;
 	}
 
-	&-menu {
-		position: relative;
-		padding: 1px 5px;
-		cursor: pointer;
+	& .rc-popover {
+		top: 50px;
 	}
 }
 

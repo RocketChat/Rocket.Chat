@@ -10,21 +10,21 @@ Template.accountBox.helpers({
 			};
 		}
 
-		let visualStatus = 'online';
+		let visualStatus = t('Online');
 		let bullet = 'general-success-background';
 		const user = Meteor.user() || {};
 		const { name, username } = user;
 		switch (Session.get(`user_${ username }_status`)) {
 			case 'away':
-				visualStatus = t('away');
+				visualStatus = t('Away');
 				bullet = 'general-pending-background';
 				break;
 			case 'busy':
-				visualStatus = t('busy');
+				visualStatus = t('Busy');
 				bullet = 'general-error-background';
 				break;
 			case 'offline':
-				visualStatus = t('invisible');
+				visualStatus = t('Invisible');
 				bullet = 'general-inactive-background';
 				break;
 		}
@@ -49,61 +49,64 @@ Template.accountBox.helpers({
 });
 
 Template.accountBox.events({
-	'click .options .status'(event) {
-		event.preventDefault();
-		AccountBox.setStatus(event.currentTarget.dataset.status);
-		return RocketChat.callbacks.run('userStatusManuallySet', event.currentTarget.dataset.status);
+	'click [data-action="set-state"]'(e) {
+		e.preventDefault();
+		AccountBox.setStatus(e.currentTarget.dataset.status);
+		$('[data-popover="anchor"]:checked').prop('checked', false);
+		RocketChat.callbacks.run('userStatusManuallySet', e.currentTarget.dataset.status);
 	},
 
-	'click .account-box'() {
-		if (Meteor.userId() == null && RocketChat.settings.get('Accounts_AllowAnonymousRead')) {
-			return;
+	'click [data-action="open"]'(e) {
+		e.preventDefault();
+		$('[data-popover="anchor"]:checked').prop('checked', false);
+
+		const open = e.currentTarget.dataset.open;
+
+		switch (open) {
+			case 'account':
+				AccountBox.openFlex();
+				break;
+			case 'logout':
+				const user = Meteor.user();
+				Meteor.logout(() => {
+					RocketChat.callbacks.run('afterLogoutCleanUp', user);
+					Meteor.call('logoutCleanUp', user);
+					FlowRouter.go('home');
+				});
+				break;
+			case 'administration':
+				SideNav.setFlex('adminFlex');
+				SideNav.openFlex();
+				FlowRouter.go('admin-info');
+				break;
 		}
 
-		return AccountBox.toggle();
-	},
-
-	'click #logout'(event) {
-		event.preventDefault();
-		const user = Meteor.user();
-		return Meteor.logout(function() {
-			RocketChat.callbacks.run('afterLogoutCleanUp', user);
-			Meteor.call('logoutCleanUp', user);
-			return FlowRouter.go('home');
-		});
-	},
-
-	'click #avatar'() {
-		return FlowRouter.go('changeAvatar');
-	},
-
-	'click #account'() {
-		SideNav.setFlex('accountFlex');
-		SideNav.openFlex();
-		return FlowRouter.go('account');
-	},
-
-	'click #admin'() {
-		SideNav.setFlex('adminFlex');
-		SideNav.openFlex();
-		return FlowRouter.go('admin-info');
-	},
-
-	'click .account-link'(event) {
-		event.stopPropagation();
-		event.preventDefault();
-		return AccountBox.openFlex();
-	},
-
-	'click .account-box-item'() {
 		if (this.href) {
 			FlowRouter.go(this.href);
 		}
 
 		if (this.sideNav != null) {
 			SideNav.setFlex(this.sideNav);
-			return SideNav.openFlex();
+			SideNav.openFlex();
 		}
+	},
+
+	'click .account-box'() {
+		if (Meteor.userId() == null && RocketChat.settings.get('Accounts_AllowAnonymousRead')) {
+			return false;
+		}
+
+		AccountBox.toggle();
+	},
+
+	'click #avatar'() {
+		FlowRouter.go('changeAvatar');
+	},
+
+	'click #account'() {
+		SideNav.setFlex('accountFlex');
+		SideNav.openFlex();
+		FlowRouter.go('account');
 	}
 });
 

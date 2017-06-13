@@ -74,17 +74,26 @@ Template.body.onRendered(function() {
 		}
 		return inputMessage.focus();
 	});
-	$(document.body).on('click', 'a', function(e) {
-		const link = e.currentTarget;
-		if (link.origin === s.rtrim(Meteor.absoluteUrl(), '/') && /msg=([a-zA-Z0-9]+)/.test(link.search)) {
-			e.preventDefault();
-			e.stopPropagation();
-			if (RocketChat.Layout.isEmbedded()) {
-				return fireGlobalEvent('click-message-link', {
-					link: link.pathname + link.search
-				});
+
+	$(document.body).on('click', function(e) {
+		const target = $(e.target);
+
+		if (e.target.tagName === 'A') {
+			const link = e.currentTarget;
+			if (link.origin === s.rtrim(Meteor.absoluteUrl(), '/') && /msg=([a-zA-Z0-9]+)/.test(link.search)) {
+				e.preventDefault();
+				e.stopPropagation();
+				if (RocketChat.Layout.isEmbedded()) {
+					return fireGlobalEvent('click-message-link', {
+						link: link.pathname + link.search
+					});
+				}
+				return FlowRouter.go(link.pathname + link.search, null, FlowRouter.current().queryParams);
 			}
-			return FlowRouter.go(link.pathname + link.search, null, FlowRouter.current().queryParams);
+		}
+
+		if (target.closest('[data-popover="label"], [data-popover="popover"]').length === 0 && target.data('popover') !== 'anchor') {
+			$('[data-popover="anchor"]:checked').prop('checked', false);
 		}
 	});
 	Tracker.autorun(function(c) {
