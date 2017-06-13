@@ -7,7 +7,7 @@ RocketChat.settings.add('uniqueID', process.env.DEPLOYMENT_ID || Random.id(), {
 // When you define a setting and want to add a description, you don't need to automatically define the i18nDescription
 // if you add a node to the i18n.json with the same setting name but with `_Description` it will automatically work.
 
-RocketChat.settings.addGroup('Accounts', function () {
+RocketChat.settings.addGroup('Accounts', function() {
 	this.add('Accounts_AllowAnonymousRead', false, {
 		type: 'boolean',
 		public: true
@@ -71,7 +71,7 @@ RocketChat.settings.addGroup('Accounts', function () {
 		'public': true
 	});
 
-	this.section('Registration', function () {
+	this.section('Registration', function() {
 		this.add('Accounts_DefaultUsernamePrefixSuggestion', 'user', {
 			type: 'string'
 		});
@@ -158,7 +158,7 @@ RocketChat.settings.addGroup('Accounts', function () {
 		});
 	});
 
-	this.section('Avatar', function () {
+	this.section('Avatar', function() {
 		this.add('Accounts_AvatarResize', true, {
 			type: 'boolean'
 		});
@@ -194,8 +194,8 @@ RocketChat.settings.addGroup('Accounts', function () {
 	});
 });
 
-RocketChat.settings.addGroup('OAuth', function () {
-	this.section('Facebook', function () {
+RocketChat.settings.addGroup('OAuth', function() {
+	this.section('Facebook', function() {
 		const enableQuery = {
 			_id: 'Accounts_OAuth_Facebook',
 			value: true
@@ -219,7 +219,7 @@ RocketChat.settings.addGroup('OAuth', function () {
 			enableQuery
 		});
 	});
-	this.section('Google', function () {
+	this.section('Google', function() {
 		const enableQuery = {
 			_id: 'Accounts_OAuth_Google',
 			value: true
@@ -243,7 +243,7 @@ RocketChat.settings.addGroup('OAuth', function () {
 			enableQuery
 		});
 	});
-	this.section('GitHub', function () {
+	this.section('GitHub', function() {
 		const enableQuery = {
 			_id: 'Accounts_OAuth_Github',
 			value: true
@@ -267,7 +267,7 @@ RocketChat.settings.addGroup('OAuth', function () {
 			enableQuery
 		});
 	});
-	this.section('Linkedin', function () {
+	this.section('Linkedin', function() {
 		const enableQuery = {
 			_id: 'Accounts_OAuth_Linkedin',
 			value: true
@@ -291,7 +291,7 @@ RocketChat.settings.addGroup('OAuth', function () {
 			enableQuery
 		});
 	});
-	this.section('Meteor', function () {
+	this.section('Meteor', function() {
 		const enableQuery = {
 			_id: 'Accounts_OAuth_Meteor',
 			value: true
@@ -315,7 +315,7 @@ RocketChat.settings.addGroup('OAuth', function () {
 			enableQuery
 		});
 	});
-	this.section('Twitter', function () {
+	this.section('Twitter', function() {
 		const enableQuery = {
 			_id: 'Accounts_OAuth_Twitter',
 			value: true
@@ -339,7 +339,7 @@ RocketChat.settings.addGroup('OAuth', function () {
 			enableQuery
 		});
 	});
-	return this.section('Proxy', function () {
+	return this.section('Proxy', function() {
 		this.add('Accounts_OAuth_Proxy_host', 'https://oauth-proxy.rocket.chat', {
 			type: 'string',
 			'public': true
@@ -351,7 +351,7 @@ RocketChat.settings.addGroup('OAuth', function () {
 	});
 });
 
-RocketChat.settings.addGroup('General', function () {
+RocketChat.settings.addGroup('General', function() {
 	this.add('Site_Url', typeof __meteor_runtime_config__ !== 'undefined' && __meteor_runtime_config__ !== null ? __meteor_runtime_config__.ROOT_URL : null, {
 		type: 'string',
 		i18nDescription: 'Site_Url_Description',
@@ -396,7 +396,7 @@ RocketChat.settings.addGroup('General', function () {
 		type: 'action',
 		actionText: 'Restart_the_server'
 	});
-	this.section('UTF8', function () {
+	this.section('UTF8', function() {
 		this.add('UTF8_Names_Validation', '[0-9a-zA-Z-_.]+', {
 			type: 'string',
 			'public': true,
@@ -407,26 +407,26 @@ RocketChat.settings.addGroup('General', function () {
 			'public': true
 		});
 	});
-	this.section('Reporting', function () {
+	this.section('Reporting', function() {
 		return this.add('Statistics_reporting', true, {
 			type: 'boolean'
 		});
 	});
-	this.section('Notifications', function () {
+	this.section('Notifications', function() {
 		return this.add('Desktop_Notifications_Duration', 0, {
 			type: 'int',
 			'public': true,
 			i18nDescription: 'Desktop_Notification_Durations_Description'
 		});
 	});
-	this.section('REST API', function () {
+	this.section('REST API', function() {
 		return this.add('API_User_Limit', 500, {
 			type: 'int',
 			'public': true,
 			i18nDescription: 'API_User_Limit'
 		});
 	});
-	this.section('Iframe_Integration', function () {
+	this.section('Iframe_Integration', function() {
 		this.add('Iframe_Integration_send_enable', false, {
 			type: 'boolean',
 			'public': true
@@ -452,13 +452,13 @@ RocketChat.settings.addGroup('General', function () {
 			}
 		});
 	});
-	this.section('Translations', function () {
+	this.section('Translations', function() {
 		return this.add('Custom_Translations', '', {
 			type: 'code',
 			'public': true
 		});
 	});
-	return this.section('Stream_Cast', function () {
+	return this.section('Stream_Cast', function() {
 		return this.add('Stream_Cast_Address', '', {
 			type: 'string'
 		});
@@ -480,7 +480,7 @@ RocketChat.settings.addGroup('Email', function() {
 			i18nLabel: 'Footer'
 		});
 	});
-	this.section('SMTP', function () {
+	this.section('SMTP', function() {
 		this.add('SMTP_Protocol', 'smtp', {
 			type: 'select',
 			values: [
@@ -529,7 +529,7 @@ RocketChat.settings.addGroup('Email', function() {
 			actionText: 'Send_a_test_mail_to_my_user'
 		});
 	});
-	this.section('Invitation', function () {
+	this.section('Invitation', function() {
 		this.add('Invitation_Customized', false, {
 			type: 'boolean',
 			i18nLabel: 'Custom'
@@ -562,7 +562,7 @@ RocketChat.settings.addGroup('Email', function() {
 			}
 		});
 	});
-	this.section('Registration', function () {
+	this.section('Registration', function() {
 		this.add('Accounts_Enrollment_Customized', false, {
 			type: 'boolean',
 			i18nLabel: 'Custom'
@@ -594,7 +594,7 @@ RocketChat.settings.addGroup('Email', function() {
 			}
 		});
 	});
-	this.section('Registration_via_Admin', function () {
+	this.section('Registration_via_Admin', function() {
 		this.add('Accounts_UserAddedEmail_Customized', false, {
 			type: 'boolean',
 			i18nLabel: 'Custom'
@@ -627,7 +627,7 @@ RocketChat.settings.addGroup('Email', function() {
 			}
 		});
 	});
-	this.section('Forgot_password_section', function () {
+	this.section('Forgot_password_section', function() {
 		this.add('Forgot_Password_Customized', false, {
 			type: 'boolean',
 			i18nLabel: 'Custom'
@@ -660,7 +660,7 @@ RocketChat.settings.addGroup('Email', function() {
 			}
 		});
 	});
-	return this.section('Verification', function () {
+	return this.section('Verification', function() {
 		this.add('Verification_Customized', false, {
 			type: 'boolean',
 			i18nLabel: 'Custom'
@@ -695,8 +695,8 @@ RocketChat.settings.addGroup('Email', function() {
 	});
 });
 
-RocketChat.settings.addGroup('Message', function () {
-	this.section('Message_Attachments', function () {
+RocketChat.settings.addGroup('Message', function() {
+	this.section('Message_Attachments', function() {
 		this.add('Message_Attachments_GroupAttach', false, {
 			type: 'boolean',
 			'public': true,
@@ -838,7 +838,7 @@ RocketChat.settings.addGroup('Message', function () {
 
 });
 
-RocketChat.settings.addGroup('Meta', function () {
+RocketChat.settings.addGroup('Meta', function() {
 	this.add('Meta_language', '', {
 		type: 'string'
 	});
@@ -861,7 +861,7 @@ RocketChat.settings.addGroup('Meta', function () {
 	});
 });
 
-RocketChat.settings.addGroup('Push', function () {
+RocketChat.settings.addGroup('Push', function() {
 	this.add('Push_enable', true, {
 		type: 'boolean',
 		'public': true
@@ -914,7 +914,7 @@ RocketChat.settings.addGroup('Push', function () {
 			value: true
 		}
 	});
-	this.section('Certificates_and_Keys', function () {
+	this.section('Certificates_and_Keys', function() {
 		this.add('Push_apn_passphrase', '', {
 			type: 'string'
 		});
@@ -945,7 +945,7 @@ RocketChat.settings.addGroup('Push', function () {
 			'public': true
 		});
 	});
-	return this.section('Privacy', function () {
+	return this.section('Privacy', function() {
 		this.add('Push_show_username_room', true, {
 			type: 'boolean',
 			'public': true
@@ -957,8 +957,8 @@ RocketChat.settings.addGroup('Push', function () {
 	});
 });
 
-RocketChat.settings.addGroup('Layout', function () {
-	this.section('Content', function () {
+RocketChat.settings.addGroup('Layout', function() {
+	this.section('Content', function() {
 		this.add('Layout_Home_Title', 'Home', {
 			type: 'string',
 			'public': true
@@ -993,7 +993,7 @@ RocketChat.settings.addGroup('Layout', function () {
 			i18nDescription: 'Layout_Sidenav_Footer_description'
 		});
 	});
-	this.section('Custom_Scripts', function () {
+	this.section('Custom_Scripts', function() {
 		this.add('Custom_Script_Logged_Out', '//Add your script', {
 			type: 'code',
 			multiline: true,
@@ -1005,7 +1005,7 @@ RocketChat.settings.addGroup('Layout', function () {
 			'public': true
 		});
 	});
-	return this.section('User_Interface', function () {
+	return this.section('User_Interface', function() {
 		this.add('UI_DisplayRoles', true, {
 			type: 'boolean',
 			'public': true
@@ -1025,7 +1025,7 @@ RocketChat.settings.addGroup('Layout', function () {
 	});
 });
 
-RocketChat.settings.addGroup('Logs', function () {
+RocketChat.settings.addGroup('Logs', function() {
 	this.add('Log_Level', '0', {
 		type: 'select',
 		values: [
