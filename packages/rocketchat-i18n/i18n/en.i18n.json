@@ -1155,246 +1155,222 @@
   "People": "People",
   "Permalink": "Permalink",
   "Permissions": "Permissions",
-  //empty lines are for ease of reviewing this pr. They will be removed before merging
 
-  "permission_access-mailer":"Access Mailer Screen",
-  "permission_access-mailer_description":"Permission to send mass email to all users.",
+  "access-mailer":"Access Mailer Screen",
+  "access-mailer_description":"Permission to send mass email to all users.",
 
-  "permission_access-permissions":"Access Permissions Screen",
-  "permission_access-permissions_description":"Modify permissions for various roles.",
+  "access-permissions":"Access Permissions Screen",
+  "access-permissions_description":"Modify permissions for various roles.",
 
-  "permission_add-oauth-service":"Add Oauth Service",
-  "permission_add-oauth-service_description":"Permission to add a new Oauth service",
+  "add-oauth-service":"Add Oauth Service",
+  "add-oauth-service_description":"Permission to add a new Oauth service",
 
-  "permission_add-user":"Add User",
-  "permission_add-user_description":"Permission to add new users to the server via users screen",
+  "add-user":"Add User",
+  "add-user_description":"Permission to add new users to the server via users screen",
 
-  "permission_add-user-to-any-c-room":"Add User to Any Public Channel",
-  "permission_add-user-to-any-c-room_description":"Permission to add a user to any public channel",
+  "add-user-to-any-c-room":"Add User to Any Public Channel",
+  "add-user-to-any-c-room_description":"Permission to add a user to any public channel",
 
-  "permission_add-user-to-any-p-room":"Add User to Any Private Channel",
-  "permission_add-user-to-any-p-room_description":"Permission to add a user to any private channel",
+  "add-user-to-any-p-room":"Add User to Any Private Channel",
+  "add-user-to-any-p-room_description":"Permission to add a user to any private channel",
 
-  "permission_add-user-to-joined-room":"Add User to Any Joined Channel",
-  "permission_add-user-to-joined-room_description":"Permission to add a user to a currently joined channel",
+  "add-user-to-joined-room":"Add User to Any Joined Channel",
+  "add-user-to-joined-room_description":"Permission to add a user to a currently joined channel",
 
-  "permission_archive-room":"Archive Room",
-  "permission_archive-room_description":"Permission to archive a channel",
+  "archive-room":"Archive Room",
+  "archive-room_description":"Permission to archive a channel",
 
-  "permission_assign-admin-role":"Assign Admin Role",
-  "permission_assign-admin-role_description":"Permission to assign the admin role to other users",
+  "assign-admin-role":"Assign Admin Role",
+  "assign-admin-role_description":"Permission to assign the admin role to other users",
 
-  "permission_auto-translate":"Auto Translate",
-  "permission_auto-translate_description":"Permission to use the auto translate tool",
+  "auto-translate":"Auto Translate",
+  "auto-translate_description":"Permission to use the auto translate tool",
 
-  "permission_ban-user":"Ban User",
-  "permission_ban-user_description":"Permission to assign the admin role to other users",
+  "ban-user":"Ban User",
+  "ban-user_description":"Permission to ban a user from a channel",
 
-  "permission_bulk-create-c":"Bulk Create Channels",
-  "permission_bulk-create-c_description":"Permission to create channels in bulk",
+  "bulk-create-c":"Bulk Create Channels",
+  "bulk-create-c_description":"Permission to create channels in bulk",
 
-  "permission_bulk-register-user":"Bulk Create Channels",
-  "permission_bulk-register-user_description":"Permission to create channels in bulk",
+  "bulk-register-user":"Bulk Create Channels",
+  "bulk-register-user_description":"Permission to create channels in bulk",
 
-  "permission_clean-channel-history":"Clean Channel History",
-  "permission_clean-channel-history_description":"Permission to Clear the history from channels",
+  "clean-channel-history":"Clean Channel History",
+  "clean-channel-history_description":"Permission to Clear the history from channels",
 
-  "permission_close-livechat-room":"Close Livechat Room",
-  "permission_close-livechat-room_description":"Permission to close the current LiveChat channel",
+  "close-livechat-room":"Close Livechat Room",
+  "close-livechat-room_description":"Permission to close the current LiveChat channel",
 
-  "permission_close-others-livechat-room":"Close Livechat Room",
-  "permission_close-others-livechat-room_description":"Permission to close other LiveChat channels",
+  "close-others-livechat-room":"Close Livechat Room",
+  "close-others-livechat-room_description":"Permission to close other LiveChat channels",
 
-  "permission_create-c":"Create Public Channels",
-  "permission_create-c_description":"Permission to create public channels",
+  "create-c":"Create Public Channels",
+  "create-c_description":"Permission to create public channels",
 
-  "permission_create-d":"Create Direct Messages",
-  "permission_create-d_description":"Permission to start direct messages",
+  "create-d":"Create Direct Messages",
+  "create-d_description":"Permission to start direct messages",
 
-  "permission_create-p":"Create Private Channels",
-  "permission_create-p_description":"Permission to create private channels",
+  "create-p":"Create Private Channels",
+  "create-p_description":"Permission to create private channels",
 
-  "permission_create-user":"Create User",
-  "permission_create-user_description":"Permission to create users",
+  "create-user":"Create User",
+  "create-user_description":"Permission to create users",
 
-  "permission_delete-c":"Delete Public Channels",
-  "permission_delete-c_description":"Permission to delete public channels",
+  "delete-c":"Delete Public Channels",
+  "delete-c_description":"Permission to delete public channels",
 
-  "permission_delete-d":"Delete Direct Messages",
-  "permission_delete-d_description":"Permission to delete direct messages",
+  "delete-d":"Delete Direct Messages",
+  "delete-d_description":"Permission to delete direct messages",
 
-  "permission_delete-p":"Delete Private Channels",
-  "permission_delete-p_description":"Permission to delete private channels",
+  "delete-p":"Delete Private Channels",
+  "delete-p_description":"Permission to delete private channels",
 
-  "permission_delete-message":"Delete Message",
-  "permission_delete-message_description":"Permission to delete a message within a room",
+  "delete-message":"Delete Message",
+  "delete-message_description":"Permission to delete a message within a room",
 
-  "permission_delete-user":"Delete User",
-  "permission_delete-user_description":"Permission to delete users",
+  "delete-user":"Delete User",
+  "delete-user_description":"Permission to delete users",
 
-  "permission_edit-message":"Edit Message",
-  "permission_edit-message_description":"Permission to edit a message within a room",
+  "edit-message":"Edit Message",
+  "edit-message_description":"Permission to edit a message within a room",
 
-  "permission_edit-other-user-active-status":"Edit Other User Active Status",
-  "permission_edit-other-user-active-status_description":"Permission to enable or disable other accounts",
+  "edit-other-user-active-status":"Edit Other User Active Status",
+  "edit-other-user-active-status_description":"Permission to enable or disable other accounts",
 
-  "permission_edit-other-user-info":"Edit Other User Information",
-  "permission_edit-other-user-info_description":"Permission to change other user’s name, username or email address.",
+  "edit-other-user-info":"Edit Other User Information",
+  "edit-other-user-info_description":"Permission to change other user’s name, username or email address.",
 
-  "permission_edit-other-user-password":"Edit Other User Password",
-  "permission_edit-other-user-password_description":"Permission to modify other user’s passwords. Requires edit-other-user-info permission.",
+  "edit-other-user-password":"Edit Other User Password",
+  "edit-other-user-password_description":"Permission to modify other user’s passwords. Requires edit-other-user-info permission.",
 
-  "permission_edit-privileged-setting":"Edit privileged Setting",
-  "permission_edit-privileged-setting_description":"Permission to edit settings",
+  "edit-privileged-setting":"Edit privileged Setting",
+  "edit-privileged-setting_description":"Permission to edit settings",
 
-  "permission_edit-room":"Edit Room",
-  "permission_edit-room_description":"Permission to edit a room’s name, topic, type (private or public status) and status (active or archived)",
+  "edit-room":"Edit Room",
+  "edit-room_description":"Permission to edit a room’s name, topic, type (private or public status) and status (active or archived)",
 
-  "permission_force-delete-message":"Force Delete Message",
-  "permission_force-delete-message_description":"Permission to delete a message bypassing all restrictions",
+  "force-delete-message":"Force Delete Message",
+  "force-delete-message_description":"Permission to delete a message bypassing all restrictions",
 
-  "permission_join-without-join-code":"Join Without Join Code",
-  "permission_join-without-join-code_description":"Permission to bypass the join code in channels with join code enabled",
+  "join-without-join-code":"Join Without Join Code",
+  "join-without-join-code_description":"Permission to bypass the join code in channels with join code enabled",
 
-  "permission_mail-messages":"Mail Messages",
-  "permission_mail-messages_description":"Permission to use the mail messages option",
+  "mail-messages":"Mail Messages",
+  "mail-messages_description":"Permission to use the mail messages option",
 
-  "permission_manage-assets":"Manage Assets",
-  "permission_manage-assets_description":"Permission to manage the server assets",
+  "manage-assets":"Manage Assets",
+  "manage-assets_description":"Permission to manage the server assets",
 
-  "permission_manage-emoji":"Manage Emoji",
-  "permission_manage-emoji_description":"Permission to manage the server emojis",
+  "manage-emoji":"Manage Emoji",
+  "manage-emoji_description":"Permission to manage the server emojis",
 
-  "permission_manage-integrations":"Manage Integrations",
-  "permission_manage-integrations_description":"Permission to manage the server integrations",
+  "manage-integrations":"Manage Integrations",
+  "manage-integrations_description":"Permission to manage the server integrations",
 
-  "permission_manage-oauth-apps":"Manage Oauth Apps",
-  "permission_manage-oauth-apps_description":"Permission to manage the server Oauth apps",
+  "manage-oauth-apps":"Manage Oauth Apps",
+  "manage-oauth-apps_description":"Permission to manage the server Oauth apps",
 
-  "permission_manage-own-integrations":"Manage Own Integrations",
-  "permission_manage-own-integrations_description":"Permition to users create and edit their own integration or webhooks",
+  "manage-own-integrations":"Manage Own Integrations",
+  "manage-own-integrations_description":"Permition to users create and edit their own integration or webhooks",
 
-  "permission_manage-sounds":"Manage Sounds",
-  "permission_manage-sounds_description":"Permission to manage the server sounds",
+  "manage-sounds":"Manage Sounds",
+  "manage-sounds_description":"Permission to manage the server sounds",
 
-  "permission_mention-all":"Mention All",
-  "permission_mention-all_description":"Permission to use the @all mention",
+  "mention-all":"Mention All",
+  "mention-all_description":"Permission to use the @all mention",
 
-  "permission_mute-user":"Mute User",
-  "permission_mute-user_description":"Permission to mute other users in the same channel",
+  "mute-user":"Mute User",
+  "mute-user_description":"Permission to mute other users in the same channel",
 
-  "permission_pin-message":"Pin Message",
-  "permission_pin-message_description":"Permission to pin a message in a channel",
+  "pin-message":"Pin Message",
+  "pin-message_description":"Permission to pin a message in a channel",
 
-  "permission_post-readonly":"Post ReadOnly",
-  "permission_post-readonly_description":"Permission to post a message in a read-only channel",
+  "post-readonly":"Post ReadOnly",
+  "post-readonly_description":"Permission to post a message in a read-only channel",
 
-  "permission_preview-c-room":"Preview Public Channel",
-  "permission_preview-c-room_description":"Permission view the contents of a public channel before joining",
+  "preview-c-room":"Preview Public Channel",
+  "preview-c-room_description":"Permission view the contents of a public channel before joining",
 
-  "permission_remove-user":"Remove User",
-  "permission_remove-user_description":"Permission to remove a user from a room",
+  "remove-user":"Remove User",
+  "remove-user_description":"Permission to remove a user from a room",
 
-  "permission_run-import":"Run Import",
-  "permission_run-import_description":"Permission to run the importers",
+  "run-import":"Run Import",
+  "run-import_description":"Permission to run the importers",
 
-  "permission_run-migration":"Run Migration",
-  "permission_run-migration_description":"Permission to run the migrations",
+  "run-migration":"Run Migration",
+  "run-migration_description":"Permission to run the migrations",
 
-  "permission_save-others-livechat-room-info":"Save Others Livechat Room Info",
-  "permission_save-others-livechat-room-info_description":"Permission to save information from other livechat channels",
+  "save-others-livechat-room-info":"Save Others Livechat Room Info",
+  "save-others-livechat-room-info_description":"Permission to save information from other livechat channels",
 
-  "permission_set-moderator":"Set Moderator",
-  "permission_set-moderator_description":"Permission to set other users as moderator of a channel",
+  "set-moderator":"Set Moderator",
+  "set-moderator_description":"Permission to set other users as moderator of a channel",
 
-  "permission_set-owner":"Set Owner",
-  "permission_set-owner_description":"Permission to set other users as owner of a channel",
+  "set-owner":"Set Owner",
+  "set-owner_description":"Permission to set other users as owner of a channel",
 
-  "permission_set-react-when-readonly":"Set React When ReadOnly",
-  "permission_set-react-when-readonly_description":"Permission to set the ability to react to messages in a read only channel",
+  "set-react-when-readonly":"Set React When ReadOnly",
+  "set-react-when-readonly_description":"Permission to set the ability to react to messages in a read only channel",
 
-  "permission_set-readonly":"Set ReadOnly",
-  "permission_set-readonly_description":"Permission to set a channel to read only channel",
+  "set-readonly":"Set ReadOnly",
+  "set-readonly_description":"Permission to set a channel to read only channel",
 
-  "permission_snippet-message":"Snippet Message",
-  "permission_snippet-message_description":"Permission to create snippet message",
+  "snippet-message":"Snippet Message",
+  "snippet-message_description":"Permission to create snippet message",
 
-  "permission_unarchive-room":"Unarchive Room",
-  "permission_unarchive-room_description":"Permission to unarchive channels",
+  "unarchive-room":"Unarchive Room",
+  "unarchive-room_description":"Permission to unarchive channels",
 
-  "permission_user-generate-access-token":"User Generate Access Token",
-  "permission_user-generate-access-token_description":"Permission to users generate access tokens",
+  "user-generate-access-token":"User Generate Access Token",
+  "user-generate-access-token_description":"Permission to users generate access tokens",
 
-  "permission_view-c-room":"View Public Channel",
-  "permission_view-c-room_description":"Permission to view public channels",
+  "view-c-room":"View Public Channel",
+  "view-c-room_description":"Permission to view public channels",
 
-  "permission_view-d-room":"View Direct Messages",
-  "permission_view-d-room_description":"Permission to view direct messages",
+  "view-d-room":"View Direct Messages",
+  "view-d-room_description":"Permission to view direct messages",
 
-  "permission_view-full-other-user-info":"View Full Other User Info",
-  "permission_view-full-other-user-info_description":"Permission to view full profile of other users including account creation date, last login, etc.",
+  "view-full-other-user-info":"View Full Other User Info",
+  "view-full-other-user-info_description":"Permission to view full profile of other users including account creation date, last login, etc.",
 
-  "permission_view-history":"View History",
-  "permission_view-history_description":"Permission to view the channel history",
+  "view-history":"View History",
+  "view-history_description":"Permission to view the channel history",
 
-  "permission_view-join-code":"View Join Code",
-  "permission_view-join-code_description":"Permission to view the channel join code",
+  "view-join-code":"View Join Code",
+  "view-join-code_description":"Permission to view the channel join code",
 
-  "permission_view-joined-room":"View Joined Room",
-  "permission_view-joined-room_description":"Permission to view the currently joined channels",
+  "view-joined-room":"View Joined Room",
+  "view-joined-room_description":"Permission to view the currently joined channels",
 
-  "permission_view-l-room":"View Livechat Room",
-  "permission_view-l-room_description":"Permission to view livechat channels",
+  "view-l-room":"View Livechat Rooms",
+  "view-l-room_description":"Permission to view livechat channels",
 
-  "permission_view-livechat-manager":"View Livechat Manager",
-  "permission_view-livechat-manager_description":"Permission to view other livechat managers",
+  "view-livechat-manager":"View Livechat Manager",
+  "view-livechat-manager_description":"Permission to view other livechat managers",
 
-  "permission_view-livechat-rooms":"View Livechat Rooms",
-  "permission_view-livechat-rooms_description":"Permission to view other livechat channels",
+  "view-livechat-rooms":"View Livechat Rooms",
+  "view-livechat-rooms_description":"Permission to view other livechat channels",
 
-  "permission_view-logs":"View Logs",
-  "permission_view-logs_description":"Permission to view the server logs ",
+  "view-logs":"View Logs",
+  "view-logs_description":"Permission to view the server logs ",
 
-  "permission_view-p-room":"View Private Room",
-  "permission_view-p-room_description":"Permission to view private channels",
+  "view-p-room":"View Private Room",
+  "view-p-room_description":"Permission to view private channels",
 
-  "permission_view-privileged-setting":"View Privileged Setting",
-  "permission_view-privileged-setting_description":"Permission to view settings",
+  "view-privileged-setting":"View Privileged Setting",
+  "view-privileged-setting_description":"Permission to view settings",
 
-  "permission_view-room-administration":"View Room Administration",
-  "permission_view-room-administration_description":"Permission to view public, private and direct message statistics. Does not include the ability to view conversations or archives",
+  "view-other-user-channels":"View Other User Channels",
+  "view-other-user-channels_description":"Permission to view channels owned by other users",
 
-  "permission_view-statistics":"View Private Room",
-  "permission_view-statistics_description":"Permission o view system statistics such as number of users logged in, number of rooms, operating system information",
+  "view-room-administration":"View Room Administration",
+  "view-room-administration_description":"Permission to view public, private and direct message statistics. Does not include the ability to view conversations or archives",
 
-  "permission_view-user-administration":"View User Administration",
-  "permission_view-user-administration_description":"Permission to partial, read-only list view of other user accounts currently logged into the system. No user account information is accessible with this permission",
+  "view-statistics":"View Private Room",
+  "view-statistics_description":"Permission o view system statistics such as number of users logged in, number of rooms, operating system information",
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+  "view-user-administration":"View User Administration",
+  "view-user-administration_description":"Permission to partial, read-only list view of other user accounts currently logged into the system. No user account information is accessible with this permission",
 
   "Pin_Message": "Pin Message",
   "Pinned_a_message": "Pinned a message:",

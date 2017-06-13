@@ -22,11 +22,11 @@ Template.permissions.helpers({
 	},
 
 	permissionName() {
-		return `permission_${ this._id }`;
+		return `${ this._id }`;
 	},
 
 	permissionDescription() {
-		return `permission_${ this._id }_description`;
+		return `${ this._id }_description`;
 	},
 
 	hasPermission() {
