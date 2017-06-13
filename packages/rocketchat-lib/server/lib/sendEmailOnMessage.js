@@ -119,7 +119,7 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 						email = {
 							to: email.address,
 							from: RocketChat.settings.get('From_Email'),
-							subject: `[${ siteName }] ${ emailSubject }`,
+							subject: `[${ siteName }] ${ emailSubject } [${ message.rid } ${ message._id }]`,
 							html: header + messageHTML + divisorMessage + (linkByUser[user._id] || defaultLink) + footer
 						};
 

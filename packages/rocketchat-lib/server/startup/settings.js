@@ -462,6 +462,50 @@ RocketChat.settings.addGroup('Email', function() {
 			i18nLabel: 'Footer'
 		});
 	});
+	this.section('IMAP', function() {
+		this.add('IMAP_Protocol', 'imap', {
+			type: 'select',
+			values: [{
+				key: 'imap',
+				i18nLabel: 'imap'
+			}, {
+				key: 'imaps',
+				i18nLabel: 'imaps'
+			}],
+			env: true,
+			i18nLabel: 'Protocol'
+		});
+		this.add('IMAP_Host', '', {
+			type: 'string',
+			env: true,
+			i18nLabel: 'Host'
+		});
+		this.add('IMAP_Port', '', {
+			type: 'string',
+			env: true,
+			i18nLabel: 'Port'
+		});
+		this.add('IMAP_IgnoreTLS', false, {
+			type: 'boolean',
+			env: true,
+			i18nLabel: 'IgnoreTLS',
+			enableQuery: {
+				_id: 'IMAP_Protocol',
+				value: 'imap'
+			}
+		});
+		this.add('IMAP_Username', '', {
+			type: 'string',
+			env: true,
+			i18nLabel: 'Username',
+			placeholder: 'email@domain'
+		});
+		this.add('IMAP_Password', '', {
+			type: 'password',
+			env: true,
+			i18nLabel: 'Password'
+		});
+	});
 	this.section('SMTP', function() {
 		this.add('SMTP_Protocol', 'smtp', {
 			type: 'select',
