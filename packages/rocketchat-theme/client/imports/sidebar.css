@@ -7,15 +7,8 @@
 
 /* Sidebar */
 .sidebar {
-	position: fixed;
-	top: 0;
-	bottom: 0;
-	left: 0;
 	width: var(--rooms-box-width);
 	height: auto;
-	/*overflow: visible;
-	z-index: 1;
-	will-change: transform;*/
 	display: flex;
 	flex-direction: column;
 
@@ -64,7 +57,7 @@
 
 	&-username {
 		max-width: 124px;
-		margin-right: 8px;
+		margin-right: 5px;
 		height: 1.1rem;
 	}
 
@@ -87,6 +80,12 @@
 		stroke: currentColor;
 		width: 8px;
 		height: 8px;
+	}
+
+	&-menu {
+		position: relative;
+		padding: 1px 5px;
+		cursor: pointer;
 	}
 }
 

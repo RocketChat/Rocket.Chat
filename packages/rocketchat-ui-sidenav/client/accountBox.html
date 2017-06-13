@@ -10,9 +10,15 @@
 					<div class="sidebar__account-status sidebar-content">
 						<div class="sidebar__account-status-bullet {{bullet}}" title="{{visualStatus}}"></div>
 						<div class="sidebar__account-username">{{username}}</div>
-						<svg class="sidebar__account-arrow">
-							<use xlink:href="/images/icons.svg#arrow-down"></use>
-						</svg>
+						<label class="sidebar__account-menu">
+							<svg class="sidebar__account-arrow">
+								<use xlink:href="/images/icons.svg#arrow-down"></use>
+							</svg>
+							<input id="open-account-menu" type="checkbox" class="rc-dropdown-anchor">
+							<div class="rc-dropdown rc-dropdown--bottom-right">
+								lala
+							</div>
+						</label>
 					</div>
 				</div>
 			{{/if}}
