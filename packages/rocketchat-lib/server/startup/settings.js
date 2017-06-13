@@ -815,21 +815,6 @@ RocketChat.settings.addGroup('Message', function () {
         'public': true,
         i18nDescription: 'Message_TimeAndDateFormat_Description'
     });
-    this.add('Message_Colors', 'none', {
-        type: 'select',
-        values: [
-            {
-                key: 'no',
-                i18nLabel: 'No Colors'
-            }, {
-                key: 'irc',
-                i18nLabel: 'IRC Colors'
-            }, {
-                key: 'full',
-                i18nLabel: 'Full Colors'
-            }
-        ]
-    });
     this.add('Message_HideType_uj', false, {
         type: 'boolean',
         'public': true
