@@ -23,7 +23,7 @@ Meteor.startup(() => {
 		section: 'Markdown',
 		public: true,
 		i18nDescription: 'Markdown_ColorSupport_Description'
-    });
+	});
 	return RocketChat.settings.add('Markdown_SupportSchemesForLink', 'http,https', {
 		type: 'string',
 		group: 'Message',
