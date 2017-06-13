@@ -60,7 +60,7 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 	}
 
 	const header = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Header') || '');
-	const footer = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Footer') || '');
+	let footer = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Footer') || '');
 	messageHTML = messageHTML.replace(/\n/gm, '<br/>');
 
 	RocketChat.models.Subscriptions.findWithSendEmailByRoomId(room._id).forEach((sub) => {
@@ -114,12 +114,19 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 					return;
 				}
 
+				let Subject = `[${ siteName }] ${ emailSubject }`;
+
+				if (RocketChat.settings.get('IMAP_Enable')) {
+					Subject += `[${ message.rid } ${ message._id }]`;
+					footer = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Footer_Direct_Reply') || '');
+				}
+
 				user.emails.some((email) => {
 					if (email.verified) {
 						email = {
 							to: email.address,
 							from: RocketChat.settings.get('From_Email'),
-							subject: `[${ siteName }] ${ emailSubject } [${ message.rid } ${ message._id }]`,
+							subject: Subject,
 							html: header + messageHTML + divisorMessage + (linkByUser[user._id] || defaultLink) + footer
 						};
 
