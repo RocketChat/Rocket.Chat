@@ -37,14 +37,6 @@ Template.roomList.helpers({
 		return ChatSubscription.find(query, { sort: { 't': 1, 'name': 1 }});
 	},
 
-	isActiveFavorite() {
-		if (!this.identifier && !this.unread && !this.anonymous) {
-			return ChatSubscription.find({ f: true }).count();
-		}
-
-		return true;
-	},
-
 	isLivechat() {
 		return this.identifier === 'l';
 	},
@@ -59,6 +51,7 @@ Template.roomList.helpers({
 		const showNormalRooms = !group.unread || Template.instance().unreadRooms.count();
 		return showNormalRooms && nonFavorite || !group.unread && !this.anonymous && rooms.count();
 	},
+
 	hasMoreChannelsButton(room) {
 		return room.identifier === 'c' || room.anonymous;
 	},

@@ -1,11 +1,11 @@
 /* globals openRoom */
 RocketChat.roomTypes.add(null, 0, {
-	icon: 'icon-star',
+	icon: 'star',
 	label: 'Favorites'
 });
 
 RocketChat.roomTypes.add('c', 10, {
-	icon: 'icon-hash',
+	icon: 'hashtag',
 	label: 'Channels',
 	route: {
 		name: 'channel',
@@ -37,7 +37,7 @@ RocketChat.roomTypes.add('c', 10, {
 });
 
 RocketChat.roomTypes.add('d', 20, {
-	icon: 'icon-at',
+	icon: false,
 	label: 'Direct_Messages',
 	route: {
 		name: 'direct',
@@ -94,7 +94,7 @@ RocketChat.roomTypes.add('d', 20, {
 });
 
 RocketChat.roomTypes.add('p', 30, {
-	icon: 'icon-lock',
+	icon: 'lock',
 	label: 'Private_Groups',
 	route: {
 		name: 'group',
