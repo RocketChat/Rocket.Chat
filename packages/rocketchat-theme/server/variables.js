@@ -54,7 +54,7 @@ const general = [
 	{
 		name: 'general-error',
 		properties: ['background-color'],
-		value: '#9b3b4b'
+		value: '#f5445c'
 	},
 	{
 		name: 'general-inactive',
