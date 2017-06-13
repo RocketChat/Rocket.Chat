@@ -5,14 +5,28 @@ Meteor.methods({
 			rooms: []
 		};
 
-		if (this.userId == null) {
-			return result;
-		}
+		const roomOptions = {
+			limit: 5,
+			fields: {
+				t: 1,
+				name: 1
+			},
+			sort: {
+				name: 1
+			}
+		};
 
 		const regex = new RegExp(s.trim(s.escapeRegExp(text)), 'i');
 
+		if (this.userId == null) {
+			if (RocketChat.settings.get('Accounts_AllowAnonymousRead') === true) {
+				result.rooms = RocketChat.models.Rooms.findByNameAndTypeNotDefault(regex, 'c', roomOptions).fetch();
+			}
+			return result;
+		}
+
 		if (type.users === true && RocketChat.authz.hasPermission(this.userId, 'view-d-room')) {
-			const userQuery = {
+			const userOptions = {
 				limit: 5,
 				fields: {
 					username: 1,
@@ -21,12 +35,14 @@ Meteor.methods({
 				},
 				sort: {}
 			};
+
 			if (RocketChat.settings.get('UI_Use_Real_Name')) {
-				userQuery.sort.name = 1;
+				userOptions.sort.name = 1;
 			} else {
-				userQuery.sort.username = 1;
+				userOptions.sort.username = 1;
 			}
-			result.users = RocketChat.models.Users.findByActiveUsersExcept(text, usernames, userQuery).fetch();
+
+			result.users = RocketChat.models.Users.findByActiveUsersExcept(text, usernames, userOptions).fetch();
 		}
 
 		if (type.rooms === true && RocketChat.authz.hasPermission(this.userId, 'view-c-room')) {
@@ -34,16 +50,7 @@ Meteor.methods({
 				username: 1
 			}).username;
 
-			result.rooms = RocketChat.models.Rooms.findByNameAndTypeNotContainingUsername(regex, 'c', username, {
-				limit: 5,
-				fields: {
-					t: 1,
-					name: 1
-				},
-				sort: {
-					name: 1
-				}
-			}).fetch();
+			result.rooms = RocketChat.models.Rooms.findByNameAndTypeNotContainingUsername(regex, 'c', username, roomOptions).fetch();
 		}
 		return result;
 	}
