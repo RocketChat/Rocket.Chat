@@ -50,3 +50,46 @@
 		transform: translate(-50%, 0);
 	}
 }
+
+.rc-dropdown-anchor {
+	display: none;
+
+	&:checked + .rc-dropdown {
+		display: flex;
+		animation: dropdown-show 0.1s cubic-bezier(0.45, 0.05, 0.55, 0.95);
+	}
+}
+
+.rc-dropdown {
+	display: none;
+	position: absolute;
+	z-index: 9999;
+	padding: 8px;
+	min-width: 180px;
+	min-height: 170px;
+	border-radius: 2px;
+	background-color: #ffffff;
+	box-shadow: 0 0 2px 0 rgba(47, 52, 61, 0.08), 0 0 12px 0 rgba(47, 52, 61, 0.12);
+	cursor: default;
+
+	&--bottom-right {
+		top: 30px;
+		left: -10px;
+	}
+
+	&--show {
+		display: flex;
+	}
+}
+
+@keyframes dropdown-show {
+	0% {
+		transform: translate(0, -2%);
+		opacity: 0;
+	}
+
+	100% {
+		transform: translate(0, 0);
+		opacity: 1;
+	}
+}
