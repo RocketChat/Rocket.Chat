@@ -907,7 +907,7 @@
   "PiwikAnalytics_cookieDomain" : "Alle Subdomains",
   "PiwikAnalytics_cookieDomain_Description" : "Besucher aufzeichnen auf allen Subdomains",
   "PiwikAnalytics_domains" : "Verberge ausgehende Links",
-  "PiwikAnalytics_domains_Description" : "Verberge im Bericht über 'ausgehende Verweise' alle Klicks auf bekannte Alias-URLs",
+  "PiwikAnalytics_domains_Description" : "Verberge im Bericht über 'ausgehende Verweise' alle Klicks auf bekannte Alias-URLs. Bitte tragen Sie pro Zeile einen Domainnamen ein, verwenden Sie dabei keine Trennzeichen.",
   "PiwikAnalytics_url_Description": "Die Piwik URL benötigt ein trailing slash. Beispiel: //piwik.rocket.chat/",
   "Placeholder_for_email_or_username_login_field": "Platzhalter für das Feld der E-Mail-Adresse und des Benutzernamen",
   "Placeholder_for_password_login_field": "Platzhalter für das Feld des Anmeldepassworts",

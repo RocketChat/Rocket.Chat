@@ -8,17 +8,12 @@ function trackEvent(category, action, label) {
 }
 
 if (!window._paq || window.ga) {
-	//Trigger the trackPageView manually as the page views don't seem to be tracked
+	//Trigger the trackPageView manually as the page views are only loaded when the loadScript.js code is executed
 	FlowRouter.triggers.enter([(route) => {
 		if (window._paq) {
 			const http = location.protocol;
 			const slashes = http.concat('//');
-			let host = slashes.concat(window.location.hostname);
-			if (RocketChat.settings.get('PiwikAnalytics_cookieDomain')) {
-				let parts = window.location.hostname.split('.');parts.shift();
-				let subDomains = parts.join('.');
-				host = slashes.concat(subDomains);
-			}
+			const host = slashes.concat(window.location.hostname);
 			window._paq.push(['setCustomUrl', host + route.path]);
 			window._paq.push(['trackPageView']);
 		}

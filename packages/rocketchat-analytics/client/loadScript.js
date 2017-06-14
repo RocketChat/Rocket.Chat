@@ -19,15 +19,23 @@ Template.body.onRendered(() => {
 				window._paq.push(['trackPageView']);
 				window._paq.push(['enableLinkTracking']);
 				if (piwikPrependDomain) {
-					window._paq.push(['setDocumentTitle', document.domain + '/' + document.title]);
+					window._paq.push(['setDocumentTitle', `${ window.location.hostname }/${ document.title }`]);
 				}
-				var parts = document.domain.split('.');parts.shift();
-				var subDomains = `*.${ parts.join('.') }`;
+				const upperLevelDomain = `*.${ window.location.hostname.split('.').slice(1).join('.') }`;
 				if (piwikCookieDomain) {
-					window._paq.push(['setCookieDomain', subDomains]);
+					window._paq.push(['setCookieDomain', upperLevelDomain]);
 				}
 				if (piwikDomains) {
-					window._paq.push(['setDomains', [subDomains]]);
+					// array
+					const domainsArray = piwikDomains.split(/\n/);
+					let domains = [];
+					for (let i = 0; i < domainsArray.length; i++) {
+						// only push domain if it contains a non whitespace character.
+						if (/\S/.test(domainsArray[i])) {
+							domains.push(`*.${ domainsArray[i].trim() }`);
+						}
+					}
+					window._paq.push(['setDomains', domains]);
 				}
 				(() => {
 					window._paq.push(['setTrackerUrl', `${ piwikUrl }piwik.php`]);

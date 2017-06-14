@@ -30,8 +30,9 @@ RocketChat.settings.addGroup('Analytics', function addSettings() {
 			i18nLabel: 'PiwikAnalytics_cookieDomain',
 			enableQuery
 		});
-		this.add('PiwikAnalytics_domains', false, {
-			type: 'boolean',
+		this.add('PiwikAnalytics_domains', '', {
+			type: 'string',
+			multiline: true,
 			public: true,
 			i18nLabel: 'PiwikAnalytics_domains',
 			enableQuery

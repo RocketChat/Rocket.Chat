@@ -1152,7 +1152,7 @@
   "PiwikAnalytics_cookieDomain" : "All subdomains",
   "PiwikAnalytics_cookieDomain_Description" : "Track visitors across all subdomains",
   "PiwikAnalytics_domains" : "Hide outgoing links",
-  "PiwikAnalytics_domains_Description" : "In the 'Outlinks' report, hide clicks to known alias URLs",
+  "PiwikAnalytics_domains_Description" : "In the 'Outlinks' report, hide clicks to known alias URLs. Please insert one domain per line and do not use any separators.",
   "PiwikAnalytics_url_Description": "The url where the Piwik resides, be sure to include the trailing slash. Example: //piwik.rocket.chat/",
   "Placeholder_for_email_or_username_login_field": "Placeholder for email or username login field",
   "Placeholder_for_password_login_field": "Placeholder for password login field",
