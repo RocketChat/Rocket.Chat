@@ -26,8 +26,6 @@
   "Accounts_AllowUserProfileChange": "사용자 프로필 변경을 허용",
   "Accounts_AvatarResize": "아바타 크기 조정",
   "Accounts_AvatarSize": "아바타 크기",
-  "Accounts_AvatarStorePath": "아바타 저장 경로",
-  "Accounts_AvatarStoreType": "아바파 저장 타입",
   "Accounts_BlockedDomainsList": "차단된 도메인 목록",
   "Accounts_BlockedDomainsList_Description": "쉼표로 구문된 차단 도메인 리스트",
   "Accounts_BlockedUsernameList": "차단된 사용자 리스트",

@@ -169,25 +169,7 @@ RocketChat.settings.addGroup('Accounts', function() {
 				value: true
 			}
 		});
-		this.add('Accounts_AvatarStoreType', 'GridFS', {
-			type: 'select',
-			values: [
-				{
-					key: 'GridFS',
-					i18nLabel: 'GridFS'
-				}, {
-					key: 'FileSystem',
-					i18nLabel: 'FileSystem'
-				}
-			]
-		});
-		this.add('Accounts_AvatarStorePath', '', {
-			type: 'string',
-			enableQuery: {
-				_id: 'Accounts_AvatarStoreType',
-				value: 'FileSystem'
-			}
-		});
+
 		return this.add('Accounts_SetDefaultAvatar', true, {
 			type: 'boolean'
 		});
@@ -473,7 +455,7 @@ RocketChat.settings.addGroup('Email', function() {
 			multiline: true,
 			i18nLabel: 'Header'
 		});
-		return this.add('Email_Footer', '</td></tr></table></td></tr><tr><td border="0" cellspacing="0" cellpadding="0" width="100%" style="font-family: Helvetica,Arial,sans-serif; max-width: 800px; margin: 0 auto; padding: 1.5em; text-align: center; font-size: 8pt; color: #999;">Powered by <a href="https://rocket.chat" target="_blank">Rocket.Chat</a></td></tr></table></td></tr></table>', {
+		return this.add('Email_Footer', '</td></tr></table></td></tr><tr><td border="0" cellspacing="0" cellpadding="0" width="100%" style="font-family: Helvetica,Arial,sans-serif; max-width: 800px; margin: 0 auto; padding: 1.5em; text-align: center; font-size: 8pt; color: #999;">Powered by <a href="https://rocket.chat" target="_blank">Rocket.Chat</a></td></tr></table></td></tr></table></html>', {
 			type: 'code',
 			code: 'text/html',
 			multiline: true,
@@ -504,6 +486,15 @@ RocketChat.settings.addGroup('Email', function() {
 			type: 'string',
 			env: true,
 			i18nLabel: 'Port'
+		});
+		this.add('SMTP_IgnoreTLS', false, {
+			type: 'boolean',
+			env: true,
+			i18nLabel: 'IgnoreTLS',
+			enableQuery: {
+				_id: 'SMTP_Protocol',
+				value: 'smtp'
+			}
 		});
 		this.add('SMTP_Pool', true, {
 			type: 'boolean',

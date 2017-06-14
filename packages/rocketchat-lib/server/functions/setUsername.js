@@ -65,12 +65,11 @@ RocketChat._setUsername = function(userId, u) {
 		RocketChat.models.Rooms.replaceUsernameOfUserByUserId(user._id, username);
 		RocketChat.models.Subscriptions.setUserUsernameByUserId(user._id, username);
 		RocketChat.models.Subscriptions.setNameForDirectRoomsWithOldName(previousUsername, username);
-		const rs = RocketChatFileAvatarInstance.getFileWithReadStream(encodeURIComponent(`${ previousUsername }.jpg`));
-		if (rs != null) {
-			RocketChatFileAvatarInstance.deleteFile(encodeURIComponent(`${ username }.jpg`));
-			const ws = RocketChatFileAvatarInstance.createWriteStream(encodeURIComponent(`${ username }.jpg`), rs.contentType);
-			ws.on('end', Meteor.bindEnvironment(() => RocketChatFileAvatarInstance.deleteFile(encodeURIComponent(`${ previousUsername }.jpg`))));
-			rs.readStream.pipe(ws);
+
+		const fileStore = FileUpload.getStore('Avatars');
+		const file = fileStore.model.findOneByName(previousUsername);
+		if (file) {
+			fileStore.model.updateFileNameById(file._id, username);
 		}
 	}
 	// Set new username*

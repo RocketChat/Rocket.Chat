@@ -25,8 +25,6 @@
   "Accounts_AllowUserProfileChange": "允許變更使用者個人檔案",
   "Accounts_AvatarResize": "調整大頭貼尺寸",
   "Accounts_AvatarSize": "大頭貼尺寸",
-  "Accounts_AvatarStorePath": "大頭貼儲存路徑",
-  "Accounts_AvatarStoreType": "大頭貼儲存類型",
   "Accounts_BlockedDomainsList": "黑名單網域列表",
   "Accounts_BlockedDomainsList_Description": "以逗號分隔的網域黑名單",
   "Accounts_BlockedUsernameList": "使用者黑名單",
