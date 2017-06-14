@@ -75,13 +75,20 @@
 		width: var(--account-status-bullet-size);
 		height: var(--account-status-bullet-size);
 		border-radius: 50%;
-		margin-right: 0.5rem;
+		margin: 0.25rem 0.5rem 0.25rem 0;
 	}
 
 	&-arrow {
 		stroke: currentColor;
 		width: 8px;
 		height: 8px;
+		transition: transform 0.2s linear;
+	}
+
+	& .rc-popover-anchor:checked {
+		& ~ .sidebar__account-status .sidebar__account-arrow {
+			transform: rotate(180deg);
+		}
 	}
 
 	& .rc-popover {
