@@ -64,7 +64,7 @@
 	display: none;
 	position: absolute;
 	z-index: 9999;
-	padding: 24px;
+	padding: 1rem;
 	border-radius: 2px;
 	background-color: #ffffff;
 	box-shadow: 0 0 2px 0 rgba(47, 52, 61, 0.08), 0 0 12px 0 rgba(47, 52, 61, 0.12);
@@ -89,23 +89,29 @@
 		margin-bottom: 8px;
 	}
 
-	&__list-item {
+	&__item {
 		display: flex;
 		align-items: center;
 		color: #2f343d;
 		font-size: 0.875rem;
 		padding: 4px 0;
 		cursor: pointer;
+		font-weight: 500;
 	}
 
-	&__list-icon {
-		margin-right: 8px;
+	&__item-icon {
+		margin: 0.25rem;
 
 		&--customize {
+			margin: 0.187rem 0.25rem;
 			width: 14px;
 			height: 14px;
 			stroke: currentColor;
 		}
+	}
+
+	&__item-text {
+		margin-left: 0.25rem;
 	}
 
 	&__divider {
