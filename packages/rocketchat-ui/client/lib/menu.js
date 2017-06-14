@@ -1,10 +1,23 @@
-/* globals isRtl */
+import EventEmitter from 'wolfy87-eventemitter';
 const sideNavW = 280;
-this.menu = new class {
+
+window.addEventListener('resize', _.debounce(((event) => {
+	let lastState = window.matchMedia('(min-width: 700px)').matches ? 'mini' : 'large';
+	RocketChat.emit('grid', lastState);
+	return (event) => {
+		const futureState = window.matchMedia('(min-width: 700px)').matches ? 'mini' : 'large';
+		if (lastState != futureState) {
+			lastState = futureState;
+			RocketChat.emit('grid', lastState);
+		}
+	};
+})(), 100));
+
+/* globals isRtl */
+this.menu = new class extends EventEmitter {
 	constructor() {
-		this._onOpen = [];
+		super();
 		this._open = false;
-		this._onClose = [];
 		this.updateUnreadBars = _.throttle(() => {
 			if (this.list == null) {
 				return;
@@ -35,6 +48,7 @@ this.menu = new class {
 		this.sideNavW = sideNavW;
 	}
 	init() {
+		this.menu = $('.sidebar');
 		this.mainContent = $('.main-content');
 
 		this.list = $('.rooms-list');
@@ -49,31 +63,29 @@ this.menu = new class {
 	isOpen() {
 		return Session.get('isMenuOpen');
 	}
-	onOpen(fn) {
-		if (typeof fn === 'function') {
-			this._onOpen.push(fn);
-		}
-	}
-	onClose(fn) {
-		if (typeof fn === 'function') {
-			this._onClose.push(fn);
-		}
-	}
 	open() {
 		this._open = true;
 		Session.set('isMenuOpen', this._open);
 		this.mainContent && this.mainContent.css('transform', `translateX(${ isRtl(localStorage.getItem('userLanguage'))?'-':'' }${ this.sideNavW }px)`);
-		setTimeout(() => this._onOpen.forEach(fn => fn.apply(this)), 10);
+		setTimeout(() => this.emit('open'), 10);
 	}
 
 	close() {
 		this._open = false;
 		Session.set('isMenuOpen', this._open);
 		this.mainContent && this.mainContent .css('transform', 'translateX(0)');
-		setTimeout(() => this._onClose.forEach(fn => fn.apply(this)), 10);
+		setTimeout(() => this.emit('close'), 10);
 	}
 
 	toggle() {
 		return this.isOpen() ? this.close() : this.open();
 	}
 };
+
+menu.on('close', function() {
+	this.menu.find('[data-popover="anchor"]:checked').prop('checked', false);
+});
+
+RocketChat.on('grid', size => {
+	menu.close();
+});
