@@ -1,5 +1,10 @@
 .main-content {
 	height: auto !important;
 	width: 100% !important;
-	position: static !important;
+	position: static;
+}
+@media (width <= 780px) {
+	.main-content {
+		position: initial;
+	}
 }
