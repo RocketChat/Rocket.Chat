@@ -1,12 +1,12 @@
 import EventEmitter from 'wolfy87-eventemitter';
 const sideNavW = 280;
 
-window.addEventListener('resize', _.debounce(((event) => {
+window.addEventListener('resize', _.debounce((() => {
 	let lastState = window.matchMedia('(min-width: 700px)').matches ? 'mini' : 'large';
 	RocketChat.emit('grid', lastState);
-	return (event) => {
+	return () => {
 		const futureState = window.matchMedia('(min-width: 700px)').matches ? 'mini' : 'large';
-		if (lastState != futureState) {
+		if (lastState !== futureState) {
 			lastState = futureState;
 			RocketChat.emit('grid', lastState);
 		}
@@ -82,10 +82,10 @@ this.menu = new class extends EventEmitter {
 	}
 };
 
-menu.on('close', function() {
+this.menu.on('close', function() {
 	this.menu.find('[data-popover="anchor"]:checked').prop('checked', false);
 });
 
-RocketChat.on('grid', size => {
-	menu.close();
+RocketChat.on('grid', () => {
+	this.menu.close();
 });

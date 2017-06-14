@@ -4,10 +4,11 @@ const map = (x, in_min, in_max, out_min, out_max) => (x - in_min) * (out_max - o
 RocketChat.settings.collection.find({_id:/theme/}, {fields:{ value: 1, properties: 1, type: 1 }}).observe({changed: () => { DynamicCss.run(); }});
 const sideNavW = menu.sideNavW;
 
-menu.onClose(function() {
+menu.on('close', function() {
 	this.mainContent.css('opacity', '1');
 });
-menu.onOpen(function() {
+
+menu.on('open', function() {
 	this.mainContent.css('opacity', '.5');
 });
 
