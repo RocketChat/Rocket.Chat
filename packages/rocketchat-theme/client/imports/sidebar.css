@@ -154,8 +154,7 @@
 
 	&__type {
 		font-size: 0.75rem;
-		text-transform: uppercase;
-		font-weight: 400;
+		font-weight: 600;
 		margin-bottom: 18px;
 		margin-left: 22px;
 	}
@@ -173,6 +172,7 @@
 	align-items: center;
 	border-radius: 2px;
 	padding-left: 22px;
+	font-weight: 500;
 
 	&__link {
 		font-size: 1rem;
