@@ -55,7 +55,7 @@ Meteor.methods({
 		if (data.language !== 'en') {
 			const localeFn = Meteor.call('loadLocale', data.language);
 			if (localeFn) {
-				Function(localeFn)();
+				Function(moment.localeFn)();
 			}
 		}
 
