@@ -104,7 +104,7 @@ this.ChatMessages = class ChatMessages {
 		const editAllowed = RocketChat.settings.get('Message_AllowEditing');
 		const editOwn = message && message.u && message.u._id === Meteor.userId();
 
-		if (!hasPermission && !editAllowed || !editOwn) { return; }
+		if (!hasPermission && (!editAllowed || !editOwn)) { return; }
 		if (element.classList.contains('system')) { return; }
 
 		const blockEditInMinutes = RocketChat.settings.get('Message_AllowEditing_BlockEditInMinutes');
@@ -477,9 +477,11 @@ this.ChatMessages = class ChatMessages {
 			return false;
 
 				// ctrl (command) + shift + k -> clear room messages
-		} else if (k === 75 && navigator && navigator.platform && event.shiftKey && (navigator.platform.indexOf('Mac') !== -1 && event.metaKey) || event.ctrlKey) {
-			return RoomHistoryManager.clear(rid);
 		}
+		// TODO
+		// else if (k === 75 && navigator && navigator.platform && event.shiftKey && (navigator.platform.indexOf('Mac') !== -1 ? event.metaKey : event.ctrlKey)) {
+		// 	return RoomHistoryManager.clear(rid);
+		// }
 	}
 
 	valueChanged(/*rid, event*/) {

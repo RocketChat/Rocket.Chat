@@ -17,6 +17,7 @@ Npm.depends({
 
 Package.onUse(function(api) {
 	api.use('rate-limit');
+	api.use('webapp');
 	api.use('session');
 	api.use('reactive-var');
 	api.use('reactive-dict');
@@ -104,6 +105,7 @@ Package.onUse(function(api) {
 
 	// SERVER MODELS
 	api.addFiles('server/models/_Base.js', 'server');
+	api.addFiles('server/models/Avatars.js', 'server');
 	api.addFiles('server/models/Messages.js', 'server');
 	api.addFiles('server/models/Reports.js', 'server');
 	api.addFiles('server/models/Rooms.js', 'server');
@@ -144,6 +146,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/methods/getFullUserData.js', 'server');
 	api.addFiles('server/methods/getRoomRoles.js', 'server');
 	api.addFiles('server/methods/getServerInfo.js', 'server');
+	api.addFiles('server/methods/getSingleMessage.js', 'server');
 	api.addFiles('server/methods/getUserRoles.js', 'server');
 	api.addFiles('server/methods/insertOrUpdateUser.js', 'server');
 	api.addFiles('server/methods/joinDefaultChannels.js', 'server');
@@ -196,6 +199,7 @@ Package.onUse(function(api) {
 
 	// CLIENT MODELS
 	api.addFiles('client/models/_Base.js', 'client');
+	api.addFiles('client/models/Avatars.js', 'client');
 	api.addFiles('client/models/Uploads.js', 'client');
 
 	// CLIENT VIEWS
@@ -212,11 +216,4 @@ Package.onUse(function(api) {
 	api.export('RocketChatTabBar');
 
 	api.imply('tap:i18n');
-});
-
-Package.onTest(function(api) {
-	api.use('coffeescript');
-	api.use('sanjo:jasmine@0.20.2');
-	api.use('rocketchat:lib');
-	api.addFiles('tests/jasmine/server/unit/models/_Base.spec.coffee', 'server');
 });
