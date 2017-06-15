@@ -142,7 +142,7 @@ konecty:delayed-task
 konecty:mongo-counter
 konecty:multiple-instances-status
 konecty:nrr
-konecty:user-presence
+voismart:user-presence
 
 dispatch:run-as-user
 francocatena:status
