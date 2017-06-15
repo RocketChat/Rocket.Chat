@@ -115,7 +115,7 @@
   "Accounts_RequirePasswordConfirmation": "Require Password Confirmation",
   "Accounts_SetDefaultAvatar": "Set Default Avatar",
   "Accounts_SetDefaultAvatar_Description": "Tries to determine default avatar based on OAuth Account or Gravatar",
-  "Accounts_ShowFormLogin": "Enable default login form",
+  "Accounts_ShowFormLogin": "Show default login form",
   "Accounts_UseDefaultBlockedDomainsList": "Use Default Blocked Domains List",
   "Accounts_UseDNSDomainCheck": "Use DNS Domain Check",
   "Accounts_UserAddedEmail_Default": "<h2>Welcome to <h1>[Site_Name]</h1></h2><p>Go to [Site_URL] and try the best open source chat solution available today!</p><p>You may login using your email: [email] and password: [password]. You may be required to change it after your first login.",
