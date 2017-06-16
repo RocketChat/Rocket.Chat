@@ -13,6 +13,17 @@ RocketChat.callbacks.add('beforeSaveMessage', (msg) => {
 					if (_.isString(queryString.msg)) { // Jump-to query param
 						const jumpToMessage = RocketChat.models.Messages.findOneById(queryString.msg);
 						if (jumpToMessage) {
+							let chainQuotes = jumpToMessage;
+							let index = 1;
+							while (chainQuotes && 'attachments' in chainQuotes) {
+								if(index >= RocketChat.settings.get('Message_QuoteChainLimit')) {
+									delete(chainQuotes.attachments);
+									break;
+								}
+								chainQuotes = chainQuotes.attachments[0];
+								index++;
+							}
+
 							msg.attachments = msg.attachments || [];
 							msg.attachments.push({
 								'text' : jumpToMessage.msg,
