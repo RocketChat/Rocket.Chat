@@ -82,6 +82,16 @@ const sidebar = [
 		value: '#9d9fa3'
 	},
 	{
+		name: 'sidebar-flex',
+		properties: ['background-color'],
+		value: '#f2f3f5'
+	},
+	{
+		name: 'sidebar-flex-content-active',
+		properties: ['color'],
+		value: '#2f343d'
+	},
+	{
 		name: 'sidebar-content-active',
 		properties: ['background-color', 'color', 'border-color'],
 		value: '#6c727a'

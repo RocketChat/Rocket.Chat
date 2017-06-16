@@ -1,10 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <svg xmlns="http://www.w3.org/2000/svg">
 <symbol id="arrow-down" viewBox="0 0 10 6"><title>arrow-down</title><path d="M8.657.828L4.828 4.657 1 .828" stroke-width="1.5" fill="none"/></symbol>
+<symbol id="arrow-back" viewBox="0 0 20 14"><title>arrow-back</title><g stroke-width="1.5" fill="none" fill-rule="evenodd"><path d="M8 13.071L1.929 7 8 .929"/><path d="M3 7h14.003C18.106 7 19 7.89 19 9v3.5"/></g></symbol>
 <symbol id="cross" viewBox="0 0 12 12"><title>cross</title><g stroke-width="1.5" fill="none" fill-rule="evenodd" stroke-linecap="square"><path d="M10.243 1.757l-8.486 8.486M1.757 1.757l8.486 8.486"/></g></symbol>
+<symbol id="customize" viewBox="0 0 16 16"><title>customize</title><g transform="translate(1 1)" stroke-width="1.5" fill="none" fill-rule="evenodd"><path d="M0 7h8m4 0h2M0 2h2m3.996 0H14M0 12h3m4 0h7" stroke-linecap="square"/><circle cx="4" cy="2" r="2"/><circle cx="10" cy="7" r="2"/><circle cx="5" cy="12" r="2"/></g></symbol>
 <symbol id="hashtag" viewBox="0 0 16 16"><title>hashtag</title><g stroke-width="1.5" fill="none" fill-rule="evenodd" stroke-linecap="square"><path d="M5 1v14M11 1v14M1 5h14M1 11h14"/></g></symbol>
 <symbol id="lock" viewBox="0 0 14 20"><title>lock</title><g stroke-width="1.5" fill="none" fill-rule="evenodd"><path d="M1 9h12v10H1zM3 5c0-2.21 1.795-4 4-4 2.21 0 4 1.795 4 4v4H3V5z"/></g></symbol>
 <symbol id="magnifier" viewBox="0 0 19 19"><title>magnifier</title><g transform="translate(1 1)" stroke-width="1.5" fill="none" fill-rule="evenodd"><circle cx="6.5" cy="6.5" r="6.5"/><path d="M17 17l-5-5" stroke-linecap="square"/></g></symbol>
 <symbol id="plus" viewBox="0 0 14 14"><title>plus</title><g stroke-width="1.5" fill="none" fill-rule="evenodd" stroke-linecap="square"><path d="M7 1v12M13 7H1"/></g></symbol>
-<symbol id="customize" viewBox="0 0 16 16"><title>customize</title><g transform="translate(1 1)" stroke-width="1.5" fill="none" fill-rule="evenodd"><path d="M0 7h8m4 0h2M0 2h2m3.996 0H14M0 12h3m4 0h7" stroke-linecap="square"/><circle cx="4" cy="2" r="2"/><circle cx="10" cy="7" r="2"/><circle cx="5" cy="12" r="2"/></g></symbol>
+<symbol id="user" viewBox="0 0 18 19"><title>user</title><path d="M1 16.832c0-4.948 6-3.958 6-5.937 0 0 .115-1.314-.546-1.98C5.63 8.092 5 7.102 5 5.454 5 2.993 6.79 1 9 1s4 1.994 4 4.453c0 1.625-.614 2.637-1.474 3.463-.628.648-.526 1.979-.526 1.979 0 1.979 6 .99 6 5.937 0 0-1.593 1.168-8 1.168s-8-1.168-8-1.168z" stroke-width="1.5" fill="none" fill-rule="evenodd"/></symbol>
+<symbol id="user-rounded" viewBox="0 0 18 18"><title>user-rounded</title><g stroke-width="1.5" fill="none" fill-rule="evenodd"><rect x=".75" y=".75" width="16.5" height="16.5" rx="2"/><path d="M3.002 17c0-3.75 4.499-3 4.499-4.5 0 0 .086-.996-.41-1.5-.618-.625-1.09-1.376-1.09-2.625C6.001 6.511 7.344 5 9 5c1.656 0 2.999 1.511 2.999 3.375 0 1.232-.46 2-1.105 2.625-.471.491-.395 1.5-.395 1.5 0 1.5 4.499.75 4.499 4.5"/></g></symbol>
 </svg>

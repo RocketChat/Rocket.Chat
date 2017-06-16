@@ -1,29 +1,51 @@
 <template name="accountFlex">
-	<header>
-		<div>
-			<h4>{{_ "My_Account"}}</h4>
-		</div>
-	</header>
-	<div class="content">
-		<div class="wrapper">
-			<ul>
-				<li>
-					<a href="{{pathFor 'account' group='preferences'}}" class="account-link">{{_ "Preferences"}}</a>
+	<aside class="sidebar sidebar--flex sidebar-flex-background" role="navigation">
+		<header class="sidebar__header">
+			{{> accountBox lighten=true }}
+			<button class="sidebar-flex__back-button sidebar-flex-content-active" data-action="back">
+				<svg class="sidebar-flex__back-icon">
+					<use xlink:href="/images/icons.svg#arrow-back"></use>
+				</svg>
+				<span>Back to chat</span>
+			</button>
+		</header>
+			<ul class="rooms-list__list">
+				<li class="room-item">
+					<a class="room-item__link sidebar-content" href="{{pathFor 'account' group='preferences'}}">
+						<svg class="room-item__room-icon room-item__room-icon--customize">
+							<use xlink:href="/images/icons.svg#customize"></use>
+						</svg>
+						<span class='room-item__name'>{{_ "Preferences"}}</span>
+					</a>
 				</li>
 				{{#if allowUserProfileChange}}
-				<li>
-					<a href="{{pathFor 'account' group='profile'}}" class="account-link">{{_ "Profile"}}</a>
-				</li>
+					<li class="room-item">
+						<a class="room-item__link sidebar-content" href="{{pathFor 'account' group='profile'}}">
+							<svg class="room-item__room-icon room-item__room-icon--user">
+								<use xlink:href="/images/icons.svg#user"></use>
+							</svg>
+							<span class='room-item__name'>{{_ "Profile"}}</span>
+						</a>
+					</li>
 				{{/if}}
 				{{#if allowUserAvatarChange}}
-				<li>
-					<a href="{{pathFor 'changeAvatar'}}" class="account-link">{{_ "Avatar"}}</a>
-				</li>
+					<li class="room-item">
+						<a class="room-item__link sidebar-content" href="{{pathFor 'changeAvatar'}}">
+							<svg class="room-item__room-icon room-item__room-icon--user-rounded">
+								<use xlink:href="/images/icons.svg#user-rounded"></use>
+							</svg>
+							<span class='room-item__name'>{{_ "Avatar"}}</span>
+						</a>
+					</li>
 				{{/if}}
-				<li>
-					<a href="{{pathFor 'account' group='security'}}" class="account-link">{{_ "Security"}}</a>
+				<li class="room-item">
+					<a class="room-item__link sidebar-content" href="{{pathFor 'account' group='security'}}">
+						<svg class="room-item__room-icon room-item__room-icon--lock">
+							<use xlink:href="/images/icons.svg#lock"></use>
+						</svg>
+						<span class='room-item__name'>{{_ "Security"}}</span>
+					</a>
 				</li>
 			</ul>
-		</div>
-	</div>
+	</aside>
 </template>

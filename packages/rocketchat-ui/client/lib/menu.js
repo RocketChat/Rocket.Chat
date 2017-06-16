@@ -85,7 +85,7 @@ this.menu = new class extends EventEmitter {
 		if (this.movestarted === true || absX > 5) {
 			this.movestarted = true;
 			if (this.isRtl) {
-				if (menu.isOpen()) {
+				if (this.isOpen()) {
 					this.diff = -sideNavW + diffX;
 				} else {
 					this.diff = diffX;
@@ -97,7 +97,7 @@ this.menu = new class extends EventEmitter {
 					this.diff = 0;
 				}
 			} else {
-				if (menu.isOpen()) {
+				if (this.isOpen()) {
 					this.diff = sideNavW + diffX;
 				} else {
 					this.diff = diffX;
@@ -123,7 +123,7 @@ this.menu = new class extends EventEmitter {
 		this.sidebarWrap.css('opacity', map((diff / width), 0, 1, -.1, .8).toFixed(2));
 		this.sidebar.css('transform', `translate3d(${ (diff - sideNavW).toFixed(3) }px, 0 , 0`);
 	}
-	touchend(e) {
+	touchend() {
 		const [max, min] = [sideNavW * .76, sideNavW * .24];
 		if (this.movestarted !== true) {
 			return;
@@ -205,14 +205,14 @@ this.menu = new class extends EventEmitter {
 
 let passClosePopover = false;
 
-menu.on('clickOut', function(event) {
+this.menu.on('clickOut', function() {
 	if (!this.closePopover()) {
 		passClosePopover = true;
 		this.close();
 	}
 });
 
-menu.on('close', function() {
+this.menu.on('close', function() {
 	if (passClosePopover) {
 		passClosePopover = false;
 		return;
