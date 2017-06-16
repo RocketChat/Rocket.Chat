@@ -2,12 +2,12 @@ import EventEmitter from 'wolfy87-eventemitter';
 const sideNavW = 280;
 const map = (x, in_min, in_max, out_min, out_max) => (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
 
-window.addEventListener('resize', _.debounce(((event) => {
+window.addEventListener('resize', _.debounce((() => {
 	let lastState = window.matchMedia('(min-width: 700px)').matches ? 'mini' : 'large';
 	RocketChat.emit('grid', lastState);
-	return (event) => {
+	return () => {
 		const futureState = window.matchMedia('(min-width: 700px)').matches ? 'mini' : 'large';
-		if (lastState != futureState) {
+		if (lastState !== futureState) {
 			lastState = futureState;
 			RocketChat.emit('grid', lastState);
 		}
@@ -202,6 +202,7 @@ this.menu = new class extends EventEmitter {
 	}
 };
 
+
 let passClosePopover = false;
 
 menu.on('clickOut', function(event) {
@@ -219,6 +220,6 @@ menu.on('close', function() {
 	this.closePopover();
 });
 
-RocketChat.on('grid', size => {
-	menu.close();
+RocketChat.on('grid', () => {
+	this.menu.close();
 });
