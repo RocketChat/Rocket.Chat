@@ -16,7 +16,7 @@ RocketChat.callbacks.add('beforeSaveMessage', (msg) => {
 							let chainQuotes = jumpToMessage;
 							let index = 1;
 							while (chainQuotes && 'attachments' in chainQuotes) {
-								if(index >= RocketChat.settings.get('Message_QuoteChainLimit')) {
+								if (index >= RocketChat.settings.get('Message_QuoteChainLimit')) {
 									delete(chainQuotes.attachments);
 									break;
 								}
