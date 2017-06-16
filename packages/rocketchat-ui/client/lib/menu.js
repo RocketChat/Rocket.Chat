@@ -1,5 +1,6 @@
 import EventEmitter from 'wolfy87-eventemitter';
 const sideNavW = 280;
+const map = (x, in_min, in_max, out_min, out_max) => (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
 
 window.addEventListener('resize', _.debounce(((event) => {
 	let lastState = window.matchMedia('(min-width: 700px)').matches ? 'mini' : 'large';
@@ -47,34 +48,153 @@ this.menu = new class extends EventEmitter {
 		}, 200);
 		this.sideNavW = sideNavW;
 	}
+	get isRtl() {
+		return isRtl(localStorage.getItem('userLanguage'));
+	}
+	touchstart(e) {
+		this.movestarted = false;
+		this.blockmove = false;
+		this.touchstartX = undefined;
+		this.touchstartY = undefined;
+		this.diff = 0;
+		if (e.target === this.sidebarWrap[0] || $(e.target).closest('.main-content').length > 0) {
+			this.closePopover();
+			this.touchstartX = e.touches[0].clientX;
+			this.touchstartY = e.touches[0].clientY;
+			this.mainContent = $('.main-content');
+			this.wrapper = $('.messages-box > .wrapper');
+		}
+	}
+	touchmove(e) {
+		if (this.touchstartX == null) {
+			return;
+		}
+		const [touch] = e.touches;
+		const diffX = touch.clientX - this.touchstartX;
+		const diffY = touch.clientY - this.touchstartY;
+		const absX = Math.abs(diffX);
+		const absY = Math.abs(diffY);
+
+		if (!this.movestarted && absY > 5) {
+			this.blockmove = true;
+		}
+		if (this.blockmove) {
+			return;
+		}
+
+		if (this.movestarted === true || absX > 5) {
+			this.movestarted = true;
+			if (this.isRtl) {
+				if (menu.isOpen()) {
+					this.diff = -sideNavW + diffX;
+				} else {
+					this.diff = diffX;
+				}
+				if (this.diff < -sideNavW) {
+					this.diff = -sideNavW;
+				}
+				if (this.diff > 0) {
+					this.diff = 0;
+				}
+			} else {
+				if (menu.isOpen()) {
+					this.diff = sideNavW + diffX;
+				} else {
+					this.diff = diffX;
+				}
+				if (this.diff > sideNavW) {
+					this.diff = sideNavW;
+				}
+				if (this.diff < 0) {
+					this.diff = 0;
+				}
+			}
+			if (map((this.diff / sideNavW), 0, 1, -.1, .8) > 0) {
+				this.sidebar.css('box-shadow', '0 0 15px 1px rgba(0,0,0,.3)');
+				this.sidebarWrap.css('z-index', '9998');
+				this.translate(this.diff);
+			}
+		}
+	}
+	translate(diff, width = sideNavW) {
+		this.sidebarWrap.css('width', '100%');
+		this.wrapper.css('overflow', 'hidden');
+		this.sidebarWrap.css('background-color', '#000');
+		this.sidebarWrap.css('opacity', map((diff / width), 0, 1, -.1, .8).toFixed(2));
+		this.sidebar.css('transform', `translate3d(${ (diff - sideNavW).toFixed(3) }px, 0 , 0`);
+	}
+	touchend(e) {
+		const [max, min] = [sideNavW * .76, sideNavW * .24];
+		if (this.movestarted !== true) {
+			return;
+		}
+		this.movestarted = false;
+		this.mainContent[0].style.transition = null;
+		this.wrapper.css('overflow', '');
+		if (this.isRtl) {
+			if (this.isOpen()) {
+				return this.diff >= -max ? this.close() : this.open();
+			} else if (this.diff <= -min) {
+				return this.open();
+			}
+			return this.close();
+		}
+		if (this.isOpen()) {
+			if (this.diff >= max) {
+				return this.open();
+			}
+			return this.close();
+		}
+		if (this.diff >= min) {
+			return this.open();
+		}
+		return this.close();
+	}
 	init() {
-		this.menu = $('.sidebar');
+		this.sidebar = this.menu = $('.sidebar');
+		this.sidebarWrap = $('.sidebar-wrap');
+		const ignore = (fn) => (event) => document.body.clientWidth <= 780 && fn(event);
+
+		document.body.addEventListener('touchstart', ignore((e) => this.touchstart(e)));
+		document.body.addEventListener('touchmove', ignore((e) => this.touchmove(e)));
+		document.body.addEventListener('touchend', ignore((e) => this.touchend(e)));
+		this.sidebarWrap.on('click', ignore((e) => {
+			e.target === this.sidebarWrap[0] && this.isOpen() && this.emit('clickOut', e);
+		}));
+		this.on('close', () => {
+			this.sidebarWrap.css('width', '');
+			this.sidebarWrap.css('z-index', '');
+			this.sidebarWrap.css('background-color', '');
+			this.sidebar.css('transform', '');
+			this.sidebar.css('box-shadow', '');
+		});
+		this.on('open', () => {
+			this.sidebar.css('box-shadow', '0 0 15px 1px rgba(0,0,0,.3)');
+			this.sidebarWrap.css('z-index', '9998');
+			this.translate(sideNavW);
+		});
 		this.mainContent = $('.main-content');
 
 		this.list = $('.rooms-list');
 		this._open = false;
 		Session.set('isMenuOpen', this._open);
-
-		this.mainContent[0].addEventListener('click', _.debounce(() => {
-			this._open && this.close();
-		}, 300));
 	}
-
+	closePopover() {
+		return this.menu.find('[data-popover="anchor"]:checked').prop('checked', false).length > 0;
+	}
 	isOpen() {
 		return Session.get('isMenuOpen');
 	}
 	open() {
 		this._open = true;
 		Session.set('isMenuOpen', this._open);
-		this.mainContent && this.mainContent.css('transform', `translateX(${ isRtl(localStorage.getItem('userLanguage'))?'-':'' }${ this.sideNavW }px)`);
-		setTimeout(() => this.emit('open'), 10);
+		this.emit('open');
 	}
 
 	close() {
 		this._open = false;
 		Session.set('isMenuOpen', this._open);
-		this.mainContent && this.mainContent .css('transform', 'translateX(0)');
-		setTimeout(() => this.emit('close'), 10);
+		this.emit('close');
 	}
 
 	toggle() {
@@ -82,8 +202,21 @@ this.menu = new class extends EventEmitter {
 	}
 };
 
+let passClosePopover = false;
+
+menu.on('clickOut', function(event) {
+	if (!this.closePopover()) {
+		passClosePopover = true;
+		this.close();
+	}
+});
+
 menu.on('close', function() {
-	this.menu.find('[data-popover="anchor"]:checked').prop('checked', false);
+	if (passClosePopover) {
+		passClosePopover = false;
+		return;
+	}
+	this.closePopover();
 });
 
 RocketChat.on('grid', size => {

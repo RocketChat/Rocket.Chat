@@ -54,13 +54,17 @@
 :root {
 	--rc-popover-open: {
 		display: flex;
+		align-items: flex-start;
+		width: 100vw;
+    height: 100vh;
+		/*background: rgba(0,0,0,.5);*/
 		animation: dropdown-show 0.1s cubic-bezier(0.45, 0.05, 0.55, 0.95);
 	}
 	--rc-popover-open-mobile: {
 		position: fixed;
-    top: 85px;
-    left: 25px;
-    right: 25px;
+		top: 0;
+		left: 0;
+		width: 100vw;
 	}
 }
 
@@ -73,16 +77,21 @@
 }
 
 
+
 .rc-popover {
 	display: none;
 	position: absolute;
+	will-change: transform;
 	z-index: 9999;
-	padding: 24px;
-	border-radius: 2px;
-	background-color: #ffffff;
-	box-shadow: 0 0 2px 0 rgba(47, 52, 61, 0.08), 0 0 12px 0 rgba(47, 52, 61, 0.12);
-	cursor: default;
-
+	&__content {
+		width: 100%;
+		display: flex;
+		padding: 24px;
+		border-radius: 2px;
+		background-color: #ffffff;
+		box-shadow: 0 0 2px 0 rgba(47, 52, 61, 0.08), 0 0 12px 0 rgba(47, 52, 61, 0.12);
+		cursor: default;
+	}
 	&--show {
 		@apply --rc-popover-open;
 	}
