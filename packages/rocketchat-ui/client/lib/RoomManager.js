@@ -259,7 +259,10 @@ Tracker.autorun(() => {
 	if ((currentUsername === undefined) && ((user != null ? user.username : undefined) != null)) {
 		currentUsername = user.username;
 		RoomManager.closeAllRooms();
-		return FlowRouter._current.route.callAction(FlowRouter._current);
+		if (FlowRouter._current.route) {
+			return FlowRouter._current.route.callAction(FlowRouter._current);
+
+		}
 	}
 });
 

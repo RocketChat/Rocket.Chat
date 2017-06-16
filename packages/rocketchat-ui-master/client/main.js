@@ -1,15 +1,6 @@
 /* globals toolbarSearch, menu, isRtl, fireGlobalEvent, CachedChatSubscription, DynamicCss */
 import Clipboard from 'clipboard';
-const map = (x, in_min, in_max, out_min, out_max) => (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
 RocketChat.settings.collection.find({_id:/theme/}, {fields:{ value: 1, properties: 1, type: 1 }}).observe({changed: () => { DynamicCss.run(); }});
-const sideNavW = menu.sideNavW;
-
-menu.onClose(function() {
-	this.mainContent.css('opacity', '1');
-});
-menu.onOpen(function() {
-	this.mainContent.css('opacity', '.5');
-});
 
 Template.body.onRendered(function() {
 	new Clipboard('.clipboard');
@@ -92,10 +83,11 @@ Template.body.onRendered(function() {
 			}
 		}
 
-		if (target.closest('[data-popover="label"], [data-popover="popover"]').length === 0 && target.data('popover') !== 'anchor') {
+		if ([...target[0].classList].includes('rc-popover') || target.closest('[data-popover="label"], [data-popover="popover"]').length === 0 && target.data('popover') !== 'anchor') {
 			$('[data-popover="anchor"]:checked').prop('checked', false);
 		}
 	});
+
 	Tracker.autorun(function(c) {
 		const w = window;
 		const d = document;
@@ -184,96 +176,6 @@ Template.main.events({
 			console.log('room click .burger');
 		}
 		return menu.toggle();
-	},
-	'touchstart'(e, t) {
-		if (document.body.clientWidth > 780) {
-			return;
-		}
-		t.touchstartX = undefined;
-		t.touchstartY = undefined;
-		t.movestarted = false;
-		t.blockmove = false;
-		t.isRtl = isRtl(localStorage.getItem('userLanguage'));
-		if ($(e.currentTarget).closest('.main-content').length > 0) {
-			t.touchstartX = e.originalEvent.touches[0].clientX;
-			t.touchstartY = e.originalEvent.touches[0].clientY;
-			t.mainContent = $('.main-content');
-			return t.wrapper = $('.messages-box > .wrapper');
-		}
-	},
-	'touchmove':(e, t) => {
-
-		if (t.touchstartX == null) {
-			return;
-		}
-		const [touch] = e.originalEvent.touches;
-		const diffX = touch.clientX - t.touchstartX;
-		const diffY = touch.clientY - t.touchstartY;
-		const absX = Math.abs(diffX);
-		const absY = Math.abs(diffY);
-		if (t.movestarted !== true && t.blockmove !== true && absY > 5) {
-			t.blockmove = true;
-		}
-		if (t.blockmove !== true && (t.movestarted === true || absX > 5)) {
-			t.movestarted = true;
-			if (t.isRtl) {
-				if (menu.isOpen()) {
-					t.diff = -sideNavW + diffX;
-				} else {
-					t.diff = diffX;
-				}
-				if (t.diff < -sideNavW) {
-					t.diff = -sideNavW;
-				}
-				if (t.diff > 0) {
-					t.diff = 0;
-				}
-			} else {
-				if (menu.isOpen()) {
-					t.diff = sideNavW + diffX;
-				} else {
-					t.diff = diffX;
-				}
-				if (t.diff > sideNavW) {
-					t.diff = sideNavW;
-				}
-				if (t.diff < 0) {
-					t.diff = 0;
-				}
-			}
-			t.mainContent.addClass('notransition');
-			t.mainContent.css('transition', 'none');
-			t.mainContent.css('opacity', `${ map(1 -(t.diff / sideNavW), 0, 1, .5, 1) }`);
-			t.mainContent.css('transform', `translate(${ t.diff }px)`);
-			return t.wrapper.css('overflow', 'hidden');
-		}
-	},
-	'touchend'(e, t) {
-		const [max, min] = [sideNavW * .76, sideNavW * .24];
-		if (t.movestarted !== true) {
-			return;
-	 	}
-		t.mainContent[0].style.transition = null;
-		t.wrapper.css('overflow', '');
-		if (t.isRtl) {
-			if (menu.isOpen()) {
-				return t.diff >= -max ? menu.close() : menu.open();
-			} else if (t.diff <= -min) {
-				return menu.open();
-			} else {
-				return menu.close();
-			}
-		} else if (menu.isOpen()) {
-			if (t.diff >= max) {
-				return menu.open();
-			} else {
-				return menu.close();
-			}
-		} else if (t.diff >= min) {
-			return menu.open();
-		} else {
-			return menu.close();
-		}
 	}
 });
 
