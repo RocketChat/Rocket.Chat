@@ -1,63 +1,7 @@
-.badge {
-	display: inline-block;
-	padding: 2px 6px;
-	border-radius: 2px;
-	font-size: 0.75rem;
-}
-
-.rc-tooltip {
-	position: relative;
-
-	&::before,
-	&::after {
-		opacity: 0;
-		pointer-events: none;
-		transition: all 0.18s ease-out 0.18s;
-		bottom: 100%;
-		left: 50%;
-		position: absolute;
-		z-index: 10;
-		transform: translate(-50%, 10px);
-		transform-origin: top;
-	}
-
-	&::after {
-		background: #414852;
-		border-radius: 4px;
-		color: #ffffff;
-		content: attr(aria-label) attr(label);
-		font-size: 12px;
-		padding: 0.5em 1em;
-		white-space: nowrap;
-		margin-bottom: 11px;
-	}
-
-	&::before {
-		background: url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2236%22%20height%3D%2212%22%3E%3Cpath%20fill%3D%22%23414852%22%20d%3D%22M2.658%200h32.004c-6%200-11.627%2012.002-16.002%2012.002C14.285%2012.002%208.594%200%202.658%200z%22%2F%3E%3C%2Fsvg%3E') no-repeat;
-		background-size: 100% auto;
-		height: 6px;
-		width: 18px;
-		content: "";
-		margin-bottom: 5px;
-	}
-
-	&:hover::before,
-	&:hover::after,
-	&:focus::before,
-	&:focus::after {
-		opacity: 1;
-		pointer-events: auto;
-		transform: translate(-50%, 0);
-	}
-}
-
 :root {
 	--rc-popover-open: {
 		display: flex;
 		align-items: flex-start;
-		width: 100vw;
-    height: 100vh;
-		/*background: rgba(0,0,0,.5);*/
 		animation: dropdown-show 0.1s cubic-bezier(0.45, 0.05, 0.55, 0.95);
 	}
 	--rc-popover-open-mobile: {
@@ -65,6 +9,7 @@
 		top: 0;
 		left: 0;
 		width: 100vw;
+		height: 100vh;
 	}
 }
 
@@ -75,8 +20,6 @@
 		@apply --rc-popover-open;
 	}
 }
-
-
 
 .rc-popover {
 	display: none;
@@ -120,7 +63,6 @@
 		font-size: 0.875rem;
 		padding: 4px 0;
 		cursor: pointer;
-		font-weight: 500;
 	}
 
 	&__item-icon {
@@ -157,7 +99,6 @@
 		opacity: 1;
 	}
 }
-
 
 @media (width <= 400px) {
 	.rc-popover {

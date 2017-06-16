@@ -3,6 +3,7 @@
 	width: 100% !important;
 	position: static;
 }
+
 @media (width <= 780px) {
 	.main-content {
 		position: initial;

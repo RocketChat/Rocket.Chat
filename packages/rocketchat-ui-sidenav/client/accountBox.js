@@ -64,7 +64,9 @@ Template.accountBox.events({
 
 		switch (open) {
 			case 'account':
-				AccountBox.openFlex();
+				SideNav.setFlex('accountFlex');
+				SideNav.openFlex();
+				FlowRouter.go('account');
 				break;
 			case 'logout':
 				const user = Meteor.user();

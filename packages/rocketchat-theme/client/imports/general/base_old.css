@@ -164,6 +164,7 @@
 	width: 100%;
 	z-index: 1000000;
 	border-radius: 0;
+	border-width: 0 0 1px;
 }
 
 .rc-old .alert {
@@ -4221,10 +4222,6 @@ body:not(.is-cordova) {
 	}
 }
 
-.rc-old.connection-status > .alert {
-	border-width: 0 0 1px;
-}
-
 .rc-old .touch .footer {
 	padding-left: 10px;
 	padding-right: 10px;
@@ -4694,10 +4691,11 @@ body:not(.is-cordova) {
 @media (width <= 780px) {
 	.rc-old.main-content {
 		will-change: transform;
-		transition: right 0.25s cubic-bezier(0.5, 0, 0.1, 1), transform .1s linear;
+		transition: right 0.25s cubic-bezier(0.5, 0, 0.1, 1), transform 0.1s linear;
 		z-index: 1;
 		left: 0;
 	}
+
 	.rc-old #rocket-chat {
 		& .burger {
 			visibility: visible;

@@ -62,45 +62,13 @@ button {
 	font-style: inherit;
 }
 
-.avatar {
-	height: 100%;
-	width: 100%;
-	overflow: hidden;
-	position: relative;
-	border-radius: 4px;
-
-	& .emoji,
-	& .emojione {
-		width: 100%;
-		height: 100%;
-		margin: 0;
-	}
-
-	& .avatar-image {
-		height: 100%;
-		width: 100%;
-		background-size: cover;
-		background-repeat: no-repeat;
-		background-position: center;
-	}
-
-	&[initials]::before {
-		display: flex;
-		align-items: center;
-		content: attr(initials);
-		position: absolute;
-		font-size: 22px;
-		text-align: center;
-		width: 100%;
-		height: 100%;
-		justify-content: center;
-		text-transform: uppercase;
-		font-weight: bold;
-	}
-}
-
 #rocket-chat {
 	display: flex;
 	align-items: stretch;
 	height: 100%;
+
+	&.animated-hidden {
+		visibility: hidden;
+		opacity: 0;
+	}
 }
