@@ -1,12 +1,12 @@
 <template name="accountBox">
-	<div class="sidebar__account" aria-label="{{_ "Account"}}" role="region">
+	<div class="sidebar__account {{#if lighten}}sidebar__account--lighten{{/if}}" aria-label="{{_ "Account"}}" role="region">
 		{{#with myUserInfo}}
 			{{#if username}}
 				<div class="sidebar__account-thumb" data-status='{{visualStatus}}'>
 					{{> avatar username=username}}
 				</div>
 				<div class="sidebar__account-data">
-					<h3 class="sidebar__account-name sidebar-content-unread" data-username="{{username}}">@{{username}}</h3>
+					<h3 class="sidebar__account-name sidebar-content-unread {{#if ../lighten}}sidebar-flex-content-active{{/if}}" data-username="{{username}}">@{{username}}</h3>
 					<input id="sidebar__account-menu" type="checkbox" class="rc-popover-anchor" data-popover="anchor">
 					<div class="rc-popover" data-popover="popover">
 						<div class="rc-popover__content">
@@ -37,9 +37,9 @@
 											<span class="rc-popover__item-text">{{name}}</span>
 										</li>
 									{{/each}}
-									{{!--<li class="rc-popover__item" data-action="open" data-open="account">
+									<li class="rc-popover__item" data-action="open" data-open="account">
 										<span class="rc-popover__item-text">{{_ "My_Account"}}</span>
-									</li>--}}
+									</li>
 									<li class="rc-popover__item" data-action="open" data-open="logout">
 										<span class="rc-popover__item-text">{{_ "Logout"}}</span>
 									</li>
@@ -49,8 +49,8 @@
 								<div class="rc-popover__column">
 									<h3 class="rc-popover__title">{{_ "Team"}}</h3>
 									<ul class="rc-popover__list">
-										<li class="rc-popover__list-item" data-action="open" data-open="administration">
-											<svg class="rc-popover__list-icon rc-popover__list-icon--customize">
+										<li class="rc-popover__item" data-action="open" data-open="administration">
+											<svg class="rc-popover__item-icon rc-popover__item-icon--customize">
 												<use xlink:href="/images/icons.svg#customize"></use>
 											</svg>
 											<span>{{_ "Administration"}}</span>

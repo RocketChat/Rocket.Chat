@@ -5,6 +5,10 @@
 @import 'imports/general/base.css';
 @import 'imports/general/base_old.css';
 @import 'imports/general/rtl.css';
-@import 'imports/sidebar.css';
-@import 'imports/content.css';
-@import 'imports/general/utils.css';
+@import 'imports/components/sidebar.css';
+@import 'imports/components/flex-nav.css';
+@import 'imports/components/main-content.css';
+@import 'imports/components/avatar.css';
+@import 'imports/components/badge.css';
+@import 'imports/components/popover.css';
+@import 'imports/components/tooltip.css';

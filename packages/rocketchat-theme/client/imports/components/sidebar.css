@@ -1,10 +1,8 @@
 :root {
 	--account-thumb-size: 56px;
-	--account-thumb-radius: 8px;
 	--account-status-bullet-size: 12px;
 	--room-item-height: 32px;
 }
-
 
 /* Sidebar */
 .sidebar {
@@ -13,16 +11,21 @@
 	display: flex;
 	flex-direction: column;
 	z-index: 9999;
-	
+
+	&--flex {
+		position: absolute;
+		height: 100%;
+	}
+
 	&-wrap {
 		z-index: -1;
 		height: 100%;
-    position: absolute;
-    top: 0;
+		position: absolute;
+		top: 0;
 		touch-action: pan-y;
-    user-select: none;
-    -webkit-user-drag: none;
-    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+		user-select: none;
+		-webkit-user-drag: none;
+		-webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 	}
 
 	&__header {
@@ -32,10 +35,25 @@
 	& .unread-rooms {
 		display: none;
 	}
+
 	&__footer {
 		padding: 24px;
+
 		& img {
 			width: 100%;
+		}
+	}
+
+	&-flex {
+		&__back-button {
+			font-size: 1rem;
+			margin-left: 0.25rem;
+		}
+
+		&__back-icon {
+			width: 18px;
+			height: 14px;
+			stroke: currentColor;
 		}
 	}
 }
@@ -61,10 +79,6 @@
 	&-thumb {
 		width: var(--account-thumb-size);
 		height: var(--account-thumb-size);
-
-		& .avatar {
-			border-radius: var(--account-thumb-radius);
-		}
 	}
 
 	&-data {
@@ -175,6 +189,7 @@
 .rooms-list {
 	padding: 0 8px;
 	height: 100%;
+	overflow-y: auto;
 
 	&__list {
 		&:not(:last-child) {
@@ -202,7 +217,7 @@
 	align-items: center;
 	border-radius: 2px;
 	padding-left: 22px;
-	font-weight: 500;
+	font-weight: 400;
 
 	&__link {
 		font-size: 1rem;
@@ -232,6 +247,21 @@
 
 		&--lock {
 			width: 12px;
+			height: 18px;
+		}
+
+		&--customize {
+			width: 14px;
+			height: 14px;
+		}
+
+		&--user {
+			width: 18px;
+			height: 17px;
+		}
+
+		&--user-rounded {
+			width: 18px;
 			height: 18px;
 		}
 	}

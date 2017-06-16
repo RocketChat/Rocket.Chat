@@ -6,7 +6,7 @@ Template.accountFlex.events({
 	'mouseleave header'() {
 		SideNav.leaveArrow();
 	},
-	'click header'() {
+	'click [data-action="back"]'() {
 		SideNav.closeFlex();
 	},
 	'click .cancel-settings'() {
