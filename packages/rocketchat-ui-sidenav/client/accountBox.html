@@ -7,48 +7,41 @@
 				</div>
 				<div class="sidebar__account-data">
 					<h3 class="sidebar__account-name sidebar-content-unread" data-username="{{username}}">@{{username}}</h3>
-					<label class="sidebar__account-status sidebar-content" for="sidebar__account-menu" data-popover="label">
-						<div class="sidebar__account-status-bullet {{bullet}}" title="{{visualStatus}}"></div>
-						<div class="sidebar__account-username">{{visualStatus}}</div>
-						<svg class="sidebar__account-arrow">
-							<use xlink:href="/images/icons.svg#arrow-down"></use>
-						</svg>
-					</label>
 					<input id="sidebar__account-menu" type="checkbox" class="rc-popover-anchor" data-popover="anchor">
 					<div class="rc-popover" data-popover="popover">
 						<div class="rc-popover__content">
 							<div class="rc-popover__column">
 								<h3 class="rc-popover__title">{{_ "User"}}</h3>
 								<ul class="rc-popover__list">
-									<li class="rc-popover__list-item" data-status="online" data-action="set-state">
-										<div class="sidebar__account-status-bullet general-success-background"></div>
-										<span>{{_ "Online"}}</span>
+									<li class="rc-popover__item" data-status="online" data-action="set-state">
+										<div class="sidebar__account-status-bullet rc-popover__item-icon general-success-background"></div>
+										<span class="rc-popover__item-text">{{_ "Online"}}</span>
 									</li>
-									<li class="rc-popover__list-item" data-status="away" data-action="set-state">
-										<div class="sidebar__account-status-bullet general-pending-background"></div>
-										<span>{{_ "Away" context="male"}}</span>
+									<li class="rc-popover__item" data-status="away" data-action="set-state">
+										<div class="sidebar__account-status-bullet rc-popover__item-icon general-pending-background"></div>
+										<span class="rc-popover__item-text">{{_ "Away" context="male"}}</span>
 									</li>
-									<li class="rc-popover__list-item" data-status="busy" data-action="set-state">
-										<div class="sidebar__account-status-bullet general-error-background"></div>
-										<span>{{_ "Busy" context="male"}}</span>
+									<li class="rc-popover__item" data-status="busy" data-action="set-state">
+										<div class="sidebar__account-status-bullet rc-popover__item-icon general-error-background"></div>
+										<span class="rc-popover__item-text">{{_ "Busy" context="male"}}</span>
 									</li>
-									<li class="rc-popover__list-item" data-status="offline" data-action="set-state">
-										<div class="sidebar__account-status-bullet general-inactive-background"></div>
-										<span>{{_ "Invisible"}}</span>
+									<li class="rc-popover__item" data-status="offline" data-action="set-state">
+										<div class="sidebar__account-status-bullet rc-popover__item-icon general-inactive-background"></div>
+										<span class="rc-popover__item-text">{{_ "Invisible"}}</span>
 									</li>
 								</ul>
 								<span class="rc-popover__divider"></span>
 								<ul class="rc-popover__list">
 									{{#each registeredMenus}}
-										<li class="rc-popover__list-item" data-action="open">
-											<span>{{name}}</span>
+										<li class="rc-popover__item" data-action="open">
+											<span class="rc-popover__item-text">{{name}}</span>
 										</li>
 									{{/each}}
-									{{!--<li class="rc-popover__list-item" data-action="open" data-open="account">
-										<span>{{_ "My_Account"}}</span>
+									{{!--<li class="rc-popover__item" data-action="open" data-open="account">
+										<span class="rc-popover__item-text">{{_ "My_Account"}}</span>
 									</li>--}}
-									<li class="rc-popover__list-item" data-action="open" data-open="logout">
-										<span>{{_ "Logout"}}</span>
+									<li class="rc-popover__item" data-action="open" data-open="logout">
+										<span class="rc-popover__item-text">{{_ "Logout"}}</span>
 									</li>
 								</ul>
 							</div>
@@ -67,6 +60,13 @@
 							{{/if}}
 						</div>
 					</div>
+					<label class="sidebar__account-status sidebar-content" for="sidebar__account-menu" data-popover="label">
+						<div class="sidebar__account-status-bullet {{bullet}}" title="{{visualStatus}}"></div>
+						<div class="sidebar__account-username">{{visualStatus}}</div>
+						<svg class="sidebar__account-arrow">
+							<use xlink:href="/images/icons.svg#arrow-down"></use>
+						</svg>
+					</label>
 				</div>
 			{{/if}}
 			{{!--<nav class="options animated-hidden">

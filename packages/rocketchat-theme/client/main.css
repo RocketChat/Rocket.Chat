@@ -5,6 +5,6 @@
 @import 'imports/general/base.css';
 @import 'imports/general/base_old.css';
 @import 'imports/general/rtl.css';
-@import 'imports/general/utils.css';
 @import 'imports/sidebar.css';
 @import 'imports/content.css';
+@import 'imports/general/utils.css';
