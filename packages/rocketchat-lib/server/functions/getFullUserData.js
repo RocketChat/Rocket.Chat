@@ -14,14 +14,18 @@ RocketChat.getFullUserData = function({userId, filter, limit}) {
 			emails: 1,
 			phone: 1,
 			statusConnection: 1,
-			createdAt: 1,
-			lastLogin: 1,
 			services: 1,
 			requirePasswordChange: 1,
 			requirePasswordChangeReason: 1,
 			roles: 1,
 			customFields: 1
 		});
+		if (RocketChat.authz.hasPermission(userId, 'view-login-other-user-info')) {
+			fields = _.extend(fields, {
+				createdAt: 1,
+				lastLogin: 1
+			});
+		}
 	} else if (limit !== 0) {
 		limit = 1;
 	}
