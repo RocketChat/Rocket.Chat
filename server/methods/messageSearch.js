@@ -185,6 +185,9 @@ Meteor.methods({
 			if (rid) {
 				query.rid = rid;
 				// check if user can access rid room
+				if (Meteor.call('canAccessRoom', rid, currentUserId) !== false) {
+					return result;
+				}
 			} else {
 				query.rid = {
 					$in : RocketChat.models.Rooms.findByContainingUsername(currentUserName)
