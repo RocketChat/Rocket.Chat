@@ -14,7 +14,7 @@ Meteor.methods({
 		};
 
 		check(text, String);
-		check(rid, String);
+		check(rid, Match.Maybe(String));
 		check(limit, Match.Optional(Number));
 
 		const currentUserId = Meteor.userId();
@@ -182,17 +182,22 @@ Meteor.methods({
 			query._hidden = {
 				$ne: true  // don't return _hidden messages
 			};
-			if (rid != null) {
+			if (rid) {
 				query.rid = rid;
-				if (Meteor.call('canAccessRoom', rid, currentUserId) !== false) {
-					if (!RocketChat.settings.get('Message_ShowEditedStatus')) {
-						options.fields = {
-							'editedAt': 0
-						};
-					}
-					result.messages = RocketChat.models.Messages.find(query, options).fetch();
-				}
+				// check if user can access rid room
+			} else {
+				query.rid = {
+					$in : RocketChat.models.Rooms.findByContainingUsername(currentUserName)
+						.fetch()
+						.map(room => room._id)
+				};
 			}
+			if (!RocketChat.settings.get('Message_ShowEditedStatus')) {
+				options.fields = {
+					'editedAt': 0
+				};
+			}
+			result.messages = RocketChat.models.Messages.find(query, options).fetch();
 		}
 
 		return result;
