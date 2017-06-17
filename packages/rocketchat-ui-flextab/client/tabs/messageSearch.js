@@ -8,8 +8,16 @@ Meteor.startup(function() {
 		],
 		action() {
 			const message = this._arguments[1];
+			if (Session.get('openedRoom') === message.rid) {
+				return RoomHistoryManager.getSurroundingMessages(message, 50);
+			}
+			FlowRouter.goToRoomById(message.rid);
 			RocketChat.MessageAction.hideDropDown();
-			return RoomHistoryManager.getSurroundingMessages(message, 50);
+			window.setTimeout(() => {
+				RoomHistoryManager.getSurroundingMessages(message, 50);
+			}, 400);
+			// 400ms is popular among game devs as a good delay before transition starts
+			// ie. 50, 100, 200, 400, 800 are the favored timings
 		},
 		order: 100
 	});
@@ -65,7 +73,7 @@ Template.messageSearch.events({
 
 		t.hasMore.set(true);
 		t.limit.set(20);
-		return t.search();
+		return t.search(true);
 	}
 	, 500),
 
@@ -108,11 +116,11 @@ Template.messageSearch.onCreated(function() {
 	this.limit = new ReactiveVar(20);
 	this.ready = new ReactiveVar(true);
 
-	return this.search = () => {
+	return this.search = (globalSearch = false) => {
 		this.ready.set(false);
 		const value = this.$('#message-search').val();
 		return Tracker.nonreactive(() => {
-			return Meteor.call('messageSearch', value, Session.get('openedRoom'), this.limit.get(), (error, result) => {
+			return Meteor.call('messageSearch', value, (globalSearch) ? undefined: Session.get('openedRoom'), this.limit.get(), (error, result) => {
 				this.currentSearchTerm.set(value);
 				this.ready.set(true);
 				if ((result != null) && (((result.messages != null ? result.messages.length : undefined) > 0) || ((result.users != null ? result.users.length : undefined) > 0) || ((result.channels != null ? result.channels.length : undefined) > 0))) {
