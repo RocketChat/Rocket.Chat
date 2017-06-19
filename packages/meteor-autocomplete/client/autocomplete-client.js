@@ -178,7 +178,7 @@ this.AutoComplete = class {
 		const startpos = this.element.selectionStart;
 		const val = this.getText().substring(0, startpos);
 
-    /*
+		/*
       Matching on multiple expressions.
       We always go from a matched state to an unmatched one
       before going to a different matched one.
@@ -370,7 +370,7 @@ this.AutoComplete = class {
 	}
 
 
-  /*
+	/*
     Rendering functions
    */
 
