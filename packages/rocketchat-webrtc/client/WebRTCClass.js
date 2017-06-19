@@ -149,7 +149,7 @@ class WebRTCTransportClass {
 }
 
 class WebRTCClass {
-  /*
+	/*
   		@param seldId {String}
   		@param room {String}
    */
@@ -307,7 +307,7 @@ class WebRTCClass {
 	}
 
 
-  /*
+	/*
   		@param data {Object}
   			from {String}
   			media {Object}
@@ -328,7 +328,7 @@ class WebRTCClass {
 			id: data.from,
 			media: data.media
 		},
-			...data.remoteConnections];
+		...data.remoteConnections];
 
 		remoteConnections.forEach(remoteConnection => {
 			if (remoteConnection.id !== this.selfId && (this.peerConnections[remoteConnection.id] == null)) {
@@ -342,7 +342,7 @@ class WebRTCClass {
 	}
 
 
-  /*
+	/*
   		@param id {String}
    */
 
@@ -517,7 +517,7 @@ class WebRTCClass {
 	}
 
 
-  /*
+	/*
   		@param callback {Function}
    */
 
@@ -546,7 +546,7 @@ class WebRTCClass {
 	}
 
 
-  /*
+	/*
   		@param id {String}
    */
 
@@ -658,7 +658,7 @@ class WebRTCClass {
 	}
 
 
-  /*
+	/*
   		@param media {Object}
   			audio {Boolean}
   			video {Boolean}
@@ -687,7 +687,7 @@ class WebRTCClass {
 	}
 
 
-  /*
+	/*
   		@param data {Object}
   			from {String}
   			monitor {Boolean}
@@ -762,7 +762,7 @@ class WebRTCClass {
 	}
 
 
-  /*
+	/*
   		@param data {Object}
   			to {String}
   			monitor {Boolean}
@@ -893,7 +893,7 @@ class WebRTCClass {
 	}
 
 
-  /*
+	/*
   		@param data {Object}
   			to {String}
   			from {String}
@@ -915,7 +915,7 @@ class WebRTCClass {
 	}
 
 
-  /*
+	/*
   		@param data {Object}
   			to {String}
   			from {String}
