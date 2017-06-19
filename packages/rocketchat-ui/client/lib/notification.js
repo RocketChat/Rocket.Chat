@@ -106,7 +106,7 @@ const KonchatNotification = {
 		});
 	},
 
-		// $('.link-room-' + rid).addClass('new-room-highlight')
+	// $('.link-room-' + rid).addClass('new-room-highlight')
 
 	removeRoomNotification(rid) {
 		Tracker.nonreactive(() => Session.set('newRoomSound', []));
