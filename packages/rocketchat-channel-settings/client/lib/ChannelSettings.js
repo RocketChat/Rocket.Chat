@@ -3,7 +3,7 @@ RocketChat.ChannelSettings = new class {
 		this.options = new ReactiveVar({});
 	}
 
-/*
+	/*
 	 * Adds an option in Channel Settings
 	 * @config (object)
 	 *   id: option id (required)
