@@ -86,14 +86,14 @@ Template.userEdit.onCreated(function() {
 		userData.requirePasswordChange = this.$('#changePassword:checked').length > 0;
 		userData.joinDefaultChannels = this.$('#joinDefaultChannels:checked').length > 0;
 		userData.sendWelcomeEmail = this.$('#sendWelcomeEmail:checked').length > 0;
-		// userData.roles = this.$('.role-select');
-		const roleSelect = this.$('.role-select');
+		// userData.roles = this.$('.role-select').toArray();
+		const roleSelect = this.$('.role-select').toArray();
 		if (roleSelect.length > 0) {
-			const roles = roleSelect.map(role => {
+			userData.roles = roleSelect.map(role => {
 				return role.value;
 			});
 
-			console.log(roles);
+			// console.log(roles);
 		}
 
 
