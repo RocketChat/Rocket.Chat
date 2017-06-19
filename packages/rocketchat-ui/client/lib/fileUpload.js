@@ -229,8 +229,7 @@ fileUpload = function(filesToUpload) {
 								item = _.findWhere(uploading, {id: upload.id});
 								return Session.set('uploading', _.without(uploading, item));
 							}
-						}
-						, 1000);
+						}, 1000);
 					}
 				});
 			});

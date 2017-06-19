@@ -189,15 +189,15 @@ Importer.Slack = class extends Importer.Base {
 						RocketChat.models.Rooms.update({ _id: channel.rocketId }, { $addToSet: { importIds: channel.id } });
 					} else {
 						const users = channel.members
-						.reduce((ret, member) => {
-							if (member !== channel.creator) {
-								const user = this.getRocketUser(member);
-								if (user && user.username) {
-									ret.push(user.username);
+							.reduce((ret, member) => {
+								if (member !== channel.creator) {
+									const user = this.getRocketUser(member);
+									if (user && user.username) {
+										ret.push(user.username);
+									}
 								}
-							}
-							return ret;
-						}, []);
+								return ret;
+							}, []);
 						let userId = startedByUserId;
 						this.users.users.forEach(user => {
 							if (user.id === channel.creator && user.do_import) {
