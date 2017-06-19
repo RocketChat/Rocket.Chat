@@ -239,11 +239,11 @@ Template.messagePopupConfig.helpers({
 						description: TAPi18n.__(item.description)
 					};
 				})
-				.filter(command => command._id.indexOf(filter) > -1)
-				.sort(function(a, b) {
-					return a._id > b._id;
-				})
-				.slice(0, 11);
+					.filter(command => command._id.indexOf(filter) > -1)
+					.sort(function(a, b) {
+						return a._id > b._id;
+					})
+					.slice(0, 11);
 			}
 		};
 		return config;
@@ -277,17 +277,17 @@ Template.messagePopupConfig.helpers({
 							data: value
 						};
 					})
-					.filter(obj => regExp.test(obj._id))
-					.slice(0, 10)
-					.sort(function(a, b) {
-						if (a._id < b._id) {
-							return -1;
-						}
-						if (a._id > b._id) {
-							return 1;
-						}
-						return 0;
-					});
+						.filter(obj => regExp.test(obj._id))
+						.slice(0, 10)
+						.sort(function(a, b) {
+							if (a._id < b._id) {
+								return -1;
+							}
+							if (a._id > b._id) {
+								return 1;
+							}
+							return 0;
+						});
 				}
 			};
 		}

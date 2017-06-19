@@ -26,8 +26,7 @@ this.Modal = (function() {
 	}
 	function startListening() {
 		stopListening();
-		return self.interval = setInterval(() => check()
-		, 100);
+		return self.interval = setInterval(() => check(), 100);
 	}
 
 
@@ -39,8 +38,7 @@ this.Modal = (function() {
 			self.opened = 0;
 			stopListening();
 			return self.$modal.removeClass('opened closed');
-		}
-		, 300);
+		}, 300);
 	}
 	function keydown(e) {
 		const k = e.which;
@@ -86,8 +84,7 @@ this.Modal = (function() {
 		if (template != null) { setContent(template, params.data); }
 		self.$modal.addClass('opened');
 		self.$modal.removeClass('fluid');
-		return setTimeout(() => focus()
-		, 200);
+		return setTimeout(() => focus(), 200);
 	}
 
 	function init($modal, params) {
