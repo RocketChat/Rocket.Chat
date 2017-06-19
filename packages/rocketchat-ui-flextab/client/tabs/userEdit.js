@@ -17,8 +17,13 @@ Template.userEdit.helpers({
 		return RocketChat.models.Roles.find({}, { sort: { description: 1, _id: 1 } });
 	},
 
+	userRoles() {
+		return Template.instance().user.roles;
+	},
+
 	selectUserRole() {
-		if (this._id === 'user') {
+		console.log(Template.parentData(1));
+		if (this._id === Template.parentData(1)) {
 			return 'selected';
 		}
 	},
@@ -35,6 +40,13 @@ Template.userEdit.events({
 		return t.cancel(t.find('form'));
 	},
 
+	'click .remove-role'(e) {
+		console.log(this);
+		e.stopPropagation();
+		e.preventDefault();
+		$(`[data=${ this }]`).remove();
+	},
+
 	'click #randomPassword'(e) {
 		e.stopPropagation();
 		e.preventDefault();
@@ -44,7 +56,6 @@ Template.userEdit.events({
 	'submit form'(e, t) {
 		e.stopPropagation();
 		e.preventDefault();
-
 		return t.save(e.currentTarget);
 	}
 });
@@ -75,7 +86,21 @@ Template.userEdit.onCreated(function() {
 		userData.requirePasswordChange = this.$('#changePassword:checked').length > 0;
 		userData.joinDefaultChannels = this.$('#joinDefaultChannels:checked').length > 0;
 		userData.sendWelcomeEmail = this.$('#sendWelcomeEmail:checked').length > 0;
-		if (this.$('#role').val()) { userData.roles = [this.$('#role').val()]; }
+		// userData.roles = this.$('.role-select');
+		const roleSelect = this.$('.role-select');
+		if (roleSelect.length > 0) {
+			const roles = roleSelect.map(role => {
+				return role.value;
+			});
+
+			console.log(roles);
+		}
+
+
+
+		// if (this.$('#role').val()) {
+		// 	userData.roles = [this.$('#role').val()];
+		// }
 		return userData;
 	};
 
@@ -91,6 +116,10 @@ Template.userEdit.onCreated(function() {
 		}
 		if (!userData.email) {
 			errors.push('Email');
+		}
+
+		if (!userData.roles) {
+			errors.push('Roles');
 		}
 
 		for (const error of Array.from(errors)) {
