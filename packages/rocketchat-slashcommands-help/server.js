@@ -7,7 +7,7 @@
 
 RocketChat.slashCommands.add('help', function Help(command, params, item) {
 
-	if ( command !== 'help' ) {
+	if (command !== 'help') {
 		return;
 	}
 	const user = Meteor.users.findOne(Meteor.userId());
@@ -32,9 +32,8 @@ RocketChat.slashCommands.add('help', function Help(command, params, item) {
 	{
 		'New_line_message_compose_input': 'Shift + Enter'
 	}
-	]
+	];
 	keys.map((key) => {
-		console.log(key[Object.keys(key)[0]])
 		RocketChat.Notifications.notifyUser(Meteor.userId(), 'message', {
 			_id: Random.id(),
 			rid: item.rid,
