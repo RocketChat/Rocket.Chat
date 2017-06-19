@@ -1,4 +1,4 @@
- /* globals menu*/
+/* globals menu*/
 
 Template.sideNav.helpers({
 	hasUnread() {
