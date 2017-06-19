@@ -516,8 +516,7 @@ Template.userInfo.onCreated(function() {
 
 	Meteor.setInterval(() => {
 		return this.now.set(moment());
-	}
-	, 30000);
+	}, 30000);
 
 	this.autorun(() => {
 		const username = this.loadedUsername.get();
