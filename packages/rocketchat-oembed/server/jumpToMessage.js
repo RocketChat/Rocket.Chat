@@ -11,7 +11,7 @@ const recursiveRemove = (message, deep = 0) => {
 		}
 	}
 	return message;
-}
+};
 
 RocketChat.callbacks.add('beforeSaveMessage', (msg) => {
 	if (msg && msg.urls) {
