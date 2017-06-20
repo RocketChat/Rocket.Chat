@@ -2,17 +2,16 @@
 
 const URL = Npm.require('url');
 const QueryString = Npm.require('querystring');
-const recursiveRemove = 
-	(message, deep = 0) => {
-        if(message) {
-    		if('attachments' in message && deep < RocketChat.settings.get('Message_QuoteChainLimit')) {
-	            message.attachments.map((msg) => recursiveRemove(msg, deep + 1));
-	        } else {
-	            delete(message.attachments);
-	        }
-	    }
-        return message;
-    }
+const recursiveRemove = (message, deep = 0) => {
+	if (message) {
+		if ('attachments' in message && deep < RocketChat.settings.get('Message_QuoteChainLimit')) {
+			message.attachments.map((msg) => recursiveRemove(msg, deep + 1));
+		} else {
+			delete(message.attachments);
+		}
+	}
+	return message;
+}
 
 RocketChat.callbacks.add('beforeSaveMessage', (msg) => {
 	if (msg && msg.urls) {
