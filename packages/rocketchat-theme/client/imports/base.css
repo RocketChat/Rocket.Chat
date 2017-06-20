@@ -3524,6 +3524,10 @@ body:not(.is-cordova) {
 			& #password {
 				width: 70%;
 			}
+
+			& .role-select {
+				width: 70%;
+			}
 		}
 
 		& nav {
