@@ -2,7 +2,7 @@
 
 const URL = Npm.require('url');
 const QueryString = Npm.require('querystring');
-const recursiveRemove = (message, deep = 0) => {
+const recursiveRemove = (message, deep = 1) => {
 	if (message) {
 		if ('attachments' in message && deep < RocketChat.settings.get('Message_QuoteChainLimit')) {
 			message.attachments.map((msg) => recursiveRemove(msg, deep + 1));
