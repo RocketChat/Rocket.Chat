@@ -1,6 +1,8 @@
 import toastr from 'toastr';
 
 Template.userEdit.helpers({
+
+
 	canEditOrAdd() {
 		return (Template.instance().user && RocketChat.authz.hasAtLeastOnePermission('edit-other-user-info')) || (!Template.instance().user && RocketChat.authz.hasAtLeastOnePermission('create-user'));
 	},
@@ -18,14 +20,7 @@ Template.userEdit.helpers({
 	},
 
 	userRoles() {
-		return Template.instance().user.roles;
-	},
-
-	selectUserRole() {
-		console.log(Template.parentData(1));
-		if (this._id === Template.parentData(1)) {
-			return 'selected';
-		}
+		return Template.instance().roles.get();
 	},
 
 	name() {
@@ -37,32 +32,51 @@ Template.userEdit.events({
 	'click .cancel'(e, t) {
 		e.stopPropagation();
 		e.preventDefault();
-		return t.cancel(t.find('form'));
+		Template.instance().roles.set('');
+		t.cancel(t.find('form'));
 	},
 
 	'click .remove-role'(e) {
-		console.log(this);
 		e.stopPropagation();
 		e.preventDefault();
-		$(`[data=${ this }]`).remove();
+		$(`[title=${ this }]`).remove();
 	},
 
 	'click #randomPassword'(e) {
 		e.stopPropagation();
 		e.preventDefault();
-		return $('#password').val(Random.id());
+		$('#password').val(Random.id());
+	},
+
+	'click #addRole'(e) {
+		e.stopPropagation();
+		e.preventDefault();
+		if ($('.role-select').find(':selected').is(':disabled')) {
+			return;
+		}
+		const user = Template.instance().user;
+		const instanceRoles = Template.instance().roles.get();
+		let userRoles = [];
+		if (user || instanceRoles) {
+			userRoles = user ? user.roles : instanceRoles;
+		}
+		userRoles.push($('.role-select').val());
+		Template.instance().roles.set(userRoles);
+		Template.instance().user.roles;
 	},
 
 	'submit form'(e, t) {
 		e.stopPropagation();
 		e.preventDefault();
-		return t.save(e.currentTarget);
+		t.save(e.currentTarget);
 	}
 });
 
 Template.userEdit.onCreated(function() {
 	let userData;
 	this.user = this.data != null ? this.data.user : undefined;
+	this.roles = this.user ? new ReactiveVar(this.user.roles) : new ReactiveVar;
+
 
 	const { tabBar } = Template.currentData();
 
@@ -86,21 +100,16 @@ Template.userEdit.onCreated(function() {
 		userData.requirePasswordChange = this.$('#changePassword:checked').length > 0;
 		userData.joinDefaultChannels = this.$('#joinDefaultChannels:checked').length > 0;
 		userData.sendWelcomeEmail = this.$('#sendWelcomeEmail:checked').length > 0;
-		// userData.roles = this.$('.role-select').toArray();
-		const roleSelect = this.$('.role-select').toArray();
+		const roleSelect = this.$('.remove-role').toArray();
+
 		if (roleSelect.length > 0) {
-			userData.roles = roleSelect.map(role => {
-				return role.value;
+			const notSorted = roleSelect.map(role => {
+				return role.title;
 			});
-
-			// console.log(roles);
+			//Remove duplicate strings from the array
+			console.log(notSorted);
+			userData.roles = notSorted.filter((el, index) => notSorted.indexOf(el) === index);
 		}
-
-
-
-		// if (this.$('#role').val()) {
-		// 	userData.roles = [this.$('#role').val()];
-		// }
 		return userData;
 	};
 
