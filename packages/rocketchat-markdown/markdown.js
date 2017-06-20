@@ -5,21 +5,21 @@
 
 const escapeHTML = (html) => (html || '').replace(/[&<>]/g, (c, offset, str) => {
 	if (c === '&') {
-		if (str.startsWith("amp;", offset+1) ||
-			str.startsWith("lt;" , offset+1) ||
-			str.startsWith("gt;" , offset+1)) {
+		if (str.startsWith('amp;', offset+1) ||
+			str.startsWith('lt;', offset+1) ||
+			str.startsWith('gt;', offset+1)) {
 			// already escaped!
 			return c;
 		}
 
-		return "&amp;";
+		return '&amp;';
 	}
 
 	if (c === '<') {
-		return "&lt;";
+		return '&lt;';
 	}
 
-	return "&gt;";
+	return '&gt;';
 });
 
 
