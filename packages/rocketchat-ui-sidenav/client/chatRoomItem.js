@@ -73,7 +73,7 @@ Template.chatRoomItem.rendered = function() {
 
 Template.chatRoomItem.events({
 
-	'click .open-room'() {
+	'click [data-id]'() {
 		return menu.close();
 	},
 

@@ -120,6 +120,7 @@ Template.toolbar.helpers({
 			cls: 'search-results-list',
 			collection: Meteor.userId() ? RocketChat.models.Subscriptions : RocketChat.models.Rooms,
 			template: 'toolbarSearchList',
+			sidebar: true,
 			emptyTemplate: 'toolbarSearchListEmpty',
 			input: '[role="search"] input',
 			cleanOnEnter: true,

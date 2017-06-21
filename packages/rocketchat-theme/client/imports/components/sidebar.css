@@ -2,6 +2,10 @@
 	--account-thumb-size: 56px;
 	--account-status-bullet-size: 12px;
 	--room-item-height: 32px;
+	--sidebar-header-height: 190px;
+	--sidebar-header-padding: 24px;
+	--sidebar-footer-height: 125px;
+	--sidebar-footer-padding: var(--sidebar-header-padding);
 }
 
 /* Sidebar */
@@ -11,6 +15,7 @@
 	display: flex;
 	flex-direction: column;
 	z-index: 9999;
+	position: relative;
 
 	&--flex {
 		position: absolute;
@@ -29,7 +34,8 @@
 	}
 
 	&__header {
-		padding: 24px 24px 32px;
+		padding: var(--sidebar-header-padding) var(--sidebar-header-padding) 33px;
+		height: var(--sidebar-header-height);
 	}
 
 	& .unread-rooms {
@@ -37,10 +43,14 @@
 	}
 
 	&__footer {
-		padding: 24px;
+		padding: var(--sidebar-footer-padding);
+		height: var(--sidebar-footer-height);
+		width: auto;
+		text-align: center;
 
 		& img {
-			width: 100%;
+			height: 100%;
+			max-width: 100%;
 		}
 	}
 
@@ -206,6 +216,17 @@
 
 	& .badge {
 		margin-left: 8px;
+	}
+
+	&__toolbar-search {
+		position: absolute;
+		z-index: 1;
+		width: 100%;
+		left: 0;
+		top: var(--sidebar-header-height);
+		height: calc(100% - calc(var(--sidebar-header-height) + var(--sidebar-footer-height)));
+		padding: 0 8px;
+		overflow-y: auto;
 	}
 }
 
