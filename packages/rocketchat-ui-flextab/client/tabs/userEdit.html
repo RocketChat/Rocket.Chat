@@ -42,13 +42,15 @@
 				{{/if}}
 					<div class="input-line" data="{{this}}">
 						<label for="role">{{_ "Add_Role"}}</label>
-						<select class="role-select">
+						{{#let roles=role}}
+						<select class="role-select" {{disabled role}}>
 							<option value="placeholder" disabled selected>{{_ "Select_role"}}</option>
-							{{#each role}}
+							{{#each roles}}
 								<option value="{{_id}}">{{name}}</option>
 							{{/each}}
 						</select>
-						<button id="addRole" class="button">{{_ 'Add_role'}}</button>
+						{{/let}}
+						<button id="addRole" class="button" {{disabled role}}>{{_ 'Add_role'}}</button>
 
 						<fieldset>
 							<ul class="chip-container current-user-roles">
