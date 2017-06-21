@@ -2,7 +2,9 @@ import toastr from 'toastr';
 
 Template.userEdit.helpers({
 
-
+	disabled(cursor) {
+		return cursor.count() === 0 ? 'disabled' : '';
+	},
 	canEditOrAdd() {
 		return (Template.instance().user && RocketChat.authz.hasAtLeastOnePermission('edit-other-user-info')) || (!Template.instance().user && RocketChat.authz.hasAtLeastOnePermission('create-user'));
 	},
@@ -16,7 +18,8 @@ Template.userEdit.helpers({
 	},
 
 	role() {
-		return RocketChat.models.Roles.find({}, { sort: { description: 1, _id: 1 } });
+		const roles = Template.instance().roles.get();
+		return RocketChat.models.Roles.find({_id: {$nin:roles}}, { sort: { description: 1, _id: 1 } });
 	},
 
 	userRoles() {
@@ -32,13 +35,16 @@ Template.userEdit.events({
 	'click .cancel'(e, t) {
 		e.stopPropagation();
 		e.preventDefault();
-		Template.instance().roles.set('');
+		Template.instance().roles.set([]);
 		t.cancel(t.find('form'));
 	},
 
 	'click .remove-role'(e) {
 		e.stopPropagation();
 		e.preventDefault();
+		let roles = Template.instance().roles.get();
+		roles = roles.filter(el => el !== this.valueOf());
+		Template.instance().roles.set(roles);
 		$(`[title=${ this }]`).remove();
 	},
 
@@ -48,21 +54,16 @@ Template.userEdit.events({
 		$('#password').val(Random.id());
 	},
 
-	'click #addRole'(e) {
+	'click #addRole'(e, instance) {
 		e.stopPropagation();
 		e.preventDefault();
 		if ($('.role-select').find(':selected').is(':disabled')) {
 			return;
 		}
-		const user = Template.instance().user;
-		const instanceRoles = Template.instance().roles.get();
-		let userRoles = [];
-		if (user || instanceRoles) {
-			userRoles = user ? user.roles : instanceRoles;
-		}
+		const userRoles = [...instance.roles.get()];
 		userRoles.push($('.role-select').val());
-		Template.instance().roles.set(userRoles);
-		Template.instance().user.roles;
+		instance.roles.set(userRoles);
+		$('.role-select').val('placeholder');
 	},
 
 	'submit form'(e, t) {
@@ -72,10 +73,11 @@ Template.userEdit.events({
 	}
 });
 
+
 Template.userEdit.onCreated(function() {
 	let userData;
 	this.user = this.data != null ? this.data.user : undefined;
-	this.roles = this.user ? new ReactiveVar(this.user.roles) : new ReactiveVar;
+	this.roles = this.user ? new ReactiveVar(this.user.roles) : new ReactiveVar([]);
 
 
 	const { tabBar } = Template.currentData();
@@ -107,7 +109,6 @@ Template.userEdit.onCreated(function() {
 				return role.title;
 			});
 			//Remove duplicate strings from the array
-			console.log(notSorted);
 			userData.roles = notSorted.filter((el, index) => notSorted.indexOf(el) === index);
 		}
 		return userData;
