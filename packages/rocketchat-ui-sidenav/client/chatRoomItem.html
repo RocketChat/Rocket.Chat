@@ -1,6 +1,6 @@
 <template name="chatRoomItem">
 	{{#let route=route}}
-		<li class="room-item {{#if active}}sidebar-content-active-background{{else}}sidebar-content-hover-background{{/if}}" data-room-id="{{rid}}">
+		<li class="room-item{{#if active}} sidebar-content-active-background{{else}} sidebar-content-hover-background{{/if}}{{#if toolbar}} popup-item{{/if}}" data-id="{{rid}}">
 			<a class="room-item__link sidebar-content {{alert}} {{#if active}}sidebar-content-unread{{/if}}" href="{{route}}" title="{{name}}">
 				{{#if roomIcon}}
 					<svg class="room-item__room-icon room-item__room-icon--{{roomIcon}}">
@@ -13,15 +13,6 @@
 					</div>
 				{{/if}}
 				<span class='room-item__name {{archived}}'>{{name}}</span>
-
-				{{!-- {{#if $not unread}}
-					<span class='opt'>
-						<i class="icon-eye-off hide-room" title="{{_ "Hide_room"}}" aria-label="{{_ "Hide_room"}}"></i>
-						{{#if canLeave}}
-							<i class="icon-logout leave-room" title="{{_ "Leave_room"}}" aria-label="{{_ "Leave_room"}}"></i>
-						{{/if}}
-					</span>
-				{{/if}} --}}
 			</a>
 
 			{{#if unread}}
