@@ -5,7 +5,7 @@ const _createExpertsChannel = function() {
 		expertsRoomName.toLowerCase();
 	}
 
-	if (!RocketChat.models.Rooms.findByTypeAndName('c', expertsRoomName).fetch()) {
+	if (!RocketChat.models.Rooms.findByNameContaining(expertsRoomName).fetch()) {
 		RocketChat.models.Rooms.createWithIdTypeAndName(Random.id(), 'c', expertsRoomName);
 	}
 };
