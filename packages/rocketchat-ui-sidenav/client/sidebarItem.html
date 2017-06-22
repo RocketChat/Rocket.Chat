@@ -1,0 +1,23 @@
+<template name="sidebarItem">
+	<li class="sidebar-item" data-id="{{rid}}">
+		<a class="sidebar-item__link" href="{{route}}" title="{{name}}">
+			<div class="sidebar-item__icon">
+				{{#if roomIcon}}
+					<svg class="room-item__room-icon room-item__room-icon--{{roomIcon}}">
+						<use xlink:href="/images/icons.svg#{{roomIcon}}"></use>
+					</svg>
+				{{else}}
+					<div class="room-item__user-status {{userStatus}}"></div>
+					<div class="room-item__user-thumb">
+						{{> avatar username=name}}
+					</div>
+				{{/if}}
+			</div>
+			<div class='sidebar-item__name'>{{name}}</div>
+		</a>
+
+		{{#if unread}}
+			<span class="badge sidebar-category-badge-content sidebar-room-badge-background">{{unread}}</span>
+		{{/if}}
+	</li>
+</template>
