@@ -57,13 +57,13 @@ Template.userEdit.events({
 	'click #addRole'(e, instance) {
 		e.stopPropagation();
 		e.preventDefault();
-		if ($('.role-select').find(':selected').is(':disabled')) {
+		if ($('#roleSelect').find(':selected').is(':disabled')) {
 			return;
 		}
 		const userRoles = [...instance.roles.get()];
-		userRoles.push($('.role-select').val());
+		userRoles.push($('#roleSelect').val());
 		instance.roles.set(userRoles);
-		$('.role-select').val('placeholder');
+		$('#roleSelect').val('placeholder');
 	},
 
 	'submit form'(e, t) {

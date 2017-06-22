@@ -85,8 +85,9 @@ class FlexTab extends Page {
 	get usersAddUserName() { return browser.element('#name'); }
 	get usersAddUserUsername() { return browser.element('#username'); }
 	get usersAddUserEmail() { return browser.element('#email'); }
+	get usersAddUserRoleList() { return browser.element('#roleSelect'); }
 	get usersAddUserPassword() { return browser.element('#password'); }
-	get usersAddUserRole() { return browser.element('#role'); }
+	get usersAddUserRoleButton() { return browser.element('#addRole'); }
 	get usersAddUserVerifiedCheckbox() { return browser.element('#verified'); }
 	get usersAddUserChangePasswordCheckbox() { return browser.element('#changePassword'); }
 	get usersAddUserDefaultChannelCheckbox() { return browser.element('#joinDefaultChannels'); }
