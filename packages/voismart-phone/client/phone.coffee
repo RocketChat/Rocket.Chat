@@ -190,17 +190,22 @@ Template.phone.events
 		instance.showRegistry.set(!showRegistry)
 
 	'click #phone-fullscreen': (e, instance) ->
+
 		pswpElement = document.querySelectorAll('.pswp')[0];
 		options = {
 			index: 0
 			counterEl: false
 			closeOnScroll:false
 			fullscreenEl: false }
-		items = [html: '<div class = "videocall"> </div>']
+		items = [html: '<div class="videocall" id="videocall"> </div>']
 		gallery = new PhotoSwipe( pswpElement, PhotoSwipeUI_Default, items, options);
 		gallery.init();
 		item = html: $('.videocall')[0].append($('.phone-streaming')[0])
 		items.push(item)
+		if pswpElement.mozRequestFullScreen
+			pswpElement.mozRequestFullScreen()
+		else
+			pswpElement.webkitRequestFullScreen()
 		RocketChat.Phone.playVideo()
 
 		$('#phone-fullscreen-hold').click ->
@@ -208,15 +213,18 @@ Template.phone.events
 			gallery.close()
 
 		$('#phone-fullscreen-mute').click ->
-			if $(this).css('color') == "rgb(255, 255, 255)"
-				$(this).css('color','red')
+			if $(this).hasClass('icon-mute-clicked')
+				$(this).removeClass('icon-mute-clicked')
 				RocketChat.Phone.toggleMute()
 			else
-				$(this).css('color','white')
+				$(this).addClass('icon-mute-clicked')
 				RocketChat.Phone.toggleMute()
 			return
-
 		gallery.listen 'destroy', ->
+			if pswpElement.mozRequestFullScreen
+				document.mozCancelFullScreen()
+			else
+				document.webkitExitFullscreen()
 			if $('.phone-video')[0]
 				$('.phone-video')[0].append($('.phone-streaming')[0])
 				RocketChat.Phone.playVideo()

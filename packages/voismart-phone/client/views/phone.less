@@ -106,11 +106,8 @@
 
 .videocall {
 	position: absolute;
-	width: 90%;
-	height: 85%;
-	margin-top: 5%;
-	margin-left: 5%;
-	margin-bottom: 5%;
+	width: 100%;
+	height: 100%;
 	.phone-streaming {
 		width: 100%;
 		height: 100%;
@@ -118,6 +115,7 @@
 		z-index: 1;
 	}
 	.phonestream {
+		object-fit:contain;
 		position: absolute;
 		width: 100%;
 		height: 100%;
@@ -140,18 +138,36 @@
 		left:45%;
 	}
 	.icon-phone {
+		height:50px;
+		box-shadow: 0px 0px 1px;
+		border-radius: 50%;
+		background-color: red;
 		margin-right: 30px;
 		display: block !important;
 		color: white;
-	}
-	.icon-phone:hover {
-		color:red;
 	}
 	.icon-mute {
 		display: block !important;
 		color: white;
 		margin-bottom: auto;
-	}
+		box-shadow: 0px 0px 0px;
+		height:50px;
+      	&:hover {
+        height:50px;
+		box-shadow: 0px 0px 1px;
+		background-color: red;
+		border-radius: 50%;
+		margin-right: 30px;
+        }
+      &-clicked {		
+        display: block !important;
+        height:50px;
+		box-shadow: 0px 0px 1px;
+		background-color	: red;
+		border-radius: 50%;
+		margin-right: 30px;
+        }
+    }
 }
 
  .phonestream {
