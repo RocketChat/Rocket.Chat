@@ -25,6 +25,7 @@ Package.onUse(function(api) {
 	api.addFiles('client/listChannelsFlex.html', 'client');
 	api.addFiles('client/listCombinedFlex.html', 'client');
 	api.addFiles('client/listPrivateGroupsFlex.html', 'client');
+	api.addFiles('client/sidebarItem.html', 'client');
 	api.addFiles('client/sideNav.html', 'client');
 	api.addFiles('client/toolbar.html', 'client');
 	api.addFiles('client/roomList.html', 'client');
