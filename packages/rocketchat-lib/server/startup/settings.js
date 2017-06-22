@@ -474,6 +474,11 @@ RocketChat.settings.addGroup('Email', function() {
 			env: true,
 			i18nLabel: 'IMAP_Enable'
 		});
+		this.add('IMAP_Debug', false, {
+			type: 'boolean',
+			env: true,
+			i18nLabel: 'IMAP_Debug'
+		});
 		this.add('IMAP_Protocol', 'imap', {
 			type: 'select',
 			values: [{
@@ -492,7 +497,16 @@ RocketChat.settings.addGroup('Email', function() {
 			i18nLabel: 'Host'
 		});
 		this.add('IMAP_Port', '', {
-			type: 'string',
+			type: 'select',
+			values: [
+				{
+					key: 143,
+					i18nLabel: '143'
+				}, {
+					key: 993,
+					i18nLabel: '993'
+				}
+			],
 			env: true,
 			i18nLabel: 'Port'
 		});
@@ -515,6 +529,10 @@ RocketChat.settings.addGroup('Email', function() {
 			type: 'password',
 			env: true,
 			i18nLabel: 'Password'
+		});
+		return this.add('IMAP_Start', 'startIMAPIntercepter', {
+			type: 'action',
+			actionText: 'IMAP_Start'
 		});
 	});
 	this.section('SMTP', function() {

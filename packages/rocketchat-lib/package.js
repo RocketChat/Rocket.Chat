@@ -95,7 +95,9 @@ Package.onUse(function(api) {
 	api.addFiles('server/lib/configLogger.js', 'server');
 	api.addFiles('server/lib/PushNotification.js', 'server');
 	api.addFiles('server/lib/defaultBlockedDomainsList.js', 'server');
+	api.addFiles('server/lib/interceptDirectReplyEmails.js', 'server');
 	api.addFiles('server/lib/notifyUsersOnMessage.js', 'server');
+	api.addFiles('server/lib/processDirectEmail.js', 'server');
 	api.addFiles('server/lib/roomTypes.js', 'server');
 	api.addFiles('server/lib/sendEmailOnMessage.js', 'server');
 	api.addFiles('server/lib/sendNotificationsOnMessage.js', 'server');
@@ -161,6 +163,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/methods/setRealName.js', 'server');
 	api.addFiles('server/methods/setUsername.js', 'server');
 	api.addFiles('server/methods/setEmail.js', 'server');
+	api.addFiles('server/methods/startIMAPIntercepter.js', 'server');
 	api.addFiles('server/methods/unarchiveRoom.js', 'server');
 	api.addFiles('server/methods/unblockUser.js', 'server');
 	api.addFiles('server/methods/updateMessage.js', 'server');
