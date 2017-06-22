@@ -3525,7 +3525,7 @@ body:not(.is-cordova) {
 				width: 70%;
 			}
 
-			& .role-select {
+			& #roleSelect {
 				width: 70%;
 			}
 		}

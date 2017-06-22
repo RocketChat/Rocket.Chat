@@ -43,7 +43,7 @@
 					<div class="input-line" data="{{this}}">
 						<label for="role">{{_ "Add_Role"}}</label>
 						{{#let roles=role}}
-						<select class="role-select" {{disabled role}}>
+						<select id="roleSelect" {{disabled role}}>
 							<option value="placeholder" disabled selected>{{_ "Select_role"}}</option>
 							{{#each roles}}
 								<option value="{{_id}}">{{name}}</option>
