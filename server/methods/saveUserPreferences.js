@@ -50,7 +50,12 @@ Meteor.methods({
 			} else {
 				delete preferences.mergeChannels;
 			}
+			if (settings.unreadRoomsMode) {
+				preferences.unreadRoomsMode = settings.unreadRoomsMode === '1' ? true : false;
+			}
 
+			console.log(settings.roomsListExhibitionMode, 'aaaaaaaaaaa');
+			preferences.roomsListExhibitionMode = ['category', 'unread', 'activity'].includes(settings.roomsListExhibitionMode) ? settings.roomsListExhibitionMode : 'category';
 			if (settings.unreadAlert) {
 				preferences.unreadAlert = settings.unreadAlert === '1' ? true : false;
 			}

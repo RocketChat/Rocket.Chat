@@ -1,40 +1,50 @@
 Template.roomList.helpers({
 	rooms() {
-		if (this.unread) {
-			return Template.instance().unreadRooms;
+		if (this.identifier == 'unread') {
+			const query = {
+				alert: true,
+				open: true,
+				hideUnreadStatus: { $ne: true }
+			};
+			return ChatSubscription.find(query, { sort: { 't': 1, 'name': 1 }});
 		}
 
 		if (this.anonymous) {
 			return RocketChat.models.Rooms.find({t: 'c'}, { sort: { name: 1 } });
 		}
 
-		const user = Meteor.user();
+
 		const favoritesEnabled = RocketChat.settings.get('Favorite_Rooms');
 
 		const query = {
 			open: true
 		};
-
-		if (this.identifier) {
-			if (this.isCombined) {
-				query.t = { $in: ['c', 'p']};
-			} else {
-				query.t = { $in: [this.identifier] };
-			}
-
-			query.f = { $ne: favoritesEnabled };
-		} else {
+		let sort = { 't': 1, 'name': 1 };
+		if (this.identifier === 'f') {
 			query.f = favoritesEnabled;
+		} else {
+			let types = [this.identifier];
+			if (this.identifier === 'activity') {
+				types = ['c', 'p', 'd'];
+				sort = { _updatedAt : -1};
+			}
+			if (this.identifier === 'channels' || this.identifier === 'unread') {
+				types= [ 'c', 'p'];
+			}
+			const user = Meteor.user();
+			if (user && user.settings && user.settings.preferences && user.settings.preferences.roomsListExhibitionMode === 'unread') {
+				query.$or = [
+					{ alert: { $ne: true } },
+					{ hideUnreadStatus: true }
+				];
+			}
+			query.t = { $in: types };
+			query.f = { $ne: favoritesEnabled };
 		}
 
-		if (user && user.settings && user.settings.preferences && user.settings.preferences.unreadRoomsMode) {
-			query.$or = [
-				{ alert: { $ne: true } },
-				{ hideUnreadStatus: true }
-			];
-		}
 
-		return ChatSubscription.find(query, { sort: { 't': 1, 'name': 1 }});
+
+		return ChatSubscription.find(query, { sort });
 	},
 
 	isLivechat() {
@@ -47,9 +57,8 @@ Template.roomList.helpers({
 		or is favorite and has one room
 		or is unread and has one room
 		*/
-		const nonFavorite = group.identifier || group.unread;
-		const showNormalRooms = !group.unread || Template.instance().unreadRooms.count();
-		return showNormalRooms && nonFavorite || !group.unread && !this.anonymous && rooms.count();
+
+		return !['unread', 'f'].includes(group.identifier) || rooms.count();
 	},
 
 	hasMoreChannelsButton(room) {
@@ -76,13 +85,13 @@ Template.roomList.events({
 });
 
 Template.roomList.onCreated(function() {
-	this.autorun(() => {
-		const query = {
-			alert: true,
-			open: true,
-			hideUnreadStatus: { $ne: true }
-		};
-
-		return this.unreadRooms = ChatSubscription.find(query, { sort: { 't': 1, 'name': 1 }});
-	});
+	// this.autorun(() => {
+	// 	const query = {
+	// 		alert: true,
+	// 		open: true,
+	// 		hideUnreadStatus: { $ne: true }
+	// 	};
+	//
+	// 	return this.unreadRooms = ChatSubscription.find(query, { sort: { 't': 1, 'name': 1 }});
+	// });
 });

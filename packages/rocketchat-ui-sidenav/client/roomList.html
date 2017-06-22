@@ -3,7 +3,7 @@
 		{{> livechat . }}
 	{{else}}
 		{{#with rooms}}
-			{{#if shouldAppear .. rooms}}
+			{{#if shouldAppear .. .}}
 					<h3 class="rooms-list__type sidebar-content">
 						{{_ ../label}}
 						{{#with count}}
