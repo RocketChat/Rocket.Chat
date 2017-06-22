@@ -1,6 +1,9 @@
 /*globals defaultUserLanguage, KonchatNotification */
 import toastr from 'toastr';
 Template.accountPreferences.helpers({
+	showMergedChannels() {
+		return ['category', 'unread'].includes(Template.instance().roomsListExhibitionMode.get()) ? '' : 'disabled';
+	},
 	audioAssets() {
 		return (RocketChat.CustomSounds && RocketChat.CustomSounds.getList && RocketChat.CustomSounds.getList()) || [];
 	},
@@ -72,14 +75,18 @@ Template.accountPreferences.helpers({
 });
 
 Template.accountPreferences.onCreated(function() {
+	const user = Meteor.user();
 	const settingsTemplate = this.parentTemplate(3);
 	if (settingsTemplate.child == null) {
 		settingsTemplate.child = [];
 	}
 	settingsTemplate.child.push(this);
-	const user = Meteor.user();
+
 	if (user && user.settings && user.settings.preferences) {
+		this.roomsListExhibitionMode = new ReactiveVar(user.settings.preferences.roomsListExhibitionMode || 'category');
 		this.useEmojis = new ReactiveVar(user.settings.preferences.desktopNotificationDuration == null || user.settings.preferences.useEmojis);
+	} else {
+		this.roomsListExhibitionMode = new ReactiveVar('category');
 	}
 	let instance = this;
 	this.autorun(() => {
@@ -116,6 +123,8 @@ Template.accountPreferences.onCreated(function() {
 		data.mergeChannels = $('#mergeChannels').find('input:checked').val();
 		data.sendOnEnter = $('#sendOnEnter').find('select').val();
 		data.unreadRoomsMode = $('input[name=unreadRoomsMode]:checked').val();
+		data.roomsListExhibitionMode = $('select[name=roomsListExhibitionMode]').val();
+
 		data.autoImageLoad = $('input[name=autoImageLoad]:checked').val();
 		data.emailNotificationMode = $('select[name=emailNotificationMode]').val();
 		data.highlights = _.compact(_.map($('[name=highlights]').val().split(','), function(e) {
@@ -165,6 +174,10 @@ Template.accountPreferences.events({
 			title: TAPi18n.__('Desktop_Notification_Test'),
 			text: TAPi18n.__('This_is_a_desktop_notification')
 		});
+	},
+	'change [name=roomsListExhibitionMode]'(e, instance) {
+		const value = $(e.currentTarget).val();
+		instance.roomsListExhibitionMode.set(value);
 	},
 	'change .audio'(e) {
 		e.preventDefault();
