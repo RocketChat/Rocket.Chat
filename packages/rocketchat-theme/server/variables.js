@@ -102,6 +102,16 @@ const sidebar = [
 		value: '#ffffff'
 	},
 	{
+		name: 'sidebar-preferenes-content-hover:hover',
+		properties: ['background-color'],
+		value: '#e1e5e8'
+	},
+	{
+		name: 'sidebar-preferenes-link-hover:hover',
+		properties: ['color'],
+		value: '#2f343d'
+	},
+	{
 		name: 'sidebar-content-hover:hover',
 		properties: ['background-color'],
 		value: '#414852'
