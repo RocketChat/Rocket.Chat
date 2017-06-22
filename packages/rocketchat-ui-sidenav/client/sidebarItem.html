@@ -1,19 +1,21 @@
 <template name="sidebarItem">
-	<li class="sidebar-item" data-id="{{rid}}">
-		<a class="sidebar-item__link" href="{{route}}" title="{{name}}">
-			<div class="sidebar-item__icon">
-				{{#if roomIcon}}
-					<svg class="room-item__room-icon room-item__room-icon--{{roomIcon}}">
-						<use xlink:href="/images/icons.svg#{{roomIcon}}"></use>
+	<li class="sidebar-item {{#if active}}sidebar-content-active-background{{else}}{{#if darken}}sidebar-preferenes-content-hover-background{{else}}sidebar-content-hover-background{{/if}}{{/if}} {{#if toolbar}}popup-item{{/if}}" data-id="{{rid}}">
+		<a class="sidebar-item__link sidebar-content {{alertClass}} {{#if active}}sidebar-content-unread{{/if}} {{#if darken}}sidebar-preferenes-link-hover{{/if}}" href="{{#if route}}{{route}}{{else}}{{pathFor pathSection group=pathGroup}}{{/if}}" title="{{name}}">
+			{{#if statusClass}}
+				<div class="sidebar-item__user-status {{statusClass}}"></div>
+			{{/if}}
+			<div class="sidebar-item__picture">
+				{{#if icon}}
+					<svg class="sidebar-item__icon sidebar-item__icon--{{icon}}">
+						<use xlink:href="/images/icons.svg#{{icon}}"></use>
 					</svg>
 				{{else}}
-					<div class="room-item__user-status {{userStatus}}"></div>
-					<div class="room-item__user-thumb">
+					<div class="sidebar-item__user-thumb">
 						{{> avatar username=name}}
 					</div>
 				{{/if}}
 			</div>
-			<div class='sidebar-item__name'>{{name}}</div>
+			<div class='sidebar-item__name {{archivedClass}}'>{{name}}</div>
 		</a>
 
 		{{#if unread}}
