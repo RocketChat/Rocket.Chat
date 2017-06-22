@@ -80,6 +80,7 @@ RocketChat.imapIntercepter = function() {
 
 	imap.once('end', function() {
 		console.log('Connection ended');
+		console.log('Retrying IMAP connection...');
 		imap.connect();
 	});
 
