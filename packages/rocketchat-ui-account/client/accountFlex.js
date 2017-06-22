@@ -23,5 +23,15 @@ Template.accountFlex.helpers({
 	},
 	allowUserAvatarChange() {
 		return RocketChat.settings.get('Accounts_AllowUserAvatarChange');
+	},
+
+	menuItem(name, icon, section, group) {
+		return {
+			name: t(name),
+			icon,
+			pathSection: section,
+			pathGroup: group,
+			darken: true
+		};
 	}
 });
