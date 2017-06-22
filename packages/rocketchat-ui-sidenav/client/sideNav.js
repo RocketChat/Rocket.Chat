@@ -3,7 +3,11 @@
 Template.sideNav.helpers({
 	hasUnread() {
 		const user = Meteor.user();
-		return user && user.settings && user.settings.preferences && user.settings.preferences.unreadRoomsMode;
+		return user && user.settings && user.settings.preferences && user.settings.preferences.roomsListExhibitionMode === 'unread';
+	},
+	sortByActivity() {
+		const user = Meteor.user();
+		return user && user.settings && user.settings.preferences && user.settings.preferences.roomsListExhibitionMode === 'activity';
 	},
 	flexTemplate() {
 		return SideNav.getFlex().template;
@@ -18,23 +22,23 @@ Template.sideNav.helpers({
 	},
 
 	roomType() {
-		return RocketChat.roomTypes.getTypes();
-	},
+		const types = RocketChat.roomTypes.getTypes();
+		const user = Meteor.user();
+		const preferences = (user && user.settings && user.settings.preferences && user.settings.preferences) || {};
+		const mode = preferences.roomsListExhibitionMode || 'activity';
+		const filter = {
+			activity(room) {
+				return ['f', 'activity'].includes(room.identifier);
+			},
+			unread(room) {
+				return ['f', ...(preferences.mergeChannels ? ['channels'] : ['p', 'c']), 'd', 'unread'].includes(room.identifier);
+			},
+			category(room) {
+				return ['f', ...(preferences.mergeChannels ? ['channels'] : ['p', 'c']), 'd'].includes(room.identifier);
+			}
+		}[mode];
 
-	canShowRoomType() {
-		if (Template.instance().mergedChannels.get()) {
-			return RocketChat.roomTypes.checkCondition(this) && (this.identifier !== 'p');
-		}
-
-		return RocketChat.roomTypes.checkCondition(this);
-	},
-
-	isCombined() {
-		if (Template.instance().mergedChannels.get()) {
-			return this.identifier === 'c';
-		}
-
-		return false;
+		return types.filter(filter);
 	}
 });
 
@@ -78,7 +82,7 @@ Template.sideNav.onCreated(function() {
 		const user = Meteor.user();
 		let userPref = null;
 		if (user && user.settings && user.settings.preferences) {
-			userPref = user.settings.preferences.mergeChannels;
+			userPref = user.settings.preferences.roomsListExhibitionMode === 'category' && user.settings.preferences.mergeChannels;
 		}
 
 		this.mergedChannels.set((userPref != null) ? userPref : RocketChat.settings.get('UI_Merge_Channels_Groups'));

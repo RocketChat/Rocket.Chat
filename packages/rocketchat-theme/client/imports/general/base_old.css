@@ -1558,7 +1558,6 @@
 /* MAIN CONTENT + MAIN PAGES */
 
 .rc-old.main-content {
-	position: fixed;
 	top: 0;
 	bottom: 0;
 	left: var(--rooms-box-width);

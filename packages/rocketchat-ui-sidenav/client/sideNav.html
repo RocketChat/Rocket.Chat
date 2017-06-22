@@ -9,16 +9,9 @@
 				{{_ "More_unreads"}} <i class="icon-up-big"></i>
 			</div>
 			<div class="rooms-list" aria-label="{{_ "Channels"}}" role="region">
-				{{#if hasUnread}}
-				{{> roomList unread=true label="Unread_Rooms" }}
-				{{/if}}
-
 				{{#each roomType}}
-				{{#if canShowRoomType}}
-				{{> roomList identifier=identifier label=label isCombined=isCombined }}
-				{{/if}}
+					{{> roomList identifier=identifier label=label }}
 				{{/each}}
-
 				{{#if canViewHistory}}
 				<h3 class="history-div">
 					<a href="{{pathFor 'privateHistory'}}">{{_ "History"}}</a>

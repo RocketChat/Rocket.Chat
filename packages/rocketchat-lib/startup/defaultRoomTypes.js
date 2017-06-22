@@ -1,10 +1,28 @@
 /* globals openRoom */
-RocketChat.roomTypes.add(null, 0, {
+
+// favorite
+RocketChat.roomTypes.add('unread', 10, {
+	unread: true,
+	label: 'Unread'
+});
+
+// favorite
+RocketChat.roomTypes.add('f', 20, {
 	icon: 'star',
 	label: 'Favorites'
 });
 
-RocketChat.roomTypes.add('c', 10, {
+// activity
+RocketChat.roomTypes.add('activity', 30, {
+	// icon: 'star',
+	label: 'Conversations'
+});
+
+RocketChat.roomTypes.add('channels', 30, {
+	label: 'Channels'
+});
+// public
+RocketChat.roomTypes.add('c', 30, {
 	icon: 'hashtag',
 	label: 'Channels',
 	route: {
@@ -36,7 +54,37 @@ RocketChat.roomTypes.add('c', 10, {
 	}
 });
 
-RocketChat.roomTypes.add('d', 20, {
+// private
+RocketChat.roomTypes.add('p', 40, {
+	icon: 'lock',
+	label: 'Private_Groups',
+	route: {
+		name: 'group',
+		path: '/group/:name',
+		action(params) {
+			return openRoom('p', params.name);
+		}
+	},
+
+	findRoom(identifier) {
+		const query = {
+			t: 'p',
+			name: identifier
+		};
+		return ChatRoom.findOne(query);
+	},
+
+	roomName(roomData) {
+		return roomData.name;
+	},
+
+	condition() {
+		return RocketChat.authz.hasAllPermission('view-p-room');
+	}
+});
+
+// direct
+RocketChat.roomTypes.add('d', 50, {
 	icon: false,
 	label: 'Direct_Messages',
 	route: {
@@ -90,33 +138,5 @@ RocketChat.roomTypes.add('d', 20, {
 		if (subscription == null) { return; }
 
 		return Session.get(`user_${ subscription.name }_status`);
-	}
-});
-
-RocketChat.roomTypes.add('p', 30, {
-	icon: 'lock',
-	label: 'Private_Groups',
-	route: {
-		name: 'group',
-		path: '/group/:name',
-		action(params) {
-			return openRoom('p', params.name);
-		}
-	},
-
-	findRoom(identifier) {
-		const query = {
-			t: 'p',
-			name: identifier
-		};
-		return ChatRoom.findOne(query);
-	},
-
-	roomName(roomData) {
-		return roomData.name;
-	},
-
-	condition() {
-		return RocketChat.authz.hasAllPermission('view-p-room');
 	}
 });
