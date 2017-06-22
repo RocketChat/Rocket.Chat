@@ -39,7 +39,7 @@ class SignalProtocolStore {
     if (trusted === undefined) {
       return Promise.resolve(true);
     }
-    return Promise.resolve(util.toString(identityKey) === util.toString(trusted));
+    return Promise.resolve(RocketChat.signalUtils.toString(identityKey) === RocketChat.signalUtils.toString(trusted));
 	}
 	loadIdentityKey(identifier) {
 		if (identifier === null || identifier === undefined)
@@ -87,6 +87,9 @@ class SignalProtocolStore {
 	}
 	storeSession(identifier, record) {
 		return Promise.resolve(this.put('session' + identifier, record));
+	}
+	sessionExists(identifier) {
+		return RocketChat.E2EStorage.store.hasOwnProperty("session"+identifier+".1");
 	}
   removeSession(identifier) {
 		return Promise.resolve(this.remove('session' + identifier));

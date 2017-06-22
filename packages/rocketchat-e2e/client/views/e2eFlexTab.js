@@ -32,7 +32,7 @@ Template.e2eFlexTab.events({
 		e.preventDefault();
 		const e2e = RocketChat.E2E.getInstanceByRoomId(this.rid);
 		if (e2e) {
-			e2e.handshake();
+			e2e.handshake(true);
 			t.timeout = Meteor.setTimeout(() => {
 				swal('Timeout', '', 'error');
 				e2e.establishing.set(false);

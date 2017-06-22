@@ -28,7 +28,7 @@ function loadKeyGlobalsFromLS() {
 	Meteor.call('addKeyToChain', { 
 					"identityKey": ab2str(RocketChat.E2EStorage.get("identityKey").pubKey), 
 					"preKey": ab2str(RocketChat.E2EStorage.loadPreKey(RocketChat.E2EStorage.get("registrationId")).pubKey), 
-					"signedPreKey": ab2str(RocketChat.E2EStorage.loadPreKey(RocketChat.E2EStorage.get("registrationId")).pubKey),
+					"signedPreKey": ab2str(RocketChat.E2EStorage.loadSignedPreKey(RocketChat.E2EStorage.get("registrationId")).pubKey),
 					"signedPreKeySignature": ab2str(RocketChat.E2EStorage.get("signedPreKeySignature"+RocketChat.E2EStorage.get("registrationId"))), 
 					"registrationId": RocketChat.E2EStorage.get("registrationId")
 								});			
@@ -66,6 +66,9 @@ class E2E {
 	}
 
 	startClient() {
+		// Meteor.call("emptyKeychain");
+		// localStorage.clear();
+		// RocketChat.E2EStorage.store = {}
 		if (localStorage.getItem('registrationId') == null) {		// This is a new device.
 			const KeyHelper = libsignal.KeyHelper;
 			const registrationId = KeyHelper.generateRegistrationId();
@@ -113,7 +116,8 @@ Meteor.startup(function() {
 			return RocketChat.E2E.getInstanceByRoomId(message.rid).encrypt(message)
 				.then((msg) => {
 					message.msg = msg;
-					message.t = 'otr';
+					message.t = 'e2e';
+					console.log(message);
 					return message;
 				});
 		} else {
@@ -122,14 +126,24 @@ Meteor.startup(function() {
 	}, RocketChat.promises.priority.HIGH);
 
 	RocketChat.promises.add('onClientMessageReceived', function(message) {
-		if (message.rid && RocketChat.E2E.getInstanceByRoomId(message.rid) && RocketChat.E2E.getInstanceByRoomId(message.rid).established.get()) {
+		console.log(message);
+		const e2eRoom = RocketChat.E2E.getInstanceByRoomId(message.rid);
+		const peerRegistrationId = e2eRoom.peerRegistrationId;
+		const existingSession = RocketChat.E2EStorage.sessionExists(peerRegistrationId);
+		if (message.rid && RocketChat.E2E.getInstanceByRoomId(message.rid) && message.t == "e2e") { //&& RocketChat.E2E.getInstanceByRoomId(message.rid).established.get()) {
 			if (message.notification) {
 				message.msg = t('Encrypted_message');
 				return Promise.resolve(message);
 			} else {
 				const otrRoom = RocketChat.E2E.getInstanceByRoomId(message.rid);
-				return otrRoom.decrypt(message.msg)
+				console.log(message);
+				
+				console.log("session exists: "+existingSession);
+
+				if (existingSession) {
+					return otrRoom.decrypt(message.msg)
 					.then((data) => {
+						console.log(data);
 						const {_id, text, ack} = data;
 						message._id = _id;
 						message.msg = text;
@@ -137,25 +151,58 @@ Meteor.startup(function() {
 						if (data.ts) {
 							message.ts = data.ts;
 						}
-
-						if (message.otrAck) {
-							return otrRoom.decrypt(message.otrAck)
-								.then((data) => {
-									if (ack === data.text) {
-										message.t = 'otr-ack';
-									}
-									return message;
-								});
-						} else if (data.userId !== Meteor.userId()) {
-							return otrRoom.encryptText(ack)
-								.then((ack) => {
-									Meteor.call('updateOTRAck', message._id, ack);
-									return message;
-								});
-						} else {
-							return message;
-						}
+						return message;
+						// if (message.otrAck) {
+						// 	return otrRoom.decrypt(message.otrAck)
+						// 		.then((data) => {
+						// 			if (ack === data.text) {
+						// 				message.t = 'otr-ack';
+						// 			}
+						// 			return message;
+						// 		});
+						// } else if (data.userId !== Meteor.userId()) {
+						// 	return otrRoom.encryptText(ack)
+						// 		.then((ack) => {
+						// 			Meteor.call('updateOTRAck', message._id, ack);
+						// 			return message;
+						// 		});
+						// } else {
+						// 	return message;
+						// }
 					});
+				}
+				else {
+					return e2eRoom.decryptInitial(message.msg)
+					.then((data) => {
+						console.log(data);
+						const {_id, text, ack} = data;
+						message._id = _id;
+						message.msg = text;
+
+						if (data.ts) {
+							message.ts = data.ts;
+						}
+						return message;
+						// if (message.otrAck) {
+						// 	return otrRoom.decrypt(message.otrAck)
+						// 		.then((data) => {
+						// 			if (ack === data.text) {
+						// 				message.t = 'otr-ack';
+						// 			}
+						// 			return message;
+						// 		});
+						// } else if (data.userId !== Meteor.userId()) {
+						// 	return otrRoom.encryptText(ack)
+						// 		.then((ack) => {
+						// 			Meteor.call('updateOTRAck', message._id, ack);
+						// 			return message;
+						// 		});
+						// } else {
+						// 	return message;
+						// }
+					});
+				}
+				
 			}
 		} else {
 			if (message.t === 'otr') {
