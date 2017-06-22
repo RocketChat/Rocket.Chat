@@ -26,8 +26,17 @@ Meteor.methods({
 				throw new Meteor.Error('error-you-are-last-owner', 'You are the last owner. Please set new owner before leaving the room.', { method: 'leaveRoom' });
 			}
 		}
-		RocketChat.leave_automatic_channel(room.name);
+		if (room.automatic) {
 
+			RocketChat.leave_automatic_channel(room.name);
+			// delete room if its the last user
+			if (room.usernames.length===1) {
+				RocketChat.models.Messages.removeByRoomId(room._id);
+				RocketChat.models.Subscriptions.removeByRoomId(room._id);
+				RocketChat.models.Rooms.removeById(room._id);
+				return;
+			}
+		}
 		return RocketChat.removeUserFromRoom(rid, Meteor.user());
 	}
 });

@@ -1,4 +1,8 @@
 RocketChat.addUserToRoom = function(rid, user, inviter, silenced) {
+	//when user is registered, it does not have prpoerty username rather it just have name
+	if (!user.username) {
+		user.username = user.name;
+	}
 	const now = new Date();
 	const room = RocketChat.models.Rooms.findOneById(rid);
 
