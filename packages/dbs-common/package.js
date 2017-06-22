@@ -7,7 +7,7 @@ Package.describe({
 });
 
 
-Package.onUse(function (api) {
+Package.onUse(function(api) {
 	api.use(['ecmascript', 'underscore']);
 	api.use('templating', 'client'); //needed in order to be able to register global helpers on the Template-object
 

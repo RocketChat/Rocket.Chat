@@ -1,1 +1,1 @@
-var expertiseSearchCache = new Meteor.Collection(null);
+// var expertiseSearchCache = new Meteor.Collection(null); //todo: Provide Cache

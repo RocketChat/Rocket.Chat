@@ -51,11 +51,11 @@ Meteor.startup(()=>{
 	});
 
 	let domain = RocketChat.settings.get('Site_Url');
-	if(domain){
+	if (domain) {
 		domain = domain
-			.replace("https://", "")
-			.replace("http://", "");
-		while(domain.charAt(domain.length - 1) === '/'){
+			.replace('https://', '')
+			.replace('http://', '');
+		while (domain.charAt(domain.length - 1) === '/') {
 			domain = domain.substr(0, domain.length - 1);
 		}
 	}
@@ -67,7 +67,7 @@ Meteor.startup(()=>{
 		i18nLabel: 'DBS_AI_Redlink_Domain'
 	});
 
-	RocketChat.settings.add('Assistify_AI_DBSearch_Suffix','', {
+	RocketChat.settings.add('Assistify_AI_DBSearch_Suffix', '', {
 		type: 'code',
 		multiline: true,
 		group: 'Assistify',

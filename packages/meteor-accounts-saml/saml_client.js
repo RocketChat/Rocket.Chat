@@ -13,29 +13,29 @@ if (!Accounts.saml) {
 // TODO: This may need some work as it is not clear if we are really
 // logging out of the idp when doing the standard logout.
 
-var MeteorLogout = Meteor.logout;
+const MeteorLogout = Meteor.logout;
 
 Meteor.logout = function() {
-	var samlService = ServiceConfiguration.configurations.findOne({service: 'saml'});
+	const samlService = ServiceConfiguration.configurations.findOne({service: 'saml'});
 	if (samlService) {
-		var provider = samlService.clientConfig && samlService.clientConfig.provider;
+		const provider = samlService.clientConfig && samlService.clientConfig.provider;
 		if (provider) {
 			if (samlService.idpSLORedirectURL) {
-				return Meteor.logoutWithSaml({ provider: provider });
+				return Meteor.logoutWithSaml({ provider });
 			}
 		}
 	}
 	return MeteorLogout.apply(Meteor, arguments);
 };
 
-var openCenteredPopup = function(url, width, height) {
-	var newwindow;
+const openCenteredPopup = function(url, width, height) {
+	let newwindow;
 
 	if (typeof cordova !== 'undefined' && typeof cordova.InAppBrowser !== 'undefined') {
 		newwindow = cordova.InAppBrowser.open(url, '_blank');
 		newwindow.closed = false;
 
-		var intervalId = setInterval(function() {
+		const intervalId = setInterval(function() {
 			newwindow.executeScript({
 				'code': 'document.getElementsByTagName("script")[0].textContent'
 			}, function(data) {
@@ -50,18 +50,18 @@ var openCenteredPopup = function(url, width, height) {
 			clearInterval(intervalId);
 		});
 	} else {
-		var screenX = typeof window.screenX !== 'undefined' ? window.screenX : window.screenLeft;
-		var screenY = typeof window.screenY !== 'undefined' ? window.screenY : window.screenTop;
-		var outerWidth = typeof window.outerWidth !== 'undefined' ? window.outerWidth : document.body.clientWidth;
-		var outerHeight = typeof window.outerHeight !== 'undefined' ? window.outerHeight : (document.body.clientHeight - 22);
+		const screenX = typeof window.screenX !== 'undefined' ? window.screenX : window.screenLeft;
+		const screenY = typeof window.screenY !== 'undefined' ? window.screenY : window.screenTop;
+		const outerWidth = typeof window.outerWidth !== 'undefined' ? window.outerWidth : document.body.clientWidth;
+		const outerHeight = typeof window.outerHeight !== 'undefined' ? window.outerHeight : (document.body.clientHeight - 22);
 		// XXX what is the 22?
 
 		// Use `outerWidth - width` and `outerHeight - height` for help in
 		// positioning the popup centered relative to the current window
-		var left = screenX + (outerWidth - width) / 2;
-		var top = screenY + (outerHeight - height) / 2;
-		var features = ('width=' + width + ',height=' + height +
-			',left=' + left + ',top=' + top + ',scrollbars=yes');
+		const left = screenX + (outerWidth - width) / 2;
+		const top = screenY + (outerHeight - height) / 2;
+		const features = (`width=${ width },height=${ height
+			},left=${ left },top=${ top },scrollbars=yes`);
 
 		newwindow = window.open(url, 'Login', features);
 		if (newwindow.focus) {
@@ -73,11 +73,11 @@ var openCenteredPopup = function(url, width, height) {
 
 Accounts.saml.initiateLogin = function(options, callback, dimensions) {
 	// default dimensions that worked well for facebook and google
-	var popup = openCenteredPopup(
-		Meteor.absoluteUrl('_saml/authorize/' + options.provider + '/' + options.credentialToken), (dimensions && dimensions.width) || 650, (dimensions && dimensions.height) || 500);
+	const popup = openCenteredPopup(
+		Meteor.absoluteUrl(`_saml/authorize/${ options.provider }/${ options.credentialToken }`), (dimensions && dimensions.width) || 650, (dimensions && dimensions.height) || 500);
 
-	var checkPopupOpen = setInterval(function() {
-		var popupClosed;
+	const checkPopupOpen = setInterval(function() {
+		let popupClosed;
 		try {
 			// Fix for #328 - added a second test criteria (popup.closed === undefined)
 			// to humour this Android quirk:
@@ -101,14 +101,14 @@ Accounts.saml.initiateLogin = function(options, callback, dimensions) {
 
 Meteor.loginWithSaml = function(options, callback) {
 	options = options || {};
-	var credentialToken = Random.id();
+	const credentialToken = Random.id();
 	options.credentialToken = credentialToken;
 
 	Accounts.saml.initiateLogin(options, function(/*error, result*/) {
 		Accounts.callLoginMethod({
 			methodArguments: [{
 				saml: true,
-				credentialToken: credentialToken
+				credentialToken
 			}],
 			userCallback: callback
 		});
@@ -124,6 +124,6 @@ Meteor.logoutWithSaml = function(options/*, callback*/) {
 		}
 		// A nasty bounce: 'result' has the SAML LogoutRequest but we need a proper 302 to redirected from the server.
 		//window.location.replace(Meteor.absoluteUrl('_saml/sloRedirect/' + options.provider + '/?redirect='+result));
-		window.location.replace(Meteor.absoluteUrl('_saml/sloRedirect/' + options.provider + '/?redirect=' + encodeURIComponent(result)));
+		window.location.replace(Meteor.absoluteUrl(`_saml/sloRedirect/${ options.provider }/?redirect=${ encodeURIComponent(result) }`));
 	});
 };

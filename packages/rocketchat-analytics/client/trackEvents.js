@@ -8,7 +8,7 @@ function trackEvent(category, action, label) {
 }
 
 if (!window._paq || window.ga) {
-	//Trigger the trackPageView manually as the page views don't seem to be tracked
+	//Trigger the trackPageView manually as the page views are only loaded when the loadScript.js code is executed
 	FlowRouter.triggers.enter([(route) => {
 		if (window._paq) {
 			const http = location.protocol;
@@ -31,44 +31,50 @@ if (!window._paq || window.ga) {
 	RocketChat.callbacks.add('afterSaveMessage', (message) => {
 		if ((window._paq || window.ga) && RocketChat.settings.get('Analytics_features_messages')) {
 			const room = ChatRoom.findOne({ _id: message.rid });
-			trackEvent('Message', 'Send', room.name + ' (' + room._id + ')');
+			trackEvent('Message', 'Send', `${ room.name } (${ room._id })`);
 		}
 	}, 2000, 'trackEvents');
 
 	//Rooms
 	RocketChat.callbacks.add('afterCreateChannel', (owner, room) => {
 		if (RocketChat.settings.get('Analytics_features_rooms')) {
-			trackEvent('Room', 'Create', room.name + ' (' + room._id + ')');
+			trackEvent('Room', 'Create', `${ room.name } (${ room._id })`);
 		}
 	}, RocketChat.callbacks.priority.MEDIUM, 'analytics-after-create-channel');
 
 	RocketChat.callbacks.add('roomNameChanged', (room) => {
 		if (RocketChat.settings.get('Analytics_features_rooms')) {
-			trackEvent('Room', 'Changed Name', room.name + ' (' + room._id + ')');
+			trackEvent('Room', 'Changed Name', `${ room.name } (${ room._id })`);
 		}
 	}, RocketChat.callbacks.priority.MEDIUM, 'analytics-room-name-changed');
 
 	RocketChat.callbacks.add('roomTopicChanged', (room) => {
 		if (RocketChat.settings.get('Analytics_features_rooms')) {
-			trackEvent('Room', 'Changed Topic', room.name + ' (' + room._id + ')');
+			trackEvent('Room', 'Changed Topic', `${ room.name } (${ room._id })`);
 		}
 	}, RocketChat.callbacks.priority.MEDIUM, 'analytics-room-topic-changed');
 
+	RocketChat.callbacks.add('roomAnnouncementChanged', (room) => {
+		if (RocketChat.settings.get('Analytics_features_rooms')) {
+			trackEvent('Room', 'Changed Announcement', `${ room.name } (${ room._id })`);
+		}
+	}, RocketChat.callbacks.priority.MEDIUM, 'analytics-room-announcement-changed');
+
 	RocketChat.callbacks.add('roomTypeChanged', (room) => {
 		if (RocketChat.settings.get('Analytics_features_rooms')) {
-			trackEvent('Room', 'Changed Room Type', room.name + ' (' + room._id + ')');
+			trackEvent('Room', 'Changed Room Type', `${ room.name } (${ room._id })`);
 		}
 	}, RocketChat.callbacks.priority.MEDIUM, 'analytics-room-type-changed');
 
 	RocketChat.callbacks.add('archiveRoom', (room) => {
 		if (RocketChat.settings.get('Analytics_features_rooms')) {
-			trackEvent('Room', 'Archived', room.name + ' (' + room._id + ')');
+			trackEvent('Room', 'Archived', `${ room.name } (${ room._id })`);
 		}
 	}, RocketChat.callbacks.priority.MEDIUM, 'analytics-archive-room');
 
 	RocketChat.callbacks.add('unarchiveRoom', (room) => {
 		if (RocketChat.settings.get('Analytics_features_rooms')) {
-			trackEvent('Room', 'Unarchived', room.name + ' (' + room._id + ')');
+			trackEvent('Room', 'Unarchived', `${ room.name } (${ room._id })`);
 		}
 	}, RocketChat.callbacks.priority.MEDIUM, 'analytics-unarchive-room');
 

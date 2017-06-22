@@ -127,7 +127,7 @@ describe('emoji', ()=> {
 		});
 
 		it('the value on the message input should be the same as the emoji clicked', ()=> {
-			mainContent.messageInput.getValue().should.equal(':smile:');
+			mainContent.messageInput.getValue().should.equal(':smile: ');
 		});
 
 		it('send the emoji', ()=> {

@@ -11,7 +11,7 @@ function getRoomInfo(roomId) {
 		request.get(api('groups.info'))
 			.set(credentials)
 			.query({
-				roomId: roomId
+				roomId
 			})
 			.end((err, req) => {
 				resolve(req.body);
@@ -22,17 +22,7 @@ function getRoomInfo(roomId) {
 describe('groups', function() {
 	this.retries(0);
 
-	before((done) => {
-		request.post(api('login'))
-		.send(login)
-		.expect('Content-Type', 'application/json')
-		.expect(200)
-		.expect((res) => {
-			credentials['X-Auth-Token'] = res.body.data.authToken;
-			credentials['X-User-Id'] = res.body.data.userId;
-		})
-		.end(done);
-	});
+	before(done => getCredentials(done));
 
 	it('/groups.create', (done) => {
 		request.post(api('groups.create'))
@@ -345,14 +335,14 @@ describe('groups', function() {
 			.set(credentials)
 			.send({
 				roomId: group._id,
-				name: 'EDITED'+apiPrivateChannelName
+				name: `EDITED${ apiPrivateChannelName }`
 			})
 			.expect('Content-Type', 'application/json')
 			.expect(200)
 			.expect((res) => {
 				expect(res.body).to.have.property('success', true);
 				expect(res.body).to.have.deep.property('group._id');
-				expect(res.body).to.have.deep.property('group.name', 'EDITED'+apiPrivateChannelName);
+				expect(res.body).to.have.deep.property('group.name', `EDITED${ apiPrivateChannelName }`);
 				expect(res.body).to.have.deep.property('group.t', 'p');
 				expect(res.body).to.have.deep.property('group.msgs', roomInfo.group.msgs + 1);
 			})

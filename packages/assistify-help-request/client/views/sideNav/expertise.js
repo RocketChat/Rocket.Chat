@@ -1,23 +1,23 @@
 Template.expertise.helpers({
-	isActive: function () {
+	isActive() {
 		if (ChatSubscription.findOne({
-				t: {$in: ['e']},
-				f: {$ne: true},
-				open: true,
-				rid: Session.get('openedRoom')
-			}, {fields: {_id: 1}})) {
+			t: {$in: ['e']},
+			f: {$ne: true},
+			open: true,
+			rid: Session.get('openedRoom')
+		}, {fields: {_id: 1}})) {
 			return 'active';
 		}
 	},
 
-	rooms: function () {
-		let query = {
+	rooms() {
+		const query = {
 			t: {$in: ['e']},
 			open: true
 		};
 
 		if (RocketChat.settings.get('Favorite_Rooms')) {
-			query.f = {$ne: true}
+			query.f = {$ne: true};
 		}
 
 		const user = Meteor.user();
@@ -27,13 +27,13 @@ Template.expertise.helpers({
 			};
 		}
 
-		return ChatSubscription.find(query, {sort: {'t': 1, 'name': 1}})
+		return ChatSubscription.find(query, {sort: {'t': 1, 'name': 1}});
 	}
 });
 
 Template.expertise.events({
-	'click .more-channels': function () {
-		SideNav.setFlex("listChannelsFlex");
+	'click .more-channels'() {
+		SideNav.setFlex('listChannelsFlex');
 		SideNav.openFlex();
 	}
 });

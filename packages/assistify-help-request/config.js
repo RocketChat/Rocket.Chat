@@ -1,9 +1,9 @@
-const _createExpertsChannel = function(){
-	let expertsRoomName = RocketChat.settings.get('Assistify_Expert_Channel');
+const _createExpertsChannel = function() {
+	const expertsRoomName = RocketChat.settings.get('Assistify_Expert_Channel');
 
-		if(expertsRoomName) {
-			expertsRoomName.toLowerCase();
-		}
+	if (expertsRoomName) {
+		expertsRoomName.toLowerCase();
+	}
 
 	if (!RocketChat.models.Rooms.findByTypeAndName('c', expertsRoomName).fetch()) {
 		RocketChat.models.Rooms.createWithIdTypeAndName(Random.id(), 'c', expertsRoomName);

@@ -19,7 +19,6 @@ Package.onUse(function(api) {
 		'mongo',
 		'ecmascript',
 		'templating',
-		'coffeescript',
 		'underscore',
 		'rocketchat:lib',
 		'meteorhacks:inject-initial'
@@ -29,7 +28,7 @@ Package.onUse(function(api) {
 	api.addFiles('client/loading.html', 'client');
 	api.addFiles('client/error.html', 'client');
 	api.addFiles('client/logoLayout.html', 'client');
-	api.addFiles('client/main.coffee', 'client');
+	api.addFiles('client/main.js', 'client');
 
 	api.addFiles('server/inject.js', 'server');
 });

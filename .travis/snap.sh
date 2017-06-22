@@ -9,11 +9,15 @@ git config user.name "CI Bot"
 git config user.email "rocketchat.buildmaster@git.launchpad.net"
 
 # Determine the channel to push snap to.
-if [[ $TRAVIS_TAG ]]
- then
+if [[ $TRAVIS_TAG =~ ^[0-9]+\.[0-9]+\.[0-9]+-rc\.[0-9]+ ]]; then
+    CHANNEL=candidate
+    RC_VERSION=$TRAVIS_TAG
+elif [[ $TRAVIS_TAG ]]; then
     CHANNEL=stable
+    RC_VERSION=$TRAVIS_TAG
 else
     CHANNEL=edge
+    RC_VERSION=0.56.0
 fi
 
 echo "Preparing to trigger a snap release for $CHANNEL channel"
@@ -33,7 +37,9 @@ echo "Tag: $TRAVIS_TAG \r\nBranch: $TRAVIS_BRANCH\r\nBuild: $TRAVIS_BUILD_NUMBER
 GIT_SSH_COMMAND="ssh -i launchpadkey" git clone -b $CHANNEL git+ssh://rocket.chat.buildmaster@git.launchpad.net/rocket.chat launchpad
 
 # Rarely will change, but just incase we copy it all
-cp -r resources $CHANNEL/snapcraft.yaml buildinfo launchpad/
+cp -r resources buildinfo launchpad/
+sed s/#{RC_VERSION}/$RC_VERSION/ $CHANNEL/snapcraft.yaml > launchpad/snapcraft.yaml
+
 cd launchpad
 git add resources snapcraft.yaml buildinfo
 

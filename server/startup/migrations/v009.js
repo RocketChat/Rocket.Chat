@@ -6,20 +6,20 @@ RocketChat.Migrations.add({
 		// source collection is dropped after data migration
 		const toMigrate = [
 			{
-				source: new Meteor.Collection('data.ChatRoom'),
+				source: new Mongo.Collection('data.ChatRoom'),
 				target: RocketChat.models.Rooms.model
 			}, {
-				source: new Meteor.Collection('data.ChatSubscription'),
+				source: new Mongo.Collection('data.ChatSubscription'),
 				target: RocketChat.models.Subscriptions.model
 			}, {
-				source: new Meteor.Collection('data.ChatMessage'),
+				source: new Mongo.Collection('data.ChatMessage'),
 				target: RocketChat.models.Messages.model
 			}, {
-				source: new Meteor.Collection('settings'),
+				source: new Mongo.Collection('settings'),
 				target: RocketChat.models.Settings.model
 			}, {
 				// this collection may not exit
-				source: new Meteor.Collection('oembed_cache'),
+				source: new Mongo.Collection('oembed_cache'),
 				target: RocketChat.models.OEmbedCache.model
 			}
 		];
@@ -28,7 +28,7 @@ RocketChat.Migrations.add({
 			const {target, source} = collection;
 
 			// rawCollection available as of Meteor 1.0.4
-			console.log(`Migrating data from: ${source.rawCollection().collectionName} to: ${target.rawCollection().collectionName}`);
+			console.log(`Migrating data from: ${ source.rawCollection().collectionName } to: ${ target.rawCollection().collectionName }`);
 
 			source.find().forEach((doc) => {
 				// use upsert to account for GENERAL room created by initialData
@@ -41,7 +41,7 @@ RocketChat.Migrations.add({
 
 			return Meteor.wrapAsync(rawSource.drop, rawSource)(function(err/*, res*/) {
 				if (err) {
-					return console.log(`Error dropping ${rawSource.collectionName} collection due to: ${err.errmsg}`);
+					return console.log(`Error dropping ${ rawSource.collectionName } collection due to: ${ err.errmsg }`);
 				}
 			});
 

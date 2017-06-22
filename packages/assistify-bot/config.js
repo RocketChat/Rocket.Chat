@@ -1,5 +1,5 @@
 Meteor.startup(()=> {
-	RocketChat.settings.add('Assistify_Bot_Username', "", {
+	RocketChat.settings.add('Assistify_Bot_Username', '', {
 		group: 'Assistify',
 		i18nLabel: 'Assistify_Bot_Username',
 		type: 'string',

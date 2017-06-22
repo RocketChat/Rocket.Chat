@@ -1,3 +1,5 @@
-_dbs.mockInterfaces = function(){
+/* globals _dbs */
+
+_dbs.mockInterfaces = function() {
 	return false;
 };

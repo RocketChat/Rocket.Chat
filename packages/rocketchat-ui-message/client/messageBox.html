@@ -1,72 +1,90 @@
 <template name="messageBox">
 	{{#if subscribed}}
-		<form class="message-form secondary-font-color" method="post" action="/">
+		<form class="message-form" method="post" action="/">
 			{{> messagePopupConfig getPopupConfig}}
+
 			{{#if allowedToSend}}
-			<div class="message-input border-component-color">
-				<div class="input-message-container content-background-color">
-					<textarea dir="auto" name="msg" maxlength="{{maxMessageLength}}" class="message-form-text input-message autogrow-short" placeholder="{{_ 'Message'}}"></textarea>
+				<div class="message-input border-component-color">
 
-					<div class="inner-left-toolbar">
-						<i class="emoji-picker-icon icon-people"></i>
+					<div class="input-message-container">
+
+						<textarea dir="auto" name="msg" maxlength="{{maxMessageLength}}" class="message-form-text input-message autogrow-short" placeholder="{{_ 'Message'}}"></textarea>
+
+						<div class="inner-left-toolbar">
+							<i class="emoji-picker-icon icon-people secondary-font-color"></i>
+						</div>
+
 					</div>
+
+					{{#unless showSend}}
+
+						<div class="share-items {{groupAttachHidden}}">
+
+							{{#if fileUploadEnabled}}
+
+								<div class="message-buttons file">
+									<i class="icon-attach file"></i>
+									<input type="file" accept="{{fileUploadAllowedMediaTypes}}">
+								</div>
+
+								{{#if showMic}}
+									<div class="message-buttons mic-button">
+										<div class="mic">
+											<i class="icon-mic" aria-label="{{_ "Record"}}"></i>
+										</div>
+										<div class="stop-mic hidden">
+											<i class="icon-stop" aria-label="{{_ "Stop_Recording"}}"></i>
+										</div>
+									</div>
+								{{/if}}
+
+								{{#if showVRec}}
+									<div class="message-buttons video-button">
+										<i class="icon-videocam" aria-label="{{_ "Record"}}"></i>
+									</div>
+								{{/if}}
+
+							{{/if}}
+
+							{{#if showLocation}}
+								<div class="message-buttons location-button">
+									<i class="icon-location"></i>
+								</div>
+							{{/if}}
+
+							{{#if showSandstorm}}
+								<div class="message-buttons sandstorm-offer">
+									<i class="icon-plus" title="{{_ "Sandstorm_Powerbox_Share"}}"></i>
+								</div>
+							{{/if}}
+
+						</div>
+
+						{{#if groupAttachHidden}}
+							<div class="message-buttons share">
+								<i class="icon-plus"></i>
+							</div>
+						{{/if}}
+
+					{{/unless}}
+
+					{{#if showSend}}
+						<div class="message-buttons send-button">
+							<i class="icon-paper-plane" aria-label="{{_ "Send"}}"></i>
+						</div>
+					{{/if}}
 				</div>
-
-				{{#unless showSend}}
-					{{#if showFileUpload}}
-						<div class="message-buttons file">
-							<i class="icon-attach file"></i>
-							<input type="file" accept="{{fileUploadAllowedMediaTypes}}">
-						</div>
-					{{/if}}
-
-
-					{{#if showSandstorm}}
-						<div class="message-buttons sandstorm-offer">
-							<i class="icon-plus" title="{{_ "Sandstorm_Powerbox_Share"}}"></i>
-						</div>
-					{{/if}}
-
-					{{#if showLocation}}
-						<div class="message-buttons location">
-							<i class="icon-location location"></i>
-						</div>
-					{{/if}}
-
-					{{#if showMic}}
-						<div class="message-buttons">
-							<div class="mic">
-								<i class="icon-mic" aria-label="{{_ "Record"}}"></i>
-							</div>
-							<div class="stop-mic hidden">
-								<i class="icon-stop" aria-label="{{_ "Stop_Recording"}}"></i>
-							</div>
-						</div>
-					{{/if}}
-
-					{{#if showVRec}}
-						<div class="message-buttons video-button">
-							<i class="icon-videocam" aria-label="{{_ "Record"}}"></i>
-						</div>
-					{{/if}}
-				{{/unless}}
-
-				{{#if showSend}}
-					<div class="message-buttons send-button">
-						<i class="icon-paper-plane" aria-label="{{_ "Send"}}"></i>
-					</div>
-				{{/if}}
-			</div>
 			{{else}}
-			<div class="stream-info">
-				{{#if isBlockedOrBlocker}}
-					{{_ "room_is_blocked"}}
-				{{else}}
-					{{_ "room_is_read_only"}}
-				{{/if}}
-			</div>
+				<div class="stream-info">
+					{{#if isBlockedOrBlocker}}
+						{{_ "room_is_blocked"}}
+					{{else}}
+						{{_ "room_is_read_only"}}
+					{{/if}}
+				</div>
 			{{/if}}
-			<div class="stream-info">
+
+			<div class="users-typing">
 				{{#with usersTyping}}
 					<strong>{{users}}</strong>
 					{{#if multi}}
@@ -84,27 +102,29 @@
 					{{/if}}
 				{{/with}}
 			</div>
+
 			{{#if allowedToSend}}
 				{{#if showFormattingTips}}
-				<div class="formatting-tips" aria-hidden="true" dir="auto">
-					{{#if showMarkdown}}
-					<b>*{{_ "bold"}}*</b>
-					<i>_{{_ "italics"}}_</i>
-					<span>~<strike>{{_ "strike"}}</strike>~</span>
-					{{/if}}
-					{{#if showMarkdownCode}}
-					<code class="code-colors inline">`{{_ "inline_code"}}`</code>
-					<code class="code-colors inline"><span class="hidden-br"><br></span>```<span class="hidden-br"><br></span><i class="icon-level-down"></i>{{_ "multi"}}<span class="hidden-br"><br></span><i class="icon-level-down"></i>{{_ "line"}}<span class="hidden-br"><br></span><i class="icon-level-down"></i>```</code>
-					{{/if}}
-					{{#if katexSyntax}}
-					<span><a href="https://github.com/Khan/KaTeX/wiki/Function-Support-in-KaTeX" target="_blank">{{katexSyntax}}</a></span>
-					{{/if}}
-					{{#if showMarkdown}}
-					<q><span class="hidden-br"><br></span>&gt;{{_ "quote"}}</q>
-					{{/if}}
-				</div>
+					<div class="formatting-tips" aria-hidden="true" dir="auto">
+						{{#if showMarkdown}}
+							<b>*{{_ "bold"}}*</b>
+							<i>_{{_ "italics"}}_</i>
+							<span>~<strike>{{_ "strike"}}</strike>~</span>
+						{{/if}}
+						{{#if showMarkdownCode}}
+							<code class="code-colors inline">`{{_ "inline_code"}}`</code>
+							<code class="code-colors inline"><span class="hidden-br"><br></span>```<span class="hidden-br"><br></span><i class="icon-level-down"></i>{{_ "multi"}}<span class="hidden-br"><br></span><i class="icon-level-down"></i>{{_ "line"}}<span class="hidden-br"><br></span><i class="icon-level-down"></i>```</code>
+						{{/if}}
+						{{#if katexSyntax}}
+							<span><a href="https://github.com/Khan/KaTeX/wiki/Function-Support-in-KaTeX" target="_blank">{{katexSyntax}}</a></span>
+						{{/if}}
+						{{#if showMarkdown}}
+							<q><span class="hidden-br"><br></span>&gt;{{_ "quote"}}</q>
+						{{/if}}
+					</div>
 				{{/if}}
 			{{/if}}
+
 			<div class="editing-commands" aria-hidden="true" dir="auto">
 				<div class="editing-commands-cancel">{{_ 'Esc_to'}} <button type="button">{{_ 'Cancel_message_input'}}</button></div>
 				<div class="editing-commands-save">{{_ 'Enter_to'}} <button type="button">{{_ 'Save_changes'}}</button></div>
@@ -122,6 +142,14 @@
 				{{/if}}
 				<button class="button join"><span><i class="icon-login"></i> {{_ "join"}}</span></button>
 			</div>
+			{{/if}}
+			{{#if anonymousRead}}
+				<div>
+					<button class="button register"><span>{{_ "Sign_in_to_start_talking"}}</span></button>
+					{{#if anonymousWrite}}
+						<button class="button register-anonymous"><span>{{_ "Or_talk_as_anonymous"}}</span></button>
+					{{/if}}
+				</div>
 			{{/if}}
 		{{/with}}
 	{{/if}}

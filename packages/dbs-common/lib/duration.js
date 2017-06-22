@@ -7,12 +7,11 @@ class Duration {
 	}
 
 	static padZero(i) {
-		return ( i < 10 ? "0" + i : i );
+		return (i < 10 ? `0${ i }` : i);
 	}
 
 	toHHMMSS() {
-		return Math.floor(this.ms / 3600000) + ':' + Duration.padZero(this.date.getMinutes()) + ':' +
-			   Duration.padZero(this.date.getSeconds())
+		return `${ Math.floor(this.ms / 3600000) }:${ Duration.padZero(this.date.getMinutes()) }:${ Duration.padZero(this.date.getSeconds()) }`;
 	}
 
 	toMM() {

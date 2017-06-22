@@ -1,4 +1,4 @@
-@AdminChatRoom = new Meteor.Collection('rocketchat_room')
+@AdminChatRoom = new Mongo.Collection('rocketchat_room')
 
 Template.adminRooms.helpers
 	isReady: ->
@@ -57,6 +57,7 @@ Template.adminRooms.onCreated ->
 	});
 
 	RocketChat.ChannelSettings.addOption
+		group: ['admin-room']
 		id: 'make-default'
 		template: 'channelSettingsDefault'
 		data: ->

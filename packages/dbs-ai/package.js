@@ -10,13 +10,13 @@ function addDirectory(api, pathInPackage, environment) {
 	const PACKAGE_PATH = 'packages/dbs-ai/';
 	const _ = Npm.require('underscore');
 	const fs = Npm.require('fs');
-	const files = _.compact(_.map(fs.readdirSync(PACKAGE_PATH + pathInPackage), function (filename) {
-		return pathInPackage + '/' + filename
+	const files = _.compact(_.map(fs.readdirSync(PACKAGE_PATH + pathInPackage), function(filename) {
+		return `${ pathInPackage }/${ filename }`;
 	}));
 	api.addFiles(files, environment);
 }
 
-Package.onUse(function (api) {
+Package.onUse(function(api) {
 
 	api.use(['ecmascript', 'underscore']);
 	api.use('templating', 'client');
@@ -50,7 +50,7 @@ Package.onUse(function (api) {
 	api.addFiles('client/lib/collections.js', 'client');
 
 	//client views
-	addDirectory(api,'client/views/app/tabbar', 'client');
+	addDirectory(api, 'client/views/app/tabbar', 'client');
 
 	//i18n in Rocket.Chat-package (packages/rocketchat-i18n/i18n
 });

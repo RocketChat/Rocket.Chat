@@ -1,9 +1,10 @@
+/* globals Restivus */
+
 /**
  * Restful API endpoints for interaction with external systems
  */
 
 import {helpRequest} from '../help-request';
-// import {Restivus} from 'nimble:restivus';
 
 const API = new Restivus({
 	apiPath: 'assistify/',
@@ -13,11 +14,11 @@ const API = new Restivus({
 
 
 function keysToUpperCase(obj) {
-	for (let prop in obj){
-		if(typeof obj[prop] === "object"){
+	for (const prop in obj) {
+		if (typeof obj[prop] === 'object') {
 			obj[prop] = keysToUpperCase(obj[prop]);
 		}
-		if(prop != prop.toUpperCase()){
+		if (prop !== prop.toUpperCase()) {
 			obj[prop.toUpperCase()] = obj[prop];
 			delete obj[prop];
 		}
@@ -26,11 +27,11 @@ function keysToUpperCase(obj) {
 }
 
 function keysToLowerCase(obj) {
-	for (let prop in obj){
-		if(typeof obj[prop] === "object"){
+	for (const prop in obj) {
+		if (typeof obj[prop] === 'object') {
 			obj[prop] = keysToLowerCase(obj[prop]);
 		}
-		if(prop != prop.toLowerCase()){
+		if (prop !== prop.toLowerCase()) {
 			obj[prop.toLowerCase()] = obj[prop];
 			delete obj[prop];
 		}
@@ -42,24 +43,26 @@ function preProcessBody(body) {
 	body = keysToLowerCase(body);
 	// Extract properties from the load encapsulated in an additional REQUEST-object
 	if (body.request) {
-		for (let key in body.request){
-			body[key] = body.request[key];
+		for (const key in body.request) {
+			if (Object.prototype.hasOwnProperty.call(body.request, key)) {
+				body[key] = body.request[key];
+			}
 		}
 		delete body.request;
 	}
 
 	//dereference references
-	for (let key in body){
-		if(typeof body[key] === 'object'){
-			for (let prop in body[key]){
-				if( prop === "%ref") {
-					let refId = body[key][prop].replace(/\#/, "");
-					body[key] = body["%heap"][refId]["%val"];
+	for (const key in body) {
+		if (typeof body[key] === 'object') {
+			for (const prop in body[key]) {
+				if (prop === '%ref') {
+					const refId = body[key][prop].replace(/\#/, '');
+					body[key] = body['%heap'][refId]['%val'];
 				}
 			}
 		}
 	}
-	delete body["%heap"];
+	delete body['%heap'];
 }
 
 API.addRoute('helpDiscussion', {
@@ -75,10 +78,10 @@ API.addRoute('helpDiscussion', {
 
 		const api = new helpRequest.HelpRequestApi();
 		try {
-			helpRequest.HelpRequestApi.validateHelpDiscussionPostRequest(this.bodyParams)
+			helpRequest.HelpRequestApi.validateHelpDiscussionPostRequest(this.bodyParams);
 		} catch (err) {
-			console.log('Assistify rejected malformed request:', JSON.stringify(this.request.body, " ", 2));
-			throw new Meteor.Error('Malformed request:' + JSON.stringify(err, " ", 2));
+			console.log('Assistify rejected malformed request:', JSON.stringify(this.request.body, ' ', 2));
+			throw new Meteor.Error(`Malformed request:${ JSON.stringify(err, ' ', 2) }`);
 		}
 
 		// if (!this.request.headers['X-Auth-Token'])) { //todo: Check authorization - or is this done by Restivus once setting another parameter?
@@ -91,6 +94,6 @@ API.addRoute('helpDiscussion', {
 			status_code: 200,
 			result: creationResult,
 			RESULT: keysToUpperCase(creationResult)
-		}
+		};
 	}
 });

@@ -71,8 +71,8 @@ Meteor.methods({
 
 		return {
 			messages: messages.concat(afterMessages),
-			moreBefore: moreBefore,
-			moreAfter: moreAfter
+			moreBefore,
+			moreAfter
 		};
 	}
 });

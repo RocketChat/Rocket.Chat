@@ -2,13 +2,13 @@
 /* exported FileUploadBase */
 
 UploadFS.config.defaultStorePermissions = new UploadFS.StorePermissions({
-	insert: function(userId/*, doc*/) {
+	insert(userId/*, doc*/) {
 		return userId;
 	},
-	update: function(userId, doc) {
+	update(userId, doc) {
 		return RocketChat.authz.hasPermission(Meteor.userId(), 'delete-message', doc.rid) || (RocketChat.settings.get('Message_AllowDeleting') && userId === doc.userId);
 	},
-	remove: function(userId, doc) {
+	remove(userId, doc) {
 		return RocketChat.authz.hasPermission(Meteor.userId(), 'delete-message', doc.rid) || (RocketChat.settings.get('Message_AllowDeleting') && userId === doc.userId);
 	}
 });

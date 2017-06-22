@@ -1,4 +1,4 @@
-Meteor.startup(function () {
+Meteor.startup(function() {
 	RocketChat.settings.addGroup('dbsAI');
 
 	RocketChat.settings.add('DBS_AI_Enabled', true, {
@@ -41,11 +41,11 @@ Meteor.startup(function () {
 
 
 	let domain = RocketChat.settings.get('Site_Url');
-	if(domain){
+	if (domain) {
 		domain = domain
-					.replace("https://", "")
-					.replace("http://", "");
-		while(domain.charAt(domain.length - 1) === '/'){
+					.replace('https://', '')
+					.replace('http://', '');
+		while (domain.charAt(domain.length - 1) === '/') {
 			domain = domain.substr(0, domain.length - 1);
 		}
 	}

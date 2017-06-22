@@ -3,7 +3,7 @@
  * Publish Peer-to-peer-specific enhancements to Rocket.Chat models
  *
  */
-Meteor.publish('assistify:room', function ({rid: roomId}) {
+Meteor.publish('assistify:room', function({rid: roomId}) {
 	if (!this.userId) {
 		return this.error(new Meteor.Error('error-not-authorized', 'Not authorized'));
 	}

@@ -1,11 +1,12 @@
+/* globals RocketChat, FlowRouter, console */
 import toastr from 'toastr';
 
 Template.AssistifyCreateExpertise.helpers({
-	selectedUsers: function () {
+	selectedUsers() {
 		const instance = Template.instance();
 		return instance.selectedUsers.get();
 	},
-	autocompleteSettings: function () {
+	autocompleteSettings() {
 		return {
 			limit: 10,
 			// inputDelay: 300
@@ -29,13 +30,13 @@ Template.AssistifyCreateExpertise.helpers({
 			]
 		};
 	},
-	canCreateExpertise: function () {
+	canCreateExpertise() {
 		// as custom authorization leads to a streamer-exception, it has been disabled.
 		// Check whether the user is in the expert's channel as lightweight workaround
 		const instance = Template.instance();
 		const isExpert = instance.isExpert.get();
 		const error = instance.error.get();
-		if(!isExpert && error && error.error === 'no-expert-room-defined'){
+		if (!isExpert && error && error.error === 'no-expert-room-defined') {
 			toastr.info(TAPi18n.__('no-expert-room-defined'));
 			return false;
 		}
@@ -54,7 +55,7 @@ Template.AssistifyCreateExpertise.events({
 	},
 
 	'click .remove-expert'(e, instance) {
-		let self = this;
+		const self = this;
 
 		let users = instance().selectedUsers.get();
 		users = _.reject(instance().selectedUsers.get(), _id => _id === self.valueOf());
@@ -65,8 +66,8 @@ Template.AssistifyCreateExpertise.events({
 	},
 
 
-	'keyup #expertise': function (e, instance) {
-		if (e.keyCode == 13) {
+	'keyup #expertise'(e, instance) {
+		if (e.keyCode === 13) {
 			instance.$('#experts').focus();
 		}
 	},
@@ -77,13 +78,13 @@ Template.AssistifyCreateExpertise.events({
 		}
 	},
 
-	'click .cancel-expertise': function (event, instance) {
+	'click .cancel-expertise'(event, instance) {
 		SideNav.closeFlex(() => {
-			instance.clearForm()
+			instance.clearForm();
 		});
 	},
 
-	'click .save-expertise': function (event, instance) {
+	'click .save-expertise'(event, instance) {
 		event.preventDefault();
 		const name = instance.find('#expertise').value.toLowerCase().trim();
 		instance.expertiseRoomName.set(name);
@@ -106,45 +107,44 @@ Template.AssistifyCreateExpertise.events({
 							toastr.error(TAPi18n.__('Expertise_needs_experts', name));
 							return;
 						default:
-							return handleError(err)
+							return handleError(err);
 					}
 				}
 
 				// we're done, so close side navigation and navigate to created request-channel
 				SideNav.closeFlex(() => {
-					instance.clearForm()
+					instance.clearForm();
 				});
-				RocketChat.callbacks.run('aftercreateCombined', {_id: result.rid, name: name});
-				FlowRouter.go('expertise', {name: name}, FlowRouter.current().queryParams);
+				RocketChat.callbacks.run('aftercreateCombined', {_id: result.rid, name});
+				FlowRouter.go('expertise', {name}, FlowRouter.current().queryParams);
 			});
 		} else {
-			console.log(err);
 			toastr.error(TAPi18n.__('The_field_is_required', TAPi18n.__('expertise')));
 		}
 	}
 });
 
-Template.AssistifyCreateExpertise.onCreated(function () {
+Template.AssistifyCreateExpertise.onCreated(function() {
 	const instance = this;
 	instance.expertiseRoomName = new ReactiveVar('');
 	instance.selectedUsers = new ReactiveVar([]);
 	instance.selectedUserNames = {};
 	instance.isExpert = new ReactiveVar(false);
-	instance.error = new ReactiveVar(null)
+	instance.error = new ReactiveVar(null);
 
-	Meteor.call('getExperts', function (err, experts) {
+	Meteor.call('getExperts', function(err, experts) {
 		if (err) {
 			instance.error.set(err);
 			instance.isExpert.set(false);
 		} else {
 			instance.error.set(null);
-			if(experts) {
-				instance.isExpert.set(experts.indexOf(Meteor.user().username) != -1);
+			if (experts) {
+				instance.isExpert.set(experts.indexOf(Meteor.user().username) !== -1);
 			}
 		}
 	});
 
-	instance.clearForm = function () {
+	instance.clearForm = function() {
 		instance.expertiseRoomName.set('');
 		instance.selectedUsers.set([]);
 		instance.find('#expertise').value = '';
