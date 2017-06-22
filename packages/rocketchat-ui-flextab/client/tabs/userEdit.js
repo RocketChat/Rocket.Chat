@@ -19,7 +19,7 @@ Template.userEdit.helpers({
 
 	role() {
 		const roles = Template.instance().roles.get();
-		return RocketChat.models.Roles.find({_id: {$nin:roles}}, { sort: { description: 1, _id: 1 } });
+		return RocketChat.models.Roles.find({_id: {$nin:roles}, scope: 'Users'}, { sort: { description: 1, _id: 1 } });
 	},
 
 	userRoles() {
