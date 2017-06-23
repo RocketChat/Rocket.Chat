@@ -248,6 +248,46 @@ Template.messagePopupConfig.helpers({
 		};
 		return config;
 	},
+	popupSlashCommandsParameterConfig() {
+		const self = this;
+    let c = {
+        command: 'join',
+				description: 'Say hello',
+        clientOnly: false,
+        params: [
+					{
+						description: 'First parameter',
+						params: [
+							{
+								description: 'Users',
+								collection: filteredUsersMemory
+							}
+						]
+					}
+				]
+    };
+
+    return {
+        title: `/${c.command} ${c.description}` ,
+        collection: c.params,
+        trigger: `/${c.command} `,
+        suffix: ' ',
+        triggerAnywhere: false,
+        template: 'messagePopupSlashCommand',
+        getInput: self.getInput,
+				getFilter(collection, filter) {
+					const regExp = new RegExp(`^${ RegExp.escape(filter) }`, 'i');
+					console.log(filter);
+					return Object.entries(collection).map((param, index) => {
+						return {
+							description: c.description,
+							params: param,
+							_id: `${c.command} `
+						}
+					})
+				}
+    }
+	},
 	emojiEnabled() {
 		return RocketChat.emoji != null;
 	},

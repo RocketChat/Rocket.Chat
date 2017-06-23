@@ -207,7 +207,7 @@ this.ChatMessages = class ChatMessages {
 
 				//Check if message starts with /command
 				if (msg[0] === '/') {
-					const match = msg.match(/^\/([^\s]+)(?:\s+(.*))?$/m);
+					const match = msg.match(/^\/([^\s]+)(\s+(.*))?$/m);
 					if (match) {
 						let command;
 						if (RocketChat.slashCommands.commands[match[1]]) {
