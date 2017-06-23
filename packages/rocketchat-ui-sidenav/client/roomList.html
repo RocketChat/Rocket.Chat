@@ -14,7 +14,7 @@
 					</h3>
 					<ul class="rooms-list__list">
 						{{#each room in this}}
-							{{> chatRoomItem roomData room }}
+							{{> sidebarItem roomData room }}
 						{{else}}
 							<p class="rooms-list__empty-room sidebar-content">{{_ "No_channels_yet" }}</p>
 						{{/each}}
