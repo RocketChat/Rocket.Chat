@@ -51,6 +51,15 @@ Template.adminFlex.helpers({
 	label,
 	adminBoxOptions() {
 		return RocketChat.AdminBox.getOptions();
+	},
+	menuItem(name, icon, section, group) {
+		return {
+			name: t(name),
+			icon,
+			pathSection: section,
+			pathGroup: group,
+			darken: true
+		};
 	}
 });
 

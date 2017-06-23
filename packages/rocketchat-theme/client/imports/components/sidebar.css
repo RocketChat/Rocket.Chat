@@ -2,6 +2,7 @@
 	--account-thumb-size: 56px;
 	--account-status-bullet-size: 12px;
 	--room-item-height: 32px;
+	--room-item-thumb-size: 20px;
 	--sidebar-header-height: 190px;
 	--sidebar-header-padding: 24px;
 	--sidebar-footer-height: 125px;
@@ -231,7 +232,7 @@
 }
 
 /* room item */
-.room-item {
+.sidebar-item {
 	cursor: pointer;
 	height: var(--room-item-height);
 	display: flex;
@@ -244,7 +245,6 @@
 		font-size: 1rem;
 		flex: 1;
 		line-height: var(--room-item-height);
-		transition: color 0.3s linear;
 		display: flex;
 		align-items: center;
 	}
@@ -253,13 +253,9 @@
 		margin: 0 8px 0 3px;
 	}
 
-	&__room-icon,
-	&__user-thumb {
-		margin-right: 6px;
-	}
-
-	&__room-icon {
+	&__icon {
 		stroke: currentColor;
+		margin: 0 auto;
 
 		&--hashtag {
 			width: 14px;
@@ -288,8 +284,8 @@
 	}
 
 	&__user-thumb {
-		width: 20px;
-		height: 20px;
+		width: var(--room-item-thumb-size);
+		height: var(--room-item-thumb-size);
 	}
 
 	&__user-status {
@@ -298,5 +294,12 @@
 		border-radius: 50%;
 		margin-left: -16px;
 		margin-right: 10px;
+	}
+
+	&__picture {
+		width: var(--room-item-thumb-size);
+		display: flex;
+		align-items: center;
+		margin-right: 6px;
 	}
 }
