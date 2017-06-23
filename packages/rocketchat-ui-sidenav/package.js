@@ -21,6 +21,7 @@ Package.onUse(function(api) {
 
 	api.addFiles('client/accountBox.html', 'client');
 	api.addFiles('client/createCombinedFlex.html', 'client');
+	api.addFiles('client/chatRoomItem.html', 'client');
 	api.addFiles('client/listChannelsFlex.html', 'client');
 	api.addFiles('client/listCombinedFlex.html', 'client');
 	api.addFiles('client/listPrivateGroupsFlex.html', 'client');
@@ -32,6 +33,7 @@ Package.onUse(function(api) {
 
 	api.addFiles('client/accountBox.js', 'client');
 	api.addFiles('client/createCombinedFlex.js', 'client');
+	api.addFiles('client/chatRoomItem.js', 'client');
 	api.addFiles('client/listChannelsFlex.js', 'client');
 	api.addFiles('client/listCombinedFlex.js', 'client');
 	api.addFiles('client/listPrivateGroupsFlex.js', 'client');
