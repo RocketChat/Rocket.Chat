@@ -91,24 +91,6 @@ Template.accountBox.events({
 			SideNav.setFlex(this.sideNav);
 			SideNav.openFlex();
 		}
-	},
-
-	'click .account-box'() {
-		if (Meteor.userId() == null && RocketChat.settings.get('Accounts_AllowAnonymousRead')) {
-			return false;
-		}
-
-		AccountBox.toggle();
-	},
-
-	'click #avatar'() {
-		FlowRouter.go('changeAvatar');
-	},
-
-	'click #account'() {
-		SideNav.setFlex('accountFlex');
-		SideNav.openFlex();
-		FlowRouter.go('account');
 	}
 });
 
