@@ -62,7 +62,6 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 	const header = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Header') || '');
 	let footer = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Footer') || '');
 	messageHTML = messageHTML.replace(/\n/gm, '<br/>');
-	let From = RocketChat.settings.get('From_Email');
 
 	RocketChat.models.Subscriptions.findWithSendEmailByRoomId(room._id).forEach((sub) => {
 		if (sub.disableNotifications) {
@@ -116,22 +115,31 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 				}
 
 				if (RocketChat.settings.get('IMAP_Enable')) {
-					From += `+${ message._id }`;
 					footer = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Footer_Direct_Reply') || '');
 				}
 				const ts = new Date().getTime();
 
 				user.emails.some((email) => {
 					if (email.verified) {
-						email = {
-							to: email.address,
-							from: From,
-							subject: `[${ siteName }] ${ emailSubject }`,
-							headers: {
-								'Message-ID': `${ ts }+${ message.rid }+${ message._id }@${ email.address.split('@')[1] }`
-							},
-							html: header + messageHTML + divisorMessage + (linkByUser[user._id] || defaultLink) + footer
-						};
+						if (RocketChat.settings.get('IMAP_Enable')) {
+							email = {
+								to: email.address,
+								from: RocketChat.settings.get('From_Email'),
+								subject: `[${ siteName }] ${ emailSubject }`,
+								headers: {
+									'Reply-To' : `${ RocketChat.settings.get('IMAP_Username').split('@')[0] }+${ message._id }@${ RocketChat.settings.get('IMAP_Username').split('@')[1] }`,
+									'Message-ID': `${ ts }+${ message.rid }+${ message._id }@${ email.address.split('@')[1] }`
+								},
+								html: header + messageHTML + divisorMessage + (linkByUser[user._id] || defaultLink) + footer
+							};
+						} else {
+							email = {
+								to: email.address,
+								from: RocketChat.settings.get('From_Email'),
+								subject: `[${ siteName }] ${ emailSubject }`,
+								html: header + messageHTML + divisorMessage + (linkByUser[user._id] || defaultLink) + footer
+							};
+						}
 
 						Meteor.defer(() => {
 							Email.send(email);
