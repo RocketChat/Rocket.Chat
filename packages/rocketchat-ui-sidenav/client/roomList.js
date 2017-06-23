@@ -1,3 +1,5 @@
+/* globals KonchatNotification */
+
 Template.roomList.helpers({
 	rooms() {
 		if (this.identifier == 'unread') {
@@ -48,10 +50,64 @@ Template.roomList.helpers({
 	},
 
 	roomData(room) {
+		let name = room.name;
+		if (RocketChat.settings.get('UI_Use_Real_Name') && room.fname) {
+			name = room.fname;
+		}
+
+		let unread = false;
+		if (((FlowRouter.getParam('_id') !== room.rid) || !document.hasFocus()) && (room.unread > 0)) {
+			unread = room.unread;
+		}
+
+		let active = false;
+		if (Session.get('openedRoom') && Session.get('openedRoom') === room.rid || Session.get('openedRoom') === room._id) {
+			active = true;
+		}
+
+		const archivedClass = room.archived ? 'archived' : false;
+
+		let alertClass = false;
+		if (!room.hideUnreadStatus && (FlowRouter.getParam('_id') !== room.rid || !document.hasFocus()) && room.alert) {
+			alertClass = 'sidebar-content-unread';
+		}
+
+		let statusClass = false;
+
+		if (room.t === 'd') {
+			switch (RocketChat.roomTypes.getUserStatus(room.t, room.rid)) {
+				case 'online':
+					statusClass = 'general-success-background';
+					break;
+				case 'away':
+					statusClass = 'general-pending-background';
+					break;
+				case 'busy':
+					statusClass = 'general-error-background';
+					break;
+				case 'offline':
+					statusClass = 'general-inactive-background';
+					break;
+				default:
+					statusClass = 'general-inactive-background';
+			}
+		}
+
+		// Sound notification
+		if (!(FlowRouter.getParam('name') === room.name) && !room.ls && room.alert === true) {
+			KonchatNotification.newRoom(room.rid);
+		}
+
 		return {
 			...room,
 			icon: RocketChat.roomTypes.getIcon(room.t),
-			route: RocketChat.roomTypes.getRouteLink(room.t, room)
+			route: RocketChat.roomTypes.getRouteLink(room.t, room),
+			name,
+			unread,
+			active,
+			archivedClass,
+			alertClass,
+			statusClass
 		};
 	},
 
@@ -90,16 +146,4 @@ Template.roomList.events({
 
 		return SideNav.openFlex();
 	}
-});
-
-Template.roomList.onCreated(function() {
-	// this.autorun(() => {
-	// 	const query = {
-	// 		alert: true,
-	// 		open: true,
-	// 		hideUnreadStatus: { $ne: true }
-	// 	};
-	//
-	// 	return this.unreadRooms = ChatSubscription.find(query, { sort: { 't': 1, 'name': 1 }});
-	// });
 });
