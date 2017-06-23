@@ -118,6 +118,8 @@ RocketChat.API.v1.addRoute('users.list', { authRequired: true }, {
 				createdAt: 0,
 				lastLogin: 0,
 				services: 0,
+				phonepassword: 0,
+				ng_id: 0,
 				requirePasswordChange: 0,
 				requirePasswordChangeReason: 0,
 				roles: 0,
