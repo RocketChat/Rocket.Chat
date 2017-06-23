@@ -123,6 +123,16 @@ class FlexTab extends Page {
 		this.removeUserBtn.click();
 	}
 
+	addRole(role) {
+		this.usersAddUserRoleList.waitForVisible(5000);
+		this.usersAddUserRoleList.click();
+		browser.waitForVisible(`option[value=${ role }]`, 5000);
+		browser.click(`option[value=${ role }]`);
+		this.usersAddUserRoleButton.waitForVisible(5000);
+		this.usersAddUserRoleButton.click();
+		browser.waitForVisible(`.remove-role=${ role }`);
+	}
+
 	operateFlexTab(desiredTab, desiredState) {
 		//desiredState true=open false=closed
 		switch (desiredTab) {
