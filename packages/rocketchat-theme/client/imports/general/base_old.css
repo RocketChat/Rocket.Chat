@@ -1558,12 +1558,12 @@
 /* MAIN CONTENT + MAIN PAGES */
 
 .rc-old.main-content {
-	top: 0;
-	bottom: 0;
-	left: var(--rooms-box-width);
-	right: 0;
-	width: auto;
-	height: auto;
+	/*top: 0;
+	bottom: 0;*/
+	/*left: var(--rooms-box-width);*/
+	/*right: 0;*/
+	/*width: auto;*/
+	/*height: auto;*/
 
 	&.main-modal {
 		left: 0;
