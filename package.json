@@ -102,7 +102,6 @@
     "mime-type": "^3.0.5",
     "moment": "^2.18.1",
     "moment-timezone": "^0.5.13",
-    "node-email-reply-parser": "0.0.1",
     "photoswipe": "^4.1.2",
     "prom-client": "^9.0.0",
     "semver": "^5.3.0",
