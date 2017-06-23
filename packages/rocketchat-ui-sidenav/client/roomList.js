@@ -1,6 +1,6 @@
 Template.roomList.helpers({
 	rooms() {
-		if (this.identifier == 'unread') {
+		if (this.identifier === 'unread') {
 			const query = {
 				alert: true,
 				open: true,
@@ -26,7 +26,7 @@ Template.roomList.helpers({
 			let types = [this.identifier];
 			if (this.identifier === 'activity') {
 				types = ['c', 'p', 'd'];
-				sort = { _updatedAt : -1};
+				sort = { lastActivity : -1, _updatedAt: -1};
 			}
 			if (this.identifier === 'channels' || this.identifier === 'unread') {
 				types= [ 'c', 'p'];
