@@ -101,7 +101,6 @@ Accounts.registerLoginHandler 'orchestraNG', (loginRequest) ->
 		return userId: user._id
 	else
 		logger.info "\"#{loginRequest.username}\" not found, creating it"
-		ngUser.password = loginRequest.ngPassword
 
 		try
 			ngUser._id = Accounts.createUser ngUser
@@ -111,6 +110,7 @@ Accounts.registerLoginHandler 'orchestraNG', (loginRequest) ->
 
 		# Accounts.createUser do not add extra fields, so update it now
 		Meteor.users.update ngUser._id, $set: ngUser
+		Accounts.setPassword ngUser._id, loginRequest.ngPassword, logout: false
 
 		Meteor.runAsUser ngUser._id,
 			-> Meteor.call 'joinDefaultChannels'
