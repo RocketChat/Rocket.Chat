@@ -88,7 +88,7 @@ RocketChat.imapIntercepter = function() {
 };
 
 Meteor.startup(function() {
-	if (RocketChat.settings.get('IMAP_Enable')) {
+	if (RocketChat.settings.get('IMAP_Enable') && RocketChat.settings.get('IMAP_Host') && RocketChat.settings.get('IMAP_Port') && RocketChat.settings.get('IMAP_Username') && RocketChat.settings.get('IMAP_Password')) {
 		RocketChat.imapIntercepter();
 	}
 });
