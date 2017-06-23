@@ -47,6 +47,14 @@ Template.roomList.helpers({
 		return ChatSubscription.find(query, { sort });
 	},
 
+	roomData(room) {
+		return {
+			...room,
+			icon: RocketChat.roomTypes.getIcon(room.t),
+			route: RocketChat.roomTypes.getRouteLink(room.t, room)
+		};
+	},
+
 	isLivechat() {
 		return this.identifier === 'l';
 	},

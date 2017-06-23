@@ -9,43 +9,20 @@
 				<span>Back to chat</span>
 			</button>
 		</header>
+		<div class="rooms-list">
 			<ul class="rooms-list__list">
-				<li class="room-item">
-					<a class="room-item__link sidebar-content" href="{{pathFor 'account' group='preferences'}}">
-						<svg class="room-item__room-icon room-item__room-icon--customize">
-							<use xlink:href="/images/icons.svg#customize"></use>
-						</svg>
-						<span class='room-item__name'>{{_ "Preferences"}}</span>
-					</a>
-				</li>
+				{{> sidebarItem menuItem "Preferences" "customize" "account" "preferences" }}
+
 				{{#if allowUserProfileChange}}
-					<li class="room-item">
-						<a class="room-item__link sidebar-content" href="{{pathFor 'account' group='profile'}}">
-							<svg class="room-item__room-icon room-item__room-icon--user">
-								<use xlink:href="/images/icons.svg#user"></use>
-							</svg>
-							<span class='room-item__name'>{{_ "Profile"}}</span>
-						</a>
-					</li>
+					{{> sidebarItem menuItem "Profile" "user" "account" "profile" }}
 				{{/if}}
+
 				{{#if allowUserAvatarChange}}
-					<li class="room-item">
-						<a class="room-item__link sidebar-content" href="{{pathFor 'changeAvatar'}}">
-							<svg class="room-item__room-icon room-item__room-icon--user-rounded">
-								<use xlink:href="/images/icons.svg#user-rounded"></use>
-							</svg>
-							<span class='room-item__name'>{{_ "Avatar"}}</span>
-						</a>
-					</li>
+					{{> sidebarItem menuItem "Avatar" "user-rounded" "changeAvatar" "" }}
 				{{/if}}
-				<li class="room-item">
-					<a class="room-item__link sidebar-content" href="{{pathFor 'account' group='security'}}">
-						<svg class="room-item__room-icon room-item__room-icon--lock">
-							<use xlink:href="/images/icons.svg#lock"></use>
-						</svg>
-						<span class='room-item__name'>{{_ "Security"}}</span>
-					</a>
-				</li>
+
+				{{> sidebarItem menuItem "Security" "lock" "account" "security" }}
 			</ul>
+		</div>
 	</aside>
 </template>
