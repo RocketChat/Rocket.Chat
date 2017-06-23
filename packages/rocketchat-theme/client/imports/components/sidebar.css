@@ -15,7 +15,7 @@
 	height: auto;
 	display: flex;
 	flex-direction: column;
-	z-index: 9999;
+	z-index: 2;
 	position: relative;
 
 	&--flex {
@@ -24,7 +24,7 @@
 	}
 
 	&-wrap {
-		z-index: -1;
+		z-index: 1;
 		height: 100%;
 		position: absolute;
 		top: 0;
@@ -70,8 +70,8 @@
 }
 
 @media (width < 780px) {
-	.sidebar {
-		transform: translateX(-280px);
+	.sidebar:not(.sidebar--flex) {
+		transform: translate3d(-280px, 0, 0);
 		will-change: transform;
 		touch-action: pan-y;
 		user-select: none;
