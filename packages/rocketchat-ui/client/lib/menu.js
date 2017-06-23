@@ -111,7 +111,7 @@ this.menu = new class extends EventEmitter {
 			}
 			if (map((this.diff / sideNavW), 0, 1, -.1, .8) > 0) {
 				this.sidebar.css('box-shadow', '0 0 15px 1px rgba(0,0,0,.3)');
-				this.sidebarWrap.css('z-index', '9998');
+				// this.sidebarWrap.css('z-index', '9998');
 				this.translate(this.diff);
 			}
 		}
@@ -163,14 +163,14 @@ this.menu = new class extends EventEmitter {
 		}));
 		this.on('close', () => {
 			this.sidebarWrap.css('width', '');
-			this.sidebarWrap.css('z-index', '');
+			// this.sidebarWrap.css('z-index', '');
 			this.sidebarWrap.css('background-color', '');
 			this.sidebar.css('transform', '');
 			this.sidebar.css('box-shadow', '');
 		});
 		this.on('open', () => {
 			this.sidebar.css('box-shadow', '0 0 15px 1px rgba(0,0,0,.3)');
-			this.sidebarWrap.css('z-index', '9998');
+			// this.sidebarWrap.css('z-index', '9998');
 			this.translate(sideNavW);
 		});
 		this.mainContent = $('.main-content');
