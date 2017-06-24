@@ -2,6 +2,9 @@ Template.body.onRendered(() => {
 	Tracker.autorun((c) => {
 		const piwikUrl = RocketChat.settings.get('PiwikAnalytics_enabled') && RocketChat.settings.get('PiwikAnalytics_url');
 		const piwikSiteId = piwikUrl && RocketChat.settings.get('PiwikAnalytics_siteId');
+		const piwikPrependDomain = piwikUrl && RocketChat.settings.get('PiwikAnalytics_prependDomain');
+		const piwikCookieDomain = piwikUrl && RocketChat.settings.get('PiwikAnalytics_cookieDomain');
+		const piwikDomains = piwikUrl && RocketChat.settings.get('PiwikAnalytics_domains');
 		const googleId = RocketChat.settings.get('GoogleAnalytics_enabled') && RocketChat.settings.get('GoogleAnalytics_ID');
 		if (piwikSiteId || googleId) {
 			c.stop();
@@ -14,6 +17,25 @@ Template.body.onRendered(() => {
 
 				window._paq.push(['trackPageView']);
 				window._paq.push(['enableLinkTracking']);
+				if (piwikPrependDomain) {
+					window._paq.push(['setDocumentTitle', `${ window.location.hostname }/${ document.title }`]);
+				}
+				const upperLevelDomain = `*.${ window.location.hostname.split('.').slice(1).join('.') }`;
+				if (piwikCookieDomain) {
+					window._paq.push(['setCookieDomain', upperLevelDomain]);
+				}
+				if (piwikDomains) {
+					// array
+					const domainsArray = piwikDomains.split(/\n/);
+					let domains = [];
+					for (let i = 0; i < domainsArray.length; i++) {
+						// only push domain if it contains a non whitespace character.
+						if (/\S/.test(domainsArray[i])) {
+							domains.push(`*.${ domainsArray[i].trim() }`);
+						}
+					}
+					window._paq.push(['setDomains', domains]);
+				}
 				(() => {
 					window._paq.push(['setTrackerUrl', `${ piwikUrl }piwik.php`]);
 					window._paq.push(['setSiteId', Number.parseInt(piwikSiteId)]);
