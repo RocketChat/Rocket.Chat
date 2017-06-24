@@ -991,6 +991,8 @@
   "Pinned_a_message": "hat eine Nachricht angeheftet:",
   "Pinned_Messages": "Fixierte Nachrichten",
   "PiwikAnalytics_siteId_Description": "Die Website-ID zur Identifizierung dieser Website. Beispiel: 17",
+  "PiwikAdditionalTrackers" : "Zusätzliche Piwik Websites",
+  "PiwikAdditionalTrackers_Description" : "Geben Sie hier weitere Piwik Website URLs und SiteIDs in folgendem Format an, wenn Sie dieselben Daten in verschiedene Piwik Instanzen tracken möchten: [ { \"trackerURL\" : \"https://my.piwik.domain2/\", \"siteId\" : 42 }, { \"trackerURL\" : \"https://my.piwik.domain3/\", \"siteId\" : 15 } ]",
   "PiwikAnalytics_prependDomain" : "Domain voranstellen",
   "PiwikAnalytics_prependDomain_Description" : "Domain der Seite beim Tracken dem Seitentitel voranstellen",
   "PiwikAnalytics_cookieDomain" : "Alle Subdomains",
