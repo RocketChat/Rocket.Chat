@@ -27,7 +27,7 @@ Template.body.onRendered(() => {
 				if (piwikDomains) {
 					// array
 					const domainsArray = piwikDomains.split(/\n/);
-					let domains = [];
+					const domains = [];
 					for (let i = 0; i < domainsArray.length; i++) {
 						// only push domain if it contains a non whitespace character.
 						if (/\S/.test(domainsArray[i])) {
