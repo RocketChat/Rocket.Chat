@@ -1159,6 +1159,8 @@
   "Pinned_a_message": "Pinned a message:",
   "Pinned_Messages": "Pinned Messages",
   "PiwikAnalytics_siteId_Description": "The site id to use for identifying this site. Example: 17",
+  "PiwikAdditionalTrackers" : "Additional piwik sites",
+  "PiwikAdditionalTrackers_Description" : "Enter addtitional Piwik website URLs and SiteIDs in the following format, if you wnat to track the same data into different websites: [ { \"trackerURL\" : \"https://my.piwik.domain2/\", \"siteId\" : 42 }, { \"trackerURL\" : \"https://my.piwik.domain3/\", \"siteId\" : 15 } ]",
   "PiwikAnalytics_prependDomain" : "Prepend domain",
   "PiwikAnalytics_prependDomain_Description" : "Prepend the site domain to the page title when tracking",
   "PiwikAnalytics_cookieDomain" : "All subdomains",
