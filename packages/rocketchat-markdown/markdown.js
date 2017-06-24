@@ -53,19 +53,19 @@ class MarkdownClass {
 		// Support ![alt text](http://image url)
 		msg = msg.replace(new RegExp(`!\\[([^\\]]+)\\]\\(((?:${ schemes }):\\/\\/[^\\)]+)\\)`, 'gm'), function(match, title, url) {
 			const target = url.indexOf(Meteor.absoluteUrl()) === 0 ? '' : '_blank';
-			return `<a href="${ _.escapeHTML(url) }" title="${ _.escapeHTML(title) }" target="${ _.escapeHTML(target) }"><div class="inline-image" style="background-image: url(${ _.escapeHTML(url) });"></div></a>`;
+			return `<a href="${ _.escapeHTML(url) }" title="${ _.escapeHTML(title) }" target="${ _.escapeHTML(target) }" ref="noopener noreferrer"><div class="inline-image" style="background-image: url(${ _.escapeHTML(url) });"></div></a>`;
 		});
 
 		// Support [Text](http://link)
 		msg = msg.replace(new RegExp(`\\[([^\\]]+)\\]\\(((?:${ schemes }):\\/\\/[^\\)]+)\\)`, 'gm'), function(match, title, url) {
 			const target = url.indexOf(Meteor.absoluteUrl()) === 0 ? '' : '_blank';
-			return `<a href="${ _.escapeHTML(url) }" target="${ _.escapeHTML(target) }">${ _.escapeHTML(title) }</a>`;
+			return `<a href="${ _.escapeHTML(url) }" target="${ _.escapeHTML(target) }" ref="noopener noreferrer">${ _.escapeHTML(title) }</a>`;
 		});
 
 		// Support <http://link|Text>
 		msg = msg.replace(new RegExp(`(?:<|&lt;)((?:${ schemes }):\\/\\/[^\\|]+)\\|(.+?)(?=>|&gt;)(?:>|&gt;)`, 'gm'), (match, url, title) => {
 			const target = url.indexOf(Meteor.absoluteUrl()) === 0 ? '' : '_blank';
-			return `<a href="${ _.escapeHTML(url) }" target="${ _.escapeHTML(target) }">${ _.escapeHTML(title) }</a>`;
+			return `<a href="${ _.escapeHTML(url) }" target="${ _.escapeHTML(target) }" ref="noopener noreferrer">${ _.escapeHTML(title) }</a>`;
 		});
 
 		if (typeof window !== 'undefined' && window !== null ? window.rocketDebug : undefined) { console.log('Markdown', msg); }
