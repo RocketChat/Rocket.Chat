@@ -5,13 +5,13 @@ RocketChat.processDirectEmail = function(email) {
 	console.log(email);
 
 	email.headers.to = email.headers.to[0];
-    // if email format is "Name <email@domain>"
+
 	if (email.headers.to.indexOf('<') >= 0 && email.headers.to.indexOf('>') >= 0) {
 		email.headers.to = email.headers.to.split('<')[1].split('>')[0];
 	}
 
 	email.headers.from = email.headers.from[0];
-    // if email format is "Name <email@domain>"
+
 	if (email.headers.from.indexOf('<') >= 0 && email.headers.from.indexOf('>') >= 0) {
 		email.headers.from = email.headers.from.split('<')[1].split('>')[0];
 	}
