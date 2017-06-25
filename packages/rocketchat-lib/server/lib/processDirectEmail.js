@@ -19,16 +19,16 @@ RocketChat.processDirectEmail = function(email) {
 	email.headers.date = email.headers.date[0];
 
 	email.headers.references = email.headers.references[0].split('@')[0];
-    // references are of format "<message-id@domain>"
+
 	if (email.headers.references.charAt(0) === '<') {
 		email.headers.references = email.headers.references.substr(1);
 	}
 
-	if (email.headers.to.indexOf('+') >= 0) {         // if reply+messageID@domain format
+	if (email.headers.to.indexOf('+') >= 0) {
 		console.log('Valid Email');
 		email.headers.mid = email.headers.to.split('@')[0].split('+')[1];
 		console.log(email);
-	} else if (/^[0-9]+\+([0-9]|[a-z]|[A-Z])+\+([0-9]|[a-z]|[A-Z])+$/.test(email.headers.references)) {   // if references info is valid ie format "ts+roomID+messageID@domain"
+	} else if (/^[0-9]+\+([0-9]|[a-z]|[A-Z])+\+([0-9]|[a-z]|[A-Z])+$/.test(email.headers.references)) {
 		console.log('Valid Email');
 		email.headers.rid = email.headers.references.split('+')[1];
 		email.headers.mid = email.headers.references.split('+')[2];
