@@ -86,7 +86,7 @@
 		"bcrypt": "^1.0.2",
 		"codemirror": "^5.26.0",
 		"emailreplyparser": "0.0.5",
-		"file-type": "^4.3.0",
+		"file-type": "^5.2.0",
 		"highlight.js": "^9.12.0",
 		"imap": "^0.8.19",
 		"jquery": "^3.2.1",
