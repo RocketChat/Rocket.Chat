@@ -2,7 +2,7 @@ import PhotoSwipe from 'photoswipe';
 import PhotoSwipeUI_Default from 'photoswipe/dist/photoswipe-ui-default';
 import 'photoswipe/dist/photoswipe.css';
 
-const escapeHTML = (html) => html.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+const escapeHTML = (html) => (html || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 Meteor.startup(() => {
 	const initGallery = (selector, items, options) => {
 		const gallery = new PhotoSwipe(selector, PhotoSwipeUI_Default, items, options);

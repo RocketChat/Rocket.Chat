@@ -135,8 +135,7 @@ export const RoomHistoryManager = new class {
 				return instance.atBottom = messages.scrollTop >= (messages.scrollHeight - messages.clientHeight);
 			});
 
-			return setTimeout(() => msgElement.removeClass('highlight')
-			, 500);
+			return setTimeout(() => msgElement.removeClass('highlight'), 500);
 		} else {
 			const room = this.getRoom(message.rid);
 			room.isLoading.set(true);
@@ -184,8 +183,7 @@ export const RoomHistoryManager = new class {
 						return 500;
 					});
 
-					return setTimeout(() => msgElement.removeClass('highlight')
-					, 500);
+					return setTimeout(() => msgElement.removeClass('highlight'), 500);
 				});
 				if (room.loaded == null) { room.loaded = 0; }
 				room.loaded += result.messages.length;
