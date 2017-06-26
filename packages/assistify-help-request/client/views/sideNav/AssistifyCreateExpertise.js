@@ -57,10 +57,10 @@ Template.AssistifyCreateExpertise.events({
 	'click .remove-expert'(e, instance) {
 		const self = this;
 
-		let users = instance().selectedUsers.get();
-		users = _.reject(instance().selectedUsers.get(), _id => _id === self.valueOf());
+		let users = instance.selectedUsers.get();
+		users = _.reject(instance.selectedUsers.get(), _id => _id === self.valueOf());
 
-		instance().selectedUsers.set(users);
+		instance.selectedUsers.set(users);
 
 		return $('#experts').focus();
 	},
