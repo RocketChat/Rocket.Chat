@@ -103,7 +103,12 @@ Meteor.startup(function() {
 			const message = this._arguments[1];
 			const input = instance.find('.input-message');
 			const url = RocketChat.MessageAction.getPermaLink(message._id);
-			const text = `[ ](${ url }) @${ message.u.username } `;
+			let text = `[ ](${ url }) `;
+
+			if (Session.get('openedRoom').indexOf(Meteor.userId()) === -1) {
+				text += `@${ message.u.username }`
+			}
+
 			if (input.value) {
 				input.value += input.value.endsWith(' ') ? '' : ' ';
 			}
