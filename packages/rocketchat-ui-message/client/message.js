@@ -193,10 +193,13 @@ Template.message.helpers({
 		}
 	},
 	hasOembed() {
-		if (!(this.urls && this.urls.length > 0 && Template.oembedBaseWidget != null && RocketChat.settings.get('API_Embed'))) {
+		// there is no URLs, there is no template to show the oembed (oembed package removed) or oembed is not enable
+		if (!(this.urls && this.urls.length > 0) || !Template.oembedBaseWidget || !RocketChat.settings.get('API_Embed')) {
 			return false;
 		}
-		if (!(RocketChat.settings.get('API_EmbedDisabledFor')||'').split(',').map(username => username.trim()).includes(this.u && this.u.username)) {
+
+		// check if oembed is disabled for message's sender
+		if ((RocketChat.settings.get('API_EmbedDisabledFor')||'').split(',').map(username => username.trim()).includes(this.u && this.u.username)) {
 			return false;
 		}
 		return true;
@@ -285,7 +288,7 @@ Template.message.onCreated(function() {
 		} else if (msg.u && msg.u.username === RocketChat.settings.get('Chatops_Username')) {
 			msg.html = msg.msg;
 			msg = RocketChat.callbacks.run('renderMentions', msg);
-				// console.log JSON.stringify message
+			// console.log JSON.stringify message
 			msg = msg.html;
 		} else {
 			msg = renderMessageBody(msg);
