@@ -114,6 +114,7 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 					return;
 				}
 
+				// Footer in case direct reply is enabled.
 				if (RocketChat.settings.get('IMAP_Enable')) {
 					footer = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Footer_Direct_Reply') || '');
 				}
@@ -121,13 +122,16 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 
 				user.emails.some((email) => {
 					if (email.verified) {
+						// If direct reply enabled, email content with headers
 						if (RocketChat.settings.get('IMAP_Enable')) {
 							email = {
 								to: email.address,
 								from: RocketChat.settings.get('From_Email'),
 								subject: `[${ siteName }] ${ emailSubject }`,
 								headers: {
+									// Reply-To header with format "username+messageId@domain"
 									'Reply-To' : `${ RocketChat.settings.get('IMAP_Username').split('@')[0] }+${ message._id }@${ RocketChat.settings.get('IMAP_Username').split('@')[1] }`,
+									// Message-ID header with format "timestamp+roomId+messageId@domain"
 									'Message-ID': `${ ts }+${ message.rid }+${ message._id }@${ email.address.split('@')[1] }`
 								},
 								html: header + messageHTML + divisorMessage + (linkByUser[user._id] || defaultLink) + footer

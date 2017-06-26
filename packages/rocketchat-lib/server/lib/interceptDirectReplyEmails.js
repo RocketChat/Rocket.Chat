@@ -14,14 +14,18 @@ RocketChat.imapIntercepter = function() {
 		imap.openBox('INBOX', false, cb);
 	}
 
+	// Fetch all UNSEEN messages and pass them for further processing
 	function getEmails(imap) {
 		imap.search(['UNSEEN'], function(err, newEmails) {
 			if (err) {
 				console.log(err);
+				throw err;
 			}
 
+			// newEmails => array containing serials of unseen messages
 			if (newEmails.length > 0) {
 				const f = imap.fetch(newEmails, {
+					// fetch headers & first body part.
 					bodies: ['HEADER.FIELDS (FROM TO SUBJECT DATE REFERENCES)', '1'],
 					struct: true,
 					markSeen: true
@@ -41,6 +45,7 @@ RocketChat.imapIntercepter = function() {
 								headerBuffer += chunk.toString('utf8');
 							}
 						});
+
 						stream.once('end', function() {
 							if (info.which === '1') {
 								email.body = bodyBuffer;
@@ -50,6 +55,7 @@ RocketChat.imapIntercepter = function() {
 						});
 					});
 
+					// On fetched each message, pass it further
 					msg.once('end', function() {
 						RocketChat.processDirectEmail(email);
 					});
@@ -61,13 +67,16 @@ RocketChat.imapIntercepter = function() {
 		});
 	}
 
+	// On successfully connected.
 	imap.once('ready', function() {
 		openInbox(function(err) {
 			if (err) {
 				throw err;
 			}
+			// fetch new emails & wait [IDLE]
 			getEmails(imap);
 
+			// If new message arrived, fetch them
 			imap.on('mail', function() {
 				getEmails(imap);
 			});
@@ -76,6 +85,7 @@ RocketChat.imapIntercepter = function() {
 
 	imap.once('error', function(err) {
 		console.log(err);
+		throw err;
 	});
 
 	imap.once('end', function() {
