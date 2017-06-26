@@ -35,16 +35,16 @@ Template.userEdit.events({
 	'click .cancel'(e, t) {
 		e.stopPropagation();
 		e.preventDefault();
-		Template.instance().roles.set([]);
+		t.roles.set([]);
 		t.cancel(t.find('form'));
 	},
 
-	'click .remove-role'(e) {
+	'click .remove-role'(e, t) {
 		e.stopPropagation();
 		e.preventDefault();
-		let roles = Template.instance().roles.get();
+		let roles = t.roles.get();
 		roles = roles.filter(el => el !== this.valueOf());
-		Template.instance().roles.set(roles);
+		t.roles.set(roles);
 		$(`[title=${ this }]`).remove();
 	},
 
