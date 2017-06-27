@@ -12,3 +12,5 @@
 @import 'imports/components/badge.css';
 @import 'imports/components/popover.css';
 @import 'imports/components/tooltip.css';
+@import 'imports/components/modal/full-modal.css';
+@import 'imports/components/modal/create-channel.css';

@@ -80,6 +80,8 @@ Package.onUse(function(api) {
 	api.addFiles('client/views/404/invalidSecretURL.html', 'client');
 	api.addFiles('client/views/app/audioNotification.html', 'client');
 	api.addFiles('client/views/app/burger.html', 'client');
+	api.addFiles('client/views/app/createChannel.html', 'client');
+	api.addFiles('client/views/app/fullModal.html', 'client');
 	api.addFiles('client/views/app/home.html', 'client');
 	api.addFiles('client/views/app/notAuthorized.html', 'client');
 	api.addFiles('client/views/app/pageContainer.html', 'client');
@@ -98,6 +100,7 @@ Package.onUse(function(api) {
 	api.addFiles('client/views/modal.js', 'client');
 	api.addFiles('client/views/404/roomNotFound.js', 'client');
 	api.addFiles('client/views/app/burger.js', 'client');
+	api.addFiles('client/views/app/fullModal.js', 'client');
 	api.addFiles('client/views/app/home.js', 'client');
 	api.addFiles('client/views/app/mobileMessageMenu.js', 'client');
 	api.addFiles('client/views/app/privateHistory.js', 'client');

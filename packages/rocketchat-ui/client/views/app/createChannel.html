@@ -1,0 +1,66 @@
+<template name="createChannel">
+	<section class="create-channel">
+		<header class="create-channel__header">
+			<h1 class="create-channel__title">New Channel</h1>
+			<p class="create-channel__description">Channels are where your team communicates.</p>
+		</header>
+		<div class="create-channel__content">
+			<div class="create-channel__switches">
+				<div class="rc-switch">
+					<label class="rc-switch__label">
+						<input type="checkbox" class="rc-switch__input">
+						<span class="rc-switch__button">
+							<span class="rc-switch__button-inside"></span>
+						</span>
+						<span class="rc-switch__text">
+							Public Channel
+						</span>
+					</label>
+					<span class="rc-switch__description">Everyone can access this channel</span>
+				</div>
+				<div class="rc-switch">
+					<label class="rc-switch__label">
+						<input type="checkbox" class="rc-switch__input" disabled>
+						<span class="rc-switch__button">
+							<span class="rc-switch__button-inside"></span>
+						</span>
+						<span class="rc-switch__text">
+							Read only channel
+						</span>
+					</label>
+					<span class="rc-switch__description">Only admin can write new messages</span>
+				</div>
+			</div>
+			<div class="create-channel__inputs">
+				<div class="rc-input">
+					<label class="rc-input__label">
+						<div class="rc-input__title">Channel name</div>
+						<div class="rc-input__wrapper">
+							<div class="rc-input__icon">
+								<svg class="rc-input__icon-svg rc-input__icon-svg--hashtag">
+									<use href="/images/icons.svg#hashtag"></use>
+								</svg>
+							</div>
+							<input type="text" class="rc-input__element" placeholder="Type channel name">
+						</div>
+					</label>
+					<div class="rc-input__description">Names must be all lower case and shorter than 22 characters</div>
+				</div>
+				<div class="rc-input">
+					<label class="rc-input__label">
+						<div class="rc-input__title">Invite people to channel</div>
+						<div class="rc-input__wrapper">
+							<div class="rc-input__icon">
+								<svg class="rc-input__icon-svg rc-input__icon-svg--user">
+									<use href="/images/icons.svg#user"></use>
+								</svg>
+							</div>
+							<input type="text" class="rc-input__element" placeholder="Type channel name">
+						</div>
+					</label>
+				</div>
+			</div>
+			<button class="rc-button rc-button--blue">Create Channel</button>
+		</div>
+	</section>
+</template>
