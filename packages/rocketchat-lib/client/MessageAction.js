@@ -106,7 +106,7 @@ Meteor.startup(function() {
 			let text = `[ ](${ url }) `;
 
 			if (Session.get('openedRoom').indexOf(Meteor.userId()) === -1) {
-				text += `@${ message.u.username }`;
+				text += `@${ message.u.username } `;
 			}
 
 			if (input.value) {
