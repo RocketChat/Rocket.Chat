@@ -73,6 +73,16 @@ Template.roomList.helpers({
 	}
 });
 
+Template.roomList.rendered = function() {
+    if (this.data.identifier !== undefined && this.data.identifier === 'c') {
+        const _first_child = this.find('.channelItemLists').children[0];
+        if (_first_child !== '' && _first_child !== undefined) {
+            _first_child.children[0].click();
+        }
+    }
+
+};
+
 Template.roomList.events({
 	'click .more'(e, t) {
 		if (t.data.identifier === 'p') {
