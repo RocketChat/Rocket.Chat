@@ -363,7 +363,7 @@ Template.room.events({
 	'click .unread-bar > button.jump-to'(e, t) {
 		const { _id } = t.data;
 		const room = RoomHistoryManager.getRoom(_id);
-		let message = room && readMessage.firstUnread.get();
+		let message = room && room.firstUnread.get();
 		if (message) {
 			return RoomHistoryManager.getSurroundingMessages(message, 50);
 		} else {
