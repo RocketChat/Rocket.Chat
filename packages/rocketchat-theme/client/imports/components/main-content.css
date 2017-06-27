@@ -1,8 +1,8 @@
 .main-content {
-	height: auto !important;
+	height: 100vh !important;
 	width: 100% !important;
 	z-index: 0 !important;
-	position: static;
+	position: relative;
 }
 
 @media (width <= 780px) {
