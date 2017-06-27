@@ -1,5 +1,5 @@
 /* globals RocketChat */
-RocketChat.createRoom = function(type, name, owner, members, readOnly, extraData={}) {
+RocketChat.createRoom = function(type, name, owner, members, isAutomatic=false, readOnly, extraData={}) {
 	name = s.trim(name);
 	owner = s.trim(owner);
 	members = [].concat(members);
@@ -82,7 +82,9 @@ RocketChat.createRoom = function(type, name, owner, members, readOnly, extraData
 		RocketChat.models.Subscriptions.createWithRoomAndUser(room, member, extra);
 	}
 
-	RocketChat.authz.addUserRoles(owner._id, ['owner'], room._id);
+	if (!isAutomatic) {
+		RocketChat.authz.addUserRoles(owner._id, ['owner'], room._id);
+	}
 
 	if (type === 'c') {
 		Meteor.defer(() => {

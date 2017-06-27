@@ -1,5 +1,5 @@
 Meteor.methods({
-	eraseRoom(rid) {
+	eraseRoom(rid, automatic=false) {
 		check(rid, String);
 
 		if (!Meteor.userId()) {
@@ -17,7 +17,7 @@ Meteor.methods({
 			});
 		}
 
-		if (RocketChat.authz.hasPermission(fromId, `delete-${ room.t }`, rid)) {
+		if (RocketChat.authz.hasPermission(fromId, `delete-${ room.t }`, rid)||automatic===true) {
 			RocketChat.models.Messages.removeByRoomId(rid);
 			RocketChat.models.Subscriptions.removeByRoomId(rid);
 			return RocketChat.models.Rooms.removeById(rid);

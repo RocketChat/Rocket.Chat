@@ -5,7 +5,7 @@ function get_language(languages_codes) {
 
 	const languages_parsed = parser.parse(languages_codes);
 	if (languages_parsed.length===0) {
-		return;
+		return null;
 	}
 	const priority_language = languages_parsed[0].code;
 
@@ -13,69 +13,109 @@ function get_language(languages_codes) {
 	return priority_language_fullname;
 }
 
-function remove_user_from_automatic_channel() {
-	const user_info = RocketChat.models.Users.findOneById(Meteor.userId());
-	// get the name of channels to which user is added
-	const to_be_removed = user_info.automatic_channels.filter(function(obj) {
-		return obj.blacklisted ==='false';
-	});
-	if (to_be_removed.length!==0) {
-		Meteor.users.update({
-			_id: Meteor.userId()
-		}, {
-			$pull: { automatic_channels: { name: to_be_removed[0].name } }
-		});
-		const room = RocketChat.models.Rooms.findOneByIdOrName(to_be_removed[0].name);
-		RocketChat.removeUserFromRoom(room._id, Meteor.user());
-		// delete the room if its the last user
-		if (room.usernames.length===1) {
-			RocketChat.models.Messages.removeByRoomId(room._id);
-			RocketChat.models.Subscriptions.removeByRoomId(room._id);
-			RocketChat.models.Rooms.removeById(room._id);
+function remove_user_from_automatic_channel(user, channelType, channelId) {
+	const collectionObj = RocketChat.models.Users.model.rawCollection();
+	const findAndModify = Meteor.wrapAsync(collectionObj.findAndModify, collectionObj);
+	const oldUser = findAndModify({
+		_id: user._id,
+		automatic_channels:{
+			$elemMatch: {
+				blacklisted: false,
+				plugin: channelType,
+				channel_id: {$ne: channelId}
+			}
 		}
+	}, [], {
+		$pull: {
+			automatic_channels: {
+				blacklisted: false,
+				plugin: channelType,
+				channel_id: {$ne: channelId}
+			}
+		}
+	});
 
-	} else {
+
+	if (!oldUser.value) {
+	// Nothing removed, no existing other channel.
 		return;
 	}
-}
-Accounts.onLogin(function(user) {
 
-	if (!Meteor.userId()) {
+	oldUser.value.automatic_channels.forEach((arrayItem) => {
+		if (arrayItem.channelId !== channelId && arrayItem.plugin === channelType && !arrayItem.blacklisted) {
+		// Remove the user from this other channel.
+			const room = RocketChat.models.Rooms.findOneById(arrayItem.channel_id);
+			RocketChat.removeUserFromRoom(room._id, user);
+
+			//delete the user if it is last.(There may be a race condition)
+			if (room.usernames.length===1) {
+				Meteor.call('eraseRoom', room._id, true);
+
+			}
+		}
+	});
+}
+
+leave_automatic_channel = function(room_name, blacklisting_allowed, user) {
+	if (blacklisting_allowed) {
+		Meteor.users.update({
+			_id: user._id,
+			'automatic_channels.name': room_name
+		}, {
+			$set: {
+				'automatic_channels.$.blacklisted' : true
+			}
+		});
+	} else {
+		Meteor.users.update({
+			_id: user._id
+		}, {
+			$pull: { automatic_channels: { blacklisted: false } }
+		});
+	}
+};
+
+Accounts.onLogin(function(user) {
+	if (!user.user._id || !user.user.username) {
 		return;
 	}
 
 	const browser_language = get_language(user.connection.httpHeaders['accept-language']);
-
+	if (browser_language === null) {
+		return;
+	}
+	let room_id;
 	// check if the browser_language channel is blacklisted
 	const is_channel_blacklisted = Meteor.users.findOne({
-		$and: [{ _id: Meteor.userId()}, {'automatic_channels':{$elemMatch:{'name': browser_language.name, 'blacklisted':'true'}}}]
+		$and: [{ _id: user.user._id}, {'automatic_channels':{$elemMatch:{'name': browser_language.name, 'blacklisted': true}}}]
 	});
 	if (is_channel_blacklisted) {
 		//just remove user from the other language channel
-		remove_user_from_automatic_channel();
+		remove_user_from_automatic_channel(user.user);
 		return;
 	} else {
 		const room = RocketChat.models.Rooms.findOneByIdOrName(browser_language.name);
 		if (room) {
 			//check if user is present in the channel
-			const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(room._id, Meteor.userId());
+			room_id = room._id;
+			const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(room._id, user.user._id);
 			if (subscription) {
 				return;
 			} else {
-				Meteor.call('joinRoom', room._id);
+
+				RocketChat.addUserToRoom(room._id, user.user);
 
 			}
 		} else {
-			RocketChat.createRoom('c', browser_language.name, Meteor.user() && Meteor.user().username, [], false, {'automatic':true});
-			// removed user as the owner, so that no one is able to change the settings (eg-rename the room) except the admin
-			const room_created = RocketChat.models.Rooms.findOneByIdOrName(browser_language.name);
-			const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(room_created._id, Meteor.userId());
-			RocketChat.models.Subscriptions.removeRoleById(subscription._id, 'owner');
+			const result = RocketChat.createRoom('c', browser_language.name, user.user && user.user.username, [], true, false, {automatic:true});
+			room_id = result.rid;
+
 		}
-		remove_user_from_automatic_channel();
+		//remove_user_from_automatic_channel(user.user, room_id);
+		remove_user_from_automatic_channel(user.user, 'language', room_id);
 
 		//add_channel_to_user's collection
-		RocketChat.models.Users.update({ _id: Meteor.userId() }, { $addToSet: { automatic_channels: {'name': browser_language.name, 'plugin': 'language', 'blacklisted': 'false'} } });
+		RocketChat.models.Users.update({ _id: user.user._id }, { $addToSet: { automatic_channels: {'name': browser_language.name, 'channel_id': room_id, 'plugin': 'language', 'blacklisted': false} } });
 	}
 });
 

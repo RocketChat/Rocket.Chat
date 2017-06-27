@@ -28,12 +28,10 @@ Meteor.methods({
 		}
 		if (room.automatic) {
 
-			RocketChat.leave_automatic_channel(room.name);
-			// delete room if its the last user
+			leave_automatic_channel(room.name, true, user);
+			//delete the user if it is last.(There may be a race condition)
 			if (room.usernames.length===1) {
-				RocketChat.models.Messages.removeByRoomId(room._id);
-				RocketChat.models.Subscriptions.removeByRoomId(room._id);
-				RocketChat.models.Rooms.removeById(room._id);
+				Meteor.call('eraseRoom', room._id, true);
 				return;
 			}
 		}

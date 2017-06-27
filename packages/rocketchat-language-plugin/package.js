@@ -8,9 +8,9 @@ Package.onUse(function(api) {
 	api.use('accounts-base');
 	api.use('ecmascript');
 	api.use('rocketchat:lib');
+	api.export('leave_automatic_channel');
 
 	api.add_files('server/server.js', 'server');
-	api.addFiles('server/functions/leave_automatic_channel.js', 'server');
 });
 
 Npm.depends({
