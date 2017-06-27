@@ -228,8 +228,7 @@ Template.toolbar.events({
 
 	'click [role="search"] button, touchend [role="search"] button'(e) {
 		if (RocketChat.authz.hasAtLeastOnePermission(['create-c', 'create-p'])) {
-			SideNav.setFlex('createCombinedFlex');
-			SideNav.openFlex();
+			FlowRouter.go('create-channel');
 		} else {
 			e.preventDefault();
 		}

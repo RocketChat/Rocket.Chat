@@ -2,7 +2,6 @@
 
 Template.chatRoomItem.helpers({
 	roomData() {
-		console.log('lalala', this);
 		let name = this.name;
 		if (RocketChat.settings.get('UI_Use_Real_Name') && this.fname) {
 			name = this.fname;

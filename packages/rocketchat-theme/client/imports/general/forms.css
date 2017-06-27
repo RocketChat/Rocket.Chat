@@ -105,21 +105,36 @@
 
 :root {
 	--button-square-size: 36px;
+	--button-padding: 0.782rem;
+	--button-padding-small: 0.5rem;
 	--input-font-size: 0.875rem;
 }
 
-.rc-input,
 .rc-button {
 	font-size: var(--input-font-size);
-	padding: 0.563rem 0.75rem;
+	padding: var(--button-padding);
 	border-radius: 2px;
 	border-width: 1px;
 	border-style: solid;
 	background-color: transparent;
-}
-
-.rc-button {
 	cursor: pointer;
+
+	&:disabled {
+		background-color: #e1e5e8;
+		color: #ffffff;
+		border: 0;
+		cursor: default;
+	}
+
+	&--blue {
+		background-color: #1d74f5;
+		color: #ffffff;
+		border: 0;
+	}
+
+	&--small {
+		padding: var(--button-padding-small);
+	}
 
 	&--square {
 		display: flex;
@@ -127,5 +142,165 @@
 		justify-content: center;
 		padding: 0;
 		flex: 0 0 var(--button-square-size);
+	}
+}
+
+.rc-input {
+	&__label {
+		cursor: pointer;
+	}
+
+	&__title {
+		font-size: var(--input-font-size);
+		color: #2d343d;
+	}
+
+	&__wrapper {
+		padding: 0.5rem 0;
+		position: relative;
+		color: #2f343d;
+	}
+
+	&__icon {
+		width: 20px;
+		display: flex;
+		justify-content: center;
+		position: absolute;
+		left: 1rem;
+		top: 0;
+		height: 100%;
+		align-items: center;
+		cursor: default;
+
+		& + .rc-input__element {
+			padding: 0.75rem 1rem 0.75rem 3.25rem;
+		}
+
+		& + .rc-input__element--small {
+			padding: 0.5rem 1rem 0.5rem 3.25rem;
+		}
+
+		&--right {
+			right: 1rem;
+			left: auto;
+		}
+	}
+
+	&__icon-svg {
+		stroke: currentColor;
+
+		&--hashtag {
+			width: 14px;
+			height: 14px;
+		}
+
+		&--user {
+			width: 12px;
+			height: 13px;
+		}
+
+		&--magnifier {
+			width: 13px;
+			height: 13px;
+		}
+
+		&--cross {
+			width: 10px;
+			height: 10px;
+		}
+	}
+
+	&__element {
+		width: 100%;
+		background-color: transparent;
+		border-width: 1px;
+		border-radius: 2px;
+		border-color: #e1e5e8;
+		padding: 0.75rem 1rem;
+		font-size: var(--input-font-size);
+
+		&--small {
+			padding: 0.5rem 1rem;
+		}
+
+		&::placeholder {
+			color: #cbced1;
+		}
+	}
+
+	&__description {
+		color: #9ea2a8;
+		font-size: var(--input-font-size);
+	}
+}
+
+.rc-switch {
+	&__label {
+		display: flex;
+		align-items: center;
+		margin-bottom: 0.5rem;
+	}
+
+	&__input {
+		display: none;
+
+		&:disabled {
+			& + .rc-switch__button {
+				cursor: default;
+				border-color: #e1e5e8;
+				background-color: #f2f3f5;
+			}
+
+			& ~ .rc-switch__text {
+				cursor: default;
+			}
+		}
+
+		&:checked {
+			& + .rc-switch__button {
+				border-color: #26d198;
+				background-color: #2de0a5;
+
+				& .rc-switch__button-inside {
+					transform: translate3d(1px, 1px, 0);
+				}
+			}
+		}
+	}
+
+	&__button {
+		display: block;
+		width: 32px;
+		height: 20px;
+		border-radius: 13px;
+		border-color: #e1364c;
+		background-color: #f5455c;
+		border-width: 1px;
+		transition: all 0.2s cubic-bezier(0.65, 0.05, 0.36, 1);
+		margin-right: 0.5rem;
+		cursor: pointer;
+	}
+
+	&__button-inside {
+		display: block;
+		width: 16px;
+		height: 16px;
+		border-radius: 50%;
+		background-color: #ffffff;
+		border-width: 1px;
+		border-color: #f2f3f5;
+		transform: translate3d(13px, 1px, 0);
+		transition: all 0.2s cubic-bezier(0.65, 0.05, 0.36, 1);
+	}
+
+	&__text {
+		font-size: var(--input-font-size);
+		color: #2f343d;
+		cursor: pointer;
+	}
+
+	&__description {
+		font-size: var(--input-font-size);
+		color: #9ea2a8;
 	}
 }

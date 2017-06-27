@@ -2,16 +2,26 @@
 	<div class="toolbar">
 		<form class="toolbar__wrapper sidebar-content-active" role="search">
 			<div class="toolbar__search">
-				<svg class="toolbar__icon toolbar__icon-search">
-					<use xlink:href="/images/icons.svg#magnifier"></use>
-				</svg>
-				<input type="text" name="toolbar-input" class="toolbar__search-input rc-input sidebar-content-active sidebar-content-active-border" placeholder="{{getPlaceholder}}" toolbar-input>
-				<svg class="toolbar__icon toolbar__icon-search toolbar__icon-search--right">
-					<use xlink:href="/images/icons.svg#cross"></use>
-				</svg>
+				<div class="rc-input">
+					<label class="rc-input__label">
+						<div class="rc-input__wrapper">
+							<div class="rc-input__icon">
+								<svg class="rc-input__icon-svg rc-input__icon-svg--magnifier">
+									<use href="/images/icons.svg#magnifier"></use>
+								</svg>
+							</div>
+							<input type="text" class="rc-input__element rc-input__element--small" placeholder="{{getPlaceholder}}">
+							<div class="rc-input__icon rc-input__icon--right">
+								<svg class="rc-input__icon-svg rc-input__icon-svg--cross">
+									<use href="/images/icons.svg#cross"></use>
+								</svg>
+							</div>
+						</div>
+					</label>
+				</div>
 			</div>
 			{{#if canCreate}}
-				<button class="toolbar__search-buttons sidebar-content-active-border rc-tooltip rc-button rc-button--square" aria-label="{{ _ 'Create_A_New_Channel' }}">
+				<button class="rc-button rc-button--square rc-tooltip" aria-label="{{ _ 'Create_A_New_Channel' }}">
 					<svg class="toolbar__icon toolbar__search-create-channel">
 						<use xlink:href="/images/icons.svg#plus"></use>
 					</svg>

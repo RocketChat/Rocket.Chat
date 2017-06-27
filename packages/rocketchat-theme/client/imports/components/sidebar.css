@@ -162,6 +162,37 @@
 		display: flex;
 		align-items: center;
 		width: 100%;
+
+		& .rc-input {
+			&__wrapper {
+				padding: 0;
+				color: #9ea2a8;
+			}
+
+			&__element {
+				background-color: #1f2329;
+				border-color: #414852;
+				color: #ffffff;
+
+				&:focus + .rc-input__icon--right {
+					display: flex;
+				}
+			}
+
+			&__icon {
+				left: 0.5rem;
+
+				&--right {
+					display: none;
+					left: auto;
+					right: 0.5rem;
+				}
+
+				& + .rc-input__element {
+					padding: 0.5rem 1rem 0.5rem 2.25rem;
+				}
+			}
+		}
 	}
 
 	&__search-input {
@@ -181,18 +212,44 @@
 		width: 13px;
 		height: 13px;
 		stroke: currentColor;
+	}
 
-		&-search {
-			position: absolute;
-			left: 8px;
+	& .rc-input {
+		&__wrapper {
+			padding: 0;
+			color: #9ea2a8;
+		}
 
-			&--right {
-				left: auto;
-				right: 8px;
-				cursor: pointer;
-				display: none;
+		&__element {
+			background-color: #1f2329;
+			border-color: #414852;
+			color: #ffffff;
+
+			&:focus + .rc-input__icon--right {
+				display: flex;
 			}
 		}
+
+		&__icon {
+			left: 0.5rem;
+
+			&--right {
+				display: none;
+				left: auto;
+				right: 0.5rem;
+			}
+
+			& + .rc-input__element {
+				padding: 0.5rem 1rem 0.5rem 2.25rem;
+			}
+		}
+	}
+
+	& .rc-button {
+		background-color: #1f2329;
+		border-color: #414852;
+		color: #9ea2a8;
+		margin-left: 0.5rem;
 	}
 }
 
