@@ -7,7 +7,7 @@
 				<h3 class="room-type {{unreadClass ..}}">
 					{{_ ../label}} <span class="room-count-small">({{count}})</span>
 				</h3>
-				<ul>
+				<ul class="channelItemLists">
 					{{#each room in this}}
 						{{> chatRoomItem room }}
 					{{else}}
