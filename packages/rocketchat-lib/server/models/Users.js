@@ -157,7 +157,8 @@ class ModelUsers extends RocketChat.models._Base {
 			]
 		};
 
-		return this.find(query, options);
+		// do not use cache
+		return this._db.find(query, options);
 	}
 
 	findUsersByNameOrUsername(nameOrUsername, options) {
