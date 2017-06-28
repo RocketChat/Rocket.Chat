@@ -1,3 +1,145 @@
+<a name="0.57.0-rc.3"></a>
+# 0.57.0-rc.3 (2017-06-28)
+
+
+### New Features
+
+- [#7311](https://github.com/RocketChat/Rocket.Chat/pull/7311) Force use of MongoDB for spotlight queries
+
+
+### Bug Fixes
+
+- [#7345](https://github.com/RocketChat/Rocket.Chat/pull/7345) click on image in a message
+- [#7207](https://github.com/RocketChat/Rocket.Chat/pull/7207) Fix Block Delete Message After (n) Minutes
+- [#7320](https://github.com/RocketChat/Rocket.Chat/pull/7320) Fix jump to unread button
+- [#7321](https://github.com/RocketChat/Rocket.Chat/pull/7321) Fix Secret Url
+- [#7358](https://github.com/RocketChat/Rocket.Chat/pull/7358) Fix user's customFields not being saved correctly
+- [#7352](https://github.com/RocketChat/Rocket.Chat/pull/7352) Improve avatar migration
+- [#7304](https://github.com/RocketChat/Rocket.Chat/pull/7304) Proxy upload to correct instance
+
+
+<details>
+<summary>Others</summary>
+
+- [#7308](https://github.com/RocketChat/Rocket.Chat/pull/7308) Escape error messages
+</details>
+
+
+
+<a name="0.57.0-rc.2"></a>
+# 0.57.0-rc.2 (2017-06-12)
+
+
+### Bug Fixes
+
+- [#7215](https://github.com/RocketChat/Rocket.Chat/pull/7215/) Fix the Zapier oAuth return url to the new one
+- [#7209](https://github.com/RocketChat/Rocket.Chat/pull/7209) "requirePasswordChange" property not being saved when set to false
+- [#7208](https://github.com/RocketChat/Rocket.Chat/pull/7208) Fix oembed previews not being shown
+- [#7200](https://github.com/RocketChat/Rocket.Chat/pull/7200) Fix editing others messages
+- [#7160](https://github.com/RocketChat/Rocket.Chat/pull/7160) Removing the kadira package install from example build script.
+
+
+
+<a name="0.57.0-rc.1"></a>
+# 0.57.0-rc.1 (2017-06-02)
+
+
+### Bug Fixes
+
+- [#7157](https://github.com/RocketChat/Rocket.Chat/pull/7157) Fix all reactions having the same username
+
+
+<details>
+<summary>Others</summary>
+
+- [#7154](https://github.com/RocketChat/Rocket.Chat/pull/7154) Remove missing CoffeeScript dependencies
+</details>
+
+
+
+<a name="0.57.0-rc.0"></a>
+# 0.57.0-rc.0 (2017-06-01)
+
+
+### New Features
+
+- [#7085](https://github.com/RocketChat/Rocket.Chat/pull/7085) API method and REST Endpoint for getting a single message by id
+- [#6919](https://github.com/RocketChat/Rocket.Chat/pull/6919) Feature/delete any message permission
+- [#6938](https://github.com/RocketChat/Rocket.Chat/pull/6938) Improve CI/Docker build/release
+- [#7059](https://github.com/RocketChat/Rocket.Chat/pull/7059) Increase unread message count on [@here](https://github.com/here) mention
+- [#6921](https://github.com/RocketChat/Rocket.Chat/pull/6921) LDAP: Use variables in User_Data_FieldMap for name mapping
+- [#6857](https://github.com/RocketChat/Rocket.Chat/pull/6857) Make channel/group delete call answer to roomName
+- [#7080](https://github.com/RocketChat/Rocket.Chat/pull/7080) Migration to add <html> tags to email header and footer
+- [#6788](https://github.com/RocketChat/Rocket.Chat/pull/6788) New avatar storage types
+- [#6690](https://github.com/RocketChat/Rocket.Chat/pull/6690) Show full name in mentions if use full name setting enabled
+- [#6953](https://github.com/RocketChat/Rocket.Chat/pull/6953) Show info about multiple instances at admin page
+- [#6605](https://github.com/RocketChat/Rocket.Chat/pull/6605) Start running unit tests
+
+
+### Bug Fixes
+
+- [#7025](https://github.com/RocketChat/Rocket.Chat/pull/7025) Add <html> and </html> to header and footer
+- [#7084](https://github.com/RocketChat/Rocket.Chat/pull/7084) Add option to ignore TLS in SMTP server settings
+- [#7072](https://github.com/RocketChat/Rocket.Chat/pull/7072) Add support for carriage return in markdown code blocks
+- [#6910](https://github.com/RocketChat/Rocket.Chat/pull/6910) Allow image insert from slack through slackbridge
+- [#6904](https://github.com/RocketChat/Rocket.Chat/pull/6904) Bugs in `isUserFromParams` helper
+- [#6840](https://github.com/RocketChat/Rocket.Chat/pull/6840) Check that username is not in the room when being muted / unmuted
+- [#7103](https://github.com/RocketChat/Rocket.Chat/pull/7103) clipboard (permalink, copy, pin, star buttons)
+- [#7030](https://github.com/RocketChat/Rocket.Chat/pull/7030) do only store password if LDAP_Login_Fallback is on
+- [#7105](https://github.com/RocketChat/Rocket.Chat/pull/7105) edit button on firefox
+- [#6935](https://github.com/RocketChat/Rocket.Chat/pull/6935) Error when trying to show preview of undefined filetype
+- [#7045](https://github.com/RocketChat/Rocket.Chat/pull/7045) Fix avatar upload via users.setAvatar REST endpoint
+- [#6950](https://github.com/RocketChat/Rocket.Chat/pull/6950) Fix badge counter on iOS push notifications
+- [#7121](https://github.com/RocketChat/Rocket.Chat/pull/7121) fix bug in preview image
+- [#6972](https://github.com/RocketChat/Rocket.Chat/pull/6972) Fix error handling for non-valid avatar URL
+- [#6974](https://github.com/RocketChat/Rocket.Chat/pull/6974) Fix login with Meteor saving an object as email address
+- [#7104](https://github.com/RocketChat/Rocket.Chat/pull/7104) Fix missing CSS files on production builds
+- [#6986](https://github.com/RocketChat/Rocket.Chat/pull/6986) Fix the other tests failing due chimp update
+- [#7049](https://github.com/RocketChat/Rocket.Chat/pull/7049) Improve Tests
+- [#6968](https://github.com/RocketChat/Rocket.Chat/pull/6968) make channels.create API check for create-c
+- [#7044](https://github.com/RocketChat/Rocket.Chat/pull/7044) New screen sharing Chrome extension checking method
+- [#6999](https://github.com/RocketChat/Rocket.Chat/pull/6999) overlapping text for users-typing-message
+- [#7014](https://github.com/RocketChat/Rocket.Chat/pull/7014) Parse HTML on admin setting's descriptions
+- [#6997](https://github.com/RocketChat/Rocket.Chat/pull/6997) Parse markdown links last
+- [#7033](https://github.com/RocketChat/Rocket.Chat/pull/7033) Prevent Ctrl key on message field from reloading messages list
+- [#6912](https://github.com/RocketChat/Rocket.Chat/pull/6912) Remove room from roomPick setting
+- [#6961](https://github.com/RocketChat/Rocket.Chat/pull/6961) SAML: Only set KeyDescriptor when non empty
+- [#7023](https://github.com/RocketChat/Rocket.Chat/pull/7023) Sidenav roomlist
+- [#6913](https://github.com/RocketChat/Rocket.Chat/pull/6913) Slackbridge text replacements
+- [#6903](https://github.com/RocketChat/Rocket.Chat/pull/6903) Updating Incoming Integration Post As Field Not Allowed
+- [#6947](https://github.com/RocketChat/Rocket.Chat/pull/6947) Use AWS Signature Version 4 signed URLs for uploads
+- [#7012](https://github.com/RocketChat/Rocket.Chat/pull/7012) video message recording dialog is shown in an incorrect position
+
+
+<details>
+<summary>Others</summary>
+
+- [#7094](https://github.com/RocketChat/Rocket.Chat/pull/7094) [FIX]Fix the failing tests
+- [#7092](https://github.com/RocketChat/Rocket.Chat/pull/7092) [FIX]Fixed typo hmtl -> html
+- [#7145](https://github.com/RocketChat/Rocket.Chat/pull/7145) Convert file unsubscribe.coffee to js
+- [#7146](https://github.com/RocketChat/Rocket.Chat/pull/7146) Convert hipchat importer to js
+- [#7022](https://github.com/RocketChat/Rocket.Chat/pull/7022) Convert irc package to js
+- [#7096](https://github.com/RocketChat/Rocket.Chat/pull/7096) Convert Livechat from Coffeescript to JavaScript
+- [#6936](https://github.com/RocketChat/Rocket.Chat/pull/6936) Convert meteor-autocomplete package to js
+- [#7017](https://github.com/RocketChat/Rocket.Chat/pull/7017) Convert oauth2-server-config package  to js
+- [#6795](https://github.com/RocketChat/Rocket.Chat/pull/6795) Convert Ui Account Package to Js
+- [#6911](https://github.com/RocketChat/Rocket.Chat/pull/6911) Convert ui-admin package to js
+- [#6775](https://github.com/RocketChat/Rocket.Chat/pull/6775) Convert WebRTC Package to Js
+- [#7018](https://github.com/RocketChat/Rocket.Chat/pull/7018) converted rocketchat-importer
+- [#6836](https://github.com/RocketChat/Rocket.Chat/pull/6836) converted rocketchat-ui coffee to js part 2
+- [#6976](https://github.com/RocketChat/Rocket.Chat/pull/6976) fix the crashing tests
+- [#7055](https://github.com/RocketChat/Rocket.Chat/pull/7055) Ldap: User_Data_FieldMap description
+- [#7114](https://github.com/RocketChat/Rocket.Chat/pull/7114) LingoHub based on develop
+- [#7005](https://github.com/RocketChat/Rocket.Chat/pull/7005) LingoHub based on develop
+- [#6978](https://github.com/RocketChat/Rocket.Chat/pull/6978) LingoHub based on develop
+- [#7062](https://github.com/RocketChat/Rocket.Chat/pull/7062) Remove Useless Jasmine Tests
+- [#6914](https://github.com/RocketChat/Rocket.Chat/pull/6914) Rocketchat ui message
+- [#7006](https://github.com/RocketChat/Rocket.Chat/pull/7006) Rocketchat ui3
+- [#6987](https://github.com/RocketChat/Rocket.Chat/pull/6987) rocketchat-importer-slack coffee to js
+- [#6735](https://github.com/RocketChat/Rocket.Chat/pull/6735) rocketchat-lib[4] coffee to js
+</details>
+
+
 <a name="0.56.0"></a>
 # NEXT
 
