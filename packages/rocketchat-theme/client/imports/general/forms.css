@@ -196,6 +196,11 @@
 			height: 14px;
 		}
 
+		&--lock {
+			width: 12px;
+			height: 18px;
+		}
+
 		&--user {
 			width: 12px;
 			height: 13px;
