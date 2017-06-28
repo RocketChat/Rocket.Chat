@@ -233,6 +233,35 @@
 	&__description {
 		color: #9ea2a8;
 		font-size: var(--input-font-size);
+		margin-bottom: 0.25rem;
+	}
+
+	&__error {
+		color: #f5455c;
+		display: flex;
+		align-items: center;
+
+		&-icon {
+			width: 20px;
+
+			&--warning {
+				width: 20px;
+				height: 20px;
+				stroke: currentColor;
+			}
+		}
+
+		&-message {
+			margin-left: 0.5rem;
+		}
+	}
+
+	&--error {
+		& .rc-input {
+			&__element {
+				border-color: #f5455c;
+			}
+		}
 	}
 }
 
