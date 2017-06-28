@@ -10,7 +10,7 @@
 			</button>
 		</header>
 		<div class="rooms-list" aria-label="{{_ "Administration"}}">
-			<h4>{{_ "Administration"}}</h4>
+			<h3 class="rooms-list__type sidebar-content">{{_ "Administration"}}</h3>
 			<ul class="rooms-list__list">
 				{{> sidebarItem menuItem "Info" "customize" "admin-info" "" }}
 
@@ -34,8 +34,19 @@
 			</ul>
 
 			{{#if hasPermission 'view-privileged-setting'}}
-				<h4>{{_ "Settings"}}</h4>
-				<input type="text" name="settings-search" placeholder="{{_ 'Search'}}">
+				<h3 class="rooms-list__type sidebar-content">{{_ "Settings"}}</h3>
+				<div class="rc-input sidebar-flex__search">
+					<label class="rc-input__label">
+						<div class="rc-input__wrapper">
+							<div class="rc-input__icon">
+								<svg class="rc-input__icon-svg rc-input__icon-svg--magnifier">
+									<use href="/images/icons.svg#magnifier"></use>
+								</svg>
+							</div>
+							<input type="text" class="rc-input__element rc-input__element--small" name="settings-search" placeholder="{{_ 'Search'}}">
+						</div>
+					</label>
+				</div>
 				<ul class="rooms-list__list">
 					{{#each groups}}
 						{{> sidebarItem menuItem label "customize" "admin" _id }}

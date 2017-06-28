@@ -1,9 +1,9 @@
 :root {
-	--account-thumb-size: 56px;
+	--account-thumb-size: 48px;
 	--account-status-bullet-size: 12px;
 	--room-item-height: 32px;
 	--room-item-thumb-size: 20px;
-	--sidebar-header-height: 190px;
+	--sidebar-header-height: 180px;
 	--sidebar-header-padding: 24px;
 	--sidebar-footer-height: 125px;
 	--sidebar-footer-padding: var(--sidebar-header-padding);
@@ -66,6 +66,30 @@
 			height: 14px;
 			stroke: currentColor;
 		}
+
+		&__search {
+			padding: 0 1rem;
+
+			& .rc-input {
+				&__wrapper {
+					color: #9ea2a8;
+				}
+
+				&__icon {
+					left: 0.5rem;
+				}
+
+				&__element {
+					padding-left: 2.25rem;
+					background-color: #ffffff;
+					border: 0;
+
+					&::placeholder {
+						color: #9ea2a8;
+					}
+				}
+			}
+		}
 	}
 }
 
@@ -112,6 +136,7 @@
 	}
 
 	&-username {
+		font-size: 0.875rem;
 		max-width: 124px;
 		margin-right: 8px;
 		user-select: none;
@@ -358,5 +383,9 @@
 		display: flex;
 		align-items: center;
 		margin-right: 6px;
+	}
+
+	&__name {
+		font-size: 1rem;
 	}
 }
