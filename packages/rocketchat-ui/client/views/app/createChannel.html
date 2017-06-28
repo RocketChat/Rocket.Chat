@@ -8,19 +8,19 @@
 			<div class="create-channel__switches">
 				<div class="rc-switch">
 					<label class="rc-switch__label">
-						<input type="checkbox" class="rc-switch__input">
+						<input type="checkbox" class="rc-switch__input" name="type" value="d" checked>
 						<span class="rc-switch__button">
 							<span class="rc-switch__button-inside"></span>
 						</span>
 						<span class="rc-switch__text">
-							Public Channel
+							{{typeLabel}}
 						</span>
 					</label>
-					<span class="rc-switch__description">Everyone can access this channel</span>
+					<span class="rc-switch__description">{{typeDescription}}</span>
 				</div>
 				<div class="rc-switch">
 					<label class="rc-switch__label">
-						<input type="checkbox" class="rc-switch__input" disabled>
+						<input type="checkbox" class="rc-switch__input" name="readOnly" {{readOnlyIsDisabled}}>
 						<span class="rc-switch__button">
 							<span class="rc-switch__button-inside"></span>
 						</span>
@@ -32,16 +32,16 @@
 				</div>
 			</div>
 			<div class="create-channel__inputs">
-				<div class="rc-input">
+				<div class="rc-input {{#if invalidChannel}}rc-input--error{{/if}}">
 					<label class="rc-input__label">
 						<div class="rc-input__title">Channel name</div>
 						<div class="rc-input__wrapper">
 							<div class="rc-input__icon">
-								<svg class="rc-input__icon-svg rc-input__icon-svg--hashtag">
-									<use href="/images/icons.svg#hashtag"></use>
+								<svg class="rc-input__icon-svg rc-input__icon-svg--{{iconType}}">
+									<use href="/images/icons.svg#{{iconType}}"></use>
 								</svg>
 							</div>
-							<input id="create-channel-input" type="text" class="rc-input__element" placeholder="Type channel name">
+							<input name="name" type="text" class="rc-input__element" placeholder="Type channel name">
 						</div>
 					</label>
 					<div class="rc-input__description">Names must be all lower case and shorter than 22 characters</div>
