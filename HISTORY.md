@@ -1,3 +1,31 @@
+<a name="0.57.0-rc.3"></a>
+# 0.57.0-rc.3 (2017-06-28)
+
+
+### New Features
+
+- [#7311](https://github.com/RocketChat/Rocket.Chat/pull/7311) Force use of MongoDB for spotlight queries
+
+
+### Bug Fixes
+
+- [#7345](https://github.com/RocketChat/Rocket.Chat/pull/7345) click on image in a message
+- [#7207](https://github.com/RocketChat/Rocket.Chat/pull/7207) Fix Block Delete Message After (n) Minutes
+- [#7320](https://github.com/RocketChat/Rocket.Chat/pull/7320) Fix jump to unread button
+- [#7321](https://github.com/RocketChat/Rocket.Chat/pull/7321) Fix Secret Url
+- [#7358](https://github.com/RocketChat/Rocket.Chat/pull/7358) Fix user's customFields not being saved correctly
+- [#7352](https://github.com/RocketChat/Rocket.Chat/pull/7352) Improve avatar migration
+- [#7304](https://github.com/RocketChat/Rocket.Chat/pull/7304) Proxy upload to correct instance
+
+
+<details>
+<summary>Others</summary>
+
+- [#7308](https://github.com/RocketChat/Rocket.Chat/pull/7308) Escape error messages
+</details>
+
+
+
 <a name="0.57.0-rc.2"></a>
 # 0.57.0-rc.2 (2017-06-12)
 
