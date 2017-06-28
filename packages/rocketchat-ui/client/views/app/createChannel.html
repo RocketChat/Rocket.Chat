@@ -32,7 +32,7 @@
 				</div>
 			</div>
 			<div class="create-channel__inputs">
-				<div class="rc-input">
+				<div class="rc-input rc-input--error">
 					<label class="rc-input__label">
 						<div class="rc-input__title">Channel name</div>
 						<div class="rc-input__wrapper">
@@ -45,6 +45,14 @@
 						</div>
 					</label>
 					<div class="rc-input__description">Names must be all lower case and shorter than 22 characters</div>
+					<div class="rc-input__error">
+						<div class="rc-input__error-icon">
+							<svg class="rc-input__error-icon-svg rc-input__error-icon--warning">
+								<use href="/images/icons.svg#warning"></use>
+							</svg>
+						</div>
+						<div class="rc-input__error-message">ERROR</div>
+					</div>
 				</div>
 				<div class="rc-input">
 					<label class="rc-input__label">
