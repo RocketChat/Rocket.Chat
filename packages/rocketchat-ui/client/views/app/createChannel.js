@@ -1,9 +1,19 @@
 Template.createChannel.helpers({
 	createIsDisabled() {
-		if (document.getElementById('create-channel-input').value === '') {
+		if (Template.instance().channelName.get() === '') {
 			return 'disabled';
 		}
 
-		return false;
+		return '';
 	}
+});
+
+Template.createChannel.events({
+	'input #create-channel-input'(e, t) {
+		t.channelName.set(e.target.value);
+	}
+});
+
+Template.createChannel.onCreated(function() {
+	this.channelName = new ReactiveVar('');
 });
