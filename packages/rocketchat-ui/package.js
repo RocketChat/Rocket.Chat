@@ -100,6 +100,7 @@ Package.onUse(function(api) {
 	api.addFiles('client/views/modal.js', 'client');
 	api.addFiles('client/views/404/roomNotFound.js', 'client');
 	api.addFiles('client/views/app/burger.js', 'client');
+	api.addFiles('client/views/app/createChannel.js', 'client');
 	api.addFiles('client/views/app/fullModal.js', 'client');
 	api.addFiles('client/views/app/home.js', 'client');
 	api.addFiles('client/views/app/mobileMessageMenu.js', 'client');

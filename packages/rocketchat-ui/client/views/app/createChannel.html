@@ -41,7 +41,7 @@
 									<use href="/images/icons.svg#hashtag"></use>
 								</svg>
 							</div>
-							<input type="text" class="rc-input__element" placeholder="Type channel name">
+							<input id="create-channel-input" type="text" class="rc-input__element" placeholder="Type channel name">
 						</div>
 					</label>
 					<div class="rc-input__description">Names must be all lower case and shorter than 22 characters</div>
@@ -60,7 +60,7 @@
 					</label>
 				</div>
 			</div>
-			<button class="rc-button rc-button--blue">Create Channel</button>
+			<button class="rc-button rc-button--blue" {{createIsDisabled}}>Create Channel</button>
 		</div>
 	</section>
 </template>
