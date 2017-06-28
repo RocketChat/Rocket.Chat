@@ -146,6 +146,8 @@
 }
 
 .rc-input {
+	width: 100%;
+
 	&__label {
 		cursor: pointer;
 	}
