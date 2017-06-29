@@ -12,6 +12,7 @@
 	display: flex;
 	justify-content: center;
 
+
 	&__wrapper {
 		position: relative;
 		width: var(--modal-wrapper-width);
@@ -34,5 +35,12 @@
 		stroke: currentColor;
 		width: 10px;
 		height: 10px;
+	}
+}
+
+
+@media (width < 1024px) {
+	.full-modal {
+		padding: 50px;
 	}
 }

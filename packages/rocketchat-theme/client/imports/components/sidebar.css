@@ -17,6 +17,7 @@
 	flex-direction: column;
 	z-index: 2;
 	position: relative;
+	transition: transform .3s;
 
 	&--flex {
 		position: absolute;
@@ -32,6 +33,7 @@
 		user-select: none;
 		-webkit-user-drag: none;
 		-webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+		transition: opacity .3s;
 	}
 
 	&__header {

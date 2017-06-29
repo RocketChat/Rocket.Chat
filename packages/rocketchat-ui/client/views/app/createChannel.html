@@ -4,10 +4,10 @@
 			<h1 class="create-channel__title">New Channel</h1>
 			<p class="create-channel__description">Channels are where your team communicates.</p>
 		</header>
-		<div class="create-channel__content">
+		<form class="create-channel__content">
 			<div class="create-channel__switches">
 				<div class="rc-switch">
-					<label class="rc-switch__label">
+					<label class="rc-switch__label" tabindex="-1">
 						<input type="checkbox" class="rc-switch__input" name="type" value="d" checked>
 						<span class="rc-switch__button">
 							<span class="rc-switch__button-inside"></span>
@@ -41,18 +41,18 @@
 									<use href="/images/icons.svg#{{iconType}}"></use>
 								</svg>
 							</div>
-							<input name="name" type="text" class="rc-input__element" placeholder="Type channel name">
+							<input name="name" type="text" class="rc-input__element" placeholder="Type channel name" autofocus>
 						</div>
 					</label>
 					<div class="rc-input__description">Names must be all lower case and shorter than 22 characters</div>
-					{{#if invalidChannel}}
+					{{#if inUse}}
 						<div class="rc-input__error">
 							<div class="rc-input__error-icon">
 								<svg class="rc-input__error-icon-svg rc-input__error-icon--warning">
 									<use href="/images/icons.svg#warning"></use>
 								</svg>
 							</div>
-							<div class="rc-input__error-message">{{invalidChannel}}</div>
+							<div class="rc-input__error-message">canal já existe</div>
 						</div>
 					{{/if}}
 				</div>
@@ -71,6 +71,6 @@
 				</div>
 			</div>
 			<button class="rc-button rc-button--blue" data-button="create" {{createIsDisabled}}>Create Channel</button>
-		</div>
+		</form>
 	</section>
 </template>
