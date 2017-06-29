@@ -1,39 +1,19 @@
-/* globals Restivus */
-
 /**
  * Restful API endpoints for interaction with external systems
  */
 
 import {helpRequest} from '../help-request';
 
-const API = new Restivus({
-	apiPath: 'assistify/',
-	useDefaultAuth: true,
-	prettyJson: true
-});
-
-
-function keysToUpperCase(obj) {
-	for (const prop in obj) {
-		if (typeof obj[prop] === 'object') {
-			obj[prop] = keysToUpperCase(obj[prop]);
-		}
-		if (prop !== prop.toUpperCase()) {
-			obj[prop.toUpperCase()] = obj[prop];
-			delete obj[prop];
-		}
-	}
-	return obj;
-}
-
 function keysToLowerCase(obj) {
 	for (const prop in obj) {
-		if (typeof obj[prop] === 'object') {
-			obj[prop] = keysToLowerCase(obj[prop]);
-		}
-		if (prop !== prop.toLowerCase()) {
-			obj[prop.toLowerCase()] = obj[prop];
-			delete obj[prop];
+		if (obj.hasOwnProperty(prop)) {
+			if (typeof obj[prop] === 'object') {
+				obj[prop] = keysToLowerCase(obj[prop]);
+			}
+			if (prop !== prop.toLowerCase()) {
+				obj[prop.toLowerCase()] = obj[prop];
+				delete obj[prop];
+			}
 		}
 	}
 	return obj;
@@ -65,7 +45,7 @@ function preProcessBody(body) {
 	delete body['%heap'];
 }
 
-API.addRoute('helpDiscussion', {
+RocketChat.API.v1.addRoute('assistify.helpDiscussion', {authRequired: true}, {
 	/**
 	 * Creates a room with an initial question and adds users who could possibly help
 	 * @see packages\rocketchat-api\server\routes.coffee
@@ -90,10 +70,6 @@ API.addRoute('helpDiscussion', {
 
 		const creationResult = api.processHelpDiscussionPostRequest(this.bodyParams);
 
-		return {
-			status_code: 200,
-			result: creationResult,
-			RESULT: keysToUpperCase(creationResult)
-		};
+		return creationResult;
 	}
 });
