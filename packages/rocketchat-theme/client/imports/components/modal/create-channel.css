@@ -3,6 +3,9 @@
 }
 
 .create-channel {
+	animation-name: fadeIn;
+	animation-duration: 1s;
+
 	&__header,
 	&__switches,
 	&__inputs,
@@ -31,3 +34,4 @@
 		width: 50%;
 	}
 }
+@keyframes fadeIn{0%{opacity:0}100%{opacity:1}}

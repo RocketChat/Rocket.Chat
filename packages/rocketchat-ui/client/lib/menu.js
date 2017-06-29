@@ -81,7 +81,8 @@ this.menu = new class extends EventEmitter {
 		if (this.blockmove) {
 			return;
 		}
-
+		this.sidebar.css('transition', 'none');
+		this.sidebarWrap.css('transition', 'none');
 		if (this.movestarted === true || absX > 5) {
 			this.movestarted = true;
 			if (this.isRtl) {
@@ -129,8 +130,6 @@ this.menu = new class extends EventEmitter {
 			return;
 		}
 		this.movestarted = false;
-		this.mainContent[0].style.transition = null;
-		this.wrapper.css('overflow', '');
 		if (this.isRtl) {
 			if (this.isOpen()) {
 				return this.diff >= -max ? this.close() : this.open();
@@ -167,6 +166,9 @@ this.menu = new class extends EventEmitter {
 			this.sidebarWrap.css('background-color', '');
 			this.sidebar.css('transform', '');
 			this.sidebar.css('box-shadow', '');
+			this.sidebar.css('transition', '');
+			this.sidebarWrap.css('transition', '');
+			this.wrapper && this.wrapper.css('overflow', '');
 		});
 		this.on('open', () => {
 			this.sidebar.css('box-shadow', '0 0 15px 1px rgba(0,0,0,.3)');
@@ -213,6 +215,8 @@ this.menu.on('clickOut', function() {
 });
 
 this.menu.on('close', function() {
+	this.sidebar.css('transition', '');
+	this.sidebarWrap.css('transition', '');
 	if (passClosePopover) {
 		passClosePopover = false;
 		return;
