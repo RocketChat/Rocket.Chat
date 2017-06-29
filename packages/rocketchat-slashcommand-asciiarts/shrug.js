@@ -14,5 +14,8 @@ function Shrug(command, params, item) {
 
 RocketChat.slashCommands.add('shrug', Shrug, {
 	description: 'Slash_Shrug_Description',
-	params: 'your_message_optional'
+	params: [{
+		description: 'User',
+		value: 'users'
+	}]
 });

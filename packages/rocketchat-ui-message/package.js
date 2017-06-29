@@ -38,6 +38,8 @@ Package.onUse(function(api) {
 	api.addFiles('client/popup/messagePopupChannel.js', 'client');
 	api.addFiles('client/popup/messagePopupConfig.js', 'client');
 	api.addFiles('client/popup/messagePopupEmoji.js', 'client');
+	api.addFiles('client/popup/messagePopupSlashCommand.js', 'client');
+
 
 	api.addFiles('client/renderMessageBody.js', 'client');
 

@@ -199,7 +199,7 @@ Template.messagePopup.onCreated(function() {
 		if (!getValue) {
 			return;
 		}
-		firstPartValue = firstPartValue.replace(template.selectorRegex, template.prefix + getValue + template.suffix);
+		firstPartValue = firstPartValue.replace(template.replaceRegex, template.prefix + getValue + template.suffix);
 		template.input.value = firstPartValue + lastPartValue;
 		return setCursorPosition(template.input, firstPartValue.length);
 	};
