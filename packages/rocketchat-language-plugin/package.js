@@ -9,6 +9,7 @@ Package.onUse(function(api) {
 	api.use('ecmascript');
 	api.use('rocketchat:lib');
 	api.export('leave_automatic_channel');
+	api.export('remove_user_from_automatic_channel');
 
 	api.add_files('server/server.js', 'server');
 });

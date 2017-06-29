@@ -28,7 +28,7 @@ Meteor.methods({
 		}
 		if (room.automatic) {
 
-			leave_automatic_channel(room.name, true, user);
+			leave_automatic_channel(room.name, user, ['language']);
 			//delete the user if it is last.(There may be a race condition)
 			if (room.usernames.length===1) {
 				Meteor.call('eraseRoom', room._id, true);

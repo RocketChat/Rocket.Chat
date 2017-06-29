@@ -12,8 +12,8 @@ function get_language(languages_codes) {
 	const priority_language_fullname = languages.getLanguageInfo(priority_language);
 	return priority_language_fullname;
 }
-
-function remove_user_from_automatic_channel(user, channelType, channelId) {
+//TODO :Export the function
+remove_user_from_automatic_channel = function(user, channelType, channelId) {
 	const collectionObj = RocketChat.models.Users.model.rawCollection();
 	const findAndModify = Meteor.wrapAsync(collectionObj.findAndModify, collectionObj);
 	const oldUser = findAndModify({
@@ -54,25 +54,24 @@ function remove_user_from_automatic_channel(user, channelType, channelId) {
 			}
 		}
 	});
-}
+};
 
-leave_automatic_channel = function(room_name, blacklisting_allowed, user) {
-	if (blacklisting_allowed) {
-		Meteor.users.update({
-			_id: user._id,
-			'automatic_channels.name': room_name
-		}, {
-			$set: {
-				'automatic_channels.$.blacklisted' : true
-			}
-		});
-	} else {
-		Meteor.users.update({
-			_id: user._id
-		}, {
-			$pull: { automatic_channels: { blacklisted: false } }
-		});
-	}
+//TODO :Export the function
+leave_automatic_channel = function(room_name, user, plugins) {
+	//plugins is an array which has the names of those channels for which admin wants the blacklisted feature to work
+	Meteor.users.update({
+		$and: [{ _id: user._id}, {'automatic_channels':{$elemMatch:{'name': room_name, 'plugin': { $in: plugins }}}}]
+
+	}, {
+		$set: {
+			'automatic_channels.$.blacklisted' : true
+		}
+	});
+	Meteor.users.update({
+		$and: [{ _id: user._id}, {'automatic_channels':{$elemMatch:{'name': room_name, 'plugin': { $nin: plugins }}}}]
+	}, {
+		$pull: { automatic_channels: { blacklisted: false } }
+	});
 };
 
 Accounts.onLogin(function(user) {

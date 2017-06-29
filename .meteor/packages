@@ -175,3 +175,4 @@ rocketchat:postcss
 dynamic-import@0.1.1
 dynamic-import
 rocketchat:language-plugin
+rocketchat:geoip-plugin
