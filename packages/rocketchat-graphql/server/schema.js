@@ -1,6 +1,11 @@
+/* global processWebhookMessage */
+
 import {
 	makeExecutableSchema
 } from 'graphql-tools';
+
+import { authenticated } from './mocks/accounts/graphql-api';
+import AccountsServer from './mocks/accounts/server';
 
 import {
 	property
@@ -10,12 +15,11 @@ import {
 	findChannelByIdAndUser
 } from './helpers/findChannelByIdAndUser';
 
-// mys:admin
-const testUser = 'fnw4B4suFsTXf8rZq';
 
 const schema = `
 	type schema {
 		query: Query
+		mutation: Mutation
 	}
 
 	type Query {
@@ -24,11 +28,18 @@ const schema = `
 			joinedChannels: false,
 			sortBy: NAME
 		}): [Channel]
+		channelByName(name: String!, isDirect: Boolean!): Channel
+		channelsByUser(userId: String!): [Channel]
+		messages(channelId: String): MessagesWithCursor
+	}
+
+	type Mutation {
+		sendMessage(channelId: String!, content: String!): Message
 	}
 
 	type Channel {
  		id: String!
-    		name: String
+		name: String
 		description: String
 		announcement: String
 		topic: String
@@ -44,7 +55,7 @@ const schema = `
 	}
 
 	enum Privacy {
-    		PRIVATE
+    PRIVATE
 		PUBLIC
 		ALL
 	}
@@ -65,28 +76,54 @@ const schema = `
 		id: String!
 		name: String
 	}
+
+	type MessagesWithCursor {
+		cursor: String
+		channel: Channel
+		messagesArray: [Message]
+	}
+
+	type Message {
+		id: String
+		author: Member
+		content: String
+		creationTime: String
+		fromServer: Boolean
+		userRef: [Member]
+		channelRef: [Channel]
+		reactions: [Reaction]
+		# TODO
+		tags: [String]
+	}
+
+	type Reaction {
+		username: String
+		icon: String
+	}
 `;
+
+const roomPublicFields = {
+	t: 1,
+	name: 1,
+	description: 1,
+	announcement: 1,
+	topic: 1,
+	usernames: 1,
+	msgs: 1,
+	ro: 1,
+	u: 1,
+	archived: 1
+};
 
 const resolvers = {
 	Query: {
-		channels: (root, args) => {
+		channels: authenticated(AccountsServer, (root, args, { models }) => {
 			const query = {};
 			const options = {
 				sort: {
 					name: 1
 				},
-				fields: {
-					t: 1,
-					name: 1,
-					description: 1,
-					announcement: 1,
-					topic: 1,
-					usernames: 1,
-					msgs: 1,
-					ro: 1,
-					u: 1,
-					archived: 1
-				}
+				fields: roomPublicFields
 			};
 
 			// Filter
@@ -111,53 +148,112 @@ const resolvers = {
 				}
 			}
 
-			return RocketChat.models.Rooms.find(query, options).fetch();
-		}
+			return models.Rooms.find(query, options).fetch();
+		}),
+		channelByName: authenticated(AccountsServer, (root, { name, isDirect }, { models }) => {
+			const query = {
+				name
+			};
+
+			if (isDirect === true) {
+				query.c = 'd';
+			}
+
+			return models.Rooms.findOne(query, {
+				fields: roomPublicFields
+			});
+		}),
+		channelsByUser: authenticated(AccountsServer, (root, { userId }, { models }) => {
+			const user = models.Users.findOneById(userId);
+
+			if (!user) {
+				// TODO:
+				throw new Error('No user');
+			}
+
+			return models.Rooms.find({
+				'usernames': {
+					$in: user.username
+				}
+			}, {
+				sort: {
+					name: 1
+				},
+				fields: roomPublicFields
+			}).fetch();
+		}),
+		messages: authenticated(AccountsServer, (root, args, { models }) => {
+			if (!args.channelId) {
+				console.error('messages query must be called with channelId');
+				return null;
+			}
+
+			const query = {};
+
+			if (args.channelId) {
+				query.rid = args.channelId;
+			}
+
+			const messagesArray = models.Messages.find(query).fetch();
+			const channel = models.Rooms.findOne(args.channelId);
+
+			return {
+				cursor: 'CURSOR',
+				channel,
+				messagesArray
+			};
+		})
+	},
+	Mutation: {
+		sendMessage: authenticated(AccountsServer, (root, { channelId, content }, { user }) => {
+			const messageReturn = processWebhookMessage({
+				roomId: channelId,
+				text: content
+			}, user)[0];
+
+			if (!messageReturn) {
+				throw new Error('Unknown error');
+			}
+
+			return messageReturn.message;
+		})
 	},
 	Channel: {
 		id: property('_id'),
-		members: (root) => {
+		members: (root, args, { models }) => {
 			return root.usernames.map(
-				username => RocketChat.models.Users.findOneByUsername(username, {
-					fields: {
-						name: 1
-					}
-				})
+				username => models.Users.findOneByUsername(username)
 			);
 		},
-		owners: (root) => {
+		owners: (root, args, { models }) => {
 			// there might be no owner
 			if (!root.u) {
-				return [];
+				return;
 			}
 
-			return [RocketChat.models.Users.findOneByUsername(root.u.username, {
-				fields: {
-					name: 1
-				}
-			})];
+			return [models.Users.findOneByUsername(root.u.username)];
 		},
 		numberOfMembers: (root) => (root.usernames || []).length,
 		numberOfMessages: property('msgs'),
 		readOnly: (root) => root.ro === true,
 		direct: (root) => root.t === 'd',
 		privateChannel: (root) => root.t === 'p',
-		favourite: (root) => {
+		favourite: (root, args, { user }) => {
 			const room = findChannelByIdAndUser({
 				params: {
 					roomId: root._id,
-					userId: testUser
+					userId: user._id
 				},
 				options: { fields: { f: 1 }}
 			});
 
 			return room && room.f === true;
 		},
-		unseenMessages: (root) => {
+		unseenMessages: (root, args, { user }) => {
 			const room = findChannelByIdAndUser({
 				params: {
 					roomId: root._id,
-					userId: testUser
+					userId: user._id
 				},
 				options: { fields: { unread: 1 }}
 			});
@@ -167,6 +263,65 @@ const resolvers = {
 	},
 	Member: {
 		id: property('_id')
+	},
+	Message: {
+		id: property('_id'),
+		content: property('msg'),
+		creationTime: property('ts'),
+		author: (root, args, { models }) => {
+			return models.Users.findOne(root.u._id);
+		},
+		fromServer: (root) => typeof root.t !== 'undefined', // on a message sent by user `true` otherwise `false`
+		channelRef: (root, args, { models }) => {
+			if (!root.channels) {
+				return;
+			}
+
+			return models.Rooms.find({
+				_id: {
+					$in: root.channels.map(c => c._id)
+				}
+			}, {
+				sort: {
+					name: 1
+				}
+			}).fetch();
+		},
+		userRef: (root, args, { models }) => {
+			if (!root.mentions) {
+				return;
+			}
+
+			return models.Users.find({
+				_id: {
+					$in: root.mentions.map(c => c._id)
+				}
+			}, {
+				sort: {
+					username: 1
+				}
+			}).fetch();
+		},
+		reactions: (root) => {
+			if (!root.reactions || Object.keys(root.reactions).length === 0) {
+				return;
+			}
+
+			const reactions = [];
+
+			Object.keys(root.reactions).forEach(icon => {
+				root.reactions[icon].usernames.forEach(username => {
+					reactions.push({
+						icon,
+						username
+					});
+				});
+			});
+
+			return reactions;
+		},
+		// TODO
+		tags: () => {}
 	}
 };
 
