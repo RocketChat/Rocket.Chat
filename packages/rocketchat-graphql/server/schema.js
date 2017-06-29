@@ -4,7 +4,10 @@ import {
 	makeExecutableSchema
 } from 'graphql-tools';
 
+import { Meteor } from 'meteor/meteor';
+
 import { authenticated } from './mocks/accounts/graphql-api';
+
 import AccountsServer from './mocks/accounts/server';
 
 import {
@@ -34,7 +37,11 @@ const schema = `
 	}
 
 	type Mutation {
+		setStatus(status: UserStatus!): Member
 		sendMessage(channelId: String!, content: String!): Message
+		editMessage(id: MessageIdentifier!, content: String!): Message
+		deleteMessage(id: MessageIdentifier!): Message
+		createChannel(name: String!, private: Boolean = false, readOnly: Boolean = false, membersId: [String!]): Channel
 	}
 
 	type Channel {
@@ -72,9 +79,18 @@ const schema = `
 		sortBy: ChannelSort
 	}
 
+	enum UserStatus {
+		ONLINE
+		AWAY
+		BUSY
+		INVISIBLE
+	}
+
 	type Member {
 		id: String!
 		name: String
+		# TODO: change to UserStatus
+		status: String
 	}
 
 	type MessagesWithCursor {
@@ -83,10 +99,16 @@ const schema = `
 		messagesArray: [Message]
 	}
 
+	input MessageIdentifier {
+		channelId: String!
+		messageId: String!
+	}
+
 	type Message {
 		id: String
 		author: Member
 		content: String
+		channel: Channel
 		creationTime: String
 		fromServer: Boolean
 		userRef: [Member]
@@ -216,6 +238,76 @@ const resolvers = {
 			}
 
 			return messageReturn.message;
+		}),
+		editMessage: authenticated(AccountsServer, (root, { id, content }, { user, models }) => {
+			const msg = models.Messages.findOneById(id.messageId);
+
+			//Ensure the message exists
+			if (!msg) {
+				throw new Error(`No message found with the id of "${ id.messageId }".`);
+			}
+
+			if (id.channelId !== msg.rid) {
+				throw new Error('The channel id provided does not match where the message is from.');
+			}
+
+			//Permission checks are already done in the updateMessage method, so no need to duplicate them
+			Meteor.runAsUser(user._id, () => {
+				Meteor.call('updateMessage', { _id: msg._id, msg: content, rid: msg.rid });
+			});
+
+			return models.Messages.findOneById(msg._id);
+		}),
+		deleteMessage: authenticated(AccountsServer, (root, { id }, { models, user }) => {
+			const msg = models.Messages.findOneById(id.messageId, { fields: { u: 1, rid: 1 }});
+
+			if (!msg) {
+				throw new Error(`No message found with the id of "${ id.messageId }".`);
+			}
+
+			if (id.channelId !== msg.rid) {
+				throw new Error('The room id provided does not match where the message is from.');
+			}
+
+			Meteor.runAsUser(user._id, () => {
+				Meteor.call('deleteMessage', { _id: msg._id });
+			});
+
+			return msg;
+		}),
+		setStatus: authenticated(AccountsServer, (root, { status }, { models, user }) => {
+			models.Users.update(user._id, {
+				$set: {
+					status: status.toLowerCase()
+				}
+			});
+
+			return models.Users.findOne(user._id);
+		}),
+		createChannel: authenticated(AccountsServer, (root, args, { models, user }) => {
+			if (!RocketChat.authz.hasPermission(user._id, 'create-c')) {
+				return RocketChat.API.v1.unauthorized();
+			}
+
+			if (!args.name) {
+				throw new Error('Param "name" is required');
+			}
+
+			if (args.membersId && !_.isArray(args.membersId)) {
+				throw new Error('Param "membersId" must be an array if provided');
+			}
+
+			let readOnly = false;
+			if (typeof args.readOnly !== 'undefined') {
+				readOnly = args.readOnly;
+			}
+
+			let id;
+			Meteor.runAsUser(user._id, () => {
+				id = Meteor.call('createChannel', args.name, args.membersId ? args.membersId : [], readOnly);
+			});
+
+			return models.Rooms.findOneById(id.rid, { fields: RocketChat.API.v1.defaultFieldsToExclude });
 		})
 	},
 	Channel: {
@@ -262,7 +354,8 @@ const resolvers = {
 		}
 	},
 	Member: {
-		id: property('_id')
+		id: property('_id'),
+		status: ({status}) => status.toUpperCase()
 	},
 	Message: {
 		id: property('_id'),
@@ -270,6 +363,9 @@ const resolvers = {
 		creationTime: property('ts'),
 		author: (root, args, { models }) => {
 			return models.Users.findOne(root.u._id);
+		},
+		channel: (root, args, { models }) => {
+			return models.Rooms.findOne(root.rid);
 		},
 		fromServer: (root) => typeof root.t !== 'undefined', // on a message sent by user `true` otherwise `false`
 		channelRef: (root, args, { models }) => {
