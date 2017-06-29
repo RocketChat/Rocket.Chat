@@ -18,7 +18,9 @@ graphQLServer.use(
 	bodyParser.json(),
 	graphqlExpress(() => ({
 		schema: executableSchema,
-		context: {},
+		context: {
+			models: RocketChat.models
+		},
 		formatError: e => ({
 			message: e.message,
 			locations: e.locations,
