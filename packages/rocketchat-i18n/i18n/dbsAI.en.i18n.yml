@@ -53,7 +53,8 @@ connection_not_available: Connection not available
 DBS_AI_Source: Knowledge source
 DBS_AI_Source_APIAI: API.ai
 DBS_AI_Source_Redlink: Redlink
-DBS_AI_Redlink_URL: URL of  Redlink service
+DBS_AI_Source_Smarti: Smarti
+DBS_AI_Redlink_URL: URL of service
 DBS_AI_Redlink_Auth_Token: Basic-Auth token
 DBS_AI_Redlink_Domain: Domain for messages
 Assistify_AI_DBSearch_Suffix: Custom search suffix

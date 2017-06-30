@@ -17,6 +17,7 @@ Package.onUse(function(api) {
 
 	//Server
 	api.addFiles('config.js', 'server');
+	//TODO add jquery?
 
 	//i18n in Rocket.Chat-package (packages/rocketchat-i18n/i18n
 });

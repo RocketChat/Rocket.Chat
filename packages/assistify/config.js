@@ -26,7 +26,8 @@ Meteor.startup(()=>{
 		section: 'Knowledge_Base',
 		values: [
 			{ key: '0', i18nLabel: 'DBS_AI_Source_APIAI'},
-			{ key: '1', i18nLabel: 'DBS_AI_Source_Redlink'}
+			{ key: '1', i18nLabel: 'DBS_AI_Source_Redlink'},
+			{ key: '2', i18nLabel: 'DBS_AI_Source_Smarti'}
 		],
 		public: true,
 		i18nLabel: 'DBS_AI_Source'
