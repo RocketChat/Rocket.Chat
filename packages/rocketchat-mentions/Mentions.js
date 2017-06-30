@@ -50,7 +50,8 @@ export default class {
 		});
 	}
 	replaceChannels(str, message) {
-		return str.replace(this.channelMentionRegex, (match, name) => {
+		//since apostrophe escaped contains # we need to unescape it
+		return str.replace(/&#39;/g, '\'').replace(this.channelMentionRegex, (match, name) => {
 			if (message.temp == null && _.findWhere(message.channels, {name}) == null) {
 				return match;
 			}
