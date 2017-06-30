@@ -6,16 +6,17 @@
 	</header>
 	<div class="content">
 		<div class="wrapper">
-			<ul>
-				<li>
-					<a href="#link" class="admin-link">{{_ "Dashboard"}}</a>
-					<a href="#link" class="admin-link">{{_ "User_management"}}</a>
-					<a href="{{pathFor 'livechat-departments'}}" class="admin-link">{{_ "Departments"}}</a>
-					<a href="{{pathFor 'livechat-triggers'}}" class="admin-link">{{_ "Triggers"}}</a>
-					<a href="#link" class="admin-link">{{_ "Theme"}}</a>
-					<a href="#link" class="admin-link">{{_ "Integrations"}}</a>
-					<a href="#link" class="admin-link">{{_ "Live_sessions"}}</a>
-				</li>
+			<ul class="flex-list">
+				<li><!-- <a href="{{pathFor 'livechat-dashboard'}}" class="{{active 'livechat-dashboard'}}">{{_ "Dashboard"}}</a> --></li>
+				<li><a href="{{pathFor 'livechat-current-chats'}}" class="{{active 'livechat-current-chats'}}">{{_ "Current_Chats"}}</a></li>
+				<li><a href="{{pathFor 'livechat-users'}}" class="{{active 'livechat-users'}}">{{_ "User_management"}}</a></li>
+				<li><a href="{{pathFor 'livechat-departments'}}" class="{{active 'livechat-departments' 'livechat-department-edit'}}">{{_ "Departments"}}</a></li>
+				<li><a href="{{pathFor 'livechat-triggers'}}" class="{{active 'livechat-triggers'}}">{{_ "Triggers"}}</a></li>
+				<li><a href="{{pathFor 'livechat-customfields'}}" class="{{active 'livechat-customfields'}}">{{_ "Custom_Fields"}}</a></li>
+				<li><a href="{{pathFor 'livechat-installation'}}" class="{{active 'livechat-installation'}}">{{_ "Installation"}}</a></li>
+				<li><a href="{{pathFor 'livechat-appearance'}}" class="{{active 'livechat-appearance'}}">{{_ "Appearance"}}</a></li>
+				<li><a href="{{pathFor 'livechat-integrations'}}" class="{{active 'livechat-integrations'}}">{{_ "Integrations"}}</a></li>
+				<li><a href="{{pathFor 'livechat-officeHours'}}" class="{{active 'livechat-officeHours'}}">{{_ "Office_Hours"}}</a></li>
 			</ul>
 		</div>
 	</div>

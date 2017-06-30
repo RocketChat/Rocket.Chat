@@ -1,0 +1,1 @@
+env LC_ALL=C mongod --bind_ip 127.0.0.1 --pidfilepath $SNAP_COMMON/mongod.pid --smallfiles --journal --dbpath=$SNAP_COMMON --replSet rs0

@@ -1,1 +1,8 @@
-{ }
+{
+	"galaxy.meteor.com": {
+		"env": {
+			"MONGO_URL": "mongodb://<db_username>:<db_password>@<db_server_host>:<db_server_port>/<db_name>",
+			"MONGO_OPLOG_URL": "mongodb://<oplog_username>:<oplog_password>@<db_server_host>:<db_server_port>/<oplog_db_name>?authSource=admin"
+		}
+	}
+}

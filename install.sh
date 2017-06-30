@@ -1,4 +1,7 @@
 #!/bin/bash
+set -x
+set -euvo pipefail
+IFS=$'\n\t'
 
 ROOTPATH=/var/www/rocket.chat
 PM2FILE=pm2.json
@@ -8,7 +11,7 @@ if [ "$1" == "development" ]; then
 fi
 
 cd $ROOTPATH
-curl -fSL "https://s3.amazonaws.com/rocketchatbuild/demo.rocket.chat-v.latest.tgz" -o rocket.chat.tgz
+curl -fSL "https://s3.amazonaws.com/rocketchatbuild/rocket.chat-develop.tgz" -o rocket.chat.tgz
 tar zxf rocket.chat.tgz  &&  rm rocket.chat.tgz
 cd $ROOTPATH/bundle/programs/server
 npm install

@@ -1,0 +1,26 @@
+<template name="customFieldsForm">
+	{{#each customFields}}
+		{{#if $eq field.type 'select'}}
+			<div class="input-line">
+				<label for="{{fieldName}}">{{_ fieldName}}</label>
+				<div>
+					<select name="{{fieldName}}" data-customfield="true">
+						{{#each field.options}}
+							<option value="{{.}}" selected="{{selectedField . ..}}">{{_ .}}</option>
+						{{/each}}
+					</select>
+					<div class="input-error"></div>
+				</div>
+			</div>
+		{{/if}}
+		{{#if $eq field.type 'text'}}
+			<div class="input-line">
+				<label for="{{fieldName}}">{{_ fieldName}}</label>
+				<div>
+					<input type="text" name="{{fieldName}}" id="{{fieldName}}" data-customfield="true" value="{{fieldValue}}" maxlength="{{field.maxLength}}" />
+					<div class="input-error"></div>
+				</div>
+			</div>
+		{{/if}}
+	{{/each}}
+</template>

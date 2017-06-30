@@ -1,7 +1,9 @@
 #!/bin/bash
-set -euo pipefail
+set -x
+set -euvo pipefail
 IFS=$'\n\t'
 
-#cd $TRAVIS_BUILD_DIR
-#export TAG=$(git describe --abbrev=0 --tags)
-ln -s /tmp/build/Rocket.Chat.tar.gz "/tmp/deploy/rocket.chat-$TRAVIS_BRANCH.tgz"
+FILENAME="$ROCKET_DEPLOY_DIR/rocket.chat-$ARTIFACT_NAME.tgz";
+
+ln -s /tmp/build/Rocket.Chat.tar.gz "$FILENAME"
+gpg --armor --detach-sign "$FILENAME"

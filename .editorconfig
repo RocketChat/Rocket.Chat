@@ -1,12 +1,19 @@
-# editorconfig.org
+# EditorConfig is awesome: http://EditorConfig.org
+
 root = true
 
 [*]
-indent_style = tab
 end_of_line = lf
 charset = utf-8
 trim_trailing_whitespace = true
 insert_final_newline = true
+
+[*.{js,coffee,html,less,css,json}]
+indent_style = tab
+
+[*.i18n.json]
+indent_style = space
+indent_size = 2
 
 [*.md]
 trim_trailing_whitespace = false

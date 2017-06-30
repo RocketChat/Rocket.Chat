@@ -2,6 +2,9 @@
 **/build/*
 **/node_modules/*
 **/tmp/*
+**/.meteor/dev_bundle
+**/.meteor/local*
+**/.meteor/meteorite
 /private/certs/*
 *.bak
 *.iml
@@ -11,6 +14,7 @@
 *.log
 *.pydevproject
 *.sublime-project
+*.sublime-workspace
 *.swp
 *.tmp
 *.tokens
@@ -35,14 +39,14 @@
 .loadpath
 .map
 .metadata
-.meteor/local
-.meteor/meteorite
+packages/rocketchat-livechat/assets/rocketchat-livechat.min.js
 .mule
 .pmd
 .project
 .sass-cache
 .settings
 .Spotlight-V100
+tatus
 .Trashes
 .wtpmodules
 \#*\#
@@ -66,3 +70,5 @@ tramp
 ecosystem.json
 pm2.json
 settings.json
+build.sh
+/public/livechat

@@ -11,7 +11,16 @@
 			left: 0;
 			top: 0;
 			bottom: 0;
-			background-color: #ccc;
+		}
+
+		html.rtl & {
+			padding-left: 0;
+			padding-right: 15px;
+
+			.attachment-block-border {
+				left: auto;
+				right: 0;
+			}
 		}
 	}
 
@@ -22,13 +31,18 @@
 
 		> a {
 			font-weight: 600;
-			color: #444;
 		}
 
 		img {
 			max-height: 16px;
+			max-width: 16px;
 			margin-right: 2px;
 			margin-bottom: -2px;
+		}
+
+		.time {
+			font-weight: normal;
+			font-size: 0.8em;
 		}
 	}
 
@@ -49,6 +63,7 @@
 
 	.attachment-image {
 		margin-top: 4px;
+		line-height: 0;
 	}
 
 	.attachment-fields {
@@ -56,7 +71,7 @@
 
 		.attachment-field {
 			&.attachment-field-short {
-				width: 48%;
+				margin-right: 12px;
 				display: inline-block;
 			}
 
@@ -74,7 +89,12 @@
 	.attachment-thumb {
 		padding-right: 10px;
 		padding-top: 5px;
-		line-height: 0px;
+		line-height: 0;
+
+		html.rtl & {
+			padding-right: 5px;
+			padding-top: 10px;
+		}
 
 		img {
 			max-width: 100px;
@@ -92,5 +112,17 @@
 
 	.attachment-small-content {
 		max-width: 700px;
+	}
+
+	.attachment-download-icon {
+		padding: 2px 5px;
+		border-width: 1px;
+		border-radius: 5px;
+		margin-left: 5px;
+
+		html.rtl & {
+			margin-right: 5px;
+			margin-left: auto;
+		}
 	}
 }
