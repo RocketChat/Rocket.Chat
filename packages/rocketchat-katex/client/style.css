@@ -1,0 +1,12 @@
+.katex-inline-error {
+	display: inline-block;
+	margin: 0 5px;
+}
+
+.katex-error {
+	border: 1px solid red;
+	padding: 2px 8px;
+	text-align: center;
+	font-style: italic;
+	font-weight: bold;
+}

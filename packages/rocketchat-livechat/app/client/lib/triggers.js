@@ -1,26 +1,29 @@
 this.Triggers = (function() {
-	var triggers = [];
+	let triggers = [];
+	let initiated = false;
+	let requests = [];
+	let enabled = true;
 
-	var init = function() {
-		Tracker.autorun(function() {
-			triggers = Trigger.find().fetch();
-		});
-	};
-
-	var fire = function(actions) {
-		if (Meteor.userId()) {
-			console.log('already logged user - does nothing');
+	const fire = function(trigger) {
+		if (!enabled || Meteor.userId()) {
 			return;
 		}
-		actions.forEach(function(action) {
+		trigger.actions.forEach(function(action) {
 			if (action.name === 'send-message') {
-				var room = Random.id();
-				visitor.setRoom(room);
+				// flag to skip the trigger if the action is 'send-message'
+				trigger.skip = true;
+
+				let roomId = visitor.getRoom();
+
+				if (!roomId) {
+					roomId = Random.id();
+					visitor.setRoom(roomId);
+				}
 
 				Session.set('triggered', true);
 				ChatMessage.insert({
 					msg: action.params.msg,
-					rid: room,
+					rid: roomId,
 					u: {
 						username: action.params.name
 					}
@@ -31,13 +34,19 @@ this.Triggers = (function() {
 		});
 	};
 
-	var processRequest = function(request) {
+	const processRequest = function(request) {
+		if (!initiated) {
+			return requests.push(request);
+		}
 		triggers.forEach(function(trigger) {
+			if (trigger.skip) {
+				return;
+			}
 			trigger.conditions.forEach(function(condition) {
 				switch (condition.name) {
 					case 'page-url':
-						if (request.href.match(new RegExp(urlRegex))) {
-							fire(trigger.actions);
+						if (request.location.href.match(new RegExp(condition.value))) {
+							fire(trigger);
 						}
 						break;
 
@@ -46,7 +55,7 @@ this.Triggers = (function() {
 							clearTimeout(trigger.timeout);
 						}
 						trigger.timeout = setTimeout(function() {
-							fire(trigger.actions);
+							fire(trigger);
 						}, parseInt(condition.value) * 1000);
 						break;
 				}
@@ -54,8 +63,35 @@ this.Triggers = (function() {
 		});
 	};
 
-	return {
-		init: init,
-		processRequest: processRequest
+	const setTriggers = function(newTriggers) {
+		triggers = newTriggers;
 	};
-})();
+
+	const init = function() {
+		initiated = true;
+
+		if (requests.length > 0 && triggers.length > 0) {
+			requests.forEach(function(request) {
+				processRequest(request);
+			});
+
+			requests = [];
+		}
+	};
+
+	const setDisabled = function() {
+		enabled = false;
+	};
+
+	const setEnabled = function() {
+		enabled = true;
+	};
+
+	return {
+		init,
+		processRequest,
+		setTriggers,
+		setDisabled,
+		setEnabled
+	};
+}());

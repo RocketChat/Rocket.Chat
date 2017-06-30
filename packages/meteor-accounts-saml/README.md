@@ -38,7 +38,7 @@ Meteor.settings = settings;
 in some template
 
 ```
-<a href="#" class="saml-login" data-provider="openam">OpenAM</a>
+<a class="saml-login" data-provider="openam">OpenAM</a>
 ```
 
 in helper function

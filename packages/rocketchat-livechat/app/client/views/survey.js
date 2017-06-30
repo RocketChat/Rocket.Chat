@@ -1,11 +1,11 @@
 Template.survey.events({
-	'click button.skip': function(e, instance) {
+	'click button.skip'(e, instance) {
 		instance.$('#survey').remove();
 	},
 
-	'click button.send': function(e, instance) {
-		formData = instance.$('form').serializeArray();
-		Meteor.call('livechat:saveSurveyFeedback', visitor.getToken(), visitor.getRoom(), formData, function(err, results) {
+	'click button.send'(e, instance) {
+		const formData = instance.$('form').serializeArray();
+		Meteor.call('livechat:saveSurveyFeedback', visitor.getToken(), visitor.getRoom(), formData, function(/*err, results*/) {
 			instance.$('#survey').remove();
 			swal({
 				title: t('Thank_you_for_your_feedback'),
@@ -14,4 +14,4 @@ Template.survey.events({
 			});
 		});
 	}
-})
+});

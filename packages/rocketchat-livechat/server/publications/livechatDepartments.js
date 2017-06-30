@@ -1,13 +1,11 @@
 Meteor.publish('livechat:departments', function(_id) {
 	if (!this.userId) {
-		throw new Meteor.Error('not-authorized');
+		return this.error(new Meteor.Error('error-not-authorized', 'Not authorized', { publish: 'livechat:agents' }));
 	}
 
-	if (!RocketChat.authz.hasPermission(this.userId, 'view-livechat-manager')) {
-		throw new Meteor.Error('not-authorized');
+	if (!RocketChat.authz.hasPermission(this.userId, 'view-l-room')) {
+		return this.error(new Meteor.Error('error-not-authorized', 'Not authorized', { publish: 'livechat:agents' }));
 	}
-
-	console.log('[publish] livechat:departments -> '.green, 'arguments:', arguments);
 
 	if (_id !== undefined) {
 		return RocketChat.models.LivechatDepartment.findByDepartmentId(_id);
