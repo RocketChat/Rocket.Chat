@@ -113,8 +113,7 @@ Template.uploadedFilesList.events({
 		if (e.target.scrollTop >= (e.target.scrollHeight - e.target.clientHeight)) {
 			return t.limit.set(t.limit.get() + 50);
 		}
-	}
-	, 200)
+	}, 200)
 });
 
 Template.uploadedFilesList.onCreated(function() {
