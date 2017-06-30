@@ -806,6 +806,10 @@ RocketChat.settings.addGroup('Message', function() {
 		'public': true,
 		i18nDescription: 'Message_TimeAndDateFormat_Description'
 	});
+	this.add('Message_QuoteChainLimit', 2, {
+		type: 'int',
+		'public': true
+	});
 	this.add('Message_HideType_uj', false, {
 		type: 'boolean',
 		'public': true
@@ -822,6 +826,7 @@ RocketChat.settings.addGroup('Message', function() {
 		type: 'boolean',
 		'public': true
 	});
+
 	return this.add('Message_HideType_mute_unmute', false, {
 		type: 'boolean',
 		'public': true

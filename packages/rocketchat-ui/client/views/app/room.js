@@ -237,8 +237,7 @@ let touchMoved = false;
 
 Template.room.events({
 	'click, touchend'(e, t) {
-		return Meteor.setTimeout(() => t.sendToBottomIfNecessaryDebounced()
-		, 100);
+		return Meteor.setTimeout(() => t.sendToBottomIfNecessaryDebounced(), 100);
 	},
 
 	'click .messages-container'() {
@@ -364,7 +363,7 @@ Template.room.events({
 	'click .unread-bar > button.jump-to'(e, t) {
 		const { _id } = t.data;
 		const room = RoomHistoryManager.getRoom(_id);
-		let message = room && readMessage.firstUnread.get();
+		let message = room && room.firstUnread.get();
 		if (message) {
 			return RoomHistoryManager.getSurroundingMessages(message, 50);
 		} else {
@@ -388,8 +387,7 @@ Template.room.events({
 		event.preventDefault();
 		Session.set('editRoomTitle', true);
 		$('.fixed-title').addClass('visible');
-		return Meteor.setTimeout(() => $('#room-title-field').focus().select()
-		, 10);
+		return Meteor.setTimeout(() => $('#room-title-field').focus().select(), 10);
 	},
 
 	'click .flex-tab .user-image > button'(e, instance) {
@@ -423,8 +421,7 @@ Template.room.events({
 				return RoomHistoryManager.getMoreNext(this._id);
 			}
 		}
-	}
-	, 200),
+	}, 200),
 
 	'click .new-message'() {
 		Template.instance().atBottom = true;
@@ -696,8 +693,7 @@ Template.room.onRendered(function() {
 	window.chatMessages[Session.get('openedRoom')].init(this.firstNode);
 
 	if (Meteor.Device.isDesktop()) {
-		setTimeout(() => $('.message-form .input-message').focus()
-		, 100);
+		setTimeout(() => $('.message-form .input-message').focus(), 100);
 	}
 
 	// ScrollListener.init()
@@ -747,7 +743,7 @@ Template.room.onRendered(function() {
 
 		observer.observe(wrapperUl, {childList: true});
 	}
-		// observer.disconnect()
+	// observer.disconnect()
 
 	template.onWindowResize = () =>
 		Meteor.defer(() => template.sendToBottomIfNecessaryDebounced())
@@ -769,10 +765,8 @@ Template.room.onRendered(function() {
 
 	wrapper.addEventListener('touchend', function() {
 		Meteor.defer(() => template.checkIfScrollIsAtBottom());
-		Meteor.setTimeout(() => template.checkIfScrollIsAtBottom()
-		, 1000);
-		return Meteor.setTimeout(() => template.checkIfScrollIsAtBottom()
-		, 2000);
+		Meteor.setTimeout(() => template.checkIfScrollIsAtBottom(), 1000);
+		return Meteor.setTimeout(() => template.checkIfScrollIsAtBottom(), 2000);
 	});
 
 	wrapper.addEventListener('scroll', function() {
@@ -781,8 +775,7 @@ Template.room.onRendered(function() {
 	});
 
 	$('.flex-tab-bar').on('click', (/*e, t*/) =>
-		Meteor.setTimeout(() => template.sendToBottomIfNecessaryDebounced()
-		, 50)
+		Meteor.setTimeout(() => template.sendToBottomIfNecessaryDebounced(), 50)
 	);
 
 	const rtl = $('html').hasClass('rtl');
@@ -807,8 +800,7 @@ Template.room.onRendered(function() {
 				return template.unreadCount.set(0);
 			}
 		}
-	}
-	, 300);
+	}, 300);
 
 	readMessage.onRead(function(rid) {
 		if (rid === template.data._id) {
