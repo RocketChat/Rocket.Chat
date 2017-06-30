@@ -2,7 +2,7 @@
 
 renderMessageBody = function(msg) {
 	if (_.trim(msg.msg) !== '') {
-			msg.html = _.escapeHTML(msg.msg);
+		msg.html = _.escapeHTML(msg.msg);
 	}
 
 	const message = RocketChat.callbacks.run('renderMessage', msg);
