@@ -1,11 +1,6 @@
 Package.describe({
   summary: "Update the client when new client code is available",
-  version: '1.2.4'
-});
-
-Cordova.depends({
-  'cordova-plugin-file': '2.1.0',
-  'cordova-plugin-file-transfer': '1.2.0'
+  version: '1.3.12'
 });
 
 Package.onUse(function (api) {

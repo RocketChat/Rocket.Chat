@@ -1,0 +1,66 @@
+<template name="adminUsers">
+	<div class="main-content-flex">
+		<section class="page-container page-list flex-tab-main-content">
+			<header class="fixed-title border-component-color">
+				{{> burger}}
+				<h2>
+					<span class="room-title">{{_ "Users"}}</span>
+				</h2>
+			</header>
+			<div class="content">
+				{{#unless hasPermission 'view-user-administration'}}
+					<p>{{_ "You_are_not_authorized_to_view_this_page"}}</p>
+				{{else}}
+					<form class="search-form" role="form">
+						<div class="input-line search">
+							<input type="text" id="users-filter" placeholder="{{_ "Search"}}" dir="auto">
+							<i class="icon-search secondary-font-color"></i>
+							{{#unless isReady}}<i class="icon-spin secondary-font-color"></i>{{/unless}}
+						</div>
+					</form>
+					<div class="results">
+						{{{_ "Showing_results" users.length}}}
+					</div>
+					<div class="list">
+						<table class="secondary-background-color">
+							<thead>
+								<tr class="admin-table-row">
+									<th class="content-background-color border-component-color">&nbsp;</th>
+									<th class="content-background-color border-component-color" width="34%">{{_ "Name"}}</th>
+									<th class="content-background-color border-component-color" width="33%">{{_ "Username"}}</th>
+									<th class="content-background-color border-component-color" width="33%">{{_ "Email"}}</th>
+									<th class="content-background-color border-component-color" width="33%">{{_ "Roles"}}</th>
+									<th class="content-background-color border-component-color" width="33%">{{_ "Status"}}</th>
+								</tr>
+							</thead>
+							<tbody>
+								{{#each users}}
+								<tr class="user-info row-link {{#if not active}}deactivated{{/if}}">
+									<td class="border-component-color">
+										<div class="user-image status-{{status}}">
+											{{> avatar username=username}}
+										</div>
+									</td>
+									<td class="border-component-color">{{name}}</td>
+									<td class="border-component-color">{{username}}</td>
+									<td class="border-component-color">{{emailAddress}}</td>
+									<td class="border-component-color">{{roles}}</td>
+									<td class="border-component-color">{{status}}</td>
+								</tr>
+								{{/each}}
+							</tbody>
+						</table>
+
+						{{#if hasMore}}
+							<button class="button secondary load-more {{isLoading}}">{{_ "Load_more"}}</button>
+						{{/if}}
+					</div>
+				{{/unless}}
+			</div>
+		</section>
+		{{#with flexData}}
+			{{> flexTabBar}}
+		{{/with}}
+	</div>
+</template>
+

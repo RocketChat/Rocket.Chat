@@ -6,23 +6,25 @@ Package.describe({
 });
 
 Package.onUse(function(api) {
-	api.versionsFrom('1.0');
+	api.use([
+		'ecmascript',
+		'underscore',
+		'templating',
+		'underscorestring:underscore.string',
+		'rocketchat:lib'
+	]);
 
-	api.use('coffeescript');
-	api.use('underscore');
-	api.use('templating');
-	api.use('underscorestring:underscore.string');
-	api.use('rocketchat:lib@0.0.1');
-
-	api.addFiles('settings.coffee', 'server');
-	api.addFiles('markdown.coffee');
+	api.addFiles('settings.js', 'server');
+	api.addFiles('markdown.js');
+	api.addFiles('markdowncode.js');
 });
 
 Package.onTest(function(api) {
-	api.use('coffeescript');
-	api.use('sanjo:jasmine@0.20.2');
-	api.use('rocketchat:lib');
-	api.use('rocketchat:markdown');
+	api.use([
+		'sanjo:jasmine@0.20.2',
+		'rocketchat:lib',
+		'rocketchat:markdown'
+	]);
 
-	api.addFiles('tests/jasmine/client/unit/markdown.spec.coffee', 'client');
+	api.addFiles('tests/jasmine/client/unit/markdown.spec.js', 'client');
 });

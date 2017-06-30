@@ -6,17 +6,13 @@ Package.describe({
 });
 
 Package.onUse(function(api) {
-	api.versionsFrom('1.0');
-
 	api.use([
-		'coffeescript',
-		'rocketchat:lib@0.0.1'
+		'ecmascript',
+		'rocketchat:lib',
+		'underscore'
 	]);
 
-	api.addFiles('server.coffee', 'server');
-	api.addFiles('client.coffee', 'client');
-});
-
-Package.onTest(function(api) {
-
+	api.addFiles('server.js', 'server');
+	api.addFiles('client.js', 'client');
+	// api.('mentions.js', 'client');
 });

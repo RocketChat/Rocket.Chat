@@ -1,1 +1,0 @@
-RocketChat.authz = {}

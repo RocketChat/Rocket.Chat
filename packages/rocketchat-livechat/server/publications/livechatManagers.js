@@ -1,17 +1,15 @@
 Meteor.publish('livechat:managers', function() {
 	if (!this.userId) {
-		throw new Meteor.Error('not-authorized');
+		return this.error(new Meteor.Error('error-not-authorized', 'Not authorized', { publish: 'livechat:managers' }));
 	}
 
-	if (!RocketChat.authz.hasPermission(this.userId, 'view-livechat-manager')) {
-		throw new Meteor.Error('not-authorized');
+	if (!RocketChat.authz.hasPermission(this.userId, 'view-livechat-rooms')) {
+		return this.error(new Meteor.Error('error-not-authorized', 'Not authorized', { publish: 'livechat:managers' }));
 	}
 
-	console.log('[publish] livechat:managers -> '.green, 'arguments:', arguments);
+	const self = this;
 
-	var self = this;
-
-	var handle = RocketChat.authz.getUsersInRole('livechat-manager').observeChanges({
+	const handle = RocketChat.authz.getUsersInRole('livechat-manager').observeChanges({
 		added(id, fields) {
 			self.added('managerUsers', id, fields);
 		},

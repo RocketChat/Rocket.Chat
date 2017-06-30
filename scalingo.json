@@ -4,5 +4,11 @@
   "description": "Have your own open-source Slack-like online chat, built with Meteor.",
   "logo": "https://raw.githubusercontent.com/RocketChat/Rocket.Chat/master/public/images/logo/512x512.png?v=3",
   "website": "https://rocket.chat",
-  "addons": ["scalingo-mongodb"]
+  "addons": ["scalingo-mongodb"],
+  "env": {
+    "DEPLOY_PLATFORM": {
+      "description": "Platform name",
+      "value": "scalingo"
+    }
+  }
 }

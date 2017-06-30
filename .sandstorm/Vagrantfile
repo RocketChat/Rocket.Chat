@@ -10,8 +10,8 @@ VM_NAME = File.basename(File.dirname(File.dirname(__FILE__))) + "_sandstorm_#{Ti
 VAGRANTFILE_API_VERSION = "2"
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
-  # We base ourselves off Debian Jessie
-  config.vm.box = "debian/jessie64"
+  # Base on the Sandstorm snapshots of the official Debian 8 (jessie) box.
+  config.vm.box = "sandstorm/debian-jessie64"
 
   if Vagrant.has_plugin?("vagrant-vbguest") then
     # vagrant-vbguest is a Vagrant plugin that upgrades
@@ -29,9 +29,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   # Use a shell script to "provision" the box. This installs Sandstorm using
   # the bundled installer.
-  config.vm.provision "shell", inline: "sudo bash /opt/app/.sandstorm/global-setup.sh"
+  config.vm.provision "shell", inline: "sudo bash /opt/app/.sandstorm/global-setup.sh", keep_color: true
   # Then, do stack-specific and app-specific setup.
-  config.vm.provision "shell", inline: "sudo bash /opt/app/.sandstorm/setup.sh"
+  config.vm.provision "shell", inline: "sudo bash /opt/app/.sandstorm/setup.sh", keep_color: true
 
   # Shared folders are configured per-provider since vboxsf can't handle >4096 open files,
   # NFS requires privilege escalation every time you bring a VM up,
@@ -82,7 +82,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
     override.vm.synced_folder "..", "/opt/app"
     override.vm.synced_folder ENV["HOME"] + "/.sandstorm", "/host-dot-sandstorm"
-    override.vm.synced_folder "..", "/vagrant"
+    override.vm.synced_folder "..", "/vagrant", disabled: true
   end
   config.vm.provider :libvirt do |libvirt, override|
     libvirt.cpus = cpus
@@ -91,6 +91,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
     override.vm.synced_folder "..", "/opt/app", type: "9p", accessmode: "passthrough"
     override.vm.synced_folder ENV["HOME"] + "/.sandstorm", "/host-dot-sandstorm", type: "9p", accessmode: "passthrough"
-    override.vm.synced_folder "..", "/vagrant", type: "9p", accessmode: "passthrough"
+    override.vm.synced_folder "..", "/vagrant", type: "9p", accessmode: "passthrough", disabled: true
   end
 end
