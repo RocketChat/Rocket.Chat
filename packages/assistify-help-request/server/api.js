@@ -39,7 +39,7 @@ class HelpRequestApi {
 
 		return new helpRequest.HelpDiscussionCreatedResponse(
 			HelpRequestApi.getUrlForRoom(creationResult.room),
-			creationResult.providers
+			creationResult.members
 		);
 	}
 
@@ -68,7 +68,10 @@ class HelpRequestApi {
 
 		if (potentialEmails.length > 0) {
 			potentialEmails.forEach((emailAddress) => {
-				users.push(RocketChat.models.Users.findOneByEmailAddress(emailAddress));
+				const matchedUser = RocketChat.models.Users.findOneByEmailAddress(emailAddress);
+				if (matchedUser) {
+					users.push(matchedUser);
+				}
 			});
 			// users = users.concat(
 			// 	RocketChat.models.Users.findByEmailAddresses(potentialEmails).fetch()
@@ -77,7 +80,10 @@ class HelpRequestApi {
 
 		if (potentialIds.length > 0) {
 			potentialIds.forEach((_id) => {
-				users.push(RocketChat.models.Users.findById(_id).fetch());
+				const matchedUser = RocketChat.models.Users.findById(_id).fetch();
+				if (matchedUser) {
+					users.push();
+				}
 			});
 		}
 
@@ -142,9 +148,12 @@ class HelpRequestApi {
 			throw new Meteor.Error(err);
 		}
 
+		const roomCreated = RocketChat.models.Rooms.findOne({_id: channel.rid});
 		return {
-			room: RocketChat.models.Rooms.findOne({_id: channel.rid}),
-			providers
+			room: roomCreated,
+			members: roomCreated.usernames.map((user) => {
+				return {username: user};
+			})
 		};
 	}
 }
