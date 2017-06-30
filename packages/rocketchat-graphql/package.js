@@ -22,6 +22,7 @@ Npm.depends({
 	express: '4.15.3',
 	graphql: '0.10.3',
 	'graphql-server-express': '0.9.0',
-	'graphql-tools': '1.0.0',
-	'body-parser': '1.17.2'
+	'graphql-tools': '1.1.0',
+	'body-parser': '1.17.2',
+	'merge-graphql-schemas': '1.1.0'
 });
