@@ -1,5 +1,5 @@
 /* globals RocketChat */
-RocketChat.createRoom = function(type, name, owner, members, isAutomatic=false, readOnly, extraData={}) {
+RocketChat.createRoom = function(type, name, owner, members, readOnly, extraData={}) {
 	name = s.trim(name);
 	owner = s.trim(owner);
 	members = [].concat(members);
@@ -82,7 +82,7 @@ RocketChat.createRoom = function(type, name, owner, members, isAutomatic=false, 
 		RocketChat.models.Subscriptions.createWithRoomAndUser(room, member, extra);
 	}
 
-	if (!isAutomatic) {
+	if (!extraData.automatic) {
 		RocketChat.authz.addUserRoles(owner._id, ['owner'], room._id);
 	}
 

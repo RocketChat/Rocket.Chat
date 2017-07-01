@@ -12,4 +12,6 @@ Package.onUse(function(api) {
 	api.add_files('server/server.js', 'server');
 });
 
-
+Npm.depends({
+	'satelize': '0.2.0'
+});

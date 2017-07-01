@@ -106,7 +106,7 @@ Accounts.onLogin(function(user) {
 
 			}
 		} else {
-			const result = RocketChat.createRoom('c', browser_language.name, user.user && user.user.username, [], true, false, {automatic:true});
+			const result = RocketChat.createRoom('c', browser_language.name, user.user && user.user.username, [], false, {automatic:true});
 			room_id = result.rid;
 
 		}
