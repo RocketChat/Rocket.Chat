@@ -25,6 +25,13 @@ export const resolver = {
 
 			// Filter
 			if (typeof args.filter !== 'undefined') {
+				// nameFilter
+				if (typeof args.filter.nameFilter !== undefined) {
+					query.name = {
+						$regex: new RegExp(args.filter.nameFilter, 'i')
+					};
+				}
+
 				// sortBy
 				if (args.filter.sortBy === 'NUMBER_OF_MESSAGES') {
 					options.sort = {
