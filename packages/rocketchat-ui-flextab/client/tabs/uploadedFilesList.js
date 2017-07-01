@@ -1,9 +1,31 @@
 /* globals chatMessages*/
 const roomFiles = new Mongo.Collection('room_files');
 
+const removeFiles = (upload, msg) => {
+	RocketChat.models.Uploads.remove(upload._id, function() {
+		if (msg) {
+			return chatMessages[Session.get('openedRoom')].deleteMsg(msg);
+		} else {
+			return Meteor.call('deleteFileMessage', upload._id, function(error) {
+				if (error) {
+					return handleError(error);
+				}
+			});
+		}
+	});
+};
+
 Template.uploadedFilesList.helpers({
-	files() {
-		return roomFiles.find({ rid: this.rid }, { sort: { uploadedAt: -1 } });
+
+	uploadedFiles() {
+		const files = roomFiles.find({ rid: this.rid }, { sort: { uploadedAt: -1 } });
+		const totalFiles = files.count();
+		const showDeleteAll = totalFiles > 1 ;
+		return {
+			totalFiles,
+			showDeleteAll,
+			files
+		};
 	},
 
 	hasFiles() {
@@ -74,38 +96,43 @@ Template.uploadedFilesList.events({
 
 	'click .icon-trash'() {
 		const self = this;
+		const deleteText = self._id ?
+			TAPi18n.__('You_will_not_be_able_to_recover_file') :
+			TAPi18n.__('You_will_not_be_able_to_recover_all_files');
+		const deleteConfirm = self._id ?
+			TAPi18n.__('Yes_delete_it') :
+			TAPi18n.__('Yes_delete_all_it');
+		const successText = self._id ?
+			TAPi18n.__('Your_file_has_been_deleted') :
+			TAPi18n.__('Your_files_are_been_deleted');
 		return swal({
 			title: TAPi18n.__('Are_you_sure'),
-			text: TAPi18n.__('You_will_not_be_able_to_recover_file'),
+			text: deleteText,
 			type: 'warning',
 			showCancelButton: true,
 			confirmButtonColor: '#DD6B55',
-			confirmButtonText: TAPi18n.__('Yes_delete_it'),
+			confirmButtonText: deleteConfirm,
 			cancelButtonText: TAPi18n.__('Cancel'),
 			closeOnConfirm: false,
 			html: false
 		}, function() {
 			swal({
 				title: TAPi18n.__('Deleted'),
-				text: TAPi18n.__('Your_file_has_been_deleted'),
+				text: successText,
 				type: 'success',
 				timer: 1000,
 				showConfirmButton: false
 			});
-
 			// Check if the upload message for this file is currently loaded
 			const msg = ChatMessage.findOne({ file: { _id: self._id } });
-			return RocketChat.models.Uploads.remove(self._id, function() {
-				if (msg) {
-					return chatMessages[Session.get('openedRoom')].deleteMsg(msg);
-				} else {
-					return Meteor.call('deleteFileMessage', self._id, function(error) {
-						if (error) {
-							return handleError(error);
-						}
-					});
-				}
-			});
+			if (!self._id) {
+
+				self.files.map((file) => {
+					return removeFiles(file, msg);
+				});
+			} else {
+				return removeFiles(self, msg);
+			}
 		});
 	},
 
