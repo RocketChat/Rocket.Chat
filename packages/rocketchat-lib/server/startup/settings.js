@@ -116,18 +116,16 @@ RocketChat.settings.addGroup('Accounts', function() {
 		this.add('Accounts_RegistrationForm', 'Public', {
 			type: 'select',
 			'public': true,
-			values: [
-				{
-					key: 'Public',
-					i18nLabel: 'Accounts_RegistrationForm_Public'
-				}, {
-					key: 'Disabled',
-					i18nLabel: 'Accounts_RegistrationForm_Disabled'
-				}, {
-					key: 'Secret URL',
-					i18nLabel: 'Accounts_RegistrationForm_Secret_URL'
-				}
-			]
+			values: [{
+				key: 'Public',
+				i18nLabel: 'Accounts_RegistrationForm_Public'
+			}, {
+				key: 'Disabled',
+				i18nLabel: 'Accounts_RegistrationForm_Disabled'
+			}, {
+				key: 'Secret URL',
+				i18nLabel: 'Accounts_RegistrationForm_Secret_URL'
+			}]
 		});
 		this.add('Accounts_RegistrationForm_SecretURL', Random.id(), {
 			type: 'string'
@@ -468,85 +466,83 @@ RocketChat.settings.addGroup('Email', function() {
 			i18nLabel: 'Footer_Direct_Reply'
 		});
 	});
-	this.section('IMAP', function() {
-		this.add('IMAP_Enable', false, {
+	this.section('Direct_Reply', function() {
+		this.add('Direct_Reply_Enable', false, {
 			type: 'boolean',
 			env: true,
-			i18nLabel: 'IMAP_Enable'
+			i18nLabel: 'Direct_Reply_Enable'
 		});
-		this.add('IMAP_Debug', false, {
+		this.add('Direct_Reply_Debug', false, {
 			type: 'boolean',
 			env: true,
-			i18nLabel: 'IMAP_Debug'
+			i18nLabel: 'Direct_Reply_Debug'
 		});
-		this.add('IMAP_Protocol', 'imap', {
+		this.add('Direct_Reply_Protocol', 'IMAP', {
 			type: 'select',
 			values: [{
-				key: 'imap',
-				i18nLabel: 'imap'
+				key: 'IMAP',
+				i18nLabel: 'IMAP'
 			}, {
-				key: 'imaps',
-				i18nLabel: 'imaps'
+				key: 'POP',
+				i18nLabel: 'POP'
 			}],
 			env: true,
 			i18nLabel: 'Protocol'
 		});
-		this.add('IMAP_Host', '', {
+		this.add('Direct_Reply_Host', '', {
 			type: 'string',
 			env: true,
 			i18nLabel: 'Host'
 		});
-		this.add('IMAP_Port', 143, {
+		this.add('Direct_Reply_Port', 143, {
 			type: 'select',
-			values: [
-				{
-					key: 143,
-					i18nLabel: '143'
-				}, {
-					key: 993,
-					i18nLabel: '993'
-				}
-			],
+			values: [{
+				key: 143,
+				i18nLabel: '143'
+			}, {
+				key: 993,
+				i18nLabel: '993'
+			}, {
+				key: 110,
+				i18nLabel: '110'
+			}, {
+				key: 995,
+				i18nLabel: '995'
+			}],
 			env: true,
 			i18nLabel: 'Port'
 		});
-		this.add('IMAP_IgnoreTLS', false, {
+		this.add('Direct_Reply_IgnoreTLS', false, {
 			type: 'boolean',
 			env: true,
-			i18nLabel: 'IgnoreTLS',
-			enableQuery: {
-				_id: 'IMAP_Protocol',
-				value: 'imap'
-			}
+			i18nLabel: 'IgnoreTLS'
 		});
-		this.add('IMAP_Username', '', {
+		this.add('Direct_Reply_Username', '', {
 			type: 'string',
 			env: true,
 			i18nLabel: 'Username',
 			placeholder: 'email@domain'
 		});
-		this.add('IMAP_Password', '', {
+		this.add('Direct_Reply_Password', '', {
 			type: 'password',
 			env: true,
 			i18nLabel: 'Password'
 		});
-		return this.add('IMAP_Start', 'startIMAPIntercepter', {
+		return this.add('Direct_Reply_Start', 'startEmailIntercepter', {
 			type: 'action',
-			actionText: 'IMAP_Start'
+			actionText: 'Direct_Reply_Start'
 		});
 	});
 	this.section('SMTP', function() {
 		this.add('SMTP_Protocol', 'smtp', {
 			type: 'select',
-			values: [
-				{
-					key: 'smtp',
-					i18nLabel: 'smtp'
-				}, {
-					key: 'smtps',
-					i18nLabel: 'smtps'
-				}
-			],
+			values: [{
+				key: 'smtp',
+				i18nLabel: 'smtp'
+			}, {
+				key: 'smtps',
+				i18nLabel: 'smtps'
+			}],
 			env: true,
 			i18nLabel: 'Protocol'
 		});
@@ -946,28 +942,24 @@ RocketChat.settings.addGroup('Push', function() {
 	});
 	this.add('Push_gateway', 'https://gateway.rocket.chat', {
 		type: 'string',
-		enableQuery: [
-			{
-				_id: 'Push_enable',
-				value: true
-			}, {
-				_id: 'Push_enable_gateway',
-				value: true
-			}
-		]
+		enableQuery: [{
+			_id: 'Push_enable',
+			value: true
+		}, {
+			_id: 'Push_enable_gateway',
+			value: true
+		}]
 	});
 	this.add('Push_production', true, {
 		type: 'boolean',
 		'public': true,
-		enableQuery: [
-			{
-				_id: 'Push_enable',
-				value: true
-			}, {
-				_id: 'Push_enable_gateway',
-				value: false
-			}
-		]
+		enableQuery: [{
+			_id: 'Push_enable',
+			value: true
+		}, {
+			_id: 'Push_enable_gateway',
+			value: false
+		}]
 	});
 	this.add('Push_test_push', 'push_test', {
 		type: 'action',
@@ -1091,18 +1083,16 @@ RocketChat.settings.addGroup('Layout', function() {
 RocketChat.settings.addGroup('Logs', function() {
 	this.add('Log_Level', '0', {
 		type: 'select',
-		values: [
-			{
-				key: '0',
-				i18nLabel: '0_Errors_Only'
-			}, {
-				key: '1',
-				i18nLabel: '1_Errors_and_Information'
-			}, {
-				key: '2',
-				i18nLabel: '2_Erros_Information_and_Debug'
-			}
-		],
+		values: [{
+			key: '0',
+			i18nLabel: '0_Errors_Only'
+		}, {
+			key: '1',
+			i18nLabel: '1_Errors_and_Information'
+		}, {
+			key: '2',
+			i18nLabel: '2_Erros_Information_and_Debug'
+		}],
 		'public': true
 	});
 	this.add('Log_Package', false, {
