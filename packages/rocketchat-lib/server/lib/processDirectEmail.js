@@ -28,6 +28,8 @@ RocketChat.processDirectEmail = function(email) {
 				method: 'sendMessage'
 			});
 		}
+
+		console.log(message);
 	}
 
 	// Extract/parse reply from email body
