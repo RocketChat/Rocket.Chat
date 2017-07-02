@@ -28,16 +28,6 @@ RocketChat.processDirectEmail = function(email) {
 				method: 'sendMessage'
 			});
 		}
-
-		const user = RocketChat.models.Users.findOneByEmailAddress(email.headers.from, {
-			fields: {
-				username: 1,
-				name: 1
-			}
-		});
-		if (!user) {
-			return false;
-		}
 	}
 
 	// Extract/parse reply from email body
