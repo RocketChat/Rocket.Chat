@@ -7,7 +7,9 @@ RocketChat.imapIntercepter = function() {
 		host: RocketChat.settings.get('IMAP_Host'),
 		port: RocketChat.settings.get('IMAP_Port'),
 		debug: RocketChat.settings.get('IMAP_Debug') ? console.log : false,
-		tls: !RocketChat.settings.get('IMAP_IgnoreTLS')
+		tls: !RocketChat.settings.get('IMAP_IgnoreTLS'),
+		connTimeout: 30000,
+		keepalive: true
 	});
 
 	function openInbox(cb) {
@@ -98,7 +100,9 @@ RocketChat.imapIntercepter = function() {
 };
 
 Meteor.startup(function() {
-	if (RocketChat.settings.get('IMAP_Enable') && RocketChat.settings.get('IMAP_Host') && RocketChat.settings.get('IMAP_Port') && RocketChat.settings.get('IMAP_Username') && RocketChat.settings.get('IMAP_Password')) {
-		RocketChat.imapIntercepter();
+	if (RocketChat.settings.get('Direct_Reply_Enable') && RocketChat.settings.get('Direct_Reply_Protocol') && RocketChat.settings.get('Direct_Reply_Host') && RocketChat.settings.get('Direct_Reply_Port') && RocketChat.settings.get('Direct_Reply_Username') && RocketChat.settings.get('Direct_Reply_Password')) {
+		if (RocketChat.settings.get('Direct_Reply_Protocol') === "IMAP") {
+			RocketChat.imapIntercepter();
+		}
 	}
 });
