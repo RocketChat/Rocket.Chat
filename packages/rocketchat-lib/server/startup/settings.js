@@ -496,7 +496,7 @@ RocketChat.settings.addGroup('Email', function() {
 			env: true,
 			i18nLabel: 'Host'
 		});
-		this.add('IMAP_Port', '', {
+		this.add('IMAP_Port', 143, {
 			type: 'select',
 			values: [
 				{
