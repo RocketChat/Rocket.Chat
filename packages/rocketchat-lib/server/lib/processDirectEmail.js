@@ -1,6 +1,10 @@
 const reply = require('emailreplyparser').EmailReplyParser;
 
 RocketChat.processDirectEmail = function(email) {
+	function sendMessage(email) {
+		console.log(email);
+	}
+
 	// Extract/parse reply from email body
 	email.body = reply.parse_reply(email.body);
 	console.log(email);
@@ -34,13 +38,13 @@ RocketChat.processDirectEmail = function(email) {
 		// Valid 'To' format
 		console.log('Valid Email');
 		email.headers.mid = email.headers.to.split('@')[0].split('+')[1];
-		console.log(email);
+		sendMessage(email);
 	} else if (/^[0-9]+\+([0-9]|[a-z]|[A-Z])+\+([0-9]|[a-z]|[A-Z])+$/.test(email.headers.references)) {
 		// Valid references(Message-ID) format
 		console.log('Valid Email');
 		email.headers.rid = email.headers.references.split('+')[1];
 		email.headers.mid = email.headers.references.split('+')[2];
-		console.log(email);
+		sendMessage(email);
 	} else {
 		console.log('Invalid Email....If not. Please report it.');
 	}
