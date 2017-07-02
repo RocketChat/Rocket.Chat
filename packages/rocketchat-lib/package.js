@@ -39,8 +39,12 @@ Package.onUse(function(api) {
 	api.use('rocketchat:version');
 	api.use('rocketchat:logger');
 	api.use('rocketchat:custom-oauth');
-	api.use('rocketchat:authorization', {unordered: true});
-	api.use('rocketchat:push-notifications', {unordered: true});
+	api.use('rocketchat:authorization', {
+		unordered: true
+	});
+	api.use('rocketchat:push-notifications', {
+		unordered: true
+	});
 
 	api.use('templating', 'client');
 	api.use('kadira:flow-router');
@@ -164,7 +168,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/methods/setRealName.js', 'server');
 	api.addFiles('server/methods/setUsername.js', 'server');
 	api.addFiles('server/methods/setEmail.js', 'server');
-	api.addFiles('server/methods/startIMAPIntercepter.js', 'server');
+	api.addFiles('server/methods/startEmailIntercepter.js', 'server');
 	api.addFiles('server/methods/unarchiveRoom.js', 'server');
 	api.addFiles('server/methods/unblockUser.js', 'server');
 	api.addFiles('server/methods/updateMessage.js', 'server');

@@ -1,13 +1,47 @@
+import moment from 'moment';
 const reply = require('emailreplyparser').EmailReplyParser;
 
 RocketChat.processDirectEmail = function(email) {
 	function sendMessage(email) {
 		console.log(email);
+		let message = {
+			ts: email.headers.date,
+			msg: email.body
+		};
+
+		if (message.ts) {
+			const tsDiff = Math.abs(moment(message.ts).diff());
+			if (tsDiff > 60000) {
+				throw new Meteor.Error('error-message-ts-out-of-sync', 'Message timestamp is out of sync', {
+					method: 'sendMessage',
+					message_ts: message.ts,
+					server_ts: new Date().getTime()
+				});
+			} else if (tsDiff > 10000) {
+				message.ts = new Date();
+			}
+		} else {
+			message.ts = new Date();
+		}
+		if (message.msg && message.msg.length > RocketChat.settings.get('Message_MaxAllowedSize')) {
+			throw new Meteor.Error('error-message-size-exceeded', 'Message size exceeds Message_MaxAllowedSize', {
+				method: 'sendMessage'
+			});
+		}
+
+		const user = RocketChat.models.Users.findOneByEmailAddress(email.headers.from, {
+			fields: {
+				username: 1,
+				name: 1
+			}
+		});
+		if (!user) {
+			return false;
+		}
 	}
 
 	// Extract/parse reply from email body
 	email.body = reply.parse_reply(email.body);
-	console.log(email);
 
 	email.headers.to = email.headers.to[0];
 
