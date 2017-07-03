@@ -74,7 +74,7 @@ class AmqpConnection
 		@qid = qid
 		ok = @chan.assertQueue(qid, queueopts)
 		ok = ok.then(=> @chan.bindQueue(@qid, @exchange, @routingKey))
-		ok = ok.then(=> @chan.consume(@qid, @onMessage))
+		ok = ok.then(=> @chan.consume(@qid, @onMessage, {noAck: true}))
 
 	onMessage: (msg) =>
 		try
