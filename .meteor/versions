@@ -17,6 +17,7 @@ blaze@2.3.2
 blaze-html-templates@1.1.2
 blaze-tools@1.0.10
 boilerplate-generator@1.1.0
+bundle-visualizer@1.0.3
 caching-compiler@1.1.9
 caching-html-compiler@1.1.2
 callback-hook@1.0.10

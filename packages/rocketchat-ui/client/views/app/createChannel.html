@@ -56,19 +56,8 @@
 						</div>
 					{{/if}}
 				</div>
-				<div class="rc-input">
-					<label class="rc-input__label">
-						<div class="rc-input__title">Invite people to channel</div>
-						<div class="rc-input__wrapper">
-							<div class="rc-input__icon">
-								<svg class="rc-input__icon-svg rc-input__icon-svg--user">
-									<use href="/images/icons.svg#user"></use>
-								</svg>
-							</div>
-							<input type="text" class="rc-input__element" placeholder="Type channel name">
-						</div>
-					</label>
-				</div>
+				{{ selectedUsers }}
+				{{> selectDropdown config}}
 			</div>
 			<button class="rc-button rc-button--blue" data-button="create" {{createIsDisabled}}>Create Channel</button>
 		</form>

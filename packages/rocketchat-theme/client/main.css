@@ -14,3 +14,19 @@
 @import 'imports/components/tooltip.css';
 @import 'imports/components/modal/full-modal.css';
 @import 'imports/components/modal/create-channel.css';
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translate3d(0, -20px, 0);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.fadeInDown {
+  animation-name: fadeInDown;
+	    animation-duration: .3s;
+}
