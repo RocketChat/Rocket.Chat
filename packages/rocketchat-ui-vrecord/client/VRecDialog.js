@@ -1,9 +1,9 @@
 export const VRecDialog = new class {
-	static initClass() {
-		this.prototype.opened = false;
-		this.prototype.initiated = false;
-		this.prototype.width = 400;
-		this.prototype.height = 280;
+	constructor() {
+		this.opened = false;
+		this.initiated = false;
+		this.width = 400;
+		this.height = 280;
 	}
 
 	init() {

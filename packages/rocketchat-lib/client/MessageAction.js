@@ -180,14 +180,18 @@ Meteor.startup(function() {
 			if (RocketChat.models.Subscriptions.findOne({rid: message.rid}) == null) {
 				return false;
 			}
+			const forceDelete = RocketChat.authz.hasAtLeastOnePermission('force-delete-message', message.rid);
 			const hasPermission = RocketChat.authz.hasAtLeastOnePermission('delete-message', message.rid);
 			const isDeleteAllowed = RocketChat.settings.get('Message_AllowDeleting');
 			const deleteOwn = message.u && message.u._id === Meteor.userId();
-			if (!(hasPermission || (isDeleteAllowed && deleteOwn))) {
+			if (!(hasPermission || (isDeleteAllowed && deleteOwn) || forceDelete)) {
 				return;
 			}
 			const blockDeleteInMinutes = RocketChat.settings.get('Message_AllowDeleting_BlockDeleteInMinutes');
-			if ((blockDeleteInMinutes != null) && blockDeleteInMinutes !== 0) {
+			if (forceDelete) {
+				return true;
+			}
+			if (blockDeleteInMinutes != null && blockDeleteInMinutes !== 0) {
 				let msgTs;
 				if (message.ts != null) {
 					msgTs = moment(message.ts);
@@ -210,7 +214,7 @@ Meteor.startup(function() {
 		i18nLabel: 'Permalink',
 		classes: 'clipboard',
 		context: ['message', 'message-mobile'],
-		action() {
+		action(event) {
 			const message = this._arguments[1];
 			const permalink = RocketChat.MessageAction.getPermaLink(message._id);
 			RocketChat.MessageAction.hideDropDown();
@@ -237,7 +241,7 @@ Meteor.startup(function() {
 		i18nLabel: 'Copy',
 		classes: 'clipboard',
 		context: ['message', 'message-mobile'],
-		action() {
+		action(event) {
 			const message = this._arguments[1].msg;
 			RocketChat.MessageAction.hideDropDown();
 			if (Meteor.isCordova) {
