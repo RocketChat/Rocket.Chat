@@ -45,9 +45,9 @@ export default () => {
 	const properties = [fontFamily, colors, customCss];
 	const run = list => {
 		return list.filter(setting => setting.value && setting.properties || setting.type !== 'color')
-				.sort((a, b) => a._id.length - b._id.length)
-				.map(setting => properties.reduce((ret, f) => ret || f(setting), ''))
-				.join('\n');
+			.sort((a, b) => a._id.length - b._id.length)
+			.map(setting => properties.reduce((ret, f) => ret || f(setting), ''))
+			.join('\n');
 	};
 
 	DynamicCss.run = debounce(() => {
