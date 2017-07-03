@@ -56,8 +56,35 @@
 						</div>
 					{{/if}}
 				</div>
-				{{ selectedUsers }}
-				{{> selectDropdown config}}
+				<div class="rc-input">
+					<label class="rc-input__label">
+						<div class="rc-input__title">Invite people to channel</div>
+						<div class="rc-input__wrapper">
+							<div class="rc-input__icon">
+								<svg class="rc-input__icon-svg rc-input__icon-svg--at">
+									<use href="/images/icons.svg#at"></use>
+								</svg>
+							</div>
+							<div class="rc-tags">
+								{{#each user in selectedUsers}}
+									<span class="rc-tags__tag">
+										<span class="rc-tags__tag-avatar">
+											{{> avatar username="karl.prieb"}}
+										</span>
+										<span class="rc-tags__tag-username">{{user}}</span>
+										<svg class="rc-tags__tag-icon">
+											<use href="/images/icons.svg#cross"></use>
+										</svg>
+									</span>
+								{{/each}}
+								<input type="text" class="rc-tags__input" placeholder="{{_ "username"}}" name="users">
+							</div>
+						</div>
+					</label>
+					<div class="fadeInDown">
+						{{ > popupList config}}
+					</div>
+				</div>
 			</div>
 			<button class="rc-button rc-button--blue" data-button="create" {{createIsDisabled}}>Create Channel</button>
 		</form>

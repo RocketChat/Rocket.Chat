@@ -24,16 +24,14 @@ Template.createChannel.helpers({
 				users.set(usersArr);
 			}, modifier(text) {
 				const f = filter.get();
-				return f.length === 0 ? text : text.replace(new RegExp(filter.get()), function(part) {
+				return `@${ f.length === 0 ? text : text.replace(new RegExp(filter.get()), function(part) {
 					return `<b>${ part }</b>`;
-				});
+				}) }`;
 			}
 		};
 	},
 	selectedUsers() {
-		const instance = Template.instance();
-		const users = instance.selectedUsers.get();
-		return users.join();
+		return Template.instance().selectedUsers.get();
 	},
 	inUse() {
 		const instance = Template.instance();
