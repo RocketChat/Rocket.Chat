@@ -1,0 +1,17 @@
+<template name="popupList">
+	<div class="" style="border: 1px solid #ccc;">
+		{{> Template.dynamic config }}
+	</div>
+</template>
+
+<template name="popupList_default">
+	<ul>
+		{{#each item in items}}
+			{{> Template.dynamic config item}}
+		{{/each}}
+	</ul>
+</template>
+
+<template name="popupList_item_default">
+	 <li>{{{modifier item}}}</li>
+</template>
