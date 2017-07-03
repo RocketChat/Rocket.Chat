@@ -40,6 +40,13 @@ Meteor.startup(function() {
 		i18nLabel: 'DBS_AI_Redlink_Auth_Token'
 	});
 
+	RocketChat.settings.add('DBS_AI_Redlink_Hook_Token', 'key123', {
+		type: 'string',
+		group: 'Assistify',
+		section: 'Knowledge_Base',
+		public: true,
+		i18nLabel: 'DBS_AI_Redlink_Hook_Token'
+	});
 
 	let domain = RocketChat.settings.get('Site_Url');
 	if (domain) {

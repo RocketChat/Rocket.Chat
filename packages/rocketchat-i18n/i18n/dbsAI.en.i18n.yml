@@ -56,6 +56,7 @@ DBS_AI_Source_Redlink: Redlink
 DBS_AI_Source_Smarti: Smarti
 DBS_AI_Redlink_URL: URL of service
 DBS_AI_Redlink_Auth_Token: Basic-Auth token
+DBS_AI_Redlink_Hook_Token: Token for incoming Messages
 DBS_AI_Redlink_Domain: Domain for messages
 Assistify_AI_DBSearch_Suffix: Custom search suffix
 similar_to: Similar to
