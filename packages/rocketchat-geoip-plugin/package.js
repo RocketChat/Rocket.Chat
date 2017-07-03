@@ -5,11 +5,11 @@ Package.describe({
 });
 
 Package.onUse(function(api) {
-	api.use('accounts-base');
 	api.use('ecmascript');
-	api.use('rocketchat:lib');
+	api.use('rocketchat:plugin-handler');
 
 	api.add_files('server/server.js', 'server');
+	api.export('get_country');
 });
 
 Npm.depends({

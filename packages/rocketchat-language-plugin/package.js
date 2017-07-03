@@ -5,13 +5,13 @@ Package.describe({
 });
 
 Package.onUse(function(api) {
-	api.use('accounts-base');
+
 	api.use('ecmascript');
-	api.use('rocketchat:lib');
-	api.export('leave_automatic_channel');
-	api.export('remove_user_from_automatic_channel');
+	api.use('rocketchat:plugin-handler');
 
 	api.add_files('server/server.js', 'server');
+	api.export('get_language');
+
 });
 
 Npm.depends({
