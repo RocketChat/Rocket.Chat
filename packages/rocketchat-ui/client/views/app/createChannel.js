@@ -2,8 +2,39 @@ const validateChannelName = (name) => {
 	const reg = new RegExp(`^${ RocketChat.settings.get('UTF8_Names_Validation') }$`);
 	return name.length === 0 || reg.test(name);
 };
+const filterNames = (old) => {
+	const reg = new RegExp(`^${ RocketChat.settings.get('UTF8_Names_Validation') }$`);
+	return [...old.replace(' ', '').toLocaleLowerCase()].filter(f => reg.test(f)).splice(0, 22).join('');
+};
 
 Template.createChannel.helpers({
+	config() {
+		const instance = Template.instance();
+		const filter = instance.userFilter;
+		const users = instance.selectedUsers;
+		const usersArr = users.get();
+		return {
+			items: ['gazzo', 'chinelo', 'teste'].filter(e => !usersArr.includes(e)).filter((() => {
+				const text = filter.get().toLowerCase();
+				return (str)=> (text.length === 0 || str.toLowerCase().includes(text));
+			})()),
+			onClick(item) {
+				console.log('OI');
+				usersArr.push(item);
+				users.set(usersArr);
+			}, modifier(text) {
+				const f = filter.get();
+				return f.length === 0 ? text : text.replace(new RegExp(filter.get()), function(part) {
+					return `<b>${ part }</b>`;
+				});
+			}
+		};
+	},
+	selectedUsers() {
+		const instance = Template.instance();
+		const users = instance.selectedUsers.get();
+		return users.join();
+	},
 	inUse() {
 		const instance = Template.instance();
 		return instance.inUse.get();
@@ -46,13 +77,29 @@ Template.createChannel.events({
 	'change [name=type]'(e, t) {
 		t.type.set(e.target.checked ? e.target.value : 'p');
 	},
+	'keydown [name=users]'(e) {
+		if (e.keyCode === 27) { // esc
+			e.target.value = '';
+		}
+		if (e.keyCode === 13) {
+
+		}
+	},
+	'input [name=users]'(e, t) {
+		const input = e.target;
+		const position = input.selectionEnd || input.selectionStart;
+		const length = input.value.length;
+		const modified = filterNames(input.value);
+		input.value = modified;
+		document.activeElement === input && e && /input/i.test(e.type) && (input.selectionEnd = position + input.value.length - length);
+
+		t.userFilter.set(modified);
+	},
 	'input [name=name]'(e, t) {
 		const input = e.target;
 		const position = input.selectionEnd || input.selectionStart;
 		const length = input.value.length;
-		const old = input.value;
-		const reg = new RegExp(`^${ RocketChat.settings.get('UTF8_Names_Validation') }$`);
-		const modified = [...old.replace(' ', '').toLocaleLowerCase()].filter(f => reg.test(f)).splice(0, 22).join('');
+		const modified = filterNames(input.value);
 
 		input.value = modified;
 		document.activeElement === input && e && /input/i.test(e.type) && (input.selectionEnd = position + input.value.length - length);
@@ -101,6 +148,7 @@ Template.createChannel.onCreated(function() {
 	this.type = new ReactiveVar('d');
 	this.inUse = new ReactiveVar(undefined);
 	this.invalid = new ReactiveVar(false);
+	this.userFilter = new ReactiveVar('');
 	this.selectedUsers = new ReactiveVar([]);
 	this.checkChannel = _.debounce((name) => {
 		if (validateChannelName(name)) {

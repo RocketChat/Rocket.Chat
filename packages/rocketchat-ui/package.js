@@ -112,5 +112,15 @@ Package.onUse(function(api) {
 	api.addFiles('client/views/app/videoCall/videoCall.js', 'client');
 	api.addFiles('client/views/app/photoswipe.js', 'client');
 
+
+
+	api.addFiles('client/components/popupList.html', 'client');
+	api.addFiles('client/components/popupList.js', 'client');
+
+	api.addFiles('client/components/selectDropdown.html', 'client');
+	api.addFiles('client/components/selectDropdown.js', 'client');
+
+
+
 	api.export('fileUpload');
 });

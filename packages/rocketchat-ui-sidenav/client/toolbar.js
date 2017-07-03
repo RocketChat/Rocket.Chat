@@ -124,7 +124,7 @@ Template.toolbar.helpers({
 			emptyTemplate: 'toolbarSearchListEmpty',
 			input: '[role="search"] input',
 			cleanOnEnter: true,
-			closeOnEsc: false,
+			closeOnEsc: true,
 			blurOnSelectItem: true,
 			isLoading,
 			open,
