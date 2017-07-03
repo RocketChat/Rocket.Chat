@@ -1,4 +1,6 @@
-
+.rc-old * {
+	font-weight: inherit;
+}
 
 .rc-old .text-right {
 	text-align: right;
