@@ -191,6 +191,7 @@
 	&__icon-svg {
 		stroke: currentColor;
 
+		&--at,
 		&--hashtag {
 			width: 14px;
 			height: 14px;
@@ -338,5 +339,88 @@
 	&__description {
 		font-size: var(--input-font-size);
 		color: #9ea2a8;
+	}
+}
+
+.rc-tags {
+	display: flex;
+	flex-wrap: wrap;
+	width: 100%;
+	justify-content: flex-start;
+	background-color: transparent;
+	border-width: 1px;
+	border-radius: 2px;
+	border-color: #e1e5e8;
+	padding: 0 1rem 0 3.25rem;
+	min-height: 43px;
+
+	&__tag {
+		background: #f2f3f5;
+		padding: 0.35rem 0.5rem;
+		display: flex;
+		align-items: center;
+		color: #2f343d;
+		margin: 0.25rem;
+
+		&-avatar {
+			width: 20px;
+			height: 20px;
+			margin-right: 0.5rem;
+		}
+
+		&-username {
+			margin-right: 0.5rem;
+		}
+
+		&-icon {
+			stroke: #9d9fa3;
+			width: 10px;
+			height: 10px;
+		}
+	}
+
+	&__input {
+		font-size: 0.875rem;
+		border: 0;
+		margin: 0.25rem;
+		padding: 0.35rem 0.5rem;
+
+		&::placeholder {
+			color: #cbced1;
+		}
+	}
+}
+
+.rc-popup-list {
+	width: 100%;
+
+	&__list {
+		border-radius: 2px;
+		background-color: #ffffff;
+		box-shadow: 0 0 2px 0 rgba(47, 52, 61, 0.08), 0 0 12px 0 rgba(47, 52, 61, 0.12);
+		padding: 1rem;
+	}
+
+	&__item {
+		display: flex;
+		align-items: center;
+		padding: 0.5rem;
+		border-radius: 2px;
+		cursor: pointer;
+
+		&:hover {
+			background-color: #f2f3f5;
+		}
+
+		&-image {
+			width: 32px;
+			height: 32px;
+			margin-right: 1rem;
+		}
+
+		&-name {
+			font-size: 1rem;
+			color: #2d343d;
+		}
 	}
 }

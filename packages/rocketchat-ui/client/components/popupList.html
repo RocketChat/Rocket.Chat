@@ -1,11 +1,11 @@
 <template name="popupList">
-	<div class="" style="border: 1px solid #ccc;">
+	<div class="rc-popup-list">
 		{{> Template.dynamic config }}
 	</div>
 </template>
 
 <template name="popupList_default">
-	<ul>
+	<ul class="rc-popup-list__list">
 		{{#each item in items}}
 			{{> Template.dynamic config item}}
 		{{/each}}
@@ -13,5 +13,10 @@
 </template>
 
 <template name="popupList_item_default">
-	 <li>{{{modifier item}}}</li>
+	 <li class="rc-popup-list__item">
+		 <span class="rc-popup-list__item-image">
+			 {{>avatar username="karl.prieb"}}
+		 </span>
+		 <span class="rc-popup-list__item-name">{{{modifier item}}}</span>
+	</li>
 </template>
