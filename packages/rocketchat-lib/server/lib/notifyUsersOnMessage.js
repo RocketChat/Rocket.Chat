@@ -44,6 +44,7 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 		RocketChat.models.Subscriptions.incUnreadOfDirectForRoomIdExcludingUserId(message.rid, message.u._id, 1);
 	} else {
 		let toAll = false;
+		let toHere = false;
 		const mentionIds = [];
 		const highlightsIds = [];
 		const highlights = RocketChat.models.Users.findUsersByUsernamesWithHighlights(room.usernames, { fields: { '_id': 1, 'settings.preferences.highlights': 1 }}).fetch();
@@ -52,6 +53,9 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 			message.mentions.forEach(function(mention) {
 				if (!toAll && mention._id === 'all') {
 					toAll = true;
+				}
+				if (!toHere && mention._id === 'here') {
+					toHere = true;
 				}
 				if (mention._id !== message.u._id) {
 					mentionIds.push(mention._id);
@@ -67,7 +71,7 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 			}
 		});
 
-		if (toAll) {
+		if (toAll || toHere) {
 			RocketChat.models.Subscriptions.incUnreadForRoomIdExcludingUserId(room._id, message.u._id);
 		} else if ((mentionIds && mentionIds.length > 0) || (highlightsIds && highlightsIds.length > 0)) {
 			RocketChat.models.Subscriptions.incUnreadForRoomIdAndUserIds(room._id, _.compact(_.unique(mentionIds.concat(highlightsIds))));

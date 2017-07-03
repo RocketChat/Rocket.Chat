@@ -29,7 +29,7 @@ function ask_backup {
 
     read choice
     [[ "${choice,,}" = n* ]] && return
-    [[ "${choice,,}" = y* ]] && backupdb.sh && return
+    [[ "${choice,,}" = y* ]] && backupdb && return
     exit
 }
 

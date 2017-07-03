@@ -6,12 +6,12 @@ import {getCredentials, api, login, request, credentials, apiEmail, apiUsername,
 import {adminEmail, password} from '../../data/user.js';
 import {imgURL} from '../../data/interactions.js';
 
-describe('Users', function() {
+describe('[Users]', function() {
 	this.retries(0);
 
 	before(done => getCredentials(done));
 
-	it('/users.create', (done) => {
+	it('/users.create:', (done) => {
 		request.post(api('users.create'))
 		.set(credentials)
 		.send({
@@ -37,7 +37,7 @@ describe('Users', function() {
 		.end(done);
 	});
 
-	it('/users.info', (done) => {
+	it('/users.info:', (done) => {
 		request.get(api('users.info'))
 		.set(credentials)
 		.query({
@@ -55,7 +55,7 @@ describe('Users', function() {
 		.end(done);
 	});
 
-	it('/users.getPresence', (done) => {
+	it('/users.getPresence:', (done) => {
 		request.get(api('users.getPresence'))
 		.set(credentials)
 		.query({
@@ -70,7 +70,7 @@ describe('Users', function() {
 		.end(done);
 	});
 
-	it('/users.list', (done) => {
+	it('/users.list:', (done) => {
 		request.get(api('users.list'))
 		.set(credentials)
 		.expect('Content-Type', 'application/json')
@@ -83,7 +83,7 @@ describe('Users', function() {
 		.end(done);
 	});
 
-	it.skip('/users.list', (done) => {
+	it.skip('/users.list:', (done) => {
 		//filtering user list
 		request.get(api('users.list'))
 		.set(credentials)
@@ -103,9 +103,7 @@ describe('Users', function() {
 		.end(done);
 	});
 
-
-
-	it.skip('/users.setAvatar', (done) => {
+	it.skip('/users.setAvatar:', (done) => {
 		request.post(api('users.setAvatar'))
 		.set(credentials)
 		.attach('avatarUrl', imgURL)
@@ -117,7 +115,7 @@ describe('Users', function() {
 		.end(done);
 	});
 
-	it('/users.update', (done) => {
+	it('/users.update:', (done) => {
 		request.post(api('users.update'))
 		.set(credentials)
 		.send({
@@ -143,7 +141,7 @@ describe('Users', function() {
 		.end(done);
 	});
 
-	describe('/users.createToken', () => {
+	describe('[/users.createToken]', () => {
 		let user;
 		beforeEach((done) => {
 			const username = `user.test.${ Date.now() }`;
@@ -180,7 +178,7 @@ describe('Users', function() {
 			user = undefined;
 		});
 
-		describe('logged as admin', () => {
+		describe('logged as admin:', () => {
 			it('should return the user id and a new token', (done) => {
 				request.post(api('users.createToken'))
 				.set(credentials)
@@ -198,7 +196,7 @@ describe('Users', function() {
 			});
 		});
 
-		describe('logged as itself', () => {
+		describe('logged as itself:', () => {
 			it('should return the user id and a new token', (done) => {
 				request.post(api('users.createToken'))
 				.set(userCredentials)
@@ -216,7 +214,7 @@ describe('Users', function() {
 			});
 		});
 
-		describe('As an user not allowed', () => {
+		describe('As an user not allowed:', () => {
 			it('should return 401 unauthorized', (done) => {
 				request.post(api('users.createToken'))
 				.set(userCredentials)
@@ -233,7 +231,7 @@ describe('Users', function() {
 			});
 		});
 
-		describe('Not logged in', () => {
+		describe('Not logged in:', () => {
 			it('should return 401 unauthorized', (done) => {
 				request.post(api('users.createToken'))
 				.send({
@@ -248,7 +246,7 @@ describe('Users', function() {
 			});
 		});
 
-		describe('Testing if the returned token is valid', (done) => {
+		describe('Testing if the returned token is valid:', (done) => {
 			it('should return 200', (done) => {
 				return request.post(api('users.createToken'))
 				.set(credentials)
