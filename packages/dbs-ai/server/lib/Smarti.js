@@ -28,7 +28,8 @@ class SmartiAdapter {
 			user_id: message.u._id,
 			username: message.u.username,
 			text: message.msg,
-			timestamp: message.ts
+			timestamp: message.ts,
+			origin: message.origin
 		};
 
 		try {
@@ -39,13 +40,31 @@ class SmartiAdapter {
 
 			const response = HTTP.post(`${ this.properties.url }rocket/${RocketChat.settings.get('DBS_AI_Redlink_Domain')}`, options);
 
-			if (response.data && response.statusCode === 200) {
+			if (response.statusCode === 200) {
 				SystemLogger.debug('Smarti - analysis triggered successfully:', JSON.stringify(response, '', 2));
 			} else {
 				SystemLogger.error('Smarti - analysis triggering failed:', JSON.stringify(response, '', 2));
 			}
 		} catch (e) {
 			SystemLogger.error('Smarti response did not succeed: ', e);
+		}
+	}
+
+	onClose(room) { //async
+		//TODO add options here?
+		//get conversation id
+		const m = RocketChat.models.LivechatExternalMessage.findOneById(room._id);
+
+		if(m) {
+			const response = HTTP.post(`${ this.properties.url }conversation/${m.conversationId}/publish`);
+
+			if (response.statusCode === 200) {
+				SystemLogger.debug('Smarti - closed room successfully:', room._id, JSON.stringify(response, '', 2));
+			} else {
+				SystemLogger.error('Smarti - closing room failed:', room._id, JSON.stringify(response, '', 2));
+			}
+		} else {
+			SystemLogger.error('Smarti - closing room failed: No conversation id for room ' + room._id);
 		}
 	}
 
@@ -98,6 +117,9 @@ class SmartiAdapterFactory {
 
 			adapterProps.webhookUrl = RocketChat.settings.get('Site_Url') + 'api/v1/smarti.result/' + RocketChat.settings.get('DBS_AI_Redlink_Hook_Token');
 
+			console.log(RocketChat.settings);
+			console.log(Meteor.settings);
+
 			if (_dbs.mockInterfaces()) { //use mock
 				this.singleton = new SmartiMock(adapterProps);
 			} else {
@@ -129,7 +151,7 @@ RocketChat.API.v1.addRoute('smarti.result/:token', {authRequired: false}, {
 
 		check(this.bodyParams, Match.ObjectIncluding({
 			conversationId: String,
-			token: String
+			channelId: String
 		}));
 
 		//verify token
@@ -151,9 +173,9 @@ RocketChat.API.v1.addRoute('smarti.result/:token', {authRequired: false}, {
 					upsert: true
 				});
 
-			const m = RocketChat.models.LivechatExternalMessage.findOneById(this.bodyParams.rid);
+			const m = RocketChat.models.LivechatExternalMessage.findOneById(this.bodyParams.channelId);
 
-			RocketChat.Notifications.notifyRoom(this.bodyParams.rid, 'newConversationResult', m);
+			RocketChat.Notifications.notifyRoom(this.bodyParams.channelId, 'newConversationResult', m);
 
 			return RocketChat.API.v1.success();
 
