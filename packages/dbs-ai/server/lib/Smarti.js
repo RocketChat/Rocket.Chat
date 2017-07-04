@@ -137,6 +137,9 @@ _dbs.SmartiAdapterFactory = SmartiAdapterFactory;
  */
 Meteor.methods({
 	getLastSmartiResult:function(rid) {
+
+		//Todo: check if the user is allowed to get this results!
+
 		SystemLogger.debug('Smarti - last smarti result requested:', JSON.stringify(rid, '', 2));
 		SystemLogger.debug('Smarti - last message:', JSON.stringify(RocketChat.models.LivechatExternalMessage.findOneById(rid), '', 2));
 		return RocketChat.models.LivechatExternalMessage.findOneById(rid);
