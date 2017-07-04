@@ -4648,18 +4648,8 @@ body:not(.is-cordova) {
 	}
 }
 
-.sweet-alert {
-	margin-left: -239px !important;
-
-	& .sa-input-error {
-		top: 19px;
-	}
-}
-
-@media all and (max-width: 540px) {
-	.sweet-alert {
-		margin-left: 0 !important;
-	}
+.sweet-alert .sa-input-error {
+	top: 19px;
 }
 
 .one-passsword {
@@ -4801,6 +4791,10 @@ a + br.only-after-a {
 @media (width > 780px) {
 	.main-content {
 		transform: translateX(0) !important;
+	}
+
+	.sweet-alert {
+		margin-left: -239px !important;
 	}
 }
 
