@@ -12,7 +12,7 @@ WebApp.rawConnectHandlers.use(function(req, res, next) {
 	if (req.headers['content-type'] !== '' && req.headers['content-type'] !== undefined) {
 		return next();
 	}
-	if (req.url.indexOf('/ufs/') === 0) {
+	if (req.url.indexOf(`${ __meteor_runtime_config__.ROOT_URL_PATH_PREFIX }/${UploadFS.config.storesPath}/`) === 0) {
 		return next();
 	}
 
