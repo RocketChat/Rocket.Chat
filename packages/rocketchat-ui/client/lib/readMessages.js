@@ -74,7 +74,8 @@ const readMessage = new class {
 				if (this.debug) { console.log('readMessage -> readNow canceled, unread mark visible:', visible, 'unread since exists', (room.unreadSince.get() != null)); }
 				return;
 			}
-		} else {
+		// if unread mark is not visible and there is more more not loaded unread messages
+		} else if (RoomHistoryManager.getRoom(rid).unreadNotLoaded.get() > 0) {
 			return;
 		}
 
