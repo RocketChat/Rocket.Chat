@@ -4656,6 +4656,12 @@ body:not(.is-cordova) {
 	}
 }
 
+@media all and (max-width: 540px) {
+	.sweet-alert {
+		margin-left: 0 !important;
+	}
+}
+
 .one-passsword {
 	background-image: url('/images/onepassword-button.png');
 	height: 40px;
