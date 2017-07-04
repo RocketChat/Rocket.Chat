@@ -98,13 +98,13 @@ Template.uploadedFilesList.events({
 		const self = this;
 		const deleteText = self._id ?
 			TAPi18n.__('You_will_not_be_able_to_recover_file') :
-			TAPi18n.__('You_will_not_be_able_to_recover_all_files');
+			TAPi18n.__('You_will_not_be_able_to_recover_these_files');
 		const deleteConfirm = self._id ?
 			TAPi18n.__('Yes_delete_it') :
-			TAPi18n.__('Yes_delete_all_it');
+			TAPi18n.__('Yes_delete_them_all');
 		const successText = self._id ?
 			TAPi18n.__('Your_file_has_been_deleted') :
-			TAPi18n.__('Your_files_are_been_deleted');
+			TAPi18n.__('Your_files_are_being_deleted');
 		return swal({
 			title: TAPi18n.__('Are_you_sure'),
 			text: deleteText,
