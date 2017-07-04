@@ -12,9 +12,6 @@ RocketChat.settings.get('Site_Url', function(key, value) {
 	}
 	__meteor_runtime_config__.ROOT_URL = value;
 
-	console.log('__meteor_runtime_config__.ROOT_URL_PATH_PREFIX =' + __meteor_runtime_config__.ROOT_URL_PATH_PREFIX)
-	console.log('__meteor_runtime_config__.ROOT_URL=' + __meteor_runtime_config__.ROOT_URL)
-
 	if (Meteor.absoluteUrl.defaultOptions && Meteor.absoluteUrl.defaultOptions.rootUrl) {
 		Meteor.absoluteUrl.defaultOptions.rootUrl = value;
 	}
