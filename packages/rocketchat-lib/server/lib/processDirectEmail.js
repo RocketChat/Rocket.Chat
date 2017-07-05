@@ -1,9 +1,7 @@
-import moment from 'moment';
 const reply = require('emailreplyparser').EmailReplyParser;
 
 RocketChat.processDirectEmail = function(email) {
 	function sendMessage(email) {
-		console.log(email);
 		let message = {
 			ts: new Date(email.headers.date),
 			msg: email.body
@@ -44,23 +42,22 @@ RocketChat.processDirectEmail = function(email) {
 		}
 
 		// check mention
-		if (message.msg.indexOf('@' + prevMessage.u.username) === -1) {
-			message.msg = '@' + prevMessage.u.username + ' ' + message.msg;
+		if (message.msg.indexOf(`@${ prevMessage.u.username }`) === -1) {
+			message.msg = `@${ prevMessage.u.username } ${ message.msg }`;
 		}
 
-		const roomInfo = RocketChat.models.Rooms.findOneByIdOrName(message.rid, {
+		const roomInfo = RocketChat.models.Rooms.findOneById(message.rid, {
 			t: 1,
-			name: 1,
-			ro: 1
+			name: 1
 		});
 
 		// reply message link
 		let prevMessageLink = `[ ](${ Meteor.absoluteUrl().replace(/\/$/, '') }`;
-		if (roomInfo.t == "c") {
+		if (roomInfo.t === 'c') {
 			prevMessageLink += `/channel/${ roomInfo.name }?msg=${ email.headers.mid }) `;
-		} else if (roomInfo.t == "d") {
+		} else if (roomInfo.t === 'd') {
 			prevMessageLink += `/direct/${ user.username }?msg=${ email.headers.mid }) `;
-		} else if (roomInfo.t == "p") {
+		} else if (roomInfo.t === 'p') {
 			prevMessageLink += `/group/${ roomInfo.name }?msg=${ email.headers.mid }) `;
 		}
 
