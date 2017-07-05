@@ -1,19 +1,22 @@
 Template.popupList.helpers({
 	config() {
 		return {
-			template: this.template_list || 'popupList_default',
+			template: this.data.template_list || 'popupList_default',
 			data: {
-				template_item :this.template_item || 'popupList_item_default',
+				noMatchTemplate: this.data.noMatchTemplate,
+				template_item :this.data.template_item || 'popupList_item_default',
 				items: this.items,
-				onClick: this.onClick || function() { console.log('click'); },
-				modifier: this.modifier || function(text) { return text; }
+				onClick: this.data.onClick || function() {},
+				modifier: this.data.modifier || function(text) { return text; }
 			}
 		};
 	},
 	open() {
-		return true;
+		const instance = Template.instance();
+		return instance.data.items.length > 0;
 	}
 });
+
 Template.popupList_default.helpers({
 	config(item) {
 		return {
@@ -26,7 +29,6 @@ Template.popupList_default.helpers({
 		};
 	}
 });
-
 Template.popupList_item_default.events({
 	'click li'() {
 		this.onClick(this.item);

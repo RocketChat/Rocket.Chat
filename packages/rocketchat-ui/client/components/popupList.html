@@ -7,7 +7,9 @@
 <template name="popupList_default">
 	<ul class="rc-popup-list__list">
 		{{#each item in items}}
-			{{> Template.dynamic config item}}
+			{{> Template.dynamic config item data=data}}
+		{{else}}
+			{{> Template.dynamic template=noMatchTemplate}}
 		{{/each}}
 	</ul>
 </template>
@@ -15,8 +17,8 @@
 <template name="popupList_item_default">
 	 <li class="rc-popup-list__item">
 		 <span class="rc-popup-list__item-image">
-			 {{>avatar username="karl.prieb"}}
+			 {{>avatar username=item.username}}
 		 </span>
-		 <span class="rc-popup-list__item-name">{{{modifier item}}}</span>
+		 <span class="rc-popup-list__item-name">{{{modifier item.username}}}</span>
 	</li>
 </template>
