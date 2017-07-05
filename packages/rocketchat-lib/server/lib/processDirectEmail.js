@@ -5,31 +5,85 @@ RocketChat.processDirectEmail = function(email) {
 	function sendMessage(email) {
 		console.log(email);
 		let message = {
-			ts: email.headers.date,
+			ts: new Date(email.headers.date),
 			msg: email.body
 		};
 
-		if (message.ts) {
-			const tsDiff = Math.abs(moment(message.ts).diff());
-			if (tsDiff > 60000) {
-				throw new Meteor.Error('error-message-ts-out-of-sync', 'Message timestamp is out of sync', {
-					method: 'sendMessage',
-					message_ts: message.ts,
-					server_ts: new Date().getTime()
-				});
-			} else if (tsDiff > 10000) {
-				message.ts = new Date();
-			}
-		} else {
+		if (!message.ts) {
 			message.ts = new Date();
 		}
+
 		if (message.msg && message.msg.length > RocketChat.settings.get('Message_MaxAllowedSize')) {
-			throw new Meteor.Error('error-message-size-exceeded', 'Message size exceeds Message_MaxAllowedSize', {
-				method: 'sendMessage'
-			});
+			return false;
 		}
 
-		console.log(message);
+		const user = RocketChat.models.Users.findOneByEmailAddress(email.headers.from, {
+			fields: {
+				username: 1,
+				name: 1
+			}
+		});
+		if (!user) {
+			// user not found
+			return false;
+		}
+
+		const prevMessage = RocketChat.models.Messages.findOneById(email.headers.mid, {
+			rid: 1,
+			u: 1
+		});
+		if (!prevMessage) {
+			// message doesn't exist anymore
+			return false;
+		}
+		message.rid = prevMessage.rid;
+
+		const room = Meteor.call('canAccessRoom', message.rid, user._id);
+		if (!room) {
+			return false;
+		}
+
+		// check mention
+		if (message.msg.indexOf('@' + prevMessage.u.username) === -1) {
+			message.msg = '@' + prevMessage.u.username + ' ' + message.msg;
+		}
+
+		const roomInfo = RocketChat.models.Rooms.findOneByIdOrName(message.rid, {
+			t: 1,
+			name: 1,
+			ro: 1
+		});
+
+		// reply message link
+		let prevMessageLink = `[ ](${ Meteor.absoluteUrl().replace(/\/$/, '') }`;
+		if (roomInfo.t == "c") {
+			prevMessageLink += `/channel/${ roomInfo.name }?msg=${ email.headers.mid }) `;
+		} else if (roomInfo.t == "d") {
+			prevMessageLink += `/direct/${ user.username }?msg=${ email.headers.mid }) `;
+		} else if (roomInfo.t == "p") {
+			prevMessageLink += `/group/${ roomInfo.name }?msg=${ email.headers.mid }) `;
+		}
+
+		message.msg = prevMessageLink + message.msg;
+
+		const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(message.rid, user._id);
+		if (subscription && subscription.blocked || subscription.blocker) {
+			// room is blocked
+			return false;
+		}
+
+		if ((room.muted || []).includes(user.username)) {
+			// room is muted
+			return false;
+		}
+
+		if (message.alias == null && RocketChat.settings.get('Message_SetNameToAliasEnabled')) {
+			message.alias = user.name;
+		}
+
+		RocketChat.metrics.messagesSent.inc(); // TODO This line needs to be moved to it's proper place. See the comments on: https://github.com/RocketChat/Rocket.Chat/pull/5736
+
+		return RocketChat.sendMessage(user, message, room);
 	}
 
 	// Extract/parse reply from email body

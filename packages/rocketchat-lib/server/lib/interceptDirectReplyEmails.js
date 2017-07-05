@@ -18,7 +18,7 @@ RocketChat.imapIntercepter = function() {
 
 	// Fetch all UNSEEN messages and pass them for further processing
 	function getEmails(imap) {
-		imap.search(['UNSEEN'], function(err, newEmails) {
+		imap.search(['UNSEEN'], Meteor.bindEnvironment(function(err, newEmails) {
 			if (err) {
 				console.log(err);
 				throw err;
@@ -33,7 +33,7 @@ RocketChat.imapIntercepter = function() {
 					markSeen: true
 				});
 
-				f.on('message', function(msg) {
+				f.on('message', Meteor.bindEnvironment(function(msg) {
 					const email = {};
 
 					msg.on('body', function(stream, info) {
@@ -58,20 +58,20 @@ RocketChat.imapIntercepter = function() {
 					});
 
 					// On fetched each message, pass it further
-					msg.once('end', function() {
+					msg.once('end', Meteor.bindEnvironment(function() {
 						RocketChat.processDirectEmail(email);
-					});
-				});
+					}));
+				}));
 				f.once('error', function(err) {
 					console.log(`Fetch error: ${ err }`);
 				});
 			}
-		});
+		}));
 	}
 
 	// On successfully connected.
-	imap.once('ready', function() {
-		openInbox(function(err) {
+	imap.once('ready', Meteor.bindEnvironment(function() {
+		openInbox(Meteor.bindEnvironment(function(err) {
 			if (err) {
 				throw err;
 			}
@@ -79,11 +79,11 @@ RocketChat.imapIntercepter = function() {
 			getEmails(imap);
 
 			// If new message arrived, fetch them
-			imap.on('mail', function() {
+			imap.on('mail', Meteor.bindEnvironment(function() {
 				getEmails(imap);
-			});
-		});
-	});
+			}));
+		}));
+	}));
 
 	imap.once('error', function(err) {
 		console.log(err);
