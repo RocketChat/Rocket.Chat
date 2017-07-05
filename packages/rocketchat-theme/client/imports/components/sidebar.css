@@ -5,7 +5,7 @@
 	--room-item-thumb-size: 20px;
 	--sidebar-header-height: 180px;
 	--sidebar-header-padding: 24px;
-	--sidebar-footer-height: 125px;
+	--sidebar-footer-height: 100px;
 	--sidebar-footer-padding: var(--sidebar-header-padding);
 }
 
@@ -46,7 +46,7 @@
 	}
 
 	&__footer {
-		padding: var(--sidebar-footer-padding);
+		padding: calc(var(--sidebar-footer-padding) / 2) var(--sidebar-footer-padding);
 		height: var(--sidebar-footer-height);
 		width: auto;
 		text-align: center;
