@@ -1,3 +1,6 @@
+import {get_country} from 'meteor/rocketchat:geoip-plugin';
+import {get_language} from 'meteor/rocketchat:language-plugin';
+
 function remove_user_from_automatic_channel(user, channelType, channelId) {
 	const collectionObj = RocketChat.models.Users.model.rawCollection();
 	const findAndModify = Meteor.wrapAsync(collectionObj.findAndModify, collectionObj);
@@ -41,7 +44,7 @@ function remove_user_from_automatic_channel(user, channelType, channelId) {
 	});
 }
 
-plugin_handler.leave_automatic_channel = function(room_name, user, plugins) {
+export function leave_automatic_channel(room_name, user, plugins) {
 	//plugins is an array which has the names of those channels for which admin wants the blacklisted feature to work
 	Meteor.users.update({
 		$and: [{ _id: user._id}, {'automatic_channels':{$elemMatch:{'name': room_name, 'plugin': { $in: plugins }}}}]
@@ -56,7 +59,7 @@ plugin_handler.leave_automatic_channel = function(room_name, user, plugins) {
 	}, {
 		$pull: { automatic_channels: { blacklisted: false } }
 	});
-};
+}
 
 Accounts.onLogin(function(user) {
 	if (!user.user._id || !user.user.username) {
@@ -65,15 +68,15 @@ Accounts.onLogin(function(user) {
 	let room_id;
 
 	// this will contain information about plugins
-	plugin_handler.plugins = [];
+	const plugins = [];
 
 	// get user's browser's language
-	get_language(user.connection.httpHeaders['accept-language']);
+	plugins.push(get_language(user.connection.httpHeaders['accept-language']));
 
 	// get user's country
-	get_country(user.connection.httpHeaders['x-forwarded-for']);
+	plugins.push(get_country(user.connection.httpHeaders['x-forwarded-for']));
 
-	plugin_handler.plugins.forEach((arrayItem) => {
+	plugins.forEach((arrayItem) => {
 		if (arrayItem.channelName!==null) {
 
 			// find if channel is blacklisted by user

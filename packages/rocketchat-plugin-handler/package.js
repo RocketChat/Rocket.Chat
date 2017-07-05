@@ -7,9 +7,9 @@ Package.describe({
 Package.onUse(function(api) {
 	api.use('accounts-base');
 	api.use('ecmascript');
-
-	api.addFiles('server/plugin_handler.js');
-	api.add_files('server/server.js', 'server');
-	api.export('plugin_handler');
+	api.use('rocketchat:geoip-plugin');
+	api.use('rocketchat:language-plugin');
+	api.mainModule('server/server.js', 'server');
 });
+
 

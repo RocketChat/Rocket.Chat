@@ -1,9 +1,8 @@
-const satelize = Npm.require('satelize');
-
-get_country = function(country_header) {
+import satelize from 'satelize';
+export function get_country(country_header) {
 	let country_name;
 	satelize.satelize({ip: country_header}, function(err, payload) {
-		if (err) {
+		if (err || !payload) {
 			country_name = null;
 		} else {
 			country_name = payload.country.en;
@@ -13,9 +12,10 @@ get_country = function(country_header) {
 		country_name = null;
 	}
 
-	plugin_handler.plugins.push({
+	const countryResult = {
 		channelType: 'country',
 		channelName: country_name
-	});
-};
+	};
+	return countryResult;
+}
 

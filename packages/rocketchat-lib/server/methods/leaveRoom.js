@@ -1,3 +1,4 @@
+import {leave_automatic_channel} from 'meteor/rocketchat:plugin-handler';
 Meteor.methods({
 	leaveRoom(rid) {
 
@@ -28,7 +29,7 @@ Meteor.methods({
 		}
 		if (room.automatic) {
 
-			plugin_handler.leave_automatic_channel(room.name, user, ['language']);
+			leave_automatic_channel(room.name, user, ['language']);
 			//delete the user if it is last.(There may be a race condition)
 			if (room.usernames.length===1) {
 				Meteor.call('eraseRoom', room._id, true);

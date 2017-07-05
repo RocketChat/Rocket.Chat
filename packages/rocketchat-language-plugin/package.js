@@ -5,12 +5,9 @@ Package.describe({
 });
 
 Package.onUse(function(api) {
-
 	api.use('ecmascript');
-	api.use('rocketchat:plugin-handler');
 
-	api.add_files('server/server.js', 'server');
-	api.export('get_language');
+	api.mainModule('server/server.js', 'server');
 
 });
 
