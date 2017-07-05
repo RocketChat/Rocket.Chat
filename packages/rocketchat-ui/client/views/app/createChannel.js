@@ -1,3 +1,29 @@
+const acEvents = {
+	'click .rc-popup-list__item'(e, t) {
+		t.ac.onItemClick(this, e);
+	},
+	'keydown [name=users]'(e, t) {
+
+		if ([8, 46].includes(e.keyCode) && e.target.value ==='') {
+
+			const users = t.selectedUsers;
+			const usersArr = users.get();
+			usersArr.pop();
+			return users.set(usersArr);
+		}
+		t.ac.onKeyDown(e);
+	},
+	'keyup [name=users]'(e, t) {
+		t.ac.onKeyUp(e);
+	},
+	'focus [name=users]'(e, t) {
+		t.ac.onFocus(e);
+	},
+	'blur [name=users]'(e, t) {
+		t.ac.onBlur(e);
+	}
+};
+
 const validateChannelName = (name) => {
 	const reg = new RegExp(`^${ RocketChat.settings.get('UTF8_Names_Validation') }$`);
 	return name.length === 0 || reg.test(name);
@@ -8,21 +34,22 @@ const filterNames = (old) => {
 };
 
 Template.createChannel.helpers({
+	autocomplete(key) {
+		const instance = Template.instance();
+		const param = instance.ac[key];
+		return typeof param === 'function'? param.apply(instance.ac): param;
+	},
+	items() {
+		const instance = Template.instance();
+		return instance.ac.filteredList();
+	},
 	config() {
 		const instance = Template.instance();
 		const filter = instance.userFilter;
-		const users = instance.selectedUsers;
-		const usersArr = users.get();
 		return {
-			items: ['gazzo', 'chinelo', 'teste'].filter(e => !usersArr.includes(e)).filter((() => {
-				const text = filter.get().toLowerCase();
-				return (str)=> (text.length === 0 || str.toLowerCase().includes(text));
-			})()),
-			onClick(item) {
-				console.log('OI');
-				usersArr.push(item);
-				users.set(usersArr);
-			}, modifier(text) {
+			filter: filter.get(),
+			noMatchTemplate: 'userSearchEmpty',
+			modifier(text) {
 				const f = filter.get();
 				return `@${ f.length === 0 ? text : text.replace(new RegExp(filter.get()), function(part) {
 					return `<b>${ part }</b>`;
@@ -72,16 +99,13 @@ Template.createChannel.helpers({
 });
 
 Template.createChannel.events({
+	...acEvents,
+	'click .rc-tags__tag'({target}, t) {
+		const {username} = Blaze.getData(target);
+		t.selectedUsers.set(t.selectedUsers.get().filter(user => user.username !== username));
+	},
 	'change [name=type]'(e, t) {
 		t.type.set(e.target.checked ? e.target.value : 'p');
-	},
-	'keydown [name=users]'(e) {
-		if (e.keyCode === 27) { // esc
-			e.target.value = '';
-		}
-		if (e.keyCode === 13) {
-
-		}
 	},
 	'input [name=users]'(e, t) {
 		const input = e.target;
@@ -108,8 +132,9 @@ Template.createChannel.events({
 			t.name.set(modified);
 		}
 	},
-	'submit form'(e, instance) {
+	'submit .create-channel__content'(e, instance) {
 		e.preventDefault();
+		e.stopPropagation();
 		const name = e.target.name.value;
 		const type = instance.type.get();
 		const isPrivate = type === 'p';
@@ -118,7 +143,7 @@ Template.createChannel.events({
 		if (instance.invalid.get() || instance.inUse.get()) {
 			return e.target.name.focus();
 		}
-		Meteor.call(isPrivate ? 'createPrivateGroup' : 'createChannel', name, instance.selectedUsers.get(), readOnly, function(err, result) {
+		Meteor.call(isPrivate ? 'createPrivateGroup' : 'createChannel', name, instance.selectedUsers.get().map(user => user.username), readOnly, function(err, result) {
 			if (err) {
 				if (err.error === 'error-invalid-name') {
 					return instance.invalid.set(true);
@@ -137,17 +162,33 @@ Template.createChannel.events({
 	}
 });
 
-Template.createChannel.onRendered(function functionName() {
-	this.firstNode.querySelector('[name=name]').focus();
-});
+Template.createChannel.onRendered(function() {
+	const instance = Template.instance();
+	const users = instance.selectedUsers;
 
+	this.firstNode.querySelector('[name=name]').focus();
+	this.ac.element = this.firstNode.querySelector('[name=users]');
+	this.ac.$element = $(this.ac.element);
+	this.ac.$element.on('autocompleteselect', function(e, {item}) {
+		const usersArr = users.get();
+		usersArr.push(item);
+		users.set(usersArr);
+	});
+});
+/* global AutoComplete Deps */
 Template.createChannel.onCreated(function() {
+	this.selectedUsers = new ReactiveVar([]);
+	const instance = this;
+	const filter = {exceptions :[Meteor.user().username].concat(instance.selectedUsers.get().map(u => u.username))};
+	// this.onViewRead:??y(function() {
+	Deps.autorun(() => {
+		filter.exceptions = [Meteor.user().username].concat(instance.selectedUsers.get().map(u => u.username));
+	});
 	this.name = new ReactiveVar('');
 	this.type = new ReactiveVar('d');
 	this.inUse = new ReactiveVar(undefined);
 	this.invalid = new ReactiveVar(false);
 	this.userFilter = new ReactiveVar('');
-	this.selectedUsers = new ReactiveVar([]);
 	this.checkChannel = _.debounce((name) => {
 		if (validateChannelName(name)) {
 			return Meteor.call('roomNameExists', name, (error, result) => {
@@ -159,4 +200,35 @@ Template.createChannel.onCreated(function() {
 		}
 		this.inUse.set(undefined);
 	}, 1000);
+	const ac = new AutoComplete(
+		{
+			selector:{
+				item: '.rc-popup-list__item',
+				container: '.rc-popup-list__list'
+			},
+
+			limit: 10,
+			inputDelay: 300,
+			rules: [
+				{
+				// @TODO maybe change this 'collection' and/or template
+					collection: 'UserAndRoom',
+					subscription: 'userAutocomplete',
+					field: 'username',
+					matchAll: true,
+					filter,
+					doNotChangeWidht: false,
+					selector(match) {
+						return { term: match };
+					},
+					sort: 'username'
+				}
+			]
+
+		});
+	this.ac = ac;
+	// this.firstNode.querySelector('[name=name]').focus();
+	// this.ac.element = this.firstNode.querySelector('[name=users]');
+	// this.ac.$element = $(this.ac.element);
+	this.ac.tmplInst = this;
 });

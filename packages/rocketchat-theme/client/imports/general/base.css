@@ -1,7 +1,9 @@
 * {
 	font-weight: 500;
 }
-
+b {
+	font-weight: bold;
+}
 *,
 *::before,
 *::after {
