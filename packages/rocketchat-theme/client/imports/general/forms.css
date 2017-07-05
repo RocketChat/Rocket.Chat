@@ -393,12 +393,14 @@
 
 .rc-popup-list {
 	width: 100%;
+	position: absolute;
 
 	&__list {
 		border-radius: 2px;
 		background-color: #ffffff;
 		box-shadow: 0 0 2px 0 rgba(47, 52, 61, 0.08), 0 0 12px 0 rgba(47, 52, 61, 0.12);
 		padding: 1rem;
+		width: 100%;
 	}
 
 	&__item {
@@ -407,7 +409,9 @@
 		padding: 0.5rem;
 		border-radius: 2px;
 		cursor: pointer;
-
+		&.selected {
+			background-color: #f2f3f5;
+		}
 		&:hover {
 			background-color: #f2f3f5;
 		}

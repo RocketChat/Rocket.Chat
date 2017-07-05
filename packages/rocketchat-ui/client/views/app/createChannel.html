@@ -1,3 +1,14 @@
+<template name='tag'>
+	<span class="rc-tags__tag">
+		<span class="rc-tags__tag-avatar">
+			{{> avatar username=username}}
+		</span>
+		<span class="rc-tags__tag-username">{{username}}</span>
+		<svg class="rc-tags__tag-icon">
+			<use href="#icon-cross"></use>
+		</svg>
+	</span>
+</template>
 <template name="createChannel">
 	<section class="create-channel">
 		<header class="create-channel__header">
@@ -57,6 +68,7 @@
 					{{/if}}
 				</div>
 				<div class="rc-input">
+
 					<label class="rc-input__label">
 						<div class="rc-input__title">Invite people to channel</div>
 						<div class="rc-input__wrapper">
@@ -67,26 +79,25 @@
 							</div>
 							<div class="rc-tags">
 								{{#each user in selectedUsers}}
-									<span class="rc-tags__tag">
-										<span class="rc-tags__tag-avatar">
-											{{> avatar username="karl.prieb"}}
-										</span>
-										<span class="rc-tags__tag-username">{{user}}</span>
-										<svg class="rc-tags__tag-icon">
-											<use href="#icon-cross"></use>
-										</svg>
-									</span>
+									{{> tag user}}
 								{{/each}}
-								<input type="text" class="rc-tags__input" placeholder="{{_ "username"}}" name="users">
+								<input type="text" class="rc-tags__input" placeholder="{{_ "username"}}" name="users" autocomplete="off"/>
 							</div>
 						</div>
+						{{#with config}}
+							{{#if autocomplete 'isShowing'}}
+							<div class="fadeInDown">
+								{{#if autocomplete 'isLoaded'}}
+								{{ > popupList data=config items=items}}
+								{{/if}}
+							</div>
+							{{/if}}
+						{{/with}}
 					</label>
-					<div class="fadeInDown">
-						{{ > popupList config}}
-					</div>
+
 				</div>
 			</div>
-			<button class="rc-button rc-button--blue" data-button="create" {{createIsDisabled}}>Create Channel</button>
+			<button class="rc-button rc-button--blue" type='submit' data-button="create" {{createIsDisabled}}>Create Channel</button>
 		</form>
 	</section>
 </template>
