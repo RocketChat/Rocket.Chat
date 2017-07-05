@@ -117,75 +117,77 @@ RocketChat.Migrations.add({
 		const avatarsPath = RocketChat.models.Settings.findOne({_id: 'Accounts_AvatarStorePath'}).value;
 		const avatarStoreType = RocketChat.models.Settings.findOne({_id: 'Accounts_AvatarStoreType'}).value;
 
-		Meteor.setTimeout(function() {
-			const avatarsFileStore = FileUpload.getStore('Avatars');
+		Meteor.startup(function() {
+			Meteor.setTimeout(function() {
+				const avatarsFileStore = FileUpload.getStore('Avatars');
 
-			const oldAvatarGridFS = new RocketChatFile.GridFS({
-				name: 'avatars'
-			});
+				const oldAvatarGridFS = new RocketChatFile.GridFS({
+					name: 'avatars'
+				});
 
-			const users = RocketChat.models.Users.find({avatarOrigin: {$in: avatarOrigins}}, {avatarOrigin: 1, username: 1}).fetch();
+				const users = RocketChat.models.Users.find({avatarOrigin: {$in: avatarOrigins}}, {avatarOrigin: 1, username: 1}).fetch();
 
-			const usersTotal = users.length;
+				const usersTotal = users.length;
 
-			log('Total users to migrate avatars ->', usersTotal);
+				log('Total users to migrate avatars ->', usersTotal);
 
-			let current = 0;
+				let current = 0;
 
-			batch(users, 300, (user) => {
-				const id = `${ user.username }.jpg`;
+				batch(users, 300, (user) => {
+					const id = `${ user.username }.jpg`;
 
-				const gridFSAvatar = oldAvatarGridFS.getFileWithReadStream(id);
+					const gridFSAvatar = oldAvatarGridFS.getFileWithReadStream(id);
 
-				log('Migrating', ++current, 'of', usersTotal);
+					log('Migrating', ++current, 'of', usersTotal);
 
-				if (gridFSAvatar) {
-					const details = {
-						userId: user._id,
-						type: gridFSAvatar.contentType,
-						size: gridFSAvatar.length
-					};
+					if (gridFSAvatar) {
+						const details = {
+							userId: user._id,
+							type: gridFSAvatar.contentType,
+							size: gridFSAvatar.length
+						};
 
-					return insertAvatar({
-						details,
-						avatarsFileStore,
-						stream: gridFSAvatar.readStream,
-						callback() {
-							oldAvatarGridFS.deleteFile(id);
-						}
-					});
-				}
-				if (avatarStoreType === 'FileSystem' && avatarsPath && avatarsPath.trim()) {
-					try {
-						const filePath = path.join(avatarsPath, id);
-						const stat = fs.statSync(filePath);
-						if (stat && stat.isFile()) {
-							const details = {
-								userId: user._id,
-								type: 'image/jpeg',
-								size: stat.size
-							};
-							return insertAvatar({
-								details,
-								avatarsFileStore,
-								stream: fs.createReadStream(filePath),
-								callback() {
-									fs.unlinkSync(filePath);
-								}
-							});
-						}
-					} catch (e) {
-						logError('Error migrating old avatar', e);
-						return Promise.resolve();
+						return insertAvatar({
+							details,
+							avatarsFileStore,
+							stream: gridFSAvatar.readStream,
+							callback() {
+								oldAvatarGridFS.deleteFile(id);
+							}
+						});
 					}
-				}
-			}).then(() => {
-				const avatarsFiles = new Mongo.Collection('avatars.files');
-				const avatarsChunks = new Mongo.Collection('avatars.chunks');
-				avatarsFiles.rawCollection().drop();
-				avatarsChunks.rawCollection().drop();
-			});
-		}, 1000);
+					if (avatarStoreType === 'FileSystem' && avatarsPath && avatarsPath.trim()) {
+						try {
+							const filePath = path.join(avatarsPath, id);
+							const stat = fs.statSync(filePath);
+							if (stat && stat.isFile()) {
+								const details = {
+									userId: user._id,
+									type: 'image/jpeg',
+									size: stat.size
+								};
+								return insertAvatar({
+									details,
+									avatarsFileStore,
+									stream: fs.createReadStream(filePath),
+									callback() {
+										fs.unlinkSync(filePath);
+									}
+								});
+							}
+						} catch (e) {
+							logError('Error migrating old avatar', e);
+							return Promise.resolve();
+						}
+					}
+				}).then(() => {
+					const avatarsFiles = new Mongo.Collection('avatars.files');
+					const avatarsChunks = new Mongo.Collection('avatars.chunks');
+					avatarsFiles.rawCollection().drop();
+					avatarsChunks.rawCollection().drop();
+				});
+			}, 1000);
+		});
 		RocketChat.models.Settings.remove({_id: 'Accounts_AvatarStoreType'});
 		RocketChat.models.Settings.remove({_id: 'Accounts_AvatarStorePath'});
 	}
