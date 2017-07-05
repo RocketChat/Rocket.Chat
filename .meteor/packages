@@ -98,6 +98,7 @@ rocketchat:slackbridge
 rocketchat:slashcommands-archive
 rocketchat:slashcommands-asciiarts
 rocketchat:slashcommands-create
+rocketchat:slashcommands-help
 rocketchat:slashcommands-invite
 rocketchat:slashcommands-invite-all
 rocketchat:slashcommands-join
@@ -172,4 +173,3 @@ yasinuslu:blaze-meta
 deepwell:bootstrap-datepicker2
 rocketchat:postcss
 dynamic-import
-bundle-visualizer
