@@ -1560,12 +1560,12 @@
 /* MAIN CONTENT + MAIN PAGES */
 
 .rc-old.main-content {
-	/*top: 0;
-	bottom: 0;*/
-	/*left: var(--rooms-box-width);*/
-	/*right: 0;*/
-	/*width: auto;*/
-	/*height: auto;*/
+	/* top: 0;
+	bottom: 0;
+	left: var(--rooms-box-width);
+	right: 0;
+	width: auto;
+	height: auto; */
 
 	&.main-modal {
 		left: 0;
@@ -4539,12 +4539,8 @@ body:not(.is-cordova) {
 	}
 }
 
-.rc-old .sweet-alert {
-	margin-left: -239px !important;
-
-	& .sa-input-error {
-		top: 19px;
-	}
+.sweet-alert .sa-input-error {
+	top: 19px;
 }
 
 .rc-old .one-passsword {
@@ -4686,6 +4682,10 @@ body:not(.is-cordova) {
 @media (width > 780px) {
 	.rc-old.main-content {
 		transform: translateX(0) !important;
+	}
+
+	.sweet-alert {
+		margin-left: -239px !important;
 	}
 }
 
