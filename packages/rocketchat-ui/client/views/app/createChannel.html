@@ -1,14 +1,3 @@
-<template name='tag'>
-	<span class="rc-tags__tag">
-		<span class="rc-tags__tag-avatar">
-			{{> avatar username=username}}
-		</span>
-		<span class="rc-tags__tag-username">{{username}}</span>
-		<svg class="rc-tags__tag-icon">
-			<use href="#icon-cross"></use>
-		</svg>
-	</span>
-</template>
 <template name="createChannel">
 	<section class="create-channel">
 		<header class="create-channel__header">
@@ -86,11 +75,11 @@
 						</div>
 						{{#with config}}
 							{{#if autocomplete 'isShowing'}}
-							<div class="fadeInDown">
-								{{#if autocomplete 'isLoaded'}}
-								{{ > popupList data=config items=items}}
-								{{/if}}
-							</div>
+								<div class="fadeInDown">
+									{{#if autocomplete 'isLoaded'}}
+										{{> popupList data=config items=items}}
+									{{/if}}
+								</div>
 							{{/if}}
 						{{/with}}
 					</label>
@@ -100,4 +89,16 @@
 			<button class="rc-button rc-button--blue" type='submit' data-button="create" {{createIsDisabled}}>Create Channel</button>
 		</form>
 	</section>
+</template>
+
+<template name='tag'>
+	<span class="rc-tags__tag">
+		<span class="rc-tags__tag-avatar">
+			{{> avatar username=username}}
+		</span>
+		<span class="rc-tags__tag-username">{{username}}</span>
+		<svg class="rc-tags__tag-icon">
+			<use href="#icon-cross"></use>
+		</svg>
+	</span>
 </template>
