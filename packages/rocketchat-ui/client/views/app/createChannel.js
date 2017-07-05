@@ -70,10 +70,10 @@ Template.createChannel.helpers({
 		return 'disabled';
 	},
 	typeLabel() {
-		return t(Template.instance().type.get() === 'p' ? 'Private Channel': 'Public Channel');
+		return t(Template.instance().type.get() === 'p' ? t('Private_Channel') : t('Public_Channel'));
 	},
 	typeDescription() {
-		return t(Template.instance().type.get() === 'p' ? 'Just invited people can access this channel': 'Everyone can access this channel');
+		return t(Template.instance().type.get() === 'p' ? t('Just_invited_people_can_access_this_channel'): t('Everyone_can_access_this_channel'));
 	},
 	createIsDisabled() {
 		const instance = Template.instance();

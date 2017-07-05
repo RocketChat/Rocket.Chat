@@ -1,8 +1,8 @@
 <template name="createChannel">
 	<section class="create-channel">
 		<header class="create-channel__header">
-			<h1 class="create-channel__title">New Channel</h1>
-			<p class="create-channel__description">Channels are where your team communicates.</p>
+			<h1 class="create-channel__title">{{_ "Create_A_New_Channel"}}</h1>
+			<p class="create-channel__description">{{_ "Channels_are_where_your_team_communicate"}}</p>
 		</header>
 		<form class="create-channel__content">
 			<div class="create-channel__switches">
@@ -25,16 +25,16 @@
 							<span class="rc-switch__button-inside"></span>
 						</span>
 						<span class="rc-switch__text">
-							Read only channel
+							{{_ "Read_only_channel"}}
 						</span>
 					</label>
-					<span class="rc-switch__description">Only admin can write new messages</span>
+					{{!--<span class="rc-switch__description">Only admin can write new messages</span>--}}
 				</div>
 			</div>
 			<div class="create-channel__inputs">
 				<div class="rc-input {{#if invalidChannel}}rc-input--error{{/if}}">
 					<label class="rc-input__label">
-						<div class="rc-input__title">Channel name</div>
+						<div class="rc-input__title">{{_ "Channel_name"}}</div>
 						<div class="rc-input__wrapper">
 							<div class="rc-input__icon">
 								<svg class="rc-input__icon-svg rc-input__icon-svg--{{iconType}}">
@@ -44,7 +44,7 @@
 							<input name="name" type="text" class="rc-input__element" placeholder="Type channel name" autofocus>
 						</div>
 					</label>
-					<div class="rc-input__description">Names must be all lower case and shorter than 22 characters</div>
+					{{!--<div class="rc-input__description">Names must be all lower case and shorter than 22 characters</div>--}}
 					{{#if inUse}}
 						<div class="rc-input__error">
 							<div class="rc-input__error-icon">
@@ -52,14 +52,13 @@
 									<use href="#icon-warning"></use>
 								</svg>
 							</div>
-							<div class="rc-input__error-message">canal já existe</div>
+							<div class="rc-input__error-message">{{_ "Channel_already_exist_static"}}</div>
 						</div>
 					{{/if}}
 				</div>
 				<div class="rc-input">
-
 					<label class="rc-input__label">
-						<div class="rc-input__title">Invite people to channel</div>
+						<div class="rc-input__title">{{_ "Invite_Users"}}</div>
 						<div class="rc-input__wrapper">
 							<div class="rc-input__icon">
 								<svg class="rc-input__icon-svg rc-input__icon-svg--at">
@@ -83,10 +82,9 @@
 							{{/if}}
 						{{/with}}
 					</label>
-
 				</div>
 			</div>
-			<button class="rc-button rc-button--blue" type='submit' data-button="create" {{createIsDisabled}}>Create Channel</button>
+			<button class="rc-button rc-button--blue" type='submit' data-button="create" {{createIsDisabled}}>{{_ "Create"}}</button>
 		</form>
 	</section>
 </template>
