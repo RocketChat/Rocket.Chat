@@ -1,4 +1,5 @@
 /* globals FileUpload */
+
 Meteor.startup(function() {
 	WebApp.connectHandlers.use('/avatar/', Meteor.bindEnvironment(function(req, res/*, next*/) {
 		const params = {
