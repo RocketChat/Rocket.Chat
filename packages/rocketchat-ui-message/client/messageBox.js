@@ -329,7 +329,7 @@ Template.messageBox.events({
 		t.$('.share-items').toggleClass('hidden');
 		return t.$('.message-buttons.share').toggleClass('active');
 	},
-	'click .message-form .message-buttons.location'() {
+	'click .message-form .message-buttons.location-button'() {
 		const roomId = this._id;
 		const position = RocketChat.Geolocation.get();
 		const latitude = position.coords.latitude;
