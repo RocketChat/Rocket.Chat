@@ -15,6 +15,9 @@ RocketChat.processDirectEmail = function(email) {
 			return false;
 		}
 
+		// reduce new lines in multiline message
+		message.msg = message.msg.split('\n\n').join('\n');
+
 		const user = RocketChat.models.Users.findOneByEmailAddress(email.headers.from, {
 			fields: {
 				username: 1,
@@ -80,6 +83,7 @@ RocketChat.processDirectEmail = function(email) {
 
 		RocketChat.metrics.messagesSent.inc(); // TODO This line needs to be moved to it's proper place. See the comments on: https://github.com/RocketChat/Rocket.Chat/pull/5736
 
+		console.log(message);
 		return RocketChat.sendMessage(user, message, room);
 	}
 
