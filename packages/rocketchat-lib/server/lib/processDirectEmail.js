@@ -2,7 +2,7 @@ const reply = require('emailreplyparser').EmailReplyParser;
 
 RocketChat.processDirectEmail = function(email) {
 	function sendMessage(email) {
-		let message = {
+		const message = {
 			ts: new Date(email.headers.date),
 			msg: email.body
 		};
