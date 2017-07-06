@@ -133,7 +133,7 @@ RocketChat.Migrations.add({
 			} else if (Match.test(avatarsPath, String) && avatarsPath.length > 0) {
 				avatarStoreType = 'FileSystem';
 			} else {
-				SystemLogger.error_box('Can\'t define the avatar\'s storage type.\nIf you have avatars missing and they was stored in your file system\nrun the process including the following environment variables: \n  AVATARS_PATH=\'YOUR AVATAR\'S DIRECTORY\'\n  MIGRATION_VERSION=98', 'WARNING');
+				SystemLogger.error_box('Can\'t define the avatar\'s storage type.\nIf you have avatars missing and they was stored in your file system\nrun the process including the following environment variables: \n  AVATARS_PATH=\'YOUR AVATAR\'S DIRECTORY\'\n  MIGRATION_VERSION=99,rerun', 'WARNING');
 				return;
 			}
 		}
