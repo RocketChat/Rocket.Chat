@@ -13,6 +13,7 @@ Package.onUse(function(api) {
 	api.use('ecmascript');
 
 	api.addFiles('gimme.js', ['server', 'client']);
+	api.addFiles('github.js', ['server', 'client']);
 	api.addFiles('lenny.js', ['server', 'client']);
 	api.addFiles('shrug.js', ['server', 'client']);
 	api.addFiles('tableflip.js', ['server', 'client']);

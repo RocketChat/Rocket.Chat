@@ -14,8 +14,5 @@ function Gimme(command, params, item) {
 
 RocketChat.slashCommands.add('gimme', Gimme, {
 	description: 'Slash_Gimme_Description',
-	params: [{
-		description: 'Parameter one',
-		value: 'users'
-	}]
+	params: 'your_message_optional'
 });

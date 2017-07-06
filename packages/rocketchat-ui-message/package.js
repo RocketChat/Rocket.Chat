@@ -31,6 +31,7 @@ Package.onUse(function(api) {
 	api.addFiles('client/popup/messagePopupEmoji.html', 'client');
 	api.addFiles('client/popup/messagePopupSlashCommand.html', 'client');
 	api.addFiles('client/popup/messagePopupUser.html', 'client');
+	api.addFiles('client/popup/messageSuggestionPopup.html', 'client');
 
 	api.addFiles('client/message.js', 'client');
 	api.addFiles('client/messageBox.js', 'client');
@@ -38,6 +39,7 @@ Package.onUse(function(api) {
 	api.addFiles('client/popup/messagePopupChannel.js', 'client');
 	api.addFiles('client/popup/messagePopupConfig.js', 'client');
 	api.addFiles('client/popup/messagePopupEmoji.js', 'client');
+	api.addFiles('client/popup/messageSuggestionPopup.js', 'client');
 	api.addFiles('client/popup/messagePopupSlashCommand.js', 'client');
 
 

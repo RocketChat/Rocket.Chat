@@ -2,6 +2,7 @@
 	{{#if subscribed}}
 		<form class="message-form" method="post" action="/">
 			{{> messagePopupConfig getPopupConfig}}
+			{{> messageSuggestionPopup getPopupConfig}}
 
 			{{#if allowedToSend}}
 				<div class="message-input border-component-color">

@@ -233,9 +233,14 @@ Template.messagePopupConfig.helpers({
 			getFilter(collection, filter) {
 				return Object.keys(collection).map(command => {
 					const item = collection[command];
+					let param = item.params ?
+						(typeof(item.params) === 'string' ?
+							t(item.params) : t(item.params[0].description))
+							: '';
+
 					return {
 						_id: command,
-						params: item.params ? TAPi18n.__(item.params) : '',
+						params: param,
 						description: TAPi18n.__(item.description)
 					};
 				})
@@ -247,31 +252,6 @@ Template.messagePopupConfig.helpers({
 			}
 		};
 		return config;
-	},
-	popupSlashCommandsParameterConfig() {
-		const self = this;
-		let commandTriggers = 'github|gimme';
-    return {
-        title: `Suggestion` ,
-        collection: ['submit', 'assign', 'commit', 'close', 'delete'],
-				matchSelectorRegex: new RegExp(`(?:^)/(${ commandTriggers }) `),
-				selectorRegex: new RegExp(`(?:^\/(${ commandTriggers }))\\s*(.*)$`),
-				replaceRegex: new RegExp(`(?:^\/(${ commandTriggers }))\\s*(.*)$`),
-        suffix: ' ',
-        triggerAnywhere: false,
-        template: 'messagePopupSlashCommand',
-        getInput: self.getInput,
-				getFilter(collection, filter) {
-					const regExp = new RegExp(`^${ RegExp.escape(filter) }`, 'i');
-					return collection.map((param, index) => {
-						return {
-							description: collection[index],
-							params: param,
-							_id: `${collection[index]} `
-						}
-					})
-				}
-    }
 	},
 	emojiEnabled() {
 		return RocketChat.emoji != null;
