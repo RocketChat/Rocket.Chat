@@ -37,7 +37,18 @@
 											<span class="rc-popover__item-text">{{name}}</span>
 										</li>
 									{{/each}}
+									{{#if showAdminOption}}
+										<li class="rc-popover__item" data-action="open" data-open="administration">
+											<svg class="rc-popover__item-icon rc-popover__item-icon--customize">
+												<use href="#icon-customize"></use>
+											</svg>
+											<span>{{_ "Administration"}}</span>
+										</li>
+									{{/if}}
 									<li class="rc-popover__item" data-action="open" data-open="account">
+										<svg class="rc-popover__item-icon rc-popover__item-icon--customize">
+											<use href="#icon-user"></use>
+										</svg>
 										<span class="rc-popover__item-text">{{_ "My_Account"}}</span>
 									</li>
 									<li class="rc-popover__item" data-action="open" data-open="logout">
@@ -45,19 +56,6 @@
 									</li>
 								</ul>
 							</div>
-							{{#if showAdminOption}}
-								<div class="rc-popover__column">
-									<h3 class="rc-popover__title">{{_ "Team"}}</h3>
-									<ul class="rc-popover__list">
-										<li class="rc-popover__item" data-action="open" data-open="administration">
-											<svg class="rc-popover__item-icon rc-popover__item-icon--customize">
-												<use href="#icon-customize"></use>
-											</svg>
-											<span>{{_ "Administration"}}</span>
-										</li>
-									</ul>
-								</div>
-							{{/if}}
 						</div>
 					</div>
 					<label class="sidebar__account-status sidebar-content" for="sidebar__account-menu" data-popover="label">
