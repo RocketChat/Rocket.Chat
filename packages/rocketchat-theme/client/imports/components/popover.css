@@ -64,14 +64,35 @@
 		cursor: pointer;
 	}
 
-	&__item-icon {
-		margin: 0.25rem;
+	&__icon {
+		width: 16px;
+		margin: 0.25rem 0.25rem 0.25rem 0;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+	}
+
+	&__icon-element {
+		stroke: currentColor;
 
 		&--customize {
-			margin: 0.187rem 0.25rem;
 			width: 14px;
 			height: 14px;
-			stroke: currentColor;
+		}
+
+		&--comment-alt {
+			width: 16px;
+			height: 14px;
+		}
+
+		&--user {
+			width: 18px;
+			height: 17px;
+		}
+
+		&--sign-out {
+			width: 14px;
+			height: 14px;
 		}
 	}
 

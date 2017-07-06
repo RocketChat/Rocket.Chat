@@ -108,9 +108,13 @@
 /* Sidebar Account */
 
 .sidebar__account {
-	display: flex;
-	align-items: center;
 	margin-bottom: 40px;
+
+	&-label {
+		display: flex;
+		align-items: center;
+		cursor: pointer;
+	}
 
 	&-thumb {
 		width: var(--account-thumb-size);
@@ -134,6 +138,7 @@
 		font-weight: 700;
 		height: 1rem;
 		width: 160px;
+		margin-bottom: 0.5rem;
 	}
 
 	&-username {
@@ -147,8 +152,6 @@
 		font-size: 1rem;
 		display: flex;
 		align-items: center;
-		margin-top: 2px;
-		cursor: pointer;
 	}
 
 	&-status-bullet {
