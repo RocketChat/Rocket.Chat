@@ -33,7 +33,7 @@ const configure = _.debounce(function() {
 	const URLExpiryTimeSpan = RocketChat.settings.get('FileUpload_S3_URLExpiryTimeSpan');
 	const Region = RocketChat.settings.get('FileUpload_S3_Region');
 	// const CDN = RocketChat.settings.get('FileUpload_S3_CDN');
-	// const BucketURL = RocketChat.settings.get('FileUpload_S3_BucketURL');
+	const BucketURL = RocketChat.settings.get('FileUpload_S3_BucketURL');
 
 	if (!Bucket || !AWSAccessKeyId || !AWSSecretAccessKey) {
 		return;
@@ -52,6 +52,10 @@ const configure = _.debounce(function() {
 		},
 		URLExpiryTimeSpan
 	};
+
+	if (BucketURL) {
+		config.connection.endpoint = BucketURL;
+	}
 
 	AmazonS3Uploads.store = FileUpload.configureUploadsStore('AmazonS3', AmazonS3Uploads.name, config);
 	AmazonS3Avatars.store = FileUpload.configureUploadsStore('AmazonS3', AmazonS3Avatars.name, config);
