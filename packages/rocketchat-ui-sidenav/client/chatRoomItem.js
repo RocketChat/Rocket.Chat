@@ -52,6 +52,7 @@ Template.chatRoomItem.helpers({
 
 		return {
 			...this,
+			icon: RocketChat.roomTypes.getIcon(this.t),
 			name,
 			unread,
 			active,

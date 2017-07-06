@@ -5,19 +5,18 @@
 	--room-item-thumb-size: 20px;
 	--sidebar-header-height: 180px;
 	--sidebar-header-padding: 24px;
-	--sidebar-footer-height: 100px;
+	--sidebar-footer-height: 70px;
 	--sidebar-footer-padding: var(--sidebar-header-padding);
 }
 
 /* Sidebar */
 .sidebar {
-	width: var(--rooms-box-width);
-	height: auto;
 	display: flex;
+	flex: 0 0 var(--rooms-box-width);
 	flex-direction: column;
 	z-index: 2;
 	position: relative;
-	transition: transform .3s;
+	transition: transform 0.3s;
 
 	&--flex {
 		position: absolute;
