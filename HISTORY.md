@@ -1,3 +1,15 @@
+<a name="0.57.1"></a>
+## 0.57.1 (2017-07-06)
+- :hand: [#7428](https://github.com/RocketChat/Rocket.Chat/pull/7428) Fix migration of avatars from version 0.57.0
+
+<details>
+<summary>Others</summary>
+
+- [#7428](https://github.com/RocketChat/Rocket.Chat/pull/7428) Run avatar migration on startup
+</details>
+
+
+
 <a name="0.57.0"></a>
 # 0.57.0 (2017-07-03)
 
