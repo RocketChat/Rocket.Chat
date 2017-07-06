@@ -224,11 +224,16 @@ Template.room.helpers({
 			return true;
 		}
 
+		if (RocketChat.settings.get('Accounts_AllowAnonymousRead') === true) {
+			return true;
+		}
+
 		if (RocketChat.authz.hasAllPermission('preview-c-room')) {
 			return true;
 		}
 
 		return (RocketChat.models.Subscriptions.findOne({rid: this._id}) != null);
+
 	}
 });
 
@@ -391,11 +396,17 @@ Template.room.events({
 	},
 
 	'click .flex-tab .user-image > button'(e, instance) {
+		if (!Meteor.userId()) {
+			return;
+		}
 		instance.tabBar.open();
 		return instance.setUserDetail(this.user.username);
 	},
 
 	'click .user-card-message'(e, instance) {
+		if (!Meteor.userId()) {
+			return;
+		}
 		const roomData = Session.get(`roomData${ this._arguments[1].rid }`);
 
 		if (RocketChat.Layout.isEmbedded()) {
@@ -462,6 +473,9 @@ Template.room.events({
 	},
 
 	'click .mention-link'(e, instance) {
+		if (!Meteor.userId()) {
+			return;
+		}
 		const channel = $(e.currentTarget).data('channel');
 		if (channel != null) {
 			if (RocketChat.Layout.isEmbedded()) {
