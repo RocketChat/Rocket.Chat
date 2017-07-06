@@ -126,12 +126,6 @@ RocketChat.Migrations.add({
 			name: 'avatars'
 		});
 
-		// 1. Novo usuário, não executa migration
-		// 2. Antigo, migra de antes da 97, vai ter storage type
-		// 3. Executou a 97, não vai ter storeType
-		// 3.1 Se ainda tem dados no gridfs, manda ver
-		// 3.2 Se não tem, quebra e pede a variável OU forçar a reexecutar a 97???
-
 		if (avatarStoreType == null) {
 			const count = oldAvatarGridFS.countSync();
 			if (Match.test(count, Number) && count > 0) {
