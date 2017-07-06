@@ -22,23 +22,7 @@ Template.sideNav.helpers({
 	},
 
 	roomType() {
-		const types = RocketChat.roomTypes.getTypes();
-		const user = Meteor.user();
-		const preferences = (user && user.settings && user.settings.preferences && user.settings.preferences) || {};
-		const mode = preferences.roomsListExhibitionMode || 'activity';
-		const filter = {
-			activity(room) {
-				return ['f', 'activity'].includes(room.identifier);
-			},
-			unread(room) {
-				return ['f', ...(preferences.mergeChannels ? ['channels'] : ['p', 'c']), 'd', 'unread'].includes(room.identifier);
-			},
-			category(room) {
-				return ['f', ...(preferences.mergeChannels ? ['channels'] : ['p', 'c']), 'd'].includes(room.identifier);
-			}
-		}[mode];
-
-		return types.filter(filter);
+		return RocketChat.roomTypes.getTypes();
 	}
 });
 

@@ -1,8 +1,24 @@
 /* globals openRoom */
 
-// favorite
+const filter = {
+	activity(room) {
+		return ['f', 'activity'].includes(room.identifier);
+	},
+	çç(room) {
+		return ['f', ...(preferences.mergeChannels ? ['channels'] : ['p', 'c']), 'd', 'unread'].includes(room.identifier);
+	},
+	category(room) {
+		return ['f', ...(preferences.mergeChannels ? ['channels'] : ['p', 'c']), 'd'].includes(room.identifier);
+	}
+};
+// unread
 RocketChat.roomTypes.add('unread', 10, {
 	unread: true,
+	condition() {
+		const user = Meteor.user();
+		const preferences = (user && user.settings && user.settings.preferences && user.settings.preferences) || {};
+		return preferences.roomsListExhibitionMode === 'unread';
+	},
 	label: 'Unread'
 });
 
@@ -14,12 +30,21 @@ RocketChat.roomTypes.add('f', 20, {
 
 // activity
 RocketChat.roomTypes.add('activity', 30, {
-	// icon: 'star',
+	condition() {
+		const user = Meteor.user();
+		const preferences = (user && user.settings && user.settings.preferences && user.settings.preferences) || {};
+		return preferences.roomsListExhibitionMode === 'activity';
+	},
 	label: 'Conversations'
 });
 
 RocketChat.roomTypes.add('channels', 30, {
-	label: 'Channels'
+	label: 'Channels',
+	condition() {
+		const user = Meteor.user();
+		const preferences = (user && user.settings && user.settings.preferences && user.settings.preferences) || {};
+		return ['unread', 'category'].includes(preferences.roomsListExhibitionMode) && preferences.mergeChannels;
+	}
 });
 // public
 RocketChat.roomTypes.add('c', 30, {
@@ -46,7 +71,9 @@ RocketChat.roomTypes.add('c', 30, {
 	},
 
 	condition() {
-		return RocketChat.authz.hasAtLeastOnePermission(['view-c-room', 'view-joined-room']) || RocketChat.settings.get('Accounts_AllowAnonymousRead') === true;
+		const user = Meteor.user();
+		const preferences = (user && user.settings && user.settings.preferences && user.settings.preferences) || {};
+		return ['unread', 'category'].includes(preferences.roomsListExhibitionMode) && !preferences.mergeChannels && (RocketChat.authz.hasAtLeastOnePermission(['view-c-room', 'view-joined-room']) || RocketChat.settings.get('Accounts_AllowAnonymousRead') === true);
 	},
 
 	showJoinLink(roomId) {
@@ -79,7 +106,9 @@ RocketChat.roomTypes.add('p', 40, {
 	},
 
 	condition() {
-		return RocketChat.authz.hasAllPermission('view-p-room');
+		const user = Meteor.user();
+		const preferences = (user && user.settings && user.settings.preferences && user.settings.preferences) || {};
+		return ['unread', 'category'].includes(preferences.roomsListExhibitionMode) && !preferences.mergeChannels && RocketChat.authz.hasAllPermission('view-p-room');
 	}
 });
 
@@ -130,7 +159,9 @@ RocketChat.roomTypes.add('d', 50, {
 	},
 
 	condition() {
-		return RocketChat.authz.hasAtLeastOnePermission(['view-d-room', 'view-joined-room']);
+		const user = Meteor.user();
+		const preferences = (user && user.settings && user.settings.preferences && user.settings.preferences) || {};
+		return ['unread', 'category'].includes(preferences.roomsListExhibitionMode) && RocketChat.authz.hasAtLeastOnePermission(['view-d-room', 'view-joined-room']);
 	},
 
 	getUserStatus(roomId) {
