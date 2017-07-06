@@ -130,8 +130,9 @@
 	}
 
 	&-name {
-		font-size: 1.375rem;
-		height: 1.375rem;
+		font-size: 1rem;
+		font-weight: 700;
+		height: 1rem;
 		width: 160px;
 	}
 
@@ -265,7 +266,12 @@
 
 	&__type {
 		font-size: 0.75rem;
-		margin-bottom: 18px;
+		margin-bottom: 0.5rem;
+		margin-left: 22px;
+	}
+
+	&__empty-room {
+		font-size: 0.75rem;
 		margin-left: 22px;
 	}
 
