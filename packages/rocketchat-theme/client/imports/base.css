@@ -1561,7 +1561,6 @@ label.required::after {
 .fixed-title {
 	display: flex;
 	align-items: center;
-	position: absolute;
 	flex-flow: row nowrap;
 	padding: 0 10px 0 20px;
 	border-width: 0 0 1px;
@@ -2131,6 +2130,16 @@ label.required::after {
 	left: 0;
 	z-index: 1;
 
+	&-wrapper {
+		height: 100%;
+		display: flex;
+	}
+
+	&-main {
+		width: 1px;
+		flex: 1 1 1px;
+	}
+
 	& .room-topic {
 		font-size: 14px;
 		opacity: 0.4;
@@ -2155,7 +2164,6 @@ label.required::after {
 	}
 
 	& .footer {
-		position: absolute;
 		padding: 8px 20px 0;
 		border-width: 1px 0 0;
 		z-index: 100;
@@ -2314,11 +2322,9 @@ label.required::after {
 			display: flex;
 			align-items: center;
 			overflow: hidden;
-			position: absolute;
-			right: 20px;
 			opacity: 0.5;
 			white-space: nowrap;
-			transition: opacity 0.2 linear;
+			transition: opacity 0.2s linear;
 
 			& > * {
 				margin: 0 3px;
@@ -2518,7 +2524,6 @@ label.required::after {
 
 .messages-box {
 	position: relative;
-	margin: 60px 20px 0 0;
 	overflow: hidden;
 	width: 100%;
 	height: calc(100% - 130px);
@@ -2640,7 +2645,7 @@ label.required::after {
 			font-size: 12px;
 			font-weight: 600;
 			text-align: center;
-			z-index: 10;
+			z-index: 1;
 			padding: 0 10px;
 			min-width: 140px;
 		}
@@ -3024,6 +3029,7 @@ body:not(.is-cordova) {
 
 .flex-tab-container {
 	display: flex;
+	flex: 0 0 41px;
 	z-index: 2;
 	border-width: 0 0 0 1px;
 
@@ -4789,6 +4795,7 @@ a + br.only-after-a {
 		right: 40px;
 		border-width: 0 0 0 1px;
 		height: 100%;
+		z-index: 100;
 	}
 }
 
@@ -4887,17 +4894,13 @@ a + br.only-after-a {
 }
 
 @media (width <= 440px) {
-	.flex-tab-container.opened {
-		position: absolute;
-		width: 100%;
-		height: 100%;
-		top: 0;
+	.flex-tab-container.opened .flex-tab {
 		left: 0;
+		width: auto;
+	}
 
-		& .flex-tab {
-			position: relative;
-			right: auto;
-		}
+	.flex-tab-container.opened {
+		left: 0;
 	}
 }
 
