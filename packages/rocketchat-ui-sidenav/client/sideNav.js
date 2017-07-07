@@ -67,7 +67,7 @@ Template.sideNav.onRendered(function() {
 	const first_channel_login = RocketChat.settings.get('First_Channel_After_Login');
 	const room = RocketChat.roomTypes.findRoom('c', first_channel_login, Meteor.userId());
 	if (room !== undefined && room._id !== '') {
-		FlowRouter.go(`/channel/${first_channel_login}`);
+		FlowRouter.go(`/channel/${ first_channel_login }`);
 	}
 
 	return Meteor.defer(() => menu.updateUnreadBars());
