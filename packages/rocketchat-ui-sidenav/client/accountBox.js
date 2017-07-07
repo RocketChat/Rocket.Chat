@@ -44,7 +44,6 @@ Template.accountBox.helpers({
 	},
 
 	registeredMenus() {
-		console.log('registeredMenus', AccountBox.getItems());
 		return AccountBox.getItems();
 	}
 });
