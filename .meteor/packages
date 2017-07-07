@@ -97,6 +97,7 @@ rocketchat:sandstorm
 rocketchat:slackbridge
 rocketchat:slashcommands-archive
 rocketchat:slashcommands-asciiarts
+rocketchat:slashcommands-github
 rocketchat:slashcommands-create
 rocketchat:slashcommands-invite
 rocketchat:slashcommands-invite-all

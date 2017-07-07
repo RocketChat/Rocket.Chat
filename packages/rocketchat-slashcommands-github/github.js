@@ -1,13 +1,12 @@
 /*
-* Gimme is a named function that will replace /gimme commands
-* @param {Object} message - The message object
+* Github is a named function that will replace /github commands
 */
 
 
 function Github(command, params, item) {
 	if (command === 'github') {
 		const msg = item;
-		msg.msg = `Github ${ params }`;
+		msg.msg = `Used command: /github ${ params }`;
 		Meteor.call('sendMessage', msg);
 	}
 }
