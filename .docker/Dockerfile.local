@@ -1,10 +1,20 @@
-FROM danieldent/meteor as builder
+FROM ubuntu:16.04 as builder
+
+RUN apt update && apt install curl git bzip2 -y
+
+RUN set -x \
+&& curl https://install.meteor.com | sed s/--progress-bar/-sL/g | /bin/sh \
+&& export PATH="$HOME/.meteor:$PATH"
 
 COPY . /app
 
-RUN meteor npm i
+WORKDIR /app
 
-RUN meteor build --allow-superuser --headless --directory /tmp/build
+RUN set -x \
+&& meteor npm i --unsafe-perm
+
+RUN set -x \
+&& meteor build --allow-superuser --headless --directory /tmp/build
 
 FROM rocketchat/base:4
 
