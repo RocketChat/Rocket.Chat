@@ -1561,7 +1561,6 @@ label.required::after {
 .fixed-title {
 	display: flex;
 	align-items: center;
-	/*position: absolute;*/
 	flex-flow: row nowrap;
 	padding: 0 10px 0 20px;
 	border-width: 0 0 1px;
@@ -2132,7 +2131,7 @@ label.required::after {
 	z-index: 1;
 
 	&-wrapper {
-    height: 100%;
+		height: 100%;
 		display: flex;
 	}
 
@@ -2323,8 +2322,6 @@ label.required::after {
 			display: flex;
 			align-items: center;
 			overflow: hidden;
-			/*position: absolute;*/
-			/*right: 20px;*/
 			opacity: 0.5;
 			white-space: nowrap;
 			transition: opacity 0.2s linear;
@@ -2527,7 +2524,6 @@ label.required::after {
 
 .messages-box {
 	position: relative;
-	/*margin: 60px 20px 0 0;*/
 	overflow: hidden;
 	width: 100%;
 	height: calc(100% - 130px);
@@ -4902,17 +4898,9 @@ a + br.only-after-a {
 		left: 0;
 		width: auto;
 	}
-	.flex-tab-container.opened {
-		/*position: absolute;*/
-		/*width: 100%;/*/
-		/*top: 0;*/
-		left: 0;
-		/*z-index: 100;*/
 
-		/*& .flex-tab {
-			position: relative;
-			right: auto;
-		}*/
+	.flex-tab-container.opened {
+		left: 0;
 	}
 }
 
