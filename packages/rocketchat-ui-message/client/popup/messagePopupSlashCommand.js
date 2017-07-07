@@ -1,5 +1,5 @@
 Template.messagePopupSlashCommand.helpers({
-	printParams () {
+	printParams() {
 		return typeof(this.params) === 'string' ? this.params : this.params[0].description;
 	}
 });

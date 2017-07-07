@@ -233,10 +233,10 @@ Template.messagePopupConfig.helpers({
 			getFilter(collection, filter) {
 				return Object.keys(collection).map(command => {
 					const item = collection[command];
-					let param = item.params ?
+					const param = item.params ?
 						(typeof(item.params) === 'string' ?
 							t(item.params) : t(item.params[0].description))
-							: '';
+						: '';
 
 					return {
 						_id: command,

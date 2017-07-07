@@ -49,44 +49,44 @@ function val(v, d) {
 }
 
 Template.messageSuggestionPopup.onCreated(function() {
-  const template = this;
-  let commandTriggers = 'github';
-//  let commandTriggers = RocketChat.slashcommands.commands.map(c => c.command);
+	const template = this;
+	const commandTriggers = 'github';
+	//  let commandTriggers = RocketChat.slashcommands.commands.map(c => c.command);
 
-  template.suggestionCollection = new ReactiveVar([]);
-  const config = {
-    title: `Suggestion` ,
-    collection: template.suggestionCollection.get(),
-    matchSelectorRegex: new RegExp(`(?:^\/)(${ commandTriggers }).?`, 'im'),
-    selectorRegex: new RegExp(`(?:^\/(${ commandTriggers }))\\s*(.*)$`, 'im'),
-    replaceRegex: new RegExp(`(\\s+\\w*)$`, 'im'),
-    suffix: ' ',
-    triggerAnywhere: false,
-    template: 'messagePopupSlashCommand',
-    getInput: template.getInput,
-    getFilter(collection, filter) {
-      if(filter) {
-        const deep = filter.length - 1;
-        const lastWord = filter[deep];
-        const regExp = new RegExp(`${ RegExp.escape(lastWord) }`, 'i');
-        return collection.map((param, index) => {
-          let params = typeof(param) === 'string' ? t(param)
-            : param.params && param.params.map(p => p.description).join(', ');
+	template.suggestionCollection = new ReactiveVar([]);
+	const config = {
+		title: 'Suggestion',
+		collection: template.suggestionCollection.get(),
+		matchSelectorRegex: new RegExp(`(?:^\/)(${ commandTriggers }).?`, 'im'),
+		selectorRegex: new RegExp(`(?:^\/(${ commandTriggers }))\\s*(.*)$`, 'im'),
+		replaceRegex: new RegExp('(\\s+\\w*)$', 'im'),
+		suffix: ' ',
+		triggerAnywhere: false,
+		template: 'messagePopupSlashCommand',
+		getInput: template.getInput,
+		getFilter(collection, filter) {
+			if (filter) {
+				//const deep = filter.length - 1;
+				//const lastWord = filter[deep];
+				//const regExp = new RegExp(`${ RegExp.escape(lastWord) }`, 'i');
+				return collection.map((param, index) => {
+					const params = typeof(param) === 'string' ? t(param)
+						: param.params && param.params.map(p => p.description).join(', ');
 
-          return {
-            description: collection[index] ? t(collection[index].description) : '',
-            params: params || '',
-            _id: typeof(collection[index]) === 'string' ? collection[index] : collection[index].value
-          }
-        })
-      }
-    }
-  }
-  template.title = 'Suggestion'
+					return {
+						description: collection[index] ? t(collection[index].description) : '',
+						params: params || '',
+						_id: typeof(collection[index]) === 'string' ? collection[index] : collection[index].value
+					};
+				});
+			}
+		}
+	};
+	template.title = 'Suggestion';
 	template.textFilter = new ReactiveVar('');
-  template.textFilterDelay = val(config.textFilterDelay, 0);
-  template.open = val(config.open, new ReactiveVar(false));
-  template.hasData = new ReactiveVar(false);
+	template.textFilterDelay = val(config.textFilterDelay, 0);
+	template.open = val(config.open, new ReactiveVar(false));
+	template.hasData = new ReactiveVar(false);
 	template.value = new ReactiveVar;
 	template.triggerAnywhere = false;
 	template.closeOnEsc = true;
@@ -98,7 +98,7 @@ Template.messageSuggestionPopup.onCreated(function() {
 	} else {
 		template.matchSelectorRegex = val(config.matchSelectorRegex, new RegExp(`(?:^)${ template.trigger }[^\\s]*$`));
 	}
-  template.parameterPrefix = new RegExp('(\\s$)');
+	template.parameterPrefix = new RegExp('(\\s$)');
 	template.selectorRegex = val(config.selectorRegex, new RegExp(`${ template.trigger }([^\\s]*)$`));
 	template.replaceRegex = val(config.replaceRegex, new RegExp(`${ template.trigger }[^\\s]*$`));
 	template.getValue = val(config.getValue, (_id) => _id);
@@ -180,26 +180,26 @@ Template.messageSuggestionPopup.onCreated(function() {
 			return;
 		}
 
-    let inputSplit = value.trim().split(' ');
-    if(inputSplit.length === 1) {
-      let command = RocketChat.slashCommands.commands[value.replace('/','')];
-      if (command && typeof(command.params) !== 'string') {
-        template.suggestionCollection.set(command.params)
-      }
-    } else if (template.suggestionCollection.get().length > 0){
-      let childCommand = template.suggestionCollection.get().find(c => c.value === inputSplit[inputSplit.length - 1]);
-      if(childCommand && childCommand.params) {
-        let params = childCommand.params[inputSplit.length - 1];
-        template.suggestionCollection.set(params.description);
-      }
-    }
-    if (template.matchSelectorRegex.test(value)) {
+		const inputSplit = value.trim().split(' ');
+		if (inputSplit.length === 1) {
+			const command = RocketChat.slashCommands.commands[value.replace('/', '')];
+			if (command && typeof(command.params) !== 'string') {
+				template.suggestionCollection.set(command.params);
+			}
+		} else if (template.suggestionCollection.get().length > 0) {
+			const childCommand = template.suggestionCollection.get().find(c => c.value === inputSplit[inputSplit.length - 1]);
+			if (childCommand && childCommand.params) {
+				const params = childCommand.params[inputSplit.length - 1];
+				template.suggestionCollection.set(params.description);
+			}
+		}
+		if (template.matchSelectorRegex.test(value)) {
 			template.setTextFilter(value.match(template.selectorRegex));
 			template.open.set(true);
 		} else {
 			template.open.set(false);
 		}
-    /*
+		/*
     if (template.matchSelectorRegex.test(template.input.value)) {
       const lastParam = template.input.value.match(template.replaceRegex);
       let newSuggestion = template.suggestionCollection.get().find((param) => param.value === lastParam);
@@ -253,7 +253,7 @@ Template.messageSuggestionPopup.onCreated(function() {
 		if (!getValue) {
 			return;
 		}
-		firstPartValue = firstPartValue.replace(template.replaceRegex, ' ' + getValue + template.suffix);
+		firstPartValue = firstPartValue.replace(template.replaceRegex, ` ${ getValue }${ template.suffix }`);
 		template.input.value = firstPartValue + lastPartValue;
 		return setCursorPosition(template.input, firstPartValue.length);
 	};
