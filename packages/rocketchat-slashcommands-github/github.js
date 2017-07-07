@@ -14,13 +14,13 @@ function Github(command, params, item) {
 RocketChat.slashCommands.add('github', Github, {
 	description: 'Github Slashcommand',
 	params: [
-		{ value: 'submit',
+		{
+			value: 'submit',
 			description: 'Submit a new issue',
 			params: [
 				{
 					value: 'repo',
 					description: 'Repo'
-
 				}, {
 					value: 'title',
 					description: 'Title for your issue'
@@ -31,11 +31,9 @@ RocketChat.slashCommands.add('github', Github, {
 		}, {
 			value:'assign',
 			description: 'Assign an issue from a repo to an user'
-
 		}, {
 			value:'close',
 			description: 'Close an issue from a repo'
-
 		}, {
 			value: 'delete',
 			description: 'Delete an issue from a repo',
@@ -43,11 +41,9 @@ RocketChat.slashCommands.add('github', Github, {
 				{
 					value: 'repo',
 					description: 'Repository'
-
 				}, {
 					value: 'issue',
 					description: 'Issue'
-
 				}]
 		}]
 });

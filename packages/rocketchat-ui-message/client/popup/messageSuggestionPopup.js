@@ -51,25 +51,49 @@ function val(v, d) {
 Template.messageSuggestionPopup.onCreated(function() {
 	const template = this;
 	const commandTriggers = 'github';
-	//  let commandTriggers = RocketChat.slashcommands.commands.map(c => c.command);
+	//  let commandTriggers = RocketChat.slashcommands.commands.map(c => c.command).join('|');
 
 	template.suggestionCollection = new ReactiveVar([]);
 	const config = {
 		title: 'Suggestion',
 		collection: template.suggestionCollection.get(),
-		matchSelectorRegex: new RegExp(`(?:^\/)(${ commandTriggers }).?`, 'im'),
-		selectorRegex: new RegExp(`(?:^\/(${ commandTriggers }))\\s*(.*)$`, 'im'),
-		replaceRegex: new RegExp('(\\s+\\w*)$', 'im'),
+		matchSelectorRegex: new RegExp(`(?:^\/)(${ commandTriggers }) `),
+		selectorRegex: new RegExp(`(?:^\/(${ commandTriggers }))\\s*(.*)$`),
+		replaceRegex: new RegExp('(\\s+\\w*)$'),
 		suffix: ' ',
 		triggerAnywhere: false,
 		template: 'messagePopupSlashCommand',
 		getInput: template.getInput,
 		getFilter(collection, filter) {
 			if (filter) {
+				const params = filter[2].trim().split(' ');
+				const command = RocketChat.slashCommands.commands[filter[1]];
+				if (params.length === 0 || (params.length === 1 && params[0] === '')) {
+					if (command.params) {
+						template.suggestionCollection.set(command.params);
+					}
+				} else {
+					params.forEach((value) => {
+						const parameterFound = command.params.find((p) => p.value === value);
+						if (parameterFound) {
+							if ('params' in parameterFound) {
+								template.suggestionCollection.set(parameterFound.params);
+							} else {
+								template.suggestionCollection.set([]);
+							}
+						}
+					});
+				/*	const childCommand = template.suggestionCollection.get().find(c => c.value === inputSplit[inputSplit.length - 1]);
+					if (childCommand && childCommand.params) {
+						const params = childCommand.params[inputSplit.length - 1];
+						template.suggestionCollection.set(params.description);
+					}
+					*/
+				}
 				//const deep = filter.length - 1;
 				//const lastWord = filter[deep];
 				//const regExp = new RegExp(`${ RegExp.escape(lastWord) }`, 'i');
-				return collection.map((param, index) => {
+				return template.suggestionCollection.get().map((param, index) => {
 					const params = typeof(param) === 'string' ? t(param)
 						: param.params && param.params.map(p => p.description).join(', ');
 
@@ -180,19 +204,6 @@ Template.messageSuggestionPopup.onCreated(function() {
 			return;
 		}
 
-		const inputSplit = value.trim().split(' ');
-		if (inputSplit.length === 1) {
-			const command = RocketChat.slashCommands.commands[value.replace('/', '')];
-			if (command && typeof(command.params) !== 'string') {
-				template.suggestionCollection.set(command.params);
-			}
-		} else if (template.suggestionCollection.get().length > 0) {
-			const childCommand = template.suggestionCollection.get().find(c => c.value === inputSplit[inputSplit.length - 1]);
-			if (childCommand && childCommand.params) {
-				const params = childCommand.params[inputSplit.length - 1];
-				template.suggestionCollection.set(params.description);
-			}
-		}
 		if (template.matchSelectorRegex.test(value)) {
 			template.setTextFilter(value.match(template.selectorRegex));
 			template.open.set(true);
