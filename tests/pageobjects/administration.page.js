@@ -82,6 +82,8 @@ class Administration extends Page {
 	get generalFavoriteRoomTrue() { return browser.element('label:nth-of-type(1) [name="Favorite_Rooms"]'); }
 	get generalFavoriteRoomFalse() { return browser.element('label:nth-of-type(2) [name="Favorite_Rooms"]'); }
 	get generalFavoriteRoomReset() { return browser.element('.reset-setting[data-setting="Favorite_Rooms"]'); }
+	get generalOpenFirstChannel() { return browser.element('[name="First_Channel_After_Login"]'); }
+	get generalOpenFirstChannelReset() { return browser.element('.reset-setting[data-setting="First_Channel_After_Login"]'); }
 	get generalCdnPrefix() { return browser.element('[name="CDN_PREFIX"]'); }
 	get generalCdnPrefixReset() { return browser.element('.reset-setting[data-setting="CDN_PREFIX"]'); }
 	get generalForceSSLTrue() { return browser.element('label:nth-of-type(1) [name="Force_SSL"]'); }

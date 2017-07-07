@@ -354,6 +354,10 @@ RocketChat.settings.addGroup('General', function() {
 		type: 'boolean',
 		'public': true
 	});
+	this.add('First_Channel_After_Login', '', {
+		type: 'string',
+		'public': true
+	});
 	this.add('CDN_PREFIX', '', {
 		type: 'string',
 		'public': true
