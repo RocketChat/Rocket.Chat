@@ -565,6 +565,7 @@
   "Exclude_Botnames_Description": "Do not propagate messages from bots whose name matches the regular expression above. If left empty, all messages from bots will be propagated.",
   "False": "False",
   "Favorite_Rooms": "Enable Favorite Rooms",
+  "First_Channel_After_Login": "First Channel After Login",
   "Favorites": "Favorites",
   "Features_Enabled": "Features Enabled",
   "Field": "Field",
