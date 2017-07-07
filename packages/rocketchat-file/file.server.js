@@ -105,6 +105,7 @@ RocketChatFile.GridFS = class {
 		this.store = new Grid(db, mongo);
 		this.findOneSync = Meteor.wrapAsync(this.store.collection(this.name).findOne.bind(this.store.collection(this.name)));
 		this.removeSync = Meteor.wrapAsync(this.store.remove.bind(this.store));
+		this.countSync = Meteor.wrapAsync(this.store._col.count.bind(this.store._col));
 		this.getFileSync = Meteor.wrapAsync(this.getFile.bind(this));
 	}
 
