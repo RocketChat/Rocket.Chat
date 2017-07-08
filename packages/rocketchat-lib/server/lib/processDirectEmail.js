@@ -59,7 +59,7 @@ RocketChat.processDirectEmail = function(email) {
 		if (roomInfo.t === 'c') {
 			prevMessageLink += `/channel/${ roomInfo.name }?msg=${ email.headers.mid }) `;
 		} else if (roomInfo.t === 'd') {
-			prevMessageLink += `/direct/${ user.username }?msg=${ email.headers.mid }) `;
+			prevMessageLink += `/direct/${ prevMessage.u.username }?msg=${ email.headers.mid }) `;
 		} else if (roomInfo.t === 'p') {
 			prevMessageLink += `/group/${ roomInfo.name }?msg=${ email.headers.mid }) `;
 		}
@@ -108,23 +108,11 @@ RocketChat.processDirectEmail = function(email) {
 
 	email.headers.references = email.headers.references[0];
 
-	// references format is "<imestamp+roomId+messageId@domain>"
-	email.headers.references = email.headers.references.split('@')[0];
-	if (email.headers.references.charAt(0) === '<') {
-		email.headers.references = email.headers.references.substr(1);
-	}
-
 	// 'To' email format "username+messageId@domain"
 	if (email.headers.to.indexOf('+') >= 0) {
 		// Valid 'To' format
 		console.log('Valid Email');
 		email.headers.mid = email.headers.to.split('@')[0].split('+')[1];
-		sendMessage(email);
-	} else if (/^[0-9]+\+([0-9]|[a-z]|[A-Z])+\+([0-9]|[a-z]|[A-Z])+$/.test(email.headers.references)) {
-		// Valid references(Message-ID) format
-		console.log('Valid Email');
-		email.headers.rid = email.headers.references.split('+')[1];
-		email.headers.mid = email.headers.references.split('+')[2];
 		sendMessage(email);
 	} else {
 		console.log('Invalid Email....If not. Please report it.');
