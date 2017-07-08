@@ -5,13 +5,13 @@ RocketChat.IMAPIntercepter = function(config) {
 };
 
 RocketChat.IMAPIntercepter.prototype = {
-	openInbox: function(Imap, cb) {
+	openInbox(Imap, cb) {
 		Imap.openBox('INBOX', false, cb);
 	},
 
-	start: function() {
-		var self = this;
-		var Imap = this.imap;
+	start() {
+		const self = this;
+		const Imap = this.imap;
 
 		Imap.connect();
 		// On successfully connected.
@@ -46,8 +46,8 @@ RocketChat.IMAPIntercepter.prototype = {
 		});
 	},
 
-	isActive: function() {
-		var Imap = this.imap;
+	isActive() {
+		const Imap = this.imap;
 		if (Imap.state === 'disconnected') {
 			return false;
 		}
@@ -55,13 +55,13 @@ RocketChat.IMAPIntercepter.prototype = {
 		return true;
 	},
 
-	stop: function() {
-		var Imap = this.imap;
+	stop() {
+		const Imap = this.imap;
 		Imap.end();
 	},
 
 	// Fetch all UNSEEN messages and pass them for further processing
-	getEmails: function(Imap) {
+	getEmails(Imap) {
 		Imap.search(['UNSEEN'], Meteor.bindEnvironment(function(err, newEmails) {
 			if (err) {
 				console.log(err);
