@@ -120,7 +120,6 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 				if (RocketChat.settings.get('IMAP_Enable')) {
 					footer = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Footer_Direct_Reply') || '');
 				}
-				const ts = new Date().getTime();
 
 				user.emails.some((email) => {
 					if (email.verified) {
