@@ -83,7 +83,6 @@ RocketChat.processDirectEmail = function(email) {
 
 		RocketChat.metrics.messagesSent.inc(); // TODO This line needs to be moved to it's proper place. See the comments on: https://github.com/RocketChat/Rocket.Chat/pull/5736
 
-		console.log(message);
 		return RocketChat.sendMessage(user, message, room);
 	}
 
@@ -111,7 +110,6 @@ RocketChat.processDirectEmail = function(email) {
 	// 'To' email format "username+messageId@domain"
 	if (email.headers.to.indexOf('+') >= 0) {
 		// Valid 'To' format
-		console.log('Valid Email');
 		email.headers.mid = email.headers.to.split('@')[0].split('+')[1];
 		sendMessage(email);
 	} else {
