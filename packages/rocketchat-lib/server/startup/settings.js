@@ -475,7 +475,8 @@ RocketChat.settings.addGroup('Email', function() {
 		this.add('Direct_Reply_Debug', false, {
 			type: 'boolean',
 			env: true,
-			i18nLabel: 'Direct_Reply_Debug'
+			i18nLabel: 'Direct_Reply_Debug',
+			i18nDescription: 'Direct_Reply_Debug_Description'
 		});
 		this.add('Direct_Reply_Protocol', 'IMAP', {
 			type: 'select',
@@ -528,9 +529,13 @@ RocketChat.settings.addGroup('Email', function() {
 			env: true,
 			i18nLabel: 'Password'
 		});
-		return this.add('Direct_Reply_Start', 'startEmailIntercepter', {
+		this.add('Direct_Reply_Start', 'startEmailIntercepter', {
 			type: 'action',
 			actionText: 'Direct_Reply_Start'
+		});
+		return this.add('Direct_Reply_Stop', 'stopEmailIntercepter', {
+			type: 'action',
+			actionText: 'Direct_Reply_Stop'
 		});
 	});
 	this.section('SMTP', function() {

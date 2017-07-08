@@ -95,7 +95,9 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 			linkByUser[sub.u._id] = getMessageLink(room, sub);
 		});
 	} else {
-		defaultLink = getMessageLink(room, { name: room.name });
+		defaultLink = getMessageLink(room, {
+			name: room.name
+		});
 	}
 
 	if (userIdsToSendEmail.length > 0) {
@@ -130,9 +132,7 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 								subject: `[${ siteName }] ${ emailSubject }`,
 								headers: {
 									// Reply-To header with format "username+messageId@domain"
-									'Reply-To' : `${ RocketChat.settings.get('IMAP_Username').split('@')[0] }+${ message._id }@${ RocketChat.settings.get('IMAP_Username').split('@')[1] }`,
-									// Message-ID header with format "timestamp+roomId+messageId@domain"
-									'Message-ID': `${ ts }+${ message.rid }+${ message._id }@${ email.address.split('@')[1] }`
+									'Reply-To': `${ RocketChat.settings.get('IMAP_Username').split('@')[0] }+${ message._id }@${ RocketChat.settings.get('IMAP_Username').split('@')[1] }`
 								},
 								html: header + messageHTML + divisorMessage + (linkByUser[user._id] || defaultLink) + footer
 							};
