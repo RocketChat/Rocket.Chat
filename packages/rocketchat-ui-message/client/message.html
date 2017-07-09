@@ -50,7 +50,7 @@
 				<span class="private">{{_ "Only_you_can_see_this_message"}}</span>
 			{{/if}}
 		</span>
-		<div class="body color-primary-font-color {{system true}}" dir="auto" data-unread-text="{{_ "Unread_Messages"}}">
+		<div class="markdown-body color-primary-font-color {{system true}}" dir="auto" data-unread-text="{{_ "Unread_Messages"}}">
 			{{{body}}}
 			{{#if hasOembed}}
 				{{#each urls}}
