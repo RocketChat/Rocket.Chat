@@ -232,11 +232,54 @@ Importer.CSV = class ImporterCSV extends Importer.Base {
 			}
 			this.collection.update({ _id: this.channels._id }, { $set: { 'channels': this.channels.channels }});
 
+			//If no channels file, collect channel map from DB for message-only import
+			if (this.channels.channels.length === 0) {
+				for (const cname of this.messages.keys()) {
+					Meteor.runAsUser(startedByUserId, () => {
+						const existantRoom = RocketChat.models.Rooms.findOneByName(cname);
+						if (existantRoom || cname.toUpperCase() === 'GENERAL') {
+							this.channels.channels.push({
+								id: cname.replace('.', '_'),
+								name: cname,
+								rocketId: (cname.toUpperCase() === 'GENERAL' ? 'GENERAL' : existantRoom._id),
+								do_import: true
+							});
+						}
+					});
+				}
+			}
+
+			//If no users file, collect user map from DB for message-only import
+			if (this.users.users.length === 0) {
+				for (const [ch, messagesMap] of this.messages.entries()) {
+					const csvChannel = this.getChannelFromName(ch);
+					if (!csvChannel || !csvChannel.do_import) {
+						continue;
+					}
+					Meteor.runAsUser(startedByUserId, () => {
+						for (const msgs of messagesMap.values()) {
+							for (const msg of msgs.messages) {
+								if (!this.getUserFromUsername(msg.username)) {
+									const user = RocketChat.models.Users.findOneByUsername(msg.username);
+									if (user) {
+										this.users.users.push({
+											rocketId: user._id,
+											username: user.username
+										});
+									}
+								}
+							}
+						}
+					});
+				}
+			}
+
+
 			//Import the Messages
 			super.updateProgress(Importer.ProgressStep.IMPORTING_MESSAGES);
 			for (const [ch, messagesMap] of this.messages.entries()) {
 				const csvChannel = this.getChannelFromName(ch);
-				if (!csvChannel.do_import) {
+				if (!csvChannel || !csvChannel.do_import) {
 					continue;
 				}
 
