@@ -38,13 +38,12 @@ class MarkdownClass {
 				'replacements',	// Simple typographyc replacements	CORE
 				'smartquotes',	// Convert straight quotation marks to typographic ones	CORE
 				'hr'			// Horizontal rule	BLK
-			/*
+			/*   Deactivated options
 										'autolink',	 // Process autolinks '<protocol:...>'   INLINE  OK
 										'lheading',	 // heading with lines ---- ====  BLK
 										'reference',	// link to place in text  BLK
 										'linkify',	  // Replace link-like texts with link nodes.   CORE
-										
-								.disable([ 
+
 										'html_block',   // HTML block  BLK
 										'entity',	   // Process html entity - &#123;, &#xAF;, &quot;, ...   INLINE
 										'html_inline',  // Process html tags   INLINE
