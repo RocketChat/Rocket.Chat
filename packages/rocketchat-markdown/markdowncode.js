@@ -96,4 +96,4 @@ RocketChat.MarkdownCode = MarkdownCode;
 const MarkdownCodeCB = (message) => new MarkdownCode(message);
 
 // MarkdownCode gets higher priority over Markdown so it's possible place a callback in between (katex for exmaple)
-RocketChat.callbacks.add('renderMessage', MarkdownCodeCB, RocketChat.callbacks.priority.HIGH - 2, 'markdowncode');
+//RocketChat.callbacks.add('renderMessage', MarkdownCodeCB, RocketChat.callbacks.priority.HIGH - 2, 'markdowncode');

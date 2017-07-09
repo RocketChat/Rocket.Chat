@@ -1,6 +1,6 @@
 Package.describe({
 	name: 'rocketchat:markdown',
-	version: '0.0.1',
+	version: '0.1.0',
 	summary: 'Message pre-processor that will process selected markdown notations',
 	git: ''
 });
@@ -16,7 +16,7 @@ Package.onUse(function(api) {
 
 	api.addFiles('settings.js', 'server');
 	api.addFiles('markdown.js');
-	api.addFiles('markdowncode.js');
+//	api.addFiles('markdowncode.js');
 });
 
 Package.onTest(function(api) {
