@@ -264,20 +264,20 @@
 }
 
 .markdown-body sup {
-    top: -.5em;
+	top: -0.5em;
 }
 
 .markdown-body sub {
-    bottom: -.5em;
+	bottom: -0.5em;
 }
 
-.markdown-body sub, sup {
-    position: relative;
-    font-size: 75%;
-    line-height: 0;
-    vertical-align: baseline;
+.markdown-body sub,
+.markdown-body sup {
+	position: relative;
+	font-size: 75%;
+	line-height: 0;
+	vertical-align: baseline;
 }
-
 
 .markdown-body p {
 	margin-top: 0;
@@ -289,11 +289,11 @@
 	margin-left: 1em;
 }
 
-.markdown-body ul ul{
+.markdown-body ul ul {
 	list-style-type: circle;
 }
 
-.markdown-body ul ul ul{
+.markdown-body ul ul ul {
 	list-style-type: square;
 }
 
