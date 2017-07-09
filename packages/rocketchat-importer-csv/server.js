@@ -285,6 +285,7 @@ Importer.CSV = class ImporterCSV extends Importer.Base {
 
 				const room = RocketChat.models.Rooms.findOneById(csvChannel.rocketId, { fields: { usernames: 1, t: 1, name: 1 } });
 				Meteor.runAsUser(startedByUserId, () => {
+					let roomCounter = 0;
 					for (const [msgGroupData, msgs] of messagesMap.entries()) {
 						super.updateRecord({ 'messagesstatus': `${ ch }/${ msgGroupData }.${ msgs.messages.length }` });
 						for (const msg of msgs.messages) {
@@ -297,7 +298,7 @@ Importer.CSV = class ImporterCSV extends Importer.Base {
 							const creator = this.getUserFromUsername(msg.username);
 							if (creator) {
 								const msgObj = {
-									_id: `csv-${ csvChannel.id }-${ msg.ts }`,
+									_id: `csv-${ csvChannel.id }-${ roomCounter }-${ msg.ts }`,
 									ts: new Date(parseInt(msg.ts)),
 									msg: msg.text,
 									rid: room._id,
@@ -308,6 +309,7 @@ Importer.CSV = class ImporterCSV extends Importer.Base {
 								};
 
 								RocketChat.sendMessage(creator, msgObj, room, true);
+								roomCounter += 1;
 							}
 
 							super.addCountCompleted(1);
