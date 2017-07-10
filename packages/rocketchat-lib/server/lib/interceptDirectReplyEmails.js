@@ -72,7 +72,7 @@ RocketChat.IMAPIntercepter.prototype = {
 			if (newEmails.length > 0) {
 				const f = Imap.fetch(newEmails, {
 					// fetch headers & first body part.
-					bodies: ['HEADER.FIELDS (FROM TO SUBJECT DATE REFERENCES)', '1'],
+					bodies: ['HEADER.FIELDS (FROM TO DATE MESSAGE-ID)', '1'],
 					struct: true,
 					markSeen: true
 				});
