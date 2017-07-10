@@ -95,6 +95,26 @@
 					{{/unless}}
 					<div class="wrapper {{#if hasMoreNext}}has-more-next{{/if}} {{hideUsername}} {{hideAvatar}}">
 						<ul aria-live="polite">
+							{{#if roomLeader != "" }}
+							<li class="message room-leader">
+								<button class="thumb user-card-message">
+									<div class="avatar"><div class="avatar-image" style="background-image:url(/avatar/{{roomLeader.username}}?_dc=undefined);"></div></div></button>
+								<div class="right">
+									<div class="leader-info">
+										<div class="leader-name">
+											{{roomLeader.name}}
+										</div>
+										<div class="leader-status userStatus">
+											<span class="color-ball {{roomLeader.status}}"></span>
+											<span class="status-text">
+													{{roomLeader.status}}
+												</span>
+										</div>
+									</div>
+								</div>
+								<a class="chat-now" href="/direct/{{roomLeader.username}}">Chat Now</a>
+							</li>
+							{{/if}}
 							{{#if canPreview}}
 								{{#if hasMore}}
 									<li class="load-more">

@@ -218,6 +218,10 @@ Template.room.helpers({
 		return userCanDrop(this._id);
 	},
 
+	roomLeader() {
+		return RocketChat.models.Subscriptions.findUsersInRoles('leader', this._id).fetch()[0];
+	},
+
 	canPreview() {
 		const room = Session.get(`roomData${ this._id }`);
 		if (room && room.t !== 'c') {
