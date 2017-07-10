@@ -66,6 +66,9 @@ RocketChat.processDirectEmail = function(email) {
 
 		message.msg = prevMessageLink + message.msg;
 
+		// info: message was sent by email
+		message.msg += '\n>Sent by Email';
+
 		const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(message.rid, user._id);
 		if (subscription && subscription.blocked || subscription.blocker) {
 			// room is blocked
@@ -104,8 +107,6 @@ RocketChat.processDirectEmail = function(email) {
 	}
 
 	email.headers.date = email.headers.date[0];
-
-	email.headers.references = email.headers.references[0];
 
 	// 'To' email format "username+messageId@domain"
 	if (email.headers.to.indexOf('+') >= 0) {
