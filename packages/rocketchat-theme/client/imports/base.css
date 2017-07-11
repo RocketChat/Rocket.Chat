@@ -1638,10 +1638,6 @@ label.required::after {
 	& ~ .container-bars {
 		top: 95px;
 	}
-
-	& ~ .messages-box {
-		margin-top: 100px;
-	}
 }
 
 .cms-page {
