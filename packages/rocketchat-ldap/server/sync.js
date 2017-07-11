@@ -62,9 +62,10 @@ getDataToSyncUserData = function getDataToSyncUserData(ldapUser, user) {
 	const syncUserData = RocketChat.settings.get('LDAP_Sync_User_Data');
 	const syncUserDataFieldMap = RocketChat.settings.get('LDAP_Sync_User_Data_FieldMap').trim();
 
+	const userData = {};
+
 	if (syncUserData && syncUserDataFieldMap) {
 		const fieldMap = JSON.parse(syncUserDataFieldMap);
-		const userData = {};
 		const emailList = [];
 		_.map(fieldMap, function(userField, ldapField) {
 			switch (userField) {
@@ -125,21 +126,21 @@ getDataToSyncUserData = function getDataToSyncUserData(ldapUser, user) {
 				userData.emails = emailList;
 			}
 		}
+	}
 
-		const uniqueId = getLdapUserUniqueID(ldapUser);
+	const uniqueId = getLdapUserUniqueID(ldapUser);
 
-		if (uniqueId && (!user.services || !user.services.ldap || user.services.ldap.id !== uniqueId.value || user.services.ldap.idAttribute !== uniqueId.attribute)) {
-			userData['services.ldap.id'] = uniqueId.value;
-			userData['services.ldap.idAttribute'] = uniqueId.attribute;
-		}
+	if (uniqueId && (!user.services || !user.services.ldap || user.services.ldap.id !== uniqueId.value || user.services.ldap.idAttribute !== uniqueId.attribute)) {
+		userData['services.ldap.id'] = uniqueId.value;
+		userData['services.ldap.idAttribute'] = uniqueId.attribute;
+	}
 
-		if (user.ldap !== true) {
-			userData.ldap = true;
-		}
+	if (user.ldap !== true) {
+		userData.ldap = true;
+	}
 
-		if (_.size(userData)) {
-			return userData;
-		}
+	if (_.size(userData)) {
+		return userData;
 	}
 };
 
