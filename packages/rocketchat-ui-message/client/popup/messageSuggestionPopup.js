@@ -156,8 +156,14 @@ Template.messageSuggestionPopup.onCreated(function() {
 							if (parameterFound.params[0].type === 'subcommand') {
 								template.suggestionCollection.set(parameterFound.params);
 							} else if (parameterFound.params[params.length - 1]) {
-								const value = parameterFound.params[params.length - 1].value;
-								template.suggestionCollection.set(typeof(value) === 'string' ? [value] : value);
+								const parameter = parameterFound.params[params.length - 1];
+								const formatParameters = (p) => {
+									const valuesArray = typeof(p.value) === 'string' ? [p.value] : p.value;
+									return valuesArray.map((entry) => {
+										return {_id: '', value: entry, description: p.description};
+									});
+								};
+								template.suggestionCollection.set(formatParameters(parameter));
 							} else {
 								template.suggestionCollection.set([]);
 							}
@@ -181,7 +187,6 @@ Template.messageSuggestionPopup.onCreated(function() {
 				template.open.set(false);
 			}
 			template.enterValue();
-			template.updateSuggestion(template.input.value.match(template.selectorRegex));
 			if (config.cleanOnEnter) {
 				template.input.value = '';
 			}
@@ -270,6 +275,7 @@ Template.messageSuggestionPopup.onCreated(function() {
 		}
 		firstPartValue = firstPartValue.replace(template.replaceRegex, ` ${ getValue }${ template.suffix }`);
 		template.input.value = firstPartValue + lastPartValue;
+		template.updateSuggestion(template.input.value.match(template.selectorRegex));
 		return setCursorPosition(template.input, firstPartValue.length);
 	};
 	template.records = new ReactiveVar([]);

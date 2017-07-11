@@ -24,7 +24,7 @@ RocketChat.slashCommands.add('github', Github, {
 					type: 'parameter',
 					description: 'Repository'
 				}, {
-					value: ['1', '2', '3', '4', '5', '6'],
+					value: ['321', '123', '443', '231', '501', '506'],
 					type: 'parameter',
 					description: 'Issue'
 				}, {
