@@ -1,3 +1,7 @@
+:root {
+	--header-height: 61px;
+}
+
 *,
 *::before,
 *::after {
@@ -2012,8 +2016,8 @@ label.required::after {
 
 .container-bars {
 	position: absolute;
-	top: 55px;
-	z-index: 100;
+	top: 4px; /* --header-height */
+	z-index: 1;
 	font-weight: bold;
 	display: flex;
 	flex-direction: column;
@@ -2133,6 +2137,7 @@ label.required::after {
 	&-main {
 		width: 1px;
 		flex: 1 1 1px;
+		position: relative;
 	}
 
 	& .room-topic {
@@ -2304,7 +2309,6 @@ label.required::after {
 			overflow: hidden;
 			text-overflow: ellipsis;
 			max-width: 100%;
-			z-index: 10;
 			position: relative;
 			background-color: #ffffff;
 		}
@@ -4785,7 +4789,7 @@ a + br.only-after-a {
 		position: absolute;
 		right: 40px;
 		border-width: 0 0 0 1px;
-		height: 100%;
+		height: calc(100% - 61px); /* --header-height */
 		z-index: 100;
 	}
 }
