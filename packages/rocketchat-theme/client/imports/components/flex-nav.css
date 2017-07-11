@@ -1,12 +1,14 @@
 .flex-nav {
-	position: fixed;
+	position: absolute;
 	top: 0;
 	left: 0;
 	height: 100%;
 	z-index: 3;
 	overflow-y: auto;
 	overflow-x: hidden;
-	width: var(--rooms-box-width);
+
+	/* width: var(--rooms-box-width); */
+	width: 100%;
 	transition: transform 0.15s cubic-bezier(0.5, 0, 0.1, 1);
 	will-change: transform;
 
