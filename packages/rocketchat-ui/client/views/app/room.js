@@ -241,6 +241,7 @@ let isSocialSharingOpen = false;
 let touchMoved = false;
 let lastTouchX = null;
 let lastTouchY = null;
+let lastScrollTop;
 
 Template.room.events({
 	'click, touchend'(e, t) {
@@ -253,6 +254,20 @@ Template.room.events({
 		if ((Template.instance().tabBar.getState() === 'opened') && user && user.settings && user.settings.preferences && user.settings.preferences.hideFlexTab) {
 			return Template.instance().tabBar.close();
 		}
+	},
+
+	'scroll .messages-box .wrapper'() {
+		const $wrapper = $('.messages-box .wrapper');
+		if ($wrapper.scrollTop() < lastScrollTop) {
+			$('.room-leader').removeClass('hidden');
+		} else if ($wrapper.scrollTop() > $('.room-leader-container').height()) {
+			$('.room-leader').addClass('hidden');
+		}
+		lastScrollTop = $wrapper.scrollTop();
+	},
+
+	'scroll .messages-container'() {
+		console.log('scrolling1234');
 	},
 
 	'touchstart .message'(e, t) {
@@ -805,6 +820,7 @@ Template.room.onRendered(function() {
 	$('.flex-tab-bar').on('click', (/*e, t*/) =>
 		Meteor.setTimeout(() => template.sendToBottomIfNecessaryDebounced(), 50)
 	);
+	lastScrollTop = $('.messages-box .wrapper').scrollTop();
 
 	const rtl = $('html').hasClass('rtl');
 
