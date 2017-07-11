@@ -1626,7 +1626,6 @@ label.required::after {
 }
 
 .announcement {
-	margin-top: 61px;
 	height: 40px;
 	line-height: 40px;
 	overflow: hidden;
