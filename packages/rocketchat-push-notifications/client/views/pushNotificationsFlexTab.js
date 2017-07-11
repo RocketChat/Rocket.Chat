@@ -144,7 +144,7 @@ Template.pushNotificationsFlexTab.helpers({
 				case 'mentions':
 					return t('Mentions');
 				default:
-				return t('Use_account_preference');	
+					return t('Use_account_preference');
 			}
 		}
 	},
