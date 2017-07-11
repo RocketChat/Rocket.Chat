@@ -1,13 +1,95 @@
 <template name="accountProfile">
-	<section class="page-container page-home page-static">
-		<header class="fixed-title border-component-color">
+	<section class="preferences-page">
+		<header class="preferences-page__header">
 			{{> burger}}
-			<h2>
-				<span class="room-title">{{_ "Profile"}}</span>
-			</h2>
+			<h2 style="flex: 1 1; white-space: nowrap;">{{_ "My Profile"}}</h2>
+			<div class="content" style="text-align: end; max-width: 649px;  flex: 1 1 100%">
+
+
+				<button class="rc-button rc-button--blue" type="submit" data-button="create" {{canSave 'disabled'}}>Save Changes</button>
+			</div>
+			<div style="flex: 1 1;"></div>
 		</header>
-		<div class="content">
-			<div class="rocket-form">
+		<div class="preferences-page__content">
+
+		<form>
+  		<fieldset class="rc-form-legend">
+    		<legend style="margin-bottom: 2.5rem;">Profile Details</legend>
+				<div>
+					<div class="rc-form-group">
+						<label class="rc-form-label">{{_ "Profile Picture"}}</label>
+						<div class="rc-select-avatar">
+								<div class="rc-select-avatar__preview">
+									{{> avatar username=username}}
+								</div>
+								<select class="rc-select-avatar__type">
+									<option value="gravatar">gravatar</option>
+								</select>
+								<div class="rc-select-avatar__value">
+									aeo
+								</div>
+						</div>
+					</div>
+					<div class="rc-form-group">
+						<div class="rc-input rc-w-50">
+							<label class="rc-input__label">
+								<div class="rc-input__title">{{_ "Name"}}</div>
+								<div class="rc-input__wrapper">
+									<input type="text" class="rc-input__element" name="realname" id="realname" value="{{realname}}" >
+								</div>
+							</label>
+						</div><div class="rc-input rc-w-50">
+							{{# with canChange=allowUsernameChange}}
+							<label class="rc-input__label">
+								<div class="rc-input__title">{{_ "Username"}}</div>
+								<div class="rc-input__wrapper">
+									<div class="rc-input__icon">
+										<svg class="rc-input__icon-svg rc-input__icon-svg--at">
+											<use href="#icon-at"></use>
+										</svg>
+									</div>
+									<input type="text" class="rc-input__element" name="username" id="username" value="{{username}}" {{ifThenElse canChange '' 'disabled'}}>
+								</div>
+							</label>
+							{{# unless canChange}}<div class="rc-input__description">{{_ 'Username_Change_Disabled'}}</div>{{/unless}}
+						{{/with}}
+						</div>
+					</div>
+					<div class="rc-form-group">
+						<div class="rc-input rc-w-50">
+							{{#with canChange=allowEmailChange}}
+							<label class="rc-input__label">
+								<div class="rc-input__title">{{_ "Email"}}</div>
+								<div class="rc-input__wrapper">
+									<input name="name" type="text" class="rc-input__element" placeholder="Type channel name" value="{{email}}" {{ifThenElse canChange '' 'disabled'}}>
+								</div>
+							</label>
+							{{# unless canChange}}<div class="rc-input__description">{{_ 'Email_Change_Disabled'}}</div>{{/unless}}
+							{{/with}}
+						</div><div class="rc-input rc-w-50">
+							{{#with canChange=allowPasswordChange}}
+							<label class="rc-input__label">
+								<div class="rc-input__title">{{_ "New_password"}}</div>
+								<div class="rc-input__wrapper">
+									<input name="name" type="text" class="rc-input__element" placeholder="Type channel name" {{ifThenElse canChange '' 'disabled'}}>
+								</div>
+							</label>
+							{{# unless canChange}}<div class="rc-input__description">{{_ 'Password_Change_Disabled'}}</div>{{/unless}}
+							{{/with}}
+						</div>
+					</div>
+				</div>
+			</fieldset>
+		</form>
+
+
+
+
+
+
+
+
+			<!-- <div class="rocket-form">
 				<fieldset>
 					<div class="input-line">
 						<label for="realname">{{_ "Name"}}</label>
@@ -70,7 +152,7 @@
 					<button class="button danger delete"><i class="icon-trash"></i><span>{{_ "Delete_my_account"}}</span></button>
 				</div>
 				{{/if}}
-			</div>
+			</div> -->
 		</div>
 	</section>
 </template>
