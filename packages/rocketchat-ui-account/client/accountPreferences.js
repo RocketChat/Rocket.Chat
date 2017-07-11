@@ -122,6 +122,8 @@ Template.accountPreferences.onCreated(function() {
 			return _.trim(e);
 		}));
 		data.desktopNotificationDuration = $('input[name=desktopNotificationDuration]').val();
+		data.desktopNotifications = $('#desktopNotifications').find('select').val();
+		data.mobileNotifications = $('#mobileNotifications').find('select').val();
 		data.unreadAlert = $('#unreadAlert').find('input:checked').val();
 		Meteor.call('saveUserPreferences', data, function(error, results) {
 			if (results) {
