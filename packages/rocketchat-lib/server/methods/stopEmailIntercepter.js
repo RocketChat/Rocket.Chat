@@ -4,14 +4,15 @@ Meteor.methods({
 			if (RocketChat.settings.get('Direct_Reply_Protocol') === 'IMAP') {
 				if (RocketChat.IMAP && RocketChat.IMAP.isActive()) {
 					RocketChat.IMAP.stop();
-					return true;
+					return {
+						message: 'Direct_Reply_Stopped'
+					};
 				} else {
-					console.log('IMAP intercepter Not running..........');
-					throw new Meteor.Error('IMAP intercepter Not running.');
+					throw new Meteor.Error('IMAP_intercepter_Not_running');
 				}
 			}
 		} else {
-			throw new Meteor.Error('Please fill Protocol information.');
+			throw new Meteor.Error('Please_fill_all_the_information');
 		}
 	}
 });
