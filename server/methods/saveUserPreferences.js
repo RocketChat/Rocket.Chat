@@ -54,7 +54,7 @@ Meteor.methods({
 			if (settings.unreadAlert) {
 				preferences.unreadAlert = settings.unreadAlert === '1' ? true : false;
 			}
-			
+
 			if (settings.desktopNotifications) {
 				preferences.desktopNotifications = settings.desktopNotifications;
 			}
