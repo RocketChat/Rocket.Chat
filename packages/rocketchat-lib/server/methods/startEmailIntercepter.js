@@ -14,14 +14,15 @@ Meteor.methods({
 						keepalive: true
 					});
 					RocketChat.IMAP.start();
-					return true;
+					return {
+						message: 'Direct_Reply_Started'
+					};
 				} else {
-					console.log('IMAP intercepter already running..........');
-					throw new Meteor.Error('IMAP intercepter already running.');
+					throw new Meteor.Error('IMAP_intercepter_already_running');
 				}
 			}
 		} else {
-			throw new Meteor.Error('Please fill all the information.');
+			throw new Meteor.Error('Please_fill_all_the_information');
 		}
 	}
 });
