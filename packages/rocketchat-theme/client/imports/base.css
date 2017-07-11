@@ -3230,6 +3230,7 @@ body:not(.is-cordova) {
 
 	&.opened .flex-tab {
 		display: block;
+		height: calc(100% - 61px); /* --header-height */
 	}
 }
 
@@ -4793,7 +4794,6 @@ a + br.only-after-a {
 		position: absolute;
 		right: 40px;
 		border-width: 0 0 0 1px;
-		height: calc(100% - 61px); /* --header-height */
 		z-index: 100;
 	}
 }
