@@ -57,39 +57,21 @@ Template.messageSuggestionPopup.onCreated(function() {
 	const config = {
 		title: 'Suggestion',
 		collection: template.suggestionCollection.get(),
-		matchSelectorRegex: new RegExp(`(?:^\/)(${ commandTriggers }) `),
-		selectorRegex: new RegExp(`(?:^\/(${ commandTriggers }))\\s*(.*)$`),
-		replaceRegex: new RegExp('(\\s+\\w*)$'),
+		matchSelectorRegex: new RegExp(`(?:^\/)(${ commandTriggers }).*\\s$`, 'im'),
+		selectorRegex: new RegExp(`(?:^\/(${ commandTriggers }))\\s*(.*)$`, 'im'),
+		replaceRegex: new RegExp('(\\s+\\w*)$', 'im'),
 		suffix: ' ',
 		triggerAnywhere: false,
 		template: 'messagePopupSlashCommand',
 		getInput: template.getInput,
 		getFilter(collection, filter) {
 			if (filter) {
-				const params = filter[2].trim().split(' ');
-				const command = RocketChat.slashCommands.commands[filter[1]];
-				if (params.length === 0 || (params.length === 1 && params[0] === '')) {
-					if (command.params) {
-						template.suggestionCollection.set(command.params);
-					}
-				} else {
-					params.forEach((value) => {
-						const parameterFound = command.params.find((p) => p.value === value);
-						if (parameterFound) {
-							if ('params' in parameterFound) {
-								template.suggestionCollection.set(parameterFound.params);
-							} else {
-								template.suggestionCollection.set([]);
-							}
-						}
-					});
 				/*	const childCommand = template.suggestionCollection.get().find(c => c.value === inputSplit[inputSplit.length - 1]);
 					if (childCommand && childCommand.params) {
 						const params = childCommand.params[inputSplit.length - 1];
 						template.suggestionCollection.set(params.description);
 					}
 					*/
-				}
 				//const deep = filter.length - 1;
 				//const lastWord = filter[deep];
 				//const regExp = new RegExp(`${ RegExp.escape(lastWord) }`, 'i');
@@ -122,10 +104,11 @@ Template.messageSuggestionPopup.onCreated(function() {
 	} else {
 		template.matchSelectorRegex = val(config.matchSelectorRegex, new RegExp(`(?:^)${ template.trigger }[^\\s]*$`));
 	}
-	template.parameterPrefix = new RegExp('(\\s$)');
 	template.selectorRegex = val(config.selectorRegex, new RegExp(`${ template.trigger }([^\\s]*)$`));
 	template.replaceRegex = val(config.replaceRegex, new RegExp(`${ template.trigger }[^\\s]*$`));
-	template.getValue = val(config.getValue, (_id) => _id);
+	template.getValue = val(template.data.getValue, function(_id) {
+		return _id;
+	});
 	template.up = () => {
 		const current = template.find('.popup-item.selected');
 		const previous = $(current).prev('.popup-item')[0] || template.find('.popup-item:last-child');
@@ -156,6 +139,37 @@ Template.messageSuggestionPopup.onCreated(function() {
 			}
 		}
 	};
+
+	template.updateSuggestion = (filter) => {
+		if (filter) {
+			const params = filter[2].trim().split(' ');
+			const command = RocketChat.slashCommands.commands[filter[1]];
+			if (params.length === 0 || (params.length === 1 && params[0] === '')) {
+				if (command.params) {
+					template.suggestionCollection.set(command.params);
+				}
+			} else {
+				params.forEach((value) => {
+					const parameterFound = command.params.find((p) => p.value === value);
+					if (parameterFound) {
+						if ('params' in parameterFound) {
+							if (parameterFound.params[0].type === 'subcommand') {
+								template.suggestionCollection.set(parameterFound.params);
+							} else if (parameterFound.params[params.length - 1]) {
+								const value = parameterFound.params[params.length - 1].value;
+								template.suggestionCollection.set(typeof(value) === 'string' ? [value] : value);
+							} else {
+								template.suggestionCollection.set([]);
+							}
+						} else {
+							template.suggestionCollection.set([]);
+						}
+					}
+				});
+			}
+		}
+	};
+
 	template.onInputKeydown = (event) => {
 		if (template.open.curValue !== true || template.hasData.curValue !== true) {
 			return;
@@ -167,6 +181,7 @@ Template.messageSuggestionPopup.onCreated(function() {
 				template.open.set(false);
 			}
 			template.enterValue();
+			template.updateSuggestion(template.input.value.match(template.selectorRegex));
 			if (config.cleanOnEnter) {
 				template.input.value = '';
 			}
@@ -199,10 +214,7 @@ Template.messageSuggestionPopup.onCreated(function() {
 			return;
 		}
 		const value = template.input.value.substr(0, getCursorPosition(template.input));
-
-		if (template.open.curValue !== true) {
-			return;
-		}
+		template.updateSuggestion(value.match(template.selectorRegex));
 
 		if (template.matchSelectorRegex.test(value)) {
 			template.setTextFilter(value.match(template.selectorRegex));
@@ -210,15 +222,7 @@ Template.messageSuggestionPopup.onCreated(function() {
 		} else {
 			template.open.set(false);
 		}
-		/*
-    if (template.matchSelectorRegex.test(template.input.value)) {
-      const lastParam = template.input.value.match(template.replaceRegex);
-      let newSuggestion = template.suggestionCollection.get().find((param) => param.value === lastParam);
-      if (newSuggestion && newSuggestion.length > 0) {
-        template.suggestionCollection.set(newSuggestion.params || []);
-      }
-    }
-*/
+
 		if (event.which !== keys.ARROW_UP && event.which !== keys.ARROW_DOWN) {
 			return Meteor.defer(function() {
 				template.verifySelection();

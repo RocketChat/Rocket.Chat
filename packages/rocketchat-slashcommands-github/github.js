@@ -15,34 +15,39 @@ RocketChat.slashCommands.add('github', Github, {
 	description: 'Github Slashcommand',
 	params: [
 		{
-			value: 'submit',
-			description: 'Submit a new issue',
+			value:'assign',
+			type: 'subcommand',
+			description: 'Assign an issue from a repo to an user',
 			params: [
 				{
-					value: 'repo',
-					description: 'Repo'
+					value: ['Rocket.Chat', 'Rocket.Chat.Electron', 'Rocket.Chat.Android', 'Rocket.Chat.Rocketlet'],
+					type: 'parameter',
+					description: 'Repository'
 				}, {
-					value: 'title',
-					description: 'Title for your issue'
+					value: ['1', '2', '3', '4', '5', '6'],
+					type: 'parameter',
+					description: 'Issue'
 				}, {
-					value: 'description',
-					description: 'Description for your issue'
+					value: ['gdelavald', 'ggazzo', 'graywolf336', 'geekgonecrazy'],
+					type: 'parameter',
+					description: 'User assigned'
 				}]
 		}, {
-			value:'assign',
-			description: 'Assign an issue from a repo to an user'
-		}, {
 			value:'close',
+			type: 'subcommand',
 			description: 'Close an issue from a repo'
 		}, {
 			value: 'delete',
+			type: 'subcommand',
 			description: 'Delete an issue from a repo',
 			params: [
 				{
 					value: 'repo',
+					type: 'parameter',
 					description: 'Repository'
 				}, {
 					value: 'issue',
+					type: 'parameter',
 					description: 'Issue'
 				}]
 		}]
