@@ -1,5 +1,11 @@
 import toastr from 'toastr';
 Template.accountProfile.helpers({
+	ifThenElse(condition, val, not = '') {
+		return condition ? val : not;
+	},
+	canSave(ret) {
+		return ret;
+	},
 	allowDeleteOwnAccount() {
 		return RocketChat.settings.get('Accounts_AllowDeleteOwnAccount');
 	},
@@ -23,14 +29,8 @@ Template.accountProfile.helpers({
 	allowEmailChange() {
 		return RocketChat.settings.get('Accounts_AllowEmailChange');
 	},
-	usernameChangeDisabled() {
-		return t('Username_Change_Disabled');
-	},
 	allowPasswordChange() {
 		return RocketChat.settings.get('Accounts_AllowPasswordChange');
-	},
-	passwordChangeDisabled() {
-		return t('Password_Change_Disabled');
 	},
 	customFields() {
 		return Meteor.user().customFields;
