@@ -251,7 +251,7 @@ Accounts.registerLoginHandler(function(options) {
 						alert: true,
 						unread: 1,
 						userMentions: 1,
-						grouMentions: 0
+						groupMentions: 0
 					});
 				}
 			});

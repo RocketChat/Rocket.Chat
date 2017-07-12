@@ -16,7 +16,7 @@ RocketChat.addUserToDefaultChannels = function(user, silenced) {
 				alert: true,
 				unread: 1,
 				userMentions: 1,
-				grouMentions: 0
+				groupMentions: 0
 			});
 
 			// Insert user joined message

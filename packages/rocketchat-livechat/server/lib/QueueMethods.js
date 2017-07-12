@@ -41,7 +41,7 @@ RocketChat.QueueMethods = {
 			open: true,
 			unread: 1,
 			userMentions: 1,
-			grouMentions: 0,
+			groupMentions: 0,
 			code: roomCode,
 			u: {
 				_id: agent.agentId,
