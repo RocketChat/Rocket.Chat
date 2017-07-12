@@ -60,29 +60,16 @@ class MarkdownCode {
 
 				if (codeMatch != null) {
 					// Process highlight if this part is code
-					let code;
-					let lang;
-					let result;
 					const singleLine = codeMatch[0].indexOf('\n') === -1;
+					const lang = !singleLine && Array.from(hljs.listLanguages()).includes(s.trim(codeMatch[1])) ? s.trim(codeMatch[1]) : '';
+					const code =
+						singleLine ?
+							_.unescapeHTML(codeMatch[1]) :
+							lang === '' ?
+								_.unescapeHTML(codeMatch[1] + codeMatch[2]) :
+								_.unescapeHTML(codeMatch[2]);
 
-					if (singleLine) {
-						lang = '';
-						code = _.unescapeHTML(codeMatch[1] + codeMatch[2]);
-					} else {
-						lang = codeMatch[1];
-						code = _.unescapeHTML(codeMatch[2]);
-					}
-
-					if (s.trim(lang) === '') {
-						lang = '';
-					}
-
-					if (!Array.from(hljs.listLanguages()).includes(s.trim(lang))) {
-						result = hljs.highlightAuto((lang + code));
-					} else {
-						result = hljs.highlight(s.trim(lang), code);
-					}
-
+					const result = lang === '' ? hljs.highlightAuto((lang + code)) : hljs.highlight(lang, code);
 					const token = `=!=${ Random.id() }=!=`;
 
 					message.tokens.push({
