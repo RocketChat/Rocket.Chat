@@ -318,7 +318,7 @@ RocketChat.Livechat = {
 				open: true,
 				unread: 1,
 				userMentions: 1,
-				grouMentions: 0,
+				groupMentions: 0,
 				code: room.code,
 				u: {
 					_id: agent.agentId,

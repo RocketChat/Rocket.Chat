@@ -242,7 +242,7 @@ class ModelSubscriptions extends RocketChat.models._Base {
 				alert: false,
 				unread: 0,
 				userMentions: 0,
-				grouMentions: 0,
+				groupMentions: 0,
 				ls: new Date
 			}
 		};
@@ -539,7 +539,7 @@ class ModelSubscriptions extends RocketChat.models._Base {
 			alert: false,
 			unread: 0,
 			userMentions: 0,
-			grouMentions: 0,
+			groupMentions: 0,
 			ts: room.ts,
 			rid: room._id,
 			name: room.name,
