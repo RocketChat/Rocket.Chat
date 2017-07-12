@@ -19,19 +19,19 @@ function getKeyFromLS(keyID) {
 }
 
 function loadKeyGlobalsFromLS() {
-	RocketChat.E2EStorage.put("registrationId", parseInt(localStorage.getItem('registrationId')));
-	RocketChat.E2EStorage.put("identityKey", getKeyFromLS('identityKey'));
-	RocketChat.E2EStorage.storePreKey(RocketChat.E2EStorage.get("registrationId"), getKeyFromLS('preKey'));
-	RocketChat.E2EStorage.storeSignedPreKey(RocketChat.E2EStorage.get("registrationId"), getKeyFromLS('signedPreKey'));
-	RocketChat.E2EStorage.put("signedPreKeySignature"+RocketChat.E2EStorage.get("registrationId"), str2ab(localStorage.getItem('signedPreKeySignature')));
-		
-	Meteor.call('addKeyToChain', { 
-					"identityKey": ab2str(RocketChat.E2EStorage.get("identityKey").pubKey), 
-					"preKey": ab2str(RocketChat.E2EStorage.loadPreKey(RocketChat.E2EStorage.get("registrationId")).pubKey), 
-					"signedPreKey": ab2str(RocketChat.E2EStorage.loadSignedPreKey(RocketChat.E2EStorage.get("registrationId")).pubKey),
-					"signedPreKeySignature": ab2str(RocketChat.E2EStorage.get("signedPreKeySignature"+RocketChat.E2EStorage.get("registrationId"))), 
-					"registrationId": RocketChat.E2EStorage.get("registrationId")
-								});			
+	RocketChat.E2EStorage.put('registrationId', parseInt(localStorage.getItem('registrationId')));
+	RocketChat.E2EStorage.put('identityKey', getKeyFromLS('identityKey'));
+	RocketChat.E2EStorage.storePreKey(RocketChat.E2EStorage.get('registrationId'), getKeyFromLS('preKey'));
+	RocketChat.E2EStorage.storeSignedPreKey(RocketChat.E2EStorage.get('registrationId'), getKeyFromLS('signedPreKey'));
+	RocketChat.E2EStorage.put(`signedPreKeySignature${ RocketChat.E2EStorage.get('registrationId') }`, str2ab(localStorage.getItem('signedPreKeySignature')));
+
+	Meteor.call('addKeyToChain', {
+		'identityKey': ab2str(RocketChat.E2EStorage.get('identityKey').pubKey),
+		'preKey': ab2str(RocketChat.E2EStorage.loadPreKey(RocketChat.E2EStorage.get('registrationId')).pubKey),
+		'signedPreKey': ab2str(RocketChat.E2EStorage.loadSignedPreKey(RocketChat.E2EStorage.get('registrationId')).pubKey),
+		'signedPreKeySignature': ab2str(RocketChat.E2EStorage.get(`signedPreKeySignature${ RocketChat.E2EStorage.get('registrationId') }`)),
+		'registrationId': RocketChat.E2EStorage.get('registrationId')
+	});
 }
 
 class E2E {
@@ -88,8 +88,7 @@ class E2E {
 					loadKeyGlobalsFromLS();
 				});
 			});
-		}
-		else {
+		}		else {
 			loadKeyGlobalsFromLS();
 		}
 	}
@@ -130,15 +129,15 @@ Meteor.startup(function() {
 		const e2eRoom = RocketChat.E2E.getInstanceByRoomId(message.rid);
 		const peerRegistrationId = e2eRoom.peerRegistrationId;
 		const existingSession = RocketChat.E2EStorage.sessionExists(peerRegistrationId);
-		if (message.rid && RocketChat.E2E.getInstanceByRoomId(message.rid) && message.t == "e2e") { //&& RocketChat.E2E.getInstanceByRoomId(message.rid).established.get()) {
+		if (message.rid && RocketChat.E2E.getInstanceByRoomId(message.rid) && message.t == 'e2e') { //&& RocketChat.E2E.getInstanceByRoomId(message.rid).established.get()) {
 			if (message.notification) {
 				message.msg = t('Encrypted_message');
 				return Promise.resolve(message);
 			} else {
 				const otrRoom = RocketChat.E2E.getInstanceByRoomId(message.rid);
 				console.log(message);
-				
-				console.log("session exists: "+existingSession);
+
+				console.log(`session exists: ${ existingSession }`);
 
 				if (existingSession) {
 					return otrRoom.decrypt(message.msg)
@@ -170,8 +169,7 @@ Meteor.startup(function() {
 						// 	return message;
 						// }
 					});
-				}
-				else {
+				}				else {
 					return e2eRoom.decryptInitial(message.msg)
 					.then((data) => {
 						console.log(data);
@@ -202,7 +200,7 @@ Meteor.startup(function() {
 						// }
 					});
 				}
-				
+
 			}
 		} else {
 			if (message.t === 'otr') {
