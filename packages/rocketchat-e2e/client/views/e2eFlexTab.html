@@ -8,7 +8,6 @@
 			{{#if e2eAvailable}}
 				<form>
 					<ul class="list clearfix">
-						{{#if userIsOnline}}
 							{{#if established}}
 								<button class="button refresh"><span>Refresh session</span></button>
 								<button class="button end"><span>Stop E2E encryption</span></button>
@@ -18,9 +17,6 @@
 							{{else}}
 								<button class="button start"><span>Start encrypted session</span></button>
 							{{/if}} {{/if}}
-						{{else}}
-							<h2>E2E is only available when both users are online.</h2>
-						{{/if}}
 					</ul>
 				</form>
 			{{else}}

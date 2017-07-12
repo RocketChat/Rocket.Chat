@@ -109,7 +109,13 @@ RocketChat.E2E.Room = class {
 		this.keyPair = null;
 		this.exportedPublicKey = null;
 		this.sessionKey = null;
-		Meteor.call('deleteOldOTRMessages', this.roomId);
+		this.cipher = null;
+		RocketChat.E2EStorage.removeSession(this.peerRegistrationId+".1");
+		this.peerIdentityKey = null;
+		this.peerRegistrationId = null;
+		this.peerSignedPreKey = null;
+		this.peerSignedSignature = null;
+		this.peerPreKey = null;
 	}
 
 	encryptText(data) {
