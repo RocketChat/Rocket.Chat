@@ -39,10 +39,7 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 		return has;
 	}
 
-	if (room.t != null && room.t === 'd') {
-		// Update the other subscriptions
-		RocketChat.models.Subscriptions.incUnreadOfDirectForRoomIdExcludingUserId(message.rid, message.u._id, 1);
-	} else {
+	if (room != null) {
 		let toAll = false;
 		let toHere = false;
 		const mentionIds = [];
@@ -71,10 +68,22 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 			}
 		});
 
+		const unreadCount = RocketChat.settings.get('Unread_Count');
+
 		if (toAll || toHere) {
-			RocketChat.models.Subscriptions.incUnreadForRoomIdExcludingUserId(room._id, message.u._id);
+			let incUnread = 0;
+			if (['all', 'group_mentions_only', 'user_and_group_mentions_only'].includes(unreadCount)) {
+				incUnread = 1;
+			}
+			RocketChat.models.Subscriptions.incGroupMentionsAndUnreadForRoomIdExcludingUserId(room._id, message.u._id, 1, incUnread);
 		} else if ((mentionIds && mentionIds.length > 0) || (highlightsIds && highlightsIds.length > 0)) {
-			RocketChat.models.Subscriptions.incUnreadForRoomIdAndUserIds(room._id, _.compact(_.unique(mentionIds.concat(highlightsIds))));
+			let incUnread = 0;
+			if (['all', 'user_mentions_only', 'user_and_group_mentions_only'].includes(unreadCount)) {
+				incUnread = 1;
+			}
+			RocketChat.models.Subscriptions.incUserMentionsAndUnreadForRoomIdAndUserIds(room._id, _.compact(_.unique(mentionIds.concat(highlightsIds))), 1, incUnread);
+		} else if (unreadCount === 'all') {
+			RocketChat.models.Subscriptions.incUnreadForRoomIdExcludingUserId(room._id, message.u._id);
 		}
 	}
 
