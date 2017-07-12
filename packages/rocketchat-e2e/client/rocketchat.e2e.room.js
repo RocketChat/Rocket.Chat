@@ -1,3 +1,5 @@
+/* eslint-disable no-undef */
+
 // import toastr from 'toastr';
 /* globals crypto */
 
@@ -32,12 +34,13 @@ RocketChat.E2E.Room = class {
 	handshake(startSession) {
 		const self = this;
 		this.establishing.set(true);
+		let key;
 		Meteor.call('fetchKeychain', this.peerId, function(error, result) {
 			key = JSON.parse(result);
 			console.log(key);
 			self.peerIdentityKey = key.lastUsedIdentityKey;
 			for (let i=0; i<key.publicKeychain.length; i++) {
-				if (key.publicKeychain[i][0] == self.peerIdentityKey) {
+				if (key.publicKeychain[i][0] === self.peerIdentityKey) {
 					self.peerSignedPreKey = str2ab(key.publicKeychain[i][1]);
 					self.peerSignedSignature = str2ab(key.publicKeychain[i][2]);
 					self.peerPreKey = str2ab(key.publicKeychain[i][3]);
@@ -85,6 +88,7 @@ RocketChat.E2E.Room = class {
 		});
 
 		promise.catch(function onerror(error) {
+			console.log(error);
 		});
 	}
 
@@ -168,12 +172,12 @@ RocketChat.E2E.Room = class {
 		const ciphertext = str2ab(message);
 		console.log(ciphertext);
 		return this.cipher.decryptWhisperMessage(ciphertext, 'binary').then((plaintext) => {
-        	console.log(`CHECK THIS: ${ ab2str(plaintext) }`);
-		        	// return ab2str(plaintext);
-        	plaintext = EJSON.parse(ab2str(plaintext));
-        	return plaintext;
-        	// console.log("CHECK THIS: "+ab2str(plaintext));
-        	// return ab2str(plaintext);
+			console.log(`CHECK THIS: ${ ab2str(plaintext) }`);
+			// return ab2str(plaintext);
+			plaintext = EJSON.parse(ab2str(plaintext));
+			return plaintext;
+			// console.log("CHECK THIS: "+ab2str(plaintext));
+			// return ab2str(plaintext);
 		});
 
 
@@ -201,13 +205,13 @@ RocketChat.E2E.Room = class {
 		const ciphertext = str2ab(message);
 		console.log(ciphertext);
 		const self = this;
-		return new Promise((resolve, reject) => {
+		return new Promise((resolve) => {
 			Meteor.call('fetchKeychain', this.peerId, function(error, result) {
-				key = JSON.parse(result);
+				const key = JSON.parse(result);
 				console.log(key);
 				self.peerIdentityKey = key.lastUsedIdentityKey;
 				for (let i=0; i<key.publicKeychain.length; i++) {
-					if (key.publicKeychain[i][0] == self.peerIdentityKey) {
+					if (key.publicKeychain[i][0] === self.peerIdentityKey) {
 						self.peerSignedPreKey = str2ab(key.publicKeychain[i][1]);
 						self.peerSignedSignature = str2ab(key.publicKeychain[i][2]);
 						self.peerPreKey = str2ab(key.publicKeychain[i][3]);
@@ -221,12 +225,12 @@ RocketChat.E2E.Room = class {
 				self.cipher = new libsignal.SessionCipher(RocketChat.E2EStorage, bAddress);
 				self.establishing.set(false);
 				self.established.set(true);
-		        return self.cipher.decryptPreKeyWhisperMessage(ciphertext, 'binary').then((plaintext) => {
-		        	console.log(`CHECK THIS: ${ ab2str(plaintext) }`);
-		        	// return ab2str(plaintext);
-		        	plaintext = EJSON.parse(ab2str(plaintext));
-		        	resolve(plaintext);
-		});
+				return self.cipher.decryptPreKeyWhisperMessage(ciphertext, 'binary').then((plaintext) => {
+					console.log(`CHECK THIS: ${ ab2str(plaintext) }`);
+					// return ab2str(plaintext);
+					plaintext = EJSON.parse(ab2str(plaintext));
+					resolve(plaintext);
+				});
 
 			});
 		});
@@ -290,7 +294,7 @@ RocketChat.E2E.Room = class {
 				Meteor.call('fetchKeychain', data.userId, function(error, key) {
 					this.peerIdentityKey = key.lastUsedIdentityKey;
 					for (let i=0; i<key.publicKeychain.length; i++) {
-						if (key.publicKeychain[i][0] == this.peerIdentityKey) {
+						if (key.publicKeychain[i][0] === this.peerIdentityKey) {
 							this.peerSignedPreKey = key.publicKeychain[i][1];
 							this.peerSignedSignature = key.publicKeychain[i][2];
 							this.peerPreKey = key.publicKeychain[i][3];

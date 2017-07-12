@@ -1,3 +1,5 @@
+/* eslint-disable no-undef */
+
 function ab2str(buf) {
 	return RocketChat.signalUtils.toString(buf);
 }
@@ -129,7 +131,7 @@ Meteor.startup(function() {
 		const e2eRoom = RocketChat.E2E.getInstanceByRoomId(message.rid);
 		const peerRegistrationId = e2eRoom.peerRegistrationId;
 		const existingSession = RocketChat.E2EStorage.sessionExists(peerRegistrationId);
-		if (message.rid && RocketChat.E2E.getInstanceByRoomId(message.rid) && message.t == 'e2e') { //&& RocketChat.E2E.getInstanceByRoomId(message.rid).established.get()) {
+		if (message.rid && RocketChat.E2E.getInstanceByRoomId(message.rid) && message.t === 'e2e') { //&& RocketChat.E2E.getInstanceByRoomId(message.rid).established.get()) {
 			if (message.notification) {
 				message.msg = t('Encrypted_message');
 				return Promise.resolve(message);
@@ -141,16 +143,16 @@ Meteor.startup(function() {
 
 				if (existingSession) {
 					return otrRoom.decrypt(message.msg)
-					.then((data) => {
-						console.log(data);
-						const {_id, text, ack} = data;
-						message._id = _id;
-						message.msg = text;
-
-						if (data.ts) {
-							message.ts = data.ts;
-						}
-						return message;
+						.then((data) => {
+							console.log(data);
+							const {_id, text, ack} = data;
+							message._id = _id;
+							message.msg = text;
+							message.ack = ack;
+							if (data.ts) {
+								message.ts = data.ts;
+							}
+							return message;
 						// if (message.otrAck) {
 						// 	return otrRoom.decrypt(message.otrAck)
 						// 		.then((data) => {
@@ -168,19 +170,19 @@ Meteor.startup(function() {
 						// } else {
 						// 	return message;
 						// }
-					});
-				}				else {
+						});
+				} else {
 					return e2eRoom.decryptInitial(message.msg)
-					.then((data) => {
-						console.log(data);
-						const {_id, text, ack} = data;
-						message._id = _id;
-						message.msg = text;
-
-						if (data.ts) {
-							message.ts = data.ts;
-						}
-						return message;
+						.then((data) => {
+							console.log(data);
+							const {_id, text, ack} = data;
+							message._id = _id;
+							message.msg = text;
+							message.ack = ack;
+							if (data.ts) {
+								message.ts = data.ts;
+							}
+							return message;
 						// if (message.otrAck) {
 						// 	return otrRoom.decrypt(message.otrAck)
 						// 		.then((data) => {
@@ -198,7 +200,7 @@ Meteor.startup(function() {
 						// } else {
 						// 	return message;
 						// }
-					});
+						});
 				}
 
 			}
