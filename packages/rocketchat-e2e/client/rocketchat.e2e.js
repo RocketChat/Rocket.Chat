@@ -1,3 +1,5 @@
+/* eslint-disable no-undef */
+
 function ab2str(buf) {
 	return RocketChat.signalUtils.toString(buf);
 }
@@ -129,7 +131,7 @@ Meteor.startup(function() {
 		const e2eRoom = RocketChat.E2E.getInstanceByRoomId(message.rid);
 		const peerRegistrationId = e2eRoom.peerRegistrationId;
 		const existingSession = RocketChat.E2EStorage.sessionExists(peerRegistrationId);
-		if (message.rid && RocketChat.E2E.getInstanceByRoomId(message.rid) && message.t == 'e2e') { //&& RocketChat.E2E.getInstanceByRoomId(message.rid).established.get()) {
+		if (message.rid && RocketChat.E2E.getInstanceByRoomId(message.rid) && message.t === 'e2e') { //&& RocketChat.E2E.getInstanceByRoomId(message.rid).established.get()) {
 			if (message.notification) {
 				message.msg = t('Encrypted_message');
 				return Promise.resolve(message);
@@ -146,7 +148,7 @@ Meteor.startup(function() {
 						const {_id, text, ack} = data;
 						message._id = _id;
 						message.msg = text;
-
+						message.ack = ack;
 						if (data.ts) {
 							message.ts = data.ts;
 						}
@@ -176,7 +178,7 @@ Meteor.startup(function() {
 						const {_id, text, ack} = data;
 						message._id = _id;
 						message.msg = text;
-
+						message.ack = ack;
 						if (data.ts) {
 							message.ts = data.ts;
 						}

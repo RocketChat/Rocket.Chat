@@ -1,3 +1,5 @@
+/* eslint-disable no-undef, new-cap */
+
 /*
  * vim: ts=4:sw=4
  */
@@ -19,15 +21,12 @@ RocketChat.signalUtils = (function() {
 				return undefined;
 			}
 			if (thing === Object(thing)) {
-				if (thing.__proto__ == StaticArrayBufferProto) {
+				if (thing.__proto__ === StaticArrayBufferProto) {
 					return thing;
 				}
 			}
 
-			let str;
-			if (typeof thing === 'string') {
-				str = thing;
-			} else {
+			if (typeof thing !== 'string') {
 				throw new Error(`Tried to convert a non-string of type ${ typeof thing } to an array buffer`);
 			}
 			return new dcodeIO.ByteBuffer.wrap(thing, 'binary').toArrayBuffer();
@@ -43,7 +42,7 @@ RocketChat.signalUtils = (function() {
 			if (maxLength < 5) {
 				throw new Error('a/b compare too short');
 			}
-			return a.substring(0, Math.min(maxLength, a.length)) == b.substring(0, Math.min(maxLength, b.length));
+			return a.substring(0, Math.min(maxLength, a.length)) === b.substring(0, Math.min(maxLength, b.length));
 		}
 	};
 }());
