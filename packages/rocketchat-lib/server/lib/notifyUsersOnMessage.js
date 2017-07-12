@@ -72,17 +72,17 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 
 		if (toAll || toHere) {
 			let incUnread = 0;
-			if (['all', 'group_mentions_only', 'user_and_group_mentions_only'].includes(unreadCount)) {
+			if (['all_messages', 'group_mentions_only', 'user_and_group_mentions_only'].includes(unreadCount)) {
 				incUnread = 1;
 			}
 			RocketChat.models.Subscriptions.incGroupMentionsAndUnreadForRoomIdExcludingUserId(room._id, message.u._id, 1, incUnread);
 		} else if ((mentionIds && mentionIds.length > 0) || (highlightsIds && highlightsIds.length > 0)) {
 			let incUnread = 0;
-			if (['all', 'user_mentions_only', 'user_and_group_mentions_only'].includes(unreadCount)) {
+			if (['all_messages', 'user_mentions_only', 'user_and_group_mentions_only'].includes(unreadCount)) {
 				incUnread = 1;
 			}
 			RocketChat.models.Subscriptions.incUserMentionsAndUnreadForRoomIdAndUserIds(room._id, _.compact(_.unique(mentionIds.concat(highlightsIds))), 1, incUnread);
-		} else if (unreadCount === 'all') {
+		} else if (unreadCount === 'all_messages') {
 			RocketChat.models.Subscriptions.incUnreadForRoomIdExcludingUserId(room._id, message.u._id);
 		}
 	}

@@ -358,8 +358,8 @@ RocketChat.settings.addGroup('General', function() {
 		type: 'select',
 		values: [
 			{
-				key: 'all',
-				i18nLabel: 'All'
+				key: 'all_messages',
+				i18nLabel: 'All_messages'
 			}, {
 				key: 'user_mentions_only',
 				i18nLabel: 'User_mentions_only'
