@@ -2125,6 +2125,7 @@ label.required::after {
 .messages-container {
 	position: relative;
 	height: 100%;
+	width: 100%;
 	top: 0;
 	left: 0;
 	z-index: 1;
@@ -2135,8 +2136,8 @@ label.required::after {
 	}
 
 	&-main {
-		width: 1px;
-		flex: 1 1 1px;
+		flex: 1 1 auto;
+		width: 50%;
 		position: relative;
 	}
 
@@ -2606,7 +2607,7 @@ label.required::after {
 	position: absolute;
 	right: 2px;
 	height: 100%;
-	z-index: 10;
+	z-index: 1;
 	pointer-events: none;
 
 	& .tick {
