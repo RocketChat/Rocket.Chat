@@ -1,4 +1,4 @@
-const reply = require('emailreplyparser').EmailReplyParser;
+import {EmailReplyParser as reply} from 'emailreplyparser';
 
 RocketChat.processDirectEmail = function(email) {
 	function sendMessage(email) {

@@ -19,6 +19,9 @@ const startEmailIntercepter = _.debounce(Meteor.bindEnvironment(function() {
 				return true;
 			}
 		}
+	} else if (RocketChat.IMAP && RocketChat.IMAP.isActive()) {
+		// stop IMAP instance
+		RocketChat.IMAP.stop();
 	}
 }), 1000);
 

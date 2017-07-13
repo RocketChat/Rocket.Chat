@@ -530,14 +530,10 @@ RocketChat.settings.addGroup('Email', function() {
 			i18nLabel: 'Username',
 			placeholder: 'email@domain'
 		});
-		this.add('Direct_Reply_Password', '', {
+		return this.add('Direct_Reply_Password', '', {
 			type: 'password',
 			env: true,
 			i18nLabel: 'Password'
-		});
-		return this.add('Direct_Reply_Stop', 'stopEmailIntercepter', {
-			type: 'action',
-			actionText: 'Direct_Reply_Stop'
 		});
 	});
 	this.section('SMTP', function() {

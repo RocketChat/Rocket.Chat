@@ -121,24 +121,17 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 
 				user.emails.some((email) => {
 					if (email.verified) {
+						email = {
+							to: email.address,
+							from: RocketChat.settings.get('From_Email'),
+							subject: `[${ siteName }] ${ emailSubject }`,
+							html: header + messageHTML + divisorMessage + (linkByUser[user._id] || defaultLink) + footer
+						};
 						// If direct reply enabled, email content with headers
 						if (RocketChat.settings.get('Direct_Reply_Enable')) {
-							email = {
-								to: email.address,
-								from: RocketChat.settings.get('From_Email'),
-								subject: `[${ siteName }] ${ emailSubject }`,
-								headers: {
-									// Reply-To header with format "username+messageId@domain"
-									'Reply-To': `${ RocketChat.settings.get('Direct_Reply_Username').split('@')[0] }+${ message._id }@${ RocketChat.settings.get('Direct_Reply_Username').split('@')[1] }`
-								},
-								html: header + messageHTML + divisorMessage + (linkByUser[user._id] || defaultLink) + footer
-							};
-						} else {
-							email = {
-								to: email.address,
-								from: RocketChat.settings.get('From_Email'),
-								subject: `[${ siteName }] ${ emailSubject }`,
-								html: header + messageHTML + divisorMessage + (linkByUser[user._id] || defaultLink) + footer
+							email.headers = {
+								// Reply-To header with format "username+messageId@domain"
+								'Reply-To': `${ RocketChat.settings.get('Direct_Reply_Username').split('@')[0] }+${ message._id }@${ RocketChat.settings.get('Direct_Reply_Username').split('@')[1] }`
 							};
 						}
 
