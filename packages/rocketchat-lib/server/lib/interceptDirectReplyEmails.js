@@ -37,11 +37,6 @@ RocketChat.IMAPIntercepter = function(config) {
 			console.log(err);
 			throw err;
 		});
-
-		Imap.once('end', function() {
-			console.log('Connection ended.');
-			//Imap.connect();
-		});
 	};
 
 	this.isActive = function() {
@@ -53,9 +48,12 @@ RocketChat.IMAPIntercepter = function(config) {
 		return true;
 	};
 
-	this.stop = function() {
+	this.stop = function(callback) {
 		const Imap = this.imap;
 		Imap.end();
+		Imap.once('end', function() {
+			callback();
+		});
 	};
 
 	// Fetch all UNSEEN messages and pass them for further processing
@@ -111,21 +109,3 @@ RocketChat.IMAPIntercepter = function(config) {
 		}));
 	};
 };
-
-Meteor.startup(function() {
-	if (RocketChat.settings.get('Direct_Reply_Enable') && RocketChat.settings.get('Direct_Reply_Protocol') && RocketChat.settings.get('Direct_Reply_Host') && RocketChat.settings.get('Direct_Reply_Port') && RocketChat.settings.get('Direct_Reply_Username') && RocketChat.settings.get('Direct_Reply_Password')) {
-		if (RocketChat.settings.get('Direct_Reply_Protocol') === 'IMAP') {
-			RocketChat.IMAP = new RocketChat.IMAPIntercepter({
-				user: RocketChat.settings.get('Direct_Reply_Username'),
-				password: RocketChat.settings.get('Direct_Reply_Password'),
-				host: RocketChat.settings.get('Direct_Reply_Host'),
-				port: RocketChat.settings.get('Direct_Reply_Port'),
-				debug: RocketChat.settings.get('Direct_Reply_Debug') ? console.log : false,
-				tls: !RocketChat.settings.get('Direct_Reply_IgnoreTLS'),
-				connTimeout: 30000,
-				keepalive: true
-			});
-			RocketChat.IMAP.start();
-		}
-	}
-});
