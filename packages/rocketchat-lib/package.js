@@ -172,6 +172,7 @@ Package.onUse(function(api) {
 
 	// SERVER STARTUP
 	api.addFiles('server/startup/settingsOnLoadCdnPrefix.js', 'server');
+	api.addFiles('server/startup/settingsOnLoadDirectReply.js', 'server');
 	api.addFiles('server/startup/settingsOnLoadSMTP.js', 'server');
 	api.addFiles('server/startup/oAuthServicesUpdate.js', 'server');
 	api.addFiles('server/startup/settings.js', 'server');
