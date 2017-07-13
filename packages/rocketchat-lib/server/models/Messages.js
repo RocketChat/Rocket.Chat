@@ -19,14 +19,6 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base {
 	}
 
 	// FIND
-	findOneById(_id, options) {
-		const query = {
-			_id
-		};
-
-		return this.findOne(query, options);
-	}
-
 	findByMention(username, options) {
 		const query =	{'mentions.username': username};
 

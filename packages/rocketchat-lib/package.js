@@ -39,12 +39,8 @@ Package.onUse(function(api) {
 	api.use('rocketchat:version');
 	api.use('rocketchat:logger');
 	api.use('rocketchat:custom-oauth');
-	api.use('rocketchat:authorization', {
-		unordered: true
-	});
-	api.use('rocketchat:push-notifications', {
-		unordered: true
-	});
+	api.use('rocketchat:authorization', {unordered: true});
+	api.use('rocketchat:push-notifications', {unordered: true});
 
 	api.use('templating', 'client');
 	api.use('kadira:flow-router');
