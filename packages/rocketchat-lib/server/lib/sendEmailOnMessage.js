@@ -95,7 +95,7 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 			linkByUser[sub.u._id] = getMessageLink(room, sub);
 		});
 	} else {
-		defaultLink = getMessageLink(room, {name: room.name});
+		defaultLink = getMessageLink(room, { name: room.name });
 	}
 
 	if (userIdsToSendEmail.length > 0) {
