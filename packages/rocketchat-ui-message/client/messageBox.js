@@ -107,7 +107,7 @@ Template.messageBox.helpers({
 		const template = Template.instance();
 		return {
 			getInput() {
-				return template.find('.input-message');
+				return template.find('.js-input-message');
 			}
 		};
 	},
@@ -248,12 +248,12 @@ Template.messageBox.events({
 			}
 		});
 	},
-	'focus .input-message'(event, instance) {
+	'focus .js-input-message'(event, instance) {
 		KonchatNotification.removeRoomNotification(this._id);
-		chatMessages[this._id].input = instance.find('.input-message');
+		chatMessages[this._id].input = instance.find('.js-input-message');
 	},
 	'click .send-button'(event, instance) {
-		const input = instance.find('.input-message');
+		const input = instance.find('.js-input-message');
 		chatMessages[this._id].send(this._id, input, () => {
 			// fixes https://github.com/RocketChat/Rocket.Chat/issues/3037
 			// at this point, the input is cleared and ready for autogrow
@@ -262,13 +262,13 @@ Template.messageBox.events({
 		});
 		return input.focus();
 	},
-	'keyup .input-message'(event, instance) {
+	'keyup .js-input-message'(event, instance) {
 		chatMessages[this._id].keyup(this._id, event, instance);
 		return instance.isMessageFieldEmpty.set(chatMessages[this._id].isEmpty());
 	},
-	'paste .input-message'(e, instance) {
+	'paste .js-input-message'(e, instance) {
 		Meteor.setTimeout(function() {
-			const input = instance.find('.input-message');
+			const input = instance.find('.js-input-message');
 			return typeof input.updateAutogrow === 'function' && input.updateAutogrow();
 		}, 50);
 		if (e.originalEvent.clipboardData == null) {
@@ -290,13 +290,13 @@ Template.messageBox.events({
 			return instance.isMessageFieldEmpty.set(false);
 		}
 	},
-	'keydown .input-message': firefoxPasteUpload(function(event) {
+	'keydown .js-input-message': firefoxPasteUpload(function(event) {
 		return chatMessages[this._id].keydown(this._id, event, Template.instance());
 	}),
-	'input .input-message'(event) {
+	'input .js-input-message'(event) {
 		return chatMessages[this._id].valueChanged(this._id, event, Template.instance());
 	},
-	'propertychange .input-message'(event) {
+	'propertychange .js-input-message'(event) {
 		if (event.originalEvent.propertyName === 'value') {
 			return chatMessages[this._id].valueChanged(this._id, event, Template.instance());
 		}
@@ -405,6 +405,13 @@ Template.messageBox.events({
 			});
 		});
 	}
+});
+
+Template.messageBox.onRendered(function() {
+	this.$('.js-input-message').autogrow({
+		animate: true,
+		onInitialize: true
+	});
 });
 
 Template.messageBox.onCreated(function() {

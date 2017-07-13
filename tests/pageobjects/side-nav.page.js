@@ -42,8 +42,8 @@ class SideNav extends Page {
 
 	// Opens a channel via rooms list
 	openChannel(channelName) {
-		browser.waitForVisible(`.rooms-list > .wrapper > ul [title="${ channelName }"]`, 5000);
-		browser.click(`.rooms-list > .wrapper > ul [title="${ channelName }"]`);
+		browser.waitForVisible(`.rooms-list ul:not(:first-of-type) a[title="${ channelName }"]`, 5000);
+		browser.click(`.rooms-list ul:not(:first-of-type) a[title="${ channelName }"]`);
 		browser.waitForVisible('.input-message', 5000);
 		browser.waitUntil(function() {
 			browser.waitForVisible('.fixed-title .room-title', 8000);
