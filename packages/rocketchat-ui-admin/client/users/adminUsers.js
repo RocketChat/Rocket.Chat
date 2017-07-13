@@ -21,7 +21,7 @@ Template.adminUsers.helpers({
 		}
 	},
 	emailAddress() {
-		return _.map(this.emails, function(e) { e.address; }).join(', ');
+		return _.map(this.emails, function(e) { return e.address; }).join(', ');
 	},
 	flexData() {
 		return {
