@@ -24,9 +24,9 @@ class IMAPIntercepter {
 
 		Imap.connect();
 		// On successfully connected.
-		Imap.once('ready', Meteor.bindEnvironment(function() {
+		Imap.once('ready', Meteor.bindEnvironment(() => {
 			if (Imap.state !== 'disconnected') {
-				self.openInbox(Imap, Meteor.bindEnvironment(function(err) {
+				self.openInbox(Imap, Meteor.bindEnvironment((err) => {
 					if (err) {
 						throw err;
 					}
@@ -34,7 +34,7 @@ class IMAPIntercepter {
 					self.getEmails(Imap);
 
 					// If new message arrived, fetch them
-					Imap.on('mail', Meteor.bindEnvironment(function() {
+					Imap.on('mail', Meteor.bindEnvironment(() => {
 						self.getEmails(Imap);
 					}));
 				}));
@@ -69,7 +69,7 @@ class IMAPIntercepter {
 
 	// Fetch all UNSEEN messages and pass them for further processing
 	getEmails(Imap) {
-		Imap.search(['UNSEEN'], Meteor.bindEnvironment(function(err, newEmails) {
+		Imap.search(['UNSEEN'], Meteor.bindEnvironment((err, newEmails) => {
 			if (err) {
 				console.log(err);
 				throw err;
@@ -84,14 +84,14 @@ class IMAPIntercepter {
 					markSeen: true
 				});
 
-				f.on('message', Meteor.bindEnvironment(function(msg) {
+				f.on('message', Meteor.bindEnvironment((msg) => {
 					const email = {};
 
-					msg.on('body', function(stream, info) {
+					msg.on('body', (stream, info) => {
 						let headerBuffer = '';
 						let bodyBuffer = '';
 
-						stream.on('data', function(chunk) {
+						stream.on('data', (chunk) => {
 							if (info.which === '1') {
 								bodyBuffer += chunk.toString('utf8');
 							} else {
@@ -99,7 +99,7 @@ class IMAPIntercepter {
 							}
 						});
 
-						stream.once('end', function() {
+						stream.once('end', () => {
 							if (info.which === '1') {
 								email.body = bodyBuffer;
 							} else {
@@ -109,11 +109,11 @@ class IMAPIntercepter {
 					});
 
 					// On fetched each message, pass it further
-					msg.once('end', Meteor.bindEnvironment(function() {
+					msg.once('end', Meteor.bindEnvironment(() => {
 						RocketChat.processDirectEmail(email);
 					}));
 				}));
-				f.once('error', function(err) {
+				f.once('error', (err) => {
 					console.log(`Fetch error: ${ err }`);
 				});
 			}
