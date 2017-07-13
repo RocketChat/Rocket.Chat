@@ -57,9 +57,7 @@ class IMAPIntercepter {
 
 	stop(callback = new Function) {
 		this.imap.end();
-		this.imap.once('end', () => {
-			callback();
-		});
+		this.imap.once('end', callback);
 	}
 
 	// Fetch all UNSEEN messages and pass them for further processing
