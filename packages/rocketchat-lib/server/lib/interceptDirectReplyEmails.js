@@ -1,4 +1,4 @@
-const IMAP = require('imap');
+import IMAP from 'imap';
 
 class IMAPIntercepter {
 	constructor() {
@@ -59,10 +59,10 @@ class IMAPIntercepter {
 		return true;
 	}
 
-	stop(callback) {
+	stop(callback = new Function) {
 		const Imap = this.imap;
 		Imap.end();
-		Imap.once('end', function() {
+		Imap.once('end', () => {
 			callback();
 		});
 	}
