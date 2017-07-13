@@ -1459,7 +1459,6 @@
 .rc-old .fixed-title {
 	display: flex;
 	align-items: center;
-	position: absolute;
 	flex-flow: row nowrap;
 	padding: 0 10px 0 20px;
 	border-width: 0 0 1px;
@@ -1525,7 +1524,6 @@
 }
 
 .rc-old .announcement {
-	margin-top: 61px;
 	height: 40px;
 	line-height: 40px;
 	overflow: hidden;
@@ -1537,10 +1535,6 @@
 
 	& ~ .container-bars {
 		top: 95px;
-	}
-
-	& ~ .messages-box {
-		margin-top: 100px;
 	}
 }
 
@@ -1913,8 +1907,8 @@
 
 .rc-old .container-bars {
 	position: absolute;
-	top: 55px;
-	z-index: 100;
+	top: 4px; /* --header-height */
+	z-index: 1;
 	font-weight: bold;
 	display: flex;
 	flex-direction: column;
@@ -2022,9 +2016,21 @@
 .rc-old .messages-container {
 	position: relative;
 	height: 100%;
+	width: 100%;
 	top: 0;
 	left: 0;
 	z-index: 1;
+
+	&-wrapper {
+		height: 100%;
+		display: flex;
+	}
+
+	&-main {
+		flex: 1 1 auto;
+		width: 50%;
+		position: relative;
+	}
 
 	& .room-topic {
 		font-size: 14px;
@@ -2050,7 +2056,6 @@
 	}
 
 	& .footer {
-		position: absolute;
 		padding: 8px 20px 0;
 		border-width: 1px 0 0;
 		z-index: 100;
@@ -2196,7 +2201,6 @@
 			overflow: hidden;
 			text-overflow: ellipsis;
 			max-width: 100%;
-			z-index: 10;
 			position: relative;
 			background-color: #ffffff;
 		}
@@ -2209,11 +2213,9 @@
 			display: flex;
 			align-items: center;
 			overflow: hidden;
-			position: absolute;
-			right: 20px;
 			opacity: 0.5;
 			white-space: nowrap;
-			transition: opacity 0.2 linear;
+			transition: opacity 0.2s linear;
 
 			& > * {
 				margin: 0 3px;
@@ -2413,7 +2415,6 @@
 
 .rc-old .messages-box {
 	position: relative;
-	margin: 60px 20px 0 0;
 	overflow: hidden;
 	width: 100%;
 	height: calc(100% - 130px);
@@ -2497,7 +2498,7 @@
 	position: absolute;
 	right: 2px;
 	height: 100%;
-	z-index: 10;
+	z-index: 1;
 	pointer-events: none;
 
 	& .tick {
@@ -2535,7 +2536,7 @@
 			font-size: 12px;
 			font-weight: 600;
 			text-align: center;
-			z-index: 10;
+			z-index: 1;
 			padding: 0 10px;
 			min-width: 140px;
 		}
@@ -2919,6 +2920,7 @@ body:not(.is-cordova) {
 
 .rc-old .flex-tab-container {
 	display: flex;
+	flex: 0 0 41px;
 	z-index: 2;
 	border-width: 0 0 0 1px;
 
@@ -3120,6 +3122,7 @@ body:not(.is-cordova) {
 
 	&.opened .flex-tab {
 		display: block;
+		height: calc(100% - 61px); /* --header-height */
 	}
 }
 
@@ -4675,7 +4678,7 @@ body:not(.is-cordova) {
 		position: absolute;
 		right: 40px;
 		border-width: 0 0 0 1px;
-		height: 100%;
+		z-index: 100;
 	}
 }
 
@@ -4780,17 +4783,13 @@ body:not(.is-cordova) {
 }
 
 @media (width <= 440px) {
-	.rc-old .flex-tab-container.opened {
-		position: absolute;
-		width: 100%;
-		height: 100%;
-		top: 0;
+	.rc-old .flex-tab-container.opened .flex-tab {
 		left: 0;
+		width: auto;
+	}
 
-		& .flex-tab {
-			position: relative;
-			right: auto;
-		}
+	.flex-tab-container.opened {
+		left: 0;
 	}
 }
 
