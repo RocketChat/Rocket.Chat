@@ -256,10 +256,10 @@ Template.room.events({
 	},
 
 	'scroll .messages-box .wrapper'() {
-		var $wrapper = $('.messages-box .wrapper');
-		if($wrapper.scrollTop() < lastScrollTop){
+		const $wrapper = $('.messages-box .wrapper');
+		if ($wrapper.scrollTop() < lastScrollTop) {
 			$('.room-leader').removeClass('hidden');
-		} else if($wrapper.scrollTop() > $('.room-leader-container').height()){
+		} else if ($wrapper.scrollTop() > $('.room-leader-container').height()) {
 			$('.room-leader').addClass('hidden');
 		}
 		lastScrollTop = $wrapper.scrollTop();
