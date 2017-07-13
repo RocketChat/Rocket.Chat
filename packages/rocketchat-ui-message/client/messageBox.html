@@ -1,6 +1,68 @@
 <template name="messageBox">
 	{{#if subscribed}}
-		<form class="message-form" method="post" action="/">
+		<div class="rc-message-box rc-new">
+			{{> messagePopupConfig getPopupConfig}}
+			{{#with usersTyping}}
+				<div class="rc-message-box__typing">
+					<b class="rc-message-box__typing__user">{{users}}</b>
+					{{#if multi}}
+						{{#if selfTyping}}
+							{{_ "are_also_typing"}}
+						{{else}}
+							{{_ "are_typing"}}
+						{{/if}}
+					{{else}}
+						{{#if selfTyping}}
+							{{_ "is_also_typing" context="male"}}
+						{{else}}
+							{{_ "is_typing" context="male"}}
+						{{/if}}
+					{{/if}}
+				</div>
+			{{/with}}
+			<div class="rc-message-box__container">
+
+				<div class="rc-message-box__icon">
+					<svg class="rc-input__icon-svg rc-input__icon-svg--smile">
+						<use href="#icon-smile"></use>
+					</svg>
+				</div>
+				<textarea autofocus dir="auto" name="msg" maxlength="{{maxMessageLength}}" placeholder="{{_ 'Message'}}" rows="1" class="rc-message-box__textarea js-input-message autogrow-short"></textarea>
+				<div class="rc-message-box__icon">
+					<svg class="rc-input__icon-svg rc-input__icon-svg--plus">
+						<use href="#icon-plus"></use>
+					</svg>
+				</div>
+			</div>
+			<div class="rc-message-box__toolbar-markdown">
+				<!-- {{#if allowedToSend}}
+					{{#if showFormattingTips}}
+						<div class="formatting-tips" aria-hidden="true" dir="auto">
+							{{#if showMarkdown}}
+								<b>*{{_ "bold"}}*</b>
+								<i>_{{_ "italics"}}_</i>
+								<span>~<strike>{{_ "strike"}}</strike>~</span>
+							{{/if}}
+							{{#if showMarkdownCode}}
+								<code class="code-colors inline">`{{_ "inline_code"}}`</code>
+								<code class="code-colors inline"><span class="hidden-br"><br></span>```<span class="hidden-br"><br></span><i class="icon-level-down"></i>{{_ "multi"}}<span class="hidden-br"><br></span><i class="icon-level-down"></i>{{_ "line"}}<span class="hidden-br"><br></span><i class="icon-level-down"></i>```</code>
+							{{/if}}
+							{{#if katexSyntax}}
+								<span><a href="https://github.com/Khan/KaTeX/wiki/Function-Support-in-KaTeX" target="_blank">{{katexSyntax}}</a></span>
+							{{/if}}
+							{{#if showMarkdown}}
+								<q><span class="hidden-br"><br></span>&gt;{{_ "quote"}}</q>
+							{{/if}}
+						</div>
+					{{/if}}
+				{{/if}} -->
+				<button class="rc-message-box__toolbar-markdown__item">b</button>
+				<button class="rc-message-box__toolbar-markdown__item">i</button>
+				<button class="rc-message-box__toolbar-markdown__item">u</button>
+				<button class="rc-message-box__toolbar-markdown__item">s</button>
+			</div>
+		</div>
+		<form class="message-form" method="post" style="display:none;" action="/">
 			{{> messagePopupConfig getPopupConfig}}
 
 			{{#if allowedToSend}}
@@ -8,7 +70,7 @@
 
 					<div class="input-message-container">
 
-						<textarea dir="auto" name="msg" maxlength="{{maxMessageLength}}" class="message-form-text input-message autogrow-short" placeholder="{{_ 'Message'}}"></textarea>
+						<!-- <textarea dir="auto" name="msg" maxlength="{{maxMessageLength}}" class="message-form-text input-message autogrow-short" placeholder="{{_ 'Message'}}"></textarea> -->
 
 						<div class="inner-left-toolbar">
 							<i class="emoji-picker-icon icon-people secondary-font-color"></i>
@@ -82,47 +144,6 @@
 						{{_ "room_is_read_only"}}
 					{{/if}}
 				</div>
-			{{/if}}
-
-			<div class="users-typing">
-				{{#with usersTyping}}
-					<strong>{{users}}</strong>
-					{{#if multi}}
-						{{#if selfTyping}}
-							{{_ "are_also_typing"}}
-						{{else}}
-							{{_ "are_typing"}}
-						{{/if}}
-					{{else}}
-						{{#if selfTyping}}
-							{{_ "is_also_typing" context="male"}}
-						{{else}}
-							{{_ "is_typing" context="male"}}
-						{{/if}}
-					{{/if}}
-				{{/with}}
-			</div>
-
-			{{#if allowedToSend}}
-				{{#if showFormattingTips}}
-					<div class="formatting-tips" aria-hidden="true" dir="auto">
-						{{#if showMarkdown}}
-							<b>*{{_ "bold"}}*</b>
-							<i>_{{_ "italics"}}_</i>
-							<span>~<strike>{{_ "strike"}}</strike>~</span>
-						{{/if}}
-						{{#if showMarkdownCode}}
-							<code class="code-colors inline">`{{_ "inline_code"}}`</code>
-							<code class="code-colors inline"><span class="hidden-br"><br></span>```<span class="hidden-br"><br></span><i class="icon-level-down"></i>{{_ "multi"}}<span class="hidden-br"><br></span><i class="icon-level-down"></i>{{_ "line"}}<span class="hidden-br"><br></span><i class="icon-level-down"></i>```</code>
-						{{/if}}
-						{{#if katexSyntax}}
-							<span><a href="https://github.com/Khan/KaTeX/wiki/Function-Support-in-KaTeX" target="_blank">{{katexSyntax}}</a></span>
-						{{/if}}
-						{{#if showMarkdown}}
-							<q><span class="hidden-br"><br></span>&gt;{{_ "quote"}}</q>
-						{{/if}}
-					</div>
-				{{/if}}
 			{{/if}}
 
 			<div class="editing-commands" aria-hidden="true" dir="auto">

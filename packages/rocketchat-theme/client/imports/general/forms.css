@@ -171,6 +171,110 @@
 	}
 }
 
+.rc-message-box {
+	width: 100%;
+	font-size: var(--input-font-size);
+	position: relative;
+	padding: 24px;
+	&__toolbar-markdown {
+		position: absolute;
+		bottom: 4px;
+		display: flex;
+		width: 100%;
+		justify-content: center;
+		left: 0;
+		color: #9EA2A8;
+
+		&__item {
+			width: 16px;
+			height: 16px;
+			margin: 0 4px;
+			text-align: center;
+			transition: color .5s;
+			&:hover,
+			&:focus {
+				color: #2F343D;
+			}
+		}
+	}
+
+	&__typing {
+		position: absolute;
+    top: 4px;
+		left: 0;
+    margin-left: 24px;
+    font-size: 12px;
+    color: #9EA2A8;
+		&__user {
+			color: #2F343D;
+		}
+
+		&:after {
+		  overflow: hidden;
+		  display: inline-block;
+		  vertical-align: bottom;
+		  animation: ellipsis steps(4, end) 1.5s infinite;
+		  content: "\2026"; /* ascii code for the ellipsis character */
+		  width: 0px;
+		}
+	}
+
+	&__container {
+		display: flex;
+		border-width: 2px;
+		border-radius: 2px;
+		border-color: #e1e5e8;
+		padding: 0.75rem 0;
+		align-items: flex-end;
+		&.editing {
+			background-color: #fff5df;
+		}
+	}
+
+	&__textarea {
+		width: 100%;
+		max-height: 155px;
+		resize: none;
+		border: 0;
+		background-color: transparent;
+		font-size: var(--input-font-size);
+
+		&::placeholder {
+			color: #cbced1;
+		}
+	}
+
+	&__icon {
+		cursor: pointer;
+		width: 50px;
+		display: flex;
+		justify-content: center;
+		height: 21px;
+		align-items: center;
+	}
+}
+
+@media (width <= 500px) {
+	.rc-message-box {
+		padding: 24px 0 0;
+
+		&__typing {
+			margin-left: 10px;
+		}
+
+		&__toolbar-markdown {
+			display: none;
+		}
+
+		&__container {
+			display: flex;
+			border-width: 0;
+			border-top-width: 1px;
+		}
+	}
+}
+
+
 .rc-input {
 	width: 100%;
 
@@ -218,9 +322,15 @@
 		stroke: currentColor;
 
 		&--at,
+		&--plus,
 		&--hashtag {
 			width: 14px;
 			height: 14px;
+		}
+
+		&--smile {
+			width: 18px;
+			height: 18px;
 		}
 
 		&--lock {
@@ -551,5 +661,11 @@
   }
   100% {
     transform: rotate(360deg);
+  }
+}
+
+@keyframes ellipsis {
+  to {
+    width: 1.25em;
   }
 }
