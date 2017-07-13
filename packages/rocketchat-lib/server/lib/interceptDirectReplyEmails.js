@@ -14,45 +14,41 @@ class IMAPIntercepter {
 		});
 	}
 
-	openInbox(Imap, cb) {
-		Imap.openBox('INBOX', false, cb);
+	openInbox(cb) {
+		this.imap.openBox('INBOX', false, cb);
 	}
 
 	start() {
-		const self = this;
-		const Imap = this.imap;
-
-		Imap.connect();
+		this.imap.connect();
 		// On successfully connected.
-		Imap.once('ready', Meteor.bindEnvironment(() => {
-			if (Imap.state !== 'disconnected') {
-				self.openInbox(Imap, Meteor.bindEnvironment((err) => {
+		this.imap.once('ready', Meteor.bindEnvironment(() => {
+			if (this.imap.state !== 'disconnected') {
+				this.openInbox(Meteor.bindEnvironment((err) => {
 					if (err) {
 						throw err;
 					}
 					// fetch new emails & wait [IDLE]
-					self.getEmails(Imap);
+					this.getEmails();
 
 					// If new message arrived, fetch them
-					Imap.on('mail', Meteor.bindEnvironment(() => {
-						self.getEmails(Imap);
+					this.imap.on('mail', Meteor.bindEnvironment(() => {
+						this.getEmails();
 					}));
 				}));
 			} else {
 				console.log('IMAP didnot connected.');
-				Imap.end();
+				this.imap.end();
 			}
 		}));
 
-		Imap.once('error', function(err) {
+		this.imap.once('error', function(err) {
 			console.log(err);
 			throw err;
 		});
 	}
 
 	isActive() {
-		const Imap = this.imap;
-		if (Imap.state === 'disconnected') {
+		if (this.imap.state === 'disconnected') {
 			return false;
 		}
 
@@ -60,16 +56,15 @@ class IMAPIntercepter {
 	}
 
 	stop(callback = new Function) {
-		const Imap = this.imap;
-		Imap.end();
-		Imap.once('end', () => {
+		this.imap.end();
+		this.imap.once('end', () => {
 			callback();
 		});
 	}
 
 	// Fetch all UNSEEN messages and pass them for further processing
-	getEmails(Imap) {
-		Imap.search(['UNSEEN'], Meteor.bindEnvironment((err, newEmails) => {
+	getEmails() {
+		this.imap.search(['UNSEEN'], Meteor.bindEnvironment((err, newEmails) => {
 			if (err) {
 				console.log(err);
 				throw err;
@@ -77,7 +72,7 @@ class IMAPIntercepter {
 
 			// newEmails => array containing serials of unseen messages
 			if (newEmails.length > 0) {
-				const f = Imap.fetch(newEmails, {
+				const f = this.imap.fetch(newEmails, {
 					// fetch headers & first body part.
 					bodies: ['HEADER.FIELDS (FROM TO DATE MESSAGE-ID)', '1'],
 					struct: true,
