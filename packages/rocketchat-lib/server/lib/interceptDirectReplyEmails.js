@@ -2,14 +2,12 @@ const IMAP = require('imap');
 
 RocketChat.IMAPIntercepter = function(config) {
 	this.imap = new IMAP(config);
-};
 
-RocketChat.IMAPIntercepter.prototype = {
-	openInbox(Imap, cb) {
+	this.openInbox = function(Imap, cb) {
 		Imap.openBox('INBOX', false, cb);
-	},
+	};
 
-	start() {
+	this.start = function() {
 		const self = this;
 		const Imap = this.imap;
 
@@ -44,24 +42,24 @@ RocketChat.IMAPIntercepter.prototype = {
 			console.log('Connection ended.');
 			//Imap.connect();
 		});
-	},
+	};
 
-	isActive() {
+	this.isActive = function() {
 		const Imap = this.imap;
 		if (Imap.state === 'disconnected') {
 			return false;
 		}
 
 		return true;
-	},
+	};
 
-	stop() {
+	this.stop = function() {
 		const Imap = this.imap;
 		Imap.end();
-	},
+	};
 
 	// Fetch all UNSEEN messages and pass them for further processing
-	getEmails(Imap) {
+	this.getEmails = function(Imap) {
 		Imap.search(['UNSEEN'], Meteor.bindEnvironment(function(err, newEmails) {
 			if (err) {
 				console.log(err);
@@ -111,19 +109,19 @@ RocketChat.IMAPIntercepter.prototype = {
 				});
 			}
 		}));
-	}
+	};
 };
 
 Meteor.startup(function() {
 	if (RocketChat.settings.get('Direct_Reply_Enable') && RocketChat.settings.get('Direct_Reply_Protocol') && RocketChat.settings.get('Direct_Reply_Host') && RocketChat.settings.get('Direct_Reply_Port') && RocketChat.settings.get('Direct_Reply_Username') && RocketChat.settings.get('Direct_Reply_Password')) {
 		if (RocketChat.settings.get('Direct_Reply_Protocol') === 'IMAP') {
 			RocketChat.IMAP = new RocketChat.IMAPIntercepter({
-				user: RocketChat.settings.get('IMAP_Username'),
-				password: RocketChat.settings.get('IMAP_Password'),
-				host: RocketChat.settings.get('IMAP_Host'),
-				port: RocketChat.settings.get('IMAP_Port'),
-				debug: RocketChat.settings.get('IMAP_Debug') ? console.log : false,
-				tls: !RocketChat.settings.get('IMAP_IgnoreTLS'),
+				user: RocketChat.settings.get('Direct_Reply_Username'),
+				password: RocketChat.settings.get('Direct_Reply_Password'),
+				host: RocketChat.settings.get('Direct_Reply_Host'),
+				port: RocketChat.settings.get('Direct_Reply_Port'),
+				debug: RocketChat.settings.get('Direct_Reply_Debug') ? console.log : false,
+				tls: !RocketChat.settings.get('Direct_Reply_IgnoreTLS'),
 				connTimeout: 30000,
 				keepalive: true
 			});
