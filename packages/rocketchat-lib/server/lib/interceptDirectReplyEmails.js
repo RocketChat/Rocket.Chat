@@ -1,13 +1,24 @@
 const IMAP = require('imap');
 
-RocketChat.IMAPIntercepter = function(config) {
-	this.imap = new IMAP(config);
+class IMAPIntercepter {
+	constructor() {
+		this.imap = new IMAP({
+			user: RocketChat.settings.get('Direct_Reply_Username'),
+			password: RocketChat.settings.get('Direct_Reply_Password'),
+			host: RocketChat.settings.get('Direct_Reply_Host'),
+			port: RocketChat.settings.get('Direct_Reply_Port'),
+			debug: RocketChat.settings.get('Direct_Reply_Debug') ? console.log : false,
+			tls: !RocketChat.settings.get('Direct_Reply_IgnoreTLS'),
+			connTimeout: 30000,
+			keepalive: true
+		});
+	}
 
-	this.openInbox = function(Imap, cb) {
+	openInbox(Imap, cb) {
 		Imap.openBox('INBOX', false, cb);
-	};
+	}
 
-	this.start = function() {
+	start() {
 		const self = this;
 		const Imap = this.imap;
 
@@ -37,27 +48,27 @@ RocketChat.IMAPIntercepter = function(config) {
 			console.log(err);
 			throw err;
 		});
-	};
+	}
 
-	this.isActive = function() {
+	isActive() {
 		const Imap = this.imap;
 		if (Imap.state === 'disconnected') {
 			return false;
 		}
 
 		return true;
-	};
+	}
 
-	this.stop = function(callback) {
+	stop(callback) {
 		const Imap = this.imap;
 		Imap.end();
 		Imap.once('end', function() {
 			callback();
 		});
-	};
+	}
 
 	// Fetch all UNSEEN messages and pass them for further processing
-	this.getEmails = function(Imap) {
+	getEmails(Imap) {
 		Imap.search(['UNSEEN'], Meteor.bindEnvironment(function(err, newEmails) {
 			if (err) {
 				console.log(err);
@@ -107,5 +118,7 @@ RocketChat.IMAPIntercepter = function(config) {
 				});
 			}
 		}));
-	};
-};
+	}
+}
+
+RocketChat.IMAPIntercepter = IMAPIntercepter;

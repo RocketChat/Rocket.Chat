@@ -5,32 +5,14 @@ Meteor.methods({
 				// stop already running instance
 				if (RocketChat.IMAP && RocketChat.IMAP.isActive()) {
 					RocketChat.IMAP.stop(Meteor.bindEnvironment(function() {
-						RocketChat.IMAP = new RocketChat.IMAPIntercepter({
-							user: RocketChat.settings.get('Direct_Reply_Username'),
-							password: RocketChat.settings.get('Direct_Reply_Password'),
-							host: RocketChat.settings.get('Direct_Reply_Host'),
-							port: RocketChat.settings.get('Direct_Reply_Port'),
-							debug: RocketChat.settings.get('Direct_Reply_Debug') ? console.log : false,
-							tls: !RocketChat.settings.get('Direct_Reply_IgnoreTLS'),
-							connTimeout: 30000,
-							keepalive: true
-						});
+						RocketChat.IMAP = new RocketChat.IMAPIntercepter();
 						RocketChat.IMAP.start();
 						return {
 							message: 'Direct_Reply_Started'
 						};
 					}));
 				} else if (!RocketChat.IMAP || !RocketChat.IMAP.isActive()) {
-					RocketChat.IMAP = new RocketChat.IMAPIntercepter({
-						user: RocketChat.settings.get('Direct_Reply_Username'),
-						password: RocketChat.settings.get('Direct_Reply_Password'),
-						host: RocketChat.settings.get('Direct_Reply_Host'),
-						port: RocketChat.settings.get('Direct_Reply_Port'),
-						debug: RocketChat.settings.get('Direct_Reply_Debug') ? console.log : false,
-						tls: !RocketChat.settings.get('Direct_Reply_IgnoreTLS'),
-						connTimeout: 30000,
-						keepalive: true
-					});
+					RocketChat.IMAP = new RocketChat.IMAPIntercepter();
 					RocketChat.IMAP.start();
 					return {
 						message: 'Direct_Reply_Started'
