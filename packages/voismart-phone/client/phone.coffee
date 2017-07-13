@@ -1,11 +1,13 @@
 import moment from 'moment'
 import toastr from 'toastr'
+import PhotoSwipe from 'photoswipe'
+import PhotoSwipeUI_Default from 'photoswipe/dist/photoswipe-ui-default'
+import 'photoswipe/dist/photoswipe.css'
 
 Meteor.startup ->
 
 	if Meteor.isCordova
 		return
-
 
 	RocketChat.ToneGenerator = new PhoneTones(0, 0)
 
@@ -151,19 +153,6 @@ Template.phone.events
 		else
 			toastr.error TAPi18n.__('Empty_Number')
 
-	'click #phone-fullscreen': (e, instance) ->
-		i = document.getElementById("phonestream")
-		if i.requestFullscreen
-			i.requestFullscreen()
-		else
-			if i.webkitRequestFullscreen
-				i.webkitRequestFullscreen()
-			else
-				if i.mozRequestFullScreen
-					i.mozRequestFullScreen()
-				else
-					if i.msRequestFullscreen
-						i.msRequestFullscreen()
 
 	'click .phone-search-contact-number': (e, instance) ->
 		number = _.trim $(e.target).text()
@@ -199,6 +188,47 @@ Template.phone.events
 			instance.listRegistry.set([])
 
 		instance.showRegistry.set(!showRegistry)
+
+	'click #phone-fullscreen': (e, instance) ->
+
+		pswpElement = document.querySelectorAll('.pswp')[0];
+		options = {
+			index: 0
+			counterEl: false
+			closeOnScroll:false
+			fullscreenEl: false }
+		items = [html: '<div class="videocall" id="videocall"> </div>']
+		gallery = new PhotoSwipe( pswpElement, PhotoSwipeUI_Default, items, options);
+		gallery.init();
+		item = html: $('.videocall')[0].append($('.phone-streaming')[0])
+		items.push(item)
+		if pswpElement.mozRequestFullScreen
+			pswpElement.mozRequestFullScreen()
+		else
+			pswpElement.webkitRequestFullScreen()
+		RocketChat.Phone.playVideo()
+
+		$('#phone-fullscreen-hold').click ->
+			RocketChat.Phone.hangup()
+			gallery.close()
+
+		$('#phone-fullscreen-mute').click ->
+			if $(this).hasClass('icon-mute-clicked')
+				$(this).removeClass('icon-mute-clicked')
+				RocketChat.Phone.toggleMute()
+			else
+				$(this).addClass('icon-mute-clicked')
+				RocketChat.Phone.toggleMute()
+			return
+		gallery.listen 'destroy', ->
+			if pswpElement.mozRequestFullScreen
+				document.mozCancelFullScreen()
+			else
+				document.webkitExitFullscreen()
+			if $('.phone-video')[0]
+				$('.phone-video')[0].append($('.phone-streaming')[0])
+				RocketChat.Phone.playVideo()
+			return
 
 Template.phone.helpers
 	phoneDisplay: ->
@@ -343,6 +373,7 @@ RocketChat.Phone = new class
 	_server = undefined
 	_iceConfig = {forceRelay: false, iceServers: []}
 	_videoTag = undefined
+	_localVideoTag = undefined
 	_vertoEchoTimer = undefined
 
 	_audioInDevice = undefined
@@ -395,9 +426,11 @@ RocketChat.Phone = new class
 		if useVideo
 			useVideo = true
 			_videoTag.css('display', 'block')
+			_localVideoTag.css('display', 'block')
 		else
 			useVideo = false
 			_videoTag.css('display', 'none')
+			_localVideoTag.css('display', 'none')
 
 		_isVideoCall = useVideo
 
@@ -560,6 +593,7 @@ RocketChat.Phone = new class
 				delete _dialogs[d.callID]
 				WebNotifications.closeNotification 'phone'
 				$("#phonestream").css('display', 'none')
+				_localVideoTag.css('display', 'none')
 				Meteor.setTimeout ->
 					closeTabBar()
 				, 1000
@@ -636,7 +670,8 @@ RocketChat.Phone = new class
 			iceServers: _iceConfig?.iceServers,
 			forceRelay: _iceConfig?.forceRelay,
 			tagRinger: "phoneringer",
-			tag: "phonestream"
+			tag: "phonestream",
+			localTag: "localphonestream",
 			audioParams: {
 				googEchoCancellation: true,
 				googNoiseSuppression: true,
@@ -730,16 +765,23 @@ RocketChat.Phone = new class
 
 	removeVideo: ->
 		_videoTag = $("#phonestream")
+		_localVideoTag = $("#localphonestream")
 		_videoTag.appendTo($("body"))
 		_videoTag.css('display', 'none')
+		_localVideoTag.appendTo($("body"))
+		_localVideoTag.css('display', 'none')
 		if _curCall and _callState is 'active'
 			_videoTag[0].play()
+			_localVideoTag[0].play()
 
 	placeVideo: ->
-		_videoTag.appendTo($("#phone-video"))
+		_localVideoTag.appendTo($("#phone-streaming"))
+		_videoTag.appendTo($("#phone-streaming"))
 		if _curCall and _callState is 'active' and _isVideoCall
 			_videoTag.css('display', 'block')
 			_videoTag[0].play()
+			_localVideoTag.css('display', 'block')
+			_localVideoTag[0].play()
 		else if _curCall and _callState is 'active' and !_isVideoCall
 			_videoTag.css('display', 'none')
 			_videoTag[0].play()
@@ -824,12 +866,16 @@ RocketChat.Phone = new class
 	newCall: (destination, useVideo) ->
 		@setSearchTerm('')
 		@setSearchResult(undefined)
+
 		if useVideo
 			useVideo = true
 			_videoTag.css('display', 'block')
+			_localVideoTag.css('display', 'block')
+
 		else
 			useVideo = false
 			_videoTag.css('display', 'none')
+			_localVideoTag.css('display', 'none')
 
 		_isVideoCall = useVideo
 		Session.set("VoiSmart::Phone::lastUseVideo", useVideo)
@@ -879,6 +925,7 @@ RocketChat.Phone = new class
 			caller_id_number: Meteor.user().phoneextension,
 			useVideo: has_video,
 			useStereo: true,
+			mirrorInput: true,
 			useCamera: _videoDevice,
 			useSpeak: _audioOutDevice || "any",
 			useMic: _audioInDevice || "any"
@@ -970,6 +1017,11 @@ RocketChat.Phone = new class
 				annyang.setLanguage('en-GB')
 				annyang.start()
 
+	playVideo: ->
+		_videoTag[0].play()
+		_localVideoTag.css('display', 'block')
+		_localVideoTag[0].play()
+
 
 
 	start: (login, password, server, iceConfig) ->
@@ -991,6 +1043,7 @@ RocketChat.Phone = new class
 			return
 
 		_videoTag = $("#phonestream")
+		_localVideoTag = $("#localphonestream")
 
 		_login = login
 		_password = password
