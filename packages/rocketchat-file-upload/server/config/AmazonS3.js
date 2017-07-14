@@ -32,6 +32,8 @@ const configure = _.debounce(function() {
 	const AWSSecretAccessKey = RocketChat.settings.get('FileUpload_S3_AWSSecretAccessKey');
 	const URLExpiryTimeSpan = RocketChat.settings.get('FileUpload_S3_URLExpiryTimeSpan');
 	const Region = RocketChat.settings.get('FileUpload_S3_Region');
+	const SignatureVersion = RocketChat.settings.get('FileUpload_S3_SignatureVersion');
+	const ForcePathStyle = RocketChat.settings.get('FileUpload_S3_ForcePathStyle');
 	// const CDN = RocketChat.settings.get('FileUpload_S3_CDN');
 	const BucketURL = RocketChat.settings.get('FileUpload_S3_BucketURL');
 
@@ -43,7 +45,8 @@ const configure = _.debounce(function() {
 		connection: {
 			accessKeyId: AWSAccessKeyId,
 			secretAccessKey: AWSSecretAccessKey,
-			signatureVersion: 'v4',
+			signatureVersion: SignatureVersion,
+			s3ForcePathStyle: ForcePathStyle,
 			params: {
 				Bucket,
 				ACL: Acl
