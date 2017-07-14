@@ -29,31 +29,32 @@ Template.dbsAI_smarti.onDestroyed(function() {
  */
 Template.dbsAI_smarti.onRendered(function() {
 
-	var self = this;
+	const self = this;
 
 	function createSmarti() {
-		if(window.SmartiWidget == undefined) {
+		if (window.SmartiWidget === undefined) {
 			console.log('Smarti is undefined');
-			self.loading = setTimeout(createSmarti,200);
+			self.loading = setTimeout(createSmarti, 200);
 		} else {
 
-			var DBS_AI_Redlink_URL =
+			const DBS_AI_Redlink_URL =
 				RocketChat.settings.get('DBS_AI_Redlink_URL').endsWith('/') ?
 					RocketChat.settings.get('DBS_AI_Redlink_URL') :
-				RocketChat.settings.get('DBS_AI_Redlink_URL') + '/';
+					`${ RocketChat.settings.get('DBS_AI_Redlink_URL') }/`;
 
-			var WEBSOCKET_URL =
-				"ws" + RocketChat.settings.get('Site_Url').substring(4) + "websocket/";
+			const WEBSOCKET_URL =
+				`ws${ RocketChat.settings.get('Site_Url').substring(4) }websocket/`;
 
 
 			self.smarti = new window.SmartiWidget(self.find('.external-message'), {
 				socketEndpoint: WEBSOCKET_URL,
 				smartiEndpoint: DBS_AI_Redlink_URL,
 				channel: self.data.rid,
-				inputCssSelector:'.autogrow-shadow'
+				inputCssSelector: '.autogrow-shadow'
 			});
 		}
 	}
+
 	createSmarti();
 
 });
@@ -72,15 +73,23 @@ Template.dbsAI_smarti.helpers({
 /**
  * Load Smarti script
  */
-RocketChat.settings.onload('DBS_AI_Redlink_URL',function(key,value){
+RocketChat.settings.onload('DBS_AI_Redlink_URL', function() {
 
-	var DBS_AI_Redlink_URL = value.endsWith('/') ? value : value + '/';
+	Meteor.call('getSmartiUiScript', function(error, script) {
+		if (error) {
+			console.error('could not load Smarti:', error);
+		}
 
-	$.getScript(DBS_AI_Redlink_URL + 'plugin/v1/rocket.chat.js')
-		.done(function(){
-			console.debug('loaded Smarti successfully');
-		})
-		.fail(function( jqxhr, settings, exception ) {
-			console.error('could not load Smarti:', exception);
-		});
+		// generate a script tag for smarti JS
+		const doc = document;
+		const smartiScriptTag = doc.createElement('script');
+		smartiScriptTag.type = 'text/javascript';
+		smartiScriptTag.async = true;
+		smartiScriptTag.defer = true;
+		smartiScriptTag.innerHTML = script;
+		// insert the smarti script tag as first script tag
+		const firstScriptTag = doc.getElementsByTagName('script')[0];
+		firstScriptTag.parentNode.insertBefore(smartiScriptTag, firstScriptTag);
+		console.debug('loaded Smarti successfully');
+	});
 });
