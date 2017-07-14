@@ -35,6 +35,11 @@
 				<i class="icon-language {{#if autoTranslateFetching}}loading{{/if}}" aria-label="{{_ "Translated"}}"></i>
 			</span>
 		{{/if}}
+		{{#if emailReply}}
+			<span class="translated">
+				<i class="icon-mail" title='{{_ "Message_sent_by_email"}}' aria-label="{{_ "icon-mail"}}"></i>
+			</span>
+		{{/if}}
 		{{#if edited}}
 			<span class="edited" title='{{_ "edited"}} {{_ "at"}} {{editTime}} {{_ "by"}} {{editedBy}}'>
 				<i class="icon-edit" aria-label="{{_ "Edited"}}"></i>
