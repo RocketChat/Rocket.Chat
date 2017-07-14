@@ -59,8 +59,8 @@ Meteor.startup(function() {
 			return c.stop();
 		}
 		Meteor.setTimeout(function() {
-			if (__meteor_runtime_config__.ROOT_URL !== location.origin) {
-				const currentUrl = location.origin + __meteor_runtime_config__.ROOT_URL_PATH_PREFIX;
+			const currentUrl = location.origin + __meteor_runtime_config__.ROOT_URL_PATH_PREFIX;
+			if (__meteor_runtime_config__.ROOT_URL !== currentUrl) {
 				swal({
 					type: 'warning',
 					title: t('Warning'),
