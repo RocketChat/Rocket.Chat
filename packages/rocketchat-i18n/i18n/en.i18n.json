@@ -1678,6 +1678,7 @@
   "Two-factor_authentication_disabled": "Two-factor authentication disabled",
   "Two-factor_authentication_enabled": "Two-factor authentication enabled",
   "Two-factor_authentication_is_currently_disabled": "Two-factor authentication is currently disabled",
+  "Two-factor_authentication_native_mobile_app_warning" : "WARNING: Once you enable this, you will not be able to login on the native mobile apps (Rocket.Chat+) using your password until they implement the 2FA.",
   "Thursday": "Thursday",
   "Time_in_seconds": "Time in seconds",
   "Title": "Title",
