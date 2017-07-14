@@ -5,7 +5,7 @@ RocketChat.processDirectEmail = function(email) {
 		const message = {
 			ts: new Date(email.headers.date),
 			msg: email.body,
-			emailReply: true,
+			sentByEmail: true,
 			groupable: false
 		};
 
