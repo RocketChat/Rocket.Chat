@@ -1,4 +1,3 @@
-import {leave_automatic_channel} from 'meteor/rocketchat:plugin-handler';
 Meteor.methods({
 	leaveRoom(rid) {
 
@@ -12,6 +11,7 @@ Meteor.methods({
 
 		const room = RocketChat.models.Rooms.findOneById(rid);
 		const user = Meteor.user();
+
 		if (room.t === 'd') {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'leaveRoom' });
 		}
@@ -27,15 +27,7 @@ Meteor.methods({
 				throw new Meteor.Error('error-you-are-last-owner', 'You are the last owner. Please set new owner before leaving the room.', { method: 'leaveRoom' });
 			}
 		}
-		if (room.automatic) {
 
-			leave_automatic_channel(room.name, user, ['language']);
-			//delete the user if it is last.(There may be a race condition)
-			if (room.usernames.length===1) {
-				Meteor.call('eraseRoom', room._id, true);
-				return;
-			}
-		}
 		return RocketChat.removeUserFromRoom(rid, Meteor.user());
 	}
 });

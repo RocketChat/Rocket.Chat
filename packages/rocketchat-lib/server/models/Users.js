@@ -287,7 +287,7 @@ class ModelUsers extends RocketChat.models._Base {
 	setChannels(_id) {
 		const update = {
 			$set: {
-				automatic_channels: []
+				ignored_automatic_channels: []
 			}
 		};
 
