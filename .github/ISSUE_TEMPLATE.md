@@ -4,7 +4,7 @@ Thanks for opening an issue! A few things to keep in mind before moving forward:
 
   - Please [search our issues](https://github.com/RocketChat/Rocket.Chat/issues) for an existing issue before opening a new one. This helps us keep all information we need to fix the issue in one place.
 
-  - Before reporting a bug, please try reproducing your issue against the latest version of Rocket.Chat and don't forget to include any errors on your console (browser and server).
+  - Before reporting a bug, please try reproducing your issue against the latest version of Rocket.Chat and don't forget to include any errors on your [console](https://rocket.chat/docs/contributing/reporting-issues#gathering-logs) (browser and server).
 
 <!-- INSTRUCTION: Complete the information below from your Administration page -->
 
@@ -20,13 +20,15 @@ Node Version:
 ### Steps to Reproduce
 
 1. <!-- First Step -->
+
 2. <!-- Second Step -->
+
 3. <!-- and so on... -->
 
 ### Expected behavior:
 
 <!-- What you expect to happen -->
 
-## Actual behavior:
+### Actual behavior:
 
 <!-- What actually happens -->
