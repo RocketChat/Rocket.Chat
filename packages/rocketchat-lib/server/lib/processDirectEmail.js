@@ -4,7 +4,9 @@ RocketChat.processDirectEmail = function(email) {
 	function sendMessage(email) {
 		const message = {
 			ts: new Date(email.headers.date),
-			msg: email.body
+			msg: email.body,
+			emailReply: true,
+			groupable: false
 		};
 
 		if (!message.ts) {
@@ -63,11 +65,8 @@ RocketChat.processDirectEmail = function(email) {
 		} else if (roomInfo.t === 'p') {
 			prevMessageLink += `/group/${ roomInfo.name }?msg=${ email.headers.mid }) `;
 		}
-
+		// add reply message link
 		message.msg = prevMessageLink + message.msg;
-
-		// info: message was sent by email
-		message.msg += '\n>Message sent by Email';
 
 		const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(message.rid, user._id);
 		if (subscription && subscription.blocked || subscription.blocker) {
