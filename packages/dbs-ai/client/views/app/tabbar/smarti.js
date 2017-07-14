@@ -32,7 +32,7 @@ Template.dbsAI_smarti.onRendered(function() {
 	const self = this;
 
 	function createSmarti() {
-		if (window.SmartiWidget == undefined) {
+		if (window.SmartiWidget === undefined) {
 			console.log('Smarti is undefined');
 			self.loading = setTimeout(createSmarti, 200);
 		} else {
@@ -80,7 +80,16 @@ RocketChat.settings.onload('DBS_AI_Redlink_URL', function() {
 			console.error('could not load Smarti:', error);
 		}
 
-		eval(script);
+		// generate a script tag for smarti JS
+		const doc = document;
+		const smartiScriptTag = doc.createElement('script');
+		smartiScriptTag.type = 'text/javascript';
+		smartiScriptTag.async = true;
+		smartiScriptTag.defer = true;
+		smartiScriptTag.innerHTML = script;
+		// insert the smarti script tag as first script tag
+		const firstScriptTag = doc.getElementsByTagName('script')[0];
+		firstScriptTag.parentNode.insertBefore(smartiScriptTag, firstScriptTag);
 		console.debug('loaded Smarti successfully');
 	});
 });
