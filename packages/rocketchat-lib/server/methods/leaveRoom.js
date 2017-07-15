@@ -1,3 +1,4 @@
+import {leave_automatic_channel} from 'meteor/rocketchat:plugin-handler';
 Meteor.methods({
 	leaveRoom(rid) {
 
@@ -26,6 +27,9 @@ Meteor.methods({
 			if (numOwners === 1) {
 				throw new Meteor.Error('error-you-are-last-owner', 'You are the last owner. Please set new owner before leaving the room.', { method: 'leaveRoom' });
 			}
+		}
+		if (room.automatic) {
+			leave_automatic_channel(user, room, ['language']);
 		}
 
 		return RocketChat.removeUserFromRoom(rid, Meteor.user());

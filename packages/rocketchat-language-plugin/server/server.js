@@ -1,9 +1,11 @@
 import parser from 'accept-language-parser';
 import languages from 'languages';
 
-export function get_language(languages_codes) {
+import {plugin_handler} from 'meteor/rocketchat:plugin-handler';
+
+const getLanguage = function(user) {
 	let language_name;
-	const languages_parsed = parser.parse(languages_codes);
+	const languages_parsed = parser.parse(user.connection.httpHeaders['accept-language']);
 	if (languages_parsed.length===0) {
 		language_name = null;
 	} else {
@@ -11,13 +13,14 @@ export function get_language(languages_codes) {
 		const browser_language = languages.getLanguageInfo(priority_language);
 		language_name = browser_language.name;
 	}
-	const languageResult = {
-		channelType: 'language',
-		channelName: language_name
-	};
-	return languageResult;
-}
+
+	return language_name;
+};
 
 
+plugin_handler.addPlugin({
+	pluginName: 'language',
+	channelName: getLanguage
 
+});
 

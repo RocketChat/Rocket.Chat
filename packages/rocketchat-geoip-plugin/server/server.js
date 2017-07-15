@@ -1,7 +1,10 @@
 import satelize from 'satelize';
-export function get_country(country_header) {
+
+import {plugin_handler} from 'meteor/rocketchat:plugin-handler';
+
+const getCountry = function(user) {
 	let country_name;
-	satelize.satelize({ip: country_header}, function(err, payload) {
+	satelize.satelize({ip: user.connection.httpHeaders['x-forwarded-for'] }, function(err, payload) {
 		if (err || !payload) {
 			country_name = null;
 		} else {
@@ -12,10 +15,10 @@ export function get_country(country_header) {
 		country_name = null;
 	}
 
-	const countryResult = {
-		channelType: 'country',
-		channelName: country_name
-	};
-	return countryResult;
-}
+	return country_name;
+};
 
+plugin_handler.addPlugin({
+	pluginName: 'country',
+	channelName: getCountry
+});
