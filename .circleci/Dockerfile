@@ -1,10 +1,8 @@
-FROM rocketchat/base:4
-
-MAINTAINER buildmaster@rocket.chat
+FROM node:4
 
 ADD . /app
 
-ENV RC_VERSION 0.57.0-designpreview \
+ENV RC_VERSION=0.57.0-designpreview \
     DEPLOY_METHOD=docker \
     NODE_ENV=production \
     PORT=3000 \
