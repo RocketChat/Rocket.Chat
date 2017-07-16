@@ -31,9 +31,6 @@ jobs:
           name: Build Rocket.Chat
           command: |
             meteor npm install
-            meteor npm run lint
-            meteor npm run testunit
-            meteor npm run stylelint
             meteor build --server-only --directory /tmp/build
 
       - save_cache:
