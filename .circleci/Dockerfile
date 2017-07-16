@@ -2,7 +2,7 @@ FROM rocketchat/base:4
 
 MAINTAINER buildmaster@rocket.chat
 
-ADD /tmp/build /app
+ADD . /app
 
 ENV RC_VERSION 0.57.0-designpreview \
     DEPLOY_METHOD=docker \

@@ -41,6 +41,7 @@ jobs:
           paths:
             - ./node_modules
             - ./meteor
+            - {{ .Environment.HOME }}/.meteor
 
       - setup_remote_docker
 
@@ -48,7 +49,9 @@ jobs:
           name: Build Docker image
           command: |
             docker login -u $DOCKER_LOGIN -p $DOCKER_PASSWORD
-            docker build -f .circleci/Dockerfile -t rocketchat/rocket.chat:designpreview /tmp/build
+            cp .circleci/Dockerfile /tmp/build
+            cd /tmp/build
+            docker build -t rocketchat/rocket.chat:designpreview .
             docker push rocketchat/rocket.chat:designpreview
 
 
