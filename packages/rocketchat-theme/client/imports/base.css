@@ -4945,7 +4945,7 @@ a + br.only-after-a {
 	position: fixed;
 	top: 60px;
 	left: 0;
-	z-index: 999;
+	z-index: 1;
 	background: #ffffff;
 	width: calc(100% - 40px);
 	color: #555555;
