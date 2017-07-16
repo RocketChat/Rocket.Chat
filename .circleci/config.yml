@@ -40,7 +40,8 @@ jobs:
           key: dependency-cache-{{ checksum "package.json" }}
           paths:
             - ./node_modules
-            - ./meteor
+            - ./.meteor
+            - $HOME/.meteor
 
       - setup_remote_docker
 
