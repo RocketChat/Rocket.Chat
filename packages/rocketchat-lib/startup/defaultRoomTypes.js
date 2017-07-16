@@ -113,7 +113,7 @@ RocketChat.roomTypes.add('p', 30, {
 	},
 
 	roomName(roomData) {
-		return roomData.name;
+		return RocketChat.settings.get('UI_Use_Room_Real_Name') ? roomData.description : roomData.name;
 	},
 
 	condition() {

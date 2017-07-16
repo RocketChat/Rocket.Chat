@@ -70,6 +70,10 @@ Template.roomList.helpers({
 
 	hasMoreGroupsButton(room) {
 		return room.identifier === 'p';
+	},
+
+	roomType(room) {
+		return room.identifier;
 	}
 });
 
