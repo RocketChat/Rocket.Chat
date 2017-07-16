@@ -31,6 +31,9 @@ jobs:
           name: Build Rocket.Chat
           command: |
             meteor npm install
+            set +e
+            meteor add rocketchat:lib
+            set -e
             meteor build --server-only --directory /tmp/build
 
       - save_cache:
