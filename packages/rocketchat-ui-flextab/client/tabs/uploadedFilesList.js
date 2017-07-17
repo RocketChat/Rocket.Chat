@@ -1,7 +1,8 @@
 /* globals chatMessages*/
 const roomFiles = new Mongo.Collection('room_files');
 
-const removeFiles = (upload, msg) => {
+const removeFile = (upload, msg) => {
+
 	RocketChat.models.Uploads.remove(upload._id, function() {
 		if (msg) {
 			return chatMessages[Session.get('openedRoom')].deleteMsg(msg);
@@ -128,10 +129,10 @@ Template.uploadedFilesList.events({
 			if (!self._id) {
 
 				self.files.map((file) => {
-					return removeFiles(file, msg);
+					return removeFile(file, msg);
 				});
 			} else {
-				return removeFiles(self, msg);
+				return removeFile(self, msg);
 			}
 		});
 	},
