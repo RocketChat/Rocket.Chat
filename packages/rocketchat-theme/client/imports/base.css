@@ -4745,12 +4745,12 @@ a + br.only-after-a {
 }
 
 .embedded-view {
-	& .flex-tab-bar {
-		display: none;
-	}
-
 	& .messages-container {
 		border-width: 0;
+
+		& .flex-tab-container {
+			display: none;
+		}
 
 		& .messages-box {
 			margin-top: 0;
