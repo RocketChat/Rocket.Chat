@@ -232,7 +232,7 @@ describe('[Api Settings Change]', () => {
 			sideNav.general.click();
 			mainContent.setTextToInput('badword');
 			mainContent.sendBtn.click();
-			mainContent.waitForLastMessageEqualsText('*******');
+			mainContent.waitForLastMessageEqualsText('xxxxxxx');
 		});
 
 		it('it should change the bad words filter via api', (done) => {
