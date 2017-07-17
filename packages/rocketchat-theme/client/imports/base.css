@@ -4915,3 +4915,77 @@ a + br.only-after-a {
 		max-height: 50px !important;
 	}
 }
+
+.room-leader a.chat-now {
+	position: absolute;
+	right: 25px;
+	width: 80px;
+	top: 15px;
+	height: 30px;
+	border: 1px solid #eaeaea;
+	text-align: center;
+	border-radius: 4px;
+	font-family: arial;
+	font-size: 14px;
+	text-decoration: none;
+	color: #555555;
+	cursor: pointer;
+	padding-top: 4px;
+}
+
+.room-leader a.chat-now:hover {
+	color: #555555;
+}
+
+.room-leader-container {
+	height: 54px;
+}
+
+.room-leader {
+	position: fixed;
+	top: 60px;
+	left: 0;
+	z-index: 1;
+	background: #ffffff;
+	width: calc(100% - 40px);
+	color: #555555;
+	border-bottom: solid 1px #eaeaea;
+	height: 54px;
+}
+
+.room-leader .thumb {
+	top: 6px;
+}
+
+.room-leader .right {
+	position: absolute;
+	top: 10px;
+	left: 70px;
+}
+
+.leader-status .status-text {
+	text-transform: capitalize;
+	padding-left: 15px;
+	font-size: 14px;
+}
+
+.leader-status .color-ball {
+	width: 10px;
+	height: 10px;
+	position: absolute;
+	border-radius: 5px;
+	margin-top: 5px;
+}
+
+.leader-status .color-ball.online {
+	background: green;
+}
+
+.leader-status .color-ball.offline {
+	background: grey;
+}
+
+.leader-info .leader-name {
+	font-size: 18px;
+}
+
