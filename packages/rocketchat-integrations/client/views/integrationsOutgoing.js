@@ -29,7 +29,7 @@ Template.integrationsOutgoing.onCreated(function _integrationsOutgoingOnCreated(
 			scriptEnabled: $('[name=scriptEnabled]:checked').val().trim() === '1',
 			script: $('[name=script]').val().trim(),
 			targetRoom: $('[name=targetRoom]').val() ? $('[name=targetRoom]').val().trim() : undefined,
-			triggerWordAnywhere: $('[name=triggerWordAnywhere]').val() ? $('[name=triggerWordAnywhere]').val().trim() : undefined,
+			triggerWordAnywhere: $('[name=triggerWordAnywhere]:checked').val().trim() === '1',
 			retryFailedCalls: $('[name=retryFailedCalls]:checked').val().trim() === '1',
 			retryCount: $('[name=retryCount]').val() ? $('[name=retryCount]').val().trim() : 6,
 			retryDelay: $('[name=retryDelay]').val() ? $('[name=retryDelay]').val().trim() : 'powers-of-ten',
@@ -294,7 +294,7 @@ Template.integrationsOutgoing.events({
 			triggerWords = $('[name=triggerWords]').val().trim();
 			triggerWords = triggerWords.split(',').filter((word) => word.trim() !== '');
 
-			triggerWordAnywhere = $('[name=triggerWordAnywhere]').val().trim();
+			triggerWordAnywhere = $('[name=triggerWordAnywhere]:checked').val().trim();
 			runOnEdits = $('[name=runOnEdits]:checked').val().trim();
 		}
 
