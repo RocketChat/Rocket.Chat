@@ -262,11 +262,16 @@ Template.pushNotificationsFlexTab.events({
 				$audio[0].play();
 			}
 		} else {
-			audio = Meteor.user() && Meteor.user().settings && Meteor.user().settings.preferences && Meteor.user().settings.preferences.newMessageNotification || 'chime';
-			if (audio && audio !== 'none') {
-				const $audio = $(`audio#${ audio }`);
-				if ($audio && $audio[0] && $audio[0].play) {
-					$audio[0].play();
+			const user = Meteor.user()
+			if (user && user.settings && user.settings.preferences) {
+				audio = user.settings.preferences.newMessageNotification || 'chime';
+				const audioVolume = user.settings.preferences.notificationsSoundVolume || 100;
+				if (audio && audio !== 'none') {
+					const $audio = $(`audio#${ audio }`);
+					if ($audio && $audio[0] && $audio[0].play) {
+						$audio[0].volume = audioVolume/100;
+						$audio[0].play();
+					}
 				}
 			}
 		}

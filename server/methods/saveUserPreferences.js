@@ -55,6 +55,10 @@ Meteor.methods({
 				preferences.unreadAlert = settings.unreadAlert === '1' ? true : false;
 			}
 
+			if (settings.notificationsSoundVolume) {
+				preferences.notificationsSoundVolume = settings.notificationsSoundVolume;
+			}
+
 			preferences.desktopNotificationDuration = settings.desktopNotificationDuration - 0;
 			preferences.viewMode = settings.viewMode || 0;
 			preferences.hideUsernames = settings.hideUsernames === '1';
