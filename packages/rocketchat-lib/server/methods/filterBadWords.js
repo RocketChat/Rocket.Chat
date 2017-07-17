@@ -10,7 +10,7 @@ RocketChat.callbacks.add('beforeSaveMessage', function(message) {
 		if (!!badWordsList && badWordsList.length) {
 			options = {
 				list: badWordsList.split(','),
-				placeHolder: '\*'
+				placeHolder: 'x'
 			};
 		}
 		const filter = new Filter(options);
