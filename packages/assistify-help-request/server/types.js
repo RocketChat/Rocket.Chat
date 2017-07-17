@@ -2,9 +2,10 @@ import {helpRequest} from '../help-request';
 
 // Definition of value objects. No clue why export interface is not supported
 class HelpDiscussionCreatedResponse {
-	constructor(url, providersJoined) {
+	constructor(url, members) {
+		this.success = true;
 		this.url = url;
-		this.providers_joined = providersJoined;
+		this.members = members;
 	}
 }
 

@@ -115,7 +115,8 @@ Template.HelpRequestActions.events({
 					});
 
 					instance.helpRequest.set(
-						RocketChat.models.HelpRequests.findOneByRoomId(Template.currentData())
+						//RocketChat.models.HelpRequests.findOneByRoomId(Template.currentData())
+						RocketChat.models.HelpRequests.findOneByRoomId(instance.data.roomId)//TODO is this correct?
 					);
 				}
 			});

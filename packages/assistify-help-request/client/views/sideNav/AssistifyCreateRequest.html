@@ -1,11 +1,9 @@
 <template name="AssistifyCreateRequest">
+	<h4>{{_ "Requests" }}</h4>
 	<label class="color-tertiary-font-color" for="expertise-search">{{_ "New_request_for_expertise"}}</label>
+	<div class="input-line no-icon">
 		{{> inputAutocomplete settings=autocompleteExpertiseSettings id="expertise-search" class="search" autocomplete=off value=expertise}}
-	<!--Placeholder: Seperate field to enter any name-->
-	<!--<div class="input-line no-icon">-->
-		<!--<span>{{_ "Request"}}</span>-->
-		<!--<input type="text" id="request-name" class="required" dir="auto" placeholder="{{_ 'Enter_name_here'}}">-->
-	<!--</div>-->
+	</div>
 	<div class="input-submit">
 		<button class="button primary save-request">{{_ "Create" }}</button>
 		<button class="button cancel-request">{{_ "Cancel" }}</button>

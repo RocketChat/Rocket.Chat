@@ -15,7 +15,8 @@ Meteor.startup(function() {
 		section: 'Knowledge_Base',
 		values: [
 			{ key: '0', i18nLabel: 'DBS_AI_Source_APIAI'},
-			{ key: '1', i18nLabel: 'DBS_AI_Source_Redlink'}
+			{ key: '1', i18nLabel: 'DBS_AI_Source_Redlink'},
+			{ key: '2', i18nLabel: 'DBS_AI_Source_Smarti'}
 		],
 		public: true,
 		i18nLabel: 'DBS_AI_Source'
@@ -39,6 +40,13 @@ Meteor.startup(function() {
 		i18nLabel: 'DBS_AI_Redlink_Auth_Token'
 	});
 
+	RocketChat.settings.add('DBS_AI_Redlink_Hook_Token', 'key123', {
+		type: 'string',
+		group: 'Assistify',
+		section: 'Knowledge_Base',
+		public: true,
+		i18nLabel: 'DBS_AI_Redlink_Hook_Token'
+	});
 
 	let domain = RocketChat.settings.get('Site_Url');
 	if (domain) {
