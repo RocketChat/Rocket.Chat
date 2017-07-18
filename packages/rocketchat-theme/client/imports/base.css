@@ -3271,7 +3271,8 @@ body:not(.is-cordova) {
 			font-weight: 600;
 		}
 
-		& .see-all {
+		& .see-all,
+		& .delete-all {
 			float: right;
 			border-width: 0;
 			text-decoration: underline;
