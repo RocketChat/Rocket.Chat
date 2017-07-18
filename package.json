@@ -85,7 +85,7 @@
 		"postcss-cssnext": "^2.11.0",
 		"postcss-smart-import": "^0.7.5",
 		"simple-git": "^1.73.0",
-		"stylelint": "^8.0.0",
+		"stylelint": "^7.13.0",
 		"supertest": "^3.0.0"
 	},
 	"dependencies": {
