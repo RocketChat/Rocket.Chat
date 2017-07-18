@@ -241,6 +241,7 @@ let isSocialSharingOpen = false;
 let touchMoved = false;
 let lastTouchX = null;
 let lastTouchY = null;
+let lastScrollTop;
 
 Template.room.events({
 	'click, touchend'(e, t) {
@@ -253,6 +254,20 @@ Template.room.events({
 		if ((Template.instance().tabBar.getState() === 'opened') && user && user.settings && user.settings.preferences && user.settings.preferences.hideFlexTab) {
 			return Template.instance().tabBar.close();
 		}
+	},
+
+	'scroll .messages-box .wrapper'() {
+		const $wrapper = $('.messages-box .wrapper');
+		if ($wrapper.scrollTop() < lastScrollTop) {
+			$('.room-leader').removeClass('hidden');
+		} else if ($wrapper.scrollTop() > $('.room-leader-container').height()) {
+			$('.room-leader').addClass('hidden');
+		}
+		lastScrollTop = $wrapper.scrollTop();
+	},
+
+	'scroll .messages-container'() {
+		console.log('scrolling1234');
 	},
 
 	'touchstart .message'(e, t) {
@@ -678,12 +693,28 @@ Template.room.onCreated(function() {
 		return this.userDetail.set(null);
 	};
 
+	function setLeader(u) {
+		//Wish I could use the client Subscription model for this and put it as a header function
+		//but it wasn't returning the all the user roles.
+		const $leaderContainer = $('.room-leader-container');
+		$leaderContainer.removeClass('hidden');
+		$leaderContainer.find('.leader-info .leader-name').html(u.name || u.username);
+		$leaderContainer.find('.avatar-image').attr('style', 'background-image:url(/avatar/{{u.uername}}?_dc=undefined);');
+		$leaderContainer.find('.chat-now').attr('href', '/direct/{{u.username}}');
+		const currUser = RocketChat.models.Users.find({ _id:  u._id}).fetch()[0];
+		$leaderContainer.find('.leader-status').addClass(currUser.status);
+		$leaderContainer.find('.leader-status-text').html(currUser.status);
+	}
+
 	Meteor.call('getRoomRoles', this.data._id, function(error, results) {
 		if (error) {
 			return handleError(error);
 		}
 
 		return Array.from(results).map((record) => {
+			if (record.roles.indexOf('leader') > -1) {
+				setLeader(record.u);
+			}
 			delete record._id;
 			RoomRoles.upsert({ rid: record.rid, 'u._id': record.u._id }, record);
 		});
@@ -805,6 +836,7 @@ Template.room.onRendered(function() {
 	$('.flex-tab-bar').on('click', (/*e, t*/) =>
 		Meteor.setTimeout(() => template.sendToBottomIfNecessaryDebounced(), 50)
 	);
+	lastScrollTop = $('.messages-box .wrapper').scrollTop();
 
 	const rtl = $('html').hasClass('rtl');
 
