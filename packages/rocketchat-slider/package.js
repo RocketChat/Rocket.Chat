@@ -1,9 +1,9 @@
 Package.describe({
-  name: 'rocketchat:slider',
-  version: '0.0.1',
-  summary: 'UI slider component for input range.',
-  git: '',
-  documentation: 'README.md'
+	name: 'rocketchat:slider',
+	version: '0.0.1',
+	summary: 'UI slider component for input range.',
+	git: '',
+	documentation: 'README.md'
 });
 
 Package.onUse(function(api) {
