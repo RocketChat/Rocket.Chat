@@ -45,7 +45,6 @@ Meteor.methods({
 		}
 
 		RocketChat.models.Users.setName(userId, s.trim(formData.name));
-		RocketChat.models.Users.setChannels(userId);
 
 		RocketChat.saveCustomFields(userId, formData);
 

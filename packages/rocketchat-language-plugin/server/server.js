@@ -20,7 +20,7 @@ const getLanguage = function(user) {
 
 plugin_handler.addPlugin({
 	pluginName: 'language',
-	channelName: getLanguage
+	getChannelName: getLanguage
 
 });
 

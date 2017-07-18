@@ -20,5 +20,5 @@ const getCountry = function(user) {
 
 plugin_handler.addPlugin({
 	pluginName: 'country',
-	channelName: getCountry
+	getChannelName: getCountry
 });

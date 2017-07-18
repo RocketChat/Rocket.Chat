@@ -92,6 +92,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/functions/unarchiveRoom.js', 'server');
 	api.addFiles('server/functions/updateMessage.js', 'server');
 	api.addFiles('server/functions/Notifications.js', 'server');
+	api.addFiles('server/functions/eraseRoom.js', 'server');
 
 	// SERVER LIB
 	api.addFiles('server/lib/configLogger.js', 'server');

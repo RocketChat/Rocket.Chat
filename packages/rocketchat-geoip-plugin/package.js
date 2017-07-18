@@ -8,7 +8,7 @@ Package.onUse(function(api) {
 	api.use('ecmascript');
 	api.use('rocketchat:plugin-handler');
 
-	api.addFiles('server/server.js', 'server');
+	api.mainModule('server/server.js', 'server');
 });
 
 Npm.depends({
