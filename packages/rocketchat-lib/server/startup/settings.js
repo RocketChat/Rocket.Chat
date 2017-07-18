@@ -1036,6 +1036,10 @@ RocketChat.settings.addGroup('Layout', function() {
 			type: 'boolean',
 			'public': true
 		});
+		this.add('UI_Use_Room_Real_Name', false, {
+			type: 'boolean',
+			'public': true
+		});
 	});
 });
 
