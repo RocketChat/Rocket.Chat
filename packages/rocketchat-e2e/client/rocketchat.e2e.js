@@ -114,6 +114,7 @@ Meteor.startup(function() {
 
 	RocketChat.promises.add('onClientBeforeSendMessage', function(message) {
 		if (message.rid && RocketChat.E2E.getInstanceByRoomId(message.rid) && RocketChat.E2E.getInstanceByRoomId(message.rid).established.get()) {
+			console.log("WILL ENCRYPT");
 			return RocketChat.E2E.getInstanceByRoomId(message.rid).encrypt(message)
 				.then((msg) => {
 					message.msg = msg;
@@ -128,10 +129,10 @@ Meteor.startup(function() {
 
 	RocketChat.promises.add('onClientMessageReceived', function(message) {
 		console.log(message);
-		const e2eRoom = RocketChat.E2E.getInstanceByRoomId(message.rid);
-		const peerRegistrationId = e2eRoom.peerRegistrationId;
-		const existingSession = RocketChat.E2EStorage.sessionExists(peerRegistrationId);
 		if (message.rid && RocketChat.E2E.getInstanceByRoomId(message.rid) && message.t === 'e2e') { //&& RocketChat.E2E.getInstanceByRoomId(message.rid).established.get()) {
+			const e2eRoom = RocketChat.E2E.getInstanceByRoomId(message.rid);
+			const peerRegistrationId = e2eRoom.peerRegistrationId;
+			const existingSession = RocketChat.E2EStorage.sessionExists(peerRegistrationId);
 			if (message.notification) {
 				message.msg = t('Encrypted_message');
 				return Promise.resolve(message);

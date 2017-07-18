@@ -4,7 +4,7 @@ Meteor.startup(function() {
 			RocketChat.E2E.crypto = window.crypto.subtle || window.crypto.webkitSubtle;
 			RocketChat.E2E.enabled.set(true);
 			RocketChat.TabBar.addButton({
-				groups: ['direct'],
+				groups: ['direct', 'group'],
 				id: 'e2e',
 				i18nTitle: 'E2E',
 				icon: 'icon-key',
