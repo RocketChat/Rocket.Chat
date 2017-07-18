@@ -1,5 +1,6 @@
 /*globals defaultUserLanguage, KonchatNotification */
 import toastr from 'toastr';
+
 Template.accountPreferences.helpers({
 	audioAssets() {
 		return (RocketChat.CustomSounds && RocketChat.CustomSounds.getList && RocketChat.CustomSounds.getList()) || [];
@@ -130,7 +131,7 @@ Template.accountPreferences.onCreated(function() {
 		}));
 		data.desktopNotificationDuration = $('input[name=desktopNotificationDuration]').val();
 		data.unreadAlert = $('#unreadAlert').find('input:checked').val();
-		data.notificationsSoundVolume = parseInt($('input[name=notificationsSoundVolume]').val());
+		data.notificationsSoundVolume = parseInt($('#notificationsSoundVolume').val());
 
 		Meteor.call('saveUserPreferences', data, function(error, results) {
 			if (results) {

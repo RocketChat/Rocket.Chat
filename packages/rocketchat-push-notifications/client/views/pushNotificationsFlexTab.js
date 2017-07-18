@@ -255,34 +255,37 @@ Template.pushNotificationsFlexTab.events({
 
 	'click [data-play]'(e) {
 		e.preventDefault();
+
 		let audio = $(e.currentTarget).data('play');
+
+		if (!audio || audio === 'none') {
+			audio = Meteor.user().settings.preferences.newMessageNotification || 'chime';
+		}
+
 		if (audio && audio !== 'none') {
+
+			const audioVolume = Meteor.user().settings.preferences.notificationsSoundVolume || 100;
 			const $audio = $(`audio#${ audio }`);
+
 			if ($audio && $audio[0] && $audio[0].play) {
+				$audio[0].volume = Number((audioVolume/100).toPrecision(2));
 				$audio[0].play();
-			}
-		} else {
-			const user = Meteor.user()
-			if (user && user.settings && user.settings.preferences) {
-				audio = user.settings.preferences.newMessageNotification || 'chime';
-				const audioVolume = user.settings.preferences.notificationsSoundVolume || 100;
-				if (audio && audio !== 'none') {
-					const $audio = $(`audio#${ audio }`);
-					if ($audio && $audio[0] && $audio[0].play) {
-						$audio[0].volume = audioVolume/100;
-						$audio[0].play();
-					}
-				}
 			}
 		}
 	},
 
 	'change select[name=audioNotification]'(e) {
 		e.preventDefault();
+
 		const audio = $(e.currentTarget).val();
+
 		if (audio && audio !== 'none') {
+
+			const audioVolume = Meteor.user().settings.preferences.notificationsSoundVolume || 100;
 			const $audio = $(`audio#${ audio }`);
+
 			if ($audio && $audio[0] && $audio[0].play) {
+				$audio[0].volume = Number((audioVolume/100).toPrecision(2));
 				$audio[0].play();
 			}
 		}
