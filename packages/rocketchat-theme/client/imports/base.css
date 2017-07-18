@@ -4975,14 +4975,11 @@ a + br.only-after-a {
 	position: absolute;
 	border-radius: 5px;
 	margin-top: 5px;
+	background: grey;
 }
 
 .leader-status .color-ball.online {
 	background: green;
-}
-
-.leader-status .color-ball.offline {
-	background: grey;
 }
 
 .leader-info .leader-name {

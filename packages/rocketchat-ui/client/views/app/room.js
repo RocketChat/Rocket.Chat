@@ -693,12 +693,28 @@ Template.room.onCreated(function() {
 		return this.userDetail.set(null);
 	};
 
+	function setLeader(u) {
+		//Wish I could use the client Subscription model for this and put it as a header function
+		//but it wasn't returning the all the user roles.
+		const $leaderContainer = $('.room-leader-container');
+		$leaderContainer.removeClass('hidden');
+		$leaderContainer.find('.leader-info .leader-name').html(u.name || u.username);
+		$leaderContainer.find('.avatar-image').attr('style', 'background-image:url(/avatar/{{u.uername}}?_dc=undefined);');
+		$leaderContainer.find('.chat-now').attr('href', '/direct/{{u.username}}');
+		const currUser = RocketChat.models.Users.find({ _id:  u._id}).fetch()[0];
+		$leaderContainer.find('.leader-status').addClass(currUser.status);
+		$leaderContainer.find('.leader-status-text').html(currUser.status);
+	}
+
 	Meteor.call('getRoomRoles', this.data._id, function(error, results) {
 		if (error) {
 			return handleError(error);
 		}
 
 		return Array.from(results).map((record) => {
+			if (record.roles.indexOf('leader') > -1) {
+				setLeader(record.u);
+			}
 			delete record._id;
 			RoomRoles.upsert({ rid: record.rid, 'u._id': record.u._id }, record);
 		});
