@@ -215,7 +215,7 @@
 							<div class="input-line double-col">
 								<label>{{_ "Notifications_Sound_Volume"}}</label>
 								<div>
-									<input name="notificationsSoundVolume" type="range" min="0" max="100" value="{{notificationsSoundVolume}}">
+									{{> slider id="notificationsSoundVolume" min="0" max="100" value=notificationsSoundVolume}}
 								</div>
 							</div>
 						</div>
