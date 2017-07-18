@@ -1586,6 +1586,7 @@ label.required::after {
 		font-size: 22px;
 		font-weight: 500;
 		line-height: 29px;
+		flex: 1;
 
 		& .icon-at,
 		& .icon-hash,
@@ -1596,6 +1597,11 @@ label.required::after {
 		& .icon-star,
 		& .icon-star-empty {
 			margin-right: -4px;
+		}
+
+		& .iframe-toolbar {
+			flex-grow: 0;
+			white-space: nowrap;
 		}
 	}
 
