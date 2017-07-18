@@ -22,10 +22,16 @@ jobs:
       - run:
           name: Install Meteor
           command: if [ ! -e "$HOME/.meteor/meteor" ]; then curl https://install.meteor.com | sed s/--progress-bar/-sL/g | /bin/sh; fi
+          filters:
+            branches:
+              only: color-variables
 
       # Download and cache dependencies
       - restore_cache:
           key: dependency-cache-{{ checksum "package.json" }}
+          filters:
+            branches:
+              only: color-variables
 
       - run:
           name: Build Rocket.Chat
@@ -35,6 +41,9 @@ jobs:
             meteor add rocketchat:lib
             set -e
             meteor build --server-only --directory /tmp/build
+          filters:
+            branches:
+              only: color-variables
 
       - save_cache:
           key: dependency-cache-{{ checksum "package.json" }}
@@ -42,6 +51,9 @@ jobs:
             - ./node_modules
             - ./.meteor
             - $HOME/.meteor
+          filters:
+            branches:
+              only: color-variables
 
       - setup_remote_docker
 
@@ -53,6 +65,6 @@ jobs:
             cd /tmp/build
             docker build -t rocketchat/rocket.chat:designpreview .
             docker push rocketchat/rocket.chat:designpreview
-
-
-
+          filters:
+            branches:
+              only: color-variables
