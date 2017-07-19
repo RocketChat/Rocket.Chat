@@ -4,65 +4,23 @@ import {
 
 import { mergeTypes, mergeResolvers } from 'merge-graphql-schemas';
 
-import { authenticated } from './mocks/accounts/graphql-api';
-
-import AccountsServer from './mocks/accounts/server';
-
-import {
-	property
-} from './helpers/property';
-
 import * as channels from './schemas/channels';
 import * as messages from './schemas/messages';
-
-const rootSchema = `
-	type Mutation {
-		setStatus(status: UserStatus!): Member
-	}
-
-	enum UserStatus {
-		ONLINE
-		AWAY
-		BUSY
-		INVISIBLE
-	}
-
-	type Member {
-		id: String!
-		name: String
-		# TODO: change to UserStatus
-		status: String
-	}
-`;
-
-const rootResolvers = {
-	Mutation: {
-		setStatus: authenticated(AccountsServer, (root, { status }, { models, user }) => {
-			models.Users.update(user._id, {
-				$set: {
-					status: status.toLowerCase()
-				}
-			});
-
-			return models.Users.findOne(user._id);
-		})
-	},
-	Member: {
-		id: property('_id'),
-		status: ({status}) => status.toUpperCase()
-	}
-};
+import * as accounts from './schemas/accounts';
+import * as users from './schemas/users';
 
 const schema = mergeTypes([
-	rootSchema,
 	channels.schema,
-	messages.schema
+	messages.schema,
+	accounts.schema,
+	users.schema
 ]);
 
 const resolvers = mergeResolvers([
-	rootResolvers,
 	channels.resolvers,
-	messages.resolvers
+	messages.resolvers,
+	accounts.resolvers,
+	users.resolvers
 ]);
 
 export const executableSchema = makeExecutableSchema({

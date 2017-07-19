@@ -3,12 +3,12 @@ import { property } from '../../helpers/property';
 export const schema = `
 	type Message {
 		id: String
-		author: Member
+		author: User
 		content: String
 		channel: Channel
 		creationTime: String
 		fromServer: Boolean
-		userRef: [Member]
+		userRef: [User]
 		channelRef: [Channel]
 		reactions: [Reaction]
 		# TODO

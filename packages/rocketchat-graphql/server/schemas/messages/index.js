@@ -6,6 +6,9 @@ import * as messages from './messages';
 import * as sendMessage from './sendMessage';
 import * as editMessage from './editMessage';
 import * as deleteMessage from './deleteMessage';
+import * as addReactionToMessage from './addReactionToMessage';
+// subscriptions
+import * as chatMessageAdded from './chatMessageAdded';
 // types
 import * as MessageType from './Message-type';
 import * as MessagesWithCursorType from './MessagesWithCursor-type';
@@ -19,6 +22,9 @@ export const schema = mergeTypes([
 	sendMessage.schema,
 	editMessage.schema,
 	deleteMessage.schema,
+	addReactionToMessage.schema,
+	// subscriptions
+	chatMessageAdded.schema,
 	// types
 	MessageType.schema,
 	MessagesWithCursorType.schema,
@@ -33,6 +39,9 @@ export const resolvers = mergeResolvers([
 	sendMessage.resolver,
 	editMessage.resolver,
 	deleteMessage.resolver,
+	addReactionToMessage.resolver,
+	// subscriptions
+	chatMessageAdded.resolver,
 	// types
 	MessageType.resolver
 ]);
