@@ -50,6 +50,9 @@ export const resolver = {
 						};
 						break;
 				}
+
+				// joinedChannels
+				// TODO:
 			}
 
 			return models.Rooms.find(query, options).fetch();

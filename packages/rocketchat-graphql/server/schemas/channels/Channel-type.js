@@ -8,8 +8,8 @@ export const schema = `
 		description: String
 		announcement: String
 		topic: String
-		members: [Member]
-		owners: [Member]
+		members: [User]
+		owners: [User]
 		numberOfMembers: Int
 		numberOfMessages: Int
 		readOnly: Boolean

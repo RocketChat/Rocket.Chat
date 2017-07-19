@@ -5,7 +5,12 @@ import AccountsServer from '../../mocks/accounts/server';
 
 export const schema = `
 	type Mutation {
-		createChannel(name: String!, private: Boolean = false, readOnly: Boolean = false, membersId: [String!]): Channel
+		createChannel(
+			name: String!,
+			private: Boolean = false,
+			readOnly: Boolean = false,
+			membersId: [String!]
+		): Channel
 	}
 `;
 

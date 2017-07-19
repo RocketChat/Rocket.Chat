@@ -6,11 +6,14 @@ import * as channelByName from './channelByName';
 import * as channelsByUser from './channelsByUser';
 // mutations
 import * as createChannel from './createChannel';
+import * as leaveChannel from './leaveChannel';
+import * as hideChannel from './hideChannel';
 // types
-import * as channelType from './Channel-type';
-import * as channelSort from './ChannelSort-enum';
-import * as channelFilter from './ChannelFilter-input';
+import * as ChannelType from './Channel-type';
+import * as ChannelSort from './ChannelSort-enum';
+import * as ChannelFilter from './ChannelFilter-input';
 import * as Privacy from './Privacy-enum';
+import * as ChannelNameAndDirect from './ChannelNameAndDirect-input';
 
 export const schema = mergeTypes([
 	// queries
@@ -19,11 +22,14 @@ export const schema = mergeTypes([
 	channelsByUser.schema,
 	// mutations
 	createChannel.schema,
+	leaveChannel.schema,
+	hideChannel.schema,
 	// types
-	channelType.schema,
-	channelSort.schema,
-	channelFilter.schema,
-	Privacy.schema
+	ChannelType.schema,
+	ChannelSort.schema,
+	ChannelFilter.schema,
+	Privacy.schema,
+	ChannelNameAndDirect.schema
 ]);
 
 export const resolvers = mergeResolvers([
@@ -33,6 +39,8 @@ export const resolvers = mergeResolvers([
 	channelsByUser.resolver,
 	// mutations
 	createChannel.resolver,
+	leaveChannel.resolver,
+	hideChannel.resolver,
 	// types
-	channelType.resolver
+	ChannelType.resolver
 ]);

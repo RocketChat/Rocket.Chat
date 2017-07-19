@@ -7,7 +7,7 @@ const AccountsServer = {
 		}
 		// User credentials
 		// mys:admin
-		return RocketChat.models.Users.findOneById('fnw4B4suFsTXf8rZq');
+		return RocketChat.models.Users.findOne({username: 'mys'});
 	}
 };
 
