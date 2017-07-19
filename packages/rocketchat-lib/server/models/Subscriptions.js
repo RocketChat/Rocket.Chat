@@ -543,7 +543,8 @@ class ModelSubscriptions extends RocketChat.models._Base {
 			t: room.t,
 			u: {
 				_id: user._id,
-				username: user.username
+				username: user.username,
+				name: user.name
 			}
 		};
 

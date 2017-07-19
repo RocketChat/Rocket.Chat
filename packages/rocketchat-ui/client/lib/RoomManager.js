@@ -52,7 +52,7 @@ const RoomManager = new function() {
 											msg.t = typeName[0];
 											msg.recipient = typeName.substr(1, typeName.length);
 										}
-
+										msg.name = room.name;
 										Meteor.defer(() => RoomManager.updateMentionsMarksOfRoom(typeName));
 
 										RocketChat.callbacks.run('streamMessage', msg);
