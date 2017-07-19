@@ -36,7 +36,7 @@ Template.HelpRequestActions.dialogs = {
 		 */
 		display() {
 			const self = this;
-			return new Promise(function (resolve, reject) {
+			return new Promise(function(resolve, reject) {
 				swal.withForm(_.extend({
 					title: t('Closing_chat'),
 					text: '',
@@ -64,7 +64,7 @@ Template.HelpRequestActions.dialogs = {
 					}],
 					showCancelButton: true,
 					closeOnConfirm: false
-				}, self.properties), function (isConfirm) {
+				}, self.properties), function(isConfirm) {
 					if (!isConfirm) { //on cancel
 						$('.swal-form').remove(); //possible bug? why I have to do this manually
 						reject();
@@ -96,16 +96,16 @@ Template.HelpRequestActions.events({
 			roomId: instance.data.roomId
 		}), (inputValue) => {
 			/*if (!inputValue) {
-				swal.showInputError(t('Please_add_a_comment_to_close_the_room'));
-				return false;
-			}
+			 swal.showInputError(t('Please_add_a_comment_to_close_the_room'));
+			 return false;
+			 }
 
-			if (s.trim(inputValue) === '') {
-				swal.showInputError(t('Please_add_a_comment_to_close_the_room'));
-				return false;
-			}*/
+			 if (s.trim(inputValue) === '') {
+			 swal.showInputError(t('Please_add_a_comment_to_close_the_room'));
+			 return false;
+			 }*/
 
-			Meteor.call('assistify:closeHelpRequest', this.roomId, {comment: inputValue}, function (error) {
+			Meteor.call('assistify:closeHelpRequest', this.roomId, {comment: inputValue}, function(error) {
 				if (error) {
 					return handleError(error);
 				} else {
@@ -134,17 +134,8 @@ Template.HelpRequestActions.events({
 			showCancelButton: true,
 			closeOnConfirm: false
 		}, (inputValue) => {
-			if (!inputValue) {
-				swal.showInputError(t('Please_add_a_comment_to_close_the_room'));
-				return false;
-			}
 
-			if (s.trim(inputValue) === '') {
-				swal.showInputError(t('Please_add_a_comment_to_close_the_room'));
-				return false;
-			}
-
-			Meteor.call('livechat:closeRoom', this.rid, inputValue, function (error/*, result*/) {
+			Meteor.call('livechat:closeRoom', this.roomId, inputValue, function(error/*, result*/) {
 				if (error) {
 					return handleError(error);
 				}
@@ -160,26 +151,19 @@ Template.HelpRequestActions.events({
 	}
 });
 
-Template.HelpRequestActions.onCreated(function () {
+Template.HelpRequestActions.onCreated(function() {
 	const instance = this;
 	this.helpRequest = new ReactiveVar(null);
-
-	Meteor.subscribe('assistify:helpRequests', instance.data.roomId); //not reactively needed, as roomId doesn't change
-
+	this.room = new ReactiveVar(null);
 	this.autorun(() => {
-		if (Template.currentData().roomId) {
+		if (instance.data && instance.data.roomId) {
+			Meteor.subscribe('assistify:helpRequests', instance.data.roomId); //not reactively needed, as roomId doesn't change
+
 			const helpRequest = RocketChat.models.HelpRequests.findOneByRoomId(instance.data.roomId);
 			instance.helpRequest.set(helpRequest);
 
-			// if (!instance.helpRequest.get()) { //todo remove after PoC: Non-reactive method call
-			// 	Meteor.call('assistify:helpRequestByRoomId', Template.currentData().roomId, (err, result) => {
-			// 		if (!err) {
-			// 			instance.helpRequest.set(result);
-			// 		} else {
-			// 			console.log(err);
-			// 		}
-			// 	});
-			// }
+			const room = ChatSubscription.findOne({rid: instance.data.roomId});
+			instance.room.set(room);
 		}
 	});
 });
