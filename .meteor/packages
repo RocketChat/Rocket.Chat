@@ -38,6 +38,7 @@ tracker@1.1.3
 
 rocketchat:2fa
 rocketchat:action-links
+rocketchat:accounts
 rocketchat:analytics
 rocketchat:api
 rocketchat:assets
