@@ -1,20 +1,13 @@
 Template.dbsAI_smarti.onCreated(function() {
 	this.helpRequest = new ReactiveVar(null);
-
 	const instance = this;
+
+	Meteor.subscribe('assistify:helpRequests', instance.data.rid); //not reactively needed, as roomId doesn't change
 
 	this.autorun(() => {
 		if (instance.data.rid) {
-
-			if (!instance.helpRequest.get()) { //todo remove after PoC: Non-reactive method call
-				Meteor.call('assistify:helpRequestByRoomId', instance.data.rid, (err, result) => {
-					if (!err) {
-						instance.helpRequest.set(result);
-					} else {
-						console.log(err);
-					}
-				});
-			}
+			const helpRequest = RocketChat.models.HelpRequests.findOneByRoomId(instance.data.rid);
+			instance.helpRequest.set(helpRequest);
 		}
 	});
 
@@ -63,6 +56,13 @@ Template.dbsAI_smarti.helpers({
 	isLivechat() {
 		const instance = Template.instance();
 		return ChatSubscription.findOne({rid: instance.data.rid}).t === 'l';
+	},
+	/**
+	This helper is needed in order to create an object which matches the actions bar importing parameters
+	 */
+	liveChatActions() {
+		const instance = Template.instance();
+		return { roomId: instance.data.rid };
 	},
 	helpRequestByRoom() {
 		const instance = Template.instance();
