@@ -3193,6 +3193,33 @@ body:not(.is-cordova) {
 				}
 			}
 		}
+
+		& .close-flex-tab {
+			position: absolute;
+			text-align: center;
+			top: 3px;
+			right: 5px;
+			z-index: 20;
+			width: 30px;
+			height: 30px;
+
+			& span {
+				display: inline-block;
+				width: 21px;
+				height: 20px;
+				border-radius: 50%;
+
+				& i {
+					display: inline-block;
+					height: 18px;
+					width: 18px;
+					border-width: 1px;
+					border-style: solid;
+					border-radius: 50%;
+					font-size: 10px;
+				}
+			}
+		}
 	}
 
 	& .flex-tab-bar {
