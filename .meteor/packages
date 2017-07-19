@@ -110,6 +110,7 @@ rocketchat:slashcommands-mute
 rocketchat:slashcommands-open
 rocketchat:slashcommands-topic
 rocketchat:slashcommands-unarchive
+rocketchat:slider
 rocketchat:smarsh-connector
 rocketchat:spotify
 rocketchat:statistics
@@ -173,3 +174,4 @@ yasinuslu:blaze-meta
 deepwell:bootstrap-datepicker2
 rocketchat:postcss
 dynamic-import@0.1.1
+fourseven:scss
