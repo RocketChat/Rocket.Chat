@@ -97,6 +97,18 @@ Template.room.helpers({
 		return Session.get('uploading');
 	},
 
+	roomLeader() {
+		const roles = RoomRoles.find({rid: this._id, roles: 'leader'}).fetch();
+		if (roles.length > 0) {
+			const u = roles[0].u;
+			if (u._id === Meteor.user()._id) { return null; }
+			const currUser = RocketChat.models.Users.find({ _id:  u._id}).fetch();
+			u['status'] = currUser.length > 0 ? 'online' : 'offline';
+			return u;
+		}
+		return null;
+	},
+
 	roomName() {
 		const roomData = Session.get(`roomData${ this._id }`);
 		if (!roomData) { return ''; }
@@ -241,6 +253,7 @@ let isSocialSharingOpen = false;
 let touchMoved = false;
 let lastTouchX = null;
 let lastTouchY = null;
+let lastScrollTop;
 
 Template.room.events({
 	'click, touchend'(e, t) {
@@ -253,6 +266,16 @@ Template.room.events({
 		if ((Template.instance().tabBar.getState() === 'opened') && user && user.settings && user.settings.preferences && user.settings.preferences.hideFlexTab) {
 			return Template.instance().tabBar.close();
 		}
+	},
+
+	'scroll .messages-box .wrapper'() {
+		const $wrapper = $('.messages-box .wrapper');
+		if ($wrapper.scrollTop() < lastScrollTop) {
+			$('.room-leader').removeClass('hidden');
+		} else if ($wrapper.scrollTop() > $('.room-leader-container').height()) {
+			$('.room-leader').addClass('hidden');
+		}
+		lastScrollTop = $wrapper.scrollTop();
 	},
 
 	'touchstart .message'(e, t) {
@@ -418,7 +441,7 @@ Template.room.events({
 	},
 
 	'click .user-card-message'(e, instance) {
-		if (!Meteor.userId()) {
+		if (!Meteor.userId() || !this._arguments) {
 			return;
 		}
 		const roomData = Session.get(`roomData${ this._arguments[1].rid }`);
@@ -805,6 +828,7 @@ Template.room.onRendered(function() {
 	$('.flex-tab-bar').on('click', (/*e, t*/) =>
 		Meteor.setTimeout(() => template.sendToBottomIfNecessaryDebounced(), 50)
 	);
+	lastScrollTop = $('.messages-box .wrapper').scrollTop();
 
 	const rtl = $('html').hasClass('rtl');
 
