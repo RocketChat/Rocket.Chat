@@ -1,28 +1,30 @@
-Thanks for opening an issue! A few things to keep in mind before moving forward:
+<!-- 
 
-  - Please note that an issue is not the best place to ask questions. Using [Stack Overflow](https://stackoverflow.com/questions/tagged/rocket.chat) or [Server Fault](https://serverfault.com/search?q=Rocket.Chat) for that is more appropriate. Also don't forget to search our [Documentation](https://rocket.chat/docs/)
+Please see our guide for opening issues: https://rocket.chat/docs/contributing/reporting-issues
 
-  - Please [search our issues](https://github.com/RocketChat/Rocket.Chat/issues) for an existing issue before opening a new one. This helps us keep all information we need to fix the issue in one place.
+If you have questions or are looking for help/support please see: https://rocket.chat/docs/getting-support
 
-  - Before reporting a bug, please try reproducing your issue against the latest version of Rocket.Chat and don't forget to include any errors on your [console](https://rocket.chat/docs/contributing/reporting-issues#gathering-logs) (browser and server).
+If you are experiencing a bug please search our issues to be sure it is not already present: https://github.com/RocketChat/Rocket.Chat/issues
 
-<!-- INSTRUCTION: Complete the information below from your Administration page -->
+-->
 
-Rocket.Chat Version: 
-Running Instances: 
-DB Replicaset OpLog:
-Node Version:
-
-### Description
+### Description:
 
 <!-- Description of the issue -->
 
-### Steps to Reproduce
+### Server Setup Information:
+
+* Version of Rocket.Chat Server:
+* Operating System:
+* Deployment Method(snap/docker/tar/etc):
+* Number of Running Instances: 
+* DB Replicaset Oplog:
+* Node Version:
+
+### Steps to Reproduce:
 
 1. <!-- First Step -->
-
 2. <!-- Second Step -->
-
 3. <!-- and so on... -->
 
 ### Expected behavior:
@@ -32,3 +34,6 @@ Node Version:
 ### Actual behavior:
 
 <!-- What actually happens -->
+
+### Relevant logs:
+<!-- For more information about collecting logs please see: https://rocket.chat/docs/contributing/reporting-issues#gathering-logs -->
