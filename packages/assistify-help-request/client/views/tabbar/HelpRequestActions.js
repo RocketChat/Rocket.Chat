@@ -1,7 +1,10 @@
 Template.HelpRequestActions.helpers({
 	helprequestOpen() {
 		const instance = Template.instance();
-		return instance.data.resolutionStatus && instance.data.resolutionStatus !== 'resolved'; //undefined in livechats
+		const helpRequest = instance.helpRequest.get();
+		if (helpRequest) {
+			return helpRequest.resolutionStatus && helpRequest.resolutionStatus !== 'resolved'; //undefined in livechats
+		}
 	},
 
 	isLivechat() {
@@ -33,7 +36,7 @@ Template.HelpRequestActions.dialogs = {
 		 */
 		display() {
 			const self = this;
-			return new Promise(function(resolve, reject) {
+			return new Promise(function (resolve, reject) {
 				swal.withForm(_.extend({
 					title: t('Closing_chat'),
 					text: '',
@@ -61,7 +64,7 @@ Template.HelpRequestActions.dialogs = {
 					}],
 					showCancelButton: true,
 					closeOnConfirm: false
-				}, self.properties), function(isConfirm) {
+				}, self.properties), function (isConfirm) {
 					if (!isConfirm) { //on cancel
 						$('.swal-form').remove(); //possible bug? why I have to do this manually
 						reject();
@@ -92,7 +95,7 @@ Template.HelpRequestActions.events({
 			closeOnConfirm: false,
 			roomId: instance.data.roomId
 		}), (inputValue) => {
-			if (!inputValue) {
+			/*if (!inputValue) {
 				swal.showInputError(t('Please_add_a_comment_to_close_the_room'));
 				return false;
 			}
@@ -100,9 +103,9 @@ Template.HelpRequestActions.events({
 			if (s.trim(inputValue) === '') {
 				swal.showInputError(t('Please_add_a_comment_to_close_the_room'));
 				return false;
-			}
+			}*/
 
-			Meteor.call('assistify:closeHelpRequest', this.roomId, {comment: inputValue}, function(error) {
+			Meteor.call('assistify:closeHelpRequest', this.roomId, {comment: inputValue}, function (error) {
 				if (error) {
 					return handleError(error);
 				} else {
@@ -115,8 +118,7 @@ Template.HelpRequestActions.events({
 					});
 
 					instance.helpRequest.set(
-						//RocketChat.models.HelpRequests.findOneByRoomId(Template.currentData())
-						RocketChat.models.HelpRequests.findOneByRoomId(instance.data.roomId)//TODO is this correct?
+						RocketChat.models.HelpRequests.findOneByRoomId(instance.data.roomId)
 					);
 				}
 			});
@@ -142,7 +144,7 @@ Template.HelpRequestActions.events({
 				return false;
 			}
 
-			Meteor.call('livechat:closeRoom', this.rid, inputValue, function(error/*, result*/) {
+			Meteor.call('livechat:closeRoom', this.rid, inputValue, function (error/*, result*/) {
 				if (error) {
 					return handleError(error);
 				}
@@ -158,24 +160,26 @@ Template.HelpRequestActions.events({
 	}
 });
 
-Template.HelpRequestActions.onCreated(function() {
+Template.HelpRequestActions.onCreated(function () {
 	const instance = this;
 	this.helpRequest = new ReactiveVar(null);
 
-	this.autorun(() => {
-		if (Template.currentData().roomId && this.helpRequest.get()) {
-			// const helpRequest = RocketChat.models.HelpRequests.findOneByRoomId(instance.roomId);
-			// instance.helpRequest.set(helpRequest);
+	Meteor.subscribe('assistify:helpRequests', instance.data.roomId); //not reactively needed, as roomId doesn't change
 
-			if (!instance.helpRequest.get()) { //todo remove after PoC: Non-reactive method call
-				Meteor.call('assistify:helpRequestByRoomId', Template.currentData().roomId, (err, result) => {
-					if (!err) {
-						instance.helpRequest.set(result);
-					} else {
-						console.log(err);
-					}
-				});
-			}
+	this.autorun(() => {
+		if (Template.currentData().roomId) {
+			const helpRequest = RocketChat.models.HelpRequests.findOneByRoomId(instance.data.roomId);
+			instance.helpRequest.set(helpRequest);
+
+			// if (!instance.helpRequest.get()) { //todo remove after PoC: Non-reactive method call
+			// 	Meteor.call('assistify:helpRequestByRoomId', Template.currentData().roomId, (err, result) => {
+			// 		if (!err) {
+			// 			instance.helpRequest.set(result);
+			// 		} else {
+			// 			console.log(err);
+			// 		}
+			// 	});
+			// }
 		}
 	});
 });

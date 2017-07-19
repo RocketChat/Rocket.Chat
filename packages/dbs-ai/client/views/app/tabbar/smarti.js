@@ -78,18 +78,18 @@ RocketChat.settings.onload('DBS_AI_Redlink_URL', function() {
 	Meteor.call('getSmartiUiScript', function(error, script) {
 		if (error) {
 			console.error('could not load Smarti:', error);
+		} else {
+			// generate a script tag for smarti JS
+			const doc = document;
+			const smartiScriptTag = doc.createElement('script');
+			smartiScriptTag.type = 'text/javascript';
+			smartiScriptTag.async = true;
+			smartiScriptTag.defer = true;
+			smartiScriptTag.innerHTML = script;
+			// insert the smarti script tag as first script tag
+			const firstScriptTag = doc.getElementsByTagName('script')[0];
+			firstScriptTag.parentNode.insertBefore(smartiScriptTag, firstScriptTag);
+			console.debug('loaded Smarti successfully');
 		}
-
-		// generate a script tag for smarti JS
-		const doc = document;
-		const smartiScriptTag = doc.createElement('script');
-		smartiScriptTag.type = 'text/javascript';
-		smartiScriptTag.async = true;
-		smartiScriptTag.defer = true;
-		smartiScriptTag.innerHTML = script;
-		// insert the smarti script tag as first script tag
-		const firstScriptTag = doc.getElementsByTagName('script')[0];
-		firstScriptTag.parentNode.insertBefore(smartiScriptTag, firstScriptTag);
-		console.debug('loaded Smarti successfully');
 	});
 });
