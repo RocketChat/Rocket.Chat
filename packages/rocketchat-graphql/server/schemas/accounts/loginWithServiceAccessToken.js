@@ -1,4 +1,4 @@
-import AccountsServer from '../../mocks/accounts/server';
+import AccountsServer from '@accounts/server';
 
 export const schema = `
 	type Mutation {

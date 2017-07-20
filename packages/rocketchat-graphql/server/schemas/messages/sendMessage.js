@@ -1,7 +1,7 @@
 /* global processWebhookMessage */
 
-import { authenticated } from '../../mocks/accounts/graphql-api';
-import AccountsServer from '../../mocks/accounts/server';
+import { authenticated } from '@accounts/graphql-api';
+import AccountsServer from '@accounts/server';
 
 export const schema = `
 	type Mutation {

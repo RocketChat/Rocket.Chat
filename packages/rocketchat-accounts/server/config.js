@@ -6,7 +6,10 @@ import { Meteor } from 'meteor/meteor';
 Meteor.startup(() => {
 	const mongodb = MongoInternals.defaultRemoteCollectionDriver().mongo.db;
 
-	const mongoAdapter = new MongoAdapter(mongodb);
+	const mongoAdapter = new MongoAdapter(mongodb, {
+		// XXX: UserId in RocketChat is a string(17) value
+		convertUserIdToMongoObjectId: false
+	});
 
 	AccountsServer.config({
 		tokenConfigs: {
@@ -16,6 +19,7 @@ Meteor.startup(() => {
 			refreshToken: {
 				expiresIn: '30d'
 			}
-		}
+		},
+		passwordHashAlgorithm: 'sha256'
 	}, mongoAdapter);
 });
