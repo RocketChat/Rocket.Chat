@@ -131,9 +131,10 @@ Importer.CSV = class ImporterCSV extends Importer.Base {
 
 		const selectionUsers = tempUsers.map((u) => new Importer.SelectionUser(u.id, u.username, u.email, false, false, true));
 		const selectionChannels = tempChannels.map((c) => new Importer.SelectionChannel(c.id, c.name, false, true, c.isPrivate));
+		const selectionMessages = this.importRecord.count.messages;
 
 		super.updateProgress(Importer.ProgressStep.USER_SELECTION);
-		return new Importer.Selection(this.name, selectionUsers, selectionChannels);
+		return new Importer.Selection(this.name, selectionUsers, selectionChannels, selectionMessages);
 	}
 
 	startImport(importSelection) {
@@ -330,8 +331,9 @@ Importer.CSV = class ImporterCSV extends Importer.Base {
 	getSelection() {
 		const selectionUsers = this.users.users.map((u) => new Importer.SelectionUser(u.id, u.username, u.email, false, false, true));
 		const selectionChannels = this.channels.channels.map((c) => new Importer.SelectionChannel(c.id, c.name, false, true, c.isPrivate));
+		const selectionMessages = this.importRecord.count.messages;
 
-		return new Importer.Selection(this.name, selectionUsers, selectionChannels);
+		return new Importer.Selection(this.name, selectionUsers, selectionChannels, selectionMessages);
 	}
 
 	getChannelFromName(channelName) {

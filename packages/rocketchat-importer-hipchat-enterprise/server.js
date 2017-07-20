@@ -190,10 +190,11 @@ Importer.HipChatEnterprise = class ImporterHipChatEnterprise extends Importer.Ba
 
 				const selectionUsers = tempUsers.map((u) => new Importer.SelectionUser(u.id, u.username, u.email, u.isDeleted, false, true));
 				const selectionChannels = tempRooms.map((r) => new Importer.SelectionChannel(r.id, r.name, r.isArchived, true, r.isPrivate));
+				const selectionMessages = this.importRecord.count.messages;
 
 				super.updateProgress(Importer.ProgressStep.USER_SELECTION);
 
-				resolve(new Importer.Selection(this.name, selectionUsers, selectionChannels));
+				resolve(new Importer.Selection(this.name, selectionUsers, selectionChannels, selectionMessages));
 			}));
 
 			//Wish I could make this cleaner :(
@@ -431,8 +432,9 @@ Importer.HipChatEnterprise = class ImporterHipChatEnterprise extends Importer.Ba
 	getSelection() {
 		const selectionUsers = this.users.users.map((u) => new Importer.SelectionUser(u.id, u.username, u.email, false, false, true));
 		const selectionChannels = this.channels.channels.map((c) => new Importer.SelectionChannel(c.id, c.name, false, true, c.isPrivate));
+		const selectionMessages = this.importRecord.count.messages;
 
-		return new Importer.Selection(this.name, selectionUsers, selectionChannels);
+		return new Importer.Selection(this.name, selectionUsers, selectionChannels, selectionMessages);
 	}
 
 	getChannelFromRoomIdentifier(roomIdentifier) {

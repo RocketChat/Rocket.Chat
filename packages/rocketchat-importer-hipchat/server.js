@@ -131,8 +131,9 @@ Importer.HipChat = Importer.HipChat = (function() {
 			const selectionChannels = tempRooms.map(function(room) {
 				return new Importer.SelectionChannel(room.room_id, room.name, room.is_archived, true, false);
 			});
+			const selectionMessages = this.importRecord.count.messages;
 			this.updateProgress(Importer.ProgressStep.USER_SELECTION);
-			return new Importer.Selection(this.name, selectionUsers, selectionChannels);
+			return new Importer.Selection(this.name, selectionUsers, selectionChannels, selectionMessages);
 		}
 
 		startImport(importSelection) {
@@ -331,7 +332,8 @@ Importer.HipChat = Importer.HipChat = (function() {
 			const selectionChannels = this.channels.channels.map(function(room) {
 				return new Importer.SelectionChannel(room.room_id, room.name, room.is_archived, true, false);
 			});
-			return new Importer.Selection(this.name, selectionUsers, selectionChannels);
+			const selectionMessages = this.importRecord.count.messages;
+			return new Importer.Selection(this.name, selectionUsers, selectionChannels, selectionMessages);
 		}
 
 	}
