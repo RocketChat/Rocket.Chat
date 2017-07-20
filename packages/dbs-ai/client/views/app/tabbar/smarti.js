@@ -54,6 +54,9 @@ Template.dbsAI_smarti.onRendered(function() {
 					'query.dbsearch': {
 						numOfRows:2,
 						suffix: customSuffix
+					},
+					'query.keyword': {
+						disabled:true
 					}
 				},
 				lang:'de'
