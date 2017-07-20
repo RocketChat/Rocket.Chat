@@ -48,6 +48,13 @@ RocketChat.E2E.Room = class {
 				console.log("Group session key generated!");
 				Meteor.call('getUsersOfRoom', self.roomId, true, function(error, result) {
 					console.log(result);
+					result.records.forEach(function(user) {
+						console.log("Fetching for: "+user.name);
+						Meteor.call('fetchKeychain', user._id, function(error, keychain) {
+							let key = JSON.parse(keychain);
+							key = key.lastUsedIdentityKey;
+						});
+					});
 				});
 			});
 		} else {
