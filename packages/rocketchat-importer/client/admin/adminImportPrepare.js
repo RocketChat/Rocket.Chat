@@ -27,6 +27,9 @@ Template.adminImportPrepare.helpers({
 	},
 	channels() {
 		return Template.instance().channels.get();
+	},
+	message_count() {
+		return Template.instance().message_count.get();
 	}
 });
 
@@ -70,6 +73,7 @@ Template.adminImportPrepare.events({
 
 					template.users.set(data.users);
 					template.channels.set(data.channels);
+					template.message_count.set(data.message_count);
 					template.loaded.set(true);
 					template.preparing.set(false);
 				});
@@ -131,6 +135,7 @@ Template.adminImportPrepare.onCreated(function() {
 	this.loaded = new ReactiveVar(false);
 	this.users = new ReactiveVar([]);
 	this.channels = new ReactiveVar([]);
+	this.message_count = new ReactiveVar(0);
 
 	function loadSelection(progress) {
 		if ((progress != null ? progress.step : undefined)) {
@@ -146,6 +151,7 @@ Template.adminImportPrepare.onCreated(function() {
 						}
 						instance.users.set(data.users);
 						instance.channels.set(data.channels);
+						instance.message_count.set(data.message_count);
 						instance.loaded.set(true);
 						return instance.preparing.set(false);
 					});
