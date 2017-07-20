@@ -59,11 +59,11 @@ class E2E {
 			rid: roomId
 		});
 
-		if (!subscription || subscription.t !== 'd') {
+		if (!subscription || (subscription.t !== 'd' && subscription.t !== 'p')) {
 			return;
 		}
 
-		this.instancesByRoomId[roomId] = new RocketChat.E2E.Room(Meteor.userId(), roomId);
+		this.instancesByRoomId[roomId] = new RocketChat.E2E.Room(Meteor.userId(), roomId, subscription.t);
 		return this.instancesByRoomId[roomId];
 	}
 
@@ -113,15 +113,23 @@ Meteor.startup(function() {
 	});
 
 	RocketChat.promises.add('onClientBeforeSendMessage', function(message) {
+		console.log(message);
 		if (message.rid && RocketChat.E2E.getInstanceByRoomId(message.rid) && RocketChat.E2E.getInstanceByRoomId(message.rid).established.get()) {
 			console.log("WILL ENCRYPT");
-			return RocketChat.E2E.getInstanceByRoomId(message.rid).encrypt(message)
+			const e2eRoom = RocketChat.E2E.getInstanceByRoomId(message.rid);
+			// if (e2eRoom.typeOfRoom == 'p') {
+			// 	console.log("Group encrypted message sent");
+			// 	return message;
+			// }
+			// else {
+				return RocketChat.E2E.getInstanceByRoomId(message.rid).encrypt(message)
 				.then((msg) => {
 					message.msg = msg;
 					message.t = 'e2e';
 					console.log(message);
 					return message;
 				});
+			// }
 		} else {
 			return Promise.resolve(message);
 		}
@@ -131,79 +139,94 @@ Meteor.startup(function() {
 		console.log(message);
 		if (message.rid && RocketChat.E2E.getInstanceByRoomId(message.rid) && message.t === 'e2e') { //&& RocketChat.E2E.getInstanceByRoomId(message.rid).established.get()) {
 			const e2eRoom = RocketChat.E2E.getInstanceByRoomId(message.rid);
-			const peerRegistrationId = e2eRoom.peerRegistrationId;
-			const existingSession = RocketChat.E2EStorage.sessionExists(peerRegistrationId);
-			if (message.notification) {
-				message.msg = t('Encrypted_message');
-				return Promise.resolve(message);
+			console.log(e2eRoom);
+			if (e2eRoom.typeOfRoom == 'p') {
+				console.log("YESS");
+				return e2eRoom.decrypt(message.msg).then((data) => {
+					console.log(data);
+					// const {id, text, ack} = data;
+					message._id = data._id;
+					message.msg = data.text;
+					message.ack = data.ack;
+					if (data.ts) {
+						message.ts = data.ts;
+					}
+					return message;
+				});
 			} else {
-				const otrRoom = RocketChat.E2E.getInstanceByRoomId(message.rid);
-				console.log(message);
-
-				console.log(`session exists: ${ existingSession }`);
-
-				if (existingSession) {
-					return otrRoom.decrypt(message.msg)
-						.then((data) => {
-							console.log(data);
-							const {_id, text, ack} = data;
-							message._id = _id;
-							message.msg = text;
-							message.ack = ack;
-							if (data.ts) {
-								message.ts = data.ts;
-							}
-							return message;
-						// if (message.otrAck) {
-						// 	return otrRoom.decrypt(message.otrAck)
-						// 		.then((data) => {
-						// 			if (ack === data.text) {
-						// 				message.t = 'otr-ack';
-						// 			}
-						// 			return message;
-						// 		});
-						// } else if (data.userId !== Meteor.userId()) {
-						// 	return otrRoom.encryptText(ack)
-						// 		.then((ack) => {
-						// 			Meteor.call('updateOTRAck', message._id, ack);
-						// 			return message;
-						// 		});
-						// } else {
-						// 	return message;
-						// }
-						});
+				const peerRegistrationId = e2eRoom.peerRegistrationId;
+				const existingSession = RocketChat.E2EStorage.sessionExists(peerRegistrationId);
+				if (message.notification) {
+					message.msg = t('Encrypted_message');
+					return Promise.resolve(message);
 				} else {
-					return e2eRoom.decryptInitial(message.msg)
-						.then((data) => {
-							console.log(data);
-							const {_id, text, ack} = data;
-							message._id = _id;
-							message.msg = text;
-							message.ack = ack;
-							if (data.ts) {
-								message.ts = data.ts;
-							}
-							return message;
-						// if (message.otrAck) {
-						// 	return otrRoom.decrypt(message.otrAck)
-						// 		.then((data) => {
-						// 			if (ack === data.text) {
-						// 				message.t = 'otr-ack';
-						// 			}
-						// 			return message;
-						// 		});
-						// } else if (data.userId !== Meteor.userId()) {
-						// 	return otrRoom.encryptText(ack)
-						// 		.then((ack) => {
-						// 			Meteor.call('updateOTRAck', message._id, ack);
-						// 			return message;
-						// 		});
-						// } else {
-						// 	return message;
-						// }
-						});
-				}
+					const otrRoom = RocketChat.E2E.getInstanceByRoomId(message.rid);
+					console.log(message);
 
+					console.log(`session exists: ${ existingSession }`);
+
+					if (existingSession) {
+						return otrRoom.decrypt(message.msg)
+							.then((data) => {
+								console.log(data);
+								const {_id, text, ack} = data;
+								message._id = _id;
+								message.msg = text;
+								message.ack = ack;
+								if (data.ts) {
+									message.ts = data.ts;
+								}
+								return message;
+							// if (message.otrAck) {
+							// 	return otrRoom.decrypt(message.otrAck)
+							// 		.then((data) => {
+							// 			if (ack === data.text) {
+							// 				message.t = 'otr-ack';
+							// 			}
+							// 			return message;
+							// 		});
+							// } else if (data.userId !== Meteor.userId()) {
+							// 	return otrRoom.encryptText(ack)
+							// 		.then((ack) => {
+							// 			Meteor.call('updateOTRAck', message._id, ack);
+							// 			return message;
+							// 		});
+							// } else {
+							// 	return message;
+							// }
+							});
+					} else {
+						return e2eRoom.decryptInitial(message.msg)
+							.then((data) => {
+								console.log(data);
+								const {_id, text, ack} = data;
+								message._id = _id;
+								message.msg = text;
+								message.ack = ack;
+								if (data.ts) {
+									message.ts = data.ts;
+								}
+								return message;
+							// if (message.otrAck) {
+							// 	return otrRoom.decrypt(message.otrAck)
+							// 		.then((data) => {
+							// 			if (ack === data.text) {
+							// 				message.t = 'otr-ack';
+							// 			}
+							// 			return message;
+							// 		});
+							// } else if (data.userId !== Meteor.userId()) {
+							// 	return otrRoom.encryptText(ack)
+							// 		.then((ack) => {
+							// 			Meteor.call('updateOTRAck', message._id, ack);
+							// 			return message;
+							// 		});
+							// } else {
+							// 	return message;
+							// }
+							});
+					}
+				}
 			}
 		} else {
 			if (message.t === 'otr') {

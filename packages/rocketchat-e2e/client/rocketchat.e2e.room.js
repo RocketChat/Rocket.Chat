@@ -12,9 +12,11 @@ function str2ab(str) {
 }
 
 RocketChat.E2E.Room = class {
-	constructor(userId, roomId) {
+	constructor(userId, roomId, t) {
+		console.log("Room created!");
 		this.userId = userId;
 		this.roomId = roomId;
+		this.typeOfRoom = t;
 		this.peerId = roomId.replace(userId, '');
 		this.established = new ReactiveVar(false);
 		this.establishing = new ReactiveVar(false);
@@ -34,27 +36,43 @@ RocketChat.E2E.Room = class {
 	handshake(startSession) {
 		const self = this;
 		this.establishing.set(true);
-		let key;
-		Meteor.call('fetchKeychain', this.peerId, function(error, result) {
-			key = JSON.parse(result);
-			console.log(key);
-			self.peerIdentityKey = key.lastUsedIdentityKey;
-			for (let i=0; i<key.publicKeychain.length; i++) {
-				if (key.publicKeychain[i][0] === self.peerIdentityKey) {
-					self.peerSignedPreKey = str2ab(key.publicKeychain[i][1]);
-					self.peerSignedSignature = str2ab(key.publicKeychain[i][2]);
-					self.peerPreKey = str2ab(key.publicKeychain[i][3]);
-					self.peerRegistrationId = key.publicKeychain[i][4];
-					break;
-				}
-			}
-			self.peerIdentityKey = str2ab(self.peerIdentityKey);
-			console.log(`Obtained keys: ${ ab2str(self.peerIdentityKey) }, ${ ab2str(self.peerSignedPreKey) }, ${ ab2str(self.peerSignedSignature) }`);
-			if (startSession) {
+		console.log(this);
+		if (this.typeOfRoom == 'p') {
+			RocketChat.E2E.crypto.generateKey({name: "AES-CBC", length: 128}, false, ["encrypt", "decrypt"]).then((key) => {
+				self.groupSessionKey = key;
+			}).then(() => {
+				// RocketChat.Notifications.notifyUser(this.peerId, 'otr', 'handshake', { roomId: this.roomId, userId: this.userId, publicKey: EJSON.stringify(this.exportedPublicKey), refresh });
 				self.firstPeer = true;
-				self.start_session();
-			}
-		});
+				self.establishing.set(false);
+				self.established.set(true);
+				console.log("Group session key generated!");
+				Meteor.call('getUsersOfRoom', self.roomId, true, function(error, result) {
+					console.log(result);
+				});
+			});
+		} else {
+			let key;
+			Meteor.call('fetchKeychain', this.peerId, function(error, result) {
+				key = JSON.parse(result);
+				console.log(key);
+				self.peerIdentityKey = key.lastUsedIdentityKey;
+				for (let i=0; i<key.publicKeychain.length; i++) {
+					if (key.publicKeychain[i][0] === self.peerIdentityKey) {
+						self.peerSignedPreKey = str2ab(key.publicKeychain[i][1]);
+						self.peerSignedSignature = str2ab(key.publicKeychain[i][2]);
+						self.peerPreKey = str2ab(key.publicKeychain[i][3]);
+						self.peerRegistrationId = key.publicKeychain[i][4];
+						break;
+					}
+				}
+				self.peerIdentityKey = str2ab(self.peerIdentityKey);
+				console.log(`Obtained keys: ${ ab2str(self.peerIdentityKey) }, ${ ab2str(self.peerSignedPreKey) }, ${ ab2str(self.peerSignedSignature) }`);
+				if (startSession) {
+					self.firstPeer = true;
+					self.start_session();
+				}
+			});
+		}
 		// RocketChat.Notifications.notifyUser(this.peerId, 'e2e', 'handshake', { roomId: this.roomId, userId: this.userId, refresh });
 	}
 
@@ -122,16 +140,35 @@ RocketChat.E2E.Room = class {
 		this.peerPreKey = null;
 	}
 
+	generateKeyPair() {
+		let self = this;
+		return 
+
+	}
+
 	encryptText(data) {
 		if (!_.isObject(data)) {
 			data = new TextEncoder('UTF-8').encode(EJSON.stringify({ text: data, ack: Random.id((Random.fraction()+1)*20) }));
 		}
 		console.log('Encrypting...');
-		return this.cipher.encrypt(data).then((ciphertext) => {
-			console.log('Message sent: ', EJSON.stringify(ciphertext.body));
-			console.log(ciphertext);
-			return ab2str(ciphertext.body);
-		});
+		if (this.typeOfRoom == 'p') {
+			var vector = crypto.getRandomValues(new Uint8Array(16));
+			data = EJSON.stringify(data);
+			console.log(str2ab(data));
+			return crypto.subtle.encrypt({name: "AES-CBC", iv: vector}, this.groupSessionKey, str2ab(data)).then((result) => {
+				cipherText = new Uint8Array(result);
+				const output = new Uint8Array(vector.length + cipherText.length);
+				output.set(vector, 0);
+				output.set(cipherText, vector.length);
+				return EJSON.stringify(output);
+			});
+		} else {
+			return this.cipher.encrypt(data).then((ciphertext) => {
+				console.log('Message sent: ', EJSON.stringify(ciphertext.body));
+				console.log(ciphertext);
+				return ab2str(ciphertext.body);
+			});
+		}
 		// const iv = crypto.getRandomValues(new Uint8Array(12));
 
 		// return RocketChat.E2E.crypto.encrypt({
@@ -169,17 +206,28 @@ RocketChat.E2E.Room = class {
 
 	decrypt(message) {
 		console.log(`MESSAGE RECEIVED: ${ message }`);
-		const ciphertext = str2ab(message);
-		console.log(ciphertext);
-		return this.cipher.decryptWhisperMessage(ciphertext, 'binary').then((plaintext) => {
-			console.log(`CHECK THIS: ${ ab2str(plaintext) }`);
-			// return ab2str(plaintext);
-			plaintext = EJSON.parse(ab2str(plaintext));
-			return plaintext;
-			// console.log("CHECK THIS: "+ab2str(plaintext));
-			// return ab2str(plaintext);
-		});
-
+		// const ciphertext = str2ab(message);
+		// console.log(ciphertext);
+		let cipherText = EJSON.parse(message);
+		const vector = cipherText.slice(0, 16);
+		cipherText = cipherText.slice(16);
+		console.log(cipherText)
+		if (this.typeOfRoom == "p") {
+			return crypto.subtle.decrypt({name: "AES-CBC", iv: vector}, this.groupSessionKey, cipherText).then((result) => {
+				console.log(result);
+	            console.log(EJSON.parse(ab2str(EJSON.parse(ab2str(result)))));
+				return EJSON.parse(ab2str(EJSON.parse(ab2str(result))));
+			});
+		} else {
+			return this.cipher.decryptWhisperMessage(ciphertext, 'binary').then((plaintext) => {
+				console.log(`CHECK THIS: ${ ab2str(plaintext) }`);
+				// return ab2str(plaintext);
+				plaintext = EJSON.parse(ab2str(plaintext));
+				return plaintext;
+				// console.log("CHECK THIS: "+ab2str(plaintext));
+				// return ab2str(plaintext);
+			});
+		}
 
 		// let cipherText = EJSON.parse(message);
 		// const iv = cipherText.slice(0, 12);
