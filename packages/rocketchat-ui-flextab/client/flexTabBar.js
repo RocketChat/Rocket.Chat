@@ -46,6 +46,10 @@ Template.flexTabBar.events({
 		} else {
 			return instance.tabBar.open(this);
 		}
+	},
+
+	'click .close-flex-tab'(event, instance) {
+		instance.tabBar.close();
 	}
 });
 
