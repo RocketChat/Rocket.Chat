@@ -36,4 +36,5 @@ If you are experiencing a bug please search our issues to be sure it is not alre
 <!-- What actually happens -->
 
 ### Relevant logs:
+<!-- Logs from both server and browser -->
 <!-- For more information about collecting logs please see: https://rocket.chat/docs/contributing/reporting-issues#gathering-logs -->
