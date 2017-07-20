@@ -153,9 +153,10 @@ RocketChat.E2E.Room = class {
 		console.log('Encrypting...');
 		if (this.typeOfRoom == 'p') {
 			var vector = crypto.getRandomValues(new Uint8Array(16));
-			data = EJSON.stringify(data);
-			console.log(str2ab(data));
-			return crypto.subtle.encrypt({name: "AES-CBC", iv: vector}, this.groupSessionKey, str2ab(data)).then((result) => {
+			// data = EJSON.stringify(data);
+			// console.log(str2ab(data));
+			console.log(data);
+			return crypto.subtle.encrypt({name: "AES-CBC", iv: vector}, this.groupSessionKey, data).then((result) => {
 				cipherText = new Uint8Array(result);
 				const output = new Uint8Array(vector.length + cipherText.length);
 				output.set(vector, 0);
@@ -215,8 +216,8 @@ RocketChat.E2E.Room = class {
 		if (this.typeOfRoom == "p") {
 			return crypto.subtle.decrypt({name: "AES-CBC", iv: vector}, this.groupSessionKey, cipherText).then((result) => {
 				console.log(result);
-	            console.log(EJSON.parse(ab2str(EJSON.parse(ab2str(result)))));
-				return EJSON.parse(ab2str(EJSON.parse(ab2str(result))));
+				console.log(EJSON.parse(ab2str(result)));
+				return EJSON.parse(ab2str(result));
 			});
 		} else {
 			return this.cipher.decryptWhisperMessage(ciphertext, 'binary').then((plaintext) => {
