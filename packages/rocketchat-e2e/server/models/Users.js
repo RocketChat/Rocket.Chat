@@ -11,7 +11,7 @@ RocketChat.models.Users.addKeyToChain = function(key) {
 RocketChat.models.Users.fetchKeychain = function(userId) {
 	const identityKey = this.findOne({ _id: userId }).lastUsedIdentityKey;
 	const publicKeychain = this.findOne({ _id: userId }).publicKeychain;
-	const RSAPubKey = this.findOne({ _id: userId })["RSA-PubKey"];
+	const RSAPubKey = this.findOne({ _id: userId })['RSA-PubKey'];
 
 	console.log(this.findOne({ _id: userId }));
 	return JSON.stringify({ 'lastUsedIdentityKey': identityKey, 'RSA-PubKey': RSAPubKey, publicKeychain });
