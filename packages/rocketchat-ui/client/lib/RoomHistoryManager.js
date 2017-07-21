@@ -56,7 +56,7 @@ export const RoomHistoryManager = new class {
 				return;
 			}
 			let previousHeight;
-			const messages = result && result.messages || [];
+			const {messages = []} = result;
 			room.unreadNotLoaded.set(result.unreadNotLoaded);
 			room.firstUnread.set(result.firstUnread);
 
