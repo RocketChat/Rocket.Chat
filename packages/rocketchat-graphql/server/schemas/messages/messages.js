@@ -1,5 +1,4 @@
-import { authenticated } from '@accounts/graphql-api';
-import AccountsServer from '@accounts/server';
+import { authenticated } from '../../helpers/authenticated';
 
 export const schema = `
 	type Query {
@@ -16,7 +15,7 @@ export const schema = `
 
 export const resolver = {
 	Query: {
-		messages: authenticated(AccountsServer, (root, args, { models }) => {
+		messages: authenticated((root, args, { models }) => {
 			const messagesQuery = {};
 			const messagesOptions = {
 				sort: { ts: 1 }

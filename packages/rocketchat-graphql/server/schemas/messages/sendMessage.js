@@ -1,7 +1,6 @@
 /* global processWebhookMessage */
 
-import { authenticated } from '@accounts/graphql-api';
-import AccountsServer from '@accounts/server';
+import { authenticated } from '../../helpers/authenticated';
 
 export const schema = `
 	type Mutation {
@@ -11,7 +10,7 @@ export const schema = `
 
 export const resolver = {
 	Mutation: {
-		sendMessage: authenticated(AccountsServer, (root, { channelId, content }, { user }) => {
+		sendMessage: authenticated((root, { channelId, content }, { user }) => {
 			const messageReturn = processWebhookMessage({
 				roomId: channelId,
 				text: content

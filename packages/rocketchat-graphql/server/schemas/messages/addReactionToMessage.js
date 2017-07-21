@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { authenticated } from '@accounts/graphql-api';
-import AccountsServer from '@accounts/server';
+
+import { authenticated } from '../../helpers/authenticated';
 
 export const schema = `
 	type Mutation {
@@ -10,11 +10,11 @@ export const schema = `
 
 export const resolver = {
 	Mutation: {
-		addReactionToMassage: authenticated(AccountsServer, (root, { id, icon }, { models, user }) => {
+		addReactionToMassage: authenticated((root, { id, icon }, { models, user }) => {
 			return new Promise((resolve) => {
 				Meteor.runAsUser(user._id, () => {
 					Meteor.call('setReaction', id.messageId, icon, () => {
-						resolve(models.findOne(id.messageId));
+						resolve(models.Messages.findOne(id.messageId));
 					});
 				});
 			});

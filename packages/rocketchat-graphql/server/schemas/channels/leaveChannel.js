@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { authenticated } from '@accounts/graphql-api';
-import AccountsServer from '@accounts/server';
+
+import { authenticated } from '../../helpers/authenticated';
 
 export const schema = `
 	type Mutation {
@@ -10,7 +10,7 @@ export const schema = `
 
 export const resolver = {
 	Mutation: {
-		leaveChannel: authenticated(AccountsServer, (root, args, { models, user }) => {
+		leaveChannel: authenticated((root, args, { models, user }) => {
 			const channel = models.Rooms.findOne({
 				_id: args.channelId,
 				t: 'c'

@@ -17,7 +17,7 @@ Package.onUse(function(api) {
 });
 
 Npm.depends({
-	'@accounts/server': '0.0.17',
+	'@accounts/server': '0.0.18',
 	'@accounts/mongo': '0.0.12-0',
 	'@accounts/meteor-adapter': '0.1.1'
 });

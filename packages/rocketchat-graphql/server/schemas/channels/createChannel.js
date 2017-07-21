@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { authenticated } from '@accounts/graphql-api';
-import AccountsServer from '@accounts/server';
+
+import { authenticated } from '../../helpers/authenticated';
 
 export const schema = `
 	type Mutation {
@@ -15,7 +15,7 @@ export const schema = `
 
 export const resolver = {
 	Mutation: {
-		createChannel: authenticated(AccountsServer, (root, args, { models, user }) => {
+		createChannel: authenticated((root, args, { models, user }) => {
 			if (!RocketChat.authz.hasPermission(user._id, 'create-c')) {
 				return RocketChat.API.v1.unauthorized();
 			}

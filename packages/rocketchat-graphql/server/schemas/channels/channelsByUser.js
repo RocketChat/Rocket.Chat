@@ -1,5 +1,4 @@
-import { authenticated } from '@accounts/graphql-api';
-import AccountsServer from '@accounts/server';
+import { authenticated } from '../../helpers/authenticated';
 
 import { roomPublicFields } from './settings';
 
@@ -11,7 +10,7 @@ export const schema = `
 
 export const resolver = {
 	Query: {
-		channelsByUser: authenticated(AccountsServer, (root, { userId }, { models }) => {
+		channelsByUser: authenticated((root, { userId }, { models }) => {
 			const user = models.Users.findOneById(userId);
 
 			if (!user) {
@@ -19,16 +18,18 @@ export const resolver = {
 				throw new Error('No user');
 			}
 
-			return models.Rooms.find({
-				'usernames': {
-					$in: user.username
-				}
-			}, {
+			// TODO: empty
+			const rooms = models.Rooms.findByContainingUsername(user.username, {
 				sort: {
 					name: 1
 				},
 				fields: roomPublicFields
 			}).fetch();
+
+			console.log('user.username', user.username);
+			console.log('rooms', rooms);
+
+			return rooms;
 		})
 	}
 };
