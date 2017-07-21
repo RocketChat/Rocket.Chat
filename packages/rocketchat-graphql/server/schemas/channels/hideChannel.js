@@ -10,8 +10,8 @@ export const schema = `
 
 export const resolver = {
 	Mutation: {
-		hideChannel: authenticated((root, args, { models, user }) => {
-			const channel = models.Rooms.findOne({
+		hideChannel: authenticated((root, args, { user }) => {
+			const channel = RocketChat.models.Rooms.findOne({
 				_id: args.channelId,
 				t: 'c'
 			});
@@ -20,7 +20,7 @@ export const resolver = {
 				throw new Error('error-room-not-found', 'The required "channelId" param provided does not match any channel');
 			}
 
-			const sub = models.Subscriptions.findOneByRoomIdAndUserId(channel._id, user._id);
+			const sub = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(channel._id, user._id);
 
 			if (!sub) {
 				throw new Error(`The user/callee is not in the channel "${ channel.name }.`);

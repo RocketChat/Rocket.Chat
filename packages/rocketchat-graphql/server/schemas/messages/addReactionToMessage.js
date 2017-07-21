@@ -10,11 +10,11 @@ export const schema = `
 
 export const resolver = {
 	Mutation: {
-		addReactionToMassage: authenticated((root, { id, icon }, { models, user }) => {
+		addReactionToMassage: authenticated((root, { id, icon }, { user }) => {
 			return new Promise((resolve) => {
 				Meteor.runAsUser(user._id, () => {
 					Meteor.call('setReaction', id.messageId, icon, () => {
-						resolve(models.Messages.findOne(id.messageId));
+						resolve(RocketChat.models.Messages.findOne(id.messageId));
 					});
 				});
 			});

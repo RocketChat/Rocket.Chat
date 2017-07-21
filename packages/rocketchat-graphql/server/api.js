@@ -22,9 +22,7 @@ graphQLServer.use(
 	graphqlExpress(request => {
 		return {
 			schema: executableSchema,
-			context: Object.assign({
-				models: RocketChat.models
-			}, jsAccountsContext(request)),
+			context: jsAccountsContext(request),
 			formatError: e => ({
 				message: e.message,
 				locations: e.locations,

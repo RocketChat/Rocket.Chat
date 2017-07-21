@@ -8,14 +8,14 @@ export const schema = `
 
 export const resolver = {
 	Mutation: {
-		setStatus: authenticated((root, { status }, { models, user }) => {
-			models.Users.update(user._id, {
+		setStatus: authenticated((root, { status }, { user }) => {
+			RocketChat.models.Users.update(user._id, {
 				$set: {
 					status: status.toLowerCase()
 				}
 			});
 
-			return models.Users.findOne(user._id);
+			return RocketChat.models.Users.findOne(user._id);
 		})
 	}
 };

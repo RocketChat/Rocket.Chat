@@ -10,8 +10,8 @@ export const schema = `
 
 export const resolver = {
 	Query: {
-		channelsByUser: authenticated((root, { userId }, { models }) => {
-			const user = models.Users.findOneById(userId);
+		channelsByUser: authenticated((root, { userId }) => {
+			const user = RocketChat.models.Users.findOneById(userId);
 
 			if (!user) {
 				// TODO:
@@ -19,15 +19,12 @@ export const resolver = {
 			}
 
 			// TODO: empty
-			const rooms = models.Rooms.findByContainingUsername(user.username, {
+			const rooms = RocketChat.models.Rooms.findByContainingUsername(user.username, {
 				sort: {
 					name: 1
 				},
 				fields: roomPublicFields
 			}).fetch();
-
-			console.log('user.username', user.username);
-			console.log('rooms', rooms);
 
 			return rooms;
 		})

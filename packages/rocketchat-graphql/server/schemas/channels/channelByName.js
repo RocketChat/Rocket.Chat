@@ -9,7 +9,7 @@ export const schema = `
 
 export const resolver = {
 	Query: {
-		channelByName: authenticated((root, { name, isDirect }, { models }) => {
+		channelByName: authenticated((root, { name, isDirect }) => {
 			const query = {
 				name
 			};
@@ -18,7 +18,7 @@ export const resolver = {
 				query.c = 'd';
 			}
 
-			return models.Rooms.findOne(query, {
+			return RocketChat.models.Rooms.findOne(query, {
 				fields: roomPublicFields
 			});
 		})
