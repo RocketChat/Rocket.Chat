@@ -73,7 +73,9 @@ Template.roomList.helpers({
 	},
 
 	roomType(room) {
-		return room.identifier;
+		if (room.header || room.identifier) {
+			return `type-${ room.header || room.identifier }`;
+		}
 	}
 });
 
