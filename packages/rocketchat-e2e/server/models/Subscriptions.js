@@ -6,6 +6,5 @@ RocketChat.models.Subscriptions.updateGroupE2EKey = function(_id, key) {
 };
 
 RocketChat.models.Subscriptions.fetchGroupE2EKey = function(_id) {
-	const query = { _id };
 	return this.findOne({ _id }).E2EKey;
 };
