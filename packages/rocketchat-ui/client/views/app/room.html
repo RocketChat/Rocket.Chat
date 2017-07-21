@@ -27,8 +27,19 @@
 							{{/if}}
 							<span class="room-topic">{{{RocketChatMarkdown roomTopic}}}</span>
 						</h2>
+
+						{{#with toolbarButtons}}
+							<div class="iframe-toolbar">
+								{{#each buttons}}
+									<button class="{{id}}">
+										{{#if icon}}<i class="{{icon}}"></i>{{/if}}
+										{{label}}
+									</button>
+								{{/each}}
+							</div>
+						{{/with}}
 					</header>
-					
+
 				{{/unless}}
 				<div class="messages-container-wrapper">
 					<div class="messages-container-main">
