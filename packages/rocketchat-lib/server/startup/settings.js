@@ -354,6 +354,25 @@ RocketChat.settings.addGroup('General', function() {
 		type: 'boolean',
 		'public': true
 	});
+	this.add('Unread_Count', 'user_and_group_mentions_only', {
+		type: 'select',
+		values: [
+			{
+				key: 'all_messages',
+				i18nLabel: 'All_messages'
+			}, {
+				key: 'user_mentions_only',
+				i18nLabel: 'User_mentions_only'
+			}, {
+				key: 'group_mentions_only',
+				i18nLabel: 'Group_mentions_only'
+			}, {
+				key: 'user_and_group_mentions_only',
+				i18nLabel: 'User_and_group_mentions_only'
+			}
+		],
+		'public': true
+	});
 	this.add('CDN_PREFIX', '', {
 		type: 'string',
 		'public': true
@@ -811,6 +830,10 @@ RocketChat.settings.addGroup('Message', function() {
 		'public': true,
 		i18nDescription: 'Message_TimeAndDateFormat_Description'
 	});
+	this.add('Message_QuoteChainLimit', 2, {
+		type: 'int',
+		'public': true
+	});
 	this.add('Message_HideType_uj', false, {
 		type: 'boolean',
 		'public': true
@@ -827,6 +850,7 @@ RocketChat.settings.addGroup('Message', function() {
 		type: 'boolean',
 		'public': true
 	});
+
 	return this.add('Message_HideType_mute_unmute', false, {
 		type: 'boolean',
 		'public': true

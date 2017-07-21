@@ -26,9 +26,9 @@ Template.accountPreferences.helpers({
 		const user = Meteor.user();
 		let result = undefined;
 		if (user.language) {
-			result = user.language.split('-').shift().toLowerCase() === key;
+			result = user.language === key;
 		} else if (defaultUserLanguage()) {
-			result = defaultUserLanguage().split('-').shift().toLowerCase() === key;
+			result = defaultUserLanguage() === key;
 		}
 		return result;
 	},
