@@ -50,7 +50,7 @@ const RoomManager = new function() {
 											msg.roles = _.union.apply(_.union, roles);
 											ChatMessage.upsert({ _id: msg._id }, msg);
 										}
-
+										msg.name = room.name;
 										Meteor.defer(() => RoomManager.updateMentionsMarksOfRoom(typeName));
 
 										RocketChat.callbacks.run('streamMessage', msg);
