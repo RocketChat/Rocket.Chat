@@ -1,5 +1,6 @@
 /* globals openRoom */
 RocketChat.roomTypes.add(null, 0, {
+	header: 'favorite',
 	icon: 'icon-star',
 	label: 'Favorites'
 });
