@@ -2,11 +2,11 @@ import { graphqlExpress, graphiqlExpress } from 'graphql-server-express';
 import { JSAccountsContext as jsAccountsContext } from '@accounts/graphql-api';
 import { SubscriptionServer } from 'subscriptions-transport-ws';
 import { execute, subscribe } from 'graphql';
+import { Meteor } from 'meteor/meteor';
+import { WebApp } from 'meteor/webapp';
 import bodyParser from 'body-parser';
 import express from 'express';
 import cors from 'cors';
-import { Meteor } from 'meteor/meteor';
-import { WebApp } from 'meteor/webapp';
 
 import { executableSchema } from './schema';
 
@@ -19,18 +19,21 @@ graphQLServer.use(bodyParser.urlencoded({ extended: true }));
 graphQLServer.use(
 	'/graphql',
 	bodyParser.json(),
-	graphqlExpress(request => ({
-		schema: executableSchema,
-		context: Object.assign({
-			models: RocketChat.models
-		}, jsAccountsContext(request)),
-		formatError: e => ({
-			message: e.message,
-			locations: e.locations,
-			path: e.path
-		}),
-		debug: Meteor.isDevelopment
-	})));
+	graphqlExpress(request => {
+		return {
+			schema: executableSchema,
+			context: Object.assign({
+				models: RocketChat.models
+			}, jsAccountsContext(request)),
+			formatError: e => ({
+				message: e.message,
+				locations: e.locations,
+				path: e.path
+			}),
+			debug: Meteor.isDevelopment
+		};
+	})
+);
 
 graphQLServer.use('/graphiql', graphiqlExpress({
 	endpointURL: '/graphql',

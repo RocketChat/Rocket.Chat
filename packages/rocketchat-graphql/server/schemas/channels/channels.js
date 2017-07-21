@@ -1,6 +1,4 @@
-import { authenticated } from '@accounts/graphql-api';
-import AccountsServer from '@accounts/server';
-
+import { authenticated } from '../../helpers/authenticated';
 import { roomPublicFields } from './settings';
 
 export const schema = `
@@ -15,7 +13,7 @@ export const schema = `
 
 export const resolver = {
 	Query: {
-		channels: authenticated(AccountsServer, (root, args, { models }) => {
+		channels: authenticated((root, args, { models }) => {
 			const query = {};
 			const options = {
 				sort: {

@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { authenticated } from '@accounts/graphql-api';
-import AccountsServer from '@accounts/server';
+
+import { authenticated } from '../../helpers/authenticated';
 
 export const schema = `
 	type Mutation {
@@ -10,7 +10,7 @@ export const schema = `
 
 export const resolver = {
 	Mutation: {
-		deleteMessage: authenticated(AccountsServer, (root, { id }, { models, user }) => {
+		deleteMessage: authenticated((root, { id }, { models, user }) => {
 			const msg = models.Messages.findOneById(id.messageId, { fields: { u: 1, rid: 1 }});
 
 			if (!msg) {
