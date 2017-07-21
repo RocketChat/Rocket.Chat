@@ -35,16 +35,30 @@ Template.dbsAI_smarti.onRendered(function() {
 					RocketChat.settings.get('DBS_AI_Redlink_URL') :
 					`${ RocketChat.settings.get('DBS_AI_Redlink_URL') }/`;
 
-			const WEBSOCKET_URL =
-				`ws${ RocketChat.settings.get('Site_Url').substring(4) }websocket/`;
+			const WEBSOCKET_URL = `ws${ RocketChat.settings.get('Site_Url').substring(4) }websocket/`;
 
+			let customSuffix = RocketChat.settings.get('Assistify_AI_DBSearch_Suffix') || '';
+			customSuffix = customSuffix.replace(/\r\n|\r|\n/g, '');
 
-			self.smarti = new window.SmartiWidget(self.find('.external-message'), {
+			const smartiOptions = {
 				socketEndpoint: WEBSOCKET_URL,
 				smartiEndpoint: DBS_AI_Redlink_URL,
 				channel: self.data.rid,
-				inputCssSelector: '.autogrow-shadow'
-			});
+				inputCssSelector: '.autogrow-shadow',
+				widget: {
+					'query.dbsearch': {
+						numOfRows: 2,
+						suffix: customSuffix
+					},
+					'query.dbsearch.keyword': {
+						numOfRows: 2,
+						suffix: customSuffix,
+						disabled: true
+					}
+				},
+				lang: 'de'
+			};
+			self.smarti = new window.SmartiWidget(self.find('.external-message'), smartiOptions);
 		}
 	}
 
