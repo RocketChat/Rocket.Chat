@@ -14,7 +14,7 @@ RocketChat.models.Users.fetchKeychain = function(userId) {
 	const RSAPubKey = this.findOne({ _id: userId })["RSA-PubKey"];
 
 	console.log(this.findOne({ _id: userId }));
-	return JSON.stringify({ 'lastUsedIdentityKey': identityKey, publicKeychain });
+	return JSON.stringify({ 'lastUsedIdentityKey': identityKey, 'RSA-PubKey': RSAPubKey, publicKeychain });
 };
 
 RocketChat.models.Users.emptyKeychain = function() {

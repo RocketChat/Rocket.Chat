@@ -38,9 +38,9 @@ RocketChat.E2E.Room = class {
 		this.establishing.set(true);
 		console.log(this);
 		if (this.typeOfRoom == 'p') {
-			RocketChat.E2E.crypto.generateKey({name: "AES-CBC", length: 128}, false, ["encrypt", "decrypt"]).then((key) => {
+			RocketChat.E2E.crypto.generateKey({name: "AES-CBC", length: 128}, true, ["encrypt", "decrypt"]).then((key) => {
 				self.groupSessionKey = key;
-				crypto.subtle.exportKey("jwk", key_object).then(function(result){
+				crypto.subtle.exportKey("jwk", key).then(function(result){
 				    self.exportedSessionKey = JSON.stringify(result);
 				});
 			}).then(() => {
@@ -55,7 +55,33 @@ RocketChat.E2E.Room = class {
 						console.log("Fetching for: "+user.name);
 						Meteor.call('fetchKeychain', user._id, function(error, keychain) {
 							let key = JSON.parse(keychain);
-							key = key.lastUsedIdentityKey;
+							console.log(key);
+							if (key["RSA-PubKey"]) {
+								crypto.subtle.importKey("jwk", JSON.parse(key["RSA-PubKey"]), {name: "RSA-OAEP", modulusLength: 2048, publicExponent: new Uint8Array([0x01, 0x00, 0x01]), hash: {name: "SHA-256"}}, true, ["encrypt"]).then(function(user_key){
+									var vector = crypto.getRandomValues(new Uint8Array(16));
+									encrypt_promise = crypto.subtle.encrypt({name: "RSA-OAEP", iv: vector}, user_key, str2ab(self.exportedSessionKey));
+								    encrypt_promise.then(function(result) {
+								    	cipherText = new Uint8Array(result);
+								    	const output = new Uint8Array(vector.length + cipherText.length);
+										output.set(vector, 0);
+										output.set(cipherText, vector.length);
+										console.log("Encrypted key: ");
+										console.log(EJSON.stringify(output));
+								    });
+								});
+								
+
+							 //    			console.log(data);
+								// crypto.subtle.encrypt({name: "AES-CBC", iv: vector}, this.groupSessionKey, data).then((result) => {
+								// 	cipherText = new Uint8Array(result);
+								// 	const output = new Uint8Array(vector.length + cipherText.length);
+								// 	output.set(vector, 0);
+								// 	output.set(cipherText, vector.length);
+								// 	return EJSON.stringify(output);
+								// });
+
+
+							}
 						});
 					});
 				});
