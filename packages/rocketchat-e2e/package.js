@@ -31,9 +31,12 @@ Package.onUse(function(api) {
 	api.addFiles([
 		'server/settings.js',
 		'server/models/Users.js',
+		'server/models/Subscriptions.js',
 		'server/methods/addKeyToChain.js',
 		'server/methods/fetchKeychain.js',
-		'server/methods/emptyKeychain.js'
+		'server/methods/emptyKeychain.js',
+		'server/methods/updateGroupE2EKey.js',
+		'server/methods/fetchGroupE2EKey.js'
 		// 'server/methods/updateOTRAck.js'
 	], 'server');
 });

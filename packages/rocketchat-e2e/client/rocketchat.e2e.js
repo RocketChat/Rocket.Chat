@@ -158,23 +158,59 @@ Meteor.startup(function() {
 	}, RocketChat.promises.priority.HIGH);
 
 	RocketChat.promises.add('onClientMessageReceived', function(message) {
-		console.log(message);
+		// console.log(message);
+		// if (message.rid && message.t === 'e2e' ) 
 		if (message.rid && RocketChat.E2E.getInstanceByRoomId(message.rid) && message.t === 'e2e') { //&& RocketChat.E2E.getInstanceByRoomId(message.rid).established.get()) {
 			const e2eRoom = RocketChat.E2E.getInstanceByRoomId(message.rid);
 			console.log(e2eRoom);
 			if (e2eRoom.typeOfRoom == 'p') {
 				console.log("YESS");
-				return e2eRoom.decrypt(message.msg).then((data) => {
-					console.log(data);
-					// const {id, text, ack} = data;
-					message._id = data._id;
-					message.msg = data.text;
-					message.ack = data.ack;
-					if (data.ts) {
-						message.ts = data.ts;
-					}
-					return message;
-				});
+				if (e2eRoom.groupSessionKey != null) {
+					return e2eRoom.decrypt(message.msg).then((data) => {
+						console.log(data);
+						// const {id, text, ack} = data;
+						message._id = data._id;
+						message.msg = data.text;
+						message.ack = data.ack;
+						if (data.ts) {
+							message.ts = data.ts;
+						}
+						return message;
+					});
+				} else {
+					const decryptedMsg = new Promise((resolve, reject) => {
+						Meteor.call('fetchGroupE2EKey', e2eRoom.roomId, function(error, result) {
+							// console.log("Key received: ");
+							let cipherText = EJSON.parse(result);
+							const vector = cipherText.slice(0, 16);
+							cipherText = cipherText.slice(16);
+							// console.log(cipherText)
+							decrypt_promise = crypto.subtle.decrypt({name: "RSA-OAEP", iv: vector}, RocketChat.E2EStorage.get("RSA-PrivKey"), cipherText);
+						    return decrypt_promise.then(function(result){
+						    	// console.log(result);
+								// console.log(EJSON.parse(ab2str(result)));
+								e2eRoom.exportedSessionKey = ab2str(result);
+								return crypto.subtle.importKey("jwk", EJSON.parse(e2eRoom.exportedSessionKey), {name: "AES-CBC", iv: vector}, true, ["encrypt", "decrypt"]).then(function(key) {
+									e2eRoom.groupSessionKey = key;
+									e2eRoom.established.set(true);
+									return e2eRoom.decrypt(message.msg).then((data) => {
+															console.log(data);
+															// const {id, text, ack} = data;
+															message._id = data._id;
+															message.msg = data.text;
+															message.ack = data.ack;
+															if (data.ts) {
+																message.ts = data.ts;
+															}
+															resolve(message);
+														});
+
+								});
+							});
+						});
+					});
+					return decryptedMsg;
+				}
 			} else {
 				const peerRegistrationId = e2eRoom.peerRegistrationId;
 				const existingSession = RocketChat.E2EStorage.sessionExists(peerRegistrationId);

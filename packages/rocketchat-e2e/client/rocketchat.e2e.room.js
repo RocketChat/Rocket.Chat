@@ -67,6 +67,9 @@ RocketChat.E2E.Room = class {
 										output.set(cipherText, vector.length);
 										console.log("Encrypted key: ");
 										console.log(EJSON.stringify(output));
+										Meteor.call('updateGroupE2EKey', self.roomId, user._id, EJSON.stringify(output), function(error, result) {
+											console.log(result);
+										});
 								    });
 								});
 								
