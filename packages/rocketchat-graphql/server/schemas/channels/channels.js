@@ -13,7 +13,7 @@ export const schema = `
 
 export const resolver = {
 	Query: {
-		channels: authenticated((root, args, { models }) => {
+		channels: authenticated((root, args) => {
 			const query = {};
 			const options = {
 				sort: {
@@ -54,7 +54,7 @@ export const resolver = {
 				// TODO:
 			}
 
-			return models.Rooms.find(query, options).fetch();
+			return RocketChat.models.Rooms.find(query, options).fetch();
 		})
 	}
 };

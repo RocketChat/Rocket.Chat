@@ -10,8 +10,8 @@ export const schema = `
 
 export const resolver = {
 	Mutation: {
-		editMessage: authenticated((root, { id, content }, { user, models }) => {
-			const msg = models.Messages.findOneById(id.messageId);
+		editMessage: authenticated((root, { id, content }, { user }) => {
+			const msg = RocketChat.models.Messages.findOneById(id.messageId);
 
 			//Ensure the message exists
 			if (!msg) {
@@ -27,7 +27,7 @@ export const resolver = {
 				Meteor.call('updateMessage', { _id: msg._id, msg: content, rid: msg.rid });
 			});
 
-			return models.Messages.findOneById(msg._id);
+			return RocketChat.models.Messages.findOneById(msg._id);
 		})
 	}
 };

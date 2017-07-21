@@ -10,8 +10,8 @@ export const schema = `
 
 export const resolver = {
 	Mutation: {
-		deleteMessage: authenticated((root, { id }, { models, user }) => {
-			const msg = models.Messages.findOneById(id.messageId, { fields: { u: 1, rid: 1 }});
+		deleteMessage: authenticated((root, { id }, { user }) => {
+			const msg = RocketChat.models.Messages.findOneById(id.messageId, { fields: { u: 1, rid: 1 }});
 
 			if (!msg) {
 				throw new Error(`No message found with the id of "${ id.messageId }".`);
