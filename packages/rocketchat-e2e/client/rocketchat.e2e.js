@@ -96,19 +96,17 @@ class E2E {
 					saveKeyToLS('signedPreKey', signedPreKey.keyPair);
 					localStorage.setItem('signedPreKeySignature', ab2str(signedPreKey.signature));
 
-					promise_key = crypto.subtle.generateKey({name: "RSA-OAEP", modulusLength: 2048, publicExponent: new Uint8Array([0x01, 0x00, 0x01]), hash: {name: "SHA-256"}}, false, ["encrypt", "decrypt"]);
+					promise_key = crypto.subtle.generateKey({name: "RSA-OAEP", modulusLength: 2048, publicExponent: new Uint8Array([0x01, 0x00, 0x01]), hash: {name: "SHA-256"}}, true, ["encrypt", "decrypt"]);
 					promise_key.then(function(key){
-
+						console.log(key);
 						crypto.subtle.exportKey("jwk", key.publicKey).then(function(result){
 							localStorage.setItem('RSA-PubKey', JSON.stringify(result));
-
 							crypto.subtle.exportKey("jwk", key.privateKey).then(function(result){
+								console.log("All keys generated.");
 								localStorage.setItem('RSA-PrivKey', JSON.stringify(result));
 						        loadKeyGlobalsFromLS();
 							});
 						});
-						
-
 				    });
 				});
 			});
