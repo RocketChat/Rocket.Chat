@@ -26,13 +26,22 @@ function loadKeyGlobalsFromLS() {
 	RocketChat.E2EStorage.storePreKey(RocketChat.E2EStorage.get('registrationId'), getKeyFromLS('preKey'));
 	RocketChat.E2EStorage.storeSignedPreKey(RocketChat.E2EStorage.get('registrationId'), getKeyFromLS('signedPreKey'));
 	RocketChat.E2EStorage.put(`signedPreKeySignature${ RocketChat.E2EStorage.get('registrationId') }`, str2ab(localStorage.getItem('signedPreKeySignature')));
+	crypto.subtle.importKey("jwk", JSON.parse(localStorage.getItem("RSA-PrivKey")), {name: "RSA-OAEP", modulusLength: 2048, publicExponent: new Uint8Array([0x01, 0x00, 0x01]), hash: {name: "SHA-256"}}, true, ["decrypt"]).then(function(key){
+		RocketChat.E2EStorage.put("RSA-PrivKey", key);
+	});
+
+	crypto.subtle.importKey("jwk", JSON.parse(localStorage.getItem("RSA-PubKey")), {name: "RSA-OAEP", modulusLength: 2048, publicExponent: new Uint8Array([0x01, 0x00, 0x01]), hash: {name: "SHA-256"}}, true, ["encrypt"]).then(function(key){
+		RocketChat.E2EStorage.put("RSA-PubKey", key);
+	});
+
 
 	Meteor.call('addKeyToChain', {
 		'identityKey': ab2str(RocketChat.E2EStorage.get('identityKey').pubKey),
 		'preKey': ab2str(RocketChat.E2EStorage.loadPreKey(RocketChat.E2EStorage.get('registrationId')).pubKey),
 		'signedPreKey': ab2str(RocketChat.E2EStorage.loadSignedPreKey(RocketChat.E2EStorage.get('registrationId')).pubKey),
 		'signedPreKeySignature': ab2str(RocketChat.E2EStorage.get(`signedPreKeySignature${ RocketChat.E2EStorage.get('registrationId') }`)),
-		'registrationId': RocketChat.E2EStorage.get('registrationId')
+		'registrationId': RocketChat.E2EStorage.get('registrationId'), 
+		'RSA-PubKey': localStorage.getItem("RSA-PubKey")
 	});
 }
 
@@ -69,8 +78,8 @@ class E2E {
 
 	startClient() {
 		// Meteor.call("emptyKeychain");
-		// localStorage.clear();
 		// RocketChat.E2EStorage.store = {}
+		// localStorage.clear();
 		if (localStorage.getItem('registrationId') == null) {		// This is a new device.
 			const KeyHelper = libsignal.KeyHelper;
 			const registrationId = KeyHelper.generateRegistrationId();
@@ -87,10 +96,25 @@ class E2E {
 					saveKeyToLS('signedPreKey', signedPreKey.keyPair);
 					localStorage.setItem('signedPreKeySignature', ab2str(signedPreKey.signature));
 
-					loadKeyGlobalsFromLS();
+					promise_key = crypto.subtle.generateKey({name: "RSA-OAEP", modulusLength: 2048, publicExponent: new Uint8Array([0x01, 0x00, 0x01]), hash: {name: "SHA-256"}}, false, ["encrypt", "decrypt"]);
+					promise_key.then(function(key){
+
+						crypto.subtle.exportKey("jwk", key.publicKey).then(function(result){
+							localStorage.setItem('RSA-PubKey', JSON.stringify(result));
+
+							crypto.subtle.exportKey("jwk", key.privateKey).then(function(result){
+								localStorage.setItem('RSA-PrivKey', JSON.stringify(result));
+						        loadKeyGlobalsFromLS();
+							});
+						});
+						
+
+				    });
 				});
 			});
-		}		else {
+
+
+		} else {
 			loadKeyGlobalsFromLS();
 		}
 	}

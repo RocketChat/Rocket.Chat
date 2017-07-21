@@ -40,6 +40,9 @@ RocketChat.E2E.Room = class {
 		if (this.typeOfRoom == 'p') {
 			RocketChat.E2E.crypto.generateKey({name: "AES-CBC", length: 128}, false, ["encrypt", "decrypt"]).then((key) => {
 				self.groupSessionKey = key;
+				crypto.subtle.exportKey("jwk", key_object).then(function(result){
+				    self.exportedSessionKey = JSON.stringify(result);
+				});
 			}).then(() => {
 				// RocketChat.Notifications.notifyUser(this.peerId, 'otr', 'handshake', { roomId: this.roomId, userId: this.userId, publicKey: EJSON.stringify(this.exportedPublicKey), refresh });
 				self.firstPeer = true;
@@ -214,19 +217,19 @@ RocketChat.E2E.Room = class {
 
 	decrypt(message) {
 		console.log(`MESSAGE RECEIVED: ${ message }`);
-		// const ciphertext = str2ab(message);
-		// console.log(ciphertext);
-		let cipherText = EJSON.parse(message);
-		const vector = cipherText.slice(0, 16);
-		cipherText = cipherText.slice(16);
-		console.log(cipherText)
 		if (this.typeOfRoom == "p") {
+			let cipherText = EJSON.parse(message);
+			const vector = cipherText.slice(0, 16);
+			cipherText = cipherText.slice(16);
+			console.log(cipherText)
 			return crypto.subtle.decrypt({name: "AES-CBC", iv: vector}, this.groupSessionKey, cipherText).then((result) => {
 				console.log(result);
 				console.log(EJSON.parse(ab2str(result)));
 				return EJSON.parse(ab2str(result));
 			});
 		} else {
+			const ciphertext = str2ab(message);
+			console.log(ciphertext);
 			return this.cipher.decryptWhisperMessage(ciphertext, 'binary').then((plaintext) => {
 				console.log(`CHECK THIS: ${ ab2str(plaintext) }`);
 				// return ab2str(plaintext);
