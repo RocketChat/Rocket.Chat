@@ -70,6 +70,26 @@ RocketChat.settings.addGroup('Accounts', function() {
 		type: 'boolean',
 		'public': true
 	});
+	// TODO: Implementing #2995
+	this.add('Accounts_ReceivePasswordChangeLog', '', {
+		type: 'select',
+		'public': true,
+		values: [
+			{
+				key: '',
+				i18nLabel: 'Accounts_ReceivePasswordChangeLog_Dismiss'
+			}, {
+				key: 'immediately',
+				i18nLabel: 'Accounts_ReceivePasswordChangeLog_Immediately'
+			}, {
+				key: 'daily',
+				i18nLabel: 'Accounts_ReceivePasswordChangeLog_Daily'
+			}, {
+				key: 'weekly',
+				i18nLabel: 'Accounts_ReceivePasswordChangeLog_Weekly'
+			}
+		]
+	});
 
 	this.section('Registration', function() {
 		this.add('Accounts_DefaultUsernamePrefixSuggestion', 'user', {
