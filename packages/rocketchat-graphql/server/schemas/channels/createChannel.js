@@ -15,7 +15,7 @@ export const schema = `
 
 export const resolver = {
 	Mutation: {
-		createChannel: authenticated((root, args, { models, user }) => {
+		createChannel: authenticated((root, args, { user }) => {
 			if (!RocketChat.authz.hasPermission(user._id, 'create-c')) {
 				return RocketChat.API.v1.unauthorized();
 			}
@@ -38,7 +38,7 @@ export const resolver = {
 				id = Meteor.call('createChannel', args.name, args.membersId ? args.membersId : [], readOnly);
 			});
 
-			return models.Rooms.findOneById(id.rid, { fields: RocketChat.API.v1.defaultFieldsToExclude });
+			return RocketChat.models.Rooms.findOneById(id.rid, { fields: RocketChat.API.v1.defaultFieldsToExclude });
 		})
 	}
 };

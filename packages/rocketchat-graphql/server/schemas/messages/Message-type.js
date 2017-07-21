@@ -21,19 +21,19 @@ export const resolver = {
 		id: property('_id'),
 		content: property('msg'),
 		creationTime: property('ts'),
-		author: (root, args, { models }) => {
-			return models.Users.findOne(root.u._id);
+		author: (root) => {
+			return RocketChat.models.Users.findOne(root.u._id);
 		},
-		channel: (root, args, { models }) => {
-			return models.Rooms.findOne(root.rid);
+		channel: (root) => {
+			return RocketChat.models.Rooms.findOne(root.rid);
 		},
 		fromServer: (root) => typeof root.t !== 'undefined', // on a message sent by user `true` otherwise `false`
-		channelRef: (root, args, { models }) => {
+		channelRef: (root) => {
 			if (!root.channels) {
 				return;
 			}
 
-			return models.Rooms.find({
+			return RocketChat.models.Rooms.find({
 				_id: {
 					$in: root.channels.map(c => c._id)
 				}
@@ -43,12 +43,12 @@ export const resolver = {
 				}
 			}).fetch();
 		},
-		userRef: (root, args, { models }) => {
+		userRef: (root) => {
 			if (!root.mentions) {
 				return;
 			}
 
-			return models.Users.find({
+			return RocketChat.models.Users.find({
 				_id: {
 					$in: root.mentions.map(c => c._id)
 				}

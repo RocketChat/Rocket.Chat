@@ -10,8 +10,8 @@ export const schema = `
 
 export const resolver = {
 	Mutation: {
-		leaveChannel: authenticated((root, args, { models, user }) => {
-			const channel = models.Rooms.findOne({
+		leaveChannel: authenticated((root, args, { user }) => {
+			const channel = RocketChat.models.Rooms.findOne({
 				_id: args.channelId,
 				t: 'c'
 			});

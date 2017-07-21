@@ -23,18 +23,18 @@ export const schema = `
 export const resolver = {
 	Channel: {
 		id: property('_id'),
-		members: (root, args, { models }) => {
+		members: (root) => {
 			return root.usernames.map(
-				username => models.Users.findOneByUsername(username)
+				username => RocketChat.models.Users.findOneByUsername(username)
 			);
 		},
-		owners: (root, args, { models }) => {
+		owners: (root) => {
 			// there might be no owner
 			if (!root.u) {
 				return;
 			}
 
-			return [models.Users.findOneByUsername(root.u.username)];
+			return [RocketChat.models.Users.findOneByUsername(root.u.username)];
 		},
 		numberOfMembers: (root) => (root.usernames || []).length,
 		numberOfMessages: property('msgs'),

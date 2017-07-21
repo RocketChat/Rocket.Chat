@@ -15,7 +15,7 @@ export const schema = `
 
 export const resolver = {
 	Query: {
-		messages: authenticated((root, args, { models }) => {
+		messages: authenticated((root, args) => {
 			const messagesQuery = {};
 			const messagesOptions = {
 				sort: { ts: 1 }
@@ -36,19 +36,19 @@ export const resolver = {
 				return null;
 			}
 
-			const channel = models.Rooms.findOne(channelQuery);
+			const channel = RocketChat.models.Rooms.findOne(channelQuery);
 			let messagesArray = [];
 
 			if (channel) {
 
 				// cursor
 				if (isPagination && args.cursor) {
-					const cursorMsg = models.Messages.findOne(args.cursor, { fields: { ts: 1 } });
+					const cursorMsg = RocketChat.models.Messages.findOne(args.cursor, { fields: { ts: 1 } });
 					messagesQuery.ts = { $gt: cursorMsg.ts };
 				}
 
 				// searchRegex
-				if (typeof args.searchRegex !== undefined) {
+				if (typeof args.searchRegex === 'string') {
 					messagesQuery.msg = {
 						$regex: new RegExp(args.searchRegex, 'i')
 					};
@@ -59,7 +59,7 @@ export const resolver = {
 					messagesOptions.limit = args.count;
 				}
 
-				const messages = models.Messages.find(
+				const messages = RocketChat.models.Messages.find(
 					Object.assign({}, messagesQuery, { rid: channel._id }),
 					messagesOptions
 				);
