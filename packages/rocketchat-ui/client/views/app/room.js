@@ -234,6 +234,16 @@ Template.room.helpers({
 
 		return (RocketChat.models.Subscriptions.findOne({rid: this._id}) != null);
 
+	},
+	toolbarButtons() {
+		const toolbar = Session.get('toolbarButtons') || { buttons: {} };
+		const buttons = Object.keys(toolbar.buttons).map(key => {
+			return {
+				id: key,
+				...toolbar.buttons[key]
+			};
+		});
+		return { buttons };
 	}
 });
 
@@ -243,6 +253,10 @@ let lastTouchX = null;
 let lastTouchY = null;
 
 Template.room.events({
+	'click .iframe-toolbar button'() {
+		fireGlobalEvent('click-toolbar-button', { id: this.id });
+	},
+
 	'click, touchend'(e, t) {
 		return Meteor.setTimeout(() => t.sendToBottomIfNecessaryDebounced(), 100);
 	},
