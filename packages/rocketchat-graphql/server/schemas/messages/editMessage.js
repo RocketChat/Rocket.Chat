@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { authenticated } from '@accounts/graphql-api';
-import AccountsServer from '@accounts/server';
+
+import { authenticated } from '../../helpers/authenticated';
 
 export const schema = `
 	type Mutation {
@@ -10,7 +10,7 @@ export const schema = `
 
 export const resolver = {
 	Mutation: {
-		editMessage: authenticated(AccountsServer, (root, { id, content }, { user, models }) => {
+		editMessage: authenticated((root, { id, content }, { user, models }) => {
 			const msg = models.Messages.findOneById(id.messageId);
 
 			//Ensure the message exists

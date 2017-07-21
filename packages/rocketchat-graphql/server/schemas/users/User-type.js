@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 import {
 	property
 } from '../../helpers/property';
@@ -17,7 +19,7 @@ export const resolver = {
 	User: {
 		id: property('_id'),
 		status: ({status}) => status.toUpperCase(),
-		avatar: ({ _id}, args, { models }) => {
+		avatar: Meteor.bindEnvironment(({ _id }, args, { models }) => {
 			const avatar = models.Avatars.findOne({
 				userId: _id
 			}, { fields: { url: 1 }});
@@ -25,7 +27,8 @@ export const resolver = {
 			if (avatar) {
 				return avatar.url;
 			}
-		},
+			return;
+		}),
 		channels: ({ _id }, args, { models }) => {
 			return models.Rooms.findBySubscriptionUserId(_id).fetch();
 		},

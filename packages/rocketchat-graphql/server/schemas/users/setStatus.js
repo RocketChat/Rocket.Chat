@@ -1,5 +1,4 @@
-import { authenticated } from '@accounts/graphql-api';
-import AccountsServer from '@accounts/server';
+import { authenticated } from '../../helpers/authenticated';
 
 export const schema = `
 	type Mutation {
@@ -9,7 +8,7 @@ export const schema = `
 
 export const resolver = {
 	Mutation: {
-		setStatus: authenticated(AccountsServer, (root, { status }, { models, user }) => {
+		setStatus: authenticated((root, { status }, { models, user }) => {
 			models.Users.update(user._id, {
 				$set: {
 					status: status.toLowerCase()
