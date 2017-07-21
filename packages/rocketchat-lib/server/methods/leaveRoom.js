@@ -1,4 +1,3 @@
-import {leave_automatic_channel} from 'meteor/rocketchat:plugin-handler';
 Meteor.methods({
 	leaveRoom(rid) {
 
@@ -29,7 +28,7 @@ Meteor.methods({
 			}
 		}
 		if (room.automatic) {
-			leave_automatic_channel(user, room, ['language']);
+			RocketChat.leave_automatic_channel(user, room);
 		}
 
 		return RocketChat.removeUserFromRoom(rid, Meteor.user());

@@ -20,7 +20,8 @@ const getLanguage = function(user) {
 
 plugin_handler.addPlugin({
 	pluginName: 'language',
-	getChannelName: getLanguage
-
+	getChannelName: getLanguage,
+	enable: RocketChat.settings.get('Enable_Language'),
+	blacklistAllowed: RocketChat.settings.get('Blacklist_Language')
 });
 

@@ -1,6 +1,6 @@
-import satelize from 'satelize';
-
 import {plugin_handler} from 'meteor/rocketchat:plugin-handler';
+
+import satelize from 'satelize';
 
 const getCountry = function(user) {
 	let country_name;
@@ -20,5 +20,8 @@ const getCountry = function(user) {
 
 plugin_handler.addPlugin({
 	pluginName: 'country',
-	getChannelName: getCountry
+	getChannelName: getCountry,
+	enable: RocketChat.settings.get('Enable_GeoIp'),
+	blacklistAllowed: RocketChat.settings.get('Blacklist_GeoIp')
 });
+
