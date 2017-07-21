@@ -27,8 +27,6 @@
   "Accounts_AllowUserProfileChange": "Kullanıcının Profilini Değiştirmesine izin ver",
   "Accounts_AvatarResize": "Profil Resimlerini yeniden boyutlandır",
   "Accounts_AvatarSize": "Profil Resmi Boyutu",
-  "Accounts_AvatarStorePath": "Profil Resmi Depo Yolu",
-  "Accounts_AvatarStoreType": "Profil Resmi Depolama Türü",
   "Accounts_BlockedDomainsList": "Engellenen Alanlar Listesi",
   "Accounts_BlockedDomainsList_Description": "Engellenen alanların virgülle ayrılmış listesi",
   "Accounts_BlockedUsernameList": "Engellenen Kullanıcı Adı Listesi",
