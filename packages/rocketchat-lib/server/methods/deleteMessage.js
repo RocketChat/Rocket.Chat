@@ -14,7 +14,8 @@ Meteor.methods({
 			fields: {
 				u: 1,
 				rid: 1,
-				file: 1
+				file: 1,
+				ts: 1
 			}
 		});
 		if (originalMessage == null) {
@@ -23,17 +24,18 @@ Meteor.methods({
 				action: 'Delete_message'
 			});
 		}
+		const forceDelete = RocketChat.authz.hasPermission(Meteor.userId(), 'force-delete-message', originalMessage.rid);
 		const hasPermission = RocketChat.authz.hasPermission(Meteor.userId(), 'delete-message', originalMessage.rid);
 		const deleteAllowed = RocketChat.settings.get('Message_AllowDeleting');
 		const deleteOwn = originalMessage && originalMessage.u && originalMessage.u._id === Meteor.userId();
-		if (!(hasPermission || (deleteAllowed && deleteOwn))) {
+		if (!(hasPermission || (deleteAllowed && deleteOwn)) && !(forceDelete)) {
 			throw new Meteor.Error('error-action-not-allowed', 'Not allowed', {
 				method: 'deleteMessage',
 				action: 'Delete_message'
 			});
 		}
 		const blockDeleteInMinutes = RocketChat.settings.get('Message_AllowDeleting_BlockDeleteInMinutes');
-		if (blockDeleteInMinutes != null && blockDeleteInMinutes !== 0) {
+		if (blockDeleteInMinutes != null && blockDeleteInMinutes !== 0 && !forceDelete) {
 			if (originalMessage.ts == null) {
 				return;
 			}

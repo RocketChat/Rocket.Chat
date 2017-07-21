@@ -1,4 +1,3 @@
-/* globals RocketChat */
 RocketChat.deleteUser = function(userId) {
 	const user = RocketChat.models.Users.findOneById(userId);
 
@@ -22,7 +21,7 @@ RocketChat.deleteUser = function(userId) {
 
 	// removes user's avatar
 	if (user.avatarOrigin === 'upload' || user.avatarOrigin === 'url') {
-		RocketChatFileAvatarInstance.deleteFile(encodeURIComponent(`${ user.username }.jpg`));
+		FileUpload.getStore('Avatars').deleteByName(user.username);
 	}
 
 	RocketChat.models.Integrations.disableByUserId(userId); // Disables all the integrations which rely on the user being deleted.
