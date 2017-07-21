@@ -6,7 +6,7 @@ import {getCredentials, api, login, request, credentials, message, log, apiPriva
 import {adminEmail, password} from '../../data/user.js';
 import supertest from 'supertest';
 
-describe('chat', function() {
+describe('[Chat]', function() {
 	this.retries(0);
 
 	before(done => getCredentials(done));
@@ -53,6 +53,21 @@ describe('chat', function() {
 				expect(res.body).to.have.property('success', true);
 				expect(res.body).to.have.deep.property('message.msg', 'Sample message');
 				message._id = res.body.message._id;
+			})
+			.end(done);
+	});
+
+	it('/chat.getMessage', (done) => {
+		request.get(api('chat.getMessage'))
+			.set(credentials)
+			.query({
+				msgId: message._id
+			})
+			.expect('Content-Type', 'application/json')
+			.expect(200)
+			.expect((res) => {
+				expect(res.body).to.have.property('success', true);
+				expect(res.body).to.have.deep.property('message._id', message._id);
 			})
 			.end(done);
 	});

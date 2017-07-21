@@ -27,8 +27,6 @@
   "Accounts_AllowUserProfileChange": "Tillåt byte av användarprofil",
   "Accounts_AvatarResize": "Ändra storlek på avatarer",
   "Accounts_AvatarSize": "Storlek på avatar",
-  "Accounts_AvatarStorePath": "Sökväg till avatarförråd",
-  "Accounts_AvatarStoreType": "Typ av avatarförråd",
   "Accounts_BlockedDomainsList": "Lista över blockerade domäner",
   "Accounts_BlockedDomainsList_Description": "Kommaseparerad lista över blockerade domäner",
   "Accounts_BlockedUsernameList": "Användarlista över blockerade",

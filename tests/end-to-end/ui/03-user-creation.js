@@ -10,14 +10,16 @@ import {username, email, password} from '../../data/user.js';
 
 
 //Basic usage test start
-describe('User Creation', function() {
+describe('[User Creation]', function() {
 	this.retries(2);
 
 	before(() => {
 		loginPage.open();
+		// This Can Cause Timeouts erros if the server is slow so it should have a big wait
+		loginPage.emailOrUsernameField.waitForVisible(15000);
 	});
 
-	it('create user', () => {
+	it('it should create user', () => {
 		loginPage.gotToRegister();
 
 		loginPage.registerNewUser({username, email, password});

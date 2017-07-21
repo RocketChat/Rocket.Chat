@@ -101,10 +101,21 @@ Template.userInfo.helpers({
 		return RocketChat.authz.hasAllPermission('set-owner', Session.get('openedRoom'));
 	},
 
+	canSetLeader() {
+		return RocketChat.authz.hasAllPermission('set-leader', Session.get('openedRoom'));
+	},
+
 	isOwner() {
 		const user = Template.instance().user.get();
 		if (user && user._id) {
 			return !!RoomRoles.findOne({ rid: Session.get('openedRoom'), 'u._id': user._id, roles: 'owner' });
+		}
+	},
+
+	isLeader() {
+		const user = Template.instance().user.get();
+		if (user && user._id) {
+			return !!RoomRoles.findOne({ rid: Session.get('openedRoom'), 'u._id': user._id, roles: 'leader' });
 		}
 	},
 
@@ -367,6 +378,42 @@ Template.userInfo.events({
 		}
 	},
 
+	'click .set-leader'(e, t) {
+		e.preventDefault();
+		const user = t.user.get();
+		if (user) {
+			const userLeader = RoomRoles.findOne({ rid: Session.get('openedRoom'), 'u._id': user._id, roles: 'leader' }, { fields: { _id: 1 } });
+			if (userLeader == null) {
+				return Meteor.call('addRoomLeader', Session.get('openedRoom'), user._id, (err) => {
+					if (err) {
+						return handleError(err);
+					}
+
+					const room = ChatRoom.findOne(Session.get('openedRoom'));
+					return toastr.success(TAPi18n.__('User__username__is_now_a_leader_of__room_name_', { username: this.username, room_name: room.name }));
+				});
+			}
+		}
+	},
+
+	'click .unset-leader'(e, t) {
+		e.preventDefault();
+		const user = t.user.get();
+		if (user) {
+			const userLeader = RoomRoles.findOne({ rid: Session.get('openedRoom'), 'u._id': user._id, roles: 'leader' }, { fields: { _id: 1 } });
+			if (userLeader != null) {
+				return Meteor.call('removeRoomLeader', Session.get('openedRoom'), user._id, (err) => {
+					if (err) {
+						return handleError(err);
+					}
+
+					const room = ChatRoom.findOne(Session.get('openedRoom'));
+					return toastr.success(TAPi18n.__('User__username__removed_from__room_name__leaders', { username: this.username, room_name: room.name }));
+				});
+			}
+		}
+	},
+
 	'click .deactivate'(e, instance) {
 		e.stopPropagation();
 		e.preventDefault();
@@ -516,8 +563,7 @@ Template.userInfo.onCreated(function() {
 
 	Meteor.setInterval(() => {
 		return this.now.set(moment());
-	}
-	, 30000);
+	}, 30000);
 
 	this.autorun(() => {
 		const username = this.loadedUsername.get();
