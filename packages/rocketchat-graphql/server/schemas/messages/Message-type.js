@@ -1,4 +1,5 @@
 import { property } from '../../helpers/property';
+import { dateToFloat } from '../../helpers/dateToFloat';
 
 export const schema = `
 	type Message {
@@ -6,7 +7,7 @@ export const schema = `
 		author: User
 		content: String
 		channel: Channel
-		creationTime: String
+		creationTime: Float
 		fromServer: Boolean
 		userRef: [User]
 		channelRef: [Channel]
@@ -20,7 +21,7 @@ export const resolver = {
 	Message: {
 		id: property('_id'),
 		content: property('msg'),
-		creationTime: property('ts'),
+		creationTime: (root) => dateToFloat(root.ts),
 		author: (root) => {
 			return RocketChat.models.Users.findOne(root.u._id);
 		},
