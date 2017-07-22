@@ -52,6 +52,7 @@ const getUsersFromServer = (filter, records, cb) => {
 					records.push({
 						_id: result.username,
 						username: result.username,
+						name: result.name,
 						status: 'offline',
 						sort: 3
 					});
