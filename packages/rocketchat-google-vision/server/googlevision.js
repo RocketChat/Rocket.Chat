@@ -48,7 +48,7 @@ class GoogleVision {
 	blockUnsafeImages(message) {
 		if (this.enabled && this.serviceAccount && message && message.file && message.file._id) {
 			const file = RocketChat.models.Uploads.findOne({ _id: message.file._id });
-			if (file && file.type && file.type.indexOf('image') !== -1 && file.store === 'googleCloudStorage' && file.googleCloudStorage) {
+			if (file && file.type && file.type.indexOf('image') !== -1 && file.store === 'GoogleCloudStorage:Uploads' && file.googleCloudStorage) {
 				if (this.incCallCount(1)) {
 					const bucket = this.storageClient.bucket(file.googleCloudStorage.bucket);
 					const bucketFile = bucket.file(`${ file.googleCloudStorage.path }${ file._id }`);
@@ -102,7 +102,7 @@ class GoogleVision {
 		}
 		if (this.enabled && this.serviceAccount && visionTypes.length > 0 && message.file && message.file._id) {
 			const file = RocketChat.models.Uploads.findOne({ _id: message.file._id });
-			if (file && file.type && file.type.indexOf('image') !== -1 && file.store === 'googleCloudStorage' && file.googleCloudStorage) {
+			if (file && file.type && file.type.indexOf('image') !== -1 && file.store === 'GoogleCloudStorage:Uploads' && file.googleCloudStorage) {
 				if (this.incCallCount(visionTypes.length)) {
 					const bucket = this.storageClient.bucket(file.googleCloudStorage.bucket);
 					const bucketFile = bucket.file(`${ file.googleCloudStorage.path }${ file._id }`);
