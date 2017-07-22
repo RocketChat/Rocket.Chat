@@ -27,6 +27,9 @@ Meteor.methods({
 				throw new Meteor.Error('error-you-are-last-owner', 'You are the last owner. Please set new owner before leaving the room.', { method: 'leaveRoom' });
 			}
 		}
+		if (room.automatic) {
+			RocketChat.leave_automatic_channel(user, room);
+		}
 
 		return RocketChat.removeUserFromRoom(rid, Meteor.user());
 	}

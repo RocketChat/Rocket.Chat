@@ -1,0 +1,14 @@
+{
+  "dependencies": {
+    "accept-language-parser": {
+      "version": "1.4.0",
+      "resolved": "https://registry.npmjs.org/accept-language-parser/-/accept-language-parser-1.4.0.tgz",
+      "from": "accept-language-parser@1.4.0"
+    },
+    "languages": {
+      "version": "0.1.3",
+      "resolved": "https://registry.npmjs.org/languages/-/languages-0.1.3.tgz",
+      "from": "languages@0.1.3"
+    }
+  }
+}
