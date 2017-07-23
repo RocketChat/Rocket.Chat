@@ -354,6 +354,25 @@ RocketChat.settings.addGroup('General', function() {
 		type: 'boolean',
 		'public': true
 	});
+	this.add('Unread_Count', 'user_and_group_mentions_only', {
+		type: 'select',
+		values: [
+			{
+				key: 'all_messages',
+				i18nLabel: 'All_messages'
+			}, {
+				key: 'user_mentions_only',
+				i18nLabel: 'User_mentions_only'
+			}, {
+				key: 'group_mentions_only',
+				i18nLabel: 'Group_mentions_only'
+			}, {
+				key: 'user_and_group_mentions_only',
+				i18nLabel: 'User_and_group_mentions_only'
+			}
+		],
+		'public': true
+	});
 	this.add('CDN_PREFIX', '', {
 		type: 'string',
 		'public': true
