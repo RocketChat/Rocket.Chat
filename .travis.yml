@@ -69,32 +69,22 @@ script:
 before_deploy:
 - source ".travis/setartname.sh"
 - source ".travis/setdeploydir.sh"
-- ".travis/setupsig.sh"
 - ".travis/namefiles.sh"
 - echo ".travis/sandstorm.sh"
 deploy:
-  - provider: s3
-    access_key_id: AKIAIKIA7H7D47KUHYCA
-    secret_access_key: "$ACCESSKEY"
-    bucket: download.rocket.chat
-    skip_cleanup: true
-    upload_dir: build
-    local_dir: "$ROCKET_DEPLOY_DIR"
-    on:
-      condition: "$TRAVIS_PULL_REQUEST=false"
-      all_branches: true
-  # - provider: releases
-  #   api-key: "$GITHUB_TOKEN"
-  #   file_glob: true
-  #   file: build/*
-  #   skip_cleanup: true
-  #   on:
-  #     tags: true
-
-after_deploy:
-- ".travis/docker.sh"
-- ".travis/update-releases.sh"
-- ".travis/snap.sh"
+  provider: s3
+  access_key_id: "$ACCESSID"
+  secret_access_key: "$ACCESSKEY"
+  bucket: seekingalpha-devops
+  region: us-west-2
+  skip_cleanup: true
+  local-dir: "$ROCKET_DEPLOY_DIR"
+  upload-dir: rocket-chat
+  acl: public_read
+  on:
+    condition: "$TRAVIS_PULL_REQUEST=false"
+    repo: seekingalpha/Rocket.Chat
+    all_branches: true
 env:
   global:
   - DISPLAY=:99.0
