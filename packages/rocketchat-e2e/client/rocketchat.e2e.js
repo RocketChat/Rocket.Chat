@@ -180,20 +180,21 @@ Meteor.startup(function() {
 				} else {
 					const decryptedMsg = new Promise((resolve) => {
 						Meteor.call('fetchGroupE2EKey', e2eRoom.roomId, function(error, result) {
-							// console.log("Key received: ");
+							console.log("Key received: ");
 							let cipherText = EJSON.parse(result);
 							const vector = cipherText.slice(0, 16);
 							cipherText = cipherText.slice(16);
-							// console.log(cipherText)
+							console.log(cipherText)
 							decrypt_promise = crypto.subtle.decrypt({name: 'RSA-OAEP', iv: vector}, RocketChat.E2EStorage.get('RSA-PrivKey'), cipherText);
-							return decrypt_promise.then(function(result) {
-								// console.log(result);
-								// console.log(EJSON.parse(ab2str(result)));
+							decrypt_promise.then(function(result) {
+								console.log(result);
+								console.log(EJSON.parse(ab2str(result)));
 								e2eRoom.exportedSessionKey = ab2str(result);
-								return crypto.subtle.importKey('jwk', EJSON.parse(e2eRoom.exportedSessionKey), {name: 'AES-CBC', iv: vector}, true, ['encrypt', 'decrypt']).then(function(key) {
+								crypto.subtle.importKey('jwk', EJSON.parse(e2eRoom.exportedSessionKey), {name: 'AES-CBC', iv: vector}, true, ['encrypt', 'decrypt']).then(function(key) {
 									e2eRoom.groupSessionKey = key;
 									e2eRoom.established.set(true);
-									return e2eRoom.decrypt(message.msg).then((data) => {
+									e2eRoom.establishing.set(false);
+									e2eRoom.decrypt(message.msg).then((data) => {
 										console.log(data);
 										// const {id, text, ack} = data;
 										message._id = data._id;
@@ -206,6 +207,9 @@ Meteor.startup(function() {
 									});
 
 								});
+							});
+							decrypt_promise.catch(function(err) {
+								console.log(err);
 							});
 						});
 					});

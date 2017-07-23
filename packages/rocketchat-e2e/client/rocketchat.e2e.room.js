@@ -38,44 +38,86 @@ RocketChat.E2E.Room = class {
 		this.establishing.set(true);
 		console.log(this);
 		if (this.typeOfRoom === 'p') {
-			RocketChat.E2E.crypto.generateKey({name: 'AES-CBC', length: 128}, true, ['encrypt', 'decrypt']).then((key) => {
-				self.groupSessionKey = key;
-				crypto.subtle.exportKey('jwk', key).then(function(result) {
-					self.exportedSessionKey = JSON.stringify(result);
+			// if (self.groupSessionKey !== null) {
+			// 	console.log("TYPE A");
+			// 	self.established.set(true);
+			// 	self.establishing.set(false);
+			// } else {
+			const sessionKey = new Promise((resolve) => {
+				Meteor.call('fetchGroupE2EKey', self.roomId, function(error, result) {
+					if (result !== null) {
+						console.log(result);
+						console.log("TYPE 1");
+						let cipherText = EJSON.parse(result);
+						const vector = cipherText.slice(0, 16);
+						cipherText = cipherText.slice(16);
+						decrypt_promise = crypto.subtle.decrypt({name: 'RSA-OAEP', iv: vector}, RocketChat.E2EStorage.get('RSA-PrivKey'), cipherText);
+						decrypt_promise.then(function(result) {
+							console.log(result);
+							self.exportedSessionKey = ab2str(result);
+							crypto.subtle.importKey('jwk', EJSON.parse(self.exportedSessionKey), {name: 'AES-CBC', iv: vector}, true, ['encrypt', 'decrypt']).then(function(key) {
+								self.groupSessionKey = key;
+								self.established.set(true);
+								self.establishing.set(false);
+								resolve(true);
+							});
+						});
+						decrypt_promise.catch((err) => {
+							console.log(err.name);
+						});
+
+					} 
+					else {
+						resolve(false);
+					}
 				});
-			}).then(() => {
-				// RocketChat.Notifications.notifyUser(this.peerId, 'otr', 'handshake', { roomId: this.roomId, userId: this.userId, publicKey: EJSON.stringify(this.exportedPublicKey), refresh });
-				self.firstPeer = true;
-				self.establishing.set(false);
-				self.established.set(true);
-				console.log('Group session key generated!');
-				Meteor.call('getUsersOfRoom', self.roomId, true, function(error, result) {
-					console.log(result);
-					result.records.forEach(function(user) {
-						console.log(`Fetching for: ${ user.name }`);
-						Meteor.call('fetchKeychain', user._id, function(error, keychain) {
-							const key = JSON.parse(keychain);
-							console.log(key);
-							if (key['RSA-PubKey']) {
-								crypto.subtle.importKey('jwk', JSON.parse(key['RSA-PubKey']), {name: 'RSA-OAEP', modulusLength: 2048, publicExponent: new Uint8Array([0x01, 0x00, 0x01]), hash: {name: 'SHA-256'}}, true, ['encrypt']).then(function(user_key) {
-									const vector = crypto.getRandomValues(new Uint8Array(16));
-									encrypt_promise = crypto.subtle.encrypt({name: 'RSA-OAEP', iv: vector}, user_key, str2ab(self.exportedSessionKey));
-									encrypt_promise.then(function(result) {
-										cipherText = new Uint8Array(result);
-										const output = new Uint8Array(vector.length + cipherText.length);
-										output.set(vector, 0);
-										output.set(cipherText, vector.length);
-										console.log('Encrypted key: ');
-										console.log(EJSON.stringify(output));
-										Meteor.call('updateGroupE2EKey', self.roomId, user._id, EJSON.stringify(output), function(error, result) {
-											console.log(result);
+			}).then(function(val) {
+				if (val == false) {
+					console.log("TYPE 2");
+					RocketChat.E2E.crypto.generateKey({name: 'AES-CBC', length: 128}, true, ['encrypt', 'decrypt']).then((key) => {
+						self.groupSessionKey = key;
+						crypto.subtle.exportKey('jwk', key).then(function(result) {
+							self.exportedSessionKey = JSON.stringify(result);
+						});
+					}).then(() => {
+						// RocketChat.Notifications.notifyUser(this.peerId, 'otr', 'handshake', { roomId: this.roomId, userId: this.userId, publicKey: EJSON.stringify(this.exportedPublicKey), refresh });
+						self.firstPeer = true;
+						self.establishing.set(false);
+						self.established.set(true);
+						console.log('Group session key generated!');
+						Meteor.call('getUsersOfRoom', self.roomId, true, function(error, result) {
+							console.log(result);
+							result.records.forEach(function(user) {
+								console.log(`Fetching for: ${ user.name }`);
+								Meteor.call('fetchKeychain', user._id, function(error, keychain) {
+									const key = JSON.parse(keychain);
+									console.log(key);
+									if (key['RSA-PubKey']) {
+										crypto.subtle.importKey('jwk', JSON.parse(key['RSA-PubKey']), {name: 'RSA-OAEP', modulusLength: 2048, publicExponent: new Uint8Array([0x01, 0x00, 0x01]), hash: {name: 'SHA-256'}}, true, ['encrypt']).then(function(user_key) {
+											const vector = crypto.getRandomValues(new Uint8Array(16));
+											encrypt_promise = crypto.subtle.encrypt({name: 'RSA-OAEP', iv: vector}, user_key, str2ab(self.exportedSessionKey));
+											encrypt_promise.then(function(result) {
+												cipherText = new Uint8Array(result);
+												const output = new Uint8Array(vector.length + cipherText.length);
+												output.set(vector, 0);
+												output.set(cipherText, vector.length);
+												console.log('Encrypted key: ');
+												console.log(EJSON.stringify(output));
+												Meteor.call('updateGroupE2EKey', self.roomId, user._id, EJSON.stringify(output), function(error, result) {
+													console.log(result);
+												});
+											});
 										});
-									});
+									}
 								});
-							}
+							});
 						});
 					});
-				});
+				}
+			});
+			sessionKey.catch((err) => {
+				console.log("Error occurred");
+				console.log(err);
 			});
 		} else {
 			let key;
@@ -137,6 +179,17 @@ RocketChat.E2E.Room = class {
 		});
 	}
 
+
+	clearGroupKey() {
+		let self = this;
+		Meteor.call('getUsersOfRoom', self.roomId, true, function(error, result) {
+			result.records.forEach(function(user) {
+				Meteor.call('updateGroupE2EKey', self.roomId, user._id, null, function(error, result) {
+					console.log(result);
+				});
+			});
+		});
+	}
 
 	acknowledge() {
 		RocketChat.Notifications.notifyUser(this.peerId, 'e2e', 'acknowledge', { roomId: this.roomId, userId: this.userId });
