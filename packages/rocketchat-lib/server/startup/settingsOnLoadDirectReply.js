@@ -12,7 +12,7 @@ const startEmailIntercepter = _.debounce(Meteor.bindEnvironment(function() {
 					RocketChat.IMAP.start();
 					return true;
 				}));
-			} else if (RocketChat.POP3 && RocketChat.POP3.isActive()) {
+			} else if (RocketChat.POP3 && RocketChat.POP3Helper.isActive()) {
 				console.log('Disconnecting already running POP instance...');
 				RocketChat.POP3Helper.stop(Meteor.bindEnvironment(function() {
 					console.log('Starting new IMAP instance......');
@@ -28,7 +28,7 @@ const startEmailIntercepter = _.debounce(Meteor.bindEnvironment(function() {
 			}
 		} else if (RocketChat.settings.get('Direct_Reply_Protocol') === 'POP') {
 			// stop already running POP instance
-			if (RocketChat.POP3 && RocketChat.POP3.isActive()) {
+			if (RocketChat.POP3 && RocketChat.POP3Helper.isActive()) {
 				console.log('Disconnecting already running POP instance...');
 				RocketChat.POP3Helper.stop(Meteor.bindEnvironment(function() {
 					console.log('Starting new POP instance......');
@@ -54,7 +54,7 @@ const startEmailIntercepter = _.debounce(Meteor.bindEnvironment(function() {
 	} else if (RocketChat.IMAP && RocketChat.IMAP.isActive()) {
 		// stop IMAP instance
 		RocketChat.IMAP.stop();
-	} else if (RocketChat.POP3 && RocketChat.POP3.isActive()) {
+	} else if (RocketChat.POP3 && RocketChat.POP3Helper.isActive()) {
 		// stop POP3 instance
 		RocketChat.POP3Helper.stop();
 	}
