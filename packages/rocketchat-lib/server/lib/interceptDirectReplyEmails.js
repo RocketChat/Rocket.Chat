@@ -134,7 +134,7 @@ class POP3Intercepter {
 			this.pop3.login(RocketChat.settings.get('Direct_Reply_Username'), RocketChat.settings.get('Direct_Reply_Password'));
 		}));
 
-		this.pop3.on('login', Meteor.bindEnvironment((status, rawData) => {
+		this.pop3.on('login', Meteor.bindEnvironment((status) => {
 			if (status) {
 				// run on start
 				this.pop3.list();
@@ -144,7 +144,7 @@ class POP3Intercepter {
 		}));
 
 		// on getting list of all emails
-		this.pop3.on('list', Meteor.bindEnvironment((status, msgcount, msgnumber, data, rawdata) => {
+		this.pop3.on('list', Meteor.bindEnvironment((status, msgcount, msgnumber, data) => {
 			if (status) {
 				if (msgcount > 0) {
 					this.totalMsgCount = msgcount;
@@ -160,7 +160,7 @@ class POP3Intercepter {
 		}));
 
 		// on retrieved email
-		this.pop3.on('retr', Meteor.bindEnvironment((status, msgnumber, data, rawdata) => {
+		this.pop3.on('retr', Meteor.bindEnvironment((status, msgnumber, data) => {
 			if (status) {
 				// parse raw email data to  JSON object
 				simpleParser(data, Meteor.bindEnvironment((err, mail) => {
@@ -177,7 +177,7 @@ class POP3Intercepter {
 		}));
 
 		// on email deleted
-		this.pop3.on('dele', Meteor.bindEnvironment((status, msgnumber, data, rawdata) => {
+		this.pop3.on('dele', Meteor.bindEnvironment((status, msgnumber) => {
 			if (status) {
 				// get next email
 				if (this.currentMsgCount <= this.totalMsgCount) {
@@ -187,7 +187,7 @@ class POP3Intercepter {
 					this.pop3.quit();
 				}
 			} else {
-				console.log('Cannot Delete Message ....');
+				console.log('Cannot Delete Message ${ msgnumber } ....');
 			}
 		}));
 
