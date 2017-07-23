@@ -103,7 +103,13 @@ Meteor.startup(function() {
 			const message = this._arguments[1];
 			const input = instance.find('.input-message');
 			const url = RocketChat.MessageAction.getPermaLink(message._id);
-			const text = `[ ](${ url }) @${ message.u.username } `;
+			const roomInfo = RocketChat.models.Rooms.findOne(message.rid, { fields: { t: 1 } });
+			let text = `[ ](${ url }) `;
+
+			if (roomInfo.t !== 'd' && message.u.username !== Meteor.user().username) {
+				text += `@${ message.u.username } `;
+			}
+
 			if (input.value) {
 				input.value += input.value.endsWith(' ') ? '' : ' ';
 			}
@@ -188,7 +194,10 @@ Meteor.startup(function() {
 				return;
 			}
 			const blockDeleteInMinutes = RocketChat.settings.get('Message_AllowDeleting_BlockDeleteInMinutes');
-			if ((blockDeleteInMinutes != null) && blockDeleteInMinutes !== 0 && !(forceDelete)) {
+			if (forceDelete) {
+				return true;
+			}
+			if (blockDeleteInMinutes != null && blockDeleteInMinutes !== 0) {
 				let msgTs;
 				if (message.ts != null) {
 					msgTs = moment(message.ts);
@@ -211,7 +220,7 @@ Meteor.startup(function() {
 		i18nLabel: 'Permalink',
 		classes: 'clipboard',
 		context: ['message', 'message-mobile'],
-		action() {
+		action(event) {
 			const message = this._arguments[1];
 			const permalink = RocketChat.MessageAction.getPermaLink(message._id);
 			RocketChat.MessageAction.hideDropDown();
@@ -238,7 +247,7 @@ Meteor.startup(function() {
 		i18nLabel: 'Copy',
 		classes: 'clipboard',
 		context: ['message', 'message-mobile'],
-		action() {
+		action(event) {
 			const message = this._arguments[1].msg;
 			RocketChat.MessageAction.hideDropDown();
 			if (Meteor.isCordova) {

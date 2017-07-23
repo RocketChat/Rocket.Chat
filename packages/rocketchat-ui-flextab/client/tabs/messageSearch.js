@@ -66,8 +66,7 @@ Template.messageSearch.events({
 		t.hasMore.set(true);
 		t.limit.set(20);
 		return t.search();
-	}
-	, 500),
+	}, 500),
 
 	'click .message-cog'(e, t) {
 		e.stopPropagation();
@@ -96,8 +95,7 @@ Template.messageSearch.events({
 			t.limit.set(t.limit.get() + 20);
 			return t.search();
 		}
-	}
-	, 200)
+	}, 200)
 });
 
 Template.messageSearch.onCreated(function() {
