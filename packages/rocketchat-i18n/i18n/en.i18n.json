@@ -424,6 +424,7 @@
   "Direct_Reply_Debug": "Debug Direct Reply",
   "Direct_Reply_Debug_Description": "[Beware] Enabling Debug mode would display your 'Plain Text Password' in Admin console.",
   "Direct_Reply_Enable": "Enable Direct Reply",
+  "Direct_Reply_Frequency": "Email Check Frequency",
   "Direct_Reply_Protocol": "Direct Reply Protocol",
   "Direct_Reply_Host": "Direct Reply Host",
   "Direct_Reply_Port": "Direct_Reply_Port",

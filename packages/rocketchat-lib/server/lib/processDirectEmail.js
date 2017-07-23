@@ -91,21 +91,15 @@ RocketChat.processDirectEmail = function(email) {
 	// Extract/parse reply from email body
 	email.body = reply.parse_reply(email.body);
 
-	email.headers.to = email.headers.to[0];
-
 	// if 'To' email format is "Name <username@domain>"
 	if (email.headers.to.indexOf('<') >= 0 && email.headers.to.indexOf('>') >= 0) {
 		email.headers.to = email.headers.to.split('<')[1].split('>')[0];
 	}
 
-	email.headers.from = email.headers.from[0];
-
 	// if 'From' email format is "Name <username@domain>"
 	if (email.headers.from.indexOf('<') >= 0 && email.headers.from.indexOf('>') >= 0) {
 		email.headers.from = email.headers.from.split('<')[1].split('>')[0];
 	}
-
-	email.headers.date = email.headers.date[0];
 
 	// 'To' email format "username+messageId@domain"
 	if (email.headers.to.indexOf('+') >= 0) {

@@ -1,4 +1,6 @@
 import IMAP from 'imap';
+import POP3 from 'poplib';
+import {simpleParser as simpleParser} from 'mailparser-node4';
 
 class IMAPIntercepter {
 	constructor() {
@@ -97,6 +99,10 @@ class IMAPIntercepter {
 								email.body = bodyBuffer;
 							} else {
 								email.headers = IMAP.parseHeader(headerBuffer);
+
+								email.headers.to = email.headers.to[0];
+								email.headers.date = email.headers.date[0];
+								email.headers.from = email.headers.from[0];
 							}
 						});
 					});
@@ -114,4 +120,130 @@ class IMAPIntercepter {
 	}
 }
 
+class POP3Intercepter {
+	constructor() {
+		this.pop3 = new POP3(RocketChat.settings.get('Direct_Reply_Port'), RocketChat.settings.get('Direct_Reply_Host'), {
+			enabletls: !RocketChat.settings.get('Direct_Reply_IgnoreTLS'),
+			debug: RocketChat.settings.get('Direct_Reply_Debug') ? console.log : false
+		});
+
+		this.totalMsgCount = 0;
+		this.currentMsgCount = 0;
+
+		this.pop3.on('connect', Meteor.bindEnvironment(() => {
+			this.pop3.login(RocketChat.settings.get('Direct_Reply_Username'), RocketChat.settings.get('Direct_Reply_Password'));
+		}));
+
+		this.pop3.on('login', Meteor.bindEnvironment((status, rawData) => {
+			if (status) {
+				// run on start
+				this.pop3.list();
+			} else {
+				console.log('Unable to Log-in ....');
+			}
+		}));
+
+		// on getting list of all emails
+		this.pop3.on('list', Meteor.bindEnvironment((status, msgcount, msgnumber, data, rawdata) => {
+			if (status) {
+				if (msgcount > 0) {
+					this.totalMsgCount = msgcount;
+					this.currentMsgCount = 1;
+					// Retrieve email
+					this.pop3.retr(this.currentMsgCount);
+				} else {
+					this.pop3.quit();
+				}
+			} else {
+				console.log('Cannot Get Emails ....');
+			}
+		}));
+
+		// on retrieved email
+		this.pop3.on('retr', Meteor.bindEnvironment((status, msgnumber, data, rawdata) => {
+			if (status) {
+				// parse raw email data to  JSON object
+				simpleParser(data, Meteor.bindEnvironment((err, mail) => {
+					this.initialProcess(mail);
+				}));
+
+				this.currentMsgCount += 1;
+
+				// delete email
+				this.pop3.dele(msgnumber);
+			} else {
+				console.log('Cannot Retrieve Message ....');
+			}
+		}));
+
+		// on email deleted
+		this.pop3.on('dele', Meteor.bindEnvironment((status, msgnumber, data, rawdata) => {
+			if (status) {
+				// get next email
+				if (this.currentMsgCount <= this.totalMsgCount) {
+					this.pop3.retr(this.currentMsgCount);
+				} else {
+					// parsed all messages.. so quitting
+					this.pop3.quit();
+				}
+			} else {
+				console.log('Cannot Delete Message ....');
+			}
+		}));
+
+		// invalid server state
+		this.pop3.on('invalid-state', function(cmd) {
+			console.log(`Invalid state. You tried calling ${ cmd }`);
+		});
+
+		// locked => command already running, not finished yet
+		this.pop3.on('locked', function(cmd) {
+			console.log(`Current command has not finished yet. You tried calling ${ cmd }`);
+		});
+	}
+
+	initialProcess(mail) {
+		const email = {
+			headers: {
+				from: mail.from.text,
+				to: mail.to.text,
+				date: mail.date,
+				'message-id': mail.messageId
+			},
+			body: mail.text
+		};
+
+		RocketChat.processDirectEmail(email);
+	}
+}
+
+class POP3Helper {
+	constructor() {
+		this.running = false;
+	}
+
+	start() {
+		// run every x-minutes
+		if (RocketChat.settings.get('Direct_Reply_Frequency')) {
+			this.running = Meteor.setInterval(() => {
+				// get new emails and process
+				RocketChat.POP3 = new RocketChat.POP3Intercepter();
+			}, RocketChat.settings.get('Direct_Reply_Frequency')*60*1000);
+		}
+	}
+
+	isActive() {
+		return this.running;
+	}
+
+	stop(callback = new Function) {
+		if (this.isActive()) {
+			Meteor.clearInterval(this.running);
+		}
+		callback();
+	}
+}
+
 RocketChat.IMAPIntercepter = IMAPIntercepter;
+RocketChat.POP3Intercepter = POP3Intercepter;
+RocketChat.POP3Helper = new POP3Helper();
