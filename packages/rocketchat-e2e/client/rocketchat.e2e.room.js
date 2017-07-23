@@ -47,7 +47,7 @@ RocketChat.E2E.Room = class {
 				Meteor.call('fetchGroupE2EKey', self.roomId, function(error, result) {
 					if (result !== null) {
 						console.log(result);
-						console.log("TYPE 1");
+						console.log('TYPE 1');
 						let cipherText = EJSON.parse(result);
 						const vector = cipherText.slice(0, 16);
 						cipherText = cipherText.slice(16);
@@ -66,14 +66,13 @@ RocketChat.E2E.Room = class {
 							console.log(err.name);
 						});
 
-					} 
-					else {
+					}					else {
 						resolve(false);
 					}
 				});
 			}).then(function(val) {
-				if (val == false) {
-					console.log("TYPE 2");
+				if (val === false) {
+					console.log('TYPE 2');
 					RocketChat.E2E.crypto.generateKey({name: 'AES-CBC', length: 128}, true, ['encrypt', 'decrypt']).then((key) => {
 						self.groupSessionKey = key;
 						crypto.subtle.exportKey('jwk', key).then(function(result) {
@@ -116,7 +115,7 @@ RocketChat.E2E.Room = class {
 				}
 			});
 			sessionKey.catch((err) => {
-				console.log("Error occurred");
+				console.log('Error occurred');
 				console.log(err);
 			});
 		} else {
@@ -181,7 +180,7 @@ RocketChat.E2E.Room = class {
 
 
 	clearGroupKey() {
-		let self = this;
+		const self = this;
 		Meteor.call('getUsersOfRoom', self.roomId, true, function(error, result) {
 			result.records.forEach(function(user) {
 				Meteor.call('updateGroupE2EKey', self.roomId, user._id, null, function(error, result) {

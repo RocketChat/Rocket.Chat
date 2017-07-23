@@ -180,11 +180,11 @@ Meteor.startup(function() {
 				} else {
 					const decryptedMsg = new Promise((resolve) => {
 						Meteor.call('fetchGroupE2EKey', e2eRoom.roomId, function(error, result) {
-							console.log("Key received: ");
+							console.log('Key received: ');
 							let cipherText = EJSON.parse(result);
 							const vector = cipherText.slice(0, 16);
 							cipherText = cipherText.slice(16);
-							console.log(cipherText)
+							console.log(cipherText);
 							decrypt_promise = crypto.subtle.decrypt({name: 'RSA-OAEP', iv: vector}, RocketChat.E2EStorage.get('RSA-PrivKey'), cipherText);
 							decrypt_promise.then(function(result) {
 								console.log(result);

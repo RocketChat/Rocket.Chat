@@ -17,6 +17,9 @@
 							{{else}}
 								<button class="button start"><span>Start encrypted session</span></button>
 							{{/if}} {{/if}}
+							{{#if isGroup}}
+								<button class="button clearGroupKey"><span>Clear group key</span></button>
+							{{/if}}
 					</ul>
 				</form>
 			{{else}}

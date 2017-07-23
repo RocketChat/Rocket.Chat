@@ -24,6 +24,10 @@ Template.e2eFlexTab.helpers({
 	establishing() {
 		const e2e = RocketChat.E2E.getInstanceByRoomId(this.rid);
 		return e2e && e2e.establishing.get();
+	},
+	isGroup() {
+		const e2e = RocketChat.E2E.getInstanceByRoomId(this.rid);
+		return e2e && (e2e.typeOfRoom === 'p');
 	}
 });
 
@@ -49,6 +53,14 @@ Template.e2eFlexTab.events({
 				swal('Timeout', '', 'error');
 				e2e.establishing.set(false);
 			}, 10000);
+		}
+	},
+	'click button.clearGroupKey'(e) {
+		e.preventDefault();
+		const e2e = RocketChat.E2E.getInstanceByRoomId(this.rid);
+		if (e2e) {
+			e2e.end();
+			e2e.clearGroupKey();
 		}
 	},
 	'click button.end'(e/*, t*/) {
