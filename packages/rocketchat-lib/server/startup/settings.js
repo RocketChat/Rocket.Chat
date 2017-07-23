@@ -524,6 +524,15 @@ RocketChat.settings.addGroup('Email', function() {
 			env: true,
 			i18nLabel: 'IgnoreTLS'
 		});
+		this.add('Direct_Reply_Frequency', 5, {
+			type: 'int',
+			env: true,
+			i18nLabel: 'Direct_Reply_Frequency',
+			enableQuery: {
+				_id: 'Direct_Reply_Protocol',
+				value: 'POP'
+			}
+		});
 		this.add('Direct_Reply_Username', '', {
 			type: 'string',
 			env: true,
