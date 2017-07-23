@@ -144,7 +144,7 @@ class POP3Intercepter {
 		}));
 
 		// on getting list of all emails
-		this.pop3.on('list', Meteor.bindEnvironment((status, msgcount, msgnumber, data) => {
+		this.pop3.on('list', Meteor.bindEnvironment((status, msgcount) => {
 			if (status) {
 				if (msgcount > 0) {
 					this.totalMsgCount = msgcount;
@@ -177,7 +177,7 @@ class POP3Intercepter {
 		}));
 
 		// on email deleted
-		this.pop3.on('dele', Meteor.bindEnvironment((status, msgnumber) => {
+		this.pop3.on('dele', Meteor.bindEnvironment((status) => {
 			if (status) {
 				// get next email
 				if (this.currentMsgCount <= this.totalMsgCount) {
@@ -187,7 +187,7 @@ class POP3Intercepter {
 					this.pop3.quit();
 				}
 			} else {
-				console.log('Cannot Delete Message ${ msgnumber } ....');
+				console.log('Cannot Delete Message....');
 			}
 		}));
 
