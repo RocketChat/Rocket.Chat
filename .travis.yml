@@ -4,8 +4,8 @@ services:
 - mongodb
 branches:
   only:
-  - develop
-  - "/^\\d+\\.\\d+\\.\\d+(-rc\\.\\d+)?$/"
+  - staging
+  - production
 git:
   depth: 1
 node_js:
