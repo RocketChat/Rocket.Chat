@@ -133,15 +133,15 @@ Meteor.startup(function() {
 		icon: 'icon-pencil',
 		i18nLabel: 'Edit',
 		context: ['message', 'message-mobile'],
-		action(e, instance) {
+		action(e) {
 			const message = $(e.currentTarget).closest('.message')[0];
 			chatMessages[Session.get('openedRoom')].edit(message);
 			RocketChat.MessageAction.hideDropDown();
-			const input = instance.find('.input-message');
-			Meteor.setTimeout(() => {
-				input.focus();
-				input.updateAutogrow();
-			}, 200);
+			// const input = instance.find('.input-message');
+			// Meteor.setTimeout(() => {
+			// 	input.focus();
+			// 	input.change();
+			// }, 200);
 		},
 		validation(message) {
 			if (RocketChat.models.Subscriptions.findOne({

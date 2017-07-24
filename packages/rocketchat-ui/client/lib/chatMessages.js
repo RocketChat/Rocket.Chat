@@ -136,15 +136,17 @@ this.ChatMessages = class ChatMessages {
 		this.input.classList.add('editing');
 		this.$input.closest('.message-form').addClass('editing');
 
-		this.input.focus();
 		if (message.attachments && message.attachments[0].description) {
 			this.input.value = message.attachments[0].description;
 		} else {
 			this.input.value = msg;
 		}
+		$(this.input).change();
 
 		const cursor_pos = editingNext ? 0 : -1;
-		return this.$input.setCursorPosition(cursor_pos);
+		this.$input.setCursorPosition(cursor_pos);
+		this.input.focus();
+		return this.input;
 	}
 
 	clearEditing() {
