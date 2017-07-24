@@ -177,6 +177,7 @@ Template.messages.onRendered(function() {
 			template.atBottom = messages.scrollTop >= messages.scrollHeight - messages.clientHeight;
 		}, 200);
 		Meteor.setInterval(function() {
+
 			if (template.atBottom) {
 				messages.scrollTop = messages.scrollHeight - messages.clientHeight;
 				newMessage.className = 'new-message not';

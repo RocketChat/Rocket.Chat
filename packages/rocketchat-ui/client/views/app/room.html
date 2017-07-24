@@ -28,7 +28,7 @@
 							<span class="room-topic">{{{RocketChatMarkdown roomTopic}}}</span>
 						</h2>
 					</header>
-					
+
 				{{/unless}}
 				<div class="messages-container-wrapper">
 					<div class="messages-container-main">
@@ -127,7 +127,7 @@
 							</div>
 						</div>
 						<footer class="footer border-component-color">
-							{{> messageBox}}
+							{{> messageBox messageboxData}}
 						</footer>
 					</div>
 					{{#with flexData}}

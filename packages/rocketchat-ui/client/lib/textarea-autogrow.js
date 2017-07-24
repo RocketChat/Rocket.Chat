@@ -60,6 +60,7 @@
 				}
 
 				$self.height(newHeight);
+				$self.trigger('autogrow', []);
 
 				if (settings.postGrowCallback !== null) {
 					settings.postGrowCallback($self);
