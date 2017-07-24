@@ -8,7 +8,7 @@ Package.describe({
 Package.onUse(function(api) {
 	api.use([
 		'ecmascript',
-		'emojione:emojione',
+		'emojione:emojione@2.2.6',
 		'rocketchat:emoji',
 		'rocketchat:lib'
 	]);
