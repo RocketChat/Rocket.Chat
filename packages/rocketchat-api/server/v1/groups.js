@@ -64,6 +64,18 @@ RocketChat.API.v1.addRoute('groups.addOwner', { authRequired: true }, {
 	}
 });
 
+RocketChat.API.v1.addRoute('groups.addLeader', { authRequired: true }, {
+	post() {
+		const findResult = findPrivateGroupByIdOrName({ params: this.requestParams(), userId: this.userId });
+		const user = this.getUserFromParams();
+		Meteor.runAsUser(this.userId, () => {
+			Meteor.call('addRoomLeader', findResult.rid, user._id);
+		});
+
+		return RocketChat.API.v1.success();
+	}
+});
+
 //Archives a private group only if it wasn't
 RocketChat.API.v1.addRoute('groups.archive', { authRequired: true }, {
 	post() {
@@ -367,6 +379,20 @@ RocketChat.API.v1.addRoute('groups.removeOwner', { authRequired: true }, {
 
 		Meteor.runAsUser(this.userId, () => {
 			Meteor.call('removeRoomOwner', findResult.rid, user._id);
+		});
+
+		return RocketChat.API.v1.success();
+	}
+});
+
+RocketChat.API.v1.addRoute('groups.removeLeader', { authRequired: true }, {
+	post() {
+		const findResult = findPrivateGroupByIdOrName({ params: this.requestParams(), userId: this.userId });
+
+		const user = this.getUserFromParams();
+
+		Meteor.runAsUser(this.userId, () => {
+			Meteor.call('removeRoomLeader', findResult.rid, user._id);
 		});
 
 		return RocketChat.API.v1.success();
