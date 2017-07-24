@@ -50,6 +50,18 @@ const commands = {
 			Meteor.call('logoutCleanUp', user);
 			return FlowRouter.go('home');
 		});
+	},
+
+	'set-toolbar-button'({ id, icon, label }) {
+		const toolbar = Session.get('toolbarButtons') || { buttons: {} };
+		toolbar.buttons[id] = { icon, label };
+		Session.set('toolbarButtons', toolbar);
+	},
+
+	'remove-toolbar-button'({ id }) {
+		const toolbar = Session.get('toolbarButtons') || { buttons: {} };
+		delete toolbar.buttons[id];
+		Session.set('toolbarButtons', toolbar);
 	}
 };
 
