@@ -58,8 +58,6 @@ Meteor.methods({
 				});
 			}
 
-			// TODO: #2995
-
 			Accounts.setPassword(Meteor.userId(), settings.newPassword, {
 				logout: false
 			});
