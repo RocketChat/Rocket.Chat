@@ -63,7 +63,6 @@ Template.accountProfile.onCreated(function() {
 			typedPassword
 		};
 		if (_.trim($('#password').val()) && RocketChat.settings.get('Accounts_AllowPasswordChange')) {
-			// TODO #2995
 			data.newPassword = $('#password').val();
 		}
 		if (_.trim($('#realname').val())) {
