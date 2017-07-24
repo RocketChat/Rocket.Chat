@@ -467,6 +467,22 @@ RocketChat.settings.addGroup('General', function() {
 });
 
 RocketChat.settings.addGroup('Email', function() {
+	this.section('Subject', function() {
+		this.add('Offline_DM_Email', '[[Site_Name]] You have been direct messaged by [User]', {
+			type: 'code',
+			code: 'text',
+			multiline: true,
+			i18nLabel: 'Offline_DM_Email',
+			i18nDescription: 'Offline_Email_Subject_Description'
+		});
+		return this.add('Offline_Mention_Email', '[[Site_Name]] You have been mentioned by [User] in #[Room]', {
+			type: 'code',
+			code: 'text',
+			multiline: true,
+			i18nLabel: 'Offline_Mention_Email',
+			i18nDescription: 'Offline_Email_Subject_Description'
+		});
+	});
 	this.section('Header_and_Footer', function() {
 		this.add('Email_Header', '<html><table border="0" cellspacing="0" cellpadding="0" width="100%" bgcolor="#f3f3f3" style="color:#4a4a4a;font-family: Helvetica,Arial,sans-serif;font-size:14px;line-height:20px;border-collapse:collapse;border-spacing:0;margin:0 auto"><tr><td style="padding:1em"><table border="0" cellspacing="0" cellpadding="0" align="center" width="100%" style="width:100%;margin:0 auto;max-width:800px"><tr><td bgcolor="#ffffff" style="background-color:#ffffff; border: 1px solid #DDD; font-size: 10pt; font-family: Helvetica,Arial,sans-serif;"><table width="100%" border="0" cellspacing="0" cellpadding="0"><tr><td style="background-color: #04436a;"><h1 style="font-family: Helvetica,Arial,sans-serif; padding: 0 1em; margin: 0; line-height: 70px; color: #FFF;">[Site_Name]</h1></td></tr><tr><td style="padding: 1em; font-size: 10pt; font-family: Helvetica,Arial,sans-serif;">', {
 			type: 'code',
