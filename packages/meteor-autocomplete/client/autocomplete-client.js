@@ -391,7 +391,7 @@ this.AutoComplete = class {
 		// full width of the field.
 		if (rule && isWholeField(rule)) {
 			pos.left = position.left;
-			if (rule.doNotChangeWidht !== false) {
+			if (rule.doNotChangeWidth !== false) {
 				pos.width = this.$element.outerWidth(); //position.offsetWidth
 
 			}

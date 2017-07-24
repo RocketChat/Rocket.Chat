@@ -5,19 +5,18 @@
 	--room-item-thumb-size: 20px;
 	--sidebar-header-height: 180px;
 	--sidebar-header-padding: 24px;
-	--sidebar-footer-height: 125px;
+	--sidebar-footer-height: 70px;
 	--sidebar-footer-padding: var(--sidebar-header-padding);
 }
 
 /* Sidebar */
 .sidebar {
-	width: var(--rooms-box-width);
-	height: auto;
 	display: flex;
+	flex: 0 0 var(--rooms-box-width);
 	flex-direction: column;
 	z-index: 2;
 	position: relative;
-	transition: transform .3s;
+	transition: transform 0.3s;
 
 	&--flex {
 		position: absolute;
@@ -46,7 +45,7 @@
 	}
 
 	&__footer {
-		padding: var(--sidebar-footer-padding);
+		padding: calc(var(--sidebar-footer-padding) / 2) var(--sidebar-footer-padding);
 		height: var(--sidebar-footer-height);
 		width: auto;
 		text-align: center;
@@ -109,9 +108,13 @@
 /* Sidebar Account */
 
 .sidebar__account {
-	display: flex;
-	align-items: center;
 	margin-bottom: 40px;
+
+	&-label {
+		display: flex;
+		align-items: center;
+		cursor: pointer;
+	}
 
 	&-thumb {
 		width: var(--account-thumb-size);
@@ -131,9 +134,11 @@
 	}
 
 	&-name {
-		font-size: 1.375rem;
-		height: 1.375rem;
+		font-size: 1rem;
+		font-weight: 700;
+		height: 1rem;
 		width: 160px;
+		margin-bottom: 0.5rem;
 	}
 
 	&-username {
@@ -147,8 +152,6 @@
 		font-size: 1rem;
 		display: flex;
 		align-items: center;
-		margin-top: 2px;
-		cursor: pointer;
 	}
 
 	&-status-bullet {
@@ -266,7 +269,12 @@
 
 	&__type {
 		font-size: 0.75rem;
-		margin-bottom: 18px;
+		margin-bottom: 0.5rem;
+		margin-left: 22px;
+	}
+
+	&__empty-room {
+		font-size: 0.75rem;
 		margin-left: 22px;
 	}
 
