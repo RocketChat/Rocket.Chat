@@ -458,21 +458,34 @@ Template.room.events({
 		if (!Meteor.userId() || !this._arguments) {
 			return;
 		}
-		const roomData = Session.get(`roomData${ this._arguments[1].rid }`);
+		const clickToDirectMessage = Meteor.user() && Meteor.user().settings && Meteor.user().settings.preferences && Meteor.user().settings.preferences.clickToDirectMessage;
+		if (clickToDirectMessage) {
+			return Meteor.call('createDirectMessage', this._arguments[1].u.username, (error, result) => {
+				if (error) {
+					return handleError(error);
+				}
 
-		if (RocketChat.Layout.isEmbedded()) {
-			fireGlobalEvent('click-user-card-message', { username: this._arguments[1].u.username });
-			e.preventDefault();
-			e.stopPropagation();
-			return;
+				if ((result != null ? result.rid : undefined) != null) {
+					return FlowRouter.go('direct', { username: this._arguments[1].u.username }, FlowRouter.current().queryParams);
+				}
+			});
+		} else {
+			const roomData = Session.get(`roomData${ this._arguments[1].rid }`);
+
+			if (RocketChat.Layout.isEmbedded()) {
+				fireGlobalEvent('click-user-card-message', { username: this._arguments[1].u.username });
+				e.preventDefault();
+				e.stopPropagation();
+				return;
+			}
+
+			if (['c', 'p', 'd'].includes(roomData.t)) {
+				instance.setUserDetail(this._arguments[1].u.username);
+			}
+
+			instance.tabBar.setTemplate('membersList');
+			return instance.tabBar.open();
 		}
-
-		if (['c', 'p', 'd'].includes(roomData.t)) {
-			instance.setUserDetail(this._arguments[1].u.username);
-		}
-
-		instance.tabBar.setTemplate('membersList');
-		return instance.tabBar.open();
 	},
 
 	'scroll .wrapper': _.throttle(function(e) {
