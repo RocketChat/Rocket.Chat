@@ -32,6 +32,9 @@ function replaceMentionedUsernamesWithFullNames(message, mentions) {
  */
 function notifyUser(userId, user, message, room, duration) {
 	const UI_Use_Real_Name = RocketChat.settings.get('UI_Use_Real_Name') === true;
+	if (!message.msg && message.attachments[0]) {
+		message.msg = message.attachments[0].image_type ? TAPi18n.__('User_uploaded_image') : TAPi18n.__('User_uploaded_file');
+	}
 	if (UI_Use_Real_Name) {
 		message.msg = replaceMentionedUsernamesWithFullNames(message.msg, message.mentions);
 	}
