@@ -127,7 +127,15 @@ Template.room.helpers({
 		});
 		return (roomData.announcement !== undefined) && (roomData.announcement !== '');
 	},
-
+	messageboxData() {
+		const instance = Template.instance();
+		return {
+			_id: this._id,
+			onResize: () => {
+				instance.sendToBottomIfNecessary();
+			}
+		};
+	},
 	roomAnnouncement() {
 		const roomData = Session.get(`roomData${ this._id }`);
 		if (!roomData) { return ''; }
@@ -741,6 +749,7 @@ Template.room.onRendered(function() {
 	};
 
 	template.sendToBottomIfNecessary = function() {
+
 		if ((template.atBottom === true) && (template.isAtBottom() !== true)) {
 			return template.sendToBottom();
 		}

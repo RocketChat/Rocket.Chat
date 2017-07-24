@@ -411,6 +411,8 @@ Template.messageBox.onRendered(function() {
 	this.$('.js-input-message').autogrow({
 		animate: true,
 		onInitialize: true
+	}).on('autogrow', () => {
+		this.data && this.data.onResize && this.data.onResize();
 	});
 });
 
