@@ -17,8 +17,9 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 	if (directMessage) {
 		usersToSendEmail[message.rid.replace(message.u._id, '')] = 1;
 
-		emailSubject = TAPi18n.__('Offline_DM_Email', {
-			user: message.u.username
+		emailSubject = RocketChat.placeholders.replace(RocketChat.settings.get('Offline_DM_Email'), {
+			user: message.u.username,
+			room: room.name
 		});
 
 	} else {
@@ -28,7 +29,7 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 			});
 		}
 
-		emailSubject = TAPi18n.__('Offline_Mention_Email', {
+		emailSubject = RocketChat.placeholders.replace(RocketChat.settings.get('Offline_Mention_Email'), {
 			user: message.u.username,
 			room: room.name
 		});
@@ -102,8 +103,6 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 		const usersOfMention = RocketChat.models.Users.getUsersToSendOfflineEmail(userIdsToSendEmail).fetch();
 
 		if (usersOfMention && usersOfMention.length > 0) {
-			const siteName = RocketChat.settings.get('Site_Name');
-
 			usersOfMention.forEach((user) => {
 				if (user.settings && user.settings.preferences && user.settings.preferences.emailNotificationMode && user.settings.preferences.emailNotificationMode === 'disabled' && usersToSendEmail[user._id] !== 'force') {
 					return;
@@ -124,7 +123,7 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 						email = {
 							to: email.address,
 							from: RocketChat.settings.get('From_Email'),
-							subject: `[${ siteName }] ${ emailSubject }`,
+							subject: emailSubject,
 							html: header + messageHTML + divisorMessage + (linkByUser[user._id] || defaultLink) + footer
 						};
 						// If direct reply enabled, email content with headers
