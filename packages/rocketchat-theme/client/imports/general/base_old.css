@@ -1480,6 +1480,7 @@
 		font-size: 22px;
 		font-weight: 500;
 		line-height: 29px;
+		flex: 1;
 
 		& .icon-at,
 		& .icon-hash,
@@ -1490,6 +1491,11 @@
 		& .icon-star,
 		& .icon-star-empty {
 			margin-right: -4px;
+		}
+
+		& .iframe-toolbar {
+			flex-grow: 0;
+			white-space: nowrap;
 		}
 	}
 
@@ -3070,6 +3076,33 @@ body:not(.is-cordova) {
 				}
 			}
 		}
+
+		& .close-flex-tab {
+			position: absolute;
+			text-align: center;
+			top: 3px;
+			right: 5px;
+			z-index: 20;
+			width: 30px;
+			height: 30px;
+
+			& span {
+				display: inline-block;
+				width: 21px;
+				height: 20px;
+				border-radius: 50%;
+
+				& i {
+					display: inline-block;
+					height: 18px;
+					width: 18px;
+					border-width: 1px;
+					border-style: solid;
+					border-radius: 50%;
+					font-size: 10px;
+				}
+			}
+		}
 	}
 
 	& .flex-tab-bar {
@@ -4631,6 +4664,10 @@ body:not(.is-cordova) {
 	& .messages-container {
 		border-width: 0;
 
+		& .flex-tab-container {
+			display: none;
+		}
+
 		& .messages-box {
 			margin-top: 0;
 		}
@@ -4796,3 +4833,74 @@ body:not(.is-cordova) {
 		max-height: 50px !important;
 	}
 }
+
+.room-leader a.chat-now {
+	position: absolute;
+	right: 25px;
+	width: 80px;
+	top: 15px;
+	height: 30px;
+	border: 1px solid #eaeaea;
+	text-align: center;
+	border-radius: 4px;
+	font-family: arial;
+	font-size: 14px;
+	text-decoration: none;
+	color: #555555;
+	cursor: pointer;
+	padding-top: 4px;
+}
+
+.room-leader a.chat-now:hover {
+	color: #555555;
+}
+
+.room-leader-container {
+	height: 54px;
+}
+
+.room-leader {
+	position: fixed;
+	top: 60px;
+	left: 0;
+	z-index: 1;
+	background: #ffffff;
+	width: calc(100% - 40px);
+	color: #555555;
+	border-bottom: solid 1px #eaeaea;
+	height: 54px;
+}
+
+.room-leader .thumb {
+	top: 6px;
+}
+
+.room-leader .right {
+	position: absolute;
+	top: 10px;
+	left: 70px;
+}
+
+.leader-status .status-text {
+	text-transform: capitalize;
+	padding-left: 15px;
+	font-size: 14px;
+}
+
+.leader-status .color-ball {
+	width: 10px;
+	height: 10px;
+	position: absolute;
+	border-radius: 5px;
+	margin-top: 5px;
+	background: grey;
+}
+
+.leader-status .color-ball.online {
+	background: green;
+}
+
+.leader-info .leader-name {
+	font-size: 18px;
+}
+

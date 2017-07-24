@@ -1,17 +1,4 @@
 /* globals openRoom */
-
-const filter = {
-	activity(room) {
-		return ['f', 'activity'].includes(room.identifier);
-	},
-	çç(room) {
-		return ['f', ...(preferences.mergeChannels ? ['channels'] : ['p', 'c']), 'd', 'unread'].includes(room.identifier);
-	},
-	category(room) {
-		return ['f', ...(preferences.mergeChannels ? ['channels'] : ['p', 'c']), 'd'].includes(room.identifier);
-	}
-};
-// unread
 RocketChat.roomTypes.add('unread', 10, {
 	unread: true,
 	condition() {
@@ -22,8 +9,8 @@ RocketChat.roomTypes.add('unread', 10, {
 	label: 'Unread'
 });
 
-// favorite
 RocketChat.roomTypes.add('f', 20, {
+	header: 'favorite',
 	icon: 'star',
 	label: 'Favorites'
 });

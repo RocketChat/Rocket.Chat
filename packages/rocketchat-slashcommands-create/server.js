@@ -12,12 +12,13 @@ function Create(command, params, item) {
 		return result;
 	}
 
-	const regexp = /#?([\d-_\w]+)/g;
+	const regexp = new RegExp(RocketChat.settings.get('UTF8_Names_Validation'));
+
 	if (command !== 'create' || !Match.test(params, String)) {
 		return;
 	}
 	let channel = regexp.exec(params.trim());
-	channel = channel ? channel[1] : '';
+	channel = channel ? channel[0] : '';
 	if (channel === '') {
 		return;
 	}
