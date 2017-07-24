@@ -29,8 +29,3 @@ Template.popupList_default.helpers({
 		};
 	}
 });
-Template.popupList_item_default.events({
-	'click li'() {
-		this.onClick(this.item);
-	}
-});

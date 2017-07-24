@@ -3,14 +3,13 @@ const acEvents = {
 		t.ac.onItemClick(this, e);
 	},
 	'keydown [name=users]'(e, t) {
-
-		if ([8, 46].includes(e.keyCode) && e.target.value ==='') {
-
+		if ([8, 46].includes(e.keyCode) && e.target.value === '') {
 			const users = t.selectedUsers;
 			const usersArr = users.get();
 			usersArr.pop();
 			return users.set(usersArr);
 		}
+
 		t.ac.onKeyDown(e);
 	},
 	'keyup [name=users]'(e, t) {
@@ -37,22 +36,20 @@ Template.createChannel.helpers({
 	autocomplete(key) {
 		const instance = Template.instance();
 		const param = instance.ac[key];
-		return typeof param === 'function'? param.apply(instance.ac): param;
+		return typeof param === 'function' ? param.apply(instance.ac): param;
 	},
 	items() {
-		const instance = Template.instance();
-		return instance.ac.filteredList();
+		return Template.instance().ac.filteredList();
 	},
 	config() {
-		const instance = Template.instance();
-		const filter = instance.userFilter;
+		const filter = Template.instance().userFilter;
 		return {
 			filter: filter.get(),
 			noMatchTemplate: 'userSearchEmpty',
 			modifier(text) {
 				const f = filter.get();
 				return `@${ f.length === 0 ? text : text.replace(new RegExp(filter.get()), function(part) {
-					return `<b>${ part }</b>`;
+					return `<strong>${ part }</strong>`;
 				}) }`;
 			}
 		};
@@ -61,8 +58,7 @@ Template.createChannel.helpers({
 		return Template.instance().selectedUsers.get();
 	},
 	inUse() {
-		const instance = Template.instance();
-		return instance.inUse.get();
+		return Template.instance().inUse.get();
 	},
 	invalidChannel() {
 		const instance = Template.instance();
@@ -74,18 +70,16 @@ Template.createChannel.helpers({
 		return 'disabled';
 	},
 	typeLabel() {
-		const type = Template.instance().type.get();
-		return t(type === 'p' ? 'Private Channel': 'Public Channel');
+		return t(Template.instance().type.get() === 'p' ? t('Private_Channel') : t('Public_Channel'));
 	},
 	typeDescription() {
-		const type = Template.instance().type.get();
-		return t(type === 'p' ? 'Just invited people can access this channel': 'Everyone can access this channel');
+		return t(Template.instance().type.get() === 'p' ? t('Just_invited_people_can_access_this_channel'): t('Everyone_can_access_this_channel'));
 	},
 	createIsDisabled() {
 		const instance = Template.instance();
 		const invalid = instance.invalid.get();
 		const inUse = instance.inUse.get();
-		const name = Template.instance().name.get();
+		const name = instance.name.get();
 
 		if (name.length === 0 || invalid || inUse === true || inUse === undefined) {
 			return 'disabled';
@@ -93,8 +87,7 @@ Template.createChannel.helpers({
 		return '';
 	},
 	iconType() {
-		const type = Template.instance().type.get();
-		return type === 'p' ? 'lock' : 'hashtag';
+		return Template.instance().type.get() === 'p' ? 'lock' : 'hashtag';
 	}
 });
 
@@ -163,8 +156,7 @@ Template.createChannel.events({
 });
 
 Template.createChannel.onRendered(function() {
-	const instance = Template.instance();
-	const users = instance.selectedUsers;
+	const users = this.selectedUsers;
 
 	this.firstNode.querySelector('[name=name]').focus();
 	this.ac.element = this.firstNode.querySelector('[name=users]');
@@ -178,12 +170,13 @@ Template.createChannel.onRendered(function() {
 /* global AutoComplete Deps */
 Template.createChannel.onCreated(function() {
 	this.selectedUsers = new ReactiveVar([]);
-	const instance = this;
-	const filter = {exceptions :[Meteor.user().username].concat(instance.selectedUsers.get().map(u => u.username))};
+
+	const filter = {exceptions :[Meteor.user().username].concat(this.selectedUsers.get().map(u => u.username))};
 	// this.onViewRead:??y(function() {
 	Deps.autorun(() => {
-		filter.exceptions = [Meteor.user().username].concat(instance.selectedUsers.get().map(u => u.username));
+		filter.exceptions = [Meteor.user().username].concat(this.selectedUsers.get().map(u => u.username));
 	});
+
 	this.name = new ReactiveVar('');
 	this.type = new ReactiveVar('d');
 	this.inUse = new ReactiveVar(undefined);
@@ -200,7 +193,8 @@ Template.createChannel.onCreated(function() {
 		}
 		this.inUse.set(undefined);
 	}, 1000);
-	const ac = new AutoComplete(
+
+	this.ac = new AutoComplete(
 		{
 			selector:{
 				item: '.rc-popup-list__item',
@@ -217,7 +211,7 @@ Template.createChannel.onCreated(function() {
 					field: 'username',
 					matchAll: true,
 					filter,
-					doNotChangeWidht: false,
+					doNotChangeWidth: false,
 					selector(match) {
 						return { term: match };
 					},
@@ -226,7 +220,7 @@ Template.createChannel.onCreated(function() {
 			]
 
 		});
-	this.ac = ac;
+
 	// this.firstNode.querySelector('[name=name]').focus();
 	// this.ac.element = this.firstNode.querySelector('[name=users]');
 	// this.ac.$element = $(this.ac.element);
