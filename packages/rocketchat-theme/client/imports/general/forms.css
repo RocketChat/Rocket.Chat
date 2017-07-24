@@ -176,6 +176,7 @@
 	font-size: var(--input-font-size);
 	position: relative;
 	padding: 24px;
+
 	&__toolbar-markdown {
 		position: absolute;
 		bottom: 4px;
@@ -183,39 +184,41 @@
 		width: 100%;
 		justify-content: center;
 		left: 0;
-		color: #9EA2A8;
+		color: #9ea2a8;
 
 		&__item {
 			width: 16px;
 			height: 16px;
 			margin: 0 4px;
 			text-align: center;
-			transition: color .5s;
+			transition: color 0.5s;
+
 			&:hover,
 			&:focus {
-				color: #2F343D;
+				color: #2f343d;
 			}
 		}
 	}
 
 	&__typing {
 		position: absolute;
-    top: 4px;
+		top: 4px;
 		left: 0;
-    margin-left: 24px;
-    font-size: 12px;
-    color: #9EA2A8;
+		margin-left: 24px;
+		font-size: 12px;
+		color: #9ea2a8;
+
 		&__user {
-			color: #2F343D;
+			color: #2f343d;
 		}
 
-		&:after {
-		  overflow: hidden;
-		  display: inline-block;
-		  vertical-align: bottom;
-		  animation: ellipsis steps(4, end) 1.5s infinite;
-		  content: "\2026"; /* ascii code for the ellipsis character */
-		  width: 0px;
+		&::after {
+			overflow: hidden;
+			display: inline-block;
+			vertical-align: bottom;
+			animation: ellipsis steps(4, end) 1.5s infinite;
+			content: "\2026"; /* ascii code for the ellipsis character */
+			width: 0;
 		}
 	}
 
@@ -226,6 +229,7 @@
 		border-color: #e1e5e8;
 		padding: 0.75rem 0;
 		align-items: flex-end;
+
 		&.editing {
 			background-color: #fff5df;
 		}
@@ -273,7 +277,6 @@
 		}
 	}
 }
-
 
 .rc-input {
 	width: 100%;
@@ -602,7 +605,6 @@
 
 .rc-form-group {
 	margin-bottom: var(--gap-between-elements);
-	/*display: flex;*/
 }
 
 .rc-form-label {
@@ -618,14 +620,15 @@
 	font-size: 1rem;
 }
 
-.rc-w-50 {
-	display: inline-block;
-	width: 50%;
-	vertical-align: top;
+.rc-grid {
+	display: flex;
+	align-items: flex-start;
+}
 
-	/* TODO: find a better place */
+.rc-w50 {
+	flex: 0 0 50%;
 
-	&.rc-input {
+	&.padded {
 		&:nth-child(odd) {
 			padding-right: 15px;
 		}
@@ -656,16 +659,17 @@
 }
 
 @keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
+	0% {
+		transform: rotate(0deg);
+	}
+
+	100% {
+		transform: rotate(360deg);
+	}
 }
 
 @keyframes ellipsis {
-  to {
-    width: 1.25em;
-  }
+	to {
+		width: 1.25em;
+	}
 }
