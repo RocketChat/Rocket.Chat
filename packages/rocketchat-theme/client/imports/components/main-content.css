@@ -1,6 +1,5 @@
 .main-content {
-	height: 100vh !important;
-	width: 100% !important;
+	flex: 1 1 100%;
 	z-index: 0 !important;
 	position: relative;
 }

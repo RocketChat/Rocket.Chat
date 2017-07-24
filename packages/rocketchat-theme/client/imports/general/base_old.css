@@ -3885,7 +3885,7 @@ body:not(.is-cordova) {
 	}
 }
 
-.rc-old .full-page {
+.rc-old.full-page {
 	display: flex;
 	align-items: center;
 	flex-flow: row nowrap;
