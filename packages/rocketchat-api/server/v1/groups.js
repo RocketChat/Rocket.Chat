@@ -294,7 +294,7 @@ RocketChat.API.v1.addRoute('groups.list', { authRequired: true }, {
 			rooms = _.pluck(RocketChat.models.Subscriptions.findByType('p').fetch(), '_room');
 		} else {
 			rooms = _.pluck(RocketChat.models.Subscriptions.findByTypeAndUserId('p', this.userId).fetch(), '_room');
-		} 
+		}
 		const totalCount = rooms.length;
 
 		rooms = RocketChat.models.Rooms.processQueryOptionsOnResult(rooms, {
