@@ -146,6 +146,7 @@ rocketchat:error-handler@1.0.0
 rocketchat:favico@0.0.1
 rocketchat:file@0.0.1
 rocketchat:file-upload@0.0.1
+rocketchat:geoip-plugin@0.0.1
 rocketchat:github-enterprise@0.0.1
 rocketchat:gitlab@0.0.1
 rocketchat:highlight-words@0.0.1
@@ -160,6 +161,7 @@ rocketchat:integrations@0.0.1
 rocketchat:internal-hubot@0.0.1
 rocketchat:irc@0.0.2
 rocketchat:katex@0.0.1
+rocketchat:language-plugin@0.0.1
 rocketchat:ldap@0.0.1
 rocketchat:ldapjs@1.0.0
 rocketchat:lib@0.0.1
@@ -182,6 +184,7 @@ rocketchat:oauth2-server@2.0.0
 rocketchat:oauth2-server-config@1.0.0
 rocketchat:oembed@0.0.1
 rocketchat:otr@0.0.1
+rocketchat:plugin-handler@0.0.1
 rocketchat:postcss@1.0.0
 rocketchat:push-notifications@0.0.1
 rocketchat:reactions@0.0.1
