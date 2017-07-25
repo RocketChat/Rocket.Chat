@@ -15,6 +15,12 @@ RocketChat.placeholders.replace = function(str, data) {
 		str = str.replace(/\[email\]/g, data.email || '');
 		str = str.replace(/\[password\]/g, data.password || '');
 
+		str = str.replace(/\[userAffectedName\]/g, data.userAffectedName || '');
+		str = str.replace(/\[userAffectedUsername\]/g, data.userAffectedUsername || '');
+		str = str.replace(/\[userChangerUsername\]/g, data.userChangerUsername || '');
+		str = str.replace(/\[changedAt\]/g, data.changedAt || '');
+		str = str.replace(/\[passwordChangeOccurrencesList\]/g, data.passwordChangeOccurrencesList || '');
+
 		if (data.unsubscribe) {
 			str = str.replace(/\[unsubscribe\]/g, data.unsubscribe);
 		}

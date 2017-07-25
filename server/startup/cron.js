@@ -57,7 +57,7 @@ Meteor.startup(function() {
 
 		if (RocketChat.settings.get('Accounts_AdminsReceivePasswordChangeHistory') === 'daily') {
 			SyncedCron.add({
-				name: 'Sending password change log for admins by email - daily',
+				name: 'Send password change log for admins by email - daily',
 				schedule(parser) {
 					return parser.text('at 0:00 am every 1 day');
 				},
@@ -67,7 +67,7 @@ Meteor.startup(function() {
 
 		if (RocketChat.settings.get('Accounts_AdminsReceivePasswordChangeHistory') === 'weekly') {
 			SyncedCron.add({
-				name: 'Sending password change log for admins by email - weekly',
+				name: 'Send password change log for admins by email - weekly',
 				schedule(parser) {
 					return parser.text('on the first day of the week');
 				},

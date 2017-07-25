@@ -225,14 +225,10 @@ class ModelUsers extends RocketChat.models._Base {
 		return user && user.lastLogin;
 	}
 
-	// TODO: #2995
-	getUsersWithPasswordChanged(fromDate, toDate, userId, options) {
-		let query = {
+	getUsersWithPasswordChanged(fromDate, toDate, options) {
+		const query = {
 			'passwordChangeHistory.changeAt': {$gte: fromDate, $lte: toDate}
 		};
-		if (userId) {
-			query._id = userId;
-		}
 		return this.find(query, options);
 	}
 
@@ -376,7 +372,6 @@ class ModelUsers extends RocketChat.models._Base {
 		return this.update({}, update, { multi: true });
 	}
 
-	// TODO: #2995
 	addPasswordChangeHistory(_id) {
 		const query =	{_id};
 
@@ -392,8 +387,7 @@ class ModelUsers extends RocketChat.models._Base {
 		};
 
 		const result = {
-			userAffected: this.findById(_id),
-			lastPasswordChangeHistory: passwordChangeHistory,
+			passwordChangeHistory,
 			result: this.update(query, update)
 		};
 
