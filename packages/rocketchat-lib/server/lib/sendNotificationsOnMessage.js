@@ -162,7 +162,11 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 	let push_message;
 	//Set variables depending on Push Notification settings
 	if (RocketChat.settings.get('Push_show_message')) {
-		push_message = message.msg;
+		if (message.msg === '' && message.attachments[0]) {
+			push_message = message.attachments[0].image_type ? TAPi18n.__('User_uploaded_image') : TAPi18n.__('User_uploaded_file');
+		} else {
+			push_message = message.msg;
+		}
 	} else {
 		push_message = ' ';
 	}
