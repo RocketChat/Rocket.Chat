@@ -182,6 +182,12 @@ this.ChatMessages = class ChatMessages {
 
 			const msg = input.value;
 			const msgObject = { _id: Random.id(), rid, msg};
+			const lastMessage = ChatMessage.findOne({rid}, { fields: { ts: 1 }, sort: { ts: -1 }});
+			if(msg[0]+msg[1] === '+:'){
+				Meteor.call('setReaction', msg.replace('+','').trim(), lastMessage._id);
+				input.value = '';
+				return;
+			}
 
 				// Run to allow local encryption, and maybe other client specific actions to be run before send
 			return RocketChat.promises.run('onClientBeforeSendMessage', msgObject).then(msgObject => {
