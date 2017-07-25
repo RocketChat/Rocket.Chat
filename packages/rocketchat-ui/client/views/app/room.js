@@ -448,6 +448,12 @@ Template.room.events({
 			dropDown = $(`.messages-box \#${ message._id } .message-dropdown`);
 		}
 
+		const containerHeight = $('.messages-box .wrapper').height();
+		const dropdownHeight = dropDown.height();
+		const dropdownTop= dropDown.parent().offset().top;
+		if ((dropdownTop + dropdownHeight) > containerHeight) {
+			dropDown.css('top', `-${ dropdownHeight + 30 }px`);
+		}
 		return dropDown.show();
 	},
 
