@@ -318,17 +318,17 @@ Template.messagePopupConfig.helpers({
 							data: value
 						};
 					})
-					.filter(obj => regExp.test(obj._id))
-					.slice(0, 10)
-					.sort(function(a, b) {
-						if (a._id < b._id) {
-							return -1;
-						}
-						if (a._id > b._id) {
-							return 1;
-						}
-						return 0;
-					});
+						.filter(obj => regExp.test(obj._id))
+						.slice(0, 10)
+						.sort(function(a, b) {
+							if (a._id < b._id) {
+								return -1;
+							}
+							if (a._id > b._id) {
+								return 1;
+							}
+							return 0;
+						});
 				}
 			};
 		}
