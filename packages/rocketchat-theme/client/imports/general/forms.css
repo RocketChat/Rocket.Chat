@@ -255,6 +255,37 @@
 		justify-content: center;
 		height: 21px;
 		align-items: center;
+
+		& .rc-input__icon-svg--plus {
+			transition: transform 0.2s linear;
+		}
+	}
+
+	&__action-label {
+		position: relative;
+
+		& #rc-message-box__action-input:checked ~ .rc-message-box__icon .rc-input__icon-svg {
+			transform: rotate(45deg);
+		}
+
+		& .rc-popover {
+			bottom: 30px;
+			right: 8px;
+
+			&__column {
+				justify-content: space-between;
+			}
+
+			&__title {
+				font-size: 0.75rem;
+				color: #9ea2a8;
+				text-transform: none;
+			}
+
+			&__item {
+				padding: 1px 0;
+			}
+		}
 	}
 }
 
