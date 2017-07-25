@@ -152,22 +152,20 @@
 		position: relative;
 		padding-right: calc(3 * 0.782rem);
 		transition: padding-right 0.3s;
-	}
-}
 
-.loading {
-	&::before {
-		content: "";
-		border-radius: 50%;
-		width: 20px;
-		height: 20px;
-		display: block;
-		border: 0.15rem solid rgba(255, 255, 255, 0.5);
-		border-top-color: white;
-		animation: spin 1s infinite cubic-bezier(0.14, 0.48, 0.45, 0.63);
-		position: absolute;
-		right: 0.782rem;
-		top: 25%;
+		&::before {
+			content: "";
+			border-radius: 50%;
+			width: 20px;
+			height: 20px;
+			display: block;
+			border: 0.15rem solid rgba(127, 127, 127, 0.5);
+			border-top-color: white;
+			animation: spin 1s infinite cubic-bezier(0.14, 0.48, 0.45, 0.63);
+			position: absolute;
+			right: 0.782rem;
+			top: 25%;
+		}
 	}
 }
 
@@ -572,8 +570,7 @@
 
 .rc-select-avatar {
 	display: flex;
-	align-items: center;
-	cursor: pointer;
+	align-items: flex-start;
 
 	&__preview {
 		width: 150px;
@@ -582,24 +579,33 @@
 		margin-right: 1rem;
 	}
 
-	&__type {
-		max-width: 150px;
-		border-bottom-left-radius: 0;
-		border-bottom-right-radius: 0;
-		margin-right: -var(--border);
+	&__loading::after {
+		overflow: hidden;
+		display: inline-block;
+		vertical-align: bottom;
+		animation: ellipsis steps(4, end) 1.5s infinite;
+		content: "\2026"; /* ascii code for the ellipsis character */
+		width: 0;
 	}
 
-	&__type,
-	&__value {
-		height: 45px;
-		background-color: transparent;
-		border-width: var(--border);
-		border-radius: var(--border);
-		border-color: #e1e5e8;
-		padding: 0.75rem 1rem;
-		font-size: var(--input-font-size);
-		flex: 1;
-		-webkit-appearance: none;
+	&__list {
+		display: flex;
+
+		&__item {
+			margin-right: 10px;
+			cursor: pointer;
+			height: 50px;
+			width: 50px;
+			border: 1px solid;
+
+			& .avatar {
+				transition: opacity 0.5s;
+			}
+
+			& .avatar:hover {
+				opacity: 0.8;
+			}
+		}
 	}
 }
 
@@ -639,6 +645,28 @@
 	}
 }
 
+@media (width <= 500px) {
+	.rc-grid {
+		display: flex;
+		align-items: flex-start;
+		flex-direction: column;
+	}
+
+	.rc-w50 {
+		flex: 0 0 100%;
+
+		&.padded {
+			&:nth-child(odd) {
+				padding-right: 0;
+			}
+
+			&:nth-child(even) {
+				padding-left: 0;
+			}
+		}
+	}
+}
+
 .preferences-page {
 	&__header {
 		height: 77px;
@@ -653,8 +681,13 @@
 
 	&__content {
 		padding: 10px;
-		max-width: 649px;
 		margin: 25px auto;
+	}
+}
+
+@media (width > 500px) {
+	.preferences-page__content {
+		max-width: 649px;
 	}
 }
 
