@@ -474,8 +474,7 @@ Template.room.events({
 		if (!Meteor.userId() || !this._arguments) {
 			return;
 		}
-		const clickToDirectMessage = Meteor.user() && Meteor.user().settings && Meteor.user().settings.preferences && Meteor.user().settings.preferences.clickToDirectMessage;
-		if (clickToDirectMessage) {
+		if (RocketChat.settings.get('UI_Click_Direct_Message')) {
 			return Meteor.call('createDirectMessage', this._arguments[1].u.username, (error, result) => {
 				if (error) {
 					if (error.isClientSafe) {
