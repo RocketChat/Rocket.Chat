@@ -282,16 +282,6 @@ Template.room.events({
 		}
 	},
 
-	'scroll .messages-box .wrapper'() {
-		const $wrapper = $('.messages-box .wrapper');
-		if ($wrapper.scrollTop() < lastScrollTop) {
-			$('.room-leader').removeClass('hidden');
-		} else if ($wrapper.scrollTop() > $('.room-leader-container').height()) {
-			$('.room-leader').addClass('hidden');
-		}
-		lastScrollTop = $wrapper.scrollTop();
-	},
-
 	'touchstart .message'(e, t) {
 		const touches = e.originalEvent.touches;
 		if (touches && touches.length) {
