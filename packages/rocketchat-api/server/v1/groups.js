@@ -289,11 +289,11 @@ RocketChat.API.v1.addRoute('groups.list', { authRequired: true }, {
 	get() {
 		const { offset, count } = this.getPaginationItems();
 		const { sort, fields } = this.parseJsonQuery();
-        if (RocketChat.authz.hasPermission(this.userId, 'view-room-administration')) {
-            var rooms = _.pluck(RocketChat.models.Subscriptions.findByType('p').fetch(), '_room');
-        } else {
-            var rooms = _.pluck(RocketChat.models.Subscriptions.findByTypeAndUserId('p', this.userId).fetch(), '_room');
-        } 
+		if (RocketChat.authz.hasPermission(this.userId, 'view-room-administration')) {
+			var rooms = _.pluck(RocketChat.models.Subscriptions.findByType('p').fetch(), '_room');
+		} else {
+			var rooms = _.pluck(RocketChat.models.Subscriptions.findByTypeAndUserId('p', this.userId).fetch(), '_room');
+		} 
 		const totalCount = rooms.length;
 
 		rooms = RocketChat.models.Rooms.processQueryOptionsOnResult(rooms, {
