@@ -54,7 +54,7 @@ class GoogleVision {
 					const bucketFile = bucket.file(file.GoogleStorage.path);
 					const results = Meteor.wrapAsync(this.visionClient.detectSafeSearch, this.visionClient)(bucketFile);
 					if (results && results.adult === true) {
-						delete message.attachments[0];
+						FileUpload.getStore('Uploads').deleteById(file._id);
 						const user = RocketChat.models.Users.findOneById(message.u && message.u._id);
 						if (user) {
 							RocketChat.Notifications.notifyUser(user._id, 'message', {
