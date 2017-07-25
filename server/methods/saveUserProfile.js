@@ -58,6 +58,13 @@ Meteor.methods({
 				});
 			}
 
+			// TODO: #2995
+
+			if (RocketChat.settings.get('Accounts_AdminsReceivePasswordChangeLog') === 'immediately') {
+				// TODO: Send mail...
+				// Mailer.sendMail(from, subject, body)
+			}
+
 			Accounts.setPassword(Meteor.userId(), settings.newPassword, {
 				logout: false
 			});

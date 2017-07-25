@@ -30,6 +30,10 @@ function cleanupOEmbedCache() {
 	return Meteor.call('OEmbedCacheCleanup');
 }
 
+function sendPasswordChangeHistoryForAdmins() {
+	Meteor.call('sendPasswordChangeHistoryForAdmins');
+}
+
 Meteor.startup(function() {
 	return Meteor.defer(function() {
 		generateStatistics();
@@ -50,6 +54,27 @@ Meteor.startup(function() {
 			},
 			job: cleanupOEmbedCache
 		});
+
+		if (RocketChat.settings.get('Accounts_AdminsReceivePasswordChangeHistory') === 'daily') {
+			SyncedCron.add({
+				name: 'Sending password change log for admins by email - daily',
+				schedule(parser) {
+					return parser.text('at 0:00 am every 1 day');
+				},
+				job: sendPasswordChangeHistoryForAdmins
+			});
+		}
+
+		if (RocketChat.settings.get('Accounts_AdminsReceivePasswordChangeHistory') === 'weekly') {
+			SyncedCron.add({
+				name: 'Sending password change log for admins by email - weekly',
+				schedule(parser) {
+					return parser.text('on the first day of the week');
+				},
+				job: sendPasswordChangeHistoryForAdmins
+			});
+		}
+
 		return SyncedCron.start();
 	});
 });

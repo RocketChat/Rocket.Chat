@@ -20,6 +20,10 @@ Meteor.methods({
 
 		Accounts.setPassword(userId, password, {
 			logout: false
+		}, function(error) {
+			if (!error) {
+				Meteor.call('addPasswordChangeHistory', userId);
+			}
 		});
 
 		return RocketChat.models.Users.unsetRequirePasswordChange(userId);

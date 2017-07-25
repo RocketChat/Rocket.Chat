@@ -51,6 +51,7 @@ Template.resetPassword.events({
 				} else {
 					FlowRouter.go('home');
 					toastr.success(t('Password_changed_successfully'));
+					Meteor.call('addPasswordChangeHistory');
 					RocketChat.callbacks.run('userPasswordReset');
 				}
 			});
