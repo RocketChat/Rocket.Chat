@@ -300,7 +300,7 @@ Template.messagePopupConfig.helpers({
 				collection: RocketChat.emoji.list,
 				template: 'messagePopupEmoji',
 				trigger: '\\+',
-				prefix: '',
+				prefix: '+',
 				suffix: ' ',
 				getInput: self.getInput,
 				getFilter(collection, filter) {
