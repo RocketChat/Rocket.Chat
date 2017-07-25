@@ -114,7 +114,6 @@ Template.accountPreferences.onCreated(function() {
 		data.hideFlexTab = $('#hideFlexTab').find('input:checked').val();
 		data.hideAvatars = $('#hideAvatars').find('input:checked').val();
 		data.mergeChannels = $('#mergeChannels').find('input:checked').val();
-		data.clickToDirectMessage = $('#clickToDirectMessage').find('input:checked').val();
 		data.sendOnEnter = $('#sendOnEnter').find('select').val();
 		data.unreadRoomsMode = $('input[name=unreadRoomsMode]:checked').val();
 		data.autoImageLoad = $('input[name=autoImageLoad]:checked').val();
