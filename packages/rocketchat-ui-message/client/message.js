@@ -13,7 +13,7 @@ Template.message.helpers({
 	roleTags() {
 		const user = Meteor.user();
 		// test user -> settings -> preferences -> hideRoles
-		if (!RocketChat.settings.get('UI_DisplayRoles') || ['settings', 'preferences', 'hideRoles'].reduce((obj, field) => typeof obj !== 'undefined' && obj[field], user)) {
+		if (!RocketChat.settings.get('UI_DisplayRoles') || (user && ['settings', 'preferences', 'hideRoles'].reduce((obj, field) => typeof obj !== 'undefined' && obj[field], user))) {
 			return [];
 		}
 
@@ -193,16 +193,19 @@ Template.message.helpers({
 		}
 	},
 	hasOembed() {
-		if (!(this.urls && this.urls.length > 0 && Template.oembedBaseWidget != null && RocketChat.settings.get('API_Embed'))) {
+		// there is no URLs, there is no template to show the oembed (oembed package removed) or oembed is not enable
+		if (!(this.urls && this.urls.length > 0) || !Template.oembedBaseWidget || !RocketChat.settings.get('API_Embed')) {
 			return false;
 		}
-		if (!(RocketChat.settings.get('API_EmbedDisabledFor')||'').split(',').map(username => username.trim()).includes(this.u && this.u.username)) {
+
+		// check if oembed is disabled for message's sender
+		if ((RocketChat.settings.get('API_EmbedDisabledFor')||'').split(',').map(username => username.trim()).includes(this.u && this.u.username)) {
 			return false;
 		}
 		return true;
 	},
 	reactions() {
-		const userUsername = Meteor.user().username;
+		const userUsername = Meteor.user() && Meteor.user().username;
 		return Object.keys(this.reactions||{}).map(emoji => {
 			const reaction = this.reactions[emoji];
 			const total = reaction.usernames.length;
@@ -285,7 +288,7 @@ Template.message.onCreated(function() {
 		} else if (msg.u && msg.u.username === RocketChat.settings.get('Chatops_Username')) {
 			msg.html = msg.msg;
 			msg = RocketChat.callbacks.run('renderMentions', msg);
-				// console.log JSON.stringify message
+			// console.log JSON.stringify message
 			msg = msg.html;
 		} else {
 			msg = renderMessageBody(msg);

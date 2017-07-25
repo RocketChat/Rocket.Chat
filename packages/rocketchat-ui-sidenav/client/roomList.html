@@ -4,7 +4,7 @@
 	{{else}}
 		{{#if isActiveFavorite}}
 			{{#with rooms}}
-				<h3 class="room-type {{unreadClass ..}}">
+				<h3 class="room-type {{unreadClass ..}} {{roomType ..}}">
 					{{_ ../label}} <span class="room-count-small">({{count}})</span>
 				</h3>
 				<ul>
