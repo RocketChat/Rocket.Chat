@@ -49,8 +49,7 @@ Template.AssistifyCreateRequest.events({
 
 	'click .save-request'(event, instance) {
 		event.preventDefault();
-		// const name = instance.find('#request-name').value.toLowerCase().trim();
-		const expertise = instance.find('#expertise-search').value.toLowerCase().trim();
+		const expertise = instance.find('#expertise-search').value.trim();
 		instance.requestRoomName.set(name);
 
 		if (name || expertise) {

@@ -86,8 +86,7 @@ Template.AssistifyCreateExpertise.events({
 
 	'click .save-expertise'(event, instance) {
 		event.preventDefault();
-		const name = instance.find('#expertise').value.toLowerCase().trim();
-		instance.expertiseRoomName.set(name);
+		const name = instance.find('#expertise').value.trim();
 
 		if (name) {
 			Meteor.call('createExpertise', name, instance.selectedUsers.get(), (err, result) => {
@@ -126,7 +125,6 @@ Template.AssistifyCreateExpertise.events({
 
 Template.AssistifyCreateExpertise.onCreated(function() {
 	const instance = this;
-	instance.expertiseRoomName = new ReactiveVar('');
 	instance.selectedUsers = new ReactiveVar([]);
 	instance.selectedUserNames = {};
 	instance.isExpert = new ReactiveVar(false);
@@ -145,7 +143,6 @@ Template.AssistifyCreateExpertise.onCreated(function() {
 	});
 
 	instance.clearForm = function() {
-		instance.expertiseRoomName.set('');
 		instance.selectedUsers.set([]);
 		instance.find('#expertise').value = '';
 		instance.find('#experts').value = '';

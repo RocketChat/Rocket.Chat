@@ -5,6 +5,7 @@ _dbs.getKnowledgeAdapter = function() {
 
 	const KNOWLEDGE_SRC_APIAI = '0';
 	const KNOWLEDGE_SRC_REDLINK = '1';
+	const KNOWLEDGE_SRC_SMARTI = '2';
 
 	RocketChat.settings.get('DBS_AI_Source', function(key, value) {
 		knowledgeSource = value;
@@ -33,6 +34,8 @@ _dbs.getKnowledgeAdapter = function() {
 			return _dbs.apiaiAdapter;
 		case KNOWLEDGE_SRC_REDLINK:
 			return _dbs.RedlinkAdapterFactory.getInstance(); // buffering done inside the factory method
+		case KNOWLEDGE_SRC_SMARTI:
+			return _dbs.SmartiAdapterFactory.getInstance(); // buffering done inside the factory method
 	}
 };
 

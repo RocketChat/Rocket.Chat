@@ -43,6 +43,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/config.js', 'server');
 	addDirectory(api, 'server/lib', 'server');
 	addDirectory(api, 'server/hooks', 'server');
+	addDirectory(api, 'server/methods', 'server');
 
 	//Client business logic
 	api.addFiles('client/redlink_ui.js', 'client');
