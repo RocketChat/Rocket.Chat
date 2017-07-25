@@ -31,9 +31,10 @@ function replaceMentionedUsernamesWithFullNames(message, mentions) {
  * @param {number} duration Duration of notification
  */
 function notifyUser(userId, user, message, room, duration) {
+	const lng = user && user.language || RocketChat.settings.get('language') || 'en';
 	const UI_Use_Real_Name = RocketChat.settings.get('UI_Use_Real_Name') === true;
 	if (!message.msg && message.attachments[0]) {
-		message.msg = message.attachments[0].image_type ? TAPi18n.__('User_uploaded_image') : TAPi18n.__('User_uploaded_file');
+		message.msg = message.attachments[0].image_type ? TAPi18n.__('User_uploaded_image', {lng}) : TAPi18n.__('User_uploaded_file', {lng});
 	}
 	if (UI_Use_Real_Name) {
 		message.msg = replaceMentionedUsernamesWithFullNames(message.msg, message.mentions);
