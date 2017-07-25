@@ -213,14 +213,14 @@
       "from": "delayed-stream@>=1.0.0 <1.1.0"
     },
     "dot-prop": {
-      "version": "4.1.1",
-      "resolved": "https://registry.npmjs.org/dot-prop/-/dot-prop-4.1.1.tgz",
+      "version": "4.2.0",
+      "resolved": "https://registry.npmjs.org/dot-prop/-/dot-prop-4.2.0.tgz",
       "from": "dot-prop@>=4.1.0 <5.0.0"
     },
     "duplexify": {
       "version": "3.5.0",
       "resolved": "https://registry.npmjs.org/duplexify/-/duplexify-3.5.0.tgz",
-      "from": "duplexify@>=3.2.0 <4.0.0"
+      "from": "duplexify@>=3.5.0 <4.0.0"
     },
     "ecc-jsbn": {
       "version": "0.1.1",
@@ -280,19 +280,61 @@
       "from": "fs.realpath@>=1.0.0 <2.0.0"
     },
     "gcp-metadata": {
-      "version": "0.1.0",
-      "resolved": "https://registry.npmjs.org/gcp-metadata/-/gcp-metadata-0.1.0.tgz",
-      "from": "gcp-metadata@>=0.1.0 <0.2.0"
+      "version": "0.2.0",
+      "resolved": "https://registry.npmjs.org/gcp-metadata/-/gcp-metadata-0.2.0.tgz",
+      "from": "gcp-metadata@>=0.2.0 <0.3.0"
     },
     "gcs-resumable-upload": {
-      "version": "0.7.7",
-      "resolved": "https://registry.npmjs.org/gcs-resumable-upload/-/gcs-resumable-upload-0.7.7.tgz",
-      "from": "gcs-resumable-upload@>=0.7.1 <0.8.0",
+      "version": "0.8.0",
+      "resolved": "https://registry.npmjs.org/gcs-resumable-upload/-/gcs-resumable-upload-0.8.0.tgz",
+      "from": "gcs-resumable-upload@>=0.8.0 <0.9.0",
       "dependencies": {
+        "caseless": {
+          "version": "0.11.0",
+          "resolved": "https://registry.npmjs.org/caseless/-/caseless-0.11.0.tgz",
+          "from": "caseless@>=0.11.0 <0.12.0"
+        },
+        "gcp-metadata": {
+          "version": "0.1.0",
+          "resolved": "https://registry.npmjs.org/gcp-metadata/-/gcp-metadata-0.1.0.tgz",
+          "from": "gcp-metadata@>=0.1.0 <0.2.0"
+        },
         "google-auto-auth": {
           "version": "0.6.1",
           "resolved": "https://registry.npmjs.org/google-auto-auth/-/google-auto-auth-0.6.1.tgz",
           "from": "google-auto-auth@>=0.6.0 <0.7.0"
+        },
+        "har-validator": {
+          "version": "2.0.6",
+          "resolved": "https://registry.npmjs.org/har-validator/-/har-validator-2.0.6.tgz",
+          "from": "har-validator@>=2.0.6 <2.1.0"
+        },
+        "node-uuid": {
+          "version": "1.4.8",
+          "resolved": "https://registry.npmjs.org/node-uuid/-/node-uuid-1.4.8.tgz",
+          "from": "node-uuid@>=1.4.7 <1.5.0"
+        },
+        "qs": {
+          "version": "6.3.2",
+          "resolved": "https://registry.npmjs.org/qs/-/qs-6.3.2.tgz",
+          "from": "qs@>=6.3.0 <6.4.0"
+        },
+        "retry-request": {
+          "version": "1.3.2",
+          "resolved": "https://registry.npmjs.org/retry-request/-/retry-request-1.3.2.tgz",
+          "from": "retry-request@>=1.3.2 <2.0.0",
+          "dependencies": {
+            "request": {
+              "version": "2.76.0",
+              "resolved": "https://registry.npmjs.org/request/-/request-2.76.0.tgz",
+              "from": "request@2.76.0"
+            }
+          }
+        },
+        "tunnel-agent": {
+          "version": "0.4.3",
+          "resolved": "https://registry.npmjs.org/tunnel-agent/-/tunnel-agent-0.4.3.tgz",
+          "from": "tunnel-agent@>=0.4.1 <0.5.0"
         }
       }
     },
@@ -329,15 +371,20 @@
       "from": "google-auth-library@>=0.10.0 <0.11.0"
     },
     "google-auto-auth": {
-      "version": "0.5.4",
-      "resolved": "https://registry.npmjs.org/google-auto-auth/-/google-auto-auth-0.5.4.tgz",
-      "from": "google-auto-auth@>=0.5.2 <0.6.0"
+      "version": "0.7.1",
+      "resolved": "https://registry.npmjs.org/google-auto-auth/-/google-auto-auth-0.7.1.tgz",
+      "from": "google-auto-auth@>=0.7.1 <0.8.0"
     },
     "google-gax": {
-      "version": "0.12.3",
-      "resolved": "https://registry.npmjs.org/google-gax/-/google-gax-0.12.3.tgz",
-      "from": "google-gax@>=0.12.1 <0.13.0",
+      "version": "0.13.4",
+      "resolved": "https://registry.npmjs.org/google-gax/-/google-gax-0.13.4.tgz",
+      "from": "google-gax@>=0.13.0 <0.14.0",
       "dependencies": {
+        "google-auto-auth": {
+          "version": "0.5.4",
+          "resolved": "https://registry.npmjs.org/google-auto-auth/-/google-auto-auth-0.5.4.tgz",
+          "from": "google-auto-auth@>=0.5.2 <0.6.0"
+        },
         "google-proto-files": {
           "version": "0.9.1",
           "resolved": "https://registry.npmjs.org/google-proto-files/-/google-proto-files-0.9.1.tgz",
@@ -351,9 +398,9 @@
       "from": "google-p12-pem@>=0.1.0 <0.2.0"
     },
     "google-proto-files": {
-      "version": "0.10.0",
-      "resolved": "https://registry.npmjs.org/google-proto-files/-/google-proto-files-0.10.0.tgz",
-      "from": "google-proto-files@>=0.10.0 <0.11.0"
+      "version": "0.12.0",
+      "resolved": "https://registry.npmjs.org/google-proto-files/-/google-proto-files-0.12.0.tgz",
+      "from": "google-proto-files@>=0.12.0 <0.13.0"
     },
     "graceful-fs": {
       "version": "4.1.11",
@@ -363,7 +410,7 @@
     "grpc": {
       "version": "1.4.1",
       "resolved": "https://registry.npmjs.org/grpc/-/grpc-1.4.1.tgz",
-      "from": "grpc@>=1.1.1 <2.0.0",
+      "from": "grpc@>=1.3.1 <2.0.0",
       "dependencies": {
         "node-pre-gyp": {
           "version": "0.6.36",
@@ -1300,13 +1347,13 @@
       "from": "mime@>=1.2.11 <2.0.0"
     },
     "mime-db": {
-      "version": "1.27.0",
-      "resolved": "https://registry.npmjs.org/mime-db/-/mime-db-1.27.0.tgz",
-      "from": "mime-db@>=1.27.0 <1.28.0"
+      "version": "1.29.0",
+      "resolved": "https://registry.npmjs.org/mime-db/-/mime-db-1.29.0.tgz",
+      "from": "mime-db@>=1.29.0 <1.30.0"
     },
     "mime-types": {
-      "version": "2.1.15",
-      "resolved": "https://registry.npmjs.org/mime-types/-/mime-types-2.1.15.tgz",
+      "version": "2.1.16",
+      "resolved": "https://registry.npmjs.org/mime-types/-/mime-types-2.1.16.tgz",
       "from": "mime-types@>=2.0.8 <3.0.0"
     },
     "minimatch": {
@@ -1442,41 +1489,9 @@
       "from": "request@>=2.79.0 <3.0.0"
     },
     "retry-request": {
-      "version": "1.3.2",
-      "resolved": "https://registry.npmjs.org/retry-request/-/retry-request-1.3.2.tgz",
-      "from": "retry-request@>=1.3.2 <2.0.0",
-      "dependencies": {
-        "caseless": {
-          "version": "0.11.0",
-          "resolved": "https://registry.npmjs.org/caseless/-/caseless-0.11.0.tgz",
-          "from": "caseless@>=0.11.0 <0.12.0"
-        },
-        "har-validator": {
-          "version": "2.0.6",
-          "resolved": "https://registry.npmjs.org/har-validator/-/har-validator-2.0.6.tgz",
-          "from": "har-validator@>=2.0.6 <2.1.0"
-        },
-        "node-uuid": {
-          "version": "1.4.8",
-          "resolved": "https://registry.npmjs.org/node-uuid/-/node-uuid-1.4.8.tgz",
-          "from": "node-uuid@>=1.4.7 <1.5.0"
-        },
-        "qs": {
-          "version": "6.3.2",
-          "resolved": "https://registry.npmjs.org/qs/-/qs-6.3.2.tgz",
-          "from": "qs@>=6.3.0 <6.4.0"
-        },
-        "request": {
-          "version": "2.76.0",
-          "resolved": "https://registry.npmjs.org/request/-/request-2.76.0.tgz",
-          "from": "request@2.76.0"
-        },
-        "tunnel-agent": {
-          "version": "0.4.3",
-          "resolved": "https://registry.npmjs.org/tunnel-agent/-/tunnel-agent-0.4.3.tgz",
-          "from": "tunnel-agent@>=0.4.1 <0.5.0"
-        }
-      }
+      "version": "2.0.5",
+      "resolved": "https://registry.npmjs.org/retry-request/-/retry-request-2.0.5.tgz",
+      "from": "retry-request@>=2.0.0 <3.0.0"
     },
     "rgb-hex": {
       "version": "1.0.0",
@@ -1633,7 +1648,7 @@
     "xtend": {
       "version": "4.0.1",
       "resolved": "https://registry.npmjs.org/xtend/-/xtend-4.0.1.tgz",
-      "from": "xtend@>=4.0.0 <5.0.0"
+      "from": "xtend@>=4.0.1 <4.1.0"
     },
     "y18n": {
       "version": "3.2.1",
