@@ -332,12 +332,21 @@ RocketChat.API.v1.addRoute('channels.leave', { authRequired: true }, {
 
 RocketChat.API.v1.addRoute('channels.list', { authRequired: true }, {
 	get: {
-		//This is like this only to provide an example of how we routes can be defined :X
+		//This is defined as such only to provide an example of how the routes can be defined :X
 		action() {
 			const { offset, count } = this.getPaginationItems();
 			const { sort, fields, query } = this.parseJsonQuery();
 
 			const ourQuery = Object.assign({}, query, { t: 'c' });
+
+			//Special check for the permissions
+			if (RocketChat.authz.hasPermission(this.userId, 'view-joined-room')) {
+				ourQuery.usernames = {
+					$in: [ this.user.username ]
+				};
+			} else if (!RocketChat.authz.hasPermission(this.userId, 'view-c-room')) {
+				return RocketChat.API.v1.unauthorized();
+			}
 
 			const rooms = RocketChat.models.Rooms.find(ourQuery, {
 				sort: sort ? sort : { name: 1 },
