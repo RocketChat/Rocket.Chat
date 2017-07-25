@@ -48,10 +48,10 @@ class GoogleVision {
 	blockUnsafeImages(message) {
 		if (this.enabled && this.serviceAccount && message && message.file && message.file._id) {
 			const file = RocketChat.models.Uploads.findOne({ _id: message.file._id });
-			if (file && file.type && file.type.indexOf('image') !== -1 && file.store === 'GoogleCloudStorage:Uploads' && file.googleCloudStorage) {
+			if (file && file.type && file.type.indexOf('image') !== -1 && file.store === 'GoogleCloudStorage:Uploads' && file.GoogleStorage) {
 				if (this.incCallCount(1)) {
-					const bucket = this.storageClient.bucket(file.googleCloudStorage.bucket);
-					const bucketFile = bucket.file(`${ file.googleCloudStorage.path }${ file._id }`);
+					const bucket = this.storageClient.bucket(RocketChat.settings.get('FileUpload_GoogleStorage_Bucket'));
+					const bucketFile = bucket.file(file.GoogleStorage.path);
 					const results = Meteor.wrapAsync(this.visionClient.detectSafeSearch, this.visionClient)(bucketFile);
 					if (results && results.adult === true) {
 						delete message.attachments[0];
@@ -64,10 +64,10 @@ class GoogleVision {
 								msg: TAPi18n.__('Adult_images_are_not_allowed', {}, user.language)
 							});
 						}
-						throw new Error('GoogleVisionError: Image blocked');
+						throw new Meteor.Error('GoogleVisionError: Image blocked');
 					}
 				} else {
-					console.log('Google Vision: Usage limit exceeded');
+					console.error('Google Vision: Usage limit exceeded');
 				}
 				return message;
 			}
@@ -102,10 +102,10 @@ class GoogleVision {
 		}
 		if (this.enabled && this.serviceAccount && visionTypes.length > 0 && message.file && message.file._id) {
 			const file = RocketChat.models.Uploads.findOne({ _id: message.file._id });
-			if (file && file.type && file.type.indexOf('image') !== -1 && file.store === 'GoogleCloudStorage:Uploads' && file.googleCloudStorage) {
+			if (file && file.type && file.type.indexOf('image') !== -1 && file.store === 'GoogleCloudStorage:Uploads' && file.GoogleStorage) {
 				if (this.incCallCount(visionTypes.length)) {
-					const bucket = this.storageClient.bucket(file.googleCloudStorage.bucket);
-					const bucketFile = bucket.file(`${ file.googleCloudStorage.path }${ file._id }`);
+					const bucket = this.storageClient.bucket(RocketChat.settings.get('FileUpload_GoogleStorage_Bucket'));
+					const bucketFile = bucket.file(file.GoogleStorage.path);
 					this.visionClient.detect(bucketFile, visionTypes, Meteor.bindEnvironment((error, results) => {
 						if (!error) {
 							RocketChat.models.Messages.setGoogleVisionData(message._id, this.getAnnotations(visionTypes, results));
@@ -114,7 +114,7 @@ class GoogleVision {
 						}
 					}));
 				} else {
-					console.log('Google Vision: Usage limit exceeded');
+					console.error('Google Vision: Usage limit exceeded');
 				}
 			}
 		}

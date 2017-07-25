@@ -6,8 +6,8 @@ Package.describe({
 });
 
 Npm.depends({
-	'@google-cloud/storage': '0.7.0',
-	'@google-cloud/vision': '0.9.0'
+	'@google-cloud/storage': '1.2.1',
+	'@google-cloud/vision': '0.11.5'
 });
 
 Package.onUse(function(api) {
