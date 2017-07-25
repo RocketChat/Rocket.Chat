@@ -189,15 +189,15 @@ Importer.Slack = class extends Importer.Base {
 						RocketChat.models.Rooms.update({ _id: channel.rocketId }, { $addToSet: { importIds: channel.id } });
 					} else {
 						const users = channel.members
-						.reduce((ret, member) => {
-							if (member !== channel.creator) {
-								const user = this.getRocketUser(member);
-								if (user && user.username) {
-									ret.push(user.username);
+							.reduce((ret, member) => {
+								if (member !== channel.creator) {
+									const user = this.getRocketUser(member);
+									if (user && user.username) {
+										ret.push(user.username);
+									}
 								}
-							}
-							return ret;
-						}, []);
+								return ret;
+							}, []);
 						let userId = startedByUserId;
 						this.users.users.forEach(user => {
 							if (user.id === channel.creator && user.do_import) {
@@ -250,7 +250,9 @@ Importer.Slack = class extends Importer.Base {
 											RocketChat.models.Messages.createUserJoinWithRoomIdAndUser(room._id, this.getRocketUser(message.user), msgDataDefaults);
 										}
 									} else if (message.subtype === 'channel_leave') {
-										if (this.getRocketUser(message.user))											{ RocketChat.models.Messages.createUserLeaveWithRoomIdAndUser(room._id, this.getRocketUser(message.user), msgDataDefaults); }
+										if (this.getRocketUser(message.user)) {
+											RocketChat.models.Messages.createUserLeaveWithRoomIdAndUser(room._id, this.getRocketUser(message.user), msgDataDefaults);
+										}
 									} else if (message.subtype === 'me_message') {
 										const msgObj = {
 											...msgDataDefaults,
@@ -288,15 +290,15 @@ Importer.Slack = class extends Importer.Base {
 										if (this.getRocketUser(message.user)) {
 											RocketChat.models.Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser('room_changed_description', room._id, message.purpose, this.getRocketUser(message.user), msgDataDefaults);
 										}
-									}									else if (message.subtype === 'channel_topic') {
+									} else if (message.subtype === 'channel_topic') {
 										if (this.getRocketUser(message.user)) {
 											RocketChat.models.Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser('room_changed_topic', room._id, message.topic, this.getRocketUser(message.user), msgDataDefaults);
 										}
-									}									else if (message.subtype === 'channel_name') {
+									} else if (message.subtype === 'channel_name') {
 										if (this.getRocketUser(message.user)) {
 											RocketChat.models.Messages.createRoomRenamedWithRoomIdRoomNameAndUser(room._id, message.name, this.getRocketUser(message.user), msgDataDefaults);
 										}
-									}									else if (message.subtype === 'pinned_item') {
+									} else if (message.subtype === 'pinned_item') {
 										if (message.attachments) {
 											const msgObj = {
 												...msgDataDefaults,
@@ -323,7 +325,7 @@ Importer.Slack = class extends Importer.Base {
 											};
 											this.uploadFile(details, message.file.url_private_download, this.getRocketUser(message.user), room, new Date(parseInt(message.ts.split('.')[0]) * 1000));
 										}
-									}									else if (!missedTypes[message.subtype] && !ignoreTypes[message.subtype]) {
+									} else if (!missedTypes[message.subtype] && !ignoreTypes[message.subtype]) {
 										missedTypes[message.subtype] = message;
 									}
 								} else {

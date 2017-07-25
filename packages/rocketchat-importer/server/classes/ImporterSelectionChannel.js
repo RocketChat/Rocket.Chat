@@ -17,4 +17,4 @@ Importer.SelectionChannel = (Importer.SelectionChannel = class SelectionChannel 
 		this.is_private = is_private;
 	}
 });
-		//TODO: Add some verification?
+//TODO: Add some verification?

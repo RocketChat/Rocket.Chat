@@ -1,4 +1,5 @@
 /* globals FileUpload */
+
 Meteor.startup(function() {
 	WebApp.connectHandlers.use('/avatar/', Meteor.bindEnvironment(function(req, res/*, next*/) {
 		const params = {
@@ -17,6 +18,8 @@ Meteor.startup(function() {
 		if (match[1]) {
 			let username = decodeURIComponent(match[1]);
 			let file;
+
+			username = username.replace(/\.jpg$/, '');
 
 			if (username[0] !== '@') {
 				if (Meteor.settings && Meteor.settings.public && Meteor.settings.public.sandstorm) {
