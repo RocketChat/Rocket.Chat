@@ -27,11 +27,99 @@
 					</svg>
 				</div>
 				<textarea autofocus dir="auto" name="msg" maxlength="{{maxMessageLength}}" placeholder="{{_ 'Message'}}" rows="1" class="rc-message-box__textarea js-input-message autogrow-short"></textarea>
-				<div class="rc-message-box__icon">
-					<svg class="rc-input__icon-svg rc-input__icon-svg--plus">
-						<use href="#icon-plus"></use>
-					</svg>
-				</div>
+				<label class="rc-message-box__action-label" for="rc-message-box__action-input" data-popover="label">
+					<input id="rc-message-box__action-input" type="checkbox" class="rc-popover-anchor" data-popover="anchor">
+					<div class="rc-popover" data-popover="popover">
+						<div class="rc-popover__content">
+							<div class="rc-popover__column">
+								<h3 class="rc-popover__title">Create new</h3>
+								<ul class="rc-popover__list">
+									<li class="rc-popover__item" data-action="open" data-open="account">
+										<span class="rc-popover__icon">
+											<svg class="rc-popover__icon-element rc-popover__icon-element--user">
+												<use href="#icon-user"></use>
+											</svg>
+										</span>
+										<span class="rc-popover__item-text">{{_ "My_Account"}}</span>
+									</li>
+									<li class="rc-popover__item" data-action="open" data-open="account">
+										<span class="rc-popover__icon">
+											<svg class="rc-popover__icon-element rc-popover__icon-element--user">
+												<use href="#icon-user"></use>
+											</svg>
+										</span>
+										<span class="rc-popover__item-text">{{_ "My_Account"}}</span>
+									</li>
+									<li class="rc-popover__item" data-action="open" data-open="account">
+										<span class="rc-popover__icon">
+											<svg class="rc-popover__icon-element rc-popover__icon-element--user">
+												<use href="#icon-user"></use>
+											</svg>
+										</span>
+										<span class="rc-popover__item-text">{{_ "My_Account"}}</span>
+									</li>
+									<li class="rc-popover__item" data-action="open" data-open="account">
+										<span class="rc-popover__icon">
+											<svg class="rc-popover__icon-element rc-popover__icon-element--user">
+												<use href="#icon-user"></use>
+											</svg>
+										</span>
+										<span class="rc-popover__item-text">{{_ "My_Account"}}</span>
+									</li>
+									<li class="rc-popover__item" data-action="open" data-open="account">
+										<span class="rc-popover__icon">
+											<svg class="rc-popover__icon-element rc-popover__icon-element--user">
+												<use href="#icon-user"></use>
+											</svg>
+										</span>
+										<span class="rc-popover__item-text">{{_ "My_Account"}}</span>
+									</li>
+								</ul>
+							</div>
+							<div class="rc-popover__column">
+								<div class="rc-popover__stretched-item">
+									<h3 class="rc-popover__title">Add files from</h3>
+									<ul class="rc-popover__list">
+										<li class="rc-popover__item" data-action="open" data-open="account">
+											<span class="rc-popover__icon">
+												<svg class="rc-popover__icon-element rc-popover__icon-element--user">
+													<use href="#icon-user"></use>
+												</svg>
+											</span>
+											<span class="rc-popover__item-text">{{_ "My_Account"}}</span>
+										</li>
+										<li class="rc-popover__item" data-action="open" data-open="account">
+											<span class="rc-popover__icon">
+												<svg class="rc-popover__icon-element rc-popover__icon-element--user">
+													<use href="#icon-user"></use>
+												</svg>
+											</span>
+											<span class="rc-popover__item-text">{{_ "My_Account"}}</span>
+										</li>
+									</ul>
+								</div>
+								<div class="rc-popover__stretched-item">
+									<h3 class="rc-popover__title">Share</h3>
+									<ul class="rc-popover__list">
+										<li class="rc-popover__item" data-action="open" data-open="account">
+											<span class="rc-popover__icon">
+												<svg class="rc-popover__icon-element rc-popover__icon-element--user">
+													<use href="#icon-user"></use>
+												</svg>
+											</span>
+											<span class="rc-popover__item-text">{{_ "My_Account"}}</span>
+										</li>
+									</ul>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="rc-message-box__icon">
+						<svg class="rc-input__icon-svg rc-input__icon-svg--plus">
+							<use href="#icon-plus"></use>
+						</svg>
+					</div>
+				</label>
 			</div>
 			<div class="rc-message-box__toolbar-markdown">
 				<!-- {{#if allowedToSend}}
