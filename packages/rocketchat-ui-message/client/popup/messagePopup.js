@@ -201,7 +201,9 @@ Template.messagePopup.onCreated(function() {
 			return;
 		}
 		firstPartValue = firstPartValue.replace(template.selectorRegex, template.prefix + getValue + template.suffix);
-		if (preColon) firstPartValue = preColon + firstPartValue
+		if (preColon) {
+			firstPartValue = preColon + firstPartValue;
+		}
 
 		template.input.value = firstPartValue + lastPartValue;
 		return setCursorPosition(template.input, firstPartValue.length);
