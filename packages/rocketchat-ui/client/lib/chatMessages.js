@@ -183,8 +183,8 @@ this.ChatMessages = class ChatMessages {
 			const msg = input.value;
 			const msgObject = { _id: Random.id(), rid, msg};
 			const lastMessage = ChatMessage.findOne({rid}, { fields: { ts: 1 }, sort: { ts: -1 }});
-			if(msg[0]+msg[1] === '+:'){
-				Meteor.call('setReaction', msg.replace('+','').trim(), lastMessage._id);
+			if (msg[0]+msg[1] === '+:') {
+				Meteor.call('setReaction', msg.replace('+', '').trim(), lastMessage._id);
 				input.value = '';
 				return;
 			}
