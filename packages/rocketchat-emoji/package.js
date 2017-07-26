@@ -16,7 +16,7 @@ Package.onUse(function(api) {
 	]);
 
 	api.addFiles('function-isSet.js', 'client');
-	api.addFiles('rocketchat.js', ['client', 'server']);
+	api.addFiles('rocketchat.js');
 
 	api.addFiles('emojiParser.js', 'client');
 
