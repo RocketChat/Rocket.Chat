@@ -101,6 +101,7 @@ Template.createChannel.events({
 		t.type.set(e.target.checked ? e.target.value : 'p');
 	},
 	'input [name=users]'(e, t) {
+		console.log(this);
 		const input = e.target;
 		const position = input.selectionEnd || input.selectionStart;
 		const length = input.value.length;

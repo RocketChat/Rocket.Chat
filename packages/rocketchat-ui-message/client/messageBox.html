@@ -143,10 +143,9 @@
 						</div>
 					{{/if}}
 				{{/if}} -->
-				<button class="rc-message-box__toolbar-markdown__item">b</button>
-				<button class="rc-message-box__toolbar-markdown__item">i</button>
-				<button class="rc-message-box__toolbar-markdown__item">u</button>
-				<button class="rc-message-box__toolbar-markdown__item">s</button>
+				{{#each mdButtons}}
+					<button class="rc-message-box__toolbar-markdown__item rc-tooltip js-md" aria-label={{label}}>{{label}}</button>
+				{{/each}}
 			</div>
 		</div>
 		<form class="message-form" method="post" style="display:none;" action="/">
