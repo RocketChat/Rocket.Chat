@@ -53,7 +53,7 @@ RocketChat.sendMessage = function(user, message, room, upsert = false) {
 	Meteor.defer(() => {
 		// Execute all callbacks
 		message.sandstormSessionId = sandstormSessionId;
-		return RocketChat.callbacks.run('afterSaveMessage', message, room);
+		return RocketChat.callbacks.run('afterSaveMessage', message, room, user._id);
 	});
 	return message;
 };

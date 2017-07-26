@@ -23,6 +23,22 @@ function replaceMentionedUsernamesWithFullNames(message, mentions) {
 }
 
 /**
+ * This function returns a string ready to be shown in the notification
+ * 
+ * @param {object} message the message to be parsed
+ */
+function parseMessageText(message, userId) {
+	const user = RocketChat.models.Users.findOneById(userId);
+	const lng = user && user.language || RocketChat.settings.get('language') || 'en';
+
+	if (!message.msg && message.attachments[0]) {
+		message.msg = message.attachments[0].image_type ? TAPi18n.__('User_uploaded_image', {lng}) : TAPi18n.__('User_uploaded_file', {lng});
+	}
+	message.msg = RocketChat.callbacks.run('beforeNotifyUser', message.msg);
+
+	return message.msg;
+}
+/**
  * Send notification to user
  *
  * @param {string} userId The user to notify
@@ -31,11 +47,10 @@ function replaceMentionedUsernamesWithFullNames(message, mentions) {
  * @param {number} duration Duration of notification
  */
 function notifyUser(userId, user, message, room, duration) {
-	const lng = user && user.language || RocketChat.settings.get('language') || 'en';
+
 	const UI_Use_Real_Name = RocketChat.settings.get('UI_Use_Real_Name') === true;
-	if (!message.msg && message.attachments[0]) {
-		message.msg = message.attachments[0].image_type ? TAPi18n.__('User_uploaded_image', {lng}) : TAPi18n.__('User_uploaded_file', {lng});
-	}
+	message.msg = parseMessageText(message, userId);
+
 	if (UI_Use_Real_Name) {
 		message.msg = replaceMentionedUsernamesWithFullNames(message.msg, message.mentions);
 	}
@@ -88,7 +103,8 @@ function getBadgeCount(userId) {
 	}, 0);
 }
 
-RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
+RocketChat.callbacks.add('afterSaveMessage', function(message, room, userId) {
+
 	// skips this callback if the message was edited
 	if (message.editedAt) {
 		return message;
@@ -163,12 +179,7 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 	let push_message;
 	//Set variables depending on Push Notification settings
 	if (RocketChat.settings.get('Push_show_message')) {
-		const lng = user && user.language || RocketChat.settings.get('language') || 'en';
-		if (message.msg === '' && message.attachments[0]) {
-			push_message = message.attachments[0].image_type ? TAPi18n.__('User_uploaded_image', {lng}) : TAPi18n.__('User_uploaded_file', {lng});
-		} else {
-			push_message = message.msg;
-		}
+		push_message = parseMessageText(message, userId);
 	} else {
 		push_message = ' ';
 	}
