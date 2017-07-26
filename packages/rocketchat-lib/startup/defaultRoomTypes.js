@@ -37,7 +37,7 @@ RocketChat.roomTypes.add('c', 10, {
 	}
 });
 
-RocketChat.roomTypes.add('d', 20, {
+RocketChat.roomTypes.add('d', 30, {
 	icon: 'icon-at',
 	label: 'Direct_Messages',
 	route: {
@@ -94,7 +94,7 @@ RocketChat.roomTypes.add('d', 20, {
 	}
 });
 
-RocketChat.roomTypes.add('p', 30, {
+RocketChat.roomTypes.add('p', 20, {
 	icon: 'icon-lock',
 	label: 'Private_Groups',
 	route: {
