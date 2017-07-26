@@ -184,8 +184,11 @@ this.ChatMessages = class ChatMessages {
 			const msgObject = { _id: Random.id(), rid, msg};
 			const lastMessage = ChatMessage.findOne({rid}, { fields: { ts: 1 }, sort: { ts: -1 }});
 			if (msg[0]+msg[1] === '+:') {
-				Meteor.call('setReaction', msg.replace('+', '').trim(), lastMessage._id);
-				input.value = '';
+				const reaction = msg.slice(1).trim();
+				if (RocketChat.emoji.list[reaction]) {
+					Meteor.call('setReaction', msg.replace('+', '').trim(), lastMessage._id);
+					input.value = '';
+				}
 				return;
 			}
 
