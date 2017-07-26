@@ -13,10 +13,10 @@ Package.onUse(function(api) {
 		'rocketchat:lib'
 	]);
 
-	api.addFiles('emojiPicker.js', ['client', 'server']);
+	api.addFiles('emojiPicker.js');
 
-	api.addFiles('rocketchat.js', ['client', 'server']);
+	api.addFiles('rocketchat.js');
 
 	api.addFiles('sprites.css', 'client');
-	api.addFiles('callBacks.js', 'server');
+	api.addFiles('callbacks.js', 'server');
 });
