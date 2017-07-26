@@ -5,7 +5,7 @@ RocketChat.models.OEmbedCache = new class extends RocketChat.models._Base {
 		this.tryEnsureIndex({ 'updatedAt': 1 });
 	}
 
-    //FIND ONE
+	//FIND ONE
 	findOneById(_id, options) {
 		const query = {
 			_id
@@ -13,7 +13,7 @@ RocketChat.models.OEmbedCache = new class extends RocketChat.models._Base {
 		return this.findOne(query, options);
 	}
 
-    //INSERT
+	//INSERT
 	createWithIdAndData(_id, data) {
 		const record = {
 			_id,
@@ -24,7 +24,7 @@ RocketChat.models.OEmbedCache = new class extends RocketChat.models._Base {
 		return record;
 	}
 
-    //REMOVE
+	//REMOVE
 	removeAfterDate(date) {
 		const query = {
 			updatedAt: {
