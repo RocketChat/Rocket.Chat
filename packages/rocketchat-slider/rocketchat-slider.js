@@ -1,6 +1,3 @@
-import './rocketchat-slider.scss';
-import './rocketchat-slider.html';
-
 Template.slider.onRendered(function() {
 	const params = this.data;
 

@@ -59,7 +59,7 @@ this.visitor = new class {
 				// notification sound
 				if (Session.equals('sound', true) && msg.u._id !== Meteor.userId()) {
 					const audioVolume = Meteor.user().settings.preferences.notificationsSoundVolume || 100;
-					const audio = $('#chatAudioNotification')[0];
+					const audio = document.getElementById('chatAudioNotification');
 					audio.volume = Number((audioVolume/100).toPrecision(2));
 					audio.play();
 				}
