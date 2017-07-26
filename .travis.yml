@@ -72,19 +72,30 @@ before_deploy:
 - ".travis/namefiles.sh"
 - echo ".travis/sandstorm.sh"
 deploy:
-  provider: s3
-  access_key_id: "$ACCESSID"
-  secret_access_key: "$ACCESSKEY"
-  bucket: seekingalpha-devops
-  region: us-west-2
-  skip_cleanup: true
-  local-dir: "$ROCKET_DEPLOY_DIR"
-  upload-dir: rocket-chat
-  acl: public_read
-  on:
-    condition: "$TRAVIS_PULL_REQUEST=false"
-    repo: seekingalpha/Rocket.Chat
-    all_branches: true
+  - provider: s3
+    access_key_id: "$PRODACCESSID"
+    secret_access_key: "$PRODACCESSKEY"
+    bucket: seekingalpha-public-production
+    region: us-west-2
+    skip_cleanup: true
+    local-dir: "$ROCKET_DEPLOY_DIR"
+    upload-dir: rocket-chat
+    acl: public_read
+    on:
+      repo: seekingalpha/Rocket.Chat
+      branch: production
+  - provider: s3
+    access_key_id: "$ACCESSID"
+    secret_access_key: "$ACCESSKEY"
+    bucket: seekingalpha-public-staging
+    region: us-west-2
+    skip_cleanup: true
+    local-dir: "$ROCKET_DEPLOY_DIR"
+    upload-dir: rocket-chat
+    acl: public_read
+    on:
+      repo: seekingalpha/Rocket.Chat
+      branch: staging
 env:
   global:
   - DISPLAY=:99.0
