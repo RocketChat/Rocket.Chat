@@ -187,7 +187,7 @@ this.ChatMessages = class ChatMessages {
 				const reaction = msg.slice(1).trim();
 				if (RocketChat.emoji.list[reaction]) {
 					const lastMessage = ChatMessage.findOne({rid}, { fields: { ts: 1 }, sort: { ts: -1 }});
-					Meteor.call('setReaction', msg.replace('+', '').trim(), lastMessage._id);
+					Meteor.call('setReaction', reaction, lastMessage._id);
 					input.value = '';
 					return;
 				}
