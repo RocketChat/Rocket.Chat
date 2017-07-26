@@ -93,7 +93,7 @@
 								</div>
 							{{/each}}
 						</div>
-						<div class="messages-box {{#if selectable}}selectable{{/if}} {{viewMode}}">
+						<div class="messages-box {{#if selectable}}selectable{{/if}} {{viewMode}} {{hasLeader}}">
 							<div class="ticks-bar"></div>
 							<button class="new-message background-primary-action-color color-content-background-color not">
 								<i class="icon-down-big"></i>
@@ -109,26 +109,21 @@
 									</div>
 								</div>
 							{{/unless}}
+							{{#with roomLeader}}
+								<div class="room-leader message color-primary-font-color content-background-color border-component-color {{hideLeaderHeader}}">
+									<button class="thumb user-card-message">
+										{{> avatar username=username }}
+									</button>
+									<div class="leader-name">{{name}}</div>
+									<div class="leader-status userStatus">
+										<span class="color-ball status-bg-{{status}}"></span>
+										<span class="status-text leader-status-text">{{_ statusDisplay}}</span>
+									</div>
+									<a class="chat-now" href="{{chatNowLink}}">{{_ "Chat_Now"}}</a>
+								</div>
+							{{/with}}
 							<div class="wrapper {{#if hasMoreNext}}has-more-next{{/if}} {{hideUsername}} {{hideAvatar}}">
 								<ul aria-live="polite">
-									{{#if roomLeader}}
-										<li class="message room-leader-container">
-											<div class="room-leader">
-												<button class="thumb user-card-message">
-													<div class="avatar"><div class="avatar-image" style="background-image:url(/avatar/{{roomLeader.username}}?_dc=undefined);"></div></div></button>
-												<div class="right">
-													<div class="leader-info">
-														<div class="leader-name">{{roomLeader.name}}</div>
-														<div class="leader-status userStatus">
-															<span class="color-ball leader-status {{roomLeader.status}}"></span>
-															<span class="status-text leader-status-text">{{roomLeader.status}}</span>
-														</div>
-													</div>
-												</div>
-												<a class="chat-now" href="/direct/{{roomLeader.username}}">Chat Now</a>
-											</div>
-										</li>
-									{{/if}}
 									{{#if canPreview}}
 										{{#if hasMore}}
 											<li class="load-more">
