@@ -24,7 +24,7 @@ function replaceMentionedUsernamesWithFullNames(message, mentions) {
 
 /**
  * This function returns a string ready to be shown in the notification
- * 
+ *
  * @param {object} message the message to be parsed
  */
 function parseMessageText(message, userId) {
