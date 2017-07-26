@@ -1785,6 +1785,8 @@
   "User_unmuted_by": "User <em>__user_unmuted__</em> unmuted by <em>__user_by__</em>.",
   "User_unmuted_in_room": "User unmuted in room",
   "User_updated_successfully": "User updated successfully",
+  "User_uploaded_file": "Uploaded a file",
+  "User_uploaded_image": "Uploaded an image",
   "Username": "Username",
   "Username_and_message_must_not_be_empty": "Username and message must not be empty.",
   "Username_cant_be_empty": "The username cannot be empty",
