@@ -114,15 +114,20 @@ Template.room.helpers({
 	},
 
 	roomLeader() {
-		const roles = RoomRoles.find({rid: this._id, roles: 'leader'}).fetch();
-		if (roles.length > 0) {
-			const u = roles[0].u;
-			if (u._id === Meteor.user()._id) { return null; }
-			const currUser = RocketChat.models.Users.find({ _id:  u._id}).fetch();
-			u['status'] = currUser.length > 0 ? 'online' : 'offline';
-			return u;
+		const roles = RoomRoles.findOne({ rid: this._id, roles: 'leader', 'u._id': { $ne: Meteor.userId() } });
+		if (roles) {
+			const leader = RocketChat.models.Users.findOne({ _id: roles.u._id }, { fields: { name: 1, status: 1, username: 1 }}) || {};
+			return {
+				...roles.u,
+				name: leader.name || leader.username || roles.u.username,
+				status: leader.status || 'offline',
+				statusDisplay: (status => status.charAt(0).toUpperCase() + status.slice(1))(leader.status || 'offline')
+			};
 		}
-		return null;
+	},
+
+	chatNowLink() {
+		return RocketChat.roomTypes.getRouteLink('d', { name: this.username });
 	},
 
 	roomName() {
@@ -272,6 +277,14 @@ Template.room.helpers({
 			};
 		});
 		return { buttons };
+	},
+	hideLeaderHeader() {
+		return Template.instance().hideLeaderHeader.get() ? 'animated-hidden' : '';
+	},
+	hasLeader() {
+		if (RoomRoles.findOne({ rid: this._id, roles: 'leader', 'u._id': { $ne: Meteor.userId() } }, { fields: { _id: 1 } })) {
+			return 'has-leader';
+		}
 	}
 });
 
@@ -296,16 +309,6 @@ Template.room.events({
 		if ((Template.instance().tabBar.getState() === 'opened') && user && user.settings && user.settings.preferences && user.settings.preferences.hideFlexTab) {
 			return Template.instance().tabBar.close();
 		}
-	},
-
-	'scroll .messages-box .wrapper'() {
-		const $wrapper = $('.messages-box .wrapper');
-		if ($wrapper.scrollTop() < lastScrollTop) {
-			$('.room-leader').removeClass('hidden');
-		} else if ($wrapper.scrollTop() > $('.room-leader-container').height()) {
-			$('.room-leader').addClass('hidden');
-		}
-		lastScrollTop = $wrapper.scrollTop();
 	},
 
 	'touchstart .message'(e, t) {
@@ -493,7 +496,14 @@ Template.room.events({
 		}
 	},
 
-	'scroll .wrapper': _.throttle(function(e) {
+	'scroll .wrapper': _.throttle(function(e, t) {
+		if (e.target.scrollTop < lastScrollTop) {
+			t.hideLeaderHeader.set(false);
+		} else if (e.target.scrollTop > $('.room-leader').height()) {
+			t.hideLeaderHeader.set(true);
+		}
+		lastScrollTop = e.target.scrollTop;
+
 		if (RoomHistoryManager.isLoading(this._id) === false && RoomHistoryManager.hasMore(this._id) === true || RoomHistoryManager.hasMoreNext(this._id) === true) {
 			if (RoomHistoryManager.hasMore(this._id) === true && e.target.scrollTop === 0) {
 				return RoomHistoryManager.getMore(this._id);
@@ -682,6 +692,8 @@ Template.room.onCreated(function() {
 
 	this.tabBar = new RocketChatTabBar();
 	this.tabBar.showGroup(FlowRouter.current().route.name);
+
+	this.hideLeaderHeader = new ReactiveVar(false);
 
 	this.resetSelection = enabled => {
 		this.selectable.set(enabled);
