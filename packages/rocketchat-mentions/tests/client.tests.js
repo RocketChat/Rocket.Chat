@@ -60,11 +60,11 @@ describe('Mention', function() {
 				'#rocket.cat',
 				'hello rocket.cat how are you?'
 			]
-			.forEach(text => {
-				it(`should return "${ JSON.stringify(result) }" from "${ text }"`, () => {
-					assert.deepEqual(result, mention.getUserMentions(text));
+				.forEach(text => {
+					it(`should return "${ JSON.stringify(result) }" from "${ text }"`, () => {
+						assert.deepEqual(result, mention.getUserMentions(text));
+					});
 				});
-			});
 		});
 		describe('for one user', () => {
 			const result = ['@rocket.cat'];
@@ -77,11 +77,11 @@ describe('Mention', function() {
 				'@rocket.cat,hello',
 				'hello @rocket.cat how are you?'
 			]
-			.forEach(text => {
-				it(`should return "${ JSON.stringify(result) }" from "${ text }"`, () => {
-					assert.deepEqual(result, mention.getUserMentions(text));
+				.forEach(text => {
+					it(`should return "${ JSON.stringify(result) }" from "${ text }"`, () => {
+						assert.deepEqual(result, mention.getUserMentions(text));
+					});
 				});
-			});
 			it.skip('shoud return without the "." from "@rocket.cat."', () => {
 				assert.deepEqual(result, mention.getUserMentions('@rocket.cat.'));
 			});
@@ -101,11 +101,11 @@ describe('Mention', function() {
 				'@rocket.cat, hello @all',
 				'hello @rocket.cat and @all how are you?'
 			]
-			.forEach(text => {
-				it(`should return "${ JSON.stringify(result) }" from "${ text }"`, () => {
-					assert.deepEqual(result, mention.getUserMentions(text));
+				.forEach(text => {
+					it(`should return "${ JSON.stringify(result) }" from "${ text }"`, () => {
+						assert.deepEqual(result, mention.getUserMentions(text));
+					});
 				});
-			});
 		});
 	});
 
@@ -116,11 +116,11 @@ describe('Mention', function() {
 				'@rocket.cat',
 				'hello rocket.cat how are you?'
 			]
-			.forEach(text => {
-				it(`should return "${ JSON.stringify(result) }" from "${ text }"`, () => {
-					assert.deepEqual(result, mention.getChannelMentions(text));
+				.forEach(text => {
+					it(`should return "${ JSON.stringify(result) }" from "${ text }"`, () => {
+						assert.deepEqual(result, mention.getChannelMentions(text));
+					});
 				});
-			});
 		});
 		describe('for one channel', () => {
 			const result = ['#general'];

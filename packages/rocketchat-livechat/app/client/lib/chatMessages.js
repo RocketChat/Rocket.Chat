@@ -209,7 +209,7 @@ this.ChatMessages = class ChatMessages {
 			13, // Enter
 			20, // Caps lock
 			16, // Shift
-			9,  // Tab
+			9, // Tab
 			27, // Escape Key
 			17, // Control Key
 			91, // Windows Command Key
