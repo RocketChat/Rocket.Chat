@@ -911,3 +911,50 @@ label.required::after {
 		opacity: inherit;
 	}
 }
+
+/** ----------------------------------------------------------------------------
+ * Input Range Slider
+ */
+
+.range-slider__range {
+	background-color: @tertiary-background-color;
+}
+
+.range-slider__range::-webkit-slider-thumb {
+	background-color: @primary-background-color;
+}
+
+.range-slider__range::-webkit-slider-thumb:hover {
+	background-color: darken(@success-color, 30%);
+}
+
+.range-slider__range:active::-webkit-slider-thumb {
+	background-color: darken(@success-color, 10%);
+}
+
+.range-slider__range::-moz-range-thumb {
+	background-color: @primary-background-color;
+}
+
+.range-slider__range::-moz-range-thumb:hover {
+	background-color: darken(@success-color, 30%);
+}
+
+.range-slider__range:active::-moz-range-thumb {
+	background-color: darken(@success-color, 10%);
+}
+
+.range-slider__value {
+	color: lighten(@tertiary-background-color, 50%);
+	background-color: @primary-background-color;
+}
+
+.range-slider__value::after {
+	border-top-color: transparent;
+	border-right-color: @primary-background-color;
+	border-bottom-color: transparent;
+}
+
+::-moz-range-track {
+	background-color: @tertiary-background-color;
+}

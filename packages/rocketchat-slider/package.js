@@ -9,9 +9,8 @@ Package.describe({
 Package.onUse(function(api) {
 	api.use('ecmascript');
 	api.use('templating', 'client');
-	api.use('fourseven:scss');
+	api.use('rocketchat:theme');
 
-	api.addFiles('rocketchat-slider.scss', 'client');
 	api.addFiles('rocketchat-slider.html', 'client');
 	api.addFiles('rocketchat-slider.js', 'client');
 });
