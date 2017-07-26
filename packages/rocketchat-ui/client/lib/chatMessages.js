@@ -188,8 +188,8 @@ this.ChatMessages = class ChatMessages {
 				if (RocketChat.emoji.list[reaction]) {
 					Meteor.call('setReaction', msg.replace('+', '').trim(), lastMessage._id);
 					input.value = '';
+					return;
 				}
-				return;
 			}
 
 			// Run to allow local encryption, and maybe other client specific actions to be run before send
