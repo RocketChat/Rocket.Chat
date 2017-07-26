@@ -34,8 +34,7 @@ plugin_handler.addPlugin = function(options) {
 		pluginName: options.pluginName,
 		getChannelName :options.getChannelName,
 		enable: options.enable,
-		blacklist: options.blacklistAllowed,
-		demo: options.demo
+		blacklist: options.blacklistAllowed
 	});
 };
 

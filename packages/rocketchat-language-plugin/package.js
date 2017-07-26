@@ -7,7 +7,6 @@ Package.describe({
 Package.onUse(function(api) {
 	api.use('ecmascript');
 	api.use('rocketchat:plugin-handler');
-	api.use('rocketchat:lib');
 
 	api.mainModule('server/server.js', 'server');
 });
