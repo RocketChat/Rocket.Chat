@@ -12,6 +12,11 @@
 //		getProgress: =>
 //			#return the progress report, tbd what is expected
 // @version 1.0.0
+import http from 'http';
+import https from 'https';
+import AdmZip from 'adm-zip';
+import getFileType from 'file-type';
+
 Importer.Base = class Base {
 	static getBSONSize(object) {
 		// The max BSON object size we can store in MongoDB is 16777216 bytes
@@ -41,11 +46,12 @@ Importer.Base = class Base {
 	// @param [String] mimeType the of the expected file type
 	//
 	constructor(name, description, mimeType) {
+		this.http = http;
+		this.https = https;
+		this.AdmZip = AdmZip;
+		this.getFileType = getFileType;
+
 		this.MaxBSONSize = 8000000;
-		this.http = Npm.require('http');
-		this.https = Npm.require('https');
-
-
 		this.prepare = this.prepare.bind(this);
 		this.startImport = this.startImport.bind(this);
 		this.getSelection = this.getSelection.bind(this);
@@ -61,8 +67,6 @@ Importer.Base = class Base {
 		this.logger = new Logger(`${ this.name } Importer`, {});
 		this.progress = new Importer.Progress(this.name);
 		this.collection = Importer.RawImports;
-		this.AdmZip = Npm.require('adm-zip');
-		this.getFileType = Npm.require('file-type');
 		const importId = Importer.Imports.insert({ 'type': this.name, 'ts': Date.now(), 'status': this.progress.step, 'valid': true, 'user': Meteor.user()._id });
 		this.importRecord = Importer.Imports.findOne(importId);
 		this.users = {};
@@ -187,58 +191,63 @@ Importer.Base = class Base {
 	//
 	uploadFile(details, fileUrl, user, room, timeStamp) {
 		this.logger.debug(`Uploading the file ${ details.name } from ${ fileUrl }.`);
-		const requestModule = /https/i.test(fileUrl) ? Importer.Base.https : Importer.Base.http;
+		const requestModule = /https/i.test(fileUrl) ? this.https : this.http;
 
-		return requestModule.get(fileUrl, Meteor.bindEnvironment(function(stream) {
-			const fileStore = FileUpload.getStore('Uploads');
-			fileStore.insert(details, stream, function(err, file) {
-				if (err) {
-					throw new Error(err);
-				} else {
-					const url = file.url.replace(Meteor.absoluteUrl(), '/');
+		const fileStore = FileUpload.getStore('Uploads');
 
-					const attachment = {
-						title: `File Uploaded: ${ file.name }`,
-						title_link: url
-					};
+		return requestModule.get(fileUrl, Meteor.bindEnvironment(function(res) {
+			const rawData = [];
+			res.on('data', chunk => rawData.push(chunk));
+			res.on('end', Meteor.bindEnvironment(() => {
+				fileStore.insert(details, Buffer.concat(rawData), function(err, file) {
+					if (err) {
+						throw new Error(err);
+					} else {
+						const url = file.url.replace(Meteor.absoluteUrl(), '/');
 
-					if (/^image\/.+/.test(file.type)) {
-						attachment.image_url = url;
-						attachment.image_type = file.type;
-						attachment.image_size = file.size;
-						attachment.image_dimensions = file.identify != null ? file.identify.size : undefined;
+						const attachment = {
+							title: file.name,
+							title_link: url
+						};
+
+						if (/^image\/.+/.test(file.type)) {
+							attachment.image_url = url;
+							attachment.image_type = file.type;
+							attachment.image_size = file.size;
+							attachment.image_dimensions = file.identify != null ? file.identify.size : undefined;
+						}
+
+						if (/^audio\/.+/.test(file.type)) {
+							attachment.audio_url = url;
+							attachment.audio_type = file.type;
+							attachment.audio_size = file.size;
+						}
+
+						if (/^video\/.+/.test(file.type)) {
+							attachment.video_url = url;
+							attachment.video_type = file.type;
+							attachment.video_size = file.size;
+						}
+
+						const msg = {
+							rid: details.rid,
+							ts: timeStamp,
+							msg: '',
+							file: {
+								_id: file._id
+							},
+							groupable: false,
+							attachments: [attachment]
+						};
+
+						if ((details.message_id != null) && (typeof details.message_id === 'string')) {
+							msg['_id'] = details.message_id;
+						}
+
+						return RocketChat.sendMessage(user, msg, room, true);
 					}
-
-					if (/^audio\/.+/.test(file.type)) {
-						attachment.audio_url = url;
-						attachment.audio_type = file.type;
-						attachment.audio_size = file.size;
-					}
-
-					if (/^video\/.+/.test(file.type)) {
-						attachment.video_url = url;
-						attachment.video_type = file.type;
-						attachment.video_size = file.size;
-					}
-
-					const msg = {
-						rid: details.rid,
-						ts: timeStamp,
-						msg: '',
-						file: {
-							_id: file._id
-						},
-						groupable: false,
-						attachments: [attachment]
-					};
-
-					if ((details.message_id != null) && (typeof details.message_id === 'string')) {
-						msg['_id'] = details.message_id;
-					}
-
-					return RocketChat.sendMessage(user, msg, room, true);
-				}
-			});
+				});
+			}));
 		}));
 	}
 };

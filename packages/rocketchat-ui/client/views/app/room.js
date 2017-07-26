@@ -97,6 +97,18 @@ Template.room.helpers({
 		return Session.get('uploading');
 	},
 
+	roomLeader() {
+		const roles = RoomRoles.find({rid: this._id, roles: 'leader'}).fetch();
+		if (roles.length > 0) {
+			const u = roles[0].u;
+			if (u._id === Meteor.user()._id) { return null; }
+			const currUser = RocketChat.models.Users.find({ _id:  u._id}).fetch();
+			u['status'] = currUser.length > 0 ? 'online' : 'offline';
+			return u;
+		}
+		return null;
+	},
+
 	roomName() {
 		const roomData = Session.get(`roomData${ this._id }`);
 		if (!roomData) { return ''; }
@@ -224,21 +236,42 @@ Template.room.helpers({
 			return true;
 		}
 
+		if (RocketChat.settings.get('Accounts_AllowAnonymousRead') === true) {
+			return true;
+		}
+
 		if (RocketChat.authz.hasAllPermission('preview-c-room')) {
 			return true;
 		}
 
 		return (RocketChat.models.Subscriptions.findOne({rid: this._id}) != null);
+
+	},
+	toolbarButtons() {
+		const toolbar = Session.get('toolbarButtons') || { buttons: {} };
+		const buttons = Object.keys(toolbar.buttons).map(key => {
+			return {
+				id: key,
+				...toolbar.buttons[key]
+			};
+		});
+		return { buttons };
 	}
 });
 
 let isSocialSharingOpen = false;
 let touchMoved = false;
+let lastTouchX = null;
+let lastTouchY = null;
+let lastScrollTop;
 
 Template.room.events({
+	'click .iframe-toolbar button'() {
+		fireGlobalEvent('click-toolbar-button', { id: this.id });
+	},
+
 	'click, touchend'(e, t) {
-		return Meteor.setTimeout(() => t.sendToBottomIfNecessaryDebounced()
-		, 100);
+		return Meteor.setTimeout(() => t.sendToBottomIfNecessaryDebounced(), 100);
 	},
 
 	'click .messages-container'() {
@@ -249,7 +282,22 @@ Template.room.events({
 		}
 	},
 
+	'scroll .messages-box .wrapper'() {
+		const $wrapper = $('.messages-box .wrapper');
+		if ($wrapper.scrollTop() < lastScrollTop) {
+			$('.room-leader').removeClass('hidden');
+		} else if ($wrapper.scrollTop() > $('.room-leader-container').height()) {
+			$('.room-leader').addClass('hidden');
+		}
+		lastScrollTop = $wrapper.scrollTop();
+	},
+
 	'touchstart .message'(e, t) {
+		const touches = e.originalEvent.touches;
+		if (touches && touches.length) {
+			lastTouchX = touches[0].pageX;
+			lastTouchY = touches[0].pagey;
+		}
 		touchMoved = false;
 		isSocialSharingOpen = false;
 		if (e.originalEvent.touches.length !== 1) {
@@ -344,7 +392,14 @@ Template.room.events({
 	},
 
 	'touchmove .message'(e, t) {
-		touchMoved = true;
+		const touches = e.originalEvent.touches;
+		if (touches && touches.length) {
+			const deltaX = Math.abs(lastTouchX - touches[0].pageX);
+			const deltaY = Math.abs(lastTouchY - touches[0].pageY);
+			if (deltaX > 5 || deltaY > 5) {
+				touchMoved = true;
+			}
+		}
 		return Meteor.clearTimeout(t.touchtime);
 	},
 
@@ -364,7 +419,7 @@ Template.room.events({
 	'click .unread-bar > button.jump-to'(e, t) {
 		const { _id } = t.data;
 		const room = RoomHistoryManager.getRoom(_id);
-		let message = room && readMessage.firstUnread.get();
+		let message = room && room.firstUnread.get();
 		if (message) {
 			return RoomHistoryManager.getSurroundingMessages(message, 50);
 		} else {
@@ -388,16 +443,21 @@ Template.room.events({
 		event.preventDefault();
 		Session.set('editRoomTitle', true);
 		$('.fixed-title').addClass('visible');
-		return Meteor.setTimeout(() => $('#room-title-field').focus().select()
-		, 10);
+		return Meteor.setTimeout(() => $('#room-title-field').focus().select(), 10);
 	},
 
 	'click .flex-tab .user-image > button'(e, instance) {
+		if (!Meteor.userId()) {
+			return;
+		}
 		instance.tabBar.open();
 		return instance.setUserDetail(this.user.username);
 	},
 
 	'click .user-card-message'(e, instance) {
+		if (!Meteor.userId() || !this._arguments) {
+			return;
+		}
 		const roomData = Session.get(`roomData${ this._arguments[1].rid }`);
 
 		if (RocketChat.Layout.isEmbedded()) {
@@ -423,8 +483,7 @@ Template.room.events({
 				return RoomHistoryManager.getMoreNext(this._id);
 			}
 		}
-	}
-	, 200),
+	}, 200),
 
 	'click .new-message'() {
 		Template.instance().atBottom = true;
@@ -465,6 +524,9 @@ Template.room.events({
 	},
 
 	'click .mention-link'(e, instance) {
+		if (!Meteor.userId()) {
+			return;
+		}
 		const channel = $(e.currentTarget).data('channel');
 		if (channel != null) {
 			if (RocketChat.Layout.isEmbedded()) {
@@ -696,8 +758,7 @@ Template.room.onRendered(function() {
 	window.chatMessages[Session.get('openedRoom')].init(this.firstNode);
 
 	if (Meteor.Device.isDesktop()) {
-		setTimeout(() => $('.message-form .input-message').focus()
-		, 100);
+		setTimeout(() => $('.message-form .input-message').focus(), 100);
 	}
 
 	// ScrollListener.init()
@@ -747,7 +808,7 @@ Template.room.onRendered(function() {
 
 		observer.observe(wrapperUl, {childList: true});
 	}
-		// observer.disconnect()
+	// observer.disconnect()
 
 	template.onWindowResize = () =>
 		Meteor.defer(() => template.sendToBottomIfNecessaryDebounced())
@@ -769,10 +830,8 @@ Template.room.onRendered(function() {
 
 	wrapper.addEventListener('touchend', function() {
 		Meteor.defer(() => template.checkIfScrollIsAtBottom());
-		Meteor.setTimeout(() => template.checkIfScrollIsAtBottom()
-		, 1000);
-		return Meteor.setTimeout(() => template.checkIfScrollIsAtBottom()
-		, 2000);
+		Meteor.setTimeout(() => template.checkIfScrollIsAtBottom(), 1000);
+		return Meteor.setTimeout(() => template.checkIfScrollIsAtBottom(), 2000);
 	});
 
 	wrapper.addEventListener('scroll', function() {
@@ -781,9 +840,9 @@ Template.room.onRendered(function() {
 	});
 
 	$('.flex-tab-bar').on('click', (/*e, t*/) =>
-		Meteor.setTimeout(() => template.sendToBottomIfNecessaryDebounced()
-		, 50)
+		Meteor.setTimeout(() => template.sendToBottomIfNecessaryDebounced(), 50)
 	);
+	lastScrollTop = $('.messages-box .wrapper').scrollTop();
 
 	const rtl = $('html').hasClass('rtl');
 
@@ -807,8 +866,7 @@ Template.room.onRendered(function() {
 				return template.unreadCount.set(0);
 			}
 		}
-	}
-	, 300);
+	}, 300);
 
 	readMessage.onRead(function(rid) {
 		if (rid === template.data._id) {

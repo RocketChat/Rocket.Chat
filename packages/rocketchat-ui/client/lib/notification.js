@@ -106,7 +106,7 @@ const KonchatNotification = {
 		});
 	},
 
-		// $('.link-room-' + rid).addClass('new-room-highlight')
+	// $('.link-room-' + rid).addClass('new-room-highlight')
 
 	removeRoomNotification(rid) {
 		Tracker.nonreactive(() => Session.set('newRoomSound', []));
@@ -116,23 +116,24 @@ const KonchatNotification = {
 };
 
 Tracker.autorun(function() {
-	const user = Meteor.user();
-	const newRoomNotification = user && user.settings && user.settings.preferences && user.settings.preferences.newRoomNotification || 'door';
+	let audio;
 	if ((Session.get('newRoomSound') || []).length > 0) {
 		Tracker.nonreactive(function() {
+			const user = RocketChat.models.Users.findOne({ _id: Meteor.userId() }, { fields: { 'settings.preferences.newRoomNotification': 1 } });
+			const newRoomNotification = user && user.settings && user.settings.preferences && user.settings.preferences.newRoomNotification || 'door';
 			if (!Session.equals(`user_${ Meteor.userId() }_status`, 'busy') && newRoomNotification !== 'none') {
-				const [audio] = $(`audio#${ newRoomNotification }`);
+				[audio] = $(`audio#${ newRoomNotification }`);
 				return audio && audio.play && audio.play();
 			}
 		});
 	} else {
-		const [room] = $(`audio#${ newRoomNotification }`);
-		if (!room) {
+		if (!audio) {
 			return;
 		}
-		if (room.pause) {
-			room.pause();
-			return room.currentTime = 0;
+		if (audio.pause) {
+			audio.pause();
+			audio.currentTime = 0;
+			audio = null;
 		}
 	}
 });

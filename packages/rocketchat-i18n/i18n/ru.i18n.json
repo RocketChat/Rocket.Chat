@@ -1072,8 +1072,8 @@
   "This_email_has_already_been_used_and_has_not_been_verified__Please_change_your_password": "Такой email уже использовался и не был подтверждён. Измените ваш пароль.",
   "This_is_a_desktop_notification": "Это уведомление рабочего стола",
   "This_is_a_push_test_messsage": "Это тестовое push-уведомление",
-  "This_room_has_been_archived_by__username_": "Этот номер был архивируются __username__",
-  "This_room_has_been_unarchived_by__username_": "Этот номер был разархивирована по __username__",
+  "This_room_has_been_archived_by__username_": "__username__ отправил этот чат в архив",
+  "This_room_has_been_unarchived_by__username_": "__username__ вернул этот чат из архива",
   "Time_in_seconds": "Время в секундах",
   "Title": "Заголовок",
   "Title_bar_color": "Цвет строки заголовка",
@@ -1192,7 +1192,7 @@
   "WebRTC_Enable_Direct": "Включить для личных сообщений",
   "WebRTC_Enable_Private": "Включить для приватных чатов",
   "WebRTC_Servers": "Серверы STUN/TURN",
-  "WebRTC_Servers_Description": "Список STUN/TURN серверов разделен запятой.<br/>Имя пользователя, пароль и порт разрешены в формате `username:password@stun:host:port` или `username:password@turn:host:port`.",
+  "WebRTC_Servers_Description": "Список STUN/TURN серверов разделен запятой.<br/>Имя пользователя, пароль и порт разрешены в формате `username:password@stun:host:port` или `username:password@turn:host:port`.",
   "Welcome": "Добро пожаловать, <em>%s</em>.",
   "Welcome_to_the": "Добро пожаловать в",
   "Why_do_you_want_to_report_question_mark": "Почему вы хотите сообщить?",
@@ -1231,7 +1231,7 @@
   "Your_email_has_been_queued_for_sending": "Ваш email был поставлен в очередь на отправку",
   "Your_entry_has_been_deleted": "Ваша запись была удалена.",
   "Your_file_has_been_deleted": "Ваш файл был удалён.",
-  "Your_mail_was_sent_to_s": "Ваше сообщение было отправлено на %s",
+  "Your_mail_was_sent_to_s": "Ваше сообщение было отправлено на %s",
   "Your_password_is_wrong": "Неверный пароль!",
   "Your_push_was_sent_to_s_devices": "Ваше push-уведомление было отправлено на % устройств."
 }
