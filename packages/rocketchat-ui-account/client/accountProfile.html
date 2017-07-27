@@ -14,15 +14,12 @@
 			{{> burger}}
 			<h2 style="flex: 1 1; white-space: nowrap;">{{_ "My Profile"}}</h2>
 			<div class="content" style="text-align: end; max-width: 649px;  flex: 1 1 100%">
-				{{#if allowDeleteOwnAccount}}
-					<button class="rc-button rc-button--red js-delete-account"><i class="icon-trash"></i><span>{{_ "Delete_my_account"}}</span></button>
-				{{/if}}
 				<button class="rc-button rc-button--blue" name="send" type="submit" data-button="create" form="profile" {{canSave 'disabled'}}>Save Changes</button>
 			</div>
 			<div style="flex: 1 1;"></div>
 		</header>
 		<div class="preferences-page__content">
-			<form id="profile" autocomplete="off">
+			<form id="profile" autocomplete="off" class="container">
 				<fieldset class="rc-form-legend">
 					<legend style="margin-bottom: 2.5rem;">Profile Details</legend>
 					<div>
@@ -124,6 +121,9 @@
 						</div>
 						<div class="rc-form-group rc-grid">
 							<button class="rc-button js-logout">{{_ "Logout_Others"}}</button>
+							{{#if allowDeleteOwnAccount}}
+							<button class="rc-button rc-button--red js-delete-account"><i class="icon-trash"></i><span>{{_ "Delete_my_account"}}</span></button>
+							{{/if}}
 						</div>
 					</div>
 				</fieldset>
