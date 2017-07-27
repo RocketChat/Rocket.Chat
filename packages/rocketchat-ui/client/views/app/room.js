@@ -281,7 +281,7 @@ let lastTouchX = null;
 let lastTouchY = null;
 
 Template.room.events({
-	'click .iframe-toolbar h'() {
+	'click header h2'() {
 		fireGlobalEvent('click-toolbar-button', { id: this.id });
 	},
 
