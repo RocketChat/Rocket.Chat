@@ -9,7 +9,7 @@ import {targetUser} from '../../data/interactions.js';
 import {checkIfUserIsValid, setPublicChannelCreated, setPrivateChannelCreated, setDirectMessageCreated} from '../../data/checks';
 import {username, email, password} from '../../data/user.js';
 //Basic usage test start
-describe('Channel creation', function() {
+describe('[Channel creation]', function() {
 	before(()=>{
 		checkIfUserIsValid(username, email, password);
 		sideNav.spotlightSearch.waitForVisible(10000);
@@ -41,22 +41,22 @@ describe('Channel creation', function() {
 		}
 	});
 
-	describe('create a public channel', function() {
-		it('create a public channel', function() {
+	describe('public channel:', function() {
+		it('it should create a public channel', function() {
 			sideNav.createChannel(publicChannelName, false, false);
 			setPublicChannelCreated(true);
 		});
 	});
 
-	describe('create a private channel', function() {
-		it('create a private channel', function() {
+	describe('private channel:', function() {
+		it('it should create a private channel', function() {
 			sideNav.createChannel(privateChannelName, true, false);
 			setPrivateChannelCreated(true);
 		});
 	});
 
-	describe('direct channel', function() {
-		it('start a direct message with rocket.cat', function() {
+	describe('direct message:', function() {
+		it('it should start a direct message with rocket.cat', function() {
 			sideNav.searchChannel(targetUser);
 			setDirectMessageCreated(true);
 		});
