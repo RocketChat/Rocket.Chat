@@ -10,7 +10,23 @@ const isSubscribed = _id => ChatSubscription.find({ rid: _id }).count() > 0;
 const favoritesEnabled = () => RocketChat.settings.get('Favorite_Rooms');
 
 const userCanDrop = _id => !RocketChat.roomTypes.readOnly(_id, Meteor.user());
+const openProfileTab = (e, instance, data) => {
+	const roomData = Session.get(`roomData${ data.rid }`);
 
+	if (RocketChat.Layout.isEmbedded()) {
+		fireGlobalEvent('click-user-card-message', { username: data.u.username });
+		e.preventDefault();
+		e.stopPropagation();
+		return;
+	}
+
+	if (['c', 'p', 'd'].includes(roomData.t)) {
+		instance.setUserDetail(data.u.username);
+	}
+
+	instance.tabBar.setTemplate('membersList');
+	return instance.tabBar.open();
+};
 Template.room.helpers({
 	isTranslated() {
 		const sub = ChatSubscription.findOne({ rid: this._id }, { fields: { autoTranslate: 1, autoTranslateLanguage: 1 } });
@@ -461,12 +477,13 @@ Template.room.events({
 					}
 				}
 
-		if (['c', 'p', 'd'].includes(roomData.t)) {
-			instance.setUserDetail(this._arguments[1].u.username);
+				if ((result != null ? result.rid : undefined) != null) {
+					return FlowRouter.go('direct', { username: this._arguments[1].u.username }, FlowRouter.current().queryParams);
+				}
+			});
+		} else {
+			openProfileTab(e, instance, this._arguments[1]);
 		}
-
-		instance.tabBar.setTemplate('membersList');
-		return instance.tabBar.open();
 	},
 
 	'scroll .wrapper': _.throttle(function(e) {
