@@ -165,8 +165,8 @@ RocketChat.integrations.triggerHandler = new class RocketChatIntegrationHandler 
 		}
 
 		let tmpRoom;
-		if (nameOrId || trigger.targetRoom) {
-			tmpRoom = RocketChat.getRoomByNameOrIdWithOptionToJoin({ currentUserId: user._id, nameOrId: nameOrId || trigger.targetRoom, errorOnEmpty: false }) || room;
+		if (nameOrId || trigger.targetRoom || message.channel) {
+			tmpRoom = RocketChat.getRoomByNameOrIdWithOptionToJoin({ currentUserId: user._id, nameOrId: nameOrId || message.channel || trigger.targetRoom, errorOnEmpty: false }) || room;
 		} else {
 			tmpRoom = room;
 		}

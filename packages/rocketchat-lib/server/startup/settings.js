@@ -820,6 +820,10 @@ RocketChat.settings.addGroup('Message', function() {
 		type: 'boolean',
 		'public': true
 	});
+	this.add('API_Embed_UserAgent', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2227.0 Safari/537.36', {
+		type: 'string',
+		'public': true
+	});
 	this.add('API_EmbedCacheExpirationDays', 30, {
 		type: 'int',
 		'public': false
@@ -1065,6 +1069,23 @@ RocketChat.settings.addGroup('Layout', function() {
 		});
 		this.add('UI_Use_Real_Name', false, {
 			type: 'boolean',
+			'public': true
+		});
+		this.add('UI_Click_Direct_Message', false, {
+			type: 'boolean',
+			'public': true
+		});
+		this.add('UI_Unread_Counter_Style', 'Different_Style_For_User_Mentions', {
+			type: 'select',
+			values: [
+				{
+					key: 'Same_Style_For_Mentions',
+					i18nLabel: 'Same_Style_For_Mentions'
+				}, {
+					key: 'Different_Style_For_User_Mentions',
+					i18nLabel: 'Different_Style_For_User_Mentions'
+				}
+			],
 			'public': true
 		});
 	});
