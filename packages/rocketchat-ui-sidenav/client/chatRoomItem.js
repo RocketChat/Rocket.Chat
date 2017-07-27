@@ -14,6 +14,14 @@ Template.chatRoomItem.helpers({
 		}
 	},
 
+	unreadClass() {
+		if (Match.test(this.userMentions, Number) && this.userMentions > 0) {
+			return 'unread unread-mention';
+		} else {
+			return 'unread';
+		}
+	},
+
 	userStatus() {
 		const userStatus = RocketChat.roomTypes.getUserStatus(this.t, this.rid);
 		return `status-${ userStatus || 'offline' }`;
