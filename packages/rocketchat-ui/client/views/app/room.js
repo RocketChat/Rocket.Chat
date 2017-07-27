@@ -451,14 +451,15 @@ Template.room.events({
 		if (!Meteor.userId() || !this._arguments) {
 			return;
 		}
-		const roomData = Session.get(`roomData${ this._arguments[1].rid }`);
-
-		if (RocketChat.Layout.isEmbedded()) {
-			fireGlobalEvent('click-user-card-message', { username: this._arguments[1].u.username });
-			e.preventDefault();
-			e.stopPropagation();
-			return;
-		}
+		if (RocketChat.settings.get('UI_Click_Direct_Message')) {
+			return Meteor.call('createDirectMessage', this._arguments[1].u.username, (error, result) => {
+				if (error) {
+					if (error.isClientSafe) {
+						openProfileTab(e, instance, this._arguments[1]);
+					} else {
+						return handleError(error);
+					}
+				}
 
 		if (['c', 'p', 'd'].includes(roomData.t)) {
 			instance.setUserDetail(this._arguments[1].u.username);
