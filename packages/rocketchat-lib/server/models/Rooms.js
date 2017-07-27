@@ -238,7 +238,8 @@ class ModelRooms extends RocketChat.models._Base {
 			}
 		};
 
-		return this.find(query, options);
+		// do not use cache
+		return this._db.find(query, options);
 	}
 
 	findByNameAndTypeNotContainingUsername(name, type, username, options) {
@@ -250,7 +251,8 @@ class ModelRooms extends RocketChat.models._Base {
 			}
 		};
 
-		return this.find(query, options);
+		// do not use cache
+		return this._db.find(query, options);
 	}
 
 	findByNameStartingAndTypes(name, types, options) {
