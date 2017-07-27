@@ -2679,7 +2679,15 @@ label.required::after {
 	& .message-cog-container {
 		cursor: pointer;
 		position: relative;
-		display: none;
+		display: inline-block;
+
+		& .message-cog {
+			display: none;
+		}
+
+		& .message-cog.open {
+			display: block;
+		}
 	}
 
 	& .message-dropdown {
@@ -2923,7 +2931,7 @@ label.required::after {
 }
 
 body:not(.is-cordova) {
-	& .message:hover:not(.system) .message-cog-container {
+	& .message:hover:not(.system) .message-cog {
 		display: inline-block;
 	}
 
