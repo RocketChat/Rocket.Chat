@@ -17,6 +17,7 @@ Npm.depends({
 
 Package.onUse(function(api) {
 	api.use('rate-limit');
+	api.use('webapp');
 	api.use('session');
 	api.use('reactive-var');
 	api.use('reactive-dict');
@@ -81,6 +82,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/functions/removeUserFromRoom.js', 'server');
 	api.addFiles('server/functions/saveUser.js', 'server');
 	api.addFiles('server/functions/saveCustomFields.js', 'server');
+	api.addFiles('server/functions/saveCustomFieldsWithoutValidation.js', 'server');
 	api.addFiles('server/functions/sendMessage.js', 'server');
 	api.addFiles('server/functions/settings.js', 'server');
 	api.addFiles('server/functions/setUserAvatar.js', 'server');
@@ -89,6 +91,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/functions/setEmail.js', 'server');
 	api.addFiles('server/functions/unarchiveRoom.js', 'server');
 	api.addFiles('server/functions/updateMessage.js', 'server');
+	api.addFiles('server/functions/validateCustomFields.js', 'server');
 	api.addFiles('server/functions/Notifications.js', 'server');
 
 	// SERVER LIB
