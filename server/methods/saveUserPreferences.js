@@ -63,6 +63,7 @@ Meteor.methods({
 			preferences.hideFlexTab = settings.hideFlexTab === '1';
 			preferences.highlights = settings.highlights;
 			preferences.sendOnEnter = settings.sendOnEnter;
+			preferences.offlineNotificationFrequency = settings.offlineNotificationFrequency || 0;
 
 			RocketChat.models.Users.setPreferences(Meteor.userId(), preferences);
 

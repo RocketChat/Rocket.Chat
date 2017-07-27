@@ -171,6 +171,23 @@
 								</div>
 								<div class="info">{{_ "You_need_to_verifiy_your_email_address_to_get_notications"}}</div>
 							</div>
+							<div class="input-line double-col" id="offlineNotificationFrequency">
+								<label>{{_ "Offline_Notification_Frequency"}}</label>
+								<div>
+									<select name="offlineNotificationFrequency" >
+										<option value="0" selected="{{selected 'offlineNotificationFrequency' 0 true}}">Instantly, Default </option>
+										<option value="1" selected="{{selected 'offlineNotificationFrequency' 1 false}}">Every Hour</option>
+										<option value="2" selected="{{selected 'offlineNotificationFrequency' 2 false}}">Every 2 Hours</option>
+										<option value="3" selected="{{selected 'offlineNotificationFrequency' 3 false}}">Every 3 Hours</option>
+										<option value="4" selected="{{selected 'offlineNotificationFrequency' 4 false}}">Every 4 Hours</option>
+										<option value="6" selected="{{selected 'offlineNotificationFrequency' 6 false}}">Every 6 Hours</option>
+										<option value="8" selected="{{selected 'offlineNotificationFrequency' 8 false}}">Every 8 Hours</option>
+										<option value="12" selected="{{selected 'offlineNotificationFrequency' 12 false}}">Every 12 Hours</option>
+										<option value="24" selected="{{selected 'offlineNotificationFrequency' 24 false}}">Every 24 Hours</option>
+									</select>
+									<div class="info">{{_ "Offline_Notification_Frequency_Info"}}</div>
+								</div>
+							</div>
 						</div>
 					</div>
 					<div class="section">

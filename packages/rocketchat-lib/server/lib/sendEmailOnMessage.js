@@ -10,6 +10,24 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 		return message;
 	}
 
+	if (RocketChat.settings.get('Message_EmailNotificationAfterEditingExpires') && RocketChat.settings.get('Message_AllowEditing') === true && RocketChat.settings.get('Message_AllowEditing_BlockEditInMinutes') > 0) {
+		const details = {
+			'rid': message.rid,
+			'_id': message._id,
+			'ts': message.ts
+		};
+		details.ts.setMinutes(details.ts.getMinutes() + RocketChat.settings.get('Message_AllowEditing_BlockEditInMinutes'));
+
+		RocketChat.EmailSchedule.sendOrScheduleNotification(details);
+	} else {
+		RocketChat.sendEmailOnMessage(message, room);
+	}
+
+	return message;
+
+}, RocketChat.callbacks.priority.LOW, 'sendEmailOnMessage');
+
+RocketChat.sendEmailOnMessage = function(message, room) {
 	let emailSubject;
 	const usersToSendEmail = {};
 	const directMessage = room.t === 'd';
@@ -95,7 +113,9 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 			linkByUser[sub.u._id] = getMessageLink(room, sub);
 		});
 	} else {
-		defaultLink = getMessageLink(room, { name: room.name });
+		defaultLink = getMessageLink(room, {
+			name: room.name
+		});
 	}
 
 	if (userIdsToSendEmail.length > 0) {
@@ -114,6 +134,11 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 					return;
 				}
 
+				// Check if message still unread
+				if (RocketChat.models.Subscriptions.findUnreadByRoomIdAndUserId(message.rid, user._id) === 0) {
+					return;
+				}
+
 				user.emails.some((email) => {
 					if (email.verified) {
 						email = {
@@ -123,9 +148,14 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 							html: header + messageHTML + divisorMessage + (linkByUser[user._id] || defaultLink) + footer
 						};
 
-						Meteor.defer(() => {
-							Email.send(email);
-						});
+						if (user.settings && user.settings.preferences && user.settings.preferences.offlineNotificationFrequency && user.settings.preferences.offlineNotificationFrequency > 0) {
+							email.ts = RocketChat.EmailSchedule.getDigestTiming(user.settings.preferences.offlineNotificationFrequency);
+							RocketChat.EmailSchedule.sendOrScheduleDigest(email);
+						} else {
+							Meteor.defer(() => {
+								Email.send(email);
+							});
+						}
 
 						return true;
 					}
@@ -133,7 +163,4 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 			});
 		}
 	}
-
-	return message;
-
-}, RocketChat.callbacks.priority.LOW, 'sendEmailOnMessage');
+};

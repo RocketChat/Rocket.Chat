@@ -97,6 +97,7 @@
 		"file-type": "^5.2.0",
 		"highlight.js": "^9.12.0",
 		"jquery": "^3.2.1",
+		"later": "^1.2.0",
 		"mime-db": "^1.29.0",
 		"mime-type": "^3.0.5",
 		"moment": "^2.18.1",
