@@ -15,11 +15,15 @@ Template.chatRoomItem.helpers({
 	},
 
 	unreadClass() {
+		if (RocketChat.settings.get('UI_Unread_Counter_Style') === 'Same_Style_For_Mentions') {
+			return 'unread unread-mention';
+		}
+
 		if (Match.test(this.userMentions, Number) && this.userMentions > 0) {
 			return 'unread unread-mention';
-		} else {
-			return 'unread';
 		}
+
+		return 'unread';
 	},
 
 	userStatus() {
