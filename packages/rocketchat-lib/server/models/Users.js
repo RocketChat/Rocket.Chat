@@ -425,6 +425,7 @@ class ModelUsers extends RocketChat.models._Base {
 				requirePasswordChangeReason
 			}
 		};
+
 		return this.update(_id, update);
 	}
 

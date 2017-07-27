@@ -1055,6 +1055,10 @@ RocketChat.settings.addGroup('Layout', function() {
 			type: 'boolean',
 			'public': true
 		});
+		this.add('UI_Click_Direct_Message', false, {
+			type: 'boolean',
+			'public': true
+		});
 	});
 });
 
