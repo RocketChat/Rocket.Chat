@@ -26,7 +26,7 @@ Template.membersList.helpers({
 		const roomUsers = Template.instance().users.get();
 		const room = ChatRoom.findOne(this.rid);
 		const roomMuted = (room != null ? room.muted : undefined) || [];
-		const userUtcOffset = Meteor.user().utcOffset;
+		const userUtcOffset = Meteor.user() && Meteor.user().utcOffset;
 		let totalOnline = 0;
 		let users = roomUsers.map(function(user) {
 			let utcOffset;
@@ -53,7 +53,11 @@ Template.membersList.helpers({
 			};
 		});
 
-		users = _.sortBy(users, u => u.user.username);
+		if (RocketChat.settings.get('UI_Use_Real_Name')) {
+			users = _.sortBy(users, u => u.user.name);
+		} else {
+			users = _.sortBy(users, u => u.user.username);
+		}
 		// show online users first.
 		// sortBy is stable, so we can do this
 		users = _.sortBy(users, u => u.status == null);
@@ -204,8 +208,7 @@ Template.membersList.onCreated(function() {
 		this.showDetail.set(false);
 		return setTimeout(() => {
 			return this.clearRoomUserDetail();
-		}
-		, 500);
+		}, 500);
 	};
 
 	this.showUserDetail = username => {
