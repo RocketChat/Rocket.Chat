@@ -61,7 +61,7 @@ const openCenteredPopup = function(url, width, height) {
 		const left = screenX + (outerWidth - width) / 2;
 		const top = screenY + (outerHeight - height) / 2;
 		const features = (`width=${ width },height=${ height
-			},left=${ left },top=${ top },scrollbars=yes`);
+		},left=${ left },top=${ top },scrollbars=yes`);
 
 		newwindow = window.open(url, 'Login', features);
 		if (newwindow.focus) {
