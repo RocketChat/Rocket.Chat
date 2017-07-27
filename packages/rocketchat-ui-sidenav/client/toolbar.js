@@ -158,7 +158,11 @@ Template.toolbar.helpers({
 					query.t = 'd';
 				}
 
-				query.name = new RegExp((RegExp.escape(filterText)), 'i');
+				const searchQuery = new RegExp((RegExp.escape(filterText)), 'i');
+				query.$or = [
+					{ name: searchQuery },
+					{ fname: searchQuery }
+				];
 
 				resultsFromClient = collection.find(query, {limit: 20, sort: {unread: -1, ls: -1}}).fetch();
 

@@ -71,17 +71,16 @@ RocketChat.theme = new class {
 		this.compileDelayed = _.debounce(Meteor.bindEnvironment(this.compile.bind(this)), 100);
 		Meteor.startup(() => {
 			RocketChat.settings.onAfterInitialLoad(() => {
-				RocketChat.settings.get('*', Meteor.bindEnvironment((key, value) => {
+				RocketChat.settings.get(/^theme-./, Meteor.bindEnvironment((key, value) => {
 					if (key === 'theme-custom-css' && value != null) {
 						this.customCSS = value;
-					} else if (/^theme-.+/.test(key) === true) {
+					} else {
 						const name = key.replace(/^theme-[a-z]+-/, '');
 						if (this.variables[name] != null) {
 							this.variables[name].value = value;
 						}
-					} else {
-						return;
 					}
+
 					this.compileDelayed();
 				}));
 			});
@@ -89,7 +88,6 @@ RocketChat.theme = new class {
 	}
 
 	compile() {
-
 		let content = [this.getVariablesAsLess()];
 
 		content.push(...this.files.map((name) => Assets.getText(name)));

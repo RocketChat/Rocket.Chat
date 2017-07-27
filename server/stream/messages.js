@@ -51,6 +51,13 @@ Meteor.startup(function() {
 				const user = RocketChat.models.Users.findOneById(record.u._id);
 				record.u.name = user && user.name;
 			}
+
+			if (record.mentions && record.mentions.length && UI_Use_Real_Name) {
+				record.mentions.forEach((mention) => {
+					const user = RocketChat.models.Users.findOneById(mention._id);
+					mention.name = user && user.name;
+				});
+			}
 			msgStream.emitWithoutBroadcast('__my_messages__', record, {});
 			return msgStream.emitWithoutBroadcast(record.rid, record);
 		}
