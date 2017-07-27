@@ -237,6 +237,7 @@
 		max-height: 155px;
 		resize: none;
 		border: 0;
+    padding: 0px;
 		background-color: transparent;
 		font-size: var(--input-font-size);
 
@@ -620,9 +621,11 @@
 
 	&__list {
 		display: flex;
+		flex-wrap: wrap;
 
 		&__item {
 			margin-right: 10px;
+			margin-bottom: 10px;
 			cursor: pointer;
 			height: 50px;
 			width: 50px;
@@ -698,6 +701,10 @@
 }
 
 .preferences-page {
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+
 	&__header {
 		height: 77px;
 		display: flex;
@@ -710,14 +717,16 @@
 	}
 
 	&__content {
-		padding: 10px;
-		margin: 25px auto;
+		padding: 25px;
+		width: 100%;
+		overflow-y: auto;
 	}
 }
 
 @media (width > 500px) {
-	.preferences-page__content {
+	.preferences-page .container {
 		max-width: 649px;
+		margin: auto;
 	}
 }
 

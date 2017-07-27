@@ -40,7 +40,7 @@ function applyMd(e, t) {
 		apply pattern
 		restore selection
 	*/
-	box.value = initText+this.pattern.replace('{{text}}', text)+finalText;
+	box.value = initText + this.pattern.replace('{{text}}', text) + finalText;
 	box.focus();
 	box.selectionStart = selectionStart + this.pattern.indexOf('{{text}}');
 	box.selectionEnd = box.selectionStart + text.length;
@@ -59,7 +59,7 @@ const markdownButtons = [
 		label: 'italic',
 		pattern: '_{{text}}_',
 		group: 'showMarkdown',
-		command:'i'
+		command: 'i'
 	},
 	{
 		label: 'strike',
