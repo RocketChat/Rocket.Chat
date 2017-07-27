@@ -59,13 +59,13 @@ Meteor.methods({
 				preferences.notificationsSoundVolume = settings.notificationsSoundVolume;
 			}
 
-      if (settings.desktopNotifications) {
-        preferences.desktopNotifications = settings.desktopNotifications;
-      }
-
-      if (settings.mobileNotifications) {
-        preferences.mobileNotifications = settings.mobileNotifications;
-      }
+			if (settings.desktopNotifications) {
+  				preferences.desktopNotifications = settings.desktopNotifications;
+			}
+			
+			if (settings.mobileNotifications) {
+				preferences.mobileNotifications = settings.mobileNotifications;
+			}
       
 			preferences.desktopNotificationDuration = settings.desktopNotificationDuration - 0;
 			preferences.viewMode = settings.viewMode || 0;
