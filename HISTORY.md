@@ -1,3 +1,18 @@
+<a name="0.57.2"></a>
+## 0.57.2 (2017-07-14)
+
+
+### Bug Fixes
+
+- [#7472](https://github.com/RocketChat/Rocket.Chat/pull/7472) Always set LDAP properties on login
+- [#7431](https://github.com/RocketChat/Rocket.Chat/pull/7431) Fix Emails in User Admin View
+- [#7469](https://github.com/RocketChat/Rocket.Chat/pull/7469) Fix file upload on Slack import
+- [#7432](https://github.com/RocketChat/Rocket.Chat/pull/7432) Fix Private Channel List Submit
+- [#7403](https://github.com/RocketChat/Rocket.Chat/pull/7403) Fix Unread Bar Disappearing
+- [#7443](https://github.com/RocketChat/Rocket.Chat/pull/7443) S3 uploads not working for custom URLs
+
+
+
 <a name="0.57.1"></a>
 ## 0.57.1 (2017-07-06)
 - :hand: [#7428](https://github.com/RocketChat/Rocket.Chat/pull/7428) Fix migration of avatars from version 0.57.0

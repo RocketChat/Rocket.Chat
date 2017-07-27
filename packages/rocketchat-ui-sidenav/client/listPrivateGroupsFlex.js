@@ -42,6 +42,10 @@ Template.listPrivateGroupsFlex.events({
 		return e.preventDefault();
 	},
 
+	'submit .search-form'(e) {
+		return e.preventDefault();
+	},
+
 	'change #sort'(e, instance) {
 		return instance.sort.set($(e.currentTarget).val());
 	}
