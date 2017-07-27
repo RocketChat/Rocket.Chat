@@ -1040,6 +1040,19 @@ RocketChat.settings.addGroup('Layout', function() {
 			type: 'boolean',
 			'public': true
 		});
+		this.add('UI_Unread_Counter_Style', 'Different_Style_For_User_Mentions', {
+			type: 'select',
+			values: [
+				{
+					key: 'Same_Style_For_Mentions',
+					i18nLabel: 'Same_Style_For_Mentions'
+				}, {
+					key: 'Different_Style_For_User_Mentions',
+					i18nLabel: 'Different_Style_For_User_Mentions'
+				}
+			],
+			'public': true
+		});
 	});
 });
 
