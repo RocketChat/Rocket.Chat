@@ -433,20 +433,20 @@ Template.room.events({
 
 	'click .message-cog'() {
 		const [, message] = this._arguments;
-		RocketChat.MessageAction.hideDropDown();
-
 		let dropDown = $(`.messages-box \#${ message._id } .message-dropdown`);
-
-		if (dropDown.length === 0) {
-			const actions = RocketChat.MessageAction.getButtons(message, 'message');
-
-			const el = Blaze.toHTMLWithData(Template.messageDropdown,
-				{actions});
-
-			$(`.messages-box \#${ message._id } .message-cog-container`).append(el);
-
-			dropDown = $(`.messages-box \#${ message._id } .message-dropdown`);
+		RocketChat.MessageAction.hideDropDown();
+		if (dropDown.length > 0) {
+			dropDown.remove();
+			return;
 		}
+
+		const actions = RocketChat.MessageAction.getButtons(message, 'message');
+
+		const el = Blaze.toHTMLWithData(Template.messageDropdown, {actions});
+
+		$(`.messages-box \#${ message._id } .message-cog-container`).append(el);
+
+		dropDown = $(`.messages-box \#${ message._id } .message-dropdown`);
 
 		const containerHeight = $('.messages-box .wrapper').height();
 		const dropdownHeight = dropDown.height();
@@ -454,6 +454,7 @@ Template.room.events({
 		if ((dropdownTop + dropdownHeight) > containerHeight) {
 			dropDown.css('top', `-${ dropdownHeight + 30 }px`);
 		}
+		$(`.messages-box \#${ message._id } .message-cog`).addClass('open');
 		return dropDown.show();
 	},
 

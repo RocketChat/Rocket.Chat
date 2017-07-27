@@ -82,7 +82,8 @@ RocketChat.MessageAction = new class {
 	}
 
 	hideDropDown() {
-		return $('.message-dropdown:visible').hide();
+		$('.message-cog').removeClass('open');
+		return $('.message-dropdown:visible').remove();
 	}
 };
 
