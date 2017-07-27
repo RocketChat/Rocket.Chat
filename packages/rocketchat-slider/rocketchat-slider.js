@@ -4,7 +4,7 @@ Template.slider.onRendered(function() {
 	const rangeSlider = function() {
 
 		const range = $(`#${ params.id }`);
-		const labelValue = $(`#${ params.id }__value`);
+		const labelValue = $(`#${ params.id }_value`);
 
 		labelValue.html(params.value);
 
