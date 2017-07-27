@@ -80,14 +80,23 @@ const KonchatNotification = {
 		if (!Session.equals(`user_${ Meteor.userId() }_status`, 'busy')) {
 			const user = Meteor.user();
 			const newMessageNotification = user && user.settings && user.settings.preferences && user.settings.preferences.newMessageNotification || 'chime';
+			const audioVolume = user && user.settings && user.settings.preferences && user.settings.preferences.notificationsSoundVolume || 100;
+
 			const sub = ChatSubscription.findOne({ rid }, { fields: { audioNotification: 1 } });
+
 			if (sub && sub.audioNotification !== 'none') {
 				if (sub && sub.audioNotification) {
 					const [audio] = $(`audio#${ sub.audioNotification }`);
-					return audio && audio.play && audio.play();
+					if (audio && audio.play) {
+						audio.volume = Number((audioVolume/100).toPrecision(2));
+						return audio.play();
+					}
 				} else if (newMessageNotification !== 'none') {
 					const [audio] = $(`audio#${ newMessageNotification }`);
-					return audio && audio.play && audio.play();
+					if (audio && audio.play) {
+						audio.volume = Number((audioVolume/100).toPrecision(2));
+						return audio.play();
+					}
 				}
 			}
 		}
@@ -116,24 +125,28 @@ const KonchatNotification = {
 };
 
 Tracker.autorun(function() {
-	let audio;
+	const user = Meteor.user();
+	const newRoomNotification = user && user.settings && user.settings.preferences && user.settings.preferences.newRoomNotification || 'door';
+	const audioVolume = user && user.settings && user.settings.preferences && user.settings.preferences.notificationsSoundVolume || 100;
+
 	if ((Session.get('newRoomSound') || []).length > 0) {
 		Tracker.nonreactive(function() {
-			const user = RocketChat.models.Users.findOne({ _id: Meteor.userId() }, { fields: { 'settings.preferences.newRoomNotification': 1 } });
-			const newRoomNotification = user && user.settings && user.settings.preferences && user.settings.preferences.newRoomNotification || 'door';
 			if (!Session.equals(`user_${ Meteor.userId() }_status`, 'busy') && newRoomNotification !== 'none') {
-				[audio] = $(`audio#${ newRoomNotification }`);
-				return audio && audio.play && audio.play();
+				const [audio] = $(`audio#${ newRoomNotification }`);
+				if (audio && audio.play) {
+					audio.volume = Number((audioVolume/100).toPrecision(2));
+					return audio.play();
+				}
 			}
 		});
 	} else {
-		if (!audio) {
+		const [room] = $(`audio#${ newRoomNotification }`);
+		if (!room) {
 			return;
 		}
-		if (audio.pause) {
-			audio.pause();
-			audio.currentTime = 0;
-			audio = null;
+		if (room.pause) {
+			room.pause();
+			return room.currentTime = 0;
 		}
 	}
 });
