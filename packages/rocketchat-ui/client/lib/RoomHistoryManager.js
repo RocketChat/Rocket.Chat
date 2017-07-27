@@ -51,12 +51,11 @@ export const RoomHistoryManager = new class {
 			typeName = (curRoomDoc != null ? curRoomDoc.t : undefined) + (curRoomDoc != null ? curRoomDoc.name : undefined);
 		}
 
-		Meteor.call('loadHistory', rid, ts, limit, ls, function(err, result) {
+		return Meteor.call('loadHistory', rid, ts, limit, ls, function(err, result) {
 			if (err) {
 				return;
 			}
 			let previousHeight;
-			const {messages = []} = result;
 			room.unreadNotLoaded.set(result.unreadNotLoaded);
 			room.firstUnread.set(result.firstUnread);
 
@@ -65,7 +64,7 @@ export const RoomHistoryManager = new class {
 				previousHeight = wrapper.scrollHeight;
 			}
 
-			messages.forEach(item => {
+			result.messages.forEach(item => {
 				if (item.t !== 'command') {
 					const roles = [
 						(item.u && item.u._id && UserRoles.findOne(item.u._id, { fields: { roles: 1 }})) || {},
@@ -88,8 +87,8 @@ export const RoomHistoryManager = new class {
 
 			room.isLoading.set(false);
 			if (room.loaded == null) { room.loaded = 0; }
-			room.loaded += messages.length;
-			if (messages.length < limit) {
+			room.loaded += result.messages.length;
+			if (result.messages.length < limit) {
 				return room.hasMore.set(false);
 			}
 		});

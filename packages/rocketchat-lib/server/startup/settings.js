@@ -70,23 +70,22 @@ RocketChat.settings.addGroup('Accounts', function() {
 		type: 'boolean',
 		'public': true
 	});
-	// TODO: #2995
-	this.add('Accounts_AdminsReceivePasswordChangeLog', 'disabled', {
+	this.add('Accounts_AdminsReceivePasswordChangeHistory', 'disabled', {
 		type: 'select',
 		'public': true,
 		values: [
 			{
 				key: 'disabled',
-				i18nLabel: 'Accounts_AdminsReceivePasswordChangeLog_Disabled'
+				i18nLabel: 'Accounts_AdminsReceivePasswordChangeHistory_Disabled'
 			}, {
 				key: 'immediately',
-				i18nLabel: 'Accounts_AdminsReceivePasswordChangeLog_Immediately'
+				i18nLabel: 'Accounts_AdminsReceivePasswordChangeHistory_Immediately'
 			}, {
 				key: 'daily',
-				i18nLabel: 'Accounts_AdminsReceivePasswordChangeLog_Daily'
+				i18nLabel: 'Accounts_AdminsReceivePasswordChangeHistory_Daily'
 			}, {
 				key: 'weekly',
-				i18nLabel: 'Accounts_AdminsReceivePasswordChangeLog_Weekly'
+				i18nLabel: 'Accounts_AdminsReceivePasswordChangeHistory_Weekly'
 			}
 		]
 	});
@@ -1053,10 +1052,6 @@ RocketChat.settings.addGroup('Layout', function() {
 			'public': true
 		});
 		this.add('UI_Use_Real_Name', false, {
-			type: 'boolean',
-			'public': true
-		});
-		this.add('UI_Click_Direct_Message', false, {
 			type: 'boolean',
 			'public': true
 		});

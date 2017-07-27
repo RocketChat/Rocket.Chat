@@ -151,7 +151,7 @@ jalik:ufs-gridfs
 jparker:gravatar
 kadira:blaze-layout
 kadira:flow-router
-#kenton:accounts-sandstorm
+kenton:accounts-sandstorm
 mizzao:autocomplete
 mizzao:timesync
 mrt:reactive-store
@@ -174,4 +174,3 @@ yasinuslu:blaze-meta
 deepwell:bootstrap-datepicker2
 rocketchat:postcss
 dynamic-import@0.1.1
-fourseven:scss

@@ -54,9 +54,6 @@ Meteor.startup(function() {
 		action() {
 			const message = this._arguments[1];
 			RocketChat.MessageAction.hideDropDown();
-			if (window.matchMedia('(max-width: 500px)').matches) {
-				Template.instance().tabBar.close();
-			}
 			return RoomHistoryManager.getSurroundingMessages(message, 50);
 		},
 		validation(message) {

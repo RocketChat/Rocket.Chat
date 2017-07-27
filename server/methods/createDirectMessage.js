@@ -109,8 +109,10 @@ Meteor.methods({
 	}
 });
 
-RocketChat.RateLimiter.limitMethod('createDirectMessage', 10, 60000, {
-	userId(userId) {
-		return !RocketChat.authz.hasPermission(userId, 'send-many-messages');
+DDPRateLimiter.addRule({
+	type: 'method',
+	name: 'createDirectMessage',
+	connectionId() {
+		return true;
 	}
-});
+}, 10, 60000);

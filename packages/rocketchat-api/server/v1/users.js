@@ -105,10 +105,6 @@ RocketChat.API.v1.addRoute('users.info', { authRequired: true }, {
 
 RocketChat.API.v1.addRoute('users.list', { authRequired: true }, {
 	get() {
-		if (!RocketChat.authz.hasPermission(this.userId, 'view-d-room')) {
-			return RocketChat.API.v1.unauthorized();
-		}
-
 		const { offset, count } = this.getPaginationItems();
 		const { sort, fields, query } = this.parseJsonQuery();
 
