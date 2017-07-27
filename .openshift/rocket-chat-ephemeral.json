@@ -262,6 +262,30 @@
                                         "mountPath": "/app/uploads"
                                     }
                                 ],
+                                "readinessProbe": {
+                                    "httpGet": {
+                                        "path": "/api/v1/info",
+                                        "port": 3000,
+                                        "scheme": "HTTP"
+                                    },
+                                    "initialDelaySeconds": 5,
+                                    "timeoutSeconds": 1,
+                                    "periodSeconds": 10,
+                                    "successThreshold": 1,
+                                    "failureThreshold": 3
+                                },
+                                "livenessProbe": {
+                                    "httpGet": {
+                                        "path": "/api/v1/info",
+                                        "port": 3000,
+                                        "scheme": "HTTP"
+                                    },
+                                    "initialDelaySeconds": 30,
+                                    "timeoutSeconds": 1,
+                                    "periodSeconds": 10,
+                                    "successThreshold": 1,
+                                    "failureThreshold": 3
+                                },
                                 "terminationMessagePath": "/dev/termination-log",
                                 "imagePullPolicy": "Always"
                             }
