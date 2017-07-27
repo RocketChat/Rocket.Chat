@@ -116,10 +116,10 @@ Template.room.helpers({
 	roomLeader() {
 		const roles = RoomRoles.findOne({ rid: this._id, roles: 'leader', 'u._id': { $ne: Meteor.userId() } });
 		if (roles) {
-			const leader = RocketChat.models.Users.findOne({ _id: roles.u._id }, { fields: { name: 1, status: 1, username: 1 }}) || {};
+			const leader = RocketChat.models.Users.findOne({ _id: roles.u._id }, { fields: { status: 1 }}) || {};
 			return {
 				...roles.u,
-				name: leader.name || leader.username || roles.u.username,
+				name: RocketChat.settings.get('UI_Use_Real_Name') ? (roles.u.name || roles.u.username) : roles.u.username,
 				status: leader.status || 'offline',
 				statusDisplay: (status => status.charAt(0).toUpperCase() + status.slice(1))(leader.status || 'offline')
 			};
