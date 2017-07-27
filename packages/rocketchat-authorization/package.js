@@ -34,6 +34,7 @@ Package.onUse(function(api) {
 	api.addFiles('client/requiresPermission.html', ['client']);
 
 	api.addFiles('client/route.js', ['client']);
+	api.addFiles('client/usersNameChanged.js', ['client']);
 
 	// views
 	api.addFiles('client/views/permissions.html', ['client']);
