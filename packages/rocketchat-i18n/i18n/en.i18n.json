@@ -1105,6 +1105,7 @@
   "Notification_Duration": "Notification Duration",
   "Notifications": "Notifications",
   "Notifications_Muted_Description": "If you choose to mute everything, you won't see the room highlight in the list when there are new messages, except for mentions. Muting notifications will override notifications settings.",
+  "Notifications_Sound_Volume": "Notifications sound volume",
   "Notify_all_in_this_room": "Notify all in this room",
   "Notify_active_in_this_room": "Notify active users in this room",
   "Num_Agents": "# Agents",
