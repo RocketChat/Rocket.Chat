@@ -1,6 +1,5 @@
 /*globals defaultUserLanguage, KonchatNotification */
 import toastr from 'toastr';
-
 Template.accountPreferences.helpers({
 	audioAssets() {
 		return (RocketChat.CustomSounds && RocketChat.CustomSounds.getList && RocketChat.CustomSounds.getList()) || [];
@@ -87,7 +86,6 @@ Template.accountPreferences.onCreated(function() {
 		this.useEmojis = new ReactiveVar(user.settings.preferences.desktopNotificationDuration == null || user.settings.preferences.useEmojis);
 	}
 	let instance = this;
-
 	this.autorun(() => {
 		if (instance.useEmojis && instance.useEmojis.get()) {
 			Tracker.afterFlush(() => $('#convertAsciiEmoji').show());
@@ -95,11 +93,9 @@ Template.accountPreferences.onCreated(function() {
 			Tracker.afterFlush(() => $('#convertAsciiEmoji').hide());
 		}
 	});
-
 	this.clearForm = function() {
 		this.find('#language').value = localStorage.getItem('userLanguage');
 	};
-
 	this.save = function() {
 		instance = this;
 		const data = {};

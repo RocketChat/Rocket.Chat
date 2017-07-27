@@ -257,14 +257,14 @@ Template.pushNotificationsFlexTab.events({
 		e.preventDefault();
 
 		let audio = $(e.currentTarget).data('play');
+		const user = Meteor.user();
 
 		if (!audio || audio === 'none') {
-			audio = Meteor.user().settings.preferences.newMessageNotification || 'chime';
+			audio = user && user.settings && user.settings.preferences && user.settings.preferences.newMessageNotification || 'chime';
 		}
 
 		if (audio && audio !== 'none') {
-
-			const audioVolume = Meteor.user().settings.preferences.notificationsSoundVolume || 100;
+			const audioVolume = user && user.settings && user.settings.preferences && user.settings.preferences.notificationsSoundVolume || 100;
 			const $audio = $(`audio#${ audio }`);
 
 			if ($audio && $audio[0] && $audio[0].play) {
@@ -278,10 +278,10 @@ Template.pushNotificationsFlexTab.events({
 		e.preventDefault();
 
 		const audio = $(e.currentTarget).val();
+		const user = Meteor.user();
 
 		if (audio && audio !== 'none') {
-
-			const audioVolume = Meteor.user().settings.preferences.notificationsSoundVolume || 100;
+			const audioVolume = user && user.settings && user.settings.preferences && user.settings.preferences.notificationsSoundVolume || 100;
 			const $audio = $(`audio#${ audio }`);
 
 			if ($audio && $audio[0] && $audio[0].play) {
