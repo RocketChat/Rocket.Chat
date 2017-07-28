@@ -1,7 +1,10 @@
 Template.HelpRequestActions.helpers({
 	helprequestOpen() {
 		const instance = Template.instance();
-		return instance.data.resolutionStatus && instance.data.resolutionStatus !== 'resolved'; //undefined in livechats
+		const helpRequest = instance.helpRequest.get();
+		if (helpRequest) {
+			return helpRequest.resolutionStatus && helpRequest.resolutionStatus !== 'resolved'; //undefined in livechats
+		}
 	},
 
 	isLivechat() {
@@ -92,15 +95,15 @@ Template.HelpRequestActions.events({
 			closeOnConfirm: false,
 			roomId: instance.data.roomId
 		}), (inputValue) => {
-			if (!inputValue) {
-				swal.showInputError(t('Please_add_a_comment_to_close_the_room'));
-				return false;
-			}
+			/*if (!inputValue) {
+			 swal.showInputError(t('Please_add_a_comment_to_close_the_room'));
+			 return false;
+			 }
 
-			if (s.trim(inputValue) === '') {
-				swal.showInputError(t('Please_add_a_comment_to_close_the_room'));
-				return false;
-			}
+			 if (s.trim(inputValue) === '') {
+			 swal.showInputError(t('Please_add_a_comment_to_close_the_room'));
+			 return false;
+			 }*/
 
 			Meteor.call('assistify:closeHelpRequest', this.roomId, {comment: inputValue}, function(error) {
 				if (error) {
@@ -115,8 +118,7 @@ Template.HelpRequestActions.events({
 					});
 
 					instance.helpRequest.set(
-						//RocketChat.models.HelpRequests.findOneByRoomId(Template.currentData())
-						RocketChat.models.HelpRequests.findOneByRoomId(instance.data.roomId)//TODO is this correct?
+						RocketChat.models.HelpRequests.findOneByRoomId(instance.data.roomId)
 					);
 				}
 			});
@@ -132,17 +134,8 @@ Template.HelpRequestActions.events({
 			showCancelButton: true,
 			closeOnConfirm: false
 		}, (inputValue) => {
-			if (!inputValue) {
-				swal.showInputError(t('Please_add_a_comment_to_close_the_room'));
-				return false;
-			}
 
-			if (s.trim(inputValue) === '') {
-				swal.showInputError(t('Please_add_a_comment_to_close_the_room'));
-				return false;
-			}
-
-			Meteor.call('livechat:closeRoom', this.rid, inputValue, function(error/*, result*/) {
+			Meteor.call('livechat:closeRoom', this.roomId, inputValue, function(error/*, result*/) {
 				if (error) {
 					return handleError(error);
 				}
@@ -161,21 +154,16 @@ Template.HelpRequestActions.events({
 Template.HelpRequestActions.onCreated(function() {
 	const instance = this;
 	this.helpRequest = new ReactiveVar(null);
-
+	this.room = new ReactiveVar(null);
 	this.autorun(() => {
-		if (Template.currentData().roomId && this.helpRequest.get()) {
-			// const helpRequest = RocketChat.models.HelpRequests.findOneByRoomId(instance.roomId);
-			// instance.helpRequest.set(helpRequest);
+		if (instance.data && instance.data.roomId) {
+			Meteor.subscribe('assistify:helpRequests', instance.data.roomId); //not reactively needed, as roomId doesn't change
 
-			if (!instance.helpRequest.get()) { //todo remove after PoC: Non-reactive method call
-				Meteor.call('assistify:helpRequestByRoomId', Template.currentData().roomId, (err, result) => {
-					if (!err) {
-						instance.helpRequest.set(result);
-					} else {
-						console.log(err);
-					}
-				});
-			}
+			const helpRequest = RocketChat.models.HelpRequests.findOneByRoomId(instance.data.roomId);
+			instance.helpRequest.set(helpRequest);
+
+			const room = ChatSubscription.findOne({rid: instance.data.roomId});
+			instance.room.set(room);
 		}
 	});
 });
