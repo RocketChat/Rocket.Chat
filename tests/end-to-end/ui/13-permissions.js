@@ -97,6 +97,7 @@ describe('[Permissions]', () => {
 			flexTab.usersAddUserVerifiedCheckbox.click();
 			flexTab.usersAddUserPassword.setValue(password);
 			flexTab.usersAddUserChangePasswordCheckbox.click();
+			flexTab.addRole('user');
 			flexTab.usersButtonSave.click();
 		});
 
