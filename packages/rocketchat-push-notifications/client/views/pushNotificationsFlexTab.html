@@ -38,7 +38,7 @@
 						<label>{{_ "Desktop"}}</label>
 						<div>
 							{{#if editing 'desktopNotifications'}}
-								<label><input type="radio" name="desktopNotifications" value="default" checked="{{$eq desktopNotifications 'default'}}" /> {{_ "Default"}}</label>
+								<label><input type="radio" name="desktopNotifications" value="default" checked="{{$eq desktopNotifications 'default'}}" /> {{_ "Default"}} ({{_ defaultDesktopNotification}})</label>
 								<label><input type="radio" name="desktopNotifications" value="all" checked="{{$eq desktopNotifications 'all'}}" /> {{_ "All_messages"}}</label>
 								<label><input type="radio" name="desktopNotifications" value="mentions" checked="{{$eq desktopNotifications 'mentions'}}" /> {{_ "Mentions"}}</label>
 								<label><input type="radio" name="desktopNotifications" value="nothing" checked="{{$eq desktopNotifications 'nothing'}}" /> {{_ "Nothing"}}</label>
@@ -68,7 +68,7 @@
 						<label>{{_ "Mobile"}}</label>
 						<div>
 							{{#if editing 'mobilePushNotifications'}}
-								<label><input type="radio" name="mobilePushNotifications" value="default" checked="{{$eq mobilePushNotifications 'default'}}" /> {{_ "Default"}}</label>
+								<label><input type="radio" name="mobilePushNotifications" value="default" checked="{{$eq mobilePushNotifications 'default'}}" /> {{_ "Default"}} ({{_ defaultMobileNotification}})</label>
 								<label><input type="radio" name="mobilePushNotifications" value="all" checked="{{$eq mobilePushNotifications 'all'}}" /> {{_ "All_messages"}}</label>
 								<label><input type="radio" name="mobilePushNotifications" value="mentions" checked="{{$eq mobilePushNotifications 'mentions'}}" /> {{_ "Mentions"}}</label>
 								<label><input type="radio" name="mobilePushNotifications" value="nothing" checked="{{$eq mobilePushNotifications 'nothing'}}" /> {{_ "Nothing"}}</label>
