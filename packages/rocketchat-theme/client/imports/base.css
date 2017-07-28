@@ -2606,6 +2606,12 @@ label.required::after {
 	&.selectable .message {
 		cursor: pointer;
 	}
+
+	&.has-leader {
+		& .wrapper {
+			padding-top: 57px;
+		}
+	}
 }
 
 .ticks-bar {
@@ -3562,6 +3568,10 @@ body:not(.is-cordova) {
 			margin-top: 20px;
 
 			& #password {
+				width: 70%;
+			}
+
+			& #roleSelect {
 				width: 70%;
 			}
 		}
@@ -4970,52 +4980,38 @@ a + br.only-after-a {
 	color: #555555;
 }
 
-.room-leader-container {
-	height: 54px;
-}
-
 .room-leader {
-	position: fixed;
-	top: 60px;
+	position: absolute;
+	height: 57px;
 	left: 0;
-	z-index: 1;
-	background: #ffffff;
-	width: calc(100% - 40px);
-	color: #555555;
-	border-bottom: solid 1px #eaeaea;
-	height: 54px;
-}
+	right: 0;
+	z-index: 2;
+	border-bottom: 1px solid;
+	padding-bottom: 8px;
+	transition: transform 0.15s cubic-bezier(0.5, 0, 0.1, 1), visibility 0.15s cubic-bezier(0.5, 0, 0.1, 1);
+	visibility: visible;
 
-.room-leader .thumb {
-	top: 6px;
-}
+	&.animated-hidden {
+		transform: translateY(-100%);
+		visibility: hidden;
+	}
 
-.room-leader .right {
-	position: absolute;
-	top: 10px;
-	left: 70px;
-}
+	& .leader-name {
+		font-size: 18px;
+	}
 
-.leader-status .status-text {
-	text-transform: capitalize;
-	padding-left: 15px;
-	font-size: 14px;
-}
+	& .leader-status {
+		& .status-text {
+			padding-left: 15px;
+			font-size: 14px;
+		}
 
-.leader-status .color-ball {
-	width: 10px;
-	height: 10px;
-	position: absolute;
-	border-radius: 5px;
-	margin-top: 5px;
-	background: grey;
+		& .color-ball {
+			width: 10px;
+			height: 10px;
+			position: absolute;
+			border-radius: 5px;
+			margin-top: 5px;
+		}
+	}
 }
-
-.leader-status .color-ball.online {
-	background: green;
-}
-
-.leader-info .leader-name {
-	font-size: 18px;
-}
-
