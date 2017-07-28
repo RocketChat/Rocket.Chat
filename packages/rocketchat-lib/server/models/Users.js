@@ -228,6 +228,7 @@ class ModelUsers extends RocketChat.models._Base {
 
 		return this.find(query, options);
 	}
+
 	findUsersByIds(ids, options) {
 		const query = {
 			_id: {
@@ -236,6 +237,7 @@ class ModelUsers extends RocketChat.models._Base {
 		};
 		return this.find(query, options);
 	}
+
 	// UPDATE
 	addImportIds(_id, importIds) {
 		importIds = [].concat(importIds);

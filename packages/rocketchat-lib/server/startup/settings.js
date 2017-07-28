@@ -419,6 +419,7 @@ RocketChat.settings.addGroup('General', function() {
 			'public': true,
 			i18nDescription: 'Desktop_Notification_Durations_Description'
 		});
+
 		this.add('Desktop_Notifications_Default_Alert', 'all', {
 			type: 'select',
 			values: [{
@@ -449,7 +450,11 @@ RocketChat.settings.addGroup('General', function() {
 			public: true
 		});
 
-		return this.add('Notifications_Max_Room_Members', 100, { type: 'int', public: true, i18nDescription: 'Notifications_Max_Room_Members_Description' });
+		this.add('Notifications_Max_Room_Members', 100, {
+			type: 'int',
+			public: true,
+			i18nDescription: 'Notifications_Max_Room_Members_Description'
+		});
 	});
 	this.section('REST API', function() {
 		return this.add('API_User_Limit', 500, {
