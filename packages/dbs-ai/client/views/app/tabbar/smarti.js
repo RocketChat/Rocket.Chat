@@ -45,12 +45,18 @@ Template.dbsAI_smarti.onRendered(function() {
 			var WEBSOCKET_URL =
 				"ws" + RocketChat.settings.get('Site_Url').substring(4) + "websocket/";
 
+			var WIDGET_POSTING_TYPE = RocketChat.settings.get('Assistify_AI_Widget_Posting_Type') || 'postRichText';
+
+			console.log(WIDGET_POSTING_TYPE, RocketChat.settings.get('Assistify_AI_Widget_Posting_Type'));
 
 			self.smarti = new window.SmartiWidget(self.find('.external-message'), {
 				socketEndpoint: WEBSOCKET_URL,
 				smartiEndpoint: DBS_AI_Redlink_URL,
 				channel: self.data.rid,
-				inputCssSelector:'.autogrow-shadow'
+				postings: {
+					type: WIDGET_POSTING_TYPE,
+					cssInputSelector: '.message-form-text.input-message'
+				}
 			});
 		}
 	}

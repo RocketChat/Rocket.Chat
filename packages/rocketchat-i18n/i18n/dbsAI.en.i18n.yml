@@ -59,6 +59,10 @@ DBS_AI_Redlink_Auth_Token: Basic-Auth token
 DBS_AI_Redlink_Hook_Token: Token for incoming Messages
 DBS_AI_Redlink_Domain: Domain for messages
 Assistify_AI_DBSearch_Suffix: Custom search suffix
+Assistify_AI_Widget_Posting_Type: Widget posting behaviour
+Assistify_AI_Widget_Posting_Type_SuggestText: suggest text
+Assistify_AI_Widget_Posting_Type_PostText: post text
+Assistify_AI_Widget_Posting_Type_PostRichText: post rich text
 similar_to: Similar to
 similar_requests: Similar requests
 Link_provided: Similar question at
