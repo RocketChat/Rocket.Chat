@@ -76,6 +76,19 @@ Meteor.startup(()=>{
 		i18nLabel: 'DBS_AI_Redlink_Domain'
 	});
 
+	RocketChat.settings.add('Assistify_AI_Widget_Posting_Type', '', {
+		type: 'select',
+		group: 'Assistify',
+		section: 'Knowledge_Base',
+		values: [
+			{ key: 'suggestText', i18nLabel: 'Assistify_AI_Widget_Posting_Type_SuggestText'},
+			{ key: 'postText', i18nLabel: 'Assistify_AI_Widget_Posting_Type_PostText'},
+			{ key: 'postRichText', i18nLabel: 'Assistify_AI_Widget_Posting_Type_PostRichText'}
+		],
+		public: true,
+		i18nLabel: 'Assistify_AI_Widget_Posting_Type'
+	});
+
 	RocketChat.settings.add('Assistify_AI_DBSearch_Suffix', '', {
 		type: 'code',
 		multiline: true,
