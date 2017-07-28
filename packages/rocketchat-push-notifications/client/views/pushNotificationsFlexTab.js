@@ -1,6 +1,17 @@
 import toastr from 'toastr';
 /* globals ChatSubscription */
 
+const notificationLabels = {
+	all: 'All_messages',
+	mentions: 'Mentions',
+	nothing: 'Nothing'
+};
+
+function getUserPreference(preference) {
+	const user = Meteor.user();
+	return user && user.settings && user.settings.preferences && user.settings.preferences[preference];
+}
+
 Template.pushNotificationsFlexTab.helpers({
 	audioAssets() {
 		return RocketChat.CustomSounds && RocketChat.CustomSounds.getList && RocketChat.CustomSounds.getList() || [];
@@ -167,6 +178,20 @@ Template.pushNotificationsFlexTab.helpers({
 	},
 	emailVerified() {
 		return Meteor.user().emails && Meteor.user().emails[0] && Meteor.user().emails[0].verified;
+	},
+	defaultDesktopNotification() {
+		let preference = getUserPreference('desktopNotifications');
+		if (preference === 'default' || preference == null) {
+			preference = RocketChat.settings.get('Desktop_Notifications_Default_Alert');
+		}
+		return notificationLabels[preference];
+	},
+	defaultMobileNotification() {
+		let preference = getUserPreference('mobileNotifications');
+		if (preference === 'default' || preference == null) {
+			preference = RocketChat.settings.get('Mobile_Notifications_Default_Alert');
+		}
+		return notificationLabels[preference];
 	}
 });
 
