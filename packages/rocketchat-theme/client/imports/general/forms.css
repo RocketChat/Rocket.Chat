@@ -178,21 +178,20 @@
 	&__toolbar-markdown {
 		position: absolute;
 		bottom: 4px;
-		display: flex;
 		width: 100%;
 		justify-content: center;
 		left: 0;
 		color: #9ea2a8;
+		text-align: center;
 
 		&__item {
-			width: 16px;
-			height: 16px;
 			margin: 0 4px;
-			text-align: center;
-			transition: color 0.5s;
+			transition: color 0.1s;
+			display: inline-block;
 
 			&:hover,
-			&:focus {
+			&:focus,
+			&.active {
 				color: #2f343d;
 			}
 		}
