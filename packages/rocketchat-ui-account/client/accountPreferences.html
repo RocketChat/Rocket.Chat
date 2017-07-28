@@ -48,7 +48,7 @@
 									{{#if desktopNotificationDuration}}
 										<input type="number" name="desktopNotificationDuration" min="0" value="{{desktopNotificationDuration}}">
 									{{else}}
-										<input type="number" name="desktopNotificationDuration" min="0" value="" placeholder="{{_ "Use_Global_Settings"}}">
+										<input type="number" name="desktopNotificationDuration" min="0" value="" placeholder="{{_ "Use_Global_Settings"}} ({{defaultDesktopNotificationDuration}})">
 									{{/if}}
 								</div>
 							</div>
@@ -56,7 +56,7 @@
 								<label>{{_ "Notification_Desktop_Default_For"}}</label>
 								<div>
 									<select class="input-monitor" name="desktopNotifications">
-										<option value="default" selected="{{selected 'desktopNotifications' 'default' true}}">{{_ "Default"}}</option>
+										<option value="default" selected="{{selected 'desktopNotifications' 'default' true}}">{{_ "Default"}} ({{_ defaultDesktopNotification}})</option>
 										<option value="all" selected="{{selected 'desktopNotifications' 'all' false}}">{{_ "All_messages"}}</option>
 										<option value="mentions" selected="{{selected 'desktopNotifications' 'mentions' false}}">{{_ "Mentions"}}</option>
 										<option value="nothing" selected="{{selected 'desktopNotifications' 'nothing' false}}">{{_ "Nothing"}}</option>
@@ -67,7 +67,7 @@
 								<label>{{_ "Notification_Mobile_Default_For"}}</label>
 								<div>
 									<select class="input-monitor" name="mobileNotifications">
-										<option value="default" selected="{{selected 'mobileNotifications' 'default' true}}">{{_ "Default"}}</option>
+										<option value="default" selected="{{selected 'mobileNotifications' 'default' true}}">{{_ "Default"}} ({{_ defaultMobileNotification}})</option>
 										<option value="all" selected="{{selected 'mobileNotifications' 'all' false}}">{{_ "All_messages"}}</option>
 										<option value="mentions" selected="{{selected 'mobileNotifications' 'mentions' false}}">{{_ "Mentions"}}</option>
 										<option value="nothing" selected="{{selected 'mobileNotifications' 'nothing' false}}">{{_ "Nothing"}}</option>
