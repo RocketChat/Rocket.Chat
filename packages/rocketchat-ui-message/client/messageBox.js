@@ -19,7 +19,69 @@ function katexSyntax() {
 	return false;
 }
 
+
+function applyMd(e, t) {
+	e.preventDefault();
+	const box = t.find('.js-input-message');
+	const {selectionEnd = box.value.length, selectionStart = 0} = box;
+	const initText = box.value.slice(0, selectionStart);
+	const text = box.value.slice(selectionStart, selectionEnd);
+	const finalText = box.value.slice(selectionEnd, box.value.length);
+
+	const [btn] = t.findAll(`.js-md[aria-label=${ this.label }]`);
+	if (btn) {
+		btn.classList.add('active');
+		setTimeout(function() {
+			btn.classList.remove('active');
+		}, 100);
+	}
+	/*
+		get text
+		apply pattern
+		restore selection
+	*/
+	box.value = initText+this.pattern.replace('{{text}}', text)+finalText;
+	box.focus();
+	box.selectionStart = selectionStart + this.pattern.indexOf('{{text}}');
+	box.selectionEnd = box.selectionStart + text.length;
+	$(box).change();
+}
+
+
+const markdownButtons = [
+	{
+		label: 'bold',
+		pattern: '*{{text}}*',
+		group: 'showMarkdown',
+		command: 'b'
+	},
+	{
+		label: 'italic',
+		pattern: '_{{text}}_',
+		group: 'showMarkdown',
+		command:'i'
+	},
+	{
+		label: 'strike',
+		pattern: '~{{text}}~',
+		group: 'showMarkdown'
+	},
+	{
+		label: 'inline_code',
+		pattern: '`{{text}}`',
+		group: 'showMarkdownCode'
+	},
+	{
+		label: 'multi',
+		pattern: '```\n{{text}}\n``` ',
+		group: 'showMarkdownCode'
+	}
+];
+
 Template.messageBox.helpers({
+	mdButtons() {
+		return markdownButtons;
+	},
 	roomName() {
 		const roomData = Session.get(`roomData${ this._id }`);
 		if (!roomData) {
@@ -312,7 +374,13 @@ Template.messageBox.events({
 			return instance.isMessageFieldEmpty.set(false);
 		}
 	},
-	'keydown .js-input-message': firefoxPasteUpload(function(event) {
+	'keydown .js-input-message': firefoxPasteUpload(function(event, t) {
+		if ((navigator.platform.indexOf('Mac') !== -1 && event.metaKey) || (navigator.platform.indexOf('Mac') === -1 && event.ctrlKey)) {
+			const action = markdownButtons.find(action => action.command === event.key);
+			if (action) {
+				applyMd.apply(action, [event, t]);
+			}
+		}
 		return chatMessages[this._id].keydown(this._id, event, Template.instance());
 	}),
 	'input .js-input-message'(event) {
@@ -426,7 +494,11 @@ Template.messageBox.events({
 				});
 			});
 		});
+	},
+	'click .js-md'(e, t) {
+		applyMd.apply(this, [e, t]);
 	}
+
 });
 
 Template.messageBox.onRendered(function() {
