@@ -420,7 +420,7 @@ RocketChat.settings.addGroup('General', function() {
 			i18nDescription: 'Desktop_Notification_Durations_Description'
 		});
 
-		this.add('Desktop_Notifications_Default_Alert', 'all', {
+		this.add('Desktop_Notifications_Default_Alert', 'mentions', {
 			type: 'select',
 			values: [{
 				key: 'all',
