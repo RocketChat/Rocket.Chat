@@ -49,8 +49,10 @@ const RoomManager = new function() {
 											].map(e => e.roles);
 											msg.roles = _.union.apply(_.union, roles);
 											ChatMessage.upsert({ _id: msg._id }, msg);
-											msg.t = typeName[0];
-											msg.recipient = typeName.substr(1, typeName.length);
+											msg.room = {
+												type,
+												name
+											};
 										}
 										msg.name = room.name;
 										Meteor.defer(() => RoomManager.updateMentionsMarksOfRoom(typeName));
