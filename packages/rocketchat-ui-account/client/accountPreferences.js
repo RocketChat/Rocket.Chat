@@ -71,6 +71,10 @@ Template.accountPreferences.helpers({
 	},
 	showRoles() {
 		return RocketChat.settings.get('UI_DisplayRoles');
+	},
+	notificationsSoundVolume() {
+		const user = Meteor.user();
+		return user && user.settings && user.settings.preferences && user.settings.preferences.notificationsSoundVolume || 100;
 	}
 });
 
@@ -132,6 +136,8 @@ Template.accountPreferences.onCreated(function() {
 		}));
 		data.desktopNotificationDuration = $('input[name=desktopNotificationDuration]').val();
 		data.unreadAlert = $('#unreadAlert').find('input:checked').val();
+		data.notificationsSoundVolume = parseInt($('#notificationsSoundVolume').val());
+
 		Meteor.call('saveUserPreferences', data, function(error, results) {
 			if (results) {
 				toastr.success(t('Preferences_saved'));

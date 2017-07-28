@@ -54,7 +54,8 @@ Meteor.methods({
 			msg: '',
 			file: {
 				_id: file._id,
-				name: file.name
+				name: file.name,
+				type: file.type
 			},
 			groupable: false,
 			attachments: [attachment]
