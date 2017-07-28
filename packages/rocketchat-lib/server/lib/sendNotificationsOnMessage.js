@@ -197,22 +197,17 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room, userId) {
 		}
 	});
 
-	let push_message;
+	let push_message = ' ';
 	//Set variables depending on Push Notification settings
 	if (RocketChat.settings.get('Push_show_message')) {
 		push_message = parseMessageText(message, userId);
-	} else {
-		push_message = ' ';
 	}
 
-	let push_username;
-	let push_room;
+	let push_username = '';
+	let push_room = '';
 	if (RocketChat.settings.get('Push_show_username_room')) {
 		push_username = user.username;
 		push_room = `#${ room.name }`;
-	} else {
-		push_username = '';
-		push_room = '';
 	}
 
 	if (room.t == null || room.t === 'd') {
