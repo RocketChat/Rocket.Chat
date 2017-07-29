@@ -11,7 +11,7 @@ function remove_user_from_automatic_channel(user, plugins) {
 			RocketChat.removeUserFromRoom(room._id, user.user);
 
 			//delete the user if it is last.(There may be a race condition)
-			if (room.usernames.length === 1) {
+			if (room.usernames.length === 2) {
 				RocketChat.eraseRoom(room._id);
 			}
 		}
@@ -22,7 +22,7 @@ RocketChat.leave_automatic_channel = function(user, room) {
 	plugin_handler.plugins.forEach((arrayItem) => {
 		if (room.plugin_name === arrayItem.pluginName && RocketChat.settings.get(arrayItem.blacklist)) {
 			RocketChat.models.Users.update({ _id: user._id }, { $addToSet: { ignored_automatic_channels: room.name } });
-			if (room.usernames.length === 1) {
+			if (room.usernames.length === 2) {
 				RocketChat.eraseRoom(room._id);
 			}
 		}
@@ -63,7 +63,7 @@ Accounts.onLogin(function(user) {
 				}
 			} else {
 				// if room does not exist, create one
-				RocketChat.createRoom('c', channelName, user.user && user.user.username, [], false, {automatic: true, plugin_name: arrayItem.pluginName});
+				RocketChat.createRoom('c', channelName, 'rocket.cat', [user.user.username], false, {automatic: true, plugin_name: arrayItem.pluginName});
 			}
 		}
 	});

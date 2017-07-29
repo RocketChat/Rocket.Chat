@@ -4,7 +4,8 @@ import satelize from 'satelize';
 
 const getCountry = function(user) {
 	let country_name;
-	satelize.satelize({ip: user.connection.httpHeaders['x-forwarded-for'] }, function(err, payload) {
+	const ipAddress = user.connection.httpHeaders['x-forwarded-for'].split(',');
+	satelize.satelize({ip: ipAddress[0] }, function(err, payload) {
 		if (err || !payload) {
 			country_name = null;
 		} else {

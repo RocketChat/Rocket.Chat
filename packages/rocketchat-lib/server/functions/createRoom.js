@@ -64,9 +64,7 @@ RocketChat.createRoom = function(type, name, owner, members, readOnly, extraData
 		RocketChat.models.Subscriptions.createWithRoomAndUser(room, member, extra);
 	}
 
-	if (!extraData.automatic) {
-		RocketChat.authz.addUserRoles(owner._id, ['owner'], room._id);
-	}
+	RocketChat.authz.addUserRoles(owner._id, ['owner'], room._id);
 
 	if (type === 'c') {
 		Meteor.defer(() => {
