@@ -414,10 +414,46 @@ RocketChat.settings.addGroup('General', function() {
 		});
 	});
 	this.section('Notifications', function() {
-		return this.add('Desktop_Notifications_Duration', 0, {
+		this.add('Desktop_Notifications_Duration', 0, {
 			type: 'int',
 			'public': true,
 			i18nDescription: 'Desktop_Notification_Durations_Description'
+		});
+
+		this.add('Desktop_Notifications_Default_Alert', 'mentions', {
+			type: 'select',
+			values: [{
+				key: 'all',
+				i18nLabel: 'All_messages'
+			}, {
+				key: 'mentions',
+				i18nLabel: 'Mentions'
+			}, {
+				key: 'nothing',
+				i18nLabel: 'Nothing'
+			}],
+			public: true
+		});
+
+		this.add('Mobile_Notifications_Default_Alert', 'mentions', {
+			type: 'select',
+			values: [{
+				key: 'all',
+				i18nLabel: 'All_messages'
+			}, {
+				key: 'mentions',
+				i18nLabel: 'Mentions'
+			}, {
+				key: 'nothing',
+				i18nLabel: 'Nothing'
+			}],
+			public: true
+		});
+
+		this.add('Notifications_Max_Room_Members', 100, {
+			type: 'int',
+			public: true,
+			i18nDescription: 'Notifications_Max_Room_Members_Description'
 		});
 	});
 	this.section('REST API', function() {
@@ -888,6 +924,10 @@ RocketChat.settings.addGroup('Message', function() {
 		type: 'boolean',
 		'public': true
 	});
+	this.add('API_Embed_UserAgent', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2227.0 Safari/537.36', {
+		type: 'string',
+		'public': true
+	});
 	this.add('API_EmbedCacheExpirationDays', 30, {
 		type: 'int',
 		'public': false
@@ -1134,6 +1174,27 @@ RocketChat.settings.addGroup('Layout', function() {
 		this.add('UI_Use_Real_Name', false, {
 			type: 'boolean',
 			'public': true
+		});
+		this.add('UI_Click_Direct_Message', false, {
+			type: 'boolean',
+			'public': true
+		});
+		this.add('UI_Unread_Counter_Style', 'Different_Style_For_User_Mentions', {
+			type: 'select',
+			values: [
+				{
+					key: 'Same_Style_For_Mentions',
+					i18nLabel: 'Same_Style_For_Mentions'
+				}, {
+					key: 'Different_Style_For_User_Mentions',
+					i18nLabel: 'Different_Style_For_User_Mentions'
+				}
+			],
+			'public': true
+		});
+		this.add('UI_Allow_room_names_with_special_chars', false, {
+			type: 'boolean',
+			public: true
 		});
 	});
 });

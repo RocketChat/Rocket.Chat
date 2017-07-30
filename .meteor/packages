@@ -110,6 +110,7 @@ rocketchat:slashcommands-mute
 rocketchat:slashcommands-open
 rocketchat:slashcommands-topic
 rocketchat:slashcommands-unarchive
+rocketchat:slider
 rocketchat:smarsh-connector
 rocketchat:spotify
 rocketchat:statistics
@@ -150,7 +151,7 @@ jalik:ufs-gridfs
 jparker:gravatar
 kadira:blaze-layout
 kadira:flow-router
-kenton:accounts-sandstorm
+#kenton:accounts-sandstorm
 mizzao:autocomplete
 mizzao:timesync
 mrt:reactive-store

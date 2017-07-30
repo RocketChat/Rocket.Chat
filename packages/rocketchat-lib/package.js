@@ -55,6 +55,7 @@ Package.onUse(function(api) {
 	api.addFiles('lib/settings.js');
 	api.addFiles('lib/callbacks.js');
 	api.addFiles('lib/fileUploadRestrictions.js');
+	api.addFiles('lib/getValidRoomName.js');
 	api.addFiles('lib/placeholders.js');
 	api.addFiles('lib/promises.js');
 	api.addFiles('lib/roomTypesCommon.js');
@@ -82,6 +83,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/functions/removeUserFromRoom.js', 'server');
 	api.addFiles('server/functions/saveUser.js', 'server');
 	api.addFiles('server/functions/saveCustomFields.js', 'server');
+	api.addFiles('server/functions/saveCustomFieldsWithoutValidation.js', 'server');
 	api.addFiles('server/functions/sendMessage.js', 'server');
 	api.addFiles('server/functions/settings.js', 'server');
 	api.addFiles('server/functions/setUserAvatar.js', 'server');
@@ -90,6 +92,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/functions/setEmail.js', 'server');
 	api.addFiles('server/functions/unarchiveRoom.js', 'server');
 	api.addFiles('server/functions/updateMessage.js', 'server');
+	api.addFiles('server/functions/validateCustomFields.js', 'server');
 	api.addFiles('server/functions/Notifications.js', 'server');
 
 	// SERVER LIB
