@@ -1,8 +1,8 @@
 import IMAP from 'imap';
 import POP3 from 'poplib';
-import {simpleParser as simpleParser} from 'mailparser-node4';
+import { simpleParser } from 'mailparser-node4';
 
-class IMAPIntercepter {
+export class IMAPIntercepter {
 	constructor() {
 		this.imap = new IMAP({
 			user: RocketChat.settings.get('Direct_Reply_Username'),
@@ -14,16 +14,9 @@ class IMAPIntercepter {
 			connTimeout: 30000,
 			keepalive: true
 		});
-	}
 
-	openInbox(cb) {
-		this.imap.openBox('INBOX', false, cb);
-	}
-
-	start() {
-		this.imap.connect();
 		// On successfully connected.
-		this.imap.once('ready', Meteor.bindEnvironment(() => {
+		this.imap.on('ready', Meteor.bindEnvironment(() => {
 			if (this.imap.state !== 'disconnected') {
 				this.openInbox(Meteor.bindEnvironment((err) => {
 					if (err) {
@@ -43,14 +36,22 @@ class IMAPIntercepter {
 			}
 		}));
 
-		this.imap.once('error', function(err) {
-			console.log(err);
+		this.imap.on('error', (err) => {
+			console.log('Error occurred ...');
 			throw err;
 		});
 	}
 
+	openInbox(cb) {
+		this.imap.openBox('INBOX', false, cb);
+	}
+
+	start() {
+		this.imap.connect();
+	}
+
 	isActive() {
-		if (this.imap.state === 'disconnected') {
+		if (this.imap && this.imap.state && this.imap.state === 'disconnected') {
 			return false;
 		}
 
@@ -60,6 +61,13 @@ class IMAPIntercepter {
 	stop(callback = new Function) {
 		this.imap.end();
 		this.imap.once('end', callback);
+	}
+
+	restart() {
+		this.stop(() => {
+			console.log('Restarting IMAP ....');
+			this.start();
+		});
 	}
 
 	// Fetch all UNSEEN messages and pass them for further processing
@@ -120,7 +128,7 @@ class IMAPIntercepter {
 	}
 }
 
-class POP3Intercepter {
+export class POP3Intercepter {
 	constructor() {
 		this.pop3 = new POP3(RocketChat.settings.get('Direct_Reply_Port'), RocketChat.settings.get('Direct_Reply_Host'), {
 			enabletls: !RocketChat.settings.get('Direct_Reply_IgnoreTLS'),
@@ -217,7 +225,7 @@ class POP3Intercepter {
 	}
 }
 
-class POP3Helper {
+export class POP3Helper {
 	constructor() {
 		this.running = false;
 	}
@@ -243,7 +251,3 @@ class POP3Helper {
 		callback();
 	}
 }
-
-RocketChat.IMAPIntercepter = IMAPIntercepter;
-RocketChat.POP3Intercepter = POP3Intercepter;
-RocketChat.POP3Helper = new POP3Helper();
