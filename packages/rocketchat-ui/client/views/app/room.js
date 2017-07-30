@@ -10,7 +10,23 @@ const isSubscribed = _id => ChatSubscription.find({ rid: _id }).count() > 0;
 const favoritesEnabled = () => RocketChat.settings.get('Favorite_Rooms');
 
 const userCanDrop = _id => !RocketChat.roomTypes.readOnly(_id, Meteor.user());
+const openProfileTab = (e, instance, data) => {
+	const roomData = Session.get(`roomData${ data.rid }`);
 
+	if (RocketChat.Layout.isEmbedded()) {
+		fireGlobalEvent('click-user-card-message', { username: data.u.username });
+		e.preventDefault();
+		e.stopPropagation();
+		return;
+	}
+
+	if (['c', 'p', 'd'].includes(roomData.t)) {
+		instance.setUserDetail(data.u.username);
+	}
+
+	instance.tabBar.setTemplate('membersList');
+	return instance.tabBar.open();
+};
 Template.room.helpers({
 	isTranslated() {
 		const sub = ChatSubscription.findOne({ rid: this._id }, { fields: { autoTranslate: 1, autoTranslateLanguage: 1 } });
@@ -98,15 +114,20 @@ Template.room.helpers({
 	},
 
 	roomLeader() {
-		const roles = RoomRoles.find({rid: this._id, roles: 'leader'}).fetch();
-		if (roles.length > 0) {
-			const u = roles[0].u;
-			if (u._id === Meteor.user()._id) { return null; }
-			const currUser = RocketChat.models.Users.find({ _id:  u._id}).fetch();
-			u['status'] = currUser.length > 0 ? 'online' : 'offline';
-			return u;
+		const roles = RoomRoles.findOne({ rid: this._id, roles: 'leader', 'u._id': { $ne: Meteor.userId() } });
+		if (roles) {
+			const leader = RocketChat.models.Users.findOne({ _id: roles.u._id }, { fields: { status: 1 }}) || {};
+			return {
+				...roles.u,
+				name: RocketChat.settings.get('UI_Use_Real_Name') ? (roles.u.name || roles.u.username) : roles.u.username,
+				status: leader.status || 'offline',
+				statusDisplay: (status => status.charAt(0).toUpperCase() + status.slice(1))(leader.status || 'offline')
+			};
 		}
-		return null;
+	},
+
+	chatNowLink() {
+		return RocketChat.roomTypes.getRouteLink('d', { name: this.username });
 	},
 
 	roomName() {
@@ -256,6 +277,14 @@ Template.room.helpers({
 			};
 		});
 		return { buttons };
+	},
+	hideLeaderHeader() {
+		return Template.instance().hideLeaderHeader.get() ? 'animated-hidden' : '';
+	},
+	hasLeader() {
+		if (RoomRoles.findOne({ rid: this._id, roles: 'leader', 'u._id': { $ne: Meteor.userId() } }, { fields: { _id: 1 } })) {
+			return 'has-leader';
+		}
 	}
 });
 
@@ -280,16 +309,6 @@ Template.room.events({
 		if ((Template.instance().tabBar.getState() === 'opened') && user && user.settings && user.settings.preferences && user.settings.preferences.hideFlexTab) {
 			return Template.instance().tabBar.close();
 		}
-	},
-
-	'scroll .messages-box .wrapper'() {
-		const $wrapper = $('.messages-box .wrapper');
-		if ($wrapper.scrollTop() < lastScrollTop) {
-			$('.room-leader').removeClass('hidden');
-		} else if ($wrapper.scrollTop() > $('.room-leader-container').height()) {
-			$('.room-leader').addClass('hidden');
-		}
-		lastScrollTop = $wrapper.scrollTop();
 	},
 
 	'touchstart .message'(e, t) {
@@ -458,24 +477,33 @@ Template.room.events({
 		if (!Meteor.userId() || !this._arguments) {
 			return;
 		}
-		const roomData = Session.get(`roomData${ this._arguments[1].rid }`);
+		if (RocketChat.settings.get('UI_Click_Direct_Message')) {
+			return Meteor.call('createDirectMessage', this._arguments[1].u.username, (error, result) => {
+				if (error) {
+					if (error.isClientSafe) {
+						openProfileTab(e, instance, this._arguments[1]);
+					} else {
+						return handleError(error);
+					}
+				}
 
-		if (RocketChat.Layout.isEmbedded()) {
-			fireGlobalEvent('click-user-card-message', { username: this._arguments[1].u.username });
-			e.preventDefault();
-			e.stopPropagation();
-			return;
+				if ((result != null ? result.rid : undefined) != null) {
+					return FlowRouter.go('direct', { username: this._arguments[1].u.username }, FlowRouter.current().queryParams);
+				}
+			});
+		} else {
+			openProfileTab(e, instance, this._arguments[1]);
 		}
-
-		if (['c', 'p', 'd'].includes(roomData.t)) {
-			instance.setUserDetail(this._arguments[1].u.username);
-		}
-
-		instance.tabBar.setTemplate('membersList');
-		return instance.tabBar.open();
 	},
 
-	'scroll .wrapper': _.throttle(function(e) {
+	'scroll .wrapper': _.throttle(function(e, t) {
+		if (e.target.scrollTop < lastScrollTop) {
+			t.hideLeaderHeader.set(false);
+		} else if (e.target.scrollTop > $('.room-leader').height()) {
+			t.hideLeaderHeader.set(true);
+		}
+		lastScrollTop = e.target.scrollTop;
+
 		if (RoomHistoryManager.isLoading(this._id) === false && RoomHistoryManager.hasMore(this._id) === true || RoomHistoryManager.hasMoreNext(this._id) === true) {
 			if (RoomHistoryManager.hasMore(this._id) === true && e.target.scrollTop === 0) {
 				return RoomHistoryManager.getMore(this._id);
@@ -664,6 +692,8 @@ Template.room.onCreated(function() {
 
 	this.tabBar = new RocketChatTabBar();
 	this.tabBar.showGroup(FlowRouter.current().route.name);
+
+	this.hideLeaderHeader = new ReactiveVar(false);
 
 	this.resetSelection = enabled => {
 		this.selectable.set(enabled);
