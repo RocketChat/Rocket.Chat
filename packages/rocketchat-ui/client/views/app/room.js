@@ -489,7 +489,7 @@ Template.room.events({
 	'scroll .wrapper': _.throttle(function(e) {
 		if (RoomHistoryManager.isLoading(this._id) === false && RoomHistoryManager.hasMore(this._id) === true || RoomHistoryManager.hasMoreNext(this._id) === true) {
 			if (RoomHistoryManager.hasMore(this._id) === true && e.target.scrollTop === 0) {
-				let roomData = Session.get(`roomData${ this._id }`);
+				const roomData = Session.get(`roomData${ this._id }`);
 				fireGlobalEvent('load-more-messages', {
 					id: this._id,
 					name: roomData.name,

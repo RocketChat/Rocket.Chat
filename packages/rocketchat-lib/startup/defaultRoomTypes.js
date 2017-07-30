@@ -25,6 +25,9 @@ RocketChat.roomTypes.add('c', 10, {
 	},
 
 	roomName(roomData) {
+		if (RocketChat.settings.get('UI_Allow_room_names_with_special_chars')) {
+			return roomData.fname || roomData.name;
+		}
 		return roomData.name;
 	},
 
@@ -114,6 +117,9 @@ RocketChat.roomTypes.add('p', 20, {
 	},
 
 	roomName(roomData) {
+		if (RocketChat.settings.get('UI_Allow_room_names_with_special_chars')) {
+			return roomData.fname || roomData.name;
+		}
 		return roomData.name;
 	},
 

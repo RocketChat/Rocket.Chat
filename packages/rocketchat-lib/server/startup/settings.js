@@ -1021,6 +1021,10 @@ RocketChat.settings.addGroup('Layout', function() {
 			type: 'boolean',
 			'public': true
 		});
+		this.add('UI_Allow_room_names_with_special_chars', false, {
+			type: 'boolean',
+			public: true
+		});
 	});
 });
 

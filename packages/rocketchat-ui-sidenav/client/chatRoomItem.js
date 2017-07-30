@@ -20,7 +20,9 @@ Template.chatRoomItem.helpers({
 	},
 
 	name() {
-		if (RocketChat.settings.get('UI_Use_Real_Name') && this.fname) {
+		const realNameForDirectMessages = RocketChat.settings.get('UI_Use_Real_Name') && this.t === 'd';
+		const realNameForChannel = RocketChat.settings.get('UI_Allow_room_names_with_special_chars') && this.t !== 'd';
+		if ((realNameForDirectMessages || realNameForChannel) && this.fname) {
 			return this.fname;
 		}
 

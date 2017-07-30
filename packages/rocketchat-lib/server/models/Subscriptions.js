@@ -281,13 +281,14 @@ class ModelSubscriptions extends RocketChat.models._Base {
 		return this.update(query, update);
 	}
 
-	updateNameAndAlertByRoomId(roomId, name) {
+	updateNameAndAlertByRoomId(roomId, name, fname) {
 		const query =
 			{rid: roomId};
 
 		const update = {
 			$set: {
 				name,
+				fname,
 				alert: true
 			}
 		};
@@ -540,6 +541,7 @@ class ModelSubscriptions extends RocketChat.models._Base {
 			ts: room.ts,
 			rid: room._id,
 			name: room.name,
+			fname: room.fname,
 			t: room.t,
 			u: {
 				_id: user._id,
