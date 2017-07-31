@@ -60,7 +60,7 @@ RocketChat.roomTypes.add('c', 30, {
 	condition() {
 		const user = Meteor.user();
 		const preferences = (user && user.settings && user.settings.preferences && user.settings.preferences) || {};
-		return ['unread', 'category'].includes(preferences.roomsListExhibitionMode) && !preferences.mergeChannels && (RocketChat.authz.hasAtLeastOnePermission(['view-c-room', 'view-joined-room']) || RocketChat.settings.get('Accounts_AllowAnonymousRead') === true);
+		return !preferences.roomsListExhibitionMode || ['unread', 'category'].includes(preferences.roomsListExhibitionMode) && !preferences.mergeChannels && (RocketChat.authz.hasAtLeastOnePermission(['view-c-room', 'view-joined-room']) || RocketChat.settings.get('Accounts_AllowAnonymousRead') === true);
 	},
 
 	showJoinLink(roomId) {
@@ -95,7 +95,7 @@ RocketChat.roomTypes.add('p', 40, {
 	condition() {
 		const user = Meteor.user();
 		const preferences = (user && user.settings && user.settings.preferences && user.settings.preferences) || {};
-		return ['unread', 'category'].includes(preferences.roomsListExhibitionMode) && !preferences.mergeChannels && RocketChat.authz.hasAllPermission('view-p-room');
+		return !preferences.roomsListExhibitionMode || ['unread', 'category'].includes(preferences.roomsListExhibitionMode) && !preferences.mergeChannels && RocketChat.authz.hasAllPermission('view-p-room');
 	}
 });
 
@@ -148,7 +148,7 @@ RocketChat.roomTypes.add('d', 50, {
 	condition() {
 		const user = Meteor.user();
 		const preferences = (user && user.settings && user.settings.preferences && user.settings.preferences) || {};
-		return ['unread', 'category'].includes(preferences.roomsListExhibitionMode) && RocketChat.authz.hasAtLeastOnePermission(['view-d-room', 'view-joined-room']);
+		return !preferences.roomsListExhibitionMode || ['unread', 'category'].includes(preferences.roomsListExhibitionMode) && RocketChat.authz.hasAtLeastOnePermission(['view-d-room', 'view-joined-room']);
 	},
 
 	getUserStatus(roomId) {
