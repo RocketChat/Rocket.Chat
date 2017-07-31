@@ -226,6 +226,7 @@
 		border-color: #e1e5e8;
 		padding: 0.75rem 0;
 		align-items: flex-end;
+		transition: background-color 0.3s;
 
 		&.editing {
 			background-color: #fff5df;
@@ -237,7 +238,7 @@
 		max-height: 155px;
 		resize: none;
 		border: 0;
-    padding: 0px;
+		padding: 0;
 		background-color: transparent;
 		font-size: var(--input-font-size);
 

@@ -132,8 +132,11 @@ this.ChatMessages = class ChatMessages {
 		this.editing.element = element;
 		this.editing.index = index;
 		this.editing.id = message._id;
-		element.classList.add('editing');
+		// TODO: stop set two elements
+		this.input.parentElement.classList.add('editing');
 		this.input.classList.add('editing');
+
+		element.classList.add('editing');
 		this.$input.closest('.message-form').addClass('editing');
 
 		if (message.attachments && message.attachments[0].description) {
@@ -152,9 +155,11 @@ this.ChatMessages = class ChatMessages {
 	clearEditing() {
 		if (this.editing.element) {
 			this.recordInputAsDraft();
+			// TODO: stop set two elements
+			this.input.classList.remove('editing');
+			this.input.parentElement.classList.remove('editing');
 
 			this.editing.element.classList.remove('editing');
-			this.input.classList.remove('editing');
 			this.$input.closest('.message-form').removeClass('editing');
 			delete this.editing.id;
 			delete this.editing.element;
