@@ -11,25 +11,26 @@ RocketChat.saveCustomFieldsWithoutValidation = function(userId, formData) {
 	}
 
 	const customFields = Object.keys(customFieldsMeta).filter(fieldName => !customFieldsMeta[fieldName].modifyRecordField).
-			reduce((update, key) => {
-				update[key] = formData[key];
-				return update;
-			}, {});
+		reduce((update, key) => {
+			update[key] = formData[key];
+			return update;
+		}, {});
+
 
 	RocketChat.models.Users.setCustomFields(userId, customFields);
 	const update = Object.keys(customFieldsMeta).
-			filter(fieldName => customFieldsMeta[fieldName].modifyRecordField).
-			reduce((update, fieldName) => {
-				const modifyRecordField = customFieldsMeta[fieldName].modifyRecordField;
-				if (modifyRecordField.array) {
-					update.$addToSet[modifyRecordField.field] = formData[fieldName];
-				} else {
-					update.$set[modifyRecordField.field] = formData[fieldName];
-				}
-				return update;
-			}, {
-				$addToSet: {},
-				$set: {}
-			});
+		filter(fieldName => customFieldsMeta[fieldName].modifyRecordField).
+		reduce((update, fieldName) => {
+			const modifyRecordField = customFieldsMeta[fieldName].modifyRecordField;
+			if (modifyRecordField.array) {
+				update.$addToSet[modifyRecordField.field] = formData[fieldName];
+			} else {
+				update.$set[modifyRecordField.field] = formData[fieldName];
+			}
+			return update;
+		}, {
+			$addToSet: {},
+			$set: {}
+		});
 	RocketChat.models.Users.update(userId, update);
 };
