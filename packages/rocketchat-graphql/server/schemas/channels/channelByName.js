@@ -3,20 +3,17 @@ import { roomPublicFields } from './settings';
 
 export const schema = `
 	type Query {
-		channelByName(name: String!, isDirect: Boolean!): Channel
+		channelByName(name: String!): Channel
 	}
 `;
 
 export const resolver = {
 	Query: {
-		channelByName: authenticated((root, { name, isDirect }) => {
+		channelByName: authenticated((root, { name }) => {
 			const query = {
-				name
+				name,
+				t: 'c'
 			};
-
-			if (isDirect === true) {
-				query.c = 'd';
-			}
 
 			return RocketChat.models.Rooms.findOne(query, {
 				fields: roomPublicFields

@@ -30,7 +30,7 @@ export const resolver = {
 				throw new Error(`The channel, ${ channel.name }, is already closed to the sender`);
 			}
 
-			Meteor.runAsUser(this.userId, () => {
+			Meteor.runAsUser(user._id, () => {
 				Meteor.call('hideRoom', channel._id);
 			});
 
