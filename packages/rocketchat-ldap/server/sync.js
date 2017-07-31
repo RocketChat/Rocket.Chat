@@ -65,6 +65,7 @@ getDataToSyncUserData = function getDataToSyncUserData(ldapUser, user) {
 	const userData = {};
 
 	if (syncUserData && syncUserDataFieldMap) {
+		const whitelistedUserFields = ['email', 'name', 'customFields'];
 		const fieldMap = JSON.parse(syncUserDataFieldMap);
 		const emailList = [];
 		_.map(fieldMap, function(userField, ldapField) {
@@ -84,7 +85,12 @@ getDataToSyncUserData = function getDataToSyncUserData(ldapUser, user) {
 					}
 					break;
 
-				case 'name':
+				default:
+					if (!_.find(whitelistedUserFields, (el) => el === userField.split('.')[0])) {
+						logger.debug(`user attribute not whitelisted: ${ userField }`);
+						return;
+					}
+
 					const templateRegex = /#{(\w+)}/gi;
 					let match = templateRegex.exec(ldapField);
 					let tmpLdapField = ldapField;
@@ -113,11 +119,10 @@ getDataToSyncUserData = function getDataToSyncUserData(ldapUser, user) {
 						}
 					}
 
-					if (user.name !== tmpLdapField) {
-						userData.name = tmpLdapField;
-						logger.debug(`user.name changed to: ${ tmpLdapField }`);
+					if (user[userField] !== tmpLdapField) {
+						userData[userField] = tmpLdapField;
+						logger.debug(`user.${ userField } changed to: ${ tmpLdapField }`);
 					}
-					break;
 			}
 		});
 

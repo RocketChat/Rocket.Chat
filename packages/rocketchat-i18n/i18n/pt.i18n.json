@@ -698,7 +698,7 @@
   "LDAP_Sync_User_Data": "Manter dados dos usuários sincronizados",
   "LDAP_Sync_User_Data_Description": "Mantenha seus dados de usuário em sincronia logando no servidor (ex.: nome, email).",
   "LDAP_Sync_User_Data_FieldMap": "Mapeamento de campos do usuário",
-  "LDAP_Sync_User_Data_FieldMap_Description": "Configure como os campos da conta de usuário (tipo email) serão populados no LDAP (quando encontrados). <br />Por exemplo, `{\"cn\":\"name\", \"mail\":\"email\"}` irá selecionar o nome do usuário do atributo cn, e o seu e-mail do atributo mail. <br/>Os campos disponíveis incluem `name` e `email`.",
+  "LDAP_Sync_User_Data_FieldMap_Description": "Configure como os campos da conta de usuário (tipo email) serão populados no LDAP (quando encontrados). <br />Por exemplo, `{\"cn\":\"name\", \"mail\":\"email\"}` irá selecionar o nome do usuário do atributo cn, e o seu e-mail do atributo mail. <br/>Os campos disponíveis incluem `name`, `email` e `customFields`.",
   "LDAP_Sync_Users": "Sincronizar Usuários",
   "LDAP_Test_Connection": "Testar Conexão",
   "LDAP_Unique_Identifier_Field": "Campo Identificador Único",
