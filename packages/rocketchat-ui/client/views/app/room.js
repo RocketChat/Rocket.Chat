@@ -10,23 +10,45 @@ const isSubscribed = _id => ChatSubscription.find({ rid: _id }).count() > 0;
 const favoritesEnabled = () => RocketChat.settings.get('Favorite_Rooms');
 
 const userCanDrop = _id => !RocketChat.roomTypes.readOnly(_id, Meteor.user());
-const openProfileTab = (e, instance, data) => {
-	const roomData = Session.get(`roomData${ data.rid }`);
+
+const openProfileTab = (e, instance, username) => {
+	const roomData = Session.get(`roomData${ Session.get('openedRoom') }`);
 
 	if (RocketChat.Layout.isEmbedded()) {
-		fireGlobalEvent('click-user-card-message', { username: data.u.username });
+		fireGlobalEvent('click-user-card-message', { username });
 		e.preventDefault();
 		e.stopPropagation();
 		return;
 	}
 
 	if (['c', 'p', 'd'].includes(roomData.t)) {
-		instance.setUserDetail(data.u.username);
+		instance.setUserDetail(username);
 	}
 
 	instance.tabBar.setTemplate('membersList');
 	return instance.tabBar.open();
 };
+
+const openProfileTabOrOpenDM = (e, instance, username) => {
+	if (RocketChat.settings.get('UI_Click_Direct_Message')) {
+		return Meteor.call('createDirectMessage', username, (error, result) => {
+			if (error) {
+				if (error.isClientSafe) {
+					openProfileTab(e, instance, username);
+				} else {
+					return handleError(error);
+				}
+			}
+
+			if ((result != null ? result.rid : undefined) != null) {
+				return FlowRouter.go('direct', { username }, FlowRouter.current().queryParams);
+			}
+		});
+	} else {
+		openProfileTab(e, instance, username);
+	}
+};
+
 Template.room.helpers({
 	isTranslated() {
 		const sub = ChatSubscription.findOne({ rid: this._id }, { fields: { autoTranslate: 1, autoTranslateLanguage: 1 } });
@@ -473,31 +495,18 @@ Template.room.events({
 		if (!Meteor.userId()) {
 			return;
 		}
-		instance.tabBar.open();
-		return instance.setUserDetail(this.user.username);
+
+		openProfileTabOrOpenDM(e, instance, this.user.username);
 	},
 
 	'click .user-card-message'(e, instance) {
 		if (!Meteor.userId() || !this._arguments) {
 			return;
 		}
-		if (RocketChat.settings.get('UI_Click_Direct_Message')) {
-			return Meteor.call('createDirectMessage', this._arguments[1].u.username, (error, result) => {
-				if (error) {
-					if (error.isClientSafe) {
-						openProfileTab(e, instance, this._arguments[1]);
-					} else {
-						return handleError(error);
-					}
-				}
 
-				if ((result != null ? result.rid : undefined) != null) {
-					return FlowRouter.go('direct', { username: this._arguments[1].u.username }, FlowRouter.current().queryParams);
-				}
-			});
-		} else {
-			openProfileTab(e, instance, this._arguments[1]);
-		}
+		const username = this._arguments[1].u.username;
+
+		openProfileTabOrOpenDM(e, instance, username);
 	},
 
 	'scroll .wrapper': _.throttle(function(e, t) {
@@ -581,17 +590,9 @@ Template.room.events({
 			return;
 		}
 
-		if (RocketChat.Layout.isEmbedded()) {
-			fireGlobalEvent('click-mention-link', { username: $(e.currentTarget).data('username') });
-			e.stopPropagation();
-			e.preventDefault();
-			return;
-		}
+		const username = $(e.currentTarget).data('username');
 
-		instance.tabBar.setTemplate('membersList');
-		instance.setUserDetail($(e.currentTarget).data('username'));
-
-		return instance.tabBar.open();
+		openProfileTabOrOpenDM(e, instance, username);
 	},
 
 	'click .image-to-download'(event) {
