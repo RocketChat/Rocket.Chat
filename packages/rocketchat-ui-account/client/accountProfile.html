@@ -119,20 +119,22 @@
 								{{/with}}
 							</div>
 						</div>
-						<div class="rc-form-group rc-grid">
-							<button class="rc-button js-logout">{{_ "Logout_Others"}}</button>
-							{{#if allowDeleteOwnAccount}}
-							<button class="rc-button rc-button--red js-delete-account"><i class="icon-trash"></i><span>{{_ "Delete_my_account"}}</span></button>
-							{{/if}}
-						</div>
 					</div>
 				</fieldset>
-				{{# with customFields}}
 				<fieldset>
-					<legend style="margin-bottom: 2.5rem;">Custom Fields</legend>
-					{{> customFieldsForm hideFromForm=false formData=customFields}}
+					<!-- <legend style="margin-bottom: 2.5rem;">Custom Fields</legend> -->
+					{{> customFieldsForm hideFromForm=false formData=customFields new=true}}
 				</fieldset>
-				{{/with}}
+				<div class="rc-form-group rc-grid">
+					<div class="rc-input rc-w50 padded">
+						<button class="rc-button js-logout">{{_ "Logout_Others"}}</button>
+					</div>
+					{{#if allowDeleteOwnAccount}}
+					<div class="rc-input rc-w50 padded">
+						<button class="rc-button rc-button--red js-delete-account"><i class="icon-trash"></i><span>{{_ "Delete_my_account"}}</span></button>
+					</div>
+					{{/if}}
+				</div>
 			</form>
 
 			<!-- <div class="rocket-form">
