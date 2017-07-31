@@ -18,7 +18,6 @@ export const resolver = {
 				throw new Error('No user');
 			}
 
-			// TODO: empty
 			const rooms = RocketChat.models.Rooms.findByContainingUsername(user.username, {
 				sort: {
 					name: 1

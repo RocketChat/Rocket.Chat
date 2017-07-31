@@ -3,6 +3,7 @@ import { mergeTypes, mergeResolvers } from 'merge-graphql-schemas';
 // queries
 import * as channels from './channels';
 import * as channelByName from './channelByName';
+import * as directChannel from './directChannel';
 import * as channelsByUser from './channelsByUser';
 // mutations
 import * as createChannel from './createChannel';
@@ -19,6 +20,7 @@ export const schema = mergeTypes([
 	// queries
 	channels.schema,
 	channelByName.schema,
+	directChannel.schema,
 	channelsByUser.schema,
 	// mutations
 	createChannel.schema,
@@ -36,6 +38,7 @@ export const resolvers = mergeResolvers([
 	// queries
 	channels.resolver,
 	channelByName.resolver,
+	directChannel.resolver,
 	channelsByUser.resolver,
 	// mutations
 	createChannel.resolver,
