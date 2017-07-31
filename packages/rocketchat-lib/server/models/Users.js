@@ -138,21 +138,14 @@ class ModelUsers extends RocketChat.models._Base {
 		}
 
 		const termRegex = new RegExp(s.escapeRegExp(searchTerm), 'i');
+		const orStmt = _.reduce(_.keys(options.fields), function(acc, el) {
+			acc.push({ [el]: termRegex }); return acc;
+		}, []);
 		const query = {
 			$and: [
 				{
 					active: true,
-					$or: [
-						{
-							username: termRegex
-						},
-						{
-							name: termRegex
-						},
-						{
-							'emails.address': termRegex
-						}
-					]
+					$or: orStmt
 				},
 				{
 					username: { $exists: true, $nin: exceptions }

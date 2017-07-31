@@ -28,13 +28,13 @@ Meteor.methods({
 		if (type.users === true && RocketChat.authz.hasPermission(this.userId, 'view-d-room')) {
 			const userOptions = {
 				limit: 5,
-				fields: {
-					username: 1,
-					name: 1,
-					status: 1
-				},
+				fields: {},
 				sort: {}
 			};
+
+			_.map(RocketChat.settings.get('Accounts_SearchFields').trim().split(','), function(field) {
+				userOptions.fields[field.trim()] = 1;
+			});
 
 			if (RocketChat.settings.get('UI_Use_Real_Name')) {
 				userOptions.sort.name = 1;

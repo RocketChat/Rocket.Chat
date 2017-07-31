@@ -112,6 +112,7 @@
   "Accounts_RegistrationForm_SecretURL_Description": "Você deve fornecer uma seqüência aleatória que será adicionada à sua URL de registro. Exemplo: https://demo.rocket.chat/register/[secret_hash]",
   "Accounts_RequireNameForSignUp": "Nome é obrigatório para cadastro",
   "Accounts_RequirePasswordConfirmation": "Requer Confirmação de Senha",
+  "Accounts_SearchFields": "Campos a considerar na busca",
   "Accounts_ShowFormLogin": "Mostrar formulário de login",
   "Accounts_UseDefaultBlockedDomainsList": "Use Lista Padrão de Domínios Bloqueados",
   "Accounts_UseDNSDomainCheck": "Use verificação de Domínio DNS",
