@@ -85,9 +85,6 @@ FlowRouter.route('/account/:group?', {
 		}
 		params.group = _.capitalize(params.group, true);
 		BlazeLayout.render('main', { center: `account${ params.group }` });
-		if (params.group === 'Profile') {
-			$('.main-content').removeClass('rc-old');
-		}
 	},
 	triggersExit: [function() {
 		$('.main-content').addClass('rc-old');
