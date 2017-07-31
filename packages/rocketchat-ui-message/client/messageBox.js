@@ -19,7 +19,6 @@ function katexSyntax() {
 	return false;
 }
 
-
 function applyMd(e, t) {
 	e.preventDefault();
 	const box = t.find('.js-input-message');
@@ -40,8 +39,12 @@ function applyMd(e, t) {
 		apply pattern
 		restore selection
 	*/
-	box.value = initText + this.pattern.replace('{{text}}', text) + finalText;
 	box.focus();
+	if (document.execCommand) {
+		document.execCommand('insertText', false, this.pattern.replace('{{text}}', text));
+	} else {
+		box.value = initText + this.pattern.replace('{{text}}', text) + finalText;
+	}
 	box.selectionStart = selectionStart + this.pattern.indexOf('{{text}}');
 	box.selectionEnd = box.selectionStart + text.length;
 	$(box).change();
