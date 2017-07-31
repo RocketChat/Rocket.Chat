@@ -79,19 +79,30 @@ Template.accountProfile.helpers({
 	},
 	canSave(ret) {
 		const instance = Template.instance();
+		instance.dep.depend();
 		const realname = instance.realname.get();
 		const username = instance.username.get();
 		const email = instance.email.get();
 		const usernameAvaliable = instance.usernameAvaliable.get();
 		const avatar = instance.avatar.get();
-
 		const user = Meteor.user();
+		const {customFields = {}} = user;
+		if (instance.view.isRendered) {
+			if (instance.findAll('[data-customfield="true"]').some(el => {
+				const key = el.getAttribute('name');
+				const value = customFields[key] || '';
+				return el.value !== value;
+			})) {
+				return;
+			}
+		}
 		if (!avatar && user.name === realname && user.username === username && user.emails[0].address === email) {
 			return ret;
 		}
 		if (!validateEmail(email) || (!validateUsername(username) || usernameAvaliable !== true) || !validateName(realname)) {
 			return ret;
 		}
+
 		return;
 	},
 	allowDeleteOwnAccount() {
@@ -128,6 +139,7 @@ Template.accountProfile.helpers({
 Template.accountProfile.onCreated(function() {
 	const self = this;
 	const user = Meteor.user();
+	self.dep = new Tracker.Dependency;
 	self.realname = new ReactiveVar(user.name);
 	self.email = new ReactiveVar(user.emails[0].address);
 	self.username = new ReactiveVar(user.username);
@@ -242,6 +254,8 @@ Template.accountProfile.onRendered(function() {
 		SideNav.setFlex('accountFlex');
 		SideNav.openFlex();
 	});
+	$('.main-content').removeClass('rc-old');
+	// TODO: remove this line (:
 });
 
 const checkAvailability = _.debounce((username, {usernameAvaliable}) => {
@@ -251,6 +265,9 @@ const checkAvailability = _.debounce((username, {usernameAvaliable}) => {
 }, 300);
 
 Template.accountProfile.events({
+	'change [data-customfield="true"], input [data-customfield="true"]':_.debounce((e, i) => {
+		i.dep.changed();
+	}, 300),
 	'click .js-select-avatar-initials'() {
 		Meteor.call('resetAvatar', function(err) {
 			if (err && err.details && err.details.timeToReset) {
@@ -303,7 +320,7 @@ Template.accountProfile.events({
 		const reqPass = ((email !== (user && user.emails && user.emails[0] && user.emails[0].address))
 			|| _.trim(password)) && (user && user.services && user.services.password && s.trim(user.services.password.bcrypt));
 		if (!reqPass) {
-			return instance.save(undefined, () => send.removeClass('loading'));
+			return instance.save(undefined, () => setTimeout(() => send.removeClass('loading'), 1000));
 		}
 		swal({
 			title: t('Please_enter_your_password'),
