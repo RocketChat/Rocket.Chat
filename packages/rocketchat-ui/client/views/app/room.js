@@ -292,6 +292,7 @@ let isSocialSharingOpen = false;
 let touchMoved = false;
 let lastTouchX = null;
 let lastTouchY = null;
+let lastScrollTop;
 
 Template.room.events({
 	'click header h2'() {
