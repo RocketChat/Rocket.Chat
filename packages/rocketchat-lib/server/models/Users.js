@@ -225,10 +225,11 @@ class ModelUsers extends RocketChat.models._Base {
 		return user && user.lastLogin;
 	}
 
-	getUsersWithPasswordChanged(fromDate, toDate, options) {
+	getUsersWithPasswordChanged(fromDate, options) {
 		const query = {
-			'passwordChangeHistory.changeAt': {$gte: fromDate, $lte: toDate}
+			'passwordChangeHistory.changedAt': {$gte: fromDate, $lte: new Date()}
 		};
+
 		return this.find(query, options);
 	}
 
@@ -377,7 +378,7 @@ class ModelUsers extends RocketChat.models._Base {
 
 		const passwordChangeHistory = {
 			changedBy: Meteor.userId(),
-			changedAt: new Date
+			changedAt: new Date()
 		};
 
 		const update = {

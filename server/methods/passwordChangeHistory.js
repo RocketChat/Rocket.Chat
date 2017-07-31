@@ -6,21 +6,23 @@ Meteor.methods({
 
 		const passwordChangeHistoryResult = RocketChat.models.Users.addPasswordChangeHistory(userId);
 
-		const userAffected = RocketChat.models.Users.findById(userId);
-		const userChanger = RocketChat.models.Users.findById(passwordChangeHistoryResult.changedBy);
+		if (passwordChangeHistoryResult && passwordChangeHistoryResult.result && passwordChangeHistoryResult.result === 1) {
+			const userAffected = RocketChat.models.Users.findOne({_id: userId}, {fields: {name: 1, username: 1}});
+			const userChanger = RocketChat.models.Users.findOne({_id: passwordChangeHistoryResult.passwordChangeHistory.changedBy}, {fields: {username: 1}});
 
-		const passwordChangeOccurrenceParams = {
-			userAffectedName: userAffected.name,
-			userAffectedUsername: userAffected.username,
-			userChangerUsername: userChanger.username,
-			changedAt: passwordChangeHistoryResult.changedAt
-		};
+			const passwordChangeOccurrenceParams = {
+				userAffectedName: userAffected.name,
+				userAffectedUsername: userAffected.username,
+				userChangerUsername: userChanger.username,
+				changedAt: passwordChangeHistoryResult.passwordChangeHistory.changedAt
+			};
 
-		if (RocketChat.settings.get('Accounts_AdminsReceivePasswordChangeHistory') === 'immediately') {
-			Meteor.call('sendPasswordChangeHistoryForAdmins', passwordChangeOccurrenceParams);
+			if (RocketChat.settings.get('Accounts_AdminsReceivePasswordChangeHistory') === 'immediately') {
+				Meteor.call('sendPasswordChangeHistoryForAdmins', passwordChangeOccurrenceParams);
+			}
+
+			return passwordChangeOccurrenceParams;
 		}
-
-		return passwordChangeOccurrenceParams;
 	},
 
 	sendPasswordChangeHistoryForAdmins(passwordChangeOccurrenceParams) {
@@ -34,7 +36,6 @@ Meteor.methods({
 			let language;
 			let templatePasswordChangeOccurrences = '';
 			let fromDate;
-			const today = new Date();
 			const passwordChangeOccurrences = [];
 			let passwordChangeOccurrencesParams = {};
 
@@ -42,20 +43,26 @@ Meteor.methods({
 				passwordChangeOccurrencesParams = passwordChangeOccurrenceParams;
 			} else {
 				if (RocketChat.settings.get('Accounts_AdminsReceivePasswordChangeHistory') === 'daily') {
-					fromDate = moment(new Date()).subtract(1, 'days').toDate();
+					fromDate = new Date(moment().subtract(1, 'days').format());
 				} else if (RocketChat.settings.get('Accounts_AdminsReceivePasswordChangeHistory') === 'weekly') {
-					fromDate = moment(new Date()).subtract(7, 'days').toDate();
+					fromDate = new Date(moment().subtract(7, 'days').format());
 				}
 
-				const usersWithPasswordChanged = RocketChat.models.Users.getUsersWithPasswordChanged(fromDate, today);
+				// const usersWithPasswordChanged = RocketChat.models.Users.getUsersWithPasswordChanged(fromDate, {fields: {'passwordChangeHistory.$': 1}).fetch();
+
+				// const usersWithPasswordChanged = RocketChat.models.Users.find({passwordChangeHistory: {'$elemMatch': {changedAt: {'$gte': fromDate, '$lte': new Date()}}}}, {fields: {'passwordChangeHistory.$': 1}}).fetch();
+
+				const usersWithPasswordChanged = RocketChat.models.Users.find({'passwordChangeHistory.changedAt': {$gte: fromDate, $lte: new Date()}}, {fields: {'passwordChangeHistory.$': 1}}).fetch();
+
+				console.log('usersWithPasswordChanged: ', usersWithPasswordChanged);
 
 				if (!_.isEmpty(usersWithPasswordChanged)) {
 					let userChanger;
 
 					_.each(usersWithPasswordChanged, (userAffected) => {
 						_.each(userAffected.passwordChangeHistory, (passwordChange) => {
-							if (moment(passwordChange.changedAt).isBetween(moment(fromDate), moment(today))) {
-								userChanger = RocketChat.models.Users.findById(passwordChange.changedBy);
+							if (moment(passwordChange.changedAt).isBetween(moment(fromDate), moment())) {
+								userChanger = RocketChat.models.Users.findOne({_id: passwordChange.changedBy}, {fields: {username: 1}});
 								passwordChangeOccurrences.push({
 									userAffectedName: userAffected.name,
 									userAffectedUsername: userAffected.username,
@@ -65,6 +72,7 @@ Meteor.methods({
 							}
 						});
 					});
+					console.log('passwordChangeOccurrences: ', passwordChangeOccurrences);
 				}
 			}
 
@@ -89,14 +97,17 @@ Meteor.methods({
 						templatePasswordChangeOccurrences = TAPi18n.__('Accounts_AdminsReceivePasswordChangeHistory_Weekly_EmailBody_Occurrences', { lng: language });
 					}
 
-					_.each(passwordChangeOccurrences, (occurrence) => {
-						passwordChangeOccurrencesParams.passwordChangeOccurrencesList += RocketChat.placeholders.replace(templatePasswordChangeOccurrences, occurrence);
-					});
+					if (!_.isEmpty(passwordChangeOccurrences)) {
+						_.each(passwordChangeOccurrences, (occurrence) => {
+							passwordChangeOccurrencesParams.passwordChangeOccurrencesList += RocketChat.placeholders.replace(templatePasswordChangeOccurrences, occurrence);
+						});
+					}
 
-					html = RocketChat.placeholders.replace(html, {
-						name: admin.name,
-						passwordChangeOccurrencesParams
-					});
+					passwordChangeOccurrencesParams.name = admin.name;
+
+					console.log('passwordChangeOccurrencesParams: ', passwordChangeOccurrencesParams);
+
+					html = RocketChat.placeholders.replace(html, passwordChangeOccurrencesParams);
 
 					email = {
 						to: admin.email,
