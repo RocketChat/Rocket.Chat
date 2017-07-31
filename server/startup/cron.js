@@ -55,10 +55,9 @@ Meteor.startup(function() {
 			SyncedCron.add({
 				name: 'Send password change log for admins by email - daily',
 				schedule(parser) {
-					return parser.text('every 1 minutes');
-					// return parser.text('at 0:00 am every 1 day');
+					return parser.text('at 0:00 am every 1 day');
 				},
-				job: function() {
+				job() {
 					Meteor.call('sendPasswordChangeHistoryForAdmins');
 				}
 			});
@@ -68,10 +67,9 @@ Meteor.startup(function() {
 			SyncedCron.add({
 				name: 'Send password change log for admins by email - weekly',
 				schedule(parser) {
-					return parser.text('every 1 minutes');
-					// return parser.text('on the first day of the week');
+					return parser.text('on the first day of the week');
 				},
-				job: function() {
+				job() {
 					Meteor.call('sendPasswordChangeHistoryForAdmins');
 				}
 			});

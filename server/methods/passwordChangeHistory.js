@@ -48,13 +48,7 @@ Meteor.methods({
 					fromDate = new Date(moment().subtract(7, 'days').format());
 				}
 
-				// const usersWithPasswordChanged = RocketChat.models.Users.getUsersWithPasswordChanged(fromDate, {fields: {'passwordChangeHistory.$': 1}).fetch();
-
-				// const usersWithPasswordChanged = RocketChat.models.Users.find({passwordChangeHistory: {'$elemMatch': {changedAt: {'$gte': fromDate, '$lte': new Date()}}}}, {fields: {'passwordChangeHistory.$': 1}}).fetch();
-
-				const usersWithPasswordChanged = RocketChat.models.Users.find({'passwordChangeHistory.changedAt': {$gte: fromDate, $lte: new Date()}}, {fields: {'passwordChangeHistory.$': 1}}).fetch();
-
-				console.log('usersWithPasswordChanged: ', usersWithPasswordChanged);
+				const usersWithPasswordChanged = RocketChat.models.Users.db.find({'passwordChangeHistory.changedAt': {$gte: fromDate, $lte: new Date()}}, {fields: {name: 1, username: 1, passwordChangeHistory: 1}}).fetch();
 
 				if (!_.isEmpty(usersWithPasswordChanged)) {
 					let userChanger;
@@ -72,7 +66,6 @@ Meteor.methods({
 							}
 						});
 					});
-					console.log('passwordChangeOccurrences: ', passwordChangeOccurrences);
 				}
 			}
 
@@ -98,14 +91,13 @@ Meteor.methods({
 					}
 
 					if (!_.isEmpty(passwordChangeOccurrences)) {
+						passwordChangeOccurrencesParams.passwordChangeOccurrencesList = '';
 						_.each(passwordChangeOccurrences, (occurrence) => {
 							passwordChangeOccurrencesParams.passwordChangeOccurrencesList += RocketChat.placeholders.replace(templatePasswordChangeOccurrences, occurrence);
 						});
 					}
 
 					passwordChangeOccurrencesParams.name = admin.name;
-
-					console.log('passwordChangeOccurrencesParams: ', passwordChangeOccurrencesParams);
 
 					html = RocketChat.placeholders.replace(html, passwordChangeOccurrencesParams);
 
