@@ -85,7 +85,11 @@
 					{{/if}}
 				{{/if}} -->
 				{{#each mdButtons}}
-					<button class="rc-message-box__toolbar-markdown__item rc-tooltip js-md" aria-label={{label}}>{{label}}</button>
+					<button class="rc-message-box__toolbar-markdown-item rc-tooltip js-md" aria-label={{_ label}}>
+						<svg class="rc-message-box__toolbar-markdown-icon rc-message-box__toolbar-markdown-icon--{{label}}">
+							<use href="#icon-md-{{label}}"></use>
+						</svg>
+					</button>
 				{{/each}}
 			</div>
 		</div>
