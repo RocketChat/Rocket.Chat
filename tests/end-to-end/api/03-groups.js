@@ -61,7 +61,7 @@ describe('groups', function() {
 			.end(done);
 	});
 
-	it('/groups.invite', async (done) => {
+	it('/groups.invite', async(done) => {
 		const roomInfo = await getRoomInfo(group._id);
 
 		request.post(api('groups.invite'))
@@ -157,7 +157,7 @@ describe('groups', function() {
 			.end(done);
 	});
 
-	it('/groups.invite', async (done) => {
+	it('/groups.invite', async(done) => {
 		const roomInfo = await getRoomInfo(group._id);
 
 		request.post(api('groups.invite'))
@@ -343,7 +343,7 @@ describe('groups', function() {
 			.end(done);
 	});
 
-	it('/groups.rename', async (done) => {
+	it('/groups.rename', async(done) => {
 		const roomInfo = await getRoomInfo(group._id);
 
 		request.post(api('groups.rename'))

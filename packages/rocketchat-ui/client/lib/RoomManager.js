@@ -49,8 +49,12 @@ const RoomManager = new function() {
 											].map(e => e.roles);
 											msg.roles = _.union.apply(_.union, roles);
 											ChatMessage.upsert({ _id: msg._id }, msg);
+											msg.room = {
+												type,
+												name
+											};
 										}
-
+										msg.name = room.name;
 										Meteor.defer(() => RoomManager.updateMentionsMarksOfRoom(typeName));
 
 										RocketChat.callbacks.run('streamMessage', msg);
@@ -123,7 +127,7 @@ const RoomManager = new function() {
 
 			const roomsToClose = _.sortBy(_.values(openedRooms), 'lastSeen').reverse().slice(maxRoomsOpen);
 			return Array.from(roomsToClose).map((roomToClose) =>
-			this.close(roomToClose.typeName));
+				this.close(roomToClose.typeName));
 		}
 
 
@@ -224,17 +228,17 @@ const loadMissedMessages = function(rid) {
 	}
 
 	return Meteor.call('loadMissedMessages', rid, lastMessage.ts, (err, result) =>
-	Array.from(result).map((item) =>
-	RocketChat.promises.run('onClientMessageReceived', item).then(function(item) {
-		/* globals UserRoles RoomRoles*/
-		const roles = [
-			(item.u && item.u._id && UserRoles.findOne(item.u._id)) || {},
-			(item.u && item.u._id && RoomRoles.findOne({rid: item.rid, 'u._id': item.u._id})) || {}
-		].map(({roles}) => roles);
-		item.roles = _.union.apply(_, roles);
-		return ChatMessage.upsert({_id: item._id}, item);
-	}))
-);
+		Array.from(result).map((item) =>
+			RocketChat.promises.run('onClientMessageReceived', item).then(function(item) {
+				/* globals UserRoles RoomRoles*/
+				const roles = [
+					(item.u && item.u._id && UserRoles.findOne(item.u._id)) || {},
+					(item.u && item.u._id && RoomRoles.findOne({rid: item.rid, 'u._id': item.u._id})) || {}
+				].map(({roles}) => roles);
+				item.roles = _.union.apply(_, roles);
+				return ChatMessage.upsert({_id: item._id}, item);
+			}))
+	);
 };
 
 let connectionWasOnline = true;

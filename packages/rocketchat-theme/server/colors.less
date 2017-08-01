@@ -666,6 +666,11 @@ a:hover {
 	}
 
 	.unread {
+		color: @success-color;
+		border: 1px solid @success-color;
+	}
+
+	.unread.unread-mention {
 		background-color: @success-color;
 		color: contrast(@success-color, #000000, #ffffff, 50%);
 	}
@@ -762,6 +767,10 @@ i.status-online {
 	color: @status-online;
 }
 
+.status-bg-online {
+	background-color: @status-online;
+}
+
 .account-box .status-online .thumb::after,
 .account-box .status.online::after,
 .popup-user-status-online,
@@ -780,6 +789,10 @@ i.status-away {
 	color: @status-away;
 }
 
+.status-bg-away {
+	background-color: @status-away;
+}
+
 .account-box .status-away .thumb::after,
 .account-box .status.away::after,
 .popup-user-status-away,
@@ -793,6 +806,10 @@ i.status-busy {
 	color: @status-busy;
 }
 
+.status-bg-busy {
+	background-color: @status-busy;
+}
+
 .account-box .status-busy .thumb::after,
 .account-box .status.busy::after,
 .popup-user-status-busy,
@@ -804,6 +821,10 @@ i.status-busy {
 
 i.status-offline {
 	color: @status-offline;
+}
+
+.status-bg-offline {
+	background-color: @status-offline;
 }
 
 .popup-user-status-offline,
@@ -910,4 +931,47 @@ label.required::after {
 	to {
 		opacity: inherit;
 	}
+}
+
+/** ----------------------------------------------------------------------------
+ * Input Range Slider
+ */
+
+.range-slider-range::-webkit-slider-thumb {
+	background-color: @primary-background-color;
+}
+
+.range-slider-range::-webkit-slider-thumb:hover {
+	background-color: darken(@success-color, 30%);
+}
+
+.range-slider-range:active::-webkit-slider-thumb {
+	background-color: darken(@success-color, 10%);
+}
+
+.range-slider-range::-moz-range-thumb {
+	background-color: @primary-background-color;
+}
+
+.range-slider-range::-moz-range-thumb:hover {
+	background-color: darken(@success-color, 30%);
+}
+
+.range-slider-range:active::-moz-range-thumb {
+	background-color: darken(@success-color, 10%);
+}
+
+.range-slider-value {
+	color: lighten(@tertiary-background-color, 50%);
+	background-color: @primary-background-color;
+}
+
+.range-slider-value::after {
+	border-top-color: transparent;
+	border-right-color: @primary-background-color;
+	border-bottom-color: transparent;
+}
+
+.range-slider-range::-moz-range-track {
+	background-color: @tertiary-background-color;
 }

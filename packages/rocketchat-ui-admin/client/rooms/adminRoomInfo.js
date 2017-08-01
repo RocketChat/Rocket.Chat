@@ -19,7 +19,7 @@ Template.adminRoomInfo.helpers({
 		return room && room.t;
 	},
 	channelSettings() {
-		return RocketChat.ChannelSettings.getOptions(null, 'admin-room');
+		return RocketChat.ChannelSettings.getOptions(undefined, 'admin-room');
 	},
 	roomTypeDescription() {
 		const room = AdminChatRoom.findOne(this.rid, { fields: { t: 1 } });
