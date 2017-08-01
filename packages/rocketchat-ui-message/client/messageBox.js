@@ -82,6 +82,29 @@ const markdownButtons = [
 ];
 
 Template.messageBox.helpers({
+	toString(obj) { return JSON.stringify(obj); },
+	columns() {
+		const groups = RocketChat.messageBox.actions.get();
+		const sorted = Object.keys(groups).sort((a, b) => groups[b].length - groups[a].length);
+		const totalColumn = sorted.reduce((total, key) => total + groups[key].length, 0) / 2;
+		const columns = [];
+
+		let counter = 0;
+		let index = 0;
+		sorted.forEach(key => {
+			const actions = groups[key];
+			columns[index] = columns[index] || [];
+			counter += actions.length;
+			columns[index].push({name: key, actions});
+
+			if (counter > totalColumn) {
+				counter = 0;
+				index++;
+			}
+		});
+
+		return columns;
+	},
 	mdButtons() {
 		return markdownButtons;
 	},
@@ -305,6 +328,9 @@ function firefoxPasteUpload(fn) {
 }
 
 Template.messageBox.events({
+	'click .js-message-actions .rc-popover__item'(event, instance) {
+		this.action.apply(this, [{rid: Template.parentData()._id, messageBox: instance.find('.js-input-message'), element: event.target, event}]);
+	},
 	'click .join'(event) {
 		event.stopPropagation();
 		event.preventDefault();
@@ -379,7 +405,7 @@ Template.messageBox.events({
 	},
 	'keydown .js-input-message': firefoxPasteUpload(function(event, t) {
 		if ((navigator.platform.indexOf('Mac') !== -1 && event.metaKey) || (navigator.platform.indexOf('Mac') === -1 && event.ctrlKey)) {
-			const action = markdownButtons.find(action => action.command === event.key);
+			const action = markdownButtons.find(action => action.command === event.key.toLowerCase());
 			if (action) {
 				applyMd.apply(action, [event, t]);
 			}
