@@ -11,6 +11,7 @@ RocketChat.messageBox.actions = new class {
 	@param config
 	icon: icon class
 	action: action function
+	condition: condition to display the action
 	*/
 
 	add(group, actionName, config) {
