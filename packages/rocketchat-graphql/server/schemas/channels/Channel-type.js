@@ -23,6 +23,13 @@ export const schema = `
 export const resolver = {
 	Channel: {
 		id: property('_id'),
+		name: (root, args, { user }) => {
+			if (root.t === 'd') {
+				return root.usernames.find(u => u !== user.username);
+			}
+
+			return root.name;
+		},
 		members: (root) => {
 			return root.usernames.map(
 				username => RocketChat.models.Users.findOneByUsername(username)
