@@ -75,7 +75,7 @@ const markdownButtons = [
 		group: 'showMarkdownCode'
 	},
 	{
-		label: 'multi',
+		label: 'multi_line',
 		pattern: '```\n{{text}}\n``` ',
 		group: 'showMarkdownCode'
 	}
