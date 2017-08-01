@@ -36,8 +36,7 @@ Template.adminImportProgress.onCreated(function() {
 						instance.step.set(t(progress.step[0].toUpperCase() + progress.step.slice(1)));
 						instance.completed.set(progress.count.completed);
 						instance.total.set(progress.count.total);
-						return setTimeout(() => instance.updateProgress()
-						, 100);
+						return setTimeout(() => instance.updateProgress(), 100);
 					}
 				} else {
 					toastr.warning(t('Importer_not_in_progress'));

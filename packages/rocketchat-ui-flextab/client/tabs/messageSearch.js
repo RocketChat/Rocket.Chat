@@ -13,11 +13,10 @@ Meteor.startup(function() {
 			}
 			FlowRouter.goToRoomById(message.rid);
 			RocketChat.MessageAction.hideDropDown();
-			window.setTimeout(() => {
-				RoomHistoryManager.getSurroundingMessages(message, 50);
-			}, 400);
-			// 400ms is popular among game devs as a good delay before transition starts
-			// ie. 50, 100, 200, 400, 800 are the favored timings
+			if (window.matchMedia('(max-width: 500px)').matches) {
+				Template.instance().tabBar.close();
+			}
+			return RoomHistoryManager.getSurroundingMessages(message, 50);
 		},
 		order: 100
 	});
@@ -73,9 +72,14 @@ Template.messageSearch.events({
 
 		t.hasMore.set(true);
 		t.limit.set(20);
+<<<<<<< HEAD
 		return t.search(true);
 	}
 	, 500),
+=======
+		return t.search();
+	}, 500),
+>>>>>>> 00fd6a8bf3b911055d1f53629d56baab01bfca10
 
 	'click .message-cog'(e, t) {
 		e.stopPropagation();
@@ -104,8 +108,7 @@ Template.messageSearch.events({
 			t.limit.set(t.limit.get() + 20);
 			return t.search();
 		}
-	}
-	, 200)
+	}, 200)
 });
 
 Template.messageSearch.onCreated(function() {

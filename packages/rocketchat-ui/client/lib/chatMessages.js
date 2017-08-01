@@ -169,7 +169,7 @@ this.ChatMessages = class ChatMessages {
 		}
 	}
 	/* globals readMessage KonchatNotification */
-		/**
+	/**
 		* * @param {string} rim room ID
 		* * @param {Element} input DOM element
 		* * @param {function?} done callback
@@ -183,10 +183,20 @@ this.ChatMessages = class ChatMessages {
 			const msg = input.value;
 			const msgObject = { _id: Random.id(), rid, msg};
 
-				// Run to allow local encryption, and maybe other client specific actions to be run before send
+			if (msg.slice(0, 2) === '+:') {
+				const reaction = msg.slice(1).trim();
+				if (RocketChat.emoji.list[reaction]) {
+					const lastMessage = ChatMessage.findOne({rid}, { fields: { ts: 1 }, sort: { ts: -1 }});
+					Meteor.call('setReaction', reaction, lastMessage._id);
+					input.value = '';
+					return;
+				}
+			}
+
+			// Run to allow local encryption, and maybe other client specific actions to be run before send
 			return RocketChat.promises.run('onClientBeforeSendMessage', msgObject).then(msgObject => {
 
-					// checks for the final msgObject.msg size before actually sending the message
+				// checks for the final msgObject.msg size before actually sending the message
 				if (this.isMessageTooLong(msgObject.msg)) {
 					return toastr.error(t('Message_too_long'));
 				}
@@ -205,7 +215,7 @@ this.ChatMessages = class ChatMessages {
 				this.hasValue.set(false);
 				this.stopTyping(rid);
 
-					//Check if message starts with /command
+				//Check if message starts with /command
 				if (msg[0] === '/') {
 					const match = msg.match(/^\/([^\s]+)(?:\s+(.*))?$/m);
 					if (match) {
@@ -243,13 +253,13 @@ this.ChatMessages = class ChatMessages {
 				return done();
 			});
 
-				// If edited message was emptied we ask for deletion
+			// If edited message was emptied we ask for deletion
 		} else if (this.editing.element) {
 			const message = this.getMessageById(this.editing.id);
 			if (message.attachments && message.attachments[0] && message.attachments[0].description) {
 				return this.update(this.editing.id, rid, '', true);
 			}
-				// Restore original message in textbox in case delete is canceled
+			// Restore original message in textbox in case delete is canceled
 			this.resetToDraft(this.editing.id);
 
 			return this.confirmDeleteMsg(message, done);
@@ -286,7 +296,7 @@ this.ChatMessages = class ChatMessages {
 			return done();
 		});
 
-			// In order to avoid issue "[Callback not called when still animating](https://github.com/t4t5/sweetalert/issues/528)"
+		// In order to avoid issue "[Callback not called when still animating](https://github.com/t4t5/sweetalert/issues/528)"
 		return $('.sweet-alert').addClass('visible');
 	}
 
@@ -377,7 +387,7 @@ this.ChatMessages = class ChatMessages {
 			13, // Enter
 			20, // Caps lock
 			16, // Shift
-			9,  // Tab
+			9, // Tab
 			27, // Escape Key
 			17, // Control Key
 			91, // Windows Command Key
@@ -440,7 +450,7 @@ this.ChatMessages = class ChatMessages {
 			if (this.editing.index != null) {
 				// const record = this.getMessageDraft(this.editing.id);
 
-					// If resetting did nothing then edited message is same as original
+				// If resetting did nothing then edited message is same as original
 				if (!this.resetToDraft(this.editing.id)) {
 					this.clearCurrentDraft();
 					this.clearEditing();
@@ -476,7 +486,7 @@ this.ChatMessages = class ChatMessages {
 
 			return false;
 
-				// ctrl (command) + shift + k -> clear room messages
+			// ctrl (command) + shift + k -> clear room messages
 		}
 		// TODO
 		// else if (k === 75 && navigator && navigator.platform && event.shiftKey && (navigator.platform.indexOf('Mac') !== -1 ? event.metaKey : event.ctrlKey)) {
@@ -494,7 +504,7 @@ this.ChatMessages = class ChatMessages {
 		return this.input.dir = this.isMessageRtl(this.input.value) ? 'rtl' : 'ltr';
 	}
 
-		// http://stackoverflow.com/a/14824756
+	// http://stackoverflow.com/a/14824756
 	isMessageRtl(message) {
 		const ltrChars = 'A-Za-z\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u02B8\u0300-\u0590\u0800-\u1FFF\u2C00-\uFB1C\uFDFE-\uFE6F\uFEFD-\uFFFF';
 		const rtlChars = '\u0591-\u07FF\uFB1D-\uFDFD\uFE70-\uFEFC';

@@ -316,7 +316,13 @@ describe('[Administration]', () => {
 					});
 
 					it('it should show the role dropdown', () => {
-						flexTab.usersAddUserRole.isVisible().should.be.true;
+						flexTab.usersAddUserRoleList.waitForVisible(5000);
+						flexTab.usersAddUserRoleList.isVisible().should.be.true;
+					});
+
+					it('ít should show the add role button', () => {
+						flexTab.usersAddUserRoleButton.waitForVisible(5000);
+						flexTab.usersAddUserRoleButton.isVisible().should.be.true;
 					});
 
 					it('it should show the join default channel checkbox', () => {

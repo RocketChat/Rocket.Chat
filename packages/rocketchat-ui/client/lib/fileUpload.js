@@ -56,7 +56,7 @@ fileUpload = function(filesToUpload) {
 			return;
 		}
 
-		if (!RocketChat.fileUploadIsValidContentType(file.file.type)) {
+		if (!file.file.type || !RocketChat.fileUploadIsValidContentType(file.file.type)) {
 			swal({
 				title: t('FileUpload_MediaType_NotAccepted'),
 				text: file.file.type || `*.${ s.strRightBack(file.file.name, '.') }`,
@@ -135,7 +135,7 @@ fileUpload = function(filesToUpload) {
 				html: true
 			}, function(isConfirm) {
 				consume();
-				if (isConfirm !== true) {
+				if (!isConfirm) {
 					return;
 				}
 
@@ -175,10 +175,10 @@ fileUpload = function(filesToUpload) {
 							uploading = [];
 						}
 
-						const item = _.findWhere(uploading, { id: this.id });
+						const item = _.findWhere(uploading, { id: upload.id });
 
 						if (_.isObject(item)) {
-							item.error = error.error;
+							item.error = error.message;
 							item.percentage = 0;
 						} else {
 							uploading.push({
@@ -229,8 +229,7 @@ fileUpload = function(filesToUpload) {
 								item = _.findWhere(uploading, {id: upload.id});
 								return Session.set('uploading', _.without(uploading, item));
 							}
-						}
-						, 1000);
+						}, 1000);
 					}
 				});
 			});
