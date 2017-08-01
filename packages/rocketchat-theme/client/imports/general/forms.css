@@ -177,22 +177,55 @@
 
 	&__toolbar-markdown {
 		position: absolute;
-		bottom: 4px;
 		width: 100%;
+		height: 24px;
+		display: flex;
 		justify-content: center;
-		left: 0;
 		color: #9ea2a8;
-		text-align: center;
 
-		&__item {
+		&-item {
+			width: 16px;
 			margin: 0 4px;
 			transition: color 0.1s;
-			display: inline-block;
+			display: flex;
 
 			&:hover,
 			&:focus,
 			&.active {
 				color: #2f343d;
+			}
+		}
+
+		&-icon {
+			stroke: currentColor;
+			fill: currentColor;
+
+			&--bold {
+				width: 8px;
+				height: 10px;
+				stroke: none;
+			}
+
+			&--italic {
+				width: 2px;
+				height: 10px;
+				stroke: none;
+			}
+
+			&--inline_code {
+				width: 16px;
+				height: 12px;
+			}
+
+			&--strike {
+				width: 12px;
+				height: 11px;
+				stroke: none;
+			}
+
+			&--multi_line {
+				width: 13px;
+				height: 11px;
 			}
 		}
 	}
