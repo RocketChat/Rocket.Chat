@@ -34,6 +34,7 @@
 							{{# each column in columns }}
 								<div class="rc-popover__column">
 									{{# each group in column }}
+									<div class="rc-popover__column__wrapper">
 										<h3 class="rc-popover__title">{{group.name}}</h3>
 										<ul class="rc-popover__list">
 											{{# each group.actions }}
@@ -47,7 +48,9 @@
 											</li>
 											{{/each}}
 										</ul>
+									</div>
 									{{/each}}
+
 								</div>
 							{{/each}}
 						</div>
