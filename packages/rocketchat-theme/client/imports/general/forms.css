@@ -264,12 +264,12 @@
 		position: relative;
 
 		& #rc-message-box__action-input:checked ~ .rc-message-box__icon .rc-input__icon-svg {
-			transform: rotate(45deg);
+			transform: rotate(135deg);
 		}
 
 		& .rc-popover {
 			bottom: 30px;
-			right: 8px;
+			right: 18px;
 
 			&__column {
 				justify-content: space-between;
