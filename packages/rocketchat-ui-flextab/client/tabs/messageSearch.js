@@ -17,10 +17,10 @@ Meteor.startup(function() {
 				Template.instance().tabBar.close();
 			}
 			window.setTimeout(() => {
- 				RoomHistoryManager.getSurroundingMessages(message, 50);
- 			}, 400);
- 			// 400ms is popular among game devs as a good delay before transition starts
- 			// ie. 50, 100, 200, 400, 800 are the favored timings
+				RoomHistoryManager.getSurroundingMessages(message, 50);
+			}, 400);
+			// 400ms is popular among game devs as a good delay before transition starts
+			// ie. 50, 100, 200, 400, 800 are the favored timings
 		},
 		order: 100
 	});
@@ -78,8 +78,7 @@ Template.messageSearch.events({
 		t.hasMore.set(true);
 		t.limit.set(20);
 		return t.search(globalSearch);
-	}
-	, 500),
+	}, 500),
 
 	'click .message-cog'(e, t) {
 		e.stopPropagation();
