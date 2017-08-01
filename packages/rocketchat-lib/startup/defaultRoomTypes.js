@@ -1,5 +1,6 @@
 /* globals openRoom */
 RocketChat.roomTypes.add(null, 0, {
+	header: 'favorite',
 	icon: 'icon-star',
 	label: 'Favorites'
 });
@@ -24,6 +25,9 @@ RocketChat.roomTypes.add('c', 10, {
 	},
 
 	roomName(roomData) {
+		if (RocketChat.settings.get('UI_Allow_room_names_with_special_chars')) {
+			return roomData.fname || roomData.name;
+		}
 		return roomData.name;
 	},
 
@@ -113,6 +117,9 @@ RocketChat.roomTypes.add('p', 30, {
 	},
 
 	roomName(roomData) {
+		if (RocketChat.settings.get('UI_Allow_room_names_with_special_chars')) {
+			return roomData.fname || roomData.name;
+		}
 		return roomData.name;
 	},
 

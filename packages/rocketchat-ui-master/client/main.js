@@ -129,7 +129,8 @@ Template.main.helpers({
 	subsReady() {
 		const routerReady = FlowRouter.subsReady('userData', 'activeUsers');
 		const subscriptionsReady = CachedChatSubscription.ready.get();
-		const ready = (Meteor.userId() == null) || (routerReady && subscriptionsReady);
+		const settingsReady = RocketChat.settings.cachedCollection.ready.get();
+		const ready = (Meteor.userId() == null) || (routerReady && subscriptionsReady && settingsReady);
 		RocketChat.CachedCollectionManager.syncEnabled = ready;
 		return ready;
 	},
@@ -184,7 +185,7 @@ Template.main.events({
 	},
 	'touchmove'(e, t) {
 		if (t.touchstartX != null) {
-			const [touch] = e.originalEvent.touches;
+			const touch = e.originalEvent.touches[0];
 			const diffX = touch.clientX - t.touchstartX;
 			const diffY = touch.clientY - t.touchstartY;
 			const absX = Math.abs(diffX);
