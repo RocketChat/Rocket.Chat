@@ -60,6 +60,7 @@ Package.onUse(function(api) {
 	api.addFiles('lib/roomTypesCommon.js');
 	api.addFiles('lib/slashCommand.js');
 	api.addFiles('lib/Message.js');
+	api.addFiles('lib/messageBox.js');
 	api.addFiles('lib/MessageTypes.js');
 
 	api.addFiles('server/lib/bugsnag.js', 'server');
