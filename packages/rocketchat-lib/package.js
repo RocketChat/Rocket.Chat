@@ -178,6 +178,7 @@ Package.onUse(function(api) {
 
 	// COMMON STARTUP
 	api.addFiles('lib/startup/settingsOnLoadSiteUrl.js');
+	api.addFiles('lib/startup/messageBoxActions.js');
 
 	// CLIENT LIB
 	api.addFiles('client/Notifications.js', 'client');
