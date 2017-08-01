@@ -2145,6 +2145,8 @@ label.required::after {
 		flex: 1 1 auto;
 		width: 50%;
 		position: relative;
+		display: flex;
+		flex-direction: column;
 	}
 
 	& .room-topic {
@@ -2178,6 +2180,7 @@ label.required::after {
 		left: 0;
 		width: 100%;
 		min-height: var(--footer-min-height);
+		height: 130px;
 	}
 
 	& .message-form {
@@ -2532,7 +2535,7 @@ label.required::after {
 	position: relative;
 	overflow: hidden;
 	width: 100%;
-	height: calc(100% - 130px);
+	flex-grow: 1;
 
 	& .message-cog-container .message-action.jump-to-search-message {
 		display: none !important;
