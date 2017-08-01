@@ -36,9 +36,15 @@ RocketChat.messageBox.actions = new class {
 
 	get(group) {
 		if (!group) {
-			return this.actions;
+			return Object.keys(this.actions).reduce((ret, key) => {
+				const actions = this.actions[key].filter(action => !action.condition || action.condition());
+				if (actions.length) {
+					ret[key] = actions;
+				}
+				return ret;
+			}, {});
 		}
 
-		return this.actions[group];
+		return this.actions[group].filter(action => !action.condition || action.condition());
 	}
 };
