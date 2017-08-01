@@ -188,6 +188,7 @@
 			margin: 0 4px;
 			transition: color 0.1s;
 			display: flex;
+			justify-content: center;
 
 			&:hover,
 			&:focus,
