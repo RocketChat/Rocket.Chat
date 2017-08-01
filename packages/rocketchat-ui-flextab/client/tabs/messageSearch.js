@@ -16,7 +16,11 @@ Meteor.startup(function() {
 			if (window.matchMedia('(max-width: 500px)').matches) {
 				Template.instance().tabBar.close();
 			}
-			return RoomHistoryManager.getSurroundingMessages(message, 50);
+			window.setTimeout(() => {
+ 				RoomHistoryManager.getSurroundingMessages(message, 50);
+ 			}, 400);
+ 			// 400ms is popular among game devs as a good delay before transition starts
+ 			// ie. 50, 100, 200, 400, 800 are the favored timings
 		},
 		order: 100
 	});
@@ -50,6 +54,7 @@ Template.messageSearch.helpers({
 	message() {
 		return _.extend(this, { customClass: 'search' });
 	}
+
 });
 
 Template.messageSearch.events({
@@ -69,17 +74,12 @@ Template.messageSearch.events({
 		} else if (value === t.currentSearchTerm.get()) {
 			return;
 		}
-
+		const globalSearch = $('#global-search').is(':checked');
 		t.hasMore.set(true);
 		t.limit.set(20);
-<<<<<<< HEAD
-		return t.search(true);
+		return t.search(globalSearch);
 	}
 	, 500),
-=======
-		return t.search();
-	}, 500),
->>>>>>> 00fd6a8bf3b911055d1f53629d56baab01bfca10
 
 	'click .message-cog'(e, t) {
 		e.stopPropagation();
@@ -113,8 +113,7 @@ Template.messageSearch.events({
 
 Template.messageSearch.onCreated(function() {
 	this.currentSearchTerm = new ReactiveVar('');
-	this.searchResult = new ReactiveVar;
-
+	this.searchResult = new ReactiveVar();
 	this.hasMore = new ReactiveVar(true);
 	this.limit = new ReactiveVar(20);
 	this.ready = new ReactiveVar(true);
@@ -126,7 +125,7 @@ Template.messageSearch.onCreated(function() {
 			return Meteor.call('messageSearch', value, (globalSearch) ? undefined: Session.get('openedRoom'), this.limit.get(), (error, result) => {
 				this.currentSearchTerm.set(value);
 				this.ready.set(true);
-				if ((result != null) && (((result.messages != null ? result.messages.length : undefined) > 0) || ((result.users != null ? result.users.length : undefined) > 0) || ((result.channels != null ? result.channels.length : undefined) > 0))) {
+				if ((result != null) && (((result.messages !== null ? result.messages.length : undefined) > 0) || ((result.users != null ? result.users.length : undefined) > 0) || ((result.channels != null ? result.channels.length : undefined) > 0))) {
 					this.searchResult.set(result);
 					if (((result.messages != null ? result.messages.length : undefined) + (result.users != null ? result.users.length : undefined) + (result.channels != null ? result.channels.length : undefined)) < this.limit.get()) {
 						return this.hasMore.set(false);
