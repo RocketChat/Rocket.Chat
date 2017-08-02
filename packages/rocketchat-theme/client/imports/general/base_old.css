@@ -92,7 +92,7 @@
 	}
 }
 
-.rc-old .upload-preview {
+.upload-preview {
 	padding: 1rem;
 
 	& .upload-preview-file {
@@ -103,7 +103,7 @@
 	}
 }
 
-.rc-old .upload-preview-title {
+.upload-preview-title {
 	padding: 3px;
 	border-radius: 0 0 5px 5px;
 }
@@ -4833,7 +4833,7 @@ body:not(.is-cordova) {
 }
 
 @media (height <= 400px) {
-	.rc-old .upload-preview .upload-preview-file {
+	.upload-preview .upload-preview-file {
 		height: 100px;
 	}
 }

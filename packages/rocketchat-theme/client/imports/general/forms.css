@@ -314,10 +314,6 @@
 				color: #9ea2a8;
 				text-transform: none;
 			}
-
-			&__item {
-				padding: 1px 0;
-			}
 		}
 	}
 }
