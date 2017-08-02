@@ -37,32 +37,30 @@ function applyMd(e, t) {
 	box.focus();
 
 	// removes markdown if selected text in inside the same clicked markdown
-	if (selectionStart !== selectionEnd) {
-		const startPattern = this.pattern.substr(0, this.pattern.indexOf('{{text}}'));
-		const startPatternFound = [...startPattern].reverse().every((char, index) => {
-			return box.value.substr(selectionStart - index - 1, 1) === char;
+	const startPattern = this.pattern.substr(0, this.pattern.indexOf('{{text}}'));
+	const startPatternFound = [...startPattern].reverse().every((char, index) => {
+		return box.value.substr(selectionStart - index - 1, 1) === char;
+	});
+
+	if (startPatternFound) {
+		const endPattern = this.pattern.substr(this.pattern.indexOf('{{text}}') + '{{text}}'.length);
+		const endPatternFound = [...endPattern].every((char, index) => {
+			return box.value.substr(selectionEnd + index, 1) === char;
 		});
 
-		if (startPatternFound) {
-			const endPattern = this.pattern.substr(this.pattern.indexOf('{{text}}') + '{{text}}'.length);
-			const endPatternFound = [...endPattern].every((char, index) => {
-				return box.value.substr(selectionEnd + index, 1) === char;
-			});
+		if (endPatternFound) {
+			box.selectionStart = selectionStart - startPattern.length;
+			box.selectionEnd = selectionEnd + endPattern.length;
 
-			if (endPatternFound) {
-				box.selectionStart = selectionStart - startPattern.length;
-				box.selectionEnd = selectionEnd + endPattern.length;
-
-				if (document.execCommand) {
-					document.execCommand('insertText', false, selectedText);
-				} else {
-					box.value = initText.substr(0, initText.length - startPattern.length) + selectedText + finalText.substr(endPattern.length);
-				}
-				box.selectionStart = selectionStart - startPattern.length;
-				box.selectionEnd = box.selectionStart + selectedText.length;
-				$(box).change();
-				return;
+			if (document.execCommand) {
+				document.execCommand('insertText', false, selectedText);
+			} else {
+				box.value = initText.substr(0, initText.length - startPattern.length) + selectedText + finalText.substr(endPattern.length);
 			}
+			box.selectionStart = selectionStart - startPattern.length;
+			box.selectionEnd = box.selectionStart + selectedText.length;
+			$(box).change();
+			return;
 		}
 	}
 
