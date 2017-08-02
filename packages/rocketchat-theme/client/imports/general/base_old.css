@@ -396,7 +396,8 @@
 	box-shadow: 0 0 0;
 }
 
-/*.rc-old textarea,*/
+/* .rc-old textarea, */
+
 .rc-old select,
 .rc-old input[type='text'],
 .rc-old input[type='number'],
