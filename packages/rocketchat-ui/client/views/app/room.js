@@ -175,11 +175,6 @@ Template.room.helpers({
 	showAnnouncement() {
 		const roomData = Session.get(`roomData${ this._id }`);
 		if (!roomData) { return false; }
-		Meteor.defer(() => {
-			if (window.chatMessages && window.chatMessages[roomData._id]) {
-				return window.chatMessages[roomData._id].resize();
-			}
-		});
 		return (roomData.announcement !== undefined) && (roomData.announcement !== '');
 	},
 
