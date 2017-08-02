@@ -37,6 +37,21 @@ class ModelRooms extends RocketChat.models._Base {
 		return this.findOne(query, options);
 	}
 
+	findOneByNameAndNotId(name, rid) {
+		const query = {
+			_id: { $ne: rid },
+			name
+		};
+
+		return this.findOne(query);
+	}
+
+	findOneByDisplayName(fname, options) {
+		const query = {fname};
+
+		return this.findOne(query, options);
+	}
+
 	findOneByNameAndType(name, type, options) {
 		const query = {
 			name,
@@ -490,12 +505,13 @@ class ModelRooms extends RocketChat.models._Base {
 		return this.update(query, update);
 	}
 
-	setNameById(_id, name) {
+	setNameById(_id, name, fname) {
 		const query = {_id};
 
 		const update = {
 			$set: {
-				name
+				name,
+				fname
 			}
 		};
 
@@ -719,9 +735,10 @@ class ModelRooms extends RocketChat.models._Base {
 	}
 
 	// INSERT
-	createWithTypeNameUserAndUsernames(type, name, user, usernames, extraData) {
+	createWithTypeNameUserAndUsernames(type, name, fname, user, usernames, extraData) {
 		const room = {
 			name,
+			fname,
 			t: type,
 			usernames,
 			msgs: 0,

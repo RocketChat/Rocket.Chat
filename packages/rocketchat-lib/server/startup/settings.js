@@ -70,25 +70,6 @@ RocketChat.settings.addGroup('Accounts', function() {
 		type: 'boolean',
 		'public': true
 	});
-	this.add('Accounts_AdminsReceivePasswordChangeHistory', 'disabled', {
-		type: 'select',
-		'public': true,
-		values: [
-			{
-				key: 'disabled',
-				i18nLabel: 'Accounts_AdminsReceivePasswordChangeHistory_Disabled'
-			}, {
-				key: 'immediately',
-				i18nLabel: 'Accounts_AdminsReceivePasswordChangeHistory_Immediately'
-			}, {
-				key: 'daily',
-				i18nLabel: 'Accounts_AdminsReceivePasswordChangeHistory_Daily'
-			}, {
-				key: 'weekly',
-				i18nLabel: 'Accounts_AdminsReceivePasswordChangeHistory_Weekly'
-			}
-		]
-	});
 
 	this.section('Registration', function() {
 		this.add('Accounts_DefaultUsernamePrefixSuggestion', 'user', {
@@ -433,10 +414,46 @@ RocketChat.settings.addGroup('General', function() {
 		});
 	});
 	this.section('Notifications', function() {
-		return this.add('Desktop_Notifications_Duration', 0, {
+		this.add('Desktop_Notifications_Duration', 0, {
 			type: 'int',
 			'public': true,
 			i18nDescription: 'Desktop_Notification_Durations_Description'
+		});
+
+		this.add('Desktop_Notifications_Default_Alert', 'mentions', {
+			type: 'select',
+			values: [{
+				key: 'all',
+				i18nLabel: 'All_messages'
+			}, {
+				key: 'mentions',
+				i18nLabel: 'Mentions'
+			}, {
+				key: 'nothing',
+				i18nLabel: 'Nothing'
+			}],
+			public: true
+		});
+
+		this.add('Mobile_Notifications_Default_Alert', 'mentions', {
+			type: 'select',
+			values: [{
+				key: 'all',
+				i18nLabel: 'All_messages'
+			}, {
+				key: 'mentions',
+				i18nLabel: 'Mentions'
+			}, {
+				key: 'nothing',
+				i18nLabel: 'Nothing'
+			}],
+			public: true
+		});
+
+		this.add('Notifications_Max_Room_Members', 100, {
+			type: 'int',
+			public: true,
+			i18nDescription: 'Notifications_Max_Room_Members_Description'
 		});
 	});
 	this.section('REST API', function() {
@@ -1057,6 +1074,19 @@ RocketChat.settings.addGroup('Layout', function() {
 		});
 		this.add('UI_Click_Direct_Message', false, {
 			type: 'boolean',
+			'public': true
+		});
+		this.add('UI_Unread_Counter_Style', 'Different_Style_For_User_Mentions', {
+			type: 'select',
+			values: [
+				{
+					key: 'Same_Style_For_Mentions',
+					i18nLabel: 'Same_Style_For_Mentions'
+				}, {
+					key: 'Different_Style_For_User_Mentions',
+					i18nLabel: 'Different_Style_For_User_Mentions'
+				}
+			],
 			'public': true
 		});
 	});

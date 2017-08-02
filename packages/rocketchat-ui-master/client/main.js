@@ -129,7 +129,8 @@ Template.main.helpers({
 	subsReady() {
 		const routerReady = FlowRouter.subsReady('userData', 'activeUsers');
 		const subscriptionsReady = CachedChatSubscription.ready.get();
-		const ready = (Meteor.userId() == null) || (routerReady && subscriptionsReady);
+		const settingsReady = RocketChat.settings.cachedCollection.ready.get();
+		const ready = (Meteor.userId() == null) || (routerReady && subscriptionsReady && settingsReady);
 		RocketChat.CachedCollectionManager.syncEnabled = ready;
 		return ready;
 	},

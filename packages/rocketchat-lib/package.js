@@ -55,6 +55,7 @@ Package.onUse(function(api) {
 	api.addFiles('lib/settings.js');
 	api.addFiles('lib/callbacks.js');
 	api.addFiles('lib/fileUploadRestrictions.js');
+	api.addFiles('lib/getValidRoomName.js');
 	api.addFiles('lib/placeholders.js');
 	api.addFiles('lib/promises.js');
 	api.addFiles('lib/roomTypesCommon.js');
@@ -98,6 +99,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/lib/configLogger.js', 'server');
 	api.addFiles('server/lib/PushNotification.js', 'server');
 	api.addFiles('server/lib/defaultBlockedDomainsList.js', 'server');
+	api.addFiles('server/lib/loginErrorMessageOverride.js', 'server');
 	api.addFiles('server/lib/notifyUsersOnMessage.js', 'server');
 	api.addFiles('server/lib/roomTypes.js', 'server');
 	api.addFiles('server/lib/sendEmailOnMessage.js', 'server');

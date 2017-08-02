@@ -191,7 +191,11 @@ RocketChat.API.v1.addRoute('users.resetAvatar', { authRequired: true }, {
 
 RocketChat.API.v1.addRoute('users.setAvatar', { authRequired: true }, {
 	post() {
-		check(this.bodyParams, { avatarUrl: Match.Maybe(String), userId: Match.Maybe(String) });
+		check(this.bodyParams, Match.ObjectIncluding({
+			avatarUrl: Match.Maybe(String),
+			userId: Match.Maybe(String),
+			username: Match.Maybe(String)
+		}));
 
 		let user;
 		if (this.isUserFromParams()) {
