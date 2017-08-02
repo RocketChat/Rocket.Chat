@@ -82,11 +82,14 @@ const markdownButtons = [
 ];
 
 Template.messageBox.helpers({
-	toString(obj) { return JSON.stringify(obj); },
+	toString(obj) {
+		return JSON.stringify(obj);
+	},
 	columns() {
 		const groups = RocketChat.messageBox.actions.get();
 		const sorted = Object.keys(groups).sort((a, b) => groups[b].length - groups[a].length);
-		const totalColumn = sorted.reduce((total, key) => total + groups[key].length, 0) / 2;
+		const totalColumn = sorted.reduce((total, key) => total + groups[key].length, 0);
+		const totalPerColumn = Math.ceil(totalColumn / 2);
 		const columns = [];
 
 		let counter = 0;
@@ -97,7 +100,7 @@ Template.messageBox.helpers({
 			counter += actions.length;
 			columns[index].push({name: key, actions});
 
-			if (counter > totalColumn) {
+			if (counter > totalPerColumn) {
 				counter = 0;
 				index++;
 			}
