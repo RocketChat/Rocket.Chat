@@ -24,7 +24,7 @@ function applyMd(e, t) {
 	const box = t.find('.js-input-message');
 	const {selectionEnd = box.value.length, selectionStart = 0} = box;
 	const initText = box.value.slice(0, selectionStart);
-	const text = box.value.slice(selectionStart, selectionEnd);
+	const selectedText = box.value.slice(selectionStart, selectionEnd);
 	const finalText = box.value.slice(selectionEnd, box.value.length);
 
 	const [btn] = t.findAll(`.js-md[aria-label=${ this.label }]`);
@@ -34,19 +34,19 @@ function applyMd(e, t) {
 			btn.classList.remove('active');
 		}, 100);
 	}
+	box.focus();
 	/*
 		get text
 		apply pattern
 		restore selection
 	*/
-	box.focus();
 	if (document.execCommand) {
-		document.execCommand('insertText', false, this.pattern.replace('{{text}}', text));
+		document.execCommand('insertText', false, this.pattern.replace('{{text}}', selectedText));
 	} else {
-		box.value = initText + this.pattern.replace('{{text}}', text) + finalText;
+		box.value = initText + this.pattern.replace('{{text}}', selectedText) + finalText;
 	}
 	box.selectionStart = selectionStart + this.pattern.indexOf('{{text}}');
-	box.selectionEnd = box.selectionStart + text.length;
+	box.selectionEnd = box.selectionStart + selectedText.length;
 	$(box).change();
 }
 
