@@ -40,34 +40,32 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 	messageHTML = messageHTML.replace(/\n/gm, '<br/>');
 
 	const usersToSendEmail = {};
-
-	RocketChat.models.Subscriptions.findWithSendEmailByRoomId(room._id).forEach((sub) => {
-		if (sub.disableNotifications) {
-			return delete usersToSendEmail[sub.u._id];
-		}
-
-		if (room.t === 'd') {
-			return usersToSendEmail[message.rid.replace(message.u._id, '')] = 'direct';
-		}
-
-		const emailNotifications = sub.emailNotifications;
-
-		if (emailNotifications !== 'nothing') {
-			const mentionedUser = message.mentions.find((mention) => {
-				return mention._id === sub.u._id;
-			});
-
-			if (emailNotifications === 'mentions' || mentionedUser) {
-				return usersToSendEmail[sub.u._id] = 'mention';
+	if (room.t === 'd') {
+		usersToSendEmail[message.rid.replace(message.u._id, '')] = 'direct';
+	} else {
+		RocketChat.models.Subscriptions.findWithSendEmailByRoomId(room._id).forEach((sub) => {
+			if (sub.disableNotifications) {
+				return delete usersToSendEmail[sub.u._id];
 			}
 
-			if (emailNotifications === 'all') {
-				return usersToSendEmail[sub.u._id] = 'all';
-			}
-		}
-		delete usersToSendEmail[sub.u._id];
-	});
+			const emailNotifications = sub.emailNotifications;
 
+			if (emailNotifications !== 'nothing') {
+				const mentionedUser = message.mentions.find((mention) => {
+					return mention._id === sub.u._id;
+				});
+
+				if (emailNotifications === 'mentions' || mentionedUser) {
+					return usersToSendEmail[sub.u._id] = 'mention';
+				}
+
+				if (emailNotifications === 'all') {
+					return usersToSendEmail[sub.u._id] = 'all';
+				}
+			}
+			delete usersToSendEmail[sub.u._id];
+		});
+	}
 	const userIdsToSendEmail = Object.keys(usersToSendEmail);
 
 	let defaultLink;
