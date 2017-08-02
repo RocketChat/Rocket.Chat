@@ -1,12 +1,12 @@
 Package.describe({
-	name: 'rocketchat:geoip-plugin',
+	name: 'rocketchat:automatic-channels-geoip-category',
 	version: '0.0.1',
-	summary: 'geoip plugin for Rocket.Chat'
+	summary: 'geoip category for Rocket.Chat'
 });
 
 Package.onUse(function(api) {
 	api.use('ecmascript');
-	api.use('rocketchat:plugin-handler');
+	api.use('rocketchat:automatic-channels-handler');
 
 	api.mainModule('server/server.js', 'server');
 });

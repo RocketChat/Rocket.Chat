@@ -28,7 +28,7 @@ Meteor.methods({
 			}
 		}
 		if (room.automatic) {
-			RocketChat.leave_automatic_channel(user, room);
+			RocketChat.leaveAutomaticChannels(user, room);
 		}
 
 		return RocketChat.removeUserFromRoom(rid, Meteor.user());

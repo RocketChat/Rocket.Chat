@@ -1,4 +1,4 @@
-RocketChat.settings.addGroup('plugin_settings', function() {
+RocketChat.settings.addGroup('Automatic Channels Settings', function() {
 	this.section('language', function() {
 		this.add('Enable_Language', false, {
 			type: 'boolean'

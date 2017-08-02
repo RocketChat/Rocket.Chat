@@ -1,7 +1,8 @@
-export const plugin_handler ={};
-plugin_handler.plugins = [];
-function remove_user_from_automatic_channel(user, plugins) {
-	const channelNames = plugins.map(function(x) { return x.getChannelName(user); });
+export const automaticChannelsHandler ={};
+automaticChannelsHandler.categories = [];
+
+function removeUserFromOtherAutomaticChannels(user, categories) {
+	const channelNames = categories.map(function(x) { return x.getChannelName(user); });
 
 	const userSubscriptions = RocketChat.models.Subscriptions.findByTypeAndUserId('c', user.user._id).fetch();
 	userSubscriptions.forEach((arrayItem) => {
@@ -18,10 +19,10 @@ function remove_user_from_automatic_channel(user, plugins) {
 	});
 }
 
-RocketChat.leave_automatic_channel = function(user, room) {
-	plugin_handler.plugins.forEach((arrayItem) => {
-		if (room.plugin_name === arrayItem.pluginName && RocketChat.settings.get(arrayItem.blacklist)) {
-			RocketChat.models.Users.update({ _id: user._id }, { $addToSet: { ignored_automatic_channels: room.name } });
+RocketChat.leaveAutomaticChannels = function(user, room) {
+	automaticChannelsHandler.categories.forEach((arrayItem) => {
+		if (room.categoryName === arrayItem.categoryName && RocketChat.settings.get(arrayItem.blacklist)) {
+			RocketChat.models.Users.update({ _id: user._id }, { $addToSet: { ignoredAutomaticChannels: room.name } });
 			if (room.usernames.length === 2) {
 				RocketChat.eraseRoom(room._id);
 			}
@@ -29,12 +30,12 @@ RocketChat.leave_automatic_channel = function(user, room) {
 	});
 };
 
-plugin_handler.addPlugin = function(options) {
-	return plugin_handler.plugins.push({
-		pluginName: options.pluginName,
+automaticChannelsHandler.addCategory = function(options) {
+	return automaticChannelsHandler.categories.push({
+		categoryName: options.categoryName,
 		getChannelName :options.getChannelName,
 		enable: options.enable,
-		blacklist: options.blacklistAllowed
+		blacklist: options.blacklist
 	});
 };
 
@@ -42,11 +43,11 @@ Accounts.onLogin(function(user) {
 	if (!user.user._id || !user.user.username) {
 		return;
 	}
-	plugin_handler.plugins.forEach((arrayItem) => {
+	automaticChannelsHandler.categories.forEach((arrayItem) => {
 		const channelName = arrayItem.getChannelName(user);
 		if (channelName !== null && RocketChat.settings.get(arrayItem.enable)) {
-			if (user.user.ignored_automatic_channels) {
-				if (user.user.ignored_automatic_channels.includes(channelName)) {
+			if (user.user.ignoredAutomaticChannels) {
+				if (user.user.ignoredAutomaticChannels.includes(channelName)) {
 					return;
 				}
 			}
@@ -63,10 +64,10 @@ Accounts.onLogin(function(user) {
 				}
 			} else {
 				// if room does not exist, create one
-				RocketChat.createRoom('c', channelName, 'rocket.cat', [user.user.username], false, {automatic: true, plugin_name: arrayItem.pluginName});
+				RocketChat.createRoom('c', channelName, 'rocket.cat', [user.user.username], false, {automatic: true, categoryName: arrayItem.categoryName});
 			}
 		}
 	});
 	// remove user from previously added automatic channels
-	remove_user_from_automatic_channel(user, plugin_handler.plugins);
+	removeUserFromOtherAutomaticChannels(user, automaticChannelsHandler.categories);
 });

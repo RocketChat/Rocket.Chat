@@ -1,12 +1,12 @@
 Package.describe({
-	name: 'rocketchat:language-plugin',
+	name: 'rocketchat:automatic-channels-language-category',
 	version: '0.0.1',
-	summary: 'language plugin for Rocket.Chat'
+	summary: 'language category for Rocket.Chat'
 });
 
 Package.onUse(function(api) {
 	api.use('ecmascript');
-	api.use('rocketchat:plugin-handler');
+	api.use('rocketchat:automatic-channels-handler');
 
 	api.mainModule('server/server.js', 'server');
 });
