@@ -36,9 +36,22 @@ Template.livechat.helpers({
 	},
 
 	inquiries() {
+		//load all livechatDepartmentAgents fpr current agent
+		const departmentAgents = LivechatDepartmentAgents.find({
+			agentId : Meteor.userId()
+		});
+		console.log(departmentAgents);
+		const departmentIds = [];
+		departmentAgents.forEach((agent) => {
+			departmentIds.push(agent.departmentId);
+		});
+		console.log(departmentIds);
+
 		// get all inquiries of the department
 		const inqs = LivechatInquiry.find({
-			agents: Meteor.userId(),
+			department: {
+				$in: departmentIds
+			},
 			status: 'open'
 		}, {
 			sort: {
@@ -109,7 +122,7 @@ Template.livechat.events({
 			text: `${ t('Message') }: ${ this.message }`,
 			showCancelButton: true,
 			confirmButtonColor: '#3085d6',
-			cancelButtonColor: '#d33',
+			cancelButtonColor: '#e8e8e8',
 			confirmButtonText: t('Take_it')
 		}, (isConfirm) => {
 			if (isConfirm) {
@@ -136,4 +149,5 @@ Template.livechat.onCreated(function() {
 	});
 
 	this.subscribe('livechat:inquiry');
+	this.subscribe('livechat:departmentAgents', null);
 });
