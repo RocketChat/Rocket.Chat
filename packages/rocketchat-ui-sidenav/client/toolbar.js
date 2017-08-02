@@ -4,6 +4,7 @@ let filterText = '';
 let usernamesFromClient;
 let resultsFromClient;
 
+const selectorSearch = '.toolbar__search .rc-input__element';
 Meteor.startup(() => {
 	isLoading = new ReactiveVar(false);
 });
@@ -11,14 +12,14 @@ Meteor.startup(() => {
 const toolbarSearch = {
 	shortcut: false,
 	clear() {
-		const $inputMessage = $('textarea.input-message');
+		const $inputMessage = $('.js-input-message');
 
 		if (0 === $inputMessage.length) {
 			return;
 		}
 
 		$inputMessage.focus();
-		$('.toolbar__search-input').val('');
+		$(selectorSearch).val('');
 
 		if (this.shortcut) {
 			menu.close();
@@ -26,7 +27,7 @@ const toolbarSearch = {
 	},
 	focus(fromShortcut) {
 		menu.open();
-		$('.toolbar__search-input').focus();
+		$(selectorSearch).focus();
 		this.shortcut = fromShortcut;
 	}
 };
