@@ -5,7 +5,7 @@
 		</div>
 		<form>
 			<ul class="list clearfix">
-				<li>
+				<li class="disable-notifications">
 					<label>{{_ "Disable_Notifications"}}</label>
 					<div class="input checkbox toggle">
 						<input type="checkbox" id="disableNotifications" name="disableNotifications" value="1" checked="{{$eq disableNotifications true}}" />
@@ -13,7 +13,7 @@
 					</div>
 				</li>
 				{{#if $neq disableNotifications true}}
-					<li>
+					<li class="audio-notifications">
 						<label>{{_ "Audio"}}</label>
 						<div>
 							{{#if editing 'audioNotification'}}
@@ -34,7 +34,7 @@
 							{{/if}}
 						</div>
 					</li>
-					<li>
+					<li class="desktop-notifications">
 						<label>{{_ "Desktop"}}</label>
 						<div>
 							{{#if editing 'desktopNotifications'}}
@@ -56,14 +56,14 @@
 						</div>
 					</li>
 					{{#unless editing 'desktopNotifications'}}
-					<li>
+					<li class="desktop-notifications-duration">
 						<label>{{_ "Desktop_Notifications_Duration"}}</label>
 						<div>
 							<span class="current-setting">{{#if desktopNotificationDuration}}{{desktopNotificationDuration}} {{_"seconds"}}{{else}}{{_ "Use_User_Preferences_or_Global_Settings"}}{{/if}}</span>
 						</div>
 					</li>
 					{{/unless}}
-					<li>
+					<li class="mobile-notifications">
 						<label>{{_ "Mobile"}}</label>
 						<div>
 							{{#if editing 'mobilePushNotifications'}}
@@ -77,7 +77,7 @@
 							{{/if}}
 						</div>
 					</li>
-					<li>
+					<li class="email-notifications">
 						<label>{{_ "Email"}}</label>
 						<div>
 							{{#if editing 'emailNotifications'}}
@@ -95,21 +95,21 @@
 						</div>
 					</li>
 					{{#unless emailVerified}}
-					<li>
+					<li class="email-alerts">
 						<div class="alert alert-warning pending-background pending-border">
 							{{_ "You_wont_receive_email_notifications_because_you_have_not_verified_your_email"}}
 						</div>
 					</li>
 					{{/unless}}
 				{{/if}}
-				<li>
+				<li class="unread-room-status">
 					<label>{{_ "Hide_Unread_Room_Status"}}</label>
 					<div class="input checkbox toggle">
 						<input type="checkbox" id="hideUnreadStatus" name="hideUnreadStatus" value="1" checked="{{$eq hideUnreadStatus true}}" />
 						<label for="hideUnreadStatus"></label>
 					</div>
 				</li>
-				<li>
+				<li class="unread-alerts">
 					<label>{{_ "Unread_Tray_Icon_Alert"}}</label>
 					<div>
 						{{#if editing 'unreadAlert'}}
