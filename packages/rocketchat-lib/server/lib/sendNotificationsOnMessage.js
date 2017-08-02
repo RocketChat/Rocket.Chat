@@ -189,6 +189,7 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room, userId) {
 	let userIdsToPushNotify = [];
 	const usersWithHighlights = [];
 
+	const alwaysNotifyMobileBoolean = RocketChat.settings.get('Notifications_Always_Notify_Mobile');
 	const highlights = RocketChat.models.Users.findUsersByUsernamesWithHighlights(room.usernames, { fields: { '_id': 1, 'settings.preferences.highlights': 1 }}).fetch();
 
 	highlights.forEach(function(user) {
@@ -233,7 +234,7 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room, userId) {
 		}
 
 		if ((userOfMention != null) && canBeNotified(userOfMentionId, 'desktop')) {
-			if (Push.enabled === true && userOfMention.statusConnection !== 'online') {
+			if (Push.enabled === true && userOfMention.statusConnection !== 'online' || alwaysNotifyMobileBoolean === true) {
 				RocketChat.PushNotification.send({
 					roomId: message.rid,
 					username: push_username,
@@ -325,6 +326,9 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room, userId) {
 			}
 
 			userIdsToPushNotify = _.pluck(_.filter(usersOfMobileMentions, function(user) {
+				if (alwaysNotifyMobileBoolean === true) {
+					return true;
+				}
 				return user.statusConnection !== 'online';
 			}), '_id');
 		}
