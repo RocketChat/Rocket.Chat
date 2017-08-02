@@ -12,7 +12,6 @@
 	display: flex;
 	justify-content: center;
 
-
 	&__wrapper {
 		position: relative;
 		width: var(--modal-wrapper-width);
@@ -37,7 +36,6 @@
 		height: 10px;
 	}
 }
-
 
 @media (width < 1024px) {
 	.full-modal {
