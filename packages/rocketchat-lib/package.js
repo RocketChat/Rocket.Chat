@@ -100,6 +100,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/lib/PushNotification.js', 'server');
 	api.addFiles('server/lib/defaultBlockedDomainsList.js', 'server');
 	api.addFiles('server/lib/interceptDirectReplyEmails.js', 'server');
+	api.addFiles('server/lib/loginErrorMessageOverride.js', 'server');
 	api.addFiles('server/lib/notifyUsersOnMessage.js', 'server');
 	api.addFiles('server/lib/processDirectEmail.js', 'server');
 	api.addFiles('server/lib/roomTypes.js', 'server');
