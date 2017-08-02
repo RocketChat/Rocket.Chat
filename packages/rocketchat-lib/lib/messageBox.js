@@ -7,15 +7,15 @@ RocketChat.messageBox.actions = new class {
 
 	/* Add a action to messagebox
 	@param group
-	@param action name
+	@param label
 	@param config
 	icon: icon class
 	action: action function
 	condition: condition to display the action
 	*/
 
-	add(group, actionName, config) {
-		if (!group && !actionName && !config) {
+	add(group, label, config) {
+		if (!group && !label && !config) {
 			return;
 		}
 
@@ -24,14 +24,14 @@ RocketChat.messageBox.actions = new class {
 		}
 
 		const actionExists = this.actions[group].find((action) => {
-			return action.actionName === actionName;
+			return action.label === label;
 		});
 
 		if (actionExists) {
 			return;
 		}
 
-		this.actions[group].push({...config, actionName});
+		this.actions[group].push({...config, label});
 	}
 
 	get(group) {

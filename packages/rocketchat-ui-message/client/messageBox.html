@@ -33,24 +33,25 @@
 						<div class="rc-popover__content">
 							{{# each column in columns }}
 								<div class="rc-popover__column">
-									{{# each group in column }}
-									<div class="rc-popover__column__wrapper">
-										<h3 class="rc-popover__title">{{group.name}}</h3>
-										<ul class="rc-popover__list">
-											{{# each group.actions }}
-											<li class="rc-popover__item" data-action="open" data-open="account">
-												<span class="rc-popover__icon">
-													<svg class="rc-popover__icon-element rc-popover__icon-element--user">
-														<use href="#icon-user"></use>
-													</svg>
-												</span>
-												<span class="rc-popover__item-text">{{_ actionName}}</span>
-											</li>
-											{{/each}}
-										</ul>
-									</div>
+									{{#each group in column }}
+										<div class="rc-popover__column-wrapper">
+											<h3 class="rc-popover__title">{{_ group.name}}</h3>
+											<ul class="rc-popover__list">
+												{{# each group.actions }}
+												<li class="rc-popover__item" data-action="open" data-open="account">
+													<span class="rc-popover__icon">
+														{{#if icon}}
+															<svg class="rc-popover__icon-element rc-popover__icon-element--{{icon}}">
+																<use href="#icon-{{icon}}"></use>
+															</svg>
+														{{/if}}
+													</span>
+													<span class="rc-popover__item-text">{{_ label}}</span>
+												</li>
+												{{/each}}
+											</ul>
+										</div>
 									{{/each}}
-
 								</div>
 							{{/each}}
 						</div>
