@@ -13,13 +13,6 @@ this.ChatMessages = class ChatMessages {
 		this.bindEvents();
 	}
 
-	resize() {
-		let dif = (RocketChat.Layout.isEmbedded() ? 0 : 60) + $('.messages-container').find('footer').outerHeight();
-		dif += $('.announcement').length > 0 ? 40 : 0;
-		return $('.messages-box').css({
-			height: `calc(100% - ${ dif }px)`});
-	}
-
 	getEditingIndex(element) {
 		const msgs = this.wrapper.get(0).querySelectorAll('.own:not(.system)');
 		let index = 0;
@@ -361,11 +354,7 @@ this.ChatMessages = class ChatMessages {
 
 	bindEvents() {
 		if (this.wrapper && this.wrapper.length) {
-			return $('.input-message').autogrow({
-				postGrowCallback: () => {
-					return this.resize();
-				}
-			});
+			$('.input-message').autogrow();
 		}
 	}
 
@@ -416,7 +405,6 @@ this.ChatMessages = class ChatMessages {
 		const input = event.currentTarget;
 		// const $input = $(input);
 		const k = event.which;
-		this.resize(input);
 
 		if (k === 13) {
 			if (sendOnEnter == null || sendOnEnter === 'normal' || sendOnEnter === 'desktop' && Meteor.Device.isDesktop()) {
