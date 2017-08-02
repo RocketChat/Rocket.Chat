@@ -286,7 +286,6 @@
 
         if (self.options.useVideo) {
             self.options.useVideo.style.display = 'none';
-            self.options.useVideo['src'] = '';
         }
 
         if (self.localStream) {
@@ -437,22 +436,23 @@
         console.log("Audio constraints", mediaParams.audio);
         console.log("Video constraints", mediaParams.video);
 
-        if (self.options.useVideo && self.options.localVideo) {
-            getUserMedia({
-                constraints: {
-                    audio: false,
-                    video: {
-                        //mandatory: self.options.videoParams,
-                        //optional: []
-                    },
-                },
-                localVideo: self.options.localVideo,
-                onsuccess: function(e) { self.options.localVideoStream = e; console.log("local video ready"); },
-                onerror: function(e) { console.error("local video error!"); }
-            });
-        }
-
-        getUserMedia({
+        // if (self.options.useVideo && self.options.localVideo) {
+        //   debugger
+        //     getUserMedia({
+        //         constraints: {
+        //             audio: false,
+        //             video: {
+        //                 //mandatory: self.options.videoParams,
+        //                 //optional: []
+        //             },
+        //         },
+        //         localVideo: self.options.localVideo,
+        //         onsuccess: function(e) { self.options.localVideoStream = e; console.log("local video ready"); debugger },
+        //         onerror: function(e) { console.error("local video error!"); }
+        //     });
+        // }
+        getUserMedia(
+          {
             constraints: {
                 audio: mediaParams.audio,
                 video: mediaParams.video
@@ -501,7 +501,7 @@
 
                 },
                 localVideo: obj.options.localVideo,
-                onsuccess: function(e) { self.options.localVideoStream = e; console.log("local video ready"); },
+                onsuccess: function(e) { obj.options.localVideoStream = e; console.log("local video ready"); },
                 onerror: function(e) { console.error("local video error!"); }
             });
         }
