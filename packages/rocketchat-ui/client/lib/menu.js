@@ -62,7 +62,6 @@ this.menu = new class extends EventEmitter {
 			this.touchstartX = e.touches[0].clientX;
 			this.touchstartY = e.touches[0].clientY;
 			this.mainContent = $('.main-content');
-			this.wrapper = $('.messages-box > .wrapper');
 		}
 	}
 	touchmove(e) {
@@ -152,6 +151,7 @@ this.menu = new class extends EventEmitter {
 	init() {
 		this.sidebar = this.menu = $('.sidebar');
 		this.sidebarWrap = $('.sidebar-wrap');
+		this.wrapper = $('.messages-box > .wrapper');
 		const ignore = (fn) => (event) => document.body.clientWidth <= 780 && fn(event);
 
 		document.body.addEventListener('touchstart', ignore((e) => this.touchstart(e)));
@@ -170,11 +170,11 @@ this.menu = new class extends EventEmitter {
 			this.sidebarWrap.css('transition', '');
 			this.wrapper && this.wrapper.css('overflow', '');
 		});
-		this.on('open', () => {
+		this.on('open', ignore(() => {
 			this.sidebar.css('box-shadow', '0 0 15px 1px rgba(0,0,0,.3)');
 			// this.sidebarWrap.css('z-index', '9998');
 			this.translate(sideNavW);
-		});
+		}));
 		this.mainContent = $('.main-content');
 
 		this.list = $('.rooms-list');
