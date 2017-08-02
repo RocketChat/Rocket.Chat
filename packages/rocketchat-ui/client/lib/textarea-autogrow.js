@@ -16,6 +16,8 @@
 				postGrowCallback: null
 			}, options);
 
+			const maxHeight = window.getComputedStyle(self)['max-height'].replace('px', '');
+
 			var shadow = $("div.autogrow-shadow");
 			if (!shadow.length) {
 				shadow = $('<div></div>').addClass("autogrow-shadow").appendTo(document.body);
@@ -59,13 +61,15 @@
 					newHeight = settings.preGrowCallback($self, shadow, newHeight, minHeight);
 				}
 
-
-
-				const maxHeight = $self.css("max-height").replace('px', '');
-
-				if(maxHeight > newHeight){
-					$self.css('overflow-y', 'hidden');
+				if(newHeight === $self[0].offsetHeight){
+					return;
 				}
+
+				if(maxHeight <= newHeight){
+					return;
+				}
+
+				$self.css('overflow-y', 'hidden');
 
 				$self.stop().animate( { height: newHeight }, { duration: 100, complete: ()=> {
 					$self.trigger('autogrow', []);
