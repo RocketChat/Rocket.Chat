@@ -35,6 +35,35 @@ function applyMd(e, t) {
 		}, 100);
 	}
 	box.focus();
+
+	// removes markdown if selected text in inside the same clicked markdown
+	const startPattern = this.pattern.substr(0, this.pattern.indexOf('{{text}}'));
+	const startPatternFound = [...startPattern].reverse().every((char, index) => {
+		return box.value.substr(selectionStart - index - 1, 1) === char;
+	});
+
+	if (startPatternFound) {
+		const endPattern = this.pattern.substr(this.pattern.indexOf('{{text}}') + '{{text}}'.length);
+		const endPatternFound = [...endPattern].every((char, index) => {
+			return box.value.substr(selectionEnd + index, 1) === char;
+		});
+
+		if (endPatternFound) {
+			box.selectionStart = selectionStart - startPattern.length;
+			box.selectionEnd = selectionEnd + endPattern.length;
+
+			if (document.execCommand) {
+				document.execCommand('insertText', false, selectedText);
+			} else {
+				box.value = initText.substr(0, initText.length - startPattern.length) + selectedText + finalText.substr(endPattern.length);
+			}
+			box.selectionStart = selectionStart - startPattern.length;
+			box.selectionEnd = box.selectionStart + selectedText.length;
+			$(box).change();
+			return;
+		}
+	}
+
 	/*
 		get text
 		apply pattern
@@ -82,11 +111,14 @@ const markdownButtons = [
 ];
 
 Template.messageBox.helpers({
-	toString(obj) { return JSON.stringify(obj); },
+	toString(obj) {
+		return JSON.stringify(obj);
+	},
 	columns() {
 		const groups = RocketChat.messageBox.actions.get();
 		const sorted = Object.keys(groups).sort((a, b) => groups[b].length - groups[a].length);
-		const totalColumn = sorted.reduce((total, key) => total + groups[key].length, 0) / 2;
+		const totalColumn = sorted.reduce((total, key) => total + groups[key].length, 0);
+		const totalPerColumn = Math.ceil(totalColumn / 2);
 		const columns = [];
 
 		let counter = 0;
@@ -97,7 +129,7 @@ Template.messageBox.helpers({
 			counter += actions.length;
 			columns[index].push({name: key, actions});
 
-			if (counter > totalColumn) {
+			if (counter > totalPerColumn) {
 				counter = 0;
 				index++;
 			}
