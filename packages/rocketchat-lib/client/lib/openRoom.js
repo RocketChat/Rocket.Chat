@@ -70,11 +70,9 @@ function openRoom(type, name) {
 			RoomManager.updateMentionsMarksOfRoom(type + name);
 			Meteor.setTimeout(() => readMessage.readNow(), 2000);
 			// KonchatNotification.removeRoomNotification(params._id)
-
 			if (Meteor.Device.isDesktop() && window.chatMessages && window.chatMessages[room._id] != null) {
-				setTimeout(() => $('.message-form .input-message').focus(), 100);
+				setTimeout(() => window.chatMessages[room._id].input.focus(), 100);
 			}
-
 			// update user's room subscription
 			const sub = ChatSubscription.findOne({rid: room._id});
 			if (sub && sub.open === false) {
