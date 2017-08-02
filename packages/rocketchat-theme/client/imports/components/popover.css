@@ -28,7 +28,6 @@
 	z-index: 9999;
 
 	&__content {
-		width: 100%;
 		display: flex;
 		padding: 1rem;
 		border-radius: 2px;
@@ -44,8 +43,16 @@
 	&__column {
 		display: flex;
 		flex-direction: column;
-		width: 100%;
 		min-width: 130px;
+		flex: 1 0 auto;
+
+		&:not(:first-child) {
+			padding-left: 1rem;
+		}
+
+		&-wrapper:not(:first-child) {
+			margin-top: 1rem;
+		}
 	}
 
 	&__title {
@@ -93,6 +100,26 @@
 		&--sign-out {
 			width: 14px;
 			height: 14px;
+		}
+
+		&--video {
+			width: 17px;
+			height: 13px;
+		}
+
+		&--audio {
+			width: 16px;
+			height: 14px;
+		}
+
+		&--computer {
+			width: 16px;
+			height: 14px;
+		}
+
+		&--map-pin {
+			width: 12px;
+			height: 16px;
 		}
 	}
 
