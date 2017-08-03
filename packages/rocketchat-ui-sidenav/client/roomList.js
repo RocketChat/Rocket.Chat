@@ -48,9 +48,13 @@ Template.roomList.helpers({
 	},
 
 	roomData(room) {
+		const icon = RocketChat.roomTypes.getIcon(room.t);
+		const avatar = !icon;
+
 		return {
 			...room,
-			icon: RocketChat.roomTypes.getIcon(room.t),
+			icon,
+			avatar,
 			route: RocketChat.roomTypes.getRouteLink(room.t, room)
 		};
 	},

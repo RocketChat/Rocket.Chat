@@ -10,9 +10,11 @@
 						<use href="#icon-{{icon}}"></use>
 					</svg>
 				{{else}}
-					<div class="sidebar-item__user-thumb">
-						{{> avatar username=name}}
-					</div>
+					{{#if avatar}}
+						<div class="sidebar-item__user-thumb">
+							{{> avatar username=name}}
+						</div>
+					{{/if}}
 				{{/if}}
 			</div>
 			<div class='sidebar-item__name {{archivedClass}}'>{{name}}</div>
