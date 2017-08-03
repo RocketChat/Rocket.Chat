@@ -1,4 +1,4 @@
-/* globals Template */
+/* globals Template chatMessages*/
 Template.messageBox.events({
 	'click .emoji-picker-icon'(event) {
 		event.stopPropagation();
@@ -6,19 +6,23 @@ Template.messageBox.events({
 			RocketChat.EmojiPicker.close();
 		} else {
 			RocketChat.EmojiPicker.open(event.currentTarget, (emoji) => {
-				const input = $(event.currentTarget).parent().parent().find('.input-message');
+				const {input} = chatMessages[RocketChat.openedRoom];
 
 				const emojiValue = `:${ emoji }:`;
 
-				const caretPos = input.prop('selectionStart');
-				const textAreaTxt = input.val();
-
-				input.val(textAreaTxt.substring(0, caretPos) + emojiValue + textAreaTxt.substring(caretPos));
+				const caretPos = input.selectionStart;
+				const textAreaTxt = input.value;
+				input.focus();
+				if (document.execCommand) {
+					document.execCommand('insertText', false, emojiValue);
+				} else {
+					input.value = textAreaTxt.substring(0, caretPos) + emojiValue + textAreaTxt.substring(caretPos);
+				}
 
 				input.focus();
 
-				input.prop('selectionStart', caretPos + emojiValue.length);
-				input.prop('selectionEnd', caretPos + emojiValue.length);
+				input.selectionStart = caretPos + emojiValue.length;
+				input.selectionEnd = caretPos + emojiValue.length;
 			});
 		}
 	}
