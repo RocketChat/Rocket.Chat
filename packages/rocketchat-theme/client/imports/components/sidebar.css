@@ -343,6 +343,12 @@
 			width: 18px;
 			height: 18px;
 		}
+
+		&--comment-alt {
+			width: 16px;
+			height: 14px;
+			fill: currentColor;
+		}
 	}
 
 	&__user-thumb {
