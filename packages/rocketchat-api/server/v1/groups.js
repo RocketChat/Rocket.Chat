@@ -290,7 +290,7 @@ RocketChat.API.v1.addRoute('groups.list', { authRequired: true }, {
 		const { offset, count } = this.getPaginationItems();
 		const { sort, fields } = this.parseJsonQuery();
         let rooms = _.pluck(RocketChat.models.Subscriptions.findByTypeAndUserId('p', this.userId).fetch(), '_room');
-		const totalCount = rooms.length;
+        const totalCount = rooms.length;
 
 		rooms = RocketChat.models.Rooms.processQueryOptionsOnResult(rooms, {
 			sort: sort ? sort : { name: 1 },
