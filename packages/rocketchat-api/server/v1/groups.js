@@ -314,7 +314,7 @@ RocketChat.API.v1.addRoute('groups.listAll', { authRequired: true }, {
 		const { sort, fields } = this.parseJsonQuery();
 		if (!RocketChat.authz.hasPermission(this.userId, 'view-room-administration')) {
 			return RocketChat.API.v1.unauthorized();
-		} 
+		}
 		let rooms = RocketChat.models.Rooms.findByType('p').fetch();
 		const totalCount = rooms.length;
 
