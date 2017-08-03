@@ -414,10 +414,46 @@ RocketChat.settings.addGroup('General', function() {
 		});
 	});
 	this.section('Notifications', function() {
-		return this.add('Desktop_Notifications_Duration', 0, {
+		this.add('Desktop_Notifications_Duration', 0, {
 			type: 'int',
 			'public': true,
 			i18nDescription: 'Desktop_Notification_Durations_Description'
+		});
+
+		this.add('Desktop_Notifications_Default_Alert', 'mentions', {
+			type: 'select',
+			values: [{
+				key: 'all',
+				i18nLabel: 'All_messages'
+			}, {
+				key: 'mentions',
+				i18nLabel: 'Mentions'
+			}, {
+				key: 'nothing',
+				i18nLabel: 'Nothing'
+			}],
+			public: true
+		});
+
+		this.add('Mobile_Notifications_Default_Alert', 'mentions', {
+			type: 'select',
+			values: [{
+				key: 'all',
+				i18nLabel: 'All_messages'
+			}, {
+				key: 'mentions',
+				i18nLabel: 'Mentions'
+			}, {
+				key: 'nothing',
+				i18nLabel: 'Nothing'
+			}],
+			public: true
+		});
+
+		this.add('Notifications_Max_Room_Members', 100, {
+			type: 'int',
+			public: true,
+			i18nDescription: 'Notifications_Max_Room_Members_Description'
 		});
 	});
 	this.section('REST API', function() {
@@ -1056,6 +1092,10 @@ RocketChat.settings.addGroup('Layout', function() {
 				}
 			],
 			'public': true
+		});
+		this.add('UI_Allow_room_names_with_special_chars', false, {
+			type: 'boolean',
+			public: true
 		});
 	});
 });

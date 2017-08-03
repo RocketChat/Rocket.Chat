@@ -24,10 +24,18 @@ const acEvents = {
 };
 
 const validateChannelName = (name) => {
+	if (RocketChat.settings.get('UI_Allow_room_names_with_special_chars')) {
+		return true;
+	}
+
 	const reg = new RegExp(`^${ RocketChat.settings.get('UTF8_Names_Validation') }$`);
 	return name.length === 0 || reg.test(name);
 };
 const filterNames = (old) => {
+	if (RocketChat.settings.get('UI_Allow_room_names_with_special_chars')) {
+		return old;
+	}
+
 	const reg = new RegExp(`^${ RocketChat.settings.get('UTF8_Names_Validation') }$`);
 	return [...old.replace(' ', '').toLocaleLowerCase()].filter(f => reg.test(f)).splice(0, 22).join('');
 };
@@ -137,6 +145,7 @@ Template.createChannel.events({
 		if (instance.invalid.get() || instance.inUse.get()) {
 			return e.target.name.focus();
 		}
+
 		Meteor.call(isPrivate ? 'createPrivateGroup' : 'createChannel', name, instance.selectedUsers.get().map(user => user.username), readOnly, function(err, result) {
 			if (err) {
 				if (err.error === 'error-invalid-name') {
@@ -148,9 +157,10 @@ Template.createChannel.events({
 				return;
 			}
 			if (!isPrivate) {
-				RocketChat.callbacks.run('aftercreateCombined', { _id: result.rid, name });
+				RocketChat.callbacks.run('aftercreateCombined', { _id: result.rid, name: result.name });
 			}
-			return FlowRouter.go(isPrivate ? 'group' : 'channel', { name }, FlowRouter.current().queryParams);
+
+			return FlowRouter.go(isPrivate ? 'group' : 'channel', { name: result.name }, FlowRouter.current().queryParams);
 		});
 		return false;
 	}
