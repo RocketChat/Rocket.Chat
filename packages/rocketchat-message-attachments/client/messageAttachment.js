@@ -70,5 +70,10 @@ Template.messageAttachment.helpers({
 	},
 	injectIndex(data, previousIndex, index) {
 		data.index = `${ previousIndex }.attachments.${ index }`;
+	},
+
+	isFile() {
+		console.log(this.type === 'file');
+		return this.type === 'file';
 	}
 });
