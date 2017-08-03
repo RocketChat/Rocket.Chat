@@ -289,8 +289,8 @@ RocketChat.API.v1.addRoute('groups.list', { authRequired: true }, {
 	get() {
 		const { offset, count } = this.getPaginationItems();
 		const { sort, fields } = this.parseJsonQuery();
-        let rooms = _.pluck(RocketChat.models.Subscriptions.findByTypeAndUserId('p', this.userId).fetch(), '_room');
-        const totalCount = rooms.length;
+		let rooms = _.pluck(RocketChat.models.Subscriptions.findByTypeAndUserId('p', this.userId).fetch(), '_room');
+		const totalCount = rooms.length;
 
 		rooms = RocketChat.models.Rooms.processQueryOptionsOnResult(rooms, {
 			sort: sort ? sort : { name: 1 },
@@ -315,7 +315,7 @@ RocketChat.API.v1.addRoute('groups.listAll', { authRequired: true }, {
 		if (!RocketChat.authz.hasPermission(this.userId, 'view-room-administration')) {
 			return RocketChat.API.v1.unauthorized();
 		} 
-        let rooms = RocketChat.models.Rooms.findByType('p').fetch();
+		let rooms = RocketChat.models.Rooms.findByType('p').fetch();
 		const totalCount = rooms.length;
 
 		rooms = RocketChat.models.Rooms.processQueryOptionsOnResult(rooms, {
