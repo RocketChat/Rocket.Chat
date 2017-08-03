@@ -71,8 +71,7 @@ jobs:
       - run:
           name: Notify on demo
           command: |
-            set -x
-            curl -X POST -H 'Content-Type: application/json' --data "{'text':'@here Nova [build](${CIRCLE_BUILD_URL}) pronta\!'}" $WEBHOOK_URL
+            curl -X POST -H 'Content-Type: application/json' --data "{\"text\":\"@here Nova [build](${CIRCLE_BUILD_URL}) pronta :marioparty:\"}" $WEBHOOK_URL
           filters:
             branches:
               only: color-variables
