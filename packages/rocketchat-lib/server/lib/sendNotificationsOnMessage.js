@@ -144,20 +144,41 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room, userId) {
 		return (settings[types[type][0]].indexOf(id) === -1 || settings[types[type][1]].indexOf(id) !== -1);
 	}
 
-	const notificationPreferencesByRoom = RocketChat.models.Subscriptions.findNotificationPreferencesByRoom(room._id);
-	notificationPreferencesByRoom.forEach(function(subscription) {
+	// Don't fetch all users if room exceeds max members
+	const maxMembersForNotification = RocketChat.settings.get('Notifications_Max_Room_Members');
+	const disableAllMessageNotifications = room.usernames.length > maxMembersForNotification && maxMembersForNotification !== 0;
+	const subscriptions = RocketChat.models.Subscriptions.findNotificationPreferencesByRoom(room._id, disableAllMessageNotifications);
+	const userIds = [];
+	subscriptions.forEach((s) => {
+		userIds.push(s.u._id);
+	});
+	const userSettings = {};
+	RocketChat.models.Users.findUsersByIds(userIds, { fields: { 'settings.preferences.desktopNotifications': 1, 'settings.preferences.mobileNotifications': 1 } }).forEach((user) => {
+		userSettings[user._id] = user.settings;
+	});
+
+	subscriptions.forEach((subscription) => {
 		if (subscription.disableNotifications) {
 			settings.dontNotifyDesktopUsers.push(subscription.u._id);
 			settings.dontNotifyMobileUsers.push(subscription.u._id);
 		} else {
-			if (subscription.desktopNotifications === 'all') {
+			const preferences = userSettings[subscription.u._id] ? userSettings[subscription.u._id].preferences || {} : {};
+			const userDesktopNotificationPreference = preferences.desktopNotifications !== 'default' ? preferences.desktopNotifications : undefined;
+			const userMobileNotificationPreference = preferences.mobileNotifications !== 'default' ? preferences.mobileNotifications : undefined;
+			// Set defaults if they don't exist
+			const {
+				desktopNotifications = userDesktopNotificationPreference || RocketChat.settings.get('Desktop_Notifications_Default_Alert'),
+				mobilePushNotifications = userMobileNotificationPreference || RocketChat.settings.get('Mobile_Notifications_Default_Alert')
+			} = subscription;
+
+			if (desktopNotifications === 'all' && !disableAllMessageNotifications) {
 				settings.alwaysNotifyDesktopUsers.push(subscription.u._id);
-			} else if (subscription.desktopNotifications === 'nothing') {
+			} else if (desktopNotifications === 'nothing') {
 				settings.dontNotifyDesktopUsers.push(subscription.u._id);
 			}
-			if (subscription.mobilePushNotifications === 'all') {
+			if (mobilePushNotifications === 'all' && !disableAllMessageNotifications) {
 				settings.alwaysNotifyMobileUsers.push(subscription.u._id);
-			} else if (subscription.mobilePushNotifications === 'nothing') {
+			} else if (mobilePushNotifications === 'nothing') {
 				settings.dontNotifyMobileUsers.push(subscription.u._id);
 			}
 		}
@@ -176,22 +197,17 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room, userId) {
 		}
 	});
 
-	let push_message;
+	let push_message = ' ';
 	//Set variables depending on Push Notification settings
 	if (RocketChat.settings.get('Push_show_message')) {
 		push_message = parseMessageText(message, userId);
-	} else {
-		push_message = ' ';
 	}
 
-	let push_username;
-	let push_room;
+	let push_username = '';
+	let push_room = '';
 	if (RocketChat.settings.get('Push_show_username_room')) {
 		push_username = user.username;
 		push_room = `#${ room.name }`;
-	} else {
-		push_username = '';
-		push_room = '';
 	}
 
 	if (room.t == null || room.t === 'd') {
