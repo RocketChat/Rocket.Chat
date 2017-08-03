@@ -7,9 +7,8 @@ RocketChat.saveCustomFieldsWithoutValidation = function(userId, formData) {
 			throw new Meteor.Error('error-invalid-customfield-json', 'Invalid JSON for Custom Fields');
 		}
 
-		const customFields = formData;
-
-		// for fieldName, field of customFieldsMeta
+		const customFields = {};
+		Object.keys(customFieldsMeta).forEach(key => customFields[key] = formData[key]);
 		RocketChat.models.Users.setCustomFields(userId, customFields);
 
 		Object.keys(customFields).forEach((fieldName) => {

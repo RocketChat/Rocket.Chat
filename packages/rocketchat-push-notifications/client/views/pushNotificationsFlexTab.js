@@ -1,6 +1,17 @@
 import toastr from 'toastr';
 /* globals ChatSubscription */
 
+const notificationLabels = {
+	all: 'All_messages',
+	mentions: 'Mentions',
+	nothing: 'Nothing'
+};
+
+function getUserPreference(preference) {
+	const user = Meteor.user();
+	return user && user.settings && user.settings.preferences && user.settings.preferences[preference];
+}
+
 Template.pushNotificationsFlexTab.helpers({
 	audioAssets() {
 		return RocketChat.CustomSounds && RocketChat.CustomSounds.getList && RocketChat.CustomSounds.getList() || [];
@@ -43,7 +54,7 @@ Template.pushNotificationsFlexTab.helpers({
 				desktopNotifications: 1
 			}
 		});
-		return sub ? sub.desktopNotifications : '';
+		return sub ? sub.desktopNotifications || 'default' : 'default';
 	},
 	mobilePushNotifications() {
 		const sub = ChatSubscription.findOne({
@@ -53,7 +64,7 @@ Template.pushNotificationsFlexTab.helpers({
 				mobilePushNotifications: 1
 			}
 		});
-		return sub ? sub.mobilePushNotifications : '';
+		return sub ? sub.mobilePushNotifications || 'default' : 'default';
 	},
 	emailNotifications() {
 		const sub = ChatSubscription.findOne({
@@ -144,11 +155,7 @@ Template.pushNotificationsFlexTab.helpers({
 				case 'mentions':
 					return t('Mentions');
 				default:
-					if (field === 'emailNotifications') {
-						return t('Use_account_preference');
-					} else {
-						return t('Mentions');
-					}
+					return t('Use_account_preference');
 			}
 		}
 	},
@@ -171,6 +178,20 @@ Template.pushNotificationsFlexTab.helpers({
 	},
 	emailVerified() {
 		return Meteor.user().emails && Meteor.user().emails[0] && Meteor.user().emails[0].verified;
+	},
+	defaultDesktopNotification() {
+		let preference = getUserPreference('desktopNotifications');
+		if (preference === 'default' || preference == null) {
+			preference = RocketChat.settings.get('Desktop_Notifications_Default_Alert');
+		}
+		return notificationLabels[preference];
+	},
+	defaultMobileNotification() {
+		let preference = getUserPreference('mobileNotifications');
+		if (preference === 'default' || preference == null) {
+			preference = RocketChat.settings.get('Mobile_Notifications_Default_Alert');
+		}
+		return notificationLabels[preference];
 	}
 });
 
