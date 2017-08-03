@@ -13,6 +13,6 @@ Template.snippetMessage.helpers({
 		}
 	},
 	body() {
-		return `<a href="/snippet/${ this._id }/${ this.snippetName }">${ this.snippetName }</a>`;
+		return `<a href="/snippet/${ this._id }/${ encodeURIComponent(this.snippetName) }">${ _.escapeHTML(this.snippetName) }</a>`;
 	}
 });

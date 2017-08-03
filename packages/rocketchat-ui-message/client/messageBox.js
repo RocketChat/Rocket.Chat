@@ -361,7 +361,7 @@ function firefoxPasteUpload(fn) {
 
 Template.messageBox.events({
 	'click .js-message-actions .rc-popover__item'(event, instance) {
-		this.action.apply(this, [{rid: Template.parentData()._id, messageBox: instance.find('.js-input-message'), element: event.target, event}]);
+		this.action.apply(this, [{rid: Template.parentData()._id, messageBox: instance.find('.rc-message-box'), element: $(event.target).parent('.rc-popover__item')[0], event}]);
 	},
 	'click .join'(event) {
 		event.stopPropagation();
