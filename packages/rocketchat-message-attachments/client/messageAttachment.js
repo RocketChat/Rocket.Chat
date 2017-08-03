@@ -73,7 +73,6 @@ Template.messageAttachment.helpers({
 	},
 
 	isFile() {
-		console.log(this.type === 'file');
 		return this.type === 'file';
 	}
 });
