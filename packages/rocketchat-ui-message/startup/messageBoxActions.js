@@ -1,22 +1,44 @@
-/* globals fileUpload popover */
+/* globals fileUpload popover chatMessages AudioRecorder */
 
 import mime from 'mime-type/with-db';
+import {VRecDialog} from 'meteor/rocketchat:ui-vrecord';
 
 RocketChat.messageBox.actions.add('Create_new', 'Video_message', {
 	icon: 'video',
 	condition: () => RocketChat.settings.get('FileUpload_Enabled') && RocketChat.settings.get('Message_VideoRecorderEnabled') && ((navigator.getUserMedia != null) || (navigator.webkitGetUserMedia != null)) && (!RocketChat.settings.get('FileUpload_MediaTypeWhiteList') || RocketChat.settings.get('FileUpload_MediaTypeWhiteList').match(/video\/webm|video\/\*/i)),
-	action() {
-		return;
+	action({event, messageBox}) {
+		return VRecDialog.opened ? VRecDialog.close() : VRecDialog.open(messageBox);
 	}
 });
 
 RocketChat.messageBox.actions.add('Create_new', 'Audio_message', {
 	icon: 'audio',
 	condition: () => RocketChat.settings.get('FileUpload_Enabled') && RocketChat.settings.get('Message_AudioRecorderEnabled') && ((navigator.getUserMedia != null) || (navigator.webkitGetUserMedia != null)) && (!RocketChat.settings.get('FileUpload_MediaTypeWhiteList') || RocketChat.settings.get('FileUpload_MediaTypeWhiteList').match(/audio\/wav|audio\/\*/i)),
-	action() {
-		return;
+	action({event, element}) {
+		event.preventDefault();
+		const icon = element.querySelector('.rc-popover__icon');
+		if (chatMessages[RocketChat.openedRoom].recording) {
+			return AudioRecorder.stop(function(blob) {
+				icon.style.color = '';
+				icon.classList.remove('pulse');
+				chatMessages[RocketChat.openedRoom].recording = false;
+				return fileUpload([
+					{
+						file: blob,
+						type: 'audio',
+						name: `${ TAPi18n.__('Audio record') }.wav`
+					}
+				]);
+			});
+		}
+		icon.classList.add('pulse');
+		icon.style.color = 'red';
+		chatMessages[RocketChat.openedRoom].recording = true;
+		return AudioRecorder.start(function() {
+		});
 	}
 });
+
 
 RocketChat.messageBox.actions.add('Add_files_from', 'Computer', {
 	icon: 'computer',

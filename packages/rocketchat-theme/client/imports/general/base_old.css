@@ -1463,11 +1463,8 @@
 	flex-flow: row nowrap;
 	padding: 0 10px 0 20px;
 	border-width: 0 0 1px;
-	z-index: 100;
-	top: 0;
-	left: 0;
-	width: 100%;
 	height: calc(var(--header-min-height) + 1px);
+	flex-shrink: 0;
 
 	&.visible h2 {
 		overflow: visible;
@@ -2022,15 +2019,14 @@
 
 .rc-old .messages-container {
 	position: relative;
-	height: 100%;
-	width: 100%;
-	top: 0;
-	left: 0;
-	z-index: 1;
+	flex: 1;
+	display: flex;
+	flex-direction: column;
 
 	&-wrapper {
 		height: calc(100% - 61px);
 		display: flex;
+		flex-grow: 1;
 	}
 
 	&-main {
@@ -2062,6 +2058,11 @@
 		overflow-x: hidden;
 		word-wrap: break-word;
 		-webkit-overflow-scrolling: touch;
+	}
+
+	& .footer {
+		border-width: 1px 0 0;
+		flex-shrink: 0;
 	}
 
 	& .message-form {
@@ -2415,8 +2416,7 @@
 .rc-old .messages-box {
 	position: relative;
 	overflow: hidden;
-	width: 100%;
-	flex: 1 1 100%;
+	flex-grow: 1;
 
 	& .message-cog-container .message-action.jump-to-search-message {
 		display: none !important;
@@ -3154,7 +3154,6 @@ body:not(.is-cordova) {
 
 	&.opened .flex-tab {
 		display: block;
-		height: calc(100% - 61px); /* --header-height */
 	}
 }
 

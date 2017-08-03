@@ -1,5 +1,12 @@
 /*globals defaultUserLanguage, KonchatNotification */
 import toastr from 'toastr';
+
+const notificationLabels = {
+	all: 'All_messages',
+	mentions: 'Mentions',
+	nothing: 'Nothing'
+};
+
 Template.accountPreferences.helpers({
 	showMergedChannels() {
 		return ['category', 'unread'].includes(Template.instance().roomsListExhibitionMode.get()) ? '' : 'disabled';
@@ -69,6 +76,15 @@ Template.accountPreferences.helpers({
 		const user = Meteor.user();
 		return user && user.settings && user.settings.preferences && user.settings.preferences.desktopNotificationDuration;
 	},
+	defaultDesktopNotificationDuration() {
+		return RocketChat.settings.get('Desktop_Notifications_Duration');
+	},
+	defaultDesktopNotification() {
+		return notificationLabels[RocketChat.settings.get('Desktop_Notifications_Default_Alert')];
+	},
+	defaultMobileNotification() {
+		return notificationLabels[RocketChat.settings.get('Mobile_Notifications_Default_Alert')];
+	},
 	showRoles() {
 		return RocketChat.settings.get('UI_DisplayRoles');
 	},
@@ -135,6 +151,8 @@ Template.accountPreferences.onCreated(function() {
 			return _.trim(e);
 		}));
 		data.desktopNotificationDuration = $('input[name=desktopNotificationDuration]').val();
+		data.desktopNotifications = $('#desktopNotifications').find('select').val();
+		data.mobileNotifications = $('#mobileNotifications').find('select').val();
 		data.unreadAlert = $('#unreadAlert').find('input:checked').val();
 		data.notificationsSoundVolume = parseInt($('#notificationsSoundVolume').val());
 
