@@ -289,12 +289,33 @@ RocketChat.API.v1.addRoute('groups.list', { authRequired: true }, {
 	get() {
 		const { offset, count } = this.getPaginationItems();
 		const { sort, fields } = this.parseJsonQuery();
-		let rooms;
-		if (RocketChat.authz.hasPermission(this.userId, 'view-room-administration')) {
-			rooms = _.pluck(RocketChat.models.Subscriptions.findByType('p').fetch(), '_room');
-		} else {
-			rooms = _.pluck(RocketChat.models.Subscriptions.findByTypeAndUserId('p', this.userId).fetch(), '_room');
-		}
+        let rooms = _.pluck(RocketChat.models.Subscriptions.findByTypeAndUserId('p', this.userId).fetch(), '_room');
+		const totalCount = rooms.length;
+
+		rooms = RocketChat.models.Rooms.processQueryOptionsOnResult(rooms, {
+			sort: sort ? sort : { name: 1 },
+			skip: offset,
+			limit: count,
+			fields: Object.assign({}, fields, RocketChat.API.v1.defaultFieldsToExclude)
+		});
+
+		return RocketChat.API.v1.success({
+			groups: rooms,
+			offset,
+			count: rooms.length,
+			total: totalCount
+		});
+	}
+});
+
+RocketChat.API.v1.addRoute('groups.listAll', { authRequired: true }, {
+	get() {
+		const { offset, count } = this.getPaginationItems();
+		const { sort, fields } = this.parseJsonQuery();
+		if (!RocketChat.authz.hasPermission(this.userId, 'view-room-administration')) {
+			return RocketChat.API.v1.unauthorized();
+		} 
+        let rooms = RocketChat.models.Rooms.findByType('p').fetch();
 		const totalCount = rooms.length;
 
 		rooms = RocketChat.models.Rooms.processQueryOptionsOnResult(rooms, {
