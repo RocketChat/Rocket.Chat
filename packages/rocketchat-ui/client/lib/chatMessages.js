@@ -137,7 +137,7 @@ this.ChatMessages = class ChatMessages {
 		} else {
 			this.input.value = msg;
 		}
-		$(this.input).change();
+		$(this.input).trigger('change').trigger('input');
 
 		const cursor_pos = editingNext ? 0 : -1;
 		this.$input.setCursorPosition(cursor_pos);
@@ -159,6 +159,7 @@ this.ChatMessages = class ChatMessages {
 			delete this.editing.index;
 
 			this.input.value = this.editing.saved || '';
+			$(this.input).trigger('change').trigger('input');
 			const cursor_pos = this.editing.savedCursor != null ? this.editing.savedCursor : -1;
 			this.$input.setCursorPosition(cursor_pos);
 
@@ -189,6 +190,7 @@ this.ChatMessages = class ChatMessages {
 					const lastMessage = ChatMessage.findOne({rid}, { fields: { ts: 1 }, sort: { ts: -1 }});
 					Meteor.call('setReaction', reaction, lastMessage._id);
 					input.value = '';
+					$(input).trigger('change').trigger('input');
 					return;
 				}
 			}
@@ -209,6 +211,8 @@ this.ChatMessages = class ChatMessages {
 
 				KonchatNotification.removeRoomNotification(rid);
 				input.value = '';
+				$(input).trigger('change').trigger('input');
+
 				if (typeof input.updateAutogrow === 'function') {
 					input.updateAutogrow();
 				}
