@@ -1,5 +1,7 @@
 <template name="messageBox">
 	<div class="rc-message-box rc-new">
+		{{#if subscribed}}
+
 			{{> messagePopupConfig getPopupConfig}}
 			{{#with usersTyping}}
 				<div class="rc-message-box__typing">
@@ -92,8 +94,6 @@
 					</button>
 				{{/each}}
 			</div>
-		</div>
-		{{#if subscribed}}
 			<form class="message-form" method="post" style="display:none;" action="/">
 				{{> messagePopupConfig getPopupConfig}}
 
@@ -187,7 +187,6 @@
 			{{#with notSubscribedTpl}}
 				{{> Template.dynamic . }}
 			{{else}}
-				<div class="rc-message-box rc-new">
 				{{#if canJoin}}
 				<div>
 					{{{_ "you_are_in_preview_mode_of" room_name=roomName}}}
