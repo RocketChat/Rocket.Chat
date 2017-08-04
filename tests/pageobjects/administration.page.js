@@ -1,14 +1,14 @@
 import Page from './Page';
 
 class Administration extends Page {
-	get flexNav() { return browser.element('.flex-nav'); }
-	get flexNavContent() { return browser.element('.flex-nav .content'); }
-	get layoutLink() { return browser.element('.flex-nav .content [href="/admin/Layout"]'); }
-	get infoLink() { return browser.element('.flex-nav .content [href="/admin/info"]'); }
-	get roomsLink() { return browser.element('.flex-nav .content [href="/admin/rooms"]'); }
-	get usersLink() { return browser.element('.flex-nav .content [href="/admin/users"]'); }
-	get generalLink() { return browser.element('.flex-nav .content [href="/admin/General"]'); }
-	get permissionsLink() { return browser.element('.flex-nav .content [href="/admin/permissions"]'); }
+	get flexNav() { return browser.element('.sidebar--flex'); }
+	get flexNavContent() { return browser.element('.sidebar--flex'); }
+	get layoutLink() { return browser.element('.sidebar--flex [href="/admin/Layout"]'); }
+	get infoLink() { return browser.element('.sidebar--flex [href="/admin/info"]'); }
+	get roomsLink() { return browser.element('.sidebar--flex [href="/admin/rooms"]'); }
+	get usersLink() { return browser.element('.sidebar--flex [href="/admin/users"]'); }
+	get generalLink() { return browser.element('.sidebar--flex [href="/admin/General"]'); }
+	get permissionsLink() { return browser.element('.sidebar--flex [href="/admin/permissions"]'); }
 	get customScriptBtn() { return browser.element('.section:nth-of-type(6) .collapse'); }
 	get customScriptLoggedOutTextArea() { return browser.element('.section:nth-of-type(6) .CodeMirror-scroll'); }
 	get customScriptLoggedInTextArea() { return browser.element('.CodeMirror.cm-s-default:nth-of-type(2)'); }

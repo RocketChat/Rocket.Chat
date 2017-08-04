@@ -3,10 +3,10 @@ const sideNavW = 280;
 const map = (x, in_min, in_max, out_min, out_max) => (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
 
 window.addEventListener('resize', _.debounce((() => {
-	let lastState = window.matchMedia('(min-width: 700px)').matches ? 'mini' : 'large';
+	let lastState = window.matchMedia('(min-width: 780px)').matches ? 'mini' : 'large';
 	RocketChat.emit('grid', lastState);
 	return () => {
-		const futureState = window.matchMedia('(min-width: 700px)').matches ? 'mini' : 'large';
+		const futureState = window.matchMedia('(min-width: 780px)').matches ? 'mini' : 'large';
 		if (lastState !== futureState) {
 			lastState = futureState;
 			RocketChat.emit('grid', lastState);
