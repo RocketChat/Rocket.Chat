@@ -1,4 +1,3 @@
-/*globals menu */
 Template.accountFlex.events({
 	'click [data-action="back"]'() {
 		SideNav.closeFlex();
