@@ -25,6 +25,14 @@ Template.visitorInfo.helpers({
 		return ChatRoom.findOne({ _id: this.rid });
 	},
 
+	department() {
+		return Template.instance().department.get();
+	},
+
+	inquiry() {
+		return LivechatInquiry.findOne({ rid: this.rid });
+	},
+
 	joinTags() {
 		return this.tags && this.tags.join(', ');
 	},
@@ -218,6 +226,7 @@ Template.visitorInfo.onCreated(function() {
 	this.customFields = new ReactiveVar([]);
 	this.action = new ReactiveVar();
 	this.user = new ReactiveVar();
+	this.department = new ReactiveVar();
 
 	Meteor.call('livechat:getCustomFields', (err, customFields) => {
 		if (customFields) {
@@ -242,5 +251,18 @@ Template.visitorInfo.onCreated(function() {
 
 	this.autorun(() => {
 		this.user.set(Meteor.users.findOne({ '_id': this.visitorId.get() }));
+
+		//load guest department
+		if (this.user.get() && this.user.get().department) {
+			const sub = this.subscribe('livechat:departments', this.user.get().department);
+			if (sub.ready()) {
+				const department = LivechatDepartment.findOne({_id: this.user.get().department});
+				if (department) {
+					this.department.set(department);
+				}
+			}
+		}
 	});
+
+	this.subscribe('livechat:inquiry');
 });

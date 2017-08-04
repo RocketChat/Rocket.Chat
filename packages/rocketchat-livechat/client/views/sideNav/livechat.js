@@ -40,12 +40,16 @@ Template.livechat.helpers({
 		const departmentAgents = LivechatDepartmentAgents.find({
 			agentId : Meteor.userId()
 		});
-		console.log(departmentAgents);
+
 		const departmentIds = [];
 		departmentAgents.forEach((agent) => {
 			departmentIds.push(agent.departmentId);
 		});
-		console.log(departmentIds);
+		if (departmentIds.length) {
+			departmentIds.push(null);
+			departmentIds.push('');
+		}
+
 
 		// get all inquiries of the department
 		const inqs = LivechatInquiry.find({
@@ -61,6 +65,7 @@ Template.livechat.helpers({
 
 		// for notification sound
 		inqs.forEach((inq) => {
+			console.log(inq);
 			KonchatNotification.newRoom(inq.rid);
 		});
 
@@ -148,6 +153,6 @@ Template.livechat.onCreated(function() {
 		}
 	});
 
-	this.subscribe('livechat:inquiry');
+	this.subscribe('livechat:inquiry', {status: 'open'});
 	this.subscribe('livechat:departmentAgents', null);
 });

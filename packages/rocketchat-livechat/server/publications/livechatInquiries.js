@@ -1,4 +1,4 @@
-Meteor.publish('livechat:inquiry', function() {
+Meteor.publish('livechat:inquiry', function(query) {
 	if (!this.userId) {
 		return this.error(new Meteor.Error('error-not-authorized', 'Not authorized', { publish: 'livechat:inquiry' }));
 	}
@@ -7,10 +7,7 @@ Meteor.publish('livechat:inquiry', function() {
 		return this.error(new Meteor.Error('error-not-authorized', 'Not authorized', { publish: 'livechat:inquiry' }));
 	}
 
-	const query = {
-		agents: this.userId,
-		status: 'open'
-	};
+	query = query || {};
 
 	return RocketChat.models.LivechatInquiry.find(query);
 });
