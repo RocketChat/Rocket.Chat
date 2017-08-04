@@ -655,13 +655,12 @@
 		display: flex;
 		flex-wrap: wrap;
 
-		&__item {
+		&-item {
 			margin-right: 10px;
 			margin-bottom: 10px;
 			cursor: pointer;
-			height: 50px;
-			width: 50px;
-			border: 1px solid;
+			height: 48px;
+			width: 48px;
 
 			& .avatar {
 				transition: opacity 0.5s;
@@ -671,6 +670,20 @@
 				opacity: 0.8;
 			}
 		}
+	}
+
+	&__upload-label {
+		display: block;
+		background: #e1e5e8;
+		color: #2d343d;
+		cursor: pointer;
+	}
+
+	&__upload-icon {
+		height: 48px;
+		width: 48px;
+		padding: 12px;
+		fill: currentColor;
 	}
 }
 
