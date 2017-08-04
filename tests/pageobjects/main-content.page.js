@@ -10,13 +10,12 @@ class MainContent extends Page {
 	get channelTitle() { return browser.element('.room-title'); }
 
 	//Main Content Footer (Message Input Area)
-	get messageInput() { return browser.element('.input-message'); }
-	get sendBtn() { return browser.element('.message-buttons.send-button'); }
-	get fileAttachmentBtn() { return browser.element('.message-buttons .icon-attach'); }
-	get fileAttachment() { return browser.element('.message-buttons input[type="file"]'); }
+	get messageInput() { return browser.element('.rc-message-box__container textarea'); }
+	get sendBtn() { return browser.element('.rc-message-box__icon.js-send'); }
+	get messageBoxActions() { return browser.element('.rc-message-box__icon'); }
 	get recordBtn() { return browser.element('.message-buttons .icon-mic'); }
 	get videoCamBtn() { return browser.element('.message-buttons .icon-videocam'); }
-	get emojiBtn() { return browser.element('.inner-left-toolbar .emoji-picker-icon'); }
+	get emojiBtn() { return browser.element('.rc-message-box__icon.emoji-picker-icon'); }
 	get messagePopUp() { return browser.element('.message-popup'); }
 	get messagePopUpTitle() { return browser.element('.message-popup-title'); }
 	get messagePopUpItems() { return browser.element('.message-popup-items'); }
