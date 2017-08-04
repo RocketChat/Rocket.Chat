@@ -2,6 +2,7 @@
 	flex: 1 1 100%;
 	z-index: 0 !important;
 	position: relative;
+	height: 100%;
 }
 
 @media (width <= 780px) {
