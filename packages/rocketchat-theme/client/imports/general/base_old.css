@@ -160,13 +160,14 @@
 	text-align: center;
 }
 
-.rc-old.connection-status > .alert {
+.connection-status > .alert {
 	padding: 2px;
 	position: absolute;
 	width: 100%;
 	z-index: 1000000;
 	border-radius: 0;
 	border-width: 0 0 1px;
+	top: 0;
 }
 
 .rc-old .alert {

@@ -15,7 +15,7 @@ Template.chatRoomItem.helpers({
 		}
 
 		let active = false;
-		if (Session.get('openedRoom') && Session.get('openedRoom') === this.rid || Session.get('openedRoom') === this._id) {
+		if ([this.rid, this._id].find(id => id === Session.get('openedRoom'))) {
 			active = true;
 		}
 
