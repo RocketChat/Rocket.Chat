@@ -68,13 +68,13 @@ FlowRouter.route('/home', {
 	}
 });
 
-FlowRouter.route('/changeavatar', {
-	name: 'changeAvatar',
-
-	action() {
-		BlazeLayout.render('main', {center: 'avatarPrompt'});
-	}
-});
+// FlowRouter.route('/changeavatar', {
+// 	name: 'changeAvatar',
+//
+// 	action() {
+// 		BlazeLayout.render('main', {center: 'avatarPrompt'});
+// 	}
+// });
 
 FlowRouter.route('/account/:group?', {
 	name: 'account',
