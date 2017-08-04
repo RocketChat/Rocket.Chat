@@ -8,7 +8,9 @@ import sideNav from '../../pageobjects/side-nav.page';
 import {username, email, password} from '../../data/user.js';
 import {checkIfUserIsValid} from '../../data/checks';
 
-describe('[Resolution]', ()=> {
+
+//skipping this since the main content its not moved anymore, instead there is a overlay of the side nav over the main content
+describe.skip('[Resolution]', ()=> {
 	describe('[Mobile Render]', ()=> {
 		before(()=> {
 			checkIfUserIsValid(username, email, password);
