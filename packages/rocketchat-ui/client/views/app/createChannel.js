@@ -37,7 +37,7 @@ const filterNames = (old) => {
 	}
 
 	const reg = new RegExp(`^${ RocketChat.settings.get('UTF8_Names_Validation') }$`);
-	return [...old.replace(' ', '').toLocaleLowerCase()].filter(f => reg.test(f)).splice(0, 22).join('');
+	return [...old.replace(' ', '').toLocaleLowerCase()].filter(f => reg.test(f)).join('');
 };
 
 Template.createChannel.helpers({
