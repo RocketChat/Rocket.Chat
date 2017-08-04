@@ -612,7 +612,7 @@
 	}
 }
 
-.rc-old .burger {
+.rc-old.burger {
 	padding: 12px;
 	visibility: hidden;
 	display: none;
@@ -4740,7 +4740,7 @@ body:not(.is-cordova) {
 		left: 0;
 	}
 
-	.rc-old #rocket-chat {
+	.rc-old {
 		& .burger {
 			visibility: visible;
 			display: inline-block;
