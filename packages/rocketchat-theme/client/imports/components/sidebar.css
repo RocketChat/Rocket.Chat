@@ -13,6 +13,7 @@
 .sidebar {
 	display: flex;
 	flex: 0 0 var(--rooms-box-width);
+	width: var(--rooms-box-width);
 	flex-direction: column;
 	z-index: 2;
 	position: relative;
@@ -309,6 +310,7 @@
 		line-height: var(--room-item-height);
 		display: flex;
 		align-items: center;
+		overflow: hidden;
 	}
 
 	& .badge {
@@ -373,5 +375,8 @@
 
 	&__name {
 		font-size: 1rem;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
 	}
 }
