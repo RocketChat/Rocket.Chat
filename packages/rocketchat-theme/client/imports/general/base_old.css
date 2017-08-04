@@ -2061,7 +2061,6 @@
 	}
 
 	& .footer {
-		border-width: 1px 0 0;
 		flex-shrink: 0;
 	}
 
@@ -2413,7 +2412,7 @@
 	float: right;
 }
 
-.rc-old .messages-box {
+.messages-box {
 	position: relative;
 	overflow: hidden;
 	flex-grow: 1;

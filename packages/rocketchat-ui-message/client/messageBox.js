@@ -306,6 +306,9 @@ Template.messageBox.helpers({
 	},
 	anonymousWrite() {
 		return (Meteor.userId() == null) && RocketChat.settings.get('Accounts_AllowAnonymousRead') === true && RocketChat.settings.get('Accounts_AllowAnonymousWrite') === true;
+	},
+	sendIcon() {
+		return Template.instance().sendIcon.get();
 	}
 });
 
@@ -397,7 +400,7 @@ Template.messageBox.events({
 		KonchatNotification.removeRoomNotification(this._id);
 		chatMessages[this._id].input = instance.find('.js-input-message');
 	},
-	'click .send-button'(event, instance) {
+	'click .js-send'(event, instance) {
 		const input = instance.find('.js-input-message');
 		chatMessages[this._id].send(this._id, input, () => {
 			// fixes https://github.com/RocketChat/Rocket.Chat/issues/3037
@@ -444,7 +447,8 @@ Template.messageBox.events({
 		}
 		return chatMessages[this._id].keydown(this._id, event, Template.instance());
 	}),
-	'input .js-input-message'(event) {
+	'input .js-input-message'(event, instance) {
+		instance.sendIcon.set(event.target.value !== '');
 		return chatMessages[this._id].valueChanged(this._id, event, Template.instance());
 	},
 	'propertychange .js-input-message'(event) {
@@ -479,56 +483,6 @@ Template.messageBox.events({
 	'click .message-buttons.share'(e, t) {
 		t.$('.share-items').toggleClass('hidden');
 		return t.$('.message-buttons.share').toggleClass('active');
-	},
-	'click .message-form .message-buttons.location-button'() {
-		const roomId = this._id;
-		const position = RocketChat.Geolocation.get();
-		const latitude = position.coords.latitude;
-		const longitude = position.coords.longitude;
-		const text = `<div class="location-preview">\n	<img style="height: 250px; width: 250px;" src="https://maps.googleapis.com/maps/api/staticmap?zoom=14&size=250x250&markers=color:gray%7Clabel:%7C${ latitude },${ longitude }&key=${ RocketChat.settings.get('MapView_GMapsAPIKey') }" />\n</div>`;
-		return swal({
-			title: t('Share_Location_Title'),
-			text,
-			showCancelButton: true,
-			closeOnConfirm: true,
-			closeOnCancel: true,
-			html: true
-		}, function(isConfirm) {
-			if (isConfirm !== true) {
-				return;
-			}
-			return Meteor.call('sendMessage', {
-				_id: Random.id(),
-				rid: roomId,
-				msg: '',
-				location: {
-					type: 'Point',
-					coordinates: [longitude, latitude]
-				}
-			});
-		});
-	},
-	'click .message-form .mic'(e, t) {
-		return AudioRecorder.start(function() {
-			t.$('.stop-mic').removeClass('hidden');
-			return t.$('.mic').addClass('hidden');
-		});
-	},
-	'click .message-form .video-button'(e) {
-		return VRecDialog.opened ? VRecDialog.close() : VRecDialog.open(e.currentTarget);
-	},
-	'click .message-form .stop-mic'(e, t) {
-		AudioRecorder.stop(function(blob) {
-			return fileUpload([
-				{
-					file: blob,
-					type: 'audio',
-					name: `${ TAPi18n.__('Audio record') }.wav`
-				}
-			]);
-		});
-		t.$('.stop-mic').addClass('hidden');
-		return t.$('.mic').removeClass('hidden');
 	},
 	'click .sandstorm-offer'() {
 		const roomId = this._id;
@@ -575,6 +529,9 @@ Template.messageBox.onCreated(function() {
 	this.isMessageFieldEmpty = new ReactiveVar(true);
 	this.showMicButton = new ReactiveVar(false);
 	this.showVideoRec = new ReactiveVar(false);
+	this.showVideoRec = new ReactiveVar(false);
+	this.sendIcon = new ReactiveVar(false);
+
 	return this.autorun(() => {
 		const videoRegex = /video\/webm|video\/\*/i;
 		const videoEnabled = !RocketChat.settings.get('FileUpload_MediaTypeWhiteList') || RocketChat.settings.get('FileUpload_MediaTypeWhiteList').match(videoRegex);

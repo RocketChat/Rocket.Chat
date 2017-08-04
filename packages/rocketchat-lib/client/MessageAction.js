@@ -115,6 +115,7 @@ Meteor.startup(function() {
 			}
 			input.value += text;
 			input.focus();
+			$(input).trigger('change').trigger('input');
 			return RocketChat.MessageAction.hideDropDown();
 		},
 		validation(message) {
@@ -282,6 +283,7 @@ Meteor.startup(function() {
 			}
 			input.value += text;
 			input.focus();
+			$(input).trigger('change').trigger('input');
 			return RocketChat.MessageAction.hideDropDown();
 		},
 		validation(message) {
