@@ -85,7 +85,8 @@ Template.avatarPrompt.events({
 				files = event.dataTransfer && event.dataTransfer.files || [];
 			}
 
-			for (const file of files) {
+			for (let i = 0; i < files.length; i++) {
+				const file = files[i];
 				Object.defineProperty(file, 'type', { value: mime.lookup(file.name) });
 			}
 
