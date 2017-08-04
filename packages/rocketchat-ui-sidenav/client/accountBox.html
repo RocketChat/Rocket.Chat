@@ -7,7 +7,7 @@
 						{{> avatar username=username}}
 					</div>
 					<div class="sidebar__account-data">
-						<h3 class="sidebar__account-name sidebar-content-unread {{#if ../lighten}}sidebar-flex-content-active{{/if}}" data-username="{{username}}">@{{username}}</h3>
+						<h3 class="sidebar__account-name {{#if ../lighten}}sidebar__account-name--lighten{{/if}}" data-username="{{username}}">@{{username}}</h3>
 						<input id="sidebar__account-menu" type="checkbox" class="rc-popover-anchor" data-popover="anchor">
 						<div class="rc-popover" data-popover="popover">
 							<div class="rc-popover__content">
@@ -75,7 +75,7 @@
 								</div>
 							</div>
 						</div>
-						<div class="sidebar__account-status sidebar-content">
+						<div class="sidebar__account-status">
 							<div class="sidebar__account-status-bullet {{bullet}}" title="{{visualStatus}}"></div>
 							<div class="sidebar__account-username">{{visualStatus}}</div>
 							<svg class="sidebar__account-arrow">

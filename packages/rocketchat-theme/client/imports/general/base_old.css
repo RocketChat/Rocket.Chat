@@ -16,25 +16,31 @@
 }
 
 .rc-old code {
-	border-radius: 4px;
-	border-width: 1px;
 	display: block;
-	font-size: 13px;
-	font-weight: 600;
+
 	margin: 5px 0;
 	padding: 0.5em;
-	vertical-align: middle;
-	word-wrap: break-word;
+
 	text-align: left;
+	vertical-align: middle;
 	white-space: pre-wrap;
-	unicode-bidi: embed;
-	direction: ltr;
+	word-wrap: break-word;
+
+	border-width: 1px;
+	border-radius: 4px;
+
 	font-family: Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+	font-size: 13px;
+	font-weight: 600;
+	direction: ltr;
+	unicode-bidi: embed;
 
 	&.inline {
 		display: inline;
-		padding: 0 0.5em;
+
 		margin: 0 0.1em;
+		padding: 0 0.5em;
+
 		line-height: 16px;
 	}
 }
@@ -45,19 +51,23 @@
 
 .rc-old pre {
 	display: inline-block;
+
 	width: 100%;
 }
 
 .rc-old blockquote {
-	margin: 0.5em 0;
-	padding-left: 10px;
 	position: relative;
+
 	clear: both;
 
+	margin: 0.5em 0;
+	padding-left: 10px;
+
 	&::after {
-		content: "";
 		display: table;
 		clear: both;
+
+		content: "";
 	}
 
 	&:first-child {
@@ -69,26 +79,31 @@
 	}
 
 	&::before {
-		content: ' ';
-		width: 4px;
 		position: absolute;
-		border-radius: 2px;
-		left: 0;
 		top: -1px;
 		bottom: -1px;
+		left: 0;
+
+		width: 4px;
+
+		content: ' ';
+
+		border-radius: 2px;
 	}
 }
 
 .rc-old .login-terms {
-	font-size: smaller;
 	width: 520px;
-	padding: 10px;
 	max-width: 100%;
 	margin: auto;
+	padding: 10px;
+
+	font-size: smaller;
 
 	& a {
-		font-weight: bold !important;
 		text-decoration: underline;
+
+		font-weight: bold !important;
 	}
 }
 
@@ -97,26 +112,31 @@
 
 	& .upload-preview-file {
 		height: 200px;
-		background-size: contain;
+
 		background-repeat: no-repeat;
 		background-position: center center;
+		background-size: contain;
 	}
 }
 
 .upload-preview-title {
 	padding: 3px;
+
 	border-radius: 0 0 5px 5px;
 }
 
 .rc-old .copyonly {
-	float: left;
 	display: inline-block;
-	vertical-align: baseline;
+	float: left;
+
 	width: 0;
 	height: 0;
+
+	user-select: none;
+	vertical-align: baseline;
+
 	font-size: 0;
 	-moz-box-orient: vertical;
-	user-select: none;
 }
 
 .rc-old .first-unread,
@@ -129,29 +149,36 @@
 
 	& .body {
 		&::before {
-			content: "";
-			display: block;
 			position: absolute;
+			top: 0;
 			right: 0;
 			left: 0;
-			top: 0;
-			transition: background-color, 0.5s, linear;
+
+			display: block;
+
 			height: 16px;
+
+			content: "";
+			transition: background-color, 0.5s, linear;
 		}
 
 		&::after {
-			content: attr(data-unread-text);
-			display: block;
 			position: absolute;
-			right: 0;
 			top: 0;
+			right: 0;
+			left: 0;
+
+			display: block;
+
+			padding: 0 5px;
+
+			content: attr(data-unread-text);
+			transition: color, 0.5s, linear;
+			text-align: center;
 			text-transform: uppercase;
+
 			font-size: 12px;
 			line-height: 16px;
-			padding: 0 5px;
-			transition: color, 0.5s, linear;
-			left: 0;
-			text-align: center;
 		}
 	}
 }
@@ -161,25 +188,27 @@
 }
 
 .connection-status > .alert {
-	padding: 2px;
 	position: absolute;
-	width: 100%;
 	z-index: 1000000;
-	border-radius: 0;
-	border-width: 0 0 1px;
 	top: 0;
+
+	width: 100%;
+	padding: 2px;
+
+	border-width: 0 0 1px;
 }
 
 .rc-old .alert {
-	padding: 15px;
 	margin-bottom: 20px;
+	padding: 15px;
+
 	border-width: 1px;
 	border-radius: 4px;
 }
 
 .rc-old .full-page .hidden {
-	visibility: hidden !important;
 	display: none !important;
+	visibility: hidden !important;
 }
 
 .rc-old .hidden {
@@ -187,33 +216,39 @@
 }
 
 .rc-old .scrollable {
-	overflow-y: scroll;
-	-webkit-overflow-scrolling: touch;
 	position: absolute;
-	width: 100%;
-	height: 100%;
 	top: 0;
 	left: 0;
+
+	overflow-y: scroll;
+
+	width: 100%;
+	height: 100%;
+	-webkit-overflow-scrolling: touch;
 }
 
 .rc-old .page-container {
-	overflow-y: hidden;
 	position: absolute;
-	width: 100%;
-	height: 100%;
 	top: 0;
 	left: 0;
 
+	overflow-y: hidden;
+
+	width: 100%;
+	height: 100%;
+
 	& .content {
-		padding: 25px 40px;
-		overflow-y: scroll;
-		margin-top: 60px;
-		-webkit-overflow-scrolling: touch;
-		height: calc(100% - 60px);
 		position: absolute;
-		width: 100%;
 		top: 0;
 		left: 0;
+
+		overflow-y: scroll;
+
+		width: 100%;
+		height: calc(100% - 60px);
+		margin-top: 60px;
+		padding: 25px 40px;
+		-webkit-overflow-scrolling: touch;
 
 		& fieldset {
 			margin-bottom: 1em;
@@ -222,6 +257,7 @@
 		& .rocket-form {
 			& fieldset {
 				display: block;
+
 				margin: 1em 0 1.5em;
 
 				& small {
@@ -230,10 +266,13 @@
 			}
 
 			& legend {
-				margin: 12px 0;
 				position: relative;
-				width: 100%;
+
 				display: block;
+
+				width: 100%;
+				margin: 12px 0;
+
 				font-weight: bold;
 
 				& h3 {
@@ -247,6 +286,7 @@
 
 			& .submit {
 				margin-top: 20px;
+
 				text-align: right;
 			}
 
@@ -258,6 +298,7 @@
 
 					& label {
 						display: block;
+
 						margin-top: 20px;
 					}
 				}
@@ -271,16 +312,19 @@
 
 	& table {
 		overflow: hidden;
-		margin-bottom: 30px;
+
 		width: 100%;
+		margin-bottom: 30px;
 
 		& th,
 		& td {
-			vertical-align: middle;
 			padding: 0.6rem 0.7rem;
-			text-align: left;
-			border-width: 0 0 1px;
+
 			user-select: text;
+			text-align: left;
+			vertical-align: middle;
+
+			border-width: 0 0 1px;
 		}
 
 		& th {
@@ -291,13 +335,15 @@
 
 .rc-old .input-line {
 	display: block;
-	margin-bottom: 12px;
 	clear: both;
 
+	margin-bottom: 12px;
+
 	&::after {
-		content: "";
 		display: table;
 		clear: both;
+
+		content: "";
 	}
 
 	&:nth-last-child(1) {
@@ -314,11 +360,13 @@
 		& .icon-spin {
 			right: 5px;
 			left: auto;
-			font-weight: 400;
+
 			animation-name: spin;
 			animation-duration: 2000ms;
-			animation-iteration-count: infinite;
 			animation-timing-function: linear;
+			animation-iteration-count: infinite;
+
+			font-weight: 400;
 		}
 
 		& input {
@@ -328,6 +376,7 @@
 
 	& > label {
 		display: block;
+
 		margin-bottom: 4px;
 	}
 
@@ -336,9 +385,9 @@
 
 		& .right {
 			position: absolute;
-			right: 10px;
-			top: 10px;
 			z-index: 10;
+			top: 10px;
+			right: 10px;
 		}
 	}
 
@@ -352,21 +401,27 @@
 
 	&.double-col {
 		& > label {
-			width: 30%;
 			float: left;
+
+			width: 30%;
 			margin-bottom: 0;
-			text-align: right;
-			line-height: 15px;
 			padding: 10px 20px 10px 0;
+
+			text-align: right;
+
+			line-height: 15px;
 		}
 
 		& > div {
 			float: left;
+
 			width: 67%;
 
 			& label {
 				display: inline-block;
+
 				margin-right: 4px;
+
 				line-height: 35px;
 
 				&:nth-last-child(1) {
@@ -405,38 +460,47 @@
 .rc-old input[type='email'],
 .rc-old input[type='url'],
 .rc-old input[type='password'] {
-	appearance: none;
-	height: 35px;
-	line-height: normal;
-	border-width: 1px;
-	border-radius: 5px;
-	padding: 2px 8px;
 	position: relative;
+
 	width: 100%;
-	outline: none;
+	height: 35px;
+	padding: 2px 8px;
+
+	border-width: 1px;
 	border-style: solid;
+	border-radius: 5px;
+	outline: none;
+
+	line-height: normal;
+	appearance: none;
 }
 
 .rc-old input {
 	& .input-forward {
-		width: 0;
 		visibility: hidden;
+
+		width: 0;
+
 		transition: width 0.5s ease-in;
 
 		& .show {
 			visibility: visible;
+
 			width: calc(100% - 48px);
 		}
 	}
 
 	& .search::before {
-		content: " ";
-		width: 30px;
-		height: 30px;
-		display: block;
 		position: absolute;
 		top: 0;
 		left: 0;
+
+		display: block;
+
+		width: 30px;
+		height: 30px;
+
+		content: " ";
 	}
 }
 
@@ -461,31 +525,38 @@
 
 .rc-old .form-horizontal .control-label {
 	padding-top: 12px;
+
 	font-weight: bold;
 }
 
 .rc-old .-autocomplete-container {
-	box-shadow: 1px 1px 0 rgba(0, 0, 0, 0.2);
-	border-width: 0;
-	border-radius: 0;
-	width: 100%;
 	top: auto !important;
 
+	width: 100%;
+
+	border-width: 0;
+	border-radius: 0;
+	box-shadow: 1px 1px 0 rgba(0, 0, 0, 0.2);
+
 	& p {
-		font-size: 14px;
 		padding: 8px;
+
+		font-size: 14px;
 	}
 
 	& .loading-animation {
 		position: relative;
+
 		min-height: 60px;
 	}
 }
 
 .rc-old .-autocomplete-item {
 	padding: 8px 5px;
-	font-size: 12px;
+
 	cursor: pointer;
+
+	font-size: 12px;
 }
 
 .rc-old label.required::after {
@@ -493,10 +564,11 @@
 }
 
 .rc-old .btn-loading {
-	pointer-events: none;
 	cursor: not-allowed;
-	box-shadow: none !important;
+	pointer-events: none;
+
 	border-width: 0;
+	box-shadow: none !important;
 
 	& i {
 		display: block;
@@ -510,18 +582,23 @@
 /* new layout buttons */
 
 .rc-old .button {
-	user-select: none;
-	border-width: 0;
-	display: inline-block;
-	padding: 9px 12px;
-	font-weight: 500;
-	font-size: 14px;
-	text-align: center;
-	text-transform: uppercase;
-	word-spacing: 0;
-	line-height: 16px;
 	position: relative;
+
+	display: inline-block;
+
+	padding: 9px 12px;
+
+	user-select: none;
+	text-align: center;
+	word-spacing: 0;
+	text-transform: uppercase;
+
+	border-width: 0;
 	border-radius: 4px;
+
+	font-size: 14px;
+	font-weight: 500;
+	line-height: 16px;
 
 	& span {
 		position: relative;
@@ -530,8 +607,9 @@
 
 	&.button-block {
 		display: block;
-		margin-bottom: 4px;
+
 		width: 100%;
+		margin-bottom: 4px;
 	}
 
 	&[disabled] {
@@ -581,6 +659,7 @@
 
 .rc-old .buttons-group {
 	display: flex;
+
 	margin-bottom: 4px;
 
 	& .button {
@@ -599,12 +678,16 @@
 
 .rc-old .sec-header {
 	margin: 16px 0;
+
 	text-align: center;
 
 	& > * {
 		display: inline-table;
+
 		width: auto;
+
 		vertical-align: middle;
+
 		line-height: 35px;
 	}
 
@@ -614,46 +697,57 @@
 }
 
 .rc-old.burger {
-	padding: 12px;
-	visibility: hidden;
-	display: none;
-	cursor: pointer;
-	margin-left: 7px;
 	position: absolute;
 	top: 5px;
 	left: 0;
-	will-change: transform;
+
+	display: none;
+	visibility: hidden;
+
+	margin-left: 7px;
+	padding: 12px;
+
+	cursor: pointer;
 	transition: transform 0.2s ease-out 0.1s;
+	will-change: transform;
 
 	& i {
 		display: block;
-		height: 2px;
+
 		width: 20px;
+		height: 2px;
 		margin: 5px 0;
-		opacity: 0.8;
+
 		transition: transform 0.2s ease-out;
+
+		opacity: 0.8;
 	}
 
 	& .unread-burger-alert {
-		border-radius: 20px;
 		position: absolute;
-		min-width: 18px;
-		height: 18px;
-		line-height: 18px;
-		text-align: center;
-		font-weight: bold;
-		font-size: 12px;
+		z-index: 3;
 		top: 8px;
 		right: 4px;
-		z-index: 3;
+
+		min-width: 18px;
+		height: 18px;
 		padding: 0 4px;
+
+		text-align: center;
+
+		border-radius: 20px;
+
+		font-size: 12px;
+		font-weight: bold;
+		line-height: 18px;
 	}
 
 	&.menu-opened i {
 		&:nth-child(1),
 		&:nth-child(3) {
-			opacity: 1;
 			transform-origin: 50%, 50%, 0;
+
+			opacity: 1;
 		}
 
 		&:nth-child(1) {
@@ -667,31 +761,36 @@
 }
 
 .rc-old .arrow {
-	display: block;
-	width: 25px;
-	height: 25px;
 	z-index: 100;
 	top: calc(50% - 13px);
 
+	display: block;
+
+	width: 25px;
+	height: 25px;
+
 	&::before,
 	&::after {
-		content: " ";
-		display: block;
-		width: 2px;
-		height: 10px;
 		position: absolute;
 		top: calc(50% - 5px);
 		left: calc(50% - 5px);
+
+		display: block;
+
+		width: 2px;
+		height: 10px;
+
+		content: " ";
 	}
 
 	&::before {
-		transform: rotate(135deg) translateX(-4px);
 		transition: transform 0.185s ease-out, background 0.15s ease-out;
+		transform: rotate(135deg) translateX(-4px);
 	}
 
 	&::after {
-		transform: rotate(-135deg) translateX(-4px);
 		transition: transform 0.185s ease-out, background 0.15s ease-out;
+		transform: rotate(-135deg) translateX(-4px);
 	}
 
 	&.left {
@@ -736,59 +835,74 @@
 }
 
 .rc-old #rocket-chat {
-	display: block;
 	position: fixed;
 	top: 0;
+	right: 0;
 	bottom: 0;
 	left: 0;
-	right: 0;
+
+	display: block;
+	visibility: visible;
+
 	width: auto;
 	height: auto;
-	opacity: 1;
-	visibility: visible;
+
 	transition: opacity 0.2s ease-out;
+
+	opacity: 1;
 
 	&.animated-hidden {
 		visibility: hidden;
+
 		opacity: 0;
 	}
 
 	& > .alert {
+		position: absolute;
+
 		margin-bottom: 0;
 		padding: 5px;
-		position: absolute;
 	}
 }
 
 .rc-old .account-box {
 	position: relative;
-	height: 100%;
-	cursor: pointer;
+
 	width: 100%;
+	height: 100%;
+
+	cursor: pointer;
 
 	& .info {
 		position: relative;
-		height: 100%;
-		padding: 10px 0 10px 18px;
 		z-index: 100;
 
+		height: 100%;
+		padding: 10px 0 10px 18px;
+
 		& .thumb {
-			float: left;
 			position: relative;
+
+			float: left;
+
 			width: 42px;
-			padding: 0;
 			height: 42px;
+			padding: 0;
 
 			&::after {
-				content: " ";
-				display: block;
-				width: 8px;
-				height: 8px;
-				z-index: 10;
 				position: absolute;
-				border-radius: 4px;
+				z-index: 10;
 				top: 18px;
 				left: -14px;
+
+				display: block;
+
+				width: 8px;
+				height: 8px;
+
+				content: " ";
+
+				border-radius: 4px;
 			}
 
 			& .avatar-initials {
@@ -797,44 +911,53 @@
 		}
 
 		& .data {
-			display: flex;
-			align-items: center;
-			float: left;
 			position: relative;
-			padding: 0 25px 0 10px;
-			height: 100%;
-			flex-flow: row nowrap;
+
+			display: flex;
+			float: left;
+
 			width: calc(100% - 60px);
+			height: 100%;
+			padding: 0 25px 0 10px;
+			align-items: center;
+			flex-flow: row nowrap;
 		}
 
 		& h4 {
-			display: block;
-			line-height: 18px;
-			font-size: 16px;
-			margin-top: 3px;
-			font-weight: 400;
-			overflow: hidden;
-			text-overflow: ellipsis;
 			position: relative;
+
+			display: block;
+			overflow: hidden;
+
 			width: 130px;
-			text-align: left;
+			margin-top: 3px;
+
 			transition: color 0.15s ease-out;
+			text-align: left;
+			text-overflow: ellipsis;
+
+			font-size: 16px;
+			font-weight: 400;
+			line-height: 18px;
 		}
 	}
 
 	& .options {
 		position: fixed;
+		z-index: 99;
 		top: var(--header-min-height);
 		left: 0;
-		padding-top: 15px;
-		width: var(--rooms-box-width);
+
 		overflow-x: hidden;
 		overflow-y: auto;
-		-webkit-overflow-scrolling: touch;
-		direction: rtl;
+
+		width: var(--rooms-box-width);
 		height: calc(100% - calc(var(--header-min-height) - var(--footer-min-height)));
+		padding-top: 15px;
+
 		transition: transform 0.3s cubic-bezier(0.5, 0, 0.1, 1);
-		z-index: 99;
+		direction: rtl;
+		-webkit-overflow-scrolling: touch;
 
 		&.animated-hidden {
 			transform: translateY(-100%) translateY(-50px);
@@ -845,46 +968,59 @@
 		}
 
 		& .status {
-			padding-left: 38px;
 			position: relative;
 
+			padding-left: 38px;
+
 			&::after {
-				content: " ";
+				position: absolute;
+				z-index: 5;
+				top: calc(50% - 8px);
+				left: 18px;
+
 				display: block;
+
 				width: 13px;
 				height: 13px;
+
+				content: " ";
+
 				border-width: 1px;
 				border-radius: 50%;
-				z-index: 5;
-				position: absolute;
-				left: 18px;
-				top: calc(50% - 8px);
 			}
 		}
 
 		& span.soon {
-			width: 100px;
 			position: absolute;
-			right: -30px;
-			font-size: 10px;
 			top: 17px;
+			right: -30px;
+
+			width: 100px;
+
+			font-size: 10px;
 		}
 
 		& i {
-			width: 26px;
 			display: inline-block;
-			text-align: center;
+
+			width: 26px;
 			margin-left: 0;
+
+			text-align: center;
 		}
 
 		& button,
 		& a {
 			position: relative;
+
 			display: table;
+
 			width: 100%;
 			padding: 15px 12px;
-			line-height: 1;
+
 			text-decoration: none;
+
+			line-height: 1;
 
 			&:hover {
 				text-decoration: none;
@@ -905,13 +1041,16 @@
 
 .rc-old.flex-nav {
 	position: fixed;
+	z-index: 3;
 	top: 0;
 	left: 0;
-	height: 100%;
-	z-index: 3;
-	overflow-y: auto;
+
 	overflow-x: hidden;
+	overflow-y: auto;
+
 	width: var(--rooms-box-width);
+	height: 100%;
+
 	transition: transform 0.15s cubic-bezier(0.5, 0, 0.1, 1);
 
 	&.animated-hidden {
@@ -932,77 +1071,93 @@
 
 	& > section {
 		position: absolute;
-		width: 100%;
-		height: 100%;
 		top: 0;
 		left: 0;
+
+		width: 100%;
+		height: 100%;
 	}
 
 	& header {
-		display: table;
 		position: absolute;
+		z-index: 110;
 		top: 0;
 		left: 0;
+
+		display: table;
+
 		width: 100%;
-		z-index: 110;
-		cursor: pointer;
-		min-height: var(--header-min-height);
 		height: var(--header-min-height);
+		min-height: var(--header-min-height);
 		padding-left: 15px;
+
+		cursor: pointer;
 
 		& > div {
 			display: table-cell;
-			vertical-align: middle;
+
 			text-align: left;
+			vertical-align: middle;
 		}
 
 		& h4 {
-			line-height: 24px;
-			font-size: 20px;
-			margin-top: 2px;
-			font-weight: 300;
-			overflow: hidden;
-			text-overflow: ellipsis;
 			position: relative;
+
+			overflow: hidden;
+
+			margin-top: 2px;
+
+			text-overflow: ellipsis;
+
+			font-size: 20px;
+			font-weight: 300;
+			line-height: 24px;
 		}
 
 		& p {
-			line-height: 18px;
 			margin-top: 4px;
-			font-weight: 400;
+
 			font-size: 13px;
+			font-weight: 400;
+			line-height: 18px;
 		}
 	}
 
 	& footer {
-		display: table;
 		position: absolute;
+		z-index: 120;
 		bottom: 0;
 		left: 0;
+
+		display: table;
+
 		width: 100%;
-		padding: 0 10px;
-		z-index: 120;
-		text-align: left;
 		height: var(--footer-min-height);
+		padding: 0 10px;
+
+		text-align: left;
 
 		& > div {
 			display: table-cell;
-			vertical-align: middle;
+
 			text-align: left;
+			vertical-align: middle;
 		}
 	}
 
 	& .content {
-		direction: rtl;
 		position: absolute;
 		top: var(--header-min-height);
-		height: calc(100% - calc(var(--header-min-height) + var(--footer-min-height)));
-		width: 100%;
+
+		display: block;
 		overflow-x: hidden;
 		overflow-y: auto;
-		display: block;
-		-webkit-overflow-scrolling: touch;
+
+		width: 100%;
+		height: calc(100% - calc(var(--header-min-height) + var(--footer-min-height)));
 		padding: 20px 10px;
+		direction: rtl;
+		-webkit-overflow-scrolling: touch;
 
 		&.no-shadow {
 			box-shadow: 0 0 0;
@@ -1023,9 +1178,11 @@
 
 		& h4 {
 			margin-bottom: 30px;
-			font-weight: 400;
+
 			text-transform: uppercase;
+
 			font-size: 13px;
+			font-weight: 400;
 		}
 	}
 
@@ -1037,18 +1194,20 @@
 		}
 
 		& label {
-			font-weight: 400;
 			margin-bottom: 0;
+
+			font-weight: 400;
 		}
 
 		& input[type='text'],
 		& input[type='password'],
 		& select {
 			padding: 0 8px 0 30px;
-			box-shadow: 0 0 0;
-			appearance: none;
+
 			border-width: 1px;
 			border-radius: 4px;
+			box-shadow: 0 0 0;
+			appearance: none;
 		}
 
 		& .inline-fields {
@@ -1064,14 +1223,18 @@
 
 			& > label {
 				display: inline-block;
+
 				width: calc(100% - 40px);
-				font-size: 14px;
+
 				vertical-align: top;
+
+				font-size: 14px;
 			}
 
 			& > div {
-				width: 40px;
 				display: inline-block;
+
+				width: 40px;
 			}
 		}
 
@@ -1089,9 +1252,10 @@
 
 		& li {
 			display: inline-block;
-			padding: 5px;
+
 			margin-right: 2px;
 			margin-bottom: 2px;
+			padding: 5px;
 		}
 
 		& i {
@@ -1102,102 +1266,121 @@
 
 .rc-old .side-nav {
 	position: fixed;
+	z-index: 100;
 	top: 0;
 	bottom: 0;
 	left: 0;
+
+	overflow: visible;
+
 	width: var(--rooms-box-width);
 	height: auto;
-	overflow: visible;
-	z-index: 100;
 	padding: 12px 0 0;
 	will-change: transform;
 
 	&::before {
-		content: " ";
-		height: 1px;
-		width: 189px;
-		left: 8px;
 		position: absolute;
 		top: 59px;
+		left: 8px;
+
+		width: 189px;
+		height: 1px;
+
+		content: " ";
 	}
 
 	& .rooms-list {
-		direction: rtl;
 		position: absolute;
 		top: calc(var(--header-min-height) + var(--toolbar-height));
 		bottom: var(--footer-min-height);
-		width: 100%;
+
+		display: block;
 		overflow-x: hidden;
 		overflow-y: auto;
-		display: block;
+
+		width: 100%;
+		direction: rtl;
 		-webkit-overflow-scrolling: touch;
 
 		& > .wrapper {
-			direction: ltr;
-			padding-left: 8px;
-			padding-bottom: 1em;
 			position: relative;
+
+			padding-bottom: 1em;
+			padding-left: 8px;
+			direction: ltr;
 		}
 	}
 
 	& .more {
 		display: block;
+
 		width: 100%;
-		font-size: 11px;
-		padding: 4px 0 4px 10px;
 		margin-top: 2px;
+		padding: 4px 0 4px 10px;
+
+		font-size: 11px;
 	}
 
 	& .input-error {
-		font-size: 12px;
-		padding: 0;
-		text-align: left;
-		margin-bottom: -20px;
 		margin-top: -12px;
+		margin-bottom: -20px;
+		padding: 0;
+
+		text-align: left;
+
+		font-size: 12px;
 
 		& strong {
 			display: block;
+
 			margin-bottom: 2px;
 		}
 	}
 
 	& .empty {
-		font-size: 11px;
 		padding: 2px 10px;
+
+		font-size: 11px;
 	}
 
 	& .header {
 		position: absolute;
+		z-index: 3;
 		top: 0;
 		left: 0;
+
 		width: 100%;
-		z-index: 3;
-		cursor: pointer;
-		min-height: var(--header-min-height);
 		height: var(--header-min-height);
+		min-height: var(--header-min-height);
+
+		cursor: pointer;
 	}
 
 	& > .arrow {
 		position: absolute;
+		z-index: 3;
 		top: 18px;
 		right: 8px;
-		z-index: 3;
+
 		cursor: pointer;
 	}
 
 	& .footer {
 		position: absolute;
+		z-index: 2;
 		bottom: 0;
 		left: 0;
+
 		width: 100%;
-		padding: 10px 15px 0;
-		text-align: right;
-		min-height: var(--footer-min-height);
 		height: var(--footer-min-height);
-		z-index: 2;
+		min-height: var(--footer-min-height);
+		padding: 10px 15px 0;
+
+		text-align: right;
 
 		& .logo {
 			display: block;
+
 			width: 100%;
 			height: 100%;
 			margin-top: -1px;
@@ -1208,18 +1391,22 @@
 		}
 
 		& small {
-			font-size: 11px;
-			width: 100%;
 			display: block;
-			text-transform: lowercase;
-			margin-bottom: 0;
-			font-weight: 400;
-			padding-right: 4px;
+
+			width: 100%;
 			margin-top: 2px;
+			margin-bottom: 0;
+			padding-right: 4px;
+
+			text-transform: lowercase;
+
+			font-size: 11px;
+			font-weight: 400;
 		}
 
 		& img {
 			display: inline-block;
+
 			max-width: 222px;
 			max-height: 43px;
 		}
@@ -1231,50 +1418,63 @@
 
 	& h3 {
 		position: relative;
-		text-transform: uppercase;
-		font-weight: 500;
+
 		margin: 25px 0 0;
-		line-height: 28px;
 		padding-left: 10px;
+
+		text-transform: uppercase;
+
+		font-weight: 500;
+		line-height: 28px;
 	}
 
 	& .unread {
+		position: absolute;
+		top: 6px;
+		right: 6px;
+
 		min-width: 15px;
 		padding: 0 2px;
-		border-radius: 2px;
+
 		text-align: center;
-		position: absolute;
-		right: 6px;
+
+		border-radius: 2px;
+
 		font-size: 11px;
-		top: 6px;
-		line-height: 14px;
 		font-weight: 800;
+		line-height: 14px;
 	}
 
 	& ul {
 		position: relative;
 
 		& li {
-			white-space: nowrap;
-			max-width: 100%;
 			overflow: hidden;
-			text-overflow: ellipsis;
+
+			max-width: 100%;
+
 			vertical-align: middle;
+			white-space: nowrap;
+			text-overflow: ellipsis;
 
 			& .remove,
 			& .erase {
 				position: absolute;
-				display: block;
-				right: -18px;
 				top: 2px;
-				opacity: 0;
-				transform: translateX(-10px);
+				right: -18px;
+
+				display: block;
+
 				transition: opacity 0.15s ease 0.35s, transform 0.12s ease-out 0.35s;
+				transform: translateX(-10px);
+
+				opacity: 0;
 			}
 
 			&:hover .opt {
-				opacity: 1;
 				transform: translateX(0);
+
+				opacity: 1;
 			}
 
 			&.has-unread .opt {
@@ -1287,18 +1487,23 @@
 		}
 
 		& a {
-			display: block;
-			border-radius: 2px 0 0 2px;
-			padding: 6px 25px 7px 6px;
-			font-size: 15px;
 			position: relative;
-			line-height: 16px;
-			white-space: nowrap;
-			max-width: 100%;
+
+			display: block;
 			overflow: hidden;
-			text-overflow: ellipsis;
+
+			max-width: 100%;
+			padding: 6px 25px 7px 6px;
+
 			vertical-align: middle;
+			white-space: nowrap;
 			text-decoration: none;
+			text-overflow: ellipsis;
+
+			border-radius: 2px 0 0 2px;
+
+			font-size: 15px;
+			line-height: 16px;
 
 			&:hover {
 				text-decoration: none;
@@ -1311,14 +1516,18 @@
 
 		& .opt {
 			position: absolute;
+			top: 7px;
 			right: 0;
+
+			display: block;
+
 			width: 50px;
 			padding-right: 10px;
-			text-align: right;
-			opacity: 0;
-			display: block;
-			top: 7px;
+
 			transition: opacity 0.12s ease;
+			text-align: right;
+
+			opacity: 0;
 
 			& i {
 				margin: 0 1px;
@@ -1333,19 +1542,23 @@
 			}
 
 			&.fixed {
-				opacity: 1;
 				transform: translateX(0);
+
+				opacity: 1;
 			}
 		}
 
 		& i {
-			font-size: 14px;
-			width: 16px;
 			display: inline-block;
+
+			width: 16px;
+
+			font-size: 14px;
 		}
 
 		& input[type="text"] {
 			width: 100%;
+
 			font-size: 12px;
 		}
 	}
@@ -1353,13 +1566,17 @@
 	& .unread-rooms {
 		position: absolute;
 		z-index: 1;
-		width: 100%;
-		text-align: center;
-		line-height: 24px;
-		text-transform: uppercase;
-		font-weight: bold;
+
 		display: -webkit-flex;
 		display: flex;
+
+		width: 100%;
+
+		text-align: center;
+		text-transform: uppercase;
+
+		font-weight: bold;
+		line-height: 24px;
 		align-items: center;
 		justify-content: center;
 
@@ -1373,16 +1590,19 @@
 
 		& i {
 			margin-left: 5px;
+
 			font-size: 12px;
 		}
 	}
 
 	& .unread-rooms-mode,
 	& .unread-rooms-mode + ul {
-		max-height: 0;
-		opacity: 0;
 		overflow: hidden;
+
+		max-height: 0;
 		margin: 0;
+
+		opacity: 0;
 	}
 
 	& .unread-rooms-mode.has-unread {
@@ -1391,27 +1611,32 @@
 
 	& .unread-rooms-mode.has-unread,
 	& .unread-rooms-mode.has-unread + ul {
-		transition: max-height 1s ease-in, opacity 0.5s linear;
 		max-height: 5000px;
+
+		transition: max-height 1s ease-in, opacity 0.5s linear;
+
 		opacity: 1;
 	}
 }
 
 .rc-old .toolbar {
 	position: absolute;
-	width: 100%;
 	z-index: 2;
 	top: var(--header-min-height);
+
+	width: 100%;
 	height: var(--toolbar-height);
 }
 
 .rc-old .toolbar-wrapper {
-	margin: 10px 8px;
 	display: flex;
+
+	margin: 10px 8px;
 }
 
 .rc-old .toolbar-search {
 	position: relative;
+
 	width: 100%;
 }
 
@@ -1419,17 +1644,22 @@
 	position: absolute;
 	top: 0;
 	left: 0;
-	line-height: 35px;
+
 	width: 35px;
+
 	text-align: center;
+
+	line-height: 35px;
 }
 
 .rc-old .toolbar-search__icon--cancel {
-	left: auto;
 	right: 0;
-	opacity: 0;
-	transition: opacity 0.3s;
+	left: auto;
+
 	cursor: pointer;
+	transition: opacity 0.3s;
+
+	opacity: 0;
 }
 
 .rc-old .toolbar-search__input {
@@ -1442,15 +1672,18 @@
 
 .rc-old .toolbar-search__buttons {
 	display: flex;
-	align-items: center;
+
 	margin-left: 5px;
+	align-items: center;
 
 	& i {
 		width: 25px;
 		height: 25px;
-		line-height: 25px;
-		text-align: center;
+
 		cursor: pointer;
+		text-align: center;
+
+		line-height: 25px;
 	}
 }
 
@@ -1460,11 +1693,13 @@
 
 .rc-old .fixed-title {
 	display: flex;
+
+	height: calc(var(--header-min-height) + 1px);
+	padding: 0 10px 0 20px;
+
+	border-width: 0 0 1px;
 	align-items: center;
 	flex-flow: row nowrap;
-	padding: 0 10px 0 20px;
-	border-width: 0 0 1px;
-	height: calc(var(--header-min-height) + 1px);
 	flex-shrink: 0;
 
 	&.visible h2 {
@@ -1472,14 +1707,17 @@
 	}
 
 	& h2 {
-		width: 100%;
 		overflow: hidden;
+		flex: 1;
+
+		width: 100%;
+
 		white-space: nowrap;
 		text-overflow: ellipsis;
+
 		font-size: 22px;
 		font-weight: 500;
 		line-height: 29px;
-		flex: 1;
 
 		& .icon-at,
 		& .icon-hash,
@@ -1493,8 +1731,8 @@
 		}
 
 		& .iframe-toolbar {
-			flex-grow: 0;
 			white-space: nowrap;
+			flex-grow: 0;
 		}
 	}
 
@@ -1502,41 +1740,51 @@
 		display: flex;
 
 		& .button {
-			white-space: nowrap;
 			margin-left: 1rem;
+
+			white-space: nowrap;
 		}
 	}
 
 	& .animated-hidden {
-		visibility: hidden;
 		display: none;
+		visibility: hidden;
 	}
 
 	& input[type='text'] {
 		width: calc(100% - 100px);
-		vertical-align: top;
 		margin-top: -4px;
 		margin-left: -3px;
+
+		vertical-align: top;
+
 		font-size: 20px;
 	}
 
 	& .icon-pencil {
-		vertical-align: text-top;
-		margin-top: -7px;
 		display: inline-block;
+
+		margin-top: -7px;
+
+		vertical-align: text-top;
+
 		font-size: 16px;
 	}
 }
 
 .rc-old .announcement {
-	height: 40px;
-	line-height: 40px;
-	overflow: hidden;
-	font-size: 1.2em;
-	background-color: #04436a;
-	color: white;
-	text-align: center;
 	display: block;
+	overflow: hidden;
+
+	height: 40px;
+
+	text-align: center;
+
+	color: white;
+	background-color: #04436a;
+
+	font-size: 1.2em;
+	line-height: 40px;
 
 	& ~ .container-bars {
 		top: 95px;
@@ -1547,11 +1795,13 @@
 	max-width: 800px;
 	margin: 40px auto;
 	padding: 20px;
+
 	border-radius: 4px;
 	box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.3);
 
 	& .cms-page-close {
 		margin-bottom: 10px;
+
 		text-align: right;
 	}
 }
@@ -1561,6 +1811,7 @@
 .rc-old.main-content {
 	&.main-modal {
 		left: 0;
+
 		margin-right: 0;
 	}
 
@@ -1587,19 +1838,21 @@
 
 		& > .info {
 			max-width: none;
-			line-height: 24px;
 			padding-left: 20px;
+
 			font-size: 16px;
 			font-weight: 500;
+			line-height: 24px;
 		}
 	}
 
 	& .section {
+		margin: 20px;
+		padding: 20px;
+
 		border: 1px solid #dddddd;
 		border-radius: 4px;
-		background-color: #ffffff;
-		padding: 20px;
-		margin: 20px;
+		background-color: var(--color-white);
 
 		&.section-collapsed .section-content {
 			display: none;
@@ -1608,6 +1861,7 @@
 
 	& .section-title {
 		display: flex;
+
 		font-size: 24px;
 		font-weight: 600;
 		line-height: 40px;
@@ -1622,20 +1876,24 @@
 	}
 
 	& .section-content {
-		border: none !important;
-		border-radius: 0 !important;
 		padding: 20px 0 0 !important;
 
+		border: none !important;
+		border-radius: 0 !important;
+
 		& .input-line {
-			border-bottom: 1px solid #eeeeee;
-			padding: 20px 0;
-			margin-bottom: 0;
 			display: flex;
+
+			margin-bottom: 0;
+			padding: 20px 0;
+
+			border-bottom: 1px solid #eeeeee;
 			align-items: flex-start;
 
 			&:last-child {
-				border-bottom: none;
 				padding-bottom: 0;
+
+				border-bottom: none;
 			}
 
 			&:first-child {
@@ -1656,27 +1914,33 @@
 		}
 
 		& .setting-label {
-			text-align: left;
-			font-weight: 500;
-			font-size: 16px;
-			line-height: 20px;
 			width: 25%;
+
+			text-align: left;
+
+			font-size: 16px;
+			font-weight: 500;
+			line-height: 20px;
 		}
 
 		& .settings-description {
 			padding: 5px;
+
 			line-height: 20px;
 		}
 
 		& .settings-alert {
-			border-width: 1px;
-			font-weight: bold;
 			padding: 5px;
+
+			border-width: 1px;
+
+			font-weight: bold;
 		}
 
 		& .color-editor {
-			width: 150px;
 			position: relative;
+
+			width: 150px;
 		}
 
 		& .selected-rooms .remove-room {
@@ -1689,8 +1953,8 @@
 	}
 
 	& .rocket-form {
-		max-width: none;
 		width: 100%;
+		max-width: none;
 		padding: 0;
 	}
 
@@ -1700,13 +1964,16 @@
 
 		& input[type=file] {
 			position: absolute !important;
-			width: 100%;
+			z-index: 10000;
 			top: 0;
 			left: 0;
+
+			width: 100%;
 			height: 100%;
-			opacity: 0;
-			z-index: 10000;
+
 			cursor: pointer;
+
+			opacity: 0;
 
 			& * {
 				cursor: pointer;
@@ -1714,20 +1981,23 @@
 		}
 
 		& .preview {
-			height: 50px;
-			width: 100px;
-			border-radius: 4px;
 			overflow: hidden;
-			box-shadow: 0 0 1px rgba(0, 0, 0, 0.5) inset;
-			background-size: contain;
-			background-position: center center;
+
+			width: 100px;
+			height: 50px;
+
+			border-radius: 4px;
 			background-repeat: no-repeat;
+			background-position: center center;
+			background-size: contain;
+			box-shadow: 0 0 1px rgba(0, 0, 0, 0.5) inset;
 
 			&.no-file {
 				display: flex;
+
+				font-size: 24px;
 				align-items: center;
 				justify-content: center;
-				font-size: 24px;
 			}
 		}
 	}
@@ -1752,9 +2022,10 @@
 
 	& .section {
 		& h1 {
-			font-size: 20px;
 			margin-top: 40px;
 			padding: 0 0 0 10px;
+
+			font-size: 20px;
 			font-weight: 500;
 		}
 
@@ -1763,8 +2034,9 @@
 		}
 
 		& .section-content {
-			border-width: 1px;
 			padding: 20px;
+
+			border-width: 1px;
 			border-radius: 4px;
 
 			& .section-helper {
@@ -1781,9 +2053,11 @@
 	& h2,
 	& h3,
 	& h4 {
-		font-weight: 300;
-		text-transform: uppercase;
 		margin-bottom: 12px;
+
+		text-transform: uppercase;
+
+		font-weight: 300;
 	}
 }
 
@@ -1794,12 +2068,14 @@
 
 	& .logo {
 		display: block;
-		margin: 10px 0;
+
 		max-width: 325px;
+		margin: 10px 0;
 	}
 
 	& .info {
 		max-width: 680px;
+
 		line-height: 20px;
 	}
 
@@ -1820,22 +2096,26 @@
 	}
 
 	& .results {
-		padding: 10px 0;
-		border-width: 0 0 1px;
 		margin-bottom: 10px;
+		padding: 10px 0;
+
+		border-width: 0 0 1px;
+
 		font-weight: 300;
 
 		& p {
-			font-size: 12px;
 			text-transform: uppercase;
+
+			font-size: 12px;
 		}
 	}
 
 	& .list {
 		& a {
 			display: block;
-			padding: 3px;
+
 			margin-bottom: 5px;
+			padding: 3px;
 
 			& .info {
 				& h3 {
@@ -1849,8 +2129,9 @@
 		}
 
 		& .room-info {
-			padding: 3px;
 			margin-bottom: 5px;
+			padding: 3px;
+
 			cursor: pointer;
 
 			& h3 {
@@ -1860,25 +2141,29 @@
 
 		& .user-image {
 			float: right;
+
 			margin-left: 12px;
 		}
 	}
 }
 
 .rc-old .image-to-download {
-	border-radius: 6px;
-	border: 1px dashed;
-	padding: 20px 15px;
-	margin-bottom: 5px;
-	text-transform: uppercase;
-	text-align: center;
-	cursor: pointer;
-	height: 200px;
 	display: flex;
 	flex-direction: column;
+
+	width: 200px;
+	height: 200px;
+	margin-bottom: 5px;
+	padding: 20px 15px;
+
+	cursor: pointer;
+	text-align: center;
+	text-transform: uppercase;
+
+	border: 1px dashed;
+	border-radius: 6px;
 	align-items: center;
 	justify-content: center;
-	width: 200px;
 
 	& i {
 		font-size: 24px;
@@ -1888,90 +2173,107 @@
 .rc-old .room-not-found {
 	display: flex;
 	flex-direction: column;
+
+	font-size: 30px;
 	align-items: center;
 	justify-content: center;
-	font-size: 30px;
 
 	& div {
-		line-height: 40px;
 		text-align: center;
+
+		line-height: 40px;
 	}
 
 	& i {
-		font-size: 100px;
 		padding-bottom: 30px;
+
+		font-size: 100px;
 	}
 }
 
 .rc-old .container-bars {
 	position: absolute;
-	top: 4px; /* --header-height */
 	z-index: 1;
-	font-weight: bold;
-	display: flex;
-	flex-direction: column;
-	border-radius: 4px;
-	overflow: hidden;
-	font-size: 1em;
-	left: 10px;
+	top: 4px; /* --header-height */
 	right: 10px;
+	left: 10px;
+
+	display: flex;
+	visibility: hidden;
+	overflow: hidden;
+	flex-direction: column;
+
+	transition: transform 0.4s ease, visibility 0.3s ease, opacity 0.3s ease;
+	transform: translateY(-10px);
+
+	opacity: 0;
+	border-radius: 4px;
 	box-shadow:
 		0 1px 1px 0 rgba(0, 0, 0, 0.2),
 		0 2px 10px 0 rgba(0, 0, 0, 0.16);
-	transition: transform 0.4s ease, visibility 0.3s ease, opacity 0.3s ease;
-	transform: translateY(-10px);
-	opacity: 0;
-	visibility: hidden;
+
+	font-size: 1em;
+	font-weight: bold;
 
 	&.show {
-		opacity: 1;
 		visibility: visible;
+
 		transform: translateY(0);
+
+		opacity: 1;
 	}
 
 	& > div {
-		line-height: 28px;
 		padding: 0 10px;
+
+		line-height: 28px;
 	}
 
 	& .upload-progress {
-		height: 28px;
 		position: relative;
+
+		height: 28px;
 
 		& .upload-progress-progress {
 			position: absolute;
-			left: 0;
-			height: 100%;
-			width: 0%;
 			z-index: 1;
+			left: 0;
+
+			width: 0%;
+			height: 100%;
+
 			transition: width, 1s, ease-out;
 		}
 
 		& .upload-progress-text {
-			padding: 0 10px;
 			position: absolute;
-			left: 0;
-			right: 0;
-			height: 100%;
 			z-index: 2;
+			right: 0;
+			left: 0;
+
+			height: 100%;
+			padding: 0 10px;
 
 			& > a {
 				float: right;
-				text-transform: uppercase;
+
 				cursor: pointer;
+				text-transform: uppercase;
 			}
 		}
 
 		& button {
 			float: right;
-			font-weight: bold;
+
 			text-transform: uppercase;
+
+			font-weight: bold;
 		}
 	}
 
 	& .unread-bar {
-		text-transform: uppercase;
 		text-align: center;
+		text-transform: uppercase;
 
 		& > button.mark-read {
 			float: right;
@@ -2000,9 +2302,9 @@
 }
 
 .rc-old .flex-tab-main-content {
-	flex-grow: 1;
 	position: relative;
 	z-index: 1;
+	flex-grow: 1;
 }
 
 .rc-old .room-container {
@@ -2013,43 +2315,53 @@
 
 .rc-old .messages-container {
 	position: relative;
-	flex: 1;
+
 	display: flex;
 	flex-direction: column;
+	flex: 1;
 
 	&-wrapper {
-		height: calc(100% - 61px);
 		display: flex;
+
+		height: calc(100% - 61px);
 		flex-grow: 1;
 	}
 
 	&-main {
-		flex: 1 1 auto;
-		width: 50%;
 		position: relative;
+
 		display: flex;
 		flex-direction: column;
+		flex: 1 1 auto;
+
+		width: 50%;
 	}
 
 	& .room-topic {
-		font-size: 14px;
-		opacity: 0.4;
 		margin-left: 10px;
+
+		opacity: 0.4;
+
+		font-size: 14px;
 	}
 
 	& .edit-room-title {
 		margin-left: 4px;
+
 		font-size: 16px;
 	}
 
 	& .wrapper {
 		position: absolute;
-		width: 100%;
-		height: 100%;
 		top: 0;
 		left: 0;
-		overflow-y: auto;
+
 		overflow-x: hidden;
+		overflow-y: auto;
+
+		width: 100%;
+		height: 100%;
+
 		word-wrap: break-word;
 		-webkit-overflow-scrolling: touch;
 	}
@@ -2062,25 +2374,31 @@
 		margin-bottom: 18px;
 
 		& > .message-input {
-			border-width: 1px;
-			overflow: hidden;
-			border-radius: 5px;
 			position: relative;
+
 			display: flex;
+			overflow: hidden;
+
+			border-width: 1px;
+			border-radius: 5px;
 
 			& > .share-items {
-				display: flex;
 				position: relative;
+
+				display: flex;
 
 				& input {
 					position: absolute;
 					top: 0;
-					left: 0;
 					right: 0;
 					bottom: 0;
+					left: 0;
+
 					overflow: hidden;
-					opacity: 0;
+
 					cursor: pointer;
+
+					opacity: 0;
 
 					&::-webkit-file-upload-button {
 						cursor: pointer;
@@ -2092,26 +2410,33 @@
 				}
 
 				& > .message-buttons {
-					height: 35px;
-					width: 35px;
-					text-align: center;
-					border: 0;
-					cursor: pointer;
+					position: relative;
+
 					display: flex;
+					overflow: hidden;
+
+					width: 35px;
+					height: 35px;
+
+					cursor: pointer;
+					text-align: center;
+
+					border: 0;
 					align-items: center;
 					justify-content: center;
-					position: relative;
-					overflow: hidden;
 
 					& input {
 						position: absolute;
 						top: 0;
-						left: 0;
 						right: 0;
 						bottom: 0;
+						left: 0;
+
 						overflow: hidden;
-						opacity: 0;
+
 						cursor: pointer;
+
+						opacity: 0;
 
 						&::-webkit-file-upload-button {
 							cursor: pointer;
@@ -2126,42 +2451,51 @@
 
 			& .input-message-container {
 				position: relative;
+
 				width: 100%;
 
 				& .inner-left-toolbar {
 					position: absolute;
-					left: 13px;
 					top: 8px;
+					left: 13px;
 				}
 			}
 
 			& > .message-buttons {
-				flex: 0 0 35px;
-				text-align: center;
-				border: 0;
-				cursor: pointer;
+				position: relative;
+
 				display: flex;
+				flex: 0 0 35px;
+
+				cursor: pointer;
+				transition: background-color 0.1s linear, color 0.1s linear;
+				text-align: center;
+
+				border: 0;
 				align-items: center;
 				justify-content: center;
-				position: relative;
-				transition: background-color 0.1s linear, color 0.1s linear;
 
 				& i {
-					font-size: 18px;
-					transform: rotate(0deg);
 					transition: transform 0.3s ease-out;
+					transform: rotate(0deg);
+
+					font-size: 18px;
 				}
 
 				& input {
 					position: absolute;
 					top: 0;
-					left: 0;
 					right: 0;
 					bottom: 0;
+					left: 0;
+
 					overflow: hidden;
-					opacity: 0;
-					cursor: pointer;
+
 					width: 100%;
+
+					cursor: pointer;
+
+					opacity: 0;
 
 					&::-webkit-file-upload-button {
 						cursor: pointer;
@@ -2172,43 +2506,56 @@
 
 		& textarea {
 			display: block;
+			overflow-y: auto;
+
+			max-height: 155px;
 			margin: 0;
 			padding-top: 9px;
 			padding-bottom: 9px;
 			padding-left: 49px;
-			border-radius: 0;
-			overflow-y: auto;
-			max-height: 155px;
+
 			resize: none;
-			line-height: 16px;
+
 			border-width: 0 1px 0 0;
+			border-radius: 0;
+
+			line-height: 16px;
 		}
 
 		& .users-typing {
-			float: left;
-			height: 23px;
-			font-size: 12px;
-			padding: 3px;
-			display: inline-block;
-			white-space: nowrap;
-			overflow: hidden;
-			text-overflow: ellipsis;
-			max-width: 100%;
 			position: relative;
-			background-color: #ffffff;
+
+			display: inline-block;
+			float: left;
+			overflow: hidden;
+
+			max-width: 100%;
+			height: 23px;
+			padding: 3px;
+
+			white-space: nowrap;
+			text-overflow: ellipsis;
+
+			background-color: var(--color-white);
+
+			font-size: 12px;
 		}
 
 		& .formatting-tips {
-			float: right;
-			height: 25px;
-			font-size: 11px;
-			padding: 3px;
 			display: flex;
-			align-items: center;
+			float: right;
 			overflow: hidden;
-			opacity: 0.5;
-			white-space: nowrap;
+
+			height: 25px;
+			padding: 3px;
+
 			transition: opacity 0.2s linear;
+			white-space: nowrap;
+
+			opacity: 0.5;
+
+			font-size: 11px;
+			align-items: center;
 
 			& > * {
 				margin: 0 3px;
@@ -2220,6 +2567,7 @@
 
 			& q {
 				padding: 0 0 0 3px;
+
 				border-width: 0 0 0 3px;
 
 				&::before {
@@ -2228,11 +2576,13 @@
 			}
 
 			& code {
-				line-height: 13px;
 				overflow: hidden;
+
 				vertical-align: top;
-				font-size: 10px;
 				white-space: nowrap;
+
+				font-size: 10px;
+				line-height: 13px;
 			}
 
 			& .hidden-br {
@@ -2245,28 +2595,35 @@
 		}
 
 		& .stream-info {
-			font-size: 12px;
+			float: left;
+
 			height: 25px;
 			padding: 3px;
-			float: left;
+
+			font-size: 12px;
 		}
 
 		& .editing-commands {
 			display: none;
+
 			text-transform: lowercase;
 
 			& .editing-commands-cancel {
 				float: left;
+
 				height: 23px;
-				font-size: 11px;
 				padding: 3px;
+
+				font-size: 11px;
 			}
 
 			& .editing-commands-save {
 				float: right;
+
 				height: 23px;
-				font-size: 11px;
 				padding: 3px;
+
+				font-size: 11px;
 			}
 		}
 
@@ -2287,11 +2644,13 @@
 	}
 
 	& .add-user-search {
-		height: 100%;
-		overflow: hidden;
 		display: inline-block;
-		vertical-align: top;
+		overflow: hidden;
+
 		width: 100%;
+		height: 100%;
+
+		vertical-align: top;
 	}
 
 	&.admin {
@@ -2302,6 +2661,7 @@
 
 	& .secondary-name {
 		color: #666666;
+
 		font-size: 15px;
 	}
 }
@@ -2313,38 +2673,47 @@
 .rc-old .message-popup {
 	position: absolute;
 	z-index: 101;
+	right: 0;
 	bottom: 0;
 	left: 0;
-	right: 0;
+
 	overflow: hidden;
+
+	border-radius: 5px;
 	box-shadow:
 		0 -1px 10px 0 rgba(0, 0, 0, 0.2),
 		0 1px 1px rgba(0, 0, 0, 0.16);
-	border-radius: 5px;
 
 	&.popup-down {
-		bottom: auto;
 		top: 0;
+		bottom: auto;
 	}
 
 	&.search-results-list {
 		top: 0;
-		height: calc(100vh - calc(var(--header-min-height) + calc(var(--toolbar-height) + var(--footer-min-height))));
+
 		overflow-y: auto;
-		box-shadow: none;
-		border-radius: 0;
+
+		height: calc(100vh - calc(var(--header-min-height) + calc(var(--toolbar-height) + var(--footer-min-height))));
 		padding: 25px 0 0 8px;
-		direction: rtl;
+
 		text-align: left;
 
+		border-radius: 0;
+		box-shadow: none;
+		direction: rtl;
+
 		& .popup-item {
-			white-space: nowrap;
-			overflow: hidden;
-			text-overflow: ellipsis;
-			padding-left: 6px;
 			position: relative;
-			direction: ltr;
+
+			overflow: hidden;
+
 			height: 30px;
+			padding-left: 6px;
+
+			white-space: nowrap;
+			text-overflow: ellipsis;
+			direction: ltr;
 
 			& i::before {
 				margin-right: 0;
@@ -2352,8 +2721,8 @@
 		}
 
 		& .room-title {
-			line-height: 30px;
 			font-size: 15px;
+			line-height: 30px;
 		}
 
 		& .bold {
@@ -2371,34 +2740,42 @@
 }
 
 .rc-old .message-popup-title {
-	border-width: 0 0 1px;
 	padding: 0 20px;
-	line-height: 32px;
+
+	border-width: 0 0 1px;
+
 	font-size: 14px;
 	font-weight: 300;
+	line-height: 32px;
 }
 
 .rc-old .popup-item {
 	padding: 0 20px;
-	line-height: 32px;
+
 	cursor: pointer;
 	user-select: none;
+
+	line-height: 32px;
 }
 
 .rc-old .popup-user-avatar {
-	width: 24px;
 	display: inline-block;
+
+	width: 24px;
 	height: 24px;
-	background-size: contain;
-	border-radius: 3px;
 	margin: -7px 4px;
+
+	border-radius: 3px;
+	background-size: contain;
 }
 
 .rc-old .popup-user-status {
-	border-width: 1px;
+	display: inline-block;
+
 	width: 10px;
 	height: 10px;
-	display: inline-block;
+
+	border-width: 1px;
 	border-radius: 10px;
 }
 
@@ -2408,6 +2785,7 @@
 
 .messages-box {
 	position: relative;
+
 	overflow: hidden;
 	flex-grow: 1;
 
@@ -2424,26 +2802,31 @@
 	}
 
 	& .start {
-		text-align: center;
 		margin-top: 12px;
+
+		text-align: center;
 	}
 
 	& .new-message {
-		user-select: none;
-		margin: 0 -65px;
 		position: absolute;
-		border-radius: 20px;
-		width: 130px;
-		height: 30px;
-		text-align: center;
-		line-height: 30px;
-		font-size: 0.8em;
-		cursor: pointer;
+		z-index: 16;
 		bottom: 8px;
 		left: 50%;
-		z-index: 16;
+
+		width: 130px;
+		height: 30px;
+		margin: 0 -65px;
+
+		cursor: pointer;
+		user-select: none;
 		transition: transform 0.3s ease-out;
 		transform: translateY(0);
+		text-align: center;
+
+		border-radius: 20px;
+
+		font-size: 0.8em;
+		line-height: 30px;
 
 		&.not {
 			transform: translateY(150%);
@@ -2451,28 +2834,32 @@
 	}
 
 	& .jump-recent {
-		z-index: 15;
 		position: absolute;
-		text-align: right;
-		height: 24px;
-		line-height: 24px;
-		font-size: 0.8em;
-		padding-right: 20px;
+		z-index: 15;
+		right: 20px;
 		bottom: 0;
 		left: 20px;
-		right: 20px;
-		border-top-left-radius: 4px;
-		border-top-right-radius: 4px;
+
+		height: 24px;
+		padding-right: 20px;
+
 		transition: transform 0.3s ease-out;
 		transform: translateY(0);
+		text-align: right;
+
+		border-top-left-radius: 4px;
+		border-top-right-radius: 4px;
+
+		font-size: 0.8em;
+		line-height: 24px;
 
 		&.not {
 			transform: translateY(150%);
 		}
 
 		& button {
-			user-select: none;
 			cursor: pointer;
+			user-select: none;
 		}
 	}
 
@@ -2492,28 +2879,35 @@
 }
 
 .rc-old .ticks-bar {
-	width: 10px;
 	position: absolute;
-	right: 2px;
-	height: 100%;
 	z-index: 1;
+	right: 2px;
+
+	width: 10px;
+	height: 100%;
+
 	pointer-events: none;
 
 	& .tick {
-		height: 2px;
-		width: 100%;
-		top: 50%;
 		position: absolute;
+		top: 50%;
+
+		width: 100%;
+		height: 2px;
+
 		border-radius: 2px;
 	}
 }
 
 .rc-old .message {
-	padding: 8px 20px 4px 70px;
 	position: relative;
-	line-height: 20px;
+
 	min-height: 40px;
+	padding: 8px 20px 4px 70px;
+
 	transition: background 0.3s;
+
+	line-height: 20px;
 
 	&.highlight {
 		animation: highlight 3s;
@@ -2527,32 +2921,41 @@
 		margin-top: 60px;
 
 		&::before {
-			content: attr(data-date);
-			display: block;
 			position: absolute;
+			z-index: 1;
 			top: -30px;
 			left: calc(50% - 70px);
+
+			display: block;
+
+			min-width: 140px;
+			padding: 0 10px;
+
+			content: attr(data-date);
+			text-align: center;
+
 			font-size: 12px;
 			font-weight: 600;
-			text-align: center;
-			z-index: 1;
-			padding: 0 10px;
-			min-width: 140px;
 		}
 
 		&::after {
-			content: " ";
-			display: block;
 			position: absolute;
 			top: -20px;
 			left: 0;
-			border-width: 1px 0 0;
+
+			display: block;
+
 			width: 100%;
+
+			content: " ";
+
+			border-width: 1px 0 0;
 		}
 	}
 
 	& .message-action {
 		display: none;
+
 		cursor: pointer;
 	}
 
@@ -2561,40 +2964,51 @@
 	}
 
 	& .message-cog-container {
-		cursor: pointer;
 		position: relative;
+
 		display: none;
+
+		cursor: pointer;
 	}
 
 	& .message-dropdown {
 		position: absolute;
+		z-index: 1000;
 		top: -5px;
 		left: -2px;
-		z-index: 1000;
+
 		display: none;
-		border-radius: 4px;
 		overflow: hidden;
+
+		transition: transform 0.15s ease-in-out, opacity 0.15s ease-in-out;
+		animation: dropdown-in 0.15s ease-in-out;
+
+		border-radius: 4px;
 		box-shadow:
 			0 1px 1px 0 rgba(0, 0, 0, 0.2),
 			0 2px 10px 0 rgba(0, 0, 0, 0.16);
-		transition: transform 0.15s ease-in-out, opacity 0.15s ease-in-out;
-		animation: dropdown-in 0.15s ease-in-out;
 
 		& ul {
 			display: flex;
 			display: -webkit-flex;
+
 			padding: 0;
+
 			font-size: 14px;
 
 			& li {
 				display: block;
+
 				padding: 0 8px;
+
+				cursor: pointer;
+
 				font-weight: 400;
 				line-height: 26px;
-				cursor: pointer;
 
 				&:first-child {
 					padding-left: 6px;
+
 					border-width: 0 1px 0 0;
 				}
 
@@ -2607,14 +3021,18 @@
 
 	& .user {
 		display: inline-block;
-		font-weight: 600;
+
 		margin-right: 5px;
+
+		font-weight: 600;
 	}
 
 	& .thumb {
 		position: absolute;
 		left: 20px;
+
 		display: block;
+
 		width: 40px;
 		height: 40px;
 
@@ -2625,9 +3043,12 @@
 
 		&.thumb-small {
 			position: initial;
+
+			display: inline-block;
+
 			width: 20px;
 			height: 20px;
-			display: inline-block;
+
 			vertical-align: bottom;
 
 			& .avatar {
@@ -2641,14 +3062,16 @@
 		font-size: 12px;
 
 		& .edited {
-			border-left: 1px dotted;
-			padding-left: 3px;
 			margin-left: 3px;
+			padding-left: 3px;
+
+			border-left: 1px dotted;
 		}
 
 		& .is-bot,
 		& .role-tag {
 			padding: 1px 4px;
+
 			border-radius: 2px;
 		}
 	}
@@ -2659,9 +3082,9 @@
 
 	&.sequential {
 		min-height: 20px;
+		margin-top: 0;
 		padding-top: 4px;
 		padding-bottom: 4px;
-		margin-top: 0;
 
 		& .user {
 			display: none;
@@ -2673,9 +3096,11 @@
 
 		& .info {
 			position: absolute;
-			text-align: right;
 			left: 5px;
+
 			width: 60px;
+
+			text-align: right;
 
 			& .time,
 			& .role-tag {
@@ -2684,10 +3109,13 @@
 
 			& .edited {
 				display: block;
-				border-left: 0;
+
 				margin-left: 0;
 				padding-left: 0;
+
 				white-space: nowrap;
+
+				border-left: 0;
 			}
 
 			& .private {
@@ -2696,6 +3124,7 @@
 
 			& .message-action {
 				float: left;
+
 				margin-left: 1px;
 			}
 		}
@@ -2734,25 +3163,31 @@
 	}
 
 	& .body {
-		opacity: 1;
-		transition: opacity 1s linear;
 		margin-top: 2px;
 
+		transition: opacity 1s linear;
+
+		opacity: 1;
+
 		& .inline-image {
-			background-size: contain;
-			background-repeat: no-repeat;
-			background-position: center left;
 			display: inline-block;
-			line-height: 0;
-			box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.1);
-			border-radius: 3px;
 			overflow: hidden;
 
+			border-radius: 3px;
+			background-repeat: no-repeat;
+			background-position: center left;
+			background-size: contain;
+			box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.1);
+
+			line-height: 0;
+
 			& img {
-				max-height: 200px;
 				max-width: 100%;
-				opacity: 0;
+				max-height: 200px;
+
 				cursor: pointer;
+
+				opacity: 0;
 			}
 		}
 
@@ -2796,13 +3231,15 @@
 	}
 
 	& .message-alias {
-		font-weight: 400;
 		padding-left: 2px;
+
+		font-weight: 400;
 	}
 }
 
 .rc-old .attachment-description {
 	margin-top: 10px;
+
 	line-height: 1;
 }
 
@@ -2865,8 +3302,8 @@ body:not(.is-cordova) {
 			}
 
 			& blockquote iframe {
-				height: 150px;
 				width: 266px;
+				height: 150px;
 			}
 		}
 
@@ -2881,9 +3318,10 @@ body:not(.is-cordova) {
 		}
 
 		& .thumb {
-			height: 20px;
-			width: 20px;
 			left: 10px;
+
+			width: 20px;
+			height: 20px;
 
 			& .avatar {
 				width: 20px;
@@ -2899,8 +3337,9 @@ body:not(.is-cordova) {
 
 			& .info {
 				position: relative;
-				text-align: right;
 				left: 0;
+
+				text-align: right;
 
 				& .time,
 				& .edited {
@@ -2914,32 +3353,38 @@ body:not(.is-cordova) {
 /* FLEX-TAB and FLEX-TAB views */
 .rc-old .main-content-flex {
 	display: flex;
+
 	height: 100%;
 }
 
 .rc-old .flex-tab-container {
+	z-index: 2;
+
 	display: flex;
 	flex: 0 0 41px;
-	z-index: 2;
+
 	border-width: 0 0 0 1px;
 
 	& .flex-tab {
 		position: relative;
+
 		display: none;
+		overflow-x: visible;
+
 		width: var(--flex-tab-width);
 		height: calc(100vh - 61px);
-		overflow-x: visible;
 
 		& .control {
 			& .header {
-				text-align: center;
-				padding: 5px 30px 20px;
 				margin: 5px 0 15px;
+				padding: 5px 30px 20px;
+
+				text-align: center;
 
 				& h2 {
 					font-size: 20px;
-					line-height: 25px;
 					font-weight: 300;
+					line-height: 25px;
 				}
 			}
 
@@ -2950,21 +3395,25 @@ body:not(.is-cordova) {
 
 			& .more {
 				position: absolute;
-				left: 0;
 				top: 0;
-				height: 60px;
+				left: 0;
+
 				width: 30px;
-				border-width: 0 0 1px;
+				height: 60px;
+
 				cursor: pointer;
-				transform: translateX(-27px);
 				transition: transform 0.25s ease-out 0.475s, background 0.075s ease-out 0.5s;
+				transform: translateX(-27px);
+
+				border-width: 0 0 1px;
 
 				& i {
-					transform-origin: 50%, 50%, 0;
-					transition: transform 0.3s ease-out;
 					height: 12.5px;
-					vertical-align: top;
 					margin-top: 1px;
+
+					transition: transform 0.3s ease-out;
+					transform-origin: 50%, 50%, 0;
+					vertical-align: top;
 				}
 			}
 
@@ -2975,6 +3424,7 @@ body:not(.is-cordova) {
 					position: absolute;
 					top: 11px;
 					left: 8px;
+
 					font-size: 13px;
 				}
 			}
@@ -2982,18 +3432,24 @@ body:not(.is-cordova) {
 			& .info-tabs {
 				position: absolute;
 				top: 0;
-				text-align: right;
-				height: 60px;
 				right: 20px;
 
+				height: 60px;
+
+				text-align: right;
+
 				& a {
-					float: left;
 					display: inline-block;
-					padding: 0 15px;
+					float: left;
+
 					height: 60px;
-					line-height: 60px;
+					padding: 0 15px;
+
 					vertical-align: middle;
+
 					border-width: 0 0 0 1px;
+
+					line-height: 60px;
 
 					&:last-child {
 						border-width: 0 1px 0 0;
@@ -3003,14 +3459,16 @@ body:not(.is-cordova) {
 		}
 
 		& .content {
+			position: absolute;
+			top: auto;
+			left: 0;
+
 			overflow-x: hidden;
 			overflow-y: auto;
-			top: auto;
-			-webkit-overflow-scrolling: touch;
-			position: absolute;
+
 			width: 100%;
 			height: 100%;
-			left: 0;
+			-webkit-overflow-scrolling: touch;
 
 			& > div {
 				transition: transform 0.45s cubic-bezier(0.5, 0, 0, 1), opacity 0.125s ease-out 0.1s;
@@ -3018,6 +3476,7 @@ body:not(.is-cordova) {
 
 			& > .animated-hidden {
 				transform: translateX(100%);
+
 				opacity: 0;
 			}
 
@@ -3025,6 +3484,7 @@ body:not(.is-cordova) {
 				position: absolute;
 				top: 0;
 				left: 0;
+
 				width: 100%;
 				height: 100%;
 			}
@@ -3034,39 +3494,46 @@ body:not(.is-cordova) {
 
 				& h2 {
 					padding: 0 20px;
+
 					font-size: 20px;
-					line-height: var(--header-min-height);
 					font-weight: 300;
+					line-height: var(--header-min-height);
 				}
 			}
 		}
 
 		& footer {
 			position: absolute;
+			z-index: 100;
 			bottom: 0;
 			left: 0;
+
 			width: 100%;
-			padding: 9px 15px 0;
-			z-index: 100;
-			text-align: right;
 			height: var(--footer-min-height);
+			padding: 9px 15px 0;
+
+			text-align: right;
 		}
 
 		& .social {
 			text-align: center;
 
 			& h4 {
-				font-weight: 300;
 				position: absolute;
-				width: 100%;
 				top: -12px;
 				left: 0;
+
+				width: 100%;
+
 				font-size: 13px;
+				font-weight: 300;
 			}
 
 			& .share {
-				border-radius: 50%;
 				min-height: 40px;
+
+				border-radius: 50%;
+
 				line-height: 20px;
 
 				&::before {
@@ -3081,26 +3548,33 @@ body:not(.is-cordova) {
 
 		& .close-flex-tab {
 			position: absolute;
-			text-align: center;
+			z-index: 20;
 			top: 3px;
 			right: 5px;
-			z-index: 20;
+
 			width: 30px;
 			height: 30px;
 
+			text-align: center;
+
 			& span {
 				display: inline-block;
+
 				width: 21px;
 				height: 20px;
+
 				border-radius: 50%;
 
 				& i {
 					display: inline-block;
-					height: 18px;
+
 					width: 18px;
+					height: 18px;
+
 					border-width: 1px;
 					border-style: solid;
 					border-radius: 50%;
+
 					font-size: 10px;
 				}
 			}
@@ -3108,11 +3582,13 @@ body:not(.is-cordova) {
 	}
 
 	& .flex-tab-bar {
-		min-width: 40px;
 		z-index: 1;
+
+		min-width: 40px;
 
 		& .tab-button {
 			position: relative;
+
 			cursor: pointer;
 			text-align: center;
 
@@ -3122,15 +3598,19 @@ body:not(.is-cordova) {
 
 			& .counter {
 				position: absolute;
-				font-size: 9px;
+				top: 4px;
+				right: 4px;
+
 				width: 13px;
 				height: 13px;
-				border-radius: 50%;
-				line-height: 13px;
-				font-weight: bold;
-				right: 4px;
-				top: 4px;
+
 				text-align: center;
+
+				border-radius: 50%;
+
+				font-size: 9px;
+				font-weight: bold;
+				line-height: 13px;
 			}
 
 			&.active {
@@ -3153,17 +3633,21 @@ body:not(.is-cordova) {
 }
 
 .rc-old .list-view {
-	-webkit-overflow-scrolling: touch;
-	overflow-y: auto;
-	overflow-x: hidden;
 	z-index: 10;
+
+	overflow-x: hidden;
+	overflow-y: auto;
+
 	padding: 20px;
+	-webkit-overflow-scrolling: touch;
 
 	& .list {
-		display: flex;
-		flex-flow: column nowrap;
 		position: relative;
+
+		display: flex;
+
 		width: 100%;
+		flex-flow: column nowrap;
 
 		& .message {
 			padding: 8px 0 4px 50px;
@@ -3175,13 +3659,14 @@ body:not(.is-cordova) {
 
 		& h2 {
 			font-size: 20px;
-			line-height: 25px;
 			font-weight: 300;
+			line-height: 25px;
 		}
 
 		& p {
-			font-size: 12px;
 			margin-top: 4px;
+
+			font-size: 12px;
 		}
 
 		& b {
@@ -3190,9 +3675,11 @@ body:not(.is-cordova) {
 
 		& .see-all {
 			float: right;
-			border-width: 0;
-			text-decoration: underline;
+
 			cursor: pointer;
+			text-decoration: underline;
+
+			border-width: 0;
 
 			&:hover {
 				text-decoration: none;
@@ -3201,41 +3688,49 @@ body:not(.is-cordova) {
 	}
 
 	& .show-more-users {
-		margin: 1em auto 0;
 		display: block;
+
+		margin: 1em auto 0;
 	}
 
 	&.uploaded-files-list {
 		& a .file-name {
-			color: #008ce3;
-			padding: 10px 5px;
-			border-bottom: 1px solid #eaeaea;
 			display: block;
+
+			padding: 10px 5px;
+
+			color: #008ce3;
 			border-width: 0 0 1px;
+			border-bottom: 1px solid #eaeaea;
 
 			&:hover {
-				color: #006db0;
 				text-decoration: underline;
+
+				color: #006db0;
 			}
 
 			& p {
 				overflow: hidden;
-				text-overflow: ellipsis;
+
 				white-space: nowrap;
+				text-overflow: ellipsis;
 			}
 		}
 
 		& i {
 			float: left;
+
 			margin-right: 10px;
 
 			&.file-delete {
 				float: right;
+
 				padding-top: 10px;
 			}
 
 			&.file-download {
 				float: right;
+
 				padding-top: 11px;
 			}
 		}
@@ -3244,8 +3739,9 @@ body:not(.is-cordova) {
 
 .rc-old .user-view {
 	z-index: 15;
-	overflow-y: auto;
+
 	overflow-x: hidden;
+	overflow-y: auto;
 
 	& .about {
 		width: 100%;
@@ -3267,107 +3763,136 @@ body:not(.is-cordova) {
 	}
 
 	& .info {
-		white-space: normal;
 		padding: 0 20px;
 
+		white-space: normal;
+
 		& h3 {
-			user-select: text;
-			font-size: 24px;
-			margin: 8px 0;
-			line-height: 27px;
-			text-overflow: ellipsis;
-			width: 100%;
 			overflow: hidden;
+
+			width: 100%;
+			margin: 8px 0;
+
+			user-select: text;
 			white-space: nowrap;
+			text-overflow: ellipsis;
+
+			font-size: 24px;
+			line-height: 27px;
 
 			& i::after {
-				content: " ";
 				display: inline-block;
+
 				width: 8px;
 				height: 8px;
-				border-radius: 4px;
+
+				content: " ";
 				vertical-align: middle;
+
+				border-radius: 4px;
 			}
 		}
 
 		& p {
 			user-select: text;
-			line-height: 18px;
+
 			font-size: 12px;
 			font-weight: 300;
+			line-height: 18px;
 		}
 
 		& .role-tag {
 			padding: 1px 4px;
+
 			border-radius: 2px;
 		}
 	}
 
 	& .stats li {
-		margin-bottom: 3px;
 		display: inline-block;
+
+		margin-bottom: 3px;
 		padding: 4px 6px;
+
 		border-right: 2px;
 		border-radius: 2px;
 	}
 
 	& .box {
 		position: relative;
+
 		margin-bottom: 25px;
+
 		font-size: 13px;
 
 		& h4 {
-			font-size: 13px;
-			text-transform: uppercase;
-			font-weight: 600;
 			margin-bottom: 6px;
+
+			text-transform: uppercase;
+
+			font-size: 13px;
+			font-weight: 600;
 		}
 
 		&::after {
-			content: " ";
-			height: 1px;
-			width: 100%;
+			position: absolute;
 			bottom: -10px;
 			left: 0;
-			position: absolute;
+
+			width: 100%;
+			height: 1px;
+
+			content: " ";
 		}
 	}
 
 	& .tags li {
 		display: inline-block;
+
 		padding: 4px;
+
 		border-right: 2px;
 	}
 
 	& .links {
 		& i {
 			margin-right: 5px;
+
 			font-size: 13px;
 		}
 
 		& a {
-			white-space: nowrap;
-			max-width: 100%;
-			overflow: hidden;
-			text-overflow: ellipsis;
-			display: block;
-			border-radius: 2px;
-			padding: 0 5px;
-			line-height: 22px;
 			position: relative;
+
+			display: block;
+			overflow: hidden;
+
+			max-width: 100%;
+			padding: 0 5px;
+
 			transition: background 0.18s ease, color 0.18s ease;
+			white-space: nowrap;
+			text-overflow: ellipsis;
+
+			border-radius: 2px;
+
+			line-height: 22px;
 
 			&::before {
-				content: attr(data-stats);
 				position: absolute;
-				right: 5px;
 				top: 0;
-				font-size: 11px;
+				right: 5px;
+
+				content: attr(data-stats);
+
 				opacity: 0;
+
+				font-size: 11px;
 			}
 
 			&:hover {
 				padding-right: 34px;
+
 				text-decoration: none;
 
 				&::before {
@@ -3383,41 +3908,51 @@ body:not(.is-cordova) {
 
 	& .contact-code {
 		margin: -5px 0 10px 0;
+
 		font-size: 12px;
 	}
 
 	& .channels {
 		& h3 {
-			font-size: 24px;
 			margin-bottom: 8px;
+
+			font-size: 24px;
 			line-height: 22px;
 		}
 
 		& p {
-			line-height: 18px;
 			font-size: 12px;
 			font-weight: 300;
+			line-height: 18px;
 		}
 
 		& a {
-			white-space: nowrap;
-			max-width: 100%;
-			overflow: hidden;
-			text-overflow: ellipsis;
-			display: block;
-			border-radius: 2px;
-			padding: 0 5px;
-			line-height: 22px;
 			position: relative;
+
+			display: block;
+			overflow: hidden;
+
+			max-width: 100%;
+			padding: 0 5px;
+
 			transition: background 0.18s ease, color 0.18s ease;
+			white-space: nowrap;
+			text-overflow: ellipsis;
+
+			border-radius: 2px;
+
+			line-height: 22px;
 
 			&::before {
-				content: attr(data-stats);
 				position: absolute;
-				right: 5px;
 				top: 0;
-				font-size: 11px;
+				right: 5px;
+
+				content: attr(data-stats);
+
 				opacity: 0;
+
+				font-size: 11px;
 			}
 
 			& span {
@@ -3428,18 +3963,20 @@ body:not(.is-cordova) {
 
 	& .edit-form {
 		padding: 20px 20px 0;
+
 		white-space: normal;
 
 		& h3 {
-			font-size: 24px;
 			margin-bottom: 8px;
+
+			font-size: 24px;
 			line-height: 22px;
 		}
 
 		& p {
-			line-height: 18px;
 			font-size: 12px;
 			font-weight: 300;
+			line-height: 18px;
 		}
 
 		& > .input-line {
@@ -3463,9 +4000,10 @@ body:not(.is-cordova) {
 		}
 
 		& .form-divisor {
-			text-align: center;
-			margin: 2em 0;
 			height: 9px;
+			margin: 2em 0;
+
+			text-align: center;
 
 			& > span {
 				padding: 0 1em;
@@ -3479,13 +4017,17 @@ body:not(.is-cordova) {
 }
 
 .rc-old .user-image {
-	margin: 4px;
-	height: var(--user-image-square);
-	width: var(--user-image-square);
-	cursor: pointer;
-	font-size: 12px;
 	position: relative;
+
 	display: inline-table;
+
+	width: var(--user-image-square);
+	height: var(--user-image-square);
+	margin: 4px;
+
+	cursor: pointer;
+
+	font-size: 12px;
 
 	&:hover,
 	&.selected .avatar::after {
@@ -3500,13 +4042,16 @@ body:not(.is-cordova) {
 		}
 
 		&::after {
-			content: " ";
-			height: 6px;
-			width: 6px;
 			position: absolute;
 			z-index: 1;
-			left: -12px;
 			top: 8px;
+			left: -12px;
+
+			width: 6px;
+			height: 6px;
+
+			content: " ";
+
 			border-radius: 3px;
 		}
 
@@ -3521,6 +4066,7 @@ body:not(.is-cordova) {
 
 	& button {
 		display: block;
+
 		width: 100%;
 		height: 100%;
 	}
@@ -3535,44 +4081,53 @@ body:not(.is-cordova) {
 	}
 
 	& button {
-		padding: 5px 0;
-		height: 30px;
 		display: block;
 		clear: both;
 
+		height: 30px;
+		padding: 5px 0;
+
 		&::after {
-			content: "";
 			display: table;
 			clear: both;
+
+			content: "";
 		}
 
 		& > div {
 			float: left;
+
 			width: var(--user-image-square);
 			height: var(--user-image-square);
 		}
 	}
 
 	& p {
-		float: left;
+		position: relative;
+
 		display: block;
-		line-height: var(--user-image-square);
+		float: left;
+		overflow: hidden;
+
+		width: calc(100% - 45px);
+		padding-left: 10px;
+
+		text-overflow: ellipsis;
+
 		font-size: 15px;
 		font-weight: 400;
-		overflow: hidden;
-		text-overflow: ellipsis;
-		position: relative;
-		padding-left: 10px;
-		width: calc(100% - 45px);
+		line-height: var(--user-image-square);
 	}
 }
 
 .rc-old .user-profile {
-	white-space: normal;
 	overflow: hidden;
+
+	white-space: normal;
 
 	& .thumb {
 		float: left;
+
 		width: 75px;
 
 		& img {
@@ -3583,17 +4138,20 @@ body:not(.is-cordova) {
 
 	& .info {
 		display: block;
+
 		margin-left: 75px;
 
 		& h3 {
-			font-size: 14px;
 			margin-bottom: 8px;
+
+			font-size: 14px;
 			font-weight: 600;
 		}
 
 		& p {
-			font-size: 12px;
 			margin-bottom: 6px;
+
+			font-size: 12px;
 		}
 
 		& a:hover {
@@ -3608,19 +4166,23 @@ body:not(.is-cordova) {
 
 .rc-old .rocket-modal {
 	position: fixed;
+	z-index: 1000;
 	top: 0;
 	left: 0;
+
+	visibility: hidden;
+
 	width: 100%;
 	height: 100%;
-	z-index: 1000;
-	visibility: hidden;
 
 	&.fluid .modal {
 		height: 100%;
 
 		& main {
 			position: absolute;
+
 			overflow-y: scroll;
+
 			height: calc(100% - 112px);
 		}
 	}
@@ -3645,25 +4207,31 @@ body:not(.is-cordova) {
 		overflow: visible;
 
 		& main {
-			overflow: visible;
 			position: relative;
+
+			overflow: visible;
 		}
 	}
 
 	& .wrapper {
-		display: table;
-		height: 100%;
-		width: 100%;
 		position: relative;
+
+		display: table;
+
+		width: 100%;
+		height: 100%;
 	}
 
 	& .window {
+		position: relative;
+
 		display: table-cell;
-		vertical-align: middle;
-		text-align: center;
+
 		width: 100%;
 		height: 100%;
-		position: relative;
+
+		text-align: center;
+		vertical-align: middle;
 	}
 
 	& fieldset {
@@ -3671,11 +4239,15 @@ body:not(.is-cordova) {
 	}
 
 	& legend {
-		z-index: 2;
-		display: block;
-		margin-bottom: 18px;
 		position: relative;
+		z-index: 2;
+
+		display: block;
+
+		margin-bottom: 18px;
+
 		text-transform: uppercase;
+
 		font-size: 13px;
 
 		& i {
@@ -3683,57 +4255,72 @@ body:not(.is-cordova) {
 		}
 
 		&::before {
-			content: " ";
-			width: 100%;
-			height: 1px;
 			position: absolute;
+			z-index: 1;
 			top: 19px;
 			left: 0;
-			z-index: 1;
+
+			width: 100%;
+			height: 1px;
+
+			content: " ";
 		}
 	}
 
 	& .modal {
+		position: relative;
+
 		display: block;
+		overflow: hidden;
+
+		width: 90%;
 		max-width: 800px;
 		margin: 0 auto;
-		width: 90%;
-		position: relative;
-		overflow: hidden;
+		padding: 56px 0;
+
 		text-align: left;
+
+		opacity: 0;
 		border-radius: 4px;
 		box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.15);
-		padding: 56px 0;
-		opacity: 0;
 
 		& header {
-			height: 55px;
 			position: absolute;
-			top: 0;
-			width: 100%;
 			z-index: 1;
-			font-size: 14px;
-			text-align-last: right;
+			top: 0;
+
+			width: 100%;
+			height: 55px;
 			padding: 0 25px;
+
+			text-align-last: right;
+
 			box-shadow: 0 1px 0 rgba(0, 0, 0, 0.2);
+
+			font-size: 14px;
 
 			& h3 {
 				display: inline-block;
+				overflow: hidden;
+
 				margin: 0;
+
 				text-align: left;
+				text-overflow: ellipsis;
+
 				font-size: 18px;
 				font-weight: 600;
 				line-height: 55px;
-				text-overflow: ellipsis;
-				overflow: hidden;
 			}
 
 			& .close {
 				position: absolute;
+				top: 16px;
+				right: 20px;
+
 				width: 20px;
 				height: 26px;
-				right: 20px;
-				top: 16px;
+
 				opacity: 1;
 
 				& i {
@@ -3744,21 +4331,25 @@ body:not(.is-cordova) {
 
 		& main {
 			display: block;
+			overflow-x: hidden;
+			overflow-y: auto;
+
 			width: 100%;
 			height: 100%;
-			overflow-y: auto;
-			overflow-x: hidden;
 			padding: 20px 25px;
 		}
 
 		& footer {
-			height: 55px;
 			position: absolute;
-			bottom: 0;
-			width: 100%;
 			z-index: 1;
+			bottom: 0;
+
+			width: 100%;
+			height: 55px;
 			padding: 11px 25px 0;
+
 			text-align: right;
+
 			box-shadow: 0 -1px 0 rgba(0, 0, 0, 0.15);
 		}
 	}
@@ -3767,8 +4358,8 @@ body:not(.is-cordova) {
 .rc-old .avatarPrompt {
 	& header p {
 		font-size: 14px;
-		line-height: 22px;
 		font-weight: 300;
+		line-height: 22px;
 	}
 
 	& img {
@@ -3778,49 +4369,57 @@ body:not(.is-cordova) {
 
 .rc-old .select-arrow {
 	position: absolute;
-	bottom: 11px;
 	right: 4px;
+	bottom: 11px;
+
 	color: #a9a9a9;
 }
 
 .rc-old #login-card {
+	position: relative;
+	z-index: 1;
+
 	width: 100%;
 	max-width: 520px;
-	padding: 20px;
 	margin: 20px auto;
+	padding: 20px;
+
+	border-radius: 4px;
 	box-shadow:
 		0 1px 1px 0 rgba(0, 0, 0, 0.2),
 		0 2px 10px 0 rgba(0, 0, 0, 0.16);
-	border-radius: 4px;
-	position: relative;
-	z-index: 1;
 
 	& header {
 		padding: 18px 0 23px;
 
 		& p {
 			margin: 8px 0 0;
+
 			font-size: 14px;
-			line-height: 22px;
 			font-weight: 300;
+			line-height: 22px;
 		}
 	}
 
 	& h2 {
-		font-weight: 300;
-		text-transform: uppercase;
-		font-size: 20px;
-		letter-spacing: -0.5px;
-		line-height: 24px;
 		margin: 0;
+
+		letter-spacing: -0.5px;
+		text-transform: uppercase;
+
+		font-size: 20px;
+		font-weight: 300;
+		line-height: 24px;
 	}
 
 	& h3 {
-		font-weight: 300;
-		text-transform: uppercase;
-		font-size: 16px;
-		letter-spacing: -0.5px;
 		margin: 18px 0;
+
+		letter-spacing: -0.5px;
+		text-transform: uppercase;
+
+		font-size: 16px;
+		font-weight: 300;
 	}
 
 	& img {
@@ -3828,13 +4427,16 @@ body:not(.is-cordova) {
 	}
 
 	& a {
-		margin: 4px 0;
 		display: inline-block;
+
+		margin: 4px 0;
 	}
 
 	& .options {
 		display: none;
+
 		width: 100%;
+
 		font-size: 10px;
 	}
 
@@ -3846,16 +4448,19 @@ body:not(.is-cordova) {
 	}
 
 	& .input-line {
-		margin: 0 0 14px;
 		position: relative;
 
+		margin: 0 0 14px;
+
 		&::before {
-			content: " ";
-			width: 100%;
-			height: 40px;
 			position: absolute;
 			top: 7px;
 			left: 0;
+
+			width: 100%;
+			height: 40px;
+
+			content: " ";
 			cursor: text;
 		}
 
@@ -3865,13 +4470,16 @@ body:not(.is-cordova) {
 
 		& input,
 		& select {
-			box-shadow: 0 0 0;
 			position: relative;
+
 			padding: 4px 8px;
-			font-size: 18px;
+
 			border-width: 0 0 1px;
-			font-weight: 400;
 			border-radius: 0;
+			box-shadow: 0 0 0;
+
+			font-size: 18px;
+			font-weight: 400;
 
 			&:focus {
 				border-color: #13679a !important;
@@ -3879,20 +4487,27 @@ body:not(.is-cordova) {
 		}
 
 		& label {
-			margin-left: 8px;
 			display: block;
-			font-size: 12px;
-			text-align: left;
-			color: #a9a9a9;
+
+			margin-left: 8px;
+
 			transition: all 0.3s;
+			text-align: left;
+
+			color: #a9a9a9;
+
+			font-size: 12px;
 		}
 
 		& .input-error {
-			text-align: left;
-			color: #b40202;
 			padding-left: 8px;
-			font-weight: bold;
+
+			text-align: left;
+
+			color: #b40202;
+
 			font-size: 14px;
+			font-weight: bold;
 		}
 	}
 }
@@ -3903,19 +4518,22 @@ body:not(.is-cordova) {
 	flex-wrap: wrap;
 
 	& h3 {
-		font-weight: 300;
-		text-transform: uppercase;
-		font-size: 16px;
-		letter-spacing: -0.5px;
 		margin-top: 0;
 		margin-bottom: 12px;
+
+		letter-spacing: -0.5px;
+		text-transform: uppercase;
+
+		font-size: 16px;
+		font-weight: 300;
 	}
 
 	& .button {
-		line-height: 22px;
-		font-size: 18px;
-		flex-grow: 1;
 		margin-bottom: 4px;
+
+		font-size: 18px;
+		line-height: 22px;
+		flex-grow: 1;
 
 		&:first-child {
 			margin-left: 4px;
@@ -3924,35 +4542,42 @@ body:not(.is-cordova) {
 }
 
 .rc-old.full-page {
-	display: flex;
-	align-items: center;
-	flex-flow: row nowrap;
-	text-align: center;
-	margin: auto;
-	width: 100%;
-	min-height: 100%;
 	z-index: 101;
 
+	display: flex;
+
+	width: 100%;
+	min-height: 100%;
+	margin: auto;
+
+	text-align: center;
+	align-items: center;
+	flex-flow: row nowrap;
+
 	& .wrapper {
-		text-align: center;
-		z-index: 10;
 		position: relative;
+		z-index: 10;
+
 		width: 100%;
 		padding: 20px;
+
+		text-align: center;
 	}
 
 	& .logo {
 		display: block;
 
 		& > img {
-			display: inline-block;
 			position: relative;
+			z-index: 20;
 			top: 0;
 			right: 0;
-			z-index: 20;
-			padding: 10px;
+
+			display: inline-block;
+
 			max-width: 100%;
 			max-height: 150px;
+			padding: 10px;
 		}
 	}
 
@@ -3962,70 +4587,86 @@ body:not(.is-cordova) {
 
 	& .cell {
 		display: table-cell;
-		vertical-align: middle;
+
 		text-align: center;
+		vertical-align: middle;
 	}
 
 	& header {
-		display: block;
 		position: relative;
 		z-index: 1;
+
+		display: block;
 	}
 
 	& .text {
-		font-weight: 300;
-		margin: 0 auto 25px;
-		max-width: 580px;
 		position: relative;
 		z-index: 1;
 
+		max-width: 580px;
+		margin: 0 auto 25px;
+
+		font-weight: 300;
+
 		& .button {
-			font-weight: 400;
-			padding: 16px 20px;
 			margin-top: 20px;
+			padding: 16px 20px;
+
+			font-weight: 400;
 		}
 
 		& h1 {
-			font-weight: 600;
-			text-transform: uppercase;
-			font-size: 24px;
-			letter-spacing: -0.5px;
-			margin-bottom: 20px;
 			display: none;
+
+			margin-bottom: 20px;
+
+			letter-spacing: -0.5px;
+			text-transform: uppercase;
+
+			font-size: 24px;
+			font-weight: 600;
 		}
 
 		& h2 {
-			font-weight: 300;
-			text-transform: uppercase;
-			font-size: 20px;
-			letter-spacing: -0.5px;
 			margin: 18px 0;
+
+			letter-spacing: -0.5px;
+			text-transform: uppercase;
+
+			font-size: 20px;
+			font-weight: 300;
 		}
 
 		& h3 {
-			font-weight: 300;
-			text-transform: uppercase;
-			font-size: 16px;
-			letter-spacing: -0.5px;
 			margin: 18px 0;
+
+			letter-spacing: -0.5px;
+			text-transform: uppercase;
+
+			font-size: 16px;
+			font-weight: 300;
 		}
 
 		& p {
 			margin: 18px 0;
+
 			font-size: 16px;
-			line-height: 24px;
 			font-weight: 400;
+			line-height: 24px;
 		}
 	}
 
 	& footer {
-		padding: 20px 0 0;
 		position: relative;
 		z-index: 1;
 
+		padding: 20px 0 0;
+
 		& h4 {
-			text-transform: uppercase;
 			margin-bottom: 8px;
+
+			text-transform: uppercase;
+
 			font-size: 12px;
 			font-weight: 300;
 		}
@@ -4039,16 +4680,21 @@ body:not(.is-cordova) {
 		position: fixed;
 		right: 30px;
 		bottom: 20px;
+
 		width: 100px;
 		height: 50px;
+
+		text-indent: -9999em;
+
 		background: url(images/meteor.png) no-repeat center center;
 		background-size: 100% auto;
-		text-indent: -9999em;
 	}
 
 	& .share {
-		border-radius: 50%;
 		min-height: 40px;
+
+		border-radius: 50%;
+
 		line-height: 20px;
 
 		&::before {
@@ -4062,11 +4708,12 @@ body:not(.is-cordova) {
 }
 
 .rc-old #particles-js {
-	width: 100%;
-	height: 100%;
+	position: fixed;
 	top: 0;
 	left: 0;
-	position: fixed;
+
+	width: 100%;
+	height: 100%;
 }
 
 .rc-old .mention-link {
@@ -4074,14 +4721,16 @@ body:not(.is-cordova) {
 
 	&.mention-link-me,
 	&.mention-link-all {
-		font-weight: bold;
 		padding: 0 4px 2px;
+
+		font-weight: bold;
 	}
 }
 
 .rc-old .highlight-text {
-	border-radius: 4px;
 	padding: 2px;
+
+	border-radius: 4px;
 }
 
 .rc-old .avatar-suggestions {
@@ -4091,50 +4740,61 @@ body:not(.is-cordova) {
 
 .rc-old .avatar-suggestion-item {
 	display: flex;
-	align-items: center;
-	margin: 5px 0;
-	text-align: left;
-	flex-flow: row nowrap;
+
 	width: 100%;
+	margin: 5px 0;
 	padding: 12px;
+
+	transition: background-color 0.15s ease-out, border-color 0.15s ease-out;
+	text-align: left;
+
 	border-width: 1px;
 	border-radius: 4px;
-	transition: background-color 0.15s ease-out, border-color 0.15s ease-out;
+	align-items: center;
+	flex-flow: row nowrap;
 
 	&:first-child {
 		margin-top: 10px;
 	}
 
 	& .avatar {
-		height: 55px;
-		max-height: 55px;
-		min-height: 55px;
-		width: 55px;
-		max-width: 55px;
-		min-width: 55px;
-		background-size: cover;
-		font-size: 40px;
-		text-align: center;
 		position: relative;
+
+		width: 55px;
+		min-width: 55px;
+		max-width: 55px;
+		height: 55px;
+		min-height: 55px;
+		max-height: 55px;
+
+		text-align: center;
+
+		background-size: cover;
+
+		font-size: 40px;
 	}
 
 	& .question-mark::before {
 		position: absolute;
-		left: 0;
 		top: 0;
+		left: 0;
+
 		width: 100%;
 		height: 100%;
 		margin: 0;
+
 		line-height: 55px;
 	}
 
 	& .action {
-		text-align: right;
 		padding-left: 20px;
+
+		text-align: right;
 	}
 
 	& .button {
 		min-width: 120px;
+
 		cursor: pointer;
 		text-align: center;
 	}
@@ -4150,13 +4810,16 @@ body:not(.is-cordova) {
 
 	& input[type=file] {
 		position: absolute !important;
-		width: 100%;
+		z-index: 10000;
 		top: 0;
 		left: 0;
+
+		width: 100%;
 		height: 100%;
-		opacity: 0;
-		z-index: 10000;
+
 		cursor: pointer;
+
+		opacity: 0;
 
 		& * {
 			cursor: pointer;
@@ -4169,18 +4832,20 @@ body:not(.is-cordova) {
 }
 
 .rc-old .statistics-table {
-	margin-bottom: 30px;
 	width: 100%;
+	margin-bottom: 30px;
 
 	& th,
 	& td {
-		text-align: left;
 		padding: 6px 8px;
+
+		text-align: left;
 	}
 
 	& th {
-		text-align: right;
 		width: 30%;
+
+		text-align: right;
 	}
 
 	& td {
@@ -4197,20 +4862,24 @@ body:not(.is-cordova) {
 
 	& a {
 		display: inline-block;
+
 		width: 50px;
 		height: 50px;
-		border-radius: 50%;
-		background-size: 100%;
-		background-position: 50% 50%;
 		margin-right: 5px;
+
+		border-radius: 50%;
+		background-position: 50% 50%;
+		background-size: 100%;
 	}
 }
 
 .rc-old #fullscreendiv:-webkit-full-screen {
 	position: fixed;
+	top: 0;
+
 	width: 100%;
 	height: 100%;
-	top: 0;
+
 	background: none;
 }
 
@@ -4223,22 +4892,27 @@ body:not(.is-cordova) {
 
 	&.over .dropzone-overlay {
 		position: fixed;
-		top: 0;
-		left: 0;
-		bottom: 0;
-		right: 0;
 		z-index: 1000000;
-		font-size: 42px;
+		top: 0;
+		right: 0;
+		bottom: 0;
+		left: 0;
+
 		display: flex;
+
+		font-size: 42px;
 		align-items: center;
 		justify-content: center;
 
 		& > div {
 			padding: 40px;
-			border-radius: 10px;
-			pointer-events: none;
-			line-height: 1.3em;
+
 			text-align: center;
+			pointer-events: none;
+
+			border-radius: 10px;
+
+			line-height: 1.3em;
 		}
 	}
 }
@@ -4251,14 +4925,15 @@ body:not(.is-cordova) {
 
 		& button.more {
 			width: 60px;
+
 			transform: translateX(-57px);
 		}
 	}
 }
 
 .rc-old .touch .footer {
-	padding-left: 10px;
 	padding-right: 10px;
+	padding-left: 10px;
 }
 
 .rc-old .webrtc-video {
@@ -4266,23 +4941,24 @@ body:not(.is-cordova) {
 	& .main-video,
 	& .state-overlay::before,
 	& .videos .video-item {
-		color: #ffffff;
+		color: var(--color-white);
 	}
 
 	&.webrtc-video-overlay {
 		position: fixed;
-		left: 0;
+		z-index: 1000;
+		top: 0;
 		right: 0;
 		bottom: 0;
-		top: 0;
-		z-index: 1000;
+		left: 0;
+
 		display: flex;
 		flex-direction: column;
 		justify-content: center;
 
 		& .main-video .webrtc-video-element {
-			max-width: 100%;
 			width: auto;
+			max-width: 100%;
 		}
 	}
 
@@ -4295,12 +4971,15 @@ body:not(.is-cordova) {
 		}
 
 		& > div {
-			margin-top: -28px;
 			position: relative;
-			line-height: 25px;
+
+			margin-top: -28px;
 			margin-bottom: 2px;
+
 			text-align: center;
+
 			font-weight: bold;
+			line-height: 25px;
 		}
 	}
 
@@ -4316,52 +4995,66 @@ body:not(.is-cordova) {
 
 		& .video-item {
 			position: relative;
-			margin-right: 3px;
-			line-height: 0;
-			width: 93px;
+
 			overflow: hidden;
+
+			width: 93px;
+			margin-right: 3px;
+
 			text-align: center;
 
+			line-height: 0;
+
 			& &.state-overlay::before {
-				content: attr(data-state-text);
 				position: absolute;
 				top: 0;
-				left: 0;
-				bottom: 0;
 				right: 0;
+				bottom: 0;
+				left: 0;
+
 				display: flex;
-				justify-content: center;
-				align-items: center;
+
+				content: attr(data-state-text);
+
 				font-size: 12px;
 				font-weight: bold;
+				align-items: center;
+				justify-content: center;
 			}
 
 			& .webrtc-video-element {
-				height: 70px;
 				max-width: 100px;
+				height: 70px;
 			}
 
 			& > div {
-				line-height: 16px;
-				font-size: 12px;
+				position: relative;
+
+				overflow: hidden;
+
+				margin-top: -16px;
+				padding: 0 2px;
+
 				text-align: center;
 				text-overflow: ellipsis;
-				overflow: hidden;
-				padding: 0 2px;
-				margin-top: -16px;
-				position: relative;
+
+				font-size: 12px;
 				font-weight: bold;
+				line-height: 16px;
 			}
 
 			& .video-muted-overlay {
 				position: absolute;
-				bottom: 16px;
-				left: 0;
 				top: 16px;
 				right: 0;
-				text-align: center;
-				font-size: 24px;
+				bottom: 16px;
+				left: 0;
+
 				display: flex;
+
+				text-align: center;
+
+				font-size: 24px;
 				align-items: center;
 				justify-content: center;
 			}
@@ -4374,9 +5067,11 @@ body:not(.is-cordova) {
 }
 
 .rc-old .alert-icon {
-	font-size: 80px;
 	display: block;
+
 	margin-bottom: 20px;
+
+	font-size: 80px;
 }
 
 .rc-old .colorpicker-input {
@@ -4384,31 +5079,37 @@ body:not(.is-cordova) {
 }
 
 .rc-old .colorpicker-swatch {
-	height: 33px;
-	width: 33px;
+	position: absolute;
 	top: 1px;
 	left: 1px;
-	border-radius: 5px 0 0 5px;
-	overflow: hidden;
-	border-width: 0 1px 0 0;
+
 	display: block;
-	position: absolute;
+	overflow: hidden;
+
+	width: 33px;
+	height: 33px;
+
+	border-width: 0 1px 0 0;
+	border-radius: 5px 0 0 5px;
 }
 
 .rc-old .inline-video {
-	height: auto;
 	width: 100%;
 	max-width: 480px;
+	height: auto;
 	max-height: 270px;
 }
 
 .rc-old .attention-message {
 	padding-top: 50px;
+
 	font-size: 24px;
 
 	& i {
 		display: block;
+
 		margin-bottom: 20px;
+
 		font-size: 40px;
 	}
 
@@ -4419,8 +5120,9 @@ body:not(.is-cordova) {
 
 .rc-old .load-more {
 	position: relative;
-	padding: 1rem 0;
+
 	height: 10px;
+	padding: 1rem 0;
 }
 
 .rc-old .search-messages-list {
@@ -4442,18 +5144,22 @@ body:not(.is-cordova) {
 .rc-old .terminal {
 	position: absolute;
 	top: 0;
-	bottom: 0;
-	margin: 0;
 	right: 0;
+	bottom: 0;
 	left: 0;
+
 	overflow-y: scroll;
-	border: none !important;
+
+	margin: 0;
+	margin-bottom: 0 !important;
 	padding: 8px 10px !important;
+
+	color: var(--color-white);
+	border: none !important;
+	background-color: #444444 !important;
+
 	font-family: Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 	font-weight: 500;
-	margin-bottom: 0 !important;
-	background-color: #444444 !important;
-	color: #ffffff;
 }
 
 .rc-old .terminal-line {
@@ -4465,25 +5171,29 @@ body:not(.is-cordova) {
 }
 
 .rc-old .code-colors {
-	background-color: #f8f8f8;
-	border-color: #cccccc;
 	color: #333333;
+	border-color: #cccccc;
+	background-color: #f8f8f8;
 }
 
 .rc-old .new-logs {
-	margin: 0 -65px;
 	position: absolute;
-	border-radius: 20px;
-	width: 130px;
-	height: 30px;
-	text-align: center;
-	line-height: 30px;
-	font-size: 0.8em;
-	cursor: pointer;
 	bottom: 8px;
 	left: 50%;
+
+	width: 130px;
+	height: 30px;
+	margin: 0 -65px;
+
+	cursor: pointer;
 	transition: transform 0.3s ease-out;
 	transform: translateY(0);
+	text-align: center;
+
+	border-radius: 20px;
+
+	font-size: 0.8em;
+	line-height: 30px;
 
 	&.not {
 		transform: translateY(150%);
@@ -4496,17 +5206,20 @@ body:not(.is-cordova) {
 
 .rc-old .code-error-box {
 	& .title {
+		margin-top: 5px;
 		padding: 5px;
+
 		font-size: 16px;
 		font-weight: bold;
-		margin-top: 5px;
 	}
 
 	& .script-error {
+		padding: 6px;
+
+		border-left: 3px solid;
+
 		font-size: 12px;
 		font-weight: bold;
-		padding: 6px;
-		border-left: 3px solid;
 	}
 }
 
@@ -4524,21 +5237,24 @@ body:not(.is-cordova) {
 	}
 
 	& .buttons {
-		text-align: right;
 		margin-top: 10px;
+
+		text-align: right;
 	}
 
 	&.code-mirror-box-fullscreen {
-		height: auto;
 		position: fixed;
-		top: 61px;
-		bottom: 0;
 		z-index: 100;
-		width: auto;
+		top: 61px;
 		right: 40px;
+		bottom: 0;
 		left: 260px;
+
 		display: flex;
 		flex-direction: column;
+
+		width: auto;
+		height: auto;
 		align-items: stretch;
 
 		& .buttons {
@@ -4547,7 +5263,9 @@ body:not(.is-cordova) {
 
 		& .title {
 			display: initial;
+
 			padding-left: 10px;
+
 			font-size: 16px;
 			line-height: 30px;
 		}
@@ -4561,9 +5279,9 @@ body:not(.is-cordova) {
 		}
 
 		& .CodeMirror {
-			flex-grow: 1;
 			display: flex;
 			flex-direction: column;
+			flex-grow: 1;
 
 			& .CodeMirror-scroll {
 				flex-grow: 1;
@@ -4577,17 +5295,20 @@ body:not(.is-cordova) {
 }
 
 .rc-old .one-passsword {
-	background-image: url('/images/onepassword-button.png');
-	height: 40px;
+	position: absolute;
+	top: -5px;
+	right: -8px;
+
+	float: right;
+
 	width: 40px;
-	background-size: 23px;
+	height: 40px;
+
+	opacity: 0.6;
+	background-image: url('/images/onepassword-button.png');
 	background-repeat: no-repeat;
 	background-position: center;
-	float: right;
-	position: absolute;
-	right: -8px;
-	top: -5px;
-	opacity: 0.6;
+	background-size: 23px;
 }
 
 .rc-old .collapse-switch {
@@ -4622,16 +5343,18 @@ body:not(.is-cordova) {
 
 .rc-old .messages-box:not(.compact) .hide-avatars .message.sequential .info {
 	position: static;
-	width: auto;
+
 	float: right;
+
+	width: auto;
 
 	& .message-cog-container {
 		float: left;
 	}
 
 	& .message-dropdown {
-		left: auto;
 		right: -2px;
+		left: auto;
 
 		& ul {
 			flex-direction: row-reverse;
@@ -4647,12 +5370,15 @@ body:not(.is-cordova) {
 	& input,
 	& select {
 		display: inline-block;
+
 		width: auto;
+
 		vertical-align: middle;
 	}
 
 	& label {
 		display: inline-block;
+
 		max-width: 100%;
 	}
 
@@ -4702,6 +5428,7 @@ body:not(.is-cordova) {
 
 .rc-old .user-info.deactivated {
 	text-decoration: line-through;
+
 	opacity: 0.8;
 }
 
@@ -4710,9 +5437,10 @@ body:not(.is-cordova) {
 @media (width <= 1100px) {
 	.rc-old .flex-tab-container.opened .flex-tab {
 		position: absolute;
-		right: 40px;
-		border-width: 0 0 0 1px;
 		z-index: 100;
+		right: 40px;
+
+		border-width: 0 0 0 1px;
 	}
 }
 
@@ -4728,16 +5456,17 @@ body:not(.is-cordova) {
 
 @media (width <= 780px) {
 	.rc-old.main-content {
-		will-change: transform;
-		transition: right 0.25s cubic-bezier(0.5, 0, 0.1, 1), transform 0.1s linear;
 		z-index: 1;
 		left: 0;
+
+		transition: right 0.25s cubic-bezier(0.5, 0, 0.1, 1), transform 0.1s linear;
+		will-change: transform;
 	}
 
 	.rc-old {
 		& .burger {
-			visibility: visible;
 			display: inline-block;
+			visibility: visible;
 		}
 
 		& .fixed-title h2 {
@@ -4751,9 +5480,10 @@ body:not(.is-cordova) {
 
 	.rc-old .sweet-alert {
 		& h2 {
+			margin: 10px 0;
+
 			font-size: 20px;
 			line-height: 30px;
-			margin: 10px 0;
 		}
 
 		& button {
@@ -4795,8 +5525,8 @@ body:not(.is-cordova) {
 
 @media (height <= 480px) {
 	.rc-old #login-card {
-		padding: 10px;
 		margin: 10px auto;
+		padding: 10px;
 
 		& .input-line {
 			margin-bottom: 6px;
@@ -4819,6 +5549,7 @@ body:not(.is-cordova) {
 @media (width <= 440px) {
 	.rc-old .flex-tab-container.opened .flex-tab {
 		left: 0;
+
 		width: auto;
 	}
 
@@ -4841,19 +5572,23 @@ body:not(.is-cordova) {
 
 .room-leader a.chat-now {
 	position: absolute;
-	right: 25px;
-	width: 80px;
 	top: 15px;
+	right: 25px;
+
+	width: 80px;
 	height: 30px;
-	border: 1px solid #eaeaea;
+	padding-top: 4px;
+
+	cursor: pointer;
 	text-align: center;
+	text-decoration: none;
+
+	color: #555555;
+	border: 1px solid #eaeaea;
 	border-radius: 4px;
+
 	font-family: arial;
 	font-size: 14px;
-	text-decoration: none;
-	color: #555555;
-	cursor: pointer;
-	padding-top: 4px;
 }
 
 .room-leader a.chat-now:hover {
@@ -4862,18 +5597,23 @@ body:not(.is-cordova) {
 
 .room-leader {
 	position: absolute;
-	height: 57px;
-	left: 0;
-	right: 0;
 	z-index: 2;
-	border-bottom: 1px solid;
-	padding-bottom: 8px;
-	transition: transform 0.15s cubic-bezier(0.5, 0, 0.1, 1), visibility 0.15s cubic-bezier(0.5, 0, 0.1, 1);
+	right: 0;
+	left: 0;
+
 	visibility: visible;
 
+	height: 57px;
+	padding-bottom: 8px;
+
+	transition: transform 0.15s cubic-bezier(0.5, 0, 0.1, 1), visibility 0.15s cubic-bezier(0.5, 0, 0.1, 1);
+
+	border-bottom: 1px solid;
+
 	&.animated-hidden {
-		transform: translateY(-100%);
 		visibility: hidden;
+
+		transform: translateY(-100%);
 	}
 
 	& .leader-name {
@@ -4883,15 +5623,18 @@ body:not(.is-cordova) {
 	& .leader-status {
 		& .status-text {
 			padding-left: 15px;
+
 			font-size: 14px;
 		}
 
 		& .color-ball {
+			position: absolute;
+
 			width: 10px;
 			height: 10px;
-			position: absolute;
-			border-radius: 5px;
 			margin-top: 5px;
+
+			border-radius: 5px;
 		}
 	}
 }

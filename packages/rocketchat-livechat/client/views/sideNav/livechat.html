@@ -1,6 +1,6 @@
 <template name="livechat">
 	<div class="livechat-section">
-		<h3 class="rooms-list__type sidebar-content {{isActive}}">
+		<h3 class="rooms-list__type {{isActive}}">
 			{{#with available}}
 				<i class="livechat-status {{status}} {{icon}}" title="{{hint}}"></i>
 			{{/with}}
@@ -9,19 +9,19 @@
 
 		{{#if guestPool}}
 			{{#if isLivechatAvailable}}
-				<h3 class="rooms-list__type sidebar-content {{isActive}}">
+				<h3 class="rooms-list__type {{isActive}}">
 					{{_ "Incoming_Livechats"}}
 				</h3>
 				<ul class="rooms-list__list inquiries">
 					{{#each room in inquiries}}
 						{{> chatRoomItem room }}
 					{{else}}
-						<p class="rooms-list__empty-room sidebar-content">{{_ "No_livechats" }}</p>
+						<p class="rooms-list__empty-room">{{_ "No_livechats" }}</p>
 					{{/each}}
 				</ul>
 			{{/if}}
 
-			<h3 class="rooms-list__type sidebar-content {{isActive}}">
+			<h3 class="rooms-list__type {{isActive}}">
 				{{_ "Open_Livechats"}}
 			</h3>
 		{{/if}}
@@ -29,7 +29,7 @@
 		<ul class="rooms-list__list">
 			{{#if showQueueLink}}
 				<li class="sidebar-item sidebar-content-hover-background {{activeLivechatQueue}}">
-					<a class="sidebar-item__link sidebar-content" href="{{pathFor 'livechat-queue'}}">
+					<a class="sidebar-item__link" href="{{pathFor 'livechat-queue'}}">
 						<i class="icon-th-list"></i>
 						{{_ "Queue"}}
 					</a>
@@ -38,7 +38,7 @@
 			{{#each room in rooms}}
 				{{> chatRoomItem room }}
 			{{else}}
-				<p class="rooms-list__empty-room sidebar-content">{{_ "No_livechats" }}</p>
+				<p class="rooms-list__empty-room">{{_ "No_livechats" }}</p>
 			{{/each}}
 		</ul>
 	</div>

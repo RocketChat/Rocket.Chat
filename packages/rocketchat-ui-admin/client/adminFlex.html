@@ -1,8 +1,8 @@
 <template name="adminFlex">
-	<aside class="sidebar sidebar--flex sidebar-flex-background" role="navigation">
+	<aside class="sidebar sidebar--flex" role="navigation">
 		<header class="sidebar__header">
 			{{> accountBox lighten=true }}
-			<button class="sidebar-flex__back-button sidebar-flex-content-active" data-action="back">
+			<button class="sidebar-flex__back-button" data-action="back">
 				<svg class="sidebar-flex__back-icon">
 					<use xlink:href="#icon-arrow-back"></use>
 				</svg>
@@ -10,7 +10,7 @@
 			</button>
 		</header>
 		<div class="rooms-list" aria-label="{{_ "Administration"}}">
-			<h3 class="rooms-list__type sidebar-content">{{_ "Administration"}}</h3>
+			<h3 class="rooms-list__type">{{_ "Administration"}}</h3>
 			<ul class="rooms-list__list">
 				{{> sidebarItem menuItem "Info" false "admin-info" "" }}
 
@@ -34,7 +34,7 @@
 			</ul>
 
 			{{#if hasPermission 'view-privileged-setting'}}
-				<h3 class="rooms-list__type sidebar-content">{{_ "Settings"}}</h3>
+				<h3 class="rooms-list__type">{{_ "Settings"}}</h3>
 				<div class="rc-input sidebar-flex__search">
 					<label class="rc-input__label">
 						<div class="rc-input__wrapper">

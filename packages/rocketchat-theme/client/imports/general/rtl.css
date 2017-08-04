@@ -32,6 +32,7 @@
 
 					& .data {
 						float: right;
+
 						padding: 0 10px 0 25px;
 
 						& .wrp {
@@ -55,8 +56,8 @@
 					}
 
 					& span.soon {
-						left: -30px;
 						right: auto;
+						left: -30px;
 					}
 				}
 
@@ -67,8 +68,8 @@
 		}
 
 		& > .arrow {
-			left: 8px;
 			right: auto;
+			left: 8px;
 		}
 
 		& .arrow {
@@ -84,17 +85,17 @@
 			direction: ltr;
 
 			& > .wrapper {
-				direction: rtl;
 				padding-right: 8px;
 				padding-left: auto;
+				direction: rtl;
 
 				& h3 {
 					padding-right: 10px;
 					padding-left: auto;
 
 					& .add-room i {
-						left: 6px;
 						right: auto;
+						left: 6px;
 					}
 				}
 
@@ -114,10 +115,12 @@
 		}
 
 		& ul .opt {
-			left: 0;
 			right: auto;
-			padding-left: 10px;
+			left: 0;
+
 			padding-right: auto;
+			padding-left: 10px;
+
 			text-align: left;
 		}
 
@@ -133,6 +136,7 @@
 			& header {
 				right: 0;
 				left: auto;
+
 				padding-right: 15px;
 				padding-left: auto;
 
@@ -157,6 +161,7 @@
 			& footer {
 				right: 0;
 				left: auto;
+
 				text-align: right;
 
 				& > div {
@@ -176,8 +181,8 @@
 		}
 
 		& .search-form {
-			margin-left: 20px;
 			margin-right: auto;
+			margin-left: 20px;
 
 			& .search {
 				padding-right: 25px;
@@ -190,14 +195,14 @@
 			padding-left: auto;
 
 			&.add-room i {
-				left: 6px;
 				right: auto;
+				left: 6px;
 			}
 		}
 
 		& .unread {
-			left: 6px;
 			right: auto;
+			left: 6px;
 		}
 	}
 
@@ -207,8 +212,9 @@
 	}
 
 	& .main-content {
-		left: 0;
 		right: var(--rooms-box-width);
+		left: 0;
+
 		transition: left 0.25s cubic-bezier(0.5, 0, 0.1, 1);
 
 		&.flex-opened {
@@ -295,7 +301,9 @@
 			& textarea {
 				padding-right: 49px;
 				padding-left: 8px;
+
 				text-align: right;
+
 				border-width: 0 0 0 1px;
 				border-right-width: 0;
 			}
@@ -305,12 +313,14 @@
 			}
 
 			& > .formatting-tips {
-				float: left;
 				position: relative;
 				right: auto;
 
+				float: left;
+
 				& q {
 					padding: 0 3px 0 0;
+
 					border-right: 3px solid;
 					border-left: 0 none;
 				}
@@ -333,13 +343,15 @@
 	& .flex-tab-bar .tab-button.active {
 		margin-right: -1px;
 		margin-left: auto;
-		border-left: 3px solid #ff0000;
+
 		border-right: unset;
+		border-left: 3px solid #ff0000;
 	}
 
 	& .flex-tab .control {
-		text-align: right;
 		padding: 12px 30px;
+
+		text-align: right;
 
 		& > a,
 		& > form {
@@ -349,12 +361,13 @@
 		& .more {
 			right: 0;
 			left: auto;
+
 			transform: translateX(27px);
 		}
 
 		& .search-form {
-			padding: 0 0 0 4px;
 			width: 100%;
+			padding: 0 0 0 4px;
 
 			& .icon-plus {
 				right: 4px;
@@ -363,9 +376,10 @@
 		}
 
 		& .info-tabs {
-			text-align: left;
-			left: 20px;
 			right: auto;
+			left: 20px;
+
+			text-align: left;
 		}
 	}
 
@@ -376,8 +390,8 @@
 	& .input-line {
 		&.search {
 			& .icon-spin {
-				left: 5px;
 				right: auto;
+				left: 5px;
 			}
 
 			& .icon-search,
@@ -389,37 +403,40 @@
 			& input {
 				padding-right: 20px;
 				padding-left: 8px;
+
 				text-align: right;
 			}
 		}
 
 		& > div .right {
-			left: 10px;
 			right: auto;
+			left: 10px;
 		}
 
 		&.double-col {
 			& > label {
 				float: right;
-				text-align: left;
+
 				padding: 10px 0 10px 20px;
+
+				text-align: left;
 			}
 
 			& > div {
 				float: right;
 
 				& label {
-					margin-left: 4px;
 					margin-right: auto;
+					margin-left: 4px;
 
 					&:nth-last-child(1) {
-						margin-left: 0;
 						margin-right: auto;
+						margin-left: 0;
 					}
 
 					& input {
-						margin-left: 4px;
 						margin-right: auto;
+						margin-left: 4px;
 					}
 				}
 			}
@@ -438,6 +455,7 @@
 
 		& p {
 			float: right;
+
 			padding-right: 10px;
 			padding-left: auto;
 		}
@@ -460,14 +478,15 @@
 	}
 
 	& .burger {
-		margin-right: 7px;
-		margin-left: auto;
 		right: 0;
 		left: auto;
 
+		margin-right: 7px;
+		margin-left: auto;
+
 		& .unread-burger-alert {
-			left: 4px;
 			right: auto;
+			left: 4px;
 		}
 
 		&.menu-opened i {
@@ -537,8 +556,8 @@
 	}
 
 	& .message {
-		padding-left: 20px;
 		padding-right: 70px;
+		padding-left: 20px;
 
 		& .message-dropdown {
 			right: -2px;
@@ -548,20 +567,21 @@
 				&:first-child {
 					padding-right: 6px;
 					padding-left: 8px;
-					border-left: 1px solid #eeeeee;
+
 					border-right: unset;
+					border-left: 1px solid #eeeeee;
 				}
 
 				&:last-child {
-					padding-left: 13px;
 					padding-right: 8px;
+					padding-left: 13px;
 				}
 			}
 		}
 
 		& .user {
-			margin-left: 5px;
 			margin-right: 0;
+			margin-left: 5px;
 		}
 
 		& .thumb {
@@ -570,12 +590,13 @@
 		}
 
 		& .info .edited {
-			border-right: 1px dotted #bab8d8;
-			border-left: unset;
-			padding-right: 3px;
-			padding-left: auto;
 			margin-right: 3px;
 			margin-left: auto;
+			padding-right: 3px;
+			padding-left: auto;
+
+			border-right: 1px dotted #bab8d8;
+			border-left: unset;
 		}
 
 		& .private {
@@ -587,20 +608,23 @@
 			padding-top: 4px;
 
 			& .info {
-				text-align: left;
 				right: 5px;
 				left: auto;
 
+				text-align: left;
+
 				& .edited {
-					border-right: 0;
 					margin-right: 0;
 					margin-left: auto;
 					padding-right: 0;
 					padding-left: auto;
+
+					border-right: 0;
 				}
 
 				& .message-action {
 					float: right;
+
 					margin-right: 1px;
 					margin-left: auto;
 				}
@@ -625,20 +649,21 @@
 		}
 
 		&::after {
-			left: 0;
 			right: auto;
+			left: 0;
 		}
 	}
 
 	& .ticks-bar {
-		left: 2px;
 		right: auto;
+		left: 2px;
 	}
 
 	& .fixed-title {
-		padding: 0 20px 0 10px;
 		right: 0;
 		left: auto;
+
+		padding: 0 20px 0 10px;
 	}
 
 	& .list-view {
@@ -653,8 +678,9 @@
 
 			& i {
 				float: right;
-				margin-left: 10px;
+
 				margin-right: auto;
+				margin-left: 10px;
 			}
 		}
 	}
@@ -667,6 +693,7 @@
 
 		& .user-image {
 			float: left;
+
 			margin-right: 12px;
 			margin-left: auto;
 		}
@@ -691,8 +718,8 @@
 		}
 
 		&.code-mirror-box-fullscreen {
-			left: 40px;
 			right: 260px;
+			left: 40px;
 
 			& .title {
 				padding-right: 10px;
@@ -718,8 +745,8 @@
 
 	/* Override toastr messages to show on hte left side */
 	& .toast-top-right {
-		left: 12px;
 		right: auto;
+		left: 12px;
 	}
 
 	& .toolbar-search__icon {
@@ -732,9 +759,10 @@
 	}
 
 	& .message-popup.search-results-list {
-		direction: ltr;
-		text-align: right;
 		padding: 25px 8px 0 0;
+
+		text-align: right;
+		direction: ltr;
 
 		& .popup-item {
 			direction: rtl;
@@ -743,8 +771,8 @@
 
 	@media (width <= 1100px) {
 		& #rocket-chat .flex-opened {
-			left: 0;
 			right: var(--rooms-box-width);
+			left: 0;
 
 			& .flex-tab {
 				transform: translateX(calc(100% + 40px));

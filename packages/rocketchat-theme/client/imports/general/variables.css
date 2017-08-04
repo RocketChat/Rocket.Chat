@@ -1,4 +1,26 @@
 :root {
+	/*
+	* General
+	*/
+	--color-darkest: #1f2329;
+	--color-dark: #2f343d;
+	--color-gray: #9ea2a8;
+	--color-gray-medium: #cbced1;
+	--color-gray-light: #e1e5e8;
+	--color-gray-lightest: #f2f3f5;
+	--color-white: #ffffff;
+	--color-error: #f5455c;
+	--color-error-light: #e1364c;
+	--color-alert: #ffd21f;
+	--color-alert-light: #f6c502;
+	--color-success: #2de0a5;
+	--color-success-light: #25d198;
+	--color-button-primary: #1d74f5;
+	--color-button-primary-light: #175cc4;
+
+	/*
+	* General
+	*/
 	--header-min-height: 60px;
 	--toolbar-height: 55px;
 	--footer-min-height: 70px;
@@ -7,4 +29,33 @@
 	--flex-tab-webrtc-width: 400px;
 	--flex-tab-webrtc-2-width: 850px;
 	--user-image-square: 20px;
+	--border: 2px;
+
+	/*
+	* Forms
+	*/
+	--button-square-size: 36px;
+	--button-padding: 0.782rem;
+	--button-padding-small: 0.5rem;
+	--input-font-size: 0.875rem;
+	--gap-between-elements: 2.5rem;
+	--label-margin-bottom: 1rem;
+
+	/*
+	* Modal
+	*/
+	--modal-wrapper-width: 650px;
+	--modal-wrapper-margin: 3rem;
+
+	/*
+	* Sidebar
+	*/
+	--account-thumb-size: 48px;
+	--account-status-bullet-size: 12px;
+	--room-item-height: 32px;
+	--room-item-thumb-size: 20px;
+	--sidebar-header-height: 180px;
+	--sidebar-header-padding: 24px;
+	--sidebar-footer-height: 70px;
+	--sidebar-footer-padding: var(--sidebar-header-padding);
 }

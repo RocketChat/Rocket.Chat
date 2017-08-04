@@ -1,7 +1,7 @@
 <template name="messagePopup">
 	{{#if isOpen}}
 		{{#if sidebar}}
-			<ul class="rooms-list__list rooms-list__toolbar-search sidebar-background">
+			<ul class="rooms-list__list rooms-list__toolbar-search">
 				{{#each data}}
 						{{> Template.dynamic template=../template data=toolbarData }}
 				{{/each}}
