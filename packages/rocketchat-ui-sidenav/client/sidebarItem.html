@@ -1,6 +1,6 @@
 <template name="sidebarItem">
-	<li class="sidebar-item {{#if active}}sidebar-content-active-background{{else}}{{#if darken}}sidebar-preferenes-content-hover-background{{else}}sidebar-content-hover-background{{/if}}{{/if}} {{#if toolbar}}popup-item{{/if}}" data-id="{{_id}}">
-		<a class="sidebar-item__link sidebar-content {{alertClass}} {{#if active}}sidebar-content-unread{{/if}} {{#if darken}}sidebar-preferenes-link-hover{{/if}}" href="{{#if route}}{{route}}{{else}}{{pathFor pathSection group=pathGroup}}{{/if}}" title="{{name}}">
+	<li class="sidebar-item {{#if active}}sidebar-item--active{{else}}{{#if darken}}sidebar-preferenes-content-hover-background{{else}}sidebar-content-hover-background{{/if}}{{/if}} {{#if toolbar}}popup-item{{/if}}" data-id="{{_id}}">
+		<a class="sidebar-item__link {{alertClass}} {{#if active}}sidebar-item__link--active{{/if}} {{#if darken}}sidebar-preferenes-link-hover{{/if}}" href="{{#if route}}{{route}}{{else}}{{pathFor pathSection group=pathGroup}}{{/if}}" title="{{name}}">
 			{{#if statusClass}}
 				<div class="sidebar-item__user-status {{statusClass}}"></div>
 			{{/if}}

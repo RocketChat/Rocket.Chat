@@ -1,13 +1,15 @@
 :root {
 	--rc-popover-open: {
 		display: flex;
-		align-items: flex-start;
+
 		animation: dropdown-show 0.1s cubic-bezier(0.45, 0.05, 0.55, 0.95);
+		align-items: flex-start;
 	}
 	--rc-popover-open-mobile: {
 		position: fixed;
 		top: 0;
 		left: 0;
+
 		width: 100vw;
 		height: 100vh;
 	}
@@ -22,18 +24,22 @@
 }
 
 .rc-popover {
-	display: none;
 	position: absolute;
-	will-change: transform;
 	z-index: 9999;
+
+	display: none;
+	will-change: transform;
 
 	&__content {
 		display: flex;
+
 		padding: 1rem;
-		border-radius: 2px;
-		background-color: #ffffff;
-		box-shadow: 0 0 2px 0 rgba(47, 52, 61, 0.08), 0 0 12px 0 rgba(47, 52, 61, 0.12);
+
 		cursor: default;
+
+		border-radius: 2px;
+		background-color: var(--color-white);
+		box-shadow: 0 0 2px 0 rgba(47, 52, 61, 0.08), 0 0 12px 0 rgba(47, 52, 61, 0.12);
 	}
 
 	&--show {
@@ -43,8 +49,9 @@
 	&__column {
 		display: flex;
 		flex-direction: column;
-		min-width: 130px;
 		flex: 1 0 auto;
+
+		min-width: 130px;
 
 		&:not(:first-child) {
 			padding-left: 1rem;
@@ -56,27 +63,35 @@
 	}
 
 	&__title {
-		font-size: 0.75rem;
-		text-transform: uppercase;
-		color: #2f343d;
 		margin-bottom: 8px;
+
+		text-transform: uppercase;
+
+		color: var(--color-dark);
+
+		font-size: 0.75rem;
 	}
 
 	&__item {
 		display: flex;
-		align-items: center;
-		color: #2f343d;
-		font-size: 0.875rem;
+
 		padding: 4px 0;
+
 		cursor: pointer;
+
+		color: var(--color-dark);
+
+		font-size: 0.875rem;
+		align-items: center;
 	}
 
 	&__icon {
+		display: flex;
+
 		width: 16px;
 		margin: 0.25rem 0.25rem 0.25rem 0;
-		display: flex;
-		justify-content: center;
 		align-items: center;
+		justify-content: center;
 	}
 
 	&__icon-element {
@@ -130,19 +145,22 @@
 	&__divider {
 		width: 100%;
 		height: 2px;
-		background: #e1e5e8;
 		margin: 1rem 0;
+
+		background: var(--color-gray-light);
 	}
 }
 
 @keyframes dropdown-show {
 	0% {
 		transform: translate(0, -2%);
+
 		opacity: 0;
 	}
 
 	100% {
 		transform: translate(0, 0);
+
 		opacity: 1;
 	}
 }

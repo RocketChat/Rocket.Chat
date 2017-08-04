@@ -14,15 +14,19 @@
 	}
 
 	&__title {
-		color: #1f2329;
-		font-size: 1.375rem;
 		padding: 0.25rem 0;
+
+		color: var(--color-darkest);
+
+		font-size: 1.375rem;
 	}
 
 	&__description {
-		font-size: 0.875rem;
-		color: #9ea2a8;
 		padding: 0.25rem 0;
+
+		color: var(--color-gray);
+
+		font-size: 0.875rem;
 	}
 
 	&__switches {

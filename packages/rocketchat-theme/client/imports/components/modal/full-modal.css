@@ -1,28 +1,29 @@
-:root {
-	--modal-wrapper-width: 650px;
-	--modal-wrapper-margin: 3rem;
-}
-
 .full-modal {
 	position: absolute;
 	top: 0;
 	left: 0;
+
+	display: flex;
+
 	width: 100%;
 	height: 100%;
-	display: flex;
 	justify-content: center;
 
 	&__wrapper {
 		position: relative;
+
 		width: var(--modal-wrapper-width);
 		margin: var(--modal-wrapper-margin) 0;
 	}
 
 	&__back-button {
 		position: absolute;
-		right: 0;
 		top: 0;
+		right: 0;
+
 		display: flex;
+
+		color: var(--color-gray);
 		align-items: center;
 	}
 
@@ -31,9 +32,9 @@
 	}
 
 	&__back-icon {
-		stroke: currentColor;
 		width: 10px;
 		height: 10px;
+		stroke: currentColor;
 	}
 }
 

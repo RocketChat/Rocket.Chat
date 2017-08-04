@@ -1,6 +1,6 @@
 @import 'imports/general/reset.css';
 @import 'imports/general/variables.css';
-@import 'imports/general/keyframes.css';
+@import 'imports/general/animations.css';
 @import 'imports/general/forms.css';
 @import 'imports/general/base_old.css';
 @import 'imports/general/base.css';
@@ -15,38 +15,3 @@
 @import 'imports/components/modal/full-modal.css';
 @import 'imports/components/modal/create-channel.css';
 @import 'imports/slider.css';
-
-@keyframes fadeInDown {
-	from {
-		opacity: 0;
-		transform: translate3d(0, -20px, 0);
-	}
-
-	to {
-		opacity: 1;
-		transform: none;
-	}
-}
-
-.fadeInDown {
-	animation-name: fadeInDown;
-	animation-duration: 0.3s;
-}
-
-@keyframes pulse {
-	from {
-		transform: scale3d(0.9, 0.9, 0.9);
-	}
-
-	50% {
-		transform: scale3d(1.1, 1.1, 1.1);
-	}
-
-	to {
-		transform: scale3d(0.9, 0.9, 0.9);
-	}
-}
-
-.pulse {
-	animation: pulse 1s infinite;
-}
