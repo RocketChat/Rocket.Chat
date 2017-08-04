@@ -71,6 +71,41 @@ RocketChat.roomTypes.add('c', 30, {
 	}
 });
 
+// private
+RocketChat.roomTypes.add('p', 40, {
+	icon: 'lock',
+	label: 'Private_Groups',
+	route: {
+		name: 'group',
+		path: '/group/:name',
+		action(params) {
+			return openRoom('p', params.name);
+		}
+	},
+
+	findRoom(identifier) {
+		const query = {
+			t: 'p',
+			name: identifier
+		};
+		return ChatRoom.findOne(query);
+	},
+
+	roomName(roomData) {
+		if (RocketChat.settings.get('UI_Allow_room_names_with_special_chars')) {
+			return roomData.fname || roomData.name;
+		}
+		return roomData.name;
+	},
+
+	condition() {
+		const user = Meteor.user();
+		const preferences = (user && user.settings && user.settings.preferences && user.settings.preferences) || {};
+		return !preferences.roomsListExhibitionMode || ['unread', 'category'].includes(preferences.roomsListExhibitionMode) && !preferences.mergeChannels && RocketChat.authz.hasAllPermission('view-p-room');
+	}
+});
+
+
 // direct
 RocketChat.roomTypes.add('d', 50, {
 	icon: false,
@@ -128,39 +163,5 @@ RocketChat.roomTypes.add('d', 50, {
 		if (subscription == null) { return; }
 
 		return Session.get(`user_${ subscription.name }_status`);
-	}
-});
-
-// private
-RocketChat.roomTypes.add('p', 40, {
-	icon: 'icon-lock',
-	label: 'Private_Groups',
-	route: {
-		name: 'group',
-		path: '/group/:name',
-		action(params) {
-			return openRoom('p', params.name);
-		}
-	},
-
-	findRoom(identifier) {
-		const query = {
-			t: 'p',
-			name: identifier
-		};
-		return ChatRoom.findOne(query);
-	},
-
-	roomName(roomData) {
-		if (RocketChat.settings.get('UI_Allow_room_names_with_special_chars')) {
-			return roomData.fname || roomData.name;
-		}
-		return roomData.name;
-	},
-
-	condition() {
-		const user = Meteor.user();
-		const preferences = (user && user.settings && user.settings.preferences && user.settings.preferences) || {};
-		return !preferences.roomsListExhibitionMode || ['unread', 'category'].includes(preferences.roomsListExhibitionMode) && !preferences.mergeChannels && RocketChat.authz.hasAllPermission('view-p-room');
 	}
 });

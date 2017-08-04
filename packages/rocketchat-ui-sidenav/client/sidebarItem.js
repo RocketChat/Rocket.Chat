@@ -19,3 +19,7 @@ Template.sidebarItem.events({
 		return menu.close();
 	}
 });
+
+Template.sidebarItem.onCreated(function() {
+	console.log('sidebarItem', this.data);
+});
