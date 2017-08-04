@@ -151,9 +151,16 @@
       "from": "express@4.15.3"
     },
     "finalhandler": {
-      "version": "1.0.3",
-      "resolved": "https://registry.npmjs.org/finalhandler/-/finalhandler-1.0.3.tgz",
-      "from": "finalhandler@>=1.0.3 <1.1.0"
+      "version": "1.0.4",
+      "resolved": "https://registry.npmjs.org/finalhandler/-/finalhandler-1.0.4.tgz",
+      "from": "finalhandler@>=1.0.3 <1.1.0",
+      "dependencies": {
+        "debug": {
+          "version": "2.6.8",
+          "resolved": "https://registry.npmjs.org/debug/-/debug-2.6.8.tgz",
+          "from": "debug@2.6.8"
+        }
+      }
     },
     "forwarded": {
       "version": "0.1.0",
@@ -258,8 +265,8 @@
       "from": "js-tokens@>=3.0.0 <4.0.0"
     },
     "jsonwebtoken": {
-      "version": "7.4.1",
-      "resolved": "https://registry.npmjs.org/jsonwebtoken/-/jsonwebtoken-7.4.1.tgz",
+      "version": "7.4.2",
+      "resolved": "https://registry.npmjs.org/jsonwebtoken/-/jsonwebtoken-7.4.2.tgz",
       "from": "jsonwebtoken@>=7.2.1 <8.0.0"
     },
     "jwa": {
