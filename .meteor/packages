@@ -64,6 +64,7 @@ rocketchat:file-upload
 rocketchat:github-enterprise
 rocketchat:gitlab
 rocketchat:google-vision
+rocketchat:grant
 rocketchat:graphql
 rocketchat:highlight-words
 rocketchat:iframe-login
