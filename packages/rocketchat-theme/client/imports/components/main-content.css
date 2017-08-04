@@ -1,13 +1,16 @@
 .main-content {
-	flex: 1 1 100%;
-	z-index: 0 !important;
 	position: relative;
+	z-index: 0 !important;
+
+	flex: 1 1 100%;
+
 	height: 100%;
 }
 
 @media (width <= 780px) {
 	.main-content {
 		position: fixed;
+
 		width: 100%;
 		height: 100%;
 	}

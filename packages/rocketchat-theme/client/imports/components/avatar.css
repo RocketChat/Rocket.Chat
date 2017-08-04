@@ -1,8 +1,11 @@
 .avatar {
-	height: 100%;
-	width: 100%;
-	overflow: hidden;
 	position: relative;
+
+	overflow: hidden;
+
+	width: 100%;
+	height: 100%;
+
 	border-radius: 2px;
 
 	& .emoji,
@@ -13,24 +16,29 @@
 	}
 
 	& .avatar-image {
-		height: 100%;
 		width: 100%;
-		background-size: cover;
+		height: 100%;
+
 		background-repeat: no-repeat;
 		background-position: center;
+		background-size: cover;
 	}
 
 	&[initials]::before {
-		display: flex;
-		align-items: center;
-		content: attr(initials);
 		position: absolute;
-		font-size: 22px;
-		text-align: center;
+
+		display: flex;
+
 		width: 100%;
 		height: 100%;
-		justify-content: center;
+
+		content: attr(initials);
+		text-align: center;
 		text-transform: uppercase;
+
+		font-size: 22px;
 		font-weight: bold;
+		align-items: center;
+		justify-content: center;
 	}
 }
