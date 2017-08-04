@@ -24,14 +24,14 @@
 			<div class="rc-message-box__container">
 				<div class="rc-message-box__icon emoji-picker-icon">
 					<svg class="rc-input__icon-svg rc-input__icon-svg--smile">
-						<use href="#icon-smile"></use>
+						<use xlink:href="#icon-smile"></use>
 					</svg>
 				</div>
 				<textarea autofocus dir="auto" name="msg" maxlength="{{maxMessageLength}}" placeholder="{{_ 'Message'}}" rows="1" class="rc-message-box__textarea js-input-message autogrow-short"></textarea>
 				{{# if sendIcon}}
 					<div class="rc-message-box__icon js-send">
 						<svg class="rc-input__icon-svg rc-input__icon-svg--smile">
-							<use href="#icon-send"></use>
+							<use xlink:href="#icon-send"></use>
 						</svg>
 					</div>
 				{{else}}
@@ -50,7 +50,7 @@
 													<span class="rc-popover__icon">
 														{{#if icon}}
 															<svg class="rc-popover__icon-element rc-popover__icon-element--{{icon}}">
-																<use href="#icon-{{icon}}"></use>
+																<use xlink:href="#icon-{{icon}}"></use>
 															</svg>
 														{{/if}}
 													</span>
@@ -66,7 +66,7 @@
 					</div>
 					<div class="rc-message-box__icon">
 						<svg class="rc-input__icon-svg rc-input__icon-svg--plus">
-							<use href="#icon-plus"></use>
+							<use xlink:href="#icon-plus"></use>
 						</svg>
 					</div></label>
 				{{/if}}
@@ -96,7 +96,7 @@
 				{{#each mdButtons}}
 					<button class="rc-message-box__toolbar-markdown-item rc-tooltip js-md" aria-label={{_ label}}>
 						<svg class="rc-message-box__toolbar-markdown-icon rc-message-box__toolbar-markdown-icon--{{label}}">
-							<use href="#icon-md-{{label}}"></use>
+							<use xlink:href="#icon-md-{{label}}"></use>
 						</svg>
 					</button>
 				{{/each}}
