@@ -6,7 +6,7 @@ import {VRecDialog} from 'meteor/rocketchat:ui-vrecord';
 RocketChat.messageBox.actions.add('Create_new', 'Video_message', {
 	icon: 'video',
 	condition: () => RocketChat.settings.get('FileUpload_Enabled') && RocketChat.settings.get('Message_VideoRecorderEnabled') && ((navigator.getUserMedia != null) || (navigator.webkitGetUserMedia != null)) && (!RocketChat.settings.get('FileUpload_MediaTypeWhiteList') || RocketChat.settings.get('FileUpload_MediaTypeWhiteList').match(/video\/webm|video\/\*/i)),
-	action({event, messageBox}) {
+	action({messageBox}) {
 		return VRecDialog.opened ? VRecDialog.close() : VRecDialog.open(messageBox);
 	}
 });

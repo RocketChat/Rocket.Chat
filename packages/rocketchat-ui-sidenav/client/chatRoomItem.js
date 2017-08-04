@@ -52,9 +52,13 @@ Template.chatRoomItem.helpers({
 			KonchatNotification.newRoom(this.rid);
 		}
 
+		const icon = RocketChat.roomTypes.getIcon(this.t);
+		const avatar = !icon;
+
 		return {
 			...this,
-			icon: RocketChat.roomTypes.getIcon(this.t),
+			icon,
+			avatar,
 			route: RocketChat.roomTypes.getRouteLink(this.t, this),
 			name,
 			unread,
