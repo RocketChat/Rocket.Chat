@@ -1558,13 +1558,6 @@
 /* MAIN CONTENT + MAIN PAGES */
 
 .rc-old.main-content {
-	/* top: 0;
-	bottom: 0;
-	left: var(--rooms-box-width);
-	right: 0;
-	width: auto;
-	height: auto; */
-
 	&.main-modal {
 		left: 0;
 		margin-right: 0;
@@ -2933,7 +2926,7 @@ body:not(.is-cordova) {
 		position: relative;
 		display: none;
 		width: var(--flex-tab-width);
-		height: calc(100% - 61px);
+		height: calc(100vh - 61px);
 		overflow-x: visible;
 
 		& .control {
