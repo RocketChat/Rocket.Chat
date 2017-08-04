@@ -1,10 +1,14 @@
 <template name="avatarService">
-	<div class="rc-select-avatar__list__item rc-tooltip js-select-avatar" aria-label="{{name}}">
+	<div class="rc-select-avatar__list-item rc-tooltip js-select-avatar" aria-label="{{name}}">
 		{{#if suggestion}}
 			{{> avatar url=suggestion.blob}}
 		{{/if}}
 		{{#if service}}
-			{{name}}
+			<div class="rc-select-avatar__upload-label avatar">
+				<svg class="rc-select-avatar__upload-icon">
+					<use href="#icon-{{name.toLowerCase}}"></use>
+				</svg>
+			</div>
 		{{/if}}
 	</div>
 </template>
@@ -35,14 +39,18 @@
 								</div>
 									{{#if suggestions.ready}}
 										<div class="rc-select-avatar__list">
-											<div class="rc-select-avatar__list__item rc-tooltip js-select-avatar-initials" aria-label="Username initials">
+											<div class="rc-select-avatar__list-item rc-tooltip js-select-avatar-initials" aria-label="Username initials">
 												{{> avatar username=initialsUsername }}
 											</div>
-											<div class="rc-select-avatar__list__item rc-tooltip js-select-avatar-upload" aria-label="upload file">
-												<label class="avatar tertiary-background-color question-mark icon-upload" for="upload-avatar"></label>
+											<div class="rc-select-avatar__list-item rc-tooltip js-select-avatar-upload" aria-label="upload file">
+												<label class="rc-select-avatar__upload-label avatar" for="upload-avatar">
+													<svg class="rc-select-avatar__upload-icon">
+														<use href="#icon-upload"></use>
+													</svg>
+												</label>
 												<input type="file" name="" value="" id="upload-avatar" style="display:none;">
 											</div>
-											{{# each service in services}}
+											{{#each service in services}}
 												{{ > avatarService service}}
 											{{/each}}
 										</div>
