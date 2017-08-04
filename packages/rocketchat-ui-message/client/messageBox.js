@@ -1,11 +1,11 @@
-/* globals fileUpload AudioRecorder KonchatNotification chatMessages */
+/* globals fileUpload KonchatNotification chatMessages */
 import toastr from 'toastr';
 
 import mime from 'mime-type/with-db';
 
 import moment from 'moment';
 
-import {VRecDialog} from 'meteor/rocketchat:ui-vrecord';
+//import {VRecDialog} from 'meteor/rocketchat:ui-vrecord';
 
 function katexSyntax() {
 	if (RocketChat.katex.katex_enabled()) {
