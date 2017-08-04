@@ -2519,6 +2519,7 @@
 	position: relative;
 	line-height: 20px;
 	min-height: 40px;
+	transition: background 0.3s;
 
 	&.highlight {
 		animation: highlight 3s;
