@@ -6,7 +6,7 @@
 		{{#if service}}
 			<div class="rc-select-avatar__upload-label avatar">
 				<svg class="rc-select-avatar__upload-icon">
-					<use href="#icon-{{name.toLowerCase}}"></use>
+					<use xlink:href="#icon-{{name.toLowerCase}}"></use>
 				</svg>
 			</div>
 		{{/if}}
@@ -45,7 +45,7 @@
 											<div class="rc-select-avatar__list-item rc-tooltip js-select-avatar-upload" aria-label="upload file">
 												<label class="rc-select-avatar__upload-label avatar" for="upload-avatar">
 													<svg class="rc-select-avatar__upload-icon">
-														<use href="#icon-upload"></use>
+														<use xlink:href="#icon-upload"></use>
 													</svg>
 												</label>
 												<input type="file" name="" value="" id="upload-avatar" style="display:none;">
@@ -77,7 +77,7 @@
 									<div class="rc-input__wrapper">
 										<div class="rc-input__icon">
 											<svg class="rc-input__icon-svg rc-input__icon-svg--at">
-												<use href="#icon-at"></use>
+												<use xlink:href="#icon-at"></use>
 											</svg>
 										</div>
 										<input type="text" class="rc-input__element" name="username" id="username" value="{{username}}" {{ifThenElse canChange '' 'disabled'}}>
@@ -90,7 +90,7 @@
 									<div class="rc-input__error">
 										<div class="rc-input__error-icon">
 											<svg class="rc-input__error-icon-svg rc-input__error-icon--warning">
-												<use href="#icon-warning"></use>
+												<use xlink:href="#icon-warning"></use>
 											</svg>
 										</div>
 										<div class="rc-input__error-message">{{_ "Username_already_exist"}}</div>

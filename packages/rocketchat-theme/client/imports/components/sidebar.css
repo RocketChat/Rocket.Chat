@@ -18,6 +18,7 @@
 	z-index: 2;
 	position: relative;
 	transition: transform 0.3s;
+	height: 100%;
 
 	&--flex {
 		position: absolute;

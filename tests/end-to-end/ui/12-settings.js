@@ -326,7 +326,7 @@ describe('[Api Settings Change]', () => {
 		});
 	});
 
-	describe('block file upload:', () => {
+	describe.skip('block file upload:', () => {
 		it('it should change the file upload via api', (done) => {
 			request.post(api('settings/FileUpload_Enabled'))
 				.set(credentials)

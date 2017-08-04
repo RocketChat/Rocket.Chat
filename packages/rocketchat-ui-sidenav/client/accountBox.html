@@ -38,7 +38,7 @@
 												{{#if icon}}
 													<span class="rc-popover__icon">
 														<svg class="rc-popover__icon-element rc-popover__icon-element--{{icon}}">
-															<use href="#icon-{{icon}}"></use>
+															<use xlink:href="#icon-{{icon}}"></use>
 														</svg>
 													</span>
 												{{/if}}
@@ -49,7 +49,7 @@
 											<li class="rc-popover__item" data-action="open" data-open="administration">
 												<span class="rc-popover__icon">
 													<svg class="rc-popover__icon-element rc-popover__icon-element--customize">
-														<use href="#icon-customize"></use>
+														<use xlink:href="#icon-customize"></use>
 													</svg>
 												</span>
 												<span class="rc-popover__item-text">{{_ "Administration"}}</span>
@@ -58,7 +58,7 @@
 										<li class="rc-popover__item" data-action="open" data-open="account">
 											<span class="rc-popover__icon">
 												<svg class="rc-popover__icon-element rc-popover__icon-element--user">
-													<use href="#icon-user"></use>
+													<use xlink:href="#icon-user"></use>
 												</svg>
 											</span>
 											<span class="rc-popover__item-text">{{_ "My_Account"}}</span>
@@ -66,7 +66,7 @@
 										<li class="rc-popover__item" data-action="open" data-open="logout">
 											<span class="rc-popover__icon">
 												<svg class="rc-popover__icon-element rc-popover__icon-element--sign-out">
-													<use href="#icon-sign-out"></use>
+													<use xlink:href="#icon-sign-out"></use>
 												</svg>
 											</span>
 											<span class="rc-popover__item-text">{{_ "Logout"}}</span>
@@ -79,7 +79,7 @@
 							<div class="sidebar__account-status-bullet {{bullet}}" title="{{visualStatus}}"></div>
 							<div class="sidebar__account-username">{{visualStatus}}</div>
 							<svg class="sidebar__account-arrow">
-								<use href="#icon-arrow-down"></use>
+								<use xlink:href="#icon-arrow-down"></use>
 							</svg>
 						</div>
 					</div>
