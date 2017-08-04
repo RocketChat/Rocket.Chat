@@ -28,7 +28,14 @@
 					</svg>
 				</div>
 				<textarea autofocus dir="auto" name="msg" maxlength="{{maxMessageLength}}" placeholder="{{_ 'Message'}}" rows="1" class="rc-message-box__textarea js-input-message autogrow-short"></textarea>
-				<label class="rc-message-box__action-label" for="rc-message-box__action-input" data-popover="label">
+				{{# if sendIcon}}
+					<div class="rc-message-box__icon js-send">
+						<svg class="rc-input__icon-svg rc-input__icon-svg--smile">
+							<use href="#icon-send"></use>
+						</svg>
+					</div>
+				{{else}}
+					<label class="rc-message-box__action-label" for="rc-message-box__action-input" data-popover="label">
 					<input id="rc-message-box__action-input" type="checkbox" class="rc-popover-anchor" data-popover="anchor">
 					<div class="rc-popover js-message-actions" data-popover="popover">
 						<div class="rc-popover__content">
@@ -61,8 +68,8 @@
 						<svg class="rc-input__icon-svg rc-input__icon-svg--plus">
 							<use href="#icon-plus"></use>
 						</svg>
-					</div>
-				</label>
+					</div></label>
+				{{/if}}
 			</div>
 			<div class="rc-message-box__toolbar-markdown">
 				<!-- {{#if allowedToSend}}
