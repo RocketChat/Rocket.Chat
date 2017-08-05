@@ -198,7 +198,22 @@ this.ChatMessages = class ChatMessages {
 
 				// checks for the final msgObject.msg size before actually sending the message
 				if (this.isMessageTooLong(msgObject.msg)) {
-					return toastr.error(t('Message_too_long'));
+					// TODO #7267
+					if (RocketChat.settings.get('Message_AllowAttachTooLongMessages') === true) {
+						return swal({
+							text: t('Message_too_long_as_an_attachment_question'),
+							title: '',
+							type: 'warning',
+							showCancelButton: true,
+							confirmButtonText: t('Yes'),
+							cancelButtonText: t('No'),
+							closeOnConfirm: true
+						}, () => {
+							alert('Send the message as an attachment...');
+						});
+					} else {
+						return toastr.error(t('Message_too_long'));
+					}
 				}
 
 				this.clearCurrentDraft();

@@ -755,6 +755,7 @@
   "Message_TimeFormat": "Formato de Hora",
   "Message_TimeFormat_Description": "Veja também: <a href=\"http://momentjs.com/docs/#/displaying/format/\" target=\"momemt\">Moment.js</a>",
   "Message_too_long": "Mensagem muito longa",
+  "Message_too_long_as_an_attachment_question": "Mensagem muito longa. Deseja enviá-la como anexo?",
   "Message_VideoRecorderEnabled": "Gravação de vídeo habilitada",
   "Messages": "Mensagens",
   "Messages_that_are_sent_to_the_Incoming_WebHook_will_be_posted_here": "As mensagens que são enviadas para o WebHook de Entrada serão publicadas aqui.",

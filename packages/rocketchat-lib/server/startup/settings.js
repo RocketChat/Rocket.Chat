@@ -807,6 +807,10 @@ RocketChat.settings.addGroup('Message', function() {
 		type: 'int',
 		'public': true
 	});
+	this.add('Message_AllowAttachTooLongMessages', true, {
+		type: 'boolean',
+		'public': true
+	});
 	this.add('Message_ShowFormattingTips', true, {
 		type: 'boolean',
 		'public': true

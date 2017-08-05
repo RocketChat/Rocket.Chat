@@ -22,10 +22,15 @@ Meteor.methods({
 		} else {
 			message.ts = new Date();
 		}
+		// TODO: #7267 Offer to send as attachment when message too long
 		if (message.msg && message.msg.length > RocketChat.settings.get('Message_MaxAllowedSize')) {
-			throw new Meteor.Error('error-message-size-exceeded', 'Message size exceeds Message_MaxAllowedSize', {
-				method: 'sendMessage'
-			});
+			if (RocketChat.settings.get('Message_AllowAttachTooLongMessages') === true) {
+				// TODO #7267 Attach message...
+			} else {
+				throw new Meteor.Error('error-message-size-exceeded', 'Message size exceeds Message_MaxAllowedSize', {
+					method: 'sendMessage'
+				});
+			}
 		}
 		const user = RocketChat.models.Users.findOneById(Meteor.userId(), {
 			fields: {
