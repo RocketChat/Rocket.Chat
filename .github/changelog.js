@@ -70,7 +70,7 @@ var writerOpts = {
 			// GitHub issue URLs.
 			commit.subject = commit.subject.replace(/#([0-9]+)/g, function(_, issue) {
 				issues.push(issue);
-				return '[#' + issue + '](' + gitUrl + '/issue/' + issue + ')';
+				return '[#' + issue + '](' + gitUrl + '/issues/' + issue + ')';
 			});
 			// GitHub user URLs.
 			commit.subject = commit.subject.replace(/@([a-zA-Z0-9_]+)/g, '[@$1](https://github.com/$1)');
