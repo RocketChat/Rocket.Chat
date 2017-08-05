@@ -193,81 +193,29 @@ this.ChatMessages = class ChatMessages {
 				}
 			}
 
-			// Run to allow local encryption, and maybe other client specific actions to be run before send
-			return RocketChat.promises.run('onClientBeforeSendMessage', msgObject).then(msgObject => {
-
-				// checks for the final msgObject.msg size before actually sending the message
-				if (this.isMessageTooLong(msgObject.msg)) {
-					// TODO #7267
-					if (RocketChat.settings.get('Message_AllowAttachTooLongMessages') === true) {
-						return swal({
-							text: t('Message_too_long_as_an_attachment_question'),
-							title: '',
-							type: 'warning',
-							showCancelButton: true,
-							confirmButtonText: t('Yes'),
-							cancelButtonText: t('No'),
-							closeOnConfirm: true
-						}, () => {
-							alert('Send the message as an attachment...');
-						});
-					} else {
-						return toastr.error(t('Message_too_long'));
-					}
+			// checks for the final msgObject.msg size before actually sending the message
+			if (this.isMessageTooLong(msgObject.msg)) {
+				// TODO #7267
+				if (RocketChat.settings.get('Message_AllowAttachTooLongMessages') === true) {
+					swal({
+						text: t('Message_too_long_as_an_attachment_question'),
+						title: '',
+						type: 'warning',
+						showCancelButton: true,
+						confirmButtonText: t('Yes'),
+						cancelButtonText: t('No'),
+						closeOnConfirm: true
+					}, () => {
+						// TODO #7267 Transform message to attachment...
+						msgObject.msg = '... as attachment...';
+						this.runOnClientBeforeSendMessagePromise(msgObject, input, done);
+					});
+				} else {
+					return toastr.error(t('Message_too_long'));
 				}
-
-				this.clearCurrentDraft();
-				if (this.editing.id) {
-					this.update(this.editing.id, rid, msgObject.msg);
-					return;
-				}
-
-				KonchatNotification.removeRoomNotification(rid);
-				input.value = '';
-				if (typeof input.updateAutogrow === 'function') {
-					input.updateAutogrow();
-				}
-				this.hasValue.set(false);
-				this.stopTyping(rid);
-
-				//Check if message starts with /command
-				if (msg[0] === '/') {
-					const match = msg.match(/^\/([^\s]+)(?:\s+(.*))?$/m);
-					if (match) {
-						let command;
-						if (RocketChat.slashCommands.commands[match[1]]) {
-							const commandOptions = RocketChat.slashCommands.commands[match[1]];
-							command = match[1];
-							const param = match[2] || '';
-							if (commandOptions.clientOnly) {
-								commandOptions.callback(command, param, msgObject);
-							} else {
-								Meteor.call('slashCommand', {cmd: command, params: param, msg: msgObject }, (err, result) => typeof commandOptions.result === 'function' && commandOptions.result(err, result, {cmd: command, params: param, msg: msgObject }));
-							}
-							return;
-						}
-
-						if (!RocketChat.settings.get('Message_AllowUnrecognizedSlashCommand')) {
-							const invalidCommandMsg = {
-								_id: Random.id(),
-								rid,
-								ts: new Date,
-								msg: TAPi18n.__('No_such_command', { command: match[1] }),
-								u: {
-									username: 'rocketbot'
-								},
-								private: true
-							};
-							ChatMessage.upsert({ _id: invalidCommandMsg._id }, invalidCommandMsg);
-							return;
-						}
-					}
-				}
-
-				Meteor.call('sendMessage', msgObject);
-				return done();
-			});
-
+			} else {
+				this.runOnClientBeforeSendMessagePromise(msgObject, input, done);
+			}
 			// If edited message was emptied we ask for deletion
 		} else if (this.editing.element) {
 			const message = this.getMessageById(this.editing.id);
@@ -279,6 +227,63 @@ this.ChatMessages = class ChatMessages {
 
 			return this.confirmDeleteMsg(message, done);
 		}
+	}
+
+	runOnClientBeforeSendMessagePromise(msgObject, input, done = function() {}) {
+		// Run to allow local encryption, and maybe other client specific actions to be run before send
+		return RocketChat.promises.run('onClientBeforeSendMessage', msgObject).then(msgObject => {
+
+			this.clearCurrentDraft();
+			if (this.editing.id) {
+				this.update(this.editing.id, msgObject.rid, msgObject.msg);
+				return;
+			}
+
+			KonchatNotification.removeRoomNotification(msgObject.rid);
+			input.value = '';
+			if (typeof input.updateAutogrow === 'function') {
+				input.updateAutogrow();
+			}
+			this.hasValue.set(false);
+			this.stopTyping(msgObject.rid);
+
+			//Check if message starts with /command
+			if (msgObject.msg[0] === '/') {
+				const match = msgObject.msg.match(/^\/([^\s]+)(?:\s+(.*))?$/m);
+				if (match) {
+					let command;
+					if (RocketChat.slashCommands.commands[match[1]]) {
+						const commandOptions = RocketChat.slashCommands.commands[match[1]];
+						command = match[1];
+						const param = match[2] || '';
+						if (commandOptions.clientOnly) {
+							commandOptions.callback(command, param, msgObject);
+						} else {
+							Meteor.call('slashCommand', {cmd: command, params: param, msg: msgObject }, (err, result) => typeof commandOptions.result === 'function' && commandOptions.result(err, result, {cmd: command, params: param, msg: msgObject }));
+						}
+						return;
+					}
+
+					if (!RocketChat.settings.get('Message_AllowUnrecognizedSlashCommand')) {
+						const invalidCommandMsg = {
+							_id: Random.id(),
+							rid: msgObject.rid,
+							ts: new Date,
+							msg: TAPi18n.__('No_such_command', { command: match[1] }),
+							u: {
+								username: 'rocketbot'
+							},
+							private: true
+						};
+						ChatMessage.upsert({ _id: invalidCommandMsg._id }, invalidCommandMsg);
+						return;
+					}
+				}
+			}
+
+			Meteor.call('sendMessage', msgObject);
+			return done();
+		});
 	}
 
 	confirmDeleteMsg(message, done = function() {}) {

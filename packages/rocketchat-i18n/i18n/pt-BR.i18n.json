@@ -721,6 +721,7 @@
   "Mentions": "Menções",
   "Mentions_default": "Menções (padrão)",
   "Message": "Mensagem",
+  "Message_AllowAttachTooLongMessages": "Permitir que mensagens muito longas sejam enviadas como anexo",
   "Message_AllowBadWordsFilter": "Permitir filtro de palavrões em mensagens",
   "Message_AllowDeleting": "Permitir Exclusão de Mensagem",
   "Message_AllowDeleting_BlockDeleteInMinutes": "Bloquear exclusão de mensagens após (n) minutos",
