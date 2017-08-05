@@ -68,22 +68,34 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 			}
 		});
 
-		const unreadCount = RocketChat.settings.get('Unread_Count');
+		if (room.t === 'd') {
+			const unreadCountDM = RocketChat.settings.get('Unread_Count_DM');
 
-		if (toAll || toHere) {
-			let incUnread = 0;
-			if (['all_messages', 'group_mentions_only', 'user_and_group_mentions_only'].includes(unreadCount)) {
-				incUnread = 1;
+			if (unreadCountDM === 'all_messages') {
+				RocketChat.models.Subscriptions.incUnreadForRoomIdExcludingUserId(room._id, message.u._id);
+			} else if (toAll || toHere) {
+				RocketChat.models.Subscriptions.incGroupMentionsAndUnreadForRoomIdExcludingUserId(room._id, message.u._id, 1, 1);
+			} else if ((mentionIds && mentionIds.length > 0) || (highlightsIds && highlightsIds.length > 0)) {
+				RocketChat.models.Subscriptions.incUserMentionsAndUnreadForRoomIdAndUserIds(room._id, _.compact(_.unique(mentionIds.concat(highlightsIds))), 1, 1);
 			}
-			RocketChat.models.Subscriptions.incGroupMentionsAndUnreadForRoomIdExcludingUserId(room._id, message.u._id, 1, incUnread);
-		} else if ((mentionIds && mentionIds.length > 0) || (highlightsIds && highlightsIds.length > 0)) {
-			let incUnread = 0;
-			if (['all_messages', 'user_mentions_only', 'user_and_group_mentions_only'].includes(unreadCount)) {
-				incUnread = 1;
+		} else {
+			const unreadCount = RocketChat.settings.get('Unread_Count');
+
+			if (toAll || toHere) {
+				let incUnread = 0;
+				if (['all_messages', 'group_mentions_only', 'user_and_group_mentions_only'].includes(unreadCount)) {
+					incUnread = 1;
+				}
+				RocketChat.models.Subscriptions.incGroupMentionsAndUnreadForRoomIdExcludingUserId(room._id, message.u._id, 1, incUnread);
+			} else if ((mentionIds && mentionIds.length > 0) || (highlightsIds && highlightsIds.length > 0)) {
+				let incUnread = 0;
+				if (['all_messages', 'user_mentions_only', 'user_and_group_mentions_only'].includes(unreadCount)) {
+					incUnread = 1;
+				}
+				RocketChat.models.Subscriptions.incUserMentionsAndUnreadForRoomIdAndUserIds(room._id, _.compact(_.unique(mentionIds.concat(highlightsIds))), 1, incUnread);
+			} else if (unreadCount === 'all_messages') {
+				RocketChat.models.Subscriptions.incUnreadForRoomIdExcludingUserId(room._id, message.u._id);
 			}
-			RocketChat.models.Subscriptions.incUserMentionsAndUnreadForRoomIdAndUserIds(room._id, _.compact(_.unique(mentionIds.concat(highlightsIds))), 1, incUnread);
-		} else if (unreadCount === 'all_messages') {
-			RocketChat.models.Subscriptions.incUnreadForRoomIdExcludingUserId(room._id, message.u._id);
 		}
 	}
 

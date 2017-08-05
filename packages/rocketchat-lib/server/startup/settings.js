@@ -373,6 +373,19 @@ RocketChat.settings.addGroup('General', function() {
 		],
 		'public': true
 	});
+	this.add('Unread_Count_DM', 'all_messages', {
+		type: 'select',
+		values: [
+			{
+				key: 'all_messages',
+				i18nLabel: 'All_messages'
+			}, {
+				key: 'mentions_only',
+				i18nLabel: 'Mentions_only'
+			}
+		],
+		'public': true
+	});
 	this.add('CDN_PREFIX', '', {
 		type: 'string',
 		'public': true
