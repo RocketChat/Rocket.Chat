@@ -23,8 +23,10 @@ function AutoLinker(message) {
 				if (match.getType() === 'url') {
 					if (regUrls.test(match.matchedText)) {
 						if (match.matchedText.indexOf(Meteor.absoluteUrl()) === 0) {
-							const tag = match.buildTag();				// returns an `Autolinker.HtmlTag` instance for an <a> tag
-							tag.setAttr('target', '');					// sets target to empty, instead of _blank
+							// returns an `Autolinker.HtmlTag` instance for an <a> tag
+							const tag = match.buildTag();
+							// sets target to empty, instead of _blank
+							tag.setAttr('target', '');
 							return tag;
 						}
 
