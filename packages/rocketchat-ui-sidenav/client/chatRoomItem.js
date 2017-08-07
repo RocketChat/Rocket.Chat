@@ -26,27 +26,6 @@ Template.chatRoomItem.helpers({
 			alertClass = 'sidebar-item__link--active';
 		}
 
-		let statusClass = false;
-
-		if (this.t === 'd') {
-			switch (RocketChat.roomTypes.getUserStatus(this.t, this.rid)) {
-				case 'online':
-					statusClass = 'general-success-background';
-					break;
-				case 'away':
-					statusClass = 'general-pending-background';
-					break;
-				case 'busy':
-					statusClass = 'general-error-background';
-					break;
-				case 'offline':
-					statusClass = 'general-inactive-background';
-					break;
-				default:
-					statusClass = 'general-inactive-background';
-			}
-		}
-
 		// Sound notification
 		if (!(FlowRouter.getParam('name') === this.name) && !this.ls && this.alert === true) {
 			KonchatNotification.newRoom(this.rid);
@@ -65,7 +44,7 @@ Template.chatRoomItem.helpers({
 			active,
 			archivedClass,
 			alertClass,
-			statusClass
+			statusClass: this.t === 'd' ? RocketChat.roomTypes.getUserStatus(this.t, this.rid) : false
 		};
 	}
 });
