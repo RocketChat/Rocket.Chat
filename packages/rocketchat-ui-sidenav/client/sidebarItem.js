@@ -15,7 +15,7 @@ Template.sidebarItem.helpers({
 });
 
 Template.sidebarItem.events({
-	'click [data-id], click .sidebar-preferenes-link-hover'() {
+	'click [data-id], click .sidebar-item__link'() {
 		return menu.close();
 	}
 });

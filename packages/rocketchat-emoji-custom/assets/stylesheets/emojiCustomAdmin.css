@@ -1,98 +1,112 @@
 .emojiAdminPreview {
-	height: 100%;
-	width: 100%;
-	overflow: hidden;
 	position: relative;
+
+	overflow: hidden;
+
+	width: 100%;
+	height: 100%;
+
 	border-radius: 4px;
 
-	.emojiAdminPreview-image {
-		height: 100%;
-		width: 100%;
-		min-height: 20px;
-		min-width: 20px;
-		display: block;
+	& .emojiAdminPreview-image {
 		position: relative;
-		background-size: cover;
+
+		display: block;
+
+		width: 100%;
+		min-width: 20px;
+		height: 100%;
+		min-height: 20px;
+
+		border-radius: 4px;
 		background-repeat: no-repeat;
 		background-position: center;
-		border-radius: 4px;
+		background-size: cover;
 	}
 }
 
 .emoji-view {
 	z-index: 15;
-	overflow-y: auto;
-	overflow-x: hidden;
 
-	.thumb {
+	overflow-x: hidden;
+	overflow-y: auto;
+
+	& .thumb {
 		width: 100%;
 		height: 350px;
 		padding: 20px;
 	}
 
-	nav {
+	& nav {
 		padding: 0 20px;
 	}
 
-	.info {
-		white-space: normal;
+	& .info {
 		padding: 0 20px;
 
-		h3 {
-			-webkit-user-select: text;
-			-moz-user-select: text;
-			-ms-user-select: text;
-			user-select: text;
-			font-size: 24px;
-			margin: 8px 0;
-			line-height: 27px;
-			text-overflow: ellipsis;
-			width: 100%;
-			overflow: hidden;
-			white-space: nowrap;
+		white-space: normal;
 
-			i::after {
-				content: " ";
+		& h3 {
+			overflow: hidden;
+
+			width: 100%;
+			margin: 8px 0;
+
+			user-select: text;
+			white-space: nowrap;
+			text-overflow: ellipsis;
+
+			font-size: 24px;
+			line-height: 27px;
+
+			& i::after {
 				display: inline-block;
+
 				width: 8px;
 				height: 8px;
-				border-radius: 4px;
+
+				content: " ";
 				vertical-align: middle;
+
+				border-radius: 4px;
 			}
 		}
 
-		p {
+		& p {
 			-webkit-user-select: text;
 			-moz-user-select: text;
 			-ms-user-select: text;
 			user-select: text;
-			line-height: 18px;
+
 			font-size: 12px;
 			font-weight: 300;
+			line-height: 18px;
 		}
 	}
 
-	.edit-form {
+	& .edit-form {
 		padding: 20px 20px 0;
+
 		white-space: normal;
 
-		h3 {
-			font-size: 24px;
+		& h3 {
 			margin-bottom: 8px;
+
+			font-size: 24px;
 			line-height: 22px;
 		}
 
-		p {
-			line-height: 18px;
+		& p {
 			font-size: 12px;
 			font-weight: 300;
+			line-height: 18px;
 		}
 
-		> .input-line {
+		& > .input-line {
 			margin-top: 20px;
 		}
 
-		nav {
+		& nav {
 			padding: 0;
 
 			&.buttons {
@@ -100,18 +114,19 @@
 			}
 		}
 
-		.form-divisor {
-			text-align: center;
-			margin: 2em 0;
+		& .form-divisor {
 			height: 9px;
+			margin: 2em 0;
 
-			> span {
+			text-align: center;
+
+			& > span {
 				padding: 0 1em;
 			}
 		}
 	}
 
-	.room-info-content > div {
+	& .room-info-content > div {
 		margin: 0 0 20px;
 	}
 }

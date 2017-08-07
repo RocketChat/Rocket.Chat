@@ -8,7 +8,6 @@ Package.describe({
 Package.onUse(function(api) {
 	api.use([
 		'ecmascript',
-		'less',
 		'rocketchat:file',
 		'rocketchat:lib',
 		'templating',
@@ -33,7 +32,7 @@ Package.onUse(function(api) {
 		'server/methods/uploadCustomSound.js'
 	], 'server');
 
-	api.addFiles('assets/stylesheets/customSoundsAdmin.less', 'client');
+	api.addFiles('assets/stylesheets/customSoundsAdmin.css', 'client');
 
 	api.addFiles('admin/startup.js', 'client');
 	api.addFiles('admin/adminSounds.html', 'client');

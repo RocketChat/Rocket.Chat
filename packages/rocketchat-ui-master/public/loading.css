@@ -1,24 +1,28 @@
 .loading-animation {
+	position: absolute;
 	top: 0;
 	right: 0;
 	bottom: 0;
 	left: 0;
+
 	display: flex;
-	align-items: center;
-	position: absolute;
-	justify-content: center;
+
 	text-align: center;
+	align-items: center;
+	justify-content: center;
 }
 
 .loading-animation > div {
+	display: inline-block;
+
 	width: 10px;
 	height: 10px;
 	margin: 2px;
-	border-radius: 100%;
-	display: inline-block;
-	background-color: rgba(255, 255, 255, 0.6);
-	-webkit-animation: loading-bouncedelay 1.4s infinite ease-in-out both;
+
 	animation: loading-bouncedelay 1.4s infinite ease-in-out both;
+
+	border-radius: 100%;
+	background-color: rgba(255, 255, 255, 0.6);
 }
 
 .loading-animation .bounce1 {
@@ -29,18 +33,6 @@
 .loading-animation .bounce2 {
 	-webkit-animation-delay: -0.16s;
 	animation-delay: -0.16s;
-}
-
-@-webkit-keyframes loading-bouncedelay {
-	0%,
-	80%,
-	100% {
-		-webkit-transform: scale(0);
-	}
-
-	40% {
-		-webkit-transform: scale(1);
-	}
 }
 
 @keyframes loading-bouncedelay {

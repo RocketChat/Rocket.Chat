@@ -39,96 +39,20 @@ const minorColors= {
 	'status-offline': '@transparent-darker'
 };
 
+// const content = [
+// 	{
+// 		name: 'content',
+// 		properties: ['background-color'],
+// 		value: '#ffffff'
+// 	},
+// 	{
+// 		name: 'content-color',
+// 		properties: ['color'],
+// 		value: '#414852'
+// 	}
+// ];
 
-const general = [
-	{
-		name: 'general-success',
-		properties: ['background-color'],
-		value: '#2de0a5'
-	},
-	{
-		name: 'general-pending',
-		properties: ['background-color'],
-		value: '#ffd21f'
-	},
-	{
-		name: 'general-error',
-		properties: ['background-color'],
-		value: '#f5445c'
-	},
-	{
-		name: 'general-inactive',
-		properties: ['background-color'],
-		value: '#dedfe0'
-	},
-	{
-		name: 'general-selection',
-		properties: ['background-color'],
-		value: '#02acec'
-	}
-];
-
-general.forEach(setting => RocketChat.theme.addColor(setting.name, setting.value, 'General', setting.properties));
-
-const sidebar = [
-	{
-		name: 'sidebar-content-unread',
-		properties: ['color'],
-		value: '#ffffff'
-	},
-	{
-		name: 'sidebar-preferenes-content-hover:hover',
-		properties: ['background-color'],
-		value: '#e1e5e8'
-	},
-	{
-		name: 'sidebar-preferenes-link-hover:hover',
-		properties: ['color'],
-		value: '#2f343d'
-	},
-	{
-		name: 'sidebar-content-hover:hover',
-		properties: ['background-color'],
-		value: '#414852'
-	},
-	{
-		name: 'sidebar-category-badge',
-		properties: ['background-color'],
-		value: '#414852'
-	},
-	{
-		name: 'sidebar-category-badge-content',
-		properties: ['color'],
-		value: '#ffffff'
-	},
-	{
-		name: 'sidebar-room-badge',
-		properties: ['background-color'],
-		value: '#1d74f5'
-	},
-	{
-		name: 'sidebar-room-badge-content',
-		properties: ['color'],
-		value: '#ffffff'
-	}
-];
-
-sidebar.forEach(setting => RocketChat.theme.addColor(setting.name, setting.value, 'Sidebar', setting.properties));
-
-const content = [
-	{
-		name: 'content',
-		properties: ['background-color'],
-		value: '#ffffff'
-	},
-	{
-		name: 'content-color',
-		properties: ['color'],
-		value: '#414852'
-	}
-];
-
-content.forEach(setting => RocketChat.theme.addColor(setting.name, setting.value, 'Content', setting.properties));
+// content.forEach(setting => RocketChat.theme.addColor(setting.name, setting.value, 'Content', setting.properties));
 
 // Bulk-add settings for color scheme
 

@@ -13,11 +13,10 @@ Package.onUse(function(api) {
 		'underscore',
 		'tracker',
 		'rocketchat:lib',
-		'less'
 	]);
 
 
-	api.addFiles('client/vrecord.less', 'client');
+	api.addFiles('client/vrecord.css', 'client');
 
 	api.addFiles('client/vrecord.html', 'client');
 	api.addFiles('client/vrecord.js', 'client');
