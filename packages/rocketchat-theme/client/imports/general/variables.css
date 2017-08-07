@@ -76,6 +76,16 @@
 	--input-error-color: var(--color-error);
 
 	/*
+	* Forms - popup list
+	*/
+	--popup-list-border-radius: var(--border-radius);
+	--popup-list-background: var(--color-white);
+	--popup-list-background-hover: var(--color-gray-lightest);
+	--popup-list-selected-background: var(--color-gray-lightest);
+	--popup-list-name-color: #2d343d;
+	--popup-list-name-size: 1rem;
+
+	/*
 	* Modal
 	*/
 	--modal-wrapper-width: 650px;
