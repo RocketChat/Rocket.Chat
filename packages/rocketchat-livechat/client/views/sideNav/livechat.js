@@ -1,4 +1,4 @@
-/* globals LivechatInquiry, LivechatRoom, KonchatNotification */
+/* globals LivechatInquiry, KonchatNotification */
 Template.livechat.helpers({
 	isActive() {
 		const query = {

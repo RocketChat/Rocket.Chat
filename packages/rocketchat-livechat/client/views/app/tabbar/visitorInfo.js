@@ -1,3 +1,4 @@
+/* globals LivechatInquiry */
 import moment from 'moment';
 import UAParser from 'ua-parser-js';
 
