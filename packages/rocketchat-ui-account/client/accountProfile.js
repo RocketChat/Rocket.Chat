@@ -131,6 +131,9 @@ Template.accountProfile.helpers({
 	allowPasswordChange() {
 		return RocketChat.settings.get('Accounts_AllowPasswordChange');
 	},
+	allowAvatarChange() {
+		return RocketChat.settings.get('Accounts_AllowUserAvatarChange');
+	},
 	customFields() {
 		return Meteor.user().customFields;
 	}
