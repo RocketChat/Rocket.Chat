@@ -48,7 +48,7 @@
 
 		cursor: pointer;
 
-		color: var(--popup-list-name-color);
+		color: var(--select-avatar-upload-color);
 		background: var(--select-avatar-upload-background);
 	}
 

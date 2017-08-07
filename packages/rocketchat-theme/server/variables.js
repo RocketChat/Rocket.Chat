@@ -39,23 +39,7 @@ const minorColors= {
 	'status-offline': '@transparent-darker'
 };
 
-// const content = [
-// 	{
-// 		name: 'content',
-// 		properties: ['background-color'],
-// 		value: '#ffffff'
-// 	},
-// 	{
-// 		name: 'content-color',
-// 		properties: ['color'],
-// 		value: '#414852'
-// 	}
-// ];
-
-// content.forEach(setting => RocketChat.theme.addColor(setting.name, setting.value, 'Content', setting.properties));
-
 // Bulk-add settings for color scheme
-
 Object.keys(majorColors).forEach((key) => {
 	const value = majorColors[key];
 	RocketChat.theme.addPublicColor(key, value, 'Colors');
