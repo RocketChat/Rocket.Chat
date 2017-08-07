@@ -21,7 +21,7 @@
 			{{/with}}
 			{{#if allowedToSend}}
 				{{> messagePopupConfig getPopupConfig}}
-				<div class="rc-message-box__container">
+				<label class="rc-message-box__container">
 					<div class="rc-message-box__icon emoji-picker-icon">
 						<svg class="rc-input__icon-svg rc-input__icon-svg--smile">
 							<use xlink:href="#icon-smile"></use>
@@ -74,7 +74,7 @@
 						</label>
 
 					{{/if}}
-				</div>
+				</label>
 				<div class="rc-message-box__toolbar-markdown">
 					<!--{{#if katexSyntax}}
 									<span><a href="https://github.com/Khan/KaTeX/wiki/Function-Support-in-KaTeX" target="_blank">{{katexSyntax}}</a></span>
