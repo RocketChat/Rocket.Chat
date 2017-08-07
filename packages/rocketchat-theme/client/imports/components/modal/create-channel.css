@@ -1,7 +1,3 @@
-:root {
-	--create-channel-gap-between-elements: 2.5rem;
-}
-
 .create-channel {
 	animation-name: fadeIn;
 	animation-duration: 1s;
@@ -16,17 +12,17 @@
 	&__title {
 		padding: 0.25rem 0;
 
-		color: var(--color-darkest);
+		color: var(--create-channel-title-color);
 
-		font-size: 1.375rem;
+		font-size: var(--create-channel-title-text-size);
 	}
 
 	&__description {
 		padding: 0.25rem 0;
 
-		color: var(--color-gray);
+		color: var(--create-channel-description-color);
 
-		font-size: 0.875rem;
+		font-size: var(--create-channel-description-text-size);
 	}
 
 	&__switches {
