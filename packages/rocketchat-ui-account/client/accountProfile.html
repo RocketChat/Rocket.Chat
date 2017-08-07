@@ -37,27 +37,29 @@
 											{{> avatar url=avatarPreview.blob}}
 									{{/unless}}
 								</div>
-									{{#if suggestions.ready}}
-										<div class="rc-select-avatar__list">
-											<div class="rc-select-avatar__list-item rc-tooltip js-select-avatar-initials" aria-label="Username initials">
-												{{> avatar username=initialsUsername }}
+									{{#if allowAvatarChange}}
+										{{#if suggestions.ready}}
+											<div class="rc-select-avatar__list">
+												<div class="rc-select-avatar__list-item rc-tooltip js-select-avatar-initials" aria-label="Username initials">
+													{{> avatar username=initialsUsername }}
+												</div>
+												<div class="rc-select-avatar__list-item rc-tooltip js-select-avatar-upload" aria-label="upload file">
+													<label class="rc-select-avatar__upload-label avatar" for="upload-avatar">
+														<svg class="rc-select-avatar__upload-icon">
+															<use xlink:href="#icon-upload"></use>
+														</svg>
+													</label>
+													<input type="file" name="" value="" id="upload-avatar" style="display:none;">
+												</div>
+												{{#each service in services}}
+													{{ > avatarService service}}
+												{{/each}}
 											</div>
-											<div class="rc-select-avatar__list-item rc-tooltip js-select-avatar-upload" aria-label="upload file">
-												<label class="rc-select-avatar__upload-label avatar" for="upload-avatar">
-													<svg class="rc-select-avatar__upload-icon">
-														<use xlink:href="#icon-upload"></use>
-													</svg>
-												</label>
-												<input type="file" name="" value="" id="upload-avatar" style="display:none;">
+										{{else}}
+											<div class="rc-select-avatar__loading">
+												{{_ "Loading_suggestion"}}
 											</div>
-											{{#each service in services}}
-												{{ > avatarService service}}
-											{{/each}}
-										</div>
-									{{else}}
-										<div class="rc-select-avatar__loading">
-											{{_ "Loading_suggestion"}}
-										</div>
+										{{/if}}
 									{{/if}}
 							</div>
 						</div>
