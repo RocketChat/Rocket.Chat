@@ -52,6 +52,16 @@
 	*/
 	--modal-wrapper-width: 650px;
 	--modal-wrapper-margin: 3rem;
+	--modal-back-button-color: var(--color-gray);
+
+	/*
+	* Modal - Create Channel
+	*/
+	--create-channel-gap-between-elements: 2.5rem;
+	--create-channel-title-color: var(--color-darkest);
+	--create-channel-title-text-size: 1.375rem;
+	--create-channel-description-color: var(--color-gray);
+	--create-channel-description-text-size: 0.875rem;
 
 	/*
 	* Sidebar
