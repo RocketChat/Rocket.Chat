@@ -146,4 +146,9 @@
 	--badge-text-size: 0.75rem;
 	--badge-background: var(--color-dark-medium);
 	--badge-unread-background: var(--color-button-primary);
+
+	/*
+	* Flex nav
+	*/
+	--flex-nav-background: var(--color-gray-lightest);
 }
