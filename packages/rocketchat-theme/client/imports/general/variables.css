@@ -137,4 +137,13 @@
 	--avatar-radius: var(--border-radius);
 	--avatar-initials-text-size: 22px;
 	--avatar-initials-text-weight: 700;
+
+	/*
+	* Badge
+	*/
+	--badge-text-color: var(--color-white);
+	--badge-radius: var(--border-radius);
+	--badge-text-size: 0.75rem;
+	--badge-background: var(--color-dark-medium);
+	--badge-unread-background: var(--color-button-primary);
 }
