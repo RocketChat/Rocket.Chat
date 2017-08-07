@@ -8,7 +8,7 @@
 					</div>
 					<div class="sidebar__account-data">
 						<h3 class="sidebar__account-name {{#if ../lighten}}sidebar__account-name--lighten{{/if}}" data-username="{{username}}">@{{username}}</h3>
-						<input id="sidebar__account-menu" type="checkbox" class="rc-popover-anchor" data-popover="anchor">
+						<input id="sidebar__account-menu" type="checkbox" class="rc-popover-anchor" data-popover="anchor" {{isAnonymous}}>
 						<div class="rc-popover" data-popover="popover">
 							<div class="rc-popover__content">
 								<div class="rc-popover__column">
@@ -78,9 +78,11 @@
 						<div class="sidebar__account-status">
 							<div class="sidebar__account-status-bullet {{bullet}}" title="{{visualStatus}}"></div>
 							<div class="sidebar__account-username">{{visualStatus}}</div>
+							{{#unless isAnonymous}}
 							<svg class="sidebar__account-arrow">
 								<use xlink:href="#icon-arrow-down"></use>
 							</svg>
+							{{/unless}}
 						</div>
 					</div>
 				</label>
