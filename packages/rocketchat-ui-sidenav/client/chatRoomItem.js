@@ -43,7 +43,7 @@ Template.chatRoomItem.helpers({
 			active,
 			archivedClass,
 			alertClass,
-			statusClass: (this.t === 'd' ? Session.get(`user_${ this.name }_status`) : RocketChat.roomTypes.getUserStatus(this.t, this.rid)) || 'offline'
+			statusClass: this.t === 'd' ? Session.get(`user_${ this.name }_status`) || 'offline' : this.t === 'l' ? RocketChat.roomTypes.getUserStatus(this.t, this.rid) || 'offline' : false
 		};
 	}
 });
