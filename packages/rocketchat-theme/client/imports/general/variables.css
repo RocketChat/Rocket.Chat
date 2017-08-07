@@ -166,4 +166,12 @@
 	--popover-item-text-size: 0.875rem;
 	--popover-divider-height: 2px;
 	--popover-divider-color: var(--color-gray-light);
+
+	/*
+	* Tooltip
+	*/
+	--tooltip-background: var(--color-darkest);
+	--tooltip-text-color: var(--color-white);
+	--tooltip-text-size: 0.75rem;
+	--tooltip-radius: var(--border-radius);
 }
