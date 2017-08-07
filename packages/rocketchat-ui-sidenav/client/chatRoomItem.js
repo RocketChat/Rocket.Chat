@@ -25,32 +25,6 @@ Template.chatRoomItem.helpers({
 		if (!this.hideUnreadStatus && (FlowRouter.getParam('_id') !== this.rid || !document.hasFocus()) && this.alert) {
 			alertClass = 'sidebar-item__link--active';
 		}
-
-		let statusClass = false;
-		let status = 'offline';
-		if (this.t === 'd') {
-			status = Session.get(`user_${ this.name }_status`);
-		} else {
-			status = RocketChat.roomTypes.getUserStatus(this.t, this.rid);
-		}
-		switch (status) {
-			case 'online':
-				statusClass = 'general-success-background';
-				break;
-			case 'away':
-				statusClass = 'general-pending-background';
-				break;
-			case 'busy':
-				statusClass = 'general-error-background';
-				break;
-			case 'offline':
-				statusClass = 'general-inactive-background';
-				break;
-			default:
-				statusClass = 'general-inactive-background';
-		}
-
-
 		// Sound notification
 		if (!(FlowRouter.getParam('name') === this.name) && !this.ls && this.alert === true) {
 			KonchatNotification.newRoom(this.rid);
@@ -69,7 +43,7 @@ Template.chatRoomItem.helpers({
 			active,
 			archivedClass,
 			alertClass,
-			statusClass
+			statusClass: (this.t === 'd' ? Session.get(`user_${ this.name }_status`) : RocketChat.roomTypes.getUserStatus(this.t, this.rid)) || 'offline'
 		};
 	}
 });
