@@ -88,8 +88,19 @@
 	/*
 	* Sidebar Item
 	*/
-	--room-item-height: 32px;
-	--room-item-thumb-size: 20px;
+	--sidebar-item-radius: 2px;
+	--sidebar-item-height: 32px;
+	--sidebar-item-thumb-size: 20px;
+	--sidebar-item-text-color: var(--color-gray);
+	--sidebar-item-lighten-hover-background: var(--color-dark-medium);
+	--sidebar-item-darken-hover-background: var(--color-gray-light);
+	--sidebar-item-darken-text-color: var(--color-dark);
+	--sidebar-item-active-background: var(--color-gray);
+	--sidebar-item-active-text-color: var(--color-white);
+	--sidebar-item-popup-background: var(--color-dark-medium);
+	--sidebar-item-user-status-size: 6px;
+	--sidebar-item-user-status-radius: 50%;
+	--sidebar-item-text-size: 1rem;
 
 	/*
 	* Toolbar
