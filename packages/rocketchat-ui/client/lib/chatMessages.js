@@ -1,4 +1,4 @@
-/* globals MsgTyping */
+/* globals MsgTyping, performFileUpload */
 import moment from 'moment';
 import toastr from 'toastr';
 this.ChatMessages = class ChatMessages {
