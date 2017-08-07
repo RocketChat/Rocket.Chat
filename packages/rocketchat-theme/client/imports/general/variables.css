@@ -86,6 +86,17 @@
 	--popup-list-name-size: 1rem;
 
 	/*
+	* Forms - tags
+	*/
+	--tags-border-width: var(--border);
+	--tags-border-radius: var(--border-radius);
+	--tags-border-color: var(--color-gray-light);
+	--tags-text-color: var(--color-dark);
+	--tags-background: #f2f3f5;
+	--tags-avatar-size: 20px;
+
+
+	/*
 	* Forms - select avatar
 	*/
 	--select-avatar-size: 48px;
