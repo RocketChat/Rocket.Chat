@@ -1,0 +1,136 @@
+.sidebar-item {
+	display: flex;
+
+	height: var(--room-item-height);
+	padding-left: 22px;
+
+	cursor: pointer;
+
+	border-radius: 2px;
+	align-items: center;
+
+	&--active {
+		background-color: var(--color-gray);
+	}
+
+	&--darken {
+		&:hover {
+			background-color: var(--color-gray-light);
+		}
+
+		& .sidebar-item__link {
+			color: var(--color-dark);
+		}
+	}
+
+	&--lighten:hover {
+		background-color: var(--color-dark-medium);
+	}
+
+	&__popup-active {
+		background-color: var(--color-dark-medium);
+	}
+
+	&__link {
+		display: flex;
+		overflow: hidden;
+		flex: 1;
+
+		color: var(--color-gray);
+
+		font-size: 1rem;
+		line-height: var(--room-item-height);
+		align-items: center;
+
+		&--active {
+			color: var(--color-white);
+		}
+	}
+
+	& .badge {
+		margin: 0 8px 0 3px;
+	}
+
+	&__icon {
+		margin: 0 auto;
+		stroke: currentColor;
+
+		&--hashtag {
+			width: 14px;
+			height: 14px;
+		}
+
+		&--lock {
+			width: 12px;
+			height: 18px;
+		}
+
+		&--customize {
+			width: 14px;
+			height: 14px;
+		}
+
+		&--user {
+			width: 18px;
+			height: 17px;
+		}
+
+		&--user-rounded {
+			width: 18px;
+			height: 18px;
+		}
+
+		&--comment-alt {
+			width: 16px;
+			height: 14px;
+			fill: currentColor;
+		}
+	}
+
+	&__user-thumb {
+		width: var(--room-item-thumb-size);
+		height: var(--room-item-thumb-size);
+	}
+
+	&__user-status {
+		width: 6px;
+		height: 6px;
+		margin-right: 10px;
+		margin-left: -16px;
+
+		border-radius: 50%;
+
+		&--online {
+			background-color: var(--color-success);
+		}
+
+		&--away {
+			background-color: var(--color-alert);
+		}
+
+		&--busy {
+			background-color: var(--color-error);
+		}
+
+		&--offline {
+			background-color: var(--color-gray-medium);
+		}
+	}
+
+	&__picture {
+		display: flex;
+
+		width: var(--room-item-thumb-size);
+		margin-right: 6px;
+		align-items: center;
+	}
+
+	&__name {
+		overflow: hidden;
+
+		white-space: nowrap;
+		text-overflow: ellipsis;
+
+		font-size: 1rem;
+	}
+}

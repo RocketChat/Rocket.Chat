@@ -1,6 +1,6 @@
 :root {
 	/*
-	* General
+	* General Colors
 	*/
 	--color-darkest: #1f2329;
 	--color-dark: #2f343d;
@@ -9,6 +9,7 @@
 	--color-gray-medium: #cbced1;
 	--color-gray-light: #e1e5e8;
 	--color-gray-lightest: #f2f3f5;
+	--color-black: #000000;
 	--color-white: #ffffff;
 	--color-error: #f5455c;
 	--color-error-light: #e1364c;
@@ -31,6 +32,10 @@
 	--flex-tab-webrtc-2-width: 850px;
 	--user-image-square: 20px;
 	--border: 2px;
+	--status-online: var(--color-success);
+	--status-away: var(--color-alert);
+	--status-busy: var(--color-error);
+	--status-invisible: var(--color-gray-medium);
 
 	/*
 	* Forms
@@ -51,12 +56,56 @@
 	/*
 	* Sidebar
 	*/
-	--account-thumb-size: 48px;
-	--account-status-bullet-size: 12px;
-	--room-item-height: 32px;
-	--room-item-thumb-size: 20px;
+	--sidebar-width: 280px;
+	--sidebar-background: var(--color-dark);
+	--sidebar-background-light: var(--color-gray-lightest);
 	--sidebar-header-height: 180px;
 	--sidebar-header-padding: 24px;
 	--sidebar-footer-height: 70px;
 	--sidebar-footer-padding: var(--sidebar-header-padding);
+
+	/*
+	* Sidebar flex
+	*/
+	--sidebar-flex-back-button-color: var(--color-dark);
+	--sidebar-flex-search-background: var(--color-white);
+	--sidebar-flex-search-placeholder-color: var(--color-gray);
+
+	/*
+	* Sidebar Account
+	*/
+	--sidebar-account-thumb-size: 48px;
+	--sidebar-account-status-bullet-size: 12px;
+	--sidebar-account-status-bullet-radius: 50%;
+	--sidebar-account-username-size: 1rem;
+	--sidebar-account-username-weight: 700;
+	--sidebar-account-username-color: var(--color-white);
+	--sidebar-account-username-color-darker: var(--color-dark);
+	--sidebar-account-status-font-size: 0.875rem;
+	--sidebar-account-status-color: var(--color-gray);
+	--sidebar-account-arrow-size: 8px;
+
+	/*
+	* Sidebar Item
+	*/
+	--room-item-height: 32px;
+	--room-item-thumb-size: 20px;
+
+	/*
+	* Toolbar
+	*/
+	--toolbar-placeholder-color: var(--color-gray);
+
+	/*
+	* Rooms list
+	*/
+	--rooms-list-title-color: var(--color-gray);
+	--rooms-list-title-text-size: 0.75rem;
+	--rooms-list-empty-text-color: var(--color-gray);
+	--rooms-list-empty-text-size: 0.75rem;
+
+	/*
+	* Chip
+	*/
+	--chip-background: #dddddd;
 }

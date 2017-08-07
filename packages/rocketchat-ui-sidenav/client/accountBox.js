@@ -11,29 +11,15 @@ Template.accountBox.helpers({
 			};
 		}
 
-		let visualStatus = t('Online');
-		let bullet = 'general-success-background';
 		const user = Meteor.user() || {};
 		const { name, username } = user;
-		switch (Session.get(`user_${ username }_status`)) {
-			case 'away':
-				visualStatus = t('Away');
-				bullet = 'general-pending-background';
-				break;
-			case 'busy':
-				visualStatus = t('Busy');
-				bullet = 'general-error-background';
-				break;
-			case 'offline':
-				visualStatus = t('Invisible');
-				bullet = 'general-inactive-background';
-				break;
-		}
+		const userStatus = Session.get(`user_${ username }_status`);
+
 		return {
 			name: Session.get(`user_${ username }_name`) || username,
 			status: Session.get(`user_${ username }_status`),
-			visualStatus,
-			bullet,
+			visualStatus: t(userStatus.charAt(0).toUpperCase() + userStatus.slice(1)),
+			bullet: userStatus,
 			_id: Meteor.userId(),
 			username,
 			fname: name || username
