@@ -4,25 +4,25 @@
 	cursor: pointer;
 	transition: background-color 0.3s;
 
-	border-width: 1px;
+	border-width: var(--button-border-width);
 	border-style: solid;
-	border-radius: 2px;
+	border-radius: var(--button-border-radius);
 	background-color: transparent;
 
-	font-size: var(--input-font-size);
+	font-size: var(--button-text-size);
 
 	&:disabled {
 		cursor: default;
 
-		color: var(--color-white);
+		color: var(--button-disabled-text-color);
 		border: 0;
-		background-color: var(--color-gray-light);
+		background-color: var(--button-disabled-background);
 	}
 
-	&--blue {
-		color: var(--color-white);
+	&--primary {
+		color: var(--button-primary-text-color);
 		border: 0;
-		background-color: var(--color-button-primary);
+		background-color: var(--button-primary-background);
 	}
 
 	&--small {
