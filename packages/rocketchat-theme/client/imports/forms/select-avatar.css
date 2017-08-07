@@ -3,10 +3,10 @@
 	align-items: flex-start;
 
 	&__preview {
-		flex: 0 0 150px;
+		flex: 0 0 var(--select-avatar-preview-size);
 
-		width: 150px;
-		height: 150px;
+		width: var(--select-avatar-preview-size);
+		height: var(--select-avatar-preview-size);
 		margin-right: 1rem;
 	}
 
@@ -26,8 +26,8 @@
 		flex-wrap: wrap;
 
 		&-item {
-			width: 48px;
-			height: 48px;
+			width: var(--select-avatar-size);
+			height: var(--select-avatar-size);
 			margin-right: 10px;
 			margin-bottom: 10px;
 
@@ -48,13 +48,13 @@
 
 		cursor: pointer;
 
-		color: #2d343d;
-		background: var(--color-gray-light);
+		color: var(--popup-list-name-color);
+		background: var(--select-avatar-upload-background);
 	}
 
 	&__upload-icon {
-		width: 48px;
-		height: 48px;
+		width: var(--select-avatar-size);
+		height: var(--select-avatar-size);
 		padding: 12px;
 		fill: currentColor;
 	}
