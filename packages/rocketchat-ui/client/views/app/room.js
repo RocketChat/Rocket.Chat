@@ -315,6 +315,7 @@ let touchMoved = false;
 let lastTouchX = null;
 let lastTouchY = null;
 let lastScrollTop;
+let leaderLoaded = false;
 
 Template.room.events({
 	'click .iframe-toolbar button'() {
@@ -506,10 +507,14 @@ Template.room.events({
 	},
 
 	'scroll .wrapper': _.throttle(function(e, t) {
-		if (e.target.scrollTop < lastScrollTop) {
-			t.hideLeaderHeader.set(false);
-		} else if (e.target.scrollTop > $('.room-leader').height()) {
-			t.hideLeaderHeader.set(true);
+		const $roomLeader = $('.room-leader');
+		if ($roomLeader.length) {
+			if (e.target.scrollTop < lastScrollTop || !leaderLoaded) {
+				t.hideLeaderHeader.set(false);
+			} else if (e.target.scrollTop > $('.room-leader').height()) {
+				t.hideLeaderHeader.set(true);
+			}
+			leaderLoaded = true;
 		}
 		lastScrollTop = e.target.scrollTop;
 
