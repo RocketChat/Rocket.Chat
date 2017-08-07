@@ -1,0 +1,66 @@
+.rc-button {
+	padding: var(--button-padding);
+
+	cursor: pointer;
+	transition: background-color 0.3s;
+
+	border-width: 1px;
+	border-style: solid;
+	border-radius: 2px;
+	background-color: transparent;
+
+	font-size: var(--input-font-size);
+
+	&:disabled {
+		cursor: default;
+
+		color: var(--color-white);
+		border: 0;
+		background-color: var(--color-gray-light);
+	}
+
+	&--blue {
+		color: var(--color-white);
+		border: 0;
+		background-color: var(--color-button-primary);
+	}
+
+	&--small {
+		padding: var(--button-padding-small);
+	}
+
+	&--square {
+		display: flex;
+		flex: 0 0 var(--button-square-size);
+
+		padding: 0;
+		align-items: center;
+		justify-content: center;
+	}
+
+	&.loading {
+		position: relative;
+
+		padding-right: calc(3 * 0.782rem);
+
+		transition: padding-right 0.3s;
+
+		&::before {
+			position: absolute;
+			top: 25%;
+			right: 0.782rem;
+
+			display: block;
+
+			width: 20px;
+			height: 20px;
+
+			content: "";
+			animation: spin 1s infinite cubic-bezier(0.14, 0.48, 0.45, 0.63);
+
+			border: 0.15rem solid rgba(127, 127, 127, 0.5);
+			border-top-color: white;
+			border-radius: 50%;
+		}
+	}
+}
