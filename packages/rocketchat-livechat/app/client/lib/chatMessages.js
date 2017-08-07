@@ -91,22 +91,7 @@ this.ChatMessages = class ChatMessages {
 			return;
 		}
 		if (this.isMessageTooLong(input)) {
-			// TODO #7267
-			if (RocketChat.settings.get('Message_AllowAttachTooLongMessages') === true) {
-				return swal({
-					text: t('Message_too_long_as_an_attachment_question'),
-					title: '',
-					type: 'warning',
-					showCancelButton: true,
-					confirmButtonText: t('Yes'),
-					cancelButtonText: t('No'),
-					closeOnConfirm: true
-				}, () => {
-					alert('Send the message as an attachment...');
-				});
-			} else {
-				return toastr.error(t('Message_too_long'));
-			}
+			return toastr.error(t('Message_too_long'));
 		}
 		// KonchatNotification.removeRoomNotification(rid)
 		const msg = input.value;

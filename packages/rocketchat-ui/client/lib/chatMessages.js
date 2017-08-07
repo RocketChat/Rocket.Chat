@@ -195,7 +195,6 @@ this.ChatMessages = class ChatMessages {
 
 			// checks for the final msgObject.msg size before actually sending the message
 			if (this.isMessageTooLong(msgObject.msg)) {
-				// TODO #7267
 				if (RocketChat.settings.get('Message_AllowAttachTooLongMessages') === true) {
 					swal({
 						text: t('Message_too_long_as_an_attachment_question'),
@@ -206,15 +205,21 @@ this.ChatMessages = class ChatMessages {
 						cancelButtonText: t('No'),
 						closeOnConfirm: true
 					}, () => {
-						// TODO #7267 Transform message to attachment...
-						msgObject.msg = '... as attachment...';
-						this.runOnClientBeforeSendMessagePromise(msgObject, input, done);
+						// Transform message to attachment...
+						const contentType = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+						const messageBlob = new Blob([msgObject.msg], { type: contentType });
+						const fileName = `${ Meteor.user().username } - ${ new Date() }.docx`;
+						const file = new File([messageBlob], fileName, { type: contentType, lastModified: Date.now() });
+
+						performFileUpload(file, fileName, t('Message_sent_as_attachment'));
+
+						this.runOnClientBeforeSendMessagePromise(msgObject, input, true, done);
 					});
 				} else {
 					return toastr.error(t('Message_too_long'));
 				}
 			} else {
-				this.runOnClientBeforeSendMessagePromise(msgObject, input, done);
+				this.runOnClientBeforeSendMessagePromise(msgObject, input, false, done);
 			}
 			// If edited message was emptied we ask for deletion
 		} else if (this.editing.element) {
@@ -229,7 +234,9 @@ this.ChatMessages = class ChatMessages {
 		}
 	}
 
-	runOnClientBeforeSendMessagePromise(msgObject, input, done = function() {}) {
+	runOnClientBeforeSendMessagePromise(msgObject, input, messageAsAttachment, done = function() {}) {
+		messageAsAttachment = messageAsAttachment || false;
+
 		// Run to allow local encryption, and maybe other client specific actions to be run before send
 		return RocketChat.promises.run('onClientBeforeSendMessage', msgObject).then(msgObject => {
 
@@ -247,41 +254,44 @@ this.ChatMessages = class ChatMessages {
 			this.hasValue.set(false);
 			this.stopTyping(msgObject.rid);
 
-			//Check if message starts with /command
-			if (msgObject.msg[0] === '/') {
-				const match = msgObject.msg.match(/^\/([^\s]+)(?:\s+(.*))?$/m);
-				if (match) {
-					let command;
-					if (RocketChat.slashCommands.commands[match[1]]) {
-						const commandOptions = RocketChat.slashCommands.commands[match[1]];
-						command = match[1];
-						const param = match[2] || '';
-						if (commandOptions.clientOnly) {
-							commandOptions.callback(command, param, msgObject);
-						} else {
-							Meteor.call('slashCommand', {cmd: command, params: param, msg: msgObject }, (err, result) => typeof commandOptions.result === 'function' && commandOptions.result(err, result, {cmd: command, params: param, msg: msgObject }));
+			if (messageAsAttachment === false) {
+				//Check if message starts with /command
+				if (msgObject.msg[0] === '/') {
+					const match = msgObject.msg.match(/^\/([^\s]+)(?:\s+(.*))?$/m);
+					if (match) {
+						let command;
+						if (RocketChat.slashCommands.commands[match[1]]) {
+							const commandOptions = RocketChat.slashCommands.commands[match[1]];
+							command = match[1];
+							const param = match[2] || '';
+							if (commandOptions.clientOnly) {
+								commandOptions.callback(command, param, msgObject);
+							} else {
+								Meteor.call('slashCommand', {cmd: command, params: param, msg: msgObject }, (err, result) => typeof commandOptions.result === 'function' && commandOptions.result(err, result, {cmd: command, params: param, msg: msgObject }));
+							}
+							return;
 						}
-						return;
-					}
 
-					if (!RocketChat.settings.get('Message_AllowUnrecognizedSlashCommand')) {
-						const invalidCommandMsg = {
-							_id: Random.id(),
-							rid: msgObject.rid,
-							ts: new Date,
-							msg: TAPi18n.__('No_such_command', { command: match[1] }),
-							u: {
-								username: 'rocketbot'
-							},
-							private: true
-						};
-						ChatMessage.upsert({ _id: invalidCommandMsg._id }, invalidCommandMsg);
-						return;
+						if (!RocketChat.settings.get('Message_AllowUnrecognizedSlashCommand')) {
+							const invalidCommandMsg = {
+								_id: Random.id(),
+								rid: msgObject.rid,
+								ts: new Date,
+								msg: TAPi18n.__('No_such_command', { command: match[1] }),
+								u: {
+									username: 'rocketbot'
+								},
+								private: true
+							};
+							ChatMessage.upsert({ _id: invalidCommandMsg._id }, invalidCommandMsg);
+							return;
+						}
 					}
 				}
+
+				Meteor.call('sendMessage', msgObject);
 			}
 
-			Meteor.call('sendMessage', msgObject);
 			return done();
 		});
 	}

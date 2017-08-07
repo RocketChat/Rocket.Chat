@@ -1026,6 +1026,7 @@
   "Message_pinning": "Message pinning",
   "Message_QuoteChainLimit": "Maximum Number of Chained Quotes",
   "Message_removed": "Message removed",
+  "Message_sent_as_attachment": "Message sent as attachment.",
   "Message_SetNameToAliasEnabled": "Set a user name to alias in message",
   "Message_SetNameToAliasEnabled_Description": "Only if not already set alias. The old messages alias not changed if user has changed the name.",
   "Message_ShowDeletedStatus": "Show Deleted Status",

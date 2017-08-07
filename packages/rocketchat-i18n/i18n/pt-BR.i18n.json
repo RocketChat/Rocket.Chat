@@ -749,6 +749,7 @@
   "Message_MaxAllowedSize": "Tamanho máximo de mensagem permitido ",
   "Message_pinning": "Fixação de mensagem",
   "Message_removed": "Mensagem removida",
+  "Message_sent_as_attachment": "Messagem enviada como anexo.",
   "Message_ShowDeletedStatus": "Mostrar Status Excluído",
   "Message_ShowEditedStatus": "Mostrar Status Editado",
   "Message_ShowFormattingTips": "Exibir dicas de formatação",

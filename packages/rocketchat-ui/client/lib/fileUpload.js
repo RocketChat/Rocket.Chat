@@ -46,7 +46,6 @@ function formatBytes(bytes, decimals) {
 }
 
 fileUpload = function(filesToUpload) {
-	const roomId = Session.get('openedRoom');
 	const files = [].concat(filesToUpload);
 
 	function consume() {
@@ -139,102 +138,107 @@ fileUpload = function(filesToUpload) {
 					return;
 				}
 
-				const record = {
-					name: document.getElementById('file-name').value || file.name || file.file.name,
-					size: file.file.size,
-					type: file.file.type,
-					rid: roomId,
-					description: document.getElementById('file-description').value
-				};
-
-				const upload = fileUploadHandler('Uploads', record, file.file);
-
-				let uploading = Session.get('uploading') || [];
-				uploading.push({
-					id: upload.id,
-					name: upload.getFileName(),
-					percentage: 0
-				});
-
-				Session.set('uploading', uploading);
-
-				upload.onProgress = function(progress) {
-					uploading = Session.get('uploading');
-
-					const item = _.findWhere(uploading, {id: upload.id});
-					if (item != null) {
-						item.percentage = Math.round(progress * 100) || 0;
-						return Session.set('uploading', uploading);
-					}
-				};
-
-				upload.start(function(error, file, storage) {
-					if (error) {
-						let uploading = Session.get('uploading');
-						if (!Array.isArray(uploading)) {
-							uploading = [];
-						}
-
-						const item = _.findWhere(uploading, { id: upload.id });
-
-						if (_.isObject(item)) {
-							item.error = error.message;
-							item.percentage = 0;
-						} else {
-							uploading.push({
-								error: error.error,
-								percentage: 0
-							});
-						}
-
-						Session.set('uploading', uploading);
-						return;
-					}
-
-
-					if (file) {
-						Meteor.call('sendFileMessage', roomId, storage, file, () => {
-							Meteor.setTimeout(() => {
-								const uploading = Session.get('uploading');
-								if (uploading !== null) {
-									const item = _.findWhere(uploading, {
-										id: upload.id
-									});
-									return Session.set('uploading', _.without(uploading, item));
-								}
-							}, 2000);
-						});
-					}
-				});
-
-				Tracker.autorun(function(c) {
-					const cancel = Session.get(`uploading-cancel-${ upload.id }`);
-					if (cancel) {
-						let item;
-						upload.stop();
-						c.stop();
-
-						uploading = Session.get('uploading');
-						if (uploading != null) {
-							item = _.findWhere(uploading, {id: upload.id});
-							if (item != null) {
-								item.percentage = 0;
-							}
-							Session.set('uploading', uploading);
-						}
-
-						return Meteor.setTimeout(function() {
-							uploading = Session.get('uploading');
-							if (uploading != null) {
-								item = _.findWhere(uploading, {id: upload.id});
-								return Session.set('uploading', _.without(uploading, item));
-							}
-						}, 1000);
-					}
-				});
+				performFileUpload(file.file, document.getElementById('file-name').value, document.getElementById('file-description').value);
 			});
 		});
 	}
 
 	consume();
+};
+
+performFileUpload = function(file, fileName, fileDescription) {
+	const roomId = Session.get('openedRoom');
+	const record = {
+		name: fileName || file.name,
+		size: file.size,
+		type: file.type,
+		rid: roomId,
+		description: fileDescription
+	};
+
+	const upload = fileUploadHandler('Uploads', record, file);
+
+	let uploading = Session.get('uploading') || [];
+	uploading.push({
+		id: upload.id,
+		name: upload.getFileName(),
+		percentage: 0
+	});
+
+	Session.set('uploading', uploading);
+
+	upload.onProgress = function(progress) {
+		uploading = Session.get('uploading');
+
+		const item = _.findWhere(uploading, {id: upload.id});
+		if (item !== null) {
+			item.percentage = Math.round(progress * 100) || 0;
+			return Session.set('uploading', uploading);
+		}
+	};
+
+	upload.start(function(error, file, storage) {
+		if (error) {
+			let uploading = Session.get('uploading');
+			if (!Array.isArray(uploading)) {
+				uploading = [];
+			}
+
+			const item = _.findWhere(uploading, { id: upload.id });
+
+			if (_.isObject(item)) {
+				item.error = error.message;
+				item.percentage = 0;
+			} else {
+				uploading.push({
+					error: error.error,
+					percentage: 0
+				});
+			}
+
+			Session.set('uploading', uploading);
+			return;
+		}
+
+
+		if (file) {
+			Meteor.call('sendFileMessage', roomId, storage, file, () => {
+				Meteor.setTimeout(() => {
+					const uploading = Session.get('uploading');
+					if (uploading !== null) {
+						const item = _.findWhere(uploading, {
+							id: upload.id
+						});
+						return Session.set('uploading', _.without(uploading, item));
+					}
+				}, 2000);
+			});
+		}
+	});
+
+	Tracker.autorun(function(c) {
+		const cancel = Session.get(`uploading-cancel-${ upload.id }`);
+		if (cancel) {
+			let item;
+			upload.stop();
+			c.stop();
+
+			uploading = Session.get('uploading');
+			if (uploading !== null) {
+				item = _.findWhere(uploading, {id: upload.id});
+				if (item !== null) {
+					item.percentage = 0;
+				}
+				Session.set('uploading', uploading);
+			}
+
+			return Meteor.setTimeout(function() {
+				uploading = Session.get('uploading');
+				if (uploading !== null) {
+					item = _.findWhere(uploading, {id: upload.id});
+					return Session.set('uploading', _.without(uploading, item));
+				}
+			}, 1000);
+		}
+	});
 };
