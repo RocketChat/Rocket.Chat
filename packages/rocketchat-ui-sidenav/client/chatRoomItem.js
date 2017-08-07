@@ -23,7 +23,7 @@ Template.chatRoomItem.helpers({
 
 		let alertClass = false;
 		if (!this.hideUnreadStatus && (FlowRouter.getParam('_id') !== this.rid || !document.hasFocus()) && this.alert) {
-			alertClass = 'sidebar-content-unread';
+			alertClass = 'sidebar-item__link--active';
 		}
 
 		let statusClass = false;

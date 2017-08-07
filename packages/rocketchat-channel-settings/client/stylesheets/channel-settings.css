@@ -1,26 +1,31 @@
 .flex-tab {
-	.channel-settings {
-		ul {
-			li {
+	& .channel-settings {
+		& ul {
+			& li {
 				margin-bottom: 20px;
 			}
 		}
 
-		label {
+		& label {
 			display: block;
-			font-weight: bold;
+
 			margin-bottom: 5px;
+
 			font-size: 14px;
+			font-weight: bold;
 		}
 
-		.current-setting {
-			font-size: 14px;
-			width: calc(~"100% - 38px");
+		& .current-setting {
 			display: inline-block;
-			vertical-align: middle;
+
+			width: calc(100% - 38px);
 			min-height: 20px;
-			cursor: pointer;
 			margin-top: 3px;
+
+			cursor: pointer;
+			vertical-align: middle;
+
+			font-size: 14px;
 
 			&[data-edit="false"] {
 				cursor: inherit;
@@ -28,70 +33,81 @@
 			}
 		}
 
-		.editing {
-			padding-right: 80px;
-			font-size: 14px;
+		& .editing {
 			margin: -2px 0 -1px -9px;
+			padding-right: 80px;
+
+			font-size: 14px;
 		}
 
-		.buttons {
+		& .buttons {
 			position: absolute;
 			top: -1px;
-			bottom: 0;
 			right: 10px;
+			bottom: 0;
+
 			border-radius: 0 4px 4px 0;
 
-			.button {
+			& .button {
 				padding: 8px;
 			}
 		}
 
-		.button.edit {
-			padding: 8px;
-			font-size: 12px;
-			vertical-align: middle;
+		& .button.edit {
 			display: inline-block;
 			visibility: hidden;
+
+			padding: 8px;
+
+			vertical-align: middle;
+
+			font-size: 12px;
 		}
 
-		.submit {
+		& .submit {
 			margin-top: 30px;
+
 			text-align: center;
 		}
 
-		.boolean {
+		& .boolean {
 			font-size: 0;
 
-			> label {
-				width: calc(~"100% - 45px");
+			& > label {
 				display: inline-block;
+
+				width: calc(100% - 45px);
+
 				vertical-align: middle;
 			}
 
-			.setting-block {
-				width: 40px;
+			& .setting-block {
 				display: inline-block;
-				vertical-align: middle;
+
+				width: 40px;
 				margin-left: -5px;
+
+				vertical-align: middle;
 			}
 		}
 
-		.setting-block {
+		& .setting-block {
 			position: relative;
+
 			font-size: 0;
 
-			.loading-animation {
+			& .loading-animation {
 				top: 30px;
 			}
 
 			&:hover {
-				.button.edit {
+				& .button.edit {
 					visibility: visible;
 				}
 			}
 		}
 
-		nav {
+		& nav {
 			text-align: right;
 		}
 	}

@@ -1,51 +1,61 @@
 .permissions-manager {
-	h2 {
-		font-weight: bold !important;
-		font-size: 16px;
+	& h2 {
 		margin-top: 1em !important;
 		margin-bottom: 1em !important;
+
 		border-bottom-width: 1px;
+
+		font-size: 16px;
+		font-weight: bold !important;
 	}
 
-	.permission-grid {
-		th {
-			white-space: normal;
-			text-align: center;
+	& .permission-grid {
+		& th {
 			position: relative;
+
 			padding-top: 20px;
-		}
 
-		td {
 			text-align: center;
-			width: 10%;
+			white-space: normal;
 		}
 
-		.icon-edit {
-			font-size: 80%;
+		& td {
+			width: 10%;
+
+			text-align: center;
+		}
+
+		& .icon-edit {
 			position: absolute;
-			padding-left: 2px;
 			top: 0;
 			left: 50%;
+
+			padding-left: 2px;
+
 			transform: translateX(-50%);
+
+			font-size: 80%;
 		}
 
-		.permission-name {
+		& .permission-name {
 			cursor: default;
 		}
 	}
 
-	.empty-role {
+	& .empty-role {
 		padding: 0.5em !important;
 	}
 
-	.form-role {
-		label {
-			width: 150px;
+	& .form-role {
+		& label {
 			display: inline-block;
+
+			width: 150px;
+
 			text-align: right;
 		}
 
-		.form-buttons {
+		& .form-buttons {
 			padding-left: 150px;
 		}
 	}
