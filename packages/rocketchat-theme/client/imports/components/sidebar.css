@@ -456,6 +456,22 @@
 		margin-left: -16px;
 
 		border-radius: 50%;
+
+		&--online {
+			background-color: var(--color-success);
+		}
+
+		&--away {
+			background-color: var(--color-alert);
+		}
+
+		&--busy {
+			background-color: var(--color-error);
+		}
+
+		&--offline {
+			background-color: var(--color-gray-medium);
+		}
 	}
 
 	&__picture {
