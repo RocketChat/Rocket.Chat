@@ -22,6 +22,7 @@ Template.visitorInfo.helpers({
 	},
 
 	room() {
+		console.log('room.id', this.rid);
 		return ChatRoom.findOne({ _id: this.rid });
 	},
 
@@ -122,9 +123,23 @@ Template.visitorInfo.helpers({
 	},
 
 	roomOpen() {
+		if (!this.rid) { return false; }
 		const room = ChatRoom.findOne({ _id: this.rid });
 
 		return room.open;
+	},
+	roomArchived() {
+		if (!this.rid) { return false; }
+		const room = ChatRoom.findOne({ _id: this.rid });
+
+		return room.archived;
+	},
+
+	inquiryOpen() {
+		if (!this.rid) { return false; }
+		const inquiry = LivechatInquiry.findOne({ rid: this.rid });
+		if (!inquiry) { return false; }
+		return (inquiry.status === 'open');
 	},
 
 	guestPool() {
@@ -211,6 +226,23 @@ Template.visitorInfo.events({
 					FlowRouter.go('/home');
 				}
 			});
+		});
+	},
+	'click .close-inquiry'(event) {
+		event.preventDefault();
+
+		Meteor.call('livechat:closeInquiry', this.rid);
+	},
+	'click .archive-room'(event) {
+		event.preventDefault();
+
+		Meteor.call('archiveRoom', this.rid, function(error/*, result*/) {
+			if (error) {
+				console.log(error);
+			} else {
+				Session.set('openedRoom');
+				FlowRouter.go('/home');
+			}
 		});
 	},
 

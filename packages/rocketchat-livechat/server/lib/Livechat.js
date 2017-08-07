@@ -210,6 +210,9 @@ RocketChat.Livechat = {
 			chatDuration: (now.getTime() - room.ts) / 1000
 		});
 
+		const inquiry = RocketChat.models.LivechatInquiry.findOne({rid : room._id});
+		RocketChat.models.LivechatInquiry.closeInquiry(inquiry._id);
+
 		const message = {
 			t: 'livechat-close',
 			msg: comment,
@@ -218,7 +221,7 @@ RocketChat.Livechat = {
 
 		RocketChat.sendMessage(user, message, room);
 
-		RocketChat.models.Subscriptions.hideByRoomIdAndUserId(room._id, user._id);
+		RocketChat.models.Subscriptions.archiveByRoomId(room._id);
 		RocketChat.models.Messages.createCommandWithRoomIdAndUser('promptTranscript', room._id, user);
 
 		Meteor.defer(() => {

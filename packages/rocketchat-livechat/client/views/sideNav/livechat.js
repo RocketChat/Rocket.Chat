@@ -1,4 +1,4 @@
-/* globals LivechatInquiry, KonchatNotification */
+/* globals LivechatInquiry, LivechatRoom, KonchatNotification */
 Template.livechat.helpers({
 	isActive() {
 		const query = {
@@ -50,7 +50,6 @@ Template.livechat.helpers({
 			departmentIds.push('');
 		}
 
-
 		// get all inquiries of the department
 		const inqs = LivechatInquiry.find({
 			department: {
@@ -65,7 +64,6 @@ Template.livechat.helpers({
 
 		// for notification sound
 		inqs.forEach((inq) => {
-			console.log(inq);
 			KonchatNotification.newRoom(inq.rid);
 		});
 

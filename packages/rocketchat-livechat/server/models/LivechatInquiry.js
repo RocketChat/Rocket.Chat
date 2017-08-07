@@ -8,7 +8,7 @@ class LivechatInquiry extends RocketChat.models._Base {
 		this.tryEnsureIndex({ 'ts': 1 }); // timestamp
 		this.tryEnsureIndex({ 'code': 1 }); // (for routing)
 		this.tryEnsureIndex({ 'agents': 1}); // Id's of the agents who can see the inquiry (handle departments)
-		this.tryEnsureIndex({ 'status': 1}); // 'open', 'taken'
+		this.tryEnsureIndex({ 'status': 1}); // 'open', 'taken', 'closed'
 	}
 
 	findOneById(inquiryId) {
@@ -34,6 +34,17 @@ class LivechatInquiry extends RocketChat.models._Base {
 			'_id': inquiryId
 		}, {
 			$set: { status: 'open' }
+		});
+	}
+
+	/*
+	 * mark inquiry as closed
+	 */
+	closeInquiry(inquiryId) {
+		this.update({
+			'_id': inquiryId
+		}, {
+			$set: { status: 'closed' }
 		});
 	}
 
