@@ -151,4 +151,19 @@
 	* Flex nav
 	*/
 	--flex-nav-background: var(--color-gray-lightest);
+
+	/*
+	* Popover
+	*/
+	--popover-padding: 1rem;
+	--popover-radius: var(--border-radius);
+	--popover-background: var(--color-white);
+	--popover-column-min-width: 130px;
+	--popover-column-padding: 1rem;
+	--popover-title-color: var(--color-dark);
+	--popover-title-text-size: 0.75rem;
+	--popover-item-color: var(--color-dark);
+	--popover-item-text-size: 0.875rem;
+	--popover-divider-height: 2px;
+	--popover-divider-color: var(--color-gray-light);
 }
