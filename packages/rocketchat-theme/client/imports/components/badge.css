@@ -3,7 +3,15 @@
 
 	padding: 2px 6px;
 
+	color: var(--color-white);
+
 	border-radius: 2px;
 
+	background-color: var(--color-dark-medium);
+
 	font-size: 0.75rem;
+
+	&--unread {
+		background-color: var(--color-button-primary);
+	}
 }

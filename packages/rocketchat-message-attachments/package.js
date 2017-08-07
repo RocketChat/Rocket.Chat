@@ -11,12 +11,11 @@ Package.onUse(function(api) {
 		'ecmascript',
 		'underscore',
 		'rocketchat:lib',
-		'less'
 	]);
 
 	api.addFiles('client/messageAttachment.html', 'client');
 	api.addFiles('client/messageAttachment.js', 'client');
 
 	// stylesheets
-	api.addFiles('client/stylesheets/messageAttachments.less', 'client');
+	api.addFiles('client/stylesheets/messageAttachments.css', 'client');
 });

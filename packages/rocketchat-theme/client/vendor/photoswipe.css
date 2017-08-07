@@ -1,19 +1,23 @@
 .pswp__button {
+	position: relative;
+
+	display: block;
+	float: right;
+	overflow: visible;
+
 	width: 44px;
 	height: 44px;
-	position: relative;
-	background: none;
-	cursor: pointer;
-	overflow: visible;
-	-webkit-appearance: none;
-	display: block;
-	border: 0;
-	padding: 0;
 	margin: 0;
-	float: right;
-	opacity: 0.75;
+	padding: 0;
+
+	cursor: pointer;
 	transition: opacity 0.2s;
+
+	opacity: 0.75;
+	border: 0;
+	background: none;
 	box-shadow: none;
+	appearance: none;
 
 	&:focus,
 	&:hover {
@@ -21,12 +25,13 @@
 	}
 
 	&:active {
-		outline: none;
 		opacity: 0.9;
+		outline: none;
 	}
 
 	&::-moz-focus-inner {
 		padding: 0;
+
 		border: 0;
 	}
 }
@@ -38,10 +43,11 @@
 .pswp__button,
 .pswp__button--arrow--left::before,
 .pswp__button--arrow--right::before {
-	background: url(/images/gallery-skin.svg) 0 0 no-repeat;
-	background-size: 264px 88px;
 	width: 44px;
 	height: 44px;
+
+	background: url(/images/gallery-skin.svg) 0 0 no-repeat;
+	background-size: 264px 88px;
 }
 
 @media (-webkit-min-device-pixel-ratio: 1.1),
@@ -76,6 +82,7 @@
 
 .pswp__button--zoom {
 	display: none;
+
 	background-position: -88px 0;
 }
 
@@ -94,12 +101,14 @@
 
 .pswp__button--arrow--left,
 .pswp__button--arrow--right {
-	background: none;
+	position: absolute;
 	top: 50%;
-	margin-top: -50px;
+
 	width: 70px;
 	height: 100px;
-	position: absolute;
+	margin-top: -50px;
+
+	background: none;
 }
 
 .pswp__button--arrow--left {
@@ -112,21 +121,26 @@
 
 .pswp__button--arrow--left::before,
 .pswp__button--arrow--right::before {
-	content: '';
-	top: 35px;
-	background-color: rgba(0, 0, 0, 0.3);
-	height: 30px;
-	width: 32px;
 	position: absolute;
+	top: 35px;
+
+	width: 32px;
+	height: 30px;
+
+	content: '';
+
+	background-color: rgba(0, 0, 0, 0.3);
 }
 
 .pswp__button--arrow--left::before {
 	left: 6px;
+
 	background-position: -138px -44px;
 }
 
 .pswp__button--arrow--right::before {
 	right: 6px;
+
 	background-position: -94px -44px;
 }
 
@@ -137,25 +151,30 @@
  */
 .pswp__caption {
 	position: absolute;
-	left: 0;
 	bottom: 0;
+	left: 0;
+
 	width: 100%;
 	min-height: 44px;
 
-	small {
-		font-size: 11px;
+	& small {
 		color: #bbbbbb;
+
+		font-size: 11px;
 	}
 }
 
 .pswp__caption__center {
-	text-align: left;
 	max-width: 420px;
 	margin: 0 auto;
-	font-size: 13px;
 	padding: 10px;
-	line-height: 20px;
+
+	text-align: left;
+
 	color: #cccccc;
+
+	font-size: 13px;
+	line-height: 20px;
 }
 
 .pswp__caption--empty {
@@ -175,16 +194,19 @@
 
  */
 .pswp__preloader {
-	width: 44px;
-	height: 44px;
 	position: absolute;
 	top: 0;
 	left: 50%;
+
+	width: 44px;
+	height: 44px;
 	margin-left: -22px;
-	opacity: 0;
+
 	transition: opacity 0.25s ease-out;
-	will-change: opacity;
+
+	opacity: 0;
 	direction: ltr;
+	will-change: opacity;
 }
 
 .pswp__preloader__icn {
@@ -198,46 +220,54 @@
 }
 
 .pswp--css_animation {
-	.pswp__preloader--active {
+	& .pswp__preloader--active {
 		opacity: 1;
 
-		.pswp__preloader__icn {
-			animation: clockwise 500ms linear infinite;
-			background: none;
-			opacity: 0.75;
+		& .pswp__preloader__icn {
+			position: absolute;
+			top: 15px;
+			left: 15px;
+
 			width: 14px;
 			height: 14px;
-			position: absolute;
-			left: 15px;
-			top: 15px;
 			margin: 0;
+
+			animation: clockwise 500ms linear infinite;
+
+			opacity: 0.75;
+			background: none;
 		}
 
-		.pswp__preloader__donut {
-			animation: donut-rotate 1000ms cubic-bezier(0.4, 0, 0.22, 1) infinite;
-			box-sizing: border-box;
-			width: 14px;
-			height: 14px;
-			border: 2px solid #ffffff;
-			border-radius: 50%;
-			border-left-color: transparent;
-			border-bottom-color: transparent;
+		& .pswp__preloader__donut {
 			position: absolute;
 			top: 0;
 			left: 0;
-			background: none;
+
+			box-sizing: border-box;
+			width: 14px;
+			height: 14px;
 			margin: 0;
+
+			animation: donut-rotate 1000ms cubic-bezier(0.4, 0, 0.22, 1) infinite;
+
+			border: 2px solid #ffffff;
+			border-bottom-color: transparent;
+			border-left-color: transparent;
+			border-radius: 50%;
+			background: none;
 		}
 
-		.pswp__preloader__cut {
+		& .pswp__preloader__cut {
 			/*
 					The idea of animating inner circle is based on Polymer ("material") loading indicator
 					by Keanu Lee https://blog.keanulee.com/2014/10/20/the-tale-of-three-spinners.html
 				*/
 			position: relative;
+
+			overflow: hidden;
+
 			width: 7px;
 			height: 14px;
-			overflow: hidden;
 		}
 	}
 }
@@ -245,10 +275,12 @@
 @media screen and (max-width: 1024px) {
 	.pswp__preloader {
 		position: relative;
-		left: auto;
 		top: auto;
-		margin: 0;
+		left: auto;
+
 		float: right;
+
+		margin: 0;
 	}
 }
 
@@ -308,28 +340,31 @@
 
 /* root element of UI */
 .pswp__ui {
-	-webkit-font-smoothing: auto;
-	visibility: visible;
-	opacity: 1;
 	z-index: 1550;
+
+	visibility: visible;
+
+	opacity: 1;
+	-webkit-font-smoothing: auto;
 }
 
 /* top black bar with buttons and "1 of X" indicator */
 .pswp__top-bar {
 	position: absolute;
-	left: 0;
 	top: 0;
-	height: 44px;
+	left: 0;
+
 	width: 100%;
+	height: 44px;
 }
 
 .pswp__caption,
 .pswp__top-bar,
 .pswp--has_mouse .pswp__button--arrow--left,
 .pswp--has_mouse .pswp__button--arrow--right {
+	transition: opacity 333ms cubic-bezier(0.4, 0, 0.22, 1);
 	-webkit-backface-visibility: hidden;
 	will-change: opacity;
-	transition: opacity 333ms cubic-bezier(0.4, 0, 0.22, 1);
 }
 
 /* pswp--has_mouse class is added only when two subsequent mousemove events occur */

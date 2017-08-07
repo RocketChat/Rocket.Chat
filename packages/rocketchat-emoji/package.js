@@ -10,7 +10,6 @@ Package.onUse(function(api) {
 		'ecmascript',
 		'underscore',
 		'templating',
-		'less',
 		'rocketchat:lib',
 		'rocketchat:ui-message'
 	]);
@@ -22,7 +21,7 @@ Package.onUse(function(api) {
 
 	api.addFiles('emojiPicker.html', 'client');
 	api.addFiles('emojiPicker.js', 'client');
-	api.addFiles('emojiPicker.less', 'client');
+	api.addFiles('emojiPicker.css', 'client');
 
 	api.addFiles('emoji.css', 'client');
 

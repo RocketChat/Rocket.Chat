@@ -185,6 +185,22 @@
 		margin: 0.25rem 0.5rem 0.25rem 0;
 
 		border-radius: 50%;
+
+		&--online {
+			background-color: var(--color-success);
+		}
+
+		&--away {
+			background-color: var(--color-alert);
+		}
+
+		&--busy {
+			background-color: var(--color-error);
+		}
+
+		&--invisible {
+			background-color: var(--color-gray-medium);
+		}
 	}
 
 	&-arrow {
@@ -352,6 +368,24 @@
 
 	&--active {
 		background-color: var(--color-gray);
+	}
+
+	&--darken {
+		&:hover {
+			background-color: var(--color-gray-light);
+		}
+
+		& .sidebar-item__link {
+			color: var(--color-dark);
+		}
+	}
+
+	&--lighten:hover {
+		background-color: var(--color-dark-medium);
+	}
+
+	&__popup-active {
+		background-color: var(--color-dark-medium);
 	}
 
 	&__link {
