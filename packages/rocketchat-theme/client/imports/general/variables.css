@@ -23,6 +23,7 @@
 	/*
 	* General
 	*/
+	--text-size: 0.875rem;
 	--header-min-height: 60px;
 	--toolbar-height: 55px;
 	--footer-min-height: 70px;
@@ -47,6 +48,17 @@
 	--input-font-size: 0.875rem;
 	--gap-between-elements: 2.5rem;
 	--label-margin-bottom: 1rem;
+	--input-title-text-size: var(--input-font-size);
+	--input-title-color: #2d343d;
+	--input-text-color: var(--color-dark-medium);
+	--input-placeholder-color: var(--color-gray-medium);
+	--input-icon-color: var(--color-dark);
+	--input-border-color: var(--color-gray-light);
+	--input-border-width: var(--border);
+	--input-border-radius: var(--border-radius);
+	--input-description-text-color: var(--color-gray);
+	--input-description-text-size: var(--input-font-size);
+	--input-error-color: var(--color-error);
 
 	/*
 	* Modal
@@ -174,4 +186,21 @@
 	--tooltip-text-color: var(--color-white);
 	--tooltip-text-size: 0.75rem;
 	--tooltip-radius: var(--border-radius);
+
+	/*
+	* Message box
+	*/
+	--message-box-text-size: var(--input-font-size);
+	--message-box-placeholder-color: var(--color-gray-medium);
+	--message-box-markdown-color: var(--color-gray);
+	--message-box-markdown-hover-color: var(--color-dark);
+	--message-box-user-typing-color: var(--color-gray);
+	--message-box-user-typing-text-size: 0.75rem;
+	--message-box-user-typing-user-color: var(--color-dark);
+	--message-box-container-border-color: var(--color-gray-light);
+	--message-box-container-border-width: var(--border);
+	--message-box-container-border-radius: var(--border-radius);
+	--message-box-editing-color: #fff5df;
+	--message-box-popover-title-text-color: var(--color-gray);
+	--message-box-popover-title-text-size: 0.75rem;
 }
