@@ -856,6 +856,10 @@
 		align-items: center;
 	}
 
+	& h2 {
+		margin-left: 45px;
+	}
+
 	&__content {
 		overflow-y: auto;
 

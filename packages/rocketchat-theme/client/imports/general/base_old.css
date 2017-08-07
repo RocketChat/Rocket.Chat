@@ -5464,7 +5464,7 @@ body:not(.is-cordova) {
 	}
 
 	.rc-old {
-		& .burger {
+		&.burger {
 			display: inline-block;
 			visibility: visible;
 		}
