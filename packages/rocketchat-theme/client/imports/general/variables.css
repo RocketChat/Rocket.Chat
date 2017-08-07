@@ -32,6 +32,7 @@
 	--flex-tab-webrtc-2-width: 850px;
 	--user-image-square: 20px;
 	--border: 2px;
+	--border-radius: 2px;
 	--status-online: var(--color-success);
 	--status-away: var(--color-alert);
 	--status-busy: var(--color-error);
@@ -129,4 +130,11 @@
 	* Chip
 	*/
 	--chip-background: #dddddd;
+
+	/*
+	* Avatar
+	*/
+	--avatar-radius: var(--border-radius);
+	--avatar-initials-text-size: 22px;
+	--avatar-initials-text-weight: 700;
 }

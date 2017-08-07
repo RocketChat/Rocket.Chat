@@ -6,7 +6,7 @@
 	width: 100%;
 	height: 100%;
 
-	border-radius: 2px;
+	border-radius: var(--avatar-radius);
 
 	& .emoji,
 	& .emojione {
@@ -36,8 +36,8 @@
 		text-align: center;
 		text-transform: uppercase;
 
-		font-size: 22px;
-		font-weight: bold;
+		font-size: var(--avatar-initials-text-size);
+		font-weight: var(--avatar-initials-text-weight);
 		align-items: center;
 		justify-content: center;
 	}
