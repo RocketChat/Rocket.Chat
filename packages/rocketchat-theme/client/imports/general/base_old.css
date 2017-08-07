@@ -2320,6 +2320,8 @@
 	flex-direction: column;
 	flex: 1;
 
+	width: 100%;
+
 	&-wrapper {
 		display: flex;
 
