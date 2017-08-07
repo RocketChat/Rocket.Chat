@@ -23,22 +23,24 @@
 		content: attr(aria-label) attr(label);
 		white-space: nowrap;
 
-		color: var(--color-white);
-		border-radius: 4px;
-		background: #414852;
+		color: var(--tooltip-text-color);
+		border-radius: var(--tooltip-radius);
+		background: var(--tooltip-background);
 
-		font-size: 12px;
+		font-size: var(--tooltip-text-size);
 	}
 
 	&::before {
-		width: 18px;
-		height: 6px;
-		margin-bottom: 5px;
+
+		width: 0;
+		height: 0;
+		margin-bottom: 6px;
 
 		content: "";
 
-		background: url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2236%22%20height%3D%2212%22%3E%3Cpath%20fill%3D%22%23414852%22%20d%3D%22M2.658%200h32.004c-6%200-11.627%2012.002-16.002%2012.002C14.285%2012.002%208.594%200%202.658%200z%22%2F%3E%3C%2Fsvg%3E') no-repeat;
-		background-size: 100% auto;
+		border-width: 5px 5px 0;
+		border-style: solid;
+		border-color: var(--tooltip-background) transparent transparent transparent;
 	}
 
 	&:hover::before,
