@@ -15,7 +15,7 @@
 		width: 100%;
 		height: 24px;
 
-		color: var(---message-box-markdown-color);
+		color: var(--message-box-markdown-color);
 		justify-content: center;
 
 		&-item {

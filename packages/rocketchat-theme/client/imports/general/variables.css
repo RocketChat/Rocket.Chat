@@ -95,14 +95,13 @@
 	--tags-background: #f2f3f5;
 	--tags-avatar-size: 20px;
 
-
 	/*
 	* Forms - select avatar
 	*/
 	--select-avatar-size: 48px;
 	--select-avatar-preview-size: 150px;
 	--select-avatar-upload-background: var(--color-gray-light);
-	--select-avatar-upload-color:
+	--select-avatar-upload-color: #2d343d;
 
 	/*
 	* Modal

@@ -1,22 +1,4 @@
 /* globals Inject */
-const renderDynamicCssList = () => {
-	const variables = RocketChat.models.Settings.find({_id:/theme-/}, {fields: { value: 1, properties: 1, type: 1 }}).fetch();
-
-	Inject.rawHead('dynamic-variables',
-		`<script>
-			DynamicCss = typeof DynamicCss !== 'undefined' ? DynamicCss : { };
-			DynamicCss.list = ${ JSON.stringify(variables) };
-		</script>`);
-};
-
-renderDynamicCssList();
-
-RocketChat.models.Settings.find({_id:/theme-/}, {fields: { value: 1, properties: 1, type: 1 }}).observe({
-	changed: renderDynamicCssList
-});
-
-Inject.rawHead('dynamic', `<script>(${ require('./dynamic-css.js').default.toString() })()</script>`);
-
 Inject.rawHead('page-loading', `<style>${ Assets.getText('public/loading.css') }</style>`);
 
 Inject.rawBody('icons', Assets.getText('public/icons.svg'));
