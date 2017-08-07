@@ -120,7 +120,7 @@
 	&__picture {
 		display: flex;
 
-		width: var(--room-item-thumb-size);
+		width: var(--sidebar-item-thumb-size);
 		margin-right: 6px;
 		align-items: center;
 	}
