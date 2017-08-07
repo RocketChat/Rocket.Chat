@@ -23,7 +23,7 @@
 
 		display: flex;
 
-		color: var(--color-gray);
+		color: var(--modal-back-button-color);
 		align-items: center;
 	}
 
