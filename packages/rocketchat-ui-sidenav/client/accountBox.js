@@ -6,6 +6,7 @@ Template.accountBox.helpers({
 				fname: t('Anonymous'),
 				status: 'online',
 				visualStatus: t('online'),
+				bullet: 'general-success-background',
 				username: 'anonymous'
 			};
 		}
@@ -45,6 +46,12 @@ Template.accountBox.helpers({
 
 	registeredMenus() {
 		return AccountBox.getItems();
+	},
+
+	isAnonymous() {
+		if (Meteor.user() == null && RocketChat.settings.get('Accounts_AllowAnonymousRead')) {
+			return 'disabled';
+		}
 	}
 });
 
