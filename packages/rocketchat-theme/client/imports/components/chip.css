@@ -13,7 +13,7 @@
 	cursor: pointer;
 
 	border-radius: 10px;
-	background-color: #dddddd;
+	background-color: var(--chip-background);
 }
 
 .chip-container li .icon-plus-circled {

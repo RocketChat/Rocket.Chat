@@ -5,7 +5,14 @@
 @import 'imports/general/base_old.css';
 @import 'imports/general/base.css';
 @import 'imports/general/rtl.css';
-@import 'imports/components/sidebar.css';
+
+/* Sidebar */
+@import 'imports/components/sidebar/sidebar.css';
+@import 'imports/components/sidebar/sidebar-account.css';
+@import 'imports/components/sidebar/sidebar-item.css';
+@import 'imports/components/sidebar/sidebar-flex.css';
+@import 'imports/components/sidebar/toolbar.css';
+@import 'imports/components/sidebar/rooms-list.css';
 @import 'imports/components/flex-nav.css';
 @import 'imports/components/main-content.css';
 @import 'imports/components/avatar.css';
@@ -14,4 +21,5 @@
 @import 'imports/components/tooltip.css';
 @import 'imports/components/modal/full-modal.css';
 @import 'imports/components/modal/create-channel.css';
-@import 'imports/slider.css';
+@import 'imports/components/slider.css';
+@import 'imports/components/chip.css';
