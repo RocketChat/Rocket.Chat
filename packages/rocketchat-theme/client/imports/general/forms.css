@@ -856,10 +856,6 @@
 		align-items: center;
 	}
 
-	& h2 {
-		margin-left: 45px;
-	}
-
 	&__content {
 		overflow-y: auto;
 
@@ -867,6 +863,13 @@
 		padding: 25px;
 	}
 }
+
+@media (width < 780px) {
+	.preferences-page__header h2 {
+		margin-left: 40px;
+	}
+}
+
 
 @media (width > 500px) {
 	.preferences-page .container {
