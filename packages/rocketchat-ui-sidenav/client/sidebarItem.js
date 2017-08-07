@@ -15,7 +15,7 @@ Template.sidebarItem.helpers({
 });
 
 Template.sidebarItem.events({
-	'click [data-id]'() {
+	'click [data-id], click .sidebar-preferenes-link-hover'() {
 		return menu.close();
 	}
 });
