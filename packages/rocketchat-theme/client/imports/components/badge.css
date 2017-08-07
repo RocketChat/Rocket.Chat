@@ -3,15 +3,15 @@
 
 	padding: 2px 6px;
 
-	color: var(--color-white);
+	color: var(-badge-text-color);
 
-	border-radius: 2px;
+	border-radius: var(--badge-radius);
 
-	background-color: var(--color-dark-medium);
+	background-color: var(--badge-background);
 
-	font-size: 0.75rem;
+	font-size: var(--badge-text-size);
 
 	&--unread {
-		background-color: var(--color-button-primary);
+		background-color: var(--badge-unread-background);
 	}
 }
