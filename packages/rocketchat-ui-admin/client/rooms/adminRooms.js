@@ -27,7 +27,7 @@ Template.adminRooms.helpers({
 		return rooms && rooms.count();
 	},
 	name() {
-		if (this.t === 'c' || this.t === 'p') {
+		if (this.t === 'c' || this.t === 'p' || this.t === 'r' || this.t === 'e') {
 			return this.name;
 		} else if (this.t === 'd') {
 			return this.usernames.join(' x ');
@@ -41,6 +41,12 @@ Template.adminRooms.helpers({
 		}
 		if (this.t === 'p') {
 			return TAPi18n.__('Private Group');
+		}
+		if (this.t === 'r') {
+			return TAPi18n.__('Request');
+		}
+		if (this.t === 'e') {
+			return TAPi18n.__('Expertise');
 		}
 	},
 	'default'() {

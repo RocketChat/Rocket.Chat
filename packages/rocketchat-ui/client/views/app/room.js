@@ -407,7 +407,7 @@ Template.room.events({
 			return;
 		}
 
-		if (['c', 'p', 'd'].includes(roomData.t)) {
+		if (['c', 'p', 'd', 'r', 'e'].includes(roomData.t)) {
 			instance.setUserDetail(this._arguments[1].u.username);
 		}
 
