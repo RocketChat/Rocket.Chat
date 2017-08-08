@@ -12,7 +12,7 @@ Package.onUse(function(api) {
 		'templating',
 		'underscore',
 		'tracker',
-		'rocketchat:lib',
+		'rocketchat:lib'
 	]);
 
 
