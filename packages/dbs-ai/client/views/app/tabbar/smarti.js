@@ -77,11 +77,11 @@ Template.dbsAI_smarti.helpers({
 		return ChatSubscription.findOne({rid: instance.data.rid}).t === 'l';
 	},
 	/**
-	This helper is needed in order to create an object which matches the actions bar importing parameters
+	 This helper is needed in order to create an object which matches the actions bar importing parameters
 	 */
 	liveChatActions() {
 		const instance = Template.instance();
-		return { roomId: instance.data.rid };
+		return {roomId: instance.data.rid};
 	},
 	helpRequestByRoom() {
 		const instance = Template.instance();
@@ -93,10 +93,9 @@ Template.dbsAI_smarti.helpers({
  * Load Smarti script
  */
 RocketChat.settings.onload('DBS_AI_Redlink_URL', function() {
-
 	Meteor.call('getSmartiUiScript', function(error, script) {
 		if (error) {
-			console.error('could not load Smarti:', error);
+			console.error('could not load Smarti:', error.message);
 		} else {
 			// generate a script tag for smarti JS
 			const doc = document;

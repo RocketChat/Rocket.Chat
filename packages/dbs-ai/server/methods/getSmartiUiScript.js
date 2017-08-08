@@ -7,6 +7,11 @@ Meteor.methods({
 		if (script) { //buffering
 			return script;
 		}
+
+		if (!RocketChat.settings.get('DBS_AI_Redlink_URL').trim()) {
+			throw new Meteor.Error('no-smarti-url-configured');
+		}
+
 		const DBS_AI_SMARTI_URL =
 			RocketChat.settings.get('DBS_AI_Redlink_URL').endsWith('/') ?
 				RocketChat.settings.get('DBS_AI_Redlink_URL') :
