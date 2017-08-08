@@ -1,6 +1,10 @@
 /* globals toolbarSearch, menu, isRtl, fireGlobalEvent, CachedChatSubscription, DynamicCss */
 import Clipboard from 'clipboard';
-RocketChat.settings.collection.find({_id:/theme/}, {fields:{ value: 1, properties: 1, type: 1 }}).observe({changed: () => { DynamicCss.run(); }});
+
+if (!DynamicCss.test()) {
+	RocketChat.settings.collection.find({_id:'theme-custom-variables'}, {fields:{ value: 1 }}).observe({changed: () => { DynamicCss.run(true); }});
+}
+
 Template.body.onRendered(function() {
 	new Clipboard('.clipboard');
 
