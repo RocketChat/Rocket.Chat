@@ -62,6 +62,7 @@ Package.onUse(function(api) {
 	api.addFiles('lib/slashCommand.js');
 	api.addFiles('lib/Message.js');
 	api.addFiles('lib/MessageTypes.js');
+	api.addFiles('lib/templateVarHandler.js');
 
 	api.addFiles('server/lib/bugsnag.js', 'server');
 	api.addFiles('server/lib/metrics.js', 'server');
