@@ -76,6 +76,34 @@
 	--input-error-color: var(--color-error);
 
 	/*
+	* Forms - popup list
+	*/
+	--popup-list-border-radius: var(--border-radius);
+	--popup-list-background: var(--color-white);
+	--popup-list-background-hover: var(--color-gray-lightest);
+	--popup-list-selected-background: var(--color-gray-lightest);
+	--popup-list-name-color: #2d343d;
+	--popup-list-name-size: 1rem;
+
+	/*
+	* Forms - tags
+	*/
+	--tags-border-width: var(--border);
+	--tags-border-radius: var(--border-radius);
+	--tags-border-color: var(--color-gray-light);
+	--tags-text-color: var(--color-dark);
+	--tags-background: #f2f3f5;
+	--tags-avatar-size: 20px;
+
+	/*
+	* Forms - select avatar
+	*/
+	--select-avatar-size: 48px;
+	--select-avatar-preview-size: 150px;
+	--select-avatar-upload-background: var(--color-gray-light);
+	--select-avatar-upload-color: #2d343d;
+
+	/*
 	* Modal
 	*/
 	--modal-wrapper-width: 650px;
