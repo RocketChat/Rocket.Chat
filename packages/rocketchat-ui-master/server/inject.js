@@ -1,21 +1,19 @@
 /* globals Inject */
 const renderDynamicCssList = () => {
-	const variables = RocketChat.models.Settings.find({_id:/theme-/}, {fields: { value: 1, properties: 1, type: 1 }}).fetch();
-
-	Inject.rawHead('dynamic-variables',
-		`<script>
-			DynamicCss = typeof DynamicCss !== 'undefined' ? DynamicCss : { };
-			DynamicCss.list = ${ JSON.stringify(variables) };
-		</script>`);
+	const variables = RocketChat.models.Settings.findOne({_id:'theme-custom-variables'}, {fields: { value: 1}});
+	if (!variables || !variables.value) {
+		return;
+	}
+	Inject.rawBody('dynamic-variables', `<style id='css-variables'>${ variables.value }</style>`);
 };
 
 renderDynamicCssList();
 
-RocketChat.models.Settings.find({_id:/theme-/}, {fields: { value: 1, properties: 1, type: 1 }}).observe({
+RocketChat.models.Settings.find({_id:'theme-custom-variables'}, {fields: { value: 1}}).observe({
 	changed: renderDynamicCssList
 });
 
-Inject.rawHead('dynamic', `<script>(${ require('./dynamic-css.js').default.toString() })()</script>`);
+Inject.rawHead('dynamic', `<script>(${ require('./dynamic-css.js').default.toString().replace(/\/\/.*?\n/g, '') })()</script>`);
 
 Inject.rawHead('page-loading', `<style>${ Assets.getText('public/loading.css') }</style>`);
 

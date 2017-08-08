@@ -76,3 +76,13 @@ RocketChat.settings.add('theme-custom-css', '', {
 	section: 'Custom CSS',
 	public: true
 });
+
+
+RocketChat.settings.add('theme-custom-variables', Assets.getText('client/imports/general/variables.css'), {
+	group: 'Layout',
+	type: 'code',
+	code: 'text/css',
+	multiline: true,
+	section: 'Customize Theme',
+	public: true
+});

@@ -21,5 +21,5 @@ Template.sidebarItem.events({
 });
 
 Template.sidebarItem.onCreated(function() {
-	console.log('sidebarItem', this.data);
+	// console.log('sidebarItem', this.data);
 });
