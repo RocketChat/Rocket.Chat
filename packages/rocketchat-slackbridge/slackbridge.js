@@ -600,7 +600,7 @@ class SlackBridge {
 				} else {
 					const url = file.url.replace(Meteor.absoluteUrl(), '/');
 					const attachment = {
-						title: `File Uploaded: ${ file.name }`,
+						title: file.name,
 						title_link: url
 					};
 

@@ -14,13 +14,27 @@ Template.chatRoomItem.helpers({
 		}
 	},
 
+	unreadClass() {
+		if (RocketChat.settings.get('UI_Unread_Counter_Style') === 'Same_Style_For_Mentions') {
+			return 'unread unread-mention';
+		}
+
+		if (Match.test(this.userMentions, Number) && this.userMentions > 0) {
+			return 'unread unread-mention';
+		}
+
+		return 'unread';
+	},
+
 	userStatus() {
 		const userStatus = RocketChat.roomTypes.getUserStatus(this.t, this.rid);
 		return `status-${ userStatus || 'offline' }`;
 	},
 
 	name() {
-		if (RocketChat.settings.get('UI_Use_Real_Name') && this.fname) {
+		const realNameForDirectMessages = RocketChat.settings.get('UI_Use_Real_Name') && this.t === 'd';
+		const realNameForChannel = RocketChat.settings.get('UI_Allow_room_names_with_special_chars') && this.t !== 'd';
+		if ((realNameForDirectMessages || realNameForChannel) && this.fname) {
 			return this.fname;
 		}
 
