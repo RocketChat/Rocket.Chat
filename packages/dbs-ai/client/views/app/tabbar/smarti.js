@@ -35,11 +35,11 @@ Template.dbsAI_smarti.onRendered(function() {
 					RocketChat.settings.get('DBS_AI_Redlink_URL') :
 					`${ RocketChat.settings.get('DBS_AI_Redlink_URL') }/`;
 
-			const WEBSOCKET_URL = `ws${ RocketChat.settings.get('Site_Url').substring(4) }websocket/`;     
+			const WEBSOCKET_URL = `ws${ RocketChat.settings.get('Site_Url').substring(4) }websocket/`;
 			let customSuffix = RocketChat.settings.get('Assistify_AI_DBSearch_Suffix') || '';
 			customSuffix = customSuffix.replace(/\r\n|\r|\n/g, '');
-     	
-      const WIDGET_POSTING_TYPE = RocketChat.settings.get('Assistify_AI_Widget_Posting_Type') || 'postRichText';
+
+			const WIDGET_POSTING_TYPE = RocketChat.settings.get('Assistify_AI_Widget_Posting_Type') || 'postRichText';
 			console.log(WIDGET_POSTING_TYPE, RocketChat.settings.get('Assistify_AI_Widget_Posting_Type'));
 
 			const smartiOptions = {
