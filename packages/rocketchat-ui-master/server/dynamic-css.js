@@ -17,7 +17,11 @@ export default () => {
 		};
 	};
 	const cssVarPoly = {
+		test() { return window.CSS && window.CSS.supports && window.CSS.supports('(--foo: red)'); },
 		init() {
+			if (this.test()) {
+				return;
+			}
 			console.time('cssVarPoly');
 			cssVarPoly.ratifiedVars = {};
 			cssVarPoly.varsByBlock = [];
@@ -146,10 +150,14 @@ export default () => {
 	}, 100);
 
 	DynamicCss = typeof DynamicCss !=='undefined'? DynamicCss : {};
+<<<<<<< HEAD
 	DynamicCss.test = () => window.CSS && window.CSS.supports && window.CSS.supports('(--foo: red)');
 	DynamicCss.run = debounce((replace = false) => {
 
 
+=======
+	DynamicCss.run = debounce((replace = false) => {
+>>>>>>> 2aa991faeef52dd99e3e0bdde1aa04f5b0d110f7
 		if (replace) {
 			document.querySelector('#css-variables').innerHTML = RocketChat.settings.get('theme-custom-variables');
 		}
