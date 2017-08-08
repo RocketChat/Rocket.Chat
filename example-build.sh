@@ -5,7 +5,7 @@ IFS=$'\n\t'
 
 # Build
 export NODE_ENV=production
-meteor add rocketchat:internal-hubot meteorhacks:kadira
+meteor add rocketchat:internal-hubot
 meteor build --server https://demo.rocket.chat --directory /var/www/rocket.chat
 
 # Run

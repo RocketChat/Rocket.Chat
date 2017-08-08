@@ -27,8 +27,6 @@
   "Accounts_AllowUserProfileChange": "允许修改个人资料",
   "Accounts_AvatarResize": "调整头像大小",
   "Accounts_AvatarSize": "头像大小",
-  "Accounts_AvatarStorePath": "头像存储路径",
-  "Accounts_AvatarStoreType": "头像存储类型",
   "Accounts_BlockedDomainsList": "已屏蔽域名列表",
   "Accounts_BlockedDomainsList_Description": "以逗号分隔的屏蔽的域名列表",
   "Accounts_BlockedUsernameList": "已屏蔽的用户名列表",

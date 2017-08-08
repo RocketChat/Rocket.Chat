@@ -21,8 +21,6 @@
   "Accounts_AllowUserProfileChange": "Lejo përdoruesit Profilin Change",
   "Accounts_AvatarResize": "Ndrysho madhësin e Avatarit",
   "Accounts_AvatarSize": "Madhësia e Avatarit",
-  "Accounts_AvatarStorePath": "Avatari Storage Path",
-  "Accounts_AvatarStoreType": "Avatari Storage Lloji",
   "Accounts_BlockedDomainsList": "Blocked Lista Domains",
   "Accounts_BlockedDomainsList_Description": "lista të ndara me presje të fushave të bllokuara",
   "Accounts_BlockedUsernameList": "Blocked List Emri i përdoruesit",

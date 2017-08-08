@@ -19,7 +19,7 @@
 
 <template name="toolbarSearchList">
 	<i class="{{icon}} {{userStatus}}"></i>
-	<span class="room-title {{#if unread}}bold{{/if}}">{{displayName}}</span>
+	<span class="room-title {{#if unread}}bold{{/if}}" name="{{displayName}}" >{{displayName}}</span>
 	{{#if unread}}
 		<span class="unread">{{unread}}</span>
 	{{/if}}

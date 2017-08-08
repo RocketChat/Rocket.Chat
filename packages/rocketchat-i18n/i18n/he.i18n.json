@@ -21,8 +21,6 @@
   "Accounts_AllowUserProfileChange": "אפשר למשתמש לשנות את הפרופיל",
   "Accounts_AvatarResize": "שנה את גודל תמונת הפרופיל",
   "Accounts_AvatarSize": "גודל תמונת הפרופיל",
-  "Accounts_AvatarStorePath": "נתיב תמונת הפרופיל",
-  "Accounts_AvatarStoreType": "סוג אחסון תמונת פרופיל",
   "Accounts_BlockedDomainsList": "רשימת דומיינים חסומים",
   "Accounts_BlockedDomainsList_Description": "רשימה מופרדת בפסיקים של דומיינים חסומים",
   "Accounts_BlockedUsernameList": "רשימת משתמש חסום",

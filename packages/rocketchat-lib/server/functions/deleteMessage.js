@@ -21,7 +21,7 @@ RocketChat.deleteMessage = function(message, user) {
 		}
 
 		if (message.file && message.file._id) {
-			FileUpload.delete(message.file._id);
+			FileUpload.getStore('Uploads').deleteById(message.file._id);
 		}
 
 		Meteor.defer(function() {

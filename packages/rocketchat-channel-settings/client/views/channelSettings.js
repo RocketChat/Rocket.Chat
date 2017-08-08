@@ -108,11 +108,17 @@ Template.channelSettings.events({
 			t.saveSetting();
 		}
 	},
-	'click [data-edit]'(e, t) {
+	'click [data-edit], click .button.edit'(e, t) {
 		e.preventDefault();
-		if ($(e.currentTarget).data('edit')) {
-			t.editing.set($(e.currentTarget).data('edit'));
-			return setTimeout((function() {
+		let input = $(e.currentTarget);
+
+		if (input.hasClass('button')) {
+			input = $(e.currentTarget).siblings('.current-setting');
+		}
+
+		if (input.data('edit')) {
+			t.editing.set(input.data('edit'));
+			setTimeout((function() {
 				return t.$('input.editing').focus().select();
 			}), 100);
 		}

@@ -1,0 +1,28 @@
+<template name="roomList">
+	{{#if isLivechat}}
+		{{> livechat . }}
+	{{else}}
+		{{#if isActiveFavorite}}
+			{{#with rooms}}
+				<h3 class="room-type {{unreadClass ..}}">
+					{{_ ../label}} <span class="room-count-small">({{count}})</span>
+				</h3>
+				<ul>
+					{{#each room in this}}
+						{{> chatRoomItem room }}
+					{{else}}
+						<p class="empty">{{_ "No_channels_yet" }}</p>
+					{{/each}}
+				</ul>
+
+				{{#if hasMoreChannelsButton ..}}
+					<button class="more more-channels background-transparent-darker-hover">{{_ "More_channels"}}...</button>
+				{{/if}}
+
+				{{#if hasMoreGroupsButton ..}}
+					<button class="more more-groups background-transparent-darker-hover">{{_ "More_groups"}}...</button>
+				{{/if}}
+			{{/with}}
+		{{/if}}
+	{{/if}}
+</template>

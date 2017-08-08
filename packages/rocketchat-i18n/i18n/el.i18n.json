@@ -21,8 +21,6 @@
   "Accounts_AllowUserProfileChange": "Επιτρέψτε Προφίλ Χρήστη Αλλαγή",
   "Accounts_AvatarResize": "Αλλαγή μεγέθους Avatars",
   "Accounts_AvatarSize": "Avatar Μέγεθος",
-  "Accounts_AvatarStorePath": "Path Avatar αποθήκευσης",
-  "Accounts_AvatarStoreType": "Avatar Τύπος αποθήκευσης",
   "Accounts_BlockedDomainsList": "Λίστα αποκλεισμένων τομέων",
   "Accounts_BlockedDomainsList_Description": "Διαχωρισμένες με κόμμα λίστα των αποκλεισμένων περιοχών",
   "Accounts_BlockedUsernameList": "Λίστα αποκλεισμένων Όνομα Χρήστη",

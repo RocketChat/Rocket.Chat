@@ -7,7 +7,7 @@ function openRoom(type, name) {
 	return Meteor.defer(() =>
 		currentTracker = Tracker.autorun(function(c) {
 			const user = Meteor.user();
-			if ((user && user.username == null) || user == null && RocketChat.settings.get('Accounts_AllowAnonymousAccess') === false) {
+			if ((user && user.username == null) || user == null && RocketChat.settings.get('Accounts_AllowAnonymousRead') === false) {
 				BlazeLayout.render('main');
 				return;
 			}

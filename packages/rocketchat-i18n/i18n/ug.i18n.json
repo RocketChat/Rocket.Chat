@@ -21,8 +21,6 @@
   "Accounts_AllowUserProfileChange": "ئاكونت ئەزانىڭ ماتېرىيالىنى ئۆزگەرتىشكە رۇخسەت قىلدى",
   "Accounts_AvatarResize": "ئاكونت باش سۈرئەتنىڭ چوڭ كىچىكلىكىنى تەڭشەش",
   "Accounts_AvatarSize": "ئاكونت باش سۈرئەتنىڭ چوڭ كىچىكلىكى",
-  "Accounts_AvatarStorePath": "ئاكونت باش سۈرئەت ساقلاش ئادرېسى",
-  "Accounts_AvatarStoreType": "ئاكونت باش سۈرئەت ساقلاش تىپى",
   "Accounts_BlockedDomainsList": "ئاكونت تور بەت نامى تىزىملىكىنى توسۇۋېتىلدى",
   "Accounts_BlockedDomainsList_Description": "چىكىتلىك پەش ئارقىلىق توسۇۋېتىلگەن توربەت نامى تىزىملىكى",
   "Accounts_BlockedUsernameList": "ئاكونت مەنئىي قىلغان ئەزا تىزىملىكى",
