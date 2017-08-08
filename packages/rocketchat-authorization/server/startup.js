@@ -47,10 +47,7 @@ Meteor.startup(function() {
 		{ _id: 'set-moderator',                 roles : ['admin', 'owner'] },
 		{ _id: 'set-owner',                     roles : ['admin', 'owner'] },
 		{ _id: 'send-many-messages',            roles : ['admin', 'bot'] },
-<<<<<<< HEAD
-=======
 		{ _id: 'set-leader',                    roles : ['admin', 'owner'] },
->>>>>>> origin/develop
 		{ _id: 'unarchive-room',                roles : ['admin'] },
 		{ _id: 'view-c-room',                   roles : ['admin', 'user', 'bot', 'anonymous'] },
 		{ _id: 'user-generate-access-token',    roles : ['admin'] },

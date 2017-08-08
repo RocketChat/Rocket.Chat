@@ -284,8 +284,6 @@ Template.room.helpers({
 
 		return (RocketChat.models.Subscriptions.findOne({rid: this._id}) != null);
 
-<<<<<<< HEAD
-=======
 	},
 	toolbarButtons() {
 		const toolbar = Session.get('toolbarButtons') || { buttons: {} };
@@ -304,7 +302,6 @@ Template.room.helpers({
 		if (RoomRoles.findOne({ rid: this._id, roles: 'leader', 'u._id': { $ne: Meteor.userId() } }, { fields: { _id: 1 } })) {
 			return 'has-leader';
 		}
->>>>>>> origin/develop
 	}
 });
 
@@ -489,29 +486,12 @@ Template.room.events({
 		if (!Meteor.userId()) {
 			return;
 		}
-<<<<<<< HEAD
-		instance.tabBar.open();
-		return instance.setUserDetail(this.user.username);
-	},
-
-	'click .user-card-message'(e, instance) {
-		if (!Meteor.userId()) {
-			return;
-		}
-		const roomData = Session.get(`roomData${ this._arguments[1].rid }`);
-
-		if (RocketChat.Layout.isEmbedded()) {
-			fireGlobalEvent('click-user-card-message', { username: this._arguments[1].u.username });
-			e.preventDefault();
-			e.stopPropagation();
-=======
 
 		openProfileTabOrOpenDM(e, instance, this.user.username);
 	},
 
 	'click .user-card-message'(e, instance) {
 		if (!Meteor.userId() || !this._arguments) {
->>>>>>> origin/develop
 			return;
 		}
 
