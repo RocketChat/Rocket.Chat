@@ -10,7 +10,7 @@ Package.onUse(function(api) {
 		'templating',
 		'ecmascript',
 		'underscore',
-		'rocketchat:lib',
+		'rocketchat:lib'
 	]);
 
 	api.addFiles('client/messageAttachment.html', 'client');

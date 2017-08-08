@@ -5,9 +5,9 @@
 	min-height: 43px;
 	padding: 0 1rem 0 3.25rem;
 
-	border-width: 1px;
-	border-color: var(--color-gray-light);
-	border-radius: 2px;
+	border-width: var(--tags-border-width);
+	border-color: var(--tags-border-color);
+	border-radius: var(--tags-border-radius);
 	background-color: transparent;
 	flex-wrap: wrap;
 	justify-content: flex-start;
@@ -18,13 +18,13 @@
 		margin: 0.25rem;
 		padding: 0.35rem 0.5rem;
 
-		color: var(--color-dark);
-		background: #f2f3f5;
+		color: var(--tags-text-color);
+		background: var(--tags-background);
 		align-items: center;
 
 		&-avatar {
-			width: 20px;
-			height: 20px;
+			width: var(--tags-avatar-size);
+			height: var(--tags-avatar-size);
 			margin-right: 0.5rem;
 		}
 

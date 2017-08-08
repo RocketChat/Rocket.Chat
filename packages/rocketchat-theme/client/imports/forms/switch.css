@@ -13,8 +13,8 @@
 			& + .rc-switch__button {
 				cursor: default;
 
-				border-color: var(--color-gray-light);
-				background-color: #f2f3f5;
+				border-color: var(--button-disabled-background);
+				background-color: var(--color-gray-lightest);
 			}
 
 			& ~ .rc-switch__text {
