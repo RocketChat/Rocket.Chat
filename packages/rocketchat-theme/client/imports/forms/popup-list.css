@@ -7,8 +7,8 @@
 		width: 100%;
 		padding: 1rem;
 
-		border-radius: 2px;
-		background-color: var(--color-white);
+		border-radius: var(--popup-list-border-radius);
+		background-color: var(--popup-list-background);
 		box-shadow: 0 0 2px 0 rgba(47, 52, 61, 0.08), 0 0 12px 0 rgba(47, 52, 61, 0.12);
 	}
 
@@ -19,15 +19,15 @@
 
 		cursor: pointer;
 
-		border-radius: 2px;
+		border-radius: var(--popup-list-border-radius);
 		align-items: center;
 
 		&.selected {
-			background-color: #f2f3f5;
+			background-color: var(--popup-list-selected-background);
 		}
 
 		&:hover {
-			background-color: #f2f3f5;
+			background-color: var(--popup-list-background-hover);
 		}
 
 		&-image {
@@ -37,9 +37,9 @@
 		}
 
 		&-name {
-			color: #2d343d;
+			color: var(--popup-list-name-color);
 
-			font-size: 1rem;
+			font-size: var(--popup-list-name-size);
 		}
 	}
 }
