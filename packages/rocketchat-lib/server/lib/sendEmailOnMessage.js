@@ -100,7 +100,7 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 					case 'all':
 						emailSubject = TAPi18n.__('Offline_Mention_All_Email', {
 							user: message.u.username,
-							room: room.name
+							room: room.name || room.label
 						});
 						break;
 					case 'direct':
