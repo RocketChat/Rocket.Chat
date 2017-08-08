@@ -1,3 +1,23 @@
+<a name="0.58.0-rc.1"></a>
+# 0.58.0-rc.1 (2017-08-08)
+
+
+### New Features
+
+- [#7658](https://github.com/RocketChat/Rocket.Chat/pull/7658) Add unread options for direct messages
+
+
+### Bug Fixes
+
+- [#7629](https://github.com/RocketChat/Rocket.Chat/pull/7629) Fix messagebox growth
+- [#7687](https://github.com/RocketChat/Rocket.Chat/pull/7687) Fix room load on first hit
+- [#7644](https://github.com/RocketChat/Rocket.Chat/pull/7644) Markdown noopener/noreferrer: use correct HTML attribute
+- [#7652](https://github.com/RocketChat/Rocket.Chat/pull/7652) Only use "File Uploaded" prefix on files
+- [#7639](https://github.com/RocketChat/Rocket.Chat/pull/7639) Wrong email subject when "All Messages" setting enabled
+- [#7630](https://github.com/RocketChat/Rocket.Chat/pull/7630) Wrong render of snippet’s name
+
+
+
 <a name="0.58.0-rc.0"></a>
 # 0.58.0-rc.0 (2017-08-01)
 
