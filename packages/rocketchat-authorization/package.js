@@ -10,7 +10,7 @@ Package.onUse(function(api) {
 	api.use([
 		'ecmascript',
 		'underscore',
-		'rocketchat:lib',
+		'rocketchat:lib'
 	]);
 
 	api.use('mongo', ['client', 'server']);
