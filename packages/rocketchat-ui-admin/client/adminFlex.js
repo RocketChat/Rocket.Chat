@@ -1,4 +1,3 @@
-/* globals menu */
 Template.adminFlex.onCreated(function() {
 	this.settingsFilter = new ReactiveVar('');
 	if (RocketChat.settings.cachedCollectionPrivate == null) {
