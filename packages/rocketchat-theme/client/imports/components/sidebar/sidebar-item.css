@@ -85,6 +85,18 @@
 			height: 14px;
 			fill: currentColor;
 		}
+
+		&--livechat {
+			width: 15px;
+			height: 15px;
+			fill: currentColor;
+		}
+
+		&--queue {
+			width: 15px;
+			height: 15px;
+			fill: currentColor;
+		}
 	}
 
 	&__user-thumb {

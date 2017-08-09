@@ -1,6 +1,6 @@
 AccountBox.addItem({
 	name: 'Livechat',
-	icon: 'comment-alt',
+	icon: 'livechat',
 	href: 'livechat-current-chats',
 	sideNav: 'livechatFlex',
 	condition: () => {
