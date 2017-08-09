@@ -28,12 +28,7 @@
 
 		<ul class="rooms-list__list">
 			{{#if showQueueLink}}
-				<li class="sidebar-item sidebar-item--lighten {{activeLivechatQueue}}">
-					<a class="sidebar-item__link" href="{{pathFor 'livechat-queue'}}">
-						<i class="icon-th-list"></i>
-						{{_ "Queue"}}
-					</a>
-				</li>
+				{{> sidebarItem active=activeLivechatQueue pathSection="livechat-queue" icon="queue" name="Queue"}}
 			{{/if}}
 			{{#each room in rooms}}
 				{{> chatRoomItem room }}
