@@ -61,14 +61,6 @@ Template.roomList.helpers({
 		return !['unread', 'f'].includes(group.identifier) || rooms.count();
 	},
 
-	hasMoreChannelsButton(room) {
-		return room.identifier === 'c' || room.anonymous;
-	},
-
-	hasMoreGroupsButton(room) {
-		return room.identifier === 'p';
-	},
-
 	roomType(room) {
 		if (room.header || room.identifier) {
 			return `type-${ room.header || room.identifier }`;
