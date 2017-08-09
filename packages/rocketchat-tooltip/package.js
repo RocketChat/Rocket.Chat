@@ -14,10 +14,10 @@ Package.onUse(function(api) {
 	api.use('rocketchat:ui-master');
 	api.use('less');
 
-	api.addFiles('tooltip.less', 'client');
+	api.addFiles('client/tooltip.less', 'client');
 
-	api.addFiles('rocketchat-tooltip.html', 'client');
-	api.addFiles('rocketchat-tooltip.js', 'client');
+	api.addFiles('client/rocketchat-tooltip.html', 'client');
+	api.addFiles('client/rocketchat-tooltip.js', 'client');
 
-	api.addFiles('init.js', 'client');
+	api.addFiles('client/init.js', 'client');
 });
