@@ -9,6 +9,7 @@ export const schema = `
 		channel: Channel
 		creationTime: Float
 		fromServer: Boolean
+		type: String
 		userRef: [User]
 		channelRef: [Channel]
 		reactions: [Reaction]
@@ -29,6 +30,7 @@ export const resolver = {
 			return RocketChat.models.Rooms.findOne(root.rid);
 		},
 		fromServer: (root) => typeof root.t !== 'undefined', // on a message sent by user `true` otherwise `false`
+		type: property('t'),
 		channelRef: (root) => {
 			if (!root.channels) {
 				return;

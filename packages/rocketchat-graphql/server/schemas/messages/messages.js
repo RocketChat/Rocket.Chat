@@ -8,7 +8,8 @@ export const schema = `
 				channelName: String,
 				cursor: String,
 				count: Int,
-				searchRegex: String
+				searchRegex: String,
+				excludeServer: Boolean
 		): MessagesWithCursor
 	}
 `;
@@ -57,6 +58,10 @@ export const resolver = {
 				// count
 				if (isPagination && args.count) {
 					messagesOptions.limit = args.count;
+				}
+
+				if (args.excludeServer === true) {
+					messagesQuery.t = { $exists: false };
 				}
 
 				const messages = RocketChat.models.Messages.find(
