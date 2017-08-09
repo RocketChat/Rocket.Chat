@@ -3,6 +3,7 @@ import session from 'express-session';
 import Grant from 'grant-express';
 import fiber from 'fibers';
 
+import { GrantError } from './error';
 import { generateConfig } from './grant';
 import { path, generateCallback, generateAppCallback } from './routes';
 import { middleware as redirect } from './redirect';
@@ -51,5 +52,6 @@ export {
 	generateCallback,
 	generateAppCallback,
 	Providers,
-	Settings
+	Settings,
+	GrantError
 };
