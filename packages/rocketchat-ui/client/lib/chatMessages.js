@@ -396,6 +396,12 @@ this.ChatMessages = class ChatMessages {
 			this.startTyping(rid, input);
 		}
 
+		// Ctrl + Shift + V
+		if (event.ctrlKey && event.shiftKey && (event.keyCode === 86)) {
+			event.target.value = `\`\`\`${ event.target.value }\`\`\``;
+			return true;
+		}
+
 		return this.hasValue.set(input.value !== '');
 	}
 
