@@ -9,6 +9,7 @@ Package.onUse(function(api) {
 	api.use([
 		'underscore',
 		'ecmascript',
+		'http',
 		'rocketchat:lib',
 		'rocketchat:api',
 		'rocketchat:accounts'
