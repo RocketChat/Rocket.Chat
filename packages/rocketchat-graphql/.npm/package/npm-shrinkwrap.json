@@ -71,8 +71,8 @@
       "from": "cookie-signature@1.0.6"
     },
     "core-js": {
-      "version": "2.4.1",
-      "resolved": "https://registry.npmjs.org/core-js/-/core-js-2.4.1.tgz",
+      "version": "2.5.0",
+      "resolved": "https://registry.npmjs.org/core-js/-/core-js-2.5.0.tgz",
       "from": "core-js@>=2.4.0 <3.0.0"
     },
     "cors": {
@@ -218,16 +218,9 @@
       "from": "hoek@>=2.0.0 <3.0.0"
     },
     "http-errors": {
-      "version": "1.6.1",
-      "resolved": "https://registry.npmjs.org/http-errors/-/http-errors-1.6.1.tgz",
-      "from": "http-errors@>=1.6.1 <1.7.0",
-      "dependencies": {
-        "depd": {
-          "version": "1.1.0",
-          "resolved": "https://registry.npmjs.org/depd/-/depd-1.1.0.tgz",
-          "from": "depd@1.1.0"
-        }
-      }
+      "version": "1.6.2",
+      "resolved": "https://registry.npmjs.org/http-errors/-/http-errors-1.6.2.tgz",
+      "from": "http-errors@>=1.6.1 <1.7.0"
     },
     "iconv-lite": {
       "version": "0.4.15",

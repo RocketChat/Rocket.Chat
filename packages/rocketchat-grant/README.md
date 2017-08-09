@@ -6,5 +6,3 @@
 1. in callback it would create and / or log in a user
 1. without any specified sub configuration, it would redirect to localhost:3000 by default
 1. with a specified sub configuration it would redirect to a path and add access_token to the URL
-
-

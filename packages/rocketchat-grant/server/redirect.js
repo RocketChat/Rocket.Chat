@@ -1,70 +1,49 @@
-function getEntry(req) {
-	let provider;
-	let app;
+import { authenticate } from './authenticate';
+import Settings from './settings';
+import { routes } from './routes';
 
-	const i = req.url.indexOf('?');
-	let barePath;
-
-	if (i === -1) {
-		barePath = req.url;
-	} else {
-		barePath = req.url.substring(0, i);
-	}
-
-	const splitPath = barePath.split('/');
-
-	// Any non-oauth request will continue down the default
-	// middlewares.
-	if (splitPath[1] === '_oauth_apps') {
-		provider = splitPath[2];
-		app = splitPath && splitPath[3] !== 'callback' ? splitPath[3] : null;
-	}
-
-	return {
-		provider,
-		app
-	};
+function parseUrl(url, config) {
+	return url.replace(/\{[\ ]*(provider|accessToken|refreshToken|error)[\ ]*\}/g, (_, key) => config[key]);
 }
 
-function getAccessToken(req) {
-	const i = req.url.indexOf('?');
+function getAppConfig(providerName, appName) {
+	const providerConfig = Settings.get(providerName);
 
-	if (i === -1) {
-		return;
-	}
-
-	const barePath = req.url.substring(i + 1);
-	const splitPath = barePath.split('&');
-	const token = splitPath.find(p => p.match(/access_token=[a-zA-Z0-9]+/));
-
-	if (token) {
-		return token.replace('access_token=', '');
+	if (providerConfig) {
+		return Settings.apps.get(appName);
 	}
 }
 
-export function middleware(req, res, next) {
-	const {
-		provider,
-		app
-	} = getEntry(req);
+export async function middleware(req, res, next) {
+	const route = routes.appCallback(req);
 
-	if (!provider || !app) {
-		next();
-		return;
-	}
+	// handle app callback
+	if (route) {
+		const config = {
+			provider: route.provider
+		};
+		const appConfig = getAppConfig(route.provider, route.app);
 
-	console.log('provider', provider);
-	console.log('app', app);
+		if (appConfig) {
+			const {
+				redirectUrl,
+				errorUrl
+			} = appConfig;
 
-	// handle providers and apps
-	if (provider === 'github' && app === 'pwa') {
-		const token = getAccessToken(req);
-		console.log('token', token);
+			try {
+				const tokens = await authenticate(route.provider, req);
 
-		// TODO: get redirect URL from settings
-		const redirectUrl = 'http://localhost:4200/login';
+				config.accessToken = tokens.accessToken;
+				config.refreshToken = tokens.refreshToken;
 
-		res.redirect(`${ redirectUrl }?service=${ provider }&access_token=${ token }`);
+				res.redirect(parseUrl(redirectUrl, config));
+				return;
+			} catch (error) {
+				config.error = error.message;
+				res.redirect(parseUrl(errorUrl, config));
+				return;
+			}
+		}
 	}
 
 	next();

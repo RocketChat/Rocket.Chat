@@ -153,6 +153,9 @@ rocketchat:github-enterprise@0.0.1
 rocketchat:gitlab@0.0.1
 rocketchat:google-vision@0.0.1
 rocketchat:grant@0.0.1
+rocketchat:grant-facebook@0.0.1
+rocketchat:grant-github@0.0.1
+rocketchat:grant-google@0.0.1
 rocketchat:graphql@0.0.1
 rocketchat:highlight-words@0.0.1
 rocketchat:i18n@0.0.1

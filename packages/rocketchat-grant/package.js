@@ -9,8 +9,10 @@ Package.onUse(function(api) {
 	api.use([
 		'webapp',
 		'mongo',
+		'check',
 		'ecmascript',
-		'rocketchat:lib'
+		'rocketchat:lib',
+		'rocketchat:accounts'
 	]);
 
 	api.mainModule('server/index.js', 'server');
