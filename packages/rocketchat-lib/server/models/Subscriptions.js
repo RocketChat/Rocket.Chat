@@ -422,17 +422,19 @@ class ModelSubscriptions extends RocketChat.models._Base {
 			rid: roomId,
 			'u._id': {
 				$ne: userId
-			}
+			},
+			$or: [
+				{ alert: { $ne: true } },
+				{ open: { $ne: true } }
+			]
 		};
-		// TODO: test if is already open or alert when we find a best solution to update the last message on subscription
+
 		const update = {
 			$set: {
 				alert: true,
-				open: true,
-				lastActivity: new Date
+				open: true
 			}
 		};
-
 		return this.update(query, update, { multi: true });
 	}
 

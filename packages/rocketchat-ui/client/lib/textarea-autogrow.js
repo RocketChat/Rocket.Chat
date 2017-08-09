@@ -86,9 +86,7 @@
 				}
 			};
 
-			$self.change(update).keyup(update).keydown({
-				event: 'keydown'
-			}, update);
+			$self.on('focus, change, keyup, keydown, input', update);
 			$(window).resize(update);
 
 			update();

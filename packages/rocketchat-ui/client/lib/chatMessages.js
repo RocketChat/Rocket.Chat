@@ -7,7 +7,7 @@ this.ChatMessages = class ChatMessages {
 		this.records = {};
 		this.messageMaxSize = RocketChat.settings.get('Message_MaxAllowedSize');
 		this.wrapper = $(node).find('.wrapper');
-		this.input = $(node).find('.input-message').get(0);
+		this.input = this.input || $(node).find('.js-input-message').get(0);
 		this.$input = $(this.input);
 		this.hasValue = new ReactiveVar(false);
 		this.bindEvents();

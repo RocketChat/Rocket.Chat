@@ -2,7 +2,7 @@
 import moment from 'moment';
 import mime from 'mime-type/with-db';
 
-
+window.chatMessages = window.chatMessages || {};
 const socialSharing = (options = {}) => window.plugins.socialsharing.share(options.message, options.subject, options.file, options.link);
 
 const isSubscribed = _id => ChatSubscription.find({ rid: _id }).count() > 0;
@@ -785,16 +785,11 @@ Template.room.onDestroyed(function() {
 });
 
 Template.room.onRendered(function() {
-	window.chatMessages = window.chatMessages || {};
+
 	if (!window.chatMessages[Session.get('openedRoom')]) {
 		window.chatMessages[Session.get('openedRoom')] = new ChatMessages;
 	}
 	window.chatMessages[Session.get('openedRoom')].init(this.firstNode);
-
-	if (Meteor.Device.isDesktop()) {
-		setTimeout(() => $('.message-form .input-message').focus(), 100);
-	}
-
 	// ScrollListener.init()
 
 	const wrapper = this.find('.wrapper');

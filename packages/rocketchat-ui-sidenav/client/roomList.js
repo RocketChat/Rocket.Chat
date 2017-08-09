@@ -41,10 +41,18 @@ Template.roomList.helpers({
 			query.t = { $in: types };
 			query.f = { $ne: favoritesEnabled };
 		}
-
-
-
-		return ChatSubscription.find(query, { sort });
+		if (this.identifier === 'activity') {
+			const list = ChatSubscription.find(query).fetch().map(sub => {
+				const lm = RocketChat.models.Rooms.findOne(sub.rid, { fields: { _updatedAt: 1 }})._updatedAt;
+				return {
+					lm: lm && lm.toISOString(),
+					...sub
+				};
+			});
+			return _.sortBy(list, 'lm').reverse();
+		} else {
+			return ChatSubscription.find(query, { sort });
+		}
 	},
 
 	isLivechat() {
