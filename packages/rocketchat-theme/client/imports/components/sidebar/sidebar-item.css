@@ -119,8 +119,8 @@
 
 	&__picture {
 		display: flex;
+		flex: 0 0 var(--sidebar-item-thumb-size);
 
-		width: var(--sidebar-item-thumb-size);
 		margin-right: 6px;
 		align-items: center;
 	}

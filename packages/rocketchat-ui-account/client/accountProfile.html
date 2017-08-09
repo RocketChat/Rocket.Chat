@@ -18,17 +18,17 @@
 			{{> burger}}
 			<h2 style="flex: 1 1; white-space: nowrap;">{{_ "My Profile"}}</h2>
 			<div class="content" style="text-align: end; max-width: 649px;  flex: 1 1 100%">
-				<button class="rc-button rc-button--primary" name="send" type="submit" data-button="create" form="profile" {{canSave 'disabled'}}>Save Changes</button>
+				<button class="rc-button rc-button--primary" name="send" type="submit" data-button="create" form="profile" {{canSave 'disabled'}}>{{_ "Save_changes"}}</button>
 			</div>
 			<div style="flex: 1 1;"></div>
 		</header>
 		<div class="preferences-page__content">
 			<form id="profile" autocomplete="off" class="container">
 				<fieldset class="rc-form-legend">
-					<legend style="margin-bottom: 2.5rem;">Profile Details</legend>
+					<legend style="margin-bottom: 2.5rem;">{{_ "Profile_details"}}</legend>
 					<div>
 						<div class="rc-form-group">
-							<label class="rc-form-label">{{_ "Profile Picture"}}</label>
+							<label class="rc-form-label">{{_ "Profile_picture"}}</label>
 							<div class="rc-select-avatar">
 									<div class="rc-select-avatar__preview">
 									{{# unless avatarPreview}}

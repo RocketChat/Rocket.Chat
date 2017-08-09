@@ -1,12 +1,12 @@
 <template name="accountFlex">
 	<aside class="sidebar sidebar--light" role="navigation">
 		<header class="sidebar__header">
-			{{> accountBox lighten=true }}
+			{{> accountBox lighten=true modifier="--account" }}
 			<button class="sidebar-flex__back-button" data-action="back">
 				<svg class="sidebar-flex__back-icon">
 					<use xlink:href="#icon-arrow-back"></use>
 				</svg>
-				<span>Back to chat</span>
+				<span>{{_ "Back_to_chat"}}</span>
 			</button>
 		</header>
 		<div class="rooms-list">
