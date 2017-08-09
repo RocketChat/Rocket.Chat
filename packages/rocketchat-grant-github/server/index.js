@@ -32,8 +32,6 @@ export function getUser(accessToken) {
 	const emails = getEmails(accessToken);
 	const primaryEmail = (emails || []).find(email => email.primary === true);
 
-	console.log('identity', identity);
-
 	return {
 		id: identity.id,
 		email: identity.email || (primaryEmail && primaryEmail.email) || '',
