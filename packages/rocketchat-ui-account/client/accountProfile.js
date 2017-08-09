@@ -36,9 +36,6 @@ const loginWith = function(event, template) {
 };
 
 Template.accountProfile.helpers({
-	stringify(obj) {
-		return JSON.stringify(obj);
-	},
 	emailInvalid() {
 		return !validateEmail(Template.instance().email.get());
 	},

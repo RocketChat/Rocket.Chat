@@ -177,7 +177,6 @@ this.AutoComplete = class {
 	}
 
 	onKeyUp() {
-		// debugger;
 		if (!this.$element) {
 			return; //Don't try to do this while loading
 		}

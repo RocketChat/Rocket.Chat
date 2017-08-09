@@ -8,10 +8,6 @@ Template.accountFlex.helpers({
 	allowUserProfileChange() {
 		return RocketChat.settings.get('Accounts_AllowUserProfileChange');
 	},
-	allowUserAvatarChange() {
-		return RocketChat.settings.get('Accounts_AllowUserAvatarChange');
-	},
-
 	menuItem(name, icon, section, group) {
 		return {
 			name: t(name),
