@@ -1,14 +1,7 @@
-strong,
-b {
-	font-weight: bold !important;
-}
-
 *,
 *::before,
 *::after {
 	box-sizing: border-box;
-
-	font-weight: 500;
 }
 
 html {
