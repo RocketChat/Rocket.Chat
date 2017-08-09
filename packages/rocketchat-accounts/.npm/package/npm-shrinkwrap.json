@@ -46,8 +46,8 @@
       "from": "bufferjs@1.1.0"
     },
     "core-js": {
-      "version": "2.4.1",
-      "resolved": "https://registry.npmjs.org/core-js/-/core-js-2.4.1.tgz",
+      "version": "2.5.0",
+      "resolved": "https://registry.npmjs.org/core-js/-/core-js-2.5.0.tgz",
       "from": "core-js@>=2.4.0 <3.0.0"
     },
     "core-util-is": {
@@ -111,8 +111,8 @@
       "from": "joi@>=6.10.1 <7.0.0"
     },
     "jsonwebtoken": {
-      "version": "7.4.1",
-      "resolved": "https://registry.npmjs.org/jsonwebtoken/-/jsonwebtoken-7.4.1.tgz",
+      "version": "7.4.2",
+      "resolved": "https://registry.npmjs.org/jsonwebtoken/-/jsonwebtoken-7.4.2.tgz",
       "from": "jsonwebtoken@>=7.2.1 <8.0.0"
     },
     "jwa": {
