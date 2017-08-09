@@ -102,8 +102,32 @@
 	align-items: center;
 
 	& .emoji-filter {
+		position: relative;
+
 		width: 90%;
 		margin-bottom: 0;
+
+		& .search {
+			position: relative;
+
+			width: 100%;
+			height: 35px;
+			padding: 2px 8px;
+
+			border-width: 1px;
+			border-style: solid;
+			border-radius: 5px;
+			outline: none;
+
+			line-height: normal;
+			appearance: none;
+		}
+
+		& .icon-search {
+			position: absolute;
+			top: 10px;
+			left: 7px;
+		}
 	}
 
 	& .change-tone {

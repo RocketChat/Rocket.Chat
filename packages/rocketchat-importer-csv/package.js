@@ -17,5 +17,5 @@ Package.onUse(function(api) {
 });
 
 Npm.depends({
-	'csv-parse': '1.1.7'
+	'csv-parse': '1.2.0'
 });
