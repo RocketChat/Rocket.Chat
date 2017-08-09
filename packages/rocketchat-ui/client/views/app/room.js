@@ -294,6 +294,14 @@ Template.room.helpers({
 			};
 		});
 		return { buttons };
+	},
+	hideLeaderHeader() {
+		return Template.instance().hideLeaderHeader.get() ? 'animated-hidden' : '';
+	},
+	hasLeader() {
+		if (RoomRoles.findOne({ rid: this._id, roles: 'leader', 'u._id': { $ne: Meteor.userId() } }, { fields: { _id: 1 } })) {
+			return 'has-leader';
+		}
 	}
 });
 

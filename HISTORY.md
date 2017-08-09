@@ -16,8 +16,6 @@
 <a name="0.57.1"></a>
 ## 0.57.1 (2017-07-06)
 - :hand: [#7428](https://github.com/RocketChat/Rocket.Chat/pull/7428) Fix migration of avatars from version 0.57.0
-<a name="0.57.0-rc.3"></a>
-# 0.57.0-rc.3 (2017-06-28)
 
 <details>
 <summary>Others</summary>
