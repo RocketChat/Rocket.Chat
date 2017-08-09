@@ -64,20 +64,8 @@ Template.adminFlex.helpers({
 });
 
 Template.adminFlex.events({
-	'mouseenter header'() {
-		SideNav.overArrow();
-	},
-	'mouseleave header'() {
-		SideNav.leaveArrow();
-	},
 	'click [data-action="back"]'() {
 		SideNav.closeFlex();
-	},
-	'click .cancel-settings'() {
-		SideNav.closeFlex();
-	},
-	'click .admin-link'() {
-		menu.close();
 	},
 	'keyup [name=settings-search]'(e, t) {
 		t.settingsFilter.set(e.target.value);
