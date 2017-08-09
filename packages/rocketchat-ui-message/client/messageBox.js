@@ -517,12 +517,13 @@ Template.messageBox.events({
 });
 
 Template.messageBox.onRendered(function() {
-	this.$('.js-input-message').autogrow({
+	chatMessages[RocketChat.openedRoom] = chatMessages[RocketChat.openedRoom] || new ChatMessages;
+	chatMessages[RocketChat.openedRoom].input = this.$('.js-input-message').autogrow({
 		animate: true,
 		onInitialize: true
 	}).on('autogrow', () => {
 		this.data && this.data.onResize && this.data.onResize();
-	});
+	}).focus()[0];
 });
 
 Template.messageBox.onCreated(function() {
@@ -552,7 +553,7 @@ Template.messageBox.onCreated(function() {
 
 Meteor.startup(function() {
 	RocketChat.Geolocation = new ReactiveVar(false);
-	return Tracker.autorun(function() {
+	Tracker.autorun(function() {
 		const MapView_GMapsAPIKey = RocketChat.settings.get('MapView_GMapsAPIKey');
 		if (RocketChat.settings.get('MapView_Enabled') === true && MapView_GMapsAPIKey && MapView_GMapsAPIKey.length && navigator.geolocation && navigator.geolocation.getCurrentPosition) {
 			const success = (position) => {
@@ -571,5 +572,10 @@ Meteor.startup(function() {
 		} else {
 			return RocketChat.Geolocation.set(false);
 		}
+	});
+	RocketChat.callbacks.add('enter-room', function() {
+		setTimeout(()=> {
+			chatMessages[RocketChat.openedRoom].input.focus();
+		}, 200);
 	});
 });
