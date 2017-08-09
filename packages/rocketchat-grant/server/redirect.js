@@ -1,6 +1,7 @@
 import { authenticate } from './authenticate';
 import Settings from './settings';
 import { routes } from './routes';
+import { GrantError } from './error';
 
 function parseUrl(url, config) {
 	return url.replace(/\{[\ ]*(provider|accessToken|refreshToken|error)[\ ]*\}/g, (_, key) => config[key]);
@@ -39,7 +40,10 @@ export async function middleware(req, res, next) {
 				res.redirect(parseUrl(redirectUrl, config));
 				return;
 			} catch (error) {
-				config.error = error.message;
+				config.error = error instanceof GrantError ? error.message : 'Something went wrong';
+
+				console.error(error);
+
 				res.redirect(parseUrl(errorUrl, config));
 				return;
 			}

@@ -1,4 +1,4 @@
-import { Providers } from 'meteor/rocketchat:grant';
+import { Providers, GrantError } from 'meteor/rocketchat:grant';
 import { HTTP } from 'meteor/http';
 
 const userAgent = 'Meteor';
@@ -13,10 +13,7 @@ function getIdentity(accessToken) {
 				}
 			}).data;
 	} catch (err) {
-		throw Object.assign(
-			new Error(`Failed to fetch identity from Google. ${ err.message }`),
-			{ response: err.response }
-		);
+		throw new GrantError(`Failed to fetch identity from Google. ${ err.message }`);
 	}
 }
 
@@ -32,10 +29,8 @@ export function getUser(accessToken) {
 		id: identity.id,
 		email: identity.email,
 		username,
-		profile: {
-			name: identity.name,
-			avatar: identity.picture
-		}
+		name: identity.name,
+		avatar: identity.picture
 	};
 }
 

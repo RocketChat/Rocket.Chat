@@ -1,4 +1,4 @@
-import { Providers } from 'meteor/rocketchat:grant';
+import { Providers, GrantError } from 'meteor/rocketchat:grant';
 import { HTTP } from 'meteor/http';
 
 const userAgent = 'Meteor';
@@ -11,10 +11,7 @@ function getIdentity(accessToken) {
 				params: { access_token: accessToken }
 			}).data;
 	} catch (err) {
-		throw Object.assign(
-			new Error(`Failed to fetch identity from Github. ${ err.message }`),
-			{ response: err.response }
-		);
+		throw new GrantError(`Failed to fetch identity from Github. ${ err.message }`);
 	}
 }
 
@@ -35,15 +32,15 @@ export function getUser(accessToken) {
 	const emails = getEmails(accessToken);
 	const primaryEmail = (emails || []).find(email => email.primary === true);
 
+	console.log('identity', identity);
+
 	return {
 		id: identity.id,
 		email: identity.email || (primaryEmail && primaryEmail.email) || '',
 		username: identity.login,
 		emails,
-		profile: {
-			name: identity.name,
-			avatar: identity.avatar_url
-		}
+		name: identity.name,
+		avatar: identity.avatar_url
 	};
 }
 

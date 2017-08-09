@@ -1,6 +1,7 @@
 import { AccountsServer } from 'meteor/rocketchat:accounts';
 import { Accounts } from 'meteor/accounts-base';
 
+import { GrantError } from './error';
 import Providers from './providers';
 
 const findUserByOAuthId = (providerName, id) => {
@@ -40,10 +41,12 @@ export async function authenticate(providerName, req) {
 	const provider = Providers.get(providerName);
 
 	if (!provider) {
-		throw new Error(`Provider '${ providerName }' not found`);
+		throw new GrantError(`Provider '${ providerName }' not found`);
 	}
 
 	const userData = provider.getUser(accessToken);
+
+	console.log('userData', userData);
 
 	let user = findUserByOAuthId(providerName, userData.id);
 
@@ -64,16 +67,18 @@ export async function authenticate(providerName, req) {
 		tokens = loginResult.tokens;
 	} else {
 		const id = Accounts.createUser({
-			email: userData.email
+			email: userData.email,
+			username: userData.username
 		});
 
 		RocketChat.models.Users.setProfile(id, {
-			name: userData.profile.name,
-			avatar: userData.profile.avatar,
+			avatar: userData.avatar,
 			oauth: {
 				[providerName]: userData.id
 			}
 		});
+
+		RocketChat.models.Users.setName(id, userData.name);
 
 		const loginResult = await AccountsServer.loginWithUser({ id });
 

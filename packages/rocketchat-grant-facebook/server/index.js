@@ -1,4 +1,4 @@
-import { Providers } from 'meteor/rocketchat:grant';
+import { Providers, GrantError } from 'meteor/rocketchat:grant';
 import { HTTP } from 'meteor/http';
 
 const userAgent = 'Meteor';
@@ -15,11 +15,7 @@ function getIdentity(accessToken, fields) {
 				}
 			}).data;
 	} catch (err) {
-		console.log('err', err);
-		throw Object.assign(
-			new Error(`Failed to fetch identity from Facebook. ${ err.message }`),
-			{ response: err.response }
-		);
+		throw new GrantError(`Failed to fetch identity from Facebook. ${ err.message }`);
 	}
 }
 
@@ -37,10 +33,7 @@ function getPicture(accessToken) {
 				}
 			}).data;
 	} catch (err) {
-		throw Object.assign(
-			new Error(`Failed to fetch profile picture from Facebook. ${ err.message }`),
-			{ response: err.response }
-		);
+		throw new GrantError(`Failed to fetch profile picture from Facebook. ${ err.message }`);
 	}
 }
 
@@ -54,10 +47,8 @@ export function getUser(accessToken) {
 		id: identity.id,
 		email: identity.email,
 		username,
-		profile: {
-			name: `${ identity.first_name } ${ identity.last_name }`,
-			avatar: avatar.data.url
-		}
+		name: `${ identity.first_name } ${ identity.last_name }`,
+		avatar: avatar.data.url
 	};
 }
 
