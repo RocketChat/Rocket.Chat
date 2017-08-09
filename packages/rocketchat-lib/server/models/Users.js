@@ -148,6 +148,9 @@ class ModelUsers extends RocketChat.models._Base {
 						},
 						{
 							name: termRegex
+						},
+						{
+							'emails.address': termRegex
 						}
 					]
 				},
@@ -207,16 +210,6 @@ class ModelUsers extends RocketChat.models._Base {
 		return this.find(query, options);
 	}
 
-	findUsersByUsernames(usernames, options) {
-		const query = {
-			username: {
-				$in: usernames
-			}
-		};
-
-		return this.find(query, options);
-	}
-
 	getLastLogin(options) {
 		if (options == null) { options = {}; }
 		const query = { lastLogin: { $exists: 1 } };
@@ -226,9 +219,11 @@ class ModelUsers extends RocketChat.models._Base {
 		return user && user.lastLogin;
 	}
 
-	getUsersWithPasswordChanged(fromDate, options) {
+	findUsersByUsernames(usernames, options) {
 		const query = {
-			'passwordChangeHistory.changedAt': {$gte: fromDate, $lte: new Date()}
+			username: {
+				$in: usernames
+			}
 		};
 
 		return this.find(query, options);
