@@ -28,7 +28,7 @@
 						</svg>
 					</div>
 					<textarea autofocus dir="auto" name="msg" maxlength="{{maxMessageLength}}" placeholder="{{_ 'Message'}}" rows="1" class="rc-message-box__textarea js-input-message autogrow-short"></textarea>
-					{{# if sendIcon}}
+					{{#if sendIcon}}
 						<div class="rc-message-box__icon js-send">
 							<svg class="rc-input__icon-svg rc-input__icon-svg--smile">
 								<use xlink:href="#icon-send"></use>
@@ -75,18 +75,23 @@
 
 					{{/if}}
 				</label>
-				<div class="rc-message-box__toolbar-markdown">
-					<!--{{#if katexSyntax}}
-									<span><a href="https://github.com/Khan/KaTeX/wiki/Function-Support-in-KaTeX" target="_blank">{{katexSyntax}}</a></span>
-								{{/if}}-->
-					{{#each mdButtons}}
-						<button class="rc-message-box__toolbar-markdown-item rc-tooltip js-md" aria-label={{_ label}}>
-							<svg class="rc-message-box__toolbar-markdown-icon rc-message-box__toolbar-markdown-icon--{{label}}">
-								<use xlink:href="#icon-md-{{label}}"></use>
-							</svg>
-						</button>
-					{{/each}}
-				</div>
+				{{#if showFormattingTips}}
+					<div class="rc-message-box__toolbar-markdown">
+						{{#each mdButtons}}
+							<button class="rc-message-box__toolbar-markdown-item rc-tooltip js-md" aria-label={{_ label}} data-link="{{link}}">
+								{{#if icon}}
+									<svg class="rc-message-box__toolbar-markdown-icon rc-message-box__toolbar-markdown-icon--{{icon}}">
+										<use xlink:href="#icon-md-{{icon}}"></use>
+									</svg>
+								{{else}}
+									{{#if link}}
+										<a href="{{link}}" target="_blank" class="rc-message-box__toolbar-markdown-link">{{label}}</a>
+									{{/if}}
+								{{/if}}
+							</button>
+						{{/each}}
+					</div>
+				{{/if}}
 			{{else}}
 				<div class="stream-info">
 					{{#if isBlockedOrBlocker}}
