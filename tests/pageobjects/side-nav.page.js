@@ -8,7 +8,7 @@ class SideNav extends Page {
 	get saveChannelBtn() { return browser.element('.create-channel__content button[data-button="create"]'); }
 
 	// Account box
-	get accountBoxUserName() { return browser.element('.sidebar__account-name'); }
+	get accountBoxUserName() { return browser.element('.sidebar__account-username'); }
 	get accountBoxUserAvatar() { return browser.element('.sidebar__account .avatar-image'); }
 	get accountStatus() { return browser.element('.sidebar__account-status'); }
 	get popOverContent() { return browser.element('.rc-popover__content'); }
