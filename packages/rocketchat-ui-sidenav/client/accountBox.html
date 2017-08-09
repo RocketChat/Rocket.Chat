@@ -2,13 +2,13 @@
 	<div class="sidebar__account {{#if lighten}}sidebar__account--lighten{{/if}}" aria-label="{{_ "Account"}}" role="region">
 		{{#with myUserInfo}}
 			{{#if username}}
-				<label class="sidebar__account-label" for="sidebar__account-menu" data-popover="label">
+				<label class="sidebar__account-label" for="sidebar__account-menu-{{../id}}" data-popover="label">
 					<div class="sidebar__account-thumb" data-status='{{visualStatus}}'>
 						{{> avatar username=username}}
 					</div>
 					<div class="sidebar__account-data">
 						<h3 class="sidebar__account-username {{#if ../lighten}}sidebar__account-username--lighten{{/if}}" data-username="{{username}}">@{{username}}</h3>
-						<input id="sidebar__account-menu" type="checkbox" class="rc-popover-anchor" data-popover="anchor" {{isAnonymous}}>
+						<input id="sidebar__account-menu-{{../id}}" type="checkbox" class="rc-popover-anchor" data-popover="anchor" {{isAnonymous}}>
 						<div class="rc-popover" data-popover="popover">
 							<div class="rc-popover__content">
 								<div class="rc-popover__column">
