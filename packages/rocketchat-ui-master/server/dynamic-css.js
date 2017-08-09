@@ -150,6 +150,7 @@ export default () => {
 	}, 100);
 
 	DynamicCss = typeof DynamicCss !=='undefined'? DynamicCss : {};
+	DynamicCss.test = () => window.CSS && window.CSS.supports && window.CSS.supports('(--foo: red)');
 	DynamicCss.run = debounce((replace = false) => {
 		if (replace) {
 			document.querySelector('#css-variables').innerHTML = RocketChat.settings.get('theme-custom-variables');

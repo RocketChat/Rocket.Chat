@@ -1,11 +1,6 @@
 /* globals fileUpload KonchatNotification chatMessages */
 import toastr from 'toastr';
-
-import mime from 'mime-type/with-db';
-
 import moment from 'moment';
-
-//import {VRecDialog} from 'meteor/rocketchat:ui-vrecord';
 
 function katexSyntax() {
 	if (RocketChat.katex.katex_enabled()) {
@@ -20,6 +15,10 @@ function katexSyntax() {
 }
 
 function applyMd(e, t) {
+	if (e.currentTarget.dataset.link) {
+		return false;
+	}
+
 	e.preventDefault();
 	const box = t.find('.js-input-message');
 	const {selectionEnd = box.value.length, selectionStart = 0} = box;
@@ -83,37 +82,44 @@ function applyMd(e, t) {
 const markdownButtons = [
 	{
 		label: 'bold',
+		icon: 'bold',
 		pattern: '*{{text}}*',
-		group: 'showMarkdown',
-		command: 'b'
+		command: 'b',
+		condition: () => RocketChat.Markdown
 	},
 	{
 		label: 'italic',
+		icon: 'italic',
 		pattern: '_{{text}}_',
-		group: 'showMarkdown',
-		command: 'i'
+		command: 'i',
+		condition: () => RocketChat.Markdown
 	},
 	{
 		label: 'strike',
+		icon: 'strike',
 		pattern: '~{{text}}~',
-		group: 'showMarkdown'
+		condition: () => RocketChat.Markdown
 	},
 	{
 		label: 'inline_code',
+		icon: 'inline-code',
 		pattern: '`{{text}}`',
-		group: 'showMarkdownCode'
+		condition: () => RocketChat.Markdown
 	},
 	{
 		label: 'multi_line',
+		icon: 'multi-line',
 		pattern: '```\n{{text}}\n``` ',
-		group: 'showMarkdownCode'
+		condition: () => RocketChat.MarkdownCode
+	},
+	{
+		label: katexSyntax,
+		link: 'https://github.com/Khan/KaTeX/wiki/Function-Support-in-KaTeX',
+		condition: () => RocketChat.katex
 	}
 ];
 
 Template.messageBox.helpers({
-	toString(obj) {
-		return JSON.stringify(obj);
-	},
 	columns() {
 		const groups = RocketChat.messageBox.actions.get();
 		const sorted = Object.keys(groups).sort((a, b) => groups[b].length - groups[a].length);
@@ -138,7 +144,7 @@ Template.messageBox.helpers({
 		return columns;
 	},
 	mdButtons() {
-		return markdownButtons;
+		return markdownButtons.filter(button => !button.condition || button.condition());
 	},
 	roomName() {
 		const roomData = Session.get(`roomData${ this._id }`);
@@ -158,20 +164,8 @@ Template.messageBox.helpers({
 			return roomData.name;
 		}
 	},
-	showMarkdown() {
-		return RocketChat.Markdown;
-	},
-	showMarkdownCode() {
-		return RocketChat.MarkdownCode;
-	},
-	showKatex() {
-		return RocketChat.katex;
-	},
-	katexSyntax() {
-		return katexSyntax();
-	},
 	showFormattingTips() {
-		return RocketChat.settings.get('Message_ShowFormattingTips') && (RocketChat.Markdown || RocketChat.MarkdownCode || katexSyntax());
+		return RocketChat.settings.get('Message_ShowFormattingTips');
 	},
 	canJoin() {
 		return Meteor.userId() && RocketChat.roomTypes.verifyShowJoinLink(this._id);
@@ -261,46 +255,9 @@ Template.messageBox.helpers({
 			return 'hidden';
 		}
 	},
-	fileUploadEnabled() {
-		return RocketChat.settings.get('FileUpload_Enabled');
-	},
-	fileUploadAllowedMediaTypes() {
-		return RocketChat.settings.get('FileUpload_MediaTypeWhiteList');
-	},
-	showFileUpload() {
-		let roomData;
-		if (RocketChat.settings.get('FileUpload_Enabled')) {
-			roomData = Session.get(`roomData${ this._id }`);
-			if (roomData && roomData.t === 'd') {
-				return RocketChat.settings.get('FileUpload_Enabled_Direct');
-			} else {
-				return true;
-			}
-		} else {
-			return RocketChat.settings.get('FileUpload_Enabled');
-		}
-	},
-	showMic() {
-		return Template.instance().showMicButton.get();
-	},
-	showVRec() {
-		return Template.instance().showVideoRec.get();
-	},
-	showSend() {
-		if (!Template.instance().isMessageFieldEmpty.get()) {
-			return 'show-send';
-		}
-	},
-	showLocation() {
-		return RocketChat.Geolocation.get() !== false;
-	},
 	notSubscribedTpl() {
 		return RocketChat.roomTypes.getNotSubscribedTpl(this._id);
 	},
-	showSandstorm() {
-		return Meteor.settings['public'].sandstorm && !Meteor.isCordova;
-	},
-
 	anonymousRead() {
 		return (Meteor.userId() == null) && RocketChat.settings.get('Accounts_AllowAnonymousRead') === true;
 	},
@@ -462,54 +419,6 @@ Template.messageBox.events({
 	'click .editing-commands-save > button'() {
 		return chatMessages[this._id].send(this._id, chatMessages[this._id].input);
 	},
-	'change .message-form input[type=file]'(event) {
-		const e = event.originalEvent || event;
-		let files = e.target.files;
-		if (!files || files.length === 0) {
-			files = (e.dataTransfer && e.dataTransfer.files) || [];
-		}
-		const filesToUpload = [...files].map(file => {
-			// `file.type = mime.lookup(file.name)` does not work.
-			Object.defineProperty(file, 'type', {
-				value: mime.lookup(file.name)
-			});
-			return {
-				file,
-				name: file.name
-			};
-		});
-		return fileUpload(filesToUpload);
-	},
-	'click .message-buttons.share'(e, t) {
-		t.$('.share-items').toggleClass('hidden');
-		return t.$('.message-buttons.share').toggleClass('active');
-	},
-	'click .sandstorm-offer'() {
-		const roomId = this._id;
-		return RocketChat.Sandstorm.request('uiView', (err, data) => {
-			if (err || !data.token) {
-				console.error(err);
-				return;
-			}
-			return Meteor.call('sandstormClaimRequest', data.token, data.descriptor, function(err, viewInfo) {
-				if (err) {
-					console.error(err);
-					return;
-				}
-				Meteor.call('sendMessage', {
-					_id: Random.id(),
-					rid: roomId,
-					msg: '',
-					urls: [
-						{
-							url: 'grain://sandstorm',
-							sandstormViewInfo: viewInfo
-						}
-					]
-				});
-			});
-		});
-	},
 	'click .js-md'(e, t) {
 		applyMd.apply(this, [e, t]);
 	}
@@ -528,27 +437,7 @@ Template.messageBox.onRendered(function() {
 
 Template.messageBox.onCreated(function() {
 	this.isMessageFieldEmpty = new ReactiveVar(true);
-	this.showMicButton = new ReactiveVar(false);
-	this.showVideoRec = new ReactiveVar(false);
-	this.showVideoRec = new ReactiveVar(false);
 	this.sendIcon = new ReactiveVar(false);
-
-	return this.autorun(() => {
-		const videoRegex = /video\/webm|video\/\*/i;
-		const videoEnabled = !RocketChat.settings.get('FileUpload_MediaTypeWhiteList') || RocketChat.settings.get('FileUpload_MediaTypeWhiteList').match(videoRegex);
-		if (RocketChat.settings.get('Message_VideoRecorderEnabled') && ((navigator.getUserMedia != null) || (navigator.webkitGetUserMedia != null)) && videoEnabled && RocketChat.settings.get('FileUpload_Enabled')) {
-			this.showVideoRec.set(true);
-		} else {
-			this.showVideoRec.set(false);
-		}
-		const wavRegex = /audio\/wav|audio\/\*/i;
-		const wavEnabled = !RocketChat.settings.get('FileUpload_MediaTypeWhiteList') || RocketChat.settings.get('FileUpload_MediaTypeWhiteList').match(wavRegex);
-		if (RocketChat.settings.get('Message_AudioRecorderEnabled') && ((navigator.getUserMedia != null) || (navigator.webkitGetUserMedia != null)) && wavEnabled && RocketChat.settings.get('FileUpload_Enabled')) {
-			return this.showMicButton.set(true);
-		} else {
-			return this.showMicButton.set(false);
-		}
-	});
 });
 
 Meteor.startup(function() {

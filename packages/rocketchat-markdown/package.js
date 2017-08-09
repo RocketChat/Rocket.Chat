@@ -18,13 +18,3 @@ Package.onUse(function(api) {
 	api.addFiles('markdown.js');
 	api.addFiles('markdowncode.js');
 });
-
-Package.onTest(function(api) {
-	api.use([
-		'sanjo:jasmine@0.20.2',
-		'rocketchat:lib',
-		'rocketchat:markdown'
-	]);
-
-	api.addFiles('tests/jasmine/client/unit/markdown.spec.js', 'client');
-});
