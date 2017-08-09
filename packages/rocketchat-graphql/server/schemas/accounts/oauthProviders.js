@@ -21,8 +21,6 @@ export const resolver = {
 		oauthProviders: async() => {
 			// depends on rocketchat:grant package
 			try {
-				const url = Meteor.absoluteUrl('_oauth_apps/providers');
-				console.log('url', url);
 				const result = HTTP.get(Meteor.absoluteUrl('_oauth_apps/providers')).content;
 
 				if (isJSON(result)) {

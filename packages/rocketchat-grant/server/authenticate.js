@@ -46,8 +46,6 @@ export async function authenticate(providerName, req) {
 
 	const userData = provider.getUser(accessToken);
 
-	console.log('userData', userData);
-
 	let user = findUserByOAuthId(providerName, userData.id);
 
 	if (user) {
@@ -77,8 +75,8 @@ export async function authenticate(providerName, req) {
 				[providerName]: userData.id
 			}
 		});
-
 		RocketChat.models.Users.setName(id, userData.name);
+		RocketChat.models.Users.setEmailVerified(id, userData.email);
 
 		const loginResult = await AccountsServer.loginWithUser({ id });
 
