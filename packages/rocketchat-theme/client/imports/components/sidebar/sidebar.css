@@ -10,6 +10,8 @@
 
 	height: 100%;
 
+	user-select: none;
+
 	transition: transform 0.3s;
 
 	background-color: var(--sidebar-background);
