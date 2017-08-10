@@ -396,8 +396,11 @@ this.ChatMessages = class ChatMessages {
 			this.startTyping(rid, input);
 		}
 
-		// Ctrl + Shift + V
-		if (event.ctrlKey && event.shiftKey && (event.keyCode === 86)) {
+		const ctrlOrCommandKey = navigator && navigator.platform && navigator.platform.indexOf('Mac') !== -1 ? (event.metaKey || event.keyCode === 91) : event.ctrlKey;
+		const shiftKey = navigator && navigator.platform && navigator.platform.indexOf('Mac') !== -1 ? (event.shiftKey || event.keyCode === 16) : event.shiftKey;
+
+		// Ctrl/Command + Shift + V
+		if (ctrlOrCommandKey && shiftKey && event.keyCode === 86) {
 			event.target.value = `\`\`\`${ event.target.value }\`\`\``;
 			return true;
 		}
