@@ -136,6 +136,11 @@
 			width: 12px;
 			height: 16px;
 		}
+
+		&--livechat {
+			width: 15px;
+			height: 15px;
+		}
 	}
 
 	&__item-text {
