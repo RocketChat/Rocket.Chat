@@ -105,6 +105,7 @@ Template.body.onRendered(function() {
 	}
 });
 
+RocketChat.mainReady = new ReactiveVar(false);
 Template.main.helpers({
 	siteName() {
 		return RocketChat.settings.get('Site_Name');
@@ -132,6 +133,9 @@ Template.main.helpers({
 		const settingsReady = RocketChat.settings.cachedCollection.ready.get();
 		const ready = (Meteor.userId() == null) || (routerReady && subscriptionsReady && settingsReady);
 		RocketChat.CachedCollectionManager.syncEnabled = ready;
+		Meteor.defer(() => {
+			RocketChat.mainReady.set(ready);
+		});
 		return ready;
 	},
 	hasUsername() {
