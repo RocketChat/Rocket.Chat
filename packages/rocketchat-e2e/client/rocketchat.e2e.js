@@ -121,9 +121,9 @@ class E2E {
 RocketChat.E2E = new E2E();
 
 Meteor.startup(function() {
-	RocketChat.E2E.startClient();
 	Tracker.autorun(function() {
 		if (Meteor.userId()) {
+			RocketChat.E2E.startClient();
 			RocketChat.Notifications.onUser('e2e', (type, data) => {
 				if (!data.roomId || !data.userId || data.userId === Meteor.userId()) {
 					return;
