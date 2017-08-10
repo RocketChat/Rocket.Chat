@@ -75,7 +75,7 @@ localstorage@1.1.1
 logging@1.1.17
 matb33:collection-hooks@0.8.4
 mdg:validation-error@0.5.1
-meteor@1.7.0
+meteor@1.7.1
 meteor-base@1.1.0
 meteor-developer-oauth@1.2.0
 meteorhacks:inject-initial@1.0.4
@@ -90,7 +90,7 @@ mobile-experience@1.0.4
 mobile-status-bar@1.0.14
 modules@0.9.2
 modules-runtime@0.8.0
-mongo@1.1.19
+mongo@1.1.22
 mongo-id@1.0.6
 mongo-livedata@1.0.12
 mrt:reactive-store@0.0.1
@@ -98,7 +98,7 @@ mystor:device-detection@0.2.0
 nimble:restivus@0.8.12
 nooitaf:colors@1.1.2_1
 npm-bcrypt@0.9.3
-npm-mongo@2.2.24
+npm-mongo@2.2.30
 oauth@1.1.13
 oauth1@1.1.11
 oauth2@1.1.11
