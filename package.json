@@ -113,6 +113,7 @@
 		"photoswipe": "^4.1.2",
 		"prom-client": "^10.0.3",
 		"semver": "^5.4.1",
-		"toastr": "^2.1.2"
+		"toastr": "^2.1.2",
+		"wolfy87-eventemitter": "^5.1.0"
 	}
 }
