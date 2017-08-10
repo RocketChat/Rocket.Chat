@@ -23,6 +23,7 @@ Package.onUse(function(api) {
 	api.addFiles('client/admin.html', 'client');
 	api.addFiles('client/adminFlex.html', 'client');
 	api.addFiles('client/adminInfo.html', 'client');
+	api.addFiles('client/adminApps.html', 'client');
 
 	api.addFiles('client/rooms/adminRooms.html', 'client');
 	api.addFiles('client/rooms/adminRoomInfo.html', 'client');
