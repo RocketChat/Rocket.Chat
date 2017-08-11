@@ -12,7 +12,7 @@ RocketChat.TabBar.addButton({
 	groups: ['live'],
 	id: 'visitor-info',
 	i18nTitle: 'Visitor_Info',
-	icon: 'icon-info-circled',
+	icon: 'info-circled',
 	template: 'visitorInfo',
 	order: 0
 });
@@ -30,7 +30,7 @@ RocketChat.TabBar.addButton({
 	groups: ['live'],
 	id: 'visitor-history',
 	i18nTitle: 'Past_Chats',
-	icon: 'icon-chat',
+	icon: 'chat',
 	template: 'visitorHistory',
 	order: 11
 });
@@ -45,7 +45,7 @@ RocketChat.TabBar.addButton({
 	groups: ['live'],
 	id: 'external-search',
 	i18nTitle: 'Knowledge_Base',
-	icon: 'icon-lightbulb',
+	icon: 'lightbulb',
 	template: 'externalSearch',
 	order: 10
 });

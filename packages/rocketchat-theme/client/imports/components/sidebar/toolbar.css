@@ -77,4 +77,8 @@
 		border-color: #414852;
 		background-color: var(--color-darkest);
 	}
+
+	& .rc-button--square {
+		padding: 10px;
+	}
 }

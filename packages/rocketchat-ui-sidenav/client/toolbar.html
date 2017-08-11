@@ -6,15 +6,11 @@
 					<label class="rc-input__label">
 						<div class="rc-input__wrapper">
 							<div class="rc-input__icon">
-								<svg class="rc-input__icon-svg rc-input__icon-svg--magnifier">
-									<use xlink:href="#icon-magnifier"></use>
-								</svg>
+								{{> icon block="rc-input__icon-svg" icon="magnifier"}}
 							</div>
 							<input type="text" class="rc-input__element rc-input__element--small" placeholder="{{getPlaceholder}}">
 							<div class="rc-input__icon rc-input__icon--right">
-								<svg class="rc-input__icon-svg rc-input__icon-svg--cross">
-									<use xlink:href="#icon-cross"></use>
-								</svg>
+								{{> icon block="rc-input__icon-svg" icon="cross"}}
 							</div>
 						</div>
 					</label>
@@ -22,9 +18,7 @@
 			</div>
 			{{#if canCreate}}
 				<button class="rc-button rc-button--square rc-tooltip" aria-label="{{ _ 'Create_A_New_Channel' }}">
-					<svg class="toolbar__icon toolbar__search-create-channel">
-						<use xlink:href="#icon-plus"></use>
-					</svg>
+					{{> icon block="toolbar__icon" icon="plus" classes="toolbar__search-create-channel"}}
 				</button>
 			{{/if}}
 		</form>

@@ -23,16 +23,12 @@
 				{{> messagePopupConfig getPopupConfig}}
 				<label class="rc-message-box__container">
 					<div class="rc-message-box__icon emoji-picker-icon">
-						<svg class="rc-input__icon-svg rc-input__icon-svg--smile">
-							<use xlink:href="#icon-smile"></use>
-						</svg>
+						{{> icon block="rc-input__icon-svg" icon="smile"}}
 					</div>
 					<textarea autofocus dir="auto" name="msg" maxlength="{{maxMessageLength}}" placeholder="{{_ 'Message'}}" rows="1" class="rc-message-box__textarea js-input-message autogrow-short"></textarea>
 					{{#if sendIcon}}
 						<div class="rc-message-box__icon js-send">
-							<svg class="rc-input__icon-svg rc-input__icon-svg--smile">
-								<use xlink:href="#icon-send"></use>
-							</svg>
+							{{> icon block="rc-input__icon-svg" icon="smile"}}
 						</div>
 					{{else}}
 						<label class="rc-message-box__action-label" for="rc-message-box__action-input" data-popover="label">
@@ -49,9 +45,7 @@
 														<li class="rc-popover__item" data-action="open" data-open="account">
 															<span class="rc-popover__icon">
 																{{#if icon}}
-																	<svg class="rc-popover__icon-element rc-popover__icon-element--{{icon}}">
-																		<use xlink:href="#icon-{{icon}}"></use>
-																	</svg>
+																	{{> icon block="rc-popover__icon-element" icon="{{icon}}"}}
 																{{/if}}
 															</span>
 															<span class="rc-popover__item-text">{{_ label}}</span>
@@ -66,9 +60,7 @@
 						</div>
 							{{#if columns}}
 								<div class="rc-message-box__icon">
-									<svg class="rc-input__icon-svg rc-input__icon-svg--plus">
-										<use xlink:href="#icon-plus"></use>
-									</svg>
+									{{> icon block="rc-input__icon-svg" icon="plus"}}
 								</div>
 							{{/if}}
 						</label>
@@ -80,9 +72,7 @@
 						{{#each mdButtons}}
 							<button class="rc-message-box__toolbar-markdown-item rc-tooltip js-md" aria-label={{_ label}} data-link="{{link}}">
 								{{#if icon}}
-									<svg class="rc-message-box__toolbar-markdown-icon rc-message-box__toolbar-markdown-icon--{{icon}}">
-										<use xlink:href="#icon-md-{{icon}}"></use>
-									</svg>
+									{{> icon block="rc-message-box__toolbar-markdown-icon" icon=icon }}
 								{{else}}
 									{{#if link}}
 										<a href="{{link}}" target="_blank" class="rc-message-box__toolbar-markdown-link">{{label}}</a>

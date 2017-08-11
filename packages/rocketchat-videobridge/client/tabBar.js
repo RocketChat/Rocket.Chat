@@ -5,7 +5,7 @@ Meteor.startup(function() {
 				groups: ['direct', 'group'],
 				id: 'video',
 				i18nTitle: 'Video Chat',
-				icon: 'icon-videocam',
+				icon: 'videocam',
 				iconColor: 'red',
 				template: 'videoFlexTab',
 				width: 600,

@@ -46,7 +46,7 @@ Template.adminSounds.onCreated(function() {
 		groups: ['custom-sounds', 'custom-sounds-selected'],
 		id: 'add-sound',
 		i18nTitle: 'Custom_Sound_Add',
-		icon: 'icon-plus',
+		icon: 'plus',
 		template: 'adminSoundEdit',
 		openClick(/*e, t*/) {
 			instance.tabBarData.set();
@@ -59,7 +59,7 @@ Template.adminSounds.onCreated(function() {
 		groups: ['custom-sounds-selected'],
 		id: 'admin-sound-info',
 		i18nTitle: 'Custom_Sound_Info',
-		icon: 'icon-cog',
+		icon: 'cog',
 		template: 'adminSoundInfo',
 		order: 2
 	});

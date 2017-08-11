@@ -3,9 +3,7 @@
 		<header class="sidebar__header">
 			{{> accountBox lighten=true modifier="--admin"}}
 			<button class="sidebar-flex__back-button" data-action="back">
-				<svg class="sidebar-flex__back-icon">
-					<use xlink:href="#icon-arrow-back"></use>
-				</svg>
+				{{> icon block="sidebar-flex__back-icon" icon="arrow-back"}}
 				<span>{{_ "Back_to_chat"}}</span>
 			</button>
 		</header>
@@ -39,9 +37,7 @@
 					<label class="rc-input__label">
 						<div class="rc-input__wrapper">
 							<div class="rc-input__icon">
-								<svg class="rc-input__icon-svg rc-input__icon-svg--magnifier">
-									<use xlink:href="#icon-magnifier"></use>
-								</svg>
+								{{> icon block="rc-input__icon-sv" icon="magnifier"}}
 							</div>
 							<input type="text" class="rc-input__element rc-input__element--small" name="settings-search" placeholder="{{_ 'Search'}}">
 						</div>

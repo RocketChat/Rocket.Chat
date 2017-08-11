@@ -37,9 +37,7 @@
 											<li class="rc-popover__item" data-action="open">
 												{{#if icon}}
 													<span class="rc-popover__icon">
-														<svg class="rc-popover__icon-element rc-popover__icon-element--{{icon}}">
-															<use xlink:href="#icon-{{icon}}"></use>
-														</svg>
+														{{> icon block="rc-popover__icon-element" icon=icon }}
 													</span>
 												{{/if}}
 												<span class="rc-popover__item-text">{{name}}</span>
@@ -48,26 +46,20 @@
 										{{#if showAdminOption}}
 											<li class="rc-popover__item" data-action="open" data-open="administration">
 												<span class="rc-popover__icon">
-													<svg class="rc-popover__icon-element rc-popover__icon-element--customize">
-														<use xlink:href="#icon-customize"></use>
-													</svg>
+													{{> icon block="rc-popover__icon-element" icon="customize"}}
 												</span>
 												<span class="rc-popover__item-text">{{_ "Administration"}}</span>
 											</li>
 										{{/if}}
 										<li class="rc-popover__item" data-action="open" data-open="account">
 											<span class="rc-popover__icon">
-												<svg class="rc-popover__icon-element rc-popover__icon-element--user">
-													<use xlink:href="#icon-user"></use>
-												</svg>
+												{{> icon block="rc-popover__icon-element" icon="user"}}
 											</span>
 											<span class="rc-popover__item-text">{{_ "My_Account"}}</span>
 										</li>
 										<li class="rc-popover__item" data-action="open" data-open="logout">
 											<span class="rc-popover__icon">
-												<svg class="rc-popover__icon-element rc-popover__icon-element--sign-out">
-													<use xlink:href="#icon-sign-out"></use>
-												</svg>
+												{{> icon block="rc-popover__icon-element" icon="sign-out"}}
 											</span>
 											<span class="rc-popover__item-text">{{_ "Logout"}}</span>
 										</li>
@@ -79,9 +71,7 @@
 							<div class="sidebar__account-status-bullet sidebar__account-status-bullet--{{bullet}}" title="{{visualStatus}}"></div>
 							<div class="sidebar__account-visual-status">{{visualStatus}}</div>
 							{{#unless isAnonymous}}
-								<svg class="sidebar__account-arrow">
-									<use xlink:href="#icon-arrow-down"></use>
-								</svg>
+								{{> icon block="sidebar__account-arrow" icon="arrow-down"}}
 							{{/unless}}
 						</div>
 					</div>

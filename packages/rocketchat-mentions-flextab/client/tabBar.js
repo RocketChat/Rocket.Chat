@@ -3,7 +3,7 @@ Meteor.startup(function() {
 		groups: ['channel', 'group'],
 		id: 'mentions',
 		i18nTitle: 'Mentions',
-		icon: 'icon-at',
+		icon: 'at',
 		template: 'mentionsFlexTab',
 		order: 3
 	});

@@ -36,9 +36,7 @@
 						<div class="rc-input__title">{{_ "Channel_name"}}</div>
 						<div class="rc-input__wrapper">
 							<div class="rc-input__icon">
-								<svg class="rc-input__icon-svg rc-input__icon-svg--{{iconType}}">
-									<use xlink:href="#icon-{{iconType}}"></use>
-								</svg>
+								{{> icon block="rc-input__icon-svg" icon=iconType }}
 							</div>
 							<input name="name" type="text" class="rc-input__element" placeholder="Type channel name" autofocus>
 						</div>
@@ -47,9 +45,7 @@
 					{{#if inUse}}
 						<div class="rc-input__error">
 							<div class="rc-input__error-icon">
-								<svg class="rc-input__error-icon-svg rc-input__error-icon--warning">
-									<use xlink:href="#icon-warning"></use>
-								</svg>
+								{{> icon block="rc-input__error-icon" icon="warning" classes="rc-input__error-icon-svg"}}
 							</div>
 							<div class="rc-input__error-message">{{_ "Channel_already_exist_static"}}</div>
 						</div>
@@ -60,9 +56,7 @@
 						<div class="rc-input__title">{{_ "Invite_Users"}}</div>
 						<div class="rc-input__wrapper">
 							<div class="rc-input__icon">
-								<svg class="rc-input__icon-svg rc-input__icon-svg--at">
-									<use xlink:href="#icon-at"></use>
-								</svg>
+								{{> icon block="rc-input__icon-svg" icon="at"}}
 							</div>
 							<div class="rc-tags">
 								{{#each user in selectedUsers}}
@@ -94,8 +88,6 @@
 			{{> avatar username=username}}
 		</span>
 		<span class="rc-tags__tag-username">{{username}}</span>
-		<svg class="rc-tags__tag-icon">
-			<use xlink:href="#icon-cross"></use>
-		</svg>
+		{{> icon block="rc-tags__tag-icon" icon="cross"}}
 	</span>
 </template>

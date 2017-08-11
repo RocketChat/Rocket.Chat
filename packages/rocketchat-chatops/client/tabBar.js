@@ -7,7 +7,7 @@ Meteor.startup(() =>
 					groups: ['channel', 'group', 'direct'],
 					id: 'chatops-button2',
 					i18nTitle: 'rocketchat-chatops:Chatops_Title',
-					icon: 'icon-hubot',
+					icon: 'hubot',
 					template: 'chatops-dynamicUI',
 					order: 4
 				});
@@ -17,7 +17,7 @@ Meteor.startup(() =>
 					groups: ['channel', 'group', 'direct'],
 					id: 'chatops-button3',
 					i18nTitle: 'rocketchat-chatops:Chatops_Title',
-					icon: 'icon-inbox',
+					icon: 'inbox',
 					template: 'chatops_droneflight',
 					width: 675,
 					order: 5

@@ -2,6 +2,7 @@
 	/*
 	* General Colors
 	*/
+	--color-primary: var(--color-dark);
 	--color-darkest: #1f2329;
 	--color-dark: #2f343d;
 	--color-dark-medium: #414852;
@@ -123,7 +124,7 @@
 	* Sidebar
 	*/
 	--sidebar-width: 280px;
-	--sidebar-background: var(--color-dark);
+	--sidebar-background: var(--color-primary);
 	--sidebar-background-light: var(--color-gray-lightest);
 	--sidebar-header-height: 180px;
 	--sidebar-header-padding: 24px;
