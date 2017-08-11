@@ -3,9 +3,7 @@
 		<header class="sidebar__header">
 			{{> accountBox lighten=true modifier="--account" }}
 			<button class="sidebar-flex__back-button" data-action="back">
-				<svg class="sidebar-flex__back-icon">
-					<use xlink:href="#icon-arrow-back"></use>
-				</svg>
+				{{> icon block="sidebar-flex__back-icon" icon="arrow-back"}}
 				<span>{{_ "Back_to_chat"}}</span>
 			</button>
 		</header>

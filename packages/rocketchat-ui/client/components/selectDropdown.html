@@ -4,9 +4,7 @@
 			<div class="rc-input__title">Invite people to channel</div>
 			<div class="rc-input__wrapper">
 				<div class="rc-input__icon">
-					<svg class="rc-input__icon-svg rc-input__icon-svg--at">
-						<use xlink:href="#icon-at"></use>
-					</svg>
+					{{> icon block="rc-input__icon-svg" icon="at"}}
 				</div>
 				{{ selectedUsers }}
 				<input type="text" class="rc-input__element" placeholder="Type user name" name="users">

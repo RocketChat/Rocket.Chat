@@ -24,7 +24,6 @@ body {
 	padding: 0;
 
 	font-size: var(--text-size);
-	/* line-height: 1rem; */
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
 }
@@ -80,5 +79,45 @@ button {
 		visibility: hidden;
 
 		opacity: 0;
+	}
+}
+
+.flex-tab-bar {
+	& .tab-button {
+		cursor: pointer;
+	}
+
+	& .tab-button-icon {
+		width: 14px;
+		height: 14px;
+		stroke: currentColor;
+
+		&--info-circled {
+			fill: currentColor;
+			stroke: none;
+		}
+
+		&--bell {
+			width: 16px;
+			height: 14px;
+
+			fill: currentColor;
+			stroke: none;
+		}
+
+		&--team {
+			width: 16px;
+			height: 16px;
+		}
+
+		&--clip {
+			width: 16px;
+			height: 16px;
+		}
+
+		&--star {
+			width: 17px;
+			height: 16px;
+		}
 	}
 }
