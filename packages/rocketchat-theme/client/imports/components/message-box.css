@@ -42,6 +42,9 @@
 		}
 
 		&-icon {
+			width: 12px;
+			height: 12px;
+
 			fill: currentColor;
 			stroke: currentColor;
 
@@ -57,7 +60,7 @@
 				stroke: none;
 			}
 
-			&--inline-code {
+			&--code {
 				width: 16px;
 				height: 12px;
 			}

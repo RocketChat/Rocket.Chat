@@ -17,15 +17,6 @@ RocketChat.TabBar.addButton({
 	order: 0
 });
 
-// RocketChat.TabBar.addButton({
-// 	groups: ['livechat'],
-// 	id: 'visitor-navigation',
-// 	i18nTitle: 'Visitor_Navigation',
-// 	icon: 'icon-history',
-// 	template: 'visitorNavigation',
-// 	order: 10
-// });
-
 RocketChat.TabBar.addButton({
 	groups: ['live'],
 	id: 'visitor-history',

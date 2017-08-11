@@ -102,7 +102,7 @@ const markdownButtons = [
 	},
 	{
 		label: 'inline_code',
-		icon: 'inline-code',
+		icon: 'code',
 		pattern: '`{{text}}`',
 		condition: () => RocketChat.Markdown
 	},

@@ -43,7 +43,7 @@ Template.adminUsers.onCreated(function() {
 		groups: ['admin-users'],
 		id: 'invite-user',
 		i18nTitle: 'Invite_Users',
-		icon: 'paper-plane',
+		icon: 'send',
 		template: 'adminInviteUser',
 		order: 1
 	});

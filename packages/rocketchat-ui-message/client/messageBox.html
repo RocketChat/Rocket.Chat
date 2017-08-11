@@ -28,7 +28,7 @@
 					<textarea autofocus dir="auto" name="msg" maxlength="{{maxMessageLength}}" placeholder="{{_ 'Message'}}" rows="1" class="rc-message-box__textarea js-input-message autogrow-short"></textarea>
 					{{#if sendIcon}}
 						<div class="rc-message-box__icon js-send">
-							{{> icon block="rc-input__icon-svg" icon="smile"}}
+							{{> icon block="rc-input__icon-svg" icon="send"}}
 						</div>
 					{{else}}
 						<label class="rc-message-box__action-label" for="rc-message-box__action-input" data-popover="label">
@@ -41,11 +41,11 @@
 											<div class="rc-popover__column-wrapper">
 												<h3 class="rc-popover__title">{{_ group.name}}</h3>
 												<ul class="rc-popover__list">
-													{{# each group.actions }}
+													{{#each group.actions }}
 														<li class="rc-popover__item" data-action="open" data-open="account">
 															<span class="rc-popover__icon">
 																{{#if icon}}
-																	{{> icon block="rc-popover__icon-element" icon="{{icon}}"}}
+																	{{> icon block="rc-popover__icon-element" icon=icon }}
 																{{/if}}
 															</span>
 															<span class="rc-popover__item-text">{{_ label}}</span>

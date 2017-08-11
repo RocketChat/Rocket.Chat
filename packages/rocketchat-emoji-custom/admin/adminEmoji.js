@@ -55,7 +55,7 @@ Template.adminEmoji.onCreated(function() {
 		groups: ['emoji-custom'],
 		id: 'admin-emoji-info',
 		i18nTitle: 'Custom_Emoji_Info',
-		icon: 'cog',
+		icon: 'customize',
 		template: 'adminEmojiInfo',
 		order: 2
 	});

@@ -59,7 +59,7 @@ Template.adminSounds.onCreated(function() {
 		groups: ['custom-sounds-selected'],
 		id: 'admin-sound-info',
 		i18nTitle: 'Custom_Sound_Info',
-		icon: 'cog',
+		icon: 'customize',
 		template: 'adminSoundInfo',
 		order: 2
 	});
