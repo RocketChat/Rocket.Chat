@@ -76,7 +76,7 @@ class FlexTab extends Page {
 	get fourthSetting() { return browser.element('.clearfix li:nth-child(4) .current-setting'); }
 
 	//admin view flextab items
-	get usersSendInvitationTab() { return browser.element('.tab-button:not(.hidden) .tab-button-icon--paper-plane'); }
+	get usersSendInvitationTab() { return browser.element('.tab-button:not(.hidden) .tab-button-icon--send'); }
 	get usersAddUserTab() { return browser.element('.tab-button:not(.hidden) .tab-button-icon--plus'); }
 	get usersSendInvitationTextArea() { return browser.element('#inviteEmails'); }
 	get usersButtonCancel() { return browser.element('button.cancel'); }
