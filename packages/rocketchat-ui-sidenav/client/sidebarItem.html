@@ -6,9 +6,7 @@
 		<a class="sidebar-item__link {{alertClass}} {{#if active}}sidebar-item__link--active{{/if}}" href="{{#if route}}{{route}}{{else}}{{pathFor pathSection group=pathGroup}}{{/if}}" title="{{name}}">
 			<div class="sidebar-item__picture">
 				{{#if icon}}
-					<svg class="sidebar-item__icon sidebar-item__icon--{{icon}}">
-						<use xlink:href="#icon-{{icon}}"></use>
-					</svg>
+					{{> icon block="sidebar-item__icon" icon=icon}}
 				{{else}}
 					{{#if avatar}}
 						<div class="sidebar-item__user-thumb">

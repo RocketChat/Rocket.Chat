@@ -4538,6 +4538,11 @@ body:not(.is-cordova) {
 	}
 }
 
+.full-page,
+.page-loading {
+	background-color: var(--color-primary);
+}
+
 .rc-old.full-page {
 	z-index: 101;
 

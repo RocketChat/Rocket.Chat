@@ -5,7 +5,7 @@ Meteor.startup(function() {
 				groups: ['channel', 'group', 'direct'],
 				id: 'pinned-messages',
 				i18nTitle: 'Pinned_Messages',
-				icon: 'icon-pin',
+				icon: 'pin',
 				template: 'pinnedMessages',
 				order: 10
 			});
