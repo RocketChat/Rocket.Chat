@@ -119,5 +119,18 @@ button {
 			width: 17px;
 			height: 16px;
 		}
+
+		&--language {
+			width: 16px;
+			height: 16px;
+
+			fill: currentColor;
+			stroke: none;
+		}
+
+		&--hubot {
+			width: 14px;
+			height: 16px;
+		}
 	}
 }
