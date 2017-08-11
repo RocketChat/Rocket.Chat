@@ -1568,11 +1568,8 @@ label.required::after {
 	flex-flow: row nowrap;
 	padding: 0 10px 0 20px;
 	border-width: 0 0 1px;
-	z-index: 100;
-	top: 0;
-	left: 0;
-	width: 100%;
 	height: calc(var(--header-min-height) + 1px);
+	flex-shrink: 0;
 
 	&.visible h2 {
 		overflow: visible;
@@ -2130,15 +2127,14 @@ label.required::after {
 
 .messages-container {
 	position: relative;
-	height: 100%;
-	width: 100%;
-	top: 0;
-	left: 0;
-	z-index: 1;
+	flex: 1;
+	display: flex;
+	flex-direction: column;
 
 	&-wrapper {
 		height: 100%;
 		display: flex;
+		flex-grow: 1;
 	}
 
 	&-main {
@@ -2175,12 +2171,7 @@ label.required::after {
 	& .footer {
 		padding: 8px 20px 0;
 		border-width: 1px 0 0;
-		z-index: 100;
-		bottom: 0;
-		left: 0;
-		width: 100%;
-		min-height: var(--footer-min-height);
-		height: 130px;
+		flex-shrink: 0;
 	}
 
 	& .message-form {
@@ -2534,7 +2525,6 @@ label.required::after {
 .messages-box {
 	position: relative;
 	overflow: hidden;
-	width: 100%;
 	flex-grow: 1;
 
 	& .message-cog-container .message-action.jump-to-search-message {
@@ -3273,7 +3263,6 @@ body:not(.is-cordova) {
 
 	&.opened .flex-tab {
 		display: block;
-		height: calc(100% - 61px); /* --header-height */
 	}
 }
 
