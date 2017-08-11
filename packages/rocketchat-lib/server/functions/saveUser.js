@@ -150,7 +150,6 @@ RocketChat.saveUser = function(userId, userData) {
 
 		if (userData.password && userData.password.trim() && RocketChat.authz.hasPermission(userId, 'edit-other-user-password')) {
 			Accounts.setPassword(userData._id, userData.password.trim());
-			Meteor.call('addPasswordChangeHistory', userId);
 		}
 
 		const updateUser = {

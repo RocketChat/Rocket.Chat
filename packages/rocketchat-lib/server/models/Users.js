@@ -378,28 +378,6 @@ class ModelUsers extends RocketChat.models._Base {
 		return this.update({}, update, { multi: true });
 	}
 
-	addPasswordChangeHistory(_id) {
-		const query =	{_id};
-
-		const passwordChangeHistory = {
-			changedBy: Meteor.userId(),
-			changedAt: new Date()
-		};
-
-		const update = {
-			$addToSet: {
-				passwordChangeHistory
-			}
-		};
-
-		const result = {
-			passwordChangeHistory,
-			result: this.update(query, update)
-		};
-
-		return result;
-	}
-
 	unsetLoginTokens(_id) {
 		const update = {
 			$set: {

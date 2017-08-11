@@ -6,6 +6,7 @@ accounts-meteor-developer@1.3.0
 accounts-oauth@1.1.15
 accounts-password@1.4.0
 accounts-twitter@1.3.0
+aldeed:collection2@2.5.0
 aldeed:simple-schema@1.5.3
 allow-deny@1.0.6
 autoupdate@1.3.12
@@ -254,3 +255,4 @@ webapp@1.3.17
 webapp-hashing@1.0.9
 yasaricli:slugify@0.0.7
 yasinuslu:blaze-meta@0.3.3
+zeroasterisk:auditlog@0.0.3

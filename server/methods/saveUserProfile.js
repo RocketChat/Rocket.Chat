@@ -61,8 +61,6 @@ Meteor.methods({
 			Accounts.setPassword(Meteor.userId(), settings.newPassword, {
 				logout: false
 			});
-
-			Meteor.call('addPasswordChangeHistory');
 		}
 
 		RocketChat.models.Users.setProfile(Meteor.userId(), {});

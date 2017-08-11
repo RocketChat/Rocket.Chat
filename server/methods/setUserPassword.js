@@ -22,8 +22,6 @@ Meteor.methods({
 			logout: false
 		});
 
-		Meteor.call('addPasswordChangeHistory');
-
 		return RocketChat.models.Users.unsetRequirePasswordChange(userId);
 	}
 });
