@@ -10,7 +10,7 @@ class SideNav extends Page {
 	// Account box
 	get accountBoxUserName() { return browser.element('.sidebar__account-username'); }
 	get accountBoxUserAvatar() { return browser.element('.sidebar__account .avatar-image'); }
-	get accountStatus() { return browser.element('.sidebar__account-status'); }
+	get accountMenu() { return browser.element('.sidebar__account-menu'); }
 	get popOverContent() { return browser.element('.rc-popover__content'); }
 	get statusOnline() { return browser.element('[data-status="online"]'); }
 	get statusAway() { return browser.element('[data-status="away"]'); }
