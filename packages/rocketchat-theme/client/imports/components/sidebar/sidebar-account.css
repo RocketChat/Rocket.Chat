@@ -1,30 +1,33 @@
 .sidebar__account {
 	margin-bottom: 40px;
+	display: flex;
+	align-items: center;
 
-	&-label {
-		display: flex;
+	&--lighten {
+		& .sidebar__account-username {
+			color: var(--sidebar-account-username-color-darker);
+		}
 
-		cursor: pointer;
-		align-items: center;
+		& .sidebar__account-menu {
+			fill: var(--sidebar-account-username-color-darker);
+		}
 	}
 
 	&-thumb {
 		width: var(--sidebar-account-thumb-size);
 		height: var(--sidebar-account-thumb-size);
+
+		flex: 0 0 var(--sidebar-account-thumb-size);
 	}
 
 	&-data {
+		flex: 1;
+		display: flex;
+		flex-direction: column;
+		overflow: hidden;
 		position: relative;
 
 		margin-left: 1rem;
-	}
-
-	&-name,
-	&-username {
-		overflow: hidden;
-
-		white-space: nowrap;
-		text-overflow: ellipsis;
 	}
 
 	&-username {
@@ -37,9 +40,8 @@
 		font-size: var(--sidebar-account-username-size);
 		font-weight: var(--sidebar-account-username-weight);
 
-		&--lighten {
-			color: var(--sidebar-account-username-color-darker);
-		}
+		white-space: nowrap;
+		text-overflow: ellipsis;
 	}
 
 	&-visual-status {
@@ -89,21 +91,29 @@
 		}
 	}
 
-	&-arrow {
-		width: var(--sidebar-account-arrow-size);
-		height: var(--sidebar-account-arrow-size);
+	&-label {
+		padding: 10px;
 
-		transition: transform 0.2s linear;
-		stroke: currentColor;
-	}
+		cursor: pointer;
 
-	& .rc-popover-anchor:checked {
-		& ~ .sidebar__account-status .sidebar__account-arrow {
-			transform: rotate(180deg);
+		position: relative;
+
+		&:hover .sidebar__account-menu {
+			fill: var(--sidebar-account-status-color);
 		}
 	}
 
+	&-menu {
+		width: 3px;
+		height: 16px;
+
+		fill: var(--sidebar-account-username-color);
+
+		transition: fill 0.2s;
+	}
+
 	& .rc-popover {
-		top: 50px;
+		top: 40px;
+		left: 0;
 	}
 }

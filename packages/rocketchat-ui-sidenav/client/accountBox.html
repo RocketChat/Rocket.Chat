@@ -2,12 +2,19 @@
 	<div class="sidebar__account {{#if lighten}}sidebar__account--lighten{{/if}}" aria-label="{{_ "Account"}}" role="region">
 		{{#with myUserInfo}}
 			{{#if username}}
-				<label class="sidebar__account-label" for="sidebar__account-menu{{../modifier}}" data-popover="label">
-					<div class="sidebar__account-thumb" data-status='{{visualStatus}}'>
-						{{> avatar username=username}}
+				<div class="sidebar__account-thumb" data-status='{{visualStatus}}'>
+					{{> avatar username=username}}
+				</div>
+				<div class="sidebar__account-data">
+					<h3 class="sidebar__account-username" data-username="{{username}}">@{{username}}</h3>
+					<div class="sidebar__account-status">
+						<div class="sidebar__account-status-bullet sidebar__account-status-bullet--{{bullet}}" title="{{visualStatus}}"></div>
+						<div class="sidebar__account-visual-status">{{visualStatus}}</div>
 					</div>
-					<div class="sidebar__account-data">
-						<h3 class="sidebar__account-username {{#if ../lighten}}sidebar__account-username--lighten{{/if}}" data-username="{{username}}">@{{username}}</h3>
+				</div>
+				{{#unless isAnonymous}}
+					<label class="sidebar__account-label" for="sidebar__account-menu{{../modifier}}" data-popover="label">
+						{{> icon block="sidebar__account-menu" icon="menu"}}
 						<input id="sidebar__account-menu{{../modifier}}" type="checkbox" class="rc-popover-anchor" data-popover="anchor" {{isAnonymous}}>
 						<div class="rc-popover" data-popover="popover">
 							<div class="rc-popover__content">
@@ -67,15 +74,8 @@
 								</div>
 							</div>
 						</div>
-						<div class="sidebar__account-status">
-							<div class="sidebar__account-status-bullet sidebar__account-status-bullet--{{bullet}}" title="{{visualStatus}}"></div>
-							<div class="sidebar__account-visual-status">{{visualStatus}}</div>
-							{{#unless isAnonymous}}
-								{{> icon block="sidebar__account-arrow" icon="arrow-down"}}
-							{{/unless}}
-						</div>
-					</div>
-				</label>
+					</label>
+				{{/unless}}
 			{{/if}}
 		{{/with}}
 	</div>
