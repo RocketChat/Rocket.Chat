@@ -86,12 +86,12 @@ describe('[Main Elements Render]', function() {
 	describe('[User Options]', () => {
 		describe('render:', () => {
 			before(() => {
-				sideNav.accountStatus.click();
+				sideNav.accountMenu.click();
 				sideNav.popOverContent.waitForVisible(5000);
 			});
 
 			after(() => {
-				sideNav.accountStatus.click();
+				sideNav.accountMenu.click();
 			});
 
 			it('it should show online button', () => {

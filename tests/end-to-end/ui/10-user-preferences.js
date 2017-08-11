@@ -18,8 +18,8 @@ describe('[User Preferences]', ()=> {
 		sideNav.spotlightSearch.waitForVisible(10000);
 		sideNav.searchChannel('general');
 
-		sideNav.accountBoxUserName.waitForVisible();
-		sideNav.accountBoxUserName.click();
+		sideNav.accountMenu.waitForVisible();
+		sideNav.accountMenu.click();
 		sideNav.account.waitForVisible();
 		sideNav.account.click();
 	});

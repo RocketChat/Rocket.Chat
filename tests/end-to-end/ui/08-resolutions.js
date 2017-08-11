@@ -52,8 +52,8 @@ describe.skip('[Resolution]', ()=> {
 			});
 
 			it('it should open the user preferences screen', () => {
-				sideNav.accountBoxUserName.waitForVisible(5000);
-				sideNav.accountBoxUserName.click();
+				sideNav.accountMenu.waitForVisible(5000);
+				sideNav.accountMenu.click();
 				sideNav.account.waitForVisible(5000);
 				sideNav.account.click();
 			});
