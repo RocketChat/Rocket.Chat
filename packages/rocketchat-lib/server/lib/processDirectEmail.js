@@ -1,4 +1,5 @@
 import {EmailReplyParser as reply} from 'emailreplyparser';
+import moment from 'moment';
 
 RocketChat.processDirectEmail = function(email) {
 	function sendMessage(email) {
@@ -9,7 +10,12 @@ RocketChat.processDirectEmail = function(email) {
 			groupable: false
 		};
 
-		if (!message.ts) {
+		if (message.ts) {
+			const tsDiff = Math.abs(moment(message.ts).diff());
+			if (tsDiff > 10000) {
+				message.ts = new Date();
+			}
+		} else {
 			message.ts = new Date();
 		}
 
@@ -46,15 +52,15 @@ RocketChat.processDirectEmail = function(email) {
 			return false;
 		}
 
-		// check mention
-		if (message.msg.indexOf(`@${ prevMessage.u.username }`) === -1) {
-			message.msg = `@${ prevMessage.u.username } ${ message.msg }`;
-		}
-
 		const roomInfo = RocketChat.models.Rooms.findOneById(message.rid, {
 			t: 1,
 			name: 1
 		});
+
+		// check mention
+		if (message.msg.indexOf(`@${ prevMessage.u.username }`) === -1 && roomInfo.t !== 'd') {
+			message.msg = `@${ prevMessage.u.username } ${ message.msg }`;
+		}
 
 		// reply message link
 		let prevMessageLink = `[ ](${ Meteor.absoluteUrl().replace(/\/$/, '') }`;

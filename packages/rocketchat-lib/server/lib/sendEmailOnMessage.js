@@ -108,15 +108,15 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 						break;
 					case 'direct':
 						emailSubject = RocketChat.placeholders.replace(RocketChat.settings.get('Offline_DM_Email'), {
-			        user: message.u.username,
-			        room: room.name
-		        });
+							user: message.u.username,
+							room: room.name
+						});
 						break;
 					case 'mention':
 						emailSubject = RocketChat.placeholders.replace(RocketChat.settings.get('Offline_Mention_Email'), {
-			        user: message.u.username,
-			        room: room.name
-		        });
+							user: message.u.username,
+							room: room.name
+						});
 						break;
 				}
 
