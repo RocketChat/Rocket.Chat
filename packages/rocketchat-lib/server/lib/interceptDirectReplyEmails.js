@@ -233,10 +233,12 @@ export class POP3Helper {
 	start() {
 		// run every x-minutes
 		if (RocketChat.settings.get('Direct_Reply_Frequency')) {
+			RocketChat.POP3 = new POP3Intercepter();
+
 			this.running = Meteor.setInterval(() => {
 				// get new emails and process
-				RocketChat.POP3 = new RocketChat.POP3Intercepter();
-			}, RocketChat.settings.get('Direct_Reply_Frequency')*60*1000);
+				RocketChat.POP3 = new POP3Intercepter();
+			}, Math.max(RocketChat.settings.get('Direct_Reply_Frequency')*60*1000, 2*60*1000));
 		}
 	}
 
