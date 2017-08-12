@@ -101,7 +101,7 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 				let emailSubject;
 				switch (usersToSendEmail[user._id]) {
 					case 'all':
-						emailSubject = TAPi18n.__('Offline_Mention_All_Email', {
+						emailSubject = RocketChat.placeholders.replace(RocketChat.settings.get('Offline_Mention_All_Email'), {
 							user: message.u.username,
 							room: room.name || room.label
 						});
