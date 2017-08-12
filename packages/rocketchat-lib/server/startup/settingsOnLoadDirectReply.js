@@ -1,5 +1,4 @@
 import { IMAPIntercepter } from '../lib/interceptDirectReplyEmails.js';
-import { POP3Intercepter } from '../lib/interceptDirectReplyEmails.js';
 import { POP3Helper } from '../lib/interceptDirectReplyEmails.js';
 
 const startEmailIntercepter = _.debounce(Meteor.bindEnvironment(function() {
@@ -36,7 +35,6 @@ const startEmailIntercepter = _.debounce(Meteor.bindEnvironment(function() {
 				console.log('Disconnecting already running POP instance...');
 				RocketChat.POP3Helper.stop(Meteor.bindEnvironment(function() {
 					console.log('Starting new POP instance......');
-					RocketChat.POP3 = new POP3Intercepter();
 					RocketChat.POP3Helper = new POP3Helper();
 					RocketChat.POP3Helper.start();
 					return true;
@@ -45,14 +43,12 @@ const startEmailIntercepter = _.debounce(Meteor.bindEnvironment(function() {
 				console.log('Disconnecting already running IMAP instance...');
 				RocketChat.IMAP.stop(Meteor.bindEnvironment(function() {
 					console.log('Starting new POP instance......');
-					RocketChat.POP3 = new POP3Intercepter();
 					RocketChat.POP3Helper = new POP3Helper();
 					RocketChat.POP3Helper.start();
 					return true;
 				}));
 			} else {
 				console.log('Starting new POP instance......');
-				RocketChat.POP3 = new POP3Intercepter();
 				RocketChat.POP3Helper = new POP3Helper();
 				RocketChat.POP3Helper.start();
 				return true;
