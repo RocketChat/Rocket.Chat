@@ -76,6 +76,9 @@ Template.accountPreferences.helpers({
 	defaultDesktopNotificationDuration() {
 		return RocketChat.settings.get('Desktop_Notifications_Duration');
 	},
+	defaultAudioNotification() {
+		return notificationLabels[RocketChat.settings.get('Audio_Notifications_Default_Alert')];
+	},
 	defaultDesktopNotification() {
 		return notificationLabels[RocketChat.settings.get('Desktop_Notifications_Default_Alert')];
 	},

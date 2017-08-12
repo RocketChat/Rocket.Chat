@@ -24,6 +24,14 @@
 			"email": "gabriel.engel@rocket.chat"
 		},
 		{
+			"name": "Guilherme Gazzo",
+			"email": "guilherme.gazzo@rocket.chat"
+		},
+		{
+			"name": "Karl Prieb",
+			"email": "karl.priebk@rocket.chat"
+		},
+		{
 			"name": "Marcelo Schmidt",
 			"email": "marcelo.schmidt@rocket.chat"
 		},
@@ -54,7 +62,7 @@
 		"start": "meteor npm i && meteor",
 		"lint": "eslint .",
 		"lint-fix": "eslint . --fix",
-		"stylelint": "stylelint 'packages/**/*.{less,css}'",
+		"stylelint": "stylelint packages/**/*.css",
 		"test": "node .scripts/start.js",
 		"deploy": "npm run build && pm2 startOrRestart pm2.json",
 		"chimp-watch": "chimp --ddp=http://localhost:3000 --watch --mocha --path=tests/end-to-end",
@@ -86,6 +94,7 @@
 		"postcss-smart-import": "^0.7.5",
 		"simple-git": "^1.75.0",
 		"stylelint": "^7.13.0",
+		"stylelint-order": "^0.6.0",
 		"supertest": "^3.0.0"
 	},
 	"dependencies": {
@@ -104,6 +113,7 @@
 		"photoswipe": "^4.1.2",
 		"prom-client": "^10.0.3",
 		"semver": "^5.4.1",
-		"toastr": "^2.1.2"
+		"toastr": "^2.1.2",
+		"wolfy87-eventemitter": "^5.1.0"
 	}
 }

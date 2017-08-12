@@ -59,6 +59,9 @@ Meteor.methods({
 				preferences.notificationsSoundVolume = settings.notificationsSoundVolume;
 			}
 
+			if (settings.audioNotifications) {
+				preferences.audioNotifications = settings.audioNotifications;
+			}
 			if (settings.desktopNotifications) {
 				preferences.desktopNotifications = settings.desktopNotifications;
 			}
@@ -66,6 +69,7 @@ Meteor.methods({
 				preferences.mobileNotifications = settings.mobileNotifications;
 			}
 
+			preferences.audioNotificationValue = settings.audioNotificationValue - 0;
 			preferences.desktopNotificationDuration = settings.desktopNotificationDuration - 0;
 			preferences.viewMode = settings.viewMode || 0;
 			preferences.hideUsernames = settings.hideUsernames === '1';
