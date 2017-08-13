@@ -23,4 +23,5 @@ RocketChat.models.Users.emptyKeychain = function() {
 	this.update(query, { $set: { 'lastUsedIdentityKey': '' } });
 	this.update(query, { $set: { 'RSA-PubKey': '' } });
 	this.update(query, { $set: { 'publicKeychain' : [ ] } });
+	console.log('Keychain cleared');
 };

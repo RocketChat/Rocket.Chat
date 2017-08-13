@@ -135,15 +135,10 @@ Meteor.startup(function() {
 	});
 
 	RocketChat.promises.add('onClientBeforeSendMessage', function(message) {
+		console.log('To be sent: ');
 		console.log(message);
 		if (message.rid && RocketChat.E2E.getInstanceByRoomId(message.rid) && RocketChat.E2E.getInstanceByRoomId(message.rid).established.get()) {
-			console.log('WILL ENCRYPT');
-			// const e2eRoom = RocketChat.E2E.getInstanceByRoomId(message.rid);
-			// if (e2eRoom.typeOfRoom == 'p') {
-			// 	console.log("Group encrypted message sent");
-			// 	return message;
-			// }
-			// else {
+			console.log('Will encrypt this message');
 			return RocketChat.E2E.getInstanceByRoomId(message.rid).encrypt(message)
 				.then((msg) => {
 					message.msg = msg;
@@ -151,19 +146,25 @@ Meteor.startup(function() {
 					console.log(message);
 					return message;
 				});
-			// }
 		} else {
-			return Promise.resolve(message);
+			console.log('Encryption not required.');
+			try {
+				return Promise.resolve(message);
+			} catch (err) {
+				console.log('Error printing message on client.');
+				console.log(err.message);
+			}
 		}
 	}, RocketChat.promises.priority.HIGH);
 
 	RocketChat.promises.add('onClientMessageReceived', function(message) {
-		// console.log(message);
+		console.log('Received message');
 		// if (message.rid && message.t === 'e2e' )
 		if (message.rid && RocketChat.E2E.getInstanceByRoomId(message.rid) && message.t === 'e2e') { //&& RocketChat.E2E.getInstanceByRoomId(message.rid).established.get()) {
+
 			const e2eRoom = RocketChat.E2E.getInstanceByRoomId(message.rid);
 			console.log(e2eRoom);
-			if (e2eRoom.typeOfRoom === 'p') {
+			if (e2eRoom.typeOfRoom === 'p' || e2eRoom.typeOfRoom === 'd') {
 				console.log('YESS');
 				if (e2eRoom.groupSessionKey != null) {
 					return e2eRoom.decrypt(message.msg).then((data) => {
@@ -291,10 +292,16 @@ Meteor.startup(function() {
 				}
 			}
 		} else {
+			console.log('Message is not encrypted');
 			if (message.t === 'otr') {
 				message.msg = '';
 			}
-			return Promise.resolve(message);
+			try {
+				return Promise.resolve(message);
+			} catch (err) {
+				console.log('Error printing message on client');
+				console.log(err.message);
+			}
 		}
 	}, RocketChat.promises.priority.HIGH);
 });
