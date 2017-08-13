@@ -19,6 +19,56 @@ export const RoomHistoryManager = new class {
 		return this.histories[rid];
 	}
 
+	// From the package, rocketchat:e2e
+	decryptE2EMessage(item) {
+		const e2eRoom = RocketChat.E2E.getInstanceByRoomId(item.rid);
+		console.log(e2eRoom);
+		if (e2eRoom.groupSessionKey != null) {
+			e2eRoom.decrypt(item.msg).then((data) => {
+				console.log(data);
+				// const {id, text, ack} = data;
+				item._id = data._id;
+				item.msg = data.text;
+				item.ack = data.ack;
+				if (data.ts) {
+					item.ts = data.ts;
+				}
+				ChatMessage.upsert({_id: item._id}, item);
+			});
+		} else {
+			Meteor.call('fetchGroupE2EKey', e2eRoom.roomId, function(error, result) {
+				console.log(result);
+				let cipherText = EJSON.parse(result);
+				const vector = cipherText.slice(0, 16);
+				cipherText = cipherText.slice(16);
+				console.log(cipherText);
+				const decrypt_promise = crypto.subtle.decrypt({name: 'RSA-OAEP', iv: vector}, RocketChat.E2EStorage.get('RSA-PrivKey'), cipherText);
+				decrypt_promise.then(function(result) {
+					console.log(result);
+					console.log(EJSON.parse(RocketChat.signalUtils.toString(result)));
+					e2eRoom.exportedSessionKey = RocketChat.signalUtils.toString(result);
+					crypto.subtle.importKey('jwk', EJSON.parse(e2eRoom.exportedSessionKey), {name: 'AES-CBC', iv: vector}, true, ['encrypt', 'decrypt']).then(function(key) {
+						e2eRoom.groupSessionKey = key;
+						e2eRoom.decrypt(item.msg).then((data) => {
+							console.log(data);
+							item._id = data._id;
+							item.msg = data.text;
+							item.ack = data.ack;
+							if (data.ts) {
+								item.ts = data.ts;
+							}
+							ChatMessage.upsert({_id: item._id}, item);
+						});
+
+					});
+				});
+				decrypt_promise.catch(function(err) {
+					console.log(err);
+				});
+			});
+		}
+	}
+
 	getMore(rid, limit) {
 		let ts;
 		if (limit == null) { limit = this.defaultLimit; }
@@ -51,6 +101,7 @@ export const RoomHistoryManager = new class {
 			typeName = (curRoomDoc != null ? curRoomDoc.t : undefined) + (curRoomDoc != null ? curRoomDoc.name : undefined);
 		}
 
+		const self = this;
 		return Meteor.call('loadHistory', rid, ts, limit, ls, function(err, result) {
 			if (err) {
 				return;
@@ -71,7 +122,13 @@ export const RoomHistoryManager = new class {
 						(item.u && item.u._id && RoomRoles.findOne({rid: item.rid, 'u._id': item.u._id})) || {}
 					].map(e => e.roles);
 					item.roles = _.union.apply(_.union, roles);
-					ChatMessage.upsert({_id: item._id}, item);
+					console.log(ChatMessage);
+					console.log(item);
+					if (item.t === 'e2e') {
+						self.decryptE2EMessage(item);
+					} else {
+						ChatMessage.upsert({_id: item._id}, item);
+					}
 				}
 			});
 
@@ -122,6 +179,7 @@ export const RoomHistoryManager = new class {
 		const { ts } = lastMessage;
 
 		if (ts) {
+			const self = this;
 			return Meteor.call('loadNextMessages', rid, ts, limit, function(err, result) {
 				for (const item of Array.from((result != null ? result.messages : undefined) || [])) {
 					if (item.t !== 'command') {
@@ -130,7 +188,11 @@ export const RoomHistoryManager = new class {
 							(item.u && item.u._id && RoomRoles.findOne({rid: item.rid, 'u._id': item.u._id})) || {}
 						].map(e => e.roles);
 						item.roles = _.union.apply(_.union, roles);
-						ChatMessage.upsert({_id: item._id}, item);
+						if (item.t === 'e2e') {
+							self.decryptE2EMessage(item);
+						} else {
+							ChatMessage.upsert({_id: item._id}, item);
+						}
 					}
 				}
 
@@ -186,6 +248,7 @@ export const RoomHistoryManager = new class {
 				typeName = (curRoomDoc != null ? curRoomDoc.t : undefined) + (curRoomDoc != null ? curRoomDoc.name : undefined);
 			}
 
+			const self = this;
 			return Meteor.call('loadSurroundingMessages', message, limit, function(err, result) {
 				for (const item of Array.from((result != null ? result.messages : undefined) || [])) {
 					if (item.t !== 'command') {
@@ -194,7 +257,11 @@ export const RoomHistoryManager = new class {
 							(item.u && item.u._id && RoomRoles.findOne({rid: item.rid, 'u._id': item.u._id})) || {}
 						].map(e => e.roles);
 						item.roles = _.union.apply(_.union, roles);
-						ChatMessage.upsert({_id: item._id}, item);
+						if (item.t === 'e2e') {
+							self.decryptE2EMessage(item);
+						} else {
+							ChatMessage.upsert({_id: item._id}, item);
+						}
 					}
 				}
 

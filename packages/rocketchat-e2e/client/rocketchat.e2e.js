@@ -240,23 +240,6 @@ Meteor.startup(function() {
 									message.ts = data.ts;
 								}
 								return message;
-							// if (message.otrAck) {
-							// 	return otrRoom.decrypt(message.otrAck)
-							// 		.then((data) => {
-							// 			if (ack === data.text) {
-							// 				message.t = 'otr-ack';
-							// 			}
-							// 			return message;
-							// 		});
-							// } else if (data.userId !== Meteor.userId()) {
-							// 	return otrRoom.encryptText(ack)
-							// 		.then((ack) => {
-							// 			Meteor.call('updateOTRAck', message._id, ack);
-							// 			return message;
-							// 		});
-							// } else {
-							// 	return message;
-							// }
 							});
 					} else {
 						return e2eRoom.decryptInitial(message.msg)
@@ -270,23 +253,6 @@ Meteor.startup(function() {
 									message.ts = data.ts;
 								}
 								return message;
-							// if (message.otrAck) {
-							// 	return otrRoom.decrypt(message.otrAck)
-							// 		.then((data) => {
-							// 			if (ack === data.text) {
-							// 				message.t = 'otr-ack';
-							// 			}
-							// 			return message;
-							// 		});
-							// } else if (data.userId !== Meteor.userId()) {
-							// 	return otrRoom.encryptText(ack)
-							// 		.then((ack) => {
-							// 			Meteor.call('updateOTRAck', message._id, ack);
-							// 			return message;
-							// 		});
-							// } else {
-							// 	return message;
-							// }
 							});
 					}
 				}

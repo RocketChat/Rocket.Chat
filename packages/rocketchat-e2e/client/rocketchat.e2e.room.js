@@ -296,6 +296,10 @@ RocketChat.E2E.Room = class {
 				console.log(result);
 				console.log(EJSON.parse(ab2str(result)));
 				return EJSON.parse(ab2str(result));
+			})
+			.catch((e) => {
+				console.log(`Session key was changed: ${ e }`);
+				return '< Decryption key was changed at this point >';
 			});
 		} else {
 			const ciphertext = str2ab(message);
