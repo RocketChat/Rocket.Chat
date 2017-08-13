@@ -33,11 +33,11 @@ RocketChat.E2E.Room = class {
 		this.peerSignedSignature = null;
 	}
 
-	handshake(startSession) {
+	handshake(startSession, refresh) {
 		const self = this;
 		this.establishing.set(true);
 		console.log(this);
-		if (this.typeOfRoom === 'p') {
+		if (this.typeOfRoom === 'p' || this.typeOfRoom === 'd') {
 			// if (self.groupSessionKey !== null) {
 			// 	console.log("TYPE A");
 			// 	self.established.set(true);
@@ -45,7 +45,7 @@ RocketChat.E2E.Room = class {
 			// } else {
 			const sessionKey = new Promise((resolve) => {
 				Meteor.call('fetchGroupE2EKey', self.roomId, function(error, result) {
-					if (result !== null) {
+					if (result !== null && result !== undefined && refresh !== true) {
 						console.log(result);
 						console.log('TYPE 1');
 						let cipherText = EJSON.parse(result);
@@ -179,13 +179,18 @@ RocketChat.E2E.Room = class {
 	}
 
 
-	clearGroupKey() {
+	clearGroupKey(refresh) {
 		const self = this;
 		Meteor.call('getUsersOfRoom', self.roomId, true, function(error, result) {
 			result.records.forEach(function(user) {
 				Meteor.call('updateGroupE2EKey', self.roomId, user._id, null, function(error, result) {
 					console.log(result);
-				});
+					RocketChat.Notifications.notifyUser(user._id, 'e2e', 'clearGroupKey', { roomId: self.roomId, userId: self.userId });
+					if (refresh) {
+						console.log("Will handshake again");
+						// self.handshake(true);
+					}
+				});	
 			});
 		});
 	}
@@ -204,7 +209,7 @@ RocketChat.E2E.Room = class {
 		RocketChat.Notifications.notifyUser(this.peerId, 'e2e', 'end', { roomId: this.roomId, userId: this.userId });
 	}
 
-	reset() {
+	reset(refresh) {
 		this.establishing.set(false);
 		this.established.set(false);
 		this.keyPair = null;
@@ -216,7 +221,9 @@ RocketChat.E2E.Room = class {
 		this.peerRegistrationId = null;
 		this.peerSignedPreKey = null;
 		this.peerSignedSignature = null;
+		this.groupSessionKey = null;
 		this.peerPreKey = null;
+		this.clearGroupKey(refresh);		// Might enter a race condition with the handshake function.
 	}
 
 	encryptText(data) {
@@ -224,7 +231,7 @@ RocketChat.E2E.Room = class {
 			data = new TextEncoder('UTF-8').encode(EJSON.stringify({ text: data, ack: Random.id((Random.fraction()+1)*20) }));
 		}
 		console.log('Encrypting...');
-		if (this.typeOfRoom === 'p') {
+		if (this.typeOfRoom === 'p' || this.typeOfRoom === 'd') {
 			const vector = crypto.getRandomValues(new Uint8Array(16));
 			// data = EJSON.stringify(data);
 			// console.log(str2ab(data));
@@ -280,7 +287,7 @@ RocketChat.E2E.Room = class {
 
 	decrypt(message) {
 		console.log(`MESSAGE RECEIVED: ${ message }`);
-		if (this.typeOfRoom === 'p') {
+		if (this.typeOfRoom === 'p' || this.typeOfRoom === 'd') {
 			let cipherText = EJSON.parse(message);
 			const vector = cipherText.slice(0, 16);
 			cipherText = cipherText.slice(16);
@@ -449,6 +456,16 @@ RocketChat.E2E.Room = class {
 					});
 				}
 				break;
+
+			case 'clearGroupKey':
+				if (this.established.get()) {
+					this.reset();
+					swal({
+						title: `<i class='icon-key alert-icon success-color'></i>${ TAPi18n.__('E2E') }`,
+						text: TAPi18n.__('Username_ended_the_OTR_session', { username: user.username }),
+						html: true
+					});
+				}
 		}
 	}
 };
