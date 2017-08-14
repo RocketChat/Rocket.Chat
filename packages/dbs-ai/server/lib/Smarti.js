@@ -26,7 +26,7 @@ class SmartiAdapter {
 			message_id: message._id,
 			channel_id: message.rid,
 			user_id: message.u._id,
-			username: message.u.username,
+			// username: message.u.username,
 			text: message.msg,
 			timestamp: message.ts,
 			origin: message.origin
