@@ -74,8 +74,8 @@ this.Notifications = new class {
 	unRoom(room, eventName, callback) {
 		return this.streamRoom.removeListener(`${ room }/${ eventName }`, callback);
 	}
-	unUser(callback) {
-		return this.streamUser.removeListener(visitor.getId(), callback);
+	unUser(eventName, callback) {
+		return this.streamUser.removeListener(`${ visitor.getId() }/${ eventName }`, callback);
 	}
 
 };

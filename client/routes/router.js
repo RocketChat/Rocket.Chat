@@ -68,14 +68,6 @@ FlowRouter.route('/home', {
 	}
 });
 
-FlowRouter.route('/changeavatar', {
-	name: 'changeAvatar',
-
-	action() {
-		BlazeLayout.render('main', {center: 'avatarPrompt'});
-	}
-});
-
 FlowRouter.route('/account/:group?', {
 	name: 'account',
 
@@ -85,7 +77,10 @@ FlowRouter.route('/account/:group?', {
 		}
 		params.group = _.capitalize(params.group, true);
 		BlazeLayout.render('main', { center: `account${ params.group }` });
-	}
+	},
+	triggersExit: [function() {
+		$('.main-content').addClass('rc-old');
+	}]
 });
 
 FlowRouter.route('/history/private', {

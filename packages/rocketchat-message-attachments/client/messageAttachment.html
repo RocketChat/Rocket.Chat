@@ -30,7 +30,7 @@
 			{{#if title}}
 				<div class="attachment-title">
 					{{#if title_link}}
-						<a href="{{fixCordova title_link}}" target="_blank">{{title}}</a>
+						<a href="{{fixCordova title_link}}" target="_blank">{{#if isFile}} {{_ "Attachment_File_Uploaded"}}: {{/if}}{{title}}</a>
 						{{#if title_link_download}}
 							<a class="icon-download attachment-download-icon" href="{{fixCordova title_link}}" target="_blank" download=""></a>
 						{{/if}}
