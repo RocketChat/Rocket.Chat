@@ -1,3 +1,13 @@
+<a name="0.58.0-rc.2"></a>
+# 0.58.0-rc.2 (2017-08-14)
+
+
+### Bug Fixes
+
+- [#7456](https://github.com/RocketChat/Rocket.Chat/pull/7456) Csv importer: work with more problematic data
+
+
+
 <a name="0.58.0-rc.1"></a>
 # 0.58.0-rc.1 (2017-08-08)
 
