@@ -2,7 +2,7 @@
 import moment from 'moment';
 import mime from 'mime-type/with-db';
 
-
+window.chatMessages = window.chatMessages || {};
 const socialSharing = (options = {}) => window.plugins.socialsharing.share(options.message, options.subject, options.file, options.link);
 
 const isSubscribed = _id => ChatSubscription.find({ rid: _id }).count() > 0;
@@ -177,7 +177,15 @@ Template.room.helpers({
 		if (!roomData) { return false; }
 		return (roomData.announcement !== undefined) && (roomData.announcement !== '');
 	},
-
+	messageboxData() {
+		const instance = Template.instance();
+		return {
+			_id: this._id,
+			onResize: () => {
+				instance.sendToBottomIfNecessary();
+			}
+		};
+	},
 	roomAnnouncement() {
 		const roomData = Session.get(`roomData${ this._id }`);
 		if (!roomData) { return ''; }
@@ -777,16 +785,11 @@ Template.room.onDestroyed(function() {
 });
 
 Template.room.onRendered(function() {
-	window.chatMessages = window.chatMessages || {};
+
 	if (!window.chatMessages[Session.get('openedRoom')]) {
 		window.chatMessages[Session.get('openedRoom')] = new ChatMessages;
 	}
 	window.chatMessages[Session.get('openedRoom')].init(this.firstNode);
-
-	if (Meteor.Device.isDesktop()) {
-		setTimeout(() => $('.message-form .input-message').focus(), 100);
-	}
-
 	// ScrollListener.init()
 
 	const wrapper = this.find('.wrapper');
@@ -818,6 +821,7 @@ Template.room.onRendered(function() {
 	};
 
 	template.sendToBottomIfNecessary = function() {
+
 		if ((template.atBottom === true) && (template.isAtBottom() !== true)) {
 			return template.sendToBottom();
 		}
