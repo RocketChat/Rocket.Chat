@@ -4827,6 +4827,7 @@ a + br.only-after-a {
 		right: 40px;
 		border-width: 0 0 0 1px;
 		z-index: 100;
+		height: 100%;
 	}
 }
 
