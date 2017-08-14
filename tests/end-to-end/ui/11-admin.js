@@ -24,7 +24,7 @@ describe('[Administration]', () => {
 
 	describe('[Admin View]', () => {
 		before(() => {
-			sideNav.accountBoxUserName.click();
+			sideNav.accountMenu.click();
 			sideNav.admin.waitForVisible(5000);
 		});
 

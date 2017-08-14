@@ -7,7 +7,7 @@ import sideNav from '../../pageobjects/side-nav.page';
 import preferencesMainContent from '../../pageobjects/preferences-main-content.page';
 
 import {username, password, email} from '../../data/user.js';
-import {imgURL} from '../../data/interactions.js';
+// import {imgURL} from '../../data/interactions.js';
 
 import {checkIfUserIsValid} from '../../data/checks';
 
@@ -18,8 +18,8 @@ describe('[User Preferences]', ()=> {
 		sideNav.spotlightSearch.waitForVisible(10000);
 		sideNav.searchChannel('general');
 
-		sideNav.accountBoxUserName.waitForVisible();
-		sideNav.accountBoxUserName.click();
+		sideNav.accountMenu.waitForVisible();
+		sideNav.accountMenu.click();
 		sideNav.account.waitForVisible();
 		sideNav.account.click();
 	});
@@ -31,10 +31,6 @@ describe('[User Preferences]', ()=> {
 
 		it('it should show the profile link', ()=> {
 			sideNav.profile.isVisible().should.be.true;
-		});
-
-		it('it should show the avatar link', ()=> {
-			sideNav.avatar.isVisible().should.be.true;
 		});
 
 		it('it should click on the profile link', ()=> {
@@ -88,14 +84,6 @@ describe('[User Preferences]', ()=> {
 			preferencesMainContent.acceptPasswordOverlay(password);
 		});
 
-		it('it should click on the avatar link', ()=> {
-			sideNav.avatar.click();
-		});
-
-		it('it should upload a avatar', ()=> {
-			preferencesMainContent.changeAvatarUpload(imgURL);
-		});
-
 		it('it should close the preferences menu', () => {
 			sideNav.preferencesClose.waitForVisible(5000);
 			sideNav.preferencesClose.click();
@@ -117,7 +105,7 @@ describe('[User Preferences]', ()=> {
 		});
 
 		it('it should be that the name on the nav bar is the edited one', () => {
-			sideNav.accountBoxUserName.getText().should.equal(`EditedRealName${ username }`);
+			sideNav.accountBoxUserName.getText().should.equal(`@EditeduserName${ username }`.toLowerCase());
 		});
 
 		it.skip('it should be that the user name on the members flex tab is the edited one', () => {

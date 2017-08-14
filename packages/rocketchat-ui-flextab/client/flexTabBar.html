@@ -11,7 +11,9 @@
 		<div class="flex-tab-bar content-background-color" role="toolbar">
 			{{#each buttons}}
 				<div class="tab-button {{active}} {{visible}} {{class}}" title="{{title}}">
-					<button aria-label="{{title}}"><i class="{{icon}}"></i></button>
+					<button aria-label="{{title}}">
+						{{> icon block="tab-button-icon" icon=icon }}
+					</button>
 				</div>
 			{{/each}}
 		</div>

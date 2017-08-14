@@ -1,32 +1,82 @@
 <template name="accountBox">
-	<div class="account-box" aria-label="{{_ "Account"}}" role="region">
+	<div class="sidebar__account {{#if lighten}}sidebar__account--lighten{{/if}}" aria-label="{{_ "Account"}}" role="region">
 		{{#with myUserInfo}}
-			<div class="info status-{{status}} primary-background-color">
-				{{#if username}}
-					<div class="thumb" data-status='{{visualStatus}}'>
-						{{> avatar username=username}}
-					</div>
-					<div class="data">
-						<h4 data-username="{{username}}">{{fname}}</h4>
-					</div>
-				{{/if}}
-			</div>
-			<nav class="options primary-background-color animated-hidden">
-				<div class="wrapper">
-					<button data-status="online" class="status online"><span>{{_ "Online"}}</span></button>
-					<button data-status="away" class="status away"><span>{{_ "Away" context="male"}}</span></button>
-					<button data-status="busy" class="status busy"><span>{{_ "Busy" context="male"}}</span></button>
-					<button data-status="offline" class="status offline"><span>{{_ "Invisible"}}</span></button>
-					<button id="account" class='account-link'><i class="icon-sliders"></i><span>{{_ "My_Account"}}</span></button>
-					{{#each registeredMenus}}
-						<button class="account-box-item"><i class="{{icon}}"></i><span>{{name}}</span></button>
-					{{/each}}
-					{{#if showAdminOption }}
-						<button id="admin" class='account-link'><i class="icon-wrench"></i><span>{{_ "Administration"}}</span></button>
-					{{/if}}
-					<button id="logout"><i class="icon-logout"></i><span>{{_ "Logout"}}</span></button>
+			{{#if username}}
+				<div class="sidebar__account-thumb" data-status='{{visualStatus}}'>
+					{{> avatar username=username}}
 				</div>
-			</nav>
+				<div class="sidebar__account-data">
+					<h3 class="sidebar__account-username" data-username="{{username}}">@{{username}}</h3>
+					<div class="sidebar__account-status">
+						<div class="sidebar__account-status-bullet sidebar__account-status-bullet--{{bullet}}" title="{{visualStatus}}"></div>
+						<div class="sidebar__account-visual-status">{{visualStatus}}</div>
+					</div>
+				</div>
+				{{#unless isAnonymous}}
+					<label class="sidebar__account-label" for="sidebar__account-menu{{../modifier}}" data-popover="label">
+						{{> icon block="sidebar__account-menu" icon="menu"}}
+						<input id="sidebar__account-menu{{../modifier}}" type="checkbox" class="rc-popover-anchor" data-popover="anchor" {{isAnonymous}}>
+						<div class="rc-popover" data-popover="popover">
+							<div class="rc-popover__content">
+								<div class="rc-popover__column">
+									<h3 class="rc-popover__title">{{_ "User"}}</h3>
+									<ul class="rc-popover__list">
+										<li class="rc-popover__item" data-status="online" data-action="set-state">
+											<div class="sidebar__account-status-bullet sidebar__account-status-bullet--online rc-popover__item-icon"></div>
+											<span class="rc-popover__item-text">{{_ "Online"}}</span>
+										</li>
+										<li class="rc-popover__item" data-status="away" data-action="set-state">
+											<div class="sidebar__account-status-bullet sidebar__account-status-bullet--away rc-popover__item-icon"></div>
+											<span class="rc-popover__item-text">{{_ "Away" context="male"}}</span>
+										</li>
+										<li class="rc-popover__item" data-status="busy" data-action="set-state">
+											<div class="sidebar__account-status-bullet sidebar__account-status-bullet--busy rc-popover__item-icon"></div>
+											<span class="rc-popover__item-text">{{_ "Busy" context="male"}}</span>
+										</li>
+										<li class="rc-popover__item" data-status="offline" data-action="set-state">
+											<div class="sidebar__account-status-bullet sidebar__account-status-bullet--invisible rc-popover__item-icon"></div>
+											<span class="rc-popover__item-text">{{_ "Invisible"}}</span>
+										</li>
+									</ul>
+									<span class="rc-popover__divider"></span>
+									<ul class="rc-popover__list">
+										{{#each registeredMenus}}
+											<li class="rc-popover__item" data-action="open">
+												{{#if icon}}
+													<span class="rc-popover__icon">
+														{{> icon block="rc-popover__icon-element" icon=icon }}
+													</span>
+												{{/if}}
+												<span class="rc-popover__item-text">{{name}}</span>
+											</li>
+										{{/each}}
+										{{#if showAdminOption}}
+											<li class="rc-popover__item" data-action="open" data-open="administration">
+												<span class="rc-popover__icon">
+													{{> icon block="rc-popover__icon-element" icon="customize"}}
+												</span>
+												<span class="rc-popover__item-text">{{_ "Administration"}}</span>
+											</li>
+										{{/if}}
+										<li class="rc-popover__item" data-action="open" data-open="account">
+											<span class="rc-popover__icon">
+												{{> icon block="rc-popover__icon-element" icon="user"}}
+											</span>
+											<span class="rc-popover__item-text">{{_ "My_Account"}}</span>
+										</li>
+										<li class="rc-popover__item" data-action="open" data-open="logout">
+											<span class="rc-popover__icon">
+												{{> icon block="rc-popover__icon-element" icon="sign-out"}}
+											</span>
+											<span class="rc-popover__item-text">{{_ "Logout"}}</span>
+										</li>
+									</ul>
+								</div>
+							</div>
+						</div>
+					</label>
+				{{/unless}}
+			{{/if}}
 		{{/with}}
 	</div>
 </template>
