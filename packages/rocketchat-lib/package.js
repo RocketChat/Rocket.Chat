@@ -61,6 +61,7 @@ Package.onUse(function(api) {
 	api.addFiles('lib/roomTypesCommon.js');
 	api.addFiles('lib/slashCommand.js');
 	api.addFiles('lib/Message.js');
+	api.addFiles('lib/messageBox.js');
 	api.addFiles('lib/MessageTypes.js');
 
 	api.addFiles('server/lib/bugsnag.js', 'server');
@@ -137,6 +138,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/methods/archiveRoom.js', 'server');
 	api.addFiles('server/methods/blockUser.js', 'server');
 	api.addFiles('server/methods/checkRegistrationSecretURL.js', 'server');
+	api.addFiles('server/methods/checkUsernameAvailability.js', 'server');
 	api.addFiles('server/methods/cleanChannelHistory.js', 'server');
 	api.addFiles('server/methods/createChannel.js', 'server');
 	api.addFiles('server/methods/createToken.js', 'server');
