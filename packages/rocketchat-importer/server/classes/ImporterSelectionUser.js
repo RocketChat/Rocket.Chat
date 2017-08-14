@@ -19,4 +19,4 @@ Importer.SelectionUser = (Importer.SelectionUser = class SelectionUser {
 		this.do_import = do_import;
 	}
 });
-		//TODO: Add some verification?
+//TODO: Add some verification?

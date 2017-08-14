@@ -1,0 +1,25 @@
+<template name="sidebarItem">
+	<li class="sidebar-item {{#if active}}sidebar-item--active{{else}}{{#if darken}}sidebar-item--darken{{else}}sidebar-item--lighten{{/if}}{{/if}} {{#if toolbar}}popup-item{{/if}}" data-id="{{_id}}">
+		{{#if statusClass}}
+			<div class="sidebar-item__user-status sidebar-item__user-status--{{statusClass}}"></div>
+		{{/if}}
+		<a class="sidebar-item__link {{alertClass}} {{#if active}}sidebar-item__link--active{{/if}}" href="{{#if route}}{{route}}{{else}}{{pathFor pathSection group=pathGroup}}{{/if}}" title="{{name}}">
+			<div class="sidebar-item__picture">
+				{{#if icon}}
+					{{> icon block="sidebar-item__icon" icon=icon}}
+				{{else}}
+					{{#if avatar}}
+						<div class="sidebar-item__user-thumb">
+							{{> avatar username=name}}
+						</div>
+					{{/if}}
+				{{/if}}
+			</div>
+			<div class='sidebar-item__name {{archivedClass}}'>{{name}}</div>
+		</a>
+
+		{{#if unread}}
+			<span class="badge badge--unread">{{unread}}</span>
+		{{/if}}
+	</li>
+</template>

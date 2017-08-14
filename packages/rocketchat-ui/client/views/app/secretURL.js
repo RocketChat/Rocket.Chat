@@ -5,8 +5,8 @@ Template.secretURL.helpers({
 		return RocketChat.settings.get('Accounts_RegistrationForm') === 'Secret URL' && hashIsValid && hashIsValid.get();
 	},
 	ready() {
-		const {subscriptionsReady, hashReady} = Template.instance();
-		return typeof subscriptionsReady === 'function' && subscriptionsReady() && hashReady && hashReady.get();
+		const instance = Template.instance();
+		return typeof instance.subscriptionsReady === 'function' && instance.subscriptionsReady() && instance.hashReady && instance.hashReady.get();
 	}
 });
 

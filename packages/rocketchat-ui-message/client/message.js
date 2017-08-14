@@ -13,7 +13,7 @@ Template.message.helpers({
 	roleTags() {
 		const user = Meteor.user();
 		// test user -> settings -> preferences -> hideRoles
-		if (!RocketChat.settings.get('UI_DisplayRoles') || ['settings', 'preferences', 'hideRoles'].reduce((obj, field) => typeof obj !== 'undefined' && obj[field], user)) {
+		if (!RocketChat.settings.get('UI_DisplayRoles') || (user && ['settings', 'preferences', 'hideRoles'].reduce((obj, field) => typeof obj !== 'undefined' && obj[field], user))) {
 			return [];
 		}
 
@@ -205,7 +205,7 @@ Template.message.helpers({
 		return true;
 	},
 	reactions() {
-		const userUsername = Meteor.user().username;
+		const userUsername = Meteor.user() && Meteor.user().username;
 		return Object.keys(this.reactions||{}).map(emoji => {
 			const reaction = this.reactions[emoji];
 			const total = reaction.usernames.length;
@@ -288,7 +288,7 @@ Template.message.onCreated(function() {
 		} else if (msg.u && msg.u.username === RocketChat.settings.get('Chatops_Username')) {
 			msg.html = msg.msg;
 			msg = RocketChat.callbacks.run('renderMentions', msg);
-				// console.log JSON.stringify message
+			// console.log JSON.stringify message
 			msg = msg.html;
 		} else {
 			msg = renderMessageBody(msg);

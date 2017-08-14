@@ -65,7 +65,8 @@ export default {
 
 				// notification sound
 				if (Session.equals('sound', true) && msg.u._id !== this.getId()) {
-					$('#chatAudioNotification')[0].play();
+					const audio = document.getElementById('chatAudioNotification');
+					audio.play();
 				}
 			}
 		});
