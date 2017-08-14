@@ -8,14 +8,25 @@
 		<div class="main-content-flex">
 			<section class="messages-container flex-tab-main-content {{adminClass}}" id="{{windowId}}" aria-label="{{_ "Channel"}}">
 				{{#unless embeddedVersion}}
-					<header class="fixed-title content-background-color border-component-color">
+					<header class="rc-header">
 						{{> burger}}
-						<h2>
+						<div class="rc-header__title">
 							{{#if showToggleFavorite}}
-								<a href="#favorite" class="toggle-favorite"><i class="{{favorite}}" aria-label="{{_ favoriteLabel}}"></i></a>
+								<a href="#favorite" class="rc-header__toggle-favorite {{state}}">{{> icon block="rc-header__icon" icon="star"}}</a>
 							{{/if}}
-							<i class="{{roomIcon}} status-{{userStatus}}"></i>
-							<span class="room-title">{{roomName}}</span>
+							{{#if isDirect}}
+								<div class="rc-header__room-image" style="{{avatarUrl}}"></div>
+							{{/if}}
+							<div class="rc-header__room-title">
+								<span class="rc-header__room-title__name">{{roomName}}</span>
+								{{#if isDirect}}
+									<div class="rc-header__room-title__status">
+										<div class="rc-header__room-title__status-bullet rc-header__room-title__status-bullet--{{visualStatus}}" title="{{visualStatus}}"></div>
+										<div class="rc-header__room-title__status-visual-status">{{visualStatus}}</div>
+									</div>
+								{{/if}}
+							</div>
+
 							{{#if secondaryName}}
 								<span class="secondary-name">@{{secondaryName}}</span>
 							{{/if}}
@@ -26,7 +37,7 @@
 								<i class="icon-language" aria-label="{{_ "Translated"}}"></i>
 							{{/if}}
 							<span class="room-topic">{{{RocketChatMarkdown roomTopic}}}</span>
-						</h2>
+						</div>
 
 						{{#with toolbarButtons}}
 							<div class="iframe-toolbar">

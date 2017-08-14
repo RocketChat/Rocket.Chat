@@ -246,4 +246,10 @@
 	--message-box-editing-color: #fff5df;
 	--message-box-popover-title-text-color: var(--color-gray);
 	--message-box-popover-title-text-size: 0.75rem;
+
+	/*
+	* Header
+	*/
+	--header-toggle-favorite-color: var(--color-gray-medium);
+	--header-toggle-favorite-star-color: var(--color-alert-light);
 }

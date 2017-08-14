@@ -50,6 +50,22 @@ const openProfileTabOrOpenDM = (e, instance, username) => {
 };
 
 Template.room.helpers({
+	avatarUrl() {
+		const roomData = Session.get(`roomData${ this._id }`);
+		if (!roomData) { return ''; }
+		const url = getAvatarUrlFromUsername(RocketChat.roomTypes.getRoomName(roomData.t, roomData));
+		console.log(url);
+		return `background-image: url(${ url });`;
+	},
+
+	visualStatus() {
+		const roomData = Session.get(`roomData${ this._id }`);
+		const name = RocketChat.roomTypes.getRoomName(roomData.t, roomData);
+
+		return Session.get(`user_${ name }_status`);
+
+	},
+
 	isTranslated() {
 		const sub = ChatSubscription.findOne({ rid: this._id }, { fields: { autoTranslate: 1, autoTranslateLanguage: 1 } });
 		return RocketChat.settings.get('AutoTranslate_Enabled') && ((sub != null ? sub.autoTranslate : undefined) === true) && (sub.autoTranslateLanguage != null);
@@ -59,10 +75,10 @@ Template.room.helpers({
 		return RocketChat.Layout.isEmbedded();
 	},
 
-	favorite() {
+	state() {
 		const sub = ChatSubscription.findOne({ rid: this._id }, { fields: { f: 1 } });
-		if (((sub != null ? sub.f : undefined) != null) && sub.f && favoritesEnabled()) { return 'icon-star favorite-room pending-color'; }
-		return 'icon-star-empty';
+		if (((sub != null ? sub.f : undefined) != null) && sub.f && favoritesEnabled()) { return ' favorite-room'; }
+		return '--empty';
 	},
 
 	favoriteLabel() {
@@ -125,6 +141,10 @@ Template.room.helpers({
 
 	isLoading() {
 		return RoomHistoryManager.isLoading(this._id);
+	},
+
+	isDirect() {
+		return RocketChat.models.Rooms.findOne(this._id).t === 'd' ;
 	},
 
 	windowId() {
@@ -473,10 +493,10 @@ Template.room.events({
 		}
 	},
 
-	'click .toggle-favorite'(event) {
+	'click .rc-header__toggle-favorite'(event) {
 		event.stopPropagation();
 		event.preventDefault();
-		return Meteor.call('toggleFavorite', this._id, !$('i', event.currentTarget).hasClass('favorite-room'), function(err) {
+		return Meteor.call('toggleFavorite', this._id, !$(event.currentTarget).hasClass('favorite-room'), function(err) {
 			if (err) {
 				return handleError(err);
 			}
