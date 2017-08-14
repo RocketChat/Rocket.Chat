@@ -31,6 +31,7 @@ Package.onUse(function(api) {
 	api.addFiles('client/lib/fileUploadHandler.js', 'client');
 
 	api.addFiles('server/lib/FileUpload.js', 'server');
+	api.addFiles('server/lib/proxy.js', 'server');
 	api.addFiles('server/lib/requests.js', 'server');
 
 	api.addFiles('server/config/_configUploadStorage.js', 'server');

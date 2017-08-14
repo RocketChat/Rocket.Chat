@@ -15,3 +15,4 @@ notices-for-facebook-graph-api-2
 1.4.0-remove-old-dev-bundle-link
 1.4.1-add-shell-server-package
 1.4.3-split-account-service-packages
+1.5-add-dynamic-import-package
