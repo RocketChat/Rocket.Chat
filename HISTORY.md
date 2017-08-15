@@ -1,3 +1,13 @@
+<a name="0.58.0-rc.3"></a>
+# 0.58.0-rc.3 (2017-08-15)
+
+
+### Bug Fixes
+
+- [#7738](https://github.com/RocketChat/Rocket.Chat/pull/7738) make flex-tab visible again when reduced width
+
+
+
 <a name="0.58.0-rc.2"></a>
 # 0.58.0-rc.2 (2017-08-14)
 
