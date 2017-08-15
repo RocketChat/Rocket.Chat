@@ -4,7 +4,6 @@
 	height: 77px;
 	padding: 20px;
 
-	color: var(--color-dark);
 	box-shadow: 0 0 1px 1px #e6e4e4;
 
 	align-items: center;
@@ -69,7 +68,7 @@
 
 	&__toggle-favorite {
 		color: var(--header-toggle-favorite-star-color);
-		&.--empty {
+		&.empty {
 			color: var(--header-toggle-favorite-color);
 		}
 		&:hover {

@@ -50,11 +50,10 @@ const openProfileTabOrOpenDM = (e, instance, username) => {
 };
 
 Template.room.helpers({
-	avatarUrl() {
+	avatarBackground() {
 		const roomData = Session.get(`roomData${ this._id }`);
 		if (!roomData) { return ''; }
 		const url = getAvatarUrlFromUsername(RocketChat.roomTypes.getRoomName(roomData.t, roomData));
-		console.log(url);
 		return `background-image: url(${ url });`;
 	},
 
@@ -70,7 +69,7 @@ Template.room.helpers({
 	state() {
 		const sub = ChatSubscription.findOne({ rid: this._id }, { fields: { f: 1 } });
 		if (((sub != null ? sub.f : undefined) != null) && sub.f && favoritesEnabled()) { return ' favorite-room'; }
-		return '--empty';
+		return 'empty';
 	},
 
 	favoriteLabel() {
