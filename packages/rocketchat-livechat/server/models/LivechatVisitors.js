@@ -16,6 +16,18 @@ class LivechatVisitors extends RocketChat.models._Base {
 	}
 
 	/**
+	 * Find visitors by _id
+	 * @param {string} token - Visitor token
+	 */
+	findById(_id, options) {
+		const query = {
+			_id
+		};
+
+		return this.find(query, options);
+	}
+
+	/**
 	 * Gets visitor by token
 	 * @param {string} token - Visitor token
 	 */
