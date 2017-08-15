@@ -433,6 +433,21 @@ RocketChat.settings.addGroup('General', function() {
 			i18nDescription: 'Desktop_Notification_Durations_Description'
 		});
 
+		this.add('Audio_Notifications_Default_Alert', 'mentions', {
+			type: 'select',
+			values: [{
+				key: 'all',
+				i18nLabel: 'All_messages'
+			}, {
+				key: 'mentions',
+				i18nLabel: 'Mentions'
+			}, {
+				key: 'nothing',
+				i18nLabel: 'Nothing'
+			}],
+			public: true
+		});
+
 		this.add('Desktop_Notifications_Default_Alert', 'mentions', {
 			type: 'select',
 			values: [{

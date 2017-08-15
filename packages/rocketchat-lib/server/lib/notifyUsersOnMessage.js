@@ -106,7 +106,7 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 	// the unread counter, as it is only for mentions and direct messages
 	RocketChat.models.Subscriptions.setAlertForRoomIdExcludingUserId(message.rid, message.u._id);
 	// Used to order subscriptions by activity
-	RocketChat.models.Subscriptions.updateUserSubscription(message.rid, message.u._id);
+	// RocketChat.models.Subscriptions.updateUserSubscription(message.rid, message.u._id);
 
 	return message;
 
