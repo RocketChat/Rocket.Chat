@@ -32,7 +32,7 @@ RocketChat.API.v1.addRoute('livechat/sms-incoming/:service', {
 			sendMessage.message.rid = Random.id();
 			sendMessage.message.token = Random.id();
 
-			const userId = RocketChat.Livechat.registerGuest({
+			const visitorId = RocketChat.Livechat.registerGuest({
 				username: sms.from.replace(/[^0-9]/g, ''),
 				token: sendMessage.message.token,
 				phone: {
@@ -40,7 +40,7 @@ RocketChat.API.v1.addRoute('livechat/sms-incoming/:service', {
 				}
 			});
 
-			visitor = RocketChat.models.Users.findOneById(userId);
+			visitor = LivechatVisitors.findOneById(visitorId);
 		}
 
 		sendMessage.message.msg = sms.body;
