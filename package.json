@@ -114,6 +114,6 @@
 		"prom-client": "^10.0.2",
 		"semver": "^5.3.0",
 		"toastr": "^2.1.2",
-		"wolfy87-eventemitter": "^5.1.0"
+		"wolfy87-eventemitter": "^5.2.2"
 	}
 }
