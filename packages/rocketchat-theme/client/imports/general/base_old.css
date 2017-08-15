@@ -3634,14 +3634,6 @@ body:not(.is-cordova) {
 }
 
 .rc-old .list-view {
-	z-index: 10;
-
-	overflow-x: hidden;
-	overflow-y: auto;
-
-	padding: 20px;
-	-webkit-overflow-scrolling: touch;
-
 	& .list {
 		position: relative;
 
@@ -5133,14 +5125,12 @@ body:not(.is-cordova) {
 		display: flex;
 		flex-direction: column;
 		height: 100%;
-
+		padding: 20px;
 	}
 
 	&__header {
 		flex: 0 0 auto;
-		z-index: none;
-		overflow: auto;
-		padding: 20px;
+		padding-bottom: 10px;
 	}
 
 	&__result {
