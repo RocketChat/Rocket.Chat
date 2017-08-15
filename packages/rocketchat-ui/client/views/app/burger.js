@@ -6,5 +6,8 @@ Template.burger.helpers({
 		if (Session.equals('isMenuOpen', true)) {
 			return 'menu-opened';
 		}
+	},
+	isNew() {
+		return Template.instace().new === true ? '' : 'rc-old';
 	}
 });

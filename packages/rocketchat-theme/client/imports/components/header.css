@@ -2,31 +2,49 @@
 	display: flex;
 
 	height: 77px;
-	padding: 25px;
+	padding: 20px;
 
 	color: var(--color-dark);
 	box-shadow: 0 0 1px 1px #e6e4e4;
 
 	font-size: 16px;
 	font-weight: 600;
+	align-items: center;
+
+	&__title {
+		display: flex;
+
+		font-size: var(--header-title-font-size);
+		align-items: center;
+		justify-content: flex-start;
+	}
 
 	&__room-title {
-		display: inline-block;
+		display: flex;
+		flex-direction: column;
+	}
 
+	&__channel-name {
+		margin-bottom: 0.25rem;
+
+		color: var(--header-title-username-color-darker);
+
+		font-weight: var(--header-title-username-weight);
+
+	}
+
+	&__subtitle {
+		display: flex;
+
+		color: var(--header-title-status-color);
+
+		font-weight: var(--header-title-status-name-weight);
 		align-items: center;
 
-		&__name {
-			display: block;
-		}
-
-		&__status {
-			display: inline-flex;
-		}
-
-		&__status-bullet {
+		&-bullet {
 			width: var(--sidebar-account-status-bullet-size);
 			height: var(--sidebar-account-status-bullet-size);
-			margin: 0.25rem 0.5rem 0.25rem 0;
+			margin-right: 0.25rem;
 
 			border-radius: var(--sidebar-account-status-bullet-radius);
 
@@ -64,20 +82,81 @@
 	}
 
 	&__icon {
-		width: 22px;
-		height: 20px;
+		width: 25px;
+		height: 25px;
 		stroke: currentColor;
 	}
 
 	&__room-image {
+		width: 30px;
+		height: 30px;
+		margin: 0 0.75rem;
+	}
+}
+
+.burger {
+
+	display: none;
+	visibility: hidden;
+
+	margin-left: 7px;
+
+	cursor: pointer;
+	transition: transform 0.2s ease-out 0.1s;
+	will-change: transform;
+
+	& i {
+		display: block;
+
+		width: 20px;
+		height: 2px;
+		margin: 5px 0;
+
+		transition: transform 0.2s ease-out;
+
+		opacity: 0.8;
+	}
+
+	& .unread-burger-alert {
+		position: absolute;
+		z-index: 3;
+		top: 8px;
+		right: 4px;
+
+		min-width: 18px;
+		height: 18px;
+		padding: 0 4px;
+
+		text-align: center;
+
+		border-radius: 20px;
+
+		font-size: 12px;
+		font-weight: bold;
+		line-height: 18px;
+	}
+
+	&.menu-opened i {
+		&:nth-child(1),
+		&:nth-child(3) {
+			transform-origin: 50%, 50%, 0;
+
+			opacity: 1;
+		}
+
+		&:nth-child(1) {
+			transform: translate(-25%, 3px) rotate(-45deg) scale(0.5, 1);
+		}
+
+		&:nth-child(3) {
+			transform: translate(-25%, -3px) rotate(45deg) scale(0.5, 1);
+		}
+	}
+}
+
+@media (max-width: 780px) {
+	.burger {
 		display: inline-block;
-
-		width: 22px;
-		height: 22px;
-
-		background-repeat: no-repeat;
-		background-position: center;
-		background-size: cover;
-
+		visibility: visible;
 	}
 }

@@ -39,6 +39,8 @@
 	--status-away: var(--color-alert);
 	--status-busy: var(--color-error);
 	--status-invisible: var(--color-gray-medium);
+	--account-username-weight: 700;
+	--status-name-weight: 400;
 
 	/*
 	* Forms
@@ -145,7 +147,7 @@
 	--sidebar-account-status-bullet-size: 12px;
 	--sidebar-account-status-bullet-radius: 50%;
 	--sidebar-account-username-size: 1rem;
-	--sidebar-account-username-weight: 700;
+	--sidebar-account-username-weight: var(--account-username-weight);
 	--sidebar-account-username-color: var(--color-white);
 	--sidebar-account-username-color-darker: var(--color-dark);
 	--sidebar-account-status-font-size: 0.875rem;
@@ -252,4 +254,9 @@
 	*/
 	--header-toggle-favorite-color: var(--color-gray-medium);
 	--header-toggle-favorite-star-color: var(--color-alert-light);
+	--header-title-username-color-darker: var(--color-dark);
+	--header-title-font-size: 0.875rem;
+	--header-title-status-color: var(--color-gray);
+	--header-title-username-weight: var(--account-username-weight);
+	--header-title-status-name-weight: var(--status-name-weight);
 }
