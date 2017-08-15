@@ -3656,7 +3656,9 @@ body:not(.is-cordova) {
 	}
 
 	& > .title {
-		margin: 0 0 20px;
+		&:not(:last-child) {
+			margin: 0 0 20px;
+		}
 
 		& h2 {
 			font-size: 20px;
@@ -5126,7 +5128,26 @@ body:not(.is-cordova) {
 	padding: 1rem 0;
 }
 
-.rc-old .search-messages-list {
+.rc-old .flex-tab {
+	&__content {
+		display: flex;
+		flex-direction: column;
+		height: 100%;
+
+	}
+
+	&__header {
+		flex: 0 0 auto;
+		z-index: none;
+		overflow: auto;
+		padding: 20px;
+	}
+
+	&__result {
+		flex: 1 1 auto;
+    overflow-y: auto;
+	}
+
 	& .message-cog-container {
 		& .message-action {
 			display: none !important;
