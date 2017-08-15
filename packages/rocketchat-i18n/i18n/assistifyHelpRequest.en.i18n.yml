@@ -4,7 +4,7 @@ release: Version
 transaction: Transaction
 application: Application
 gui_title: GUI-Title
-Close_HelpRequest: Help completed
+Close_HelpRequest: Close chat
 Expertise_needs_experts: Select some experts in order to define an expertise
 No_expertise_yet: No expertise yet
 Request: Request
