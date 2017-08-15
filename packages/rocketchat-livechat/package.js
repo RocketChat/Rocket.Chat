@@ -67,6 +67,7 @@ Package.onUse(function(api) {
 	api.addFiles('client/collections/LivechatTrigger.js', 'client');
 	api.addFiles('client/collections/LivechatInquiry.js', 'client');
 	api.addFiles('client/collections/livechatOfficeHour.js', 'client');
+	api.addFiles('client/collections/LivechatVisitor.js', 'client');
 
 	api.addFiles('client/methods/changeLivechatStatus.js', 'client');
 
