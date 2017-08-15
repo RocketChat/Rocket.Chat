@@ -1,6 +1,8 @@
 /* globals SystemLogger */
 
 let script;
+let timeoutHandle;
+
 
 function loadSmarti() {
 	if (!RocketChat.settings.get('DBS_AI_Redlink_URL').trim()) {
@@ -22,7 +24,7 @@ function loadSmarti() {
 			throw new Meteor.Error('no-smarti-ui-script');
 		} else {
 			// add pseudo comment in order to make the script appear in the frontend as a file. This makes it de-buggable
-			script = `${ script } //#  sourceURL=SmartiWidget.js`;
+			script = `${ script } //# sourceURL=SmartiWidget.js`;
 		}
 	} else {
 		SystemLogger.error('Could not reach Smarti service at', DBS_AI_SMARTI_URL);
@@ -30,10 +32,18 @@ function loadSmarti() {
 	}
 }
 
+function delayedReload() {
+	if (timeoutHandle) {
+		Meteor.clearTimeout(timeoutHandle);
+	}
+	timeoutHandle = Meteor.setTimeout(loadSmarti(), 86400000);
+}
+
 Meteor.methods({
 	reloadSmarti() {
 		script = undefined;
 		loadSmarti();
+		delayedReload();
 	}
 });
 
@@ -41,8 +51,8 @@ Meteor.methods({
 	getSmartiUiScript() {
 		if (!script) { //buffering
 			loadSmarti();
+			delayedReload();
 		}
-
 		return script;
 	}
 });
