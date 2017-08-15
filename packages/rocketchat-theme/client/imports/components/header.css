@@ -7,8 +7,6 @@
 	color: var(--color-dark);
 	box-shadow: 0 0 1px 1px #e6e4e4;
 
-	font-size: 16px;
-	font-weight: 600;
 	align-items: center;
 
 	&__title {
@@ -16,7 +14,6 @@
 
 		font-size: var(--header-title-font-size);
 		align-items: center;
-		justify-content: flex-start;
 	}
 
 	&__room-title {
@@ -42,11 +39,11 @@
 		align-items: center;
 
 		&-bullet {
-			width: var(--sidebar-account-status-bullet-size);
-			height: var(--sidebar-account-status-bullet-size);
+			width: var(--header-title-status-bullet-size);
+			height: var(--header-title-status-bullet-size);
 			margin-right: 0.25rem;
 
-			border-radius: var(--sidebar-account-status-bullet-radius);
+			border-radius: var(--header-title-status-bullet-radius);
 
 			&--online {
 				background-color: var(--status-online);
@@ -99,7 +96,7 @@
 	display: none;
 	visibility: hidden;
 
-	margin-left: 7px;
+	margin-right: 20px;
 
 	cursor: pointer;
 	transition: transform 0.2s ease-out 0.1s;
@@ -120,8 +117,8 @@
 	& .unread-burger-alert {
 		position: absolute;
 		z-index: 3;
-		top: 8px;
-		right: 4px;
+		bottom: 13px;
+		left: 10px;
 
 		min-width: 18px;
 		height: 18px;

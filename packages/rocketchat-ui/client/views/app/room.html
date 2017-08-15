@@ -28,8 +28,6 @@
 									{{#if isDirect}}
 										<div class="rc-header__subtitle-bullet rc-header__subtitle-bullet--{{userStatus}}" title="{{userStatus}}"></div>
 										<div class="rc-header__subtitle-visual-status">{{userStatus}}</div>
-									{{else}}
-										<span class="rc-header__subtitle-topic">{{{RocketChatMarkdown roomTopic}}}</span>
 									{{/if}}
 									</div>
 							</div>
@@ -44,7 +42,9 @@
 								<i class="icon-language" aria-label="{{_ "Translated"}}"></i>
 							{{/if}}
 						</div>
-
+						{{#unless isDirect}}
+							<span class="room-topic">{{{RocketChatMarkdown roomTopic}}}</span>
+						{{/unless}}
 						{{#with toolbarButtons}}
 							<div class="iframe-toolbar">
 								{{#each buttons}}
