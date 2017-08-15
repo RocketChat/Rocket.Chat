@@ -84,7 +84,7 @@ Meteor.startup(() => {
 			});
 
 
-			this.add('Reload', 'reloadSmarti', {
+			this.add('reload_Assistify', 'reloadSmarti', {
 				type: 'action',
 				actionText: 'Reload_Settings'
 			});

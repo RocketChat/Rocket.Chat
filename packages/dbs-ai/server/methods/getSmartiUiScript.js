@@ -22,7 +22,7 @@ function loadSmarti() {
 			throw new Meteor.Error('no-smarti-ui-script');
 		} else {
 			// add pseudo comment in order to make the script appear in the frontend as a file. This makes it de-buggable
-			script += '//#  sourceURL=SmartiWidget.js';
+			script = `${ script } //#  sourceURL=SmartiWidget.js`;
 		}
 	} else {
 		SystemLogger.error('Could not reach Smarti service at', DBS_AI_SMARTI_URL);
