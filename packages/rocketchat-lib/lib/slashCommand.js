@@ -26,6 +26,7 @@ Meteor.methods({
 				method: 'slashCommand'
 			});
 		}
+
 		return RocketChat.slashCommands.run(command.cmd, command.params, command.msg);
 	}
 });

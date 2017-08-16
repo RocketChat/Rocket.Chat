@@ -45,4 +45,6 @@ RocketChat.slashCommands.add('help', function Help(command, params, item) {
 		});
 	});
 
+}, {
+	description: 'Show_the_keyboard_shortcut_list'
 });

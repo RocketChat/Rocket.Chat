@@ -45,4 +45,7 @@ function Create(command, params, item) {
 	Meteor.call('createChannel', channel, []);
 }
 
-RocketChat.slashCommands.add('create', Create);
+RocketChat.slashCommands.add('create', Create, {
+	description: 'Create_A_New_Channel',
+	params: '#channel'
+});
