@@ -4,5 +4,6 @@
 @import 'imports/keyframes.css';
 @import 'imports/forms.css';
 @import 'imports/base.css';
+@import 'imports/chip.css';
 @import 'imports/rtl.css';
-
+@import 'imports/slider.css';
