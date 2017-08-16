@@ -33,6 +33,36 @@ RocketChat.API.v1.addRoute(['dm.close', 'im.close'], { authRequired: true }, {
 	}
 });
 
+RocketChat.API.v1.addRoute(['dm.files', 'im.files'], { authRequired: true }, {
+	get() {
+		const findResult = findDirectMessageRoomById(this.bodyParams.roomId, this.userId);
+
+		//The find method returns either with the dm or the failure
+		if (findResult.statusCode) {
+			return findResult;
+		}
+
+		const { offset, count } = this.getPaginationItems();
+		const { sort, fields, query } = this.parseJsonQuery();
+
+		const ourQuery = Object.assign({}, query, { rid: findResult._id });
+
+		const files = RocketChat.models.Uploads.find(ourQuery, {
+			sort: sort ? sort : { name: 1 },
+			skip: offset,
+			limit: count,
+			fields: Object.assign({}, fields, RocketChat.API.v1.defaultFieldsToExclude)
+		}).fetch();
+
+		return RocketChat.API.v1.success({
+			files,
+			count: files.length,
+			offset,
+			total: RocketChat.models.Uploads.find(ourQuery).count()
+		});
+	}
+});
+
 RocketChat.API.v1.addRoute(['dm.history', 'im.history'], { authRequired: true }, {
 	get() {
 		const findResult = findDirectMessageRoomById(this.queryParams.roomId, this.userId);
