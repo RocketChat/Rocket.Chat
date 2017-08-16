@@ -93,6 +93,7 @@ rocketchat:oembed
 rocketchat:otr
 rocketchat:push-notifications
 rocketchat:reactions
+rocketchat:rocketlets
 rocketchat:sandstorm
 rocketchat:slackbridge
 rocketchat:slashcommands-archive

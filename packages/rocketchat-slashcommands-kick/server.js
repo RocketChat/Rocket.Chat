@@ -37,4 +37,7 @@ const Kick = function(command, params, {rid}) {
 	Meteor.call('removeUserFromRoom', {rid, username});
 };
 
-RocketChat.slashCommands.add('kick', Kick);
+RocketChat.slashCommands.add('kick', Kick, {
+	description: 'Remove_someone_from_room',
+	params: '@username'
+});

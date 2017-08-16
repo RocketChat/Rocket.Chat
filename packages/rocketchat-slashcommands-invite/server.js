@@ -77,6 +77,7 @@ function Invite(command, params, item) {
 	});
 }
 
-RocketChat.slashCommands.add('invite', Invite);
-
-export {Invite};
+RocketChat.slashCommands.add('invite', Invite, {
+	description: 'Invite_user_to_join_channel',
+	params: '@username'
+});
