@@ -127,7 +127,7 @@ Accounts.registerLoginHandler(function(options) {
 
 	if (!_hasCredential(options.cas.credentialToken)) {
 		throw new Meteor.Error(Accounts.LoginCancelledError.numericError,
-		'no matching login attempt found');
+			'no matching login attempt found');
 	}
 
 	const result = _retrieveCredential(options.cas.credentialToken);
@@ -249,7 +249,9 @@ Accounts.registerLoginHandler(function(options) {
 						ts: new Date(),
 						open: true,
 						alert: true,
-						unread: 1
+						unread: 1,
+						userMentions: 1,
+						groupMentions: 0
 					});
 				}
 			});

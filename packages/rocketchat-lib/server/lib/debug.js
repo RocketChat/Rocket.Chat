@@ -1,3 +1,4 @@
+/* global InstanceStatus */
 const logger = new Logger('Meteor', {
 	methods: {
 		method: {
@@ -36,3 +37,8 @@ Meteor.publish = function(name, func) {
 		return func.apply(this, arguments);
 	});
 };
+
+WebApp.rawConnectHandlers.use(function(req, res, next) {
+	res.setHeader('X-Instance-ID', InstanceStatus.id());
+	return next();
+});

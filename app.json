@@ -6,7 +6,6 @@
   "keywords": ["meteor", "social", "community", "chat"],
   "website": "https://rocket.chat",
   "env": {
-    "NODE_ENV": "production",
     "BUILDPACK_URL": "https://github.com/RocketChat/meteor-buildpack-horse.git",
     "HEROKU_APP_NAME": {
       "description": "Please re-enter your App Name from the top.",
