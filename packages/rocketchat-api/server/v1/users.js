@@ -19,11 +19,16 @@ RocketChat.API.v1.addRoute('users.create', { authRequired: true }, {
 			this.bodyParams.joinDefaultChannels = true;
 		}
 
+		if (this.bodyParams.customFields) {
+			RocketChat.validateCustomFields(this.bodyParams.customFields);
+		}
+
 		const newUserId = RocketChat.saveUser(this.userId, this.bodyParams);
 
 		if (this.bodyParams.customFields) {
-			RocketChat.saveCustomFields(newUserId, this.bodyParams.customFields);
+			RocketChat.saveCustomFieldsWithoutValidation(newUserId, this.bodyParams.customFields);
 		}
+
 
 		if (typeof this.bodyParams.active !== 'undefined') {
 			Meteor.runAsUser(this.userId, () => {
@@ -190,7 +195,11 @@ RocketChat.API.v1.addRoute('users.resetAvatar', { authRequired: true }, {
 
 RocketChat.API.v1.addRoute('users.setAvatar', { authRequired: true }, {
 	post() {
-		check(this.bodyParams, { avatarUrl: Match.Maybe(String), userId: Match.Maybe(String) });
+		check(this.bodyParams, Match.ObjectIncluding({
+			avatarUrl: Match.Maybe(String),
+			userId: Match.Maybe(String),
+			username: Match.Maybe(String)
+		}));
 
 		let user;
 		if (this.isUserFromParams()) {

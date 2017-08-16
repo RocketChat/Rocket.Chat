@@ -8,7 +8,11 @@ class MarkdownClass {
 		return this.parseNotEscaped(_.escapeHTML(text));
 	}
 
-	parseNotEscaped(msg) {
+	parseNotEscaped(msg, message) {
+		if (message && message.tokens == null) {
+			message.tokens = [];
+		}
+
 		const schemes = RocketChat.settings.get('Markdown_SupportSchemesForLink').split(',').join('|');
 
 		if (RocketChat.settings.get('Markdown_Headers')) {
@@ -53,19 +57,32 @@ class MarkdownClass {
 		// Support ![alt text](http://image url)
 		msg = msg.replace(new RegExp(`!\\[([^\\]]+)\\]\\(((?:${ schemes }):\\/\\/[^\\)]+)\\)`, 'gm'), function(match, title, url) {
 			const target = url.indexOf(Meteor.absoluteUrl()) === 0 ? '' : '_blank';
-			return `<a href="${ _.escapeHTML(url) }" title="${ _.escapeHTML(title) }" target="${ _.escapeHTML(target) }"><div class="inline-image" style="background-image: url(${ _.escapeHTML(url) });"></div></a>`;
+			const html = `<a href="${ _.escapeHTML(url) }" title="${ _.escapeHTML(title) }" target="${ _.escapeHTML(target) }" rel="noopener noreferrer"><div class="inline-image" style="background-image: url(${ _.escapeHTML(url) });"></div></a>`;
+
+			if (message && message.tokens) {
+				const token = `=!=${ Random.id() }=!=`;
+
+				message.tokens.push({
+					token,
+					text: html
+				});
+
+				return token;
+			}
+
+			return html;
 		});
 
 		// Support [Text](http://link)
 		msg = msg.replace(new RegExp(`\\[([^\\]]+)\\]\\(((?:${ schemes }):\\/\\/[^\\)]+)\\)`, 'gm'), function(match, title, url) {
 			const target = url.indexOf(Meteor.absoluteUrl()) === 0 ? '' : '_blank';
-			return `<a href="${ _.escapeHTML(url) }" target="${ _.escapeHTML(target) }">${ _.escapeHTML(title) }</a>`;
+			return `<a href="${ _.escapeHTML(url) }" target="${ _.escapeHTML(target) }" rel="noopener noreferrer">${ _.escapeHTML(title) }</a>`;
 		});
 
 		// Support <http://link|Text>
 		msg = msg.replace(new RegExp(`(?:<|&lt;)((?:${ schemes }):\\/\\/[^\\|]+)\\|(.+?)(?=>|&gt;)(?:>|&gt;)`, 'gm'), (match, url, title) => {
 			const target = url.indexOf(Meteor.absoluteUrl()) === 0 ? '' : '_blank';
-			return `<a href="${ _.escapeHTML(url) }" target="${ _.escapeHTML(target) }">${ _.escapeHTML(title) }</a>`;
+			return `<a href="${ _.escapeHTML(url) }" target="${ _.escapeHTML(target) }" rel="noopener noreferrer">${ _.escapeHTML(title) }</a>`;
 		});
 
 		if (typeof window !== 'undefined' && window !== null ? window.rocketDebug : undefined) { console.log('Markdown', msg); }
@@ -80,7 +97,7 @@ RocketChat.Markdown = Markdown;
 // renderMessage already did html escape
 const MarkdownMessage = (message) => {
 	if (_.trim(message != null ? message.html : undefined)) {
-		message.html = Markdown.parseNotEscaped(message.html);
+		message.html = Markdown.parseNotEscaped(message.html, message);
 	}
 
 	return message;

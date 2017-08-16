@@ -12,6 +12,8 @@ const fields = {
 	alert: 1,
 	roles: 1,
 	unread: 1,
+	userMentions: 1,
+	groupMentions: 1,
 	archived: 1,
 	audioNotification: 1,
 	desktopNotifications: 1,
