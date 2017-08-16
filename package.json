@@ -99,11 +99,11 @@
 	},
 	"dependencies": {
 		"@google-cloud/storage": "^1.2.1",
-		"aws-sdk": "^2.94.0",
+		"aws-sdk": "^2.99.0",
 		"babel-runtime": "^6.25.0",
 		"bcrypt": "^1.0.2",
 		"codemirror": "^5.28.0",
-		"file-type": "^5.2.0",
+		"file-type": "^6.1.0",
 		"highlight.js": "^9.12.0",
 		"jquery": "^3.2.1",
 		"mime-db": "^1.29.0",
@@ -114,6 +114,6 @@
 		"prom-client": "^10.0.3",
 		"semver": "^5.4.1",
 		"toastr": "^2.1.2",
-		"wolfy87-eventemitter": "^5.1.0"
+		"wolfy87-eventemitter": "^5.2.2"
 	}
 }
