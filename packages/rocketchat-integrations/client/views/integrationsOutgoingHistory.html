@@ -1,14 +1,17 @@
 <template name="integrationsOutgoingHistory">
 	<section class="page-container page-home page-static page-settings">
-		<header class="fixed-title border-component-color">
+		<header class="rc-header">
 			{{> burger}}
-			<h2>
-				<span class="room-title">{{pageTitle}}</span>
-			</h2>
+			<div class="rc-header__title">
+				<span class="rc-header__section--title">{{pageTitle}}</span>
+			</div>
+
 			{{#if hasPermission}}
-				<div class="submit">
+				<div class="rc-header__section--button">
 					<button class="button danger clear-history"><i class="icon-history"></i>{{_ "clear_history"}}</button>
 				</div>
+
+				<div class="rc-header__section--help"></div>
 			{{/if}}
 		</header>
 		<div class="content background-transparent-dark">

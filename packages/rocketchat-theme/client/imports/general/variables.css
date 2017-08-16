@@ -258,6 +258,7 @@
 	--header-toggle-favorite-star-color: var(--color-alert-light);
 	--header-title-username-color-darker: var(--color-dark);
 	--header-title-font-size: 0.875rem;
+	--header-title-font-size: 1rem;
 	--header-title-status-color: var(--color-gray);
 	--header-title-username-weight: var(--account-username-weight);
 	--header-title-status-name-weight: var(--status-name-weight);

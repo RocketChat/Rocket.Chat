@@ -234,7 +234,7 @@
 
 	& .content {
 		position: absolute;
-		top: 0;
+		top: 18px;
 		left: 0;
 
 		overflow-y: scroll;

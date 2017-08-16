@@ -2,7 +2,7 @@
 	display: flex;
 
 	height: 77px;
-	padding: 20px;
+	padding: 20px 24px;
 
 	box-shadow: 0 0 1px 1px #e6e4e4;
 
@@ -10,11 +10,31 @@
 
 	&__title {
 		display: flex;
+		flex: 1 1 100%;
+
+		margin-left: 4px;
 
 		font-size: var(--header-title-font-size);
 		align-items: center;
 	}
 
+	&__section--title {
+		color: var(--header-title-username-color-darker);
+
+		font-weight: var(--header-title-username-weight);
+	}
+
+	&__section--button,
+	&__section--help {
+		display: flex;
+		flex: 1 1 100%;
+		justify-content: flex-end;
+
+	}
+
+	&__section--button > * {
+		margin: 0.3rem;
+	}
 	&__room-title {
 		display: flex;
 		flex-direction: column;
@@ -84,9 +104,9 @@
 	}
 
 	&__room-image {
-		width: 30px;
-		height: 30px;
-		margin: 0 0.75rem;
+		width: 32px;
+		height: 32px;
+		margin: 0 1rem;
 	}
 }
 

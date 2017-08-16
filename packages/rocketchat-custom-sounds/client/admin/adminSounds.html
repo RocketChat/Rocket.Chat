@@ -1,11 +1,11 @@
 <template name="adminSounds">
 	<div class="main-content-flex">
 		<section class="page-container page-list flex-tab-main-content">
-			<header class="fixed-title">
+			<header class="rc-header">
 				{{> burger}}
-				<h2>
-					<span class="room-title">{{_ "Custom_Sounds"}}</span>
-				</h2>
+				<div class="rc-header__title">
+					<span class="rc-header__section--title">{{_ "Custom_Sounds"}}</span>
+				</div>
 			</header>
 			<div class="content">
 				{{#requiresPermission 'manage-sounds'}}
