@@ -15,6 +15,8 @@ export class IMAPIntercepter {
 			keepalive: true
 		});
 
+		this.delete = RocketChat.settings.get('Direct_Reply_Delete') ? RocketChat.settings.get('Direct_Reply_Delete') : false;
+
 		// On successfully connected.
 		this.imap.on('ready', Meteor.bindEnvironment(() => {
 			if (this.imap.state !== 'disconnected') {
@@ -87,7 +89,7 @@ export class IMAPIntercepter {
 					markSeen: true
 				});
 
-				f.on('message', Meteor.bindEnvironment((msg) => {
+				f.on('message', Meteor.bindEnvironment((msg, seqno) => {
 					const email = {};
 
 					msg.on('body', (stream, info) => {
@@ -106,6 +108,7 @@ export class IMAPIntercepter {
 							if (info.which === '1') {
 								email.body = bodyBuffer;
 							} else {
+								// parse headers
 								email.headers = IMAP.parseHeader(headerBuffer);
 
 								email.headers.to = email.headers.to[0];
@@ -117,6 +120,12 @@ export class IMAPIntercepter {
 
 					// On fetched each message, pass it further
 					msg.once('end', Meteor.bindEnvironment(() => {
+						// delete message from inbox
+						if (this.delete) {
+							this.imap.seq.addFlags(seqno, 'Deleted', (err) => {
+								if (err) { console.log(`Mark deleted error: ${ err }`); }
+							});
+						}
 						RocketChat.processDirectEmail(email);
 					}));
 				}));
