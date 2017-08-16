@@ -131,9 +131,10 @@ Importer.CSV = class ImporterCSV extends Importer.Base {
 
 		const selectionUsers = tempUsers.map((u) => new Importer.SelectionUser(u.id, u.username, u.email, false, false, true));
 		const selectionChannels = tempChannels.map((c) => new Importer.SelectionChannel(c.id, c.name, false, true, c.isPrivate));
+		const selectionMessages = this.importRecord.count.messages;
 
 		super.updateProgress(Importer.ProgressStep.USER_SELECTION);
-		return new Importer.Selection(this.name, selectionUsers, selectionChannels);
+		return new Importer.Selection(this.name, selectionUsers, selectionChannels, selectionMessages);
 	}
 
 	startImport(importSelection) {
@@ -232,16 +233,60 @@ Importer.CSV = class ImporterCSV extends Importer.Base {
 			}
 			this.collection.update({ _id: this.channels._id }, { $set: { 'channels': this.channels.channels }});
 
+			//If no channels file, collect channel map from DB for message-only import
+			if (this.channels.channels.length === 0) {
+				for (const cname of this.messages.keys()) {
+					Meteor.runAsUser(startedByUserId, () => {
+						const existantRoom = RocketChat.models.Rooms.findOneByName(cname);
+						if (existantRoom || cname.toUpperCase() === 'GENERAL') {
+							this.channels.channels.push({
+								id: cname.replace('.', '_'),
+								name: cname,
+								rocketId: (cname.toUpperCase() === 'GENERAL' ? 'GENERAL' : existantRoom._id),
+								do_import: true
+							});
+						}
+					});
+				}
+			}
+
+			//If no users file, collect user map from DB for message-only import
+			if (this.users.users.length === 0) {
+				for (const [ch, messagesMap] of this.messages.entries()) {
+					const csvChannel = this.getChannelFromName(ch);
+					if (!csvChannel || !csvChannel.do_import) {
+						continue;
+					}
+					Meteor.runAsUser(startedByUserId, () => {
+						for (const msgs of messagesMap.values()) {
+							for (const msg of msgs.messages) {
+								if (!this.getUserFromUsername(msg.username)) {
+									const user = RocketChat.models.Users.findOneByUsername(msg.username);
+									if (user) {
+										this.users.users.push({
+											rocketId: user._id,
+											username: user.username
+										});
+									}
+								}
+							}
+						}
+					});
+				}
+			}
+
+
 			//Import the Messages
 			super.updateProgress(Importer.ProgressStep.IMPORTING_MESSAGES);
 			for (const [ch, messagesMap] of this.messages.entries()) {
 				const csvChannel = this.getChannelFromName(ch);
-				if (!csvChannel.do_import) {
+				if (!csvChannel || !csvChannel.do_import) {
 					continue;
 				}
 
 				const room = RocketChat.models.Rooms.findOneById(csvChannel.rocketId, { fields: { usernames: 1, t: 1, name: 1 } });
 				Meteor.runAsUser(startedByUserId, () => {
+					const timestamps = {};
 					for (const [msgGroupData, msgs] of messagesMap.entries()) {
 						super.updateRecord({ 'messagesstatus': `${ ch }/${ msgGroupData }.${ msgs.messages.length }` });
 						for (const msg of msgs.messages) {
@@ -253,8 +298,15 @@ Importer.CSV = class ImporterCSV extends Importer.Base {
 
 							const creator = this.getUserFromUsername(msg.username);
 							if (creator) {
+								let suffix = '';
+								if (timestamps[msg.ts] === undefined) {
+									timestamps[msg.ts] = 1;
+								} else {
+									suffix = `-${ timestamps[msg.ts] }`;
+									timestamps[msg.ts] += 1;
+								}
 								const msgObj = {
-									_id: `csv-${ csvChannel.id }-${ msg.ts }`,
+									_id: `csv-${ csvChannel.id }-${ msg.ts }${ suffix }`,
 									ts: new Date(parseInt(msg.ts)),
 									msg: msg.text,
 									rid: room._id,
@@ -285,8 +337,9 @@ Importer.CSV = class ImporterCSV extends Importer.Base {
 	getSelection() {
 		const selectionUsers = this.users.users.map((u) => new Importer.SelectionUser(u.id, u.username, u.email, false, false, true));
 		const selectionChannels = this.channels.channels.map((c) => new Importer.SelectionChannel(c.id, c.name, false, true, c.isPrivate));
+		const selectionMessages = this.importRecord.count.messages;
 
-		return new Importer.Selection(this.name, selectionUsers, selectionChannels);
+		return new Importer.Selection(this.name, selectionUsers, selectionChannels, selectionMessages);
 	}
 
 	getChannelFromName(channelName) {

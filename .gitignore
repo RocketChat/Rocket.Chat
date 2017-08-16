@@ -3,6 +3,8 @@
 **/node_modules/*
 **/tmp/*
 **/.meteor/dev_bundle
+**/.meteor/local*
+**/.meteor/meteorite
 /private/certs/*
 *.bak
 *.iml
@@ -34,13 +36,10 @@
 .env
 .externalToolBuilders
 .idea
+.vscode
 .loadpath
 .map
 .metadata
-.meteor/local*
-.meteor/meteorite
-.meteor/dev_bundle
-packages/rocketchat-livechat/app/.meteor/dev_bundle
 packages/rocketchat-livechat/assets/rocketchat-livechat.min.js
 .mule
 .pmd
