@@ -76,6 +76,12 @@ function inviteAll(type) {
 		}
 	};
 }
-RocketChat.slashCommands.add('invite-all-to', inviteAll('to'));
-RocketChat.slashCommands.add('invite-all-from', inviteAll('from'));
+RocketChat.slashCommands.add('invite-all-to', inviteAll('to'), {
+	description: 'Invite_user_to_join_channel_all_to',
+	params: '#room'
+});
+RocketChat.slashCommands.add('invite-all-from', inviteAll('from'), {
+	description: 'Invite_user_to_join_channel_all_from',
+	params: '#room'
+});
 module.exports = inviteAll;

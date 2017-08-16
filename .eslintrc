@@ -133,6 +133,7 @@
 		"ReactiveVar"                 : false,
 		"RocketChat"                  : true,
 		"RocketChatFile"              : false,
+		"Rocketlets"                  : false,
 		"RoomHistoryManager"          : false,
 		"RoomManager"                 : false,
 		"s"                           : false,
