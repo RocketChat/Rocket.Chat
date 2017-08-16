@@ -164,14 +164,41 @@ RocketChat.API.v1.addRoute('channels.delete', { authRequired: true }, {
 	post() {
 		const findResult = findChannelByIdOrName({ params: this.requestParams(), checkedArchived: false });
 
-		//The find method returns either with the group or the failur
-
 		Meteor.runAsUser(this.userId, () => {
 			Meteor.call('eraseRoom', findResult._id);
 		});
 
 		return RocketChat.API.v1.success({
 			channel: findResult
+		});
+	}
+});
+
+RocketChat.API.v1.addRoute('channels.files', { authRequired: true }, {
+	get() {
+		const findResult = findChannelByIdOrName({ params: this.requestParams(), checkedArchived: false });
+
+		Meteor.runAsUser(this.userId, () => {
+			Meteor.call('canAccessRoom', findResult._id, this.userId);
+		});
+
+		const { offset, count } = this.getPaginationItems();
+		const { sort, fields, query } = this.parseJsonQuery();
+
+		const ourQuery = Object.assign({}, query, { rid: findResult._id });
+
+		const files = RocketChat.models.Uploads.find(ourQuery, {
+			sort: sort ? sort : { name: 1 },
+			skip: offset,
+			limit: count,
+			fields: Object.assign({}, fields, RocketChat.API.v1.defaultFieldsToExclude)
+		}).fetch();
+
+		return RocketChat.API.v1.success({
+			files,
+			count: files.length,
+			offset,
+			total: RocketChat.models.Uploads.find(ourQuery).count()
 		});
 	}
 });
