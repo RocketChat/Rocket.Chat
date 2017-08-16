@@ -1,6 +1,6 @@
 FROM rocketchat/base:4
 
-ENV RC_VERSION 0.57.3
+ENV RC_VERSION 0.58.0-rc.3
 
 MAINTAINER buildmaster@rocket.chat
 

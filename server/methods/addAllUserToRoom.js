@@ -37,7 +37,9 @@ Meteor.methods({
 					ts: now,
 					open: true,
 					alert: true,
-					unread: 1
+					unread: 1,
+					userMentions: 1,
+					groupMentions: 0
 				});
 				RocketChat.models.Messages.createUserJoinWithRoomIdAndUser(rid, user, {
 					ts: now

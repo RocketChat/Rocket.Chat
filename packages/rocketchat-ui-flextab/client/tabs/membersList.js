@@ -208,8 +208,7 @@ Template.membersList.onCreated(function() {
 		this.showDetail.set(false);
 		return setTimeout(() => {
 			return this.clearRoomUserDetail();
-		}
-		, 500);
+		}, 500);
 	};
 
 	this.showUserDetail = username => {

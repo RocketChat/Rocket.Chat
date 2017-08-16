@@ -148,6 +148,9 @@ class ModelUsers extends RocketChat.models._Base {
 						},
 						{
 							name: termRegex
+						},
+						{
+							'emails.address': termRegex
 						}
 					]
 				},
@@ -223,6 +226,15 @@ class ModelUsers extends RocketChat.models._Base {
 			}
 		};
 
+		return this.find(query, options);
+	}
+
+	findUsersByIds(ids, options) {
+		const query = {
+			_id: {
+				$in: ids
+			}
+		};
 		return this.find(query, options);
 	}
 
@@ -493,7 +505,7 @@ class ModelUsers extends RocketChat.models._Base {
 		return this.update({ _id }, update);
 	}
 
-// INSERT
+	// INSERT
 	create(data) {
 		const user = {
 			createdAt: new Date,
@@ -506,12 +518,12 @@ class ModelUsers extends RocketChat.models._Base {
 	}
 
 
-// REMOVE
+	// REMOVE
 	removeById(_id) {
 		return this.remove(_id);
 	}
 
-/*
+	/*
 Find users to send a message by email if:
 - he is not online
 - has a verified email

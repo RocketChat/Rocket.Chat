@@ -228,6 +228,8 @@ describe('[Api Settings Change]', () => {
 		});
 
 		it('it should send a bad word', () => {
+			sideNav.general.waitForVisible(5000);
+			sideNav.general.click();
 			mainContent.setTextToInput('badword');
 			mainContent.sendBtn.click();
 			mainContent.waitForLastMessageEqualsText('*******');
