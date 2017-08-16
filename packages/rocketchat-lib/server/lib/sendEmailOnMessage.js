@@ -43,6 +43,9 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 	if (room.t === 'd') {
 		usersToSendEmail[message.rid.replace(message.u._id, '')] = 'direct';
 	} else {
+		const isMentionAll = message.mentions.find((mention) => {
+			return mention._id === 'all';
+		});
 		RocketChat.models.Subscriptions.findWithSendEmailByRoomId(room._id).forEach((sub) => {
 			if (sub.disableNotifications) {
 				return delete usersToSendEmail[sub.u._id];
@@ -55,7 +58,7 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 					return mention._id === sub.u._id;
 				});
 
-				if (emailNotifications === 'mentions' || mentionedUser) {
+				if (emailNotifications === 'mentions' && (mentionedUser || isMentionAll)) {
 					return usersToSendEmail[sub.u._id] = 'mention';
 				}
 
