@@ -239,11 +239,11 @@ Template.messagePopupConfig.helpers({
 						description: TAPi18n.__(item.description)
 					};
 				})
-				.filter(command => command._id.indexOf(filter) > -1)
-				.sort(function(a, b) {
-					return a._id > b._id;
-				})
-				.slice(0, 11);
+					.filter(command => command._id.indexOf(filter) > -1)
+					.sort(function(a, b) {
+						return a._id > b._id;
+					})
+					.slice(0, 11);
 			}
 		};
 		return config;
@@ -277,17 +277,58 @@ Template.messagePopupConfig.helpers({
 							data: value
 						};
 					})
-					.filter(obj => regExp.test(obj._id))
-					.slice(0, 10)
-					.sort(function(a, b) {
-						if (a._id < b._id) {
-							return -1;
-						}
-						if (a._id > b._id) {
-							return 1;
-						}
-						return 0;
-					});
+						.filter(obj => regExp.test(obj._id))
+						.slice(0, 10)
+						.sort(function(a, b) {
+							if (a._id < b._id) {
+								return -1;
+							}
+							if (a._id > b._id) {
+								return 1;
+							}
+							return 0;
+						});
+				}
+			};
+		}
+	},
+	popupReactionEmojiConfig() {
+		if (RocketChat.emoji != null) {
+			const self = this;
+			return {
+				title: t('Emoji'),
+				collection: RocketChat.emoji.list,
+				template: 'messagePopupEmoji',
+				trigger: '\\+',
+				prefix: '+',
+				suffix: ' ',
+				getInput: self.getInput,
+				getFilter(collection, filter) {
+					const key = `${ filter }`;
+
+					if (!RocketChat.emoji.packages.emojione || RocketChat.emoji.packages.emojione.asciiList[key] || filter.length < 2) {
+						return [];
+					}
+
+					const regExp = new RegExp(`^${ RegExp.escape(key) }`, 'i');
+					return Object.keys(collection).map(key => {
+						const value = collection[key];
+						return {
+							_id: key,
+							data: value
+						};
+					})
+						.filter(obj => regExp.test(obj._id))
+						.slice(0, 10)
+						.sort(function(a, b) {
+							if (a._id < b._id) {
+								return -1;
+							}
+							if (a._id > b._id) {
+								return 1;
+							}
+							return 0;
+						});
 				}
 			};
 		}
