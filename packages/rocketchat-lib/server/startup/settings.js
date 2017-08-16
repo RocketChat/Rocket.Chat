@@ -624,7 +624,7 @@ RocketChat.settings.addGroup('Email', function() {
 				value: 'POP'
 			}
 		});
-		this.add('Direct_Reply_Delete', false, {
+		this.add('Direct_Reply_Delete', true, {
 			type: 'boolean',
 			env: true,
 			i18nLabel: 'Direct_Reply_Delete',
@@ -632,6 +632,71 @@ RocketChat.settings.addGroup('Email', function() {
 				_id: 'Direct_Reply_Protocol',
 				value: 'IMAP'
 			}
+		});
+		this.add('Direct_Reply_Separator', '+', {
+			type: 'select',
+			values: [
+				{
+					key: '!',
+					i18nLabel: '!'
+				}, {
+					key: '#',
+					i18nLabel: '#'
+				}, {
+					key: '$',
+					i18nLabel: '$'
+				}, {
+					key: '%',
+					i18nLabel: '%'
+				}, {
+					key: '&',
+					i18nLabel: '&'
+				}, {
+					key: '\'',
+					i18nLabel: '\''
+				}, {
+					key: '*',
+					i18nLabel: '*'
+				}, {
+					key: '+',
+					i18nLabel: '+'
+				}, {
+					key: '-',
+					i18nLabel: '-'
+				}, {
+					key: '/',
+					i18nLabel: '/'
+				}, {
+					key: '=',
+					i18nLabel: '='
+				}, {
+					key: '?',
+					i18nLabel: '?'
+				}, {
+					key: '^',
+					i18nLabel: '^'
+				}, {
+					key: '_',
+					i18nLabel: '_'
+				}, {
+					key: '`',
+					i18nLabel: '`'
+				}, {
+					key: '{',
+					i18nLabel: '{'
+				}, {
+					key: '|',
+					i18nLabel: '|'
+				}, {
+					key: '}',
+					i18nLabel: '}'
+				}, {
+					key: '~',
+					i18nLabel: '~'
+				}
+			],
+			env: true,
+			i18nLabel: 'Direct_Reply_Separator'
 		});
 		this.add('Direct_Reply_Username', '', {
 			type: 'string',

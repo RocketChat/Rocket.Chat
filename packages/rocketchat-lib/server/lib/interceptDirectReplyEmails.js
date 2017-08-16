@@ -15,7 +15,7 @@ export class IMAPIntercepter {
 			keepalive: true
 		});
 
-		this.delete = RocketChat.settings.get('Direct_Reply_Delete') ? RocketChat.settings.get('Direct_Reply_Delete') : false;
+		this.delete = RocketChat.settings.get('Direct_Reply_Delete') ? RocketChat.settings.get('Direct_Reply_Delete') : true;
 
 		// On successfully connected.
 		this.imap.on('ready', Meteor.bindEnvironment(() => {
