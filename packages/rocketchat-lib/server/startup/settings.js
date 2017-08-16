@@ -624,6 +624,15 @@ RocketChat.settings.addGroup('Email', function() {
 				value: 'POP'
 			}
 		});
+		this.add('Direct_Reply_Delete', false, {
+			type: 'boolean',
+			env: true,
+			i18nLabel: 'Direct_Reply_Delete',
+			enableQuery: {
+				_id: 'Direct_Reply_Protocol',
+				value: 'IMAP'
+			}
+		});
 		this.add('Direct_Reply_Username', '', {
 			type: 'string',
 			env: true,
