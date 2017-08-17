@@ -121,6 +121,28 @@ RocketChat.API.v1.addRoute(['dm.history', 'im.history'], { authRequired: true },
 	}
 });
 
+RocketChat.API.v1.addRoute(['dm.members', 'im.members'], { authRequired: true }, {
+	get() {
+		const findResult = findDirectMessageRoom(this.requestParams(), this.user);
+
+		const { offset, count } = this.getPaginationItems();
+		const { sort } = this.parseJsonQuery();
+
+		const members = RocketChat.models.Rooms.processQueryOptionsOnResult(Array.from(findResult.room.usernames), {
+			sort: sort ? sort : -1,
+			skip: offset,
+			limit: count
+		});
+
+		return RocketChat.API.v1.success({
+			members,
+			count: members.length,
+			offset,
+			total: findResult.room.usernames
+		});
+	}
+});
+
 RocketChat.API.v1.addRoute(['dm.messages', 'im.messages'], { authRequired: true }, {
 	get() {
 		const findResult = findDirectMessageRoom(this.requestParams(), this.user);
