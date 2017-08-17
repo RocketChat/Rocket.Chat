@@ -1,10 +1,10 @@
 <template name="pageSettingsContainer">
 	<section class="page-container page-home page-static page-settings content-background-color">
-		<header class="fixed-title content-background-color border-component-color">
+		<header class="rc-header">
 			{{> burger}}
-			<h2>
-				<span class="page-title">{{pageTitle}}</span>
-			</h2>
+			<div class="rc-header__title">
+				<span class="rc-header__section--title">{{pageTitle}}</span>
+			</div>
 		</header>
 		<div class="content {{#if noScroll}}no-scroll{{/if}}">
 			{{> Template.dynamic template=pageTemplate}}

@@ -1,16 +1,22 @@
 <template name="admin">
 	{{#with group}}
 		<section class="page-container page-home page-static page-settings">
-			<header class="fixed-title border-component-color">
+
+			<header class="rc-header">
 				{{> burger}}
-				<h2>
-					<span class="room-title">{{label}}</span>
-				</h2>
-				<div class="submit">
+				<div class="rc-header__title">
+					<span class="rc-header__section--title">{{label}}</span>
+				</div>
+
+				<div class="rc-header__section--button">
 					{{#if hasChanges}}
-						<button class="button danger discard"><i class="icon-send"></i><span>{{_ "Cancel"}}</span></button>
+						<button class="rc-button rc-button--cancel"><span>{{_ "Cancel"}}</span></button>
 					{{/if}}
-					<button class="button primary save" disabled="{{not hasChanges}}"><i class="icon-send"></i><span>{{_ "Save_changes"}}</span></button>
+					<button class="rc-button rc-button--primary" disabled="{{not hasChanges}}"><span>{{_ "Save_changes"}}</span></button>
+				</div>
+
+				<div class="rc-header__section--help">
+
 				</div>
 			</header>
 
