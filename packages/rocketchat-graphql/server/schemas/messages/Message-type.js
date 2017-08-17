@@ -24,7 +24,9 @@ export const resolver = {
 		content: property('msg'),
 		creationTime: (root) => dateToFloat(root.ts),
 		author: (root) => {
-			return RocketChat.models.Users.findOne(root.u._id);
+			const user = RocketChat.models.Users.findOne(root.u._id);
+
+			return user || root.u;
 		},
 		channel: (root) => {
 			return RocketChat.models.Rooms.findOne(root.rid);
