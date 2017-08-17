@@ -76,7 +76,9 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 			linkByUser[sub.u._id] = getMessageLink(room, sub);
 		});
 	} else {
-		defaultLink = getMessageLink(room, { name: room.name });
+		defaultLink = getMessageLink(room, {
+			name: room.name
+		});
 	}
 
 	if (userIdsToSendEmail.length > 0) {
@@ -132,7 +134,7 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 						if (RocketChat.settings.get('Direct_Reply_Enable')) {
 							email.headers = {
 								// Reply-To header with format "username+messageId@domain"
-								'Reply-To': `${ RocketChat.settings.get('Direct_Reply_Username').split('@')[0] }${ RocketChat.settings.get('Direct_Reply_Separator') }${ message._id }@${ RocketChat.settings.get('Direct_Reply_Username').split('@')[1] }`
+								'Reply-To': `${ RocketChat.settings.get('Direct_Reply_Username').split('@')[0].split(RocketChat.settings.get('Direct_Reply_Separator'))[0] }${ RocketChat.settings.get('Direct_Reply_Separator') }${ message._id }@${ RocketChat.settings.get('Direct_Reply_Username').split('@')[1] }`
 							};
 						}
 
