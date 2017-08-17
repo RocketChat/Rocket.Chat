@@ -415,6 +415,37 @@ RocketChat.API.v1.addRoute('channels.list.joined', { authRequired: true }, {
 	}
 });
 
+RocketChat.API.v1.addRoute('channels.messages', { authRequired: true }, {
+	get() {
+		const findResult = findChannelByIdOrName({ params: this.requestParams(), checkedArchived: false });
+		const { offset, count } = this.getPaginationItems();
+		const { sort, fields, query } = this.parseJsonQuery();
+
+		const ourQuery = Object.assign({}, query, { rid: findResult._id });
+
+		//Special check for the permissions
+		if (RocketChat.authz.hasPermission(this.userId, 'view-joined-room') && !findResult.usernames.includes(this.user.username)) {
+			return RocketChat.API.v1.unauthorized();
+		} else if (!RocketChat.authz.hasPermission(this.userId, 'view-c-room')) {
+			return RocketChat.API.v1.unauthorized();
+		}
+
+		const messages = RocketChat.models.Messages.find(ourQuery, {
+			sort: sort ? sort : { ts: -1 },
+			skip: offset,
+			limit: count,
+			fields: Object.assign({}, fields, RocketChat.API.v1.defaultFieldsToExclude)
+		}).fetch();
+
+		return RocketChat.API.v1.success({
+			messages,
+			count: messages.length,
+			offset,
+			total: RocketChat.models.Messages.find(ourQuery).count()
+		});
+	}
+});
+
 RocketChat.API.v1.addRoute('channels.online', { authRequired: true }, {
 	get() {
 		const { query } = this.parseJsonQuery();
