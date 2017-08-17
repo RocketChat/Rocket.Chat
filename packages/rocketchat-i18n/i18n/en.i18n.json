@@ -439,6 +439,7 @@
   "Direct_Reply_Port": "Direct_Reply_Port",
   "Direct_Reply_IgnoreTLS": "IgnoreTLS",
   "Direct_Reply_Username": "Username",
+  "Direct_Reply_Username_Description": "Please use absolute email, tagging is not allowed, it would be over-written",
   "Direct_Reply_Password": "Password",
   "Direct_Reply_Separator": "Separator",
   "Direct_Reply_Separator_Description": "[Alter only if you know exactly what you are doing, refer docs]<br/>Separator between base & tag part of email",
