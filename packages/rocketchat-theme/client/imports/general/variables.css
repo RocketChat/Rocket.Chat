@@ -24,7 +24,6 @@
 	/*
 	* General
 	*/
-	--text-size: 0.875rem;
 	--header-min-height: 60px;
 	--toolbar-height: 55px;
 	--footer-min-height: 70px;
@@ -43,6 +42,22 @@
 	--status-bullet-radius: 50%;
 	--account-username-weight: 700;
 	--status-name-weight: 400;
+
+	/*
+	* General Typography
+	*/
+	--text-default-size: 1rem;
+	--text-default-weight: 500;
+	--text-small-size: 0.875rem;
+	--text-small-weight: 500;
+	--text-heading-size: 1.375rem;
+	--text-heading-weight: 700;
+	--text-label-size: 075rem;
+	--text-label-weight: 600;
+	--text-tiny-size: 075rem;
+	--text-tiny-weight: 400;
+	--text-micro-size: 0.625rem;
+	--text-micro-weight: 700;
 
 	/*
 	* Forms
@@ -257,10 +272,10 @@
 	--header-toggle-favorite-color: var(--color-gray-medium);
 	--header-toggle-favorite-star-color: var(--color-alert-light);
 	--header-title-username-color-darker: var(--color-dark);
-	--header-title-font-size: 0.875rem;
-	--header-title-font-size: 1rem;
+	--header-title-font-size: var(--text-default-size);
+	--header-title-font-size--small: var(--text-small-size);
 	--header-title-status-color: var(--color-gray);
-	--header-title-username-weight: var(--account-username-weight);
+	--header-title-username-weight: var(--text-heading-weight);
 	--header-title-status-name-weight: var(--status-name-weight);
 	--header-title-status-bullet-radius: var(--status-bullet-radius);
 	--header-title-status-bullet-size: var(--status-bullet-size);
