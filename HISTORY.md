@@ -1,3 +1,13 @@
+<a name="0.58.1"></a>
+## 0.58.1 (2017-08-17)
+
+
+### Bug Fixes
+
+- [#7781](https://github.com/RocketChat/Rocket.Chat/pull/7781) Fix flex tab not opening and getting offscreen
+
+
+
 <a name="0.58.0"></a>
 # 0.58.0 (2017-08-16)
 
