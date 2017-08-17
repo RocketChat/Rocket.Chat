@@ -335,6 +335,27 @@ RocketChat.API.v1.addRoute('groups.list', { authRequired: true }, {
 	}
 });
 
+RocketChat.API.v1.addRoute('groups.members', { authRequired: true }, {
+	get() {
+		const findResult = findPrivateGroupByIdOrName({ params: this.requestParams(), userId: this.userId });
+		const { offset, count } = this.getPaginationItems();
+		const { sort } = this.parseJsonQuery();
+
+		const members = RocketChat.models.Rooms.processQueryOptionsOnResult(Array.from(findResult._room.usernames), {
+			sort: sort ? sort : -1,
+			skip: offset,
+			limit: count
+		});
+
+		return RocketChat.API.v1.success({
+			members,
+			count: members.length,
+			offset,
+			total: findResult._room.usernames
+		});
+	}
+});
+
 RocketChat.API.v1.addRoute('groups.messages', { authRequired: true }, {
 	get() {
 		const findResult = findPrivateGroupByIdOrName({ params: this.requestParams(), userId: this.userId });
