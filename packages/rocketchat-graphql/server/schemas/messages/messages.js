@@ -19,7 +19,7 @@ export const resolver = {
 		messages: authenticated((root, args) => {
 			const messagesQuery = {};
 			const messagesOptions = {
-				sort: { ts: 1 }
+				sort: { ts: -1 }
 			};
 			const channelQuery = {};
 			const isPagination = !!args.cursor || args.count > 0;

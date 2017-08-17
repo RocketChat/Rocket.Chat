@@ -1,8 +1,29 @@
 import { AccountsServer } from 'meteor/rocketchat:accounts';
 import { Accounts } from 'meteor/accounts-base';
+import { Meteor } from 'meteor/meteor';
 
 import { GrantError } from './error';
 import Providers from './providers';
+
+const setAvatarFromUrl = (userId, url) => {
+	return new Promise((resolve, reject) => {
+		Meteor.runAsUser(userId, () => {
+			Meteor.call('setAvatarFromService', url, '', 'url', (err) => {
+				if (err) {
+					if (err.details.timeToReset && err.details.timeToReset) {
+						reject((t('error-too-many-requests', {
+							seconds: parseInt(err.details.timeToReset / 1000)
+						})));
+					} else {
+						reject(t('Avatar_url_invalid_or_error'));
+					}
+				} else {
+					resolve();
+				}
+			});
+		});
+	});
+};
 
 const findUserByOAuthId = (providerName, id) => {
 	return RocketChat.models.Users.findOne({ [`settings.profile.oauth.${ providerName }`]: id });
@@ -77,6 +98,8 @@ export async function authenticate(providerName, req) {
 		});
 		RocketChat.models.Users.setName(id, userData.name);
 		RocketChat.models.Users.setEmailVerified(id, userData.email);
+
+		await setAvatarFromUrl(id, userData.avatar);
 
 		const loginResult = await AccountsServer.loginWithUser({ id });
 
