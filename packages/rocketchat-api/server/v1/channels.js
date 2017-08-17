@@ -281,9 +281,11 @@ RocketChat.API.v1.addRoute('channels.history', { authRequired: true }, {
 			result = Meteor.call('getChannelHistory', { rid: findResult._id, latest: latestDate, oldest: oldestDate, inclusive, count, unreads });
 		});
 
-		return RocketChat.API.v1.success({
-			messages: result && result.messages ? result.messages : []
-		});
+		if (!result) {
+			return RocketChat.API.v1.unauthorized();
+		}
+
+		return RocketChat.API.v1.success(result);
 	}
 });
 

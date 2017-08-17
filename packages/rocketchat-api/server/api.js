@@ -8,7 +8,8 @@ class API extends Restivus {
 		this.defaultFieldsToExclude = {
 			joinCode: 0,
 			$loki: 0,
-			meta: 0
+			meta: 0,
+			members: 0
 		};
 
 		this._config.defaultOptionsEndpoint = function() {

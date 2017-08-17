@@ -113,9 +113,11 @@ RocketChat.API.v1.addRoute(['dm.history', 'im.history'], { authRequired: true },
 			});
 		});
 
-		return RocketChat.API.v1.success({
-			messages: result && result.messages ? result.messages : []
-		});
+		if (!result) {
+			return RocketChat.API.v1.unauthorized();
+		}
+
+		return RocketChat.API.v1.success(result);
 	}
 });
 
