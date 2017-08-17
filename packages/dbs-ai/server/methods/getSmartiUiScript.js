@@ -15,20 +15,25 @@ function loadSmarti() {
 			`${ RocketChat.settings.get('DBS_AI_Redlink_URL') }/`;
 	SystemLogger.debug('Trying to retrieve Smarti UI from', DBS_AI_SMARTI_URL);
 
-	const response = HTTP.get(`${ DBS_AI_SMARTI_URL }plugin/v1/rocket.chat.js`);
-	if (response.statusCode === 200) {
-		script = response.content;
+	try {
+		const response = HTTP.get(`${ DBS_AI_SMARTI_URL }plugin/v1/rocket.chat.js`);
+		if (response.statusCode === 200) {
+			script = response.content;
 
-		if (!script) {
-			SystemLogger.error('Could not extract script from Smarti response');
-			throw new Meteor.Error('no-smarti-ui-script');
+			if (!script) {
+				SystemLogger.error('Could not extract script from Smarti response');
+				throw new Meteor.Error('no-smarti-ui-script', 'no-smarti-ui-script');
+			} else {
+				// add pseudo comment in order to make the script appear in the frontend as a file. This makes it de-buggable
+				script = `${ script } //# sourceURL=SmartiWidget.js`;
+			}
 		} else {
-			// add pseudo comment in order to make the script appear in the frontend as a file. This makes it de-buggable
-			script = `${ script } //# sourceURL=SmartiWidget.js`;
+			SystemLogger.error('Could not reach Smarti service at', DBS_AI_SMARTI_URL);
+			throw new Meteor.Error('no-smarti-ui-script', 'no-smarti-ui-script');
 		}
-	} else {
+	} catch (error) {
 		SystemLogger.error('Could not reach Smarti service at', DBS_AI_SMARTI_URL);
-		throw new Meteor.Error('no-smarti-ui-script');
+		throw new Meteor.Error('error-unreachable-url');
 	}
 }
 
@@ -39,11 +44,18 @@ function delayedReload() {
 	timeoutHandle = Meteor.setTimeout(loadSmarti(), 86400000);
 }
 
+/**
+ * This method can be used to explicitly trigger a reconfiguration of the smart-widget
+ */
 Meteor.methods({
 	reloadSmarti() {
 		script = undefined;
 		loadSmarti();
 		delayedReload();
+
+		return {
+			message: 'settings-reloaded-successfully'
+		};
 	}
 });
 
