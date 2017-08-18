@@ -10,9 +10,9 @@
 
 				<div class="rc-header__section--button">
 					{{#if hasChanges}}
-						<button class="rc-button rc-button--cancel"><span>{{_ "Cancel"}}</span></button>
+						<button class="rc-button rc-button--cancel discard"><span>{{_ "Cancel"}}</span></button>
 					{{/if}}
-					<button class="rc-button rc-button--primary" disabled="{{not hasChanges}}"><span>{{_ "Save_changes"}}</span></button>
+					<button class="rc-button rc-button--primary save" disabled="{{not hasChanges}}"><span>{{_ "Save_changes"}}</span></button>
 				</div>
 
 				<div class="rc-header__section--help">
