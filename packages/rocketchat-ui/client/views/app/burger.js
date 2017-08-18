@@ -7,7 +7,7 @@ Template.burger.helpers({
 			return 'menu-opened';
 		}
 	},
-	isNew() {
-		return Template.instace().new === true ? '' : 'rc-old';
+	isOld() {
+		return Template.instance().old === false ? '' : 'rc-old';
 	}
 });
