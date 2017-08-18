@@ -10,7 +10,7 @@
 
 	&__title {
 		display: flex;
-		flex: 1 1 100%;
+		flex: 1 1;
 
 		margin-left: 4px;
 
@@ -24,11 +24,16 @@
 		font-weight: var(--header-title-username-weight);
 	}
 
-	&__section--button,
 	&__section--help {
+		flex: 1 1;
+	}
+
+	&__section--button {
 		display: flex;
 		flex: 1 1 100%;
 		justify-content: flex-end;
+
+		/* max-width: use this to allign the buttons with the form */
 
 	}
 
@@ -52,8 +57,11 @@
 	&__subtitle {
 		display: flex;
 
+		text-transform: capitalize;
+
 		color: var(--header-title-status-color);
 
+		font-size: var(--header-title-font-size--subtitle);
 		font-weight: var(--header-title-status-name-weight);
 		align-items: center;
 

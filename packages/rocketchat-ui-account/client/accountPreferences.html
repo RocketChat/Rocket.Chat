@@ -1,10 +1,18 @@
 <template name="accountPreferences">
 	<section class="page-container page-home page-static">
-		<header class="fixed-title border-component-color">
+		<header class="rc-header">
 			{{> burger}}
-			<h2>
-				<span class="room-title">{{_ "Preferences"}}</span>
-			</h2>
+			<div class="rc-header__title">
+				<span class="rc-header__section--title">{{_ "Preferences"}}</span>
+			</div>
+
+			<div class="rc-header__section--button">
+				<button class="rc-button rc-button--primary save"><span>{{_ "Save_changes"}}</span></button>
+			</div>
+
+			<div class="rc-header__section--help">
+
+			</div>
 		</header>
 		<div class="content">
 			<div class="rocket-form">
@@ -249,9 +257,6 @@
 						</div>
 					</div>
 				</fieldset>
-				<div class="submit">
-					<button class="button primary save"><i class="icon-send"></i><span>{{_ "Save_changes"}}</span></button>
-				</div>
 			</div>
 		</div>
 	</section>
