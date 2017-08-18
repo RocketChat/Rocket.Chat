@@ -118,6 +118,7 @@ button {
 		&--star {
 			width: 17px;
 			height: 16px;
+			fill: none;
 		}
 
 		&--language {

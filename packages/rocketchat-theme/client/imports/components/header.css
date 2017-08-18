@@ -99,6 +99,10 @@
 		color: var(--header-toggle-favorite-star-color);
 		&.empty {
 			color: var(--header-toggle-favorite-color);
+
+			& .rc-header__icon {
+				fill: none;
+			}
 		}
 		&:hover {
 			color: var(--header-toggle-favorite-star-color);
@@ -109,6 +113,7 @@
 	&__icon {
 		width: 25px;
 		height: 25px;
+		fill: currentColor;
 		stroke: currentColor;
 	}
 
