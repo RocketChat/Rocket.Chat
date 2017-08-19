@@ -92,8 +92,9 @@ Importer.Slack = class extends Importer.Base {
 		}
 		const selectionUsers = tempUsers.map(user => new Importer.SelectionUser(user.id, user.name, user.profile.email, user.deleted, user.is_bot, !user.is_bot));
 		const selectionChannels = tempChannels.map(channel => new Importer.SelectionChannel(channel.id, channel.name, channel.is_archived, true, false));
+		const selectionMessages = this.importRecord.count.messages;
 		this.updateProgress(Importer.ProgressStep.USER_SELECTION);
-		return new Importer.Selection(this.name, selectionUsers, selectionChannels);
+		return new Importer.Selection(this.name, selectionUsers, selectionChannels, selectionMessages);
 	}
 	startImport(importSelection) {
 		super.startImport(importSelection);
@@ -189,15 +190,15 @@ Importer.Slack = class extends Importer.Base {
 						RocketChat.models.Rooms.update({ _id: channel.rocketId }, { $addToSet: { importIds: channel.id } });
 					} else {
 						const users = channel.members
-						.reduce((ret, member) => {
-							if (member !== channel.creator) {
-								const user = this.getRocketUser(member);
-								if (user && user.username) {
-									ret.push(user.username);
+							.reduce((ret, member) => {
+								if (member !== channel.creator) {
+									const user = this.getRocketUser(member);
+									if (user && user.username) {
+										ret.push(user.username);
+									}
 								}
-							}
-							return ret;
-						}, []);
+								return ret;
+							}, []);
 						let userId = startedByUserId;
 						this.users.users.forEach(user => {
 							if (user.id === channel.creator && user.do_import) {
@@ -431,6 +432,7 @@ Importer.Slack = class extends Importer.Base {
 	getSelection() {
 		const selectionUsers = this.users.users.map(user => new Importer.SelectionUser(user.id, user.name, user.profile.email, user.deleted, user.is_bot, !user.is_bot));
 		const selectionChannels = this.channels.channels.map(channel => new Importer.SelectionChannel(channel.id, channel.name, channel.is_archived, true, false));
-		return new Importer.Selection(this.name, selectionUsers, selectionChannels);
+		const selectionMessages = this.importRecord.count.messages;
+		return new Importer.Selection(this.name, selectionUsers, selectionChannels, selectionMessages);
 	}
 };

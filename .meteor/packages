@@ -4,36 +4,36 @@
 # but you can also edit it by hand.
 
 rocketchat:cors
-accounts-facebook@1.1.1
-accounts-github@1.2.1
-accounts-google@1.1.2
-accounts-meteor-developer@1.2.1
-accounts-password@1.3.6
-accounts-twitter@1.2.1
+accounts-facebook@1.2.1
+accounts-github@1.3.0
+accounts-google@1.2.0
+accounts-meteor-developer@1.3.0
+accounts-password@1.4.0
+accounts-twitter@1.3.0
 blaze-html-templates
 check@1.2.5
 ddp-rate-limiter@1.0.7
-ecmascript@0.7.3
+ecmascript@0.8.1
 ejson@1.0.13
-email@1.2.1
+email@1.2.3
 fastclick@1.0.13
 http@1.2.12
 jquery@1.11.10
 less@2.7.9
 logging@1.1.17
-meteor-base@1.0.4
+meteor-base@1.1.0
 mobile-experience@1.0.4
-mongo@1.1.17
+mongo@1.1.19
 random@1.0.10
 rate-limit@1.0.8
-reactive-dict@1.1.8
+reactive-dict@1.1.9
 reactive-var@1.0.11
 reload@1.1.11
 service-configuration@1.0.11
 session@1.1.7
-shell-server@0.2.3
+shell-server@0.2.4
 spacebars
-standard-minifier-js@2.0.0
+standard-minifier-js@2.1.1
 tracker@1.1.3
 
 rocketchat:2fa
@@ -98,6 +98,7 @@ rocketchat:slackbridge
 rocketchat:slashcommands-archive
 rocketchat:slashcommands-asciiarts
 rocketchat:slashcommands-create
+rocketchat:slashcommands-help
 rocketchat:slashcommands-invite
 rocketchat:slashcommands-invite-all
 rocketchat:slashcommands-join
@@ -109,6 +110,7 @@ rocketchat:slashcommands-mute
 rocketchat:slashcommands-open
 rocketchat:slashcommands-topic
 rocketchat:slashcommands-unarchive
+rocketchat:slider
 rocketchat:smarsh-connector
 rocketchat:spotify
 rocketchat:statistics
@@ -149,7 +151,7 @@ jalik:ufs-gridfs
 jparker:gravatar
 kadira:blaze-layout
 kadira:flow-router
-kenton:accounts-sandstorm
+#kenton:accounts-sandstorm
 mizzao:autocomplete
 mizzao:timesync
 mrt:reactive-store
@@ -171,6 +173,7 @@ yasaricli:slugify
 yasinuslu:blaze-meta
 deepwell:bootstrap-datepicker2
 rocketchat:postcss
+dynamic-import@0.1.1
 
 dbs:common
 dbs:ai

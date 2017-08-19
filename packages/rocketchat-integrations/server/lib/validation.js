@@ -149,7 +149,7 @@ RocketChat.integrations.validateOutgoing = function _validateOutgoing(integratio
 	const user = RocketChat.models.Users.findOne({ username: integration.username });
 
 	if (!user) {
-		throw new Meteor.Error('error-invalid-user', 'Invalid user', { function: 'validateOutgoing' });
+		throw new Meteor.Error('error-invalid-user', 'Invalid user (did you delete the `rocket.cat` user?)', { function: 'validateOutgoing' });
 	}
 
 	integration.type = 'webhook-outgoing';

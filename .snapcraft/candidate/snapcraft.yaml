@@ -39,7 +39,7 @@ apps:
 parts:
     node:
         plugin: nodejs
-        node-engine: 4.8.1
+        node-engine: 4.8.3
         node-packages:
             - promise
             - fibers

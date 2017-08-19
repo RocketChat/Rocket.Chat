@@ -9,7 +9,8 @@ function categoryName(category) {
 	for (const emojiPackage in RocketChat.emoji.packages) {
 		if (RocketChat.emoji.packages.hasOwnProperty(emojiPackage)) {
 			if (RocketChat.emoji.packages[emojiPackage].emojiCategories.hasOwnProperty(category)) {
-				return RocketChat.emoji.packages[emojiPackage].emojiCategories[category];
+				const categoryTag = RocketChat.emoji.packages[emojiPackage].emojiCategories[category];
+				return TAPi18n.__(categoryTag);
 			}
 		}
 	}
