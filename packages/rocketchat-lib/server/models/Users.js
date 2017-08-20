@@ -255,6 +255,24 @@ class ModelUsers extends RocketChat.models._Base {
 		return this.update(query, update);
 	}
 
+	clearObsoleteTokens() {
+		const query = {
+			_id: { $regex: '.*' }
+		}
+
+		const update = {
+			$push: {
+				"services.resume.loginTokens": {
+					$each: [],
+					$sort: { when: 1 },
+					$slice: -50
+				}
+			}
+		}
+
+		return this.update(query, update, { multi: true });
+	}
+
 	updateLastLoginById(_id) {
 		const update = {
 			$set: {
