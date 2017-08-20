@@ -22,7 +22,8 @@ caching-html-compiler@1.1.2
 callback-hook@1.0.10
 cfs:http-methods@0.0.32
 check@1.2.5
-coffeescript@1.12.6_1
+coffeescript@1.12.7_1
+coffeescript-compiler@1.12.7_1
 dandv:caret-position@2.1.1
 ddp@1.3.0
 ddp-client@2.0.0
