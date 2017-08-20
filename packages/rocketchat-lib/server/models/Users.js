@@ -262,7 +262,7 @@ class ModelUsers extends RocketChat.models._Base {
 
 		const update = {
 			$push: {
-				"services.resume.loginTokens": {
+				'services.resume.loginTokens': {
 					$each: [],
 					$sort: { when: 1 },
 					$slice: -50
