@@ -30,14 +30,22 @@ function cleanupOEmbedCache() {
 	return Meteor.call('OEmbedCacheCleanup');
 }
 
-Meteor.startup(function() {
-	return Meteor.defer(function() {
+function cleanupObsoleteTokens() {
+	try {
+		RocketChat.models.Users.clearObsoleteTokens();
+	} catch (error) {
+		console.log(error);
+	}
+}
+
+Meteor.startup(function () {
+	return Meteor.defer(function () {
 		generateStatistics();
 
 		SyncedCron.add({
 			name: 'Generate and save statistics',
 			schedule(parser) {
-				return parser.cron(`${ new Date().getMinutes() } * * * *`);
+				return parser.cron(`${new Date().getMinutes()} * * * *`);
 			},
 			job: generateStatistics
 		});
@@ -46,10 +54,19 @@ Meteor.startup(function() {
 			name: 'Cleanup OEmbed cache',
 			schedule(parser) {
 				const now = new Date();
-				return parser.cron(`${ now.getMinutes() } ${ now.getHours() } * * *`);
+				return parser.cron(`${now.getMinutes()} ${now.getHours()} * * *`);
 			},
 			job: cleanupOEmbedCache
 		});
+
+		SyncedCron.add({
+			name: 'Cleanup Obsolete Tokens',
+			schedule(parser) {
+				return parser.text('every 1 hour');
+			},
+			job: cleanupObsoleteTokens
+		});
+
 		return SyncedCron.start();
 	});
 });
