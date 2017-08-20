@@ -258,7 +258,7 @@ class ModelUsers extends RocketChat.models._Base {
 	clearObsoleteTokens() {
 		const query = {
 			_id: { $regex: '.*' }
-		}
+		};
 
 		const update = {
 			$push: {
@@ -268,7 +268,7 @@ class ModelUsers extends RocketChat.models._Base {
 					$slice: -50
 				}
 			}
-		}
+		};
 
 		return this.update(query, update, { multi: true });
 	}
