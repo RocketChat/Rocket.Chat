@@ -38,11 +38,11 @@ Meteor.startup(function() {
 	});
 });
 
-const getUsersFromServer = (filter, records, cb) => {
+const getUsersFromServer = (filter, records, cb, rid) => {
 	const messageUsers = _.pluck(records, 'username');
 	return Meteor.call('spotlight', filter, messageUsers, {
 		users: true
-	}, function(err, results) {
+	}, rid, function(err, results) {
 		if (err != null) {
 			return console.error(err);
 		}
@@ -63,10 +63,13 @@ const getUsersFromServer = (filter, records, cb) => {
 	});
 };
 
-const getRoomsFromServer = (filter, records, cb) => {
+const getRoomsFromServer = (filter, records, cb, rid) => {
+	if (!RocketChat.authz.hasAllPermission('view-outside-room')) {
+		return cb([]);
+	}
 	return Meteor.call('spotlight', filter, null, {
 		rooms: true
-	}, function(err, results) {
+	}, rid, function(err, results) {
 		if (err != null) {
 			return console.error(err);
 		}
@@ -120,37 +123,48 @@ Template.messagePopupConfig.helpers({
 				if (items.length < 5 && filter && filter.trim() !== '') {
 					const messageUsers = _.pluck(items, 'username');
 					const user = Meteor.user();
-					items.push(...Meteor.users.find({
-						$and: [
-							{
-								$or: [
-									{
-										username: exp
-									}, {
-										name: exp
+					if (!RocketChat.authz.hasAllPermission('view-outside-room')) {
+						const usernames = RocketChat.models.Subscriptions.find({$or :[{'name': exp}, { fname: exp}]}).fetch().map(({name}) =>name);
+						items.push(...
+							RocketChat.models.Users.find({username:{$in:usernames}}, {fields:{
+								username: 1,
+								name: 1,
+								status: 1
+							}}).fetch()
+						);
+					} else {
+						items.push(...Meteor.users.find({
+							$and: [
+								{
+									$or: [
+										{
+											username: exp
+										}, {
+											name: exp
+										}
+									]
+								}, {
+									username: {
+										$nin: [(user && user.username), ...messageUsers]
 									}
-								]
-							}, {
-								username: {
-									$nin: [(user && user.username), ...messageUsers]
 								}
-							}
-						]
-					}, {
-						limit: 5 - messageUsers.length
-					}).fetch().map(function(item) {
-						return {
-							_id: item.username,
-							username: item.username,
-							name: item.name,
-							status: item.status,
-							sort: 1
-						};
-					}));
+							]
+						}, {
+							limit: 5 - messageUsers.length
+						}).fetch().map(function(item) {
+							return {
+								_id: item.username,
+								username: item.username,
+								name: item.name,
+								status: item.status,
+								sort: 1
+							};
+						}));
+					}
 				}
 				// Get users from db
 				if (items.length < 5 && filter && filter.trim() !== '') {
-					getUsersFromServerDelayed(filter, items, cb);
+					getUsersFromServerDelayed(filter, items, cb, RocketChat.openedRoom);
 				}
 				const all = {
 					_id: 'all',
@@ -207,7 +221,7 @@ Template.messagePopupConfig.helpers({
 				}).fetch();
 
 				if (records.length < 5 && filter && filter.trim() !== '') {
-					getRoomsFromServerDelayed(filter, records, cb);
+					getRoomsFromServerDelayed(filter, records, cb, RocketChat.openedRoom);
 				}
 				return records;
 			},
