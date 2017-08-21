@@ -99,9 +99,9 @@ Meteor.startup(function() {
 		icon: 'icon-reply',
 		i18nLabel: 'Reply',
 		context: ['message', 'message-mobile'],
-		action(event, instance) {
+		action() {
 			const message = this._arguments[1];
-			const input = instance.find('.input-message');
+			const {input} = chatMessages[message.rid];
 			const url = RocketChat.MessageAction.getPermaLink(message._id);
 			const roomInfo = RocketChat.models.Rooms.findOne(message.rid, { fields: { t: 1 } });
 			let text = `[ ](${ url }) `;
@@ -110,11 +110,12 @@ Meteor.startup(function() {
 				text += `@${ message.u.username } `;
 			}
 
-			if (input.value) {
-				input.value += input.value.endsWith(' ') ? '' : ' ';
+			if (input.value && !input.value.endsWith(' ')) {
+				input.value += ' ';
 			}
 			input.value += text;
 			input.focus();
+			$(input).trigger('change').trigger('input');
 			return RocketChat.MessageAction.hideDropDown();
 		},
 		validation(message) {
@@ -133,15 +134,10 @@ Meteor.startup(function() {
 		icon: 'icon-pencil',
 		i18nLabel: 'Edit',
 		context: ['message', 'message-mobile'],
-		action(e, instance) {
+		action(e) {
 			const message = $(e.currentTarget).closest('.message')[0];
 			chatMessages[Session.get('openedRoom')].edit(message);
 			RocketChat.MessageAction.hideDropDown();
-			const input = instance.find('.input-message');
-			Meteor.setTimeout(() => {
-				input.focus();
-				input.updateAutogrow();
-			}, 200);
 		},
 		validation(message) {
 			if (RocketChat.models.Subscriptions.findOne({
@@ -272,9 +268,9 @@ Meteor.startup(function() {
 		icon: 'icon-quote-left',
 		i18nLabel: 'Quote',
 		context: ['message', 'message-mobile'],
-		action(event, instance) {
+		action() {
 			const message = this._arguments[1];
-			const input = instance.find('.input-message');
+			const {input} = chatMessages[message.rid];
 			const url = RocketChat.MessageAction.getPermaLink(message._id);
 			const text = `[ ](${ url }) `;
 			if (input.value) {
@@ -282,6 +278,7 @@ Meteor.startup(function() {
 			}
 			input.value += text;
 			input.focus();
+			$(input).trigger('change').trigger('input');
 			return RocketChat.MessageAction.hideDropDown();
 		},
 		validation(message) {

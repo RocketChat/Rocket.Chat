@@ -24,6 +24,7 @@ Meteor.methods({
 
 		const attachment = {
 			title: file.name,
+			type: 'file',
 			description: file.description,
 			title_link: fileUrl,
 			title_link_download: true
@@ -54,7 +55,8 @@ Meteor.methods({
 			msg: '',
 			file: {
 				_id: file._id,
-				name: file.name
+				name: file.name,
+				type: file.type
 			},
 			groupable: false,
 			attachments: [attachment]

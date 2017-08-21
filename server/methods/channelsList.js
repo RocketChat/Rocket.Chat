@@ -58,14 +58,15 @@ Meteor.methods({
 		}
 
 		if (channelType !== 'public' && RocketChat.authz.hasPermission(Meteor.userId(), 'view-p-room')) {
-			const userPref = Meteor.user() && Meteor.user().settings && Meteor.user().settings.preferences && Meteor.user().settings.preferences.mergeChannels;
+			const user = Meteor.user();
+			const userPref = user && user.settings && user.settings.preferences && user.settings.preferences.mergeChannels && user.settings.preferences.roomsListExhibitionMode === 'category';
 			const globalPref = RocketChat.settings.get('UI_Merge_Channels_Groups');
-			const mergeChannels = userPref || globalPref;
+			const mergeChannels = userPref !== undefined ? userPref : globalPref;
 
 			if (mergeChannels) {
 				roomTypes.push({
 					type: 'p',
-					username: Meteor.user().username
+					username: user.username
 				});
 			}
 		}
