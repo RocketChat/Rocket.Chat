@@ -3,7 +3,7 @@ Meteor.startup(function() {
 		groups: ['channel', 'group', 'direct'],
 		id: 'push-notifications',
 		i18nTitle: 'Notifications',
-		icon: 'icon-bell-alt',
+		icon: 'bell',
 		template: 'pushNotificationsFlexTab',
 		order: 2
 	});

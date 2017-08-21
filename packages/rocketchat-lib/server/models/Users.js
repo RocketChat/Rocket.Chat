@@ -148,6 +148,9 @@ class ModelUsers extends RocketChat.models._Base {
 						},
 						{
 							name: termRegex
+						},
+						{
+							'emails.address': termRegex
 						}
 					]
 				},
@@ -223,6 +226,15 @@ class ModelUsers extends RocketChat.models._Base {
 			}
 		};
 
+		return this.find(query, options);
+	}
+
+	findUsersByIds(ids, options) {
+		const query = {
+			_id: {
+				$in: ids
+			}
+		};
 		return this.find(query, options);
 	}
 
