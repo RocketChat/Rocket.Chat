@@ -264,6 +264,15 @@ Template.message.helpers({
 		if (subscription == null) {
 			return 'hidden';
 		}
+	},
+	channelName() {
+		return Session.get(`roomData${ this.rid }`).name;
+	},
+	roomIcon() {
+		return RocketChat.roomTypes.getIcon(Session.get(`roomData${ this.rid }`).t);
+	},
+	fromSearch() {
+		return (this.customClass==='search');
 	}
 });
 
