@@ -196,6 +196,7 @@
 
 	&__content {
 		overflow-y: auto;
+		flex: 1;
 
 		width: 100%;
 		padding: 25px;
