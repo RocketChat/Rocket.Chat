@@ -44,13 +44,13 @@ export default class {
 				return match;
 			}
 			const name = this.useRealName && mentionObj && mentionObj.name;
-			console.log({name});
 
 			return `<a class="mention-link ${ username === me ? 'mention-link-me background-primary-action-color':'' }" data-username="${ username }" title="${ name ? username : '' }">${ name || match }</a>`;
 		});
 	}
 	replaceChannels(str, message) {
-		return str.replace(this.channelMentionRegex, (match, name) => {
+		//since apostrophe escaped contains # we need to unescape it
+		return str.replace(/&#39;/g, '\'').replace(this.channelMentionRegex, (match, name) => {
 			if (message.temp == null && _.findWhere(message.channels, {name}) == null) {
 				return match;
 			}

@@ -92,8 +92,9 @@ Importer.Slack = class extends Importer.Base {
 		}
 		const selectionUsers = tempUsers.map(user => new Importer.SelectionUser(user.id, user.name, user.profile.email, user.deleted, user.is_bot, !user.is_bot));
 		const selectionChannels = tempChannels.map(channel => new Importer.SelectionChannel(channel.id, channel.name, channel.is_archived, true, false));
+		const selectionMessages = this.importRecord.count.messages;
 		this.updateProgress(Importer.ProgressStep.USER_SELECTION);
-		return new Importer.Selection(this.name, selectionUsers, selectionChannels);
+		return new Importer.Selection(this.name, selectionUsers, selectionChannels, selectionMessages);
 	}
 	startImport(importSelection) {
 		super.startImport(importSelection);
@@ -250,7 +251,9 @@ Importer.Slack = class extends Importer.Base {
 											RocketChat.models.Messages.createUserJoinWithRoomIdAndUser(room._id, this.getRocketUser(message.user), msgDataDefaults);
 										}
 									} else if (message.subtype === 'channel_leave') {
-										if (this.getRocketUser(message.user))											{ RocketChat.models.Messages.createUserLeaveWithRoomIdAndUser(room._id, this.getRocketUser(message.user), msgDataDefaults); }
+										if (this.getRocketUser(message.user)) {
+											RocketChat.models.Messages.createUserLeaveWithRoomIdAndUser(room._id, this.getRocketUser(message.user), msgDataDefaults);
+										}
 									} else if (message.subtype === 'me_message') {
 										const msgObj = {
 											...msgDataDefaults,
@@ -288,15 +291,15 @@ Importer.Slack = class extends Importer.Base {
 										if (this.getRocketUser(message.user)) {
 											RocketChat.models.Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser('room_changed_description', room._id, message.purpose, this.getRocketUser(message.user), msgDataDefaults);
 										}
-									}									else if (message.subtype === 'channel_topic') {
+									} else if (message.subtype === 'channel_topic') {
 										if (this.getRocketUser(message.user)) {
 											RocketChat.models.Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser('room_changed_topic', room._id, message.topic, this.getRocketUser(message.user), msgDataDefaults);
 										}
-									}									else if (message.subtype === 'channel_name') {
+									} else if (message.subtype === 'channel_name') {
 										if (this.getRocketUser(message.user)) {
 											RocketChat.models.Messages.createRoomRenamedWithRoomIdRoomNameAndUser(room._id, message.name, this.getRocketUser(message.user), msgDataDefaults);
 										}
-									}									else if (message.subtype === 'pinned_item') {
+									} else if (message.subtype === 'pinned_item') {
 										if (message.attachments) {
 											const msgObj = {
 												...msgDataDefaults,
@@ -323,7 +326,7 @@ Importer.Slack = class extends Importer.Base {
 											};
 											this.uploadFile(details, message.file.url_private_download, this.getRocketUser(message.user), room, new Date(parseInt(message.ts.split('.')[0]) * 1000));
 										}
-									}									else if (!missedTypes[message.subtype] && !ignoreTypes[message.subtype]) {
+									} else if (!missedTypes[message.subtype] && !ignoreTypes[message.subtype]) {
 										missedTypes[message.subtype] = message;
 									}
 								} else {
@@ -429,6 +432,7 @@ Importer.Slack = class extends Importer.Base {
 	getSelection() {
 		const selectionUsers = this.users.users.map(user => new Importer.SelectionUser(user.id, user.name, user.profile.email, user.deleted, user.is_bot, !user.is_bot));
 		const selectionChannels = this.channels.channels.map(channel => new Importer.SelectionChannel(channel.id, channel.name, channel.is_archived, true, false));
-		return new Importer.Selection(this.name, selectionUsers, selectionChannels);
+		const selectionMessages = this.importRecord.count.messages;
+		return new Importer.Selection(this.name, selectionUsers, selectionChannels, selectionMessages);
 	}
 };
