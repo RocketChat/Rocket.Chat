@@ -49,7 +49,7 @@ SAML.prototype.initialize = function(options) {
 
 SAML.prototype.generateUniqueID = function() {
 	const chars = 'abcdef0123456789';
-	let uniqueID = '';
+	let uniqueID = 'id-';
 	for (let i = 0; i < 20; i++) {
 		uniqueID += chars.substr(Math.floor((Math.random() * 15)), 1);
 	}
@@ -85,12 +85,12 @@ SAML.prototype.generateAuthorizeRequest = function(req) {
 	let request =
 		`<samlp:AuthnRequest xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol" ID="${ id }" Version="2.0" IssueInstant="${ instant
 		}" ProtocolBinding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" AssertionConsumerServiceURL="${ callbackUrl }" Destination="${
-		this.options.entryPoint }">` +
+			this.options.entryPoint }">` +
 		`<saml:Issuer xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion">${ this.options.issuer }</saml:Issuer>\n`;
 
 	if (this.options.identifierFormat) {
 		request += `<samlp:NameIDPolicy xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol" Format="${ this.options.identifierFormat
-			}" AllowCreate="true"></samlp:NameIDPolicy>\n`;
+		}" AllowCreate="true"></samlp:NameIDPolicy>\n`;
 	}
 
 	request +=
@@ -112,7 +112,7 @@ SAML.prototype.generateLogoutRequest = function(options) {
 
 	let request = `${ '<samlp:LogoutRequest xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol" ' +
 		'xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion" ID="' }${ id }" Version="2.0" IssueInstant="${ instant
-		}" Destination="${ this.options.idpSLORedirectURL }">` +
+	}" Destination="${ this.options.idpSLORedirectURL }">` +
 		`<saml:Issuer xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion">${ this.options.issuer }</saml:Issuer>` +
 		`<saml:NameID Format="${ this.options.identifierFormat }">${ options.nameID }</saml:NameID>` +
 		'</samlp:LogoutRequest>';
@@ -128,7 +128,7 @@ SAML.prototype.generateLogoutRequest = function(options) {
 		'NameQualifier="http://id.init8.net:8080/openam" ' +
 		`SPNameQualifier="${ this.options.issuer }" ` +
 		`Format="${ this.options.identifierFormat }">${
-		options.nameID }</saml:NameID>` +
+			options.nameID }</saml:NameID>` +
 		`<samlp:SessionIndex xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol">${ options.sessionIndex }</samlp:SessionIndex>` +
 		'</samlp:LogoutRequest>';
 	if (Meteor.settings.debug) {
@@ -258,6 +258,10 @@ SAML.prototype.getElement = function(parentElement, elementName) {
 		return parentElement[`saml2p:${ elementName }`];
 	} else if (parentElement[`saml2:${ elementName }`]) {
 		return parentElement[`saml2:${ elementName }`];
+	} else if (parentElement[`ns0:${ elementName }`]) {
+		return parentElement[`ns0:${ elementName }`];
+	} else if (parentElement[`ns1:${ elementName }`]) {
+		return parentElement[`ns1:${ elementName }`];
 	}
 	return parentElement[elementName];
 };
@@ -314,7 +318,8 @@ SAML.prototype.validateResponse = function(samlResponse, relayState, callback) {
 		console.log(`Validating response with relay state: ${ xml }`);
 	}
 	const parser = new xml2js.Parser({
-		explicitRoot: true
+		explicitRoot: true,
+		xmlns:true
 	});
 
 	parser.parseString(xml, function(err, doc) {
@@ -432,11 +437,37 @@ SAML.prototype.validateResponse = function(samlResponse, relayState, callback) {
 let decryptionCert;
 SAML.prototype.generateServiceProviderMetadata = function(callbackUrl) {
 
-	let keyDescriptor = null;
-
 	if (!decryptionCert) {
 		decryptionCert = this.options.privateCert;
 	}
+
+	if (!this.options.callbackUrl && !callbackUrl) {
+		throw new Error(
+			'Unable to generate service provider metadata when callbackUrl option is not set');
+	}
+
+	const metadata = {
+		'EntityDescriptor': {
+			'@xmlns': 'urn:oasis:names:tc:SAML:2.0:metadata',
+			'@xmlns:ds': 'http://www.w3.org/2000/09/xmldsig#',
+			'@entityID': this.options.issuer,
+			'SPSSODescriptor': {
+				'@protocolSupportEnumeration': 'urn:oasis:names:tc:SAML:2.0:protocol',
+				'SingleLogoutService': {
+					'@Binding': 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect',
+					'@Location': `${ Meteor.absoluteUrl() }_saml/logout/${ this.options.provider }/`,
+					'@ResponseLocation': `${ Meteor.absoluteUrl() }_saml/logout/${ this.options.provider }/`
+				},
+				'NameIDFormat': this.options.identifierFormat,
+				'AssertionConsumerService': {
+					'@index': '1',
+					'@isDefault': 'true',
+					'@Binding': 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST',
+					'@Location': callbackUrl
+				}
+			}
+		}
+	};
 
 	if (this.options.privateKey) {
 		if (!decryptionCert) {
@@ -448,7 +479,7 @@ SAML.prototype.generateServiceProviderMetadata = function(callbackUrl) {
 		decryptionCert = decryptionCert.replace(/-+END CERTIFICATE-+\r?\n?/, '');
 		decryptionCert = decryptionCert.replace(/\r\n/g, '\n');
 
-		keyDescriptor = {
+		metadata['EntityDescriptor']['SPSSODescriptor']['KeyDescriptor'] = {
 			'ds:KeyInfo': {
 				'ds:X509Data': {
 					'ds:X509Certificate': {
@@ -476,35 +507,6 @@ SAML.prototype.generateServiceProviderMetadata = function(callbackUrl) {
 			]
 		};
 	}
-
-	if (!this.options.callbackUrl && !callbackUrl) {
-		throw new Error(
-			'Unable to generate service provider metadata when callbackUrl option is not set');
-	}
-
-	const metadata = {
-		'EntityDescriptor': {
-			'@xmlns': 'urn:oasis:names:tc:SAML:2.0:metadata',
-			'@xmlns:ds': 'http://www.w3.org/2000/09/xmldsig#',
-			'@entityID': this.options.issuer,
-			'SPSSODescriptor': {
-				'@protocolSupportEnumeration': 'urn:oasis:names:tc:SAML:2.0:protocol',
-				'KeyDescriptor': keyDescriptor,
-				'SingleLogoutService': {
-					'@Binding': 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect',
-					'@Location': `${ Meteor.absoluteUrl() }_saml/logout/${ this.options.provider }/`,
-					'@ResponseLocation': `${ Meteor.absoluteUrl() }_saml/logout/${ this.options.provider }/`
-				},
-				'NameIDFormat': this.options.identifierFormat,
-				'AssertionConsumerService': {
-					'@index': '1',
-					'@isDefault': 'true',
-					'@Binding': 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST',
-					'@Location': callbackUrl
-				}
-			}
-		}
-	};
 
 	return xmlbuilder.create(metadata).end({
 		pretty: true,

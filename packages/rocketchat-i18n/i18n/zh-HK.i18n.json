@@ -20,7 +20,6 @@
   "Accounts_AllowUserProfileChange": "允許使用者變更個人檔案",
   "Accounts_AvatarResize": "調整頭像大\b小",
   "Accounts_AvatarSize": "頭像大\b小",
-  "Accounts_AvatarStorePath": "頭像儲存路徑",
   "Accounts_BlockedDomainsList": "黑名單網域列表",
   "Accounts_denyUnverifiedEmail": "拒绝未经验证的电子邮件",
   "Accounts_EmailVerification": "邮件验证",

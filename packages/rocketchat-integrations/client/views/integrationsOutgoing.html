@@ -225,6 +225,14 @@
 											<div class="settings-description">{{_ "Integration_Word_Trigger_Placement_Description"}}</div>
 										</div>
 									</div>
+									<div class="input-line double-col">
+										<label>{{_ "Integration_Run_When_Message_Is_Edited"}}</label>
+										<div>
+											<label><input type="radio" name="runOnEdits" value="1" checked="{{$eq data.runOnEdits true}}" /> {{_ "True"}}</label>
+											<label><input type="radio" name="runOnEdits" value="0" checked="{{$neq data.runOnEdits true}}" /> {{_ "False"}}</label>
+											<div class="settings-description">{{{_ "Integration_Run_When_Message_Is_Edited_Description"}}}</div>
+										</div>
+									</div>
 								{{/if}}
 							</div>
 						</div>

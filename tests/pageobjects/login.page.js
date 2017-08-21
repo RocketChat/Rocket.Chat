@@ -27,11 +27,15 @@ class LoginPage extends Page {
 	gotToRegister() {
 		this.registerButton.waitForVisible(5000);
 		this.registerButton.click();
+		// This Can Cause Timeouts erros if the server is slow so it should have a big wait
+		this.nameField.waitForVisible(15000);
 	}
 
 	gotToForgotPassword() {
 		this.forgotPasswordButton.waitForVisible(5000);
 		this.forgotPasswordButton.click();
+		// This Can Cause Timeouts erros if the server is slow so it should have a big wait
+		this.emailField.waitForVisible(15000);
 	}
 
 	registerNewUser({username, email, password}) {

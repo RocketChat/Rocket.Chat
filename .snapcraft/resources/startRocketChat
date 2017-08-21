@@ -1,0 +1,43 @@
+#!/bin/bash
+
+function start_rocketchat {
+	echo "Checking if oplog has been enabled, and enabling if not"
+	LC_ALL=C mongo $SNAP/bin/initreplset.js
+
+	export DEPLOY_METHOD=snap
+	export NODE_ENV=production
+	export BABEL_CACHE_DIR=/tmp
+	export ROOT_URL=http://localhost
+	export PORT=3000
+	export MONGO_URL=mongodb://localhost:27017/parties
+	export MONGO_OPLOG_URL=mongodb://localhost:27017/local
+	export Accounts_AvatarStorePath=$SNAP_COMMON/uploads
+
+	node $SNAP/main.js
+}
+
+sleep_time=5
+try_times=0
+
+function try_start {
+
+	search=$(ps --pid $(cat $SNAP_COMMON/mongod.pid) -o comm=)
+
+	if [ $search ]
+        	then
+                	start_rocketchat
+        	else
+			if [[ "$try_times" == 5 || "$try_times" > 5 ]]; then
+		                echo "Was unable to connect to Mongo.  Please make sure Mongo has started successfully: sudo systemctl status snap.rocketchat-server.rocketchat-mongo to view logs: sudo journalctl -u snap.rocketchat-server.rocketchat-mongo"
+               			exit 1;
+        		fi
+
+			((try_times += 1))
+			((sleep_time += 5))
+                	echo "Mongo is not available, can't start. Waiting ${sleep_time} seconds and trying again"
+			sleep $sleep_time
+			try_start
+	fi
+}
+
+try_start

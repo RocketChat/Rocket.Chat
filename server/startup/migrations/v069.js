@@ -84,4 +84,3 @@ RocketChat.Migrations.add({
 		});
 	}
 });
-

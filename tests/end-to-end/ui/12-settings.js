@@ -44,11 +44,12 @@ const settingValue = {
 	value : undefined
 };
 
-describe('Changing settings via api', () => {
+describe('[Api Settings Change]', () => {
 	before((done) => {
 		checkIfUserIsValid(username, email, password);
 		sideNav.spotlightSearch.waitForVisible(10000);
-		sideNav.searchChannel('general');
+		sideNav.general.waitForVisible(5000);
+		sideNav.general.click();
 
 		request.post(api('login'))
 			.send(login)
@@ -71,7 +72,7 @@ describe('Changing settings via api', () => {
 		expect(credentials).to.have.property('X-User-Id').with.length.at.least(1);
 	});
 
-	describe('message edit', () => {
+	describe('message edit:', () => {
 		it('it should change the message editing via api', (done) => {
 			request.post(api('settings/Message_AllowEditing'))
 				.set(credentials)
@@ -84,7 +85,7 @@ describe('Changing settings via api', () => {
 				.end(done);
 		});
 
-		it.skip('should not show the edit messages', () => {
+		it.skip('it should not show the edit messages', () => {
 		//the page needs a refresh to show the changes in the client
 			mainContent.sendMessage('Message for Message Edit Block');
 			mainContent.openMessageActionMenu();
@@ -104,7 +105,7 @@ describe('Changing settings via api', () => {
 		});
 	});
 
-	describe('message delete', () => {
+	describe('message delete:', () => {
 		it('it should change the message deleting via api', (done) => {
 			request.post(api('settings/Message_AllowDeleting'))
 				.set(credentials)
@@ -117,7 +118,7 @@ describe('Changing settings via api', () => {
 				.end(done);
 		});
 
-		it.skip('should not show the delete messages', () => {
+		it.skip('it should not show the delete messages', () => {
 		//the page needs a refresh to show the changes in the client
 			mainContent.sendMessage('Message for Message delete Block');
 			mainContent.openMessageActionMenu();
@@ -137,8 +138,8 @@ describe('Changing settings via api', () => {
 		});
 	});
 
-	describe('block audio files', () => {
-		it('should change the message audio files via api', (done) => {
+	describe('block audio files:', () => {
+		it('it should change the message audio files via api', (done) => {
 			request.post(api('settings/Message_AudioRecorderEnabled'))
 				.set(credentials)
 				.send({'value' : false})
@@ -150,13 +151,13 @@ describe('Changing settings via api', () => {
 				.end(done);
 		});
 
-		it.skip('should not show the audo file button', () => {
+		it.skip('it should not show the audo file button', () => {
 		//the page needs a refresh to show the changes in the client
 			mainContent.recordBtn.waitForVisible(10000, true);
 			mainContent.recordBtn.isVisible().should.be.false;
 		});
 
-		it('should change the message audio files via api', (done) => {
+		it('it should change the message audio files via api', (done) => {
 			request.post(api('settings/Message_AudioRecorderEnabled'))
 				.set(credentials)
 				.send({'value' : true})
@@ -169,8 +170,8 @@ describe('Changing settings via api', () => {
 		});
 	});
 
-	describe('block video files', () => {
-		it('should change the message video files via api', (done) => {
+	describe('block video files:', () => {
+		it('it should change the message video files via api', (done) => {
 			request.post(api('settings/Message_VideoRecorderEnabled'))
 				.set(credentials)
 				.send({'value' : false})
@@ -182,13 +183,13 @@ describe('Changing settings via api', () => {
 				.end(done);
 		});
 
-		it.skip('should not show the video file button', () => {
+		it.skip('it should not show the video file button', () => {
 		//the page needs a refresh to show the changes in the client
 			mainContent.videoCamBtn.waitForVisible(10000, true);
 			mainContent.videoCamBtn.isVisible().should.be.false;
 		});
 
-		it('should change the message video files via api', (done) => {
+		it('it should change the message video files via api', (done) => {
 			request.post(api('settings/Message_VideoRecorderEnabled'))
 				.set(credentials)
 				.send({'value' : true})
@@ -201,8 +202,8 @@ describe('Changing settings via api', () => {
 		});
 	});
 
-	describe('bad words filter', () => {
-		it('should change the bad words filter via api', (done) => {
+	describe('bad words filter:', () => {
+		it('it should change the bad words filter via api', (done) => {
 			request.post(api('settings/Message_AllowBadWordsFilter'))
 				.set(credentials)
 				.send({'value' : true})
@@ -214,7 +215,7 @@ describe('Changing settings via api', () => {
 				.end(done);
 		});
 
-		it('should add bad words to the filter via api', (done) => {
+		it('it should add bad words to the filter via api', (done) => {
 			request.post(api('settings/Message_BadWordsFilterList'))
 				.set(credentials)
 				.send({'value' : 'badword'})
@@ -226,13 +227,15 @@ describe('Changing settings via api', () => {
 				.end(done);
 		});
 
-		it('should send a bad word', () => {
+		it('it should send a bad word', () => {
+			sideNav.general.waitForVisible(5000);
+			sideNav.general.click();
 			mainContent.setTextToInput('badword');
 			mainContent.sendBtn.click();
-			mainContent.lastMessage.getText().should.equal('*******');
+			mainContent.waitForLastMessageEqualsText('*******');
 		});
 
-		it('should change the bad words filter via api', (done) => {
+		it('it should change the bad words filter via api', (done) => {
 			request.post(api('settings/Message_AllowBadWordsFilter'))
 				.set(credentials)
 				.send({'value' : false})
@@ -245,8 +248,8 @@ describe('Changing settings via api', () => {
 		});
 	});
 
-	describe('block message pin', () => {
-		it('should change the message pin via api', (done) => {
+	describe('block message pin:', () => {
+		it('it should change the message pin via api', (done) => {
 			request.post(api('settings/Message_AllowPinning'))
 				.set(credentials)
 				.send({'value' : false})
@@ -258,20 +261,20 @@ describe('Changing settings via api', () => {
 				.end(done);
 		});
 
-		it.skip('should not show the pinned tab button', () => {
+		it.skip('it should not show the pinned tab button', () => {
 		//the page needs a refresh to show the changes in the client
 			flexTab.pinnedTab.waitForVisible(10000, true);
 			flexTab.pinnedTab.isVisible().should.be.false;
 		});
 
-		it.skip('should not show the pin message action', () => {
+		it.skip('it should not show the pin message action', () => {
 		//the page needs a refresh to show the changes in the client
 			mainContent.sendMessage('Message for Message pin Block');
 			mainContent.openMessageActionMenu();
 			mainContent.pinMessage.isVisible().should.be.false;
 		});
 
-		it('should change the message pin via api', (done) => {
+		it('it should change the message pin via api', (done) => {
 			request.post(api('settings/Message_AllowPinning'))
 				.set(credentials)
 				.send({'value' : true})
@@ -284,8 +287,8 @@ describe('Changing settings via api', () => {
 		});
 	});
 
-	describe('block message star', () => {
-		it('should change the message star via api', (done) => {
+	describe('block message star:', () => {
+		it('it should change the message star via api', (done) => {
 			request.post(api('settings/Message_AllowStarring'))
 				.set(credentials)
 				.send({'value' : false})
@@ -297,20 +300,20 @@ describe('Changing settings via api', () => {
 				.end(done);
 		});
 
-		it.skip('should not show the starred tab button', () => {
+		it.skip('it should not show the starred tab button', () => {
 		//the page needs a refresh to show the changes in the client
 			flexTab.starredTab.waitForVisible(10000, true);
 			flexTab.starredTab.isVisible().should.be.false;
 		});
 
-		it.skip('should not show the star message action', () => {
+		it.skip('it should not show the star message action', () => {
 		//the page needs a refresh to show the changes in the client
 			mainContent.sendMessage('Message for Message pin Block');
 			mainContent.openMessageActionMenu();
 			mainContent.starMessage.isVisible().should.be.false;
 		});
 
-		it('should change the message star via api', (done) => {
+		it('it should change the message star via api', (done) => {
 			request.post(api('settings/Message_AllowStarring'))
 				.set(credentials)
 				.send({'value' : true})
@@ -323,8 +326,8 @@ describe('Changing settings via api', () => {
 		});
 	});
 
-	describe('block file upload', () => {
-		it('should change the file upload via api', (done) => {
+	describe.skip('block file upload:', () => {
+		it('it should change the file upload via api', (done) => {
 			request.post(api('settings/FileUpload_Enabled'))
 				.set(credentials)
 				.send({'value' : false})
@@ -336,11 +339,11 @@ describe('Changing settings via api', () => {
 				.end(done);
 		});
 
-		it('should not show file upload icon', () => {
+		it('it should not show file upload icon', () => {
 			mainContent.fileAttachment.isVisible().should.be.false;
 		});
 
-		it('should change the file upload via api', (done) => {
+		it('it should change the file upload via api', (done) => {
 			request.post(api('settings/FileUpload_Enabled'))
 				.set(credentials)
 				.send({'value' : true})
@@ -353,9 +356,9 @@ describe('Changing settings via api', () => {
 		});
 	});
 
-	describe.skip('profile changes', () => {
+	describe.skip('profile changes:', () => {
 		before(() => {
-			sideNav.accountBoxUserName.click();
+			sideNav.accountMenu.click();
 			sideNav.account.waitForVisible(5000);
 			sideNav.account.click();
 		});
@@ -368,7 +371,7 @@ describe('Changing settings via api', () => {
 			sideNav.searchChannel('general');
 		});
 		describe('block profile change', () => {
-			it('should change the allow user profile change via api', (done) => {
+			it('it should change the allow user profile change via api', (done) => {
 				request.post(api('settings/Accounts_AllowUserProfileChange'))
 					.set(credentials)
 					.send({'value' : false})
@@ -380,11 +383,11 @@ describe('Changing settings via api', () => {
 					.end(done);
 			});
 
-			it('should not show profile link', () => {
+			it('it should not show profile link', () => {
 				sideNav.profile.isVisible().should.be.false;
 			});
 
-			it('should change the allow user profile change via api', (done) => {
+			it('it should change the allow user profile change via api', (done) => {
 				request.post(api('settings/Accounts_AllowUserProfileChange'))
 					.set(credentials)
 					.send({'value' : true})
@@ -398,7 +401,7 @@ describe('Changing settings via api', () => {
 		});
 
 		describe('block avatar change', () => {
-			it('should change the allow user avatar change via api', (done) => {
+			it('it should change the allow user avatar change via api', (done) => {
 				request.post(api('settings/Accounts_AllowUserAvatarChange'))
 					.set(credentials)
 					.send({'value' : false})
@@ -410,11 +413,11 @@ describe('Changing settings via api', () => {
 					.end(done);
 			});
 
-			it('should not show avatar link', () => {
+			it('it should not show avatar link', () => {
 				sideNav.avatar.isVisible().should.be.false;
 			});
 
-			it('should change the allow user avatar change via api', (done) => {
+			it('it should change the allow user avatar change via api', (done) => {
 				request.post(api('settings/Accounts_AllowUserAvatarChange'))
 					.set(credentials)
 					.send({'value' : true})
@@ -428,17 +431,17 @@ describe('Changing settings via api', () => {
 		});
 	});
 
-	describe('Manually Approve New Users', () => {
+	describe('Manually Approve New Users:', () => {
 		before(() => {
-			sideNav.accountBoxUserName.waitForVisible(5000);
-			sideNav.accountBoxUserName.click();
+			sideNav.accountMenu.waitForVisible(5000);
+			sideNav.accountMenu.click();
 			sideNav.logout.waitForVisible(5000);
 			sideNav.logout.click();
 
 			loginPage.open();
 		});
 
-		it('should change the Manually Approve New Users via api', (done) => {
+		it('it should change the Manually Approve New Users via api', (done) => {
 			request.post(api('settings/Accounts_ManuallyApproveNewUsers'))
 				.set(credentials)
 				.send({'value' : true})
@@ -462,13 +465,13 @@ describe('Changing settings via api', () => {
 			loginPage.submit();
 
 			loginPage.registrationSucceededCard.waitForVisible(5000);
-			loginPage.registrationSucceededCard.getText().toLowerCase().should.equal('registration succeeded');
+			loginPage.registrationSucceededCard.getAttribute('data-i18n').should.equal('Registration_Succeeded');
 			loginPage.backToLoginButton.click();
 		});
 
 		it('login as admin and go to users', () => {
 			checkIfUserIsAdmin(adminUsername, adminEmail, adminPassword);
-			sideNav.accountBoxUserName.click();
+			sideNav.accountMenu.click();
 			sideNav.admin.waitForVisible(5000);
 			sideNav.admin.click();
 			admin.usersLink.waitForVisible(5000);
@@ -488,21 +491,21 @@ describe('Changing settings via api', () => {
 			flexTab.usersView.waitForVisible(5000);
 		});
 
-		it('should show the activate user btn', () => {
+		it('it should show the activate user btn', () => {
 			flexTab.usersActivate.waitForVisible(5000);
 			flexTab.usersActivate.isVisible().should.be.true;
 		});
 
-		it('should activate the user', () => {
+		it('it should activate the user', () => {
 			flexTab.usersActivate.click();
 		});
 
-		it('should show the deactivate btn', () => {
+		it('it should show the deactivate btn', () => {
 			flexTab.usersDeactivate.waitForVisible(5000);
 			flexTab.usersDeactivate.isVisible().should.be.true;
 		});
 
-		it('should change the Manually Approve New Users via api', (done) => {
+		it('it should change the Manually Approve New Users via api', (done) => {
 			request.post(api('settings/Accounts_ManuallyApproveNewUsers'))
 				.set(credentials)
 				.send({'value' : false})

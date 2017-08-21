@@ -3,11 +3,11 @@
 Meteor.startup(function() {
 	const instance = {
 		host: 'localhost',
-		port: process.env.PORT
+		port: String(process.env.PORT).trim()
 	};
 
 	if (process.env.INSTANCE_IP) {
-		instance.host = process.env.INSTANCE_IP;
+		instance.host = String(process.env.INSTANCE_IP).trim();
 	}
 
 	InstanceStatus.registerInstance('rocket.chat', instance);

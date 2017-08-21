@@ -21,8 +21,6 @@
   "Accounts_AllowUserProfileChange": "کاربر اجازه می دهد مشخصات تغییر",
   "Accounts_AvatarResize": "تغییر اندازه آواتار ها",
   "Accounts_AvatarSize": "آواتار حجم",
-  "Accounts_AvatarStorePath": "مسیر آواتار ذخیره سازی",
-  "Accounts_AvatarStoreType": "آواتار نوع ذخیره سازی",
   "Accounts_BlockedDomainsList": "مسدود شده فهرست دامنه",
   "Accounts_BlockedDomainsList_Description": "جدا شده با کاما از حوزه های مسدود شده",
   "Accounts_BlockedUsernameList": "مسدود شده نام کاربری",

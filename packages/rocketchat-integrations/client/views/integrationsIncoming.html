@@ -30,11 +30,7 @@
 						<div class="input-line double-col">
 							<label>{{_ "Post_as"}}</label>
 							<div>
-								{{#if data.token}}
-									<input type="text" name="username" value="{{data.username}}" readonly="readonly" />
-								{{else}}
-									<input type="text" name="username" value="{{data.username}}" />
-								{{/if}}
+								<input type="text" name="username" value="{{data.username}}" />
 								<div class="settings-description secondary-font-color">{{_ "Choose_the_username_that_this_integration_will_post_as"}}</div>
 								<div class="settings-description secondary-font-color">{{_ "Should_exists_a_user_with_this_username"}}</div>
 							</div>
