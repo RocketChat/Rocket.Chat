@@ -7,7 +7,8 @@ RocketChat.settings.get('FileUpload_ProtectFiles', function(key, value) {
 	protectedFiles = value;
 });
 
-WebApp.connectHandlers.use('/file-upload/', function(req, res, next) {
+WebApp.connectHandlers.use(`${ __meteor_runtime_config__.ROOT_URL_PATH_PREFIX }/file-upload/`,	function(req, res, next) {
+
 	const match = /^\/([^\/]+)\/(.*)/.exec(req.url);
 
 	if (match[1]) {

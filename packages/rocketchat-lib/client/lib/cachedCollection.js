@@ -97,7 +97,7 @@ class CachedCollection {
 		userRelated = true,
 		useSync = true,
 		useCache = true,
-		debug = true,
+		debug = false,
 		version = 6,
 		maxCacheTime = 60*60*24*30
 	}) {

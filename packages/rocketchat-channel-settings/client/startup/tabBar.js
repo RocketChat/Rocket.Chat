@@ -4,7 +4,7 @@ Meteor.startup(() => {
 		id: 'channel-settings',
 		anonymous: true,
 		i18nTitle: 'Room_Info',
-		icon: 'icon-info-circled',
+		icon: 'info-circled',
 		template: 'channelSettings',
 		order: 0
 	});

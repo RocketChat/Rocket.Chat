@@ -2,6 +2,11 @@
 	"plugins": {
 		"postcss-smart-import": {},
 		"postcss-cssnext": {
+			"features": {
+				"customProperties": {
+					"preserve": true
+				}
+			},
 			"browsers": [
 				"ie > 10",
 				"last 2 Edge versions",
