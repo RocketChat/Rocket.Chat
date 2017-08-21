@@ -26,7 +26,7 @@ Template.membersList.helpers({
 		const roomUsers = Template.instance().users.get();
 		const room = ChatRoom.findOne(this.rid);
 		const roomMuted = (room != null ? room.muted : undefined) || [];
-		const userUtcOffset = Meteor.user().utcOffset;
+		const userUtcOffset = Meteor.user() && Meteor.user().utcOffset;
 		let totalOnline = 0;
 		let users = roomUsers.map(function(user) {
 			let utcOffset;

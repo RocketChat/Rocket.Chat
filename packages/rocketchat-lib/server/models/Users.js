@@ -148,6 +148,9 @@ class ModelUsers extends RocketChat.models._Base {
 						},
 						{
 							name: termRegex
+						},
+						{
+							'emails.address': termRegex
 						}
 					]
 				},
@@ -157,7 +160,8 @@ class ModelUsers extends RocketChat.models._Base {
 			]
 		};
 
-		return this.find(query, options);
+		// do not use cache
+		return this._db.find(query, options);
 	}
 
 	findUsersByNameOrUsername(nameOrUsername, options) {
@@ -222,6 +226,15 @@ class ModelUsers extends RocketChat.models._Base {
 			}
 		};
 
+		return this.find(query, options);
+	}
+
+	findUsersByIds(ids, options) {
+		const query = {
+			_id: {
+				$in: ids
+			}
+		};
 		return this.find(query, options);
 	}
 
@@ -315,9 +328,8 @@ class ModelUsers extends RocketChat.models._Base {
 
 	setCustomFields(_id, fields) {
 		const values = {};
-		Object.keys(fields).reduce(key => {
-			const value = fields[key];
-			values[`customFields.${ key }`] = value;
+		Object.keys(fields).forEach(key => {
+			values[`customFields.${ key }`] = fields[key];
 		});
 
 		const update = {$set: values};

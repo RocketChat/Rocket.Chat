@@ -1,0 +1,44 @@
+.avatar {
+	position: relative;
+
+	overflow: hidden;
+
+	width: 100%;
+	height: 100%;
+
+	border-radius: var(--avatar-radius);
+
+	& .emoji,
+	& .emojione {
+		width: 100%;
+		height: 100%;
+		margin: 0;
+	}
+
+	& .avatar-image {
+		width: 100%;
+		height: 100%;
+
+		background-repeat: no-repeat;
+		background-position: center;
+		background-size: cover;
+	}
+
+	&[initials]::before {
+		position: absolute;
+
+		display: flex;
+
+		width: 100%;
+		height: 100%;
+
+		content: attr(initials);
+		text-align: center;
+		text-transform: uppercase;
+
+		font-size: var(--avatar-initials-text-size);
+		font-weight: var(--avatar-initials-text-weight);
+		align-items: center;
+		justify-content: center;
+	}
+}

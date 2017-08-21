@@ -68,14 +68,8 @@ Meteor.methods({
 	}
 });
 // Limit a user, who does not have the "bot" role, to sending 5 msgs/second
-DDPRateLimiter.addRule({
-	type: 'method',
-	name: 'sendMessage',
+RocketChat.RateLimiter.limitMethod('sendMessage', 5, 1000, {
 	userId(userId) {
-		const user = RocketChat.models.Users.findOneById(userId);
-		if (user == null || !user.roles) {
-			return true;
-		}
-		return user.roles.includes('bot');
+		return !RocketChat.authz.hasPermission(userId, 'send-many-messages');
 	}
-}, 5, 1000);
+});
