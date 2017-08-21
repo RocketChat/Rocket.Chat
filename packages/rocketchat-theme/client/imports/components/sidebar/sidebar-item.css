@@ -1,0 +1,148 @@
+.sidebar-item {
+	display: flex;
+
+	height: var(--sidebar-item-height);
+	padding-left: 22px;
+
+	cursor: pointer;
+
+	border-radius: var(--sidebar-item-radius);
+	align-items: center;
+
+	&--active {
+		background-color: var(--sidebar-item-active-background);
+	}
+
+	&--darken {
+		&:hover {
+			background-color: var(--sidebar-item-darken-hover-background);
+		}
+
+		& .sidebar-item__link {
+			color: var(--sidebar-item-darken-text-color);
+		}
+	}
+
+	&--lighten:hover {
+		background-color: var(--sidebar-item-lighten-hover-background);
+	}
+
+	&__popup-active {
+		background-color: var(--sidebar-item-popup-background);
+	}
+
+	&__link {
+		display: flex;
+		overflow: hidden;
+		flex: 1;
+
+		color: var(--sidebar-item-text-color);
+
+		font-size: 1rem;
+		line-height: var(--sidebar-item-height);
+		align-items: center;
+
+		&--active {
+			color: var(--sidebar-item-active-text-color);
+		}
+	}
+
+	& .badge {
+		margin: 0 8px 0 3px;
+	}
+
+	&__icon {
+		margin: 0 auto;
+		stroke: currentColor;
+
+		&--hashtag {
+			width: 14px;
+			height: 14px;
+		}
+
+		&--lock {
+			width: 12px;
+			height: 18px;
+		}
+
+		&--customize {
+			width: 14px;
+			height: 14px;
+		}
+
+		&--user {
+			width: 18px;
+			height: 17px;
+		}
+
+		&--user-rounded {
+			width: 18px;
+			height: 18px;
+		}
+
+		&--comment-alt {
+			width: 16px;
+			height: 14px;
+			fill: currentColor;
+		}
+
+		&--livechat {
+			width: 15px;
+			height: 15px;
+			fill: currentColor;
+		}
+
+		&--queue {
+			width: 15px;
+			height: 15px;
+			fill: currentColor;
+		}
+	}
+
+	&__user-thumb {
+		width: var(--sidebar-item-thumb-size);
+		height: var(--sidebar-item-thumb-size);
+	}
+
+	&__user-status {
+		width: var(--sidebar-item-user-status-size);
+		height: var(--sidebar-item-user-status-size);
+		margin-right: 10px;
+		margin-left: -16px;
+
+		border-radius: var(--sidebar-item-user-status-radius);
+
+		&--online {
+			background-color: var(--status-online);
+		}
+
+		&--away {
+			background-color: var(--status-away);
+		}
+
+		&--busy {
+			background-color: var(--status-busy);
+		}
+
+		&--offline {
+			background-color: var(--status-invisible);
+		}
+	}
+
+	&__picture {
+		display: flex;
+		flex: 0 0 var(--sidebar-item-thumb-size);
+
+		margin-right: 6px;
+		align-items: center;
+	}
+
+	&__name {
+		overflow: hidden;
+
+		white-space: nowrap;
+		text-overflow: ellipsis;
+
+		font-size: var(--sidebar-item-text-size);
+	}
+}

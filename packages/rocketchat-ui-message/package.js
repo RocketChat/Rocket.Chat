@@ -41,5 +41,7 @@ Package.onUse(function(api) {
 
 	api.addFiles('client/renderMessageBody.js', 'client');
 
+	api.addFiles('startup/messageBoxActions.js', 'client');
+
 	api.export('renderMessageBody');
 });
