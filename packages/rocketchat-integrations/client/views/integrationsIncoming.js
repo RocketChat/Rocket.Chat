@@ -118,7 +118,7 @@ Template.integrationsIncoming.helpers({
 			}
 		});
 
-		return `curl -X POST -H 'Content-Type: application/json' --data 'payload=${ JSON.stringify(data) }' ${ record.url }`;
+		return `curl -X POST -H 'Content-Type: application/json' --data '${ JSON.stringify(data) }' ${ record.url }`;
 	},
 
 	editorOptions() {
@@ -222,6 +222,7 @@ Template.integrationsIncoming.events({
 		const integration = {
 			enabled: enabled === '1',
 			channel,
+			username,
 			alias: alias !== '' ? alias : undefined,
 			emoji: emoji !== '' ? emoji : undefined,
 			avatar: avatar !== '' ? avatar : undefined,
@@ -240,8 +241,6 @@ Template.integrationsIncoming.events({
 				toastr.success(TAPi18n.__('Integration_updated'));
 			});
 		} else {
-			integration.username = username;
-
 			Meteor.call('addIncomingIntegration', integration, (err, data) => {
 				if (err) {
 					return handleError(err);

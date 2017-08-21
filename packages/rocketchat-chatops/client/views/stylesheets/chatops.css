@@ -1,9 +1,9 @@
 
 .map-container {
-  width: 670px;
-  max-width: 100%;
-  height: 500px;
-  padding: 5px, 5px, 5px 5px;
+	width: 670px;
+	max-width: 100%;
+	height: 500px;
+	padding: 5px;
 }
 
 .red {

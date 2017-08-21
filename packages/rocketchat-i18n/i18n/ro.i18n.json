@@ -21,8 +21,6 @@
   "Accounts_AllowUserProfileChange": "Permite schimbarea profilului utilzatorilor",
   "Accounts_AvatarResize": "Redimensionarea Avatare",
   "Accounts_AvatarSize": "Dimensiune Avatar",
-  "Accounts_AvatarStorePath": "Calea de stocare Avatar",
-  "Accounts_AvatarStoreType": "Tip stocare Avatar",
   "Accounts_BlockedDomainsList": "Blocate List Domenii",
   "Accounts_BlockedDomainsList_Description": "Lista de elemente separate prin virgulă de domenii blocate",
   "Accounts_BlockedUsernameList": "Utilizator blocat Lista",

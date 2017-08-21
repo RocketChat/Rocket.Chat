@@ -15,7 +15,7 @@
 * [Mobile apps](#mobile-apps)
 * [Desktop apps](#desktop-apps)
 * [Deployment](#deployment)
-   * [Snaps](#instant-server-intallation-with-snaps)
+   * [Snaps](#instant-server-installation-with-snaps)
    * [Layershift](#layershift)
    * [Sandstorm.io](#sandstormio) 
    * [DPlatform](#dplatform) 
@@ -23,6 +23,7 @@
    * [Ubuntu 16.04](#ubuntu-1604)
    * [Cloudron.io](#cloudronio) 
    * [Heroku](#heroku)
+   * [Helm Kubernetes](#helm-kubernetes)
   * [Scalingo](#scalingo)
   * [Sloppy.io](#sloppyio)
   * [Docker](#docker)
@@ -76,7 +77,7 @@ Now compatible with all Android devices as old as version 4.0.x - [download here
 
 # Deployment
 
-## Instant Server Intallation with Snaps
+## Instant Server Installation with Snaps
  
 Install Rocket.Chat in seconds on Linux (Ubuntu and others) with:
 
@@ -84,7 +85,7 @@ Install Rocket.Chat in seconds on Linux (Ubuntu and others) with:
 sudo snap install rocketchat-server
 ```
 
-[![Rocket.Chat Snap is recommended for Linux deployments](https://github.com/Sing-Li/bbug/raw/master/images/ubuntulogo.png)](https://uappexplorer.com/app/rocketchat-server.rocketchat)
+[![Rocket.Chat Snap is recommended for Linux deployments](https://github.com/Sing-Li/bbug/raw/master/images/ubuntulogo.png)](https://uappexplorer.com/snap/ubuntu/rocketchat-server)
 
 Installing snaps is very quick.  By running that command you have your full Rocket.Chat server up and running.  Snaps are secure.  They are isolated with all of their dependencies.  Snaps also auto update when we release new versions. 
 
@@ -118,7 +119,7 @@ Get your Rocket.Chat instance hosted in a "as a Service" style. You register and
 [![Rocket.Chat on IndieHosters](https://indie.host/signup.png)](https://indiehosters.net/shop/product/rocket-chat-21)
 
 ## Ubuntu 16.04
-[![Ubuntu Apps Explorer](https://raw.githubusercontent.com/Sing-Li/bbug/master/images/uappexplorer.png)](https://uappexplorer.com/app/rocketchat-server.rocketchat)
+[![Ubuntu Apps Explorer](https://raw.githubusercontent.com/Sing-Li/bbug/master/images/uappexplorer.png)](https://uappexplorer.com/snap/ubuntu/rocketchat-server)
 
 Deploy from shell:
 
@@ -136,6 +137,9 @@ Install Rocket.Chat on [Cloudron](https://cloudron.io) Smartserver:
 Host your own Rocket.Chat server for **FREE** with [One-Click Deploy](https://heroku.com/deploy)
 
 [![Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy?template=https://github.com/RocketChat/Rocket.Chat/tree/master)
+
+## Helm Kubernetes
+Deploy on Kubernetes using the official [helm chart](https://github.com/kubernetes/charts/pull/752).
 
 ## Scalingo
 Deploy your own Rocket.Chat server instantly on [Scalingo](https://scalingo.com)
@@ -417,11 +421,15 @@ Thanks to our core team
 [Sing Li](https://github.com/Sing-Li),
 and to hundreds of awesome [contributors](https://github.com/RocketChat/Rocket.Chat/graphs/contributors).
 
+![Emoji One](https://cloud.githubusercontent.com/assets/1986378/24772858/47290a70-1ae9-11e7-9a5a-2913d0002c94.png)
+
 Emoji provided free by [Emoji One](http://emojione.com)
 
-Performance monitoring provided by [Kadira](https://kadira.io)
+![BrowserStack](https://cloud.githubusercontent.com/assets/1986378/24772879/57d57b88-1ae9-11e7-98b4-4af824b47933.png)
 
-Hosting powered by [Rackspace](https://rackspace.com)
+Testing with [BrowserStack](https://www.browserstack.com)
+
+
 
 # Donate
 

@@ -2,6 +2,7 @@ const options = {
 	fields: {
 		_id: 1,
 		name: 1,
+		fname: 1,
 		t: 1,
 		cl: 1,
 		u: 1,
@@ -9,10 +10,12 @@ const options = {
 		topic: 1,
 		announcement: 1,
 		muted: 1,
+		_updatedAt: 1,
 		archived: 1,
 		jitsiTimeout: 1,
 		description: 1,
 		default: 1,
+		customFields: 1,
 
 		// @TODO create an API to register this fields based on room type
 		livechatData: 1,
@@ -20,9 +23,11 @@ const options = {
 		sms: 1,
 		code: 1,
 		open: 1,
+		lastActivity: 1,
 		v: 1,
 		label: 1,
-		ro: 1
+		ro: 1,
+		sentiment: 1
 	}
 };
 
@@ -39,6 +44,9 @@ const roomMap = (record) => {
 Meteor.methods({
 	'rooms/get'(updatedAt) {
 		if (!Meteor.userId()) {
+			if (RocketChat.settings.get('Accounts_AllowAnonymousRead') === true) {
+				return RocketChat.models.Rooms.findByDefaultAndTypes(true, ['c'], options).fetch();
+			}
 			return [];
 		}
 
@@ -55,7 +63,7 @@ Meteor.methods({
 	},
 
 	getRoomByTypeAndName(type, name) {
-		if (!Meteor.userId()) {
+		if (!Meteor.userId() && RocketChat.settings.get('Accounts_AllowAnonymousRead') === false) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'getRoomByTypeAndName' });
 		}
 

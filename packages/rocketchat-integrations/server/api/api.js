@@ -10,6 +10,7 @@ function buildSandbox(store = {}) {
 		s,
 		console,
 		moment,
+		Livechat: RocketChat.Livechat,
 		Store: {
 			set(key, val) {
 				return store[key] = val;
@@ -207,6 +208,12 @@ function executeIntegrationRest() {
 				return RocketChat.API.v1.failure(result.error);
 			}
 			this.bodyParams = result && result.content;
+			if (typeof result !== 'undefined') {
+				this.scriptResponse = result.response;
+				if (result.user) {
+					this.user = result.user;
+				}
+			}
 			logger.incoming.debug('[Process Incoming Request result of Trigger', this.integration.name, ':]');
 			logger.incoming.debug('result', this.bodyParams);
 		} catch ({stack}) {
@@ -228,7 +235,10 @@ function executeIntegrationRest() {
 		if (_.isEmpty(message)) {
 			return RocketChat.API.v1.failure('unknown-error');
 		}
-		return RocketChat.API.v1.success();
+		if (this.scriptResponse) {
+			logger.incoming.debug('response', this.scriptResponse);
+		}
+		return RocketChat.API.v1.success(this.scriptResponse);
 	} catch ({error}) {
 		return RocketChat.API.v1.failure(error);
 	}

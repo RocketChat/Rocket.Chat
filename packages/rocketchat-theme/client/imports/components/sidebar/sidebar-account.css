@@ -1,0 +1,119 @@
+.sidebar__account {
+	margin-bottom: 40px;
+	display: flex;
+	align-items: center;
+
+	&--lighten {
+		& .sidebar__account-username {
+			color: var(--sidebar-account-username-color-darker);
+		}
+
+		& .sidebar__account-menu {
+			fill: var(--sidebar-account-username-color-darker);
+		}
+	}
+
+	&-thumb {
+		width: var(--sidebar-account-thumb-size);
+		height: var(--sidebar-account-thumb-size);
+
+		flex: 0 0 var(--sidebar-account-thumb-size);
+	}
+
+	&-data {
+		flex: 1;
+		display: flex;
+		flex-direction: column;
+		overflow: hidden;
+		position: relative;
+
+		margin-left: 1rem;
+	}
+
+	&-username {
+		width: 160px;
+		height: calc(var(--sidebar-account-username-size) + 0.1rem);
+		margin-bottom: 0.5rem;
+
+		color: var(--sidebar-account-username-color);
+
+		font-size: var(--sidebar-account-username-size);
+		font-weight: var(--sidebar-account-username-weight);
+
+		white-space: nowrap;
+		text-overflow: ellipsis;
+	}
+
+	&-visual-status {
+		max-width: 124px;
+		margin-right: 8px;
+
+		user-select: none;
+
+		font-size: var(--sidebar-account-status-font-size);
+	}
+
+	&-status {
+		display: flex;
+
+		color: var(--sidebar-account-status-color);
+
+		align-items: center;
+	}
+
+	&-status-bullet {
+		display: block;
+
+		width: var(--sidebar-account-status-bullet-size);
+		height: var(--sidebar-account-status-bullet-size);
+		margin: 0.25rem 0.5rem 0.25rem 0;
+
+		border-radius: var(--sidebar-account-status-bullet-radius);
+
+		&--online {
+			background-color: var(--status-online);
+		}
+
+		&--away {
+			background-color: var(--status-away);
+		}
+
+		&--busy {
+			background-color: var(--status-busy);
+		}
+
+		&--invisible {
+			background-color: var(--status-invisible);
+		}
+
+		&--offline {
+			background-color: var(--status-invisible);
+		}
+	}
+
+	&-label {
+		padding: 10px;
+
+		cursor: pointer;
+
+		position: relative;
+
+		&:hover .sidebar__account-menu {
+			fill: var(--sidebar-account-status-color);
+		}
+	}
+
+	&-menu {
+		width: 3px;
+		height: 16px;
+
+		fill: var(--sidebar-account-username-color);
+
+		transition: fill 0.2s;
+	}
+
+	& .rc-popover {
+		top: 40px;
+		left: 0;
+	}
+}

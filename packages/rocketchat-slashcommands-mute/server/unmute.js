@@ -26,7 +26,7 @@ RocketChat.slashCommands.add('unmute', function Unmute(command, params, item) {
 			}, user.language)
 		});
 	}
-	if ((room.usernames || []).includes(username)) {
+	if ((room.usernames || []).includes(username) === false) {
 		return RocketChat.Notifications.notifyUser(Meteor.userId(), 'message', {
 			_id: Random.id(),
 			rid: item.rid,
