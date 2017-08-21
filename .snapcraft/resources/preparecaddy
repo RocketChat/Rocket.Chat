@@ -1,0 +1,36 @@
+#! /bin/bash
+
+caddy_bin="caddy"
+caddy_dl_ext=".tar.gz"
+
+# NOTE: `uname -m` is more accurate and universal than `arch`
+# See https://en.wikipedia.org/wiki/Uname
+unamem="$(uname -m)"
+if [[ $unamem == *aarch64* ]]; then
+        caddy_arch="arm64"
+elif [[ $unamem == *64* ]]; then
+        caddy_arch="amd64"
+elif [[ $unamem == *86* ]]; then
+        caddy_arch="386"
+elif [[ $unamem == *armv5* ]]; then
+        caddy_arch="arm"
+        caddy_arm="5"
+elif [[ $unamem == *armv6l* ]]; then
+        caddy_arch="arm"
+        caddy_arm="6"
+elif [[ $unamem == *armv7l* ]]; then
+        caddy_arch="arm"
+        caddy_arm="7"
+else
+        echo "Aborted, unsupported or unknown architecture: $unamem"
+        return 2
+fi
+
+echo "Downloading Caddy for $caddy_os/$caddy_arch$caddy_arm..."
+caddy_file="caddy_linux_$caddy_arch${caddy_arm}_custom$caddy_dl_ext"
+caddy_url="https://caddyserver.com/download/linux/$caddy_arch$caddy_arm?plugins=$caddy_plugins"
+echo "$caddy_url"
+
+wget --quiet "$caddy_url" -O "$caddy_file"
+tar -xzf $caddy_file -C . "$caddy_bin"
+chmod +x $caddy_bin

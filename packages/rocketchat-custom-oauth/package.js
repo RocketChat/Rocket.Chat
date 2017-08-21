@@ -20,9 +20,9 @@ Package.onUse(function(api) {
 	api.use('http', 'server');
 
 
-	api.mainModule('custom_oauth_client.js', 'client');
+	api.mainModule('client/custom_oauth_client.js', 'client');
 
-	api.mainModule('custom_oauth_server.js', 'server');
+	api.mainModule('server/custom_oauth_server.js', 'server');
 
 	api.export('CustomOAuth');
 });

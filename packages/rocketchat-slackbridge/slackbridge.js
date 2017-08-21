@@ -80,8 +80,9 @@ class SlackBridge {
 		if (!_.isEmpty(slackMsgTxt)) {
 			slackMsgTxt = slackMsgTxt.replace(/<!everyone>/g, '@all');
 			slackMsgTxt = slackMsgTxt.replace(/<!channel>/g, '@all');
-			slackMsgTxt = slackMsgTxt.replace(/&gt;/g, '<');
-			slackMsgTxt = slackMsgTxt.replace(/&lt;/g, '>');
+			slackMsgTxt = slackMsgTxt.replace(/<!here>/g, '@here');
+			slackMsgTxt = slackMsgTxt.replace(/&gt;/g, '>');
+			slackMsgTxt = slackMsgTxt.replace(/&lt;/g, '<');
 			slackMsgTxt = slackMsgTxt.replace(/&amp;/g, '&');
 			slackMsgTxt = slackMsgTxt.replace(/:simple_smile:/g, ':smile:');
 			slackMsgTxt = slackMsgTxt.replace(/:memo:/g, ':pencil:');
@@ -591,59 +592,57 @@ class SlackBridge {
 		const parsedUrl = url.parse(slackFileURL, true);
 		parsedUrl.headers = { 'Authorization': `Bearer ${ this.apiToken }` };
 		requestModule.get(parsedUrl, Meteor.bindEnvironment((stream) => {
-			const fileId = Meteor.fileStore.create(details);
-			if (fileId) {
-				Meteor.fileStore.write(stream, fileId, (err, file) => {
-					console.log('fileStore.write', file);
-					if (err) {
-						throw new Error(err);
-					} else {
-						const url = file.url.replace(Meteor.absoluteUrl(), '/');
-						const attachment = {
-							title: `File Uploaded: ${ file.name }`,
-							title_link: url
-						};
+			const fileStore = FileUpload.getStore('Uploads');
 
-						if (/^image\/.+/.test(file.type)) {
-							attachment.image_url = url;
-							attachment.image_type = file.type;
-							attachment.image_size = file.size;
-							attachment.image_dimensions = file.identify && file.identify.size;
-						}
-						if (/^audio\/.+/.test(file.type)) {
-							attachment.audio_url = url;
-							attachment.audio_type = file.type;
-							attachment.audio_size = file.size;
-						}
-						if (/^video\/.+/.test(file.type)) {
-							attachment.video_url = url;
-							attachment.video_type = file.type;
-							attachment.video_size = file.size;
-						}
+			fileStore.insert(details, stream, (err, file) => {
+				if (err) {
+					throw new Error(err);
+				} else {
+					const url = file.url.replace(Meteor.absoluteUrl(), '/');
+					const attachment = {
+						title: file.name,
+						title_link: url
+					};
 
-						const msg = {
-							rid: details.rid,
-							ts: timeStamp,
-							msg: '',
-							file: {
-								_id: file._id
-							},
-							groupable: false,
-							attachments: [attachment]
-						};
-
-						if (isImporting) {
-							msg.imported = 'slackbridge';
-						}
-
-						if (details.message_id && (typeof details.message_id === 'string')) {
-							msg['_id'] = details.message_id;
-						}
-
-						return RocketChat.sendMessage(rocketUser, msg, rocketChannel, true);
+					if (/^image\/.+/.test(file.type)) {
+						attachment.image_url = url;
+						attachment.image_type = file.type;
+						attachment.image_size = file.size;
+						attachment.image_dimensions = file.identify && file.identify.size;
 					}
-				});
-			}
+					if (/^audio\/.+/.test(file.type)) {
+						attachment.audio_url = url;
+						attachment.audio_type = file.type;
+						attachment.audio_size = file.size;
+					}
+					if (/^video\/.+/.test(file.type)) {
+						attachment.video_url = url;
+						attachment.video_type = file.type;
+						attachment.video_size = file.size;
+					}
+
+					const msg = {
+						rid: details.rid,
+						ts: timeStamp,
+						msg: '',
+						file: {
+							_id: file._id
+						},
+						groupable: false,
+						attachments: [attachment]
+					};
+
+					if (isImporting) {
+						msg.imported = 'slackbridge';
+					}
+
+					if (details.message_id && (typeof details.message_id === 'string')) {
+						msg['_id'] = details.message_id;
+					}
+
+					return RocketChat.sendMessage(rocketUser, msg, rocketChannel, true);
+				}
+			});
 		}));
 	}
 

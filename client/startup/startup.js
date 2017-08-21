@@ -44,6 +44,7 @@ Meteor.startup(function() {
 		return RocketChat.settings.get('Language') || defaultAppLanguage();
 	};
 
+	const availableLanguages = TAPi18n.getLanguages();
 	const loadedLanguages = [];
 
 	window.setLanguage = function(language) {
@@ -63,7 +64,10 @@ Meteor.startup(function() {
 			$('html').removeClass('rtl');
 		}
 
-		language = language.split('-').shift();
+		if (!availableLanguages[language]) {
+			language = language.split('-').shift();
+		}
+
 		TAPi18n.setLanguage(language);
 
 		language = language.toLowerCase();

@@ -85,7 +85,6 @@ const CROWD = class CROWD {
 
 	syncDataToUser(crowdUser, id) {
 		const user = {
-			name: crowdUser.displayname,
 			username: crowdUser.username,
 			emails: [{
 				address : crowdUser.email,
@@ -94,6 +93,10 @@ const CROWD = class CROWD {
 			password: crowdUser.password,
 			active: crowdUser.active
 		};
+
+		if (crowdUser.displayname) {
+			RocketChat._setRealName(id, crowdUser.displayname);
+		}
 
 		Meteor.users.update(id, {
 			$set: user

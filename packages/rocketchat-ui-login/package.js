@@ -14,7 +14,6 @@ Package.onUse(function(api) {
 	api.use([
 		'ecmascript',
 		'templating',
-		'coffeescript',
 		'underscore',
 		'rocketchat:lib',
 		'rocketchat:assets',
@@ -39,10 +38,10 @@ Package.onUse(function(api) {
 	api.addFiles('client/username/layout.html', 'client');
 	api.addFiles('client/username/username.html', 'client');
 
-	api.addFiles('client/login/footer.coffee', 'client');
-	api.addFiles('client/login/form.coffee', 'client');
-	api.addFiles('client/login/header.coffee', 'client');
-	api.addFiles('client/login/services.coffee', 'client');
-	api.addFiles('client/login/social.coffee', 'client');
+	api.addFiles('client/login/footer.js', 'client');
+	api.addFiles('client/login/form.js', 'client');
+	api.addFiles('client/login/header.js', 'client');
+	api.addFiles('client/login/services.js', 'client');
+	api.addFiles('client/login/social.js', 'client');
 	api.addFiles('client/username/username.js', 'client');
 });

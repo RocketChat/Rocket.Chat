@@ -10,7 +10,8 @@
     "HEROKU_APP_NAME": {
       "description": "Please re-enter your App Name from the top.",
       "required": true
-    }
+    },
+    "DEPLOY_PLATFORM": "heroku"
   },
   "addons": [
     "mongolab",

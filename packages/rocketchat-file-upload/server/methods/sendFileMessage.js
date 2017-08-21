@@ -23,7 +23,8 @@ Meteor.methods({
 		const fileUrl = `/file-upload/${ file._id }/${ file.name }`;
 
 		const attachment = {
-			title: `${ TAPi18n.__('Attachment_File_Uploaded') }: ${ file.name }`,
+			title: file.name,
+			type: 'file',
 			description: file.description,
 			title_link: fileUrl,
 			title_link_download: true
@@ -54,7 +55,8 @@ Meteor.methods({
 			msg: '',
 			file: {
 				_id: file._id,
-				name: file.name
+				name: file.name,
+				type: file.type
 			},
 			groupable: false,
 			attachments: [attachment]

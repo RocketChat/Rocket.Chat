@@ -13,7 +13,7 @@ Meteor.methods({
 		}
 
 		const user = Meteor.user();
-		RocketChatFileAvatarInstance.deleteFile(`${ user.username }.jpg`);
+		FileUpload.getStore('Avatars').deleteByName(user.username);
 		RocketChat.models.Users.unsetAvatarOrigin(user._id);
 		RocketChat.Notifications.notifyLogged('updateAvatar', {
 			username: user.username

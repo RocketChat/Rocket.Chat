@@ -21,8 +21,6 @@
   "Accounts_AllowUserProfileChange": "பயனர் விவரம் மாற்றம் அனுமதி",
   "Accounts_AvatarResize": "அவதாரங்களை அளவை",
   "Accounts_AvatarSize": "avatar அளவு",
-  "Accounts_AvatarStorePath": "அவதார் சேமிப்பு பாதை",
-  "Accounts_AvatarStoreType": "அவதார் சேமிப்பு வகை",
   "Accounts_BlockedDomainsList": "தடுக்கப்பட்ட களங்கள் பட்டியல்",
   "Accounts_BlockedDomainsList_Description": "தடுக்கப்பட்டது களங்களின் கமாவால் பிரிக்கப்பட்ட பட்டியல்",
   "Accounts_BlockedUsernameList": "தடுக்கப்பட்ட பயனர் பெயர் பட்டியல்",
