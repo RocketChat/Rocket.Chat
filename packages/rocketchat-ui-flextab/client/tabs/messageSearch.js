@@ -94,7 +94,6 @@ Template.messageSearch.events({
 	},
 
 	'scroll .js-list': _.throttle(function(e, t) {
-		console.log('tete');
 		if (e.target.scrollTop >= (e.target.scrollHeight - e.target.clientHeight)) {
 			t.limit.set(t.limit.get() + 20);
 			return t.search();
