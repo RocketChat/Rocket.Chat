@@ -101,7 +101,7 @@ Accounts.saml.initiateLogin = function(options, callback, dimensions) {
 
 Meteor.loginWithSaml = function(options, callback) {
 	options = options || {};
-	const credentialToken = Random.id();
+	const credentialToken = `id-${ Random.id() }`;
 	options.credentialToken = credentialToken;
 
 	Accounts.saml.initiateLogin(options, function(/*error, result*/) {
