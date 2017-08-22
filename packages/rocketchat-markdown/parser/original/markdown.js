@@ -86,7 +86,7 @@ const parseNotEscaped = function(msg, message) {
 	if (typeof window !== 'undefined' && window !== null ? window.rocketDebug : undefined) { console.log('Markdown', msg); }
 
 	return msg;
-}
+};
 
 export const markdown = function(message) {
 	message.html = parseNotEscaped(message.html, message);
