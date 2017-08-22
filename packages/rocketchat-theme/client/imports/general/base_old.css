@@ -3234,6 +3234,24 @@
 	}
 }
 
+.rc-old .image-labels {
+	margin: 5px 0 25px;
+	display: flex;
+	flex-wrap: wrap;
+}
+
+.rc-old .image-label {
+	padding: 9px 4px;
+	border-radius: 2px;
+	font-size: 12px;
+	margin-right: 5px;
+	margin-top: 5px;
+
+	&:last-child {
+		margin-right: 0;
+	}
+}
+
 .rc-old .attachment-description {
 	margin-top: 10px;
 
@@ -3630,14 +3648,6 @@ body:not(.is-cordova) {
 }
 
 .rc-old .list-view {
-	z-index: 10;
-
-	overflow-x: hidden;
-	overflow-y: auto;
-
-	padding: 20px;
-	-webkit-overflow-scrolling: touch;
-
 	& .list {
 		position: relative;
 
@@ -3652,7 +3662,9 @@ body:not(.is-cordova) {
 	}
 
 	& > .title {
-		margin: 0 0 20px;
+		&:not(:last-child) {
+			margin: 0 0 20px;
+		}
 
 		& h2 {
 			font-size: 20px;
@@ -5127,7 +5139,24 @@ body:not(.is-cordova) {
 	padding: 1rem 0;
 }
 
-.rc-old .search-messages-list {
+.rc-old .flex-tab {
+	&__content {
+		display: flex;
+		flex-direction: column;
+		height: 100%;
+		padding: 20px;
+	}
+
+	&__header {
+		flex: 0 0 auto;
+		padding-bottom: 10px;
+	}
+
+	&__result {
+		flex: 1 1 auto;
+    overflow-y: auto;
+	}
+
 	& .message-cog-container {
 		& .message-action {
 			display: none !important;

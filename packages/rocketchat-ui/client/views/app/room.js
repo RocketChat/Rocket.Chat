@@ -1,4 +1,4 @@
-/* globals RocketChatTabBar , fileUpload , fireGlobalEvent , mobileMessageMenu , cordova , readMessage , RoomRoles*/
+/* globals RocketChatTabBar , chatMessages, fileUpload , fireGlobalEvent , mobileMessageMenu , cordova , readMessage , RoomRoles*/
 import moment from 'moment';
 import mime from 'mime-type/with-db';
 
@@ -542,7 +542,7 @@ Template.room.events({
 
 	'click .new-message'() {
 		Template.instance().atBottom = true;
-		return Template.instance().find('.input-message').focus();
+		return chatMessages[RocketChat.openedRoom].input.focus();
 	},
 
 	'click .message-cog'() {
@@ -800,11 +800,11 @@ Template.room.onDestroyed(function() {
 });
 
 Template.room.onRendered(function() {
-
-	if (!window.chatMessages[Session.get('openedRoom')]) {
-		window.chatMessages[Session.get('openedRoom')] = new ChatMessages;
+	const rid = Session.get('openedRoom');
+	if (!window.chatMessages[rid]) {
+		window.chatMessages[rid] = new ChatMessages;
 	}
-	window.chatMessages[Session.get('openedRoom')].init(this.firstNode);
+	window.chatMessages[rid].init(this.firstNode);
 	// ScrollListener.init()
 
 	const wrapper = this.find('.wrapper');
@@ -939,4 +939,12 @@ Template.room.onRendered(function() {
 			}
 		});
 	}
+	RocketChat.callbacks.add('streamMessage', (msg) => {
+		if (rid !== msg.rid || msg.editedAt) {
+			return;
+		}
+		if (!template.isAtBottom()) {
+			newMessage.classList.remove('not');
+		}
+	});
 });
