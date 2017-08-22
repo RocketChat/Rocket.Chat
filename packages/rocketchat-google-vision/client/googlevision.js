@@ -7,7 +7,7 @@ RocketChat.GoogleVision = {
 				labels.push({ label });
 			});
 		}
-		if (attachment.safeSearch && attachment.safeSearch[0] && attachment.safeSearch[0].adult === true) {
+		if (attachment.safeSearch && attachment.safeSearch && attachment.safeSearch.adult === true) {
 			labels.push({ label: 'NSFW', bgColor: 'red', fontColor: 'white' });
 		}
 		if (attachment.safeSearch && attachment.safeSearch.violence === true) {
@@ -70,7 +70,6 @@ RocketChat.GoogleVision = {
 							}
 						}
 					}
-					RocketChat.models.Message.update({ _id: message._id }, { $set: { attachments: message.attachments } });
 				}, RocketChat.callbacks.priority.HIGH - 3, 'googlevision-stream');
 			} else {
 				RocketChat.callbacks.remove('renderMessage', 'googlevision');
