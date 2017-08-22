@@ -46,7 +46,7 @@ function parseMessageText(message, userId) {
  * @param {object} room The room send from
  * @param {number} duration Duration of notification
  */
-function notifyUser(userId, user, message, room, duration) {
+function notifyDesktopUser(userId, user, message, room, duration) {
 
 	const UI_Use_Real_Name = RocketChat.settings.get('UI_Use_Real_Name') === true;
 	message.msg = parseMessageText(message, userId);
@@ -58,10 +58,35 @@ function notifyUser(userId, user, message, room, duration) {
 	if (room.t !== 'd' && room.name) {
 		title += ` @ #${ room.name }`;
 	}
-	RocketChat.Notifications.notifyUser(userId, 'notification', {
+	RocketChat.Notifications.notifyUser(userId, 'desktopNotification', {
 		title,
 		text: message.msg,
 		duration,
+		payload: {
+			_id: message._id,
+			rid: message.rid,
+			sender: message.u,
+			type: room.t,
+			name: room.name
+		}
+	});
+}
+
+function notifyAudioUser(userId, user, message, room) {
+
+	const UI_Use_Real_Name = RocketChat.settings.get('UI_Use_Real_Name') === true;
+	message.msg = parseMessageText(message, userId);
+
+	if (UI_Use_Real_Name) {
+		message.msg = replaceMentionedUsernamesWithFullNames(message.msg, message.mentions);
+	}
+	let title = UI_Use_Real_Name ? user.name : `@${ user.username }`;
+	if (room.t !== 'd' && room.name) {
+		title += ` @ #${ room.name }`;
+	}
+	RocketChat.Notifications.notifyUser(userId, 'audioNotification', {
+		title,
+		text: message.msg,
 		payload: {
 			_id: message._id,
 			rid: message.rid,
@@ -124,7 +149,10 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room, userId) {
 		dontNotifyDesktopUsers: [],
 		alwaysNotifyMobileUsers: [],
 		dontNotifyMobileUsers: [],
-		desktopNotificationDurations: {}
+		desktopNotificationDurations: {},
+		alwaysNotifyAudioUsers: [],
+		dontNotifyAudioUsers: [],
+		audioNotificationValues: {}
 	};
 
 	/**
@@ -138,7 +166,8 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room, userId) {
 	function canBeNotified(id, type) {
 		const types = {
 			mobile: [ 'dontNotifyDesktopUsers', 'alwaysNotifyDesktopUsers' ],
-			desktop: [ 'dontNotifyMobileUsers', 'alwaysNotifyMobileUsers' ]
+			desktop: [ 'dontNotifyMobileUsers', 'alwaysNotifyMobileUsers' ],
+			audio: [ 'dontNotifyAudioUsers', 'alwaysNotifyAudioUsers' ]
 		};
 
 		return (settings[types[type][0]].indexOf(id) === -1 || settings[types[type][1]].indexOf(id) !== -1);
@@ -153,7 +182,7 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room, userId) {
 		userIds.push(s.u._id);
 	});
 	const userSettings = {};
-	RocketChat.models.Users.findUsersByIds(userIds, { fields: { 'settings.preferences.desktopNotifications': 1, 'settings.preferences.mobileNotifications': 1 } }).forEach((user) => {
+	RocketChat.models.Users.findUsersByIds(userIds, { fields: { 'settings.preferences.audioNotifications': 1, 'settings.preferences.desktopNotifications': 1, 'settings.preferences.mobileNotifications': 1 } }).forEach((user) => {
 		userSettings[user._id] = user.settings;
 	});
 
@@ -161,16 +190,22 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room, userId) {
 		if (subscription.disableNotifications) {
 			settings.dontNotifyDesktopUsers.push(subscription.u._id);
 			settings.dontNotifyMobileUsers.push(subscription.u._id);
+			settings.dontNotifyAudioUsers.push(subscription.u._id);
 		} else {
 			const preferences = userSettings[subscription.u._id] ? userSettings[subscription.u._id].preferences || {} : {};
+			const userAudioNotificationPreference = preferences.audioNotifications !== 'default' ? preferences.audioNotifications : undefined;
 			const userDesktopNotificationPreference = preferences.desktopNotifications !== 'default' ? preferences.desktopNotifications : undefined;
 			const userMobileNotificationPreference = preferences.mobileNotifications !== 'default' ? preferences.mobileNotifications : undefined;
 			// Set defaults if they don't exist
 			const {
+				audioNotifications = userAudioNotificationPreference || RocketChat.settings.get('Audio_Notifications_Default_Alert'),
 				desktopNotifications = userDesktopNotificationPreference || RocketChat.settings.get('Desktop_Notifications_Default_Alert'),
 				mobilePushNotifications = userMobileNotificationPreference || RocketChat.settings.get('Mobile_Notifications_Default_Alert')
 			} = subscription;
 
+			if (audioNotifications === 'all' && !disableAllMessageNotifications) {
+				settings.alwaysNotifyAudioUsers.push(subscription.u._id);
+			}
 			if (desktopNotifications === 'all' && !disableAllMessageNotifications) {
 				settings.alwaysNotifyDesktopUsers.push(subscription.u._id);
 			} else if (desktopNotifications === 'nothing') {
@@ -182,11 +217,13 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room, userId) {
 				settings.dontNotifyMobileUsers.push(subscription.u._id);
 			}
 		}
+		settings.audioNotificationValues[subscription.u._id] = subscription.audioNotificationValue;
 		settings.desktopNotificationDurations[subscription.u._id] = subscription.desktopNotificationDuration;
 	});
-
+	let userIdsForAudio = [];
 	let userIdsToNotify = [];
 	let userIdsToPushNotify = [];
+
 	const usersWithHighlights = [];
 
 	const highlights = RocketChat.models.Users.findUsersByUsernamesWithHighlights(room.usernames, { fields: { '_id': 1, 'settings.preferences.highlights': 1 }}).fetch();
@@ -229,7 +266,7 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room, userId) {
 		}
 		if ((userOfMention != null) && canBeNotified(userOfMentionId, 'mobile')) {
 			const duration = settings.desktopNotificationDurations[userOfMention._id];
-			notifyUser(userOfMention._id, user, message, room, duration);
+			notifyDesktopUser(userOfMention._id, user, message, room, duration);
 		}
 
 		if ((userOfMention != null) && canBeNotified(userOfMentionId, 'desktop')) {
@@ -329,6 +366,45 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room, userId) {
 			}), '_id');
 		}
 
+		if (mentionIds.length > 0 || settings.alwaysNotifyAudioUsers.length > 0) {
+			let audioMentionIds = _.union(mentionIds, settings.alwaysNotifyAudioUsers);
+			audioMentionIds = _.difference(audioMentionIds, userIdsToNotify);
+
+			let usersOfAudioMentions = RocketChat.models.Users.find({
+				_id: {
+					$in: audioMentionIds
+				}
+			}, {
+				fields: {
+					_id: 1,
+					username: 1,
+					active: 1
+				}
+			}).fetch();
+			if (room.t === 'c' && !toAll) {
+				const callJoin = function(usersOfMentionItem) {
+					if (usersOfMentionItem.active) {
+						Meteor.runAsUser(usersOfMentionItem._id, function() {
+							return Meteor.call('joinRoom', room._id);
+						});
+					}
+				};
+				for (const usersOfMentionItem of usersOfAudioMentions) {
+					if (room.usernames.indexOf(usersOfMentionItem.username) === -1) {
+						callJoin(usersOfMentionItem);
+					}
+				}
+			}
+
+			if (room.t !== 'c') {
+				usersOfAudioMentions = _.reject(usersOfAudioMentions, (usersOfMentionItem) => {
+					return room.usernames.indexOf(usersOfMentionItem.username) === -1;
+				});
+			}
+
+			userIdsForAudio = _.pluck(usersOfAudioMentions, '_id');
+		}
+
 		if ((toAll || toHere) && room.usernames && room.usernames.length > 0) {
 			RocketChat.models.Users.find({
 				username: {
@@ -347,26 +423,38 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room, userId) {
 			}).forEach(function(user) {
 				if (['online', 'away', 'busy'].includes(user.status) && (settings.dontNotifyDesktopUsers || []).includes(user._id) === false) {
 					userIdsToNotify.push(user._id);
+					userIdsForAudio.push(user._id);
 				}
 				if (toAll && user.statusConnection !== 'online' && (settings.dontNotifyMobileUsers || []).includes(user._id) === false) {
 					return userIdsToPushNotify.push(user._id);
+				}
+				if (toAll && user.statusConnection !== 'online') {
+					userIdsForAudio.push(user._id);
 				}
 			});
 		}
 
 		if (usersWithHighlights.length > 0) {
 			const highlightsIds = _.pluck(usersWithHighlights, '_id');
+			userIdsForAudio = userIdsForAudio.concat(highlightsIds);
 			userIdsToNotify = userIdsToNotify.concat(highlightsIds);
 			userIdsToPushNotify = userIdsToPushNotify.concat(highlightsIds);
 		}
 
 		userIdsToNotify = _.without(_.compact(_.unique(userIdsToNotify)), message.u._id);
 		userIdsToPushNotify = _.without(_.compact(_.unique(userIdsToPushNotify)), message.u._id);
+		userIdsForAudio = _.without(_.compact(_.unique(userIdsForAudio)), message.u._id);
 
 		if (userIdsToNotify.length > 0) {
 			for (const usersOfMentionId of userIdsToNotify) {
 				const duration = settings.desktopNotificationDurations[usersOfMentionId];
-				notifyUser(usersOfMentionId, user, message, room, duration);
+				notifyDesktopUser(usersOfMentionId, user, message, room, duration);
+			}
+		}
+
+		if (userIdsForAudio.length > 0) {
+			for (const usersOfMentionId of userIdsForAudio) {
+				notifyAudioUser(usersOfMentionId, user, message, room);
 			}
 		}
 
