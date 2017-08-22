@@ -251,6 +251,14 @@ Template.messageBox.events({
 	'focus .input-message'(event, instance) {
 		KonchatNotification.removeRoomNotification(this._id);
 		chatMessages[this._id].input = instance.find('.input-message');
+		// Created by Vignesh on 22/08/2017
+		if ($('.input-message').val() !== ''){
+			chatMessages[this._id].input.updateAutogrow();
+			console.log($('.input-message').val());
+			console.log('Text >filled');
+			instance.isMessageFieldEmpty.set(false);
+		}
+		// End of creation by Vignesh on 22/08/2017
 	},
 	'click .send-button'(event, instance) {
 		const input = instance.find('.input-message');
