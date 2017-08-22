@@ -13,7 +13,7 @@
 	&__title {
 		display: flex;
 		flex: 1 1;
-
+		max-width: 60%;
 		margin-left: 4px;
 
 		font-size: var(--header-title-font-size);
@@ -44,6 +44,7 @@
 	&__room-title {
 		display: flex;
 		flex-direction: column;
+		width: 100%;
 	}
 
 	&__channel-name {
@@ -52,6 +53,10 @@
 		color: var(--header-title-username-color-darker);
 
 		font-weight: var(--header-title-username-weight);
+
+		width: 100%;
+		overflow: hidden;
+		text-overflow: ellipsis;
 
 	}
 
@@ -65,6 +70,12 @@
 		font-size: var(--header-title-font-size--subtitle);
 		font-weight: var(--header-title-status-name-weight);
 		align-items: center;
+
+		&-topic {
+			width: 100%;
+			overflow: hidden;
+			text-overflow: ellipsis;
+		}
 
 		&-bullet {
 			width: var(--header-title-status-bullet-size);
