@@ -1,9 +1,7 @@
-import {automaticChannelsHandler} from 'meteor/rocketchat:automatic-channels-handler';
-
 import parser from 'accept-language-parser';
 import languages from 'languages';
 
-const getLanguage = function(user) {
+export const getLanguage = function(user) {
 	let languageName;
 	const languagesParsed = parser.parse(user.connection.httpHeaders['accept-language']);
 	if (languagesParsed.length===0) {
@@ -17,11 +15,4 @@ const getLanguage = function(user) {
 	return languageName;
 };
 
-
-automaticChannelsHandler.addCategory({
-	categoryName: 'language',
-	getChannelName: getLanguage,
-	enable: 'Enable_Language',
-	blacklist: 'Blacklist_Language'
-});
 

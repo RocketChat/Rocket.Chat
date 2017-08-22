@@ -8,7 +8,8 @@ Package.onUse(function(api) {
 	api.use('ecmascript');
 	api.use('rocketchat:automatic-channels-handler');
 
-	api.mainModule('server/server.js', 'server');
+	api.mainModule('server.js', 'server');
+	api.addFiles('main.js', 'server');
 });
 
 Npm.depends({
