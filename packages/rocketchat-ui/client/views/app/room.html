@@ -8,54 +8,7 @@
 		<div class="main-content-flex">
 			<section class="messages-container flex-tab-main-content {{adminClass}}" id="{{windowId}}" aria-label="{{_ "Channel"}}">
 				{{#unless embeddedVersion}}
-					<header class="rc-header">
-						{{> burger}}
-						<div class="rc-header__title">
-							{{#if showToggleFavorite}}
-								<a href="#favorite" class="rc-header__toggle-favorite {{state}}">{{> icon block="rc-header__icon" icon="star"}}</a>
-							{{/if}}
-							<div class="rc-header__room-image">
-								{{#if isDirect}}
-									<div class="avatar">
-										<div class="avatar-image" style="{{avatarBackground}}"></div>
-									</div>
-								{{/if}}
-							</div>
-
-							<div class="rc-header__room-title">
-								<span class="rc-header__channel-name">{{roomPrefix}}{{roomName}}</span>
-								<div class="rc-header__subtitle">
-									{{#if isDirect}}
-										<div class="rc-header__subtitle-bullet rc-header__subtitle-bullet--{{userStatus}}" title="{{userStatus}}"></div>
-										<div class="rc-header__subtitle-visual-status">{{userStatus}}</div>
-									{{else}}
-										<span class="rc-header__subtitle-topic">{{{RocketChatMarkdown roomTopic}}}</span>
-									{{/if}}
-									</div>
-							</div>
-
-							{{#if secondaryName}}
-								<span class="secondary-name">@{{secondaryName}}</span>
-							{{/if}}
-							{{#if sentimentSmile}}
-								<span class="sentiment">{{sentimentSmile}}</span>
-							{{/if}}
-							{{#if isTranslated}}
-								<i class="icon-language" aria-label="{{_ "Translated"}}"></i>
-							{{/if}}
-						</div>
-						{{#with toolbarButtons}}
-							<div class="iframe-toolbar">
-								{{#each buttons}}
-									<button class="{{id}}">
-										{{#if icon}}<i class="{{icon}}"></i>{{/if}}
-										{{label}}
-									</button>
-								{{/each}}
-							</div>
-						{{/with}}
-					</header>
-
+					{{> header}}
 				{{/unless}}
 				<div class="messages-container-wrapper">
 					<div class="messages-container-main">
