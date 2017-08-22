@@ -1,8 +1,8 @@
-/* globals RocketChatTabBar , fileUpload , fireGlobalEvent , mobileMessageMenu , cordova , readMessage , RoomRoles*/
+/* globals RocketChatTabBar , chatMessages, fileUpload , fireGlobalEvent , mobileMessageMenu , cordova , readMessage , RoomRoles*/
 import moment from 'moment';
 import mime from 'mime-type/with-db';
 
-
+window.chatMessages = window.chatMessages || {};
 const socialSharing = (options = {}) => window.plugins.socialsharing.share(options.message, options.subject, options.file, options.link);
 
 const isSubscribed = _id => ChatSubscription.find({ rid: _id }).count() > 0;
@@ -177,7 +177,15 @@ Template.room.helpers({
 		if (!roomData) { return false; }
 		return (roomData.announcement !== undefined) && (roomData.announcement !== '');
 	},
-
+	messageboxData() {
+		const instance = Template.instance();
+		return {
+			_id: this._id,
+			onResize: () => {
+				instance.sendToBottomIfNecessary();
+			}
+		};
+	},
 	roomAnnouncement() {
 		const roomData = Session.get(`roomData${ this._id }`);
 		if (!roomData) { return ''; }
@@ -519,7 +527,7 @@ Template.room.events({
 
 	'click .new-message'() {
 		Template.instance().atBottom = true;
-		return Template.instance().find('.input-message').focus();
+		return chatMessages[RocketChat.openedRoom].input.focus();
 	},
 
 	'click .message-cog'() {
@@ -777,16 +785,11 @@ Template.room.onDestroyed(function() {
 });
 
 Template.room.onRendered(function() {
-	window.chatMessages = window.chatMessages || {};
-	if (!window.chatMessages[Session.get('openedRoom')]) {
-		window.chatMessages[Session.get('openedRoom')] = new ChatMessages;
+	const rid = Session.get('openedRoom');
+	if (!window.chatMessages[rid]) {
+		window.chatMessages[rid] = new ChatMessages;
 	}
-	window.chatMessages[Session.get('openedRoom')].init(this.firstNode);
-
-	if (Meteor.Device.isDesktop()) {
-		setTimeout(() => $('.message-form .input-message').focus(), 100);
-	}
-
+	window.chatMessages[rid].init(this.firstNode);
 	// ScrollListener.init()
 
 	const wrapper = this.find('.wrapper');
@@ -818,6 +821,7 @@ Template.room.onRendered(function() {
 	};
 
 	template.sendToBottomIfNecessary = function() {
+
 		if ((template.atBottom === true) && (template.isAtBottom() !== true)) {
 			return template.sendToBottom();
 		}
@@ -920,4 +924,12 @@ Template.room.onRendered(function() {
 			}
 		});
 	}
+	RocketChat.callbacks.add('streamMessage', (msg) => {
+		if (rid !== msg.rid || msg.editedAt) {
+			return;
+		}
+		if (!template.isAtBottom()) {
+			newMessage.classList.remove('not');
+		}
+	});
 });

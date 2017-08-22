@@ -40,7 +40,6 @@ const minorColors= {
 };
 
 // Bulk-add settings for color scheme
-
 Object.keys(majorColors).forEach((key) => {
 	const value = majorColors[key];
 	RocketChat.theme.addPublicColor(key, value, 'Colors');
@@ -56,8 +55,18 @@ RocketChat.theme.addPublicFont('body-font-family', '-apple-system, BlinkMacSyste
 RocketChat.settings.add('theme-custom-css', '', {
 	group: 'Layout',
 	type: 'code',
-	code: 'text/x-less',
+	code: 'text/css',
 	multiline: true,
 	section: 'Custom CSS',
-	public: false
+	public: true
+});
+
+
+RocketChat.settings.add('theme-custom-variables', Assets.getText('client/imports/general/variables.css'), {
+	group: 'Layout',
+	type: 'code',
+	code: 'text/css',
+	multiline: true,
+	section: 'Customize Theme',
+	public: true
 });
