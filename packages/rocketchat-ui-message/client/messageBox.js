@@ -254,8 +254,6 @@ Template.messageBox.events({
 		// Created by Vignesh on 22/08/2017
 		if ($('.input-message').val() !== ''){
 			chatMessages[this._id].input.updateAutogrow();
-			console.log($('.input-message').val());
-			console.log('Text >filled');
 			instance.isMessageFieldEmpty.set(false);
 		}
 		// End of creation by Vignesh on 22/08/2017
