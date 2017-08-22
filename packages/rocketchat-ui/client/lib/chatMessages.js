@@ -438,7 +438,6 @@ this.ChatMessages = class ChatMessages {
 		}
 
 
-
 		if (k === 9) { // Tab
 			event.preventDefault();
 			event.stopPropagation();

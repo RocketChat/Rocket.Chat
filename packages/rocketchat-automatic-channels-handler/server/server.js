@@ -44,8 +44,12 @@ Accounts.onLogin(function(user) {
 		return;
 	}
 	automaticChannelsHandler.categories.forEach((arrayItem) => {
+		if (RocketChat.settings.get(arrayItem.enable) !== true) {
+			return;
+		}
+
 		const channelName = arrayItem.getChannelName(user);
-		if (channelName !== null && RocketChat.settings.get(arrayItem.enable)) {
+		if (channelName !== null) {
 			if (user.user.ignoredAutomaticChannels) {
 				if (user.user.ignoredAutomaticChannels.includes(channelName)) {
 					return;

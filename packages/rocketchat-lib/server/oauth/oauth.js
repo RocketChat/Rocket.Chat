@@ -49,4 +49,3 @@ Accounts.registerLoginHandler(function(options) {
 });
 
 
-

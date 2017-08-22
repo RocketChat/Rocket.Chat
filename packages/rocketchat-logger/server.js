@@ -42,7 +42,6 @@ LoggerManager = new class extends EventEmitter { // eslint-disable-line no-undef
 };
 
 
-
 const defaultTypes = {
 	debug: {
 		name: 'debug',

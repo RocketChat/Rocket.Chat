@@ -145,7 +145,6 @@ class WebRTCTransportClass {
 	}
 
 
-
 }
 
 class WebRTCClass {
@@ -843,7 +842,6 @@ class WebRTCClass {
 			peerConnection.createOffer(onOffer, this.onError);
 		}
 	}
-
 
 
 	onRemoteOffer(data) {

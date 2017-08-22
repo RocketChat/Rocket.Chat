@@ -40,6 +40,7 @@
 		"no-invalid-regexp": 2,
 		"no-irregular-whitespace": 2,
 		"no-mixed-spaces-and-tabs": 2,
+		"no-multiple-empty-lines": 2,
 		"no-sparse-arrays": 2,
 		"no-negated-in-lhs": 2,
 		"no-obj-calls": 2,

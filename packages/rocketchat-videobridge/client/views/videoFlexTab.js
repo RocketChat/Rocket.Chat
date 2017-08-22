@@ -89,7 +89,6 @@ Template.videoFlexTab.onRendered(function() {
 						}
 
 
-
 					// Lets make sure its loaded before we try to show it.
 					} else if (typeof JitsiMeetExternalAPI !== 'undefined') {
 

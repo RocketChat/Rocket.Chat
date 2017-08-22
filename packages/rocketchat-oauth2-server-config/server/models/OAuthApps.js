@@ -5,8 +5,6 @@ RocketChat.models.OAuthApps = new class extends RocketChat.models._Base {
 };
 
 
-
-
 // FIND
 // findByRole: (role, options) ->
 // 	query =

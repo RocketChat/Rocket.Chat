@@ -12,5 +12,3 @@ Package.onUse(function(api) {
 	api.mainModule('server/server.js', 'server');
 	api.addFiles('server/settings.js', 'server');
 });
-
-

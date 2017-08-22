@@ -16,6 +16,3 @@ export const getCountry = function(user) {
 
 	return countryNname;
 };
-
-
-

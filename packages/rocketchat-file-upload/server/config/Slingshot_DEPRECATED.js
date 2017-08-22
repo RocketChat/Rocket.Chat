@@ -66,7 +66,6 @@ RocketChat.settings.get('FileUpload_Storage_Type', configureSlingshot);
 RocketChat.settings.get(/^FileUpload_S3_/, configureSlingshot);
 
 
-
 const createGoogleStorageDirective = _.debounce(() => {
 	const type = RocketChat.settings.get('FileUpload_Storage_Type');
 	const bucket = RocketChat.settings.get('FileUpload_GoogleStorage_Bucket');

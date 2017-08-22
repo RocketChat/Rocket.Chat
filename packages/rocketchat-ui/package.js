@@ -123,6 +123,5 @@ Package.onUse(function(api) {
 	api.addFiles('client/components/selectDropdown.js', 'client');
 
 
-
 	api.export('fileUpload');
 });
