@@ -9,7 +9,6 @@ Package.onUse(function(api) {
 		'mongo',
 		'ecmascript',
 		'underscore',
-		'less',
 		'rocketchat:lib'
 	]);
 
@@ -23,7 +22,7 @@ Package.onUse(function(api) {
 		'client/tabBar.js',
 		'client/views/pinnedMessages.html',
 		'client/views/pinnedMessages.js',
-		'client/views/stylesheets/messagepin.less'
+		'client/views/stylesheets/messagepin.css'
 	], 'client');
 
 	api.addFiles([

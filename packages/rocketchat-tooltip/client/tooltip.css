@@ -1,0 +1,48 @@
+.tooltip {
+	position: absolute;
+	z-index: 300;
+
+	visibility: hidden;
+
+	max-width: 400px;
+	padding: 8px 10px;
+
+	transition: opacity 0.3s ease;
+	text-align: center;
+
+	opacity: 0;
+	color: #ffffff;
+	border-radius: 5px;
+	background: #000000;
+
+	font-size: 0.8rem;
+
+	&.show {
+		visibility: visible;
+
+		opacity: 0.9;
+	}
+
+	& .tooltip-arrow {
+		position: absolute;
+		top: 100%;
+		left: 50%;
+
+		width: 0;
+		height: 0;
+		margin-left: -5px;
+
+		border-top: 5px solid #000000;
+		border-right: 5px solid transparent;
+		border-left: 5px solid transparent;
+	}
+
+	&.bellow {
+		& .tooltip-arrow {
+			top: -5px;
+
+			border-top: none;
+			border-bottom: 5px solid #000000;
+		}
+	}
+}

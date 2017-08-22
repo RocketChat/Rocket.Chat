@@ -19,11 +19,16 @@ RocketChat.API.v1.addRoute('users.create', { authRequired: true }, {
 			this.bodyParams.joinDefaultChannels = true;
 		}
 
+		if (this.bodyParams.customFields) {
+			RocketChat.validateCustomFields(this.bodyParams.customFields);
+		}
+
 		const newUserId = RocketChat.saveUser(this.userId, this.bodyParams);
 
 		if (this.bodyParams.customFields) {
-			RocketChat.saveCustomFields(newUserId, this.bodyParams.customFields);
+			RocketChat.saveCustomFieldsWithoutValidation(newUserId, this.bodyParams.customFields);
 		}
+
 
 		if (typeof this.bodyParams.active !== 'undefined') {
 			Meteor.runAsUser(this.userId, () => {
@@ -105,6 +110,10 @@ RocketChat.API.v1.addRoute('users.info', { authRequired: true }, {
 
 RocketChat.API.v1.addRoute('users.list', { authRequired: true }, {
 	get() {
+		if (!RocketChat.authz.hasPermission(this.userId, 'view-d-room')) {
+			return RocketChat.API.v1.unauthorized();
+		}
+
 		const { offset, count } = this.getPaginationItems();
 		const { sort, fields, query } = this.parseJsonQuery();
 
@@ -186,7 +195,11 @@ RocketChat.API.v1.addRoute('users.resetAvatar', { authRequired: true }, {
 
 RocketChat.API.v1.addRoute('users.setAvatar', { authRequired: true }, {
 	post() {
-		check(this.bodyParams, { avatarUrl: Match.Maybe(String), userId: Match.Maybe(String) });
+		check(this.bodyParams, Match.ObjectIncluding({
+			avatarUrl: Match.Maybe(String),
+			userId: Match.Maybe(String),
+			username: Match.Maybe(String)
+		}));
 
 		let user;
 		if (this.isUserFromParams()) {
@@ -197,32 +210,34 @@ RocketChat.API.v1.addRoute('users.setAvatar', { authRequired: true }, {
 			return RocketChat.API.v1.unauthorized();
 		}
 
-		if (this.bodyParams.avatarUrl) {
-			RocketChat.setUserAvatar(user, this.bodyParams.avatarUrl, '', 'url');
-		} else {
-			const Busboy = Npm.require('busboy');
-			const busboy = new Busboy({ headers: this.request.headers });
+		Meteor.runAsUser(user._id, () => {
+			if (this.bodyParams.avatarUrl) {
+				RocketChat.setUserAvatar(user, this.bodyParams.avatarUrl, '', 'url');
+			} else {
+				const Busboy = Npm.require('busboy');
+				const busboy = new Busboy({ headers: this.request.headers });
 
-			Meteor.wrapAsync((callback) => {
-				busboy.on('file', Meteor.bindEnvironment((fieldname, file, filename, encoding, mimetype) => {
-					if (fieldname !== 'image') {
-						return callback(new Meteor.Error('invalid-field'));
-					}
+				Meteor.wrapAsync((callback) => {
+					busboy.on('file', Meteor.bindEnvironment((fieldname, file, filename, encoding, mimetype) => {
+						if (fieldname !== 'image') {
+							return callback(new Meteor.Error('invalid-field'));
+						}
 
-					const imageData = [];
-					file.on('data', Meteor.bindEnvironment((data) => {
-						imageData.push(data);
+						const imageData = [];
+						file.on('data', Meteor.bindEnvironment((data) => {
+							imageData.push(data);
+						}));
+
+						file.on('end', Meteor.bindEnvironment(() => {
+							RocketChat.setUserAvatar(user, Buffer.concat(imageData), mimetype, 'rest');
+							callback();
+						}));
+
 					}));
-
-					file.on('end', Meteor.bindEnvironment(() => {
-						RocketChat.setUserAvatar(user, Buffer.concat(imageData), mimetype, 'rest');
-						callback();
-					}));
-
-				}));
-				this.request.pipe(busboy);
-			})();
-		}
+					this.request.pipe(busboy);
+				})();
+			}
+		});
 
 		return RocketChat.API.v1.success();
 	}

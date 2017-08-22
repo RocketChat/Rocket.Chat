@@ -57,7 +57,7 @@ Template.mentionsFlexTab.events({
 		const dropDown = t.$(`\#${ message_id } .message-dropdown`);
 		return dropDown.show();
 	},
-	'scroll .content': _.throttle(function(e, instance) {
+	'scroll .js-list': _.throttle(function(e, instance) {
 		if (e.target.scrollTop >= e.target.scrollHeight - e.target.clientHeight && instance.hasMore.get()) {
 			return instance.limit.set(instance.limit.get() + 50);
 		}

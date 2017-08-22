@@ -9,7 +9,6 @@ Package.onUse(function(api) {
 
 	api.use([
 		'ecmascript',
-		'coffeescript',
 		'check',
 		'rocketchat:lib'
 	]);

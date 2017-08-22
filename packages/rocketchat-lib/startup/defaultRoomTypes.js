@@ -1,11 +1,41 @@
 /* globals openRoom */
-RocketChat.roomTypes.add(null, 0, {
-	icon: 'icon-star',
+RocketChat.roomTypes.add('unread', 10, {
+	unread: true,
+	condition() {
+		const user = Meteor.user();
+		const preferences = (user && user.settings && user.settings.preferences && user.settings.preferences) || {};
+		return preferences.roomsListExhibitionMode === 'unread';
+	},
+	label: 'Unread'
+});
+
+RocketChat.roomTypes.add('f', 20, {
+	header: 'favorite',
+	icon: 'star',
 	label: 'Favorites'
 });
 
-RocketChat.roomTypes.add('c', 10, {
-	icon: 'icon-hash',
+// activity
+RocketChat.roomTypes.add('activity', 30, {
+	condition() {
+		const user = Meteor.user();
+		const preferences = (user && user.settings && user.settings.preferences && user.settings.preferences) || {};
+		return preferences.roomsListExhibitionMode === 'activity';
+	},
+	label: 'Conversations'
+});
+
+RocketChat.roomTypes.add('channels', 30, {
+	label: 'Channels',
+	condition() {
+		const user = Meteor.user();
+		const preferences = (user && user.settings && user.settings.preferences && user.settings.preferences) || {};
+		return ['unread', 'category'].includes(preferences.roomsListExhibitionMode) && preferences.mergeChannels;
+	}
+});
+// public
+RocketChat.roomTypes.add('c', 30, {
+	icon: 'hashtag',
 	label: 'Channels',
 	route: {
 		name: 'channel',
@@ -24,11 +54,16 @@ RocketChat.roomTypes.add('c', 10, {
 	},
 
 	roomName(roomData) {
+		if (RocketChat.settings.get('UI_Allow_room_names_with_special_chars')) {
+			return roomData.fname || roomData.name;
+		}
 		return roomData.name;
 	},
 
 	condition() {
-		return RocketChat.authz.hasAtLeastOnePermission(['view-c-room', 'view-joined-room']) || RocketChat.settings.get('Accounts_AllowAnonymousRead') === true;
+		const user = Meteor.user();
+		const preferences = (user && user.settings && user.settings.preferences && user.settings.preferences) || {};
+		return !preferences.roomsListExhibitionMode || ['unread', 'category'].includes(preferences.roomsListExhibitionMode) && !preferences.mergeChannels && (RocketChat.authz.hasAtLeastOnePermission(['view-c-room', 'view-joined-room']) || RocketChat.settings.get('Accounts_AllowAnonymousRead') === true);
 	},
 
 	showJoinLink(roomId) {
@@ -36,8 +71,44 @@ RocketChat.roomTypes.add('c', 10, {
 	}
 });
 
-RocketChat.roomTypes.add('d', 20, {
-	icon: 'icon-at',
+// private
+RocketChat.roomTypes.add('p', 40, {
+	icon: 'lock',
+	label: 'Private_Groups',
+	route: {
+		name: 'group',
+		path: '/group/:name',
+		action(params) {
+			return openRoom('p', params.name);
+		}
+	},
+
+	findRoom(identifier) {
+		const query = {
+			t: 'p',
+			name: identifier
+		};
+		return ChatRoom.findOne(query);
+	},
+
+	roomName(roomData) {
+		if (RocketChat.settings.get('UI_Allow_room_names_with_special_chars')) {
+			return roomData.fname || roomData.name;
+		}
+		return roomData.name;
+	},
+
+	condition() {
+		const user = Meteor.user();
+		const preferences = (user && user.settings && user.settings.preferences && user.settings.preferences) || {};
+		return !preferences.roomsListExhibitionMode || ['unread', 'category'].includes(preferences.roomsListExhibitionMode) && !preferences.mergeChannels && RocketChat.authz.hasAllPermission('view-p-room');
+	}
+});
+
+
+// direct
+RocketChat.roomTypes.add('d', 50, {
+	icon: false,
 	label: 'Direct_Messages',
 	route: {
 		name: 'direct',
@@ -82,7 +153,9 @@ RocketChat.roomTypes.add('d', 20, {
 	},
 
 	condition() {
-		return RocketChat.authz.hasAtLeastOnePermission(['view-d-room', 'view-joined-room']);
+		const user = Meteor.user();
+		const preferences = (user && user.settings && user.settings.preferences && user.settings.preferences) || {};
+		return !preferences.roomsListExhibitionMode || ['unread', 'category'].includes(preferences.roomsListExhibitionMode) && RocketChat.authz.hasAtLeastOnePermission(['view-d-room', 'view-joined-room']);
 	},
 
 	getUserStatus(roomId) {
@@ -90,33 +163,5 @@ RocketChat.roomTypes.add('d', 20, {
 		if (subscription == null) { return; }
 
 		return Session.get(`user_${ subscription.name }_status`);
-	}
-});
-
-RocketChat.roomTypes.add('p', 30, {
-	icon: 'icon-lock',
-	label: 'Private_Groups',
-	route: {
-		name: 'group',
-		path: '/group/:name',
-		action(params) {
-			return openRoom('p', params.name);
-		}
-	},
-
-	findRoom(identifier) {
-		const query = {
-			t: 'p',
-			name: identifier
-		};
-		return ChatRoom.findOne(query);
-	},
-
-	roomName(roomData) {
-		return roomData.name;
-	},
-
-	condition() {
-		return RocketChat.authz.hasAllPermission('view-p-room');
 	}
 });

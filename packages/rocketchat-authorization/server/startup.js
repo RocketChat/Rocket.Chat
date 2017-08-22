@@ -46,6 +46,8 @@ Meteor.startup(function() {
 		{ _id: 'run-migration',                 roles : ['admin'] },
 		{ _id: 'set-moderator',                 roles : ['admin', 'owner'] },
 		{ _id: 'set-owner',                     roles : ['admin', 'owner'] },
+		{ _id: 'send-many-messages',            roles : ['admin', 'bot'] },
+		{ _id: 'set-leader',                    roles : ['admin', 'owner'] },
 		{ _id: 'unarchive-room',                roles : ['admin'] },
 		{ _id: 'view-c-room',                   roles : ['admin', 'user', 'bot', 'anonymous'] },
 		{ _id: 'user-generate-access-token',    roles : ['admin'] },
@@ -73,6 +75,7 @@ Meteor.startup(function() {
 	const defaultRoles = [
 		{ name: 'admin',     scope: 'Users',         description: 'Admin' },
 		{ name: 'moderator', scope: 'Subscriptions', description: 'Moderator' },
+		{ name: 'leader',    scope: 'Subscriptions', description: 'Leader' },
 		{ name: 'owner',     scope: 'Subscriptions', description: 'Owner' },
 		{ name: 'user',      scope: 'Users',         description: '' },
 		{ name: 'bot',       scope: 'Users',         description: '' },
