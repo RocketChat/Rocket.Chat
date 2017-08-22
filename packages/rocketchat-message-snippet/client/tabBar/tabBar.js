@@ -5,7 +5,7 @@ Meteor.startup(function() {
 				groups: ['channel', 'group', 'direct'],
 				id: 'snippeted-messages',
 				i18nTitle: 'Snippeted_Messages',
-				icon: 'icon-code',
+				icon: 'code',
 				template: 'snippetedMessages',
 				order: 20
 			});

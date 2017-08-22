@@ -7,7 +7,7 @@ import { code } from './code.js';
 
 export const original = (message) => {
 	// Parse markdown
-	message.html = markdown(message.html);
+	message = markdown(message);
 
 	// Parse markdown code
 	message = code(message);
