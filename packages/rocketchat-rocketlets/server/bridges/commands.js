@@ -1,12 +1,11 @@
 export class RocketletCommandsBridge {
 	constructor(converters) {
-		console.log('CommandsBridge constructor');
 		this.converters = converters;
 		this.disabledCommands = new Map();
 	}
 
 	doesCommandExist(command, rocketletId) {
-		console.log(`The Rocketlet ${ rocketletId } is check if "${ command }" command exists.`);
+		console.log(`The Rocketlet ${ rocketletId } is checking if "${ command }" command exists.`);
 
 		if (typeof command !== 'string') {
 			return false;
