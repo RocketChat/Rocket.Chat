@@ -14,17 +14,35 @@ Package.onUse(function(api) {
 
 	api.addFiles('server/orchestrator.js', 'server');
 
-	api.addFiles('server/models/Rocketlets.js', 'server');
+	// Storage
+	api.addFiles([
+		'server/storage/rl-model.js',
+		'server/storage/storage.js',
+		'server/storage/index.js'
+	], 'server');
 
 	// Bridges
 	api.addFiles([
-		'server/bridges/commands.js'
+		'server/bridges/bridges.js',
+		'server/bridges/commands.js',
+		'server/bridges/environmental.js',
+		'server/bridges/settings.js',
+		'server/bridges/index.js'
 	], 'server');
 
 	// Communication pieces
 	api.addFiles([
 		'server/communication/rest.js',
-		'server/communication/websockets.js'
+		'server/communication/websockets.js',
+		'server/communication/index.js'
+	], 'server');
+
+	api.addFiles([
+		'server/converters/messages.js',
+		'server/converters/rooms.js',
+		'server/converters/settings.js',
+		'server/converters/users.js',
+		'server/converters/index.js'
 	], 'server');
 
 	// Client communication pieces
@@ -36,6 +54,6 @@ Package.onUse(function(api) {
 });
 
 Npm.depends({
-	'temporary-rocketlets-server': '0.1.11',
+	'temporary-rocketlets-server': '0.1.12',
 	'temporary-rocketlets-ts-definition': '0.6.2'
 });
