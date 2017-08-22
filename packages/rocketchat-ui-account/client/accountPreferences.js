@@ -72,6 +72,12 @@ Template.accountPreferences.helpers({
 	desktopNotificationDisabled() {
 		return KonchatNotification.notificationStatus.get() === 'denied' || (window.Notification && Notification.permission === 'denied');
 	},
+	defaultAudioNotification() {
+		return notificationLabels[RocketChat.settings.get('Audio_Notifications_Default_Alert')];
+	},
+	defaultAudioNotificationValue() {
+		return RocketChat.settings.get('Audio_Notifications_Value');
+	},
 	desktopNotificationDuration() {
 		const user = Meteor.user();
 		return user && user.settings && user.settings.preferences && user.settings.preferences.desktopNotificationDuration;
