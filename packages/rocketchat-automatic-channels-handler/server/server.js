@@ -55,9 +55,9 @@ Accounts.onLogin(function(user) {
 					return;
 				}
 			}
-			const room = RocketChat.models.Rooms.findOneByIdOrName(channelName);
-			if (room) {
 
+			const room = RocketChat.models.Rooms.findOneByDisplayName(channelName);
+			if (room) {
 				//check if user is present in the channel
 				const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(room._id, user.user._id);
 				if (subscription) {
