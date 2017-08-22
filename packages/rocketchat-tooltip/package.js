@@ -12,9 +12,8 @@ Package.onUse(function(api) {
 	api.use('rocketchat:lib');
 	api.use('rocketchat:theme');
 	api.use('rocketchat:ui-master');
-	api.use('less');
 
-	api.addFiles('client/tooltip.less', 'client');
+	api.addFiles('client/tooltip.css', 'client');
 
 	api.addFiles('client/rocketchat-tooltip.html', 'client');
 	api.addFiles('client/rocketchat-tooltip.js', 'client');

@@ -352,9 +352,6 @@ Template.message.onViewRendered = function(context) {
 			}
 			if (currentNode.classList.contains('own') === true) {
 				return (templateInstance.atBottom = true);
-			} else if (templateInstance.firstNode && templateInstance.atBottom === false) {
-				const newMessage = templateInstance.find('.new-message');
-				return newMessage && (newMessage.className = 'new-message background-primary-action-color color-content-background-color ');
 			}
 		}
 	});
