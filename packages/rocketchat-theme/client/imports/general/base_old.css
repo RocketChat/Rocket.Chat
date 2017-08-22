@@ -3234,6 +3234,24 @@
 	}
 }
 
+.rc-old .image-labels {
+	margin: 5px 0 25px;
+	display: flex;
+	flex-wrap: wrap;
+}
+
+.rc-old .image-label {
+	padding: 9px 4px;
+	border-radius: 2px;
+	font-size: 12px;
+	margin-right: 5px;
+	margin-top: 5px;
+
+	&:last-child {
+		margin-right: 0;
+	}
+}
+
 .rc-old .attachment-description {
 	margin-top: 10px;
 
