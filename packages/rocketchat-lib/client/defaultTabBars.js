@@ -38,7 +38,7 @@ RocketChat.TabBar.addButton({
 	groups: ['channel', 'privategroup', 'directmessage'],
 	id: 'keyboard-shortcut-list',
 	i18nTitle: 'Keyboard_Shortcuts_Title',
-	icon: 'icon-keyboard',
+	icon: 'keyboard',
 	template: 'keyboardShortcuts',
 	order: 4
 });
