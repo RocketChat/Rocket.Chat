@@ -38,7 +38,7 @@ Template.dbsAI_smarti.onRendered(function() {
 			const SITE_URL_W_SLASH =
 				RocketChat.settings.get('Site_Url').endsWith('/') ?
 					RocketChat.settings.get('Site_Url') :
-					`${ RocketChat.settings.get('Site_Url').endsWith('/') }/`;
+					`${ RocketChat.settings.get('Site_Url') }/`;
 
 			// stripping only the protocol ("http") from the site-url either creates a secure or an insecure websocket connection
 			const WEBSOCKET_URL = `ws${ SITE_URL_W_SLASH.substring(4) }websocket/`;

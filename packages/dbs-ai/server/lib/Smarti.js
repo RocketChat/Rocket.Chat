@@ -122,7 +122,7 @@ class SmartiAdapterFactory {
 			const SITE_URL_W_SLASH =
 				RocketChat.settings.get('Site_Url').endsWith('/') ?
 					RocketChat.settings.get('Site_Url') :
-					`${ RocketChat.settings.get('Site_Url').endsWith('/') }/`;
+					`${ RocketChat.settings.get('Site_Url') }/`;
 
 			adapterProps.url = DBS_AI_Redlink_URL;
 
