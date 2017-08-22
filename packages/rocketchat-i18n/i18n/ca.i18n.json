@@ -179,6 +179,7 @@
   "API_Drupal_URL": "Adreça URL del servidor de Drupal",
   "API_Drupal_URL_Description": "Exemple: https://domini.com (sense la barra final)",
   "API_Embed": "Incrusta (embed)",
+  "API_Embed_UserAgent": "Incrusta user agent de la consulta",
   "API_Embed_Description": "Activa o no les previsualitzacions d'enllaços quan un usuari publica l'enllaç a un web.",
   "API_EmbedCacheExpirationDays": "Caducitat de la memòria cau de les incrustacions (en dies)",
   "API_EmbedDisabledFor": "Deshabilitar la incrustació per als usuaris",
