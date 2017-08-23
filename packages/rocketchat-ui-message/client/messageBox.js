@@ -410,7 +410,7 @@ Template.messageBox.events({
 	},
 	'keydown .js-input-message': firefoxPasteUpload(function(event, t) {
 		if ((navigator.platform.indexOf('Mac') !== -1 && event.metaKey) || (navigator.platform.indexOf('Mac') === -1 && event.ctrlKey)) {
-			const action = markdownButtons.find(action => action.command === event.key.toLowerCase());
+			const action = markdownButtons.find(action => action.command === event.key.toLowerCase() && (!action.condition || action.condition()));
 			if (action) {
 				applyMd.apply(action, [event, t]);
 			}
