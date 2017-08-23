@@ -72,21 +72,8 @@ function notifyDesktopUser(userId, user, message, room, duration) {
 	});
 }
 
-function notifyAudioUser(userId, user, message, room) {
-
-	const UI_Use_Real_Name = RocketChat.settings.get('UI_Use_Real_Name') === true;
-	message.msg = parseMessageText(message, userId);
-
-	if (UI_Use_Real_Name) {
-		message.msg = replaceMentionedUsernamesWithFullNames(message.msg, message.mentions);
-	}
-	let title = UI_Use_Real_Name ? user.name : `@${ user.username }`;
-	if (room.t !== 'd' && room.name) {
-		title += ` @ #${ room.name }`;
-	}
+function notifyAudioUser(userId, message, room) {
 	RocketChat.Notifications.notifyUser(userId, 'audioNotification', {
-		title,
-		text: message.msg,
 		payload: {
 			_id: message._id,
 			rid: message.rid,
@@ -396,7 +383,9 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room, userId) {
 
 		if ([toAll, toHere].some(e => e) && room.usernames && room.usernames.length > 0) {
 			RocketChat.models.Users.find({
-				username: { $in: room.usernames	}, _id: {	$ne: user._id	}	}, {
+				username: { $in: room.usernames },
+				_id: { $ne: user._id }
+			}, {
 				fields: {
 					_id: 1,
 					username: 1,
@@ -433,7 +422,7 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room, userId) {
 			notifyDesktopUser(usersOfMentionId, user, message, room, duration);
 		}
 		for (const usersOfMentionId of userIdsForAudio) {
-			notifyAudioUser(usersOfMentionId, user, message, room);
+			notifyAudioUser(usersOfMentionId, message, room);
 		}
 		sendPushNotifications(userIdsToPushNotify, message, room, push_room, push_username, push_message);
 
