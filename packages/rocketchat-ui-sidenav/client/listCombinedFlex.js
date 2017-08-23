@@ -52,15 +52,13 @@ Template.listCombinedFlex.events({
 		if (t.hasMore.get() && (e.target.scrollTop >= (e.target.scrollHeight - e.target.clientHeight))) {
 			return t.limit.set(t.limit.get() + 50);
 		}
-	}
-	, 200),
+	}, 200),
 
 	'submit .search-form'(e) {
 		return e.preventDefault();
 	},
 
-	'keyup #channel-search': _.debounce((e, instance) => instance.nameFilter.set($(e.currentTarget).val())
-	, 300),
+	'keyup #channel-search': _.debounce((e, instance) => instance.nameFilter.set($(e.currentTarget).val()), 300),
 
 	'change #sort-channels'(e, instance) {
 		return instance.sortChannels.set($(e.currentTarget).val());

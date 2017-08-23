@@ -5,7 +5,7 @@ Template.body.onRendered(() => {
 		const piwikPrependDomain = piwikUrl && RocketChat.settings.get('PiwikAnalytics_prependDomain');
 		const piwikCookieDomain = piwikUrl && RocketChat.settings.get('PiwikAnalytics_cookieDomain');
 		const piwikDomains = piwikUrl && RocketChat.settings.get('PiwikAnalytics_domains');
-
+		const piwikAdditionalTracker = piwikUrl && RocketChat.settings.get('PiwikAdditionalTrackers');
 		const googleId = RocketChat.settings.get('GoogleAnalytics_enabled') && RocketChat.settings.get('GoogleAnalytics_ID');
 		if (piwikSiteId || googleId) {
 			c.stop();
@@ -38,6 +38,11 @@ Template.body.onRendered(() => {
 					window._paq.push(['setDomains', domains]);
 				}
 				(() => {
+					const addTrackers = JSON.parse(piwikAdditionalTracker);
+					for (let i = 0; i < addTrackers.length; i++) {
+						const tracker = addTrackers[i];
+						window._paq.push(['addTracker', `${ tracker['trackerURL'] }piwik.php`, tracker['siteId']]);
+					}
 					window._paq.push(['setTrackerUrl', `${ piwikUrl }piwik.php`]);
 					window._paq.push(['setSiteId', Number.parseInt(piwikSiteId)]);
 					const d = document;

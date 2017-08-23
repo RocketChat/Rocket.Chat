@@ -21,8 +21,6 @@
   "Accounts_AllowUserProfileChange": "Sta wijzen van gebruikers profiel toe",
   "Accounts_AvatarResize": "Wijzig Avatar grootte",
   "Accounts_AvatarSize": "Avatar grootte",
-  "Accounts_AvatarStorePath": "Avatar opslag pad",
-  "Accounts_AvatarStoreType": "Avatar opslag type",
   "Accounts_BlockedDomainsList": "Geblokkeerde domeinen List",
   "Accounts_BlockedDomainsList_Description": "Door komma's gescheiden lijst van geblokkeerde domeinen",
   "Accounts_BlockedUsernameList": "Geblokkeerde Gebruikersnaam List",

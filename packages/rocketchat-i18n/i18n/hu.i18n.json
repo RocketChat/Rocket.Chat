@@ -27,8 +27,6 @@
   "Accounts_AllowUserProfileChange": "Felhasználó módosíthatja profilját",
   "Accounts_AvatarResize": "Profilképek átméretezése",
   "Accounts_AvatarSize": "Profilkép mérete",
-  "Accounts_AvatarStorePath": "Profilkép tárolásának elérési útja",
-  "Accounts_AvatarStoreType": "Profilkép tárolásának típusa",
   "Accounts_BlockedDomainsList": "Blokkolt domainek listája",
   "Accounts_BlockedDomainsList_Description": "Blokkolt domain-ek listája (vesszővel elválasztva)",
   "Accounts_BlockedUsernameList": "Blokkolt felhasználónevek listája",

@@ -21,8 +21,6 @@
   "Accounts_AllowUserProfileChange": "អនុញ្ញាតិអ្នកប្រើប្រាស់ប្តូរព័ត៌មានផ្ទាល់ខ្លួន",
   "Accounts_AvatarResize": "ប្តូ​រ​ទំហំ Avatar",
   "Accounts_AvatarSize": "ទំហំ Avatar",
-  "Accounts_AvatarStorePath": "ទីតាំងផ្ទុក Avatar",
-  "Accounts_AvatarStoreType": "ប្រភេទបន្ទុក Avatar",
   "Accounts_BlockedDomainsList": "បញ្ជីដែន",
   "Accounts_BlockedDomainsList_Description": "បញ្ជីបំបែកដោយសញ្ញាក្បៀសនៃដែនបានបិទ",
   "Accounts_BlockedUsernameList": "បញ្ជីឈ្មោះអ្នកប្រើ",

@@ -11,7 +11,7 @@ Package.describe({
 });
 
 Npm.depends({
-	'clipboard': '1.5.12'
+	clipboard: '1.6.1'
 });
 
 Package.onUse(function(api) {
@@ -20,6 +20,7 @@ Package.onUse(function(api) {
 		'ecmascript',
 		'templating',
 		'underscore',
+		'reactive-var',
 		'rocketchat:lib',
 		'meteorhacks:inject-initial'
 	]);

@@ -19,7 +19,7 @@
 				<tbody>
 					{{#each permission}}
 						<tr class="admin-table-row">
-							<td class="border-component-color">{{_id}}</td>
+							<td class="permission-name border-component-color" title="{{_ permissionDescription}}">{{_ permissionName}}<br>[{{_id}}]</td>
 							{{#each role}}
 								<td class="border-component-color">
 									<input type="checkbox" name="perm[{{_id}}][{{../_id}}]" class="role-permission" value="1" checked="{{granted ../roles}}" data-role="{{_id}}" data-permission="{{../_id}}">

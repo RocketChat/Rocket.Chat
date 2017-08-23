@@ -70,6 +70,12 @@ Meteor.methods({
 				const user = RocketChat.models.Users.findOneById(message.u._id);
 				message.u.name = user && user.name;
 			}
+			if (message.mentions && message.mentions.length && UI_Use_Real_Name) {
+				message.mentions.forEach((mention) => {
+					const user = RocketChat.models.Users.findOneById(mention._id);
+					mention.name = user && user.name;
+				});
+			}
 			return message;
 		});
 

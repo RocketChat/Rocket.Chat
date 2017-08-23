@@ -54,6 +54,9 @@ Meteor.startup(function() {
 		action() {
 			const message = this._arguments[1];
 			RocketChat.MessageAction.hideDropDown();
+			if (window.matchMedia('(max-width: 500px)').matches) {
+				Template.instance().tabBar.close();
+			}
 			return RoomHistoryManager.getSurroundingMessages(message, 50);
 		},
 		validation(message) {
@@ -70,7 +73,7 @@ Meteor.startup(function() {
 		i18nLabel: 'Permalink',
 		classes: 'clipboard',
 		context: ['starred'],
-		action() {
+		action(event) {
 			const message = this._arguments[1];
 			RocketChat.MessageAction.hideDropDown();
 			$(event.currentTarget).attr('data-clipboard-text', RocketChat.MessageAction.getPermaLink(message._id));

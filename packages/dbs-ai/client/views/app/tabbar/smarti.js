@@ -35,16 +35,28 @@ Template.dbsAI_smarti.onRendered(function() {
 					RocketChat.settings.get('DBS_AI_Redlink_URL') :
 					`${ RocketChat.settings.get('DBS_AI_Redlink_URL') }/`;
 
-			const WEBSOCKET_URL = `ws${ RocketChat.settings.get('Site_Url').substring(4) }websocket/`;
+			const SITE_URL_W_SLASH =
+				RocketChat.settings.get('Site_Url').endsWith('/') ?
+					RocketChat.settings.get('Site_Url') :
+					`${ RocketChat.settings.get('Site_Url') }/`;
+
+			// stripping only the protocol ("http") from the site-url either creates a secure or an insecure websocket connection
+			const WEBSOCKET_URL = `ws${ SITE_URL_W_SLASH.substring(4) }websocket/`;
 
 			let customSuffix = RocketChat.settings.get('Assistify_AI_DBSearch_Suffix') || '';
 			customSuffix = customSuffix.replace(/\r\n|\r|\n/g, '');
+
+			const WIDGET_POSTING_TYPE = RocketChat.settings.get('Assistify_AI_Widget_Posting_Type') || 'postRichText';
+			console.log(WIDGET_POSTING_TYPE, RocketChat.settings.get('Assistify_AI_Widget_Posting_Type'));
 
 			const smartiOptions = {
 				socketEndpoint: WEBSOCKET_URL,
 				smartiEndpoint: DBS_AI_Redlink_URL,
 				channel: self.data.rid,
-				inputCssSelector: '.autogrow-shadow',
+				postings: {
+					type: WIDGET_POSTING_TYPE,
+					cssInputSelector: '.message-form-text.input-message'
+				},
 				widget: {
 					'query.dbsearch': {
 						numOfRows: 2,
@@ -72,11 +84,11 @@ Template.dbsAI_smarti.helpers({
 		return ChatSubscription.findOne({rid: instance.data.rid}).t === 'l';
 	},
 	/**
-	This helper is needed in order to create an object which matches the actions bar importing parameters
+	 This helper is needed in order to create an object which matches the actions bar importing parameters
 	 */
 	liveChatActions() {
 		const instance = Template.instance();
-		return { roomId: instance.data.rid };
+		return {roomId: instance.data.rid};
 	},
 	helpRequestByRoom() {
 		const instance = Template.instance();
@@ -88,10 +100,9 @@ Template.dbsAI_smarti.helpers({
  * Load Smarti script
  */
 RocketChat.settings.onload('DBS_AI_Redlink_URL', function() {
-
 	Meteor.call('getSmartiUiScript', function(error, script) {
 		if (error) {
-			console.error('could not load Smarti:', error);
+			console.error('could not load Smarti:', error.message);
 		} else {
 			// generate a script tag for smarti JS
 			const doc = document;

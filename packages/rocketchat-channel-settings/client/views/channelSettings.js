@@ -16,6 +16,9 @@ Template.channelSettings.helpers({
 			}
 			return true;
 		}
+		if (this.$value.getValue) {
+			return this.$value.getValue(obj, key);
+		}
 		return obj && obj[key];
 	},
 	showSetting(setting, room) {
@@ -50,6 +53,13 @@ Template.channelSettings.helpers({
 			}
 		});
 		const roomType = room && room.t;
+		/*
+		dirty hack since custom permissions create in packages/assistify-help-request/startup/customRoomTypes.js
+		lead to a streamer exception in some occasions.
+		*/
+		if (roomType === 'e') {
+			return roomType && RocketChat.authz.hasAtLeastOnePermission('delete-c');
+		}
 		return roomType && RocketChat.authz.hasAtLeastOnePermission(`delete-${ roomType }`, this.rid);
 	},
 	readOnly() {
@@ -108,11 +118,17 @@ Template.channelSettings.events({
 			t.saveSetting();
 		}
 	},
-	'click [data-edit]'(e, t) {
+	'click [data-edit], click .button.edit'(e, t) {
 		e.preventDefault();
-		if ($(e.currentTarget).data('edit')) {
-			t.editing.set($(e.currentTarget).data('edit'));
-			return setTimeout((function() {
+		let input = $(e.currentTarget);
+
+		if (input.hasClass('button')) {
+			input = $(e.currentTarget).siblings('.current-setting');
+		}
+
+		if (input.data('edit')) {
+			t.editing.set(input.data('edit'));
+			setTimeout((function() {
 				return t.$('input.editing').focus().select();
 			}), 100);
 		}
@@ -146,22 +162,30 @@ Template.channelSettings.onCreated(function() {
 			canEdit(room) {
 				return RocketChat.authz.hasAllPermission('edit-room', room._id);
 			},
+			getValue(room) {
+				if (RocketChat.settings.get('UI_Allow_room_names_with_special_chars')) {
+					return room.fname || room.name;
+				}
+				return room.name;
+			},
 			save(value, room) {
 				let nameValidation;
 				if (!RocketChat.authz.hasAllPermission('edit-room', room._id) || (room.t !== 'c' && room.t !== 'p')) {
 					return toastr.error(t('error-not-allowed'));
 				}
-				try {
-					nameValidation = new RegExp(`^${ RocketChat.settings.get('UTF8_Names_Validation') }$`);
-				} catch (error1) {
-					nameValidation = new RegExp('^[0-9a-zA-Z-_.]+$');
-				}
-				if (!nameValidation.test(value)) {
-					return toastr.error(t('error-invalid-room-name', {
-						room_name: {
-							name: value
-						}
-					}));
+				if (!RocketChat.settings.get('UI_Allow_room_names_with_special_chars')) {
+					try {
+						nameValidation = new RegExp(`^${ RocketChat.settings.get('UTF8_Names_Validation') }$`);
+					} catch (error1) {
+						nameValidation = new RegExp('^[0-9a-zA-Z-_.]+$');
+					}
+					if (!nameValidation.test(value)) {
+						return toastr.error(t('error-invalid-room-name', {
+							room_name: {
+								name: value
+							}
+						}));
+					}
 				}
 				Meteor.call('saveRoomSettings', room._id, 'roomName', value, function(err) {
 					if (err) {

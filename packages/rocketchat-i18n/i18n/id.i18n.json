@@ -21,8 +21,6 @@
   "Accounts_AllowUserProfileChange": "Memungkinkan Profil Pengguna Ganti",
   "Accounts_AvatarResize": "Ubah Ukuran Avatar",
   "Accounts_AvatarSize": "Ukuran Avatar",
-  "Accounts_AvatarStorePath": "Lokasi Penyimpanan Avatar",
-  "Accounts_AvatarStoreType": "Tipe Penyimpanan Avatar",
   "Accounts_BlockedDomainsList": "Daftar Domain diblokir",
   "Accounts_BlockedDomainsList_Description": "Dipisahkan dengan koma daftar domain diblokir",
   "Accounts_BlockedUsernameList": "Diblokir Daftar Nama",

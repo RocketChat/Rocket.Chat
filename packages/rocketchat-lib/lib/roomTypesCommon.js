@@ -10,11 +10,12 @@ this.roomTypesCommon = class {
 	@param identifier An identifier to the room type. If a real room, MUST BE the same of `db.rocketchat_room.t` field, if not, can be null
 	@param order Order number of the type
 	@param config
-	template: template name to render on sideNav
 	icon: icon class
+	label: i18n label
 	route:
 	name: route name
 	action: route action function
+	identifier: room type identifier
 	*/
 
 	add(identifier = Random.id(), order, config) {
@@ -29,7 +30,7 @@ this.roomTypesCommon = class {
 			identifier,
 			order
 		});
-		this.roomTypes[identifier] = config;
+		this.roomTypes[identifier] = {...config, identifier};
 		if (config.route && config.route.path && config.route.name && config.route.action) {
 			const routeConfig = {
 				name: config.route.name,

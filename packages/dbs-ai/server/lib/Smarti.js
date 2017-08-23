@@ -26,7 +26,7 @@ class SmartiAdapter {
 			message_id: message._id,
 			channel_id: message.rid,
 			user_id: message.u._id,
-			username: message.u.username,
+			// username: message.u.username,
 			text: message.msg,
 			timestamp: message.ts,
 			origin: message.origin
@@ -114,11 +114,21 @@ class SmartiAdapterFactory {
 				language: ''
 			};
 
-			adapterProps.url = RocketChat.settings.get('DBS_AI_Redlink_URL');
+			const DBS_AI_Redlink_URL =
+				RocketChat.settings.get('DBS_AI_Redlink_URL').endsWith('/') ?
+					RocketChat.settings.get('DBS_AI_Redlink_URL') :
+					`${ RocketChat.settings.get('DBS_AI_Redlink_URL') }/`;
+
+			const SITE_URL_W_SLASH =
+				RocketChat.settings.get('Site_Url').endsWith('/') ?
+					RocketChat.settings.get('Site_Url') :
+					`${ RocketChat.settings.get('Site_Url') }/`;
+
+			adapterProps.url = DBS_AI_Redlink_URL;
 
 			adapterProps.token = RocketChat.settings.get('DBS_AI_Redlink_Auth_Token');
 
-			adapterProps.webhookUrl = `${ RocketChat.settings.get('Site_Url') }api/v1/smarti.result/${ RocketChat.settings.get('DBS_AI_Redlink_Hook_Token') }`;
+			adapterProps.webhookUrl = `${ SITE_URL_W_SLASH }api/v1/smarti.result/${ RocketChat.settings.get('DBS_AI_Redlink_Hook_Token') }`;
 
 			SystemLogger.debug(RocketChat.settings);
 
