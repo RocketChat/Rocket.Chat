@@ -39,20 +39,11 @@ Meteor.startup(function() {
 
 			RocketChat.Notifications.onUser('audioNotification', function(notification) {
 
-				let openedRoomId = undefined;
-				if (['channel', 'group', 'direct'].includes(FlowRouter.getRouteName())) {
-					openedRoomId = Session.get('openedRoom');
-				}
+				const openedRoomId = Session.get('openedRoom');
 
 				// This logic is duplicated in /client/startup/unread.coffee.
 				const hasFocus = readMessage.isEnable();
 				const messageIsInOpenedRoom = openedRoomId === notification.payload.rid;
-
-				fireGlobalEvent('notification', {
-					notification,
-					fromOpenedRoom: messageIsInOpenedRoom,
-					hasFocus
-				});
 
 				if (RocketChat.Layout.isEmbedded()) {
 					if (!hasFocus && messageIsInOpenedRoom) {
