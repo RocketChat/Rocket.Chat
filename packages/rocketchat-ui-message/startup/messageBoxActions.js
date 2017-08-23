@@ -12,7 +12,7 @@ RocketChat.messageBox.actions.add('Create_new', 'Video_message', {
 });
 
 RocketChat.messageBox.actions.add('Create_new', 'Audio_message', {
-	icon: 'audio',
+	icon: 'mic',
 	condition: () => RocketChat.settings.get('FileUpload_Enabled') && RocketChat.settings.get('Message_AudioRecorderEnabled') && ((navigator.getUserMedia != null) || (navigator.webkitGetUserMedia != null)) && (!RocketChat.settings.get('FileUpload_MediaTypeWhiteList') || RocketChat.settings.get('FileUpload_MediaTypeWhiteList').match(/audio\/wav|audio\/\*/i)),
 	action({event, element}) {
 		event.preventDefault();
