@@ -7,6 +7,7 @@ export default {
 	room: new ReactiveVar(null),
 	roomToSubscribe: new ReactiveVar(null),
 	roomSubscribed: null,
+	connected: null,
 
 	register() {
 		if (!localStorage.getItem('visitorToken')) {
@@ -70,5 +71,13 @@ export default {
 				}
 			}
 		});
+	},
+
+	setConnected() {
+		if (this.connected) {
+			return;
+		}
+		this.connected = true;
+		Meteor.call('UserPresence:connect', this.getToken(), { visitor: this.getToken() });
 	}
 };

@@ -121,6 +121,8 @@ this.ChatMessages = class ChatMessages {
 					ChatMessage.update(result._id, _.omit(result, '_id'));
 					Livechat.room = result.rid;
 
+					visitor.setConnected();
+
 					parentCall('callback', 'chat-started');
 				}
 			});

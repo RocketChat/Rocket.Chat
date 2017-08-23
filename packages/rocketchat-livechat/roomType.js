@@ -38,19 +38,18 @@ RocketChat.roomTypes.add('l', 5, {
 	},
 
 	getUserStatus(roomId) {
-		let guestName;
 		const room = Session.get(`roomData${ roomId }`);
 
 		if (room) {
-			guestName = room.v && room.v.username;
+			return room.v && room.v.status;
 		} else {
 			const inquiry = LivechatInquiry.findOne({ rid: roomId });
-			guestName = inquiry && inquiry.v && inquiry.v.username;
+			return inquiry && inquiry.v && inquiry.v.status;
 		}
 
-		if (guestName) {
-			return Session.get(`user_${ guestName }_status`);
-		}
+		// if (guestName) {
+		// 	return Session.get(`user_${ guestName }_status`);
+		// }
 	},
 
 	notSubscribedTpl: {

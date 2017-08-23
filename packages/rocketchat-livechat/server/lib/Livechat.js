@@ -198,16 +198,29 @@ RocketChat.Livechat = {
 		return ret;
 	},
 
-	closeRoom({ user, room, comment }) {
+	closeRoom({ user, visitor, room, comment }) {
 		const now = new Date();
-		RocketChat.models.Rooms.closeByRoomId(room._id, {
-			user: {
-				_id: user._id,
-				username: user.username
-			},
+
+		const closeData = {
 			closedAt: now,
 			chatDuration: (now.getTime() - room.ts) / 1000
-		});
+		};
+
+		if (user) {
+			closeData.closer = 'user';
+			closeData.closedBy = {
+				_id: user._id,
+				username: user.username
+			};
+		} else if (visitor) {
+			closeData.closer = 'visitor';
+			closeData.closedBy = {
+				_id: visitor._id,
+				username: visitor.username
+			};
+		}
+
+		RocketChat.models.Rooms.closeByRoomId(room._id, closeData);
 
 		const message = {
 			t: 'livechat-close',
@@ -217,8 +230,8 @@ RocketChat.Livechat = {
 
 		RocketChat.sendMessage(user, message, room);
 
-		RocketChat.models.Subscriptions.hideByRoomIdAndUserId(room._id, user._id);
-		RocketChat.models.Messages.createCommandWithRoomIdAndUser('promptTranscript', room._id, user);
+		RocketChat.models.Subscriptions.hideByRoomIdAndUserId(room._id, room.servedBy._id);
+		RocketChat.models.Messages.createCommandWithRoomIdAndUser('promptTranscript', room._id, room.servedBy);
 
 		Meteor.defer(() => {
 			RocketChat.callbacks.run('livechat.closeRoom', room);

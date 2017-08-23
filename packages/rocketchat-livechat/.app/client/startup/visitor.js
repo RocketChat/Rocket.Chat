@@ -16,3 +16,14 @@ Meteor.startup(() => {
 		});
 	}
 });
+
+Meteor.startup(() => {
+	let connected = false;
+	Tracker.autorun(function() {
+		var connectionStatus = Meteor.status();
+		if (visitor.getRoom() && visitor.getToken() && connectionStatus.connected && !connected) {
+			connected = connectionStatus.connected;
+			visitor.setConnected();
+		}
+	});
+});
