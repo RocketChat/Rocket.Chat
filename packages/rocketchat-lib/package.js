@@ -100,8 +100,10 @@ Package.onUse(function(api) {
 	api.addFiles('server/lib/configLogger.js', 'server');
 	api.addFiles('server/lib/PushNotification.js', 'server');
 	api.addFiles('server/lib/defaultBlockedDomainsList.js', 'server');
+	api.addFiles('server/lib/interceptDirectReplyEmails.js', 'server');
 	api.addFiles('server/lib/loginErrorMessageOverride.js', 'server');
 	api.addFiles('server/lib/notifyUsersOnMessage.js', 'server');
+	api.addFiles('server/lib/processDirectEmail.js', 'server');
 	api.addFiles('server/lib/roomTypes.js', 'server');
 	api.addFiles('server/lib/sendEmailOnMessage.js', 'server');
 	api.addFiles('server/lib/sendNotificationsOnMessage.js', 'server');
@@ -174,6 +176,7 @@ Package.onUse(function(api) {
 
 	// SERVER STARTUP
 	api.addFiles('server/startup/settingsOnLoadCdnPrefix.js', 'server');
+	api.addFiles('server/startup/settingsOnLoadDirectReply.js', 'server');
 	api.addFiles('server/startup/settingsOnLoadSMTP.js', 'server');
 	api.addFiles('server/startup/oAuthServicesUpdate.js', 'server');
 	api.addFiles('server/startup/settings.js', 'server');
