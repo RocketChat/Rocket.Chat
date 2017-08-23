@@ -1,6 +1,6 @@
 export class RocketletRoomsConverter {
-	constructor(converters) {
-		this.converters = converters;
+	constructor(orch) {
+		this.orch = orch;
 	}
 
 	convertById(roomId) {

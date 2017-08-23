@@ -182,6 +182,7 @@ Package.onUse(function(api) {
 	// CLIENT LIB
 	api.addFiles('client/Notifications.js', 'client');
 	api.addFiles('client/OAuthProxy.js', 'client');
+	api.addFiles('client/lib/RestApiClient.js', 'client');
 	api.addFiles('client/lib/TabBar.js', 'client');
 	api.addFiles('client/lib/RocketChatTabBar.js', 'client');
 	api.addFiles('client/lib/cachedCollection.js', 'client');
@@ -191,6 +192,9 @@ Package.onUse(function(api) {
 	api.addFiles('client/lib/roomTypes.js', 'client');
 	api.addFiles('client/lib/userRoles.js', 'client');
 	api.addFiles('client/lib/Layout.js', 'client');
+
+	// CLIENT LIB STARTUP
+	api.addFiles('client/lib/startup/commands.js', 'client');
 
 	// CLIENT METHODS
 	api.addFiles('client/methods/sendMessage.js', 'client');
