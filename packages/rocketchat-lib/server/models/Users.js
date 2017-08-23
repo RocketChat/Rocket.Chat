@@ -138,8 +138,10 @@ class ModelUsers extends RocketChat.models._Base {
 		}
 
 		const termRegex = new RegExp(s.escapeRegExp(searchTerm), 'i');
-		const orStmt = _.reduce(_.keys(options.fields), function(acc, el) {
-			acc.push({ [el]: termRegex }); return acc;
+
+		const orStmt = _.reduce(RocketChat.settings.get('Accounts_SearchFields').trim().split(','), function(acc, el) {
+			acc.push({ [el.trim()]: termRegex });
+			return acc;
 		}, []);
 		const query = {
 			$and: [
