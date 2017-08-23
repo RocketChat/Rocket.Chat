@@ -1095,6 +1095,7 @@ RocketChat.settings.addGroup('Message', function() {
 		type: 'boolean',
 		'public': true
 	});
+
 });
 
 RocketChat.settings.addGroup('Meta', function() {

@@ -85,7 +85,18 @@ class MarkdownClass {
 			return `<a href="${ _.escapeHTML(url) }" target="${ _.escapeHTML(target) }" rel="noopener noreferrer">${ _.escapeHTML(title) }</a>`;
 		});
 
-		if (typeof window !== 'undefined' && window !== null ? window.rocketDebug : undefined) { console.log('Markdown', msg); }
+		if (RocketChat.settings.get('Markdown_Colors') === 'irc' || RocketChat.settings.get('Markdown_Colors') === 'full') {
+			// IRC Color Support
+			msg = msg.replace(/\{color fg:(White|Black|Blue|Green|Red|Brown|Purple|Orange|Yellow|LightGreen|Cyan|LightCyan|LightBlue|PinkGray|LightGray)\}([^{]+)\{\/color\}/img, '<span style="color:$1;">$2</span>');
+			msg = msg.replace(/\{color bg:(White|Black|Blue|Green|Red|Brown|Purple|Orange|Yellow|LightGreen|Cyan|LightCyan|LightBlue|PinkGray|LightGray)\}([^{]+)\{\/color\}/img, '<span style="background-color:$1;">$2</span>');
+			msg = msg.replace(/\{color fg:(White|Black|Blue|Green|Red|Brown|Purple|Orange|Yellow|LightGreen|Cyan|LightCyan|LightBlue|PinkGray|LightGray) bg:(White|Black|Blue|Green|Red|Brown|Purple|Orange|Yellow|LightGreen|Cyan|LightCyan|LightBlue|PinkGray|LightGray)\}([^{]+)\{\/color\}/img, '<span style="color:$1; background-color:$2;">$3</span>');
+			msg = msg.replace(/\{color bg:(White|Black|Blue|Green|Red|Brown|Purple|Orange|Yellow|LightGreen|Cyan|LightCyan|LightBlue|PinkGray|LightGray) fg:(White|Black|Blue|Green|Red|Brown|Purple|Orange|Yellow|LightGreen|Cyan|LightCyan|LightBlue|PinkGray|LightGray)\}([^{]+)\{\/color\}/img, '<span style="color:$2; background-color:$1;">$3</span>');
+		} else if (RocketChat.settings.get('Markdown_Colors') === 'full') {
+			msg = msg.replace(/\{color fg:([#\w]\w+)\}([^{]+)\{\/color\}/img, '<span style="color:$1;">$2</span>');
+			msg = msg.replace(/\{color bg:([#\w]\w+)\}([^{]+)\{\/color\}/img, '<span style="background-color:$1;">$2</span>');
+			msg = msg.replace(/\{color fg:([#\w]\w+) bg:([#\w]\w+)\}([^{]+)\{\/color\}/img, '<span style="color:$1; background-color:$2;">$3</span>');
+			msg = msg.replace(/\{color bg:([#\w]\w+) fg:([#\w]\w+)\}([^{]+)\{\/color\}/img, '<span style="color:$2; background-color:$1;">$3</span>');
+		}
 
 		return msg;
 	}
