@@ -115,6 +115,8 @@ Template.livechatWindow.onCreated(function() {
 
 			if (result.room) {
 				Livechat.room = result.room._id;
+
+				visitor.setConnected();
 			}
 
 			if (result.agentData) {
