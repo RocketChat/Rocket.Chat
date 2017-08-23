@@ -62,7 +62,7 @@ Template._autocompleteContainer.destroyed = function() {
 
 Template._autocompleteContainer.events({
 	// t.data is the AutoComplete instance; `this` is the data item
-	'click .-autocomplete-item'(e, t) {
+	'click .-autocomplete-item, click [data-autocomplete]'(e, t) {
 		t.data.onItemClick(this, e);
 	},
 	'mouseenter .-autocomplete-item'(e, t) {
@@ -78,3 +78,4 @@ Template._autocompleteContainer.helpers({
 		return this.matchedRule().noMatchTemplate || Template._noMatch;
 	}
 });
+export { acEvents, attributes, autocompleteHelpers };
