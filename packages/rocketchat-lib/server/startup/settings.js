@@ -74,6 +74,10 @@ RocketChat.settings.addGroup('Accounts', function() {
 		type: 'boolean',
 		'public': true
 	});
+	this.add('Accounts_SearchFields', 'username, name, emails.address', {
+		type: 'string',
+		public: true
+	});
 
 	this.section('Registration', function() {
 		this.add('Accounts_DefaultUsernamePrefixSuggestion', 'user', {
