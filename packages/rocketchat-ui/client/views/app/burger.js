@@ -8,6 +8,6 @@ Template.burger.helpers({
 		}
 	},
 	isOld() {
-		return Template.instance().old === false ? '' : 'rc-old';
+		return Template.instance().data.old == null ? '' : 'rc-old';
 	}
 });

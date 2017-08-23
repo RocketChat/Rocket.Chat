@@ -50,32 +50,9 @@ const openProfileTabOrOpenDM = (e, instance, username) => {
 };
 
 Template.room.helpers({
-	avatarBackground() {
-		const roomData = Session.get(`roomData${ this._id }`);
-		if (!roomData) { return ''; }
-		const url = getAvatarUrlFromUsername(RocketChat.roomTypes.getRoomName(roomData.t, roomData));
-		return `background-image: url(${ url });`;
-	},
-
-	isTranslated() {
-		const sub = ChatSubscription.findOne({ rid: this._id }, { fields: { autoTranslate: 1, autoTranslateLanguage: 1 } });
-		return RocketChat.settings.get('AutoTranslate_Enabled') && ((sub != null ? sub.autoTranslate : undefined) === true) && (sub.autoTranslateLanguage != null);
-	},
 
 	embeddedVersion() {
 		return RocketChat.Layout.isEmbedded();
-	},
-
-	state() {
-		const sub = ChatSubscription.findOne({ rid: this._id }, { fields: { f: 1 } });
-		if (((sub != null ? sub.f : undefined) != null) && sub.f && favoritesEnabled()) { return ' favorite-room'; }
-		return 'empty';
-	},
-
-	favoriteLabel() {
-		const sub = ChatSubscription.findOne({ rid: this._id }, { fields: { f: 1 } });
-		if (((sub != null ? sub.f : undefined) != null) && sub.f && favoritesEnabled()) { return 'Unfavorite'; }
-		return 'Favorite';
 	},
 
 	subscribed() {
@@ -134,10 +111,6 @@ Template.room.helpers({
 		return RoomHistoryManager.isLoading(this._id);
 	},
 
-	isDirect() {
-		return RocketChat.models.Rooms.findOne(this._id).t === 'd' ;
-	},
-
 	windowId() {
 		return `chat-window-${ this._id }`;
 	},
@@ -163,35 +136,12 @@ Template.room.helpers({
 		return RocketChat.roomTypes.getRouteLink('d', { name: this.username });
 	},
 
-	roomName() {
-		const roomData = Session.get(`roomData${ this._id }`);
-		if (!roomData) { return ''; }
-
-		return RocketChat.roomTypes.getRoomName(roomData.t, roomData);
-	},
-
-	secondaryName() {
-		const roomData = Session.get(`roomData${ this._id }`);
-		if (!roomData) { return ''; }
-
-		return RocketChat.roomTypes.getSecondaryRoomName(roomData.t, roomData);
-	},
-
-	roomTopic() {
-		const roomData = Session.get(`roomData${ this._id }`);
-		if (!roomData) { return ''; }
-		return roomData.topic;
-	},
-
-	roomPrefix() {
-		return RocketChat.models.Rooms.findOne(this._id).t === 'd' ? '@' : '#';
-	},
-
 	showAnnouncement() {
 		const roomData = Session.get(`roomData${ this._id }`);
 		if (!roomData) { return false; }
 		return (roomData.announcement !== undefined) && (roomData.announcement !== '');
 	},
+
 	messageboxData() {
 		const instance = Template.instance();
 		return {
@@ -201,22 +151,11 @@ Template.room.helpers({
 			}
 		};
 	},
+
 	roomAnnouncement() {
 		const roomData = Session.get(`roomData${ this._id }`);
 		if (!roomData) { return ''; }
 		return roomData.announcement;
-	},
-
-	roomIcon() {
-		const roomData = Session.get(`roomData${ this._id }`);
-		if (!(roomData != null ? roomData.t : undefined)) { return ''; }
-
-		return RocketChat.roomTypes.getIcon(roomData != null ? roomData.t : undefined);
-	},
-
-	userStatus() {
-		const roomData = Session.get(`roomData${ this._id }`);
-		return RocketChat.roomTypes.getUserStatus(roomData.t, this._id) || 'offline';
 	},
 
 	maxMessageLength() {
@@ -291,6 +230,17 @@ Template.room.helpers({
 		return userCanDrop(this._id);
 	},
 
+	toolbarButtons() {
+		const toolbar = Session.get('toolbarButtons') || { buttons: {} };
+		const buttons = Object.keys(toolbar.buttons).map(key => {
+			return {
+				id: key,
+				...toolbar.buttons[key]
+			};
+		});
+		return { buttons };
+	},
+
 	canPreview() {
 		const room = Session.get(`roomData${ this._id }`);
 		if (room && room.t !== 'c') {
@@ -307,16 +257,6 @@ Template.room.helpers({
 
 		return (RocketChat.models.Subscriptions.findOne({rid: this._id}) != null);
 
-	},
-	toolbarButtons() {
-		const toolbar = Session.get('toolbarButtons') || { buttons: {} };
-		const buttons = Object.keys(toolbar.buttons).map(key => {
-			return {
-				id: key,
-				...toolbar.buttons[key]
-			};
-		});
-		return { buttons };
 	},
 	hideLeaderHeader() {
 		return Template.instance().hideLeaderHeader.get() ? 'animated-hidden' : '';
@@ -335,10 +275,6 @@ let lastTouchY = null;
 let lastScrollTop;
 
 Template.room.events({
-	'click .iframe-toolbar button'() {
-		fireGlobalEvent('click-toolbar-button', { id: this.id });
-	},
-
 	'click, touchend'(e, t) {
 		return Meteor.setTimeout(() => t.sendToBottomIfNecessaryDebounced(), 100);
 	},
@@ -486,16 +422,6 @@ Template.room.events({
 			message = ChatMessage.find({ rid: _id, ts: { $gt: (subscription != null ? subscription.ls : undefined) } }, { sort: { ts: 1 }, limit: 1 }).fetch()[0];
 			return RoomHistoryManager.getSurroundingMessages(message, 50);
 		}
-	},
-
-	'click .rc-header__toggle-favorite'(event) {
-		event.stopPropagation();
-		event.preventDefault();
-		return Meteor.call('toggleFavorite', this._id, !$(event.currentTarget).hasClass('favorite-room'), function(err) {
-			if (err) {
-				return handleError(err);
-			}
-		});
 	},
 
 	'click .edit-room-title'(event) {

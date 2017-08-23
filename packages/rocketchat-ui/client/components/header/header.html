@@ -1,6 +1,8 @@
 <template name="header">
 	<header class="rc-header">
 		{{> burger}}
+		{{#if isChannel}}
 			{{> headerChannel}}
+		{{/if}}
 	</header>
 </template>
