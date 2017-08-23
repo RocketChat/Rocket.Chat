@@ -17,7 +17,7 @@ this.Commands = {
 		if (Livechat.transcript) {
 			// @TODO get visitor email
 			const user = Meteor.user();
-			const email = user.visitorEmails && user.visitorEmails.length > 0 ? user.visitorEmails[0].address : '';
+			const email = user && user.visitorEmails && user.visitorEmails.length > 0 ? user.visitorEmails[0].address : '';
 
 			swal({
 				title: t('Chat_ended'),
