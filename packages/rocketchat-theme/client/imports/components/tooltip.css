@@ -1,0 +1,55 @@
+.rc-tooltip {
+	position: relative;
+
+	&::before,
+	&::after {
+		position: absolute;
+		z-index: 10;
+		bottom: 100%;
+		left: 50%;
+
+		transition: all 0.18s ease-out 0.18s;
+		transform: translate(-50%, 10px);
+		transform-origin: top;
+		pointer-events: none;
+
+		opacity: 0;
+	}
+
+	&::after {
+		margin-bottom: 11px;
+		padding: 0.5em 1em;
+
+		content: attr(aria-label) attr(label);
+		white-space: nowrap;
+
+		color: var(--tooltip-text-color);
+		border-radius: var(--tooltip-radius);
+		background: var(--tooltip-background);
+
+		font-size: var(--tooltip-text-size);
+	}
+
+	&::before {
+
+		width: 0;
+		height: 0;
+		margin-bottom: 6px;
+
+		content: "";
+
+		border-width: 5px 5px 0;
+		border-style: solid;
+		border-color: var(--tooltip-background) transparent transparent transparent;
+	}
+
+	&:hover::before,
+	&:hover::after,
+	&:focus::before,
+	&:focus::after {
+		transform: translate(-50%, 0);
+		pointer-events: auto;
+
+		opacity: 1;
+	}
+}

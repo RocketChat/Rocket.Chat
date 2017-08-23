@@ -8,7 +8,8 @@ class API extends Restivus {
 		this.defaultFieldsToExclude = {
 			joinCode: 0,
 			$loki: 0,
-			meta: 0
+			meta: 0,
+			members: 0
 		};
 
 		this._config.defaultOptionsEndpoint = function() {
@@ -96,7 +97,7 @@ class API extends Restivus {
 						endpoints[method] = { action: endpoints[method] };
 					}
 
-					//Add a try/catch for each much
+					//Add a try/catch for each endpoint
 					const originalAction = endpoints[method].action;
 					endpoints[method].action = function() {
 						this.logger.debug(`${ this.request.method.toUpperCase() }: ${ this.request.url }`);

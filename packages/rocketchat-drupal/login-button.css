@@ -1,7 +1,9 @@
 .icon-drupal.service-icon {
 	display: inline-block;
+
 	width: 21px;
 	height: 28px;
+
 	background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABUAAAAcCAYAAACOGPReAAAABGdBTUEAALGPC/xhBQAAAAZiS0dEAP8A/wD/oL2nkwAAAcNJREFUSMetlbFrFFEQh7/dJnhpDHcx6SyiRLhLkUKDsRZB8S9IWi2Syj8iVooQ0FLBNlqJRpNO8Br7FLkoRDBooQHhNCr6WTjB48zd7d7uNI+d+c333pt9bx5kNPVGVm1WYF39rTbKhD7zr62XBVwI4MsYF4sCZ9S2uq6mMbbVmWGBx9WW+kGdCN+J+G6pY3mBo2pT/ape6IrNx2qb6mhW4Ii6qf5Ur/TQXI74pjoyCJioa3F8FgdoF0K3pib9hLfiDy9l3NVS6G/3EiyH4GbO+q9E3nJ3oKF+Vx/33Urvkj2K/EZn4JW6l/uY/MsfU9+rzUPHXCz/+jDADvC14Myhrqpf1EpB6LHgrCbqa+BzkiSXikAD/ByopcAUsFUUGLYFTKVABWiXBG0DlRTYB8ZLgo4D+ynQAuolQevAdgq8AM6rk0Vo0R7ngQ3UU+qvvNfzCOhKcE4fOu6r39TpIYHT0XsfdDon45puq7WcwFrk7f1XQvVsdPS3Wd+geMPeRN65XqJZdVf9od5Tz/TZ7t3Q7aqzg2avqnfUg2gQO+pT9WGMO+E/CF21m5H0gU8AV4GLwEmgCnwC3gEbwJMkST4elfsHJbIReGbv9uUAAAAASUVORK5CYII=);
 	background-repeat: no-repeat;
 }
