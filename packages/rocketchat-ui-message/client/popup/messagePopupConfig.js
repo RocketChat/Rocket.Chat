@@ -130,7 +130,9 @@ Template.messagePopupConfig.helpers({
 								username: 1,
 								name: 1,
 								status: 1
-							}}).fetch()
+							}}, {
+								limit: 5 - messageUsers.length
+							}).fetch().map(({username, name, status}) => ({ _id: username, username, name, status, sort: 1 }))
 						);
 					} else {
 						items.push(...Meteor.users.find({
@@ -151,15 +153,7 @@ Template.messagePopupConfig.helpers({
 							]
 						}, {
 							limit: 5 - messageUsers.length
-						}).fetch().map(function(item) {
-							return {
-								_id: item.username,
-								username: item.username,
-								name: item.name,
-								status: item.status,
-								sort: 1
-							};
-						}));
+						}).fetch().map(({username, name, status}) => ({ _id: username, username, name, status, sort: 1 })));
 					}
 				}
 				// Get users from db
