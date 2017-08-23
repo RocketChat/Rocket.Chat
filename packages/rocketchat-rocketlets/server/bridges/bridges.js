@@ -4,12 +4,12 @@ import { RocketletEnvironmentalVariableBridge } from './environmental';
 import { RocketletSettingBridge } from './settings';
 
 export class RealRocketletBridges extends RocketletBridges {
-	constructor(converters) {
+	constructor(orch) {
 		super();
 
-		this._cmdBridge = new RocketletCommandsBridge(converters);
-		this._envBridge = new RocketletEnvironmentalVariableBridge(converters);
-		this._setsBridge = new RocketletSettingBridge(converters);
+		this._cmdBridge = new RocketletCommandsBridge(orch);
+		this._envBridge = new RocketletEnvironmentalVariableBridge(orch);
+		this._setsBridge = new RocketletSettingBridge(orch);
 	}
 
 	getCommandBridge() {
