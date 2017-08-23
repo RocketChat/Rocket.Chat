@@ -2,29 +2,27 @@ Meteor.startup(() =>
 	Tracker.autorun(function() {
 		if (RocketChat.TabBar) {
 			if (RocketChat.settings && RocketChat.settings.get('Chatops_Enabled')) {
-				console.log('Adding chatops to tabbar');
 				RocketChat.TabBar.addButton({
 					groups: ['channel', 'group', 'direct'],
 					id: 'chatops-button2',
 					i18nTitle: 'rocketchat-chatops:Chatops_Title',
-					icon: 'icon-hubot',
+					icon: 'hubot',
 					template: 'chatops-dynamicUI',
 					order: 4
 				});
 
-				console.log('Adding chatops to tabbar');
-				return RocketChat.TabBar.addButton({
+				RocketChat.TabBar.addButton({
 					groups: ['channel', 'group', 'direct'],
 					id: 'chatops-button3',
 					i18nTitle: 'rocketchat-chatops:Chatops_Title',
-					icon: 'icon-inbox',
+					icon: 'inbox',
 					template: 'chatops_droneflight',
 					width: 675,
 					order: 5
 				});
 			} else {
 				RocketChat.TabBar.removeButton('chatops-button2');
-				return RocketChat.TabBar.removeButton('chatops-button3');
+				RocketChat.TabBar.removeButton('chatops-button3');
 			}
 		}
 	})
