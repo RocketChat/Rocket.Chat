@@ -1,12 +1,26 @@
 export class RocketletWebsocketReceiver {
-	constructor(restApi) {
-		this.rest = restApi;
+	constructor(orch) {
+		this.orch = orch;
 		this.streamer = new Meteor.Streamer('rocketlets');
 
-		this.streamer.on('command/added', this.onCommandAdded);
+		this.streamer.on('command/added', this.onCommandAdded.bind(this));
+		this.streamer.on('command/disabled', this.onCommandDisabled.bind(this));
+		this.streamer.on('command/updated', this.onCommandUpdated.bind(this));
 	}
 
 	onCommandAdded(command) {
-		console.log('Added:', command);
+		RocketChat.API.v1.get('commands.getOne', { command }).then((result) => {
+			RocketChat.slashCommands.commands[command] = result.command;
+		});
+	}
+
+	onCommandDisabled(command) {
+		delete RocketChat.slashCommands.commands[command];
+	}
+
+	onCommandUpdated(command) {
+		RocketChat.API.v1.get('commands.getOne', { command }).then((result) => {
+			RocketChat.slashCommands.commands[command] = result.command;
+		});
 	}
 }

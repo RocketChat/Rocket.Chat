@@ -12,8 +12,6 @@ Package.onUse(function(api) {
 
 	api.addFiles('lib/Rocketlets.js', ['client', 'server']);
 
-	api.addFiles('server/orchestrator.js', 'server');
-
 	// Storage
 	api.addFiles([
 		'server/storage/rl-model.js',
@@ -45,15 +43,23 @@ Package.onUse(function(api) {
 		'server/converters/index.js'
 	], 'server');
 
+	// Server Orchestrator
+	api.addFiles('server/orchestrator.js', 'server');
+
 	// Client communication pieces
 	api.addFiles([
-		'client/communication/websockets.js'
+		'client/communication/websockets.js',
+		'client/communication/index.js'
 	], 'client');
+
+	// Client orchestrator
+	api.addFiles('client/orchestrator.js', 'client');
 
 	api.export('Rocketlets');
 });
 
 Npm.depends({
-	'temporary-rocketlets-server': '0.1.12',
+	'busboy': '0.2.13',
+	'temporary-rocketlets-server': '0.1.16',
 	'temporary-rocketlets-ts-definition': '0.6.2'
 });

@@ -23,7 +23,7 @@ RocketChat.API.v1.addRoute('commands.list', { authRequired: true }, {
 
 		let commands = Object.values(RocketChat.slashCommands.commands);
 
-		if (query.command) {
+		if (query && query.command) {
 			commands = commands.filter((command) => command.command === query.command);
 		}
 
