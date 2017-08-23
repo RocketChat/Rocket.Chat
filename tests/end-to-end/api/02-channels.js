@@ -61,7 +61,7 @@ describe('[Channels]', function() {
 			.end(done);
 	});
 
-	it('/channels.invite', async (done) => {
+	it('/channels.invite', async(done) => {
 		const roomInfo = await getRoomInfo(channel._id);
 
 		request.post(api('channels.invite'))
@@ -142,7 +142,7 @@ describe('[Channels]', function() {
 			.end(done);
 	});
 
-	it('/channels.kick', async (done) => {
+	it('/channels.kick', async(done) => {
 		const roomInfo = await getRoomInfo(channel._id);
 
 		request.post(api('channels.kick'))
@@ -163,7 +163,7 @@ describe('[Channels]', function() {
 			.end(done);
 	});
 
-	it('/channels.invite', async (done) => {
+	it('/channels.invite', async(done) => {
 		const roomInfo = await getRoomInfo(channel._id);
 
 		request.post(api('channels.invite'))
@@ -381,7 +381,7 @@ describe('[Channels]', function() {
 			.end(done);
 	});
 
-	it('/channels.rename', async (done) => {
+	it('/channels.rename', async(done) => {
 		const roomInfo = await getRoomInfo(channel._id);
 
 		request.post(api('channels.rename'))
@@ -435,7 +435,7 @@ describe('[Channels]', function() {
 			.end(done);
 	});
 
-	it('/channels.setJoinCode', async (done) => {
+	it('/channels.setJoinCode', async(done) => {
 		const roomInfo = await getRoomInfo(channel._id);
 
 		request.post(api('channels.setJoinCode'))
@@ -456,7 +456,7 @@ describe('[Channels]', function() {
 			.end(done);
 	});
 
-	it('/channels.setReadOnly', async (done) => {
+	it('/channels.setReadOnly', async(done) => {
 		const roomInfo = await getRoomInfo(channel._id);
 
 		request.post(api('channels.setReadOnly'))
@@ -477,7 +477,7 @@ describe('[Channels]', function() {
 			.end(done);
 	});
 
-	it('/channels.leave', async (done) => {
+	it('/channels.leave', async(done) => {
 		const roomInfo = await getRoomInfo(channel._id);
 
 		request.post(api('channels.leave'))
@@ -497,7 +497,7 @@ describe('[Channels]', function() {
 			.end(done);
 	});
 
-	it('/channels.setType', async (done) => {
+	it('/channels.setType', async(done) => {
 		const roomInfo = await getRoomInfo(channel._id);
 
 		request.post(api('channels.setType'))

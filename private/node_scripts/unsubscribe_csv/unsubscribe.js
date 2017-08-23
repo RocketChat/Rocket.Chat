@@ -8,7 +8,7 @@ program.usage('[options]').option('-v, --verbose', 'Verbose', (function(v, total
 }), 0).option('-M, --mongo-db [mongo db]', 'Mongo DB', 'localhost:27017').option('-N, --db-name [db name]', 'DB Name', 'meteor').on('--help', function() {
 	console.log('  Example:');
 	console.log('');
-	console.log('    $ coffee unsubscribe.coffee');
+	console.log('    $ node unsubscribe.js');
 	return console.log('');
 }).parse(process.argv);
 
