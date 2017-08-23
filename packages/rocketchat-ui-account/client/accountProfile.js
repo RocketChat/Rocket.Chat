@@ -228,6 +228,6 @@ Template.accountProfile.events({
 			}
 			e.currentTarget.innerHTML = e.currentTarget.innerHTML.replace(' ...', '');
 			return e.currentTarget.disabled = false;
-		}));
+		});
 	}
 });
