@@ -53,7 +53,7 @@ Object.assign(FileUpload, {
 		}
 		const height = RocketChat.settings.get('Accounts_AvatarSize');
 		const width = height;
-		return RocketChatFile.gm(readStream).background('#ffffff').resize(width, `${ height }^`).gravity('Center').crop(width, height).extent(width, height).stream('jpeg').pipe(writeStream);
+		return (file => RocketChat.Info.GraphicsMagick.enabled ? file: file.alpha('remove'))(RocketChatFile.gm(readStream).background('#FFFFFF')).resize(width, `${ height }^`).gravity('Center').crop(width, height).extent(width, height).stream('jpeg').pipe(writeStream);
 	},
 
 	avatarsOnValidate(file) {
@@ -61,24 +61,21 @@ Object.assign(FileUpload, {
 			return;
 		}
 
-		const tmpFile = UploadFS.getTempFilePath(file._id);
-
-		const fut = new Future();
+		const tempFilePath = UploadFS.getTempFilePath(file._id);
 
 		const height = RocketChat.settings.get('Accounts_AvatarSize');
 		const width = height;
+		const future = new Future();
 
-		RocketChatFile.gm(tmpFile).background('#ffffff').resize(width, `${ height }^`).gravity('Center').crop(width, height).extent(width, height).setFormat('jpeg').write(tmpFile, Meteor.bindEnvironment((err) => {
+		(file => RocketChat.Info.GraphicsMagick.enabled ? file: file.alpha('remove'))(RocketChatFile.gm(tempFilePath).background('#FFFFFF')).resize(width, `${ height }^`).gravity('Center').crop(width, height).extent(width, height).setFormat('jpeg').write(tempFilePath, Meteor.bindEnvironment(err => {
 			if (err != null) {
 				console.error(err);
 			}
-
-			const size = fs.lstatSync(tmpFile).size;
+			const size = fs.lstatSync(tempFilePath).size;
 			this.getCollection().direct.update({_id: file._id}, {$set: {size}});
-			fut.return();
+			future.return();
 		}));
-
-		return fut.wait();
+		return future.wait();
 	},
 
 	uploadsTransformWrite(readStream, writeStream, fileId, file) {
@@ -183,18 +180,16 @@ Object.assign(FileUpload, {
 		if (this.handlers[handlerName] == null) {
 			console.error(`Upload handler "${ handlerName }" does not exists`);
 		}
-
 		return this.handlers[handlerName];
 	},
 
 	get(file, req, res, next) {
-		if (file.store && this.handlers && this.handlers[file.store] && this.handlers[file.store].get) {
-			this.handlers[file.store].get(file, req, res, next);
-		} else {
-			res.writeHead(404);
-			res.end();
-			return;
+		const store = this.getStoreByName(file.store);
+		if (store && store.get) {
+			return store.get(file, req, res, next);
 		}
+		res.writeHead(404);
+		res.end();
 	}
 });
 
