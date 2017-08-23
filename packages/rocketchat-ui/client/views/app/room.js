@@ -1,8 +1,8 @@
-/* globals RocketChatTabBar , fileUpload , fireGlobalEvent , mobileMessageMenu , cordova , readMessage , RoomRoles*/
+/* globals RocketChatTabBar , chatMessages, fileUpload , fireGlobalEvent , mobileMessageMenu , cordova , readMessage , RoomRoles*/
 import moment from 'moment';
 import mime from 'mime-type/with-db';
 
-
+window.chatMessages = window.chatMessages || {};
 const socialSharing = (options = {}) => window.plugins.socialsharing.share(options.message, options.subject, options.file, options.link);
 
 const isSubscribed = _id => ChatSubscription.find({ rid: _id }).count() > 0;
@@ -10,23 +10,45 @@ const isSubscribed = _id => ChatSubscription.find({ rid: _id }).count() > 0;
 const favoritesEnabled = () => RocketChat.settings.get('Favorite_Rooms');
 
 const userCanDrop = _id => !RocketChat.roomTypes.readOnly(_id, Meteor.user());
-const openProfileTab = (e, instance, data) => {
-	const roomData = Session.get(`roomData${ data.rid }`);
+
+const openProfileTab = (e, instance, username) => {
+	const roomData = Session.get(`roomData${ Session.get('openedRoom') }`);
 
 	if (RocketChat.Layout.isEmbedded()) {
-		fireGlobalEvent('click-user-card-message', { username: data.u.username });
+		fireGlobalEvent('click-user-card-message', { username });
 		e.preventDefault();
 		e.stopPropagation();
 		return;
 	}
 
 	if (['c', 'p', 'd'].includes(roomData.t)) {
-		instance.setUserDetail(data.u.username);
+		instance.setUserDetail(username);
 	}
 
 	instance.tabBar.setTemplate('membersList');
 	return instance.tabBar.open();
 };
+
+const openProfileTabOrOpenDM = (e, instance, username) => {
+	if (RocketChat.settings.get('UI_Click_Direct_Message')) {
+		return Meteor.call('createDirectMessage', username, (error, result) => {
+			if (error) {
+				if (error.isClientSafe) {
+					openProfileTab(e, instance, username);
+				} else {
+					return handleError(error);
+				}
+			}
+
+			if ((result != null ? result.rid : undefined) != null) {
+				return FlowRouter.go('direct', { username }, FlowRouter.current().queryParams);
+			}
+		});
+	} else {
+		openProfileTab(e, instance, username);
+	}
+};
+
 Template.room.helpers({
 	isTranslated() {
 		const sub = ChatSubscription.findOne({ rid: this._id }, { fields: { autoTranslate: 1, autoTranslateLanguage: 1 } });
@@ -153,14 +175,17 @@ Template.room.helpers({
 	showAnnouncement() {
 		const roomData = Session.get(`roomData${ this._id }`);
 		if (!roomData) { return false; }
-		Meteor.defer(() => {
-			if (window.chatMessages && window.chatMessages[roomData._id]) {
-				return window.chatMessages[roomData._id].resize();
-			}
-		});
 		return (roomData.announcement !== undefined) && (roomData.announcement !== '');
 	},
-
+	messageboxData() {
+		const instance = Template.instance();
+		return {
+			_id: this._id,
+			onResize: () => {
+				instance.sendToBottomIfNecessary();
+			}
+		};
+	},
 	roomAnnouncement() {
 		const roomData = Session.get(`roomData${ this._id }`);
 		if (!roomData) { return ''; }
@@ -469,31 +494,18 @@ Template.room.events({
 		if (!Meteor.userId()) {
 			return;
 		}
-		instance.tabBar.open();
-		return instance.setUserDetail(this.user.username);
+
+		openProfileTabOrOpenDM(e, instance, this.user.username);
 	},
 
 	'click .user-card-message'(e, instance) {
 		if (!Meteor.userId() || !this._arguments) {
 			return;
 		}
-		if (RocketChat.settings.get('UI_Click_Direct_Message')) {
-			return Meteor.call('createDirectMessage', this._arguments[1].u.username, (error, result) => {
-				if (error) {
-					if (error.isClientSafe) {
-						openProfileTab(e, instance, this._arguments[1]);
-					} else {
-						return handleError(error);
-					}
-				}
 
-				if ((result != null ? result.rid : undefined) != null) {
-					return FlowRouter.go('direct', { username: this._arguments[1].u.username }, FlowRouter.current().queryParams);
-				}
-			});
-		} else {
-			openProfileTab(e, instance, this._arguments[1]);
-		}
+		const username = this._arguments[1].u.username;
+
+		openProfileTabOrOpenDM(e, instance, username);
 	},
 
 	'scroll .wrapper': _.throttle(function(e, t) {
@@ -515,7 +527,7 @@ Template.room.events({
 
 	'click .new-message'() {
 		Template.instance().atBottom = true;
-		return Template.instance().find('.input-message').focus();
+		return chatMessages[RocketChat.openedRoom].input.focus();
 	},
 
 	'click .message-cog'() {
@@ -565,17 +577,9 @@ Template.room.events({
 			return;
 		}
 
-		if (RocketChat.Layout.isEmbedded()) {
-			fireGlobalEvent('click-mention-link', { username: $(e.currentTarget).data('username') });
-			e.stopPropagation();
-			e.preventDefault();
-			return;
-		}
+		const username = $(e.currentTarget).data('username');
 
-		instance.tabBar.setTemplate('membersList');
-		instance.setUserDetail($(e.currentTarget).data('username'));
-
-		return instance.tabBar.open();
+		openProfileTabOrOpenDM(e, instance, username);
 	},
 
 	'click .image-to-download'(event) {
@@ -781,16 +785,11 @@ Template.room.onDestroyed(function() {
 });
 
 Template.room.onRendered(function() {
-	window.chatMessages = window.chatMessages || {};
-	if (!window.chatMessages[Session.get('openedRoom')]) {
-		window.chatMessages[Session.get('openedRoom')] = new ChatMessages;
+	const rid = Session.get('openedRoom');
+	if (!window.chatMessages[rid]) {
+		window.chatMessages[rid] = new ChatMessages;
 	}
-	window.chatMessages[Session.get('openedRoom')].init(this.firstNode);
-
-	if (Meteor.Device.isDesktop()) {
-		setTimeout(() => $('.message-form .input-message').focus(), 100);
-	}
-
+	window.chatMessages[rid].init(this.firstNode);
 	// ScrollListener.init()
 
 	const wrapper = this.find('.wrapper');
@@ -822,6 +821,7 @@ Template.room.onRendered(function() {
 	};
 
 	template.sendToBottomIfNecessary = function() {
+
 		if ((template.atBottom === true) && (template.isAtBottom() !== true)) {
 			return template.sendToBottom();
 		}
@@ -924,4 +924,12 @@ Template.room.onRendered(function() {
 			}
 		});
 	}
+	RocketChat.callbacks.add('streamMessage', (msg) => {
+		if (rid !== msg.rid || msg.editedAt) {
+			return;
+		}
+		if (!template.isAtBottom()) {
+			newMessage.classList.remove('not');
+		}
+	});
 });

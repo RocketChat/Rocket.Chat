@@ -11,7 +11,6 @@ Package.onUse(function(api) {
 		'reactive-var',
 		'tracker',
 		'templating',
-		'less',
 		'rocketchat:lib'
 	]);
 
@@ -22,7 +21,7 @@ Package.onUse(function(api) {
 		'client/startup/trackSettingsChange.js',
 		'client/views/channelSettings.html',
 		'client/views/channelSettings.js',
-		'client/stylesheets/channel-settings.less'
+		'client/stylesheets/channel-settings.css'
 	], 'client');
 
 	api.addFiles([

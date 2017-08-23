@@ -29,7 +29,7 @@ const escapify = {
 	},
 
 	sideNavIcon() {
-		const sideNavArrow = document.querySelector('.side-nav .arrow');
+		const sideNavArrow = document.querySelector('.sidebar .arrow');
 		if (sideNavArrow && (sideNavArrow.classList.contains('top') || sideNavArrow.classList.contains('close'))) {
 			SideNav.toggleCurrent();
 			return;
