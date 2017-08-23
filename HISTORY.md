@@ -1,6 +1,10 @@
 <a name="0.58.2"></a>
 ## 0.58.2 (2017-08-23)
 
+### Bug Fixes
+
+- [#7758](https://github.com/RocketChat/Rocket.Chat/pull/7758) Fixed bug preventing validation emails to be sent
+
 
 
 <a name="0.58.1"></a>
