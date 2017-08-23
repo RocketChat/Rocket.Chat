@@ -434,7 +434,7 @@ RocketChat.settings.addGroup('General', function() {
 		});
 
 		this.add('Audio_Notifications_Value', 'chime', {
-			type: 'int',
+			type: 'string',
 			'public': true,
 			i18nDescription: 'Audio_Notification_Value_Description'
 		});
