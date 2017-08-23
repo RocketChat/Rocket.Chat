@@ -545,6 +545,16 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base {
 		return this.createWithTypeRoomIdMessageAndUser('owner-removed', roomId, message, user, extraData);
 	}
 
+	createNewLeaderWithRoomIdAndUser(roomId, user, extraData) {
+		const message = user.username;
+		return this.createWithTypeRoomIdMessageAndUser('new-leader', roomId, message, user, extraData);
+	}
+
+	createLeaderRemovedWithRoomIdAndUser(roomId, user, extraData) {
+		const message = user.username;
+		return this.createWithTypeRoomIdMessageAndUser('leader-removed', roomId, message, user, extraData);
+	}
+
 	createSubscriptionRoleAddedWithRoomIdAndUser(roomId, user, extraData) {
 		const message = user.username;
 		return this.createWithTypeRoomIdMessageAndUser('subscription-role-added', roomId, message, user, extraData);

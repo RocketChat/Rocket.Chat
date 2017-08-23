@@ -86,7 +86,7 @@ RocketChat.animeBack = function(e, callback, type) {
 	const p = ((type ? s.animation : s.transition));
 	el.one(p, function(e) {
 
-			//el.off(p);
+		//el.off(p);
 		callback(e);
 	});
 
