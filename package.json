@@ -99,7 +99,7 @@
 	},
 	"dependencies": {
 		"@google-cloud/storage": "^1.2.1",
-		"aws-sdk": "^2.100.0",
+		"aws-sdk": "^2.102.0",
 		"babel-runtime": "^6.26.0",
 		"bcrypt": "^1.0.2",
 		"codemirror": "^5.28.0",
@@ -115,7 +115,7 @@
 		"moment-timezone": "^0.5.13",
 		"photoswipe": "^4.1.2",
 		"poplib": "^0.1.7",
-		"prom-client": "^10.0.3",
+		"prom-client": "^10.0.4",
 		"semver": "^5.4.1",
 		"toastr": "^2.1.2",
 		"wolfy87-eventemitter": "^5.2.2"
