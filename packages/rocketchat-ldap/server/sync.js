@@ -85,35 +85,9 @@ getDataToSyncUserData = function getDataToSyncUserData(ldapUser, user) {
 					break;
 
 				case 'name':
-					const templateRegex = /#{(\w+)}/gi;
-					let match = templateRegex.exec(ldapField);
-					let tmpLdapField = ldapField;
+					const tmpLdapField = RocketChat.templateVarHandler(ldapField, ldapUser.object);
 
-					if (match == null) {
-						if (!ldapUser.object.hasOwnProperty(ldapField)) {
-							logger.debug(`user does not have attribute: ${ ldapField }`);
-							return;
-						}
-						tmpLdapField = ldapUser.object[ldapField];
-					} else {
-						logger.debug('template found. replacing values');
-						while (match != null) {
-							const tmplVar = match[0];
-							const tmplAttrName = match[1];
-
-							if (!ldapUser.object.hasOwnProperty(tmplAttrName)) {
-								logger.debug(`user does not have attribute: ${ tmplAttrName }`);
-								return;
-							}
-
-							const attrVal = ldapUser.object[tmplAttrName];
-							logger.debug(`replacing template var: ${ tmplVar } with value from ldap: ${ attrVal }`);
-							tmpLdapField = tmpLdapField.replace(tmplVar, attrVal);
-							match = templateRegex.exec(ldapField);
-						}
-					}
-
-					if (user.name !== tmpLdapField) {
+					if (tmpLdapField && user.name !== tmpLdapField) {
 						userData.name = tmpLdapField;
 						logger.debug(`user.name changed to: ${ tmpLdapField }`);
 					}
