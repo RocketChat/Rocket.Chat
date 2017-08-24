@@ -1,4 +1,4 @@
-/* globals renderEmoji renderMessageBody*/
+/* globals renderEmoji renderMessageBody popover */
 import moment from 'moment';
 
 Template.message.helpers({
@@ -264,8 +264,15 @@ Template.message.helpers({
 		if (subscription == null) {
 			return 'hidden';
 		}
+	},
+	messageActions() {
+		return RocketChat.MessageAction.getButtons(Template.currentData(), 'message', 'message');
+	},
+	messageActionsMenu() {
+		return RocketChat.MessageAction.getButtons(Template.currentData(), 'message', 'menu');
 	}
 });
+
 
 Template.message.onCreated(function() {
 	let msg = Template.currentData();
