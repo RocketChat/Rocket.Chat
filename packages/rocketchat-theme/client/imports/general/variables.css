@@ -130,6 +130,7 @@
 	--sidebar-header-padding: 24px;
 	--sidebar-footer-height: 70px;
 	--sidebar-footer-padding: var(--sidebar-header-padding);
+	--sidebar-small-width: 90%;
 
 	/*
 	* Sidebar flex
