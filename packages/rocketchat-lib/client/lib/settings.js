@@ -28,20 +28,20 @@ RocketChat.settings.init = function() {
 		added(record) {
 			Meteor.settings[record._id] = record.value;
 			RocketChat.settings.dict.set(record._id, record.value);
-			return RocketChat.settings.load(record._id, record.value, initialLoad);
+			RocketChat.settings.load(record._id, record.value, initialLoad);
 		},
 		changed(record) {
 			Meteor.settings[record._id] = record.value;
 			RocketChat.settings.dict.set(record._id, record.value);
-			return RocketChat.settings.load(record._id, record.value, initialLoad);
+			RocketChat.settings.load(record._id, record.value, initialLoad);
 		},
 		removed(record) {
 			delete Meteor.settings[record._id];
 			RocketChat.settings.dict.set(record._id, null);
-			return RocketChat.settings.load(record._id, null, initialLoad);
+			RocketChat.settings.load(record._id, null, initialLoad);
 		}
 	});
-	return initialLoad = false;
+	initialLoad = false;
 };
 
 RocketChat.settings.init();

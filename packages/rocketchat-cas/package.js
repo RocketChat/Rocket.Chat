@@ -18,12 +18,11 @@ Package.onUse(function(api) {
 	api.use('ecmascript');
 
 	// Server files
-	api.add_files('cas_rocketchat.js', 'server');
-	api.add_files('cas_server.js', 'server');
+	api.add_files('server/cas_rocketchat.js', 'server');
+	api.add_files('server/cas_server.js', 'server');
 
 	// Client files
-	api.add_files('cas_client.js', 'client');
-
+	api.add_files('client/cas_client.js', 'client');
 });
 
 Npm.depends({

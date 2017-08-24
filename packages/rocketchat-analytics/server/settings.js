@@ -18,6 +18,32 @@ RocketChat.settings.addGroup('Analytics', function addSettings() {
 			i18nLabel: 'Client_ID',
 			enableQuery
 		});
+		this.add('PiwikAdditionalTrackers', '', {
+			type: 'string',
+			multiline: true,
+			public: true,
+			i18nLabel: 'PiwikAdditionalTrackers',
+			enableQuery
+		});
+		this.add('PiwikAnalytics_prependDomain', false, {
+			type: 'boolean',
+			public: true,
+			i18nLabel: 'PiwikAnalytics_prependDomain',
+			enableQuery
+		});
+		this.add('PiwikAnalytics_cookieDomain', false, {
+			type: 'boolean',
+			public: true,
+			i18nLabel: 'PiwikAnalytics_cookieDomain',
+			enableQuery
+		});
+		this.add('PiwikAnalytics_domains', '', {
+			type: 'string',
+			multiline: true,
+			public: true,
+			i18nLabel: 'PiwikAnalytics_domains',
+			enableQuery
+		});
 	});
 
 	this.section('Analytics_Google', function() {
