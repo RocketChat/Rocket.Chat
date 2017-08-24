@@ -1,12 +1,13 @@
 export const automaticChannelsHandler ={};
 automaticChannelsHandler.categories = [];
 
-function removeUserFromOtherAutomaticChannels(user, categories) {
-	const channelNames = categories.map(function(x) { return x.getChannelName(user); });
-
+function removeUserFromOtherAutomaticChannels(user, currentChannelNames) {
+	if (currentChannelNames.length === 0) {
+		return;
+	}
 	const userSubscriptions = RocketChat.models.Subscriptions.findByTypeAndUserId('c', user.user._id).fetch();
 	userSubscriptions.forEach((arrayItem) => {
-		if (!channelNames.includes(arrayItem.name) && arrayItem._room.automatic) {
+		if (!currentChannelNames.includes(arrayItem.name) && arrayItem._room.automatic) {
 		// Remove the user from this other channel.
 			const room = RocketChat.models.Rooms.findOneById(arrayItem._room._id);
 			RocketChat.removeUserFromRoom(room._id, user.user);
@@ -43,6 +44,7 @@ Accounts.onLogin(function(user) {
 	if (!user.user._id || !user.user.username) {
 		return;
 	}
+	const currentChannelNames=[];
 	automaticChannelsHandler.categories.forEach((arrayItem) => {
 		if (RocketChat.settings.get(arrayItem.enable) !== true) {
 			return;
@@ -50,6 +52,7 @@ Accounts.onLogin(function(user) {
 
 		const channelName = arrayItem.getChannelName(user);
 		if (channelName !== null) {
+			currentChannelNames.push(channelName);
 			if (user.user.ignoredAutomaticChannels) {
 				if (user.user.ignoredAutomaticChannels.includes(channelName)) {
 					return;
@@ -73,5 +76,5 @@ Accounts.onLogin(function(user) {
 		}
 	});
 	// remove user from previously added automatic channels
-	removeUserFromOtherAutomaticChannels(user, automaticChannelsHandler.categories);
+	removeUserFromOtherAutomaticChannels(user, currentChannelNames);
 });
