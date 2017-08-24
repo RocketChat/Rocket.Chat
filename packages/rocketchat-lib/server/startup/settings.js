@@ -48,6 +48,10 @@ RocketChat.settings.addGroup('Accounts', function() {
 		type: 'boolean',
 		'public': true
 	});
+	this.add('Accounts_CustomFieldsToShowInUserInfo', '', {
+		type: 'string',
+		public: true
+	});
 	this.add('Accounts_LoginExpiration', 90, {
 		type: 'int',
 		'public': true
@@ -69,6 +73,10 @@ RocketChat.settings.addGroup('Accounts', function() {
 	this.add('Accounts_ForgetUserSessionOnWindowClose', false, {
 		type: 'boolean',
 		'public': true
+	});
+	this.add('Accounts_SearchFields', 'username, name, emails.address', {
+		type: 'string',
+		public: true
 	});
 
 	this.section('Registration', function() {
@@ -435,6 +443,27 @@ RocketChat.settings.addGroup('General', function() {
 			type: 'int',
 			'public': true,
 			i18nDescription: 'Desktop_Notification_Durations_Description'
+		});
+
+		this.add('Audio_Notifications_Value', 'chime', {
+			type: 'string',
+			'public': true,
+			i18nDescription: 'Audio_Notification_Value_Description'
+		});
+
+		this.add('Audio_Notifications_Default_Alert', 'mentions', {
+			type: 'select',
+			values: [{
+				key: 'all',
+				i18nLabel: 'All_messages'
+			}, {
+				key: 'mentions',
+				i18nLabel: 'Mentions'
+			}, {
+				key: 'nothing',
+				i18nLabel: 'Nothing'
+			}],
+			public: true
 		});
 
 		this.add('Desktop_Notifications_Default_Alert', 'mentions', {
