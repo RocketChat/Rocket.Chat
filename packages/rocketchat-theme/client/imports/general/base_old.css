@@ -2902,8 +2902,6 @@
 	min-height: 40px;
 	padding: 8px 20px 4px 70px;
 
-	transition: background 0.3s;
-
 	line-height: 20px;
 
 	&.highlight {
