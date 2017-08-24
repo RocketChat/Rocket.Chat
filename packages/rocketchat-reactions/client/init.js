@@ -38,7 +38,7 @@ Template.room.events({
 Meteor.startup(function() {
 	RocketChat.MessageAction.addButton({
 		id: 'reaction-message',
-		icon: 'reaction',
+		icon: 'add-reaction',
 		label: 'Reactions',
 		context: [
 			'message',

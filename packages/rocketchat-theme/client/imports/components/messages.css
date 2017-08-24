@@ -1,23 +1,23 @@
 .message-actions {
 	position: absolute;
-	top: 6px;
+	top: 2px;
 	right: 2px;
 
 	display: none;
 
 	color: #6c727a;
 
+	font-size: 1rem;
+
 	&__buttons {
-		margin-right: 0.5rem;
+		display: flex;
 	}
 
-	&__button-icon {
-		width: 16px;
-		height: 16px;
-		stroke: currentColor;
+	&__button {
+		margin: 0 0.2rem;
 
 		&:hover {
-			stroke: var(--color-button-primary);
+			color: var(--color-button-primary);
 		}
 	}
 
@@ -32,10 +32,6 @@
 	}
 
 	&__menu {
-		display: block;
-
-		width: 3px;
-		height: 12px;
 		fill: currentColor;
 	}
 }
@@ -47,6 +43,12 @@
 
 		& .message-actions {
 			display: flex;
+		}
+	}
+
+	&.active {
+		& .message-actions__label {
+			color: var(--color-button-primary);
 		}
 	}
 
