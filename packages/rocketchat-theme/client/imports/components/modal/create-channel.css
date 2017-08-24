@@ -32,6 +32,10 @@
 	& .rc-switch {
 		width: 50%;
 	}
+
+	& .rc-input__icon-svg {
+		font-size: 1.2rem;
+	}
 }
 
 @keyframes fadeIn {
