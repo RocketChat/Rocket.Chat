@@ -89,59 +89,14 @@
 	&__icon {
 		display: flex;
 
-		width: 16px;
-		margin: 0.25rem 0.25rem 0.25rem 0;
+		width: 20px;
+		margin: 0.25rem 0 0.25rem;
 		align-items: center;
 		justify-content: center;
 	}
 
 	&__icon-element {
-		stroke: currentColor;
-
-		&--customize {
-			width: 14px;
-			height: 14px;
-		}
-
-		&--comment-alt {
-			width: 16px;
-			height: 14px;
-		}
-
-		&--user {
-			width: 18px;
-			height: 17px;
-		}
-
-		&--sign-out {
-			width: 14px;
-			height: 14px;
-		}
-
-		&--video {
-			width: 17px;
-			height: 13px;
-		}
-
-		&--audio {
-			width: 16px;
-			height: 14px;
-		}
-
-		&--computer {
-			width: 16px;
-			height: 14px;
-		}
-
-		&--map-pin {
-			width: 12px;
-			height: 16px;
-		}
-
-		&--livechat {
-			width: 15px;
-			height: 15px;
-		}
+		font-size: 18px;
 	}
 
 	&__item-text {

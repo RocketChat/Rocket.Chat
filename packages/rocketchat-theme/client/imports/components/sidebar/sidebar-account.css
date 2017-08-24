@@ -102,7 +102,7 @@
 
 		position: relative;
 
-		padding: 10px;
+		padding: 10px 0 10px 10px;
 
 		cursor: pointer;
 
@@ -112,10 +112,9 @@
 	}
 
 	&-menu {
-		width: 3px;
-		height: 16px;
-
 		transition: fill 0.2s;
+
+		font-size: 1.375rem;
 
 		fill: var(--sidebar-account-username-color);
 	}

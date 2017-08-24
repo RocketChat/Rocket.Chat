@@ -85,7 +85,14 @@ const markdownButtons = [
 		icon: 'bold',
 		pattern: '*{{text}}*',
 		command: 'b',
-		condition: () => RocketChat.Markdown
+		condition: () => RocketChat.Markdown && RocketChat.settings.get('Markdown_Parser') === 'original'
+	},
+	{
+		label: 'bold',
+		icon: 'bold',
+		pattern: '**{{text}}**',
+		command: 'b',
+		condition: () => RocketChat.Markdown && RocketChat.settings.get('Markdown_Parser') === 'marked'
 	},
 	{
 		label: 'italic',
@@ -98,7 +105,13 @@ const markdownButtons = [
 		label: 'strike',
 		icon: 'strike',
 		pattern: '~{{text}}~',
-		condition: () => RocketChat.Markdown
+		condition: () => RocketChat.Markdown && RocketChat.settings.get('Markdown_Parser') === 'original'
+	},
+	{
+		label: 'strike',
+		icon: 'strike',
+		pattern: '~~{{text}}~~',
+		condition: () => RocketChat.Markdown && RocketChat.settings.get('Markdown_Parser') === 'marked'
 	},
 	{
 		label: 'inline_code',
@@ -110,7 +123,7 @@ const markdownButtons = [
 		label: 'multi_line',
 		icon: 'multi-line',
 		pattern: '```\n{{text}}\n``` ',
-		condition: () => RocketChat.MarkdownCode
+		condition: () => RocketChat.Markdown
 	},
 	{
 		label: katexSyntax,
@@ -397,7 +410,7 @@ Template.messageBox.events({
 	},
 	'keydown .js-input-message': firefoxPasteUpload(function(event, t) {
 		if ((navigator.platform.indexOf('Mac') !== -1 && event.metaKey) || (navigator.platform.indexOf('Mac') === -1 && event.ctrlKey)) {
-			const action = markdownButtons.find(action => action.command === event.key.toLowerCase());
+			const action = markdownButtons.find(action => action.command === event.key.toLowerCase() && (!action.condition || action.condition()));
 			if (action) {
 				applyMd.apply(action, [event, t]);
 			}
