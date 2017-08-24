@@ -16,16 +16,6 @@ Template.pushNotificationsFlexTab.helpers({
 	audioAssets() {
 		return RocketChat.CustomSounds && RocketChat.CustomSounds.getList && RocketChat.CustomSounds.getList() || [];
 	},
-	audioNotification() {
-		const sub = ChatSubscription.findOne({
-			rid: Session.get('openedRoom')
-		}, {
-			fields: {
-				audioNotification: 1
-			}
-		});
-		return sub ? sub.audioNotification || '' : '';
-	},
 	disableNotifications() {
 		const sub = ChatSubscription.findOne({
 			rid: Session.get('openedRoom')
@@ -45,6 +35,16 @@ Template.pushNotificationsFlexTab.helpers({
 			}
 		});
 		return sub ? sub.hideUnreadStatus || false : false;
+	},
+	audioNotifications() {
+		const sub = ChatSubscription.findOne({
+			rid: Session.get('openedRoom')
+		}, {
+			fields: {
+				audioNotifications: 1
+			}
+		});
+		return sub ? sub.audioNotifications || 'default' : 'default';
 	},
 	desktopNotifications() {
 		const sub = ChatSubscription.findOne({
@@ -114,27 +114,6 @@ Template.pushNotificationsFlexTab.helpers({
 		}
 		return t('Use_account_preference');
 	},
-	audioValue() {
-		const sub = ChatSubscription.findOne({
-			rid: Session.get('openedRoom')
-		}, {
-			fields: {
-				audioNotification: 1
-			}
-		});
-		const audio = sub ? sub.audioNotification || '': '';
-		if (audio === 'none') {
-			return t('None');
-		} else if (audio === '') {
-			return t('Use_account_preference');
-		} else if (audio === 'chime') {
-			return 'Chime';
-		} else {
-			const audioAssets = RocketChat.CustomSounds && RocketChat.CustomSounds.getList && RocketChat.CustomSounds.getList() || [];
-			const asset = _.findWhere(audioAssets, { _id: audio });
-			return asset && asset.name;
-		}
-	},
 	subValue(field) {
 		const sub = ChatSubscription.findOne({
 			rid: Session.get('openedRoom')
@@ -159,6 +138,20 @@ Template.pushNotificationsFlexTab.helpers({
 			}
 		}
 	},
+	audioNotificationValue() {
+		const sub = ChatSubscription.findOne({
+			rid: Session.get('openedRoom')
+		}, {
+			fields: {
+				audioNotificationValue: 1
+			}
+		});
+		const audio = sub ? sub.audioNotificationValue || 'default' : 'default';
+		if (audio === 'default') {
+			return t('Use_account_preference');
+		}
+		return audio;
+	},
 	desktopNotificationDuration() {
 		const sub = ChatSubscription.findOne({
 			rid: Session.get('openedRoom')
@@ -178,6 +171,13 @@ Template.pushNotificationsFlexTab.helpers({
 	},
 	emailVerified() {
 		return Meteor.user().emails && Meteor.user().emails[0] && Meteor.user().emails[0].verified;
+	},
+	defaultAudioNotification() {
+		let preference = getUserPreference('audioNotifications');
+		if (preference === 'default' || preference == null) {
+			preference = RocketChat.settings.get('Audio_Notifications_Default_Alert');
+		}
+		return notificationLabels[preference];
 	},
 	defaultDesktopNotification() {
 		let preference = getUserPreference('desktopNotifications');
@@ -200,7 +200,8 @@ Template.pushNotificationsFlexTab.onCreated(function() {
 
 	this.validateSetting = (field) => {
 		switch (field) {
-			case 'audioNotification':
+			case 'audioNotificationValue':
+				return true;
 			case 'hideUnreadStatus':
 			case 'disableNotifications':
 				return true;
@@ -218,9 +219,6 @@ Template.pushNotificationsFlexTab.onCreated(function() {
 		const field = this.editing.get();
 		let value;
 		switch (field) {
-			case 'audioNotification':
-				value = this.$(`select[name=${ field }]`).val();
-				break;
 			case 'hideUnreadStatus':
 			case 'disableNotifications':
 				value = this.$(`input[name=${ field }]:checked`).val() ? '1' : '0';
@@ -229,22 +227,26 @@ Template.pushNotificationsFlexTab.onCreated(function() {
 				value = this.$(`input[name=${ field }]:checked`).val();
 				break;
 		}
+		const soundVal = $('select').val();
 		const duration = $('input[name=duration]').val();
 		if (this.validateSetting(field)) {
 			Meteor.call('saveNotificationSettings', Session.get('openedRoom'), field, value, (err/*, result*/) => {
 				if (err) {
 					return handleError(err);
-				}
-				if (duration !== undefined) {
+				} else if (duration !== undefined) {
 					Meteor.call('saveDesktopNotificationDuration', Session.get('openedRoom'), duration, (err) => {
 						if (err) {
 							return handleError(err);
 						}
-						this.editing.set();
 					});
-				} else {
-					this.editing.set();
+				} else if (soundVal!==undefined) {
+					Meteor.call('saveAudioNotificationValue', Session.get('openedRoom'), soundVal, (err) => {
+						if (err) {
+							return handleError(err);
+						}
+					});
 				}
+				this.editing.set();
 			});
 		}
 	};
@@ -280,7 +282,7 @@ Template.pushNotificationsFlexTab.events({
 		let audio = $(e.currentTarget).data('play');
 		const user = Meteor.user();
 
-		if (!audio || audio === 'none') {
+		if (audio === 'Use account preference' || audio === 'none') {
 			audio = user && user.settings && user.settings.preferences && user.settings.preferences.newMessageNotification || 'chime';
 		}
 
@@ -295,12 +297,15 @@ Template.pushNotificationsFlexTab.events({
 		}
 	},
 
-	'change select[name=audioNotification]'(e) {
+	'change select[name=audioNotificationValue]'(e) {
 		e.preventDefault();
 
-		const audio = $(e.currentTarget).val();
+		let audio = $(e.currentTarget).val();
 		const user = Meteor.user();
 
+		if (audio==='') {
+			audio = user && user.settings && user.settings.preferences && user.settings.preferences.newMessageNotification || 'chime';
+		}
 		if (audio && audio !== 'none') {
 			const audioVolume = user && user.settings && user.settings.preferences && user.settings.preferences.notificationsSoundVolume || 100;
 			const $audio = $(`audio#${ audio }`);
