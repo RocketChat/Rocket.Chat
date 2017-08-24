@@ -96,6 +96,10 @@ RocketChat.MessageAction = new class {
 	closePopover() {
 		popover.close();
 	}
+
+	hideDropDown() {
+		$('.message-dropdown:visible').hide();
+	}
 };
 
 Meteor.startup(function() {

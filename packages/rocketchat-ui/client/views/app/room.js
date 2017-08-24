@@ -12,7 +12,7 @@ const favoritesEnabled = () => RocketChat.settings.get('Favorite_Rooms');
 const userCanDrop = _id => !RocketChat.roomTypes.readOnly(_id, Meteor.user());
 
 const openProfileTab = (e, instance, username) => {
-	const roomData = Session.get(`roomData${Session.get('openedRoom')}`);
+	const roomData = Session.get(`roomData${ Session.get('openedRoom') }`);
 
 	if (RocketChat.Layout.isEmbedded()) {
 		fireGlobalEvent('click-user-card-message', { username });
@@ -77,7 +77,7 @@ Template.room.helpers({
 
 	messagesHistory() {
 		const hideMessagesOfType = [];
-		RocketChat.settings.collection.find({ _id: /Message_HideType_.+/ }).forEach(function (record) {
+		RocketChat.settings.collection.find({ _id: /Message_HideType_.+/ }).forEach(function(record) {
 			let types;
 			const type = record._id.replace('Message_HideType_', '');
 			switch (type) {
@@ -87,7 +87,7 @@ Template.room.helpers({
 				default:
 					types = [type];
 			}
-			return types.forEach(function (type) {
+			return types.forEach(function(type) {
 				const index = hideMessagesOfType.indexOf(type);
 
 				if ((record.value === true) && (index === -1)) {
@@ -128,7 +128,7 @@ Template.room.helpers({
 	},
 
 	windowId() {
-		return `chat-window-${this._id}`;
+		return `chat-window-${ this._id }`;
 	},
 
 	uploading() {
@@ -153,27 +153,27 @@ Template.room.helpers({
 	},
 
 	roomName() {
-		const roomData = Session.get(`roomData${this._id}`);
+		const roomData = Session.get(`roomData${ this._id }`);
 		if (!roomData) { return ''; }
 
 		return RocketChat.roomTypes.getRoomName(roomData.t, roomData);
 	},
 
 	secondaryName() {
-		const roomData = Session.get(`roomData${this._id}`);
+		const roomData = Session.get(`roomData${ this._id }`);
 		if (!roomData) { return ''; }
 
 		return RocketChat.roomTypes.getSecondaryRoomName(roomData.t, roomData);
 	},
 
 	roomTopic() {
-		const roomData = Session.get(`roomData${this._id}`);
+		const roomData = Session.get(`roomData${ this._id }`);
 		if (!roomData) { return ''; }
 		return roomData.topic;
 	},
 
 	showAnnouncement() {
-		const roomData = Session.get(`roomData${this._id}`);
+		const roomData = Session.get(`roomData${ this._id }`);
 		if (!roomData) { return false; }
 		return (roomData.announcement !== undefined) && (roomData.announcement !== '');
 	},
@@ -187,20 +187,20 @@ Template.room.helpers({
 		};
 	},
 	roomAnnouncement() {
-		const roomData = Session.get(`roomData${this._id}`);
+		const roomData = Session.get(`roomData${ this._id }`);
 		if (!roomData) { return ''; }
 		return roomData.announcement;
 	},
 
 	roomIcon() {
-		const roomData = Session.get(`roomData${this._id}`);
+		const roomData = Session.get(`roomData${ this._id }`);
 		if (!(roomData != null ? roomData.t : undefined)) { return ''; }
 
 		return RocketChat.roomTypes.getIcon(roomData != null ? roomData.t : undefined);
 	},
 
 	userStatus() {
-		const roomData = Session.get(`roomData${this._id}`);
+		const roomData = Session.get(`roomData${ this._id }`);
 		return RocketChat.roomTypes.getUserStatus(roomData.t, this._id) || 'offline';
 	},
 
@@ -277,7 +277,7 @@ Template.room.helpers({
 	},
 
 	canPreview() {
-		const room = Session.get(`roomData${this._id}`);
+		const room = Session.get(`roomData${ this._id }`);
 		if (room && room.t !== 'c') {
 			return true;
 		}
@@ -453,7 +453,7 @@ Template.room.events({
 
 	'click .upload-progress-text > button'(e) {
 		e.preventDefault();
-		return Session.set(`uploading-cancel-${this.id}`, true);
+		return Session.set(`uploading-cancel-${ this.id }`, true);
 	},
 
 	'click .unread-bar > button.mark-read'() {
@@ -476,7 +476,7 @@ Template.room.events({
 	'click .toggle-favorite'(event) {
 		event.stopPropagation();
 		event.preventDefault();
-		return Meteor.call('toggleFavorite', this._id, !$('i', event.currentTarget).hasClass('favorite-room'), function (err) {
+		return Meteor.call('toggleFavorite', this._id, !$('i', event.currentTarget).hasClass('favorite-room'), function(err) {
 			if (err) {
 				return handleError(err);
 			}
@@ -591,11 +591,11 @@ Template.room.events({
 		const id = this._arguments[1]._id;
 
 		if ((this._arguments[1] != null ? this._arguments[1].attachments : undefined) != null) {
-			ChatMessage.update({ _id: id }, { $set: { [`attachments.${index}.collapsed`]: !collapsed } });
+			ChatMessage.update({ _id: id }, { $set: { [`attachments.${ index }.collapsed`]: !collapsed } });
 		}
 
 		if ((this._arguments[1] != null ? this._arguments[1].urls : undefined) != null) {
-			return ChatMessage.update({ _id: id }, { $set: { [`urls.${index}.collapsed`]: !collapsed } });
+			return ChatMessage.update({ _id: id }, { $set: { [`urls.${ index }.collapsed`]: !collapsed } });
 		}
 	},
 
@@ -669,14 +669,14 @@ Template.room.events({
 			const selectedMessages = $('.messages-box .message.selected').map((i, message) => message.id);
 			const removeClass = _.difference(selectedMessages, template.getSelectedMessages());
 			const addClass = _.difference(template.getSelectedMessages(), selectedMessages);
-			removeClass.forEach(message => $(`.messages-box #${message}`).removeClass('selected'));
-			addClass.forEach(message => $(`.messages-box #${message}`).addClass('selected'));
+			removeClass.forEach(message => $(`.messages-box #${ message }`).removeClass('selected'));
+			addClass.forEach(message => $(`.messages-box #${ message }`).addClass('selected'));
 		}
 	}
 });
 
 
-Template.room.onCreated(function () {
+Template.room.onCreated(function() {
 	// this.scrollOnBottom = true
 	// this.typing = new msgTyping this.data._id
 	this.showUsersOffline = new ReactiveVar(false);
@@ -747,7 +747,7 @@ Template.room.onCreated(function () {
 		return this.userDetail.set(null);
 	};
 
-	Meteor.call('getRoomRoles', this.data._id, function (error, results) {
+	Meteor.call('getRoomRoles', this.data._id, function(error, results) {
 		if (error) {
 			return handleError(error);
 		}
@@ -779,7 +779,7 @@ Template.room.onCreated(function () {
 	});
 }); // Update message to re-render DOM
 
-Template.room.onDestroyed(function () {
+Template.room.onDestroyed(function() {
 	return window.removeEventListener('resize', this.onWindowResize);
 });
 
@@ -799,7 +799,7 @@ Template.room.onRendered(function() {
 
 	const messageBox = $('.messages-box');
 
-	template.isAtBottom = function (scrollThreshold) {
+	template.isAtBottom = function(scrollThreshold) {
 		if ((scrollThreshold == null)) { scrollThreshold = 0; }
 		if ((wrapper.scrollTop + scrollThreshold) >= (wrapper.scrollHeight - wrapper.clientHeight)) {
 			newMessage.className = 'new-message background-primary-action-color color-content-background-color not';
@@ -808,18 +808,18 @@ Template.room.onRendered(function() {
 		return false;
 	};
 
-	template.sendToBottom = function () {
+	template.sendToBottom = function() {
 		wrapper.scrollTop = wrapper.scrollHeight - wrapper.clientHeight;
 		return newMessage.className = 'new-message background-primary-action-color color-content-background-color not';
 	};
 
-	template.checkIfScrollIsAtBottom = function () {
+	template.checkIfScrollIsAtBottom = function() {
 		template.atBottom = template.isAtBottom(100);
 		readMessage.enable();
 		return readMessage.read();
 	};
 
-	template.sendToBottomIfNecessary = function () {
+	template.sendToBottomIfNecessary = function() {
 
 		if ((template.atBottom === true) && (template.isAtBottom() !== true)) {
 			return template.sendToBottom();
@@ -841,29 +841,29 @@ Template.room.onRendered(function() {
 
 	template.onWindowResize = () =>
 		Meteor.defer(() => template.sendToBottomIfNecessaryDebounced())
-		;
+	;
 
 	window.addEventListener('resize', template.onWindowResize);
 
-	wrapper.addEventListener('mousewheel', function () {
+	wrapper.addEventListener('mousewheel', function() {
 		template.atBottom = false;
 		return Meteor.defer(() => template.checkIfScrollIsAtBottom());
 	});
 
-	wrapper.addEventListener('wheel', function () {
+	wrapper.addEventListener('wheel', function() {
 		template.atBottom = false;
 		return Meteor.defer(() => template.checkIfScrollIsAtBottom());
 	});
 
 	wrapper.addEventListener('touchstart', () => template.atBottom = false);
 
-	wrapper.addEventListener('touchend', function () {
+	wrapper.addEventListener('touchend', function() {
 		Meteor.defer(() => template.checkIfScrollIsAtBottom());
 		Meteor.setTimeout(() => template.checkIfScrollIsAtBottom(), 1000);
 		return Meteor.setTimeout(() => template.checkIfScrollIsAtBottom(), 2000);
 	});
 
-	wrapper.addEventListener('scroll', function () {
+	wrapper.addEventListener('scroll', function() {
 		template.atBottom = false;
 		return Meteor.defer(() => template.checkIfScrollIsAtBottom());
 	});
@@ -875,7 +875,7 @@ Template.room.onRendered(function() {
 
 	const rtl = $('html').hasClass('rtl');
 
-	const updateUnreadCount = _.throttle(function () {
+	const updateUnreadCount = _.throttle(function() {
 		let lastInvisibleMessageOnScreen;
 		const messageBoxOffset = messageBox.offset();
 
@@ -897,7 +897,7 @@ Template.room.onRendered(function() {
 		}
 	}, 300);
 
-	readMessage.onRead(function (rid) {
+	readMessage.onRead(function(rid) {
 		if (rid === template.data._id) {
 			return template.unreadCount.set(0);
 		}
