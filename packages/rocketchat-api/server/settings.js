@@ -8,5 +8,7 @@ RocketChat.settings.addGroup('General', function() {
 		this.add('API_Shield_Types', '*', { type: 'string', public: false, enableQuery: { _id: 'API_Enable_Shields', value: true } });
 		this.add('API_Enable_CORS', false, { type: 'boolean', public: false });
 		this.add('API_CORS_Origin', '*', { type: 'string', public: false, enableQuery: { _id: 'API_Enable_CORS', value: true } });
+		this.add('API_Enable_Obsolete_Cron', false, { type: 'boolean', public: false, i18nDescription: 'API_Enable_Obsolete_Cron_Description' });
+		this.add('API_Obsolete_Cron', 'every 3 hours', { type: 'string', public: false, enableQuery: { _id: 'API_Enable_Obsolete_Cron', value: true }, i18nDescription: 'API_Obsolete_Cron_Description' });
 	});
 });
