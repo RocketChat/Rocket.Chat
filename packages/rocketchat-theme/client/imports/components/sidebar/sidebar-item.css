@@ -55,50 +55,8 @@
 
 	&__icon {
 		margin: 0 auto;
-		stroke: currentColor;
-
-		&--hashtag {
-			width: 14px;
-			height: 14px;
-		}
-
-		&--lock {
-			width: 12px;
-			height: 18px;
-		}
-
-		&--customize {
-			width: 14px;
-			height: 14px;
-		}
-
-		&--user {
-			width: 18px;
-			height: 17px;
-		}
-
-		&--user-rounded {
-			width: 18px;
-			height: 18px;
-		}
-
-		&--comment-alt {
-			width: 16px;
-			height: 14px;
-			fill: currentColor;
-		}
-
-		&--livechat {
-			width: 15px;
-			height: 15px;
-			fill: currentColor;
-		}
-
-		&--queue {
-			width: 15px;
-			height: 15px;
-			fill: currentColor;
-		}
+		font-size: 1.25rem;
+		fill: currentColor;
 	}
 
 	&__user-thumb {
