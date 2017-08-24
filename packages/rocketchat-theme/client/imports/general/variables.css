@@ -41,6 +41,7 @@
 	--status-busy: var(--color-error);
 	--status-invisible: var(--color-gray-medium);
 	--status-invisible-sidebar: var(--color-darkest);
+	--default-padding: 1rem;
 	--default-small-padding: 1rem;
 
 	/*
