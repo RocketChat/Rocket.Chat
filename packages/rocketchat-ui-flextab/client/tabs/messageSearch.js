@@ -9,6 +9,9 @@ Meteor.startup(function() {
 		action() {
 			const message = this._arguments[1];
 			RocketChat.MessageAction.hideDropDown();
+			if (window.matchMedia('(max-width: 500px)').matches) {
+				Template.instance().tabBar.close();
+			}
 			return RoomHistoryManager.getSurroundingMessages(message, 50);
 		},
 		order: 100
@@ -90,7 +93,7 @@ Template.messageSearch.events({
 		return t.search();
 	},
 
-	'scroll .content': _.throttle(function(e, t) {
+	'scroll .js-list': _.throttle(function(e, t) {
 		if (e.target.scrollTop >= (e.target.scrollHeight - e.target.clientHeight)) {
 			t.limit.set(t.limit.get() + 20);
 			return t.search();

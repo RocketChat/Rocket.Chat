@@ -1,8 +1,8 @@
-/* globals RocketChatTabBar , fileUpload , fireGlobalEvent , mobileMessageMenu , cordova , readMessage , RoomRoles*/
+/* globals RocketChatTabBar , chatMessages, fileUpload , fireGlobalEvent , mobileMessageMenu , cordova , readMessage , RoomRoles*/
 import moment from 'moment';
 import mime from 'mime-type/with-db';
 
-
+window.chatMessages = window.chatMessages || {};
 const socialSharing = (options = {}) => window.plugins.socialsharing.share(options.message, options.subject, options.file, options.link);
 
 const isSubscribed = _id => ChatSubscription.find({ rid: _id }).count() > 0;
@@ -10,6 +10,44 @@ const isSubscribed = _id => ChatSubscription.find({ rid: _id }).count() > 0;
 const favoritesEnabled = () => RocketChat.settings.get('Favorite_Rooms');
 
 const userCanDrop = _id => !RocketChat.roomTypes.readOnly(_id, Meteor.user());
+
+const openProfileTab = (e, instance, username) => {
+	const roomData = Session.get(`roomData${ Session.get('openedRoom') }`);
+
+	if (RocketChat.Layout.isEmbedded()) {
+		fireGlobalEvent('click-user-card-message', { username });
+		e.preventDefault();
+		e.stopPropagation();
+		return;
+	}
+
+	if (['c', 'p', 'd'].includes(roomData.t)) {
+		instance.setUserDetail(username);
+	}
+
+	instance.tabBar.setTemplate('membersList');
+	return instance.tabBar.open();
+};
+
+const openProfileTabOrOpenDM = (e, instance, username) => {
+	if (RocketChat.settings.get('UI_Click_Direct_Message')) {
+		return Meteor.call('createDirectMessage', username, (error, result) => {
+			if (error) {
+				if (error.isClientSafe) {
+					openProfileTab(e, instance, username);
+				} else {
+					return handleError(error);
+				}
+			}
+
+			if ((result != null ? result.rid : undefined) != null) {
+				return FlowRouter.go('direct', { username }, FlowRouter.current().queryParams);
+			}
+		});
+	} else {
+		openProfileTab(e, instance, username);
+	}
+};
 
 Template.room.helpers({
 	isTranslated() {
@@ -98,15 +136,20 @@ Template.room.helpers({
 	},
 
 	roomLeader() {
-		const roles = RoomRoles.find({rid: this._id, roles: 'leader'}).fetch();
-		if (roles.length > 0) {
-			const u = roles[0].u;
-			if (u._id === Meteor.user()._id) { return null; }
-			const currUser = RocketChat.models.Users.find({ _id:  u._id}).fetch();
-			u['status'] = currUser.length > 0 ? 'online' : 'offline';
-			return u;
+		const roles = RoomRoles.findOne({ rid: this._id, roles: 'leader', 'u._id': { $ne: Meteor.userId() } });
+		if (roles) {
+			const leader = RocketChat.models.Users.findOne({ _id: roles.u._id }, { fields: { status: 1 }}) || {};
+			return {
+				...roles.u,
+				name: RocketChat.settings.get('UI_Use_Real_Name') ? (roles.u.name || roles.u.username) : roles.u.username,
+				status: leader.status || 'offline',
+				statusDisplay: (status => status.charAt(0).toUpperCase() + status.slice(1))(leader.status || 'offline')
+			};
 		}
-		return null;
+	},
+
+	chatNowLink() {
+		return RocketChat.roomTypes.getRouteLink('d', { name: this.username });
 	},
 
 	roomName() {
@@ -132,14 +175,17 @@ Template.room.helpers({
 	showAnnouncement() {
 		const roomData = Session.get(`roomData${ this._id }`);
 		if (!roomData) { return false; }
-		Meteor.defer(() => {
-			if (window.chatMessages && window.chatMessages[roomData._id]) {
-				return window.chatMessages[roomData._id].resize();
-			}
-		});
 		return (roomData.announcement !== undefined) && (roomData.announcement !== '');
 	},
-
+	messageboxData() {
+		const instance = Template.instance();
+		return {
+			_id: this._id,
+			onResize: () => {
+				instance.sendToBottomIfNecessary();
+			}
+		};
+	},
 	roomAnnouncement() {
 		const roomData = Session.get(`roomData${ this._id }`);
 		if (!roomData) { return ''; }
@@ -256,6 +302,14 @@ Template.room.helpers({
 			};
 		});
 		return { buttons };
+	},
+	hideLeaderHeader() {
+		return Template.instance().hideLeaderHeader.get() ? 'animated-hidden' : '';
+	},
+	hasLeader() {
+		if (RoomRoles.findOne({ rid: this._id, roles: 'leader', 'u._id': { $ne: Meteor.userId() } }, { fields: { _id: 1 } })) {
+			return 'has-leader';
+		}
 	}
 });
 
@@ -280,16 +334,6 @@ Template.room.events({
 		if ((Template.instance().tabBar.getState() === 'opened') && user && user.settings && user.settings.preferences && user.settings.preferences.hideFlexTab) {
 			return Template.instance().tabBar.close();
 		}
-	},
-
-	'scroll .messages-box .wrapper'() {
-		const $wrapper = $('.messages-box .wrapper');
-		if ($wrapper.scrollTop() < lastScrollTop) {
-			$('.room-leader').removeClass('hidden');
-		} else if ($wrapper.scrollTop() > $('.room-leader-container').height()) {
-			$('.room-leader').addClass('hidden');
-		}
-		lastScrollTop = $wrapper.scrollTop();
 	},
 
 	'touchstart .message'(e, t) {
@@ -450,32 +494,28 @@ Template.room.events({
 		if (!Meteor.userId()) {
 			return;
 		}
-		instance.tabBar.open();
-		return instance.setUserDetail(this.user.username);
+
+		openProfileTabOrOpenDM(e, instance, this.user.username);
 	},
 
 	'click .user-card-message'(e, instance) {
 		if (!Meteor.userId() || !this._arguments) {
 			return;
 		}
-		const roomData = Session.get(`roomData${ this._arguments[1].rid }`);
 
-		if (RocketChat.Layout.isEmbedded()) {
-			fireGlobalEvent('click-user-card-message', { username: this._arguments[1].u.username });
-			e.preventDefault();
-			e.stopPropagation();
-			return;
-		}
+		const username = this._arguments[1].u.username;
 
-		if (['c', 'p', 'd'].includes(roomData.t)) {
-			instance.setUserDetail(this._arguments[1].u.username);
-		}
-
-		instance.tabBar.setTemplate('membersList');
-		return instance.tabBar.open();
+		openProfileTabOrOpenDM(e, instance, username);
 	},
 
-	'scroll .wrapper': _.throttle(function(e) {
+	'scroll .wrapper': _.throttle(function(e, t) {
+		if (e.target.scrollTop < lastScrollTop) {
+			t.hideLeaderHeader.set(false);
+		} else if (e.target.scrollTop > $('.room-leader').height()) {
+			t.hideLeaderHeader.set(true);
+		}
+		lastScrollTop = e.target.scrollTop;
+
 		if (RoomHistoryManager.isLoading(this._id) === false && RoomHistoryManager.hasMore(this._id) === true || RoomHistoryManager.hasMoreNext(this._id) === true) {
 			if (RoomHistoryManager.hasMore(this._id) === true && e.target.scrollTop === 0) {
 				return RoomHistoryManager.getMore(this._id);
@@ -487,7 +527,7 @@ Template.room.events({
 
 	'click .new-message'() {
 		Template.instance().atBottom = true;
-		return Template.instance().find('.input-message').focus();
+		return chatMessages[RocketChat.openedRoom].input.focus();
 	},
 
 	'click .message-cog'() {
@@ -537,17 +577,9 @@ Template.room.events({
 			return;
 		}
 
-		if (RocketChat.Layout.isEmbedded()) {
-			fireGlobalEvent('click-mention-link', { username: $(e.currentTarget).data('username') });
-			e.stopPropagation();
-			e.preventDefault();
-			return;
-		}
+		const username = $(e.currentTarget).data('username');
 
-		instance.tabBar.setTemplate('membersList');
-		instance.setUserDetail($(e.currentTarget).data('username'));
-
-		return instance.tabBar.open();
+		openProfileTabOrOpenDM(e, instance, username);
 	},
 
 	'click .image-to-download'(event) {
@@ -665,6 +697,8 @@ Template.room.onCreated(function() {
 	this.tabBar = new RocketChatTabBar();
 	this.tabBar.showGroup(FlowRouter.current().route.name);
 
+	this.hideLeaderHeader = new ReactiveVar(false);
+
 	this.resetSelection = enabled => {
 		this.selectable.set(enabled);
 		$('.messages-box .message.selected').removeClass('selected');
@@ -751,16 +785,11 @@ Template.room.onDestroyed(function() {
 });
 
 Template.room.onRendered(function() {
-	window.chatMessages = window.chatMessages || {};
-	if (!window.chatMessages[Session.get('openedRoom')]) {
-		window.chatMessages[Session.get('openedRoom')] = new ChatMessages;
+	const rid = Session.get('openedRoom');
+	if (!window.chatMessages[rid]) {
+		window.chatMessages[rid] = new ChatMessages;
 	}
-	window.chatMessages[Session.get('openedRoom')].init(this.firstNode);
-
-	if (Meteor.Device.isDesktop()) {
-		setTimeout(() => $('.message-form .input-message').focus(), 100);
-	}
-
+	window.chatMessages[rid].init(this.firstNode);
 	// ScrollListener.init()
 
 	const wrapper = this.find('.wrapper');
@@ -792,6 +821,7 @@ Template.room.onRendered(function() {
 	};
 
 	template.sendToBottomIfNecessary = function() {
+
 		if ((template.atBottom === true) && (template.isAtBottom() !== true)) {
 			return template.sendToBottom();
 		}
@@ -894,4 +924,12 @@ Template.room.onRendered(function() {
 			}
 		});
 	}
+	RocketChat.callbacks.add('streamMessage', (msg) => {
+		if (rid !== msg.rid || msg.editedAt) {
+			return;
+		}
+		if (!template.isAtBottom()) {
+			newMessage.classList.remove('not');
+		}
+	});
 });
