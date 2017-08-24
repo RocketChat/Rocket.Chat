@@ -6,12 +6,13 @@
 		align-items: flex-start;
 	}
 	--rc-popover-open-mobile: {
+		top: initial;
 		position: fixed;
-		top: 0;
-		left: 0;
-
+		bottom: 0;
+		padding: 8px;
+		animation: dropup-show 0.5s cubic-bezier(0.45, 0.05, 0.55, 0.95);
 		width: 100vw;
-		height: 100vh;
+		display: inline-block;
 	}
 }
 
@@ -114,6 +115,20 @@
 @keyframes dropdown-show {
 	0% {
 		transform: translate(0, -2%);
+
+		opacity: 0;
+	}
+
+	100% {
+		transform: translate(0, 0);
+
+		opacity: 1;
+	}
+}
+
+@keyframes dropup-show {
+	0% {
+		transform: translate(0, 100%);
 
 		opacity: 0;
 	}
