@@ -1,12 +1,7 @@
 <template name="adminRooms">
 	<div class="main-content-flex">
 		<section class="page-container page-list flex-tab-main-content">
-			<header class="rc-header">
-				{{> burger}}
-				<div class="rc-header__title">
-					<span class="rc-header__section--title">{{_ "Rooms"}}</span>
-				</div>
-				</header>
+				{{> header sectionName="Rooms"}}
 			<div class="content">
 				{{#unless hasPermission 'view-room-administration'}}
 					<p>{{_ "You_are_not_authorized_to_view_this_page"}}</p>

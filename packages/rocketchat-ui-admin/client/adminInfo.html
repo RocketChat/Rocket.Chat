@@ -1,11 +1,6 @@
 <template name="adminInfo">
 	<section class="page-container page-list">
-		<header class="rc-header">
-			{{> burger}}
-			<div class="rc-header__title">
-				<span class="rc-header__section--title">{{_ "Info"}}</span>
-			</div>
-		</header>
+		{{> header sectionName="Info"}}
 		<div class="content">
 			{{#if $gt statistics.instanceCount 1}}
 				{{#unless statistics.oplogEnabled}}

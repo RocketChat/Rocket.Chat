@@ -25,6 +25,12 @@
 		background-color: var(--button-primary-background);
 	}
 
+	&--secondary {
+		color: var(--button-secondary-text-color);
+		border: 0;
+		background-color: var(--button-secondary-background);
+	}
+
 	&--cancel {
 		color: var(--button-primary-text-color);
 		border: 0;

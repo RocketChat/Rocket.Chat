@@ -1,12 +1,7 @@
 <template name="adminImportPrepare">
 	<section class="page-container page-home page-static page-settings">
 		{{#with importer}}
-			<header class="rc-header">
-				{{> burger}}
-				<div class="rc-header__title">
-					<span class="rc-header__section--title">{{name}}</span>
-				</div>
-			</header>
+			{{> header sectionName=name}}
 			<div class="content">
 				{{#unless isAdmin}}
 					<p>You are not authorized to view this page.</p>

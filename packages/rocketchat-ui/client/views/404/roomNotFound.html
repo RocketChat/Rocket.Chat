@@ -1,11 +1,6 @@
 <template name="roomNotFound">
 	<section class="page-container page-list content-background-color">
-		<header class="rc-header">
-			{{> burger}}
-			<div class="rc-header__title">
-				<span class="rc-header__section--title">{{_ "Room_not_found"}}</span>
-			</div>
-		</header>
+		{{> header sectionName="Room_not_found"}}
 		<div class="content room-not-found error-color">
 			<i class="icon-attention"></i>
 			<div>

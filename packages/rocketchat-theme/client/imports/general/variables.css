@@ -79,6 +79,8 @@
 	--button-primary-background: var(--color-button-primary);
 	--button-primary-text-color: var(--color-white);
 	--button-cancel-color: var(--color-error);
+	--button-secondary-background: var(--color-gray-medium);
+	--button-secondary-text-color: var(--color-dark-medium);
 
 	/*
 	* Forms - Input

@@ -1,11 +1,6 @@
 <template name="home">
 	<section class="page-container page-home page-static content-background-color">
-		<header class="rc-header">
-			{{> burger}}
-			<div class="rc-header__title">
-				<span class="rc-header__section--title">{{title}}</span>
-			</div>
-		</header>
+		{{> header sectionName="Home"}}
 		<div class="content">
 			{{{body}}}
 		</div>

@@ -1,19 +1,11 @@
 <template name="accountPreferences">
 	<section class="preferences-page">
-		<header class="rc-header">
-			{{> burger}}
-			<div class="rc-header__title">
-				<span class="rc-header__section--title">{{_ "Preferences"}}</span>
-			</div>
+		{{#header sectionName="Preferences" buttons=true}}
+		<div class="rc-header__section--button" style="max-width: 649px;">
+			<button class="rc-button rc-button--primary save"><span>{{_ "Save_changes"}}</span></button>
+		</div>
+		{{/header}}
 
-			<div class="rc-header__section--button" style="max-width: 649px;">
-				<button class="rc-button rc-button--primary save"><span>{{_ "Save_changes"}}</span></button>
-			</div>
-
-			<div class="rc-header__section--help">
-
-			</div>
-		</header>
 		<div class="preferences-page__content">
 			<form id="preferences" autocomplete="off"  class="container">
 				<fieldset class="rc-form-legend">

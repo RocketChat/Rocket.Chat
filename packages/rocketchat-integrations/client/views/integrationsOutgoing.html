@@ -1,18 +1,13 @@
 <template name="integrationsOutgoing">
 	<section class="page-container page-home page-static page-settings">
-		<header class="rc-header">
-			{{> burger}}
-			<div class="rc-header__title">
-				<span class="rc-header__section--title">{{pageTitle}}</span>
-			</div>
+		{{#header sectionName=pageTitle buttons=true}}
 			<div class="rc-header__section--button">
 				<button class="button history" disabled="{{not showHistoryButton}}"><i class="icon-history"></i>{{_ "History"}}</button>
 				<button class="button danger delete" disabled="{{not canDelete}}"><i class="icon-trash"></i> <span>{{_ "Delete"}}</span></button>
 				<button class="button primary save" disabled="{{not hasTypeSelected}}"><i class="icon-paper-plane"></i> <span>{{_ "Save_changes"}}</span></button>
 			</div>
+		{{/header}}
 
-			<div class="rc-header__section--help"></div>
-		</header>
 		<div class="content background-transparent-dark">
 			<a href="{{pathFor "admin-integrations"}}"><i class="icon-angle-left"></i> {{_ "Back_to_integrations"}}</a><br><br>
 			{{#unless hasPermission}}

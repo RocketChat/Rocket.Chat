@@ -122,13 +122,8 @@ Package.onUse(function(api) {
 	api.addFiles('client/components/selectDropdown.html', 'client');
 	api.addFiles('client/components/selectDropdown.js', 'client');
 
-
 	api.addFiles('client/components/header/header.html', 'client');
-	api.addFiles('client/components/header/headerChannel.html', 'client');
 	api.addFiles('client/components/header/header.js', 'client');
-	api.addFiles('client/components/header/headerChannel.js', 'client');
-
-
 
 	api.export('fileUpload');
 });

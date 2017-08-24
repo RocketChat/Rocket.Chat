@@ -1,25 +1,21 @@
 <template name="admin">
-	{{#with group}}
-		<section class="page-container page-home page-static page-settings">
-
-			<header class="rc-header">
-				{{> burger}}
-				<div class="rc-header__title">
-					<span class="rc-header__section--title">{{label}}</span>
-				</div>
-
+	<section class="page-container page-home page-static page-settings">
+		{{#with group}}
+			{{#header sectionName=i18nLabel buttons=true}}
 				<div class="rc-header__section--button">
 					{{#if hasChanges}}
 						<button class="rc-button rc-button--cancel discard"><span>{{_ "Cancel"}}</span></button>
 					{{/if}}
 					<button class="rc-button rc-button--primary save" disabled="{{not hasChanges}}"><span>{{_ "Save_changes"}}</span></button>
+					{{#if $eq _id 'OAuth'}}
+						<button class="rc-button rc-button--secondary refresh-oauth"><span>{{_ "Refresh_oauth_services"}}</span></button>
+						<button class="rc-button rc-button--secondary add-custom-oauth"><span>{{_ "Add_custom_oauth"}}</span></button>
+					{{/if}}
+					{{#if $eq _id 'Assets'}}
+						<button class="rc-button rc-button--secondary refresh-clients"><span>{{_ "Apply_and_refresh_all_clients"}}</span></button>
+					{{/if}}
 				</div>
-
-				<div class="rc-header__section--help">
-
-				</div>
-			</header>
-
+			{{/header}}
 			<div class="content background-transparent-dark">
 				{{#unless hasPermission 'view-privileged-setting'}}
 					<p>{{_ "You_are_not_authorized_to_view_this_page"}}</p>
@@ -227,19 +223,9 @@
 								</div>
 							</div>
 						{{/each}}
-
-						<div class="submit">
-							{{#if $eq _id 'OAuth'}}
-								<button class="button secondary refresh-oauth"><span>{{_ "Refresh_oauth_services"}}</span></button>
-								<button class="button secondary add-custom-oauth"><span>{{_ "Add_custom_oauth"}}</span></button>
-							{{/if}}
-							{{#if $eq _id 'Assets'}}
-								<button class="button refresh-clients"><span>{{_ "Apply_and_refresh_all_clients"}}</span></button>
-							{{/if}}
-						</div>
 					</div>
 				{{/unless}}
 			</div>
+			{{/with}}
 		</section>
-	{{/with}}
 </template>

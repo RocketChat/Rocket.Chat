@@ -1,19 +1,11 @@
 <template name="integrationsOutgoingHistory">
 	<section class="page-container page-home page-static page-settings">
-		<header class="rc-header">
-			{{> burger}}
-			<div class="rc-header__title">
-				<span class="rc-header__section--title">{{pageTitle}}</span>
+		{{#header sectionName=pageTitle buttons=true}}
+			<div class="rc-header__section--button">
+				<button class="button danger clear-history"><i class="icon-history"></i>{{_ "clear_history"}}</button>
 			</div>
+		{{/header}}
 
-			{{#if hasPermission}}
-				<div class="rc-header__section--button">
-					<button class="button danger clear-history"><i class="icon-history"></i>{{_ "clear_history"}}</button>
-				</div>
-
-				<div class="rc-header__section--help"></div>
-			{{/if}}
-		</header>
 		<div class="content background-transparent-dark">
 			{{#unless hasPermission}}
 				<p>{{_ "You_are_not_authorized_to_view_this_page"}}</p>
