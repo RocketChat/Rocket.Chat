@@ -403,7 +403,6 @@ RocketChat.API.v1.addRoute('groups.messages', { authRequired: true }, {
 			count: messages.length,
 			offset,
 			total: RocketChat.models.Messages.find(ourQuery).count()
-
 		});
 	}
 });
