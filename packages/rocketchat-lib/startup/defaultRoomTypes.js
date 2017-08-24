@@ -33,6 +33,7 @@ RocketChat.roomTypes.add('channels', 30, {
 		return ['unread', 'category'].includes(preferences.roomsListExhibitionMode) && preferences.mergeChannels;
 	}
 });
+
 // public
 RocketChat.roomTypes.add('c', 30, {
 	icon: 'hashtag',
@@ -102,6 +103,10 @@ RocketChat.roomTypes.add('p', 40, {
 		const user = Meteor.user();
 		const preferences = (user && user.settings && user.settings.preferences && user.settings.preferences) || {};
 		return !preferences.roomsListExhibitionMode || ['unread', 'category'].includes(preferences.roomsListExhibitionMode) && !preferences.mergeChannels && RocketChat.authz.hasAllPermission('view-p-room');
+	},
+
+	showJoinLink() {
+		return true;
 	}
 });
 

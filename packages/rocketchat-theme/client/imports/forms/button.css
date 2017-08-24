@@ -64,3 +64,9 @@
 		}
 	}
 }
+
+@media (width < 780px) {
+	.rc-button--full {
+		width: 100%;
+	}
+}

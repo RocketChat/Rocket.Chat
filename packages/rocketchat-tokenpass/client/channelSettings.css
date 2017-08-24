@@ -1,0 +1,42 @@
+.channelSettings-tokenpass {
+	&.tokenpass__editing {
+		& .button.edit {
+			visibility: hidden !important;
+		}
+	}
+
+	& .details {
+		clear: both;
+		padding-left: 1rem;
+	}
+
+	& button {
+		margin: 0 5px 0 0 !important;
+	}
+
+	& button[disabled] {
+		opacity: 0.5;
+	}
+
+	& button[disabled]:hover {
+		opacity: 0.5;
+	}
+
+	& .js-edit {
+		float: right;
+	}
+
+	& .chip-container {
+		margin: 0;
+
+		& > li {
+			padding: 2px 8px;
+		}
+	}
+
+	&__input {
+		height: auto !important;
+		margin: 0 0 10px !important;
+		padding: 10px !important;
+	}
+}

@@ -12,6 +12,10 @@
 	flex-wrap: wrap;
 	justify-content: flex-start;
 
+	&--no-icon {
+		padding: 0;
+	}
+
 	&__tag {
 		display: flex;
 
@@ -22,13 +26,13 @@
 		background: var(--tags-background);
 		align-items: center;
 
-		&-avatar {
+		&-image {
 			width: var(--tags-avatar-size);
 			height: var(--tags-avatar-size);
 			margin-right: 0.5rem;
 		}
 
-		&-username {
+		&-text {
 			margin-right: 0.5rem;
 		}
 
