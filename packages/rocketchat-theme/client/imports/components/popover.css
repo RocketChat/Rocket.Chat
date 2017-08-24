@@ -16,7 +16,11 @@
 }
 
 .rc-popover-anchor {
-	display: none;
+	opacity: 0;
+	visibility: hidden;
+
+	width: 0;
+	height: 0;
 
 	&:checked + .rc-popover {
 		@apply --rc-popover-open;
@@ -95,6 +99,9 @@
 	}
 
 	&__icon-element {
+		width: 14px;
+		height: 14px;
+
 		stroke: currentColor;
 
 		&--customize {

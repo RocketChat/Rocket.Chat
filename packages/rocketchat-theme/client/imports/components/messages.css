@@ -1,0 +1,76 @@
+.message-actions {
+	position: absolute;
+	top: 6px;
+	right: 2px;
+
+	display: none;
+
+	color: #6c727a;
+
+	&__buttons {
+		margin-right: 0.5rem;
+	}
+
+	&__button-icon {
+		width: 16px;
+		height: 16px;
+		stroke: currentColor;
+
+		&:hover {
+			stroke: var(--color-button-primary);
+		}
+	}
+
+	&__label {
+		padding: 2px 10px;
+
+		cursor: pointer;
+
+		&:hover {
+			color: var(--color-button-primary);
+		}
+	}
+
+	&__menu {
+		display: block;
+
+		width: 3px;
+		height: 12px;
+		fill: currentColor;
+	}
+}
+
+.message {
+	&:hover,
+	&.active {
+		background-color: rgba(0, 0, 0, 0.05);
+
+		& .message-actions {
+			display: flex;
+		}
+	}
+
+	& .rc-popover {
+		top: -200vh;
+		right: 180px;
+
+		&__wrapper {
+			position: fixed;
+			top: -100vh;
+			left: -100vw;
+
+			width: 300vw;
+			height: 300vh;
+		}
+
+		&__content {
+			position: absolute;
+			top: 0;
+			left: 0;
+		}
+	}
+}
+
+.messages-box .rc-popover__list {
+	padding: 0;
+}
