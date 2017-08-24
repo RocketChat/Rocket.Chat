@@ -92,7 +92,7 @@
 	}
 
 	&-label {
-		padding: 10px;
+		padding: 5px 0;
 
 		cursor: pointer;
 
@@ -104,8 +104,7 @@
 	}
 
 	&-menu {
-		width: 3px;
-		height: 16px;
+		font-size: 1.375rem;
 
 		fill: var(--sidebar-account-username-color);
 
