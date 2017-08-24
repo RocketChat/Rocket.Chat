@@ -1,0 +1,63 @@
+:root {
+	--snippet-page-left-border-size: 30px;
+	--snippet-page-top-border-size: 20px;
+	--snippet-informations-height: 40px;
+	--snippet-page-right-border-size: 30px;
+}
+
+.snippet-page {
+	overflow-x: hidden;
+	overflow-y: auto;
+
+	width: auto;
+	height: 100%;
+	padding-top: var(--snippet-page-top-border-size);
+	padding-right: var(--snippet-page-right-border-size);
+	padding-left: var(--snippet-page-left-border-size);
+
+	& pre code,
+	& h1,
+	& span {
+		user-select: all;
+	}
+
+	& .snippet-informations {
+		display: inline-block;
+
+		width: 100%;
+		height: 60px;
+
+		& .avatar {
+			display: block;
+			float: left;
+			clear: left;
+
+			margin-right: 10px;
+		}
+
+		& .username {
+			display: block;
+
+			width: 100%;
+
+		}
+
+		& .snippet-filename {
+			display: block;
+
+			width: 100%;
+
+			font-weight: bold;
+		}
+	}
+
+	& .info {
+		color: darkgrey;
+
+		font-style: italic;
+	}
+
+	& .download-button {
+		float: right;
+	}
+}

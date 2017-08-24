@@ -1,25 +1,30 @@
 .emojione {
+	position: relative;
+
+	display: inline-block;
+	overflow: hidden;
+
+	width: 22px;
+	height: 22px;
+	margin: 0 0.15em;
+
+	vertical-align: middle;
+	white-space: nowrap;
+	text-indent: 100%;
+
+	background-image: url("../../packages/emojione_emojione/assets/sprites/emojione.sprites.png");
+	background-repeat: no-repeat;
+	background-size: 4365.625% 4365.625%;
+
+	font-size: inherit;
+	line-height: normal;
 	image-rendering: -webkit-optimize-contrast;
 	image-rendering: optimizeQuality;
-	font-size: inherit;
-	height: 22px;
-	width: 22px;
-	position: relative;
-	display: inline-block;
-	margin: 0 0.15em;
-	line-height: normal;
-	vertical-align: middle;
-	background-image: url("../../packages/emojione_emojione/assets/sprites/emojione.sprites.png");
-	background-size: 4365.625% 4365.625%;
-	background-repeat: no-repeat;
-	text-indent: 100%;
-	white-space: nowrap;
-	overflow: hidden;
 }
 
 .emojione.big {
-	height: 44px !important;
 	width: 44px !important;
+	height: 44px !important;
 }
 
 .emojione-0023-20e3 {
