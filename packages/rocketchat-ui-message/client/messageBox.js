@@ -272,7 +272,12 @@ Template.messageBox.events({
 	},
 	'focus .input-message'(event, instance) {
 		KonchatNotification.removeRoomNotification(this._id);
-		chatMessages[this._id].input = instance.find('.input-message');
+		const input = event.target;
+		chatMessages[this._id].input = input;
+		if (event.target.value) {
+			instance.isMessageFieldEmpty.set(false);
+			return typeof input.updateAutogrow === 'function' && input.updateAutogrow();
+		}
 	},
 	'click .send-button'(event, instance) {
 		const input = instance.find('.input-message');
