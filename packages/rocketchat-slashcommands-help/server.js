@@ -6,10 +6,6 @@
 
 
 RocketChat.slashCommands.add('help', function Help(command, params, item) {
-
-	if (command !== 'help') {
-		return;
-	}
 	const user = Meteor.users.findOne(Meteor.userId());
 	const keys = [{
 		'Open_channel_user_search': 'Command (or Ctrl) + p OR Command (or Ctrl) + k'

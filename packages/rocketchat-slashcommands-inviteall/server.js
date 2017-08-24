@@ -4,7 +4,6 @@
  */
 
 function inviteAll(type) {
-
 	return function inviteAll(command, params, item) {
 
 		if (!/invite\-all-(to|from)/.test(command) || !Match.test(params, String)) {
@@ -76,6 +75,7 @@ function inviteAll(type) {
 		}
 	};
 }
+
 RocketChat.slashCommands.add('invite-all-to', inviteAll('to'), {
 	description: 'Invite_user_to_join_channel_all_to',
 	params: '#room'

@@ -50,4 +50,7 @@ function Unarchive(command, params, item) {
 	return Unarchive;
 }
 
-RocketChat.slashCommands.add('unarchive', Unarchive);
+RocketChat.slashCommands.add('unarchive', Unarchive, {
+	description: 'Unarchive',
+	params: '#channel'
+});
