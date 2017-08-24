@@ -16,11 +16,7 @@
 }
 
 .rc-popover-anchor {
-	opacity: 0;
-	visibility: hidden;
-
-	width: 0;
-	height: 0;
+	display: none;
 
 	&:checked + .rc-popover {
 		@apply --rc-popover-open;

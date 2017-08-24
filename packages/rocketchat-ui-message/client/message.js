@@ -266,7 +266,6 @@ Template.message.helpers({
 		}
 	},
 	messageActions() {
-		console.log(RocketChat.MessageAction.getButtons(Template.currentData(), 'message', 'message'));
 		return RocketChat.MessageAction.getButtons(Template.currentData(), 'message', 'message');
 	},
 	messageActionsMenu() {
