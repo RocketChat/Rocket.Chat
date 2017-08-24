@@ -101,7 +101,7 @@ RocketChat.MessageAction = new class {
 Meteor.startup(function() {
 	RocketChat.MessageAction.addButton({
 		id: 'reply-message',
-		icon: 'reply',
+		icon: 'message',
 		label: 'Reply',
 		context: ['message', 'message-mobile'],
 		action() {
@@ -136,7 +136,7 @@ Meteor.startup(function() {
 
 	RocketChat.MessageAction.addButton({
 		id: 'edit-message',
-		icon: 'pencil',
+		icon: 'edit',
 		label: 'Edit',
 		context: ['message', 'message-mobile'],
 		action(e) {
@@ -220,7 +220,7 @@ Meteor.startup(function() {
 
 	RocketChat.MessageAction.addButton({
 		id: 'permalink',
-		icon: 'link',
+		icon: 'permalink',
 		label: 'Permalink',
 		classes: 'clipboard',
 		context: ['message', 'message-mobile'],
@@ -248,7 +248,7 @@ Meteor.startup(function() {
 
 	RocketChat.MessageAction.addButton({
 		id: 'copy',
-		icon: 'paste',
+		icon: 'copy',
 		label: 'Copy',
 		classes: 'clipboard',
 		context: ['message', 'message-mobile'],

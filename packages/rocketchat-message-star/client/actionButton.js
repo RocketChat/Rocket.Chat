@@ -2,7 +2,7 @@ import toastr from 'toastr';
 Meteor.startup(function() {
 	RocketChat.MessageAction.addButton({
 		id: 'star-message',
-		icon: 'star-empty',
+		icon: 'star',
 		label: 'Star_Message',
 		context: ['starred', 'message', 'message-mobile'],
 		action() {
