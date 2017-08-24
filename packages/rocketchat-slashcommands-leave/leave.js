@@ -20,5 +20,5 @@ function Leave(command, params, item) {
 	}
 }
 
-RocketChat.slashCommands.add('leave', Meteor.isClient ? undefined : Leave, { description: 'Leave_the_current_channel' });
-RocketChat.slashCommands.add('part', Meteor.isClient ? undefined : Leave, { description: 'Leave_the_current_channel' });
+RocketChat.slashCommands.add('leave', Leave, { description: 'Leave_the_current_channel' });
+RocketChat.slashCommands.add('part', Leave, { description: 'Leave_the_current_channel' });

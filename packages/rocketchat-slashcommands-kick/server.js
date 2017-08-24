@@ -39,5 +39,6 @@ const Kick = function(command, params, {rid}) {
 
 RocketChat.slashCommands.add('kick', Kick, {
 	description: 'Remove_someone_from_room',
-	params: '@username'
+	params: '@username',
+	permission: 'remove-user'
 });

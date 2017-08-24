@@ -1,5 +1,5 @@
 import { RealRocketletBridges } from './bridges';
-import { RocketletsRestApi, RocketletWebsocketNotifier } from './communication';
+import { RocketletWebsocketNotifier } from './communication';
 import { RocketletMessagesConverter, RocketletRoomsConverter, RocketletSettingsConverter, RocketletUsersConverter } from './converters';
 import { RocketletsModel, RocketletRealStorage } from './storage';
 
@@ -21,7 +21,6 @@ class RocketletServerOrchestrator {
 		this._manager = new RocketletManager(this._storage, this._bridges);
 
 		this._communicators = new Map();
-		this._communicators.set('restapi', new RocketletsRestApi(this._manager));
 		this._communicators.set('notifier', new RocketletWebsocketNotifier());
 	}
 

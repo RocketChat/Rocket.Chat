@@ -8,6 +8,7 @@ RocketChat.slashCommands.add = function(command, callback, options = {}, result)
 		callback,
 		params: options.params,
 		description: options.description,
+		permission: options.permission,
 		clientOnly: options.clientOnly || false,
 		result
 	};

@@ -41,4 +41,7 @@ RocketChat.slashCommands.add('unmute', function Unmute(command, params, item) {
 		rid: item.rid,
 		username
 	});
+}, {
+	description: 'Unmute_someone_in_room',
+	params: '@username'
 });
