@@ -42,39 +42,8 @@
 		}
 
 		&-icon {
-			width: 12px;
-			height: 12px;
-
+			font-size: 1rem;
 			fill: currentColor;
-			stroke: currentColor;
-
-			&--bold {
-				width: 8px;
-				height: 10px;
-				stroke: none;
-			}
-
-			&--italic {
-				width: 2px;
-				height: 10px;
-				stroke: none;
-			}
-
-			&--code {
-				width: 16px;
-				height: 12px;
-			}
-
-			&--strike {
-				width: 12px;
-				height: 11px;
-				stroke: none;
-			}
-
-			&--multi-line {
-				width: 13px;
-				height: 11px;
-			}
 		}
 	}
 
@@ -150,6 +119,10 @@
 		cursor: pointer;
 		align-items: center;
 		justify-content: center;
+
+		& .rc-input__icon-svg {
+			font-size: 1.4rem;
+		}
 
 		& .rc-input__icon-svg--plus {
 			transition: transform 0.2s linear;
