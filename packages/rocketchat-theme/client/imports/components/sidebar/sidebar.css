@@ -62,6 +62,7 @@
 	}
 }
 
+
 @media (width < 780px) {
 	.sidebar:not(.sidebar--light) {
 		user-select: none;
@@ -70,5 +71,17 @@
 		touch-action: pan-y;
 		-webkit-user-drag: none;
 		will-change: transform;
+	}
+}
+
+@media (width <= 400px) {
+	.sidebar {
+		flex: 0 0 var(--sidebar-small-width);
+
+		width: var(--sidebar-small-width);
+
+		&:not(&--light) {
+			transform: translate3d(-100%, 0, 0);
+		}
 	}
 }
