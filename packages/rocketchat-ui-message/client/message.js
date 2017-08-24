@@ -1,4 +1,4 @@
-/* globals renderEmoji renderMessageBody popover */
+/* globals renderEmoji renderMessageBody */
 import moment from 'moment';
 
 Template.message.helpers({
