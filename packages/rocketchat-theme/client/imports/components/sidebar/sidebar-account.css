@@ -103,7 +103,8 @@
 
 		position: relative;
 
-		padding: 10px 0 10px 10px;
+		margin-right: -9px;
+		padding: 0;
 
 		cursor: pointer;
 
