@@ -1,3 +1,77 @@
+<a name="0.59.0-rc.0"></a>
+# 0.59.0-rc.0 (2017-08-25)
+
+
+### New Features
+
+- [#7636](https://github.com/RocketChat/Rocket.Chat/pull/7636) Add classes to notification menu so they can be hidden in css
+- [#7852](https://github.com/RocketChat/Rocket.Chat/pull/7852) Add markdown parser "marked"
+- [#7711](https://github.com/RocketChat/Rocket.Chat/pull/7711) Add room type as a class to the ul-group of rooms
+- [#6301](https://github.com/RocketChat/Rocket.Chat/pull/6301) Add tags to uploaded images using Google Cloud Vision API
+- [#7658](https://github.com/RocketChat/Rocket.Chat/pull/7658) Add unread options for direct messages
+- [#5902](https://github.com/RocketChat/Rocket.Chat/pull/5902) Adds a Keyboard Shortcut option to the flextab
+- [#7614](https://github.com/RocketChat/Rocket.Chat/pull/7614) Allow ldap mapping of customFields
+- [#7817](https://github.com/RocketChat/Rocket.Chat/pull/7817) Audio Notification updated in sidebar
+- [#7350](https://github.com/RocketChat/Rocket.Chat/pull/7350) Automatically select the first channel
+- [#7853](https://github.com/RocketChat/Rocket.Chat/pull/7853) Create a standard for svg icons
+- [#7342](https://github.com/RocketChat/Rocket.Chat/pull/7342) Integrated personal email gateway (GSoC'17)
+- [#7830](https://github.com/RocketChat/Rocket.Chat/pull/7830) Option to block users to mention unknow users
+- [#6700](https://github.com/RocketChat/Rocket.Chat/pull/6700) Package to render issue numbers into links to an issue tracker.
+- [#7864](https://github.com/RocketChat/Rocket.Chat/pull/7864) Replace message cog for vertical menu
+- [#7565](https://github.com/RocketChat/Rocket.Chat/pull/7565) REST API endpoint to list all private groups (permission limited)
+- [#7643](https://github.com/RocketChat/Rocket.Chat/pull/7643) Rocket.Chat UI Redesign
+- [#7612](https://github.com/RocketChat/Rocket.Chat/pull/7612) Search users by fields defined by admin
+- [#7688](https://github.com/RocketChat/Rocket.Chat/pull/7688) Template to show Custom Fields in user info view
+
+
+### Bug Fixes
+
+- [#7854](https://github.com/RocketChat/Rocket.Chat/pull/7854) Add CSS support for Safari versions > 7
+- [#7456](https://github.com/RocketChat/Rocket.Chat/pull/7456) Csv importer: work with more problematic data
+- [#7815](https://github.com/RocketChat/Rocket.Chat/pull/7815) Dutch translations
+- [#7846](https://github.com/RocketChat/Rocket.Chat/pull/7846) Email message forward error
+- [#7673](https://github.com/RocketChat/Rocket.Chat/pull/7673) Example usage of unsubscribe.js
+- [#7855](https://github.com/RocketChat/Rocket.Chat/pull/7855) File upload on multi-instances using a path prefix
+- [#7656](https://github.com/RocketChat/Rocket.Chat/pull/7656) Fix avatar upload fail on Cordova app
+- [#7168](https://github.com/RocketChat/Rocket.Chat/pull/7168) Fix black background on transparent avatars
+- [#7814](https://github.com/RocketChat/Rocket.Chat/pull/7814) Fix Dutch translation
+- [#7629](https://github.com/RocketChat/Rocket.Chat/pull/7629) Fix messagebox growth
+- [#7863](https://github.com/RocketChat/Rocket.Chat/pull/7863) Fix migration 100
+- [#7823](https://github.com/RocketChat/Rocket.Chat/pull/7823) Fix new-message button showing on search
+- [#7687](https://github.com/RocketChat/Rocket.Chat/pull/7687) Fix room load on first hit
+- [#7758](https://github.com/RocketChat/Rocket.Chat/pull/7758) Fixed function closure syntax allowing validation emails to be sent.
+- [#7825](https://github.com/RocketChat/Rocket.Chat/pull/7825) Google vision NSFW tag
+- [#7679](https://github.com/RocketChat/Rocket.Chat/pull/7679) Make link inside YouTube preview open in new tab
+- [#7644](https://github.com/RocketChat/Rocket.Chat/pull/7644) Markdown noopener/noreferrer: use correct HTML attribute
+- [#7721](https://github.com/RocketChat/Rocket.Chat/pull/7721) meteor-accounts-saml issue with ns0,ns1 namespaces, makes it compatible with pysaml2 lib
+- [#7652](https://github.com/RocketChat/Rocket.Chat/pull/7652) Only use "File Uploaded" prefix on files
+- [#7809](https://github.com/RocketChat/Rocket.Chat/pull/7809) Remove redundant "do" in "Are you sure ...?" messages.
+- [#7672](https://github.com/RocketChat/Rocket.Chat/pull/7672) Remove references to non-existent tests
+- [#7748](https://github.com/RocketChat/Rocket.Chat/pull/7748) scroll on flex-tab
+- [#7779](https://github.com/RocketChat/Rocket.Chat/pull/7779) Settings not getting applied from Meteor.settings and process.env 
+- [#7778](https://github.com/RocketChat/Rocket.Chat/pull/7778) Update Snap links
+- [#7639](https://github.com/RocketChat/Rocket.Chat/pull/7639) Wrong email subject when "All Messages" setting enabled
+- [#7630](https://github.com/RocketChat/Rocket.Chat/pull/7630) Wrong render of snippet’s name
+
+
+<details>
+<summary>Others</summary>
+
+- [#7793](https://github.com/RocketChat/Rocket.Chat/pull/7793) Additions to the REST API
+- [#7625](https://github.com/RocketChat/Rocket.Chat/pull/7625) Bump version to 0.59.0-develop
+- [#7661](https://github.com/RocketChat/Rocket.Chat/pull/7661) Fix typo in generated URI
+- [#7728](https://github.com/RocketChat/Rocket.Chat/pull/7728) FIX: Error when starting local development environment
+- [#7803](https://github.com/RocketChat/Rocket.Chat/pull/7803) LingoHub based on develop
+- [#2](https://github.com/RocketChat/Rocket.Chat/pull/2) local update
+- [#7677](https://github.com/RocketChat/Rocket.Chat/pull/7677) Meteor packages and npm dependencies update
+- [#7865](https://github.com/RocketChat/Rocket.Chat/pull/7865) Mobile sidenav
+- [#7842](https://github.com/RocketChat/Rocket.Chat/pull/7842) npm deps update
+- [#7755](https://github.com/RocketChat/Rocket.Chat/pull/7755) npm deps update
+- [#7739](https://github.com/RocketChat/Rocket.Chat/pull/7739) Remove CircleCI
+</details>
+
+
+
 <a name="0.58.2"></a>
 ## 0.58.2 (2017-08-23)
 
