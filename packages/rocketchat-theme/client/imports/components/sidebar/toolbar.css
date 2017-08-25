@@ -29,8 +29,8 @@
 
 	&__icon {
 		&--plus {
-				font-size: 1.25rem;
-			}
+			font-size: 1.25rem;
+		}
 	}
 
 	& .rc-input {
@@ -69,8 +69,9 @@
 			}
 
 			&-svg--plus {
-				font-size: 1rem;
 				transform: rotate(45deg);
+
+				font-size: 1rem;
 			}
 		}
 	}
