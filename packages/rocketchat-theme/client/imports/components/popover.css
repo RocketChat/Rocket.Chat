@@ -40,6 +40,8 @@
 
 		padding: var(--popover-padding);
 
+		white-space: nowrap;
+
 		cursor: default;
 
 		border-radius: var(--popover-radius);
