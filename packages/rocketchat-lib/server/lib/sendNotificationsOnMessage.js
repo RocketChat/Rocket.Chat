@@ -58,7 +58,7 @@ function notifyDesktopUser(userId, user, message, room, duration) {
 	if (room.t !== 'd' && room.name) {
 		title += ` @ #${ room.name }`;
 	}
-	RocketChat.Notifications.notifyUser(userId, 'desktopNotification', {
+	RocketChat.Notifications.notifyUser(userId, 'notification', {
 		title,
 		text: message.msg,
 		duration,
