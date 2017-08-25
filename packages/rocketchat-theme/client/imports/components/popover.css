@@ -6,13 +6,17 @@
 		align-items: flex-start;
 	}
 	--rc-popover-open-mobile: {
-		top: initial;
 		position: fixed;
+		top: initial;
 		bottom: 0;
-		padding: 8px;
-		animation: dropup-show 0.5s cubic-bezier(0.45, 0.05, 0.55, 0.95);
-		width: 100vw;
+		left: 0;
+
 		display: inline-block;
+
+		width: 100vw;
+		padding: 8px;
+
+		animation: dropup-show 0.5s cubic-bezier(0.45, 0.05, 0.55, 0.95);
 	}
 }
 
