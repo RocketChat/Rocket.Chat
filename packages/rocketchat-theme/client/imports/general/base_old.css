@@ -3622,8 +3622,6 @@ body:not(.is-cordova) {
 			top: 3px;
 			right: 5px;
 
-			display: none;
-
 			width: 30px;
 			height: 30px;
 
@@ -3635,17 +3633,11 @@ body:not(.is-cordova) {
 				width: 21px;
 				height: 20px;
 
-				border-radius: 50%;
-
 				& i {
 					display: inline-block;
 
 					width: 18px;
 					height: 18px;
-
-					border-width: 1px;
-					border-style: solid;
-					border-radius: 50%;
 
 					font-size: 10px;
 				}
