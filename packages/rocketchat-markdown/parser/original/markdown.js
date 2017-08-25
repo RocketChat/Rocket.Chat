@@ -11,6 +11,8 @@ const parseNotEscaped = function(msg, message) {
 		message.tokens = [];
 	}
 
+	msg = msg || '';
+
 	const schemes = RocketChat.settings.get('Markdown_SupportSchemesForLink').split(',').join('|');
 
 	if (RocketChat.settings.get('Markdown_Headers')) {
@@ -83,7 +85,9 @@ const parseNotEscaped = function(msg, message) {
 		return `<a href="${ _.escapeHTML(url) }" target="${ _.escapeHTML(target) }" rel="noopener noreferrer">${ _.escapeHTML(title) }</a>`;
 	});
 
-	if (typeof window !== 'undefined' && window !== null ? window.rocketDebug : undefined) { console.log('Markdown', msg); }
+	if (typeof window !== 'undefined' && window !== null && window.rocketDebug ) {
+		console.log('Markdown', msg);
+	}
 
 	return msg;
 };

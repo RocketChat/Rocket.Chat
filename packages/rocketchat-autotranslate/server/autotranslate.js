@@ -16,7 +16,7 @@ class AutoTranslate {
 
 	tokenize(message) {
 		message = this.tokenizeEmojis(message);
-		message = this.tokenizeCode(message);
+		//message = this.tokenizeCode(message);
 		message = this.tokenizeURLs(message);
 		message = this.tokenizeMentions(message);
 		return message;
@@ -114,7 +114,7 @@ class AutoTranslate {
 		}
 		let count = message.tokens.length;
 
-		if (message.mentions && message.mentions.length > 0) {
+		if (message.mentions && Array.isArray(message.mentions) && message.mentions.length > 0) {
 			message.mentions.forEach(mention => {
 				message.msg = message.msg.replace(new RegExp(`(@${ mention.username })`, 'gm'), match => {
 					const token = `<i class=notranslate>{${ count++ }}</i>`;
@@ -127,7 +127,7 @@ class AutoTranslate {
 			});
 		}
 
-		if (message.channels && message.channels.length > 0) {
+		if (message.channels && Array.isArray(message.channels) && message.channels.length > 0) {
 			message.channels.forEach(channel => {
 				message.msg = message.msg.replace(new RegExp(`(#${ channel.name })`, 'gm'), match => {
 					const token = `<i class=notranslate>{${ count++ }}</i>`;
@@ -144,7 +144,7 @@ class AutoTranslate {
 	}
 
 	deTokenize(message) {
-		if (message.tokens && message.tokens.length > 0) {
+		if (message.tokens && Array.isArray(message.tokens) && message.tokens.length > 0) {
 			for (const {token, text, noHtml} of message.tokens) {
 				message.msg = message.msg.replace(token, () => noHtml ? noHtml : text);
 			}
@@ -195,7 +195,7 @@ class AutoTranslate {
 				});
 			}
 
-			if (message.attachments && message.attachments.length > 0) {
+			if (message.attachments && Array.isArray(message.attachments) && message.attachments.length > 0) {
 				Meteor.defer(() => {
 					for (const index in message.attachments) {
 						if (message.attachments.hasOwnProperty(index)) {
