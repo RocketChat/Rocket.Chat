@@ -39,6 +39,7 @@
 		flex: 1;
 
 		max-width: 160px;
+		max-width: fit-content;
 		height: calc(var(--sidebar-account-username-size) + 0.1rem);
 		margin-bottom: 0.5rem;
 
@@ -146,7 +147,6 @@
 
 		&-username {
 			width: auto;
-			max-width: 160px;
 			margin: 0  0.65rem;
 
 			font-weight: var(--sidebar-small-account-username-weight);
