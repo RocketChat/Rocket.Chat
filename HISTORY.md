@@ -1,3 +1,16 @@
+<a name="0.59.0-rc.1"></a>
+# 0.59.0-rc.1 (2017-08-25)
+
+
+### Bug Fixes
+
+- [#7885](https://github.com/RocketChat/Rocket.Chat/pull/7885) message actions over unread bar
+- [#7883](https://github.com/RocketChat/Rocket.Chat/pull/7883) popover position on mobile
+- [#7881](https://github.com/RocketChat/Rocket.Chat/pull/7881) search results position on sidebar
+- [#7880](https://github.com/RocketChat/Rocket.Chat/pull/7880) sidebar paddings
+
+
+
 <a name="0.59.0-rc.0"></a>
 # 0.59.0-rc.0 (2017-08-25)
 
