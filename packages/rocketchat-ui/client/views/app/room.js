@@ -328,7 +328,7 @@ Template.room.events({
 		return Meteor.setTimeout(() => t.sendToBottomIfNecessaryDebounced(), 100);
 	},
 
-	'click .messages-container'() {
+	'click .messages-container-main'() {
 		const user = Meteor.user();
 
 		if ((Template.instance().tabBar.getState() === 'opened') && user && user.settings && user.settings.preferences && user.settings.preferences.hideFlexTab) {
