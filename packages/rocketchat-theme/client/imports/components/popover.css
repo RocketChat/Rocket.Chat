@@ -90,7 +90,7 @@
 		display: flex;
 
 		width: 20px;
-		margin: 0.25rem 0 0.25rem;
+		margin: 0.25rem 0;
 		align-items: center;
 		justify-content: center;
 	}
