@@ -35,7 +35,6 @@ $(document).on('click', function(e) {
 	const element = $(e.target);
 	if ($(element).parents('.message').length) {
 		if ($(element).data('popover') === 'label' || $(element).data('popover') === 'anchor') {
-			console.log('open');
 			disableWindowScroll();
 
 			$(element).parents('.message').addClass('active');
@@ -64,7 +63,6 @@ $(document).on('click', function(e) {
 				});
 			}, 100);
 		} else if ($(element).hasClass('rc-popover__wrapper') || $(element).hasClass('rc-popover__item-text') || $(element).hasClass('rc-popover__icon-element')) {
-			console.log('close');
 			enableWindowScroll();
 			$(element).parents('.message').removeClass('active');
 			popover.close();
