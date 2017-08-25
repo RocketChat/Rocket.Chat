@@ -51,7 +51,7 @@
 			height: 100%;
 		}
 
-		& a {
+		& a:any-link {
 			color: var(--color-gray);
 		}
 	}
