@@ -1,3 +1,7 @@
+/*globals Tokenly, OAuth */
+
+'use strict';
+
 Tokenly = {};
 
 // Request Tokenly credentials for the user
@@ -20,17 +24,12 @@ Tokenly.requestCredential = function(options, credentialRequestCompleteCallback)
 	}
 	const credentialToken = Random.secret();
 
-	const scope = (options && options.requestPermissions) || ['user'];
+	const scope = (options && options.requestPermissions) || ['user', 'tca'];
 	const flatScope = _.map(scope, encodeURIComponent).join('+');
 
 	const loginStyle = OAuth._loginStyle('tokenly', config, options);
 
-	const loginUrl =
-				`${ 'https://tokenpass.tokenly.com/login/oauth/authorize' +
-				'?client_id=' }${ config.clientId
-				}&scope=${ flatScope
-				}&redirect_uri=${ OAuth._redirectUri('tokenly', config)
-				}&state=${ OAuth._stateParam(loginStyle, credentialToken, options && options.redirectUrl) }`;
+	const loginUrl = `${ 'https://tokenpass.tokenly.com/oauth/authorize?client_id=' }${ config.clientId }&scope=${ flatScope }&redirect_uri=${ OAuth._redirectUri('tokenly', config) }&state=${ OAuth._stateParam(loginStyle, credentialToken, options && options.redirectUrl) }`;
 
 	OAuth.launchLogin({
 		loginService: 'tokenly',

@@ -122,6 +122,7 @@ reactive-var@1.0.11
 reload@1.1.11
 retry@1.0.9
 rocketchat:2fa@0.0.1
+rocketchat:accounts-tokenly@0.0.1
 rocketchat:action-links@0.0.1
 rocketchat:analytics@0.0.2
 rocketchat:api@0.0.1
@@ -212,6 +213,7 @@ rocketchat:spotify@0.0.1
 rocketchat:statistics@0.0.1
 rocketchat:streamer@0.5.0
 rocketchat:theme@0.0.1
+rocketchat:tokenly-oauth@0.0.1
 rocketchat:tooltip@0.0.1
 rocketchat:tutum@0.0.1
 rocketchat:ui@0.1.0

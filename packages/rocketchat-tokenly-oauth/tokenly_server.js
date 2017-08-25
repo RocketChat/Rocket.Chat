@@ -1,3 +1,7 @@
+/*globals Tokenly, OAuth */
+
+'use strict';
+
 Tokenly = {};
 
 let userAgent = 'Meteor';
@@ -10,12 +14,13 @@ const getAccessToken = function(query) {
 	let response;
 	try {
 		response = HTTP.post(
-			'https://tokenly.com/login/oauth/access_token', {
+			'https://tokenpass.tokenly.com/oauth/access-token', {
 				headers: {
 					Accept: 'application/json',
 					'User-Agent': userAgent
 				},
 				params: {
+					grant_type: 'authorization_code',
 					code: query.code,
 					client_id: config.clientId,
 					client_secret: OAuth.openSecret(config.secret),
@@ -24,11 +29,10 @@ const getAccessToken = function(query) {
 				}
 			});
 	} catch (err) {
-		throw _.extend(new Error(`Failed to complete OAuth handshake with Tokenly. ${ err.message }`),
-			{response: err.response});
+		throw _.extend(new Error(`Failed to complete OAuth handshake with Tokenly. ${ err.message }`), {response: err.response});
 	}
 	if (response.data.error) {
-		throw new Error(`Failed to complete OAuth handshake with GitHub. ${ response.data.error }`);
+		throw new Error(`Failed to complete OAuth handshake with Tokenly. ${ response.data.error }`);
 	} else {
 		return response.data.access_token;
 	}
@@ -37,41 +41,30 @@ const getAccessToken = function(query) {
 const getIdentity = function(accessToken) {
 	try {
 		return HTTP.get(
-			'https://api.tokenly.com/user', {
-				headers: {'User-Agent': userAgent},
-				params: {access_token: accessToken}
+			'https://tokenpass.tokenly.com/oauth/user', {
+				headers: {
+					'User-Agent': userAgent
+				},
+				params: {
+					access_token: accessToken
+				}
 			}).data;
 	} catch (err) {
-		throw _.extend(new Error(`Failed to fetch identity from Tokenly. ${ err.message }`),
-			{response: err.response});
-	}
-};
-
-const getEmails = function(accessToken) {
-	try {
-		return HTTP.get(
-			'https://api.tokenly.com/user/emails', {
-				headers: {'User-Agent': userAgent}, // http://developer.tokenly.com/v3/#user-agent-required
-				params: {access_token: accessToken}
-			}).data;
-	} catch (err) {
-		return [];
+		throw _.extend(new Error(`Failed to fetch identity from Tokenly. ${ err.message }`), {response: err.response});
 	}
 };
 
 OAuth.registerService('tokenly', 2, null, function(query) {
 	const accessToken = getAccessToken(query);
 	const identity = getIdentity(accessToken);
-	const emails = getEmails(accessToken);
-	const primaryEmail = _.findWhere(emails, {primary: true});
 
 	return {
 		serviceData: {
 			id: identity.id,
 			accessToken: OAuth.sealSecret(accessToken),
-			email: identity.email || (primaryEmail && primaryEmail.email) || '',
-			username: identity.login,
-			emails
+			email: identity.email || '',
+			email_is_confirmed: identity.email_is_confirmed,
+			username: identity.username
 		},
 		options: {profile: {name: identity.name}}
 	};
