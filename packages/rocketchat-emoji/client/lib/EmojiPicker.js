@@ -78,7 +78,6 @@ RocketChat.EmojiPicker = {
 		return $('.emoji-picker').css(cssProperties);
 	},
 	open(source, callback) {
-		console.log('open', source);
 		if (!this.initiated) {
 			this.init();
 		}
