@@ -33,7 +33,7 @@
 	&__toolbar-search {
 		position: absolute;
 		z-index: 1;
-		top: var(--sidebar-header-height);
+
 		left: 0;
 
 		overflow-y: auto;
