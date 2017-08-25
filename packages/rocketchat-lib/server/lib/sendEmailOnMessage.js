@@ -121,7 +121,6 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 						});
 						break;
 				}
-
 				user.emails.some((email) => {
 					if (email.verified) {
 						email = {

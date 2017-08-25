@@ -2902,8 +2902,6 @@
 	min-height: 40px;
 	padding: 8px 20px 4px 70px;
 
-	transition: background 0.3s;
-
 	line-height: 20px;
 
 	&.highlight {
@@ -3220,6 +3218,55 @@
 			& button {
 				display: block;
 			}
+		}
+
+		& ul,
+		& ol {
+			padding: 0 0 0 24px;
+		}
+
+		& ul {
+			list-style-type: disc;
+		}
+
+		& ol {
+			list-style-type: decimal;
+		}
+
+		& > * + * {
+			padding-top: 10px;
+		}
+
+		& > table {
+			display: block;
+			overflow: auto;
+
+			& tr {
+				background-color: #ffffff;
+				border-top: 1px solid #cccccc;
+
+				&:nth-child(2n) {
+					background-color: #f6f8fa;
+				}
+
+				& th {
+					font-weight: 600;
+				}
+
+				& th,
+				& td {
+					padding: 6px 13px;
+					border: 1px solid #dddddd;
+				}
+			}
+		}
+
+		& > hr {
+			height: 3px;
+			padding: 0;
+			margin: 12px 0;
+			background-color: #e7e7e7;
+			border: 0;
 		}
 	}
 

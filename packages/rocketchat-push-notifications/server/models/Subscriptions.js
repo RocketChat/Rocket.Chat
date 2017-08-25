@@ -1,11 +1,27 @@
-RocketChat.models.Subscriptions.updateAudioNotificationById = function(_id, audioNotification) {
+RocketChat.models.Subscriptions.updateAudioNotificationsById = function(_id, audioNotifications) {
+	const query = {
+		_id
+	};
+
+	const update = {};
+
+	if (audioNotifications === 'default') {
+		update.$unset = { audioNotifications: 1 };
+	} else {
+		update.$set = { audioNotifications };
+	}
+
+	return this.update(query, update);
+};
+
+RocketChat.models.Subscriptions.updateAudioNotificationValueById = function(_id, audioNotificationValue) {
 	const query = {
 		_id
 	};
 
 	const update = {
 		$set: {
-			audioNotification
+			audioNotificationValue
 		}
 	};
 
@@ -114,6 +130,15 @@ RocketChat.models.Subscriptions.updateHideUnreadStatusById = function(_id, hideU
 	return this.update(query, update);
 };
 
+RocketChat.models.Subscriptions.findAlwaysNotifyAudioUsersByRoomId = function(roomId) {
+	const query = {
+		rid: roomId,
+		audioNotifications: 'all'
+	};
+
+	return this.find(query);
+};
+
 RocketChat.models.Subscriptions.findAlwaysNotifyDesktopUsersByRoomId = function(roomId) {
 	const query = {
 		rid: roomId,
@@ -158,7 +183,8 @@ RocketChat.models.Subscriptions.findNotificationPreferencesByRoom = function(roo
 
 	if (explicit) {
 		query.$or = [
-			{audioNotification: {$exists: true}},
+			{audioNotifications: {$exists: true}},
+			{audioNotificationValue: {$exists: true}},
 			{desktopNotifications: {$exists: true}},
 			{desktopNotificationDuration: {$exists: true}},
 			{mobilePushNotifications: {$exists: true}},
@@ -166,7 +192,7 @@ RocketChat.models.Subscriptions.findNotificationPreferencesByRoom = function(roo
 		];
 	}
 
-	return this.find(query, { fields: { 'u._id': 1, desktopNotificationDuration: 1, desktopNotifications: 1, mobilePushNotifications: 1 } });
+	return this.find(query, { fields: { 'u._id': 1, audioNotifications: 1, audioNotificationValue: 1, desktopNotificationDuration: 1, desktopNotifications: 1, mobilePushNotifications: 1, disableNotifications: 1 } });
 };
 
 RocketChat.models.Subscriptions.findWithSendEmailByRoomId = function(roomId) {
