@@ -178,9 +178,6 @@ Template.main.helpers({
 
 Template.main.events({
 	'click .burger'() {
-		if (window.rocketDebug) {
-			console.log('room click .burger');
-		}
 		return menu.toggle();
 	}
 });
