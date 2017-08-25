@@ -3622,6 +3622,8 @@ body:not(.is-cordova) {
 			top: 3px;
 			right: 5px;
 
+			display: none;
+
 			width: 30px;
 			height: 30px;
 
