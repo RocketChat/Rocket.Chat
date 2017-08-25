@@ -86,3 +86,7 @@
 .messages-box .rc-popover__list {
 	padding: 0;
 }
+
+.first-unread .message-actions {
+	top: 18px;
+}
