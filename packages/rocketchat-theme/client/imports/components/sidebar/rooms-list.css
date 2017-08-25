@@ -11,6 +11,7 @@
 
 	&__type {
 		margin-bottom: 0.5rem;
+		margin-left: calc(var(--sidebar-default-padding) - calc(var(--sidebar-default-padding) / 3));
 
 		color: var(--rooms-list-title-color);
 
@@ -18,6 +19,7 @@
 	}
 
 	&__empty-room {
+		margin-left: calc(var(--sidebar-default-padding) - calc(var(--sidebar-default-padding) / 3));
 
 		color: var(--rooms-list-empty-text-color);
 
@@ -41,5 +43,14 @@
 		padding: 0 8px;
 
 		background-color: var(--sidebar-background);
+	}
+}
+
+@media (width <= 400px) {
+	.rooms-list {
+		&__type,
+		&__empty-room {
+			margin-left: 0;
+		}
 	}
 }
