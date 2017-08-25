@@ -82,9 +82,10 @@ export const code = (message) => {
 		codeblocks(message);
 		inlinecode(message);
 
-		if (window && window.rocketDebug) {
-			console.log('Markdown', message);
+		if (typeof window !== 'undefined' && window !== null && window.rocketDebug) {
+			console.log('Markdown', message); 
 		}
+
 	}
 
 	return message;
