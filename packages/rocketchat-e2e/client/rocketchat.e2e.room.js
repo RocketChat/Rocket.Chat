@@ -226,16 +226,43 @@ RocketChat.E2E.Room = class {
 		this.clearGroupKey(refresh);		// Might enter a race condition with the handshake function.
 	}
 
+	encryptFile(fileArrayBuffer) {
+		if (this.typeOfRoom === 'p' || this.typeOfRoom === 'd') {
+			const vector = crypto.getRandomValues(new Uint8Array(16));
+			return crypto.subtle.encrypt({name: 'AES-CBC', iv: vector}, this.groupSessionKey, fileArrayBuffer).then((result) => {
+				cipherText = new Uint8Array(result);
+				const output = new Uint8Array(vector.length + cipherText.length);
+				output.set(vector, 0);
+				output.set(cipherText, vector.length);
+				console.log(output);
+				return str2ab(EJSON.stringify(output));
+			});
+		}
+	}
+
+	decryptFile(message) {
+		let cipherText = EJSON.parse(message);
+		const vector = cipherText.slice(0, 16);
+		cipherText = cipherText.slice(16);
+		console.log(cipherText);
+		return crypto.subtle.decrypt({name: 'AES-CBC', iv: vector}, this.groupSessionKey, cipherText).then((result) => {
+			console.log(result);
+			return result;
+			// console.log(EJSON.parse(ab2str(result)));
+			// return EJSON.parse(ab2str(result));
+		})
+		.catch((e) => {
+			console.log(`Session key was changed: ${ e }`);
+			return false;
+		});
+	}
+
 	encryptText(data) {
 		if (!_.isObject(data)) {
 			data = new TextEncoder('UTF-8').encode(EJSON.stringify({ text: data, ack: Random.id((Random.fraction()+1)*20) }));
 		}
-		console.log('Encrypting...');
 		if (this.typeOfRoom === 'p' || this.typeOfRoom === 'd') {
 			const vector = crypto.getRandomValues(new Uint8Array(16));
-			// data = EJSON.stringify(data);
-			// console.log(str2ab(data));
-			console.log(data);
 			return crypto.subtle.encrypt({name: 'AES-CBC', iv: vector}, this.groupSessionKey, data).then((result) => {
 				cipherText = new Uint8Array(result);
 				const output = new Uint8Array(vector.length + cipherText.length);
@@ -245,25 +272,9 @@ RocketChat.E2E.Room = class {
 			});
 		} else {
 			return this.cipher.encrypt(data).then((ciphertext) => {
-				console.log('Message sent: ', EJSON.stringify(ciphertext.body));
-				console.log(ciphertext);
 				return ab2str(ciphertext.body);
 			});
 		}
-		// const iv = crypto.getRandomValues(new Uint8Array(12));
-
-		// return RocketChat.E2E.crypto.encrypt({
-		// 	name: 'AES-GCM',
-		// 	iv
-		// }, this.sessionKey, data).then((cipherText) => {
-		// 	cipherText = new Uint8Array(cipherText);
-		// 	const output = new Uint8Array(iv.length + cipherText.length);
-		// 	output.set(iv, 0);
-		// 	output.set(cipherText, iv.length);
-		// 	return EJSON.stringify(output);
-		// }).catch(() => {
-		// 	throw new Meteor.Error('encryption-error', 'Encryption error.');
-		// });
 	}
 
 	encrypt(message) {
@@ -299,38 +310,17 @@ RocketChat.E2E.Room = class {
 			})
 			.catch((e) => {
 				console.log(`Session key was changed: ${ e }`);
-				return '< Decryption key was changed at this point >';
+				return false;
 			});
 		} else {
 			const ciphertext = str2ab(message);
 			console.log(ciphertext);
 			return this.cipher.decryptWhisperMessage(ciphertext, 'binary').then((plaintext) => {
 				console.log(`CHECK THIS: ${ ab2str(plaintext) }`);
-				// return ab2str(plaintext);
 				plaintext = EJSON.parse(ab2str(plaintext));
 				return plaintext;
-				// console.log("CHECK THIS: "+ab2str(plaintext));
-				// return ab2str(plaintext);
 			});
 		}
-
-		// let cipherText = EJSON.parse(message);
-		// const iv = cipherText.slice(0, 12);
-		// cipherText = cipherText.slice(12);
-
-		// return RocketChat.E2E.crypto.decrypt({
-		// 	name: 'AES-GCM',
-		// 	iv
-		// }, this.sessionKey, cipherText)
-		// 	.then((data) => {
-		// 		data = EJSON.parse(new TextDecoder('UTF-8').decode(new Uint8Array(data)));
-		// 		return data;
-		// 	})
-		// 	.catch((e) => {
-		// 		// toastr.error(e);
-		// 		console.log(e);
-		// 		return message;
-		// 	});
 	}
 
 	decryptInitial(message) {
@@ -457,7 +447,7 @@ RocketChat.E2E.Room = class {
 						title: `<i class='icon-key alert-icon success-color'></i>${ TAPi18n.__('E2E') }`,
 						text: TAPi18n.__('Username_ended_the_OTR_session', { username: user.username }),
 						html: true
-					});
+					});	// Change this to E2E specific line. 
 				}
 				break;
 
