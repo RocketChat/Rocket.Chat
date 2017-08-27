@@ -253,6 +253,11 @@ RocketChat.E2E.Room = class {
 		})
 		.catch((e) => {
 			console.log(`Session key was changed: ${ e }`);
+			swal({
+				title: `<i class='icon-key alert-icon failure-color'></i>${ TAPi18n.__('E2E') }`,
+				text: TAPi18n.__('Some messages cannot be decrypted because session key was reset.'),
+				html: true
+			});	// Change this to E2E specific line. 
 			return false;
 		});
 	}
