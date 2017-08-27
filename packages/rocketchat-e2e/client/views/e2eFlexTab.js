@@ -2,21 +2,6 @@ Template.e2eFlexTab.helpers({
 	e2eAvailable() {
 		return RocketChat.E2E && RocketChat.E2E.isEnabled();
 	},
-	userIsOnline() {
-		// I have to appear online for the other user
-		if (Meteor.user().status === 'offline') {
-			return false;
-		}
-
-		if (this.rid) {
-			const peerId = this.rid.replace(Meteor.userId(), '');
-			if (peerId) {
-				const user = Meteor.users.findOne(peerId);
-				const online = user && user.status !== 'offline';
-				return online;
-			}
-		}
-	},
 	established() {
 		const e2e = RocketChat.E2E.getInstanceByRoomId(this.rid);
 		return e2e && e2e.established.get();
@@ -63,9 +48,14 @@ Template.e2eFlexTab.events({
 		if (e2e) {
 			e2e.end();
 			e2e.clearGroupKey();
+			swal({
+				title: `<i class='icon-key alert-icon failure-color'></i>${ TAPi18n.__('E2E') }`,
+				text: TAPi18n.__('The E2E session key was cleared. Session has now ended.'),
+				html: true
+			});
 		}
 	},
-	'click button.end'(e/*, t*/) {
+	'click button.end'(e) {
 		e.preventDefault();
 		const e2e = RocketChat.E2E.getInstanceByRoomId(this.rid);
 		if (e2e) {

@@ -23,9 +23,8 @@ export const RoomHistoryManager = new class {
 	decryptE2EMessage(item) {
 		const e2eRoom = RocketChat.E2E.getInstanceByRoomId(item.rid);
 		if (e2eRoom.groupSessionKey != null) {
+			// Session key exists in browser, directly decrypt.
 			e2eRoom.decrypt(item.msg).then((data) => {
-				// const {id, text, ack} = data;
-				// item._id = data._id;
 				item.msg = data.text;
 				item.ack = data.ack;
 				if (data.ts) {
@@ -33,18 +32,25 @@ export const RoomHistoryManager = new class {
 				}
 				ChatMessage.upsert({_id: item._id}, item);
 			});
-		} else {
+		} 
+		else {
+			// Session key for this room does not exist in browser. Download key first.
 			Meteor.call('fetchGroupE2EKey', e2eRoom.roomId, function(error, result) {
 				let cipherText = EJSON.parse(result);
 				const vector = cipherText.slice(0, 16);
 				cipherText = cipherText.slice(16);
+
+				// Decrypt downloaded key.
 				const decrypt_promise = crypto.subtle.decrypt({name: 'RSA-OAEP', iv: vector}, RocketChat.E2EStorage.get('RSA-PrivKey'), cipherText);
 				decrypt_promise.then(function(result) {
+
+					// Import decrypted session key for use.
 					e2eRoom.exportedSessionKey = RocketChat.signalUtils.toString(result);
 					crypto.subtle.importKey('jwk', EJSON.parse(e2eRoom.exportedSessionKey), {name: 'AES-CBC', iv: vector}, true, ['encrypt', 'decrypt']).then(function(key) {
 						e2eRoom.groupSessionKey = key;
+
+						// Decrypt message.
 						e2eRoom.decrypt(item.msg).then((data) => {
-							// item._id = data._id;
 							item.msg = data.text;
 							item.ack = data.ack;
 							if (data.ts) {
@@ -55,9 +61,11 @@ export const RoomHistoryManager = new class {
 
 					});
 				});
+
 				decrypt_promise.catch(function(err) {
 					console.log(err);
 				});
+				
 			});
 		}
 	}

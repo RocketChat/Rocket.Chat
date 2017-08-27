@@ -13,7 +13,6 @@ function str2ab(str) {
 
 RocketChat.E2E.Room = class {
 	constructor(userId, roomId, t) {
-		console.log('Room created!');
 		this.userId = userId;
 		this.roomId = roomId;
 		this.typeOfRoom = t;
@@ -21,89 +20,94 @@ RocketChat.E2E.Room = class {
 		this.established = new ReactiveVar(false);
 		this.establishing = new ReactiveVar(false);
 
-		this.userOnlineComputation = null;
-
 		this.keyPair = null;
 		this.exportedPublicKey = null;
 		this.sessionKey = null;
 
+
+		// Keys needed by Signal Protocol
 		this.peerIdentityKey = null;
 		this.peerPreKey = null;
 		this.peerSignedPreKey = null;
 		this.peerSignedSignature = null;
 	}
 
+	// Initiates E2E Encryption
 	handshake(startSession, refresh) {
 		const self = this;
 		this.establishing.set(true);
-		console.log(this);
+
+		// Cover private groups and direct messages
 		if (this.typeOfRoom === 'p' || this.typeOfRoom === 'd') {
-			// if (self.groupSessionKey !== null) {
-			// 	console.log("TYPE A");
-			// 	self.established.set(true);
-			// 	self.establishing.set(false);
-			// } else {
 			const sessionKey = new Promise((resolve) => {
+
+				// Fetch encrypted session key from subscription model
 				Meteor.call('fetchGroupE2EKey', self.roomId, function(error, result) {
 					if (result !== null && result !== undefined && refresh !== true) {
-						console.log(result);
-						console.log('TYPE 1');
 						let cipherText = EJSON.parse(result);
 						const vector = cipherText.slice(0, 16);
 						cipherText = cipherText.slice(16);
+
+						// Decrypt obtained encrypted session key
 						decrypt_promise = crypto.subtle.decrypt({name: 'RSA-OAEP', iv: vector}, RocketChat.E2EStorage.get('RSA-PrivKey'), cipherText);
 						decrypt_promise.then(function(result) {
-							console.log(result);
+
 							self.exportedSessionKey = ab2str(result);
+
+							// Import session key for use.
 							crypto.subtle.importKey('jwk', EJSON.parse(self.exportedSessionKey), {name: 'AES-CBC', iv: vector}, true, ['encrypt', 'decrypt']).then(function(key) {
+								
+								// Key has been obtained. E2E is now in session. 
 								self.groupSessionKey = key;
 								self.established.set(true);
 								self.establishing.set(false);
 								resolve(true);
 							});
 						});
+						
 						decrypt_promise.catch((err) => {
 							console.log(err.name);
 						});
-
-					}					else {
+					} 
+					else {
+						// Could not obtain session key from server.
 						resolve(false);
 					}
 				});
+
 			}).then(function(val) {
 				if (val === false) {
-					console.log('TYPE 2');
+					// Session key does not exist on the server. Generating new.
 					RocketChat.E2E.crypto.generateKey({name: 'AES-CBC', length: 128}, true, ['encrypt', 'decrypt']).then((key) => {
 						self.groupSessionKey = key;
 						crypto.subtle.exportKey('jwk', key).then(function(result) {
 							self.exportedSessionKey = JSON.stringify(result);
 						});
 					}).then(() => {
-						// RocketChat.Notifications.notifyUser(this.peerId, 'otr', 'handshake', { roomId: this.roomId, userId: this.userId, publicKey: EJSON.stringify(this.exportedPublicKey), refresh });
-						self.firstPeer = true;
 						self.establishing.set(false);
 						self.established.set(true);
-						console.log('Group session key generated!');
+
+						// Encrypt generated session key for every user in room and publish to subscription model.
 						Meteor.call('getUsersOfRoom', self.roomId, true, function(error, result) {
-							console.log(result);
 							result.records.forEach(function(user) {
-								console.log(`Fetching for: ${ user.name }`);
+
+								// Fetch public key for this user in room
 								Meteor.call('fetchKeychain', user._id, function(error, keychain) {
 									const key = JSON.parse(keychain);
-									console.log(key);
 									if (key['RSA-PubKey']) {
 										crypto.subtle.importKey('jwk', JSON.parse(key['RSA-PubKey']), {name: 'RSA-OAEP', modulusLength: 2048, publicExponent: new Uint8Array([0x01, 0x00, 0x01]), hash: {name: 'SHA-256'}}, true, ['encrypt']).then(function(user_key) {
 											const vector = crypto.getRandomValues(new Uint8Array(16));
+
+											// Encrypt session key for this user with his/her public key
 											encrypt_promise = crypto.subtle.encrypt({name: 'RSA-OAEP', iv: vector}, user_key, str2ab(self.exportedSessionKey));
 											encrypt_promise.then(function(result) {
 												cipherText = new Uint8Array(result);
 												const output = new Uint8Array(vector.length + cipherText.length);
 												output.set(vector, 0);
 												output.set(cipherText, vector.length);
-												console.log('Encrypted key: ');
-												console.log(EJSON.stringify(output));
+
+												// Key has been encrypted. Publish to that user's subscription model for this room.
 												Meteor.call('updateGroupE2EKey', self.roomId, user._id, EJSON.stringify(output), function(error, result) {
-													console.log(result);
 												});
 											});
 										});
@@ -114,15 +118,22 @@ RocketChat.E2E.Room = class {
 					});
 				}
 			});
+
 			sessionKey.catch((err) => {
-				console.log('Error occurred');
 				console.log(err);
 			});
-		} else {
+
+		} 
+		else {		
+		
+		// Control should never reach here as both cases (private group and direct) have been covered above.
+		// This is for future, in case of Signal integration.
+
 			let key;
+
+			// Fetch Signal keychain for user. 
 			Meteor.call('fetchKeychain', this.peerId, function(error, result) {
 				key = JSON.parse(result);
-				console.log(key);
 				self.peerIdentityKey = key.lastUsedIdentityKey;
 				for (let i=0; i<key.publicKeychain.length; i++) {
 					if (key.publicKeychain[i][0] === self.peerIdentityKey) {
@@ -134,20 +145,18 @@ RocketChat.E2E.Room = class {
 					}
 				}
 				self.peerIdentityKey = str2ab(self.peerIdentityKey);
-				console.log(`Obtained keys: ${ ab2str(self.peerIdentityKey) }, ${ ab2str(self.peerSignedPreKey) }, ${ ab2str(self.peerSignedSignature) }`);
+
 				if (startSession) {
 					self.firstPeer = true;
 					self.start_session();
 				}
 			});
 		}
-		// RocketChat.Notifications.notifyUser(this.peerId, 'e2e', 'handshake', { roomId: this.roomId, userId: this.userId, refresh });
 	}
 
-
+	// Starts Signal's E2E session
 	start_session() {
 		const bAddress = new libsignal.SignalProtocolAddress(this.peerRegistrationId, 1);
-		console.log(this.peerIdentityKey);
 		const sessionBuilder = new libsignal.SessionBuilder(RocketChat.E2EStorage, bAddress);
 
 		const self = this;
@@ -167,7 +176,7 @@ RocketChat.E2E.Room = class {
 		});
 
 		promise.then(function onsuccess() {
-			console.log('Successfully created session');
+			// Signal Session was created successfully.
 			self.establishing.set(false);
 			self.established.set(true);
 			self.cipher = new libsignal.SessionCipher(RocketChat.E2EStorage, bAddress);
@@ -179,36 +188,34 @@ RocketChat.E2E.Room = class {
 	}
 
 
+	// Clears the session key in use by room
 	clearGroupKey(refresh) {
 		const self = this;
+
+		// For every user in room...
 		Meteor.call('getUsersOfRoom', self.roomId, true, function(error, result) {
 			result.records.forEach(function(user) {
+
+				// ...remove session key for this room
 				Meteor.call('updateGroupE2EKey', self.roomId, user._id, null, function(error, result) {
-					console.log(result);
 					RocketChat.Notifications.notifyUser(user._id, 'e2e', 'clearGroupKey', { roomId: self.roomId, userId: self.userId });
 					if (refresh) {
-						console.log('Will handshake again');
-						// self.handshake(true);
+						// Generate new key.
 					}
 				});
 			});
 		});
 	}
 
-	acknowledge() {
-		RocketChat.Notifications.notifyUser(this.peerId, 'e2e', 'acknowledge', { roomId: this.roomId, userId: this.userId });
-	}
 
-	deny() {
-		this.reset();
-		RocketChat.Notifications.notifyUser(this.peerId, 'e2e', 'deny', { roomId: this.roomId, userId: this.userId });
-	}
-
+	// Stop E2E session.
 	end() {
 		this.reset();
 		RocketChat.Notifications.notifyUser(this.peerId, 'e2e', 'end', { roomId: this.roomId, userId: this.userId });
 	}
 
+
+	// Reset E2E session.
 	reset(refresh) {
 		this.establishing.set(false);
 		this.established.set(false);
@@ -226,6 +233,8 @@ RocketChat.E2E.Room = class {
 		this.clearGroupKey(refresh);		// Might enter a race condition with the handshake function.
 	}
 
+
+	// Encrypts files before upload. I/O is in arraybuffers. 
 	encryptFile(fileArrayBuffer) {
 		if (this.typeOfRoom === 'p' || this.typeOfRoom === 'd') {
 			const vector = crypto.getRandomValues(new Uint8Array(16));
@@ -234,34 +243,34 @@ RocketChat.E2E.Room = class {
 				const output = new Uint8Array(vector.length + cipherText.length);
 				output.set(vector, 0);
 				output.set(cipherText, vector.length);
-				console.log(output);
 				return str2ab(EJSON.stringify(output));
 			});
 		}
 	}
 
+
+	// Decrypt uploaded encrypted files. I/O is in arraybuffers.
 	decryptFile(message) {
 		let cipherText = EJSON.parse(message);
 		const vector = cipherText.slice(0, 16);
 		cipherText = cipherText.slice(16);
-		console.log(cipherText);
 		return crypto.subtle.decrypt({name: 'AES-CBC', iv: vector}, this.groupSessionKey, cipherText).then((result) => {
-			console.log(result);
 			return result;
-			// console.log(EJSON.parse(ab2str(result)));
-			// return EJSON.parse(ab2str(result));
 		})
 		.catch((e) => {
-			console.log(`Session key was changed: ${ e }`);
+
+			// Session key was reset. Cannot decrypt this file anymore.
 			swal({
 				title: `<i class='icon-key alert-icon failure-color'></i>${ TAPi18n.__('E2E') }`,
 				text: TAPi18n.__('Some messages cannot be decrypted because session key was reset.'),
 				html: true
-			});	// Change this to E2E specific line. 
+			});	
 			return false;
 		});
 	}
 
+
+	// Encrypts messages
 	encryptText(data) {
 		if (!_.isObject(data)) {
 			data = new TextEncoder('UTF-8').encode(EJSON.stringify({ text: data, ack: Random.id((Random.fraction()+1)*20) }));
@@ -275,13 +284,20 @@ RocketChat.E2E.Room = class {
 				output.set(cipherText, vector.length);
 				return EJSON.stringify(output);
 			});
-		} else {
+		} 
+		else {
+
+			// Control should never reach here as both cases (private group and direct) have been covered above.
+			// This is for future, in case of Signal integration.
+			
 			return this.cipher.encrypt(data).then((ciphertext) => {
 				return ab2str(ciphertext.body);
 			});
 		}
 	}
 
+
+	// Helper function for encryption of messages
 	encrypt(message) {
 		let ts;
 		if (isNaN(TimeSync.serverOffset())) {
@@ -301,42 +317,48 @@ RocketChat.E2E.Room = class {
 		return enc;
 	}
 
+
+	// Decrypt messages
 	decrypt(message) {
-		console.log(`MESSAGE RECEIVED: ${ message }`);
 		if (this.typeOfRoom === 'p' || this.typeOfRoom === 'd') {
 			let cipherText = EJSON.parse(message);
 			const vector = cipherText.slice(0, 16);
 			cipherText = cipherText.slice(16);
-			console.log(cipherText);
 			return crypto.subtle.decrypt({name: 'AES-CBC', iv: vector}, this.groupSessionKey, cipherText).then((result) => {
-				console.log(result);
-				console.log(EJSON.parse(ab2str(result)));
 				return EJSON.parse(ab2str(result));
 			})
 			.catch((e) => {
-				console.log(`Session key was changed: ${ e }`);
+				// Session key was reset. Cannot decrypt this message anymore.
 				return false;
 			});
-		} else {
+
+		} 
+		else {
+
+			// Control should never reach here as both cases (private group and direct) have been covered above.
+			// This is for future, in case of Signal integration.
 			const ciphertext = str2ab(message);
-			console.log(ciphertext);
 			return this.cipher.decryptWhisperMessage(ciphertext, 'binary').then((plaintext) => {
-				console.log(`CHECK THIS: ${ ab2str(plaintext) }`);
 				plaintext = EJSON.parse(ab2str(plaintext));
 				return plaintext;
 			});
 		}
 	}
 
+
+	// Decrypts first message after signal session establishment by peer. 
+	// According to signal protocol, needs to be handled differently as this message contains session establishment information.
 	decryptInitial(message) {
-		console.log(`MESSAGE RECEIVED: ${ message }`);
+
+		// Control should never reach here as both cases (private group and direct) have been covered above.
+		// This is for future, in case of Signal integration.
 		const ciphertext = str2ab(message);
-		console.log(ciphertext);
 		const self = this;
 		return new Promise((resolve) => {
+
+			// Get signal keys for the peer.
 			Meteor.call('fetchKeychain', this.peerId, function(error, result) {
 				const key = JSON.parse(result);
-				console.log(key);
 				self.peerIdentityKey = key.lastUsedIdentityKey;
 				for (let i=0; i<key.publicKeychain.length; i++) {
 					if (key.publicKeychain[i][0] === self.peerIdentityKey) {
@@ -348,14 +370,15 @@ RocketChat.E2E.Room = class {
 					}
 				}
 				self.peerIdentityKey = str2ab(self.peerIdentityKey);
-				console.log(`Obtained keys: ${ ab2str(self.peerIdentityKey) }, ${ ab2str(self.peerSignedPreKey) }, ${ ab2str(self.peerSignedSignature) }`);
+
+				// Establish a signal session.
 				const bAddress = new libsignal.SignalProtocolAddress(self.peerRegistrationId, 1);
 				self.cipher = new libsignal.SessionCipher(RocketChat.E2EStorage, bAddress);
 				self.establishing.set(false);
 				self.established.set(true);
+
+				// Decrypt initial signal message using `decryptPreKeyWhisperMessage`
 				return self.cipher.decryptPreKeyWhisperMessage(ciphertext, 'binary').then((plaintext) => {
-					console.log(`CHECK THIS: ${ ab2str(plaintext) }`);
-					// return ab2str(plaintext);
 					plaintext = EJSON.parse(ab2str(plaintext));
 					resolve(plaintext);
 				});
@@ -364,59 +387,13 @@ RocketChat.E2E.Room = class {
 		});
 	}
 
+
 	onUserStream(type, data) {
 		const user = Meteor.users.findOne(data.userId);
 		switch (type) {
-			case 'handshake':
-				let timeout = null;
-
-				const establishConnection = () => {
-					this.establishing.set(true);
-					Meteor.clearTimeout(timeout);
-					this.firstPeer = false;
-					FlowRouter.goToRoomById(data.roomId);
-					Meteor.defer(() => {
-						this.established.set(true);
-						this.acknowledge();
-					});
-
-
-				};
-
-				if (data.refresh && this.established.get()) {
-					this.reset();
-					establishConnection();
-				} else {
-					if (this.established.get()) {
-						this.reset();
-					}
-
-					swal({
-						title: `<i class='icon-key alert-icon success-color'></i>${ TAPi18n.__('OTR') }`,
-						text: TAPi18n.__('Username_wants_to_start_otr_Do_you_want_to_accept', { username: user.username }),
-						html: true,
-						showCancelButton: true,
-						allowOutsideClick: false,
-						confirmButtonText: TAPi18n.__('Yes'),
-						cancelButtonText: TAPi18n.__('No')
-					}, (isConfirm) => {
-						if (isConfirm) {
-							establishConnection();
-						} else {
-							Meteor.clearTimeout(timeout);
-							this.deny();
-						}
-					});
-				}
-
-				timeout = Meteor.setTimeout(() => {
-					this.establishing.set(false);
-					swal.close();
-				}, 10000);
-
-				break;
-
 			case 'acknowledge':
+				// Control should never reach here as both cases (private group and direct) have been covered above.
+				// This is for future, in case of Signal integration.
 				this.established.set(true);
 				// GET THE OTHER'S KEY
 				Meteor.call('fetchKeychain', data.userId, function(error, key) {
@@ -432,27 +409,15 @@ RocketChat.E2E.Room = class {
 				});
 				break;
 
-			case 'deny':
-				if (this.establishing.get()) {
-					this.reset();
-					const user = Meteor.users.findOne(this.peerId);
-					swal({
-						title: `<i class='icon-key alert-icon success-color'></i>${ TAPi18n.__('E2E') }`,
-						text: TAPi18n.__('Username_denied_the_OTR_session', { username: user.username }),
-						html: true
-					});
-				}
-				break;
-
 			case 'end':
 				if (this.established.get()) {
 					this.reset();
 					const user = Meteor.users.findOne(this.peerId);
 					swal({
-						title: `<i class='icon-key alert-icon success-color'></i>${ TAPi18n.__('E2E') }`,
-						text: TAPi18n.__('Username_ended_the_OTR_session', { username: user.username }),
+						title: `<i class='icon-key alert-icon failure-color'></i>${ TAPi18n.__('E2E') }`,
+						text: TAPi18n.__('The E2E session was ended'),
 						html: true
-					});	// Change this to E2E specific line. 
+					});	
 				}
 				break;
 
@@ -460,8 +425,8 @@ RocketChat.E2E.Room = class {
 				if (this.established.get()) {
 					this.reset();
 					swal({
-						title: `<i class='icon-key alert-icon success-color'></i>${ TAPi18n.__('E2E') }`,
-						text: TAPi18n.__('Username_ended_the_OTR_session', { username: user.username }),
+						title: `<i class='icon-key alert-icon failure-color'></i>${ TAPi18n.__('E2E') }`,
+						text: TAPi18n.__('The E2E session key was cleared. Session has now ended.'),
 						html: true
 					});
 				}

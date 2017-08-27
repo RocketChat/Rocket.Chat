@@ -47,7 +47,7 @@ Meteor.methods({
 		}
 
 		const user = Meteor.user();
-		console.log(file);
+
 		let msg = Object.assign({
 			_id: Random.id(),
 			rid: roomId,
@@ -60,9 +60,9 @@ Meteor.methods({
 			groupable: false,
 			attachments: [attachment]
 		}, msgData);
+
 		if (file.encryption && file.encryption == true) {
-			console.log("Encrypted file found.");
-			console.log("Room id: "+roomId);
+			// File is encrypted. Need to add flags to let the receiving side know how to decrypt.
 			msg.t = 'e2e';
 			msg.attachments[0].decryption_required = true;
 			msg.attachments[0].rid = roomId;
