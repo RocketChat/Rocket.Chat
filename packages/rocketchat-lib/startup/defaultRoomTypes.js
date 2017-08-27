@@ -100,9 +100,10 @@ RocketChat.roomTypes.add('t', 40, {
 
 	condition() {
 		const user = Meteor.user();
-		const hasTokenpass = user & user.services && user.services.tokenly;
+		const hasTokenpass = !!(user && user.services && user.services.tokenly);
 		const preferences = (user && user.settings && user.settings.preferences && user.settings.preferences) || {};
-		return hasTokenpass && !preferences.roomsListExhibitionMode || ['unread', 'category'].includes(preferences.roomsListExhibitionMode) && !preferences.mergeChannels;
+
+		return hasTokenpass && (!preferences.roomsListExhibitionMode || ['unread', 'category'].includes(preferences.roomsListExhibitionMode)) && !preferences.mergeChannels;
 	}
 });
 

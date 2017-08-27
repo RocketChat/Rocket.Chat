@@ -438,6 +438,16 @@ class ModelUsers extends RocketChat.models._Base {
 		return this.update(_id, update);
 	}
 
+	setTokenlyTcaBalances(_id, tcaBalances) {
+		const update = {
+			$set: {
+				'services.tokenly.tcaBalances': tcaBalances
+			}
+		};
+
+		return this.update(_id, update);
+	}
+
 	setUtcOffset(_id, utcOffset) {
 		const query = {
 			_id,

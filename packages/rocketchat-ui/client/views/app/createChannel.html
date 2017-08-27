@@ -29,6 +29,19 @@
 						</span>
 					</label>
 				</div>
+				{{#if currentUser.services.tokenly}}
+					<div class="rc-switch">
+						<label class="rc-switch__label" tabindex="-1">
+							<input type="checkbox" class="rc-switch__input" name="setTokensRequired" checked>
+							<span class="rc-switch__button">
+								<span class="rc-switch__button-inside"></span>
+							</span>
+							<span class="rc-switch__text">
+								{{_ "Token_Controlled_Access"}}
+							</span>
+						</label>
+					</div>
+				{{/if}}
 			</div>
 			<div class="create-channel__inputs">
 				<div class="rc-input {{#if invalidChannel}}rc-input--error{{/if}}">
@@ -38,7 +51,7 @@
 							<div class="rc-input__icon">
 								{{> icon block="rc-input__icon-svg" icon=iconType }}
 							</div>
-							<input name="name" type="text" class="rc-input__element" placeholder="Type channel name" autofocus>
+							<input name="name" type="text" class="rc-input__element" placeholder="{{_ "Channel_Name_Placeholder"}}" autofocus>
 						</div>
 					</label>
 					{{!--<div class="rc-input__description">Names must be all lower case and shorter than 22 characters</div>--}}
@@ -76,6 +89,50 @@
 						{{/with}}
 					</label>
 				</div>
+				{{#if currentUser.services.tokenly}}
+					<div id="tokensFields">
+						<div class="rc-input {{#if invalidChannel}}rc-input--error{{/if}}">
+							<label class="rc-input__label">
+								<div class="rc-input__title">{{_ "Tokens_Required"}}</div>
+								<div class="rc-input__wrapper">
+									<div class="rc-input__icon">
+										{{> icon block="rc-input__icon-svg" icon=iconType }}
+									</div>
+									<input name="tokensRequired" type="text" class="rc-input__element" placeholder="{{_ "Tokens_Required_Input_Placeholder"}}">
+								</div>
+							</label>
+							<div class="rc-input__description">{{_ "Tokens_Required_Input_Description"}}</div>
+							{{#if inUse}}
+								<div class="rc-input__error">
+									<div class="rc-input__error-icon">
+										{{> icon block="rc-input__error-icon" icon="warning" classes="rc-input__error-icon-svg"}}
+									</div>
+									<div class="rc-input__error-message">{{_ "Tokens_Required_Input_Error"}}</div>
+								</div>
+							{{/if}}
+						</div>
+						<div class="rc-input {{#if invalidChannel}}rc-input--error{{/if}}">
+							<label class="rc-input__label">
+								<div class="rc-input__title">{{_ "Tokens_Minimum_Needed_Balance"}}</div>
+								<div class="rc-input__wrapper">
+									<div class="rc-input__icon">
+										{{> icon block="rc-input__icon-svg" icon=iconType }}
+									</div>
+									<input name="tokenMinimumNeededBalance" type="number" class="rc-input__element" placeholder="{{_ "Tokens_Minimum_Needed_Balance_Placeholder"}}">
+								</div>
+							</label>
+							<div class="rc-input__description">{{_ "Tokens_Minimum_Needed_Balance_Description"}}</div>
+							{{#if inUse}}
+								<div class="rc-input__error">
+									<div class="rc-input__error-icon">
+										{{> icon block="rc-input__error-icon" icon="warning" classes="rc-input__error-icon-svg"}}
+									</div>
+									<div class="rc-input__error-message">{{_ "Tokens_Minimum_Needed_Balance_Placeholder"}}</div>
+								</div>
+							{{/if}}
+						</div>
+					</div>
+				{{/if}}
 			</div>
 			<button class="rc-button rc-button--primary" type='submit' data-button="create" {{createIsDisabled}}>{{_ "Create"}}</button>
 		</form>

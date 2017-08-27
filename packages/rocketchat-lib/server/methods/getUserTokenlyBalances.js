@@ -20,6 +20,7 @@ Meteor.methods({
 			throw new Error(`Failed to fetch public tokenpass balances from Tokenly. ${ error.message }`);
 		}
 	},
+
 	getProtectedTokenpassBalances(accessToken) {
 		try {
 			this.unblock();
@@ -27,6 +28,7 @@ Meteor.methods({
 			return HTTP.get(
 				'https://tokenpass.tokenly.com/api/v1/tca/protected/balances', {
 					headers: {
+						Accept: 'application/json',
 						'User-Agent': userAgent
 					},
 					params: {
@@ -34,7 +36,7 @@ Meteor.methods({
 					}
 				}).data;
 		} catch (error) {
-			throw new Error(`Failed to fetch public tokenpass balances from Tokenly. ${ error.message }`);
+			throw new Error(`Failed to fetch protected tokenpass balances from Tokenly. ${ error.message }`);
 		}
 	}
 });

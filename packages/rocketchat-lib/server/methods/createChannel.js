@@ -1,7 +1,11 @@
 Meteor.methods({
-	createChannel(name, members, readOnly = false, customFields = {}) {
+	createChannel(name, members, readOnly = false, customFields = {}, tokens, minimumTokenBalance) {
 		check(name, String);
 		check(members, Match.Optional([String]));
+		check(tokens, Match.Optional([String]));
+		check(minimumTokenBalance, Match.Optional(Number));
+
+		// TODO Tokenly
 
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'createChannel' });
@@ -11,6 +15,6 @@ Meteor.methods({
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'createChannel' });
 		}
 
-		return RocketChat.createRoom('c', name, Meteor.user() && Meteor.user().username, members, readOnly, {customFields});
+		return RocketChat.createRoom('c', name, Meteor.user() && Meteor.user().username, members, readOnly, {customFields}, tokens, minimumTokenBalance);
 	}
 });

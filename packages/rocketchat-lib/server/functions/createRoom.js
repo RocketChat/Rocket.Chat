@@ -1,8 +1,11 @@
 /* globals RocketChat */
-RocketChat.createRoom = function(type, name, owner, members, readOnly, extraData={}) {
+RocketChat.createRoom = function(type, name, owner, members, readOnly, extraData={}, tokens, minimumTokenBalance) {
 	name = s.trim(name);
 	owner = s.trim(owner);
 	members = [].concat(members);
+
+	// TODO Tokenly
+	tokens = [].concat(tokens);
 
 	if (!name) {
 		throw new Meteor.Error('error-invalid-name', 'Invalid name', { function: 'RocketChat.createRoom' });
@@ -29,6 +32,8 @@ RocketChat.createRoom = function(type, name, owner, members, readOnly, extraData
 			ro: readOnly === true,
 			sysMes: readOnly !== true,
 			usernames: members,
+			tokens,
+			minimumTokenBalance,
 			u: {
 				_id: owner._id,
 				username: owner.username

@@ -31,6 +31,12 @@ const validateChannelName = (name) => {
 	const reg = new RegExp(`^${ RocketChat.settings.get('UTF8_Names_Validation') }$`);
 	return name.length === 0 || reg.test(name);
 };
+
+const validateAccessTokens = (accessTokens) => {
+	// TODO Tokenly - Assign tokens (which was separated by commas) in array... Each tokens array validating if user have all the entered tokens...
+	return true;
+};
+
 const filterNames = (old) => {
 	if (RocketChat.settings.get('UI_Allow_room_names_with_special_chars')) {
 		return old;
@@ -104,6 +110,14 @@ Template.createChannel.events({
 	'click .rc-tags__tag'({target}, t) {
 		const {username} = Blaze.getData(target);
 		t.selectedUsers.set(t.selectedUsers.get().filter(user => user.username !== username));
+	},
+	'change [name=setTokensRequired]'(e, t) {
+		// Tokenly
+		if (e.target.checked) {
+			t.$('#tokensFields').slideDown();
+		} else {
+			t.$('#tokensFields').slideUp();
+		}
 	},
 	'change [name=type]'(e, t) {
 		t.type.set(e.target.checked ? e.target.value : 'p');
