@@ -31,43 +31,43 @@ FileUploadBase = class FileUploadBase {
 	}
 
 	start(callback) {
-		var self = this;
+		const self = this;
 		if (this.meta.rid && RocketChat.E2E.getInstanceByRoomId(this.meta.rid) && RocketChat.E2E.getInstanceByRoomId(this.meta.rid).established.get()) {
 			// Encryption is required as E2E is in session.
 
 			// Read the selected file into an arraybuffer object, encrypt it, then create new file object with that buffer, and upload that object.
-			var reader = new FileReader();
-			reader.onload = function (evt) {
-		        RocketChat.E2E.getInstanceByRoomId(self.meta.rid).encryptFile(evt.target.result)
-				.then((msg) => {
-					// File has been encrypted.
-					var encryptedFile = new File([msg], self.file.name);
-					encryptedFile.encryption = true;
+			const reader = new FileReader();
+			reader.onload = function(evt) {
+				RocketChat.E2E.getInstanceByRoomId(self.meta.rid).encryptFile(evt.target.result)
+					.then((msg) => {
+						// File has been encrypted.
+						const encryptedFile = new File([msg], self.file.name);
+						encryptedFile.encryption = true;
 
-					// Create upload handler for new file object.
-					self.handler = new UploadFS.Uploader({
-						store: self.store,
-						data: encryptedFile,
-						file: self.meta,
-						onError: (err) => {
-							return callback(err);
-						},
-						onComplete: (fileData) => {
-							const file = _.pick(fileData, '_id', 'type', 'size', 'name', 'identify', 'description');
-							file.encryption = true;
-							file.url = fileData.url.replace(Meteor.absoluteUrl(), '/');
-							return callback(null, file, self.store.options.name);
-						}
+						// Create upload handler for new file object.
+						self.handler = new UploadFS.Uploader({
+							store: self.store,
+							data: encryptedFile,
+							file: self.meta,
+							onError: (err) => {
+								return callback(err);
+							},
+							onComplete: (fileData) => {
+								const file = _.pick(fileData, '_id', 'type', 'size', 'name', 'identify', 'description');
+								file.encryption = true;
+								file.url = fileData.url.replace(Meteor.absoluteUrl(), '/');
+								return callback(null, file, self.store.options.name);
+							}
+						});
+						self.handler.onProgress = (file, progress) => {
+							self.onProgress(progress);
+						};
+						return self.handler.start();
 					});
-					self.handler.onProgress = (file, progress) => {
-						self.onProgress(progress);
-					};
-					return self.handler.start();
-				});
-		    }
-		    reader.onerror = function (evt) {
-				console.log("read failure");
-		    }
+			};
+			reader.onerror = function(evt) {
+				console.log(`read failure${ evt }`);
+			};
 			reader.readAsArrayBuffer(this.file);
 		} else {
 			// Encryption is not required as E2E is not in session.
@@ -93,7 +93,7 @@ FileUploadBase = class FileUploadBase {
 
 			return this.handler.start();
 		}
-		
+
 	}
 
 	onProgress() {}

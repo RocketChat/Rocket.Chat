@@ -32,8 +32,7 @@ export const RoomHistoryManager = new class {
 				}
 				ChatMessage.upsert({_id: item._id}, item);
 			});
-		} 
-		else {
+		}		else {
 			// Session key for this room does not exist in browser. Download key first.
 			Meteor.call('fetchGroupE2EKey', e2eRoom.roomId, function(error, result) {
 				let cipherText = EJSON.parse(result);
@@ -65,7 +64,7 @@ export const RoomHistoryManager = new class {
 				decrypt_promise.catch(function(err) {
 					console.log(err);
 				});
-				
+
 			});
 		}
 	}

@@ -74,29 +74,28 @@ Template.messageAttachment.helpers({
 
 	// Decrypt received encrypted file.
 	decryptFile() {
-		var xhttp = new XMLHttpRequest();
-		var self = this;
+		const xhttp = new XMLHttpRequest();
+		const self = this;
 
 		// Download file asynchronously using XHR.
 		xhttp.onreadystatechange = function() {
-			if (this.readyState == 4 && this.status == 200) {
+			if (this.readyState === 4 && this.status === 200) {
 				const e2eRoom = RocketChat.E2E.getInstanceByRoomId(self.rid);
 				if (e2eRoom.groupSessionKey != null) {
-			        RocketChat.E2E.getInstanceByRoomId(self.rid).decryptFile(xhttp.response)
+					RocketChat.E2E.getInstanceByRoomId(self.rid).decryptFile(xhttp.response)
 						.then((msg) => {
 							if (msg) {
-								var decryptedFile = new File([msg], self.title);
-								var downloadUrl = URL.createObjectURL(decryptedFile);
-							    var a = document.createElement("a");
-							    document.body.appendChild(a);
-							    a.style = "display: none";
-							    a.href = downloadUrl;
-							    a.download = self.title;
-							    a.click();
+								const decryptedFile = new File([msg], self.title);
+								const downloadUrl = URL.createObjectURL(decryptedFile);
+								const a = document.createElement('a');
+								document.body.appendChild(a);
+								a.style = 'display: none';
+								a.href = downloadUrl;
+								a.download = self.title;
+								a.click();
 							}
-					});
-				}
-				else {
+						});
+				}				else {
 					// Session key for this room does not exist in browser. Download key first.
 					Meteor.call('fetchGroupE2EKey', e2eRoom.roomId, function(error, result) {
 						let cipherText = EJSON.parse(result);
@@ -114,30 +113,30 @@ Template.messageAttachment.helpers({
 
 								// Decrypt message.
 								RocketChat.E2E.getInstanceByRoomId(self.rid).decryptFile(xhttp.response)
-								.then((msg) => {
-									if (msg) {
-										var decryptedFile = new File([msg], self.title);
-										var downloadUrl = URL.createObjectURL(decryptedFile);
-									    var a = document.createElement("a");
-									    document.body.appendChild(a);
-									    a.style = "display: none";
-									    a.href = downloadUrl;
-									    a.download = self.title;
-									    a.click();
-									}
-								});
+									.then((msg) => {
+										if (msg) {
+											const decryptedFile = new File([msg], self.title);
+											const downloadUrl = URL.createObjectURL(decryptedFile);
+											const a = document.createElement('a');
+											document.body.appendChild(a);
+											a.style = 'display: none';
+											a.href = downloadUrl;
+											a.download = self.title;
+											a.click();
+										}
+									});
 							});
 						});
 
 						decrypt_promise.catch(function(err) {
 							console.log(err);
 						});
-						
+
 					});
 				}
 			}
 		};
-		xhttp.open("GET", this.title_link, true);
+		xhttp.open('GET', this.title_link, true);
 		xhttp.send();
 	}
 });
