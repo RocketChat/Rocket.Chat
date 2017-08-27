@@ -13,12 +13,14 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 	let emailSubject;
 	const usersToSendEmail = {};
 	const directMessage = room.t === 'd';
+	const username = RocketChat.settings.get('UI_Use_Real_Name') ? message.u.name : message.u.username;
+	const roomName = RocketChat.settings.get('UI_Allow_room_names_with_special_chars') ? room.fname : room.name;
 
 	if (directMessage) {
 		usersToSendEmail[message.rid.replace(message.u._id, '')] = 1;
 
 		emailSubject = TAPi18n.__('Offline_DM_Email', {
-			user: message.u.username
+			user: username
 		});
 
 	} else {
@@ -29,8 +31,8 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 		}
 
 		emailSubject = TAPi18n.__('Offline_Mention_Email', {
-			user: message.u.username,
-			room: room.name
+			user: username,
+			room: roomName
 		});
 	}
 
