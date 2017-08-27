@@ -115,7 +115,7 @@ export const RoomHistoryManager = new class {
 						(item.u && item.u._id && RoomRoles.findOne({rid: item.rid, 'u._id': item.u._id})) || {}
 					].map(e => e.roles);
 					item.roles = _.union.apply(_.union, roles);
-					if (item.t === 'e2e') {
+					if (item.t === 'e2e' && !item.file) {
 						self.decryptE2EMessage(item);
 					} else {
 						ChatMessage.upsert({_id: item._id}, item);
@@ -179,7 +179,7 @@ export const RoomHistoryManager = new class {
 							(item.u && item.u._id && RoomRoles.findOne({rid: item.rid, 'u._id': item.u._id})) || {}
 						].map(e => e.roles);
 						item.roles = _.union.apply(_.union, roles);
-						if (item.t === 'e2e') {
+						if (item.t === 'e2e' && !item.file) {
 							self.decryptE2EMessage(item);
 						} else {
 							ChatMessage.upsert({_id: item._id}, item);
@@ -248,7 +248,7 @@ export const RoomHistoryManager = new class {
 							(item.u && item.u._id && RoomRoles.findOne({rid: item.rid, 'u._id': item.u._id})) || {}
 						].map(e => e.roles);
 						item.roles = _.union.apply(_.union, roles);
-						if (item.t === 'e2e') {
+						if (item.t === 'e2e' && !item.file) {
 							self.decryptE2EMessage(item);
 						} else {
 							ChatMessage.upsert({_id: item._id}, item);

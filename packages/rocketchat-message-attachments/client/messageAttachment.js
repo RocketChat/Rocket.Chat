@@ -75,6 +75,7 @@ Template.messageAttachment.helpers({
 		console.log(this);
 		var xhttp = new XMLHttpRequest();
 		var self = this;
+		
 		xhttp.onreadystatechange = function() {
 			if (this.readyState == 4 && this.status == 200) {
 				console.log(xhttp.response);
