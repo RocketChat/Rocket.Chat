@@ -177,6 +177,10 @@ RocketChat.settings.addGroup('Accounts', function() {
 				value: true
 			}
 		});
+		this.add('Accounts_ExternalSource', '', {
+			type: 'string',
+			'public': true
+		});
 
 		return this.add('Accounts_SetDefaultAvatar', true, {
 			type: 'boolean'
