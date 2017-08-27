@@ -71,6 +71,41 @@ RocketChat.roomTypes.add('c', 30, {
 	}
 });
 
+// tokenly
+RocketChat.roomTypes.add('t', 40, {
+	label: 'Tokenly_Channels',
+	icon: 'lock',
+	route: {
+		name: 'tokenly-channel',
+		path: '/tokenly-channel/:name',
+		action(params) {
+			return openRoom('t', params.name);
+		}
+	},
+
+	findRoom(identifier) {
+		const query = {
+			t: 't',
+			name: identifier
+		};
+		return ChatRoom.findOne(query);
+	},
+
+	roomName(roomData) {
+		if (RocketChat.settings.get('UI_Allow_room_names_with_special_chars')) {
+			return roomData.fname || roomData.name;
+		}
+		return roomData.name;
+	},
+
+	condition() {
+		const user = Meteor.user();
+		const hasTokenpass = user & user.services && user.services.tokenly;
+		const preferences = (user && user.settings && user.settings.preferences && user.settings.preferences) || {};
+		return hasTokenpass && !preferences.roomsListExhibitionMode || ['unread', 'category'].includes(preferences.roomsListExhibitionMode) && !preferences.mergeChannels;
+	}
+});
+
 // private
 RocketChat.roomTypes.add('p', 40, {
 	icon: 'lock',

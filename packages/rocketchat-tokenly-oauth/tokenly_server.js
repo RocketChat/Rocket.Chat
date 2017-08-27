@@ -1,5 +1,4 @@
-/*globals Tokenly, OAuth */
-
+/*globals Tokenly, OAuth, ServiceConfiguration */
 'use strict';
 
 Tokenly = {};
@@ -28,8 +27,8 @@ const getAccessToken = function(query) {
 					state: query.state
 				}
 			});
-	} catch (err) {
-		throw _.extend(new Error(`Failed to complete OAuth handshake with Tokenly. ${ err.message }`), {response: err.response});
+	} catch (error) {
+		throw _.extend(new Error(`Failed to complete OAuth handshake with Tokenly. ${ error.message }`), {response: error.response});
 	}
 	if (response.data.error) {
 		throw new Error(`Failed to complete OAuth handshake with Tokenly. ${ response.data.error }`);
@@ -49,8 +48,8 @@ const getIdentity = function(accessToken) {
 					access_token: accessToken
 				}
 			}).data;
-	} catch (err) {
-		throw _.extend(new Error(`Failed to fetch identity from Tokenly. ${ err.message }`), {response: err.response});
+	} catch (error) {
+		throw _.extend(new Error(`Failed to fetch identity from Tokenly. ${ error.message }`), {response: error.response});
 	}
 };
 

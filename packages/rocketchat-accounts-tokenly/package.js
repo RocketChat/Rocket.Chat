@@ -14,6 +14,7 @@ Package.onUse(function(api) {
 	api.imply('rocketchat:tokenly-oauth');
 
 	api.use(
+		['accounts-ui'],
 		['client', 'server'],
 		{ weak: true }
 	);

@@ -156,6 +156,8 @@ Package.onUse(function(api) {
 	api.addFiles('server/methods/getServerInfo.js', 'server');
 	api.addFiles('server/methods/getSingleMessage.js', 'server');
 	api.addFiles('server/methods/getUserRoles.js', 'server');
+	api.addFiles('server/methods/getUserTokenlyBalances.js', 'server');
+	api.addFiles('server/methods/getUserTokenlyChannels.js', 'server');
 	api.addFiles('server/methods/insertOrUpdateUser.js', 'server');
 	api.addFiles('server/methods/joinDefaultChannels.js', 'server');
 	api.addFiles('server/methods/joinRoom.js', 'server');

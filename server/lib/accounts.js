@@ -88,6 +88,11 @@ Accounts.onCreateUser(function(options, user = {}) {
 					verified: true
 				}];
 			}
+
+			const tcaPublicBalances = Meteor.call('getPublicTokenpassBalances', service.accessToken);
+			const tcaProtectedBalances = Meteor.call('getProtectedTokenpassBalances', service.accessToken);
+
+			console.log(tcaPublicBalances, tcaProtectedBalances);
 		}
 	}
 

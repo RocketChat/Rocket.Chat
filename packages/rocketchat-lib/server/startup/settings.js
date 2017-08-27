@@ -305,30 +305,6 @@ RocketChat.settings.addGroup('OAuth', function() {
 			enableQuery
 		});
 	});
-	this.section('Tokenly', function() {
-		const enableQuery = {
-			_id: 'Accounts_OAuth_Tokenly',
-			value: true
-		};
-		this.add('Accounts_OAuth_Tokenly', false, {
-			type: 'boolean',
-			'public': true
-		});
-		this.add('Accounts_OAuth_Tokenly_id', '', {
-			type: 'string',
-			enableQuery
-		});
-		this.add('Accounts_OAuth_Tokenly_secret', '', {
-			type: 'string',
-			enableQuery
-		});
-		return this.add('Accounts_OAuth_Tokenly_callback_url', '_oauth/tokenly', {
-			type: 'relativeUrl',
-			readonly: true,
-			force: true,
-			enableQuery
-		});
-	});
 	this.section('Twitter', function() {
 		const enableQuery = {
 			_id: 'Accounts_OAuth_Twitter',
