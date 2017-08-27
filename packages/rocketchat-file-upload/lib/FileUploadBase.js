@@ -31,17 +31,17 @@ FileUploadBase = class FileUploadBase {
 	}
 
 	start(callback) {
-		var self = this;
+		const self = this;
 		if (this.meta.rid && RocketChat.E2E.getInstanceByRoomId(this.meta.rid) && RocketChat.E2E.getInstanceByRoomId(this.meta.rid).established.get()) {
 			// Encryption is required as E2E is in session.
 
 			// Read the selected file into an arraybuffer object, encrypt it, then create new file object with that buffer, and upload that object.
-			var reader = new FileReader();
-			reader.onload = function (evt) {
-		        RocketChat.E2E.getInstanceByRoomId(self.meta.rid).encryptFile(evt.target.result)
+			const reader = new FileReader();
+			reader.onload = function(evt) {
+				RocketChat.E2E.getInstanceByRoomId(self.meta.rid).encryptFile(evt.target.result)
 				.then((msg) => {
 					// File has been encrypted.
-					var encryptedFile = new File([msg], self.file.name);
+					const encryptedFile = new File([msg], self.file.name);
 					encryptedFile.encryption = true;
 
 					// Create upload handler for new file object.
@@ -64,10 +64,10 @@ FileUploadBase = class FileUploadBase {
 					};
 					return self.handler.start();
 				});
-		    }
-		    reader.onerror = function (evt) {
-				console.log("read failure");
-		    }
+			};
+			reader.onerror = function(evt) {
+				console.log(`read failure${ evt }`);
+			};
 			reader.readAsArrayBuffer(this.file);
 		} else {
 			// Encryption is not required as E2E is not in session.
@@ -93,7 +93,7 @@ FileUploadBase = class FileUploadBase {
 
 			return this.handler.start();
 		}
-		
+
 	}
 
 	onProgress() {}

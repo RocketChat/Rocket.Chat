@@ -84,7 +84,7 @@ class E2E {
 	}
 
 	startClient() {
-		// To reset all keys (local and on server): 
+		// To reset all keys (local and on server):
 		//   Meteor.call("emptyKeychain");
 		//   RocketChat.E2EStorage.store = {}
 		//   localStorage.clear();
@@ -119,8 +119,7 @@ class E2E {
 					});
 				});
 			});
-		} 
-		else {
+		}		else {
 			// This is not a new device. Load keys from browser localstorage.
 			loadKeyGlobalsFromLS();
 		}
@@ -165,7 +164,7 @@ Meteor.startup(function() {
 
 	// Decrypt messages before displaying
 	RocketChat.promises.add('onClientMessageReceived', function(message) {
-		if (message.rid && RocketChat.E2E.getInstanceByRoomId(message.rid) && message.t === 'e2e' && !message.file) { 
+		if (message.rid && RocketChat.E2E.getInstanceByRoomId(message.rid) && message.t === 'e2e' && !message.file) {
 			const e2eRoom = RocketChat.E2E.getInstanceByRoomId(message.rid);
 			if (e2eRoom.typeOfRoom === 'p' || e2eRoom.typeOfRoom === 'd') {
 
@@ -181,8 +180,7 @@ Meteor.startup(function() {
 						return message;
 					});
 
-				} 
-				else {
+				}				else {
 					// User does not have session key. Need to download and decrypt from subscription model.
 					const decryptedMsg = new Promise((resolve) => {
 						Meteor.call('fetchGroupE2EKey', e2eRoom.roomId, function(error, result) {
@@ -223,8 +221,7 @@ Meteor.startup(function() {
 
 					return decryptedMsg;
 				}
-			} 
-			else {
+			}			else {
 				// Control should never reach here as both cases (private group and direct) have been covered above.
 				// This is for future, in case of Signal integration.
 				const peerRegistrationId = e2eRoom.peerRegistrationId;
@@ -249,8 +246,7 @@ Meteor.startup(function() {
 								return message;
 							});
 
-					} 
-					else {
+					}					else {
 						// Decrypt message using special first-time decryption function
 						return e2eRoom.decryptInitial(message.msg)
 							.then((data) => {
@@ -266,9 +262,8 @@ Meteor.startup(function() {
 					}
 				}
 			}
-		} 
-		else {
-			// Message is not encrypted. 
+		}		else {
+			// Message is not encrypted.
 			try {
 				return Promise.resolve(message);
 			} catch (err) {

@@ -56,20 +56,19 @@ RocketChat.E2E.Room = class {
 
 							// Import session key for use.
 							crypto.subtle.importKey('jwk', EJSON.parse(self.exportedSessionKey), {name: 'AES-CBC', iv: vector}, true, ['encrypt', 'decrypt']).then(function(key) {
-								
-								// Key has been obtained. E2E is now in session. 
+
+								// Key has been obtained. E2E is now in session.
 								self.groupSessionKey = key;
 								self.established.set(true);
 								self.establishing.set(false);
 								resolve(true);
 							});
 						});
-						
+
 						decrypt_promise.catch((err) => {
 							console.log(err.name);
 						});
-					} 
-					else {
+					}					else {
 						// Could not obtain session key from server.
 						resolve(false);
 					}
@@ -108,6 +107,7 @@ RocketChat.E2E.Room = class {
 
 												// Key has been encrypted. Publish to that user's subscription model for this room.
 												Meteor.call('updateGroupE2EKey', self.roomId, user._id, EJSON.stringify(output), function(error, result) {
+													console.log(result);
 												});
 											});
 										});
@@ -123,15 +123,14 @@ RocketChat.E2E.Room = class {
 				console.log(err);
 			});
 
-		} 
-		else {		
-		
+		}		else {
+
 		// Control should never reach here as both cases (private group and direct) have been covered above.
 		// This is for future, in case of Signal integration.
 
 			let key;
 
-			// Fetch Signal keychain for user. 
+			// Fetch Signal keychain for user.
 			Meteor.call('fetchKeychain', this.peerId, function(error, result) {
 				key = JSON.parse(result);
 				self.peerIdentityKey = key.lastUsedIdentityKey;
@@ -198,6 +197,7 @@ RocketChat.E2E.Room = class {
 
 				// ...remove session key for this room
 				Meteor.call('updateGroupE2EKey', self.roomId, user._id, null, function(error, result) {
+					console.log(result);
 					RocketChat.Notifications.notifyUser(user._id, 'e2e', 'clearGroupKey', { roomId: self.roomId, userId: self.userId });
 					if (refresh) {
 						// Generate new key.
@@ -234,7 +234,7 @@ RocketChat.E2E.Room = class {
 	}
 
 
-	// Encrypts files before upload. I/O is in arraybuffers. 
+	// Encrypts files before upload. I/O is in arraybuffers.
 	encryptFile(fileArrayBuffer) {
 		if (this.typeOfRoom === 'p' || this.typeOfRoom === 'd') {
 			const vector = crypto.getRandomValues(new Uint8Array(16));
@@ -258,13 +258,13 @@ RocketChat.E2E.Room = class {
 			return result;
 		})
 		.catch((e) => {
-
+			console.log(e);
 			// Session key was reset. Cannot decrypt this file anymore.
 			swal({
 				title: `<i class='icon-key alert-icon failure-color'></i>${ TAPi18n.__('E2E') }`,
 				text: TAPi18n.__('Some messages cannot be decrypted because session key was reset.'),
 				html: true
-			});	
+			});
 			return false;
 		});
 	}
@@ -284,12 +284,11 @@ RocketChat.E2E.Room = class {
 				output.set(cipherText, vector.length);
 				return EJSON.stringify(output);
 			});
-		} 
-		else {
+		}		else {
 
 			// Control should never reach here as both cases (private group and direct) have been covered above.
 			// This is for future, in case of Signal integration.
-			
+
 			return this.cipher.encrypt(data).then((ciphertext) => {
 				return ab2str(ciphertext.body);
 			});
@@ -328,12 +327,13 @@ RocketChat.E2E.Room = class {
 				return EJSON.parse(ab2str(result));
 			})
 			.catch((e) => {
+				console.log(e);
+
 				// Session key was reset. Cannot decrypt this message anymore.
 				return false;
 			});
 
-		} 
-		else {
+		}		else {
 
 			// Control should never reach here as both cases (private group and direct) have been covered above.
 			// This is for future, in case of Signal integration.
@@ -346,7 +346,7 @@ RocketChat.E2E.Room = class {
 	}
 
 
-	// Decrypts first message after signal session establishment by peer. 
+	// Decrypts first message after signal session establishment by peer.
 	// According to signal protocol, needs to be handled differently as this message contains session establishment information.
 	decryptInitial(message) {
 
@@ -389,7 +389,6 @@ RocketChat.E2E.Room = class {
 
 
 	onUserStream(type, data) {
-		const user = Meteor.users.findOne(data.userId);
 		switch (type) {
 			case 'acknowledge':
 				// Control should never reach here as both cases (private group and direct) have been covered above.
@@ -412,12 +411,11 @@ RocketChat.E2E.Room = class {
 			case 'end':
 				if (this.established.get()) {
 					this.reset();
-					const user = Meteor.users.findOne(this.peerId);
 					swal({
 						title: `<i class='icon-key alert-icon failure-color'></i>${ TAPi18n.__('E2E') }`,
 						text: TAPi18n.__('The E2E session was ended'),
 						html: true
-					});	
+					});
 				}
 				break;
 
