@@ -13,10 +13,13 @@
 	&__title {
 		display: flex;
 		flex: 1 1;
+
 		max-width: 60%;
 		margin-left: 4px;
 
 		font-size: var(--header-title-font-size);
+		line-height: 1.25rem;
+
 		align-items: center;
 	}
 
@@ -44,26 +47,24 @@
 	&__room-title {
 		display: flex;
 		flex-direction: column;
+
 		width: 100%;
 	}
 
 	&__channel-name {
-		margin-bottom: 0.25rem;
+		overflow: hidden;
+
+		width: 100%;
+
+		text-overflow: ellipsis;
 
 		color: var(--header-title-username-color-darker);
 
 		font-weight: var(--header-title-username-weight);
-
-		width: 100%;
-		overflow: hidden;
-		text-overflow: ellipsis;
-
 	}
 
 	&__subtitle {
 		display: flex;
-
-		text-transform: capitalize;
 
 		color: var(--header-title-status-color);
 
@@ -72,9 +73,15 @@
 		align-items: center;
 
 		&-topic {
-			width: 100%;
 			overflow: hidden;
+
+			width: 100%;
+
 			text-overflow: ellipsis;
+		}
+
+		&-visual-status {
+			text-transform: capitalize;
 		}
 
 		&-bullet {
