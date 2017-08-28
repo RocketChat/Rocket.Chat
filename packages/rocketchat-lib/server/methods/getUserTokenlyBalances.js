@@ -5,7 +5,6 @@ Meteor.methods({
 	getPublicTokenpassBalances(accessToken) {
 		try {
 			this.unblock();
-
 			return HTTP.get(
 				'https://tokenpass.tokenly.com/api/v1/tca/public/balances', {
 					headers: {
@@ -24,7 +23,6 @@ Meteor.methods({
 	getProtectedTokenpassBalances(accessToken) {
 		try {
 			this.unblock();
-
 			return HTTP.get(
 				'https://tokenpass.tokenly.com/api/v1/tca/protected/balances', {
 					headers: {

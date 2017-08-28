@@ -561,7 +561,7 @@ class ModelSubscriptions extends RocketChat.models._Base {
 				_id: user._id,
 				username: user.username,
 				name: user.name
-			}
+			} // TODO Tokenly - maybe include tokens here?
 		};
 
 		_.extend(subscription, extraData);

@@ -31,7 +31,9 @@ Template.channelSettings.helpers({
 		return Template.instance().settings;
 	},
 	getRoom() {
-		return ChatRoom.findOne(this.rid);
+		// return ChatRoom.findOne(this.rid);
+		console.log('getRoom...');
+		return RocketChat.models.Rooms.findOne(this.rid);
 	},
 	editing(field) {
 		return Template.instance().editing.get() === field;
@@ -245,6 +247,48 @@ Template.channelSettings.onCreated(function() {
 						return handleError(err);
 					}
 					return toastr.success(TAPi18n.__('Room_description_changed_successfully'));
+				});
+			}
+		},
+		tokens: {
+			type: 'text',
+			label: 'Tokens',
+			canView(room) {
+				return room.t !== 'd' && Meteor.user() && Meteor.user().services && Meteor.user().services.tokenly;
+			},
+			canEdit(room) {
+				return RocketChat.authz.hasAllPermission('edit-room', room._id);
+			},
+			getValue(room) {
+				return room.tokens && room.tokens.toString();
+			},
+			save(value, room) {
+				return Meteor.call('saveRoomSettings', room._id, 'roomTokens', value, function(err) {
+					if (err) {
+						return handleError(err);
+					}
+					return toastr.success(TAPi18n.__('Room_tokens_changed_successfully'));
+				});
+			}
+		},
+		tokensMinimumBalance: {
+			type: 'text', // TODO Tokenly - alter type to 'number'
+			label: 'Tokens_Minimum_Needed_Balance',
+			canView(room) {
+				return room.t !== 'd' && Meteor.user() && Meteor.user().services && Meteor.user().services.tokenly;
+			},
+			canEdit(room) {
+				return RocketChat.authz.hasAllPermission('edit-room', room._id);
+			},
+			getValue(room) {
+				return room.minimumTokenBalance;
+			},
+			save(value, room) {
+				return Meteor.call('saveRoomSettings', room._id, 'roomTokensMinimumBalance', value, function(err) {
+					if (err) {
+						return handleError(err);
+					}
+					return toastr.success(TAPi18n.__('Room_tokens_minimum_balance_changed_successfully'));
 				});
 			}
 		},

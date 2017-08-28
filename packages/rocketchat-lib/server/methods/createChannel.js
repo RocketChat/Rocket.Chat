@@ -2,10 +2,9 @@ Meteor.methods({
 	createChannel(name, members, readOnly = false, customFields = {}, tokens, minimumTokenBalance) {
 		check(name, String);
 		check(members, Match.Optional([String]));
-		check(tokens, Match.Optional([String]));
-		check(minimumTokenBalance, Match.Optional(Number));
 
-		// TODO Tokenly
+		check(tokens, Match.Optional(String));
+		check(minimumTokenBalance, Match.Optional(Number));
 
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'createChannel' });

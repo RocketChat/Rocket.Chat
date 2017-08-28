@@ -65,6 +65,16 @@ Meteor.methods({
 						RocketChat.saveRoomType(rid, value, Meteor.user());
 					}
 					break;
+				case 'roomTokens':
+					if (value !== room.tokens) {
+						RocketChat.saveRoomTokens(rid, value, Meteor.user());
+					}
+					break;
+				case 'roomTokensMinimumBalance':
+					if (value !== room.minimumTokenBalance) {
+						RocketChat.saveRoomTokensMinimumBalance(rid, value, Meteor.user());
+					}
+					break;
 				case 'readOnly':
 					if (value !== room.ro) {
 						RocketChat.saveRoomReadOnly(rid, value, Meteor.user());

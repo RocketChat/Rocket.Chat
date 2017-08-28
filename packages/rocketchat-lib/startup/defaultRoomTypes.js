@@ -33,6 +33,7 @@ RocketChat.roomTypes.add('channels', 30, {
 		return ['unread', 'category'].includes(preferences.roomsListExhibitionMode) && preferences.mergeChannels;
 	}
 });
+
 // public
 RocketChat.roomTypes.add('c', 30, {
 	icon: 'hashtag',
@@ -71,33 +72,9 @@ RocketChat.roomTypes.add('c', 30, {
 	}
 });
 
-// tokenly
-RocketChat.roomTypes.add('t', 40, {
-	label: 'Tokenly_Channels',
-	icon: 'lock',
-	route: {
-		name: 'tokenly-channel',
-		path: '/tokenly-channel/:name',
-		action(params) {
-			return openRoom('t', params.name);
-		}
-	},
-
-	findRoom(identifier) {
-		const query = {
-			t: 't',
-			name: identifier
-		};
-		return ChatRoom.findOne(query);
-	},
-
-	roomName(roomData) {
-		if (RocketChat.settings.get('UI_Allow_room_names_with_special_chars')) {
-			return roomData.fname || roomData.name;
-		}
-		return roomData.name;
-	},
-
+// token controlled access
+RocketChat.roomTypes.add('tokens', 30, {
+	label: 'Token Channels',
 	condition() {
 		const user = Meteor.user();
 		const hasTokenpass = !!(user && user.services && user.services.tokenly);

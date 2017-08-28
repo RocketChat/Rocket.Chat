@@ -5,6 +5,7 @@ class ModelRooms extends RocketChat.models._Base {
 		this.tryEnsureIndex({ 'name': 1 }, { unique: 1, sparse: 1 });
 		this.tryEnsureIndex({ 'default': 1 });
 		this.tryEnsureIndex({ 'usernames': 1 });
+		this.tryEnsureIndex({ 'tokens': 1 });
 		this.tryEnsureIndex({ 't': 1 });
 		this.tryEnsureIndex({ 'u._id': 1 });
 
@@ -103,6 +104,16 @@ class ModelRooms extends RocketChat.models._Base {
 		const query = {
 			t: {
 				$in: types
+			}
+		};
+
+		return this.find(query, options);
+	}
+
+	findByTokens(tokens, options) {
+		const query = {
+			tokens: {
+				$in: tokens
 			}
 		};
 
@@ -734,8 +745,28 @@ class ModelRooms extends RocketChat.models._Base {
 		return this.update({ _id }, update);
 	}
 
+	setTokensById(_id, tokens) {
+		const update = {
+			$set: {
+				tokens
+			}
+		};
+
+		return this.update({_id}, update);
+	}
+
+	setMinimumTokenBalanceById(_id, minimumTokenBalance) {
+		const update = {
+			$set: {
+				minimumTokenBalance
+			}
+		};
+
+		return this.update({_id}, update);
+	}
+
 	// INSERT
-	createWithTypeNameUserAndUsernames(type, name, fname, user, usernames, extraData) {
+	createWithTypeNameUserAndUsernames(type, name, fname, user, usernames, extraData, tokens, minimumTokenBalance) {
 		const room = {
 			name,
 			fname,
@@ -748,13 +779,18 @@ class ModelRooms extends RocketChat.models._Base {
 			}
 		};
 
+		if (tokens && minimumTokenBalance) {
+			room.tokens = tokens;
+			room.minimumTokenBalance = minimumTokenBalance;
+		}
+
 		_.extend(room, extraData);
 
 		room._id = this.insert(room);
 		return room;
 	}
 
-	createWithIdTypeAndName(_id, type, name, extraData) {
+	createWithIdTypeAndName(_id, type, name, extraData, tokens, minimumTokenBalance) {
 		const room = {
 			_id,
 			ts: new Date(),
@@ -763,6 +799,11 @@ class ModelRooms extends RocketChat.models._Base {
 			usernames: [],
 			msgs: 0
 		};
+
+		if (tokens && minimumTokenBalance) {
+			room.tokens = tokens;
+			room.minimumTokenBalance = minimumTokenBalance;
+		}
 
 		_.extend(room, extraData);
 

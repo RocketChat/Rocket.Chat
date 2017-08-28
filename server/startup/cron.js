@@ -50,6 +50,8 @@ Meteor.startup(function() {
 			},
 			job: cleanupOEmbedCache
 		});
+
+		// TODO Tokenly - Add SyncedCron for auto remove from token channels all users with expired or invalid token
 		return SyncedCron.start();
 	});
 });

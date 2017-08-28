@@ -32,11 +32,6 @@ const validateChannelName = (name) => {
 	return name.length === 0 || reg.test(name);
 };
 
-const validateAccessTokens = (accessTokens) => {
-	// TODO Tokenly - Assign tokens (which was separated by commas) in array... Each tokens array validating if user have all the entered tokens...
-	return true;
-};
-
 const filterNames = (old) => {
 	if (RocketChat.settings.get('UI_Allow_room_names_with_special_chars')) {
 		return old;
@@ -80,6 +75,9 @@ Template.createChannel.helpers({
 		const inUse = instance.inUse.get();
 		return invalid || inUse;
 	},
+	invalidTokens() {
+		return Template.instance().invalidTokens.get();
+	},
 	readOnlyIsDisabled() {
 		return 'disabled';
 	},
@@ -112,7 +110,7 @@ Template.createChannel.events({
 		t.selectedUsers.set(t.selectedUsers.get().filter(user => user.username !== username));
 	},
 	'change [name=setTokensRequired]'(e, t) {
-		// Tokenly
+		// TODO Tokenly
 		if (e.target.checked) {
 			t.$('#tokensFields').slideDown();
 		} else {
@@ -155,11 +153,34 @@ Template.createChannel.events({
 		const isPrivate = type === 'p';
 		const readOnly = false;//instance.find('#channel-ro').checked;
 
+		let tokensRequired = '';
+		let minimumTokenBalance = 0;
+
+		if (instance.find('[name=setTokensRequired]') && instance.find('[name=setTokensRequired]').checked) {
+			tokensRequired = e.target.tokensRequired.value;
+			if (e.target.tokenMinimumNeededBalance.value) {
+				minimumTokenBalance = parseInt(e.target.tokenMinimumNeededBalance.value);
+			}
+
+			const user = Meteor.user();
+			const tokens = tokensRequired.replace(/\s/ig, '').split(',');
+			if (_.isEmpty(tokens)) {
+				instance.invalidTokens.set(true);
+			} else {
+				_.each(tokens, (typedToken) => {
+					const userTokens = user && user.services && user.services.tokenly && user.services.tokenly.tcaBalances;
+					if (!_.contains(userTokens, typedToken)) {
+						instance.invalidTokens.set(true);
+					}
+				});
+			}
+		}
+
 		if (instance.invalid.get() || instance.inUse.get()) {
 			return e.target.name.focus();
 		}
 
-		Meteor.call(isPrivate ? 'createPrivateGroup' : 'createChannel', name, instance.selectedUsers.get().map(user => user.username), readOnly, function(err, result) {
+		Meteor.call(isPrivate ? 'createPrivateGroup' : 'createChannel', name, instance.selectedUsers.get().map(user => user.username), readOnly, {}, tokensRequired, minimumTokenBalance, function(err, result) {
 			if (err) {
 				if (err.error === 'error-invalid-name') {
 					return instance.invalid.set(true);
@@ -205,6 +226,7 @@ Template.createChannel.onCreated(function() {
 	this.type = new ReactiveVar('d');
 	this.inUse = new ReactiveVar(undefined);
 	this.invalid = new ReactiveVar(false);
+	this.invalidTokens = new ReactiveVar(false);
 	this.userFilter = new ReactiveVar('');
 	this.checkChannel = _.debounce((name) => {
 		if (validateChannelName(name)) {
