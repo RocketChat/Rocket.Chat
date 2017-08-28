@@ -40,7 +40,7 @@ function cleanupObsoleteTokens() {
 
 function configCleanupTokens() {
 	if (RocketChat.settings.get('API_Enable_Obsolete_Cron')) {
-		const duration = RocketChat.settings.get('API_Obsolete_Cron').trim() || 'every 12 hours'
+		const duration = RocketChat.settings.get('API_Obsolete_Cron').trim() || 'every 12 hours';
 		SyncedCron.add({
 			name: 'Cleanup Obsolete Tokens',
 			schedule(parser) {
@@ -51,8 +51,8 @@ function configCleanupTokens() {
 	}
 }
 
-Meteor.startup(function () {
-	return Meteor.defer(function () {
+Meteor.startup(function() {
+	return Meteor.defer(function() {
 		generateStatistics();
 
 		SyncedCron.add({
