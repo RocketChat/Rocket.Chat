@@ -55,12 +55,17 @@ Template.header.helpers({
 
 	channelIcon() {
 		const roomType = RocketChat.models.Rooms.findOne(this._id).t;
-		if (roomType === 'd') {
-			return 'at';
-		} else if (roomType === 'p') {
-			return 'lock';
-		} else {
-			return 'hashtag';
+		switch (roomType) {
+			case 'd':
+				return 'at';
+			case 'p':
+				return 'lock';
+			case 'c':
+				return 'hashtag';
+			case 'l':
+				return 'livechat';
+			default :
+				return null;
 		}
 	},
 
