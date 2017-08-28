@@ -2902,8 +2902,6 @@
 	min-height: 40px;
 	padding: 8px 20px 4px 70px;
 
-	transition: background 0.3s;
-
 	line-height: 20px;
 
 	&.highlight {
@@ -3635,17 +3633,11 @@ body:not(.is-cordova) {
 				width: 21px;
 				height: 20px;
 
-				border-radius: 50%;
-
 				& i {
 					display: inline-block;
 
 					width: 18px;
 					height: 18px;
-
-					border-width: 1px;
-					border-style: solid;
-					border-radius: 50%;
 
 					font-size: 10px;
 				}

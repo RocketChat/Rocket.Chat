@@ -33,6 +33,7 @@
 @import 'imports/components/tooltip.css';
 @import 'imports/components/slider.css';
 @import 'imports/components/chip.css';
+@import 'imports/components/messages.css';
 
 /* Modal */
 @import 'imports/components/modal/full-modal.css';

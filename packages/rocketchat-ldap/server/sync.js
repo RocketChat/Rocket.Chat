@@ -65,6 +65,7 @@ getDataToSyncUserData = function getDataToSyncUserData(ldapUser, user) {
 	const userData = {};
 
 	if (syncUserData && syncUserDataFieldMap) {
+		const whitelistedUserFields = ['email', 'name', 'customFields'];
 		const fieldMap = JSON.parse(syncUserDataFieldMap);
 		const emailList = [];
 		_.map(fieldMap, function(userField, ldapField) {
@@ -84,14 +85,19 @@ getDataToSyncUserData = function getDataToSyncUserData(ldapUser, user) {
 					}
 					break;
 
-				case 'name':
-					const tmpLdapField = RocketChat.templateVarHandler(ldapField, ldapUser.object);
-
-					if (tmpLdapField && user.name !== tmpLdapField) {
-						userData.name = tmpLdapField;
-						logger.debug(`user.name changed to: ${ tmpLdapField }`);
+				default:
+					if (!_.find(whitelistedUserFields, (el) => el === userField.split('.')[0])) {
+						logger.debug(`user attribute not whitelisted: ${ userField }`);
+						return;
 					}
-					break;
+
+					const tmpLdapField = RocketChat.templateVarHandler(ldapField, ldapUser.object);
+					const userFieldValue = _.reduce(userField.split('.'), (acc, el) => acc[el], user);
+
+					if (tmpLdapField && userFieldValue !== tmpLdapField) {
+						userData[userField] = tmpLdapField;
+						logger.debug(`user.${ userField } changed to: ${ tmpLdapField }`);
+					}
 			}
 		});
 

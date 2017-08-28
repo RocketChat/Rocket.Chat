@@ -28,9 +28,9 @@
 	}
 
 	&__icon {
-		width: 13px;
-		height: 13px;
-		stroke: currentColor;
+		&--plus {
+			font-size: 1.25rem;
+		}
 	}
 
 	& .rc-input {
@@ -67,6 +67,12 @@
 			& + .rc-input__element {
 				padding: 0.5rem 1rem 0.5rem 2.25rem;
 			}
+
+			&-svg--plus {
+				transform: rotate(45deg);
+
+				font-size: 1rem;
+			}
 		}
 	}
 
@@ -78,7 +84,7 @@
 		background-color: var(--color-darkest);
 	}
 
-	& .rc-button--square {
-		padding: 10px;
+	& .rc-input__icon-svg--magnifier {
+		font-size: 1rem;
 	}
 }

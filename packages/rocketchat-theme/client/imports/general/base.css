@@ -90,6 +90,11 @@ button {
 	& .tab-button-icon {
 		width: 14px;
 		height: 14px;
+
+		color: var(--color-dark-medium);
+
+		font-size: 1.125rem;
+		fill: var(--color-dark-medium);
 		stroke: currentColor;
 
 		&--info-circled {
@@ -134,4 +139,14 @@ button {
 			height: 16px;
 		}
 	}
+}
+
+.rc-icon {
+	overflow: hidden;
+
+	width: 1em;
+	height: 1em;
+
+	vertical-align: -0.15em;
+
 }
