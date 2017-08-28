@@ -108,6 +108,8 @@
 
 	&__toggle-favorite {
 		color: var(--header-toggle-favorite-star-color);
+
+		font-size: 1.5rem;
 		&.empty {
 			color: var(--header-toggle-favorite-color);
 
@@ -122,8 +124,6 @@
 	}
 
 	&__icon {
-		width: 25px;
-		height: 25px;
 		fill: currentColor;
 		stroke: currentColor;
 	}
@@ -132,6 +132,7 @@
 		width: 32px;
 		height: 32px;
 		margin: 0 1rem;
+		flex-shrink: 0;
 	}
 }
 

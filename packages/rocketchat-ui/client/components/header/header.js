@@ -53,8 +53,15 @@ Template.header.helpers({
 		return roomData.topic;
 	},
 
-	roomPrefix() {
-		return RocketChat.models.Rooms.findOne(this._id).t === 'd' ? '@' : '#';
+	channelIcon() {
+		const roomType = RocketChat.models.Rooms.findOne(this._id).t;
+		if (roomType === 'd') {
+			return 'at';
+		} else if (roomType === 'p') {
+			return 'lock';
+		} else {
+			return 'hashtag';
+		}
 	},
 
 	roomIcon() {

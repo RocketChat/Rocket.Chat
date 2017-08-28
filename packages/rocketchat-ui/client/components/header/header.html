@@ -15,7 +15,7 @@
 				</div>
 
 				<div class="rc-header__room-title">
-					<span class="rc-header__channel-name">{{roomPrefix}}{{roomName}}</span>
+					<span class="rc-header__channel-name">{{> icon block="rc-header__icon" icon=channelIcon}}{{roomName}}</span>
 					<div class="rc-header__subtitle">
 						{{#if isDirect}}
 							<div class="rc-header__subtitle-bullet rc-header__subtitle-bullet--{{userStatus}}" title="{{userStatus}}"></div>
