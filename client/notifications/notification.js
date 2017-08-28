@@ -7,7 +7,7 @@
 Meteor.startup(function() {
 	Tracker.autorun(function() {
 		if (Meteor.userId()) {
-			RocketChat.Notifications.onUser('desktopNotification', function(notification) {
+			RocketChat.Notifications.onUser('notification', function(notification) {
 
 				let openedRoomId = undefined;
 				if (['channel', 'group', 'direct'].includes(FlowRouter.getRouteName())) {
