@@ -30,7 +30,25 @@ function cleanupOEmbedCache() {
 	return Meteor.call('OEmbedCacheCleanup');
 }
 
+function configCleanupTokens() {
+	console.log('--------------------------------configCleanupTokens------------------------------')
+	if (RocketChat.settings.get('API_Enable_Obsolete_Cron')) {
+		console.log('---------------configCleanupTokens enabled--------------------')
+
+		const duration = RocketChat.settings.get('API_Obsolete_Cron').trim() || 'every 12 hours'
+		SyncedCron.add({
+			name: 'Cleanup Obsolete Tokens',
+			schedule(parser) {
+				return parser.text(duration);
+			},
+			job: cleanupObsoleteTokens
+		});
+	}
+}
+
 function cleanupObsoleteTokens() {
+	console.log('--------------------------------cleanupObsoleteTokens------------------------------')
+
 	try {
 		RocketChat.models.Users.clearObsoleteTokens();
 	} catch (error) {
@@ -38,14 +56,14 @@ function cleanupObsoleteTokens() {
 	}
 }
 
-Meteor.startup(function() {
-	return Meteor.defer(function() {
+Meteor.startup(function () {
+	return Meteor.defer(function () {
 		generateStatistics();
 
 		SyncedCron.add({
 			name: 'Generate and save statistics',
 			schedule(parser) {
-				return parser.cron(`${ new Date().getMinutes() } * * * *`);
+				return parser.cron(`${new Date().getMinutes()} * * * *`);
 			},
 			job: generateStatistics
 		});
@@ -54,18 +72,13 @@ Meteor.startup(function() {
 			name: 'Cleanup OEmbed cache',
 			schedule(parser) {
 				const now = new Date();
-				return parser.cron(`${ now.getMinutes() } ${ now.getHours() } * * *`);
+				return parser.cron(`${now.getMinutes()} ${now.getHours()} * * *`);
 			},
 			job: cleanupOEmbedCache
 		});
 
-		SyncedCron.add({
-			name: 'Cleanup Obsolete Tokens',
-			schedule(parser) {
-				return parser.text('every 1 hour');
-			},
-			job: cleanupObsoleteTokens
-		});
+		configCleanupTokens();
+
 
 		return SyncedCron.start();
 	});
