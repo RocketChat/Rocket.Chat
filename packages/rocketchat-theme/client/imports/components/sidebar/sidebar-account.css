@@ -1,6 +1,7 @@
 .sidebar__account {
-	margin-bottom: 40px;
 	display: flex;
+
+	margin-bottom: 40px;
 	align-items: center;
 
 	&--lighten {
@@ -14,34 +15,41 @@
 	}
 
 	&-thumb {
-		width: var(--sidebar-account-thumb-size);
-		height: var(--sidebar-account-thumb-size);
 
 		flex: 0 0 var(--sidebar-account-thumb-size);
+
+		width: var(--sidebar-account-thumb-size);
+		height: var(--sidebar-account-thumb-size);
 	}
 
 	&-data {
-		flex: 1;
-		display: flex;
-		flex-direction: column;
-		overflow: hidden;
 		position: relative;
+
+		display: flex;
+		overflow: hidden;
+		flex-direction: column;
+		flex: 1;
 
 		margin-left: 1rem;
 	}
 
 	&-username {
-		width: 160px;
+
+		overflow: hidden;
+		flex: 1;
+
+		max-width: 160px;
+		max-width: fit-content;
 		height: calc(var(--sidebar-account-username-size) + 0.1rem);
 		margin-bottom: 0.5rem;
+
+		white-space: nowrap;
+		text-overflow: ellipsis;
 
 		color: var(--sidebar-account-username-color);
 
 		font-size: var(--sidebar-account-username-size);
 		font-weight: var(--sidebar-account-username-weight);
-
-		white-space: nowrap;
-		text-overflow: ellipsis;
 	}
 
 	&-visual-status {
@@ -92,11 +100,13 @@
 	}
 
 	&-label {
-		padding: 10px;
-
-		cursor: pointer;
 
 		position: relative;
+
+		margin-right: -9px;
+		padding: 0;
+
+		cursor: pointer;
 
 		&:hover .sidebar__account-menu {
 			fill: var(--sidebar-account-status-color);
@@ -104,16 +114,53 @@
 	}
 
 	&-menu {
-		width: 3px;
-		height: 16px;
+		transition: fill 0.2s;
+
+		font-size: 1.375rem;
 
 		fill: var(--sidebar-account-username-color);
-
-		transition: fill 0.2s;
 	}
 
 	& .rc-popover {
 		top: 40px;
 		left: 0;
+	}
+}
+
+@media (width <= 400px) {
+	.sidebar__account {
+		margin: 0 0 5px;
+
+		&-thumb {
+
+			flex: 0 0 var(--sidebar-small-account-thumb-size);
+
+			width: var(--sidebar-small-account-thumb-size);
+			height: var(--sidebar-small-account-thumb-size);
+		}
+
+		&-data {
+			flex-direction: row;
+
+			margin: 0;
+			align-items: center;
+		}
+
+		&-username {
+			width: auto;
+			margin: 0  0.65rem;
+
+			font-weight: var(--sidebar-small-account-username-weight);
+		}
+
+		&-visual-status {
+			display: none;
+		}
+
+		&-status-bullet {
+			width: var(--sidebar-small-account-status-bullet-size);
+			height: var(--sidebar-small-account-status-bullet-size);
+			margin: 0;
+		}
 	}
 }

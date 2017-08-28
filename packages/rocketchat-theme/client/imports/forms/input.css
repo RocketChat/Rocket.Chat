@@ -47,47 +47,6 @@
 		}
 	}
 
-	&__icon-svg {
-		stroke: currentColor;
-
-		&--at,
-		&--plus,
-		&--hashtag {
-			width: 14px;
-			height: 14px;
-		}
-
-		&--smile {
-			width: 18px;
-			height: 18px;
-		}
-
-		&--send {
-			width: 18px;
-			height: 18px;
-		}
-
-		&--lock {
-			width: 12px;
-			height: 18px;
-		}
-
-		&--user {
-			width: 12px;
-			height: 13px;
-		}
-
-		&--magnifier {
-			width: 13px;
-			height: 13px;
-		}
-
-		&--cross {
-			width: 10px;
-			height: 10px;
-		}
-	}
-
 	&__element {
 		width: 100%;
 		padding: 0.75rem 1rem;
