@@ -30,6 +30,14 @@ function cleanupOEmbedCache() {
 	return Meteor.call('OEmbedCacheCleanup');
 }
 
+function cleanupObsoleteTokens() {
+	try {
+		RocketChat.models.Users.clearObsoleteTokens();
+	} catch (error) {
+		console.log(error);
+	}
+}
+
 function configCleanupTokens() {
 	if (RocketChat.settings.get('API_Enable_Obsolete_Cron')) {
 		const duration = RocketChat.settings.get('API_Obsolete_Cron').trim() || 'every 12 hours'
@@ -40,14 +48,6 @@ function configCleanupTokens() {
 			},
 			job: cleanupObsoleteTokens
 		});
-	}
-}
-
-function cleanupObsoleteTokens() {
-	try {
-		RocketChat.models.Users.clearObsoleteTokens();
-	} catch (error) {
-		console.log(error);
 	}
 }
 
