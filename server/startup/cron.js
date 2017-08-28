@@ -31,10 +31,7 @@ function cleanupOEmbedCache() {
 }
 
 function configCleanupTokens() {
-	console.log('--------------------------------configCleanupTokens------------------------------')
 	if (RocketChat.settings.get('API_Enable_Obsolete_Cron')) {
-		console.log('---------------configCleanupTokens enabled--------------------')
-
 		const duration = RocketChat.settings.get('API_Obsolete_Cron').trim() || 'every 12 hours'
 		SyncedCron.add({
 			name: 'Cleanup Obsolete Tokens',
@@ -47,8 +44,6 @@ function configCleanupTokens() {
 }
 
 function cleanupObsoleteTokens() {
-	console.log('--------------------------------cleanupObsoleteTokens------------------------------')
-
 	try {
 		RocketChat.models.Users.clearObsoleteTokens();
 	} catch (error) {
