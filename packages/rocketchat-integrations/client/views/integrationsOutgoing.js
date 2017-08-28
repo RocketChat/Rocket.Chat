@@ -206,7 +206,7 @@ Template.integrationsOutgoing.events({
 		t.record.set(record);
 	},
 
-	'click .button.history': () => {
+	'click .rc-button.history': () => {
 		FlowRouter.go(`/admin/integrations/outgoing/${ FlowRouter.getParam('id') }/history`);
 	},
 

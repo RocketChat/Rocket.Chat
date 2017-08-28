@@ -100,7 +100,7 @@ Template.header.events({
 	'click .edit-room-title'(event) {
 		event.preventDefault();
 		Session.set('editRoomTitle', true);
-		$('.fixed-title').addClass('visible');
+		$('.rc-header').addClass('visible');
 		return Meteor.setTimeout(() => $('#room-title-field').focus().select(), 10);
 	}
 });
