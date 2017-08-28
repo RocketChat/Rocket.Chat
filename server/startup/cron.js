@@ -67,7 +67,7 @@ Meteor.startup(function() {
 			name: 'Cleanup OEmbed cache',
 			schedule(parser) {
 				const now = new Date();
-				return parser.cron(`${ now.getMinutes()} ${now.getHours() } * * *`);
+				return parser.cron(`${ now.getMinutes() } ${ now.getHours() } * * *`);
 			},
 			job: cleanupOEmbedCache
 		});
