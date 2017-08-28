@@ -1,3 +1,23 @@
+<a name="0.59.0-rc.2"></a>
+# 0.59.0-rc.2 (2017-08-28)
+
+
+### Bug Fixes
+
+- [#7912](https://github.com/RocketChat/Rocket.Chat/pull/7912) Fix google play logo on repo README
+- [#7904](https://github.com/RocketChat/Rocket.Chat/pull/7904) Fix livechat toggle UI issue
+- [#7895](https://github.com/RocketChat/Rocket.Chat/pull/7895) Remove break change in Realtime API
+- [#7893](https://github.com/RocketChat/Rocket.Chat/pull/7893) Window exception when parsing Markdown on server
+
+
+<details>
+<summary>Others</summary>
+
+- [#7894](https://github.com/RocketChat/Rocket.Chat/pull/7894) Hide flex-tab close button
+</details>
+
+
+
 <a name="0.59.0-rc.1"></a>
 # 0.59.0-rc.1 (2017-08-25)
 
