@@ -7,6 +7,7 @@ Template.messageBox.events({
 			RocketChat.EmojiPicker.close();
 		} else {
 			RocketChat.EmojiPicker.open(event.currentTarget, (emoji) => {
+				console.log('test');
 				const {input} = chatMessages[RocketChat.openedRoom];
 
 				const emojiValue = `:${ emoji }:`;
@@ -14,9 +15,8 @@ Template.messageBox.events({
 				const caretPos = input.selectionStart;
 				const textAreaTxt = input.value;
 				input.focus();
-				if (document.execCommand) {
-					document.execCommand('insertText', false, emojiValue);
-				} else {
+				if (!document.execCommand || !document.execCommand('insertText', false, emojiValue)) {
+					// document.execCommand('insertText', false, emojiValue);
 					input.value = textAreaTxt.substring(0, caretPos) + emojiValue + textAreaTxt.substring(caretPos);
 				}
 
