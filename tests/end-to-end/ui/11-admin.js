@@ -9,7 +9,7 @@ import admin from '../../pageobjects/administration.page';
 import {checkIfUserIsAdmin} from '../../data/checks';
 import {adminUsername, adminEmail, adminPassword} from '../../data/user.js';
 
-describe('[Administration]', () => {
+describe.only('[Administration]', () => {
 	before(() => {
 		checkIfUserIsAdmin(adminUsername, adminEmail, adminPassword);
 		sideNav.spotlightSearch.waitForVisible(10000);
