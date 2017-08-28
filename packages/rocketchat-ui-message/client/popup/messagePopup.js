@@ -75,8 +75,8 @@ Template.messagePopup.onCreated(function() {
 		const current = template.find('.popup-item.selected');
 		const previous = $(current).prev('.popup-item')[0] || template.find('.popup-item:last-child');
 		if (previous != null) {
-			current.className = current.className.replace(/\sselected/, '');
-			previous.className += ' selected';
+			current.className = current.className.replace(/\sselected/, '').replace('sidebar-item__popup-active', '');
+			previous.className += ' selected sidebar-item__popup-active';
 			return template.value.set(previous.getAttribute('data-id'));
 		}
 	};
@@ -84,8 +84,8 @@ Template.messagePopup.onCreated(function() {
 		const current = template.find('.popup-item.selected');
 		const next = $(current).next('.popup-item')[0] || template.find('.popup-item');
 		if (next && next.classList.contains('popup-item')) {
-			current.className = current.className.replace(/\sselected/, '');
-			next.className += ' selected';
+			current.className = current.className.replace(/\sselected/, '').replace('sidebar-item__popup-active', '');
+			next.className += ' selected sidebar-item__popup-active';
 			return template.value.set(next.getAttribute('data-id'));
 		}
 	};
@@ -94,7 +94,7 @@ Template.messagePopup.onCreated(function() {
 		if (current == null) {
 			const first = template.find('.popup-item');
 			if (first != null) {
-				first.className += ' selected';
+				first.className += ' selected sidebar-item__popup-active';
 				return template.value.set(first.getAttribute('data-id'));
 			} else {
 				return template.value.set(null);
@@ -255,9 +255,9 @@ Template.messagePopup.events({
 		const template = Template.instance();
 		const current = template.find('.popup-item.selected');
 		if (current != null) {
-			current.className = current.className.replace(/\sselected/, '');
+			current.className = current.className.replace(/\sselected/, '').replace('sidebar-item__popup-active', '');
 		}
-		e.currentTarget.className += ' selected';
+		e.currentTarget.className += ' selected sidebar-item__popup-active';
 		return template.value.set(this._id);
 	},
 	'mousedown .popup-item, touchstart .popup-item'() {
@@ -280,6 +280,12 @@ Template.messagePopup.helpers({
 	},
 	data() {
 		const template = Template.instance();
-		return template.records.get();
+		return Object.assign(template.records.get(), {toolbar: true});
+	},
+	toolbarData() {
+		return {...Template.currentData(), toolbar: true};
+	},
+	sidebarHeaderHeight() {
+		return `${ document.querySelector('.sidebar__header').offsetHeight }px`;
 	}
 });

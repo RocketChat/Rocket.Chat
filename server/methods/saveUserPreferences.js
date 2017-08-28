@@ -50,11 +50,30 @@ Meteor.methods({
 			} else {
 				delete preferences.mergeChannels;
 			}
+			if (settings.unreadRoomsMode) {
+				preferences.unreadRoomsMode = settings.unreadRoomsMode === '1' ? true : false;
+			}
 
+			preferences.roomsListExhibitionMode = ['category', 'unread', 'activity'].includes(settings.roomsListExhibitionMode) ? settings.roomsListExhibitionMode : 'category';
 			if (settings.unreadAlert) {
 				preferences.unreadAlert = settings.unreadAlert === '1' ? true : false;
 			}
 
+			if (settings.notificationsSoundVolume) {
+				preferences.notificationsSoundVolume = settings.notificationsSoundVolume;
+			}
+
+			if (settings.audioNotifications) {
+				preferences.audioNotifications = settings.audioNotifications;
+			}
+			if (settings.desktopNotifications) {
+				preferences.desktopNotifications = settings.desktopNotifications;
+			}
+			if (settings.mobileNotifications) {
+				preferences.mobileNotifications = settings.mobileNotifications;
+			}
+
+			preferences.audioNotificationValue = settings.audioNotificationValue - 0;
 			preferences.desktopNotificationDuration = settings.desktopNotificationDuration - 0;
 			preferences.viewMode = settings.viewMode || 0;
 			preferences.hideUsernames = settings.hideUsernames === '1';

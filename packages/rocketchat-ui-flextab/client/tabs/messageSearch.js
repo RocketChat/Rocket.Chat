@@ -1,17 +1,22 @@
 Meteor.startup(function() {
-	return RocketChat.MessageAction.addButton({
+	RocketChat.MessageAction.addButton({
 		id: 'jump-to-search-message',
-		icon: 'icon-right-hand',
-		i18nLabel: 'Jump_to_message',
+		icon: 'right-hand',
+		label: 'Jump_to_message',
 		context: [
 			'search'
 		],
 		action() {
 			const message = this._arguments[1];
 			RocketChat.MessageAction.hideDropDown();
-			return RoomHistoryManager.getSurroundingMessages(message, 50);
+			if (window.matchMedia('(max-width: 500px)').matches) {
+				Template.instance().tabBar.close();
+			}
+
+			RoomHistoryManager.getSurroundingMessages(message, 50);
 		},
-		order: 100
+		order: 100,
+		group: 'menu'
 	});
 });
 
@@ -90,7 +95,7 @@ Template.messageSearch.events({
 		return t.search();
 	},
 
-	'scroll .content': _.throttle(function(e, t) {
+	'scroll .js-list': _.throttle(function(e, t) {
 		if (e.target.scrollTop >= (e.target.scrollHeight - e.target.clientHeight)) {
 			t.limit.set(t.limit.get() + 20);
 			return t.search();

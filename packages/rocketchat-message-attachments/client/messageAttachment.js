@@ -138,5 +138,8 @@ Template.messageAttachment.helpers({
 		};
 		xhttp.open('GET', this.title_link, true);
 		xhttp.send();
+	},
+	isFile() {
+		return this.type === 'file';
 	}
 });
