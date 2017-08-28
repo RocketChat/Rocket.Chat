@@ -1,0 +1,38 @@
+.sidebar-flex {
+	&__back-button {
+		margin-left: 0.25rem;
+
+		color: var(--sidebar-flex-back-button-color);
+
+		font-size: 1rem;
+	}
+
+	&__back-icon {
+		font-size: 1.25rem;
+	}
+
+	&__search {
+		padding: 0 1rem;
+
+		& .rc-input {
+			&__wrapper {
+				color: var(--sidebar-flex-search-placeholder-color);
+			}
+
+			&__icon {
+				left: 0.5rem;
+			}
+
+			&__element {
+				padding-left: 2.25rem;
+
+				border: 0;
+				background-color: var(--sidebar-flex-search-background);
+
+				&::placeholder {
+					color: var(--sidebar-flex-search-placeholder-color);
+				}
+			}
+		}
+	}
+}

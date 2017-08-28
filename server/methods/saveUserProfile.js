@@ -50,7 +50,7 @@ Meteor.methods({
 			Meteor.call('setEmail', settings.email);
 		}
 
-		// Should be the last chack to prevent error when trying to check password for users without password
+		// Should be the last check to prevent error when trying to check password for users without password
 		if ((settings.newPassword) && RocketChat.settings.get('Accounts_AllowPasswordChange') === true) {
 			if (!checkPassword(user, settings.typedPassword)) {
 				throw new Meteor.Error('error-invalid-password', 'Invalid password', {
