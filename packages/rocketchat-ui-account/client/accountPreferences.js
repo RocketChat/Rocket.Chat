@@ -85,6 +85,9 @@ Template.accountPreferences.helpers({
 	defaultDesktopNotificationDuration() {
 		return RocketChat.settings.get('Desktop_Notifications_Duration');
 	},
+	defaultIdleTimeLimit() {
+		return RocketChat.settings.get('Idle_Time_Limit');
+	},
 	defaultDesktopNotification() {
 		return notificationLabels[RocketChat.settings.get('Desktop_Notifications_Default_Alert')];
 	},
@@ -160,7 +163,11 @@ Template.accountPreferences.onCreated(function() {
 		data.desktopNotifications = $('#desktopNotifications').find('select').val();
 		data.mobileNotifications = $('#mobileNotifications').find('select').val();
 		data.unreadAlert = $('#unreadAlert').find('input:checked').val();
+		data.enableAutoAway = $('#enableAutoAway').find('input:checked').val();
+		data.idleTimeLimit = $('input[name=idleTimeLimit]').val();
 		data.notificationsSoundVolume = parseInt($('#notificationsSoundVolume').val());
+
+		console.log(data);
 
 		Meteor.call('saveUserPreferences', data, function(error, results) {
 			if (results) {
