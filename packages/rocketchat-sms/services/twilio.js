@@ -5,7 +5,9 @@ class Twilio {
 		this.authToken = RocketChat.settings.get('SMS_Twilio_authToken');
 	}
 	parse(data) {
-		return {
+		var NumMedia = 0;
+		
+		var returndata = {
 			from: data.From,
 			to: data.To,
 			body: data.Body,
@@ -21,6 +23,30 @@ class Twilio {
 				fromZip: data.FromZip
 			}
 		};
+
+		if(data.NumMedia) {
+			NumMedia = parseInt(data.NumMedia, 10);
+		}
+
+		if (isNaN(NumMedia)) {
+			console.error("Error parsing NumMedia " + data.NumMedia);
+			return returndata;
+		}
+
+		returndata.hasMedia = true;
+		returndata.media = [];
+
+		for(var mediaIndex = 0; mediaIndex < NumMedia; mediaIndex++) {
+			var mediaurl = data["MediaUrl" + mediaIndex];
+			var contenttype = data["MediaContentType" + mediaIndex];
+
+			returndata.media.push({
+				"url": mediaurl,
+				"contenttype": contenttype
+			});
+		}
+		
+		return returndata;
 	}
 	send(fromNumber, toNumber, message) {
 		const client = Npm.require('twilio')(this.accountSid, this.authToken);
