@@ -25,7 +25,6 @@ export const resolver = {
 			if (avatar) {
 				return avatar.url;
 			}
-			return;
 		},
 		channels: ({ _id }) => {
 			return RocketChat.models.Rooms.findBySubscriptionUserId(_id).fetch();
