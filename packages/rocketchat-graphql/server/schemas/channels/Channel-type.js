@@ -1,5 +1,4 @@
 import { property } from '../../helpers/property';
-import { findChannelByIdAndUser } from '../../helpers/findChannelByIdAndUser';
 
 export const schema = `
 	type Channel {
@@ -49,24 +48,12 @@ export const resolver = {
 		direct: (root) => root.t === 'd',
 		privateChannel: (root) => root.t === 'p',
 		favourite: (root, args, { user }) => {
-			const room = findChannelByIdAndUser({
-				params: {
-					roomId: root._id,
-					userId: user._id
-				},
-				options: { fields: { f: 1 }}
-			});
+			const room = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(root._id, user._id);
 
 			return room && room.f === true;
 		},
 		unseenMessages: (root, args, { user }) => {
-			const room = findChannelByIdAndUser({
-				params: {
-					roomId: root._id,
-					userId: user._id
-				},
-				options: { fields: { unread: 1 }}
-			});
+			const room = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(root._id, user._id);
 
 			return (room || {}).unread;
 		}
