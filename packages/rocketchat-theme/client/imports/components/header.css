@@ -115,6 +115,8 @@
 	}
 
 	&__toggle-favorite {
+		margin-right: 1rem;
+
 		color: var(--header-toggle-favorite-star-color);
 
 		font-size: 1.5rem;
@@ -139,7 +141,7 @@
 	&__room-image {
 		width: 32px;
 		height: 32px;
-		margin: 0 1rem;
+		margin-right: 1rem;
 		flex-shrink: 0;
 	}
 }

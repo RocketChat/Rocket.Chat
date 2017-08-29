@@ -6,13 +6,14 @@
 				{{#if showToggleFavorite}}
 					<a href="#favorite" class="rc-header__toggle-favorite {{state}}">{{> icon block="rc-header__icon" icon="star"}}</a>
 				{{/if}}
-				<div class="rc-header__room-image">
-					{{#if isDirect}}
+
+				{{#if isDirect}}
+					<div class="rc-header__room-image">
 						<div class="avatar">
 							<div class="avatar-image" style="{{avatarBackground}}"></div>
 						</div>
-					{{/if}}
-				</div>
+					</div>
+				{{/if}}
 
 				<div class="rc-header__room-title">
 					<span class="rc-header__channel-name">{{> icon block="rc-header__icon" icon=channelIcon}}{{roomName}}</span>
