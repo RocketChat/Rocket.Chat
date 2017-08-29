@@ -24,25 +24,25 @@ class Twilio {
 			}
 		};
 
-		if(data.NumMedia) {
+		if (data.NumMedia) {
 			NumMedia = parseInt(data.NumMedia, 10);
 		}
 
 		if (isNaN(NumMedia)) {
-			console.error("Error parsing NumMedia " + data.NumMedia);
+			console.error('Error parsing NumMedia ' + data.NumMedia);
 			return returndata;
 		}
 
 		returndata.hasMedia = true;
 		returndata.media = [];
 
-		for(var mediaIndex = 0; mediaIndex < NumMedia; mediaIndex++) {
-			var mediaurl = data["MediaUrl" + mediaIndex];
-			var contenttype = data["MediaContentType" + mediaIndex];
+		for (let mediaIndex = 0; mediaIndex < NumMedia; mediaIndex++) {
+			let mediaurl = data['MediaUrl' + mediaIndex];
+			let contenttype = data['MediaContentType' + mediaIndex];
 
 			returndata.media.push({
-				"url": mediaurl,
-				"contenttype": contenttype
+				'url': mediaurl,
+				'contenttype': contenttype
 			});
 		}
 		
