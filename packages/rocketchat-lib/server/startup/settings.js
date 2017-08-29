@@ -366,6 +366,11 @@ RocketChat.settings.addGroup('General', function() {
 		type: 'string',
 		'public': true
 	});
+	this.add('Idle_Time_Limit', 300000, {
+		type: 'int',
+		'public': true,
+		i18nDescription: 'Idle_Time_Limit_Description'
+	});
 	this.add('Unread_Count', 'user_and_group_mentions_only', {
 		type: 'select',
 		values: [
