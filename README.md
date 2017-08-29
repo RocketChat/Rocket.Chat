@@ -68,7 +68,7 @@ Download the Native Cross-Platform Desktop Application at [Rocket.Chat.Electron]
 [![Rocket.Chat on Apple AppStore](http://linkmaker.itunes.apple.com/images/badges/en-us/badge_appstore-lrg.svg)](https://itunes.apple.com/us/app/rocket.chat/id1028869439?mt=8)
 
 ### Available from Google Play
-[![Rocket.Chat on Google Play](https://upload.wikimedia.org/wikipedia/commons/thumb/5/58/Google_Play_logo_2015.PNG/220px-Google_Play_logo_2015.PNG)](https://play.google.com/store/apps/details?id=com.konecty.rocket.chat)
+[![Rocket.Chat on Google Play](https://upload.wikimedia.org/wikipedia/commons/c/cd/Get_it_on_Google_play.svg)](https://play.google.com/store/apps/details?id=com.konecty.rocket.chat)
 
 Now compatible with all Android devices as old as version 4.0.x - [download here](https://rocket.chat/docs/developer-guides/mobile-apps/), even on BlackBerry Passport!
 
@@ -333,7 +333,7 @@ Read about [how it all started](http://osdelivers.blackducksoftware.com/2016/06/
 ## Awards
 [![InfoWorld Bossie Awards 2016 - Best Open Source Applications](https://raw.githubusercontent.com/Sing-Li/bbug/master/images/bossie.png)](http://www.infoworld.com/article/3122000/open-source-tools/bossie-awards-2016-the-best-open-source-applications.html#slide4)
 
-[![Black Duck Open Source Rookie of the Year for 2015](https://raw.githubusercontent.com/Sing-Li/bbug/master/images/blackducksm.png)](https://info.blackducksoftware.com/OpenSourceRookies2015.html)
+[![Black Duck Open Source Rookie of the Year for 2015](https://raw.githubusercontent.com/Sing-Li/bbug/master/images/blackducksm.png)](https://info.blackducksoftware.com/OpenSourceRookies2015)
 
 [![Softpedia 100% Free and Clean Award for 2017](https://raw.githubusercontent.com/Sing-Li/bbug/master/images/softpedia.gif)](http://www.softpedia.com/get/Internet/Chat/Other-Chat-Tools/Rocket-Chat.shtml#status)
 
