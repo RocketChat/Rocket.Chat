@@ -16,8 +16,6 @@ export const schema = `
 		# list of mentioned channels
 		channelRef: [Channel]
 		reactions: [Reaction]
-		# TODO
-		tags: [String]
 	}
 `;
 
@@ -83,8 +81,6 @@ export const resolver = {
 			});
 
 			return reactions;
-		},
-		// TODO
-		tags: () => {}
+		}
 	}
 };
