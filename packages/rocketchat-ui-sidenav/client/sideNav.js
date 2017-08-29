@@ -22,7 +22,17 @@ Template.sideNav.helpers({
 	},
 
 	roomType() {
-		return RocketChat.roomTypes.getTypes();
+		return RocketChat.roomTypes.getTypes().map((roomType) => {
+			return {
+				template: roomType.customTemplate || 'roomList',
+				data: {
+					header: roomType.header,
+					identifier: roomType.identifier,
+					isCombined: roomType.isCombined,
+					label: roomType.label
+				}
+			};
+		});
 	}
 });
 
