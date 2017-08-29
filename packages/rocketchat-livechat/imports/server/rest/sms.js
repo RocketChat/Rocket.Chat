@@ -47,21 +47,21 @@ RocketChat.API.v1.addRoute('livechat/sms-incoming/:service', {
 		if (sms.hasMedia) {
 			sendMessage.message.attachments = [];
 			for (let mediaIndex = 0; mediaIndex < sms.media.length; mediaIndex++) {
-				let attachment = {};
-				let contenttype = sms.media[mediaIndex].contenttype;
+				const attachment = {};
+				const contenttype = sms.media[mediaIndex].contenttype;
 
 				switch (contenttype.substr(0, contenttype.indexOf('/'))) {
 					case 'image':
 						attachment.image_url = sms.media[mediaIndex].url;
 						break;
 					case 'video':
-						attachment.video_url = sms.media[mediaIndex].url
+						attachment.video_url = sms.media[mediaIndex].url;
 						break;
 					case 'audio':
-						attachment.audio_url = sms.media[mediaIndex].url
+						attachment.audio_url = sms.media[mediaIndex].url;
 						break;
 				}
-				
+
 				attachment.message_link = sms.media[mediaIndex].url;
 
 				sendMessage.message.attachments.push(attachment);
