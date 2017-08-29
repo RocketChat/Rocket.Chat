@@ -89,6 +89,18 @@ RocketChat.API.v1.addRoute('users.getPresence', { authRequired: true }, {
 	}
 });
 
+RocketChat.API.v1.addRoute('users.unreadCount', { authRequired: true }, {
+	get() {
+		const user = this.getUserFromParams();
+
+		const unreadCount = RocketChat.models.Subscriptions.findUnreadByUserId(user._id).fetch()[0];
+
+		return RocketChat.API.v1.success({
+			data: unreadCount || {}
+		});
+	}
+});
+
 RocketChat.API.v1.addRoute('users.info', { authRequired: true }, {
 	get() {
 		const user = this.getUserFromParams();
