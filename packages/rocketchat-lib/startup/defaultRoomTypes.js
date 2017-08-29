@@ -74,7 +74,7 @@ RocketChat.roomTypes.add('c', 30, {
 
 // token controlled access
 RocketChat.roomTypes.add('tokens', 30, {
-	label: 'Token Channels',
+	label: 'Tokenly_Channels',
 	condition() {
 		const user = Meteor.user();
 		const hasTokenpass = !!(user && user.services && user.services.tokenly);

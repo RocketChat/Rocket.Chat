@@ -6,7 +6,7 @@ Meteor.methods({
 		try {
 			this.unblock();
 			return HTTP.get(
-				'https://tokenpass.tokenly.com/api/v1/tca/public/balances', {
+				`${ RocketChat.settings.get('API_Tokenly_URL') }/api/v1/tca/public/balances`, {
 					headers: {
 						Accept: 'application/json',
 						'User-Agent': userAgent
@@ -24,7 +24,7 @@ Meteor.methods({
 		try {
 			this.unblock();
 			return HTTP.get(
-				'https://tokenpass.tokenly.com/api/v1/tca/protected/balances', {
+				`${ RocketChat.settings.get('API_Tokenly_URL') }/api/v1/tca/protected/balances`, {
 					headers: {
 						Accept: 'application/json',
 						'User-Agent': userAgent

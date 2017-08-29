@@ -31,9 +31,7 @@ Template.channelSettings.helpers({
 		return Template.instance().settings;
 	},
 	getRoom() {
-		// return ChatRoom.findOne(this.rid);
-		console.log('getRoom...');
-		return RocketChat.models.Rooms.findOne(this.rid);
+		return ChatRoom.findOne(this.rid);
 	},
 	editing(field) {
 		return Template.instance().editing.get() === field;

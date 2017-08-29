@@ -110,7 +110,6 @@ Template.createChannel.events({
 		t.selectedUsers.set(t.selectedUsers.get().filter(user => user.username !== username));
 	},
 	'change [name=setTokensRequired]'(e, t) {
-		// TODO Tokenly
 		if (e.target.checked) {
 			t.$('#tokensFields').slideDown();
 		} else {
