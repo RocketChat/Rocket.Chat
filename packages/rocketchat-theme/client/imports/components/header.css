@@ -1,6 +1,7 @@
 .rc-header {
 	display: flex;
 
+	max-width: 100vw;
 	height: 77px;
 	padding: 20px 24px;
 
