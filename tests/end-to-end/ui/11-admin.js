@@ -9,7 +9,7 @@ import admin from '../../pageobjects/administration.page';
 import {checkIfUserIsAdmin} from '../../data/checks';
 import {adminUsername, adminEmail, adminPassword} from '../../data/user.js';
 
-describe.only('[Administration]', () => {
+describe('[Administration]', () => {
 	before(() => {
 		checkIfUserIsAdmin(adminUsername, adminEmail, adminPassword);
 		sideNav.spotlightSearch.waitForVisible(10000);
@@ -56,6 +56,7 @@ describe.only('[Administration]', () => {
 			});
 
 			it('the first title should be Runtime_Environment', () => {
+				admin.infoRuntimeTableTitle.moveToObject();
 				admin.infoRuntimeTableTitle.getText().should.equal('Runtime_Environment');
 			});
 
@@ -64,6 +65,7 @@ describe.only('[Administration]', () => {
 			});
 
 			it('the first title should be Build_Environment', () => {
+				admin.infoBuildTableTitle.moveToObject();
 				admin.infoBuildTableTitle.getText().should.equal('Build_Environment');
 			});
 
