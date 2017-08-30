@@ -62,6 +62,7 @@ rocketchat:file
 rocketchat:file-upload
 rocketchat:github-enterprise
 rocketchat:gitlab
+rocketchat:google-vision
 rocketchat:highlight-words
 rocketchat:iframe-login
 rocketchat:importer
@@ -72,6 +73,7 @@ rocketchat:importer-slack
 rocketchat:integrations
 rocketchat:internal-hubot
 rocketchat:irc
+rocketchat:issuelinks
 rocketchat:katex
 rocketchat:ldap
 rocketchat:lib

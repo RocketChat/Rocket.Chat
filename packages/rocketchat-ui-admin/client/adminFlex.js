@@ -1,4 +1,3 @@
-/* globals menu */
 Template.adminFlex.onCreated(function() {
 	this.settingsFilter = new ReactiveVar('');
 	if (RocketChat.settings.cachedCollectionPrivate == null) {
@@ -51,24 +50,21 @@ Template.adminFlex.helpers({
 	label,
 	adminBoxOptions() {
 		return RocketChat.AdminBox.getOptions();
+	},
+	menuItem(name, icon, section, group) {
+		return {
+			name: t(name),
+			icon,
+			pathSection: section,
+			pathGroup: group,
+			darken: true
+		};
 	}
 });
 
 Template.adminFlex.events({
-	'mouseenter header'() {
-		SideNav.overArrow();
-	},
-	'mouseleave header'() {
-		SideNav.leaveArrow();
-	},
-	'click header'() {
+	'click [data-action="back"]'() {
 		SideNav.closeFlex();
-	},
-	'click .cancel-settings'() {
-		SideNav.closeFlex();
-	},
-	'click .admin-link'() {
-		menu.close();
 	},
 	'keyup [name=settings-search]'(e, t) {
 		t.settingsFilter.set(e.target.value);

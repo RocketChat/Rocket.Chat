@@ -3,6 +3,39 @@ import moment from 'moment';
 import toastr from 'toastr';
 
 Template.userInfo.helpers({
+	customField() {
+		if (!RocketChat.authz.hasAllPermission('view-full-other-user-info')) {
+			return;
+		}
+
+		const sCustomFieldsToShow = RocketChat.settings.get('Accounts_CustomFieldsToShowInUserInfo').trim();
+		const customFields = [];
+
+		if (sCustomFieldsToShow) {
+			const user = Template.instance().user.get();
+			const userCustomFields = user && user.customFields || {};
+			const listOfCustomFieldsToShow = JSON.parse(sCustomFieldsToShow);
+
+			_.map(listOfCustomFieldsToShow, (el) => {
+				let content = '';
+				if (_.isObject(el)) {
+					_.map(el, (key, label) => {
+						const value = RocketChat.templateVarHandler(key, userCustomFields);
+						if (value) {
+							content = `${ label }: ${ value }`;
+						}
+					});
+				} else {
+					content = RocketChat.templateVarHandler(el, userCustomFields);
+				}
+				if (content) {
+					customFields.push(content);
+				}
+			});
+		}
+		return customFields;
+	},
+
 	name() {
 		const user = Template.instance().user.get();
 		return user && user.name ? user.name : TAPi18n.__('Unnamed');

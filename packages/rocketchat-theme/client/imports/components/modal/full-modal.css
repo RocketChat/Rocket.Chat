@@ -1,0 +1,45 @@
+.full-modal {
+	position: absolute;
+	top: 0;
+	left: 0;
+
+	display: flex;
+
+	width: 100%;
+	height: 100%;
+	justify-content: center;
+
+	&__wrapper {
+		position: relative;
+
+		width: var(--modal-wrapper-width);
+		margin: var(--modal-wrapper-margin) 0;
+	}
+
+	&__back-button {
+		position: absolute;
+		top: 0;
+		right: 0;
+
+		display: flex;
+
+		color: var(--modal-back-button-color);
+		align-items: center;
+	}
+
+	&__back-text {
+		margin-right: 0.375rem;
+	}
+
+	&__back-icon {
+		width: 10px;
+		height: 10px;
+		stroke: currentColor;
+	}
+}
+
+@media (width < 1024px) {
+	.full-modal {
+		padding: 50px;
+	}
+}

@@ -80,14 +80,14 @@ Meteor.methods({
 			}
 
 			return {
-				messages,
+				messages: messages || [],
 				firstUnread,
 				unreadNotLoaded
 			};
 		}
 
 		return {
-			messages
+			messages: messages || []
 		};
 	}
 });
