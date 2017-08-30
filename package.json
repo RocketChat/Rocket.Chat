@@ -92,24 +92,24 @@
 		"eslint": "^4.5.0",
 		"postcss-cssnext": "^2.11.0",
 		"postcss-smart-import": "^0.7.5",
-		"simple-git": "^1.75.0",
+		"simple-git": "^1.76.0",
 		"stylelint": "^8.0.0",
 		"stylelint-order": "^0.6.0",
 		"supertest": "^3.0.0"
 	},
 	"dependencies": {
 		"@google-cloud/storage": "^1.2.1",
-		"aws-sdk": "^2.102.0",
+		"aws-sdk": "^2.105.0",
 		"babel-runtime": "^6.26.0",
-		"bcrypt": "^1.0.2",
-		"codemirror": "^5.28.0",
+		"bcrypt": "^1.0.3",
+		"codemirror": "^5.29.0",
 		"emailreplyparser": "0.0.5",
 		"file-type": "^6.1.0",
 		"highlight.js": "^9.12.0",
 		"imap": "^0.8.19",
 		"jquery": "^3.2.1",
 		"mailparser-node4": "^2.0.2-2",
-		"mime-db": "^1.29.0",
+		"mime-db": "^1.30.0",
 		"mime-type": "^3.0.5",
 		"moment": "^2.18.1",
 		"moment-timezone": "^0.5.13",
@@ -121,4 +121,3 @@
 		"wolfy87-eventemitter": "^5.2.2"
 	}
 }
-
