@@ -509,10 +509,13 @@ Template.room.events({
 	},
 
 	'scroll .wrapper': _.throttle(function(e, t) {
-		if (e.target.scrollTop < lastScrollTop) {
-			t.hideLeaderHeader.set(false);
-		} else if (e.target.scrollTop > $('.room-leader').height()) {
-			t.hideLeaderHeader.set(true);
+		const $roomLeader = $('.room-leader');
+		if ($roomLeader.length) {
+			if (e.target.scrollTop < lastScrollTop) {
+				t.hideLeaderHeader.set(false);
+			} else if (t.isAtBottom(100) === false && e.target.scrollTop > $('.room-leader').height()) {
+				t.hideLeaderHeader.set(true);
+			}
 		}
 		lastScrollTop = e.target.scrollTop;
 
