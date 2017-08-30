@@ -3024,16 +3024,16 @@
 
 	& .thumb {
 		position: absolute;
-		left: 20px;
+		left: 24px;
 
 		display: block;
 
-		width: 40px;
-		height: 40px;
+		width: 36px;
+		height: 36px;
 
 		&:not(.thumb-small) .avatar {
-			width: 40px;
-			height: 40px;
+			width: 36px;
+			height: 36px;
 		}
 
 		&.thumb-small {
@@ -3124,10 +3124,6 @@
 			}
 		}
 
-		& .body {
-			margin-top: 0;
-		}
-
 		&:hover .edited {
 			display: none;
 		}
@@ -3158,8 +3154,6 @@
 	}
 
 	& .body {
-		margin-top: 2px;
-
 		transition: opacity 1s linear;
 
 		opacity: 1;
