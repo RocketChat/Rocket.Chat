@@ -5,7 +5,7 @@ class SideNav extends Page {
 	get channelType() { return browser.element('.create-channel__content .rc-switch__button'); }
 	get channelReadOnly() { return browser.elements('.create-channel__switches .rc-switch__button').value[1]; }
 	get channelName() { return browser.element('.create-channel__content input[name="name"]'); }
-	get saveChannelBtn() { return browser.element('.create-channel__content button[data-button="create"]'); }
+	get saveChannelBtn() { return browser.element('.create-channel__content [data-button="create"]'); }
 
 	// Account box
 	get accountBoxUserName() { return browser.element('.sidebar__account-username'); }
@@ -101,7 +101,7 @@ class SideNav extends Page {
 		this.channelName.setValue(channelName);
 
 		browser.waitUntil(function() {
-			return browser.isEnabled('.create-channel__content button[data-button="create"]');
+			return browser.isEnabled('.create-channel__content [data-button="create"]');
 		}, 5000);
 
 		this.channelType.waitForVisible(10000);
