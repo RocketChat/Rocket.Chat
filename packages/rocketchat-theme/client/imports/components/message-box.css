@@ -6,6 +6,10 @@
 
 	font-size: var(--message-box-text-size);
 
+	&--embedded {
+		padding: 12px;
+	}
+
 	&__toolbar-markdown {
 		position: absolute;
 		left: 0;
