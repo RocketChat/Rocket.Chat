@@ -49,6 +49,7 @@
 			"packages/**/*.tests.js"
 		],
 		"files": [
+			"packages/**/*.mocks.js",
 			"packages/**/*.js",
 			"!packages/**/*.tests.js"
 		]
@@ -90,12 +91,16 @@
 		"chimp": "^0.49.1",
 		"conventional-changelog-cli": "^1.3.2",
 		"eslint": "^4.5.0",
+		"mock-require": "^2.0.2",
 		"postcss-cssnext": "^2.11.0",
 		"postcss-smart-import": "^0.7.5",
+		"proxyquire": "^1.8.0",
 		"simple-git": "^1.75.0",
 		"stylelint": "^8.0.0",
 		"stylelint-order": "^0.6.0",
-		"supertest": "^3.0.0"
+		"supertest": "^3.0.0",
+		"underscore": "^1.5.2",
+		"underscore.string": "^3.3.4"
 	},
 	"dependencies": {
 		"@google-cloud/storage": "^1.2.1",
@@ -121,4 +126,3 @@
 		"wolfy87-eventemitter": "^5.2.2"
 	}
 }
-
