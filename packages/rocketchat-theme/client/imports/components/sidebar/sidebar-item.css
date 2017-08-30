@@ -13,7 +13,7 @@
 	align-items: center;
 
 	&--active {
-		background-color: var(--sidebar-item-active-background);
+		background-color: var(--color-dark-light);
 	}
 
 	&--darken {
@@ -88,7 +88,7 @@
 		}
 
 		&--offline {
-			background-color: var(--status-invisible);
+			background-color: var(--status-invisible-sidebar);
 		}
 	}
 

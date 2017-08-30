@@ -6,6 +6,10 @@
 
 	font-size: var(--message-box-text-size);
 
+	&--embedded {
+		padding: 12px;
+	}
+
 	&__toolbar-markdown {
 		position: absolute;
 		left: 0;
@@ -177,7 +181,8 @@
 		&__container {
 			display: flex;
 
-			padding: 1rem 1rem calc(1rem - 8px) 1rem;
+			padding: var(--default-small-padding);
+			padding-bottom: calc(var(--default-small-padding) - 8px);
 
 			border-width: 0;
 			border-top-width: 1px;
