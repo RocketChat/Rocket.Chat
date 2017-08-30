@@ -4,6 +4,7 @@ let filterText = '';
 let usernamesFromClient;
 let resultsFromClient;
 
+const selectorSearch = '.toolbar__search .rc-input__element';
 Meteor.startup(() => {
 	isLoading = new ReactiveVar(false);
 });
@@ -11,14 +12,14 @@ Meteor.startup(() => {
 const toolbarSearch = {
 	shortcut: false,
 	clear() {
-		const $inputMessage = $('textarea.input-message');
+		const $inputMessage = $('.js-input-message');
 
 		if (0 === $inputMessage.length) {
 			return;
 		}
 
 		$inputMessage.focus();
-		$('.toolbar-search__input').val('');
+		$(selectorSearch).val('');
 
 		if (this.shortcut) {
 			menu.close();
@@ -26,7 +27,7 @@ const toolbarSearch = {
 	},
 	focus(fromShortcut) {
 		menu.open();
-		$('.toolbar-search__input').focus();
+		$(selectorSearch).focus();
 		this.shortcut = fromShortcut;
 	}
 };
@@ -100,9 +101,9 @@ Template.toolbar.helpers({
 		if (!Meteor.Device.isDesktop()) {
 			return placeholder;
 		} else if (window.navigator.platform.toLowerCase().includes('mac')) {
-			placeholder = `${ placeholder } (CMD+K)`;
+			placeholder = `${ placeholder } (\u2318+K)`;
 		} else {
-			placeholder = `${ placeholder } (Ctrl+K)`;
+			placeholder = `${ placeholder } (\u2303+K)`;
 		}
 
 		return placeholder;
@@ -120,10 +121,11 @@ Template.toolbar.helpers({
 			cls: 'search-results-list',
 			collection: Meteor.userId() ? RocketChat.models.Subscriptions : RocketChat.models.Rooms,
 			template: 'toolbarSearchList',
+			sidebar: true,
 			emptyTemplate: 'toolbarSearchListEmpty',
-			input: '.toolbar-search__input',
+			input: '[role="search"] input',
 			cleanOnEnter: true,
-			closeOnEsc: false,
+			closeOnEsc: true,
 			blurOnSelectItem: true,
 			isLoading,
 			open,
@@ -199,7 +201,12 @@ Template.toolbar.helpers({
 });
 
 Template.toolbar.events({
-	'keyup .toolbar-search__input'(e) {
+	'submit form'(e) {
+		e.preventDefault();
+		return false;
+	},
+
+	'keyup [role="search"] input'(e) {
 		if (e.which === 27) {
 			e.preventDefault();
 			e.stopPropagation();
@@ -208,41 +215,25 @@ Template.toolbar.events({
 		}
 	},
 
-	'click .toolbar-search__input'() {
+	'click [role="search"] input'() {
 		toolbarSearch.shortcut = false;
 	},
 
-	'click .toolbar-search__create-channel, touchend .toolbar-search__create-channel'(e) {
+	'click .toolbar__icon-search--right'() {
+		toolbarSearch.clear();
+	},
+
+	'blur [role="search"] input'() {
+		toolbarSearch.clear();
+	},
+
+	'click [role="search"] button, touchend [role="search"] button'(e) {
 		if (RocketChat.authz.hasAtLeastOnePermission(['create-c', 'create-p'])) {
-			SideNav.setFlex('createCombinedFlex');
-			SideNav.openFlex();
+			// TODO: resolve this name menu/sidebar/sidebav/flex...
+			menu.close();
+			FlowRouter.go('create-channel');
 		} else {
 			e.preventDefault();
-		}
-	},
-
-	'blur .toolbar-search__input'() {
-		toolbarSearch.clear();
-	}
-});
-
-Template.toolbarSearchList.helpers({
-	icon() {
-		return RocketChat.roomTypes.getIcon(this.t);
-	},
-	userStatus() {
-		if (this.t === 'd') {
-			return `status-${ Session.get(`user_${ this.name }_status`) || 'offline' }`;
-		} else {
-			return `status-${ RocketChat.roomTypes.getUserStatus(this.t, this.rid || this._id) || 'offline' }`;
-		}
-	},
-
-	displayName() {
-		if (RocketChat.settings.get('UI_Use_Real_Name') && this.fname) {
-			return this.fname;
-		} else {
-			return this.name;
 		}
 	}
 });

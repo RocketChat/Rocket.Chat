@@ -4,7 +4,7 @@ Meteor.startup(function() {
 			RocketChat.MessageAction.addButton({
 				id: 'toggle-language',
 				icon: 'icon-language',
-				i18nLabel: 'Toggle_original_translated',
+				label: 'Toggle_original_translated',
 				context: [
 					'message',
 					'message-mobile'
@@ -23,11 +23,9 @@ Meteor.startup(function() {
 						RocketChat.models.Messages.update({ _id: message._id }, { $set: { autoTranslateShowInverse: true } });
 					}
 				},
-
-				validation(message) {
+				condition(message) {
 					return message && message.u && message.u._id !== Meteor.userId();
 				},
-
 				order: 90
 			});
 		} else {
