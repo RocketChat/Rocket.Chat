@@ -9,7 +9,7 @@
 		return this.filter('textarea').each(function() {
 			var self = this;
 			var $self = $(self);
-			var minHeight = 16; //$self.height();
+			var minHeight = $self.height();
 			var settings = $.extend({
 				preGrowCallback: null,
 				postGrowCallback: null
@@ -56,7 +56,7 @@
 				}
 
 				shadow.css('width', $self.width());
-				shadow.html(val); // Append '...' to resize pre-emptively.
+				shadow.html(val);
 
 				var newHeight = Math.max(shadow.height() + 1, minHeight) + 1;
 				if (settings.preGrowCallback !== null) {

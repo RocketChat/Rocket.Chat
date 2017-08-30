@@ -51,11 +51,10 @@ function applyMd(e, t) {
 			box.selectionStart = selectionStart - startPattern.length;
 			box.selectionEnd = selectionEnd + endPattern.length;
 
-			if (document.execCommand) {
-				document.execCommand('insertText', false, selectedText);
-			} else {
+			if (!document.execCommand || !document.execCommand('insertText', false, selectedText)) {
 				box.value = initText.substr(0, initText.length - startPattern.length) + selectedText + finalText.substr(endPattern.length);
 			}
+
 			box.selectionStart = selectionStart - startPattern.length;
 			box.selectionEnd = box.selectionStart + selectedText.length;
 			$(box).change();
@@ -68,11 +67,10 @@ function applyMd(e, t) {
 		apply pattern
 		restore selection
 	*/
-	if (document.execCommand) {
-		document.execCommand('insertText', false, this.pattern.replace('{{text}}', selectedText));
-	} else {
+	if (!document.execCommand || !document.execCommand('insertText', false, this.pattern.replace('{{text}}', selectedText))) {
 		box.value = initText + this.pattern.replace('{{text}}', selectedText) + finalText;
 	}
+
 	box.selectionStart = selectionStart + this.pattern.indexOf('{{text}}');
 	box.selectionEnd = box.selectionStart + selectedText.length;
 	$(box).change();
@@ -135,7 +133,6 @@ const markdownButtons = [
 const methods = {
 	actions() {
 		const groups = RocketChat.messageBox.actions.get();
-		console.log(Object.keys(groups).reduce((ret, el) => ret.concat(groups[el]), []));
 		return Object.keys(groups).reduce((ret, el) => ret.concat(groups[el]), []);
 	},
 	columns() {
@@ -163,8 +160,8 @@ const methods = {
 	}
 };
 
-Template.messageBox__actions.helpers({...methods});
-Template.messageBox__actionsSmall.helpers({...methods});
+Template.messageBox__actions.helpers(methods);
+Template.messageBox__actionsSmall.helpers(methods);
 Template.messageBox.helpers({
 	mdButtons() {
 		return markdownButtons.filter(button => !button.condition || button.condition());
@@ -288,8 +285,10 @@ Template.messageBox.helpers({
 		return (Meteor.userId() == null) && RocketChat.settings.get('Accounts_AllowAnonymousRead') === true && RocketChat.settings.get('Accounts_AllowAnonymousWrite') === true;
 	},
 	disableSendIcon() {
-		console.log(Template.instance().sendIcon.get());
 		return !Template.instance().sendIcon.get() ? 'disabled' : '';
+	},
+	embeddedVersion() {
+		return RocketChat.Layout.isEmbedded();
 	}
 });
 
