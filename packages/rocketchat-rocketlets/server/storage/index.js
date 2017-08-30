@@ -1,4 +1,5 @@
 import { RocketletsModel } from './rl-model';
+import { RocketletsPersistenceModel } from './rl-persistence-model';
 import { RocketletRealStorage } from './storage';
 
-export { RocketletsModel, RocketletRealStorage };
+export { RocketletsModel, RocketletsPersistenceModel, RocketletRealStorage };

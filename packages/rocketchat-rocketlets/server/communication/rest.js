@@ -39,21 +39,19 @@ export class RocketletsRestApi {
 		const fileHandler = this._handleFile;
 
 		this.api.addRoute('', { authRequired: true }, {
-			post() {
-				console.log('Creating a new Rocketlet via the rest api');
+			get() {
+				const rocketlets = manager.get().map(prl => prl.getInfo());
 
+				return { success: true, rocketlets };
+			},
+			post() {
 				const buff = fileHandler(this.request, 'rocketlet');
 				const item = Meteor.wrapAsync((callback) => {
-					manager.add(buff.toString('base64')).then((rl) => {
-						console.log('Success?');
-						callback(undefined, rl);
-					}).catch((e) => {
+					manager.add(buff.toString('base64')).then((rl) => callback(undefined, rl)).catch((e) => {
 						console.warn('Error!', e);
 						callback(e);
 					});
 				})();
-
-				console.log('result:', item.rocketlet.info);
 
 				return { success: true, rocketlet: item.rocketlet.info };
 			}
@@ -62,7 +60,9 @@ export class RocketletsRestApi {
 		this.api.addRoute(':id', { authRequired: true }, {
 			get() {
 				console.log('Getting:', this.urlParams.id);
-				return { success: false };
+				const rocketlet = manager.getOneById(this.urlParams.id).getInfo();
+
+				return { success: true, rocketlet };
 			},
 			post() {
 				console.log('Updating:', this.urlParams.id);
