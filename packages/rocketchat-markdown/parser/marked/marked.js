@@ -1,3 +1,4 @@
+import { RocketChat } from 'meteor/rocketchat:lib';
 import { Random } from 'meteor/random';
 import { _ } from 'meteor/underscore';
 import hljs from 'highlight.js';
