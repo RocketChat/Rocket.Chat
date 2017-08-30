@@ -60,7 +60,7 @@ Template.body.onRendered(function() {
 		if (target.id === 'pswp') {
 			return;
 		}
-		const inputMessage = $('textarea.input-message');
+		const inputMessage = $('textarea.rc-message-box__textarea');
 		if (inputMessage.length === 0) {
 			return;
 		}
