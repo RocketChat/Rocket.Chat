@@ -46,7 +46,7 @@ Template.messageSearch.helpers({
 	},
 
 	message() {
-		return _.extend(this, { customClass: 'search' });
+		return _.extend(this, { customClass: 'search', prefix: 'search'});
 	}
 });
 
