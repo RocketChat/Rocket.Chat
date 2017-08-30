@@ -1,3 +1,29 @@
+<a name="0.59.0-rc.3"></a>
+# 0.59.0-rc.3 (2017-08-30)
+
+
+### Bug Fixes
+
+- [#7971](https://github.com/RocketChat/Rocket.Chat/pull/7971) Add padding on messages to allow space to the action buttons
+- [#7944](https://github.com/RocketChat/Rocket.Chat/pull/7944) Broken embedded view layout
+- [#7943](https://github.com/RocketChat/Rocket.Chat/pull/7943) Broken emoji picker on firefox
+- [#7984](https://github.com/RocketChat/Rocket.Chat/pull/7984) Chat box no longer auto-focuses when typing
+- [#7942](https://github.com/RocketChat/Rocket.Chat/pull/7942) Create channel button on Firefox
+- [#7948](https://github.com/RocketChat/Rocket.Chat/pull/7948) Document README.md. Drupal repo out of date
+- [#7927](https://github.com/RocketChat/Rocket.Chat/pull/7927) Double scroll on 'keyboard shortcuts' menu in sidepanel
+- [#7945](https://github.com/RocketChat/Rocket.Chat/pull/7945) Fix placeholders in account profile
+- [#7963](https://github.com/RocketChat/Rocket.Chat/pull/7963) Fix the status on the members list
+- [#7965](https://github.com/RocketChat/Rocket.Chat/pull/7965) Markdown being rendered in code tags
+- [#7954](https://github.com/RocketChat/Rocket.Chat/pull/7954) OTR buttons padding
+- [#7712](https://github.com/RocketChat/Rocket.Chat/pull/7712) Show leader on first load
+- [#7970](https://github.com/RocketChat/Rocket.Chat/pull/7970) Small alignment fixes
+- [#7960](https://github.com/RocketChat/Rocket.Chat/pull/7960) status and active room colors on sidebar
+- [#7985](https://github.com/RocketChat/Rocket.Chat/pull/7985) Text area buttons and layout on mobile 
+- [#7986](https://github.com/RocketChat/Rocket.Chat/pull/7986) Textarea on firefox
+- [#7953](https://github.com/RocketChat/Rocket.Chat/pull/7953) username ellipsis on firefox
+
+
+
 <a name="0.59.0-rc.2"></a>
 # 0.59.0-rc.2 (2017-08-28)
 
