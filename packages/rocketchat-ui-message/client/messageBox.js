@@ -277,6 +277,9 @@ Template.messageBox.helpers({
 	},
 	sendIcon() {
 		return Template.instance().sendIcon.get();
+	},
+	embeddedVersion() {
+		return RocketChat.Layout.isEmbedded();
 	}
 });
 
