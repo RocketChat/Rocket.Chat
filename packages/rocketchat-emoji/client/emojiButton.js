@@ -14,9 +14,7 @@ Template.messageBox.events({
 				const caretPos = input.selectionStart;
 				const textAreaTxt = input.value;
 				input.focus();
-				if (document.execCommand) {
-					document.execCommand('insertText', false, emojiValue);
-				} else {
+				if (!document.execCommand || !document.execCommand('insertText', false, emojiValue)) {
 					input.value = textAreaTxt.substring(0, caretPos) + emojiValue + textAreaTxt.substring(caretPos);
 				}
 
