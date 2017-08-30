@@ -97,6 +97,7 @@ export class RocketletCommandsBridge {
 		const room = this.orch.getConverters().get('rooms').convertById(message.rid);
 		const params = parameters.length === 0 || parameters === ' ' ? [] : parameters.split(' ');
 
-		this.orch.getManager().getCommandManager().executeCommand(command, new SlashCommandContext(user, room, params));
+		const context = new SlashCommandContext(Object.freeze(user), Object.freeze(room), Object.freeze(params));
+		this.orch.getManager().getCommandManager().executeCommand(command, context);
 	}
 }

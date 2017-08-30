@@ -1,6 +1,6 @@
 export class RocketletEnvironmentalVariableBridge {
-	constructor(converters) {
-		this.converters = converters;
+	constructor(orch) {
+		this.orch = orch;
 	}
 
 	getValueByName(envVarName, rocketletId) {

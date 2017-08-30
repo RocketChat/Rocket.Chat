@@ -1,6 +1,6 @@
 export class RocketletSettingBridge {
-	constructor(converters) {
-		this.converters = converters;
+	constructor(orch) {
+		this.orch = orch;
 	}
 
 	getAll(rocketletId) {
