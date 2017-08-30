@@ -9,8 +9,7 @@
 		return this.filter('textarea').each(function() {
 			var self = this;
 			var $self = $(self);
-			var minHeight = $self.height();
-			var noFlickerPad = $self.hasClass('autogrow-short') ? 0 : parseInt($self.css('lineHeight')) || 0;
+			var minHeight = 16; //$self.height();
 			var settings = $.extend({
 				preGrowCallback: null,
 				postGrowCallback: null
@@ -24,6 +23,9 @@
 			}
 
 			shadow.css({
+				position: 'absolute',
+				top: -10000,
+				left: -10000,
 				width: $self.width(),
 				fontSize: $self.css('fontSize'),
 				fontFamily: $self.css('fontFamily'),
@@ -54,9 +56,9 @@
 				}
 
 				shadow.css('width', $self.width());
-				shadow.html(val + (noFlickerPad === 0 ? '...' : '')); // Append '...' to resize pre-emptively.
+				shadow.html(val); // Append '...' to resize pre-emptively.
 
-				var newHeight = Math.max(shadow.height() + noFlickerPad + 1, minHeight);
+				var newHeight = Math.max(shadow.height() + 1, minHeight) + 1;
 				if (settings.preGrowCallback !== null) {
 					newHeight = settings.preGrowCallback($self, shadow, newHeight, minHeight);
 				}
