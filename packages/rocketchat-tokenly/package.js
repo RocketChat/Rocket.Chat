@@ -10,14 +10,26 @@ Package.onUse(function(api) {
 	api.use('rocketchat:lib');
 	api.use('service-configuration');
 	api.use('rocketchat:custom-oauth');
+	api.use('rocketchat:authorization');
 	api.use('templating', 'client');
 
 	api.addFiles('common.js');
 
-	api.addFiles('client/roomType.js', 'client');
-	api.addFiles('client/tokenlyRoomList.html', 'client');
 	api.addFiles('login-button.css', 'client');
 
+	api.addFiles('client/roomType.js', 'client');
+	api.addFiles('client/tokenChannelsList.html', 'client');
+	api.addFiles('client/tokenChannelsList.js', 'client');
+
 	api.addFiles('startup.js', 'server');
+
+	api.addFiles('server/functions/saveRoomTokens.js', 'server');
+	api.addFiles('server/functions/saveRoomTokensMinimumBalance.js', 'server');
+	api.addFiles('server/models/Rooms.js', 'server');
+	api.addFiles('server/models/Users.js', 'server');
+	api.addFiles('server/methods/findTokenChannels.js', 'server');
+	api.addFiles('server/methods/getProtectedTokenpassBalances.js', 'server');
+	api.addFiles('server/methods/getPublicTokenpassBalances.js', 'server');
+	api.addFiles('server/methods/updateUserTokenlyBalances.js', 'server');
 });
 

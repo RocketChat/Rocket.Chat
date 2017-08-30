@@ -72,18 +72,6 @@ RocketChat.roomTypes.add('c', 30, {
 	}
 });
 
-// token controlled access
-RocketChat.roomTypes.add('tokens', 30, {
-	label: 'Tokenly_Channels',
-	condition() {
-		const user = Meteor.user();
-		const hasTokenpass = !!(user && user.services && user.services.tokenly);
-		const preferences = (user && user.settings && user.settings.preferences && user.settings.preferences) || {};
-
-		return hasTokenpass && (!preferences.roomsListExhibitionMode || ['unread', 'category'].includes(preferences.roomsListExhibitionMode)) && !preferences.mergeChannels;
-	}
-});
-
 // private
 RocketChat.roomTypes.add('p', 40, {
 	icon: 'lock',
@@ -115,6 +103,10 @@ RocketChat.roomTypes.add('p', 40, {
 		const user = Meteor.user();
 		const preferences = (user && user.settings && user.settings.preferences && user.settings.preferences) || {};
 		return !preferences.roomsListExhibitionMode || ['unread', 'category'].includes(preferences.roomsListExhibitionMode) && !preferences.mergeChannels && RocketChat.authz.hasAllPermission('view-p-room');
+	},
+
+	showJoinLink() {
+		return true;
 	}
 });
 

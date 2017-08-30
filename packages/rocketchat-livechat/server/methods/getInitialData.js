@@ -26,9 +26,7 @@ Meteor.methods({
 				u: 1,
 				usernames: 1,
 				v: 1,
-				servedBy: 1,
-				tokens: 1,
-				minimumTokenBalance: 1
+				servedBy: 1
 			}
 		}).fetch();
 

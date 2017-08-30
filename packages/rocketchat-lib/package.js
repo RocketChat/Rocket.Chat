@@ -156,7 +156,6 @@ Package.onUse(function(api) {
 	api.addFiles('server/methods/getServerInfo.js', 'server');
 	api.addFiles('server/methods/getSingleMessage.js', 'server');
 	api.addFiles('server/methods/getUserRoles.js', 'server');
-	api.addFiles('server/methods/getUserTokenlyBalances.js', 'server');
 	api.addFiles('server/methods/insertOrUpdateUser.js', 'server');
 	api.addFiles('server/methods/joinDefaultChannels.js', 'server');
 	api.addFiles('server/methods/joinRoom.js', 'server');
@@ -175,7 +174,6 @@ Package.onUse(function(api) {
 	api.addFiles('server/methods/unarchiveRoom.js', 'server');
 	api.addFiles('server/methods/unblockUser.js', 'server');
 	api.addFiles('server/methods/updateMessage.js', 'server');
-	api.addFiles('server/methods/updateUserTokenlyBalances.js', 'server');
 
 	// SERVER STARTUP
 	api.addFiles('server/startup/settingsOnLoadCdnPrefix.js', 'server');

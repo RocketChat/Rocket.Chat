@@ -100,6 +100,12 @@ Template.createChannel.helpers({
 	},
 	iconType() {
 		return Template.instance().type.get() === 'p' ? 'lock' : 'hashtag';
+	},
+	tokenIsDisabled() {
+		return Template.instance().type.get() !== 'p' ? 'disabled' : null;
+	},
+	tokensRequired() {
+		return Template.instance().tokensRequired.get() && Template.instance().type.get() === 'p';
 	}
 });
 
@@ -110,11 +116,7 @@ Template.createChannel.events({
 		t.selectedUsers.set(t.selectedUsers.get().filter(user => user.username !== username));
 	},
 	'change [name=setTokensRequired]'(e, t) {
-		if (e.target.checked) {
-			t.$('#tokensFields').slideDown();
-		} else {
-			t.$('#tokensFields').slideUp();
-		}
+		t.tokensRequired.set(e.currentTarget.checked);
 	},
 	'change [name=type]'(e, t) {
 		t.type.set(e.target.checked ? e.target.value : 'p');
@@ -152,26 +154,12 @@ Template.createChannel.events({
 		const isPrivate = type === 'p';
 		const readOnly = false;//instance.find('#channel-ro').checked;
 
-		let tokensRequired = '';
-		let minimumTokenBalance = 0;
+		const tokenpass = {};
 
 		if (instance.find('[name=setTokensRequired]') && instance.find('[name=setTokensRequired]').checked) {
-			tokensRequired = e.target.tokensRequired.value;
+			tokenpass.tokens = e.target.tokensRequired.value.split(',').map(token => token.trim()).filter(token => token.length > 0);
 			if (e.target.tokenMinimumNeededBalance.value) {
-				minimumTokenBalance = parseInt(e.target.tokenMinimumNeededBalance.value);
-			}
-
-			const user = Meteor.user();
-			const tokens = tokensRequired.replace(/\s/ig, '').split(',');
-			if (_.isEmpty(tokens)) {
-				instance.invalidTokens.set(true);
-			} else {
-				_.each(tokens, (typedToken) => {
-					const userTokens = user && user.services && user.services.tokenly && user.services.tokenly.tcaBalances;
-					if (!_.contains(userTokens, typedToken)) {
-						instance.invalidTokens.set(true);
-					}
-				});
+				tokenpass.minimumBalance = parseInt(e.target.tokenMinimumNeededBalance.value);
 			}
 		}
 
@@ -179,7 +167,7 @@ Template.createChannel.events({
 			return e.target.name.focus();
 		}
 
-		Meteor.call(isPrivate ? 'createPrivateGroup' : 'createChannel', name, instance.selectedUsers.get().map(user => user.username), readOnly, {}, tokensRequired, minimumTokenBalance, function(err, result) {
+		Meteor.call(isPrivate ? 'createPrivateGroup' : 'createChannel', name, instance.selectedUsers.get().map(user => user.username), readOnly, {}, tokenpass, function(err, result) {
 			if (err) {
 				if (err.error === 'error-invalid-name') {
 					return instance.invalid.set(true);
@@ -227,6 +215,7 @@ Template.createChannel.onCreated(function() {
 	this.invalid = new ReactiveVar(false);
 	this.invalidTokens = new ReactiveVar(false);
 	this.userFilter = new ReactiveVar('');
+	this.tokensRequired = new ReactiveVar(false);
 	this.checkChannel = _.debounce((name) => {
 		if (validateChannelName(name)) {
 			return Meteor.call('roomNameExists', name, (error, result) => {

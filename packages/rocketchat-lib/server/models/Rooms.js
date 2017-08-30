@@ -745,28 +745,8 @@ class ModelRooms extends RocketChat.models._Base {
 		return this.update({ _id }, update);
 	}
 
-	setTokensById(_id, tokens) {
-		const update = {
-			$set: {
-				tokens
-			}
-		};
-
-		return this.update({_id}, update);
-	}
-
-	setMinimumTokenBalanceById(_id, minimumTokenBalance) {
-		const update = {
-			$set: {
-				minimumTokenBalance
-			}
-		};
-
-		return this.update({_id}, update);
-	}
-
 	// INSERT
-	createWithTypeNameUserAndUsernames(type, name, fname, user, usernames, extraData, tokens, minimumTokenBalance) {
+	createWithTypeNameUserAndUsernames(type, name, fname, user, usernames, extraData) {
 		const room = {
 			name,
 			fname,
@@ -779,18 +759,13 @@ class ModelRooms extends RocketChat.models._Base {
 			}
 		};
 
-		if (tokens && minimumTokenBalance) {
-			room.tokens = tokens;
-			room.minimumTokenBalance = minimumTokenBalance;
-		}
-
 		_.extend(room, extraData);
 
 		room._id = this.insert(room);
 		return room;
 	}
 
-	createWithIdTypeAndName(_id, type, name, extraData, tokens, minimumTokenBalance) {
+	createWithIdTypeAndName(_id, type, name, extraData) {
 		const room = {
 			_id,
 			ts: new Date(),
@@ -799,11 +774,6 @@ class ModelRooms extends RocketChat.models._Base {
 			usernames: [],
 			msgs: 0
 		};
-
-		if (tokens && minimumTokenBalance) {
-			room.tokens = tokens;
-			room.minimumTokenBalance = minimumTokenBalance;
-		}
 
 		_.extend(room, extraData);
 

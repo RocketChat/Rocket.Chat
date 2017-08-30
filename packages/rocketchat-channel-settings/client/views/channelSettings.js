@@ -252,13 +252,13 @@ Template.channelSettings.onCreated(function() {
 			type: 'text',
 			label: 'Tokens',
 			canView(room) {
-				return room.t !== 'd' && Meteor.user() && Meteor.user().services && Meteor.user().services.tokenly;
+				return RocketChat.authz.hasAllPermission('edit-room', room._id);
 			},
 			canEdit(room) {
 				return RocketChat.authz.hasAllPermission('edit-room', room._id);
 			},
 			getValue(room) {
-				return room.tokens && room.tokens.toString();
+				return room.tokenpass && room.tokenpass.tokens.join(', ');
 			},
 			save(value, room) {
 				return Meteor.call('saveRoomSettings', room._id, 'roomTokens', value, function(err) {
@@ -273,13 +273,13 @@ Template.channelSettings.onCreated(function() {
 			type: 'text', // TODO Tokenly - alter type to 'number'
 			label: 'Tokens_Minimum_Needed_Balance',
 			canView(room) {
-				return room.t !== 'd' && Meteor.user() && Meteor.user().services && Meteor.user().services.tokenly;
+				return RocketChat.authz.hasAllPermission('edit-room', room._id);
 			},
 			canEdit(room) {
 				return RocketChat.authz.hasAllPermission('edit-room', room._id);
 			},
 			getValue(room) {
-				return room.minimumTokenBalance;
+				return room.tokenpass.minimumBalance;
 			},
 			save(value, room) {
 				return Meteor.call('saveRoomSettings', room._id, 'roomTokensMinimumBalance', value, function(err) {

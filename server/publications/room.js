@@ -28,8 +28,7 @@ const options = {
 		label: 1,
 		ro: 1,
 		sentiment: 1,
-		tokens: 1,
-		minimumTokenBalance: 1
+		tokenpass: 1
 	}
 };
 

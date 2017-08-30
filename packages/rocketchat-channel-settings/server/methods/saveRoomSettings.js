@@ -10,7 +10,7 @@ Meteor.methods({
 				method: 'saveRoomSettings'
 			});
 		}
-		if (!['roomName', 'roomTopic', 'roomAnnouncement', 'roomDescription', 'roomType', 'readOnly', 'reactWhenReadOnly', 'systemMessages', 'default', 'joinCode'].some((s) => s === setting)) {
+		if (!['roomName', 'roomTopic', 'roomAnnouncement', 'roomDescription', 'roomType', 'readOnly', 'reactWhenReadOnly', 'systemMessages', 'default', 'joinCode', 'roomTokens', 'roomTokensMinimumBalance'].some((s) => s === setting)) {
 			throw new Meteor.Error('error-invalid-settings', 'Invalid settings provided', {
 				method: 'saveRoomSettings'
 			});
@@ -66,12 +66,12 @@ Meteor.methods({
 					}
 					break;
 				case 'roomTokens':
-					if (value !== room.tokens) {
+					if (room.tokenpass && value !== room.tokenpass.tokens.join(', ')) {
 						RocketChat.saveRoomTokens(rid, value, Meteor.user());
 					}
 					break;
 				case 'roomTokensMinimumBalance':
-					if (value !== room.minimumTokenBalance) {
+					if (room.tokenpass && value !== room.tokenpass.minimumBalance) {
 						RocketChat.saveRoomTokensMinimumBalance(rid, value, Meteor.user());
 					}
 					break;

@@ -1,5 +1,4 @@
-RocketChat.saveRoomTokens = function(rid, roomTokens, user) {
-
+RocketChat.saveRoomTokens = function(rid, roomTokens) {
 	if (!Match.test(rid, String)) {
 		throw new Meteor.Error('invalid-room', 'Invalid room', {
 			'function': 'RocketChat.saveRoomTokens'
@@ -14,7 +13,5 @@ RocketChat.saveRoomTokens = function(rid, roomTokens, user) {
 		tokens = escapedRoomTokens.replace(/\s/ig, '').split(',');
 	}
 
-	const update = RocketChat.models.Rooms.setTokensById(rid, tokens);
-	RocketChat.models.Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser('room_changed_tokens', rid, tokens, user);
-	return update;
+	return RocketChat.models.Rooms.setTokensById(rid, tokens);
 };

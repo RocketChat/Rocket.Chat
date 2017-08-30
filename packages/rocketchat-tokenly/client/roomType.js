@@ -1,3 +1,9 @@
-RocketChat.roomTypes.add('tokenly', 1, {
-	customTemplate: 'tokenlyRoomList'
+RocketChat.roomTypes.add('tokenpass', 1, {
+	customTemplate: 'tokenChannelsList',
+	condition() {
+		const user = Meteor.user();
+		const hasTokenpass = !!(user && user.services && user.services.tokenly);
+
+		return hasTokenpass;
+	}
 });
