@@ -1,10 +1,16 @@
-/* globals FileUpload */
+/* globals FileUpload, Jimp, svg2png */
 
 Meteor.startup(function() {
 	WebApp.connectHandlers.use('/avatar/', Meteor.bindEnvironment(function(req, res/*, next*/) {
-		const params = {
-			username: decodeURIComponent(req.url.replace(/^\//, '').replace(/\?.*$/, ''))
-		};
+
+		// TODO 7908
+
+		console.log('#7908');
+
+		const params = req.query;
+		params.username = decodeURIComponent(req.url.replace(/^\//, '').replace(/\?.*$/, ''));
+
+		console.log(params);
 
 		if (_.isEmpty(params.username)) {
 			res.writeHead(403);
@@ -32,6 +38,8 @@ Meteor.startup(function() {
 					}
 				}
 				file = RocketChat.models.Avatars.findOneByName(username);
+
+				// console.log(file);
 			}
 
 			if (file) {
@@ -88,7 +96,44 @@ Meteor.startup(function() {
 
 				const svg = `<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n<svg xmlns=\"http://www.w3.org/2000/svg\" pointer-events=\"none\" width=\"50\" height=\"50\">\n<rect height="50" width="50" fill=\"${ color }\"/>\n<text text-anchor=\"middle\" y=\"50%\" x=\"50%\" dy=\"0.36em\" pointer-events=\"auto\" fill=\"#ffffff\" font-family=\"Helvetica, Arial, Lucida Grande, sans-serif\" font-weight="400" font-size="28">\n${ initials }\n</text>\n</svg>`;
 
-				res.write(svg);
+				if (params.format && (params.format === 'png' || params.format === 'jpg' || params.format === 'bmp')) {
+					// TODO - See https://www.npmjs.com/package/svg2png and https://www.npmjs.com/package/jimp
+
+					svg2png(svg, { width: params.width || 50, height: params.height || 50}).then(imageBuffer => {
+						Jimp.read(imageBuffer, function(error, image) {
+							if (error) {
+								throw error;
+							} else {
+								image.resize(params.width, params.height).quality(params.quality || 100);
+
+								let mime;
+
+								switch (params.format) {
+									case 'png': mime = Jimp.MIME_PNG; break;
+									case 'jpg': mime = Jimp.MIME_JPEG; break;
+									case 'bmp': mime = Jimp.MIME_BMP; break;
+								}
+
+								res.write(image.getBuffer(mime, function(error) {
+									console.error(error);
+								}));
+							}
+						});
+					}).catch(function(error) {
+						console.error(error);
+					});
+				} else {
+					// TODO Move validation to top
+					res.writeHead(400);
+					res.write('Invalid image format. Formats supported are PNG, JPG and BMP.');
+					res.end();
+					return;
+				}
+
+				if (!params.format) {
+					res.write(svg);
+				}
+
 				res.end();
 
 				return;
