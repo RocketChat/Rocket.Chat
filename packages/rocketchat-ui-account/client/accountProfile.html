@@ -99,7 +99,7 @@
 									<label class="rc-input__label">
 										<div class="rc-input__title">{{_ "Email"}}</div>
 										<div class="rc-input__wrapper">
-											<input name="email" type="text" class="rc-input__element" placeholder="Type channel name" value="{{email}}" autocomplete="false" {{ifThenElse canChange '' 'disabled'}}>
+											<input name="email" type="text" class="rc-input__element" placeholder="Type email" value="{{email}}" autocomplete="false" {{ifThenElse canChange '' 'disabled'}}>
 										</div>
 									</label>
 									{{# unless canChange}}
@@ -112,7 +112,7 @@
 									<label class="rc-input__label">
 										<div class="rc-input__title">{{_ "New_password"}}</div>
 										<div class="rc-input__wrapper">
-											<input name="password" type="password" class="rc-input__element" placeholder="Type channel name"  autocomplete="new-password" {{ifThenElse canChange '' 'disabled'}}>
+											<input name="password" type="password" class="rc-input__element" placeholder="Type new password"  autocomplete="new-password" {{ifThenElse canChange '' 'disabled'}}>
 										</div>
 									</label>
 									{{# unless canChange}}
