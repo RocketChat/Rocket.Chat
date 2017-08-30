@@ -15,6 +15,7 @@ Package.onUse(function(api) {
 	// Storage
 	api.addFiles([
 		'server/storage/rl-model.js',
+		'server/storage/rl-persistence-model.js',
 		'server/storage/storage.js',
 		'server/storage/index.js'
 	], 'server');
@@ -24,7 +25,11 @@ Package.onUse(function(api) {
 		'server/bridges/bridges.js',
 		'server/bridges/commands.js',
 		'server/bridges/environmental.js',
+		'server/bridges/messages.js',
+		'server/bridges/persistence.js',
+		'server/bridges/rooms.js',
 		'server/bridges/settings.js',
+		'server/bridges/users.js',
 		'server/bridges/index.js'
 	], 'server');
 
@@ -35,6 +40,7 @@ Package.onUse(function(api) {
 		'server/communication/index.js'
 	], 'server');
 
+	// RocketChat <-> Rocketlet Data Converters
 	api.addFiles([
 		'server/converters/messages.js',
 		'server/converters/rooms.js',
@@ -60,6 +66,6 @@ Package.onUse(function(api) {
 
 Npm.depends({
 	'busboy': '0.2.13',
-	'temporary-rocketlets-server': '0.1.16',
-	'temporary-rocketlets-ts-definition': '0.6.2'
+	'temporary-rocketlets-server': '0.1.20',
+	'temporary-rocketlets-ts-definition': '0.6.11'
 });

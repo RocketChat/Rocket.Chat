@@ -1,13 +1,14 @@
 import { RealRocketletBridges } from './bridges';
-import { RocketletWebsocketNotifier } from './communication';
+import { RocketletsRestApi, RocketletWebsocketNotifier } from './communication';
 import { RocketletMessagesConverter, RocketletRoomsConverter, RocketletSettingsConverter, RocketletUsersConverter } from './converters';
-import { RocketletsModel, RocketletRealStorage } from './storage';
+import { RocketletsModel, RocketletsPersistenceModel, RocketletRealStorage } from './storage';
 
 import { RocketletManager } from 'temporary-rocketlets-server/server/RocketletManager';
 
 class RocketletServerOrchestrator {
 	constructor() {
 		this._model = new RocketletsModel();
+		this._persistModel = new RocketletsPersistenceModel();
 		this._storage = new RocketletRealStorage(this._model);
 
 		this._converters = new Map();
@@ -22,10 +23,15 @@ class RocketletServerOrchestrator {
 
 		this._communicators = new Map();
 		this._communicators.set('notifier', new RocketletWebsocketNotifier());
+		this._communicators.set('restapi', new RocketletsRestApi(this._manager));
 	}
 
 	getModel() {
 		return this._model;
+	}
+
+	getPersistenceModel() {
+		return this._persistModel;
 	}
 
 	getStorage() {
