@@ -281,7 +281,7 @@ It is a great solution for communities and companies wanting to privately host t
 - Audio calls
 - Multi-users Audio Conference
 - Screensharing
-- Drupal 7.x and 8.x Plug-in ([download](https://www.drupal.org/project/rocket_chat)  and [source code](https://github.com/jelhouss/rocket_chat) )
+- Drupal 7.x and 8.x Plug-in (both stable and development flavours) ([download](https://www.drupal.org/project/rocket_chat)  and [source code](https://git.drupal.org/project/rocket_chat.git) )
 - XMPP bridge ([try it](https://demo.rocket.chat/channel/general))
 - REST APIs
 - Remote Locations Video Monitoring
