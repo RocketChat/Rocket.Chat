@@ -1,5 +1,5 @@
 <template name="message">
-	<li id="{{_id}}" class="message background-transparent-dark-hover {{isSequential}} {{system}} {{t}} {{own}} {{isTemp}} {{chatops}} {{customClass}}" data-username="{{u.username}}" data-groupable="{{isGroupable}}" data-date="{{date}}" data-timestamp="{{timestamp}}">
+	<li id="{{prefix}}{{_id}}" class="message background-transparent-dark-hover {{isSequential}} {{system}} {{t}} {{own}} {{isTemp}} {{chatops}} {{customClass}}" data-username="{{u.username}}" data-groupable="{{isGroupable}}" data-date="{{date}}" data-timestamp="{{timestamp}}">
 		{{#if avatar}}
 			{{#if avatarFromUsername}}
 				<button class="thumb user-card-message" data-username="{{u.username}}" tabindex="1">{{> avatar username=avatarFromUsername}}</button>
@@ -70,10 +70,10 @@
 						</button>
 					{{/each}}
 				</div>
-				<label class="message-actions__label" for="message-actions__menu--{{_id}}" data-popover="label">
+				<label class="message-actions__label" for="message-actions__menu--{{_id}}{{prefix}}" data-popover="label">
 					{{> icon block="message-actions__menu" icon="menu"}}
 				</label>
-				<input id="message-actions__menu--{{_id}}" type="checkbox" class="rc-popover-anchor" data-popover="anchor">
+				<input id="message-actions__menu--{{_id}}{{prefix}}" type="checkbox" class="rc-popover-anchor" data-popover="anchor">
 				<div class="rc-popover" data-popover="popover">
 				<div class="rc-popover__wrapper"></div>
 					<div class="rc-popover__content">
