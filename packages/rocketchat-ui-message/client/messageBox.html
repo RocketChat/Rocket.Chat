@@ -1,5 +1,5 @@
 <template name="messageBox">
-	<div class="rc-message-box rc-new">
+	<div class="rc-message-box rc-new {{#if embeddedVersion}}rc-message-box--embedded{{/if}}">
 		{{#if subscribed}}
 			{{#with usersTyping}}
 				<div class="rc-message-box__typing">
@@ -39,21 +39,23 @@
 						</span>
 					{{/messageBox__actionsSmall}}
 				</label>
-				{{#if showFormattingTips}}
-					<div class="rc-message-box__toolbar-markdown">
-						{{#each mdButtons}}
-							<button class="rc-message-box__toolbar-markdown-item rc-tooltip js-md" aria-label={{_ label}} data-link="{{link}}">
-								{{#if icon}}
-									{{> icon block="rc-message-box__toolbar-markdown-icon" icon=icon }}
-								{{else}}
-									{{#if link}}
-										<a href="{{link}}" target="_blank" class="rc-message-box__toolbar-markdown-link">{{label}}</a>
+				{{#unless embeddedVersion}}
+					{{#if showFormattingTips}}
+						<div class="rc-message-box__toolbar-markdown">
+							{{#each mdButtons}}
+								<button class="rc-message-box__toolbar-markdown-item rc-tooltip js-md" aria-label={{_ label}} data-link="{{link}}">
+									{{#if icon}}
+										{{> icon block="rc-message-box__toolbar-markdown-icon" icon=icon }}
+									{{else}}
+										{{#if link}}
+											<a href="{{link}}" target="_blank" class="rc-message-box__toolbar-markdown-link">{{label}}</a>
+										{{/if}}
 									{{/if}}
-								{{/if}}
-							</button>
-						{{/each}}
-					</div>
-				{{/if}}
+								</button>
+							{{/each}}
+						</div>
+					{{/if}}
+				{{/unless}}
 			{{else}}
 				<div class="stream-info">
 					{{#if isBlockedOrBlocker}}
