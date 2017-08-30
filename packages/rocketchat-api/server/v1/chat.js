@@ -50,9 +50,30 @@ RocketChat.API.v1.addRoute('chat.getMessage', { authRequired: true }, {
 	}
 });
 
+RocketChat.API.v1.addRoute('chat.pinMessage', { authRequired: true }, {
+	post() {
+		if (!this.bodyParams.messageId || !this.bodyParams.messageId.trim()) {
+			throw new Meteor.Error('error-messageid-param-not-provided', 'The required "messageId" param is required.');
+		}
+
+		const msg = RocketChat.models.Messages.findOneById(this.bodyParams.messageId);
+
+		if (!msg) {
+			throw new Meteor.Error('error-message-not-found', 'The provided "messageId" does not match any existing message.');
+		}
+
+		let pinnedMessage;
+		Meteor.runAsUser(this.userId, () => pinnedMessage = Meteor.call('pinMessage', msg));
+
+		return RocketChat.API.v1.success({
+			message: pinnedMessage
+		});
+	}
+});
+
 RocketChat.API.v1.addRoute('chat.postMessage', { authRequired: true }, {
 	post() {
-		const messageReturn = processWebhookMessage(this.bodyParams, this.user)[0];
+		const messageReturn = processWebhookMessage(this.bodyParams, this.user, undefined, true)[0];
 
 		if (!messageReturn) {
 			return RocketChat.API.v1.failure('unknown-error');
@@ -63,6 +84,68 @@ RocketChat.API.v1.addRoute('chat.postMessage', { authRequired: true }, {
 			channel: messageReturn.channel,
 			message: messageReturn.message
 		});
+	}
+});
+
+RocketChat.API.v1.addRoute('chat.starMessage', { authRequired: true }, {
+	post() {
+		if (!this.bodyParams.messageId || !this.bodyParams.messageId.trim()) {
+			throw new Meteor.Error('error-messageid-param-not-provided', 'The required "messageId" param is required.');
+		}
+
+		const msg = RocketChat.models.Messages.findOneById(this.bodyParams.messageId);
+
+		if (!msg) {
+			throw new Meteor.Error('error-message-not-found', 'The provided "messageId" does not match any existing message.');
+		}
+
+		Meteor.runAsUser(this.userId, () => Meteor.call('starMessage', {
+			_id: msg._id,
+			rid: msg.rid,
+			starred: true
+		}));
+
+		return RocketChat.API.v1.success();
+	}
+});
+
+RocketChat.API.v1.addRoute('chat.unPinMessage', { authRequired: true }, {
+	post() {
+		if (!this.bodyParams.messageId || !this.bodyParams.messageId.trim()) {
+			throw new Meteor.Error('error-messageid-param-not-provided', 'The required "messageId" param is required.');
+		}
+
+		const msg = RocketChat.models.Messages.findOneById(this.bodyParams.messageId);
+
+		if (!msg) {
+			throw new Meteor.Error('error-message-not-found', 'The provided "messageId" does not match any existing message.');
+		}
+
+		Meteor.runAsUser(this.userId, () => Meteor.call('unpinMessage', msg));
+
+		return RocketChat.API.v1.success();
+	}
+});
+
+RocketChat.API.v1.addRoute('chat.unStarMessage', { authRequired: true }, {
+	post() {
+		if (!this.bodyParams.messageId || !this.bodyParams.messageId.trim()) {
+			throw new Meteor.Error('error-messageid-param-not-provided', 'The required "messageId" param is required.');
+		}
+
+		const msg = RocketChat.models.Messages.findOneById(this.bodyParams.messageId);
+
+		if (!msg) {
+			throw new Meteor.Error('error-message-not-found', 'The provided "messageId" does not match any existing message.');
+		}
+
+		Meteor.runAsUser(this.userId, () => Meteor.call('starMessage', {
+			_id: msg._id,
+			rid: msg.rid,
+			starred: false
+		}));
+
+		return RocketChat.API.v1.success();
 	}
 });
 
