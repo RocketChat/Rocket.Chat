@@ -132,7 +132,12 @@ const markdownButtons = [
 	}
 ];
 
-Template.messageBox.helpers({
+const methods = {
+	actions() {
+		const groups = RocketChat.messageBox.actions.get();
+		console.log(Object.keys(groups).reduce((ret, el) => ret.concat(groups[el]), []));
+		return Object.keys(groups).reduce((ret, el) => ret.concat(groups[el]), []);
+	},
 	columns() {
 		const groups = RocketChat.messageBox.actions.get();
 		const sorted = Object.keys(groups).sort((a, b) => groups[b].length - groups[a].length);
@@ -155,7 +160,12 @@ Template.messageBox.helpers({
 		});
 
 		return columns;
-	},
+	}
+};
+
+Template.messageBox__actions.helpers({...methods});
+Template.messageBox__actionsSmall.helpers({...methods});
+Template.messageBox.helpers({
 	mdButtons() {
 		return markdownButtons.filter(button => !button.condition || button.condition());
 	},
@@ -277,8 +287,9 @@ Template.messageBox.helpers({
 	anonymousWrite() {
 		return (Meteor.userId() == null) && RocketChat.settings.get('Accounts_AllowAnonymousRead') === true && RocketChat.settings.get('Accounts_AllowAnonymousWrite') === true;
 	},
-	sendIcon() {
-		return Template.instance().sendIcon.get();
+	disableSendIcon() {
+		console.log(Template.instance().sendIcon.get());
+		return !Template.instance().sendIcon.get() ? 'disabled' : '';
 	}
 });
 
@@ -333,8 +344,9 @@ function firefoxPasteUpload(fn) {
 }
 
 Template.messageBox.events({
-	'click .js-message-actions .rc-popover__item'(event, instance) {
-		this.action.apply(this, [{rid: Template.parentData()._id, messageBox: instance.find('.rc-message-box'), element: $(event.target).parent('.rc-popover__item')[0], event}]);
+	'click .js-message-actions .rc-popover__item, click .js-message-actions .js-message-action'(event, instance) {
+		const action = this.action || Template.parentData().action;
+		action.apply(this, [{rid: Template.parentData()._id, messageBox: instance.find('.rc-message-box'), element: event.currentTarget, event}]);
 	},
 	'click .join'(event) {
 		event.stopPropagation();
