@@ -125,7 +125,7 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 					if (email.verified) {
 						email = {
 							to: email.address,
-							from: RocketChat.settings.get('From_Email'),
+							from: `${ message.u.name } <${ RocketChat.settings.get('From_Email') }>`,
 							subject: emailSubject,
 							html: header + messageHTML + divisorMessage + (linkByUser[user._id] || defaultLink) + footer
 						};
