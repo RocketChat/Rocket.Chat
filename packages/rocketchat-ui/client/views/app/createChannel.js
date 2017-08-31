@@ -101,6 +101,9 @@ Template.createChannel.helpers({
 	iconType() {
 		return Template.instance().type.get() === 'p' ? 'lock' : 'hashtag';
 	},
+	tokenAccessEnabled() {
+		return RocketChat.settings.get('API_Tokenly_URL') !== '';
+	},
 	tokenIsDisabled() {
 		return Template.instance().type.get() !== 'p' ? 'disabled' : null;
 	},
