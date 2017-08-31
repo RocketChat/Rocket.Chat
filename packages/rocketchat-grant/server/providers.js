@@ -31,7 +31,6 @@ export function middleware(req, res, next) {
 
 		providers.forEach((_, name) => list.push(name));
 
-		// TODO: send a list of providers
 		res.end(JSON.stringify({
 			data: list
 		}));
