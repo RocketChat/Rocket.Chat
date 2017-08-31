@@ -12,12 +12,13 @@ Meteor.methods({
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'joinRoom' });
 		}
 
+		// TODO we should have a 'beforeJoinRoom' call back
 		const user = Meteor.user();
 		if (room.tokenpass && user && user.services && user.services.tokenly) {
 			Meteor.call('updateUserTokenlyBalances');
 
 			const hasAppropriateToken = user.services.tokenly.tcaBalances.some(token => {
-				return room.tokenpass.tokens.includes(token.asset) && room.tokenpass.minimumBalance <= parseFloat(token.balanceSat);
+				return room.tokenpass.tokens.includes(token.asset) && room.tokenpass.minimumBalance <= parseFloat(token.balance);
 			});
 			if (!hasAppropriateToken) {
 				throw new Meteor.Error('error-not-allowed', 'Token required', { method: 'joinRoom' });

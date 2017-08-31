@@ -66,12 +66,12 @@ Meteor.methods({
 					}
 					break;
 				case 'roomTokens':
-					if (room.tokenpass && value !== room.tokenpass.tokens.join(', ')) {
+					if (value !== (room.tokenpass && room.tokenpass.tokens.join(', '))) {
 						RocketChat.saveRoomTokens(rid, value, Meteor.user());
 					}
 					break;
 				case 'roomTokensMinimumBalance':
-					if (room.tokenpass && value !== room.tokenpass.minimumBalance) {
+					if (value !== (room.tokenpass && room.tokenpass.minimumBalance)) {
 						RocketChat.saveRoomTokensMinimumBalance(rid, value, Meteor.user());
 					}
 					break;

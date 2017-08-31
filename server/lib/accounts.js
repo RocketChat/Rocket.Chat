@@ -94,14 +94,6 @@ Accounts.onCreateUser(function(options, user = {}) {
 	return user;
 });
 
-Accounts.onLogin(function() {
-	const user = Meteor.user();
-
-	if (user && user.services && user.services.tokenly) {
-		Meteor.call('updateUserTokenlyBalances');
-	}
-});
-
 Accounts.insertUserDoc = _.wrap(Accounts.insertUserDoc, function(insertUserDoc, options, user) {
 	let roles = [];
 

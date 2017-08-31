@@ -19,7 +19,7 @@ function validateTokenAccess(userData, roomData) {
 	}
 
 	return userData.services.tokenly.tcaBalances.some(token => {
-		return roomData.tokenpass.tokens.includes(token.asset) && roomData.tokenpass.minimumBalance <= token.balanceSat;
+		return roomData.tokenpass.tokens.includes(token.asset) && roomData.tokenpass.minimumBalance <= token.balance;
 	});
 }
 
@@ -41,4 +41,12 @@ Meteor.startup(function() {
 
 		return room;
 	});
+});
+
+Accounts.onLogin(function() {
+	const user = Meteor.user();
+
+	if (user && user.services && user.services.tokenly) {
+		RocketChat.updateUserTokenlyBalances();
+	}
 });

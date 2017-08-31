@@ -7,6 +7,7 @@ Package.describe({
 Package.onUse(function(api) {
 	api.versionsFrom('1.0');
 	api.use('ecmascript');
+	api.use('accounts-base');
 	api.use('rocketchat:lib');
 	api.use('service-configuration');
 	api.use('rocketchat:custom-oauth');
@@ -23,13 +24,13 @@ Package.onUse(function(api) {
 
 	api.addFiles('startup.js', 'server');
 
+	api.addFiles('server/functions/getProtectedTokenpassBalances.js', 'server');
+	api.addFiles('server/functions/getPublicTokenpassBalances.js', 'server');
 	api.addFiles('server/functions/saveRoomTokens.js', 'server');
 	api.addFiles('server/functions/saveRoomTokensMinimumBalance.js', 'server');
+	api.addFiles('server/functions/updateUserTokenlyBalances.js', 'server');
 	api.addFiles('server/models/Rooms.js', 'server');
 	api.addFiles('server/models/Users.js', 'server');
 	api.addFiles('server/methods/findTokenChannels.js', 'server');
-	api.addFiles('server/methods/getProtectedTokenpassBalances.js', 'server');
-	api.addFiles('server/methods/getPublicTokenpassBalances.js', 'server');
-	api.addFiles('server/methods/updateUserTokenlyBalances.js', 'server');
 });
 

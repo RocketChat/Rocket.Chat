@@ -5,7 +5,7 @@ RocketChat.saveRoomTokensMinimumBalance = function(rid, roomTokensMinimumBalance
 		});
 	}
 
-	const minimumTokenBalance = parseInt(s.escapeHTML(roomTokensMinimumBalance));
+	const minimumTokenBalance = parseFloat(s.escapeHTML(roomTokensMinimumBalance));
 
 	return RocketChat.models.Rooms.setMinimumTokenBalanceById(rid, minimumTokenBalance);
 };

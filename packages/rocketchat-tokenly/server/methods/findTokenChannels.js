@@ -9,8 +9,7 @@ Meteor.methods({
 		if (user.services && user.services.tokenly && user.services.tokenly.tcaBalances) {
 			const tokens = {};
 			user.services.tokenly.tcaBalances.forEach(token => {
-				// TODO: balanceSat???
-				tokens[token.asset] = parseFloat(token.balanceSat);
+				tokens[token.asset] = parseFloat(token.balance);
 			});
 
 			return RocketChat.models.Rooms.findByToknepass(Object.keys(tokens)).filter(room => {
