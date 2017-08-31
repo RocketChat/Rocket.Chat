@@ -177,6 +177,7 @@ Template.createChannel.events({
 				}
 				return;
 			}
+
 			if (!isPrivate) {
 				RocketChat.callbacks.run('aftercreateCombined', { _id: result.rid, name: result.name });
 			}
