@@ -77,47 +77,22 @@
 					</label>
 				</div>
 				{{#if tokenAccessEnabled}}
-					<div class="create-channel__switches">
-						<div class="rc-switch">
-							<label class="rc-switch__label" tabindex="-1">
-								<input type="checkbox" class="rc-switch__input" name="setTokensRequired" {{tokenIsDisabled}}>
-								<span class="rc-switch__button">
-									<span class="rc-switch__button-inside"></span>
-								</span>
-								<span class="rc-switch__text">
-									{{_ "Token_Controlled_Access"}}
-								</span>
-							</label>
+						<div class="create-channel__switches">
+							<div class="rc-switch">
+								<label class="rc-switch__label" tabindex="-1">
+									<input type="checkbox" class="rc-switch__input" name="setTokensRequired" {{tokenIsDisabled}}>
+									<span class="rc-switch__button">
+										<span class="rc-switch__button-inside"></span>
+									</span>
+									<span class="rc-switch__text">
+										{{_ "Token_Controlled_Access"}}
+									</span>
+								</label>
+							</div>
 						</div>
-					</div>
-					{{#if tokensRequired}}
-						<div class="rc-input {{#if invalidTokens}}rc-input--error{{/if}}">
-							<label class="rc-input__label">
-								<div class="rc-input__title">{{_ "Tokens_Required"}}</div>
-								<div class="rc-input__wrapper">
-									<input name="tokensRequired" type="text" class="rc-input__element" placeholder="{{_ "Tokens_Required_Input_Placeholder"}}">
-								</div>
-							</label>
-							<div class="rc-input__description">{{_ "Tokens_Required_Input_Description"}}</div>
-							{{#if invalidTokens}}
-								<div class="rc-input__error">
-									<div class="rc-input__error-icon">
-										{{> icon block="rc-input__error-icon" icon="warning" classes="rc-input__error-icon-svg"}}
-									</div>
-									<div class="rc-input__error-message">{{_ "Tokens_Required_Input_Error"}}</div>
-								</div>
-							{{/if}}
-						</div>
-						<div class="rc-input">
-							<label class="rc-input__label">
-								<div class="rc-input__title">{{_ "Tokens_Minimum_Needed_Balance"}}</div>
-								<div class="rc-input__wrapper">
-									<input name="tokenMinimumNeededBalance" type="number" class="rc-input__element" placeholder="{{_ "Tokens_Minimum_Needed_Balance_Placeholder"}}" min="0">
-								</div>
-							</label>
-							<div class="rc-input__description">{{_ "Tokens_Minimum_Needed_Balance_Description"}}</div>
-						</div>
-					{{/if}}
+						{{#if tokensRequired}}
+							{{> tokenpass extensionsConfig}}
+						{{/if}}
 				{{/if}}
 			</div>
 			<div class="create-channel__inputs">
@@ -127,12 +102,60 @@
 	</section>
 </template>
 
+<template name="tokenpass">
+	<fieldset class="rc-form-fieldset {{#if invalid}}rc-form-fieldset--error{{/if}}">
+		<legend class="rc-form-legend">tokenpass</legend>
+		<div class="rc-input {{#if invalidTokens}}rc-input--error{{/if}}">
+			<label class="rc-input__label">
+				<div class="rc-input__title">{{_ "Tokens_Required"}}</div>
+				<div class="rc-input__wrapper">
+					<input name="tokensRequired" type="text" class="rc-input__element" placeholder="{{_ "Tokens_Required_Input_Placeholder"}}">
+				</div>
+			</label>
+			<div class="rc-input__description">{{_ "Tokens_Required_Input_Description"}}</div>
+		</div>
+		<div class="rc-input">
+			<label class="rc-input__label">
+				<div class="rc-input__title">{{_ "Tokens_Minimum_Needed_Balance"}}</div>
+				<div class="rc-input__wrapper">
+					<input name="tokenMinimumNeededBalance" type="number" class="rc-input__element" placeholder="{{_ "Tokens_Minimum_Needed_Balance_Placeholder"}}" min="0">
+				</div>
+			</label>
+			<div class="rc-input__description">{{_ "Tokens_Minimum_Needed_Balance_Description"}}</div>
+		</div>
+		{{#if selectedTokens}}
+			<div class="rc-input">
+				<label class="rc-input__label">
+					<div class="rc-input__title">Tokens</div>
+					<div class="rc-input__wrapper">
+						<div class="rc-tags rc-tags--no-icon">
+							{{#each token in selectedTokens}}
+								{{> tagToken token}}
+							{{/each}}
+						</div>
+					</div>
+				</label>
+			</div>
+		{{/if}}
+
+		<input class="rc-button rc-button--primary rc-button--full" type="submit" data-button="add" {{addIsDisabled}} value="{{_ "Add"}}">
+
+	</fieldset>
+</template>
+
 <template name='tag'>
 	<span class="rc-tags__tag">
-		<span class="rc-tags__tag-avatar">
+		<span class="rc-tags__tag-image">
 			{{> avatar username=username}}
 		</span>
-		<span class="rc-tags__tag-username">{{username}}</span>
+		<span class="rc-tags__tag-text">{{username}}</span>
+		{{> icon block="rc-tags__tag-icon" icon="cross"}}
+	</span>
+</template>
+
+<template name='tagToken'>
+	<span class="rc-tags__tag">
+		<span class="rc-tags__tag-text rc-tooltip" aria-label="balance: {{balance}}">{{token}}</span>
 		{{> icon block="rc-tags__tag-icon" icon="cross"}}
 	</span>
 </template>

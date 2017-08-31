@@ -75,9 +75,6 @@ Template.createChannel.helpers({
 		const inUse = instance.inUse.get();
 		return invalid || inUse;
 	},
-	invalidTokens() {
-		return Template.instance().invalidTokens.get();
-	},
 	readOnlyIsDisabled() {
 		return 'disabled';
 	},
@@ -90,10 +87,11 @@ Template.createChannel.helpers({
 	createIsDisabled() {
 		const instance = Template.instance();
 		const invalid = instance.invalid.get();
+		const extensions_invalid = instance.extensions_invalid.get();
 		const inUse = instance.inUse.get();
 		const name = instance.name.get();
 
-		if (name.length === 0 || invalid || inUse === true || inUse === undefined) {
+		if (name.length === 0 || invalid || inUse === true || inUse === undefined || extensions_invalid) {
 			return 'disabled';
 		}
 		return '';
@@ -109,6 +107,14 @@ Template.createChannel.helpers({
 	},
 	tokensRequired() {
 		return Template.instance().tokensRequired.get() && Template.instance().type.get() === 'p';
+	},
+	extensionsConfig() {
+		const instance = Template.instance();
+		return {
+			validations : Template.instance().extensions_validations,
+			submits: Template.instance().extensions_submits,
+			change: instance.change
+		};
 	}
 });
 
@@ -120,9 +126,11 @@ Template.createChannel.events({
 	},
 	'change [name=setTokensRequired]'(e, t) {
 		t.tokensRequired.set(e.currentTarget.checked);
+		t.change();
 	},
 	'change [name=type]'(e, t) {
 		t.type.set(e.target.checked ? e.target.value : 'p');
+		t.change();
 	},
 	'input [name=users]'(e, t) {
 		const input = e.target;
@@ -158,7 +166,6 @@ Template.createChannel.events({
 		const readOnly = false;//instance.find('#channel-ro').checked;
 
 		const tokenpass = {};
-
 		if (instance.find('[name=setTokensRequired]') && instance.find('[name=setTokensRequired]').checked) {
 			tokenpass.tokens = e.target.tokensRequired.value.split(',').map(token => token.trim()).filter(token => token.length > 0);
 			if (e.target.tokenMinimumNeededBalance.value) {
@@ -169,7 +176,10 @@ Template.createChannel.events({
 		if (instance.invalid.get() || instance.inUse.get()) {
 			return e.target.name.focus();
 		}
-
+		if (!Object.keys(instance.extensions_validations).map(key => instance.extensions_validations[key]).reduce((valid, fn) => fn(instance) && valid, true)) {
+			return instance.extensions_invalid.set(true);
+		}
+		console.log(Object.keys(instance.extensions_submits).map(key => instance.extensions_submits[key]).map(f => f(instance)).reduce((result, item) => ({...result, ...item}), {}));
 		Meteor.call(isPrivate ? 'createPrivateGroup' : 'createChannel', name, instance.selectedUsers.get().map(user => user.username), readOnly, {}, tokenpass, function(err, result) {
 			if (err) {
 				if (err.error === 'error-invalid-name') {
@@ -212,12 +222,18 @@ Template.createChannel.onCreated(function() {
 	Deps.autorun(() => {
 		filter.exceptions = [Meteor.user().username].concat(this.selectedUsers.get().map(u => u.username));
 	});
-
+	this.extensions_validations = [];
+	this.extensions_submits = [];
 	this.name = new ReactiveVar('');
 	this.type = new ReactiveVar('d');
 	this.inUse = new ReactiveVar(undefined);
 	this.invalid = new ReactiveVar(false);
-	this.invalidTokens = new ReactiveVar(false);
+	this.extensions_invalid = new ReactiveVar(false);
+	this.change = _.debounce(() => {
+		let valid = true;
+		Object.keys(this.extensions_validations).map(key => this.extensions_validations[key]).forEach(f => (valid = f(this) && valid));
+		this.extensions_invalid.set(!valid);
+	}, 300);
 	this.userFilter = new ReactiveVar('');
 	this.tokensRequired = new ReactiveVar(false);
 	this.checkChannel = _.debounce((name) => {
@@ -263,4 +279,61 @@ Template.createChannel.onCreated(function() {
 	// this.ac.element = this.firstNode.querySelector('[name=users]');
 	// this.ac.$element = $(this.ac.element);
 	this.ac.tmplInst = this;
+});
+
+
+
+Template.tokenpass.onCreated(function() {
+
+
+	this.data.validations.tokenpass = (instance) => {
+		const result = (RocketChat.settings.get('API_Tokenly_URL') !== '' && instance.tokensRequired.get() && instance.type.get() === 'p') && this.selectedTokens.get().length === 0;
+		this.invalid.set(result);
+		return !result;
+	};
+	this.data.submits.tokenpass = () => {
+		return {tokens: this.selectedTokens.get()};
+	};
+	this.balance = new ReactiveVar('');
+	this.token = new ReactiveVar('');
+	this.selectedTokens = new ReactiveVar([]);
+	this.invalid = new ReactiveVar(false);
+});
+
+Template.tokenpass.helpers({
+	selectedTokens() {
+		return Template.instance().selectedTokens.get();
+	},
+	invalid() {
+		return Template.instance().invalid.get();
+	},
+	addIsDisabled() {
+		const {balance, token} = Template.instance();
+		return (balance.get().length && token.get().length) ? '' : 'disabled';
+	}
+});
+
+Template.tokenpass.events({
+	'click [data-button=add]'(e, instance) {
+		const {balance, token, selectedTokens} = instance;
+		const text = token.get();
+		const arr = selectedTokens.get();
+		selectedTokens.set([...arr.filter(token => token.token !== text), {token: text, balance: balance.get()}]);
+		balance.set('');
+		token.set('');
+		[...instance.findAll('input[type=text],input[type=number]')].forEach(el => el.value = '');
+		instance.data.change();
+		return false;
+	},
+	'click .rc-tags__tag'({target}, t) {
+		const {token} = Blaze.getData(target);
+		t.selectedTokens.set(t.selectedTokens.get().filter(t => t.token !== token));
+		t.data.change();
+	},
+	'input [name=tokenMinimumNeededBalance]'(e, i) {
+		i.balance.set(e.target.value);
+	},
+	'input [name=tokensRequired]'(e, i) {
+		i.token.set(e.target.value);
+	}
 });

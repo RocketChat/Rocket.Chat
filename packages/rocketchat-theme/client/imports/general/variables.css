@@ -41,6 +41,7 @@
 	--status-busy: var(--color-error);
 	--status-invisible: var(--color-gray-medium);
 	--status-invisible-sidebar: var(--color-darkest);
+	--default-padding: 1.5rem;
 	--default-small-padding: 1rem;
 
 	/*
@@ -131,7 +132,7 @@
 	--sidebar-background: var(--color-primary);
 	--sidebar-background-light: var(--color-gray-lightest);
 	--sidebar-header-height: 180px;
-	--sidebar-default-padding: 24px;
+	--sidebar-default-padding: var(--default-padding);
 	--sidebar-small-default-padding: 16px;
 	--sidebar-header-padding: var(--sidebar-default-padding);
 	--sidebar-footer-height: 70px;
