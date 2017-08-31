@@ -1,13 +1,10 @@
-import {
-	makeExecutableSchema
-} from 'graphql-tools';
+import { makeExecutableSchema } from 'graphql-tools';
+import { mergeTypes, mergeResolvers } from 'kamilkisiela-merge-graphql-schemas';
 
-import { mergeTypes, mergeResolvers } from 'merge-graphql-schemas';
-
-import * as channels from './schemas/channels';
-import * as messages from './schemas/messages';
-import * as accounts from './schemas/accounts';
-import * as users from './schemas/users';
+import * as channels from './resolvers/channels';
+import * as messages from './resolvers/messages';
+import * as accounts from './resolvers/accounts';
+import * as users from './resolvers/users';
 
 const schema = mergeTypes([
 	channels.schema,
