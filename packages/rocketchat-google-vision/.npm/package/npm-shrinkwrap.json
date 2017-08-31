@@ -1243,8 +1243,8 @@
       "from": "methmeth@>=1.1.0 <2.0.0"
     },
     "mime": {
-      "version": "1.3.6",
-      "resolved": "https://registry.npmjs.org/mime/-/mime-1.3.6.tgz",
+      "version": "1.4.0",
+      "resolved": "https://registry.npmjs.org/mime/-/mime-1.4.0.tgz",
       "from": "mime@>=1.2.11 <2.0.0"
     },
     "mime-db": {
