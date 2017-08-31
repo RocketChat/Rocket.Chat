@@ -1545,8 +1545,6 @@
   "room_changed_announcement": "Room announcement changed to: <em>__room_announcement__</em> by <em>__user_by__</em>",
   "room_changed_description": "Room description changed to: <em>__room_description__</em> by <em>__user_by__</em>",
   "room_changed_privacy": "Room type changed to: <em>__room_type__</em> by <em>__user_by__</em>",
-  "room_changed_tokens": "Room tokens changed to: <em>__room_tokens__</em> by <em>__user_by__</em>",
-  "room_changed_tokens_minimum_balance": "Room tokens minimum balances changed to: <em>__room_tokens_minimum_balance__</em> by <em>__user_by__</em>",
   "room_changed_topic": "Room topic changed to: <em>__room_topic__</em> by <em>__user_by__</em>",
   "Room_description_changed_successfully": "Room description changed successfully",
   "Room_has_been_deleted": "Room has been deleted",

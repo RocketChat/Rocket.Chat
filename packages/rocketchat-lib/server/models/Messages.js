@@ -469,7 +469,7 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base {
 	// INSERT
 	createWithTypeRoomIdMessageAndUser(type, roomId, message, user, extraData) {
 		const room = RocketChat.models.Rooms.findOneById(roomId, { fields: { sysMes: 1 }});
-		if ((room !== null ? room.sysMes : undefined) === false) {
+		if ((room != null ? room.sysMes : undefined) === false) {
 			return;
 		}
 		const record = {

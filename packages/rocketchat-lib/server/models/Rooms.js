@@ -5,7 +5,6 @@ class ModelRooms extends RocketChat.models._Base {
 		this.tryEnsureIndex({ 'name': 1 }, { unique: 1, sparse: 1 });
 		this.tryEnsureIndex({ 'default': 1 });
 		this.tryEnsureIndex({ 'usernames': 1 });
-		this.tryEnsureIndex({ 'tokens': 1 });
 		this.tryEnsureIndex({ 't': 1 });
 		this.tryEnsureIndex({ 'u._id': 1 });
 
@@ -104,16 +103,6 @@ class ModelRooms extends RocketChat.models._Base {
 		const query = {
 			t: {
 				$in: types
-			}
-		};
-
-		return this.find(query, options);
-	}
-
-	findByTokens(tokens, options) {
-		const query = {
-			tokens: {
-				$in: tokens
 			}
 		};
 

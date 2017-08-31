@@ -15,7 +15,7 @@ Meteor.methods({
 		// TODO we should have a 'beforeJoinRoom' call back
 		const user = Meteor.user();
 		if (room.tokenpass && user && user.services && user.services.tokenly) {
-			Meteor.call('updateUserTokenlyBalances');
+			RocketChat.updateUserTokenlyBalances();
 
 			const hasAppropriateToken = user.services.tokenly.tcaBalances.some(token => {
 				return room.tokenpass.tokens.includes(token.asset) && room.tokenpass.minimumBalance <= parseFloat(token.balance);

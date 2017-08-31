@@ -29,8 +29,11 @@ Package.onUse(function(api) {
 	api.addFiles('server/functions/saveRoomTokens.js', 'server');
 	api.addFiles('server/functions/saveRoomTokensMinimumBalance.js', 'server');
 	api.addFiles('server/functions/updateUserTokenlyBalances.js', 'server');
+
+	api.addFiles('server/models/indexes.js', 'server');
 	api.addFiles('server/models/Rooms.js', 'server');
 	api.addFiles('server/models/Users.js', 'server');
+
 	api.addFiles('server/methods/findTokenChannels.js', 'server');
 });
 

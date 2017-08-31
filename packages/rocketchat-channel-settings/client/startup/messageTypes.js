@@ -12,30 +12,6 @@ Meteor.startup(function() {
 	});
 
 	RocketChat.MessageTypes.registerType({
-		id: 'room_changed_tokens',
-		system: true,
-		message: 'room_changed_tokens',
-		data(message) {
-			return {
-				user_by: message.u && message.u.username,
-				room_tokens: message.msg
-			};
-		}
-	});
-
-	RocketChat.MessageTypes.registerType({
-		id: 'room_changed_tokens_minimum_balance',
-		system: true,
-		message: 'room_changed_tokens_minimum_balance',
-		data(message) {
-			return {
-				user_by: message.u && message.u.username,
-				room_tokens_minimum_balance: message.msg
-			};
-		}
-	});
-
-	RocketChat.MessageTypes.registerType({
 		id: 'room_changed_topic',
 		system: true,
 		message: 'room_changed_topic',

@@ -1,4 +1,4 @@
-/* globals CustomOAuth, RocketChat */
+/* globals CustomOAuth */
 import toastr from 'toastr';
 
 Meteor.startup(function() {
