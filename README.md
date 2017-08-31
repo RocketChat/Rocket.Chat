@@ -147,6 +147,23 @@ Host your own Rocket.Chat server for **FREE** with [One-Click Deploy](https://he
 
 [![Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy?template=https://github.com/RocketChat/Rocket.Chat/tree/master)
 
+### Update existing One-Click Heroku Deployment
+Prepare for updates:
+```
+# create local repo pointing to the Heroku remote
+heroku git:clone --app YOUR_HEROKU_APPNAME && cd YOUR_HEROKU_APPNAME
+
+# attach the GitHub repository of Rocket.Chat as a new remote
+git remote add origin https://github.com/RocketChat/Rocket.Chat
+```
+
+From now on you can simply update your Heroku instance by running:
+```
+cd YOUR_HEROKU_APPNAME
+git pull origin master # pull down the latest version from GitHub
+git push heroku master # push all updates back to your Heroku app instance
+```
+
 ## Helm Kubernetes
 Deploy on Kubernetes using the official [helm chart](https://github.com/kubernetes/charts/pull/752).
 
