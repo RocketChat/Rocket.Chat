@@ -6,14 +6,21 @@
       "from": "addressparser@>=0.3.2 <0.4.0"
     },
     "babel-polyfill": {
-      "version": "6.23.0",
-      "resolved": "https://registry.npmjs.org/babel-polyfill/-/babel-polyfill-6.23.0.tgz",
+      "version": "6.26.0",
+      "resolved": "https://registry.npmjs.org/babel-polyfill/-/babel-polyfill-6.26.0.tgz",
       "from": "babel-polyfill@>=6.23.0 <7.0.0"
     },
     "babel-runtime": {
-      "version": "6.25.0",
-      "resolved": "https://registry.npmjs.org/babel-runtime/-/babel-runtime-6.25.0.tgz",
-      "from": "babel-runtime@>=6.22.0 <7.0.0"
+      "version": "6.26.0",
+      "resolved": "https://registry.npmjs.org/babel-runtime/-/babel-runtime-6.26.0.tgz",
+      "from": "babel-runtime@>=6.26.0 <7.0.0",
+      "dependencies": {
+        "regenerator-runtime": {
+          "version": "0.11.0",
+          "resolved": "https://registry.npmjs.org/regenerator-runtime/-/regenerator-runtime-0.11.0.tgz",
+          "from": "regenerator-runtime@>=0.11.0 <0.12.0"
+        }
+      }
     },
     "base64url": {
       "version": "2.0.0",
@@ -48,7 +55,7 @@
     "core-js": {
       "version": "2.5.0",
       "resolved": "https://registry.npmjs.org/core-js/-/core-js-2.5.0.tgz",
-      "from": "core-js@>=2.4.0 <3.0.0"
+      "from": "core-js@>=2.5.0 <3.0.0"
     },
     "core-util-is": {
       "version": "1.0.2",
@@ -66,8 +73,8 @@
       "from": "ecdsa-sig-formatter@1.0.9"
     },
     "emailjs": {
-      "version": "1.0.11",
-      "resolved": "https://registry.npmjs.org/emailjs/-/emailjs-1.0.11.tgz",
+      "version": "1.0.12",
+      "resolved": "https://registry.npmjs.org/emailjs/-/emailjs-1.0.12.tgz",
       "from": "emailjs@>=1.0.8 <2.0.0"
     },
     "encoding": {
@@ -111,8 +118,8 @@
       "from": "joi@>=6.10.1 <7.0.0"
     },
     "jsonwebtoken": {
-      "version": "7.4.2",
-      "resolved": "https://registry.npmjs.org/jsonwebtoken/-/jsonwebtoken-7.4.2.tgz",
+      "version": "7.4.3",
+      "resolved": "https://registry.npmjs.org/jsonwebtoken/-/jsonwebtoken-7.4.3.tgz",
       "from": "jsonwebtoken@>=7.2.1 <8.0.0"
     },
     "jwa": {
@@ -153,19 +160,19 @@
       }
     },
     "moment": {
-      "version": "2.11.2",
-      "resolved": "https://registry.npmjs.org/moment/-/moment-2.11.2.tgz",
-      "from": "moment@2.11.2"
+      "version": "2.15.2",
+      "resolved": "https://registry.npmjs.org/moment/-/moment-2.15.2.tgz",
+      "from": "moment@2.15.2"
     },
     "mongodb": {
-      "version": "2.2.30",
-      "resolved": "https://registry.npmjs.org/mongodb/-/mongodb-2.2.30.tgz",
+      "version": "2.2.31",
+      "resolved": "https://registry.npmjs.org/mongodb/-/mongodb-2.2.31.tgz",
       "from": "mongodb@>=2.2.22 <3.0.0"
     },
     "mongodb-core": {
-      "version": "2.1.14",
-      "resolved": "https://registry.npmjs.org/mongodb-core/-/mongodb-core-2.1.14.tgz",
-      "from": "mongodb-core@2.1.14"
+      "version": "2.1.15",
+      "resolved": "https://registry.npmjs.org/mongodb-core/-/mongodb-core-2.1.15.tgz",
+      "from": "mongodb-core@2.1.15"
     },
     "ms": {
       "version": "2.0.0",
@@ -185,7 +192,7 @@
     "regenerator-runtime": {
       "version": "0.10.5",
       "resolved": "https://registry.npmjs.org/regenerator-runtime/-/regenerator-runtime-0.10.5.tgz",
-      "from": "regenerator-runtime@>=0.10.0 <0.11.0"
+      "from": "regenerator-runtime@>=0.10.5 <0.11.0"
     },
     "require_optional": {
       "version": "1.0.1",
