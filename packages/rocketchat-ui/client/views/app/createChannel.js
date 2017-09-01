@@ -179,8 +179,13 @@ Template.createChannel.events({
 		if (!Object.keys(instance.extensions_validations).map(key => instance.extensions_validations[key]).reduce((valid, fn) => fn(instance) && valid, true)) {
 			return instance.extensions_invalid.set(true);
 		}
-		console.log(Object.keys(instance.extensions_submits).map(key => instance.extensions_submits[key]).map(f => f(instance)).reduce((result, item) => ({...result, ...item}), {}));
-		Meteor.call(isPrivate ? 'createPrivateGroup' : 'createChannel', name, instance.selectedUsers.get().map(user => user.username), readOnly, {}, tokenpass, function(err, result) {
+
+		const extraData = Object.keys(instance.extensions_submits)
+			.reduce((result, key) => {
+				return { ...result, ...instance.extensions_submits[key](instance) };
+			}, {});
+
+		Meteor.call(isPrivate ? 'createPrivateGroup' : 'createChannel', name, instance.selectedUsers.get().map(user => user.username), readOnly, {}, extraData, function(err, result) {
 			if (err) {
 				if (err.error === 'error-invalid-name') {
 					return instance.invalid.set(true);
@@ -222,8 +227,8 @@ Template.createChannel.onCreated(function() {
 	Deps.autorun(() => {
 		filter.exceptions = [Meteor.user().username].concat(this.selectedUsers.get().map(u => u.username));
 	});
-	this.extensions_validations = [];
-	this.extensions_submits = [];
+	this.extensions_validations = {};
+	this.extensions_submits = {};
 	this.name = new ReactiveVar('');
 	this.type = new ReactiveVar('d');
 	this.inUse = new ReactiveVar(undefined);
@@ -284,15 +289,13 @@ Template.createChannel.onCreated(function() {
 
 
 Template.tokenpass.onCreated(function() {
-
-
 	this.data.validations.tokenpass = (instance) => {
 		const result = (RocketChat.settings.get('API_Tokenly_URL') !== '' && instance.tokensRequired.get() && instance.type.get() === 'p') && this.selectedTokens.get().length === 0;
 		this.invalid.set(result);
 		return !result;
 	};
 	this.data.submits.tokenpass = () => {
-		return {tokens: this.selectedTokens.get()};
+		return {tokenpass: this.selectedTokens.get()};
 	};
 	this.balance = new ReactiveVar('');
 	this.token = new ReactiveVar('');
