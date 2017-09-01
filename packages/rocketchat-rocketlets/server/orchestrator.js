@@ -7,6 +7,10 @@ import { RocketletManager } from 'temporary-rocketlets-server/server/RocketletMa
 
 class RocketletServerOrchestrator {
 	constructor() {
+		if (RocketChat.models && RocketChat.models.Permissions) {
+			RocketChat.models.Permissions.createOrUpdate('manage-rocketlets', ['admin']);
+		}
+
 		this._model = new RocketletsModel();
 		this._persistModel = new RocketletsPersistenceModel();
 		this._storage = new RocketletRealStorage(this._model);
