@@ -77,22 +77,22 @@
 					</label>
 				</div>
 				{{#if tokenAccessEnabled}}
-						<div class="create-channel__switches">
-							<div class="rc-switch">
-								<label class="rc-switch__label" tabindex="-1">
-									<input type="checkbox" class="rc-switch__input" name="setTokensRequired" {{tokenIsDisabled}}>
-									<span class="rc-switch__button">
-										<span class="rc-switch__button-inside"></span>
-									</span>
-									<span class="rc-switch__text">
-										{{_ "Token_Controlled_Access"}}
-									</span>
-								</label>
-							</div>
+					<div class="create-channel__switches">
+						<div class="rc-switch">
+							<label class="rc-switch__label" tabindex="-1">
+								<input type="checkbox" class="rc-switch__input" name="setTokensRequired" {{tokenIsDisabled}}>
+								<span class="rc-switch__button">
+									<span class="rc-switch__button-inside"></span>
+								</span>
+								<span class="rc-switch__text">
+									{{_ "Token_Controlled_Access"}}
+								</span>
+							</label>
 						</div>
-						{{#if tokensRequired}}
-							{{> tokenpass extensionsConfig}}
-						{{/if}}
+					</div>
+					{{#if tokensRequired}}
+						{{> tokenpass extensionsConfig}}
+					{{/if}}
 				{{/if}}
 			</div>
 			<div class="create-channel__inputs">
@@ -104,7 +104,23 @@
 
 <template name="tokenpass">
 	<fieldset class="rc-form-fieldset {{#if invalid}}rc-form-fieldset--error{{/if}}">
-		<legend class="rc-form-legend">tokenpass</legend>
+		<legend class="rc-form-legend">Tokenpass</legend>
+
+		<div class="create-channel__switches">
+			<div class="rc-switch">
+				<label class="rc-switch__label" tabindex="-1">
+					<input type="checkbox" class="rc-switch__input" name="tokenRequireAll" value="all" checked>
+					<span class="rc-switch__button">
+						<span class="rc-switch__button-inside"></span>
+					</span>
+					<span class="rc-switch__text">
+						{{tokenRequiment}}
+					</span>
+				</label>
+				<span class="rc-switch__description">{{tokenRequimentDescription}}</span>
+			</div>
+		</div>
+
 		<div class="rc-input {{#if invalidTokens}}rc-input--error{{/if}}">
 			<label class="rc-input__label">
 				<div class="rc-input__title">{{_ "Tokens_Required"}}</div>

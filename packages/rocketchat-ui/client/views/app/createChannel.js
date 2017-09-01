@@ -165,14 +165,6 @@ Template.createChannel.events({
 		const isPrivate = type === 'p';
 		const readOnly = false;//instance.find('#channel-ro').checked;
 
-		const tokenpass = {};
-		if (instance.find('[name=setTokensRequired]') && instance.find('[name=setTokensRequired]').checked) {
-			tokenpass.tokens = e.target.tokensRequired.value.split(',').map(token => token.trim()).filter(token => token.length > 0);
-			if (e.target.tokenMinimumNeededBalance.value) {
-				tokenpass.minimumBalance = parseInt(e.target.tokenMinimumNeededBalance.value);
-			}
-		}
-
 		if (instance.invalid.get() || instance.inUse.get()) {
 			return e.target.name.focus();
 		}
@@ -301,6 +293,7 @@ Template.tokenpass.onCreated(function() {
 	this.token = new ReactiveVar('');
 	this.selectedTokens = new ReactiveVar([]);
 	this.invalid = new ReactiveVar(false);
+	this.requireAll = new ReactiveVar(true);
 });
 
 Template.tokenpass.helpers({
@@ -313,6 +306,18 @@ Template.tokenpass.helpers({
 	addIsDisabled() {
 		const {balance, token} = Template.instance();
 		return (balance.get().length && token.get().length) ? '' : 'disabled';
+	},
+	tokenRequiment() {
+		if (Template.instance().requireAll.get()) {
+			return t('Require_all_tokens');
+		}
+		return t('Require_any_token');
+	},
+	tokenRequimentDescription() {
+		if (Template.instance().requireAll.get()) {
+			return t('All_added_tokens_will_be_required_by_the_user');
+		}
+		return t('At_least_one_added_token_is_required_by_the_user');
 	}
 });
 
@@ -338,5 +343,8 @@ Template.tokenpass.events({
 	},
 	'input [name=tokensRequired]'(e, i) {
 		i.token.set(e.target.value);
+	},
+	'change [name=tokenRequireAll]'(e, i) {
+		i.requireAll.set(e.currentTarget.checked);
 	}
 });

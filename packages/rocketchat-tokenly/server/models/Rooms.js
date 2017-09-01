@@ -1,6 +1,6 @@
 RocketChat.models.Rooms.findByToknepass = function(tokens) {
 	const query = {
-		'tokenpass.tokens': {
+		'tokenpass.token': {
 			$in: tokens
 		}
 	};
@@ -11,19 +11,19 @@ RocketChat.models.Rooms.findByToknepass = function(tokens) {
 RocketChat.models.Rooms.setTokensById = function(_id, tokens) {
 	const update = {
 		$set: {
-			'tokenpass.tokens': tokens
+			'tokenpass.token': tokens
 		}
 	};
 
 	return this.update({_id}, update);
 };
 
-RocketChat.models.Rooms.setMinimumTokenBalanceById = function(_id, minimumTokenBalance) {
-	const update = {
-		$set: {
-			'tokenpass.minimumBalance': minimumTokenBalance
-		}
-	};
+// RocketChat.models.Rooms.setMinimumTokenBalanceById = function(_id, minimumTokenBalance) {
+// 	const update = {
+// 		$set: {
+// 			'tokenpass.minimumBalance': minimumTokenBalance
+// 		}
+// 	};
 
-	return this.update({_id}, update);
-};
+// 	return this.update({_id}, update);
+// };
