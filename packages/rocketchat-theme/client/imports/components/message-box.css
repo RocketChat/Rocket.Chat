@@ -85,6 +85,8 @@
 
 		cursor: text;
 
+		line-height: 20px;
+
 		transition: background-color 0.3s;
 
 		border-width: var(--message-box-container-border-width);
@@ -99,9 +101,10 @@
 
 	&__textarea {
 		width: 100%;
-		max-height: 155px;
-		padding: 0;
 		height: 15px;
+		max-height: 155px;
+
+		padding: 0;
 
 		resize: none;
 

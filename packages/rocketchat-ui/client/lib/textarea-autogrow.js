@@ -64,11 +64,11 @@
 				}
 
 				if(newHeight === $self[0].offsetHeight){
-					return;
+					return false;
 				}
 
 				if(maxHeight <= newHeight){
-					return;
+					newHeight = maxHeight;
 				}
 
 				$self.css('overflow-y', 'hidden');
@@ -77,9 +77,6 @@
 					$self.trigger('autogrow', []);
 					$self.css('overflow-y', '');
 				}});
-
-
-
 
 				$self.trigger('autogrow', []);
 
