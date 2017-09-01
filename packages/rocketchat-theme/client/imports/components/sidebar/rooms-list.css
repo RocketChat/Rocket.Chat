@@ -52,5 +52,9 @@
 		&__empty-room {
 			margin-left: 0;
 		}
+
+		&__toolbar-search {
+			bottom: 0;
+		}
 	}
 }
