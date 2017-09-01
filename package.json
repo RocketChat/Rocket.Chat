@@ -118,7 +118,6 @@
     "poplib": "^0.1.7",
     "prom-client": "^10.0.4",
     "semver": "^5.4.1",
-    "svg2png": "^4.1.1",
     "toastr": "^2.1.2",
     "wolfy87-eventemitter": "^5.2.2"
   }

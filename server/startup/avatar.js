@@ -1,4 +1,8 @@
-/* globals FileUpload, Jimp, svg2png */
+/* globals FileUpload */
+
+import Jimp from 'jimp';
+// import svg2png from 'svg2png';
+import gm from 'gm';
 
 Meteor.startup(function() {
 	WebApp.connectHandlers.use('/avatar/', Meteor.bindEnvironment(function(req, res/*, next*/) {
@@ -99,42 +103,87 @@ Meteor.startup(function() {
 				if (params.format && (params.format === 'png' || params.format === 'jpg' || params.format === 'bmp')) {
 					// TODO - See https://www.npmjs.com/package/svg2png and https://www.npmjs.com/package/jimp
 
-					svg2png(svg, { width: params.width || 50, height: params.height || 50}).then(imageBuffer => {
-						Jimp.read(imageBuffer, function(error, image) {
-							if (error) {
-								throw error;
-							} else {
-								image.resize(params.width, params.height).quality(params.quality || 100);
+					const options = { width: params.width || 50, height: params.height || 50};
 
-								let mime;
+					// const gm = require('gm');
 
-								switch (params.format) {
-									case 'png': mime = Jimp.MIME_PNG; break;
-									case 'jpg': mime = Jimp.MIME_JPEG; break;
-									case 'bmp': mime = Jimp.MIME_BMP; break;
-								}
+					// gm(svg).write('image.png', function(err) {
+					// 	if (!err) { console.log('image converted.'); }
+					// });
 
-								res.write(image.getBuffer(mime, function(error) {
-									console.error(error);
-								}));
+					const svgBuffer = new Buffer(svg);
+					res.set('Content-Type', `image/${ params.format }`);
+					// gm(svgBuffer, 'svg.svg').stream('png', function(err, stdout, stderr) {
+					// 	stdout.pipe(res);
+					// });
+
+					// gm(buf)
+					// 	.resize(30, 30)
+					// 	.toBuffer('PNG', function(err, buffer) {
+					// 		if (err) {
+					// 			throw err;
+					// 		} else {
+					// 			console.log('>>> Yes!!! >>> ', buffer);
+					Jimp.read(svgBuffer, function(error, image) {
+						if (error) {
+							console.log('ops...');
+							throw error;
+						} else {
+							image.resize(options.width, options.height).quality(params.quality || 100);
+
+							let mime;
+
+							switch (params.format) {
+								case 'png': mime = Jimp.MIME_PNG; break;
+								case 'jpg': mime = Jimp.MIME_JPEG; break;
+								case 'bmp': mime = Jimp.MIME_BMP; break;
 							}
-						});
-					}).catch(function(error) {
-						console.error(error);
+
+							res.write(image.getBuffer(mime, function(error) {
+								console.error('ops...', error);
+							}));
+							res.end();
+						}
 					});
-				} else {
+					// 		}
+					// 		console.log('done!');
+					// 	});
+
+					// svg2png(svg, { width: params.width || 50, height: params.height || 50}).then(imageBuffer => {
+					// Jimp.read(svg2png.sync(svg), function(error, image) {
+					// 	if (error) {
+					// 		console.log('ops...');
+					// 		throw error;
+					// 	} else {
+					// 		image.resize(options.width, options.height).quality(params.quality || 100);
+          //
+					// 		let mime;
+          //
+					// 		switch (params.format) {
+					// 			case 'png': mime = Jimp.MIME_PNG; break;
+					// 			case 'jpg': mime = Jimp.MIME_JPEG; break;
+					// 			case 'bmp': mime = Jimp.MIME_BMP; break;
+					// 		}
+          //
+					// 		res.write(image.getBuffer(mime, function(error) {
+					// 			console.error('ops...', error);
+					// 		}));
+					// 		res.end();
+					// 	}
+					// });
+					// }).catch(function(error) {
+					// 	console.error(error);
+					// });
+				} else if (params.format && params.format !== '') {
 					// TODO Move validation to top
 					res.writeHead(400);
 					res.write('Invalid image format. Formats supported are PNG, JPG and BMP.');
 					res.end();
 					return;
-				}
-
-				if (!params.format) {
+				} else {
 					res.write(svg);
+					res.end();
 				}
-
-				res.end();
 
 				return;
 			}
