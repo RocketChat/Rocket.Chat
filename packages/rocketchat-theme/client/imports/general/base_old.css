@@ -4151,6 +4151,8 @@ body:not(.is-cordova) {
 
 			width: var(--user-image-square);
 			height: var(--user-image-square);
+
+			margin-left: 1rem;
 		}
 	}
 

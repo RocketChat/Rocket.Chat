@@ -1,20 +1,14 @@
-/* globals FileUpload */
-
-import Jimp from 'jimp';
-// import svg2png from 'svg2png';
-import gm from 'gm';
+/* globals FileUpload, UploadFS, RocketChatFile */
+/* imports UploadFS, RocketChatFile */
 
 Meteor.startup(function() {
 	WebApp.connectHandlers.use('/avatar/', Meteor.bindEnvironment(function(req, res/*, next*/) {
-
-		// TODO 7908
-
-		console.log('#7908');
-
 		const params = req.query;
+
 		params.username = decodeURIComponent(req.url.replace(/^\//, '').replace(/\?.*$/, ''));
 
-		console.log(params);
+		params.width = params.width && params.width > 0 ? (params.width <= 300 ? params.width : 300): 50;
+		params.height = params.height && params.height > 0 ? (params.height <= 300 ? params.height : 300): 50;
 
 		if (_.isEmpty(params.username)) {
 			res.writeHead(403);
@@ -42,19 +36,35 @@ Meteor.startup(function() {
 					}
 				}
 				file = RocketChat.models.Avatars.findOneByName(username);
-
-				// console.log(file);
 			}
+
+			res.setHeader('Cache-Control', 'public, max-age=0');
+			res.setHeader('Expires', '-1');
+			res.setHeader('Last-Modified', 'Thu, 01 Jan 2015 00:00:00 GMT');
 
 			if (file) {
 				res.setHeader('Content-Security-Policy', 'default-src \'none\'');
 
-				return FileUpload.get(file, req, res);
+				params.format = params.format || file.type.split('/')[1];
+
+				if (params.width !== 50 || params.height !== 50 || params.format !== file.type.split('/')[1]) {
+					const fileStore = UploadFS.getStore(file.store);
+
+					RocketChatFile.gm(fileStore.getReadStream(file._id, file))
+						.resize(params.width, params.height)
+						.stream(params.format, function(error, stdout) {
+							if (error) {
+								throw error;
+							}
+							res.set('Content-Type', `image/${ params.format }`);
+							stdout.pipe(res);
+						});
+					return;
+				} else {
+					return FileUpload.get(file, req, res);
+				}
 			} else {
 				res.setHeader('Content-Type', 'image/svg+xml');
-				res.setHeader('Cache-Control', 'public, max-age=0');
-				res.setHeader('Expires', '-1');
-				res.setHeader('Last-Modified', 'Thu, 01 Jan 2015 00:00:00 GMT');
 
 				const reqModifiedHeader = req.headers['if-modified-since'];
 
@@ -98,99 +108,33 @@ Meteor.startup(function() {
 					initials = initials.toUpperCase();
 				}
 
-				const svg = `<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n<svg xmlns=\"http://www.w3.org/2000/svg\" pointer-events=\"none\" width=\"50\" height=\"50\">\n<rect height="50" width="50" fill=\"${ color }\"/>\n<text text-anchor=\"middle\" y=\"50%\" x=\"50%\" dy=\"0.36em\" pointer-events=\"auto\" fill=\"#ffffff\" font-family=\"Helvetica, Arial, Lucida Grande, sans-serif\" font-weight="400" font-size="28">\n${ initials }\n</text>\n</svg>`;
+				const svg = `<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n<svg xmlns=\"http://www.w3.org/2000/svg\" pointer-events=\"none\" width=\"${ params.width }\" height=\"${ params.height }\">\n<rect height="${ params.height }" width="${ params.width }" fill=\"${ color }\"/>\n<text y=\"50%\" x=\"50%\" pointer-events=\"auto\" fill=\"#ffffff\" font-family=\"Helvetica, Arial, Lucida Grande, sans-serif\" font-weight=\"400\" font-size=\"${ params.height*(66/100) }\">\n<tspan y=\"75%\" x=\"50%\" text-anchor=\"middle\">${ initials }</tspan>\n</text>\n</svg>`;
 
 				if (params.format && (params.format === 'png' || params.format === 'jpg' || params.format === 'bmp')) {
-					// TODO - See https://www.npmjs.com/package/svg2png and https://www.npmjs.com/package/jimp
-
-					const options = { width: params.width || 50, height: params.height || 50};
-
-					// const gm = require('gm');
-
-					// gm(svg).write('image.png', function(err) {
-					// 	if (!err) { console.log('image converted.'); }
-					// });
-
 					const svgBuffer = new Buffer(svg);
-					res.set('Content-Type', `image/${ params.format }`);
-					// gm(svgBuffer, 'svg.svg').stream('png', function(err, stdout, stderr) {
-					// 	stdout.pipe(res);
-					// });
+					const gm = require('gm');
 
-					// gm(buf)
-					// 	.resize(30, 30)
-					// 	.toBuffer('PNG', function(err, buffer) {
-					// 		if (err) {
-					// 			throw err;
-					// 		} else {
-					// 			console.log('>>> Yes!!! >>> ', buffer);
-					Jimp.read(svgBuffer, function(error, image) {
-						if (error) {
-							console.log('ops...');
-							throw error;
-						} else {
-							image.resize(options.width, options.height).quality(params.quality || 100);
-
-							let mime;
-
-							switch (params.format) {
-								case 'png': mime = Jimp.MIME_PNG; break;
-								case 'jpg': mime = Jimp.MIME_JPEG; break;
-								case 'bmp': mime = Jimp.MIME_BMP; break;
+					gm(svgBuffer)
+						.resize(params.width, params.height)
+						.stream(params.format, function(error, stdout) {
+							if (error) {
+								throw error;
 							}
-
-							res.write(image.getBuffer(mime, function(error) {
-								console.error('ops...', error);
-							}));
-							res.end();
-						}
-					});
-					// 		}
-					// 		console.log('done!');
-					// 	});
-
-					// svg2png(svg, { width: params.width || 50, height: params.height || 50}).then(imageBuffer => {
-					// Jimp.read(svg2png.sync(svg), function(error, image) {
-					// 	if (error) {
-					// 		console.log('ops...');
-					// 		throw error;
-					// 	} else {
-					// 		image.resize(options.width, options.height).quality(params.quality || 100);
-          //
-					// 		let mime;
-          //
-					// 		switch (params.format) {
-					// 			case 'png': mime = Jimp.MIME_PNG; break;
-					// 			case 'jpg': mime = Jimp.MIME_JPEG; break;
-					// 			case 'bmp': mime = Jimp.MIME_BMP; break;
-					// 		}
-          //
-					// 		res.write(image.getBuffer(mime, function(error) {
-					// 			console.error('ops...', error);
-					// 		}));
-					// 		res.end();
-					// 	}
-					// });
-					// }).catch(function(error) {
-					// 	console.error(error);
-					// });
+							res.set('Content-Type', `image/${ params.format }`);
+							stdout.pipe(res);
+						});
 				} else if (params.format && params.format !== '') {
-					// TODO Move validation to top
 					res.writeHead(400);
-					res.write('Invalid image format. Formats supported are PNG, JPG and BMP.');
 					res.end();
-					return;
 				} else {
 					res.write(svg);
 					res.end();
 				}
-
 				return;
 			}
 		}
 
 		res.writeHead(404);
 		res.end();
-		return;
 	}));
 });
