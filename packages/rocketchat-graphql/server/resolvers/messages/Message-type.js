@@ -1,6 +1,8 @@
-import { property } from '../../helpers/property';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import property from 'lodash.property';
+
 import { dateToFloat } from '../../helpers/dateToFloat';
-import schema from '../../schemas/messages/Message-type.graphql';
+import schema from '../../schemas/messages/Message-type.graphqls';
 
 const resolver = {
 	Message: {

@@ -1,7 +1,7 @@
 import { HTTP } from 'meteor/http';
 import { Meteor } from 'meteor/meteor';
 
-import schema from '../../schemas/accounts/oauthProviders.graphql';
+import schema from '../../schemas/accounts/oauthProviders.graphqls';
 
 function isJSON(obj) {
 	try {

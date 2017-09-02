@@ -1,5 +1,7 @@
-import { property } from '../../helpers/property';
-import schema from '../../schemas/users/User-type.graphql';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import property from 'lodash.property';
+
+import schema from '../../schemas/users/User-type.graphqls';
 
 const resolver = {
 	User: {

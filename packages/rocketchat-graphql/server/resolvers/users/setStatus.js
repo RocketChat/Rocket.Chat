@@ -1,5 +1,7 @@
+import { RocketChat } from 'meteor/rocketchat:lib';
+
 import { authenticated } from '../../helpers/authenticated';
-import schema from '../../schemas/users/setStatus.graphql';
+import schema from '../../schemas/users/setStatus.graphqls';
 
 const resolver = {
 	Mutation: {

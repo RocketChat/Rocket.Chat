@@ -53,8 +53,8 @@
       "from": "bufferjs@1.1.0"
     },
     "core-js": {
-      "version": "2.5.0",
-      "resolved": "https://registry.npmjs.org/core-js/-/core-js-2.5.0.tgz",
+      "version": "2.5.1",
+      "resolved": "https://registry.npmjs.org/core-js/-/core-js-2.5.1.tgz",
       "from": "core-js@>=2.5.0 <3.0.0"
     },
     "core-util-is": {

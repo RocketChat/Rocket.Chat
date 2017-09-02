@@ -1,4 +1,3 @@
-// import './fix';
 import './config';
 
 import AccountsServer from '@accounts/server';
