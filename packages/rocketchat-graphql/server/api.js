@@ -1,5 +1,5 @@
 import { graphqlExpress, graphiqlExpress } from 'apollo-server-express';
-import { JSAccountsContext as jsAccountsContext } from 'kamilkisiela-graphql-api';
+import { JSAccountsContext as jsAccountsContext } from '@accounts/graphql-api';
 import { SubscriptionServer } from 'subscriptions-transport-ws';
 import { execute, subscribe } from 'graphql';
 import { Meteor } from 'meteor/meteor';
@@ -41,7 +41,13 @@ graphQLServer.use('/graphiql', graphiqlExpress({
 new SubscriptionServer({
 	schema: executableSchema,
 	execute,
-	subscribe
+	subscribe,
+	onOperation: ({context}) => {
+		console.log('context', context);
+		return {
+			authToken: context.Authorization
+		};
+	}
 },
 {
 	path: '/subscriptions',

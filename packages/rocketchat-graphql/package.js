@@ -20,7 +20,7 @@ Package.onUse(function(api) {
 });
 
 Npm.depends({
-	'kamilkisiela-graphql-api': '0.1.1',
+	'@accounts/graphql-api': '0.1.1',
 	'apollo-server-express': '1.1.2',
 	'cors': '2.8.4',
 	'body-parser': '1.17.2',
@@ -28,6 +28,7 @@ Npm.depends({
 	'graphql': '0.10.3',
 	'graphql-subscriptions': '0.4.4',
 	'graphql-tools': '1.2.2',
+	'lodash.property': '4.4.2',
 	'kamilkisiela-merge-graphql-schemas': '1.1.2',
 	'subscriptions-transport-ws': '0.8.2'
 });

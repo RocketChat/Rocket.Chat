@@ -1,4 +1,5 @@
 import { AccountsServer } from 'meteor/rocketchat:accounts';
+import { RocketChat } from 'meteor/rocketchat:lib';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 

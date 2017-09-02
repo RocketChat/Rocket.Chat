@@ -1,4 +1,4 @@
-import schema from '../../schemas/channels/Privacy-enum.graphql';
+import schema from '../../schemas/channels/Privacy-enum.graphqls';
 
 export {
 	schema

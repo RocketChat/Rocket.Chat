@@ -1,4 +1,4 @@
-import schema from '../../schemas/channels/ChannelSort-enum.graphql';
+import schema from '../../schemas/channels/ChannelSort-enum.graphqls';
 
 export {
 	schema

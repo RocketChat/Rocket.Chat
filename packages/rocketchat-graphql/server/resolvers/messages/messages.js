@@ -1,9 +1,11 @@
+import { RocketChat } from 'meteor/rocketchat:lib';
+
 import { authenticated } from '../../helpers/authenticated';
-import schema from '../../schemas/messages/messages.graphql';
+import schema from '../../schemas/messages/messages.graphqls';
 
 const resolver = {
 	Query: {
-		messages: authenticated((root, args) => {
+		messages: authenticated((root, args, { user }) => {
 			const messagesQuery = {};
 			const messagesOptions = {
 				sort: { ts: -1 }
@@ -15,20 +17,24 @@ const resolver = {
 			if (args.channelId) {
 				// channelId
 				channelQuery._id = args.channelId;
-			} else if (args.channelDetails) {
-				// channelDetails
-				channelQuery.name = args.channelDetails.name;
-				channelQuery.t = args.channelDetails.direct === true ? 'd' : { $ne: 'd' };
+			} else if (args.directTo) {
+				// direct message where directTo is a user id
+				channelQuery.t = 'd';
+				channelQuery.usernames = { $all: [args.directTo, user.username] };
+			} else if (args.channelName) {
+				// non-direct channel
+				channelQuery.t = { $ne: 'd' };
+				channelQuery.name = args.channelName;
 			} else {
-				console.error('messages query must be called with channelId or channelDetails');
+				console.error('messages query must be called with channelId or directTo');
 				return null;
 			}
 
 			const channel = RocketChat.models.Rooms.findOne(channelQuery);
+
 			let messagesArray = [];
 
 			if (channel) {
-
 				// cursor
 				if (isPagination && args.cursor) {
 					const cursorMsg = RocketChat.models.Messages.findOne(args.cursor, { fields: { ts: 1 } });
