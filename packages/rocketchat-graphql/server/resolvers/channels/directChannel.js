@@ -1,6 +1,8 @@
+import { RocketChat } from 'meteor/rocketchat:lib';
+
 import { authenticated } from '../../helpers/authenticated';
 import { roomPublicFields } from './settings';
-import schema from '../../schemas/channels/directChannel.graphql';
+import schema from '../../schemas/channels/directChannel.graphqls';
 
 const resolver = {
 	Query: {

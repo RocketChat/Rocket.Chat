@@ -1,4 +1,4 @@
-import schema from '../../schemas/users/UserStatus-enum.graphql';
+import schema from '../../schemas/users/UserStatus-enum.graphqls';
 
 export {
 	schema

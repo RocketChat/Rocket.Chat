@@ -1,7 +1,8 @@
 import { Meteor } from 'meteor/meteor';
+import { RocketChat } from 'meteor/rocketchat:lib';
 
 import { authenticated } from '../../helpers/authenticated';
-import schema from '../../schemas/messages/deleteMessage.graphql';
+import schema from '../../schemas/messages/deleteMessage.graphqls';
 
 const resolver = {
 	Mutation: {

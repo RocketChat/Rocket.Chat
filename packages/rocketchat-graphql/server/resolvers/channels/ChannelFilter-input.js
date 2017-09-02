@@ -1,4 +1,4 @@
-import schema from '../../schemas/channels/ChannelFilter-input.graphql';
+import schema from '../../schemas/channels/ChannelFilter-input.graphqls';
 
 export {
 	schema

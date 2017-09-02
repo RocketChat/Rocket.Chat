@@ -7,7 +7,6 @@ Meteor.startup(() => {
 	const mongodb = MongoInternals.defaultRemoteCollectionDriver().mongo.db;
 
 	const mongoAdapter = new MongoAdapter(mongodb, {
-		// XXX: UserId in RocketChat is a string(17) value
 		convertUserIdToMongoObjectId: false
 	});
 

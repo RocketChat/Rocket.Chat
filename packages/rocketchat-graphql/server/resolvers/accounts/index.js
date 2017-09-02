@@ -1,4 +1,4 @@
-import { createJSAccountsGraphQL } from 'kamilkisiela-graphql-api';
+import { createJSAccountsGraphQL } from '@accounts/graphql-api';
 import { AccountsServer } from 'meteor/rocketchat:accounts';
 import { mergeTypes, mergeResolvers } from 'kamilkisiela-merge-graphql-schemas';
 
