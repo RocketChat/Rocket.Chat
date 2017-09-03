@@ -7,6 +7,18 @@ const notificationLabels = {
 	nothing: 'Nothing'
 };
 
+const DEFAULT_IDLE_TIME_LIMIT = 300000;
+
+const userHasPreferences = (user) => {
+	const userHasSettings = user.hasOwnProperty("settings");
+
+	if (!userHasSettings) {
+		return false;
+	}
+
+	return user.settings.hasOwnProperty("preferences");
+};
+
 Template.accountPreferences.helpers({
 	showMergedChannels() {
 		return ['category', 'unread'].includes(Template.instance().roomsListExhibitionMode.get()) ? '' : 'disabled';
@@ -44,14 +56,18 @@ Template.accountPreferences.helpers({
 	},
 	checked(property, value, defaultValue) {
 		const user = Meteor.user();
-		const propertyeExists = !!(user && user.settings && user.settings.preferences && user.settings.preferences[property]);
-		let currentValue;
-		if (propertyeExists) {
-			currentValue = !!user.settings.preferences[property];
-		} else if (!propertyeExists && defaultValue === true) {
-			currentValue = value;
+
+		if (!userHasPreferences(user)) {
+			return defaultValue;
 		}
-		return currentValue === value;
+
+		const userPreferences = user.settings.preferences;
+
+		if (userPreferences.hasOwnProperty(property)) {
+			return value === userPreferences[property];
+		}
+
+		return defaultValue;
 	},
 	selected(property, value, defaultValue) {
 		const user = Meteor.user();
@@ -85,8 +101,12 @@ Template.accountPreferences.helpers({
 	defaultDesktopNotificationDuration() {
 		return RocketChat.settings.get('Desktop_Notifications_Duration');
 	},
+	idleTimeLimit() {
+		const user = Meteor.user();
+		return (user && user.settings && user.settings.preferences && user.settings.preferences.idleTimeLimit) || DEFAULT_IDLE_TIME_LIMIT;
+	},
 	defaultIdleTimeLimit() {
-		return RocketChat.settings.get('Idle_Time_Limit');
+		return DEFAULT_IDLE_TIME_LIMIT;
 	},
 	defaultDesktopNotification() {
 		return notificationLabels[RocketChat.settings.get('Desktop_Notifications_Default_Alert')];
@@ -164,10 +184,8 @@ Template.accountPreferences.onCreated(function() {
 		data.mobileNotifications = $('#mobileNotifications').find('select').val();
 		data.unreadAlert = $('#unreadAlert').find('input:checked').val();
 		data.enableAutoAway = $('#enableAutoAway').find('input:checked').val();
-		data.idleTimeLimit = $('input[name=idleTimeLimit]').val();
+		data.idleTimeLimit = parseInt($('input[name=idleTimeLimit]').val());
 		data.notificationsSoundVolume = parseInt($('#notificationsSoundVolume').val());
-
-		console.log(data);
 
 		Meteor.call('saveUserPreferences', data, function(error, results) {
 			if (results) {
