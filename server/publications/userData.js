@@ -14,6 +14,8 @@ Meteor.publish('userData', function() {
 			utcOffset: 1,
 			language: 1,
 			settings: 1,
+			enableAutoAway: 1,
+			idleTimeLimit: 1,
 			roles: 1,
 			active: 1,
 			defaultRoom: 1,

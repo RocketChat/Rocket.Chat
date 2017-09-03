@@ -17,8 +17,18 @@ if (window.DISABLE_ANIMATION) {
 Meteor.startup(function() {
 	TimeSync.loggingEnabled = false;
 
-	UserPresence.awayTime = 300000;
-	UserPresence.start();
+	const userHasPreferences = (user) => {
+		const userHasSettings = user.hasOwnProperty("settings");
+
+		if (!userHasSettings) {
+			return false;
+		}
+
+		return user.settings.hasOwnProperty("preferences");
+	};
+
+	// UserPresence.awayTime = 300000;
+	// UserPresence.start();
 	Meteor.subscribe('activeUsers');
 
 	Session.setDefault('AvatarRandom', 0);
@@ -30,7 +40,7 @@ Meteor.startup(function() {
 
 	const defaultAppLanguage = function() {
 		let lng = window.navigator.userLanguage || window.navigator.language || 'en';
-		// Fix browsers having all-lowercase language settings eg. pt-br, en-us
+		// Fix browsers having all-lowercase language settings eg. pt-br, en-usbb
 		const re = /([a-z]{2}-)([a-z]{2})/;
 		if (re.test(lng)) {
 			lng = lng.replace(re, (match, ...parts) => {
@@ -79,8 +89,24 @@ Meteor.startup(function() {
 		}
 	};
 
+	const defaultIdleTimeLimit = 300000;
 	Meteor.subscribe('userData', function() {
-		const userLanguage = Meteor.user() && Meteor.user().language ? Meteor.user().language : window.defaultUserLanguage();
+		const user = Meteor.user();
+		const userLanguage = user && user.language ? user.language : window.defaultUserLanguage();
+
+		console.log('Reconfiguring userpresence')
+		if (!userHasPreferences(user)) {
+			UserPresence.awayTime = 300000;
+			UserPresence.start();
+		} else {
+			UserPresence.awayTime = user.settings.preferences.idleTimeLimit || 300000;
+
+			if (user.settings.preferences.hasOwnProperty("enableAutoAway")) {
+				user.settings.preferences.enableAutoAway && UserPresence.start();
+			} else {
+				UserPresence.start();
+			}
+		}
 
 		if (localStorage.getItem('userLanguage') !== userLanguage) {
 			localStorage.setItem('userLanguage', userLanguage);
@@ -94,8 +120,8 @@ Meteor.startup(function() {
 				return;
 			}
 
-			if (Meteor.user() && Meteor.user().status !== status) {
-				status = Meteor.user().status;
+			if (user && user.status !== status) {
+				status = user.status;
 				fireGlobalEvent('status-changed', status);
 			}
 		});
