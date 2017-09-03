@@ -18,13 +18,13 @@ Meteor.startup(function() {
 	TimeSync.loggingEnabled = false;
 
 	const userHasPreferences = (user) => {
-		const userHasSettings = user.hasOwnProperty("settings");
+		const userHasSettings = user.hasOwnProperty('settings');
 
 		if (!userHasSettings) {
 			return false;
 		}
 
-		return user.settings.hasOwnProperty("preferences");
+		return user.settings.hasOwnProperty('preferences');
 	};
 
 	// UserPresence.awayTime = 300000;
@@ -90,18 +90,18 @@ Meteor.startup(function() {
 	};
 
 	const defaultIdleTimeLimit = 300000;
+
 	Meteor.subscribe('userData', function() {
 		const user = Meteor.user();
 		const userLanguage = user && user.language ? user.language : window.defaultUserLanguage();
 
-		console.log('Reconfiguring userpresence')
 		if (!userHasPreferences(user)) {
-			UserPresence.awayTime = 300000;
+			UserPresence.awayTime = defaultIdleTimeLimit;
 			UserPresence.start();
 		} else {
-			UserPresence.awayTime = user.settings.preferences.idleTimeLimit || 300000;
+			UserPresence.awayTime = user.settings.preferences.idleTimeLimit || defaultIdleTimeLimit;
 
-			if (user.settings.preferences.hasOwnProperty("enableAutoAway")) {
+			if (user.settings.preferences.hasOwnProperty('enableAutoAway')) {
 				user.settings.preferences.enableAutoAway && UserPresence.start();
 			} else {
 				UserPresence.start();

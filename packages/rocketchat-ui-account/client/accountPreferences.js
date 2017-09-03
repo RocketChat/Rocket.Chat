@@ -10,13 +10,13 @@ const notificationLabels = {
 const DEFAULT_IDLE_TIME_LIMIT = 300000;
 
 const userHasPreferences = (user) => {
-	const userHasSettings = user.hasOwnProperty("settings");
+	const userHasSettings = user.hasOwnProperty('settings');
 
 	if (!userHasSettings) {
 		return false;
 	}
 
-	return user.settings.hasOwnProperty("preferences");
+	return user.settings.hasOwnProperty('preferences');
 };
 
 Template.accountPreferences.helpers({
