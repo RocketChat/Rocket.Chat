@@ -196,7 +196,14 @@ Template.room.helpers({
 		const roomData = Session.get(`roomData${ this._id }`);
 		if (!(roomData != null ? roomData.t : undefined)) { return ''; }
 
-		return RocketChat.roomTypes.getIcon(roomData != null ? roomData.t : undefined);
+		const roomIcon = RocketChat.roomTypes.getIcon(roomData != null ? roomData.t : undefined);
+
+		// Remove this 'codegueira' on header redesign
+		if (!roomIcon) {
+			return 'at';
+		}
+
+		return roomIcon;
 	},
 
 	userStatus() {
