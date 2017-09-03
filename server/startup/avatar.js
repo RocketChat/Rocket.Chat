@@ -1,5 +1,4 @@
 /* globals FileUpload, UploadFS, RocketChatFile */
-/* imports UploadFS, RocketChatFile */
 
 Meteor.startup(function() {
 	WebApp.connectHandlers.use('/avatar/', Meteor.bindEnvironment(function(req, res/*, next*/) {
@@ -40,7 +39,6 @@ Meteor.startup(function() {
 
 			res.setHeader('Cache-Control', 'public, max-age=0');
 			res.setHeader('Expires', '-1');
-			res.setHeader('Last-Modified', 'Thu, 01 Jan 2015 00:00:00 GMT');
 
 			if (file) {
 				res.setHeader('Content-Security-Policy', 'default-src \'none\'');
@@ -65,6 +63,7 @@ Meteor.startup(function() {
 				}
 			} else {
 				res.setHeader('Content-Type', 'image/svg+xml');
+				res.setHeader('Last-Modified', 'Thu, 01 Jan 2015 00:00:00 GMT');
 
 				const reqModifiedHeader = req.headers['if-modified-since'];
 
