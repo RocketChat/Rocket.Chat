@@ -27,8 +27,6 @@ Meteor.startup(function() {
 		return user.settings.hasOwnProperty('preferences');
 	};
 
-	// UserPresence.awayTime = 300000;
-	// UserPresence.start();
 	Meteor.subscribe('activeUsers');
 
 	Session.setDefault('AvatarRandom', 0);
@@ -40,7 +38,7 @@ Meteor.startup(function() {
 
 	const defaultAppLanguage = function() {
 		let lng = window.navigator.userLanguage || window.navigator.language || 'en';
-		// Fix browsers having all-lowercase language settings eg. pt-br, en-usbb
+		// Fix browsers having all-lowercase language settings eg. pt-br, en-us
 		const re = /([a-z]{2}-)([a-z]{2})/;
 		if (re.test(lng)) {
 			lng = lng.replace(re, (match, ...parts) => {
