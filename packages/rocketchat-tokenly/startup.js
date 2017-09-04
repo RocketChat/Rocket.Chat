@@ -19,13 +19,13 @@ function validateTokenAccess(userData, roomData) {
 	}
 
 	return userData.services.tokenly.tcaBalances.some(token => {
-		return roomData.tokenpass.tokens.includes(token.asset) && roomData.tokenpass.minimumBalance <= token.balance;
+		return roomData.tokenpass.some(config => config.token === token.asset && config.balance <= parseFloat(token.balance));
 	});
 }
 
 Meteor.startup(function() {
 	RocketChat.authz.addRoomAccessValidator(function(room, user) {
-		if (!room.tokenpass || !room.tokenpass.tokens) {
+		if (!room.tokenpass) {
 			return false;
 		}
 
