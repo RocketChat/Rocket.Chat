@@ -88,17 +88,19 @@ button {
 	}
 
 	& .tab-button-icon {
-		font-size: 1.125rem;
 		color: var(--color-dark-medium);
+
+		font-size: 1.125rem;
 		fill: var(--color-dark-medium);
 	}
 }
 
 .rc-icon {
+
+	overflow: hidden;
+
 	width: 1em;
-  height: 1em;
+	height: 1em;
 
 	vertical-align: -0.15em;
-
-  overflow: hidden;
 }

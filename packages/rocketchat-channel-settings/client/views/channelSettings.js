@@ -248,48 +248,6 @@ Template.channelSettings.onCreated(function() {
 				});
 			}
 		},
-		tokens: {
-			type: 'text',
-			label: 'Tokens',
-			canView(room) {
-				return RocketChat.authz.hasAllPermission('edit-room', room._id);
-			},
-			canEdit(room) {
-				return RocketChat.authz.hasAllPermission('edit-room', room._id);
-			},
-			getValue(room) {
-				return room.tokenpass && room.tokenpass.tokens.join(', ');
-			},
-			save(value, room) {
-				return Meteor.call('saveRoomSettings', room._id, 'roomTokens', value, function(err) {
-					if (err) {
-						return handleError(err);
-					}
-					return toastr.success(TAPi18n.__('Room_tokens_changed_successfully'));
-				});
-			}
-		},
-		tokensMinimumBalance: {
-			type: 'text', // TODO Tokenly - alter type to 'number'
-			label: 'Tokens_Minimum_Needed_Balance',
-			canView(room) {
-				return RocketChat.authz.hasAllPermission('edit-room', room._id);
-			},
-			canEdit(room) {
-				return RocketChat.authz.hasAllPermission('edit-room', room._id);
-			},
-			getValue(room) {
-				return room.tokenpass.minimumBalance;
-			},
-			save(value, room) {
-				return Meteor.call('saveRoomSettings', room._id, 'roomTokensMinimumBalance', value, function(err) {
-					if (err) {
-						return handleError(err);
-					}
-					return toastr.success(TAPi18n.__('Room_tokens_minimum_balance_changed_successfully'));
-				});
-			}
-		},
 		t: {
 			type: 'boolean',
 			label: 'Private',
@@ -479,4 +437,88 @@ Template.channelSettings.onCreated(function() {
 		}
 		return this.editing.set();
 	};
+});
+
+RocketChat.ChannelSettings.addOption({
+	group: ['room'],
+	id: 'tokenly',
+	template: 'channelSettings__tokenly',
+	validation() {
+		return true;
+	}
+});
+
+Template.channelSettings__tokenly.helpers({
+	disabled() {
+		const {balance, token} = Template.instance();
+		return balance.get()&&token.get() ? '' : 'disabled';
+	},
+	list() {
+		return Template.instance().list.get();
+	},
+	save() {
+		const {list, initial} = Template.instance();
+		return JSON.stringify(list.get()) !== JSON.stringify(initial);
+	},
+	editing() {
+		const {editing} = Template.instance();
+		return editing.get();
+	}
+});
+
+Template.channelSettings__tokenly.onCreated(function() {
+	this.editing = new ReactiveVar(false);
+	const room = ChatRoom.findOne(this.data.rid);
+	this.initial = room.tokenpass;
+	this.list = new ReactiveVar(this.initial);
+	this.token = new ReactiveVar('');
+	this.balance = new ReactiveVar('');
+});
+
+Template.channelSettings__tokenly.events({
+	'click .js-edit'(e, i) {
+		i.editing.set(true);
+	},
+	'input [name=token]'(e, i) {
+		i.token.set(e.target.value);
+	},
+	'input [name=balance]'(e, i) {
+		i.balance.set(e.target.value);
+	},
+	'click .js-add'(e, i) {
+		e.preventDefault();
+		const instance = Template.instance();
+		const {balance, token, list} = instance;
+		list.set([...list.get().filter(t => t.token !== token), {token:token.get(), balance: balance.get()}]);
+
+
+		[...i.findAll('input')].forEach(el => el.value = '');
+		return balance.set('') && token.set('');
+	},
+	'click .js-remove'(e, instance) {
+		e.preventDefault();
+		const {list, editing} = instance;
+
+		if (!editing.get()) {
+			return;
+		}
+		list.set(list.get().filter(t => t.token !== this.token));
+
+	},
+	'click .js-save'(e, i) {
+		e.preventDefault();
+		i.editing.set(false);
+		i.initial.set(i.list);
+		i.token.set('');
+		i.balance.set('');
+		[...i.findAll('input')].forEach(el => el.value = '');
+	},
+	'click .js-cancel'(e, i) {
+		e.preventDefault();
+		i.editing.set(false);
+		i.list.set(i.initial);
+		i.token.set('');
+		i.balance.set('');
+		[...i.findAll('input')].forEach(el => el.value = '');
+	}
 });

@@ -16,7 +16,8 @@ Package.onUse(function(api) {
 
 	api.addFiles('common.js');
 
-	api.addFiles('login-button.css', 'client');
+	api.addFiles('client/login-button.css', 'client');
+	api.addFiles('client/channelSettings.css', 'client');
 
 	api.addFiles('client/roomType.js', 'client');
 	api.addFiles('client/tokenChannelsList.html', 'client');
@@ -36,4 +37,3 @@ Package.onUse(function(api) {
 
 	api.addFiles('server/methods/findTokenChannels.js', 'server');
 });
-
