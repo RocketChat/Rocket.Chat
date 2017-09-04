@@ -93,15 +93,29 @@
 						<div class="rc-form-group rc-grid">
 							{{#with canChange=allowEmailChange}}
 							<div class="rc-input rc-w50 padded {{#if emailInvalid}}rc-input--error{{/if}}">
-									<label class="rc-input__label">
-										<div class="rc-input__title">{{_ "Email"}}</div>
-										<div class="rc-input__wrapper">
-											<input name="email" type="text" class="rc-input__element" placeholder="Type channel name" value="{{email}}" autocomplete="false" {{ifThenElse canChange '' 'disabled'}}>
-										</div>
-									</label>
-									{{# unless canChange}}
-										<div class="rc-input__description">{{_ 'Email_Change_Disabled'}}</div>
-									{{/unless}}
+								<label class="rc-input__label">
+									<div class="rc-input__title">{{_ "Email"}}</div>
+									<div class="rc-input__wrapper">
+										<input name="email" type="text" class="rc-input__element" placeholder="Type email" value="{{email}}" autocomplete="false" {{ifThenElse canChange '' 'disabled'}}>
+										{{#unless emailVerified}}
+											<div class="rc-input__icon rc-input__icon--right">
+												{{> icon block="rc-input__icon-svg" icon="cross-circled"}}
+											</div>
+										{{else}}
+											<div class="rc-input__icon rc-input__icon--right">
+												{{> icon block="rc-input__icon-svg" icon="checkmark-circled"}}
+											</div>
+										{{/unless}}
+									</div>
+								</label>
+								{{#unless canChange}}
+									<div class="rc-input__description">{{_ 'Email_Change_Disabled'}}</div>
+								{{/unless}}
+								{{#unless emailVerified}}
+									<div class="rc-input__error">
+										<button class="rc-button rc-button--small" id="resend-verification-email">{{_ "Resend_verification_mail"}}</button>
+									</div>
+								{{/unless}}
 							</div>
 							{{/with}}
 							<div class="rc-input rc-w50 padded">
@@ -109,7 +123,7 @@
 									<label class="rc-input__label">
 										<div class="rc-input__title">{{_ "New_password"}}</div>
 										<div class="rc-input__wrapper">
-											<input name="password" type="password" class="rc-input__element" placeholder="Type channel name"  autocomplete="new-password" {{ifThenElse canChange '' 'disabled'}}>
+											<input name="password" type="password" class="rc-input__element" placeholder="Type new password"  autocomplete="new-password" {{ifThenElse canChange '' 'disabled'}}>
 										</div>
 									</label>
 									{{# unless canChange}}
