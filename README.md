@@ -34,6 +34,7 @@
   * [Koozali SME](#koozali-sme)
   * [Ubuntu VPS](#ubuntu-vps)
   * [Hyper.sh](#hypersh)
+  * [WeDeploy](#wedeploy)
 * [About Rocket.Chat](#about-rocketchat)
   * [On the News](#on-the-news)
   * [Features](#features)
@@ -216,6 +217,11 @@ Follow these [deployment instructions](https://rocket.chat/docs/installation/man
 
 ## Hyper.sh
 Follow their [deployment instructions](https://rocket.chat/docs/installation/paas-deployments/hyper-sh/) to install a per-second billed Rocket.Chat instance on [Hyper.sh](https://rocket.chat/docs/installation/paas-deployments/hyper-sh/)
+
+## WeDeploy
+Install Rocket.Chat on [WeDeploy](https://wedeploy.com):
+
+[![Install](https://avatars3.githubusercontent.com/u/10002920?v=4&s=100)](https://rocket.chat/docs/installation/paas-deployments/wedeploy/)
 
 # About Rocket.Chat
 
