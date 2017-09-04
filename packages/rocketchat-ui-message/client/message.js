@@ -1,4 +1,4 @@
-/* globals renderEmoji renderMessageBody*/
+/* globals renderEmoji renderMessageBody */
 import moment from 'moment';
 
 Template.message.helpers({
@@ -264,8 +264,15 @@ Template.message.helpers({
 		if (subscription == null) {
 			return 'hidden';
 		}
+	},
+	messageActions() {
+		return RocketChat.MessageAction.getButtons(Template.currentData(), 'message', 'message');
+	},
+	messageActionsMenu() {
+		return RocketChat.MessageAction.getButtons(Template.currentData(), 'message', 'menu');
 	}
 });
+
 
 Template.message.onCreated(function() {
 	let msg = Template.currentData();
@@ -352,9 +359,6 @@ Template.message.onViewRendered = function(context) {
 			}
 			if (currentNode.classList.contains('own') === true) {
 				return (templateInstance.atBottom = true);
-			} else if (templateInstance.firstNode && templateInstance.atBottom === false) {
-				const newMessage = templateInstance.find('.new-message');
-				return newMessage && (newMessage.className = 'new-message background-primary-action-color color-content-background-color ');
 			}
 		}
 	});

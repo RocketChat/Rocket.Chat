@@ -6,6 +6,10 @@
 
 	font-size: var(--message-box-text-size);
 
+	&--embedded {
+		padding: 12px;
+	}
+
 	&__toolbar-markdown {
 		position: absolute;
 		left: 0;
@@ -42,39 +46,8 @@
 		}
 
 		&-icon {
-			width: 12px;
-			height: 12px;
-
+			font-size: 1rem;
 			fill: currentColor;
-			stroke: currentColor;
-
-			&--bold {
-				width: 8px;
-				height: 10px;
-				stroke: none;
-			}
-
-			&--italic {
-				width: 2px;
-				height: 10px;
-				stroke: none;
-			}
-
-			&--code {
-				width: 16px;
-				height: 12px;
-			}
-
-			&--strike {
-				width: 12px;
-				height: 11px;
-				stroke: none;
-			}
-
-			&--multi-line {
-				width: 13px;
-				height: 11px;
-			}
 		}
 	}
 
@@ -128,6 +101,7 @@
 		width: 100%;
 		max-height: 155px;
 		padding: 0;
+		height: 15px;
 
 		resize: none;
 
@@ -150,6 +124,10 @@
 		cursor: pointer;
 		align-items: center;
 		justify-content: center;
+
+		& .rc-input__icon-svg {
+			font-size: 1.4rem;
+		}
 
 		& .rc-input__icon-svg--plus {
 			transition: transform 0.2s linear;
@@ -180,14 +158,21 @@
 			}
 		}
 	}
+
+	& [data-small] {
+		display: none;
+	}
 }
 
 @media (width <= 500px) {
 	.rc-message-box {
-		padding: 24px 0 0;
+		margin-top: 1rem;
+		padding: 0;
 
 		&__typing {
-			margin-left: 10px;
+			top: -1rem;
+
+			margin-left: 1rem;
 		}
 
 		&__toolbar-markdown {
@@ -197,8 +182,59 @@
 		&__container {
 			display: flex;
 
+			padding: var(--default-small-padding);
+			padding-bottom: calc(var(--default-small-padding) - 8px);
+
 			border-width: 0;
 			border-top-width: 1px;
+			flex-wrap: wrap;
+		}
+
+		& [data-desktop] {
+			display: none;
+		}
+
+		& [data-small] {
+			display: flex;
+		}
+
+		&__textarea {
+			flex: 1 0 100%;
+
+			margin-bottom: 10px;
+			order: 1;
+		}
+
+		&__action {
+			margin: 5px 10px;
+
+			font-size: 20px;
+		}
+
+		& [disabled] {
+			opacity: 0.4;
+		}
+
+		& .emoji-picker-icon {
+			width: initial;
+			padding-right: 10px;
+			order: 2;
+		}
+
+		&__action-label {
+			display: flex;
+			flex-direction: row;
+			flex: 1 1 auto;
+
+			font-size: 20px;
+			order: 3;
+		}
+
+		&__send {
+			flex: 0;
+
+			font-size: 20px;
+			order: 4;
 		}
 	}
 }

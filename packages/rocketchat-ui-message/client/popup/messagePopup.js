@@ -284,5 +284,8 @@ Template.messagePopup.helpers({
 	},
 	toolbarData() {
 		return {...Template.currentData(), toolbar: true};
+	},
+	sidebarHeaderHeight() {
+		return `${ document.querySelector('.sidebar__header').offsetHeight }px`;
 	}
 });

@@ -1,8 +1,11 @@
 .sidebar-item {
+	position: relative;
+
 	display: flex;
 
 	height: var(--sidebar-item-height);
-	padding-left: 22px;
+
+	padding-left: calc(var(--sidebar-default-padding) - calc(var(--sidebar-default-padding) / 3));
 
 	cursor: pointer;
 
@@ -10,7 +13,7 @@
 	align-items: center;
 
 	&--active {
-		background-color: var(--sidebar-item-active-background);
+		background-color: var(--color-dark-light);
 	}
 
 	&--darken {
@@ -48,55 +51,14 @@
 	}
 
 	& .badge {
-		margin: 0 8px 0 3px;
+		margin: 0 16px 0 3px;
 	}
 
 	&__icon {
 		margin: 0 auto;
-		stroke: currentColor;
 
-		&--hashtag {
-			width: 14px;
-			height: 14px;
-		}
-
-		&--lock {
-			width: 12px;
-			height: 18px;
-		}
-
-		&--customize {
-			width: 14px;
-			height: 14px;
-		}
-
-		&--user {
-			width: 18px;
-			height: 17px;
-		}
-
-		&--user-rounded {
-			width: 18px;
-			height: 18px;
-		}
-
-		&--comment-alt {
-			width: 16px;
-			height: 14px;
-			fill: currentColor;
-		}
-
-		&--livechat {
-			width: 15px;
-			height: 15px;
-			fill: currentColor;
-		}
-
-		&--queue {
-			width: 15px;
-			height: 15px;
-			fill: currentColor;
-		}
+		font-size: 1.25rem;
+		fill: currentColor;
 	}
 
 	&__user-thumb {
@@ -105,10 +67,11 @@
 	}
 
 	&__user-status {
+		position: absolute;
+		left: 4px;
+
 		width: var(--sidebar-item-user-status-size);
 		height: var(--sidebar-item-user-status-size);
-		margin-right: 10px;
-		margin-left: -16px;
 
 		border-radius: var(--sidebar-item-user-status-radius);
 
@@ -125,7 +88,7 @@
 		}
 
 		&--offline {
-			background-color: var(--status-invisible);
+			background-color: var(--status-invisible-sidebar);
 		}
 	}
 
@@ -144,5 +107,16 @@
 		text-overflow: ellipsis;
 
 		font-size: var(--sidebar-item-text-size);
+	}
+}
+
+@media (width <= 400px) {
+	.sidebar-item {
+		padding-left: 0;
+
+		&__user-status {
+			right: calc(100% + var(--sidebar-small-item-user-status-size));
+			left: auto;
+		}
 	}
 }

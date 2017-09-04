@@ -7,11 +7,16 @@
 	}
 	--rc-popover-open-mobile: {
 		position: fixed;
-		top: 0;
+		top: initial;
+		bottom: 0;
 		left: 0;
 
+		display: inline-block;
+
 		width: 100vw;
-		height: 100vh;
+		padding: 8px;
+
+		animation: dropup-show 0.5s cubic-bezier(0.45, 0.05, 0.55, 0.95);
 	}
 }
 
@@ -34,6 +39,8 @@
 		display: flex;
 
 		padding: var(--popover-padding);
+
+		white-space: nowrap;
 
 		cursor: default;
 
@@ -88,59 +95,14 @@
 	&__icon {
 		display: flex;
 
-		width: 16px;
-		margin: 0.25rem 0.25rem 0.25rem 0;
+		width: 20px;
+		margin: 0.25rem 0;
 		align-items: center;
 		justify-content: center;
 	}
 
 	&__icon-element {
-		stroke: currentColor;
-
-		&--customize {
-			width: 14px;
-			height: 14px;
-		}
-
-		&--comment-alt {
-			width: 16px;
-			height: 14px;
-		}
-
-		&--user {
-			width: 18px;
-			height: 17px;
-		}
-
-		&--sign-out {
-			width: 14px;
-			height: 14px;
-		}
-
-		&--video {
-			width: 17px;
-			height: 13px;
-		}
-
-		&--audio {
-			width: 16px;
-			height: 14px;
-		}
-
-		&--computer {
-			width: 16px;
-			height: 14px;
-		}
-
-		&--map-pin {
-			width: 12px;
-			height: 16px;
-		}
-
-		&--livechat {
-			width: 15px;
-			height: 15px;
-		}
+		font-size: 18px;
 	}
 
 	&__item-text {
@@ -159,6 +121,20 @@
 @keyframes dropdown-show {
 	0% {
 		transform: translate(0, -2%);
+
+		opacity: 0;
+	}
+
+	100% {
+		transform: translate(0, 0);
+
+		opacity: 1;
+	}
+}
+
+@keyframes dropup-show {
+	0% {
+		transform: translate(0, 100%);
 
 		opacity: 0;
 	}

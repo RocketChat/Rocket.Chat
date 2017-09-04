@@ -5,18 +5,18 @@ import {VRecDialog} from 'meteor/rocketchat:ui-vrecord';
 
 RocketChat.messageBox.actions.add('Create_new', 'Video_message', {
 	icon: 'video',
-	condition: () => RocketChat.settings.get('FileUpload_Enabled') && RocketChat.settings.get('Message_VideoRecorderEnabled') && ((navigator.getUserMedia != null) || (navigator.webkitGetUserMedia != null)) && (!RocketChat.settings.get('FileUpload_MediaTypeWhiteList') || RocketChat.settings.get('FileUpload_MediaTypeWhiteList').match(/video\/webm|video\/\*/i)),
+	condition: () => (navigator.getUserMedia || navigator.webkitGetUserMedia) && RocketChat.settings.get('FileUpload_Enabled') && RocketChat.settings.get('Message_VideoRecorderEnabled') && (!RocketChat.settings.get('FileUpload_MediaTypeWhiteList') || RocketChat.settings.get('FileUpload_MediaTypeWhiteList').match(/video\/webm|video\/\*/i)),
 	action({messageBox}) {
 		return VRecDialog.opened ? VRecDialog.close() : VRecDialog.open(messageBox);
 	}
 });
 
 RocketChat.messageBox.actions.add('Create_new', 'Audio_message', {
-	icon: 'audio',
-	condition: () => RocketChat.settings.get('FileUpload_Enabled') && RocketChat.settings.get('Message_AudioRecorderEnabled') && ((navigator.getUserMedia != null) || (navigator.webkitGetUserMedia != null)) && (!RocketChat.settings.get('FileUpload_MediaTypeWhiteList') || RocketChat.settings.get('FileUpload_MediaTypeWhiteList').match(/audio\/wav|audio\/\*/i)),
+	icon: 'mic',
+	condition: () => (navigator.getUserMedia || navigator.webkitGetUserMedia) && RocketChat.settings.get('FileUpload_Enabled') && RocketChat.settings.get('Message_AudioRecorderEnabled') && (!RocketChat.settings.get('FileUpload_MediaTypeWhiteList') || RocketChat.settings.get('FileUpload_MediaTypeWhiteList').match(/audio\/wav|audio\/\*/i)),
 	action({event, element}) {
 		event.preventDefault();
-		const icon = element.querySelector('.rc-popover__icon');
+		const icon = element;
 		if (chatMessages[RocketChat.openedRoom].recording) {
 			return AudioRecorder.stop(function(blob) {
 				icon.style.color = '';
@@ -31,10 +31,10 @@ RocketChat.messageBox.actions.add('Create_new', 'Audio_message', {
 				]);
 			});
 		}
-		icon.classList.add('pulse');
-		icon.style.color = 'red';
 		chatMessages[RocketChat.openedRoom].recording = true;
 		return AudioRecorder.start(function() {
+			icon.classList.add('pulse');
+			icon.style.color = 'red';
 		});
 	}
 });

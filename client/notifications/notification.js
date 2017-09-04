@@ -36,6 +36,25 @@ Meteor.startup(function() {
 					KonchatNotification.showDesktop(notification);
 				}
 			});
+
+			RocketChat.Notifications.onUser('audioNotification', function(notification) {
+
+				const openedRoomId = Session.get('openedRoom');
+
+				// This logic is duplicated in /client/startup/unread.coffee.
+				const hasFocus = readMessage.isEnable();
+				const messageIsInOpenedRoom = openedRoomId === notification.payload.rid;
+
+				if (RocketChat.Layout.isEmbedded()) {
+					if (!hasFocus && messageIsInOpenedRoom) {
+						// Play a sound and show a notification.
+						KonchatNotification.newMessage(notification.payload.rid);
+					}
+				} else if (!(hasFocus && messageIsInOpenedRoom)) {
+					// Play a sound and show a notification.
+					KonchatNotification.newMessage(notification.payload.rid);
+				}
+			});
 		}
 	});
 });

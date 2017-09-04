@@ -1,8 +1,8 @@
 Meteor.startup(() => {
-	return RocketChat.MessageAction.addButton({
+	RocketChat.MessageAction.addButton({
 		id: 'mark-message-as-unread',
-		icon: 'icon-flag',
-		i18nLabel: 'Mark_as_unread',
+		icon: 'flag',
+		label: 'Mark_as_unread',
 		context: ['message', 'message-mobile'],
 		action() {
 			const message = this._arguments[1];
@@ -21,9 +21,10 @@ Meteor.startup(() => {
 				return FlowRouter.go('home');
 			});
 		},
-		validation(message) {
+		condition(message) {
 			return message.u._id !== Meteor.user()._id;
 		},
-		order: 22
+		order: 22,
+		group: 'menu'
 	});
 });
