@@ -58,7 +58,6 @@
 	}
 
 	&__header {
-		height: var(--sidebar-header-height);
 		padding: var(--sidebar-default-padding);
 	}
 

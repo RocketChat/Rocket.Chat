@@ -91,7 +91,7 @@ class AutoTranslate {
 		let count = message.tokens.length;
 
 		message.html = message.msg;
-		message = RocketChat.Markdown.parse(message);
+		message = RocketChat.Markdown.parseNotEscaped(message);
 		message.msg = message.html;
 
 		for (const tokenIndex in message.tokens) {

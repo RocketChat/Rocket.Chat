@@ -5,7 +5,7 @@
 }
 
 html {
-	overflow-y: scroll;
+	overflow-y: auto;
 
 	height: 100%;
 
@@ -103,4 +103,6 @@ button {
 	height: 1em;
 
 	vertical-align: -0.15em;
+
+	overflow: hidden;
 }
