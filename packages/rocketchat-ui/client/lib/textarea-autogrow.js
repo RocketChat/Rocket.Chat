@@ -71,11 +71,8 @@
 					newHeight = maxHeight;
 				}
 
-				$self.css('overflow-y', 'hidden');
-
 				$self.stop().animate( { height: newHeight }, { duration: 100, complete: ()=> {
 					$self.trigger('autogrow', []);
-					$self.css('overflow-y', '');
 				}});
 
 				$self.trigger('autogrow', []);
