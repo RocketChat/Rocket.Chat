@@ -1,3 +1,3 @@
 Meteor.startup(function() {
-	RocketChat.models.Rooms.tryEnsureIndex({ 'tokenpass.token': 1 });
+	RocketChat.models.Rooms.tryEnsureIndex({ 'tokenpass.tokens.token': 1 });
 });

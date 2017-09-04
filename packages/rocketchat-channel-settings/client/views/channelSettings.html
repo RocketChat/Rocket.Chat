@@ -104,13 +104,24 @@
 
 
 <template name="channelSettings__tokenly">
-		<div class="channelSettings-tokenly setting-block">
-			<label>{{_ "tokenly"}}</label>
-			{{#unless editing}}
-			<button type="button" class="button edit js-edit">
-				<i class="icon-pencil"></i>
-			</button>
-			{{/unless}}
+	<li class="channelSettings-tokenly setting-block {{editing}}">
+		<button type="button" class="button edit js-edit">
+			<i class="icon-pencil"></i>
+		</button>
+
+		<label>Tokenpass</label>
+
+		<div class="clearfix">
+			<div class="boolean">
+				<label>{{requiredLabel}}</label>
+				<div class="setting-block">
+					<div class="input checkbox toggle">
+						<input type="checkbox" id="requireAllTokens" name="requireAllTokens" {{requiredChecked}} {{requiredDisabled}}>
+						<label for="requireAllTokens"></label>
+					</div>
+				</div>
+			</div>
+
 			{{#if list}}
 				<ul class="chip-container">
 					{{#each list}}
@@ -120,10 +131,13 @@
 			{{/if}}
 			{{#if editing}}
 				<form class="channelSettings-tokenly__form">
-					<input type="text" name="token" class="channelSettings-tokenly__input content-background-color editing" placeholder="token"/>
-					<input type="number" min="0" name="balance" class="channelSettings-tokenly__input content-background-color editing" placeholder="balance"/>
-					<button type="button" class="button js-add" title="{{_ 'Add'}}" {{disabled}}><i class="icon-plus"></i></button><button type="button" class="button js-cancel" title="{{_ 'Cancel'}}" >{{_ 'Cancel'}}</button> {{#if save}}<button type="button" class="button primary mail-messages">save</button>{{/if}}
+					<input type="text" name="token" class="channelSettings-tokenly__input content-background-color editing" placeholder="{{_ "Token_required"}}"/>
+					<input type="number" min="0" name="balance" class="channelSettings-tokenly__input content-background-color editing" placeholder="{{_ "Minimum_balance"}}" />
+					<button type="button" class="button js-add" title="{{_ 'Add'}}" {{addDisabled}}><i class="icon-plus"></i></button>
+					<button type="button" class="button js-cancel" title="{{_ 'Cancel'}}" >{{_ "Cancel"}}</button>
+					{{#if save}}<button type="button" class="button primary js-save">{{_ "Save"}}</button>{{/if}}
 				</form>
 			{{/if}}
 		</div>
+	</li>
 </template>

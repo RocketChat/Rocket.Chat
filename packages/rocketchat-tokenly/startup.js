@@ -19,7 +19,8 @@ function validateTokenAccess(userData, roomData) {
 	}
 
 	return userData.services.tokenly.tcaBalances.some(token => {
-		return roomData.tokenpass.some(config => config.token === token.asset && config.balance <= parseFloat(token.balance));
+		const compFunc = roomData.tokenpass.require === 'any' ? 'some' : 'every';
+		return roomData.tokenpass.tokens[compFunc](config => config.token === token.asset && config.balance <= parseFloat(token.balance));
 	});
 }
 

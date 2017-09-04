@@ -18,7 +18,8 @@ Meteor.methods({
 			RocketChat.updateUserTokenlyBalances();
 
 			const hasAppropriateToken = user.services.tokenly.tcaBalances.some(token => {
-				return room.tokenpass.some(config => config.token === token.asset && config.balance <= parseFloat(token.balance));
+				const compFunc = room.tokenpass.require === 'any' ? 'some' : 'every';
+				return room.tokenpass.tokens[compFunc](config => config.token === token.asset && config.balance <= parseFloat(token.balance));
 			});
 			if (!hasAppropriateToken) {
 				throw new Meteor.Error('error-not-allowed', 'Token required', { method: 'joinRoom' });

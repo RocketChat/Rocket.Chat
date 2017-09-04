@@ -278,8 +278,6 @@ Template.createChannel.onCreated(function() {
 	this.ac.tmplInst = this;
 });
 
-
-
 Template.tokenpass.onCreated(function() {
 	this.data.validations.tokenpass = (instance) => {
 		const result = (RocketChat.settings.get('API_Tokenly_URL') !== '' && instance.tokensRequired.get() && instance.type.get() === 'p') && this.selectedTokens.get().length === 0;
@@ -287,7 +285,12 @@ Template.tokenpass.onCreated(function() {
 		return !result;
 	};
 	this.data.submits.tokenpass = () => {
-		return {tokenpass: this.selectedTokens.get()};
+		return {
+			tokenpass: {
+				require: this.requireAll.get() ? 'all' : 'any',
+				tokens: this.selectedTokens.get()
+			}
+		};
 	};
 	this.balance = new ReactiveVar('');
 	this.token = new ReactiveVar('');
@@ -308,16 +311,10 @@ Template.tokenpass.helpers({
 		return (balance.get().length && token.get().length) ? '' : 'disabled';
 	},
 	tokenRequiment() {
-		if (Template.instance().requireAll.get()) {
-			return t('Require_all_tokens');
-		}
-		return t('Require_any_token');
+		return Template.instance().requireAll.get() ? t('Require_all_tokens') : t('Require_any_token');
 	},
 	tokenRequimentDescription() {
-		if (Template.instance().requireAll.get()) {
-			return t('All_added_tokens_will_be_required_by_the_user');
-		}
-		return t('At_least_one_added_token_is_required_by_the_user');
+		return Template.instance().requireAll.get() ? t('All_added_tokens_will_be_required_by_the_user') : t('At_least_one_added_token_is_required_by_the_user');
 	}
 });
 

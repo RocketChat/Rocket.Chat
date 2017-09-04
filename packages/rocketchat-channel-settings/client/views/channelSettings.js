@@ -425,6 +425,9 @@ Template.channelSettings.onCreated(function() {
 		const room = ChatRoom.findOne(this.data && this.data.rid);
 		const field = this.editing.get();
 		let value;
+		if (!this.settings[field]) {
+			return;
+		}
 		if (this.settings[field].type === 'select') {
 			value = this.$(`.channel-settings form [name=${ field }]:checked`).val();
 		} else if (this.settings[field].type === 'boolean') {
@@ -449,9 +452,9 @@ RocketChat.ChannelSettings.addOption({
 });
 
 Template.channelSettings__tokenly.helpers({
-	disabled() {
+	addDisabled() {
 		const {balance, token} = Template.instance();
-		return balance.get()&&token.get() ? '' : 'disabled';
+		return balance.get() && token.get() ? '' : 'disabled';
 	},
 	list() {
 		return Template.instance().list.get();
@@ -461,16 +464,29 @@ Template.channelSettings__tokenly.helpers({
 		return JSON.stringify(list.get()) !== JSON.stringify(initial);
 	},
 	editing() {
-		const {editing} = Template.instance();
-		return editing.get();
+		return Template.instance().editing.get() ? 'tokenpass__editing' : '';
+	},
+	requiredChecked() {
+		return Template.instance().requireAll.get() ? 'checked' : '';
+	},
+	requiredLabel() {
+		return Template.instance().requireAll.get() ? t('Require_all_tokens') : t('Require_any_token');
+	},
+	requiredDisabled() {
+		return !Template.instance().editing.get() ? 'disabled' : '';
+	},
+	editDisabled() {
+		return Template.instance().editing.get() ? 'disabled' : '';
 	}
 });
 
 Template.channelSettings__tokenly.onCreated(function() {
+	const room = ChatRoom.findOne(this.data.rid, { fields: { tokenpass : 1 } });
+
 	this.editing = new ReactiveVar(false);
-	const room = ChatRoom.findOne(this.data.rid);
 	this.initial = room.tokenpass;
-	this.list = new ReactiveVar(this.initial);
+	this.requireAll = new ReactiveVar(room.tokenpass.require === 'all');
+	this.list = new ReactiveVar(this.initial.tokens);
 	this.token = new ReactiveVar('');
 	this.balance = new ReactiveVar('');
 });
@@ -507,18 +523,33 @@ Template.channelSettings__tokenly.events({
 	},
 	'click .js-save'(e, i) {
 		e.preventDefault();
-		i.editing.set(false);
-		i.initial.set(i.list);
-		i.token.set('');
-		i.balance.set('');
-		[...i.findAll('input')].forEach(el => el.value = '');
+
+		const tokenpass = {
+			require: i.find('[name=requireAllTokens]').checked ? 'all' : 'any',
+			tokens: i.list.get()
+		};
+
+		Meteor.call('saveRoomSettings', this.rid, 'tokenpass', tokenpass, function(err) {
+			if (err) {
+				return handleError(err);
+			}
+			i.editing.set(false);
+			i.token.set('');
+			i.balance.set('');
+			i.initial = tokenpass;
+			[...i.findAll('input')].forEach(el => el.value = '');
+			return toastr.success(TAPi18n.__('Room_tokenpass_config_changed_successfully'));
+		});
 	},
 	'click .js-cancel'(e, i) {
 		e.preventDefault();
 		i.editing.set(false);
-		i.list.set(i.initial);
+		i.list.set(i.initial.tokens);
 		i.token.set('');
 		i.balance.set('');
 		[...i.findAll('input')].forEach(el => el.value = '');
+	},
+	'change [name=requireAllTokens]'(e, instance) {
+		instance.requireAll.set(e.currentTarget.checked);
 	}
 });

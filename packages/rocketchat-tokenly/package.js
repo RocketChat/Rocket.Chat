@@ -16,7 +16,7 @@ Package.onUse(function(api) {
 
 	api.addFiles('common.js');
 
-	api.addFiles('client/login-button.css', 'client');
+	api.addFiles('login-button.css', 'client');
 	api.addFiles('client/channelSettings.css', 'client');
 
 	api.addFiles('client/roomType.js', 'client');

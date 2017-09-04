@@ -13,7 +13,8 @@ Meteor.methods({
 			});
 
 			return RocketChat.models.Rooms.findByToknepass(Object.keys(tokens)).filter(room => {
-				return room.tokenpass.some(config => typeof tokens[config.token] !== 'undefined' && parseFloat(config.balance) <= tokens[config.token]);
+				const compFunc = room.tokenpass.require === 'any' ? 'some' : 'every';
+				return room.tokenpass.tokens[compFunc](config => typeof tokens[config.token] !== 'undefined' && parseFloat(config.balance) <= tokens[config.token]);
 			});
 		}
 
