@@ -10,20 +10,24 @@ Package.onUse(function(api) {
 	api.use('accounts-base');
 	api.use('rocketchat:lib');
 	api.use('service-configuration');
-	api.use('rocketchat:custom-oauth');
 	api.use('rocketchat:authorization');
+	api.use('rocketchat:custom-oauth');
+	api.use('rocketchat:channel-settings');
 	api.use('templating', 'client');
 
 	api.addFiles('common.js');
 
-	api.addFiles('login-button.css', 'client');
+	api.addFiles('client/login-button.css', 'client');
 	api.addFiles('client/channelSettings.css', 'client');
 
+	api.addFiles('client/startup.js', 'client');
 	api.addFiles('client/roomType.js', 'client');
 	api.addFiles('client/tokenChannelsList.html', 'client');
 	api.addFiles('client/tokenChannelsList.js', 'client');
+	api.addFiles('client/tokenpassChannelSettings.html', 'client');
+	api.addFiles('client/tokenpassChannelSettings.js', 'client');
 
-	api.addFiles('startup.js', 'server');
+	api.addFiles('server/startup.js', 'server');
 
 	api.addFiles('server/functions/getProtectedTokenpassBalances.js', 'server');
 	api.addFiles('server/functions/getPublicTokenpassBalances.js', 'server');
