@@ -19,7 +19,7 @@
    * [RocketChatLauncher](#launcher)
    * [Layershift](#layershift)
    * [Sandstorm.io](#sandstormio)
-   * [Yunohost.org](#yunohost)
+   * [Yunohost.org](#yunohostorg)
    * [DPlatform](#dplatform) 
    * [IndieHosters](#indiehosters)
    * [Ubuntu 16.04](#ubuntu-1604)
