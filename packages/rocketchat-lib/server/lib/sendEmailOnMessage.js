@@ -59,6 +59,10 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 				});
 
 				if (emailNotifications === 'mentions' && (mentionedUser || isMentionAll)) {
+					const maxMembersForNotification = RocketChat.settings.get('Notifications_Max_Room_Members');
+					if (isMentionAll && maxMembersForNotification !== 0 && room.usernames.length > maxMembersForNotification) {
+						return;
+					}
 					return usersToSendEmail[sub.u._id] = 'mention';
 				}
 
