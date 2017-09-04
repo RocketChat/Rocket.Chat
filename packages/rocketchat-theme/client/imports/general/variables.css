@@ -6,6 +6,7 @@
 	--color-darkest: #1f2329;
 	--color-dark: #2f343d;
 	--color-dark-medium: #414852;
+	--color-dark-light: #6c727a;
 	--color-gray: #9ea2a8;
 	--color-gray-medium: #cbced1;
 	--color-gray-light: #e1e5e8;
@@ -39,6 +40,8 @@
 	--status-away: var(--color-alert);
 	--status-busy: var(--color-error);
 	--status-invisible: var(--color-gray-medium);
+	--status-invisible-sidebar: var(--color-darkest);
+	--default-small-padding: 1rem;
 
 	/*
 	* Forms
@@ -124,12 +127,15 @@
 	* Sidebar
 	*/
 	--sidebar-width: 280px;
+	--sidebar-small-width: 90%;
 	--sidebar-background: var(--color-primary);
 	--sidebar-background-light: var(--color-gray-lightest);
-	--sidebar-header-height: 180px;
-	--sidebar-header-padding: 24px;
+	--sidebar-default-padding: 24px;
+	--sidebar-small-default-padding: 16px;
+	--sidebar-header-padding: var(--sidebar-default-padding);
 	--sidebar-footer-height: 70px;
 	--sidebar-footer-padding: var(--sidebar-header-padding);
+	--sidebar-small-header-padding: var(--sidebar-small-default-padding);
 
 	/*
 	* Sidebar flex
@@ -142,10 +148,13 @@
 	* Sidebar Account
 	*/
 	--sidebar-account-thumb-size: 48px;
+	--sidebar-small-account-thumb-size: 40px;
 	--sidebar-account-status-bullet-size: 12px;
+	--sidebar-small-account-status-bullet-size: 8px;
 	--sidebar-account-status-bullet-radius: 50%;
 	--sidebar-account-username-size: 1rem;
 	--sidebar-account-username-weight: 700;
+	--sidebar-small-account-username-weight: 400;
 	--sidebar-account-username-color: var(--color-white);
 	--sidebar-account-username-color-darker: var(--color-dark);
 	--sidebar-account-status-font-size: 0.875rem;
@@ -165,6 +174,7 @@
 	--sidebar-item-active-text-color: var(--color-white);
 	--sidebar-item-popup-background: var(--color-dark-medium);
 	--sidebar-item-user-status-size: 6px;
+	--sidebar-small-item-user-status-size: 4px;
 	--sidebar-item-user-status-radius: 50%;
 	--sidebar-item-text-size: 1rem;
 
@@ -180,6 +190,8 @@
 	--rooms-list-title-text-size: 0.75rem;
 	--rooms-list-empty-text-color: var(--color-gray);
 	--rooms-list-empty-text-size: 0.75rem;
+	--rooms-list-padding: var(--sidebar-default-padding);
+	--rooms-list-small-padding: var(--sidebar-small-default-padding);
 
 	/*
 	* Chip
@@ -240,7 +252,7 @@
 	--message-box-user-typing-color: var(--color-gray);
 	--message-box-user-typing-text-size: 0.75rem;
 	--message-box-user-typing-user-color: var(--color-dark);
-	--message-box-container-border-color: var(--color-gray-light);
+	--message-box-container-border-color: var(--color-gray-medium);
 	--message-box-container-border-width: var(--border);
 	--message-box-container-border-radius: var(--border-radius);
 	--message-box-editing-color: #fff5df;

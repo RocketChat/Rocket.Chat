@@ -8,11 +8,11 @@ Meteor.methods({
 		check(field, String);
 		check(value, String);
 
-		if (['audioNotification', 'desktopNotifications', 'mobilePushNotifications', 'emailNotifications', 'unreadAlert', 'disableNotifications', 'hideUnreadStatus'].indexOf(field) === -1) {
+		if (['audioNotifications', 'desktopNotifications', 'mobilePushNotifications', 'emailNotifications', 'unreadAlert', 'disableNotifications', 'hideUnreadStatus'].indexOf(field) === -1) {
 			throw new Meteor.Error('error-invalid-settings', 'Invalid settings field', { method: 'saveNotificationSettings' });
 		}
 
-		if (field !== 'audioNotification' && field !== 'hideUnreadStatus' && field !== 'disableNotifications' && ['all', 'mentions', 'nothing', 'default'].indexOf(value) === -1) {
+		if (field !== 'hideUnreadStatus' && field !== 'disableNotifications' && ['all', 'mentions', 'nothing', 'default'].indexOf(value) === -1) {
 			throw new Meteor.Error('error-invalid-settings', 'Invalid settings value', { method: 'saveNotificationSettings' });
 		}
 
@@ -22,8 +22,8 @@ Meteor.methods({
 		}
 
 		switch (field) {
-			case 'audioNotification':
-				RocketChat.models.Subscriptions.updateAudioNotificationById(subscription._id, value);
+			case 'audioNotifications':
+				RocketChat.models.Subscriptions.updateAudioNotificationsById(subscription._id, value);
 				break;
 			case 'desktopNotifications':
 				RocketChat.models.Subscriptions.updateDesktopNotificationsById(subscription._id, value);
@@ -45,6 +45,15 @@ Meteor.methods({
 				break;
 		}
 
+		return true;
+	},
+
+	saveAudioNotificationValue(rid, value) {
+		const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(rid, Meteor.userId());
+		if (!subscription) {
+			throw new Meteor.Error('error-invalid-subscription', 'Invalid subscription', { method: 'saveAudioNotificationValue' });
+		}
+		RocketChat.models.Subscriptions.updateAudioNotificationValueById(subscription._id, value);
 		return true;
 	},
 

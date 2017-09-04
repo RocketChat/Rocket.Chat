@@ -12,7 +12,7 @@
 							{{/if}}
 						{{/with}}
 					</h3>
-					<ul class="rooms-list__list">
+					<ul class="rooms-list__list {{ roomType ..}}">
 						{{#each room in this}}
 							{{> chatRoomItem room }}
 						{{else}}

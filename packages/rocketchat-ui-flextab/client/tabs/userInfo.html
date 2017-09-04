@@ -28,6 +28,7 @@
 						{{/if}}
 						{{#if lastLogin}} <p class="secondary-font-color"><i class="icon-calendar"></i> {{_ "Created_at"}}: {{createdAt}}</p> {{/if}}
 						{{#if lastLogin}} <p class="secondary-font-color"><i class="icon-calendar"></i> {{_ "Last_login"}}: {{lastLogin}}</p> {{/if}}
+						{{#each customField}} <p class="secondary-font-color">{{.}}</p> {{/each}}
 						{{#if services.facebook.id}} <p class="secondary-font-color"><i class="icon-facebook"></i><a href="{{services.facebook.link}}" target="_blank">{{services.facebook.name}}</a></p> {{/if}}
 						{{#if services.github.id}} <p class="secondary-font-color"><i class="icon-github-circled"></i><a href="https://www.github.com/{{services.github.username}}" target="_blank">{{services.github.username}}</a></p> {{/if}}
 						{{#if services.gitlab.id}} <p class="secondary-font-color"><i class="icon-gitlab"></i>{{services.gitlab.username}}</p> {{/if}}
