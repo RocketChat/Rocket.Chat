@@ -80,7 +80,7 @@
 						<div class="rc-popover__column">
 							<ul class="rc-popover__list">
 								{{#each action in messageActionsMenu}}
-									<li class="rc-popover__item" data-message-action="{{action.id}}">
+									<li class="rc-popover__item {{action.classes}}" data-message-action="{{action.id}}">
 										{{#if action.icon}}
 											<span class="rc-popover__icon">
 												{{> icon block="rc-popover__icon-element" icon=action.icon}}
