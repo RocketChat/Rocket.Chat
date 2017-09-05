@@ -1,3 +1,23 @@
+<a name="0.59.0-rc.4"></a>
+# 0.59.0-rc.4 (2017-09-05)
+
+
+### Bug Fixes
+
+- [#8039](https://github.com/RocketChat/Rocket.Chat/pull/8039) copy to clipboard and update clipboard.js library
+- [#8001](https://github.com/RocketChat/Rocket.Chat/pull/8001) Error when translating message
+- [#7754](https://github.com/RocketChat/Rocket.Chat/pull/7754) Fix email on mention
+- [#8014](https://github.com/RocketChat/Rocket.Chat/pull/8014) Hide scrollbar on login page if not necessary
+- [#8048](https://github.com/RocketChat/Rocket.Chat/pull/8048) Invisible leader bar on hover
+- [#8019](https://github.com/RocketChat/Rocket.Chat/pull/8019) message-box autogrow
+- [#8046](https://github.com/RocketChat/Rocket.Chat/pull/8046) Prevent autotranslate tokens race condition
+- [#7998](https://github.com/RocketChat/Rocket.Chat/pull/7998) Recent emojis not updated when adding via text
+- [#8017](https://github.com/RocketChat/Rocket.Chat/pull/8017) room icon on header
+- [#8018](https://github.com/RocketChat/Rocket.Chat/pull/8018) search results height
+- [#7988](https://github.com/RocketChat/Rocket.Chat/pull/7988) Vertical menu on flex-tab
+
+
+
 <a name="0.59.0-rc.3"></a>
 # 0.59.0-rc.3 (2017-08-30)
 
