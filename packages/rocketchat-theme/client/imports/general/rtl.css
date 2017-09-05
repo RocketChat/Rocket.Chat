@@ -212,7 +212,6 @@
 	}
 
 	& .main-content {
-		right: var(--rooms-box-width);
 		left: 0;
 
 		transition: left 0.25s cubic-bezier(0.5, 0, 0.1, 1);
@@ -771,7 +770,6 @@
 
 	@media (width <= 1100px) {
 		& #rocket-chat .flex-opened {
-			right: var(--rooms-box-width);
 			left: 0;
 
 			& .flex-tab {
