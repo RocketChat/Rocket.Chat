@@ -316,6 +316,10 @@ Template.room.events({
 		fireGlobalEvent('click-toolbar-button', { id: this.id });
 	},
 
+	'click .iframe-toolbar .popout'() {
+		window.open(location.href);
+	},
+
 	'click, touchend'(e, t) {
 		return Meteor.setTimeout(() => t.sendToBottomIfNecessaryDebounced(), 100);
 	},
