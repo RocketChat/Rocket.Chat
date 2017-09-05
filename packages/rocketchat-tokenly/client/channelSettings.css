@@ -5,6 +5,11 @@
 		}
 	}
 
+	& .details {
+		clear: both;
+		padding-left: 1rem;
+	}
+
 	& button {
 		margin: 0 5px 0 0 !important;
 	}
