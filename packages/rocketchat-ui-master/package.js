@@ -11,7 +11,7 @@ Package.describe({
 });
 
 Npm.depends({
-	clipboard: '1.6.1'
+	clipboard: '1.7.1'
 });
 
 Package.onUse(function(api) {

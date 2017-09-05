@@ -91,7 +91,12 @@ button {
 		color: var(--color-dark-medium);
 
 		font-size: 1.125rem;
+
 		fill: var(--color-dark-medium);
+
+		&--star {
+			fill: none;
+		}
 	}
 }
 
