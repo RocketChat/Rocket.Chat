@@ -13,13 +13,13 @@ Meteor.methods({
 
 		// validate extra data schema
 		check(extraData, Match.ObjectIncluding({
-			tokenpass: {
+			tokenpass: Match.Maybe({
 				require: String,
 				tokens: [{
 					token: String,
 					balance: String
 				}]
-			}
+			})
 		}));
 
 		return RocketChat.createRoom('p', name, Meteor.user() && Meteor.user().username, members, readOnly, {customFields, ...extraData});
