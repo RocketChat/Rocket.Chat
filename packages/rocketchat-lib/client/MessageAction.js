@@ -59,15 +59,14 @@ RocketChat.MessageAction = new class {
 	}
 
 	getButtons(message, context, group) {
-		const allButtons = _.toArray(this.buttons.get());
-		let allowedButtons = allButtons;
+		let allButtons = _.toArray(this.buttons.get());
 
 		if (group) {
-			allowedButtons = allowedButtons.filter(button => button.group === group);
+			allButtons = allButtons.filter(button => button.group === group);
 		}
 
 		if (message) {
-			allowedButtons = _.compact(_.map(allowedButtons, function(button) {
+			allButtons = _.compact(_.map(allButtons, function(button) {
 				if (button.context == null || button.context.includes(context)) {
 					if (button.condition == null || button.condition(message, context)) {
 						return button;
@@ -75,7 +74,7 @@ RocketChat.MessageAction = new class {
 				}
 			}));
 		}
-		return _.sortBy(allowedButtons, 'order');
+		return _.sortBy(allButtons, 'order');
 	}
 
 	resetButtons() {
@@ -95,10 +94,6 @@ RocketChat.MessageAction = new class {
 
 	closePopover() {
 		popover.close();
-	}
-
-	hideDropDown() {
-		$('.message-dropdown:visible').hide();
 	}
 };
 
