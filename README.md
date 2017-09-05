@@ -18,7 +18,8 @@
    * [Snaps](#instant-server-installation-with-snaps)
    * [RocketChatLauncher](#launcher)
    * [Layershift](#layershift)
-   * [Sandstorm.io](#sandstormio) 
+   * [Sandstorm.io](#sandstormio)
+   * [Yunohost.org](#yunohostorg)
    * [DPlatform](#dplatform) 
    * [IndieHosters](#indiehosters)
    * [Ubuntu 16.04](#ubuntu-1604)
@@ -34,6 +35,7 @@
   * [Koozali SME](#koozali-sme)
   * [Ubuntu VPS](#ubuntu-vps)
   * [Hyper.sh](#hypersh)
+  * [WeDeploy](#wedeploy)
 * [About Rocket.Chat](#about-rocketchat)
   * [On the News](#on-the-news)
   * [Features](#features)
@@ -115,6 +117,10 @@ Host your own Rocket.Chat server in four seconds flat:
 
 [![Rocket.Chat on Sandstorm.io](https://raw.githubusercontent.com/Sing-Li/bbug/master/images/sandstorm.jpg)](https://apps.sandstorm.io/app/vfnwptfn02ty21w715snyyczw0nqxkv3jvawcah10c6z7hj1hnu0)
 
+## Yunohost.org
+Host your own Rocket.Chat server in a few seconds.
+
+[![Install RocketChat with YunoHost](https://install-app.yunohost.org/install-with-yunohost.png)](https://install-app.yunohost.org/?app=rocketchat)
 
 ## DPlatform
 
@@ -216,6 +222,11 @@ Follow these [deployment instructions](https://rocket.chat/docs/installation/man
 
 ## Hyper.sh
 Follow their [deployment instructions](https://rocket.chat/docs/installation/paas-deployments/hyper-sh/) to install a per-second billed Rocket.Chat instance on [Hyper.sh](https://rocket.chat/docs/installation/paas-deployments/hyper-sh/)
+
+## WeDeploy
+Install Rocket.Chat on [WeDeploy](https://wedeploy.com):
+
+[![Install](https://avatars3.githubusercontent.com/u/10002920?v=4&s=100)](https://rocket.chat/docs/installation/paas-deployments/wedeploy/)
 
 # About Rocket.Chat
 
