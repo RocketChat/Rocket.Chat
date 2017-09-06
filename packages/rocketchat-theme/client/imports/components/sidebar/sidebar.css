@@ -57,10 +57,6 @@
 		}
 	}
 
-	&__header {
-		padding: var(--sidebar-default-padding);
-	}
-
 	& .unread-rooms {
 		display: none;
 	}
