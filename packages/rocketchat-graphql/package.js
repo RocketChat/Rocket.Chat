@@ -29,6 +29,6 @@ Npm.depends({
 	'graphql-subscriptions': '0.4.4',
 	'graphql-tools': '1.2.2',
 	'lodash.property': '4.4.2',
-	'kamilkisiela-merge-graphql-schemas': '1.1.2',
+	'merge-graphql-schemas': '1.1.3',
 	'subscriptions-transport-ws': '0.8.2'
 });
