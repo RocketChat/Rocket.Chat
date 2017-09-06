@@ -1,6 +1,6 @@
 import { createJSAccountsGraphQL } from '@accounts/graphql-api';
 import { AccountsServer } from 'meteor/rocketchat:accounts';
-import { mergeTypes, mergeResolvers } from 'kamilkisiela-merge-graphql-schemas';
+import { mergeTypes, mergeResolvers } from 'merge-graphql-schemas';
 
 // queries
 import * as oauthProviders from './oauthProviders';

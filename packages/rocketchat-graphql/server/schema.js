@@ -1,5 +1,5 @@
 import { makeExecutableSchema } from 'graphql-tools';
-import { mergeTypes, mergeResolvers } from 'kamilkisiela-merge-graphql-schemas';
+import { mergeTypes, mergeResolvers } from 'merge-graphql-schemas';
 
 import * as channels from './resolvers/channels';
 import * as messages from './resolvers/messages';
