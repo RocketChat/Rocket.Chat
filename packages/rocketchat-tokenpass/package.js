@@ -1,7 +1,7 @@
 Package.describe({
-	name: 'rocketchat:tokenly',
+	name: 'rocketchat:tokenpass',
 	version: '0.0.1',
-	summary: 'RocketChat settings for Tokenly OAuth flow'
+	summary: 'RocketChat settings for Tokenpass OAuth flow'
 });
 
 Package.onUse(function(api) {
@@ -34,7 +34,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/functions/getPublicTokenpassBalances.js', 'server');
 	api.addFiles('server/functions/saveRoomTokens.js', 'server');
 	api.addFiles('server/functions/saveRoomTokensMinimumBalance.js', 'server');
-	api.addFiles('server/functions/updateUserTokenlyBalances.js', 'server');
+	api.addFiles('server/functions/updateUserTokenpassBalances.js', 'server');
 
 	api.addFiles('server/models/indexes.js', 'server');
 	api.addFiles('server/models/Rooms.js', 'server');

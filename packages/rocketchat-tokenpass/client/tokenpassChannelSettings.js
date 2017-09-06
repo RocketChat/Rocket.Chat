@@ -1,4 +1,4 @@
-Template.channelSettings__tokenly.helpers({
+Template.channelSettings__tokenpass.helpers({
 	addDisabled() {
 		const {balance, token} = Template.instance();
 		return balance.get() && token.get() ? '' : 'disabled';
@@ -27,7 +27,7 @@ Template.channelSettings__tokenly.helpers({
 	}
 });
 
-Template.channelSettings__tokenly.onCreated(function() {
+Template.channelSettings__tokenpass.onCreated(function() {
 	const room = ChatRoom.findOne(this.data.rid, { fields: { tokenpass : 1 } });
 
 	this.editing = new ReactiveVar(false);
@@ -38,7 +38,7 @@ Template.channelSettings__tokenly.onCreated(function() {
 	this.balance = new ReactiveVar('');
 });
 
-Template.channelSettings__tokenly.events({
+Template.channelSettings__tokenpass.events({
 	'click .js-edit'(e, i) {
 		i.editing.set(true);
 	},

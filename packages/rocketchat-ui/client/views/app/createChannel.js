@@ -100,7 +100,7 @@ Template.createChannel.helpers({
 		return Template.instance().type.get() === 'p' ? 'lock' : 'hashtag';
 	},
 	tokenAccessEnabled() {
-		return RocketChat.settings.get('API_Tokenly_URL') !== '';
+		return RocketChat.settings.get('API_Tokenpass_URL') !== '';
 	},
 	tokenIsDisabled() {
 		return Template.instance().type.get() !== 'p' ? 'disabled' : null;
@@ -280,7 +280,7 @@ Template.createChannel.onCreated(function() {
 
 Template.tokenpass.onCreated(function() {
 	this.data.validations.tokenpass = (instance) => {
-		const result = (RocketChat.settings.get('API_Tokenly_URL') !== '' && instance.tokensRequired.get() && instance.type.get() === 'p') && this.selectedTokens.get().length === 0;
+		const result = (RocketChat.settings.get('API_Tokenpass_URL') !== '' && instance.tokensRequired.get() && instance.type.get() === 'p') && this.selectedTokens.get().length === 0;
 		this.invalid.set(result);
 		return !result;
 	};

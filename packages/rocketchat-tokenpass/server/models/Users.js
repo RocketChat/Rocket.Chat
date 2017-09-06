@@ -1,7 +1,7 @@
-RocketChat.models.Users.setTokenlyTcaBalances = function(_id, tcaBalances) {
+RocketChat.models.Users.setTokenpassTcaBalances = function(_id, tcaBalances) {
 	const update = {
 		$set: {
-			'services.tokenly.tcaBalances': tcaBalances
+			'services.tokenpass.tcaBalances': tcaBalances
 		}
 	};
 
@@ -15,7 +15,7 @@ RocketChat.models.Users.getTokenBalancesByUserId = function(userId) {
 
 	const options = {
 		fields: {
-			'services.tokenly.tcaBalances': 1
+			'services.tokenpass.tcaBalances': 1
 		}
 	};
 

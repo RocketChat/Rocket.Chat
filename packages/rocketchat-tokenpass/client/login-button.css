@@ -1,4 +1,4 @@
-.icon-tokenly.service-icon {
+.icon-tokenpass.service-icon {
 	display: inline-block;
 
 	width: 25px;
@@ -9,6 +9,6 @@
 	background-position: center center;
 }
 
-.button.external-login.tokenly {
+.button.external-login.tokenpass {
 	background-color: #4170a0;
 }

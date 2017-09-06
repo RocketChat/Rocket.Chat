@@ -1,4 +1,4 @@
-.channelSettings-tokenly {
+.channelSettings-tokenpass {
 	&.tokenpass__editing {
 		& .button.edit {
 			visibility: hidden !important;

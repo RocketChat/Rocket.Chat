@@ -18,8 +18,8 @@ function removeUsersFromTokenChannels() {
 	Object.keys(users).forEach(user => {
 		const userInfo = RocketChat.models.Users.findOneById(user);
 
-		if (userInfo && userInfo.services && userInfo.services.tokenly) {
-			const balances = RocketChat.updateUserTokenlyBalances(userInfo);
+		if (userInfo && userInfo.services && userInfo.services.tokenpass) {
+			const balances = RocketChat.updateUserTokenpassBalances(userInfo);
 
 			users[user].forEach(roomId => {
 				const valid = RocketChat.Tokenpass.validateAccess(rooms[roomId], balances);

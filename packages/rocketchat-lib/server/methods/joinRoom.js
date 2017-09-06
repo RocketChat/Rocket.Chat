@@ -14,8 +14,8 @@ Meteor.methods({
 
 		// TODO we should have a 'beforeJoinRoom' call back so external services can do their own validations
 		const user = Meteor.user();
-		if (room.tokenpass && user && user.services && user.services.tokenly) {
-			const balances = RocketChat.updateUserTokenlyBalances(user);
+		if (room.tokenpass && user && user.services && user.services.tokenpass) {
+			const balances = RocketChat.updateUserTokenpassBalances(user);
 
 			if (!RocketChat.Tokenpass.validateAccess(room.tokenpass, balances)) {
 				throw new Meteor.Error('error-not-allowed', 'Token required', { method: 'joinRoom' });

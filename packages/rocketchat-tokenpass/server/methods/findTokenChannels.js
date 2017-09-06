@@ -6,14 +6,14 @@ Meteor.methods({
 
 		const user = Meteor.user();
 
-		if (user.services && user.services.tokenly && user.services.tokenly.tcaBalances) {
+		if (user.services && user.services.tokenpass && user.services.tokenpass.tcaBalances) {
 			const tokens = {};
-			user.services.tokenly.tcaBalances.forEach(token => {
+			user.services.tokenpass.tcaBalances.forEach(token => {
 				tokens[token.asset] = 1;
 			});
 
 			return RocketChat.models.Rooms.findByTokenpass(Object.keys(tokens))
-				.filter(room => RocketChat.Tokenpass.validateAccess(room.tokenpass, user.services.tokenly.tcaBalances));
+				.filter(room => RocketChat.Tokenpass.validateAccess(room.tokenpass, user.services.tokenpass.tcaBalances));
 		}
 
 		return [];

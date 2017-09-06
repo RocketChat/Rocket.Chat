@@ -10,26 +10,26 @@ const config = {
 	usernameField: 'username',
 	mergeUsers: true,
 	addAutopublishFields: {
-		forLoggedInUser: ['services.tokenly'],
-		forOtherUsers: ['services.tokenly.name']
+		forLoggedInUser: ['services.tokenpass'],
+		forOtherUsers: ['services.tokenpass.name']
 	}
 };
 
-const Tokenly = new CustomOAuth('tokenly', config);
+const Tokenpass = new CustomOAuth('tokenpass', config);
 
 if (Meteor.isServer) {
 	Meteor.startup(function() {
-		RocketChat.settings.get('API_Tokenly_URL', function(key, value) {
+		RocketChat.settings.get('API_Tokenpass_URL', function(key, value) {
 			config.serverURL = value;
-			Tokenly.configure(config);
+			Tokenpass.configure(config);
 		});
 	});
 } else {
 	Meteor.startup(function() {
 		Tracker.autorun(function() {
-			if (RocketChat.settings.get('API_Tokenly_URL')) {
-				config.serverURL = RocketChat.settings.get('API_Tokenly_URL');
-				Tokenly.configure(config);
+			if (RocketChat.settings.get('API_Tokenpass_URL')) {
+				config.serverURL = RocketChat.settings.get('API_Tokenpass_URL');
+				Tokenpass.configure(config);
 			}
 		});
 	});

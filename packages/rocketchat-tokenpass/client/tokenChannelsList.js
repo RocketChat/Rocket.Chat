@@ -1,6 +1,6 @@
 Template.tokenChannelsList.helpers({
 	rooms() {
-		return Template.instance().tokenlyRooms.get().filter(room => {
+		return Template.instance().tokenpassRooms.get().filter(room => {
 			return RocketChat.models.Subscriptions.find({ rid: room._id }).count() === 0;
 		});
 	}
@@ -9,12 +9,12 @@ Template.tokenChannelsList.helpers({
 Template.tokenChannelsList.onRendered(function() {
 	Tracker.autorun(c => {
 		const user = Meteor.user();
-		if (user && user.services && user.services.tokenly) {
+		if (user && user.services && user.services.tokenpass) {
 			c.stop();
 
 			Meteor.call('findTokenChannels', (error, result) => {
 				if (!error) {
-					this.tokenlyRooms.set(result);
+					this.tokenpassRooms.set(result);
 				}
 			});
 		}
@@ -22,5 +22,5 @@ Template.tokenChannelsList.onRendered(function() {
 });
 
 Template.tokenChannelsList.onCreated(function() {
-	this.tokenlyRooms = new ReactiveVar([]);
+	this.tokenpassRooms = new ReactiveVar([]);
 });

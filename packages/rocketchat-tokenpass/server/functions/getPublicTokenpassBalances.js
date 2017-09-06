@@ -4,7 +4,7 @@ if (Meteor.release) { userAgent += `/${ Meteor.release }`; }
 RocketChat.getPublicTokenpassBalances = function(accessToken) {
 	try {
 		return HTTP.get(
-			`${ RocketChat.settings.get('API_Tokenly_URL') }/api/v1/tca/public/balances`, {
+			`${ RocketChat.settings.get('API_Tokenpass_URL') }/api/v1/tca/public/balances`, {
 				headers: {
 					Accept: 'application/json',
 					'User-Agent': userAgent
@@ -14,6 +14,6 @@ RocketChat.getPublicTokenpassBalances = function(accessToken) {
 				}
 			}).data;
 	} catch (error) {
-		throw new Error(`Failed to fetch public tokenpass balances from Tokenly. ${ error.message }`);
+		throw new Error(`Failed to fetch public tokenpass balances from Tokenpass. ${ error.message }`);
 	}
 };

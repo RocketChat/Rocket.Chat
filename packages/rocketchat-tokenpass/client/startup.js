@@ -1,8 +1,8 @@
 Meteor.startup(function() {
 	RocketChat.ChannelSettings.addOption({
 		group: ['room'],
-		id: 'tokenly',
-		template: 'channelSettings__tokenly',
+		id: 'tokenpass',
+		template: 'channelSettings__tokenpass',
 		validation(data) {
 			if (data && data.rid) {
 				const room = RocketChat.models.Rooms.findOne(data.rid, { fields: { tokenpass: 1 } });

@@ -34,7 +34,7 @@ Template.roomList.helpers({
 				types= [ 'c', 'p'];
 			}
 
-			if (this.identifier === 'tokens' && user && user.services && user.services.tokenly) {
+			if (this.identifier === 'tokens' && user && user.services && user.services.tokenpass) {
 				query.tokens = { $exists: true };
 			} else if (this.identifier === 'c' || this.identifier === 'p') {
 				query.tokens = { $exists: false };
