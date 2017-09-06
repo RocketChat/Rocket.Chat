@@ -1,4 +1,4 @@
-import { mergeTypes, mergeResolvers } from 'kamilkisiela-merge-graphql-schemas';
+import { mergeTypes, mergeResolvers } from 'merge-graphql-schemas';
 
 // queries
 import * as channels from './channels';
