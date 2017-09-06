@@ -1,4 +1,6 @@
 .toolbar {
+	padding: 0 var(--sidebar-default-padding) var(--sidebar-default-padding);
+
 	&__wrapper {
 		display: flex;
 
