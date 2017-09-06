@@ -18,8 +18,9 @@
 	background-color: var(--sidebar-background);
 
 	&-light {
-		width: 100%;
 		position: absolute;
+
+		width: 100%;
 
 		height: 100%;
 
@@ -80,10 +81,10 @@
 		-webkit-user-drag: none;
 		will-change: transform;
 	}
+
 	.rtl .sidebar {
 		transform: translate3d(200%, 0, 0);
 	}
-
 }
 
 @media (width <= 400px) {
