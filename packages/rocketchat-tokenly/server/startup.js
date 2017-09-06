@@ -18,10 +18,7 @@ function validateTokenAccess(userData, roomData) {
 		return false;
 	}
 
-	return userData.services.tokenly.tcaBalances.some(token => {
-		const compFunc = roomData.tokenpass.require === 'any' ? 'some' : 'every';
-		return roomData.tokenpass.tokens[compFunc](config => config.token === token.asset && config.balance <= parseFloat(token.balance));
-	});
+	return RocketChat.Tokenpass.validateAccess(roomData.tokenpass, userData.services.tokenly.tcaBalances);
 }
 
 Meteor.startup(function() {
@@ -44,10 +41,8 @@ Meteor.startup(function() {
 	});
 });
 
-Accounts.onLogin(function() {
-	const user = Meteor.user();
-
+Accounts.onLogin(function({ user }) {
 	if (user && user.services && user.services.tokenly) {
-		RocketChat.updateUserTokenlyBalances();
+		RocketChat.updateUserTokenlyBalances(user);
 	}
 });

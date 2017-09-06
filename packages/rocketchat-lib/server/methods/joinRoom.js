@@ -12,16 +12,12 @@ Meteor.methods({
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'joinRoom' });
 		}
 
-		// TODO we should have a 'beforeJoinRoom' call back
+		// TODO we should have a 'beforeJoinRoom' call back so external services can do their own validations
 		const user = Meteor.user();
 		if (room.tokenpass && user && user.services && user.services.tokenly) {
-			RocketChat.updateUserTokenlyBalances();
+			const balances = RocketChat.updateUserTokenlyBalances(user);
 
-			const hasAppropriateToken = user.services.tokenly.tcaBalances.some(token => {
-				const compFunc = room.tokenpass.require === 'any' ? 'some' : 'every';
-				return room.tokenpass.tokens[compFunc](config => config.token === token.asset && config.balance <= parseFloat(token.balance));
-			});
-			if (!hasAppropriateToken) {
+			if (!RocketChat.Tokenpass.validateAccess(room.tokenpass, balances)) {
 				throw new Meteor.Error('error-not-allowed', 'Token required', { method: 'joinRoom' });
 			}
 		} else {

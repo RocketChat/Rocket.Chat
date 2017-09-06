@@ -6,14 +6,15 @@ Package.describe({
 
 Package.onUse(function(api) {
 	api.versionsFrom('1.0');
-	api.use('ecmascript');
 	api.use('accounts-base');
-	api.use('rocketchat:lib');
+	api.use('ecmascript');
 	api.use('service-configuration');
+	api.use('templating', 'client');
+	api.use('percolate:synced-cron');
+	api.use('rocketchat:lib');
 	api.use('rocketchat:authorization');
 	api.use('rocketchat:custom-oauth');
 	api.use('rocketchat:channel-settings');
-	api.use('templating', 'client');
 
 	api.addFiles('common.js');
 
@@ -37,7 +38,12 @@ Package.onUse(function(api) {
 
 	api.addFiles('server/models/indexes.js', 'server');
 	api.addFiles('server/models/Rooms.js', 'server');
+	api.addFiles('server/models/Subscriptions.js', 'server');
 	api.addFiles('server/models/Users.js', 'server');
 
 	api.addFiles('server/methods/findTokenChannels.js', 'server');
+
+	api.addFiles('server/cronRemoveUsers.js', 'server');
+
+	api.addFiles('server/Tokenpass.js', 'server');
 });

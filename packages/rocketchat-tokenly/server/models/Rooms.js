@@ -1,4 +1,4 @@
-RocketChat.models.Rooms.findByToknepass = function(tokens) {
+RocketChat.models.Rooms.findByTokenpass = function(tokens) {
 	const query = {
 		'tokenpass.tokens.token': {
 			$in: tokens
@@ -26,4 +26,16 @@ RocketChat.models.Rooms.setTokenpassById = function(_id, tokenpass) {
 	};
 
 	return this.update({ _id }, update);
+};
+
+RocketChat.models.Rooms.findAllTokenChannels = function() {
+	const query = {
+		tokenpass: { $exists: true }
+	};
+	const options = {
+		fields: {
+			tokenpass: 1
+		}
+	};
+	return this._db.find(query, options);
 };
