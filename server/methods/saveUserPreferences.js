@@ -59,6 +59,10 @@ Meteor.methods({
 				preferences.unreadAlert = settings.unreadAlert === '1' ? true : false;
 			}
 
+			if (settings.showHiddenRoomsWhenUnreadMessages) {
+				preferences.showHiddenRoomsWhenUnreadMessages = settings.showHiddenRoomsWhenUnreadMessages === '1';
+			}
+
 			if (settings.notificationsSoundVolume) {
 				preferences.notificationsSoundVolume = settings.notificationsSoundVolume;
 			}

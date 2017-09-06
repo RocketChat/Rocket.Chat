@@ -150,7 +150,7 @@ Template.accountPreferences.onCreated(function() {
 		data.sendOnEnter = $('#sendOnEnter').find('select').val();
 		data.unreadRoomsMode = $('input[name=unreadRoomsMode]:checked').val();
 		data.roomsListExhibitionMode = $('select[name=roomsListExhibitionMode]').val();
-
+		data.showHiddenRoomsWhenUnreadMessages = $('input[name=showHiddenRoomsWhenUnreadMessages]:checked').val();
 		data.autoImageLoad = $('input[name=autoImageLoad]:checked').val();
 		data.emailNotificationMode = $('select[name=emailNotificationMode]').val();
 		data.highlights = _.compact(_.map($('[name=highlights]').val().split(','), function(e) {

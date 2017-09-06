@@ -126,6 +126,18 @@ class ModelSubscriptions extends RocketChat.models._Base {
 		return this.find(query, options);
 	}
 
+	findByRoomIdForAlert(roomId, options) {
+		const query = {
+			rid: roomId,
+			$or: [
+				{ alert: { $ne: true } },
+				{ open: { $ne: true } }
+			]
+		};
+
+		return this.find(query, options);
+	}
+
 	findByRoomIdAndNotUserId(roomId, userId, options) {
 		const query = {
 			rid: roomId,
@@ -417,25 +429,16 @@ class ModelSubscriptions extends RocketChat.models._Base {
 		};
 		return this.update(query, update);
 	}
-	setAlertForRoomIdExcludingUserId(roomId, userId) {
-		const query = {
-			rid: roomId,
-			'u._id': {
-				$ne: userId
-			},
-			$or: [
-				{ alert: { $ne: true } },
-				{ open: { $ne: true } }
-			]
-		};
 
+	setAlertForUserSubscribed(userId, showHiddenRoom) {
 		const update = {
 			$set: {
 				alert: true,
-				open: true
+				open: showHiddenRoom
 			}
 		};
-		return this.update(query, update, { multi: true });
+
+		return this.update({'u._id': userId}, update);
 	}
 
 	setBlockedByRoomId(rid, blocked, blocker) {
