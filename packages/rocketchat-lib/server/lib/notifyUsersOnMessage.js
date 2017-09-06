@@ -108,7 +108,7 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 	if (subscriptions) {
 		let userSubscribed = {};
 		let showHiddenRoom;
-		subscriptions.forEach(function (subscription) {
+		subscriptions.forEach(function(subscription) {
 			if (subscription.u._id !== message.u._id) {
 				userSubscribed = RocketChat.models.Users.findById(message.u._id);
 				showHiddenRoom = userSubscribed && userSubscribed.settings && userSubscribed.settings.preferences && userSubscribed.settings.preferences.showHiddenRoomsWhenUnreadMessages;
