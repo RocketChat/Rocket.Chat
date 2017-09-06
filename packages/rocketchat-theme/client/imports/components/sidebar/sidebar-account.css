@@ -1,8 +1,16 @@
 .sidebar__account {
 	display: flex;
 
-	margin-bottom: 12px;
+	padding: calc(var(--sidebar-default-padding) / 2) var(--sidebar-default-padding);
+	margin: calc(var(--sidebar-default-padding) / 2) 0;
+
 	align-items: center;
+
+	&.active:hover {
+		cursor: pointer;
+
+		background-color: var(--sidebar-background-hover);
+	}
 
 	&--lighten {
 		& .sidebar__account-username {
@@ -34,7 +42,6 @@
 	}
 
 	&-username {
-
 		overflow: hidden;
 		flex: 1;
 
@@ -53,7 +60,6 @@
 
 	&-visual-status {
 		max-width: 124px;
-		margin-right: 8px;
 
 		user-select: none;
 
@@ -161,5 +167,40 @@
 			height: var(--sidebar-small-account-status-bullet-size);
 			margin: 0;
 		}
+	}
+}
+
+.rc-popover--account {
+	& [data-type="set-state"] {
+		& .rc-icon {
+			font-size: var(--sidebar-account-status-bullet-size);
+		}
+
+		&.rc-popover__item {
+
+		&--online {
+			& .rc-icon {
+				color: var(--status-online);
+			}
+		}
+
+		&--away {
+			& .rc-icon {
+				color: var(--status-away);
+			}
+		}
+
+		&--busy {
+			& .rc-icon {
+				color: var(--status-busy);
+			}
+		}
+
+		&--offline {
+			& .rc-icon {
+				color: var(--status-invisible);
+			}
+		}
+	}
 	}
 }

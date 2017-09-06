@@ -29,24 +29,29 @@
 }
 
 .rc-popover {
-	position: absolute;
+	position: fixed;
 	z-index: 9999;
-
 	display: none;
-	will-change: transform;
+
+	top:0;
+	left:0;
+
+	width: 100vw;
+	height: 100vh;
 
 	&__content {
+		position: absolute;
 		display: flex;
 
 		padding: var(--popover-padding);
 
 		white-space: nowrap;
 
-		cursor: default;
-
 		border-radius: var(--popover-radius);
 		background-color: var(--popover-background);
 		box-shadow: 0 0 2px 0 rgba(47, 52, 61, 0.08), 0 0 12px 0 rgba(47, 52, 61, 0.12);
+
+		opacity: 0;
 	}
 
 	&--show {
@@ -119,6 +124,10 @@
 		margin: 1rem 0;
 
 		background: var(--popover-divider-color);
+
+		&:last-child {
+			display: none;
+		}
 	}
 }
 

@@ -138,9 +138,9 @@ Meteor.startup(function() {
 		icon: 'edit',
 		label: 'Edit',
 		context: ['message', 'message-mobile'],
-		action(e) {
-			const message = $(e.currentTarget).closest('.message')[0];
-			chatMessages[Session.get('openedRoom')].edit(message);
+		action() {
+			const messageId = this._arguments[1]._id;
+			chatMessages[Session.get('openedRoom')].edit(document.getElementById(messageId));
 			RocketChat.MessageAction.closePopover();
 		},
 		condition(message) {
