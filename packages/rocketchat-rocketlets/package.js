@@ -7,8 +7,11 @@ Package.onUse(function(api) {
 	api.use([
 		'ecmascript',
 		'rocketchat:lib',
-		'rocketchat:api'
+		'rocketchat:api',
+		'templating'
 	]);
+
+	api.use(['reactive-var', 'kadira:flow-router'], 'client');
 
 	api.addFiles('lib/Rocketlets.js', ['client', 'server']);
 
@@ -58,6 +61,12 @@ Package.onUse(function(api) {
 		'client/communication/index.js'
 	], 'client');
 
+	// Client Admin Management
+	api.addFiles([
+		'client/admin/rocketlets.html',
+		'client/admin/rocketlets.js'
+	], 'client');
+
 	// Client orchestrator
 	api.addFiles('client/orchestrator.js', 'client');
 
@@ -66,6 +75,6 @@ Package.onUse(function(api) {
 
 Npm.depends({
 	'busboy': '0.2.13',
-	'temporary-rocketlets-server': '0.1.20',
-	'temporary-rocketlets-ts-definition': '0.6.11'
+	'temporary-rocketlets-server': '0.1.22',
+	'temporary-rocketlets-ts-definition': '0.6.24'
 });

@@ -1,6 +1,7 @@
 import { RocketletBridges } from 'temporary-rocketlets-server/server/bridges';
 import { RocketletCommandsBridge } from './commands';
 import { RocketletEnvironmentalVariableBridge } from './environmental';
+import { RocketletHttpBridge } from './http';
 import { RocketletMessageBridge } from './messages';
 import { RocketletPersistenceBridge } from './persistence';
 import { RocketletRoomBridge } from './rooms';
@@ -13,6 +14,7 @@ export class RealRocketletBridges extends RocketletBridges {
 
 		this._cmdBridge = new RocketletCommandsBridge(orch);
 		this._envBridge = new RocketletEnvironmentalVariableBridge(orch);
+		this._httpBridge = new RocketletHttpBridge();
 		this._msgBridge = new RocketletMessageBridge(orch);
 		this._persistBridge = new RocketletPersistenceBridge(orch);
 		this._roomBridge = new RocketletRoomBridge(orch);
@@ -26,6 +28,10 @@ export class RealRocketletBridges extends RocketletBridges {
 
 	getEnvironmentalVariableBridge() {
 		return this._envBridge;
+	}
+
+	getHttpBridge() {
+		return this._httpBridge;
 	}
 
 	getMessageBridge() {
