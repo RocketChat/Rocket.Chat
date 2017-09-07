@@ -211,9 +211,22 @@
 		left: auto;
 	}
 
+	& .sidebar__account {
+		&-status-bullet {
+			margin: 0.25rem 0.25rem 0.5rem 0;
+		}
+	}
+
+	& .sidebar__account {
+		&-data {
+			margin-right: 1rem;
+			margin-left: 0;
+		}
+	}
+
 	& .main-content {
-		right: var(--rooms-box-width);
-		left: 0;
+		right: 0;
+		left: var(--rooms-box-width);
 
 		transition: left 0.25s cubic-bezier(0.5, 0, 0.1, 1);
 
