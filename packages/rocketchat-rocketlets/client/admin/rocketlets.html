@@ -1,0 +1,20 @@
+<template name="rocketlets">
+	<div class="main-content-flex">
+		<section class="page-container page-list flex-tab-main-content">
+			<header class="fixed-title">
+				{{> burger}}
+				<h2>
+					<span class="room-title">{{_ "Manage_Rocketlets"}}</span>
+				</h2>
+			</header>
+			<div class="content">
+				{{#requiresPermission 'manage-rocketlets'}}
+					<h1>Hello</h1>
+				{{/requiresPermission}}
+			</div>
+		</section>
+		{{#with flexData}}
+			{{> flexTabBar}}
+		{{/with}}
+	</div>
+</template>

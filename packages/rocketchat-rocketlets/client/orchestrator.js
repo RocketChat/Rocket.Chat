@@ -12,16 +12,9 @@ class RocketletClientOrchestrator {
 	}
 
 	_addAdminMenuOption() {
-		FlowRouter.route('/admin/rocketlets', {
-			name: 'rocketlets',
-			action() {
-				BlazeLayout.render('main', { center: 'rocketlets' });
-			}
-		});
-
 		RocketChat.AdminBox.addOption({
 			href: 'rocketlets',
-			i18nLabel: 'rocketlets',
+			i18nLabel: 'Rocketlets',
 			permissionGranted() {
 				return RocketChat.authz.hasAtLeastOnePermission(['manage-rocketlets']);
 			}
@@ -31,4 +24,12 @@ class RocketletClientOrchestrator {
 
 Meteor.startup(function _rlClientOrch() {
 	window.Rocketlets = new RocketletClientOrchestrator();
+});
+
+// Bah, this has to be done *before* `Meteor.startup`
+FlowRouter.route('/admin/rocketlets', {
+	name: 'rocketlets',
+	action() {
+		BlazeLayout.render('main', { center: 'rocketlets' });
+	}
 });

@@ -4,7 +4,7 @@ export class RocketletMessageBridge {
 	}
 
 	create(message, rocketletId) {
-		console.log(`The Rocketlet ${ rocketletId } is creating a new message.`, message);
+		console.log(`The Rocketlet ${ rocketletId } is creating a new message.`);
 
 		let msg = this.orch.getConverters().get('messages').convertRocketletMessage(message);
 
