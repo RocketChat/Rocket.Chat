@@ -42,12 +42,7 @@ new SubscriptionServer({
 	schema: executableSchema,
 	execute,
 	subscribe,
-	onOperation: ({context}) => {
-		console.log('context', context);
-		return {
-			authToken: context.Authorization
-		};
-	}
+	onConnect: (connectionParams) => ({ authToken: connectionParams.Authorization })
 },
 {
 	path: '/subscriptions',

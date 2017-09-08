@@ -29,18 +29,14 @@ function shouldPublish(message, { id, directTo }, username) {
 const resolver = {
 	Subscription: {
 		chatMessageAdded: {
-			subscribe: withFilter(() => pubsub.asyncIterator(CHAT_MESSAGE_SUBSCRIPTION_TOPIC), (payload, args, ctx) => {
-				// FIX: there's no authToken in context
-				// TODO: check if middleware applies to subscriptions, probably not.
+			subscribe: withFilter(() => pubsub.asyncIterator(CHAT_MESSAGE_SUBSCRIPTION_TOPIC), authenticated((payload, args, { user }) => {
 				const channel = {
 					id: args.channelId,
 					directTo: args.directTo
 				};
 
-				console.log('context in sub', ctx);
-
-				return shouldPublish(payload.chatMessageAdded, channel, ctx.user.username);
-			})
+				return shouldPublish(payload.chatMessageAdded, channel, user.username);
+			}))
 		}
 	}
 };
