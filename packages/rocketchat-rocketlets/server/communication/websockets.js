@@ -29,4 +29,8 @@ export class RocketletWebsocketNotifier {
 	commandUpdated(command) {
 		this.streamer.emit('command/updated', command);
 	}
+
+	commandRemoved(command) {
+		this.streamer.emit('command/removed', command);
+	}
 }

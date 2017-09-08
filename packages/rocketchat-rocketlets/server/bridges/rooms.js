@@ -42,4 +42,16 @@ export class RocketletRoomBridge {
 
 		return this.orch.getConverters().get('rooms').convertByName(roomName);
 	}
+
+	update(room, rocketletId) {
+		console.log(`The Rocketlet ${ rocketletId } is updating a room.`);
+
+		if (!room.id || RocketChat.models.Rooms.findOneById(room.id)) {
+			throw new Error('A room must exist to update.');
+		}
+
+		const rm = this.orch.getConverters().get('rooms').convertRocketletRoom(room);
+
+		RocketChat.models.Rooms.update(rm._id, rm);
+	}
 }

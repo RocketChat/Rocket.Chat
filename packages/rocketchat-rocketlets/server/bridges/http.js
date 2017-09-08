@@ -7,7 +7,7 @@ export class RocketletHttpBridge {
 		console.log(`The Rocketlet ${ info.rocketletId } is requesting from the outter webs:`, info);
 		const result = HTTP.call(info.method, info.url, info.request);
 
-		console.log('The result is:', result);
+		// TODO: Maybe modify the resulting object? :thinking:
 
 		return result;
 	}
