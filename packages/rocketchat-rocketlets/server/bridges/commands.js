@@ -70,6 +70,24 @@ export class RocketletCommandsBridge {
 		this.orch.getNotifier().commandAdded(command.command.toLowerCase());
 	}
 
+	unregisterCommand(command, rocketletId) {
+		console.log(`The Rocketlet ${ rocketletId } is unregistering the command: "${ command }"`);
+
+		if (typeof command !== 'string' || command.trim().length === 0) {
+			throw new Error('Invalid command parameter provided, must be a string.');
+		}
+
+		const cmd = command.toLowerCase();
+		if (typeof RocketChat.slashCommands.commands[cmd] === 'undefined' || !this.disabledCommands.has(cmd)) {
+			throw new Error(`Command does not exist in the system currently: ${ cmd }`);
+		}
+
+		this.disabledCommands.delete(cmd);
+		delete RocketChat.slashCommands.commands[cmd];
+
+		this.orch.getNotifier().commandRemoved(cmd);
+	}
+
 	_verifyCommand(command) {
 		if (typeof command !== 'object') {
 			throw new Error('Invalid Slash Command parameter provided, it must be a valid ISlashCommand object.');

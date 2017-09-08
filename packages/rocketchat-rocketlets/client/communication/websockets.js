@@ -6,6 +6,7 @@ export class RocketletWebsocketReceiver {
 		this.streamer.on('command/added', this.onCommandAdded.bind(this));
 		this.streamer.on('command/disabled', this.onCommandDisabled.bind(this));
 		this.streamer.on('command/updated', this.onCommandUpdated.bind(this));
+		this.streamer.on('command/removed', this.onCommandDisabled.bind(this));
 	}
 
 	onCommandAdded(command) {

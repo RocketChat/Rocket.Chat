@@ -70,11 +70,12 @@ Package.onUse(function(api) {
 	// Client orchestrator
 	api.addFiles('client/orchestrator.js', 'client');
 
+	// Add what this package actually does export
 	api.export('Rocketlets');
 });
 
 Npm.depends({
 	'busboy': '0.2.13',
-	'temporary-rocketlets-server': '0.1.22',
-	'temporary-rocketlets-ts-definition': '0.6.24'
+	'temporary-rocketlets-server': '0.1.23',
+	'temporary-rocketlets-ts-definition': '0.6.25'
 });
