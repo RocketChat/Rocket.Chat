@@ -1065,6 +1065,7 @@
   "Message_AllowDeleting": "Allow Message Deleting",
   "Message_AllowDeleting_BlockDeleteInMinutes": "Block Message Deleting After (n) Minutes",
   "Message_AllowDeleting_BlockDeleteInMinutes_Description": "Enter 0 to disable blocking.",
+  "Message_AllowDirectMessagesToYourself": "Allow user direct messages to yourself",
   "Message_AllowEditing": "Allow Message Editing",
   "Message_AllowEditing_BlockEditInMinutes": "Block Message Editing After (n) Minutes",
   "Message_AllowEditing_BlockEditInMinutesDescription": "Enter 0 to disable blocking.",
