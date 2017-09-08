@@ -1085,13 +1085,13 @@
       "from": "mime@>=1.2.11 <2.0.0"
     },
     "mime-db": {
-      "version": "1.29.0",
-      "resolved": "http://registry.npmjs.org/mime-db/-/mime-db-1.29.0.tgz",
-      "from": "mime-db@>=1.29.0 <1.30.0"
+      "version": "1.30.0",
+      "resolved": "https://registry.npmjs.org/mime-db/-/mime-db-1.30.0.tgz",
+      "from": "mime-db@>=1.30.0 <1.31.0"
     },
     "mime-types": {
-      "version": "2.1.16",
-      "resolved": "http://registry.npmjs.org/mime-types/-/mime-types-2.1.16.tgz",
+      "version": "2.1.17",
+      "resolved": "https://registry.npmjs.org/mime-types/-/mime-types-2.1.17.tgz",
       "from": "mime-types@>=2.0.8 <3.0.0"
     },
     "minimatch": {

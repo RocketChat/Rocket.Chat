@@ -5686,6 +5686,10 @@ body:not(.is-cordova) {
 
 	border-bottom: 1px solid;
 
+	&.message:hover {
+		background-color: #ffffff;
+	}
+
 	&.animated-hidden {
 		visibility: hidden;
 
