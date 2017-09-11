@@ -104,6 +104,7 @@ Template.channelSettings.events({
 				});
 				FlowRouter.go('home');
 				RoomManager.close(result.t+result.name);
+				/* globals CachedChatRoom */
 				CachedChatRoom.trySync();
 			});
 		});
