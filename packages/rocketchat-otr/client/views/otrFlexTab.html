@@ -8,8 +8,12 @@
 				<ul class="list clearfix">
 					{{#if userIsOnline}}
 						{{#if established}}
-							<button class="button refresh"><span>{{_ "Refresh_keys"}}</span></button>
-							<button class="button end"><span>{{_ "End_OTR"}}</span></button>
+							<div class="buttons-group">
+								<button class="button refresh"><span>{{_ "Refresh_keys"}}</span></button>
+							</div>
+							<div class="buttons-group">
+								<button class="button end"><span>{{_ "End_OTR"}}</span></button>
+							</div>
 						{{else}} {{#if establishing}}
 							{{_ "Please_wait_while_OTR_is_being_established"}}
 						{{else}}

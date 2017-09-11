@@ -8,9 +8,7 @@
 	}
 
 	&__back-icon {
-		width: 18px;
-		height: 14px;
-		stroke: currentColor;
+		font-size: 1.25rem;
 	}
 
 	&__search {

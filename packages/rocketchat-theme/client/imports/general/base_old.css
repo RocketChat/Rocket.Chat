@@ -2900,9 +2900,7 @@
 	position: relative;
 
 	min-height: 40px;
-	padding: 8px 20px 4px 70px;
-
-	transition: background 0.3s;
+	padding: 8px 50px 4px 70px;
 
 	line-height: 20px;
 
@@ -3026,16 +3024,16 @@
 
 	& .thumb {
 		position: absolute;
-		left: 20px;
+		left: 24px;
 
 		display: block;
 
-		width: 40px;
-		height: 40px;
+		width: 36px;
+		height: 36px;
 
 		&:not(.thumb-small) .avatar {
-			width: 40px;
-			height: 40px;
+			width: 36px;
+			height: 36px;
 		}
 
 		&.thumb-small {
@@ -3126,10 +3124,6 @@
 			}
 		}
 
-		& .body {
-			margin-top: 0;
-		}
-
 		&:hover .edited {
 			display: none;
 		}
@@ -3160,8 +3154,6 @@
 	}
 
 	& .body {
-		margin-top: 2px;
-
 		transition: opacity 1s linear;
 
 		opacity: 1;
@@ -3221,6 +3213,55 @@
 				display: block;
 			}
 		}
+
+		& ul,
+		& ol {
+			padding: 0 0 0 24px;
+		}
+
+		& ul {
+			list-style-type: disc;
+		}
+
+		& ol {
+			list-style-type: decimal;
+		}
+
+		& > * + * {
+			padding-top: 10px;
+		}
+
+		& > table {
+			display: block;
+			overflow: auto;
+
+			& tr {
+				background-color: #ffffff;
+				border-top: 1px solid #cccccc;
+
+				&:nth-child(2n) {
+					background-color: #f6f8fa;
+				}
+
+				& th {
+					font-weight: 600;
+				}
+
+				& th,
+				& td {
+					padding: 6px 13px;
+					border: 1px solid #dddddd;
+				}
+			}
+		}
+
+		& > hr {
+			height: 3px;
+			padding: 0;
+			margin: 12px 0;
+			background-color: #e7e7e7;
+			border: 0;
+		}
 	}
 
 	&.temp .body {
@@ -3231,6 +3272,24 @@
 		padding-left: 2px;
 
 		font-weight: 400;
+	}
+}
+
+.rc-old .image-labels {
+	margin: 5px 0 25px;
+	display: flex;
+	flex-wrap: wrap;
+}
+
+.rc-old .image-label {
+	padding: 9px 4px;
+	border-radius: 2px;
+	font-size: 12px;
+	margin-right: 5px;
+	margin-top: 5px;
+
+	&:last-child {
+		margin-right: 0;
 	}
 }
 
@@ -3477,6 +3536,14 @@ body:not(.is-cordova) {
 				opacity: 0;
 			}
 
+			& .section {
+				border: 1px solid #dddddd;
+				border-radius: 4px;
+				background-color: #ffffff;
+				padding: 20px;
+				margin: 20px;
+			}
+
 			& > .animated {
 				position: absolute;
 				top: 0;
@@ -3560,17 +3627,11 @@ body:not(.is-cordova) {
 				width: 21px;
 				height: 20px;
 
-				border-radius: 50%;
-
 				& i {
 					display: inline-block;
 
 					width: 18px;
 					height: 18px;
-
-					border-width: 1px;
-					border-style: solid;
-					border-radius: 50%;
 
 					font-size: 10px;
 				}
@@ -3630,14 +3691,6 @@ body:not(.is-cordova) {
 }
 
 .rc-old .list-view {
-	z-index: 10;
-
-	overflow-x: hidden;
-	overflow-y: auto;
-
-	padding: 20px;
-	-webkit-overflow-scrolling: touch;
-
 	& .list {
 		position: relative;
 
@@ -3652,7 +3705,9 @@ body:not(.is-cordova) {
 	}
 
 	& > .title {
-		margin: 0 0 20px;
+		&:not(:last-child) {
+			margin: 0 0 20px;
+		}
 
 		& h2 {
 			font-size: 20px;
@@ -4096,6 +4151,8 @@ body:not(.is-cordova) {
 
 			width: var(--user-image-square);
 			height: var(--user-image-square);
+
+			margin-left: 1rem;
 		}
 	}
 
@@ -5127,7 +5184,24 @@ body:not(.is-cordova) {
 	padding: 1rem 0;
 }
 
-.rc-old .search-messages-list {
+.rc-old .flex-tab {
+	&__content {
+		display: flex;
+		flex-direction: column;
+		height: 100%;
+		padding: 20px;
+	}
+
+	&__header {
+		flex: 0 0 auto;
+		padding-bottom: 10px;
+	}
+
+	&__result {
+		flex: 1 1 auto;
+    overflow-y: auto;
+	}
+
 	& .message-cog-container {
 		& .message-action {
 			display: none !important;
@@ -5611,6 +5685,10 @@ body:not(.is-cordova) {
 	transition: transform 0.15s cubic-bezier(0.5, 0, 0.1, 1), visibility 0.15s cubic-bezier(0.5, 0, 0.1, 1);
 
 	border-bottom: 1px solid;
+
+	&.message:hover {
+		background-color: #ffffff;
+	}
 
 	&.animated-hidden {
 		visibility: hidden;

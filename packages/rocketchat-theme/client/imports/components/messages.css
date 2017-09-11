@@ -1,0 +1,92 @@
+.message-actions {
+	position: absolute;
+	top: 2px;
+	right: 2px;
+
+	display: none;
+
+	color: #6c727a;
+
+	font-size: 1rem;
+
+	&__buttons {
+		display: flex;
+	}
+
+	&__button {
+		margin: 0 0.2rem;
+
+		&:hover {
+			color: var(--color-button-primary);
+		}
+	}
+
+	&__label {
+		padding: 2px 0;
+
+		cursor: pointer;
+
+		&:hover {
+			color: var(--color-button-primary);
+		}
+	}
+
+	&__menu {
+		fill: currentColor;
+	}
+}
+
+.message {
+	&:hover,
+	&.active {
+		background-color: rgba(0, 0, 0, 0.05);
+
+		& .message-actions {
+			display: flex;
+		}
+	}
+
+	&.active {
+		& .message-actions__label {
+			color: var(--color-button-primary);
+		}
+	}
+
+	& .rc-popover-anchor {
+		display: block;
+
+		visibility: hidden;
+		opacity: 0;
+
+		width: 0;
+		height: 0;
+	}
+
+	& .rc-popover {
+		top: -200vh;
+		right: 180px;
+
+		&__wrapper {
+			position: fixed;
+			top: -100vh;
+			left: -100vw;
+
+			width: 300vw;
+			height: 300vh;
+		}
+
+		&__content {
+			position: absolute;
+			top: 0;
+			left: 0;
+		}
+	}
+}
+
+.messages-box .rc-popover__list {
+	padding: 0;
+}
+
+.first-unread .message-actions {
+	top: 18px;
+}

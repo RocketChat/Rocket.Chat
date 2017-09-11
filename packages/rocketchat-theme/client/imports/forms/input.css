@@ -34,57 +34,16 @@
 		justify-content: center;
 
 		& + .rc-input__element {
-			padding: 0.75rem 1rem 0.75rem 3.25rem;
+			padding: 0.75rem 1rem 0.75rem 2.75rem;
 		}
 
 		& + .rc-input__element--small {
-			padding: 0.5rem 1rem 0.5rem 3.25rem;
+			padding: 0.5rem 1rem 0.5rem 2.75rem;
 		}
 
 		&--right {
 			right: 1rem;
 			left: auto;
-		}
-	}
-
-	&__icon-svg {
-		stroke: currentColor;
-
-		&--at,
-		&--plus,
-		&--hashtag {
-			width: 14px;
-			height: 14px;
-		}
-
-		&--smile {
-			width: 18px;
-			height: 18px;
-		}
-
-		&--send {
-			width: 18px;
-			height: 18px;
-		}
-
-		&--lock {
-			width: 12px;
-			height: 18px;
-		}
-
-		&--user {
-			width: 12px;
-			height: 13px;
-		}
-
-		&--magnifier {
-			width: 13px;
-			height: 13px;
-		}
-
-		&--cross {
-			width: 10px;
-			height: 10px;
 		}
 	}
 
