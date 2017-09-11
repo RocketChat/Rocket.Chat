@@ -90,7 +90,7 @@ Template.channelSettings.events({
 			html: false
 		}, () => {
 			swal.disableButtons();
-			Meteor.call('eraseRoom', this.rid, function(error) {
+			Meteor.call('eraseRoom', this.rid, function(error,result) {
 				if (error) {
 					handleError(error);
 					return swal.enableButtons();
@@ -102,6 +102,9 @@ Template.channelSettings.events({
 					timer: 2000,
 					showConfirmButton: false
 				});
+				FlowRouter.go('home');
+				RoomManager.close(result.t+result.name);
+				CachedChatRoom.trySync();
 			});
 		});
 	},
