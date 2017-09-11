@@ -196,7 +196,14 @@ Template.room.helpers({
 		const roomData = Session.get(`roomData${ this._id }`);
 		if (!(roomData != null ? roomData.t : undefined)) { return ''; }
 
-		return RocketChat.roomTypes.getIcon(roomData != null ? roomData.t : undefined);
+		const roomIcon = RocketChat.roomTypes.getIcon(roomData != null ? roomData.t : undefined);
+
+		// Remove this 'codegueira' on header redesign
+		if (!roomIcon) {
+			return 'at';
+		}
+
+		return roomIcon;
 	},
 
 	userStatus() {
@@ -531,29 +538,6 @@ Template.room.events({
 	'click .new-message'() {
 		Template.instance().atBottom = true;
 		return chatMessages[RocketChat.openedRoom].input.focus();
-	},
-
-	'click .message-cog'() {
-		const [, message] = this._arguments;
-		RocketChat.MessageAction.hideDropDown();
-
-		let dropDown = $(`.messages-box \#${ message._id } .message-dropdown`);
-
-		if (dropDown.length === 0) {
-			const actions = RocketChat.MessageAction.getButtons(message, 'message');
-
-			const el = Blaze.toHTMLWithData(Template.messageDropdown, { actions });
-
-			$(`.messages-box \#${ message._id } .message-cog-container`).append(el);
-
-			dropDown = $(`.messages-box \#${ message._id } .message-dropdown`);
-		}
-
-		return dropDown.show();
-	},
-
-	'click .message-dropdown-close'() {
-		return RocketChat.MessageAction.hideDropDown();
 	},
 
 	'click .message [data-message-action]'(e, t) {

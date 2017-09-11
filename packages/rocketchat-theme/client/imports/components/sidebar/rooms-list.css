@@ -34,12 +34,12 @@
 		position: absolute;
 		z-index: 1;
 
+		bottom: var(--sidebar-footer-height);
 		left: 0;
 
 		overflow-y: auto;
 
 		width: 100%;
-		height: calc(100% - calc(var(--sidebar-header-height) + var(--sidebar-footer-height)));
 		padding: 0 8px;
 
 		background-color: var(--sidebar-background);
@@ -51,6 +51,10 @@
 		&__type,
 		&__empty-room {
 			margin-left: 0;
+		}
+
+		&__toolbar-search {
+			bottom: 0;
 		}
 	}
 }
