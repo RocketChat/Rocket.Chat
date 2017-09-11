@@ -103,6 +103,10 @@
 
 	&__icon-element {
 		font-size: 18px;
+
+		&--star {
+			fill: none;
+		}
 	}
 
 	&__item-text {
@@ -116,6 +120,10 @@
 
 		background: var(--popover-divider-color);
 	}
+}
+
+[data-message-action="unstar-message"] .rc-popover__icon-element--star {
+	fill: currentColor;
 }
 
 @keyframes dropdown-show {
