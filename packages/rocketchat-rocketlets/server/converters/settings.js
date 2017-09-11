@@ -8,6 +8,10 @@ export class RocketletSettingsConverter {
 	convertById(settingId) {
 		const setting = RocketChat.models.Settings.findOneById(settingId);
 
+		return this.convertToRocketlet(setting);
+	}
+
+	convertToRocketlet(setting) {
 		return {
 			id: setting._id,
 			type: this._convertTypeToRocketlet(setting.type),

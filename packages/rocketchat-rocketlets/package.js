@@ -25,6 +25,7 @@ Package.onUse(function(api) {
 
 	// Bridges
 	api.addFiles([
+		'server/bridges/activation.js',
 		'server/bridges/bridges.js',
 		'server/bridges/commands.js',
 		'server/bridges/environmental.js',
@@ -67,6 +68,8 @@ Package.onUse(function(api) {
 		'client/admin/rocketlets.js'
 	], 'client');
 
+	api.addFiles('assets/stylesheets/rocketlets.css', 'client');
+
 	// Client orchestrator
 	api.addFiles('client/orchestrator.js', 'client');
 
@@ -76,6 +79,6 @@ Package.onUse(function(api) {
 
 Npm.depends({
 	'busboy': '0.2.13',
-	'temporary-rocketlets-server': '0.1.23',
-	'temporary-rocketlets-ts-definition': '0.6.25'
+	'temporary-rocketlets-server': '0.1.26',
+	'temporary-rocketlets-ts-definition': '0.6.26'
 });

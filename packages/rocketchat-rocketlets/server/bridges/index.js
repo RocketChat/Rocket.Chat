@@ -1,4 +1,5 @@
 import { RealRocketletBridges } from './bridges';
+import { RocketletActivationBridge } from './activation';
 import { RocketletCommandsBridge } from './commands';
 import { RocketletEnvironmentalVariableBridge } from './environmental';
 import { RocketletHttpBridge } from './http';
@@ -10,6 +11,7 @@ import { RocketletUserBridge } from './users';
 
 export {
 	RealRocketletBridges,
+	RocketletActivationBridge,
 	RocketletCommandsBridge,
 	RocketletEnvironmentalVariableBridge,
 	RocketletHttpBridge,

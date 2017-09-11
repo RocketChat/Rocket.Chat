@@ -9,7 +9,11 @@
 			</header>
 			<div class="content">
 				{{#requiresPermission 'manage-rocketlets'}}
-					<h1>Hello</h1>
+					{{#each rocketlets}}
+						<ul class="sound-info row-link">
+							<li>{{name}}&nbsp;<i class="icon-play-circled"></i></li>
+						</ul>
+					{{/each}}
 				{{/requiresPermission}}
 			</div>
 		</section>
