@@ -9,6 +9,24 @@
 	height: 100%;
 }
 
+.messages-container .room-icon {
+	&.online {
+		color: var(--status-online);
+	}
+
+	&.away {
+		color: var(--status-away);
+	}
+
+	&.busy {
+		color: var(--status-busy);
+	}
+
+	&.offline {
+		color: var(--status-invisible);
+	}
+}
+
 @media (width <= 780px) {
 	.main-content {
 		position: fixed;

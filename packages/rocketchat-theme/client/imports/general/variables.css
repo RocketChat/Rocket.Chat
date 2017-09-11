@@ -41,6 +41,7 @@
 	--status-busy: var(--color-error);
 	--status-invisible: var(--color-gray-medium);
 	--status-invisible-sidebar: var(--color-darkest);
+	--default-small-padding: 1rem;
 
 	/*
 	* Forms
@@ -129,7 +130,6 @@
 	--sidebar-small-width: 90%;
 	--sidebar-background: var(--color-primary);
 	--sidebar-background-light: var(--color-gray-lightest);
-	--sidebar-header-height: 180px;
 	--sidebar-default-padding: 24px;
 	--sidebar-small-default-padding: 16px;
 	--sidebar-header-padding: var(--sidebar-default-padding);
