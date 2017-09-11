@@ -40,7 +40,19 @@ export class RocketletsRestApi {
 
 		this.api.addRoute('', { authRequired: true }, {
 			get() {
-				const rocketlets = manager.get().map(prl => prl.getInfo());
+				const rocketlets = manager.get().map(prl => {
+					if (this.queryParams.languagesOnly) {
+						return {
+							id: prl.getID(),
+							languages: prl.getStorageItem().languageFiles
+						};
+					} else {
+						const info = prl.getInfo();
+						info.languages = prl.getStorageItem().languageFiles;
+
+						return info;
+					}
+				});
 
 				return { success: true, rocketlets };
 			},
@@ -60,9 +72,16 @@ export class RocketletsRestApi {
 		this.api.addRoute(':id', { authRequired: true }, {
 			get() {
 				console.log('Getting:', this.urlParams.id);
-				const rocketlet = manager.getOneById(this.urlParams.id).getInfo();
+				const prl = manager.getOneById(this.urlParams.id);
 
-				return { success: true, rocketlet };
+				if (prl) {
+					const info = prl.getInfo();
+					info.languages = prl.getStorageItem().languageFiles;
+
+					return { success: true, rocketlet: info };
+				} else {
+					return RocketChat.API.v1.notFound(`No Rocketlet found by the id of: ${ this.urlParams.id }`);
+				}
 			},
 			post() {
 				console.log('Updating:', this.urlParams.id);

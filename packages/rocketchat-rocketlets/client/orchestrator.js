@@ -5,6 +5,7 @@ class RocketletClientOrchestrator {
 		this.ws = new RocketletWebsocketReceiver(this);
 
 		this._addAdminMenuOption();
+		setTimeout(() => this._loadLanguages(), 500);
 	}
 
 	getWsListener() {
@@ -17,6 +18,28 @@ class RocketletClientOrchestrator {
 			i18nLabel: 'Rocketlets',
 			permissionGranted() {
 				return RocketChat.authz.hasAtLeastOnePermission(['manage-rocketlets']);
+			}
+		});
+	}
+
+	_loadLanguages() {
+		if (!Meteor.user()) {
+			return;
+		}
+
+		RocketChat.API.get('rocketlets?languagesOnly=true').then((info) => {
+			info.rocketlets.forEach((rlInfo) => this.parseAndLoadLanguages(rlInfo.languages));
+		});
+	}
+
+	parseAndLoadLanguages(languages) {
+		Object.keys(languages).forEach((key) => {
+			try {
+				const json = JSON.parse(languages[key]);
+
+				TAPi18next.addResourceBundle(key, 'project', json);
+			} catch (e) {
+				// Failed to parse the json
 			}
 		});
 	}

@@ -66,6 +66,15 @@ class API extends Restivus {
 		};
 	}
 
+	notFound(msg) {
+		return {
+			statusCode: 404,
+			body: {
+				success: false,
+				error: msg ? msg : 'Resource not found'
+			}
+		};
+	}
 
 	unauthorized(msg) {
 		return {
