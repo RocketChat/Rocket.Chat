@@ -171,7 +171,7 @@ rocketchat:logger@0.0.1
 rocketchat:login-token@1.0.0
 rocketchat:mailer@0.0.1
 rocketchat:mapview@0.0.1
-rocketchat:markdown@0.0.2
+rocketchat:markdown@0.1.0
 rocketchat:mentions@0.0.1
 rocketchat:mentions-flextab@0.0.1
 rocketchat:message-attachments@0.0.1
