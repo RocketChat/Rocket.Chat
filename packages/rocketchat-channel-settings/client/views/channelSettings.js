@@ -90,7 +90,7 @@ Template.channelSettings.events({
 			html: false
 		}, () => {
 			swal.disableButtons();
-			Meteor.call('eraseRoom', this.rid, function(error,result) {
+			Meteor.call('eraseRoom', this.rid, function(error, result) {
 				if (error) {
 					handleError(error);
 					return swal.enableButtons();
