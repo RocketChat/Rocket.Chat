@@ -1,7 +1,6 @@
 /* globals toolbarSearch, menu, isRtl, fireGlobalEvent, CachedChatSubscription, DynamicCss */
 import Clipboard from 'clipboard';
 
-
 RocketChat.settings.collection.find({_id:'theme-custom-variables'}, {fields:{ value: 1 }}).observe({changed: () => { DynamicCss.run(true); }});
 
 Template.body.onRendered(function() {
@@ -61,7 +60,7 @@ Template.body.onRendered(function() {
 		if (target.id === 'pswp') {
 			return;
 		}
-		const inputMessage = $('textarea.input-message');
+		const inputMessage = $('textarea.rc-message-box__textarea');
 		if (inputMessage.length === 0) {
 			return;
 		}
@@ -179,9 +178,6 @@ Template.main.helpers({
 
 Template.main.events({
 	'click .burger'() {
-		if (window.rocketDebug) {
-			console.log('room click .burger');
-		}
 		return menu.toggle();
 	}
 });

@@ -35,6 +35,10 @@ Template.flexTabBar.helpers({
 		return Object.assign(Template.currentData().data || {}, {
 			tabBar: Template.instance().tabBar
 		});
+	},
+
+	embeddedVersion() {
+		return RocketChat.Layout.isEmbedded();
 	}
 });
 
