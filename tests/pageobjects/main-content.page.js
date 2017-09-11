@@ -10,13 +10,12 @@ class MainContent extends Page {
 	get channelTitle() { return browser.element('.room-title'); }
 
 	//Main Content Footer (Message Input Area)
-	get messageInput() { return browser.element('.input-message'); }
-	get sendBtn() { return browser.element('.message-buttons.send-button'); }
-	get fileAttachmentBtn() { return browser.element('.message-buttons .icon-attach'); }
-	get fileAttachment() { return browser.element('.message-buttons input[type="file"]'); }
+	get messageInput() { return browser.element('.rc-message-box__container textarea'); }
+	get sendBtn() { return browser.element('.rc-message-box__icon.js-send'); }
+	get messageBoxActions() { return browser.element('.rc-message-box__icon'); }
 	get recordBtn() { return browser.element('.message-buttons .icon-mic'); }
 	get videoCamBtn() { return browser.element('.message-buttons .icon-videocam'); }
-	get emojiBtn() { return browser.element('.inner-left-toolbar .emoji-picker-icon'); }
+	get emojiBtn() { return browser.element('.rc-message-box__icon.emoji-picker-icon'); }
 	get messagePopUp() { return browser.element('.message-popup'); }
 	get messagePopUpTitle() { return browser.element('.message-popup-title'); }
 	get messagePopUpItems() { return browser.element('.message-popup-items'); }
@@ -33,19 +32,20 @@ class MainContent extends Page {
 	get lastMessageUserTag() { return browser.element('.message:last-child .role-tag'); }
 	get lastMessageImg() { return browser.element('.message:last-child .attachment-image img'); }
 	get lastMessageTextAttachment() { return browser.element('.message:last-child .attachment-text'); }
-	get messageOptionsBtn() { return browser.element('.message:last-child .info .message-cog-container .icon-cog'); }
-	get messageReply() { return browser.element('.message:last-child .message-dropdown .reply-message'); }
-	get messageActionMenu() { return browser.element('.message:last-child .message-dropdown'); }
-	get messageEdit() { return browser.element('.message:last-child .message-dropdown .edit-message'); }
-	get messageDelete() { return browser.element('.message:last-child .message-dropdown .delete-message'); }
-	get messagePermalink() { return browser.element('.message:last-child .message-dropdown .permalink'); }
-	get messageCopy() { return browser.element('.message:last-child .message-dropdown .copy'); }
-	get messageQuote() { return browser.element('.message:last-child .message-dropdown .quote-message'); }
-	get messageStar() { return browser.element('.message:last-child .message-dropdown .star-message'); }
-	get messageUnread() { return browser.element('.message:last-child .message-dropdown .mark-message-as-unread'); }
-	get messageReaction() { return browser.element('.message:last-child .message-dropdown .reaction-message'); }
-	get messagePin() { return browser.element('.message:last-child .message-dropdown .pin-message'); }
-	get messageClose() { return browser.element('.message:last-child .message-dropdown .message-dropdown-close'); }
+	get messageOptionsBtn() { return browser.element('.message:last-child .message-actions__label'); }
+	get messageReply() { return browser.element('.message:last-child .rc-popover [data-message-action=reply-message]'); }
+	get messageActionMenu() { return browser.element('.message:last-child .rc-popover'); }
+	get messageActionMenuWrapper() { return browser.element('.message:last-child .rc-popover__wrapper'); }
+	get messageEdit() { return browser.element('.message:last-child .rc-popover [data-message-action=edit-message]'); }
+	get messageDelete() { return browser.element('.message:last-child .rc-popover [data-message-action=delete-message]'); }
+	get messagePermalink() { return browser.element('.message:last-child .rc-popover [data-message-action=permalink]'); }
+	get messageCopy() { return browser.element('.message:last-child .rc-popover [data-message-action=copy]'); }
+	get messageQuote() { return browser.element('.message:last-child .rc-popover [data-message-action=quote-message]'); }
+	get messageStar() { return browser.element('.message:last-child .rc-popover [data-message-action=star-message]'); }
+	get messageUnread() { return browser.element('.message:last-child .rc-popover [data-message-action=mark-message-as-unread]'); }
+	// get messageReaction() { return browser.element('.message:last-child .rc-popover [data-message-action=reaction-message]'); }
+	get messagePin() { return browser.element('.message:last-child .rc-popover [data-message-action=pin-message]'); }
+	// get messageClose() { return browser.element('.message:last-child .rc-popover [data-message-action=rc-popover-close]'); }
 
 	// Emojis
 	get emojiPickerMainScreen() { return browser.element('.emoji-picker'); }
@@ -121,6 +121,13 @@ class MainContent extends Page {
 		this.messageOptionsBtn.waitForVisible(5000);
 		this.messageOptionsBtn.click();
 		this.messageActionMenu.waitForVisible(5000);
+		browser.pause(100);
+	}
+
+	closeMessageActionMenu() {
+		browser.moveToObject(this.messageActionMenu.selector, -30, -30);
+		browser.buttonPress(0);
+		this.messageActionMenu.waitForVisible(5000, true);
 	}
 
 	setLanguageToEnglish() {

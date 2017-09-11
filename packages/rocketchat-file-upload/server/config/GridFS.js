@@ -66,20 +66,17 @@ const getByteRange = function(header) {
 };
 
 
-// code from: https://github.com/jalik/jalik-ufs/blob/master/ufs-server.js#L91
+// code from: https://github.com/jalik/jalik-ufs/blob/master/ufs-server.js#L310
 const readFromGridFS = function(storeName, fileId, file, headers, req, res) {
 	const store = UploadFS.getStore(storeName);
 	const rs = store.getReadStream(fileId, file);
 	const ws = new stream.PassThrough();
 
-	rs.on('error', function(err) {
+	[rs, ws].forEach(stream => stream.on('error', function(err) {
 		store.onReadError.call(store, err, fileId, file);
 		res.end();
-	});
-	ws.on('error', function(err) {
-		store.onReadError.call(store, err, fileId, file);
-		res.end();
-	});
+	}));
+
 	ws.on('close', function() {
 		// Close output stream at the end
 		ws.emit('end');
@@ -89,7 +86,6 @@ const readFromGridFS = function(storeName, fileId, file, headers, req, res) {
 
 	// Transform stream
 	store.transformRead(rs, ws, fileId, file, req, headers);
-
 	const range = getByteRange(req.headers.range);
 	let out_of_range = false;
 	if (range) {
@@ -193,15 +189,12 @@ new FileUploadClass({
 
 	get(file, req, res) {
 		const reqModifiedHeader = req.headers['if-modified-since'];
-		if (reqModifiedHeader) {
-			if (reqModifiedHeader === (file.uploadedAt && file.uploadedAt.toUTCString())) {
-				res.setHeader('Last-Modified', reqModifiedHeader);
-				res.writeHead(304);
-				res.end();
-				return;
-			}
+		if (reqModifiedHeader && reqModifiedHeader === (file.uploadedAt && file.uploadedAt.toUTCString())) {
+			res.setHeader('Last-Modified', reqModifiedHeader);
+			res.writeHead(304);
+			res.end();
+			return;
 		}
-
 		file = FileUpload.addExtensionTo(file);
 		const headers = {
 			'Cache-Control': 'public, max-age=0',

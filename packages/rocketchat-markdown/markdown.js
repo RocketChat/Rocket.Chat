@@ -2,6 +2,10 @@
  * Markdown is a named function that will parse markdown syntax
  * @param {Object} message - The message object
  */
+import { Meteor } from 'meteor/meteor';
+import { Blaze } from 'meteor/blaze';
+import { RocketChat } from 'meteor/rocketchat:lib';
+
 import hljs from 'highlight.js';
 
 class MarkdownClass {

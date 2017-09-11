@@ -5,12 +5,15 @@ Package.describe({
 	git: ''
 });
 
+Npm.depends({
+	'marked': '0.3.6'
+});
+
 Package.onUse(function(api) {
 	api.use([
 		'ecmascript',
 		'underscore',
 		'templating',
-		'underscorestring:underscore.string',
 		'rocketchat:lib'
 	]);
 

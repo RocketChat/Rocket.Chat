@@ -1,7 +1,7 @@
 /* globals openRoom, LivechatInquiry */
 
 RocketChat.roomTypes.add('l', 5, {
-	icon: 'icon-chat-empty',
+	icon: 'livechat',
 	label: 'Livechat',
 	route: {
 		name: 'live',
