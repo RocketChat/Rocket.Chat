@@ -7,6 +7,12 @@ this.popover = {
 	},
 	close() {
 		Blaze.remove(this.renderedPopover);
+
+		const activeElement = this.renderedPopover.dataVar.curValue.activeElement;
+
+		if (activeElement) {
+			$(activeElement).removeClass('active');
+		}
 	}
 };
 
@@ -17,7 +23,7 @@ Template.popover.onRendered(function() {
 		}
 	});
 
-	console.log('render', this.data);
+	const activeElement = this.data.activeElement
 
 	const popoverContent = this.firstNode.children[0];
 	const position = this.data.position;
@@ -64,14 +70,26 @@ Template.popover.onRendered(function() {
 		});
 	}
 
+	if (activeElement) {
+		$(activeElement).addClass('active');
+	}
+
 	popoverContent.style.opacity = 1;
 });
 
 Template.popover.events({
+	'click [data-type="messagebox-action"]'(event, t) {
+		const action = RocketChat.messageBox.actions.getById(event.currentTarget.dataset.id);
+		if ((action[0] != null ? action[0].action : undefined) != null) {
+			action[0].action({rid: t.data.data.rid, messageBox: document.querySelector('.rc-message-box'), element: event.currentTarget, event});
+			popover.close();
+		}
+	},
 	'click [data-type="message-action"]'(e, t) {
 		const button = RocketChat.MessageAction.getButtonById(e.currentTarget.dataset.id);
 		if ((button != null ? button.action : undefined) != null) {
 			button.action.call(t.data.data, e, t.data.instance);
+			popover.close();
 		}
 	},
 	'click [data-type="set-state"]'(e) {

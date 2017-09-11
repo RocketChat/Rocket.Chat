@@ -539,7 +539,7 @@ Template.room.events({
 		Template.instance().atBottom = true;
 		return chatMessages[RocketChat.openedRoom].input.focus();
 	},
-	'click .message-actions-label'(e, i) {
+	'click .message-actions__menu'(e, i) {
 		let context = $(e.target).parents('.message').data('context');
 		if (!context) {
 			context = 'message';
@@ -570,7 +570,8 @@ Template.room.events({
 			mousePosition: {
 				x: e.clientX,
 				y: e.clientY
-			}
+			},
+			activeElement: $(e.currentTarget).parents('.message')[0]
 		};
 
 		popover.open(config);
