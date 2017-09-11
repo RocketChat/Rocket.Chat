@@ -1,3 +1,5 @@
+/* globals popover */
+
 Template.accountBox.helpers({
 	myUserInfo() {
 		if (Meteor.user() == null && RocketChat.settings.get('Accounts_AllowAnonymousRead')) {
