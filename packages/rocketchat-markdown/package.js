@@ -1,8 +1,12 @@
 Package.describe({
 	name: 'rocketchat:markdown',
-	version: '0.0.1',
+	version: '0.0.2',
 	summary: 'Message pre-processor that will process selected markdown notations',
 	git: ''
+});
+
+Npm.depends({
+	'marked': '0.3.6'
 });
 
 Package.onUse(function(api) {
@@ -10,11 +14,9 @@ Package.onUse(function(api) {
 		'ecmascript',
 		'underscore',
 		'templating',
-		'underscorestring:underscore.string',
 		'rocketchat:lib'
 	]);
 
 	api.addFiles('settings.js', 'server');
-	api.addFiles('markdown.js');
-	api.addFiles('markdowncode.js');
+	api.mainModule('markdown.js');
 });

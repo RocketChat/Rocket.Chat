@@ -36,13 +36,16 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 	}
 
 	const header = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Header') || '');
-	const footer = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Footer') || '');
+	let footer = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Footer') || '');
 	messageHTML = messageHTML.replace(/\n/gm, '<br/>');
 
 	const usersToSendEmail = {};
 	if (room.t === 'd') {
 		usersToSendEmail[message.rid.replace(message.u._id, '')] = 'direct';
 	} else {
+		const isMentionAll = message.mentions.find((mention) => {
+			return mention._id === 'all';
+		});
 		RocketChat.models.Subscriptions.findWithSendEmailByRoomId(room._id).forEach((sub) => {
 			if (sub.disableNotifications) {
 				return delete usersToSendEmail[sub.u._id];
@@ -55,7 +58,11 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 					return mention._id === sub.u._id;
 				});
 
-				if (emailNotifications === 'mentions' || mentionedUser) {
+				if (emailNotifications === 'mentions' && (mentionedUser || isMentionAll)) {
+					const maxMembersForNotification = RocketChat.settings.get('Notifications_Max_Room_Members');
+					if (isMentionAll && maxMembersForNotification !== 0 && room.usernames.length > maxMembersForNotification) {
+						return;
+					}
 					return usersToSendEmail[sub.u._id] = 'mention';
 				}
 
@@ -76,15 +83,15 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 			linkByUser[sub.u._id] = getMessageLink(room, sub);
 		});
 	} else {
-		defaultLink = getMessageLink(room, { name: room.name });
+		defaultLink = getMessageLink(room, {
+			name: room.name
+		});
 	}
 
 	if (userIdsToSendEmail.length > 0) {
 		const usersOfMention = RocketChat.models.Users.getUsersToSendOfflineEmail(userIdsToSendEmail).fetch();
 
 		if (usersOfMention && usersOfMention.length > 0) {
-			const siteName = RocketChat.settings.get('Site_Name');
-
 			usersOfMention.forEach((user) => {
 				if (user.settings && user.settings.preferences && user.settings.preferences.emailNotificationMode && user.settings.preferences.emailNotificationMode === 'disabled' && usersToSendEmail[user._id] !== 'force') {
 					return;
@@ -95,19 +102,27 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 					return;
 				}
 
+				// Footer in case direct reply is enabled.
+				if (RocketChat.settings.get('Direct_Reply_Enable')) {
+					footer = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Footer_Direct_Reply') || '');
+				}
+
 				let emailSubject;
 				switch (usersToSendEmail[user._id]) {
 					case 'all':
-						emailSubject = TAPi18n.__('Offline_Mention_All_Email', {
+						emailSubject = RocketChat.placeholders.replace(RocketChat.settings.get('Offline_Mention_All_Email'), {
 							user: message.u.username,
 							room: room.name || room.label
 						});
 						break;
 					case 'direct':
-						emailSubject = TAPi18n.__('Offline_DM_Email', {	user: message.u.username });
+						emailSubject = RocketChat.placeholders.replace(RocketChat.settings.get('Offline_DM_Email'), {
+							user: message.u.username,
+							room: room.name
+						});
 						break;
 					case 'mention':
-						emailSubject = TAPi18n.__('Offline_Mention_Email', {
+						emailSubject = RocketChat.placeholders.replace(RocketChat.settings.get('Offline_Mention_Email'), {
 							user: message.u.username,
 							room: room.name
 						});
@@ -118,9 +133,16 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 						email = {
 							to: email.address,
 							from: RocketChat.settings.get('From_Email'),
-							subject: `[${ siteName }] ${ emailSubject }`,
+							subject: emailSubject,
 							html: header + messageHTML + divisorMessage + (linkByUser[user._id] || defaultLink) + footer
 						};
+						// If direct reply enabled, email content with headers
+						if (RocketChat.settings.get('Direct_Reply_Enable')) {
+							email.headers = {
+								// Reply-To header with format "username+messageId@domain"
+								'Reply-To': `${ RocketChat.settings.get('Direct_Reply_Username').split('@')[0].split(RocketChat.settings.get('Direct_Reply_Separator'))[0] }${ RocketChat.settings.get('Direct_Reply_Separator') }${ message._id }@${ RocketChat.settings.get('Direct_Reply_Username').split('@')[1] }`
+							};
+						}
 
 						Meteor.defer(() => {
 							Email.send(email);

@@ -5,7 +5,7 @@
 }
 
 html {
-	overflow-y: scroll;
+	overflow-y: auto;
 
 	height: 100%;
 
@@ -88,49 +88,23 @@ button {
 	}
 
 	& .tab-button-icon {
-		width: 14px;
-		height: 14px;
-		stroke: currentColor;
+		color: var(--color-dark-medium);
 
-		&--info-circled {
-			fill: currentColor;
-			stroke: none;
-		}
+		font-size: 1.125rem;
 
-		&--bell {
-			width: 16px;
-			height: 14px;
-
-			fill: currentColor;
-			stroke: none;
-		}
-
-		&--team {
-			width: 16px;
-			height: 16px;
-		}
-
-		&--clip {
-			width: 16px;
-			height: 16px;
-		}
+		fill: var(--color-dark-medium);
 
 		&--star {
-			width: 17px;
-			height: 16px;
-		}
-
-		&--language {
-			width: 16px;
-			height: 16px;
-
-			fill: currentColor;
-			stroke: none;
-		}
-
-		&--hubot {
-			width: 14px;
-			height: 16px;
+			fill: none;
 		}
 	}
+}
+
+.rc-icon {
+	width: 1em;
+  height: 1em;
+
+	vertical-align: -0.15em;
+
+  overflow: hidden;
 }
