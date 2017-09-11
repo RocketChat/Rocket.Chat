@@ -1,4 +1,4 @@
-/* globals fileUpload KonchatNotification chatMessages */
+/* globals fileUpload KonchatNotification chatMessages popover */
 import toastr from 'toastr';
 import moment from 'moment';
 

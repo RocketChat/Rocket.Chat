@@ -9,7 +9,6 @@ this.popover = {
 		Blaze.remove(this.renderedPopover);
 
 		const activeElement = this.renderedPopover.dataVar.curValue.activeElement;
-
 		if (activeElement) {
 			$(activeElement).removeClass('active');
 		}
@@ -23,8 +22,7 @@ Template.popover.onRendered(function() {
 		}
 	});
 
-	const activeElement = this.data.activeElement
-
+	const activeElement = this.data.activeElement;
 	const popoverContent = this.firstNode.children[0];
 	const position = this.data.position;
 	const customCSSProperties = this.data.customCSSProperties;
