@@ -8,7 +8,8 @@ const resolver = {
 		id: property('_id'),
 		status: ({status}) => status.toUpperCase(),
 		avatar: async({ _id }) => {
-			const avatar = RocketChat.models.Avatars.findOne({
+			// XXX js-accounts/graphql#16
+			const avatar = await RocketChat.models.Avatars.model.rawCollection().findOne({
 				userId: _id
 			}, { fields: { url: 1 }});
 
