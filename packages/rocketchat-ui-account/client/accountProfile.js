@@ -133,6 +133,9 @@ Template.accountProfile.helpers({
 	},
 	customFields() {
 		return Meteor.user().customFields;
+	},
+	emailVerificationEnabled() {
+		return RocketChat.settings.get('Accounts_EmailVerification');
 	}
 });
 

@@ -55,8 +55,9 @@ Meteor.methods({
 				Accounts.emailTemplates.verifyEmail.subject = () => subject;
 				Accounts.emailTemplates.verifyEmail.html = (userModel, url) => html.replace(/\[Verification_Url]/g, url);
 			}
-
-			Accounts.sendVerificationEmail(userId, userData.email);
+			if (RocketChat.settings.get('Accounts_EmailVerification')) {
+				Accounts.sendVerificationEmail(userId, userData.email);
+			}
 		} catch (error) {
 			// throw new Meteor.Error 'error-email-send-failed', 'Error trying to send email: ' + error.message, { method: 'registerUser', message: error.message }
 		}

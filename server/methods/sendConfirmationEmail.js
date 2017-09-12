@@ -2,6 +2,9 @@ Meteor.methods({
 	sendConfirmationEmail(email) {
 		check(email, String);
 		email = email.trim();
+		if (!RocketChat.settings.get('Accounts_EmailVerification')) {
+			return false;
+		}
 
 		const user = RocketChat.models.Users.findOneByEmailAddress(email);
 
