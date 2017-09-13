@@ -265,6 +265,9 @@ Template.message.helpers({
 			return 'hidden';
 		}
 	},
+	actionContext() {
+		return this.actionContext;
+	},
 	messageActions(group) {
 		let messageGroup = group;
 		let context = this.actionContext;
