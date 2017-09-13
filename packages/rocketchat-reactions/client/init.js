@@ -1,5 +1,5 @@
 Template.room.events({
-	'click .add-reaction'(event) {
+	'click .add-reaction, click [data-message-action="reaction-message"]'(event) {
 		event.preventDefault();
 		event.stopPropagation();
 		const data = Blaze.getData(event.currentTarget);
