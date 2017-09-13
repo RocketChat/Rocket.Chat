@@ -133,8 +133,6 @@
 
 @media (width <= 400px) {
 	.sidebar__account {
-		margin: 0 0 5px;
-
 		&-thumb {
 
 			flex: 0 0 var(--sidebar-small-account-thumb-size);
