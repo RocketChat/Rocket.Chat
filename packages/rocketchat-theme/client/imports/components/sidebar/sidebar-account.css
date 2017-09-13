@@ -1,8 +1,9 @@
 .sidebar__account {
 	display: flex;
 
-	padding: calc(var(--sidebar-default-padding) / 2) var(--sidebar-default-padding);
 	margin: calc(var(--sidebar-default-padding) / 2) 0;
+
+	padding: calc(var(--sidebar-default-padding) / 2) var(--sidebar-default-padding);
 
 	align-items: center;
 
@@ -178,7 +179,6 @@
 		}
 
 		&.rc-popover__item {
-
 			&--online {
 				& .rc-icon {
 					color: var(--status-online);
