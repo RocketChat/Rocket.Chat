@@ -284,6 +284,8 @@
 	/*
 	* Header
 	*/
+	--header-height: 77px;
+	--header-padding: 20px 24px;
 	--header-toggle-favorite-color: var(--color-gray-medium);
 	--header-toggle-favorite-star-color: var(--color-alert-light);
 	--header-title-username-color-darker: var(--color-dark);

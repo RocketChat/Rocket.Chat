@@ -118,7 +118,6 @@ Template.header.events({
 });
 
 Template.header.onCreated(function() {
-	console.log(this);
 	this.currentChannel = RocketChat.models.Rooms.findOne(this.data._id) || undefined;
 });
 

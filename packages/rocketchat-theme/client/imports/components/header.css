@@ -1,9 +1,9 @@
 .rc-header {
 	display: flex;
 
-	max-width: 100vw;
-	height: 77px;
-	padding: 20px 24px;
+	max-width: calc(100vw - var(--sidebar-width));
+	height: var(--header-height);
+	padding: var(--header-padding`);
 
 	white-space: nowrap;
 
@@ -42,7 +42,7 @@
 		/* max-width: use this to allign the buttons with the form */
 	}
 
-	&__section--button > * {
+	&__section--button > button {
 		margin: 0.3rem;
 	}
 	&__room-title {
