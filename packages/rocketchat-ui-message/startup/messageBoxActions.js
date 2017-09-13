@@ -4,6 +4,7 @@ import mime from 'mime-type/with-db';
 import {VRecDialog} from 'meteor/rocketchat:ui-vrecord';
 
 RocketChat.messageBox.actions.add('Create_new', 'Video_message', {
+	id: 'video-message',
 	icon: 'video',
 	condition: () => (navigator.getUserMedia || navigator.webkitGetUserMedia) && RocketChat.settings.get('FileUpload_Enabled') && RocketChat.settings.get('Message_VideoRecorderEnabled') && (!RocketChat.settings.get('FileUpload_MediaTypeWhiteList') || RocketChat.settings.get('FileUpload_MediaTypeWhiteList').match(/video\/webm|video\/\*/i)),
 	action({messageBox}) {
@@ -12,6 +13,7 @@ RocketChat.messageBox.actions.add('Create_new', 'Video_message', {
 });
 
 RocketChat.messageBox.actions.add('Create_new', 'Audio_message', {
+	id: 'audio-message',
 	icon: 'mic',
 	condition: () => (navigator.getUserMedia || navigator.webkitGetUserMedia) && RocketChat.settings.get('FileUpload_Enabled') && RocketChat.settings.get('Message_AudioRecorderEnabled') && (!RocketChat.settings.get('FileUpload_MediaTypeWhiteList') || RocketChat.settings.get('FileUpload_MediaTypeWhiteList').match(/audio\/wav|audio\/\*/i)),
 	action({event, element}) {
@@ -41,6 +43,7 @@ RocketChat.messageBox.actions.add('Create_new', 'Audio_message', {
 
 
 RocketChat.messageBox.actions.add('Add_files_from', 'Computer', {
+	id: 'file-upload',
 	icon: 'computer',
 	condition: () => RocketChat.settings.get('FileUpload_Enabled'),
 	action() {
@@ -73,6 +76,7 @@ RocketChat.messageBox.actions.add('Add_files_from', 'Computer', {
 });
 
 RocketChat.messageBox.actions.add('Share', 'My_location', {
+	id: 'share-location',
 	icon: 'map-pin',
 	condition: () => RocketChat.Geolocation.get() !== false,
 	action({rid}) {

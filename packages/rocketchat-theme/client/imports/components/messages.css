@@ -21,18 +21,18 @@
 		}
 	}
 
-	&__label {
+	&__menu {
 		padding: 2px 0;
 
 		cursor: pointer;
 
-		&:hover {
-			color: var(--color-button-primary);
+		&:hover &-icon {
+			fill: var(--color-button-primary);
 		}
-	}
 
-	&__menu {
-		fill: currentColor;
+		&-icon {
+			fill: currentColor;
+		}
 	}
 }
 
@@ -56,10 +56,11 @@
 		display: block;
 
 		visibility: hidden;
-		opacity: 0;
 
 		width: 0;
 		height: 0;
+
+		opacity: 0;
 	}
 
 	& .rc-popover {
