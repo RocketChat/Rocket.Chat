@@ -11,8 +11,8 @@
 
 	align-items: center;
 
-	&__title {
-		display: flex;
+	&__room-info,
+	&__section-title {
 		flex: 1 1;
 
 		max-width: 60%;
@@ -21,20 +21,24 @@
 		font-size: var(--header-title-font-size);
 		line-height: 1.25rem;
 
+	}
+
+	&__room-info {
+		display: flex;
 		align-items: center;
 	}
 
-	&__section--title {
+	&__section-title {
 		color: var(--header-title-username-color-darker);
 
 		font-weight: var(--header-title-username-weight);
 	}
 
-	&__section--help {
+	&__section-help {
 		flex: 1 1;
 	}
 
-	&__section--button {
+	&__section-button {
 		display: flex;
 		flex: 1 1 100%;
 		justify-content: flex-end;
@@ -42,7 +46,7 @@
 		/* max-width: use this to allign the buttons with the form */
 	}
 
-	&__section--button > button {
+	&__section-button > button {
 		margin: 0.3rem;
 	}
 	&__room-title {
@@ -64,22 +68,26 @@
 		font-weight: var(--header-title-username-weight);
 	}
 
-	&__subtitle {
-		display: flex;
-
+	&__topic,
+	&__status {
 		color: var(--header-title-status-color);
 
 		font-size: var(--header-title-font-size--subtitle);
 		font-weight: var(--header-title-status-name-weight);
+	}
+
+	&__topic {
+		overflow: hidden;
+
+		width: 100%;
+
+		text-overflow: ellipsis;
+	}
+
+	&__status {
+		display: flex;
+
 		align-items: center;
-
-		&-topic {
-			overflow: hidden;
-
-			width: 100%;
-
-			text-overflow: ellipsis;
-		}
 
 		&-visual-status {
 			text-transform: capitalize;
@@ -157,7 +165,7 @@
 	transition: transform 0.2s ease-out 0.1s;
 	will-change: transform;
 
-	& i {
+	& .burger__line {
 		display: block;
 
 		width: 20px;
@@ -188,7 +196,7 @@
 		line-height: 18px;
 	}
 
-	&.menu-opened i {
+	&.menu-opened .burger__line {
 		&:nth-child(1),
 		&:nth-child(3) {
 			transform-origin: 50%, 50%, 0;

@@ -221,7 +221,7 @@ Template.integrationsOutgoing.events({
 		$(e.currentTarget).closest('button').addClass('expand').removeClass('collapse').find('span').text(TAPi18n.__('Expand'));
 	},
 
-	'click .rc-header__section--button > .delete': () => {
+	'click .rc-header__section-button > .delete': () => {
 		const params = Template.instance().data.params();
 
 		swal({
@@ -263,7 +263,7 @@ Template.integrationsOutgoing.events({
 		$('.CodeMirror')[0].CodeMirror.refresh();
 	},
 
-	'click .rc-header__section--button > .save': () => {
+	'click .rc-header__section-button > .save': () => {
 		const event = $('[name=event]').val().trim();
 		const enabled = $('[name=enabled]:checked').val().trim();
 		const name = $('[name=name]').val().trim();

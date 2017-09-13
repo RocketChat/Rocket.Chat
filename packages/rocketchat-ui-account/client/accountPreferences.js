@@ -187,7 +187,7 @@ Template.accountPreferences.onRendered(function() {
 });
 
 Template.accountPreferences.events({
-	'click .rc-header__section--button .save'(e, t) {
+	'click .rc-header__section-button .save'(e, t) {
 		t.save();
 	},
 	'change input[name=useEmojis]'(e, t) {

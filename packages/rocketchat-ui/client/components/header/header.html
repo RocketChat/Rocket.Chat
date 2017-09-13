@@ -1,8 +1,9 @@
 <template name="header">
 	<header class="rc-header">
 		{{> burger}}
-		<div class="rc-header__title">
-			{{#if isChannel}}
+		{{#if isChannel}}
+			<!-- This still needs better naming -->
+			<div class="rc-header__room-info">
 				{{#if showToggleFavorite}}
 					<a href="#favorite" class="rc-header__toggle-favorite {{state}}">{{> icon block="rc-header__icon" icon="star"}}</a>
 				{{/if}}
@@ -17,14 +18,14 @@
 
 				<div class="rc-header__room-title">
 					<span class="rc-header__channel-name">{{> icon block="rc-header__icon" icon=channelIcon}}{{roomName}}</span>
-					<div class="rc-header__subtitle">
-						{{#if isDirect}}
-							<div class="rc-header__subtitle-bullet rc-header__subtitle-bullet--{{userStatus}}" title="{{userStatus}}"></div>
-							<div class="rc-header__subtitle-visual-status">{{userStatus}}</div>
-						{{else}}
-							<span class="rc-header__subtitle-topic">{{{RocketChatMarkdown roomTopic}}}</span>
-						{{/if}}
-						</div>
+					{{#if isDirect}}
+						<span class="rc-header__status">
+							<div class="rc-header__status-bullet rc-header__status-bullet--{{userStatus}}" title="{{userStatus}}"></div>
+							<div class="rc-header__status-visual-status">{{userStatus}}</div>
+						</span>
+					{{else}}
+						<span class="rc-header__topic">{{{RocketChatMarkdown roomTopic}}}</span>
+					{{/if}}
 				</div>
 
 				{{#if secondaryName}}
@@ -36,20 +37,19 @@
 				{{#if isTranslated}}
 					<i class="icon-language" aria-label="{{_ "Translated"}}"></i>
 				{{/if}}
-			{{/if}}
+			</div>
+		{{/if}}
 
-			{{#if isSection}}
-				<span class="rc-header__section--title">{{_ sectionName}}</span>
-			{{/if}}
-		</div>
+		{{#if isSection}}
+			<span class="rc-header__section-title">{{_ sectionName}}</span>
+		{{/if}}
 
 		{{#if buttons}}
 			{{> Template.contentBlock}}
 		{{/if}}
 
 		{{#unless isChannel}}
-			<div class="rc-header__section--help">
-			</div>
+			<div class="rc-header__section-help"></div>
 		{{/unless}}
 
 
