@@ -19,10 +19,17 @@ class MarkdownClass {
 		const message = {
 			html: _.escapeHTML(text)
 		};
-		return this.parseNotEscaped(message).html;
+		return this.parseMessageNotEscaped(message).html;
 	}
 
-	parseNotEscaped(message) {
+	parseNotEscaped(text) {
+		const message = {
+			html: text
+		};
+		return this.parseMessageNotEscaped(message).html;
+	}
+
+	parseMessageNotEscaped(message) {
 		const parser = RocketChat.settings.get('Markdown_Parser');
 		if (typeof parsers[parser] === 'function') {
 			return parsers[parser](message);
@@ -37,7 +44,7 @@ RocketChat.Markdown = Markdown;
 // renderMessage already did html escape
 const MarkdownMessage = (message) => {
 	if (_.trim(message != null ? message.html : undefined)) {
-		message = Markdown.parseNotEscaped(message);
+		message = Markdown.parseMessageNotEscaped(message);
 	}
 
 	return message;
