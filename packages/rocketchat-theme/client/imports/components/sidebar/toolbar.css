@@ -90,3 +90,9 @@
 		font-size: 1rem;
 	}
 }
+
+@media (width <= 400px) {
+	.toolbar {
+		padding: 0 var(--sidebar-small-default-padding) var(--sidebar-small-default-padding);
+	}
+}
