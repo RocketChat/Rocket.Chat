@@ -207,6 +207,10 @@
 }
 
 @media (max-width: 780px) {
+	.rc-header {
+		max-width: 100vw;
+	}
+
 	.burger {
 		display: inline-block;
 		visibility: visible;
