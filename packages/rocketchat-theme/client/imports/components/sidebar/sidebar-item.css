@@ -75,6 +75,9 @@
 
 		border-radius: var(--sidebar-item-user-status-radius);
 
+		top: 50%;
+		transform: translateY(-50%);
+
 		&--online {
 			background-color: var(--status-online);
 		}
@@ -113,6 +116,10 @@
 @media (width <= 400px) {
 	.sidebar-item {
 		padding-left: 0;
+
+		& .badge {
+			margin: 0 0 0 3px;
+		}
 
 		&__user-status {
 			right: calc(100% + var(--sidebar-small-item-user-status-size));

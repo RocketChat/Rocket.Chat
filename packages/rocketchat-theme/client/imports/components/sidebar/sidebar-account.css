@@ -135,6 +135,7 @@
 @media (width <= 400px) {
 	.sidebar__account {
 		margin: 0 0 5px;
+		padding: 5px var(--sidebar-small-default-padding);
 
 		&-thumb {
 
@@ -178,29 +179,29 @@
 
 		&.rc-popover__item {
 
-		&--online {
-			& .rc-icon {
-				color: var(--status-online);
+			&--online {
+				& .rc-icon {
+					color: var(--status-online);
+				}
 			}
-		}
 
-		&--away {
-			& .rc-icon {
-				color: var(--status-away);
+			&--away {
+				& .rc-icon {
+					color: var(--status-away);
+				}
 			}
-		}
 
-		&--busy {
-			& .rc-icon {
-				color: var(--status-busy);
+			&--busy {
+				& .rc-icon {
+					color: var(--status-busy);
+				}
 			}
-		}
 
-		&--offline {
-			& .rc-icon {
-				color: var(--status-invisible);
+			&--offline {
+				& .rc-icon {
+					color: var(--status-invisible);
+				}
 			}
 		}
-	}
 	}
 }
