@@ -85,13 +85,13 @@
 
 		cursor: text;
 
-		line-height: 20px;
-
 		transition: background-color 0.3s;
 
 		border-width: var(--message-box-container-border-width);
 		border-color: var(--message-box-container-border-color);
 		border-radius: var(--message-box-container-border-radius);
+
+		line-height: 20px;
 		align-items: center;
 
 		&.editing {

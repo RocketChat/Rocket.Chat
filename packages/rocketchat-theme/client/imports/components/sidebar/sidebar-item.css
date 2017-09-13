@@ -68,15 +68,16 @@
 
 	&__user-status {
 		position: absolute;
+
+		top: 50%;
 		left: 4px;
 
 		width: var(--sidebar-item-user-status-size);
 		height: var(--sidebar-item-user-status-size);
 
-		border-radius: var(--sidebar-item-user-status-radius);
-
-		top: 50%;
 		transform: translateY(-50%);
+
+		border-radius: var(--sidebar-item-user-status-radius);
 
 		&--online {
 			background-color: var(--status-online);

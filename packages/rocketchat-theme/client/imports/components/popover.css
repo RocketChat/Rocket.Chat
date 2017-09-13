@@ -23,29 +23,31 @@
 .rc-popover {
 	position: fixed;
 	z-index: 9999;
-	display: none;
 
-	top:0;
-	left:0;
+	top: 0;
+	left: 0;
+
+	display: none;
 
 	width: 100vw;
 	height: 100vh;
 
 	&__content {
 		position: absolute;
+
 		display: flex;
 
 		padding: var(--popover-padding);
 
+		animation: dropdown-show 0.1s cubic-bezier(0.45, 0.05, 0.55, 0.95);
+
 		white-space: nowrap;
+
+		opacity: 0;
 
 		border-radius: var(--popover-radius);
 		background-color: var(--popover-background);
 		box-shadow: 0 0 2px 0 rgba(47, 52, 61, 0.08), 0 0 12px 0 rgba(47, 52, 61, 0.12);
-
-		opacity: 0;
-
-		animation: dropdown-show 0.1s cubic-bezier(0.45, 0.05, 0.55, 0.95);
 	}
 
 	&--show {
@@ -132,11 +134,13 @@
 @media (width <= 400px) {
 	.rc-popover {
 		& .rc-popover__content {
-			bottom: 0;
 			top: initial !important;
+			bottom: 0;
 			left: 0 !important;
+
 			width: calc(100vw - 16px) !important;
 			margin: 8px !important;
+
 			animation: dropup-show 0.5s cubic-bezier(0.45, 0.05, 0.55, 0.95);
 		}
 	}
