@@ -83,11 +83,6 @@
 
 		width: var(--sidebar-small-width);
 
-		&__header {
-			height: auto;
-			padding: var(--sidebar-small-default-padding);
-		}
-
 		& .unread-rooms,
 		& .rooms-list {
 			padding: 0 var(--sidebar-small-default-padding)  var(--sidebar-small-default-padding)  var(--sidebar-small-default-padding);
