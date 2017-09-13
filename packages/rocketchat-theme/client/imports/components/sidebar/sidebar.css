@@ -66,10 +66,6 @@
 	& .unread-rooms {
 		display: none;
 	}
-
-	& .rooms-list {
-		padding: 0 calc(var(--sidebar-default-padding) / 3);
-	}
 }
 
 @media (width < 780px) {
@@ -97,11 +93,6 @@
 		&__header {
 			height: auto;
 			padding: var(--sidebar-small-default-padding);
-		}
-
-		& .unread-rooms,
-		& .rooms-list {
-			padding: 0 var(--sidebar-small-default-padding)  var(--sidebar-small-default-padding)  var(--sidebar-small-default-padding);
 		}
 
 		&__footer {
