@@ -1,3 +1,5 @@
+/* globals popover */
+
 Template.accountBox.helpers({
 	myUserInfo() {
 		if (Meteor.user() == null && RocketChat.settings.get('Accounts_AllowAnonymousRead')) {
@@ -26,14 +28,6 @@ Template.accountBox.helpers({
 		};
 	},
 
-	showAdminOption() {
-		return RocketChat.authz.hasAtLeastOnePermission(['view-statistics', 'view-room-administration', 'view-user-administration', 'view-privileged-setting' ]) || (RocketChat.AdminBox.getOptions().length > 0);
-	},
-
-	registeredMenus() {
-		return AccountBox.getItems();
-	},
-
 	isAnonymous() {
 		if (Meteor.user() == null && RocketChat.settings.get('Accounts_AllowAnonymousRead')) {
 			return 'disabled';
@@ -42,48 +36,95 @@ Template.accountBox.helpers({
 });
 
 Template.accountBox.events({
-	'click [data-action="set-state"]'(e) {
-		e.preventDefault();
-		AccountBox.setStatus(e.currentTarget.dataset.status);
-		$('[data-popover="anchor"]:checked').prop('checked', false);
-		RocketChat.callbacks.run('userStatusManuallySet', e.currentTarget.dataset.status);
-	},
-
-	'click [data-action="open"]'(e) {
-		e.preventDefault();
-		$('[data-popover="anchor"]:checked').prop('checked', false);
-
-		const open = e.currentTarget.dataset.open;
-
-		switch (open) {
-			case 'account':
-				SideNav.setFlex('accountFlex');
-				SideNav.openFlex();
-				FlowRouter.go('account');
-				break;
-			case 'logout':
-				const user = Meteor.user();
-				Meteor.logout(() => {
-					RocketChat.callbacks.run('afterLogoutCleanUp', user);
-					Meteor.call('logoutCleanUp', user);
-					FlowRouter.go('home');
-				});
-				break;
-			case 'administration':
-				SideNav.setFlex('adminFlex');
-				SideNav.openFlex();
-				FlowRouter.go('admin-info');
-				break;
+	'click .sidebar__account.active'() {
+		let adminOption;
+		if (RocketChat.authz.hasAtLeastOnePermission(['view-statistics', 'view-room-administration', 'view-user-administration', 'view-privileged-setting' ]) || (RocketChat.AdminBox.getOptions().length > 0)) {
+			adminOption = {
+				icon: 'customize',
+				name: t('Administration'),
+				type: 'open',
+				id: 'administration'
+			};
 		}
 
-		if (this.href) {
-			FlowRouter.go(this.href);
-		}
+		const accountBox = document.querySelector('.sidebar__account');
 
-		if (this.sideNav != null) {
-			SideNav.setFlex(this.sideNav);
-			SideNav.openFlex();
-		}
+		const config = {
+			popoverClass: 'account',
+			columns: [
+				{
+					groups: [
+						{
+							title: t('User'),
+							items: [
+								{
+									icon: 'circle',
+									name: t('Online'),
+									type: 'set-state',
+									id: 'online',
+									class: 'online'
+								},
+								{
+									icon: 'circle',
+									name: t('Away'),
+									type: 'set-state',
+									id: 'away',
+									class: 'away'
+								},
+								{
+									icon: 'circle',
+									name: t('Busy'),
+									type: 'set-state',
+									id: 'busy',
+									class: 'busy'
+								},
+								{
+									icon: 'circle',
+									name: t('Invisible'),
+									type: 'set-state',
+									id: 'offline',
+									class: 'offline'
+								}
+							]
+						},
+						{
+							items: AccountBox.getItems().map(item => {
+								return {
+									icon: item.icon,
+									name: t(item.name),
+									type: 'open',
+									id: item.name
+								};
+							}).concat([
+								adminOption,
+								{
+									icon: 'user',
+									name: t('My_Account'),
+									type: 'open',
+									id: 'account'
+								},
+								{
+									icon: 'sign-out',
+									name: t('Logout'),
+									type: 'open',
+									id: 'logout'
+								}
+							])
+						}
+
+					]
+				}
+			],
+			position: {
+				top: accountBox.offsetHeight + parseInt(getComputedStyle(accountBox)['padding-bottom'].replace('px', '')),
+				left: parseInt(getComputedStyle(accountBox)['padding-left'].replace('px', ''))
+			},
+			customCSSProperties: {
+				width: `${ accountBox.offsetWidth - parseInt(getComputedStyle(accountBox)['padding-left'].replace('px', '')) * 2 }px`
+			}
+		};
+
+		popover.open(config);
 	}
 });
 

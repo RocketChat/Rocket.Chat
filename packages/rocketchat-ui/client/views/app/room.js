@@ -539,13 +539,42 @@ Template.room.events({
 		Template.instance().atBottom = true;
 		return chatMessages[RocketChat.openedRoom].input.focus();
 	},
-
-	'click .message [data-message-action]'(e, t) {
-		const button = RocketChat.MessageAction.getButtonById(e.currentTarget.dataset.messageAction);
-		if ((button != null ? button.action : undefined) != null) {
-			popover.close();
-			button.action.call(this, e, t);
+	'click .message-actions__menu'(e, i) {
+		let context = $(e.target).parents('.message').data('context');
+		if (!context) {
+			context = 'message';
 		}
+
+		const [, message] = this._arguments;
+		const items = RocketChat.MessageAction.getButtons(message, context, 'menu').map(item => {
+			return {
+				icon: item.icon,
+				name: t(item.label),
+				type: 'message-action',
+				id: item.id
+			};
+		});
+
+		const config = {
+			columns: [
+				{
+					groups: [
+						{
+							items
+						}
+					]
+				}
+			],
+			instance: i,
+			data: this,
+			mousePosition: {
+				x: e.clientX,
+				y: e.clientY
+			},
+			activeElement: $(e.currentTarget).parents('.message')[0]
+		};
+
+		popover.open(config);
 	},
 
 	'click .mention-link'(e, instance) {

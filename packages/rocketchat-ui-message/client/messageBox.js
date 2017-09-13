@@ -1,4 +1,4 @@
-/* globals fileUpload KonchatNotification chatMessages */
+/* globals fileUpload KonchatNotification chatMessages popover */
 import toastr from 'toastr';
 import moment from 'moment';
 
@@ -134,29 +134,6 @@ const methods = {
 	actions() {
 		const groups = RocketChat.messageBox.actions.get();
 		return Object.keys(groups).reduce((ret, el) => ret.concat(groups[el]), []);
-	},
-	columns() {
-		const groups = RocketChat.messageBox.actions.get();
-		const sorted = Object.keys(groups).sort((a, b) => groups[b].length - groups[a].length);
-		const totalColumn = sorted.reduce((total, key) => total + groups[key].length, 0);
-		const totalPerColumn = Math.ceil(totalColumn / 2);
-		const columns = [];
-
-		let counter = 0;
-		let index = 0;
-		sorted.forEach(key => {
-			const actions = groups[key];
-			columns[index] = columns[index] || [];
-			counter += actions.length;
-			columns[index].push({name: key, actions});
-
-			if (counter > totalPerColumn) {
-				counter = 0;
-				index++;
-			}
-		});
-
-		return columns;
 	}
 };
 
@@ -445,8 +422,43 @@ Template.messageBox.events({
 	},
 	'click .js-md'(e, t) {
 		applyMd.apply(this, [e, t]);
-	}
+	},
+	'click .rc-message-box__action-menu'(e) {
+		const groups = RocketChat.messageBox.actions.get();
 
+		const config = {
+			popoverClass: 'message-box',
+			columns: [
+				{
+					groups: Object.keys(groups).map(group => {
+						const items = [];
+						groups[group].forEach(item => {
+							items.push({
+								icon: item.icon,
+								name: t(item.label),
+								type: 'messagebox-action',
+								id: item.id
+							});
+						});
+						return {
+							title: t(group),
+							items
+						};
+					})
+				}
+			],
+			mousePosition: {
+				x: document.querySelector('.rc-message-box__textarea').getBoundingClientRect().right + 10,
+				y: document.querySelector('.rc-message-box__textarea').getBoundingClientRect().top
+			},
+			data: {
+				rid: this._id
+			},
+			activeElement: e.currentTarget
+		};
+
+		popover.open(config);
+	}
 });
 
 Template.messageBox.onRendered(function() {
