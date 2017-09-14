@@ -126,7 +126,7 @@ RocketChat.API.v1.addRoute(['dm.members', 'im.members'], { authRequired: true },
 		const findResult = findDirectMessageRoom(this.requestParams(), this.user);
 
 		const { offset, count } = this.getPaginationItems();
-		const { sort } = this.parseJsonQuery();
+		const { sort, fields } = this.parseJsonQuery();
 
 		const members = RocketChat.models.Rooms.processQueryOptionsOnResult(Array.from(findResult.room.usernames), {
 			sort: sort ? sort : -1,
@@ -134,11 +134,14 @@ RocketChat.API.v1.addRoute(['dm.members', 'im.members'], { authRequired: true },
 			limit: count
 		});
 
+		const ourFields = Object.assign({ _id: 1, username: 1, status: 1 }, fields, RocketChat.API.v1.defaultFieldsToExclude);
+		const users = RocketChat.models.Users.find({ username: { $in: members } }, { fields: ourFields }).fetch();
+
 		return RocketChat.API.v1.success({
-			members,
+			members: users,
 			count: members.length,
 			offset,
-			total: findResult.room.usernames
+			total: findResult.room.usernames.length
 		});
 	}
 });
