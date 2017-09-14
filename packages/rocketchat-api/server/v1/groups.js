@@ -366,7 +366,7 @@ RocketChat.API.v1.addRoute('groups.members', { authRequired: true }, {
 	get() {
 		const findResult = findPrivateGroupByIdOrName({ params: this.requestParams(), userId: this.userId });
 		const { offset, count } = this.getPaginationItems();
-		const { sort, fields } = this.parseJsonQuery();
+		const { sort } = this.parseJsonQuery();
 
 		const members = RocketChat.models.Rooms.processQueryOptionsOnResult(Array.from(findResult._room.usernames), {
 			sort: sort ? sort : -1,
@@ -374,8 +374,8 @@ RocketChat.API.v1.addRoute('groups.members', { authRequired: true }, {
 			limit: count
 		});
 
-		const ourFields = Object.assign({ _id: 1, username: 1, status: 1 }, fields, RocketChat.API.v1.defaultFieldsToExclude);
-		const users = RocketChat.models.Users.find({ username: { $in: members } }, { fields: ourFields }).fetch();
+		const users = RocketChat.models.Users.find({ username: { $in: members } },
+			{ fields: { _id: 1, username: 1, name: 1, status: 1, utcOffset: 1 } }).fetch();
 
 		return RocketChat.API.v1.success({
 			members: users,
