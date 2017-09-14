@@ -59,10 +59,6 @@
 		}
 	}
 
-	&__header {
-		padding: var(--sidebar-default-padding);
-	}
-
 	& .unread-rooms {
 		display: none;
 	}
@@ -89,11 +85,6 @@
 
 		width: var(--sidebar-small-width);
 		max-width: var(--sidebar-small-width);
-
-		&__header {
-			height: auto;
-			padding: var(--sidebar-small-default-padding);
-		}
 
 		&__footer {
 			display: none;
