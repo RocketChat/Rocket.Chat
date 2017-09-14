@@ -2,7 +2,7 @@
 import 'babel-polyfill';
 import assert from 'assert';
 
-import Mentions from '../Mentions';
+import Mentions from '../client/Mentions';
 let mention;
 beforeEach(function functionName() {
 	mention = new Mentions({
