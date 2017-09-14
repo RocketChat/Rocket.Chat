@@ -29,6 +29,7 @@
 
 		width: var(--sidebar-account-thumb-size);
 		height: var(--sidebar-account-thumb-size);
+		margin: 0 0.5rem;
 	}
 
 	&-data {
@@ -39,7 +40,7 @@
 		flex-direction: column;
 		flex: 1;
 
-		margin-left: 1rem;
+		margin: 0 0.5rem;
 	}
 
 	&-username {
@@ -61,6 +62,7 @@
 
 	&-visual-status {
 		max-width: 124px;
+		margin-right: 8px;
 
 		user-select: none;
 
@@ -69,6 +71,8 @@
 
 	&-status {
 		display: flex;
+
+		margin: 0 -0.25rem;
 
 		color: var(--sidebar-account-status-color);
 
@@ -80,7 +84,7 @@
 
 		width: var(--sidebar-account-status-bullet-size);
 		height: var(--sidebar-account-status-bullet-size);
-		margin: 0.25rem 0.5rem 0.25rem 0;
+		margin: 0.25rem;
 
 		border-radius: var(--sidebar-account-status-bullet-radius);
 
@@ -109,7 +113,6 @@
 
 		position: relative;
 
-		margin-right: -9px;
 		padding: 0;
 
 		cursor: pointer;
@@ -133,10 +136,14 @@
 	}
 }
 
+.rtl .sidebar__account .rc-popover {
+	right: 0;
+	left: initial;
+}
+
 @media (width <= 400px) {
 	.sidebar__account {
 		margin: 0 0 5px;
-		padding: 5px var(--sidebar-small-default-padding);
 
 		&-thumb {
 
@@ -155,7 +162,7 @@
 
 		&-username {
 			width: auto;
-			margin: 0  0.65rem;
+			margin: 0 0.65rem;
 
 			font-weight: var(--sidebar-small-account-username-weight);
 		}
