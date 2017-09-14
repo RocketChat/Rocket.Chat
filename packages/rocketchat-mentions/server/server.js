@@ -1,5 +1,5 @@
 import _ from 'underscore';
-import MentionsServer from './MentionsServer';
+import MentionsServer from './Mentions';
 
 const mention = new MentionsServer({
 	pattern: () => RocketChat.settings.get('UTF8_Names_Validation'),
