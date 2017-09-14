@@ -3236,8 +3236,8 @@
 			overflow: auto;
 
 			& tr {
-				background-color: #ffffff;
 				border-top: 1px solid #cccccc;
+				background-color: #ffffff;
 
 				&:nth-child(2n) {
 					background-color: #f6f8fa;
@@ -3250,6 +3250,7 @@
 				& th,
 				& td {
 					padding: 6px 13px;
+
 					border: 1px solid #dddddd;
 				}
 			}
@@ -3257,10 +3258,11 @@
 
 		& > hr {
 			height: 3px;
-			padding: 0;
 			margin: 12px 0;
-			background-color: #e7e7e7;
+			padding: 0;
+
 			border: 0;
+			background-color: #e7e7e7;
 		}
 	}
 
@@ -3276,17 +3278,20 @@
 }
 
 .rc-old .image-labels {
-	margin: 5px 0 25px;
 	display: flex;
+
+	margin: 5px 0 25px;
 	flex-wrap: wrap;
 }
 
 .rc-old .image-label {
-	padding: 9px 4px;
-	border-radius: 2px;
-	font-size: 12px;
-	margin-right: 5px;
 	margin-top: 5px;
+	margin-right: 5px;
+	padding: 9px 4px;
+
+	border-radius: 2px;
+
+	font-size: 12px;
 
 	&:last-child {
 		margin-right: 0;
@@ -3537,11 +3542,12 @@ body:not(.is-cordova) {
 			}
 
 			& .section {
+				margin: 20px;
+				padding: 20px;
+
 				border: 1px solid #dddddd;
 				border-radius: 4px;
 				background-color: #ffffff;
-				padding: 20px;
-				margin: 20px;
 			}
 
 			& > .animated {
@@ -5188,18 +5194,20 @@ body:not(.is-cordova) {
 	&__content {
 		display: flex;
 		flex-direction: column;
+
 		height: 100%;
 		padding: 20px;
 	}
 
 	&__header {
 		flex: 0 0 auto;
+
 		padding-bottom: 10px;
 	}
 
 	&__result {
+		overflow-y: auto;
 		flex: 1 1 auto;
-    overflow-y: auto;
 	}
 
 	& .message-cog-container {

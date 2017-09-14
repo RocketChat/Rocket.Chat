@@ -10,15 +10,15 @@ class SideNav extends Page {
 	// Account box
 	get accountBoxUserName() { return browser.element('.sidebar__account-username'); }
 	get accountBoxUserAvatar() { return browser.element('.sidebar__account .avatar-image'); }
-	get accountMenu() { return browser.element('.sidebar__account-menu'); }
+	get accountMenu() { return browser.element('.sidebar__account'); }
 	get popOverContent() { return browser.element('.rc-popover__content'); }
-	get statusOnline() { return browser.element('[data-status="online"]'); }
-	get statusAway() { return browser.element('[data-status="away"]'); }
-	get statusBusy() { return browser.element('[data-status="busy"]'); }
-	get statusOffline() { return browser.element('[data-status="offline"]'); }
-	get account() { return browser.element('[data-open="account"]'); }
-	get admin() { return browser.element('[data-open="administration"]'); }
-	get logout() { return browser.element('[data-open="logout"]'); }
+	get statusOnline() { return browser.element('[data-id="online"]'); }
+	get statusAway() { return browser.element('[data-id="away"]'); }
+	get statusBusy() { return browser.element('[data-id="busy"]'); }
+	get statusOffline() { return browser.element('[data-id="offline"]'); }
+	get account() { return browser.element('[data-id="account"][data-type="open"]'); }
+	get admin() { return browser.element('[data-id="administration"][data-type="open"]'); }
+	get logout() { return browser.element('[data-id="logout"][data-type="open"]'); }
 	get sideNavBar() { return browser.element('.sidebar'); }
 
 	// Toolbar
