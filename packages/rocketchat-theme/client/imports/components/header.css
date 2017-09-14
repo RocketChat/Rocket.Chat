@@ -68,6 +68,14 @@
 		font-weight: var(--header-title-username-weight);
 	}
 
+	&__username {
+		display: inline;
+
+		color: var(--header-title-status-color);
+
+		font-weight: var(--header-title-status-name-weight);
+	}
+
 	&__topic,
 	&__status {
 		color: var(--header-title-status-color);

@@ -17,9 +17,14 @@
 				{{/if}}
 
 				<div class="rc-header__room-title">
-					<span class="rc-header__channel-name">{{> icon block="rc-header__icon" icon=channelIcon}}{{roomName}}</span>
+					{{#unless secondaryName}}
+						<span class="rc-header__channel-name">{{> icon block="rc-header__icon" icon=channelIcon}}{{roomName}}</span>
+					{{else}}
+						<div class="rc-header__channel-name">{{roomName}} <div class="rc-header__username">{{> icon block="rc-header__icon" icon=channelIcon}}{{secondaryName}}</div></div>
+					{{/unless}}
+
 					{{#if isDirect}}
-						<span class="rc-header__status">
+					<span class="rc-header__status">
 							<div class="rc-header__status-bullet rc-header__status-bullet--{{userStatus}}" title="{{userStatus}}"></div>
 							<div class="rc-header__status-visual-status">{{userStatus}}</div>
 						</span>
@@ -28,9 +33,6 @@
 					{{/if}}
 				</div>
 
-				{{#if secondaryName}}
-					<span class="secondary-name">@{{secondaryName}}</span>
-				{{/if}}
 				{{#if sentimentSmile}}
 					<span class="sentiment">{{sentimentSmile}}</span>
 				{{/if}}
