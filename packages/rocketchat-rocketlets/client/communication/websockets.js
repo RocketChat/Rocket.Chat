@@ -11,8 +11,8 @@ export class RocketletWebsocketReceiver {
 	}
 
 	onRocketletAdded(rocketletId) {
-		RocketChat.API.get(`rocketlets/${ rocketletId }`).then((result) => {
-			this.orch.parseAndLoadLanguages(result.rocketlet.languages);
+		RocketChat.API.get(`rocketlets/${ rocketletId }/languages`).then((result) => {
+			this.orch.parseAndLoadLanguages(result.languages);
 		});
 	}
 

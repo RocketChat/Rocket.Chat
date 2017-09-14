@@ -5,7 +5,13 @@ class RocketletClientOrchestrator {
 		this.ws = new RocketletWebsocketReceiver(this);
 
 		this._addAdminMenuOption();
-		setTimeout(() => this._loadLanguages(), 500);
+
+		const loadLangs = setInterval(() => {
+			if (Meteor.user()) {
+				clearInterval(loadLangs);
+				this._loadLanguages();
+			}
+		}, 50);
 	}
 
 	getWsListener() {
@@ -54,5 +60,12 @@ FlowRouter.route('/admin/rocketlets', {
 	name: 'rocketlets',
 	action() {
 		BlazeLayout.render('main', { center: 'rocketlets' });
+	}
+});
+
+FlowRouter.route('/admin/rocketlets/:rocketletId', {
+	name: 'rocketlet-manage',
+	action() {
+		BlazeLayout.render('main', { center: 'rocketletManage' });
 	}
 });
