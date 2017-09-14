@@ -76,7 +76,6 @@ export class RocketletsRestApi {
 
 				if (prl) {
 					const info = prl.getInfo();
-					info.languages = prl.getStorageItem().languageFiles;
 
 					return { success: true, rocketlet: info };
 				} else {
@@ -93,6 +92,111 @@ export class RocketletsRestApi {
 				});
 
 				return { success: false, item };
+			}
+		});
+
+		this.api.addRoute(':id/languages', { authRequired: true }, {
+			get() {
+				console.log(`Getting ${ this.urlParams.id }'s languages..`);
+				const prl = manager.getOneById(this.urlParams.id);
+
+				if (prl) {
+					const languages = prl.getStorageItem().languageFiles || {};
+
+					return { success: true, languages };
+				} else {
+					return RocketChat.API.v1.notFound(`No Rocketlet found by the id of: ${ this.urlParams.id }`);
+				}
+			}
+		});
+
+		this.api.addRoute(':id/settings', { authRequired: true }, {
+			get() {
+				console.log(`Getting ${ this.urlParams.id }'s settings..`);
+				const prl = manager.getOneById(this.urlParams.id);
+
+				if (prl) {
+					const settings = Object.assign({}, prl.getStorageItem().settings);
+
+					Object.keys(settings).forEach((k) => {
+						if (settings[k].hidden) {
+							delete settings[k];
+						}
+					});
+
+					return { success: true, settings };
+				} else {
+					return RocketChat.API.v1.notFound(`No Rocketlet found by the id of: ${ this.urlParams.id }`);
+				}
+			},
+			post() {
+				console.log(`Updating ${ this.urlParams.id }'s settings..`);
+				if (!this.bodyParams || !this.bodyParams.settings) {
+					return RocketChat.API.v1.failure('The settings to update must be present.');
+				}
+
+				const prl = manager.getOneById(this.urlParams.id);
+
+				if (!prl) {
+					return RocketChat.API.v1.notFound(`No Rocketlet found by the id of: ${ this.urlParams.id }`);
+				}
+
+				const settings = prl.getStorageItem().settings;
+
+				const updated = [];
+				this.bodyParams.settings.forEach((s) => {
+					if (settings[s.id]) {
+						Promise.await(manager.getSettingsManager().updateRocketletSetting(this.urlParams.id, s));
+						// Updating?
+						updated.push(s);
+					}
+				});
+
+				return { success: true, updated };
+			}
+		});
+
+		this.api.addRoute(':id/settings/:settingId', { authRequired: true }, {
+			get() {
+				console.log(`Getting the Rocketlet ${ this.urlParams.id }'s setting ${ this.urlParams.settingId }`);
+
+				try {
+					const setting = manager.getSettingsManager().getRocketletSetting(this.urlParams.id, this.urlParams.settingId);
+
+					return {
+						success: true,
+						setting
+					};
+				} catch (e) {
+					if (e.message.includes('No setting found')) {
+						return RocketChat.API.v1.notFound(`No Setting found on the Rocketlet by the id of: "${ this.urlParams.settingId }"`);
+					} else if (e.message.includes('No Rocketlet found')) {
+						return RocketChat.API.v1.notFound(`No Rocketlet found by the id of: ${ this.urlParams.id }`);
+					} else {
+						return RocketChat.API.v1.failure(e.message);
+					}
+				}
+			},
+			post() {
+				console.log(`Updating the Rocketlet ${ this.urlParams.id }'s setting ${ this.urlParams.settingId }`);
+
+				if (!this.bodyParams.setting) {
+					return RocketChat.API.v1.failure('Setting to update to must be present on the posted body.');
+				}
+
+				try {
+					Promise.await(manager.getSettingsManager().updateRocketletSetting(this.urlParams.id, this.bodyParams.setting));
+
+					return { success: true };
+				} catch (e) {
+					if (e.message.includes('No setting found')) {
+						return RocketChat.API.v1.notFound(`No Setting found on the Rocketlet by the id of: "${ this.urlParams.settingId }"`);
+					} else if (e.message.includes('No Rocketlet found')) {
+						return RocketChat.API.v1.notFound(`No Rocketlet found by the id of: ${ this.urlParams.id }`);
+					} else {
+						return RocketChat.API.v1.failure(e.message);
+					}
+				}
 			}
 		});
 	}

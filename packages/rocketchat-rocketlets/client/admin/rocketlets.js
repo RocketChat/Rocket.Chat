@@ -20,3 +20,15 @@ Template.rocketlets.helpers({
 		return Template.instance().rocketlets.get();
 	}
 });
+
+Template.rocketlets.events({
+	'click .manage'() {
+		const rl = this;
+
+		if (rl && rl.id) {
+			FlowRouter.go(`/admin/rocketlets/${ rl.id }`);
+		} else {
+			// show an error ? I don't think this should ever happen
+		}
+	}
+});
