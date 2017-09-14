@@ -163,11 +163,13 @@ syncUserData = function syncUserData(user, ldapUser) {
 				type: 'image/jpeg'
 			};
 
-			fileStore.insert(file, rs, () => {
-				Meteor.setTimeout(function() {
-					RocketChat.models.Users.setAvatarOrigin(user._id, 'ldap');
-					RocketChat.Notifications.notifyLogged('updateAvatar', {username: user.username});
-				}, 500);
+			Meteor.runAsUser(user._id, () => {
+				fileStore.insert(file, rs, () => {
+					Meteor.setTimeout(function() {
+						RocketChat.models.Users.setAvatarOrigin(user._id, 'ldap');
+						RocketChat.Notifications.notifyLogged('updateAvatar', {username: user.username});
+					}, 500);
+				});
 			});
 		}
 	}

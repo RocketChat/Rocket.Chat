@@ -1,4 +1,6 @@
 .toolbar {
+	padding: 0 var(--sidebar-default-padding) var(--sidebar-default-padding);
+
 	&__wrapper {
 
 		display: flex;
@@ -32,6 +34,12 @@
 
 	&__icon {
 		&--plus {
+			position: absolute;
+			top: 50%;
+			left: 50%;
+
+			transform: translate(-50%, -50%);
+
 			font-size: 1.25rem;
 		}
 	}
@@ -91,5 +99,11 @@
 
 	& .rc-input__icon-svg--magnifier {
 		font-size: 1rem;
+	}
+}
+
+@media (width <= 400px) {
+	.toolbar {
+		padding: 0 var(--sidebar-small-default-padding) var(--sidebar-small-default-padding);
 	}
 }

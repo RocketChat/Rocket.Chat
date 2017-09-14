@@ -68,8 +68,6 @@ Template.body.onRendered(function() {
 	});
 
 	$(document.body).on('click', function(e) {
-		const target = $(e.target);
-
 		if (e.target.tagName === 'A') {
 			const link = e.currentTarget;
 			if (link.origin === s.rtrim(Meteor.absoluteUrl(), '/') && /msg=([a-zA-Z0-9]+)/.test(link.search)) {
@@ -82,10 +80,6 @@ Template.body.onRendered(function() {
 				}
 				return FlowRouter.go(link.pathname + link.search, null, FlowRouter.current().queryParams);
 			}
-		}
-
-		if ([...target[0].classList].includes('rc-popover') || target.closest('[data-popover="label"], [data-popover="popover"]').length === 0 && target.data('popover') !== 'anchor') {
-			$('[data-popover="anchor"]:checked').prop('checked', false);
 		}
 	});
 
