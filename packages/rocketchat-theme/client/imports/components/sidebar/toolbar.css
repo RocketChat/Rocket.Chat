@@ -1,6 +1,11 @@
 .toolbar {
+	padding: 0 var(--sidebar-default-padding) var(--sidebar-default-padding);
+
 	&__wrapper {
+
 		display: flex;
+
+		margin: 0 -0.25rem;
 
 		color: var(--toolbar-placeholder-color);
 	}
@@ -29,11 +34,19 @@
 
 	&__icon {
 		&--plus {
+			position: absolute;
+			top: 50%;
+			left: 50%;
+
+			transform: translate(-50%, -50%);
+
 			font-size: 1.25rem;
 		}
 	}
 
 	& .rc-input {
+		margin: 0 0.25rem;
+
 		&__wrapper {
 			padding: 0;
 
@@ -77,7 +90,7 @@
 	}
 
 	& .rc-button {
-		margin-left: 0.5rem;
+		margin: 0 0.25rem;
 
 		color: var(--color-gray);
 		border-color: #414852;
@@ -86,5 +99,11 @@
 
 	& .rc-input__icon-svg--magnifier {
 		font-size: 1rem;
+	}
+}
+
+@media (width <= 400px) {
+	.toolbar {
+		padding: 0 var(--sidebar-small-default-padding) var(--sidebar-small-default-padding);
 	}
 }
