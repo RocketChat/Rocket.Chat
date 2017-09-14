@@ -5,6 +5,8 @@
 		color: var(--sidebar-flex-back-button-color);
 
 		font-size: 1rem;
+
+		padding: 1rem var(--sidebar-default-padding) 1.5rem;
 	}
 
 	&__back-icon {
@@ -33,6 +35,14 @@
 					color: var(--sidebar-flex-search-placeholder-color);
 				}
 			}
+		}
+	}
+}
+
+@media (width <= 400px) {
+	.sidebar-flex {
+		&__back-button {
+			padding: 1rem calc(var(--sidebar-small-default-padding) - 8px) 1.5rem;
 		}
 	}
 }
