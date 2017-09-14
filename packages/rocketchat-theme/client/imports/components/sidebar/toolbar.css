@@ -2,7 +2,10 @@
 	padding: 0 var(--sidebar-default-padding) var(--sidebar-default-padding);
 
 	&__wrapper {
+
 		display: flex;
+
+		margin: 0 -0.25rem;
 
 		color: var(--toolbar-placeholder-color);
 	}
@@ -42,6 +45,8 @@
 	}
 
 	& .rc-input {
+		margin: 0 0.25rem;
+
 		&__wrapper {
 			padding: 0;
 
@@ -85,7 +90,7 @@
 	}
 
 	& .rc-button {
-		margin-left: 0.5rem;
+		margin: 0 0.25rem;
 
 		color: var(--color-gray);
 		border-color: #414852;
