@@ -3,6 +3,10 @@ RocketChat.API = {
 		return RocketChat.API._jqueryCall('GET', endpoint, params);
 	},
 
+	post(endpoint, params, body) {
+		return RocketChat.API._jqueryCall('POST', endpoint, params, body);
+	},
+
 	_jqueryCall(method, endpoint, params, body) {
 		let query = '';
 		if (params) {
@@ -22,7 +26,7 @@ RocketChat.API = {
 					'X-User-Id': localStorage['Meteor.userId'],
 					'X-Auth-Token': localStorage['Meteor.loginToken']
 				},
-				data: body,
+				data: JSON.stringify(body),
 				success: function _rlGetSuccess(result) {
 					resolve(result);
 				},

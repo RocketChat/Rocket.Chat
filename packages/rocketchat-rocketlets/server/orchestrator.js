@@ -64,6 +64,6 @@ Meteor.startup(function _rocketletServerOrchestrator() {
 	global.Rocketlets = new RocketletServerOrchestrator();
 
 	global.Rocketlets.getManager().load()
-		.then(() => console.log('...done! :)'))
+		.then(() => console.log('...done! ;)'))
 		.catch((err) => console.warn('...failed!', err));
 });

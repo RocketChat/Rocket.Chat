@@ -11,7 +11,7 @@ Package.onUse(function(api) {
 		'templating'
 	]);
 
-	api.use(['reactive-var', 'kadira:flow-router'], 'client');
+	api.use(['reactive-var', 'kadira:flow-router', 'underscore'], 'client');
 
 	api.addFiles('lib/Rocketlets.js', ['client', 'server']);
 
@@ -65,7 +65,9 @@ Package.onUse(function(api) {
 	// Client Admin Management
 	api.addFiles([
 		'client/admin/rocketlets.html',
-		'client/admin/rocketlets.js'
+		'client/admin/rocketlets.js',
+		'client/admin/rocketletManage.html',
+		'client/admin/rocketletManage.js'
 	], 'client');
 
 	api.addFiles('assets/stylesheets/rocketlets.css', 'client');
@@ -79,6 +81,6 @@ Package.onUse(function(api) {
 
 Npm.depends({
 	'busboy': '0.2.13',
-	'temporary-rocketlets-server': '0.1.26',
-	'temporary-rocketlets-ts-definition': '0.6.26'
+	'temporary-rocketlets-server': '0.1.27',
+	'temporary-rocketlets-ts-definition': '0.6.27'
 });
