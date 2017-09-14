@@ -55,6 +55,17 @@ Meteor.startup(function() {
 					KonchatNotification.newMessage(notification.payload.rid);
 				}
 			});
+
+			RocketChat.Notifications.onUser('subscriptions-changed', function(action, sub) {
+				// Do not play new room sound if user is busy
+				if (Session.equals(`user_${ Meteor.userId() }_status`, 'busy')) {
+					return;
+				}
+
+				if (!(FlowRouter.getParam('name') && FlowRouter.getParam('name') === sub.name) && !sub.ls && sub.alert === true) {
+					return KonchatNotification.newRoom(sub.rid);
+				}
+			});
 		}
 	});
 });
