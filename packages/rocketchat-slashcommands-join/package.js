@@ -15,6 +15,6 @@ Package.onUse(function(api) {
 
 	api.use('templating', 'client');
 
-	api.addFiles('client.js', 'client');
-	api.addFiles('server.js', 'server');
+	api.addFiles('client/client.js', 'client');
+	api.addFiles('server/server.js', 'server');
 });
