@@ -2,11 +2,11 @@
 	&__back-button {
 		margin-left: 0.25rem;
 
+		padding: 1rem var(--sidebar-default-padding) 1.5rem;
+
 		color: var(--sidebar-flex-back-button-color);
 
 		font-size: 1rem;
-
-		padding: 1rem var(--sidebar-default-padding) 1.5rem;
 	}
 
 	&__back-icon {
