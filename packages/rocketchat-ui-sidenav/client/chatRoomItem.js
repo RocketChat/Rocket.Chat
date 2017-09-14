@@ -1,5 +1,3 @@
-/* globals KonchatNotification */
-
 Template.chatRoomItem.helpers({
 	roomData() {
 		let name = this.name;
@@ -25,10 +23,6 @@ Template.chatRoomItem.helpers({
 		if (!this.hideUnreadStatus && (FlowRouter.getParam('_id') !== this.rid || !document.hasFocus()) && this.alert) {
 			alertClass = 'sidebar-item__link--active';
 		}
-		// Sound notification
-		if (!(FlowRouter.getParam('name') === this.name) && !this.ls && this.alert === true) {
-			KonchatNotification.newRoom(this.rid);
-		}
 
 		const icon = RocketChat.roomTypes.getIcon(this.t);
 		const avatar = !icon;
@@ -47,9 +41,3 @@ Template.chatRoomItem.helpers({
 		};
 	}
 });
-
-Template.chatRoomItem.onRendered = function() {
-	if (!(FlowRouter.getParam('name') && (FlowRouter.getParam('name') === this.name)) && !this.ls && (this.alert === true)) {
-		return KonchatNotification.newRoom(this.rid);
-	}
-};
