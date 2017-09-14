@@ -174,3 +174,10 @@
 		opacity: 1;
 	}
 }
+
+.rtl .rc-popover {
+	&__item-text {
+		margin-right: 0.25rem;
+		margin-left: auto;
+	}
+}

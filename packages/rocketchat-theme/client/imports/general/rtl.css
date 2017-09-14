@@ -237,7 +237,7 @@
 	}
 
 	& .messages-box {
-		margin: 60px 0 0 20px;
+		margin: 60px 0 0;
 
 		& .new-message {
 			right: 50%;
