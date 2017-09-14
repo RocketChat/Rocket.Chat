@@ -47,7 +47,6 @@ Package.onUse(function(api) {
 	api.addFiles('client/lib/msgTyping.js', 'client');
 	api.addFiles('client/lib/notification.js', 'client');
 	api.addFiles('client/lib/parentTemplate.js', 'client');
-	api.addFiles('client/lib/popover.js', 'client');
 	api.addFiles('client/lib/readMessages.js', 'client');
 	api.addFiles('client/lib/rocket.js', 'client');
 	api.addFiles('client/lib/RoomHistoryManager.js', 'client');
@@ -95,6 +94,7 @@ Package.onUse(function(api) {
 	api.addFiles('client/views/app/userSearch.html', 'client');
 	api.addFiles('client/views/app/videoCall/videoButtons.html', 'client');
 	api.addFiles('client/views/app/videoCall/videoCall.html', 'client');
+	api.addFiles('client/views/app/popover.html', 'client');
 	api.addFiles('client/views/app/photoswipe.html', 'client');
 
 	api.addFiles('client/views/cmsPage.js', 'client');
@@ -112,6 +112,7 @@ Package.onUse(function(api) {
 	api.addFiles('client/views/app/secretURL.js', 'client');
 	api.addFiles('client/views/app/videoCall/videoButtons.js', 'client');
 	api.addFiles('client/views/app/videoCall/videoCall.js', 'client');
+	api.addFiles('client/views/app/popover.js', 'client');
 	api.addFiles('client/views/app/photoswipe.js', 'client');
 
 	api.addFiles('client/components/icon.html', 'client');
