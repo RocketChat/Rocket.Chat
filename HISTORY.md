@@ -1,3 +1,25 @@
+<a name="0.59.0-rc.5"></a>
+# 0.59.0-rc.5 (2017-09-14)
+
+
+### Bug Fixes
+
+- [#8101](https://github.com/RocketChat/Rocket.Chat/pull/8101) Dynamic popover
+- [#8099](https://github.com/RocketChat/Rocket.Chat/pull/8099) Fix setting user avatar on LDAP login
+- [#8059](https://github.com/RocketChat/Rocket.Chat/pull/8059) Not sending email to mentioned users with unchanged preference
+- [#8112](https://github.com/RocketChat/Rocket.Chat/pull/8112) RTL
+- [#8047](https://github.com/RocketChat/Rocket.Chat/pull/8047) Scroll on messagebox
+- [#8122](https://github.com/RocketChat/Rocket.Chat/pull/8122) Settings description not showing
+
+
+<details>
+<summary>Others</summary>
+
+- [#8054](https://github.com/RocketChat/Rocket.Chat/pull/8054) Remove unnecessary returns in cors common
+</details>
+
+
+
 <a name="0.59.0-rc.4"></a>
 # 0.59.0-rc.4 (2017-09-05)
 
