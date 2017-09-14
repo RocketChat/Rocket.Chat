@@ -71,6 +71,8 @@
 
 		&__toolbar-search {
 			bottom: 0;
+
+			padding: 0 var(--sidebar-small-default-padding)  var(--sidebar-small-default-padding)  var(--sidebar-small-default-padding);
 		}
 	}
 }

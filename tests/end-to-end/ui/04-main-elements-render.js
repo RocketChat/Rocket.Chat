@@ -91,7 +91,7 @@ describe('[Main Elements Render]', function() {
 			});
 
 			after(() => {
-				sideNav.accountMenu.click();
+				mainContent.popoverWrapper.click();
 			});
 
 			it('it should show online button', () => {
