@@ -134,7 +134,8 @@
 	--sidebar-background-light-hover: var(--color-gray-light);
 	--sidebar-default-padding: 24px;
 	--sidebar-small-default-padding: 16px;
-	--sidebar-header-padding: var(--sidebar-default-padding);
+	--sidebar-header-padding: 16px;
+	--sidebar-header-small-padding: 12px;
 	--sidebar-footer-height: 70px;
 	--sidebar-footer-padding: var(--sidebar-header-padding);
 	--sidebar-small-header-padding: var(--sidebar-small-default-padding);

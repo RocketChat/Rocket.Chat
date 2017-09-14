@@ -23,13 +23,13 @@
 		font-size: var(--rooms-list-title-text-size);
 		align-items: center;
 
-		&-text {
-			margin: 0 8px;
+		&-text--livechat {
+			flex: 1;
 		}
 	}
 
 	&__empty-room {
-		margin-left: calc(var(--sidebar-default-padding) - calc(var(--sidebar-default-padding) / 3));
+		padding-left: var(--sidebar-default-padding);
 
 		color: var(--rooms-list-empty-text-color);
 
@@ -62,10 +62,6 @@
 	.rooms-list {
 		&__type,
 		&__empty-room {
-			margin-left: 0;
-		}
-
-		&__type {
 			padding: 0 calc(var(--sidebar-small-default-padding) - 4px) 0.5rem calc(var(--sidebar-small-default-padding) - 4px);
 		}
 
