@@ -108,6 +108,7 @@ Template.livechatWindow.onCreated(function() {
 				Livechat.online = true;
 				Livechat.transcript = result.transcript;
 				Livechat.transcriptMessage = result.transcriptMessage;
+				Livechat.showAgentEmail = result.showAgentEmail;
 			}
 			Livechat.videoCall = result.videoCall;
 			Livechat.registrationForm = result.registrationForm;

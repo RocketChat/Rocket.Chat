@@ -73,7 +73,7 @@ Template.messages.helpers({
 			agentData.name = agent.name;
 		}
 
-		if (agent.emails && agent.emails[0] && agent.emails[0].address) {
+		if (Livechat.showAgentEmail && agent.emails && agent.emails[0] && agent.emails[0].address) {
 			agentData.email = agent.emails[0].address;
 		}
 
