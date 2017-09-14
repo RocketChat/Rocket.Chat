@@ -15,6 +15,7 @@ Meteor.methods({
 			offlineSuccessMessage: null,
 			offlineUnavailableMessage: null,
 			displayOfflineForm: null,
+            showAgentEmail: null,
 			videoCall: null
 		};
 
@@ -40,6 +41,7 @@ Meteor.methods({
 		info.color = initSettings.Livechat_title_color;
 		info.enabled = initSettings.Livechat_enabled;
 		info.registrationForm = initSettings.Livechat_registration_form;
+        info.showAgentEmail = initSettings.Livechat_show_agent_email;
 		info.offlineTitle = initSettings.Livechat_offline_title;
 		info.offlineColor = initSettings.Livechat_offline_title_color;
 		info.offlineMessage = initSettings.Livechat_offline_message;
