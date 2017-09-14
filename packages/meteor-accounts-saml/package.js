@@ -11,9 +11,13 @@ Package.on_use(function(api) {
 	api.use(['routepolicy', 'webapp', 'underscore', 'service-configuration'], 'server');
 	api.use(['http', 'accounts-base'], ['client', 'server']);
 
-	api.add_files(['saml_server.js', 'saml_utils.js'], 'server');
-	api.add_files(['saml_rocketchat.js'], 'server');
-	api.add_files('saml_client.js', 'client');
+	api.add_files([
+		'server/saml_server.js',
+		'server/saml_utils.js',
+		'server/saml_rocketchat.js'
+	], 'server');
+
+	api.add_files('client/saml_client.js', 'client');
 });
 
 Npm.depends({
