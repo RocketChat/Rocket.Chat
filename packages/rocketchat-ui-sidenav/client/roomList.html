@@ -5,7 +5,7 @@
 		{{#with rooms}}
 			{{#if shouldAppear .. .}}
 					<h3 class="rooms-list__type">
-						{{_ ../label}}
+						<div class="rooms-list__type-text">{{_ ../label}}</div>
 						{{#with count}}
 							{{#if .}}
 								<span class="badge">{{.}}</span>
