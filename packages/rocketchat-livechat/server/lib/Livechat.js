@@ -235,6 +235,7 @@ RocketChat.Livechat = {
 			'Livechat_title',
 			'Livechat_title_color',
 			'Livechat_enabled',
+			'Livechat_show_agent_email',
 			'Livechat_registration_form',
 			'Livechat_allow_switching_departments',
 			'Livechat_offline_title',
