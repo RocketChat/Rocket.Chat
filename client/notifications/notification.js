@@ -11,7 +11,7 @@ function notifyNewRoom(sub) {
 		return;
 	}
 
-	if (!(FlowRouter.getParam('name') && FlowRouter.getParam('name') === sub.name) && !sub.ls && sub.alert === true) {
+	if ((!FlowRouter.getParam('name') || FlowRouter.getParam('name') !== sub.name) && !sub.ls && sub.alert === true) {
 		return KonchatNotification.newRoom(sub.rid);
 	}
 }
@@ -69,7 +69,7 @@ Meteor.startup(function() {
 			});
 
 			CachedChatSubscription.onSyncData = function(action, sub) {
-				if (action === 'changed') {
+				if (action !== 'removed') {
 					notifyNewRoom(sub);
 				}
 			};
