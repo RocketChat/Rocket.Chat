@@ -208,6 +208,8 @@ class CachedCollection {
 				delete record.$loki;
 				this.collection.upsert({ _id: record._id }, _.omit(record, '_id'));
 
+				this.onSyncData('changed', record);
+
 				if (record._updatedAt && record._updatedAt > this.updatedAt) {
 					this.updatedAt = record._updatedAt;
 				}
