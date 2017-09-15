@@ -73,7 +73,7 @@ Template.livechatWindow.onCreated(function() {
 	const availableLanguages = TAPi18n.getLanguages();
 
 	const defaultAppLanguage = () => {
-		let lng = window.navigator.userLanguage || window.navigator.language || 'en';
+		let lng = Livechat.language || window.navigator.userLanguage || window.navigator.language || 'en';
 		const regexp = /([a-z]{2}-)([a-z]{2})/;
 		if (regexp.test(lng)) {
 			lng = lng.replace(regexp, function(match, ...parts) {
@@ -84,7 +84,12 @@ Template.livechatWindow.onCreated(function() {
 	};
 
 	// get all needed live chat info for the user
-	Meteor.call('livechat:getInitialData', visitor.getToken(), (err, result) => {
+	Meteor.call('livechat:getInitialData', 
+		{
+			"token": visitor.getToken(),
+			"language": defaultAppLanguage()
+		}, 
+		(err, result) => {
 		if (err) {
 			console.error(err);
 		} else {

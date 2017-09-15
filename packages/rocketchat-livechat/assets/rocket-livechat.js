@@ -612,6 +612,10 @@
 		callHook('setCustomField', [key, value, overwrite]);
 	};
 
+	var setLanguage = function(language) {
+		callHook('setLanguage', language);
+	};
+
 	var setTheme = function(theme) {
 		callHook('setTheme', theme);
 	};
@@ -719,6 +723,7 @@
 		// methods
 		pageVisited: pageVisited,
 		setCustomField: setCustomField,
+		setLanguage: setLanguage,
 		setTheme: setTheme,
 		setDepartment: setDepartment,
 		clearDepartment: clearDepartment,

@@ -12,6 +12,10 @@ const api = {
 		CustomFields.setCustomField(visitor.getToken(), key, value, overwrite);
 	},
 
+	setLanguage(language){
+		Livechat.language = language;
+	},
+
 	setTheme(theme) {
 		if (theme.color) {
 			Livechat.customColor = theme.color;
