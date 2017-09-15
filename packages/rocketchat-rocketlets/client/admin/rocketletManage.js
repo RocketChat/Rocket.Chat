@@ -50,7 +50,7 @@ Template.rocketletManage.helpers({
 		return Object.values(Template.instance().settings.get());
 	},
 	parseDescription(i18nDescription) {
-		const item = RocketChat.Markdown.parseNotEscaped({ html: t(i18nDescription) });
+		const item = RocketChat.Markdown.parseMessageNotEscaped({ html: t(i18nDescription) });
 
 		item.tokens.forEach((t) => item.html = item.html.replace(t.token, t.text));
 
