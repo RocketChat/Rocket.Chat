@@ -44,11 +44,11 @@ export class RocketletsRestApi {
 					if (this.queryParams.languagesOnly) {
 						return {
 							id: prl.getID(),
-							languages: prl.getStorageItem().languageFiles
+							languages: prl.getStorageItem().languageContent
 						};
 					} else {
 						const info = prl.getInfo();
-						info.languages = prl.getStorageItem().languageFiles;
+						info.languages = prl.getStorageItem().languageContent;
 
 						return info;
 					}
@@ -101,7 +101,7 @@ export class RocketletsRestApi {
 				const prl = manager.getOneById(this.urlParams.id);
 
 				if (prl) {
-					const languages = prl.getStorageItem().languageFiles || {};
+					const languages = prl.getStorageItem().languageContent || {};
 
 					return { success: true, languages };
 				} else {
