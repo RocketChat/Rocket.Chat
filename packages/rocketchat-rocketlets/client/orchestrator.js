@@ -41,9 +41,7 @@ class RocketletClientOrchestrator {
 	parseAndLoadLanguages(languages) {
 		Object.keys(languages).forEach((key) => {
 			try {
-				const json = JSON.parse(languages[key]);
-
-				TAPi18next.addResourceBundle(key, 'project', json);
+				TAPi18next.addResourceBundle(key, 'project', languages[key]);
 			} catch (e) {
 				// Failed to parse the json
 			}
