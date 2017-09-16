@@ -47,7 +47,7 @@ Template.body.onRendered(() => {
 								window._paq.push(['addTracker', `${ tracker['trackerURL'] }piwik.php`, tracker['siteId']]);
 							}
 						}
-					} catch(e) {
+					} catch (e) {
 						// parsing JSON faild
 						console.log('Error while parsing JSON value of "piwikAdditionalTracker": ', e);
 					}
