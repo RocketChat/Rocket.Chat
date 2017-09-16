@@ -133,15 +133,15 @@ function createChannelValidator(params) {
 		throw new Error('unauthorized');
 	}
 
-	if (!params.name.value) {
+	if (!params.name || !params.name.value) {
 		throw new Error(`Param "${ params.name.key }" is required`);
 	}
 
-	if (params.members.value && !_.isArray(params.members.value)) {
+	if (params.members && params.members.value && !_.isArray(params.members.value)) {
 		throw new Error(`Param "${ params.members.key }" must be an array if provided`);
 	}
 
-	if (params.customFields.value && !(typeof params.customFields.value === 'object')) {
+	if (params.customFields && params.customFields.value && !(typeof params.customFields.value === 'object')) {
 		throw new Error(`Param "${ params.customFields.key }" must be an object if provided`);
 	}
 }
@@ -176,7 +176,7 @@ RocketChat.API.v1.addRoute('channels.create', { authRequired: true }, {
 		let error;
 
 		try {
-			RocketChat.API.create.validate({
+			RocketChat.API.channels.create.validate({
 				user: {
 					value: userId
 				},
