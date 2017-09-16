@@ -10,11 +10,12 @@ import cors from 'cors';
 
 import { executableSchema } from './schema';
 
+const subscriptionPort = 3100;
+
 // the Meteor GraphQL server is an Express server
 const graphQLServer = express();
 
 graphQLServer.use(cors());
-graphQLServer.use(bodyParser.urlencoded({ extended: true }));
 
 graphQLServer.use(
 	'/graphql',
@@ -33,20 +34,31 @@ graphQLServer.use(
 	})
 );
 
-graphQLServer.use('/graphiql', graphiqlExpress({
-	endpointURL: '/graphql',
-	subscriptionsEndpoint: 'ws://localhost:3000/subscriptions'
-}));
+graphQLServer.use(
+	'/graphiql',
+	graphiqlExpress({
+		endpointURL: '/graphql',
+		subscriptionsEndpoint: `ws://localhost:${ subscriptionPort }`
+	})
+);
 
-new SubscriptionServer({
-	schema: executableSchema,
-	execute,
-	subscribe,
-	onConnect: (connectionParams) => ({ authToken: connectionParams.Authorization })
-},
-{
-	path: '/subscriptions',
-	server: WebApp.httpServer
+function startSubscriptionServer() {
+	SubscriptionServer.create({
+		schema: executableSchema,
+		execute,
+		subscribe,
+		onConnect: (connectionParams) => ({ authToken: connectionParams.Authorization })
+	},
+	{
+		port: subscriptionPort,
+		host: process.env.BIND_IP || '0.0.0.0'
+	});
+
+	console.log('GraphQL Subscription server runs on port:', subscriptionPort);
+}
+
+WebApp.onListening(() => {
+	startSubscriptionServer();
 });
 
 // this binds the specified paths to the Express server running Apollo + GraphiQL
