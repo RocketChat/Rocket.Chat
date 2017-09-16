@@ -8,6 +8,7 @@ Package.describe({
 
 Package.onUse(function(api) {
 	api.use('ecmascript');
+	api.use('rocketchat:file');
 	api.use('rocketchat:lib');
 	api.use('rocketchat:logger');
 
@@ -20,5 +21,5 @@ Package.onUse(function(api) {
 });
 
 Npm.depends({
-	'slack-client': '2.0.6'
+	'@slack/client': '3.13.0'
 });

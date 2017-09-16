@@ -1,10 +1,10 @@
-/* globals logger */
+/* globals logger, RocketChatFile, UploadFS */
 
 class SlackBridge {
 
 	constructor() {
 		this.util = Npm.require('util');
-		this.slackClient = Npm.require('slack-client');
+		this.slackClient = Npm.require('@slack/client');
 		this.apiToken = RocketChat.settings.get('SlackBridge_APIToken');
 		this.aliasFormat = RocketChat.settings.get('SlackBridge_AliasFormat');
 		this.excludeBotnames = RocketChat.settings.get('SlackBridge_Botnames');
@@ -1115,6 +1115,7 @@ class SlackBridge {
 		}
 
 		//Probably a new message from Rocket.Chat
+		// TODO #6309
 		const outSlackChannels = RocketChat.settings.get('SlackBridge_Out_All') ? _.keys(this.slackChannelMap) : _.pluck(RocketChat.settings.get('SlackBridge_Out_Channels'), '_id') || [];
 		//logger.class.debug('Out SlackChannels: ', outSlackChannels);
 		if (outSlackChannels.indexOf(rocketMessage.rid) !== -1) {
@@ -1182,10 +1183,14 @@ class SlackBridge {
 
 	postMessageToSlack(slackChannel, rocketMessage) {
 		if (slackChannel && slackChannel.id) {
+			// TODO #8162 - Add file upload to slack message when it have an attachment
+			// console.log('It will be send it for slack channel... ', rocketMessage);
+
 			let iconUrl = getAvatarUrlFromUsername(rocketMessage.u && rocketMessage.u.username);
 			if (iconUrl) {
 				iconUrl = Meteor.absoluteUrl().replace(/\/$/, '') + iconUrl;
 			}
+
 			const data = {
 				token: this.apiToken,
 				text: rocketMessage.msg,
@@ -1194,8 +1199,35 @@ class SlackBridge {
 				icon_url: iconUrl,
 				link_names: 1
 			};
+
 			logger.class.debug('Post Message To Slack', data);
+
+			if (rocketMessage.file && rocketMessage.attachments && rocketMessage.attachments[0]) {
+				try {
+					const fileUploaded = RocketChat.models.Uploads.findOne({'name': rocketMessage.file.name});
+
+					const fileStore = UploadFS.getStore(fileUploaded.store);
+
+					console.log(fileUploaded);
+
+					const fileStream = fileStore.getReadStream(fileUploaded._id, fileUploaded);
+
+					data.channels = slackChannel.id;
+					data.file = fileStream;
+					data.filename = rocketMessage.file.name;
+					data.filetype = rocketMessage.file.type;
+					data.title = rocketMessage.attachments[0].description;
+
+					const uploadFileResult = HTTP.post('https://slack.com/api/files.upload', { params: data });
+
+					console.log(uploadFileResult);
+				} catch (e) {
+					throw e;
+				}
+			}
+
 			const postResult = HTTP.post('https://slack.com/api/chat.postMessage', { params: data });
+
 			if (postResult.statusCode === 200 && postResult.data && postResult.data.message && postResult.data.message.bot_id && postResult.data.message.ts) {
 				RocketChat.models.Messages.setSlackBotIdAndSlackTs(rocketMessage._id, postResult.data.message.bot_id, postResult.data.message.ts);
 				logger.class.debug(`RocketMsgID=${ rocketMessage._id } SlackMsgID=${ postResult.data.message.ts } SlackBotID=${ postResult.data.message.bot_id }`);
@@ -1310,6 +1342,7 @@ class SlackBridge {
 				msgDataDefaults['imported'] = 'slackbridge';
 			}
 			try {
+				// TODO #6309 Verify why the file stream has been incomplete...
 				this.createAndSaveRocketMessage(rocketChannel, rocketUser, slackMessage, msgDataDefaults, isImporting);
 			} catch (e) {
 				// http://www.mongodb.org/about/contributors/error-codes/
