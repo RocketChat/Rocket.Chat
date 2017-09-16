@@ -379,6 +379,13 @@ this.ChatMessages = class ChatMessages {
 		}
 	}
 
+	restoreText(rid) {
+		const text = localStorage.getItem(`messagebox_${ rid }`);
+		if (typeof text === 'string') {
+			this.input.value = text;
+		}
+	}
+
 	keyup(rid, event) {
 		let i;
 		const input = event.currentTarget;
@@ -406,6 +413,8 @@ this.ChatMessages = class ChatMessages {
 		if (!Array.from(keyCodes).includes(k)) {
 			this.startTyping(rid, input);
 		}
+
+		localStorage.setItem(`messagebox_${ rid }`, input.value);
 
 		return this.hasValue.set(input.value !== '');
 	}
@@ -520,3 +529,12 @@ this.ChatMessages = class ChatMessages {
 		return !this.hasValue.get();
 	}
 };
+
+
+RocketChat.callbacks.add('afterLogoutCleanUp', () => {
+	Object.keys(localStorage).forEach((item) => {
+		if (item.indexOf('messagebox_') === 0) {
+			localStorage.removeItem(item);
+		}
+	});
+}, RocketChat.callbacks.priority.MEDIUM, 'chatMessages-after-logout-cleanup');
