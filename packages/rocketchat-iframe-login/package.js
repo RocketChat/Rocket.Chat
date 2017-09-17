@@ -26,9 +26,9 @@ Package.onUse(function(api) {
 	api.imply('oauth');
 
 	// Server files
-	api.addFiles('iframe_rocketchat.js', 'server');
-	api.addFiles('iframe_server.js', 'server');
+	api.addFiles('server/iframe_rocketchat.js', 'server');
+	api.addFiles('server/iframe.js', 'server');
 
 	// Client files
-	api.addFiles('iframe_client.js', 'client');
+	api.addFiles('client/iframe.js', 'client');
 });
