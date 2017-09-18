@@ -453,7 +453,7 @@ Template.messageBox.events({
 				y: document.querySelector('.rc-message-box__textarea').getBoundingClientRect().top
 			},
 			customCSSProperties: {
-				left: isRtl() ? `${ textArea.getBoundingClientRect().left - 10 }px` : `${ textArea.getBoundingClientRect().right + 10 }px`
+				left: isRtl() ? `${ textArea.getBoundingClientRect().left - 10 }px` : undefined
 			},
 			data: {
 				rid: this._id
