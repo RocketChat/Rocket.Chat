@@ -1,4 +1,4 @@
-/* globals fileUpload KonchatNotification chatMessages popover */
+/* globals fileUpload KonchatNotification chatMessages popover isRtl */
 import toastr from 'toastr';
 import moment from 'moment';
 
@@ -425,6 +425,7 @@ Template.messageBox.events({
 	},
 	'click .rc-message-box__action-menu'(e) {
 		const groups = RocketChat.messageBox.actions.get();
+		const textArea = document.querySelector('.rc-message-box__textarea');
 
 		const config = {
 			popoverClass: 'message-box',
@@ -450,6 +451,9 @@ Template.messageBox.events({
 			mousePosition: {
 				x: document.querySelector('.rc-message-box__textarea').getBoundingClientRect().right + 10,
 				y: document.querySelector('.rc-message-box__textarea').getBoundingClientRect().top
+			},
+			customCSSProperties: {
+				left: isRtl() ? `${ textArea.getBoundingClientRect().left - 10 }px` : undefined
 			},
 			data: {
 				rid: this._id

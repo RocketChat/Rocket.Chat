@@ -124,7 +124,6 @@ this.menu = new class extends EventEmitter {
 		this.wrapper.css('overflow', 'hidden');
 		this.sidebarWrap.css('background-color', '#000');
 		this.sidebarWrap.css('opacity', map((Math.abs(diff) / width), 0, 1, -.1, .8).toFixed(2));
-		console.log(sideNavW, diff);
 		this.isRtl ? this.sidebar.css('transform', `translate3d(${ (sideNavW + diff).toFixed(3) }px, 0 , 0)`) : this.sidebar.css('transform', `translate3d(${ (diff - sideNavW).toFixed(3) }px, 0 , 0)`);
 	}
 	touchend() {
