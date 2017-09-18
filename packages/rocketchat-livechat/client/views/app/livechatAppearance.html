@@ -5,6 +5,18 @@
 
 			<form class="rocket-form">
 				<fieldset>
+					<legend>Langue des texts</legend>
+					<div class="select-arrow">
+						<i class="icon-down-open secondary-font-color"></i>
+					</div>
+					<select class="input-monitor" name="{{_id}}" {{isDisabled}}>
+						{{#each languages}}
+						<option value="{{key}}" dir="auto">{{name}}</option>
+						{{/each}}
+					</select>
+				</fieldset>
+
+				<fieldset>
 					<legend>{{_ "Livechat_online"}}</legend>
 					<div class="input-line">
 						<label for="title">{{_ "Title"}}</label>
@@ -57,6 +69,7 @@
 						<textarea class="preview-settings" name="offlineSuccessMessage" id="offlineSuccessMessage">{{offlineSuccessMessage}}</textarea>
 					</div>
 				</fieldset>
+				
 				<div class="submit">
 					<button class="button secondary reset-settings"><i class="icon-ccw"></i>{{_ "Reset"}}</button>
 					<button class="button primary save"><i class="icon-floppy"></i>{{_ "Save"}}</button>

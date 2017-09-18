@@ -144,6 +144,22 @@ Template.livechatAppearance.helpers({
 				}
 			]
 		};
+	},
+	languages() {
+		const languages = TAPi18n.getLanguages();
+
+		let result = Object.keys(languages).map(key => {
+			const language = languages[key];
+			return _.extend(language, { key });
+		});
+
+		result = _.sortBy(result, 'key');
+		result.unshift({
+			'name': 'Default',
+			'en': 'Default',
+			'key': ''
+		});
+		return result;
 	}
 });
 

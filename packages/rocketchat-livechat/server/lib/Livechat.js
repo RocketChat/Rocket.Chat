@@ -252,6 +252,8 @@ RocketChat.Livechat = {
 			settings[setting._id] = setting.value;
 		});
 
+		// TODO: overwriter les configs qui existent dans la langue demandée
+
 		return settings;
 	},
 
