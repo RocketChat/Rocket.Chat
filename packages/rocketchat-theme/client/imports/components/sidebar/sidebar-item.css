@@ -115,6 +115,7 @@
 		flex: 1;
 
 		margin: 0 4px;
+		padding: 5px 0;
 
 		white-space: nowrap;
 		text-overflow: ellipsis;
