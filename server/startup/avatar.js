@@ -1,4 +1,4 @@
-/* globals FileUpload */
+/* globals FileUpload, RocketChatFile */
 
 Meteor.startup(function() {
 	WebApp.connectHandlers.use('/avatar/', Meteor.bindEnvironment(function(req, res/*, next*/) {
@@ -86,11 +86,16 @@ Meteor.startup(function() {
 					initials = initials.toUpperCase();
 				}
 
-				const svg = `<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n<svg xmlns=\"http://www.w3.org/2000/svg\" pointer-events=\"none\" width=\"50\" height=\"50\">\n<rect height="50" width="50" fill=\"${ color }\"/>\n<text text-anchor=\"middle\" y=\"50%\" x=\"50%\" dy=\"0.36em\" pointer-events=\"auto\" fill=\"#ffffff\" font-family=\"Helvetica, Arial, Lucida Grande, sans-serif\" font-weight="400" font-size="28">\n${ initials }\n</text>\n</svg>`;
+				const svg = `<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n<svg xmlns=\"http://www.w3.org/2000/svg\" pointer-events=\"none\" width=\"150\" height=\"150\">\n<rect height=\"150\" width=\"150\" fill=\"${ color }\"/>\n<text y=\"50%\" x=\"50%\" pointer-events=\"auto\" fill=\"#ffffff\" font-family=\"Helvetica, Arial, Lucida Grande, sans-serif\" font-weight=\"400\" font-size=\"72\">\n<tspan y=\"67%\" x=\"50%\" text-anchor=\"middle\">${ initials }</tspan>\n</text>\n</svg>`;
 
-				res.write(svg);
-				res.end();
-
+				if (RocketChat.Info.GraphicsMagick.enabled || RocketChat.Info.ImageMagick.enabled) {
+					const svgBuffer = new Buffer(svg);
+					res.setHeader('Content-Type', 'image/png');
+					RocketChatFile.gm(svgBuffer).stream('png').pipe(res);
+				} else {
+					res.write(svg);
+					res.end();
+				}
 				return;
 			}
 		}
