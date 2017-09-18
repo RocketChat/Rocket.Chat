@@ -29,7 +29,7 @@
 	}
 
 	&__empty-room {
-		padding-left: var(--sidebar-default-padding);
+		padding: 0 var(--sidebar-default-padding);
 
 		color: var(--rooms-list-empty-text-color);
 
