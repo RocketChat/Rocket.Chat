@@ -120,6 +120,7 @@
 		text-overflow: ellipsis;
 
 		font-size: var(--sidebar-item-text-size);
+		line-height: var(--sidebar-item-height);
 	}
 }
 
