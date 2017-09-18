@@ -147,6 +147,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/methods/removeManager.js', 'server');
 	api.addFiles('server/methods/removeTrigger.js', 'server');
 	api.addFiles('server/methods/saveAppearance.js', 'server');
+	api.addFiles('server/methods/saveAppearanceTexts.js', 'server');
 	api.addFiles('server/methods/saveCustomField.js', 'server');
 	api.addFiles('server/methods/saveDepartment.js', 'server');
 	api.addFiles('server/methods/saveInfo.js', 'server');

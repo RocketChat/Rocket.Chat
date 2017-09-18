@@ -9,9 +9,9 @@
 					<div class="select-arrow">
 						<i class="icon-down-open secondary-font-color"></i>
 					</div>
-					<select class="input-monitor" name="{{_id}}" {{isDisabled}}>
+					<select id="language" class="input-monitor" name="{{_id}}" {{isDisabled}}>
 						{{#each languages}}
-						<option value="{{key}}" dir="auto">{{name}}</option>
+						<option value="{{key}}" selected="{{LivechatLanguage key}}" dir="auto">{{name}}</option>
 						{{/each}}
 					</select>
 				</fieldset>

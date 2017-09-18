@@ -1,14 +1,15 @@
 Meteor.methods({
-	'livechat:saveAppearance'(settings) {
+	'livechat:saveAppearanceTexts'(settings) {
 		if (!Meteor.userId() || !RocketChat.authz.hasPermission(Meteor.userId(), 'view-livechat-manager')) {
-			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'livechat:saveAppearance' });
+			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'livechat:saveAppearanceTexts' });
 		}
 
 		const validSettings = [
-			'Livechat_title_color',
-			'Livechat_display_offline_form',
-			'Livechat_offline_title_color',
-			'Livechat_offline_email'
+			'Livechat_title',
+			'Livechat_offline_form_unavailable',
+			'Livechat_offline_message',
+			'Livechat_offline_success_message',
+			'Livechat_offline_title'
 		];
 
 		const valid = settings.every((setting) => {

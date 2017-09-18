@@ -160,6 +160,10 @@ Template.livechatAppearance.helpers({
 			'key': ''
 		});
 		return result;
+	},
+	LivechatLanguage(key) {
+		const setting = RocketChat.settings.get('Language');
+		return setting && setting.split('-').shift().toLowerCase() === key;
 	}
 });
 
@@ -167,6 +171,7 @@ Template.livechatAppearance.onCreated(function() {
 	this.subscribe('livechat:appearance');
 
 	this.previewState = new ReactiveVar('opened');
+	this.chosenLanguage = new ReactiveVar('en');
 
 	this.title = new ReactiveVar(null);
 	this.color = new ReactiveVar(null);
@@ -228,6 +233,17 @@ Template.livechatAppearance.events({
 		}
 		instance[e.currentTarget.name].set(value);
 	},
+	'change #language, keyup #language'(e, instance) {
+		let value = _.trim($('#language').val());
+		switch (this.type) {
+			case 'int':
+				value = parseInt(value);
+				break;
+			case 'boolean':
+				value = value === '1';
+		}
+		instance.chosenLanguage.set(value);
+	},
 	'click .reset-settings'(e, instance) {
 		e.preventDefault();
 
@@ -258,11 +274,7 @@ Template.livechatAppearance.events({
 	'submit .rocket-form'(e, instance) {
 		e.preventDefault();
 
-		const settings = [
-			{
-				_id: 'Livechat_title',
-				value: _.trim(instance.title.get())
-			},
+		const settingsAppearance = [
 			{
 				_id: 'Livechat_title_color',
 				value: instance.color.get()
@@ -270,6 +282,21 @@ Template.livechatAppearance.events({
 			{
 				_id: 'Livechat_display_offline_form',
 				value: instance.displayOfflineForm.get()
+			},
+			{
+				_id: 'Livechat_offline_title_color',
+				value: instance.colorOffline.get()
+			},
+			{
+				_id: 'Livechat_offline_email',
+				value: instance.$('#emailOffline').val()
+			}
+		];
+
+		const settingTexts = [
+			{
+				_id: 'Livechat_title',
+				value: _.trim(instance.title.get())
 			},
 			{
 				_id: 'Livechat_offline_form_unavailable',
@@ -286,22 +313,21 @@ Template.livechatAppearance.events({
 			{
 				_id: 'Livechat_offline_title',
 				value: _.trim(instance.titleOffline.get())
-			},
-			{
-				_id: 'Livechat_offline_title_color',
-				value: instance.colorOffline.get()
-			},
-			{
-				_id: 'Livechat_offline_email',
-				value: instance.$('#emailOffline').val()
 			}
 		];
 
-		Meteor.call('livechat:saveAppearance', settings, (err/*, success*/) => {
+		Meteor.call('livechat:saveAppearance', settingsAppearance, (err/*, success*/) => {
 			if (err) {
 				return handleError(err);
 			}
-			toastr.success(t('Settings_updated'));
+
+			// chain with localized texts
+			Meteor.call('livechat:saveAppearanceTexts', settingTexts, (err/*, success*/) => {
+				if (err) {
+					return handleError(err);
+				}
+				toastr.success(t('Settings_updated'));
+			});
 		});
 	}
 });
