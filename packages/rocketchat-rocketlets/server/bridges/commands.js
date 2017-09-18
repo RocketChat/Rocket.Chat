@@ -9,11 +9,30 @@ export class RocketletCommandsBridge {
 	doesCommandExist(command, rocketletId) {
 		console.log(`The Rocketlet ${ rocketletId } is checking if "${ command }" command exists.`);
 
-		if (typeof command !== 'string') {
+		if (typeof command !== 'string' || command.length === 0) {
 			return false;
 		}
 
-		return typeof RocketChat.slashCommands.commands[command.toLowerCase()] === 'object';
+		const cmd = command.toLowerCase();
+		return typeof RocketChat.slashCommands.commands[cmd] === 'object' || this.disabledCommands.has(cmd);
+	}
+
+	enableCommand(command, rocketletId) {
+		console.log(`The Rocketlet ${ rocketletId } is attempting to enable the command: "${ command }"`);
+
+		if (typeof command !== 'string' || command.trim().length === 0) {
+			throw new Error('Invalid command parameter provided, must be a string.');
+		}
+
+		const cmd = command.toLowerCase();
+		if (!this.disabledCommands.has(cmd)) {
+			throw new Error(`The command is not currently disabled: "${ cmd }"`);
+		}
+
+		RocketChat.slashCommands.commands[cmd] = this.disabledCommands.get(cmd);
+		this.disabledCommands.delete(cmd);
+
+		this.orch.getNotifier().commandUpdated(cmd);
 	}
 
 	disableCommand(command, rocketletId) {
@@ -25,7 +44,7 @@ export class RocketletCommandsBridge {
 
 		const cmd = command.toLowerCase();
 		if (typeof RocketChat.slashCommands.commands[cmd] === 'undefined') {
-			throw new Error(`Command does not exist in the system currently (or it is disabled): ${ cmd }`);
+			throw new Error(`Command does not exist in the system currently (or it is disabled): "${ cmd }"`);
 		}
 
 		this.disabledCommands.set(cmd, RocketChat.slashCommands.commands[cmd]);
@@ -42,7 +61,7 @@ export class RocketletCommandsBridge {
 
 		const cmd = command.toLowerCase();
 		if (typeof RocketChat.slashCommands.commands[cmd] === 'undefined') {
-			throw new Error(`Command does not exist in the system currently (or it is disabled): ${ cmd }`);
+			throw new Error(`Command does not exist in the system currently (or it is disabled): "${ cmd }"`);
 		}
 
 		const item = RocketChat.slashCommands.commands[cmd];
@@ -79,7 +98,7 @@ export class RocketletCommandsBridge {
 
 		const cmd = command.toLowerCase();
 		if (typeof RocketChat.slashCommands.commands[cmd] === 'undefined' || !this.disabledCommands.has(cmd)) {
-			throw new Error(`Command does not exist in the system currently: ${ cmd }`);
+			throw new Error(`Command does not exist in the system currently: "${ cmd }"`);
 		}
 
 		this.disabledCommands.delete(cmd);
