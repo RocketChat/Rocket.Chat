@@ -29,7 +29,7 @@ Template.accountBox.helpers({
 	},
 
 	isAnonymous() {
-		if (Meteor.user() == null && RocketChat.settings.get('Accounts_AllowAnonymousRead')) {
+		if (Meteor.userId() == null && RocketChat.settings.get('Accounts_AllowAnonymousRead')) {
 			return 'disabled';
 		}
 	}
