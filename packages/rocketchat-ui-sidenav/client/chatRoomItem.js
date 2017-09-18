@@ -4,6 +4,7 @@ Template.chatRoomItem.helpers({
 	roomData() {
 		const originalName = this.name;
 		let name = originalName;
+
 		const realNameForDirectMessages = RocketChat.settings.get('UI_Use_Real_Name') && this.t === 'd';
 		const realNameForChannel = RocketChat.settings.get('UI_Allow_room_names_with_special_chars') && this.t !== 'd';
 		if ((realNameForDirectMessages || realNameForChannel) && this.fname) {
