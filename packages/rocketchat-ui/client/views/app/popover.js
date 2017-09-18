@@ -1,4 +1,4 @@
-/* globals popover */
+/* globals popover isRtl */
 
 this.popover = {
 	renderedPopover: null,
@@ -39,7 +39,7 @@ Template.popover.onRendered(function() {
 		const mousePosition = this.data.mousePosition;
 
 		let top;
-		if (mousePosition.y <= popoverHeight) {
+		if (mousePosition.y <= popoverHeightHalf) {
 			top = 10;
 		} else if (mousePosition.y + popoverHeightHalf > windowHeight) {
 			top = windowHeight - popoverHeight - 10;
@@ -47,19 +47,19 @@ Template.popover.onRendered(function() {
 			top = mousePosition.y - popoverHeightHalf;
 		}
 
-		let right;
+		let left;
 		if (mousePosition.x + popoverWidth >= windowWidth) {
-			right = mousePosition.x - popoverWidth;
+			left = mousePosition.x - popoverWidth;
 		} else if (mousePosition.x <= popoverWidth) {
-			right = 10;
+			left = isRtl() ? mousePosition.x + 10 : 10;
 		} else if (mousePosition.x <= windowWidth / 2) {
-			right = mousePosition.x;
+			left = mousePosition.x;
 		} else {
-			right = mousePosition.x - popoverWidth;
+			left = mousePosition.x - popoverWidth;
 		}
 
 		popoverContent.style.top = `${ top }px`;
-		popoverContent.style.left = `${ right }px`;
+		popoverContent.style.left = `${ left }px`;
 	}
 
 	if (customCSSProperties) {
@@ -96,9 +96,9 @@ Template.popover.events({
 		popover.close();
 	},
 	'click [data-type="open"]'(e) {
-		const open = e.currentTarget.dataset.id;
+		const data = e.currentTarget.dataset;
 
-		switch (open) {
+		switch (data.id) {
 			case 'account':
 				SideNav.setFlex('accountFlex');
 				SideNav.openFlex();
@@ -119,12 +119,12 @@ Template.popover.events({
 				break;
 		}
 
-		if (this.href) {
-			FlowRouter.go(this.href);
+		if (data.href) {
+			FlowRouter.go(data.href);
 		}
 
-		if (this.sideNav != null) {
-			SideNav.setFlex(this.sideNav);
+		if (data.sideNav) {
+			SideNav.setFlex(data.sideNav);
 			SideNav.openFlex();
 		}
 
