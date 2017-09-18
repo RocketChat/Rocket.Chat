@@ -89,7 +89,7 @@ class IframeLogin {
 
 		if (Match.test(tokenData, String)) {
 			tokenData = {
-				tokenData
+				token: tokenData
 			};
 		}
 
