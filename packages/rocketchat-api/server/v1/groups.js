@@ -374,11 +374,14 @@ RocketChat.API.v1.addRoute('groups.members', { authRequired: true }, {
 			limit: count
 		});
 
+		const users = RocketChat.models.Users.find({ username: { $in: members } },
+			{ fields: { _id: 1, username: 1, name: 1, status: 1, utcOffset: 1 } }).fetch();
+
 		return RocketChat.API.v1.success({
-			members,
+			members: users,
 			count: members.length,
 			offset,
-			total: findResult._room.usernames
+			total: findResult._room.usernames.length
 		});
 	}
 });
