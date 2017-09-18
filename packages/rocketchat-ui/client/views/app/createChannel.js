@@ -106,7 +106,7 @@ Template.createChannel.events({
 		t.selectedUsers.set(t.selectedUsers.get().filter(user => user.username !== username));
 	},
 	'change [name=type]'(e, t) {
-		t.type.set(e.target.checked ? e.target.value : 'p');
+		t.type.set(e.target.checked ? e.target.value : 'd');
 	},
 	'input [name=users]'(e, t) {
 		const input = e.target;
@@ -189,7 +189,7 @@ Template.createChannel.onCreated(function() {
 	});
 
 	this.name = new ReactiveVar('');
-	this.type = new ReactiveVar('d');
+	this.type = new ReactiveVar('p');
 	this.inUse = new ReactiveVar(undefined);
 	this.invalid = new ReactiveVar(false);
 	this.userFilter = new ReactiveVar('');
