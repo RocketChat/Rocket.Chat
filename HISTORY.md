@@ -1,3 +1,25 @@
+<a name="0.59.0-rc.6"></a>
+# 0.59.0-rc.6 (2017-09-18)
+
+
+### New Features
+
+- [#8073](https://github.com/RocketChat/Rocket.Chat/pull/8073) Upgrade to meteor 1.5.2
+
+
+### Bug Fixes
+
+- [#8147](https://github.com/RocketChat/Rocket.Chat/pull/8147) "*.members" rest api being useless and only returning usernames
+- [#8094](https://github.com/RocketChat/Rocket.Chat/pull/8094) Add admin audio preferences translations
+- [#8172](https://github.com/RocketChat/Rocket.Chat/pull/8172) Allow unknown file types if no allowed whitelist has been set ([#7074](https://github.com/RocketChat/Rocket.Chat/issues/7074))
+- [#8146](https://github.com/RocketChat/Rocket.Chat/pull/8146) Fix iframe login API response (issue [#8145](https://github.com/RocketChat/Rocket.Chat/issues/8145))
+- [#8144](https://github.com/RocketChat/Rocket.Chat/pull/8144) Fix new room sound being played too much
+- [#8167](https://github.com/RocketChat/Rocket.Chat/pull/8167) Issue [#8166](https://github.com/RocketChat/Rocket.Chat/issues/8166) where empty analytics setting breaks to load Piwik script
+- [#8154](https://github.com/RocketChat/Rocket.Chat/pull/8154) Sidebar and RTL alignments
+- [#8159](https://github.com/RocketChat/Rocket.Chat/pull/8159) Text area lost text when page reloads
+
+
+
 <a name="0.59.0-rc.5"></a>
 # 0.59.0-rc.5 (2017-09-14)
 
