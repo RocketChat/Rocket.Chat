@@ -641,18 +641,6 @@
 		}
 	}
 
-	& .first-unread .body {
-		&::before {
-			right: 20px;
-			left: 0;
-		}
-
-		&::after {
-			right: auto;
-			left: 0;
-		}
-	}
-
 	& .ticks-bar {
 		right: auto;
 		left: 2px;
