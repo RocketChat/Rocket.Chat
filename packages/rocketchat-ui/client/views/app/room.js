@@ -800,6 +800,7 @@ Template.room.onDestroyed(function() {
 });
 
 Template.room.onRendered(function() {
+	$(this.find('.messages-box .wrapper')).perfectScrollbar();
 	const rid = Session.get('openedRoom');
 	if (!window.chatMessages[rid]) {
 		window.chatMessages[rid] = new ChatMessages;
