@@ -15,11 +15,6 @@
       "resolved": "https://registry.npmjs.org/arguejs/-/arguejs-0.2.3.tgz",
       "from": "arguejs@>=0.2.3 <0.3.0"
     },
-    "array-union": {
-      "version": "1.0.2",
-      "resolved": "https://registry.npmjs.org/array-union/-/array-union-1.0.2.tgz",
-      "from": "array-union@>=1.0.1 <2.0.0"
-    },
     "array-uniq": {
       "version": "1.0.3",
       "resolved": "https://registry.npmjs.org/array-uniq/-/array-uniq-1.0.3.tgz",
@@ -291,11 +286,6 @@
       "resolved": "https://registry.npmjs.org/glob/-/glob-7.1.2.tgz",
       "from": "glob@>=7.0.5 <8.0.0"
     },
-    "globby": {
-      "version": "6.1.0",
-      "resolved": "https://registry.npmjs.org/globby/-/globby-6.1.0.tgz",
-      "from": "globby@>=6.1.0 <7.0.0"
-    },
     "google-auth-library": {
       "version": "0.10.0",
       "resolved": "https://registry.npmjs.org/google-auth-library/-/google-auth-library-0.10.0.tgz",
@@ -307,8 +297,8 @@
       "from": "google-auto-auth@>=0.7.1 <0.8.0"
     },
     "google-gax": {
-      "version": "0.13.5",
-      "resolved": "https://registry.npmjs.org/google-gax/-/google-gax-0.13.5.tgz",
+      "version": "0.13.4",
+      "resolved": "https://registry.npmjs.org/google-gax/-/google-gax-0.13.4.tgz",
       "from": "google-gax@>=0.13.0 <0.14.0",
       "dependencies": {
         "google-auto-auth": {
@@ -317,19 +307,9 @@
           "from": "google-auto-auth@>=0.5.2 <0.6.0"
         },
         "google-proto-files": {
-          "version": "0.13.1",
-          "resolved": "https://registry.npmjs.org/google-proto-files/-/google-proto-files-0.13.1.tgz",
-          "from": "google-proto-files@>=0.13.1 <0.14.0"
-        },
-        "object-assign": {
-          "version": "3.0.0",
-          "resolved": "https://registry.npmjs.org/object-assign/-/object-assign-3.0.0.tgz",
-          "from": "object-assign@>=3.0.0 <4.0.0"
-        },
-        "protobufjs": {
-          "version": "6.8.0",
-          "resolved": "https://registry.npmjs.org/protobufjs/-/protobufjs-6.8.0.tgz",
-          "from": "protobufjs@>=6.8.0 <7.0.0"
+          "version": "0.9.1",
+          "resolved": "https://registry.npmjs.org/google-proto-files/-/google-proto-files-0.9.1.tgz",
+          "from": "google-proto-files@>=0.9.1 <0.10.0"
         }
       }
     },
@@ -1145,9 +1125,9 @@
       "from": "oauth-sign@>=0.8.1 <0.9.0"
     },
     "object-assign": {
-      "version": "4.1.1",
-      "resolved": "https://registry.npmjs.org/object-assign/-/object-assign-4.1.1.tgz",
-      "from": "object-assign@>=4.0.1 <5.0.0"
+      "version": "3.0.0",
+      "resolved": "https://registry.npmjs.org/object-assign/-/object-assign-3.0.0.tgz",
+      "from": "object-assign@>=3.0.0 <4.0.0"
     },
     "once": {
       "version": "1.4.0",
@@ -1178,16 +1158,6 @@
       "version": "2.3.0",
       "resolved": "https://registry.npmjs.org/pify/-/pify-2.3.0.tgz",
       "from": "pify@>=2.3.0 <3.0.0"
-    },
-    "pinkie": {
-      "version": "2.0.4",
-      "resolved": "https://registry.npmjs.org/pinkie/-/pinkie-2.0.4.tgz",
-      "from": "pinkie@>=2.0.0 <3.0.0"
-    },
-    "pinkie-promise": {
-      "version": "2.0.1",
-      "resolved": "https://registry.npmjs.org/pinkie-promise/-/pinkie-promise-2.0.1.tgz",
-      "from": "pinkie-promise@>=2.0.0 <3.0.0"
     },
     "process-nextick-args": {
       "version": "1.0.7",
