@@ -1,6 +1,7 @@
 
 
 .rooms-list {
+	position: relative;
 	overflow-y: scroll;
 
 	height: 100%;
