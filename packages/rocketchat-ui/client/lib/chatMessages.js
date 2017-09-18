@@ -207,7 +207,7 @@ this.ChatMessages = class ChatMessages {
 						cancelButtonText: t('No'),
 						closeOnConfirm: true
 					}, () => {
-						const contentType = 'plain/text';
+						const contentType = 'text/plain';
 						const messageBlob = new Blob([msgObject.msg], { type: contentType });
 						const fileName = `${ Meteor.user().username } - ${ new Date() }.txt`;
 						const file = new File([messageBlob], fileName, { type: contentType, lastModified: Date.now() });
@@ -254,6 +254,7 @@ this.ChatMessages = class ChatMessages {
 			if (typeof input.updateAutogrow === 'function') {
 				input.updateAutogrow();
 			}
+
 			this.hasValue.set(false);
 			this.stopTyping(msgObject.rid);
 
