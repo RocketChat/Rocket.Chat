@@ -12,7 +12,7 @@ const api = {
 		CustomFields.setCustomField(visitor.getToken(), key, value, overwrite);
 	},
 
-	setLanguage(language){
+	setLanguage(language) {
 		Livechat.language = language;
 	},
 

@@ -1,7 +1,7 @@
 Meteor.methods({
 	'livechat:getInitialData'(args) {
-		let visitorToken = args.token;
-		let clientLanguage = args.language;
+		const visitorToken = args.token;
+		const clientLanguage = args.language;
 
 		const info = {
 			enabled: null,

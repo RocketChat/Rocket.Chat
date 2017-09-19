@@ -84,11 +84,11 @@ Template.livechatWindow.onCreated(function() {
 	};
 
 	// get all needed live chat info for the user
-	Meteor.call('livechat:getInitialData', 
+	Meteor.call('livechat:getInitialData',
 		{
-			"token": visitor.getToken(),
-			"language": defaultAppLanguage()
-		}, 
+			'token': visitor.getToken(),
+			'language': defaultAppLanguage()
+		},
 		(err, result) => {
 		if (err) {
 			console.error(err);
