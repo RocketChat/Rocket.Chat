@@ -63,7 +63,7 @@ Template.livechatAppearance.helpers({
 		return Template.instance().offlineUnavailableMessage.get().replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1<br>$2');
 	},
 	emailOffline() {
-		return Template.instance().offlineEmail.get();
+		return Template.instance().emailOffline.get();
 	},
 	sampleColor() {
 		if (Template.instance().previewState.get().indexOf('offline') !== -1) {
@@ -182,7 +182,7 @@ Template.livechatAppearance.onCreated(function() {
 	this.offlineSuccessMessage = new ReactiveVar(null);
 	this.titleOffline = new ReactiveVar(null);
 	this.colorOffline = new ReactiveVar(null);
-	this.offlineEmail = new ReactiveVar(null);
+	this.emailOffline = new ReactiveVar(null);
 
 	this.autorun(() => {
 		const setting = LivechatAppearance.findOne('Livechat_title');
@@ -218,7 +218,7 @@ Template.livechatAppearance.onCreated(function() {
 	});
 	this.autorun(() => {
 		const setting = LivechatAppearance.findOne('Livechat_offline_email');
-		this.offlineEmail.set(setting && setting.value);
+		this.emailOffline.set(setting && setting.value);
 	});
 });
 
