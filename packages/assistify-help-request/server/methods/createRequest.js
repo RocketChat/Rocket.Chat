@@ -1,5 +1,5 @@
 Meteor.methods({
-	createRequest(name, expertise='', members=[], environment) {
+	createRequest(name, expertise = '', members = [], environment) {
 		check(name, String);
 		check(expertise, String);
 
@@ -32,8 +32,23 @@ Meteor.methods({
 			}
 		};
 
+		const createNotifications = function(roomId, usernames) {
+			usernames.forEach((username) => {
+				const user = RocketChat.models.Users.findOneByUsername(username);
+				const room = RocketChat.models.Rooms.findOneById(roomId);
+				let subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(roomId, user._id);
+				if (!subscription) {
+					subscription = RocketChat.models.Subscriptions.createWithRoomAndUser(room, user);
+				}
+
+				RocketChat.models.Subscriptions.updateDesktopNotificationsById(subscription._id, 'all');
+				RocketChat.models.Subscriptions.updateMobilePushNotificationsById(subscription._id, 'all');
+				RocketChat.models.Subscriptions.updateEmailNotificationsById(subscription._id, 'all');
+			});
+		};
+
 		if (!Meteor.userId()) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'createRequest' });
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', {method: 'createRequest'});
 		}
 
 		// if (!RocketChat.authz.hasPermission(Meteor.userId(), 'create-r')) {
@@ -51,6 +66,8 @@ Meteor.methods({
 		}
 
 		const roomCreateResult = RocketChat.createRoom('r', name, Meteor.user() && Meteor.user().username, members, false, {expertise});
+
+		createNotifications(roomCreateResult.rid, members.concat([Meteor.user().username]));
 
 		const room = RocketChat.models.Rooms.findOneById(roomCreateResult.rid);
 		const helpRequestId = RocketChat.models.HelpRequests.createForSupportArea(expertise, roomCreateResult.rid, '', environment);
