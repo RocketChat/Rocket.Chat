@@ -52,8 +52,6 @@ Template.popover.onRendered(function() {
 			left = mousePosition.x - popoverWidth;
 		} else if (mousePosition.x <= popoverWidth) {
 			left = isRtl() ? mousePosition.x + 10 : 10;
-		} else if (mousePosition.x <= windowWidth / 2) {
-			left = mousePosition.x;
 		} else {
 			left = mousePosition.x - popoverWidth;
 		}
@@ -129,5 +127,84 @@ Template.popover.events({
 		}
 
 		popover.close();
+	},
+	'click [data-type="sidebar-item"]'(e, instance) {
+		popover.close();
+		const { rid, name, template } = instance.data.data;
+
+		if (e.currentTarget.dataset.id === 'hide') {
+			let warnText;	
+			switch (template) {
+				case 'c': warnText = 'Hide_Room_Warning'; break;
+				case 'p': warnText = 'Hide_Group_Warning'; break;
+				case 'd': warnText = 'Hide_Private_Warning'; break;
+			}
+	
+			return swal({
+				title: t('Are_you_sure'),
+				text: warnText ? t(warnText, name) : '',
+				type: 'warning',
+				showCancelButton: true,
+				confirmButtonColor: '#DD6B55',
+				confirmButtonText: t('Yes_hide_it'),
+				cancelButtonText: t('Cancel'),
+				closeOnConfirm: true,
+				html: false
+			}, function() {
+				if (['channel', 'group', 'direct'].includes(FlowRouter.getRouteName()) && (Session.get('openedRoom') === rid)) {
+					FlowRouter.go('home');
+				}
+	
+				Meteor.call('hideRoom', rid, function(err) {
+					if (err) {
+						handleError(err);
+					} else if (rid === Session.get('openedRoom')) {
+						Session.delete('openedRoom');
+					}
+				});
+			});
+		} else {
+			let warnText;	
+			switch (template) {
+				case 'c': warnText = 'Leave_Room_Warning'; break;
+				case 'p': warnText = 'Leave_Group_Warning'; break;
+				case 'd': warnText = 'Leave_Private_Warning'; break;
+			}
+
+			swal({
+				title: t('Are_you_sure'),
+				text: t(warnText, name),
+				type: 'warning',
+				showCancelButton: true,
+				confirmButtonColor: '#DD6B55',
+				confirmButtonText: t('Yes_leave_it'),
+				cancelButtonText: t('Cancel'),
+				closeOnConfirm: false,
+				html: false
+			}, function(isConfirm) {
+				if (isConfirm) {
+					Meteor.call('leaveRoom', rid, function(err) {
+						if (err) {
+							swal({
+								title: t('Warning'),
+								text: handleError(err, false),
+								type: 'warning',
+								html: false
+							});
+	
+						} else {
+							swal.close();
+							if (['channel', 'group', 'direct'].includes(FlowRouter.getRouteName()) && (Session.get('openedRoom') === rid)) {
+								FlowRouter.go('home');
+							}
+	
+							RoomManager.close(rid);
+						}
+					});
+				} else {
+					swal.close();
+				}
+			});
+		}
 	}
 });
