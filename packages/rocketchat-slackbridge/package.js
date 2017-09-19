@@ -9,6 +9,7 @@ Package.describe({
 Package.onUse(function(api) {
 	api.use('ecmascript');
 	api.use('rocketchat:file');
+	api.use('rocketchat:file-upload');
 	api.use('rocketchat:lib');
 	api.use('rocketchat:logger');
 

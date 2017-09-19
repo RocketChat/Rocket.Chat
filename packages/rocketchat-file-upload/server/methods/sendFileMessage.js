@@ -47,17 +47,15 @@ Meteor.methods({
 			attachment.video_size = file.size;
 		}
 
+		// TODO #8162
+
 		const user = Meteor.user();
 		let msg = Object.assign({
 			_id: Random.id(),
 			rid: roomId,
 			ts: new Date(),
 			msg: '',
-			file: {
-				_id: file._id,
-				name: file.name,
-				type: file.type
-			},
+			file,
 			groupable: false,
 			attachments: [attachment]
 		}, msgData);

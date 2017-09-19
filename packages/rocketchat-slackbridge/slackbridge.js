@@ -1,4 +1,4 @@
-/* globals logger, RocketChatFile, UploadFS */
+/* globals logger, RocketChat, RocketChatFile */
 
 class SlackBridge {
 
@@ -648,6 +648,7 @@ class SlackBridge {
 
 	registerForRocketEvents() {
 		RocketChat.callbacks.add('afterSaveMessage', this.onRocketMessage.bind(this), RocketChat.callbacks.priority.LOW, 'SlackBridge_Out');
+		RocketChat.callbacks.add('afterFileUpload', this.onRocketFileUpload.bind(this), RocketChat.callbacks.priority.LOW, 'SlackBridge_Out');
 		RocketChat.callbacks.add('afterDeleteMessage', this.onRocketMessageDelete.bind(this), RocketChat.callbacks.priority.LOW, 'SlackBridge_Delete');
 		RocketChat.callbacks.add('setReaction', this.onRocketSetReaction.bind(this), RocketChat.callbacks.priority.LOW, 'SlackBridge_SetReaction');
 		RocketChat.callbacks.add('unsetReaction', this.onRocketUnSetReaction.bind(this), RocketChat.callbacks.priority.LOW, 'SlackBridge_UnSetReaction');
@@ -1115,7 +1116,6 @@ class SlackBridge {
 		}
 
 		//Probably a new message from Rocket.Chat
-		// TODO #6309
 		const outSlackChannels = RocketChat.settings.get('SlackBridge_Out_All') ? _.keys(this.slackChannelMap) : _.pluck(RocketChat.settings.get('SlackBridge_Out_Channels'), '_id') || [];
 		//logger.class.debug('Out SlackChannels: ', outSlackChannels);
 		if (outSlackChannels.indexOf(rocketMessage.rid) !== -1) {
@@ -1183,9 +1183,6 @@ class SlackBridge {
 
 	postMessageToSlack(slackChannel, rocketMessage) {
 		if (slackChannel && slackChannel.id) {
-			// TODO #8162 - Add file upload to slack message when it have an attachment
-			// console.log('It will be send it for slack channel... ', rocketMessage);
-
 			let iconUrl = getAvatarUrlFromUsername(rocketMessage.u && rocketMessage.u.username);
 			if (iconUrl) {
 				iconUrl = Meteor.absoluteUrl().replace(/\/$/, '') + iconUrl;
@@ -1200,31 +1197,11 @@ class SlackBridge {
 				link_names: 1
 			};
 
-			logger.class.debug('Post Message To Slack', data);
-
 			if (rocketMessage.file && rocketMessage.attachments && rocketMessage.attachments[0]) {
-				try {
-					const fileUploaded = RocketChat.models.Uploads.findOne({'name': rocketMessage.file.name});
-
-					const fileStore = UploadFS.getStore(fileUploaded.store);
-
-					console.log(fileUploaded);
-
-					const fileStream = fileStore.getReadStream(fileUploaded._id, fileUploaded);
-
-					data.channels = slackChannel.id;
-					data.file = fileStream;
-					data.filename = rocketMessage.file.name;
-					data.filetype = rocketMessage.file.type;
-					data.title = rocketMessage.attachments[0].description;
-
-					const uploadFileResult = HTTP.post('https://slack.com/api/files.upload', { params: data });
-
-					console.log(uploadFileResult);
-				} catch (e) {
-					throw e;
-				}
+				// this.postFileUploadToSlack(slackChannel, rocketMessage);
 			}
+
+			logger.class.debug('Post Message To Slack', data);
 
 			const postResult = HTTP.post('https://slack.com/api/chat.postMessage', { params: data });
 
@@ -1233,6 +1210,90 @@ class SlackBridge {
 				logger.class.debug(`RocketMsgID=${ rocketMessage._id } SlackMsgID=${ postResult.data.message.ts } SlackBotID=${ postResult.data.message.bot_id }`);
 			}
 		}
+	}
+
+	onRocketFileUpload(rocketFileUpload) {
+		logger.class.debug('onRocketFileUpload', rocketFileUpload);
+
+		// console.log('onRocketFileUpload', rocketFileUpload);
+
+		this.postFileUploadToSlack(rocketFileUpload.room.importIds, rocketFileUpload.message.file);
+
+		return rocketFileUpload;
+	}
+
+	postFileUploadToSlack(slackChannel, file) {
+		// TODO #8162 - Add file upload to slack message when it have an attachment
+
+		const gfs = new RocketChatFile.GridFS({name: 'uploads', transformWrite: true});
+
+		// const fileContent = [];
+
+		// gfs.store.files.find({_id: file._id}).toArray(function(error, files) {
+		// 	if (error) {
+		// 		console.log(error);
+		// 	}
+		// 	if (files.length > 0) {
+		// 		console.log(files[0]);
+
+		// 		const readStream = gfs.store.createReadStream({_id: file._id});
+
+		// 		readStream.on('data', Meteor.bindEnvironment(function(chunk) {
+		// 			return fileContent.push(chunk);
+		// 		}));
+		// 	} else {
+		// 		console.log('File Not Found');
+		// 	}
+		// });
+
+		gfs.store.files.find().toArray(function(error, files) {
+			if (error) {
+				console.log(error);
+			}
+			console.log(files);
+		});
+
+		gfs.open(function(error, store) {
+			store.exist({filename: file._id}, function(error, found) {
+				if (error) {
+					throw error;
+				}
+				found ? console.log('File exists') : console.log('File does not exist');
+				console.log(found);
+			});
+
+			const readstream = store.createReadStream({
+				filename: file._id
+			});
+
+			readstream.on('data', (data) => {
+				const params = {
+					token: this.apiToken,
+					channels: slackChannel.id,
+					file: data,
+					filename: file.name,
+					filetype: file.type,
+					title: file.description
+				};
+
+				// console.log('Post File Attachment To Slack', params);
+
+				logger.class.debug('Post File Attachment To Slack', params);
+
+				try {
+					const uploadFileResult = HTTP.post('https://slack.com/api/files.upload', { params });
+
+					console.log(uploadFileResult);
+				} catch (e) {
+					throw e;
+				}
+			});
+
+			readstream.on('error', function(error) {
+				console.log(error);
+				throw error;
+			});
+		});
 	}
 
 	/*
