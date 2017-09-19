@@ -41,5 +41,17 @@
 @media (width < 1024px) {
 	.full-modal {
 		padding: 50px;
+
+		&__wrapper {
+			margin: 0;
+		}
+	}
+}
+
+@media (width <= 400px) {
+	.full-modal {
+		&__back-button {
+			top: -1.5rem;
+		}
 	}
 }
