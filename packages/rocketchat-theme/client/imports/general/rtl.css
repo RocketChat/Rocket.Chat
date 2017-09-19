@@ -1,6 +1,10 @@
 .rtl {
 	direction: rtl;
 
+	& .rc-old .page-container .content .rocket-form .submit {
+		text-align: left;
+	}
+
 	& button {
 		text-align: right;
 	}
