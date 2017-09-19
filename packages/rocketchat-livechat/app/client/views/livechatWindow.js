@@ -67,7 +67,7 @@ Template.livechatWindow.events({
 	}
 });
 
-Template.livechatWindow.onCreated(function () {
+Template.livechatWindow.onCreated(function() {
 	Session.set({ sound: true });
 
 	const availableLanguages = TAPi18n.getLanguages();
@@ -76,7 +76,7 @@ Template.livechatWindow.onCreated(function () {
 		let lng = Livechat.language || window.navigator.userLanguage || window.navigator.language || 'en';
 		const regexp = /([a-z]{2}-)([a-z]{2})/;
 		if (regexp.test(lng)) {
-			lng = lng.replace(regexp, function (match, ...parts) {
+			lng = lng.replace(regexp, function(match, ...parts) {
 				return parts[0] + parts[1].toUpperCase();
 			});
 		}
