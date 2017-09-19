@@ -1,10 +1,10 @@
 <template name="livechat">
 	<div class="livechat-section">
 		<h3 class="rooms-list__type {{isActive}}">
+			<span class="rooms-list__type-text--livechat">{{_ "Livechat"}}</span>
 			{{#with available}}
 				<i class="livechat-status {{status}} {{icon}}" title="{{hint}}"></i>
 			{{/with}}
-			{{_ "Livechat"}}
 		</h3>
 
 		{{#if guestPool}}

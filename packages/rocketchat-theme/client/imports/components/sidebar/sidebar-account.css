@@ -1,9 +1,9 @@
 .sidebar__account {
 	display: flex;
 
-	margin: calc(var(--sidebar-default-padding) / 2) 0;
+	margin: 0 0 var(--sidebar-header-small-padding);
 
-	padding: calc(var(--sidebar-default-padding) / 2) var(--sidebar-default-padding);
+	padding: var(--sidebar-header-small-padding) var(--sidebar-default-padding) var(--sidebar-header-small-padding);
 
 	align-items: center;
 
@@ -21,6 +21,10 @@
 		& .sidebar__account-menu {
 			fill: var(--sidebar-account-username-color-darker);
 		}
+
+		&.active:hover {
+			background-color: var(--sidebar-background-light-hover);
+		}
 	}
 
 	&-thumb {
@@ -29,7 +33,7 @@
 
 		width: var(--sidebar-account-thumb-size);
 		height: var(--sidebar-account-thumb-size);
-		margin: 0 0.5rem;
+		margin: 0 0.5rem 0 0;
 	}
 
 	&-data {
@@ -144,6 +148,7 @@
 @media (width <= 400px) {
 	.sidebar__account {
 		margin: 0 0 5px;
+		padding: var(--sidebar-header-small-padding) calc(var(--sidebar-small-default-padding) - 8px) var(--sidebar-header-small-padding);
 
 		&-thumb {
 
