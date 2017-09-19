@@ -1,6 +1,7 @@
 Template.chatRoomItem.helpers({
 	roomData() {
-		let name = this.name;
+		let {name} = this;
+
 		const realNameForDirectMessages = RocketChat.settings.get('UI_Use_Real_Name') && this.t === 'd';
 		const realNameForChannel = RocketChat.settings.get('UI_Allow_room_names_with_special_chars') && this.t !== 'd';
 		if ((realNameForDirectMessages || realNameForChannel) && this.fname) {
@@ -33,6 +34,7 @@ Template.chatRoomItem.helpers({
 			avatar,
 			route: RocketChat.roomTypes.getRouteLink(this.t, this),
 			name,
+			username: this.name,
 			unread,
 			active,
 			archivedClass,
