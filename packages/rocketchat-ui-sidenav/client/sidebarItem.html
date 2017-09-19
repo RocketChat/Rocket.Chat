@@ -17,8 +17,11 @@
 			</div>
 			<div class='sidebar-item__name {{archivedClass}}'>{{name}}</div>
 			{{#if unread}}
-			<span class="badge badge--unread">{{unread}}</span>
+				<span class="badge badge--unread">{{unread}}</span>
 			{{/if}}
+			<div class="sidebar-item__menu">
+				{{> icon block="sidebar-item__menu-icon" icon="menu"}}
+			</div>
 		</a>
 	</li>
 </template>
