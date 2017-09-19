@@ -63,12 +63,12 @@ Template.livechatWindow.events({
 	},
 	'click .sound'(event) {
 		event.stopPropagation();
-		Session.set({sound: !Session.get('sound')});
+		Session.set({ sound: !Session.get('sound') });
 	}
 });
 
-Template.livechatWindow.onCreated(function() {
-	Session.set({sound: true});
+Template.livechatWindow.onCreated(function () {
+	Session.set({ sound: true });
 
 	const availableLanguages = TAPi18n.getLanguages();
 
@@ -76,7 +76,7 @@ Template.livechatWindow.onCreated(function() {
 		let lng = Livechat.language || window.navigator.userLanguage || window.navigator.language || 'en';
 		const regexp = /([a-z]{2}-)([a-z]{2})/;
 		if (regexp.test(lng)) {
-			lng = lng.replace(regexp, function(match, ...parts) {
+			lng = lng.replace(regexp, function (match, ...parts) {
 				return parts[0] + parts[1].toUpperCase();
 			});
 		}
@@ -90,59 +90,59 @@ Template.livechatWindow.onCreated(function() {
 			'language': defaultAppLanguage()
 		},
 		(err, result) => {
-		if (err) {
-			console.error(err);
-		} else {
-			if (!result.enabled) {
-				Triggers.setDisabled();
-				return parentCall('removeWidget');
-			}
-
-			if (!result.online) {
-				Triggers.setDisabled();
-				Livechat.title = result.offlineTitle;
-				Livechat.offlineColor = result.offlineColor;
-				Livechat.offlineMessage = result.offlineMessage;
-				Livechat.displayOfflineForm = result.displayOfflineForm;
-				Livechat.offlineUnavailableMessage = result.offlineUnavailableMessage;
-				Livechat.offlineSuccessMessage = result.offlineSuccessMessage;
-				Livechat.online = false;
+			if (err) {
+				console.error(err);
 			} else {
-				Livechat.title = result.title;
-				Livechat.onlineColor = result.color;
-				Livechat.online = true;
-				Livechat.transcript = result.transcript;
-				Livechat.transcriptMessage = result.transcriptMessage;
+				if (!result.enabled) {
+					Triggers.setDisabled();
+					return parentCall('removeWidget');
+				}
+
+				if (!result.online) {
+					Triggers.setDisabled();
+					Livechat.title = result.offlineTitle;
+					Livechat.offlineColor = result.offlineColor;
+					Livechat.offlineMessage = result.offlineMessage;
+					Livechat.displayOfflineForm = result.displayOfflineForm;
+					Livechat.offlineUnavailableMessage = result.offlineUnavailableMessage;
+					Livechat.offlineSuccessMessage = result.offlineSuccessMessage;
+					Livechat.online = false;
+				} else {
+					Livechat.title = result.title;
+					Livechat.onlineColor = result.color;
+					Livechat.online = true;
+					Livechat.transcript = result.transcript;
+					Livechat.transcriptMessage = result.transcriptMessage;
+				}
+				Livechat.videoCall = result.videoCall;
+				Livechat.registrationForm = result.registrationForm;
+
+				if (result.room) {
+					Livechat.room = result.room._id;
+				}
+
+				if (result.agentData) {
+					Livechat.agent = result.agentData;
+				}
+
+				let language = result.language || defaultAppLanguage();
+
+				if (!availableLanguages[language]) {
+					language = language.split('-').shift();
+				}
+
+				TAPi18n.setLanguage(language);
+
+				Triggers.setTriggers(result.triggers);
+				Triggers.init();
+
+				result.departments.forEach((department) => {
+					Department.insert(department);
+				});
+				Livechat.allowSwitchingDepartments = result.allowSwitchingDepartments;
+				Livechat.ready();
 			}
-			Livechat.videoCall = result.videoCall;
-			Livechat.registrationForm = result.registrationForm;
-
-			if (result.room) {
-				Livechat.room = result.room._id;
-			}
-
-			if (result.agentData) {
-				Livechat.agent = result.agentData;
-			}
-
-			let language = result.language || defaultAppLanguage();
-
-			if (!availableLanguages[language]) {
-				language = language.split('-').shift();
-			}
-
-			TAPi18n.setLanguage(language);
-
-			Triggers.setTriggers(result.triggers);
-			Triggers.init();
-
-			result.departments.forEach((department) => {
-				Department.insert(department);
-			});
-			Livechat.allowSwitchingDepartments = result.allowSwitchingDepartments;
-			Livechat.ready();
-		}
-	});
+		});
 
 	$(window).on('focus', () => {
 		if (Livechat.isWidgetOpened()) {
