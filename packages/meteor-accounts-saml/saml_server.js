@@ -102,7 +102,8 @@ Accounts.registerLoginHandler(function(loginRequest) {
 	}
 
 	if (loginResult && loginResult.profile && loginResult.profile.email) {
-		const emailRegex = new RegExp(`^${ loginResult.profile.email }$`, 'i');
+		const email = RegExp.escape(loginResult.profile.email)
+		const emailRegex = new RegExp(`^${ email }$`, 'i');
 		let user = Meteor.users.findOne({
 			'emails.address': emailRegex
 		});
