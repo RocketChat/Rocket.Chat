@@ -367,9 +367,11 @@ Template.message.onViewRendered = function(context) {
 			if (!templateInstance) {
 				return;
 			}
+
 			if (currentNode.classList.contains('own') === true) {
-				return (templateInstance.atBottom = true);
+				templateInstance.atBottom = true;
 			}
+			templateInstance.sendToBottomIfNecessary();
 		}
 	});
 };
