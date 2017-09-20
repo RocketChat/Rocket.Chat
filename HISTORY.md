@@ -1,3 +1,24 @@
+<a name="0.59.0-rc.7"></a>
+# 0.59.0-rc.7 (2017-09-20)
+
+
+### Bug Fixes
+
+- [#8211](https://github.com/RocketChat/Rocket.Chat/pull/8211) Incorrect URL for login terms when using prefix
+- [#8213](https://github.com/RocketChat/Rocket.Chat/pull/8213) Leave and hide buttons was removed
+- [#8190](https://github.com/RocketChat/Rocket.Chat/pull/8190) Scrollbar not using new style
+- [#8210](https://github.com/RocketChat/Rocket.Chat/pull/8210) User avatar in DM list.
+
+
+<details>
+<summary>Others</summary>
+
+- [#8194](https://github.com/RocketChat/Rocket.Chat/pull/8194) Fix more rtl issues
+- [#8197](https://github.com/RocketChat/Rocket.Chat/pull/8197) npm deps update
+</details>
+
+
+
 <a name="0.59.0-rc.6"></a>
 # 0.59.0-rc.6 (2017-09-18)
 
