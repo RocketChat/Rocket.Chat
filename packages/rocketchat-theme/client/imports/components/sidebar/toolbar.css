@@ -107,3 +107,9 @@
 		padding: 0 calc(var(--sidebar-small-default-padding) - 8px) var(--sidebar-small-default-padding);
 	}
 }
+
+.rtl .toolbar {
+	& .rc-input__icon + .rc-input__element {
+		padding: 0.5rem 2.25rem 0.5rem 1rem;
+	}
+}
