@@ -133,13 +133,13 @@ Template.popover.events({
 		const { rid, name, template } = instance.data.data;
 
 		if (e.currentTarget.dataset.id === 'hide') {
-			let warnText;	
+			let warnText;
 			switch (template) {
 				case 'c': warnText = 'Hide_Room_Warning'; break;
 				case 'p': warnText = 'Hide_Group_Warning'; break;
 				case 'd': warnText = 'Hide_Private_Warning'; break;
 			}
-	
+
 			return swal({
 				title: t('Are_you_sure'),
 				text: warnText ? t(warnText, name) : '',
@@ -154,7 +154,7 @@ Template.popover.events({
 				if (['channel', 'group', 'direct'].includes(FlowRouter.getRouteName()) && (Session.get('openedRoom') === rid)) {
 					FlowRouter.go('home');
 				}
-	
+
 				Meteor.call('hideRoom', rid, function(err) {
 					if (err) {
 						handleError(err);
@@ -164,7 +164,7 @@ Template.popover.events({
 				});
 			});
 		} else {
-			let warnText;	
+			let warnText;
 			switch (template) {
 				case 'c': warnText = 'Leave_Room_Warning'; break;
 				case 'p': warnText = 'Leave_Group_Warning'; break;
@@ -191,13 +191,12 @@ Template.popover.events({
 								type: 'warning',
 								html: false
 							});
-	
 						} else {
 							swal.close();
 							if (['channel', 'group', 'direct'].includes(FlowRouter.getRouteName()) && (Session.get('openedRoom') === rid)) {
 								FlowRouter.go('home');
 							}
-	
+
 							RoomManager.close(rid);
 						}
 					});
