@@ -18,6 +18,16 @@
 	border-radius: var(--sidebar-item-radius);
 	align-items: center;
 
+	&:hover {
+		& .sidebar-item__menu {
+			display: block;
+		}
+
+		& .badge {
+			display: none;
+		}
+	}
+
 	&--active {
 		background-color: var(--color-dark-light);
 	}
@@ -121,6 +131,14 @@
 
 		font-size: var(--sidebar-item-text-size);
 		line-height: var(--sidebar-item-height);
+	}
+
+	&__menu {
+		display: none;
+
+		&-icon {
+			fill: var(--color-white);
+		}
 	}
 }
 
