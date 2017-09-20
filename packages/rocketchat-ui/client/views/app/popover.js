@@ -138,6 +138,7 @@ Template.popover.events({
 				case 'c': warnText = 'Hide_Room_Warning'; break;
 				case 'p': warnText = 'Hide_Group_Warning'; break;
 				case 'd': warnText = 'Hide_Private_Warning'; break;
+				case 'l': warnText = 'Hide_Livechat_Warning'; break;
 			}
 
 			return swal({
@@ -169,6 +170,7 @@ Template.popover.events({
 				case 'c': warnText = 'Leave_Room_Warning'; break;
 				case 'p': warnText = 'Leave_Group_Warning'; break;
 				case 'd': warnText = 'Leave_Private_Warning'; break;
+				case 'l': warnText = 'Hide_Livechat_Warning'; break;
 			}
 
 			swal({
