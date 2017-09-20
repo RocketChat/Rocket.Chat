@@ -800,6 +800,7 @@ Template.room.onDestroyed(function() {
 });
 
 Template.room.onRendered(function() {
+	$(this.find('.messages-box .wrapper')).perfectScrollbar();
 	const rid = Session.get('openedRoom');
 	if (!window.chatMessages[rid]) {
 		window.chatMessages[rid] = new ChatMessages;
@@ -816,8 +817,10 @@ Template.room.onRendered(function() {
 	const messageBox = $('.messages-box');
 
 	template.isAtBottom = function(scrollThreshold) {
-		if ((scrollThreshold == null)) { scrollThreshold = 0; }
-		if ((wrapper.scrollTop + scrollThreshold) >= (wrapper.scrollHeight - wrapper.clientHeight)) {
+		if (scrollThreshold == null) {
+			scrollThreshold = 0;
+		}
+		if (wrapper.scrollTop + scrollThreshold >= wrapper.scrollHeight - wrapper.clientHeight) {
 			newMessage.className = 'new-message background-primary-action-color color-content-background-color not';
 			return true;
 		}
@@ -836,8 +839,7 @@ Template.room.onRendered(function() {
 	};
 
 	template.sendToBottomIfNecessary = function() {
-
-		if ((template.atBottom === true) && (template.isAtBottom() !== true)) {
+		if (template.atBottom === true && template.isAtBottom() !== true) {
 			return template.sendToBottom();
 		}
 	};
