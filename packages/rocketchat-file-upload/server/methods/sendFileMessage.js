@@ -47,8 +47,6 @@ Meteor.methods({
 			attachment.video_size = file.size;
 		}
 
-		// TODO #8162
-
 		const user = Meteor.user();
 		let msg = Object.assign({
 			_id: Random.id(),
