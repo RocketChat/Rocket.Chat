@@ -161,7 +161,7 @@ RocketChat.API.v1.addRoute('groups.files', { authRequired: true }, {
 		const { offset, count } = this.getPaginationItems();
 		const { sort, fields, query } = this.parseJsonQuery();
 
-		const ourQuery = Object.assign({}, query, { rid: findResult._id });
+		const ourQuery = Object.assign({}, query, { rid: findResult.rid });
 
 		const files = RocketChat.models.Uploads.find(ourQuery, {
 			sort: sort ? sort : { name: 1 },
