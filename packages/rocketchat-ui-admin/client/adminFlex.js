@@ -14,9 +14,9 @@ const label = function() {
 	return TAPi18n.__(this.i18nLabel || this._id);
 };
 
-Template.adminFlex.onRendered(function() {
-	$(this.find('.rooms-list')).perfectScrollbar();
-});
+// Template.adminFlex.onRendered(function() {
+// 	$(this.find('.rooms-list')).perfectScrollbar();
+// });
 
 Template.adminFlex.helpers({
 	groups() {
