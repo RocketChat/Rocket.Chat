@@ -92,6 +92,14 @@
 
 		font-size: var(--popover-item-text-size);
 		align-items: center;
+
+		&--error {
+			color: var(--color-error);
+
+			& .rc-icon {
+				fill: var(--color-error);
+			}
+		}
 	}
 
 	&__icon {
