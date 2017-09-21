@@ -136,6 +136,8 @@
 	&__menu {
 		display: none;
 
+		padding: 8px 0 8px 8px;
+
 		&-icon {
 			fill: var(--color-white);
 		}
