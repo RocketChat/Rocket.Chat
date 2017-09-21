@@ -17,3 +17,4 @@ New_request_for_expertise: New request for topic
 Experts: Experts
 Experts_channel: Experts channel
 Search_Requests: Search requests
+Request_already_exists: A request with the next rawn number already exists. Please try again.

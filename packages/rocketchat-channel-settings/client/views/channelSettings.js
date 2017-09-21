@@ -170,7 +170,7 @@ Template.channelSettings.onCreated(function() {
 			},
 			save(value, room) {
 				let nameValidation;
-				if (!RocketChat.authz.hasAllPermission('edit-room', room._id) || (room.t !== 'c' && room.t !== 'p')) {
+				if (!RocketChat.authz.hasAllPermission('edit-room', room._id) || (room.t !== 'c' && room.t !== 'p' && room.t !== 'e' && room.t !== 'r')) {
 					return toastr.error(t('error-not-allowed'));
 				}
 				if (!RocketChat.settings.get('UI_Allow_room_names_with_special_chars')) {
