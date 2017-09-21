@@ -19,6 +19,8 @@ Template.sidebarItem.events({
 		return menu.close();
 	},
 	'click .sidebar-item__menu'(e) {
+		e.preventDefault();
+
 		const config = {
 			popoverClass: 'sidebar-item',
 			columns: [
@@ -36,7 +38,8 @@ Template.sidebarItem.events({
 									icon: 'sign-out',
 									name: t('Leave_room'),
 									type: 'sidebar-item',
-									id: 'leave'
+									id: 'leave',
+									modifier: 'error'
 								}
 							]
 						}
@@ -56,8 +59,4 @@ Template.sidebarItem.events({
 
 		popover.open(config);
 	}
-});
-
-Template.sidebarItem.onCreated(function() {
-	// console.log('sidebarItem', this.data);
 });
