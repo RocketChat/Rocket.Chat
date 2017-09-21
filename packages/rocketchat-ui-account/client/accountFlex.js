@@ -4,9 +4,9 @@ Template.accountFlex.events({
 	}
 });
 
-Template.accountFlex.onRendered(function() {
-	$(this.find('.rooms-list')).perfectScrollbar();
-});
+// Template.accountFlex.onRendered(function() {
+// 	$(this.find('.rooms-list')).perfectScrollbar();
+// });
 
 Template.accountFlex.helpers({
 	allowUserProfileChange() {
