@@ -52,6 +52,8 @@ Template.popover.onRendered(function() {
 			left = mousePosition.x - popoverWidth;
 		} else if (mousePosition.x <= popoverWidth) {
 			left = isRtl() ? mousePosition.x + 10 : 10;
+		} else if (mousePosition.x <= windowWidth / 2) {
+			left = mousePosition.x;
 		} else {
 			left = mousePosition.x - popoverWidth;
 		}
