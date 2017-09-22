@@ -60,6 +60,10 @@
 
 		&--active {
 			color: var(--sidebar-item-active-text-color);
+
+			& .sidebar-item__menu {
+				transition: margin 0.1s;
+			}
 		}
 	}
 
@@ -132,8 +136,6 @@
 	&__menu {
 		margin: 0 -15px;
 		padding: 6px;
-
-		transition: margin 0.2s 0.3s;
 
 		&-icon {
 			fill: var(--color-white);
