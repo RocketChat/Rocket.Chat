@@ -31,7 +31,11 @@
 	}
 
 	& .rc-switch {
-		width: 50%;
+		width: 100%;
+
+		&:not(:last-child) {
+			margin-bottom: 2rem;
+		}
 	}
 
 	& .rc-input__icon-svg {
@@ -46,17 +50,5 @@
 
 	100% {
 		opacity: 1;
-	}
-}
-
-@media (width <= 400px) {
-	.create-channel {
-		& .rc-switch {
-			width: 100%;
-
-			&:not(:last-child) {
-				margin-bottom: 2rem;
-			}
-		}
 	}
 }
