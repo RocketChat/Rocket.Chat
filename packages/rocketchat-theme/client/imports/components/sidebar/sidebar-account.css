@@ -20,10 +20,12 @@
 
 	align-items: center;
 
+	transition: background-color 0.3s;
+
 	&.active:hover {
 		cursor: pointer;
 
-		background-color: var(--sidebar-background-hover);
+		background-color: var(--sidebar-item-hover-background);
 	}
 	&-thumb {
 
