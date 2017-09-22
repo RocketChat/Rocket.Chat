@@ -20,11 +20,7 @@
 
 	&:hover {
 		& .sidebar-item__menu {
-			display: block;
-		}
-
-		& .badge {
-			display: none;
+			margin: 0;
 		}
 	}
 
@@ -134,9 +130,10 @@
 	}
 
 	&__menu {
-		display: none;
+		margin: 0 -15px;
+		padding: 6px;
 
-		padding: 8px 0 8px 8px;
+		transition: margin 0.2s 0.3s;
 
 		&-icon {
 			fill: var(--color-white);
