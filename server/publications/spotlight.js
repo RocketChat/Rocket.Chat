@@ -50,7 +50,7 @@ Meteor.methods({
 				username: 1
 			}).username;
 
-			result.rooms = RocketChat.models.Rooms.findByNameAndTypeNotContainingUsername(regex, 'c', username, roomOptions).fetch();
+			result.rooms = RocketChat.models.Rooms.findByNameContainingTypesAndTags(text, [{type: 'c'}, {type: 'r', username}, {type: 'e', username}], roomOptions).fetch();
 		}
 		return result;
 	}
