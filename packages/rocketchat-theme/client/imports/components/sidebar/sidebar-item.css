@@ -1,6 +1,3 @@
-.rtl .sidebar-item {
-	margin: 0 8px 0 0;
-}
 .sidebar-light {
 	& .sidebar-item {
 		color: var(--color-dark);
