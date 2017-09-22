@@ -28,6 +28,12 @@
 		background-color: var(--color-dark-light);
 	}
 
+	&--unread {
+		& .sidebar-item__menu {
+			transition: margin 0.1s;
+		}
+	}
+
 	&--darken {
 		&:hover {
 			background-color: var(--sidebar-item-darken-hover-background);
@@ -60,10 +66,6 @@
 
 		&--active {
 			color: var(--sidebar-item-active-text-color);
-
-			& .sidebar-item__menu {
-				transition: margin 0.1s;
-			}
 		}
 	}
 
