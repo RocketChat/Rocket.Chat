@@ -1,6 +1,7 @@
-/* globals RocketChatTabBar , chatMessages, fileUpload , fireGlobalEvent , mobileMessageMenu , cordova , readMessage , RoomRoles, popover*/
+/* globals RocketChatTabBar , chatMessages, fileUpload , fireGlobalEvent , mobileMessageMenu , cordova , readMessage , RoomRoles, popover */
 import moment from 'moment';
 import mime from 'mime-type/with-db';
+import Clipboard from 'clipboard';
 
 window.chatMessages = window.chatMessages || {};
 const socialSharing = (options = {}) => window.plugins.socialsharing.share(options.message, options.subject, options.file, options.link);
@@ -551,7 +552,8 @@ Template.room.events({
 				icon: item.icon,
 				name: t(item.label),
 				type: 'message-action',
-				id: item.id
+				id: item.id,
+				modifier: item.id === 'delete-message' ? 'error' : null
 			};
 		});
 
@@ -571,7 +573,8 @@ Template.room.events({
 				x: e.clientX,
 				y: e.clientY
 			},
-			activeElement: $(e.currentTarget).parents('.message')[0]
+			activeElement: $(e.currentTarget).parents('.message')[0],
+			onRendered: () => new Clipboard('.rc-popover__item')
 		};
 
 		popover.open(config);
