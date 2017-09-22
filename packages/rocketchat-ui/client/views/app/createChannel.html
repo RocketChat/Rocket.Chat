@@ -20,7 +20,7 @@
 				</div>
 				<div class="rc-switch">
 					<label class="rc-switch__label">
-						<input type="checkbox" class="rc-switch__input" name="readOnly" {{readOnlyIsDisabled}}>
+						<input type="checkbox" class="rc-switch__input" name="readOnly">
 						<span class="rc-switch__button">
 							<span class="rc-switch__button-inside"></span>
 						</span>
@@ -28,6 +28,7 @@
 							{{_ "Read_only_channel"}}
 						</span>
 					</label>
+					<span class="rc-switch__description">{{readOnlyDescription}}</span>
 				</div>
 			</div>
 			<div class="create-channel__inputs">
