@@ -169,12 +169,16 @@
 	--sidebar-item-radius: 2px;
 	--sidebar-item-height: 32px;
 	--sidebar-item-thumb-size: 20px;
+
 	--sidebar-item-text-color: var(--color-gray);
-	--sidebar-item-lighten-hover-background: var(--color-dark-medium);
-	--sidebar-item-darken-hover-background: var(--color-gray-light);
-	--sidebar-item-darken-text-color: var(--color-dark);
-	--sidebar-item-active-background: var(--color-gray);
-	--sidebar-item-active-text-color: var(--color-white);
+	--sidebar-item-background: inherit;
+	--sidebar-item-hover-background: var(--color-darkest);
+
+	--sidebar-item-active-background: var(--color-dark-medium);
+	--sidebar-item-active-color: var(--sidebar-item-text-color);
+
+	--sidebar-item-unread-color: var(--color-white);
+
 	--sidebar-item-popup-background: var(--color-dark-medium);
 	--sidebar-item-user-status-size: 6px;
 	--sidebar-small-item-user-status-size: 4px;
