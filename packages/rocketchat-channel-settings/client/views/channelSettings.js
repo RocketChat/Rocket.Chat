@@ -1,3 +1,4 @@
+/* globals RocketChat */
 import toastr from 'toastr';
 
 Template.channelSettings.helpers({
@@ -164,7 +165,10 @@ Template.channelSettings.onCreated(function() {
 			save(value, room) {
 				let nameValidation;
 				if (!RocketChat.authz.hasAllPermission('edit-room', room._id) || (room.t !== 'c' && room.t !== 'p')) {
-					return toastr.error(t('error-not-allowed'));
+					// custom room types can explicitly enable/disable the channel settings support
+					if (!(RocketChat.roomTypes[room.t].allowChangeChannelSettings && RocketChat.roomTypes[room.t].allowChangeChannelSettings())) {
+						return toastr.error(t('error-not-allowed'));
+					}
 				}
 				if (!RocketChat.settings.get('UI_Allow_room_names_with_special_chars')) {
 					try {
