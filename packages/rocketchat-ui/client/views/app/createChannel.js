@@ -2,7 +2,7 @@ const acEvents = {
 	'click .rc-popup-list__item'(e, t) {
 		t.ac.onItemClick(this, e);
 	},
-	'keydown [name=users]'(e, t) {
+	'keydown [name="users"]'(e, t) {
 		if ([8, 46].includes(e.keyCode) && e.target.value === '') {
 			const users = t.selectedUsers;
 			const usersArr = users.get();
@@ -12,13 +12,13 @@ const acEvents = {
 
 		t.ac.onKeyDown(e);
 	},
-	'keyup [name=users]'(e, t) {
+	'keyup [name="users"]'(e, t) {
 		t.ac.onKeyUp(e);
 	},
-	'focus [name=users]'(e, t) {
+	'focus [name="users"]'(e, t) {
 		t.ac.onFocus(e);
 	},
-	'blur [name=users]'(e, t) {
+	'blur [name="users"]'(e, t) {
 		t.ac.onBlur(e);
 	}
 };
@@ -74,14 +74,14 @@ Template.createChannel.helpers({
 		const inUse = instance.inUse.get();
 		return invalid || inUse;
 	},
-	readOnlyIsDisabled() {
-		return 'disabled';
-	},
 	typeLabel() {
 		return t(Template.instance().type.get() === 'p' ? t('Private_Channel') : t('Public_Channel'));
 	},
 	typeDescription() {
-		return t(Template.instance().type.get() === 'p' ? t('Just_invited_people_can_access_this_channel'): t('Everyone_can_access_this_channel'));
+		return t(Template.instance().type.get() === 'p' ? t('Just_invited_people_can_access_this_channel') : t('Everyone_can_access_this_channel'));
+	},
+	readOnlyDescription() {
+		return t(Template.instance().readOnly.get() ? t('Only_authorized_users_can_write_new_messages') : t('All_users_in_the_channel_can_write_new_messages'));
 	},
 	createIsDisabled() {
 		const instance = Template.instance();
@@ -105,10 +105,13 @@ Template.createChannel.events({
 		const {username} = Blaze.getData(target);
 		t.selectedUsers.set(t.selectedUsers.get().filter(user => user.username !== username));
 	},
-	'change [name=type]'(e, t) {
+	'change [name="type"]'(e, t) {
 		t.type.set(e.target.checked ? e.target.value : 'd');
 	},
-	'input [name=users]'(e, t) {
+	'change [name="readOnly"]'(e, t) {
+		t.readOnly.set(e.target.checked);
+	},
+	'input [name="users"]'(e, t) {
 		const input = e.target;
 		const position = input.selectionEnd || input.selectionStart;
 		const length = input.value.length;
@@ -118,7 +121,7 @@ Template.createChannel.events({
 
 		t.userFilter.set(modified);
 	},
-	'input [name=name]'(e, t) {
+	'input [name="name"]'(e, t) {
 		const input = e.target;
 		const position = input.selectionEnd || input.selectionStart;
 		const length = input.value.length;
@@ -138,8 +141,8 @@ Template.createChannel.events({
 		e.stopPropagation();
 		const name = e.target.name.value;
 		const type = instance.type.get();
+		const readOnly = instance.readOnly.get();
 		const isPrivate = type === 'p';
-		const readOnly = false;//instance.find('#channel-ro').checked;
 
 		if (instance.invalid.get() || instance.inUse.get()) {
 			return e.target.name.focus();
@@ -169,8 +172,8 @@ Template.createChannel.events({
 Template.createChannel.onRendered(function() {
 	const users = this.selectedUsers;
 
-	this.firstNode.querySelector('[name=name]').focus();
-	this.ac.element = this.firstNode.querySelector('[name=users]');
+	this.firstNode.querySelector('[name="name"]').focus();
+	this.ac.element = this.firstNode.querySelector('[name="users"]');
 	this.ac.$element = $(this.ac.element);
 	this.ac.$element.on('autocompleteselect', function(e, {item}) {
 		const usersArr = users.get();
@@ -190,6 +193,7 @@ Template.createChannel.onCreated(function() {
 
 	this.name = new ReactiveVar('');
 	this.type = new ReactiveVar('p');
+	this.readOnly = new ReactiveVar(false);
 	this.inUse = new ReactiveVar(undefined);
 	this.invalid = new ReactiveVar(false);
 	this.userFilter = new ReactiveVar('');
