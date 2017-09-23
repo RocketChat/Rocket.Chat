@@ -1,10 +1,12 @@
-
 RocketChat.saveRoomName = function(rid, displayName, user, sendMessage = true) {
 	const room = RocketChat.models.Rooms.findOneById(rid);
 	if (room.t !== 'c' && room.t !== 'p') {
-		throw new Meteor.Error('error-not-allowed', 'Not allowed', {
-			'function': 'RocketChat.saveRoomdisplayName'
-		});
+		// custom room types can explicitly enable/disable the channel settings support
+		if (!(RocketChat.roomTypes[room.t].allowChangeChannelSettings && RocketChat.roomTypes[room.t].allowChangeChannelSettings())) {
+			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
+				'function': 'RocketChat.saveRoomdisplayName'
+			});
+		}
 	}
 	if (displayName === room.name) {
 		return;

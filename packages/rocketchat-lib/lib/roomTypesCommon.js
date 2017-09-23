@@ -16,12 +16,21 @@ this.roomTypesCommon = class {
 	name: route name
 	action: route action function
 	identifier: room type identifier
-	*/
 
+	Optional methods which can be redefined
+	getDisplayName(room): return room's name for the UI
+	allowChangeChannelSettings(room): Whether it's possible to use the common channel-settings-tab to change a room's settings
+	canBeDeleted(userId, room): Custom authorizations for whether a room can be deleted. If not implemented, `delete-{identifier}` will be checked for
+	*/
 	add(identifier = Random.id(), order, config) {
 		if (this.roomTypes[identifier] != null) {
 			return false;
 		}
+
+		// apart from the structure, the config may optionally override default behaviour.
+		// In order to simplify implementation, default implementeations are added unless "redefined"
+		this._addDefaultImplementations(config);
+
 		if (order == null) {
 			order = this.mainOrder + 10;
 			this.mainOrder += 10;
@@ -81,5 +90,30 @@ this.roomTypesCommon = class {
 		}
 		return FlowRouter.go(this.roomTypes[roomType].route.name, routeData, queryParams);
 	}
+
+	_addDefaultImplementations(config) {
+		if (!config.getDisplayName) {
+			config.getDisplayName = function(room) {
+				return room.name;
+			};
+		}
+
+		if (!config.allowChangeChannelSettings) {
+			config.allowChangeChannelSettings = function() {
+				return true;
+			};
+		}
+
+		if (!config.canBeDeleted) {
+			config.canBeDeleted = function(userId, room) {
+				/* this implementation is actually not necessary, since the generic authorisation check on delete-{identifier}
+				   is already performed in /server/methods/eraseRoom.js. However, in order not to rely on that remaining as-is,
+				   code the authorization check redundantly here. This shall also make consumption more easy and transparent
+				*/
+				RocketChat.authz.hasPermission(userId, `delete-${ room.t }`, room._id);
+			};
+		}
+	}
+
 };
 export default this.roomTypesCommon;
