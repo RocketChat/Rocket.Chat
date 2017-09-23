@@ -32,19 +32,34 @@
 		background-color: var(--sidebar-item-hover-background);
 
 		& .sidebar-item__menu {
-			display: block;
-		}
-
-		& .badge {
-			display: none;
+			margin: 0;
 		}
 	}
 
 	&--active {
 		background-color: var(--sidebar-item-active-background);
 	}
+
 	&--unread {
-		color: var(--sidebar-item-unread-color);
+    color: var(--sidebar-item-unread-color);
+
+		& .sidebar-item__menu {
+			transition: margin 0.1s;
+		}
+	}
+
+	&--darken {
+		&:hover {
+			background-color: var(--sidebar-item-darken-hover-background);
+		}
+
+		& .sidebar-item__link {
+			color: var(--sidebar-item-darken-text-color);
+		}
+	}
+
+	&--lighten:hover {
+		background-color: var(--sidebar-item-lighten-hover-background);
 	}
 
 	&__popup-active {
@@ -131,9 +146,8 @@
 	}
 
 	&__menu {
-		display: none;
-
-		padding: 8px 0 8px 8px;
+		margin: 0 -15px;
+		padding: 6px;
 
 		&-icon {
 			fill: var(--color-white);
