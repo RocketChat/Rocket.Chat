@@ -6,7 +6,9 @@ Template.membersList.helpers({
 	},
 
 	isGroupChat() {
-		return ['c', 'p'].includes(ChatRoom.findOne(this.rid, { reactive: false }).t);
+		const room = ChatRoom.findOne(this.rid, { reactive: false });
+		return ['c', 'p'].includes(room.t)
+			|| (RocketChat.roomTypes[room.t].isGroupChat && RocketChat.roomTypes[room.t].isGroupChat());
 	},
 
 	isDirectChat() {
@@ -89,7 +91,8 @@ Template.membersList.helpers({
 			switch (roomData.t) {
 				case 'p': return RocketChat.authz.hasAtLeastOnePermission(['add-user-to-any-p-room', 'add-user-to-joined-room'], this._id);
 				case 'c': return RocketChat.authz.hasAtLeastOnePermission(['add-user-to-any-c-room', 'add-user-to-joined-room'], this._id);
-				default: return false;
+				default:
+					return (RocketChat.roomTypes[roomData.t].canAddUser && RocketChat.roomTypes[roomData.t].canAddUser(roomData)) || false;
 			}
 		})();
 	},
@@ -136,8 +139,8 @@ Template.membersList.helpers({
 			tabBar: Template.currentData().tabBar,
 			username: Template.instance().userDetail.get(),
 			clear: Template.instance().clearUserDetail,
-			showAll: ['c', 'p'].includes(room != null ? room.t : undefined),
-			hideAdminControls: ['c', 'p', 'd'].includes(room != null ? room.t : undefined),
+			showAll: ['c', 'p'].includes(room != null ? room.t : undefined) || (RocketChat.roomTypes[room.t].userDetailShowAll && RocketChat.roomTypes[room.t].userDetailShowAll(room)),
+			hideAdminControls: ['c', 'p', 'd'].includes(room != null ? room.t : undefined) || !(RocketChat.roomTypes[room.t].userDetailShowAdmin && RocketChat.roomTypes[room.t].userDetailShowAdmin(room)),
 			video: ['d'].includes(room != null ? room.t : undefined)
 		};
 	},
@@ -163,7 +166,7 @@ Template.membersList.events({
 
 		const roomData = Session.get(`roomData${ template.data.rid }`);
 
-		if (['c', 'p'].includes(roomData.t)) {
+		if (['c', 'p'].includes(roomData.t) || (RocketChat.roomTypes[roomData.t].canAddUser && RocketChat.roomTypes[roomData.t].canAddUser(roomData))) {
 			return Meteor.call('addUserToRoom', { rid: roomData._id, username: doc.username }, function(error) {
 				if (error) {
 					return handleError(error);

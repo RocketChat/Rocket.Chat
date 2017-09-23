@@ -18,9 +18,14 @@ this.roomTypesCommon = class {
 	identifier: room type identifier
 
 	Optional methods which can be redefined
-	getDisplayName(room): return room's name for the UI
-	allowChangeChannelSettings(room): Whether it's possible to use the common channel-settings-tab to change a room's settings
-	canBeDeleted(userId, room): Custom authorizations for whether a room can be deleted. If not implemented, `delete-{identifier}` will be checked for
+		getDisplayName(room): return room's name for the UI
+		allowChangeChannelSettings(room): Whether it's possible to use the common channel-settings-tab to change a room's settings
+		canBeDeleted(userId, room): Custom authorizations for whether a room can be deleted. If not implemented, `delete-{identifier}` will be checked for
+		supportMembersList(room): Whether the generic members list for managing a room's members shall be available
+		isGroupChat(): Whether the room type is a chat of a group of members
+		canAddUser(userId, room): Whether the given user is allowed to add users to the specified room
+		userDetailShowAll(room): Whether all room members' details be shown in the user info
+		userDetailShowAdmin(room): Whether admin-controls (change role etc.) shall be shown in the user info
 	*/
 	add(identifier = Random.id(), order, config) {
 		if (this.roomTypes[identifier] != null) {
@@ -113,6 +118,37 @@ this.roomTypesCommon = class {
 				RocketChat.authz.hasPermission(userId, `delete-${ room.t }`, room._id);
 			};
 		}
+
+		if (!config.supportMembersList) {
+			config.supportMembersList = function() {
+				return true;
+			};
+		}
+
+		if (!config.isGroupChat) {
+			config.isGroupChat = function() {
+				return true;
+			};
+		}
+
+		if (!config.canAddUser) {
+			config.canAddUser = function() {
+				return true;
+			};
+		}
+
+		if (!config.userDetailShowAll) {
+			config.userDetailShowAll = function() {
+				return true;
+			};
+		}
+
+		if (!config.userDetailShowAdmin) {
+			config.userDetailShowAdmin = function() {
+				return true;
+			};
+		}
+
 	}
 
 };
