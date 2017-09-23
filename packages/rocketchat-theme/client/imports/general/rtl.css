@@ -669,9 +669,16 @@
 
 			& i {
 				float: right;
-
 				margin-right: auto;
 				margin-left: 10px;
+
+				&.file-delete {
+				  float: left;
+				}
+
+				&.file-download {
+				  float: left;
+				}
 			}
 		}
 	}
