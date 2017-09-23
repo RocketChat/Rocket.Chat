@@ -16,6 +16,10 @@ this.popover = {
 };
 
 Template.popover.onRendered(function() {
+	if (this.data.onRendered) {
+		this.data.onRendered();
+	}
+
 	$('.rc-popover').click(function(e) {
 		if (e.currentTarget === e.target) {
 			popover.close();
