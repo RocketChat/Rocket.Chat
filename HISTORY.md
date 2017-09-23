@@ -1,3 +1,33 @@
+<a name="0.59.0-rc.8"></a>
+# 0.59.0-rc.8 (2017-09-23)
+
+
+### New Features
+
+- [#8260](https://github.com/RocketChat/Rocket.Chat/pull/8260) Enable read only channel creation
+
+
+### Bug Fixes
+
+- [#8241](https://github.com/RocketChat/Rocket.Chat/pull/8241) Api groups.files is always returning empty
+- [#8216](https://github.com/RocketChat/Rocket.Chat/pull/8216) Case insensitive SAML email check
+- [#8259](https://github.com/RocketChat/Rocket.Chat/pull/8259) clipboard and permalink on new popover
+- [#8262](https://github.com/RocketChat/Rocket.Chat/pull/8262) make sidebar item animation fast
+- [#8261](https://github.com/RocketChat/Rocket.Chat/pull/8261) RTL on reply
+- [#8257](https://github.com/RocketChat/Rocket.Chat/pull/8257) sidenav colors, hide and leave, create channel on safari
+- [#8252](https://github.com/RocketChat/Rocket.Chat/pull/8252) sidenav mentions on hover
+
+
+<details>
+<summary>Others</summary>
+
+- [#8244](https://github.com/RocketChat/Rocket.Chat/pull/8244) Disable perfect scrollbar
+- [#8243](https://github.com/RocketChat/Rocket.Chat/pull/8243) Fix `leave and hide` click, color and position
+- [#8253](https://github.com/RocketChat/Rocket.Chat/pull/8253) readme-file: fix broken link
+</details>
+
+
+
 <a name="0.59.0-rc.7"></a>
 # 0.59.0-rc.7 (2017-09-20)
 
