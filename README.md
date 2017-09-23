@@ -20,10 +20,10 @@
    * [Layershift](#layershift)
    * [Sandstorm.io](#sandstormio)
    * [Yunohost.org](#yunohostorg)
-   * [DPlatform](#dplatform) 
+   * [DPlatform](#dplatform)
    * [IndieHosters](#indiehosters)
    * [Ubuntu 16.04](#ubuntu-1604)
-   * [Cloudron.io](#cloudronio) 
+   * [Cloudron.io](#cloudronio)
    * [Heroku](#heroku)
    * [Helm Kubernetes](#helm-kubernetes)
   * [Scalingo](#scalingo)
@@ -83,7 +83,7 @@ Download the Native Cross-Platform Desktop Application at [Rocket.Chat.Electron]
 # Deployment
 
 ## Instant Server Installation with Snaps
- 
+
 Install Rocket.Chat in seconds on Linux (Ubuntu and others) with:
 
 ```
@@ -92,7 +92,7 @@ sudo snap install rocketchat-server
 
 [![Rocket.Chat Snap is recommended for Linux deployments](https://github.com/Sing-Li/bbug/raw/master/images/ubuntulogo.png)](https://uappexplorer.com/snap/ubuntu/rocketchat-server)
 
-Installing snaps is very quick.  By running that command you have your full Rocket.Chat server up and running.  Snaps are secure.  They are isolated with all of their dependencies.  Snaps also auto update when we release new versions. 
+Installing snaps is very quick.  By running that command you have your full Rocket.Chat server up and running.  Snaps are secure.  They are isolated with all of their dependencies.  Snaps also auto update when we release new versions.
 
 Our snap features a built-in reverse proxy that can request and maintain free letsencrypt SSL certificates. You can go from zero to a public-facing SSL-secured Rocket.Chat server in less than 5 minutes.
 
@@ -341,7 +341,7 @@ It is a great solution for communities and companies wanting to privately host t
 
 ## How it all started
 
-Read about [how it all started](http://osdelivers.blackducksoftware.com/2016/06/10/rocket-chat-hosted-chat-services/).
+Read about [how it all started](https://blog.blackducksoftware.com/rocket-chat-enabling-privately-hosted-chat-services).
 
 ## Awards
 [![InfoWorld Bossie Awards 2016 - Best Open Source Applications](https://raw.githubusercontent.com/Sing-Li/bbug/master/images/bossie.png)](http://www.infoworld.com/article/3122000/open-source-tools/bossie-awards-2016-the-best-open-source-applications.html#slide4)
