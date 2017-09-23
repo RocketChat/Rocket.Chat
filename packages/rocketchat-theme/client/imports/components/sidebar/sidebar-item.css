@@ -28,6 +28,12 @@
 		background-color: var(--color-dark-light);
 	}
 
+	&--unread {
+		& .sidebar-item__menu {
+			transition: margin 0.1s;
+		}
+	}
+
 	&--darken {
 		&:hover {
 			background-color: var(--sidebar-item-darken-hover-background);
@@ -132,8 +138,6 @@
 	&__menu {
 		margin: 0 -15px;
 		padding: 6px;
-
-		transition: margin 0.2s 0.3s;
 
 		&-icon {
 			fill: var(--color-white);
