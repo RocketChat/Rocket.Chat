@@ -1,6 +1,15 @@
 .rtl {
 	direction: rtl;
 
+	& .rc-old .buttons-group .button {
+		margin-right: 4px;
+		margin-left: auto;
+
+		&:first-child {
+			margin-right: 0;
+		}
+	}
+
 	& .rc-old .page-container .content .rocket-form .submit {
 		text-align: left;
 	}
