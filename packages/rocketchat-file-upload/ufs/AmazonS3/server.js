@@ -137,7 +137,8 @@ export class AmazonS3Store extends UploadFS.Store {
 			s3.putObject({
 				Key: this.getPath(file),
 				Body: writeStream,
-				ContentType: file.type
+				ContentType: file.type,
+				ContentDisposition: `inline; filename=${ file.name }`
 
 			}, (error) => {
 				if (error) {
