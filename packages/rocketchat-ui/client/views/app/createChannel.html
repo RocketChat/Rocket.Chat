@@ -20,7 +20,7 @@
 				</div>
 				<div class="rc-switch">
 					<label class="rc-switch__label">
-						<input type="checkbox" class="rc-switch__input" name="readOnly" {{readOnlyIsDisabled}}>
+						<input type="checkbox" class="rc-switch__input" name="readOnly">
 						<span class="rc-switch__button">
 							<span class="rc-switch__button-inside"></span>
 						</span>
@@ -28,6 +28,7 @@
 							{{_ "Read_only_channel"}}
 						</span>
 					</label>
+					<span class="rc-switch__description">{{readOnlyDescription}}</span>
 				</div>
 			</div>
 			<div class="create-channel__inputs">
@@ -38,7 +39,7 @@
 							<div class="rc-input__icon">
 								{{> icon block="rc-input__icon-svg" icon=iconType }}
 							</div>
-							<input name="name" type="text" class="rc-input__element" placeholder="Type channel name" autofocus>
+							<input name="name" type="text" class="rc-input__element" placeholder="{{_ "Channel_Name_Placeholder"}}" autofocus>
 						</div>
 					</label>
 					{{!--<div class="rc-input__description">Names must be all lower case and shorter than 22 characters</div>--}}
@@ -62,7 +63,7 @@
 								{{#each user in selectedUsers}}
 									{{> tag user}}
 								{{/each}}
-								<input type="text" class="rc-tags__input" placeholder="{{_ "username"}}" name="users" autocomplete="off"/>
+								<input type="text" class="rc-tags__input" placeholder="{{_ "Username_Placeholder"}}" name="users" autocomplete="off"/>
 							</div>
 						</div>
 						{{#with config}}
