@@ -62,28 +62,28 @@ Template.accountBox.events({
 									name: t('Online'),
 									type: 'set-state',
 									id: 'online',
-									class: 'online'
+									modifier: 'online'
 								},
 								{
 									icon: 'circle',
 									name: t('Away'),
 									type: 'set-state',
 									id: 'away',
-									class: 'away'
+									modifier: 'away'
 								},
 								{
 									icon: 'circle',
 									name: t('Busy'),
 									type: 'set-state',
 									id: 'busy',
-									class: 'busy'
+									modifier: 'busy'
 								},
 								{
 									icon: 'circle',
 									name: t('Invisible'),
 									type: 'set-state',
 									id: 'offline',
-									class: 'offline'
+									modifier: 'offline'
 								}
 							]
 						},
