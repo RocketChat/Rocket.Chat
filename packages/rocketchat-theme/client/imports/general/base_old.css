@@ -3757,7 +3757,8 @@ body:not(.is-cordova) {
 			margin-bottom: 10px;
 		  }
 		}
-		& a .file-name {
+		
+		& .file-name {
 			display: block;
 
 			padding: 10px 5px;
