@@ -263,8 +263,8 @@
       "from": "fs.realpath@>=1.0.0 <2.0.0"
     },
     "gcp-metadata": {
-      "version": "0.3.0",
-      "resolved": "https://registry.npmjs.org/gcp-metadata/-/gcp-metadata-0.3.0.tgz",
+      "version": "0.3.1",
+      "resolved": "https://registry.npmjs.org/gcp-metadata/-/gcp-metadata-0.3.1.tgz",
       "from": "gcp-metadata@>=0.3.0 <0.4.0",
       "dependencies": {
         "retry-request": {
@@ -275,8 +275,8 @@
       }
     },
     "gcs-resumable-upload": {
-      "version": "0.8.1",
-      "resolved": "https://registry.npmjs.org/gcs-resumable-upload/-/gcs-resumable-upload-0.8.1.tgz",
+      "version": "0.8.2",
+      "resolved": "https://registry.npmjs.org/gcs-resumable-upload/-/gcs-resumable-upload-0.8.2.tgz",
       "from": "gcs-resumable-upload@>=0.8.0 <0.9.0"
     },
     "getpass": {
@@ -1316,8 +1316,8 @@
       "from": "through2@>=2.0.0 <3.0.0"
     },
     "tough-cookie": {
-      "version": "2.3.2",
-      "resolved": "https://registry.npmjs.org/tough-cookie/-/tough-cookie-2.3.2.tgz",
+      "version": "2.3.3",
+      "resolved": "https://registry.npmjs.org/tough-cookie/-/tough-cookie-2.3.3.tgz",
       "from": "tough-cookie@>=2.3.2 <2.4.0"
     },
     "tunnel-agent": {
