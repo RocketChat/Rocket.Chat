@@ -35,10 +35,10 @@
 									{{#if allowAvatarChange}}
 										{{#if suggestions.ready}}
 											<div class="rc-select-avatar__list">
-												<div class="rc-select-avatar__list-item rc-tooltip js-select-avatar-initials" aria-label="Username initials">
+												<div class="rc-select-avatar__list-item rc-tooltip js-select-avatar-initials" aria-label="{{_ "Username_initials" }}">
 													{{> avatar username=initialsUsername }}
 												</div>
-												<div class="rc-select-avatar__list-item rc-tooltip js-select-avatar-upload" aria-label="upload file">
+												<div class="rc-select-avatar__list-item rc-tooltip js-select-avatar-upload" aria-label="{{_ "Upload_file" }}">
 													<label class="rc-select-avatar__upload-label avatar" for="upload-avatar">
 														{{> icon block="rc-select-avatar__upload-icon" icon="upload"}}
 													</label>
@@ -61,7 +61,7 @@
 								<label class="rc-input__label">
 									<div class="rc-input__title">{{_ "Name"}}</div>
 									<div class="rc-input__wrapper">
-										<input type="text" class="rc-input__element" name="realname" id="realname" value="{{realname}}" >
+										<input type="text" class="rc-input__element" name="realname" id="realname" placeholder="{{_ "Name_Placeholder" }}" value="{{realname}}" >
 									</div>
 								</label>
 							</div>
@@ -73,7 +73,7 @@
 										<div class="rc-input__icon">
 											{{> icon block="rc-input__icon-svg" icon="at"}}
 										</div>
-										<input type="text" class="rc-input__element" name="username" id="username" value="{{username}}" {{ifThenElse canChange '' 'disabled'}}>
+										<input type="text" class="rc-input__element" name="username" id="username" placeholder="{{_ "Username_Placeholder" }}" value="{{username}}" {{ifThenElse canChange '' 'disabled'}}>
 									</div>
 								</label>
 								{{# unless canChange}}
@@ -96,7 +96,7 @@
 								<label class="rc-input__label">
 									<div class="rc-input__title">{{_ "Email"}}</div>
 									<div class="rc-input__wrapper">
-										<input name="email" type="text" class="rc-input__element" placeholder="Type email" value="{{email}}" autocomplete="false" {{ifThenElse canChange '' 'disabled'}}>
+										<input name="email" type="text" class="rc-input__element" placeholder="{{_ "Email_Placeholder" }}" value="{{email}}" autocomplete="false" {{ifThenElse canChange '' 'disabled'}}>
 										{{#unless emailVerified}}
 											<div class="rc-input__icon rc-input__icon--right">
 												{{> icon block="rc-input__icon-svg" icon="cross-circled"}}
@@ -123,7 +123,7 @@
 									<label class="rc-input__label">
 										<div class="rc-input__title">{{_ "New_password"}}</div>
 										<div class="rc-input__wrapper">
-											<input name="password" type="password" class="rc-input__element" placeholder="Type new password"  autocomplete="new-password" {{ifThenElse canChange '' 'disabled'}}>
+											<input name="password" type="password" class="rc-input__element" placeholder="{{_ "New_Password_Placeholder"}}"  autocomplete="new-password" {{ifThenElse canChange '' 'disabled'}}>
 										</div>
 									</label>
 									{{# unless canChange}}

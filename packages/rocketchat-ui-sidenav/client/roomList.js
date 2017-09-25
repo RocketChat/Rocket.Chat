@@ -76,6 +76,10 @@ Template.roomList.helpers({
 	}
 });
 
+// Template.roomList.onRendered(function() {
+// 	$(this.firstNode.parentElement).perfectScrollbar();
+// });
+
 Template.roomList.events({
 	'click .more'(e, t) {
 		if (t.data.identifier === 'p') {

@@ -1,7 +1,7 @@
 .message-actions {
 	position: absolute;
 	top: 2px;
-	right: 2px;
+	right: 0.4rem;
 
 	display: none;
 
@@ -90,4 +90,9 @@
 
 .first-unread .message-actions {
 	top: 18px;
+}
+
+.rtl .message-actions {
+	right: auto;
+	left: 2px;
 }

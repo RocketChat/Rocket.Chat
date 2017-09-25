@@ -1,6 +1,7 @@
-/* globals RocketChatTabBar , chatMessages, fileUpload , fireGlobalEvent , mobileMessageMenu , cordova , readMessage , RoomRoles, popover*/
+/* globals RocketChatTabBar , chatMessages, fileUpload , fireGlobalEvent , mobileMessageMenu , cordova , readMessage , RoomRoles, popover */
 import moment from 'moment';
 import mime from 'mime-type/with-db';
+import Clipboard from 'clipboard';
 
 window.chatMessages = window.chatMessages || {};
 const socialSharing = (options = {}) => window.plugins.socialsharing.share(options.message, options.subject, options.file, options.link);
@@ -485,7 +486,8 @@ Template.room.events({
 				icon: item.icon,
 				name: t(item.label),
 				type: 'message-action',
-				id: item.id
+				id: item.id,
+				modifier: item.id === 'delete-message' ? 'error' : null
 			};
 		});
 
@@ -505,7 +507,8 @@ Template.room.events({
 				x: e.clientX,
 				y: e.clientY
 			},
-			activeElement: $(e.currentTarget).parents('.message')[0]
+			activeElement: $(e.currentTarget).parents('.message')[0],
+			onRendered: () => new Clipboard('.rc-popover__item')
 		};
 
 		popover.open(config);
@@ -734,6 +737,7 @@ Template.room.onDestroyed(function() {
 });
 
 Template.room.onRendered(function() {
+	// $(this.find('.messages-box .wrapper')).perfectScrollbar();
 	const rid = Session.get('openedRoom');
 	if (!window.chatMessages[rid]) {
 		window.chatMessages[rid] = new ChatMessages;
@@ -750,8 +754,10 @@ Template.room.onRendered(function() {
 	const messageBox = $('.messages-box');
 
 	template.isAtBottom = function(scrollThreshold) {
-		if ((scrollThreshold == null)) { scrollThreshold = 0; }
-		if ((wrapper.scrollTop + scrollThreshold) >= (wrapper.scrollHeight - wrapper.clientHeight)) {
+		if (scrollThreshold == null) {
+			scrollThreshold = 0;
+		}
+		if (wrapper.scrollTop + scrollThreshold >= wrapper.scrollHeight - wrapper.clientHeight) {
 			newMessage.className = 'new-message background-primary-action-color color-content-background-color not';
 			return true;
 		}
@@ -770,8 +776,7 @@ Template.room.onRendered(function() {
 	};
 
 	template.sendToBottomIfNecessary = function() {
-
-		if ((template.atBottom === true) && (template.isAtBottom() !== true)) {
+		if (template.atBottom === true && template.isAtBottom() !== true) {
 			return template.sendToBottom();
 		}
 	};

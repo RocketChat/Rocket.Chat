@@ -10,6 +10,10 @@ Package.describe({
 	documentation: 'README.md'
 });
 
+Npm.depends({
+	clipboard: '1.7.1'
+});
+
 Package.onUse(function(api) {
 	api.use([
 		'accounts-base',
