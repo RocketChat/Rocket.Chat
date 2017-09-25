@@ -49,16 +49,14 @@ Template.adminRooms.helpers({
 
 		// custom room type
 		return TAPi18n.__(RocketChat.roomTypes[this.t].label);
-	}
-	,
+	},
 	'default'() {
 		if (this['default']) {
 			return t('True');
 		} else {
 			return t('False');
 		}
-	}
-	,
+	},
 	flexData() {
 		return {
 			tabBar: Template.instance().tabBar
