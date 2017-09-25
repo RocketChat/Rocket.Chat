@@ -19,10 +19,7 @@ Template.chatRoomItem.helpers({
 
 		const archivedClass = this.archived ? 'archived' : false;
 
-		let alertClass = false;
-		if (!this.hideUnreadStatus && (FlowRouter.getParam('_id') !== this.rid || !document.hasFocus()) && this.alert) {
-			alertClass = 'sidebar-item__link--active';
-		}
+		this.alert = !this.hideUnreadStatus && (FlowRouter.getParam('_id') !== this.rid || !document.hasFocus()) && this.alert;
 
 		const icon = RocketChat.roomTypes.getIcon(this.t);
 		const avatar = !icon;
@@ -37,7 +34,6 @@ Template.chatRoomItem.helpers({
 			unread,
 			active,
 			archivedClass,
-			alertClass,
 			statusClass: this.t === 'd' ? Session.get(`user_${ this.name }_status`) || 'offline' : this.t === 'l' ? RocketChat.roomTypes.getUserStatus(this.t, this.rid) || 'offline' : false
 		};
 	}
