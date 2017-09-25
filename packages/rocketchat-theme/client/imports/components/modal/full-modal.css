@@ -28,13 +28,15 @@
 	}
 
 	&__back-text {
-		margin-right: 0.375rem;
+		margin-right: 2px;
+
+		line-height: 22px;
 	}
 
 	&__back-icon {
-		width: 10px;
-		height: 10px;
-		stroke: currentColor;
+		transform: rotate(45deg);
+
+		font-size: 1rem;
 	}
 }
 
@@ -53,5 +55,16 @@
 		&__back-button {
 			top: -1.5rem;
 		}
+	}
+}
+
+.rtl .full-modal {
+	&__back-button {
+	  right: auto;
+	  left: 0;
+	}
+
+	&__back-text {
+		margin-left: 0.375rem;
 	}
 }

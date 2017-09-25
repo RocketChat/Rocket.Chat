@@ -90,7 +90,8 @@
 	}
 
 	& .rc-button {
-		margin: 0 0.25rem;
+		margin-left: 0.25rem;
+		margin-right: 0.25rem;
 
 		color: var(--color-gray);
 		border-color: #414852;
@@ -105,5 +106,11 @@
 @media (width <= 400px) {
 	.toolbar {
 		padding: 0 calc(var(--sidebar-small-default-padding) - 8px) var(--sidebar-small-default-padding);
+	}
+}
+
+.rtl .toolbar {
+	& .rc-input__icon + .rc-input__element {
+		padding: 0.5rem 2.25rem 0.5rem 1rem;
 	}
 }
