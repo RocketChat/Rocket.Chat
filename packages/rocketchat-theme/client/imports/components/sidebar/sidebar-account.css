@@ -1,3 +1,16 @@
+.sidebar-light {
+	& .sidebar__account-username {
+		color: var(--color-dark);
+	}
+
+	& .sidebar__account-menu {
+		fill: var(--color-dark);
+	}
+
+	& .sidebar__account.active:hover {
+		background-color: var(--sidebar-background-light-hover);
+	}
+}
 .sidebar__account {
 	display: flex;
 
@@ -7,26 +20,13 @@
 
 	align-items: center;
 
+	transition: background-color 0.3s;
+
 	&.active:hover {
 		cursor: pointer;
 
-		background-color: var(--sidebar-background-hover);
+		background-color: var(--sidebar-item-hover-background);
 	}
-
-	&--lighten {
-		& .sidebar__account-username {
-			color: var(--sidebar-account-username-color-darker);
-		}
-
-		& .sidebar__account-menu {
-			fill: var(--sidebar-account-username-color-darker);
-		}
-
-		&.active:hover {
-			background-color: var(--sidebar-background-light-hover);
-		}
-	}
-
 	&-thumb {
 
 		flex: 0 0 var(--sidebar-account-thumb-size);

@@ -1,6 +1,10 @@
 .rtl {
 	direction: rtl;
 
+	& .rc-old .page-container .content .rocket-form .submit {
+		text-align: left;
+	}
+
 	& button {
 		text-align: right;
 	}
@@ -641,18 +645,6 @@
 		}
 	}
 
-	& .first-unread .body {
-		&::before {
-			right: 20px;
-			left: 0;
-		}
-
-		&::after {
-			right: auto;
-			left: 0;
-		}
-	}
-
 	& .ticks-bar {
 		right: auto;
 		left: 2px;
@@ -677,9 +669,16 @@
 
 			& i {
 				float: right;
-
 				margin-right: auto;
 				margin-left: 10px;
+
+				&.file-delete {
+				  float: left;
+				}
+
+				&.file-download {
+				  float: left;
+				}
 			}
 		}
 	}

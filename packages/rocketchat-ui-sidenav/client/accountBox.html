@@ -1,5 +1,5 @@
 <template name="accountBox">
-	<div class="sidebar__account {{#if lighten}}sidebar__account--lighten{{/if}} {{#unless isAnonymous}}active{{/unless}}" aria-label="{{_ "Account"}}" role="region">
+	<div class="sidebar__account {{#unless isAnonymous}}active{{/unless}}" aria-label="{{_ "Account"}}" role="region">
 		{{#with myUserInfo}}
 			{{#if username}}
 				<div class="sidebar__account-thumb" data-status='{{visualStatus}}'>
