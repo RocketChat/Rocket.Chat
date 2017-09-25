@@ -48,20 +48,6 @@
 		}
 	}
 
-	&--darken {
-		&:hover {
-			background-color: var(--sidebar-item-darken-hover-background);
-		}
-
-		& .sidebar-item__link {
-			color: var(--sidebar-item-darken-text-color);
-		}
-	}
-
-	&--lighten:hover {
-		background-color: var(--sidebar-item-lighten-hover-background);
-	}
-
 	&__popup-active {
 		background-color: var(--sidebar-item-popup-background);
 	}
