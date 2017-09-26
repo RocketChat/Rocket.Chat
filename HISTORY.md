@@ -1,3 +1,39 @@
+<a name="0.59.0-rc.9"></a>
+# 0.59.0-rc.9 (2017-09-26)
+
+
+### New Features
+
+- [#8304](https://github.com/RocketChat/Rocket.Chat/pull/8304) Add RD Station integration to livechat
+
+
+### Bug Fixes
+
+- [#8278](https://github.com/RocketChat/Rocket.Chat/pull/8278) "Cancel button" on modal in RTL in Firefox 55
+- [#8266](https://github.com/RocketChat/Rocket.Chat/pull/8266) "Channel Setting" buttons alignment in RTL
+- [#8270](https://github.com/RocketChat/Rocket.Chat/pull/8270) [i18n] My Profile & README.md links
+- [#8271](https://github.com/RocketChat/Rocket.Chat/pull/8271) Attachment icons alignment in LTR and RTL
+- [#8307](https://github.com/RocketChat/Rocket.Chat/pull/8307) Call buttons with wrong margin on RTL
+- [#8295](https://github.com/RocketChat/Rocket.Chat/pull/8295) Check attachments is defined before accessing first element
+- [#8300](https://github.com/RocketChat/Rocket.Chat/pull/8300) Emoji Picker hidden for reactions in RTL
+- [#8310](https://github.com/RocketChat/Rocket.Chat/pull/8310) Execute meteor reset on TRAVIS_TAG builds
+- [#8286](https://github.com/RocketChat/Rocket.Chat/pull/8286) Missing placeholder translations
+- [#8237](https://github.com/RocketChat/Rocket.Chat/pull/8237) Removing pipe and commas from custom emojis ([#8168](https://github.com/RocketChat/Rocket.Chat/issues/8168))
+- [#8269](https://github.com/RocketChat/Rocket.Chat/pull/8269) some placeholder and phrase traslation fix
+- [#8298](https://github.com/RocketChat/Rocket.Chat/pull/8298) TypeError: Cannot read property 't' of undefined
+- [#8296](https://github.com/RocketChat/Rocket.Chat/pull/8296) Wrong file name when upload to AWS S3
+
+
+<details>
+<summary>Others</summary>
+
+- [#8299](https://github.com/RocketChat/Rocket.Chat/pull/8299)  [FIX] Amin menu not showing all items & File list breaking line
+- [#8273](https://github.com/RocketChat/Rocket.Chat/pull/8273) Deps update
+- [#8282](https://github.com/RocketChat/Rocket.Chat/pull/8282) fix color on unread messages
+</details>
+
+
+
 <a name="0.59.0-rc.8"></a>
 # 0.59.0-rc.8 (2017-09-23)
 
