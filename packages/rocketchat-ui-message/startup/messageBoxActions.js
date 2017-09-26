@@ -46,32 +46,30 @@ RocketChat.messageBox.actions.add('Add_files_from', 'Computer', {
 	id: 'file-upload',
 	icon: 'computer',
 	condition: () => RocketChat.settings.get('FileUpload_Enabled'),
-	action() {
-		setTimeout(() => {
-			popover.close();
-			const input = document.createElement('input');
-			input.style.display = 'none';
-			input.type = 'file';
-			input.setAttribute('multiple', 'multiple');
-			document.body.appendChild(input);
+	action({event}) {
+		event.preventDefault();
+		const input = document.createElement('input');
+		input.style.display = 'none';
+		input.type = 'file';
+		input.setAttribute('multiple', 'multiple');
+		document.body.appendChild(input);
 
-			input.click();
+		input.click();
 
-			input.addEventListener('change', function(e) {
-				const filesToUpload = [...e.target.files].map(file => {
-					Object.defineProperty(file, 'type', {
-						value: mime.lookup(file.name)
-					});
-					return {
-						file,
-						name: file.name
-					};
+		input.addEventListener('change', function(e) {
+			const filesToUpload = [...e.target.files].map(file => {
+				Object.defineProperty(file, 'type', {
+					value: mime.lookup(file.name)
 				});
-				return fileUpload(filesToUpload);
-			}, {once: true});
+				return {
+					file,
+					name: file.name
+				};
+			});
+			return fileUpload(filesToUpload);
+		}, {once: true});
 
-			input.remove();
-		}, 100);
+		input.remove();
 	}
 });
 
