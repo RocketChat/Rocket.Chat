@@ -63,12 +63,12 @@ Template.livechatWindow.events({
 	},
 	'click .sound'(event) {
 		event.stopPropagation();
-		Session.set({ sound: !Session.get('sound') });
+		Session.set({sound: !Session.get('sound')});
 	}
 });
 
 Template.livechatWindow.onCreated(function() {
-	Session.set({ sound: true });
+	Session.set({sound: true});
 
 	const availableLanguages = TAPi18n.getLanguages();
 

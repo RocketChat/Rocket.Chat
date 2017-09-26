@@ -6,6 +6,9 @@ import toastr from 'toastr';
 const LivechatAppearance = new Mongo.Collection('livechatAppearance');
 
 Template.livechatAppearance.helpers({
+	chosenLanguage() {
+		return Template.instance().chosenLanguage.get();
+	},
 	previewState() {
 		return Template.instance().previewState.get();
 	},
@@ -154,16 +157,10 @@ Template.livechatAppearance.helpers({
 		});
 
 		result = _.sortBy(result, 'key');
-		result.unshift({
-			'name': 'Default',
-			'en': 'Default',
-			'key': ''
-		});
 		return result;
 	},
-	LivechatLanguage(key) {
-		const setting = RocketChat.settings.get('Language');
-		return setting && setting.split('-').shift().toLowerCase() === key;
+	defaultLanguage(key) {
+		return 'en' === key;
 	}
 });
 
@@ -234,15 +231,7 @@ Template.livechatAppearance.events({
 		instance[e.currentTarget.name].set(value);
 	},
 	'change #language, keyup #language'(e, instance) {
-		let value = _.trim($('#language').val());
-		switch (this.type) {
-			case 'int':
-				value = parseInt(value);
-				break;
-			case 'boolean':
-				value = value === '1';
-		}
-		instance.chosenLanguage.set(value);
+		instance.chosenLanguage.set(e.currentTarget.value);
 	},
 	'click .reset-settings'(e, instance) {
 		e.preventDefault();

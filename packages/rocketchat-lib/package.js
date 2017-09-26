@@ -82,6 +82,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/functions/deleteUser.js', 'server');
 	api.addFiles('server/functions/getFullUserData.js', 'server');
 	api.addFiles('server/functions/getRoomByNameOrIdWithOptionToJoin.js', 'server');
+	api.addFiles('server/functions/livechatTexts.js', 'server');
 	api.addFiles('server/functions/removeUserFromRoom.js', 'server');
 	api.addFiles('server/functions/saveUser.js', 'server');
 	api.addFiles('server/functions/saveCustomFields.js', 'server');
@@ -113,6 +114,7 @@ Package.onUse(function(api) {
 	// SERVER MODELS
 	api.addFiles('server/models/_Base.js', 'server');
 	api.addFiles('server/models/Avatars.js', 'server');
+	api.addFiles('server/models/LivechatTexts.js', 'server');
 	api.addFiles('server/models/Messages.js', 'server');
 	api.addFiles('server/models/Reports.js', 'server');
 	api.addFiles('server/models/Rooms.js', 'server');

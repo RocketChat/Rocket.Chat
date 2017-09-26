@@ -13,7 +13,7 @@ Meteor.methods({
 		];
 
 		const valid = settings.every((setting) => {
-			return validSettings.indexOf(setting._id) !== -1;
+			return validSettings.indexOf(setting.identifier) !== -1;
 		});
 
 		if (!valid) {
@@ -21,7 +21,7 @@ Meteor.methods({
 		}
 
 		settings.forEach((setting) => {
-			RocketChat.settings.updateById(setting._id, setting.value);
+			RocketChat.LivechatTexts.updateByNameAndLang(setting.identifier, setting.lang, setting.text);
 		});
 
 		return;
