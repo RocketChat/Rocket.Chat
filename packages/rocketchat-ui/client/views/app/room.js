@@ -952,4 +952,10 @@ Template.room.onRendered(function() {
 			newMessage.classList.remove('not');
 		}
 	});
+	Tracker.autorun(function() {
+		const subRoom = ChatSubscription.findOne({rid:template.data._id});
+		if (!subRoom) {
+			FlowRouter.go('home');
+		}
+	});
 });
