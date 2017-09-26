@@ -6,6 +6,16 @@ import { Meteor } from 'meteor/meteor';
 import { _ } from 'meteor/underscore';
 import { RocketChat } from 'meteor/rocketchat:lib';
 
+const specialChars = {
+	'<': '&lt;',
+	'>': '&gt;'
+};
+const specialCharsRegex = new RegExp(`[${ Object.keys(specialChars) }]`, 'g');
+
+function replaceSpecialChars(text) {
+	return text.replace(specialCharsRegex, r => specialChars[r]);
+}
+
 const parseNotEscaped = function(msg, message) {
 	if (message && message.tokens == null) {
 		message.tokens = [];
@@ -74,13 +84,13 @@ const parseNotEscaped = function(msg, message) {
 	// Support [Text](http://link)
 	msg = msg.replace(new RegExp(`\\[([^\\]]+)\\]\\(((?:${ schemes }):\\/\\/[^\\)]+)\\)`, 'gm'), function(match, title, url) {
 		const target = url.indexOf(Meteor.absoluteUrl()) === 0 ? '' : '_blank';
-		return `<a href="${ _.escapeHTML(url) }" target="${ _.escapeHTML(target) }" rel="noopener noreferrer">${ _.escapeHTML(title) }</a>`;
+		return `<a href="${ _.escapeHTML(url) }" target="${ _.escapeHTML(target) }" rel="noopener noreferrer">${ replaceSpecialChars(title) }</a>`;
 	});
 
 	// Support <http://link|Text>
 	msg = msg.replace(new RegExp(`(?:<|&lt;)((?:${ schemes }):\\/\\/[^\\|]+)\\|(.+?)(?=>|&gt;)(?:>|&gt;)`, 'gm'), (match, url, title) => {
 		const target = url.indexOf(Meteor.absoluteUrl()) === 0 ? '' : '_blank';
-		return `<a href="${ _.escapeHTML(url) }" target="${ _.escapeHTML(target) }" rel="noopener noreferrer">${ _.escapeHTML(title) }</a>`;
+		return `<a href="${ _.escapeHTML(url) }" target="${ _.escapeHTML(target) }" rel="noopener noreferrer">${ replaceSpecialChars(title) }</a>`;
 	});
 
 	return msg;

@@ -191,7 +191,8 @@ const link = {
 	'[Rocket.Chat Site](ttps://rocket.chat/)': '[Rocket.Chat Site](ttps://rocket.chat/)',
 	'[Rocket.Chat Site](tps://rocket.chat/)': '[Rocket.Chat Site](tps://rocket.chat/)',
 	'[Demo Site For Rocket.Chat](demo.rocket.chat/)': '[Demo Site For Rocket.Chat](demo.rocket.chat/)',
-	'[Testing Entry on Rocket.Chat Docs Site](htts://rocket.chat/docs/developer-guides/testing/#testing)': '[Testing Entry on Rocket.Chat Docs Site](htts://rocket.chat/docs/developer-guides/testing/#testing)'
+	'[Testing Entry on Rocket.Chat Docs Site](htts://rocket.chat/docs/developer-guides/testing/#testing)': '[Testing Entry on Rocket.Chat Docs Site](htts://rocket.chat/docs/developer-guides/testing/#testing)',
+	'[Special chars \' " &](https://rocket.chat/)': linkWrapped('https://rocket.chat/', 'Special chars \' " &')
 };
 
 const inlinecode = {
