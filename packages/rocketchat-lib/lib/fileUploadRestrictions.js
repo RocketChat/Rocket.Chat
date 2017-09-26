@@ -11,7 +11,15 @@ RocketChat.fileUploadMediaWhiteList = function() {
 
 RocketChat.fileUploadIsValidContentType = function(type) {
 	const list = RocketChat.fileUploadMediaWhiteList();
-	if (!list || _.contains(list, type)) {
+	if (!list) {
+		return true;
+	}
+
+	if (!type) {
+		return false;
+	}
+
+	if (_.contains(list, type)) {
 		return true;
 	} else {
 		const wildCardGlob = '/*';

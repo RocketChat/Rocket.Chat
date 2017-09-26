@@ -127,6 +127,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/hooks/externalMessage.js', 'server');
 	api.addFiles('server/hooks/markRoomResponded.js', 'server');
 	api.addFiles('server/hooks/offlineMessage.js', 'server');
+	api.addFiles('server/hooks/RDStation.js', 'server');
 	api.addFiles('server/hooks/sendToCRM.js', 'server');
 
 	// methods
