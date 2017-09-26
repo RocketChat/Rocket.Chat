@@ -284,24 +284,29 @@ Template.livechatAppearance.events({
 
 		const settingTexts = [
 			{
-				_id: 'Livechat_title',
-				value: _.trim(instance.title.get())
+				identifier: 'Livechat_title',
+				lang: instance.chosenLanguage.get(),
+				text: _.trim(instance.title.get())
 			},
 			{
-				_id: 'Livechat_offline_form_unavailable',
-				value: _.trim(instance.offlineUnavailableMessage.get())
+				identifier: 'Livechat_offline_form_unavailable',
+				lang: instance.chosenLanguage.get(),
+				text: _.trim(instance.offlineUnavailableMessage.get())
 			},
 			{
-				_id: 'Livechat_offline_message',
-				value: _.trim(instance.offlineMessage.get())
+				identifier: 'Livechat_offline_message',
+				lang: instance.chosenLanguage.get(),
+				text: _.trim(instance.offlineMessage.get())
 			},
 			{
-				_id: 'Livechat_offline_success_message',
-				value: _.trim(instance.offlineSuccessMessage.get())
+				identifier: 'Livechat_offline_success_message',
+				lang: instance.chosenLanguage.get(),
+				text: _.trim(instance.offlineSuccessMessage.get())
 			},
 			{
-				_id: 'Livechat_offline_title',
-				value: _.trim(instance.titleOffline.get())
+				identifier: 'Livechat_offline_title',
+				lang: instance.chosenLanguage.get(),
+				text: _.trim(instance.titleOffline.get())
 			}
 		];
 
