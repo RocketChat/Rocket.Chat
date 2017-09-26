@@ -86,7 +86,7 @@ Template.adminRoomInfo.events({
 			html: false
 		}, () => {
 			swal.disableButtons();
-			Meteor.call('eraseRoom', this.rid, function(error) {
+			Meteor.call('eraseRoom', this.rid, function(error, result) {
 				if (error) {
 					handleError(error);
 					swal.enableButtons();
@@ -98,6 +98,9 @@ Template.adminRoomInfo.events({
 						timer: 2000,
 						showConfirmButton: false
 					});
+					RoomManager.close(result.t+result.name);
+					/* globals CachedChatRoom */
+					CachedChatRoom.trySync();
 				}
 			});
 		});

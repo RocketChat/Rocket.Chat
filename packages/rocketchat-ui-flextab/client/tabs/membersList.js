@@ -168,7 +168,7 @@ Template.membersList.events({
 				if (error) {
 					return handleError(error);
 				}
-
+				template.usersRefresh.set(true);
 				return $('#user-add-search').val('');
 			});
 		}
@@ -188,12 +188,14 @@ Template.membersList.onCreated(function() {
 	this.users = new ReactiveVar([]);
 	this.total = new ReactiveVar;
 	this.loading = new ReactiveVar(true);
-
+	this.usersRefresh = new ReactiveVar(false);
 	this.tabBar = Template.instance().tabBar;
 
 	Tracker.autorun(() => {
 		if (this.data.rid == null) { return; }
-
+		if (this.usersRefresh.get()) {
+			this.usersRefresh.set(false);
+		}
 		this.loading.set(true);
 		return Meteor.call('getUsersOfRoom', this.data.rid, this.showAllUsers.get(), (error, users) => {
 			this.users.set(users.records);
@@ -206,6 +208,7 @@ Template.membersList.onCreated(function() {
 
 	this.clearUserDetail = () => {
 		this.showDetail.set(false);
+		this.usersRefresh.set(true);
 		return setTimeout(() => {
 			return this.clearRoomUserDetail();
 		}, 500);
