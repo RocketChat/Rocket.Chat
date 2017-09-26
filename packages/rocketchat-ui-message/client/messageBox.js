@@ -54,7 +54,7 @@ Template.messageBox.helpers({
 		return RocketChat.settings.get('Message_ShowFormattingTips') && (RocketChat.Markdown || RocketChat.MarkdownCode || katexSyntax());
 	},
 	canJoin() {
-		return RocketChat.roomTypes.verifyShowJoinLink(this._id);
+		return Meteor.userId() && RocketChat.roomTypes.verifyShowJoinLink(this._id);
 	},
 	joinCodeRequired() {
 		const code = Session.get(`roomData${ this._id }`);
@@ -179,6 +179,13 @@ Template.messageBox.helpers({
 	},
 	showSandstorm() {
 		return Meteor.settings['public'].sandstorm && !Meteor.isCordova;
+	},
+
+	anonymousRead() {
+		return (Meteor.userId() == null) && RocketChat.settings.get('Accounts_AllowAnonymousRead') === true;
+	},
+	anonymousWrite() {
+		return (Meteor.userId() == null) && RocketChat.settings.get('Accounts_AllowAnonymousRead') === true && RocketChat.settings.get('Accounts_AllowAnonymousWrite') === true;
 	}
 });
 
@@ -245,6 +252,21 @@ Template.messageBox.events({
 				RoomManager.getOpenedRoomByRid(this._id).ready = false;
 				RoomHistoryManager.getRoom(this._id).loaded = null;
 				RoomManager.computation.invalidate();
+			}
+		});
+	},
+
+	'click .register'(event) {
+		event.stopPropagation();
+		event.preventDefault();
+		return Session.set('forceLogin', true);
+	},
+	'click .register-anonymous'(event) {
+		event.stopPropagation();
+		event.preventDefault();
+		return Meteor.call('registerUser', {}, function(error, loginData) {
+			if (loginData && loginData.token) {
+				return Meteor.loginWithToken(loginData.token);
 			}
 		});
 	},
@@ -334,7 +356,7 @@ Template.messageBox.events({
 		t.$('.share-items').toggleClass('hidden');
 		return t.$('.message-buttons.share').toggleClass('active');
 	},
-	'click .message-form .message-buttons.location'() {
+	'click .message-form .message-buttons.location-button'() {
 		const roomId = this._id;
 		const position = RocketChat.Geolocation.get();
 		const latitude = position.coords.latitude;

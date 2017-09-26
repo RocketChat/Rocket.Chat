@@ -177,10 +177,10 @@ Meteor.methods({
 		}
 		if (Object.keys(query).length > 0) {
 			query.t = {
-				$ne: 'rm'  //hide removed messages (useful when searching for user messages)
+				$ne: 'rm' //hide removed messages (useful when searching for user messages)
 			};
 			query._hidden = {
-				$ne: true  // don't return _hidden messages
+				$ne: true // don't return _hidden messages
 			};
 			if (rid != null) {
 				query.rid = rid;

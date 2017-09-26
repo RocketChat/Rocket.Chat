@@ -1,33 +1,41 @@
 {
 	"name": "Rocket.Chat",
 	"description": "The Ultimate Open Source WebChat Platform",
-	"version": "0.57.2",
+	"version": "0.58.1",
 	"author": {
 		"name": "Rocket.Chat",
 		"url": "https://rocket.chat/"
 	},
-	"contributors": [{
-		"name": "Aaron Ogle",
-		"email": "aaron.ogle@rocket.chat"
-	}, {
-		"name": "Bradley Hilton",
-		"email": "bradley.hilton@rocket.chat"
-	}, {
-		"name": "Diego Sampaio",
-		"email": "diego.sampaio@rocket.chat"
-	}, {
-		"name": "Gabriel Engel",
-		"email": "gabriel.engel@rocket.chat"
-	}, {
-		"name": "Marcelo Schmidt",
-		"email": "marcelo.schmidt@rocket.chat"
-	}, {
-		"name": "Rodrigo Nascimento",
-		"email": "rodrigo.nascimento@rocket.chat"
-	}, {
-		"name": "Sing Li",
-		"email": "sing.li@rocket.chat"
-	}],
+	"contributors": [
+		{
+			"name": "Aaron Ogle",
+			"email": "aaron.ogle@rocket.chat"
+		},
+		{
+			"name": "Bradley Hilton",
+			"email": "bradley.hilton@rocket.chat"
+		},
+		{
+			"name": "Diego Sampaio",
+			"email": "diego.sampaio@rocket.chat"
+		},
+		{
+			"name": "Gabriel Engel",
+			"email": "gabriel.engel@rocket.chat"
+		},
+		{
+			"name": "Marcelo Schmidt",
+			"email": "marcelo.schmidt@rocket.chat"
+		},
+		{
+			"name": "Rodrigo Nascimento",
+			"email": "rodrigo.nascimento@rocket.chat"
+		},
+		{
+			"name": "Sing Li",
+			"email": "sing.li@rocket.chat"
+		}
+	],
 	"mocha": {
 		"tests": [
 			"packages/**/*.tests.js"
@@ -46,7 +54,7 @@
 		"start": "meteor npm i && meteor",
 		"lint": "eslint .",
 		"lint-fix": "eslint . --fix",
-		"stylelint": "stylelint packages/**/*.{less,css}",
+		"stylelint": "stylelint 'packages/**/*.{less,css}'",
 		"test": "node .scripts/start.js",
 		"deploy": "npm run build && pm2 startOrRestart pm2.json",
 		"chimp-watch": "chimp --ddp=http://localhost:3000 --watch --mocha --path=tests/end-to-end",
@@ -71,29 +79,30 @@
 	"devDependencies": {
 		"babel-mocha-es6-compiler": "^0.1.0",
 		"babel-plugin-array-includes": "^2.0.3",
-		"chimp": "^0.49.0",
-		"conventional-changelog": "^1.1.3",
-		"eslint": "^3.19.0",
+		"chimp": "^0.49.1",
+		"conventional-changelog-cli": "^1.3.2",
+		"eslint": "^4.2.0",
 		"postcss-cssnext": "^2.11.0",
-		"postcss-smart-import": "^0.7.2",
-		"stylelint": "^7.10.1",
+		"postcss-smart-import": "^0.7.5",
+		"simple-git": "^1.73.0",
+		"stylelint": "^7.13.0",
 		"supertest": "^3.0.0"
 	},
 	"dependencies": {
-		"@google-cloud/storage": "^1.1.1",
-		"aws-sdk": "^2.55.0",
+		"@google-cloud/storage": "^1.2.0",
+		"aws-sdk": "^2.86.0",
 		"babel-runtime": "^6.23.0",
 		"bcrypt": "^1.0.2",
-		"codemirror": "^5.26.0",
-		"file-type": "^4.3.0",
+		"codemirror": "^5.27.4",
+		"file-type": "^5.2.0",
 		"highlight.js": "^9.12.0",
 		"jquery": "^3.2.1",
-		"mime-db": "^1.28.0",
+		"mime-db": "^1.29.0",
 		"mime-type": "^3.0.5",
 		"moment": "^2.18.1",
 		"moment-timezone": "^0.5.13",
 		"photoswipe": "^4.1.2",
-		"prom-client": "^9.0.0",
+		"prom-client": "^10.0.2",
 		"semver": "^5.3.0",
 		"toastr": "^2.1.2"
 	}

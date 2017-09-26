@@ -8,8 +8,8 @@
 */
 
 // Meteor.startup ->
-	// window.addEventListener 'focus', ->
-		// readMessage.refreshUnreadMark(undefined, true)
+// window.addEventListener 'focus', ->
+// readMessage.refreshUnreadMark(undefined, true)
 
 const readMessage = new class {
 	constructor() {
@@ -145,7 +145,7 @@ const readMessage = new class {
 		}
 			// 'u._id':
 			// 	$ne: Meteor.userId()
-		, {
+			, {
 			sort: {
 				ts: -1
 			}
@@ -173,7 +173,7 @@ const readMessage = new class {
 					$ne: Meteor.userId()
 				}
 			}
-			, {
+				, {
 				sort: {
 					ts: 1
 				}

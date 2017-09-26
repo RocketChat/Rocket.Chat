@@ -48,8 +48,30 @@
 									{{#if desktopNotificationDuration}}
 										<input type="number" name="desktopNotificationDuration" min="0" value="{{desktopNotificationDuration}}">
 									{{else}}
-										<input type="number" name="desktopNotificationDuration" min="0" value="" placeholder="{{_ "Use_Global_Settings"}}">
+										<input type="number" name="desktopNotificationDuration" min="0" value="" placeholder="{{_ "Use_Global_Settings"}} ({{defaultDesktopNotificationDuration}})">
 									{{/if}}
+								</div>
+							</div>
+							<div class="input-line double-col" id="desktopNotifications">
+								<label>{{_ "Notification_Desktop_Default_For"}}</label>
+								<div>
+									<select class="input-monitor" name="desktopNotifications">
+										<option value="default" selected="{{selected 'desktopNotifications' 'default' true}}">{{_ "Default"}} ({{_ defaultDesktopNotification}})</option>
+										<option value="all" selected="{{selected 'desktopNotifications' 'all' false}}">{{_ "All_messages"}}</option>
+										<option value="mentions" selected="{{selected 'desktopNotifications' 'mentions' false}}">{{_ "Mentions"}}</option>
+										<option value="nothing" selected="{{selected 'desktopNotifications' 'nothing' false}}">{{_ "Nothing"}}</option>
+									</select>
+								</div>
+							</div>
+							<div class="input-line double-col" id="mobileNotifications">
+								<label>{{_ "Notification_Mobile_Default_For"}}</label>
+								<div>
+									<select class="input-monitor" name="mobileNotifications">
+										<option value="default" selected="{{selected 'mobileNotifications' 'default' true}}">{{_ "Default"}} ({{_ defaultMobileNotification}})</option>
+										<option value="all" selected="{{selected 'mobileNotifications' 'all' false}}">{{_ "All_messages"}}</option>
+										<option value="mentions" selected="{{selected 'mobileNotifications' 'mentions' false}}">{{_ "Mentions"}}</option>
+										<option value="nothing" selected="{{selected 'mobileNotifications' 'nothing' false}}">{{_ "Nothing"}}</option>
+									</select>
 								</div>
 							</div>
 							<div class="input-line double-col" id="unreadAlert">
@@ -210,6 +232,12 @@
 											<option value="{{_id}}" selected="{{$eq newMessageNotification _id}}">{{name}}</option>
 										{{/each}}
 									</select>
+								</div>
+							</div>
+							<div class="input-line double-col">
+								<label>{{_ "Notifications_Sound_Volume"}}</label>
+								<div>
+									{{> slider id="notificationsSoundVolume" min="0" max="100" value=notificationsSoundVolume}}
 								</div>
 							</div>
 						</div>

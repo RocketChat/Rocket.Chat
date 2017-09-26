@@ -58,7 +58,10 @@ this.visitor = new class {
 
 				// notification sound
 				if (Session.equals('sound', true) && msg.u._id !== Meteor.userId()) {
-					$('#chatAudioNotification')[0].play();
+					const audioVolume = Meteor.user() && Meteor.user().settings && Meteor.user().settings.preferences && Meteor.user().settings.preferences.notificationsSoundVolume || 100;
+					const audio = document.getElementById('chatAudioNotification');
+					audio.volume = Number((audioVolume/100).toPrecision(2));
+					audio.play();
 				}
 			}
 		});

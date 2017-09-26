@@ -37,10 +37,10 @@ Template.adminRooms.helpers({
 		if (this.t === 'c') {
 			return TAPi18n.__('Channel');
 		} else if (this.t === 'd') {
-			return TAPi18n.__('Direct Message');
+			return TAPi18n.__('Direct_Messages');
 		}
 		if (this.t === 'p') {
-			return TAPi18n.__('Private Group');
+			return TAPi18n.__('Private_Groups');
 		}
 		if (this.t === 'r') {
 			return TAPi18n.__('Request');

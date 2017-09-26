@@ -35,7 +35,14 @@ Template.dbsAI_smarti.onRendered(function() {
 					RocketChat.settings.get('DBS_AI_Redlink_URL') :
 					`${ RocketChat.settings.get('DBS_AI_Redlink_URL') }/`;
 
-			const WEBSOCKET_URL = `ws${ RocketChat.settings.get('Site_Url').substring(4) }websocket/`;
+			const SITE_URL_W_SLASH =
+				RocketChat.settings.get('Site_Url').endsWith('/') ?
+					RocketChat.settings.get('Site_Url') :
+					`${ RocketChat.settings.get('Site_Url') }/`;
+
+			// stripping only the protocol ("http") from the site-url either creates a secure or an insecure websocket connection
+			const WEBSOCKET_URL = `ws${ SITE_URL_W_SLASH.substring(4) }websocket/`;
+
 			let customSuffix = RocketChat.settings.get('Assistify_AI_DBSearch_Suffix') || '';
 			customSuffix = customSuffix.replace(/\r\n|\r|\n/g, '');
 
@@ -97,14 +104,14 @@ RocketChat.settings.onload('DBS_AI_Redlink_URL', function() {
 		if (error) {
 			console.error('could not load Smarti:', error.message);
 		} else {
-				// generate a script tag for smarti JS
+			// generate a script tag for smarti JS
 			const doc = document;
 			const smartiScriptTag = doc.createElement('script');
 			smartiScriptTag.type = 'text/javascript';
 			smartiScriptTag.async = true;
 			smartiScriptTag.defer = true;
 			smartiScriptTag.innerHTML = script;
-				// insert the smarti script tag as first script tag
+			// insert the smarti script tag as first script tag
 			const firstScriptTag = doc.getElementsByTagName('script')[0];
 			firstScriptTag.parentNode.insertBefore(smartiScriptTag, firstScriptTag);
 			console.debug('loaded Smarti successfully');

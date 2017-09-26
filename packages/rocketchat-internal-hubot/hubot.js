@@ -155,7 +155,7 @@ class RocketChatAdapter extends Hubot.Adapter {
 		this.robot.emit('connected');
 		return this.robot.brain.mergeData({});
 	}
-		// @robot.brain.emit 'loaded'
+	// @robot.brain.emit 'loaded'
 
 	// Public: Raw method for shutting the bot down. Extend this.
 	//

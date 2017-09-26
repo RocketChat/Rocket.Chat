@@ -2,6 +2,7 @@ const options = {
 	fields: {
 		_id: 1,
 		name: 1,
+		fname: 1,
 		t: 1,
 		cl: 1,
 		u: 1,
@@ -13,6 +14,7 @@ const options = {
 		jitsiTimeout: 1,
 		description: 1,
 		default: 1,
+		customFields: 1,
 
 		// @TODO create an API to register this fields based on room type
 		livechatData: 1,

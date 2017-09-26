@@ -95,33 +95,26 @@ Template.HelpRequestActions.events({
 			closeOnConfirm: false,
 			roomId: instance.data.roomId
 		}), (inputValue) => {
-			/*if (!inputValue) {
-			 swal.showInputError(t('Please_add_a_comment_to_close_the_room'));
-			 return false;
-			 }
+			//inputValue is false on "cancel" and has a string value of the input if confirmed.
+			if (!(typeof inputValue === 'boolean' && inputValue === false)) {
+				Meteor.call('assistify:closeHelpRequest', this.roomId, {comment: inputValue}, function(error) {
+					if (error) {
+						return handleError(error);
+					} else {
+						swal({
+							title: t('Chat_closed'),
+							text: t('Chat_closed_successfully'),
+							type: 'success',
+							timer: 1000,
+							showConfirmButton: false
+						});
 
-			 if (s.trim(inputValue) === '') {
-			 swal.showInputError(t('Please_add_a_comment_to_close_the_room'));
-			 return false;
-			 }*/
-
-			Meteor.call('assistify:closeHelpRequest', this.roomId, {comment: inputValue}, function(error) {
-				if (error) {
-					return handleError(error);
-				} else {
-					swal({
-						title: t('Chat_closed'),
-						text: t('Chat_closed_successfully'),
-						type: 'success',
-						timer: 1000,
-						showConfirmButton: false
-					});
-
-					instance.helpRequest.set(
-						RocketChat.models.HelpRequests.findOneByRoomId(instance.data.roomId)
-					);
-				}
-			});
+						instance.helpRequest.set(
+							RocketChat.models.HelpRequests.findOneByRoomId(instance.data.roomId)
+						);
+					}
+				});
+			}
 		});
 	},
 	'click .close-livechat'(event) {
@@ -134,19 +127,22 @@ Template.HelpRequestActions.events({
 			showCancelButton: true,
 			closeOnConfirm: false
 		}, (inputValue) => {
+			//inputValue is false on "cancel" and has a string value of the input if confirmed.
+			if (!(typeof inputValue === 'boolean' && inputValue === false)) {
 
-			Meteor.call('livechat:closeRoom', this.roomId, inputValue, function(error/*, result*/) {
-				if (error) {
-					return handleError(error);
-				}
-				swal({
-					title: t('Chat_closed'),
-					text: t('Chat_closed_successfully'),
-					type: 'success',
-					timer: 1000,
-					showConfirmButton: false
+				Meteor.call('livechat:closeRoom', this.roomId, inputValue, function(error/*, result*/) {
+					if (error) {
+						return handleError(error);
+					}
+					swal({
+						title: t('Chat_closed'),
+						text: t('Chat_closed_successfully'),
+						type: 'success',
+						timer: 1000,
+						showConfirmButton: false
+					});
 				});
-			});
+			}
 		});
 	}
 });

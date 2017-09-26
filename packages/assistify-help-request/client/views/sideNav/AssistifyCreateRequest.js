@@ -58,10 +58,10 @@ Template.AssistifyCreateRequest.events({
 					console.log(err);
 					switch (err.error) {
 						case 'error-invalid-name':
-							toastr.error(TAPi18n.__('Invalid_room_name', name));
+							toastr.error(TAPi18n.__('Invalid_room_name', `${ expertise }...`));
 							return;
 						case 'error-duplicate-channel-name':
-							toastr.error(TAPi18n.__('Duplicate_channel_name', name));
+							toastr.error(TAPi18n.__('Request_already_exists'));
 							return;
 						case 'error-archived-duplicate-name':
 							toastr.error(TAPi18n.__('Duplicate_archived_channel_name', name));

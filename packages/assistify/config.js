@@ -3,7 +3,7 @@ Meteor.startup(() => {
 	// Consequently hide the original group
 	RocketChat.settings.removeById('dbsAI');
 
-	RocketChat.settings.addGroup('Assistify', function () {
+	RocketChat.settings.addGroup('Assistify', function() {
 
 		this.add('Assistify_Show_Standard_Features', false, {
 			i18nLabel: 'Assistify_Show_Standard_Features',
@@ -11,7 +11,7 @@ Meteor.startup(() => {
 			public: true
 		});
 
-		this.section('Knowledge_Base', function () {
+		this.section('Knowledge_Base', function() {
 
 			this.add('DBS_AI_Enabled', false, {
 				type: 'boolean',
