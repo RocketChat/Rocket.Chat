@@ -330,6 +330,7 @@ class CachedCollection {
 			this.log('record received', t, record);
 			if (t === 'removed') {
 				this.collection.remove(record._id);
+				RoomManager.close(record.t+record.name);
 			} else {
 				delete record.$loki;
 				this.collection.upsert({ _id: record._id }, _.omit(record, '_id'));
