@@ -556,19 +556,17 @@ Template.room.events({
 				modifier: item.color
 			};
 		});
-		const groups = allItems.reduce((result, value) => (result[value.id === 'delete-message' ? 1 : 0].push(value), result), [[], []]);
+		const [items, deleteItem] = allItems.reduce((result, value) => (result[value.id === 'delete-message' ? 1 : 0].push(value), result), [[], []]);
+		const groups = [{ items }];
+
+		if (deleteItem.length) {
+			groups.push({ items: deleteItem });
+		}
 
 		const config = {
 			columns: [
 				{
-					groups: [
-						{
-							items: groups[0]
-						},
-						{
-							items: groups[1]
-						}
-					]
+					groups
 				}
 			],
 			instance: i,
