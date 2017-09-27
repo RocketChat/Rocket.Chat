@@ -20,6 +20,7 @@
 	--color-success: #2de0a5;
 	--color-success-light: #25d198;
 	--color-button-primary: #1d74f5;
+	--color-link-active: #1d74f5;
 	--color-button-primary-light: #175cc4;
 
 	/*
@@ -292,15 +293,15 @@
 	* Header
 	*/
 	--header-height: 77px;
-	--header-padding: 20px 24px;
+	--header-padding: 16px;
 	--header-toggle-favorite-color: var(--color-gray-medium);
 	--header-toggle-favorite-star-color: var(--color-alert-light);
 	--header-title-username-color-darker: var(--color-dark);
 	--header-title-font-size: var(--text-default-size);
 	--header-title-font-size--subtitle: var(--text-small-size);
 	--header-title-status-color: var(--color-gray);
-	--header-title-username-weight: var(--text-heading-weight);
-	--header-title-status-name-weight: var(--status-name-weight);
+	--header-title-username-weight: 400;
+	--header-title-status-name-weight: 400;
 	--header-title-status-bullet-radius: var(--status-bullet-radius);
 	--header-title-status-bullet-size: var(--status-bullet-size);
 }

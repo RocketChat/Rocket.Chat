@@ -8,7 +8,11 @@
 		<div class="main-content-flex">
 			<section class="messages-container flex-tab-main-content {{adminClass}}" id="{{windowId}}" aria-label="{{_ "Channel"}}">
 				{{#unless embeddedVersion}}
-					{{> header}}
+					{{# header}}
+						{{#with flexData}}
+								{{> RoomsActionTab}}
+						{{/with}}
+					{{/header}}
 				{{/unless}}
 				<div class="messages-container-wrapper">
 					<div class="messages-container-main">
@@ -124,7 +128,7 @@
 						</footer>
 					</div>
 					{{#with flexData}}
-					{{> flexTabBar}}
+						{{> RoomsActionContent}}
 					{{/with}}
 				</div>
 			</section>

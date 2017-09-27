@@ -1,26 +1,23 @@
 .rc-header {
+
+	z-index: 1;
+
 	display: flex;
 
-	max-width: calc(100vw - var(--sidebar-width));
-	height: var(--header-height);
-	padding: var(--header-padding`);
+	padding: var(--header-padding);
 
 	white-space: nowrap;
 
 	box-shadow: 0 0 1px 1px #e6e4e4;
 
-	align-items: center;
-
 	&__room-info,
 	&__section-title {
 		flex: 1 1;
 
-		max-width: 60%;
 		margin-left: 4px;
 
 		font-size: var(--header-title-font-size);
 		line-height: 1.25rem;
-
 	}
 
 	&__room-info {
@@ -49,6 +46,7 @@
 	&__section-button > button {
 		margin: 0.3rem;
 	}
+
 	&__room-title {
 		display: flex;
 		flex-direction: column;
@@ -136,6 +134,7 @@
 		color: var(--header-toggle-favorite-star-color);
 
 		font-size: 1.5rem;
+
 		&.empty {
 			color: var(--header-toggle-favorite-color);
 
@@ -143,10 +142,10 @@
 				fill: none;
 			}
 		}
+
 		&:hover {
 			color: var(--header-toggle-favorite-star-color);
 		}
-
 	}
 
 	&__icon {
@@ -159,6 +158,94 @@
 		height: 32px;
 		margin-right: 1rem;
 		flex-shrink: 0;
+	}
+}
+
+.rc-room-actions {
+	display: flex;
+
+	margin: -8px;
+	align-items: center;
+
+	&__action,
+	&__more-action {
+		display: flex;
+		flex-direction: column;
+
+		margin: 0 8px;
+
+		cursor: pointer;
+		transition: all 0.3s;
+
+		font-size: 24px;
+		align-items: center;
+
+		&.active,
+		&:hover {
+			color: var(--color-link-active);
+		}
+	}
+
+	&__more {
+		&-action {
+			flex: 0 0 80px;
+
+			max-width: 80px;
+			margin: 8px;
+		}
+
+		&-container {
+			display: flex;
+
+			max-width: 480px;
+			margin: 0 -8px;
+			flex-wrap: wrap;
+			justify-content: space-between;
+		}
+	}
+
+	&__button {
+		color: inherit;
+
+		font-size: inherit;
+	}
+
+	&__description {
+		display: inline-block;
+		overflow: hidden;
+
+		width: 100%;
+		padding: 8px 0;
+
+		text-align: center;
+		white-space: nowrap;
+		text-overflow: ellipsis;
+
+		font-size: 12px;
+		font-weight: 600;
+	}
+
+	&__content {
+		flex: 1 1 auto;
+
+		width: 100%;
+		max-width: var(--flex-tab-width);
+		height: 100%;
+		padding: var(--default-small-padding);
+
+		background: white;
+		box-shadow: 0 5px 1px 1px rgba(31, 35, 41, 0.08);
+
+		& > .flex-tab {
+			width: 100%;
+		}
+	}
+}
+
+@media (width <= 1100px) {
+	.rc-room-actions__content {
+		position: absolute;
+		right: 0;
 	}
 }
 

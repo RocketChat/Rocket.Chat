@@ -7,6 +7,7 @@
 		}
 	}
 }
+
 .sidebar-item {
 	position: relative;
 
@@ -20,13 +21,14 @@
 
 	cursor: pointer;
 
-	border-radius: var(--sidebar-item-radius);
-	align-items: center;
+	transition: all 0.3s;
 
-	background-color: var(--sidebar-item-background);
 	color: var(--sidebar-item-text-color);
 
-	transition: all 0.3s;
+	border-radius: var(--sidebar-item-radius);
+
+	background-color: var(--sidebar-item-background);
+	align-items: center;
 
 	&:hover {
 		background-color: var(--sidebar-item-hover-background);
@@ -41,7 +43,7 @@
 	}
 
 	&--unread {
-    color: var(--sidebar-item-unread-color);
+		color: var(--sidebar-item-unread-color);
 
 		& .sidebar-item__menu {
 			transition: margin 0.1s;

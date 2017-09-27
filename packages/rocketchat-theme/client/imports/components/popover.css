@@ -33,10 +33,31 @@
 	width: 100vw;
 	height: 100vh;
 
+	&__close {
+		cursor: pointer;
+		transform: rotate(45deg);
+
+		&:hover {
+			color: var(--color-link-active);
+		}
+	}
+
+	&__header {
+		display: flex;
+		flex-direction: row;
+
+		margin-bottom: 16px;
+
+		font-size: 21px;
+		justify-content: flex-end;
+	}
+
 	&__content {
 		position: absolute;
 
 		display: flex;
+
+		flex-direction: column;
 
 		padding: var(--popover-padding);
 
@@ -72,6 +93,8 @@
 	}
 
 	&__title {
+		flex: 1;
+
 		margin-bottom: 8px;
 
 		text-transform: uppercase;
@@ -79,6 +102,8 @@
 		color: var(--popover-title-color);
 
 		font-size: var(--popover-title-text-size);
+
+		font-weight: 600;
 	}
 
 	&__item {

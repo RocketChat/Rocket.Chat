@@ -46,14 +46,13 @@
 			<span class="rc-header__section-title">{{_ sectionName}}</span>
 		{{/if}}
 
-		{{#if buttons}}
-			{{> Template.contentBlock}}
-		{{/if}}
+		<!-- {{#if buttons}} -->
+		{{> Template.contentBlock}}
+		<!-- {{/if}} -->
 
 		{{#unless isChannel}}
 			<div class="rc-header__section-help"></div>
 		{{/unless}}
-
 
 		{{#with toolbarButtons}}
 			<div class="iframe-toolbar">

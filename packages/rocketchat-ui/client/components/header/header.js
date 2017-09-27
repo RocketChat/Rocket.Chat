@@ -11,6 +11,9 @@ Template.header.helpers({
 		const url = getAvatarUrlFromUsername(RocketChat.roomTypes.getRoomName(roomData.t, roomData));
 		return `background-image: url(${ url });`;
 	},
+	buttons() {
+		return RocketChat.TabBar.getButtons();
+	},
 
 	isTranslated() {
 		const sub = ChatSubscription.findOne({ rid: this._id }, { fields: { autoTranslate: 1, autoTranslateLanguage: 1 } });
@@ -120,4 +123,3 @@ Template.header.events({
 Template.header.onCreated(function() {
 	this.currentChannel = RocketChat.models.Rooms.findOne(this.data._id) || undefined;
 });
-
