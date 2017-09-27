@@ -92,6 +92,11 @@ Meteor.methods({
 			return '';
 		}
 
+		function filterLabel(_, tag) {
+			query['attachments.0.labels'] = new RegExp(s.escapeRegExp(tag), 'i');
+			return '';
+		}
+
 		function sortByTimestamp(_, direction) {
 			if (direction.startsWith('asc')) {
 				options.sort.ts = 1;
@@ -140,6 +145,8 @@ Meteor.methods({
 		text = text.replace(/is:pinned|has:pin/g, filterPinned);
 		// Filter on messages which have a location attached.
 		text = text.replace(/has:location|has:map/g, filterLocation);
+		// Filter image tags
+		text = text.replace(/label:(\w+)/g, filterLabel);
 		// Filtering before/after/on a date
 		// matches dd-MM-yyyy, dd/MM/yyyy, dd-MM-yyyy, prefixed by before:, after: and on: respectively.
 		// Example: before:15/09/2016 after: 10-08-2016

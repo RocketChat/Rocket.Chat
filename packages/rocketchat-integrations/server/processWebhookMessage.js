@@ -1,4 +1,4 @@
-this.processWebhookMessage = function(messageObj, user, defaultValues = { channel: '', alias: '', avatar: '', emoji: '' }) {
+this.processWebhookMessage = function(messageObj, user, defaultValues = { channel: '', alias: '', avatar: '', emoji: '' }, mustBeJoined = false) {
 	const sentData = [];
 	const channels = [].concat(messageObj.channel || messageObj.roomId || defaultValues.channel);
 
@@ -32,6 +32,11 @@ this.processWebhookMessage = function(messageObj, user, defaultValues = { channe
 
 				//No room, so throw an error
 				throw new Meteor.Error('invalid-channel');
+		}
+
+		if (mustBeJoined && !room.usernames.includes(user.username)) {
+			// throw new Meteor.Error('invalid-room', 'Invalid room provided to send a message to, must be joined.');
+			throw new Meteor.Error('invalid-channel'); // Throwing the generic one so people can't "brute force" find rooms
 		}
 
 		if (messageObj.attachments && !_.isArray(messageObj.attachments)) {

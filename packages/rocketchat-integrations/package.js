@@ -16,7 +16,6 @@ Package.onUse(function(api) {
 	api.use('rocketchat:api');
 	api.use('rocketchat:theme');
 	api.use('rocketchat:logger');
-	api.use('less');
 
 	api.use('kadira:flow-router', 'client');
 	api.use('templating', 'client');
@@ -41,7 +40,7 @@ Package.onUse(function(api) {
 	api.addFiles('client/views/integrationsOutgoingHistory.js', 'client');
 
 	// stylesheets
-	api.addFiles('client/stylesheets/integrations.less', 'client');
+	api.addFiles('client/stylesheets/integrations.css', 'client');
 
 	api.addFiles('server/logger.js', 'server');
 	api.addFiles('server/lib/validation.js', 'server');
