@@ -69,7 +69,7 @@ Template.adminRooms.onCreated(function() {
 		groups: ['admin-rooms'],
 		id: 'admin-room',
 		i18nTitle: 'Room_Info',
-		icon: 'icon-info-circled',
+		icon: 'info-circled',
 		template: 'adminRoomInfo',
 		order: 1
 	});

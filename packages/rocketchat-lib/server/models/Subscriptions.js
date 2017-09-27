@@ -12,7 +12,7 @@ class ModelSubscriptions extends RocketChat.models._Base {
 		this.tryEnsureIndex({ 'unread': 1 });
 		this.tryEnsureIndex({ 'ts': 1 });
 		this.tryEnsureIndex({ 'ls': 1 });
-		this.tryEnsureIndex({ 'audioNotification': 1 }, { sparse: 1 });
+		this.tryEnsureIndex({ 'audioNotifications': 1 }, { sparse: 1 });
 		this.tryEnsureIndex({ 'desktopNotifications': 1 }, { sparse: 1 });
 		this.tryEnsureIndex({ 'mobilePushNotifications': 1 }, { sparse: 1 });
 		this.tryEnsureIndex({ 'emailNotifications': 1 }, { sparse: 1 });
@@ -152,6 +152,18 @@ class ModelSubscriptions extends RocketChat.models._Base {
 			'u._id': {
 				$in: userIds
 			}
+		};
+
+		return this.find(query);
+	}
+
+	findByRoomIdAndUserIdsOrAllMessages(roomId, userIds) {
+		const query = {
+			rid: roomId,
+			$or: [
+				{ 'u._id': { $in: userIds } },
+				{ emailNotifications: 'all' }
+			]
 		};
 
 		return this.find(query);
@@ -404,7 +416,19 @@ class ModelSubscriptions extends RocketChat.models._Base {
 
 		return this.update(query, update, { multi: true });
 	}
-
+	updateUserSubscription(rid, userId) {
+		const query = {
+			rid,
+			'u._id': userId
+		};
+		const update = {
+			$set: {
+				open: true,
+				lastActivity: new Date
+			}
+		};
+		return this.update(query, update);
+	}
 	setAlertForRoomIdExcludingUserId(roomId, userId) {
 		const query = {
 			rid: roomId,
@@ -423,7 +447,6 @@ class ModelSubscriptions extends RocketChat.models._Base {
 				open: true
 			}
 		};
-
 		return this.update(query, update, { multi: true });
 	}
 
