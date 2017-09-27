@@ -110,5 +110,7 @@ RocketChat.roomTypes = new class extends roomTypesCommon {
 		}
 		return this.roomTypes[roomType].notSubscribedTpl;
 	}
-
+	getCreationTemplate(roomType) {
+		return this.roomTypes[roomType].creationTemplate;
+	}
 };

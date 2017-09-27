@@ -32,7 +32,7 @@ Template.createCombinedFlex.helpers({
 						exceptions: [Meteor.user().username].concat(Template.instance().selectedUsers.get())
 					},
 					selector(match) {
-						return { term: match };
+						return {term: match};
 					},
 					sort: 'username'
 				}
@@ -44,6 +44,20 @@ Template.createCombinedFlex.helpers({
 	},
 	privateSwitchChecked() {
 		return RocketChat.authz.hasAllPermission('create-c') ? '' : 'checked';
+	},
+	roomTypesBeforeStandard() {
+		return RocketChat.roomTypes.filter(
+			(roomType) => RocketChat.roomTypesOrder[roomType.identifier].order < RocketChat.roomTypesOrder['c'].order
+		).map((roomType) => {
+			creationTemplate: roomType.getCreationTemplate(roomType);
+		});
+	},
+	roomTypesAfterStandard() {
+		return RocketChat.roomTypes.filter(
+			(roomType) => RocketChat.roomTypesOrder[roomType.identifier].order > RocketChat.roomTypesOrder['d'].order
+		).map((roomType) => {
+			creationTemplate: roomType.getCreationTemplate(roomType);
+		});
 	}
 });
 
@@ -112,15 +126,15 @@ Template.createCombinedFlex.events({
 			return Meteor.call(createRoute, name, instance.selectedUsers.get(), readOnly, function(err, result) {
 				if (err) {
 					if (err.error === 'error-invalid-room-name') {
-						instance.error.set({ invalid: true });
+						instance.error.set({invalid: true});
 						return;
 					}
 					if (err.error === 'error-duplicate-channel-name') {
-						instance.error.set({ duplicate: true });
+						instance.error.set({duplicate: true});
 						return;
 					}
 					if (err.error === 'error-archived-duplicate-name') {
-						instance.error.set({ archivedduplicate: true });
+						instance.error.set({archivedduplicate: true});
 						return;
 					} else {
 						return handleError(err);
@@ -130,13 +144,13 @@ Template.createCombinedFlex.events({
 				SideNav.closeFlex(() => instance.clearForm());
 
 				if (!privateGroup) {
-					RocketChat.callbacks.run('aftercreateCombined', { _id: result.rid, name: result.name });
+					RocketChat.callbacks.run('aftercreateCombined', {_id: result.rid, name: result.name});
 				}
 
-				return FlowRouter.go(successRoute, { name: result.name }, FlowRouter.current().queryParams);
+				return FlowRouter.go(successRoute, {name: result.name}, FlowRouter.current().queryParams);
 			});
 		} else {
-			return instance.error.set({ fields: err });
+			return instance.error.set({fields: err});
 		}
 	}
 });
