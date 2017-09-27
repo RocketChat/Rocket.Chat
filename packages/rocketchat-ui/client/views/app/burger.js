@@ -8,7 +8,6 @@ Template.burger.helpers({
 		}
 	},
 	embeddedVersion() {
-		console.log('burger', RocketChat.Layout.isEmbedded());
 		return RocketChat.Layout.isEmbedded();
 	}
 });
