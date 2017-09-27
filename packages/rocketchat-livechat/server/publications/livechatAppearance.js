@@ -10,13 +10,8 @@ Meteor.publish('livechat:appearance', function() {
 	const query = {
 		_id: {
 			$in: [
-				'Livechat_title',
 				'Livechat_title_color',
 				'Livechat_display_offline_form',
-				'Livechat_offline_form_unavailable',
-				'Livechat_offline_message',
-				'Livechat_offline_success_message',
-				'Livechat_offline_title',
 				'Livechat_offline_title_color',
 				'Livechat_offline_email'
 			]

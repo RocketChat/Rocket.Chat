@@ -838,6 +838,7 @@
   "Livechat_room_count": "Nombre de salons de chat en direct",
   "Livechat_Routing_Method": "Méthode de routage du chat en direct",
   "Livechat_Take_Confirm": "Voulez-vous répondre à ce client ?",
+  "Livechat_texts_language": "Langue de cette configuration",
   "Livechat_title": "Titre du chat en direct",
   "Livechat_title_color": "Couleur d'arrière plan du titre du chat en direct",
   "Livechat_Users": "Utilisateurs du chat en direct",

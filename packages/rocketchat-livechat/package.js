@@ -195,6 +195,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/publications/externalMessages.js', 'server');
 	api.addFiles('server/publications/livechatAgents.js', 'server');
 	api.addFiles('server/publications/livechatAppearance.js', 'server');
+	api.addFiles('server/publications/livechatAppearanceTexts.js', 'server');
 	api.addFiles('server/publications/livechatDepartments.js', 'server');
 	api.addFiles('server/publications/livechatIntegration.js', 'server');
 	api.addFiles('server/publications/livechatManagers.js', 'server');
