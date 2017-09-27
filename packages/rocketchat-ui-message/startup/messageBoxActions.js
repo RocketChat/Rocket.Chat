@@ -1,4 +1,4 @@
-/* globals fileUpload popover chatMessages AudioRecorder */
+/* globals fileUpload chatMessages AudioRecorder device */
 
 import mime from 'mime-type/with-db';
 import {VRecDialog} from 'meteor/rocketchat:ui-vrecord';
@@ -55,6 +55,11 @@ RocketChat.messageBox.actions.add('Add_files_from', 'Computer', {
 		document.body.appendChild(input);
 
 		input.click();
+
+		// Simple hack for cordova aka codegueira
+		if (typeof device !== 'undefined' && device.platform && device.platform.toLocaleLowerCase() === 'ios') {
+			input.click();
+		}
 
 		input.addEventListener('change', function(e) {
 			const filesToUpload = [...e.target.files].map(file => {
