@@ -65,6 +65,7 @@ getDataToSyncUserData = function getDataToSyncUserData(ldapUser, user) {
 	const userData = {};
 
 	if (syncUserData && syncUserDataFieldMap) {
+		const whitelistedUserFields = ['email', 'name', 'customFields'];
 		const fieldMap = JSON.parse(syncUserDataFieldMap);
 		const emailList = [];
 		_.map(fieldMap, function(userField, ldapField) {
@@ -84,40 +85,19 @@ getDataToSyncUserData = function getDataToSyncUserData(ldapUser, user) {
 					}
 					break;
 
-				case 'name':
-					const templateRegex = /#{(\w+)}/gi;
-					let match = templateRegex.exec(ldapField);
-					let tmpLdapField = ldapField;
-
-					if (match == null) {
-						if (!ldapUser.object.hasOwnProperty(ldapField)) {
-							logger.debug(`user does not have attribute: ${ ldapField }`);
-							return;
-						}
-						tmpLdapField = ldapUser.object[ldapField];
-					} else {
-						logger.debug('template found. replacing values');
-						while (match != null) {
-							const tmplVar = match[0];
-							const tmplAttrName = match[1];
-
-							if (!ldapUser.object.hasOwnProperty(tmplAttrName)) {
-								logger.debug(`user does not have attribute: ${ tmplAttrName }`);
-								return;
-							}
-
-							const attrVal = ldapUser.object[tmplAttrName];
-							logger.debug(`replacing template var: ${ tmplVar } with value from ldap: ${ attrVal }`);
-							tmpLdapField = tmpLdapField.replace(tmplVar, attrVal);
-							match = templateRegex.exec(ldapField);
-						}
+				default:
+					if (!_.find(whitelistedUserFields, (el) => el === userField.split('.')[0])) {
+						logger.debug(`user attribute not whitelisted: ${ userField }`);
+						return;
 					}
 
-					if (user.name !== tmpLdapField) {
-						userData.name = tmpLdapField;
-						logger.debug(`user.name changed to: ${ tmpLdapField }`);
+					const tmpLdapField = RocketChat.templateVarHandler(ldapField, ldapUser.object);
+					const userFieldValue = _.reduce(userField.split('.'), (acc, el) => acc[el], user);
+
+					if (tmpLdapField && userFieldValue !== tmpLdapField) {
+						userData[userField] = tmpLdapField;
+						logger.debug(`user.${ userField } changed to: ${ tmpLdapField }`);
 					}
-					break;
 			}
 		});
 
@@ -183,11 +163,13 @@ syncUserData = function syncUserData(user, ldapUser) {
 				type: 'image/jpeg'
 			};
 
-			fileStore.insert(file, rs, () => {
-				Meteor.setTimeout(function() {
-					RocketChat.models.Users.setAvatarOrigin(user._id, 'ldap');
-					RocketChat.Notifications.notifyLogged('updateAvatar', {username: user.username});
-				}, 500);
+			Meteor.runAsUser(user._id, () => {
+				fileStore.insert(file, rs, () => {
+					Meteor.setTimeout(function() {
+						RocketChat.models.Users.setAvatarOrigin(user._id, 'ldap');
+						RocketChat.Notifications.notifyLogged('updateAvatar', {username: user.username});
+					}, 500);
+				});
 			});
 		}
 	}
