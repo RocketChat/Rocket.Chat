@@ -6,5 +6,9 @@ Template.burger.helpers({
 		if (Session.equals('isMenuOpen', true)) {
 			return 'menu-opened';
 		}
+	},
+	embeddedVersion() {
+		console.log('burger', RocketChat.Layout.isEmbedded());
+		return RocketChat.Layout.isEmbedded();
 	}
 });
