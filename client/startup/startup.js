@@ -17,7 +17,7 @@ if (window.DISABLE_ANIMATION) {
 Meteor.startup(function() {
 	TimeSync.loggingEnabled = false;
 
-	UserPresence.awayTime = 300000;
+	UserPresence.awayTime = 10000;
 	UserPresence.start();
 	Meteor.subscribe('activeUsers');
 
