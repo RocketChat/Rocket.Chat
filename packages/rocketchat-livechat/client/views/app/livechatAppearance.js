@@ -239,7 +239,7 @@ Template.livechatAppearance.events({
 		e.preventDefault();
 
 		const settingTitle = LivechatAppearanceTexts.findOne({identifier: 'Livechat_title', lang: instance.chosenLanguage.get()});
-		instance.title.set(settingTitle && settingTitle.value);
+		instance.title.set(settingTitle && settingTitle.text);
 
 		const settingTitleColor = LivechatAppearance.findOne('Livechat_title_color');
 		instance.color.set(settingTitleColor && settingTitleColor.value);
@@ -248,16 +248,16 @@ Template.livechatAppearance.events({
 		instance.displayOfflineForm.set(settingDiplayOffline && settingDiplayOffline.value);
 
 		const settingFormUnavailable = LivechatAppearanceTexts.findOne({identifier: 'Livechat_offline_form_unavailable', lang: instance.chosenLanguage.get()});
-		instance.offlineUnavailableMessage.set(settingFormUnavailable && settingFormUnavailable.value);
+		instance.offlineUnavailableMessage.set(settingFormUnavailable && settingFormUnavailable.text);
 
 		const settingOfflineMessage = LivechatAppearanceTexts.findOne({identifier: 'Livechat_offline_message', lang: instance.chosenLanguage.get()});
-		instance.offlineMessage.set(settingOfflineMessage && settingOfflineMessage.value);
+		instance.offlineMessage.set(settingOfflineMessage && settingOfflineMessage.text);
 
 		const settingOfflineSuccess = LivechatAppearanceTexts.findOne({identifier: 'Livechat_offline_success_message', lang: instance.chosenLanguage.get()});
-		instance.offlineSuccessMessage.set(settingOfflineSuccess && settingOfflineSuccess.value);
+		instance.offlineSuccessMessage.set(settingOfflineSuccess && settingOfflineSuccess.text);
 
 		const settingOfflineTitle = LivechatAppearanceTexts.findOne({identifier: 'Livechat_offline_title', lang: instance.chosenLanguage.get()});
-		instance.titleOffline.set(settingOfflineTitle && settingOfflineTitle.value);
+		instance.titleOffline.set(settingOfflineTitle && settingOfflineTitle.text);
 
 		const settingOfflineTitleColor = LivechatAppearance.findOne('Livechat_offline_title_color');
 		instance.colorOffline.set(settingOfflineTitleColor && settingOfflineTitleColor.value);
