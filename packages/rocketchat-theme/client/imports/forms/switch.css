@@ -9,6 +9,17 @@
 	&__input {
 		display: none;
 
+		&:checked {
+			& + .rc-switch__button {
+				border-color: #26d198;
+				background-color: var(--color-success);
+
+				& .rc-switch__button-inside {
+					transform: translate3d(1px, 1px, 0);
+				}
+			}
+		}
+
 		&:disabled {
 			& + .rc-switch__button {
 				cursor: default;
@@ -19,17 +30,6 @@
 
 			& ~ .rc-switch__text {
 				cursor: default;
-			}
-		}
-
-		&:checked {
-			& + .rc-switch__button {
-				border-color: #26d198;
-				background-color: var(--color-success);
-
-				& .rc-switch__button-inside {
-					transform: translate3d(1px, 1px, 0);
-				}
 			}
 		}
 	}
