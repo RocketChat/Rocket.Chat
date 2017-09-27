@@ -1,0 +1,17 @@
+pipeline:
+  build:
+    image: ubuntu:16.04
+    commands:
+      - apt update && apt install curl git bzip2 -y
+      - if [ ! -e "$HOME/.meteor/meteor" ]; then curl https://install.meteor.com | sed s/--progress-bar/-sL/g | /bin/sh; fi
+      - meteor npm install
+      - set +e
+      - meteor add rocketchat:lib
+      - set -e
+      - meteor build --allow-superuser --server-only --directory /drone/build
+  docker:
+    image: plugins/docker
+    repo: rocketchat/rocket.chat
+    dockerfile: .docker/Dockerfile.local
+    storage_driver: overlay
+    context: /drone/build
