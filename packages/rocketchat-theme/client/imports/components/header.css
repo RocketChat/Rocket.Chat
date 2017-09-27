@@ -226,6 +226,8 @@
 	}
 
 	&__content {
+		z-index: 0;
+
 		flex: 1 1 auto;
 
 		width: 100%;
@@ -234,7 +236,7 @@
 		padding: var(--default-small-padding);
 
 		background: white;
-		box-shadow: 0 5px 1px 1px rgba(31, 35, 41, 0.08);
+		box-shadow: -1px 3px 1px 1px rgba(31, 35, 41, 0.08);
 
 		& > .flex-tab {
 			width: 100%;

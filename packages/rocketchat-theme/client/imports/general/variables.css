@@ -46,6 +46,7 @@
 	--status-name-weight: 400;
 	--status-invisible-sidebar: var(--color-darkest);
 	--default-small-padding: 1rem;
+	--default-padding: 24px;
 
 	/*
 	* General Typography
@@ -155,7 +156,7 @@
 	--sidebar-background-hover: var(--color-dark-medium);
 	--sidebar-background-light: var(--color-gray-lightest);
 	--sidebar-background-light-hover: var(--color-gray-light);
-	--sidebar-default-padding: 24px;
+	--sidebar-default-padding: var(--default-padding);
 	--sidebar-small-default-padding: 16px;
 	--sidebar-header-padding: 16px;
 	--sidebar-header-small-padding: 12px;

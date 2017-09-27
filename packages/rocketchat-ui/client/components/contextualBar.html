@@ -1,0 +1,16 @@
+<template name="contextualBar">
+		{{#if template}}
+			<section class="contextual-bar">
+				<header class="contextual-bar__header">
+						{{> icon block="contextual-bar__header-icon" icon="clip"}}
+						<h1 class="contextual-bar__header-title">Title</h1>
+						<button class="contextual-bar__header-close">
+								{{> icon block="contextual-bar__header-close-icon" icon="plus"}}
+						</button>
+				</header>
+				<main class="contextual-bar__content">
+						{{> Template.dynamic template=template data=flexData}}
+				</main>
+			</section>
+		{{/if}}
+	</template>

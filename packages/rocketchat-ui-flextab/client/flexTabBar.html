@@ -42,7 +42,6 @@
 </template>
 
 <template name="RoomsActionMore">
-
 	<div class="rc-popover__header">
 			<div class="rc-popover__title">
 				{{_"More actions"}}
@@ -61,17 +60,4 @@
 		{{/each}}
 	<!-- </div> -->
 	</div>
-</template>
-
-<template name="RoomsActionContent">
-	{{#if template}}
-	<div class="rc-room-actions__content {{opened}}">
-		<section class="flex-tab border-component-color">
-			<button class="rc-tooltip rc-room-actions__button">
-				<span class="secondary-background-color"><i class="icon-cancel"></i></span>
-			</button>
-			{{> Template.dynamic template=template data=flexData}}
-		</section>
-	</div>
-	{{/if}}
 </template>

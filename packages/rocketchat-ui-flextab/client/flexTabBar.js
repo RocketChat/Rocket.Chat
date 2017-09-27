@@ -6,6 +6,17 @@ const commonHelpers = {
 		if (this.template === Template.instance().tabBar.getTemplate() && Template.instance().tabBar.getState() === 'opened') {
 			return 'active';
 		}
+	},
+	buttons() {
+		return RocketChat.TabBar.getButtons().filter(button => {
+			if (!Meteor.userId() && !this.anonymous) {
+				return false;
+			}
+			if (button.groups.indexOf(Template.instance().tabBar.currentGroup()) === -1) {
+				return false;
+			}
+			return true;
+		});
 	}
 };
 
@@ -177,27 +188,5 @@ Template.RoomsActionTab.helpers({
 			return true;
 		});
 		return buttons.length > 5 ? true : false;
-	}
-});
-
-Template.RoomsActionContent.events({
-	'click .js-action'() {
-		console.log(this);
-	}
-});
-
-Template.RoomsActionContent.onCreated(function() {
-	this.tabBar = Template.currentData().tabBar;
-});
-
-Template.RoomsActionContent.helpers({
-	template() {
-		return Template.instance().tabBar.getTemplate();
-	},
-
-	flexData() {
-		return Object.assign(Template.currentData().data || {}, {
-			tabBar: Template.instance().tabBar
-		});
 	}
 });

@@ -6,6 +6,10 @@ this.popover = {
 		this.renderedPopover = Blaze.renderWithData(Template.popover, config, document.body);
 	},
 	close() {
+		if (!this.renderedPopover) {
+			return false;
+		}
+
 		Blaze.remove(this.renderedPopover);
 
 		const activeElement = this.renderedPopover.dataVar.curValue.activeElement;
