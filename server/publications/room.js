@@ -23,7 +23,6 @@ const options = {
 		sms: 1,
 		code: 1,
 		open: 1,
-		lastActivity: 1,
 		v: 1,
 		label: 1,
 		ro: 1,
