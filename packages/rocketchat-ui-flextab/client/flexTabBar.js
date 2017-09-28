@@ -129,7 +129,7 @@ Template.RoomsActionTab.events({
 			}),
 			data: {
 				rid: this._id,
-				buttons: buttons.slice(4),
+				buttons: instance.small.get() ? buttons : buttons.slice(4),
 				tabBar: instance.tabBar
 			},
 			activeElement: e.currentTarget
@@ -139,9 +139,15 @@ Template.RoomsActionTab.events({
 	}
 });
 
-
+Template.RoomsActionTab.onDestroyed(function() {
+	$(window).off('resize', this.refresh);
+});
 Template.RoomsActionTab.onCreated(function() {
-	console.log(this);
+	this.small = new ReactiveVar(window.matchMedia('(max-width: 500px)').matches);
+	this.refresh = _.throttle(() => {
+		this.small.set(window.matchMedia('(max-width: 500px)').matches);
+	}, 100);
+	$(window).on('resize', this.refresh);
 	this.tabBar = Template.currentData().tabBar;
 });
 
@@ -154,6 +160,9 @@ Template.RoomsActionTab.helpers({
 	},
 
 	buttons() {
+		if (Template.instance().small.get()) {
+			return [];
+		}
 		const buttons = RocketChat.TabBar.getButtons().filter(button => {
 			if (!Meteor.userId() && !this.anonymous) {
 				return false;
@@ -167,6 +176,9 @@ Template.RoomsActionTab.helpers({
 	},
 
 	moreButtons() {
+		if (Template.instance().small.get()) {
+			return true;
+		}
 		const buttons = RocketChat.TabBar.getButtons().filter(button => {
 			if (!Meteor.userId() && !this.anonymous) {
 				return false;

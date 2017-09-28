@@ -24,20 +24,22 @@
 
 <template name="RoomsActionTab">
 	<div class="rc-room-actions">
-		{{#each buttons}}
-		<div class="rc-room-actions__action tab-button {{active}} {{visible}} {{class}} js-action">
-			<button class="rc-tooltip rc-tooltip--down rc-room-actions__button" aria-label="{{title}}">
-				{{> icon block="tab-button-icon" icon=icon }}
-			</button>
+		<div class="rc-room-actions__wrapper">
+			{{#each buttons}}
+			<div class="rc-room-actions__action tab-button {{active}} {{visible}} {{class}} js-action">
+				<button class="rc-tooltip rc-tooltip--down rc-room-actions__button" aria-label="{{title}}">
+					{{> icon block="tab-button-icon" icon=icon }}
+				</button>
+			</div>
+			{{/each}}
+			{{# with moreButtons}}
+			<div class="rc-room-actions__action {{opened}}">
+				<button class="rc-tooltip rc-tooltip--down rc-room-actions__button js-more" aria-label="{{_ 'More'}}">
+					{{> icon block="tab-button-icon" icon="menu" }}
+				</button>
+			</div>
+			{{/with}}
 		</div>
-		{{/each}}
-		{{# with moreButtons}}
-		<div class="rc-room-actions__action {{opened}}">
-			<button class="rc-tooltip rc-tooltip--down rc-room-actions__button js-more" aria-label="{{_ 'More'}}">
-			{{> icon block="tab-button-icon" icon="menu" }}
-			</button>
-		</div>
-		{{/with}}
 	</div>
 </template>
 

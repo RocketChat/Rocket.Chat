@@ -1,35 +1,35 @@
 <template name="header">
 	<header class="rc-header">
-		{{> burger}}
+		<div class="rc-header__block rc-header--burger">
+			{{> burger}}
+		</div>
+		{{#if showToggleFavorite}}
+			<div class="rc-header__block rc-header__favorite">
+				<a href="#favorite" class="rc-header__toggle-favorite {{state}}">{{> icon block="rc-header__icon" icon="star"}}</a>
+			</div>
+		{{/if}}
 		{{#if isChannel}}
-			<!-- This still needs better naming -->
-			<div class="rc-header__room-info">
-				{{#if showToggleFavorite}}
-					<a href="#favorite" class="rc-header__toggle-favorite {{state}}">{{> icon block="rc-header__icon" icon="star"}}</a>
-				{{/if}}
-
+			<div class="rc-header__content rc-header__block">
 				{{#if isDirect}}
-					<div class="rc-header__room-image">
-						<div class="avatar">
-							<div class="avatar-image" style="{{avatarBackground}}"></div>
-						</div>
+					<div class="rc-header__image rc-header__block">
+						{{> avatar username=avatarBackground}}
 					</div>
 				{{/if}}
 
-				<div class="rc-header__room-title">
+				<div class="rc-header__data">
 					{{#unless secondaryName}}
-						<span class="rc-header__channel-name">{{> icon block="rc-header__icon" icon=channelIcon}}{{roomName}}</span>
+						<div class="rc-header__name">{{> icon block="rc-header__icon" icon=channelIcon}}{{roomName}}</div>
 					{{else}}
-						<div class="rc-header__channel-name">{{roomName}} <div class="rc-header__username">{{> icon block="rc-header__icon" icon=channelIcon}}{{secondaryName}}</div></div>
+						<div class="rc-header__name">{{roomName}} <div class="rc-header__username">@{{secondaryName}}</div></div>
 					{{/unless}}
 
 					{{#if isDirect}}
 					<span class="rc-header__status">
 							<div class="rc-header__status-bullet rc-header__status-bullet--{{userStatus}}" title="{{userStatus}}"></div>
-							<div class="rc-header__status-visual-status">{{userStatus}}</div>
+							<div class="rc-header__visual-status">{{userStatus}}</div>
 						</span>
 					{{else}}
-						<span class="rc-header__topic">{{{RocketChatMarkdown roomTopic}}}</span>
+						{{#if roomTopic}}<span class="rc-header__topic">{{{RocketChatMarkdown roomTopic}}}</span>{{/if}}
 					{{/if}}
 				</div>
 
@@ -46,9 +46,11 @@
 			<span class="rc-header__section-title">{{_ sectionName}}</span>
 		{{/if}}
 
-		<!-- {{#if buttons}} -->
-		{{> Template.contentBlock}}
-		<!-- {{/if}} -->
+		{{#if Template.contentBlock}}
+			<div class="rc-header__block rc-header__block-action">
+				{{> Template.contentBlock}}
+			</div>
+		{{/if}}
 
 		{{#unless isChannel}}
 			<div class="rc-header__section-help"></div>
