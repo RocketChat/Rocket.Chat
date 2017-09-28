@@ -359,6 +359,12 @@ input[type="submit"] {
 	}
 }
 
+.global-announcement {
+	background-color: @attention-color;
+	font-weight: bold;
+	color: desaturate(contrast(@attention-color), 50%);
+}
+
 .input-line {
 	&.setting-changed > label {
 		color: @selection-color;
