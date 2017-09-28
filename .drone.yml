@@ -21,3 +21,4 @@ pipeline:
     storage_driver: overlay
     context: /drone/build
     secrets: [ docker_username, docker_password ]
+    tag: designpreview
