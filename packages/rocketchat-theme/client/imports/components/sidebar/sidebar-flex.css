@@ -1,0 +1,48 @@
+.sidebar-flex {
+	&__back-button {
+		margin-left: 0.25rem;
+
+		padding: 1rem var(--sidebar-default-padding) 1.5rem;
+
+		color: var(--sidebar-flex-back-button-color);
+
+		font-size: 1rem;
+	}
+
+	&__back-icon {
+		font-size: 1.25rem;
+	}
+
+	&__search {
+		padding: 0 1rem;
+
+		& .rc-input {
+			&__wrapper {
+				color: var(--sidebar-flex-search-placeholder-color);
+			}
+
+			&__icon {
+				left: 0.5rem;
+			}
+
+			&__element {
+				padding-left: 2.25rem;
+
+				border: 0;
+				background-color: var(--sidebar-flex-search-background);
+
+				&::placeholder {
+					color: var(--sidebar-flex-search-placeholder-color);
+				}
+			}
+		}
+	}
+}
+
+@media (width <= 400px) {
+	.sidebar-flex {
+		&__back-button {
+			padding: 1rem calc(var(--sidebar-small-default-padding) - 8px) 1.5rem;
+		}
+	}
+}

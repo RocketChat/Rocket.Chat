@@ -1,3 +1,4 @@
+/* globals RocketChat */
 import toastr from 'toastr';
 
 Template.channelSettings.helpers({
@@ -53,13 +54,6 @@ Template.channelSettings.helpers({
 			}
 		});
 		const roomType = room && room.t;
-		/*
-		dirty hack since custom permissions create in packages/assistify-help-request/startup/customRoomTypes.js
-		lead to a streamer exception in some occasions.
-		*/
-		if (roomType === 'e') {
-			return roomType && RocketChat.authz.hasAtLeastOnePermission('delete-c');
-		}
 		return roomType && RocketChat.authz.hasAtLeastOnePermission(`delete-${ roomType }`, this.rid);
 	},
 	readOnly() {
@@ -170,8 +164,11 @@ Template.channelSettings.onCreated(function() {
 			},
 			save(value, room) {
 				let nameValidation;
-				if (!RocketChat.authz.hasAllPermission('edit-room', room._id) || (room.t !== 'c' && room.t !== 'p' && room.t !== 'e' && room.t !== 'r')) {
-					return toastr.error(t('error-not-allowed'));
+				if (!RocketChat.authz.hasAllPermission('edit-room', room._id) || (room.t !== 'c' && room.t !== 'p')) {
+					// custom room types can explicitly enable/disable the channel settings support
+					if (!(RocketChat.roomTypes[room.t].allowChangeChannelSettings && RocketChat.roomTypes[room.t].allowChangeChannelSettings())) {
+						return toastr.error(t('error-not-allowed'));
+					}
 				}
 				if (!RocketChat.settings.get('UI_Allow_room_names_with_special_chars')) {
 					try {

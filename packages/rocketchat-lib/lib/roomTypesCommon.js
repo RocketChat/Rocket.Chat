@@ -16,12 +16,28 @@ this.roomTypesCommon = class {
 	name: route name
 	action: route action function
 	identifier: room type identifier
-	*/
 
+	Optional methods which can be redefined
+		getDisplayName(room): return room's name for the UI
+		allowChangeChannelSettings(room): Whether it's possible to use the common channel-settings-tab to change a room's settings
+		canBeDeleted(userId, room): Custom authorizations for whether a room can be deleted. If not implemented, `delete-{identifier}` will be checked for
+		supportMembersList(room): Whether the generic members list for managing a room's members shall be available
+		isGroupChat(): Whether the room type is a chat of a group of members
+		canAddUser(userId, room): Whether the given user is allowed to add users to the specified room
+		userDetailShowAll(room): Whether all room members' details be shown in the user info
+		userDetailShowAdmin(room): Whether admin-controls (change role etc.) shall be shown in the user info
+		preventRenaming(room): Whether it shall be impossible to rename the room
+		includeInRoomSearch(): Whether rooms of this type shall be included into the result list when searching for "rooms"
+	*/
 	add(identifier = Random.id(), order, config) {
 		if (this.roomTypes[identifier] != null) {
 			return false;
 		}
+
+		// apart from the structure, the config may optionally override default behaviour.
+		// In order to simplify implementation, default implementeations are added unless "redefined"
+		this._addDefaultImplementations(config);
+
 		if (order == null) {
 			order = this.mainOrder + 10;
 			this.mainOrder += 10;
@@ -81,5 +97,72 @@ this.roomTypesCommon = class {
 		}
 		return FlowRouter.go(this.roomTypes[roomType].route.name, routeData, queryParams);
 	}
+
+	_addDefaultImplementations(config) {
+		if (!config.getDisplayName) {
+			config.getDisplayName = function(room) {
+				return room.name;
+			};
+		}
+
+		if (!config.allowChangeChannelSettings) {
+			config.allowChangeChannelSettings = function() {
+				return true;
+			};
+		}
+
+		if (!config.canBeDeleted) {
+			config.canBeDeleted = function(userId, room) {
+				/* this implementation is actually not necessary, since the generic authorisation check on delete-{identifier}
+				   is already performed in /server/methods/eraseRoom.js. However, in order not to rely on that remaining as-is,
+				   code the authorization check redundantly here. This shall also make consumption more easy and transparent
+				*/
+				RocketChat.authz.hasPermission(userId, `delete-${ room.t }`, room._id);
+			};
+		}
+
+		if (!config.supportMembersList) {
+			config.supportMembersList = function() {
+				return true;
+			};
+		}
+
+		if (!config.isGroupChat) {
+			config.isGroupChat = function() {
+				return true;
+			};
+		}
+
+		if (!config.canAddUser) {
+			config.canAddUser = function() {
+				return true;
+			};
+		}
+
+		if (!config.userDetailShowAll) {
+			config.userDetailShowAll = function() {
+				return true;
+			};
+		}
+
+		if (!config.userDetailShowAdmin) {
+			config.userDetailShowAdmin = function() {
+				return true;
+			};
+		}
+
+		if (!config.preventRenaming) {
+			config.preventRenaming = function() {
+				return false;
+			};
+		}
+
+		if (!config.includeInRoomSearch) {
+			config.includeInRoomSearch = function() {
+				return true;
+			};
+		}
+	}
+
 };
 export default this.roomTypesCommon;

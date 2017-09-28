@@ -1,4 +1,4 @@
-/*globals RocketChatTabBar, AdminChatRoom */
+/*globals RocketChatTabBar, AdminChatRoom, RocketChat */
 
 this.AdminChatRoom = new Mongo.Collection('rocketchat_room');
 
@@ -27,10 +27,14 @@ Template.adminRooms.helpers({
 		return rooms && rooms.count();
 	},
 	name() {
-		if (this.t === 'c' || this.t === 'p' || this.t === 'r' || this.t === 'e') {
+		if (this.t === 'c' || this.t === 'p') {
 			return this.name;
 		} else if (this.t === 'd') {
 			return this.usernames.join(' x ');
+		} else {
+			// custom room type
+			RocketChat.roomTypes[this.t].getDisplayName(this);
+
 		}
 	},
 	type() {
@@ -42,12 +46,9 @@ Template.adminRooms.helpers({
 		if (this.t === 'p') {
 			return TAPi18n.__('Private_Groups');
 		}
-		if (this.t === 'r') {
-			return TAPi18n.__('Request');
-		}
-		if (this.t === 'e') {
-			return TAPi18n.__('Expertise');
-		}
+
+		// custom room type
+		return TAPi18n.__(RocketChat.roomTypes[this.t].label);
 	},
 	'default'() {
 		if (this['default']) {
@@ -61,7 +62,8 @@ Template.adminRooms.helpers({
 			tabBar: Template.instance().tabBar
 		};
 	}
-});
+})
+;
 
 Template.adminRooms.onCreated(function() {
 	const instance = this;
@@ -75,7 +77,7 @@ Template.adminRooms.onCreated(function() {
 		groups: ['admin-rooms'],
 		id: 'admin-room',
 		i18nTitle: 'Room_Info',
-		icon: 'icon-info-circled',
+		icon: 'info-circled',
 		template: 'adminRoomInfo',
 		order: 1
 	});
@@ -113,13 +115,13 @@ Template.adminRooms.onCreated(function() {
 		filter = _.trim(filter);
 		if (filter) {
 			const filterReg = new RegExp(s.escapeRegExp(filter), 'i');
-			query = { $or: [{ name: filterReg }, { t: 'd', usernames: filterReg } ]};
+			query = {$or: [{name: filterReg}, {t: 'd', usernames: filterReg}]};
 		}
 		if (types.length) {
-			query['t'] = { $in: types };
+			query['t'] = {$in: types};
 		}
 		const limit = instance.limit && instance.limit.get();
-		return AdminChatRoom.find(query, { limit, sort: { 'default': -1, name: 1}});
+		return AdminChatRoom.find(query, {limit, sort: {'default': -1, name: 1}});
 	};
 	this.getSearchTypes = function() {
 		return _.map($('[name=room-type]:checked'), function(input) {

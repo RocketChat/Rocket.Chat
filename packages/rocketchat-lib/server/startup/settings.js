@@ -48,6 +48,10 @@ RocketChat.settings.addGroup('Accounts', function() {
 		type: 'boolean',
 		'public': true
 	});
+	this.add('Accounts_CustomFieldsToShowInUserInfo', '', {
+		type: 'string',
+		public: true
+	});
 	this.add('Accounts_LoginExpiration', 90, {
 		type: 'int',
 		'public': true
@@ -69,6 +73,10 @@ RocketChat.settings.addGroup('Accounts', function() {
 	this.add('Accounts_ForgetUserSessionOnWindowClose', false, {
 		type: 'boolean',
 		'public': true
+	});
+	this.add('Accounts_SearchFields', 'username, name, emails.address', {
+		type: 'string',
+		public: true
 	});
 
 	this.section('Registration', function() {
@@ -354,6 +362,10 @@ RocketChat.settings.addGroup('General', function() {
 		type: 'boolean',
 		'public': true
 	});
+	this.add('First_Channel_After_Login', '', {
+		type: 'string',
+		'public': true
+	});
 	this.add('Unread_Count', 'user_and_group_mentions_only', {
 		type: 'select',
 		values: [
@@ -431,6 +443,27 @@ RocketChat.settings.addGroup('General', function() {
 			type: 'int',
 			'public': true,
 			i18nDescription: 'Desktop_Notification_Durations_Description'
+		});
+
+		this.add('Audio_Notifications_Value', 'chime', {
+			type: 'string',
+			'public': true,
+			i18nDescription: 'Audio_Notification_Value_Description'
+		});
+
+		this.add('Audio_Notifications_Default_Alert', 'mentions', {
+			type: 'select',
+			values: [{
+				key: 'all',
+				i18nLabel: 'All_messages'
+			}, {
+				key: 'mentions',
+				i18nLabel: 'Mentions'
+			}, {
+				key: 'nothing',
+				i18nLabel: 'Nothing'
+			}],
+			public: true
 		});
 
 		this.add('Desktop_Notifications_Default_Alert', 'mentions', {
@@ -516,6 +549,29 @@ RocketChat.settings.addGroup('General', function() {
 });
 
 RocketChat.settings.addGroup('Email', function() {
+	this.section('Subject', function() {
+		this.add('Offline_DM_Email', '[[Site_Name]] You have been direct messaged by [User]', {
+			type: 'code',
+			code: 'text',
+			multiline: true,
+			i18nLabel: 'Offline_DM_Email',
+			i18nDescription: 'Offline_Email_Subject_Description'
+		});
+		this.add('Offline_Mention_Email', '[[Site_Name]] You have been mentioned by [User] in #[Room]', {
+			type: 'code',
+			code: 'text',
+			multiline: true,
+			i18nLabel: 'Offline_Mention_Email',
+			i18nDescription: 'Offline_Email_Subject_Description'
+		});
+		return this.add('Offline_Mention_All_Email', '[User] has posted a message in #[Room]', {
+			type: 'code',
+			code: 'text',
+			multiline: true,
+			i18nLabel: 'Offline_Mention_All_Email',
+			i18nDescription: 'Offline_Email_Subject_Description'
+		});
+	});
 	this.section('Header_and_Footer', function() {
 		this.add('Email_Header', '<html><table border="0" cellspacing="0" cellpadding="0" width="100%" bgcolor="#f3f3f3" style="color:#4a4a4a;font-family: Helvetica,Arial,sans-serif;font-size:14px;line-height:20px;border-collapse:collapse;border-spacing:0;margin:0 auto"><tr><td style="padding:1em"><table border="0" cellspacing="0" cellpadding="0" align="center" width="100%" style="width:100%;margin:0 auto;max-width:800px"><tr><td bgcolor="#ffffff" style="background-color:#ffffff; border: 1px solid #DDD; font-size: 10pt; font-family: Helvetica,Arial,sans-serif;"><table width="100%" border="0" cellspacing="0" cellpadding="0"><tr><td style="background-color: #04436a;"><h1 style="font-family: Helvetica,Arial,sans-serif; padding: 0 1em; margin: 0; line-height: 70px; color: #FFF;">[Site_Name]</h1></td></tr><tr><td style="padding: 1em; font-size: 10pt; font-family: Helvetica,Arial,sans-serif;">', {
 			type: 'code',
@@ -523,11 +579,168 @@ RocketChat.settings.addGroup('Email', function() {
 			multiline: true,
 			i18nLabel: 'Header'
 		});
-		return this.add('Email_Footer', '</td></tr></table></td></tr><tr><td border="0" cellspacing="0" cellpadding="0" width="100%" style="font-family: Helvetica,Arial,sans-serif; max-width: 800px; margin: 0 auto; padding: 1.5em; text-align: center; font-size: 8pt; color: #999;">Powered by <a href="https://rocket.chat" target="_blank">Rocket.Chat</a></td></tr></table></td></tr></table></html>', {
+		this.add('Email_Footer', '</td></tr></table></td></tr><tr><td border="0" cellspacing="0" cellpadding="0" width="100%" style="font-family: Helvetica,Arial,sans-serif; max-width: 800px; margin: 0 auto; padding: 1.5em; text-align: center; font-size: 8pt; color: #999;">Powered by <a href="https://rocket.chat" target="_blank">Rocket.Chat</a></td></tr></table></td></tr></table></html>', {
 			type: 'code',
 			code: 'text/html',
 			multiline: true,
 			i18nLabel: 'Footer'
+		});
+		return this.add('Email_Footer_Direct_Reply', '</td></tr></table></td></tr><tr><td border="0" cellspacing="0" cellpadding="0" width="100%" style="font-family: Helvetica,Arial,sans-serif; max-width: 800px; margin: 0 auto; padding: 1.5em; text-align: center; font-size: 8pt; color: #999;">You can directly reply to this email.<br>Do not temper reply email<br>Powered by <a href="https://rocket.chat" target="_blank">Rocket.Chat</a></td></tr></table></td></tr></table></html>', {
+			type: 'code',
+			code: 'text/html',
+			multiline: true,
+			i18nLabel: 'Footer_Direct_Reply'
+		});
+	});
+	this.section('Direct_Reply', function() {
+		this.add('Direct_Reply_Enable', false, {
+			type: 'boolean',
+			env: true,
+			i18nLabel: 'Direct_Reply_Enable'
+		});
+		this.add('Direct_Reply_Debug', false, {
+			type: 'boolean',
+			env: true,
+			i18nLabel: 'Direct_Reply_Debug',
+			i18nDescription: 'Direct_Reply_Debug_Description'
+		});
+		this.add('Direct_Reply_Protocol', 'IMAP', {
+			type: 'select',
+			values: [
+				{
+					key: 'IMAP',
+					i18nLabel: 'IMAP'
+				}, {
+					key: 'POP',
+					i18nLabel: 'POP'
+				}
+			],
+			env: true,
+			i18nLabel: 'Protocol'
+		});
+		this.add('Direct_Reply_Host', '', {
+			type: 'string',
+			env: true,
+			i18nLabel: 'Host'
+		});
+		this.add('Direct_Reply_Port', '143', {
+			type: 'select',
+			values: [
+				{
+					key: '143',
+					i18nLabel: '143'
+				}, {
+					key: '993',
+					i18nLabel: '993'
+				}, {
+					key: '110',
+					i18nLabel: '110'
+				}, {
+					key: '995',
+					i18nLabel: '995'
+				}
+			],
+			env: true,
+			i18nLabel: 'Port'
+		});
+		this.add('Direct_Reply_IgnoreTLS', false, {
+			type: 'boolean',
+			env: true,
+			i18nLabel: 'IgnoreTLS'
+		});
+		this.add('Direct_Reply_Frequency', 5, {
+			type: 'int',
+			env: true,
+			i18nLabel: 'Direct_Reply_Frequency',
+			enableQuery: {
+				_id: 'Direct_Reply_Protocol',
+				value: 'POP'
+			}
+		});
+		this.add('Direct_Reply_Delete', true, {
+			type: 'boolean',
+			env: true,
+			i18nLabel: 'Direct_Reply_Delete',
+			enableQuery: {
+				_id: 'Direct_Reply_Protocol',
+				value: 'IMAP'
+			}
+		});
+		this.add('Direct_Reply_Separator', '+', {
+			type: 'select',
+			values: [
+				{
+					key: '!',
+					i18nLabel: '!'
+				}, {
+					key: '#',
+					i18nLabel: '#'
+				}, {
+					key: '$',
+					i18nLabel: '$'
+				}, {
+					key: '%',
+					i18nLabel: '%'
+				}, {
+					key: '&',
+					i18nLabel: '&'
+				}, {
+					key: '\'',
+					i18nLabel: '\''
+				}, {
+					key: '*',
+					i18nLabel: '*'
+				}, {
+					key: '+',
+					i18nLabel: '+'
+				}, {
+					key: '-',
+					i18nLabel: '-'
+				}, {
+					key: '/',
+					i18nLabel: '/'
+				}, {
+					key: '=',
+					i18nLabel: '='
+				}, {
+					key: '?',
+					i18nLabel: '?'
+				}, {
+					key: '^',
+					i18nLabel: '^'
+				}, {
+					key: '_',
+					i18nLabel: '_'
+				}, {
+					key: '`',
+					i18nLabel: '`'
+				}, {
+					key: '{',
+					i18nLabel: '{'
+				}, {
+					key: '|',
+					i18nLabel: '|'
+				}, {
+					key: '}',
+					i18nLabel: '}'
+				}, {
+					key: '~',
+					i18nLabel: '~'
+				}
+			],
+			env: true,
+			i18nLabel: 'Direct_Reply_Separator'
+		});
+		this.add('Direct_Reply_Username', '', {
+			type: 'string',
+			env: true,
+			i18nLabel: 'Username',
+			placeholder: 'email@domain'
+		});
+		return this.add('Direct_Reply_Password', '', {
+			type: 'password',
+			env: true,
+			i18nLabel: 'Password'
 		});
 	});
 	this.section('SMTP', function() {
@@ -1042,7 +1255,7 @@ RocketChat.settings.addGroup('Layout', function() {
 			multiline: true,
 			'public': true
 		});
-		this.add('Layout_Login_Terms', 'By proceeding you are agreeing to our <a href="/terms-of-service">Terms of Service</a> and <a href="/privacy-policy">Privacy Policy</a>.', {
+		this.add('Layout_Login_Terms', 'By proceeding you are agreeing to our <a href="terms-of-service">Terms of Service</a> and <a href="privacy-policy">Privacy Policy</a>.', {
 			type: 'string',
 			multiline: true,
 			'public': true

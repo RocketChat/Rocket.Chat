@@ -1,27 +1,24 @@
-/*globals menu */
 Template.accountFlex.events({
-	'mouseenter header'() {
-		SideNav.overArrow();
-	},
-	'mouseleave header'() {
-		SideNav.leaveArrow();
-	},
-	'click header'() {
+	'click [data-action="back"]'() {
 		SideNav.closeFlex();
-	},
-	'click .cancel-settings'() {
-		SideNav.closeFlex();
-	},
-	'click .account-link'() {
-		menu.close();
 	}
 });
+
+// Template.accountFlex.onRendered(function() {
+// 	$(this.find('.rooms-list')).perfectScrollbar();
+// });
 
 Template.accountFlex.helpers({
 	allowUserProfileChange() {
 		return RocketChat.settings.get('Accounts_AllowUserProfileChange');
 	},
-	allowUserAvatarChange() {
-		return RocketChat.settings.get('Accounts_AllowUserAvatarChange');
+	menuItem(name, icon, section, group) {
+		return {
+			name: t(name),
+			icon,
+			pathSection: section,
+			pathGroup: group,
+			darken: true
+		};
 	}
 });
