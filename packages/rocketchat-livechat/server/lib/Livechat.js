@@ -228,31 +228,56 @@ RocketChat.Livechat = {
 		return true;
 	},
 
-	getInitSettings() {
+	getInitSettings(lang) {
 		const settings = {};
+		settings['Language'] = lang;
 
 		RocketChat.models.Settings.findNotHiddenPublic([
-			'Livechat_title',
 			'Livechat_title_color',
 			'Livechat_enabled',
 			'Livechat_registration_form',
 			'Livechat_allow_switching_departments',
-			'Livechat_offline_title',
 			'Livechat_offline_title_color',
-			'Livechat_offline_message',
-			'Livechat_offline_success_message',
-			'Livechat_offline_form_unavailable',
 			'Livechat_display_offline_form',
 			'Livechat_videocall_enabled',
 			'Jitsi_Enabled',
-			'Language',
 			'Livechat_enable_transcript',
 			'Livechat_transcript_message'
 		]).forEach((setting) => {
 			settings[setting._id] = setting.value;
 		});
 
-		// TODO: overwriter les configs qui existent dans la langue demandée
+		// English backup
+		RocketChat.models.LivechatTexts.find({
+			lang: 'en',
+			identifier: {
+				$in: [
+					'Livechat_title',
+					'Livechat_offline_title',
+					'Livechat_offline_message',
+					'Livechat_offline_success_message',
+					'Livechat_offline_form_unavailable'
+				]
+			}
+		}).forEach((setting) => {
+			settings[setting.identifier] = setting.text;
+		});
+
+		// client language
+		RocketChat.models.LivechatTexts.find({
+			lang,
+			identifier: {
+				$in: [
+					'Livechat_title',
+					'Livechat_offline_title',
+					'Livechat_offline_message',
+					'Livechat_offline_success_message',
+					'Livechat_offline_form_unavailable'
+				]
+			}
+		}).forEach((setting) => {
+			settings[setting.identifier] = setting.text;
+		});
 
 		return settings;
 	},

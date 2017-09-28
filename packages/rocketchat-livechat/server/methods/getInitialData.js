@@ -37,8 +37,7 @@ Meteor.methods({
 			info.room = room[0];
 		}
 
-		// TODO: utiliser le language somehow pour loader les configs apporpriées
-		const initSettings = RocketChat.Livechat.getInitSettings();
+		const initSettings = RocketChat.Livechat.getInitSettings(clientLanguage);
 
 		info.title = initSettings.Livechat_title;
 		info.color = initSettings.Livechat_title_color;
