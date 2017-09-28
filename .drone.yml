@@ -4,6 +4,8 @@ pipeline:
     restore: true
     mount:
       - /drone/meteor_install/
+      - ./node_modules
+      - ./.meteor/local
     volumes:
       - /tmp/cache/Rocket.Chat:/cache
   build:
@@ -13,7 +15,7 @@ pipeline:
       - HOME=/drone
     commands:
       - apt update && apt install curl git bzip2 -y
-      - if [ ! -e "/drone/meteor_install/meteor" ]; then curl https://install.meteor.com | sed s/--progress-bar/-sL/g | /bin/sh; else mv /drone/meteor_install $HOME/.meteor; cp $HOME/.meteor/meteor /usr/local/bin/ fi
+      - if [ ! -e "/drone/meteor_install/meteor" ]; then curl https://install.meteor.com | sed s/--progress-bar/-sL/g | /bin/sh; else mv /drone/meteor_install $HOME/.meteor; cp $HOME/.meteor/meteor /usr/local/bin/; fi
       - meteor npm install
       - set +e
       - meteor add rocketchat:lib
@@ -27,6 +29,8 @@ pipeline:
     rebuild: true
     mount:
       - /drone/meteor_install/
+      - ./node_modules
+      - ./.meteor/local
     volumes:
       - /tmp/cache/Rocket.Chat:/cache
   docker:
