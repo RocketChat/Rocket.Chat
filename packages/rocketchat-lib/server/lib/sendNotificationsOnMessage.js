@@ -235,6 +235,7 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room, userId) {
 	let userIdsToNotify = [];
 	let userIdsToPushNotify = [];
 	const mentions = [];
+	const alwaysNotifyMobileBoolean = RocketChat.settings.get('Notifications_Always_Notify_Mobile');
 
 	const usersWithHighlights = RocketChat.models.Users.findUsersByUsernamesWithHighlights(room.usernames, { fields: { '_id': 1, 'settings.preferences.highlights': 1 }}).fetch()
 		.filter(user => messageContainsHighlight(message, user.settings.preferences.highlights));
@@ -275,7 +276,7 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room, userId) {
 		}
 
 		if ((userOfMention != null) && canBeNotified(userOfMentionId, 'desktop')) {
-             if (Push.enabled === true && (userOfMention.statusConnection !== 'online' || alwaysNotifyMobileBoolean === true)) {
+			if (Push.enabled === true && (userOfMention.statusConnection !== 'online' || alwaysNotifyMobileBoolean === true)) {
 				RocketChat.PushNotification.send({
 					roomId: message.rid,
 					username: push_username,
@@ -300,6 +301,8 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room, userId) {
 		const mentionIds = (message.mentions || []).map(({_id}) => _id);
 		const toAll = mentionIds.includes('all');
 		const toHere = mentionIds.includes('here');
+		let usersOfMobileMentions = [];
+
 		if (mentionIds.length + settings.alwaysNotifyDesktopUsers.length > 0) {
 			let desktopMentionIds = _.union(mentionIds, settings.alwaysNotifyDesktopUsers);
 			desktopMentionIds = _.difference(desktopMentionIds, settings.dontNotifyDesktopUsers);
@@ -329,36 +332,36 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room, userId) {
 			let mobileMentionIds = _.union(mentionIds, settings.alwaysNotifyMobileUsers);
 			mobileMentionIds = _.difference(mobileMentionIds, settings.dontNotifyMobileUsers);
 
-    if (alwaysNotifyMobileBoolean === true){
- let usersOfMobileMentions = RocketChat.models.Users.find({  
-         _id: {                                              
-                 $in: mobileMentionIds                       
-         }                                                   
- }, {                                                        
-         fields: {                                           
-                 _id: 1,                                     
-                 username: 1,                                
-                 statusConnection: 1,                        
-                 active: 1                                   
-         }                                                   
- }).fetch();
- }else{
- let usersOfMobileMentions = RocketChat.models.Users.find({  
-         _id: {                                              
-                 $in: mobileMentionIds                       
-         },                                                  
-         statusConnection: {                                 
-                 $ne: 'online'                               
-         }                                                   
- }, {                                                        
-         fields: {                                           
-                 _id: 1,                                     
-                 username: 1,                                
-                 statusConnection: 1,                        
-                 active: 1                                   
-         }                                                   
- }).fetch();
- }
+			if (alwaysNotifyMobileBoolean === true) {
+				usersOfMobileMentions = RocketChat.models.Users.find({
+					_id: {
+						$in: mobileMentionIds
+					}
+				}, {
+					fields: {
+						_id: 1,
+						username: 1,
+						statusConnection: 1,
+						active: 1
+					}
+				}).fetch();
+			} else {
+				usersOfMobileMentions = RocketChat.models.Users.find({
+					_id: {
+						$in: mobileMentionIds
+					},
+					statusConnection: {
+						$ne: 'online'
+					}
+				}, {
+					fields: {
+						_id: 1,
+						username: 1,
+						statusConnection: 1,
+						active: 1
+					}
+				}).fetch();
+			}
 			mentions.push(...usersOfMobileMentions);
 			if (room.t !== 'c') {
 				usersOfMobileMentions = _.reject(usersOfMobileMentions, usersOfMentionItem => !room.usernames.includes(usersOfMentionItem.username));
