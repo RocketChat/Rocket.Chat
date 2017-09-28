@@ -3,7 +3,7 @@ pipeline:
     image: drillster/drone-volume-cache
     restore: true
     mount:
-      - ./.meteor_install/
+      - /drone/.meteor/
       - ./node_modules
       - ./.meteor/local
     volumes:
@@ -12,10 +12,12 @@ pipeline:
     image: ubuntu:16.04
     environment:
       - METEOR_ALLOW_SUPERUSER=true
-      - HOME=/drone
     commands:
       - apt update && apt install curl git bzip2 -y
-      - if [ ! -e "$PWD/.meteor_install/meteor" ]; then curl https://install.meteor.com | sed s/--progress-bar/-sL/g | /bin/sh; else ln -s $PWD/.meteor_install/ $HOME/.meteor; export PATH="$PWD/.meteor_install:$PATH"; fi
+      - export HOME=/drone
+      - export PATH="/drone/.meteor:$PATH"
+      - if [ ! -e "/drone/.meteor/meteor" ]; then export HOME=/drone; curl https://install.meteor.com | sed s/--progress-bar/-sL/g | /bin/sh; fi
+      - which meteor
       - meteor npm install
       - set +e
       - meteor add rocketchat:lib
@@ -27,7 +29,7 @@ pipeline:
     image: drillster/drone-volume-cache
     rebuild: true
     mount:
-      - ./.meteor_install/
+      - /drone/.meteor/
       - ./node_modules
       - ./.meteor/local
     volumes:
