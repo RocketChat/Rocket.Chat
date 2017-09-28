@@ -3,8 +3,7 @@ pipeline:
     image: drillster/drone-volume-cache
     restore: true
     mount:
-      - /.meteor_install/
-      - .
+      - ./.meteor_install/
       - ./node_modules
       - ./.meteor/local
     volumes:
@@ -31,7 +30,7 @@ pipeline:
     image: drillster/drone-volume-cache
     rebuild: true
     mount:
-      - /drone/meteor_install/
+      - ./.meteor_install/
       - ./node_modules
       - ./.meteor/local
     volumes:
