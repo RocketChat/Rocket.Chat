@@ -42,8 +42,9 @@
 		background-color: var(--sidebar-item-active-background);
 	}
 
-	&--unread {
-		color: var(--sidebar-item-unread-color);
+	&--unread,
+	&--mention {
+    	color: var(--sidebar-item-unread-color);
 
 		& .sidebar-item__menu {
 			transition: margin 0.1s;

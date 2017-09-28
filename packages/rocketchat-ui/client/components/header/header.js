@@ -8,8 +8,7 @@ Template.header.helpers({
 	avatarBackground() {
 		const roomData = Session.get(`roomData${ this._id }`);
 		if (!roomData) { return ''; }
-		const url = getAvatarUrlFromUsername(RocketChat.roomTypes.getRoomName(roomData.t, roomData));
-		return `background-image: url(${ url });`;
+		return RocketChat.roomTypes.getSecondaryRoomName(roomData.t, roomData) || RocketChat.roomTypes.getRoomName(roomData.t, roomData) ;
 	},
 	buttons() {
 		return RocketChat.TabBar.getButtons();

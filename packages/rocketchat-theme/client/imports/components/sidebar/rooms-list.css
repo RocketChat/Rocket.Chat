@@ -7,6 +7,8 @@
 
 	height: 100%;
 
+	flex: 1 1 auto;
+
 	&__list {
 		&:not(:last-child) {
 			margin-bottom: 32px;

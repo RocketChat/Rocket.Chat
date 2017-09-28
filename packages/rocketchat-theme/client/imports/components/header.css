@@ -1,5 +1,9 @@
 .rc-header {
-
+	&__block {
+		margin: 0 0.5rem;
+		align-items: center;
+		display: flex;
+	}
 	z-index: 1;
 
 	display: flex;
@@ -8,23 +12,25 @@
 
 	white-space: nowrap;
 
-	box-shadow: 0 0 1px 1px #e6e4e4;
+	box-shadow: 0 1px 2px 0 rgba(31, 35, 41, 0.08);
 
-	&__room-info,
-	&__section-title {
-		flex: 1 1;
+	font-size: var(--header-title-font-size);
+	margin: 0 -0.5rem;
 
-		margin-left: 4px;
-
-		font-size: var(--header-title-font-size);
-		line-height: 1.25rem;
-	}
-
-	&__room-info {
+	&__content {
 		display: flex;
 		align-items: center;
+		width: 100%;
+		margin-left: 0;
 	}
-
+	&--burger {
+		display: none;
+	}
+	&__name {
+		overflow: hidden;
+		text-overflow: ellipsis;
+		padding-bottom: 1px;
+	}
 	&__section-title {
 		color: var(--header-title-username-color-darker);
 
@@ -47,31 +53,36 @@
 		margin: 0.3rem;
 	}
 
-	&__room-title {
+	&-title {
 		display: flex;
 		flex-direction: column;
 
 		width: 100%;
 	}
 
-	&__channel-name {
-		overflow: hidden;
+	&__data {
+		width: 1px;
 
-		width: 100%;
-
-		text-overflow: ellipsis;
+		flex-grow: 1;
 
 		color: var(--header-title-username-color-darker);
 
 		font-weight: var(--header-title-username-weight);
+		margin: 0;
+
+		overflow: hidden;
+    text-overflow: ellipsis;
+
+		flex-direction: column;
+    align-items: flex-start;
+
+		margin: 0 0.5rem;
 	}
 
 	&__username {
 		display: inline;
 
 		color: var(--header-title-status-color);
-
-		font-weight: var(--header-title-status-name-weight);
 	}
 
 	&__topic,
@@ -86,8 +97,13 @@
 		overflow: hidden;
 
 		width: 100%;
+		max-width: fit-content;
 
 		text-overflow: ellipsis;
+	}
+
+	&-visual-status {
+		text-transform: capitalize;
 	}
 
 	&__status {
@@ -95,9 +111,6 @@
 
 		align-items: center;
 
-		&-visual-status {
-			text-transform: capitalize;
-		}
 
 		&-bullet {
 			width: var(--header-title-status-bullet-size);
@@ -129,8 +142,6 @@
 	}
 
 	&__toggle-favorite {
-		margin-right: 1rem;
-
 		color: var(--header-toggle-favorite-star-color);
 
 		font-size: 1.5rem;
@@ -153,19 +164,22 @@
 		stroke: currentColor;
 	}
 
-	&__room-image {
+	&__image {
 		width: 32px;
 		height: 32px;
-		margin-right: 1rem;
+		margin: 0 0.5rem;
 		flex-shrink: 0;
 	}
 }
 
 .rc-room-actions {
-	display: flex;
 
-	margin: -8px;
-	align-items: center;
+	&__wrapper {
+		display: flex;
+		margin: -8px;
+		align-items: center;
+	}
+
 
 	&__action,
 	&__more-action {
@@ -251,12 +265,50 @@
 	}
 }
 
+@media (width <= 500px) {
+	.rc-header {
+		&__visual-status {
+			display: none;
+		}
+
+		&__block {
+			margin: 0 0.25rem;
+		}
+
+		&__block-action {
+			order: 2;
+		}
+
+		&__favorite {
+			order: 1;
+		}
+
+		&__data {
+			display: flex;
+			flex-direction: row;
+			align-items: center;
+		}
+
+		&__status {
+			margin: 0 0.5rem;
+		}
+
+		&__content {
+			margin-right: -0.25rem;
+		}
+
+		&__image {
+			width: 20px;
+			height: 20px;
+		}
+
+		&--burger {
+			display: flex;
+		}
+	}
+}
+
 .burger {
-
-	display: none;
-	visibility: hidden;
-
-	margin-right: 20px;
 
 	cursor: pointer;
 	transition: transform 0.2s ease-out 0.1s;
@@ -313,11 +365,8 @@
 
 @media (max-width: 780px) {
 	.rc-header {
-		max-width: 100vw;
-	}
-
-	.burger {
-		display: inline-block;
-		visibility: visible;
+		&--burger {
+			display: flex;
+		}
 	}
 }
