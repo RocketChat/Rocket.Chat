@@ -1,3 +1,4 @@
+/* globals popover, isRtl */
 const commonHelpers = {
 	title() {
 		return t(this.i18nTitle) || this.title;
