@@ -15,10 +15,7 @@ pipeline:
       - HOME=/drone
     commands:
       - apt update && apt install curl git bzip2 -y
-      - mkdir -p $PWD/.meteor_install $HOME/.meteor
-      - ln -s $PWD/.meteor_install $HOME/.meteor
-      - export PATH="$HOME/.meteor:$PATH"
-      - if [ ! -e "$PWD/.meteor_install/meteor" ]; then curl https://install.meteor.com | sed s/--progress-bar/-sL/g | /bin/sh; fi
+      - if [ ! -e "$PWD/.meteor_install/meteor" ]; then curl https://install.meteor.com | sed s/--progress-bar/-sL/g | /bin/sh; else ln -s $PWD/.meteor_install/ $HOME/.meteor; export PATH="$PWD/.meteor_install:$PATH"; fi
       - meteor npm install
       - set +e
       - meteor add rocketchat:lib
