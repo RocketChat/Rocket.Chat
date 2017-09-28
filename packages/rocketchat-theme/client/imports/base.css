@@ -3898,6 +3898,34 @@ body:not(.is-cordova) {
 	color: #a9a9a9;
 }
 
+.global-announcement {
+	padding: 20px;
+	text-align: center;
+}
+
+#login-global-announcement {
+	width: 100%;
+	max-width: 520px;
+	margin: auto;
+	box-shadow:
+			0 1px 1px 0 rgba(0, 0, 0, 0.2),
+			0 2px 10px 0 rgba(0, 0, 0, 0.16);
+	border-radius: 4px;
+	position: relative;
+	z-index: 1;
+}
+
+#home-global-announcement {
+	width: 100%;
+	margin: 20px auto;
+	box-shadow:
+			0 1px 1px 0 rgba(0, 0, 0, 0.2),
+			0 2px 10px 0 rgba(0, 0, 0, 0.16);
+	border-radius: 4px;
+	position: relative;
+	z-index: 1;
+}
+
 #login-card {
 	width: 100%;
 	max-width: 520px;
