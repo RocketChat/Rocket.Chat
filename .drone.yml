@@ -1,11 +1,19 @@
 pipeline:
+  restore-cache:
+    image: drillster/drone-volume-cache
+    restore: true
+    mount:
+      - /drone/meteor_install/
+    volumes:
+      - /tmp/cache/Rocket.Chat:/cache
   build:
     image: ubuntu:16.04
     environment:
       - METEOR_ALLOW_SUPERUSER=true
+      - HOME=/drone
     commands:
       - apt update && apt install curl git bzip2 -y
-      - if [ ! -e "$HOME/.meteor/meteor" ]; then curl https://install.meteor.com | sed s/--progress-bar/-sL/g | /bin/sh; fi
+      - if [ ! -e "/drone/meteor_install/meteor" ]; then curl https://install.meteor.com | sed s/--progress-bar/-sL/g | /bin/sh; else mv /drone/meteor_install $HOME/.meteor; cp $HOME/.meteor/meteor /usr/local/bin/ fi
       - meteor npm install
       - set +e
       - meteor add rocketchat:lib
@@ -13,7 +21,14 @@ pipeline:
       - mkdir /drone/build
       - meteor build --allow-superuser --server-only --directory /drone/build
       - cp .docker/Dockerfile.local /drone/build/Dockerfile
-      - ls -lah /drone/build
+      - mv $HOME/.meteor /drone/meteor_install
+  rebuild-cache:
+    image: drillster/drone-volume-cache
+    rebuild: true
+    mount:
+      - /drone/meteor_install/
+    volumes:
+      - /tmp/cache/Rocket.Chat:/cache
   docker:
     image: plugins/docker
     repo: rocketchat/rocket.chat
