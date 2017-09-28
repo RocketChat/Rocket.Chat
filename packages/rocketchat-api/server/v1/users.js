@@ -89,6 +89,44 @@ RocketChat.API.v1.addRoute('users.getPresence', { authRequired: true }, {
 	}
 });
 
+RocketChat.API.v1.addRoute('users.unreadRoomsCount', { authRequired: true }, {
+	get() {
+		const user = this.getUserFromParams();
+
+		let archived = false;
+
+		if (typeof this.queryParams.archived !== 'undefined') {
+			if (archived==='true') {
+				archived = true;
+			}
+		}
+
+		const unreadCount = RocketChat.models.Subscriptions.findUnreadRoomsByUserId(user._id,archived).count();
+
+		return RocketChat.API.v1.success({
+			count: unreadCount
+		});
+	}
+});
+
+RocketChat.API.v1.addRoute('users.subscriptions', { authRequired: true }, {
+	post() {
+		check(this.bodyParams, {
+			roomIds: Array,
+			userId : Match.Maybe(String),
+			username : Match.Maybe(String),
+		});
+		const user = this.getUserFromParams();
+
+
+		const subs = RocketChat.models.Subscriptions.findByRoomIdsAndUserId(user._id,this.bodyParams.roomIds).fetch();
+
+		return RocketChat.API.v1.success({
+			subscriptions: subs
+		});
+	}
+});
+
 RocketChat.API.v1.addRoute('users.info', { authRequired: true }, {
 	get() {
 		const user = this.getUserFromParams();

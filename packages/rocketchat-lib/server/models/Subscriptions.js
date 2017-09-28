@@ -157,6 +157,17 @@ class ModelSubscriptions extends RocketChat.models._Base {
 		return this.find(query);
 	}
 
+	findByRoomIdsAndUserId(userId,roomIds) {
+		const query = {
+			rid: {
+				$in: roomIds
+			},
+			'u._id': userId
+		};
+
+		return this.find(query);
+	}
+
 	findByRoomIdAndUserIdsOrAllMessages(roomId, userIds) {
 		const query = {
 			rid: roomId,
@@ -169,14 +180,26 @@ class ModelSubscriptions extends RocketChat.models._Base {
 		return this.find(query);
 	}
 
-	findUnreadByUserId(userId) {
-		const query = {
-			'u._id': userId,
-			unread: {
-				$gt: 0
-			}
-		};
-
+	findUnreadRoomsByUserId(userId, isArchived) {
+		//since archived can be missing ( not being set when a subscription is created ), we need special handling for archived=false
+		let query = {};
+		if (!isArchived) {
+			query = {
+				'u._id': userId,
+				unread: {
+					$gt: 0
+				},
+				$or:[{archived:false},{archived:{$exists:false}}]
+			};
+		} else {
+			query = {
+				'u._id': userId,
+				unread: {
+					$gt: 0
+				},
+				archived : true
+			};
+		}
 		return this.find(query, { fields: { unread: 1 } });
 	}
 
