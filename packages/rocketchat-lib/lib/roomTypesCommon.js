@@ -26,6 +26,7 @@ this.roomTypesCommon = class {
 		canAddUser(userId, room): Whether the given user is allowed to add users to the specified room
 		userDetailShowAll(room): Whether all room members' details be shown in the user info
 		userDetailShowAdmin(room): Whether admin-controls (change role etc.) shall be shown in the user info
+		preventRenaming(room): Whether it shall be impossible to rename the room
 	*/
 	add(identifier = Random.id(), order, config) {
 		if (this.roomTypes[identifier] != null) {
@@ -149,6 +150,11 @@ this.roomTypesCommon = class {
 			};
 		}
 
+		if (!config.preventRenaming) {
+			config.preventRenaming = function() {
+				return false;
+			};
+		}
 	}
 
 };
