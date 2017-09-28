@@ -180,6 +180,17 @@ class ModelSubscriptions extends RocketChat.models._Base {
 		return this.find(query);
 	}
 
+	findUnreadByUserId(userId) {
+		const query = {
+				'u._id': userId,
+				unread: {
+					$gt: 0
+				}
+		};
+
+		return this.find(query, { fields: { unread: 1 } });
+	}
+
 	findUnreadRoomsByUserId(userId, isArchived) {
 		//since archived can be missing ( not being set when a subscription is created ), we need special handling for archived=false
 		let query = {};
