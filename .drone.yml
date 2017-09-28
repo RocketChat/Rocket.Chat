@@ -8,10 +8,13 @@ pipeline:
       - set +e
       - meteor add rocketchat:lib
       - set -e
+      - mkdir /drone/build
       - meteor build --allow-superuser --server-only --directory /drone/build
+      - cp .docker/Dockerfile.local /drone/build/Dockerfile
+      - ls -lah /drone/build
   docker:
     image: plugins/docker
     repo: rocketchat/rocket.chat
-    dockerfile: .docker/Dockerfile.local
+    #dockerfile: .docker/Dockerfile.local
     storage_driver: overlay
     context: /drone/build
