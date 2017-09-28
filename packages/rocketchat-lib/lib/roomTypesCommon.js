@@ -27,6 +27,7 @@ this.roomTypesCommon = class {
 		userDetailShowAll(room): Whether all room members' details be shown in the user info
 		userDetailShowAdmin(room): Whether admin-controls (change role etc.) shall be shown in the user info
 		preventRenaming(room): Whether it shall be impossible to rename the room
+		includeInRoomSearch(): Whether rooms of this type shall be included into the result list when searching for "rooms"
 	*/
 	add(identifier = Random.id(), order, config) {
 		if (this.roomTypes[identifier] != null) {
@@ -153,6 +154,12 @@ this.roomTypesCommon = class {
 		if (!config.preventRenaming) {
 			config.preventRenaming = function() {
 				return false;
+			};
+		}
+
+		if (!config.includeInRoomSearch) {
+			config.includeInRoomSearch = function() {
+				return true;
 			};
 		}
 	}
