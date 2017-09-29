@@ -43,13 +43,11 @@
 		{{/if}}
 
 		{{#if isSection}}
-			<span class="rc-header__section-title">{{_ sectionName}}</span>
+			<span class="rc-header__block">{{_ sectionName}}</span>
 		{{/if}}
 
 		{{#if Template.contentBlock}}
-			<div class="rc-header__block rc-header__block-action">
-				{{> Template.contentBlock}}
-			</div>
+			{{> Template.contentBlock}}
 		{{/if}}
 
 		{{#unless isChannel}}
