@@ -1,12 +1,23 @@
-RocketChat.updateUserTokenpassBalances = function(user) {
-	if (user && user.services && user.services.tokenpass) {
-		const tcaPublicBalances = RocketChat.getPublicTokenpassBalances(user.services.tokenpass.accessToken);
-		const tcaProtectedBalances = RocketChat.getProtectedTokenpassBalances(user.services.tokenpass.accessToken);
+RocketChat.updateUserTokenpassBalances = function(user, cb) {
+	try {
+		if (user && user.services && user.services.tokenpass) {
+			const tcaPublicBalances = RocketChat.getPublicTokenpassBalances(user.services.tokenpass.accessToken);
+			const tcaProtectedBalances = RocketChat.getProtectedTokenpassBalances(user.services.tokenpass.accessToken);
 
-		const balances = _.uniq(_.union(tcaPublicBalances, tcaProtectedBalances), false, item => item.asset);
+			const balances = _.uniq(_.union(tcaPublicBalances, tcaProtectedBalances), false, item => item.asset);
+			RocketChat.models.Users.setTokenpassTcaBalances(user._id, balances);
 
-		RocketChat.models.Users.setTokenpassTcaBalances(user._id, balances);
-
-		return balances;
+			if (cb) {
+				return cb(null, balances);
+			} else {
+				return balances;
+			}
+		}
+	} catch (error) {
+		if (cb) {
+			return cb(error);
+		} else {
+			throw error;
+		}
 	}
 };
