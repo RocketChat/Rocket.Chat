@@ -12,3 +12,4 @@ RocketChat.LivechatTexts.updateByNameAndLang = function(identifier, lang, value)
 
 	return RocketChat.models.LivechatTexts.upsertByNameAndLang(identifier, lang, value);
 };
+

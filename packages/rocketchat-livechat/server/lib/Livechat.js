@@ -229,8 +229,7 @@ RocketChat.Livechat = {
 	},
 
 	getInitSettings(lang) {
-		const settings = {};
-		settings['Language'] = lang;
+		const settings = { ...RocketChat.Livechat.getTextsTranslation(lang) };
 
 		RocketChat.models.Settings.findNotHiddenPublic([
 			'Livechat_title_color',
@@ -247,23 +246,12 @@ RocketChat.Livechat = {
 			settings[setting._id] = setting.value;
 		});
 
-		// English backup
-		RocketChat.models.LivechatTexts.find({
-			lang: 'en',
-			identifier: {
-				$in: [
-					'Livechat_title',
-					'Livechat_offline_title',
-					'Livechat_offline_message',
-					'Livechat_offline_success_message',
-					'Livechat_offline_form_unavailable'
-				]
-			}
-		}).forEach((setting) => {
-			settings[setting.identifier] = setting.text;
-		});
+		return settings;
+	},
 
-		// client language
+	getTextsTranslation(lang) {
+		const settings = {Language: lang};
+
 		RocketChat.models.LivechatTexts.find({
 			lang,
 			identifier: {

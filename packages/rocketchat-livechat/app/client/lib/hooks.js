@@ -14,6 +14,22 @@ const api = {
 
 	setLanguage(language) {
 		Livechat.language = language;
+
+		Meteor.call('livechat:getTextsTranslation', Livechat.language,
+			(err, result) => {
+				if (err) {
+					console.error(err);
+				} else {
+					if (Livechat.online) {
+						if (result.title) Livechat.title = result.title;
+					} else {
+						if (result.offlineTitle) Livechat.title = result.offlineTitle;
+						if (result.offlineMessage) Livechat.offlineMessage = result.offlineMessage;
+						if (result.offlineUnavailableMessage) Livechat.offlineUnavailableMessage = result.offlineUnavailableMessage;
+						if (result.offlineSuccessMessage) Livechat.offlineSuccessMessage = result.offlineSuccessMessage;
+					}
+				}
+			});
 	},
 
 	setTheme(theme) {

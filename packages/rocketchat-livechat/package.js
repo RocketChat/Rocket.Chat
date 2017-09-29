@@ -139,6 +139,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/methods/getCustomFields.js', 'server');
 	api.addFiles('server/methods/getAgentData.js', 'server');
 	api.addFiles('server/methods/getInitialData.js', 'server');
+	api.addFiles('server/methods/getTextsTranslation.js', 'server');
 	api.addFiles('server/methods/loginByToken.js', 'server');
 	api.addFiles('server/methods/pageVisited.js', 'server');
 	api.addFiles('server/methods/registerGuest.js', 'server');
