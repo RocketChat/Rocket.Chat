@@ -1,3 +1,25 @@
+<a name="0.59.0-rc.10"></a>
+# 0.59.0-rc.10 (2017-09-29)
+
+
+### Bug Fixes
+
+- [#8314](https://github.com/RocketChat/Rocket.Chat/pull/8314) After deleting the room, cache is not synchronizing
+- [#8317](https://github.com/RocketChat/Rocket.Chat/pull/8317) Email Subjects not being sent
+- [#8316](https://github.com/RocketChat/Rocket.Chat/pull/8316) Mention unread indicator was removed
+- [#8315](https://github.com/RocketChat/Rocket.Chat/pull/8315) Put delete action on another popover group
+- [#8334](https://github.com/RocketChat/Rocket.Chat/pull/8334) Remove sidebar header on admin embedded version
+
+
+<details>
+<summary>Others</summary>
+
+- [#8331](https://github.com/RocketChat/Rocket.Chat/pull/8331) [FIX-RC] Mobile file upload not working
+- [#8355](https://github.com/RocketChat/Rocket.Chat/pull/8355) Update meteor to 1.5.2.2-rc.0
+</details>
+
+
+
 <a name="0.59.0-rc.9"></a>
 # 0.59.0-rc.9 (2017-09-26)
 
