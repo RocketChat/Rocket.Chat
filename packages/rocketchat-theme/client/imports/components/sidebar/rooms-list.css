@@ -14,6 +14,10 @@
 	}
 
 	&__list {
+		& .badge {
+			margin: 0 4px;
+		}
+
 		&:not(:last-child) {
 			margin-bottom: 32px;
 		}
@@ -44,10 +48,6 @@
 		font-size: var(--rooms-list-empty-text-size);
 	}
 
-	& .badge {
-		margin: 0 4px;
-	}
-
 	&__toolbar-search {
 		position: absolute;
 		z-index: 1;
@@ -55,10 +55,9 @@
 		bottom: var(--sidebar-footer-height);
 		left: 0;
 
-		overflow-y: auto;
+		overflow-y: scroll;
 
 		width: 100%;
-		padding: 0 8px;
 
 		background-color: var(--sidebar-background);
 	}
