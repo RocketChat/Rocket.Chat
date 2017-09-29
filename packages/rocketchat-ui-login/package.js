@@ -17,7 +17,8 @@ Package.onUse(function(api) {
 		'underscore',
 		'rocketchat:lib',
 		'rocketchat:assets',
-		'rocketchat:2fa'
+		'rocketchat:2fa',
+		'rocketchat:ui'
 	]);
 
 	api.use('kadira:flow-router', 'client');
@@ -34,6 +35,8 @@ Package.onUse(function(api) {
 	api.addFiles('client/login/layout.js', 'client');
 	api.addFiles('client/login/services.html', 'client');
 	api.addFiles('client/login/social.html', 'client');
+	api.addFiles('client/login/globalAnnouncement.html', 'client');
+	api.addFiles('client/login/globalAnnouncement.js', 'client');
 
 	api.addFiles('client/username/layout.html', 'client');
 	api.addFiles('client/username/username.html', 'client');
