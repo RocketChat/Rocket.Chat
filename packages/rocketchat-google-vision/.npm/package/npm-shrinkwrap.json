@@ -1,8 +1,8 @@
 {
   "dependencies": {
     "ajv": {
-      "version": "5.2.2",
-      "resolved": "https://registry.npmjs.org/ajv/-/ajv-5.2.2.tgz",
+      "version": "5.2.3",
+      "resolved": "https://registry.npmjs.org/ajv/-/ajv-5.2.3.tgz",
       "from": "ajv@>=5.1.0 <6.0.0"
     },
     "ansi-regex": {
@@ -1231,8 +1231,8 @@
       "from": "readable-stream@>=2.2.2 <3.0.0"
     },
     "request": {
-      "version": "2.82.0",
-      "resolved": "https://registry.npmjs.org/request/-/request-2.82.0.tgz",
+      "version": "2.83.0",
+      "resolved": "https://registry.npmjs.org/request/-/request-2.83.0.tgz",
       "from": "request@>=2.79.0 <3.0.0"
     },
     "retry-request": {
@@ -1318,7 +1318,7 @@
     "tough-cookie": {
       "version": "2.3.3",
       "resolved": "https://registry.npmjs.org/tough-cookie/-/tough-cookie-2.3.3.tgz",
-      "from": "tough-cookie@>=2.3.2 <2.4.0"
+      "from": "tough-cookie@>=2.3.3 <2.4.0"
     },
     "tunnel-agent": {
       "version": "0.6.0",
