@@ -1,3 +1,5 @@
+import async from 'async';
+
 Template.dbsAI_smarti.onCreated(function() {
 	this.helpRequest = new ReactiveVar(null);
 	const instance = this;
@@ -99,22 +101,34 @@ Template.dbsAI_smarti.helpers({
 /**
  * Load Smarti script
  */
-RocketChat.settings.onload('DBS_AI_Redlink_URL', function() {
-	Meteor.call('getSmartiUiScript', function(error, script) {
-		if (error) {
-			console.error('could not load Smarti:', error.message);
-		} else {
-			// generate a script tag for smarti JS
-			const doc = document;
-			const smartiScriptTag = doc.createElement('script');
-			smartiScriptTag.type = 'text/javascript';
-			smartiScriptTag.async = true;
-			smartiScriptTag.defer = true;
-			smartiScriptTag.innerHTML = script;
-			// insert the smarti script tag as first script tag
-			const firstScriptTag = doc.getElementsByTagName('script')[0];
-			firstScriptTag.parentNode.insertBefore(smartiScriptTag, firstScriptTag);
-			console.debug('loaded Smarti successfully');
-		}
+
+const asynVariabelLoad = (variable, cb) => {
+	RocketChat.settings.onload(variable, (n, v) => {
+		cb(null, v);
 	});
+};
+
+async.map(['DBS_AI_Enabled', 'DBS_AI_Redlink_URL', 'DBS_AI_Source'], asynVariabelLoad, function(err, results) {
+
+	if (err) { return console.error('could not load Smarti:', err.message); }
+
+	if (results[0] && results[1] && results[1] !== '' && results[2] === '2') {
+		Meteor.call('getSmartiUiScript', function(error, script) {
+			if (error) {
+				console.error('could not load Smarti:', error.message);
+			} else {
+				// generate a script tag for smarti JS
+				const doc = document;
+				const smartiScriptTag = doc.createElement('script');
+				smartiScriptTag.type = 'text/javascript';
+				smartiScriptTag.async = true;
+				smartiScriptTag.defer = true;
+				smartiScriptTag.innerHTML = script;
+				// insert the smarti script tag as first script tag
+				const firstScriptTag = doc.getElementsByTagName('script')[0];
+				firstScriptTag.parentNode.insertBefore(smartiScriptTag, firstScriptTag);
+				console.debug('loaded Smarti successfully');
+			}
+		});
+	}
 });
