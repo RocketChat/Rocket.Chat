@@ -2,11 +2,16 @@
 
 .rooms-list {
 	position: relative;
+
 	overflow-y: scroll;
+
+	flex: 1 1 auto;
 
 	height: 100%;
 
-	flex: 1 1 auto;
+	&--embedded {
+		margin-top: 2rem;
+	}
 
 	&__list {
 		&:not(:last-child) {
