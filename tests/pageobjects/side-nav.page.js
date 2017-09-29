@@ -48,8 +48,8 @@ class SideNav extends Page {
 		browser.waitForVisible('.rc-message-box__container textarea', 5000);
 		browser.waitForVisible('.rc-header', 5000);
 		browser.waitUntil(function() {
-			browser.waitForVisible('.rc-header__channel-name', 8000);
-			return browser.getText('.rc-header__channel-name') === channelName;
+			browser.waitForVisible('.rc-header__name', 8000);
+			return browser.getText('.rc-header__name') === channelName;
 		}, 10000);
 	}
 
@@ -57,8 +57,8 @@ class SideNav extends Page {
 	searchChannel(channelName) {
 		let currentRoom;
 		browser.waitForVisible('.rc-header', 15000);
-		if (browser.isVisible('.rc-header__channel-name')) {
-			currentRoom = browser.element('.rc-header__channel-name').getText();
+		if (browser.isVisible('.rc-header__name')) {
+			currentRoom = browser.element('.rc-header__name').getText();
 		}
 		if (currentRoom !== channelName) {
 			this.spotlightSearch.waitForVisible(5000);
@@ -66,9 +66,9 @@ class SideNav extends Page {
 			this.spotlightSearch.setValue(channelName);
 			browser.waitForVisible(`[title='${ channelName }']`, 5000);
 			browser.click(`[title='${ channelName }']`);
-			browser.waitForVisible('.rc-header__channel-name', 8000);
+			browser.waitForVisible('.rc-header__name', 8000);
 			browser.waitUntil(function() {
-				return browser.getText('.rc-header__channel-name') === channelName;
+				return browser.getText('.rc-header__name') === channelName;
 			}, 10000);
 
 		}
@@ -78,10 +78,10 @@ class SideNav extends Page {
 	getChannelFromSpotlight(channelName) {
 		let currentRoom;
 		browser.waitForVisible('.rc-header', 15000);
-		if (browser.isVisible('.rc-header__channel-name')) {
-			currentRoom = browser.element('.rc-header__channel-name').getText();
+		if (browser.isVisible('.rc-header__name')) {
+			currentRoom = browser.element('.rc-header__name').getText();
 		}
-		currentRoom = browser.element('.rc-header__channel-name').getText();
+		currentRoom = browser.element('.rc-header__name').getText();
 		console.log(currentRoom, channelName);
 		if (currentRoom !== channelName) {
 			this.spotlightSearch.waitForVisible(5000);

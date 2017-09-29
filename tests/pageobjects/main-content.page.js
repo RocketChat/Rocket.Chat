@@ -7,7 +7,7 @@ class MainContent extends Page {
 	// Main Content Header (Channel Title Area)
 	get emptyFavoriteStar() { return browser.element('.rc-header__toggle-favorite.empty'); }
 	get favoriteStar() { return browser.element('.rc-header__toggle-favorite.favorite-room'); }
-	get channelTitle() { return browser.element('.rc-header__channel-name'); }
+	get channelTitle() { return browser.element('.rc-header__name'); }
 
 	//Main Content Footer (Message Input Area)
 	get messageInput() { return browser.element('.rc-message-box__container textarea'); }

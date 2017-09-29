@@ -74,7 +74,7 @@ describe('[Administration]', () => {
 			});
 		});
 
-		describe('[Rooms]', () => {
+		describe.skip('[Rooms]', () => {
 			before(() => {
 				admin.roomsLink.waitForVisible(5000);
 				admin.roomsLink.click();
@@ -195,7 +195,7 @@ describe('[Administration]', () => {
 			});
 		});
 
-		describe('[Users]', () => {
+		describe.skip('[Users]', () => {
 			before(() => {
 				admin.usersLink.waitForVisible(5000);
 				admin.usersLink.click();

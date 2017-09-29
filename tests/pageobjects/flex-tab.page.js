@@ -2,6 +2,7 @@ import Page from './Page';
 import Global from './global';
 
 class FlexTab extends Page {
+	get moreActions() { return browser.element('.rc-room-actions__button.js-more') ; }
 	// Channel Info Tab
 	get channelTab() { return browser.element('.tab-button:not(.hidden) .tab-button-icon--info-circled'); }
 	get channelSettings() { return browser.element('.channel-settings'); }
