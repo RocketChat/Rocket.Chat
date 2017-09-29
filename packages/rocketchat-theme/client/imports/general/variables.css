@@ -143,14 +143,13 @@
 	/*
 	* Sidebar flex
 	*/
-	--sidebar-flex-back-button-color: var(--color-dark);
 	--sidebar-flex-search-background: var(--color-white);
 	--sidebar-flex-search-placeholder-color: var(--color-gray);
 
 	/*
 	* Sidebar Account
 	*/
-	--sidebar-account-thumb-size: 48px;
+	--sidebar-account-thumb-size: 36px;
 	--sidebar-small-account-thumb-size: 40px;
 	--sidebar-account-status-bullet-size: 12px;
 	--sidebar-small-account-status-bullet-size: 8px;
