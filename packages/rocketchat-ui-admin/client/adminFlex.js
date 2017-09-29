@@ -63,6 +63,9 @@ Template.adminFlex.helpers({
 			pathGroup: group,
 			darken: true
 		};
+	},
+	embeddedVersion() {
+		return RocketChat.Layout.isEmbedded();
 	}
 });
 
