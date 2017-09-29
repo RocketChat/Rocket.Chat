@@ -6,6 +6,9 @@ Template.livechatFlex.helpers({
 			pathSection: section,
 			darken: true
 		};
+	},
+	embeddedVersion() {
+		return RocketChat.Layout.isEmbedded();
 	}
 });
 
