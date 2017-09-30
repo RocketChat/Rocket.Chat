@@ -13,7 +13,7 @@ Template.livechatFlex.helpers({
 });
 
 Template.livechatFlex.events({
-	'click [data-action="back"]'() {
+	'click [data-action="close"]'() {
 		SideNav.closeFlex();
 	}
 });
