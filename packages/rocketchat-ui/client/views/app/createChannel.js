@@ -44,7 +44,7 @@ Template.createChannel.helpers({
 	autocomplete(key) {
 		const instance = Template.instance();
 		const param = instance.ac[key];
-		return typeof param === 'function' ? param.apply(instance.ac): param;
+		return typeof param === 'function' ? param.apply(instance.ac) : param;
 	},
 	items() {
 		return Template.instance().ac.filteredList();
@@ -96,6 +96,26 @@ Template.createChannel.helpers({
 	},
 	iconType() {
 		return Template.instance().type.get() === 'p' ? 'lock' : 'hashtag';
+	},
+	roomTypesBeforeStandard() {
+		const orderLow = RocketChat.roomTypes.roomTypesOrder.filter((roomTypeOrder) => roomTypeOrder.identifier === 'c')[0].order;
+		return RocketChat.roomTypes.roomTypesOrder.filter(
+			(roomTypeOrder) => roomTypeOrder.order < orderLow
+		).map(
+			(roomTypeOrder) => {
+				return RocketChat.roomTypes.roomTypes[roomTypeOrder.identifier];
+			}
+		).filter((roomType) => roomType.creationTemplate);
+	},
+	roomTypesAfterStandard() {
+		const orderHigh = RocketChat.roomTypes.roomTypesOrder.filter((roomTypeOrder) => roomTypeOrder.identifier === 'd')[0].order;
+		return RocketChat.roomTypes.roomTypesOrder.filter(
+			(roomTypeOrder) => roomTypeOrder.order > orderHigh
+		).map(
+			(roomTypeOrder) => {
+				return RocketChat.roomTypes.roomTypes[roomTypeOrder.identifier];
+			}
+		).filter((roomType) => roomType.creationTemplate);
 	}
 });
 
@@ -160,10 +180,10 @@ Template.createChannel.events({
 			}
 
 			if (!isPrivate) {
-				RocketChat.callbacks.run('aftercreateCombined', { _id: result.rid, name: result.name });
+				RocketChat.callbacks.run('aftercreateCombined', {_id: result.rid, name: result.name});
 			}
 
-			return FlowRouter.go(isPrivate ? 'group' : 'channel', { name: result.name }, FlowRouter.current().queryParams);
+			return FlowRouter.go(isPrivate ? 'group' : 'channel', {name: result.name}, FlowRouter.current().queryParams);
 		});
 		return false;
 	}
@@ -185,7 +205,7 @@ Template.createChannel.onRendered(function() {
 Template.createChannel.onCreated(function() {
 	this.selectedUsers = new ReactiveVar([]);
 
-	const filter = {exceptions :[Meteor.user().username].concat(this.selectedUsers.get().map(u => u.username))};
+	const filter = {exceptions: [Meteor.user().username].concat(this.selectedUsers.get().map(u => u.username))};
 	// this.onViewRead:??y(function() {
 	Deps.autorun(() => {
 		filter.exceptions = [Meteor.user().username].concat(this.selectedUsers.get().map(u => u.username));
@@ -211,7 +231,7 @@ Template.createChannel.onCreated(function() {
 
 	this.ac = new AutoComplete(
 		{
-			selector:{
+			selector: {
 				item: '.rc-popup-list__item',
 				container: '.rc-popup-list__list'
 			},
@@ -220,7 +240,7 @@ Template.createChannel.onCreated(function() {
 			inputDelay: 300,
 			rules: [
 				{
-				// @TODO maybe change this 'collection' and/or template
+					// @TODO maybe change this 'collection' and/or template
 					collection: 'UserAndRoom',
 					subscription: 'userAutocomplete',
 					field: 'username',
@@ -228,7 +248,7 @@ Template.createChannel.onCreated(function() {
 					filter,
 					doNotChangeWidth: false,
 					selector(match) {
-						return { term: match };
+						return {term: match};
 					},
 					sort: 'username'
 				}
