@@ -1,5 +1,5 @@
 Template.accountFlex.events({
-	'click [data-action="back"]'() {
+	'click [data-action="close"]'() {
 		SideNav.closeFlex();
 	}
 });
