@@ -1,5 +1,8 @@
 <template name="createChannel">
 	<section class="create-channel">
+		{{#each roomType in roomTypesBeforeStandard}}
+			{{> Template.dynamic template=roomType.creationTemplate }}
+		{{/each}}
 		<header class="create-channel__header">
 			<h1 class="create-channel__title">{{_ "Create_A_New_Channel"}}</h1>
 			<p class="create-channel__description">{{_ "Channels_are_where_your_team_communicate"}}</p>
@@ -80,6 +83,9 @@
 			</div>
 			<input class="rc-button rc-button--primary" type="submit" data-button="create" {{createIsDisabled}} value="{{_ "Create"}}">
 		</form>
+		{{#each roomType in roomTypesAfterStandard}}
+			{{> Template.dynamic template=roomType.creationTemplate }}
+		{{/each}}
 	</section>
 </template>
 

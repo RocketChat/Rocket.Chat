@@ -6,13 +6,19 @@ RocketChat.roomTypes.add('unread', 10, {
 		const preferences = (user && user.settings && user.settings.preferences && user.settings.preferences) || {};
 		return preferences.roomsListExhibitionMode === 'unread';
 	},
-	label: 'Unread'
+	label: 'Unread',
+	includeInRoomSearch() {
+		return false;
+	}
 });
 
 RocketChat.roomTypes.add('f', 20, {
 	header: 'favorite',
 	icon: 'star',
-	label: 'Favorites'
+	label: 'Favorites',
+	includeInRoomSearch() {
+		return false;
+	}
 });
 
 // activity
@@ -22,7 +28,10 @@ RocketChat.roomTypes.add('activity', 30, {
 		const preferences = (user && user.settings && user.settings.preferences && user.settings.preferences) || {};
 		return preferences.roomsListExhibitionMode === 'activity';
 	},
-	label: 'Conversations'
+	label: 'Conversations',
+	includeInRoomSearch() {
+		return false;
+	}
 });
 
 RocketChat.roomTypes.add('channels', 30, {
@@ -67,7 +76,7 @@ RocketChat.roomTypes.add('c', 30, {
 	},
 
 	showJoinLink(roomId) {
-		return !!ChatRoom.findOne({ _id: roomId, t: 'c' });
+		return !!ChatRoom.findOne({_id: roomId, t: 'c'});
 	}
 });
 
@@ -102,6 +111,10 @@ RocketChat.roomTypes.add('p', 40, {
 		const user = Meteor.user();
 		const preferences = (user && user.settings && user.settings.preferences && user.settings.preferences) || {};
 		return !preferences.roomsListExhibitionMode || ['unread', 'category'].includes(preferences.roomsListExhibitionMode) && !preferences.mergeChannels && RocketChat.authz.hasAllPermission('view-p-room');
+	},
+
+	includeInRoomSearch() {
+		return false;
 	}
 });
 
@@ -117,7 +130,7 @@ RocketChat.roomTypes.add('d', 50, {
 			return openRoom('d', params.username);
 		},
 		link(sub) {
-			return { username: sub.name };
+			return {username: sub.name};
 		}
 	},
 
@@ -134,7 +147,7 @@ RocketChat.roomTypes.add('d', 50, {
 	},
 
 	roomName(roomData) {
-		const subscription = ChatSubscription.findOne({ rid: roomData._id }, { fields: { name: 1, fname: 1 } });
+		const subscription = ChatSubscription.findOne({rid: roomData._id}, {fields: {name: 1, fname: 1}});
 		if (!subscription) {
 			return '';
 		}
@@ -147,7 +160,7 @@ RocketChat.roomTypes.add('d', 50, {
 
 	secondaryRoomName(roomData) {
 		if (RocketChat.settings.get('UI_Use_Real_Name')) {
-			const subscription = ChatSubscription.findOne({ rid: roomData._id }, { fields: { name: 1 } });
+			const subscription = ChatSubscription.findOne({rid: roomData._id}, {fields: {name: 1}});
 			return subscription && subscription.name;
 		}
 	},
@@ -160,8 +173,14 @@ RocketChat.roomTypes.add('d', 50, {
 
 	getUserStatus(roomId) {
 		const subscription = RocketChat.models.Subscriptions.findOne({rid: roomId});
-		if (subscription == null) { return; }
+		if (subscription == null) {
+			return;
+		}
 
 		return Session.get(`user_${ subscription.name }_status`);
+	},
+
+	includeInRoomSearch() {
+		return false;
 	}
 });
