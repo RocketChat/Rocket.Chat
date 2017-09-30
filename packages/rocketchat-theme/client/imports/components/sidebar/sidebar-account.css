@@ -53,7 +53,6 @@
 
 		max-width: fit-content;
 		height: calc(var(--sidebar-account-username-size) + 0.1rem);
-		margin-bottom: 0.5rem;
 
 		white-space: nowrap;
 		text-overflow: ellipsis;
