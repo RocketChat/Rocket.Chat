@@ -14,6 +14,7 @@ RocketChat.roomTypes.add('r', 6, { //5 is livechat
 	template: 'requests',
 	icon: 'icon-help',
 	label: 'Requests',
+	creationTemplate: 'AssistifyCreateRequest',
 	route: {
 		name: 'request',
 		path: '/request/:name',
@@ -40,6 +41,10 @@ RocketChat.roomTypes.add('r', 6, { //5 is livechat
 
 	showJoinLink(roomId) {
 		return !!ChatRoom.findOne({ _id: roomId, t: 'r' });
+	},
+
+	canBeDeleted(userId, room) {
+		return RocketChat.authz.hasPermission(userId, 'delete-c', room._id);
 	}
 });
 
@@ -51,6 +56,7 @@ RocketChat.roomTypes.add('e', 15, { //20 = private messages
 	template: 'expertise',
 	icon: 'icon-lightbulb',
 	label: 'Expertises',
+	creationTemplate: 'AssistifyCreateExpertise',
 	route: {
 		name: 'expertise',
 		path: '/expertise/:name',
@@ -73,5 +79,9 @@ RocketChat.roomTypes.add('e', 15, { //20 = private messages
 
 	condition() {
 		return RocketChat.authz.hasAllPermission('view-p-room'); //todo: Own authorization
+	},
+
+	canBeDeleted(userId, room) {
+		return RocketChat.authz.hasPermission(userId, 'delete-c', room._id);
 	}
 });
