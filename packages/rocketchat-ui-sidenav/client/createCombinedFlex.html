@@ -1,7 +1,4 @@
 <template name="createCombinedFlex">
-	{{#each roomType in roomTypesBeforeStandard}}
-		{{> roomType.creationTemplate }}
-	{{/each}}
 	<header class="primary-background-color">
 		<div>
 			<h4>{{_ "Channels"}}</h4>
@@ -74,7 +71,4 @@
 			</div>
 		{{/if}}
 	</div>
-	{{#each roomType in roomTypesAfterStandard}}
-		{{> roomType.creationTemplate }}
-	{{/each}}
 </template>

@@ -117,7 +117,7 @@ this.roomTypesCommon = class {
 				   is already performed in /server/methods/eraseRoom.js. However, in order not to rely on that remaining as-is,
 				   code the authorization check redundantly here. This shall also make consumption more easy and transparent
 				*/
-				RocketChat.authz.hasPermission(userId, `delete-${ room.t }`, room._id);
+				return RocketChat.authz.hasPermission(userId, `delete-${ room.t }`, room._id);
 			};
 		}
 
