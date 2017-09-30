@@ -3,8 +3,12 @@ Template.sidebarItem.helpers({
 	or(...args) {
 		args.pop();
 		return args.some(arg => arg);
+	},
+	isRoom() {
+		return this.rid || this._id;
 	}
 });
+
 Template.sidebarItem.events({
 	'click [data-id], click .sidebar-item__link'() {
 		return menu.close();
