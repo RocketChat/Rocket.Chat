@@ -70,7 +70,7 @@ Template.adminFlex.helpers({
 });
 
 Template.adminFlex.events({
-	'click [data-action="back"]'() {
+	'click [data-action="close"]'() {
 		SideNav.closeFlex();
 	},
 	'keyup [name=settings-search]'(e, t) {
