@@ -47,11 +47,9 @@ Meteor.methods({
 					username: 1
 				}).username;
 
-				let searchableRoomTypes = ['c'];
-				searchableRoomTypes = searchableRoomTypes.concat(RocketChat.roomTypes
-					.filter((roomType) => roomType.includeInRoomSearch && roomType.includeInRoomSearch())
-					.map((roomType) => roomType.identifier)
-				);
+				const searchableRoomTypes = Object.entries(RocketChat.roomTypes.roomTypes)
+					.filter((roomType)=>roomType[1].includeInRoomSearch())
+					.map((roomType)=>roomType[0]);
 
 				result.rooms = RocketChat.models.Rooms.findByNameAndTypesNotContainingUsername(regex, searchableRoomTypes, username, roomOptions).fetch();
 			}
