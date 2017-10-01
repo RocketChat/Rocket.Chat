@@ -547,24 +547,26 @@ Template.room.events({
 		}
 
 		const [, message] = this._arguments;
-		const items = RocketChat.MessageAction.getButtons(message, context, 'menu').map(item => {
+		const allItems = RocketChat.MessageAction.getButtons(message, context, 'menu').map(item => {
 			return {
 				icon: item.icon,
 				name: t(item.label),
 				type: 'message-action',
 				id: item.id,
-				modifier: item.id === 'delete-message' ? 'error' : null
+				modifier: item.color
 			};
 		});
+		const [items, deleteItem] = allItems.reduce((result, value) => (result[value.id === 'delete-message' ? 1 : 0].push(value), result), [[], []]);
+		const groups = [{ items }];
+
+		if (deleteItem.length) {
+			groups.push({ items: deleteItem });
+		}
 
 		const config = {
 			columns: [
 				{
-					groups: [
-						{
-							items
-						}
-					]
+					groups
 				}
 			],
 			instance: i,
@@ -950,6 +952,12 @@ Template.room.onRendered(function() {
 		}
 		if (!template.isAtBottom()) {
 			newMessage.classList.remove('not');
+		}
+	});
+	Tracker.autorun(function() {
+		const subRoom = ChatSubscription.findOne({rid:template.data._id});
+		if (!subRoom) {
+			FlowRouter.go('home');
 		}
 	});
 });
