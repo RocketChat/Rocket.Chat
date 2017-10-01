@@ -112,12 +112,10 @@ this.roomTypesCommon = class {
 		}
 
 		if (!config.canBeDeleted) {
-			config.canBeDeleted = function(userId, room) {
-				/* this implementation is actually not necessary, since the generic authorisation check on delete-{identifier}
-				   is already performed in /server/methods/eraseRoom.js. However, in order not to rely on that remaining as-is,
-				   code the authorization check redundantly here. This shall also make consumption more easy and transparent
-				*/
-				return RocketChat.authz.hasPermission(userId, `delete-${ room.t }`, room._id);
+			config.canBeDeleted = function(room) {
+				return Meteor.isServer ?
+					RocketChat.authz.hasAtLeastOnePermission(Meteor.userId(), [`delete-${ room.t }`], room._id) :
+					RocketChat.authz.hasAtLeastOnePermission([`delete-${ room.t }`], room._id);
 			};
 		}
 
@@ -129,13 +127,13 @@ this.roomTypesCommon = class {
 
 		if (!config.isGroupChat) {
 			config.isGroupChat = function() {
-				return true;
+				return false;
 			};
 		}
 
 		if (!config.canAddUser) {
 			config.canAddUser = function() {
-				return true;
+				return false;
 			};
 		}
 
@@ -159,7 +157,7 @@ this.roomTypesCommon = class {
 
 		if (!config.includeInRoomSearch) {
 			config.includeInRoomSearch = function() {
-				return true;
+				return false;
 			};
 		}
 	}

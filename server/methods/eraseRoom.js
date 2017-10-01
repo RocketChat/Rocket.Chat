@@ -10,7 +10,6 @@ Meteor.methods({
 			});
 		}
 
-		const fromId = Meteor.userId();
 		const room = RocketChat.models.Rooms.findOneById(rid);
 
 		if (!room) {
@@ -19,9 +18,7 @@ Meteor.methods({
 			});
 		}
 
-		if (RocketChat.authz.hasPermission(fromId, `delete-${ room.t }`, rid)
-			//support custom room types verifying deletion differently
-			|| (RocketChat.roomTypes[room.t].canBeDeleted && RocketChat.roomTypes[room.t].canBeDeleted(fromId, room))) {
+		if (RocketChat.roomTypes.roomTypes[room.t].canBeDeleted(room)) {
 			RocketChat.models.Messages.removeByRoomId(rid);
 			RocketChat.models.Subscriptions.removeByRoomId(rid);
 			return RocketChat.models.Rooms.removeById(rid);
