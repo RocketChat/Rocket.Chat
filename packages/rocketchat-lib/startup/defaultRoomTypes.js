@@ -6,19 +6,13 @@ RocketChat.roomTypes.add('unread', 10, {
 		const preferences = (user && user.settings && user.settings.preferences && user.settings.preferences) || {};
 		return preferences.roomsListExhibitionMode === 'unread';
 	},
-	label: 'Unread',
-	includeInRoomSearch() {
-		return false;
-	}
+	label: 'Unread'
 });
 
 RocketChat.roomTypes.add('f', 20, {
 	header: 'favorite',
 	icon: 'star',
-	label: 'Favorites',
-	includeInRoomSearch() {
-		return false;
-	}
+	label: 'Favorites'
 });
 
 // activity
@@ -28,10 +22,7 @@ RocketChat.roomTypes.add('activity', 30, {
 		const preferences = (user && user.settings && user.settings.preferences && user.settings.preferences) || {};
 		return preferences.roomsListExhibitionMode === 'activity';
 	},
-	label: 'Conversations',
-	includeInRoomSearch() {
-		return false;
-	}
+	label: 'Conversations'
 });
 
 RocketChat.roomTypes.add('channels', 30, {
@@ -77,6 +68,30 @@ RocketChat.roomTypes.add('c', 30, {
 
 	showJoinLink(roomId) {
 		return !!ChatRoom.findOne({_id: roomId, t: 'c'});
+	},
+
+	includeInRoomSearch() {
+		return true;
+	},
+
+	isGroupChat() {
+		return true;
+	},
+
+	canAddUser(room) {
+		return RocketChat.authz.hasAtLeastOnePermission(['add-user-to-any-c-room', 'add-user-to-joined-room'], room._id)
+	},
+
+	userDetailShowAll() {
+		return true;
+	},
+
+	userDetailShowAdmin() {
+		return true;
+	},
+
+	getDisplayName(room) {
+		return room.name;
 	}
 });
 
@@ -113,8 +128,24 @@ RocketChat.roomTypes.add('p', 40, {
 		return !preferences.roomsListExhibitionMode || ['unread', 'category'].includes(preferences.roomsListExhibitionMode) && !preferences.mergeChannels && RocketChat.authz.hasAllPermission('view-p-room');
 	},
 
-	includeInRoomSearch() {
-		return false;
+	isGroupChat() {
+		return true;
+	},
+
+	canAddUser(room) {
+		return RocketChat.authz.hasAtLeastOnePermission(['add-user-to-any-p-room', 'add-user-to-joined-room'], room._id)
+	},
+
+	userDetailShowAll() {
+		return true;
+	},
+
+	userDetailShowAdmin() {
+		return true;
+	},
+
+	getDisplayName(room) {
+		return room.name;
 	}
 });
 
@@ -180,7 +211,11 @@ RocketChat.roomTypes.add('d', 50, {
 		return Session.get(`user_${ subscription.name }_status`);
 	},
 
-	includeInRoomSearch() {
-		return false;
+	userDetailShowAdmin() {
+		return true;
+	},
+
+	getDisplayName(room) {
+		return room.usernames.join(' x ');
 	}
 });
