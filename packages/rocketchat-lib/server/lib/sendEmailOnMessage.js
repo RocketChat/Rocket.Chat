@@ -113,7 +113,7 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 			usersOfMention.forEach((user) => {
 				if (usersToSendEmail[user._id] === 'default') {
 					if (!user.settings || !user.settings.preferences || !user.settings.preferences.emailNotificationMode || user.settings.preferences.emailNotificationMode === 'all') { //Mention/DM
-						usersToSendEmail[user._id] === 'mention';
+						usersToSendEmail[user._id] = 'mention';
 					} else {
 						return;
 					}
