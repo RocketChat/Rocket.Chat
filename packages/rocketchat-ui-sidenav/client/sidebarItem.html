@@ -1,25 +1,27 @@
 <template name="sidebarItem">
-	<li class="sidebar-item {{#if unread}}sidebar-item--unread{{/if}} {{#if active}}sidebar-item--active{{/if}} {{#if toolbar}}popup-item{{/if}}" data-id="{{_id}}">
+	<li class="sidebar-item {{#if or unread alert }}sidebar-item--unread{{/if}} {{#if active}}sidebar-item--active{{/if}} {{#if toolbar}}popup-item{{/if}}" data-id="{{_id}}">
 		{{#if statusClass}}
 			<div class="sidebar-item__user-status sidebar-item__user-status--{{statusClass}}"></div>
 		{{/if}}
-		<a class="sidebar-item__link {{alertClass}} {{#if active}}sidebar-item__link--active{{/if}}" href="{{#if route}}{{route}}{{else}}{{pathFor pathSection group=pathGroup}}{{/if}}" title="{{name}}">
-			<div class="sidebar-item__picture">
-				{{#if icon}}
+		<a class="sidebar-item__link" href="{{#if route}}{{route}}{{else}}{{pathFor pathSection group=pathGroup}}{{/if}}" title="{{name}}">
+			{{#if icon}}
+				<div class="sidebar-item__picture">
 					{{> icon block="sidebar-item__icon" icon=icon}}
-				{{else}}
-					{{#if avatar}}
+				</div>
+			{{else}}
+				{{#if avatar}}
+					<div class="sidebar-item__picture">
 						<div class="sidebar-item__user-thumb">
 							{{> avatar username=username}}
 						</div>
-					{{/if}}
+					</div>
 				{{/if}}
-			</div>
+			{{/if}}
 			<div class='sidebar-item__name {{archivedClass}}'>{{name}}</div>
 			{{#if unread}}
-				<span class="badge badge--unread">{{unread}}</span>
+				<span class="badge badge--unread">{{#if userMentions}}@ {{/if}}{{unread}}</span>
 			{{/if}}
-			{{#if rid}}
+			{{#if isRoom}}
 				<div class="sidebar-item__menu">
 					{{> icon block="sidebar-item__menu-icon" icon="menu"}}
 				</div>
