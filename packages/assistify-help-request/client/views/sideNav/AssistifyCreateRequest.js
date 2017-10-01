@@ -41,13 +41,7 @@ Template.AssistifyCreateRequest.events({
 		}
 	},
 
-	'click .cancel-request'(event, instance) {
-		SideNav.closeFlex(() => {
-			instance.clearForm();
-		});
-	},
-
-	'click .save-request'(event, instance) {
+	'submit .js-save-request'(event, instance) {
 		event.preventDefault();
 		const expertise = instance.find('#expertise-search').value.trim();
 		instance.requestRoomName.set(name);

@@ -1,28 +1,68 @@
 <template name="AssistifyCreateExpertise">
-	{{#if canCreateExpertise}}
-		<h4>{{_ "Expertises" }}</h4>
-		<div class="input-line no-icon">
-			<span>{{_ "Expertise_title"}}</span>
-			<input type="text" id="expertise" dir="auto" placeholder="{{_ 'Enter_name_here'}}">
+	<header class="create-channel__header">
+		<h1 class="create-channel__title">{{_ "Expertises"}}</h1>
+		<p class="create-channel__description">{{_ "Expertise_description"}}</p>
+	</header>
+	<form class="create-channel__content">
+		<div class="create-channel__inputs">
+			<div class="rc-input {{#if invalidChannel}}rc-input--error{{/if}}">
+				<label class="rc-input__label">
+					<div class="rc-input__title">{{_ "Expertise_title"}}</div>
+					<div class="rc-input__wrapper">
+						<div class="rc-input__icon">
+							{{> icon block="rc-input__icon-svg" icon="flag" }}
+						</div>
+						<input name="expertise" type="text" class="rc-input__element"
+							   placeholder="{{_ "Expertise_Name_Placeholder"}}" autofocus>
+					</div>
+				</label>
+				{{#if inUse}}
+					<div class="rc-input__error">
+						<div class="rc-input__error-icon">
+							{{> icon block="rc-input__error-icon" icon="warning" classes="rc-input__error-icon-svg"}}
+						</div>
+						<div class="rc-input__error-message">{{_ "Channel_already_exist_static"}}</div>
+					</div>
+				{{/if}}
+			</div>
+			<div class="rc-input">
+				<label class="rc-input__label">
+					<div class="rc-input__title">{{_ "Invite_Users"}}</div>
+					<div class="rc-input__wrapper">
+						<div class="rc-input__icon">
+							{{> icon block="rc-input__icon-svg" icon="at"}}
+						</div>
+						<div class="rc-tags">
+							{{#each user in selectedUsers}}
+								{{> tag user}}
+							{{/each}}
+							<input type="text" class="rc-tags__input" placeholder="{{_ "Experts_Placeholder"}}"
+								   name="experts" autocomplete="off"/>
+						</div>
+					</div>
+					{{#with config}}
+						{{#if autocomplete 'isShowing'}}
+							<div class="fadeInDown">
+								{{#if autocomplete 'isLoaded'}}
+									{{> popupList data=config items=items}}
+								{{/if}}
+							</div>
+						{{/if}}
+					{{/with}}
+				</label>
+			</div>
 		</div>
+		<input class="rc-button rc-button--primary" type="submit" data-button="create" {{createIsDisabled}}
+			   value="{{_ "Create"}}">
+	</form>
+</template>
 
-		<div class="input-line no-icon">
-			<label class="color-tertiary-font-color" for="experts">{{_ "Select_users"}}</label>
-			{{> inputAutocomplete settings=autocompleteSettings id="experts" class="search" placeholder=(_ "Search_by_username") autocomplete="off"}}
-			{{#if selectedUsers}}
-				<ul class="selected-users">
-					{{#each selectedUsers}}
-						<li class="background-transparent-darker">{{.}} <i
-								class="icon-cancel remove-expert"></i>
-						</li>
-					{{/each}}
-				</ul>
-			{{/if}}
-		</div>
-
-		<div class="input-submit">
-			<button class="button primary save-expertise">{{_ "Create" }}</button>
-			<button class="button cancel-expertise">{{_ "Cancel" }}</button>
-		</div>
-	{{/if}}
+<template name='tag'>
+	<span class="rc-tags__tag">
+		<span class="rc-tags__tag-avatar">
+			{{> avatar username=username}}
+		</span>
+		<span class="rc-tags__tag-username">{{username}}</span>
+		{{> icon block="rc-tags__tag-icon" icon="cross"}}
+	</span>
 </template>

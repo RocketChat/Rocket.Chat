@@ -1,11 +1,27 @@
 <template name="AssistifyCreateRequest">
-	<h4>{{_ "Requests" }}</h4>
-	<label class="color-tertiary-font-color" for="expertise-search">{{_ "New_request_for_expertise"}}</label>
-	<div class="input-line no-icon">
-		{{> inputAutocomplete settings=autocompleteExpertiseSettings id="expertise-search" class="search" autocomplete=off value=expertise}}
-	</div>
-	<div class="input-submit">
-		<button class="button primary save-request">{{_ "Create" }}</button>
-		<button class="button cancel-request">{{_ "Cancel" }}</button>
-	</div>
+	<header class="create-channel__header">
+		<h1 class="create-channel__title">{{_ "Requests"}}</h1>
+		<p class="create-channel__description">{{_ "Create_assistify_request_description"}}</p>
+	</header>
+	<form class="create-channel__content">
+		<div class="create-channel__inputs">
+			<div class="rc-input">
+				<label class="rc-input__label">
+					<div class="rc-input__title">{{_ "New_request_for_expertise"}}</div>
+					<div class="rc-input__wrapper">
+						<div class="rc-input__icon">
+							<svg class="rc-icon rc-input__icon-svg rc-input__icon-svg--lock" aria-hidden="true">
+								<use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon-lock"></use>
+							</svg>
+						</div>
+						<!--<input name="name" type="text" placeholder="Channel_Name_Placeholder" autofocus="">-->
+						{{> inputAutocomplete settings=autocompleteExpertiseSettings class="rc-input__element" id="expertise-search" autocomplete=off value=expertise placeholder="Expertise"}}
+					</div>
+					<input class="rc-button rc-button--primary js-save-request" type="submit" data-button="create"
+						   value="Create" disabled="">
+				</label>
+
+			</div>
+		</div>
+	</form>
 </template>
