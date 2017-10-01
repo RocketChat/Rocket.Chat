@@ -182,10 +182,10 @@ class ModelSubscriptions extends RocketChat.models._Base {
 
 	findUnreadByUserId(userId) {
 		const query = {
-				'u._id': userId,
-				unread: {
-					$gt: 0
-				}
+			'u._id': userId,
+			unread: {
+				$gt: 0
+			}
 		};
 
 		return this.find(query, { fields: { unread: 1 } });
