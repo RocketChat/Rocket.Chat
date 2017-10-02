@@ -79,7 +79,7 @@ RocketChat.roomTypes.add('c', 30, {
 	},
 
 	canAddUser(room) {
-		return RocketChat.authz.hasAtLeastOnePermission(['add-user-to-any-c-room', 'add-user-to-joined-room'], room._id)
+		return RocketChat.authz.hasAtLeastOnePermission(['add-user-to-any-c-room', 'add-user-to-joined-room'], room._id);
 	},
 
 	userDetailShowAll() {
@@ -133,7 +133,7 @@ RocketChat.roomTypes.add('p', 40, {
 	},
 
 	canAddUser(room) {
-		return RocketChat.authz.hasAtLeastOnePermission(['add-user-to-any-p-room', 'add-user-to-joined-room'], room._id)
+		return RocketChat.authz.hasAtLeastOnePermission(['add-user-to-any-p-room', 'add-user-to-joined-room'], room._id);
 	},
 
 	userDetailShowAll() {
