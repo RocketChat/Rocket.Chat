@@ -19,14 +19,14 @@ class MarkdownClass {
 		const message = {
 			html: _.escapeHTML(text)
 		};
-		return this.parseMessageNotEscaped(message).html;
+		return this.mountTokensBack(this.parseMessageNotEscaped(message)).html;
 	}
 
 	parseNotEscaped(text) {
 		const message = {
 			html: text
 		};
-		return this.parseMessageNotEscaped(message).html;
+		return this.mountTokensBack(this.parseMessageNotEscaped(message)).html;
 	}
 
 	parseMessageNotEscaped(message) {
@@ -35,6 +35,16 @@ class MarkdownClass {
 			return parsers[parser](message);
 		}
 		return parsers['original'](message);
+	}
+
+	mountTokensBack(message) {
+		if (message.tokens && message.tokens.length > 0) {
+			for (const {token, text} of message.tokens) {
+				message.html = message.html.replace(token, () => text); // Uses lambda so doesn't need to escape $
+			}
+		}
+
+		return message;
 	}
 }
 
