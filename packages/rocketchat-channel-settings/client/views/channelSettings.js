@@ -54,7 +54,7 @@ Template.channelSettings.helpers({
 			}
 		});
 		const roomType = room && room.t;
-		return roomType && RocketChat.authz.hasAtLeastOnePermission(`delete-${ roomType }`, this.rid);
+		return roomType && RocketChat.roomTypes.roomTypes[room.t].canBeDeleted(room);
 	},
 	readOnly() {
 		const room = ChatRoom.findOne(this.rid, {

@@ -93,7 +93,7 @@
 		font-size: var(--popover-item-text-size);
 		align-items: center;
 
-		&--error {
+		&--alert {
 			color: var(--color-error);
 
 			& .rc-icon {

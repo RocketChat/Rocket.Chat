@@ -23,7 +23,6 @@ const options = {
 		sms: 1,
 		code: 1,
 		open: 1,
-		lastActivity: 1,
 		v: 1,
 		label: 1,
 		ro: 1,
@@ -97,7 +96,7 @@ RocketChat.models.Rooms.cache.on('sync', (type, room/*, diff*/) => {
 });
 
 RocketChat.models.Subscriptions.on('changed', (type, subscription/*, diff*/) => {
-	if (type === 'inserted') {
+	if (type === 'inserted' || type === 'removed') {
 		const room = RocketChat.models.Rooms.findOneById(subscription.rid);
 		if (room) {
 			RocketChat.Notifications.notifyUserInThisInstance(subscription.u._id, 'rooms-changed', type, roomMap({_room: room}));
