@@ -25,6 +25,9 @@ Template.livechatAppearance.helpers({
 	color() {
 		return Template.instance().color.get();
 	},
+	showAgentEmail() {
+		return Template.instance().showAgentEmail.get();
+	},
 	title() {
 		return Template.instance().title.get();
 	},
@@ -45,6 +48,16 @@ Template.livechatAppearance.helpers({
 	},
 	sampleOfflineSuccessMessage() {
 		return Template.instance().offlineSuccessMessage.get().replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1<br>$2');
+	},
+	showAgentEmailFormTrueChecked() {
+		if (Template.instance().showAgentEmail.get()) {
+			return 'checked';
+		}
+	},
+	showAgentEmailFormFalseChecked() {
+		if (!Template.instance().showAgentEmail.get()) {
+			return 'checked';
+		}
 	},
 	displayOfflineFormTrueChecked() {
 		if (Template.instance().displayOfflineForm.get()) {
@@ -155,6 +168,7 @@ Template.livechatAppearance.onCreated(function() {
 	this.title = new ReactiveVar(null);
 	this.color = new ReactiveVar(null);
 
+	this.showAgentEmail = new ReactiveVar(null);
 	this.displayOfflineForm = new ReactiveVar(null);
 	this.offlineUnavailableMessage = new ReactiveVar(null);
 	this.offlineMessage = new ReactiveVar(null);
@@ -170,6 +184,10 @@ Template.livechatAppearance.onCreated(function() {
 	this.autorun(() => {
 		const setting = LivechatAppearance.findOne('Livechat_title_color');
 		this.color.set(setting && setting.value);
+	});
+	this.autorun(() => {
+		const setting = LivechatAppearance.findOne('Livechat_show_agent_email');
+		this.showAgentEmail.set(setting && setting.value);
 	});
 	this.autorun(() => {
 		const setting = LivechatAppearance.findOne('Livechat_display_offline_form');
@@ -221,6 +239,9 @@ Template.livechatAppearance.events({
 		const settingTitleColor = LivechatAppearance.findOne('Livechat_title_color');
 		instance.color.set(settingTitleColor && settingTitleColor.value);
 
+		const settingShowAgentEmail = LivechatAppearance.findOne('Livechat_show_agent_email');
+		instance.showAgentEmail.set(settingShowAgentEmail && settingShowAgentEmail.value);
+
 		const settingDiplayOffline = LivechatAppearance.findOne('Livechat_display_offline_form');
 		instance.displayOfflineForm.set(settingDiplayOffline && settingDiplayOffline.value);
 
@@ -250,6 +271,10 @@ Template.livechatAppearance.events({
 			{
 				_id: 'Livechat_title_color',
 				value: instance.color.get()
+			},
+			{
+				_id: 'Livechat_show_agent_email',
+				value: instance.showAgentEmail.get()
 			},
 			{
 				_id: 'Livechat_display_offline_form',
