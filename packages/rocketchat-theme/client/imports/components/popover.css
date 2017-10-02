@@ -92,6 +92,14 @@
 
 		font-size: var(--popover-item-text-size);
 		align-items: center;
+
+		&--alert {
+			color: var(--color-error);
+
+			& .rc-icon {
+				fill: var(--color-error);
+			}
+		}
 	}
 
 	&__icon {
@@ -172,5 +180,12 @@
 		transform: translate(0, 0);
 
 		opacity: 1;
+	}
+}
+
+.rtl .rc-popover {
+	&__item-text {
+		margin-right: 0.25rem;
+		margin-left: auto;
 	}
 }

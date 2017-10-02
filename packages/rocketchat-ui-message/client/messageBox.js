@@ -1,4 +1,4 @@
-/* globals fileUpload KonchatNotification chatMessages popover */
+/* globals fileUpload KonchatNotification chatMessages popover isRtl */
 import toastr from 'toastr';
 import moment from 'moment';
 
@@ -364,9 +364,9 @@ Template.messageBox.events({
 			// fixes https://github.com/RocketChat/Rocket.Chat/issues/3037
 			// at this point, the input is cleared and ready for autogrow
 			input.updateAutogrow();
-			return instance.isMessageFieldEmpty.set(chatMessages[this._id].isEmpty());
+			instance.isMessageFieldEmpty.set(chatMessages[this._id].isEmpty());
+			return input.focus();
 		});
-		return input.focus();
 	},
 	'keyup .js-input-message'(event, instance) {
 		chatMessages[this._id].keyup(this._id, event, instance);
@@ -425,6 +425,7 @@ Template.messageBox.events({
 	},
 	'click .rc-message-box__action-menu'(e) {
 		const groups = RocketChat.messageBox.actions.get();
+		const textArea = document.querySelector('.rc-message-box__textarea');
 
 		const config = {
 			popoverClass: 'message-box',
@@ -451,6 +452,9 @@ Template.messageBox.events({
 				x: document.querySelector('.rc-message-box__textarea').getBoundingClientRect().right + 10,
 				y: document.querySelector('.rc-message-box__textarea').getBoundingClientRect().top
 			},
+			customCSSProperties: {
+				left: isRtl() ? `${ textArea.getBoundingClientRect().left - 10 }px` : undefined
+			},
 			data: {
 				rid: this._id
 			},
@@ -469,6 +473,8 @@ Template.messageBox.onRendered(function() {
 	}).on('autogrow', () => {
 		this.data && this.data.onResize && this.data.onResize();
 	}).focus()[0];
+
+	chatMessages[RocketChat.openedRoom].restoreText(RocketChat.openedRoom);
 });
 
 Template.messageBox.onCreated(function() {
