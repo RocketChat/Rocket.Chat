@@ -236,4 +236,12 @@ Meteor.startup(function() {
 		i18nLabel: 'Livechat_AllowedDomainsList',
 		i18nDescription: 'Domains_allowed_to_embed_the_livechat_widget'
 	});
+
+	RocketChat.settings.add('Livechat_RDStation_Token', '', {
+		type: 'string',
+		group: 'Livechat',
+		public: false,
+		section: 'RD Station',
+		i18nLabel: 'RDStation_Token'
+	});
 });

@@ -1,6 +1,19 @@
 .rtl {
 	direction: rtl;
 
+	& .rc-old .buttons-group .button {
+		margin-right: 4px;
+		margin-left: auto;
+
+		&:first-child {
+			margin-right: 0;
+		}
+	}
+
+	& .rc-old .page-container .content .rocket-form .submit {
+		text-align: left;
+	}
+
 	& button {
 		text-align: right;
 	}
@@ -237,7 +250,7 @@
 	}
 
 	& .messages-box {
-		margin: 60px 0 0 20px;
+		margin: 60px 0 0;
 
 		& .new-message {
 			right: 50%;
@@ -641,18 +654,6 @@
 		}
 	}
 
-	& .first-unread .body {
-		&::before {
-			right: 20px;
-			left: 0;
-		}
-
-		&::after {
-			right: auto;
-			left: 0;
-		}
-	}
-
 	& .ticks-bar {
 		right: auto;
 		left: 2px;
@@ -677,9 +678,16 @@
 
 			& i {
 				float: right;
-
 				margin-right: auto;
 				margin-left: 10px;
+
+				&.file-delete {
+				  float: left;
+				}
+
+				&.file-download {
+				  float: left;
+				}
 			}
 		}
 	}

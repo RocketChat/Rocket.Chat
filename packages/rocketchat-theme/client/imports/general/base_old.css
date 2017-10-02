@@ -3752,7 +3752,13 @@ body:not(.is-cordova) {
 	}
 
 	&.uploaded-files-list {
-		& a .file-name {
+	  	& ul {
+		  & li {
+			margin-bottom: 10px;
+		  }
+		}
+		
+		& .file-name {
 			display: block;
 
 			padding: 10px 5px;
@@ -3777,19 +3783,14 @@ body:not(.is-cordova) {
 
 		& i {
 			float: left;
-
 			margin-right: 10px;
 
 			&.file-delete {
 				float: right;
-
-				padding-top: 10px;
 			}
 
 			&.file-download {
 				float: right;
-
-				padding-top: 11px;
 			}
 		}
 	}
