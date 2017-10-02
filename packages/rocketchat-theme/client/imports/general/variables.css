@@ -129,10 +129,13 @@
 	--sidebar-width: 280px;
 	--sidebar-small-width: 90%;
 	--sidebar-background: var(--color-primary);
+	--sidebar-background-hover: var(--color-dark-medium);
 	--sidebar-background-light: var(--color-gray-lightest);
+	--sidebar-background-light-hover: var(--color-gray-light);
 	--sidebar-default-padding: 24px;
 	--sidebar-small-default-padding: 16px;
-	--sidebar-header-padding: var(--sidebar-default-padding);
+	--sidebar-header-padding: 16px;
+	--sidebar-header-small-padding: 12px;
 	--sidebar-footer-height: 70px;
 	--sidebar-footer-padding: var(--sidebar-header-padding);
 	--sidebar-small-header-padding: var(--sidebar-small-default-padding);
@@ -140,14 +143,13 @@
 	/*
 	* Sidebar flex
 	*/
-	--sidebar-flex-back-button-color: var(--color-dark);
 	--sidebar-flex-search-background: var(--color-white);
 	--sidebar-flex-search-placeholder-color: var(--color-gray);
 
 	/*
 	* Sidebar Account
 	*/
-	--sidebar-account-thumb-size: 48px;
+	--sidebar-account-thumb-size: 36px;
 	--sidebar-small-account-thumb-size: 40px;
 	--sidebar-account-status-bullet-size: 12px;
 	--sidebar-small-account-status-bullet-size: 8px;
@@ -166,12 +168,16 @@
 	--sidebar-item-radius: 2px;
 	--sidebar-item-height: 32px;
 	--sidebar-item-thumb-size: 20px;
+
 	--sidebar-item-text-color: var(--color-gray);
-	--sidebar-item-lighten-hover-background: var(--color-dark-medium);
-	--sidebar-item-darken-hover-background: var(--color-gray-light);
-	--sidebar-item-darken-text-color: var(--color-dark);
-	--sidebar-item-active-background: var(--color-gray);
-	--sidebar-item-active-text-color: var(--color-white);
+	--sidebar-item-background: inherit;
+	--sidebar-item-hover-background: var(--color-darkest);
+
+	--sidebar-item-active-background: var(--color-dark-medium);
+	--sidebar-item-active-color: var(--sidebar-item-text-color);
+
+	--sidebar-item-unread-color: var(--color-white);
+
 	--sidebar-item-popup-background: var(--color-dark-medium);
 	--sidebar-item-user-status-size: 6px;
 	--sidebar-small-item-user-status-size: 4px;
