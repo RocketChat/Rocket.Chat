@@ -12,7 +12,7 @@
  */
 RocketChat.roomTypes.add('r', 6, { //5 is livechat
 	template: 'requests',
-	icon: 'icon-help',
+	icon: 'question',
 	label: 'Requests',
 	creationTemplate: 'AssistifyCreateRequest',
 	route: {
@@ -40,21 +40,44 @@ RocketChat.roomTypes.add('r', 6, { //5 is livechat
 	},
 
 	showJoinLink(roomId) {
-		return !!ChatRoom.findOne({ _id: roomId, t: 'r' });
+		return !!ChatRoom.findOne({_id: roomId, t: 'r'});
 	},
 
 	canBeDeleted(userId, room) {
 		return RocketChat.authz.hasPermission(userId, 'delete-c', room._id);
+	},
+
+	canBeDeleted(userId, room) {
+		return RocketChat.authz.hasPermission(userId, 'delete-c', room._id);
+	},
+	includeInRoomSearch() {
+		return true;
+	},
+
+	isGroupChat() {
+		return true;
+	},
+
+	canAddUser() {
+		return true;
+	},
+
+	userDetailShowAll() {
+		return true;
+	},
+
+	userDetailShowAdmin() {
+		return true;
 	}
 });
 
 /**
- *	An expert group is a private group of people who know something
- *	An expert group is being added to a request-channel on creation based on naming conventions
+ *    An expert group is a private group of people who know something
+ *    An expert group is being added to a request-channel on creation based on naming conventions
  */
 RocketChat.roomTypes.add('e', 15, { //20 = private messages
 	template: 'expertise',
-	icon: 'icon-lightbulb',
+	icon: 'lightbulb',
 	label: 'Expertises',
 	creationTemplate: 'AssistifyCreateExpertise',
 	route: {
@@ -83,5 +106,28 @@ RocketChat.roomTypes.add('e', 15, { //20 = private messages
 
 	canBeDeleted(userId, room) {
 		return RocketChat.authz.hasPermission(userId, 'delete-c', room._id);
+	},
+	includeInRoomSearch() {
+		return true;
+	},
+
+	isGroupChat() {
+		return true;
+	},
+
+	canAddUser() {
+		return true;
+	},
+
+	userDetailShowAll() {
+		return true;
+	},
+
+	userDetailShowAdmin() {
+		return true;
+	},
+
+	preventRenaming() {
+		return true; //renaming an expertise will lead to new requests not finding answers to the previously named expertise
 	}
 });

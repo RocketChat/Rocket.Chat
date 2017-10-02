@@ -2,10 +2,10 @@ Package.describe({
 	name: 'assistify:help-request',
 	version: '0.0.1',
 	summary: 'Adds rooms which are to be closed once the initial question has been resolved',
-  // URL to the Git repository containing the source code for this package.
+	// URL to the Git repository containing the source code for this package.
 	git: '',
-  // By default, Meteor will default to using README.md for documentation.
-  // To avoid submitting documentation, set this field to null.
+	// By default, Meteor will default to using README.md for documentation.
+	// To avoid submitting documentation, set this field to null.
 	documentation: 'README.md'
 });
 
@@ -18,6 +18,7 @@ Package.onUse(function(api) {
 	api.use('rocketchat:authorization'); //In order to create custom permissions
 	api.use(['nimble:restivus', 'rocketchat:authorization', 'rocketchat:api'], 'server');
 	api.use('templating', 'client');
+	api.use('meteorhacks:inject-initial'); //for provisioning of svg-icons
 
 	api.addFiles('help-request.js', 'server');
 	api.addFiles('server/types.js', 'server');
@@ -26,6 +27,9 @@ Package.onUse(function(api) {
 	api.addFiles('config.js', 'server');
 	api.addFiles('startup/customRoomTypes.js');
 	api.addFiles('startup/rolesAndPermissions.js', 'server');
+
+	// Libraries
+	api.addFiles('server/inject.js', 'server');
 
 	// Models
 	api.addFiles('server/models/Users.js', ['server', 'client']);
@@ -47,6 +51,9 @@ Package.onUse(function(api) {
 
 	// Hooks
 	api.addFiles('server/hooks/sendMessageToKnowledgeAdapter.js', 'server');
+
+	// UI artifacts which are pre-processed or packaged by the server
+	api.addAssets('client/public/icons.svg', 'server');
 
 	///////// Client
 
