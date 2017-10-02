@@ -105,7 +105,7 @@ function messageActionsTest() {
 			});
 
 			after(() => {
-				mainContent.closeMessageActionMenu();
+				mainContent.popoverWrapper.click();
 			});
 
 			it('it should show the message action menu', () => {

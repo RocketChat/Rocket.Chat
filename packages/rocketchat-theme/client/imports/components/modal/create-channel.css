@@ -27,10 +27,15 @@
 
 	&__switches {
 		display: flex;
+		flex-wrap: wrap;
 	}
 
 	& .rc-switch {
-		width: 50%;
+		width: 100%;
+
+		&:not(:last-child) {
+			margin-bottom: 2rem;
+		}
 	}
 
 	& .rc-input__icon-svg {
