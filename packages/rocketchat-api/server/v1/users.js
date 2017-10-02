@@ -101,7 +101,7 @@ RocketChat.API.v1.addRoute('users.unreadRoomsCount', { authRequired: true }, {
 			}
 		}
 
-		const unreadCount = RocketChat.models.Subscriptions.findUnreadRoomsByUserId(user._id,archived).count();
+		const unreadCount = RocketChat.models.Subscriptions.findUnreadRoomsByUserId(user._id, archived).count();
 
 		return RocketChat.API.v1.success({
 			count: unreadCount
@@ -114,12 +114,12 @@ RocketChat.API.v1.addRoute('users.subscriptions', { authRequired: true }, {
 		check(this.bodyParams, {
 			roomIds: Array,
 			userId : Match.Maybe(String),
-			username : Match.Maybe(String),
+			username : Match.Maybe(String)
 		});
 		const user = this.getUserFromParams();
 
 
-		const subs = RocketChat.models.Subscriptions.findByRoomIdsAndUserId(user._id,this.bodyParams.roomIds).fetch();
+		const subs = RocketChat.models.Subscriptions.findByRoomIdsAndUserId(user._id, this.bodyParams.roomIds).fetch();
 
 		return RocketChat.API.v1.success({
 			subscriptions: subs

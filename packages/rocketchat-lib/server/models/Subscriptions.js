@@ -157,7 +157,7 @@ class ModelSubscriptions extends RocketChat.models._Base {
 		return this.find(query);
 	}
 
-	findByRoomIdsAndUserId(userId,roomIds) {
+	findByRoomIdsAndUserId(userId, roomIds) {
 		const query = {
 			rid: {
 				$in: roomIds
@@ -200,7 +200,7 @@ class ModelSubscriptions extends RocketChat.models._Base {
 				unread: {
 					$gt: 0
 				},
-				$or:[{archived:false},{archived:{$exists:false}}]
+				$or:[{archived:false}, {archived:{$exists:false}}]
 			};
 		} else {
 			query = {
