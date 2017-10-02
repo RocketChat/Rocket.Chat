@@ -1,4 +1,4 @@
-/* globals popover */
+/* globals popover isRtl */
 
 this.popover = {
 	renderedPopover: null,
@@ -16,6 +16,10 @@ this.popover = {
 };
 
 Template.popover.onRendered(function() {
+	if (this.data.onRendered) {
+		this.data.onRendered();
+	}
+
 	$('.rc-popover').click(function(e) {
 		if (e.currentTarget === e.target) {
 			popover.close();
@@ -39,7 +43,7 @@ Template.popover.onRendered(function() {
 		const mousePosition = this.data.mousePosition;
 
 		let top;
-		if (mousePosition.y <= popoverHeight) {
+		if (mousePosition.y <= popoverHeightHalf) {
 			top = 10;
 		} else if (mousePosition.y + popoverHeightHalf > windowHeight) {
 			top = windowHeight - popoverHeight - 10;
@@ -47,19 +51,19 @@ Template.popover.onRendered(function() {
 			top = mousePosition.y - popoverHeightHalf;
 		}
 
-		let right;
+		let left;
 		if (mousePosition.x + popoverWidth >= windowWidth) {
-			right = mousePosition.x - popoverWidth;
+			left = mousePosition.x - popoverWidth;
 		} else if (mousePosition.x <= popoverWidth) {
-			right = 10;
+			left = isRtl() ? mousePosition.x + 10 : 10;
 		} else if (mousePosition.x <= windowWidth / 2) {
-			right = mousePosition.x;
+			left = mousePosition.x;
 		} else {
-			right = mousePosition.x - popoverWidth;
+			left = mousePosition.x - popoverWidth;
 		}
 
 		popoverContent.style.top = `${ top }px`;
-		popoverContent.style.left = `${ right }px`;
+		popoverContent.style.left = `${ left }px`;
 	}
 
 	if (customCSSProperties) {
@@ -96,9 +100,9 @@ Template.popover.events({
 		popover.close();
 	},
 	'click [data-type="open"]'(e) {
-		const open = e.currentTarget.dataset.id;
+		const data = e.currentTarget.dataset;
 
-		switch (open) {
+		switch (data.id) {
 			case 'account':
 				SideNav.setFlex('accountFlex');
 				SideNav.openFlex();
@@ -119,15 +123,95 @@ Template.popover.events({
 				break;
 		}
 
-		if (this.href) {
-			FlowRouter.go(this.href);
+		if (data.href) {
+			FlowRouter.go(data.href);
 		}
 
-		if (this.sideNav != null) {
-			SideNav.setFlex(this.sideNav);
+		if (data.sideNav) {
+			SideNav.setFlex(data.sideNav);
 			SideNav.openFlex();
 		}
 
 		popover.close();
+	},
+	'click [data-type="sidebar-item"]'(e, instance) {
+		popover.close();
+		const { rid, name, template } = instance.data.data;
+
+		if (e.currentTarget.dataset.id === 'hide') {
+			let warnText;
+			switch (template) {
+				case 'c': warnText = 'Hide_Room_Warning'; break;
+				case 'p': warnText = 'Hide_Group_Warning'; break;
+				case 'd': warnText = 'Hide_Private_Warning'; break;
+				case 'l': warnText = 'Hide_Livechat_Warning'; break;
+			}
+
+			return swal({
+				title: t('Are_you_sure'),
+				text: warnText ? t(warnText, name) : '',
+				type: 'warning',
+				showCancelButton: true,
+				confirmButtonColor: '#DD6B55',
+				confirmButtonText: t('Yes_hide_it'),
+				cancelButtonText: t('Cancel'),
+				closeOnConfirm: true,
+				html: false
+			}, function() {
+				if (['channel', 'group', 'direct'].includes(FlowRouter.getRouteName()) && (Session.get('openedRoom') === rid)) {
+					FlowRouter.go('home');
+				}
+
+				Meteor.call('hideRoom', rid, function(err) {
+					if (err) {
+						handleError(err);
+					} else if (rid === Session.get('openedRoom')) {
+						Session.delete('openedRoom');
+					}
+				});
+			});
+		} else {
+			let warnText;
+			switch (template) {
+				case 'c': warnText = 'Leave_Room_Warning'; break;
+				case 'p': warnText = 'Leave_Group_Warning'; break;
+				case 'd': warnText = 'Leave_Private_Warning'; break;
+				case 'l': warnText = 'Hide_Livechat_Warning'; break;
+			}
+
+			swal({
+				title: t('Are_you_sure'),
+				text: t(warnText, name),
+				type: 'warning',
+				showCancelButton: true,
+				confirmButtonColor: '#DD6B55',
+				confirmButtonText: t('Yes_leave_it'),
+				cancelButtonText: t('Cancel'),
+				closeOnConfirm: false,
+				html: false
+			}, function(isConfirm) {
+				if (isConfirm) {
+					Meteor.call('leaveRoom', rid, function(err) {
+						if (err) {
+							swal({
+								title: t('Warning'),
+								text: handleError(err, false),
+								type: 'warning',
+								html: false
+							});
+						} else {
+							swal.close();
+							if (['channel', 'group', 'direct'].includes(FlowRouter.getRouteName()) && (Session.get('openedRoom') === rid)) {
+								FlowRouter.go('home');
+							}
+
+							RoomManager.close(rid);
+						}
+					});
+				} else {
+					swal.close();
+				}
+			});
+		}
 	}
 });

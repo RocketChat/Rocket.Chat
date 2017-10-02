@@ -109,3 +109,11 @@ button {
 
 	vertical-align: -0.15em;
 }
+
+.ps-scrollbar-y-rail {
+	background: transparent !important;
+}
+
+.ps-scrollbar-y {
+	width: 4px !important;
+}

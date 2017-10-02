@@ -1,11 +1,23 @@
 
 
 .rooms-list {
+	position: relative;
+
 	overflow-y: scroll;
+
+	flex: 1 1 auto;
 
 	height: 100%;
 
+	&--embedded {
+		margin-top: 2rem;
+	}
+
 	&__list {
+		& .badge {
+			margin: 0 4px;
+		}
+
 		&:not(:last-child) {
 			margin-bottom: 32px;
 		}
@@ -23,21 +35,17 @@
 		font-size: var(--rooms-list-title-text-size);
 		align-items: center;
 
-		&-text {
-			margin: 0 8px;
+		&-text--livechat {
+			flex: 1;
 		}
 	}
 
 	&__empty-room {
-		margin-left: calc(var(--sidebar-default-padding) - calc(var(--sidebar-default-padding) / 3));
+		padding: 0 var(--sidebar-default-padding);
 
 		color: var(--rooms-list-empty-text-color);
 
 		font-size: var(--rooms-list-empty-text-size);
-	}
-
-	& .badge {
-		margin: 0 4px;
 	}
 
 	&__toolbar-search {
@@ -47,10 +55,9 @@
 		bottom: var(--sidebar-footer-height);
 		left: 0;
 
-		overflow-y: auto;
+		overflow-y: scroll;
 
 		width: 100%;
-		padding: 0 8px;
 
 		background-color: var(--sidebar-background);
 	}
@@ -62,10 +69,6 @@
 	.rooms-list {
 		&__type,
 		&__empty-room {
-			margin-left: 0;
-		}
-
-		&__type {
 			padding: 0 calc(var(--sidebar-small-default-padding) - 4px) 0.5rem calc(var(--sidebar-small-default-padding) - 4px);
 		}
 
