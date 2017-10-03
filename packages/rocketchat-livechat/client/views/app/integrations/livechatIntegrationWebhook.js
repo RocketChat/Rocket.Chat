@@ -1,6 +1,6 @@
 import toastr from 'toastr';
 /* globals LivechatIntegration */
-Template.livechatIntegrations.helpers({
+Template.livechatIntegrationWebhook.helpers({
 	webhookUrl() {
 		const setting = LivechatIntegration.findOne('Livechat_webhookUrl');
 		return setting && setting.value;
@@ -22,7 +22,7 @@ Template.livechatIntegrations.helpers({
 	}
 });
 
-Template.livechatIntegrations.onCreated(function() {
+Template.livechatIntegrationWebhook.onCreated(function() {
 	this.disableTest = new ReactiveVar(true);
 
 	this.autorun(() => {
@@ -33,7 +33,7 @@ Template.livechatIntegrations.onCreated(function() {
 	this.subscribe('livechat:integration');
 });
 
-Template.livechatIntegrations.events({
+Template.livechatIntegrationWebhook.events({
 	'change #webhookUrl, blur #webhookUrl'(e, instance) {
 		const setting = LivechatIntegration.findOne('Livechat_webhookUrl');
 		instance.disableTest.set(!setting || e.currentTarget.value !== setting.value);
