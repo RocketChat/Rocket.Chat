@@ -41,6 +41,7 @@ parts:
         plugin: nodejs
         node-engine: 4.8.3
         node-packages:
+            - meteor-promise
             - promise
             - fibers
             - underscore
