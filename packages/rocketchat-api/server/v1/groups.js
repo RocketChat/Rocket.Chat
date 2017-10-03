@@ -124,6 +124,10 @@ RocketChat.API.v1.addRoute('groups.create', { authRequired: true }, {
 			return RocketChat.API.v1.failure('Body param "customFields" must be an object if provided');
 		}
 
+		if (this.bodyParams.extraData && !(typeof this.bodyParams.extraData === 'object')) {
+			return RocketChat.API.v1.failure('Body param "extraData" must be an object if provided');
+		}
+
 		let readOnly = false;
 		if (typeof this.bodyParams.readOnly !== 'undefined') {
 			readOnly = this.bodyParams.readOnly;
@@ -131,7 +135,7 @@ RocketChat.API.v1.addRoute('groups.create', { authRequired: true }, {
 
 		let id;
 		Meteor.runAsUser(this.userId, () => {
-			id = Meteor.call('createPrivateGroup', this.bodyParams.name, this.bodyParams.members ? this.bodyParams.members : [], readOnly, this.bodyParams.customFields);
+			id = Meteor.call('createPrivateGroup', this.bodyParams.name, this.bodyParams.members ? this.bodyParams.members : [], readOnly, this.bodyParams.customFields, this.bodyParams.extraData);
 		});
 
 		return RocketChat.API.v1.success({
