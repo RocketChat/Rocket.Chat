@@ -44,13 +44,19 @@ this.processWebhookMessage = function(messageObj, user, defaultValues = { channe
 			messageObj.attachments = undefined;
 		}
 
+		if (messageObj.mentions && !_.isArray(messageObj.mentions)) {
+			console.log('Mentions should be Array, ignoring value'.red, messageObj.mentions);
+			messageObj.mentions = undefined;
+		}
+
 		const message = {
 			alias: messageObj.username || messageObj.alias || defaultValues.alias,
 			msg: _.trim(messageObj.text || messageObj.msg || ''),
 			attachments: messageObj.attachments,
 			parseUrls: messageObj.parseUrls !== undefined ? messageObj.parseUrls : !messageObj.attachments,
 			bot: messageObj.bot,
-			groupable: (messageObj.groupable !== undefined) ? messageObj.groupable : false
+			groupable: (messageObj.groupable !== undefined) ? messageObj.groupable : false,
+			mentions : (messageObj.mentions !== undefined) ? messageObj.mentions : []
 		};
 
 		if (!_.isEmpty(messageObj.icon_url) || !_.isEmpty(messageObj.avatar)) {
