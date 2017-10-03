@@ -1,0 +1,20 @@
+<template name="livechatIntegrationFacebook">
+	<h2>Facebook</h2>
+
+	<button class="button primary enable">{{_ "Enable"}}</button>
+
+	<ul>
+		{{#each pages}}
+			<span>{{name}}</span>
+
+			<div class="rc-switch">
+				<label class="rc-switch__label" tabindex="-1">
+					<input type="checkbox" class="rc-switch__input" name="subscribe" value="true" {{subscribed}}>
+					<span class="rc-switch__button">
+						<span class="rc-switch__button-inside"></span>
+					</span>
+				</label>
+			</div>
+		{{/each}}
+	</ul>
+</template>
