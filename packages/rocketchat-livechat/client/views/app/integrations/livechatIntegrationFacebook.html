@@ -1,20 +1,25 @@
 <template name="livechatIntegrationFacebook">
-	<h2>Facebook</h2>
-
-	<button class="button primary enable">{{_ "Enable"}}</button>
-
-	<ul>
-		{{#each pages}}
-			<span>{{name}}</span>
-
-			<div class="rc-switch">
-				<label class="rc-switch__label" tabindex="-1">
-					<input type="checkbox" class="rc-switch__input" name="subscribe" value="true" {{subscribed}}>
-					<span class="rc-switch__button">
-						<span class="rc-switch__button-inside"></span>
-					</span>
-				</label>
+	<form id="profile" autocomplete="off" class="container">
+		<fieldset class="rc-form-legend">
+			<!-- <legend style="margin-bottom: 2.5rem;">Facebook</legend> -->
+			<div class="rc-form-group">
+				<button class="button primary enable">{{_ "Enable"}}</button>
 			</div>
-		{{/each}}
-	</ul>
+			{{#each pages}}
+				<div class="rc-form-group">
+					<div class="rc-switch">
+						<label class="rc-switch__label" tabindex="-1">
+							<input type="checkbox" class="rc-switch__input" name="subscribe" value="true"  {{subscribed}}>
+							<span class="rc-switch__button">
+								<span class="rc-switch__button-inside"></span>
+							</span>
+							<span class="rc-switch__text">{{name}}</span>
+						</label>
+						<!-- <span class="rc-switch__description">Just invited people can access this channel</span> -->
+					</div>
+				</div>
+			{{/each}}
+
+		</fieldset>
+	</form>
 </template>
