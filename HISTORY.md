@@ -1,3 +1,32 @@
+<a name="0.59.0-rc.11"></a>
+# 0.59.0-rc.11 (2017-10-03)
+
+
+### New Features
+
+- [#8362](https://github.com/RocketChat/Rocket.Chat/pull/8362) Sidebar item width to 100%
+- [#8360](https://github.com/RocketChat/Rocket.Chat/pull/8360) Smaller accountBox
+- [#8361](https://github.com/RocketChat/Rocket.Chat/pull/8361) Unify unread and mentions badge
+
+
+### Bug Fixes
+
+- [#8357](https://github.com/RocketChat/Rocket.Chat/pull/8357) Missing i18n translations
+- [#8358](https://github.com/RocketChat/Rocket.Chat/pull/8358) remove accountBox from admin menu
+- [#8372](https://github.com/RocketChat/Rocket.Chat/pull/8372) Various LDAP issues & Missing pagination
+
+
+<details>
+<summary>Others</summary>
+
+- [#8375](https://github.com/RocketChat/Rocket.Chat/pull/8375) LingoHub based on develop
+- [#8345](https://github.com/RocketChat/Rocket.Chat/pull/8345) Remove field `lastActivity` from subscription data
+- [#8363](https://github.com/RocketChat/Rocket.Chat/pull/8363) Sync translations from LingoHub
+- [#8364](https://github.com/RocketChat/Rocket.Chat/pull/8364) Update Meteor to 1.5.2.2
+</details>
+
+
+
 <a name="0.59.0-rc.10"></a>
 # 0.59.0-rc.10 (2017-09-29)
 
