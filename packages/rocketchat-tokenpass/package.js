@@ -32,9 +32,11 @@ Package.onUse(function(api) {
 
 	api.addFiles('server/functions/getProtectedTokenpassBalances.js', 'server');
 	api.addFiles('server/functions/getPublicTokenpassBalances.js', 'server');
+	api.addFiles('server/functions/registerTokenpassAddress.js', 'server');
 	api.addFiles('server/functions/saveRoomTokens.js', 'server');
 	api.addFiles('server/functions/saveRoomTokensMinimumBalance.js', 'server');
 	api.addFiles('server/functions/updateUserTokenpassBalances.js', 'server');
+	api.addFiles('server/functions/verifyTokenpassAddress.js', 'server');
 
 	api.addFiles('server/models/indexes.js', 'server');
 	api.addFiles('server/models/Rooms.js', 'server');

@@ -5,7 +5,7 @@ const config = {
 	identityPath: '/oauth/user',
 	authorizePath: '/oauth/authorize',
 	tokenPath: '/oauth/access-token',
-	scope: 'user,tca,private-balances',
+	scope: 'user,tca,private-balances,private-address,manage-address',
 	tokenSentVia: 'payload',
 	usernameField: 'username',
 	mergeUsers: true,
