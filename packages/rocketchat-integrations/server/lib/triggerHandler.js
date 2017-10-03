@@ -381,7 +381,12 @@ RocketChat.integrations.triggerHandler = new class RocketChatIntegrationHandler 
 				data.user_id = message.u._id;
 				data.user_name = message.u.username;
 				data.text = message.msg;
-				data.mentions = message.mentions;
+				if (message.mentions) {
+					data.mentions = [];
+					for (const mention of Object.values(data.mentions)) {
+						data.mentions.push({user_id : mention._id , user_name : mention.username});
+					}
+				}
 
 				if (message.alias) {
 					data.alias = message.alias;
