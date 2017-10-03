@@ -383,7 +383,7 @@ RocketChat.integrations.triggerHandler = new class RocketChatIntegrationHandler 
 				data.text = message.msg;
 				if (message.mentions) {
 					data.mentions = [];
-					for (const mention of Object.values(data.mentions)) {
+					for (const mention of Object.values(message.mentions)) {
 						data.mentions.push({user_id : mention._id , user_name : mention.username});
 					}
 				}
