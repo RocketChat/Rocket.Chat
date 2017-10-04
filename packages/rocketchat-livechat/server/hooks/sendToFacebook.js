@@ -26,7 +26,7 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 
 	const result = HTTP.call('POST', 'http://localhost:3000/facebook/reply', {
 		headers: {
-			'x-rocketchat-instance': RocketChat.settings.get('uniqueID')
+			'x-rocketchat-instance': RocketChat.settings.get('Livechat_Facebook_API_Key')
 		},
 		data: {
 			page: room.facebook.page,

@@ -16,14 +16,13 @@ Meteor.methods({
 
 				const result = HTTP.call('POST', 'http://localhost:3000/facebook/enable', {
 					headers: {
-						'x-rocketchat-instance': RocketChat.settings.get('uniqueID'),
+						'x-rocketchat-instance': RocketChat.settings.get('Livechat_Facebook_API_Key'),
 						'content-type': 'application/json'
 					},
 					data: {
 						url: RocketChat.settings.get('Site_Url')
 					}
 				});
-				console.log('result ->', result);
 				return result.data;
 			}
 
@@ -32,41 +31,37 @@ Meteor.methods({
 
 				const result = HTTP.call('DELETE', 'http://localhost:3000/facebook/enable', {
 					headers: {
-						'x-rocketchat-instance': RocketChat.settings.get('uniqueID'),
+						'x-rocketchat-instance': RocketChat.settings.get('Livechat_Facebook_API_Key'),
 						'content-type': 'application/json'
 					}
 				});
-				console.log('result ->', result);
 				return result.data;
 			}
 
 			case 'list-pages': {
 				const result = HTTP.call('GET', 'http://localhost:3000/facebook/pages', {
 					headers: {
-						'x-rocketchat-instance': RocketChat.settings.get('uniqueID')
+						'x-rocketchat-instance': RocketChat.settings.get('Livechat_Facebook_API_Key')
 					}
 				});
-				console.log('result ->', result);
 				return result.data;
 			}
 
 			case 'subscribe': {
 				const result = HTTP.call('POST', `http://localhost:3000/facebook/page/${ options.page }/subscribe`, {
 					headers: {
-						'x-rocketchat-instance': RocketChat.settings.get('uniqueID')
+						'x-rocketchat-instance': RocketChat.settings.get('Livechat_Facebook_API_Key')
 					}
 				});
-				console.log('result ->', result);
 				return result.data;
 			}
 
 			case 'unsubscribe': {
 				const result = HTTP.call('DELETE', `http://localhost:3000/facebook/page/${ options.page }/subscribe`, {
 					headers: {
-						'x-rocketchat-instance': RocketChat.settings.get('uniqueID')
+						'x-rocketchat-instance': RocketChat.settings.get('Livechat_Facebook_API_Key')
 					}
 				});
-				console.log('result ->', result);
 				return result.data;
 			}
 		}
