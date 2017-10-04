@@ -1,10 +1,16 @@
 .contextual-bar {
 	display: flex;
 	width: var(--flex-tab-width);
+	height: 100%;
 	padding: var(--default-padding);
 	box-shadow: -1px 3px 1px 1px rgba(31, 35, 41, 0.08);
-	z-index: 0;
+	z-index: 1;
 	flex-direction: column;
+	background: var(--color-white);
+
+	& > .flex-tab {
+		width: 100%;
+	}
 
 	&__header {
 		display: flex;
@@ -31,3 +37,17 @@
 	}
 }
 
+
+@media (width <= 1100px) {
+	.contextual-bar {
+		position: absolute;
+		right: 0;
+	}
+}
+
+@media (width <= 500px) {
+	.contextual-bar {
+		width: auto;
+		max-width: var(--flex-tab-width);
+	}
+}

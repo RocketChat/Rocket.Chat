@@ -10,14 +10,12 @@ Template.contextualBar.onCreated(function() {
 
 Template.contextualBar.helpers({
 	template() {
-		console.log('template', Template.instance().tabBar.getTemplate());
 		return Template.instance().tabBar.getTemplate();
 	},
-
+	headerData() {
+		return Template.instance().tabBar.getData();
+	},
 	flexData() {
-		console.log('data', Object.assign(Template.currentData().data || {}, {
-			tabBar: Template.instance().tabBar
-		}));
 		return Object.assign(Template.currentData().data || {}, {
 			tabBar: Template.instance().tabBar
 		});
