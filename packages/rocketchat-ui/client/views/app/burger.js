@@ -9,5 +9,8 @@ Template.burger.helpers({
 	},
 	isOld() {
 		return Template.instance().data.old == null ? '' : 'rc-old';
+	},
+	embeddedVersion() {
+		return RocketChat.Layout.isEmbedded();
 	}
 });

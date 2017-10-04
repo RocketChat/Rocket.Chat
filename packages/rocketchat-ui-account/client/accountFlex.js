@@ -1,5 +1,5 @@
 Template.accountFlex.events({
-	'click [data-action="back"]'() {
+	'click [data-action="close"]'() {
 		SideNav.closeFlex();
 	}
 });
@@ -20,5 +20,8 @@ Template.accountFlex.helpers({
 			pathGroup: group,
 			darken: true
 		};
+	},
+	embeddedVersion() {
+		return RocketChat.Layout.isEmbedded();
 	}
 });

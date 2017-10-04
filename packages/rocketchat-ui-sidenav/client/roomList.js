@@ -19,17 +19,16 @@ Template.roomList.helpers({
 		const query = {
 			open: true
 		};
-		let sort = { 't': 1, 'name': 1 };
+		const sort = { 't': 1, 'name': 1 };
 		if (this.identifier === 'f') {
 			query.f = favoritesEnabled;
 		} else {
 			let types = [this.identifier];
 			if (this.identifier === 'activity') {
 				types = ['c', 'p', 'd'];
-				sort = { lastActivity : -1, _updatedAt: -1};
 			}
 			if (this.identifier === 'channels' || this.identifier === 'unread') {
-				types= [ 'c', 'p'];
+				types = [ 'c', 'p'];
 			}
 			const user = Meteor.user();
 			if (user && user.settings && user.settings.preferences && user.settings.preferences.roomsListExhibitionMode === 'unread') {
@@ -50,9 +49,8 @@ Template.roomList.helpers({
 				};
 			});
 			return _.sortBy(list, 'lm').reverse();
-		} else {
-			return ChatSubscription.find(query, { sort });
 		}
+		return ChatSubscription.find(query, { sort });
 	},
 
 	isLivechat() {

@@ -37,7 +37,7 @@ class SideNav extends Page {
 	get preferences() { return browser.element('[href="/account/preferences"]'); }
 	get profile() { return browser.element('[href="/account/profile"]'); }
 	get avatar() { return browser.element('[href="/changeavatar"]'); }
-	get preferencesClose() { return browser.element('.sidebar-flex__back-button[data-action="back"]'); }
+	get preferencesClose() { return browser.element('.sidebar-flex__close-button[data-action="close"]'); }
 
 	get burgerBtn() { return browser.element('.burger'); }
 
