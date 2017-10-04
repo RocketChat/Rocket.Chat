@@ -7,6 +7,17 @@ const commonHelpers = {
 		if (this.template === Template.instance().tabBar.getTemplate() && Template.instance().tabBar.getState() === 'opened') {
 			return 'active';
 		}
+	},
+	buttons() {
+		return RocketChat.TabBar.getButtons().filter(button => {
+			if (!Meteor.userId() && !this.anonymous) {
+				return false;
+			}
+			if (button.groups.indexOf(Template.instance().tabBar.currentGroup()) === -1) {
+				return false;
+			}
+			return true;
+		});
 	}
 };
 
@@ -31,17 +42,41 @@ Template.flexTabBar.helpers({
 	}
 });
 
+const commonEvents = {
+	'click .js-action'(e, instance) {
+		$('button', e.currentTarget).blur();
+		e.preventDefault();
+		const $flexTab = $('.flex-tab-container .flex-tab');
+
+		if (instance.tabBar.getState() === 'opened' && instance.tabBar.getTemplate() === this.template) {
+			$flexTab.attr('template', '');
+			return instance.tabBar.close();
+		}
+
+		$flexTab.attr('template', this.template);
+		instance.tabBar.setData({
+			label: this.i18nTitle,
+			icon: this.icon
+		});
+		instance.tabBar.open(this);
+
+		popover.close();
+	}
+};
+
 Template.flexTabBar.events({
 	'click .tab-button'(e, instance) {
 		e.preventDefault();
 		const $flexTab = $('.flex-tab-container .flex-tab');
+
 		if (instance.tabBar.getState() === 'opened' && instance.tabBar.getTemplate() === this.template) {
 			$flexTab.attr('template', '');
 			return instance.tabBar.close();
-		} else {
-			$flexTab.attr('template', this.template);
-			return instance.tabBar.open(this);
 		}
+
+		$flexTab.attr('template', this.template);
+
+		instance.tabBar.open(this);
 	},
 
 	'click .close-flex-tab'(event, instance) {
@@ -53,22 +88,6 @@ Template.flexTabBar.onCreated(function() {
 	this.tabBar = Template.currentData().tabBar;
 });
 
-// const content = new ReactiveVar;
-const commonEvents = {
-	'click .js-action'(e, instance) {
-		$('button', e.currentTarget).blur();
-		e.preventDefault();
-		popover.close();
-		const $flexTab = $('.flex-tab-container .flex-tab');
-		if (instance.tabBar.getState() === 'opened' && instance.tabBar.getTemplate() === this.template) {
-			$flexTab.attr('template', '');
-			return instance.tabBar.close();
-		} else {
-			$flexTab.attr('template', this.template);
-			return instance.tabBar.open(this);
-		}
-	}
-};
 Template.RoomsActionMore.events({
 	...commonEvents
 });
@@ -190,27 +209,5 @@ Template.RoomsActionTab.helpers({
 			return true;
 		});
 		return buttons.length > 5 ? true : false;
-	}
-});
-
-Template.RoomsActionContent.events({
-	'click .js-action'() {
-		console.log(this);
-	}
-});
-
-Template.RoomsActionContent.onCreated(function() {
-	this.tabBar = Template.currentData().tabBar;
-});
-
-Template.RoomsActionContent.helpers({
-	template() {
-		return Template.instance().tabBar.getTemplate();
-	},
-
-	flexData() {
-		return Object.assign(Template.currentData().data || {}, {
-			tabBar: Template.instance().tabBar
-		});
 	}
 });

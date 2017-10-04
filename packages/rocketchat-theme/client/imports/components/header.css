@@ -1,12 +1,15 @@
 .rc-header {
 	&__block {
+		display: flex;
+
 		margin: 0 0.5rem;
 		align-items: center;
-		display: flex;
 	}
-	z-index: 1;
+	z-index: 2;
 
 	display: flex;
+
+	margin: 0 -0.5rem;
 
 	padding: var(--header-padding);
 
@@ -16,22 +19,27 @@
 	box-shadow: 0 1px 2px 0 rgba(31, 35, 41, 0.08);
 
 	font-size: var(--header-title-font-size);
-	margin: 0 -0.5rem;
 
 	&__content {
 		display: flex;
-		align-items: center;
+
 		width: 100%;
 		margin-left: 0;
+		align-items: center;
 	}
+
 	&--burger {
 		display: none;
 	}
+
 	&__name {
 		overflow: hidden;
-		text-overflow: ellipsis;
+
 		padding-bottom: 1px;
+
+		text-overflow: ellipsis;
 	}
+
 	&__section-title {
 		color: var(--header-title-username-color-darker);
 
@@ -62,22 +70,23 @@
 	}
 
 	&__data {
+
+		overflow: hidden;
+
+		flex-direction: column;
+
 		width: 1px;
 
-		flex-grow: 1;
+		margin: 0 0.5rem;
+
+		text-overflow: ellipsis;
 
 		color: var(--header-title-username-color-darker);
 
 		font-weight: var(--header-title-username-weight);
-		margin: 0;
+		align-items: flex-start;
 
-		overflow: hidden;
-    text-overflow: ellipsis;
-
-		flex-direction: column;
-    align-items: flex-start;
-
-		margin: 0 0.5rem;
+		flex-grow: 1;
 	}
 
 	&__username {
@@ -111,7 +120,6 @@
 		display: flex;
 
 		align-items: center;
-
 
 		&-bullet {
 			width: var(--header-title-status-bullet-size);
@@ -174,13 +182,7 @@
 }
 
 .rc-room-actions {
-
-	&__wrapper {
-		display: flex;
-		margin: -8px;
-		align-items: center;
-	}
-
+	display: flex;
 
 	&__action,
 	&__more-action {
@@ -239,29 +241,10 @@
 		font-size: 12px;
 		font-weight: 600;
 	}
-
-	&__content {
-		flex: 1 1 auto;
-
-		width: 100%;
-		max-width: var(--flex-tab-width);
-		height: 100%;
-		padding: var(--default-small-padding);
-
-		background: white;
-		box-shadow: 0 5px 1px 1px rgba(31, 35, 41, 0.08);
-
-		& > .flex-tab {
-			width: 100%;
-		}
-	}
 }
 
-@media (width <= 1100px) {
-	.rc-room-actions__content {
-		position: absolute;
-		right: 0;
-	}
+.tab-button-icon--star {
+	fill: none;
 }
 
 @media (width <= 500px) {
@@ -290,10 +273,6 @@
 
 		&__status {
 			margin: 0 0.5rem;
-		}
-
-		&__content {
-			margin-right: -0.25rem;
 		}
 
 		&__image {
