@@ -5,7 +5,15 @@ Meteor.methods({
 		}
 
 		switch (options.action) {
+			case 'initialState': {
+				return {
+					enabled: RocketChat.settings.get('Livechat_Facebook_Enabled')
+				};
+			}
+
 			case 'enable': {
+				RocketChat.settings.set('Livechat_Facebook_Enabled', true);
+
 				const result = HTTP.call('POST', 'http://localhost:3000/facebook/enable', {
 					headers: {
 						'x-rocketchat-instance': RocketChat.settings.get('uniqueID'),
@@ -13,6 +21,19 @@ Meteor.methods({
 					},
 					data: {
 						url: RocketChat.settings.get('Site_Url')
+					}
+				});
+				console.log('result ->', result);
+				return result.data;
+			}
+
+			case 'disable': {
+				RocketChat.settings.set('Livechat_Facebook_Enabled', false);
+
+				const result = HTTP.call('DELETE', 'http://localhost:3000/facebook/enable', {
+					headers: {
+						'x-rocketchat-instance': RocketChat.settings.get('uniqueID'),
+						'content-type': 'application/json'
 					}
 				});
 				console.log('result ->', result);

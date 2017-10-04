@@ -3,7 +3,11 @@
 		<fieldset class="rc-form-legend">
 			<!-- <legend style="margin-bottom: 2.5rem;">Facebook</legend> -->
 			<div class="rc-form-group">
-				<button class="button primary enable">{{_ "Enable"}}</button>
+				{{#if enabled}}
+					<button class="button red disable">{{_ "Disable"}}</button>
+				{{else}}
+					<button class="button primary enable">{{_ "Enable"}}</button>
+				{{/if}}
 			</div>
 			{{#each pages}}
 				<div class="rc-form-group">
@@ -18,6 +22,8 @@
 						<!-- <span class="rc-switch__description">Just invited people can access this channel</span> -->
 					</div>
 				</div>
+			{{else}}
+				<p>Nothing to show here.</p>
 			{{/each}}
 
 		</fieldset>
