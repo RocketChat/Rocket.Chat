@@ -4,17 +4,15 @@ Template.livechatIntegrationFacebook.helpers({
 	},
 	subscribed() {
 		return this.subscribed ? 'checked' : '';
+	},
+	enabled() {
+		return Template.instance().enabled.get();
 	}
 });
 
 Template.livechatIntegrationFacebook.onCreated(function() {
 	this.enabled = new ReactiveVar(false);
-	this.pages = new ReactiveVar([
-		{id: 123, name: 'Fake Page Nro 1', subscribed: false },
-		{id: 1234, name: 'Fake Page Nro 2', subscribed: true },
-		{id: 1235, name: 'Fake Page Nro 3', subscribed: true },
-		{id: 1236, name: 'Fake Page Nro 4', subscribed: false }
-	]);
+	this.pages = new ReactiveVar([]);
 
 	this.autorun(() => {
 		if (this.enabled.get()) {
@@ -26,8 +24,17 @@ Template.livechatIntegrationFacebook.onCreated(function() {
 	});
 });
 
+Template.livechatIntegrationFacebook.onRendered(function() {
+	Meteor.call('livechat:facebook', { action: 'initialState' }, (error, result) => {
+		this.enabled.set(result.enabled);
+	});
+});
+
+
 Template.livechatIntegrationFacebook.events({
 	'click .enable'(event, instance) {
+		event.preventDefault();
+
 		Meteor.call('livechat:facebook', { action: 'enable' }, (err, result) => {
 			if (err) {
 				return handleError(err);
@@ -44,6 +51,17 @@ Template.livechatIntegrationFacebook.events({
 			} else {
 				instance.enabled.set(true);
 			}
+		});
+	},
+	'click .disable'(event, instance) {
+		event.preventDefault();
+
+		Meteor.call('livechat:facebook', { action: 'disable' }, (err) => {
+			if (err) {
+				return handleError(err);
+			}
+			instance.enabled.set(false);
+			instance.pages.set([]);
 		});
 	},
 	'change [name=subscribe]'(event, instance) {
