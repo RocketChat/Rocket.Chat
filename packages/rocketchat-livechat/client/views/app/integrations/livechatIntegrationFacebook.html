@@ -4,7 +4,8 @@
 			<!-- <legend style="margin-bottom: 2.5rem;">Facebook</legend> -->
 			<div class="rc-form-group">
 				{{#if enabled}}
-					<button class="button red disable">{{_ "Disable"}}</button>
+					<button class="button reload">{{_ "Reload_Pages"}}</button>
+					<button class="button danger disable">{{_ "Disable"}}</button>
 				{{else}}
 					<button class="button primary enable">{{_ "Enable"}}</button>
 				{{/if}}
@@ -19,7 +20,6 @@
 							</span>
 							<span class="rc-switch__text">{{name}}</span>
 						</label>
-						<!-- <span class="rc-switch__description">Just invited people can access this channel</span> -->
 					</div>
 				</div>
 			{{else}}

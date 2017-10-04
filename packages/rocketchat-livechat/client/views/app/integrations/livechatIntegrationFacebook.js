@@ -16,12 +16,16 @@ Template.livechatIntegrationFacebook.onCreated(function() {
 
 	this.autorun(() => {
 		if (this.enabled.get()) {
-			Meteor.call('livechat:facebook', { action: 'list-pages' }, (err, result) => {
-				console.log('result ->', result);
-				this.pages.set(result.pages);
-			});
+			this.loadPages();
 		}
 	});
+
+	this.loadPages = () => {
+		this.pages.set([]);
+		Meteor.call('livechat:facebook', { action: 'list-pages' }, (err, result) => {
+			this.pages.set(result.pages);
+		});
+	};
 });
 
 Template.livechatIntegrationFacebook.onRendered(function() {
@@ -30,8 +34,12 @@ Template.livechatIntegrationFacebook.onRendered(function() {
 	});
 });
 
-
 Template.livechatIntegrationFacebook.events({
+	'click .reload'(event, instance) {
+		event.preventDefault();
+
+		instance.loadPages();
+	},
 	'click .enable'(event, instance) {
 		event.preventDefault();
 
@@ -56,12 +64,32 @@ Template.livechatIntegrationFacebook.events({
 	'click .disable'(event, instance) {
 		event.preventDefault();
 
-		Meteor.call('livechat:facebook', { action: 'disable' }, (err) => {
-			if (err) {
-				return handleError(err);
-			}
-			instance.enabled.set(false);
-			instance.pages.set([]);
+		swal({
+			title: t('Disable_Facebook_integration'),
+			text: t('Are_you_sure_you_want_to_disable_Facebook_integration'),
+			type: 'warning',
+			showCancelButton: true,
+			confirmButtonColor: '#DD6B55',
+			confirmButtonText: t('Yes'),
+			cancelButtonText: t('Cancel'),
+			closeOnConfirm: false,
+			html: false
+		}, () => {
+			Meteor.call('livechat:facebook', { action: 'disable' }, (err) => {
+				if (err) {
+					return handleError(err);
+				}
+				instance.enabled.set(false);
+				instance.pages.set([]);
+
+				swal({
+					title: t('Disabled'),
+					text: t('Integration_disabled'),
+					type: 'success',
+					timer: 2000,
+					showConfirmButton: false
+				});
+			});
 		});
 	},
 	'change [name=subscribe]'(event, instance) {
