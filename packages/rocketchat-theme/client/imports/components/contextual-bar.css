@@ -25,6 +25,10 @@
 			margin: 0 0.25rem;
 
 			font-size: 22px;
+
+			&--star {
+				fill: none;
+			}
 		}
 
 		&-title {

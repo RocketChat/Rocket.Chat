@@ -242,6 +242,10 @@
 	}
 }
 
+.tab-button-icon--star {
+	fill: none;
+}
+
 @media (width <= 500px) {
 	.rc-header {
 		&__visual-status {
