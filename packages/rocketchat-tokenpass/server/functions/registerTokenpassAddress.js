@@ -16,8 +16,10 @@ RocketChat.registerTokenpassAddress = function(accessToken, address, cb) {
 					address // Bitcoin address to register
 				}
 			});
-		return cb(null, result && result.data);
-	} catch (error) {
-		return cb(error);
+		return cb(null, result && result.data && result.data.result);
+	} catch (exception) {
+		return cb(
+			(exception.response && exception.response.data && (exception.response.data.message || exception.response.data.error)) || t('Tokenpass_Command_Error_Unknown')
+		);
 	}
 };

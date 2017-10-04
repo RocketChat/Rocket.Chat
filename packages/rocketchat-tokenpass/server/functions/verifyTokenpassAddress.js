@@ -1,9 +1,9 @@
 let userAgent = 'Meteor';
 if (Meteor.release) { userAgent += `/${ Meteor.release }`; }
 
-RocketChat.verifyTokenpassAddress = function(accessToken, address, signature) {
+RocketChat.verifyTokenpassAddress = function(accessToken, address, signature, cb) {
 	try {
-		return HTTP.post(
+		const result = HTTP.post(
 			`${ RocketChat.settings.get('API_Tokenpass_URL') }/api/v1/tca/address/${ address }`, {
 				headers: {
 					Accept: 'application/json',
@@ -15,8 +15,11 @@ RocketChat.verifyTokenpassAddress = function(accessToken, address, signature) {
 				data: {
 					signature // Signed message of the verify_code field from the User Address Object
 				}
-			}).data;
-	} catch (error) {
-		throw error;
+			});
+		return cb(null, result && result.data && result.data.result);
+	} catch (exception) {
+		return cb(
+			(exception.response && exception.response.data && (exception.response.data.message || exception.response.data.error)) || t('Tokenpass_Command_Error_Unknown')
+		);
 	}
 };
