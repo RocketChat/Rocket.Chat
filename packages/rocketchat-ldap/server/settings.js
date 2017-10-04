@@ -47,6 +47,8 @@ RocketChat.settings.addGroup('LDAP', function() {
 		this.add('LDAP_User_Search_Filter', '(objectclass=*)', { type: 'string', enableQuery });
 		this.add('LDAP_User_Search_Scope', 'sub', { type: 'string', enableQuery });
 		this.add('LDAP_User_Search_Field', 'sAMAccountName', { type: 'string', enableQuery });
+		this.add('LDAP_Search_Page_Size', 250, { type: 'int', enableQuery });
+		this.add('LDAP_Search_Size_Limit', 1000, { type: 'int', enableQuery });
 	});
 
 	this.section('User Search (Group Validation)', function() {
