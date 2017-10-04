@@ -8,10 +8,10 @@ function Inventory(command, params, item) {
 	const balances = RocketChat.updateUserTokenpassBalances(user);
 
 	const messages = [
-		`*${ TAPi18n.__('Tokenpass_Command_Inventory_Result', {
+		TAPi18n.__('Tokenpass_Command_Inventory_Result', {
 			postProcess: 'sprintf',
 			sprintf: [channel]
-		}, user.language) }*`
+		}, user.language)
 	];
 
 	if (balances) {
