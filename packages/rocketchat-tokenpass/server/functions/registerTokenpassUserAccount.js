@@ -10,7 +10,9 @@ RocketChat.registerTokenpassUserAccount = function(user, cb) {
 					'User-Agent': userAgent
 				},
 				params: {
-					client_id: user._id,
+					client_id: RocketChat.settings.get('Accounts_OAuth_Tokenpass_id')
+				},
+				data: {
 					username: user.username,
 					password: Random.id(),
 					email: user.emails[0] && user.emails[0].address

@@ -1,38 +1,74 @@
 function TokenpassRegister(command, params, item) {
-	if (command !== 'tokenpass' || !Match.test(params, String)) {
+	if (command !== 'tokenpass') {
 		return;
 	}
 
 	const user = Meteor.users.findOne(Meteor.userId());
 	const channel = RocketChat.models.Rooms.findOneById(item.rid);
 
-	console.log('tokenpass command', user);
+	const messages = [];
 
-	const registeredOnTokenpass = false;
-
-	const authenticatedWithTokenpass = !!(user && user.services && user.services.tokenpass);
-
-	if (authenticatedWithTokenpass) {
+	if (!(user && user.services && user.services.tokenpass)) {
 		const tokenpassUserAccountResume = RocketChat.getTokenpassUserAccountResume(user);
+		messages.push(
+			`_${ TAPi18n.__('Tokenpass_Command_Tokenpass_Account_Username', {
+				postProcess: 'sprintf',
+				sprintf: [channel]
+			}, user.language) }: *${ tokenpassUserAccountResume.username }*_`
+		);
+		messages.push(
+			`_${ TAPi18n.__('Tokenpass_Command_Tokenpass_Account_NumberOfTokens', {
+				postProcess: 'sprintf',
+				sprintf: [channel]
+			}, user.language) }: *${ tokenpassUserAccountResume.numberOfTokens }*_`
+		);
 	} else {
 		RocketChat.registerTokenpassUserAccount(user, (error, result) => {
-
+			if (error) {
+				messages.push(
+					`${ TAPi18n.__('Tokenpass_Command_Tokenpass_Error', {
+						postProcess: 'sprintf',
+						sprintf: [channel]
+					}, user.language) } ${ error }`
+				);
+			} else if (result) {
+				messages.push(
+					TAPi18n.__('Tokenpass_Command_Tokenpass_Result_Success', {
+						postProcess: 'sprintf',
+						sprintf: [channel]
+					}, user.language)
+				);
+				messages.push(
+					`_${ TAPi18n.__('Tokenpass_Command_Tokenpass_Account_Username', {
+						postProcess: 'sprintf',
+						sprintf: [channel]
+					}, user.language) }: *${ result.username }*_`
+				);
+				messages.push(
+					`_${ TAPi18n.__('Tokenpass_Command_Tokenpass_Account_Email', {
+						postProcess: 'sprintf',
+						sprintf: [channel]
+					}, user.language) }: *${ result.email }*_`
+				);
+			} else {
+				messages.push(
+					TAPi18n.__('Tokenpass_Command_Tokenpass_Result_Empty', {
+						postProcess: 'sprintf',
+						sprintf: [channel]
+					}, user.language)
+				);
+			}
 		});
 	}
 
-	// TODO: 2 - If user don't exists on Tokenpass, registers your e-mail and sends an e-mail verification
-	if (!registeredOnTokenpass) {
-		// Create Tokenpass Account
-		RocketChat.registerTokenpassUserAccount(user, (error, result) => {
-
+	messages.forEach((msg) => {
+		RocketChat.Notifications.notifyUser(Meteor.userId(), 'message', {
+			_id: Random.id(),
+			rid: item.rid,
+			ts: new Date(),
+			msg
 		});
-	}
-
-	// TODO: 3 - If user exists on Tokenpass but don't be authenticated, show a message requesting login on Rocket.Chat using Tokenpass
-	if (registeredOnTokenpass && !authenticatedWithTokenpass) {
-		// Request login with Tokenpass
-
-	}
+	});
 }
 
 RocketChat.slashCommands.add('tokenpass', TokenpassRegister);

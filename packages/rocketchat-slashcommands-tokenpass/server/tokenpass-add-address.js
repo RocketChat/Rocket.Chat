@@ -26,41 +26,41 @@ function TokenpassAddAddress(command, params, item) {
 				}, user.language)
 			);
 			messages.push(
-				`${ TAPi18n.__('Tokenpass_Command_TokenpassAddAddress_Name', {
+				`_${ TAPi18n.__('Tokenpass_Command_TokenpassAddAddress_Name', {
 					postProcess: 'sprintf',
 					sprintf: [channel]
-				}, user.language) }: ${ result.address }`
+				}, user.language) }: *${ result.address }*_`
 			);
 			if (result.label) {
 				messages.push(
-					`${ TAPi18n.__('Tokenpass_Command_TokenpassAddAddress_Label', {
+					`_${ TAPi18n.__('Tokenpass_Command_TokenpassAddAddress_Label', {
 						postProcess: 'sprintf',
 						sprintf: [channel]
-					}, user.language) }: ${ result.label }`
+					}, user.language) }: *${ result.label }*_`
 				);
 			}
 			if (result.type) {
 				messages.push(
-					`${ TAPi18n.__('Tokenpass_Command_TokenpassAddAddress_Type', {
+					`_${ TAPi18n.__('Tokenpass_Command_TokenpassAddAddress_Type', {
 						postProcess: 'sprintf',
 						sprintf: [channel]
-					}, user.language) }: ${ result.type }`
+					}, user.language) }: *${ result.type }*_`
 				);
 			}
 			if (result.verify_code) {
 				messages.push(
-					`${ TAPi18n.__('Tokenpass_Command_TokenpassAddAddress_VerifyCode', {
+					`_${ TAPi18n.__('Tokenpass_Command_TokenpassAddAddress_VerifyCode', {
 						postProcess: 'sprintf',
 						sprintf: [channel]
-					}, user.language) }: ${ result.verify_code }`
+					}, user.language) }: *${ result.verify_code }*_`
 				);
 			}
 			if (result.verify_address) {
 				messages.push(
-					`${ TAPi18n.__('Tokenpass_Command_TokenpassAddAddress_VerifyAddress', {
+					`_${ TAPi18n.__('Tokenpass_Command_TokenpassAddAddress_VerifyAddress', {
 						postProcess: 'sprintf',
 						sprintf: [channel]
-					}, user.language) }: ${ result.verify_address }`
+					}, user.language) }: *${ result.verify_address }*_`
 				);
 			}
 		} else {
