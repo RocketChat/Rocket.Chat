@@ -33,6 +33,8 @@ export default class LDAP {
 			User_Search_Filter: RocketChat.settings.get('LDAP_User_Search_Filter'),
 			User_Search_Scope: RocketChat.settings.get('LDAP_User_Search_Scope'),
 			User_Search_Field: RocketChat.settings.get('LDAP_User_Search_Field'),
+			Search_Page_Size: RocketChat.settings.get('LDAP_Search_Page_Size'),
+			Search_Size_Limit: RocketChat.settings.get('LDAP_Search_Size_Limit'),
 			group_filter_enabled: RocketChat.settings.get('LDAP_Group_Filter_Enable'),
 			group_filter_object_class: RocketChat.settings.get('LDAP_Group_Filter_ObjectClass'),
 			group_filter_group_id_attribute: RocketChat.settings.get('LDAP_Group_Filter_Group_Id_Attribute'),
@@ -209,8 +211,9 @@ export default class LDAP {
 		const searchOptions = {
 			filter: this.getUserFilter(username),
 			scope: this.options.User_Search_Scope || 'sub',
+			sizeLimit: this.options.Search_Size_Limit,
 			paged: {
-				pageSize: 250,
+				pageSize: this.options.Search_Page_Size,
 				pagePause: !!page
 			}
 		};
