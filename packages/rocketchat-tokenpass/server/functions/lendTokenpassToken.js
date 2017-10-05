@@ -15,7 +15,7 @@ RocketChat.lendTokenpassToken = function(lending, cb) {
 				},
 				data: {
 					source: lending.source,						// string			Source address to use
-					destination: lending.destination,	// string			Destination bitcoin address or user:{username}
+					destination: JSON.stringify(lending.destination),	// string			Destination bitcoin address or user:{username}
 					asset: lending.asset, 						// asset			string	Token to promise
 					quantity: lending.quantity,				// integer		Amount, in satoshis
 					expiration: lending.expiration		// timestamp	Time that the promise expires, can be set to null
@@ -27,7 +27,7 @@ RocketChat.lendTokenpassToken = function(lending, cb) {
 		return cb(null, result && result.data && result.data.result);
 	} catch (exception) {
 		return cb(
-			(exception.response && exception.response.data && (exception.response.data.message || exception.response.data.error)) || t('Tokenpass_Command_Error_Unknown')
+			(exception.response && exception.response.data && (exception.response.data.message || exception.response.data.error)) || TAPi18n.__('Tokenpass_Command_Error_Unknown')
 		);
 	}
 };

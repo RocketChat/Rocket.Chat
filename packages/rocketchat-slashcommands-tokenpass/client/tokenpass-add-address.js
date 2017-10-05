@@ -1,4 +1,4 @@
 RocketChat.slashCommands.add('tokenpass-add-address', null, {
 	description: 'Tokenpass_Command_TokenpassAddAddress_Description',
-	params: ''
+	params: 'Tokenpass_Command_TokenpassAddAddress_Params'
 });

@@ -8,7 +8,7 @@ function TokenpassRegister(command, params, item) {
 
 	const messages = [];
 
-	if (!(user && user.services && user.services.tokenpass)) {
+	if (user && user.services && user.services.tokenpass) {
 		const tokenpassUserAccountResume = RocketChat.getTokenpassUserAccountResume(user);
 		messages.push(
 			`_${ TAPi18n.__('Tokenpass_Command_Tokenpass_Account_Username', {

@@ -3,8 +3,13 @@ function Lend(command, params, item) {
 		return;
 	}
 
-	const paramsList = _.words(params);
-	// TODO: Check parameters
+	const paramsList = s.words(params);
+
+	check(paramsList[0], String);
+	check(paramsList[1], String);
+	check(paramsList[2], String);
+	check(paramsList[3], String);
+	check(paramsList[4], Match.Maybe(String));
 
 	const user = Meteor.users.findOne(Meteor.userId());
 	const channel = RocketChat.models.Rooms.findOneById(item.rid);
@@ -12,18 +17,33 @@ function Lend(command, params, item) {
 	const messages = [];
 
 	RocketChat.lendTokenpassToken({
-		source: paramsList[0], // Source address to use
-		destination: paramsList[1], // Destination username
-		asset: paramsList[2], // Token to promise
-		quantity: paramsList[3], //	Amount, in satoshis
-		expiration: (paramsList[4] && moment().add(paramsList[4], 'days')) || null // Time that the promise expires
+		source: paramsList[0],
+		destination: `user:${ paramsList[1] }`,
+		asset: paramsList[2],
+		quantity: paramsList[3],
+		expiration: (paramsList[4] && paramsList[4] !== '') ? moment().add(parseInt(paramsList[4]), 'days').toDate() : null
 	}, (error, result) => {
 		if (error) {
-			// TODO: Messages here
+			messages.push(
+				`${ TAPi18n.__('Tokenpass_Command_Lend_Error', {
+					postProcess: 'sprintf',
+					sprintf: [channel]
+				}, user.language) } ${ error }`
+			);
 		} else if (result) {
-			// TODO: Messages here
+			messages.push(
+				TAPi18n.__('Tokenpass_Command_Lend_Result', {
+					postProcess: 'sprintf',
+					sprintf: [channel]
+				}, user.language)
+			);
 		} else {
-			// TODO: Messages here
+			messages.push(
+				TAPi18n.__('Tokenpass_Command_Lend_Result_Empty', {
+					postProcess: 'sprintf',
+					sprintf: [channel]
+				}, user.language)
+			);
 		}
 	});
 
