@@ -28,14 +28,14 @@
 	}
 
 	&__back-text {
+		z-index: 100;
 		margin-right: 2px;
-
 		line-height: 22px;
 	}
 
 	&__back-icon {
+		z-index: 100;
 		transform: rotate(45deg);
-
 		font-size: 1rem;
 	}
 }

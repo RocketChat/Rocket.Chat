@@ -16,6 +16,8 @@ this.roomTypesCommon = class {
 	name: route name
 	action: route action function
 	identifier: room type identifier
+	creationTemplate: The blaze template which shall be used in the create-dialog
+	creationLabel: The hreadline of the creation dialog
 
 	Optional methods which can be redefined
 		getDisplayName(room): return room's name for the UI

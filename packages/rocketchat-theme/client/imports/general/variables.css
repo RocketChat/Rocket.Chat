@@ -264,4 +264,9 @@
 	--message-box-editing-color: #fff5df;
 	--message-box-popover-title-text-color: var(--color-gray);
 	--message-box-popover-title-text-size: 0.75rem;
+
+	/*
+	* Tabs
+	*/
+	--tabs-padding: 1rem;
 }

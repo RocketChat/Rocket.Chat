@@ -40,3 +40,7 @@
 
 /* RTL */
 @import 'imports/general/rtl.css';
+
+/* tabs */
+@import 'imports/components/tab.css';
+
