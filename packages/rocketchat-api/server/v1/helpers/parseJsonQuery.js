@@ -19,6 +19,26 @@ RocketChat.API.v1.helperMethods.set('parseJsonQuery', function _parseJsonQuery()
 		}
 	}
 
+	// Verify the user's selected fields only contains ones which their role allows
+	if (typeof fields === 'object') {
+		let nonSelectableFields = Object.keys(RocketChat.API.v1.defaultFieldsToExclude);
+		if (!RocketChat.authz.hasPermission(this.userId, 'view-full-other-user-info') && this.request.route.includes('/v1/users.')) {
+			nonSelectableFields = nonSelectableFields.concat(Object.keys(RocketChat.API.v1.limitedUserFieldsToExclude));
+		}
+
+		Object.keys(fields).forEach((k) => {
+			if (nonSelectableFields.includes(k) || nonSelectableFields.includes(k.split(RocketChat.API.v1.fieldSeparator)[0])) {
+				delete fields[k];
+			}
+		});
+	}
+
+	// Limit the fields by default
+	fields = Object.assign({}, fields, RocketChat.API.v1.defaultFieldsToExclude);
+	if (!RocketChat.authz.hasPermission(this.userId, 'view-full-other-user-info') && this.request.route.includes('/v1/users.')) {
+		fields = Object.assign(fields, RocketChat.API.v1.limitedUserFieldsToExclude);
+	}
+
 	let query;
 	if (this.queryParams.query) {
 		try {
@@ -27,6 +47,20 @@ RocketChat.API.v1.helperMethods.set('parseJsonQuery', function _parseJsonQuery()
 			this.logger.warn(`Invalid query parameter provided "${ this.queryParams.query }":`, e);
 			throw new Meteor.Error('error-invalid-query', `Invalid query parameter provided: "${ this.queryParams.query }"`, { helperMethod: 'parseJsonQuery' });
 		}
+	}
+
+	// Verify the user has permission to query the fields they are
+	if (typeof query === 'object') {
+		let nonQuerableFields = Object.keys(RocketChat.API.v1.defaultFieldsToExclude);
+		if (!RocketChat.authz.hasPermission(this.userId, 'view-full-other-user-info') && this.request.route.includes('/v1/users.')) {
+			nonQuerableFields = nonQuerableFields.concat(Object.keys(RocketChat.API.v1.limitedUserFieldsToExclude));
+		}
+
+		Object.keys(query).forEach((k) => {
+			if (nonQuerableFields.includes(k) || nonQuerableFields.includes(k.split(RocketChat.API.v1.fieldSeparator)[0])) {
+				delete query[k];
+			}
+		});
 	}
 
 	return {
