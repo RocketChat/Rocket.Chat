@@ -1028,6 +1028,8 @@
   "LDAP_Merge_Existing_Users_Description": "*Caution!* When importing an user from LDAP and an user with same username already exists the LDAP info and password will be set into the existing user.",
   "LDAP_Port": "Port",
   "LDAP_Port_Description": "Port to access LDAP. eg: `389` or `636` for LDAPS",
+  "LDAP_Reconnect": "Reconnect",
+  "LDAP_Reconnect_Description": "Try to reconnect automatically when connection is interrupted by some reason while executing operations",
   "LDAP_Reject_Unauthorized": "Reject Unauthorized",
   "LDAP_Reject_Unauthorized_Description": "Disable this option to allow certificates that can not be verified. Usually Self Signed Certificates will require this option disabled to work",
   "LDAP_Sync_User_Avatar": "Sync User Avatar",
