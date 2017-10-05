@@ -11,6 +11,7 @@
 		background-color: var(--sidebar-background-light-hover);
 	}
 }
+
 .sidebar__account {
 	display: flex;
 
@@ -18,15 +19,16 @@
 
 	padding: var(--sidebar-header-small-padding) var(--sidebar-default-padding) var(--sidebar-header-small-padding);
 
-	align-items: center;
-
 	transition: background-color 0.3s;
+
+	align-items: center;
 
 	&.active:hover {
 		cursor: pointer;
 
 		background-color: var(--sidebar-item-hover-background);
 	}
+
 	&-thumb {
 
 		flex: 0 0 var(--sidebar-account-thumb-size);
@@ -53,7 +55,6 @@
 
 		max-width: fit-content;
 		height: calc(var(--sidebar-account-username-size) + 0.1rem);
-		margin-bottom: 0.5rem;
 
 		white-space: nowrap;
 		text-overflow: ellipsis;

@@ -1,12 +1,7 @@
 <template name="adminSounds">
 	<div class="main-content-flex">
 		<section class="page-container page-list flex-tab-main-content">
-			<header class="fixed-title">
-				{{> burger}}
-				<h2>
-					<span class="room-title">{{_ "Custom_Sounds"}}</span>
-				</h2>
-			</header>
+			{{> header sectionName="Custom_Sounds"}}
 			<div class="content">
 				{{#requiresPermission 'manage-sounds'}}
 					<form class="search-form" role="form">

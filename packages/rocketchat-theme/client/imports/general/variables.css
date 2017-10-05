@@ -20,12 +20,12 @@
 	--color-success: #2de0a5;
 	--color-success-light: #25d198;
 	--color-button-primary: #1d74f5;
+	--color-link-active: #1d74f5;
 	--color-button-primary-light: #175cc4;
 
 	/*
 	* General
 	*/
-	--text-size: 0.875rem;
 	--header-min-height: 60px;
 	--toolbar-height: 55px;
 	--footer-min-height: 70px;
@@ -40,8 +40,29 @@
 	--status-away: var(--color-alert);
 	--status-busy: var(--color-error);
 	--status-invisible: var(--color-gray-medium);
+	--status-bullet-size: 12px;
+	--status-bullet-radius: 50%;
+	--account-username-weight: 700;
+	--status-name-weight: 400;
 	--status-invisible-sidebar: var(--color-darkest);
 	--default-small-padding: 1rem;
+	--default-padding: 24px;
+
+	/*
+	* General Typography
+	*/
+	--text-default-size: 1rem;
+	--text-default-weight: 500;
+	--text-small-size: 0.875rem;
+	--text-small-weight: 500;
+	--text-heading-size: 1.375rem;
+	--text-heading-weight: 700;
+	--text-label-size: 075rem;
+	--text-label-weight: 600;
+	--text-tiny-size: 075rem;
+	--text-tiny-weight: 400;
+	--text-micro-size: 0.625rem;
+	--text-micro-weight: 700;
 
 	/*
 	* Forms
@@ -62,6 +83,9 @@
 	--button-disabled-text-color: var(--color-white);
 	--button-primary-background: var(--color-button-primary);
 	--button-primary-text-color: var(--color-white);
+	--button-cancel-color: var(--color-error);
+	--button-secondary-background: var(--color-gray-medium);
+	--button-secondary-text-color: var(--color-dark-medium);
 
 	/*
 	* Forms - Input
@@ -132,7 +156,7 @@
 	--sidebar-background-hover: var(--color-dark-medium);
 	--sidebar-background-light: var(--color-gray-lightest);
 	--sidebar-background-light-hover: var(--color-gray-light);
-	--sidebar-default-padding: 24px;
+	--sidebar-default-padding: var(--default-padding);
 	--sidebar-small-default-padding: 16px;
 	--sidebar-header-padding: 16px;
 	--sidebar-header-small-padding: 12px;
@@ -143,14 +167,13 @@
 	/*
 	* Sidebar flex
 	*/
-	--sidebar-flex-back-button-color: var(--color-dark);
 	--sidebar-flex-search-background: var(--color-white);
 	--sidebar-flex-search-placeholder-color: var(--color-gray);
 
 	/*
 	* Sidebar Account
 	*/
-	--sidebar-account-thumb-size: 48px;
+	--sidebar-account-thumb-size: 36px;
 	--sidebar-small-account-thumb-size: 40px;
 	--sidebar-account-status-bullet-size: 12px;
 	--sidebar-small-account-status-bullet-size: 8px;
@@ -265,4 +288,21 @@
 	--message-box-editing-color: #fff5df;
 	--message-box-popover-title-text-color: var(--color-gray);
 	--message-box-popover-title-text-size: 0.75rem;
+
+	/*
+	* Header
+	*/
+	--header-height: 77px;
+	--header-padding: 16px;
+	--header-toggle-favorite-color: var(--color-gray-medium);
+	--header-toggle-favorite-star-color: var(--color-alert-light);
+	--header-title-username-color-darker: var(--color-dark);
+	--header-title-font-size: var(--text-default-size);
+	--header-title-font-size--subtitle: var(--text-small-size);
+	--header-title-status-color: var(--color-gray);
+	--header-title-username-weight: 400;
+	--header-title-status-name-weight: 400;
+	--header-title-status-bullet-radius: var(--status-bullet-radius);
+	--header-title-status-bullet-size: var(--status-bullet-size);
+	--header-background-color: var(--color-white);
 }
