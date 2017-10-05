@@ -235,7 +235,7 @@ export function importNewUsers(ldap) {
 	}
 
 	let count = 0;
-	ldap.searchUsersSync('*', Meteor.bindEnvironment((error, ldapUsers, {next} = {}) => {
+	ldap.searchUsersSync('*', Meteor.bindEnvironment((error, ldapUsers, {next, end} = {}) => {
 		if (error) {
 			throw error;
 		}
@@ -275,14 +275,17 @@ export function importNewUsers(ldap) {
 				}
 			}
 
-			if (count % 1000 === 0) {
-				logger.info('Imported:', count);
+			if (count % 100 === 0) {
+				logger.info('Import running. Users imported until now:', count);
 			}
 		});
-		next && next();
-	}));
 
-	logger.info('Imported:', count);
+		if (end) {
+			logger.info('Import finished. Users imported:', count);
+		}
+
+		next(count);
+	}));
 }
 
 function sync() {
