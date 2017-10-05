@@ -17,7 +17,7 @@ if (window.DISABLE_ANIMATION) {
 Meteor.startup(function() {
 	TimeSync.loggingEnabled = false;
 
-	UserPresence.awayTime = 5000;
+	UserPresence.awayTime = RocketChat.settings.get('Default_away_time')||300000;
 	UserPresence.start();
 	Meteor.subscribe('activeUsers');
 
