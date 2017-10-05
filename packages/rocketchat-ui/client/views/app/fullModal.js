@@ -10,9 +10,9 @@ FlowRouter.route('/create-channel', {
 
 	action() {
 		if (parent) {
-			Blaze.renderWithData(Template.fullModal, {template: 'createChannel'}, parent);
+			Blaze.renderWithData(Template.fullModal, {template: 'createRooms'}, parent);
 		} else {
-			BlazeLayout.render('main', {center: 'fullModal', template: 'createChannel'});
+			BlazeLayout.render('main', {center: 'fullModal', template: 'createRooms'});
 		}
 	},
 

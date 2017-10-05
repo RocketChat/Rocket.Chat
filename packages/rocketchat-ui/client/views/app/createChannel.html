@@ -1,10 +1,4 @@
 <template name="createChannel">
-	<section class="create-channel">
-		{{#each roomType in roomTypesBeforeStandard}}
-			<div class="room-type-creation">
-				{{> Template.dynamic template=roomType.creationTemplate }}
-			</div>
-		{{/each}}
 		<div class="room-type-creation">
 			<header class="create-channel__header">
 				<h1 class="create-channel__title">{{_ "Create_A_New_Channel"}}</h1>
@@ -89,12 +83,6 @@
 					   value="{{_ "Create"}}">
 			</form>
 		</div>
-		{{#each roomType in roomTypesAfterStandard}}
-			<div class="room-type-creation">
-				{{> Template.dynamic template=roomType.creationTemplate }}
-			</div>
-		{{/each}}
-	</section>
 </template>
 
 <template name='tag'>
