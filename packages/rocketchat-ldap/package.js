@@ -6,7 +6,6 @@ Package.describe({
 });
 
 Package.onUse(function(api) {
-	api.use('rocketchat:ldapjs');
 	api.use('rocketchat:logger');
 	api.use('rocketchat:lib');
 	api.use('yasaricli:slugify');
