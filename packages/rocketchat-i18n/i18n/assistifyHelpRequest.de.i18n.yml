@@ -9,7 +9,9 @@ Expertise_needs_experts: Bitte Experten auswählen, um eine Expertise zu definie
 No_expertise_yet: Noch in keiner Expertengruppe
 Request: Anfrage
 Requests: Anfragen
+Request_description: Eine Anfrage ist der Versuch, gemeinsam eine Frage zu einem Thema zu beantworten. Aus abgeschlossenen Anfragen lernt das System und hilft, Fragen zu dem Thema in Zukunft schneller zu beantworten.
 New_request: Neue Anfrage
+New_expertise: Neues Thema
 More_requests: Weitere Anfragen
 No_requests_yet: Keine Anfragen bisher
 Assistify_room_count: Letzte Raumnummer
@@ -20,4 +22,5 @@ Search_Requests: Anfragen suchen
 Expertise: Thema
 Expertises: Themen
 Expertise_title: Titel des Themas
+Expertise_description: Ein Thema beschreibt ein Wissensgebiet. Zu einem Thema können Anfragen erstellt werden, die von den Experten, die dem Thema als Mitglieder zugeordnet sind, beantwortet werden können.
 Request_already_exists: Eine Anfrage mit der nächsten laufenen Nummer existiert bereits. Bitte erneut versuchen.

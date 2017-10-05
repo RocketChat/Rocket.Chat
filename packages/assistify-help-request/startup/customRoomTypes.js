@@ -14,6 +14,7 @@ RocketChat.roomTypes.add('r', 6, { //5 is livechat
 	template: 'requests',
 	icon: 'question',
 	label: 'Requests',
+	creationLabel: 'New_request',
 	creationTemplate: 'AssistifyCreateRequest',
 	route: {
 		name: 'request',
@@ -79,6 +80,7 @@ RocketChat.roomTypes.add('e', 15, { //20 = private messages
 	template: 'expertise',
 	icon: 'lightbulb',
 	label: 'Expertises',
+	creationLabel: 'New_expertise',
 	creationTemplate: 'AssistifyCreateExpertise',
 	route: {
 		name: 'expertise',

@@ -13,7 +13,7 @@
 							{{> icon block="rc-input__icon-svg" icon="flag" }}
 						</div>
 						<input name="expertise" type="text" class="rc-input__element"
-							   placeholder="{{_ "Expertise_Name_Placeholder"}}" autofocus>
+							   placeholder="{{_ "Expertise_title"}}" autofocus>
 					</div>
 				</label>
 				{{#if inUse}}
@@ -36,7 +36,7 @@
 							{{#each user in selectedUsers}}
 								{{> tag user}}
 							{{/each}}
-							<input type="text" class="rc-tags__input" placeholder="{{_ "Experts_Placeholder"}}"
+							<input type="text" class="rc-tags__input" placeholder="{{_ "Experts"}}"
 								   name="experts" autocomplete="off"/>
 						</div>
 					</div>
@@ -55,14 +55,4 @@
 		<input class="rc-button rc-button--primary" type="submit" data-button="create" {{createIsDisabled}}
 			   value="{{_ "Create"}}">
 	</form>
-</template>
-
-<template name='tag'>
-	<span class="rc-tags__tag">
-		<span class="rc-tags__tag-avatar">
-			{{> avatar username=username}}
-		</span>
-		<span class="rc-tags__tag-username">{{username}}</span>
-		{{> icon block="rc-tags__tag-icon" icon="cross"}}
-	</span>
 </template>
