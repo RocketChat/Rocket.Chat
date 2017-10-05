@@ -208,7 +208,7 @@ RocketChat.API.v1.addRoute('channels.getIntegrations', { authRequired: true }, {
 			sort: sort ? sort : { _createdAt: 1 },
 			skip: offset,
 			limit: count,
-			fields: Object.assign({}, fields, RocketChat.API.v1.defaultFieldsToExclude)
+			fields
 		}).fetch();
 
 		return RocketChat.API.v1.success({
@@ -352,7 +352,7 @@ RocketChat.API.v1.addRoute('channels.list', { authRequired: true }, {
 				sort: sort ? sort : { name: 1 },
 				skip: offset,
 				limit: count,
-				fields: Object.assign({}, fields, RocketChat.API.v1.defaultFieldsToExclude)
+				fields
 			}).fetch();
 
 			return RocketChat.API.v1.success({
@@ -376,7 +376,7 @@ RocketChat.API.v1.addRoute('channels.list.joined', { authRequired: true }, {
 			sort: sort ? sort : { name: 1 },
 			skip: offset,
 			limit: count,
-			fields: Object.assign({}, fields, RocketChat.API.v1.defaultFieldsToExclude)
+			fields
 		});
 
 		return RocketChat.API.v1.success({
