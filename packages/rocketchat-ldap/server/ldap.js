@@ -20,6 +20,7 @@ export default class LDAP {
 		this.options = {
 			host: RocketChat.settings.get('LDAP_Host'),
 			port: RocketChat.settings.get('LDAP_Port'),
+			Reconnect: RocketChat.settings.get('LDAP_Reconnect'),
 			timeout: RocketChat.settings.get('LDAP_Timeout'),
 			connect_timeout: RocketChat.settings.get('LDAP_Connect_Timeout'),
 			idle_timeout: RocketChat.settings.get('LDAP_Idle_Timeout'),
@@ -68,7 +69,7 @@ export default class LDAP {
 			timeout: this.options.timeout,
 			connectTimeout: this.options.connect_timeout,
 			idleTimeout: this.options.idle_timeout,
-			reconnect: true
+			reconnect: this.options.Reconnect
 		};
 
 		const tlsOptions = {
@@ -363,21 +364,12 @@ export default class LDAP {
 				logger.search.debug('Page');
 				// Force LDAP idle to wait the record processing
 				this.client._updateIdle(true);
-				page(null, entries, {end: false, next: () => {
+				page(null, entries, {end: !next, next: () => {
 					// Reset idle timer
 					this.client._updateIdle();
 					next && next();
 				}});
 				entries = [];
-			});
-
-			res.on('end', () => {
-				logger.search.info('Search result count', entries.length);
-				page(null, [], {end: true, next: () => {
-					// Reset idle timer
-					this.client._updateIdle();
-				}});
-				// logger.search.debug('Search result', JSON.stringify(jsonEntries, null, 2));
 			});
 		});
 	}
