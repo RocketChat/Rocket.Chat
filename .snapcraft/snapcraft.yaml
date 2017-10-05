@@ -39,24 +39,17 @@ apps:
 parts:
     node:
         plugin: nodejs
-        node-engine: 4.8.3
-        node-packages:
-            - promise
-            - fibers
-            - underscore
-            - source-map-support
-            - semver
+        node-engine: 4.8.4
         build-packages:
             # For fibers
             - python
             - build-essential
             - nodejs
-        organize:
-            lib/node_modules: node_modules
     rocketchat-server:
         plugin: dump
+        prepare: cd programs/server; npm install
         after: [node]
-        source: https://rocket.chat/releases/release-candidate/download
+        source: https://rocket.chat/releases/#{RC_VERSION}/download
         source-type: tar
         stage-packages:
             - graphicsmagick
