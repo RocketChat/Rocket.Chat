@@ -1,6 +1,5 @@
-/* globals LDAPJS */
-
-const ldapjs = LDAPJS;
+import ldapjs from 'ldapjs';
+import Bunyan from 'bunyan';
 
 const logger = new Logger('LDAP', {
 	sections: {
@@ -21,6 +20,7 @@ export default class LDAP {
 			host: RocketChat.settings.get('LDAP_Host'),
 			port: RocketChat.settings.get('LDAP_Port'),
 			Reconnect: RocketChat.settings.get('LDAP_Reconnect'),
+			Internal_Log_Level: RocketChat.settings.get('LDAP_Internal_Log_Level'),
 			timeout: RocketChat.settings.get('LDAP_Timeout'),
 			connect_timeout: RocketChat.settings.get('LDAP_Connect_Timeout'),
 			idle_timeout: RocketChat.settings.get('LDAP_Idle_Timeout'),
@@ -71,6 +71,15 @@ export default class LDAP {
 			idleTimeout: this.options.idle_timeout,
 			reconnect: this.options.Reconnect
 		};
+
+		if (this.options.Internal_Log_Level !== 'disabled') {
+			connectionOptions.log = new Bunyan({
+				name: 'ldapjs',
+				component: 'client',
+				stream: process.stderr,
+				level: this.options.Internal_Log_Level
+			});
+		}
 
 		const tlsOptions = {
 			rejectUnauthorized: this.options.reject_unauthorized
