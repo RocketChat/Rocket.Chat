@@ -121,7 +121,7 @@
 									<div class="input-line double-col">
 										<label>{{_ "Integration_Outgoing_WebHook_History_Error_Stacktrace"}}</label>
 										<div>
-											<pre><code class="code-colors hljs json">{{{ hljsStack history.errorStack }}}</code></pre>
+											<pre><code class="code-colors hljs json">{{{ jsonStringify history.errorStack }}}</code></pre>
 										</div>
 									</div>
 								{{/if}}
