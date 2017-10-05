@@ -27,6 +27,6 @@ RocketChat.smarsh.sendEmail = (data) => {
 		from: RocketChat.settings.get('From_Email'),
 		subject: data.subject,
 		html: data.body,
-		attachments: attachments
+		attachments
 	});
 };

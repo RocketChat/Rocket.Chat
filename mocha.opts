@@ -1,0 +1,3 @@
+--compilers js:babel-mocha-es6-compiler
+--reporter spec
+--ui bdd

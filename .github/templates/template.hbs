@@ -1,0 +1,22 @@
+{{> header}}
+
+{{#each commitGroups}}
+
+{{#if collapse}}
+<details>
+<summary>{{title}}</summary>
+{{else}}
+### {{title}}
+{{/if}}
+
+{{#each commits}}
+{{> commit root=@root}}
+{{/each}}
+{{#if collapse}}
+</details>
+{{/if}}
+
+{{/each}}
+{{> footer}}
+
+

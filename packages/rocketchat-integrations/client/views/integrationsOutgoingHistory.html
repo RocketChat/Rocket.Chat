@@ -1,0 +1,148 @@
+<template name="integrationsOutgoingHistory">
+	<section class="page-container page-home page-static page-settings">
+		<header class="fixed-title border-component-color">
+			{{> burger}}
+			<h2>
+				<span class="room-title">{{pageTitle}}</span>
+			</h2>
+			{{#if hasPermission}}
+				<div class="submit">
+					<button class="button danger clear-history"><i class="icon-history"></i>{{_ "clear_history"}}</button>
+				</div>
+			{{/if}}
+		</header>
+		<div class="content background-transparent-dark">
+			{{#unless hasPermission}}
+				<p>{{_ "You_are_not_authorized_to_view_this_page"}}</p>
+			{{else}}
+				<a href="{{pathFor "admin-integrations-outgoing" id=integrationId}}"><i class="icon-angle-left"></i> {{_ "Back_to_integration_detail"}}</a><br><br>
+
+				<div class="rocket-form">
+					{{#each history in histories}}
+						<div class="section section-collapsed">
+							<div class="section-title">
+								<div class="section-title-text">
+									<i class="{{iconClass history}}"></i>
+									{{formatDate history._createdAt}}
+								</div>
+								<div class="section-title-right">
+									<button class="button replay" data-history-id="{{ history._id }}">Replay</button>
+									<button class="button primary expand">
+										<span>{{_ "Expand"}}</span>
+									</button>
+								</div>
+							</div>
+							<div class="section-content">
+								<div class="input-line double-col">
+									<label>{{_ "Status"}}</label>
+									<div>
+										<input class="input-monitor" type="text" disabled value="{{statusI18n history.error}}">
+									</div>
+								</div>
+								<div class="input-line double-col">
+									<label>{{_ "Integration_Outgoing_WebHook_History_Time_Triggered"}}</label>
+									<div>
+										<input class="input-monitor" type="text" disabled value="{{formatDateDetail history._createdAt}}">
+									</div>
+								</div>
+								<div class="input-line double-col">
+									<label>{{_ "Integration_Outgoing_WebHook_History_Time_Ended_Or_Error"}}</label>
+									<div>
+										<input class="input-monitor" type="text" disabled value="{{formatDateDetail history._updatedAt}}">
+									</div>
+								</div>
+								<div class="input-line double-col">
+									<label>{{_ "Event_Trigger"}}</label>
+									<div>
+										<input class="input-monitor" type="text" disabled value="{{eventTypei18n history.event}}">
+									</div>
+								</div>
+								<div class="input-line double-col">
+									<label>{{_ "Integration_Outgoing_WebHook_History_Trigger_Step"}}</label>
+									<div>
+										<input class="input-monitor" type="text" disabled value="{{history.step}}">
+									</div>
+								</div>
+								<div class="input-line double-col">
+									<label>{{_ "Integration_Outgoing_WebHook_History_Data_Passed_To_Trigger"}}</label>
+									<div>
+										<pre><code class="code-colors hljs json">{{{ jsonStringify history.data }}}</code></pre>
+									</div>
+								</div>
+								{{#if hasProperty history 'prepareSentMessage'}}
+									<div class="input-line double-col">
+										<label>{{_ "Integration_Outgoing_WebHook_History_Messages_Sent_From_Prepare_Script"}}</label>
+										<div>
+											<pre><code class="code-colors hljs json">{{{ jsonStringify history.prepareSentMessage }}}</code></pre>
+										</div>
+									</div>
+								{{/if}}
+								{{#if hasProperty history 'processSentMessage'}}
+									<div class="input-line double-col">
+										<label>{{_ "Integration_Outgoing_WebHook_History_Messages_Sent_From_Process_Script"}}</label>
+										<div>
+											<pre><code class="code-colors hljs json">{{{ jsonStringify history.processSentMessage }}}</code></pre>
+										</div>
+									</div>
+								{{/if}}
+								{{#if hasProperty history 'url'}}
+									<div class="input-line double-col">
+										<label>{{_ "URL"}}</label>
+										<div>
+											<pre><code class="code-colors hljs json">{{ history.url }}</code></pre>
+										</div>
+									</div>
+								{{/if}}
+								{{#if hasProperty history 'httpCallData'}}
+									<div class="input-line double-col">
+										<label>{{_ "Integration_Outgoing_WebHook_History_Data_Passed_To_URL"}}</label>
+										<div>
+											<pre><code class="code-colors hljs json">{{{jsonStringify history.httpCallData }}}</code></pre>
+										</div>
+									</div>
+								{{/if}}
+								{{#if hasProperty history 'httpError'}}
+									<div class="input-line double-col">
+										<label>{{_ "Integration_Outgoing_WebHook_History_Http_Response_Error"}}</label>
+										<div>
+											<pre><code class="code-colors hljs json">{{{ jsonStringify history.httpError }}}</code></pre>
+										</div>
+									</div>
+								{{/if}}
+								{{#if hasProperty history 'httpResult'}}
+									<div class="input-line double-col">
+										<label>{{_ "Integration_Outgoing_WebHook_History_Http_Response"}}</label>
+										<div>
+											<pre><code class="code-colors hljs json">{{{ jsonStringify history.httpResult }}}</code></pre>
+										</div>
+									</div>
+								{{/if}}
+								{{#if hasProperty history 'errorStack'}}
+									<div class="input-line double-col">
+										<label>{{_ "Integration_Outgoing_WebHook_History_Error_Stacktrace"}}</label>
+										<div>
+											<pre><code class="code-colors hljs json">{{{ hljsStack history.errorStack }}}</code></pre>
+										</div>
+									</div>
+								{{/if}}
+							</div>
+						</div>
+					{{else}}
+						<div class="section">
+							<div class="section-title">
+								<div class="section-title-text">
+									{{_ "Integration_Outgoing_WebHook_No_History"}}
+								</div>
+							</div>
+						</div>
+					{{/each}}
+					{{#if hasMore}}
+						<div class="load-more">
+							{{> loading}}
+						</div>
+					{{/if}}
+				</div>
+			{{/unless}}
+		</div>
+	</section>
+</template>

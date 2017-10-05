@@ -12,7 +12,7 @@ RocketChat.emoji.packages.emojione.render = function(emoji) {
 
 //http://stackoverflow.com/a/26990347 function isSet() from Gajus
 function isSetNotNull(fn) {
-	var value;
+	let value;
 	try {
 		value = fn();
 	} catch (e) {
@@ -23,9 +23,9 @@ function isSetNotNull(fn) {
 }
 
 // RocketChat.emoji.list is the collection of emojis from all emoji packages
-for (let key in emojione.emojioneList) {
+for (const key in emojione.emojioneList) {
 	if (emojione.emojioneList.hasOwnProperty(key)) {
-		let emoji = emojione.emojioneList[key];
+		const emoji = emojione.emojioneList[key];
 		emoji.emojiPackage = 'emojione';
 		RocketChat.emoji.list[key] = emoji;
 	}

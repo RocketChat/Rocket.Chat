@@ -1,0 +1,30 @@
+<template name="roomNotFound">
+	<section class="page-container page-list content-background-color">
+		<header class="fixed-title content-background-color border-component-color">
+			{{> burger}}
+			<h2>
+				<span class="room-title">{{_ "Room_not_found"}}</span>
+			</h2>
+		</header>
+		<div class="content room-not-found error-color">
+			<i class="icon-attention"></i>
+			<div>
+				{{#with data}}
+					{{#if $eq type 'c'}}
+						{{{_ 'No_channel_with_name_%s_was_found' name}}}
+					{{/if}}
+					{{#if $eq type 'p'}}
+						{{{_ 'No_group_with_name_%s_was_found' name}}}
+					{{/if}}
+					{{#if $eq type 'd'}}
+						{{#if sameUser }}
+							{{{_ 'Cannot_open_conversation_with_yourself' }}}
+						{{else}}
+							{{{_ 'No_user_with_username_%s_was_found' name}}}
+						{{/if}}
+					{{/if}}
+				{{/with}}
+			</div>
+		</div>
+	</section>
+</template>

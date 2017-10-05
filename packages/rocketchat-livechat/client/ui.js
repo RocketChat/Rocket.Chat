@@ -1,6 +1,6 @@
 AccountBox.addItem({
 	name: 'Livechat',
-	icon: 'icon-chat-empty',
+	icon: 'livechat',
 	href: 'livechat-current-chats',
 	sideNav: 'livechatFlex',
 	condition: () => {
@@ -9,43 +9,34 @@ AccountBox.addItem({
 });
 
 RocketChat.TabBar.addButton({
-	groups: ['livechat'],
+	groups: ['live'],
 	id: 'visitor-info',
 	i18nTitle: 'Visitor_Info',
-	icon: 'icon-info-circled',
+	icon: 'info-circled',
 	template: 'visitorInfo',
 	order: 0
 });
 
-// RocketChat.TabBar.addButton({
-// 	groups: ['livechat'],
-// 	id: 'visitor-navigation',
-// 	i18nTitle: 'Visitor_Navigation',
-// 	icon: 'icon-history',
-// 	template: 'visitorNavigation',
-// 	order: 10
-// });
-
 RocketChat.TabBar.addButton({
-	groups: ['livechat'],
+	groups: ['live'],
 	id: 'visitor-history',
 	i18nTitle: 'Past_Chats',
-	icon: 'icon-chat',
+	icon: 'chat',
 	template: 'visitorHistory',
 	order: 11
 });
 
-RocketChat.TabBar.addGroup('message-search', ['livechat']);
-RocketChat.TabBar.addGroup('starred-messages', ['livechat']);
-RocketChat.TabBar.addGroup('uploaded-files-list', ['livechat']);
-RocketChat.TabBar.addGroup('push-notifications', ['livechat']);
-RocketChat.TabBar.addGroup('video', ['livechat']);
+RocketChat.TabBar.addGroup('message-search', ['live']);
+RocketChat.TabBar.addGroup('starred-messages', ['live']);
+RocketChat.TabBar.addGroup('uploaded-files-list', ['live']);
+RocketChat.TabBar.addGroup('push-notifications', ['live']);
+RocketChat.TabBar.addGroup('video', ['live']);
 
 RocketChat.TabBar.addButton({
-	groups: ['livechat'],
+	groups: ['live'],
 	id: 'external-search',
 	i18nTitle: 'Knowledge_Base',
-	icon: 'icon-lightbulb',
+	icon: 'lightbulb',
 	template: 'externalSearch',
 	order: 10
 });

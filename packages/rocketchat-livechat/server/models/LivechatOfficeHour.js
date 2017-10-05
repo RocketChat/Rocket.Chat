@@ -1,3 +1,5 @@
+import moment from 'moment';
+
 class LivechatOfficeHour extends RocketChat.models._Base {
 	constructor() {
 		super('livechat_office_hour');
@@ -16,7 +18,6 @@ class LivechatOfficeHour extends RocketChat.models._Base {
 			this.insert({'day' : 'Friday', 'start' : '08:00', 'finish' : '20:00', 'code' : 5, 'open' : true });
 			this.insert({'day' : 'Saturday', 'start' : '08:00', 'finish' : '20:00', 'code' : 6, 'open' : false });
 			this.insert({'day' : 'Sunday', 'start' : '08:00', 'finish' : '20:00', 'code' : 0, 'open' : false });
-
 		}
 	}
 
@@ -25,7 +26,7 @@ class LivechatOfficeHour extends RocketChat.models._Base {
 	 */
 	updateHours(day, newStart, newFinish, newOpen) {
 		this.update({
-			'day': day
+			day
 		}, {
 			$set: {
 				start: newStart,
@@ -42,10 +43,10 @@ class LivechatOfficeHour extends RocketChat.models._Base {
 	isNowWithinHours() {
 		// get current time on server in utc
 		// var ct = moment().utc();
-		var currentTime = moment.utc(moment().utc().format('dddd:HH:mm'), 'dddd:HH:mm');
+		const currentTime = moment.utc(moment().utc().format('dddd:HH:mm'), 'dddd:HH:mm');
 
 		// get todays office hours from db
-		var todaysOfficeHours = this.findOne({day: currentTime.format('dddd')});
+		const todaysOfficeHours = this.findOne({day: currentTime.format('dddd')});
 		if (!todaysOfficeHours) {
 			return false;
 		}
@@ -55,8 +56,8 @@ class LivechatOfficeHour extends RocketChat.models._Base {
 			return false;
 		}
 
-		var start = moment.utc(todaysOfficeHours.day + ':' + todaysOfficeHours.start, 'dddd:HH:mm');
-		var finish = moment.utc(todaysOfficeHours.day + ':' + todaysOfficeHours.finish, 'dddd:HH:mm');
+		const start = moment.utc(`${ todaysOfficeHours.day }:${ todaysOfficeHours.start }`, 'dddd:HH:mm');
+		const finish = moment.utc(`${ todaysOfficeHours.day }:${ todaysOfficeHours.finish }`, 'dddd:HH:mm');
 
 		// console.log(finish.isBefore(start));
 		if (finish.isBefore(start)) {
@@ -64,7 +65,7 @@ class LivechatOfficeHour extends RocketChat.models._Base {
 			finish.add(1, 'days');
 		}
 
-		var result = currentTime.isBetween(start, finish);
+		const result = currentTime.isBetween(start, finish);
 
 		// inBetween  check
 		return result;
@@ -72,10 +73,10 @@ class LivechatOfficeHour extends RocketChat.models._Base {
 
 	isOpeningTime() {
 		// get current time on server in utc
-		var currentTime = moment.utc(moment().utc().format('dddd:HH:mm'), 'dddd:HH:mm');
+		const currentTime = moment.utc(moment().utc().format('dddd:HH:mm'), 'dddd:HH:mm');
 
 		// get todays office hours from db
-		var todaysOfficeHours = this.findOne({day: currentTime.format('dddd')});
+		const todaysOfficeHours = this.findOne({day: currentTime.format('dddd')});
 		if (!todaysOfficeHours) {
 			return false;
 		}
@@ -85,22 +86,22 @@ class LivechatOfficeHour extends RocketChat.models._Base {
 			return false;
 		}
 
-		var start = moment.utc(todaysOfficeHours.day + ':' + todaysOfficeHours.start, 'dddd:HH:mm');
+		const start = moment.utc(`${ todaysOfficeHours.day }:${ todaysOfficeHours.start }`, 'dddd:HH:mm');
 
 		return start.isSame(currentTime, 'minute');
 	}
 
 	isClosingTime() {
 		// get current time on server in utc
-		var currentTime = moment.utc(moment().utc().format('dddd:HH:mm'), 'dddd:HH:mm');
+		const currentTime = moment.utc(moment().utc().format('dddd:HH:mm'), 'dddd:HH:mm');
 
 		// get todays office hours from db
-		var todaysOfficeHours = this.findOne({day: currentTime.format('dddd')});
+		const todaysOfficeHours = this.findOne({day: currentTime.format('dddd')});
 		if (!todaysOfficeHours) {
 			return false;
 		}
 
-		var finish = moment.utc(todaysOfficeHours.day + ':' + todaysOfficeHours.finish, 'dddd:HH:mm');
+		const finish = moment.utc(`${ todaysOfficeHours.day }:${ todaysOfficeHours.finish }`, 'dddd:HH:mm');
 
 		return finish.isSame(currentTime, 'minute');
 	}

@@ -7,7 +7,8 @@ Package.describe({
 
 Package.onUse(function(api) {
 	api.use([
-		'coffeescript',
+		'ecmascript',
+		'underscore',
 		'tracker',
 		'rocketchat:lib'
 	]);
@@ -16,8 +17,8 @@ Package.onUse(function(api) {
 	api.use('templating', 'client');
 
 	api.addFiles([
-		'hubot.coffee',
-		'settings.coffee'
+		'hubot.js',
+		'settings.js'
 	], ['server']);
 
 	api.export('Hubot', ['server']);
@@ -31,6 +32,5 @@ Package.onUse(function(api) {
 Npm.depends({
 	'coffee-script': '1.10.0',
 	'hubot': '2.19.0',
-	'hubot-scripts': '2.17.1',
 	'hubot-help': '0.2.0'
 });

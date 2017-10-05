@@ -1,0 +1,280 @@
+<template name="adminInfo">
+	<section class="page-container page-list">
+		<header class="fixed-title border-component-color">
+			{{> burger}}
+			<h2>
+				<span class="room-title">{{_ "Info"}}</span>
+			</h2>
+		</header>
+		<div class="content">
+			{{#if $gt statistics.instanceCount 1}}
+				{{#unless statistics.oplogEnabled}}
+					<div class="alert error-color error-border error-background">
+						<b>{{_ "Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances"}}</b><br/><br/>
+						{{_ "Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances_details"}}<br/><br/>
+						<a target="_blank" href="https://rocket.chat/docs/installation/manual-installation/multiple-instances-to-improve-performance/#running-multiple-instances-per-host-to-improve-performance">{{_ "Click_here_for_more_info"}}</a>
+					</div>
+				{{/unless}}
+			{{/if}}
+
+			{{#if hasPermission 'view-statistics'}}
+				<h3>{{_ "Rocket.Chat"}}</h3>
+				<table class="statistics-table secondary-background-color">
+					<tr class="admin-table-row">
+						<th class="content-background-color border-component-color">{{_ "Version"}}</th>
+						<td class="border-component-color">{{statistics.version}}</td>
+					</tr>
+					<tr class="admin-table-row">
+						<th class="content-background-color border-component-color">{{_ "DB_Migration"}}</th>
+						<td class="border-component-color">{{statistics.migration.version}}</td>
+					</tr>
+					<tr class="admin-table-row">
+						<th class="content-background-color border-component-color">{{_ "DB_Migration_Date"}}</th>
+						<td class="border-component-color">{{statistics.migration.lockedAt}}</td>
+					</tr>
+					<tr class="admin-table-row">
+						<th class="content-background-color border-component-color">{{_ "Installed_at"}}</th>
+						<td class="border-component-color">{{statistics.installedAt}}</td>
+					</tr>
+					<tr class="admin-table-row">
+						<th class="content-background-color border-component-color">{{_ "Uptime"}}</th>
+						<td class="border-component-color">{{humanReadableTime statistics.process.uptime}}</td>
+					</tr>
+					<tr class="admin-table-row">
+						<th class="content-background-color border-component-color">{{_ "Deployment_ID"}}</th>
+						<td class="border-component-color">{{statistics.uniqueId}}</td>
+					</tr>
+					<tr class="admin-table-row">
+						<th class="content-background-color border-component-color">{{_ "PID"}}</th>
+						<td class="border-component-color">{{statistics.process.pid}}</td>
+					</tr>
+					<tr class="admin-table-row">
+						<th class="content-background-color border-component-color">{{_ "Running_Instances"}}</th>
+						<td class="border-component-color">{{statistics.instanceCount}}</td>
+					</tr>
+					<tr class="admin-table-row">
+						<th class="content-background-color border-component-color">{{_ "OpLog"}}</th>
+						<td class="border-component-color">{{#if statistics.oplogEnabled}}{{_ "Enabled"}}{{else}}{{_ "Disabled"}}{{/if}}</td>
+					</tr>
+				</table>
+			{{/if}}
+
+			<h3>{{_ "Commit"}}</h3>
+			<table class="statistics-table secondary-background-color">
+				<tr class="admin-table-row">
+					<th class="content-background-color border-component-color">{{_ "Hash"}}</th>
+					<td class="border-component-color">{{info.commit.hash}}</td>
+				</tr>
+				<tr class="admin-table-row">
+					<th class="content-background-color border-component-color">{{_ "Date"}}</th>
+					<td class="border-component-color">{{info.commit.date}}</td>
+				</tr>
+				<tr class="admin-table-row">
+					<th class="content-background-color border-component-color">{{_ "Branch"}}</th>
+					<td class="border-component-color">{{info.commit.branch}}</td>
+				</tr>
+				<tr class="admin-table-row">
+					<th class="content-background-color border-component-color">{{_ "Tag"}}</th>
+					<td class="border-component-color">{{info.commit.tag}}</td>
+				</tr>
+				<tr class="admin-table-row">
+					<th class="content-background-color border-component-color">{{_ "Author"}}</th>
+					<td class="border-component-color">{{info.commit.author}}</td>
+				</tr>
+				<tr class="admin-table-row">
+					<th class="content-background-color border-component-color">{{_ "Subject"}}</th>
+					<td class="border-component-color">{{info.commit.subject}}</td>
+				</tr>
+			</table>
+
+			{{#if hasPermission 'view-statistics'}}
+				{{#if isReady}}
+					<h3>{{_ "Runtime_Environment"}}</h3>
+					<table class="statistics-table secondary-background-color">
+						<tr class="admin-table-row">
+							<th class="content-background-color border-component-color">{{_ "OS_Type"}}</th>
+							<td class="border-component-color">{{statistics.os.type}}</td>
+						</tr>
+						<tr class="admin-table-row">
+							<th class="content-background-color border-component-color">{{_ "OS_Platform"}}</th>
+							<td class="border-component-color">{{statistics.os.platform}}</td>
+						</tr>
+						<tr class="admin-table-row">
+							<th class="content-background-color border-component-color">{{_ "OS_Arch"}}</th>
+							<td class="border-component-color">{{statistics.os.arch}}</td>
+						</tr>
+						<tr class="admin-table-row">
+							<th class="content-background-color border-component-color">{{_ "OS_Release"}}</th>
+							<td class="border-component-color">{{statistics.os.release}}</td>
+						</tr>
+						<tr class="admin-table-row">
+							<th class="content-background-color border-component-color">{{_ "Node_version"}}</th>
+							<td class="border-component-color">{{statistics.process.nodeVersion}}</td>
+						</tr>
+						<tr class="admin-table-row">
+							<th class="content-background-color border-component-color">{{_ "OS_Uptime"}}</th>
+							<td class="border-component-color">{{humanReadableTime statistics.os.uptime}}</td>
+						</tr>
+						<tr class="admin-table-row">
+							<th class="content-background-color border-component-color">{{_ "OS_Loadavg"}}</th>
+							<td class="border-component-color">{{numFormat statistics.os.loadavg.[0]}}, {{numFormat statistics.os.loadavg.[1]}}, {{numFormat statistics.os.loadavg.[2]}}</td>
+						</tr>
+						<tr class="admin-table-row">
+							<th class="content-background-color border-component-color">{{_ "OS_Totalmem"}}</th>
+							<td class="border-component-color">{{inGB statistics.os.totalmem}}</td>
+						</tr>
+						<tr class="admin-table-row">
+							<th class="content-background-color border-component-color">{{_ "OS_Freemem"}}</th>
+							<td class="border-component-color">{{inGB statistics.os.freemem}}</td>
+						</tr>
+						<tr class="admin-table-row">
+							<th class="content-background-color border-component-color">{{_ "OS_Cpus"}}</th>
+							<td class="border-component-color">{{statistics.os.cpus.length}}</td>
+						</tr>
+					</table>
+
+					<h3>{{_ "Build_Environment"}}</h3>
+					<table class="statistics-table secondary-background-color">
+						<tr class="admin-table-row">
+							<th class="content-background-color border-component-color">{{_ "OS_Platform"}}</th>
+							<td class="border-component-color">{{build.platform}}</td>
+						</tr>
+						<tr class="admin-table-row">
+							<th class="content-background-color border-component-color">{{_ "OS_Arch"}}</th>
+							<td class="border-component-color">{{build.arch}}</td>
+						</tr>
+						<tr class="admin-table-row">
+							<th class="content-background-color border-component-color">{{_ "OS_Release"}}</th>
+							<td class="border-component-color">{{build.osRelease}}</td>
+						</tr>
+						<tr class="admin-table-row">
+							<th class="content-background-color border-component-color">{{_ "Node_version"}}</th>
+							<td class="border-component-color">{{build.nodeVersion}}</td>
+						</tr>
+						<tr class="admin-table-row">
+							<th class="content-background-color border-component-color">{{_ "Date"}}</th>
+							<td class="border-component-color">{{formatDate build.date}}</td>
+						</tr>
+					</table>
+
+
+					<h3>{{_ "Usage"}}</h3>
+					<table class="statistics-table secondary-background-color">
+						<tr class="admin-table-row">
+							<th class="content-background-color border-component-color">{{_ "Stats_Total_Users"}}</th>
+							<td class="border-component-color">{{statistics.totalUsers}}</td>
+						</tr>
+						<tr class="admin-table-row">
+							<th class="content-background-color border-component-color">{{_ "Stats_Active_Users"}}</th>
+							<td class="border-component-color">{{statistics.activeUsers}}</td>
+						</tr>
+						<tr class="admin-table-row">
+							<th class="content-background-color border-component-color">{{_ "Stats_Non_Active_Users"}}</th>
+							<td class="border-component-color">{{statistics.nonActiveUsers}}</td>
+						</tr>
+						<tr class="admin-table-row">
+							<th class="content-background-color border-component-color">{{_ "Stats_Online_Users"}}</th>
+							<td class="border-component-color">{{statistics.onlineUsers}}</td>
+						</tr>
+						<tr class="admin-table-row">
+							<th class="content-background-color border-component-color">{{_ "Stats_Away_Users"}}</th>
+							<td class="border-component-color">{{statistics.awayUsers}}</td>
+						</tr>
+						<tr class="admin-table-row">
+							<th class="content-background-color border-component-color">{{_ "Stats_Offline_Users"}}</th>
+							<td class="border-component-color">{{statistics.offlineUsers}}</td>
+						</tr>
+						<tr class="admin-table-row">
+							<th class="content-background-color border-component-color">{{_ "Stats_Total_Rooms"}}</th>
+							<td class="border-component-color">{{statistics.totalRooms}}</td>
+						</tr>
+						<tr class="admin-table-row">
+							<th class="content-background-color border-component-color">{{_ "Stats_Total_Channels"}}</th>
+							<td class="border-component-color">{{statistics.totalChannels}}</td>
+						</tr>
+						<tr class="admin-table-row">
+							<th class="content-background-color border-component-color">{{_ "Stats_Total_Private_Groups"}}</th>
+							<td class="border-component-color">{{statistics.totalPrivateGroups}}</td>
+						</tr>
+						<tr class="admin-table-row">
+							<th class="content-background-color border-component-color">{{_ "Stats_Total_Direct_Messages"}}</th>
+							<td class="border-component-color">{{statistics.totalDirect}}</td>
+						</tr>
+						<tr class="admin-table-row">
+							<th class="content-background-color border-component-color">{{_ "Stats_Total_Livechat_Rooms"}}</th>
+							<td class="border-component-color">{{statistics.totalDirect}}</td>
+						</tr>
+						<tr class="admin-table-row">
+							<th class="content-background-color border-component-color">{{_ "Stats_Total_Messages"}}</th>
+							<td class="border-component-color">{{statistics.totalMessages}}</td>
+						</tr>
+						<tr class="admin-table-row">
+							<th class="content-background-color border-component-color">{{_ "Stats_Total_Messages_Channel"}}</th>
+							<td class="border-component-color">{{statistics.totalChannelMessages}}</td>
+						</tr>
+						<tr class="admin-table-row">
+							<th class="content-background-color border-component-color">{{_ "Stats_Total_Messages_PrivateGroup"}}</th>
+							<td class="border-component-color">{{statistics.totalPrivateGroupMessages}}</td>
+						</tr>
+						<tr class="admin-table-row">
+							<th class="content-background-color border-component-color">{{_ "Stats_Total_Messages_Direct"}}</th>
+							<td class="border-component-color">{{statistics.totalDirectMessages}}</td>
+						</tr>
+						<tr class="admin-table-row">
+							<th class="content-background-color border-component-color">{{_ "Stats_Total_Messages_Livechat"}}</th>
+							<td class="border-component-color">{{statistics.totalLivechatMessages}}</td>
+						</tr>
+					</table>
+
+					{{#if instances}}
+						<h3>{{_ "Broadcast_Connected_Instances"}}</h3>
+						{{#each instances}}
+							<table class="statistics-table secondary-background-color">
+								<tr class="admin-table-row">
+									<th class="content-background-color border-component-color">{{_ "Address"}}</th>
+									<td class="border-component-color">{{address}}</td>
+								</tr>
+								<tr class="admin-table-row">
+									<th class="content-background-color border-component-color">{{_ "Auth"}}</th>
+									<td class="border-component-color">{{broadcastAuth}}</td>
+								</tr>
+								<tr class="admin-table-row">
+									<th class="content-background-color border-component-color">{{_ "Current_Status"}} > {{_ "Connected"}}</th>
+									<td class="border-component-color">{{currentStatus.connected}}</td>
+								</tr>
+								<tr class="admin-table-row">
+									<th class="content-background-color border-component-color">{{_ "Current_Status"}} > {{_ "Retry_Count"}}</th>
+									<td class="border-component-color">{{currentStatus.retryCount}}</td>
+								</tr>
+								<tr class="admin-table-row">
+									<th class="content-background-color border-component-color">{{_ "Current_Status"}} > {{_ "Status"}}</th>
+									<td class="border-component-color">{{currentStatus.status}}</td>
+								</tr>
+								<tr class="admin-table-row">
+									<th class="content-background-color border-component-color">{{_ "Instance_Record"}} > {{_ "ID"}}</th>
+									<td class="border-component-color">{{instanceRecord._id}}</td>
+								</tr>
+								<tr class="admin-table-row">
+									<th class="content-background-color border-component-color">{{_ "Instance_Record"}} > {{_ "PID"}}</th>
+									<td class="border-component-color">{{instanceRecord.pid}}</td>
+								</tr>
+								<tr class="admin-table-row">
+									<th class="content-background-color border-component-color">{{_ "Instance_Record"}} > {{_ "Created_at"}}</th>
+									<td class="border-component-color">{{formatDate instanceRecord._createdAt}}</td>
+								</tr>
+								<tr class="admin-table-row">
+									<th class="content-background-color border-component-color">{{_ "Instance_Record"}} > {{_ "Updated_at"}}</th>
+									<td class="border-component-color">{{formatDate instanceRecord._updatedAt}}</td>
+								</tr>
+							</table>
+						{{/each}}
+					{{/if}}
+
+					<button type="button" class="button primary refresh">Refresh</button>
+				{{else}}
+					{{_ "Loading..."}}
+				{{/if}}
+			{{/if}}
+		</div>
+	</section>
+</template>

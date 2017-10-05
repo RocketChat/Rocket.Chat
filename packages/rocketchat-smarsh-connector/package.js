@@ -9,9 +9,7 @@ Package.onUse(function(api) {
 	api.use([
 		'ecmascript',
 		'rocketchat:lib',
-		'underscore',
-		'mrt:moment',
-		'mrt:moment-timezone'
+		'underscore'
 	]);
 
 	api.addFiles('lib/rocketchat.js', [ 'client', 'server' ]);

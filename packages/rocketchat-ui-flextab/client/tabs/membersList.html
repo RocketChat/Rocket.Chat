@@ -1,0 +1,57 @@
+<template name="membersList">
+	{{> videoCall}}
+	{{#if isGroupChat}}
+	{{#with roomUsers}}
+		<div class="flex-tab__header">
+			<div class="list-view animated">
+				<div class="title">
+					<h2>{{_ "Members_List"}}</h2>
+					{{> videoButtons}}
+					{{#if canAddUser}}
+						<div class="control">
+							<div class="search-form">
+								<div class="input-line search">
+									{{> inputAutocomplete settings=autocompleteSettingsAddUser id="user-add-search" class="search content-background-color" placeholder=tAddUsers}}
+									<i class="icon-plus secondary-font-color"></i>
+								</div>
+							</div>
+						</div>
+					{{/if}}
+					<p>
+						{{#unless loading}}
+							{{{_ "Showing_online_users" total_showing=totalShowing online=totalOnline total=total}}}
+							<button class="see-all">{{seeAll}}</button>
+						{{/unless}}
+					</p>
+				</div>
+			</div>
+		</div>
+
+		<div class="flex-tab__result list-view">
+			<ul class='list clearfix lines'>
+				{{#if loading}}
+					{{> loading}}
+				{{else}}
+					{{#each users}}
+						<li class='user-image user-card-room status-{{status}}'>
+							<button data-username="{{user.username}}" tabindex="0" title="{{displayName}}">
+								{{> avatar username=user.username}}
+								<p>{{displayName}} {{utcOffset}}</p>
+								{{#if muted}}
+									<i class="icon-mute" title="{{_ "User_muted"}}"></i>
+								{{/if}}
+							</button>
+						</li>
+					{{/each}}
+				{{/if}}
+			</ul>
+			{{#if hasMore}}
+				<button class="button show-more-users">{{_ "Show_more"}}</button>
+			{{/if}}
+		</div>
+		{{/with}}
+	{{/if}}
+	<div class="user-view animated{{#unless showUserInfo}} animated-hidden{{/unless}}">
+		{{> userInfo (userInfoDetail)}}
+	</div>
+</template>

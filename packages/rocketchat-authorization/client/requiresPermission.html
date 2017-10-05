@@ -1,0 +1,11 @@
+<template name="requiresPermission">
+	{{#if hasPermission this}}
+		{{> Template.contentBlock}}
+	{{else}}
+		{{#if Template.elseBlock}}
+			{{> Template.elseBlock}}
+		{{else}}
+			{{_ "Not_found_or_not_allowed"}}
+		{{/if}}
+	{{/if}}
+</template>
