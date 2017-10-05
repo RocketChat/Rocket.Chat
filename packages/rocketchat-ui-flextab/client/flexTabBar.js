@@ -7,7 +7,11 @@ const commonHelpers = {
 		if (this.template === Template.instance().tabBar.getTemplate() && Template.instance().tabBar.getState() === 'opened') {
 			return 'active';
 		}
-	},
+	}
+};
+
+Template.flexTabBar.helpers({
+	...commonHelpers,
 	buttons() {
 		return RocketChat.TabBar.getButtons().filter(button => {
 			if (!Meteor.userId() && !this.anonymous) {
@@ -18,11 +22,7 @@ const commonHelpers = {
 			}
 			return true;
 		});
-	}
-};
-
-Template.flexTabBar.helpers({
-	...commonHelpers,
+	},
 	opened() {
 		return Template.instance().tabBar.getState();
 	},
@@ -106,7 +106,6 @@ Template.RoomsActionTab.events({
 	'click .js-more'(e, instance) {
 		$(e.currentTarget).blur();
 		e.preventDefault();
-		const groups = RocketChat.messageBox.actions.get();
 		const buttons = RocketChat.TabBar.getButtons().filter(button => {
 			if (!Meteor.userId() && !this.anonymous) {
 				return false;
@@ -120,25 +119,6 @@ Template.RoomsActionTab.events({
 		const config = {
 			template: 'RoomsActionMore',
 			popoverClass: 'message-box',
-			columns: [
-				{
-					groups: Object.keys(groups).map(group => {
-						const items = [];
-						groups[group].forEach(item => {
-							items.push({
-								icon: item.icon,
-								name: t(item.label),
-								type: 'messagebox-action',
-								id: item.id
-							});
-						});
-						return {
-							title: t(group),
-							items
-						};
-					})
-				}
-			],
 			mousePosition: () => ({
 				x: e.currentTarget.getBoundingClientRect().right + 10,
 				y: e.currentTarget.getBoundingClientRect().bottom + 100
@@ -208,6 +188,6 @@ Template.RoomsActionTab.helpers({
 			}
 			return true;
 		});
-		return buttons.length > 5 ? true : false;
+		return buttons.length > 5;
 	}
 });
