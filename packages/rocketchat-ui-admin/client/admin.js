@@ -355,7 +355,7 @@ Template.admin.events({
 		const value = _.trim($(e.target).val());
 		TempSettings.update({ _id: this._id }, { $set: { editor: value }});
 	},
-	'click .submit .discard'() {
+	'click .rc-header__section-button .discard'() {
 		const group = FlowRouter.getParam('group');
 		const query = {
 			group,
@@ -398,7 +398,7 @@ Template.admin.events({
 			});
 		});
 	},
-	'click .submit .save'() {
+	'click .rc-header__section-button .save'() {
 		const group = FlowRouter.getParam('group');
 		const query = { group, changed: true };
 		const settings = TempSettings.find(query, { fields: { _id: 1, value: 1, editor: 1 }}).fetch();
@@ -412,12 +412,12 @@ Template.admin.events({
 			});
 		}
 	},
-	'click .submit .refresh-clients'() {
+	'click .rc-header__section-button .refresh-clients'() {
 		Meteor.call('refreshClients', function() {
 			toastr.success(TAPi18n.__('Clients_will_refresh_in_a_few_seconds'));
 		});
 	},
-	'click .submit .add-custom-oauth'() {
+	'click .rc-header__section-button .add-custom-oauth'() {
 		const config = {
 			title: TAPi18n.__('Add_custom_oauth'),
 			text: TAPi18n.__('Give_a_unique_name_for_the_custom_oauth'),
@@ -441,7 +441,7 @@ Template.admin.events({
 			});
 		});
 	},
-	'click .submit .refresh-oauth'() {
+	'click .rc-header__section-button .refresh-oauth'() {
 		toastr.info(TAPi18n.__('Refreshing'));
 		return Meteor.call('refreshOAuthService', function(err) {
 			if (err) {
@@ -451,7 +451,7 @@ Template.admin.events({
 			}
 		});
 	},
-	'click .submit .remove-custom-oauth'() {
+	'click .rc-header__section-button .remove-custom-oauth'() {
 		const name = this.section.replace('Custom OAuth: ', '');
 		const config = {
 			title: TAPi18n.__('Are_you_sure'),

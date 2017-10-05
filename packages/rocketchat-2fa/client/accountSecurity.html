@@ -1,13 +1,8 @@
 <template name="accountSecurity">
-	<section class="page-container page-home page-static">
-		<header class="fixed-title border-component-color">
-			{{> burger}}
-			<h2>
-				<span class="room-title">{{_ "Security"}}</span>
-			</h2>
-		</header>
-		<div class="content">
-			<div class="rocket-form">
+	<section class="preferences-page">
+			{{> header sectionName="Security"}}
+	<div class="preferences-page__content">
+		<form id="security" autocomplete="off" class="container">
 				<fieldset>
 					<div class="section">
 						<h1>{{_ "Two-factor_authentication"}}</h1>
@@ -51,7 +46,7 @@
 						</div>
 					</fieldset>
 				{{/if}}
-			</div>
+			</form>
 		</div>
 	</section>
 </template>

@@ -23,7 +23,7 @@ body {
 	height: 100%;
 	padding: 0;
 
-	font-size: var(--text-size);
+	font-size: var(--text-small-size);
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
 }
@@ -88,26 +88,67 @@ button {
 	}
 
 	& .tab-button-icon {
+		width: 14px;
+		height: 14px;
+
 		color: var(--color-dark-medium);
 
 		font-size: 1.125rem;
-
 		fill: var(--color-dark-medium);
+		stroke: currentColor;
+
+		&--info-circled {
+			fill: currentColor;
+			stroke: none;
+		}
+
+		&--bell {
+			width: 16px;
+			height: 14px;
+
+			fill: currentColor;
+			stroke: none;
+		}
+
+		&--team {
+			width: 16px;
+			height: 16px;
+		}
+
+		&--clip {
+			width: 16px;
+			height: 16px;
+		}
 
 		&--star {
+			width: 17px;
+			height: 16px;
 			fill: none;
+		}
+
+		&--language {
+			width: 16px;
+			height: 16px;
+
+			fill: currentColor;
+			stroke: none;
+		}
+
+		&--hubot {
+			width: 14px;
+			height: 16px;
 		}
 	}
 }
 
 .rc-icon {
-
 	overflow: hidden;
 
 	width: 1em;
 	height: 1em;
 
 	vertical-align: -0.15em;
+
 }
 
 .ps-scrollbar-y-rail {

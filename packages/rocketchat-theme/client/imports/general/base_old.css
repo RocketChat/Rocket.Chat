@@ -233,15 +233,10 @@
 	height: 100%;
 
 	& .content {
-		position: absolute;
-		top: 0;
-		left: 0;
-
 		overflow-y: scroll;
 
 		width: 100%;
 		height: calc(100% - 60px);
-		margin-top: 60px;
 		padding: 25px 40px;
 		-webkit-overflow-scrolling: touch;
 
@@ -3433,7 +3428,7 @@ body:not(.is-cordova) {
 		overflow-x: visible;
 
 		width: var(--flex-tab-width);
-		height: calc(100vh - 61px);
+		height: calc(100vh - var(--header-height));
 
 		& .control {
 			& .header {
@@ -3757,7 +3752,7 @@ body:not(.is-cordova) {
 			margin-bottom: 10px;
 		  }
 		}
-		
+
 		& .file-name {
 			display: block;
 
