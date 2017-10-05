@@ -1,10 +1,10 @@
 this.Triggers = (function() {
-	var triggers = [];
-	var initiated = false;
-	var requests = [];
-	var enabled = true;
+	let triggers = [];
+	let initiated = false;
+	let requests = [];
+	let enabled = true;
 
-	var fire = function(trigger) {
+	const fire = function(trigger) {
 		if (!enabled || Meteor.userId()) {
 			return;
 		}
@@ -13,7 +13,7 @@ this.Triggers = (function() {
 				// flag to skip the trigger if the action is 'send-message'
 				trigger.skip = true;
 
-				var roomId = visitor.getRoom();
+				let roomId = visitor.getRoom();
 
 				if (!roomId) {
 					roomId = Random.id();
@@ -34,7 +34,7 @@ this.Triggers = (function() {
 		});
 	};
 
-	var processRequest = function(request) {
+	const processRequest = function(request) {
 		if (!initiated) {
 			return requests.push(request);
 		}
@@ -63,11 +63,11 @@ this.Triggers = (function() {
 		});
 	};
 
-	var setTriggers = function(newTriggers) {
+	const setTriggers = function(newTriggers) {
 		triggers = newTriggers;
 	};
 
-	var init = function() {
+	const init = function() {
 		initiated = true;
 
 		if (requests.length > 0 && triggers.length > 0) {
@@ -79,19 +79,19 @@ this.Triggers = (function() {
 		}
 	};
 
-	var setDisabled = function() {
+	const setDisabled = function() {
 		enabled = false;
 	};
 
-	var setEnabled = function() {
+	const setEnabled = function() {
 		enabled = true;
 	};
 
 	return {
-		init: init,
-		processRequest: processRequest,
-		setTriggers: setTriggers,
-		setDisabled: setDisabled,
-		setEnabled: setEnabled
+		init,
+		processRequest,
+		setTriggers,
+		setDisabled,
+		setEnabled
 	};
 }());

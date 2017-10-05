@@ -1,4 +1,22 @@
 <template name="messages">
+	{{#with agentData}}
+	<div class="header">
+		<div class="picture">
+			<img src="{{avatar}}">
+		</div>
+		<div class="info">
+			<ul>
+				<li><h2>{{name}}</h2></li>
+				{{#if email}}
+					<li>{{email}}</li>
+				{{/if}}
+				{{#if phone}}
+					<li>{{phone}}</li>
+				{{/if}}
+			</ul>
+		</div>
+	</div>
+	{{/with}}
 	<div class="messages">
 		<div class="wrapper">
 			<ul>
@@ -7,28 +25,53 @@
 				{{/each}}
 			</ul>
 		</div>
-		<div class="new-message not">
+		<div class="new-message background-primary-action-color color-primary-action-contrast not">
 			<span>{{_ "New_messages"}}</span>
 		</div>
 
-		<div class="error">
+		<div class="error error-color error-background">
 			<span></span>
 		</div>
 	</div>
 	<div class="footer">
-		<div class="message-bar">
-			<div class="input-wrapper">
-				<textarea class="input-message" placeholder="{{_ "Type_your_message"}}"></textarea>
+		{{#if showConnecting}}
+			{{> loading}}
+		{{else}}
+			<div class="message-bar">
+				<div class="input-wrapper">
+					<textarea class="input-message" placeholder="{{_ "Type_your_message"}}"></textarea>
+				</div>
+				<div class="buttons">
+					<svg class="send-button" aria-label="{{_ "Send"}}" viewBox="0 0 1792 1792" xmlns="http://www.w3.org/2000/svg"><path d="M1764 11q33 24 27 64l-256 1536q-5 29-32 45-14 8-31 8-11 0-24-5l-453-185-242 295q-18 23-49 23-13 0-22-4-19-7-30.5-23.5t-11.5-36.5v-349l864-1059-1069 925-395-162q-37-14-40-55-2-40 32-59l1664-960q15-9 32-9 20 0 36 11z"/></svg>
+					{{#if videoCallEnabled}}
+						<svg class="video-button" aria-label="{{_ "Video"}}"  viewBox="0 0 459 459" xmlns="http://www.w3.org/2000/svg"><path d="M357,191.25V102c0-15.3-10.2-25.5-25.5-25.5h-306C10.2,76.5,0,86.7,0,102v255c0,15.3,10.2,25.5,25.5,25.5h306 c15.3,0,25.5-10.2,25.5-25.5v-89.25l102,102V89.25L357,191.25z"/></svg>
+					{{/if}}
+				</div>
 			</div>
-			<div class="buttons">
-				<svg class="send-button" aria-label="{{_ "Send"}}" viewBox="0 0 1792 1792" xmlns="http://www.w3.org/2000/svg"><path d="M1764 11q33 24 27 64l-256 1536q-5 29-32 45-14 8-31 8-11 0-24-5l-453-185-242 295q-18 23-49 23-13 0-22-4-19-7-30.5-23.5t-11.5-36.5v-349l864-1059-1069 925-395-162q-37-14-40-55-2-40 32-59l1664-960q15-9 32-9 20 0 36 11z"/></svg>
-				{{#if videoCallEnabled}}
-					<svg class="video-button" aria-label="{{_ "Video"}}"  viewBox="0 0 459 459" xmlns="http://www.w3.org/2000/svg"><path d="M357,191.25V102c0-15.3-10.2-25.5-25.5-25.5h-306C10.2,76.5,0,86.7,0,102v255c0,15.3,10.2,25.5,25.5,25.5h306 c15.3,0,25.5-10.2,25.5-25.5v-89.25l102,102V89.25L357,191.25z"/></svg>
-				{{/if}}
-			</div>
-		</div>
+		{{/if}}
 
-		{{> options show=showOptions}}
-		<button class="toggle-options">{{optionsLink}}</button>
+		{{#if usersTyping.users}}
+			{{#with usersTyping}}
+				<div class="typing">
+					<strong>{{users}}</strong>
+					{{#if multi}}
+						{{#if selfTyping}}
+							{{_ "are_also_typing"}}
+						{{else}}
+							{{_ "are_typing"}}
+						{{/if}}
+					{{else}}
+						{{#if selfTyping}}
+							{{_ "is_also_typing" context="male"}}
+						{{else}}
+							{{_ "is_typing" context="male"}}
+						{{/if}}
+					{{/if}}
+				</div>
+			{{/with}}
+		{{else}}
+			{{> options show=showOptions}}
+			<button class="toggle-options secondary-font-color">{{optionsLink}}</button>
+		{{/if}}
 	</div>
 </template>

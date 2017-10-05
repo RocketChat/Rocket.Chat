@@ -60,6 +60,22 @@ AccountBox.addRoute({
 }, livechatManagerRoutes);
 
 AccountBox.addRoute({
+	name: 'livechat-trigger-edit',
+	path: '/triggers/:_id/edit',
+	sideNav: 'livechatFlex',
+	i18nPageTitle: 'Edit_Trigger',
+	pageTemplate: 'livechatTriggersForm'
+}, livechatManagerRoutes);
+
+AccountBox.addRoute({
+	name: 'livechat-trigger-new',
+	path: '/triggers/new',
+	sideNav: 'livechatFlex',
+	i18nPageTitle: 'New_Trigger',
+	pageTemplate: 'livechatTriggersForm'
+}, livechatManagerRoutes);
+
+AccountBox.addRoute({
 	name: 'livechat-installation',
 	path: '/installation',
 	sideNav: 'livechatFlex',

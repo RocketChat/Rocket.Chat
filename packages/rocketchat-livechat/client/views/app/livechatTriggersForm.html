@@ -1,0 +1,55 @@
+<template name="livechatTriggersForm">
+	{{#requiresPermission 'view-livechat-manager'}}
+		<form id="trigger-form">
+			<div class="rocket-form">
+				<fieldset>
+					<div class="input-line">
+						<label>{{_ "Enabled"}}</label>
+						<div>
+							<label><input type="radio" name="enabled" value="1" checked="{{$eq enabled true}}" /> {{_ "Yes"}}</label>
+							<label><input type="radio" name="enabled" value="0" checked="{{$eq enabled false}}" /> {{_ "No"}}</label>
+						</div>
+					</div>
+					<div class="input-line">
+						<label>{{_ "Name"}}</label>
+						<div>
+							<input type="text" name="name" value="{{name}}" />
+						</div>
+					</div>
+					<div class="input-line">
+						<label>{{_ "Description"}}</label>
+						<div>
+							<input type="text" name="description" value="{{description}}" />
+						</div>
+					</div>
+				</fieldset>
+				<fieldset>
+					<legend>{{_ "Condition"}}</legend>
+					<div class="conditions">
+						{{#each conditions}}
+							{{> livechatTriggerCondition}}
+						{{/each}}
+						{{#unless conditions}}
+							{{> livechatTriggerCondition}}
+						{{/unless}}
+					</div>
+				</fieldset>
+				<fieldset>
+					<legend>{{_ "Action"}}</legend>
+					<div class="actions">
+						{{#each actions}}
+							{{> livechatTriggerAction}}
+						{{/each}}
+						{{#unless actions}}
+							{{> livechatTriggerAction}}
+						{{/unless}}
+					</div>
+				</fieldset>
+				<div class="submit">
+					<button class="button back" type="button"><i class="icon-left-big"></i><span>{{_ "Back"}}</span></button>
+					<button class="button primary save"><i class="icon-floppy"></i><span>{{_ "Save"}}</span></button>
+				</div>
+			</div>
+		</form>
+	{{/requiresPermission}}
+</template>

@@ -1,0 +1,18 @@
+{
+  "name": "rocketchat-katex",
+  "private": true,
+  "version": "1.0.0",
+  "description": "",
+  "main": "package.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "katex": "^0.7.1"
+  }
+}

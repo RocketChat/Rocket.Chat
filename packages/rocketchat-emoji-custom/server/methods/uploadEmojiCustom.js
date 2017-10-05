@@ -7,14 +7,13 @@ Meteor.methods({
 
 		//delete aliases for notification purposes. here, it is a string rather than an array
 		delete emojiData.aliases;
-		let file = new Buffer(binaryContent, 'binary');
+		const file = new Buffer(binaryContent, 'binary');
 
-		let rs = RocketChatFile.bufferToStream(file);
-		RocketChatFileEmojiCustomInstance.deleteFile(encodeURIComponent(`${emojiData.name}.${emojiData.extension}`));
-		let ws = RocketChatFileEmojiCustomInstance.createWriteStream(encodeURIComponent(`${emojiData.name}.${emojiData.extension}`), contentType);
+		const rs = RocketChatFile.bufferToStream(file);
+		RocketChatFileEmojiCustomInstance.deleteFile(encodeURIComponent(`${ emojiData.name }.${ emojiData.extension }`));
+		const ws = RocketChatFileEmojiCustomInstance.createWriteStream(encodeURIComponent(`${ emojiData.name }.${ emojiData.extension }`), contentType);
 		ws.on('end', Meteor.bindEnvironment(() =>
-			Meteor.setTimeout(() => RocketChat.Notifications.notifyAll('updateEmojiCustom', {emojiData})
-			, 500)
+			Meteor.setTimeout(() => RocketChat.Notifications.notifyLogged('updateEmojiCustom', {emojiData}), 500)
 		));
 
 		rs.pipe(ws);

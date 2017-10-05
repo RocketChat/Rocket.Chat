@@ -3,18 +3,18 @@
 RocketChat.Sandstorm.notify = function() {};
 
 if (process.env.SANDSTORM === '1') {
-	var ACTIVITY_TYPES = {
+	const ACTIVITY_TYPES = {
 		'message': 0,
 		'privateMessage': 1
 	};
 
 	RocketChat.Sandstorm.notify = function(message, userIds, caption, type) {
-		var sessionId = message.sandstormSessionId;
+		const sessionId = message.sandstormSessionId;
 		if (!sessionId) {
 			return;
 		}
-		var httpBridge = getHttpBridge();
-		var activity = {};
+		const httpBridge = getHttpBridge();
+		const activity = {};
 
 		if (type) {
 			activity.type = ACTIVITY_TYPES[type];
@@ -26,7 +26,7 @@ if (process.env.SANDSTORM === '1') {
 
 		if (userIds) {
 			activity.users = _.map(userIds, function(userId) {
-				var user = Meteor.users.findOne({_id: userId}, {fields: {'services.sandstorm.id': 1}});
+				const user = Meteor.users.findOne({_id: userId}, {fields: {'services.sandstorm.id': 1}});
 				return {
 					identity: waitPromise(httpBridge.getSavedIdentity(user.services.sandstorm.id)).identity,
 					mentioned: true

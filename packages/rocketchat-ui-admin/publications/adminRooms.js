@@ -1,5 +1,4 @@
 Meteor.publish('adminRooms', function(filter, types, limit) {
-	var options;
 	if (!this.userId) {
 		return this.ready();
 	}
@@ -9,7 +8,8 @@ Meteor.publish('adminRooms', function(filter, types, limit) {
 	if (!_.isArray(types)) {
 		types = [];
 	}
-	options = {
+
+	const options = {
 		fields: {
 			name: 1,
 			t: 1,
@@ -23,18 +23,22 @@ Meteor.publish('adminRooms', function(filter, types, limit) {
 			msgs: 1,
 			archived: 1
 		},
-		limit: limit,
+		limit,
 		sort: {
 			default: -1,
 			name: 1
 		}
 	};
+
 	filter = _.trim(filter);
 	if (filter && types.length) {
+		// CACHE: can we stop using publications here?
 		return RocketChat.models.Rooms.findByNameContainingAndTypes(filter, types, options);
 	} else if (types.length) {
+		// CACHE: can we stop using publications here?
 		return RocketChat.models.Rooms.findByTypes(types, options);
 	} else {
+		// CACHE: can we stop using publications here?
 		return RocketChat.models.Rooms.findByNameContaining(filter, options);
 	}
 });

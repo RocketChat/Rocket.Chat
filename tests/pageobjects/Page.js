@@ -7,10 +7,9 @@ class Page {
 			height: 800
 		});
 
-		browser.url('http://localhost:3000/' + path);
+		browser.url(`http://localhost:3000/${ path }`);
 
 		this.body.waitForExist();
 	}
 }
-
 module.exports = Page;

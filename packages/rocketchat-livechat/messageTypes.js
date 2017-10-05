@@ -4,14 +4,9 @@ RocketChat.MessageTypes.registerType({
 	message: 'New_videocall_request'
 });
 
-RocketChat.actionLinks.register('createLivechatCall', function(/*message, params*/) {
+RocketChat.actionLinks.register('createLivechatCall', function(message, params, instance) {
 	if (Meteor.isClient) {
-		RocketChat.TabBar.setTemplate('videoFlexTab');
-
-		// calling openFlex should set the width instead of having to do this.
-		$('.flex-tab').css('max-width', '790px');
-
-		RocketChat.TabBar.openFlex();
+		instance.tabBar.open('video');
 	}
 });
 

@@ -18,7 +18,7 @@ RocketChat.API.v1.addRoute('livechat/users/:type', { authRequired: true }, {
 				throw 'Invalid type';
 			}
 
-			let users = RocketChat.authz.getUsersInRole(role);
+			const users = RocketChat.authz.getUsersInRole(role);
 
 			return RocketChat.API.v1.success({
 				users: users.fetch().map(user => ({ _id: user._id, username: user.username }))

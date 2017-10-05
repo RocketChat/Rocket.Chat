@@ -26,7 +26,7 @@ class ErrorHandler {
 		}));
 
 		const self = this;
-		let originalMeteorDebug = Meteor._debug;
+		const originalMeteorDebug = Meteor._debug;
 		Meteor._debug = function(message, stack) {
 			if (!self.reporting) {
 				return originalMeteorDebug.call(this, message, stack);
@@ -38,7 +38,7 @@ class ErrorHandler {
 
 	getRoomId(roomName) {
 		roomName = roomName.replace('#');
-		let room = RocketChat.models.Rooms.findOneByName(roomName, { fields: { _id: 1, t: 1 } });
+		const room = RocketChat.models.Rooms.findOneByName(roomName, { fields: { _id: 1, t: 1 } });
 		if (room && (room.t === 'c' || room.t === 'p')) {
 			return room._id;
 		} else {
@@ -49,10 +49,10 @@ class ErrorHandler {
 	trackError(message, stack) {
 		if (this.reporting && this.rid && this.lastError !== message) {
 			this.lastError = message;
-			let user = RocketChat.models.Users.findOneById('rocket.cat');
+			const user = RocketChat.models.Users.findOneById('rocket.cat');
 
 			if (stack) {
-				message = message + '\n```\n' + stack + '\n```';
+				message = `${ message }\n\`\`\`\n${ stack }\n\`\`\``;
 			}
 
 			RocketChat.sendMessage(user, { msg: message }, { _id: this.rid });

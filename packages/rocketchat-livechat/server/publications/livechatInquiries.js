@@ -7,6 +7,10 @@ Meteor.publish('livechat:inquiry', function() {
 		return this.error(new Meteor.Error('error-not-authorized', 'Not authorized', { publish: 'livechat:inquiry' }));
 	}
 
+	const query = {
+		agents: this.userId,
+		status: 'open'
+	};
 
-	return RocketChat.models.LivechatInquiry.find();
+	return RocketChat.models.LivechatInquiry.find(query);
 });

@@ -1,0 +1,63 @@
+.flex-tab {
+	& .autotranslate {
+		& ul {
+			& li {
+				margin-bottom: 20px;
+			}
+		}
+
+		& form {
+			& label {
+				display: block;
+
+				margin-bottom: 5px;
+
+				font-weight: bold;
+			}
+
+			& div span {
+				font-size: 14px;
+
+				& i.icon-pencil {
+					margin-left: 3px;
+
+					font-size: 12px;
+				}
+			}
+		}
+
+		& .submit {
+			margin-top: 30px;
+
+			text-align: center;
+		}
+
+		& [data-edit] {
+			cursor: pointer;
+		}
+	}
+}
+
+.message {
+	& .translated {
+		margin-left: 3px;
+		padding-left: 3px;
+
+		border-left: 1px dotted;
+
+		& i.icon-language.loading {
+			display: inline-block;
+
+			animation: spinh 2000ms infinite linear;
+		}
+	}
+
+	&.sequential {
+		& .translated {
+			position: absolute;
+			left: 5px;
+
+			border-left: 0;
+		}
+	}
+}

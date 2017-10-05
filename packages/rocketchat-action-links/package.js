@@ -12,11 +12,12 @@ Package.onUse(function(api) {
 	api.use('rocketchat:theme');
 	api.use('rocketchat:ui');
 
+	api.addFiles('both/lib/actionLinks.js');
+
+	api.addFiles('client/lib/actionLinks.js', 'client');
 	api.addFiles('client/init.js', 'client');
-	api.addAssets('client/stylesheets/actionLinks.less', 'server');
-	api.addFiles('loadStylesheets.js', 'server');
 
-	api.addFiles('server/registerActionLinkFuncts.js', ['server', 'client']);
-	api.addFiles('server/actionLinkHandler.js', ['server', 'client']);
+	api.addFiles('client/stylesheets/actionLinks.css', 'client');
 
+	api.addFiles('server/actionLinkHandler.js', 'server');
 });

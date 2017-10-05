@@ -6,10 +6,8 @@
 
 function LennyFace(command, params, item) {
 	if (command === 'lennyface') {
-		var msg;
-
-		msg = item;
-		msg.msg = params + ' ( ͡° ͜ʖ ͡°)';
+		const msg = item;
+		msg.msg = `${ params } ( ͡° ͜ʖ ͡°)`;
 		Meteor.call('sendMessage', msg);
 	}
 }

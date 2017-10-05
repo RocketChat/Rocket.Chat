@@ -6,10 +6,8 @@
 
 function Shrug(command, params, item) {
 	if (command === 'shrug') {
-		var msg;
-
-		msg = item;
-		msg.msg = params + ' ¯\\_(ツ)_/¯';
+		const msg = item;
+		msg.msg = `${ params } ¯\\_(ツ)_/¯`;
 		Meteor.call('sendMessage', msg);
 	}
 }
