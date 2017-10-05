@@ -1,46 +1,11 @@
 .mentioned-messages-list {
-	&.notready {
-		background-image: url(images/logo/loading.gif);
-		background-repeat: no-repeat;
-		background-position: 50% 50%;
-		height: 100px;
-
-		.message {
-			display: none;
-		}
-	}
-
-	li.empty {
-		color: #7f7f7f;
-		text-align: center;
-		margin-top: 60px;
-	}
-
-	.mention-link.mention-link-me {
-		background-color: transparent;
-		color: inherit;
-		&:hover {
-			color: inherit;
-		}
-	}
-
 	.message-cog-container {
 		.message-action {
 			display: none !important;
+
 			&.jump-to-message {
 				display: block !important;
 			}
-		}
-	}
-
-	.load-more {
-		text-transform: lowercase;
-		text-align: center;
-		line-height: 40px;
-		font-style: italic;
-
-		.load-more-loading {
-			color: #aaa;
 		}
 	}
 }

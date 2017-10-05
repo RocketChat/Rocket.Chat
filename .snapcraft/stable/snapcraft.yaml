@@ -7,23 +7,39 @@
 # 5.  `snapcraft snap`
 
 name: rocketchat-server
-version: 0.43.0-develop
+version: #{RC_VERSION}
 summary: Rocket.Chat server
 description: Have your own Slack like online chat, built with Meteor. https://rocket.chat/
 confinement: strict
+assumes: [snapd2.21]
 apps:
     rocketchat-server:
-        command: env BABEL_CACHE_DIR=/tmp ROOT_URL=http://localhost PORT=3000 MONGO_URL=mongodb://localhost:27017/parties Accounts_AvatarStorePath=$SNAP_COMMON/uploads node $SNAP/main.js >$SNAP_DATA/server.log 2>&1
+        command: startRocketChat
         daemon: simple
         plugs: [network, network-bind]
     rocketchat-mongo:
-        command: env LC_ALL=C mongod --smallfiles --dbpath=$SNAP_COMMON
+        command: startmongo
         daemon: simple
         plugs: [network, network-bind]
+    rocketchat-caddy:
+        command: env LC_ALL=C caddy -conf=$SNAP_DATA/Caddyfile -host=localhost:8080
+        daemon: simple
+        plugs: [network, network-bind]
+    mongo:
+        command: env LC_ALL=C mongo
+        plugs: [network]
+    restoredb:
+        command: env LC_ALL=C restoredb
+        plugs: [network]
+    backupdb:
+        command: env LC_ALL=c rcbackup
+        plugs: [network]
+    initcaddy:
+        command: env LC_ALL=c initcaddy
 parts:
     node:
         plugin: nodejs
-        node-engine: 4.6.0
+        node-engine: 4.8.3
         node-packages:
             - promise
             - fibers
@@ -39,7 +55,7 @@ parts:
             lib/node_modules: node_modules
     rocketchat-server:
         plugin: dump
-        after: [mongodb]
+        after: [node]
         source: https://rocket.chat/releases/latest/download
         source-type: tar
         stage-packages:
@@ -47,23 +63,40 @@ parts:
         stage:
             - programs
             - main.js
-            - usr
-            - lib
-        snap:
-            - programs
-            - main.js
+            - .node_version.txt
             - usr
             - lib
     mongodb:
-        source: https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu1604-3.2.7.tgz
+        build-packages:
+            - wget
+        source: ./
+        prepare: ./resources/preparemongo
         plugin: dump
         stage-packages:
             - libssl1.0.0
-        stage:
+        prime:
             - usr
             - bin
             - lib
-        snap:
-            - usr
+    scripts:
+        plugin: dump
+        source: resources/
+        organize:
+            rcbackup: bin/rcbackup
+            restoredb: bin/restoredb
+            startmongo: bin/startmongo
+            startRocketChat: bin/startRocketChat
+            initreplset.js: bin/initreplset.js
+            Caddyfile: bin/Caddyfile
+            initcaddy: bin/initcaddy
+        prime:
             - bin
-            - lib
+    caddy:
+        prepare: ./resources/preparecaddy
+        plugin: dump
+        source: ./
+        prime:
+            - bin
+        organize:
+            caddy: bin/caddy
+        after: [mongodb]

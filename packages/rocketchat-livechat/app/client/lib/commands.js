@@ -1,20 +1,20 @@
 /* globals LivechatVideoCall, Livechat */
 // Functions to call on messages of type 'command'
 this.Commands = {
-	survey: function() {
+	survey() {
 		if (!($('body #survey').length)) {
 			Blaze.render(Template.survey, $('body').get(0));
 		}
 	},
 
-	endCall: function() {
+	endCall() {
 		LivechatVideoCall.finish();
 	},
 
-	promptTranscript: function() {
+	promptTranscript() {
 		if (Livechat.transcript) {
 			const user = Meteor.user();
-			let email = user.emails && user.emails.length > 0 ? user.emails[0].address : '';
+			const email = user.visitorEmails && user.visitorEmails.length > 0 ? user.visitorEmails[0].address : '';
 
 			swal({
 				title: t('Chat_ended'),
@@ -60,5 +60,9 @@ this.Commands = {
 				showConfirmButton: false
 			});
 		}
+	},
+
+	connected() {
+		Livechat.connecting = false;
 	}
 };

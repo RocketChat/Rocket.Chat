@@ -1,55 +1,58 @@
 RocketChat.setUserAvatar = function(user, dataURI, contentType, service) {
+	let encoding;
+	let image;
+
 	if (service === 'initials') {
 		return RocketChat.models.Users.setAvatarOrigin(user._id, service);
-	}
-
-	if (service === 'url') {
+	} else if (service === 'url') {
 		let result = null;
 
 		try {
 			result = HTTP.get(dataURI, { npmRequestOptions: {encoding: 'binary'} });
 		} catch (error) {
-			console.log(`Error while handling the setting of the avatar from a url (${dataURI}) for ${user.username}:`, error);
-			throw new Meteor.Error('error-avatar-url-handling', `Error while handling avatar setting from a URL (${dataURI}) for ${user.username}`, { function: 'RocketChat.setUserAvatar', url: dataURI, username: user.username });
+			if (!error.response || error.response.statusCode !== 404) {
+				console.log(`Error while handling the setting of the avatar from a url (${ dataURI }) for ${ user.username }:`, error);
+				throw new Meteor.Error('error-avatar-url-handling', `Error while handling avatar setting from a URL (${ dataURI }) for ${ user.username }`, { function: 'RocketChat.setUserAvatar', url: dataURI, username: user.username });
+			}
 		}
 
 		if (result.statusCode !== 200) {
-			console.log(`Not a valid response, ${result.statusCode}, from the avatar url: ${dataURI}`);
-			throw new Meteor.Error('error-avatar-invalid-url', `Invalid avatar URL: ${dataURI}`, { function: 'RocketChat.setUserAvatar', url: dataURI });
+			console.log(`Not a valid response, ${ result.statusCode }, from the avatar url: ${ dataURI }`);
+			throw new Meteor.Error('error-avatar-invalid-url', `Invalid avatar URL: ${ dataURI }`, { function: 'RocketChat.setUserAvatar', url: dataURI });
 		}
 
 		if (!/image\/.+/.test(result.headers['content-type'])) {
-			console.log(`Not a valid content-type from the provided url, ${result.headers['content-type']}, from the avatar url: ${dataURI}`);
-			throw new Meteor.Error('error-avatar-invalid-url', `Invalid avatar URL: ${dataURI}`, { function: 'RocketChat.setUserAvatar', url: dataURI });
+			console.log(`Not a valid content-type from the provided url, ${ result.headers['content-type'] }, from the avatar url: ${ dataURI }`);
+			throw new Meteor.Error('error-avatar-invalid-url', `Invalid avatar URL: ${ dataURI }`, { function: 'RocketChat.setUserAvatar', url: dataURI });
 		}
 
-		let ars = RocketChatFile.bufferToStream(new Buffer(result.content, 'binary'));
-		RocketChatFileAvatarInstance.deleteFile(encodeURIComponent(`${user.username}.jpg`));
-		let aws = RocketChatFileAvatarInstance.createWriteStream(encodeURIComponent(`${user.username}.jpg`), result.headers['content-type']);
-		aws.on('end', Meteor.bindEnvironment(function() {
-			Meteor.setTimeout(function() {
-				console.log(`Set ${user.username}'s avatar from the url: ${dataURI}`);
-				RocketChat.models.Users.setAvatarOrigin(user._id, service);
-				RocketChat.Notifications.notifyAll('updateAvatar', { username: user.username });
-			}, 500);
-		}));
-
-		ars.pipe(aws);
-		return;
+		encoding = 'binary';
+		image = result.content;
+		contentType = result.headers['content-type'];
+	} else if (service === 'rest') {
+		encoding = 'binary';
+		image = dataURI;
+	} else {
+		const fileData = RocketChatFile.dataURIParse(dataURI);
+		encoding = 'base64';
+		image = fileData.image;
+		contentType = fileData.contentType;
 	}
 
-	let fileData = RocketChatFile.dataURIParse(dataURI);
-	let image = fileData.image;
-	contentType = fileData.contentType;
+	const buffer = new Buffer(image, encoding);
+	const fileStore = FileUpload.getStore('Avatars');
+	fileStore.deleteByName(user.username);
 
-	let rs = RocketChatFile.bufferToStream(new Buffer(image, 'base64'));
-	RocketChatFileAvatarInstance.deleteFile(encodeURIComponent(`${user.username}.jpg`));
-	let ws = RocketChatFileAvatarInstance.createWriteStream(encodeURIComponent(`${user.username}.jpg`), contentType);
-	ws.on('end', Meteor.bindEnvironment(function() {
+	const file = {
+		userId: user._id,
+		type: contentType,
+		size: buffer.length
+	};
+
+	fileStore.insert(file, buffer, () => {
 		Meteor.setTimeout(function() {
 			RocketChat.models.Users.setAvatarOrigin(user._id, service);
-			RocketChat.Notifications.notifyAll('updateAvatar', {username: user.username});
+			RocketChat.Notifications.notifyLogged('updateAvatar', {username: user.username});
 		}, 500);
-	}));
-	rs.pipe(ws);
+	});
 };

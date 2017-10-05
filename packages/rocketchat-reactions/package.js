@@ -19,6 +19,5 @@ Package.onUse(function(api) {
 	api.addFiles('client/methods/setReaction.js', 'client');
 	api.addFiles('setReaction.js', 'server');
 
-	api.addAssets('client/stylesheets/reaction.less', 'server');
-	api.addFiles('loadStylesheets.js', 'server');
+	api.addFiles('client/stylesheets/reaction.css', 'client');
 });

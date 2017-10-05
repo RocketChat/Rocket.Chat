@@ -96,12 +96,13 @@
 			}
 			_opt.type = (type['' + _opt.type]) ? _opt.type : _def.type;
 
-			_orig = link.getIcon();
+			_orig = link.getIcons();
 			//create temp canvas
 			_canvas = document.createElement('canvas');
 			//create temp image
 			_img = document.createElement('img');
-			if (_orig.hasAttribute('href')) {
+			var lastIcon = _orig[_orig.length - 1];
+			if (lastIcon.hasAttribute('href')) {
 				_img.setAttribute('crossOrigin', 'anonymous');
 				//get width/height
 				_img.onload = function() {
@@ -112,7 +113,7 @@
 					_context = _canvas.getContext('2d');
 					icon.ready();
 				};
-				_img.setAttribute('src', _orig.getAttribute('href'));
+				_img.setAttribute('src', lastIcon.getAttribute('href'));
 			} else {
 				_img.onload = function() {
 					_h = 32;
@@ -461,37 +462,40 @@
 
 		var link = {};
 		/**
-		 * Get icon from HEAD tag or create a new <link> element
+		 * Get icons from HEAD tag or create a new <link> element
 		 */
-		link.getIcon = function() {
-			var elm = false;
+		link.getIcons = function() {
+			var elms = [];
 			//get link element
-			var getLink = function() {
-				var link = _doc.getElementsByTagName('head')[0].getElementsByTagName('link');
-				for (var l = link.length, i = (l - 1); i >= 0; i--) {
-					if ((/(^|\s)icon(\s|$)/i).test(link[i].getAttribute('rel'))) {
-						return link[i];
+			var getLinks = function() {
+				var icons = [];
+				var links = _doc.getElementsByTagName('head')[0].getElementsByTagName('link');
+				for (var i = 0; i < links.length; i++) {
+					if ((/(^|\s)icon(\s|$)/i).test(links[i].getAttribute('rel'))) {
+						icons.push(links[i]);
 					}
 				}
-				return false;
+				return icons;
 			};
 			if (_opt.element) {
-				elm = _opt.element;
+				elms = [_opt.element];
 			} else if (_opt.elementId) {
 				//if img element identified by elementId
-				elm = _doc.getElementById(_opt.elementId);
-				elm.setAttribute('href', elm.getAttribute('src'));
+				elms = [_doc.getElementById(_opt.elementId)];
+				elms[0].setAttribute('href', elms[0].getAttribute('src'));
 			} else {
 				//if link element
-				elm = getLink();
-				if (elm === false) {
-					elm = _doc.createElement('link');
-					elm.setAttribute('rel', 'icon');
-					_doc.getElementsByTagName('head')[0].appendChild(elm);
+				elms = getLinks();
+				if (elms.length === 0) {
+					elms = [_doc.createElement('link')];
+					elms[0].setAttribute('rel', 'icon');
+					_doc.getElementsByTagName('head')[0].appendChild(elms[0]);
 				}
 			}
-			elm.setAttribute('type', 'image/png');
-			return elm;
+			elms.forEach(function(item) {
+				item.setAttribute('type', 'image/png');
+			});
+			return elms;
 		};
 		link.setIcon = function(canvas) {
 			var url = canvas.toDataURL('image/png');
@@ -512,21 +516,24 @@
 				if (_browser.ff || _browser.opera) {
 					//for FF we need to "recreate" element, atach to dom and remove old <link>
 					//var originalType = _orig.getAttribute('rel');
-					var old = _orig;
-					_orig = _doc.createElement('link');
+					var old = _orig[_orig.length - 1];
+					var newIcon = _doc.createElement('link');
+					_orig = [newIcon];
 					//_orig.setAttribute('rel', originalType);
 					if (_browser.opera) {
-						_orig.setAttribute('rel', 'icon');
+						newIcon.setAttribute('rel', 'icon');
 					}
-					_orig.setAttribute('rel', 'icon');
-					_orig.setAttribute('type', 'image/png');
-					_doc.getElementsByTagName('head')[0].appendChild(_orig);
-					_orig.setAttribute('href', url);
+					newIcon.setAttribute('rel', 'icon');
+					newIcon.setAttribute('type', 'image/png');
+					_doc.getElementsByTagName('head')[0].appendChild(newIcon);
+					newIcon.setAttribute('href', url);
 					if (old.parentNode) {
 						old.parentNode.removeChild(old);
 					}
 				} else {
-					_orig.setAttribute('href', url);
+					_orig.forEach(function(icon) {
+						icon.setAttribute('href', url);
+					});
 				}
 			}
 		};

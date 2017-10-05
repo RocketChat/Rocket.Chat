@@ -5,17 +5,17 @@ ansispan = function(str) {
 	str = str.replace(/</g, '&lt;');
 
 	Object.keys(ansispan.foregroundColors).forEach(function(ansi) {
-		var span = '<span style="color: ' + ansispan.foregroundColors[ansi] + '">';
+		const span = `<span style="color: ${ ansispan.foregroundColors[ansi] }">`;
 
 		//
 		// `\033[Xm` == `\033[0;Xm` sets foreground color to `X`.
 		//
 
 		str = str.replace(
-			new RegExp('\0o33\\[' + ansi + 'm', 'g'),
+			new RegExp(`\0o33\\[${ ansi }m`, 'g'),
 			span
 		).replace(
-			new RegExp('\0o33\\[0;' + ansi + 'm', 'g'),
+			new RegExp(`\0o33\\[0;${ ansi }m`, 'g'),
 			span
 		);
 	});

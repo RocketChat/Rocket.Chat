@@ -1,0 +1,35 @@
+<template name="toolbar">
+	<div class="toolbar">
+		<form class="toolbar__wrapper" role="search">
+			<div class="toolbar__search">
+				<div class="rc-input">
+					<label class="rc-input__label">
+						<div class="rc-input__wrapper">
+							<div class="rc-input__icon">
+								{{> icon block="rc-input__icon-svg" icon="magnifier"}}
+							</div>
+							<input type="text" class="rc-input__element rc-input__element--small" placeholder="{{getPlaceholder}}">
+							<div class="rc-input__icon rc-input__icon--right">
+								{{> icon block="rc-input__icon-svg" icon="plus"}}
+							</div>
+						</div>
+					</label>
+				</div>
+			</div>
+			{{#if canCreate}}
+				<button class="rc-button rc-button--square rc-tooltip" aria-label="{{ _ 'Create_A_New_Channel' }}">
+					{{> icon block="toolbar__icon" icon="plus" classes="toolbar__search-create-channel"}}
+				</button>
+			{{/if}}
+		</form>
+		{{> messagePopup popupConfig}}
+	</div>
+</template>
+
+<template name="toolbarSearchList">
+		{{> chatRoomItem . icon=icon}}
+</template>
+
+<template name="toolbarSearchListEmpty">
+	{{_ "No_results_found"}}
+</template>

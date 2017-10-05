@@ -3,7 +3,12 @@ function sendToCRM(hook, room) {
 		return room;
 	}
 
-	let postData = RocketChat.Livechat.getLivechatRoomGuestInfo(room);
+	// Do not send to CRM if the chat is still open
+	if (hook === 'saveLivechatInfo' && room.open) {
+		return room;
+	}
+
+	const postData = RocketChat.Livechat.getLivechatRoomGuestInfo(room);
 	if (hook === 'closeRoom') {
 		postData.type = 'LivechatSession';
 	} else if (hook === 'saveLivechatInfo') {
@@ -16,7 +21,7 @@ function sendToCRM(hook, room) {
 		if (message.t) {
 			return;
 		}
-		let msg = {
+		const msg = {
 			username: message.u.username,
 			msg: message.msg,
 			ts: message.ts

@@ -1,0 +1,63 @@
+<template name="videoCall">
+	{{#if videoAvaliable}}
+		{{#if videoActive}}
+			<div class="webrtc-video {{#if overlay}}webrtc-video-overlay background-transparent-darker{{/if}}">
+				<div class="main-video background-transparent-darker">
+					<video src="{{mainVideoUrl}}" autoplay muted="true" class="webrtc-video-element {{#if $eq mainVideoUrl selfVideoUrl}}{{#unless screenShareEnabled}}video-flip{{/unless}}{{/if}}"></video>
+					<div class="background-transparent-darker">{{mainVideoUsername}}</div>
+				</div>
+				<div class="videos">
+					{{#if selfVideoUrl}}
+						<div class="video-item background-transparent-darker" data-username="$self">
+							<video src="{{selfVideoUrl}}" autoplay muted="true" class="webrtc-video-element {{#unless screenShareEnabled}}video-flip{{/unless}}"></video>
+							{{#unless audioAndVideoEnabled}}
+								<div class="video-muted-overlay background-transparent-darker">
+									{{#unless audioEnabled}}
+										<button><i class="icon-mute"></i></button>
+									{{/unless}}
+									{{#unless videoEnabled}}
+										<button><i class="icon-eye-off"></i></button>
+									{{/unless}}
+								</div>
+							{{/unless}}
+							<div class="background-transparent-darker">{{_ "you"}}</div>
+						</div>
+					{{/if}}
+					{{#each remoteVideoItems}}
+						<div class="video-item background-transparent-darker {{#unless connected}}state-overlay background-transparent-darker-before{{/unless}}" data-state-text="{{stateText}}" data-username="{{id}}">
+							<video src="{{url}}" autoplay class="webrtc-video-element"></video>
+							<div class="background-transparent-darker">{{usernameByUserId id}}</div>
+						</div>
+					{{/each}}
+				</div>
+				<div class="buttons-group">
+					{{#if videoActive}}
+						<button class="button stop-call"><i class="icon-stop"></i>{{_ "Stop"}}</button>
+						{{#if audioEnabled}}
+							<button class="button disable-audio" title="{{_ 'Mute'}}" aria-label="{{_ 'Mute'}}"><i class="icon-mute"></i></button>
+						{{else}}
+							<button class="button enable-audio" title="{{_ 'Unmute'}}" aria-label="{{_ 'Unmute'}}"><i class="icon-mic"></i></button>
+						{{/if}}
+						{{#if videoEnabled}}
+							<button class="button disable-video"><i class="icon-eye-off"></i></button>
+						{{else}}
+							<button class="button enable-video"><i class="icon-eye"></i></button>
+						{{/if}}
+						{{#if screenShareAvailable}}
+							{{#if screenShareEnabled}}
+								<button class="button disable-screen-share"><i class="icon-desktop"></i></button>
+							{{else}}
+								<button class="button enable-screen-share"><i class="icon-desktop"></i></button>
+							{{/if}}
+						{{/if}}
+						{{#if overlayEnabled}}
+							<button class="button disable-overlay"><i class="icon-resize-small"></i></button>
+						{{else}}
+							<button class="button enable-overlay"><i class="icon-resize-full-alt"></i></button>
+						{{/if}}
+					{{/if}}
+				</div>
+			</div>
+		{{/if}}
+	{{/if}}
+</template>

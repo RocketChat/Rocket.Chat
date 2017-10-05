@@ -1,3 +1,4 @@
+import toastr from 'toastr';
 Template.visitorForward.helpers({
 	visitor() {
 		return Template.instance().visitor.get();
@@ -44,7 +45,7 @@ Template.visitorForward.events({
 		if (instance.find('#forwardUser').value) {
 			transferData.userId = instance.find('#forwardUser').value;
 		} else if (instance.find('#forwardDepartment').value) {
-			transferData.deparmentId = instance.find('#forwardDepartment').value;
+			transferData.departmentId = instance.find('#forwardDepartment').value;
 		}
 
 		Meteor.call('livechat:transfer', transferData, (error, result) => {

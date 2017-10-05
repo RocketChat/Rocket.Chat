@@ -4,14 +4,14 @@
  * Mapping category hashes into human readable and translated names
  */
 emojiCategories = {
-	people: TAPi18n.__('Smileys_and_People'),
-	nature: TAPi18n.__('Animals_and_Nature'),
-	food: TAPi18n.__('Food_and_Drink'),
-	activity: TAPi18n.__('Activity'),
-	travel: TAPi18n.__('Travel_and_Places'),
-	objects: TAPi18n.__('Objects'),
-	symbols: TAPi18n.__('Symbols'),
-	flags: TAPi18n.__('Flags')
+	people: 'Smileys_and_People',
+	nature: 'Animals_and_Nature',
+	food: 'Food_and_Drink',
+	activity: 'Activity',
+	travel: 'Travel_and_Places',
+	objects: 'Objects',
+	symbols: 'Symbols',
+	flags: 'Flags'
 };
 
 toneList = {
@@ -1523,13 +1523,6 @@ emojisByCategory = {
 		'flag_ss',
 		'flag_tc',
 		'flag_mf'
-	],
-	'modifier': [
-		'tone1',
-		'tone2',
-		'tone3',
-		'tone4',
-		'tone5'
 	]
 };
 

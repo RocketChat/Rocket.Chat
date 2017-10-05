@@ -8,15 +8,14 @@ Package.describe({
 Package.onUse(function(api) {
 	api.use([
 		'templating',
-		'coffeescript',
+		'ecmascript',
 		'underscore',
 		'rocketchat:lib'
 	]);
 
 	api.addFiles('client/messageAttachment.html', 'client');
-	api.addFiles('client/messageAttachment.coffee', 'client');
+	api.addFiles('client/messageAttachment.js', 'client');
 
 	// stylesheets
-	api.addAssets('client/stylesheets/messageAttachments.less', 'server');
-	api.addFiles('client/stylesheets/loader.coffee', 'server');
+	api.addFiles('client/stylesheets/messageAttachments.css', 'client');
 });

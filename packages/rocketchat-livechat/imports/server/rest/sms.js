@@ -4,9 +4,9 @@ RocketChat.API.v1.addRoute('livechat/sms-incoming/:service', {
 
 		const sms = SMSService.parse(this.bodyParams);
 
-		var visitor = RocketChat.models.Users.findOneVisitorByPhone(sms.from);
+		let visitor = RocketChat.models.Users.findOneVisitorByPhone(sms.from);
 
-		let sendMessage = {
+		const sendMessage = {
 			message: {
 				_id: Random.id()
 			},
@@ -30,7 +30,7 @@ RocketChat.API.v1.addRoute('livechat/sms-incoming/:service', {
 			sendMessage.message.rid = Random.id();
 			sendMessage.message.token = Random.id();
 
-			let userId = RocketChat.Livechat.registerGuest({
+			const userId = RocketChat.Livechat.registerGuest({
 				username: sms.from.replace(/[^0-9]/g, ''),
 				token: sendMessage.message.token,
 				phone: {

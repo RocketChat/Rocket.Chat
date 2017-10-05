@@ -1,0 +1,19 @@
+<template name="soundInfo">
+	{{#if editingSound}}
+		{{> soundEdit (soundToEdit)}}
+	{{else}}
+		{{#with sound}}
+		<div class="about clearfix">
+			<div class="info">
+				<h3 title="{{name}}">{{name}}</h3>
+			</div>
+		</div>
+		{{/with}}
+		<nav>
+			{{#if hasPermission 'manage-sounds'}}
+				<button class='button button-block danger delete'><span><i class='icon-trash'></i> {{_ "Delete"}}</span></button>
+				<button class='button button-block primary edit-sound'><span><i class='icon-edit'></i> {{_ "Edit"}}</span></button>
+			{{/if}}
+		</nav>
+	{{/if}}
+</template>

@@ -1,0 +1,21 @@
+<template name="snippetPage">
+	<div id="{{_id}}" class="snippet-page {{t}} {{own}} {{isTemp}}" data-username="{{u.username}}" data-groupable="{{isGroupable}}" data-date="{{date}}" data-timestamp="{{timestamp}}">
+		<div class="snippet-informations">
+			{{> avatar username=snippet.u.username}}
+			<span class="username">{{snippet.u.username}}</span>
+			<span class="snippet-filename">{{ snippet.snippetName }}</span>
+		</div>
+
+
+
+		<span class="info"> {{_ "Snippet_Added" date }}</span>
+		<a class="download-button" target="_blank" href="/snippet/download/{{snippet._id}}/{{snippet.snippetName}}">
+			<i class="icon-download"></i>
+			{{_ "Download_Snippet" }}
+		</a>
+		<div class="body" dir="auto">
+			{{{ snippetContent }}}
+		</div>
+	</div>
+
+</template>
