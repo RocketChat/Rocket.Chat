@@ -43,7 +43,6 @@
 
 		&.active,
 		&:active {
-			color: #1d74f5;
 
 			&::before {
 				position: absolute;
@@ -55,13 +54,16 @@
 
 				content: '';
 
-				background: #1d74f5;
 			}
 		}
 	}
 
 	&__content {
 		padding-top: 10px;
+
+		 animation-name: fadeIn;
+		 animation-duration: 1s;
+
 		& header h1 { /* in tab-containers, the first heading of the header is the tab strip itself */
 			display: none;
 		}
@@ -71,6 +73,8 @@
 		}
 
 		&.active {
+			transition: all 0.3s;
+
 			display: block;
 		}
     }
