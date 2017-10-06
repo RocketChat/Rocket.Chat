@@ -1,3 +1,15 @@
+<a name="0.57.4"></a>
+## 0.57.4 (2017-10-06)
+
+
+### Bug Fixes
+
+- [#8389](https://github.com/RocketChat/Rocket.Chat/pull/8389) Add needed dependency for snaps
+- [#8408](https://github.com/RocketChat/Rocket.Chat/pull/8408) Duplicate code in rest api letting in a few bugs with the rest api
+- [#8390](https://github.com/RocketChat/Rocket.Chat/pull/8390) Slack import failing and not being able to be restarted
+
+
+
 <a name="0.57.3"></a>
 ## 0.57.3 (2017-08-08)
 
