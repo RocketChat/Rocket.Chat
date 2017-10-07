@@ -64,7 +64,7 @@ Template.accountPreferences.helpers({
 	},
 	highlights() {
 		const user = Meteor.user();
-		return user && user.settings && user.settings.preferences && user.settings.preferences['highlights'] && user.settings.preferences['highlights'].join(', ');
+		return user && user.settings && user.settings.preferences && user.settings.preferences['highlights'] && user.settings.preferences['highlights'].join('\n');
 	},
 	desktopNotificationEnabled() {
 		return KonchatNotification.notificationStatus.get() === 'granted' || (window.Notification && Notification.permission === 'granted');
@@ -153,7 +153,7 @@ Template.accountPreferences.onCreated(function() {
 
 		data.autoImageLoad = $('input[name=autoImageLoad]:checked').val();
 		data.emailNotificationMode = $('select[name=emailNotificationMode]').val();
-		data.highlights = _.compact(_.map($('[name=highlights]').val().split(','), function(e) {
+		data.highlights = _.compact(_.map($('[name=highlights]').val().split('\n'), function(e) {
 			return _.trim(e);
 		}));
 		data.desktopNotificationDuration = $('input[name=desktopNotificationDuration]').val();
