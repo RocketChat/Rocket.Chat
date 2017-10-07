@@ -7,7 +7,6 @@ MAINTAINER buildmaster@rocket.chat
 RUN set -x \
  && curl -SLf "https://rocket.chat/releases/${RC_VERSION}/download" -o rocket.chat.tgz \
  && curl -SLf "https://rocket.chat/releases/${RC_VERSION}/asc" -o rocket.chat.tgz.asc \
- && mkdir /app \
  && gpg --verify rocket.chat.tgz.asc \
  && mkdir -p /app \
  && tar -zxf rocket.chat.tgz -C /app \
