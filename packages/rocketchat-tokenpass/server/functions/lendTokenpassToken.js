@@ -14,11 +14,11 @@ RocketChat.lendTokenpassToken = function(lending, cb) {
 					client_secret: RocketChat.settings.get('Accounts_OAuth_Tokenpass_secret')
 				},
 				data: {
-					source: lending.source,						// string			Source address to use
-					destination: JSON.stringify(lending.destination),	// string			Destination bitcoin address or user:{username}
-					asset: lending.asset, 						// asset			string	Token to promise
-					quantity: lending.quantity,				// integer		Amount, in satoshis
-					expiration: lending.expiration		// timestamp	Time that the promise expires, can be set to null
+					source: lending.source,
+					destination: lending.destination,
+					asset: lending.asset,
+					quantity: lending.quantity,
+					expiration: lending.expiration
 				}
 			});
 

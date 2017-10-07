@@ -1,29 +1,40 @@
 function Inventory(command, params, item) {
-	if (command !== 'inventory' && command !== 'tokens') {
+	if ((command !== 'inventory' && command !== 'tokens') || !RocketChat.checkTokenpassOAuthEnabled()) {
 		return;
 	}
 
+	const messages = [];
 	const user = Meteor.users.findOne(Meteor.userId());
 	const channel = RocketChat.models.Rooms.findOneById(item.rid);
-	const balances = RocketChat.updateUserTokenpassBalances(user);
 
-	const messages = [
-		TAPi18n.__('Tokenpass_Command_Inventory_Result', {
-			postProcess: 'sprintf',
-			sprintf: [channel]
-		}, user.language)
-	];
+	if (user && user.services && user.services.tokenpass && user.services.tokenpass.accessToken) {
+		const balances = RocketChat.updateUserTokenpassBalances(user);
 
-	if (balances) {
-		balances.forEach((tca) => {
-			messages.push(`- _${ tca.name }: *${ tca.balance }*_`);
-		});
+		if (balances) {
+			messages.push(
+				TAPi18n.__('Tokenpass_Command_Inventory_Result', {
+					postProcess: 'sprintf',
+					sprintf: [channel]
+				}, user.language)
+			);
+
+			balances.forEach((tca) => {
+				messages.push(`- ${ tca.name }: *${ tca.balance }*`);
+			});
+		} else {
+			messages.push(
+				TAPi18n.__('Tokenpass_Command_Inventory_Result_Empty', {
+					postProcess: 'sprintf',
+					sprintf: [channel]
+				}, user.language)
+			);
+		}
 	} else {
 		messages.push(
-			TAPi18n.__('Tokenpass_Command_Inventory_Result_Empty', {
+			TAPi18n.__('Tokenpass_Command_Error_NotLoggedIn', {
 				postProcess: 'sprintf',
 				sprintf: [channel]
-			}, user.language)
+			}, user && user.language)
 		);
 	}
 

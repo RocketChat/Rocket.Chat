@@ -1,5 +1,5 @@
 function TokenpassRegister(command, params, item) {
-	if (command !== 'tokenpass') {
+	if (command !== 'tokenpass' || !RocketChat.checkTokenpassOAuthEnabled()) {
 		return;
 	}
 
@@ -11,16 +11,22 @@ function TokenpassRegister(command, params, item) {
 	if (user && user.services && user.services.tokenpass) {
 		const tokenpassUserAccountResume = RocketChat.getTokenpassUserAccountResume(user);
 		messages.push(
-			`_${ TAPi18n.__('Tokenpass_Command_Tokenpass_Account_Username', {
+			TAPi18n.__('Tokenpass_Command_Tokenpass_Account_Result', {
 				postProcess: 'sprintf',
 				sprintf: [channel]
-			}, user.language) }: *${ tokenpassUserAccountResume.username }*_`
+			}, user.language)
 		);
 		messages.push(
-			`_${ TAPi18n.__('Tokenpass_Command_Tokenpass_Account_NumberOfTokens', {
+			`- ${ TAPi18n.__('Tokenpass_Command_Tokenpass_Account_Username', {
 				postProcess: 'sprintf',
 				sprintf: [channel]
-			}, user.language) }: *${ tokenpassUserAccountResume.numberOfTokens }*_`
+			}, user.language) }: *${ tokenpassUserAccountResume.username }*`
+		);
+		messages.push(
+			`- ${ TAPi18n.__('Tokenpass_Command_Tokenpass_Account_NumberOfTokens', {
+				postProcess: 'sprintf',
+				sprintf: [channel]
+			}, user.language) }: *${ tokenpassUserAccountResume.numberOfTokens }*`
 		);
 	} else {
 		RocketChat.registerTokenpassUserAccount(user, (error, result) => {
@@ -33,22 +39,28 @@ function TokenpassRegister(command, params, item) {
 				);
 			} else if (result) {
 				messages.push(
-					TAPi18n.__('Tokenpass_Command_Tokenpass_Result_Success', {
+					TAPi18n.__('Tokenpass_Command_Tokenpass_Result', {
 						postProcess: 'sprintf',
 						sprintf: [channel]
 					}, user.language)
 				);
 				messages.push(
-					`_${ TAPi18n.__('Tokenpass_Command_Tokenpass_Account_Username', {
+					TAPi18n.__('Tokenpass_Command_Tokenpass_Account_Result', {
 						postProcess: 'sprintf',
 						sprintf: [channel]
-					}, user.language) }: *${ result.username }*_`
+					}, user.language)
 				);
 				messages.push(
-					`_${ TAPi18n.__('Tokenpass_Command_Tokenpass_Account_Email', {
+					`- ${ TAPi18n.__('Tokenpass_Command_Tokenpass_Account_Username', {
 						postProcess: 'sprintf',
 						sprintf: [channel]
-					}, user.language) }: *${ result.email }*_`
+					}, user.language) }: *${ result.username }*`
+				);
+				messages.push(
+					`- ${ TAPi18n.__('Tokenpass_Command_Tokenpass_Account_Email', {
+						postProcess: 'sprintf',
+						sprintf: [channel]
+					}, user.language) }: *${ result.email }*`
 				);
 			} else {
 				messages.push(

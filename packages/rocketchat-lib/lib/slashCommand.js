@@ -3,14 +3,16 @@ RocketChat.slashCommands = {
 };
 
 RocketChat.slashCommands.add = function(command, callback, options = {}, result) {
-	RocketChat.slashCommands.commands[command] = {
-		command,
-		callback,
-		params: options.params,
-		description: options.description,
-		clientOnly: options.clientOnly || false,
-		result
-	};
+	if (!options.condition || options.condition === null || (typeof options.condition === 'function' && options.condition() === true)) {
+		RocketChat.slashCommands.commands[command] = {
+			command,
+			callback,
+			params: options.params,
+			description: options.description,
+			clientOnly: options.clientOnly || false,
+			result
+		};
+	}
 };
 
 RocketChat.slashCommands.run = function(command, params, item) {

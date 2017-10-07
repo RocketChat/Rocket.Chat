@@ -1,16 +1,27 @@
-// /tokenpass-add-address [address] allows a user to add a new token pocket
-
 function TokenpassAddAddress(command, params, item) {
-	if (command !== 'tokenpass-add-address' || !Match.test(params, String)) {
+	if (command !== 'tokenpass-add-address' || !RocketChat.checkTokenpassOAuthEnabled()) {
 		return;
 	}
 
 	const user = Meteor.users.findOne(Meteor.userId());
 	const channel = RocketChat.models.Rooms.findOneById(item.rid);
 
-	const messages = [];
+	if (!params || s.clean(params) === '') {
+		RocketChat.Notifications.notifyUser(Meteor.userId(), 'message', {
+			_id: Random.id(),
+			rid: item.rid,
+			ts: new Date(),
+			msg: TAPi18n.__('Tokenpass_Command_TokenpassAddAddress_Error_Params', {
+				postProcess: 'sprintf',
+				sprintf: [channel]
+			}, user.language)
+		});
+		return;
+	}
 
-	RocketChat.registerTokenpassAddress(user.services.tokenpass.accessToken, params, (error, result) => {
+	RocketChat.registerTokenpassAddress(user && user.services && user.services.tokenpass && user.services.tokenpass.accessToken, params, (error, result) => {
+		const messages = [];
+
 		if (error) {
 			messages.push(
 				`${ TAPi18n.__('Tokenpass_Command_TokenpassAddAddress_Error', {
@@ -26,41 +37,41 @@ function TokenpassAddAddress(command, params, item) {
 				}, user.language)
 			);
 			messages.push(
-				`_${ TAPi18n.__('Tokenpass_Command_TokenpassAddAddress_Name', {
+				`- ${ TAPi18n.__('Tokenpass_Command_TokenpassAddAddress_Name', {
 					postProcess: 'sprintf',
 					sprintf: [channel]
-				}, user.language) }: *${ result.address }*_`
+				}, user.language) }: *${ result.address }*`
 			);
 			if (result.label) {
 				messages.push(
-					`_${ TAPi18n.__('Tokenpass_Command_TokenpassAddAddress_Label', {
+					`- ${ TAPi18n.__('Tokenpass_Command_TokenpassAddAddress_Label', {
 						postProcess: 'sprintf',
 						sprintf: [channel]
-					}, user.language) }: *${ result.label }*_`
+					}, user.language) }: *${ result.label }*`
 				);
 			}
 			if (result.type) {
 				messages.push(
-					`_${ TAPi18n.__('Tokenpass_Command_TokenpassAddAddress_Type', {
+					`- ${ TAPi18n.__('Tokenpass_Command_TokenpassAddAddress_Type', {
 						postProcess: 'sprintf',
 						sprintf: [channel]
-					}, user.language) }: *${ result.type }*_`
+					}, user.language) }: *${ result.type }*`
 				);
 			}
 			if (result.verify_code) {
 				messages.push(
-					`_${ TAPi18n.__('Tokenpass_Command_TokenpassAddAddress_VerifyCode', {
+					`- ${ TAPi18n.__('Tokenpass_Command_TokenpassAddAddress_VerifyCode', {
 						postProcess: 'sprintf',
 						sprintf: [channel]
-					}, user.language) }: *${ result.verify_code }*_`
+					}, user.language) }: *${ result.verify_code }*`
 				);
 			}
 			if (result.verify_address) {
 				messages.push(
-					`_${ TAPi18n.__('Tokenpass_Command_TokenpassAddAddress_VerifyAddress', {
+					`- ${ TAPi18n.__('Tokenpass_Command_TokenpassAddAddress_VerifyAddress', {
 						postProcess: 'sprintf',
 						sprintf: [channel]
-					}, user.language) }: *${ result.verify_address }*_`
+					}, user.language) }: *${ result.verify_address }*`
 				);
 			}
 		} else {

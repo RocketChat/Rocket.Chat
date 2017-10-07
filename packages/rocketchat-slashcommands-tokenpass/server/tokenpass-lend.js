@@ -1,20 +1,31 @@
 function Lend(command, params, item) {
-	if (command !== 'lend' || !Match.test(params, String)) {
+	if (command !== 'lend' || !RocketChat.checkTokenpassOAuthEnabled()) {
 		return;
 	}
 
-	const paramsList = s.words(params);
-
-	check(paramsList[0], String);
-	check(paramsList[1], String);
-	check(paramsList[2], String);
-	check(paramsList[3], String);
-	check(paramsList[4], Match.Maybe(String));
-
 	const user = Meteor.users.findOne(Meteor.userId());
 	const channel = RocketChat.models.Rooms.findOneById(item.rid);
-
+	const paramsList = s.words(params || '');
 	const messages = [];
+
+	try {
+		check(paramsList[0], String);
+		check(paramsList[1], String);
+		check(paramsList[2], String);
+		check(paramsList[3], String);
+		check(paramsList[4], Match.Maybe(String));
+	} catch (exception) {
+		RocketChat.Notifications.notifyUser(Meteor.userId(), 'message', {
+			_id: Random.id(),
+			rid: item.rid,
+			ts: new Date(),
+			msg: TAPi18n.__('Tokenpass_Command_Lend_Error_Params', {
+				postProcess: 'sprintf',
+				sprintf: [channel]
+			}, user.language)
+		});
+		return;
+	}
 
 	RocketChat.lendTokenpassToken({
 		source: paramsList[0],

@@ -30,6 +30,7 @@ Package.onUse(function(api) {
 
 	api.addFiles('server/startup.js', 'server');
 
+	api.addFiles('server/functions/checkTokenpassOAuthEnabled.js', 'server');
 	api.addFiles('server/functions/getProtectedTokenpassBalances.js', 'server');
 	api.addFiles('server/functions/getPublicTokenpassBalances.js', 'server');
 	api.addFiles('server/functions/getTokenpassUserAccountResume.js', 'server');
@@ -47,6 +48,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/models/Users.js', 'server');
 
 	api.addFiles('server/methods/findTokenChannels.js', 'server');
+	api.addFiles('server/methods/checkTokenpassOAuthEnabled.js', 'server');
 
 	api.addFiles('server/cronRemoveUsers.js', 'server');
 
