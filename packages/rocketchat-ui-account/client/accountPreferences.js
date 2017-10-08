@@ -153,7 +153,6 @@ Template.accountPreferences.onCreated(function() {
 
 		data.autoImageLoad = $('input[name=autoImageLoad]:checked').val();
 		data.emailNotificationMode = $('select[name=emailNotificationMode]').val();
-		
 		data.highlights = _.compact(_.map($('[name=highlights]').val().split('\n'), function(e) {
 			return _.trim(e);
 		}));
