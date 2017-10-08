@@ -153,9 +153,21 @@ Template.accountPreferences.onCreated(function() {
 
 		data.autoImageLoad = $('input[name=autoImageLoad]:checked').val();
 		data.emailNotificationMode = $('select[name=emailNotificationMode]').val();
+		
 		data.highlights = _.compact(_.map($('[name=highlights]').val().split('\n'), function(e) {
 			return _.trim(e);
 		}));
+
+		// if highlights changed we need page reload
+		const user = Meteor.user();
+		if (user &&
+			user.settings &&
+			user.settings.preferences &&
+			user.settings.preferences['highlights'] &&
+			user.settings.preferences['highlights'].join('\n') !== data.highlights.join('\n')) {
+			reload = true;
+		}
+
 		data.desktopNotificationDuration = $('input[name=desktopNotificationDuration]').val();
 		data.desktopNotifications = $('#desktopNotifications').find('select').val();
 		data.mobileNotifications = $('#mobileNotifications').find('select').val();
