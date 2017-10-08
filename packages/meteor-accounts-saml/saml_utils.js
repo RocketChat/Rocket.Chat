@@ -227,6 +227,30 @@ SAML.prototype.certToPEM = function(cert) {
 // 	return res;
 // }
 
+SAML.prototype.getStatus = function (xml) {
+	const doc = new xmldom.DOMParser().parseFromString(xml);
+
+	const statusNode = xmlCrypto.xpath(doc, '//*[local-name(.)=\'StatusCode\' and namespace-uri()=\'urn:oasis:names:tc:SAML:2.0:protocol\']')[0];
+	const statusMessage = xmlCrypto.xpath(doc, '//*[local-name(.)=\'StatusMessage\' and namespace-uri()=\'urn:oasis:names:tc:SAML:2.0:protocol\']')[0];
+	// TODO: implement StatusDetail handling 3.2.2.4
+	//const statusDetail = xmlCrypto.xpath(doc, '//*[local-name(.)=\'StatusDetail\' and namespace-uri()=\'urn:oasis:names:tc:SAML:2.0:protocol\']')[0];
+
+	let successStatus = false;
+	let messageText = '';
+
+	if (statusMessage){
+		messageText = statusMessage.firstChild.textContent
+	}
+
+	const status = statusNode.getAttribute('Value');
+
+	if (status === 'urn:oasis:names:tc:SAML:2.0:status:Success'){
+		successStatus = true;
+	}
+
+	return { success :successStatus, message :messageText, statusCode : status};
+};
+
 SAML.prototype.validateSignature = function(xml, cert) {
 	const self = this;
 
@@ -289,17 +313,16 @@ SAML.prototype.validateLogoutResponse = function(samlResponse, callback) {
 					if (Meteor.settings.debug) {
 						console.log(`In Response to: ${ inResponseTo }`);
 					}
-					const status = self.getElement(response, 'Status');
-					const statusCode = self.getElement(status[0], 'StatusCode')[0].$.Value;
+					const status = self.getStatus(decoded);
 					if (Meteor.settings.debug) {
-						console.log(`StatusCode: ${ JSON.stringify(statusCode) }`);
+						console.log(`StatusCode: ${ status.statusCode }`);
 					}
-					if (statusCode === 'urn:oasis:names:tc:SAML:2.0:status:Success') {
+					if (status.success) {
 						// In case of a successful logout at IDP we return inResponseTo value.
 						// This is the only way how we can identify the Meteor user (as we don't use Session Cookies)
 						callback(null, inResponseTo);
 					} else {
-						callback('Error. Logout not confirmed by IDP', null);
+						callback(`Error. Logout not confirmed by IDP\n Status: ${ status.statusCode }\n Message: ${ status.message }`, null);
 					}
 				} else {
 					callback('No Response Found', null);
@@ -323,6 +346,17 @@ SAML.prototype.validateResponse = function(samlResponse, relayState, callback) {
 	});
 
 	parser.parseString(xml, function(err, doc) {
+		// Verify Status
+		if (Meteor.settings.debug) {
+			console.log('Verify Status');
+		}
+		const status = self.getStatus(xml);
+		if (status.success) {
+			console.log('Status Success');
+		} else {
+			return callback(new Error(`Status: ${ status.statusCode }\n Message: ${ status.message }`), null, false);
+		}
+
 		// Verify signature
 		if (Meteor.settings.debug) {
 			console.log('Verify signature');
