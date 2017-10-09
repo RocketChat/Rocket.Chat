@@ -10,5 +10,6 @@ Package.onUse(function(api) {
 		'ecmascript',
 		'rocketchat:lib'
 	]);
-	api.addFiles('leave.js');
+	api.addFiles('client/leave.js', 'client');
+	api.addFiles('server/leave.js', 'server');
 });
