@@ -1,7 +1,7 @@
-/* globals _dbs */
+/* globals RocketChat */
 
-import {SmartiAdapterFactory} from './Smarti'
-import {ApiAiAdapter} from './AiApiAdapter'
+import {SmartiAdapterFactory} from './Smarti';
+import {ApiAiAdapter} from './AiApiAdapter';
 
 export function getKnowledgeAdapter() {
 	let knowledgeSource = '';
@@ -34,7 +34,7 @@ export function getKnowledgeAdapter() {
 		case KNOWLEDGE_SRC_SMARTI:
 			return SmartiAdapterFactory.getInstance(); // buffering done inside the factory method
 	}
-};
+}
 
 /**
  * Refreshes the adapter instances on change of the configuration - the redlink-adapter factory does that on its own
