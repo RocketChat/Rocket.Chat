@@ -1,3 +1,28 @@
+<a name="0.59.0-rc.12"></a>
+# 0.59.0-rc.12 (2017-10-09)
+
+
+### Bug Fixes
+
+- [#8389](https://github.com/RocketChat/Rocket.Chat/pull/8389) Add needed dependency for snaps
+- [#8386](https://github.com/RocketChat/Rocket.Chat/pull/8386) disabled katex tooltip on messageBox
+- [#8408](https://github.com/RocketChat/Rocket.Chat/pull/8408) Duplicate code in rest api letting in a few bugs with the rest api
+- [#8397](https://github.com/RocketChat/Rocket.Chat/pull/8397) Sidebar item menu position in RTL
+- [#8390](https://github.com/RocketChat/Rocket.Chat/pull/8390) Slack import failing and not being able to be restarted
+
+
+<details>
+<summary>Others</summary>
+
+- [#8394](https://github.com/RocketChat/Rocket.Chat/pull/8394) Add i18n Title to snippet messages
+- [#8416](https://github.com/RocketChat/Rocket.Chat/pull/8416) Fix: Account menu position on RTL
+- [#8417](https://github.com/RocketChat/Rocket.Chat/pull/8417) Fix: Missing LDAP option to show internal logs
+- [#8414](https://github.com/RocketChat/Rocket.Chat/pull/8414) Fix: Missing LDAP reconnect setting
+- [#8398](https://github.com/RocketChat/Rocket.Chat/pull/8398) Fix: Missing settings to configure LDAP size and page limits
+</details>
+
+
+
 <a name="0.59.0-rc.11"></a>
 # 0.59.0-rc.11 (2017-10-03)
 
