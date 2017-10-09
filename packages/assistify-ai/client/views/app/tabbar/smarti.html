@@ -1,0 +1,18 @@
+<template name="AssistifySmarti">
+    <div class="content external-search-content">
+        <div class="title">
+            <h2><span class="title-icon"><img
+                    src="/packages/dbs_ai/assets/icons/assistify.png"></span>{{_ "Knowledge_Base"}}</h2>
+        </div>
+		{{#let helpRequest=helpRequestByRoom }}
+			{{#if helpRequest}}
+				{{> HelpRequestContext helpRequest }}
+				{{> HelpRequestActions helpRequest }}
+			{{/if}}
+		{{/let}}
+		{{#if isLivechat}}
+			{{> HelpRequestActions liveChatActions}}
+		{{/if}}
+        <div class="external-message">Smarti</div>
+    </div>
+</template>

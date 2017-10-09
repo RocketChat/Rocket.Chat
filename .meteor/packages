@@ -175,7 +175,6 @@ deepwell:bootstrap-datepicker2
 rocketchat:postcss
 dynamic-import@0.1.1
 
-dbs:common
-dbs:ai
 assistify:help-request
 assistify:bot
+assistify:ai
