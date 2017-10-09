@@ -1,10 +1,10 @@
-/* globals logger */
+/* globals logger, RocketChatFile, UploadFS */
 
 class SlackBridge {
 
 	constructor() {
 		this.util = Npm.require('util');
-		this.slackClient = Npm.require('slack-client');
+		this.slackClient = Npm.require('@slack/client');
 		this.apiToken = RocketChat.settings.get('SlackBridge_APIToken');
 		this.aliasFormat = RocketChat.settings.get('SlackBridge_AliasFormat');
 		this.excludeBotnames = RocketChat.settings.get('SlackBridge_Botnames');
@@ -648,6 +648,7 @@ class SlackBridge {
 
 	registerForRocketEvents() {
 		RocketChat.callbacks.add('afterSaveMessage', this.onRocketMessage.bind(this), RocketChat.callbacks.priority.LOW, 'SlackBridge_Out');
+		RocketChat.callbacks.add('afterFileUpload', this.onRocketFileUpload.bind(this), RocketChat.callbacks.priority.LOW, 'SlackBridge_Out');
 		RocketChat.callbacks.add('afterDeleteMessage', this.onRocketMessageDelete.bind(this), RocketChat.callbacks.priority.LOW, 'SlackBridge_Delete');
 		RocketChat.callbacks.add('setReaction', this.onRocketSetReaction.bind(this), RocketChat.callbacks.priority.LOW, 'SlackBridge_SetReaction');
 		RocketChat.callbacks.add('unsetReaction', this.onRocketUnSetReaction.bind(this), RocketChat.callbacks.priority.LOW, 'SlackBridge_UnSetReaction');
@@ -655,6 +656,7 @@ class SlackBridge {
 
 	unregisterForRocketEvents() {
 		RocketChat.callbacks.remove('afterSaveMessage', 'SlackBridge_Out');
+		RocketChat.callbacks.remove('afterFileUpload', 'SlackBridge_Out');
 		RocketChat.callbacks.remove('afterDeleteMessage', 'SlackBridge_Delete');
 		RocketChat.callbacks.remove('setReaction', 'SlackBridge_SetReaction');
 		RocketChat.callbacks.remove('unsetReaction', 'SlackBridge_UnSetReaction');
@@ -1123,6 +1125,14 @@ class SlackBridge {
 		return rocketMessage;
 	}
 
+	onRocketFileUpload(rocketFileUpload) {
+		logger.class.debug('onRocketFileUpload', rocketFileUpload);
+
+		this.postFileUploadToSlack(rocketFileUpload.room.importIds[0], rocketFileUpload.message.file);
+
+		return rocketFileUpload;
+	}
+
 	/*
 	 https://api.slack.com/methods/reactions.add
 	 */
@@ -1201,6 +1211,48 @@ class SlackBridge {
 				logger.class.debug(`RocketMsgID=${ rocketMessage._id } SlackMsgID=${ postResult.data.message.ts } SlackBotID=${ postResult.data.message.bot_id }`);
 			}
 		}
+	}
+
+	postFileUploadToSlack(slackChannel, file) {
+		// TODO: #8162 - The scope "files:write:user" is required for this working
+
+		const upload = RocketChat.models.Uploads.findOneById(file._id);
+		const fileStore = UploadFS.getStore(upload.store);
+		const readStream = fileStore.getReadStream(upload._id, upload);
+
+		readStream.on('data', Meteor.bindEnvironment(function(data) {
+			return Meteor.setTimeout(function() {
+				try {
+					logger.class.debug('Post File Attachment To Slack', params);
+
+					const params = {
+						token: RocketChat.settings.get('SlackBridge_APIToken'),
+						channels: slackChannel,
+						file: data,
+						filename: file.name,
+						filetype: file.type,
+						title: file.description
+					};
+
+					const postResult = HTTP.post('https://slack.com/api/files.upload', {
+						// headers : {
+						// 	'Content-Type' : 'application/x-www-form-urlencoded; charset=utf-8'
+						// },
+						params: `filter=${ EJSON.stringify(params) }`
+					});
+
+					if (postResult.statusCode === 200 && postResult.data && postResult.data.ok === true) {
+						logger.class.debug('File uploaded on Slack');
+					}
+				} catch (e) {
+					throw e;
+				}
+			}, 200);
+		}));
+
+		readStream.on('error', function(error) {
+			throw error;
+		});
 	}
 
 	/*

@@ -53,11 +53,7 @@ Meteor.methods({
 			rid: roomId,
 			ts: new Date(),
 			msg: '',
-			file: {
-				_id: file._id,
-				name: file.name,
-				type: file.type
-			},
+			file,
 			groupable: false,
 			attachments: [attachment]
 		}, msgData);
