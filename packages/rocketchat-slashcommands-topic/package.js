@@ -14,5 +14,6 @@ Package.onUse(function(api) {
 
 	api.use(['rocketchat:authorization'], ['client', 'server']);
 
-	api.addFiles('topic.js', ['client', 'server']);
+	api.addFiles('client/topic.js', 'client');
+	api.addFiles('server/topic.js', 'server');
 });
