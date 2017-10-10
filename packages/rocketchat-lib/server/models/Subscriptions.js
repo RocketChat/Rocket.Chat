@@ -428,6 +428,7 @@ class ModelSubscriptions extends RocketChat.models._Base {
 
 		return this.update(query, update, { multi: true });
 	}
+
 	updateUserSubscription(rid, userId) {
 		const query = {
 			rid,
@@ -441,6 +442,7 @@ class ModelSubscriptions extends RocketChat.models._Base {
 		};
 		return this.update(query, update);
 	}
+
 	setAlertForRoomIdExcludingUserId(roomId, userId) {
 		const query = {
 			rid: roomId,
@@ -452,6 +454,15 @@ class ModelSubscriptions extends RocketChat.models._Base {
 				{ open: { $ne: true } }
 			]
 		};
+
+		const update = {
+			$set: {
+				alert: true,
+				open: true
+			}
+		};
+		return this.update(query, update, { multi: true });
+	}
 
 	setAlertForUserSubscribed(userId, showHiddenRoom) {
 		const update = {
