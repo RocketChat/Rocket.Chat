@@ -3035,7 +3035,7 @@ body:not(.is-cordova) {
 
 .flex-tab-container {
 	display: flex;
-	flex: 0 0 41px;
+	/*flex: 0 0 41px;*/
 	z-index: 2;
 	border-width: 0 0 0 1px;
 
