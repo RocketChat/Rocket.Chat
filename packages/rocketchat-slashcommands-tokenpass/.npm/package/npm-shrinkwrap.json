@@ -1,0 +1,9 @@
+{
+  "dependencies": {
+    "crypto": {
+      "version": "1.0.1",
+      "resolved": "https://registry.npmjs.org/crypto/-/crypto-1.0.1.tgz",
+      "from": "crypto@1.0.1"
+    }
+  }
+}

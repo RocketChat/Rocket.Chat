@@ -28,11 +28,11 @@ function Lend(command, params, item) {
 	}
 
 	RocketChat.lendTokenpassToken({
-		source: paramsList[0],
-		destination: `user:${ paramsList[1] }`,
-		asset: paramsList[2],
-		quantity: paramsList[3],
-		expiration: (paramsList[4] && paramsList[4] !== '') ? moment().add(parseInt(paramsList[4]), 'days').toDate() : null
+		address: paramsList[0],
+		token: paramsList[1],
+		amount: parseFloat(paramsList[2]),
+		username: `user:${ paramsList[3] }`,
+		days: (paramsList[4] && paramsList[4] !== '') ? parseInt(paramsList[4]) : 0
 	}, (error, result) => {
 		if (error) {
 			messages.push(

@@ -1797,7 +1797,7 @@
   "Tokenpass_Command_Lend_Description": "Allows to lend Tokenpass address to a desired user.",
   "Tokenpass_Command_Lend_Error": "Failed to lend Tokenpass address.",
   "Tokenpass_Command_Lend_Error_Params": "Failed to lend Tokenpass address. One or more parameters required but not defined.",
-  "Tokenpass_Command_Lend_Params": "address amount (in satoshis) username days (empty for \"not expire\")",
+  "Tokenpass_Command_Lend_Params": "address token amount username days (empty for \"not expire\")",
   "Tokenpass_Command_Lend_Result": "Tokenpass address lended successfully.",
   "Tokenpass_Command_Lend_Result_Empty": "Could not lend Tokenpass address.",
   "Tokenpass_Command_Tokens_Description": "Print your Tokenpass combined balances. Same as `/inventory`.",

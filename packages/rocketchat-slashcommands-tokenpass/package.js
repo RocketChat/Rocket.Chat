@@ -28,3 +28,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/tokenpass-register.js', 'server');
 	api.addFiles('server/tokenpass-verify-address.js', 'server');
 });
+
+Npm.depends({
+	'crypto': '1.0.1'
+});
