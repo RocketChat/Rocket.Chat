@@ -1,3 +1,29 @@
+<a name="0.58.4"></a>
+## 0.58.4 (2017-10-06)
+
+
+### Bug Fixes
+
+- [#8389](https://github.com/RocketChat/Rocket.Chat/pull/8389) Add needed dependency for snaps
+- [#8408](https://github.com/RocketChat/Rocket.Chat/pull/8408) Duplicate code in rest api letting in a few bugs with the rest api
+- [#8390](https://github.com/RocketChat/Rocket.Chat/pull/8390) Slack import failing and not being able to be restarted
+
+
+
+<a name="0.58.3"></a>
+## 0.58.3 (2017-09-27)
+- Dependencies update
+
+
+<a name="0.58.2"></a>
+## 0.58.2 (2017-08-23)
+
+### Bug Fixes
+
+- [#7758](https://github.com/RocketChat/Rocket.Chat/pull/7758) Fixed bug preventing validation emails to be sent
+
+
+
 <a name="0.58.1"></a>
 ## 0.58.1 (2017-08-17)
 

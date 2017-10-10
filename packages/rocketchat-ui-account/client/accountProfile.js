@@ -220,7 +220,7 @@ Template.accountProfile.events({
 		e.preventDefault();
 		e.currentTarget.innerHTML = `${ e.currentTarget.innerHTML } ...`;
 		e.currentTarget.disabled = true;
-		Meteor.call('sendConfirmationEmail', user.emails && user.emails[0] && user.emails[0].address((error, results) => {
+		Meteor.call('sendConfirmationEmail', user.emails && user.emails[0] && user.emails[0].address, (error, results) => {
 			if (results) {
 				toastr.success(t('Verification_email_sent'));
 			} else if (error) {
@@ -228,6 +228,6 @@ Template.accountProfile.events({
 			}
 			e.currentTarget.innerHTML = e.currentTarget.innerHTML.replace(' ...', '');
 			return e.currentTarget.disabled = false;
-		}));
+		});
 	}
 });
