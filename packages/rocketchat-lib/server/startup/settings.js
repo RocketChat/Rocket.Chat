@@ -1002,6 +1002,10 @@ RocketChat.settings.addGroup('Message', function() {
 		type: 'boolean',
 		'public': true
 	});
+	this.add('Message_AllowDirectMessagesToYourself', true, {
+		type: 'boolean',
+		'public': true
+	});
 	this.add('Message_AlwaysSearchRegExp', false, {
 		type: 'boolean'
 	});
@@ -1255,7 +1259,7 @@ RocketChat.settings.addGroup('Layout', function() {
 			multiline: true,
 			'public': true
 		});
-		this.add('Layout_Login_Terms', 'By proceeding you are agreeing to our <a href="/terms-of-service">Terms of Service</a> and <a href="/privacy-policy">Privacy Policy</a>.', {
+		this.add('Layout_Login_Terms', 'By proceeding you are agreeing to our <a href="terms-of-service">Terms of Service</a> and <a href="privacy-policy">Privacy Policy</a>.', {
 			type: 'string',
 			multiline: true,
 			'public': true

@@ -16,14 +16,14 @@
 * [Desktop apps](#desktop-apps)
 * [Deployment](#deployment)
    * [Snaps](#instant-server-installation-with-snaps)
-   * [RocketChatLauncher](#launcher)
+   * [RocketChatLauncher](#rocketchatlauncher)
    * [Layershift](#layershift)
    * [Sandstorm.io](#sandstormio)
    * [Yunohost.org](#yunohostorg)
-   * [DPlatform](#dplatform) 
+   * [DPlatform](#dplatform)
    * [IndieHosters](#indiehosters)
    * [Ubuntu 16.04](#ubuntu-1604)
-   * [Cloudron.io](#cloudronio) 
+   * [Cloudron.io](#cloudronio)
    * [Heroku](#heroku)
    * [Helm Kubernetes](#helm-kubernetes)
   * [Scalingo](#scalingo)
@@ -65,12 +65,14 @@ Checkout the latest version at [https://demo.rocket.chat](https://demo.rocket.ch
 Download the Native Cross-Platform Desktop Application at [Rocket.Chat.Electron](https://github.com/RocketChat/Rocket.Chat.Electron/releases)
 
 
-# Native Mobile Apps
+# Mobile Apps
+
+## Native Mobile Apps
 *Note: currently the native apps doesn't support all the features that web does. If you're looking for it, you should download the Cordova apps.*
 
 [![Rocket.Chat on Apple AppStore](https://user-images.githubusercontent.com/551004/29770691-a2082ff4-8bc6-11e7-89a6-964cd405ea8e.png)](https://itunes.apple.com/us/app/rocket-chat/id1148741252?mt=8) [![Rocket.Chat on Google Play](https://user-images.githubusercontent.com/551004/29770692-a20975c6-8bc6-11e7-8ab0-1cde275496e0.png)](https://play.google.com/store/apps/details?id=chat.rocket.android)
 
-# Hybrid Mobile Apps (Cordova)
+## Hybrid Mobile Apps (Cordova)
 
 [![Rocket.Chat on Apple AppStore](https://user-images.githubusercontent.com/551004/29770691-a2082ff4-8bc6-11e7-89a6-964cd405ea8e.png)](https://itunes.apple.com/us/app/rocket.chat/id1028869439?mt=8) [![Rocket.Chat on Google Play](https://user-images.githubusercontent.com/551004/29770692-a20975c6-8bc6-11e7-8ab0-1cde275496e0.png)](https://play.google.com/store/apps/details?id=com.konecty.rocket.chat)
 
@@ -83,7 +85,7 @@ Download the Native Cross-Platform Desktop Application at [Rocket.Chat.Electron]
 # Deployment
 
 ## Instant Server Installation with Snaps
- 
+
 Install Rocket.Chat in seconds on Linux (Ubuntu and others) with:
 
 ```
@@ -92,7 +94,7 @@ sudo snap install rocketchat-server
 
 [![Rocket.Chat Snap is recommended for Linux deployments](https://github.com/Sing-Li/bbug/raw/master/images/ubuntulogo.png)](https://uappexplorer.com/snap/ubuntu/rocketchat-server)
 
-Installing snaps is very quick.  By running that command you have your full Rocket.Chat server up and running.  Snaps are secure.  They are isolated with all of their dependencies.  Snaps also auto update when we release new versions. 
+Installing snaps is very quick.  By running that command you have your full Rocket.Chat server up and running.  Snaps are secure.  They are isolated with all of their dependencies.  Snaps also auto update when we release new versions.
 
 Our snap features a built-in reverse proxy that can request and maintain free letsencrypt SSL certificates. You can go from zero to a public-facing SSL-secured Rocket.Chat server in less than 5 minutes.
 
@@ -341,7 +343,7 @@ It is a great solution for communities and companies wanting to privately host t
 
 ## How it all started
 
-Read about [how it all started](http://osdelivers.blackducksoftware.com/2016/06/10/rocket-chat-hosted-chat-services/).
+Read about [how it all started](https://blog.blackducksoftware.com/rocket-chat-enabling-privately-hosted-chat-services).
 
 ## Awards
 [![InfoWorld Bossie Awards 2016 - Best Open Source Applications](https://raw.githubusercontent.com/Sing-Li/bbug/master/images/bossie.png)](http://www.infoworld.com/article/3122000/open-source-tools/bossie-awards-2016-the-best-open-source-applications.html#slide4)

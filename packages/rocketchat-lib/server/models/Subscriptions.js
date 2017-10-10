@@ -169,6 +169,18 @@ class ModelSubscriptions extends RocketChat.models._Base {
 		return this.find(query);
 	}
 
+	findByRoomIdAndUserIdsOrAllMessages(roomId, userIds) {
+		const query = {
+			rid: roomId,
+			$or: [
+				{ 'u._id': { $in: userIds } },
+				{ emailNotifications: 'all' }
+			]
+		};
+
+		return this.find(query);
+	}
+
 	findUnreadByUserId(userId) {
 		const query = {
 			'u._id': userId,
@@ -429,6 +441,17 @@ class ModelSubscriptions extends RocketChat.models._Base {
 		};
 		return this.update(query, update);
 	}
+	setAlertForRoomIdExcludingUserId(roomId, userId) {
+		const query = {
+			rid: roomId,
+			'u._id': {
+				$ne: userId
+			},
+			$or: [
+				{ alert: { $ne: true } },
+				{ open: { $ne: true } }
+			]
+		};
 
 	setAlertForUserSubscribed(userId, showHiddenRoom) {
 		const update = {
