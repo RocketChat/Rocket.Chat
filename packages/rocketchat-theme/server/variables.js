@@ -10,6 +10,7 @@
 // Defined range of transparencies reduces random colour variances
 // Major colors form the core of the scheme
 // Names changed to reflect usage, comments show pre-refactor names
+
 const majorColors= {
 	'content-background-color': '#FFFFFF',
 	'primary-background-color': '#04436A',
@@ -61,12 +62,26 @@ RocketChat.settings.add('theme-custom-css', '', {
 	public: true
 });
 
+const reg = /--(color-.*?): (.*?);/igm;
 
-RocketChat.settings.add('theme-custom-variables', Assets.getText('client/imports/general/variables.css'), {
-	group: 'Layout',
-	type: 'code',
-	code: 'text/css',
-	multiline: true,
-	section: 'Customize Theme',
-	public: true
+const colors = [...Assets.getText('client/imports/general/variables.css').match(reg)].map(color => {
+	const [name, value] = color.split(": ");
+	return [name.replace("--", ""), value.replace(";", "")];
 });
+
+colors.forEach(([key, color]) => 	{
+	if(/var/.test(color)){
+		const [,value] = color.match(/var\(--(.*?)\)/i);
+		return RocketChat.theme.addPublicColor(key, value, 'Colors Test', 'expression');
+	}
+	RocketChat.theme.addPublicColor(key, color, 'Colors Test');
+});
+
+// RocketChat.settings.add('theme-custom-variables', Assets.getText('client/imports/general/variables.css'), {
+// 	group: 'Layout',
+// 	type: 'code',
+// 	code: 'text/css',
+// 	multiline: true,
+// 	section: 'Customize Theme',
+// 	public: true
+// });
