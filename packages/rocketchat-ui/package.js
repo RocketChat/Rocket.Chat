@@ -111,6 +111,5 @@ Package.onUse(function(api) {
 	api.addFiles('client/views/app/photoswipe.js', 'client');
 	api.addFiles('client/views/app/globalAnnouncement.js', 'client');
 
-
 	api.export('fileUpload');
 });
