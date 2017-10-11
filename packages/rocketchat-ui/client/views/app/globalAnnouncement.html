@@ -1,3 +1,12 @@
 <template name="globalAnnouncement">
-		<div class="global-announcement">{{{announcement}}}</div>
+	{{#if hasAnnouncement}}
+		{{#unless alreadyRead }}
+			<div class="global-announcement">
+				{{#if loggedId}}
+					<button class="button primary js-confirm-global-announcement">{{_ 'Confirm_global_announcement'}}</button>
+				{{/if}}
+				{{{announcement}}}
+			</div>
+		{{/unless}}
+	{{/if}}
 </template>
