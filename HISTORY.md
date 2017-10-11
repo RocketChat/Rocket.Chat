@@ -1,3 +1,25 @@
+<a name="0.59.0-rc.13"></a>
+# 0.59.0-rc.13 (2017-10-11)
+
+
+### New Features
+
+- [#8459](https://github.com/RocketChat/Rocket.Chat/pull/8459) Setting to disable MarkDown and enable AutoLinker
+
+
+### Bug Fixes
+
+- [#8457](https://github.com/RocketChat/Rocket.Chat/pull/8457) LDAP memory issues when pagination is not available
+
+
+<details>
+<summary>Others</summary>
+
+- [#8451](https://github.com/RocketChat/Rocket.Chat/pull/8451) Improve markdown parser code
+</details>
+
+
+
 <a name="0.59.0-rc.12"></a>
 # 0.59.0-rc.12 (2017-10-09)
 

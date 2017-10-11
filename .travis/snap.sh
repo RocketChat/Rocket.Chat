@@ -17,7 +17,7 @@ elif [[ $TRAVIS_TAG ]]; then
     RC_VERSION=$TRAVIS_TAG
 else
     CHANNEL=edge
-    RC_VERSION=0.59.0-rc.12
+    RC_VERSION=0.59.0-rc.13
 fi
 
 echo "Preparing to trigger a snap release for $CHANNEL channel"
