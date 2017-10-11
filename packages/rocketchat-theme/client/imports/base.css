@@ -3900,31 +3900,43 @@ body:not(.is-cordova) {
 
 .global-announcement {
 	padding: 20px;
-	text-align: center;
-}
-
-#login-global-announcement {
 	width: 100%;
-	max-width: 520px;
 	margin: auto;
-	box-shadow:
-			0 1px 1px 0 rgba(0, 0, 0, 0.2),
-			0 2px 10px 0 rgba(0, 0, 0, 0.16);
-	border-radius: 4px;
 	position: relative;
+	line-height: 140%;
 	z-index: 1;
+
+	& .button {
+		  float: right;
+		  padding: 6px 6px;
+		  top: -6px;
+		  right: -16px;
+	  }
+	box-shadow:
+	0 1px 1px 0 rgba(0, 0, 0, 0.2),
+	0 2px 10px 0 rgba(0, 0, 0, 0.16);
 }
 
-#home-global-announcement {
-	width: 100%;
-	margin: 20px auto;
-	box-shadow:
-			0 1px 1px 0 rgba(0, 0, 0, 0.2),
-			0 2px 10px 0 rgba(0, 0, 0, 0.16);
+/* on Login-screen */
+.wrapper .global-announcement {
+	max-width: 520px;
+	text-align: center;
 	border-radius: 4px;
-	position: relative;
-	z-index: 1;
 }
+
+/* on Home-screen */
+.content .global-announcement {
+	padding: 10px 20px;
+	text-align: left;
+	border-radius: 4px;
+}
+
+/* in a channel */
+.flex-tab-main-content .global-announcement .button {
+	right: -6px;
+}
+
+
 
 #login-card {
 	width: 100%;

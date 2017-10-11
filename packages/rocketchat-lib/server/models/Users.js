@@ -2,35 +2,35 @@ class ModelUsers extends RocketChat.models._Base {
 	constructor() {
 		super(...arguments);
 
-		this.tryEnsureIndex({ 'roles': 1 }, { sparse: 1 });
-		this.tryEnsureIndex({ 'name': 1 });
-		this.tryEnsureIndex({ 'lastLogin': 1 });
-		this.tryEnsureIndex({ 'status': 1 });
-		this.tryEnsureIndex({ 'active': 1 }, { sparse: 1 });
-		this.tryEnsureIndex({ 'statusConnection': 1 }, { sparse: 1 });
-		this.tryEnsureIndex({ 'type': 1 });
+		this.tryEnsureIndex({'roles': 1}, {sparse: 1});
+		this.tryEnsureIndex({'name': 1});
+		this.tryEnsureIndex({'lastLogin': 1});
+		this.tryEnsureIndex({'status': 1});
+		this.tryEnsureIndex({'active': 1}, {sparse: 1});
+		this.tryEnsureIndex({'statusConnection': 1}, {sparse: 1});
+		this.tryEnsureIndex({'type': 1});
 
 		this.cache.ensureIndex('username', 'unique');
 	}
 
 	findOneByImportId(_id, options) {
-		return this.findOne({ importIds: _id }, options);
+		return this.findOne({importIds: _id}, options);
 	}
 
 	findOneByUsername(username, options) {
-		const query =	{username};
+		const query = {username};
 
 		return this.findOne(query, options);
 	}
 
 	findOneByEmailAddress(emailAddress, options) {
-		const query =	{'emails.address': new RegExp(`^${ s.escapeRegExp(emailAddress) }$`, 'i')};
+		const query = {'emails.address': new RegExp(`^${ s.escapeRegExp(emailAddress) }$`, 'i')};
 
 		return this.findOne(query, options);
 	}
 
 	findOneAdmin(admin, options) {
-		const query =	{admin};
+		const query = {admin};
 
 		return this.findOne(query, options);
 	}
@@ -38,7 +38,7 @@ class ModelUsers extends RocketChat.models._Base {
 	findOneByIdAndLoginToken(_id, token, options) {
 		const query = {
 			_id,
-			'services.resume.loginTokens.hashedToken' : Accounts._hashLoginToken(token)
+			'services.resume.loginTokens.hashedToken': Accounts._hashLoginToken(token)
 		};
 
 		return this.findOne(query, options);
@@ -47,7 +47,7 @@ class ModelUsers extends RocketChat.models._Base {
 
 	// FIND
 	findById(userId) {
-		const query =	{_id: userId};
+		const query = {_id: userId};
 
 		return this.find(query);
 	}
@@ -67,7 +67,7 @@ class ModelUsers extends RocketChat.models._Base {
 
 
 	findByUsername(username, options) {
-		const query =	{username};
+		const query = {username};
 
 		return this.find(query, options);
 	}
@@ -89,7 +89,7 @@ class ModelUsers extends RocketChat.models._Base {
 		}
 
 		const query = {
-			username: { $in: usernames },
+			username: {$in: usernames},
 			'settings.preferences.highlights.0': {
 				$exists: true
 			}
@@ -99,10 +99,14 @@ class ModelUsers extends RocketChat.models._Base {
 	}
 
 	findActiveByUsernameOrNameRegexWithExceptions(searchTerm, exceptions, options) {
-		if (exceptions == null) { exceptions = []; }
-		if (options == null) { options = {}; }
+		if (exceptions == null) {
+			exceptions = [];
+		}
+		if (options == null) {
+			options = {};
+		}
 		if (!_.isArray(exceptions)) {
-			exceptions = [ exceptions ];
+			exceptions = [exceptions];
 		}
 
 		const termRegex = new RegExp(s.escapeRegExp(searchTerm), 'i');
@@ -131,31 +135,30 @@ class ModelUsers extends RocketChat.models._Base {
 	}
 
 	findByActiveUsersExcept(searchTerm, exceptions, options) {
-		if (exceptions == null) { exceptions = []; }
-		if (options == null) { options = {}; }
+		if (exceptions == null) {
+			exceptions = [];
+		}
+		if (options == null) {
+			options = {};
+		}
 		if (!_.isArray(exceptions)) {
-			exceptions = [ exceptions ];
+			exceptions = [exceptions];
 		}
 
 		const termRegex = new RegExp(s.escapeRegExp(searchTerm), 'i');
+
+		const orStmt = _.reduce(RocketChat.settings.get('Accounts_SearchFields').trim().split(','), function(acc, el) {
+			acc.push({[el.trim()]: termRegex});
+			return acc;
+		}, []);
 		const query = {
 			$and: [
 				{
 					active: true,
-					$or: [
-						{
-							username: termRegex
-						},
-						{
-							name: termRegex
-						},
-						{
-							'emails.address': termRegex
-						}
-					]
+					$or: orStmt
 				},
 				{
-					username: { $exists: true, $nin: exceptions }
+					username: {$exists: true, $nin: exceptions}
 				}
 			]
 		};
@@ -199,21 +202,23 @@ class ModelUsers extends RocketChat.models._Base {
 	}
 
 	findLDAPUsers(options) {
-		const query =	{ldap: true};
+		const query = {ldap: true};
 
 		return this.find(query, options);
 	}
 
 	findCrowdUsers(options) {
-		const query =	{crowd: true};
+		const query = {crowd: true};
 
 		return this.find(query, options);
 	}
 
 	getLastLogin(options) {
-		if (options == null) { options = {}; }
-		const query = { lastLogin: { $exists: 1 } };
-		options.sort = { lastLogin: -1 };
+		if (options == null) {
+			options = {};
+		}
+		const query = {lastLogin: {$exists: 1}};
+		options.sort = {lastLogin: -1};
 		options.limit = 1;
 		const [user] = this.find(query, options).fetch();
 		return user && user.lastLogin;
@@ -242,7 +247,7 @@ class ModelUsers extends RocketChat.models._Base {
 	addImportIds(_id, importIds) {
 		importIds = [].concat(importIds);
 
-		const query =	{_id};
+		const query = {_id};
 
 		const update = {
 			$addToSet: {
@@ -267,7 +272,7 @@ class ModelUsers extends RocketChat.models._Base {
 
 	setServiceId(_id, serviceName, serviceId) {
 		const update =
-		{$set: {}};
+			{$set: {}};
 
 		const serviceIdKey = `services.${ serviceName }.id`;
 		update.$set[serviceIdKey] = serviceId;
@@ -277,7 +282,7 @@ class ModelUsers extends RocketChat.models._Base {
 
 	setUsername(_id, username) {
 		const update =
-		{$set: {username}};
+			{$set: {username}};
 
 		return this.update(_id, update);
 	}
@@ -358,7 +363,9 @@ class ModelUsers extends RocketChat.models._Base {
 	}
 
 	setUserActive(_id, active) {
-		if (active == null) { active = true; }
+		if (active == null) {
+			active = true;
+		}
 		const update = {
 			$set: {
 				active
@@ -375,13 +382,13 @@ class ModelUsers extends RocketChat.models._Base {
 			}
 		};
 
-		return this.update({}, update, { multi: true });
+		return this.update({}, update, {multi: true});
 	}
 
 	unsetLoginTokens(_id) {
 		const update = {
 			$set: {
-				'services.resume.loginTokens' : []
+				'services.resume.loginTokens': []
 			}
 		};
 
@@ -391,8 +398,8 @@ class ModelUsers extends RocketChat.models._Base {
 	unsetRequirePasswordChange(_id) {
 		const update = {
 			$unset: {
-				'requirePasswordChange' : true,
-				'requirePasswordChangeReason' : true
+				'requirePasswordChange': true,
+				'requirePasswordChangeReason': true
 			}
 		};
 
@@ -460,6 +467,16 @@ class ModelUsers extends RocketChat.models._Base {
 		return this.update(query, update);
 	}
 
+	confirmGlobalAnnouncementRead(_id) {
+		const update = {
+			$set: {
+				globalAnnouncementRead: new Date()
+			}
+		};
+
+		return this.update(_id, update);
+	}
+
 	saveUserById(_id, data) {
 		const setData = {};
 		const unsetData = {};
@@ -502,7 +519,7 @@ class ModelUsers extends RocketChat.models._Base {
 			return true;
 		}
 
-		return this.update({ _id }, update);
+		return this.update({_id}, update);
 	}
 
 	// INSERT
@@ -543,7 +560,14 @@ Find users to send a message by email if:
 			'emails.verified': true
 		};
 
-		return this.find(query, { fields: { name: 1, username: 1, emails: 1, 'settings.preferences.emailNotificationMode': 1 } });
+		return this.find(query, {
+			fields: {
+				name: 1,
+				username: 1,
+				emails: 1,
+				'settings.preferences.emailNotificationMode': 1
+			}
+		});
 	}
 }
 
