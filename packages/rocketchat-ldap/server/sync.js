@@ -18,11 +18,11 @@ export function getLdapUsername(ldapUser) {
 
 	if (usernameField.indexOf('#{') > -1) {
 		return usernameField.replace(/#{(.+?)}/g, function(match, field) {
-			return ldapUser.object[field];
+			return ldapUser[field];
 		});
 	}
 
-	return ldapUser.object[usernameField];
+	return ldapUser[usernameField];
 }
 
 
@@ -47,12 +47,12 @@ export function getLdapUserUniqueID(ldapUser) {
 
 	if (Unique_Identifier_Field.length > 0) {
 		Unique_Identifier_Field = Unique_Identifier_Field.find((field) => {
-			return !_.isEmpty(ldapUser.object[field]);
+			return !_.isEmpty(ldapUser[field]);
 		});
 		if (Unique_Identifier_Field) {
 			Unique_Identifier_Field = {
 				attribute: Unique_Identifier_Field,
-				value: ldapUser.raw[Unique_Identifier_Field].toString('hex')
+				value: new Buffer(ldapUser[Unique_Identifier_Field]).toString('hex')
 			};
 		}
 		return Unique_Identifier_Field;
@@ -72,17 +72,17 @@ export function getDataToSyncUserData(ldapUser, user) {
 		_.map(fieldMap, function(userField, ldapField) {
 			switch (userField) {
 				case 'email':
-					if (!ldapUser.object.hasOwnProperty(ldapField)) {
+					if (!ldapUser.hasOwnProperty(ldapField)) {
 						logger.debug(`user does not have attribute: ${ ldapField }`);
 						return;
 					}
 
-					if (_.isObject(ldapUser.object[ldapField])) {
-						_.map(ldapUser.object[ldapField], function(item) {
+					if (_.isObject(ldapUser[ldapField])) {
+						_.map(ldapUser[ldapField], function(item) {
 							emailList.push({ address: item, verified: true });
 						});
 					} else {
-						emailList.push({ address: ldapUser.object[ldapField], verified: true });
+						emailList.push({ address: ldapUser[ldapField], verified: true });
 					}
 					break;
 
@@ -92,7 +92,7 @@ export function getDataToSyncUserData(ldapUser, user) {
 						return;
 					}
 
-					const tmpLdapField = RocketChat.templateVarHandler(ldapField, ldapUser.object);
+					const tmpLdapField = RocketChat.templateVarHandler(ldapField, ldapUser);
 					const userFieldValue = _.reduce(userField.split('.'), (acc, el) => acc[el], user);
 
 					if (tmpLdapField && userFieldValue !== tmpLdapField) {
@@ -129,7 +129,7 @@ export function getDataToSyncUserData(ldapUser, user) {
 export function syncUserData(user, ldapUser) {
 	logger.info('Syncing user data');
 	logger.debug('user', {'email': user.email, '_id': user._id});
-	logger.debug('ldapUser', ldapUser.object);
+	logger.debug('ldapUser', ldapUser);
 
 	const userData = getDataToSyncUserData(ldapUser, user);
 	if (user && user._id && userData) {
@@ -151,7 +151,7 @@ export function syncUserData(user, ldapUser) {
 	}
 
 	if (user && user._id && RocketChat.settings.get('LDAP_Sync_User_Avatar') === true) {
-		const avatar = ldapUser.raw.thumbnailPhoto || ldapUser.raw.jpegPhoto;
+		const avatar = ldapUser.thumbnailPhoto || ldapUser.jpegPhoto;
 		if (avatar) {
 			logger.info('Syncing user avatar');
 
@@ -193,8 +193,8 @@ export function addLdapUser(ldapUser, username, password) {
 		} else {
 			userObject.email = userData.emails[0].address;
 		}
-	} else if (ldapUser.object.mail && ldapUser.object.mail.indexOf('@') > -1) {
-		userObject.email = ldapUser.object.mail;
+	} else if (ldapUser.mail && ldapUser.mail.indexOf('@') > -1) {
+		userObject.email = ldapUser.mail;
 	} else if (RocketChat.settings.get('LDAP_Default_Domain') !== '') {
 		userObject.email = `${ username || uniqueId.value }@${ RocketChat.settings.get('LDAP_Default_Domain') }`;
 	} else {
