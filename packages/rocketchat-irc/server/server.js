@@ -44,6 +44,7 @@ class IrcClient {
 		this.socket.setNoDelay;
 		this.socket.setEncoding('utf-8');
 		this.socket.setKeepAlive(true);
+		this.connect = this.connect.bind(this);
 		this.onConnect = bind(this.onConnect);
 		this.onClose = bind(this.onClose);
 		this.onTimeout = bind(this.onTimeout);
