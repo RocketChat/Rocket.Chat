@@ -160,11 +160,11 @@ export default () => {
 				return;
 			}
 			const css = colors.map(({_id, value, editor}) => {
-				if(editor === "expression"){
-					return `--${ _id.replace("theme-color-", "")}: var(--${value});`
+				if (editor === 'expression') {
+					return `--${ _id.replace('theme-color-', '') }: var(--${ value });`;
 				}
-				return `--${ _id.replace("theme-color-", "")}: ${value};`
-			}).join("\n");
+				return `--${ _id.replace('theme-color-', '') }: ${ value };`;
+			}).join('\n');
 			document.querySelector('#css-variables').innerHTML = `:root {${ css }}`;
 		}
 		cssVarPoly.init();
