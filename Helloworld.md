@@ -282,7 +282,10 @@ Add Rocket.Chat to this world famous time tested small enterprise server today:
 ## Ubuntu VPS
 Follow these [deployment instructions](https://rocket.chat/docs/installation/manual-installation/ubuntu/)
 
-# Testing
+
+# **Testing
+
+
 ## Rebuilding your Project
 
 Rebuilding your project is generalling required in case a breaking change occurs. Click [here(https://guide.meteor.com/1.4-migration.html#recommendations)] to view the list of breaking changes in Meteor. 
