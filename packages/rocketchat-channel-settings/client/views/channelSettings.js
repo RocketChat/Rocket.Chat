@@ -178,13 +178,11 @@ Template.channelSettings.onCreated(function() {
 					}
 				}
 
-				this.processing.set(true);
 				Meteor.call('saveRoomSettings', room._id, RoomSettingsEnum.NAME, value, function(err) {
 					if (err) {
 						return handleError(err);
 					}
 
-					this.processing.set(false);
 					RocketChat.callbacks.run('roomNameChanged', {
 						_id: room._id,
 						name: value
@@ -204,13 +202,11 @@ Template.channelSettings.onCreated(function() {
 				return RocketChat.authz.hasAllPermission('edit-room', room._id);
 			},
 			save(value, room) {
-				this.processing.set(true);
 				return Meteor.call('saveRoomSettings', room._id, RoomSettingsEnum.TOPIC, value, function(err) {
 					if (err) {
 						return handleError(err);
 					}
 
-					this.processing.set(false);
 					toastr.success(TAPi18n.__('Room_topic_changed_successfully'));
 					return RocketChat.callbacks.run('roomTopicChanged', room);
 				});
@@ -226,13 +222,11 @@ Template.channelSettings.onCreated(function() {
 				return RocketChat.authz.hasAllPermission('edit-room', room._id);
 			},
 			save(value, room) {
-				this.processing.set(true);
 				return Meteor.call('saveRoomSettings', room._id, RoomSettingsEnum.ANNOUNCEMENT, value, function(err) {
 					if (err) {
 						return handleError(err);
 					}
 
-					this.processing.set(false);
 					toastr.success(TAPi18n.__('Room_announcement_changed_successfully'));
 					return RocketChat.callbacks.run('roomAnnouncementChanged', room);
 				});
@@ -248,13 +242,11 @@ Template.channelSettings.onCreated(function() {
 				return RocketChat.authz.hasAllPermission('edit-room', room._id);
 			},
 			save(value, room) {
-				this.processing.set(true);
 				return Meteor.call('saveRoomSettings', room._id, RoomSettingsEnum.DESCRIPTION, value, function(err) {
 					if (err) {
 						return handleError(err);
 					}
 
-					this.processing.set(false);
 					return toastr.success(TAPi18n.__('Room_description_changed_successfully'));
 				});
 			}
@@ -393,7 +385,6 @@ Template.channelSettings.onCreated(function() {
 				}, function(confirmed) {
 					swal.disableButtons();
 					if (confirmed) {
-						this.processing.set(true);
 						const action = value ? 'archiveRoom' : 'unarchiveRoom';
 						return Meteor.call(action, room._id, function(err) {
 							if (err) {
@@ -409,7 +400,6 @@ Template.channelSettings.onCreated(function() {
 								showConfirmButton: false
 							});
 
-							this.processing.set(false);
 							return RocketChat.callbacks.run(action, room);
 						});
 					} else {
@@ -428,13 +418,11 @@ Template.channelSettings.onCreated(function() {
 				return RocketChat.authz.hasAllPermission('edit-room', room._id);
 			},
 			save(value, room) {
-				this.processing.set(true);
 				return Meteor.call('saveRoomSettings', room._id, 'joinCode', value, function(err) {
 					if (err) {
 						return handleError(err);
 					}
 
-					this.processing.set(false);
 					toastr.success(TAPi18n.__('Room_password_changed_successfully'));
 					return RocketChat.callbacks.run('roomCodeChanged', room);
 				});
