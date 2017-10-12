@@ -1,5 +1,5 @@
 /* globals openRoom */
-import { RoomTypeConfig, RoomTypeRouteConfig } from '../RoomTypeConfig';
+import { RoomSettingsEnum, RoomTypeConfig, RoomTypeRouteConfig } from '../RoomTypeConfig';
 
 export class PrivateRoomRoute extends RoomTypeRouteConfig {
 	constructor() {
@@ -55,5 +55,14 @@ export class PrivateRoomType extends RoomTypeConfig {
 
 	canAddUser(room) {
 		return RocketChat.authz.hasAtLeastOnePermission(['add-user-to-any-p-room', 'add-user-to-joined-room'], room._id);
+	}
+
+	allowRoomSettingChange(room, setting) {
+		switch (setting) {
+			case RoomSettingsEnum.JOIN_CODE:
+				return false;
+			default:
+				return true;
+		}
 	}
 }
