@@ -6,15 +6,141 @@ Welcome to Hello World, a comprehensive troubleshooting guide for developers and
 
 For more details, visit the Rocket.Chat docs by clicking [*here](https://docs.rocket.chat/)
 
-#Table of Contents
+#**Hello World - a User's Guide on contributing and developing Rocket.Chat
+
+# *Table of Contents*
+
+*[Contribution to Rocket.Chat](#contribution)
 
 *[Development Guide](#development-guide)
 
 *[Testing](#testing)
 
-#Development Guide
+# Contribution to Rocket.Chat
 
-##Installation Guide
+### How to Contribute?
+
+#### Forking the Repository
+
+1. Open the Repository in Github and Click on the **Fork** Button in the top right corner as shown in the image.
+![Fork Button](https://help.github.com/assets/images/help/repository/fork_button.jpg)
+
+#### Keep your fork synced
+
+You might fork a project in order to propose changes to the upstream, or original, repository. In this case, it's good practice to regularly sync your fork with the upstream repository. To do this, you'll need to use Git on the command line. You can practice setting the upstream repository using the same `octocat/Spoon-Knife` repository you just forked!
+
+**Step 1: Set Up Git**
+
+
+If you haven't yet, you should first set up Git. Don't forget to set up authentication to GitHub from Git as well.
+
+
+**Step 2: Create a local clone of your fork**
+
+*Right now, you have a fork of the repository, but you don't have the files in that repository on your computer. Let's create a clone of your fork locally on your computer.
+
+*On GitHub, navigate to your fork of the repository.
+
+*Under the repository name, click `Clone` or download.
+
+*In the Clone with HTTPs section,copy the clone URL for the repository.
+
+*Open Terminal.
+
+*Type `git clone`, and then paste the URL you copied in Step 2. It will look like this, with your GitHub username instead of YOUR-USERNAME:
+
+`
+`git clone https://github.com/YOUR-USERNAME/Rocket.Chat`
+`
+
+*Press Enter. Your local clone will be created.
+
+``
+
+git clone https://github.com/YOUR-USERNAME/Rocket.Chat
+Cloning into `Rocket.Chat`...
+remote: Counting objects: 10, done.
+remote: Compressing objects: 100% (8/8), done.
+remove: Total 10 (delta 1), reused 10 (delta 1)
+Unpacking objects: 100% (10/10), done.
+
+``
+Now, you have a local copy of your fork of the repository!
+
+**Step 3: Configure Git to sync your fork with the original repository**
+
+*When you fork a project in order to propose changes to the original repository, you can configure Git to pull changes from the original, or upstream, repository into the local clone of your fork.
+
+*On GitHub, navigate to the repository.
+
+*Under the repository name, click `Clone` or download.
+
+*In the Clone with HTTPs section,copy the clone URL for the repository.
+
+*Open Terminal.
+
+*Change directories to the location of the fork you cloned in Step 2: Create a local clone of your fork.
+
+*To go to your home directory, type just `cd ` with no other text.
+*To list the files and folders in your current directory, type `ls`.
+*To go into one of your listed directories, type `cd your_listed_directory`.
+*To go up one directory, type `cd ...`
+*Type `git remote -v` and press Enter. You'll see the current configured remote repository for your fork.
+
+``
+git remote -v
+origin  https://github.com/YOUR_USERNAME/YOUR_FORK.git (fetch)
+origin  https://github.com/YOUR_USERNAME/YOUR_FORK.git (push)
+``
+*Type git remote add upstream, and then paste the URL you copied in Step 2 and press Enter. It will look like this:
+
+``
+git remote add upstream https://github.com/octocat/Spoon-Knife.git
+``
+*To verify the new upstream repository you've specified for your fork, type `git remote -v` again. You should see the URL for your fork as origin, and the URL for the original repository as upstream.
+
+
+```
+
+git remote -v
+origin    https://github.com/YOUR_USERNAME/YOUR_FORK.git (fetch)
+origin    https://github.com/YOUR_USERNAME/YOUR_FORK.git (push)
+upstream  https://github.com/ORIGINAL_OWNER/ORIGINAL_REPOSITORY.git (fetch)
+upstream  https://github.com/ORIGINAL_OWNER/ORIGINAL_REPOSITORY.git (push)
+
+```
+Now, you can keep your fork synced with the upstream repository with a few Git commands. For more information, see "Syncing a fork."
+
+### How can you make changes into Rocket.Chat?
+
+*Before starting contributing to Rocket.Chat, it is advised to go through the basic commands and usage of Git and Github.
+Click **[here](https://help.github.com/)** for help on Github usage.
+
+
+
+*After forking and cloning the repository, you can edit individual files in any text editor of your choice, and make changes to the features offered in the Rocket.Chat Platform.
+
+*If you wish to share the changes you have made with other users or if you have solved any pre-existing issue in the build, make sure to push your code to the offficial Rocket.Chat repository by **making a pull request**.
+
+##### How to make a Pull Request?
+
+After you have made changes to your local build of Rocket.Chat, firstly you need to commit and push the new repository into the local repository, in your own account. Then, you need to make a Pull Request to ask for the permission of the administrator to sync your repository with the original build. 
+
+For more information on pull requests, click **[here](https://help.github.com/articles/creating-a-pull-request/)
+
+**Note that after committing changes, the local repository must have just one commit more than the original repository.** 
+
+**Next Steps**
+
+The sky's the limit with the changes you can make to a fork, including:
+
+Creating branches: Branches allow you to build new features or test out ideas without putting your main project at risk.
+Opening pull requests: If you are hoping to contribute back to the original repository, you can send a request to the original author to pull your fork into their repository by submitting a pull request.
+
+
+# Development Guide
+
+## Installation Guide
 
 ### Instant Server Installation with Snaps
 
@@ -72,7 +198,9 @@ Get your Rocket.Chat instance hosted in a "as a Service" style. You register and
 
 Deploy from shell:
 
-`snap install rocketchat-server`
+`
+snap install rocketchat-server
+`
 
 In under 30 seconds, your Rocket.Chat server will be up and running at `http://host-ip:3000`
 
@@ -154,16 +282,17 @@ Add Rocket.Chat to this world famous time tested small enterprise server today:
 ## Ubuntu VPS
 Follow these [deployment instructions](https://rocket.chat/docs/installation/manual-installation/ubuntu/)
 
-## Rebuild 
+# Testing
+## Rebuilding your Project
 
 Rebuilding your project is generalling required in case a breaking change occurs. Click [here(https://guide.meteor.com/1.4-migration.html#recommendations)] to view the list of breaking changes in Meteor. 
 #Testing
 
-###Requeriments
+### Requirements
 
 `Google Chrome Browser`
 
-###Getting Started
+### Getting Started
 
 **Start Meteor**
 
@@ -181,15 +310,13 @@ emails: "rocketchat.internal.admin.test@rocket.chat"
 password: "rocketchat.internal.admin.test"
 ```
 
-###Run Tests
+### Run Tests
 
 On another terminal window, run the test with the command below:
 
 `meteor npm run chimp-test`
 
-####Troubleshooting
-
-Troubleshooting
+#### Troubleshooting
 
 1. babel-runtime:
 
