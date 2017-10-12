@@ -34,6 +34,7 @@ Package.onUse(function(api) {
 	api.use('matb33:collection-hooks');
 	api.use('service-configuration');
 	api.use('check');
+	api.use('modules');
 	api.use('rocketchat:i18n');
 	api.use('rocketchat:streamer');
 	api.use('rocketchat:version');
@@ -235,7 +236,10 @@ Package.onUse(function(api) {
 
 	// EXPORT
 	api.export('RocketChat');
-	api.export('RocketChatTabBar');
+
+	// exports
+	api.mainModule('server/lib/index.js', 'server');
+	api.mainModule('client/lib/index.js', 'client');
 
 	api.imply('tap:i18n');
 });

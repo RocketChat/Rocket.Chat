@@ -1,5 +1,5 @@
 /* globals openRoom */
-import { RoomTypeConfig, RoomTypeRouteConfig } from '../RoomTypeConfig';
+import { RoomTypeConfig, RoomTypeRouteConfig, RoomSettingsEnum } from '../RoomTypeConfig';
 
 export class DirectMessageRoomRoute extends RoomTypeRouteConfig {
 	constructor() {
@@ -78,5 +78,19 @@ export class DirectMessageRoomType extends RoomTypeConfig {
 
 	getDisplayName(room) {
 		return room.usernames.join(' x ');
+	}
+
+	allowRoomSettingChange(room, setting) {
+		switch (setting) {
+			case RoomSettingsEnum.NAME:
+			case RoomSettingsEnum.DESCRIPTION:
+			case RoomSettingsEnum.READ_ONLY:
+			case RoomSettingsEnum.REACT_WHEN_READ_ONLY:
+			case RoomSettingsEnum.ARCHIVE_OR_UNARCHIVE:
+			case RoomSettingsEnum.JOIN_CODE:
+				return false;
+			default:
+				return true;
+		}
 	}
 }
