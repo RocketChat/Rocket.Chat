@@ -17,6 +17,7 @@ function addDirectory(api, pathInPackage, environment) {
 }
 
 Package.onUse(function(api) {
+	api.mainModule('assistify-ai.js');
 
 	api.use(['ecmascript', 'underscore']);
 	api.use('templating', 'client');
@@ -37,6 +38,11 @@ Package.onUse(function(api) {
 
 	//client views
 	addDirectory(api, 'client/views/app/tabbar', 'client');
+
+	//public components
+	api.addFiles('assistify-ai.js', 'server');
+
+	// api.export('getKnowledgeAdapter');
 
 	//i18n in Rocket.Chat-package (packages/rocketchat-i18n/i18n
 });

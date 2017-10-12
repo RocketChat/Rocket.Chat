@@ -2,7 +2,7 @@
  * Restful API endpoints for interaction with external systems
  */
 
-import {helpRequest} from '../help-request';
+import {HelpRequestApi} from './api';
 
 function keysToLowerCase(obj) {
 	for (const prop in obj) {
@@ -58,7 +58,7 @@ RocketChat.API.v1.addRoute('assistify.helpDiscussion', {authRequired: true}, {
 
 		const api = new helpRequest.HelpRequestApi();
 		try {
-			helpRequest.HelpRequestApi.validateHelpDiscussionPostRequest(this.bodyParams);
+			HelpRequestApi.validateHelpDiscussionPostRequest(this.bodyParams);
 		} catch (err) {
 			console.log('Assistify rejected malformed request:', JSON.stringify(this.request.body, ' ', 2));
 			throw new Meteor.Error(`Malformed request:${ JSON.stringify(err, ' ', 2) }`);

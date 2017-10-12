@@ -36,6 +36,7 @@ export function getKnowledgeAdapter() {
 	}
 }
 
+
 /**
  * Refreshes the adapter instances on change of the configuration - the redlink-adapter factory does that on its own
  */

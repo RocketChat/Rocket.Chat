@@ -1,4 +1,4 @@
-/* globals _dbs, SystemLogger, RocketChat */
+/* globals SystemLogger, RocketChat */
 
 class SmartiAdapter {
 	constructor(adapterProps) {
@@ -89,7 +89,7 @@ export class SmartiAdapterFactory {
 		/**
 		 * Refreshes the adapter instances on change of the configuration
 		 */
-		//todo: validate it works
+			//todo: validate it works
 		const factory = this;
 		this.settingsHandle = RocketChat.models.Settings.findByIds(['DBS_AI_Source', 'DBS_AI_Redlink_URL', 'DBS_AI_Redlink_Auth_Token', 'DBS_AI_Redlink_Hook_Token']).observeChanges({
 			added() {
@@ -132,7 +132,8 @@ export class SmartiAdapterFactory {
 
 			SystemLogger.debug(RocketChat.settings);
 
-			if (_dbs.mockInterfaces()) { //use mock
+			const useMock = false;
+			if (useMock) { //todo: proper mocking
 				this.singleton = new SmartiMock(adapterProps);
 			} else {
 				this.singleton = new SmartiAdapter(adapterProps);
@@ -188,7 +189,7 @@ RocketChat.API.v1.addRoute('smarti.result/:token', {authRequired: false}, {
 			RocketChat.Notifications.notifyRoom(this.bodyParams.channelId, 'newConversationResult', m);
 			return RocketChat.API.v1.success();
 		} else {
-			return RocketChat.API.v1.unauthorized({msg:'token not valid'});
+			return RocketChat.API.v1.unauthorized({msg: 'token not valid'});
 		}
 	}
 });
