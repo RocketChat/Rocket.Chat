@@ -65,13 +65,13 @@ RocketChat.settings.add('theme-custom-css', '', {
 const reg = /--(color-.*?): (.*?);/igm;
 
 const colors = [...Assets.getText('client/imports/general/variables.css').match(reg)].map(color => {
-	const [name, value] = color.split(": ");
-	return [name.replace("--", ""), value.replace(";", "")];
+	const [name, value] = color.split(': ');
+	return [name.replace('--', ''), value.replace(';', '')];
 });
 
 colors.forEach(([key, color]) => 	{
-	if(/var/.test(color)){
-		const [,value] = color.match(/var\(--(.*?)\)/i);
+	if (/var/.test(color)) {
+		const [, value] = color.match(/var\(--(.*?)\)/i);
 		return RocketChat.theme.addPublicColor(key, value, 'Colors Test', 'expression');
 	}
 	RocketChat.theme.addPublicColor(key, color, 'Colors Test');
