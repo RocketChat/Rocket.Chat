@@ -1,5 +1,6 @@
-import roomTypesCommon from '../../lib/roomTypesCommon';
-RocketChat.roomTypes = new class extends roomTypesCommon {
+import { RoomTypesCommon } from '../../lib/RoomTypesCommon';
+
+RocketChat.roomTypes = new class extends RoomTypesCommon {
 	checkCondition(roomType) {
 		return roomType.condition == null || roomType.condition();
 	}
