@@ -1,24 +1,42 @@
 /* globals openRoom, LivechatInquiry */
 
-RocketChat.roomTypes.add('l', 5, {
-	icon: 'livechat',
-	label: 'Livechat',
-	route: {
-		name: 'live',
-		path: '/live/:code(\\d+)',
-		action(params/*, queryParams*/) {
-			openRoom('l', params.code);
-		},
-		link(sub) {
-			return {
-				code: sub.code
-			};
-		}
-	},
+class LivechatRoomRoute extends RocketChat.definitions.RoomTypeRouteConfig {
+	constructor() {
+		super({
+			name: 'live',
+			path: '/live/:code(\\d+)'
+		});
+	}
+
+	action(params) {
+		openRoom('l', params.code);
+	}
+
+	link(sub) {
+		return {
+			code: sub.code
+		};
+	}
+}
+
+class LivechatRoomType extends RocketChat.definitions.RoomTypeConfig {
+	constructor() {
+		super({
+			identifier: 'l',
+			order: 5,
+			icon: 'livechat',
+			label: 'Livechat',
+			route: new LivechatRoomRoute()
+		});
+
+		this.notSubscribedTpl = {
+			template: 'livechatNotSubscribed'
+		};
+	}
 
 	findRoom(identifier) {
 		return ChatRoom.findOne({ code: parseInt(identifier) });
-	},
+	}
 
 	roomName(roomData) {
 		if (!roomData.name) {
@@ -26,16 +44,16 @@ RocketChat.roomTypes.add('l', 5, {
 		} else {
 			return roomData.name;
 		}
-	},
+	}
 
 	condition() {
 		return RocketChat.settings.get('Livechat_enabled') && RocketChat.authz.hasAllPermission('view-l-room');
-	},
+	}
 
 	canSendMessage(roomId) {
 		const room = ChatRoom.findOne({ _id: roomId }, { fields: { open: 1 } });
 		return room && room.open === true;
-	},
+	}
 
 	getUserStatus(roomId) {
 		let guestName;
@@ -51,9 +69,7 @@ RocketChat.roomTypes.add('l', 5, {
 		if (guestName) {
 			return Session.get(`user_${ guestName }_status`);
 		}
-	},
-
-	notSubscribedTpl: {
-		template: 'livechatNotSubscribed'
 	}
-});
+}
+
+RocketChat.roomTypes.add(new LivechatRoomType());
