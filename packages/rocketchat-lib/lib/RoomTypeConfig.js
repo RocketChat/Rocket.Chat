@@ -1,4 +1,13 @@
-RocketChat.definitions = RocketChat.definitions || {};
+export const RoomSettingsEnum = {
+	NAME: 'roomName',
+	TOPIC: 'roomTopic',
+	ANNOUNCEMENT: 'roomAnnouncement',
+	DESCRIPTION: 'roomDescription',
+	READ_ONLY: 'readOnly',
+	REACT_WHEN_READ_ONLY: 'reactWhenReadOnly',
+	ARCHIVE_OR_UNARCHIVE: 'archiveOrUnarchive',
+	JOIN_CODE: 'joinCode'
+};
 
 export class RoomTypeRouteConfig {
 	constructor({ name, path }) {
@@ -22,8 +31,6 @@ export class RoomTypeRouteConfig {
 		return this._path;
 	}
 }
-
-RocketChat.definitions.RoomTypeRouteConfig = RoomTypeRouteConfig;
 
 export class RoomTypeConfig {
 	constructor({
@@ -130,11 +137,11 @@ export class RoomTypeConfig {
 		return room.name;
 	}
 
-	allowChangeChannelSettings(/* room, setting */) {
+	allowRoomSettingChange(/* room, setting */) {
 		return true;
 	}
 
-	canBeDeleted(userId, room) {
+	canBeDeleted(room) {
 		return Meteor.isServer ?
 			RocketChat.authz.hasAtLeastOnePermission(Meteor.userId(), [`delete-${ room.t }`], room._id) :
 			RocketChat.authz.hasAtLeastOnePermission([`delete-${ room.t }`], room._id);
@@ -168,5 +175,3 @@ export class RoomTypeConfig {
 		return false;
 	}
 }
-
-RocketChat.definitions.RoomTypeConfig = RoomTypeConfig;

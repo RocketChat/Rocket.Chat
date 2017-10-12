@@ -1,4 +1,5 @@
-/*globals RocketChatTabBar, AdminChatRoom, RocketChat */
+/*globals AdminChatRoom, RocketChat */
+import { RocketChatTabBar } from 'meteor/rocketchat:lib';
 
 this.AdminChatRoom = new Mongo.Collection('rocketchat_room');
 

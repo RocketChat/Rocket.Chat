@@ -1,6 +1,7 @@
 /* globals openRoom, LivechatInquiry */
+import { RoomSettingsEnum, RoomTypeConfig, RoomTypeRouteConfig } from 'meteor/rocketchat:lib';
 
-class LivechatRoomRoute extends RocketChat.definitions.RoomTypeRouteConfig {
+class LivechatRoomRoute extends RoomTypeRouteConfig {
 	constructor() {
 		super({
 			name: 'live',
@@ -19,7 +20,7 @@ class LivechatRoomRoute extends RocketChat.definitions.RoomTypeRouteConfig {
 	}
 }
 
-class LivechatRoomType extends RocketChat.definitions.RoomTypeConfig {
+class LivechatRoomType extends RoomTypeConfig {
 	constructor() {
 		super({
 			identifier: 'l',
@@ -68,6 +69,15 @@ class LivechatRoomType extends RocketChat.definitions.RoomTypeConfig {
 
 		if (guestName) {
 			return Session.get(`user_${ guestName }_status`);
+		}
+	}
+
+	allowRoomSettingChange(room, setting) {
+		switch (setting) {
+			case RoomSettingsEnum.JOIN_CODE:
+				return false;
+			default:
+				return true;
 		}
 	}
 }
