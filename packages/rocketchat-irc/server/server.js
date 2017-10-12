@@ -45,10 +45,12 @@ class IrcClient {
 		this.socket.setEncoding('utf-8');
 		this.socket.setKeepAlive(true);
 		this.connect = this.connect.bind(this);
+		this.onConnect = this.onConnect.bind(this);
 		this.onConnect = bind(this.onConnect);
 		this.onClose = bind(this.onClose);
 		this.onTimeout = bind(this.onTimeout);
 		this.onError = bind(this.onError);
+		this.onReceiveRawMessage = this.onReceiveRawMessage.bind(this);
 		this.onReceiveRawMessage = bind(this.onReceiveRawMessage);
 		this.socket.on('data', this.onReceiveRawMessage);
 		this.socket.on('close', this.onClose);
