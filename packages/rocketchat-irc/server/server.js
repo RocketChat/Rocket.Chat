@@ -61,14 +61,14 @@ class IrcClient {
 		this.receiveMemberListBuf = {};
 		this.pendingJoinRoomBuf = [];
 
-		this.successLoginMessageRegex = /RocketChat.settings.get('IRC_RegEx_successLogin');/;
-		this.failedLoginMessageRegex = /RocketChat.settings.get('IRC_RegEx_failedLogin');/;
-		this.receiveMessageRegex = /RocketChat.settings.get('IRC_RegEx_receiveMessage');/;
-		this.receiveMemberListRegex = /RocketChat.settings.get('IRC_RegEx_receiveMemberList');/;
-		this.endMemberListRegex = /RocketChat.settings.get('IRC_RegEx_endMemberList');/;
-		this.addMemberToRoomRegex = /RocketChat.settings.get('IRC_RegEx_addMemberToRoom');/;
-		this.removeMemberFromRoomRegex = /RocketChat.settings.get('IRC_RegEx_removeMemberFromRoom');/;
-		this.quitMemberRegex = /RocketChat.settings.get('IRC_RegEx_quitMember');/;
+		this.successLoginMessageRegex = new RegExp(RocketChat.settings.get('IRC_RegEx_successLogin'));
+		this.failedLoginMessageRegex = new RegExp(RocketChat.settings.get('IRC_RegEx_failedLogin'));
+		this.receiveMessageRegex = new RegExp(RocketChat.settings.get('IRC_RegEx_receiveMessage'));
+		this.receiveMemberListRegex = new RegExp(RocketChat.settings.get('IRC_RegEx_receiveMemberList'));
+		this.endMemberListRegex = new RegExp(RocketChat.settings.get('IRC_RegEx_endMemberList'));
+		this.addMemberToRoomRegex = new RegExp(RocketChat.settings.get('IRC_RegEx_addMemberToRoom'));
+		this.removeMemberFromRoomRegex = new RegExp(RocketChat.settings.get('IRC_RegEx_removeMemberFromRoom'));
+		this.quitMemberRegex = new RegExp(RocketChat.settings.get('IRC_RegEx_quitMember'));
 	}
 
 	connect(loginCb) {
