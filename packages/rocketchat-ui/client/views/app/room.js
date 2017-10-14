@@ -955,8 +955,8 @@ Template.room.onRendered(function() {
 		}
 	});
 	Tracker.autorun(function() {
-		const subRoom = ChatSubscription.findOne({rid:template.data._id});
-		if (!subRoom) {
+		const room = RocketChat.models.Rooms.findOne({ _id: template.data._id });
+		if (!room) {
 			FlowRouter.go('home');
 		}
 	});
