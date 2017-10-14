@@ -17,7 +17,7 @@
 		margin: 0 0.2rem;
 
 		&:hover {
-			color: var(--color-button-primary);
+			color: var(--rc-color-button-primary);
 		}
 	}
 
@@ -27,7 +27,7 @@
 		cursor: pointer;
 
 		&:hover &-icon {
-			fill: var(--color-button-primary);
+			fill: var(--rc-color-button-primary);
 		}
 
 		&-icon {
@@ -48,7 +48,7 @@
 
 	&.active {
 		& .message-actions__label {
-			color: var(--color-button-primary);
+			color: var(--rc-color-button-primary);
 		}
 	}
 
