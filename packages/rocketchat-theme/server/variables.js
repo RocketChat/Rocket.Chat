@@ -62,7 +62,7 @@ RocketChat.settings.add('theme-custom-css', '', {
 	public: true
 });
 
-const reg = /--(color-.*?): (.*?);/igm;
+const reg = /--(rc-color-.*?): (.*?);/igm;
 
 const colors = [...Assets.getText('client/imports/general/variables.css').match(reg)].map(color => {
 	const [name, value] = color.split(": ");
