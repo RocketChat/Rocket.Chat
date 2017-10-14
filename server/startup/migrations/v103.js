@@ -31,7 +31,7 @@ const minorColors= {
 const newvariables = {
 	'content-background-color': 'color-primary',
 	'primary-background-color': 'color-primary'
-}
+};
 RocketChat.Migrations.add({
 	version: 103,
 	up() {
