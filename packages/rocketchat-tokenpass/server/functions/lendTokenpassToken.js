@@ -1,43 +1,46 @@
 import moment from 'moment';
+import { Base64 } from 'meteor/base64';
 
 let userAgent = 'Meteor';
 if (Meteor.release) { userAgent += `/${ Meteor.release }`; }
 
 RocketChat.lendTokenpassToken = function(lending, cb) {
-	const client_id = RocketChat.settings.get('Accounts_OAuth_Tokenpass_id');
-	const client_secret = RocketChat.settings.get('Accounts_OAuth_Tokenpass_secret');
+	const authApiToken = RocketChat.settings.get('Accounts_OAuth_Tokenpass_id');
+	const authApiSecret = RocketChat.settings.get('Accounts_OAuth_Tokenpass_secret');
+	const authApiNonce = moment().unix();
+
+	const requestParams = {
+		source: lending.address,
+		destination: lending.username,
+		asset: lending.token,
+		quantity: lending.amount * 100000000,
+		expiration: lending.days > 0 ? moment().add(lending.days, 'days').toDate() : null
+	};
+
+	const endPointUrl = `${ RocketChat.settings.get('API_Tokenpass_URL') }/api/v1/tca/provisional/tx`;
+	const authApiMessage = `POST\n${ endPointUrl }\n${ EJSON.stringify(requestParams, false) }\n${ authApiToken }\n${ authApiNonce }`;
 
 	crypto = require('crypto');
-	// const signature = crypto.createHmac('sha256', client_secret).update(`key=${ client_id }`).digest('hex');
-	const signature = crypto.createHmac('sha256', client_secret);
-
-	console.log('signature', signature);
+	const hmac = crypto.createHmac('sha256', authApiSecret).update(authApiMessage).digest();
+	const authApiSignature = Base64.encode(hmac);
+	// console.log('authApiSignature', authApiSignature);
 
 	try {
 		const result = HTTP.post(
-			`${ RocketChat.settings.get('API_Tokenpass_URL') }/api/v1/tca/provisional/tx`, {
+			endPointUrl, {
 				headers: {
 					Accept: 'application/json',
 					'User-Agent': userAgent,
-					'x-tokenly-auth-api-token': client_id,
-					// 'x-tokenly-auth-nonce': '',
-					'x-tokenly-auth-signature': signature
+					'X-Tokenly-Auth-Api-Token': authApiToken,
+					'X-Tokenly-Auth-Nonce': authApiNonce,
+					'x-Tokenly-Auth-Signature': authApiSignature
 				},
-				data: {
-					source: lending.address,
-					destination: lending.username,
-					asset: lending.token,
-					quantity: lending.amount * 100000000,
-					expiration: lending.days > 0 ? moment().add(lending.days, 'days').toDate() : null
-				}
+				data: requestParams
 			});
-
-		console.log('result', result);
 
 		return cb(null, result && result.data && result.data.result);
 	} catch (exception) {
-
-		console.log('exception', exception);
+		console.log('exception', exception.response.data);
 
 		return cb(
 			(exception.response && exception.response.data && (exception.response.data.message || exception.response.data.error)) || TAPi18n.__('Tokenpass_Command_Error_Unknown')
