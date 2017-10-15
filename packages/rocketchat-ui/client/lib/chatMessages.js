@@ -381,7 +381,7 @@ this.ChatMessages = class ChatMessages {
 
 	restoreText(rid) {
 		const text = localStorage.getItem(`messagebox_${ rid }`);
-		if (typeof text === 'string') {
+		if (typeof text === 'string' && this.input) {
 			this.input.value = text;
 		}
 	}
