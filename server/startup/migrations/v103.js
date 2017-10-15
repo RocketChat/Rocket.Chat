@@ -1,5 +1,5 @@
-
-const majorColors= {
+ 
+const majorColors = {
 	'content-background-color': '#FFFFFF',
 	'primary-background-color': 'color-primary',
 	'primary-font-color': '#444444',
@@ -16,7 +16,7 @@ const majorColors= {
 };
 
 // Minor colours implement major colours by default, but can be overruled
-const minorColors= {
+const minorColors = {
 	'tertiary-background-color': '@component-color',
 	'tertiary-font-color': '@transparent-lightest',
 	'link-font-color': '@primary-action-color',
@@ -30,19 +30,33 @@ const minorColors= {
 
 const newvariables = {
 	'content-background-color': 'color-primary',
-	'primary-background-color': 'color-primary'
+	'primary-background-color': 'color-primary',
+	'primary-font-color': '',
 };
+
+Meteor.startup(function() {
+	Object.keys(majorColors).forEach(function (_id) {
+		console.log(_id)
+		const color = RocketChat.models.Settings.findOne({_id});
+		// const key = newvariables[_id];
+		// if(color.value !== majorColors[_id] && key){
+		// 	const id = `theme-color-${ key }`;
+		// 	RocketChat.models.Settings.update({_id: id}, {$set: { value : color.value, editor: color.editor }});
+		// }
+	});
+})
+
 RocketChat.Migrations.add({
 	version: 103,
 	up() {
-		// Object.keys(majorColors).forEach(function (_id) {
-		// 	const color = RocketChat.models.Settings.findOne({_id});
-		// 	// RocketChat.models.Settings.remove(color);
-		// 	if(color.value !== majorColors[key] && newvariables[key]){
-		// 		const _id = `theme-color-${ key }`;
-		// 		RocketChat.models.Settings.update({_id}, {$set: { value : color.value, editor: color.editor }});
-		// 	}
-		// });
+		Object.keys(majorColors).forEach(function (_id) {
+			const color = RocketChat.models.Settings.findOne({_id});
+			const key = newvariables[_id];
+			if(color.value !== majorColors[_id] && key){
+				const id = `theme-color-${ key }`;
+				RocketChat.models.Settings.update({_id: id}, {$set: { value : color.value, editor: color.editor }});
+			}
+		});
 		// Object.keys(minorColors).forEach(function (_id) {
 		// 	const color = RocketChat.models.Settings.findOne({_id});
 		// 	RocketChat.models.Settings.remove(color);
