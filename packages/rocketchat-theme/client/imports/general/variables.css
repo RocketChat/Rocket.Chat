@@ -24,6 +24,11 @@
 		--rc-color-button-primary-light: #175cc4;
 
 		--rc-color-primary: var(--color-dark);
+		--rc-color-primary-darkest: var(--color-darkest);
+		--rc-color-primary-dark: var(--color-dark-medium);
+		--rc-color-primary-light: var(--color-gray);
+		--rc-color-primary-light-medium: var(--color-gray-medium);
+		--rc-color-primary-lightest: var(--color-gray-lightest);
 		--rc-color-content: var(--color-white);
 
 		/*
@@ -44,7 +49,7 @@
 		--status-away: var(--rc-color-alert);
 		--status-busy: var(--rc-color-error);
 		--status-invisible: var(--color-gray-medium);
-		--status-invisible-sidebar: var(--color-darkest);
+		--status-invisible-sidebar: var(--rc-color-primary-darkest);
 		--default-small-padding: 1rem;
 
 		/*
@@ -99,7 +104,7 @@
 		--tags-border-width: var(--border);
 		--tags-border-radius: var(--border-radius);
 		--tags-border-color: var(--color-gray-light);
-		--tags-text-color: var(--color-dark);
+		--tags-text-color: var(--rc-color-primary);
 		--tags-background: #f2f3f5;
 		--tags-avatar-size: 20px;
 
@@ -132,10 +137,10 @@
 		*/
 		--sidebar-width: 280px;
 		--sidebar-small-width: 90%;
-		--sidebar-background: var(--color-primary);
-		--sidebar-background-hover: var(--color-dark-medium);
-		--sidebar-background-light: var(--color-gray-lightest);
-		--sidebar-background-light-hover: var(--color-gray-light);
+		--sidebar-background: var(--rc-color-primary);
+		--sidebar-background-hover: var(--rc-color-primary-dark);
+		--sidebar-background-light: var(--rc-color-primary-lightest);
+		--sidebar-background-light-hover: var(--rc-color-primary-light);
 		--sidebar-default-padding: 24px;
 		--sidebar-small-default-padding: 16px;
 		--sidebar-header-padding: 16px;
@@ -162,7 +167,7 @@
 		--sidebar-account-username-weight: 700;
 		--sidebar-small-account-username-weight: 400;
 		--sidebar-account-username-color: var(--color-white);
-		--sidebar-account-username-color-darker: var(--color-dark);
+		--sidebar-account-username-color-darker: var(--rc-color-primary);
 		--sidebar-account-status-font-size: 0.875rem;
 		--sidebar-account-status-color: var(--color-gray);
 
@@ -175,7 +180,7 @@
 
 		--sidebar-item-text-color: var(--color-gray);
 		--sidebar-item-background: inherit;
-		--sidebar-item-hover-background: var(--color-darkest);
+		--sidebar-item-hover-background: var(--rc-color-primary-darkest);
 
 		--sidebar-item-active-background: var(--color-dark-medium);
 		--sidebar-item-active-color: var(--sidebar-item-text-color);
