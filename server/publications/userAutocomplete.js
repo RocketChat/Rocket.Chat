@@ -22,8 +22,6 @@ Meteor.publish('userAutocomplete', function(selector) {
 	const pub = this;
 	const exceptions = selector.exceptions || [];
 
-	console.log(selector, options);
-
 	const cursorHandle = RocketChat.models.Users.findActiveByUsernameOrNameRegexWithExceptions(selector.term, exceptions, options).observeChanges({
 		added(_id, record) {
 			return pub.added('autocompleteRecords', _id, record);
