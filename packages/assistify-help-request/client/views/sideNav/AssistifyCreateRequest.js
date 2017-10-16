@@ -1,53 +1,87 @@
 /* globals RocketChat, FlowRouter, TAPi18n, console */
-import toastr from 'toastr';
+const acEvents = {
+	'click .rc-popup-list__item'(e, t) {
+		t.ac.onItemClick(this, e);
+	},
+	'keydown [name="expertise"]'(e, t) {
+		if ([8, 46].includes(e.keyCode) && e.target.value === '') {
+			const users = t.selectedUsers;
+			const usersArr = users.get();
+			usersArr.pop();
+			return users.set(usersArr);
+		}
+
+		t.ac.onKeyDown(e);
+	},
+	'keyup [name="expertise"]'(e, t) {
+		t.ac.onKeyUp(e);
+	},
+	'focus [name="expertise"]'(e, t) {
+		t.ac.onFocus(e);
+	},
+	'blur [name="expertise"]'(e, t) {
+		t.ac.onBlur(e);
+	}
+};
 
 Template.AssistifyCreateRequest.helpers({
-	autocompleteExpertiseSettings() {
+	autocomplete(key) {
+		const instance = Template.instance();
+		const param = instance.ac[key];
+		return typeof param === 'function' ? param.apply(instance.ac) : param;
+	},
+	items() {
+		return Template.instance().ac.filteredList();
+	},
+	selectedExpertise() {
+		return Template.instance().expertise.get();
+	},
+	errorMessage() {
+		return Template.instance().errorMessage.get();
+	},
+	config() {
+		const filter = Template.instance().expertise;
 		return {
-			limit: 10,
-			// inputDelay: 300
-			rules: [
-				{
-					// @TODO maybe change this 'collection' and/or template
-					collection: 'expertise',
-					subscription: 'autocompleteExpertise', //a server side publication providing the query
-					field: 'name',
-					template: Template.roomSearch,
-					noMatchTemplate: Template.roomSearchEmpty,
-					matchAll: true,
-					selector(match) {
-						return {name: match};
-					},
-					sort: 'name'
-				}
-			]
+			filter: filter.get(),
+			noMatchTemplate: 'roomSearchEmpty',
+			modifier(text) {
+				const f = filter.get();
+				return `#${ f.length === 0 ? text : text.replace(new RegExp(filter.get()), function(part) {
+					return `<strong>${ part }</strong>`;
+				}) }`;
+			}
 		};
+	},
+	createIsDisabled() {
+		const instance = Template.instance();
+
+		if (instance.validExpertise.get()) {
+			return '';
+		} else {
+			return 'disabled';
+		}
 	}
 });
 
 Template.AssistifyCreateRequest.events({
-	'autocompleteselect #expertise-search'(event, instance, doc) {
-		instance.expertise.set(doc.name);
-
-		return instance.find('.save-request').focus();
-	},
-
-	'keydown #request-name'(event, instance) {
-		if ($(event.currentTarget).val().trim() !== '' && event.keyCode === 13) {
-			instance.$('.save-request').click();
-			SideNav.closeFlex(() => {
-				instance.clearForm();
-			});
+	...acEvents,
+	'input #expertise-search'(e, t) {
+		const input = e.target;
+		const position = input.selectionEnd || input.selectionStart;
+		const length = input.value.length;
+		document.activeElement === input && e && /input/i.test(e.type) && (input.selectionEnd = position + input.value.length - length);
+		if (input.value) {
+			t.checkExpertise(input.value);
+			t.expertise.set(input.value);
 		}
 	},
-
-	'submit .js-save-request'(event, instance) {
+	'submit create-channel__content, click .js-save-request'(event, instance) {
 		event.preventDefault();
 		const expertise = instance.find('#expertise-search').value.trim();
-		instance.requestRoomName.set(name);
 
-		if (name || expertise) {
-			Meteor.call('createRequest', name, expertise, (err, result) => {
+		if (expertise) {
+			instance.errorMessage.set(null);
+			Meteor.call('createRequest', '', expertise, (err, result) => {
 				if (err) {
 					console.log(err);
 					switch (err.error) {
@@ -65,28 +99,73 @@ Template.AssistifyCreateRequest.events({
 					}
 				}
 
-				// we're done, so close side navigation and navigate to created request-channel
-				SideNav.closeFlex(() => {
-					instance.clearForm();
-				});
-				RocketChat.callbacks.run('aftercreateCombined', {_id: result.rid, name});
 				const roomCreated = RocketChat.models.Rooms.findOne({_id: result.rid});
 				FlowRouter.go('request', {name: roomCreated.name}, FlowRouter.current().queryParams);
 			});
 		} else {
-			toastr.error(TAPi18n.__('The_field_is_required', TAPi18n.__('request-name')));
+			instance.validExpertise.set(true);
 		}
 	}
 });
 
+Template.AssistifyCreateRequest.onRendered(function() {
+	const instance = this;
+	this.find('input[name="expertise"]').focus();
+	this.ac.element = this.find('input[name="expertise"]');
+	this.ac.$element = $(this.ac.element);
+	this.ac.$element.on('autocompleteselect', function(e, {item}) {
+		instance.expertise.set(item.name);
+		return instance.find('.js-save-request').focus();
+	});
+});
+
+/* global AutoComplete, ReactiveVar, _ */
 Template.AssistifyCreateRequest.onCreated(function() {
 	const instance = this;
-	instance.requestRoomName = new ReactiveVar('');
-	instance.expertise = new ReactiveVar('');
+	instance.expertise = new ReactiveVar(''); //the selected experise
+	instance.validExpertise = new ReactiveVar(false);
+	instance.errorMessage = new ReactiveVar(null);
 
-	instance.clearForm = function() {
-		instance.requestRoomName.set('');
-		instance.expertise.set('');
-		instance.find('#expertise-search').value = '';
-	};
+	this.checkExpertise = _.debounce((expertise) => {
+		return Meteor.call('assistify:isValidExpertise', expertise, (error, result) => {
+			if (error) {
+				instance.validExpertise.set(false);
+			} else {
+				instance.validExpertise.set(result);
+			}
+		});
+	}, 1000);
+
+	// instance.clearForm = function() {
+	// 	instance.requestRoomName.set('');
+	// 	instance.expertise.set('');
+	// 	instance.find('#expertise-search').value = '';
+	// };
+
+	this.ac = new AutoComplete({
+		selector: {
+			item: '.rc-popup-list__item',
+			container: '.rc-popup-list__list'
+		},
+
+		limit: 10,
+		inputDelay: 300,
+		rules: [
+			{
+				// @TODO maybe change this 'collection' and/or template
+				collection: 'expertise',
+				subscription: 'autocompleteExpertise',
+				field: 'name',
+				matchAll: true,
+				filter: instance.expertise,
+				doNotChangeWidth: false,
+				selector(match) {
+					return {term: match};
+				},
+				sort: 'name'
+			}
+		]
+
+	});
+	this.ac.tmplInst = this;
 });
