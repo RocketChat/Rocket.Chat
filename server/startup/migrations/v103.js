@@ -1,4 +1,3 @@
- 
 const majorColors = {
 	'content-background-color': '#FFFFFF',
 	'primary-background-color': 'color-primary',
@@ -16,43 +15,43 @@ const majorColors = {
 };
 
 // Minor colours implement major colours by default, but can be overruled
-const minorColors = {
-	'tertiary-background-color': '@component-color',
-	'tertiary-font-color': '@transparent-lightest',
-	'link-font-color': '@primary-action-color',
-	'info-font-color': '@secondary-font-color',
-	'custom-scrollbar-color': '@transparent-darker',
-	'status-online': '@success-color',
-	'status-away': '@pending-color',
-	'status-busy': '@error-color',
-	'status-offline': '@transparent-darker'
-};
+// const minorColors = {
+// 	'tertiary-background-color': '@component-color',
+// 	'tertiary-font-color': '@transparent-lightest',
+// 	'link-font-color': '@primary-action-color',
+// 	'info-font-color': '@secondary-font-color',
+// 	'custom-scrollbar-color': '@transparent-darker',
+// 	'status-online': '@success-color',
+// 	'status-away': '@pending-color',
+// 	'status-busy': '@error-color',
+// 	'status-offline': '@transparent-darker'
+// };
 
 const newvariables = {
 	'content-background-color': 'color-primary',
 	'primary-background-color': 'color-primary',
-	'primary-font-color': '',
+	'primary-font-color': ''
 };
 
 Meteor.startup(function() {
-	Object.keys(majorColors).forEach(function (_id) {
-		console.log(_id)
-		const color = RocketChat.models.Settings.findOne({_id});
+	Object.keys(majorColors).forEach(function(_id) {
+		console.log(_id);
+		// const color = RocketChat.models.Settings.findOne({_id});
 		// const key = newvariables[_id];
 		// if(color.value !== majorColors[_id] && key){
 		// 	const id = `theme-color-${ key }`;
 		// 	RocketChat.models.Settings.update({_id: id}, {$set: { value : color.value, editor: color.editor }});
 		// }
 	});
-})
+});
 
 RocketChat.Migrations.add({
 	version: 103,
 	up() {
-		Object.keys(majorColors).forEach(function (_id) {
+		Object.keys(majorColors).forEach(function(_id) {
 			const color = RocketChat.models.Settings.findOne({_id});
 			const key = newvariables[_id];
-			if(color.value !== majorColors[_id] && key){
+			if (color.value !== majorColors[_id] && key) {
 				const id = `theme-color-${ key }`;
 				RocketChat.models.Settings.update({_id: id}, {$set: { value : color.value, editor: color.editor }});
 			}
