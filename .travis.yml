@@ -41,6 +41,7 @@ before_install:
 install:
 - export PATH="$HOME/.meteor:$PATH"
 before_script:
+- if [[ $TRAVIS_TAG ]]; then meteor reset; fi
 - echo "replication:" | sudo tee -a /etc/mongod.conf
 - |-
   echo "  replSetName: \"rs0\"" | sudo tee -a /etc/mongod.conf

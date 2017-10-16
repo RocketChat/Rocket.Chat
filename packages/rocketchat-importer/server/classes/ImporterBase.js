@@ -61,17 +61,22 @@ Importer.Base = class Base {
 		this.addCountCompleted = this.addCountCompleted.bind(this);
 		this.updateRecord = this.updateRecord.bind(this);
 		this.uploadFile = this.uploadFile.bind(this);
+
 		this.name = name;
 		this.description = description;
 		this.mimeType = mimeType;
+
 		this.logger = new Logger(`${ this.name } Importer`, {});
 		this.progress = new Importer.Progress(this.name);
 		this.collection = Importer.RawImports;
+
 		const importId = Importer.Imports.insert({ 'type': this.name, 'ts': Date.now(), 'status': this.progress.step, 'valid': true, 'user': Meteor.user()._id });
 		this.importRecord = Importer.Imports.findOne(importId);
+
 		this.users = {};
 		this.channels = {};
 		this.messages = {};
+		this.oldSettings = {};
 	}
 
 	// Takes the uploaded file and extracts the users, channels, and messages from it.
@@ -89,6 +94,7 @@ Importer.Base = class Base {
 
 		if (!fileType || (fileType.mime !== this.mimeType)) {
 			this.logger.warn(`Invalid file uploaded for the ${ this.name } importer.`);
+			this.updateProgress(Importer.ProgressStep.ERROR);
 			throw new Meteor.Error('error-invalid-file-uploaded', `Invalid file uploaded to import ${ this.name } data from.`, { step: 'prepare' });
 		}
 
@@ -136,6 +142,21 @@ Importer.Base = class Base {
 	//
 	updateProgress(step) {
 		this.progress.step = step;
+
+		switch (step) {
+			case Importer.ProgressStep.IMPORTING_STARTED:
+				this.oldSettings.Accounts_AllowedDomainsList = RocketChat.models.Settings.findOneById('Accounts_AllowedDomainsList').value;
+				RocketChat.models.Settings.updateValueById('Accounts_AllowedDomainsList', '');
+
+				this.oldSettings.Accounts_AllowUsernameChange = RocketChat.models.Settings.findOneById('Accounts_AllowUsernameChange').value;
+				RocketChat.models.Settings.updateValueById('Accounts_AllowUsernameChange', true);
+				break;
+			case Importer.ProgressStep.DONE:
+			case Importer.ProgressStep.ERROR:
+				RocketChat.models.Settings.updateValueById('Accounts_AllowedDomainsList', this.oldSettings.Accounts_AllowedDomainsList);
+				RocketChat.models.Settings.updateValueById('Accounts_AllowUsernameChange', this.oldSettings.Accounts_AllowUsernameChange);
+				break;
+		}
 
 		this.logger.debug(`${ this.name } is now at ${ step }.`);
 		this.updateRecord({ 'status': this.progress.step });

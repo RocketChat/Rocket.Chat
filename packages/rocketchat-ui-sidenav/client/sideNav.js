@@ -1,14 +1,6 @@
 /* globals menu*/
 
 Template.sideNav.helpers({
-	hasUnread() {
-		const user = Meteor.user();
-		return user && user.settings && user.settings.preferences && user.settings.preferences.roomsListExhibitionMode === 'unread';
-	},
-	sortByActivity() {
-		const user = Meteor.user();
-		return user && user.settings && user.settings.preferences && user.settings.preferences.roomsListExhibitionMode === 'activity';
-	},
 	flexTemplate() {
 		return SideNav.getFlex().template;
 	},
@@ -33,6 +25,10 @@ Template.sideNav.helpers({
 				}
 			};
 		});
+	},
+
+	loggedInUser() {
+		return !!Meteor.userId();
 	}
 });
 
@@ -79,7 +75,12 @@ Template.sideNav.onCreated(function() {
 	this.mergedChannels = new ReactiveVar(false);
 
 	this.autorun(() => {
-		const user = Meteor.user();
+		const user = RocketChat.models.Users.findOne(Meteor.userId(), {
+			fields: {
+				'settings.preferences.roomsListExhibitionMode': 1,
+				'settings.preferences.mergeChannels': 1
+			}
+		});
 		let userPref = null;
 		if (user && user.settings && user.settings.preferences) {
 			userPref = user.settings.preferences.roomsListExhibitionMode === 'category' && user.settings.preferences.mergeChannels;

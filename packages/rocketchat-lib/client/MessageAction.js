@@ -1,4 +1,4 @@
-/* globals popover chatMessages cordova */
+/* globals chatMessages cordova */
 
 import moment from 'moment';
 import toastr from 'toastr';
@@ -91,10 +91,6 @@ RocketChat.MessageAction = new class {
 		}
 		return `${ Meteor.absoluteUrl().replace(/\/$/, '') + routePath }?msg=${ msgId }`;
 	}
-
-	closePopover() {
-		popover.close();
-	}
 };
 
 Meteor.startup(function() {
@@ -120,7 +116,6 @@ Meteor.startup(function() {
 			input.value += text;
 			input.focus();
 			$(input).trigger('change').trigger('input');
-			RocketChat.MessageAction.closePopover();
 		},
 		condition(message) {
 			if (RocketChat.models.Subscriptions.findOne({rid: message.rid}) == null) {
@@ -138,10 +133,9 @@ Meteor.startup(function() {
 		icon: 'edit',
 		label: 'Edit',
 		context: ['message', 'message-mobile'],
-		action(e) {
-			const message = $(e.currentTarget).closest('.message')[0];
-			chatMessages[Session.get('openedRoom')].edit(message);
-			RocketChat.MessageAction.closePopover();
+		action() {
+			const messageId = this._arguments[1]._id;
+			chatMessages[Session.get('openedRoom')].edit(document.getElementById(messageId));
 		},
 		condition(message) {
 			if (RocketChat.models.Subscriptions.findOne({
@@ -179,9 +173,9 @@ Meteor.startup(function() {
 		icon: 'trash',
 		label: 'Delete',
 		context: ['message', 'message-mobile'],
+		color: 'alert',
 		action() {
 			const message = this._arguments[1];
-			RocketChat.MessageAction.closePopover();
 			chatMessages[Session.get('openedRoom')].confirmDeleteMsg(message);
 		},
 		condition(message) {
@@ -226,7 +220,6 @@ Meteor.startup(function() {
 		action(event) {
 			const message = this._arguments[1];
 			const permalink = RocketChat.MessageAction.getPermaLink(message._id);
-			RocketChat.MessageAction.closePopover();
 			if (Meteor.isCordova) {
 				cordova.plugins.clipboard.copy(permalink);
 			} else {
@@ -253,7 +246,6 @@ Meteor.startup(function() {
 		context: ['message', 'message-mobile'],
 		action(event) {
 			const message = this._arguments[1].msg;
-			RocketChat.MessageAction.closePopover();
 			if (Meteor.isCordova) {
 				cordova.plugins.clipboard.copy(message);
 			} else {
@@ -288,7 +280,6 @@ Meteor.startup(function() {
 			input.value += text;
 			input.focus();
 			$(input).trigger('change').trigger('input');
-			RocketChat.MessageAction.closePopoverreaction-message();
 		},
 		condition(message) {
 			if (RocketChat.models.Subscriptions.findOne({rid: message.rid}) == null) {
