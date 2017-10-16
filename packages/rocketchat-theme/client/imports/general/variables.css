@@ -182,7 +182,7 @@
 		--sidebar-item-background: inherit;
 		--sidebar-item-hover-background: var(--rc-color-primary-darkest);
 
-		--sidebar-item-active-background: var(--color-dark-medium);
+		--sidebar-item-active-background: var(--rc-color-primary-dark);
 		--sidebar-item-active-color: var(--sidebar-item-text-color);
 
 		--sidebar-item-unread-color: var(--color-white);
@@ -226,7 +226,7 @@
 		--badge-text-color: var(--color-white);
 		--badge-radius: var(--border-radius);
 		--badge-text-size: 0.75rem;
-		--badge-background: var(--color-dark-medium);
+		--badge-background: var(--rc-color-primary-dark);
 		--badge-unread-background: var(--rc-color-button-primary);
 
 		/*

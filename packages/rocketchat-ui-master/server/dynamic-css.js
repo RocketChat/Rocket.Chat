@@ -154,7 +154,7 @@ export default () => {
 	DynamicCss.run = debounce((replace = false) => {
 		if (replace) {
 			// const variables = RocketChat.models.Settings.findOne({_id:'theme-custom-variables'}, {fields: { value: 1}});
-			const colors = RocketChat.settings.collection.find({_id:/theme-color-color-/i}, {fields: { value: 1, editor: 1}}).fetch().filter(color => color && color.value);
+			const colors = RocketChat.settings.collection.find({_id:/theme-color-rc/i}, {fields: { value: 1, editor: 1}}).fetch().filter(color => color && color.value);
 
 			if (!colors) {
 				return;
