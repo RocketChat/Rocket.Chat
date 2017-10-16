@@ -182,8 +182,8 @@ Template.AssistifyCreateExpertise.events({
 Template.AssistifyCreateExpertise.onRendered(function() {
 	const users = this.selectedUsers;
 
-	this.firstNode.querySelector('[name="expertise"]').focus();
-	this.ac.element = this.firstNode.querySelector('[name="experts"]');
+	this.firstNode.parentNode.querySelector('[name="expertise"]').focus();
+	this.ac.element = this.firstNode.parentNode.querySelector('[name="experts"]');
 	this.ac.$element = $(this.ac.element);
 	this.ac.$element.on('autocompleteselect', function(e, {item}) {
 		const usersArr = users.get();

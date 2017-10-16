@@ -8,6 +8,7 @@ const roomTypesBeforeStandard = function() {
 		}
 	).filter((roomType) => roomType.creationTemplate);
 };
+
 const roomTypesAfterStandard = function() {
 	const orderHigh = RocketChat.roomTypes.roomTypesOrder.filter((roomTypeOrder) => roomTypeOrder.identifier === 'd')[0].order;
 	return RocketChat.roomTypes.roomTypesOrder.filter(
