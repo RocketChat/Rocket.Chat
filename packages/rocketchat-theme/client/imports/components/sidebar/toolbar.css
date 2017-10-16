@@ -55,7 +55,7 @@
 
 		&__element {
 			color: var(--color-white);
-			border-color: #414852;
+			border-color: var(--rc-color-primary-dark);
 			background-color: var(--rc-color-primary-darkest);
 
 			&::placeholder {
