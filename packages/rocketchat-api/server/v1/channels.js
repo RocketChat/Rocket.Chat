@@ -191,7 +191,7 @@ RocketChat.API.v1.addRoute('channels.files', { authRequired: true }, {
 			sort: sort ? sort : { name: 1 },
 			skip: offset,
 			limit: count,
-			fields: Object.assign({}, fields, RocketChat.API.v1.defaultFieldsToExclude)
+			fields
 		}).fetch();
 
 		return RocketChat.API.v1.success({
@@ -235,7 +235,7 @@ RocketChat.API.v1.addRoute('channels.getIntegrations', { authRequired: true }, {
 			sort: sort ? sort : { _createdAt: 1 },
 			skip: offset,
 			limit: count,
-			fields: Object.assign({}, fields, RocketChat.API.v1.defaultFieldsToExclude)
+			fields
 		}).fetch();
 
 		return RocketChat.API.v1.success({
@@ -381,7 +381,7 @@ RocketChat.API.v1.addRoute('channels.list', { authRequired: true }, {
 				sort: sort ? sort : { name: 1 },
 				skip: offset,
 				limit: count,
-				fields: Object.assign({}, fields, RocketChat.API.v1.defaultFieldsToExclude)
+				fields
 			}).fetch();
 
 			return RocketChat.API.v1.success({
@@ -405,7 +405,7 @@ RocketChat.API.v1.addRoute('channels.list.joined', { authRequired: true }, {
 			sort: sort ? sort : { name: 1 },
 			skip: offset,
 			limit: count,
-			fields: Object.assign({}, fields, RocketChat.API.v1.defaultFieldsToExclude)
+			fields
 		});
 
 		return RocketChat.API.v1.success({
@@ -430,8 +430,11 @@ RocketChat.API.v1.addRoute('channels.members', { authRequired: true }, {
 			limit: count
 		});
 
+		const users = RocketChat.models.Users.find({ username: { $in: members } },
+			{ fields: { _id: 1, username: 1, name: 1, status: 1, utcOffset: 1 } }).fetch();
+
 		return RocketChat.API.v1.success({
-			members,
+			members: users,
 			count: members.length,
 			offset,
 			total: findResult.usernames.length
@@ -458,7 +461,7 @@ RocketChat.API.v1.addRoute('channels.messages', { authRequired: true }, {
 			sort: sort ? sort : { ts: -1 },
 			skip: offset,
 			limit: count,
-			fields: Object.assign({}, fields, RocketChat.API.v1.defaultFieldsToExclude)
+			fields
 		}).fetch();
 
 		return RocketChat.API.v1.success({

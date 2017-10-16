@@ -18,7 +18,7 @@ Template.roomList.helpers({
 		const query = {
 			open: true
 		};
-		let sort = { 't': 1, 'name': 1 };
+		const sort = { 't': 1, 'name': 1 };
 		if (this.identifier === 'f') {
 			query.f = favoritesEnabled;
 		} else {
@@ -27,11 +27,10 @@ Template.roomList.helpers({
 
 			if (this.identifier === 'activity') {
 				types = ['c', 'p', 'd'];
-				sort = { lastActivity : -1, _updatedAt: -1};
 			}
 
 			if (this.identifier === 'channels' || this.identifier === 'unread' || this.identifier === 'tokens') {
-				types= [ 'c', 'p'];
+				types = ['c', 'p'];
 			}
 
 			if (this.identifier === 'tokens' && user && user.services && user.services.tokenpass) {
@@ -58,9 +57,8 @@ Template.roomList.helpers({
 				};
 			});
 			return _.sortBy(list, 'lm').reverse();
-		} else {
-			return ChatSubscription.find(query, { sort });
 		}
+		return ChatSubscription.find(query, { sort });
 	},
 
 	isLivechat() {
@@ -83,6 +81,10 @@ Template.roomList.helpers({
 		}
 	}
 });
+
+// Template.roomList.onRendered(function() {
+// 	$(this.firstNode.parentElement).perfectScrollbar();
+// });
 
 Template.roomList.events({
 	'click .more'(e, t) {

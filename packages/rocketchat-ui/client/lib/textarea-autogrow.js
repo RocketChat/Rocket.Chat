@@ -64,7 +64,7 @@
 				}
 
 				if(newHeight === $self[0].offsetHeight){
-					return false;
+					return true;
 				}
 
 				if(maxHeight <= newHeight){
