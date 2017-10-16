@@ -29,38 +29,63 @@ const minorColors = {
 };
 
 const newvariables = {
-	'content-background-color': 'color-primary',
-	'primary-background-color': 'color-primary',
-	'primary-font-color': '',
+	'content-background-color': 'rc-color-primary-lightest',
+	'primary-background-color': 'rc-color-primary',
+	'success-color': 'rc-color-success',
+	'pending-color': 'rc-color-alert',
+	'error-color': 'rc-color-error',
+	'status-online': 'rc-color-success',
+	'status-away': 'rc-color-alert',
+	'status-busy': 'rc-color-error',
+	'status-offline': 'rc-color-primary-darkest'
 };
 
-Meteor.startup(function() {
-	Object.keys(majorColors).forEach(function (_id) {
-		console.log(_id)
-		const color = RocketChat.models.Settings.findOne({_id});
-		// const key = newvariables[_id];
-		// if(color.value !== majorColors[_id] && key){
-		// 	const id = `theme-color-${ key }`;
-		// 	RocketChat.models.Settings.update({_id: id}, {$set: { value : color.value, editor: color.editor }});
-		// }
-	});
-})
+function LightenDarkenColor(col, amt) {
+	let usePound = false;
+	if (col[0] == "#") {
+		col = col.slice(1);
+		usePound = true;
+	}
+
+	let num = parseInt(col,16);
+	let r = (num >> 16) + amt;
+
+	if (r > 255) r = 255;
+	else if  (r < 0) r = 0;
+
+	let b = ((num >> 8) & 0x00FF) + amt;
+
+	if (b > 255) b = 255;
+	else if  (b < 0) b = 0;
+
+	let g = (num & 0x0000FF) + amt;
+
+	if (g > 255) g = 255;
+	else if (g < 0) g = 0;
+
+	return (usePound?"#":"") + (g | (b << 8) | (r << 16)).toString(16);
+}
 
 RocketChat.Migrations.add({
 	version: 103,
 	up() {
 		Object.keys(majorColors).forEach(function (_id) {
-			const color = RocketChat.models.Settings.findOne({_id});
+			const color = RocketChat.models.Settings.findOne({_id: `theme-color${_id}`});
 			const key = newvariables[_id];
 			if(color.value !== majorColors[_id] && key){
+				if(/^@.+/.test(color.value)) {
+					color.value = newvariables[color.value.replace('@', '')];
+				}
 				const id = `theme-color-${ key }`;
-				RocketChat.models.Settings.update({_id: id}, {$set: { value : color.value, editor: color.editor }});
+				RocketChat.models.Settings.update({_id: id}, {$set: { value : color.value, editor: /^#.+/.test(color.value) ? 'color' : 'expression' }});
 			}
 		});
-		// Object.keys(minorColors).forEach(function (_id) {
-		// 	const color = RocketChat.models.Settings.findOne({_id});
-		// 	RocketChat.models.Settings.remove(color);
-		// });
 
+		const color = RocketChat.models.Settings.findOne({_id: 'theme-color-rc-color-primary'})
+		RocketChat.models.Settings.update({_id: 'theme-color-rc-color-primary-darkest', {$set: {value: LightenDarkenColor(color, -16)}}});
+		RocketChat.models.Settings.update({_id: 'theme-color-rc-color-primary-dark', {$set: {value: LightenDarkenColor(color, 18)}}});
+		RocketChat.models.Settings.update({_id: 'theme-color-rc-color-primary-light', {$set: {value: LightenDarkenColor(color, 110)}}});
+		RocketChat.models.Settings.update({_id: 'theme-color-rc-color-primary-light-medium', {$set: {value: LightenDarkenColor(color, 156)}}});		
+		RocketChat.models.Settings.update({_id: 'theme-color-rc-color-primary-lightest', {$set: {value: LightenDarkenColor(color, 200)}}});		
 	}
 });
