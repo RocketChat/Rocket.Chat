@@ -3,6 +3,10 @@ Template.tabContainer.helpers({
 		const instance = Template.instance();
 		return instance.activeTemplate.get() === templateName ? 'active' : 'inactive';
 	},
+	isTabActive(templateName) {
+		const instance = Template.instance();
+		return instance.activeTemplate.get() === templateName;
+	}
 });
 
 Template.tabContainer.events({
@@ -13,6 +17,6 @@ Template.tabContainer.events({
 	}
 });
 
-Template.tabContainer.onCreated(function(){
+Template.tabContainer.onCreated(function() {
 	this.activeTemplate = new ReactiveVar(this.data.tabs[0].template);
 });
