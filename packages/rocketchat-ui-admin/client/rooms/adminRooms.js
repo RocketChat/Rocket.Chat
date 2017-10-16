@@ -28,7 +28,7 @@ Template.adminRooms.helpers({
 		return rooms && rooms.count();
 	},
 	name() {
-		RocketChat.roomTypes.roomTypes[this.t].getDisplayName(this);
+		return RocketChat.roomTypes.roomTypes[this.t].getDisplayName(this);
 	},
 	type() {
 		return TAPi18n.__(RocketChat.roomTypes.roomTypes[this.t].label);
