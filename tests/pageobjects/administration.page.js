@@ -3,6 +3,7 @@ import Page from './Page';
 class Administration extends Page {
 	get flexNav() { return browser.element('.flex-nav'); }
 	get flexNavContent() { return browser.element('.flex-nav'); }
+	get settingsSearch() { return browser.element('[name=settings-search]'); }
 	get layoutLink() { return browser.element('.flex-nav [href="/admin/Layout"]'); }
 	get infoLink() { return browser.element('.flex-nav [href="/admin/info"]'); }
 	get roomsLink() { return browser.element('.flex-nav [href="/admin/rooms"]'); }

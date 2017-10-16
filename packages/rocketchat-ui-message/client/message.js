@@ -265,6 +265,9 @@ Template.message.helpers({
 			return 'hidden';
 		}
 	},
+	actionContext() {
+		return this.actionContext;
+	},
 	messageActions(group) {
 		let messageGroup = group;
 		let context = this.actionContext;
@@ -364,9 +367,11 @@ Template.message.onViewRendered = function(context) {
 			if (!templateInstance) {
 				return;
 			}
+
 			if (currentNode.classList.contains('own') === true) {
-				return (templateInstance.atBottom = true);
+				templateInstance.atBottom = true;
 			}
+			templateInstance.sendToBottomIfNecessary();
 		}
 	});
 };
