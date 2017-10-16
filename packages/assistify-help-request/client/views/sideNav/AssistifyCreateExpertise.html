@@ -36,9 +36,17 @@
 							{{#each user in selectedUsers}}
 								{{> tag user}}
 							{{/each}}
-							<input type="text" class="rc-tags__input" placeholder="{{_ "Experts"}}"
+							<input type="text" class="rc-tags__input {{#if invalidMembers}}rc-input--error{{/if}}" placeholder="{{_ "Experts"}}"
 								   name="experts" autocomplete="off"/>
 						</div>
+						{{#if invalidMembers}}
+							<div class="rc-input__error">
+								<div class="rc-input__error-icon">
+									{{> icon block="rc-input__error-icon" icon="warning" classes="rc-input__error-icon-svg"}}
+								</div>
+								<div class="rc-input__error-message">{{_ "Expertise_needs_experts"}}</div>
+							</div>
+						{{/if}}
 					</div>
 					{{#with config}}
 						{{#if autocomplete 'isShowing'}}

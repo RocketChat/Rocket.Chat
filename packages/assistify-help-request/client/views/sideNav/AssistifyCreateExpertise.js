@@ -1,5 +1,4 @@
 /* globals RocketChat, FlowRouter, console */
-import toastr from 'toastr';
 const acEvents = {
 	'click .rc-popup-list__item'(e, t) {
 		t.ac.onItemClick(this, e);
@@ -76,6 +75,10 @@ Template.AssistifyCreateExpertise.helpers({
 		const inUse = instance.inUse.get();
 		return invalid || inUse;
 	},
+	invalidMembers() {
+		const instance = Template.instance();
+		return instance.invalidMembers.get();
+	},
 	createIsDisabled() {
 		const instance = Template.instance();
 		const invalid = instance.invalid.get();
@@ -87,25 +90,8 @@ Template.AssistifyCreateExpertise.helpers({
 		}
 		return '';
 	},
-	roomTypesBeforeStandard() {
-		const orderLow = RocketChat.roomTypes.roomTypesOrder.filter((roomTypeOrder) => roomTypeOrder.identifier === 'c')[0].order;
-		return RocketChat.roomTypes.roomTypesOrder.filter(
-			(roomTypeOrder) => roomTypeOrder.order < orderLow
-		).map(
-			(roomTypeOrder) => {
-				return RocketChat.roomTypes.roomTypes[roomTypeOrder.identifier];
-			}
-		).filter((roomType) => roomType.creationTemplate);
-	},
-	roomTypesAfterStandard() {
-		const orderHigh = RocketChat.roomTypes.roomTypesOrder.filter((roomTypeOrder) => roomTypeOrder.identifier === 'd')[0].order;
-		return RocketChat.roomTypes.roomTypesOrder.filter(
-			(roomTypeOrder) => roomTypeOrder.order > orderHigh
-		).map(
-			(roomTypeOrder) => {
-				return RocketChat.roomTypes.roomTypes[roomTypeOrder.identifier];
-			}
-		).filter((roomType) => roomType.creationTemplate);
+	iconType() {
+		return Template.instance().type.get() === 'p' ? 'lock' : 'hashtag';
 	}
 });
 
@@ -131,7 +117,7 @@ Template.AssistifyCreateExpertise.events({
 
 		t.userFilter.set(modified);
 	},
-	'input [name="name"]'(e, t) {
+	'input [name="expertise"]'(e, t) {
 		const input = e.target;
 		const position = input.selectionEnd || input.selectionStart;
 		const length = input.value.length;
@@ -149,31 +135,25 @@ Template.AssistifyCreateExpertise.events({
 	'submit .create-channel__content'(e, instance) {
 		e.preventDefault();
 		e.stopPropagation();
-		const name = e.target.name.value;
-		const type = instance.type.get();
-		const readOnly = instance.readOnly.get();
-		const isPrivate = type === 'p';
+		const name = instance.find('input[name="expertise"]').value;
 
 		if (instance.invalid.get() || instance.inUse.get()) {
-			return e.target.name.focus();
+			return instance.find('input[name="expertise"]').focus();
 		}
 
-		Meteor.call(isPrivate ? 'createPrivateGroup' : 'AssistifyCreateExpertise', name, instance.selectedUsers.get().map(user => user.username), readOnly, function(err, result) {
+		Meteor.call('createExpertise', name, instance.selectedUsers.get().map(user => user.username), function(err, result) {
 			if (err) {
 				if (err.error === 'error-invalid-name') {
 					return instance.invalid.set(true);
 				}
-				if (err.error === 'error-duplicate-channel-name') {
-					return instance.inUse.set(true);
+				if (err.error === 'error-no-members') {
+					instance.find('input[name="experts"]').focus();
+					return instance.invalidMembers.set(true);
 				}
 				return;
 			}
 
-			if (!isPrivate) {
-				RocketChat.callbacks.run('aftercreateCombined', {_id: result.rid, name: result.name});
-			}
-
-			return FlowRouter.go(isPrivate ? 'group' : 'channel', {name: result.name}, FlowRouter.current().queryParams);
+			return FlowRouter.go('expertise', {name: result.name}, FlowRouter.current().queryParams);
 		});
 		return false;
 	}
@@ -182,8 +162,8 @@ Template.AssistifyCreateExpertise.events({
 Template.AssistifyCreateExpertise.onRendered(function() {
 	const users = this.selectedUsers;
 
-	this.firstNode.querySelector('[name="expertise"]').focus();
-	this.ac.element = this.firstNode.querySelector('[name="experts"]');
+	this.find('input[name="expertise"]').focus();
+	this.ac.element = this.find('input[name="experts"]');
 	this.ac.$element = $(this.ac.element);
 	this.ac.$element.on('autocompleteselect', function(e, {item}) {
 		const usersArr = users.get();
@@ -198,12 +178,13 @@ Template.AssistifyCreateExpertise.onCreated(function() {
 	const filter = {exceptions: this.selectedUsers.get().map(u => u.username)};
 	// this.onViewRead:??y(function() {
 	Deps.autorun(() => {
-		filter.exceptions = [Meteor.user().username].concat(this.selectedUsers.get().map(u => u.username));
+		filter.exceptions = this.selectedUsers.get().map(u => u.username);
 	});
 
 	this.name = new ReactiveVar('');
 	this.inUse = new ReactiveVar(undefined);
 	this.invalid = new ReactiveVar(false);
+	this.invalidMembers = new ReactiveVar(false);
 	this.userFilter = new ReactiveVar('');
 	this.checkChannel = _.debounce((name) => {
 		if (validateChannelName(name)) {
