@@ -1,4 +1,3 @@
- 
 const majorColors = {
 	'content-background-color': '#FFFFFF',
 	'primary-background-color': 'color-primary',
@@ -16,17 +15,17 @@ const majorColors = {
 };
 
 // Minor colours implement major colours by default, but can be overruled
-const minorColors = {
-	'tertiary-background-color': '@component-color',
-	'tertiary-font-color': '@transparent-lightest',
-	'link-font-color': '@primary-action-color',
-	'info-font-color': '@secondary-font-color',
-	'custom-scrollbar-color': '@transparent-darker',
-	'status-online': '@success-color',
-	'status-away': '@pending-color',
-	'status-busy': '@error-color',
-	'status-offline': '@transparent-darker'
-};
+// const minorColors = {
+// 	'tertiary-background-color': '@component-color',
+// 	'tertiary-font-color': '@transparent-lightest',
+// 	'link-font-color': '@primary-action-color',
+// 	'info-font-color': '@secondary-font-color',
+// 	'custom-scrollbar-color': '@transparent-darker',
+// 	'status-online': '@success-color',
+// 	'status-away': '@pending-color',
+// 	'status-busy': '@error-color',
+// 	'status-offline': '@transparent-darker'
+// };
 
 const newvariables = {
 	'content-background-color': 'rc-color-primary-lightest',
