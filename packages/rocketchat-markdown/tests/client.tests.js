@@ -226,6 +226,9 @@ const testObject = (object, parser = original, test = defaultObjectTest) => {
 	Object.keys(object).forEach((objectKey) => {
 		describe(objectKey, () => {
 			const result = parser({html: objectKey});
+			result.tokens.forEach((token) => {
+				result.html = result.html.replace(token.token, token.text);
+			});
 			it(`should be equal to ${ object[objectKey] }`, () => {
 				test(result, object, objectKey);
 			});
@@ -254,21 +257,9 @@ describe('Original', function() {
 
 	describe('Link', () => testObject(link));
 
-	describe('Inline Code', () => testObject(inlinecode, undefined, (result, object, objectKey) => {
-		let html = result.html;
-		result.tokens.forEach((token) => {
-			html = html.replace(token.token, token.text);
-		});
-		assert.equal(html, object[objectKey]);
-	}));
+	describe('Inline Code', () => testObject(inlinecode));
 
-	describe('Code', () => testObject(code, undefined, (result, object, objectKey) => {
-		let html = result.html;
-		result.tokens.forEach((token) => {
-			html = html.replace(token.token, token.text);
-		});
-		assert.equal(html, object[objectKey]);
-	}));
+	describe('Code', () => testObject(code));
 });
 
 // describe.only('Marked', function() {

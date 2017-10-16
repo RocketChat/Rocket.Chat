@@ -75,9 +75,6 @@ Template.createChannel.helpers({
 		const inUse = instance.inUse.get();
 		return invalid || inUse;
 	},
-	readOnlyIsDisabled() {
-		return 'disabled';
-	},
 	typeLabel() {
 		return t(Template.instance().type.get() === 'p' ? t('Private_Channel') : t('Public_Channel'));
 	},
@@ -131,8 +128,8 @@ Template.createChannel.events({
 		t.tokensRequired.set(e.currentTarget.checked);
 		t.change();
 	},
-	'change [name=type]'(e, t) {
-		t.type.set(e.target.checked ? e.target.value : 'p');
+	'change [name="type"]'(e, t) {
+		t.type.set(e.target.checked ? e.target.value : 'd');
 		t.change();
 	},
 	'change [name="readOnly"]'(e, t) {

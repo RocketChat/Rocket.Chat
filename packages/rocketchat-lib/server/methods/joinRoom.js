@@ -26,7 +26,7 @@ Meteor.methods({
 			}
 
 			if ((room.joinCodeRequired === true) && (code !== room.joinCode) && !RocketChat.authz.hasPermission(Meteor.userId(), 'join-without-join-code')) {
-				throw new Meteor.Error('error-code-invalid', 'Invalid Code', { method: 'joinRoom' });
+				throw new Meteor.Error('error-code-invalid', 'Invalid Room Password', { method: 'joinRoom' });
 			}
 		}
 

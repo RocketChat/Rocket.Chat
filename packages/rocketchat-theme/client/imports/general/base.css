@@ -101,6 +101,9 @@ button {
 }
 
 .rc-icon {
+
+	overflow: hidden;
+
 	width: 1em;
 	height: 1em;
 
@@ -110,7 +113,6 @@ button {
 .ps-scrollbar-y-rail {
 	background: transparent !important;
 }
-
 .ps-scrollbar-y {
 	width: 4px !important;
 }

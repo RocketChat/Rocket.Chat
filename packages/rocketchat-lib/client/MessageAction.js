@@ -173,6 +173,7 @@ Meteor.startup(function() {
 		icon: 'trash',
 		label: 'Delete',
 		context: ['message', 'message-mobile'],
+		color: 'alert',
 		action() {
 			const message = this._arguments[1];
 			chatMessages[Session.get('openedRoom')].confirmDeleteMsg(message);
