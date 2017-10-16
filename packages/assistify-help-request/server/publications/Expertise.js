@@ -14,7 +14,8 @@ Meteor.publish('autocompleteExpertise', function(selector) {
 		fields: {
 			name: 1,
 			t: 1
-		}
+		},
+		limit: 10
 	};
 
 	const cursorHandle = RocketChat.models.Rooms.findByNameContainingTypesAndTags(selector.name, [{type: 'e'}], options)

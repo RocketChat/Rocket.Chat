@@ -50,8 +50,8 @@ export class RequestRoomType extends RoomTypeConfig {
 		return !!ChatRoom.findOne({_id: roomId, t: 'r'});
 	}
 
-	canBeDeleted(userId, room) {
-		return RocketChat.authz.hasPermission(userId, 'delete-c', room._id);
+	canBeDeleted(room) {
+		return RocketChat.authz.hasPermission(Meteor.userId(), 'delete-c', room._id);
 	}
 
 	includeInRoomSearch() {

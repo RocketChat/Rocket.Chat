@@ -33,9 +33,6 @@ Template.AssistifyCreateRequest.helpers({
 	items() {
 		return Template.instance().ac.filteredList();
 	},
-	selectedExpertise() {
-		return Template.instance().expertise.get();
-	},
 	errorMessage() {
 		return Template.instance().errorMessage.get();
 	},
@@ -43,6 +40,7 @@ Template.AssistifyCreateRequest.helpers({
 		const filter = Template.instance().expertise;
 		return {
 			filter: filter.get(),
+			template_item: 'AssistifyCreateRequestAutocomplete',
 			noMatchTemplate: 'roomSearchEmpty',
 			modifier(text) {
 				const f = filter.get();
@@ -73,11 +71,14 @@ Template.AssistifyCreateRequest.events({
 		if (input.value) {
 			t.checkExpertise(input.value);
 			t.expertise.set(input.value);
+		} else {
+			t.validExpertise.set(false);
+			t.expertise.set('');
 		}
 	},
 	'submit create-channel__content, click .js-save-request'(event, instance) {
 		event.preventDefault();
-		const expertise = instance.find('#expertise-search').value.trim();
+		const expertise = instance.expertise.get();
 
 		if (expertise) {
 			instance.errorMessage.set(null);
@@ -115,6 +116,9 @@ Template.AssistifyCreateRequest.onRendered(function() {
 	this.ac.$element = $(this.ac.element);
 	this.ac.$element.on('autocompleteselect', function(e, {item}) {
 		instance.expertise.set(item.name);
+		$('input[name="expertise"]').val(item.name);
+		instance.checkExpertise(item.name);
+
 		return instance.find('.js-save-request').focus();
 	});
 });
@@ -122,7 +126,8 @@ Template.AssistifyCreateRequest.onRendered(function() {
 /* global AutoComplete, ReactiveVar, _ */
 Template.AssistifyCreateRequest.onCreated(function() {
 	const instance = this;
-	instance.expertise = new ReactiveVar(''); //the selected experise
+
+	instance.expertise = new ReactiveVar(''); //the value of the text field
 	instance.validExpertise = new ReactiveVar(false);
 	instance.errorMessage = new ReactiveVar(null);
 
@@ -134,7 +139,7 @@ Template.AssistifyCreateRequest.onCreated(function() {
 				instance.validExpertise.set(result);
 			}
 		});
-	}, 1000);
+	}, 500);
 
 	// instance.clearForm = function() {
 	// 	instance.requestRoomName.set('');
@@ -147,17 +152,15 @@ Template.AssistifyCreateRequest.onCreated(function() {
 			item: '.rc-popup-list__item',
 			container: '.rc-popup-list__list'
 		},
-
 		limit: 10,
 		inputDelay: 300,
 		rules: [
 			{
 				// @TODO maybe change this 'collection' and/or template
-				collection: 'expertise',
+				collection: 'expertiseSearch',
 				subscription: 'autocompleteExpertise',
 				field: 'name',
 				matchAll: true,
-				filter: instance.expertise,
 				doNotChangeWidth: false,
 				selector(match) {
 					return {term: match};
