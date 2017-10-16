@@ -7,6 +7,8 @@ renderMessageBody = function(msg) {
 		msg.html = _.escapeHTML(msg.html);
 	}
 
+	msg.html = msg.html.replace('\`\`\`\n', '\`\`\`');
+
 	const message = RocketChat.callbacks.run('renderMessage', msg);
 
 	if (message.tokens && message.tokens.length > 0) {
