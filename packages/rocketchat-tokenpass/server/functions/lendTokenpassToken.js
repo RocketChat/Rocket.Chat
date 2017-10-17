@@ -1,5 +1,4 @@
 import moment from 'moment';
-import { Base64 } from 'meteor/base64';
 
 let userAgent = 'Meteor';
 if (Meteor.release) { userAgent += `/${ Meteor.release }`; }
@@ -18,12 +17,12 @@ RocketChat.lendTokenpassToken = function(lending, cb) {
 	};
 
 	const endPointUrl = `${ RocketChat.settings.get('API_Tokenpass_URL') }/api/v1/tca/provisional/tx`;
-	const authApiMessage = `POST\n${ endPointUrl }\n${ EJSON.stringify(requestParams, false) }\n${ authApiToken }\n${ authApiNonce }`;
+	const authApiMessage = `POST\n${ endPointUrl }\n${ JSON.stringify(requestParams) }\n${ authApiToken }\n${ authApiNonce }`;
 
 	crypto = require('crypto');
 	const hmac = crypto.createHmac('sha256', authApiSecret).update(authApiMessage).digest();
-	const authApiSignature = Base64.encode(hmac);
-	// console.log('authApiSignature', authApiSignature);
+	const authApiSignature = hmac.toString('base64');
+	console.log('authApiSignature', authApiSignature.length, authApiSignature);
 
 	try {
 		const result = HTTP.post(
@@ -35,13 +34,12 @@ RocketChat.lendTokenpassToken = function(lending, cb) {
 					'X-Tokenly-Auth-Nonce': authApiNonce,
 					'x-Tokenly-Auth-Signature': authApiSignature
 				},
-				data: requestParams
+				params: requestParams
 			});
 
 		return cb(null, result && result.data && result.data.result);
 	} catch (exception) {
-		console.log('exception', exception.response.data);
-
+		console.log(exception);
 		return cb(
 			(exception.response && exception.response.data && (exception.response.data.message || exception.response.data.error)) || TAPi18n.__('Tokenpass_Command_Error_Unknown')
 		);
