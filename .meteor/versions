@@ -4,7 +4,7 @@ accounts-github@1.3.0
 accounts-google@1.2.0
 accounts-meteor-developer@1.3.0
 accounts-oauth@1.1.15
-accounts-password@1.4.0
+accounts-password@1.4.1
 accounts-twitter@1.3.0
 aldeed:simple-schema@1.5.3
 allow-deny@1.0.9
@@ -85,7 +85,7 @@ meteorhacks:meteorx@1.4.1
 meteorspark:util@0.2.0
 minifier-css@1.2.16
 minifier-js@2.1.4
-minimongo@1.3.2
+minimongo@1.3.3
 mizzao:autocomplete@0.5.1
 mizzao:timesync@0.3.4
 mobile-experience@1.0.5
@@ -101,7 +101,7 @@ mystor:device-detection@0.2.0
 nimble:restivus@0.8.12
 nooitaf:colors@1.1.2_1
 npm-bcrypt@0.9.3
-npm-mongo@2.2.30
+npm-mongo@2.2.31
 oauth@1.1.13
 oauth1@1.1.11
 oauth2@1.1.11
