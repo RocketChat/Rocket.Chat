@@ -79,6 +79,7 @@ Template.accountProfile.helpers({
 		instance.dep.depend();
 		const realname = instance.realname.get();
 		const username = instance.username.get();
+		const password = instance.password.get();
 		const email = instance.email.get();
 		const usernameAvaliable = instance.usernameAvaliable.get();
 		const avatar = instance.avatar.get();
@@ -93,7 +94,7 @@ Template.accountProfile.helpers({
 				return;
 			}
 		}
-		if (!avatar && user.name === realname && user.username === username && user.emails[0].address === email) {
+		if (!avatar && user.name === realname && user.username === username && user.emails[0].address === email && !password) {
 			return ret;
 		}
 		if (!validateEmail(email) || (!validateUsername(username) || usernameAvaliable !== true) || !validateName(realname)) {
@@ -236,6 +237,7 @@ Template.accountProfile.onCreated(function() {
 				toastr.success(t('Profile_saved_successfully'));
 				swal.close();
 				instance.clearForm();
+				self.password.set();
 			}
 			if (error) {
 				toastr.remove();
