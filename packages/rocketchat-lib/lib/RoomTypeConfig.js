@@ -141,6 +141,12 @@ export class RoomTypeConfig {
 		return true;
 	}
 
+	canBeCreated() {
+		return Meteor.isServer ?
+			RocketChat.authz.hasAtLeastOnePermission(Meteor.userId(), [`create-${ this._identifier }`]) :
+			RocketChat.authz.hasAtLeastOnePermission([`create-${ this._identifier }`]);
+	}
+
 	canBeDeleted(room) {
 		return Meteor.isServer ?
 			RocketChat.authz.hasAtLeastOnePermission(Meteor.userId(), [`delete-${ room.t }`], room._id) :
