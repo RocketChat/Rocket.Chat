@@ -65,10 +65,10 @@ Package.onUse(function(api) {
 	api.addFiles('client/views/tabbar/HelpRequestContextParameter.js', 'client');
 	api.addFiles('client/views/tabbar/HelpRequestActions.html', 'client');
 	api.addFiles('client/views/tabbar/HelpRequestActions.js', 'client');
-	api.addFiles('client/views/sideNav/AssistifyCreateRequest.html', 'client');
-	api.addFiles('client/views/sideNav/AssistifyCreateRequest.js', 'client');
-	api.addFiles('client/views/sideNav/AssistifyCreateExpertise.html', 'client');
-	api.addFiles('client/views/sideNav/AssistifyCreateExpertise.js', 'client');
+	api.addFiles('client/views/creationDialog/AssistifyCreateRequest.html', 'client');
+	api.addFiles('client/views/creationDialog/AssistifyCreateRequest.js', 'client');
+	api.addFiles('client/views/creationDialog/AssistifyCreateExpertise.html', 'client');
+	api.addFiles('client/views/creationDialog/AssistifyCreateExpertise.js', 'client');
 	api.addFiles('client/views/sideNav/requests.html', 'client');
 	api.addFiles('client/views/sideNav/requests.js', 'client');
 	api.addFiles('client/views/sideNav/expertise.html', 'client');

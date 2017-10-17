@@ -15,7 +15,7 @@ RocketChat.TabBar.addButton({
 	groups: ['request', 'expertise', 'live'],
 	id: 'dbsai',
 	i18nTitle: 'Knowledge_Base',
-	icon: 'icon-lightbulb',
+	icon: 'lightbulb',
 	template: 'dbsAI_smarti',
 	order: 0
 });

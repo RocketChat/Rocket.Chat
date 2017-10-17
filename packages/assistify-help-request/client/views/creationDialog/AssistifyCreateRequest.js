@@ -1,4 +1,4 @@
-/* globals TAPi18n, AutoComplete, Deps */
+/* globals TAPi18n, AutoComplete */
 import {RocketChat} from 'meteor/rocketchat:lib';
 import {FlowRouter} from 'meteor/kadira:flow-router';
 import {ReactiveVar} from 'meteor/reactive-var';
@@ -45,7 +45,7 @@ Template.AssistifyCreateRequest.helpers({
 		return {
 			filter: filter.get(),
 			template_item: 'AssistifyCreateRequestAutocomplete',
-			noMatchTemplate: 'roomSearchEmpty',
+			noMatchTemplate: 'userSearchEmpty',
 			modifier(text) {
 				const f = filter.get();
 				return `#${ f.length === 0 ? text : text.replace(new RegExp(filter.get()), function(part) {
