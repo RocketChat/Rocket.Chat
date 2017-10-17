@@ -1,5 +1,8 @@
-/* globals RocketChat, FlowRouter, console */
-import toastr from 'toastr';
+/* globals AutoComplete, Deps */
+import {RocketChat} from 'meteor/rocketchat:lib';
+import {FlowRouter} from 'meteor/kadira:flow-router';
+import {ReactiveVar} from 'meteor/reactive-var';
+
 const acEvents = {
 	'click .rc-popup-list__item'(e, t) {
 		t.ac.onItemClick(this, e);
@@ -172,7 +175,7 @@ Template.AssistifyCreateExpertise.onRendered(function() {
 		users.set(usersArr);
 	});
 });
-/* global AutoComplete Deps */
+
 Template.AssistifyCreateExpertise.onCreated(function() {
 	this.selectedUsers = new ReactiveVar([]);
 

@@ -1,4 +1,8 @@
-/* globals RocketChat, FlowRouter, TAPi18n, console */
+/* globals TAPi18n, AutoComplete, Deps */
+import {RocketChat} from 'meteor/rocketchat:lib';
+import {FlowRouter} from 'meteor/kadira:flow-router';
+import {ReactiveVar} from 'meteor/reactive-var';
+
 const acEvents = {
 	'click .rc-popup-list__item'(e, t) {
 		t.ac.onItemClick(this, e);
@@ -123,7 +127,6 @@ Template.AssistifyCreateRequest.onRendered(function() {
 	});
 });
 
-/* global AutoComplete, ReactiveVar, _ */
 Template.AssistifyCreateRequest.onCreated(function() {
 	const instance = this;
 
