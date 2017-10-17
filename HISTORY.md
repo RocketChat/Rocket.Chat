@@ -1,3 +1,25 @@
+<a name="0.59.0-rc.14"></a>
+# 0.59.0-rc.14 (2017-10-17)
+
+
+### Bug Fixes
+
+- [#8491](https://github.com/RocketChat/Rocket.Chat/pull/8491) Invalid Code message for password protected channel
+- [#8514](https://github.com/RocketChat/Rocket.Chat/pull/8514) Uncessary route reload break some routes
+- [#8489](https://github.com/RocketChat/Rocket.Chat/pull/8489) Wrong message when reseting password and 2FA is enabled
+
+
+<details>
+<summary>Others</summary>
+
+- [#8515](https://github.com/RocketChat/Rocket.Chat/pull/8515) Change artifact path
+- [#8463](https://github.com/RocketChat/Rocket.Chat/pull/8463) Color variables migration
+- [#8490](https://github.com/RocketChat/Rocket.Chat/pull/8490) Enable AutoLinker back
+- [#8516](https://github.com/RocketChat/Rocket.Chat/pull/8516) Fix: Change password not working in new UI
+</details>
+
+
+
 <a name="0.59.0-rc.13"></a>
 # 0.59.0-rc.13 (2017-10-11)
 
