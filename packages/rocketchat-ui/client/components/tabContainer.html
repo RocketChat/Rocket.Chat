@@ -11,9 +11,11 @@
 		</nav>
 
 		{{#each tab in tabs}}
-			<div class="rc-tabs__content {{activeClass tab.template}}">
-				{{> Template.dynamic template=tab.template }}
-			</div>
+			{{#if isTabActive tab.template}}
+				<div class="rc-tabs__content {{activeClass tab.template}}">
+					{{> Template.dynamic template=tab.template }}
+				</div>
+			{{/if}}
 		{{/each}}
 	</div>
 </template>
