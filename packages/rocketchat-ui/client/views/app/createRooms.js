@@ -6,7 +6,7 @@ const roomTypesBeforeStandard = function() {
 		(roomTypeOrder) => {
 			return RocketChat.roomTypes.roomTypes[roomTypeOrder.identifier];
 		}
-	).filter((roomType) => roomType.creationTemplate);
+	).filter((roomType) => roomType.creationTemplate && roomType.canBeCreated());
 };
 
 const roomTypesAfterStandard = function() {
@@ -17,7 +17,7 @@ const roomTypesAfterStandard = function() {
 		(roomTypeOrder) => {
 			return RocketChat.roomTypes.roomTypes[roomTypeOrder.identifier];
 		}
-	).filter((roomType) => roomType.creationTemplate);
+	).filter((roomType) => roomType.creationTemplate && roomType.canBeCreated());
 };
 
 const allTemplatesOrdered = function() {
