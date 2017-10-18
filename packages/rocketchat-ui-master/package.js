@@ -11,7 +11,7 @@ Package.describe({
 });
 
 Npm.depends({
-	clipboard: '1.6.1'
+	clipboard: '1.7.1'
 });
 
 Package.onUse(function(api) {
@@ -32,4 +32,6 @@ Package.onUse(function(api) {
 	api.addFiles('client/main.js', 'client');
 
 	api.addFiles('server/inject.js', 'server');
+	api.addAssets('public/icons.svg', 'server');
+	api.addAssets('public/loading.css', 'server');
 });

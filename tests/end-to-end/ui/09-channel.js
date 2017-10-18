@@ -19,13 +19,11 @@ describe('[Channel]', ()=> {
 			setPublicChannelCreated(true);
 			console.log('public channel not found, creating one...');
 		}
+		sideNav.openChannel('general');
 	});
 	describe('[Search]', ()=> {
 		describe('[SpotlightSearch]', () => {
 			describe('rocket.cat:', () => {
-				beforeEach(() => {
-					sideNav.getChannelFromSpotlight('rocket.cat').waitForVisible(5000);
-				});
 
 				afterEach(() => {
 					sideNav.spotlightSearch.setValue('');
@@ -378,7 +376,8 @@ describe('[Channel]', ()=> {
 				});
 			});
 
-			describe('channel quit and enter', () => {
+			//no channel quit at the moment
+			describe.skip('channel quit and enter', () => {
 				it('it should leave the channel', () => {
 					const channel = sideNav.getChannelFromList(`NAME-EDITED-${ publicChannelName }`);
 					channel.click();

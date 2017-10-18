@@ -1,58 +1,54 @@
 <template name="adminFlex">
-	<header>
-		<div>
-			<h4>{{_ "Administration"}}</h4>
-		</div>
-	</header>
-	<div class="content">
-		<div class="wrapper">
-			<ul>
-				<li>
-					<a href="{{pathFor 'admin-info'}}" class="admin-link">{{_ "Info"}}</a>
-				</li>
+	<aside class="sidebar-light" role="navigation">
+		<header class="sidebar-flex__header">
+			<h1 class="sidebar-flex__title">{{_ "Administration"}}</h1>
+			{{#unless embeddedVersion}}
+				<button class="sidebar-flex__close-button" data-action="close">
+					{{> icon block="sidebar-flex__close-icon" icon="cross"}}
+				</button>
+			{{/unless}}
+		</header>
+		<div class="rooms-list {{#if embeddedVersion}}rooms-list--embedded{{/if}}" aria-label="{{_ "Administration"}}">
+			<ul class="rooms-list__list">
+				{{> sidebarItem menuItem "Info" "info-circled" "admin-info" "" }}
 
 				{{#if hasPermission 'run-import'}}
-					<li>
-						<a href="{{pathFor 'admin-import'}}" class="admin-link">Import</a>
-					</li>
+					{{> sidebarItem menuItem "Import" "import" "admin-import" "" }}
 				{{/if}}
 
 				{{#if hasPermission 'view-room-administration'}}
-					<li>
-						<a href="{{pathFor 'admin-rooms'}}" class="admin-link">{{_ "Rooms"}}</a>
-					</li>
+					{{> sidebarItem menuItem "Rooms" "hashtag" "admin-rooms" "" }}
 				{{/if}}
 
 				{{#if hasPermission 'view-user-administration'}}
-					<li>
-						<a href="{{pathFor 'admin-users'}}" class="admin-link">{{_ "Users"}}</a>
-					</li>
+					{{> sidebarItem menuItem "Users" "team" "admin-users" "" }}
 				{{/if}}
 
 				{{#each adminBoxOptions}}
 					{{#if permissionGranted}}
-						<li>
-							<a href="{{pathFor href}}" class="admin-link">{{label}}</a>
-						</li>
+						{{> sidebarItem menuItem label icon href "" }}
 					{{/if}}
 				{{/each}}
-
-				{{#if hasPermission 'view-privileged-setting'}}
-					<h3 class="add-room">
-						{{_ "Settings"}}
-					</h3>
-
-					<li>
-						<input type="text" name="settings-search" placeholder="{{_ 'Search'}}">
-					</li>
-
-					{{#each groups}}
-					<li>
-						<a href="{{pathFor 'admin' group=_id}}" class="admin-link">{{label}}</a>
-					</li>
-					{{/each}}
-				{{/if}}
 			</ul>
+
+			{{#if hasPermission 'view-privileged-setting'}}
+				<h3 class="rooms-list__type">{{_ "Settings"}}</h3>
+				<div class="rc-input sidebar-flex__search">
+					<label class="rc-input__label">
+						<div class="rc-input__wrapper">
+							<div class="rc-input__icon">
+								{{> icon block="rc-input__icon-sv" icon="magnifier"}}
+							</div>
+							<input type="text" class="rc-input__element rc-input__element--small" name="settings-search" placeholder="{{_ 'Search'}}">
+						</div>
+					</label>
+				</div>
+				<ul class="rooms-list__list">
+					{{#each groups}}
+						{{> sidebarItem menuItem label false "admin" _id }}
+					{{/each}}
+				</ul>
+			{{/if}}
 		</div>
-	</div>
+	</aside>
 </template>
