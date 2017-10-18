@@ -1,3 +1,15 @@
+<a name="0.59.0-rc.17"></a>
+# 0.59.0-rc.17 (2017-10-18)
+
+
+<details>
+<summary>Others</summary>
+
+- [#8529](https://github.com/RocketChat/Rocket.Chat/pull/8529) Improve room sync speed
+</details>
+
+
+
 <a name="0.59.0-rc.16"></a>
 # 0.59.0-rc.16 (2017-10-18)
 
