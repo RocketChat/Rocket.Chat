@@ -5,7 +5,7 @@ Meteor.startup(function() {
 				groups: ['channel', 'group', 'direct'],
 				id: 'autotranslate',
 				i18nTitle: 'Auto_Translate',
-				icon: 'icon-language',
+				icon: 'language',
 				template: 'autoTranslateFlexTab',
 				order: 20
 			});
