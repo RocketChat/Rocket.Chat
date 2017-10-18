@@ -1,0 +1,21 @@
+Assistify_AI_DBSearch_Suffix: Custom search suffix
+Assistify_AI_Widget_Posting_Type_PostRichText: post rich text
+Assistify_AI_Widget_Posting_Type_PostText: post text
+Assistify_AI_Widget_Posting_Type_SuggestText: suggest text
+Assistify_AI_Widget_Posting_Type: Widget posting behaviour
+DBS_AI_Redlink_Auth_Token: Basic-Auth token
+DBS_AI_Redlink_Domain: Domain for messages
+DBS_AI_Redlink_Hook_Token: Token for incoming Messages
+DBS_AI_Redlink_URL: URL of service
+DBS_AI_Source_APIAI: API.ai
+DBS_AI_Source_Redlink: Redlink
+DBS_AI_Source_Smarti: Smarti
+DBS_AI_Source: Knowledge source
+error-unreachable-url: URL not reachable
+Link_provided: Similar question at
+No_room_link_possible: Origin conversation was not provided within this chat. Cannot insert a link. Please pick individual messages.
+reload_Assistify: Aktualisieren
+Reload_Settings: Reload settings
+settings-reloaded-successfully: Settings have been successfully reloaded
+similar_requests: Similar requests
+similar_to: Similar to

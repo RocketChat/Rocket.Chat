@@ -1,0 +1,21 @@
+Assistify_AI_DBSearch_Suffix: Eigener Such-Suffix
+Assistify_AI_Widget_Posting_Type_PostRichText: RichText posten
+Assistify_AI_Widget_Posting_Type_PostText: Text posten
+Assistify_AI_Widget_Posting_Type_SuggestText: Text vorschlagen
+Assistify_AI_Widget_Posting_Type: Posting-Verhalten des Widgets
+DBS_AI_Redlink_Auth_Token: Basic-Auth Token
+DBS_AI_Redlink_Domain: Domäne für Nachrichten
+DBS_AI_Redlink_Hook_Token: Token für eingende Nachrichten
+DBS_AI_Redlink_URL: URL des Service
+DBS_AI_Source_APIAI: API.ai
+DBS_AI_Source_Redlink: Redlink
+DBS_AI_Source_Smarti: Smarti
+DBS_AI_Source: Wissensquelle
+error-unreachable-url: URL nicht erreichbar
+Link_provided: Ich habe hier eine ähnliche Konversation gefunden
+No_room_link_possible: Die originale Konversation fand nicht über diesen Chat statt. Daher kann ich sie leider nicht verlinken. Bitte wähle einzelne Nachtichten aus.
+reload_Assistify: Aktualisieren
+Reload_Settings: Einstellungen neu laden
+settings-reloaded-successfully: Einstellung wurden erfolgreich neu geladen
+similar_requests: Ähnliche Anfragen
+similar_to: Ähnliches zu

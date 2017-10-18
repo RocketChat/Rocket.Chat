@@ -23,7 +23,7 @@ const openProfileTab = (e, instance, username) => {
 		return;
 	}
 
-	if (['c', 'p', 'd'].includes(roomData.t)) {
+	if (['c', 'p', 'd', 'e', 'r'].includes(roomData.t)) {
 		instance.setUserDetail(username);
 	}
 

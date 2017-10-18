@@ -1,0 +1,66 @@
+<template name="AssistifyCreateExpertise">
+	<header class="create-channel__header">
+		<h1 class="create-channel__title">{{_ "Expertises"}}</h1>
+		<p class="create-channel__description">{{_ "Expertise_description"}}</p>
+	</header>
+	<form class="create-channel__content">
+		<div class="create-channel__inputs">
+			<div class="rc-input {{#if invalidChannel}}rc-input--error{{/if}}">
+				<label class="rc-input__label">
+					<div class="rc-input__title">{{_ "Expertise_title"}}</div>
+					<div class="rc-input__wrapper">
+						<div class="rc-input__icon">
+							{{> icon block="rc-input__icon-svg" icon="flag" }}
+						</div>
+						<input name="expertise" type="text" class="rc-input__element"
+							   placeholder="{{_ "Expertise_title"}}" autofocus>
+					</div>
+				</label>
+				{{#if inUse}}
+					<div class="rc-input__error">
+						<div class="rc-input__error-icon">
+							{{> icon block="rc-input__error-icon" icon="warning" classes="rc-input__error-icon-svg"}}
+						</div>
+						<div class="rc-input__error-message">{{_ "Channel_already_exist_static"}}</div>
+					</div>
+				{{/if}}
+			</div>
+			<div class="rc-input">
+				<label class="rc-input__label">
+					<div class="rc-input__title">{{_ "Invite_Users"}}</div>
+					<div class="rc-input__wrapper">
+						<div class="rc-input__icon">
+							{{> icon block="rc-input__icon-svg" icon="at"}}
+						</div>
+						<div class="rc-tags">
+							{{#each user in selectedUsers}}
+								{{> tag user}}
+							{{/each}}
+							<input type="text" class="rc-tags__input {{#if invalidMembers}}rc-input--error{{/if}}" placeholder="{{_ "Experts"}}"
+								   name="experts" autocomplete="off"/>
+						</div>
+						{{#if invalidMembers}}
+							<div class="rc-input__error">
+								<div class="rc-input__error-icon">
+									{{> icon block="rc-input__error-icon" icon="warning" classes="rc-input__error-icon-svg"}}
+								</div>
+								<div class="rc-input__error-message">{{_ "Expertise_needs_experts"}}</div>
+							</div>
+						{{/if}}
+					</div>
+					{{#with config}}
+						{{#if autocomplete 'isShowing'}}
+							<div class="fadeInDown">
+								{{#if autocomplete 'isLoaded'}}
+									{{> popupList data=config items=items}}
+								{{/if}}
+							</div>
+						{{/if}}
+					{{/with}}
+				</label>
+			</div>
+		</div>
+		<input class="rc-button rc-button--primary" type="submit" data-button="create" {{createIsDisabled}}
+			   value="{{_ "Create"}}">
+	</form>
+</template>
