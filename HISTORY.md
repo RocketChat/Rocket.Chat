@@ -1,3 +1,15 @@
+<a name="0.59.0-rc.15"></a>
+# 0.59.0-rc.15 (2017-10-18)
+
+
+<details>
+<summary>Others</summary>
+
+- [#8520](https://github.com/RocketChat/Rocket.Chat/pull/8520) Fix high CPU load when sending messages on large rooms (regression)
+</details>
+
+
+
 <a name="0.59.0-rc.14"></a>
 # 0.59.0-rc.14 (2017-10-17)
 
