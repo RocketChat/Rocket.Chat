@@ -22,7 +22,14 @@ Template.livechatIntegrationFacebook.onCreated(function() {
 
 	this.loadPages = () => {
 		this.pages.set([]);
-		Meteor.call('livechat:facebook', { action: 'list-pages' }, (err, result) => {
+		Meteor.call('livechat:facebook', { action: 'list-pages' }, (error, result) => {
+			if (error) {
+				return swal({
+					title: t('Error_loading_pages'),
+					text: error.reason,
+					type: 'error'
+				});
+			}
 			this.pages.set(result.pages);
 		});
 	};
