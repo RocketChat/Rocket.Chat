@@ -106,7 +106,10 @@ Meteor.methods({
 RocketChat.models.Rooms.cache.on('sync', (type, room/*, diff*/) => {
 	const records = RocketChat.models.Subscriptions.findByRoomId(room._id).fetch();
 	for (const record of records) {
-		RocketChat.Notifications.notifyUserInThisInstance(record.u._id, 'rooms-changed', type, roomMap({_room: room}, getFieldsForUserId(record.u._id)));
+		const user = RocketChat.models.Users.findOneById(record.u._id);
+		if (user && (user.statusConnection === 'online' || user.statusConnection === 'away')) {
+			RocketChat.Notifications.notifyUserInThisInstance(record.u._id, 'rooms-changed', type, roomMap({_room: room}, getFieldsForUserId(record.u._id)));
+		}
 	}
 });
 
