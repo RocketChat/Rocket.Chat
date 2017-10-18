@@ -102,7 +102,6 @@ Package.onUse(function(api) {
 	api.addFiles('client/views/app/popover.html', 'client');
 	api.addFiles('client/views/app/photoswipe.html', 'client');
 	api.addFiles('client/views/app/globalAnnouncement.html', 'client');
-	api.addFiles('client/views/app/globalAnnouncementHome.html', 'client');
 
 	api.addFiles('client/views/cmsPage.js', 'client');
 	api.addFiles('client/views/fxos.js', 'client');
@@ -123,7 +122,6 @@ Package.onUse(function(api) {
 	api.addFiles('client/views/app/popover.js', 'client');
 	api.addFiles('client/views/app/photoswipe.js', 'client');
 	api.addFiles('client/views/app/globalAnnouncement.js', 'client');
-	api.addFiles('client/views/app/globalAnnouncementHome.js', 'client');
 
 
 	api.addFiles('client/components/icon.html', 'client');
