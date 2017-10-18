@@ -1,0 +1,69 @@
+<template name="adminOembed">
+	<div class="main-content-flex">
+		<section class="page-container page-list flex-tab-main-content">
+			{{> header sectionName="Oembed"}}
+			<div class="content">
+				{{#if hasPermission 'manage-own-incoming-integrations'}}
+					<form class="search-form" role="form">
+						<div class="rc-input__wrapper">
+							<div class="rc-input__icon">
+								{{#if isLoading}}
+									{{> loading }}
+								{{else}}
+									{{> icon block="rc-input__icon-svg" icon="magnifier" }}
+								{{/if}}
+							</div>
+							<input type="text" id="oembed-filter" class="rc-input__element"
+								placeholder="{{_ "Search"}}" autofocus dir="auto">
+						</div>
+					</form>
+					<div class="results">
+						{{{_ "Showing_results" oembed.length}}}
+					</div>
+					{{#table fixed='true' onItemClick=onTableItemClick onResize=onTableResize}}
+						<thead>
+							<tr>
+								<th width="50%">
+									<div class="table-fake-th">{{_ "Urls"}}</div>
+								</th>
+								<th width="50%">
+									<div class="table-fake-th">{{_ "EndPoint"}}</div>
+								</th>
+							</tr>
+						</thead>
+						<tbody>
+							{{#each oembed}}
+							<tr>
+								<td width="50%">
+									<div class="rc-table-wrapper">
+										<div class="rc-table-info {{preloadedClass preloaded}}">
+											<ul>
+											{{#each u in urls}}
+												<li>{{u}}</li>
+											{{/each}}
+											</ul>
+										</div>
+									</div>
+								</td>
+								<td width="50%">
+									<div class="rc-table-wrapper">
+										<div class="rc-table-info {{preloadedClass preloaded}}">
+											{{endPoint}}
+										</div>
+									</div>
+								</td>
+							</tr>
+							{{/each}}
+						</tbody>
+					{{/table}}
+				{{else}}
+					<p>{{_ "You_are_not_authorized_to_view_this_page"}}</p>
+				{{/if}}
+
+			</div>
+		</section>
+		{{#with flexData}}
+			{{> flexTabBar}}
+		{{/with}}
+	</div>
+</template>

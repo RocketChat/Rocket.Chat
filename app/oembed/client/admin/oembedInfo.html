@@ -1,0 +1,24 @@
+<template name="oembedInfo">
+	{{#if editingOembed}}
+		{{> oembedEdit (oembedToEdit)}}
+	{{else}}
+		{{#with oembed}}
+		<div class="about clearfix">
+			<div class="info">
+				<h3 title="{{endPoint}}">{{endPoint}}</h3>
+			</div>
+			{{#if preloaded}}
+				{{_ "OEmbed_Preloaded"}}
+			{{/if}}
+		</div>
+		<nav>
+			{{#if hasPermission 'manage-own-incoming-integrations'}}
+				{{#unless preloaded}}
+					<button class='button button-block danger delete'><span><i class='icon-trash'></i> {{_ "Delete"}}</span></button>
+					<button class='button button-block primary edit-oembed'><span><i class='icon-edit'></i> {{_ "Edit"}}</span></button>
+				{{/unless}}
+			{{/if}}
+		</nav>
+		{{/with}}
+	{{/if}}
+</template>
