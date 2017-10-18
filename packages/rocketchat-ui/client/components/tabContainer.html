@@ -1,0 +1,21 @@
+<template name="tabContainer">
+	<div class="rc-tabs__container">
+		<nav class="rc-tabs">
+			{{#each tab in tabs}}
+				<li class="rc-tabs__tab {{activeClass tab.template}}">
+					<a class="rc-tabs__tab-link" href="#{{tab.template}}">
+						{{_ tab.label}}
+					</a>
+				</li>
+			{{/each}}
+		</nav>
+
+		{{#each tab in tabs}}
+			{{#if isTabActive tab.template}}
+				<div class="rc-tabs__content {{activeClass tab.template}}">
+					{{> Template.dynamic template=tab.template }}
+				</div>
+			{{/if}}
+		{{/each}}
+	</div>
+</template>
