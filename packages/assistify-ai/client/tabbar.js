@@ -1,3 +1,5 @@
+RocketChat.TabBar.removeButton('external-search');
+
 RocketChat.TabBar.addButton({
 	groups: ['live'],
 	id: 'AssistifyAai',
