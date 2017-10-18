@@ -169,7 +169,7 @@ Host your docker container at [sloppy.io](http://sloppy.io). Get an account and 
 
 
 ## Docker
-[Deploy with docker compose](https://rocket.chat/docs/installation/docker-containers/docker-compose)
+[Deploy with docker compose](https://docs.rocket.chat/installation/docker-containers/docker-compose)
 
 or
 
