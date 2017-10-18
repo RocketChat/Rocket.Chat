@@ -1,8 +1,8 @@
 Package.describe({
 	name: 'assistify:ai',
-	version: '0.0.1',
+	version: '0.1.0',
 	summary: 'Integration of artificial knowledge',
-	git: '', //not hosted on separaete git repo yet - use http://github.com/mrsimpson/Rocket.Chat
+	git: 'http://github.com/assistify/Rocket.Chat',
 	documentation: 'README.md'
 });
 
@@ -19,9 +19,7 @@ function addDirectory(api, pathInPackage, environment) {
 Package.onUse(function(api) {
 	api.use(['ecmascript', 'underscore']);
 	api.use('templating', 'client');
-	api.use('less@2.5.1');
 	api.use('rocketchat:lib'); //in order to make general settings load earlier
-	api.use('assistify');
 
 	//Server business logic
 	addDirectory(api, 'server/lib', 'server');

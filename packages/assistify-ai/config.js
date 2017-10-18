@@ -1,5 +1,5 @@
 Meteor.startup(() => {
-	RocketChat.settings.get('Assistify', function() {
+	const addAISettings = function() {
 
 		this.section('Knowledge_Base', function() {
 
@@ -24,14 +24,6 @@ Meteor.startup(() => {
 				type: 'string',
 				public: true,
 				i18nLabel: 'DBS_AI_Redlink_URL'
-			});
-
-			/* Currently, Redlink does not offer hashed API_keys, but uses simple password-auth
-             * This is of course far from perfect and is hopeully going to change sometime later */
-			this.add('DBS_AI_Redlink_Auth_Token', '', {
-				type: 'string',
-				public: true,
-				i18nLabel: 'DBS_AI_Redlink_Auth_Token'
 			});
 
 			this.add('DBS_AI_Redlink_Hook_Token', '', {
@@ -66,18 +58,15 @@ Meteor.startup(() => {
 				i18nLabel: 'Assistify_AI_Widget_Posting_Type'
 			});
 
-			this.add('Assistify_AI_DBSearch_Suffix', '', {
-				type: 'code',
-				multiline: true,
-				public: true,
-				i18nLabel: 'Assistify_AI_DBSearch_Suffix'
-			});
-
-
 			this.add('reload_Assistify', 'reloadSmarti', {
 				type: 'action',
 				actionText: 'Reload_Settings'
 			});
 		});
-	});
+	};
+
+	// add the setting group if needed or reuse the existing one
+	RocketChat.settings.get('Assistify') ?
+		RocketChat.settings.get('Assistify', addAISettings) :
+		RocketChat.settings.addGroup('Assistify', addAISettings);
 });

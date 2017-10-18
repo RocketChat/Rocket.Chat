@@ -1,9 +1,8 @@
 Package.describe({
 	name: 'assistify:help-request',
-	version: '0.0.1',
-	summary: 'Adds rooms which are to be closed once the initial question has been resolved',
-	// URL to the Git repository containing the source code for this package.
-	git: '',
+	version: '0.1.0',
+	summary: 'Adds heavy-weight threading with integrated AI to Rocket.Chat',
+	git: 'http://github.com/assistify/Rocket.Chat',
 	// By default, Meteor will default to using README.md for documentation.
 	// To avoid submitting documentation, set this field to null.
 	documentation: 'README.md'
@@ -12,11 +11,11 @@ Package.describe({
 Package.onUse(function(api) {
 	api.versionsFrom('1.2.1');
 	api.use(['ecmascript', 'underscore', 'coffeescript', 'less@2.5.1']);
-	api.use(['assistify', 'assistify:ai']);
+	api.use('assistify:ai');
 	api.use('rocketchat:lib'); //In order to be able to attach to RocketChat-Global
 	api.use('rocketchat:livechat'); //Due to external messages
 	api.use('rocketchat:authorization'); //In order to create custom permissions
-	api.use(['nimble:restivus', 'rocketchat:authorization', 'rocketchat:api'], 'server');
+	api.use(['nimble:restivus', 'rocketchat:api'], 'server');
 	api.use('templating', 'client');
 	api.use('meteorhacks:inject-initial'); //for provisioning of svg-icons
 

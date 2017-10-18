@@ -1,3 +1,3 @@
-This package contains all artifacts of the redlink-integration which can be isolated.
-Some parts deeply integrate with existing Rocket.Chat-components. 
-For the sake of reduced dependency, potential standard-components shall implement a switch an load modified parts from this package if needed.
+This package contains all the Smarti-"AI" which aims at accelerating the current conversation.
+All artifacts shall be coupled loosely.
+In near future, as soon as the technical framework is available, all features of this package shall be converted to a Rocketlet.

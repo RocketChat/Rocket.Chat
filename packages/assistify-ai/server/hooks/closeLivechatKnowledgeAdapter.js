@@ -1,12 +1,12 @@
-/* globals RocketChat, SystemLogger, _dbs */
+/* globals RocketChat, SystemLogger*/
 
 /**
  * Notifies the knowledgeProvider about the end of a livechat conversation
  */
-
+import {getKnowledgeAdapter} from 'meteor/assistify:ai';
 const _callbackOnClose = function(room) {
 	try {
-		const knowledgeAdapter = _dbs.getKnowledgeAdapter();
+		const knowledgeAdapter = getKnowledgeAdapter();
 		if (knowledgeAdapter && knowledgeAdapter.onClose) {
 			knowledgeAdapter.onClose(room);
 		} else {
