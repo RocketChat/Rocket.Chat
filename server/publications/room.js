@@ -38,14 +38,7 @@ const roomMap = (record, fields) => {
 	return {};
 };
 
-function getFieldsForUserId(userId) {
-	if (RocketChat.authz.hasPermission(userId, 'view-join-code')) {
-		return {
-			...fields,
-			joinCode: 1
-		};
-	}
-
+function getFieldsForUserId(/*userId*/) {
 	return fields;
 }
 
