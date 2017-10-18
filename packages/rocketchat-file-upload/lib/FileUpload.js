@@ -51,10 +51,6 @@ FileUpload = {
 			throw new Meteor.Error('error-invalid-file-type', reason);
 		}
 
-		if (file.name.includes('%')) {
-			file.name = file.name.replace('%', '');
-		}
-
 		return true;
 	}
 };
