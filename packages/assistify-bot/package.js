@@ -15,12 +15,4 @@ Package.onUse(function(api) {
 	api.use('ecmascript');
 	api.use('assistify:help-request');
 	api.mainModule('bot.js');
-
-	//Server
-	api.addFiles('config.js', 'server');
-
-	//hooks
-	api.addFiles('server/hooks/onKnowledgeProviderResult.js', 'server');
-
-	//i18n in Rocket.Chat-package (packages/rocketchat-i18n/i18n
 });

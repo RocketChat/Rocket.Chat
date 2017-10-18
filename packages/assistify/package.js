@@ -12,12 +12,15 @@ Package.describe({
 Package.onUse(function(api) {
 	api.versionsFrom('1.4.2.6');
 	api.use('ecmascript');
-	api.use('dbs:ai');
+	api.use('templating', 'client'); //needed in order to be able to register global helpers on the Template-object
 	api.mainModule('assistify.js');
 
 	//Server
 	api.addFiles('config.js', 'server');
 	//TODO add jquery?
 
-	//i18n in Rocket.Chat-package (packages/rocketchat-i18n/i18n
+	//Client
+	api.addFiles('client/lib/globalTemplateHelpers.js', 'client');
+
+	//i18n in Rocket.Chat-package (packages/rocketchat-i18n/i18n)
 });

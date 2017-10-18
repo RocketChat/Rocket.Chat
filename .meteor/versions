@@ -9,6 +9,7 @@ accounts-twitter@1.3.0
 aldeed:simple-schema@1.5.3
 allow-deny@1.0.9
 assistify@0.0.1
+assistify:ai@0.0.1
 assistify:bot@0.0.1
 assistify:help-request@0.0.1
 autoupdate@1.3.12
@@ -28,8 +29,6 @@ check@1.2.5
 coffeescript@1.12.7_1
 coffeescript-compiler@1.12.7_1
 dandv:caret-position@2.1.1
-dbs:ai@0.0.1
-dbs:common@0.0.1
 ddp@1.3.1
 ddp-client@2.1.3
 ddp-common@1.2.9

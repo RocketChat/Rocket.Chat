@@ -178,7 +178,6 @@ rocketchat:postcss
 dynamic-import@0.1.3
 keepnox:perfect-scrollbar
 
-dbs:common
-dbs:ai
 assistify:help-request
 assistify:bot
+assistify:ai

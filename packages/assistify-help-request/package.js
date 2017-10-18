@@ -12,7 +12,7 @@ Package.describe({
 Package.onUse(function(api) {
 	api.versionsFrom('1.2.1');
 	api.use(['ecmascript', 'underscore', 'coffeescript', 'less@2.5.1']);
-	api.use(['assistify']);
+	api.use(['assistify', 'assistify:ai']);
 	api.use('rocketchat:lib'); //In order to be able to attach to RocketChat-Global
 	api.use('rocketchat:livechat'); //Due to external messages
 	api.use('rocketchat:authorization'); //In order to create custom permissions
