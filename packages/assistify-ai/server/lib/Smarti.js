@@ -21,6 +21,10 @@ class SmartiAdapter {
 
 		//TODO is this always a new one, what about update
 
+		const helpRequest = RocketChat.models.HelpRequests.findOneByRoomId(message.rid);
+
+		const supportArea = helpRequest ? helpRequest.supportArea : undefined;
+
 		const requestBody = {
 			webhook_url: this.properties.webhookUrl,
 			message_id: message._id,
@@ -29,7 +33,8 @@ class SmartiAdapter {
 			// username: message.u.username,
 			text: message.msg,
 			timestamp: message.ts,
-			origin: message.origin
+			origin: message.origin,
+			support_area: supportArea
 		};
 
 		try {
