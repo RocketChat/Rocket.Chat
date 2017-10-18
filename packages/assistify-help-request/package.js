@@ -46,7 +46,6 @@ Package.onUse(function(api) {
 	api.addFiles('server/methods/closeHelpRequest.js', 'server');
 	api.addFiles('server/methods/createRequest.js', 'server');
 	api.addFiles('server/methods/createExpertise.js', 'server');
-	api.addFiles('server/methods/getExperts.js', 'server');
 	api.addFiles('server/methods/requestsList.js', 'server');
 	api.addFiles('server/methods/isValidExpertise.js', 'server');
 

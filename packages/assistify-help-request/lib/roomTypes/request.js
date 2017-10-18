@@ -43,15 +43,11 @@ export class RequestRoomType extends RoomTypeConfig {
 	}
 
 	condition() {
-		return RocketChat.authz.hasAtLeastOnePermission(['view-c-room', 'view-joined-room']); //todo: own permission
+		return RocketChat.authz.hasAtLeastOnePermission(['view-r-room', 'view-joined-room']);
 	}
 
 	showJoinLink(roomId) {
 		return !!ChatRoom.findOne({_id: roomId, t: 'r'});
-	}
-
-	canBeDeleted(room) {
-		return RocketChat.authz.hasPermission(Meteor.userId(), 'delete-c', room._id);
 	}
 
 	includeInRoomSearch() {

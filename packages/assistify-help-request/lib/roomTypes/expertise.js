@@ -43,11 +43,7 @@ export class ExpertiseRoomType extends RoomTypeConfig {
 	}
 
 	condition() {
-		return RocketChat.authz.hasAllPermission('view-p-room'); //todo: Own authorization
-	}
-
-	canBeDeleted(room) {
-		return RocketChat.authz.hasPermission(Meteor.userId(), 'delete-c', room._id);
+		return RocketChat.authz.hasAllPermission('view-e-room');
 	}
 
 	includeInRoomSearch() {

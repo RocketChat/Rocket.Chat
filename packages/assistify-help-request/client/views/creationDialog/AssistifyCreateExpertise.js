@@ -190,6 +190,8 @@ Template.AssistifyCreateExpertise.onCreated(function() {
 	this.invalid = new ReactiveVar(false);
 	this.invalidMembers = new ReactiveVar(false);
 	this.userFilter = new ReactiveVar('');
+	this.error = new ReactiveVar(null);
+
 	this.checkChannel = _.debounce((name) => {
 		if (validateChannelName(name)) {
 			return Meteor.call('roomNameExists', name, (error, result) => {
@@ -200,7 +202,7 @@ Template.AssistifyCreateExpertise.onCreated(function() {
 			});
 		}
 		this.inUse.set(undefined);
-	}, 1000);
+	}, 500);
 
 	this.ac = new AutoComplete(
 		{

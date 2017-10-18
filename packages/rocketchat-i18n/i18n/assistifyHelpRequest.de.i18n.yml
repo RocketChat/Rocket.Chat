@@ -1,26 +1,32 @@
-SystemContext: System-Kontext
-system: System
-release: Version
-transaction: Transaktion
 application: Anwendung
-gui_title: GUI-Titel
-Close_HelpRequest: Chat beenden
-Expertise_needs_experts: Bitte Experten auswählen, um eine Expertise zu definieren
-No_expertise_yet: Noch in keiner Expertengruppe
-Request: Anfrage
-Requests: Anfragen
-Request_description: Eine Anfrage ist der Versuch, gemeinsam eine Frage zu einem Thema zu beantworten. Aus abgeschlossenen Anfragen lernt das System und hilft, Fragen zu dem Thema in Zukunft schneller zu beantworten.
-New_request: Neue Anfrage
-New_expertise: Neues Thema
-More_requests: Weitere Anfragen
-No_requests_yet: Keine Anfragen bisher
 Assistify_room_count: Letzte Raumnummer
-New_request_for_expertise: Neue Anfrage zum Thema
-Experts: Experten
-Experts_channel: Expertenkanal
-Search_Requests: Anfragen suchen
+Close_HelpRequest: Chat beenden
+create-e: Thema anlegen
+create-r: Anfrage anlegen
+delete-e: Thema löschen
+delete-r: Anfrage löschen
+Expertise_description: Ein Thema beschreibt ein Wissensgebiet. Zu einem Thema können Anfragen erstellt werden, die von den Experten, die dem Thema als Mitglieder zugeordnet sind, beantwortet werden können.
+Expertise_needs_experts: Bitte Experten auswählen, um eine Expertise zu definieren
+Expertise_title: Titel des Themas
 Expertise: Thema
 Expertises: Themen
-Expertise_title: Titel des Themas
-Expertise_description: Ein Thema beschreibt ein Wissensgebiet. Zu einem Thema können Anfragen erstellt werden, die von den Experten, die dem Thema als Mitglieder zugeordnet sind, beantwortet werden können.
+Experts_channel: Expertenkanal
+Experts: Experten
+gui_title: GUI-Titel
+More_requests: Weitere Anfragen
+New_expertise: Neues Thema
+New_request_for_expertise: Neue Anfrage zum Thema
+New_request: Neue Anfrage
+No_expertise_yet: Noch in keiner Expertengruppe
+No_requests_yet: Keine Anfragen bisher
+release: Version
 Request_already_exists: Eine Anfrage mit der nächsten laufenen Nummer existiert bereits. Bitte erneut versuchen.
+Request_description: Eine Anfrage ist der Versuch, gemeinsam eine Frage zu einem Thema zu beantworten. Aus abgeschlossenen Anfragen lernt das System und hilft, Fragen zu dem Thema in Zukunft schneller zu beantworten.
+Request: Anfrage
+Requests: Anfragen
+Search_Requests: Anfragen suchen
+system: System
+SystemContext: System-Kontext
+transaction: Transaktion
+view-e-room: Alle Themen einsehen
+view-r-room: Alle Anfragen einsehen

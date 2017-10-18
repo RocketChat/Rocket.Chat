@@ -14,3 +14,8 @@ RocketChat.models.Users.findByIds = function(ids, options) {
 	const query = {'_id': {$in: ids}};
 	return this.find(query, options);
 };
+
+RocketChat.models.Users.findByUsernames = function(usernames, options) {
+	const query = {'username': {$in: usernames}};
+	return this.find(query, options);
+};
