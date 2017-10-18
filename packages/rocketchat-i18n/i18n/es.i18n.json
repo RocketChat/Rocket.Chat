@@ -762,6 +762,7 @@
   "Message_AllowDeleting": "Permitir la eliminación de mensajes",
   "Message_AllowDeleting_BlockDeleteInMinutes": "Bloquear la Eliminación de Mensajes Despues de (n) Minutos",
   "Message_AllowDeleting_BlockDeleteInMinutes_Description": "Introduzca 0 para desactivar el bloqueo.",
+  "Message_AllowDirectMessagesToYourself": "Permita mensajes directos del usuario a usted mismo",
   "Message_AllowEditing": "Permitir la edición de mensajes",
   "Message_AllowEditing_BlockEditInMinutes": "Bloquear la Edicion de Mensajes Despues de (n) Minutos",
   "Message_AllowEditing_BlockEditInMinutesDescription": "Ingrese 0 para deshabilitar el bloqueo.",

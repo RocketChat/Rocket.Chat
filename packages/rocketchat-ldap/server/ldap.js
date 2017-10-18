@@ -1,6 +1,5 @@
-/* globals LDAPJS */
-
-const ldapjs = LDAPJS;
+import ldapjs from 'ldapjs';
+import Bunyan from 'bunyan';
 
 const logger = new Logger('LDAP', {
 	sections: {
@@ -20,6 +19,8 @@ export default class LDAP {
 		this.options = {
 			host: RocketChat.settings.get('LDAP_Host'),
 			port: RocketChat.settings.get('LDAP_Port'),
+			Reconnect: RocketChat.settings.get('LDAP_Reconnect'),
+			Internal_Log_Level: RocketChat.settings.get('LDAP_Internal_Log_Level'),
 			timeout: RocketChat.settings.get('LDAP_Timeout'),
 			connect_timeout: RocketChat.settings.get('LDAP_Connect_Timeout'),
 			idle_timeout: RocketChat.settings.get('LDAP_Idle_Timeout'),
@@ -33,6 +34,8 @@ export default class LDAP {
 			User_Search_Filter: RocketChat.settings.get('LDAP_User_Search_Filter'),
 			User_Search_Scope: RocketChat.settings.get('LDAP_User_Search_Scope'),
 			User_Search_Field: RocketChat.settings.get('LDAP_User_Search_Field'),
+			Search_Page_Size: RocketChat.settings.get('LDAP_Search_Page_Size'),
+			Search_Size_Limit: RocketChat.settings.get('LDAP_Search_Size_Limit'),
 			group_filter_enabled: RocketChat.settings.get('LDAP_Group_Filter_Enable'),
 			group_filter_object_class: RocketChat.settings.get('LDAP_Group_Filter_ObjectClass'),
 			group_filter_group_id_attribute: RocketChat.settings.get('LDAP_Group_Filter_Group_Id_Attribute'),
@@ -66,8 +69,17 @@ export default class LDAP {
 			timeout: this.options.timeout,
 			connectTimeout: this.options.connect_timeout,
 			idleTimeout: this.options.idle_timeout,
-			reconnect: true
+			reconnect: this.options.Reconnect
 		};
+
+		if (this.options.Internal_Log_Level !== 'disabled') {
+			connectionOptions.log = new Bunyan({
+				name: 'ldapjs',
+				component: 'client',
+				stream: process.stderr,
+				level: this.options.Internal_Log_Level
+			});
+		}
 
 		const tlsOptions = {
 			rejectUnauthorized: this.options.reject_unauthorized
@@ -209,11 +221,15 @@ export default class LDAP {
 		const searchOptions = {
 			filter: this.getUserFilter(username),
 			scope: this.options.User_Search_Scope || 'sub',
-			paged: {
-				pageSize: 250,
-				pagePause: !!page
-			}
+			sizeLimit: this.options.Search_Size_Limit
 		};
+
+		if (this.options.Search_Page_Size > 0) {
+			searchOptions.paged = {
+				pageSize: this.options.Search_Page_Size,
+				pagePause: !!page
+			};
+		}
 
 		logger.search.info('Searching user', username);
 		logger.search.debug('searchOptions', searchOptions);
@@ -349,32 +365,50 @@ export default class LDAP {
 			});
 
 			let entries = [];
-			const jsonEntries = [];
+
+			const internalPageSize = options.paged && options.paged.pageSize > 0 ? options.paged.pageSize * 2 : 500;
 
 			res.on('searchEntry', (entry) => {
-				entries.push(entry);
-				jsonEntries.push(entry.json);
+				const values = entry.raw;
+				Object.keys(values).forEach((key) => {
+					const value = values[key];
+					if (!['thumbnailPhoto', 'jpegPhoto'].includes(key) && value instanceof Buffer) {
+						values[key] = value.toString();
+					}
+				});
+
+				entries.push(values);
+
+				if (entries.length >= internalPageSize) {
+					logger.search.info('Internal Page');
+					this.client._updateIdle(true);
+					page(null, entries, {end: false, next: () => {
+						// Reset idle timer
+						this.client._updateIdle();
+					}});
+					entries = [];
+				}
 			});
 
 			res.on('page', (result, next) => {
-				logger.search.debug('Page');
-				// Force LDAP idle to wait the record processing
-				this.client._updateIdle(true);
-				page(null, entries, {end: false, next: () => {
-					// Reset idle timer
-					this.client._updateIdle();
-					next && next();
-				}});
-				entries = [];
-			});
-
-			res.on('end', () => {
-				logger.search.info('Search result count', entries.length);
-				page(null, [], {end: true, next: () => {
-					// Reset idle timer
-					this.client._updateIdle();
-				}});
-				// logger.search.debug('Search result', JSON.stringify(jsonEntries, null, 2));
+				if (!next) {
+					logger.search.debug('Final Page');
+					this.client._updateIdle(true);
+					page(null, entries, {end: true, next: () => {
+						// Reset idle timer
+						this.client._updateIdle();
+					}});
+				} else if (entries.length) {
+					logger.search.info('Page');
+					// Force LDAP idle to wait the record processing
+					this.client._updateIdle(true);
+					page(null, entries, {end: !next, next: () => {
+						// Reset idle timer
+						this.client._updateIdle();
+						next();
+					}});
+					entries = [];
+				}
 			});
 		});
 	}
@@ -396,16 +430,13 @@ export default class LDAP {
 			});
 
 			const entries = [];
-			const jsonEntries = [];
 
 			res.on('searchEntry', (entry) => {
 				entries.push(entry);
-				jsonEntries.push(entry.json);
 			});
 
 			res.on('end', () => {
 				logger.search.info('Search result count', entries.length);
-				// logger.search.debug('Search result', JSON.stringify(jsonEntries, null, 2));
 				callback(null, entries);
 			});
 		});
