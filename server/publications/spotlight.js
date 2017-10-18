@@ -47,14 +47,23 @@ Meteor.methods({
 					username: 1
 				}).username;
 
-				result.rooms = RocketChat.models.Rooms.findByNameAndTypeNotContainingUsername(regex, 'c', username, roomOptions).fetch();
+				const searchableRoomTypes = Object.entries(RocketChat.roomTypes.roomTypes)
+					.filter((roomType)=>roomType[1].includeInRoomSearch())
+					.map((roomType)=>roomType[0]);
+
+				result.rooms = RocketChat.models.Rooms.findByNameAndTypesNotContainingUsername(regex, searchableRoomTypes, username, roomOptions).fetch();
 			}
 		} else if (type.users === true && rid) {
-			const subscriptions = RocketChat.models.Subscriptions.find({rid, 'u.username':{
-				$regex: regex,
-				$nin:[...usernames, Meteor.user().username]
-			}}, {limit:userOptions.limit}).fetch().map(({u}) => u._id);
-			result.users = RocketChat.models.Users.find({_id:{$in:subscriptions}}, {fields:userOptions.fields, sort: userOptions.sort}).fetch();
+			const subscriptions = RocketChat.models.Subscriptions.find({
+				rid, 'u.username': {
+					$regex: regex,
+					$nin: [...usernames, Meteor.user().username]
+				}
+			}, {limit: userOptions.limit}).fetch().map(({u}) => u._id);
+			result.users = RocketChat.models.Users.find({_id: {$in: subscriptions}}, {
+				fields: userOptions.fields,
+				sort: userOptions.sort
+			}).fetch();
 		}
 
 		return result;

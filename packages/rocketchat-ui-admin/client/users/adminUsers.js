@@ -1,4 +1,5 @@
-/* globals RocketChatTabBar */
+import { RocketChatTabBar } from 'meteor/rocketchat:lib';
+
 Template.adminUsers.helpers({
 	isReady() {
 		const instance = Template.instance();
