@@ -7,7 +7,7 @@ this.ChatMessages = class ChatMessages {
 		this.records = {};
 		this.messageMaxSize = RocketChat.settings.get('Message_MaxAllowedSize');
 		this.wrapper = $(node).find('.wrapper');
-		this.input = $(node).find('.input-message').get(0);
+		this.input = this.input || $(node).find('.js-input-message').get(0);
 		this.$input = $(this.input);
 		this.hasValue = new ReactiveVar(false);
 		this.bindEvents();
@@ -125,33 +125,41 @@ this.ChatMessages = class ChatMessages {
 		this.editing.element = element;
 		this.editing.index = index;
 		this.editing.id = message._id;
-		element.classList.add('editing');
+		// TODO: stop set two elements
+		this.input.parentElement.classList.add('editing');
 		this.input.classList.add('editing');
+
+		element.classList.add('editing');
 		this.$input.closest('.message-form').addClass('editing');
 
-		this.input.focus();
 		if (message.attachments && message.attachments[0].description) {
 			this.input.value = message.attachments[0].description;
 		} else {
 			this.input.value = msg;
 		}
+		$(this.input).trigger('change').trigger('input');
 
 		const cursor_pos = editingNext ? 0 : -1;
-		return this.$input.setCursorPosition(cursor_pos);
+		this.$input.setCursorPosition(cursor_pos);
+		this.input.focus();
+		return this.input;
 	}
 
 	clearEditing() {
 		if (this.editing.element) {
 			this.recordInputAsDraft();
+			// TODO: stop set two elements
+			this.input.classList.remove('editing');
+			this.input.parentElement.classList.remove('editing');
 
 			this.editing.element.classList.remove('editing');
-			this.input.classList.remove('editing');
 			this.$input.closest('.message-form').removeClass('editing');
 			delete this.editing.id;
 			delete this.editing.element;
 			delete this.editing.index;
 
 			this.input.value = this.editing.saved || '';
+			$(this.input).trigger('change').trigger('input');
 			const cursor_pos = this.editing.savedCursor != null ? this.editing.savedCursor : -1;
 			this.$input.setCursorPosition(cursor_pos);
 
@@ -182,6 +190,7 @@ this.ChatMessages = class ChatMessages {
 					const lastMessage = ChatMessage.findOne({rid}, { fields: { ts: 1 }, sort: { ts: -1 }});
 					Meteor.call('setReaction', reaction, lastMessage._id);
 					input.value = '';
+					$(input).trigger('change').trigger('input');
 					return;
 				}
 			}
@@ -202,6 +211,8 @@ this.ChatMessages = class ChatMessages {
 
 				KonchatNotification.removeRoomNotification(rid);
 				input.value = '';
+				$(input).trigger('change').trigger('input');
+
 				if (typeof input.updateAutogrow === 'function') {
 					input.updateAutogrow();
 				}
@@ -368,6 +379,13 @@ this.ChatMessages = class ChatMessages {
 		}
 	}
 
+	restoreText(rid) {
+		const text = localStorage.getItem(`messagebox_${ rid }`);
+		if (typeof text === 'string' && this.input) {
+			this.input.value = text;
+		}
+	}
+
 	keyup(rid, event) {
 		let i;
 		const input = event.currentTarget;
@@ -395,6 +413,8 @@ this.ChatMessages = class ChatMessages {
 		if (!Array.from(keyCodes).includes(k)) {
 			this.startTyping(rid, input);
 		}
+
+		localStorage.setItem(`messagebox_${ rid }`, input.value);
 
 		return this.hasValue.set(input.value !== '');
 	}
@@ -509,3 +529,12 @@ this.ChatMessages = class ChatMessages {
 		return !this.hasValue.get();
 	}
 };
+
+
+RocketChat.callbacks.add('afterLogoutCleanUp', () => {
+	Object.keys(localStorage).forEach((item) => {
+		if (item.indexOf('messagebox_') === 0) {
+			localStorage.removeItem(item);
+		}
+	});
+}, RocketChat.callbacks.priority.MEDIUM, 'chatMessages-after-logout-cleanup');

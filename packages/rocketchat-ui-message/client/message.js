@@ -1,4 +1,4 @@
-/* globals renderEmoji renderMessageBody*/
+/* globals renderEmoji renderMessageBody */
 import moment from 'moment';
 
 Template.message.helpers({
@@ -264,8 +264,26 @@ Template.message.helpers({
 		if (subscription == null) {
 			return 'hidden';
 		}
+	},
+	actionContext() {
+		return this.actionContext;
+	},
+	messageActions(group) {
+		let messageGroup = group;
+		let context = this.actionContext;
+
+		if (!group) {
+			messageGroup = 'message';
+		}
+
+		if (!context) {
+			context = 'message';
+		}
+
+		return RocketChat.MessageAction.getButtons(Template.currentData(), context, messageGroup);
 	}
 });
+
 
 Template.message.onCreated(function() {
 	let msg = Template.currentData();
@@ -288,7 +306,6 @@ Template.message.onCreated(function() {
 		} else if (msg.u && msg.u.username === RocketChat.settings.get('Chatops_Username')) {
 			msg.html = msg.msg;
 			msg = RocketChat.callbacks.run('renderMentions', msg);
-			// console.log JSON.stringify message
 			msg = msg.html;
 		} else {
 			msg = renderMessageBody(msg);
@@ -350,12 +367,11 @@ Template.message.onViewRendered = function(context) {
 			if (!templateInstance) {
 				return;
 			}
+
 			if (currentNode.classList.contains('own') === true) {
-				return (templateInstance.atBottom = true);
-			} else if (templateInstance.firstNode && templateInstance.atBottom === false) {
-				const newMessage = templateInstance.find('.new-message');
-				return newMessage && (newMessage.className = 'new-message background-primary-action-color color-content-background-color ');
+				templateInstance.atBottom = true;
 			}
+			templateInstance.sendToBottomIfNecessary();
 		}
 	});
 };

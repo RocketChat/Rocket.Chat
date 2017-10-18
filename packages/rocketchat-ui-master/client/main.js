@@ -1,5 +1,7 @@
-/* globals toolbarSearch, menu, isRtl, fireGlobalEvent, CachedChatSubscription */
+/* globals toolbarSearch, menu, isRtl, fireGlobalEvent, CachedChatSubscription, DynamicCss */
 import Clipboard from 'clipboard';
+
+RocketChat.settings.collection.find({_id:/theme-color-rc/i}, {fields:{ value: 1 }}).observe({changed: () => { DynamicCss.run(true); }});
 
 Template.body.onRendered(function() {
 	new Clipboard('.clipboard');
@@ -58,25 +60,29 @@ Template.body.onRendered(function() {
 		if (target.id === 'pswp') {
 			return;
 		}
-		const inputMessage = $('textarea.input-message');
+		const inputMessage = $('textarea.rc-message-box__textarea');
 		if (inputMessage.length === 0) {
 			return;
 		}
 		return inputMessage.focus();
 	});
-	$(document.body).on('click', 'a', function(e) {
-		const link = e.currentTarget;
-		if (link.origin === s.rtrim(Meteor.absoluteUrl(), '/') && /msg=([a-zA-Z0-9]+)/.test(link.search)) {
-			e.preventDefault();
-			e.stopPropagation();
-			if (RocketChat.Layout.isEmbedded()) {
-				return fireGlobalEvent('click-message-link', {
-					link: link.pathname + link.search
-				});
+
+	$(document.body).on('click', function(e) {
+		if (e.target.tagName === 'A') {
+			const link = e.currentTarget;
+			if (link.origin === s.rtrim(Meteor.absoluteUrl(), '/') && /msg=([a-zA-Z0-9]+)/.test(link.search)) {
+				e.preventDefault();
+				e.stopPropagation();
+				if (RocketChat.Layout.isEmbedded()) {
+					return fireGlobalEvent('click-message-link', {
+						link: link.pathname + link.search
+					});
+				}
+				return FlowRouter.go(link.pathname + link.search, null, FlowRouter.current().queryParams);
 			}
-			return FlowRouter.go(link.pathname + link.search, null, FlowRouter.current().queryParams);
 		}
 	});
+
 	Tracker.autorun(function(c) {
 		const w = window;
 		const d = document;
@@ -166,107 +172,12 @@ Template.main.helpers({
 
 Template.main.events({
 	'click .burger'() {
-		if (window.rocketDebug) {
-			console.log('room click .burger');
-		}
 		return menu.toggle();
-	},
-	'touchstart'(e, t) {
-		if (document.body.clientWidth > 780) {
-			return;
-		}
-		t.touchstartX = undefined;
-		t.touchstartY = undefined;
-		t.movestarted = false;
-		t.blockmove = false;
-		t.isRtl = isRtl(localStorage.getItem('userLanguage'));
-		if ($(e.currentTarget).closest('.main-content').length > 0) {
-			t.touchstartX = e.originalEvent.touches[0].clientX;
-			t.touchstartY = e.originalEvent.touches[0].clientY;
-			t.mainContent = $('.main-content');
-			return t.wrapper = $('.messages-box > .wrapper');
-		}
-	},
-	'touchmove'(e, t) {
-		if (t.touchstartX != null) {
-			const touch = e.originalEvent.touches[0];
-			const diffX = touch.clientX - t.touchstartX;
-			const diffY = touch.clientY - t.touchstartY;
-			const absX = Math.abs(diffX);
-			const absY = Math.abs(diffY);
-			if (t.movestarted !== true && t.blockmove !== true && absY > 5) {
-				t.blockmove = true;
-			}
-			if (t.blockmove !== true && (t.movestarted === true || absX > 5)) {
-				t.movestarted = true;
-				if (t.isRtl) {
-					if (menu.isOpen()) {
-						t.diff = -260 + diffX;
-					} else {
-						t.diff = diffX;
-					}
-					if (t.diff < -260) {
-						t.diff = -260;
-					}
-					if (t.diff > 0) {
-						t.diff = 0;
-					}
-				} else {
-					if (menu.isOpen()) {
-						t.diff = 260 + diffX;
-					} else {
-						t.diff = diffX;
-					}
-					if (t.diff > 260) {
-						t.diff = 260;
-					}
-					if (t.diff < 0) {
-						t.diff = 0;
-					}
-				}
-				t.mainContent.addClass('notransition');
-				t.mainContent.css('transform', `translate(${ t.diff }px)`);
-				return t.wrapper.css('overflow', 'hidden');
-			}
-		}
-	},
-	'touchend'(e, t) {
-		if (t.movestarted === true) {
-			t.mainContent.removeClass('notransition');
-			t.wrapper.css('overflow', '');
-			if (t.isRtl) {
-				if (menu.isOpen()) {
-					if (t.diff >= -200) {
-						return menu.close();
-					} else {
-						return menu.open();
-					}
-				} else if (t.diff <= -60) {
-					return menu.open();
-				} else {
-					return menu.close();
-				}
-			} else if (menu.isOpen()) {
-				if (t.diff >= 200) {
-					return menu.open();
-				} else {
-					return menu.close();
-				}
-			} else if (t.diff >= 60) {
-				return menu.open();
-			} else {
-				return menu.close();
-			}
-		}
 	}
 });
 
 Template.main.onRendered(function() {
-	if (isRtl(localStorage.getItem('userLanguage'))) {
-		$('html').addClass('rtl');
-	} else {
-		$('html').removeClass('rtl');
-	}
+	document.body.classList[(isRtl(localStorage.getItem('userLanguage'))? 'add': 'remove')]('rtl');
 	$('#initial-page-loading').remove();
 	window.addEventListener('focus', function() {
 		return Meteor.setTimeout(function() {
