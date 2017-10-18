@@ -1,3 +1,13 @@
+<a name="0.59.0-rc.16"></a>
+# 0.59.0-rc.16 (2017-10-18)
+
+
+### Bug Fixes
+
+- [#8527](https://github.com/RocketChat/Rocket.Chat/pull/8527) Do not send joinCode field to clients
+
+
+
 <a name="0.59.0-rc.15"></a>
 # 0.59.0-rc.15 (2017-10-18)
 
