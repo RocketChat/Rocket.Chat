@@ -39,6 +39,6 @@ Package.onUse(function(api) {
 
 	//i18n in Rocket.Chat-package (packages/rocketchat-i18n/i18n
 
-	api.mainModule('assistify-ai.js');
+	api.mainModule('assistify-ai.js', 'server');
 
 });
