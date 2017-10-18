@@ -35,6 +35,6 @@ _.extend(RocketChat.models.Rooms, {
 		const query =
 			{$or};
 
-		return this.find(query, options);
+		return this._db.find(query, options); //do not use cache
 	}
 });

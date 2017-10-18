@@ -59,7 +59,7 @@ const _registerExpertsChannelCallback = function() {
 const _makeExpertChannelMembersExperts = function() {
 	const expertRoomName = RocketChat.settings.get('Assistify_Expert_Channel');
 	const expertRoom = RocketChat.models.Rooms.findOneByName(expertRoomName);
-	if (expertRoom) {
+	if (expertRoom && expertRoom.usernames && expertRoom.usernames.length) {
 		const expertUsers = RocketChat.models.Users.findByUsernames(expertRoom.usernames).fetch();
 		for (const user of expertUsers) {
 			RocketChat.authz.addUserRoles(user._id, 'expert');
