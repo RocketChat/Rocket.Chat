@@ -30,24 +30,13 @@ const fields = {
 };
 
 
-const roomMap = (record, fields) => {
+const roomMap = (record) => {
 	if (record._room) {
 		return _.pick(record._room, ...Object.keys(fields));
 	}
 	console.log('Empty Room for Subscription', record);
 	return {};
 };
-
-function getFieldsForUserId(userId) {
-	if (RocketChat.authz.hasPermission(userId, 'view-join-code')) {
-		return {
-			...fields,
-			joinCode: 1
-		};
-	}
-
-	return fields;
-}
 
 Meteor.methods({
 	'rooms/get'(updatedAt) {
@@ -63,7 +52,7 @@ Meteor.methods({
 		this.unblock();
 
 		options = {
-			fields: getFieldsForUserId(this.userId)
+			fields
 		};
 
 		if (updatedAt instanceof Date) {
@@ -99,17 +88,16 @@ Meteor.methods({
 			throw new Meteor.Error('error-no-permission', 'No permission', { method: 'getRoomByTypeAndName' });
 		}
 
-		return roomMap({_room: room}, getFieldsForUserId(this.userId));
+		return roomMap({_room: room});
 	}
 });
 
 RocketChat.models.Rooms.cache.on('sync', (type, room/*, diff*/) => {
 	const records = RocketChat.models.Subscriptions.findByRoomId(room._id).fetch();
+
+	const _room = roomMap({_room: room});
 	for (const record of records) {
-		const user = RocketChat.models.Users.findOneById(record.u._id);
-		if (user && (user.statusConnection === 'online' || user.statusConnection === 'away')) {
-			RocketChat.Notifications.notifyUserInThisInstance(record.u._id, 'rooms-changed', type, roomMap({_room: room}, getFieldsForUserId(record.u._id)));
-		}
+		RocketChat.Notifications.notifyUserInThisInstance(record.u._id, 'rooms-changed', type, _room);
 	}
 });
 
@@ -117,7 +105,7 @@ RocketChat.models.Subscriptions.on('changed', (type, subscription/*, diff*/) => 
 	if (type === 'inserted' || type === 'removed') {
 		const room = RocketChat.models.Rooms.findOneById(subscription.rid);
 		if (room) {
-			RocketChat.Notifications.notifyUserInThisInstance(subscription.u._id, 'rooms-changed', type, roomMap({_room: room}, getFieldsForUserId(subscription.u._id)));
+			RocketChat.Notifications.notifyUserInThisInstance(subscription.u._id, 'rooms-changed', type, roomMap({_room: room}));
 		}
 	}
 });
