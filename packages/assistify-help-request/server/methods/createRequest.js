@@ -28,7 +28,7 @@ Meteor.methods({
 			if (expertiseRoom) {
 				return expertiseRoom.usernames;
 			} else {
-				return []; // even if there are no experts in the room, this is valid. A bot could notify lateron about this flaw
+				return []; // even if there are no experts in the room, this is valid. A bot could notify later on about this flaw
 			}
 		};
 

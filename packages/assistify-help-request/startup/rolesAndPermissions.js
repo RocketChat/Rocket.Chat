@@ -51,7 +51,7 @@ const _registerExpertsChannelCallback = function() {
 };
 
 /**
- * Adds current memmbers of the expert channel as experts.
+ * Adds current members of the expert channel as experts.
  * Experts who have got this role via another mechanism (e. g. by adding them to the expert role manually)
  * are intentionally not removed
  * @private

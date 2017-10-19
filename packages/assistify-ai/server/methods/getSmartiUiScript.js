@@ -15,26 +15,29 @@ function loadSmarti() {
 			`${ RocketChat.settings.get('DBS_AI_Redlink_URL') }/`;
 	SystemLogger.debug('Trying to retrieve Smarti UI from', DBS_AI_SMARTI_URL);
 
+	let response = null;
 	try {
-		const response = HTTP.get(`${ DBS_AI_SMARTI_URL }plugin/v1/rocket.chat.js`);
-		if (response.statusCode === 200) {
-			script = response.content;
-
-			if (!script) {
-				SystemLogger.error('Could not extract script from Smarti response');
-				throw new Meteor.Error('no-smarti-ui-script', 'no-smarti-ui-script');
-			} else {
-				// add pseudo comment in order to make the script appear in the frontend as a file. This makes it de-buggable
-				script = `${ script } //# sourceURL=SmartiWidget.js`;
-			}
-		} else {
-			SystemLogger.error('Could not reach Smarti service at', DBS_AI_SMARTI_URL);
-			throw new Meteor.Error('no-smarti-ui-script', 'no-smarti-ui-script');
-		}
+		response = HTTP.get(`${ DBS_AI_SMARTI_URL }plugin/v1/rocket.chat.js`);
 	} catch (error) {
 		SystemLogger.error('Could not reach Smarti service at', DBS_AI_SMARTI_URL);
 		throw new Meteor.Error('error-unreachable-url');
 	}
+
+	if (response && response.statusCode === 200) {
+		script = response.content;
+
+		if (!script) {
+			SystemLogger.error('Could not extract script from Smarti response');
+			throw new Meteor.Error('no-smarti-ui-script', 'no-smarti-ui-script');
+		} else {
+			// add pseudo comment in order to make the script appear in the frontend as a file. This makes it de-buggable
+			script = `${ script } //# sourceURL=SmartiWidget.js`;
+		}
+	} else {
+		SystemLogger.error('Could not load Smarti script from', DBS_AI_SMARTI_URL);
+		throw new Meteor.Error('no-smarti-ui-script', 'no-smarti-ui-script');
+	}
+
 }
 
 function delayedReload() {

@@ -56,7 +56,7 @@ RocketChat.API.v1.addRoute('assistify.helpDiscussion', {authRequired: true}, {
 		// keysToLowerCase(this.bodyParams);
 		preProcessBody(this.bodyParams);
 
-		const api = new helpRequest.HelpRequestApi();
+		const api = new HelpRequestApi();
 		try {
 			HelpRequestApi.validateHelpDiscussionPostRequest(this.bodyParams);
 		} catch (err) {

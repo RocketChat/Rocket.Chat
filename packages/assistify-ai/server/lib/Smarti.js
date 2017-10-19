@@ -94,7 +94,7 @@ export class SmartiAdapterFactory {
 		/**
 		 * Refreshes the adapter instances on change of the configuration
 		 */
-			//todo: validate it works
+		//todo: validate it works
 		const factory = this;
 		this.settingsHandle = RocketChat.models.Settings.findByIds(['DBS_AI_Source', 'DBS_AI_Redlink_URL', 'DBS_AI_Redlink_Auth_Token', 'DBS_AI_Redlink_Hook_Token']).observeChanges({
 			added() {

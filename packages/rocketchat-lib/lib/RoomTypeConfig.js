@@ -34,13 +34,13 @@ export class RoomTypeRouteConfig {
 
 export class RoomTypeConfig {
 	constructor({
-					identifier = Random.id(),
-					order,
-					icon,
-					header,
-					label,
-					route
-				}) {
+		identifier = Random.id(),
+		order,
+		icon,
+		header,
+		label,
+		route
+	}) {
 		if (typeof identifier !== 'string' || identifier.length === 0) {
 			throw new Error('The identifier must be a string.');
 		}

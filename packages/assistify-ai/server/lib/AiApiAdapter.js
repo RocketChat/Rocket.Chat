@@ -1,5 +1,3 @@
-/* globals _dbs */
-
 export class ApiAiAdapter {
 	constructor(adapterProps) {
 		this.properties = adapterProps;
