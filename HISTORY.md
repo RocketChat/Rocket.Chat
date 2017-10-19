@@ -1,3 +1,16 @@
+<a name="0.59.1"></a>
+## 0.59.1 (2017-10-19)
+
+
+### Bug Fixes
+
+- [#8543](https://github.com/RocketChat/Rocket.Chat/pull/8543) Color reset when default value editor is different
+- [#8541](https://github.com/RocketChat/Rocket.Chat/pull/8541) LDAP login error regression at 0.59.0
+- [#8544](https://github.com/RocketChat/Rocket.Chat/pull/8544) Migration 103 wrong converting primrary colors
+- [#8547](https://github.com/RocketChat/Rocket.Chat/pull/8547) Wrong colors after migration 103
+
+
+
 <a name="0.59.0"></a>
 # 0.59.0 (2017-10-18)
 
