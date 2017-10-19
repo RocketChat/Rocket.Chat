@@ -348,6 +348,18 @@ export default class LDAP {
 		return true;
 	}
 
+	extractLdapEntryData(entry) {
+		const values = entry.raw;
+		Object.keys(values).forEach((key) => {
+			const value = values[key];
+			if (!['thumbnailPhoto', 'jpegPhoto'].includes(key) && value instanceof Buffer) {
+				values[key] = value.toString();
+			}
+		});
+
+		return values;
+	}
+
 	searchAllPaged(BaseDN, options, page) {
 		this.bindIfNecessary();
 
@@ -369,15 +381,7 @@ export default class LDAP {
 			const internalPageSize = options.paged && options.paged.pageSize > 0 ? options.paged.pageSize * 2 : 500;
 
 			res.on('searchEntry', (entry) => {
-				const values = entry.raw;
-				Object.keys(values).forEach((key) => {
-					const value = values[key];
-					if (!['thumbnailPhoto', 'jpegPhoto'].includes(key) && value instanceof Buffer) {
-						values[key] = value.toString();
-					}
-				});
-
-				entries.push(values);
+				entries.push(this.extractLdapEntryData(entry));
 
 				if (entries.length >= internalPageSize) {
 					logger.search.info('Internal Page');
@@ -432,7 +436,7 @@ export default class LDAP {
 			const entries = [];
 
 			res.on('searchEntry', (entry) => {
-				entries.push(entry);
+				entries.push(this.extractLdapEntryData(entry));
 			});
 
 			res.on('end', () => {
