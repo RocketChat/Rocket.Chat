@@ -20,7 +20,8 @@ Meteor.methods({
 
 		RocketChat.models.Uploads.updateFileComplete(file._id, Meteor.userId(), _.omit(file, '_id'));
 
-		const fileUrl = `/file-upload/${ file._id }/${ encodeURIComponent(file.name) }`;
+		const encodedName = encodeURIComponent(file.name);
+		const fileUrl = `/file-upload/${ file._id }/${ encodedName }`;
 
 		const attachment = {
 			title: file.name,
