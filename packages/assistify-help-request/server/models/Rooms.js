@@ -22,10 +22,10 @@ _.extend(RocketChat.models.Rooms, {
 		const $or = [];
 		for (const type of Array.from(types)) {
 			const obj = {name: nameRegex, t: type.type};
-			if (type.username !== null) {
+			if (type.username) {
 				obj.usernames = type.username;
 			}
-			if (type.ids !== null) {
+			if (type.ids) {
 				obj._id = {$in: type.ids};
 			}
 			$or.push(obj);
