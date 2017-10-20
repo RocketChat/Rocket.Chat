@@ -70,6 +70,7 @@ Meteor.methods({
 			if (e.response && e.response.data && e.response.data.error && e.response.data.error.message) {
 				throw new Meteor.Error('integration-error', e.response.data.error.message);
 			}
+			console.error('Error contacting omni.rocket.chat:', e);
 			throw new Meteor.Error('integration-error', e.error);
 		}
 	}
