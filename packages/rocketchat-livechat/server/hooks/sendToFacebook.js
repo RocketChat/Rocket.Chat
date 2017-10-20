@@ -1,13 +1,12 @@
 RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 	// skips this callback if the message was edited
-	// if (message.editedAt) {
-	// 	return message;
-	// }
+	if (message.editedAt) {
+		return message;
+	}
 
-	// TODO: check facebook integration
-	// if (!RocketChat.SMS.enabled) {
-	// 	return message;
-	// }
+	if (!RocketChat.settings.get('Livechat_Facebook_Enabled') || !RocketChat.settings.get('Livechat_Facebook_API_Key')) {
+		return message;
+	}
 
 	// only send the sms by SMS if it is a livechat room with SMS set to true
 	if (!(typeof room.t !== 'undefined' && room.t === 'l' && room.facebook && room.v && room.v.token)) {
@@ -24,9 +23,9 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 		return message;
 	}
 
-	const result = HTTP.call('POST', 'http://localhost:3000/facebook/reply', {
+	HTTP.call('POST', 'https://omni.rocket.chat/facebook/reply', {
 		headers: {
-			'x-rocketchat-instance': RocketChat.settings.get('Livechat_Facebook_API_Key')
+			'authorization': `Bearer ${ RocketChat.settings.get('Livechat_Facebook_API_Key') }`
 		},
 		data: {
 			page: room.facebook.page,
@@ -34,8 +33,6 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 			text: message.msg
 		}
 	});
-
-	console.log('result ->', result);
 
 	return message;
 
