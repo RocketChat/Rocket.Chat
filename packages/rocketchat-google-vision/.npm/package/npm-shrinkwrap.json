@@ -1229,8 +1229,8 @@
       "from": "request@>=2.79.0 <3.0.0"
     },
     "retry-request": {
-      "version": "3.0.1",
-      "resolved": "https://registry.npmjs.org/retry-request/-/retry-request-3.0.1.tgz",
+      "version": "3.1.0",
+      "resolved": "https://registry.npmjs.org/retry-request/-/retry-request-3.1.0.tgz",
       "from": "retry-request@>=3.0.0 <4.0.0"
     },
     "rgb-hex": {
