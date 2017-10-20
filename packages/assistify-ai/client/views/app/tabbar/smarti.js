@@ -55,7 +55,7 @@ Template.AssistifySmarti.onRendered(function() {
 				channel: self.data.rid,
 				postings: {
 					type: WIDGET_POSTING_TYPE,
-					cssInputSelector: '.message-form-text.input-message'
+					cssInputSelector: '.rc-message-box .js-input-message'
 				},
 				widget: {
 					'query.dbsearch': {
