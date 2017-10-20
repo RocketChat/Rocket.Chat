@@ -67,7 +67,10 @@ Meteor.methods({
 				}
 			}
 		} catch (e) {
-			throw new Meteor.Error('integration-error', e.response.data.error.message);
+			if (e.response && e.response.data && e.response.data.error && e.response.data.error.message) {
+				throw new Meteor.Error('integration-error', e.response.data.error.message);
+			}
+			throw new Meteor.Error('integration-error', e.error);
 		}
 	}
 });
