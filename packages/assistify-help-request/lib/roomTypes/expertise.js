@@ -19,7 +19,7 @@ export class ExpertiseRoomType extends RoomTypeConfig {
 	constructor() {
 		super({
 			identifier: 'e',
-			order: 15,
+			order: 24,
 			template: 'expertise',
 			icon: 'lightbulb',
 			label: 'Expertises',

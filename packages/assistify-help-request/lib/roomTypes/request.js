@@ -19,7 +19,7 @@ export class RequestRoomType extends RoomTypeConfig {
 	constructor() {
 		super({
 			identifier: 'r',
-			order: 6,
+			order: 22,
 			template: 'requests',
 			icon: 'question',
 			label: 'Requests',
