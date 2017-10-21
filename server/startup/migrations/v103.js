@@ -1,6 +1,6 @@
 const majorColors = {
 	'content-background-color': '#FFFFFF',
-	'primary-background-color': 'color-primary',
+	'primary-background-color': '#04436A',
 	'primary-font-color': '#444444',
 	'primary-action-color': '#13679A', // was action-buttons-color
 	'secondary-background-color': '#F4F4F4',
@@ -84,4 +84,5 @@ RocketChat.Migrations.add({
 			}
 		});
 	}
+
 });
