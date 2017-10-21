@@ -1,5 +1,6 @@
 application: Application
 Asssitify_room_count: Roomcount
+Choose_experts: Choose those who know
 Close_HelpRequest: Close chat
 Expertise_description: A topic is an area of knowledge with known experts.
 Expertise_explanation: A topic is an area of knowledge. Experts join a topic in order to help others solve their question in that area.
