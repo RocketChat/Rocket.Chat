@@ -11,7 +11,7 @@
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat)](https://github.com/RocketChat/Rocket.Chat/raw/master/LICENSE)
 
 
-* [Live Demo](#live-demo)
+* [Community](#community)
 * [Mobile apps](#mobile-apps)
 * [Desktop apps](#desktop-apps)
 * [Deployment](#deployment)
@@ -51,7 +51,6 @@
  * [Quick Start](#quick-start-for-code-developers)
   * [Branching Model](#branching-model)
   * [Translations](#translations)
-  * [Community](#community)
   * [How to Contribute](#how-to-contribute)
 * [Credits](#credits)
 * [Donate](#donate)
