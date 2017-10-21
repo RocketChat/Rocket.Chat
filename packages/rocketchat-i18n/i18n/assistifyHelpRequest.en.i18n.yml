@@ -1,7 +1,8 @@
 application: Application
 Asssitify_room_count: Roomcount
 Close_HelpRequest: Close chat
-Expertise_description: A topic is an area of knowledge. Experts join a topic in order to help others solve their question in that area.
+Expertise_description: A topic is an area of knowledge with known experts.
+Expertise_explanation: A topic is an area of knowledge. Experts join a topic in order to help others solve their question in that area.
 Expertise_needs_experts: Select some experts in order to define an topic
 Expertise_title: Topic title
 Expertise: Topic
@@ -17,6 +18,7 @@ No_expertise_yet: No topics yet
 No_requests_yet: No requests yet
 release: Version
 Request_already_exists: A request with the next rawn number already exists. Please try again.
+Request_explanation: A request is automatically being adressed towards topic experts. AI helps solving it.
 Request_description: A request is a conversation starting with a question on a particular topic. When finishing such a conversation, our system is going to learn from it in order to accelerate further request-solutions on that topic.
 Request: Request
 Requests: Requests

@@ -5,7 +5,8 @@ create-e: Thema anlegen
 create-r: Anfrage anlegen
 delete-e: Thema löschen
 delete-r: Anfrage löschen
-Expertise_description: Ein Thema beschreibt ein Wissensgebiet. Zu einem Thema können Anfragen erstellt werden, die von den Experten, die dem Thema als Mitglieder zugeordnet sind, beantwortet werden können.
+Expertise_description: Ein Thema beschreibt ein Wissensgebiet. Experten beantworten hierzu Anfragen
+Expertise_explanation: Ein Thema beschreibt ein Wissensgebiet. Zu einem Thema können Anfragen erstellt werden, die von den Experten, die dem Thema als Mitglieder zugeordnet sind, beantwortet werden können.
 Expertise_needs_experts: Bitte Experten auswählen, um eine Expertise zu definieren
 Expertise_title: Titel des Themas
 Expertise: Thema
@@ -21,7 +22,8 @@ No_expertise_yet: Noch in keiner Expertengruppe
 No_requests_yet: Keine Anfragen bisher
 release: Version
 Request_already_exists: Eine Anfrage mit der nächsten laufenen Nummer existiert bereits. Bitte erneut versuchen.
-Request_description: Eine Anfrage richtet sich an Experten eines Themas: Gemeinsam mit dem Fragesteller wird versucht, eine Frage aus dem Wissensgebiet zu beantworten. Eine KI beschleunigt den Problemlösungsprozess. Aus abgeschlossenen Anfragen lernt das System und hilft, Fragen zu dem Thema in Zukunft schneller zu beantworten.
+Request_description: Eine Eine Anfrage richtet sich automatisch an die Experten eines Themas. Eine KI hilft dabei.
+Request_explanation: Eine Anfrage richtet sich an Experten eines Themas: Gemeinsam mit dem Fragesteller wird versucht, eine Frage aus dem Wissensgebiet zu beantworten. Eine KI beschleunigt den Problemlösungsprozess. Aus abgeschlossenen Anfragen lernt das System und hilft, Fragen zu dem Thema in Zukunft schneller zu beantworten.
 Request: Anfrage
 Requests: Anfragen
 Search_Requests: Anfragen suchen
