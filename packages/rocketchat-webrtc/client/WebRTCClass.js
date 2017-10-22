@@ -149,7 +149,7 @@ class WebRTCTransportClass {
 }
 
 class WebRTCClass {
-  /*
+	/*
   		@param seldId {String}
   		@param room {String}
    */
@@ -307,7 +307,7 @@ class WebRTCClass {
 	}
 
 
-  /*
+	/*
   		@param data {Object}
   			from {String}
   			media {Object}
@@ -328,7 +328,7 @@ class WebRTCClass {
 			id: data.from,
 			media: data.media
 		},
-			...data.remoteConnections];
+		...data.remoteConnections];
 
 		remoteConnections.forEach(remoteConnection => {
 			if (remoteConnection.id !== this.selfId && (this.peerConnections[remoteConnection.id] == null)) {
@@ -342,7 +342,7 @@ class WebRTCClass {
 	}
 
 
-  /*
+	/*
   		@param id {String}
    */
 
@@ -426,13 +426,17 @@ class WebRTCClass {
 			return;
 		}
 		const getScreen = (audioStream) => {
-			if (document.cookie.indexOf('rocketchatscreenshare=chrome') === -1 && (window.rocketchatscreenshare == null) && this.navigator !== 'electron') {
-				const refresh = function() {
-					swal({
-						type: 'warning',
-						title: TAPi18n.__('Refresh_your_page_after_install_to_enable_screen_sharing')
-					});
-				};
+			const refresh = function() {
+				swal({
+					type: 'warning',
+					title: TAPi18n.__('Refresh_your_page_after_install_to_enable_screen_sharing')
+				});
+			};
+
+			const isChromeExtensionInstalled = this.navigator === 'chrome' && ChromeScreenShare.installed;
+			const isFirefoxExtensionInstalled = this.navigator === 'firefox' && window.rocketchatscreenshare != null;
+
+			if (!isChromeExtensionInstalled && !isFirefoxExtensionInstalled) {
 				swal({
 					type: 'warning',
 					title: TAPi18n.__('Screen_Share'),
@@ -452,6 +456,8 @@ class WebRTCClass {
 								});
 							} catch (_error) {
 								console.log(_error);
+								window.open(url);
+								refresh();
 							}
 						} else if (this.navigator === 'firefox') {
 							window.open('https://addons.mozilla.org/en-GB/firefox/addon/rocketchat-screen-share/');
@@ -461,6 +467,7 @@ class WebRTCClass {
 				});
 				return onError(false);
 			}
+
 			const getScreenSuccess = (stream) => {
 				if (audioStream != null) {
 					stream.addTrack(audioStream.getAudioTracks()[0]);
@@ -510,7 +517,7 @@ class WebRTCClass {
 	}
 
 
-  /*
+	/*
   		@param callback {Function}
    */
 
@@ -539,7 +546,7 @@ class WebRTCClass {
 	}
 
 
-  /*
+	/*
   		@param id {String}
    */
 
@@ -651,7 +658,7 @@ class WebRTCClass {
 	}
 
 
-  /*
+	/*
   		@param media {Object}
   			audio {Boolean}
   			video {Boolean}
@@ -680,7 +687,7 @@ class WebRTCClass {
 	}
 
 
-  /*
+	/*
   		@param data {Object}
   			from {String}
   			monitor {Boolean}
@@ -755,7 +762,7 @@ class WebRTCClass {
 	}
 
 
-  /*
+	/*
   		@param data {Object}
   			to {String}
   			monitor {Boolean}
@@ -886,7 +893,7 @@ class WebRTCClass {
 	}
 
 
-  /*
+	/*
   		@param data {Object}
   			to {String}
   			from {String}
@@ -908,7 +915,7 @@ class WebRTCClass {
 	}
 
 
-  /*
+	/*
   		@param data {Object}
   			to {String}
   			from {String}

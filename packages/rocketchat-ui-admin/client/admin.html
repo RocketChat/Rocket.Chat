@@ -48,7 +48,7 @@
 									{{/if}}
 									{{#each settings}}
 										<div class="input-line double-col {{#if isSettingChanged _id}}setting-changed{{/if}}" {{isDisabled}}>
-											<label class="setting-label">{{label}}</label>
+											<label class="setting-label" title="{{_id}}">{{label}}</label>
 											<div class="setting-field">
 												{{#if $eq type 'string'}}
 													{{#if multiline}}
@@ -186,7 +186,7 @@
 												{{/if}}
 
 												{{#if description}}
-													<div class="settings-description">{{{RocketChatMarkdown description}}}</div>
+													<div class="settings-description">{{{RocketChatMarkdownUnescape description}}}</div>
 												{{/if}}
 												{{#if alert}}
 													<div class="settings-alert pending-color pending-background pending-border"><i class="icon-attention secondary-font-color"></i>{{{_ alert}}}</div>

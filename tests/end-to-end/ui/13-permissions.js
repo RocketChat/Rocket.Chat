@@ -15,9 +15,10 @@ describe('[Permissions]', () => {
 	before(() => {
 		checkIfUserIsAdmin(adminUsername, adminEmail, adminPassword);
 		sideNav.spotlightSearch.waitForVisible(10000);
-		sideNav.searchChannel('general');
-		sideNav.accountBoxUserName.waitForVisible(5000);
-		sideNav.accountBoxUserName.click();
+		sideNav.general.waitForVisible(5000);
+		sideNav.general.click();
+		sideNav.accountMenu.waitForVisible(5000);
+		sideNav.accountMenu.click();
 		sideNav.admin.waitForVisible(5000);
 		sideNav.admin.click();
 		admin.infoRocketChatTable.waitForVisible(10000);
@@ -26,9 +27,10 @@ describe('[Permissions]', () => {
 	after(() => {
 		checkIfUserIsAdmin(adminUsername, adminEmail, adminPassword);
 		sideNav.spotlightSearch.waitForVisible(10000);
-		sideNav.searchChannel('general');
-		sideNav.accountBoxUserName.waitForVisible(5000);
-		sideNav.accountBoxUserName.click();
+		sideNav.general.waitForVisible(5000);
+		sideNav.general.click();
+		sideNav.accountMenu.waitForVisible(5000);
+		sideNav.accountMenu.click();
 		sideNav.admin.waitForVisible(5000);
 		sideNav.admin.click();
 		admin.permissionsLink.waitForVisible(5000);
@@ -95,6 +97,7 @@ describe('[Permissions]', () => {
 			flexTab.usersAddUserVerifiedCheckbox.click();
 			flexTab.usersAddUserPassword.setValue(password);
 			flexTab.usersAddUserChangePasswordCheckbox.click();
+			flexTab.addRole('user');
 			flexTab.usersButtonSave.click();
 		});
 

@@ -61,7 +61,7 @@ const openCenteredPopup = function(url, width, height) {
 		const left = screenX + (outerWidth - width) / 2;
 		const top = screenY + (outerHeight - height) / 2;
 		const features = (`width=${ width },height=${ height
-			},left=${ left },top=${ top },scrollbars=yes`);
+		},left=${ left },top=${ top },scrollbars=yes`);
 
 		newwindow = window.open(url, 'Login', features);
 		if (newwindow.focus) {
@@ -101,7 +101,7 @@ Accounts.saml.initiateLogin = function(options, callback, dimensions) {
 
 Meteor.loginWithSaml = function(options, callback) {
 	options = options || {};
-	const credentialToken = Random.id();
+	const credentialToken = `id-${ Random.id() }`;
 	options.credentialToken = credentialToken;
 
 	Accounts.saml.initiateLogin(options, function(/*error, result*/) {

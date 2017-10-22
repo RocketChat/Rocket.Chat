@@ -138,18 +138,16 @@ class ModelUsers extends RocketChat.models._Base {
 		}
 
 		const termRegex = new RegExp(s.escapeRegExp(searchTerm), 'i');
+
+		const orStmt = _.reduce(RocketChat.settings.get('Accounts_SearchFields').trim().split(','), function(acc, el) {
+			acc.push({ [el.trim()]: termRegex });
+			return acc;
+		}, []);
 		const query = {
 			$and: [
 				{
 					active: true,
-					$or: [
-						{
-							username: termRegex
-						},
-						{
-							name: termRegex
-						}
-					]
+					$or: orStmt
 				},
 				{
 					username: { $exists: true, $nin: exceptions }
@@ -157,7 +155,8 @@ class ModelUsers extends RocketChat.models._Base {
 			]
 		};
 
-		return this.find(query, options);
+		// do not use cache
+		return this._db.find(query, options);
 	}
 
 	findUsersByNameOrUsername(nameOrUsername, options) {
@@ -222,6 +221,15 @@ class ModelUsers extends RocketChat.models._Base {
 			}
 		};
 
+		return this.find(query, options);
+	}
+
+	findUsersByIds(ids, options) {
+		const query = {
+			_id: {
+				$in: ids
+			}
+		};
 		return this.find(query, options);
 	}
 
@@ -315,9 +323,8 @@ class ModelUsers extends RocketChat.models._Base {
 
 	setCustomFields(_id, fields) {
 		const values = {};
-		Object.keys(fields).reduce(key => {
-			const value = fields[key];
-			values[`customFields.${ key }`] = value;
+		Object.keys(fields).forEach(key => {
+			values[`customFields.${ key }`] = fields[key];
 		});
 
 		const update = {$set: values};
@@ -493,7 +500,7 @@ class ModelUsers extends RocketChat.models._Base {
 		return this.update({ _id }, update);
 	}
 
-// INSERT
+	// INSERT
 	create(data) {
 		const user = {
 			createdAt: new Date,
@@ -506,12 +513,12 @@ class ModelUsers extends RocketChat.models._Base {
 	}
 
 
-// REMOVE
+	// REMOVE
 	removeById(_id) {
 		return this.remove(_id);
 	}
 
-/*
+	/*
 Find users to send a message by email if:
 - he is not online
 - has a verified email

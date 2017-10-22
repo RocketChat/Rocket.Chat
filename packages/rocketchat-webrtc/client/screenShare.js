@@ -1,11 +1,20 @@
 /* globals ChromeScreenShare, fireGlobalEvent */
 this.ChromeScreenShare = {
-	screenCallback: undefined,
+	callbacks: {},
+	installed: false,
+	init() {
+		this.callbacks['get-RocketChatScreenSharingExtensionVersion'] = version => {
+			if (version) {
+				this.installed = true;
+			}
+		};
+		window.postMessage('get-RocketChatScreenSharingExtensionVersion', '*');
+	},
 	getSourceId(navigator, callback) {
 		if (callback == null) {
 			throw '"callback" parameter is mandatory.';
 		}
-		ChromeScreenShare.screenCallback = callback;
+		this.callbacks['getSourceId'] = callback;
 		if (navigator === 'electron') {
 			return fireGlobalEvent('get-sourceId', '*');
 		}
@@ -13,17 +22,21 @@ this.ChromeScreenShare = {
 	}
 };
 
+ChromeScreenShare.init();
+
 window.addEventListener('message', function(e) {
 	if (e.origin !== window.location.origin) {
 		return;
 	}
 	if (e.data === 'PermissionDeniedError') {
-		if (ChromeScreenShare.screenCallback != null) {
-			return ChromeScreenShare.screenCallback('PermissionDeniedError');
+		if (ChromeScreenShare.callbacks['getSourceId'] != null) {
+			return ChromeScreenShare.callbacks['getSourceId']('PermissionDeniedError');
 		}
 		throw new Error('PermissionDeniedError');
 	}
-	if (e.data.sourceId != null) {
-		return typeof ChromeScreenShare.screenCallback === 'function' && ChromeScreenShare.screenCallback(e.data.sourceId);
+	if (e.data.version != null) {
+		ChromeScreenShare.callbacks['get-RocketChatScreenSharingExtensionVersion'] && ChromeScreenShare.callbacks['get-RocketChatScreenSharingExtensionVersion'](e.data.version);
+	} else if (e.data.sourceId != null) {
+		return typeof ChromeScreenShare.callbacks['getSourceId'] === 'function' && ChromeScreenShare.callbacks['getSourceId'](e.data.sourceId);
 	}
 });

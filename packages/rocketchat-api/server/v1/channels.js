@@ -164,14 +164,41 @@ RocketChat.API.v1.addRoute('channels.delete', { authRequired: true }, {
 	post() {
 		const findResult = findChannelByIdOrName({ params: this.requestParams(), checkedArchived: false });
 
-		//The find method returns either with the group or the failur
-
 		Meteor.runAsUser(this.userId, () => {
 			Meteor.call('eraseRoom', findResult._id);
 		});
 
 		return RocketChat.API.v1.success({
 			channel: findResult
+		});
+	}
+});
+
+RocketChat.API.v1.addRoute('channels.files', { authRequired: true }, {
+	get() {
+		const findResult = findChannelByIdOrName({ params: this.requestParams(), checkedArchived: false });
+
+		Meteor.runAsUser(this.userId, () => {
+			Meteor.call('canAccessRoom', findResult._id, this.userId);
+		});
+
+		const { offset, count } = this.getPaginationItems();
+		const { sort, fields, query } = this.parseJsonQuery();
+
+		const ourQuery = Object.assign({}, query, { rid: findResult._id });
+
+		const files = RocketChat.models.Uploads.find(ourQuery, {
+			sort: sort ? sort : { name: 1 },
+			skip: offset,
+			limit: count,
+			fields
+		}).fetch();
+
+		return RocketChat.API.v1.success({
+			files,
+			count: files.length,
+			offset,
+			total: RocketChat.models.Uploads.find(ourQuery).count()
 		});
 	}
 });
@@ -208,7 +235,7 @@ RocketChat.API.v1.addRoute('channels.getIntegrations', { authRequired: true }, {
 			sort: sort ? sort : { _createdAt: 1 },
 			skip: offset,
 			limit: count,
-			fields: Object.assign({}, fields, RocketChat.API.v1.defaultFieldsToExclude)
+			fields
 		}).fetch();
 
 		return RocketChat.API.v1.success({
@@ -254,9 +281,11 @@ RocketChat.API.v1.addRoute('channels.history', { authRequired: true }, {
 			result = Meteor.call('getChannelHistory', { rid: findResult._id, latest: latestDate, oldest: oldestDate, inclusive, count, unreads });
 		});
 
-		return RocketChat.API.v1.success({
-			messages: result && result.messages ? result.messages : []
-		});
+		if (!result) {
+			return RocketChat.API.v1.unauthorized();
+		}
+
+		return RocketChat.API.v1.success(result);
 	}
 });
 
@@ -332,18 +361,27 @@ RocketChat.API.v1.addRoute('channels.leave', { authRequired: true }, {
 
 RocketChat.API.v1.addRoute('channels.list', { authRequired: true }, {
 	get: {
-		//This is like this only to provide an example of how we routes can be defined :X
+		//This is defined as such only to provide an example of how the routes can be defined :X
 		action() {
 			const { offset, count } = this.getPaginationItems();
 			const { sort, fields, query } = this.parseJsonQuery();
 
 			const ourQuery = Object.assign({}, query, { t: 'c' });
 
+			//Special check for the permissions
+			if (RocketChat.authz.hasPermission(this.userId, 'view-joined-room')) {
+				ourQuery.usernames = {
+					$in: [ this.user.username ]
+				};
+			} else if (!RocketChat.authz.hasPermission(this.userId, 'view-c-room')) {
+				return RocketChat.API.v1.unauthorized();
+			}
+
 			const rooms = RocketChat.models.Rooms.find(ourQuery, {
 				sort: sort ? sort : { name: 1 },
 				skip: offset,
 				limit: count,
-				fields: Object.assign({}, fields, RocketChat.API.v1.defaultFieldsToExclude)
+				fields
 			}).fetch();
 
 			return RocketChat.API.v1.success({
@@ -367,7 +405,7 @@ RocketChat.API.v1.addRoute('channels.list.joined', { authRequired: true }, {
 			sort: sort ? sort : { name: 1 },
 			skip: offset,
 			limit: count,
-			fields: Object.assign({}, fields, RocketChat.API.v1.defaultFieldsToExclude)
+			fields
 		});
 
 		return RocketChat.API.v1.success({
@@ -375,6 +413,62 @@ RocketChat.API.v1.addRoute('channels.list.joined', { authRequired: true }, {
 			offset,
 			count: rooms.length,
 			total: totalCount
+		});
+	}
+});
+
+RocketChat.API.v1.addRoute('channels.members', { authRequired: true }, {
+	get() {
+		const findResult = findChannelByIdOrName({ params: this.requestParams(), checkedArchived: false });
+
+		const { offset, count } = this.getPaginationItems();
+		const { sort } = this.parseJsonQuery();
+
+		const members = RocketChat.models.Rooms.processQueryOptionsOnResult(Array.from(findResult.usernames), {
+			sort: sort ? sort : -1,
+			skip: offset,
+			limit: count
+		});
+
+		const users = RocketChat.models.Users.find({ username: { $in: members } },
+			{ fields: { _id: 1, username: 1, name: 1, status: 1, utcOffset: 1 } }).fetch();
+
+		return RocketChat.API.v1.success({
+			members: users,
+			count: members.length,
+			offset,
+			total: findResult.usernames.length
+		});
+	}
+});
+
+RocketChat.API.v1.addRoute('channels.messages', { authRequired: true }, {
+	get() {
+		const findResult = findChannelByIdOrName({ params: this.requestParams(), checkedArchived: false });
+		const { offset, count } = this.getPaginationItems();
+		const { sort, fields, query } = this.parseJsonQuery();
+
+		const ourQuery = Object.assign({}, query, { rid: findResult._id });
+
+		//Special check for the permissions
+		if (RocketChat.authz.hasPermission(this.userId, 'view-joined-room') && !findResult.usernames.includes(this.user.username)) {
+			return RocketChat.API.v1.unauthorized();
+		} else if (!RocketChat.authz.hasPermission(this.userId, 'view-c-room')) {
+			return RocketChat.API.v1.unauthorized();
+		}
+
+		const messages = RocketChat.models.Messages.find(ourQuery, {
+			sort: sort ? sort : { ts: -1 },
+			skip: offset,
+			limit: count,
+			fields
+		}).fetch();
+
+		return RocketChat.API.v1.success({
+			messages,
+			count: messages.length,
+			offset,
+			total: RocketChat.models.Messages.find(ourQuery).count()
 		});
 	}
 });

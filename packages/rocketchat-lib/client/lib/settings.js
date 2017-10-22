@@ -28,20 +28,20 @@ RocketChat.settings.init = function() {
 		added(record) {
 			Meteor.settings[record._id] = record.value;
 			RocketChat.settings.dict.set(record._id, record.value);
-			return RocketChat.settings.load(record._id, record.value, initialLoad);
+			RocketChat.settings.load(record._id, record.value, initialLoad);
 		},
 		changed(record) {
 			Meteor.settings[record._id] = record.value;
 			RocketChat.settings.dict.set(record._id, record.value);
-			return RocketChat.settings.load(record._id, record.value, initialLoad);
+			RocketChat.settings.load(record._id, record.value, initialLoad);
 		},
 		removed(record) {
 			delete Meteor.settings[record._id];
 			RocketChat.settings.dict.set(record._id, null);
-			return RocketChat.settings.load(record._id, null, initialLoad);
+			RocketChat.settings.load(record._id, null, initialLoad);
 		}
 	});
-	return initialLoad = false;
+	initialLoad = false;
 };
 
 RocketChat.settings.init();
@@ -59,8 +59,8 @@ Meteor.startup(function() {
 			return c.stop();
 		}
 		Meteor.setTimeout(function() {
-			if (__meteor_runtime_config__.ROOT_URL !== location.origin) {
-				const currentUrl = location.origin + __meteor_runtime_config__.ROOT_URL_PATH_PREFIX;
+			const currentUrl = location.origin + __meteor_runtime_config__.ROOT_URL_PATH_PREFIX;
+			if (__meteor_runtime_config__.ROOT_URL.replace(/\/$/, '') !== currentUrl) {
 				swal({
 					type: 'warning',
 					title: t('Warning'),

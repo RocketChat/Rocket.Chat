@@ -1,28 +1,33 @@
 <template name="toolbar">
 	<div class="toolbar">
-		<div class="toolbar-wrapper">
-			<div class="toolbar-search">
-				<i class="toolbar-search__icon icon-search"></i>
-				<input type="text" name="toolbar-input" class="toolbar-search__input background-transparent-light color-content-background-color border-transparent-lighter" placeholder="{{getPlaceholder}}">
-				<i class="toolbar-search__icon toolbar-search__icon--cancel icon-cancel"></i>
+		<form class="toolbar__wrapper" role="search">
+			<div class="toolbar__search">
+				<div class="rc-input">
+					<label class="rc-input__label">
+						<div class="rc-input__wrapper">
+							<div class="rc-input__icon">
+								{{> icon block="rc-input__icon-svg" icon="magnifier"}}
+							</div>
+							<input type="text" class="rc-input__element rc-input__element--small" placeholder="{{getPlaceholder}}">
+							<div class="rc-input__icon rc-input__icon--right">
+								{{> icon block="rc-input__icon-svg" icon="plus"}}
+							</div>
+						</div>
+					</label>
+				</div>
 			</div>
 			{{#if canCreate}}
-				<div class="toolbar-search__buttons">
-					<i class="toolbar-search__create-channel icon-plus"></i>
-				</div>
+				<button class="rc-button rc-button--square rc-tooltip" aria-label="{{ _ 'Create_A_New_Channel' }}">
+					{{> icon block="toolbar__icon" icon="plus" classes="toolbar__search-create-channel"}}
+				</button>
 			{{/if}}
-		</div>
-
+		</form>
 		{{> messagePopup popupConfig}}
 	</div>
 </template>
 
 <template name="toolbarSearchList">
-	<i class="{{icon}} {{userStatus}}"></i>
-	<span class="room-title {{#if unread}}bold{{/if}}">{{displayName}}</span>
-	{{#if unread}}
-		<span class="unread">{{unread}}</span>
-	{{/if}}
+		{{> chatRoomItem . icon=icon}}
 </template>
 
 <template name="toolbarSearchListEmpty">

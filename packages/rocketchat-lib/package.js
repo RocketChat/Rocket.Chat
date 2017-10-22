@@ -17,6 +17,7 @@ Npm.depends({
 
 Package.onUse(function(api) {
 	api.use('rate-limit');
+	api.use('webapp');
 	api.use('session');
 	api.use('reactive-var');
 	api.use('reactive-dict');
@@ -54,12 +55,15 @@ Package.onUse(function(api) {
 	api.addFiles('lib/settings.js');
 	api.addFiles('lib/callbacks.js');
 	api.addFiles('lib/fileUploadRestrictions.js');
+	api.addFiles('lib/getValidRoomName.js');
 	api.addFiles('lib/placeholders.js');
 	api.addFiles('lib/promises.js');
 	api.addFiles('lib/roomTypesCommon.js');
 	api.addFiles('lib/slashCommand.js');
 	api.addFiles('lib/Message.js');
+	api.addFiles('lib/messageBox.js');
 	api.addFiles('lib/MessageTypes.js');
+	api.addFiles('lib/templateVarHandler.js');
 
 	api.addFiles('server/lib/bugsnag.js', 'server');
 	api.addFiles('server/lib/metrics.js', 'server');
@@ -81,6 +85,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/functions/removeUserFromRoom.js', 'server');
 	api.addFiles('server/functions/saveUser.js', 'server');
 	api.addFiles('server/functions/saveCustomFields.js', 'server');
+	api.addFiles('server/functions/saveCustomFieldsWithoutValidation.js', 'server');
 	api.addFiles('server/functions/sendMessage.js', 'server');
 	api.addFiles('server/functions/settings.js', 'server');
 	api.addFiles('server/functions/setUserAvatar.js', 'server');
@@ -89,13 +94,17 @@ Package.onUse(function(api) {
 	api.addFiles('server/functions/setEmail.js', 'server');
 	api.addFiles('server/functions/unarchiveRoom.js', 'server');
 	api.addFiles('server/functions/updateMessage.js', 'server');
+	api.addFiles('server/functions/validateCustomFields.js', 'server');
 	api.addFiles('server/functions/Notifications.js', 'server');
 
 	// SERVER LIB
 	api.addFiles('server/lib/configLogger.js', 'server');
 	api.addFiles('server/lib/PushNotification.js', 'server');
 	api.addFiles('server/lib/defaultBlockedDomainsList.js', 'server');
+	api.addFiles('server/lib/interceptDirectReplyEmails.js', 'server');
+	api.addFiles('server/lib/loginErrorMessageOverride.js', 'server');
 	api.addFiles('server/lib/notifyUsersOnMessage.js', 'server');
+	api.addFiles('server/lib/processDirectEmail.js', 'server');
 	api.addFiles('server/lib/roomTypes.js', 'server');
 	api.addFiles('server/lib/sendEmailOnMessage.js', 'server');
 	api.addFiles('server/lib/sendNotificationsOnMessage.js', 'server');
@@ -103,6 +112,7 @@ Package.onUse(function(api) {
 
 	// SERVER MODELS
 	api.addFiles('server/models/_Base.js', 'server');
+	api.addFiles('server/models/Avatars.js', 'server');
 	api.addFiles('server/models/Messages.js', 'server');
 	api.addFiles('server/models/Reports.js', 'server');
 	api.addFiles('server/models/Rooms.js', 'server');
@@ -131,6 +141,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/methods/archiveRoom.js', 'server');
 	api.addFiles('server/methods/blockUser.js', 'server');
 	api.addFiles('server/methods/checkRegistrationSecretURL.js', 'server');
+	api.addFiles('server/methods/checkUsernameAvailability.js', 'server');
 	api.addFiles('server/methods/cleanChannelHistory.js', 'server');
 	api.addFiles('server/methods/createChannel.js', 'server');
 	api.addFiles('server/methods/createToken.js', 'server');
@@ -141,8 +152,10 @@ Package.onUse(function(api) {
 	api.addFiles('server/methods/filterATAllTag.js', 'server');
 	api.addFiles('server/methods/getChannelHistory.js', 'server');
 	api.addFiles('server/methods/getFullUserData.js', 'server');
+	api.addFiles('server/methods/getRoomJoinCode.js', 'server');
 	api.addFiles('server/methods/getRoomRoles.js', 'server');
 	api.addFiles('server/methods/getServerInfo.js', 'server');
+	api.addFiles('server/methods/getSingleMessage.js', 'server');
 	api.addFiles('server/methods/getUserRoles.js', 'server');
 	api.addFiles('server/methods/insertOrUpdateUser.js', 'server');
 	api.addFiles('server/methods/joinDefaultChannels.js', 'server');
@@ -165,6 +178,7 @@ Package.onUse(function(api) {
 
 	// SERVER STARTUP
 	api.addFiles('server/startup/settingsOnLoadCdnPrefix.js', 'server');
+	api.addFiles('server/startup/settingsOnLoadDirectReply.js', 'server');
 	api.addFiles('server/startup/settingsOnLoadSMTP.js', 'server');
 	api.addFiles('server/startup/oAuthServicesUpdate.js', 'server');
 	api.addFiles('server/startup/settings.js', 'server');
@@ -195,6 +209,7 @@ Package.onUse(function(api) {
 
 	// CLIENT MODELS
 	api.addFiles('client/models/_Base.js', 'client');
+	api.addFiles('client/models/Avatars.js', 'client');
 	api.addFiles('client/models/Uploads.js', 'client');
 
 	// CLIENT VIEWS
@@ -211,11 +226,4 @@ Package.onUse(function(api) {
 	api.export('RocketChatTabBar');
 
 	api.imply('tap:i18n');
-});
-
-Package.onTest(function(api) {
-	api.use('coffeescript');
-	api.use('sanjo:jasmine@0.20.2');
-	api.use('rocketchat:lib');
-	api.addFiles('tests/jasmine/server/unit/models/_Base.spec.coffee', 'server');
 });

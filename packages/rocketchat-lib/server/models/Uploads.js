@@ -1,6 +1,12 @@
+/* globals InstanceStatus */
+
 RocketChat.models.Uploads = new class extends RocketChat.models._Base {
 	constructor() {
 		super('uploads');
+
+		this.model.before.insert((userId, doc) => {
+			doc.instanceId = InstanceStatus.id();
+		});
 
 		this.tryEnsureIndex({ 'rid': 1 });
 		this.tryEnsureIndex({ 'uploadedAt': 1 });
@@ -36,9 +42,8 @@ RocketChat.models.Uploads = new class extends RocketChat.models._Base {
 		return this.find(fileQuery, fileOptions);
 	}
 
-	insertFileInit(roomId, userId, store, file, extra) {
+	insertFileInit(userId, store, file, extra) {
 		const fileData = {
-			rid: roomId,
 			userId,
 			store,
 			complete: false,
@@ -50,7 +55,7 @@ RocketChat.models.Uploads = new class extends RocketChat.models._Base {
 
 		_.extend(fileData, file, extra);
 
-		if ((this.model.direct != null ? this.model.direct.insert : undefined) != null) {
+		if (this.model.direct && this.model.direct.insert != null) {
 			file = this.model.direct.insert(fileData);
 		} else {
 			file = this.insert(fileData);
@@ -80,12 +85,20 @@ RocketChat.models.Uploads = new class extends RocketChat.models._Base {
 
 		update.$set = _.extend(file, update.$set);
 
-		if ((this.model.direct != null ? this.model.direct.insert : undefined) != null) {
+		if (this.model.direct && this.model.direct.update != null) {
 			result = this.model.direct.update(filter, update);
 		} else {
 			result = this.update(filter, update);
 		}
 
 		return result;
+	}
+
+	deleteFile(fileId) {
+		if (this.model.direct && this.model.direct.remove != null) {
+			return this.model.direct.remove({ _id: fileId });
+		} else {
+			return this.remove({ _id: fileId });
+		}
 	}
 };
