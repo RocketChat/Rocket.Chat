@@ -67,7 +67,7 @@ html.rtl .flex-tab {
 			}
 		}
 
-		& .button.edit {
+		& .button {
 			display: inline-block;
 			visibility: hidden;
 
@@ -110,12 +110,14 @@ html.rtl .flex-tab {
 
 			font-size: 0;
 
+			display: flex;
+
 			& .loading-animation {
 				top: 30px;
 			}
 
 			&:hover {
-				& .button.edit {
+				& .button {
 					visibility: visible;
 				}
 			}
