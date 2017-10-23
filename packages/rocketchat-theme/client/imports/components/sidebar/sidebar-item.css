@@ -42,6 +42,7 @@
 	&--unread,
 	&--mention {
     	color: var(--sidebar-item-unread-color);
+			font-weight: var(--sidebar-item-unread-font-weight);
 	}
 
 	&__popup-active {
