@@ -52,7 +52,7 @@ export function getLdapUserUniqueID(ldapUser) {
 		if (Unique_Identifier_Field) {
 			Unique_Identifier_Field = {
 				attribute: Unique_Identifier_Field,
-				value: new Buffer(ldapUser[Unique_Identifier_Field]).toString('hex')
+				value: new Buffer(ldapUser[Unique_Identifier_Field], 'binary').toString('hex')
 			};
 		}
 		return Unique_Identifier_Field;
@@ -213,7 +213,7 @@ export function addLdapUser(ldapUser, username, password) {
 		userObject._id = Accounts.createUser(userObject);
 	} catch (error) {
 		logger.error('Error creating user', error);
-		throw error;
+		return error;
 	}
 
 	syncUserData(userObject, ldapUser);
@@ -257,10 +257,7 @@ export function importNewUsers(ldap) {
 			}
 
 			// Add user if it was not added before
-			const user = Meteor.users.findOne(userQuery);
-			if (!user) {
-				addLdapUser(ldapUser, username);
-			}
+			let user = Meteor.users.findOne(userQuery);
 
 			if (!user && username && RocketChat.settings.get('LDAP_Merge_Existing_Users') === true) {
 				const userQuery = {
@@ -269,10 +266,14 @@ export function importNewUsers(ldap) {
 
 				logger.debug('userQuery merge', userQuery);
 
-				const user = Meteor.users.findOne(userQuery);
+				user = Meteor.users.findOne(userQuery);
 				if (user) {
 					syncUserData(user, ldapUser);
 				}
+			}
+
+			if (!user) {
+				addLdapUser(ldapUser, username);
 			}
 
 			if (count % 100 === 0) {
