@@ -181,7 +181,7 @@ Template.popover.events({
 
 			swal({
 				title: t('Are_you_sure'),
-				text: t(warnText, name),
+				text: warnText ? t(warnText, name) : '',
 				type: 'warning',
 				showCancelButton: true,
 				confirmButtonColor: '#DD6B55',
