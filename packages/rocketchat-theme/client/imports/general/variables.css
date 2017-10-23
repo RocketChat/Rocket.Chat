@@ -50,6 +50,7 @@
 		--status-busy: var(--rc-color-error);
 		--status-invisible: var(--color-gray-medium);
 		--status-invisible-sidebar: var(--rc-color-primary-darkest);
+		--default-padding: 1.5rem;
 		--default-small-padding: 1rem;
 
 		/*
