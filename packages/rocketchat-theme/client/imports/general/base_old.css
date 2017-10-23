@@ -4604,7 +4604,7 @@ body:not(.is-cordova) {
 
 .full-page,
 .page-loading {
-	background-color: var(--color-primary);
+	background-color: var(--rc-color-primary);
 }
 
 .rc-old.full-page {
