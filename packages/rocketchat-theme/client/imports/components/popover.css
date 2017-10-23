@@ -94,10 +94,10 @@
 		align-items: center;
 
 		&--alert {
-			color: var(--color-error);
+			color: var(--rc-color-error);
 
 			& .rc-icon {
-				fill: var(--color-error);
+				fill: var(--rc-color-error);
 			}
 		}
 	}

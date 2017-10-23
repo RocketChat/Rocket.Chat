@@ -1,8 +1,8 @@
 {
   "dependencies": {
     "ajv": {
-      "version": "5.2.3",
-      "resolved": "https://registry.npmjs.org/ajv/-/ajv-5.2.3.tgz",
+      "version": "5.2.4",
+      "resolved": "https://registry.npmjs.org/ajv/-/ajv-5.2.4.tgz",
       "from": "ajv@>=5.1.0 <6.0.0"
     },
     "ansi-regex": {
@@ -285,7 +285,14 @@
     "globby": {
       "version": "6.1.0",
       "resolved": "https://registry.npmjs.org/globby/-/globby-6.1.0.tgz",
-      "from": "globby@>=6.1.0 <7.0.0"
+      "from": "globby@>=6.1.0 <7.0.0",
+      "dependencies": {
+        "pify": {
+          "version": "2.3.0",
+          "resolved": "https://registry.npmjs.org/pify/-/pify-2.3.0.tgz",
+          "from": "pify@>=2.0.0 <3.0.0"
+        }
+      }
     },
     "google-auth-library": {
       "version": "0.10.0",
@@ -1079,8 +1086,8 @@
       "from": "long@>=3.0.0 <4.0.0"
     },
     "make-dir": {
-      "version": "1.0.0",
-      "resolved": "https://registry.npmjs.org/make-dir/-/make-dir-1.0.0.tgz",
+      "version": "1.1.0",
+      "resolved": "https://registry.npmjs.org/make-dir/-/make-dir-1.1.0.tgz",
       "from": "make-dir@>=1.0.0 <2.0.0"
     },
     "methmeth": {
@@ -1164,9 +1171,9 @@
       "from": "performance-now@>=2.1.0 <3.0.0"
     },
     "pify": {
-      "version": "2.3.0",
-      "resolved": "https://registry.npmjs.org/pify/-/pify-2.3.0.tgz",
-      "from": "pify@>=2.3.0 <3.0.0"
+      "version": "3.0.0",
+      "resolved": "https://registry.npmjs.org/pify/-/pify-3.0.0.tgz",
+      "from": "pify@>=3.0.0 <4.0.0"
     },
     "pinkie": {
       "version": "2.0.4",
@@ -1229,8 +1236,8 @@
       "from": "request@>=2.79.0 <3.0.0"
     },
     "retry-request": {
-      "version": "3.0.1",
-      "resolved": "https://registry.npmjs.org/retry-request/-/retry-request-3.0.1.tgz",
+      "version": "3.1.0",
+      "resolved": "https://registry.npmjs.org/retry-request/-/retry-request-3.1.0.tgz",
       "from": "retry-request@>=3.0.0 <4.0.0"
     },
     "rgb-hex": {
