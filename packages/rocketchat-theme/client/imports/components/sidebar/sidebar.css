@@ -59,7 +59,7 @@
 		}
 
 		& a:any-link {
-			color: var(--color-gray);
+			color: var(--rc-color-primary-light);
 		}
 	}
 
