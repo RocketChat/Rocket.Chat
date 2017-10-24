@@ -20,6 +20,7 @@ Package.onUse(function(api) {
 	api.use(['ecmascript', 'underscore']);
 	api.use('templating', 'client');
 	api.use('rocketchat:lib'); //in order to make general settings load earlier
+	api.use('rocketchat:ui-master'); //for the loading animation
 
 	//Server business logic
 	addDirectory(api, 'server/lib', 'server');

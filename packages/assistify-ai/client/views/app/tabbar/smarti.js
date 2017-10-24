@@ -1,5 +1,10 @@
 Template.AssistifySmarti.onCreated(function() {
 	this.helpRequest = new ReactiveVar(null);
+	this.smartiLoaded = new ReactiveVar(false);
+	this.maxTriesLoading = 10;
+	this.timeoutMs = 2000;
+	this.currentTryLoading = new ReactiveVar(0);
+
 	const instance = this;
 
 	Meteor.subscribe('assistify:helpRequests', instance.data.rid); //not reactively needed, as roomId doesn't change
@@ -22,14 +27,17 @@ Template.AssistifySmarti.onDestroyed(function() {
  */
 Template.AssistifySmarti.onRendered(function() {
 
-	const self = this;
+	const instance = this;
 
 	function createSmarti() {
 		if (window.SmartiWidget === undefined) {
-			console.log('Smarti is undefined');
-			self.loading = setTimeout(createSmarti, 200);
+			console.log(`Couldn't load Smarti-Widget - try ${ instance.currentTryLoading.get() }`);
+			instance.currentTryLoading.set(instance.currentTryLoading.get() + 1);
+			if (instance.currentTryLoading.get() < instance.maxTriesLoading) {
+				instance.loading = setTimeout(createSmarti, instance.timeoutMs);
+			}
 		} else {
-
+			instance.smartiLoaded.set(true);
 			const DBS_AI_Redlink_URL =
 				RocketChat.settings.get('DBS_AI_Redlink_URL').endsWith('/') ?
 					RocketChat.settings.get('DBS_AI_Redlink_URL') :
@@ -52,7 +60,7 @@ Template.AssistifySmarti.onRendered(function() {
 			const smartiOptions = {
 				socketEndpoint: WEBSOCKET_URL,
 				smartiEndpoint: DBS_AI_Redlink_URL,
-				channel: self.data.rid,
+				channel: instance.data.rid,
 				postings: {
 					type: WIDGET_POSTING_TYPE,
 					cssInputSelector: '.rc-message-box .js-input-message'
@@ -70,7 +78,7 @@ Template.AssistifySmarti.onRendered(function() {
 				},
 				lang: 'de'
 			};
-			self.smarti = new window.SmartiWidget(self.find('.external-message'), smartiOptions);
+			instance.smarti = new window.SmartiWidget(instance.find('.smarti-widget'), smartiOptions);
 		}
 	}
 
@@ -93,6 +101,18 @@ Template.AssistifySmarti.helpers({
 	helpRequestByRoom() {
 		const instance = Template.instance();
 		return instance.helpRequest.get();
+	},
+	loadingClass() {
+		const instance = Template.instance();
+		if (instance.smartiLoaded.get()) {
+			return 'ready';
+		} else {
+			return instance.currentTryLoading.get() < instance.maxTriesLoading ? 'loading' : 'not-available';
+		}
+	},
+	isLoading() {
+		const instance = Template.instance();
+		return !instance.smartiLoaded.get() && instance.currentTryLoading.get() < instance.maxTriesLoading;
 	}
 });
 
