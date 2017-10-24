@@ -207,6 +207,10 @@ Template.room.helpers({
 		return roomIcon;
 	},
 
+	tokenAccessChannel() {
+		return Template.instance().hasTokenpass.get();
+	},
+
 	userStatus() {
 		const roomData = Session.get(`roomData${ this._id }`);
 		return RocketChat.roomTypes.getUserStatus(roomData.t, this._id) || 'offline';
@@ -767,6 +771,16 @@ Template.room.onCreated(function() {
 	this.clearUserDetail = () => {
 		return this.userDetail.set(null);
 	};
+
+	this.hasTokenpass = new ReactiveVar(false);
+
+	if (RocketChat.settings.get('API_Tokenpass_URL') !== '') {
+		Meteor.call('getChannelTokenpass', this.data._id, (error, result) => {
+			if (!error) {
+				this.hasTokenpass.set(!!(result && result.tokens && result.tokens.length > 0));
+			}
+		});
+	}
 
 	Meteor.call('getRoomRoles', this.data._id, function(error, results) {
 		if (error) {
