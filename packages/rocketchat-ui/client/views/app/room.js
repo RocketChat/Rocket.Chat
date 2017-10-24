@@ -1,4 +1,4 @@
-/* globals RocketChatTabBar , chatMessages, fileUpload , fireGlobalEvent , cordova , readMessage , RoomRoles, popover */
+/* globals RocketChatTabBar , chatMessages, fileUpload , fireGlobalEvent , cordova , readMessage , RoomRoles, popover , device */
 import moment from 'moment';
 import mime from 'mime-type/with-db';
 import Clipboard from 'clipboard';
@@ -55,6 +55,7 @@ const mountPopover = (e, i, outerContext) => {
 	}
 
 	const [, message] = outerContext._arguments;
+
 	let menuItems = RocketChat.MessageAction.getButtons(message, context, 'menu').map(item => {
 		return {
 			icon: item.icon,
@@ -84,6 +85,20 @@ const mountPopover = (e, i, outerContext) => {
 
 	if (deleteItem.length) {
 		groups.push({ items: deleteItem });
+	}
+
+	if (typeof device !== 'undefined' && device.platform && device.platform.toLocaleLowerCase() === 'ios') {
+		groups.push({
+			items: [
+				{
+					icon: 'warning',
+					name: t('Report_Abuse'),
+					type: 'message-action',
+					id: 'report-abuse',
+					modifier: 'alert'
+				}
+			]
+		});
 	}
 
 	const config = {
