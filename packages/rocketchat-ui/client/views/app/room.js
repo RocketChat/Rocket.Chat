@@ -4,8 +4,6 @@ import mime from 'mime-type/with-db';
 import Clipboard from 'clipboard';
 
 window.chatMessages = window.chatMessages || {};
-const socialSharing = (options = {}) => window.plugins.socialsharing.share(options.message, options.subject, options.file, options.link);
-
 const isSubscribed = _id => ChatSubscription.find({ rid: _id }).count() > 0;
 
 const favoritesEnabled = () => RocketChat.settings.get('Favorite_Rooms');
