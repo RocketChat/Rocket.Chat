@@ -41,14 +41,14 @@ describe('[Channel creation]', function() {
 		}
 	});
 
-	describe('public channel:', function() {
+	describe.skip('public channel:', function() {
 		it('it should create a public channel', function() {
 			sideNav.createChannel(publicChannelName, false, false);
 			setPublicChannelCreated(true);
 		});
 	});
 
-	describe('private channel:', function() {
+	describe.skip('private channel:', function() {
 		it('it should create a private channel', function() {
 			sideNav.createChannel(privateChannelName, true, false);
 			setPrivateChannelCreated(true);

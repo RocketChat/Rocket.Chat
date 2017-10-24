@@ -11,7 +11,7 @@ import {checkIfUserIsValid, publicChannelCreated, setPublicChannelCreated} from 
 import {publicChannelName} from '../../data/channel.js';
 import {targetUser} from '../../data/interactions.js';
 
-describe('[Channel]', ()=> {
+describe.skip('[Channel]', ()=> {
 	before(() => {
 		checkIfUserIsValid(username, email, password);
 		if (!publicChannelCreated) {
