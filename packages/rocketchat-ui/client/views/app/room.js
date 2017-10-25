@@ -1,4 +1,4 @@
-/* globals chatMessages, fileUpload , fireGlobalEvent , mobileMessageMenu , cordova , readMessage , RoomRoles, popover */
+/* globals chatMessages, fileUpload , fireGlobalEvent , cordova , readMessage , RoomRoles, popover, device */
 import { RocketChatTabBar } from 'meteor/rocketchat:lib';
 import moment from 'moment';
 import mime from 'mime-type/with-db';
