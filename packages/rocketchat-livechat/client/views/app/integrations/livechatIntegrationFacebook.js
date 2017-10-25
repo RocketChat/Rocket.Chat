@@ -20,9 +20,8 @@ Template.livechatIntegrationFacebook.onCreated(function() {
 		}
 	});
 
-	this.loadPages = () => {
-		this.pages.set([]);
-		Meteor.call('livechat:facebook', { action: 'list-pages' }, (error, result) => {
+	this.result = (successFn, errorFn = () => {}) => {
+		return (error, result) => {
 			if (error) {
 				return swal({
 					title: t('Error_loading_pages'),
@@ -30,8 +29,25 @@ Template.livechatIntegrationFacebook.onCreated(function() {
 					type: 'error'
 				});
 			}
+			if (result.success === false && result.type === 'OAuthException') {
+				const oauthWindow = window.open(result.url, 'facebook-integration-oauth', 'width=600,height=400');
+
+				const checkInterval = setInterval(() => {
+					if (oauthWindow.closed) {
+						clearInterval(checkInterval);
+						errorFn(error);
+					}
+				}, 300);
+			}
+			successFn(result);
+		};
+	};
+
+	this.loadPages = () => {
+		this.pages.set([]);
+		Meteor.call('livechat:facebook', { action: 'list-pages' }, this.result((result) => {
 			this.pages.set(result.pages);
-		});
+		}, this.loadPages));
 	};
 });
 
@@ -50,23 +66,9 @@ Template.livechatIntegrationFacebook.events({
 	'click .enable'(event, instance) {
 		event.preventDefault();
 
-		Meteor.call('livechat:facebook', { action: 'enable' }, (err, result) => {
-			if (err) {
-				return handleError(err);
-			}
-			if (!result.success && result.url) {
-				const oauthWindow = window.open(result.url, 'facebook-integration-oauth', 'width=600,height=400');
-
-				const checkInterval = setInterval(() => {
-					if (oauthWindow.closed) {
-						clearInterval(checkInterval);
-						instance.enabled.set(true);
-					}
-				}, 300);
-			} else {
-				instance.enabled.set(true);
-			}
-		});
+		Meteor.call('livechat:facebook', { action: 'enable' }, this.result(() => {
+			instance.enabled.set(true);
+		}, () => instance.enabled.set(true)));
 	},
 	'click .disable'(event, instance) {
 		event.preventDefault();
