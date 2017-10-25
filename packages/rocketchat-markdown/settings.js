@@ -85,4 +85,24 @@ Meteor.startup(() => {
 		public: true,
 		enableQuery: enableQueryMarked
 	});
+
+	RocketChat.settings.add('Markdown_Colors', false, {
+		type: 'select',
+		values: [
+			{
+				key: 'no',
+				i18nLabel: 'Markdown_No_Colors'
+			}, {
+				key: 'irc',
+				i18nLabel: 'Markdown_IRC_Colors'
+			}, {
+				key: 'full',
+				i18nLabel: 'Markdown_Full_Colors'
+			}
+		],
+		group: 'Message',
+		section: 'Markdown',
+		public: true,
+		i18nDescription: 'Markdown_ColorSupport_Description'
+	});
 });
