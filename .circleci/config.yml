@@ -1,0 +1,80 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/node:4.8
+
+    working_directory: ~/repo
+
+    steps:
+      - checkout
+
+      - run:
+        name: Install Meteor
+        command: if [ ! -e "$HOME/.meteor/meteor" ]; then curl https://install.meteor.com | sed s/--progress-bar/-sL/g | /bin/sh; fi
+
+      - run:
+        name: Lint
+        command: |
+          meteor npm install
+          meteor npm run lint
+          meteor npm run testunit
+          meteor npm run stylelint
+
+      # Download and cache dependencies
+      - restore_cache:
+          key: dependency-cache-{{ checksum "package.json" }}
+
+      - run:
+          name: Build Rocket.Chat
+          command: |
+            meteor build --server-only --directory /tmp/build-test
+
+      - save_cache:
+          key: dependency-cache-{{ checksum "package.json" }}
+          paths:
+            - ./node_modules
+            - ./.meteor
+            - $HOME/.meteor
+
+      - store_artifacts:
+          path: /tmp/build-test
+          destination: build
+
+  test-with-oplog:
+    docker:
+      - image: circleci/node:4.8
+      - image: circleci/mongo:3.2
+        command: [mongod, --smallfiles]
+
+    steps:
+      - run:
+        command: |
+          ls -l /tmp/
+          ls -l /tmp/build-test
+          meteor npm test
+
+  test-without-oplog:
+    docker:
+      - image: circleci/node:4.8
+      - image: circleci/mongo:3.2
+        command: [mongod, --smallfiles]
+
+    steps:
+      - run:
+        command: |
+          ls -l /tmp/
+          ls -l /tmp/build-test
+          meteor npm test
+
+workflows:
+  version: 2
+  build-and-test:
+    jobs:
+      - build
+      - test-with-oplog:
+          requires:
+            - build
+      - test-without-oplog:
+          requires:
+            - build
