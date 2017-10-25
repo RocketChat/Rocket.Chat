@@ -3,7 +3,7 @@
 		<nav class="rc-tabs">
 			{{#each tab in tabs}}
 				<li class="rc-tabs__tab {{activeClass tab.template}}">
-					<a class="rc-tabs__tab-link" href="#{{tab.template}}">
+					<a class="rc-tabs__tab-link {{tab.template}}" href="#{{tab.template}}">
 						{{_ tab.label}}
 					</a>
 				</li>
