@@ -283,7 +283,7 @@ RocketChat.models.Users.getAgentInfo = function(agentId) {
 	const query = {
 		_id: agentId
 	};
-	
+
 	const options = {
 		fields: {
 			name: 1,
