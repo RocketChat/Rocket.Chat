@@ -1,3 +1,18 @@
+<a name="0.59.2"></a>
+## 0.59.2 (2017-10-25)
+
+
+### Bug Fixes
+
+- [#8635](https://github.com/RocketChat/Rocket.Chat/pull/8635) API channel/group.members not sorting
+- [#8551](https://github.com/RocketChat/Rocket.Chat/pull/8551) encode filename in url to prevent links breaking
+- [#8577](https://github.com/RocketChat/Rocket.Chat/pull/8577) Fix guest pool inquiry taking
+- [#8613](https://github.com/RocketChat/Rocket.Chat/pull/8613) LDAP not merging existent users && Wrong id link generation
+- [#8634](https://github.com/RocketChat/Rocket.Chat/pull/8634) Message popup menu on mobile/cordova
+- [#8637](https://github.com/RocketChat/Rocket.Chat/pull/8637) Missing scroll at create channel page
+
+
+
 <a name="0.59.1"></a>
 ## 0.59.1 (2017-10-19)
 
