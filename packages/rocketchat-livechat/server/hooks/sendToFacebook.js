@@ -1,3 +1,5 @@
+import OmniChannel from '../lib/OmniChannel';
+
 RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 	// skips this callback if the message was edited
 	if (message.editedAt) {
@@ -23,15 +25,10 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 		return message;
 	}
 
-	HTTP.call('POST', 'https://omni.rocket.chat/facebook/reply', {
-		headers: {
-			'authorization': `Bearer ${ RocketChat.settings.get('Livechat_Facebook_API_Key') }`
-		},
-		data: {
-			page: room.facebook.page,
-			token: room.v.token,
-			text: message.msg
-		}
+	OmniChannel.reply({
+		page: room.facebook.page,
+		token: room.v.token,
+		text: message.msg
 	});
 
 	return message;

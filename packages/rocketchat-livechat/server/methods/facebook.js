@@ -1,3 +1,5 @@
+import OmniChannel from '../lib/OmniChannel';
+
 Meteor.methods({
 	'livechat:facebook'(options) {
 		if (!Meteor.userId() || !RocketChat.authz.hasPermission(Meteor.userId(), 'view-livechat-manager')) {
@@ -13,60 +15,33 @@ Meteor.methods({
 				}
 
 				case 'enable': {
-					RocketChat.settings.set('Livechat_Facebook_Enabled', true);
+					OmniChannel.enable();
 
-					const result = HTTP.call('POST', 'https://omni.rocket.chat/facebook/enable', {
-						headers: {
-							'authorization': `Bearer ${ RocketChat.settings.get('Livechat_Facebook_API_Key') }`,
-							'content-type': 'application/json'
-						},
-						data: {
-							url: RocketChat.settings.get('Site_Url')
-						}
-					});
-					return result.data;
+					return RocketChat.settings.set('Livechat_Facebook_Enabled', true);
 				}
 
 				case 'disable': {
-					RocketChat.settings.set('Livechat_Facebook_Enabled', false);
+					OmniChannel.disable();
 
-					const result = HTTP.call('DELETE', 'https://omni.rocket.chat/facebook/enable', {
-						headers: {
-							'authorization': `Bearer ${ RocketChat.settings.get('Livechat_Facebook_API_Key') }`,
-							'content-type': 'application/json'
-						}
-					});
-					return result.data;
+					return RocketChat.settings.set('Livechat_Facebook_Enabled', false);
 				}
 
 				case 'list-pages': {
-					const result = HTTP.call('GET', 'https://omni.rocket.chat/facebook/pages', {
-						headers: {
-							'authorization': `Bearer ${ RocketChat.settings.get('Livechat_Facebook_API_Key') }`
-						}
-					});
-					return result.data;
+					return OmniChannel.listPages();
 				}
 
 				case 'subscribe': {
-					const result = HTTP.call('POST', `https://omni.rocket.chat/facebook/page/${ options.page }/subscribe`, {
-						headers: {
-							'authorization': `Bearer ${ RocketChat.settings.get('Livechat_Facebook_API_Key') }`
-						}
-					});
-					return result.data;
+					return OmniChannel.subscribe(options.page);
 				}
 
 				case 'unsubscribe': {
-					const result = HTTP.call('DELETE', `https://omni.rocket.chat/facebook/page/${ options.page }/subscribe`, {
-						headers: {
-							'authorization': `Bearer ${ RocketChat.settings.get('Livechat_Facebook_API_Key') }`
-						}
-					});
-					return result.data;
+					return OmniChannel.unsubscribe(options.page);
 				}
 			}
 		} catch (e) {
+			if (e.response && e.response.data && e.response.data.error && e.response.data.error.response) {
+				throw new Meteor.Error('integration-error', e.response.data.error.response.error.message);
+			}
 			if (e.response && e.response.data && e.response.data.error && e.response.data.error.message) {
 				throw new Meteor.Error('integration-error', e.response.data.error.message);
 			}
