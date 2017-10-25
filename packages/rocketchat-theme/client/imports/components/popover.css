@@ -92,6 +92,14 @@
 
 		font-size: var(--popover-item-text-size);
 		align-items: center;
+
+		&--alert {
+			color: var(--rc-color-error);
+
+			& .rc-icon {
+				fill: var(--rc-color-error);
+			}
+		}
 	}
 
 	&__icon {
@@ -132,7 +140,7 @@
 	fill: currentColor;
 }
 
-@media (width <= 400px) {
+@media (width <= 500px) {
 	.rc-popover {
 		& .rc-popover__content {
 			top: initial !important;
@@ -172,5 +180,12 @@
 		transform: translate(0, 0);
 
 		opacity: 1;
+	}
+}
+
+.rtl .rc-popover {
+	&__item-text {
+		margin-right: 0.25rem;
+		margin-left: auto;
 	}
 }

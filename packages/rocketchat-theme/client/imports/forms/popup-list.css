@@ -43,3 +43,8 @@
 		}
 	}
 }
+
+.rtl .rc-popup-list__item-image {
+	margin-right: 0;
+	margin-left: 1rem;
+}
