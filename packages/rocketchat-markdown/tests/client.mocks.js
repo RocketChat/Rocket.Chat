@@ -26,6 +26,8 @@ mock('meteor/rocketchat:lib', {
 					// case 'Markdown_Marked_SmartLists':
 					// case 'Markdown_Marked_Smartypants':
 						return true;
+					case 'Markdown_Colors':
+						return true;
 					default:
 						throw new Error(`Missing setting mock ${ setting }`);
 				}
