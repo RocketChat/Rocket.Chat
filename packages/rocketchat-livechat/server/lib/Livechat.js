@@ -416,7 +416,6 @@ RocketChat.Livechat = {
 			postData.visitor.phone = visitor.phone[0].phoneNumber;
 		}
 
-		// sticitte que ca se passe ?
 		if (agent.emails && agent.emails.length > 0) {
 			postData.agent.email = agent.emails[0].address;
 		}
