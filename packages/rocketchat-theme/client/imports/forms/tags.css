@@ -48,7 +48,7 @@
 		font-size: 0.875rem;
 
 		&::placeholder {
-			color: var(--color-gray-medium);
+			color: var(--rc-color-primary-light-medium);
 		}
 	}
 }
