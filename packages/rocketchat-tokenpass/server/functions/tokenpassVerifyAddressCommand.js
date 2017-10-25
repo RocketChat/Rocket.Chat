@@ -1,4 +1,4 @@
-function TokenpassVerifyAddress(command, params, item) {
+function TokenpassVerifyAddressCommand(command, params, item) {
 	if (command !== 'tokenpass-verify-address' || !RocketChat.checkTokenpassOAuthEnabled()) {
 		return;
 	}
@@ -32,41 +32,41 @@ function TokenpassVerifyAddress(command, params, item) {
 		return;
 	}
 
-	RocketChat.verifyTokenpassAddress(user && user.services && user.services.tokenpass && user.services.tokenpass.accessToken, address, signature, (error, result) => {
-		const messages = [];
+	try {
+		const result = RocketChat.verifyTokenpassAddress(user && user.services && user.services.tokenpass && user.services.tokenpass.accessToken, address, signature);
 
-		if (error) {
-			messages.push(
-				`${ TAPi18n.__('Tokenpass_Command_TokenpassVerifyAddress_Error', {
-					postProcess: 'sprintf',
-					sprintf: [channel]
-				}, user.language) } ${ error }`
-			);
-		} else if (result === true) {
-			messages.push(
-				TAPi18n.__('Tokenpass_Command_TokenpassVerifyAddress_Result', {
-					postProcess: 'sprintf',
-					sprintf: [channel]
-				}, user.language)
-			);
-		} else {
-			messages.push(
-				TAPi18n.__('Tokenpass_Command_TokenpassVerifyAddress_Result_Empty', {
-					postProcess: 'sprintf',
-					sprintf: [channel]
-				}, user.language)
-			);
-		}
-
-		messages.forEach((msg) => {
+		if (result && result === true) {
 			RocketChat.Notifications.notifyUser(Meteor.userId(), 'message', {
 				_id: Random.id(),
 				rid: item.rid,
 				ts: new Date(),
-				msg
+				msg: TAPi18n.__('Tokenpass_Command_TokenpassVerifyAddress_Result', {
+					postProcess: 'sprintf',
+					sprintf: [channel]
+				}, user.language)
 			});
+		} else {
+			RocketChat.Notifications.notifyUser(Meteor.userId(), 'message', {
+				_id: Random.id(),
+				rid: item.rid,
+				ts: new Date(),
+				msg: TAPi18n.__('Tokenpass_Command_TokenpassVerifyAddress_Result_Empty', {
+					postProcess: 'sprintf',
+					sprintf: [channel]
+				}, user.language)
+			});
+		}
+	} catch (exception) {
+		RocketChat.Notifications.notifyUser(Meteor.userId(), 'message', {
+			_id: Random.id(),
+			rid: item.rid,
+			ts: new Date(),
+			msg: `${ TAPi18n.__('Tokenpass_Command_TokenpassVerifyAddress_Error', {
+				postProcess: 'sprintf',
+				sprintf: [channel]
+			}, user.language) } ${ exception.error }`
 		});
-	});
+	}
 }
 
-RocketChat.slashCommands.add('tokenpass-verify-address', TokenpassVerifyAddress);
+RocketChat.slashCommands.add('tokenpass-verify-address', TokenpassVerifyAddressCommand);

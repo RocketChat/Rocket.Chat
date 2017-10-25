@@ -1,4 +1,4 @@
-function TokenpassAddAddress(command, params, item) {
+function TokenpassAddAddressCommand(command, params, item) {
 	if (command !== 'tokenpass-add-address' || !RocketChat.checkTokenpassOAuthEnabled()) {
 		return;
 	}
@@ -19,29 +19,26 @@ function TokenpassAddAddress(command, params, item) {
 		return;
 	}
 
-	RocketChat.registerTokenpassAddress(user && user.services && user.services.tokenpass && user.services.tokenpass.accessToken, params, (error, result) => {
+	try {
+		const result = RocketChat.registerTokenpassAddress(user && user.services && user.services.tokenpass && user.services.tokenpass.accessToken, params);
+
 		const messages = [];
 
-		if (error) {
-			messages.push(
-				`${ TAPi18n.__('Tokenpass_Command_TokenpassAddAddress_Error', {
-					postProcess: 'sprintf',
-					sprintf: [channel]
-				}, user.language) } ${ error }`
-			);
-		} else if (result) {
+		if (result && result !== {}) {
 			messages.push(
 				TAPi18n.__('Tokenpass_Command_TokenpassAddAddress_Result', {
 					postProcess: 'sprintf',
 					sprintf: [channel]
 				}, user.language)
 			);
+
 			messages.push(
 				`- ${ TAPi18n.__('Tokenpass_Command_TokenpassAddAddress_Name', {
 					postProcess: 'sprintf',
 					sprintf: [channel]
 				}, user.language) }: *${ result.address }*`
 			);
+
 			if (result.label) {
 				messages.push(
 					`- ${ TAPi18n.__('Tokenpass_Command_TokenpassAddAddress_Label', {
@@ -50,6 +47,7 @@ function TokenpassAddAddress(command, params, item) {
 					}, user.language) }: *${ result.label }*`
 				);
 			}
+
 			if (result.type) {
 				messages.push(
 					`- ${ TAPi18n.__('Tokenpass_Command_TokenpassAddAddress_Type', {
@@ -58,6 +56,7 @@ function TokenpassAddAddress(command, params, item) {
 					}, user.language) }: *${ result.type }*`
 				);
 			}
+
 			if (result.verify_code) {
 				messages.push(
 					`- ${ TAPi18n.__('Tokenpass_Command_TokenpassAddAddress_VerifyCode', {
@@ -66,6 +65,7 @@ function TokenpassAddAddress(command, params, item) {
 					}, user.language) }: *${ result.verify_code }*`
 				);
 			}
+
 			if (result.verify_address) {
 				messages.push(
 					`- ${ TAPi18n.__('Tokenpass_Command_TokenpassAddAddress_VerifyAddress', {
@@ -91,7 +91,17 @@ function TokenpassAddAddress(command, params, item) {
 				msg
 			});
 		});
-	});
+	} catch (exception) {
+		RocketChat.Notifications.notifyUser(Meteor.userId(), 'message', {
+			_id: Random.id(),
+			rid: item.rid,
+			ts: new Date(),
+			msg: `${ TAPi18n.__('Tokenpass_Command_TokenpassAddAddress_Error', {
+				postProcess: 'sprintf',
+				sprintf: [channel]
+			}, user.language) } ${ exception.error }`
+		});
+	}
 }
 
-RocketChat.slashCommands.add('tokenpass-add-address', TokenpassAddAddress);
+RocketChat.slashCommands.add('tokenpass-add-address', TokenpassAddAddressCommand);

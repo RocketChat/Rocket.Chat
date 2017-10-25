@@ -41,6 +41,11 @@ Package.onUse(function(api) {
 	api.addFiles('server/functions/saveRoomTokensMinimumBalance.js', 'server');
 	api.addFiles('server/functions/updateUserTokenpassBalances.js', 'server');
 	api.addFiles('server/functions/verifyTokenpassAddress.js', 'server');
+	api.addFiles('server/functions/tokenpassAddAddressCommand.js', 'server');
+	api.addFiles('server/functions/tokenpassInventoryCommand.js', 'server');
+	api.addFiles('server/functions/tokenpassLendCommand.js', 'server');
+	api.addFiles('server/functions/tokenpassRegisterCommand.js', 'server');
+	api.addFiles('server/functions/tokenpassVerifyAddressCommand.js', 'server');
 
 	api.addFiles('server/models/indexes.js', 'server');
 	api.addFiles('server/models/Rooms.js', 'server');
@@ -53,4 +58,8 @@ Package.onUse(function(api) {
 	api.addFiles('server/cronRemoveUsers.js', 'server');
 
 	api.addFiles('server/Tokenpass.js', 'server');
+});
+
+Npm.depends({
+	'crypto': '1.0.1'
 });

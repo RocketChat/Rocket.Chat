@@ -1,4 +1,4 @@
-function Lend(command, params, item) {
+function LendCommand(command, params, item) {
 	if (command !== 'lend' || !RocketChat.checkTokenpassOAuthEnabled()) {
 		return;
 	}
@@ -27,21 +27,16 @@ function Lend(command, params, item) {
 		return;
 	}
 
-	RocketChat.lendTokenpassToken({
-		address: paramsList[0],
-		token: paramsList[1],
-		amount: parseFloat(paramsList[2]),
-		username: `user:${ paramsList[3] }`,
-		days: (paramsList[4] && paramsList[4] !== '') ? parseInt(paramsList[4]) : 0
-	}, (error, result) => {
-		if (error) {
-			messages.push(
-				`${ TAPi18n.__('Tokenpass_Command_Lend_Error', {
-					postProcess: 'sprintf',
-					sprintf: [channel]
-				}, user.language) } ${ error }`
-			);
-		} else if (result) {
+	try {
+		const result = RocketChat.lendTokenpassToken({
+			address: paramsList[0],
+			token: paramsList[1],
+			amount: parseFloat(paramsList[2]),
+			username: `user:${ paramsList[3] }`,
+			days: (paramsList[4] && paramsList[4] !== '') ? parseInt(paramsList[4]) : 0
+		});
+
+		if (result) {
 			messages.push(
 				TAPi18n.__('Tokenpass_Command_Lend_Result', {
 					postProcess: 'sprintf',
@@ -56,16 +51,26 @@ function Lend(command, params, item) {
 				}, user.language)
 			);
 		}
-	});
 
-	messages.forEach((msg) => {
+		messages.forEach((msg) => {
+			RocketChat.Notifications.notifyUser(Meteor.userId(), 'message', {
+				_id: Random.id(),
+				rid: item.rid,
+				ts: new Date(),
+				msg
+			});
+		});
+	} catch (exception) {
 		RocketChat.Notifications.notifyUser(Meteor.userId(), 'message', {
 			_id: Random.id(),
 			rid: item.rid,
 			ts: new Date(),
-			msg
+			msg: `${ TAPi18n.__('Tokenpass_Command_Lend_Error', {
+				postProcess: 'sprintf',
+				sprintf: [channel]
+			}, user.language) } ${ exception.error }`
 		});
-	});
+	}
 }
 
-RocketChat.slashCommands.add('lend', Lend);
+RocketChat.slashCommands.add('lend', LendCommand);

@@ -1,4 +1,4 @@
-function Inventory(command, params, item) {
+function InventoryCommand(command, params, item) {
 	if ((command !== 'inventory' && command !== 'tokens') || !RocketChat.checkTokenpassOAuthEnabled()) {
 		return;
 	}
@@ -48,5 +48,5 @@ function Inventory(command, params, item) {
 	});
 }
 
-RocketChat.slashCommands.add('inventory', Inventory);
-RocketChat.slashCommands.add('tokens', Inventory);
+RocketChat.slashCommands.add('inventory', InventoryCommand);
+RocketChat.slashCommands.add('tokens', InventoryCommand);
