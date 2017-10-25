@@ -1,4 +1,7 @@
 .create-channel {
+	display: flex;
+	flex-direction: column;
+
 	animation-name: fadeIn;
 	animation-duration: 1s;
 
@@ -23,6 +26,10 @@
 		color: var(--create-channel-description-color);
 
 		font-size: var(--create-channel-description-text-size);
+	}
+
+	&__content {
+		overflow-y: auto;
 	}
 
 	&__switches {
