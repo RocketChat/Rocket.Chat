@@ -73,6 +73,11 @@ Template.channelSettings.helpers({
 			}
 		});
 		return t(room && room.ro ? 'True' : 'False');
+	},
+	showingValue(field) {
+		const { showingValue } = Template.instance().settings[field];
+
+		return showingValue && showingValue.get();
 	}
 });
 
@@ -111,9 +116,11 @@ Template.channelSettings.events({
 			t.saveSetting();
 		}
 	},
-	'click [data-edit], click .button.edit'(e, t) {
+	async 'click [data-edit], click .button.edit'(e, t) {
 		e.preventDefault();
 		let input = $(e.currentTarget);
+
+		await t.showValue(this.$key, true);
 
 		if (input.hasClass('button')) {
 			input = $(e.currentTarget).siblings('.current-setting');
@@ -126,6 +133,11 @@ Template.channelSettings.events({
 			}), 100);
 		}
 	},
+	'click .button.show'(e, t) {
+		e.preventDefault();
+
+		t.showValue(this.$key);
+	},
 	'change [type="radio"]'(e, t) {
 		return t.editing.set($(e.currentTarget).attr('name'));
 	},
@@ -135,7 +147,8 @@ Template.channelSettings.events({
 	},
 	'click .cancel'(e, t) {
 		e.preventDefault();
-		return t.editing.set();
+
+		t.cancelEditing(this.$key);
 	},
 	'click .save'(e, t) {
 		e.preventDefault();
@@ -404,14 +417,47 @@ Template.channelSettings.onCreated(function() {
 		joinCode: {
 			type: 'text',
 			label: 'Password',
+			showingValue: new ReactiveVar(false),
+			realValue: null,
 			canView(room) {
 				return room.t === 'c' && RocketChat.authz.hasAllPermission('edit-room', room._id);
 			},
 			canEdit(room) {
 				return RocketChat.authz.hasAllPermission('edit-room', room._id);
 			},
+			getValue(room) {
+				if (this.showingValue.get()) {
+					return this.realValue;
+				}
+				return room.joinCodeRequired ? '*****' : '';
+			},
+			showHideValue(room) {
+				return room.joinCodeRequired;
+			},
+			cancelEditing() {
+				this.showingValue.set(false);
+				this.realValue = null;
+			},
+			async showValue(room, forceShow = false) {
+				if (this.showingValue.get()) {
+					if (forceShow) {
+						return;
+					}
+					this.showingValue.set(false);
+					this.realValue = null;
+
+					return null;
+				}
+				return Meteor.call('getRoomJoinCode', room._id, (error, result) => {
+					if (error) {
+						return handleError(error);
+					}
+					this.realValue = result;
+					this.showingValue.set(true);
+				});
+			},
 			save(value, room) {
-				return Meteor.call('saveRoomSettings', room._id, 'joinCode', value, function(err) {
+				Meteor.call('saveRoomSettings', room._id, 'joinCode', value, function(err) {
 					if (err) {
 						return handleError(err);
 					}
@@ -421,7 +467,7 @@ Template.channelSettings.onCreated(function() {
 			}
 		}
 	};
-	return this.saveSetting = () => {
+	this.saveSetting = () => {
 		const room = ChatRoom.findOne(this.data && this.data.rid);
 		const field = this.editing.get();
 		let value;
@@ -435,6 +481,19 @@ Template.channelSettings.onCreated(function() {
 		if (value !== room[field]) {
 			this.settings[field].save(value, room);
 		}
-		return this.editing.set();
+
+		this.cancelEditing(field);
+	};
+	this.showValue = async(field, forceShow) => {
+		if (!this.settings[field].showValue) {
+			return;
+		}
+		const room = ChatRoom.findOne(this.data && this.data.rid);
+		return this.settings[field].showValue(room, forceShow);
+	};
+	this.cancelEditing = (field) => {
+		const { cancelEditing } = this.settings[field];
+		cancelEditing && cancelEditing.call(this.settings[field]);
+		this.editing.set();
 	};
 });

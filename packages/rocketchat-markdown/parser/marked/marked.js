@@ -99,6 +99,7 @@ export const marked = (message) => {
 		smartLists,
 		smartypants,
 		renderer,
+		sanitize: true,
 		highlight
 	});
 

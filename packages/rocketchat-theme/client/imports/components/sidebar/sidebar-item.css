@@ -135,6 +135,11 @@
 	}
 }
 
+.rtl .sidebar-item__menu {
+  left: 0;
+  right: auto;
+}
+
 .rtl .sidebar-item__user-status {
 	right: 4px;
 	left: initial;

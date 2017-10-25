@@ -166,7 +166,6 @@ rocketchat:irc@0.0.2
 rocketchat:issuelinks@0.0.1
 rocketchat:katex@0.0.1
 rocketchat:ldap@0.0.1
-rocketchat:ldapjs@1.0.0
 rocketchat:lib@0.0.1
 rocketchat:livechat@0.0.1
 rocketchat:logger@0.0.1
