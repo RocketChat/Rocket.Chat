@@ -10,16 +10,16 @@ jobs:
       - checkout
 
       - run:
-        name: Install Meteor
-        command: if [ ! -e "$HOME/.meteor/meteor" ]; then curl https://install.meteor.com | sed s/--progress-bar/-sL/g | /bin/sh; fi
+          name: Install Meteor
+          command: if [ ! -e "$HOME/.meteor/meteor" ]; then curl https://install.meteor.com | sed s/--progress-bar/-sL/g | /bin/sh; fi
 
       - run:
-        name: Lint
-        command: |
-          meteor npm install
-          meteor npm run lint
-          meteor npm run testunit
-          meteor npm run stylelint
+          name: Lint
+          command: |
+            meteor npm install
+            meteor npm run lint
+            meteor npm run testunit
+            meteor npm run stylelint
 
       # Download and cache dependencies
       - restore_cache:
@@ -49,10 +49,10 @@ jobs:
 
     steps:
       - run:
-        command: |
-          ls -l /tmp/
-          ls -l /tmp/build-test
-          meteor npm test
+          command: |
+            ls -l /tmp/
+            ls -l /tmp/build-test
+            meteor npm test
 
   test-without-oplog:
     docker:
@@ -62,10 +62,10 @@ jobs:
 
     steps:
       - run:
-        command: |
-          ls -l /tmp/
-          ls -l /tmp/build-test
-          meteor npm test
+          command: |
+            ls -l /tmp/
+            ls -l /tmp/build-test
+            meteor npm test
 
 workflows:
   version: 2
