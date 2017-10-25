@@ -235,7 +235,6 @@ RocketChat.Livechat = {
 			'Livechat_title',
 			'Livechat_title_color',
 			'Livechat_enabled',
-			'Livechat_show_agent_email',
 			'Livechat_registration_form',
 			'Livechat_allow_switching_departments',
 			'Livechat_offline_title',
@@ -417,6 +416,7 @@ RocketChat.Livechat = {
 			postData.visitor.phone = visitor.phone[0].phoneNumber;
 		}
 
+		// sticitte que ca se passe ?
 		if (agent.emails && agent.emails.length > 0) {
 			postData.agent.email = agent.emails[0].address;
 		}
