@@ -64,7 +64,7 @@
 								<label class="rc-input__label">
 									<div class="rc-input__title">{{_ "Name"}}</div>
 									<div class="rc-input__wrapper">
-										<input type="text" class="rc-input__element" name="realname" id="realname" placeholder="{{_ "Name_Placeholder" }}" value="{{realname}}" >
+										<input type="text" class="rc-input__element" name="realname" id="realname" placeholder="{{_ "Name_Placeholder" }}" value="{{realname}}" />
 									</div>
 								</label>
 							</div>
@@ -76,7 +76,7 @@
 										<div class="rc-input__icon">
 											{{> icon block="rc-input__icon-svg" icon="at"}}
 										</div>
-										<input type="text" class="rc-input__element" name="username" id="username" placeholder="{{_ "Username_Placeholder" }}" value="{{username}}" {{ifThenElse canChange '' 'disabled'}}>
+										<input type="text" class="rc-input__element" name="username" id="username" placeholder="{{_ "Username_Placeholder" }}" value="{{username}}" {{ifThenElse canChange '' 'disabled'}} readonly />
 									</div>
 								</label>
 								{{# unless canChange}}
@@ -99,7 +99,7 @@
 								<label class="rc-input__label">
 									<div class="rc-input__title">{{_ "Email"}}</div>
 									<div class="rc-input__wrapper">
-										<input name="email" type="text" class="rc-input__element" placeholder="{{_ "Email_Placeholder" }}" value="{{email}}" autocomplete="false" {{ifThenElse canChange '' 'disabled'}}>
+										<input name="email" type="text" class="rc-input__element" placeholder="{{_ "Email_Placeholder" }}" value="{{email}}" autocomplete="false" {{ifThenElse canChange '' 'disabled'}} readonly />
 										{{#unless emailVerified}}
 											<div class="rc-input__icon rc-input__icon--right">
 												{{> icon block="rc-input__icon-svg" icon="cross-circled"}}
@@ -126,7 +126,7 @@
 									<label class="rc-input__label">
 										<div class="rc-input__title">{{_ "New_password"}}</div>
 										<div class="rc-input__wrapper">
-											<input name="password" type="password" class="rc-input__element" placeholder="{{_ "New_Password_Placeholder"}}"  autocomplete="new-password" {{ifThenElse canChange '' 'disabled'}}>
+											<input name="password" type="password" class="rc-input__element" placeholder="{{_ "New_Password_Placeholder"}}"  autocomplete="new-password" {{ifThenElse canChange '' 'disabled'}} readonly />
 										</div>
 									</label>
 									{{# unless canChange}}

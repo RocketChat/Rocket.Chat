@@ -248,6 +248,7 @@ Template.accountProfile.onCreated(function() {
 });
 
 Template.accountProfile.onRendered(function() {
+	$('input[readonly]').removeAttr('readonly');
 	Tracker.afterFlush(() => {
 		if (!RocketChat.settings.get('Accounts_AllowUserProfileChange')) {
 			FlowRouter.go('home');
