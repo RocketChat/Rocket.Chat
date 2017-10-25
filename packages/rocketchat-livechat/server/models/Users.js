@@ -292,7 +292,7 @@ RocketChat.models.Users.getAgentInfo = function(agentId) {
 		}
 	};
 
-	if(RocketChat.settings.get('Livechat_show_agent_email')){
+	if (RocketChat.settings.get('Livechat_show_agent_email')) {
 		options.fields.emails = 1;
 	}
 
