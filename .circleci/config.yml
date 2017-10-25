@@ -28,6 +28,9 @@ jobs:
       - run:
           name: Build Rocket.Chat
           command: |
+            set +e
+            meteor add rocketchat:lib
+            set -e
             meteor build --server-only --directory /tmp/build-test
 
       - save_cache:
