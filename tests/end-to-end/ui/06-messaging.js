@@ -274,7 +274,7 @@ describe('[Message]', () => {
 		messageActionsTest();
 	});
 
-	describe.skip('[Public Channel]', () => {
+	describe('[Public Channel]', () => {
 		before(()=>{
 			if (!publicChannelCreated) {
 				sideNav.createChannel(publicChannelName, false, false);
@@ -288,7 +288,7 @@ describe('[Message]', () => {
 		messageActionsTest();
 	});
 
-	describe.skip('[Private Channel]', () => {
+	describe('[Private Channel]', () => {
 		before(()=>{
 			if (!privateChannelCreated) {
 				sideNav.createChannel(privateChannelName, true, false);
@@ -302,7 +302,7 @@ describe('[Message]', () => {
 		messageActionsTest();
 	});
 
-	describe.skip('[Direct Message]', () => {
+	describe('[Direct Message]', () => {
 		before(()=>{
 			if (!directMessageCreated) {
 				sideNav.searchChannel(targetUser);
