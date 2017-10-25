@@ -1,8 +1,8 @@
 {
   "dependencies": {
     "ajv": {
-      "version": "5.2.3",
-      "resolved": "https://registry.npmjs.org/ajv/-/ajv-5.2.3.tgz",
+      "version": "5.2.5",
+      "resolved": "https://registry.npmjs.org/ajv/-/ajv-5.2.5.tgz",
       "from": "ajv@>=5.1.0 <6.0.0"
     },
     "ansi-regex": {
@@ -285,7 +285,14 @@
     "globby": {
       "version": "6.1.0",
       "resolved": "https://registry.npmjs.org/globby/-/globby-6.1.0.tgz",
-      "from": "globby@>=6.1.0 <7.0.0"
+      "from": "globby@>=6.1.0 <7.0.0",
+      "dependencies": {
+        "pify": {
+          "version": "2.3.0",
+          "resolved": "https://registry.npmjs.org/pify/-/pify-2.3.0.tgz",
+          "from": "pify@>=2.0.0 <3.0.0"
+        }
+      }
     },
     "google-auth-library": {
       "version": "0.10.0",
@@ -919,8 +926,8 @@
       }
     },
     "gtoken": {
-      "version": "1.2.2",
-      "resolved": "https://registry.npmjs.org/gtoken/-/gtoken-1.2.2.tgz",
+      "version": "1.2.3",
+      "resolved": "https://registry.npmjs.org/gtoken/-/gtoken-1.2.3.tgz",
       "from": "gtoken@>=1.2.1 <2.0.0"
     },
     "har-schema": {
@@ -1079,8 +1086,8 @@
       "from": "long@>=3.0.0 <4.0.0"
     },
     "make-dir": {
-      "version": "1.0.0",
-      "resolved": "https://registry.npmjs.org/make-dir/-/make-dir-1.0.0.tgz",
+      "version": "1.1.0",
+      "resolved": "https://registry.npmjs.org/make-dir/-/make-dir-1.1.0.tgz",
       "from": "make-dir@>=1.0.0 <2.0.0"
     },
     "methmeth": {
@@ -1091,7 +1098,7 @@
     "mime": {
       "version": "1.4.1",
       "resolved": "https://registry.npmjs.org/mime/-/mime-1.4.1.tgz",
-      "from": "mime@>=1.2.11 <2.0.0"
+      "from": "mime@>=1.4.1 <2.0.0"
     },
     "mime-db": {
       "version": "1.30.0",
@@ -1164,9 +1171,9 @@
       "from": "performance-now@>=2.1.0 <3.0.0"
     },
     "pify": {
-      "version": "2.3.0",
-      "resolved": "https://registry.npmjs.org/pify/-/pify-2.3.0.tgz",
-      "from": "pify@>=2.3.0 <3.0.0"
+      "version": "3.0.0",
+      "resolved": "https://registry.npmjs.org/pify/-/pify-3.0.0.tgz",
+      "from": "pify@>=3.0.0 <4.0.0"
     },
     "pinkie": {
       "version": "2.0.4",

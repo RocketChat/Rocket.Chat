@@ -112,7 +112,6 @@ Package.onUse(function(api) {
 	api.addFiles('client/views/app/createRooms.js', 'client');
 	api.addFiles('client/views/app/fullModal.js', 'client');
 	api.addFiles('client/views/app/home.js', 'client');
-	api.addFiles('client/views/app/mobileMessageMenu.js', 'client');
 	api.addFiles('client/views/app/privateHistory.js', 'client');
 	api.addFiles('client/views/app/room.js', 'client');
 	api.addFiles('client/views/app/roomSearch.js', 'client');
