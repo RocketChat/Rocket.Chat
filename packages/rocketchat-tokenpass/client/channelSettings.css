@@ -1,4 +1,6 @@
 .channelSettings-tokenpass {
+	flex-direction: column;
+
 	&.tokenpass__editing {
 		& .button.edit {
 			visibility: hidden !important;
@@ -6,7 +8,6 @@
 	}
 
 	& .details {
-		clear: both;
 		padding-left: 1rem;
 	}
 
@@ -32,6 +33,10 @@
 		& > li {
 			padding: 2px 8px;
 		}
+	}
+
+	&__form .button {
+		visibility: visible !important;
 	}
 
 	&__input {
