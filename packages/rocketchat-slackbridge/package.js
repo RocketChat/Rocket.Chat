@@ -11,12 +11,12 @@ Package.onUse(function(api) {
 	api.use('rocketchat:lib');
 	api.use('rocketchat:logger');
 
-	api.addFiles('slashcommand/slackbridge_import.client.js', 'client');
+	api.addFiles('client/slackbridge_import.client.js', 'client');
 
-	api.addFiles('logger.js', 'server');
-	api.addFiles('settings.js', 'server');
-	api.addFiles('slackbridge.js', 'server');
-	api.addFiles('slashcommand/slackbridge_import.server.js', 'server');
+	api.addFiles('server/logger.js', 'server');
+	api.addFiles('server/settings.js', 'server');
+	api.addFiles('server/slackbridge.js', 'server');
+	api.addFiles('server/slackbridge_import.server.js', 'server');
 });
 
 Npm.depends({
