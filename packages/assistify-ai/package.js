@@ -32,9 +32,12 @@ Package.onUse(function(api) {
 
 	//Client business logic
 	api.addFiles('client/tabbar.js', 'client');
+	api.addFiles('client/hooks/openAiTab.js', 'client');
 
 	//client views
 	addDirectory(api, 'client/views/app/tabbar', 'client');
+
+	//styling
 	api.addFiles('client/public/stylesheets/smarti.css', 'client');
 
 	//Assets
