@@ -93,11 +93,11 @@
 		font-size: var(--popover-item-text-size);
 		align-items: center;
 
-		&--error {
-			color: var(--color-error);
+		&--alert {
+			color: var(--rc-color-error);
 
 			& .rc-icon {
-				fill: var(--color-error);
+				fill: var(--rc-color-error);
 			}
 		}
 	}
@@ -140,7 +140,7 @@
 	fill: currentColor;
 }
 
-@media (width <= 400px) {
+@media (width <= 500px) {
 	.rc-popover {
 		& .rc-popover__content {
 			top: initial !important;

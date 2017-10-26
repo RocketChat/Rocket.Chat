@@ -60,7 +60,7 @@ RocketChat.API.v1.addRoute(['dm.files', 'im.files'], { authRequired: true }, {
 			sort: sort ? sort : { name: 1 },
 			skip: offset,
 			limit: count,
-			fields: Object.assign({}, fields, RocketChat.API.v1.defaultFieldsToExclude)
+			fields
 		}).fetch();
 
 		return RocketChat.API.v1.success({
@@ -160,7 +160,7 @@ RocketChat.API.v1.addRoute(['dm.messages', 'im.messages'], { authRequired: true 
 			sort: sort ? sort : { ts: -1 },
 			skip: offset,
 			limit: count,
-			fields: Object.assign({}, fields, RocketChat.API.v1.defaultFieldsToExclude)
+			fields
 		}).fetch();
 
 		return RocketChat.API.v1.success({
@@ -200,7 +200,7 @@ RocketChat.API.v1.addRoute(['dm.messages.others', 'im.messages.others'], { authR
 			sort: sort ? sort : { ts: -1 },
 			skip: offset,
 			limit: count,
-			fields: Object.assign({}, fields, RocketChat.API.v1.defaultFieldsToExclude)
+			fields
 		}).fetch();
 
 		return RocketChat.API.v1.success({
@@ -223,7 +223,7 @@ RocketChat.API.v1.addRoute(['dm.list', 'im.list'], { authRequired: true }, {
 			sort: sort ? sort : { name: 1 },
 			skip: offset,
 			limit: count,
-			fields: Object.assign({}, fields, RocketChat.API.v1.defaultFieldsToExclude)
+			fields
 		});
 
 		return RocketChat.API.v1.success({
@@ -250,7 +250,7 @@ RocketChat.API.v1.addRoute(['dm.list.everyone', 'im.list.everyone'], { authRequi
 			sort: sort ? sort : { name: 1 },
 			skip: offset,
 			limit: count,
-			fields: Object.assign({}, fields, RocketChat.API.v1.defaultFieldsToExclude)
+			fields
 		}).fetch();
 
 		return RocketChat.API.v1.success({
