@@ -13,6 +13,9 @@ jobs:
           name: Install Meteor
           command: if [ ! -e "$HOME/.meteor/meteor" ]; then curl https://install.meteor.com | sed s/--progress-bar/-sL/g | /bin/sh; fi
 
+      - restore_cache:
+          key: dependency-cache-{{ checksum "package.json" }}
+
       - run:
           name: Lint
           command: |
@@ -20,10 +23,6 @@ jobs:
             meteor npm run lint
             meteor npm run testunit
             meteor npm run stylelint
-
-      # Download and cache dependencies
-      - restore_cache:
-          key: dependency-cache-{{ checksum "package.json" }}
 
       - run:
           name: Build Rocket.Chat
