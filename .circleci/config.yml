@@ -1,0 +1,171 @@
+defaults: &defaults
+  working_directory: ~/repo
+
+version: 2
+jobs:
+  build:
+    <<: *defaults
+    docker:
+      - image: circleci/node:4.8
+
+    steps:
+      - checkout
+
+      - run:
+          name: Install Meteor
+          command: |
+            if [ ! -e "$HOME/.meteor/meteor" ]; then curl https://install.meteor.com | sed s/--progress-bar/-sL/g | /bin/sh; fi
+            meteor npm install
+
+      - restore_cache:
+          keys:
+            - node-modules-cache-{{ checksum "package.json" }}
+            - meteor-cache-{{ checksum ".meteor/versions" }}
+
+      - run:
+          name: Lint
+          command: |
+            meteor npm run lint
+            meteor npm run testunit
+            meteor npm run stylelint
+
+      - run:
+          name: Build Rocket.Chat
+          command: |
+            set +e
+            meteor add rocketchat:lib
+            set -e
+            meteor build --server-only --directory /tmp/build-test
+
+      - run:
+          name: Prepare build
+          command: |
+            cd /tmp/build-test/bundle/programs/server
+            npm install
+
+      - save_cache:
+          key: node-modules-cache-{{ checksum "package.json" }}
+          paths:
+            - ./node_modules
+
+      - save_cache:
+          key: meteor-cache-{{ checksum ".meteor/versions" }}
+          paths:
+            - ./.meteor/local
+            - /home/circleci/.meteor
+
+      - persist_to_workspace:
+          root: /tmp/
+          paths:
+            - build-test
+
+  test-with-oplog:
+    <<: *defaults
+    docker:
+      - image: circleci/node:4.8-browsers
+      - image: mongo:3.4
+        command: [mongod, --nojournal, --noprealloc, --smallfiles, --replSet=rs0]
+
+    environment:
+      TEST_MODE: "true"
+      MONGO_URL: mongodb://localhost:27017/testwithoplog
+      MONGO_OPLOG_URL: mongodb://localhost:27017/local
+
+    steps:
+      - attach_workspace:
+          at: /tmp
+
+      - checkout
+
+      # - run:
+      #     name: Install Meteor
+      #     command: if [ ! -e "$HOME/.meteor/meteor" ]; then curl https://install.meteor.com | sed s/--progress-bar/-sL/g | /bin/sh; fi
+
+      - run:
+          name: Install dependencies
+          command: |
+            sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 0C49F3730359A14518585931BC711F9BA15703C6
+            echo "deb [ arch=amd64 ] http://repo.mongodb.org/apt/ubuntu trusty/mongodb-org/3.4 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.4.list
+            wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
+            sudo apt-get update
+            sudo apt-get install -y mongodb-org-shell
+
+      # - run:
+      #     name: Install dependencies
+      #     command: |
+      #       sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 0C49F3730359A14518585931BC711F9BA15703C6
+      #       echo "deb [ arch=amd64 ] http://repo.mongodb.org/apt/ubuntu trusty/mongodb-org/3.4 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.4.list
+      #       wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
+      #       sudo sh -c 'echo "deb http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list'
+      #       sudo apt-get update
+      #       sudo apt-get install -y mongodb-org-shell google-chrome-stable
+      #       google-chrome --version
+
+      - run:
+          name: Configure Replica Set
+          command: |
+            mongo --eval 'rs.initiate({_id:"rs0", members: [{"_id":1, "host":"localhost:27017"}]})'
+            mongo --eval 'rs.status()'
+
+      # - run:
+      #     name: Running X virtual framebuffer
+      #     command: Xvfb :99 -screen 0 1280x1024x24
+      #     background: true
+
+      - run:
+          name: Run Tests
+          command: |
+            npm install
+            npm test
+
+  test-without-oplog:
+    <<: *defaults
+    docker:
+      - image: circleci/node:4.8-browsers
+      - image: circleci/mongo:3.4
+
+    environment:
+      TEST_MODE: "true"
+      MONGO_URL: mongodb://localhost:27017/testwithoplog
+
+    steps:
+      - attach_workspace:
+          at: /tmp
+
+      - checkout
+
+      # - run:
+      #     name: Install Meteor
+      #     command: if [ ! -e "$HOME/.meteor/meteor" ]; then curl https://install.meteor.com | sed s/--progress-bar/-sL/g | /bin/sh; fi
+
+      # - run:
+      #     name: Install dependencies
+      #     command: |
+      #       wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
+      #       sudo sh -c 'echo "deb http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list'
+      #       sudo apt-get update
+      #       sudo apt-get install -y google-chrome-stable
+      #       google-chrome --version
+
+      # - run:
+      #     name: Running X virtual framebuffer
+      #     command: Xvfb :99 -screen 0 1280x1024x24
+      #     background: true
+
+      - run:
+          name: Run Tests
+          command: |
+            npm install
+            npm test
+
+workflows:
+  version: 2
+  build-and-test:
+    jobs:
+      - build
+      - test-with-oplog:
+          requires:
+            - build
+      - test-without-oplog:
+          requires:
+            - build
