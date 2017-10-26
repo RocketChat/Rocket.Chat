@@ -21,7 +21,7 @@ const openProfileTab = (e, instance, username) => {
 		return;
 	}
 
-	if (['c', 'p', 'd', 'e', 'r'].includes(roomData.t)) {
+	if (RocketChat.roomTypes.roomTypes[roomData.t].enableMembersListProfile()) {
 		instance.setUserDetail(username);
 	}
 

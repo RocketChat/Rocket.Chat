@@ -69,5 +69,10 @@ export class ExpertiseRoomType extends RoomTypeConfig {
 	preventRenaming() {
 		return true; //renaming an expertise will lead to new requests not finding answers to the previously named expertise
 	}
+
+
+	enableMembersListProfile() {
+		return true;
+	}
 }
 

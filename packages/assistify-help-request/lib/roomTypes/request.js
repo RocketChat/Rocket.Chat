@@ -69,5 +69,9 @@ export class RequestRoomType extends RoomTypeConfig {
 	userDetailShowAdmin() {
 		return true;
 	}
+
+	enableMembersListProfile() {
+		return true;
+	}
 }
 
