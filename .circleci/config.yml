@@ -87,6 +87,11 @@ jobs:
             mongo --eval 'rs.status()'
 
       - run:
+          name: Running X virtual framebuffer
+          command: Xvfb :99 -screen 0 1280x1024x24
+          background: true
+
+      - run:
           name: Run Tests
           command: |
             meteor npm install
@@ -119,6 +124,11 @@ jobs:
             sudo sh -c 'echo "deb http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list'
             sudo apt-get update
             sudo apt-get install -y google-chrome-stable
+
+      - run:
+          name: Running X virtual framebuffer
+          command: Xvfb :99 -screen 0 1280x1024x24
+          background: true
 
       - run:
           name: Run Tests
