@@ -38,6 +38,6 @@ RocketChat.lendTokenpassToken = function(lending) {
 
 		return result && result.data && result.data.result;
 	} catch (exception) {
-		throw new Meteor.Error(exception.response && exception.response.data && (exception.response.data.message || exception.response.data.error)) || TAPi18n.__('Tokenpass_Command_Error_Unknown');
+		throw new Meteor.Error(exception.response && exception.response.data && (exception.response.data.message || exception.response.data.error) || TAPi18n.__('Tokenpass_Command_Error_Unknown'));
 	}
 };

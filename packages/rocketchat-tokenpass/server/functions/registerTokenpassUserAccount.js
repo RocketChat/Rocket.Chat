@@ -18,8 +18,17 @@ RocketChat.registerTokenpassUserAccount = function(user) {
 				email: user.emails[0] && user.emails[0].address
 			}
 		});
+
+		if (result && result.data && result.data.result === false) {
+			throw result;
+		}
+
 		return result && result.data && result.data.result;
 	} catch (exception) {
-		throw new Meteor.Error(exception.response && exception.response.data && (exception.response.data.message || exception.response.data.error)) || TAPi18n.__('Tokenpass_Command_Error_Unknown');
+		if (exception.data && exception.data.error) {
+			throw new Meteor.Error(exception.data.error);
+		} else {
+			throw new Meteor.Error(exception.response && exception.response.data && (exception.response.data.message || exception.response.data.error) || TAPi18n.__('Tokenpass_Command_Error_Unknown'));
+		}
 	}
 };
