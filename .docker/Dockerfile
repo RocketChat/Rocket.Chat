@@ -1,17 +1,17 @@
 FROM rocketchat/base:4
 
-ENV RC_VERSION 0.59.1.a-irc
+ENV RC_VERSION 0.59.0
 
 MAINTAINER buildmaster@rocket.chat
 
 RUN set -x \
- && curl -SLf "https://github.com/Pharserror/Rocket.Chat/releases/download/${RC_VERSION}/Rocket.Chat.tar.gz" -o rocket.chat.tgz \
-# && curl -SLf "https://rocket.chat/releases/${RC_VERSION}/asc" -o rocket.chat.tgz.asc \
+ && curl -SLf "https://rocket.chat/releases/${RC_VERSION}/download" -o rocket.chat.tgz \
+ && curl -SLf "https://rocket.chat/releases/${RC_VERSION}/asc" -o rocket.chat.tgz.asc \
  && mkdir /app \
-# && gpg --verify rocket.chat.tgz.asc \
+ && gpg --verify rocket.chat.tgz.asc \
  && mkdir -p /app \
  && tar -zxf rocket.chat.tgz -C /app \
-# && rm rocket.chat.tgz rocket.chat.tgz.asc \
+ && rm rocket.chat.tgz rocket.chat.tgz.asc \
  && cd /app/bundle/programs/server \
  && npm install \
  && npm cache clear \
