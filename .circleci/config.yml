@@ -55,14 +55,14 @@ jobs:
         environment:
           TEST_MODE: "true"
       - image: mongo:3.4
-        command: [mongod, --nojournal, --noprealloc, --smallfiles, --replSet rs0]
+        command: [mongod, --nojournal, --noprealloc, --smallfiles, --replSet=rs0]
         environment:
           MONGO_URL: mongodb://localhost:27017/testwithoplog
           MONGO_OPLOG_URL: mongodb://localhost:27017/local
 
     steps:
       - attach_workspace:
-          at: /tmp/build-test
+          at: /tmp
 
       - checkout
 
@@ -81,8 +81,6 @@ jobs:
       - run:
           command: |
             mongo --eval 'rs.initiate({_id:"rs0", members: [{"_id":1, "host":"localhost:27017"}]})'
-            ls -la /tmp/build-test/
-            ls -la /tmp/build-test/bundle
             meteor npm test
 
   test-without-oplog:
@@ -97,7 +95,7 @@ jobs:
 
     steps:
       - attach_workspace:
-          at: /tmp/build-test
+          at: /tmp
 
       - checkout
 
