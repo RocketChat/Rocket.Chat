@@ -31,14 +31,14 @@
 					</div>
 				</fieldset>
 				<fieldset>
-					<legend>{{_ "Condition"}}</legend>
+					<legend>
+						{{_ "Condition"}}
+						<button name="add" class="button primary add-condition">{{_ "Add"}}</button>
+					</legend>
 					<div class="conditions">
 						{{#each conditions}}
 							{{> livechatTriggerCondition}}
 						{{/each}}
-						{{#unless conditions}}
-							{{> livechatTriggerCondition}}
-						{{/unless}}
 					</div>
 				</fieldset>
 				<fieldset>

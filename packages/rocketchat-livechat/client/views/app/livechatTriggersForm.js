@@ -1,4 +1,5 @@
 import toastr from 'toastr';
+
 Template.livechatTriggersForm.helpers({
 	name() {
 		const trigger = LivechatTrigger.findOne(FlowRouter.getParam('_id'));
@@ -17,12 +18,7 @@ Template.livechatTriggersForm.helpers({
 		return (trigger && trigger.runOnce) || false;
 	},
 	conditions() {
-		const trigger = LivechatTrigger.findOne(FlowRouter.getParam('_id'));
-		if (!trigger) {
-			return [];
-		}
-
-		return trigger.conditions;
+		return Template.instance().conditions.get();
 	},
 	actions() {
 		const trigger = LivechatTrigger.findOne(FlowRouter.getParam('_id'));
@@ -34,7 +30,40 @@ Template.livechatTriggersForm.helpers({
 	},
 });
 
+Template.livechatTriggersForm.onCreated(function() {
+	this.conditions = new ReactiveVar([]);
+
+	this.subscribe('livechat:triggers', FlowRouter.getParam('_id'));
+
+	this.autorun(() => {
+		const trigger = LivechatTrigger.findOne(FlowRouter.getParam('_id'));
+		if (trigger) {
+			this.conditions.set(trigger.conditions);
+		} else {
+			this.conditions.set([{id:1, name:'page-url', value:''}]);
+		}
+	});
+});
+
 Template.livechatTriggersForm.events({
+	'click button.add-condition'(e, instance) {
+		e.preventDefault();
+		const newConditions = instance.conditions.get();
+		const idArray = newConditions.map(function(o) { return o.id; });
+		idArray.push(0);
+		const newId = Math.max.apply(Math, idArray);
+
+		const emptyCondition = {id: newId + 1, name:'page-url', value:''};
+		newConditions.push(emptyCondition);
+		instance.conditions.set(newConditions);
+	},
+	'click .remove-condition'(e, instance) {
+		e.preventDefault();
+
+		let newConditions = instance.conditions.get();
+		newConditions = _.reject(newConditions, (condition) => { return condition.id === this.id; });
+		instance.conditions.set(newConditions);
+	},
 	'submit #trigger-form'(e, instance) {
 		e.preventDefault();
 		const $btn = instance.$('button.save');
@@ -96,8 +125,4 @@ Template.livechatTriggersForm.events({
 		e.preventDefault();
 		FlowRouter.go('livechat-triggers');
 	},
-});
-
-Template.livechatTriggersForm.onCreated(function() {
-	this.subscribe('livechat:triggers', FlowRouter.getParam('_id'));
 });
