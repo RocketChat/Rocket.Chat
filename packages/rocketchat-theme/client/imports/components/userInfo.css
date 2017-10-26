@@ -1,19 +1,18 @@
 .rc-user-info {
-	display: flex;
-  flex-direction: column;
-  align-items: center;
-	margin-bottom: var(--default-padding);
 	z-index: 1;
 
+	display: flex;
+	flex-direction: column;
 
+	margin-bottom: var(--default-padding);
+	align-items: center;
 
-
-
-	&-container{
+	&-container {
 		position: absolute;
 		top: 0;
-		left: 0;
 		right: 0;
+		left: 0;
+
 		background-color: var(--color-white);
 
 		&.animated {
@@ -22,6 +21,7 @@
 
 		&.animated-hidden {
 			transform: translateX(100%);
+
 			opacity: 0;
 		}
 	}
@@ -30,13 +30,14 @@
 		width: 120px;
 		height: 120px;
 		margin: var(--default-padding);
+
 		border-radius: 2px;
 	}
 
 	&__name {
 		font-size: 22px;
+		font-weight: 500;
 		line-height: 28px;
-    font-weight: 500;
 	}
 
 	&__username {
@@ -46,17 +47,19 @@
 	}
 
 	&-action {
+		display: flex;
+
 		margin-bottom: var(--default-padding);
 		justify-content: center;
-    display: flex;
 
 		&__item {
-			margin: 0 8px;
-			white-space: nowrap;
 			overflow: hidden;
+
+			margin: 0 8px;
+
+			white-space: nowrap;
 			text-overflow: ellipsis;
 		}
-
 
 		&__icon {
 			font-size: 20px;
@@ -64,29 +67,35 @@
 	}
 
 	&-details {
-		padding: var(--default-padding);
 
 		margin-bottom: calc(var(--default-small-padding) * -1);
+		padding: var(--default-padding);
 
-		background-color: #F7F8FA;
+		background-color: #f7f8fa;
 
 		&__item:not(:last-child) {
 			margin-bottom: var(--default-small-padding);
 		}
 
 		&__label {
-			font-size: 10px;
-			color: var(--color-gray);
-			margin-bottom: var(--default-small-padding);
 			display: inline-block;
+
+			margin-bottom: var(--default-small-padding);
+
+			color: var(--color-gray);
+
+			font-size: 10px;
 		}
 
 		&__info {
-			font-size: 16px;
-			color: var(--color-dark);
 			overflow: hidden;
-    	text-overflow: ellipsis;
-	    line-height: 18px;
+
+			text-overflow: ellipsis;
+
+			color: var(--color-dark);
+
+			font-size: 16px;
+			line-height: 18px;
 		}
 
 		&__item {
@@ -94,14 +103,14 @@
 			flex-direction: column;
 		}
 
-
 		& .chip-container {
 			margin: 0;
+
 			& > li {
 				padding: 2px 4px;
+
 				border-radius: 2px;
 			}
 		}
 	}
-
 }
