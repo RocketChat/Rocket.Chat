@@ -1,4 +1,100 @@
 <template name="userInfo">
+	<header class="contextual-bar__header">
+		<button class="contextual-bar__header-close js-close">
+			{{> icon block="contextual-bar__header-close-icon" icon="plus"}}
+		</button>
+	</header>
+	{{#if isLoading}}
+		{{> loading}}
+	{{else}}
+	{{#if editingUser}}
+		{{> userEdit (userToEdit)}}
+	{{else}}
+		{{#with user}}
+		<div class="rc-user-info">
+			<div class="rc-user-info__avatar">
+				{{> avatar username=username}}
+			</div>
+			<h3 title="{{name}}" class="rc-user-info__name"><i class="status-{{status}}"></i> {{name}}</h3>
+			<p class="rc-user-info__username">@{{username}}</p>
+		</div>
+
+		<div class="rc-user-info-action">
+			{{#each actions}}
+				<button class="js-action rc-user-info-action__item">
+					{{> icon block="rc-user-info-action__icon" icon=icon }}
+					{{_ ./name}}
+				</button>
+			{{/each}}
+			{{# with moreActions}}
+			<button class="rc-tooltip rc-room-actions__button js-more" aria-label="{{_ 'More'}}">
+			{{> icon block="tab-button-icon" icon="menu" }}
+			</button>
+			{{/with}}
+		</div>
+
+		<div class="rc-user-info-details">
+			{{#if roleTags}}
+			<div class="rc-user-info-details__item">
+				<label class="rc-user-info-details__label	">Roles</label>
+				<ul class="chip-container current-user-roles">
+					{{#each roleTags}}
+					<li class="role-tag" title="{{description}}">{{description}}</li>
+					{{/each}}
+				</ul>
+			</div>
+			{{/if}}
+			{{#if hasPermission 'view-full-other-user-info'}}
+				{{#if hasEmails}}
+					<div class="rc-user-info-details__item">
+						<label class="rc-user-info-details__label	">Email address</label>
+						{{#each emails}} <a href="mailto:{{address}}" class="rc-user-info-details__info">{{address}}{{#if verified}}&nbsp;<i class="icon-ok success-color"></i>{{/if}}</a> {{/each}}
+					</div>
+				{{/if}}
+				{{#if hasPhone}}
+					<div class="rc-user-info-details__item">
+						<label class="rc-user-info-details__label	">Phone number</label>
+						{{#each phone}} <a href="tel:{{phoneNumber}}" class="rc-user-info-details__info">{{phoneNumber}}</a> {{/each}}
+					</div>
+				{{/if}}
+				{{#if lastLogin}}
+					<div class="rc-user-info-details__item">
+						<label class="rc-user-info-details__label	">{{_ "Created_at"}}</label>
+						<p class="rc-user-info-details__info">{{createdAt}}</p>
+					</div>
+					<div class="rc-user-info-details__item">
+						<label class="rc-user-info-details__label	">{{_ "Last_login"}}</label>
+						<p class="rc-user-info-details__info">{{lastLogin}}</p>
+					</div>
+				{{/if}}
+			{{/if}}
+			{{#if utc}}
+				<div class="rc-user-info-details__item">
+					<label class="rc-user-info-details__label	">Timezone</label>
+					<p class="rc-user-info-details__info">{{userTime}} (UTC {{utc}})</p>
+				</div>
+			{{/if}}
+			<div class="rc-user-info-details__item">
+				{{#if services.facebook.id}} <p class="secondary-font-color"><i class="icon-facebook"></i><a href="{{services.facebook.link}}" target="_blank">{{services.facebook.name}}</a></p> {{/if}}
+				{{#if services.github.id}} <p class="secondary-font-color"><i class="icon-github-circled"></i><a href="https://www.github.com/{{services.github.username}}" target="_blank">{{services.github.username}}</a></p> {{/if}}
+				{{#if services.gitlab.id}} <p class="secondary-font-color"><i class="icon-gitlab"></i>{{services.gitlab.username}}</p> {{/if}}
+				{{#if services.google.id}} <p class="secondary-font-color"><i class="icon-gplus"></i><a href="https://plus.google.com/{{services.google.id}}" target="_blank">{{services.google.name}}</a></p> {{/if}}
+				{{#if services.linkedin.id}} <p class="secondary-font-color"><i class="icon-linkedin"></i><a href="{{services.linkedin.publicProfileUrl}}" target="_blank">{{linkedinUsername}}</a></p> {{/if}}
+				{{#if servicesMeteor.id}} <p class="secondary-font-color"><i class="icon-meteor"></i>{{servicesMeteor.username}}</p> {{/if}}
+				{{#if services.twitter.id}} <p class="secondary-font-color"><i class="icon-twitter"></i><a href="https://twitter.com/{{services.twitter.screenName}}" target="_blank">{{services.twitter.screenName}}</a></p> {{/if}}
+				{{#if services.wordpress.id}} <p class="secondary-font-color"><i class="icon-wordpress"></i>{{services.wordpress.user_login}}</p> {{/if}}
+			</div>
+		</div>
+		{{/with}}
+	{{/if}}
+		{{/if}}
+</template>
+
+<template name="_userinfo">
+	{{> userInfo (userInfoDetail)}}
+</template>
+
+<template name="rc-user-info_">
 	{{#if isLoading}}
 		{{> loading}}
 	{{else}}
@@ -8,7 +104,6 @@
 			{{#with user}}
 			<div class="about clearfix">
 				<div class="thumb">
-					{{> avatar username=username}}
 				</div>
 				<div class="info">
 					<h3 title="{{name}}"><i class="status-{{status}}"></i> {{name}}</h3>
@@ -42,7 +137,6 @@
 			</div>
 			{{/with}}
 			<nav>
-				{{#unless isSelf user.username}}
 					{{#if user.active}}
 						{{> videoButtons}}
 					{{/if}}
@@ -112,7 +206,6 @@
 						<button class='button button-block danger delete'><span><i class='icon-trash'></i> {{_ "Delete"}}</span></button>
 						{{/if}}
 					{{/unless}}
-				{{/unless}}
 
 				{{#if showAll}}
 					<button class='button back'><span>{{_ "View_All"}} <i class='icon-angle-right'></i></span></button>

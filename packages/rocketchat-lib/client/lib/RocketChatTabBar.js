@@ -40,7 +40,7 @@ RocketChatTabBar = class RocketChatTabBar {
 	getState() {
 		return this.state.get();
 	}
-
+	// TODO: @karl fix it
 	open(button) {
 		this.state.set('opened');
 
