@@ -31,6 +31,10 @@ Template.AssistifySmarti.onRendered(function() {
 
 	const instance = this;
 
+	/* in order to avoid duplicated scrollbars, have the outer one hidden */
+	const parentContainer = this.$(':parent').parent();
+	parentContainer.css('overflow-y', 'hidden');
+
 	function createSmarti() {
 		if (window.SmartiWidget === undefined) {
 			console.log(`Couldn't load Smarti-Widget - try ${ instance.currentTryLoading.get() }`);

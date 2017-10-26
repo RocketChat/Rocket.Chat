@@ -7,3 +7,7 @@
 
 	line-height: 1.4;
 }
+
+.content .external-search-content .smarti {
+	overflow-y: auto;
+}
