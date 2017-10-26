@@ -13,15 +13,18 @@ jobs:
 
       - run:
           name: Install Meteor
-          command: if [ ! -e "$HOME/.meteor/meteor" ]; then curl https://install.meteor.com | sed s/--progress-bar/-sL/g | /bin/sh; fi
+          command: |
+            if [ ! -e "$HOME/.meteor/meteor" ]; then curl https://install.meteor.com | sed s/--progress-bar/-sL/g | /bin/sh; fi
+            meteor npm install
 
       - restore_cache:
-          key: dependency-cache-{{ checksum "package.json" }}
+          keys:
+            - node-modules-cache-{{ checksum "package.json" }}
+            - meteor-cache-{{ checksum ".meteor/versions" }}
 
       - run:
           name: Lint
           command: |
-            meteor npm install
             meteor npm run lint
             meteor npm run testunit
             meteor npm run stylelint
@@ -33,14 +36,22 @@ jobs:
             meteor add rocketchat:lib
             set -e
             meteor build --server-only --directory /tmp/build-test
+
+      - run:
+          name: Prepare build
+          command: |
             cd /tmp/build-test/bundle/programs/server
             npm install
 
       - save_cache:
-          key: dependency-cache-{{ checksum "package.json" }}
+          key: node-modules-cache-{{ checksum "package.json" }}
           paths:
             - ./node_modules
-            - ./.meteor
+
+      - save_cache:
+          key: meteor-cache-{{ checksum ".meteor/versions" }}
+          paths:
+            - ./.meteor/local
             - /home/circleci/.meteor
 
       - persist_to_workspace:
