@@ -54,8 +54,8 @@ jobs:
       - image: circleci/node:4.8
         environment:
           TEST_MODE: "true"
-      - image: circleci/mongo:3.4
-        command: [mongod, --smallfiles, --replSet rs0]
+      - image: mongo:3.4
+        command: [mongod, --nojournal, --noprealloc, --smallfiles, --replSet rs0]
         environment:
           MONGO_URL: mongodb://localhost:27017/testwithoplog
           MONGO_OPLOG_URL: mongodb://localhost:27017/local
@@ -81,6 +81,8 @@ jobs:
       - run:
           command: |
             mongo --eval 'rs.initiate({_id:"rs0", members: [{"_id":1, "host":"localhost:27017"}]})'
+            ls -la /tmp/build-test/
+            ls -la /tmp/build-test/bundle
             meteor npm test
 
   test-without-oplog:
@@ -90,7 +92,6 @@ jobs:
         environment:
           TEST_MODE: "true"
       - image: circleci/mongo:3.4
-        command: [mongod, --smallfiles]
         environment:
           MONGO_URL: mongodb://localhost:27017/testwithoutoplog
 
@@ -106,6 +107,8 @@ jobs:
 
       - run:
           command: |
+            ls -la /tmp/build-test/
+            ls -la /tmp/build-test/bundle
             meteor npm test
 
 workflows:
