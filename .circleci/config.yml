@@ -49,8 +49,10 @@ jobs:
   test-with-oplog:
     docker:
       - image: circleci/node:4.8
-      - image: circleci/mongo:3.2
-        command: [mongod, --smallfiles]
+        environment:
+          TEST_MODE: "true"
+      - image: circleci/mongo:3.4
+        command: [mongod, --smallfiles, --replSet rs0]
         environment:
           MONGO_URL: mongodb://localhost:27017/testwithoplog
           MONGO_OPLOG_URL: mongodb://localhost:27017/local
@@ -58,12 +60,19 @@ jobs:
     steps:
       - attach_workspace:
           at: /tmp/build-test
-      - restore_cache:
-          key: dependency-cache-{{ checksum "package.json" }}
+
       - run:
-          name: Link Meteor
+          name: Install Meteor
+          command: if [ ! -e "$HOME/.meteor/meteor" ]; then curl https://install.meteor.com | sed s/--progress-bar/-sL/g | /bin/sh; fi
+
+      - run:
+          name: Install MongoDB Client
           command: |
-            export PATH=$HOME/.meteor:$PATH
+            sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 0C49F3730359A14518585931BC711F9BA15703C6
+            echo "deb [ arch=amd64 ] http://repo.mongodb.org/apt/ubuntu trusty/mongodb-org/3.4 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.4.list
+            apt-get update
+            apt-get install -y mongodb-org-shell
+
       - run:
           command: |
             mongo --eval 'rs.initiate({_id:"rs0", members: [{"_id":1, "host":"localhost:27017"}]})'
@@ -72,7 +81,9 @@ jobs:
   test-without-oplog:
     docker:
       - image: circleci/node:4.8
-      - image: circleci/mongo:3.2
+        environment:
+          TEST_MODE: "true"
+      - image: circleci/mongo:3.4
         command: [mongod, --smallfiles]
         environment:
           MONGO_URL: mongodb://localhost:27017/testwithoutoplog
@@ -80,12 +91,11 @@ jobs:
     steps:
       - attach_workspace:
           at: /tmp/build-test
-      - restore_cache:
-          key: dependency-cache-{{ checksum "package.json" }}
+
       - run:
-          name: Link Meteor
-          command: |
-            export PATH=$HOME/.meteor:$PATH
+          name: Install Meteor
+          command: if [ ! -e "$HOME/.meteor/meteor" ]; then curl https://install.meteor.com | sed s/--progress-bar/-sL/g | /bin/sh; fi
+
       - run:
           command: |
             meteor npm test
