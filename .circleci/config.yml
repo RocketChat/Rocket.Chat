@@ -31,6 +31,8 @@ jobs:
             meteor add rocketchat:lib
             set -e
             meteor build --server-only --directory /tmp/build-test
+            cd /tmp/build-test/bundle/programs/server
+            npm install
 
       - save_cache:
           key: dependency-cache-{{ checksum "package.json" }}
@@ -54,10 +56,16 @@ jobs:
           MONGO_OPLOG_URL: mongodb://localhost:27017/local
 
     steps:
+      - attach_workspace:
+          at: /tmp/build-test
+      - restore_cache:
+          key: dependency-cache-{{ checksum "package.json" }}
+      - run:
+          name: Link Meteor
+          command: |
+            export PATH=$HOME/.meteor:$PATH
       - run:
           command: |
-            ls -l /tmp/
-            ls -l /tmp/build-test
             mongo --eval 'rs.initiate({_id:"rs0", members: [{"_id":1, "host":"localhost:27017"}]})'
             meteor npm test
 
@@ -72,10 +80,14 @@ jobs:
     steps:
       - attach_workspace:
           at: /tmp/build-test
+      - restore_cache:
+          key: dependency-cache-{{ checksum "package.json" }}
+      - run:
+          name: Link Meteor
+          command: |
+            export PATH=$HOME/.meteor:$PATH
       - run:
           command: |
-            ls -l /tmp/
-            ls -l /tmp/build-test
             meteor npm test
 
 workflows:
