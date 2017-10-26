@@ -65,4 +65,8 @@ export class PublicRoomType extends RoomTypeConfig {
 	allowRoomSettingChange() {
 		return true;
 	}
+
+	enableMembersListProfile() {
+		return true;
+	}
 }

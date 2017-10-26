@@ -93,4 +93,8 @@ export class DirectMessageRoomType extends RoomTypeConfig {
 				return true;
 		}
 	}
+
+	enableMembersListProfile() {
+		return true;
+	}
 }
