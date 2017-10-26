@@ -17,7 +17,7 @@ Meteor.methods({
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'setReaction' });
 		}
 
-		if (!RocketChat.emoji.list[reaction] && RocketChat.models.EmojiCustom.findByNameOrAlias(reaction).count() === 0){
+		if (!RocketChat.emoji.list[reaction] && RocketChat.models.EmojiCustom.findByNameOrAlias(reaction).count() === 0) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'setReaction' });
 		}
 
