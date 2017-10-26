@@ -432,7 +432,7 @@ Template.room.events({
 		return Meteor.setTimeout(() => $('#room-title-field').focus().select(), 10);
 	},
 
-	'click .flex-tab .user-image > button'(e, instance) {
+	'click .user-image > button'(e, instance) {
 		if (!Meteor.userId()) {
 			return;
 		}

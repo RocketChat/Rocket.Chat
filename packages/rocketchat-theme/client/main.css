@@ -40,5 +40,7 @@
 @import 'imports/components/modal/full-modal.css';
 @import 'imports/components/modal/create-channel.css';
 
+/* User Info */
+@import 'imports/components/userInfo.css';
 /* RTL */
 @import 'imports/general/rtl.css';

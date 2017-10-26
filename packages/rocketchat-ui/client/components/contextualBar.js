@@ -1,5 +1,5 @@
 Template.contextualBar.events({
-	'click .contextual-bar__header-close'(e, t) {
+	'click .js-close'(e, t) {
 		t.tabBar.close();
 	}
 });
