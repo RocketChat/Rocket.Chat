@@ -1,5 +1,5 @@
 <template name="AssistifySmarti">
-	<div class="content external-search-content">
+	<div class="content external-search-content smarti">
 		<div class="title">
 			<h2><span class="title-icon"><img
 					src="/packages/assistify_ai/client/public/assistify-beta.png"
@@ -15,8 +15,9 @@
 			{{> HelpRequestActions liveChatActions}}
 		{{/if}}
 		<div class="smarti-widget {{loadingClass}}">
+			<div class="loading-notification">{{loadingNotification}}</div>
 			{{#if isLoading }}
-					{{> loading }}
+				{{> loading }}
 			{{/if}}
 		</div>
 	</div>

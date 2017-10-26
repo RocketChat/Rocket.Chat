@@ -35,6 +35,7 @@ Package.onUse(function(api) {
 
 	//client views
 	addDirectory(api, 'client/views/app/tabbar', 'client');
+	api.addFiles('client/public/stylesheets/smarti.css', 'client');
 
 	//Assets
 	api.addAssets('client/public/assistify.png', 'client');

@@ -19,3 +19,5 @@ Reload_Settings: Einstellungen neu laden
 settings-reloaded-successfully: Einstellung wurden erfolgreich neu geladen
 similar_requests: Ähnliche Anfragen
 similar_to: Ähnliches zu
+Widget_could_not_load: Die Wissensbasis kann nicht angezeigt werden. Das tut uns echt leid! Ein möglicher Grund ist eine fehlende Intranetverbindung. Sollte der Rest des Intranets erreichbar sein, nimm bitte Kontakt mit uns auf!
+Widget_loading: Die Wissensbasis lädt gerade - und zwar schon ungewöhnlich lange. Da scheint etwas nicht zu stimmen...

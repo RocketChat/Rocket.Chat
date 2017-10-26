@@ -1,8 +1,8 @@
 {
   "dependencies": {
     "ajv": {
-      "version": "5.2.5",
-      "resolved": "https://registry.npmjs.org/ajv/-/ajv-5.2.5.tgz",
+      "version": "5.3.0",
+      "resolved": "https://registry.npmjs.org/ajv/-/ajv-5.3.0.tgz",
       "from": "ajv@>=5.1.0 <6.0.0"
     },
     "ansi-regex": {
@@ -246,6 +246,11 @@
       "version": "1.0.0",
       "resolved": "https://registry.npmjs.org/fast-deep-equal/-/fast-deep-equal-1.0.0.tgz",
       "from": "fast-deep-equal@>=1.0.0 <2.0.0"
+    },
+    "fast-json-stable-stringify": {
+      "version": "2.0.0",
+      "resolved": "https://registry.npmjs.org/fast-json-stable-stringify/-/fast-json-stable-stringify-2.0.0.tgz",
+      "from": "fast-json-stable-stringify@>=2.0.0 <3.0.0"
     },
     "forever-agent": {
       "version": "0.6.1",
@@ -1030,20 +1035,10 @@
       "resolved": "https://registry.npmjs.org/json-schema-traverse/-/json-schema-traverse-0.3.1.tgz",
       "from": "json-schema-traverse@>=0.3.0 <0.4.0"
     },
-    "json-stable-stringify": {
-      "version": "1.0.1",
-      "resolved": "https://registry.npmjs.org/json-stable-stringify/-/json-stable-stringify-1.0.1.tgz",
-      "from": "json-stable-stringify@>=1.0.1 <2.0.0"
-    },
     "json-stringify-safe": {
       "version": "5.0.1",
       "resolved": "https://registry.npmjs.org/json-stringify-safe/-/json-stringify-safe-5.0.1.tgz",
       "from": "json-stringify-safe@>=5.0.1 <5.1.0"
-    },
-    "jsonify": {
-      "version": "0.0.0",
-      "resolved": "https://registry.npmjs.org/jsonify/-/jsonify-0.0.0.tgz",
-      "from": "jsonify@>=0.0.0 <0.1.0"
     },
     "jsprim": {
       "version": "1.4.1",
@@ -1256,8 +1251,8 @@
       "from": "signal-exit@>=3.0.2 <4.0.0"
     },
     "sntp": {
-      "version": "2.0.2",
-      "resolved": "https://registry.npmjs.org/sntp/-/sntp-2.0.2.tgz",
+      "version": "2.1.0",
+      "resolved": "https://registry.npmjs.org/sntp/-/sntp-2.1.0.tgz",
       "from": "sntp@>=2.0.0 <3.0.0"
     },
     "split-array-stream": {
