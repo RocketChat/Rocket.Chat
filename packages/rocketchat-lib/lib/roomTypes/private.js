@@ -65,4 +65,8 @@ export class PrivateRoomType extends RoomTypeConfig {
 				return true;
 		}
 	}
+
+	enableMembersListProfile() {
+		return true;
+	}
 }

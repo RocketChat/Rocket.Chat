@@ -180,4 +180,8 @@ export class RoomTypeConfig {
 	includeInRoomSearch() {
 		return false;
 	}
+
+	enableMembersListProfile() {
+		return false;
+	}
 }
