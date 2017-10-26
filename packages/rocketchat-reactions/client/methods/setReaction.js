@@ -15,7 +15,7 @@ Meteor.methods({
 			return false;
 		} else if (message.private) {
 			return false;
-		} else if (!RocketChat.emoji.list[reaction] && RocketChat.models.EmojiCustom.findByNameOrAlias(reaction).count() === 0){
+		} else if (!RocketChat.emoji.list[reaction] && RocketChat.models.EmojiCustom.findByNameOrAlias(reaction).count() === 0) {
 			return false;
 		}
 
