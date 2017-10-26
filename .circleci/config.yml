@@ -1,10 +1,12 @@
+defaults: &defaults
+  working_directory: ~/repo
+
 version: 2
 jobs:
   build:
+    <<: *defaults
     docker:
       - image: circleci/node:4.8
-
-    working_directory: ~/repo
 
     steps:
       - checkout
@@ -47,6 +49,7 @@ jobs:
             - build-test
 
   test-with-oplog:
+    <<: *defaults
     docker:
       - image: circleci/node:4.8
         environment:
@@ -79,6 +82,7 @@ jobs:
             meteor npm test
 
   test-without-oplog:
+    <<: *defaults
     docker:
       - image: circleci/node:4.8
         environment:
