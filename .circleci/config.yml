@@ -38,23 +38,28 @@ jobs:
           paths:
             - ./node_modules
             - ./.meteor
-            - $HOME/.meteor
+            - {{ .Environment.HOME }}/.meteor
 
-      - store_artifacts:
-          path: /tmp/build-test
-          destination: build
+      - persist_to_workspace:
+          root: /tmp/
+          paths:
+            - build-test
 
   test-with-oplog:
     docker:
       - image: circleci/node:4.8
       - image: circleci/mongo:3.2
         command: [mongod, --smallfiles]
+        environment:
+          MONGO_URL: mongodb://localhost:27017/testwithoplog
+          MONGO_OPLOG_URL: mongodb://localhost:27017/local
 
     steps:
       - run:
           command: |
             ls -l /tmp/
             ls -l /tmp/build-test
+            mongo --eval 'rs.initiate({_id:"rs0", members: [{"_id":1, "host":"localhost:27017"}]})'
             meteor npm test
 
   test-without-oplog:
@@ -62,8 +67,12 @@ jobs:
       - image: circleci/node:4.8
       - image: circleci/mongo:3.2
         command: [mongod, --smallfiles]
+        environment:
+          MONGO_URL: mongodb://localhost:27017/testwithoutoplog
 
     steps:
+      - attach_workspace:
+          at: /tmp/build-test
       - run:
           command: |
             ls -l /tmp/
