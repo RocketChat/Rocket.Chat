@@ -19,6 +19,12 @@ this.popover = {
 	}
 };
 
+Template.popover.helpers({
+	hasAction() {
+		return !!this.action;
+	}
+});
+
 Template.popover.onRendered(function() {
 	if (this.data.onRendered) {
 		this.data.onRendered();
@@ -91,6 +97,10 @@ Template.popover.onDestroyed(function() {
 });
 
 Template.popover.events({
+	'click .js-action'(e, instance) {
+		!this.action || this.action.call(instance.data.data, e, instance);
+		popover.close();
+	},
 	'click .js-close'() {
 		popover.close();
 	},
