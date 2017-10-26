@@ -38,7 +38,7 @@ jobs:
           paths:
             - ./node_modules
             - ./.meteor
-            - {{ .Environment.HOME }}/.meteor
+            - /home/circleci/.meteor
 
       - persist_to_workspace:
           root: /tmp/
