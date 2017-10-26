@@ -79,8 +79,15 @@ jobs:
             sudo apt-get install -y mongodb-org-shell
 
       - run:
+          name: Configure Replica Set
           command: |
             mongo --eval 'rs.initiate({_id:"rs0", members: [{"_id":1, "host":"localhost:27017"}]})'
+            mongo --eval 'rs.status()'
+
+      - run:
+          name: Run Tests
+          command: |
+            meteor npm install
             meteor npm test
 
   test-without-oplog:
@@ -104,9 +111,9 @@ jobs:
           command: if [ ! -e "$HOME/.meteor/meteor" ]; then curl https://install.meteor.com | sed s/--progress-bar/-sL/g | /bin/sh; fi
 
       - run:
+          name: Run Tests
           command: |
-            ls -la /tmp/build-test/
-            ls -la /tmp/build-test/bundle
+            meteor npm install
             meteor npm test
 
 workflows:
