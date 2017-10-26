@@ -182,13 +182,13 @@ RocketChat.API.v1 = new API({
 	version: 'v1',
 	useDefaultAuth: true,
 	prettyJson: true,
-	enableCors: false,
+	enableCors: RocketChat.settings.get('API_Enable_CORS'),
 	auth: getUserAuth()
 });
 
 RocketChat.API.default = new API({
 	useDefaultAuth: true,
 	prettyJson: true,
-	enableCors: false,
+	enableCors: RocketChat.settings.get('API_Enable_CORS'),
 	auth: getUserAuth()
 });
