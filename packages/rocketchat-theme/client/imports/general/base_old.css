@@ -3516,7 +3516,7 @@ body:not(.is-cordova) {
 
 		& .content {
 			position: absolute;
-			top: auto;
+			top: 0;
 			left: 0;
 
 			overflow-x: hidden;

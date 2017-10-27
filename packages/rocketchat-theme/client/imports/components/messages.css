@@ -1,3 +1,7 @@
+.messages-container-wrapper {
+	position: relative;
+}
+
 .message-actions {
 	position: absolute;
 	top: 2px;
