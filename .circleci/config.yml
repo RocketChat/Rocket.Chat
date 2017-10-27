@@ -11,19 +11,19 @@ jobs:
     steps:
       - checkout
 
-      - run:
-          name: Install Meteor
-          command: |
-            if [ ! -e "$HOME/.meteor/meteor" ]; then curl https://install.meteor.com | sed s/--progress-bar/-sL/g | /bin/sh; fi
-            meteor npm install
-
       - restore_cache:
           keys:
             - node-modules-cache-{{ checksum "package.json" }}
 
       - restore_cache:
           keys:
-            - meteor-cache-{{ checksum ".meteor/versions" }}
+            - meteor-cache-{{ checksum ".meteor/release" }}
+
+      - run:
+          name: Install Meteor
+          command: |
+            if [ ! -e "$HOME/.meteor/meteor" ]; then curl https://install.meteor.com | sed s/--progress-bar/-sL/g | /bin/sh; fi
+            meteor npm install
 
       - run:
           name: Lint
@@ -52,7 +52,7 @@ jobs:
             - ./node_modules
 
       - save_cache:
-          key: meteor-cache-{{ checksum ".meteor/versions" }}
+          key: meteor-cache-{{ checksum ".meteor/release" }}
           paths:
             - ./.meteor/local
             - /home/circleci/.meteor
@@ -78,13 +78,13 @@ jobs:
       - attach_workspace:
           at: /tmp
 
-      # - run:
-      #     name: Install dependencies
-      #     command: |
-      #       sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 0C49F3730359A14518585931BC711F9BA15703C6
-      #       echo "deb [ arch=amd64 ] http://repo.mongodb.org/apt/ubuntu trusty/mongodb-org/3.4 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.4.list
-      #       sudo apt-get update
-      #       sudo apt-get install -y mongodb-org-shell
+      - run:
+          name: Install dependencies
+          command: |
+            sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 0C49F3730359A14518585931BC711F9BA15703C6
+            echo "deb [ arch=amd64 ] http://repo.mongodb.org/apt/ubuntu trusty/mongodb-org/3.4 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.4.list
+            sudo apt-get update
+            sudo apt-get install -y mongodb-org-shell
 
       - run:
           name: Configure Replica Set
