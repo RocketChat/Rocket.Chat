@@ -17,7 +17,7 @@ jobs:
 
       - restore_cache:
           keys:
-            - meteor-cache-{{ checksum ".meteor/release" }}
+            - meteor-{{ checksum ".meteor/release" }}
 
       - run:
           name: Install Meteor
@@ -31,6 +31,10 @@ jobs:
             meteor npm run lint
             meteor npm run testunit
             meteor npm run stylelint
+
+      - restore_cache:
+          keys:
+            - meteor-cache-{{ checksum ".meteor/versions" }}
 
       - run:
           name: Build Rocket.Chat
@@ -52,7 +56,12 @@ jobs:
             - ./node_modules
 
       - save_cache:
-          key: meteor-cache-{{ checksum ".meteor/release" }}
+          key: meteor-cache-{{ checksum ".meteor/versions" }}
+          paths:
+            - ./.meteor/local
+
+      - save_cache:
+          key: meteor-{{ checksum ".meteor/release" }}
           paths:
             - ./.meteor/local
             - /home/circleci/.meteor
@@ -77,6 +86,8 @@ jobs:
     steps:
       - attach_workspace:
           at: /tmp
+
+      - checkout
 
       - run:
           name: Install dependencies
@@ -115,6 +126,8 @@ jobs:
     steps:
       - attach_workspace:
           at: /tmp
+
+      - checkout
 
       - run:
           name: Update NPM
