@@ -17,6 +17,12 @@ Template.HelpRequestActions.helpers({
 		const instance = Template.instance();
 		const room = ChatSubscription.findOne({rid: instance.data.roomId});
 		return room.open;
+	},
+
+	isOpenLivechat() {
+		const instance = Template.instance();
+		const room = ChatSubscription.findOne({rid: instance.data.roomId});
+		return room.t === 'l' && room.open;
 	}
 });
 

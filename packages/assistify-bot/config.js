@@ -7,7 +7,7 @@ Meteor.startup(()=> {
 		public: true
 	});
 
-	RocketChat.settings.add('Assistify_Bot_Automated_Response_Threshold', 50, {
+	RocketChat.settings.add('Assistify_Bot_Automated_Response_Threshold', 100, {
 		group: 'Assistify',
 		i18nLabel: 'Assistify_Bot_Automated_Response_Threshold',
 		type: 'int',

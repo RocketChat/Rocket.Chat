@@ -1,0 +1,13 @@
+.smarti-widget .loading-notification {
+	margin: 0 20px;
+
+	text-align: justify;
+
+	font-style: italic;
+
+	line-height: 1.4;
+}
+
+.content .external-search-content .smarti {
+	overflow-y: auto;
+}

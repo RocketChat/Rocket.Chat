@@ -12,10 +12,10 @@ RocketChat.TabBar.addGroup('message-search', ['request', 'expertise']);
 RocketChat.TabBar.addGroup('uploaded-files-list', ['request', 'expertise']);
 
 RocketChat.TabBar.addButton({
-	groups: ['request', 'expertise', 'live'],
-	id: 'dbsai',
+	groups: ['request', 'expertise'],
+	id: 'AssistifyAi',
 	i18nTitle: 'Knowledge_Base',
-	icon: 'icon-lightbulb',
-	template: 'dbsAI_smarti',
+	icon: 'lightbulb',
+	template: 'AssistifySmarti',
 	order: 0
 });

@@ -8,7 +8,7 @@ class ModelRooms extends RocketChat.models._Base {
 		this.tryEnsureIndex({ 't': 1 });
 		this.tryEnsureIndex({ 'u._id': 1 });
 
-		this.cache.ignoreUpdatedFields.push('msgs', 'lm');
+		this.cache.ignoreUpdatedFields = ['msgs', 'lm'];
 		this.cache.ensureIndex(['t', 'name'], 'unique');
 		this.cache.options = {fields: {usernames: 0}};
 	}
@@ -257,9 +257,11 @@ class ModelRooms extends RocketChat.models._Base {
 		return this._db.find(query, options);
 	}
 
-	findByNameAndTypeNotContainingUsername(name, type, username, options) {
+	findByNameAndTypesNotContainingUsername(name, types, username, options) {
 		const query = {
-			t: type,
+			t: {
+				$in: types
+			},
 			name,
 			usernames: {
 				$ne: username

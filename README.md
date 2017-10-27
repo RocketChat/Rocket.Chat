@@ -16,12 +16,14 @@
 * [Desktop apps](#desktop-apps)
 * [Deployment](#deployment)
    * [Snaps](#instant-server-installation-with-snaps)
+   * [RocketChatLauncher](#rocketchatlauncher)
    * [Layershift](#layershift)
-   * [Sandstorm.io](#sandstormio) 
-   * [DPlatform](#dplatform) 
+   * [Sandstorm.io](#sandstormio)
+   * [Yunohost.org](#yunohostorg)
+   * [DPlatform](#dplatform)
    * [IndieHosters](#indiehosters)
    * [Ubuntu 16.04](#ubuntu-1604)
-   * [Cloudron.io](#cloudronio) 
+   * [Cloudron.io](#cloudronio)
    * [Heroku](#heroku)
    * [Helm Kubernetes](#helm-kubernetes)
   * [Scalingo](#scalingo)
@@ -33,6 +35,7 @@
   * [Koozali SME](#koozali-sme)
   * [Ubuntu VPS](#ubuntu-vps)
   * [Hyper.sh](#hypersh)
+  * [WeDeploy](#wedeploy)
 * [About Rocket.Chat](#about-rocketchat)
   * [On the News](#on-the-news)
   * [Features](#features)
@@ -63,13 +66,17 @@ Download the Native Cross-Platform Desktop Application at [Rocket.Chat.Electron]
 
 
 # Mobile Apps
-### Available from the AppStore
-[![Rocket.Chat on Apple AppStore](http://linkmaker.itunes.apple.com/images/badges/en-us/badge_appstore-lrg.svg)](https://itunes.apple.com/us/app/rocket.chat/id1028869439?mt=8)
 
-### Available from Google Play
-[![Rocket.Chat on Google Play](https://upload.wikimedia.org/wikipedia/commons/thumb/5/58/Google_Play_logo_2015.PNG/220px-Google_Play_logo_2015.PNG)](https://play.google.com/store/apps/details?id=com.konecty.rocket.chat)
+## Native Mobile Apps
+*Note: currently the native apps doesn't support all the features that web does. If you're looking for it, you should download the Cordova apps.*
 
-Now compatible with all Android devices as old as version 4.0.x - [download here](https://rocket.chat/docs/developer-guides/mobile-apps/), even on BlackBerry Passport!
+[![Rocket.Chat on Apple AppStore](https://user-images.githubusercontent.com/551004/29770691-a2082ff4-8bc6-11e7-89a6-964cd405ea8e.png)](https://itunes.apple.com/us/app/rocket-chat/id1148741252?mt=8) [![Rocket.Chat on Google Play](https://user-images.githubusercontent.com/551004/29770692-a20975c6-8bc6-11e7-8ab0-1cde275496e0.png)](https://play.google.com/store/apps/details?id=chat.rocket.android)
+
+## Hybrid Mobile Apps (Cordova)
+
+[![Rocket.Chat on Apple AppStore](https://user-images.githubusercontent.com/551004/29770691-a2082ff4-8bc6-11e7-89a6-964cd405ea8e.png)](https://itunes.apple.com/us/app/rocket.chat/id1028869439?mt=8) [![Rocket.Chat on Google Play](https://user-images.githubusercontent.com/551004/29770692-a20975c6-8bc6-11e7-8ab0-1cde275496e0.png)](https://play.google.com/store/apps/details?id=com.konecty.rocket.chat)
+
+*Now compatible with all Android devices as old as version 4.0.x - [download here](https://rocket.chat/docs/developer-guides/mobile-apps/), even on BlackBerry Passport!*
 
 ### Also available as FirefoxOS app
 [![Firefox OS app now available](https://raw.githubusercontent.com/Sing-Li/bbug/master/images/firefoxos.png)](https://rocket.chat/docs/installation/mobile-and-desktop-apps/#native-firefox-os-app)
@@ -78,20 +85,26 @@ Now compatible with all Android devices as old as version 4.0.x - [download here
 # Deployment
 
 ## Instant Server Installation with Snaps
- 
+
 Install Rocket.Chat in seconds on Linux (Ubuntu and others) with:
 
 ```
 sudo snap install rocketchat-server
 ```
 
-[![Rocket.Chat Snap is recommended for Linux deployments](https://github.com/Sing-Li/bbug/raw/master/images/ubuntulogo.png)](https://uappexplorer.com/app/rocketchat-server.rocketchat)
+[![Rocket.Chat Snap is recommended for Linux deployments](https://github.com/Sing-Li/bbug/raw/master/images/ubuntulogo.png)](https://uappexplorer.com/snap/ubuntu/rocketchat-server)
 
-Installing snaps is very quick.  By running that command you have your full Rocket.Chat server up and running.  Snaps are secure.  They are isolated with all of their dependencies.  Snaps also auto update when we release new versions. 
+Installing snaps is very quick.  By running that command you have your full Rocket.Chat server up and running.  Snaps are secure.  They are isolated with all of their dependencies.  Snaps also auto update when we release new versions.
 
 Our snap features a built-in reverse proxy that can request and maintain free letsencrypt SSL certificates. You can go from zero to a public-facing SSL-secured Rocket.Chat server in less than 5 minutes.
 
 Find out more information about our snaps [here](https://rocket.chat/docs/installation/manual-installation/ubuntu/snaps/)
+
+## RocketChatLauncher
+
+Focus on your team/community and not on servers or code - the Launcher provides RocketChat-as-a-Service on a monthly subscription model.
+
+[![RocketChatLauncher](https://rocketchatlauncher.com/wp-content/uploads/2017/03/cropped-rcl-small-type.png)](https://rocketchatlauncher.com)
 
 ## Layershift
 
@@ -106,6 +119,10 @@ Host your own Rocket.Chat server in four seconds flat:
 
 [![Rocket.Chat on Sandstorm.io](https://raw.githubusercontent.com/Sing-Li/bbug/master/images/sandstorm.jpg)](https://apps.sandstorm.io/app/vfnwptfn02ty21w715snyyczw0nqxkv3jvawcah10c6z7hj1hnu0)
 
+## Yunohost.org
+Host your own Rocket.Chat server in a few seconds.
+
+[![Install RocketChat with YunoHost](https://install-app.yunohost.org/install-with-yunohost.png)](https://install-app.yunohost.org/?app=rocketchat)
 
 ## DPlatform
 
@@ -119,7 +136,7 @@ Get your Rocket.Chat instance hosted in a "as a Service" style. You register and
 [![Rocket.Chat on IndieHosters](https://indie.host/signup.png)](https://indiehosters.net/shop/product/rocket-chat-21)
 
 ## Ubuntu 16.04
-[![Ubuntu Apps Explorer](https://raw.githubusercontent.com/Sing-Li/bbug/master/images/uappexplorer.png)](https://uappexplorer.com/app/rocketchat-server.rocketchat)
+[![Ubuntu Apps Explorer](https://raw.githubusercontent.com/Sing-Li/bbug/master/images/uappexplorer.png)](https://uappexplorer.com/snap/ubuntu/rocketchat-server)
 
 Deploy from shell:
 
@@ -208,6 +225,11 @@ Follow these [deployment instructions](https://rocket.chat/docs/installation/man
 ## Hyper.sh
 Follow their [deployment instructions](https://rocket.chat/docs/installation/paas-deployments/hyper-sh/) to install a per-second billed Rocket.Chat instance on [Hyper.sh](https://rocket.chat/docs/installation/paas-deployments/hyper-sh/)
 
+## WeDeploy
+Install Rocket.Chat on [WeDeploy](https://wedeploy.com):
+
+[![Install](https://avatars3.githubusercontent.com/u/10002920?v=4&s=100)](https://rocket.chat/docs/installation/paas-deployments/wedeploy/)
+
 # About Rocket.Chat
 
 Rocket.Chat is a Web Chat Server, developed in JavaScript, using the [Meteor](https://www.meteor.com/install) fullstack framework.
@@ -279,7 +301,7 @@ It is a great solution for communities and companies wanting to privately host t
 - Audio calls
 - Multi-users Audio Conference
 - Screensharing
-- Drupal 7.x and 8.x Plug-in ([download](https://www.drupal.org/project/rocket_chat)  and [source code](https://github.com/jelhouss/rocket_chat) )
+- Drupal 7.x and 8.x Plug-in (both stable and development flavours) ([download](https://www.drupal.org/project/rocket_chat)  and [source code](https://git.drupal.org/project/rocket_chat.git) )
 - XMPP bridge ([try it](https://demo.rocket.chat/channel/general))
 - REST APIs
 - Remote Locations Video Monitoring
@@ -321,12 +343,12 @@ It is a great solution for communities and companies wanting to privately host t
 
 ## How it all started
 
-Read about [how it all started](http://osdelivers.blackducksoftware.com/2016/06/10/rocket-chat-hosted-chat-services/).
+Read about [how it all started](https://blog.blackducksoftware.com/rocket-chat-enabling-privately-hosted-chat-services).
 
 ## Awards
 [![InfoWorld Bossie Awards 2016 - Best Open Source Applications](https://raw.githubusercontent.com/Sing-Li/bbug/master/images/bossie.png)](http://www.infoworld.com/article/3122000/open-source-tools/bossie-awards-2016-the-best-open-source-applications.html#slide4)
 
-[![Black Duck Open Source Rookie of the Year for 2015](https://raw.githubusercontent.com/Sing-Li/bbug/master/images/blackducksm.png)](https://info.blackducksoftware.com/OpenSourceRookies2015.html)
+[![Black Duck Open Source Rookie of the Year for 2015](https://raw.githubusercontent.com/Sing-Li/bbug/master/images/blackducksm.png)](https://info.blackducksoftware.com/OpenSourceRookies2015)
 
 [![Softpedia 100% Free and Clean Award for 2017](https://raw.githubusercontent.com/Sing-Li/bbug/master/images/softpedia.gif)](http://www.softpedia.com/get/Internet/Chat/Other-Chat-Tools/Rocket-Chat.shtml#status)
 

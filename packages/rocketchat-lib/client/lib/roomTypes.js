@@ -1,11 +1,11 @@
-import roomTypesCommon from '../../lib/roomTypesCommon';
+import { RoomTypesCommon } from '../../lib/RoomTypesCommon';
 
-RocketChat.roomTypes = new class extends roomTypesCommon {
+RocketChat.roomTypes = new class extends RoomTypesCommon {
 	checkCondition(roomType) {
 		return roomType.condition == null || roomType.condition();
 	}
 	getTypes() {
-		return _.sortBy(this.roomTypesOrder, 'order').map((type) => this.roomTypes[type.identifier]);
+		return _.sortBy(this.roomTypesOrder, 'order').map((type) => this.roomTypes[type.identifier]).filter(type => !type.condition || type.condition());
 	}
 	getIcon(roomType) {
 		return this.roomTypes[roomType] && this.roomTypes[roomType].icon;
@@ -111,5 +111,4 @@ RocketChat.roomTypes = new class extends roomTypesCommon {
 		}
 		return this.roomTypes[roomType].notSubscribedTpl;
 	}
-
 };

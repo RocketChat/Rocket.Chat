@@ -114,7 +114,7 @@ class API extends Restivus {
 						endpoints[method] = { action: endpoints[method] };
 					}
 
-					//Add a try/catch for each much
+					//Add a try/catch for each endpoint
 					const originalAction = endpoints[method].action;
 					endpoints[method].action = function() {
 						this.logger.debug(`${ this.request.method.toUpperCase() }: ${ this.request.url }`);
@@ -182,13 +182,13 @@ RocketChat.API.v1 = new API({
 	version: 'v1',
 	useDefaultAuth: true,
 	prettyJson: true,
-	enableCors: false,
+	enableCors: RocketChat.settings.get('API_Enable_CORS'),
 	auth: getUserAuth()
 });
 
 RocketChat.API.default = new API({
 	useDefaultAuth: true,
 	prettyJson: true,
-	enableCors: false,
+	enableCors: RocketChat.settings.get('API_Enable_CORS'),
 	auth: getUserAuth()
 });

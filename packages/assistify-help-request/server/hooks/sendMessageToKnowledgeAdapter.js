@@ -1,4 +1,6 @@
-/* globals _dbs, SystemLogger */
+/* globals SystemLogger */
+
+import {getKnowledgeAdapter} from 'meteor/assistify:ai';
 
 Meteor.startup(() => {
 	RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
@@ -17,7 +19,7 @@ Meteor.startup(() => {
 			return message;
 		}
 
-		const knowledgeAdapter = _dbs.getKnowledgeAdapter();
+		const knowledgeAdapter = getKnowledgeAdapter();
 		if (!knowledgeAdapter) {
 			return;
 		}
