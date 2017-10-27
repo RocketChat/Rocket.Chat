@@ -89,6 +89,7 @@ jobs:
             wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
             sudo apt-get update
             sudo apt-get install -y mongodb-org-shell
+            sudo npm install -g npm
 
       # - run:
       #     name: Install dependencies
@@ -146,6 +147,11 @@ jobs:
       #       sudo apt-get update
       #       sudo apt-get install -y google-chrome-stable
       #       google-chrome --version
+
+      - run:
+          name: Install dependencies
+          command: |
+            sudo npm install -g npm
 
       # - run:
       #     name: Running X virtual framebuffer
