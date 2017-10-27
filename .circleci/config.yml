@@ -17,7 +17,7 @@ jobs:
 
       - restore_cache:
           keys:
-            - v1-meteor-{{ checksum ".meteor/release" }}
+            - v2-meteor-{{ checksum ".meteor/release" }}
 
       - run:
           name: Install Meteor
@@ -51,6 +51,7 @@ jobs:
       - run:
           name: Build Rocket.Chat
           command: |
+            if [[ $CIRCLE_TAG ]]; then meteor reset; fi
             set +e
             meteor add rocketchat:lib
             set -e
@@ -59,6 +60,9 @@ jobs:
       - run:
           name: Prepare build
           command: |
+            mkdir /tmp/build/
+            cd /tmp/build-test
+            tar czf /tmp/build/Rocket.Chat.tar.gz bundle
             cd /tmp/build-test/bundle/programs/server
             npm install
 
@@ -83,15 +87,15 @@ jobs:
             - ./packages/rocketchat-livechat/app/.meteor/local
 
       - save_cache:
-          key: v1-meteor-{{ checksum ".meteor/release" }}
+          key: v2-meteor-{{ checksum ".meteor/release" }}
           paths:
             - /home/circleci/.meteor
-            - /usr/local/bin/meteor
 
       - persist_to_workspace:
           root: /tmp/
           paths:
             - build-test
+            - build
 
   test-with-oplog:
     <<: *defaults
@@ -179,6 +183,30 @@ jobs:
           command: |
             npm test
 
+  deploy:
+    <<: *defaults
+    machine:
+        enabled: true
+
+    steps:
+      - checkout
+
+      - run: |
+          aws
+          if [[ $CIRCLE_PULL_REQUESTS ]]; then exit 0; fi;
+
+          source .circleci/setartname.sh
+          source .circleci/setdeploydir.sh
+          bash .circleci/setupsig.sh
+          bash .circleci/namefiles.sh
+          echo ".circleci/sandstorm.sh"
+
+          aws s3 sync $ROCKET_DEPLOY_DIR/ s3://download.rocket.chat/
+
+          bash .circleci/docker.sh
+          bash .circleci/update-releases.sh
+          bash .circleci/snap.sh
+
 workflows:
   version: 2
   build-and-test:
@@ -190,3 +218,7 @@ workflows:
       - test-without-oplog:
           requires:
             - build
+      - deploy:
+          requires:
+            - test-with-oplog
+            - test-without-oplog
