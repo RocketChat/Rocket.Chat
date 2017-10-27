@@ -29,12 +29,24 @@ jobs:
           name: Lint
           command: |
             meteor npm run lint
-            meteor npm run testunit
             meteor npm run stylelint
+
+      - run:
+          name: Unit Test
+          command: |
+            meteor npm run testunit
 
       - restore_cache:
           keys:
             - meteor-cache-{{ checksum ".meteor/versions" }}
+
+      - restore_cache:
+          keys:
+            - livechat-meteor-cache-{{ checksum "packages/rocketchat-livechat/app/.meteor/versions" }}
+
+      - restore_cache:
+          keys:
+            - livechat-node-modules-cache-{{ checksum "packages/rocketchat-livechat/app/package.json" }}
 
       - run:
           name: Build Rocket.Chat
@@ -61,9 +73,18 @@ jobs:
             - ./.meteor/local
 
       - save_cache:
+          key: livechat-node-modules-cache-{{ checksum "packages/rocketchat-livechat/app/package.json" }}
+          paths:
+            - ./packages/rocketchat-livechat/app/node_modules
+
+      - save_cache:
+          key: livechat-meteor-cache-{{ checksum "packages/rocketchat-livechat/app/.meteor/versions" }}
+          paths:
+            - ./packages/rocketchat-livechat/app/.meteor/local
+
+      - save_cache:
           key: meteor-{{ checksum ".meteor/release" }}
           paths:
-            - ./.meteor/local
             - /home/circleci/.meteor
 
       - persist_to_workspace:
@@ -103,10 +124,19 @@ jobs:
             mongo --eval 'rs.initiate({_id:"rs0", members: [{"_id":1, "host":"localhost:27017"}]})'
             mongo --eval 'rs.status()'
 
+      - restore_cache:
+          keys:
+            - node-modules-cache-{{ checksum "package.json" }}
+
       - run:
           name: Update NPM
           command: |
             sudo npm install -g npm
+
+      # - run:
+      #     name: NPM install
+      #     command: |
+      #       npm install --only=dev
 
       - run:
           name: Run Tests
@@ -129,10 +159,19 @@ jobs:
 
       - checkout
 
+      - restore_cache:
+          keys:
+            - node-modules-cache-{{ checksum "package.json" }}
+
       - run:
           name: Update NPM
           command: |
             sudo npm install -g npm
+
+      # - run:
+      #     name: NPM install
+      #     command: |
+      #       npm install --only=dev
 
       - run:
           name: Run Tests
