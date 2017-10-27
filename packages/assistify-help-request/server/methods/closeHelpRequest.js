@@ -16,12 +16,12 @@ Meteor.methods({
 			// delete subscriptions in order to make the room disappear from the user's clients
 			const nonOwners = RocketChat.models.Subscriptions.findByRoomIdAndNotUserId(roomId, room.u._id).fetch();
 			nonOwners.forEach((nonOwner) => {
-				RocketChat.models.Subscriptions.removeByRoomIdAndUserId(roomId, nonOwner.u._id);
+				RocketChat.models.Subscriptions.hideByRoomIdAndUserId(roomId, nonOwner.u._id);
 			});
 
 			//remove the subscription of the user closing the room as well - if he's the one who triggered the closing
 			if (Meteor.userId() === room.u._id) {
-				RocketChat.models.Subscriptions.removeByRoomIdAndUserId(roomId, Meteor.userId());
+				RocketChat.models.Subscriptions.hideByRoomIdAndUserId(roomId, Meteor.userId());
 			}
 
 			Meteor.defer(() => {
