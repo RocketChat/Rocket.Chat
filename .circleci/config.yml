@@ -20,6 +20,9 @@ jobs:
       - restore_cache:
           keys:
             - node-modules-cache-{{ checksum "package.json" }}
+            
+      - restore_cache:
+          keys:
             - meteor-cache-{{ checksum ".meteor/versions" }}
 
       - run:
