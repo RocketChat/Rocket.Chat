@@ -1,6 +1,21 @@
 import toastr from 'toastr';
 
 Template.channelSettings.helpers({
+	getIcon(room) {
+		const roomType = RocketChat.models.Rooms.findOne(room._id).t;
+		switch (roomType) {
+			case 'd':
+				return 'at';
+			case 'p':
+				return 'lock';
+			case 'c':
+				return 'hashtag';
+			case 'l':
+				return 'livechat';
+			default :
+				return null;
+		}
+	},
 	toArray(obj) {
 		return Object.keys(obj).map((key) => {
 			return {
@@ -26,6 +41,9 @@ Template.channelSettings.helpers({
 			return room.t !== 'd';
 		}
 		return true;
+	},
+	get(settings, key) {
+		return settings[key];
 	},
 	settings() {
 		return Template.instance().settings;
@@ -144,6 +162,7 @@ Template.channelSettings.events({
 });
 
 Template.channelSettings.onCreated(function() {
+	this.room = ChatRoom.findOne(this.data && this.data.rid);
 	this.editing = new ReactiveVar;
 	this.settings = {
 		name: {
