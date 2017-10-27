@@ -123,7 +123,7 @@ Template.accountBox.events({
 			customCSSProperties: {
 				width: `${ accountBox.offsetWidth - parseInt(getComputedStyle(accountBox)['padding-left'].replace('px', '')) * 2 }px`,
 				left: isRtl() ? 'auto' : getComputedStyle(accountBox)['padding-left'],
-				right: isRtl() ? getComputedStyle(accountBox)['padding-right'] : 'auto'
+				right: 'auto'
 			}
 		};
 

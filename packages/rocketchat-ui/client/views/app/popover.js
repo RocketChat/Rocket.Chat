@@ -92,6 +92,43 @@ Template.popover.events({
 		if ((button != null ? button.action : undefined) != null) {
 			button.action.call(t.data.data, e, t.data.instance);
 			popover.close();
+			return false;
+		}
+
+		if (e.currentTarget.dataset.id === 'report-abuse') {
+			const message = t.data.data._arguments[1];
+			swal({
+				title: TAPi18n.__('Report_this_message_question_mark'),
+				text: message.msg,
+				inputPlaceholder: TAPi18n.__('Why_do_you_want_to_report_question_mark'),
+				type: 'input',
+				showCancelButton: true,
+				confirmButtonColor: '#DD6B55',
+				confirmButtonText: TAPi18n.__('Report_exclamation_mark'),
+				cancelButtonText: TAPi18n.__('Cancel'),
+				closeOnConfirm: false,
+				html: false
+			}, (inputValue) => {
+				if (inputValue === false) {
+					return false;
+				}
+
+				if (inputValue === '') {
+					swal.showInputError(TAPi18n.__('You_need_to_write_something'));
+					return false;
+				}
+
+				Meteor.call('reportMessage', message._id, inputValue);
+
+				swal({
+					title: TAPi18n.__('Report_sent'),
+					text: TAPi18n.__('Thank_you_exclamation_mark '),
+					type: 'success',
+					timer: 1000,
+					showConfirmButton: false
+				});
+			});
+			popover.close();
 		}
 	},
 	'click [data-type="set-state"]'(e) {
