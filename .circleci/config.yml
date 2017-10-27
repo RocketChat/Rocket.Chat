@@ -17,7 +17,7 @@ jobs:
 
       - restore_cache:
           keys:
-            - meteor-{{ checksum ".meteor/release" }}
+            - v1-meteor-{{ checksum ".meteor/release" }}
 
       - run:
           name: Install Meteor
@@ -83,9 +83,10 @@ jobs:
             - ./packages/rocketchat-livechat/app/.meteor/local
 
       - save_cache:
-          key: meteor-{{ checksum ".meteor/release" }}
+          key: v1-meteor-{{ checksum ".meteor/release" }}
           paths:
             - /home/circleci/.meteor
+            - /usr/local/bin/meteor
 
       - persist_to_workspace:
           root: /tmp/
