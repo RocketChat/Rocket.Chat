@@ -455,7 +455,6 @@ this.ChatMessages = class ChatMessages {
 		const input = event.currentTarget;
 		// const $input = $(input);
 		const k = event.which;
-		this.resize(input);
 
 		if (k === 13) {
 			if (sendOnEnter == null || sendOnEnter === 'normal' || sendOnEnter === 'desktop' && Meteor.Device.isDesktop()) {
