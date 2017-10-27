@@ -149,7 +149,7 @@ jobs:
       #       google-chrome --version
 
       - run:
-          name: Install dependencies
+          name: Update NPM
           command: |
             sudo npm install -g npm
 
