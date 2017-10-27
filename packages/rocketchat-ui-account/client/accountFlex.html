@@ -1,29 +1,23 @@
 <template name="accountFlex">
-	<header>
-		<div>
-			<h4>{{_ "My_Account"}}</h4>
-		</div>
-	</header>
-	<div class="content">
-		<div class="wrapper">
-			<ul>
-				<li>
-					<a href="{{pathFor 'account' group='preferences'}}" class="account-link">{{_ "Preferences"}}</a>
-				</li>
+	<aside class="sidebar-light" role="navigation">
+		<header class="sidebar-flex__header">
+			<h1 class="sidebar-flex__title">{{_ "My_Account"}}</h1>
+			{{#unless embeddedVersion}}
+				<button class="sidebar-flex__close-button" data-action="close">
+					{{> icon block="sidebar-flex__close-icon" icon="cross"}}
+				</button>
+			{{/unless}}
+		</header>
+		<div class="rooms-list {{#if embeddedVersion}}rooms-list--embedded{{/if}}">
+			<ul class="rooms-list__list">
+				{{> sidebarItem menuItem "Preferences" "customize" "account" "preferences" }}
+
 				{{#if allowUserProfileChange}}
-				<li>
-					<a href="{{pathFor 'account' group='profile'}}" class="account-link">{{_ "Profile"}}</a>
-				</li>
+					{{> sidebarItem menuItem "Profile" "user" "account" "profile" }}
 				{{/if}}
-				{{#if allowUserAvatarChange}}
-				<li>
-					<a href="{{pathFor 'changeAvatar'}}" class="account-link">{{_ "Avatar"}}</a>
-				</li>
-				{{/if}}
-				<li>
-					<a href="{{pathFor 'account' group='security'}}" class="account-link">{{_ "Security"}}</a>
-				</li>
+
+				{{> sidebarItem menuItem "Security" "lock" "account" "security" }}
 			</ul>
 		</div>
-	</div>
+	</aside>
 </template>

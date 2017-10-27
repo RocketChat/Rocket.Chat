@@ -1,0 +1,81 @@
+.rc-tabs {
+	position: relative;
+
+	display: flex;
+
+	margin: 0 calc(var(--tabs-padding) / -2);
+	padding: calc(var(--tabs-padding) / 2);
+
+	list-style: none;
+
+	color: var(--color-gray);
+
+	font-size: 14px;
+
+	&::before {
+		position: absolute;
+		bottom: 0;
+
+		width: 100%;
+		height: 2px;
+
+		content: '';
+
+		background: var(--color-gray-light);
+	}
+
+	&__tab {
+		position: relative;
+
+		margin: calc(var(--tabs-padding) / 2);
+		padding: 0 5px;
+
+		cursor: pointer;
+		transition: all 0.3s;
+
+		&-link {
+			color: inherit !important;
+		}
+
+		&:hover {
+			opacity: 0.5;
+		}
+
+		&.active,
+		&:active {
+
+			&::before {
+				position: absolute;
+				bottom: calc(var(--tabs-padding) * -1);
+				left: 0;
+
+				width: 100%;
+				height: 2px;
+
+				content: '';
+
+			}
+		}
+	}
+
+	&__content {
+		padding-top: 10px;
+
+		 animation-name: fadeIn;
+		 animation-duration: 1s;
+
+		& header h1 { /* in tab-containers, the first heading of the header is the tab strip itself */
+			display: none;
+		}
+
+		&.inactive {
+			display: none;
+		}
+
+		&.active {
+			transition: all 0.3s;
+
+			display: block;
+		}
+    }
+}

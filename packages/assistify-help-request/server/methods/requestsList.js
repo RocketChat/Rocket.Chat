@@ -44,11 +44,11 @@ Meteor.methods({
 
 		const roomTypes = [];
 
-		// if (RocketChat.authz.hasPermission(Meteor.userId(), 'view-r-room')) { //todo authorization
-		roomTypes.push({
-			type: 'r'
-		});
-		// }
+		if (RocketChat.authz.hasPermission(Meteor.userId(), 'view-r-room')) {
+			roomTypes.push({
+				type: 'r'
+			});
+		}
 
 		if (roomTypes.length) {
 			if (filter) {

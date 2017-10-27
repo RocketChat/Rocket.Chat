@@ -1,8 +1,8 @@
 /* globals console */
 
-import {helpRequest} from '../help-request';
+import {HelpDiscussionCreatedResponse} from './types';
 
-class HelpRequestApi {
+export class HelpRequestApi {
 
 	/**
 	 *
@@ -37,7 +37,7 @@ class HelpRequestApi {
 
 		//todo: record the helpdesk metadata
 
-		return new helpRequest.HelpDiscussionCreatedResponse(
+		return new HelpDiscussionCreatedResponse(
 			HelpRequestApi.getUrlForRoom(creationResult.room),
 			creationResult.members
 		);
@@ -157,5 +157,3 @@ class HelpRequestApi {
 		};
 	}
 }
-
-helpRequest.HelpRequestApi = HelpRequestApi;

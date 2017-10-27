@@ -15,7 +15,9 @@
 							{{#if showToggleFavorite}}
 								<a href="#favorite" class="toggle-favorite"><i class="{{favorite}}" aria-label="{{_ favoriteLabel}}"></i></a>
 							{{/if}}
-							<i class="{{roomIcon}} status-{{userStatus}}"></i>
+
+							{{> icon block="room-icon" icon=roomIcon classes=userStatus}}
+
 							<span class="room-title">{{roomName}}</span>
 							{{#if secondaryName}}
 								<span class="secondary-name">@{{secondaryName}}</span>
@@ -87,7 +89,7 @@
 										<div class="upload-progress-text">
 											{{name}}... {{percentage}}%
 											<button>
-												{{_ "cancel"}}
+												{{_ "Cancel"}}
 											</button>
 										</div>
 									{{/if}}
@@ -152,7 +154,7 @@
 							</div>
 						</div>
 						<footer class="footer border-component-color">
-							{{> messageBox}}
+							{{> messageBox messageboxData}}
 						</footer>
 					</div>
 					{{#with flexData}}

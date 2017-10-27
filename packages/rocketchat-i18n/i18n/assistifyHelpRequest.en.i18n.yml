@@ -1,20 +1,35 @@
-SystemContext: System context
-system: System
-release: Version
-transaction: Transaction
 application: Application
-gui_title: GUI-Title
+Asssitify_room_count: Roomcount
+Choose_experts: Choose those who know
 Close_HelpRequest: Close chat
-Expertise_needs_experts: Select some experts in order to define an expertise
-No_expertise_yet: No expertise yet
+Expertise_description: A topic is an area of knowledge with known experts.
+Expertise_explanation: A topic is an area of knowledge. Experts join a topic in order to help others solve their question in that area.
+Expertise_needs_experts: Select some experts in order to define an topic
+Expertise_title: Topic title
+Expertise: Topic
+Expertises: Topics
+Experts_channel: Experts channel
+Experts: Experts
+gui_title: GUI-Title
+More_requests: Other requests
+New_expertise: New topic
+New_request_for_expertise: New request for topic
+New_request: New request
+No_expertise_yet: No topics yet
+No_requests_yet: No requests yet
+release: Version
+Request_already_exists: A request with the next rawn number already exists. Please try again.
+Request_explanation: A request is automatically being adressed towards topic experts. AI helps solving it.
+Request_description: A request is a conversation starting with a question on a particular topic. When finishing such a conversation, our system is going to learn from it in order to accelerate further request-solutions on that topic.
 Request: Request
 Requests: Requests
-New_request: New request
-More_requests: Other requests
-No_requests_yet: No requests yet
-Asssitify_room_count: Roomcount
-New_request_for_expertise: New request for topic
-Experts: Experts
-Experts_channel: Experts channel
 Search_Requests: Search requests
-Request_already_exists: A request with the next rawn number already exists. Please try again.
+system: System
+SystemContext: System context
+transaction: Transaction
+create-r: Create request
+create-e: Create topic
+delete-r: Delete request
+delete-e: Delete topic
+view-r-room: View all requests
+view-e-room: View all topics

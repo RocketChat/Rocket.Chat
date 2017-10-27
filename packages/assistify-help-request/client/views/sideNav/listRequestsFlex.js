@@ -120,7 +120,7 @@ Template.listRequestsFlex.onCreated(function() {
 				name: new RegExp(s.trim(s.escapeRegExp(this.nameFilter.get())), 'i'),
 				t: 'c'
 			}, options).fetch()
-				);
+			);
 			if (this.channelsList.get().length < this.limit.get()) {
 				return this.hasMore.set(false);
 			}
@@ -134,7 +134,7 @@ Template.listRequestsFlex.onCreated(function() {
 					}
 				}
 			}
-				);
+			);
 		}
 	}
 	);
