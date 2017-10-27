@@ -25,6 +25,33 @@ const fixCordova = (url) => {
 };
 const roomFiles = new Mongo.Collection('room_files');
 Template.uploadedFilesList.helpers({
+	iconType() {
+		let icon = 'file-generic';
+		let type = '';
+
+		if (this.type.match(/application\/pdf/)) {
+			icon = 'file-pdf';
+			type = 'pdf';
+		}
+		if (['application/vnd.oasis.opendocument.text', 'application/vnd.oasis.opendocument.presentation'].includes(this.type)) {
+			icon = 'file-document';
+			type = 'document';
+		}
+		if (['application/vnd.ms-excel', 'application/vnd.oasis.opendocument.spreadsheet',
+			'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'].includes(this.type)) {
+			icon = 'file-sheets';
+			type = 'sheets';
+		}
+
+		if (['application/vnd.ms-powerpoint', 'application/vnd.oasis.opendocument.presentation'].includes(this.type)) {
+			icon = 'file-sheets';
+			type = 'ppt';
+		}
+
+		const [, extension] = this.name.match(/.*?\.(.*)$/);
+
+		return {icon, extension, type};
+	},
 	thumb() {
 		if (/image/.test(this.type)) {
 			return fixCordova(this.url);
