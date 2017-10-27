@@ -236,6 +236,17 @@ Meteor.startup(function() {
 		i18nDescription: 'Domains_allowed_to_embed_the_livechat_widget'
 	});
 
+	RocketChat.settings.add('Livechat_Facebook_Enabled', false, {
+		type: 'boolean',
+		group: 'Livechat'
+	});
+
+	RocketChat.settings.add('Livechat_Facebook_API_Key', false, {
+		type: 'string',
+		group: 'Livechat',
+		enableQuery: { _id: 'Livechat_Facebook_Enabled', value: true }
+	});
+
 	RocketChat.settings.add('Livechat_RDStation_Token', '', {
 		type: 'string',
 		group: 'Livechat',
