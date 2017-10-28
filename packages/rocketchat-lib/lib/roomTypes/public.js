@@ -1,5 +1,5 @@
 /* globals openRoom */
-import { RoomTypeConfig, RoomTypeRouteConfig } from '../RoomTypeConfig';
+import {RoomTypeConfig, RoomTypeRouteConfig, UiTextContext} from '../RoomTypeConfig';
 
 export class PublicRoomRoute extends RoomTypeRouteConfig {
 	constructor() {
@@ -47,7 +47,7 @@ export class PublicRoomType extends RoomTypeConfig {
 	}
 
 	showJoinLink(roomId) {
-		return !!ChatRoom.findOne({ _id: roomId, t: 'c' });
+		return !!ChatRoom.findOne({_id: roomId, t: 'c'});
 	}
 
 	includeInRoomSearch() {
@@ -68,5 +68,16 @@ export class PublicRoomType extends RoomTypeConfig {
 
 	enableMembersListProfile() {
 		return true;
+	}
+
+	getUiText(context) {
+		switch (context) {
+			case UiTextContext.HIDE_WARNING:
+				return 'Hide_Room_Warning';
+			case UiTextContext.LEAVE_WARNING:
+				return 'Leave_Room_Warning';
+			default:
+				return '';
+		}
 	}
 }

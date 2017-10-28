@@ -7,12 +7,13 @@
 */
 
 import { RocketChatTabBar } from './RocketChatTabBar';
-import { RoomSettingsEnum, RoomTypeConfig, RoomTypeRouteConfig } from '../../lib/RoomTypeConfig';
+import { RoomSettingsEnum, RoomTypeConfig, RoomTypeRouteConfig, UiTextContext } from '../../lib/RoomTypeConfig';
 
 
 export {
 	RocketChatTabBar,
 	RoomSettingsEnum,
 	RoomTypeConfig,
-	RoomTypeRouteConfig
+	RoomTypeRouteConfig,
+	UiTextContext
 };
