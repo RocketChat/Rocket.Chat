@@ -10,6 +10,7 @@ export const RoomSettingsEnum = {
 };
 
 export const UiTextContext = {
+	CLOSE_WARNING: 'closeWarning',
 	HIDE_WARNING: 'hideWarning',
 	LEAVE_WARNING: 'leaveWarning'
 };
