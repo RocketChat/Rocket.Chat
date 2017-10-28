@@ -37,8 +37,11 @@ jobs:
             fi
 
             # only install meteor if bin isn't found
-            command -v meteor >/dev/null 2>&1 || curl https://install.meteor.com | /bin/sh
+            command -v meteor >/dev/null 2>&1 || curl https://install.meteor.com | sed s/--progress-bar/-sL/g | /bin/sh
 
+      - run:
+          name: Meteor npm install
+          command: |
             meteor npm install
 
       - run:
@@ -162,7 +165,7 @@ jobs:
       - run:
           name: Run Tests
           command: |
-            npm test
+            for i in {1..5}; do npm test && break || sleep 1; done
 
   test-without-oplog:
     <<: *defaults
@@ -197,7 +200,8 @@ jobs:
       - run:
           name: Run Tests
           command: |
-            npm test
+            for i in {1..5}; do npm test && break || sleep 1; done
+
 
   deploy:
     <<: *defaults
