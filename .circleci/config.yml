@@ -13,16 +13,32 @@ jobs:
 
       - restore_cache:
           keys:
-            - node-modules-cache-{{ checksum "package.json" }}
+            - node-modules-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum "package.json" }}
 
       - restore_cache:
           keys:
-            - v2-meteor-{{ checksum ".meteor/release" }}
+            - meteor-{{ checksum ".circleci/config.yml" }}-{{ checksum ".meteor/release" }}
 
       - run:
           name: Install Meteor
           command: |
-            if [ ! -e "$HOME/.meteor/meteor" ]; then curl https://install.meteor.com | sed s/--progress-bar/-sL/g | /bin/sh; fi
+            set +e
+            # Restore bin from cache
+            METEOR_SYMLINK_TARGET=$(readlink ~/.meteor/meteor)
+            METEOR_TOOL_DIRECTORY=$(dirname "$METEOR_SYMLINK_TARGET")
+            set -e
+            LAUNCHER=$HOME/.meteor/$METEOR_TOOL_DIRECTORY/scripts/admin/launch-meteor
+            if [ -e $LAUNCHER ]
+            then
+              echo "Cached Meteor bin found, restoring it"
+              sudo cp "$LAUNCHER" "/usr/local/bin/meteor"
+            else
+              echo "No cached Meteor bin found."
+            fi
+
+            only install meteor if bin isn't found
+            command -v meteor >/dev/null 2>&1 || curl https://install.meteor.com | /bin/sh
+
             meteor npm install
 
       - run:
@@ -38,15 +54,15 @@ jobs:
 
       - restore_cache:
           keys:
-            - meteor-cache-{{ checksum ".meteor/versions" }}
+            - meteor-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum ".meteor/versions" }}
 
       - restore_cache:
           keys:
-            - livechat-meteor-cache-{{ checksum "packages/rocketchat-livechat/app/.meteor/versions" }}
+            - livechat-meteor-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum "packages/rocketchat-livechat/app/.meteor/versions" }}
 
       - restore_cache:
           keys:
-            - livechat-node-modules-cache-{{ checksum "packages/rocketchat-livechat/app/package.json" }}
+            - livechat-node-modules-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum "packages/rocketchat-livechat/app/package.json" }}
 
       - run:
           name: Build Rocket.Chat
@@ -67,29 +83,29 @@ jobs:
             npm install
 
       - save_cache:
-          key: node-modules-cache-{{ checksum "package.json" }}
+          key: node-modules-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum "package.json" }}
           paths:
             - ./node_modules
 
       - save_cache:
-          key: meteor-cache-{{ checksum ".meteor/versions" }}
+          key: meteor-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum ".meteor/versions" }}
           paths:
             - ./.meteor/local
 
       - save_cache:
-          key: livechat-node-modules-cache-{{ checksum "packages/rocketchat-livechat/app/package.json" }}
+          key: livechat-node-modules-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum "packages/rocketchat-livechat/app/package.json" }}
           paths:
             - ./packages/rocketchat-livechat/app/node_modules
 
       - save_cache:
-          key: livechat-meteor-cache-{{ checksum "packages/rocketchat-livechat/app/.meteor/versions" }}
+          key: livechat-meteor-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum "packages/rocketchat-livechat/app/.meteor/versions" }}
           paths:
             - ./packages/rocketchat-livechat/app/.meteor/local
 
       - save_cache:
-          key: v2-meteor-{{ checksum ".meteor/release" }}
+          key: meteor-{{ checksum ".circleci/config.yml" }}-{{ checksum ".meteor/release" }}
           paths:
-            - /home/circleci/.meteor
+            - ~/.meteor
 
       - persist_to_workspace:
           root: /tmp/
@@ -131,7 +147,7 @@ jobs:
 
       - restore_cache:
           keys:
-            - node-modules-cache-{{ checksum "package.json" }}
+            - node-modules-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum "package.json" }}
 
       - run:
           name: Update NPM
@@ -166,7 +182,7 @@ jobs:
 
       - restore_cache:
           keys:
-            - node-modules-cache-{{ checksum "package.json" }}
+            - node-modules-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum "package.json" }}
 
       - run:
           name: Update NPM
@@ -185,21 +201,22 @@ jobs:
 
   deploy:
     <<: *defaults
-    machine:
-        enabled: true
+    docker:
+      - image: circleci/node:4.8
+    # machine:
+    #     enabled: true
 
     steps:
       - checkout
 
       - run: |
-          aws
           if [[ $CIRCLE_PULL_REQUESTS ]]; then exit 0; fi;
 
           source .circleci/setartname.sh
           source .circleci/setdeploydir.sh
           bash .circleci/setupsig.sh
           bash .circleci/namefiles.sh
-          echo ".circleci/sandstorm.sh"
+          # echo ".circleci/sandstorm.sh"
 
           aws s3 sync $ROCKET_DEPLOY_DIR/ s3://download.rocket.chat/
 
@@ -222,3 +239,12 @@ workflows:
           requires:
             - test-with-oplog
             - test-without-oplog
+          filters:
+            branches:
+              only:
+                - develop
+                - circle-ci
+            tags:
+              only:
+                - "/^\\d+\\.\\d+\\.\\d+(-rc\\.\\d+)?$/"
+
