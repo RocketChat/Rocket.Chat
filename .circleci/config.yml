@@ -165,7 +165,7 @@ jobs:
       - run:
           name: Run Tests
           command: |
-            for i in {1..5}; do npm test && break || sleep 1; done
+            for i in $(seq 1 5); do npm test && s=0 && break || s=$? && sleep 1; done; (exit $s)
 
   test-without-oplog:
     <<: *defaults
@@ -200,7 +200,7 @@ jobs:
       - run:
           name: Run Tests
           command: |
-            for i in {1..5}; do npm test && break || sleep 1; done
+            for i in $(seq 1 5); do npm test && s=0 && break || s=$? && sleep 1; done; (exit $s)
 
 
   deploy:
