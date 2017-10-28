@@ -1,5 +1,4 @@
-{
-	"plugins": {
+{	"plugins": {
 		"postcss-smart-import": {},
 		"postcss-cssnext": {
 			"features": {
@@ -22,4 +21,4 @@
 		}
 	},
 	"excludedPackages": ["deepwell:bootstrap-datepicker2", "smoral:sweetalert"]
-}
+	}
