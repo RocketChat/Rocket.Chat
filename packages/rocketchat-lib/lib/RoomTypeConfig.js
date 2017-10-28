@@ -9,6 +9,11 @@ export const RoomSettingsEnum = {
 	JOIN_CODE: 'joinCode'
 };
 
+export const UiTextContext = {
+	HIDE_WARNING: 'hideWarning',
+	LEAVE_WARNING: 'leaveWarning'
+};
+
 export class RoomTypeRouteConfig {
 	constructor({ name, path }) {
 		if (typeof name !== 'undefined' && (typeof name !== 'string' || name.length === 0)) {
@@ -183,5 +188,15 @@ export class RoomTypeConfig {
 
 	enableMembersListProfile() {
 		return false;
+	}
+
+	/**
+	 * Returns a text which can be used in generic UIs.
+	 * @param context The role of the text in the UI-Element
+	 * @return {string} A text or a translation key - the consumers of this method will pass the
+	 * returned value to an internationalization library
+	 */
+	getUiText(/* context */) {
+		return '';
 	}
 }
