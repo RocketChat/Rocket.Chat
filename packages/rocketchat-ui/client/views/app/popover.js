@@ -6,6 +6,10 @@ this.popover = {
 		this.renderedPopover = Blaze.renderWithData(Template.popover, config, document.body);
 	},
 	close() {
+		if (!this.renderedPopover) {
+			return false;
+		}
+
 		Blaze.remove(this.renderedPopover);
 
 		const activeElement = this.renderedPopover.dataVar.curValue.activeElement;
@@ -81,10 +85,13 @@ Template.popover.onRendered(function() {
 
 Template.popover.events({
 	'click [data-type="messagebox-action"]'(event, t) {
-		const action = RocketChat.messageBox.actions.getById(event.currentTarget.dataset.id);
+		const id = event.currentTarget.dataset.id;
+		const action = RocketChat.messageBox.actions.getById(id);
 		if ((action[0] != null ? action[0].action : undefined) != null) {
 			action[0].action({rid: t.data.data.rid, messageBox: document.querySelector('.rc-message-box'), element: event.currentTarget, event});
-			popover.close();
+			if (id !== 'audio-message') {
+				popover.close();
+			}
 		}
 	},
 	'click [data-type="message-action"]'(e, t) {
