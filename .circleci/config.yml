@@ -36,7 +36,7 @@ jobs:
               echo "No cached Meteor bin found."
             fi
 
-            only install meteor if bin isn't found
+            # only install meteor if bin isn't found
             command -v meteor >/dev/null 2>&1 || curl https://install.meteor.com | /bin/sh
 
             meteor npm install
