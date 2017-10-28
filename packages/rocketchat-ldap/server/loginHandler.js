@@ -147,5 +147,11 @@ Accounts.registerLoginHandler('ldap', function(loginRequest) {
 	}
 
 	// Create new user
-	return addLdapUser(ldapUser, username, loginRequest.ldapPass);
+	const result = addLdapUser(ldapUser, username, loginRequest.ldapPass);
+
+	if (result instanceof Error) {
+		throw result;
+	}
+
+	return result;
 });
