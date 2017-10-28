@@ -31,6 +31,11 @@ class MarkdownClass {
 
 	parseMessageNotEscaped(message) {
 		const parser = RocketChat.settings.get('Markdown_Parser');
+
+		if (parser === 'disabled') {
+			return message;
+		}
+
 		if (typeof parsers[parser] === 'function') {
 			return parsers[parser](message);
 		}
