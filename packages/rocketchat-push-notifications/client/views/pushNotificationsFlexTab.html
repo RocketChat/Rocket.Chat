@@ -5,6 +5,37 @@
 		</div>
 		<form>
 			<ul class="list clearfix">
+				<li class="snooze-notifications">
+					<label>{{_ "Snooze_Notifications_Label"}}</label>
+					<div class="input checkbox toggle">
+						<input type="checkbox" id="snoozeNotifications" name="snoozeNotifications" value="1" checked="{{$eq snoozeNotifications true}}" />
+						<label for="snoozeNotifications"></label>
+					</div>
+				</li>
+				{{#if $eq snoozeNotifications true}}
+					<li class="snooze-notifications-time-period">
+						<div>
+							{{#if editing 'snoozeNotifications'}}
+								<label><input type="radio" name="snoozeNotifications" value="20"/> {{_ "Snooze_Notifications_20_Minutes_Option"}}</label>
+								<label><input type="radio" name="snoozeNotifications" value="60"/> {{_ "Snooze_Notifications_1_Hour_Option"}}</label>
+								<label><input type="radio" name="snoozeNotifications" value="120"/> {{_ "Snooze_Notifications_2_Hours_Option"}}</label>
+								<label><input type="radio" name="snoozeNotifications" value="240"/> {{_ "Snooze_Notifications_4_Hours_Option"}}</label>
+								<label><input type="radio" name="snoozeNotifications" value="480"/> {{_ "Snooze_Notifications_8_Hours_Option"}}</label>
+								<label><input type="radio" name="snoozeNotifications" value="1440"/> {{_ "Snooze_Notifications_24_Hours_Option"}}</label>
+								<label><input type="radio" name="snoozeNotifications" value="timePeriod"/> {{_ "Snooze_Notifications_Time_Period_Option"}}</label>
+
+								<!-- TODO: 6609 - Add input for initial hour -->
+								<!-- TODO: 6609 - Add input for final hour -->
+
+								<button type="button" class="button cancel">{{_ "Cancel"}}</button>
+								<button type="button" class="button primary save">{{_ "Save"}}</button>
+							{{else}}
+								<span class="current-setting"><!-- TODO: 6609 - Add value of saved snooze time --><i class="icon-pencil" data-edit="snoozeNotifications"></i></span>
+							{{/if}}
+						</div>
+					</li>
+				{{/if}}
+
 				<li class="disable-notifications">
 					<label>{{_ "Disable_Notifications"}}</label>
 					<div class="input checkbox toggle">

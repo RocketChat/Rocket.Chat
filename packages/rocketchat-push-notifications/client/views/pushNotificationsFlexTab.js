@@ -115,6 +115,7 @@ Template.pushNotificationsFlexTab.helpers({
 		return t('Use_account_preference');
 	},
 	subValue(field) {
+		// TODO: 6609 - Insert values for related fields to "snooze notifications for a time period (perhaps 'snoozeTimePeriod')"
 		const sub = ChatSubscription.findOne({
 			rid: Session.get('openedRoom')
 		}, {
