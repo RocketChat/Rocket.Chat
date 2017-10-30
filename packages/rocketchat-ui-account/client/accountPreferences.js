@@ -140,6 +140,7 @@ Template.accountPreferences.onCreated(function() {
 		data.useEmojis = $('input[name=useEmojis]:checked').val();
 		data.convertAsciiEmoji = $('input[name=convertAsciiEmoji]:checked').val();
 		data.saveMobileBandwidth = $('input[name=saveMobileBandwidth]:checked').val();
+		data.saveLastVisitedRoom = $('input[name=saveLastVisitedRoom]:checked').val();
 		data.collapseMediaByDefault = $('input[name=collapseMediaByDefault]:checked').val();
 		data.viewMode = parseInt($('#viewMode').find('select').val());
 		data.hideUsernames = $('#hideUsernames').find('input:checked').val();
