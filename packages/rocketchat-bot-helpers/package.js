@@ -7,7 +7,6 @@ Package.describe({
 
 Package.onUse(function(api) {
 	api.use('ecmascript');
-	api.use('underscore');
 	api.use('rocketchat:lib');
 	api.use('accounts-base');
 	// api.mainModule('server/index.js', 'server'); // when 1.3
