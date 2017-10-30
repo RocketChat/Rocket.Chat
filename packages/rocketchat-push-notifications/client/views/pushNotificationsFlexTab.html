@@ -22,15 +22,52 @@
 								<label><input type="radio" name="snoozeNotifications" value="240"/> {{_ "Snooze_Notifications_4_Hours_Option"}}</label>
 								<label><input type="radio" name="snoozeNotifications" value="480"/> {{_ "Snooze_Notifications_8_Hours_Option"}}</label>
 								<label><input type="radio" name="snoozeNotifications" value="1440"/> {{_ "Snooze_Notifications_24_Hours_Option"}}</label>
-								<label><input type="radio" name="snoozeNotifications" value="timePeriod"/> {{_ "Snooze_Notifications_Time_Period_Option"}}</label>
-
-								<!-- TODO: 6609 - Add input for initial hour -->
-								<!-- TODO: 6609 - Add input for final hour -->
 
 								<button type="button" class="button cancel">{{_ "Cancel"}}</button>
 								<button type="button" class="button primary save">{{_ "Save"}}</button>
 							{{else}}
-								<span class="current-setting"><!-- TODO: 6609 - Add value of saved snooze time --><i class="icon-pencil" data-edit="snoozeNotifications"></i></span>
+								<span class="current-setting"><!-- TODO: 6609 - Add value of saved snooze option --><i class="icon-pencil" data-edit="snoozeNotifications"></i></span>
+							{{/if}}
+						</div>
+					</li>
+				{{/if}}
+
+				<li class="do-not-disturb">
+					<label>{{_ "Do_Not_Disturb_Label"}}</label>
+					<div class="input checkbox toggle">
+						<input type="checkbox" id="doNotDisturb" name="doNotDisturb" value="1" checked="{{$eq doNotDisturb true}}" />
+						<label for="doNotDisturb"></label>
+					</div>
+				</li>
+				{{#if $eq doNotDisturb true}}
+					<li class="do-not-disturb">
+						<div>
+							{{#if editing 'doNotDisturb'}}
+
+								<section id="do-not-disturb-initial-period-select">
+									<label>{{_ "Do_Not_Disturb_Initial_Time_Period_Label"}}</label>
+									<label>
+										<select name="doNotDisturbInitialTimePeriod">
+											{{#each selectHoursOptions}}
+												<option value="{{value}}">{{label}}</option>
+											{{/each}}
+										</select>
+									</label>
+
+									<label>{{_ "Do_Not_Disturb_Final_Time_Period_Label"}}</label>
+									<label>
+										<select name="doNotDisturbFinalTimePeriod">
+											{{#each selectHoursOptions}}
+												<option value="{{value}}">{{label}}</option>
+											{{/each}}
+										</select>
+									</label>
+								</section>
+
+								<button type="button" class="button cancel">{{_ "Cancel"}}</button>
+								<button type="button" class="button primary save">{{_ "Save"}}</button>
+							{{else}}
+								<span class="current-setting"><!-- TODO: 6609 - Add values of saved do not disturb time period --><i class="icon-pencil" data-edit="doNotDisturb"></i></span>
 							{{/if}}
 						</div>
 					</li>

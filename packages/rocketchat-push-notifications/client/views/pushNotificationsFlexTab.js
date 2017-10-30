@@ -1,4 +1,5 @@
 import toastr from 'toastr';
+import moment from 'moment';
 /* globals ChatSubscription */
 
 const notificationLabels = {
@@ -15,6 +16,27 @@ function getUserPreference(preference) {
 Template.pushNotificationsFlexTab.helpers({
 	audioAssets() {
 		return RocketChat.CustomSounds && RocketChat.CustomSounds.getList && RocketChat.CustomSounds.getList() || [];
+	},
+	snoozeNotifications() {
+		const sub = ChatSubscription.findOne({
+			rid: Session.get('openedRoom')
+		}, {
+			fields: {
+				snoozeNotifications: 1
+			}
+		});
+		// TODO: 6609 - Validate snooze notifications period - It's still a valid period?
+		return sub.snoozeNotifications && sub.snoozeNotifications.final && moment().isBefore(sub.snoozeNotifications.final);
+	},
+	doNotDisturb() {
+		const sub = ChatSubscription.findOne({
+			rid: Session.get('openedRoom')
+		}, {
+			fields: {
+				doNotDisturb: 1
+			}
+		});
+		return sub ? sub.doNotDisturb || false : false;
 	},
 	disableNotifications() {
 		const sub = ChatSubscription.findOne({
@@ -205,6 +227,10 @@ Template.pushNotificationsFlexTab.onCreated(function() {
 				return true;
 			case 'hideUnreadStatus':
 			case 'disableNotifications':
+				return true;
+			case 'snoozeNotifications':
+				return true;
+			case 'doNotDisturb':
 				return true;
 			default:
 				const value = this.$(`input[name=${ field }]:checked`).val();
