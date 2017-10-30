@@ -13,5 +13,8 @@ Package.onUse(function(api) {
 		'rocketchat:lib'
 	]);
 
-	api.addFiles(['messages.js', 'server.js'], 'server');
+	api.use('templating', 'client');
+
+	api.addFiles('client/client.js', 'client');
+	api.addFiles(['server/messages.js', 'server/server.js'], 'server');
 });
