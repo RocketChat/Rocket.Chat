@@ -30,6 +30,9 @@ FlowRouter.route('/', {
 					if (Meteor.user() && Meteor.user().defaultRoom) {
 						const room = Meteor.user().defaultRoom.split('/');
 						FlowRouter.go(room[0], { name: room[1] }, FlowRouter.current().queryParams);
+					} else if (Meteor.user() && Meteor.user().settings && Meteor.user().settings.preferences.saveLastVisitedRoom && Meteor.user().lastVisitedRoom) {
+						const room = Meteor.user().lastVisitedRoom;
+						FlowRouter.go(room, FlowRouter.current().queryParams);
 					} else {
 						FlowRouter.go('home');
 					}
