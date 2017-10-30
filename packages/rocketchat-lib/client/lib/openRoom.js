@@ -65,11 +65,8 @@ function openRoom(type, name) {
 			Session.set('openedRoom', room._id);
 			RocketChat.openedRoom = room._id;
 
-			const room_type = RocketChat.roomTypes.roomTypes[type].route.name;
-			const room_path = `/${ room_type }/${ name }`;
-
-			if (Meteor.user().settings && Meteor.user().settings.preferences.saveLastVisitedRoom) {
-				Meteor.call('setLastVisitedRoom', Meteor.userId(), room_path);
+			if (user.settings && user.settings.preferences.saveLastVisitedRoom) {
+				Meteor.call('setLastVisitedRoom', room._id);
 			}
 
 			fireGlobalEvent('room-opened', _.omit(room, 'usernames'));
