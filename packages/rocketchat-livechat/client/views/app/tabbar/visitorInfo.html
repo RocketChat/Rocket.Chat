@@ -28,15 +28,10 @@
 			{{#with room}}
 				<div class="info">
 					<ul>
-						{{#if sms}}
-							<li><i class="icon-mobile"></i>{{_ "SMS_Enabled"}}</li>
-						{{/if}}
-						{{#if topic}}
-							<li><strong>{{_ "Topic"}}</strong>: {{topic}}</li>
-						{{/if}}
-						{{#if tags}}
-							<li><strong>{{_ "Tags"}}</strong>: {{joinTags}}</li>
-						{{/if}}
+						{{#if facebook}} <li><i class="icon-facebook"></i>{{_ "Facebook_Page"}}: {{facebook.page.name}}</li> {{/if}}
+						{{#if sms}} <li><i class="icon-mobile"></i>{{_ "SMS_Enabled"}}</li> {{/if}}
+						{{#if topic}} <li><strong>{{_ "Topic"}}</strong>: {{topic}}</li> {{/if}}
+						{{#if tags}} <li><strong>{{_ "Tags"}}</strong>: {{joinTags}}</li> {{/if}}
 					</ul>
 				</div>
 			{{/with}}
