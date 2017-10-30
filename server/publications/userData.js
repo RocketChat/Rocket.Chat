@@ -16,6 +16,7 @@ Meteor.publish('userData', function() {
 			settings: 1,
 			roles: 1,
 			active: 1,
+			lastVisitedRoom:1,
 			defaultRoom: 1,
 			customFields: 1,
 			'services.github': 1,
