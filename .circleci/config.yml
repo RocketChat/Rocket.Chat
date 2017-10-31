@@ -213,6 +213,17 @@ jobs:
     steps:
       - checkout
 
+      - run:
+          name: Install AWS cli
+          command: |
+            if [[ $CIRCLE_PULL_REQUESTS ]]; then exit 0; fi;
+
+            apt-get -y -qq update
+            apt-get -y -qq install python3.4-dev
+            curl -O https://bootstrap.pypa.io/get-pip.py
+            python3.4 get-pip.py --user
+            pip install awscli --upgrade --user
+
       - run: |
           if [[ $CIRCLE_PULL_REQUESTS ]]; then exit 0; fi;
 
@@ -222,11 +233,11 @@ jobs:
           bash .circleci/namefiles.sh
           # echo ".circleci/sandstorm.sh"
 
-          aws s3 sync $ROCKET_DEPLOY_DIR/ s3://download.rocket.chat/
+          aws s3 cp $ROCKET_DEPLOY_DIR/ s3://download.rocket.chat/build/ --recursive
 
-          bash .circleci/docker.sh
-          bash .circleci/update-releases.sh
-          bash .circleci/snap.sh
+          # bash .circleci/docker.sh
+          # bash .circleci/update-releases.sh
+          # bash .circleci/snap.sh
 
 workflows:
   version: 2
@@ -251,4 +262,3 @@ workflows:
             tags:
               only:
                 - "/^\\d+\\.\\d+\\.\\d+(-rc\\.\\d+)?$/"
-
