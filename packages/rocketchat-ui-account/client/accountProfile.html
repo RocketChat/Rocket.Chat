@@ -60,14 +60,19 @@
 							</div>
 						</div>
 						<div class="rc-form-group rc-grid">
+							{{# with canChange=allowRealNameChange}}
 							<div class="rc-input rc-w50 padded {{#if nameInvalid}}rc-input--error{{/if}}">
 								<label class="rc-input__label">
 									<div class="rc-input__title">{{_ "Name"}}</div>
 									<div class="rc-input__wrapper">
-										<input type="text" class="rc-input__element" name="realname" id="realname" placeholder="{{_ "Name_Placeholder" }}" value="{{realname}}" >
+										<input type="text" class="rc-input__element" name="realname" id="realname" placeholder="{{_ "Name_Placeholder" }}" value="{{realname}}" {{ifThenElse canChange '' 'disabled'}}>
 									</div>
 								</label>
+								{{# unless canChange}}
+									<div class="rc-input__description">{{_ 'RealName_Change_Disabled'}}</div>
+								{{/unless}}
 							</div>
+							{{/with}}
 							{{# with canChange=allowUsernameChange}}
 							<div class="rc-input rc-w50 padded {{#if usernameInvalid}}rc-input--error{{/if}} {{#unless usernameAvaliable}}rc-input--error{{/unless}}">
 								<label class="rc-input__label">

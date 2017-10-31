@@ -8,6 +8,7 @@ class Administration extends Page {
 	get infoLink() { return browser.element('.flex-nav [href="/admin/info"]'); }
 	get roomsLink() { return browser.element('.flex-nav [href="/admin/rooms"]'); }
 	get usersLink() { return browser.element('.flex-nav [href="/admin/users"]'); }
+	get accountsLink() { return browser.element('.flex-nav [href="/admin/Accounts"]'); }
 	get generalLink() { return browser.element('.flex-nav [href="/admin/General"]'); }
 	get permissionsLink() { return browser.element('.flex-nav [href="/admin/permissions"]'); }
 	get customScriptBtn() { return browser.element('.section:nth-of-type(6) .collapse'); }
@@ -62,6 +63,8 @@ class Administration extends Page {
 	get emojiFilter() { return browser.element('#emoji-filter'); }
 
 	//settings
+	get buttonSave() { return browser.element('button.save'); }
+
 	get generalButtonExpandIframe() { return browser.element('.section:nth-of-type(2) .button.expand'); }
 	get generalButtonExpandNotifications() { return browser.element('.section:nth-of-type(3) .button.expand'); }
 	get generalButtonExpandRest() { return browser.element('.section:nth-of-type(4) .button.expand'); }
@@ -119,6 +122,11 @@ class Administration extends Page {
 	get generalUTF8NamesSlugFalse() { return browser.element('label:nth-of-type(2) [name="UTF8_Names_Slugify"]'); }
 	get generalUTF8NamesSlugReset() { return browser.element('.reset-setting[data-setting="UTF8_Names_Slugify"]'); }
 
+	get accountsRealNameChangeTrue() { return browser.element('label:nth-of-type(1) [name="Accounts_AllowRealNameChange"]'); }
+	get accountsRealNameChangeFalse() { return browser.element('label:nth-of-type(2) [name="Accounts_AllowRealNameChange"]'); }
+	get accountsUsernameChangeTrue() { return browser.element('label:nth-of-type(1) [name="Accounts_AllowUsernameChange"]'); }
+	get accountsUsernameChangeFalse() { return browser.element('label:nth-of-type(2) [name="Accounts_AllowUsernameChange"]'); }
+
 	checkUserList(user) {
 		const element = browser.element(`td=adminCreated${ user }`);
 		element.waitForVisible(5000);
@@ -135,6 +143,14 @@ class Administration extends Page {
 		const element = browser.element(`td=${ user }`);
 		element.waitForVisible(5000);
 		return element;
+	}
+
+	adminSaveChanges() {
+		this.buttonSave.waitForVisible(5000);
+		browser.waitUntil(function() {
+			return browser.isEnabled('button.save');
+		}, 5000);
+		this.buttonSave.click();
 	}
 }
 

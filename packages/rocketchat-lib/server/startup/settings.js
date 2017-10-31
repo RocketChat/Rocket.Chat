@@ -36,6 +36,10 @@ RocketChat.settings.addGroup('Accounts', function() {
 		type: 'boolean',
 		'public': true
 	});
+	this.add('Accounts_AllowRealNameChange', true, {
+		type: 'boolean',
+		'public': true
+	});
 	this.add('Accounts_AllowUsernameChange', true, {
 		type: 'boolean',
 		'public': true
