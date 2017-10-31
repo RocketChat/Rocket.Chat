@@ -6,6 +6,9 @@
 				"experimentalObjectRestSpread" : true,
 		}
 	},
+	
+	
+	
 	"env": {
 		"browser": true,
 		"commonjs": true,
@@ -78,6 +81,8 @@
 		"new-cap":  [2, {
 			"capIsNewExceptions": ["Match.Optional", "Match.Maybe", "Match.ObjectIncluding", "Push.Configure", "SHA256"]
 		}],
+		
+		
 		"use-isnan": 2,
 		"valid-typeof": 2,
 		"linebreak-style": [2, "unix"],
