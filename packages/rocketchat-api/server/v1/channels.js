@@ -366,8 +366,14 @@ RocketChat.API.v1.addRoute('channels.list', { authRequired: true }, {
 			const { offset, count } = this.getPaginationItems();
 			const { sort, fields, query } = this.parseJsonQuery();
 
-			const ourQuery = Object.assign({}, query, { t: 'c' });
+			const ourQuery = Object.assign({}, query, { t: {$in: [ 'c', 'p' ] }});
 
+			// if user role is not admin, show only the rooms they are part of
+			if (!RocketChat.authz.hasRole(this.userId, 'admin')) {
+				ourQuery.usernames = {
+					$in: [ this.user.username ]
+				};
+			}
 			//Special check for the permissions
 			if (RocketChat.authz.hasPermission(this.userId, 'view-joined-room')) {
 				ourQuery.usernames = {
