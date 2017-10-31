@@ -116,6 +116,9 @@ jobs:
             - build-test
             - build
 
+      - store_artifacts:
+          path: /tmp/build
+
   test-with-oplog:
     <<: *defaults
     docker:
@@ -167,6 +170,9 @@ jobs:
           command: |
             for i in $(seq 1 5); do npm test && s=0 && break || s=$? && sleep 1; done; (exit $s)
 
+      - store_artifacts:
+          path: .screenshots/
+
   test-without-oplog:
     <<: *defaults
     docker:
@@ -202,6 +208,8 @@ jobs:
           command: |
             for i in $(seq 1 5); do npm test && s=0 && break || s=$? && sleep 1; done; (exit $s)
 
+      - store_artifacts:
+          path: .screenshots/
 
   deploy:
     <<: *defaults
