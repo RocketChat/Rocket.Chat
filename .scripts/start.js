@@ -4,7 +4,7 @@ var path = require('path'),
 	extend = require('util')._extend,
 	exec = require('child_process').exec,
 	processes = [];
-
+// new 2
 var baseDir = path.resolve(__dirname, '..'),
 	srcDir = path.resolve(baseDir);
 
