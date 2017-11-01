@@ -6,7 +6,7 @@ jobs:
   build:
     <<: *defaults
     docker:
-      - image: circleci/node:4.8
+      - image: circleci/node:8
 
     steps:
       - checkout
@@ -122,7 +122,7 @@ jobs:
   test-with-oplog:
     <<: *defaults
     docker:
-      - image: circleci/node:4.8-browsers
+      - image: circleci/node:8-browsers
       - image: mongo:3.4
         command: [mongod, --nojournal, --noprealloc, --smallfiles, --replSet=rs0]
 
@@ -176,7 +176,7 @@ jobs:
   test-without-oplog:
     <<: *defaults
     docker:
-      - image: circleci/node:4.8-browsers
+      - image: circleci/node:8-browsers
       - image: circleci/mongo:3.4
 
     environment:
