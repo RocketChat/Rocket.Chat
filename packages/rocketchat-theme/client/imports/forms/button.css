@@ -1,8 +1,10 @@
 .rc-button {
+	margin: 0.5rem 0;
 	padding: var(--button-padding);
 
 	cursor: pointer;
 	transition: background-color 0.3s;
+	text-align: center;
 
 	border-width: var(--button-border-width);
 	border-style: solid;
