@@ -12,7 +12,7 @@
 		{{> userEdit (userToEdit)}}
 	{{else}}
 		{{#with user}}
-		<main class="contextual-bar__container">
+		<main class="contextual-bar__container rc-user-info-wrapper">
 			<div class="rc-user-info">
 				<div class="rc-user-info__avatar">
 					{{> avatar username=username}}
@@ -45,46 +45,58 @@
 					{{/each}}
 				</ul>
 			</div>
-			{{/if}}
-			{{#if hasPermission 'view-full-other-user-info'}}
-				{{#if hasEmails}}
-					<div class="rc-user-info-details__item">
-						<label class="rc-user-info-details__label	">Email address</label>
-						{{#each emails}} <a href="mailto:{{address}}" class="rc-user-info-details__info">{{address}}{{#if verified}}&nbsp;<i class="icon-ok success-color"></i>{{/if}}</a> {{/each}}
-					</div>
-				{{/if}}
-				{{#if hasPhone}}
-					<div class="rc-user-info-details__item">
-						<label class="rc-user-info-details__label	">Phone number</label>
-						{{#each phone}} <a href="tel:{{phoneNumber}}" class="rc-user-info-details__info">{{phoneNumber}}</a> {{/each}}
-					</div>
-				{{/if}}
-				{{#if lastLogin}}
-					<div class="rc-user-info-details__item">
-						<label class="rc-user-info-details__label	">{{_ "Created_at"}}</label>
-						<p class="rc-user-info-details__info">{{createdAt}}</p>
-					</div>
-					<div class="rc-user-info-details__item">
-						<label class="rc-user-info-details__label	">{{_ "Last_login"}}</label>
-						<p class="rc-user-info-details__info">{{lastLogin}}</p>
-					</div>
-				{{/if}}
-			{{/if}}
-			{{#if utc}}
+
+			<div class="rc-user-info-details">
+				{{#if roleTags}}
 				<div class="rc-user-info-details__item">
-					<label class="rc-user-info-details__label	">Timezone</label>
-					<p class="rc-user-info-details__info">{{userTime}} (UTC {{utc}})</p>
+					<label class="rc-user-info-details__label	">Roles</label>
+					<ul class="chip-container current-user-roles">
+						{{#each roleTags}}
+						<li class="role-tag" title="{{description}}">{{description}}</li>
+						{{/each}}
+					</ul>
 				</div>
-			{{/if}}
-			<div class="rc-user-info-details__item">
-				{{#if services.facebook.id}} <p class="secondary-font-color"><i class="icon-facebook"></i><a href="{{services.facebook.link}}" target="_blank">{{services.facebook.name}}</a></p> {{/if}}
-				{{#if services.github.id}} <p class="secondary-font-color"><i class="icon-github-circled"></i><a href="https://www.github.com/{{services.github.username}}" target="_blank">{{services.github.username}}</a></p> {{/if}}
-				{{#if services.gitlab.id}} <p class="secondary-font-color"><i class="icon-gitlab"></i>{{services.gitlab.username}}</p> {{/if}}
-				{{#if services.google.id}} <p class="secondary-font-color"><i class="icon-gplus"></i><a href="https://plus.google.com/{{services.google.id}}" target="_blank">{{services.google.name}}</a></p> {{/if}}
-				{{#if services.linkedin.id}} <p class="secondary-font-color"><i class="icon-linkedin"></i><a href="{{services.linkedin.publicProfileUrl}}" target="_blank">{{linkedinUsername}}</a></p> {{/if}}
-				{{#if servicesMeteor.id}} <p class="secondary-font-color"><i class="icon-meteor"></i>{{servicesMeteor.username}}</p> {{/if}}
-				{{#if services.twitter.id}} <p class="secondary-font-color"><i class="icon-twitter"></i><a href="https://twitter.com/{{services.twitter.screenName}}" target="_blank">{{services.twitter.screenName}}</a></p> {{/if}}
-				{{#if services.wordpress.id}} <p class="secondary-font-color"><i class="icon-wordpress"></i>{{services.wordpress.user_login}}</p> {{/if}}
+				{{/if}}
+				{{#if hasPermission 'view-full-other-user-info'}}
+					{{#if hasEmails}}
+						<div class="rc-user-info-details__item">
+							<label class="rc-user-info-details__label	">Email address</label>
+							{{#each emails}} <a href="mailto:{{address}}" class="rc-user-info-details__info">{{address}}{{#if verified}}&nbsp;<i class="icon-ok success-color"></i>{{/if}}</a> {{/each}}
+						</div>
+					{{/if}}
+					{{#if hasPhone}}
+						<div class="rc-user-info-details__item">
+							<label class="rc-user-info-details__label	">Phone number</label>
+							{{#each phone}} <a href="tel:{{phoneNumber}}" class="rc-user-info-details__info">{{phoneNumber}}</a> {{/each}}
+						</div>
+					{{/if}}
+					{{#if lastLogin}}
+						<div class="rc-user-info-details__item">
+							<label class="rc-user-info-details__label	">{{_ "Created_at"}}</label>
+							<p class="rc-user-info-details__info">{{createdAt}}</p>
+						</div>
+						<div class="rc-user-info-details__item">
+							<label class="rc-user-info-details__label	">{{_ "Last_login"}}</label>
+							<p class="rc-user-info-details__info">{{lastLogin}}</p>
+						</div>
+					{{/if}}
+				{{/if}}
+				{{#if utc}}
+					<div class="rc-user-info-details__item">
+						<label class="rc-user-info-details__label	">Timezone</label>
+						<p class="rc-user-info-details__info">{{userTime}} (UTC {{utc}})</p>
+					</div>
+				{{/if}}
+				<div class="rc-user-info-details__item">
+					{{#if services.facebook.id}} <p class="secondary-font-color"><i class="icon-facebook"></i><a href="{{services.facebook.link}}" target="_blank">{{services.facebook.name}}</a></p> {{/if}}
+					{{#if services.github.id}} <p class="secondary-font-color"><i class="icon-github-circled"></i><a href="https://www.github.com/{{services.github.username}}" target="_blank">{{services.github.username}}</a></p> {{/if}}
+					{{#if services.gitlab.id}} <p class="secondary-font-color"><i class="icon-gitlab"></i>{{services.gitlab.username}}</p> {{/if}}
+					{{#if services.google.id}} <p class="secondary-font-color"><i class="icon-gplus"></i><a href="https://plus.google.com/{{services.google.id}}" target="_blank">{{services.google.name}}</a></p> {{/if}}
+					{{#if services.linkedin.id}} <p class="secondary-font-color"><i class="icon-linkedin"></i><a href="{{services.linkedin.publicProfileUrl}}" target="_blank">{{linkedinUsername}}</a></p> {{/if}}
+					{{#if servicesMeteor.id}} <p class="secondary-font-color"><i class="icon-meteor"></i>{{servicesMeteor.username}}</p> {{/if}}
+					{{#if services.twitter.id}} <p class="secondary-font-color"><i class="icon-twitter"></i><a href="https://twitter.com/{{services.twitter.screenName}}" target="_blank">{{services.twitter.screenName}}</a></p> {{/if}}
+					{{#if services.wordpress.id}} <p class="secondary-font-color"><i class="icon-wordpress"></i>{{services.wordpress.user_login}}</p> {{/if}}
+				</div>
 			</div>
 		</div>
 		</main>
