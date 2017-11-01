@@ -237,33 +237,39 @@ jobs:
     #     enabled: true
 
     steps:
+      - attach_workspace:
+          at: /tmp
+
       - checkout
 
       - run:
           name: Install AWS cli
           command: |
-            if [[ $CIRCLE_PULL_REQUESTS ]]; then exit 0; fi;
+            # if [[ $CIRCLE_PULL_REQUESTS ]]; then exit 0; fi;
 
             apt-get -y -qq update
             apt-get -y -qq install python3.4-dev
             curl -O https://bootstrap.pypa.io/get-pip.py
             python3.4 get-pip.py --user
             pip install awscli --upgrade --user
+            export PATH=~/.local/bin:$PATH
 
-      - run: |
-          # if [[ $CIRCLE_PULL_REQUESTS ]]; then exit 0; fi;
+      - run:
+          name: Publish assets
+          command: |
+            # if [[ $CIRCLE_PULL_REQUESTS ]]; then exit 0; fi;
 
-          source .circleci/setartname.sh
-          source .circleci/setdeploydir.sh
-          bash .circleci/setupsig.sh
-          bash .circleci/namefiles.sh
-          # echo ".circleci/sandstorm.sh"
+            source .circleci/setartname.sh
+            source .circleci/setdeploydir.sh
+            bash .circleci/setupsig.sh
+            bash .circleci/namefiles.sh
+            # echo ".circleci/sandstorm.sh"
 
-          aws s3 cp $ROCKET_DEPLOY_DIR/ s3://download.rocket.chat/build/ --recursive
+            aws s3 cp $ROCKET_DEPLOY_DIR/ s3://download.rocket.chat/build/ --recursive
 
-          # bash .circleci/docker.sh
-          # bash .circleci/update-releases.sh
-          # bash .circleci/snap.sh
+            # bash .circleci/docker.sh
+            # bash .circleci/update-releases.sh
+            # bash .circleci/snap.sh
 
 workflows:
   version: 2
