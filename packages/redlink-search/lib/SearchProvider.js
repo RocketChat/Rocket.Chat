@@ -1,8 +1,8 @@
 import {
 	SearchProvider,
+	searchProviders,
 	SearchProviderMetadata,
 	SearchProviderRuntime,
-	SearchProviderRegistry,
 	SearchProviderUi
 } from 'meteor/rocketchat:search-lib';
 
@@ -26,4 +26,4 @@ class RedlinkSearchProvider extends SearchProvider {
 	}
 }
 
-SearchProviderRegistry.add(new RedlinkSearchProvider());
+searchProviders.add(new RedlinkSearchProvider());

@@ -10,12 +10,14 @@ Package.onUse(function(api) {
 	api.versionsFrom('1.5.2.2');
 	api.use('ecmascript');
 	api.use('rocketchat:search-lib');
+
+	api.addFiles('lib/SearchProvider.js');
+
 	api.mainModule('redlink-search.js');
 });
 
-Package.onTest(function(api) {
+/*Package.onTest(function(api) {
 	api.use('ecmascript');
 	api.use('tinytest');
 	api.use('redlink:search');
-	api.mainModule('redlink-search-lib-tests.js');
-});
+});*/

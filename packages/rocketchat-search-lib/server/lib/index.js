@@ -1,12 +1,16 @@
 import {
+	RoomSearchResult,
 	SearchProvider,
+	searchProviders,
 	SearchProviderMetadata,
 	SearchProviderRegistry,
 	SearchProviderRuntime
-} from '../lib';
+} from '../../lib';
 
 export {
+	RoomSearchResult,
 	SearchProvider,
+	searchProviders,
 	SearchProviderMetadata,
 	SearchProviderRegistry,
 	SearchProviderRuntime

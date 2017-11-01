@@ -21,6 +21,8 @@ export class SearchProviderRegistry {
 		}
 
 		this.providers[searchProvider.identifier] = searchProvider;
+
+		return true;
 	}
 
 	get activeProvider() {
@@ -31,3 +33,5 @@ export class SearchProviderRegistry {
 		this.activeProviderIdentifier = identifier;
 	}
 }
+
+export const searchProviders = new SearchProviderRegistry();

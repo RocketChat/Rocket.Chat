@@ -1,9 +1,11 @@
 import {
+	RoomSearchResult,
 	SearchProvider,
 	SearchProviderUi
-} from '../lib';
+} from '../../lib';
 
 export {
+	RoomSearchResult,
 	SearchProvider,
 	SearchProviderUi
 };
