@@ -127,6 +127,29 @@
 
 .rc-form-group {
 	margin-bottom: var(--gap-between-elements);
+
+	&--small {
+		margin-bottom: var(--default-small-padding);
+	}
+
+	&--inline {
+		display: flex;
+		flex-direction: row;
+    align-items: flex-end;
+		margin-left: -0.5rem;
+		margin-right: -0.5rem;
+		white-space: nowrap;
+	}
+
+	& > .rc-form-item-inline {
+		flex: 1 1 auto;
+		margin-left: 0.5rem;
+		margin-right: 0.5rem;
+
+		&--full {
+			flex: 0 0 100%;
+		}
+	}
 }
 
 .rc-form-label {

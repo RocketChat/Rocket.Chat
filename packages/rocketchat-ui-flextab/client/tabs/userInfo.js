@@ -1,4 +1,4 @@
-/* globals RoomRoles, UserRoles*/
+/* globals RoomRoles, UserRoles WebRTC*/
 import moment from 'moment';
 import toastr from 'toastr';
 const hasPermission = RocketChat.authz.hasAllPermission;

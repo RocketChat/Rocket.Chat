@@ -102,15 +102,5 @@
 			display: flex;
 			flex-direction: column;
 		}
-
-		& .chip-container {
-			margin: 0;
-
-			& > li {
-				padding: 2px 4px;
-
-				border-radius: 2px;
-			}
-		}
 	}
 }
