@@ -11,13 +11,13 @@ jobs:
     steps:
       - checkout
 
-      - restore_cache:
-          keys:
-            - node-modules-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum "package.json" }}
+      # - restore_cache:
+      #     keys:
+      #       - node-modules-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum "package.json" }}
 
-      - restore_cache:
-          keys:
-            - meteor-{{ checksum ".circleci/config.yml" }}-{{ checksum ".meteor/release" }}
+      # - restore_cache:
+      #     keys:
+      #       - meteor-{{ checksum ".circleci/config.yml" }}-{{ checksum ".meteor/release" }}
 
       - run:
           name: Install Meteor
@@ -67,17 +67,17 @@ jobs:
           command: |
             meteor npm run testunit
 
-      - restore_cache:
-          keys:
-            - meteor-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum ".meteor/versions" }}
+      # - restore_cache:
+      #     keys:
+      #       - meteor-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum ".meteor/versions" }}
 
-      - restore_cache:
-          keys:
-            - livechat-meteor-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum "packages/rocketchat-livechat/app/.meteor/versions" }}
+      # - restore_cache:
+      #     keys:
+      #       - livechat-meteor-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum "packages/rocketchat-livechat/app/.meteor/versions" }}
 
-      - restore_cache:
-          keys:
-            - livechat-node-modules-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum "packages/rocketchat-livechat/app/package.json" }}
+      # - restore_cache:
+      #     keys:
+      #       - livechat-node-modules-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum "packages/rocketchat-livechat/app/package.json" }}
 
       - run:
           name: Build Rocket.Chat
