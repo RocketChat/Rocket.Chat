@@ -123,7 +123,7 @@
     "mime-db": "^1.31.0",
     "mime-type": "^3.0.5",
     "moment": "^2.19.1",
-    "moment-timezone": "^0.5.13",
+    "moment-timezone": "^0.5.14",
     "photoswipe": "^4.1.2",
     "poplib": "^0.1.7",
     "prom-client": "^10.2.1",
