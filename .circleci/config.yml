@@ -163,19 +163,14 @@ jobs:
             mongo --eval 'rs.initiate({_id:"rs0", members: [{"_id":1, "host":"localhost:27017"}]})'
             mongo --eval 'rs.status()'
 
-      - restore_cache:
-          keys:
-            - node-modules-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum "package.json" }}
+      # - restore_cache:
+      #     keys:
+      #       - node-modules-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum "package.json" }}
 
       - run:
-          name: Update NPM
+          name: NPM install
           command: |
-            sudo npm install -g npm
-
-      # - run:
-      #     name: NPM install
-      #     command: |
-      #       npm install --only=dev
+            npm install
 
       - run:
           name: Run Tests
