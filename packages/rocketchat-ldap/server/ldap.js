@@ -349,11 +349,19 @@ export default class LDAP {
 	}
 
 	extractLdapEntryData(entry) {
-		const values = entry.raw;
-		Object.keys(values).forEach((key) => {
-			const value = values[key];
-			if (!['thumbnailPhoto', 'jpegPhoto'].includes(key) && value instanceof Buffer) {
-				values[key] = value.toString('binary');
+		const values = {
+			_raw: entry.raw
+		};
+
+		Object.keys(values._raw).forEach((key) => {
+			const value = values._raw[key];
+
+			if (!['thumbnailPhoto', 'jpegPhoto'].includes(key)) {
+				if (value instanceof Buffer) {
+					values[key] = value.toString();
+				} else {
+					values[key] = value;
+				}
 			}
 		});
 
