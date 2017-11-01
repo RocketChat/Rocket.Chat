@@ -20,10 +20,6 @@ Meteor.startup(function() {
 			}
 		};
 
-		if (RocketChat.authz.hasPermission(this.userId, 'view-join-code')) {
-			options.fields.joinCode = 1;
-		}
-
 		if (RocketChat.authz.hasPermission(this.userId, 'view-c-room')) {
 			return RocketChat.models.Rooms.findByTypeAndName('c', identifier, options);
 		} else if (RocketChat.authz.hasPermission(this.userId, 'view-joined-room')) {

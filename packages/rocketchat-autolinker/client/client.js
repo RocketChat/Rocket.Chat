@@ -6,6 +6,10 @@
 import Autolinker from 'autolinker';
 
 function AutoLinker(message) {
+	if (RocketChat.settings.get('AutoLinker') !== true) {
+		return message;
+	}
+
 	if (_.trim(message.html)) {
 		const regUrls = new RegExp(RocketChat.settings.get('AutoLinker_UrlsRegExp'));
 

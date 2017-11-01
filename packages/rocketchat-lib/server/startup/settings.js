@@ -1002,6 +1002,10 @@ RocketChat.settings.addGroup('Message', function() {
 		type: 'boolean',
 		'public': true
 	});
+	this.add('Message_AllowDirectMessagesToYourself', true, {
+		type: 'boolean',
+		'public': true
+	});
 	this.add('Message_AlwaysSearchRegExp', false, {
 		type: 'boolean'
 	});
