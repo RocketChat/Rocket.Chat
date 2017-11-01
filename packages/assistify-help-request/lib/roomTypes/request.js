@@ -39,7 +39,7 @@ export class RequestRoomType extends RoomTypeConfig {
 	}
 
 	roomName(roomData) {
-		return roomData.name;
+		return roomData.fname || roomData.name;
 	}
 
 	condition() {
