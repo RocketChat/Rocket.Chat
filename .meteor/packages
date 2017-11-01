@@ -140,7 +140,6 @@ rocketchat:version
 rocketchat:videobridge
 rocketchat:webrtc
 rocketchat:wordpress
-#rocketchat:chatops
 
 konecty:change-case
 konecty:delayed-task
