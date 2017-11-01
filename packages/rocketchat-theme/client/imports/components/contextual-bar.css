@@ -109,44 +109,54 @@
 	&__file,
 	&__thumb {
 		display: inline-block;
+		display: flex;
+		flex-direction: column;
 		flex: 0 0 auto;
 
+		width: 50px;
 
 		height: 50px;
 		margin: 8px;
-		width: 50px;
 
-		background: radial-gradient(ellipse at center, rgba(155,169,186,1) 0%, rgba(131,143,158,1) 100%);
 		border-radius: 2px;
+
+		background: radial-gradient(ellipse at center, rgba(155, 169, 186, 1) 0%, rgba(131, 143, 158, 1) 100%);
 		background-size: cover;
 
+		font-size: 24px;
+
 		align-items: center;
-justify-content: center;
-display: flex;
-font-size: 24px;
-flex-direction: column;
-	}
-	&__file--pdf{
-		background: radial-gradient(ellipse at center, rgba(250,97,97,1) 0%, rgba(251,19,19,1) 100%);
+		justify-content: center;
 	}
 
-	&__file--sheets{
-		background: radial-gradient(ellipse at center, rgba(0,163,82,1) 0%, rgba(2,114,59,1) 100%);
-	}
+	&__file {
+		&--pdf {
+			background: radial-gradient(ellipse at center, rgba(250, 97, 97, 1) 0%, rgba(251, 19, 19, 1) 100%);
+		}
 
-	&__file--ppt {
-		background: radial-gradient(ellipse at center, rgba(250,109,77,1) 0%, rgba(208,71,40,1) 100%);
+		&--sheets {
+			background: radial-gradient(ellipse at center, rgba(0, 163, 82, 1) 0%, rgba(2, 114, 59, 1) 100%);
+		}
+
+		&--ppt {
+			background: radial-gradient(ellipse at center, rgba(250, 109, 77, 1) 0%, rgba(208, 71, 40, 1) 100%);
+		}
 	}
 
 	&__type {
+		overflow: hidden;
+		flex: 0 0 auto;
+
+		max-width: 100%;
+		padding: 0 10px;
+
+		text-overflow: ellipsis;
+
+		color: white;
+
 		font-size: 10px;
-    color: white;
-    padding: 0 10px;
-    overflow: hidden;
-    flex: 0 0 auto;
-    max-width: 100%;
-    text-overflow: ellipsis;
 	}
+
 	&__name {
 		overflow: hidden;
 

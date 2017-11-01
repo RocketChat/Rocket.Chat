@@ -4,6 +4,7 @@
 			{{> icon block="contextual-bar__header-close-icon" icon="plus"}}
 		</button>
 	</header>
+
 	{{#if isLoading}}
 		{{> loading}}
 	{{else}}
@@ -11,29 +12,30 @@
 		{{> userEdit (userToEdit)}}
 	{{else}}
 		{{#with user}}
-		<div class="rc-user-info">
-			<div class="rc-user-info__avatar">
-				{{> avatar username=username}}
+		<main class="contextual-bar__container">
+			<div class="rc-user-info">
+				<div class="rc-user-info__avatar">
+					{{> avatar username=username}}
+				</div>
+				<h3 title="{{name}}" class="rc-user-info__name"><i class="status-{{status}}"></i> {{name}}</h3>
+				<p class="rc-user-info__username">@{{username}}</p>
 			</div>
-			<h3 title="{{name}}" class="rc-user-info__name"><i class="status-{{status}}"></i> {{name}}</h3>
-			<p class="rc-user-info__username">@{{username}}</p>
-		</div>
 
-		<div class="rc-user-info-action">
-			{{#each actions}}
-				<button class="js-action rc-user-info-action__item">
-					{{> icon block="rc-user-info-action__icon" icon=icon }}
-					{{_ ./name}}
+			<div class="rc-user-info-action">
+				{{#each actions}}
+					<button class="js-action rc-user-info-action__item">
+						{{> icon block="rc-user-info-action__icon" icon=icon }}
+						{{_ ./name}}
+					</button>
+				{{/each}}
+				{{# with moreActions}}
+				<button class="rc-tooltip rc-room-actions__button js-more" aria-label="{{_ 'More'}}">
+				{{> icon block="tab-button-icon" icon="menu" }}
 				</button>
-			{{/each}}
-			{{# with moreActions}}
-			<button class="rc-tooltip rc-room-actions__button js-more" aria-label="{{_ 'More'}}">
-			{{> icon block="tab-button-icon" icon="menu" }}
-			</button>
-			{{/with}}
-		</div>
+				{{/with}}
+			</div>
 
-		<div class="rc-user-info-details">
+			<div class="rc-user-info-details">
 			{{#if roleTags}}
 			<div class="rc-user-info-details__item">
 				<label class="rc-user-info-details__label	">Roles</label>
@@ -85,9 +87,11 @@
 				{{#if services.wordpress.id}} <p class="secondary-font-color"><i class="icon-wordpress"></i>{{services.wordpress.user_login}}</p> {{/if}}
 			</div>
 		</div>
+		</main>
 		{{/with}}
 	{{/if}}
 		{{/if}}
+
 </template>
 
 <template name="_userinfo">

@@ -444,7 +444,7 @@
 
 /* .rc-old textarea, */
 
-.rc-old select,
+/*.rc-old select,
 .rc-old input[type='text'],
 .rc-old input[type='number'],
 .rc-old input[type='email'],
@@ -463,7 +463,7 @@
 
 	line-height: normal;
 	appearance: none;
-}
+}*/
 
 .rc-old input {
 	& .input-forward {
