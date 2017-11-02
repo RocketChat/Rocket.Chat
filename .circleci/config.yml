@@ -97,30 +97,30 @@ jobs:
             cd /tmp/build-test/bundle/programs/server
             npm install
 
-      - save_cache:
-          key: node-modules-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum "package.json" }}
-          paths:
-            - ./node_modules
+      # - save_cache:
+      #     key: node-modules-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum "package.json" }}
+      #     paths:
+      #       - ./node_modules
 
-      - save_cache:
-          key: meteor-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum ".meteor/versions" }}
-          paths:
-            - ./.meteor/local
+      # - save_cache:
+      #     key: meteor-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum ".meteor/versions" }}
+      #     paths:
+      #       - ./.meteor/local
 
-      - save_cache:
-          key: livechat-node-modules-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum "packages/rocketchat-livechat/app/package.json" }}
-          paths:
-            - ./packages/rocketchat-livechat/app/node_modules
+      # - save_cache:
+      #     key: livechat-node-modules-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum "packages/rocketchat-livechat/app/package.json" }}
+      #     paths:
+      #       - ./packages/rocketchat-livechat/app/node_modules
 
-      - save_cache:
-          key: livechat-meteor-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum "packages/rocketchat-livechat/app/.meteor/versions" }}
-          paths:
-            - ./packages/rocketchat-livechat/app/.meteor/local
+      # - save_cache:
+      #     key: livechat-meteor-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum "packages/rocketchat-livechat/app/.meteor/versions" }}
+      #     paths:
+      #       - ./packages/rocketchat-livechat/app/.meteor/local
 
-      - save_cache:
-          key: meteor-{{ checksum ".circleci/config.yml" }}-{{ checksum ".meteor/release" }}
-          paths:
-            - ~/.meteor
+      # - save_cache:
+      #     key: meteor-{{ checksum ".circleci/config.yml" }}-{{ checksum ".meteor/release" }}
+      #     paths:
+      #       - ~/.meteor
 
       - persist_to_workspace:
           root: /tmp/
@@ -183,7 +183,7 @@ jobs:
             for i in $(seq 1 5); do npm test && s=0 && break || s=$? && sleep 1; done; (exit $s)
 
       - store_artifacts:
-          path: .screenshots/
+          path: ~/.screenshots
 
   test-without-oplog:
     <<: *defaults
@@ -227,14 +227,12 @@ jobs:
       #       cp -R .screenshots /tmp/screenshots
 
       - store_artifacts:
-          path: .screenshots/
+          path: ~/.screenshots
 
   deploy:
     <<: *defaults
     docker:
       - image: circleci/node:4.8
-    # machine:
-    #     enabled: true
 
     steps:
       - attach_workspace:
@@ -245,7 +243,7 @@ jobs:
       - run:
           name: Install AWS cli
           command: |
-            # if [[ $CIRCLE_PULL_REQUESTS ]]; then exit 0; fi;
+            if [[ $CIRCLE_PULL_REQUESTS ]]; then exit 0; fi;
 
             sudo apt-get -y -qq update
             sudo apt-get -y -qq install python3.4-dev
@@ -258,10 +256,11 @@ jobs:
       - run:
           name: Publish assets
           command: |
+            if [[ $CIRCLE_PULL_REQUESTS ]]; then exit 0; fi;
+
             echo $PATH
             export PATH=~/.local/bin:$PATH
             aws --version
-            # if [[ $CIRCLE_PULL_REQUESTS ]]; then exit 0; fi;
 
             source .circleci/setartname.sh
             source .circleci/setdeploydir.sh
@@ -286,7 +285,7 @@ workflows:
       - test-without-oplog:
           requires:
             - build
-      - hold:
+      - deploy:
           type: approval
           requires:
             - test-with-oplog
@@ -295,10 +294,6 @@ workflows:
             branches:
               only:
                 - develop
-                - circle-ci
             tags:
               only:
                 - "/^\\d+\\.\\d+\\.\\d+(-rc\\.\\d+)?$/"
-      - deploy:
-          requires:
-            - hold
