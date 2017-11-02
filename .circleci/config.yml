@@ -183,7 +183,7 @@ jobs:
             for i in $(seq 1 5); do npm test && s=0 && break || s=$? && sleep 1; done; (exit $s)
 
       - store_artifacts:
-          path: ~/.screenshots
+          path: ~/repo/.screenshots
 
   test-without-oplog:
     <<: *defaults
@@ -227,7 +227,7 @@ jobs:
       #       cp -R .screenshots /tmp/screenshots
 
       - store_artifacts:
-          path: ~/.screenshots
+          path: ~/repo/.screenshots
 
   deploy:
     <<: *defaults
@@ -243,7 +243,7 @@ jobs:
       - run:
           name: Install AWS cli
           command: |
-            if [[ $CIRCLE_PULL_REQUESTS ]]; then exit 0; fi;
+            # if [[ $CIRCLE_PULL_REQUESTS ]]; then exit 0; fi;
 
             sudo apt-get -y -qq update
             sudo apt-get -y -qq install python3.4-dev
@@ -256,7 +256,7 @@ jobs:
       - run:
           name: Publish assets
           command: |
-            if [[ $CIRCLE_PULL_REQUESTS ]]; then exit 0; fi;
+            # if [[ $CIRCLE_PULL_REQUESTS ]]; then exit 0; fi;
 
             echo $PATH
             export PATH=~/.local/bin:$PATH
@@ -285,7 +285,7 @@ workflows:
       - test-without-oplog:
           requires:
             - build
-      - deploy:
+      - hold:
           type: approval
           requires:
             - test-with-oplog
@@ -294,6 +294,10 @@ workflows:
             branches:
               only:
                 - develop
+                - circle-ci
             tags:
               only:
                 - "/^\\d+\\.\\d+\\.\\d+(-rc\\.\\d+)?$/"
+      - deploy:
+          requires:
+            - hold
