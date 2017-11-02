@@ -130,6 +130,22 @@ RocketChat.models.Subscriptions.updateHideUnreadStatusById = function(_id, hideU
 	return this.update(query, update);
 };
 
+RocketChat.models.Subscriptions.updateDoNotDisturbById = function(_id, doNotDisturb) {
+	return this.update(_id, {
+		$set: {
+			doNotDisturb
+		}
+	});
+};
+
+RocketChat.models.Subscriptions.updateSnoozeNotificationsById = function(_id, snoozeNotifications) {
+	return this.update(_id, {
+		$set: {
+			snoozeNotifications
+		}
+	});
+};
+
 RocketChat.models.Subscriptions.findAlwaysNotifyAudioUsersByRoomId = function(roomId) {
 	const query = {
 		rid: roomId,

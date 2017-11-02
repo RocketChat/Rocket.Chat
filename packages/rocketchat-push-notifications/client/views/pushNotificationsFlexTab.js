@@ -17,27 +17,6 @@ Template.pushNotificationsFlexTab.helpers({
 	audioAssets() {
 		return RocketChat.CustomSounds && RocketChat.CustomSounds.getList && RocketChat.CustomSounds.getList() || [];
 	},
-	snoozeNotifications() {
-		const sub = ChatSubscription.findOne({
-			rid: Session.get('openedRoom')
-		}, {
-			fields: {
-				snoozeNotifications: 1
-			}
-		});
-		// TODO: 6609 - Validate snooze notifications period - It's still a valid period?
-		return sub.snoozeNotifications && sub.snoozeNotifications.final && moment().isBefore(sub.snoozeNotifications.final);
-	},
-	doNotDisturb() {
-		const sub = ChatSubscription.findOne({
-			rid: Session.get('openedRoom')
-		}, {
-			fields: {
-				doNotDisturb: 1
-			}
-		});
-		return sub ? sub.doNotDisturb || false : false;
-	},
 	disableNotifications() {
 		const sub = ChatSubscription.findOne({
 			rid: Session.get('openedRoom')
@@ -57,6 +36,54 @@ Template.pushNotificationsFlexTab.helpers({
 			}
 		});
 		return sub ? sub.hideUnreadStatus || false : false;
+	},
+	doNotDisturb() {
+		return Template.instance().doNotDisturb.get();
+	},
+	doNotDisturbInfo() {
+		return {
+			from: moment(Template.instance().doNotDisturb.get().initialTime).format('HH:mm'),
+			to: moment(Template.instance().doNotDisturb.get().finalTime).format('HH:mm')
+		};
+	},
+	doNotDisturbIsValid() {
+		const doNotDisturb = Template.instance().doNotDisturb.get();
+		return !!(doNotDisturb && doNotDisturb.initialTime && doNotDisturb.finalTime);
+	},
+	snoozeNotifications() {
+		return Template.instance().snoozeNotifications.get();
+	},
+	snoozeNotificationsInfo() {
+		let duration;
+		const snoozeNotifications = Template.instance().snoozeNotifications.get();
+
+		if (snoozeNotifications.duration === 20) {
+			duration = t('Snooze_Notifications_20_Minutes_Option');
+		} else if (snoozeNotifications.duration === 60) {
+			duration = t('Snooze_Notifications_1_Hour_Option');
+		} else {
+			duration = t(`Snooze_Notifications_${ (snoozeNotifications.duration/60) }_Hours_Option`);
+		}
+		return {
+			description: duration,
+			from: moment(Template.instance().snoozeNotifications.get().initialTime).format('HH:mm'),
+			to: moment(Template.instance().snoozeNotifications.get().finalTime).format('HH:mm')
+		};
+	},
+	snoozeNotificationsIsValid() {
+		const snoozeNotifications = Template.instance().snoozeNotifications.get();
+		return snoozeNotifications && snoozeNotifications.finalTime && moment().isBefore(snoozeNotifications.finalTime);
+	},
+	selectHoursOptions() {
+		let hour = moment('00:00', 'HH:mm');
+		const hours = [];
+
+		while (hour.isBefore(moment('23:59', 'HH:mm'))) {
+			hours.push(hour.format('HH:mm'));
+			hour = hour.add(30, 'minutes');
+		}
+
+		return hours;
 	},
 	audioNotifications() {
 		const sub = ChatSubscription.findOne({
@@ -137,7 +164,6 @@ Template.pushNotificationsFlexTab.helpers({
 		return t('Use_account_preference');
 	},
 	subValue(field) {
-		// TODO: 6609 - Insert values for related fields to "snooze notifications for a time period (perhaps 'snoozeTimePeriod')"
 		const sub = ChatSubscription.findOne({
 			rid: Session.get('openedRoom')
 		}, {
@@ -197,21 +223,21 @@ Template.pushNotificationsFlexTab.helpers({
 	},
 	defaultAudioNotification() {
 		let preference = getUserPreference('audioNotifications');
-		if (preference === 'default' || preference == null) {
+		if (preference === 'default' || preference === null) {
 			preference = RocketChat.settings.get('Audio_Notifications_Default_Alert');
 		}
 		return notificationLabels[preference];
 	},
 	defaultDesktopNotification() {
 		let preference = getUserPreference('desktopNotifications');
-		if (preference === 'default' || preference == null) {
+		if (preference === 'default' || preference === null) {
 			preference = RocketChat.settings.get('Desktop_Notifications_Default_Alert');
 		}
 		return notificationLabels[preference];
 	},
 	defaultMobileNotification() {
 		let preference = getUserPreference('mobileNotifications');
-		if (preference === 'default' || preference == null) {
+		if (preference === 'default' || preference === null) {
 			preference = RocketChat.settings.get('Mobile_Notifications_Default_Alert');
 		}
 		return notificationLabels[preference];
@@ -221,16 +247,39 @@ Template.pushNotificationsFlexTab.helpers({
 Template.pushNotificationsFlexTab.onCreated(function() {
 	this.editing = new ReactiveVar();
 
+	this.doNotDisturb = new ReactiveVar({});
+
+	this.snoozeNotifications = new ReactiveVar({});
+
+	Meteor.autorun(() => {
+		const sub = ChatSubscription.findOne({
+			rid: Session.get('openedRoom')
+		}, {
+			fields: {
+				doNotDisturb: 1,
+				snoozeNotifications: 1
+			}
+		});
+
+		if (sub && sub.doNotDisturb) {
+			this.doNotDisturb.set(sub.doNotDisturb);
+		}
+
+		if (sub && sub.snoozeNotifications) {
+			this.snoozeNotifications.set(sub.snoozeNotifications);
+		}
+	});
+
 	this.validateSetting = (field) => {
 		switch (field) {
 			case 'audioNotificationValue':
 				return true;
-			case 'hideUnreadStatus':
-			case 'disableNotifications':
-				return true;
 			case 'snoozeNotifications':
 				return true;
 			case 'doNotDisturb':
+				return true;
+			case 'hideUnreadStatus':
+			case 'disableNotifications':
 				return true;
 			default:
 				const value = this.$(`input[name=${ field }]:checked`).val();
@@ -246,6 +295,12 @@ Template.pushNotificationsFlexTab.onCreated(function() {
 		const field = this.editing.get();
 		let value;
 		switch (field) {
+			case 'snoozeNotifications':
+				value = this.$(`input[name=${ field }]:checked`).val();
+				break;
+			case 'doNotDisturb':
+				value = this.$(`input[name=${ field }]:checked`).val();
+				break;
 			case 'hideUnreadStatus':
 			case 'disableNotifications':
 				value = this.$(`input[name=${ field }]:checked`).val() ? '1' : '0';
@@ -256,6 +311,36 @@ Template.pushNotificationsFlexTab.onCreated(function() {
 		}
 		const soundVal = $('select').val();
 		const duration = $('input[name=duration]').val();
+
+		if (field === 'doNotDisturb' || field === 'snoozeNotifications') {
+			if (value && value === '1') {
+				if (field === 'doNotDisturb') {
+					const initialTime = moment($('select[name=doNotDisturbInitialTimePeriod]').val() || '00:00', 'HH:mm');
+					const finalTime = moment($('select[name=doNotDisturbFinalTimePeriod]').val() || '08:00', 'HH:mm');
+
+					value = {
+						initialTime: initialTime.toDate(),
+						finalTime: finalTime.toDate()
+					};
+				} else if (field === 'snoozeNotifications') {
+					const snoozeDuration = parseInt($('input[name=snoozeNotificationsOptions]:checked').val() || 120);
+					const initialTime = new Date();
+
+					if (snoozeDuration && snoozeDuration > 0) {
+						value = {
+							duration: snoozeDuration,
+							initialTime,
+							finalTime: (moment(initialTime).add(snoozeDuration, 'minutes')).toDate()
+						};
+					} else {
+						value = {};
+					}
+				}
+			} else {
+				value = {};
+			}
+		}
+
 		if (this.validateSetting(field)) {
 			Meteor.call('saveNotificationSettings', Session.get('openedRoom'), field, value, (err/*, result*/) => {
 				if (err) {

@@ -6,13 +6,26 @@ Meteor.methods({
 
 		check(rid, String);
 		check(field, String);
-		check(value, String);
 
-		if (['audioNotifications', 'desktopNotifications', 'mobilePushNotifications', 'emailNotifications', 'unreadAlert', 'disableNotifications', 'hideUnreadStatus'].indexOf(field) === -1) {
+		if (field === 'doNotDisturb' || field === 'snoozeNotifications') {
+			if (value && value.initialTime && value.finalTime) {
+				check(value, {
+					duration: Match.Maybe(Number),
+					initialTime: Date,
+					finalTime: Date
+				});
+			} else {
+				value = {};
+			}
+		} else {
+			check(value, String);
+		}
+
+		if (['audioNotifications', 'desktopNotifications', 'mobilePushNotifications', 'emailNotifications', 'unreadAlert', 'disableNotifications', 'hideUnreadStatus', 'snoozeNotifications', 'doNotDisturb'].indexOf(field) === -1) {
 			throw new Meteor.Error('error-invalid-settings', 'Invalid settings field', { method: 'saveNotificationSettings' });
 		}
 
-		if (field !== 'hideUnreadStatus' && field !== 'disableNotifications' && ['all', 'mentions', 'nothing', 'default'].indexOf(value) === -1) {
+		if (field !== 'hideUnreadStatus' && field !== 'disableNotifications' && field !== 'snoozeNotifications' && field !== 'doNotDisturb' && ['all', 'mentions', 'nothing', 'default'].indexOf(value) === -1) {
 			throw new Meteor.Error('error-invalid-settings', 'Invalid settings value', { method: 'saveNotificationSettings' });
 		}
 
@@ -42,6 +55,12 @@ Meteor.methods({
 				break;
 			case 'hideUnreadStatus':
 				RocketChat.models.Subscriptions.updateHideUnreadStatusById(subscription._id, value === '1' ? true : false);
+				break;
+			case 'doNotDisturb':
+				RocketChat.models.Subscriptions.updateDoNotDisturbById(subscription._id, value);
+				break;
+			case 'snoozeNotifications':
+				RocketChat.models.Subscriptions.updateSnoozeNotificationsById(subscription._id, value);
 				break;
 		}
 
