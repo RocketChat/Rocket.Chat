@@ -2,7 +2,11 @@
 
 import {SearchProvider} from './SearchProvider';
 
+const SETTINGS_GROUP_NAME = 'SearchProviders';
+const SETTINGS_SEARCH_ENABLED = 'SearchEnabled';
+
 export class SearchProviderRegistry {
+
 	constructor() {
 		this.providers = {};
 		this.activeProviderIdentifier = '';
@@ -14,17 +18,26 @@ export class SearchProviderRegistry {
 	 * @return {boolean} whether the provider has been registered successfully
 	 */
 	add(searchProvider) {
-		if (!(searchProvider instanceof SearchProvider)) {
-			throw new Error('Invalid provider object, it must extend "SearchProvider"');
+		if (Meteor.isServer) {
+			if (!(searchProvider instanceof SearchProvider)) {
+				throw new Error('Invalid provider object, it must extend "SearchProvider"');
+			}
+
+			if (this.providers[searchProvider.identifier]) {
+				return false;
+			}
+
+			this.providers[searchProvider.identifier] = searchProvider;
+
+			RocketChat.settings.addGroup(SETTINGS_GROUP_NAME, {}, function() {
+				const group = this;
+				group.section(searchProvider.identifier, function() {
+					searchProvider.metadata.addSettings(this);
+				});
+			});
+
+			return true;
 		}
-
-		if (this.providers[searchProvider.identifier]) {
-			return false;
-		}
-
-		this.providers[searchProvider.identifier] = searchProvider;
-
-		return true;
 	}
 
 	get activeProvider() {
@@ -35,15 +48,18 @@ export class SearchProviderRegistry {
 		this.activeProviderIdentifier = identifier;
 	}
 
-	provideSettings() {
-
-		RocketChat.settings.addGroup('SearchProviders', {}, () => {
-			const group = this;
-			this.providers.each((provider)=>{
-				group.section(provider.identifier, (section)=>provider.addSettings(section));
+	provideSettingsGroup() {
+		if (Meteor.isServer) {
+			RocketChat.settings.addGroup(SETTINGS_GROUP_NAME, {}, function() {
+				this.add(SETTINGS_SEARCH_ENABLED, false);
+				this.add('ActiveSearchProvider', 0);
 			});
-		});
+		}
 	}
 }
 
 export const searchProviders = new SearchProviderRegistry();
+
+Meteor.startup(function() {
+	searchProviders.provideSettingsGroup();
+});

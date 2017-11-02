@@ -6,6 +6,7 @@ import {
 	SearchProviderUi
 } from 'meteor/rocketchat:search';
 
+export const SETTING_URL = 'RedlinkSearchUrl';
 
 class RedlinkSearchProviderRuntimeIntegration extends SearchProviderRuntimeIntegration {
 
@@ -14,6 +15,17 @@ class RedlinkSearchProviderRuntimeIntegration extends SearchProviderRuntimeInteg
 class RedlinkSearchProviderMetadata extends SearchProviderMetadata {
 	supportsPermissions() {
 		return true;
+	}
+
+	addSettings(section) {
+		section.add(SETTING_URL, '');
+	}
+
+	isConfigurationValid(settings, logger) {
+		logger.debug('Validating settings', settings);
+		if (!settings[SETTING_URL] || settings[SETTING_URL] === '') {
+			return false;
+		}
 	}
 }
 
@@ -30,4 +42,6 @@ class RedlinkSearchProvider extends SearchProvider {
 	}
 }
 
-searchProviders.add(new RedlinkSearchProvider());
+Meteor.startup(function() {
+	searchProviders.add(new RedlinkSearchProvider());
+});
