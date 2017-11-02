@@ -136,6 +136,8 @@ rocketchat:cas@1.0.0
 rocketchat:channel-settings@0.0.1
 rocketchat:channel-settings-mail-messages@0.0.1
 rocketchat:colors@0.0.1
+rocketchat:conferencecall@0.1.0
+rocketchat:conferencecall-jitsi@0.2.0
 rocketchat:cors@0.0.1
 rocketchat:crowd@1.0.0
 rocketchat:custom-oauth@1.0.0
@@ -225,8 +227,6 @@ rocketchat:ui-message@0.1.0
 rocketchat:ui-sidenav@0.1.0
 rocketchat:ui-vrecord@0.0.1
 rocketchat:version@1.0.0
-rocketchat:videobridge@0.2.0
-rocketchat:videoconference@0.1.0
 rocketchat:webrtc@0.0.1
 rocketchat:wordpress@0.0.1
 routepolicy@1.0.12

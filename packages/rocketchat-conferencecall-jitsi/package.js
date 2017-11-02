@@ -1,5 +1,5 @@
 Package.describe({
-	name: 'rocketchat:videobridge',
+	name: 'rocketchat:conferencecall-jitsi',
 	version: '0.2.0',
 	summary: 'jitsi integration',
 	git: ''
@@ -8,10 +8,11 @@ Package.describe({
 Package.onUse(function(api) {
 	api.use([
 		'ecmascript',
+		'modules',
 		'underscore',
 		'less',
 		'rocketchat:lib',
-		'rocketchat:videoconference'
+		'rocketchat:conferencecall'
 	]);
 
 	api.use('templating', 'client');
@@ -22,7 +23,7 @@ Package.onUse(function(api) {
 	api.addFiles('client/views/jitsiVideoTab.html', 'client');
 	api.addFiles('client/views/jitsiVideoTab.js', 'client');
 
-	api.addFiles('common/videoConferenceProvider.js', ['client', 'server']);
+	api.addFiles('common/conferenceCallProvider.js', ['client', 'server']);
 
 	api.addFiles('server/settings.js', 'server');
 	api.addFiles('server/models/Rooms.js', 'server');

@@ -1,12 +1,13 @@
 Package.describe({
-	name: 'rocketchat:videoconference',
+	name: 'rocketchat:conferencecall',
 	version: '0.1.0',
-	summary: 'Video Conference',
+	summary: 'Conference Call',
 	git: ''
 });
 
 Package.onUse(function(api) {
 	api.use([
+		'modules',
 		'ecmascript',
 		'underscore',
 		'less',
@@ -22,9 +23,11 @@ Package.onUse(function(api) {
 	api.addFiles('lib/messageType.js', ['client', 'server']);
 	//api.addFiles('lib/roomType.js', ['client', 'server']);
 
-	api.addFiles('lib/videoConferenceProvidersCommon.js', ['client', 'server']);
-	api.addFiles('server/videoConferenceProviders.js', ['server']);
-	api.addFiles('client/videoConferenceProviders.js', ['client']);
+	api.addFiles('lib/conferenceCallProvidersCommon.js', ['client', 'server']);
+	api.addFiles('lib/conferenceCallTypes.js', ['client', 'server']);
+	api.addFiles('lib/conferenceCallProvider.js', ['client', 'server']);
+	api.addFiles('server/conferenceCallProviders.js', ['server']);
+	api.addFiles('client/conferenceCallProviders.js', ['client']);
 
 	api.addFiles('server/settings.js', 'server');
 	//api.addFiles('server/methods/startCall.js', 'server');

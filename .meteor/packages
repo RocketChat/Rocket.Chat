@@ -130,8 +130,8 @@ rocketchat:ui-message
 rocketchat:ui-sidenav
 rocketchat:ui-vrecord
 rocketchat:version
-rocketchat:videoconference
-rocketchat:videobridge
+rocketchat:conferencecall
+rocketchat:conferencecall-jitsi
 rocketchat:webrtc
 rocketchat:wordpress
 rocketchat:message-snippet

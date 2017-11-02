@@ -1,5 +1,5 @@
 import toastr from 'toastr';
-RocketChat.actionLinks.register('joinJitsiCall', function(message, params, instance) {
+RocketChat.actionLinks.register('joinConferenceCall', function(message, params, instance) {
 	if (Session.get('openedRoom')) {
 		const rid = Session.get('openedRoom');
 

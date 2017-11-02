@@ -1,15 +1,15 @@
 Meteor.startup(function() {
 	Tracker.autorun(function() {
-		const videoProvider = RocketChat.videoConferenceProviders.get(RocketChat.settings.get('VideoConference_Provider'));
+		const provider = RocketChat.conferenceCallProviders.getActiveProvider();
 
-		if (RocketChat.settings.get('VideoConference_Enabled')) {
+		if (RocketChat.settings.get('ConferenceCall_Enabled')) {
 			RocketChat.TabBar.addButton({
 				groups: ['direct', 'group'],
 				id: 'video',
 				i18nTitle: 'Video Chat',
 				icon: 'video',
 				iconColor: 'red',
-				template: videoProvider.template,
+				template: provider.templateName,
 				width: 600,
 				order: 12
 			});
@@ -19,7 +19,7 @@ Meteor.startup(function() {
 	});
 
 	Tracker.autorun(function() {
-		if (RocketChat.settings.get('VideoConference_Enabled') && RocketChat.settings.get('VideoConference_Enable_Channels')) {
+		if (RocketChat.settings.get('ConferenceCall_Enabled') && RocketChat.settings.get('ConferenceCall_Enable_Channels')) {
 			RocketChat.TabBar.addGroup('video', ['channel']);
 		} else {
 			RocketChat.TabBar.removeGroup('video', ['channel']);
@@ -27,7 +27,7 @@ Meteor.startup(function() {
 	});
 
 	Tracker.autorun(function() {
-		if (RocketChat.settings.get('VideoConference_Enabled')) {
+		if (RocketChat.settings.get('ConferenceCall_Enabled')) {
 			// Load from the jitsi meet instance.
 			if (typeof JitsiMeetExternalAPI === 'undefined') {
 				const prefix = __meteor_runtime_config__.ROOT_URL_PATH_PREFIX || '';
