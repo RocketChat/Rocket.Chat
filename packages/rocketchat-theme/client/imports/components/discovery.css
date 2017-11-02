@@ -1,0 +1,93 @@
+.rc-discovery {
+	justify-content: center;
+
+	&__empty {
+		padding: 40px;
+
+		text-align: center;
+
+		color: var(--color-gray);
+	}
+
+	&-wrap {
+		display: flex;
+
+		margin: 0 -12px;
+		flex-wrap: wrap;
+		justify-content: flex-start;
+	}
+
+	&__container {
+		flex: 1 1 100%;
+	}
+
+	&__item {
+		min-width: 304px;
+		margin: 12px;
+		padding: 10px;
+
+		border-radius: 2px;
+		background: #f7f8fa;
+
+		&:hover &__image {
+			transform: scale(1.1);
+		}
+
+		&__image-wrap {
+			overflow: hidden;
+
+			height: 128px;
+		}
+
+		&__image {
+			height: 128px;
+
+			transition: all 0.3s;
+
+			border-radius: 2px;
+			background: #cccccc;
+
+			background: url(http://www.clickgratis.com.br/fotos-imagens/gatinho/aHR0cDovL3d3dy5jb21vZmF6ZXIub3JnL3dwLWNvbnRlbnQvdXBsb2Fkcy8yMDEyLzA3L2dhdGluaG8tcGVyc2EuanBn.jpg);
+			background-repeat: no-repeat;
+			background-position: 50%;
+			background-size: cover;
+		}
+
+		&__footer {
+			display: flex;
+
+			padding: 10px 10px 0;
+
+			font-weight: 500;
+			line-height: 20px;
+			align-items: center;
+
+			&__title {
+				margin-bottom: 4px;
+
+				font-size: 18px;
+			}
+
+			&__description {
+				color: #9ea2a8;
+
+				font-size: 14px;
+			}
+		}
+
+		& .rc-button {
+			flex: 0;
+
+			width: 20px;
+			height: 20px;
+
+			color: #1d74f5;
+			border-color: #1d74f5;
+			border-radius: 4px;
+
+			& .rc-icon {
+				font-size: 1rem;
+			}
+		}
+	}
+}
