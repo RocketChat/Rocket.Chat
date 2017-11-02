@@ -5,7 +5,7 @@ class JitsiConferenceCallProvider extends ConferenceCallProvider {
 		super({
 			id: 'Jitsi',
 			name: 'Jitsi Meet',
-			template: 'jitsiVideoTab',
+			templateName: 'jitsiVideoTab',
 			type: ConferenceCallTypes.VIDEO
 		});
 	}
