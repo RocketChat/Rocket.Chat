@@ -1,6 +1,6 @@
 /* globals openRoom */
 
-import {RoomTypeConfig, RoomTypeRouteConfig} from 'meteor/rocketchat:lib';
+import {RoomTypeConfig, RoomTypeRouteConfig, UiTextContext} from 'meteor/rocketchat:lib';
 
 class RequestRoomRoute extends RoomTypeRouteConfig {
 	constructor() {
@@ -72,6 +72,19 @@ export class RequestRoomType extends RoomTypeConfig {
 
 	enableMembersListProfile() {
 		return true;
+	}
+
+	getUiText(context) {
+		switch (context) {
+			case UiTextContext.CLOSE_WARNING:
+				return 'Close_request_warning';
+			case UiTextContext.HIDE_WARNING:
+				return 'Hide_request_warning';
+			case UiTextContext.LEAVE_WARNING:
+				return 'Leave_request_warning';
+			default:
+				return '';
+		}
 	}
 }
 

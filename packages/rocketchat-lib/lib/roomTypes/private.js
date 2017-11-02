@@ -1,5 +1,5 @@
 /* globals openRoom */
-import { RoomSettingsEnum, RoomTypeConfig, RoomTypeRouteConfig } from '../RoomTypeConfig';
+import {RoomSettingsEnum, RoomTypeConfig, RoomTypeRouteConfig, UiTextContext} from '../RoomTypeConfig';
 
 export class PrivateRoomRoute extends RoomTypeRouteConfig {
 	constructor() {
@@ -68,5 +68,16 @@ export class PrivateRoomType extends RoomTypeConfig {
 
 	enableMembersListProfile() {
 		return true;
+	}
+
+	getUiText(context) {
+		switch (context) {
+			case UiTextContext.HIDE_WARNING:
+				return 'Hide_Group_Warning';
+			case UiTextContext.LEAVE_WARNING:
+				return 'Leave_Group_Warning';
+			default:
+				return '';
+		}
 	}
 }
