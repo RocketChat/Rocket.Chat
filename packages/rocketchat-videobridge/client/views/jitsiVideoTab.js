@@ -116,7 +116,7 @@ Template.jitsiVideoTab.onRendered(function() {
 								*/
 								Meteor.setTimeout(() => {
 									this.api.executeCommand('displayName', [Meteor.user().name]);
-									this.api.executeCommand('avatar', ['https://open.rocket.chat/avatar/aaron.ogle'])
+									this.api.executeCommand('avatar', [`${ Meteor.absoluteUrl() }avatar/${ Meteor.user().username }.jpg`])
 								}, 5000);
 
 								Meteor.call('jitsi:updateTimeout', roomId);
