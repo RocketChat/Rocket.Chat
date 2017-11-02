@@ -9,7 +9,7 @@ Package.describe({
 Package.onUse(function(api) {
 	api.versionsFrom('1.5.2.2');
 	api.use('ecmascript');
-	api.use('rocketchat:search-lib');
+	api.use('rocketchat:search');
 
 	api.addFiles('lib/SearchProvider.js');
 

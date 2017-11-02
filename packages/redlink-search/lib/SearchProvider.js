@@ -2,11 +2,12 @@ import {
 	SearchProvider,
 	searchProviders,
 	SearchProviderMetadata,
-	SearchProviderRuntime,
+	SearchProviderRuntimeIntegration,
 	SearchProviderUi
-} from 'meteor/rocketchat:search-lib';
+} from 'meteor/rocketchat:search';
 
-class RedlinkSearchProviderRuntime extends SearchProviderRuntime {
+
+class RedlinkSearchProviderRuntimeIntegration extends SearchProviderRuntimeIntegration {
 
 }
 
@@ -16,13 +17,16 @@ class RedlinkSearchProviderMetadata extends SearchProviderMetadata {
 	}
 }
 
+/*
+Don't know whether an own UI is really necessary
+ */
 class RedlinkSearchProviderUi extends SearchProviderUi {
 
 }
 
 class RedlinkSearchProvider extends SearchProvider {
 	constructor() {
-		super(new RedlinkSearchProviderRuntime(), new RedlinkSearchProviderMetadata(), new RedlinkSearchProviderUi());
+		super('redlink', new RedlinkSearchProviderRuntimeIntegration(), new RedlinkSearchProviderMetadata(), new RedlinkSearchProviderUi());
 	}
 }
 

@@ -1,5 +1,5 @@
 Package.describe({
-	name: 'rocketchat:search-lib',
+	name: 'rocketchat:search',
 	version: '0.0.1',
 	summary: 'This package exposes an API to integrate search providers',
 	git: '',
@@ -12,8 +12,7 @@ Package.onUse(function(api) {
 	api.use('rocketchat:lib');
 
 	// publicly visible artifacts
-	api.mainModule('server/lib/index.js', 'server');
-	api.mainModule('client/lib/index.js', 'client');
+	api.mainModule('lib/index.js');
 });
 
 Package.onTest(function(api) {

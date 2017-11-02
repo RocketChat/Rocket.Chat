@@ -1,3 +1,5 @@
+/* globals RocketChat */
+
 import {SearchProvider} from './SearchProvider';
 
 export class SearchProviderRegistry {
@@ -31,6 +33,16 @@ export class SearchProviderRegistry {
 
 	set activeProvider(identifier) {
 		this.activeProviderIdentifier = identifier;
+	}
+
+	provideSettings() {
+
+		RocketChat.settings.addGroup('SearchProviders', {}, () => {
+			const group = this;
+			this.providers.each((provider)=>{
+				group.section(provider.identifier, (section)=>provider.addSettings(section));
+			});
+		});
 	}
 }
 
