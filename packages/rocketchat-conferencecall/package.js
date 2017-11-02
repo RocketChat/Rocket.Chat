@@ -32,4 +32,6 @@ Package.onUse(function(api) {
 	api.addFiles('server/settings.js', 'server');
 	//api.addFiles('server/methods/startCall.js', 'server');
 	api.addFiles('server/actionLink.js', 'server');
+
+	api.mainModule('lib/index.js', ['client', 'server']);
 });

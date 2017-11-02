@@ -5,7 +5,6 @@ Meteor.startup(function() {
 		let providers = [];
 
 		_.forEach(RocketChat.conferenceCallProviders.providers, function(value, key) {
-			console.log(key, value);
 			providers.push({
 				key: key,
 				i18nLabel: key
@@ -18,7 +17,7 @@ Meteor.startup(function() {
 			public: true
 		});
 
-		this.add('ConferenceCall_Provider', providers[0].identifier, {
+		this.add('ConferenceCall_Provider', providers[0].key, {
 			type: 'select',
 			enableQuery: {
 				_id: 'ConferenceCall_Enabled',

@@ -54,7 +54,7 @@ Template.jitsiVideoTab.onRendered(function() {
 		}
 		this.timeout = null;
 		this.autorun(() => {
-			if (RocketChat.settings.get('Jitsi_Enabled')) {
+			if (RocketChat.settings.get('ConferenceCall_Provider') === 'Jitsi') {
 				if (this.tabBar.getState() === 'opened') {
 					const roomId = Session.get('openedRoom');
 
