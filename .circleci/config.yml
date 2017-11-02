@@ -253,10 +253,14 @@ jobs:
             python3.4 get-pip.py --user
             export PATH=~/.local/bin:$PATH
             pip install awscli --upgrade --user
+            aws --version
 
       - run:
           name: Publish assets
           command: |
+            echo $PATH
+            export PATH=~/.local/bin:$PATH
+            aws --version
             # if [[ $CIRCLE_PULL_REQUESTS ]]; then exit 0; fi;
 
             source .circleci/setartname.sh
