@@ -2,7 +2,6 @@ import { ConferenceCallProvider, ConferenceCallTypes } from 'meteor/rocketchat:c
 
 class JitsiConferenceCallProvider extends ConferenceCallProvider {
 	constructor() {
-		console.log('test');
 		super({
 			id: 'Jitsi',
 			name: 'Jitsi Meet',
