@@ -38,6 +38,7 @@ export class SearchProviderMetadata {
 	 * @return {boolean} indicates whether the settings are consitent and the search provider can act based upon the
 	 */
 	isConfigurationValid(settings, logger) {
+		logger.debug(settings);
 		return true;
 	}
 }

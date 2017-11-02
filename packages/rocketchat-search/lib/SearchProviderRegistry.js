@@ -1,5 +1,7 @@
 /* globals RocketChat */
 
+import {registerHooks} from '../server/runtime-integration/hooks';
+
 import {SearchProvider} from './SearchProvider';
 
 const SETTINGS_GROUP_NAME = 'SearchProviders';
@@ -55,6 +57,18 @@ export class SearchProviderRegistry {
 				this.add('ActiveSearchProvider', 0);
 			});
 		}
+	}
+
+	enable() {
+		if (!this.activeProvider()) {
+			throw new Error('No_provider_configured');
+		}
+
+		if (!this.activeProvider.metadata.isConfigurationValid()) {
+			throw new Error('Provider_not_properly_configured');
+		}
+
+		registerHooks();
 	}
 }
 

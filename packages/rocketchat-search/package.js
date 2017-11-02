@@ -14,10 +14,3 @@ Package.onUse(function(api) {
 	// publicly visible artifacts
 	api.mainModule('lib/index.js');
 });
-
-Package.onTest(function(api) {
-	api.use('ecmascript');
-	api.use('tinytest');
-	api.use('rocketchat:search');
-	api.mainModule('search-lib-tests.js');
-});

@@ -35,7 +35,7 @@ export class SearchProviderRuntimeIntegration {
 	 * @param user The user who has just been added
 	 * @param logger A logger providing log-levels {error, warn, info/log, debug, success}
 	 */
-	onUserAdded(room, user, logger) {
+	onUserAdded(user, room, logger) {
 		logger.info('User added propagated to search provider', room, user);
 	}
 
@@ -46,7 +46,7 @@ export class SearchProviderRuntimeIntegration {
 	 * @param user The user who has just been removed
 	 * @param logger A logger providing log-levels {error, warn, info/log, debug, success}
 	 */
-	onUserRemoved(room, user, logger) {
+	onUserRemoved(user, room, logger) {
 		logger.info('User removed propagated to search provider', room, user);
 	}
 
