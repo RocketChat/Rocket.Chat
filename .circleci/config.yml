@@ -251,8 +251,8 @@ jobs:
             sudo apt-get -y -qq install python3.4-dev
             curl -O https://bootstrap.pypa.io/get-pip.py
             python3.4 get-pip.py --user
-            pip install awscli --upgrade --user
             export PATH=~/.local/bin:$PATH
+            pip install awscli --upgrade --user
 
       - run:
           name: Publish assets
