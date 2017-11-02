@@ -1,13 +1,15 @@
 Meteor.startup(function() {
 	Tracker.autorun(function() {
-		if (RocketChat.settings.get('Jitsi_Enabled')) {
+		const videoProvider = RocketChat.videoConferenceProviders.get(RocketChat.settings.get('VideoConference_Provider'));
+
+		if (RocketChat.settings.get('VideoConference_Enabled')) {
 			RocketChat.TabBar.addButton({
 				groups: ['direct', 'group'],
 				id: 'video',
 				i18nTitle: 'Video Chat',
 				icon: 'video',
 				iconColor: 'red',
-				template: 'videoFlexTab',
+				template: videoProvider.template,
 				width: 600,
 				order: 12
 			});
@@ -17,7 +19,7 @@ Meteor.startup(function() {
 	});
 
 	Tracker.autorun(function() {
-		if (RocketChat.settings.get('Jitsi_Enabled') && RocketChat.settings.get('Jitsi_Enable_Channels')) {
+		if (RocketChat.settings.get('VideoConference_Enabled') && RocketChat.settings.get('VideoConference_Enable_Channels')) {
 			RocketChat.TabBar.addGroup('video', ['channel']);
 		} else {
 			RocketChat.TabBar.removeGroup('video', ['channel']);
@@ -25,7 +27,7 @@ Meteor.startup(function() {
 	});
 
 	Tracker.autorun(function() {
-		if (RocketChat.settings.get('Jitsi_Enabled')) {
+		if (RocketChat.settings.get('VideoConference_Enabled')) {
 			// Load from the jitsi meet instance.
 			if (typeof JitsiMeetExternalAPI === 'undefined') {
 				const prefix = __meteor_runtime_config__.ROOT_URL_PATH_PREFIX || '';

@@ -1,7 +1,7 @@
 /* globals JitsiMeetExternalAPI */
 /* eslint new-cap: [2, {"capIsNewExceptions": ["MD5"]}] */
 
-Template.videoFlexTab.helpers({
+Template.jitsiVideoTab.helpers({
 	openInNewWindow() {
 		if (Meteor.isCordova) {
 			return true;
@@ -11,11 +11,11 @@ Template.videoFlexTab.helpers({
 	}
 });
 
-Template.videoFlexTab.onCreated(function() {
+Template.jitsiVideoTab.onCreated(function() {
 	this.tabBar = Template.currentData().tabBar;
 });
 
-Template.videoFlexTab.onRendered(function() {
+Template.jitsiVideoTab.onRendered(function() {
 	this.api = null;
 
 	let timeOut = null;
@@ -116,9 +116,11 @@ Template.videoFlexTab.onRendered(function() {
 								*/
 								Meteor.setTimeout(() => {
 									this.api.executeCommand('displayName', [Meteor.user().name]);
+									this.api.executeCommand('avatar', ['https://open.rocket.chat/avatar/aaron.ogle'])
 								}, 5000);
 
 								Meteor.call('jitsi:updateTimeout', roomId);
+								Meteor.call('jitsi:startCall', roomId);
 
 								timeOut = Meteor.setInterval(() => Meteor.call('jitsi:updateTimeout', roomId), 10*1000);
 							}
