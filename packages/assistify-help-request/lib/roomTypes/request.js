@@ -82,6 +82,8 @@ export class RequestRoomType extends RoomTypeConfig {
 				return 'Hide_request_warning';
 			case UiTextContext.LEAVE_WARNING:
 				return 'Leave_request_warning';
+			case UiTextContext.NO_ROOMS_SUBSCRIBED:
+				return 'No_requests_yet';
 			default:
 				return '';
 		}
