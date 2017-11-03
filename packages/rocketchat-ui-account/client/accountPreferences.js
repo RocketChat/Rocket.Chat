@@ -1,5 +1,6 @@
 /*globals defaultUserLanguage, KonchatNotification */
 import toastr from 'toastr';
+import moment from 'moment';
 
 const notificationLabels = {
 	all: 'All_messages',
@@ -97,6 +98,59 @@ Template.accountPreferences.helpers({
 	notificationsSoundVolume() {
 		const user = Meteor.user();
 		return user && user.settings && user.settings.preferences && user.settings.preferences.notificationsSoundVolume || 100;
+	},
+	doNotDisturb() {
+		const user = Meteor.user();
+		return user && user.settings && user.settings.preferences && user.settings.preferences.doNotDisturb;
+	},
+	doNotDisturbInfo() {
+		const user = Meteor.user();
+		const doNotDisturb = user && user.settings && user.settings.preferences && user.settings.preferences.doNotDisturb;
+
+		return {
+			from: moment(doNotDisturb.initialTime).format('HH:mm'),
+			to: moment(doNotDisturb.finalTime).format('HH:mm')
+		};
+	},
+	snoozeNotifications() {
+		const user = Meteor.user();
+		return user && user.settings && user.settings.preferences && user.settings.preferences.snoozeNotifications;
+	},
+	snoozeNotificationsInfo() {
+		let duration;
+		const user = Meteor.user();
+		const snoozeNotifications = user && user.settings && user.settings.preferences && user.settings.preferences.snoozeNotifications;
+
+		if (snoozeNotifications.duration === 20) {
+			duration = t('Snooze_Notifications_20_Minutes_Option');
+		} else if (snoozeNotifications.duration === 60) {
+			duration = t('Snooze_Notifications_1_Hour_Option');
+		} else {
+			duration = t(`Snooze_Notifications_${ (snoozeNotifications.duration/60) }_Hours_Option`);
+		}
+
+		return {
+			description: duration,
+			from: moment(snoozeNotifications.initialTime).format('HH:mm'),
+			to: moment(snoozeNotifications.finalTime).format('HH:mm')
+		};
+	},
+	snoozeNotificationsIsValid() {
+		const user = Meteor.user();
+		const snoozeNotifications = user && user.settings && user.settings.preferences && user.settings.preferences.snoozeNotifications;
+
+		return snoozeNotifications && snoozeNotifications.finalTime && moment().isBefore(snoozeNotifications.finalTime);
+	},
+	selectHoursOptions() {
+		let hour = moment('00:00', 'HH:mm');
+		const hours = [];
+
+		while (hour.isBefore(moment('23:59', 'HH:mm'))) {
+			hours.push(hour.format('HH:mm'));
+			hour = hour.add(30, 'minutes');
+		}
+
+		return hours;
 	}
 });
 
@@ -161,6 +215,10 @@ Template.accountPreferences.onCreated(function() {
 		data.mobileNotifications = $('#mobileNotifications').find('select').val();
 		data.unreadAlert = $('#unreadAlert').find('input:checked').val();
 		data.notificationsSoundVolume = parseInt($('#notificationsSoundVolume').val());
+
+		data.snoozeNotifications = parseInt($('input[name=snoozeNotifications]:checked').val() || 0);
+		data.doNotDisturbInitialTime = moment($('select[name=doNotDisturbInitialTime]').val() || '00:00', 'HH:mm');
+		data.doNotDisturbFinalTime = moment($('select[name=doNotDisturbFinalTime]').val() || '08:00', 'HH:mm');
 
 		Meteor.call('saveUserPreferences', data, function(error, results) {
 			if (results) {

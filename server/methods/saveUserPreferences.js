@@ -1,3 +1,5 @@
+import moment from 'moment';
+
 Meteor.methods({
 	saveUserPreferences(settings) {
 		check(settings, Object);
@@ -82,6 +84,26 @@ Meteor.methods({
 			preferences.hideFlexTab = settings.hideFlexTab === '1';
 			preferences.highlights = settings.highlights;
 			preferences.sendOnEnter = settings.sendOnEnter;
+
+			if (settings.snoozeNotifications && settings.snoozeNotifications > 0) {
+				const initialTime = new Date();
+				preferences.snoozeNotifications = {
+					duration: settings.snoozeNotifications,
+					initialTime,
+					finalTime: (moment(initialTime).add(settings.snoozeNotifications, 'minutes')).toDate()
+				};
+			} else {
+				preferences.snoozeNotifications = {};
+			}
+
+			if (settings.doNotDisturbInitialTime && settings.doNotDisturbFinalTime) {
+				preferences.doNotDisturb = {
+					initialTime: settings.doNotDisturbInitialTime.toDate(),
+					finalTime: settings.doNotDisturbFinalTime.toDate()
+				};
+			} else {
+				preferences.doNotDisturb = {};
+			}
 
 			RocketChat.models.Users.setPreferences(Meteor.userId(), preferences);
 

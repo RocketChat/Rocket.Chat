@@ -64,10 +64,11 @@ Template.pushNotificationsFlexTab.helpers({
 		} else {
 			duration = t(`Snooze_Notifications_${ (snoozeNotifications.duration/60) }_Hours_Option`);
 		}
+
 		return {
 			description: duration,
-			from: moment(Template.instance().snoozeNotifications.get().initialTime).format('HH:mm'),
-			to: moment(Template.instance().snoozeNotifications.get().finalTime).format('HH:mm')
+			from: moment(snoozeNotifications.initialTime).format('HH:mm'),
+			to: moment(snoozeNotifications.finalTime).format('HH:mm')
 		};
 	},
 	snoozeNotificationsIsValid() {
@@ -246,9 +247,7 @@ Template.pushNotificationsFlexTab.helpers({
 
 Template.pushNotificationsFlexTab.onCreated(function() {
 	this.editing = new ReactiveVar();
-
 	this.doNotDisturb = new ReactiveVar({});
-
 	this.snoozeNotifications = new ReactiveVar({});
 
 	Meteor.autorun(() => {
@@ -315,8 +314,8 @@ Template.pushNotificationsFlexTab.onCreated(function() {
 		if (field === 'doNotDisturb' || field === 'snoozeNotifications') {
 			if (value && value === '1') {
 				if (field === 'doNotDisturb') {
-					const initialTime = moment($('select[name=doNotDisturbInitialTimePeriod]').val() || '00:00', 'HH:mm');
-					const finalTime = moment($('select[name=doNotDisturbFinalTimePeriod]').val() || '08:00', 'HH:mm');
+					const initialTime = moment($('select[name=doNotDisturbInitialTime]').val() || '00:00', 'HH:mm');
+					const finalTime = moment($('select[name=doNotDisturbFinalTime]').val() || '08:00', 'HH:mm');
 
 					value = {
 						initialTime: initialTime.toDate(),

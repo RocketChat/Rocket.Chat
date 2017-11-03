@@ -81,6 +81,32 @@
 									<label><input type="radio" name="unreadAlert" value="0" checked="{{checked 'unreadAlert' false}}"/> {{_ "Off"}}</label>
 								</div>
 							</div>
+							<div class="input-line double-col" id="snoozeNotifications">
+								<label>{{_ "Snooze_Notifications_Label"}}</label>
+								<div>
+									<label><input type="radio" name="snoozeNotifications" value="20" checked="{{$eq snoozeNotifications.duration 20}}"/> {{_ "Snooze_Notifications_20_Minutes_Option"}}</label>
+									<label><input type="radio" name="snoozeNotifications" value="60" checked="{{$eq snoozeNotifications.duration 60}}"/> {{_ "Snooze_Notifications_1_Hour_Option"}}</label>
+									<label><input type="radio" name="snoozeNotifications" value="120" checked="{{$eq snoozeNotifications.duration 120}}"/> {{_ "Snooze_Notifications_2_Hours_Option"}}</label>
+									<label><input type="radio" name="snoozeNotifications" value="240" checked="{{$eq snoozeNotifications.duration 240}}"/> {{_ "Snooze_Notifications_4_Hours_Option"}}</label>
+									<label><input type="radio" name="snoozeNotifications" value="480" checked="{{$eq snoozeNotifications.duration 480}}"/> {{_ "Snooze_Notifications_8_Hours_Option"}}</label>
+									<label><input type="radio" name="snoozeNotifications" value="1440" checked="{{$eq snoozeNotifications.duration 1440}}"/> {{_ "Snooze_Notifications_24_Hours_Option"}}</label>
+								</div>
+							</div>
+							<div class="input-line double-col" id="doNotDisturb">
+								<label>{{_ "Do_Not_Disturb_Label"}}</label>
+								<div>
+									<select class="input-monitor" name="doNotDisturbInitialTime">
+										{{#each selectHoursOptions}}
+											<option value="{{this}}" selected="{{$eq this doNotDisturbInfo.from}}">{{this}}</option>
+										{{/each}}
+									</select>
+									<select class="input-monitor" name="doNotDisturbFinalTime">
+										{{#each selectHoursOptions}}
+											<option value="{{this}}" selected="{{$eq this doNotDisturbInfo.to}}">{{this}}</option>
+										{{/each}}
+									</select>
+								</div>
+							</div>
 							<div class="input-line double-col">
 								<label>{{_ "Use_Emojis"}}</label>
 								<div>
