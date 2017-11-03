@@ -12,7 +12,8 @@ export const RoomSettingsEnum = {
 export const UiTextContext = {
 	CLOSE_WARNING: 'closeWarning',
 	HIDE_WARNING: 'hideWarning',
-	LEAVE_WARNING: 'leaveWarning'
+	LEAVE_WARNING: 'leaveWarning',
+	NO_ROOMS_SUBSCRIBED: 'noRoomsSubscribed'
 };
 
 export class RoomTypeRouteConfig {
