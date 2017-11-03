@@ -26,6 +26,7 @@ Package.onUse(function(api) {
 	api.addFiles('config.js', 'server');
 	api.addFiles('startup/customRoomTypes.js');
 	api.addFiles('startup/rolesAndPermissions.js', 'server');
+	api.addFiles('lib/messageTypes/requestClosed.js');
 
 	// Libraries
 	api.addFiles('server/inject.js', 'server');
@@ -82,6 +83,7 @@ Package.onUse(function(api) {
 
 	//Assets
 	api.addAssets('assets/stylesheets/helpRequestContext.less', 'server'); //has to be done on the server, it exposes the completed css to the client
+	api.addFiles('client/public/stylesheets/help-request.css', 'client');
 
 	//global UI modifications
 	api.addFiles('client/views/tabbar/tabbarConfig.js', 'client');

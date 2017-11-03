@@ -1,5 +1,5 @@
 /* globals openRoom */
-import { RoomTypeConfig, RoomTypeRouteConfig, RoomSettingsEnum } from '../RoomTypeConfig';
+import {RoomTypeConfig, RoomTypeRouteConfig, RoomSettingsEnum, UiTextContext} from '../RoomTypeConfig';
 
 export class DirectMessageRoomRoute extends RoomTypeRouteConfig {
 	constructor() {
@@ -14,7 +14,7 @@ export class DirectMessageRoomRoute extends RoomTypeRouteConfig {
 	}
 
 	link(sub) {
-		return { username: sub.name };
+		return {username: sub.name};
 	}
 }
 
@@ -41,7 +41,7 @@ export class DirectMessageRoomType extends RoomTypeConfig {
 	}
 
 	roomName(roomData) {
-		const subscription = ChatSubscription.findOne({ rid: roomData._id }, { fields: { name: 1, fname: 1 }});
+		const subscription = ChatSubscription.findOne({rid: roomData._id}, {fields: {name: 1, fname: 1}});
 		if (!subscription) {
 			return '';
 		}
@@ -55,7 +55,7 @@ export class DirectMessageRoomType extends RoomTypeConfig {
 
 	secondaryRoomName(roomData) {
 		if (RocketChat.settings.get('UI_Use_Real_Name')) {
-			const subscription = ChatSubscription.findOne({ rid: roomData._id }, { fields: { name: 1 }});
+			const subscription = ChatSubscription.findOne({rid: roomData._id}, {fields: {name: 1}});
 			return subscription && subscription.name;
 		}
 	}
@@ -68,7 +68,7 @@ export class DirectMessageRoomType extends RoomTypeConfig {
 	}
 
 	getUserStatus(roomId) {
-		const subscription = RocketChat.models.Subscriptions.findOne({ rid: roomId });
+		const subscription = RocketChat.models.Subscriptions.findOne({rid: roomId});
 		if (subscription == null) {
 			return;
 		}
@@ -96,5 +96,16 @@ export class DirectMessageRoomType extends RoomTypeConfig {
 
 	enableMembersListProfile() {
 		return true;
+	}
+
+	getUiText(context) {
+		switch (context) {
+			case UiTextContext.HIDE_WARNING:
+				return 'Hide_Private_Warning';
+			case UiTextContext.LEAVE_WARNING:
+				return 'Leave_Private_Warning';
+			default:
+				return '';
+		}
 	}
 }
