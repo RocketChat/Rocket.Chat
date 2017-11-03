@@ -1,5 +1,5 @@
 #!/bin/bash
-set -euo pipefail
+set -euvo pipefail
 IFS=$'\n\t'
 
 FILENAME="$ROCKET_DEPLOY_DIR/rocket.chat-$ARTIFACT_NAME.tgz";

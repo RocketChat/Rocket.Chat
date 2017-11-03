@@ -1,5 +1,5 @@
 #!/bin/bash
-set -euo pipefail
+set -euvo pipefail
 IFS=$'\n\t'
 
 # Add launchpad to known hosts

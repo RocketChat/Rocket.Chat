@@ -1,5 +1,5 @@
 #!/bin/bash
-set -euo pipefail
+set -euvo pipefail
 IFS=$'\n\t'
 
 CHANNEL=develop
@@ -15,7 +15,15 @@ fi
 
 if [[ $CHANNEL = "develop" ]]; then
     RC_VERSION=0.59.0-develop
-    aws s3api put-object --acl public-read --website-redirect-location "https://download.rocket.chat/build/$ARTIFACT_NAME" --bucket download.rocket.chat --key "build/rocket.chat-$RC_VERSION.tgz"
+    aws s3api put-object \
+    --acl public-read \
+    --website-redirect-location "https://download.rocket.chat/build/$ARTIFACT_NAME" \
+    --bucket download.rocket.chat \
+    --key "build/rocket.chat-$RC_VERSION.tgz"
 fi
 
-aws s3api put-object --acl public-read --website-redirect-location "https://download.rocket.chat/build/$ARTIFACT_NAME" --bucket download.rocket.chat --key "$CHANNEL"
+aws s3api put-object \
+--acl public-read \
+--website-redirect-location "https://download.rocket.chat/build/$ARTIFACT_NAME" \
+--bucket download.rocket.chat \
+--key "$CHANNEL"
