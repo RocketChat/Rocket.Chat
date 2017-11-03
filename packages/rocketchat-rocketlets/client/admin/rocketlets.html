@@ -10,7 +10,7 @@
 			<div class="content">
 				{{#requiresPermission 'manage-rocketlets'}}
 					<div class="rc-discovery">
-					<div class="rc-discovery-wrap">
+						<div class="rc-discovery-wrap">
 							<div class="rc-discovery__item">
 								<div class="rc-discovery__item__image-wrap">
 									<div class="rc-discovery__item__image"></div>
@@ -21,9 +21,7 @@
 										<div class="rc-discovery__item__footer__description">Install or import a new Rocketlet.</div>
 									</div>
 									<button class="rc-button rc-button--square rc-tooltip" aria-label="Install">
-										<svg class="rc-icon toolbar__icon toolbar__icon--plus toolbar__search-create-channel" aria-hidden="true">
-											<use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon-plus"></use>
-										</svg>
+										{{> icon icon="plus"}}
 									</button>
 								</div>
 							</div>
@@ -37,12 +35,10 @@
 									<div class="rc-discovery__item__footer">
 										<div class="rc-discovery__container">
 											<div class="discovery__item__footer__title">{{name}}</div>
-											<div class="rc-discovery__item__footer__description">{{description}}de</div>
+											<div class="rc-discovery__item__footer__description">{{description}}</div>
 										</div>
 										<button class="rc-button rc-button--square rc-tooltip" aria-label="Install">
-											<svg class="rc-icon toolbar__icon toolbar__icon--plus toolbar__search-create-channel" aria-hidden="true">
-												<use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon-plus"></use>
-											</svg>
+											{{> icon icon="cog"}}
 										</button>
 									</div>
 								</div>
