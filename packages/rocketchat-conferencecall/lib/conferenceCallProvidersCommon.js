@@ -33,4 +33,4 @@ export class ConferenceCallProvidersCommon {
 	getActiveProvider() {
 		return this.getProvider(RocketChat.settings.get('ConferenceCall_Provider'));
 	}
-};
+}

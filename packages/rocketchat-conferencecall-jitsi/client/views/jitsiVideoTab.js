@@ -116,11 +116,10 @@ Template.jitsiVideoTab.onRendered(function() {
 								*/
 								Meteor.setTimeout(() => {
 									this.api.executeCommand('displayName', [Meteor.user().name]);
-									this.api.executeCommand('avatar', [`${ Meteor.absoluteUrl() }avatar/${ Meteor.user().username }.jpg`])
+									this.api.executeCommand('avatar', [`${ Meteor.absoluteUrl() }avatar/${ Meteor.user().username }.jpg`]);
 								}, 5000);
 
 								Meteor.call('jitsi:updateTimeout', roomId);
-								Meteor.call('jitsi:startCall', roomId);
 
 								timeOut = Meteor.setInterval(() => Meteor.call('jitsi:updateTimeout', roomId), 10*1000);
 							}

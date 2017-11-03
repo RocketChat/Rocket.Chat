@@ -12,14 +12,14 @@ Meteor.methods({
 			_id: roomId,
 			msgs: 1,
 			lm: new Date(),
-			code: "roomCode",
-			label: "test",
+			code: 'roomCode',
+			label: 'test',
 			// usernames: [agent.username, guest.username],
 			t: 'v',
 			ts: new Date(),
 			v: {
 				_id: user._id,
-				username: user.username,
+				username: user.username
 				//token: message.token
 			},
 			cl: false,
@@ -29,13 +29,13 @@ Meteor.methods({
 
 		const subscriptionData = {
 			rid: roomId,
-			name: "test",
+			name: 'test',
 			alert: true,
 			open: true,
 			unread: 1,
 			userMentions: 1,
 			groupMentions: 0,
-			code: "roomCode",
+			code: 'roomCode',
 			u: {
 				_id: user._id,
 				username: user.username

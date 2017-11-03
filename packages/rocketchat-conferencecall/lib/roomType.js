@@ -1,4 +1,4 @@
-/* globals openRoom, LivechatInquiry */
+/* globals openRoom */
 
 RocketChat.roomTypes.add('v', 5, {
 	icon: 'video',
@@ -17,7 +17,6 @@ RocketChat.roomTypes.add('v', 5, {
 	},
 
 	findRoom(identifier) {
-		alert('find')
 		return ChatRoom.findOne({ code: identifier });
 	},
 
@@ -36,9 +35,5 @@ RocketChat.roomTypes.add('v', 5, {
 	canSendMessage(roomId) {
 		const room = ChatRoom.findOne({ _id: roomId }, { fields: { open: 1 } });
 		return room && room.open === true;
-	},
-
-	notSubscribedTpl: {
-		template: 'livechatNotSubscribed'
 	}
 });

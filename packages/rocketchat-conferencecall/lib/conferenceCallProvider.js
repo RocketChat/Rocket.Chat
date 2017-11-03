@@ -1,13 +1,13 @@
 export class ConferenceCallProvider {
 	constructor({
 		id,
-	    name,
-	    templateName,
+		name,
+		templateName,
 		type,
 	}) {
 		this.id = id;
-        this.name = name;
+		this.name = name;
 		this.templateName = templateName;
-        this.type = type;
+		this.type = type;
 	}
 }

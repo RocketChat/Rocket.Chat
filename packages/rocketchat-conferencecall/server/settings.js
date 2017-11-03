@@ -1,12 +1,10 @@
 Meteor.startup(function() {
 	RocketChat.settings.addGroup('Conference Calls', function() {
-		console.log(RocketChat.conferenceCallProviders)
-
-		let providers = [];
+		const providers = [];
 
 		_.forEach(RocketChat.conferenceCallProviders.providers, function(value, key) {
 			providers.push({
-				key: key,
+				key,
 				i18nLabel: key
 			});
 		});

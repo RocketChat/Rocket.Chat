@@ -1,7 +1,7 @@
 Meteor.startup(function() {
 	RocketChat.settings.addGroup('Conference Calls', function() {
 
-		this.section('Jitsi', function () {
+		this.section('Jitsi', function() {
 			this.add('Jitsi_Domain', 'meet.jit.si', {
 				type: 'string',
 				enableQuery: {
