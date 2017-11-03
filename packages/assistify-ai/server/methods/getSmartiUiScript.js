@@ -13,13 +13,15 @@ function loadSmarti() {
 		RocketChat.settings.get('DBS_AI_Redlink_URL').endsWith('/') ?
 			RocketChat.settings.get('DBS_AI_Redlink_URL') :
 			`${ RocketChat.settings.get('DBS_AI_Redlink_URL') }/`;
-	SystemLogger.debug('Trying to retrieve Smarti UI from', DBS_AI_SMARTI_URL);
+	const DBS_AI_SMARTI_WIDGET_URL = `${ DBS_AI_SMARTI_URL }plugin/v1/rocket.chat.js`;
 
 	let response = null;
 	try {
-		response = HTTP.get(`${ DBS_AI_SMARTI_URL }plugin/v1/rocket.chat.js`);
+		SystemLogger.debug('Trying to retrieve Smarti-Widget script from', DBS_AI_SMARTI_WIDGET_URL);
+		response = HTTP.get(DBS_AI_SMARTI_WIDGET_URL);
 	} catch (error) {
-		SystemLogger.error('Could not reach Smarti service at', DBS_AI_SMARTI_URL);
+		SystemLogger.error('Could not load the Smarti-Widget script at', DBS_AI_SMARTI_URL);
+		SystemLogger.debug(error);
 		throw new Meteor.Error('error-unreachable-url');
 	}
 
