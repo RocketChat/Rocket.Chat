@@ -258,7 +258,7 @@ jobs:
             # if [[ $CIRCLE_PULL_REQUESTS ]]; then exit 0; fi;
 
             export PATH=~/.local/bin:$PATH
-            CIRCLE_TAG=${CIRCLE_TAG:=}
+            export CIRCLE_TAG=${CIRCLE_TAG:=}
 
             source .circleci/setartname.sh
             source .circleci/setdeploydir.sh
