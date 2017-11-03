@@ -2,7 +2,7 @@
 set -euvo pipefail
 IFS=$'\n\t'
 
-if [[ $SNAP_CHANNEL = "develop" ]]; then
+if [[ $RC_RELEASE = "develop" ]]; then
     aws s3api put-object \
     --acl public-read \
     --website-redirect-location "https://download.rocket.chat/build/$ARTIFACT_NAME" \
@@ -14,4 +14,4 @@ aws s3api put-object \
 --acl public-read \
 --website-redirect-location "https://download.rocket.chat/build/$ARTIFACT_NAME" \
 --bucket download.rocket.chat \
---key "$SNAP_CHANNEL"
+--key "$RC_RELEASE"
