@@ -22,7 +22,7 @@ chmod 0600 launchpadkey
 echo "Tag: $CIRCLE_TAG \r\nBranch: $CIRCLE_BRANCH\r\nBuild: $CIRCLE_BUILD_NUM\r\nCommit: $CIRCLE_SHA1" > buildinfo
 
 # Clone launchpad repo for the channel down.
-GIT_SSH_COMMAND="ssh -i launchpadkey" git clone -b $SNAP_CHANNEL git+ssh://rocket.chat.buildmaster@git.launchpad.net/rocket.chat launchpad
+ssh-agent sh -c "ssh-add ./launchpadkey; git clone -b $SNAP_CHANNEL git+ssh://rocket.chat.buildmaster@git.launchpad.net/rocket.chat launchpad"
 
 # Rarely will change, but just incase we copy it all
 cp -r resources buildinfo launchpad/
@@ -35,7 +35,7 @@ git add resources snapcraft.yaml buildinfo
 git commit -m "CircleCI Build: $CIRCLE_BUILD_NUM CircleCI Commit: $CIRCLE_SHA1"
 
 # Push up up to the branch of choice.
-GIT_SSH_COMMAND="ssh -i ../launchpadkey" git push origin $SNAP_CHANNEL
+ssh-agent sh -c "ssh-add ../launchpadkey; git push origin $SNAP_CHANNEL"
 
 # Clean up
 cd ..
