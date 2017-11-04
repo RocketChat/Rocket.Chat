@@ -10,6 +10,22 @@
 // Defined range of transparencies reduces random colour variances
 // Major colors form the core of the scheme
 // Names changed to reflect usage, comments show pre-refactor names
+
+const reg = /--(rc-color-.*?): (.*?);/igm;
+
+const colors = [...Assets.getText('client/imports/general/variables.css').match(reg)].map(color => {
+	const [name, value] = color.split(': ');
+	return [name.replace('--', ''), value.replace(';', '')];
+});
+
+colors.forEach(([key, color]) => 	{
+	if (/var/.test(color)) {
+		const [, value] = color.match(/var\(--(.*?)\)/i);
+		return RocketChat.theme.addPublicColor(key, value, 'Colors', 'expression');
+	}
+	RocketChat.theme.addPublicColor(key, color, 'Colors');
+});
+
 const majorColors= {
 	'content-background-color': '#FFFFFF',
 	'primary-background-color': '#04436A',
@@ -42,12 +58,12 @@ const minorColors= {
 // Bulk-add settings for color scheme
 Object.keys(majorColors).forEach((key) => {
 	const value = majorColors[key];
-	RocketChat.theme.addPublicColor(key, value, 'Colors');
+	RocketChat.theme.addPublicColor(key, value, 'Old Colors');
 });
 
 Object.keys(minorColors).forEach((key) => {
 	const value = minorColors[key];
-	RocketChat.theme.addPublicColor(key, value, 'Colors (minor)', 'expression');
+	RocketChat.theme.addPublicColor(key, value, 'Old Colors (minor)', 'expression');
 });
 
 RocketChat.theme.addPublicFont('body-font-family', '-apple-system, BlinkMacSystemFont, Roboto, \'Helvetica Neue\', Arial, sans-serif, \'Apple Color Emoji\', \'Segoe UI\', \'Segoe UI Emoji\', \'Segoe UI Symbol\', \'Meiryo UI\'');
@@ -61,12 +77,3 @@ RocketChat.settings.add('theme-custom-css', '', {
 	public: true
 });
 
-
-RocketChat.settings.add('theme-custom-variables', Assets.getText('client/imports/general/variables.css'), {
-	group: 'Layout',
-	type: 'code',
-	code: 'text/css',
-	multiline: true,
-	section: 'Customize Theme',
-	public: true
-});

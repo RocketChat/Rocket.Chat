@@ -94,10 +94,10 @@
 		align-items: center;
 
 		&--alert {
-			color: var(--color-error);
+			color: var(--rc-color-error);
 
 			& .rc-icon {
-				fill: var(--color-error);
+				fill: var(--rc-color-error);
 			}
 		}
 	}
@@ -140,7 +140,7 @@
 	fill: currentColor;
 }
 
-@media (width <= 400px) {
+@media (width <= 500px) {
 	.rc-popover {
 		& .rc-popover__content {
 			top: initial !important;
