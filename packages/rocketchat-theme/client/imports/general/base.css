@@ -88,11 +88,11 @@ button {
 	}
 
 	& .tab-button-icon {
-		color: var(--color-dark-medium);
+		color: var(--rc-color-primary-dark);
 
 		font-size: 1.125rem;
 
-		fill: var(--color-dark-medium);
+		fill: var(--rc-color-primary-dark);
 
 		&--star {
 			fill: none;

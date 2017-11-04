@@ -25,10 +25,23 @@ RocketChat.settings.addGroup('LDAP', function() {
 	this.add('LDAP_Login_Fallback', true, { type: 'boolean', enableQuery });
 	this.add('LDAP_Host', '', { type: 'string', enableQuery });
 	this.add('LDAP_Port', '389', { type: 'string', enableQuery });
+	this.add('LDAP_Reconnect', false, { type: 'boolean', enableQuery });
 	this.add('LDAP_Encryption', 'plain', { type: 'select', values: [ { key: 'plain', i18nLabel: 'No_Encryption' }, { key: 'tls', i18nLabel: 'StartTLS' }, { key: 'ssl', i18nLabel: 'SSL/LDAPS' } ], enableQuery });
 	this.add('LDAP_CA_Cert', '', { type: 'string', multiline: true, enableQuery: enableTLSQuery });
 	this.add('LDAP_Reject_Unauthorized', true, { type: 'boolean', enableQuery: enableTLSQuery });
 	this.add('LDAP_BaseDN', '', { type: 'string', enableQuery });
+	this.add('LDAP_Internal_Log_Level', 'disabled', {
+		type: 'select',
+		values: [
+			{ key: 'disabled', i18nLabel: 'Disabled' },
+			{ key: 'error', i18nLabel: 'Error' },
+			{ key: 'warn', i18nLabel: 'Warn' },
+			{ key: 'info', i18nLabel: 'Info' },
+			{ key: 'debug', i18nLabel: 'Debug' },
+			{ key: 'trace', i18nLabel: 'Trace' }
+		],
+		enableQuery
+	});
 	this.add('LDAP_Test_Connection', 'ldap_test_connection', { type: 'action', actionText: 'Test_Connection' });
 
 	this.section('Authentication', function() {
@@ -47,6 +60,8 @@ RocketChat.settings.addGroup('LDAP', function() {
 		this.add('LDAP_User_Search_Filter', '(objectclass=*)', { type: 'string', enableQuery });
 		this.add('LDAP_User_Search_Scope', 'sub', { type: 'string', enableQuery });
 		this.add('LDAP_User_Search_Field', 'sAMAccountName', { type: 'string', enableQuery });
+		this.add('LDAP_Search_Page_Size', 250, { type: 'int', enableQuery });
+		this.add('LDAP_Search_Size_Limit', 1000, { type: 'int', enableQuery });
 	});
 
 	this.section('User Search (Group Validation)', function() {
