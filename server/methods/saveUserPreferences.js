@@ -85,12 +85,13 @@ Meteor.methods({
 			preferences.highlights = settings.highlights;
 			preferences.sendOnEnter = settings.sendOnEnter;
 
-			if (settings.snoozeNotifications && settings.snoozeNotifications > 0) {
-				const initialTime = new Date();
+			if (settings.snoozeNotificationsDuration && settings.snoozeNotificationsDuration > 0) {
+				const initialDateTime = new Date();
+
 				preferences.snoozeNotifications = {
-					duration: settings.snoozeNotifications,
-					initialTime,
-					finalTime: (moment(initialTime).add(settings.snoozeNotifications, 'minutes')).toDate()
+					duration: settings.snoozeNotificationsDuration,
+					initialDateTime,
+					finalDateTime: (moment(initialDateTime).add(settings.snoozeNotificationsDuration, 'minutes')).toDate()
 				};
 			} else {
 				preferences.snoozeNotifications = {};
@@ -98,8 +99,8 @@ Meteor.methods({
 
 			if (settings.doNotDisturbInitialTime && settings.doNotDisturbFinalTime) {
 				preferences.doNotDisturb = {
-					initialTime: settings.doNotDisturbInitialTime.toDate(),
-					finalTime: settings.doNotDisturbFinalTime.toDate()
+					initialTime: settings.doNotDisturbInitialTime,
+					finalTime: settings.doNotDisturbFinalTime
 				};
 			} else {
 				preferences.doNotDisturb = {};

@@ -7,12 +7,21 @@ Meteor.methods({
 		check(rid, String);
 		check(field, String);
 
-		if (field === 'doNotDisturb' || field === 'snoozeNotifications') {
+		if (field === 'doNotDisturb') {
 			if (value && value.initialTime && value.finalTime) {
 				check(value, {
+					initialTime: String,
+					finalTime: String
+				});
+			} else {
+				value = {};
+			}
+		} else if (field === 'snoozeNotifications') {
+			if (value && value.initialDateTime && value.finalDateTime) {
+				check(value, {
 					duration: Match.Maybe(Number),
-					initialTime: Date,
-					finalTime: Date
+					initialDateTime: Date,
+					finalDateTime: Date
 				});
 			} else {
 				value = {};

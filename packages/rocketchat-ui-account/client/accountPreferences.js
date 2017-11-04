@@ -100,26 +100,21 @@ Template.accountPreferences.helpers({
 		return user && user.settings && user.settings.preferences && user.settings.preferences.notificationsSoundVolume || 100;
 	},
 	doNotDisturb() {
-		const user = Meteor.user();
-		return user && user.settings && user.settings.preferences && user.settings.preferences.doNotDisturb;
+		return Template.instance().doNotDisturb.get();
 	},
-	doNotDisturbInfo() {
-		const user = Meteor.user();
-		const doNotDisturb = user && user.settings && user.settings.preferences && user.settings.preferences.doNotDisturb;
-
-		return {
-			from: moment(doNotDisturb.initialTime).format('HH:mm'),
-			to: moment(doNotDisturb.finalTime).format('HH:mm')
-		};
+	doNotDisturbIsValid() {
+		const doNotDisturb = Template.instance().doNotDisturb.get();
+		return !!(doNotDisturb && doNotDisturb.initialTime && doNotDisturb.finalTime);
+	},
+	showDoNotDisturbOptions() {
+		return Template.instance().showDoNotDisturbOptions.get();
 	},
 	snoozeNotifications() {
-		const user = Meteor.user();
-		return user && user.settings && user.settings.preferences && user.settings.preferences.snoozeNotifications;
+		return Template.instance().snoozeNotifications.get();
 	},
 	snoozeNotificationsInfo() {
 		let duration;
-		const user = Meteor.user();
-		const snoozeNotifications = user && user.settings && user.settings.preferences && user.settings.preferences.snoozeNotifications;
+		const snoozeNotifications = Template.instance().snoozeNotifications.get();
 
 		if (snoozeNotifications.duration === 20) {
 			duration = t('Snooze_Notifications_20_Minutes_Option');
@@ -131,15 +126,16 @@ Template.accountPreferences.helpers({
 
 		return {
 			description: duration,
-			from: moment(snoozeNotifications.initialTime).format('HH:mm'),
-			to: moment(snoozeNotifications.finalTime).format('HH:mm')
+			from: moment(snoozeNotifications.initialDateTime).format('lll'),
+			to: moment(snoozeNotifications.finalDateTime).format('lll')
 		};
 	},
 	snoozeNotificationsIsValid() {
-		const user = Meteor.user();
-		const snoozeNotifications = user && user.settings && user.settings.preferences && user.settings.preferences.snoozeNotifications;
-
-		return snoozeNotifications && snoozeNotifications.finalTime && moment().isBefore(snoozeNotifications.finalTime);
+		const snoozeNotifications = Template.instance().snoozeNotifications.get();
+		return !!(snoozeNotifications && snoozeNotifications.finalDateTime && moment().isBefore(snoozeNotifications.finalDateTime));
+	},
+	showSnoozeNotificationsOptions() {
+		return Template.instance().showSnoozeNotificationsOptions.get();
 	},
 	selectHoursOptions() {
 		let hour = moment('00:00', 'HH:mm');
@@ -179,6 +175,21 @@ Template.accountPreferences.onCreated(function() {
 	this.clearForm = function() {
 		this.find('#language').value = localStorage.getItem('userLanguage');
 	};
+
+	this.doNotDisturb = new ReactiveVar(user && user.settings && user.settings.preferences && user.settings.preferences.doNotDisturb);
+	this.snoozeNotifications = new ReactiveVar(user && user.settings && user.settings.preferences && user.settings.preferences.snoozeNotifications);
+
+	this.showDoNotDisturbOptions = new ReactiveVar(false);
+	this.showSnoozeNotificationsOptions = new ReactiveVar(false);
+
+	if (this.doNotDisturb.get() && this.doNotDisturb.get().initialTime) {
+		this.showDoNotDisturbOptions.set(true);
+	}
+
+	if (this.snoozeNotifications.get() && this.snoozeNotifications.get().finalDateTime && moment().isBefore(this.snoozeNotifications.get().finalDateTime)) {
+		this.showSnoozeNotificationsOptions.set(true);
+	}
+
 	this.save = function() {
 		instance = this;
 		const data = {};
@@ -216,9 +227,14 @@ Template.accountPreferences.onCreated(function() {
 		data.unreadAlert = $('#unreadAlert').find('input:checked').val();
 		data.notificationsSoundVolume = parseInt($('#notificationsSoundVolume').val());
 
-		data.snoozeNotifications = parseInt($('input[name=snoozeNotifications]:checked').val() || 0);
-		data.doNotDisturbInitialTime = moment($('select[name=doNotDisturbInitialTime]').val() || '00:00', 'HH:mm');
-		data.doNotDisturbFinalTime = moment($('select[name=doNotDisturbFinalTime]').val() || '08:00', 'HH:mm');
+		if ($('input[name=snoozeNotifications]:checked').val() === '1') {
+			data.snoozeNotificationsDuration = parseInt($('input[name=snoozeNotificationsDuration]:checked').val() || 0);
+		}
+
+		if ($('input[name=doNotDisturb]:checked').val() === '1' && $('select[name=doNotDisturbInitialTime]').val() !== $('select[name=doNotDisturbFinalTime]').val()) {
+			data.doNotDisturbInitialTime = $('select[name=doNotDisturbInitialTime]').val();
+			data.doNotDisturbFinalTime = $('select[name=doNotDisturbFinalTime]').val();
+		}
 
 		Meteor.call('saveUserPreferences', data, function(error, results) {
 			if (results) {
@@ -277,5 +293,13 @@ Template.accountPreferences.events({
 			const $audio = $(`audio#${ audio }`);
 			return $audio && $audio[0] && $audio.play();
 		}
+	},
+	'change input[name=doNotDisturb]'(e, instance) {
+		e.preventDefault();
+		instance.showDoNotDisturbOptions.set(!instance.showDoNotDisturbOptions.get());
+	},
+	'change input[name=snoozeNotifications]'(e, instance) {
+		e.preventDefault();
+		instance.showSnoozeNotificationsOptions.set(!instance.showSnoozeNotificationsOptions.get());
 	}
 });

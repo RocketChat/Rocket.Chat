@@ -40,12 +40,6 @@ Template.pushNotificationsFlexTab.helpers({
 	doNotDisturb() {
 		return Template.instance().doNotDisturb.get();
 	},
-	doNotDisturbInfo() {
-		return {
-			from: moment(Template.instance().doNotDisturb.get().initialTime).format('HH:mm'),
-			to: moment(Template.instance().doNotDisturb.get().finalTime).format('HH:mm')
-		};
-	},
 	doNotDisturbIsValid() {
 		const doNotDisturb = Template.instance().doNotDisturb.get();
 		return !!(doNotDisturb && doNotDisturb.initialTime && doNotDisturb.finalTime);
@@ -67,13 +61,13 @@ Template.pushNotificationsFlexTab.helpers({
 
 		return {
 			description: duration,
-			from: moment(snoozeNotifications.initialTime).format('HH:mm'),
-			to: moment(snoozeNotifications.finalTime).format('HH:mm')
+			from: moment(snoozeNotifications.initialDateTime).format('lll'),
+			to: moment(snoozeNotifications.finalDateTime).format('lll')
 		};
 	},
 	snoozeNotificationsIsValid() {
 		const snoozeNotifications = Template.instance().snoozeNotifications.get();
-		return snoozeNotifications && snoozeNotifications.finalTime && moment().isBefore(snoozeNotifications.finalTime);
+		return snoozeNotifications && snoozeNotifications.finalDateTime && moment().isBefore(snoozeNotifications.finalDateTime);
 	},
 	selectHoursOptions() {
 		let hour = moment('00:00', 'HH:mm');
@@ -314,22 +308,19 @@ Template.pushNotificationsFlexTab.onCreated(function() {
 		if (field === 'doNotDisturb' || field === 'snoozeNotifications') {
 			if (value && value === '1') {
 				if (field === 'doNotDisturb') {
-					const initialTime = moment($('select[name=doNotDisturbInitialTime]').val() || '00:00', 'HH:mm');
-					const finalTime = moment($('select[name=doNotDisturbFinalTime]').val() || '08:00', 'HH:mm');
-
 					value = {
-						initialTime: initialTime.toDate(),
-						finalTime: finalTime.toDate()
+						initialTime: $('select[name=doNotDisturbInitialTime]').val() || '00:00',
+						finalTime: $('select[name=doNotDisturbFinalTime]').val() || '08:00'
 					};
 				} else if (field === 'snoozeNotifications') {
 					const snoozeDuration = parseInt($('input[name=snoozeNotificationsOptions]:checked').val() || 120);
-					const initialTime = new Date();
+					const initialDateTime = new Date();
 
 					if (snoozeDuration && snoozeDuration > 0) {
 						value = {
 							duration: snoozeDuration,
-							initialTime,
-							finalTime: (moment(initialTime).add(snoozeDuration, 'minutes')).toDate()
+							initialDateTime,
+							finalDateTime: (moment(initialDateTime).add(snoozeDuration, 'minutes')).toDate()
 						};
 					} else {
 						value = {};
