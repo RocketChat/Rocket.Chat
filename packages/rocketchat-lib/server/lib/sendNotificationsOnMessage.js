@@ -198,13 +198,45 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room, userId) {
 	});
 
 	subscriptions.forEach(subscription => {
-		if (subscription.disableNotifications) {
+		const preferences = userSettings[subscription.u._id] ? userSettings[subscription.u._id].preferences || {} : {};
+
+		let snoozeNotifications = subscription.snoozeNotifications && subscription.snoozeNotifications.duration && subscription.snoozeNotifications.finalDateTime && moment().isBefore(subscription.snoozeNotifications.finalDateTime);
+
+		if (!snoozeNotifications) {
+			snoozeNotifications = preferences.snoozeNotifications && preferences.snoozeNotifications.duration && preferences.snoozeNotifications.finalDateTime && moment().isBefore(preferences.snoozeNotifications.finalDateTime);
+		}
+
+		let doNotDisturb = false;
+
+		if (subscription.doNotDisturb && subscription.doNotDisturb.initialTime && subscription.doNotDisturb.finalTime) {
+			const initialMoment = moment(subscription.doNotDisturb.initialTime, 'HH:mm');
+			const finalMoment = moment(subscription.doNotDisturb.finalTime, 'HH:mm');
+
+			if (initialMoment.isAfter(finalMoment)) {
+				finalMoment.add(1, 'day');
+			}
+
+			doNotDisturb = moment().isBetween(initialMoment, finalMoment);
+		}
+
+		if (!doNotDisturb && preferences.doNotDisturb && preferences.doNotDisturb.initialTime && preferences.doNotDisturb.finalTime) {
+			const initialMoment = moment(preferences.doNotDisturb.initialTime, 'HH:mm');
+			const finalMoment = moment(preferences.doNotDisturb.finalTime, 'HH:mm');
+
+			if (initialMoment.isAfter(finalMoment)) {
+				finalMoment.add(1, 'day');
+			}
+
+			doNotDisturb = moment().isBetween(initialMoment, finalMoment);
+		}
+
+		if (subscription.disableNotifications || snoozeNotifications || doNotDisturb) {
 			settings.dontNotifyDesktopUsers.push(subscription.u._id);
 			settings.dontNotifyMobileUsers.push(subscription.u._id);
 			settings.dontNotifyAudioUsers.push(subscription.u._id);
 			return;
 		}
-		const preferences = userSettings[subscription.u._id] ? userSettings[subscription.u._id].preferences || {} : {};
+
 		const userAudioNotificationPreference = preferences.audioNotifications !== 'default' ? preferences.audioNotifications : undefined;
 		const userDesktopNotificationPreference = preferences.desktopNotifications !== 'default' ? preferences.desktopNotifications : undefined;
 		const userMobileNotificationPreference = preferences.mobileNotifications !== 'default' ? preferences.mobileNotifications : undefined;
@@ -214,17 +246,20 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room, userId) {
 			desktopNotifications = userDesktopNotificationPreference || RocketChat.settings.get('Desktop_Notifications_Default_Alert'),
 			mobilePushNotifications = userMobileNotificationPreference || RocketChat.settings.get('Mobile_Notifications_Default_Alert')
 		} = subscription;
-		if (audioNotifications === 'all' && !disableAllMessageNotifications) {
+
+		if (audioNotifications === 'all' && !disableAllMessageNotifications && !snoozeNotifications && !doNotDisturb) {
 			settings.alwaysNotifyAudioUsers.push(subscription.u._id);
 		}
-		if (desktopNotifications === 'all' && !disableAllMessageNotifications) {
+
+		if (desktopNotifications === 'all' && !disableAllMessageNotifications && !snoozeNotifications && !doNotDisturb) {
 			settings.alwaysNotifyDesktopUsers.push(subscription.u._id);
-		} else if (desktopNotifications === 'nothing') {
+		} else if (desktopNotifications === 'nothing' || snoozeNotifications || doNotDisturb) {
 			settings.dontNotifyDesktopUsers.push(subscription.u._id);
 		}
-		if (mobilePushNotifications === 'all' && !disableAllMessageNotifications) {
+
+		if (mobilePushNotifications === 'all' && !disableAllMessageNotifications && !snoozeNotifications && !doNotDisturb) {
 			settings.alwaysNotifyMobileUsers.push(subscription.u._id);
-		} else if (mobilePushNotifications === 'nothing') {
+		} else if (mobilePushNotifications === 'nothing' || snoozeNotifications || doNotDisturb) {
 			settings.dontNotifyMobileUsers.push(subscription.u._id);
 		}
 
