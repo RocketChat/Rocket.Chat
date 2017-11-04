@@ -7,11 +7,18 @@ Template.livechatIntegrationFacebook.helpers({
 	},
 	enabled() {
 		return Template.instance().enabled.get();
+	},
+	hasToken() {
+		return Template.instance().hasToken.get();
+	},
+	enableButtonDisabled() {
+		return !Template.instance().hasToken.get() ? 'disabled' : '';
 	}
 });
 
 Template.livechatIntegrationFacebook.onCreated(function() {
 	this.enabled = new ReactiveVar(false);
+	this.hasToken = new ReactiveVar(false);
 	this.pages = new ReactiveVar([]);
 
 	this.autorun(() => {

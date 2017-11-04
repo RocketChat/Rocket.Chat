@@ -10,7 +10,8 @@ Meteor.methods({
 			switch (options.action) {
 				case 'initialState': {
 					return {
-						enabled: RocketChat.settings.get('Livechat_Facebook_Enabled')
+						enabled: RocketChat.settings.get('Livechat_Facebook_Enabled'),
+						hasToken: !!RocketChat.settings.get('Livechat_Facebook_API_Key')
 					};
 				}
 

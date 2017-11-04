@@ -7,7 +7,11 @@
 					<button class="button reload">{{_ "Reload_Pages"}}</button>
 					<button class="button danger disable">{{_ "Disable"}}</button>
 				{{else}}
-					<button class="button primary enable">{{_ "Enable"}}</button>
+					<button class="button primary enable" {{enableButtonDisabled}}>{{_ "Enable"}}</button>
+					{{#unless hasToken}}
+						<p>{{_ "You_have_to_set_an_API_token_first_in_order_to_use_the_integration"}}</p>
+						<p>{{_ "Please_go_to_the_Administration_page_then_Livechat_Facebook"}}</p>
+					{{/unless}}
 				{{/if}}
 			</div>
 			{{#each pages}}
@@ -23,7 +27,9 @@
 					</div>
 				</div>
 			{{else}}
-				<p>Nothing to show here.</p>
+				{{#if enabled}}
+					<p>Nothing to show here.</p>
+				{{/if}}
 			{{/each}}
 		</fieldset>
 	</form>
