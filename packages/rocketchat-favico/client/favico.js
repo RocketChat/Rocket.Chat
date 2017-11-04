@@ -22,6 +22,7 @@
  *    win: top
  * });
  */
+/* eslint-disable */
 (function() {
 
 	var Favico = (function(opt) {

@@ -6,6 +6,10 @@ this.popover = {
 		this.renderedPopover = Blaze.renderWithData(Template.popover, config, document.body);
 	},
 	close() {
+		if (!this.renderedPopover) {
+			return false;
+		}
+
 		Blaze.remove(this.renderedPopover);
 
 		const activeElement = this.renderedPopover.dataVar.curValue.activeElement;
@@ -81,16 +85,56 @@ Template.popover.onRendered(function() {
 
 Template.popover.events({
 	'click [data-type="messagebox-action"]'(event, t) {
-		const action = RocketChat.messageBox.actions.getById(event.currentTarget.dataset.id);
+		const id = event.currentTarget.dataset.id;
+		const action = RocketChat.messageBox.actions.getById(id);
 		if ((action[0] != null ? action[0].action : undefined) != null) {
 			action[0].action({rid: t.data.data.rid, messageBox: document.querySelector('.rc-message-box'), element: event.currentTarget, event});
-			popover.close();
+			if (id !== 'audio-message') {
+				popover.close();
+			}
 		}
 	},
 	'click [data-type="message-action"]'(e, t) {
 		const button = RocketChat.MessageAction.getButtonById(e.currentTarget.dataset.id);
 		if ((button != null ? button.action : undefined) != null) {
 			button.action.call(t.data.data, e, t.data.instance);
+			popover.close();
+			return false;
+		}
+
+		if (e.currentTarget.dataset.id === 'report-abuse') {
+			const message = t.data.data._arguments[1];
+			swal({
+				title: TAPi18n.__('Report_this_message_question_mark'),
+				text: message.msg,
+				inputPlaceholder: TAPi18n.__('Why_do_you_want_to_report_question_mark'),
+				type: 'input',
+				showCancelButton: true,
+				confirmButtonColor: '#DD6B55',
+				confirmButtonText: TAPi18n.__('Report_exclamation_mark'),
+				cancelButtonText: TAPi18n.__('Cancel'),
+				closeOnConfirm: false,
+				html: false
+			}, (inputValue) => {
+				if (inputValue === false) {
+					return false;
+				}
+
+				if (inputValue === '') {
+					swal.showInputError(TAPi18n.__('You_need_to_write_something'));
+					return false;
+				}
+
+				Meteor.call('reportMessage', message._id, inputValue);
+
+				swal({
+					title: TAPi18n.__('Report_sent'),
+					text: TAPi18n.__('Thank_you_exclamation_mark '),
+					type: 'success',
+					timer: 1000,
+					showConfirmButton: false
+				});
+			});
 			popover.close();
 		}
 	},
