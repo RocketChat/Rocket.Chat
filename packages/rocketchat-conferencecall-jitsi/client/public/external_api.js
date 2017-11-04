@@ -28,13 +28,14 @@ var id = 0;
  * commands expected by jitsi-meet
  */
 var commands = {
-    "displayName": "display-name",
-    "toggleAudio": "toggle-audio",
-    "toggleVideo": "toggle-video",
-    "toggleFilmStrip": "toggle-film-strip",
-    "toggleChat": "toggle-chat",
-    "toggleContactList": "toggle-contact-list",
-    "toggleShareScreen": "toggle-share-screen"
+		'displayName': 'display-name',
+		'avatar': 'avatar-url',
+		'toggleAudio': 'toggle-audio',
+		'toggleVideo': 'toggle-video',
+		'toggleFilmStrip': 'toggle-film-strip',
+		'toggleChat': 'toggle-chat',
+		'toggleContactList': 'toggle-contact-list',
+		'toggleShareScreen': 'toggle-share-screen'
 };
 
 /**
