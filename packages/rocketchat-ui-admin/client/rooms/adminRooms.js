@@ -1,4 +1,5 @@
-/*globals RocketChatTabBar, AdminChatRoom */
+/*globals AdminChatRoom, RocketChat */
+import { RocketChatTabBar } from 'meteor/rocketchat:lib';
 
 this.AdminChatRoom = new Mongo.Collection('rocketchat_room');
 
@@ -27,21 +28,10 @@ Template.adminRooms.helpers({
 		return rooms && rooms.count();
 	},
 	name() {
-		if (this.t === 'c' || this.t === 'p') {
-			return this.name;
-		} else if (this.t === 'd') {
-			return this.usernames.join(' x ');
-		}
+		return RocketChat.roomTypes.roomTypes[this.t].getDisplayName(this);
 	},
 	type() {
-		if (this.t === 'c') {
-			return TAPi18n.__('Channel');
-		} else if (this.t === 'd') {
-			return TAPi18n.__('Direct_Messages');
-		}
-		if (this.t === 'p') {
-			return TAPi18n.__('Private_Groups');
-		}
+		return TAPi18n.__(RocketChat.roomTypes.roomTypes[this.t].label);
 	},
 	'default'() {
 		if (this['default']) {

@@ -1,4 +1,6 @@
-/* globals RocketChatTabBar , chatMessages, fileUpload , fireGlobalEvent , cordova , readMessage , RoomRoles, popover , device */
+/* globals chatMessages, fileUpload , fireGlobalEvent , cordova , readMessage , RoomRoles, popover , device */
+import { RocketChatTabBar } from 'meteor/rocketchat:lib';
+
 import moment from 'moment';
 import mime from 'mime-type/with-db';
 import Clipboard from 'clipboard';
@@ -20,7 +22,7 @@ const openProfileTab = (e, instance, username) => {
 		return;
 	}
 
-	if (['c', 'p', 'd'].includes(roomData.t)) {
+	if (RocketChat.roomTypes.roomTypes[roomData.t].enableMembersListProfile()) {
 		instance.setUserDetail(username);
 	}
 
