@@ -506,7 +506,9 @@ Meteor.startup(function() {
 	});
 	RocketChat.callbacks.add('enter-room', function() {
 		setTimeout(()=> {
-			chatMessages[RocketChat.openedRoom].input.focus();
+			if (chatMessages[RocketChat.openedRoom].input) {
+				chatMessages[RocketChat.openedRoom].input.focus();
+			}
 		}, 200);
 	});
 });
