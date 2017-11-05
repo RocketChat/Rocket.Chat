@@ -60,6 +60,9 @@
 			{{#each attachments}}
 				{{injectIndex . @index}} {{> messageAttachment}}
 			{{/each}}
+			{{#if hasOtherJoins}}
+				{{{otherJoinMessage}}} also joined.
+			{{/if}}
 		</div>
 		{{#unless system}}
 			<div class="message-actions">

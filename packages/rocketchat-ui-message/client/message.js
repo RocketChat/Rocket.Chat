@@ -281,6 +281,15 @@ Template.message.helpers({
 		}
 
 		return RocketChat.MessageAction.getButtons(Template.currentData(), context, messageGroup);
+	},
+	hasOtherJoins() {
+		return Template.instance().data.otherJoins && Template.instance().data.otherJoins.length > 0;
+	},
+	otherJoinMessage() {
+		const otherJoins = Template.instance().data.otherJoins;
+		return otherJoins.map(join => {
+			return join.u.username;
+		}).join(', ');
 	}
 });
 
