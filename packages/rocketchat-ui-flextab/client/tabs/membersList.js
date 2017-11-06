@@ -1,4 +1,5 @@
 /* globals WebRTC */
+import _ from 'underscore';
 
 Template.membersList.helpers({
 	tAddUsers() {
