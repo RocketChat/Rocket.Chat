@@ -59,9 +59,10 @@ Template.livechatIntegrationFacebook.onCreated(function() {
 });
 
 Template.livechatIntegrationFacebook.onRendered(function() {
-	Meteor.call('livechat:facebook', { action: 'initialState' }, (error, result) => {
+	Meteor.call('livechat:facebook', { action: 'initialState' }, this.result((result) => {
 		this.enabled.set(result.enabled);
-	});
+		this.hasToken.set(result.hasToken);
+	}));
 });
 
 Template.livechatIntegrationFacebook.events({
@@ -73,7 +74,7 @@ Template.livechatIntegrationFacebook.events({
 	'click .enable'(event, instance) {
 		event.preventDefault();
 
-		Meteor.call('livechat:facebook', { action: 'enable' }, this.result(() => {
+		Meteor.call('livechat:facebook', { action: 'enable' }, instance.result(() => {
 			instance.enabled.set(true);
 		}, () => instance.enabled.set(true)));
 	},
