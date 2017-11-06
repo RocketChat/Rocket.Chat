@@ -1,5 +1,6 @@
 /* globals slugify, SyncedCron */
 
+import _ from 'underscore';
 import LDAP from './ldap';
 
 const logger = new Logger('LDAPSync', {});
