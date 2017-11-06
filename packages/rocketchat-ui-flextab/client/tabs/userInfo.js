@@ -1,4 +1,6 @@
 /* globals RoomRoles, UserRoles*/
+import _ from 'underscore';
+import s from 'underscore.string';
 import moment from 'moment';
 import toastr from 'toastr';
 

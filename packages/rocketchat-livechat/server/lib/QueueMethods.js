@@ -1,3 +1,5 @@
+import _ from 'underscore';
+
 RocketChat.QueueMethods = {
 	/* Least Amount Queuing method:
 	 *

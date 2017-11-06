@@ -1,5 +1,6 @@
 /*globals jscolor*/
 /*eslint new-cap: ["error", { "newIsCapExceptions": ["jscolor"] }]*/
+import s from 'underscore.string';
 import moment from 'moment';
 import toastr from 'toastr';
 
@@ -245,7 +246,7 @@ Template.livechatAppearance.events({
 		const settings = [
 			{
 				_id: 'Livechat_title',
-				value: _.trim(instance.title.get())
+				value: s.trim(instance.title.get())
 			},
 			{
 				_id: 'Livechat_title_color',
@@ -257,19 +258,19 @@ Template.livechatAppearance.events({
 			},
 			{
 				_id: 'Livechat_offline_form_unavailable',
-				value: _.trim(instance.offlineUnavailableMessage.get())
+				value: s.trim(instance.offlineUnavailableMessage.get())
 			},
 			{
 				_id: 'Livechat_offline_message',
-				value: _.trim(instance.offlineMessage.get())
+				value: s.trim(instance.offlineMessage.get())
 			},
 			{
 				_id: 'Livechat_offline_success_message',
-				value: _.trim(instance.offlineSuccessMessage.get())
+				value: s.trim(instance.offlineSuccessMessage.get())
 			},
 			{
 				_id: 'Livechat_offline_title',
-				value: _.trim(instance.titleOffline.get())
+				value: s.trim(instance.titleOffline.get())
 			},
 			{
 				_id: 'Livechat_offline_title_color',

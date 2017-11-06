@@ -1,4 +1,6 @@
 /*globals HTTPInternals, changeCase */
+import _ from 'underscore';
+
 const URL = Npm.require('url');
 
 const querystring = Npm.require('querystring');
