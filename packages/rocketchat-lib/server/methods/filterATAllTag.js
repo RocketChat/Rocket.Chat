@@ -1,3 +1,5 @@
+import _ from 'underscore';
+
 RocketChat.callbacks.add('beforeSaveMessage', function(message) {
 	// Test if the message mentions include @all.
 	if (message.mentions != null &&

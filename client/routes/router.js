@@ -1,4 +1,5 @@
 /* globals KonchatNotification */
+import s from 'underscore.string';
 
 Blaze.registerHelper('pathFor', function(path, kw) {
 	return FlowRouter.path(path, kw.hash);
@@ -75,7 +76,7 @@ FlowRouter.route('/account/:group?', {
 		if (!params.group) {
 			params.group = 'Preferences';
 		}
-		params.group = _.capitalize(params.group, true);
+		params.group = s.capitalize(params.group, true);
 		BlazeLayout.render('main', { center: `account${ params.group }` });
 	},
 	triggersExit: [function() {
