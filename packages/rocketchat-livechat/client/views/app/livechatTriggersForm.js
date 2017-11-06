@@ -38,6 +38,12 @@ Template.livechatTriggersForm.onCreated(function() {
 	this.autorun(() => {
 		const trigger = LivechatTrigger.findOne(FlowRouter.getParam('_id'));
 		if (trigger) {
+			// to be backward compatible with conditions that exist prior to this update
+			// the system has to attribute a new id to these objects
+			if (trigger.conditions.length === 1) {
+				trigger.conditions[0].id = 1;
+			}
+
 			this.conditions.set(trigger.conditions);
 		} else {
 			this.conditions.set([{id:1, name:'page-url', value:''}]);
