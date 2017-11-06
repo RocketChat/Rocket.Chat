@@ -12,8 +12,8 @@ Package.onUse(function(api) {
 	api.use('rocketchat:search');
 
 	api.addFiles('lib/SearchProvider.js');
-
-	api.mainModule('redlink-search.js');
+	api.addFiles('lib/RedlinkSearch.js');
+	api.addFiles('lib/SmartiSearch.js');
 });
 
 /*Package.onTest(function(api) {

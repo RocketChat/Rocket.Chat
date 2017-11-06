@@ -1,47 +1,18 @@
 import {
-	SearchProvider,
-	searchProviders,
-	SearchProviderMetadata,
 	SearchProviderRuntimeIntegration,
 	SearchProviderUi
 } from 'meteor/rocketchat:search';
 
-export const SETTING_URL = 'RedlinkSearchUrl';
-
-class RedlinkSearchProviderRuntimeIntegration extends SearchProviderRuntimeIntegration {
-
-}
-
-class RedlinkSearchProviderMetadata extends SearchProviderMetadata {
-	supportsPermissions() {
-		return true;
-	}
-
-	addSettings(section) {
-		section.add(SETTING_URL, '');
-	}
-
-	isConfigurationValid(settings, logger) {
-		logger.debug('Validating settings', settings);
-		if (!settings[SETTING_URL] || settings[SETTING_URL] === '') {
-			return false;
-		}
-	}
-}
-
-/*
-Don't know whether an own UI is really necessary
+// todo!
+/**
+ * Generic calls for integrating Smarti and the hosted Redlink Search
  */
-class RedlinkSearchProviderUi extends SearchProviderUi {
+export class CustomSearchProviderRuntimeIntegration extends SearchProviderRuntimeIntegration {
 
 }
 
-class RedlinkSearchProvider extends SearchProvider {
-	constructor() {
-		super('redlink', new RedlinkSearchProviderRuntimeIntegration(), new RedlinkSearchProviderMetadata(), new RedlinkSearchProviderUi());
-	}
+/**
+ * Generic UI parts
+ */
+export class CustomSearchProviderUi extends SearchProviderUi {
 }
-
-Meteor.startup(function() {
-	searchProviders.add(new RedlinkSearchProvider());
-});
