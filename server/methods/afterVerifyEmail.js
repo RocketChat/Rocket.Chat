@@ -1,3 +1,5 @@
+import _ from 'underscore';
+
 Meteor.methods({
 	afterVerifyEmail() {
 		const userId = Meteor.userId();

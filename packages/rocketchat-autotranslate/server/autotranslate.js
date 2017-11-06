@@ -1,3 +1,6 @@
+import _ from 'underscore';
+import s from 'underscore.string';
+
 class AutoTranslate {
 	constructor() {
 		this.languages = [];
