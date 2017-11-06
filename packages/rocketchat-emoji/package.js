@@ -8,7 +8,6 @@ Package.describe({
 Package.onUse(function(api) {
 	api.use([
 		'ecmascript',
-		'underscore',
 		'templating',
 		'rocketchat:lib',
 		'rocketchat:ui-message'

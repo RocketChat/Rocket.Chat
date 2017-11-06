@@ -1,4 +1,6 @@
 /* globals MsgTyping, showError, Livechat */
+import _ from 'underscore';
+import s from 'underscore.string';
 import toastr from 'toastr';
 
 this.ChatMessages = class ChatMessages {

@@ -1,5 +1,5 @@
-import {_} from 'meteor/underscore';
 import {UploadFS} from 'meteor/jalik:ufs';
+import _ from 'underscore';
 import S3 from 'aws-sdk/clients/s3';
 import stream from 'stream';
 
