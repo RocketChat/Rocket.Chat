@@ -1,5 +1,6 @@
 /* globals FileUpload, UploadFS */
 
+import _ from 'underscore';
 import fs from 'fs';
 import { FileUploadClass } from '../lib/FileUpload';
 
