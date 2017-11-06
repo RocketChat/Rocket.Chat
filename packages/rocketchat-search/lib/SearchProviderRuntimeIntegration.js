@@ -88,4 +88,24 @@ export class SearchProviderRuntimeIntegration {
 	initialLoad(/* roomsCursor, messagesCursor, usersCursor, rolesCursor, permissionsCursor, logger, initialLoadCompletedCallback */) {
 
 	}
+
+	/**
+	 * Hook triggered once the search provider is enabled.
+	 * This happens after validation but before initial load.
+	 * @param logger
+	 */
+	onEnable(logger) {
+		logger.info('Enabled search provider', this.constructor.name);
+	}
+
+	/**
+	 * Hook triggered once the search provider has been disabled.
+	 * This happens when switching the search provider or when disabling fulltext search in general.
+	 * During the implementation, the search provider can e. g. clean the index - as a re-enabling would anyway
+	 * trigger a new initial load
+	 * @param logger
+	 */
+	onDisable(logger) {
+		logger.info('Disabled search provider', this.constructor.name);
+	}
 }

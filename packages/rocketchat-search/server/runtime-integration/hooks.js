@@ -46,7 +46,7 @@ class ActiveProviderProxy {
 			try {
 				this.activeProviderRuntimeIntegration.onMessageSent(message, SystemLogger);
 			} catch (error) {
-				this.replayBuffer.recordFailure(error, callbackIds.MESSAGE, { message, room, userId });
+				this.replayBuffer.recordFailure(error, callbackIds.MESSAGE, {message, room, userId});
 			}
 		}
 	}
@@ -74,6 +74,11 @@ class ActiveProviderProxy {
 
 export function registerHooks() {
 	const facade = new ActiveProviderProxy();
+
+	//remove the old ones
+	RocketChat.callbacks.remove('afterSaveMessage', callbackIds.MESSAGE);
+	RocketChat.callbacks.remove('afterJoinRoom', callbackIds.USER_ADDED);
+	RocketChat.callbacks.remove('afterLeaveRoom', callbackIds.USER_REMOVED);
 
 	RocketChat.callbacks.add('afterSaveMessage', facade.afterSaveMessage, RocketChat.callbacks.priority.LOW, callbackIds.MESSAGE);
 	RocketChat.callbacks.add('afterJoinRoom', facade.afterJoinRoom, RocketChat.callbacks.priority.LOW, callbackIds.USER_ADDED);

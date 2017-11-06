@@ -25,13 +25,11 @@ export class SearchProvider {
 
 		this._metadata = metadata;
 
+		this._ui = ui;
+
 		// restrict visibility of components to the tier they are used on
 		if (Meteor.isServer) {
 			this._runtimeIntegration = runtimeIntegration;
-		}
-
-		if (Meteor.isClient) {
-			this._ui = ui;
 		}
 	}
 
@@ -80,9 +78,9 @@ export class SearchProvider {
 	 * for code injection needs to be performed by the implementaion
 	 * @param userId The technical GUID of the user who executed the seach. This allows for integration of an ACL
 	 * @param logger A logger providing log-levels {error, warn, info/log, debug, success}
-	 * @return {Array} //todo: Define format of the result instance
+	 * @return {Array{RoomSearchResult}} //todo: Define format of the result instance
 	 */
-	findRooms(searchText, userId, logger) {
+	async findRooms(searchText, userId, logger) {
 		logger.debug('Search for rooms triggered by', userId, 'with search text', searchText);
 		return [];
 	}

@@ -11,6 +11,8 @@ Package.onUse(function(api) {
 	api.use('ecmascript');
 	api.use('rocketchat:lib');
 
+	api.addFiles('server/MockProvider.js');
+
 	// publicly visible artifacts
 	api.mainModule('lib/index.js');
 });

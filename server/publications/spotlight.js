@@ -1,3 +1,7 @@
+/* globals SystemLogger */
+
+import {searchProviders} from 'meteor/rocketchat:search';
+
 Meteor.methods({
 	spotlight(text, usernames, type = {users: true, rooms: true}, rid) {
 		const regex = new RegExp(s.trim(s.escapeRegExp(text)), 'i');
@@ -50,11 +54,21 @@ Meteor.methods({
 				result.rooms = RocketChat.models.Rooms.findByNameAndTypeNotContainingUsername(regex, 'c', username, roomOptions).fetch();
 			}
 		} else if (type.users === true && rid) {
-			const subscriptions = RocketChat.models.Subscriptions.find({rid, 'u.username':{
-				$regex: regex,
-				$nin:[...usernames, Meteor.user().username]
-			}}, {limit:userOptions.limit}).fetch().map(({u}) => u._id);
-			result.users = RocketChat.models.Users.find({_id:{$in:subscriptions}}, {fields:userOptions.fields, sort: userOptions.sort}).fetch();
+			const subscriptions = RocketChat.models.Subscriptions.find({
+				rid, 'u.username': {
+					$regex: regex,
+					$nin: [...usernames, Meteor.user().username]
+				}
+			}, {limit: userOptions.limit}).fetch().map(({u}) => u._id);
+			result.users = RocketChat.models.Users.find({_id: {$in: subscriptions}}, {
+				fields: userOptions.fields,
+				sort: userOptions.sort
+			}).fetch();
+		}
+
+		// fulltext search
+		if (searchProviders.activeProvider) {
+			result.fullText = searchProviders.activeProvider.findRooms(text, userId, SystemLogger);
 		}
 
 		return result;

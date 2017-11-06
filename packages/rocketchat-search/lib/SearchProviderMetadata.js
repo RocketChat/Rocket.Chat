@@ -33,12 +33,11 @@ export class SearchProviderMetadata {
 
 	/**
 	 * As search providers bring their own configuration, this configuration is validated before activating the provider
-	 * @param settings The settings from the section: An array of {key, value}
 	 * @param logger A logger providing log-levels {error, warn, info/log, debug, success}
 	 * @return {boolean} indicates whether the settings are consitent and the search provider can act based upon the
 	 */
-	isConfigurationValid(settings, logger) {
-		logger.debug(settings);
+	isConfigurationValid(logger) {
+		logger.debug('Search provider asked for validation', this.constructor.name);
 		return true;
 	}
 }
