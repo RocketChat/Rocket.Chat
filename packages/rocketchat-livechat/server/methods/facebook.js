@@ -18,13 +18,15 @@ Meteor.methods({
 				case 'enable': {
 					OmniChannel.enable();
 
-					return RocketChat.settings.set('Livechat_Facebook_Enabled', true);
+					// return RocketChat.settings.set('Livechat_Facebook_Enabled', true);
+					return RocketChat.settings.updateById('Livechat_Facebook_Enabled', true);
 				}
 
 				case 'disable': {
 					OmniChannel.disable();
 
-					return RocketChat.settings.set('Livechat_Facebook_Enabled', false);
+					// return RocketChat.settings.set('Livechat_Facebook_Enabled', false);
+					return RocketChat.settings.updateById('Livechat_Facebook_Enabled', false);
 				}
 
 				case 'list-pages': {
