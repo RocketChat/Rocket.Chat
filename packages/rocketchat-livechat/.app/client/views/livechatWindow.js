@@ -174,7 +174,7 @@ Template.livechatWindow.onCreated(function() {
 
 			TAPi18n.setLanguage(language);
 
-			Triggers.init(result.triggers);
+			Triggers.init(result.triggers, language);
 
 			Livechat.allowSwitchingDepartments = result.allowSwitchingDepartments;
 
