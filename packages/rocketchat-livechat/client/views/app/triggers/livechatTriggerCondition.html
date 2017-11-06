@@ -15,7 +15,7 @@
 				<input type="number" name="time-on-site-value" class="time-on-site-value rc-input__element" placeholder="{{_ "Time_in_seconds"}}" value="{{valueFor 'time-on-site'}}">
 			</div>
 			<div class="language trigger-condition-value {{hiddenValue 'language'}}">
-				<select id="language" class="language-value" name="language-value">
+				<select name="language-value" class="language-value">
 					{{#each languages}}
 						<option value="{{key}}" selected="{{defaultLanguage key}}" dir="auto">{{name}}</option>
 					{{/each}}

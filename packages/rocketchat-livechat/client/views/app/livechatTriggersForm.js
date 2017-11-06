@@ -50,7 +50,7 @@ Template.livechatTriggersForm.events({
 		e.preventDefault();
 		const newConditions = instance.conditions.get();
 		const idArray = newConditions.map(function(o) { return o.id; });
-		idArray.push(0);
+		idArray.push(1);
 		const newId = Math.max.apply(Math, idArray);
 
 		const emptyCondition = {id: newId + 1, name:'page-url', value:''};
@@ -62,6 +62,14 @@ Template.livechatTriggersForm.events({
 
 		let newConditions = instance.conditions.get();
 		newConditions = _.reject(newConditions, (condition) => { return condition.id === this.id; });
+		instance.conditions.set(newConditions);
+	},
+	'change .trigger-condition'(e, instance) {
+		const newName = e.currentTarget.value;
+
+		const newConditions = instance.conditions.get();
+		const index = newConditions.findIndex(i => i.id === this.id);
+		newConditions[index].name = newName;
 		instance.conditions.set(newConditions);
 	},
 	'submit #trigger-form'(e, instance) {
@@ -77,7 +85,7 @@ Template.livechatTriggersForm.events({
 			description: instance.$('input[name=description]').val(),
 			enabled: instance.$('input[name=enabled]:checked').val() === '1',
 			runOnce: instance.$('input[name=runOnce]:checked').val() === '1',
-			conditions: [],
+			conditions: instance.conditions.get(),
 			actions: [],
 		};
 

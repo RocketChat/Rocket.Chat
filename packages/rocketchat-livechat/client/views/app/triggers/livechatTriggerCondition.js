@@ -1,9 +1,6 @@
 Template.livechatTriggerCondition.helpers({
 	hiddenValue(current) {
-		if (this.name === undefined && Template.instance().firstCondition) {
-			Template.instance().firstCondition = false;
-			return '';
-		} else if (this.name !== current) {
+		if (this.name !== current) {
 			return 'hidden';
 		}
 	},
@@ -29,17 +26,16 @@ Template.livechatTriggerCondition.helpers({
 		return result;
 	},
 	defaultLanguage(key) {
-		return 'en' === key;
+		if (Template.instance().data.name === 'language') {
+			return Template.instance().data.value === key;
+		} else {
+			return 'en' === key;
+		}
 	}
 });
 
 Template.livechatTriggerCondition.events({
-	'change .trigger-condition'(e, instance) {
-		instance.$('.trigger-condition-value ').addClass('hidden');
-		instance.$(`.${ e.currentTarget.value }`).removeClass('hidden');
+	'change .trigger-condition-value input, change .trigger-condition-value select, keyup .trigger-condition-value input'(e/*, instance*/) {
+		this.value = e.currentTarget.value;
 	},
-});
-
-Template.livechatTriggerCondition.onCreated(function() {
-	this.firstCondition = true;
 });
