@@ -121,6 +121,7 @@ random@1.0.10
 rate-limit@1.0.8
 reactive-dict@1.1.9
 reactive-var@1.0.11
+redlink:search@0.0.1
 reload@1.1.11
 retry@1.0.9
 rocketchat:2fa@0.0.1
@@ -190,6 +191,7 @@ rocketchat:postcss@1.0.0
 rocketchat:push-notifications@0.0.1
 rocketchat:reactions@0.0.1
 rocketchat:sandstorm@0.0.1
+rocketchat:search@0.0.1
 rocketchat:slackbridge@0.0.1
 rocketchat:slashcommands-archive@0.0.1
 rocketchat:slashcommands-asciiarts@0.0.1
