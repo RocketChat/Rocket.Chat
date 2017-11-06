@@ -109,9 +109,6 @@ describe('[Direct Messages]', function() {
 				userId: 'rocket.cat'
 			})
 			.expect('Content-Type', 'application/json')
-			.expect((...args) => {
-				console.log(...args);
-			})
 			.expect(200)
 			.expect((res) => {
 				expect(res.body).to.have.property('success', true);
