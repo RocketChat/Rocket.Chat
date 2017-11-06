@@ -97,7 +97,7 @@ const markdownButtons = [
 		icon: 'italic',
 		pattern: '_{{text}}_',
 		command: 'i',
-		condition: () => RocketChat.Markdown
+		condition: () => RocketChat.Markdown && RocketChat.settings.get('Markdown_Parser') !== 'disabled'
 	},
 	{
 		label: 'strike',
@@ -115,18 +115,18 @@ const markdownButtons = [
 		label: 'inline_code',
 		icon: 'code',
 		pattern: '`{{text}}`',
-		condition: () => RocketChat.Markdown
+		condition: () => RocketChat.Markdown && RocketChat.settings.get('Markdown_Parser') !== 'disabled'
 	},
 	{
 		label: 'multi_line',
 		icon: 'multi-line',
 		pattern: '```\n{{text}}\n``` ',
-		condition: () => RocketChat.Markdown
+		condition: () => RocketChat.Markdown && RocketChat.settings.get('Markdown_Parser') !== 'disabled'
 	},
 	{
 		label: katexSyntax,
 		link: 'https://github.com/Khan/KaTeX/wiki/Function-Support-in-KaTeX',
-		condition: () => RocketChat.katex
+		condition: () => RocketChat.katex.katex_enabled()
 	}
 ];
 
@@ -506,7 +506,9 @@ Meteor.startup(function() {
 	});
 	RocketChat.callbacks.add('enter-room', function() {
 		setTimeout(()=> {
-			chatMessages[RocketChat.openedRoom].input.focus();
+			if (chatMessages[RocketChat.openedRoom].input) {
+				chatMessages[RocketChat.openedRoom].input.focus();
+			}
 		}, 200);
 	});
 });

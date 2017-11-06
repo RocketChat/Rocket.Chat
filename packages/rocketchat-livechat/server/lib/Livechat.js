@@ -59,8 +59,6 @@ RocketChat.Livechat = {
 
 			newRoom = true;
 		} else {
-			console.log('canAccess ->', message.rid, guest._id);
-
 			room = Meteor.call('canAccessRoom', message.rid, guest._id);
 		}
 		if (!room) {
@@ -74,9 +72,6 @@ RocketChat.Livechat = {
 		if (guest.name) {
 			message.alias = guest.name;
 		}
-
-		console.log('room -> ', room, newRoom);
-
 
 		// return messages;
 		return _.extend(RocketChat.sendMessage(guest, message, room), { newRoom, showConnecting: this.showConnecting() });
