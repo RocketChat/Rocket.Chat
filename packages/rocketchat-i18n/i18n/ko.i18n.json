@@ -115,7 +115,7 @@
   "Accounts_RegistrationForm_Public": "공개",
   "Accounts_RegistrationForm_Secret_URL": "비밀 URL",
   "Accounts_RegistrationForm_SecretURL": "등록 양식 비밀 URL",
-  "Accounts_RegistrationForm_SecretURL_Description": "등록 URL에 추가될 임의의 문자열을 제공해야 합니다. 예 : https://demo.rocket.chat/register/[secret_hash]",
+  "Accounts_RegistrationForm_SecretURL_Description": "등록 URL에 추가될 임의의 문자열을 제공해야 합니다. 예 : https://open.rocket.chat/register/[secret_hash]",
   "Accounts_RequireNameForSignUp": "회원 가입을 위한 이름이 필요합니다.",
   "Accounts_RequirePasswordConfirmation": "비밀번호 확인이 필요합니다.",
   "Accounts_SetDefaultAvatar": "기본 아바타 설정",
