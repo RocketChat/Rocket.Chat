@@ -13,6 +13,9 @@ Template.livechatIntegrationFacebook.helpers({
 	},
 	enableButtonDisabled() {
 		return !Template.instance().hasToken.get() ? 'disabled' : '';
+	},
+	isLoading() {
+		return Template.instance().loading.get();
 	}
 });
 
@@ -20,6 +23,7 @@ Template.livechatIntegrationFacebook.onCreated(function() {
 	this.enabled = new ReactiveVar(false);
 	this.hasToken = new ReactiveVar(false);
 	this.pages = new ReactiveVar([]);
+	this.loading = new ReactiveVar(false);
 
 	this.autorun(() => {
 		if (this.enabled.get()) {
@@ -52,16 +56,20 @@ Template.livechatIntegrationFacebook.onCreated(function() {
 
 	this.loadPages = () => {
 		this.pages.set([]);
+		this.loading.set(true);
 		Meteor.call('livechat:facebook', { action: 'list-pages' }, this.result((result) => {
 			this.pages.set(result.pages);
+			this.loading.set(false);
 		}, this.loadPages));
 	};
 });
 
 Template.livechatIntegrationFacebook.onRendered(function() {
+	this.loading.set(true);
 	Meteor.call('livechat:facebook', { action: 'initialState' }, this.result((result) => {
 		this.enabled.set(result.enabled);
 		this.hasToken.set(result.hasToken);
+		this.loading.set(false);
 	}));
 });
 
