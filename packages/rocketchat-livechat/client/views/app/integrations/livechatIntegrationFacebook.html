@@ -1,7 +1,6 @@
 <template name="livechatIntegrationFacebook">
 	<form id="profile" autocomplete="off" class="container">
 		<fieldset class="rc-form-legend">
-			<!-- <legend style="margin-bottom: 2.5rem;">Facebook</legend> -->
 			<div class="rc-form-group">
 				{{#if enabled}}
 					<button class="button reload">{{_ "Reload_Pages"}}</button>
@@ -14,23 +13,27 @@
 					{{/unless}}
 				{{/if}}
 			</div>
-			{{#each pages}}
-				<div class="rc-form-group">
-					<div class="rc-switch">
-						<label class="rc-switch__label" tabindex="-1">
-							<input type="checkbox" class="rc-switch__input" name="subscribe" value="true"  {{subscribed}}>
-							<span class="rc-switch__button">
-								<span class="rc-switch__button-inside"></span>
-							</span>
-							<span class="rc-switch__text">{{name}}</span>
-						</label>
-					</div>
-				</div>
+			{{#if isLoading}}
+				{{> loading}}
 			{{else}}
-				{{#if enabled}}
-					<p>Nothing to show here.</p>
-				{{/if}}
-			{{/each}}
+				{{#each pages}}
+					<div class="rc-form-group">
+						<div class="rc-switch">
+							<label class="rc-switch__label" tabindex="-1">
+								<input type="checkbox" class="rc-switch__input" name="subscribe" value="true"  {{subscribed}}>
+								<span class="rc-switch__button">
+									<span class="rc-switch__button-inside"></span>
+								</span>
+								<span class="rc-switch__text">{{name}}</span>
+							</label>
+						</div>
+					</div>
+				{{else}}
+					{{#if enabled}}
+						<p>{{_ "No_pages_yet_Try_hitting_Reload_Pages_button"}}</p>
+					{{/if}}
+				{{/each}}
+			{{/if}}
 		</fieldset>
 	</form>
 </template>
