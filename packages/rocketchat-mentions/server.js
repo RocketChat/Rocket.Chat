@@ -1,4 +1,6 @@
+import _ from 'underscore';
 import MentionsServer from './MentionsServer';
+
 const mention = new MentionsServer({
 	pattern: () => RocketChat.settings.get('UTF8_Names_Validation'),
 	messageMaxAll: () => RocketChat.settings.get('Message_MaxAll'),

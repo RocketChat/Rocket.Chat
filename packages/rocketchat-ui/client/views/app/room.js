@@ -1,4 +1,5 @@
 /* globals RocketChatTabBar , chatMessages, fileUpload , fireGlobalEvent , cordova , readMessage , RoomRoles, popover , device */
+import _ from 'underscore';
 import moment from 'moment';
 import mime from 'mime-type/with-db';
 import Clipboard from 'clipboard';

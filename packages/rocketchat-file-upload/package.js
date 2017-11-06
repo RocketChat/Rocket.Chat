@@ -18,7 +18,6 @@ Package.onUse(function(api) {
 	api.use('rocketchat:lib');
 	api.use('random');
 	api.use('accounts-base');
-	api.use('underscore');
 	api.use('tracker');
 	api.use('webapp');
 
