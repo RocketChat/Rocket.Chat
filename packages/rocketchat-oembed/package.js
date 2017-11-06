@@ -17,7 +17,6 @@ Package.onUse(function(api) {
 		'http',
 		'templating',
 		'ecmascript',
-		'underscore',
 		'konecty:change-case',
 		'rocketchat:lib'
 	]);
