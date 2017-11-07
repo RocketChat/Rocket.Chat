@@ -1,5 +1,6 @@
 /* globals Livechat, t, tr, livechatAutolinker */
 import moment from 'moment';
+import s from 'underscore.string';
 
 Template.message.helpers({
 	own() {

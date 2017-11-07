@@ -1,6 +1,9 @@
 /* globals toolbarSearch */
 // This is not supposed to be a complete list
 // it is just to improve readability in this file
+
+import _ from 'underscore';
+
 const keys = {
 	TAB: 9,
 	ENTER: 13,
