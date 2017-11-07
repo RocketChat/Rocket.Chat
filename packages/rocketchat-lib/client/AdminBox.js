@@ -1,3 +1,5 @@
+import _ from 'underscore';
+
 RocketChat.AdminBox = new class {
 	constructor() {
 		this.options = new ReactiveVar([]);
