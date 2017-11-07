@@ -1,4 +1,6 @@
 /* globals RocketChatTabBar */
+import s from 'underscore.string';
+
 Template.adminSounds.helpers({
 	isReady() {
 		if (Template.instance().ready != null) {
@@ -71,7 +73,7 @@ Template.adminSounds.onCreated(function() {
 	});
 
 	this.customsounds = function() {
-		const filter = (instance.filter != null) ? _.trim(instance.filter.get()) : '';
+		const filter = (instance.filter != null) ? s.trim(instance.filter.get()) : '';
 
 		let query = {};
 

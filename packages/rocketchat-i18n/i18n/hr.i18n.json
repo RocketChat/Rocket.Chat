@@ -104,7 +104,7 @@
   "Accounts_RegistrationForm_Public": "Javan",
   "Accounts_RegistrationForm_Secret_URL": "Tajni URL",
   "Accounts_RegistrationForm_SecretURL": "Tajni URL za registracijski obrazac",
-  "Accounts_RegistrationForm_SecretURL_Description": "Morate navesti nasumični niz znakova koji će biti dodan u vašu registracijski URL. Na primjer: https://demo.rocket.chat/register/[secret_hash]",
+  "Accounts_RegistrationForm_SecretURL_Description": "Morate navesti nasumični niz znakova koji će biti dodan u vašu registracijski URL. Na primjer: https://open.rocket.chat/register/[secret_hash]",
   "Accounts_RequireNameForSignUp": "Zahtijevaj ime pri prijavi",
   "Accounts_RequirePasswordConfirmation": "Zahtjevaj potvrdu lozinke",
   "Accounts_SetDefaultAvatar": "Namjesti zadani Avatar",
