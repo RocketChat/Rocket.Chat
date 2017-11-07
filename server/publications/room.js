@@ -1,3 +1,5 @@
+import _ from 'underscore';
+
 const fields = {
 	_id: 1,
 	name: 1,
