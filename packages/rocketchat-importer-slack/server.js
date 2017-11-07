@@ -1,4 +1,6 @@
 /* globals Importer */
+import _ from 'underscore';
+
 Importer.Slack = class extends Importer.Base {
 	constructor(name, descriptionI18N, mimeType) {
 		super(name, descriptionI18N, mimeType);
