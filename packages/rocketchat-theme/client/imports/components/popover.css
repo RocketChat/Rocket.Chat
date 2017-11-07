@@ -140,7 +140,7 @@
 	fill: currentColor;
 }
 
-@media (width <= 400px) {
+@media (width <= 500px) {
 	.rc-popover {
 		& .rc-popover__content {
 			top: initial !important;
