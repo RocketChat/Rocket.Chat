@@ -1,14 +1,15 @@
 {
+  "lockfileVersion": 1,
   "dependencies": {
     "double-ended-queue": {
       "version": "2.1.0-0",
       "resolved": "https://registry.npmjs.org/double-ended-queue/-/double-ended-queue-2.1.0-0.tgz",
-      "from": "double-ended-queue@>=2.1.0-0 <3.0.0"
+      "integrity": "sha1-ED01J/0xUo9AGIEwyEHv3XgmTlw="
     },
     "redis": {
       "version": "2.2.5",
       "resolved": "https://registry.npmjs.org/redis/-/redis-2.2.5.tgz",
-      "from": "redis@2.2.5"
+      "integrity": "sha1-+B1XALMmhmCfKcCvsp1TnthTrXg="
     }
   }
 }
