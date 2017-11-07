@@ -1,3 +1,5 @@
+import s from 'underscore.string';
+
 Meteor.methods({
 	messageSearch(text, rid, limit) {
 		const result = {
