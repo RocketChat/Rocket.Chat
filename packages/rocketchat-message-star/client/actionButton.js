@@ -1,4 +1,6 @@
+import _ from 'underscore';
 import toastr from 'toastr';
+
 Meteor.startup(function() {
 	RocketChat.MessageAction.addButton({
 		id: 'star-message',

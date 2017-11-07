@@ -1,3 +1,5 @@
+import s from 'underscore.string';
+
 const commands = {
 	go(data) {
 		if (typeof data.path !== 'string' || data.path.trim().length === 0) {
@@ -28,7 +30,7 @@ const commands = {
 			const customOauth = ServiceConfiguration.configurations.findOne({service: data.service});
 
 			if (customOauth) {
-				const customLoginWith = Meteor[`loginWith${ _.capitalize(customOauth.service, true) }`];
+				const customLoginWith = Meteor[`loginWith${ s.capitalize(customOauth.service, true) }`];
 				const customRedirectUri = data.redirectUrl || siteUrl;
 				customLoginWith.call(Meteor, {'redirectUrl': customRedirectUri}, customOAuthCallback);
 			}
