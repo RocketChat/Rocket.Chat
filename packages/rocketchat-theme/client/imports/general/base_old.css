@@ -3520,7 +3520,7 @@ body:not(.is-cordova) {
 			}
 
 			& > .animated-hidden {
-				transform: translateX(100%);
+				transform: translateX(calc(100% + 40px));
 
 				opacity: 0;
 			}
