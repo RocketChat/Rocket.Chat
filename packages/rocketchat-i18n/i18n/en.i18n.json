@@ -316,7 +316,7 @@
   "Cancel": "Cancel",
   "Cancel_message_input": "Cancel",
   "Cannot_invite_users_to_direct_rooms": "Cannot invite users to direct rooms",
-  "Cannot_open_conversation_with_yourself": "Cannot open a conversation with yourself",
+  "Cannot_open_conversation_with_yourself": "Cannot Direct Message with yourself",
   "CAS_autoclose": "Autoclose Login Popup",
   "CAS_base_url": "SSO Base URL",
   "CAS_base_url_Description": "The base URL of your external SSO service e.g: https://sso.example.undef/sso/",
