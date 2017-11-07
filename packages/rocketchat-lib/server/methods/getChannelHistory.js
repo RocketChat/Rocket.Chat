@@ -1,3 +1,5 @@
+import _ from 'underscore';
+
 Meteor.methods({
 	getChannelHistory({rid, latest, oldest, inclusive, count = 20, unreads}) {
 		check(rid, String);

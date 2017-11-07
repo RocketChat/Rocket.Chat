@@ -1,3 +1,5 @@
+import _ from 'underscore';
+
 const AccessTokenServices = {};
 
 RocketChat.registerAccessTokenService = function(serviceName, handleAccessTokenRequest) {

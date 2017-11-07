@@ -1,3 +1,5 @@
+import _ from 'underscore';
+
 RocketChat.TabBar = new (class TabBar {
 	constructor() {
 		this.buttons = new ReactiveVar({});
