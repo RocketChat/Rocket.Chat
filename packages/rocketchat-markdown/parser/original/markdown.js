@@ -4,8 +4,8 @@
  */
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
-import { _ } from 'meteor/underscore';
 import { RocketChat } from 'meteor/rocketchat:lib';
+import s from 'underscore.string';
 
 const parseNotEscaped = function(msg, message) {
 	if (message && message.tokens == null) {
@@ -66,19 +66,19 @@ const parseNotEscaped = function(msg, message) {
 	// Support ![alt text](http://image url)
 	msg = msg.replace(new RegExp(`!\\[([^\\]]+)\\]\\(((?:${ schemes }):\\/\\/[^\\)]+)\\)`, 'gm'), (match, title, url) => {
 		const target = url.indexOf(Meteor.absoluteUrl()) === 0 ? '' : '_blank';
-		return addAsToken(`<a href="${ _.escapeHTML(url) }" title="${ _.escapeHTML(title) }" target="${ _.escapeHTML(target) }" rel="noopener noreferrer"><div class="inline-image" style="background-image: url(${ _.escapeHTML(url) });"></div></a>`);
+		return addAsToken(`<a href="${ s.escapeHTML(url) }" title="${ s.escapeHTML(title) }" target="${ s.escapeHTML(target) }" rel="noopener noreferrer"><div class="inline-image" style="background-image: url(${ s.escapeHTML(url) });"></div></a>`);
 	});
 
 	// Support [Text](http://link)
 	msg = msg.replace(new RegExp(`\\[([^\\]]+)\\]\\(((?:${ schemes }):\\/\\/[^\\)]+)\\)`, 'gm'), (match, title, url) => {
 		const target = url.indexOf(Meteor.absoluteUrl()) === 0 ? '' : '_blank';
-		return addAsToken(`<a href="${ _.escapeHTML(url) }" target="${ _.escapeHTML(target) }" rel="noopener noreferrer">${ _.escapeHTML(title) }</a>`);
+		return addAsToken(`<a href="${ s.escapeHTML(url) }" target="${ s.escapeHTML(target) }" rel="noopener noreferrer">${ s.escapeHTML(title) }</a>`);
 	});
 
 	// Support <http://link|Text>
 	msg = msg.replace(new RegExp(`(?:<|&lt;)((?:${ schemes }):\\/\\/[^\\|]+)\\|(.+?)(?=>|&gt;)(?:>|&gt;)`, 'gm'), (match, url, title) => {
 		const target = url.indexOf(Meteor.absoluteUrl()) === 0 ? '' : '_blank';
-		return addAsToken(`<a href="${ _.escapeHTML(url) }" target="${ _.escapeHTML(target) }" rel="noopener noreferrer">${ _.escapeHTML(title) }</a>`);
+		return addAsToken(`<a href="${ s.escapeHTML(url) }" target="${ s.escapeHTML(target) }" rel="noopener noreferrer">${ s.escapeHTML(title) }</a>`);
 	});
 
 	return msg;

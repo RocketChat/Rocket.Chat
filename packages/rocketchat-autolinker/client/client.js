@@ -1,3 +1,5 @@
+import s from 'underscore.string';
+
 //
 // AutoLinker is a named function that will replace links on messages
 // @param {Object} message - The message object
@@ -10,7 +12,7 @@ function AutoLinker(message) {
 		return message;
 	}
 
-	if (_.trim(message.html)) {
+	if (s.trim(message.html)) {
 		const regUrls = new RegExp(RocketChat.settings.get('AutoLinker_UrlsRegExp'));
 
 		const autolinker = new Autolinker({
