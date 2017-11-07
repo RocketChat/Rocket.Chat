@@ -103,7 +103,7 @@
   "Accounts_RegistrationForm_Public": "Nyilvános",
   "Accounts_RegistrationForm_Secret_URL": "titkos URL",
   "Accounts_RegistrationForm_SecretURL": "Regisztrációs űrlap titkos URL",
-  "Accounts_RegistrationForm_SecretURL_Description": "Meg kell adnia egy véletlenszerű karaktersorozat, amely hozzáadódik a regisztrációs URL-t. Példa: https://demo.rocket.chat/register/[secret_hash]",
+  "Accounts_RegistrationForm_SecretURL_Description": "Meg kell adnia egy véletlenszerű karaktersorozat, amely hozzáadódik a regisztrációs URL-t. Példa: https://open.rocket.chat/register/[secret_hash]",
   "Accounts_RequireNameForSignUp": "Igényel elnevezése Regisztráció",
   "Accounts_RequirePasswordConfirmation": "Igényelt jelszó megerősítése",
   "Accounts_SetDefaultAvatar": "alapértelmezett Avatar beállítása",
