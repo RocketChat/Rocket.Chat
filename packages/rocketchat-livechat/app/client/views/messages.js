@@ -152,7 +152,7 @@ Template.messages.onCreated(function() {
 		}
 	};
 
-	$(document).click((/*event*/) => {
+	$(document).click((event) => {
 		if (!this.showOptions.get()) {
 			return;
 		}
