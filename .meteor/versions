@@ -245,8 +245,6 @@ templating@1.3.2
 templating-compiler@1.3.3
 templating-runtime@1.3.2
 templating-tools@1.1.2
-tmeasday:crypto-base@3.1.2
-tmeasday:crypto-md5@3.1.2
 todda00:friendly-slugs@0.6.0
 tracker@1.1.3
 twitter-oauth@1.2.0

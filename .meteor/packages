@@ -168,7 +168,6 @@ raix:push
 raix:ui-dropped-event
 smoral:sweetalert
 steffo:meteor-accounts-saml
-tmeasday:crypto-md5
 todda00:friendly-slugs
 yasaricli:slugify
 yasinuslu:blaze-meta
