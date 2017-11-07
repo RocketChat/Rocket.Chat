@@ -1,3 +1,5 @@
+import _ from 'underscore';
+
 Meteor.methods({
 	setUsername(username, param = {}) {
 		const { joinDefaultChannelsSilenced } = param;

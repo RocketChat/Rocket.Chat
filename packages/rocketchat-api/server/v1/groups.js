@@ -1,3 +1,5 @@
+import _ from 'underscore';
+
 //Returns the private group subscription IF found otherwise it will return the failure of why it didn't. Check the `statusCode` property
 function findPrivateGroupByIdOrName({ params, userId, checkedArchived = true }) {
 	if ((!params.roomId || !params.roomId.trim()) && (!params.roomName || !params.roomName.trim())) {
