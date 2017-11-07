@@ -102,7 +102,7 @@
   "Accounts_RegistrationForm_Public": "Offentlig",
   "Accounts_RegistrationForm_Secret_URL": "hemliga URL",
   "Accounts_RegistrationForm_SecretURL": "Anmälningsblankett Secret URL",
-  "Accounts_RegistrationForm_SecretURL_Description": "Du måste ange en slumpmässig sträng som kommer att läggas till din registrerings URL. Exempel: https://demo.rocket.chat/register/[secret_hash]",
+  "Accounts_RegistrationForm_SecretURL_Description": "Du måste ange en slumpmässig sträng som kommer att läggas till din registrerings URL. Exempel: https://open.rocket.chat/register/[secret_hash]",
   "Accounts_RequireNameForSignUp": "Kräv namn för registrering",
   "Accounts_ShowFormLogin": "Visa formbaserad inloggning",
   "Accounts_UseDefaultBlockedDomainsList": "Använd standardlista för blockerade domäner",

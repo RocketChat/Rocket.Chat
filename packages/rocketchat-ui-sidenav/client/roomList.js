@@ -1,3 +1,5 @@
+import _ from 'underscore';
+
 Template.roomList.helpers({
 	rooms() {
 		if (this.identifier === 'unread') {
@@ -19,7 +21,12 @@ Template.roomList.helpers({
 		const query = {
 			open: true
 		};
-		const sort = { 't': 1, 'name': 1 };
+		const sort = { 't': 1 };
+		if (this.identifier === 'd' && RocketChat.settings.get('UI_Use_Real_Name')) {
+			sort.fname = 1;
+		} else {
+			sort.name = 1;
+		}
 		if (this.identifier === 'f') {
 			query.f = favoritesEnabled;
 		} else {

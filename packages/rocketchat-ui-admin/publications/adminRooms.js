@@ -1,3 +1,6 @@
+import _ from 'underscore';
+import s from 'underscore.string';
+
 Meteor.publish('adminRooms', function(filter, types, limit) {
 	if (!this.userId) {
 		return this.ready();
@@ -30,7 +33,7 @@ Meteor.publish('adminRooms', function(filter, types, limit) {
 		}
 	};
 
-	filter = _.trim(filter);
+	filter = s.trim(filter);
 	if (filter && types.length) {
 		// CACHE: can we stop using publications here?
 		return RocketChat.models.Rooms.findByNameContainingAndTypes(filter, types, options);
