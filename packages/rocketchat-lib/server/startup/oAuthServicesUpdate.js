@@ -1,4 +1,6 @@
 /* globals CustomOAuth */
+import _ from 'underscore';
+
 const logger = new Logger('rocketchat:lib', {
 	methods: {
 		oauth_updated: {
