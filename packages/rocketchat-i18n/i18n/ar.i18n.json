@@ -115,7 +115,7 @@
   "Accounts_RegistrationForm_Public": "عام",
   "Accounts_RegistrationForm_Secret_URL": "رابط سري",
   "Accounts_RegistrationForm_SecretURL": "رابط استمارة التسجيل السري",
-  "Accounts_RegistrationForm_SecretURL_Description": "يجب توفير سلسلة العشوائية التي ستضاف إلى URL تسجيلك. على سبيل المثال: https://demo.rocket.chat/register/[secret_hash]",
+  "Accounts_RegistrationForm_SecretURL_Description": "يجب توفير سلسلة العشوائية التي ستضاف إلى URL تسجيلك. على سبيل المثال: https://open.rocket.chat/register/[secret_hash]",
   "Accounts_RequireNameForSignUp": "تتطلب اسم للاشتراك",
   "Accounts_RequirePasswordConfirmation": "يتطلب تأكيد كلمة المرور",
   "Accounts_SetDefaultAvatar": "ضبط إعدادات الصورة الرمزية",
