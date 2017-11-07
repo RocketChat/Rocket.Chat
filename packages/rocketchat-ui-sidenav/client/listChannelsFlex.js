@@ -1,3 +1,6 @@
+import _ from 'underscore';
+import s from 'underscore.string';
+
 Template.listChannelsFlex.helpers({
 	channel() {
 		return Template.instance().channelsList.get();
@@ -94,7 +97,7 @@ Template.listChannelsFlex.onCreated(function() {
 			if (_.isNumber(this.limit.get())) {
 				options.limit = this.limit.get();
 			}
-			if (_.trim(this.sortSubscriptions.get())) {
+			if (s.trim(this.sortSubscriptions.get())) {
 				switch (this.sortSubscriptions.get()) {
 					case 'name':
 						options.sort = { name: 1 };

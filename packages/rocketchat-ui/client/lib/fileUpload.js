@@ -1,5 +1,7 @@
 /* globals fileUploadHandler, Handlebars, fileUpload */
 /* exported fileUpload */
+import _ from 'underscore';
+import s from 'underscore.string';
 
 function readAsDataURL(file, callback) {
 	const reader = new FileReader();

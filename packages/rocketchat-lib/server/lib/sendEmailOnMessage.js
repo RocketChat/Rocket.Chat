@@ -1,4 +1,5 @@
 import moment from 'moment';
+import s from 'underscore.string';
 
 RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 	// skips this callback if the message was edited
