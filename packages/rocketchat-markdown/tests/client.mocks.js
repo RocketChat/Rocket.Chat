@@ -34,8 +34,6 @@ mock('meteor/rocketchat:lib', {
 	}
 });
 
-mock('meteor/underscore', { _ });
-
 mock('meteor/random', {
 	Random: {
 		id() {

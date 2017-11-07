@@ -1,3 +1,6 @@
+import _ from 'underscore';
+import s from 'underscore.string';
+
 function flat(obj, newObj = {}, path = '') {
 	for (const key of Object.keys(obj)) {
 		const value = obj[key];
