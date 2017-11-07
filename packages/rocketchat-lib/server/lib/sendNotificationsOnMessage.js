@@ -193,27 +193,32 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room, userId) {
 		userIds.push(s.u._id);
 	});
 	const userSettings = {};
-	RocketChat.models.Users.findUsersByIds(userIds, { fields: { 'settings.preferences.audioNotifications': 1, 'settings.preferences.desktopNotifications': 1, 'settings.preferences.mobileNotifications': 1 } }).forEach((user) => {
+	RocketChat.models.Users.findUsersByIds(userIds, { fields: { 'settings.preferences.audioNotifications': 1, 'settings.preferences.desktopNotifications': 1, 'settings.preferences.mobileNotifications': 1, 'settings.preferences.snoozeNotifications': 1, 'settings.preferences.doNotDisturb': 1 } }).forEach((user) => {
 		userSettings[user._id] = user.settings;
 	});
 
 	subscriptions.forEach(subscription => {
 		const preferences = userSettings[subscription.u._id] ? userSettings[subscription.u._id].preferences || {} : {};
 
-		let snoozeNotifications = subscription.snoozeNotifications && subscription.snoozeNotifications.duration && subscription.snoozeNotifications.finalDateTime && moment().isBefore(subscription.snoozeNotifications.finalDateTime);
+		console.log('subscription.snoozeNotifications', subscription.snoozeNotifications);
+		console.log('subscription.doNotDisturb', subscription.doNotDisturb);
+		console.log('preferences.snoozeNotifications', preferences.snoozeNotifications);
+		console.log('preferences.doNotDisturb', preferences.doNotDisturb);
+
+		let snoozeNotifications = !!(subscription.snoozeNotifications && subscription.snoozeNotifications.duration && subscription.snoozeNotifications.finalDateTime && moment().isBefore(subscription.snoozeNotifications.finalDateTime));
 
 		if (!snoozeNotifications) {
-			snoozeNotifications = preferences.snoozeNotifications && preferences.snoozeNotifications.duration && preferences.snoozeNotifications.finalDateTime && moment().isBefore(preferences.snoozeNotifications.finalDateTime);
+			snoozeNotifications = !!(preferences.snoozeNotifications && preferences.snoozeNotifications.duration && preferences.snoozeNotifications.finalDateTime && moment().isBefore(preferences.snoozeNotifications.finalDateTime));
 		}
 
 		let doNotDisturb = false;
 
 		if (subscription.doNotDisturb && subscription.doNotDisturb.initialTime && subscription.doNotDisturb.finalTime) {
 			const initialMoment = moment(subscription.doNotDisturb.initialTime, 'HH:mm');
-			const finalMoment = moment(subscription.doNotDisturb.finalTime, 'HH:mm');
+			let finalMoment = moment(subscription.doNotDisturb.finalTime, 'HH:mm');
 
 			if (initialMoment.isAfter(finalMoment)) {
-				finalMoment.add(1, 'day');
+				finalMoment = finalMoment.add(1, 'day');
 			}
 
 			doNotDisturb = moment().isBetween(initialMoment, finalMoment);
@@ -221,14 +226,17 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room, userId) {
 
 		if (!doNotDisturb && preferences.doNotDisturb && preferences.doNotDisturb.initialTime && preferences.doNotDisturb.finalTime) {
 			const initialMoment = moment(preferences.doNotDisturb.initialTime, 'HH:mm');
-			const finalMoment = moment(preferences.doNotDisturb.finalTime, 'HH:mm');
+			let finalMoment = moment(preferences.doNotDisturb.finalTime, 'HH:mm');
 
 			if (initialMoment.isAfter(finalMoment)) {
-				finalMoment.add(1, 'day');
+				finalMoment = finalMoment.add(1, 'day');
 			}
 
 			doNotDisturb = moment().isBetween(initialMoment, finalMoment);
 		}
+
+		console.log('snoozeNotifications', snoozeNotifications);
+		console.log('doNotDisturb', doNotDisturb);
 
 		if (subscription.disableNotifications || snoozeNotifications || doNotDisturb) {
 			settings.dontNotifyDesktopUsers.push(subscription.u._id);

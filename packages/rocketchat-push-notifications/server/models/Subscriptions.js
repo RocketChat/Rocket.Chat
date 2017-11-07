@@ -208,7 +208,7 @@ RocketChat.models.Subscriptions.findNotificationPreferencesByRoom = function(roo
 		];
 	}
 
-	return this.find(query, { fields: { 'u._id': 1, audioNotifications: 1, audioNotificationValue: 1, desktopNotificationDuration: 1, desktopNotifications: 1, mobilePushNotifications: 1, disableNotifications: 1 } });
+	return this.find(query, { fields: { 'u._id': 1, audioNotifications: 1, audioNotificationValue: 1, desktopNotificationDuration: 1, desktopNotifications: 1, mobilePushNotifications: 1, disableNotifications: 1, snoozeNotifications: 1, doNotDisturb: 1 } });
 };
 
 RocketChat.models.Subscriptions.findWithSendEmailByRoomId = function(roomId) {
