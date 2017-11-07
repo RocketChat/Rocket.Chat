@@ -9,7 +9,6 @@ Package.onUse(function(api) {
 	api.use([
 		'templating',
 		'ecmascript',
-		'underscore',
 		'rocketchat:lib'
 	]);
 

@@ -1,4 +1,5 @@
 /* globals MsgTyping */
+import s from 'underscore.string';
 import moment from 'moment';
 import toastr from 'toastr';
 this.ChatMessages = class ChatMessages {
@@ -176,7 +177,7 @@ this.ChatMessages = class ChatMessages {
 		* * @param {function?} done callback
 		*/
 	send(rid, input, done = function() {}) {
-		if (_.trim(input.value) !== '') {
+		if (s.trim(input.value) !== '') {
 			readMessage.enable();
 			readMessage.readNow();
 			$('.message.first-unread').removeClass('first-unread');
@@ -344,7 +345,7 @@ this.ChatMessages = class ChatMessages {
 	}
 
 	update(id, rid, msg, isDescription) {
-		if ((_.trim(msg) !== '') || (isDescription === true)) {
+		if ((s.trim(msg) !== '') || (isDescription === true)) {
 			Meteor.call('updateMessage', { _id: id, msg, rid });
 			this.clearEditing();
 			return this.stopTyping(rid);
@@ -352,7 +353,7 @@ this.ChatMessages = class ChatMessages {
 	}
 
 	startTyping(rid, input) {
-		if (_.trim(input.value) !== '') {
+		if (s.trim(input.value) !== '') {
 			return MsgTyping.start(rid);
 		} else {
 			return MsgTyping.stop(rid);
@@ -381,7 +382,7 @@ this.ChatMessages = class ChatMessages {
 
 	restoreText(rid) {
 		const text = localStorage.getItem(`messagebox_${ rid }`);
-		if (typeof text === 'string') {
+		if (typeof text === 'string' && this.input) {
 			this.input.value = text;
 		}
 	}
