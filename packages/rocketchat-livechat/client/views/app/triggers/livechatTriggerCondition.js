@@ -1,3 +1,5 @@
+import _ from 'underscore';
+
 Template.livechatTriggerCondition.helpers({
 	hiddenValue(current) {
 		if (this.name !== current) {
