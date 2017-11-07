@@ -34,6 +34,7 @@ Template.livechatIntegrationFacebook.onCreated(function() {
 	this.result = (successFn, errorFn = () => {}) => {
 		return (error, result) => {
 			if (error) {
+				errorFn(error);
 				return swal({
 					title: t('Error_loading_pages'),
 					text: error.reason,
@@ -60,7 +61,7 @@ Template.livechatIntegrationFacebook.onCreated(function() {
 		Meteor.call('livechat:facebook', { action: 'list-pages' }, this.result((result) => {
 			this.pages.set(result.pages);
 			this.loading.set(false);
-		}, this.loadPages));
+		}, () => this.loading.set(false)));
 	};
 });
 

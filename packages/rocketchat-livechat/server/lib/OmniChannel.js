@@ -52,7 +52,7 @@ export default {
 	},
 
 	reply({ page, token, text }) {
-		return HTTP.call('POST', 'https://omni.rocket.chat/facebook/reply', {
+		return HTTP.call('POST', `${ gatewayURL }/facebook/reply`, {
 			headers: {
 				'authorization': `Bearer ${ RocketChat.settings.get('Livechat_Facebook_API_Key') }`
 			},

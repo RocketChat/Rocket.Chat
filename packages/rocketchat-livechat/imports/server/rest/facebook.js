@@ -13,8 +13,6 @@
  */
 RocketChat.API.v1.addRoute('livechat/facebook', {
 	post() {
-		console.log('this.bodyParams ->', this.bodyParams);
-
 		if (!this.bodyParams.text && !this.bodyParams.attachments) {
 			return {
 				success: false
