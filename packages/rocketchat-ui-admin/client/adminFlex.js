@@ -1,3 +1,6 @@
+import _ from 'underscore';
+import s from 'underscore.string';
+
 Template.adminFlex.onCreated(function() {
 	this.settingsFilter = new ReactiveVar('');
 	if (RocketChat.settings.cachedCollectionPrivate == null) {
@@ -25,7 +28,7 @@ Template.adminFlex.helpers({
 			type: 'group'
 		};
 		if (filter) {
-			const filterRegex = new RegExp(_.escapeRegExp(filter), 'i');
+			const filterRegex = new RegExp(s.escapeRegExp(filter), 'i');
 			const records = RocketChat.settings.collectionPrivate.find().fetch();
 			let groups = [];
 			records.forEach(function(record) {

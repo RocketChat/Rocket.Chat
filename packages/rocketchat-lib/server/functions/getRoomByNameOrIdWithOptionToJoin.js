@@ -1,4 +1,6 @@
 /* globals RocketChat */
+import _ from 'underscore';
+
 RocketChat.getRoomByNameOrIdWithOptionToJoin = function _getRoomByNameOrIdWithOptionToJoin({ currentUserId, nameOrId, type='', tryDirectByUserIdOnly=false, joinChannel=true, errorOnEmpty=true }) {
 	let room;
 

@@ -13,7 +13,6 @@ Npm.depends({
 Package.onUse(function(api) {
 	api.use([
 		'ecmascript',
-		'underscore',
 		'rocketchat:lib'
 	]);
 
