@@ -1,3 +1,5 @@
+import _ from 'underscore';
+
 const acEvents = {
 	'click .rc-popup-list__item'(e, t) {
 		t.ac.onItemClick(this, e);
