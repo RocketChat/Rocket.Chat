@@ -1,3 +1,5 @@
+import _ from 'underscore';
+
 Template.createCombinedFlex.helpers({
 	selectedUsers() {
 		return Template.instance().selectedUsers.get();
