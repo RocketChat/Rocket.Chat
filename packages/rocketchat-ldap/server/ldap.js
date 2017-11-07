@@ -221,12 +221,15 @@ export default class LDAP {
 		const searchOptions = {
 			filter: this.getUserFilter(username),
 			scope: this.options.User_Search_Scope || 'sub',
-			sizeLimit: this.options.Search_Size_Limit,
-			paged: {
+			sizeLimit: this.options.Search_Size_Limit
+		};
+
+		if (this.options.Search_Page_Size > 0) {
+			searchOptions.paged = {
 				pageSize: this.options.Search_Page_Size,
 				pagePause: !!page
-			}
-		};
+			};
+		}
 
 		logger.search.info('Searching user', username);
 		logger.search.debug('searchOptions', searchOptions);
@@ -345,6 +348,26 @@ export default class LDAP {
 		return true;
 	}
 
+	extractLdapEntryData(entry) {
+		const values = {
+			_raw: entry.raw
+		};
+
+		Object.keys(values._raw).forEach((key) => {
+			const value = values._raw[key];
+
+			if (!['thumbnailPhoto', 'jpegPhoto'].includes(key)) {
+				if (value instanceof Buffer) {
+					values[key] = value.toString();
+				} else {
+					values[key] = value;
+				}
+			}
+		});
+
+		return values;
+	}
+
 	searchAllPaged(BaseDN, options, page) {
 		this.bindIfNecessary();
 
@@ -362,23 +385,42 @@ export default class LDAP {
 			});
 
 			let entries = [];
-			const jsonEntries = [];
+
+			const internalPageSize = options.paged && options.paged.pageSize > 0 ? options.paged.pageSize * 2 : 500;
 
 			res.on('searchEntry', (entry) => {
-				entries.push(entry);
-				jsonEntries.push(entry.json);
+				entries.push(this.extractLdapEntryData(entry));
+
+				if (entries.length >= internalPageSize) {
+					logger.search.info('Internal Page');
+					this.client._updateIdle(true);
+					page(null, entries, {end: false, next: () => {
+						// Reset idle timer
+						this.client._updateIdle();
+					}});
+					entries = [];
+				}
 			});
 
 			res.on('page', (result, next) => {
-				logger.search.debug('Page');
-				// Force LDAP idle to wait the record processing
-				this.client._updateIdle(true);
-				page(null, entries, {end: !next, next: () => {
-					// Reset idle timer
-					this.client._updateIdle();
-					next && next();
-				}});
-				entries = [];
+				if (!next) {
+					logger.search.debug('Final Page');
+					this.client._updateIdle(true);
+					page(null, entries, {end: true, next: () => {
+						// Reset idle timer
+						this.client._updateIdle();
+					}});
+				} else if (entries.length) {
+					logger.search.info('Page');
+					// Force LDAP idle to wait the record processing
+					this.client._updateIdle(true);
+					page(null, entries, {end: !next, next: () => {
+						// Reset idle timer
+						this.client._updateIdle();
+						next();
+					}});
+					entries = [];
+				}
 			});
 		});
 	}
@@ -400,16 +442,13 @@ export default class LDAP {
 			});
 
 			const entries = [];
-			const jsonEntries = [];
 
 			res.on('searchEntry', (entry) => {
-				entries.push(entry);
-				jsonEntries.push(entry.json);
+				entries.push(this.extractLdapEntryData(entry));
 			});
 
 			res.on('end', () => {
 				logger.search.info('Search result count', entries.length);
-				// logger.search.debug('Search result', JSON.stringify(jsonEntries, null, 2));
 				callback(null, entries);
 			});
 		});
