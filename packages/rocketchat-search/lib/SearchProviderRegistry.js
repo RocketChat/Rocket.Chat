@@ -11,31 +11,89 @@ const SETTINGS_SEARCH_PROVIDER = 'SearchProvider';
 export class SearchProviderRegistry {
 
 	constructor() {
+		this.PHASES = {
+			STARTING: 0,
+			CONFIGURE: 10,
+			STARTED: 20
+		};
+		this.providerBuffer = new Array();
 		this.providers = {};
-		this.activeProviderIdentifier = '';
-		this._enabled = false;
+		this.activeProviderIdentifier = RocketChat.models.Settings.findOneNotHiddenById(SETTINGS_SEARCH_PROVIDER).value;
+		this._enabled = RocketChat.models.Settings.findOneNotHiddenById(SETTINGS_SEARCH_ENABLED).value; //copy on startup
+		this.phase = this.PHASES.STARTING;
 
 		// register handlers for change of relevant settings
-		RocketChat.settings.onload(SETTINGS_SEARCH_ENABLED, (key, value) => {
-			if (!this.enabled && value === true) {
-				this.enable();
-			}
 
-			if (this.enabled && value === false) {
-				this.disable();
+		const _this = this;
+		RocketChat.settings.onload(SETTINGS_SEARCH_ENABLED, (key, value) => {
+
+			if (_this.phase === _this.PHASES.STARTED) {
+
+				if (!_this.activeProvider) { //if the enabled setting is loaded first, no provider might be active
+					_this.switchProvider(RocketChat.models.Settings.findOneNotHiddenById(SETTINGS_SEARCH_PROVIDER).value);
+				}
+
+				if (!_this.enabled && value === true) {
+					_this.enable();
+				}
+
+				if (_this.enabled && value === false) {
+					_this.disable();
+				}
 			}
 		});
 
 		RocketChat.settings.onload(SETTINGS_SEARCH_PROVIDER, (key, selectedProviderIdentifier) => {
-			const currentProvider = this.activeProvider ? this.activeProvider.identifier : null;
-			if (currentProvider && currentProvider !== selectedProviderIdentifier) {
-				this.disable();
-			}
 
-			if (selectedProviderIdentifier) { //the very first start, no provider might be set
-				this.switchProvider(selectedProviderIdentifier);
+			if (_this.phase === _this.PHASES.STARTED) {
+				_this.switchProvider(selectedProviderIdentifier);
 			}
 		});
+	}
+
+	/**
+	 * in order to manage search providers, they must not be effective until the server has started
+	 */
+	started() {
+
+		registerHooks();
+
+		this.phase = this.PHASES.STARTED;
+	}
+
+	configure() {
+		this.phase = this.PHASES.CONFIGURE;
+
+		while (this.providerBuffer.length) {
+			const searchProvider = this.providerBuffer.pop();
+			this.add(searchProvider);
+		}
+
+		this.provideSettings();
+	}
+
+	get enabled() {
+		return this._enabled;
+	}
+
+	/**
+	 * Setter provided in order to make the Setting reflect the internal state
+	 * Must not be called from outside disable()
+	 * @param enabled
+	 */
+	set enabled(enabled) {
+		this._enabled = enabled;
+
+		// Write the setting via the model (not via settings.set) as this is done by the server and not from a user
+		RocketChat.models.Settings.updateValueById(SETTINGS_SEARCH_ENABLED, enabled);
+	}
+
+	get activeProvider() {
+		return this.providers[this.activeProviderIdentifier];
+	}
+
+	set activeProvider(identifier) {
+		this.activeProviderIdentifier = identifier;
 	}
 
 	/**
@@ -53,24 +111,19 @@ export class SearchProviderRegistry {
 				return false;
 			}
 
-			this.providers[searchProvider.identifier] = searchProvider;
+			if (this.phase === this.PHASES.STARTING) {
+				this.providerBuffer.push(searchProvider);
+				return; //will be re-executed once started
+			}
 
-			//re-create the settigns group since the providers have changed
-			this.provideSettings();
+			this.providers[searchProvider.identifier] = searchProvider;
 
 			return true;
 		}
 	}
 
-	get activeProvider() {
-		return this.providers[this.activeProviderIdentifier];
-	}
-
-	set activeProvider(identifier) {
-		this.activeProviderIdentifier = identifier;
-	}
-
 	provideSettings() {
+
 		if (Meteor.isServer) {
 			const _this = this;
 			RocketChat.settings.addGroup(SETTINGS_GROUP_NAME, {}, function() {
@@ -107,48 +160,49 @@ export class SearchProviderRegistry {
 	switchProvider(newProviderIdentifier) {
 		const newProvider = this.providers[newProviderIdentifier];
 		if (!newProvider) {
-			this.enabled = false;
-			return;
+			// this can actually only happen when starting up the machine.
+			// thus, ignore those calls as this would disable the previously active provider
+			getLogger().error('Search provider', newProviderIdentifier, 'which shall be loaded is not available');
 		}
 
 		if (!newProvider.metadata.isConfigurationValid(getLogger())) {
-
-			RocketChat.models.Settings.updateValueById(SETTINGS_SEARCH_PROVIDER, this.activeProvider.identifier);
-			throw new Error('Provider_not_properly_configured');
+			if (this.activeProvider) {
+				RocketChat.models.Settings.updateValueById(SETTINGS_SEARCH_PROVIDER, this.activeProvider.identifier);
+			}
+			throw new Error('Provider-not-properly-configured');
 		}
 
+		//disable the current provider
+		if (this.activeProvider && this.activeProvider !== newProvider) {
+			this.disable();
+		}
 		this.activeProvider = newProviderIdentifier;
 	}
 
 	enable() {
 		if (Meteor.isServer) {
-			registerHooks();
+			if (!this.activeProvider) {
+				return;
+			}
 
-			this.activeProvider.runtimeIntegration.onEnable(getLogger());
+			if (this.activeProvider.metadata.isConfigurationValid(getLogger())) {
 
-			// this.activeProvider.runtimeIntegration.initialLoad() //todo
+				// no way back from here
+
+				// this.activeProvider.runtimeIntegration.initialLoad() //todo
+
+				this.enabled = true;
+			} else {
+				getLogger().error(this.activeProvider.identifier, 'could not be enabled as the configuration is invalid');
+			}
 		}
 	}
 
 	disable() {
+		this.enabled = false;
 		if (this.activeProvider) {
 			this.activeProvider.runtimeIntegration.onDisable(getLogger());
 		}
-	}
-
-	/**
-	 * Setter provided in order to make the Setting reflect the internal state
-	 * @param enabled
-	 */
-	set enabled(enabled) {
-		this._enabled = enabled;
-
-		// Write the setting via the model (not via settings.set) as this is done by the server and not from a user
-		RocketChat.models.Settings.updateValueById(SETTINGS_SEARCH_ENABLED, enabled);
-	}
-
-	get enabled() {
-		return this._enabled;
 	}
 }
 
@@ -158,5 +212,6 @@ export const searchProviders = new SearchProviderRegistry();
  * Enable the search provider registry
  */
 Meteor.startup(function() {
-	searchProviders.provideSettings();
+	searchProviders.configure();
+	searchProviders.started();
 });

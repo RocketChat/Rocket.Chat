@@ -35,10 +35,10 @@ class ReplayBuffer {
 class ActiveProviderProxy {
 	constructor() {
 		this.replayBuffer = new ReplayBuffer();
+	}
 
-		searchProviders.activeProvider
-			? this.activeProviderRuntimeIntegration = searchProviders.activeProvider.runtimeIntegration
-			: null;
+	get activeProviderRuntimeIntegration() {
+		return searchProviders.activeProvider.runtimeIntegration;
 	}
 
 	afterSaveMessage(message, room, userId) {

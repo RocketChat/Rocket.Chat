@@ -48,6 +48,4 @@ class RedlinkSearchProvider extends SearchProvider {
 	}
 }
 
-Meteor.startup(function() {
-	searchProviders.add(new RedlinkSearchProvider());
-});
+searchProviders.add(new RedlinkSearchProvider());

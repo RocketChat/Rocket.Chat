@@ -16,9 +16,10 @@ export class SearchProviderMetadata {
 	 * Within this method, settings can be added
 	 * @see packages/rocketchat-lib/server/functions/settings.js:22
 	 * @param section for this particular search provider
+	 * @param settingsHandler a wrapper for settings which keeps track of the settings created (for invalidation)
 	 * @param logger A logger providing log-levels {error, warn, info/log, debug, success}
 	 */
-	addSettings(section, logger) {
+	addSettings(section, settingsHandler, logger) {
 		logger.debug('Adding settings to', section._id);
 		/*
 		use section.add(_id, value, options = {})

@@ -43,6 +43,4 @@ export class MockProvider extends SearchProvider {
 	}
 }
 
-Meteor.startup(() => {
-	searchProviders.add(new MockProvider());
-});
+searchProviders.add(new MockProvider());

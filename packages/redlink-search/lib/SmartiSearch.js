@@ -51,6 +51,4 @@ class SmartiSearchProvider extends SearchProvider {
 	}
 }
 
-Meteor.startup(function() {
-	searchProviders.add(new SmartiSearchProvider());
-});
+searchProviders.add(new SmartiSearchProvider());
