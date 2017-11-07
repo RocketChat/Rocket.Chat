@@ -120,7 +120,7 @@
   "Accounts_RegistrationForm_Public": "Veřejný",
   "Accounts_RegistrationForm_Secret_URL": "Tajná URL",
   "Accounts_RegistrationForm_SecretURL": "Tajná URL pro registracI",
-  "Accounts_RegistrationForm_SecretURL_Description": "Vložte náhodný retězec, který bude přidán do vaší registrační URL. Příklad: https://demo.rocket.chat/register/[tajny_kod]",
+  "Accounts_RegistrationForm_SecretURL_Description": "Vložte náhodný retězec, který bude přidán do vaší registrační URL. Příklad: https://open.rocket.chat/register/[tajny_kod]",
   "Accounts_RequireNameForSignUp": "Vyžadovat jméno",
   "Accounts_RequirePasswordConfirmation": "Vyžadovat potvrzení hesla",
   "Accounts_SearchFields": "Pole zohledněná ve vyhledávání",
