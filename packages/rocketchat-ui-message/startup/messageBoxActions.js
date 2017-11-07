@@ -1,4 +1,4 @@
-/* globals fileUpload chatMessages AudioRecorder device */
+/* globals fileUpload chatMessages AudioRecorder device popover */
 
 import mime from 'mime-type/with-db';
 import {VRecDialog} from 'meteor/rocketchat:ui-vrecord';
@@ -18,13 +18,15 @@ RocketChat.messageBox.actions.add('Create_new', 'Audio_message', {
 	condition: () => (navigator.getUserMedia || navigator.webkitGetUserMedia) && RocketChat.settings.get('FileUpload_Enabled') && RocketChat.settings.get('Message_AudioRecorderEnabled') && (!RocketChat.settings.get('FileUpload_MediaTypeWhiteList') || RocketChat.settings.get('FileUpload_MediaTypeWhiteList').match(/audio\/wav|audio\/\*/i)),
 	action({event, element}) {
 		event.preventDefault();
-		const icon = element;
+		const icon = element.querySelector('.rc-icon');
+
 		if (chatMessages[RocketChat.openedRoom].recording) {
-			return AudioRecorder.stop(function(blob) {
+			AudioRecorder.stop(function(blob) {
+				popover.close();
 				icon.style.color = '';
 				icon.classList.remove('pulse');
 				chatMessages[RocketChat.openedRoom].recording = false;
-				return fileUpload([
+				fileUpload([
 					{
 						file: blob,
 						type: 'audio',
@@ -32,9 +34,11 @@ RocketChat.messageBox.actions.add('Create_new', 'Audio_message', {
 					}
 				]);
 			});
+			return false;
 		}
+
 		chatMessages[RocketChat.openedRoom].recording = true;
-		return AudioRecorder.start(function() {
+		AudioRecorder.start(function() {
 			icon.classList.add('pulse');
 			icon.style.color = 'red';
 		});
@@ -71,7 +75,7 @@ RocketChat.messageBox.actions.add('Add_files_from', 'Computer', {
 					name: file.name
 				};
 			});
-			return fileUpload(filesToUpload);
+			fileUpload(filesToUpload);
 		}, {once: true});
 
 		input.remove();
@@ -87,7 +91,7 @@ RocketChat.messageBox.actions.add('Share', 'My_location', {
 		const latitude = position.coords.latitude;
 		const longitude = position.coords.longitude;
 		const text = `<div class="location-preview"><img style="height: 250px; width: 250px;" src="https://maps.googleapis.com/maps/api/staticmap?zoom=14&size=250x250&markers=color:gray%7Clabel:%7C${ latitude },${ longitude }&key=${ RocketChat.settings.get('MapView_GMapsAPIKey') }" /></div>`;
-		return swal({
+		swal({
 			title: t('Share_Location_Title'),
 			text,
 			showCancelButton: true,
@@ -98,7 +102,7 @@ RocketChat.messageBox.actions.add('Share', 'My_location', {
 			if (isConfirm !== true) {
 				return;
 			}
-			return Meteor.call('sendMessage', {
+			Meteor.call('sendMessage', {
 				_id: Random.id(),
 				rid,
 				msg: '',

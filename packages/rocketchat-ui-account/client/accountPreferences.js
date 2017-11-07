@@ -1,4 +1,6 @@
 /*globals defaultUserLanguage, KonchatNotification */
+import _ from 'underscore';
+import s from 'underscore.string';
 import toastr from 'toastr';
 
 const notificationLabels = {
@@ -153,6 +155,7 @@ Template.accountPreferences.onCreated(function() {
 
 		data.autoImageLoad = $('input[name=autoImageLoad]:checked').val();
 		data.emailNotificationMode = $('select[name=emailNotificationMode]').val();
+
 		data.highlights = _.compact(_.map($('[name=highlights]').val().split('\n'), function(e) {
 			return _.trim(e);
 		}));

@@ -1,3 +1,5 @@
+import s from 'underscore.string';
+
 import moment from 'moment';
 
 Template.snippetMessage.helpers({
@@ -13,6 +15,6 @@ Template.snippetMessage.helpers({
 		}
 	},
 	body() {
-		return `<a href="/snippet/${ this._id }/${ encodeURIComponent(this.snippetName) }">${ _.escapeHTML(this.snippetName) }</a>`;
+		return `<a href="/snippet/${ this._id }/${ encodeURIComponent(this.snippetName) }">${ s.escapeHTML(this.snippetName) }</a>`;
 	}
 });

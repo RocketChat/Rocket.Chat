@@ -3227,10 +3227,6 @@
 			list-style-type: decimal;
 		}
 
-		& > * + * {
-			padding-top: 10px;
-		}
-
 		& > table {
 			display: block;
 			overflow: auto;
@@ -3757,7 +3753,7 @@ body:not(.is-cordova) {
 			margin-bottom: 10px;
 		  }
 		}
-		
+
 		& .file-name {
 			display: block;
 
@@ -4604,7 +4600,7 @@ body:not(.is-cordova) {
 
 .full-page,
 .page-loading {
-	background-color: var(--color-primary);
+	background-color: var(--rc-color-primary);
 }
 
 .rc-old.full-page {
