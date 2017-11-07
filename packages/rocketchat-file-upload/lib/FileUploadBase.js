@@ -28,7 +28,7 @@ FileUploadBase = class FileUploadBase {
 	}
 
 	getFileName() {
-		return this.meta.name;
+		return this.meta.name.substring(0, 50);
 	}
 
 	start(callback) {
