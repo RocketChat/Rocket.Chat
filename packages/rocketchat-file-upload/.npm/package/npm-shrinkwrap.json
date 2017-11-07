@@ -1,19 +1,10 @@
 {
+  "lockfileVersion": 1,
   "dependencies": {
     "filesize": {
       "version": "3.3.0",
       "resolved": "https://registry.npmjs.org/filesize/-/filesize-3.3.0.tgz",
-      "from": "filesize@3.3.0"
-    },
-    "mime-db": {
-      "version": "1.23.0",
-      "resolved": "https://registry.npmjs.org/mime-db/-/mime-db-1.23.0.tgz",
-      "from": "mime-db@>=1.23.0 <1.24.0"
-    },
-    "mime-types": {
-      "version": "2.1.11",
-      "resolved": "https://registry.npmjs.org/mime-types/-/mime-types-2.1.11.tgz",
-      "from": "mime-types@2.1.11"
+      "integrity": "sha1-UxSeo0YOOy4CSWKlFkiqVyz5gSI="
     }
   }
 }
