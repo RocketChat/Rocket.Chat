@@ -1,3 +1,5 @@
+import s from 'underscore.string';
+
 Meteor.methods({
 	spotlight(text, usernames, type = {users: true, rooms: true}, rid) {
 		const regex = new RegExp(s.trim(s.escapeRegExp(text)), 'i');

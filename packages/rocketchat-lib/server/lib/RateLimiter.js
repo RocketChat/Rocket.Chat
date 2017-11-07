@@ -1,4 +1,6 @@
 /* globals RateLimiter */
+import _ from 'underscore';
+
 RocketChat.RateLimiter = new class {
 	limitFunction(fn, numRequests, timeInterval, matchers) {
 		if (process.env.TEST_MODE === 'true') {

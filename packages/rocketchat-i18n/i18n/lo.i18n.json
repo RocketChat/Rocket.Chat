@@ -93,7 +93,7 @@
   "Accounts_RegistrationForm_Public": "ສາທາລະນະ",
   "Accounts_RegistrationForm_Secret_URL": "URL Secret",
   "Accounts_RegistrationForm_SecretURL": "ການລົງທະບຽນແບບຟອມ URL Secret",
-  "Accounts_RegistrationForm_SecretURL_Description": "ທ່ານຕ້ອງໄດ້ສະຫນອງການຊ່ອຍແນ່ໄປທີ່ຈະໄດ້ຮັບການເພີ່ມ URL ລົງທະບຽນຂອງທ່ານ. ຍົກຕົວຢ່າງ: https://demo.rocket.chat/register/[secret_hash]",
+  "Accounts_RegistrationForm_SecretURL_Description": "ທ່ານຕ້ອງໄດ້ສະຫນອງການຊ່ອຍແນ່ໄປທີ່ຈະໄດ້ຮັບການເພີ່ມ URL ລົງທະບຽນຂອງທ່ານ. ຍົກຕົວຢ່າງ: https://open.rocket.chat/register/[secret_hash]",
   "Accounts_RequireNameForSignUp": "ຮຽກຮ້ອງໃຫ້ຊື່ສໍາລັບສະຫມັກ",
   "Accounts_ShowFormLogin": "ສະແດງໃຫ້ເຫັນຮູບແບບທີ່ເຂົ້າສູ່ລະບົບ",
   "Accounts_UseDefaultBlockedDomainsList": "ການນໍາໃຊ້ມາດຕະຖານສະກັດຊີ Domains",
