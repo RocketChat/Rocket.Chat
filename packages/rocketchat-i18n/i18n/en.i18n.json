@@ -1267,7 +1267,7 @@
   "No_available_agents_to_transfer": "No available agents to transfer",
   "No_channel_with_name_%s_was_found": "No channel with name <strong>\"%s\"</strong> was found!",
   "No_channels_yet": "You aren't part of any channel yet.",
-  "No_direct_messages_yet": "You haven't started any conversations yet.",
+  "No_direct_messages_yet": "No Direct Messages.",
   "No_Encryption": "No Encryption",
   "No_group_with_name_%s_was_found": "No private group with name <strong>\"%s\"</strong> was found!",
   "No_groups_yet": "You have no private groups yet.",
