@@ -19,7 +19,6 @@ Package.onUse(function(api) {
 		'mongo',
 		'ecmascript',
 		'templating',
-		'underscore',
 		'reactive-var',
 		'rocketchat:lib',
 		'meteorhacks:inject-initial'

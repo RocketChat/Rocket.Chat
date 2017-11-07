@@ -1,5 +1,6 @@
 /*globals jscolor*/
 /*eslint new-cap: ["error", { "newIsCapExceptions": ["jscolor"] }]*/
+import s from 'underscore.string';
 import moment from 'moment';
 import toastr from 'toastr';
 
@@ -291,27 +292,27 @@ Template.livechatAppearance.events({
 			{
 				identifier: 'Livechat_title',
 				lang: instance.chosenLanguage.get(),
-				text: _.trim(instance.title.get())
+				text: s.trim(instance.title.get())
 			},
 			{
 				identifier: 'Livechat_offline_form_unavailable',
 				lang: instance.chosenLanguage.get(),
-				text: _.trim(instance.offlineUnavailableMessage.get())
+				text: s.trim(instance.offlineUnavailableMessage.get())
 			},
 			{
 				identifier: 'Livechat_offline_message',
 				lang: instance.chosenLanguage.get(),
-				text: _.trim(instance.offlineMessage.get())
+				text: s.trim(instance.offlineMessage.get())
 			},
 			{
 				identifier: 'Livechat_offline_success_message',
 				lang: instance.chosenLanguage.get(),
-				text: _.trim(instance.offlineSuccessMessage.get())
+				text: s.trim(instance.offlineSuccessMessage.get())
 			},
 			{
 				identifier: 'Livechat_offline_title',
 				lang: instance.chosenLanguage.get(),
-				text: _.trim(instance.titleOffline.get())
+				text: s.trim(instance.titleOffline.get())
 			}
 		];
 

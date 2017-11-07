@@ -1,3 +1,5 @@
+import _ from 'underscore';
+
 Meteor.methods({
 	'livechat:getInitialData'(args) {
 		const visitorToken = args.token;

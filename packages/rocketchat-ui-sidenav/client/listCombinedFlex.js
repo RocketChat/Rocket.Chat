@@ -1,3 +1,6 @@
+import _ from 'underscore';
+import s from 'underscore.string';
+
 Template.listCombinedFlex.helpers({
 	channel() {
 		return Template.instance().channelsList.get();
@@ -103,7 +106,7 @@ Template.listCombinedFlex.onCreated(function() {
 			if (_.isNumber(this.limit.get())) {
 				options.limit = this.limit.get();
 			}
-			if (_.trim(this.sortSubscriptions.get())) {
+			if (s.trim(this.sortSubscriptions.get())) {
 				switch (this.sortSubscriptions.get()) {
 					case 'name':
 						options.sort = { name: 1 };
@@ -114,7 +117,7 @@ Template.listCombinedFlex.onCreated(function() {
 				}
 			}
 			let type = {$in: ['c', 'p']};
-			if (_.trim(this.channelType.get())) {
+			if (s.trim(this.channelType.get())) {
 				switch (this.channelType.get()) {
 					case 'public':
 						type = 'c';
