@@ -7,7 +7,6 @@ Package.describe({
 
 Package.onUse(function(api) {
 	api.use([
-		'underscore',
 		'ecmascript',
 		'rocketchat:lib',
 		'nimble:restivus'
