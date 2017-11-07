@@ -77,7 +77,7 @@ localstorage@1.2.0
 logging@1.1.19
 matb33:collection-hooks@0.8.4
 mdg:validation-error@0.5.1
-meteor@1.8.0
+meteor@1.8.1
 meteor-base@1.2.0
 meteor-developer-oauth@1.2.0
 meteorhacks:inject-initial@1.0.4
