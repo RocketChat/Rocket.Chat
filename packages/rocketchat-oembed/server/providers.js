@@ -1,5 +1,5 @@
 /*globals changeCase */
-
+import _ from 'underscore';
 
 const URL = Npm.require('url');
 
