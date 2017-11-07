@@ -202,11 +202,6 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room, userId) {
 	subscriptions.forEach(subscription => {
 		const preferences = userSettings[subscription.u._id] ? userSettings[subscription.u._id].preferences || {} : {};
 
-		console.log('subscription.snoozeNotifications', subscription.snoozeNotifications);
-		console.log('subscription.doNotDisturb', subscription.doNotDisturb);
-		console.log('preferences.snoozeNotifications', preferences.snoozeNotifications);
-		console.log('preferences.doNotDisturb', preferences.doNotDisturb);
-
 		let snoozeNotifications = !!(subscription.snoozeNotifications && subscription.snoozeNotifications.duration && subscription.snoozeNotifications.finalDateTime && moment().isBefore(subscription.snoozeNotifications.finalDateTime));
 
 		if (!snoozeNotifications) {
@@ -237,9 +232,6 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room, userId) {
 			doNotDisturb = moment().isBetween(initialMoment, finalMoment);
 		}
 
-		console.log('snoozeNotifications', snoozeNotifications);
-		console.log('doNotDisturb', doNotDisturb);
-
 		if (subscription.disableNotifications || snoozeNotifications || doNotDisturb) {
 			settings.dontNotifyDesktopUsers.push(subscription.u._id);
 			settings.dontNotifyMobileUsers.push(subscription.u._id);
@@ -257,19 +249,19 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room, userId) {
 			mobilePushNotifications = userMobileNotificationPreference || RocketChat.settings.get('Mobile_Notifications_Default_Alert')
 		} = subscription;
 
-		if (audioNotifications === 'all' && !disableAllMessageNotifications && !snoozeNotifications && !doNotDisturb) {
+		if (audioNotifications === 'all' && !disableAllMessageNotifications) {
 			settings.alwaysNotifyAudioUsers.push(subscription.u._id);
 		}
 
-		if (desktopNotifications === 'all' && !disableAllMessageNotifications && !snoozeNotifications && !doNotDisturb) {
+		if (desktopNotifications === 'all' && !disableAllMessageNotifications) {
 			settings.alwaysNotifyDesktopUsers.push(subscription.u._id);
-		} else if (desktopNotifications === 'nothing' || snoozeNotifications || doNotDisturb) {
+		} else if (desktopNotifications === 'nothing') {
 			settings.dontNotifyDesktopUsers.push(subscription.u._id);
 		}
 
-		if (mobilePushNotifications === 'all' && !disableAllMessageNotifications && !snoozeNotifications && !doNotDisturb) {
+		if (mobilePushNotifications === 'all' && !disableAllMessageNotifications) {
 			settings.alwaysNotifyMobileUsers.push(subscription.u._id);
-		} else if (mobilePushNotifications === 'nothing' || snoozeNotifications || doNotDisturb) {
+		} else if (mobilePushNotifications === 'nothing') {
 			settings.dontNotifyMobileUsers.push(subscription.u._id);
 		}
 
@@ -399,7 +391,7 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room, userId) {
 
 		if (mentionIds.length + settings.alwaysNotifyAudioUsers.length > 0) {
 			let audioMentionIds = _.union(mentionIds, settings.alwaysNotifyAudioUsers);
-			audioMentionIds = _.difference(audioMentionIds, userIdsToNotify);
+			audioMentionIds = _.difference(audioMentionIds, settings.dontNotifyAudioUsers);
 
 			let usersOfAudioMentions = RocketChat.models.Users.find({ _id: { $in: audioMentionIds }, statusConnection: {
 				$ne:'offline'
