@@ -1,4 +1,5 @@
 /* globals WebApp:true */
+import _ from 'underscore';
 import url from 'url';
 
 WebApp = Package.webapp.WebApp;

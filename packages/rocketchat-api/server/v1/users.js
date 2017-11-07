@@ -1,3 +1,5 @@
+import _ from 'underscore';
+
 RocketChat.API.v1.addRoute('users.create', { authRequired: true }, {
 	post() {
 		check(this.bodyParams, {

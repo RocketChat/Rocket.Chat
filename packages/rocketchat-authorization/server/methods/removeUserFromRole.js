@@ -1,3 +1,5 @@
+import _ from 'underscore';
+
 Meteor.methods({
 	'authorization:removeUserFromRole'(roleName, username, scope) {
 		if (!Meteor.userId() || !RocketChat.authz.hasPermission(Meteor.userId(), 'access-permissions')) {

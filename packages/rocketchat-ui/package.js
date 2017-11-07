@@ -24,7 +24,6 @@ Package.onUse(function(api) {
 		'reactive-var',
 		'ecmascript',
 		'templating',
-		'underscore',
 		'rocketchat:lib',
 		'rocketchat:ui-master',
 		'raix:push',

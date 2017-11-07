@@ -1,3 +1,5 @@
+import _ from 'underscore';
+
 /* DEFINITIONS
 - If window loses focus user needs to scroll or click/touch some place
 - On hit ESC enable read, force read of current room and remove unread mark

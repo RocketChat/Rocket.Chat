@@ -1,3 +1,5 @@
+import _ from 'underscore';
+
 Template.roomList.helpers({
 	rooms() {
 		if (this.identifier === 'unread') {
