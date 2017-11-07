@@ -1,3 +1,5 @@
+import s from 'underscore.string';
+
 Meteor.methods({
 	sendMessageLivechat(message) {
 		if (s.trim(message.msg) !== '') {
