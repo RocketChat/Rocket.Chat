@@ -1,4 +1,6 @@
 /* globals fireGlobalEvent readMessage currentTracker*/
+import _ from 'underscore';
+
 currentTracker = undefined;
 
 function openRoom(type, name) {
