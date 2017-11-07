@@ -1,4 +1,5 @@
 /*globals OAuth*/
+import _ from 'underscore';
 
 const logger = new Logger('CustomOAuth');
 

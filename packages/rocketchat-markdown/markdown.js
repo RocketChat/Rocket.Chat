@@ -2,6 +2,7 @@
  * Markdown is a named function that will parse markdown syntax
  * @param {Object} message - The message object
  */
+import s from 'underscore.string';
 import { Meteor } from 'meteor/meteor';
 import { Blaze } from 'meteor/blaze';
 import { RocketChat } from 'meteor/rocketchat:lib';
@@ -17,7 +18,7 @@ const parsers = {
 class MarkdownClass {
 	parse(text) {
 		const message = {
-			html: _.escapeHTML(text)
+			html: s.escapeHTML(text)
 		};
 		return this.mountTokensBack(this.parseMessageNotEscaped(message)).html;
 	}
@@ -58,7 +59,7 @@ RocketChat.Markdown = Markdown;
 
 // renderMessage already did html escape
 const MarkdownMessage = (message) => {
-	if (_.trim(message != null ? message.html : undefined)) {
+	if (s.trim(message != null ? message.html : undefined)) {
 		message = Markdown.parseMessageNotEscaped(message);
 	}
 
