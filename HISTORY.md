@@ -1,3 +1,42 @@
+<a name="0.59.3"></a>
+## 0.59.3 (2017-10-29)
+
+
+### Bug Fixes
+
+- [#8593](https://github.com/RocketChat/Rocket.Chat/pull/8593) AmazonS3: Quote file.name for ContentDisposition for files with commas
+- [#8648](https://github.com/RocketChat/Rocket.Chat/pull/8648) Audio message icon
+- [#8645](https://github.com/RocketChat/Rocket.Chat/pull/8645) Fix e-mail message forward
+- [#8679](https://github.com/RocketChat/Rocket.Chat/pull/8679) Fix typos
+- [#8431](https://github.com/RocketChat/Rocket.Chat/pull/8431) Highlighted color height issue
+- [#8691](https://github.com/RocketChat/Rocket.Chat/pull/8691) LDAP not respecting UTF8 characters & Sync Interval not working
+- [#8655](https://github.com/RocketChat/Rocket.Chat/pull/8655) Update pt-BR translation
+
+
+<details>
+<summary>Others</summary>
+
+- [#8653](https://github.com/RocketChat/Rocket.Chat/pull/8653) install grpc package manually to fix snap armhf build
+- [#8434](https://github.com/RocketChat/Rocket.Chat/pull/8434) removing a duplicate line
+</details>
+
+
+
+<a name="0.59.2"></a>
+## 0.59.2 (2017-10-25)
+
+
+### Bug Fixes
+
+- [#8635](https://github.com/RocketChat/Rocket.Chat/pull/8635) API channel/group.members not sorting
+- [#8551](https://github.com/RocketChat/Rocket.Chat/pull/8551) encode filename in url to prevent links breaking
+- [#8577](https://github.com/RocketChat/Rocket.Chat/pull/8577) Fix guest pool inquiry taking
+- [#8613](https://github.com/RocketChat/Rocket.Chat/pull/8613) LDAP not merging existent users && Wrong id link generation
+- [#8634](https://github.com/RocketChat/Rocket.Chat/pull/8634) Message popup menu on mobile/cordova
+- [#8637](https://github.com/RocketChat/Rocket.Chat/pull/8637) Missing scroll at create channel page
+
+
+
 <a name="0.59.1"></a>
 ## 0.59.1 (2017-10-19)
 

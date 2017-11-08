@@ -1,3 +1,5 @@
+/* globals TAPi18n */
+
 Template.AssistifySmarti.onCreated(function() {
 	this.helpRequest = new ReactiveVar(null);
 	this.smartiLoaded = new ReactiveVar(false);
@@ -28,6 +30,11 @@ Template.AssistifySmarti.onDestroyed(function() {
 Template.AssistifySmarti.onRendered(function() {
 
 	const instance = this;
+
+	/* in order to avoid duplicated scrollbars, have the outer one hidden */
+	const parentContainer = this.$(':parent').parent();
+	parentContainer.css('overflow-y', 'initial');
+	this.$('.smarti-widget').css('overflow-y', 'auto');
 
 	function createSmarti() {
 		if (window.SmartiWidget === undefined) {
@@ -113,6 +120,14 @@ Template.AssistifySmarti.helpers({
 	isLoading() {
 		const instance = Template.instance();
 		return !instance.smartiLoaded.get() && instance.currentTryLoading.get() < instance.maxTriesLoading;
+	},
+	loadingNotification() {
+		const instance = Template.instance();
+		if (instance.currentTryLoading.get() < instance.maxTriesLoading && instance.currentTryLoading.get() > 3) {
+			return TAPi18n.__('Widget_loading');
+		} else if (instance.currentTryLoading.get() === instance.maxTriesLoading) {
+			return TAPi18n.__('Widget_could_not_load');
+		}
 	}
 });
 

@@ -1,6 +1,6 @@
 /* globals openRoom */
 
-import {RoomTypeConfig, RoomTypeRouteConfig} from 'meteor/rocketchat:lib';
+import {RoomTypeConfig, RoomTypeRouteConfig, UiTextContext} from 'meteor/rocketchat:lib';
 
 class ExpertiseRoomRoute extends RoomTypeRouteConfig {
 	constructor() {
@@ -68,6 +68,23 @@ export class ExpertiseRoomType extends RoomTypeConfig {
 
 	preventRenaming() {
 		return true; //renaming an expertise will lead to new requests not finding answers to the previously named expertise
+	}
+
+	enableMembersListProfile() {
+		return true;
+	}
+
+	getUiText(context) {
+		switch (context) {
+			case UiTextContext.HIDE_WARNING:
+				return 'Hide_expertise_warning';
+			case UiTextContext.LEAVE_WARNING:
+				return 'Leave_expertise_warning';
+			case UiTextContext.NO_ROOMS_SUBSCRIBED:
+				return 'No_expertise_yet';
+			default:
+				return '';
+		}
 	}
 }
 

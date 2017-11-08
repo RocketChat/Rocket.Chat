@@ -3227,10 +3227,6 @@
 			list-style-type: decimal;
 		}
 
-		& > * + * {
-			padding-top: 10px;
-		}
-
 		& > table {
 			display: block;
 			overflow: auto;
@@ -3422,7 +3418,7 @@ body:not(.is-cordova) {
 	z-index: 2;
 
 	display: flex;
-	flex: 0 0 41px;
+	/*flex: 0 0 41px; Fixes #10 - flexes out sidebar on IE*/
 
 	border-width: 0 0 0 1px;
 
