@@ -42,7 +42,7 @@ export default {
 		return result.data;
 	},
 
-	ubsubscribe(pageId) {
+	unsubscribe(pageId) {
 		const result = HTTP.call('DELETE', `${ gatewayURL }/facebook/page/${ pageId }/subscribe`, {
 			headers: {
 				'authorization': `Bearer ${ RocketChat.settings.get('Livechat_Facebook_API_Key') }`
