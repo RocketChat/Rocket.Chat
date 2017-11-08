@@ -16,7 +16,11 @@ Meteor.methods({
 				}
 
 				case 'enable': {
-					OmniChannel.enable();
+					const result = OmniChannel.enable();
+
+					if (!result.success) {
+						return result;
+					}
 
 					return RocketChat.settings.updateById('Livechat_Facebook_Enabled', true);
 				}

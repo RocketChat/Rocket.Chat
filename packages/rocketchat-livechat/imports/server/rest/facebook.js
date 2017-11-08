@@ -1,3 +1,4 @@
+import crypto from 'crypto';
 /**
  * @api {post} /livechat/facebook Send Facebook message
  * @apiName Facebook
@@ -16,6 +17,28 @@ RocketChat.API.v1.addRoute('livechat/facebook', {
 		if (!this.bodyParams.text && !this.bodyParams.attachments) {
 			return {
 				success: false
+			};
+		}
+
+		if (!this.request.headers['x-hub-signature']) {
+			return {
+				success: false
+			};
+		}
+
+		if (!RocketChat.settings.get('Livechat_Facebook_Enabled')) {
+			return {
+				success: false,
+				error: 'Integration disabled'
+			};
+		}
+
+		// validate if request come from omni
+		const signature = crypto.createHmac('sha1', RocketChat.settings.get('Livechat_Facebook_API_Secret')).update(JSON.stringify(this.request.body)).digest('hex');
+		if (this.request.headers['x-hub-signature'] !== `sha1=${ signature }`) {
+			return {
+				success: false,
+				error: 'Invalid signature'
 			};
 		}
 
