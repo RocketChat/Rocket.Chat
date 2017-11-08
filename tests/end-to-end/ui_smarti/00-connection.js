@@ -3,19 +3,14 @@
 
 import supertest from 'supertest';
 export const request = supertest.agent('http://localhost:8080');
+export const credentials = {
+	username: 'admin',
+	password: 'admin'
+};
 
-describe('[Smarti]', ()=>{
-	before(function(done){
-		request
-			.post('/')
-			.send({username: 'admin', password: '59ebc2f7-c630-4182-8ea1-11d3d7b5ba1d'})
-			.end(function(err, res){
-				if (err) return done(err)
-				done();
-			});
-	});
+describe('[Smarti Connection]', ()=>{
 
-	describe('[Connection]', function() {
+	describe('[Status]', function() {
 		describe('health', ()=> {
 			it('Smarti should be UP', (done) => {
 				request.get('/system/health')
@@ -37,7 +32,7 @@ describe('[Smarti]', ()=>{
 		});
 	});
 
-	describe('[Conversation]', ()=> {
+	describe.skip('[Conversation]', ()=> {
 		it('Get Conversation', (done)=> {
 			request.get('/conversation/59f1d5e8857aba0006307ef2')
 				.expect(200)
@@ -50,18 +45,21 @@ describe('[Smarti]', ()=>{
 		});
 	});
 
-	describe.skip('[Rocket.Chat]', ()=> {
+	describe('[Rocket.Chat]', ()=> {
 		it('Get client list', (done)=> {
 			request.get('/client')
+				.auth(credentials['username'], credentials['password'])
 				.expect(200)
-				.expect('Content-Type', 'application/vnd.spring-boot.actuator.v1+json;charset=UTF-8')
+				.expect('Content-Type', 'application/json;charset=UTF-8')
 				.end(done);
 		});
+	});
+
+	describe.skip('[BREAK]', ()=> {
 		it('BREAK', ()=> {
 			true.should.equal(false);
 		});
 	});
-
 
 });
 

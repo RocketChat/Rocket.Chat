@@ -213,6 +213,8 @@ class SideNav extends Page {
 		// this.channelType.waitForVisible(5000, true);
 		browser.pause(500);
 	}
+
+
 }
 
 module.exports = new SideNav();
