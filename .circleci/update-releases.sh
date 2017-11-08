@@ -15,3 +15,9 @@ aws s3api put-object \
 --website-redirect-location "https://download.rocket.chat/build/rocket.chat-$ARTIFACT_NAME.tgz" \
 --bucket download.rocket.chat \
 --key "$RC_RELEASE"
+
+aws s3api put-object \
+--acl public-read \
+--website-redirect-location "https://download.rocket.chat/build/rocket.chat-$ARTIFACT_NAME.tgz.asc" \
+--bucket download.rocket.chat \
+--key "$RC_RELEASE.asc"
