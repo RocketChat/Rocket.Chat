@@ -242,7 +242,14 @@ Meteor.startup(function() {
 		section: 'Facebook'
 	});
 
-	RocketChat.settings.add('Livechat_Facebook_API_Key', false, {
+	RocketChat.settings.add('Livechat_Facebook_API_Key', '', {
+		type: 'string',
+		group: 'Livechat',
+		section: 'Facebook',
+		i18nDescription: 'If_you_dont_have_one_send_an_email_to_omni_rocketchat_to_get_yours'
+	});
+
+	RocketChat.settings.add('Livechat_Facebook_API_Secret', '', {
 		type: 'string',
 		group: 'Livechat',
 		section: 'Facebook',

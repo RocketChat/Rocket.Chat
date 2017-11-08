@@ -33,15 +33,7 @@ Template.livechatIntegrationFacebook.onCreated(function() {
 
 	this.result = (successFn, errorFn = () => {}) => {
 		return (error, result) => {
-			if (error) {
-				errorFn(error);
-				return swal({
-					title: t('Error_loading_pages'),
-					text: error.reason,
-					type: 'error'
-				});
-			}
-			if (result.success === false && result.type === 'OAuthException') {
+			if (result.success === false && (result.type === 'OAuthException' || typeof result.url !== 'undefined')) {
 				const oauthWindow = window.open(result.url, 'facebook-integration-oauth', 'width=600,height=400');
 
 				const checkInterval = setInterval(() => {
@@ -50,6 +42,15 @@ Template.livechatIntegrationFacebook.onCreated(function() {
 						errorFn(error);
 					}
 				}, 300);
+				return;
+			}
+			if (error) {
+				errorFn(error);
+				return swal({
+					title: t('Error_loading_pages'),
+					text: error.reason,
+					type: 'error'
+				});
 			}
 			successFn(result);
 		};
