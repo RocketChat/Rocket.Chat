@@ -20,7 +20,7 @@ export function getPropertyValue(obj, key) {
 	} catch (err) {
 		return undefined;
 	}
-};
+}
 
 
 export function getLdapUsername(ldapUser) {
