@@ -95,6 +95,12 @@ export class RocketletsRestApi {
 			}
 		});
 
+		this.api.addRoute(':id/icon', { authRequired: true }, {
+			get() {
+				return { success: false };
+			}
+		});
+
 		this.api.addRoute(':id/languages', { authRequired: true }, {
 			get() {
 				console.log(`Getting ${ this.urlParams.id }'s languages..`);

@@ -39,7 +39,7 @@ export class RocketletRealStorage extends RocketletStorage {
 			let doc;
 
 			try {
-				doc = this.db.findOneById(id);
+				doc = this.db.findOne({ $or: [ {_id: id }, { id } ]});
 			} catch (e) {
 				return reject(e);
 			}
@@ -47,7 +47,7 @@ export class RocketletRealStorage extends RocketletStorage {
 			if (doc) {
 				resolve(doc);
 			} else {
-				reject(new Error(`Nothing found by the id: ${ id }`));
+				reject(new Error(`No Rocketlet found by the id: ${ id }`));
 			}
 		});
 	}
