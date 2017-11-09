@@ -121,7 +121,7 @@ export function getDataToSyncUserData(ldapUser, user) {
 					}
 
 					const tmpUserField = getPropertyValue(user, userField);
-					const tmpLdapField = RocketChat.templateVarHandler(ldapField, ldapUser.object);
+					const tmpLdapField = RocketChat.templateVarHandler(ldapField, ldapUser);
 
 					if (tmpLdapField && tmpUserField !== tmpLdapField) {
 						// creates the object structure instead of just assigning 'tmpLdapField' to
