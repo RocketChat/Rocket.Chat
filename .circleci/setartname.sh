@@ -1,7 +1,7 @@
 if [[ $CIRCLE_TAG ]]; then
   export ARTIFACT_NAME="$(npm run version --silent)"
 else
-  export ARTIFACT_NAME="$(npm run version --silent).circleci-$CIRCLE_BUILD_NUM"
+  export ARTIFACT_NAME="$(npm run version --silent).$CIRCLE_BUILD_NUM"
 fi
 
 if [[ $CIRCLE_TAG =~ ^[0-9]+\.[0-9]+\.[0-9]+-rc\.[0-9]+ ]]; then
