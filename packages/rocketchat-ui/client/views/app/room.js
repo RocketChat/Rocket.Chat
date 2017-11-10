@@ -1,3 +1,4 @@
+/* globals chatMessages, fileUpload , fireGlobalEvent , cordova , readMessage , RoomRoles, popover , device */
 /* globals chatMessages, fileUpload , fireGlobalEvent , cordova , readMessage , RoomRoles, popover, device */
 import { RocketChatTabBar } from 'meteor/rocketchat:lib';
 import moment from 'moment';

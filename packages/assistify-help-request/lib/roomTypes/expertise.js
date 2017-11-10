@@ -80,6 +80,8 @@ export class ExpertiseRoomType extends RoomTypeConfig {
 				return 'Hide_expertise_warning';
 			case UiTextContext.LEAVE_WARNING:
 				return 'Leave_expertise_warning';
+			case UiTextContext.NO_ROOMS_SUBSCRIBED:
+				return 'No_expertise_yet';
 			default:
 				return '';
 		}

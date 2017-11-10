@@ -1,13 +1,12 @@
 FROM rocketchat/base:4
 
-ENV RC_VERSION 0.59.2
+ENV RC_VERSION 0.59.3
 
 MAINTAINER buildmaster@rocket.chat
 
 RUN set -x \
  && curl -SLf "https://download.rocket.chat/build/rocket.chat-${RC_VERSION}.tgz" -o rocket.chat.tgz \
  && curl -SLf "https://download.rocket.chat/build/rocket.chat-${RC_VERSION}.tgz.asc" -o rocket.chat.tgz.asc \
- && mkdir /app \
  && gpg --verify rocket.chat.tgz.asc \
  && mkdir -p /app \
  && tar -zxf rocket.chat.tgz -C /app \
