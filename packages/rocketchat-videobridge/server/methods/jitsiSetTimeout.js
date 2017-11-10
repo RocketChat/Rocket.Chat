@@ -21,11 +21,11 @@ Meteor.methods({
 			const room = RocketChat.models.Rooms.findOneById(rid);
 			message.msg = TAPi18n.__('Started_a_video_call');
 			message.mentions = [
-						{
-							_id:'here', 
-							username:'here'
-						}
-					];
+				{
+					_id:'here',
+					username:'here'
+				}
+			];
 			RocketChat.callbacks.run('afterSaveMessage', message, room);
 		} else if ((jitsiTimeout - currentTime) / 1000 <= 15) {
 			RocketChat.models.Rooms.setJitsiTimeout(rid, new Date(jitsiTimeout + 25*1000));
