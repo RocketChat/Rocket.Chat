@@ -7,6 +7,13 @@ Meteor.methods({
 		const user = RocketChat.models.Users.findOneByEmailAddress(email);
 
 		if (user) {
+			// prevent a password reset if the user is not activated
+			if (!!user.active !== true) {
+				throw new Meteor.Error('error-user-is-not-activated', 'User is not activated', {
+					'function': 'sendForgotPasswordEmail'
+				});
+			}
+
 			const regex = new RegExp(`^${ s.escapeRegExp(email) }$`, 'i');
 			email = (user.emails || []).map(item => item.address).find(userEmail => regex.test(userEmail));
 
