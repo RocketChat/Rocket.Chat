@@ -1,3 +1,16 @@
+<a name="assistify-0.4.4"></a>
+## Assistify-0.4.4 (2017-11-10)
+
+## Enhancements
+- Based on <a href="#0.59.3">Rocket.Chat 0.59.3</a>
+- Provide more explanation texts for dialogs
+- [#140](https://github.com/assistify/Rocket.Chat/issues/140) Provide more information for disabled users when trying to log-in
+- [#121](https://github.com/assistify/Rocket.Chat/pull/121) Improved closing of requests 
+
+### Bug Fixes
+- Properly invalidate Smarti widget on settings change
+
+
 <a name="0.59.3"></a>
 ## 0.59.3 (2017-10-29)
 
