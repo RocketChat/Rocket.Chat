@@ -1,4 +1,5 @@
 /* globals popover isRtl */
+import _ from 'underscore';
 
 this.popover = {
 	renderedPopover: null,
