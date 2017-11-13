@@ -466,13 +466,6 @@ Template.room.events({
 		}
 	},
 
-	'click .edit-room-title'(event) {
-		event.preventDefault();
-		Session.set('editRoomTitle', true);
-		$('.rc-header').addClass('visible');
-		return Meteor.setTimeout(() => $('#room-title-field').focus().select(), 10);
-	},
-
 	'click .toggle-favorite'(event) {
 		event.stopPropagation();
 		event.preventDefault();

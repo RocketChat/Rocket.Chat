@@ -1,4 +1,6 @@
 /* globals popover, isRtl */
+import _ from 'underscore';
+
 const commonHelpers = {
 	title() {
 		return t(this.i18nTitle) || this.title;
