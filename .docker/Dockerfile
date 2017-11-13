@@ -1,6 +1,6 @@
 FROM rocketchat/base:8
 
-ENV RC_VERSION 0.59.0-develop
+ENV RC_VERSION 0.60.0-develop
 
 MAINTAINER buildmaster@rocket.chat
 
@@ -13,7 +13,7 @@ RUN set -x \
  && rm rocket.chat.tgz rocket.chat.tgz.asc \
  && cd /app/bundle/programs/server \
  && npm install \
- && npm cache clear \
+ && npm cache clear --force \
  && chown -R rocketchat:rocketchat /app
 
 USER rocketchat

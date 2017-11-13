@@ -210,15 +210,10 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room, userId) {
 
 		let doNotDisturb = false;
 
-		const doNotDisturbValidate = () => {
-			// TODO
-			return true;
-		};
-
-		if (subscription.doNotDisturb && subscription.doNotDisturb.initialTime && subscription.doNotDisturb.finalTime) {
-			if (subscription.doNotDisturb.repeatFor && (subscription.doNotDisturb.repeatFor === 'every day' || (subscription.doNotDisturb.limitDateTime && moment().isBefore(subscription.doNotDisturb.limitDateTime)))) {
-				const initialMoment = moment(subscription.doNotDisturb.initialTime, 'HH:mm');
-				let finalMoment = moment(subscription.doNotDisturb.finalTime, 'HH:mm');
+		const doNotDisturbValidate = (doNotDisturbObject) => {
+			if (doNotDisturbObject.repeatFor && (doNotDisturbObject.repeatFor === 'every day' || (doNotDisturbObject.limitDateTime && moment().isBefore(doNotDisturbObject.limitDateTime)))) {
+				const initialMoment = moment(doNotDisturbObject.initialTime, 'HH:mm');
+				let finalMoment = moment(doNotDisturbObject.finalTime, 'HH:mm');
 
 				if (initialMoment.isAfter(finalMoment)) {
 					finalMoment = finalMoment.add(1, 'day');
@@ -226,17 +221,14 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room, userId) {
 
 				doNotDisturb = moment().isBetween(initialMoment, finalMoment);
 			}
+		};
+
+		if (subscription.doNotDisturb && subscription.doNotDisturb.initialTime && subscription.doNotDisturb.finalTime) {
+			doNotDisturbValidate(subscription.doNotDisturb);
 		}
 
 		if (!doNotDisturb && preferences.doNotDisturb && preferences.doNotDisturb.initialTime && preferences.doNotDisturb.finalTime) {
-			const initialMoment = moment(preferences.doNotDisturb.initialTime, 'HH:mm');
-			let finalMoment = moment(preferences.doNotDisturb.finalTime, 'HH:mm');
-
-			if (initialMoment.isAfter(finalMoment)) {
-				finalMoment = finalMoment.add(1, 'day');
-			}
-
-			doNotDisturb = moment().isBetween(initialMoment, finalMoment);
+			doNotDisturbValidate(preferences.doNotDisturb);
 		}
 
 		if (subscription.disableNotifications || snoozeNotifications || doNotDisturb) {
