@@ -1,4 +1,6 @@
-/* globals RoomRoles, UserRoles WebRTC*/
+/* globals RoomRoles, UserRoles, WebRTC*/
+import _ from 'underscore';
+import s from 'underscore.string';
 import moment from 'moment';
 import toastr from 'toastr';
 const hasPermission = RocketChat.authz.hasAllPermission;
@@ -466,33 +468,6 @@ const actions = [
 const more = function() {
 	return actions.map(action => typeof action === 'function' ? action.call(this): action).filter(action => action && (!action.condition || action.condition.call(this))).slice(2);
 };
-
-
-Template._userinfo.onCreated(function() {
-	return this.autorun(() => {
-		const data = Template.currentData();
-		this.userDetail = data.userDetail;
-		// return this.showUserDetail(data.userDetail);
-	}
-	);
-});
-Template._userinfo.helpers({
-	userInfoDetail() {
-		const room = ChatRoom.findOne(this.rid, { fields: { t: 1 } });
-
-		return {
-			// close: true,
-			tabBar: Template.currentData().tabBar,
-			username: this.userDetail,
-			clear: this.clearUserDetail,
-			showAll: ['c', 'p'].includes(room != null ? room.t : undefined),
-			hideAdminControls: ['c', 'p', 'd'].includes(room != null ? room.t : undefined),
-			video: ['d'].includes(room != null ? room.t : undefined)
-		};
-	}
-});
-
-
 
 Template.userInfo.helpers({
 	moreActions: more,

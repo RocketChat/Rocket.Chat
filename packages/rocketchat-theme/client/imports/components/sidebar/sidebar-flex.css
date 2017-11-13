@@ -1,17 +1,15 @@
 .sidebar-flex {
 	&__header {
+		padding: var(--sidebar-default-padding);
 
 		display: flex;
-
-		padding: var(--sidebar-default-padding);
 	}
 
 	&__title {
-		
-		flex: 1;
-
 		font-size: 1rem;
 		font-weight: 400;
+
+		flex: 1;
 	}
 
 	&__close-button {

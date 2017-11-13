@@ -7,9 +7,6 @@ Template.burger.helpers({
 			return 'menu-opened';
 		}
 	},
-	isOld() {
-		return Template.instance().data.old == null ? '' : 'rc-old';
-	},
 	embeddedVersion() {
 		return RocketChat.Layout.isEmbedded();
 	}

@@ -125,17 +125,20 @@
 	}
 
 	&__menu {
+		padding: 6px;
 		position: absolute;
 		right: 0;
-
 		display: none;
-
-		padding: 6px;
 
 		&-icon {
 			fill: var(--color-white);
 		}
 	}
+}
+
+.rtl .sidebar-item__menu {
+  left: 0;
+  right: auto;
 }
 
 .rtl .sidebar-item__user-status {

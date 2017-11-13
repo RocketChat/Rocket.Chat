@@ -1,5 +1,8 @@
 /* globals chatMessages*/
 import moment from 'moment';
+import _ from 'underscore';
+import s from 'underscore.string';
+
 const fixCordova = (url) => {
 	if ((url != null ? url.indexOf('data:image') : undefined) === 0) {
 		return url;
@@ -23,7 +26,9 @@ const fixCordova = (url) => {
 		return Meteor.absoluteUrl().replace(/\/$/, '') + __meteor_runtime_config__.ROOT_URL_PATH_PREFIX + url;
 	}
 };
+
 const roomFiles = new Mongo.Collection('room_files');
+
 Template.uploadedFilesList.helpers({
 	iconType() {
 		let icon = 'file-generic';
