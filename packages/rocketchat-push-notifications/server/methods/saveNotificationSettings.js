@@ -11,7 +11,9 @@ Meteor.methods({
 			if (value && value.initialTime && value.finalTime) {
 				check(value, {
 					initialTime: String,
-					finalTime: String
+					finalTime: String,
+					repeatFor: String,
+					limitDateTime: Match.Maybe(Date)
 				});
 			} else {
 				value = {};

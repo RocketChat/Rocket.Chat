@@ -70,6 +70,17 @@
 													{{/each}}
 												</select>
 											</label>
+
+											<label>{{_ "Do_Not_Disturb_Repeat_For_Label"}}</label>
+											<label>
+												<select name="doNotDisturbRepeatFor">
+													<option value="1 day" selected="{{$eq this doNotDisturb.repeatFor}}">{{_ "Do_Not_Disturb_Repeat_For_1_Day_Option"}}</option>
+													<option value="1 week" selected="{{$eq this doNotDisturb.repeatFor}}">{{_ "Do_Not_Disturb_Repeat_For_1_Week_Option"}}</option>
+													<option value="1 month" selected="{{$eq this doNotDisturb.repeatFor}}">{{_ "Do_Not_Disturb_Repeat_For_1_Month_Option"}}</option>
+													<option value="1 year" selected="{{$eq this doNotDisturb.repeatFor}}">{{_ "Do_Not_Disturb_Repeat_For_1_Year_Option"}}</option>
+													<option value="every day" selected="{{$eq this doNotDisturb.repeatFor}}">{{_ "Do_Not_Disturb_Repeat_For_Every_Day_Option"}}</option>
+												</select>
+											</label>
 										</section>
 
 										<button type="button" class="button cancel">{{_ "Cancel"}}</button>

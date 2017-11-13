@@ -210,15 +210,22 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room, userId) {
 
 		let doNotDisturb = false;
 
+		const doNotDisturbValidate = () => {
+			// TODO
+			return true;
+		};
+
 		if (subscription.doNotDisturb && subscription.doNotDisturb.initialTime && subscription.doNotDisturb.finalTime) {
-			const initialMoment = moment(subscription.doNotDisturb.initialTime, 'HH:mm');
-			let finalMoment = moment(subscription.doNotDisturb.finalTime, 'HH:mm');
+			if (subscription.doNotDisturb.repeatFor && (subscription.doNotDisturb.repeatFor === 'every day' || (subscription.doNotDisturb.limitDateTime && moment().isBefore(subscription.doNotDisturb.limitDateTime)))) {
+				const initialMoment = moment(subscription.doNotDisturb.initialTime, 'HH:mm');
+				let finalMoment = moment(subscription.doNotDisturb.finalTime, 'HH:mm');
 
-			if (initialMoment.isAfter(finalMoment)) {
-				finalMoment = finalMoment.add(1, 'day');
+				if (initialMoment.isAfter(finalMoment)) {
+					finalMoment = finalMoment.add(1, 'day');
+				}
+
+				doNotDisturb = moment().isBetween(initialMoment, finalMoment);
 			}
-
-			doNotDisturb = moment().isBetween(initialMoment, finalMoment);
 		}
 
 		if (!doNotDisturb && preferences.doNotDisturb && preferences.doNotDisturb.initialTime && preferences.doNotDisturb.finalTime) {

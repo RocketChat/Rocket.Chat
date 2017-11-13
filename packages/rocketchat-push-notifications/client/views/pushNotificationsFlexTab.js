@@ -310,8 +310,23 @@ Template.pushNotificationsFlexTab.onCreated(function() {
 				if (field === 'doNotDisturb') {
 					value = {
 						initialTime: $('select[name=doNotDisturbInitialTime]').val() || '00:00',
-						finalTime: $('select[name=doNotDisturbFinalTime]').val() || '08:00'
+						finalTime: $('select[name=doNotDisturbFinalTime]').val() || '08:00',
+						repeatFor: $('select[name=doNotDisturbRepeatFor]').val() || 'every day'
 					};
+
+					if (value.repeatFor && value.repeatFor !== '') {
+						const addLimitDateTime = (durationValue, durationType) => {
+							return value.limitDateTime = moment(`${ moment().format('YYYY-MM-DD') } ${ value.finalTime }`, 'YYYY-MM-DD HH:mm').add(durationValue, durationType).toDate();
+						};
+
+						switch (value.repeatFor) {
+							case '1 day': addLimitDateTime(1, 'day'); break;
+							case '1 week': addLimitDateTime(1, 'week'); break;
+							case '1 month': addLimitDateTime(1, 'month'); break;
+							case '1 year': addLimitDateTime(1, 'year'); break;
+							case 'every day': value.limitDateTime = undefined;
+						}
+					}
 				} else if (field === 'snoozeNotifications') {
 					const snoozeDuration = parseInt($('input[name=snoozeNotificationsOptions]:checked').val() || 120);
 					const initialDateTime = new Date();
