@@ -100,7 +100,7 @@
   "Accounts_RegistrationForm_Public": "عمومی",
   "Accounts_RegistrationForm_Secret_URL": "URL راز",
   "Accounts_RegistrationForm_SecretURL": "فرم ثبت نام راز URL",
-  "Accounts_RegistrationForm_SecretURL_Description": "شما باید یک رشته تصادفی است که به URL ثبت نام خود را اضافه فراهم می کند. به عنوان مثال: https://demo.rocket.chat/register/[secret_hash]",
+  "Accounts_RegistrationForm_SecretURL_Description": "شما باید یک رشته تصادفی است که به URL ثبت نام خود را اضافه فراهم می کند. به عنوان مثال: https://open.rocket.chat/register/[secret_hash]",
   "Accounts_RequireNameForSignUp": "نیاز به نام برای ثبت نام",
   "Accounts_ShowFormLogin": "ورود مبتنی بر فرم نمایش",
   "Accounts_UseDefaultBlockedDomainsList": "استفاده از پیش فرض مسدود شده فهرست دامنه",

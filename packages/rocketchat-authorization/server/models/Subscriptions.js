@@ -1,3 +1,5 @@
+import _ from 'underscore';
+
 RocketChat.models.Subscriptions.roleBaseQuery = function(userId, scope) {
 	if (scope == null) {
 		return;

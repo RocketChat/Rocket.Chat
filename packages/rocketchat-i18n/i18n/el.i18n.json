@@ -95,7 +95,7 @@
   "Accounts_RegistrationForm_Public": "Δημόσιο",
   "Accounts_RegistrationForm_Secret_URL": "μυστική URL",
   "Accounts_RegistrationForm_SecretURL": "Αίτηση Εγγραφής μυστικό URL",
-  "Accounts_RegistrationForm_SecretURL_Description": "Πρέπει να δώσετε μια τυχαία σειρά που θα προστεθούν στο URL της εγγραφής σας. Παράδειγμα: https://demo.rocket.chat/register/[secret_hash]",
+  "Accounts_RegistrationForm_SecretURL_Description": "Πρέπει να δώσετε μια τυχαία σειρά που θα προστεθούν στο URL της εγγραφής σας. Παράδειγμα: https://open.rocket.chat/register/[secret_hash]",
   "Accounts_RequireNameForSignUp": "Απαιτούν Όνομα Για Εγγραφή",
   "Accounts_ShowFormLogin": "Εμφάνιση μορφής βασίζεται Σύνδεση",
   "Accounts_UseDefaultBlockedDomainsList": "Χρήση προεπιλεγμένων λίστα αποκλεισμένων τομέων",
