@@ -97,7 +97,16 @@ export class RocketletsRestApi {
 
 		this.api.addRoute(':id/icon', { authRequired: true }, {
 			get() {
-				return { success: false };
+				console.log('Getting the Rocketlet\'s Icon:', this.urlParams.id);
+				const prl = manager.getOneById(this.urlParams.id);
+
+				if (prl) {
+					const info = prl.getInfo();
+
+					return { success: true, iconFileContent: info.iconFileContent };
+				} else {
+					return RocketChat.API.v1.notFound(`No Rocketlet found by the id of: ${ this.urlParams.id }`);
+				}
 			}
 		});
 
