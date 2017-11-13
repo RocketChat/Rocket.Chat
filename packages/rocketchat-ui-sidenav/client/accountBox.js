@@ -5,7 +5,7 @@ Template.accountBox.helpers({
 		if (Meteor.user() == null && RocketChat.settings.get('Accounts_AllowAnonymousRead')) {
 			return {
 				name: t('Anonymous'),
-				fname: t('Anonymous'),
+				fname: RocketChat.settings.get('UI_Use_Real_Name') && t('Anonymous'),
 				status: 'online',
 				visualStatus: t('online'),
 				bullet: 'general-success-background',
@@ -24,7 +24,7 @@ Template.accountBox.helpers({
 			bullet: userStatus,
 			_id: Meteor.userId(),
 			username,
-			fname: name || username
+			fname: RocketChat.settings.get('UI_Use_Real_Name') && name
 		};
 	},
 
@@ -123,7 +123,7 @@ Template.accountBox.events({
 			customCSSProperties: {
 				width: `${ accountBox.offsetWidth - parseInt(getComputedStyle(accountBox)['padding-left'].replace('px', '')) * 2 }px`,
 				left: isRtl() ? 'auto' : getComputedStyle(accountBox)['padding-left'],
-				right: isRtl() ? getComputedStyle(accountBox)['padding-right'] : 'auto'
+				right: 'auto'
 			}
 		};
 
