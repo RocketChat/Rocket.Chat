@@ -30,5 +30,9 @@ Template.rocketlets.events({
 		} else {
 			// show an error ? I don't think this should ever happen
 		}
+	},
+
+	'click .install'() {
+		FlowRouter.go('/admin/rocketlets-install');
 	}
 });
