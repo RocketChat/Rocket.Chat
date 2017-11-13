@@ -3,7 +3,7 @@
 
 	display: flex;
 	flex-direction: column;
-	flex: 1 1 100%;
+	flex: 1 1 var(--flex-tab-width);
 
 	width: var(--flex-tab-width);
 	height: 100%;
@@ -28,16 +28,26 @@
 		overflow: auto;
 
 		flex: 1 1 auto;
+
+		& .section:not(:last-child) {
+			margin-bottom: 2rem;
+		}
 	}
 
 	&__header {
 		display: flex;
 		flex: 0 0 auto;
-
-		flex: 0;
+		justify-content: flex-end;
 
 		margin: 0 -0.25rem var(--default-padding);
-		justify-content: flex-end;
+		align-items: end;
+
+
+		&-data {
+			display: flex;
+			flex: 1 1;
+			align-items: center;
+		}
 
 		&-icon {
 			margin: 0 0.25rem;
@@ -72,6 +82,10 @@
 
 		flex-direction: column;
 		flex: 1 1;
+	}
+
+	& .search-form .rc-input__icon-svg {
+    font-size: 1.2rem;
 	}
 }
 

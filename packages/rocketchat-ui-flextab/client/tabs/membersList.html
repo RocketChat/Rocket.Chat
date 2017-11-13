@@ -5,14 +5,19 @@
 		<div class="flex-tab__header">
 			<div class="list-view animated">
 				<div class="title">
-					<h2>{{_ "Members_List"}}</h2>
 					{{> videoButtons}}
 					{{#if canAddUser}}
 						<div class="control">
 							<div class="search-form">
-								<div class="input-line search">
-									{{> inputAutocomplete settings=autocompleteSettingsAddUser id="user-add-search" class="search content-background-color" placeholder=tAddUsers}}
-									<i class="icon-plus secondary-font-color"></i>
+									<div class="rc-input">
+									<label class="rc-input__label">
+										<div class="rc-input__wrapper">
+											<div class="rc-input__icon">
+												{{> icon block="rc-input__icon-svg" icon="plus"}}
+											</div>
+											{{> inputAutocomplete settings=autocompleteSettingsAddUser id="user-add-search" class="rc-input__element" placeholder=tAddUsers}}
+										</div>
+									</label>
 								</div>
 							</div>
 						</div>
