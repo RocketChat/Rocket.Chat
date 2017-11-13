@@ -1,15 +1,34 @@
 /* global Restivus */
+import _ from 'underscore';
+
 class API extends Restivus {
 	constructor(properties) {
 		super(properties);
 		this.logger = new Logger(`API ${ properties.version ? properties.version : 'default' } Logger`, {});
 		this.authMethods = [];
 		this.helperMethods = new Map();
+		this.fieldSeparator = '.';
 		this.defaultFieldsToExclude = {
 			joinCode: 0,
 			$loki: 0,
 			meta: 0,
-			members: 0
+			members: 0,
+			importIds: 0
+		};
+		this.limitedUserFieldsToExclude = {
+			avatarOrigin: 0,
+			emails: 0,
+			phone: 0,
+			statusConnection: 0,
+			createdAt: 0,
+			lastLogin: 0,
+			services: 0,
+			requirePasswordChange: 0,
+			requirePasswordChangeReason: 0,
+			roles: 0,
+			statusDefault: 0,
+			_updatedAt: 0,
+			customFields: 0
 		};
 
 		this._config.defaultOptionsEndpoint = function() {
