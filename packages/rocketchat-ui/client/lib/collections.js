@@ -1,3 +1,5 @@
+import _ from 'underscore';
+
 this.ChatMessage = new Mongo.Collection(null);
 this.CachedChatRoom = new RocketChat.CachedCollection({ name: 'rooms' });
 this.ChatRoom = this.CachedChatRoom.collection;

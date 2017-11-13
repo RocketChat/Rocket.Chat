@@ -1,4 +1,6 @@
 /* global menu */
+import _ from 'underscore';
+
 let isLoading;
 let filterText = '';
 let usernamesFromClient;

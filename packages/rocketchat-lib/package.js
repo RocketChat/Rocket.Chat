@@ -27,10 +27,8 @@ Package.onUse(function(api) {
 	api.use('check');
 	api.use('tracker');
 	api.use('ddp-rate-limiter');
-	api.use('underscore');
 	api.use('mongo');
 	api.use('oauth');
-	api.use('underscorestring:underscore.string@3.3.4');
 	api.use('matb33:collection-hooks');
 	api.use('service-configuration');
 	api.use('check');
@@ -152,6 +150,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/methods/filterATAllTag.js', 'server');
 	api.addFiles('server/methods/getChannelHistory.js', 'server');
 	api.addFiles('server/methods/getFullUserData.js', 'server');
+	api.addFiles('server/methods/getRoomJoinCode.js', 'server');
 	api.addFiles('server/methods/getRoomRoles.js', 'server');
 	api.addFiles('server/methods/getServerInfo.js', 'server');
 	api.addFiles('server/methods/getSingleMessage.js', 'server');
