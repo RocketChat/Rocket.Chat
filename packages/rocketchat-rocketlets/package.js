@@ -67,7 +67,9 @@ Package.onUse(function(api) {
 		'client/admin/rocketlets.html',
 		'client/admin/rocketlets.js',
 		'client/admin/rocketletManage.html',
-		'client/admin/rocketletManage.js'
+		'client/admin/rocketletManage.js',
+		'client/admin/rocketletInstall.html',
+		'client/admin/rocketletInstall.js'
 	], 'client');
 
 	api.addFiles('assets/stylesheets/rocketlets.css', 'client');
@@ -81,6 +83,6 @@ Package.onUse(function(api) {
 
 Npm.depends({
 	'busboy': '0.2.13',
-	'temporary-rocketlets-server': '0.1.32',
-	'temporary-rocketlets-ts-definition': '0.6.30'
+	'temporary-rocketlets-server': '0.1.34',
+	'temporary-rocketlets-ts-definition': '0.6.31'
 });

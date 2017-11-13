@@ -61,6 +61,13 @@ FlowRouter.route('/admin/rocketlets', {
 	}
 });
 
+FlowRouter.route('/admin/rocketlets-install', {
+	name: 'rocketlet-install',
+	action() {
+		BlazeLayout.render('main', { center: 'rocketletInstall' });
+	}
+});
+
 FlowRouter.route('/admin/rocketlets/:rocketletId', {
 	name: 'rocketlet-manage',
 	action() {
