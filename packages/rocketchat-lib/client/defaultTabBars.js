@@ -1,7 +1,7 @@
 RocketChat.TabBar.addButton({
 	groups: ['channel', 'group', 'direct'],
 	id: 'message-search',
-	i18nTitle: 'Search',
+	i18nTitle: 'Search_Messages',
 	icon: 'magnifier',
 	template: 'messageSearch',
 	order: 1
