@@ -36,5 +36,19 @@
 		& [data-play] {
 			cursor: pointer;
 		}
+
+		& .disable-notifications,
+		& .unread-room-status {
+			display: flex;
+			align-items: center;
+
+			& label {
+				flex: 1 1;
+			}
+		}
+
+		& .alert {
+			padding: 0.5rem;
+		}
 	}
 }

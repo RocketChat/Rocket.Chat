@@ -47,6 +47,7 @@
 		display: flex;
 		flex: 0 0 var(--button-square-size);
 
+		margin: 0;
 		padding: 0;
 		align-items: center;
 		justify-content: center;
