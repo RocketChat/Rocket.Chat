@@ -3,7 +3,7 @@
 
 	width: 100%;
 	min-height: 43px;
-	padding: 0 1rem 0 3.25rem;
+	padding: 0 1rem 0 2.25rem;
 
 	border-width: var(--tags-border-width);
 	border-color: var(--tags-border-color);
