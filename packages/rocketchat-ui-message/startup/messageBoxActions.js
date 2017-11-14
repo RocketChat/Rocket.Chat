@@ -90,8 +90,9 @@ RocketChat.messageBox.actions.add('Share', 'My_location', {
 		const position = RocketChat.Geolocation.get();
 		const latitude = position.coords.latitude;
 		const longitude = position.coords.longitude;
-		const text = `<div class="location-preview"><img style="height: 250px; width: 250px;" src="https://maps.googleapis.com/maps/api/staticmap?zoom=14&size=250x250&markers=color:gray%7Clabel:%7C${ latitude },${ longitude }&key=${ RocketChat.settings.get('MapView_GMapsAPIKey') }" /></div>`;
-		swal({
+		const text = `<img style="height: 250px; width: 500px;" src="https://maps.googleapis.com/maps/api/staticmap?zoom=14&size=250x500&markers=color:gray%7Clabel:%7C${ latitude },${ longitude }&key=${ RocketChat.settings.get('MapView_GMapsAPIKey') }" />`;
+
+		modal.open({
 			title: t('Share_Location_Title'),
 			text,
 			showCancelButton: true,

@@ -1,6 +1,6 @@
 
 .rc-modal {
-  min-width: 300px;
+  min-width: 400px;
   background: white;
 
   boder-radius: 15px;
@@ -9,6 +9,7 @@
 	box-shadow: 0 0 2px 0 rgba(47, 52, 61, 0.08), 0 0 12px 0 rgba(47, 52, 61, 0.12);
 
   &-wrapper {
+		padding: 10px;
 		z-index: 10;
     display: flex;
     position: fixed;
@@ -59,11 +60,10 @@
 	&__footer {
     padding: 16px;
     background: #F7F8FA;
+		display: flex;
+		justify-content: space-between;
 		& > .rc-button {
 			margin: 0;
-		}
-		& .rc-button--primary {
-			float: right;
 		}
 	}
 }
