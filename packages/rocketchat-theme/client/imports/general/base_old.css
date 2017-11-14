@@ -687,15 +687,8 @@
 }
 
 .rc-old.burger {
-	position: absolute;
-	top: 5px;
-	left: 0;
-
 	display: none;
 	visibility: hidden;
-
-	margin-left: 7px;
-	padding: 12px;
 
 	cursor: pointer;
 	transition: transform 0.2s ease-out 0.1s;
@@ -711,25 +704,6 @@
 		transition: transform 0.2s ease-out;
 
 		opacity: 0.8;
-	}
-
-	& .unread-burger-alert {
-		position: absolute;
-		z-index: 3;
-		top: 8px;
-		right: 4px;
-
-		min-width: 18px;
-		height: 18px;
-		padding: 0 4px;
-
-		text-align: center;
-
-		border-radius: 20px;
-
-		font-size: 12px;
-		font-weight: bold;
-		line-height: 18px;
 	}
 
 	&.menu-opened i {

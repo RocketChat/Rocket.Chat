@@ -99,7 +99,7 @@ Template.popover.onDestroyed(function() {
 
 Template.popover.events({
 	'click .js-action'(e, instance) {
-		!this.action || this.action.call(instance.data.data, e, instance);
+		!this.action || this.action.call(this, e, instance.data.data);
 		popover.close();
 	},
 	'click .js-close'() {

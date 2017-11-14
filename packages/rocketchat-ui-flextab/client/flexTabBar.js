@@ -65,6 +65,25 @@ const commonEvents = {
 		popover.close();
 	}
 };
+const action = function(e, instance) {
+	$('button', e.currentTarget).blur();
+	e.preventDefault();
+	const $flexTab = $('.flex-tab-container .flex-tab');
+
+	if (instance.tabBar.getState() === 'opened' && instance.tabBar.getTemplate() === this.template) {
+		$flexTab.attr('template', '');
+		return instance.tabBar.close();
+	}
+
+	$flexTab.attr('template', this.template);
+	instance.tabBar.setData({
+		label: this.i18nTitle,
+		icon: this.icon
+	});
+	instance.tabBar.open(this);
+
+	popover.close();
+};
 
 Template.flexTabBar.events({
 	'click .tab-button'(e, instance) {
@@ -89,6 +108,7 @@ Template.flexTabBar.events({
 Template.flexTabBar.onCreated(function() {
 	this.tabBar = Template.currentData().tabBar;
 });
+
 
 Template.RoomsActionMore.events({
 	...commonEvents
@@ -117,9 +137,16 @@ Template.RoomsActionTab.events({
 			}
 			return true;
 		});
-
+		const groups = [{items:(instance.small.get() ? buttons : buttons.slice(4)).map(item => {
+			item.name = TAPi18n.__(item.i18nTitle);
+			item.action = action;
+			return item;
+		})}];
+		const columns = [groups];
+		columns[0] = {groups};
 		const config = {
-			template: 'RoomsActionMore',
+			columns,
+			// template: 'RoomsActionMore',
 			popoverClass: 'message-box',
 			mousePosition: () => ({
 				x: e.currentTarget.getBoundingClientRect().right + 10,
