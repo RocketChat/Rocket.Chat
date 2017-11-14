@@ -122,6 +122,17 @@
 													<option value="{{this}}" selected="{{$eq this doNotDisturb.finalTime}}">{{this}}</option>
 												{{/each}}
 											</select>
+											<label>{{_ "Do_Not_Disturb_Repeat_For_Label"}}</label>
+											<select class="input-monitor" name="doNotDisturbRepeatFor">
+												<option value="1 day" selected="{{$eq doNotDisturb.repeatFor '1 day'}}">{{_ "Do_Not_Disturb_Repeat_For_1_Day_Option"}}</option>
+												<option value="1 week" selected="{{$eq doNotDisturb.repeatFor '1 week'}}">{{_ "Do_Not_Disturb_Repeat_For_1_Week_Option"}}</option>
+												<option value="1 month" selected="{{$eq doNotDisturb.repeatFor '1 month'}}">{{_ "Do_Not_Disturb_Repeat_For_1_Month_Option"}}</option>
+												<option value="1 year" selected="{{$eq doNotDisturb.repeatFor '1 year'}}">{{_ "Do_Not_Disturb_Repeat_For_1_Year_Option"}}</option>
+												<option value="every day" selected="{{$eq doNotDisturb.repeatFor 'every day'}}">{{_ "Do_Not_Disturb_Repeat_For_Every_Day_Option"}}</option>
+											</select>
+											{{#if doNotDisturbInfo.limitDateTime}}
+												<div class="info">{{_ "Do_Not_Disturb_Repeat_For_Current_Limit_Label"}}: {{doNotDisturbInfo.limitDateTime}}</div>
+											{{/if}}
 										</section>
 									{{/if}}
 								</div>

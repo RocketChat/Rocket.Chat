@@ -106,7 +106,26 @@ Template.accountPreferences.helpers({
 	},
 	doNotDisturbIsValid() {
 		const doNotDisturb = Template.instance().doNotDisturb.get();
-		return !!(doNotDisturb && doNotDisturb.initialTime && doNotDisturb.finalTime);
+		return !!(doNotDisturb && doNotDisturb.initialTime && doNotDisturb.finalTime && (doNotDisturb.repeatFor === 'every day' || moment().isBefore(doNotDisturb.limitDateTime)));
+	},
+	doNotDisturbInfo() {
+		const { initialTime, finalTime, limitDateTime } = Template.instance().doNotDisturb.get();
+		let { repeatFor } = Template.instance().doNotDisturb.get();
+
+		switch (repeatFor) {
+			case '1 day': repeatFor = t('Do_Not_Disturb_Repeat_For_1_Day_Option'); break;
+			case '1 week': repeatFor = t('Do_Not_Disturb_Repeat_For_1_Week_Option'); break;
+			case '1 month': repeatFor = t('Do_Not_Disturb_Repeat_For_1_Month_Option'); break;
+			case '1 year': repeatFor = t('Do_Not_Disturb_Repeat_For_1_Year_Option'); break;
+			case 'every day': repeatFor = t('Do_Not_Disturb_Repeat_For_Every_Day_Option');
+		}
+
+		return {
+			initialTime,
+			finalTime,
+			repeatFor,
+			limitDateTime: limitDateTime ? moment(limitDateTime).format('ll') : undefined
+		};
 	},
 	showDoNotDisturbOptions() {
 		return Template.instance().showDoNotDisturbOptions.get();
@@ -115,21 +134,21 @@ Template.accountPreferences.helpers({
 		return Template.instance().snoozeNotifications.get();
 	},
 	snoozeNotificationsInfo() {
-		let duration;
-		const snoozeNotifications = Template.instance().snoozeNotifications.get();
+		const { initialDateTime, finalDateTime } = Template.instance().snoozeNotifications.get();
+		let { duration } = Template.instance().snoozeNotifications.get();
 
-		if (snoozeNotifications.duration === 20) {
+		if (duration === 20) {
 			duration = t('Snooze_Notifications_20_Minutes_Option');
-		} else if (snoozeNotifications.duration === 60) {
+		} else if (duration === 60) {
 			duration = t('Snooze_Notifications_1_Hour_Option');
 		} else {
-			duration = t(`Snooze_Notifications_${ (snoozeNotifications.duration/60) }_Hours_Option`);
+			duration = t(`Snooze_Notifications_${ (duration/60) }_Hours_Option`);
 		}
 
 		return {
 			description: duration,
-			from: moment(snoozeNotifications.initialDateTime).format('lll'),
-			to: moment(snoozeNotifications.finalDateTime).format('lll')
+			from: moment(initialDateTime).format('lll'),
+			to: moment(finalDateTime).format('lll')
 		};
 	},
 	snoozeNotificationsIsValid() {
@@ -236,6 +255,7 @@ Template.accountPreferences.onCreated(function() {
 		if ($('input[name=doNotDisturb]:checked').val() === '1' && $('select[name=doNotDisturbInitialTime]').val() !== $('select[name=doNotDisturbFinalTime]').val()) {
 			data.doNotDisturbInitialTime = $('select[name=doNotDisturbInitialTime]').val();
 			data.doNotDisturbFinalTime = $('select[name=doNotDisturbFinalTime]').val();
+			data.doNotDisturbRepeatFor = $('select[name=doNotDisturbRepeatFor]').val();
 		}
 
 		Meteor.call('saveUserPreferences', data, function(error, results) {

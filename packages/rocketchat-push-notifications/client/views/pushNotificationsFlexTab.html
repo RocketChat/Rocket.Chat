@@ -74,11 +74,11 @@
 											<label>{{_ "Do_Not_Disturb_Repeat_For_Label"}}</label>
 											<label>
 												<select name="doNotDisturbRepeatFor">
-													<option value="1 day" selected="{{$eq this doNotDisturb.repeatFor}}">{{_ "Do_Not_Disturb_Repeat_For_1_Day_Option"}}</option>
-													<option value="1 week" selected="{{$eq this doNotDisturb.repeatFor}}">{{_ "Do_Not_Disturb_Repeat_For_1_Week_Option"}}</option>
-													<option value="1 month" selected="{{$eq this doNotDisturb.repeatFor}}">{{_ "Do_Not_Disturb_Repeat_For_1_Month_Option"}}</option>
-													<option value="1 year" selected="{{$eq this doNotDisturb.repeatFor}}">{{_ "Do_Not_Disturb_Repeat_For_1_Year_Option"}}</option>
-													<option value="every day" selected="{{$eq this doNotDisturb.repeatFor}}">{{_ "Do_Not_Disturb_Repeat_For_Every_Day_Option"}}</option>
+													<option value="1 day" selected="{{$eq doNotDisturb.repeatFor '1 day'}}">{{_ "Do_Not_Disturb_Repeat_For_1_Day_Option"}}</option>
+													<option value="1 week" selected="{{$eq doNotDisturb.repeatFor '1 week'}}">{{_ "Do_Not_Disturb_Repeat_For_1_Week_Option"}}</option>
+													<option value="1 month" selected="{{$eq doNotDisturb.repeatFor '1 month'}}">{{_ "Do_Not_Disturb_Repeat_For_1_Month_Option"}}</option>
+													<option value="1 year" selected="{{$eq doNotDisturb.repeatFor '1 year'}}">{{_ "Do_Not_Disturb_Repeat_For_1_Year_Option"}}</option>
+													<option value="every day" selected="{{$eq doNotDisturb.repeatFor 'every day'}}">{{_ "Do_Not_Disturb_Repeat_For_Every_Day_Option"}}</option>
 												</select>
 											</label>
 										</section>
@@ -86,7 +86,7 @@
 										<button type="button" class="button cancel">{{_ "Cancel"}}</button>
 										<button type="button" class="button primary save">{{_ "Save"}}</button>
 									{{else}}
-										<span class="current-setting">{{_ "Do_Not_Disturb_Initial_Time_Label"}} {{doNotDisturb.initialTime}} {{_ "Do_Not_Disturb_Final_Time_Label"}} {{doNotDisturb.finalTime}} <i class="icon-pencil" data-edit="doNotDisturb"></i></span>
+										<span class="current-setting">{{_ "Do_Not_Disturb_Initial_Time_Label"}} {{doNotDisturbInfo.initialTime}} {{_ "Do_Not_Disturb_Final_Time_Label"}} {{doNotDisturbInfo.finalTime}} ({{doNotDisturbInfo.repeatFor}}{{#if doNotDisturbInfo.limitDateTime}} - {{_ "Do_Not_Disturb_Repeat_For_Limit_Date_Label"}} {{doNotDisturbInfo.limitDateTime}}{{/if}}) <i class="icon-pencil" data-edit="doNotDisturb"></i></span>
 									{{/if}}
 								</div>
 							</li>
