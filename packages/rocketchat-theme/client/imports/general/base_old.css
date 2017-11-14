@@ -2246,8 +2246,14 @@
 			right: 0;
 			left: 0;
 
+			overflow: hidden;
+
+			width: 50%;
+
 			height: 100%;
 			padding: 0 10px;
+
+			text-overflow: ellipsis;
 
 			& > a {
 				float: right;
@@ -2258,6 +2264,9 @@
 		}
 
 		& button {
+			position: relative;
+			z-index: 3;
+
 			float: right;
 
 			text-transform: uppercase;
