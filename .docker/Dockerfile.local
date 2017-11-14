@@ -1,4 +1,4 @@
-FROM node:4
+FROM node:8
 
 ADD . /app
 
@@ -11,7 +11,7 @@ ENV RC_VERSION=0.57.0-designpreview \
 RUN set -x \
  && cd /app/bundle/programs/server \
  && npm install \
- && npm cache clear
+ && npm cache clear --force
 
 WORKDIR /app/bundle
 
