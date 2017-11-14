@@ -2,15 +2,31 @@
 
 this.modal = {
 	renderedModal: null,
-	open(config) {
+	open(config = {
+		confirmButtonText: t('ok'),
+		cancelButtonText: t('Cancel')
+	}, fn) {
 		this.close();
 		this.renderedModal = Blaze.renderWithData(Template.rc_modal, config, document.body);
+		this.fn = fn;
+		this.config = config;
+		this.timer = null;
+		if (config.timer) {
+			this.timer = setTimeout(() => this.close(), config.timer);
+		}
 	},
 	close() {
 		if (this.renderedModal) {
 			Blaze.remove(this.renderedModal);
 		}
-
+		this.fn = null;
+		if (this.timer) {
+			clearTimeout(this.timer);
+		}
+	},
+	confirm() {
+		this.fn(true);
+		this.config.closeOnConfirm && this.close();
 	}
 };
 
@@ -39,5 +55,8 @@ Template.rc_modal.events({
 	},
 	'click .js-close'() {
 		modal.close();
+	},
+	'click .js-confirm'() {
+		modal.confirm();
 	}
 });
