@@ -33,6 +33,7 @@ Package.onUse(function(api) {
 	//Add v1 routes
 	api.addFiles('server/v1/channels.js', 'server');
 	api.addFiles('server/v1/chat.js', 'server');
+	api.addFiles('server/v1/commands.js', 'server');
 	api.addFiles('server/v1/groups.js', 'server');
 	api.addFiles('server/v1/im.js', 'server');
 	api.addFiles('server/v1/integrations.js', 'server');
