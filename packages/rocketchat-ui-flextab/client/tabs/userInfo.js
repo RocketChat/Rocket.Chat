@@ -3,6 +3,7 @@ import _ from 'underscore';
 import s from 'underscore.string';
 import moment from 'moment';
 import toastr from 'toastr';
+
 const hasPermission = RocketChat.authz.hasAllPermission;
 const canSetLeader= () => {
 	return RocketChat.authz.hasAllPermission('set-leader', Session.get('openedRoom'));
@@ -70,17 +71,17 @@ const isSelf = (username) => {
 	return user && user.username === username;
 };
 const getUser = function getUser(fn, ...args) {
-	const user = this.instance.user.get();
+	const user = this.user && this.user.get();
 	if (!user) {
 		return;
 	}
 	return fn.apply(this, [user, ...args]);
 };
 const prevent = function prevent(fn, ...args) {
-	return function(e) {
+	return function(e, {instance}) {
 		e.stopPropagation();
 		e.preventDefault();
-		return fn.apply(this, args);
+		return fn.apply(instance, args);
 	};
 };
 const success = function success(fn) {
@@ -469,6 +470,7 @@ const more = function() {
 	return actions.map(action => typeof action === 'function' ? action.call(this): action).filter(action => action && (!action.condition || action.condition.call(this))).slice(2);
 };
 
+
 Template.userInfo.helpers({
 	moreActions: more,
 	actions() {
@@ -654,12 +656,11 @@ Template.userInfo.events({
 		};
 		popover.open(config);
 	},
-
+	'click .js-action'(e) {
+		return this.action && this.action.apply(this, [e, {instance : Template.instance()}]);
+	},
 	'click .js-close-info'(e, instance) {
 		return instance.clear();
-	},
-	'click .js-action'(e) {
-		return this.action && this.action.apply({instance : Template.instance()}, [e]);
 	}
 });
 
