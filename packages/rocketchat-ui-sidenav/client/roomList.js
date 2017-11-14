@@ -19,7 +19,8 @@ Template.roomList.helpers({
 		const favoritesEnabled = RocketChat.settings.get('Favorite_Rooms');
 
 		const query = {
-			open: true
+			open: true,
+			subGroup: {$ne: true}
 		};
 		const sort = { 't': 1 };
 		if (this.identifier === 'd' && RocketChat.settings.get('UI_Use_Real_Name')) {
@@ -81,9 +82,18 @@ Template.roomList.helpers({
 	}
 });
 
-// Template.roomList.onRendered(function() {
-// 	$(this.firstNode.parentElement).perfectScrollbar();
-// });
+
+Template.roomList.onRendered(function() {
+	let fullUser = RocketChat.models.Users.findOne({'_id': Meteor.userId()});
+	if (fullUser && fullUser.settings && fullUser.settings.preferences && fullUser.settings.preferences.hideSubgroups) {
+		$('.collapser-button').removeClass('icon-down-dir');
+		$('.collapser-button').addClass('collapsed icon-right-dir');
+		$('.child-room').hide();
+	} else {
+		return;
+	}
+	// $(this.firstNode.parentElement).perfectScrollbar();
+});
 
 Template.roomList.events({
 	'click .more'(e, t) {

@@ -11,13 +11,17 @@
 					<header class="fixed-title content-background-color border-component-color">
 						{{> burger}}
 						<h2>
-							{{#if showToggleFavorite}}
-								<a href="#favorite" class="toggle-favorite"><i class="{{favorite}}" aria-label="{{_ favoriteLabel}}"></i></a>
+							{{#if isSubGroup}}
+								<i class="icon-angle-double-right status-{{userStatus}}"></i>
+								<span class="room-title">{{subGroupName}}</span>
+							{{else}}
+								{{#if showToggleFavorite}}
+									<a href="#favorite" class="toggle-favorite"><i class="{{favorite}}" aria-label="{{_ favoriteLabel}}"></i></a>
+								{{/if}}
+								{{> icon block="room-icon" icon=roomIcon classes=userStatus}}
+								<span class="room-title">{{roomName}}</span>
 							{{/if}}
 
-							{{> icon block="room-icon" icon=roomIcon classes=userStatus}}
-
-							<span class="room-title">{{roomName}}</span>
 							{{#if secondaryName}}
 								<span class="secondary-name">@{{secondaryName}}</span>
 							{{/if}}

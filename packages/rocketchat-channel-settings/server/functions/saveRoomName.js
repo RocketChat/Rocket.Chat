@@ -6,6 +6,11 @@ RocketChat.saveRoomName = function(rid, displayName, user, sendMessage = true) {
 			'function': 'RocketChat.saveRoomdisplayName'
 		});
 	}
+	if (room.subGroup) {
+		throw new Meteor.Error('error-not-allowed-subgroup-name', 'Can\'t change subgroup names', {
+			'function': 'RocketChat.saveRoomdisplayName'
+		});
+	}
 	if (displayName === room.name) {
 		return;
 	}

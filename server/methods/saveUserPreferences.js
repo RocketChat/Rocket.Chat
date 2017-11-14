@@ -80,6 +80,7 @@ Meteor.methods({
 			preferences.hideRoles = settings.hideRoles === '1';
 			preferences.hideAvatars = settings.hideAvatars === '1';
 			preferences.hideFlexTab = settings.hideFlexTab === '1';
+			preferences.hideSubgroups = settings.hideSubgroups === '1';
 			preferences.highlights = settings.highlights;
 			preferences.sendOnEnter = settings.sendOnEnter;
 

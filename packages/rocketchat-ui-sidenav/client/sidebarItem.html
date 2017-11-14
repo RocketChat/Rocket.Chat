@@ -4,7 +4,11 @@
 			<div class="sidebar-item__user-status sidebar-item__user-status--{{statusClass}}"></div>
 		{{/if}}
 		<a class="sidebar-item__link" href="{{#if route}}{{route}}{{else}}{{pathFor pathSection group=pathGroup}}{{/if}}" title="{{name}}">
-			{{#if icon}}
+			{{#if hasSubGroups}}
+				<i class="icon-down-dir collapser-button"></i>
+			{{else if subGroup}}
+				<i class="icon-angle-double-right"></i>
+			{{else if icon}}
 				<div class="sidebar-item__picture">
 					{{> icon block="sidebar-item__icon" icon=icon}}
 				</div>
@@ -17,15 +21,39 @@
 					</div>
 				{{/if}}
 			{{/if}}
-			<div class='sidebar-item__name {{archivedClass}}'>{{name}}</div>
+			{{#if subGroupName}}
+				<div class='sidebar-item__name {{archivedClass}}'>{{subGroupName}}</div>
+			{{else}}
+				<div class='sidebar-item__name {{archivedClass}}'>{{name}}</div>
+			{{/if}}
 			{{#if unread}}
 				<span class="badge badge--unread">{{#if userMentions}}@ {{/if}}{{unread}}</span>
 			{{/if}}
 			{{#if isRoom}}
-				<div class="sidebar-item__menu">
-					{{> icon block="sidebar-item__menu-icon" icon="menu"}}
-				</div>
+				{{#unless hasSubGroups}}
+					<div class="sidebar-item__menu">
+						{{> icon block="sidebar-item__menu-icon" icon="menu"}}
+					</div>
+				{{/unless}}
 			{{/if}}
 		</a>
 	</li>
+	{{#each subGroups}}
+		<li class="sidebar-item {{#if or unread alert }}sidebar-item--unread{{/if}} {{#if active}}sidebar-item--active{{/if}} {{#if toolbar}}popup-item{{/if}} child-room" data-id="{{_id}}" data-parent-id="{{originalId}}">
+			<a class="sidebar-item__link child-room-link" href="{{#if route}}{{route}}{{else}}{{pathFor pathSection group=pathGroup}}{{/if}}" title="{{subGroupName}}">
+				<div class="sidebar-item__picture">
+					<div class="sidebar-item__icon sub-group-arrow" style="padding-top: 4px; margin-left: 22px; margin-right: -5px; margin-bottom: 3px;">
+						<i class="icon-angle-double-right"></i>
+					</div>
+				</div>
+				<div class='sidebar-item__name {{archivedClass}}'>{{subGroupName}}</div>
+			</a>
+			{{#if this.unread}}
+				<span class="badge badge--unread">{{this.unread}}</span>
+			{{/if}}
+			<div class="sidebar-item__menu">
+				{{> icon block="sidebar-item__menu-icon" icon="menu"}}
+			</div>
+		</li>
+	{{/each}}
 </template>

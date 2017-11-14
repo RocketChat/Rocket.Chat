@@ -146,6 +146,7 @@ Template.accountPreferences.onCreated(function() {
 		data.viewMode = parseInt($('#viewMode').find('select').val());
 		data.hideUsernames = $('#hideUsernames').find('input:checked').val();
 		data.hideRoles = $('#hideRoles').find('input:checked').val();
+		data.hideSubgroups = $('#hideSubgroups').find('input:checked').val();
 		data.hideFlexTab = $('#hideFlexTab').find('input:checked').val();
 		data.hideAvatars = $('#hideAvatars').find('input:checked').val();
 		data.mergeChannels = $('#mergeChannels').find('input:checked').val();

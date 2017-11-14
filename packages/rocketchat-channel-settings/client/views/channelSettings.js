@@ -84,9 +84,10 @@ Template.channelSettings.helpers({
 
 Template.channelSettings.events({
 	'click .delete'() {
+		let hasSubGroups = Meteor.call('hasSubGroups', Session.get('openedRoom'));
 		return swal({
 			title: t('Are_you_sure'),
-			text: t('Delete_Room_Warning'),
+			text: hasSubGroups ? t("Delete_Room_Warning_With_SubGroups") : t('Delete_Room_Warning'),
 			type: 'warning',
 			showCancelButton: true,
 			confirmButtonColor: '#DD6B55',

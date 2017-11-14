@@ -244,6 +244,15 @@ Template.room.helpers({
 		return roomData.topic;
 	},
 
+	isSubGroup() {
+		let subData = RocketChat.models.Subscriptions.findOne({'rid': this._id});
+		return subData.subGroup;
+	},
+	subGroupName() {
+		let subData = RocketChat.models.Subscriptions.findOne({'rid': this._id});
+		return subData.subGroupName;
+	},
+
 	showAnnouncement() {
 		const roomData = Session.get(`roomData${ this._id }`);
 		if (!roomData) { return false; }
