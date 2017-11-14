@@ -4522,6 +4522,7 @@ body:not(.is-cordova) {
 
 		& input,
 		& select {
+			width: 100%;
 			position: relative;
 
 			padding: 4px 8px;
