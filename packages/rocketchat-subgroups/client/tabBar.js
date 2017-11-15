@@ -7,7 +7,8 @@ Meteor.startup(function() {
 				i18nTitle: 'Create_Subgroup',
 				icon: 'queue',
 				template: 'subGroups',
-				order: 6
+				order: 3,
+				subGroups: true
 			});
 		} else {
 			RocketChat.TabBar.removeButton('subGroups');

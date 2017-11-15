@@ -1124,9 +1124,9 @@
       "integrity": "sha1-O0tCACOmbKfjK9uhbnEJN+FNGws="
     },
     "nan": {
-      "version": "2.7.0",
-      "resolved": "https://registry.npmjs.org/nan/-/nan-2.7.0.tgz",
-      "integrity": "sha1-2Vv3IeyHfgjbJ27T/G63j5CDrUY="
+      "version": "2.8.0",
+      "resolved": "https://registry.npmjs.org/nan/-/nan-2.8.0.tgz",
+      "integrity": "sha1-7XFfP+neArV6XmJS2QqWZ14fCFo="
     },
     "node-forge": {
       "version": "0.7.1",

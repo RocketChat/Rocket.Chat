@@ -11,11 +11,19 @@
 			</section>
 			<div class="flex-tab-bar content-background-color" role="toolbar">
 				{{#each buttons}}
-					<div class="tab-button {{active}} {{visible}} {{class}}" title="{{title}}">
-						<button aria-label="{{title}}">
-							{{> icon block="tab-button-icon" icon=icon }}
-						</button>
-					</div>
+					{{#if subGroups}}
+	          <div class="tab-button {{active}} {{visible}} {{class}}" title="{{title}}">
+	            <button aria-label="{{title}}">
+	              <img src="images/subgroups.svg" alt="createSubgroup" style="height: 18px;">
+	            </button>
+	          </div>
+	        {{else}}
+						<div class="tab-button {{active}} {{visible}} {{class}}" title="{{title}}">
+							<button aria-label="{{title}}">
+								{{> icon block="tab-button-icon" icon=icon }}
+							</button>
+						</div>
+					{{/if}}
 				{{/each}}
 			</div>
 		</div>
