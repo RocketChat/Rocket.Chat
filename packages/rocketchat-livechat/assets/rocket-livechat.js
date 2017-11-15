@@ -486,7 +486,7 @@
 	var scrollPosition;
 
 	var widgetWidth = '320px';
-	var widgetHeightOpened = '350px';
+	var widgetHeightOpened = '380px';
 	var widgetHeightClosed = '30px';
 
 	var validCallbacks = [
