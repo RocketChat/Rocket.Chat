@@ -58,8 +58,34 @@ Meteor.methods({
 					method: 'addUsersToRoom'
 				});
 			}
+			if (room.subGroup) {
+				let originalSub = RocketChat.models.Subscriptions.findOne({
+					'rid': room.originalRoomId,
+					'u.username': username
+				});
+				if (!originalSub) {
+					throw new Meteor.Error('User_must_be_in_parent_room', 'User must be in parent room', {
+						method: 'addUserToRoom'
+					});
+				}
+			}
 
 			RocketChat.addUserToRoom(data.rid, newUser, user);
+
+			if (room.subGroup) {
+				let sub = RocketChat.models.Subscriptions.update({
+					'rid': data.rid
+				},
+				{
+					$set:
+						{
+							'subGroup': true,
+							'subGroupName': room.subGroupName,
+              'originalRoomId': room.originalRoomId
+						}
+				},
+				{ multi: true });
+			}
 		});
 
 		return true;
