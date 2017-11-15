@@ -5,7 +5,6 @@ Meteor.startup(function() {
 				groups: ['channel', 'group'],
 				id: 'subGroups',
 				i18nTitle: 'Create_Subgroup',
-				icon: 'queue',
 				template: 'subGroups',
 				order: 3,
 				subGroups: true
