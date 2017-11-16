@@ -1,37 +1,41 @@
-
 .rc-modal {
-  min-width: 400px;
-  background: white;
+	min-width: 400px;
 
-  boder-radius: 15px;
 	animation: dropdown-show 0.3s cubic-bezier(0.45, 0.05, 0.55, 0.95);
+
+	background: white;
 
 	box-shadow: 0 0 2px 0 rgba(47, 52, 61, 0.08), 0 0 12px 0 rgba(47, 52, 61, 0.12);
 
-  &-wrapper {
-		padding: 10px;
+	&-wrapper {
+		position: fixed;
 		z-index: 10;
-    display: flex;
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(47, 52, 61, 0.8);
-    align-items: center;
-    justify-content: center;
-  }
+		top: 0;
+		right: 0;
+		bottom: 0;
+		left: 0;
+
+		display: flex;
+
+		padding: 10px;
+
+		background: rgba(47, 52, 61, 0.8);
+		align-items: center;
+		justify-content: center;
+	}
 
 	&__title {
-		text-align: left;
-    flex: 1 1 auto;
+		flex: 1 1 auto;
+
 		font-size: 16px;
 	}
 
 	&__close {
 		cursor: pointer;
 		transform: rotate(45deg);
-    font-size: 20px;
+
+		font-size: 20px;
+
 		&:hover {
 			color: var(--color-link-active);
 		}
@@ -40,16 +44,20 @@
 	&__header {
 		display: flex;
 		flex-direction: row;
-    padding: 16px;
+
+		margin-bottom: -16px;
+		padding: 16px;
 
 		font-size: 21px;
 		justify-content: flex-end;
 	}
+
 	&__content {
-    padding: 16px;
 		display: flex;
 
 		flex-direction: column;
+
+		padding: 16px;
 
 		animation: dropdown-show 0.1s cubic-bezier(0.45, 0.05, 0.55, 0.95);
 
@@ -57,24 +65,30 @@
 
 		background-color: var(--modal-background);
 	}
+
 	&__footer {
-    padding: 16px;
-    background: #F7F8FA;
 		display: flex;
+
+		padding: 16px;
+
+		background: #f7f8fa;
 		justify-content: space-between;
+
 		& > .rc-button {
 			margin: 0;
 		}
 	}
 }
+
 @media (width <= 400px) {
 	.rc-modal {
 		top: initial !important;
 		bottom: 0;
 		left: 0 !important;
+
+		width: 100%;
 		min-width: 100%;
 		max-width: 100%;
-		width: 100%;
 		margin: 0 16px;
 
 		animation: dropup-show 0.3s cubic-bezier(0.45, 0.05, 0.55, 0.95);
