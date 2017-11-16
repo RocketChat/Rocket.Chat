@@ -1,6 +1,6 @@
 application: Anwendung
 Assistify_room_count: Letzte Raumnummer
-Choose_experts: Die auswählen, die sich damit auskennen
+Choose_experts: Experten auswählen
 Close_HelpRequest: Chat beenden
 Close_request_comment: Platz für (berühmte) letzten Worte
 Close_request_warning: Ist die Anfrage abschließend beantwortet, dann schließen Sie den Chat. So können wir aus dem Geschriebenen lernen.
@@ -9,9 +9,10 @@ create-r: Anfrage anlegen
 delete-e: Thema löschen
 delete-r: Anfrage löschen
 Expertise_description: Ein Thema beschreibt ein Wissensgebiet. Experten beantworten hierzu Anfragen
+Expertise_does_not_exist: Das Thema gibt es nicht
 Expertise_explanation: Ein Thema beschreibt ein Wissensgebiet. Zu einem Thema können Anfragen erstellt werden, die von den Experten, die dem Thema als Mitglieder zugeordnet sind, beantwortet werden können.
 Expertise_needs_experts: Bitte Experten auswählen, um eine Expertise zu definieren
-Expertise_title: Titel des Themas
+Expertise_title: Geben Sie dem Thema einen Namen
 Expertise: Thema
 Expertises: Themen
 Experts_channel: Expertenkanal
@@ -23,16 +24,20 @@ Leave_expertise_warning: Sind Sie sicher, dass Sie das Thema "%s" verlassen woll
 Leave_request_warning: Sind sie Sicher, dass Sie die Anfrage "%s" verlassen wollen? Sie können sie danach nicht mehr einsehen und auch nicht in der Suche finden!
 More_requests: Weitere Anfragen
 New_expertise: Neues Thema
-New_request_for_expertise: Neue Anfrage zum Thema
+New_request_for_expertise: Wählen Sie das Thema Ihrer Frage aus
 New_request: Neue Anfrage
+New_request_created: Die neue Anfrage wurde erstellt
+New_request_first_question: Was möchten Sie fragen?
+New_request_title: Ein Name hilft, die Anfrage wieder zu finden
 No_expertise_yet: Keinem Thema zugeordnet
 No_requests_yet: Keine Anfragen bisher
 release: Version
-Request_already_exists: Eine Anfrage mit der nächsten laufenen Nummer existiert bereits. Bitte erneut versuchen.
+Request_already_exists: Eine Anfrage mit diesem Namen existiert bereits.
 Request_closed: Anfrage geschlossen__comment__
 Request_closed_explanation: Die Anfrage wurde geschlossen. Sie können weiter schreiben, aber daraus wird nicht gelernt. Sollte es weitere Fragen geben, bitte eine neue Anfrage eröffnen.
 Request_description: Eine Anfrage richtet sich automatisch an die Experten eines Themas. Eine KI hilft dabei.
 Request_explanation: Eine Anfrage richtet sich an Experten eines Themas: Gemeinsam mit dem Fragesteller wird versucht, eine Frage aus dem Wissensgebiet zu beantworten. Eine KI beschleunigt den Problemlösungsprozess. Aus abgeschlossenen Anfragen lernt das System und hilft, Fragen zu dem Thema in Zukunft schneller zu beantworten.
+Request_no_special_char: Der Titel der Anfrage darf keine Sonderzeichen enthalten
 Request: Anfrage
 Requests: Anfragen
 Search_Requests: Anfragen suchen
@@ -41,3 +46,5 @@ SystemContext: System-Kontext
 transaction: Transaktion
 view-e-room: Alle Themen einsehen
 view-r-room: Alle Anfragen einsehen
+Your_question: Frage
+

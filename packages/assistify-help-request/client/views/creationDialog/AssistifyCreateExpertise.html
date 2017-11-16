@@ -7,7 +7,7 @@
 		<div class="create-channel__inputs">
 			<div class="rc-input {{#if invalidChannel}}rc-input--error{{/if}}">
 				<label class="rc-input__label">
-					<div class="rc-input__title">{{_ "Expertise_title"}}</div>
+					<div class="rc-input__title">{{_ "Name"}}</div>
 					<div class="rc-input__wrapper">
 						<div class="rc-input__icon">
 							{{> icon block="rc-input__icon-svg" icon="flag" }}
@@ -17,17 +17,12 @@
 					</div>
 				</label>
 				{{#if inUse}}
-					<div class="rc-input__error">
-						<div class="rc-input__error-icon">
-							{{> icon block="rc-input__error-icon" icon="warning" classes="rc-input__error-icon-svg"}}
-						</div>
-						<div class="rc-input__error-message">{{_ "Channel_already_exist_static"}}</div>
-					</div>
+					{{> AssistifyCreateInputError text="Channel_already_exist_static"}}
 				{{/if}}
 			</div>
 			<div class="rc-input">
 				<label class="rc-input__label">
-					<div class="rc-input__title">{{_ "Choose_experts"}}</div>
+					<div class="rc-input__title">{{_ "Experts"}}</div>
 					<div class="rc-input__wrapper">
 						<div class="rc-input__icon">
 							{{> icon block="rc-input__icon-svg" icon="at"}}
@@ -36,18 +31,13 @@
 							{{#each user in selectedUsers}}
 								{{> tag user}}
 							{{/each}}
-							<input type="text" class="rc-tags__input {{#if invalidMembers}}rc-input--error{{/if}}" placeholder="{{_ "Experts"}}"
+							<input type="text" class="rc-tags__input {{#if invalidMembers}}rc-input--error{{/if}}" placeholder="{{_ "Choose_experts"}}"
 								   name="experts" autocomplete="off"/>
 						</div>
-						{{#if invalidMembers}}
-							<div class="rc-input__error">
-								<div class="rc-input__error-icon">
-									{{> icon block="rc-input__error-icon" icon="warning" classes="rc-input__error-icon-svg"}}
-								</div>
-								<div class="rc-input__error-message">{{_ "Expertise_needs_experts"}}</div>
-							</div>
-						{{/if}}
 					</div>
+					{{#if invalidMembers}}
+						{{> AssistifyCreateInputError text="Expertise_needs_experts"}}
+					{{/if}}
 					{{#with config}}
 						{{#if autocomplete 'isShowing'}}
 							<div class="fadeInDown">
