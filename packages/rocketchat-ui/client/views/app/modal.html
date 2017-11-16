@@ -27,9 +27,8 @@
 				</main>
 				<div class="rc-modal__footer">
 					{{# if showCancelButton}}
-					<input class="rc-button rc-button--nude js-close" type="submit" data-button="cancel" value="Cancel">
+						<input class="rc-button rc-button--nude js-close" type="submit" data-button="cancel" value="{{cancelButtonText}}">
 					{{/if}}
-
 					<input style="background-color:{{confirmButtonColor}}" class="rc-button rc-button--primary js-confirm" type="submit" data-button="create" value="{{confirmButtonText}}">
 
 				</div>

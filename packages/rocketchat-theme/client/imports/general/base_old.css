@@ -104,8 +104,6 @@
 }
 
 .upload-preview {
-	padding: 1rem;
-
 	& .upload-preview-file {
 		height: 200px;
 
