@@ -2,10 +2,10 @@
 
 this.modal = {
 	renderedModal: null,
-	open(config = {
-		confirmButtonText: t('ok'),
-		cancelButtonText: t('Cancel')
-	}, fn) {
+	open(config = {}, fn) {
+		config.confirmButtonText = config.confirmButtonText || t('Send');
+		config.cancelButtonText = config.cancelButtonText || t('Cancel');
+
 		this.close();
 		this.renderedModal = Blaze.renderWithData(Template.rc_modal, config, document.body);
 		this.fn = fn;

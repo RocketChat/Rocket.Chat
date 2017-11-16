@@ -1,4 +1,4 @@
-/* globals fileUploadHandler, Handlebars, fileUpload */
+/* globals fileUploadHandler, Handlebars, fileUpload, modal */
 /* exported fileUpload */
 import _ from 'underscore';
 import s from 'underscore.string';
