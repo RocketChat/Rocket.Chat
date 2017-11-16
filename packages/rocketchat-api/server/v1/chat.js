@@ -28,6 +28,31 @@ RocketChat.API.v1.addRoute('chat.delete', { authRequired: true }, {
 	}
 });
 
+RocketChat.API.v1.addRoute('chat.syncMessages', { authRequired: true }, {
+	get() {
+		const { rid } = this.queryParams;
+		let lastUpdate = this.queryParams;
+		lastUpdate = lastUpdate ? new Date(lastUpdate) : lastUpdate;
+		if (!rid) {
+			return RocketChat.API.v1.failure('The "rid" query parameter must be provided.');
+		}
+		if (!lastUpdate) {
+			return RocketChat.API.v1.failure('The "lastUpdate" query parameter must be provided.');
+		}
+
+		let result;
+		Meteor.runAsUser(this.userId, () => {
+			result = Meteor.call('messages/get', rid, { lastUpdate });
+		});
+
+		if (!result) {
+			return RocketChat.API.v1.failure();
+		}
+
+		return RocketChat.API.v1.success({result});
+	}
+});
+
 RocketChat.API.v1.addRoute('chat.getMessage', { authRequired: true }, {
 	get() {
 		if (!this.queryParams.msgId) {
