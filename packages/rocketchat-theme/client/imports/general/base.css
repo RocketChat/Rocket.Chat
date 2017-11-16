@@ -117,3 +117,53 @@ button {
 .ps-scrollbar-y {
 	width: 4px !important;
 }
+
+.first-unread {
+	& .body {
+		&::before {
+			position: absolute;
+			top: 0;
+			left: 0;
+			background: var(--rc-color-error);
+			z-index: 1;
+			content: "";
+			width: 100%;
+			height: 1px;
+		}
+
+		&::after {
+			position: absolute;
+			top: -10px;
+			right: 0;
+			content: attr(data-unread-text);
+			text-align: right;
+			text-transform: uppercase;
+			font-size: 10px;
+			padding: 0 1rem;
+			background: #ffffff;
+			color: var(--rc-color-error);
+			z-index: 2;
+		}
+	}
+}
+
+.first-unread-opaque .body::after {
+	color: rgba(0, 0, 0, 0.2);
+	background: transparent;
+}
+
+.message.new-day.first-unread {
+	&::after {
+		border-color: var(--rc-color-error);
+	}
+
+	& .body {
+		&::before {
+			display: none;
+		}
+
+		&::after {
+			top: -30px;
+		}
+	}
+}
