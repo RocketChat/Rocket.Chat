@@ -152,11 +152,6 @@ button {
 	}
 }
 
-.first-unread-opaque .body::after {
-	color: rgba(0, 0, 0, 0.2);
-	background: transparent;
-}
-
 .message.new-day.first-unread {
 	&::after {
 		border-color: var(--rc-color-error);
