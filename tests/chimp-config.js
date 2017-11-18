@@ -19,13 +19,13 @@ module.exports = {
 // 	showXolvioMessages: true,
 
 // 	// - - - - CUCUMBER - - - -
-	path: 'tests/end-to-end',
+	path: 'tests/end-to-end/ui_smarti',
 	// 	format: 'pretty',
 	// 	tags: '~@ignore',
 	// 	singleSnippetPerFile: true,
 	// 	recommendedFilenameSeparator: '_',
 	// 	chai: false,
-	screenshotsOnError: true,
+	screenshotsOnError: false,
 	screenshotsPath: '.screenshots',
 	captureAllStepScreenshots: false,
 	saveScreenshotsToDisk: true,
@@ -135,7 +135,7 @@ module.exports = {
 	// 	},
 
 	// 	// - - - - METEOR  - - - -
-	ddp: 'http://localhost:3000'
+	ddp: 'http://rocketchat:3000'
 // 	serverExecuteTimeout: 10000,
 
 // 	// - - - - PHANTOM  - - - -
@@ -145,7 +145,7 @@ module.exports = {
 
 // 	// - - - - DEBUGGING  - - - -
 // 	log: 'info',
-// 	debug: false,
+// 	debug: true,
 // 	seleniumDebug: null,
 // 	debugCucumber: null,
 // 	debugBrkCucumber: null,

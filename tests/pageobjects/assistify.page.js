@@ -1,14 +1,16 @@
 import Page from './Page';
 import mainContent from './main-content.page';
 import sideNav from './side-nav.page';
+import flexTab from './flex-tab.page';
+import global from './global';
 
 class Assistify extends Page {
 	get knowledgebaseTab() {
 		return browser.element('.tab-button:not(.hidden) .tab-button-icon--lightbulb');
 	}
 
-	get closeRequest() {
-		return browser.element('.content external-search-content .button-block');
+	get completeRequest() {
+		return browser.element('.button.close-helprequest.button-block');
 	}
 
 	get commentClose() {
@@ -18,6 +20,15 @@ class Assistify extends Page {
 	get commentCloseOK() {
 		return browser.element('.sweet-alert .sa-confirm-button-container');
 	}
+
+	get sendMessageBtn() {
+		return browser.element('.rc-message-box__icon.rc-message-box__send.js-send');
+	}
+
+	get messageTextField() {
+		return browser.element('.rc-message-box__container textarea');
+	}
+
 
 	get knowledgebaseAnswer() {
 		return browser.element('.external-search-content .smarti-widget .search-results');
@@ -60,7 +71,7 @@ class Assistify extends Page {
 
 	// Knowledgebase
 	get closeTopicBtn() {
-		return browser.element('.flex-tab-container.border-component-color.opened li:nth-child(6)');
+		return browser.element('.flex-tab-container.border-component-color.opened .delete');
 	}
 
 	get infoRoomIcon() {
@@ -107,8 +118,13 @@ class Assistify extends Page {
 		this.topicName.setValue(topicName);
 
 		browser.pause(1000)
-		browser.element('.create-channel__content .rc-popup-list').click();
-		browser.pause(500)
+		try {
+			browser.element('.create-channel__content .rc-popup-list').click();
+			browser.pause(500)
+		}
+		catch(e) {
+
+		}
 
 		browser.waitUntil(function () {
 			return browser.isEnabled('.create-channel__content [data-button="create"]');
@@ -118,37 +134,51 @@ class Assistify extends Page {
 		this.saveTopicBtn.click();
 		browser.pause(500);
 
+		this.clickKnowledgebase();
+		this.sendTopicMessage(message);
 
-		mainContent.messageInput.waitForVisible(5000);
-		mainContent.sendMessage(message);
+	}
+
+	sendTopicMessage(message) {
+		this.messageTextField.waitForVisible(5000);
+		this.messageTextField.setValue(message);
+		this.sendMessageBtn.waitForVisible(5000);
+		this.sendMessageBtn.click();
 	}
 
 	answerRequest(topicName, message) {
 		sideNav.openChannel(topicName);
 
-		mainContent.messageInput.waitForVisible(5000);
-		mainContent.sendMessage(message);
+		this.sendTopicMessage(message);
 	}
 
 	closeRequest(topicName, comment) {
-		sideNav.openChannel(topicName);
+		// sideNav.openChannel(topicName);
 		this.knowledgebaseTab.click();
 
-		this.closeRequest.waitForVisible(5000);
-		this.closeRequest.click();
+		this.completeRequest.waitForVisible(5000);
+		this.completeRequest.click();
 
-		this.commentClose.waitForVisible(5000);
-		this.commentClose.setValue(comment);
-
-		this.commentCloseOK.waitForVisible(5000);
-		this.commentCloseOK.click();
+		// this.commentClose.waitForVisible(5000);
+		// this.commentClose.setValue(comment);
+		//
+		// this.commentCloseOK.waitForVisible(5000);
+		// this.commentCloseOK.click();
+		global.confirmPopup();
 	}
 
-	closeTopic(){
-		this.infoRoomIcon.waitForVisible(5000);
-		this.infoRoomIcon.click();
+	closeTopic(topicName) {
+		sideNav.openChannel(topicName)
+		flexTab.channelTab.waitForVisible(5000);
+		flexTab.channelTab.click();
 		this.closeTopicBtn.waitForVisible(5000);
 		this.closeTopicBtn.click();
+		global.confirmPopup();
+	}
+
+	clickKnowledgebase() {
+		this.knowledgebaseTab.waitForVisible(5000);
+		this.knowledgebaseTab.click();
 	}
 }
 

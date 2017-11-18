@@ -2,7 +2,7 @@
 /* eslint-disable func-names, prefer-arrow-callback */
 
 import supertest from 'supertest';
-export const request = supertest.agent('http://localhost:8080');
+export const request = supertest.agent('http://smarti:8080');
 export const credentials = {
 	username: 'admin',
 	password: 'admin'
