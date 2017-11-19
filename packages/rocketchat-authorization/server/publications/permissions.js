@@ -11,7 +11,12 @@ Meteor.methods({
 				update: records.filter((record) => {
 					return record._updatedAt > updatedAt;
 				}),
-				remove: RocketChat.models.Permissions.trashFindDeletedAfter(updatedAt, {}, {fields: {_id: 1, _deletedAt: 1}}).fetch()
+				remove: RocketChat.models.Permissions.trashFindDeletedAfter(updatedAt, {}, {
+					fields: {
+						_id: 1,
+						_deletedAt: 1
+					}
+				}).fetch()
 			};
 		}
 
@@ -20,14 +25,22 @@ Meteor.methods({
 	'setting-permissions/get'(updatedAt) {
 		this.unblock();
 
-		const records = RocketChat.models.Permissions.find({level: permissionLevel.SETTING}).fetch();
+		const records = RocketChat.models.Permissions.find({
+			level: permissionLevel.SETTING,
+			groupPermissionId: {$exists: true} //filter group permissions themselves, as they are being assigned implicitly
+		}).fetch();
 
 		if (updatedAt instanceof Date) {
 			return {
 				update: records.filter((record) => {
 					return record._updatedAt > updatedAt;
 				}),
-				remove: RocketChat.models.Permissions.trashFindDeletedAfter(updatedAt, {}, {fields: {_id: 1, _deletedAt: 1}}).fetch()
+				remove: RocketChat.models.Permissions.trashFindDeletedAfter(updatedAt, {}, {
+					fields: {
+						_id: 1,
+						_deletedAt: 1
+					}
+				}).fetch()
 			};
 		}
 

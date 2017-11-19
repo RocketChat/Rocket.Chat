@@ -104,20 +104,35 @@ Meteor.startup(function() {
 		return `change-setting-${ settingId }`;
 	};
 
-	const obsoleteSettingPermissions = {};
+	const previousSettingPermissions = {};
 	RocketChat.models.Permissions.find({level: permissionLevel.SETTING}).fetch().forEach(
 		function(permission) {
-			obsoleteSettingPermissions[permission._id] = permission;
+			previousSettingPermissions[permission._id] = permission;
 		});
 	RocketChat.models.Settings.findNotHidden().fetch().forEach((setting) => {
 		const permissionId = getSettingPermissionId(setting._id);
-		const permission = {_id: permissionId, level: permissionLevel.SETTING};
+		const permission = {
+			_id: permissionId,
+			level: permissionLevel.SETTING
+		};
+		// copy previously assigned roles if available
+		if (previousSettingPermissions[permissionId] && previousSettingPermissions[permissionId].roles) {
+			permission.roles = previousSettingPermissions[permissionId].roles;
+		} else {
+			permission.roles = [];
+		}
+		if (setting.group) {
+			permission.groupPermissionId = getSettingPermissionId(setting.group);
+		}
+		if (setting.section) {
+			permission.sectionPermissionId = getSettingPermissionId(setting.section);
+		}
 		RocketChat.models.Permissions.upsert(permission._id, {$set: permission});
-		delete obsoleteSettingPermissions[permissionId];
+		delete previousSettingPermissions[permissionId];
 	});
 
-	for (const obsoletePermission in obsoleteSettingPermissions) {
-		if (obsoleteSettingPermissions.hasOwnProperty(obsoletePermission)) {
+	for (const obsoletePermission in previousSettingPermissions) {
+		if (previousSettingPermissions.hasOwnProperty(obsoletePermission)) {
 			RocketChat.models.Permissions.remove({_id: obsoletePermission});
 			SystemLogger.info('Removed permission', obsoletePermission);
 		}

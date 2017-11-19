@@ -7,6 +7,17 @@ Meteor.methods({
 			});
 		}
 
+		const addParentPermissions = function(permissionId, role) {
+			const permission = RocketChat.models.Permissions.findOneById(permissionId);
+			if (permission.groupPermissionId) {
+				const groupPermission = RocketChat.models.Permissions.findOneById(permission.groupPermissionId);
+				if (groupPermission.roles.indexOf(role) === -1) {
+					RocketChat.models.Permissions.addRole(permission.groupPermissionId, role);
+				}
+			}
+		};
+
+		addParentPermissions(permission, role);
 		return RocketChat.models.Permissions.addRole(permission, role);
 	}
 });

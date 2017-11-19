@@ -7,6 +7,22 @@ Meteor.methods({
 			});
 		}
 
-		return RocketChat.models.Permissions.removeRole(permission, role);
+		const removeStaleParentPermissions = function(permissionId, role) {
+			const permission = RocketChat.models.Permissions.findOneById(permissionId);
+			if (permission.groupPermissionId) {
+				const groupPermission = RocketChat.models.Permissions.findOneById(permission.groupPermissionId);
+				if (groupPermission.roles.indexOf(role) !== -1) {
+					// the role has the group permission assigned, so check whether it's still needed
+					if (RocketChat.models.Permissions.find({
+						groupPermissionId: permission.groupPermissionId,
+						roles: role
+					}).count() === 0) {
+						RocketChat.models.Permissions.removeRole(permission.groupPermissionId, role);
+					}
+				}
+			}
+		};
+		RocketChat.models.Permissions.removeRole(permission, role);
+		removeStaleParentPermissions(permission, role);
 	}
 });
