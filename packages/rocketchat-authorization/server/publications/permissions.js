@@ -28,7 +28,7 @@ Meteor.methods({
 		const records = RocketChat.models.Permissions.find({
 			level: permissionLevel.SETTING,
 			groupPermissionId: {$exists: true} //filter group permissions themselves, as they are being assigned implicitly
-		}).fetch();
+		}, {}, {sort:{group: 1, section: 1}}).fetch();
 
 		if (updatedAt instanceof Date) {
 			return {

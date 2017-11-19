@@ -56,7 +56,19 @@ Template.permissionsTable.helpers({
 	},
 
 	permissionName(permission) {
-		return permission.level === permissionLevel.SETTING ? t(permission.settingId) : t(permission._id);
+		if (permission.level === permissionLevel.SETTING) {
+			let path = '';
+			if (permission.group) {
+				path = `${ t(permission.group) } > `;
+			}
+			if (permission.section) {
+				path = `${ path }${ t(permission.section) } > `;
+			}
+			path = `${ path }${ t(permission.settingId) }`;
+			return path;
+		} else {
+			return t(permission._id);
+		}
 	},
 
 	permissionDescription(permission) {
