@@ -16,7 +16,8 @@
 		<tbody>
 		{{#each permission in permissions}}
 			<tr class="admin-table-row">
-				<td class="permission-name border-component-color" title="{{permissionDescription permission}}">{{permissionName permission}}<br>[{{permission._id}}]
+				<td class="permission-name border-component-color"
+					title="{{permissionDescription permission}}">{{permissionName permission}}<br>[{{permission._id}}]
 				</td>
 				{{#each role in allRoles}}
 					<td class="border-component-color">
@@ -31,18 +32,41 @@
 	</table>
 </template>
 <template name="permissions">
-	<div class="permissions-manager">
-		{{#if hasPermission}}
-			<a href="{{pathFor "admin-permissions-new"}}" class="button primary new-role">{{_ "New_role"}}</a>
-			{{> permissionsTable permissions=permissions allRoles=roles}}
-			{{#if settingPermissionExpanded}}
-				<div class="js-toggle-setting-permissions">{{_ "setting-permissions-collapse"}}</div>
-				{{> permissionsTable permissions=settingPermissions allRoles=roles}}
+	<section class="page-settings">
+		<div class="permissions-manager">
+			{{#if hasPermission}}
+				<a href="{{pathFor "admin-permissions-new"}}" class="button primary new-role">{{_ "New_role"}}</a>
+				<div class="rocket-form">
+					<div class="section">
+						{{> permissionsTable permissions=permissions allRoles=roles}}
+					</div>
+				</div>
+				<div class="rocket-form">
+					<div class="section {{#unless settingPermissionExpanded}}section-collapsed{{/unless}}">
+						<div class="section-title">
+							<div class="section-title-text">
+								{{_ "setting-permissions"}}</div>
+							<div class="section-title-right">
+								<button class="button primary js-toggle-setting-permissions"><span>
+									{{#if settingPermissionExpanded }}
+										{{_ "Collapse"}}
+									{{else}}
+										{{_ "Expand"}}
+									{{/if}}
+								</span>
+								</button>
+							</div>
+						</div>
+						<div class="section-content border-component-color">
+							{{#if settingPermissionExpanded }}
+								{{> permissionsTable permissions=settingPermissions allRoles=roles}}
+							{{/if}}
+						</div>
+					</div>
+				</div>
 			{{else}}
-				<div class="js-toggle-setting-permissions">{{_ "setting-permissions-expand"}}</div>
+				{{_ "Not_authorized"}}
 			{{/if}}
-		{{else}}
-			{{_ "Not_authorized"}}
-		{{/if}}
-	</div>
+		</div>
+	</section>
 </template>

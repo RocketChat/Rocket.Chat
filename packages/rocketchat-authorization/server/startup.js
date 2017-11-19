@@ -113,7 +113,8 @@ Meteor.startup(function() {
 		const permissionId = getSettingPermissionId(setting._id);
 		const permission = {
 			_id: permissionId,
-			level: permissionLevel.SETTING
+			level: permissionLevel.SETTING,
+			settingId: setting._id
 		};
 		// copy previously assigned roles if available
 		if (previousSettingPermissions[permissionId] && previousSettingPermissions[permissionId].roles) {

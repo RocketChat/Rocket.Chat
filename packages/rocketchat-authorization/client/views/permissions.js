@@ -1,4 +1,6 @@
 /* globals ChatPermissions, SettingPermissions */
+import {permissionLevel} from '../../lib/rocketchat';
+
 Template.permissions.helpers({
 	roles() {
 		return Template.instance().roles.get();
@@ -54,7 +56,7 @@ Template.permissionsTable.helpers({
 	},
 
 	permissionName(permission) {
-		return t(permission._id);
+		return permission.level === permissionLevel.SETTING ? t(permission.settingId) : t(permission._id);
 	},
 
 	permissionDescription(permission) {
