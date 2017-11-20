@@ -41,29 +41,33 @@
 						{{> permissionsTable permissions=permissions allRoles=roles}}
 					</div>
 				</div>
-				<div class="rocket-form">
-					<div class="section {{#unless settingPermissionExpanded}}section-collapsed{{/unless}}">
-						<div class="section-title">
-							<div class="section-title-text">
-								{{_ "setting-permissions"}}</div>
-							<div class="section-title-right">
-								<button class="button primary js-toggle-setting-permissions"><span>
-									{{#if settingPermissionExpanded }}
-										{{_ "Collapse"}}
-									{{else}}
-										{{_ "Expand"}}
-									{{/if}}
-								</span>
-								</button>
+				{{#if hasSettingPermission}}
+					<div class="rocket-form">
+						<div class="section {{#unless settingPermissionExpanded}}section-collapsed{{/unless}}">
+							<div class="section-title">
+								<div class="section-title-text">
+									{{_ "Setting_permissions"}}</div>
+								<div class="section-title-right">
+									<button class="button primary js-toggle-setting-permissions"><span>
+										{{#if settingPermissionExpanded }}
+											{{_ "Collapse"}}
+										{{else}}
+											{{_ "Expand"}}
+										{{/if}}
+									</span>
+									</button>
+								</div>
+							</div>
+							<div class="section-content border-component-color">
+								{{#if settingPermissionExpanded }}
+									{{> permissionsTable permissions=settingPermissions allRoles=roles}}
+								{{else}}
+									{{_ "Not_authorized"}}
+								{{/if}}
 							</div>
 						</div>
-						<div class="section-content border-component-color">
-							{{#if settingPermissionExpanded }}
-								{{> permissionsTable permissions=settingPermissions allRoles=roles}}
-							{{/if}}
-						</div>
 					</div>
-				</div>
+				{{/if}}
 			{{else}}
 				{{_ "Not_authorized"}}
 			{{/if}}

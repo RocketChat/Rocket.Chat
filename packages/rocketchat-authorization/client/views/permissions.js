@@ -26,6 +26,10 @@ Template.permissions.helpers({
 		return RocketChat.authz.hasAllPermission('access-permissions');
 	},
 
+	hasSettingPermission() {
+		return RocketChat.authz.hasAllPermission('access-setting-permissions');
+	},
+
 	settingPermissionExpanded() {
 		return Template.instance().settingPermissionsExpanded.get();
 	}

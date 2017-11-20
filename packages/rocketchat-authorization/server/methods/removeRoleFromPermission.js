@@ -1,12 +1,18 @@
+import {permissionLevel} from '../../lib/rocketchat';
+
 Meteor.methods({
 	'authorization:removeRoleFromPermission'(permission, role) {
-		if (!Meteor.userId() || !RocketChat.authz.hasPermission(Meteor.userId(), 'access-permissions')) {
+		if (!Meteor.userId() || !RocketChat.authz.hasPermission(Meteor.userId(), 'access-permissions')
+			|| (permission.level === permissionLevel.SETTING && !RocketChat.authz.hasPermission(Meteor.userId(), 'access-setting-permissions'))
+		) {
 			throw new Meteor.Error('error-action-not-allowed', 'Accessing permissions is not allowed', {
 				method: 'authorization:removeRoleFromPermission',
 				action: 'Accessing_permissions'
 			});
 		}
 
+		// for setting based permissions, revoke the group permission once all setting permissions
+		// related to this group have been removed
 		const removeStaleParentPermissions = function(permissionId, role) {
 			const permission = RocketChat.models.Permissions.findOneById(permissionId);
 			if (permission.groupPermissionId) {
