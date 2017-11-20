@@ -1,3 +1,5 @@
+import _ from 'underscore';
+
 Meteor.startup(function() {
 	RocketChat.MessageAction.addButton({
 		id: 'jump-to-search-message',

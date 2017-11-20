@@ -1,3 +1,5 @@
+import s from 'underscore.string';
+
 Meteor.publish('customSounds', function(filter, limit) {
 	if (!this.userId) {
 		return this.ready();

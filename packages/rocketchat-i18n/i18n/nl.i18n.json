@@ -93,7 +93,7 @@
   "Accounts_RegistrationForm_Public": "Openbaar",
   "Accounts_RegistrationForm_Secret_URL": "Geheime URL",
   "Accounts_RegistrationForm_SecretURL": "Registration Form Secret URL",
-  "Accounts_RegistrationForm_SecretURL_Description": "You must provide a random string that will be added to your registration URL. Example: https://demo.rocket.chat/register/[secret_hash]",
+  "Accounts_RegistrationForm_SecretURL_Description": "You must provide a random string that will be added to your registration URL. Example: https://open.rocket.chat/register/[secret_hash]",
   "Accounts_RequireNameForSignUp": "Vereis naam tijdens registratie",
   "Accounts_ShowFormLogin": "Laat formulier-gebaseerd loginscherm zien",
   "Accounts_UseDefaultBlockedDomainsList": "Gebruik Default geblokkeerde domeinen List",
