@@ -1825,6 +1825,7 @@
   "Token_Access": "Token Access",
   "Token_Controlled_Access": "Token Controlled Access",
   "Token_required": "Token required",
+  "Tokenpass_Channel_Label": "Tokenpass Channel",
   "Tokenpass_Channels": "Tokenpass Channels",
   "Tokens_Minimum_Needed_Balance": "Minimum needed token balance",
   "Tokens_Minimum_Needed_Balance_Description": "Set minimum needed balance on each token. Blank or \"0\" for not limit.",
