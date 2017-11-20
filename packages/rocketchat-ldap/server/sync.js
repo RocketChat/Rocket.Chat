@@ -1,5 +1,6 @@
 /* globals slugify, SyncedCron */
 
+import _ from 'underscore';
 import LDAP from './ldap';
 
 const logger = new Logger('LDAPSync', {});
@@ -47,12 +48,12 @@ export function getLdapUserUniqueID(ldapUser) {
 
 	if (Unique_Identifier_Field.length > 0) {
 		Unique_Identifier_Field = Unique_Identifier_Field.find((field) => {
-			return !_.isEmpty(ldapUser[field]);
+			return !_.isEmpty(ldapUser._raw[field]);
 		});
 		if (Unique_Identifier_Field) {
 			Unique_Identifier_Field = {
 				attribute: Unique_Identifier_Field,
-				value: new Buffer(ldapUser[Unique_Identifier_Field]).toString('hex')
+				value: ldapUser._raw[Unique_Identifier_Field].toString('hex')
 			};
 		}
 		return Unique_Identifier_Field;
@@ -151,7 +152,7 @@ export function syncUserData(user, ldapUser) {
 	}
 
 	if (user && user._id && RocketChat.settings.get('LDAP_Sync_User_Avatar') === true) {
-		const avatar = ldapUser.thumbnailPhoto || ldapUser.jpegPhoto;
+		const avatar = ldapUser._raw.thumbnailPhoto || ldapUser._raw.jpegPhoto;
 		if (avatar) {
 			logger.info('Syncing user avatar');
 
@@ -213,7 +214,7 @@ export function addLdapUser(ldapUser, username, password) {
 		userObject._id = Accounts.createUser(userObject);
 	} catch (error) {
 		logger.error('Error creating user', error);
-		throw error;
+		return error;
 	}
 
 	syncUserData(userObject, ldapUser);
@@ -257,10 +258,7 @@ export function importNewUsers(ldap) {
 			}
 
 			// Add user if it was not added before
-			const user = Meteor.users.findOne(userQuery);
-			if (!user) {
-				addLdapUser(ldapUser, username);
-			}
+			let user = Meteor.users.findOne(userQuery);
 
 			if (!user && username && RocketChat.settings.get('LDAP_Merge_Existing_Users') === true) {
 				const userQuery = {
@@ -269,10 +267,14 @@ export function importNewUsers(ldap) {
 
 				logger.debug('userQuery merge', userQuery);
 
-				const user = Meteor.users.findOne(userQuery);
+				user = Meteor.users.findOne(userQuery);
 				if (user) {
 					syncUserData(user, ldapUser);
 				}
+			}
+
+			if (!user) {
+				addLdapUser(ldapUser, username);
 			}
 
 			if (count % 100 === 0) {
@@ -342,15 +344,16 @@ const addCronJob = _.debounce(Meteor.bindEnvironment(function addCronJobDebounce
 		return;
 	}
 
-	if (RocketChat.settings.get('LDAP_Sync_Interval')) {
+	if (RocketChat.settings.get('LDAP_Background_Sync_Interval')) {
 		logger.info('Enabling LDAP Background Sync');
 		SyncedCron.add({
 			name: jobName,
-			schedule: (parser) => parser.text(RocketChat.settings.get('LDAP_Sync_Interval')),
+			schedule: (parser) => parser.text(RocketChat.settings.get('LDAP_Background_Sync_Interval')),
 			job() {
 				sync();
 			}
 		});
+		SyncedCron.start();
 	}
 }), 500);
 
