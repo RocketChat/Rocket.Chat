@@ -1,4 +1,6 @@
 /* globals RocketChatTabBar */
+import s from 'underscore.string';
+
 Template.adminEmoji.helpers({
 	isReady() {
 		if (Template.instance().ready != null) {
@@ -67,7 +69,7 @@ Template.adminEmoji.onCreated(function() {
 	});
 
 	this.customemoji = function() {
-		const filter = (instance.filter != null) ? _.trim(instance.filter.get()) : '';
+		const filter = (instance.filter != null) ? s.trim(instance.filter.get()) : '';
 
 		let query = {};
 
