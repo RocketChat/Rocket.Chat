@@ -193,7 +193,7 @@ export class CustomOAuth {
 				if (identity.user && identity.user.userid && !identity.id) {
 					if (identity.user.userid_sec && identity.user.userid_sec[0]) {
 						identity.id = identity.user.userid_sec[0];
-					} else { 
+					} else {
 						identity.id = identity.user.userid;
 					}
 					identity.email = identity.user.email;
