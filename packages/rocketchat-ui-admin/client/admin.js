@@ -1,5 +1,8 @@
 /*globals jscolor, i18nDefaultQuery */
+import _ from 'underscore';
+import s from 'underscore.string';
 import toastr from 'toastr';
+
 const TempSettings = new Mongo.Collection(null);
 
 RocketChat.TempSettings = TempSettings;
@@ -332,7 +335,7 @@ Template.admin.helpers({
 
 Template.admin.events({
 	'change .input-monitor, keyup .input-monitor': _.throttle(function(e) {
-		let value = _.trim($(e.target).val());
+		let value = s.trim($(e.target).val());
 		switch (this.type) {
 			case 'int':
 				value = parseInt(value);
@@ -353,7 +356,7 @@ Template.admin.events({
 		});
 	}, 500),
 	'change select[name=color-editor]'(e) {
-		const value = _.trim($(e.target).val());
+		const value = s.trim($(e.target).val());
 		TempSettings.update({ _id: this._id }, { $set: { editor: value }});
 		RocketChat.settings.collectionPrivate.update({ _id: this._id }, { $set: { editor: value }});
 	},

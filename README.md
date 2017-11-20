@@ -2,7 +2,7 @@
 
 # The Ultimate Open Source WebChat Platform
 
-[![Rocket.Chat](https://demo.rocket.chat/images/join-chat.svg)](https://demo.rocket.chat/)
+[![Rocket.Chat](https://open.rocket.chat/images/join-chat.svg)](https://open.rocket.chat/)
 [![Build Status](https://img.shields.io/travis/RocketChat/Rocket.Chat/master.svg)](https://travis-ci.org/RocketChat/Rocket.Chat)
 [![Project Dependencies](https://david-dm.org/RocketChat/Rocket.Chat.svg)](https://david-dm.org/RocketChat/Rocket.Chat)
 [![Codacy Badge](https://api.codacy.com/project/badge/grade/8580571ba024426d9649e9ab389bd5dd)](https://www.codacy.com/app/RocketChat/Rocket-Chat)
@@ -11,7 +11,7 @@
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat)](https://github.com/RocketChat/Rocket.Chat/raw/master/LICENSE)
 
 
-* [Live Demo](#live-demo)
+* [Community](#community)
 * [Mobile apps](#mobile-apps)
 * [Desktop apps](#desktop-apps)
 * [Deployment](#deployment)
@@ -51,15 +51,19 @@
  * [Quick Start](#quick-start-for-code-developers)
   * [Branching Model](#branching-model)
   * [Translations](#translations)
-  * [Community](#community)
   * [How to Contribute](#how-to-contribute)
 * [Credits](#credits)
 * [Donate](#donate)
 
 
-# Live Demo
-Checkout the latest version at [https://demo.rocket.chat](https://demo.rocket.chat)
+# Community
+Join thousands of members world-wide 24 x 7 in our [community server](https://open.rocket.chat).
 
+[![Rocket.Chat](https://open.rocket.chat/api/v1/shield.svg?type=channel&name=Rocket.Chat&channel=support)](https://open.rocket.chat/channel/support) for help from our community with general Rocket.Chat questions.
+
+[![Rocket.Chat](https://open.rocket.chat/api/v1/shield.svg?type=channel&name=Rocket.Chat&channel=dev)](https://open.rocket.chat/channel/dev) for developers needing help from the community to developing new features
+
+You can also join the conversation at [Twitter](https://twitter.com/RocketChat), [Facebook](https://www.facebook.com/RocketChatApp) or [Google Plus](https://plus.google.com/+RocketChatApp)
 
 # Desktop Apps
 Download the Native Cross-Platform Desktop Application at [Rocket.Chat.Electron](https://github.com/RocketChat/Rocket.Chat.Electron/releases)
@@ -302,7 +306,7 @@ It is a great solution for communities and companies wanting to privately host t
 - Multi-users Audio Conference
 - Screensharing
 - Drupal 7.x and 8.x Plug-in (both stable and development flavours) ([download](https://www.drupal.org/project/rocket_chat)  and [source code](https://git.drupal.org/project/rocket_chat.git) )
-- XMPP bridge ([try it](https://demo.rocket.chat/channel/general))
+- XMPP bridge ([try it](https://open.rocket.chat/channel/general))
 - REST APIs
 - Remote Locations Video Monitoring
 - Native real-time APIs for Microsoft C#, Visual Basic, F# and other .NET supported languages ([Get it!](https://www.nuget.org/packages/Rocket.Chat.Net/0.0.12-pre))
@@ -416,10 +420,6 @@ See also this [Git Workflows Comparison](https://www.atlassian.com/git/tutorials
 ## Translations
 We are experimenting [Lingohub](https://translate.lingohub.com/engelgabriel/rocket-dot-chat/dashboard).
 If you want to help, send an email to support at rocket.chat to be invited to the translation project.
-
-## Community
-
-Join thousands of members  world-wide 24 x 7 in our [community server](https://demo.rocket.chat).  Join the conversation at [Twitter](https://twitter.com/RocketChatApp), [Facebook](https://www.facebook.com/RocketChatApp) or [Google Plus](https://plus.google.com/+RocketChatApp)
 
 ## How to Contribute
 

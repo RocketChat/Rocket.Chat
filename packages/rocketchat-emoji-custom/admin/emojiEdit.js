@@ -1,4 +1,5 @@
 import toastr from 'toastr';
+import s from 'underscore.string';
 
 Template.emojiEdit.helpers({
 	emoji() {
