@@ -1,3 +1,5 @@
+import _ from 'underscore';
+
 RocketChat.updateUserTokenpassBalances = function(user) {
 	if (user && user.services && user.services.tokenpass) {
 		const tcaPublicBalances = RocketChat.getPublicTokenpassBalances(user.services.tokenpass.accessToken);
