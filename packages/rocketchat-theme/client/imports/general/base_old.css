@@ -1774,6 +1774,7 @@
 	height: 40px;
 
 	text-align: center;
+	text-overflow: ellipsis;
 
 	color: white;
 	background-color: #04436a;

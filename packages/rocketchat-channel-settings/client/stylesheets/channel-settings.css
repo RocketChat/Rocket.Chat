@@ -40,6 +40,7 @@ html.rtl .flex-tab {
 
 			cursor: pointer;
 			vertical-align: middle;
+			word-wrap: break-word;
 
 			font-size: 14px;
 
