@@ -9,10 +9,15 @@ RocketChat.placeholders.replace = function(str, data) {
 
 	str = str.replace(/\[Site_Name\]/g, RocketChat.settings.get('Site_Name') || '');
 	str = str.replace(/\[Site_URL\]/g, RocketChat.settings.get('Site_Url') || '');
+
 	var iurl = RocketChat.settings.get('Site_Url');
 	if (i.slice(-1) != '/') iurl += '/';
-	iurl += 'register/'
-	str = str.replace(/\[Invite_URL\]/g, (iurl + RocketChat.settings.get('Accounts_RegistrationForm_SecretURL')) || '');
+	iurl += 'register/';
+	// only add secret if registration is set to Secret URL
+	if (RocketChat.settings.get('Accounts_RegistrationForm') === 'Secret URL') {
+		iurl + RocketChat.settings.get('Accounts_RegistrationForm_SecretURL')
+	}
+	str = str.replace(/\[Invite_URL\]/g, iurl || '');
 
 	if (data) {
 		str = str.replace(/\[name\]/g, data.name || '');
