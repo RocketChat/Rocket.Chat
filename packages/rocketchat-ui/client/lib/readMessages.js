@@ -1,3 +1,5 @@
+import _ from 'underscore';
+
 /* DEFINITIONS
 - If window loses focus user needs to scroll or click/touch some place
 - On hit ESC enable read, force read of current room and remove unread mark
@@ -74,6 +76,9 @@ const readMessage = new class {
 				if (this.debug) { console.log('readMessage -> readNow canceled, unread mark visible:', visible, 'unread since exists', (room.unreadSince.get() != null)); }
 				return;
 			}
+		// if unread mark is not visible and there is more more not loaded unread messages
+		} else if (RoomHistoryManager.getRoom(rid).unreadNotLoaded.get() > 0) {
+			return;
 		}
 
 		if (this.debug) { console.log('readMessage -> readNow rid:', rid); }

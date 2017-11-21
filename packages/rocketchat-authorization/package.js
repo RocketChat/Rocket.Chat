@@ -9,14 +9,11 @@ Package.describe({
 Package.onUse(function(api) {
 	api.use([
 		'ecmascript',
-		'underscore',
-		'rocketchat:lib',
-		'less'
+		'rocketchat:lib'
 	]);
 
 	api.use('mongo', ['client', 'server']);
 	api.use('kadira:flow-router', 'client');
-	api.use('less', 'client');
 	api.use('tracker', 'client');
 
 	api.use('templating', 'client');
@@ -34,6 +31,7 @@ Package.onUse(function(api) {
 	api.addFiles('client/requiresPermission.html', ['client']);
 
 	api.addFiles('client/route.js', ['client']);
+	api.addFiles('client/usersNameChanged.js', ['client']);
 
 	// views
 	api.addFiles('client/views/permissions.html', ['client']);
@@ -42,7 +40,7 @@ Package.onUse(function(api) {
 	api.addFiles('client/views/permissionsRole.js', ['client']);
 
 	// stylesheets
-	api.addFiles('client/stylesheets/permissions.less', 'client');
+	api.addFiles('client/stylesheets/permissions.css', 'client');
 
 	api.addFiles('server/models/Permissions.js', ['server']);
 	api.addFiles('server/models/Roles.js', ['server']);

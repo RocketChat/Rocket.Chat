@@ -1,3 +1,5 @@
+import _ from 'underscore';
+
 class ModelSubscriptions extends RocketChat.models._Base {
 	constructor() {
 		super(...arguments);
@@ -12,7 +14,7 @@ class ModelSubscriptions extends RocketChat.models._Base {
 		this.tryEnsureIndex({ 'unread': 1 });
 		this.tryEnsureIndex({ 'ts': 1 });
 		this.tryEnsureIndex({ 'ls': 1 });
-		this.tryEnsureIndex({ 'audioNotification': 1 }, { sparse: 1 });
+		this.tryEnsureIndex({ 'audioNotifications': 1 }, { sparse: 1 });
 		this.tryEnsureIndex({ 'desktopNotifications': 1 }, { sparse: 1 });
 		this.tryEnsureIndex({ 'mobilePushNotifications': 1 }, { sparse: 1 });
 		this.tryEnsureIndex({ 'emailNotifications': 1 }, { sparse: 1 });
@@ -157,6 +159,18 @@ class ModelSubscriptions extends RocketChat.models._Base {
 		return this.find(query);
 	}
 
+	findByRoomIdAndUserIdsOrAllMessages(roomId, userIds) {
+		const query = {
+			rid: roomId,
+			$or: [
+				{ 'u._id': { $in: userIds } },
+				{ emailNotifications: 'all' }
+			]
+		};
+
+		return this.find(query);
+	}
+
 	findUnreadByUserId(userId) {
 		const query = {
 			'u._id': userId,
@@ -241,6 +255,8 @@ class ModelSubscriptions extends RocketChat.models._Base {
 				open: true,
 				alert: false,
 				unread: 0,
+				userMentions: 0,
+				groupMentions: 0,
 				ls: new Date
 			}
 		};
@@ -281,13 +297,14 @@ class ModelSubscriptions extends RocketChat.models._Base {
 		return this.update(query, update);
 	}
 
-	updateNameAndAlertByRoomId(roomId, name) {
+	updateNameAndAlertByRoomId(roomId, name, fname) {
 		const query =
 			{rid: roomId};
 
 		const update = {
 			$set: {
 				name,
+				fname,
 				alert: true
 			}
 		};
@@ -336,29 +353,6 @@ class ModelSubscriptions extends RocketChat.models._Base {
 		return this.update(query, update, { multi: true });
 	}
 
-	incUnreadOfDirectForRoomIdExcludingUserId(roomId, userId, inc) {
-		if (inc == null) { inc = 1; }
-		const query = {
-			rid: roomId,
-			t: 'd',
-			'u._id': {
-				$ne: userId
-			}
-		};
-
-		const update = {
-			$set: {
-				alert: true,
-				open: true
-			},
-			$inc: {
-				unread: inc
-			}
-		};
-
-		return this.update(query, update, { multi: true });
-	}
-
 	incUnreadForRoomIdExcludingUserId(roomId, userId, inc) {
 		if (inc == null) { inc = 1; }
 		const query = {
@@ -381,8 +375,29 @@ class ModelSubscriptions extends RocketChat.models._Base {
 		return this.update(query, update, { multi: true });
 	}
 
-	incUnreadForRoomIdAndUserIds(roomId, userIds, inc) {
-		if (inc == null) { inc = 1; }
+	incGroupMentionsAndUnreadForRoomIdExcludingUserId(roomId, userId, incGroup = 1, incUnread = 1) {
+		const query = {
+			rid: roomId,
+			'u._id': {
+				$ne: userId
+			}
+		};
+
+		const update = {
+			$set: {
+				alert: true,
+				open: true
+			},
+			$inc: {
+				unread: incUnread,
+				groupMentions: incGroup
+			}
+		};
+
+		return this.update(query, update, { multi: true });
+	}
+
+	incUserMentionsAndUnreadForRoomIdAndUserIds(roomId, userIds, incUser = 1, incUnread = 1) {
 		const query = {
 			rid: roomId,
 			'u._id': {
@@ -396,13 +411,13 @@ class ModelSubscriptions extends RocketChat.models._Base {
 				open: true
 			},
 			$inc: {
-				unread: inc
+				unread: incUnread,
+				userMentions: incUser
 			}
 		};
 
 		return this.update(query, update, { multi: true });
 	}
-
 	setAlertForRoomIdExcludingUserId(roomId, userId) {
 		const query = {
 			rid: roomId,
@@ -421,7 +436,6 @@ class ModelSubscriptions extends RocketChat.models._Base {
 				open: true
 			}
 		};
-
 		return this.update(query, update, { multi: true });
 	}
 
@@ -537,13 +551,17 @@ class ModelSubscriptions extends RocketChat.models._Base {
 			open: false,
 			alert: false,
 			unread: 0,
+			userMentions: 0,
+			groupMentions: 0,
 			ts: room.ts,
 			rid: room._id,
 			name: room.name,
+			fname: room.fname,
 			t: room.t,
 			u: {
 				_id: user._id,
-				username: user.username
+				username: user.username,
+				name: user.name
 			}
 		};
 

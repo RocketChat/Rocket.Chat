@@ -1,8 +1,9 @@
 /* globals WebAppInternals */
+import _ from 'underscore';
 
 import url from 'url';
 
-WebApp.rawConnectHandlers.use(function(req, res, next) {
+WebApp.rawConnectHandlers.use(Meteor.bindEnvironment(function(req, res, next) {
 	if (req._body) {
 		return next();
 	}
@@ -12,7 +13,7 @@ WebApp.rawConnectHandlers.use(function(req, res, next) {
 	if (req.headers['content-type'] !== '' && req.headers['content-type'] !== undefined) {
 		return next();
 	}
-	if (req.url.indexOf('/ufs/') === 0) {
+	if (req.url.indexOf(`${ __meteor_runtime_config__.ROOT_URL_PATH_PREFIX }/ufs/`) === 0) {
 		return next();
 	}
 
@@ -36,7 +37,7 @@ WebApp.rawConnectHandlers.use(function(req, res, next) {
 
 		return next();
 	});
-});
+}));
 
 WebApp.rawConnectHandlers.use(function(req, res, next) {
 	if (/^\/(api|_timesync|sockjs|tap-i18n|__cordova)(\/|$)/.test(req.url)) {

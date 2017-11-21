@@ -16,7 +16,7 @@ Meteor.methods({
 			});
 		}
 
-		if (me.username === username) {
+		if (RocketChat.settings.get('Message_AllowDirectMessagesToYourself') === false && me.username === username) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: 'createDirectMessage'
 			});
@@ -66,6 +66,8 @@ Meteor.methods({
 				t: 'd',
 				alert: false,
 				unread: 0,
+				userMentions: 0,
+				groupMentions: 0,
 				u: {
 					_id: me._id,
 					username: me.username
@@ -92,6 +94,8 @@ Meteor.methods({
 				open: false,
 				alert: false,
 				unread: 0,
+				userMentions: 0,
+				groupMentions: 0,
 				u: {
 					_id: to._id,
 					username: to.username
@@ -105,10 +109,8 @@ Meteor.methods({
 	}
 });
 
-DDPRateLimiter.addRule({
-	type: 'method',
-	name: 'createDirectMessage',
-	connectionId() {
-		return true;
+RocketChat.RateLimiter.limitMethod('createDirectMessage', 10, 60000, {
+	userId(userId) {
+		return !RocketChat.authz.hasPermission(userId, 'send-many-messages');
 	}
-}, 10, 60000);
+});

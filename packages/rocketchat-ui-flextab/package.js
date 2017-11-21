@@ -15,7 +15,6 @@ Package.onUse(function(api) {
 		'mongo',
 		'ecmascript',
 		'templating',
-		'underscore',
 		'rocketchat:lib'
 	]);
 
@@ -32,4 +31,5 @@ Package.onUse(function(api) {
 	api.addFiles('client/tabs/uploadedFilesList.js', 'client');
 	api.addFiles('client/tabs/userEdit.js', 'client');
 	api.addFiles('client/tabs/userInfo.js', 'client');
+	api.addFiles('client/tabs/keyboardShortcuts.html', 'client');
 });

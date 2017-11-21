@@ -1,3 +1,4 @@
+import _ from 'underscore';
 RocketChat.ChannelSettings = new class {
 	constructor() {
 		this.options = new ReactiveVar({});
@@ -21,12 +22,13 @@ RocketChat.ChannelSettings = new class {
 		});
 	}
 
-	getOptions(currentData, group) {
+	getOptions(currentData = {}, group) {
 		const allOptions = _.toArray(this.options.get());
 		const allowedOptions = _.compact(_.map(allOptions, function(option) {
+			const ret = {...option};
 			if (option.validation == null || option.validation()) {
-				option.data = Object.assign({}, typeof option.data === 'function' ? option.data() : option.data, currentData);
-				return option;
+				ret.data = Object.assign({}, typeof option.data === 'function' ? option.data() : option.data, currentData);
+				return ret;
 			}
 		})).filter(function(option) {
 			return !group || !option.group || option.group.includes(group);

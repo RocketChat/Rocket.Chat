@@ -1,5 +1,7 @@
 /* globals fileUploadHandler, Handlebars, fileUpload */
 /* exported fileUpload */
+import _ from 'underscore';
+import s from 'underscore.string';
 
 function readAsDataURL(file, callback) {
 	const reader = new FileReader();
@@ -135,7 +137,7 @@ fileUpload = function(filesToUpload) {
 				html: true
 			}, function(isConfirm) {
 				consume();
-				if (isConfirm !== true) {
+				if (!isConfirm) {
 					return;
 				}
 
@@ -175,10 +177,10 @@ fileUpload = function(filesToUpload) {
 							uploading = [];
 						}
 
-						const item = _.findWhere(uploading, { id: this.id });
+						const item = _.findWhere(uploading, { id: upload.id });
 
 						if (_.isObject(item)) {
-							item.error = error.error;
+							item.error = error.message;
 							item.percentage = 0;
 						} else {
 							uploading.push({

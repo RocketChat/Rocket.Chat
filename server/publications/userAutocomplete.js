@@ -1,3 +1,5 @@
+import _ from 'underscore';
+
 Meteor.publish('userAutocomplete', function(selector) {
 	if (!this.userId) {
 		return this.ready();

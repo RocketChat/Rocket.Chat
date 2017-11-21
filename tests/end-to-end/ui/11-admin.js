@@ -24,7 +24,7 @@ describe('[Administration]', () => {
 
 	describe('[Admin View]', () => {
 		before(() => {
-			sideNav.accountBoxUserName.click();
+			sideNav.accountMenu.click();
 			sideNav.admin.waitForVisible(5000);
 		});
 
@@ -316,7 +316,13 @@ describe('[Administration]', () => {
 					});
 
 					it('it should show the role dropdown', () => {
-						flexTab.usersAddUserRole.isVisible().should.be.true;
+						flexTab.usersAddUserRoleList.waitForVisible(5000);
+						flexTab.usersAddUserRoleList.isVisible().should.be.true;
+					});
+
+					it('ít should show the add role button', () => {
+						flexTab.usersAddUserRoleButton.waitForVisible(5000);
+						flexTab.usersAddUserRoleButton.isVisible().should.be.true;
 					});
 
 					it('it should show the join default channel checkbox', () => {
@@ -408,8 +414,10 @@ describe('[Administration]', () => {
 
 		describe('[General Settings]', () => {
 			before(() => {
+				admin.settingsSearch.setValue('general');
 				admin.generalLink.waitForVisible(5000);
 				admin.generalLink.click();
+				admin.settingsSearch.setValue('');
 				admin.generalSiteUrl.waitForVisible(5000);
 			});
 
@@ -509,6 +517,23 @@ describe('[Administration]', () => {
 
 				it('it should click the reset button', () => {
 					admin.generalFavoriteRoomReset.click();
+				});
+
+				it('it should show open first channel field', () => {
+					admin.generalOpenFirstChannel.isVisible().should.be.true;
+				});
+
+				it('it should change open first channel field', () => {
+					admin.generalOpenFirstChannel.setValue('something');
+				});
+
+				it('it should show the reset button', () => {
+					admin.generalOpenFirstChannelReset.waitForVisible(5000);
+					admin.generalOpenFirstChannelReset.isVisible().should.be.true;
+				});
+
+				it('it should click the reset button', () => {
+					admin.generalOpenFirstChannelReset.click();
 				});
 
 				it('it should show cdn prefix field', () => {

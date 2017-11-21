@@ -8,12 +8,10 @@ Package.describe({
 Package.onUse(function(api) {
 	api.use([
 		'ecmascript',
-		'less',
 		'rocketchat:file',
 		'rocketchat:lib',
 		'templating',
 		'reactive-var',
-		'underscore',
 		'webapp'
 	]);
 
@@ -33,18 +31,18 @@ Package.onUse(function(api) {
 		'server/methods/uploadCustomSound.js'
 	], 'server');
 
-	api.addFiles('assets/stylesheets/customSoundsAdmin.less', 'client');
+	api.addFiles('assets/stylesheets/customSoundsAdmin.css', 'client');
 
-	api.addFiles('admin/startup.js', 'client');
-	api.addFiles('admin/adminSounds.html', 'client');
-	api.addFiles('admin/adminSounds.js', 'client');
-	api.addFiles('admin/adminSoundEdit.html', 'client');
-	api.addFiles('admin/adminSoundInfo.html', 'client');
-	api.addFiles('admin/soundEdit.html', 'client');
-	api.addFiles('admin/soundEdit.js', 'client');
-	api.addFiles('admin/soundInfo.html', 'client');
-	api.addFiles('admin/soundInfo.js', 'client');
-	api.addFiles('admin/route.js', 'client');
+	api.addFiles('client/admin/startup.js', 'client');
+	api.addFiles('client/admin/adminSounds.html', 'client');
+	api.addFiles('client/admin/adminSounds.js', 'client');
+	api.addFiles('client/admin/adminSoundEdit.html', 'client');
+	api.addFiles('client/admin/adminSoundInfo.html', 'client');
+	api.addFiles('client/admin/soundEdit.html', 'client');
+	api.addFiles('client/admin/soundEdit.js', 'client');
+	api.addFiles('client/admin/soundInfo.html', 'client');
+	api.addFiles('client/admin/soundInfo.js', 'client');
+	api.addFiles('client/admin/route.js', 'client');
 
 	api.addFiles('client/lib/CustomSounds.js', 'client');
 	api.addFiles('client/models/CustomSounds.js', 'client');

@@ -1,3 +1,4 @@
+import _ from 'underscore';
 import net from 'net';
 import Lru from 'lru-cache';
 
@@ -359,6 +360,8 @@ class IrcClient {
 				open: false,
 				alert: false,
 				unread: 0,
+				userMentions: 0,
+				groupMentions: 0,
 				u: { _id: target._id, username: target.username }}
 		});
 		return { t: 'd', _id: rid };

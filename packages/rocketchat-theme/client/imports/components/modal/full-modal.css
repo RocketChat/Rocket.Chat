@@ -1,0 +1,72 @@
+.full-modal {
+	position: absolute;
+	top: 0;
+	left: 0;
+
+	display: flex;
+
+	width: 100%;
+	height: 100%;
+	justify-content: center;
+
+	&__wrapper {
+		position: relative;
+
+		display: flex;
+
+		width: var(--modal-wrapper-width);
+		margin: var(--modal-wrapper-margin) 0;
+	}
+
+	&__back-button {
+		position: absolute;
+		top: 0;
+		right: 0;
+
+		display: flex;
+
+		color: var(--modal-back-button-color);
+		align-items: center;
+	}
+
+	&__back-text {
+		margin-right: 2px;
+
+		line-height: 22px;
+	}
+
+	&__back-icon {
+		transform: rotate(45deg);
+
+		font-size: 1rem;
+	}
+}
+
+@media (width < 1024px) {
+	.full-modal {
+		padding: 50px;
+
+		&__wrapper {
+			margin: 0;
+		}
+	}
+}
+
+@media (width <= 400px) {
+	.full-modal {
+		&__back-button {
+			top: -1.5rem;
+		}
+	}
+}
+
+.rtl .full-modal {
+	&__back-button {
+	  right: auto;
+	  left: 0;
+	}
+
+	&__back-text {
+		margin-left: 0.375rem;
+	}
+}

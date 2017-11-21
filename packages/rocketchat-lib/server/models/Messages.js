@@ -1,3 +1,5 @@
+import _ from 'underscore';
+
 RocketChat.models.Messages = new class extends RocketChat.models._Base {
 	constructor() {
 		super('message');
@@ -84,6 +86,19 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base {
 			}
 		};
 
+		return this.find(query, options);
+	}
+
+	findForUpdates(roomId, timestamp, options) {
+		const query = {
+			_hidden: {
+				$ne: true
+			},
+			rid: roomId,
+			_updatedAt: {
+				$gt: timestamp
+			}
+		};
 		return this.find(query, options);
 	}
 
@@ -543,6 +558,16 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base {
 	createOwnerRemovedWithRoomIdAndUser(roomId, user, extraData) {
 		const message = user.username;
 		return this.createWithTypeRoomIdMessageAndUser('owner-removed', roomId, message, user, extraData);
+	}
+
+	createNewLeaderWithRoomIdAndUser(roomId, user, extraData) {
+		const message = user.username;
+		return this.createWithTypeRoomIdMessageAndUser('new-leader', roomId, message, user, extraData);
+	}
+
+	createLeaderRemovedWithRoomIdAndUser(roomId, user, extraData) {
+		const message = user.username;
+		return this.createWithTypeRoomIdMessageAndUser('leader-removed', roomId, message, user, extraData);
 	}
 
 	createSubscriptionRoleAddedWithRoomIdAndUser(roomId, user, extraData) {

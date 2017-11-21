@@ -1,4 +1,6 @@
 /* globals HTTP */
+import _ from 'underscore';
+import s from 'underscore.string';
 import UAParser from 'ua-parser-js';
 
 RocketChat.Livechat = {
@@ -127,7 +129,7 @@ RocketChat.Livechat = {
 
 				if (this.connection) {
 					userData.userAgent = this.connection.httpHeaders['user-agent'];
-					userData.ip = this.connection.httpHeaders['x-real-ip'] || this.connection.clientAddress;
+					userData.ip = this.connection.httpHeaders['x-real-ip'] || this.connection.httpHeaders['x-forwarded-for'] || this.connection.clientAddress;
 					userData.host = this.connection.httpHeaders.host;
 				}
 
@@ -317,6 +319,8 @@ RocketChat.Livechat = {
 				alert: true,
 				open: true,
 				unread: 1,
+				userMentions: 1,
+				groupMentions: 0,
 				code: room.code,
 				u: {
 					_id: agent.agentId,

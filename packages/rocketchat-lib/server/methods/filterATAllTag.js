@@ -1,3 +1,5 @@
+import _ from 'underscore';
+
 RocketChat.callbacks.add('beforeSaveMessage', function(message) {
 	// Test if the message mentions include @all.
 	if (message.mentions != null &&
@@ -20,14 +22,10 @@ RocketChat.callbacks.add('beforeSaveMessage', function(message) {
 			});
 
 			// Also throw to stop propagation of 'sendMessage'.
-			throw new Meteor.Error(
-				'error-action-not-allowed',
-				'Notify all in this room not allowed',
-				{
-					method: 'filterATAllTag',
-					action: 'Notify_all_in_this_room'
-				}
-			);
+			throw new Meteor.Error('error-action-not-allowed', 'Notify all in this room not allowed', {
+				method: 'filterATAllTag',
+				action: 'Notify_all_in_this_room'
+			});
 		}
 	}
 

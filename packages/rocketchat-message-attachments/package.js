@@ -9,14 +9,12 @@ Package.onUse(function(api) {
 	api.use([
 		'templating',
 		'ecmascript',
-		'underscore',
-		'rocketchat:lib',
-		'less'
+		'rocketchat:lib'
 	]);
 
 	api.addFiles('client/messageAttachment.html', 'client');
 	api.addFiles('client/messageAttachment.js', 'client');
 
 	// stylesheets
-	api.addFiles('client/stylesheets/messageAttachments.less', 'client');
+	api.addFiles('client/stylesheets/messageAttachments.css', 'client');
 });

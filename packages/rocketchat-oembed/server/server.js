@@ -1,4 +1,6 @@
 /*globals HTTPInternals, changeCase */
+import _ from 'underscore';
+
 const URL = Npm.require('url');
 
 const querystring = Npm.require('querystring');
@@ -88,7 +90,7 @@ const getUrlContent = function(urlObj, redirectCount = 5, callback) {
 		gzip: true,
 		maxRedirects: redirectCount,
 		headers: {
-			'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2227.0 Safari/537.36'
+			'User-Agent': RocketChat.settings.get('API_Embed_UserAgent')
 		}
 	};
 	let headers = null;

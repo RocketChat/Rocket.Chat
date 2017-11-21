@@ -22,6 +22,8 @@ const files = [
 	'./package.json',
 	'./.sandstorm/sandstorm-pkgdef.capnp',
 	'./.travis/snap.sh',
+	'./.circleci/snap.sh',
+	'./.circleci/update-releases.sh',
 	'./.docker/Dockerfile',
 	'./packages/rocketchat-lib/rocketchat.info'
 ];
@@ -55,6 +57,9 @@ git.status()
 	}
 	if (status.current === 'master') {
 		return semver.inc(pkgJson.version, 'patch');
+	}
+	if (status.current === 'develop') {
+		return semver.inc(semver.inc(pkgJson.version, 'minor'), 'minor')+'-develop';
 	}
 	return Promise.reject(`No release action for branch ${ status.current }`);
 })

@@ -1,3 +1,5 @@
+import _ from 'underscore';
+
 const RoomManager = new function() {
 	const openedRooms = {};
 	const msgStream = new Meteor.Streamer('room-messages');
@@ -12,7 +14,7 @@ const RoomManager = new function() {
 				Object.keys(openedRooms).forEach(typeName => {
 					const record = openedRooms[typeName];
 					if (record.active !== true || record.ready === true) { return; }
-					const ready = CachedChatRoom.ready.get() && CachedChatSubscription.ready.get() === true;
+					const ready = CachedChatRoom.ready.get() && RocketChat.mainReady.get();
 					if (ready !== true) { return; }
 					const user = Meteor.user();
 
@@ -49,8 +51,12 @@ const RoomManager = new function() {
 											].map(e => e.roles);
 											msg.roles = _.union.apply(_.union, roles);
 											ChatMessage.upsert({ _id: msg._id }, msg);
+											msg.room = {
+												type,
+												name
+											};
 										}
-
+										msg.name = room.name;
 										Meteor.defer(() => RoomManager.updateMentionsMarksOfRoom(typeName));
 
 										RocketChat.callbacks.run('streamMessage', msg);
@@ -252,18 +258,24 @@ Tracker.autorun(function() {
 	return connectionWasOnline = connected;
 });
 
-// Reload rooms after login
-let currentUsername = undefined;
-Tracker.autorun(() => {
-	const user = Meteor.user();
-	if ((currentUsername === undefined) && ((user != null ? user.username : undefined) != null)) {
-		currentUsername = user.username;
-		RoomManager.closeAllRooms();
-		return FlowRouter._current.route.callAction(FlowRouter._current);
-	}
-});
+Meteor.startup(() => {
 
-Meteor.startup(() =>
+	// Reload rooms after login
+	let currentUsername = undefined;
+	Tracker.autorun(() => {
+		const user = Meteor.user();
+		if ((currentUsername === undefined) && ((user != null ? user.username : undefined) != null)) {
+			currentUsername = user.username;
+			RoomManager.closeAllRooms();
+			const roomTypes = RocketChat.roomTypes.roomTypes;
+			// Reload only if the current route is a channel route
+			const roomType = Object.keys(roomTypes).find(key => roomTypes[key].route && roomTypes[key].route.name === FlowRouter.current().route.name);
+			if (roomType) {
+				FlowRouter.reload();
+			}
+		}
+	});
+
 	ChatMessage.find().observe({
 		removed(record) {
 			if (RoomManager.getOpenedRoomByRid(record.rid) != null) {
@@ -278,8 +290,8 @@ Meteor.startup(() =>
 				}
 			}
 		}
-	})
-);
+	});
+});
 
 
 const onDeleteMessageStream = msg => ChatMessage.remove({_id: msg._id});
