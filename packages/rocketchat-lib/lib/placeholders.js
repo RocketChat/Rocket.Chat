@@ -9,6 +9,10 @@ RocketChat.placeholders.replace = function(str, data) {
 
 	str = str.replace(/\[Site_Name\]/g, RocketChat.settings.get('Site_Name') || '');
 	str = str.replace(/\[Site_URL\]/g, RocketChat.settings.get('Site_Url') || '');
+	var iurl = RocketChat.settings.get('Site_Url');
+	if (i.slice(-1) != '/') iurl += '/';
+	iurl += 'register/'
+	str = str.replace(/\[Invite_URL\]/g, (iurl + RocketChat.settings.get('Accounts_RegistrationForm_SecretURL')) || '');
 
 	if (data) {
 		str = str.replace(/\[name\]/g, data.name || '');
