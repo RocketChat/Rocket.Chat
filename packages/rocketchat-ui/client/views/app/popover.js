@@ -191,7 +191,7 @@ Template.popover.events({
 				case 'l': warnText = 'Hide_Livechat_Warning'; break;
 			}
 
-			return swal({
+			swal({
 				title: t('Are_you_sure'),
 				text: warnText ? t(warnText, name) : '',
 				type: 'warning',
@@ -214,7 +214,11 @@ Template.popover.events({
 					}
 				});
 			});
-		} else {
+
+			return false;
+		}
+
+		if (e.currentTarget.dataset.id === 'leave') {
 			let warnText;
 			switch (template) {
 				case 'c': warnText = 'Leave_Room_Warning'; break;
@@ -256,6 +260,24 @@ Template.popover.events({
 					swal.close();
 				}
 			});
+
+			return false;
+		}
+
+		if (e.currentTarget.dataset.id === 'read') {
+			Meteor.call('readMessages', rid);
+			return false;
+		}
+
+		if (e.currentTarget.dataset.id === 'favorite') {
+			Meteor.call('toggleFavorite', rid, !$(e.currentTarget).hasClass('rc-popover__item--star-filled'), function(err) {
+				popover.close();
+				if (err) {
+					handleError(err);
+				}
+			});
+
+			return false;
 		}
 	}
 });
