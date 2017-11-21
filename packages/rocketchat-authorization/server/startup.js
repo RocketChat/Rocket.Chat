@@ -64,7 +64,7 @@ Meteor.startup(function() {
 		{_id: 'view-other-user-channels', roles: ['admin']},
 		{_id: 'view-p-room', roles: ['admin', 'user', 'anonymous']},
 		{_id: 'view-privileged-setting', roles: ['admin']},
-		{_id: 'view-selected-settings', roles: ['admin']},
+		{_id: 'manage-selected-settings', roles: ['admin']},
 		{_id: 'view-room-administration', roles: ['admin']},
 		{_id: 'view-statistics', roles: ['admin']},
 		{_id: 'view-user-administration', roles: ['admin']},

@@ -31,42 +31,16 @@ Meteor.methods({
 			return [];
 		}
 		this.unblock();
-		if (!RocketChat.authz.hasPermission(Meteor.userId(), 'view-privileged-setting')) {
-			return [];
-		}
 		const records = RocketChat.models.Settings.find().fetch().filter(function(record) {
-			return record.hidden !== true;
+			if (RocketChat.authz.hasPermission(Meteor.userId(), 'view-privileged-setting')) {
+				return record.hidden !== true;
+			} else if (RocketChat.authz.hasPermission(Meteor.userId(), 'manage-selected-settings')) {
+				return record.hidden !== true && RocketChat.authz.hasPermission(Meteor.userId(), `change-setting-${ record._id }`);
+			} else {
+				return false;
+			}
 		});
-		if (updatedAt instanceof Date) {
-			return {
-				update: records.filter(function(record) {
-					return record._updatedAt > updatedAt;
-				}),
-				remove: RocketChat.models.Settings.trashFindDeletedAfter(updatedAt, {
-					hidden: {
-						$ne: true
-					}
-				}, {
-					fields: {
-						_id: 1,
-						_deletedAt: 1
-					}
-				}).fetch()
-			};
-		}
-		return records;
-	},
-	'selected-settings/get'(updatedAt) {
-		if (!Meteor.userId()) {
-			return [];
-		}
-		this.unblock();
-		if (!RocketChat.authz.hasPermission(Meteor.userId(), 'view-selected-settings')) {
-			return [];
-		}
-		const records = RocketChat.models.Settings.find().fetch().filter(function(record) {
-			return record.hidden !== true && RocketChat.authz.hasPermission(Meteor.userId(), `change-setting-${ record._id }`);
-		});
+
 		if (updatedAt instanceof Date) {
 			return {
 				update: records.filter(function(record) {

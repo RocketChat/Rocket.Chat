@@ -51,5 +51,8 @@ Meteor.methods({
 
 RocketChat.models.Permissions.on('changed', (type, permission) => {
 	RocketChat.Notifications.notifyLoggedInThisInstance('permissions-changed', type, permission);
+	if (permission.level === permissionLevel.SETTING) {
+		RocketChat.Notifications.notifyLoggedInThisInstance('selected-settings-changed', type, permission);
+	}
 });
 

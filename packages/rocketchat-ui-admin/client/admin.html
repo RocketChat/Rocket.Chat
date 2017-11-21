@@ -15,7 +15,7 @@
 			</header>
 
 			<div class="content background-transparent-dark">
-				{{#unless hasPermission 'view-privileged-setting'}}
+				{{#unless hasSettingPermission}}
 					<p>{{_ "You_are_not_authorized_to_view_this_page"}}</p>
 				{{else}}
 					{{#if description}}

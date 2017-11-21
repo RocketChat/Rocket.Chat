@@ -38,7 +38,7 @@
 				<a href="{{pathFor "admin-permissions-new"}}" class="button primary new-role">{{_ "New_role"}}</a>
 				<div class="rocket-form">
 					<div class="section">
-						{{> permissionsTable permissions=permissions allRoles=roles}}
+						{{> permissionsTable permissions=permissions allRoles=roles collection='Chat'}}
 					</div>
 				</div>
 				{{#if hasSettingPermission}}
@@ -60,7 +60,7 @@
 							</div>
 							<div class="section-content border-component-color">
 								{{#if settingPermissionExpanded }}
-									{{> permissionsTable permissions=settingPermissions allRoles=roles}}
+									{{> permissionsTable permissions=settingPermissions allRoles=roles collection='Setting'}}
 								{{else}}
 									{{_ "Not_authorized"}}
 								{{/if}}

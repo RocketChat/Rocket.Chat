@@ -94,7 +94,6 @@ Template.permissionsTable.events({
 	}
 });
 
-
 Template.permissionsTable.onCreated(function() {
 	this.permissionByRole = {};
 	this.actions = {
@@ -114,7 +113,13 @@ Template.permissionsTable.onCreated(function() {
 				delete this.permissionByRole[id];
 			}
 		};
-		ChatPermissions.find().observeChanges(observer);
-		SettingPermissions.find().observeChanges(observer);
+		if (this.data.collection === 'Chat') {
+			ChatPermissions.find().observeChanges(observer);
+		}
+
+		if (this.data.collection === 'Setting') {
+			SettingPermissions.find().observeChanges(observer);
+		}
 	});
 });
+

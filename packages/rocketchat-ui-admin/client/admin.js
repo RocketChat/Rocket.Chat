@@ -52,18 +52,8 @@ Template.admin.onCreated(function() {
 		RocketChat.settings.collectionPrivate = RocketChat.settings.cachedCollectionPrivate.collection;
 		RocketChat.settings.cachedCollectionPrivate.init();
 	}
-
-	// settings which the user is explicitly allowed to change
-	if (RocketChat.settings.cachedCollectionSelected == null) {
-		RocketChat.settings.cachedCollectionSelected = new RocketChat.CachedCollection({
-			name: 'selected-settings',
-			eventType: 'onLogged'
-		});
-		RocketChat.settings.collectionSelected = RocketChat.settings.cachedCollectionSelected.collection;
-		RocketChat.settings.cachedCollectionSelected.init();
-	}
 	this.selectedRooms = new ReactiveVar({});
-	const observation = {
+	RocketChat.settings.collectionPrivate.find().observe({
 		added: (data) => {
 			const selectedRooms = this.selectedRooms.get();
 			if (data.type === 'roomPick') {
@@ -88,10 +78,7 @@ Template.admin.onCreated(function() {
 			}
 			TempSettings.remove(data._id);
 		}
-	};
-
-	RocketChat.settings.collectionPrivate.find().observe(observation);
-	RocketChat.settings.collectionSelected.find().observe(observation);
+	});
 });
 
 Template.admin.onDestroyed(function() {
@@ -99,6 +86,9 @@ Template.admin.onDestroyed(function() {
 });
 
 Template.admin.helpers({
+	hasSettingPermission() {
+		return RocketChat.authz.hasAtLeastOnePermission(['view-privileged-setting', 'manage-selected-settings']);
+	},
 	languages() {
 		const languages = TAPi18n.getLanguages();
 
