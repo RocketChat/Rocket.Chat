@@ -11,7 +11,9 @@ RocketChat.placeholders.replace = function(str, data) {
 	str = str.replace(/\[Site_URL\]/g, RocketChat.settings.get('Site_Url') || '');
 
 	let iurl = RocketChat.settings.get('Site_Url');
-	if (iurl.slice(-1) !== '/') {iurl += '/';}
+	if (iurl.slice(-1) !== '/') {
+		iurl += '/';
+	}
 	iurl += 'register/';
 	// only add secret if registration is set to Secret URL
 	if (RocketChat.settings.get('Accounts_RegistrationForm') === 'Secret URL') {
