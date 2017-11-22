@@ -1,8 +1,12 @@
 Template.accountFlex.events({
-	'click [data-action="back"]'() {
+	'click [data-action="close"]'() {
 		SideNav.closeFlex();
 	}
 });
+
+// Template.accountFlex.onRendered(function() {
+// 	$(this.find('.rooms-list')).perfectScrollbar();
+// });
 
 Template.accountFlex.helpers({
 	allowUserProfileChange() {
@@ -16,5 +20,8 @@ Template.accountFlex.helpers({
 			pathGroup: group,
 			darken: true
 		};
+	},
+	embeddedVersion() {
+		return RocketChat.Layout.isEmbedded();
 	}
 });

@@ -1,5 +1,7 @@
 /* globals fileUploadHandler, Handlebars, fileUpload */
 /* exported fileUpload */
+import _ from 'underscore';
+import s from 'underscore.string';
 
 function readAsDataURL(file, callback) {
 	const reader = new FileReader();
@@ -56,7 +58,7 @@ fileUpload = function(filesToUpload) {
 			return;
 		}
 
-		if (!file.file.type || !RocketChat.fileUploadIsValidContentType(file.file.type)) {
+		if (!RocketChat.fileUploadIsValidContentType(file.file.type)) {
 			swal({
 				title: t('FileUpload_MediaType_NotAccepted'),
 				text: file.file.type || `*.${ s.strRightBack(file.file.name, '.') }`,

@@ -25,7 +25,7 @@
 					<div class="rc-message-box__icon emoji-picker-icon">
 						{{> icon block="rc-input__icon-svg" icon="emoji"}}
 					</div>
-					<textarea autofocus dir="auto" name="msg" maxlength="{{maxMessageLength}}" placeholder="{{_ 'Message'}}" rows="1" class="rc-message-box__textarea js-input-message autogrow-short"></textarea>
+					<textarea autofocus name="msg" maxlength="{{maxMessageLength}}" placeholder="{{_ 'Message'}}" rows="1" class="rc-message-box__textarea js-input-message autogrow-short"></textarea>
 					{{#unless disableSendIcon}}
 						<div class="rc-message-box__icon rc-message-box__send js-send" data-desktop>
 							{{> icon block="rc-input__icon-svg" icon="send"}}
@@ -73,7 +73,7 @@
 					<div>
 						{{{_ "you_are_in_preview_mode_of" room_name=roomName}}}
 						{{#if joinCodeRequired}}
-							<input type="text" name="joinCode" placeholder="{{_ 'Code'}}" style="width: 100px">
+							<input type="text" name="joinCode" placeholder="{{_ 'Password'}}" style="width: 100px">
 						{{/if}}
 						<button class="button join"><span><i class="icon-login"></i> {{_ "join"}}</span></button>
 					</div>
