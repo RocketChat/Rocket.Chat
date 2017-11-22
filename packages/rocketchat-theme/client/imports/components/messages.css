@@ -5,7 +5,7 @@
 
 	display: none;
 
-	color: #6c727a;
+	color: var(--color-darkest);
 
 	font-size: 1rem;
 
