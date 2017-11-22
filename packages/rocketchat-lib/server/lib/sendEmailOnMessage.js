@@ -128,7 +128,7 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 						return;
 					}
 
-					if (directMessageEmailPreference === 'default' && userEmailPreferenceIsDisable) {
+					if ((directMessageEmailPreference === 'default' || directMessageEmailPreference == null) && userEmailPreferenceIsDisable) {
 						return;
 					}
 				}
