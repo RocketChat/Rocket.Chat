@@ -1,3 +1,5 @@
+import s from 'underscore.string';
+
 function TokenpassAddAddressCommand(command, params, item) {
 	if (command !== 'tokenpass-add-address' || !RocketChat.checkTokenpassOAuthEnabled()) {
 		return;

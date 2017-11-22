@@ -1,3 +1,5 @@
+import s from 'underscore.string';
+
 function LendCommand(command, params, item) {
 	if (command !== 'lend' || !RocketChat.checkTokenpassOAuthEnabled()) {
 		return;
