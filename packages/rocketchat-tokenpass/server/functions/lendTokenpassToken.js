@@ -6,7 +6,7 @@ if (Meteor.release) { userAgent += `/${ Meteor.release }`; }
 RocketChat.lendTokenpassToken = function(lending) {
 	const authApiToken = RocketChat.settings.get('Accounts_OAuth_Tokenpass_id');
 	const authApiSecret = RocketChat.settings.get('Accounts_OAuth_Tokenpass_secret');
-	const authApiNonce = moment().unix();
+	const authApiNonce = Date.now();
 
 	const requestParams = {
 		source: lending.address,
