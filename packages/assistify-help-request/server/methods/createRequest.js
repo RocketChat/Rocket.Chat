@@ -77,7 +77,7 @@ Meteor.methods({
 		if (openingQuestion) {
 			const msg = openingQuestion;
 			const msgObject = { _id: Random.id(), rid:roomCreateResult.rid, msg};
-			RocketChat.sendMessage([Meteor.user().username], msgObject, room);
+			RocketChat.sendMessage(Meteor.user(), msgObject, room);
 		}
 
 		const helpRequestId = RocketChat.models.HelpRequests.createForSupportArea(expertise, roomCreateResult.rid, '', environment);

@@ -24,7 +24,7 @@ New_request_for_expertise: The topic of the new request
 New_request: New request
 New_request_created: Request created successfully
 New_request_first_question: What do you want to ask
-New_request_title: A name helps to find the request later on
+New_request_title: A title helps to find the request later on
 No_expertise_yet: No topics yet
 No_requests_yet: No requests yet
 release: Version
