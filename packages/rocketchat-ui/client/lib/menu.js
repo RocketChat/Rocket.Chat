@@ -1,3 +1,4 @@
+import _ from 'underscore';
 import EventEmitter from 'wolfy87-eventemitter';
 const sideNavW = 280;
 const map = (x, in_min, in_max, out_min, out_max) => (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
@@ -124,7 +125,6 @@ this.menu = new class extends EventEmitter {
 		this.wrapper.css('overflow', 'hidden');
 		this.sidebarWrap.css('background-color', '#000');
 		this.sidebarWrap.css('opacity', map((Math.abs(diff) / width), 0, 1, -.1, .8).toFixed(2));
-		console.log(sideNavW, diff);
 		this.isRtl ? this.sidebar.css('transform', `translate3d(${ (sideNavW + diff).toFixed(3) }px, 0 , 0)`) : this.sidebar.css('transform', `translate3d(${ (diff - sideNavW).toFixed(3) }px, 0 , 0)`);
 	}
 	touchend() {

@@ -1,14 +1,10 @@
 {
+  "lockfileVersion": 1,
   "dependencies": {
-    "highlight.js": {
-      "version": "9.9.0",
-      "resolved": "https://registry.npmjs.org/highlight.js/-/highlight.js-9.9.0.tgz",
-      "from": "highlight.js@9.9.0"
-    },
     "marked": {
       "version": "0.3.6",
       "resolved": "https://registry.npmjs.org/marked/-/marked-0.3.6.tgz",
-      "from": "marked@0.3.6"
+      "integrity": "sha1-ssbGGPzOzk74bE/Gy4p8v1rtqNc="
     }
   }
 }

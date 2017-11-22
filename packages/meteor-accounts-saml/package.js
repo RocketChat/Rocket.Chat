@@ -8,7 +8,7 @@ Package.describe({
 Package.on_use(function(api) {
 	api.use('rocketchat:lib', 'server');
 	api.use('ecmascript');
-	api.use(['routepolicy', 'webapp', 'underscore', 'service-configuration'], 'server');
+	api.use(['routepolicy', 'webapp', 'service-configuration'], 'server');
 	api.use(['http', 'accounts-base'], ['client', 'server']);
 
 	api.add_files(['saml_server.js', 'saml_utils.js'], 'server');

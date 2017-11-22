@@ -1,4 +1,6 @@
 html.rtl .attachment {
+	direction: rtl;
+
 	& .attachment-block {
 		padding-right: 15px;
 		padding-left: 0;

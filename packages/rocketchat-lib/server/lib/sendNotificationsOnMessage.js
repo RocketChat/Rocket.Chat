@@ -1,4 +1,6 @@
 /* globals Push */
+import _ from 'underscore';
+import s from 'underscore.string';
 import moment from 'moment';
 
 /**
@@ -31,7 +33,7 @@ function parseMessageText(message, userId) {
 	const user = RocketChat.models.Users.findOneById(userId);
 	const lng = user && user.language || RocketChat.settings.get('language') || 'en';
 
-	if (!message.msg && message.attachments[0]) {
+	if (!message.msg && message.attachments && message.attachments[0]) {
 		message.msg = message.attachments[0].image_type ? TAPi18n.__('User_uploaded_image', {lng}) : TAPi18n.__('User_uploaded_file', {lng});
 	}
 	message.msg = RocketChat.callbacks.run('beforeNotifyUser', message.msg);

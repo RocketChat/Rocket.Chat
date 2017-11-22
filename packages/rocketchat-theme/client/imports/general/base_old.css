@@ -3227,10 +3227,6 @@
 			list-style-type: decimal;
 		}
 
-		& > * + * {
-			padding-top: 10px;
-		}
-
 		& > table {
 			display: block;
 			overflow: auto;
@@ -3752,7 +3748,13 @@ body:not(.is-cordova) {
 	}
 
 	&.uploaded-files-list {
-		& a .file-name {
+	  	& ul {
+		  & li {
+			margin-bottom: 10px;
+		  }
+		}
+
+		& .file-name {
 			display: block;
 
 			padding: 10px 5px;
@@ -3777,19 +3779,14 @@ body:not(.is-cordova) {
 
 		& i {
 			float: left;
-
 			margin-right: 10px;
 
 			&.file-delete {
 				float: right;
-
-				padding-top: 10px;
 			}
 
 			&.file-download {
 				float: right;
-
-				padding-top: 11px;
 			}
 		}
 	}
@@ -4603,7 +4600,7 @@ body:not(.is-cordova) {
 
 .full-page,
 .page-loading {
-	background-color: var(--color-primary);
+	background-color: var(--rc-color-primary);
 }
 
 .rc-old.full-page {
