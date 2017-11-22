@@ -53,7 +53,9 @@ Package.onUse(function(api) {
 	api.addFiles('server/models/Subscriptions.js', 'server');
 	api.addFiles('server/models/Users.js', 'server');
 
+	api.addFiles('server/methods/checkTokenpassOAuthEnabled.js', 'server');
 	api.addFiles('server/methods/findTokenChannels.js', 'server');
+	api.addFiles('server/methods/getChannelTokenpass.js', 'server');
 
 	api.addFiles('server/cronRemoveUsers.js', 'server');
 
