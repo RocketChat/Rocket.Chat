@@ -37,15 +37,6 @@
 }
 
 .message {
-	&:hover,
-	&.active {
-		background-color: rgba(0, 0, 0, 0.05);
-
-		& .message-actions {
-			display: flex;
-		}
-	}
-
 	&.active {
 		& .message-actions__label {
 			color: var(--rc-color-button-primary);
@@ -95,4 +86,17 @@
 .rtl .message-actions {
 	right: auto;
 	left: 2px;
+}
+
+@media (width >= 500px) {
+	.message {
+		&:hover,
+		&.active {
+			background-color: rgba(0, 0, 0, 0.05);
+
+			& .message-actions {
+				display: flex;
+			}
+		}
+	}
 }

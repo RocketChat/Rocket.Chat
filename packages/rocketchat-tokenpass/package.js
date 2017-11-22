@@ -20,6 +20,7 @@ Package.onUse(function(api) {
 
 	api.addFiles('client/login-button.css', 'client');
 	api.addFiles('client/channelSettings.css', 'client');
+	api.addFiles('client/styles.css', 'client');
 
 	api.addFiles('client/startup.js', 'client');
 	api.addFiles('client/roomType.js', 'client');
@@ -53,13 +54,8 @@ Package.onUse(function(api) {
 	api.addFiles('server/models/Users.js', 'server');
 
 	api.addFiles('server/methods/findTokenChannels.js', 'server');
-	api.addFiles('server/methods/checkTokenpassOAuthEnabled.js', 'server');
 
 	api.addFiles('server/cronRemoveUsers.js', 'server');
 
 	api.addFiles('server/Tokenpass.js', 'server');
-});
-
-Npm.depends({
-	'crypto': '1.0.1'
 });

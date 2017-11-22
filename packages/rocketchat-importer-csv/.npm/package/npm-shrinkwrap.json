@@ -1,9 +1,10 @@
 {
+  "lockfileVersion": 1,
   "dependencies": {
     "csv-parse": {
       "version": "1.2.0",
       "resolved": "https://registry.npmjs.org/csv-parse/-/csv-parse-1.2.0.tgz",
-      "from": "csv-parse@1.2.0"
+      "integrity": "sha1-BHtzhoq5qFdG6IX2N/ntD7ZFpCU="
     }
   }
 }

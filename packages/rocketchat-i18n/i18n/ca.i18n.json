@@ -120,7 +120,7 @@
   "Accounts_RegistrationForm_Public": "Públic",
   "Accounts_RegistrationForm_Secret_URL": "URL secret",
   "Accounts_RegistrationForm_SecretURL": "URL secret del fomulari de registre",
-  "Accounts_RegistrationForm_SecretURL_Description": "Cal proporcionar una cadena de text aleatori que s'afegirà a l'URL de registre. Exemple: https://demo.rocket.chat/register/[secret_hash]",
+  "Accounts_RegistrationForm_SecretURL_Description": "Cal proporcionar una cadena de text aleatori que s'afegirà a l'URL de registre. Exemple: https://open.rocket.chat/register/[secret_hash]",
   "Accounts_RequireNameForSignUp": "Requerir el nom per registrar-se",
   "Accounts_RequirePasswordConfirmation": "Requereix confirmació de la contrasenya",
   "Accounts_SearchFields": "Camps a considerar a la cerca",

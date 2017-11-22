@@ -1,4 +1,6 @@
 /* global logger, processWebhookMessage */
+import _ from 'underscore';
+import s from 'underscore.string';
 import moment from 'moment';
 
 RocketChat.integrations.triggerHandler = new class RocketChatIntegrationHandler {
@@ -130,7 +132,7 @@ RocketChat.integrations.triggerHandler = new class RocketChatIntegrationHandler 
 		}
 
 		if (typeof httpResult !== 'undefined') {
-			history.httpResult = httpResult;
+			history.httpResult = JSON.stringify(httpResult, null, 2);
 		}
 
 		if (typeof error !== 'undefined') {
