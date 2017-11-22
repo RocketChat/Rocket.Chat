@@ -10,6 +10,10 @@ Package.describe({
 	documentation: 'README.md'
 });
 
+Npm.depends({
+	clipboard: '1.7.1'
+});
+
 Package.onUse(function(api) {
 	api.use([
 		'accounts-base',
@@ -20,7 +24,6 @@ Package.onUse(function(api) {
 		'reactive-var',
 		'ecmascript',
 		'templating',
-		'underscore',
 		'rocketchat:lib',
 		'rocketchat:ui-master',
 		'raix:push',
@@ -105,7 +108,6 @@ Package.onUse(function(api) {
 	api.addFiles('client/views/app/createChannel.js', 'client');
 	api.addFiles('client/views/app/fullModal.js', 'client');
 	api.addFiles('client/views/app/home.js', 'client');
-	api.addFiles('client/views/app/mobileMessageMenu.js', 'client');
 	api.addFiles('client/views/app/privateHistory.js', 'client');
 	api.addFiles('client/views/app/room.js', 'client');
 	api.addFiles('client/views/app/roomSearch.js', 'client');

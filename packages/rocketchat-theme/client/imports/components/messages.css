@@ -1,7 +1,7 @@
 .message-actions {
 	position: absolute;
 	top: 2px;
-	right: 2px;
+	right: 0.4rem;
 
 	display: none;
 
@@ -17,7 +17,7 @@
 		margin: 0 0.2rem;
 
 		&:hover {
-			color: var(--color-button-primary);
+			color: var(--rc-color-button-primary);
 		}
 	}
 
@@ -27,7 +27,7 @@
 		cursor: pointer;
 
 		&:hover &-icon {
-			fill: var(--color-button-primary);
+			fill: var(--rc-color-button-primary);
 		}
 
 		&-icon {
@@ -37,18 +37,9 @@
 }
 
 .message {
-	&:hover,
-	&.active {
-		background-color: rgba(0, 0, 0, 0.05);
-
-		& .message-actions {
-			display: flex;
-		}
-	}
-
 	&.active {
 		& .message-actions__label {
-			color: var(--color-button-primary);
+			color: var(--rc-color-button-primary);
 		}
 	}
 
@@ -90,4 +81,22 @@
 
 .first-unread .message-actions {
 	top: 18px;
+}
+
+.rtl .message-actions {
+	right: auto;
+	left: 2px;
+}
+
+@media (width >= 500px) {
+	.message {
+		&:hover,
+		&.active {
+			background-color: rgba(0, 0, 0, 0.05);
+
+			& .message-actions {
+				display: flex;
+			}
+		}
+	}
 }
