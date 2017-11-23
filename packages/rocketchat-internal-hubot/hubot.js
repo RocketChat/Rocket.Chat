@@ -175,11 +175,12 @@ const InternalHubotReceiver = (message) => {
 		const enabledForC = RocketChat.settings.get('InternalHubot_EnableForChannels');
 		const enabledForD = RocketChat.settings.get('InternalHubot_EnableForDirectMessages');
 		const enabledForP = RocketChat.settings.get('InternalHubot_EnableForPrivateGroups');
+		const subscribedToP = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(room._id, InternalHubot.user._id);
 
 		if (
 			(room.t === 'c' && enabledForC)
 			|| (room.t === 'd' && enabledForD)
-			|| (room.t === 'p' && enabledForP)
+			|| (room.t === 'p' && enabledForP && subscribedToP)
 		) {
 			const InternalHubotUser = new Hubot.User(message.u.username, {room: message.rid});
 			const InternalHubotTextMessage = new Hubot.TextMessage(InternalHubotUser, message.msg, message._id);
