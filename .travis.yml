@@ -51,9 +51,10 @@ before_script:
 - travis_retry meteor npm install
 - |-
   mongo --eval 'rs.initiate({_id:"rs0", members: [{"_id":1, "host":"localhost:27017"}]})'
-- meteor npm run lint
-- meteor npm run testunit
-- meteor npm run stylelint
+#- meteor npm run lint
+#- meteor npm run testunit
+#- meteor npm run stylelint
+- docker pull thomasroehl/smarti
 - travis_retry meteor build --headless /tmp/build
 - mkdir /tmp/build-test
 - tar -xf /tmp/build/Rocket.Chat.tar.gz -C /tmp/build-test/
@@ -94,7 +95,7 @@ script:
   #     tags: true
 
 #after_deploy:
-#- ".travis/docker.sh"
+#- ".travis/docker.sh
 #- ".travis/update-releases.sh"
 #- ".travis/snap.sh"
 env:
