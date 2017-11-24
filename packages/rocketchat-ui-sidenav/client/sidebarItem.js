@@ -6,6 +6,11 @@ Template.sidebarItem.helpers({
 	},
 	isRoom() {
 		return this.rid || this._id;
+	},
+	lastMessage() {
+		if (this.lastMessage) {
+			return `${ this.lastMessage.u.username }: ${ this.lastMessage.msg }`;
+		}
 	}
 });
 

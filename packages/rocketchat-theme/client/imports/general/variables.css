@@ -4,7 +4,7 @@
 		*/
 
 		--color-darkest: #1f2329;
-		--color-dark: #2f343d; 
+		--color-dark: #2f343d;
 		--color-dark-medium: #414852;
 		--color-dark-light: #6c727a;
 		--color-gray: #9ea2a8;
@@ -175,7 +175,7 @@
 		* Sidebar Item
 		*/
 		--sidebar-item-radius: 2px;
-		--sidebar-item-height: 32px;
+		--sidebar-item-height: 55px;
 		--sidebar-item-thumb-size: 20px;
 
 		--sidebar-item-text-color: var(--color-gray);
