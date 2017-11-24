@@ -175,7 +175,4 @@ steffo:meteor-accounts-saml
 todda00:friendly-slugs
 yasaricli:slugify
 yasinuslu:blaze-meta
-deepwell:bootstrap-datepicker2
-rocketchat:postcss
-dynamic-import@0.1.1
 rocketchat:e2e
