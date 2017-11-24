@@ -3,6 +3,9 @@ import _ from 'underscore';
 import s from 'underscore.string';
 import moment from 'moment';
 
+const CATEGORY_MESSAGE = 'MESSAGE';
+const CATEGORY_MESSAGE_NOREPLY = 'MESSAGE_NOREPLY';
+
 /**
  * Replaces @username with full name
  *
@@ -141,7 +144,7 @@ const sendPushNotifications = (userIdsToPushNotify = [], message, room, push_roo
 				usersTo: {
 					userId: userIdToNotify
 				},
-				category: canSendMessageToRoom(room, pushUsernames[userIdToNotify]) ? 'MESSAGE' : 'MESSAGE_NOREPLY'
+				category: canSendMessageToRoom(room, pushUsernames[userIdToNotify]) ? CATEGORY_MESSAGE : CATEGORY_MESSAGE_NOREPLY
 			});
 		});
 	}
@@ -301,7 +304,7 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room, userId) {
 						usersTo: {
 							userId: userOfMention._id
 						},
-						category: canSendMessageToRoom(room, userOfMention.username) ? 'MESSAGE' : 'MESSAGE_NOREPLY'
+						category: canSendMessageToRoom(room, userOfMention.username) ? CATEGORY_MESSAGE : CATEGORY_MESSAGE_NOREPLY
 					});
 					return message;
 				}
