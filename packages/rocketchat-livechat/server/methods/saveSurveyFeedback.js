@@ -1,4 +1,5 @@
 /* eslint new-cap: [2, {"capIsNewExceptions": ["Match.ObjectIncluding"]}] */
+import _ from 'underscore';
 
 Meteor.methods({
 	'livechat:saveSurveyFeedback'(visitorToken, visitorRoom, formData) {

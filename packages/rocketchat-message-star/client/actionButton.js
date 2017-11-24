@@ -1,4 +1,6 @@
+import _ from 'underscore';
 import toastr from 'toastr';
+
 Meteor.startup(function() {
 	RocketChat.MessageAction.addButton({
 		id: 'star-message',
@@ -52,12 +54,11 @@ Meteor.startup(function() {
 
 	RocketChat.MessageAction.addButton({
 		id: 'jump-to-star-message',
-		icon: 'right-hand',
+		icon: 'jump',
 		label: 'Jump_to_message',
 		context: ['starred'],
 		action() {
 			const message = this._arguments[1];
-			RocketChat.MessageAction.hideDropDown();
 			if (window.matchMedia('(max-width: 500px)').matches) {
 				Template.instance().tabBar.close();
 			}
@@ -75,13 +76,12 @@ Meteor.startup(function() {
 
 	RocketChat.MessageAction.addButton({
 		id: 'permalink-star',
-		icon: 'link',
+		icon: 'permalink',
 		label: 'Permalink',
 		classes: 'clipboard',
 		context: ['starred'],
 		action(event) {
 			const message = this._arguments[1];
-			RocketChat.MessageAction.hideDropDown();
 			$(event.currentTarget).attr('data-clipboard-text', RocketChat.MessageAction.getPermaLink(message._id));
 			toastr.success(TAPi18n.__('Copied'));
 		},

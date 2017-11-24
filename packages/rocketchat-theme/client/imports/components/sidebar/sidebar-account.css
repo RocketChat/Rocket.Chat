@@ -1,25 +1,39 @@
+.sidebar-light {
+	& .sidebar__account-username {
+		color: var(--color-dark);
+	}
+
+	& .sidebar__account-menu {
+		fill: var(--color-dark);
+	}
+
+	& .sidebar__account.active:hover {
+		background-color: var(--sidebar-background-light-hover);
+	}
+}
 .sidebar__account {
 	display: flex;
 
-	margin-bottom: 40px;
+	margin: 0 0 var(--sidebar-header-small-padding);
+
+	padding: var(--sidebar-header-small-padding) var(--sidebar-default-padding) var(--sidebar-header-small-padding);
+
 	align-items: center;
 
-	&--lighten {
-		& .sidebar__account-username {
-			color: var(--sidebar-account-username-color-darker);
-		}
+	transition: background-color 0.3s;
 
-		& .sidebar__account-menu {
-			fill: var(--sidebar-account-username-color-darker);
-		}
+	&.active:hover {
+		cursor: pointer;
+
+		background-color: var(--sidebar-item-hover-background);
 	}
-
 	&-thumb {
 
 		flex: 0 0 var(--sidebar-account-thumb-size);
 
 		width: var(--sidebar-account-thumb-size);
 		height: var(--sidebar-account-thumb-size);
+		margin: 0 0.5rem 0 0;
 	}
 
 	&-data {
@@ -30,18 +44,15 @@
 		flex-direction: column;
 		flex: 1;
 
-		margin-left: 1rem;
+		margin: 0 0.5rem;
 	}
 
 	&-username {
-
 		overflow: hidden;
 		flex: 1;
 
-		max-width: 160px;
 		max-width: fit-content;
 		height: calc(var(--sidebar-account-username-size) + 0.1rem);
-		margin-bottom: 0.5rem;
 
 		white-space: nowrap;
 		text-overflow: ellipsis;
@@ -50,6 +61,7 @@
 
 		font-size: var(--sidebar-account-username-size);
 		font-weight: var(--sidebar-account-username-weight);
+		line-height: calc(var(--sidebar-account-username-size) + 0.1rem);
 	}
 
 	&-visual-status {
@@ -64,6 +76,8 @@
 	&-status {
 		display: flex;
 
+		margin: 0 -0.25rem;
+
 		color: var(--sidebar-account-status-color);
 
 		align-items: center;
@@ -74,7 +88,7 @@
 
 		width: var(--sidebar-account-status-bullet-size);
 		height: var(--sidebar-account-status-bullet-size);
-		margin: 0.25rem 0.5rem 0.25rem 0;
+		margin: 0.25rem;
 
 		border-radius: var(--sidebar-account-status-bullet-radius);
 
@@ -103,7 +117,6 @@
 
 		position: relative;
 
-		margin-right: -9px;
 		padding: 0;
 
 		cursor: pointer;
@@ -127,9 +140,15 @@
 	}
 }
 
+.rtl .sidebar__account .rc-popover {
+	right: 0;
+	left: initial;
+}
+
 @media (width <= 400px) {
 	.sidebar__account {
 		margin: 0 0 5px;
+		padding: var(--sidebar-header-small-padding) calc(var(--sidebar-small-default-padding) - 8px) var(--sidebar-header-small-padding);
 
 		&-thumb {
 
@@ -148,7 +167,7 @@
 
 		&-username {
 			width: auto;
-			margin: 0  0.65rem;
+			margin: 0 0.65rem;
 
 			font-weight: var(--sidebar-small-account-username-weight);
 		}
@@ -161,6 +180,40 @@
 			width: var(--sidebar-small-account-status-bullet-size);
 			height: var(--sidebar-small-account-status-bullet-size);
 			margin: 0;
+		}
+	}
+}
+
+.rc-popover--account {
+	& [data-type="set-state"] {
+		& .rc-icon {
+			font-size: var(--sidebar-account-status-bullet-size);
+		}
+
+		&.rc-popover__item {
+			&--online {
+				& .rc-icon {
+					color: var(--status-online);
+				}
+			}
+
+			&--away {
+				& .rc-icon {
+					color: var(--status-away);
+				}
+			}
+
+			&--busy {
+				& .rc-icon {
+					color: var(--status-busy);
+				}
+			}
+
+			&--offline {
+				& .rc-icon {
+					color: var(--status-invisible);
+				}
+			}
 		}
 	}
 }
