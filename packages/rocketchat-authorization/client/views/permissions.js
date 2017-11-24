@@ -15,11 +15,7 @@ Template.permissions.helpers({
 	},
 
 	settingPermissions() {
-		return SettingPermissions.find({}, {
-			sort: {
-				_id: 1
-			}
-		});
+		return SettingPermissions.find();
 	},
 
 	hasPermission() {
