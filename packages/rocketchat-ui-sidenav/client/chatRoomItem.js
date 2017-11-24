@@ -24,7 +24,7 @@ Template.chatRoomItem.helpers({
 		const icon = RocketChat.roomTypes.getIcon(this.t);
 		const avatar = !icon;
 
-		return {
+		const roomData = {
 			...this,
 			icon,
 			avatar,
@@ -36,5 +36,13 @@ Template.chatRoomItem.helpers({
 			archivedClass,
 			statusClass: this.t === 'd' ? Session.get(`user_${ this.name }_status`) || 'offline' : this.t === 'l' ? RocketChat.roomTypes.getUserStatus(this.t, this.rid) || 'offline' : false
 		};
+
+		if (RocketChat.settings.get('Store_Last_Message')) {
+			const room = RocketChat.models.Rooms.findOne(this.rid, { fields: { lastMessage: 1 } });
+
+			roomData.lastMessage = room.lastMessage;
+		}
+
+		return roomData;
 	}
 });

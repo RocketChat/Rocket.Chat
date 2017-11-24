@@ -17,6 +17,7 @@ const fields = {
 	description: 1,
 	default: 1,
 	customFields: 1,
+	lastMessage: 1,
 
 	// @TODO create an API to register this fields based on room type
 	livechatData: 1,

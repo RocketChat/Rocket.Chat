@@ -17,7 +17,11 @@
 					</div>
 				{{/if}}
 			{{/if}}
-			<div class='sidebar-item__name {{archivedClass}}'>{{name}}</div>
+			<div class="sidebar-item__body">
+				<div class="sidebar-item__name {{archivedClass}}">{{name}}</div>
+				<div class="sidebar-item__last-message">{{lastMessage}}</div>
+			</div>
+
 			{{#if unread}}
 				<span class="badge badge--unread">{{#if userMentions}}@ {{/if}}{{unread}}</span>
 			{{/if}}
