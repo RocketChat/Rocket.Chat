@@ -41,7 +41,7 @@
 
 	&--unread,
 	&--mention {
-    	color: var(--sidebar-item-unread-color);
+		color: var(--sidebar-item-unread-color);
 	}
 
 	&__popup-active {
@@ -110,17 +110,32 @@
 		align-items: center;
 	}
 
-	&__name {
-		overflow: hidden;
+	&__body {
+		display: flex;
 		flex: 1;
+		flex-direction: column;
 
 		margin: 0 4px;
+
+		overflow: hidden;
+	}
+
+	&__name {
+		overflow: hidden;
 
 		white-space: nowrap;
 		text-overflow: ellipsis;
 
 		font-size: var(--sidebar-item-text-size);
-		line-height: var(--sidebar-item-height);
+	}
+
+	&__last-message {
+		flex: 1;
+		font-size: 10pt;
+		color: rgba(255,255,255,0.4);
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
 	}
 
 	&__menu {
