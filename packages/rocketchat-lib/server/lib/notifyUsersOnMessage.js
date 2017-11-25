@@ -1,3 +1,5 @@
+import _ from 'underscore';
+import s from 'underscore.string';
 import moment from 'moment';
 
 RocketChat.callbacks.add('afterSaveMessage', function(message, room) {

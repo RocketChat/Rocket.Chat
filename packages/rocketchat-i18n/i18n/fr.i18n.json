@@ -110,7 +110,7 @@
   "Accounts_RegistrationForm_Public": "Public",
   "Accounts_RegistrationForm_Secret_URL": "URL secrète",
   "Accounts_RegistrationForm_SecretURL": "URL secrète du formulaire d'inscription",
-  "Accounts_RegistrationForm_SecretURL_Description": "Vous devez fournir une chaîne de caractères aléatoire qui sera ajoutée à votre URL d'inscription. Exemple: https://demo.rocket.chat/register/[secret_hash]",
+  "Accounts_RegistrationForm_SecretURL_Description": "Vous devez fournir une chaîne de caractères aléatoire qui sera ajoutée à votre URL d'inscription. Exemple: https://open.rocket.chat/register/[secret_hash]",
   "Accounts_RequireNameForSignUp": "Exiger un nom pour s'inscrire",
   "Accounts_RequirePasswordConfirmation": "Confirmation du mot de passe requise",
   "Accounts_SetDefaultAvatar": "Définir l'avatar par défaut",
