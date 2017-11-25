@@ -1,4 +1,5 @@
 /* globals FileUpload, UploadFS, RocketChatFile */
+import _ from 'underscore';
 
 Meteor.startup(function() {
 	WebApp.connectHandlers.use('/avatar/', Meteor.bindEnvironment(function(req, res/*, next*/) {

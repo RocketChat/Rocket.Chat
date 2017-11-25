@@ -1,4 +1,5 @@
 /* globals renderEmoji renderMessageBody */
+import _ from 'underscore';
 import moment from 'moment';
 
 Template.message.helpers({
@@ -265,11 +266,22 @@ Template.message.helpers({
 			return 'hidden';
 		}
 	},
-	messageActions() {
-		return RocketChat.MessageAction.getButtons(Template.currentData(), 'message', 'message');
+	actionContext() {
+		return this.actionContext;
 	},
-	messageActionsMenu() {
-		return RocketChat.MessageAction.getButtons(Template.currentData(), 'message', 'menu');
+	messageActions(group) {
+		let messageGroup = group;
+		let context = this.actionContext;
+
+		if (!group) {
+			messageGroup = 'message';
+		}
+
+		if (!context) {
+			context = 'message';
+		}
+
+		return RocketChat.MessageAction.getButtons(Template.currentData(), context, messageGroup);
 	}
 });
 
@@ -295,7 +307,6 @@ Template.message.onCreated(function() {
 		} else if (msg.u && msg.u.username === RocketChat.settings.get('Chatops_Username')) {
 			msg.html = msg.msg;
 			msg = RocketChat.callbacks.run('renderMentions', msg);
-			// console.log JSON.stringify message
 			msg = msg.html;
 		} else {
 			msg = renderMessageBody(msg);
@@ -357,9 +368,11 @@ Template.message.onViewRendered = function(context) {
 			if (!templateInstance) {
 				return;
 			}
+
 			if (currentNode.classList.contains('own') === true) {
-				return (templateInstance.atBottom = true);
+				templateInstance.atBottom = true;
 			}
+			templateInstance.sendToBottomIfNecessary();
 		}
 	});
 };

@@ -88,17 +88,32 @@ button {
 	}
 
 	& .tab-button-icon {
+		color: var(--rc-color-primary-dark);
+
 		font-size: 1.125rem;
-		color: var(--color-dark-medium);
-		fill: var(--color-dark-medium);
+
+		fill: var(--rc-color-primary-dark);
+
+		&--star {
+			fill: none;
+		}
 	}
 }
 
 .rc-icon {
+
+	overflow: hidden;
+
 	width: 1em;
-  height: 1em;
+	height: 1em;
 
 	vertical-align: -0.15em;
+}
 
-  overflow: hidden;
+.ps-scrollbar-y-rail {
+	background: transparent !important;
+}
+
+.ps-scrollbar-y {
+	width: 4px !important;
 }

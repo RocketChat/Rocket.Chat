@@ -1,5 +1,6 @@
-/* globals popover chatMessages cordova */
+/* globals chatMessages cordova */
 
+import _ from 'underscore';
 import moment from 'moment';
 import toastr from 'toastr';
 
@@ -59,15 +60,14 @@ RocketChat.MessageAction = new class {
 	}
 
 	getButtons(message, context, group) {
-		const allButtons = _.toArray(this.buttons.get());
-		let allowedButtons = allButtons;
+		let allButtons = _.toArray(this.buttons.get());
 
 		if (group) {
-			allowedButtons = allowedButtons.filter(button => button.group === group);
+			allButtons = allButtons.filter(button => button.group === group);
 		}
 
 		if (message) {
-			allowedButtons = _.compact(_.map(allowedButtons, function(button) {
+			allButtons = _.compact(_.map(allButtons, function(button) {
 				if (button.context == null || button.context.includes(context)) {
 					if (button.condition == null || button.condition(message, context)) {
 						return button;
@@ -75,7 +75,7 @@ RocketChat.MessageAction = new class {
 				}
 			}));
 		}
-		return _.sortBy(allowedButtons, 'order');
+		return _.sortBy(allButtons, 'order');
 	}
 
 	resetButtons() {
@@ -91,14 +91,6 @@ RocketChat.MessageAction = new class {
 			routePath = RocketChat.roomTypes.getRouteLink(roomData.t, roomData);
 		}
 		return `${ Meteor.absoluteUrl().replace(/\/$/, '') + routePath }?msg=${ msgId }`;
-	}
-
-	closePopover() {
-		popover.close();
-	}
-
-	hideDropDown() {
-		$('.message-dropdown:visible').hide();
 	}
 };
 
@@ -125,7 +117,6 @@ Meteor.startup(function() {
 			input.value += text;
 			input.focus();
 			$(input).trigger('change').trigger('input');
-			RocketChat.MessageAction.closePopover();
 		},
 		condition(message) {
 			if (RocketChat.models.Subscriptions.findOne({rid: message.rid}) == null) {
@@ -143,10 +134,9 @@ Meteor.startup(function() {
 		icon: 'edit',
 		label: 'Edit',
 		context: ['message', 'message-mobile'],
-		action(e) {
-			const message = $(e.currentTarget).closest('.message')[0];
-			chatMessages[Session.get('openedRoom')].edit(message);
-			RocketChat.MessageAction.closePopover();
+		action() {
+			const messageId = this._arguments[1]._id;
+			chatMessages[Session.get('openedRoom')].edit(document.getElementById(messageId));
 		},
 		condition(message) {
 			if (RocketChat.models.Subscriptions.findOne({
@@ -184,9 +174,9 @@ Meteor.startup(function() {
 		icon: 'trash',
 		label: 'Delete',
 		context: ['message', 'message-mobile'],
+		color: 'alert',
 		action() {
 			const message = this._arguments[1];
-			RocketChat.MessageAction.closePopover();
 			chatMessages[Session.get('openedRoom')].confirmDeleteMsg(message);
 		},
 		condition(message) {
@@ -231,7 +221,6 @@ Meteor.startup(function() {
 		action(event) {
 			const message = this._arguments[1];
 			const permalink = RocketChat.MessageAction.getPermaLink(message._id);
-			RocketChat.MessageAction.closePopover();
 			if (Meteor.isCordova) {
 				cordova.plugins.clipboard.copy(permalink);
 			} else {
@@ -258,7 +247,6 @@ Meteor.startup(function() {
 		context: ['message', 'message-mobile'],
 		action(event) {
 			const message = this._arguments[1].msg;
-			RocketChat.MessageAction.closePopover();
 			if (Meteor.isCordova) {
 				cordova.plugins.clipboard.copy(message);
 			} else {
@@ -293,7 +281,6 @@ Meteor.startup(function() {
 			input.value += text;
 			input.focus();
 			$(input).trigger('change').trigger('input');
-			RocketChat.MessageAction.closePopoverreaction-message();
 		},
 		condition(message) {
 			if (RocketChat.models.Subscriptions.findOne({rid: message.rid}) == null) {

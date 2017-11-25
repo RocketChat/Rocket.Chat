@@ -1,3 +1,5 @@
+import _ from 'underscore';
+
 RocketChat.models.Messages = new class extends RocketChat.models._Base {
 	constructor() {
 		super('message');
@@ -84,6 +86,19 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base {
 			}
 		};
 
+		return this.find(query, options);
+	}
+
+	findForUpdates(roomId, timestamp, options) {
+		const query = {
+			_hidden: {
+				$ne: true
+			},
+			rid: roomId,
+			_updatedAt: {
+				$gt: timestamp
+			}
+		};
 		return this.find(query, options);
 	}
 

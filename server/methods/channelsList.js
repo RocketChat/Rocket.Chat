@@ -1,3 +1,6 @@
+import _ from 'underscore';
+import s from 'underscore.string';
+
 Meteor.methods({
 	channelsList(filter, channelType, limit, sort) {
 		this.unblock();
@@ -27,7 +30,7 @@ Meteor.methods({
 			options.limit = limit;
 		}
 
-		if (_.trim(sort)) {
+		if (s.trim(sort)) {
 			switch (sort) {
 				case 'name':
 					options.sort = {
