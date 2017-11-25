@@ -93,7 +93,7 @@
   "Accounts_RegistrationForm_Public": "ציבורי",
   "Accounts_RegistrationForm_Secret_URL": "כתובת סודית",
   "Accounts_RegistrationForm_SecretURL": "סיסמת כתובת טופס הרישום",
-  "Accounts_RegistrationForm_SecretURL_Description": "אתה חייב לספק מחרוזת אקראית שתתווסף לכתובת הרישום שלך. לדוגמה:https://demo.rocket.chat/register/[secret_hash]",
+  "Accounts_RegistrationForm_SecretURL_Description": "אתה חייב לספק מחרוזת אקראית שתתווסף לכתובת הרישום שלך. לדוגמה:https://open.rocket.chat/register/[secret_hash]",
   "Accounts_RequireNameForSignUp": "נדרש שם לרישום",
   "Accounts_ShowFormLogin": "טופס מבוסס צג כניסה",
   "Accounts_UseDefaultBlockedDomainsList": "השתמש בברירת מחדל רשימת Domains חסימה",
