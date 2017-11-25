@@ -1,4 +1,6 @@
 /* globals RocketChatTabBar */
+import s from 'underscore.string';
+
 Template.adminSounds.helpers({
 	isReady() {
 		if (Template.instance().ready != null) {
@@ -46,7 +48,7 @@ Template.adminSounds.onCreated(function() {
 		groups: ['custom-sounds', 'custom-sounds-selected'],
 		id: 'add-sound',
 		i18nTitle: 'Custom_Sound_Add',
-		icon: 'icon-plus',
+		icon: 'plus',
 		template: 'adminSoundEdit',
 		openClick(/*e, t*/) {
 			instance.tabBarData.set();
@@ -59,7 +61,7 @@ Template.adminSounds.onCreated(function() {
 		groups: ['custom-sounds-selected'],
 		id: 'admin-sound-info',
 		i18nTitle: 'Custom_Sound_Info',
-		icon: 'icon-cog',
+		icon: 'customize',
 		template: 'adminSoundInfo',
 		order: 2
 	});
@@ -71,7 +73,7 @@ Template.adminSounds.onCreated(function() {
 	});
 
 	this.customsounds = function() {
-		const filter = (instance.filter != null) ? _.trim(instance.filter.get()) : '';
+		const filter = (instance.filter != null) ? s.trim(instance.filter.get()) : '';
 
 		let query = {};
 

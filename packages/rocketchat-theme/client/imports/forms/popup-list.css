@@ -1,0 +1,50 @@
+.rc-popup-list {
+	position: absolute;
+
+	width: 100%;
+
+	&__list {
+		width: 100%;
+		padding: 1rem;
+
+		border-radius: var(--popup-list-border-radius);
+		background-color: var(--popup-list-background);
+		box-shadow: 0 0 2px 0 rgba(47, 52, 61, 0.08), 0 0 12px 0 rgba(47, 52, 61, 0.12);
+	}
+
+	&__item {
+		display: flex;
+
+		padding: 0.5rem;
+
+		cursor: pointer;
+
+		border-radius: var(--popup-list-border-radius);
+		align-items: center;
+
+		&.selected {
+			background-color: var(--popup-list-selected-background);
+		}
+
+		&:hover {
+			background-color: var(--popup-list-background-hover);
+		}
+
+		&-image {
+			width: 32px;
+			height: 32px;
+			margin-right: 1rem;
+		}
+
+		&-name {
+			color: var(--popup-list-name-color);
+
+			font-size: var(--popup-list-name-size);
+		}
+	}
+}
+
+.rtl .rc-popup-list__item-image {
+	margin-right: 0;
+	margin-left: 1rem;
+}

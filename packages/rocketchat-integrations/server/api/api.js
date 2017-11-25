@@ -1,5 +1,8 @@
 /* globals Api Meteor Restivus logger processWebhookMessage*/
 // TODO: remove globals
+
+import _ from 'underscore';
+import s from 'underscore.string';
 import vm from 'vm';
 import moment from 'moment';
 
@@ -158,18 +161,21 @@ function executeIntegrationRest() {
 	logger.incoming.info('Post integration:', this.integration.name);
 	logger.incoming.debug('@urlParams:', this.urlParams);
 	logger.incoming.debug('@bodyParams:', this.bodyParams);
+
 	if (this.integration.enabled !== true) {
 		return {
 			statusCode: 503,
 			body: 'Service Unavailable'
 		};
 	}
+
 	const defaultValues = {
 		channel: this.integration.channel,
 		alias: this.integration.alias,
 		avatar: this.integration.avatar,
 		emoji: this.integration.emoji
 	};
+
 	if (this.integration.scriptEnabled === true && this.integration.scriptCompiled && this.integration.scriptCompiled.trim() !== '') {
 		let script;
 		try {
@@ -178,6 +184,7 @@ function executeIntegrationRest() {
 			logger.incoming.warn(e);
 			return RocketChat.API.v1.failure(e.message);
 		}
+
 		const request = {
 			url: {
 				hash: this.request._parsedUrl.hash,
@@ -197,23 +204,29 @@ function executeIntegrationRest() {
 				username: this.user.username
 			}
 		};
+
 		try {
-			const {sandbox} = buildSandbox(compiledScripts[this.integration._id].store);
+			const { sandbox } = buildSandbox(compiledScripts[this.integration._id].store);
 			sandbox.script = script;
 			sandbox.request = request;
+
 			const result = vm.runInNewContext('script.process_incoming_request({ request: request })', sandbox, {
 				timeout: 3000
 			});
-			if (result && result.error) {
+
+			if (!result) {
+				logger.incoming.debug('[Process Incoming Request result of Trigger', this.integration.name, ':] No data');
+				return RocketChat.API.v1.success();
+			} else if (result && result.error) {
 				return RocketChat.API.v1.failure(result.error);
 			}
+
 			this.bodyParams = result && result.content;
-			if (typeof result !== 'undefined') {
-				this.scriptResponse = result.response;
-				if (result.user) {
-					this.user = result.user;
-				}
+			this.scriptResponse = result.response;
+			if (result.user) {
+				this.user = result.user;
 			}
+
 			logger.incoming.debug('[Process Incoming Request result of Trigger', this.integration.name, ':]');
 			logger.incoming.debug('result', this.bodyParams);
 		} catch ({stack}) {
@@ -224,22 +237,28 @@ function executeIntegrationRest() {
 			return RocketChat.API.v1.failure('error-running-script');
 		}
 	}
-	if (this.bodyParams == null) {
-		return RocketChat.API.v1.failure('body-empty');
+
+	// TODO: Turn this into an option on the integrations - no body means a success
+	// TODO: Temporary fix for https://github.com/RocketChat/Rocket.Chat/issues/7770 until the above is implemented
+	if (!this.bodyParams) {
+		// return RocketChat.API.v1.failure('body-empty');
+		return RocketChat.API.v1.success();
 	}
-	this.bodyParams.bot = {
-		i: this.integration._id
-	};
+
+	this.bodyParams.bot = { i: this.integration._id };
+
 	try {
 		const message = processWebhookMessage(this.bodyParams, this.user, defaultValues);
 		if (_.isEmpty(message)) {
 			return RocketChat.API.v1.failure('unknown-error');
 		}
+
 		if (this.scriptResponse) {
 			logger.incoming.debug('response', this.scriptResponse);
 		}
+
 		return RocketChat.API.v1.success(this.scriptResponse);
-	} catch ({error}) {
+	} catch ({ error }) {
 		return RocketChat.API.v1.failure(error);
 	}
 }

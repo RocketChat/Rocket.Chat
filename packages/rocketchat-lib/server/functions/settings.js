@@ -1,3 +1,5 @@
+import _ from 'underscore';
+
 const blockedSettings = {};
 
 if (process.env.SETTINGS_BLOCKED) {
@@ -31,7 +33,7 @@ RocketChat.settings.add = function(_id, value, options = {}) {
 	}
 	options.packageValue = value;
 	options.valueSource = 'packageValue';
-	options.hidden = false;
+	options.hidden = options.hidden || false;
 	options.blocked = options.blocked || false;
 	if (options.sorter == null) {
 		options.sorter = RocketChat.settings._sorter[options.group]++;
@@ -42,8 +44,8 @@ RocketChat.settings.add = function(_id, value, options = {}) {
 	if (options.i18nDefaultQuery != null) {
 		options.i18nDefaultQuery = JSON.stringify(options.i18nDefaultQuery);
 	}
-	if (typeof process !== 'undefined' && process.env && process.env._id) {
-		let value = process.env[_id];
+	if (typeof process !== 'undefined' && process.env && process.env[_id]) {
+		value = process.env[_id];
 		if (value.toLowerCase() === 'true') {
 			value = true;
 		} else if (value.toLowerCase() === 'false') {
@@ -51,8 +53,12 @@ RocketChat.settings.add = function(_id, value, options = {}) {
 		}
 		options.processEnvValue = value;
 		options.valueSource = 'processEnvValue';
-	} else if (Meteor.settings && Meteor.settings) {
-		const value = Meteor.settings[_id];
+	} else if (Meteor.settings && typeof Meteor.settings[_id] !== 'undefined') {
+		if (Meteor.settings[_id] == null) {
+			return false;
+		}
+
+		value = Meteor.settings[_id];
 		options.meteorSettingsValue = value;
 		options.valueSource = 'meteorSettingsValue';
 	}

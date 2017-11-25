@@ -1,4 +1,7 @@
 /* globals chatMessages*/
+import _ from 'underscore';
+import s from 'underscore.string';
+
 const roomFiles = new Mongo.Collection('room_files');
 
 Template.uploadedFilesList.helpers({
@@ -109,7 +112,7 @@ Template.uploadedFilesList.events({
 		});
 	},
 
-	'scroll .content': _.throttle(function(e, t) {
+	'scroll .js-list': _.throttle(function(e, t) {
 		if (e.target.scrollTop >= (e.target.scrollHeight - e.target.clientHeight)) {
 			return t.limit.set(t.limit.get() + 50);
 		}

@@ -8,15 +8,13 @@ Package.describe({
 Package.onUse(function(api) {
 	api.use([
 		'ecmascript',
-		'underscore',
-		'less',
 		'rocketchat:lib'
 	]);
 
 	api.use('templating', 'client');
 
 	api.addFiles([
-		'client/stylesheets/pushNotifications.less',
+		'client/stylesheets/pushNotifications.css',
 		'client/views/pushNotificationsFlexTab.html',
 		'client/views/pushNotificationsFlexTab.js',
 		'client/tabBar.js'

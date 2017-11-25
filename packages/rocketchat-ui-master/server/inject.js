@@ -1,49 +1,37 @@
 /* globals Inject */
+import _ from 'underscore';
 
-Inject.rawHead('page-loading', `
-<style>
-.loading-animation {
-	top: 0;
-	right: 0;
-	bottom: 0;
-	left: 0;
-	display: flex;
-	align-items: center;
-	position: absolute;
-	justify-content: center;
-	text-align: center;
-}
-.loading-animation > div {
-	width: 10px;
-	height: 10px;
-	margin: 2px;
-	border-radius: 100%;
-	display: inline-block;
-	background-color: rgba(255,255,255,0.6);
-	-webkit-animation: loading-bouncedelay 1.4s infinite ease-in-out both;
-	animation: loading-bouncedelay 1.4s infinite ease-in-out both;
-}
-.loading-animation .bounce1 {
-	-webkit-animation-delay: -0.32s;
-	animation-delay: -0.32s;
-}
-.loading-animation .bounce2 {
-	-webkit-animation-delay: -0.16s;
-	animation-delay: -0.16s;
-}
-@-webkit-keyframes loading-bouncedelay {
-	0%,
-	80%,
-	100% { -webkit-transform: scale(0) }
-	40% { -webkit-transform: scale(1.0) }
-}
-@keyframes loading-bouncedelay {
-	0%,
-	80%,
-	100% { transform: scale(0); }
-	40% { transform: scale(1.0); }
-}
-</style>`);
+const renderDynamicCssList = _.debounce(Meteor.bindEnvironment(() => {
+	// const variables = RocketChat.models.Settings.findOne({_id:'theme-custom-variables'}, {fields: { value: 1}});
+	const colors = RocketChat.models.Settings.find({_id:/theme-color-rc/i}, {fields: { value: 1, editor: 1}}).fetch().filter(color => color && color.value);
+
+	if (!colors) {
+		return;
+	}
+	const css = colors.map(({_id, value, editor}) => {
+		if (editor === 'expression') {
+			return `--${ _id.replace('theme-color-', '') }: var(--${ value });`;
+		}
+		return `--${ _id.replace('theme-color-', '') }: ${ value };`;
+	}).join('\n');
+	Inject.rawBody('dynamic-variables', `<style id='css-variables'> :root {${ css }}</style>`);
+}), 500);
+
+renderDynamicCssList();
+
+// RocketChat.models.Settings.find({_id:'theme-custom-variables'}, {fields: { value: 1}}).observe({
+// 	changed: renderDynamicCssList
+// });
+
+RocketChat.models.Settings.find({_id:/theme-color-rc/i}, {fields: { value: 1}}).observe({
+	changed: renderDynamicCssList
+});
+
+Inject.rawHead('dynamic', `<script>(${ require('./dynamic-css.js').default.toString().replace(/\/\/.*?\n/g, '') })()</script>`);
+
+Inject.rawHead('page-loading', `<style>${ Assets.getText('public/loading.css') }</style>`);
+
+Inject.rawBody('icons', Assets.getText('public/icons.svg'));
 
 Inject.rawBody('page-loading-div', `
 <div id="initial-page-loading" class="page-loading">
@@ -82,7 +70,7 @@ RocketChat.settings.get('Assets_SvgFavicon_Enable', (key, value) => {
 	}
 });
 
-RocketChat.settings.get('theme-color-primary-background-color', (key, value = '#04436a') => {
+RocketChat.settings.get('theme-color-sidebar-background', (key, value) => {
 	Inject.rawHead(key, `<style>body { background-color: ${ value };}</style>` +
 						`<meta name="msapplication-TileColor" content="${ value }" />` +
 						`<meta name="theme-color" content="${ value }" />`);
@@ -152,4 +140,3 @@ Meteor.defer(() => {
 	}
 	Inject.rawHead('base', `<base href="${ baseUrl }">`);
 });
-

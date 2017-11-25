@@ -1,4 +1,6 @@
-/* globals menu */
+import _ from 'underscore';
+import s from 'underscore.string';
+
 Template.adminFlex.onCreated(function() {
 	this.settingsFilter = new ReactiveVar('');
 	if (RocketChat.settings.cachedCollectionPrivate == null) {
@@ -15,6 +17,10 @@ const label = function() {
 	return TAPi18n.__(this.i18nLabel || this._id);
 };
 
+// Template.adminFlex.onRendered(function() {
+// 	$(this.find('.rooms-list')).perfectScrollbar();
+// });
+
 Template.adminFlex.helpers({
 	groups() {
 		const filter = Template.instance().settingsFilter.get();
@@ -22,7 +28,7 @@ Template.adminFlex.helpers({
 			type: 'group'
 		};
 		if (filter) {
-			const filterRegex = new RegExp(_.escapeRegExp(filter), 'i');
+			const filterRegex = new RegExp(s.escapeRegExp(filter), 'i');
 			const records = RocketChat.settings.collectionPrivate.find().fetch();
 			let groups = [];
 			records.forEach(function(record) {
@@ -51,24 +57,24 @@ Template.adminFlex.helpers({
 	label,
 	adminBoxOptions() {
 		return RocketChat.AdminBox.getOptions();
+	},
+	menuItem(name, icon, section, group) {
+		return {
+			name: t(name),
+			icon,
+			pathSection: section,
+			pathGroup: group,
+			darken: true
+		};
+	},
+	embeddedVersion() {
+		return RocketChat.Layout.isEmbedded();
 	}
 });
 
 Template.adminFlex.events({
-	'mouseenter header'() {
-		SideNav.overArrow();
-	},
-	'mouseleave header'() {
-		SideNav.leaveArrow();
-	},
-	'click header'() {
+	'click [data-action="close"]'() {
 		SideNav.closeFlex();
-	},
-	'click .cancel-settings'() {
-		SideNav.closeFlex();
-	},
-	'click .admin-link'() {
-		menu.close();
 	},
 	'keyup [name=settings-search]'(e, t) {
 		t.settingsFilter.set(e.target.value);

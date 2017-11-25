@@ -1,3 +1,6 @@
+import _ from 'underscore';
+import s from 'underscore.string';
+
 class ModelRooms extends RocketChat.models._Base {
 	constructor() {
 		super(...arguments);
@@ -8,7 +11,7 @@ class ModelRooms extends RocketChat.models._Base {
 		this.tryEnsureIndex({ 't': 1 });
 		this.tryEnsureIndex({ 'u._id': 1 });
 
-		this.cache.ignoreUpdatedFields.push('msgs', 'lm');
+		this.cache.ignoreUpdatedFields = ['msgs', 'lm'];
 		this.cache.ensureIndex(['t', 'name'], 'unique');
 		this.cache.options = {fields: {usernames: 0}};
 	}
