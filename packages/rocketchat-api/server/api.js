@@ -1,4 +1,4 @@
-/* global Restivus */
+/* global Restivus, Auth */
 import _ from 'underscore';
 
 class API extends Restivus {
@@ -143,7 +143,172 @@ class API extends Restivus {
 			super.addRoute(route, options, endpoints);
 		});
 	}
+
+	_initAuth() {
+		const self = this;
+		/*
+		Add a login endpoint to the API
+		After the user is logged in, the onLoggedIn hook is called (see Restfully.configure() for
+		adding hook).
+		*/
+		this.addRoute('login', {authRequired: false}, {
+			post() {
+				// Grab the username or email that the user is logging in with
+				const user = {};
+				if (this.bodyParams.user) {
+					if (this.bodyParams.user.indexOf('@') === -1) {
+						user.username = this.bodyParams.user;
+					} else {
+						user.email = this.bodyParams.user;
+					}
+				} else if (this.bodyParams.username) {
+					user.username = this.bodyParams.username;
+				} else if (this.bodyParams.email) {
+					user.email = this.bodyParams.email;
+				}
+
+				let password = this.bodyParams.password;
+				if (this.bodyParams.hashed) {
+					password = {
+						digest: password,
+						algorithm: 'sha-256'
+					};
+				}
+
+				let auth;
+				try {
+					// Try to log the user into the user's account (if successful we'll get an auth token back)
+					auth = Auth.loginWithPassword(user, password);
+				} catch (error) {
+					const e = error;
+					return {
+						statusCode: e.error,
+						body: {
+							status: 'error',
+							message: e.reason
+						}
+					};
+				}
+				// Get the authenticated user
+				// TODO: Consider returning the user in Auth.loginWithPassword(), instead of fetching it again here
+				if (auth.userId && auth.authToken) {
+					const searchQuery = {};
+					searchQuery[self._config.auth.token] = Accounts._hashLoginToken(auth.authToken);
+
+					this.user = Meteor.users.findOne({
+						'_id': auth.userId
+					}, searchQuery);
+
+					this.userId = this.user && this.user._id;
+				}
+
+				// Start changes
+				const attempt = {
+					allowed: true,
+					user: this.user,
+					methodArguments: [{
+						user,
+						password
+					}],
+					type: 'password'
+				};
+
+				if (this.bodyParams.code) {
+					attempt.methodArguments[0] = {
+						totp: {
+							code: this.bodyParams.code,
+							...attempt.methodArguments[0]
+						}
+					};
+				}
+
+				Accounts._validateLogin(null, attempt);
+
+				if (attempt.allowed !== true) {
+					const error = attempt.error || new Meteor.Error('invalid-login-attempt', 'Invalid Login Attempt');
+
+					return {
+						statusCode: 401,
+						body: {
+							status: 'error',
+							error: error.error,
+							reason: error.reason,
+							message: error.message
+						}
+					};
+				}
+				// End changes
+
+				const response = {
+					status: 'success',
+					data: auth
+				};
+
+				// Call the login hook with the authenticated user attached
+				const extraData = self._config.onLoggedIn && self._config.onLoggedIn.call(this);
+
+				if (extraData != null) {
+					_.extend(response.data, {
+						extra: extraData
+					});
+				}
+
+				return response;
+			}
+		});
+
+		const logout = function() {
+			// Remove the given auth token from the user's account
+			const authToken = this.request.headers['x-auth-token'];
+			const hashedToken = Accounts._hashLoginToken(authToken);
+			const tokenLocation = self._config.auth.token;
+			const index = tokenLocation.lastIndexOf('.');
+			const tokenPath = tokenLocation.substring(0, index);
+			const tokenFieldName = tokenLocation.substring(index + 1);
+			const tokenToRemove = {};
+			tokenToRemove[tokenFieldName] = hashedToken;
+			const tokenRemovalQuery = {};
+			tokenRemovalQuery[tokenPath] = tokenToRemove;
+
+			Meteor.users.update(this.user._id, {
+				$pull: tokenRemovalQuery
+			});
+
+			const response = {
+				status: 'success',
+				data: {
+					message: 'You\'ve been logged out!'
+				}
+			};
+
+			// Call the logout hook with the authenticated user attached
+			const extraData = self._config.onLoggedOut && self._config.onLoggedOut.call(this);
+			if (extraData != null) {
+				_.extend(response.data, {
+					extra: extraData
+				});
+			}
+			return response;
+		};
+
+		/*
+		Add a logout endpoint to the API
+		After the user is logged out, the onLoggedOut hook is called (see Restfully.configure() for
+		adding hook).
+		*/
+		return this.addRoute('logout', {
+			authRequired: true
+		}, {
+			get() {
+				console.warn('Warning: Default logout via GET will be removed in Restivus v1.0. Use POST instead.');
+				console.warn('    See https://github.com/kahmali/meteor-restivus/issues/100');
+				return logout.call(this);
+			},
+			post: logout
+		});
+	}
 }
+
 
 RocketChat.API = {};
 
