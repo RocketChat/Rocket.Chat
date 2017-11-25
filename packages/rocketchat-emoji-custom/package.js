@@ -8,12 +8,10 @@ Package.describe({
 Package.onUse(function(api) {
 	api.use([
 		'ecmascript',
-		'less',
 		'rocketchat:emoji',
 		'rocketchat:file',
 		'rocketchat:lib',
 		'templating',
-		'underscore',
 		'webapp'
 	]);
 
@@ -34,7 +32,7 @@ Package.onUse(function(api) {
 		'server/methods/uploadEmojiCustom.js'
 	], 'server');
 
-	api.addFiles('assets/stylesheets/emojiCustomAdmin.less', 'client');
+	api.addFiles('assets/stylesheets/emojiCustomAdmin.css', 'client');
 
 	api.addFiles([
 		'admin/startup.js',

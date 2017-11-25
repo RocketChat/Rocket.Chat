@@ -1,3 +1,4 @@
+import _ from 'underscore';
 RocketChat.ChannelSettings = new class {
 	constructor() {
 		this.options = new ReactiveVar({});

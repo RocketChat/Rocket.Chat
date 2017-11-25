@@ -1,3 +1,5 @@
+import _ from 'underscore';
+
 Meteor.methods({
 	'public-settings/get'(updatedAt) {
 		this.unblock();
@@ -58,7 +60,7 @@ Meteor.methods({
 
 RocketChat.models.Settings.cache.on('changed', function(type, setting) {
 	if (setting['public'] === true) {
-		RocketChat.Notifications.notifyAllInThisInstance('public-settings-changed', type, _.pick(setting, '_id', 'value'));
+		RocketChat.Notifications.notifyAllInThisInstance('public-settings-changed', type, _.pick(setting, '_id', 'value', 'editor', 'properties'));
 	}
 	return RocketChat.Notifications.notifyLoggedInThisInstance('private-settings-changed', type, setting);
 });

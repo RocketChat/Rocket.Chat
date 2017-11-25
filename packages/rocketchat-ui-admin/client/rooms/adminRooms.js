@@ -1,4 +1,6 @@
 /*globals RocketChatTabBar, AdminChatRoom */
+import _ from 'underscore';
+import s from 'underscore.string';
 
 this.AdminChatRoom = new Mongo.Collection('rocketchat_room');
 
@@ -69,7 +71,7 @@ Template.adminRooms.onCreated(function() {
 		groups: ['admin-rooms'],
 		id: 'admin-room',
 		i18nTitle: 'Room_Info',
-		icon: 'icon-info-circled',
+		icon: 'info-circled',
 		template: 'adminRoomInfo',
 		order: 1
 	});
@@ -97,14 +99,14 @@ Template.adminRooms.onCreated(function() {
 	this.rooms = function() {
 		let filter;
 		if (instance.filter && instance.filter.get()) {
-			filter = _.trim(instance.filter.get());
+			filter = s.trim(instance.filter.get());
 		}
 		let types = instance.types && instance.types.get();
 		if (!_.isArray(types)) {
 			types = [];
 		}
 		let query = {};
-		filter = _.trim(filter);
+		filter = s.trim(filter);
 		if (filter) {
 			const filterReg = new RegExp(s.escapeRegExp(filter), 'i');
 			query = { $or: [{ name: filterReg }, { t: 'd', usernames: filterReg } ]};

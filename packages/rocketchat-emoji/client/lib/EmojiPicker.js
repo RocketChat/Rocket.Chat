@@ -1,4 +1,6 @@
 /* globals Blaze, Template */
+import _ from 'underscore';
+
 RocketChat.EmojiPicker = {
 	width: 390,
 	height: 238,
@@ -71,8 +73,7 @@ RocketChat.EmojiPicker = {
 			const pickerWidth = $('.emoji-picker').width();
 
 			if (left + pickerWidth > windowSize) {
-				const emojiButtonSize = $('.reaction-message.message-action').outerWidth();
-				cssProperties.left = left - pickerWidth + emojiButtonSize;
+				cssProperties.left = left - pickerWidth;
 			}
 		}
 
