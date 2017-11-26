@@ -2,9 +2,9 @@
 
 docker pull thomasroehl/smarti:firsttry
 
-docker run --net=host thomasroehl/smarti:firsttry
+docker run -d --net=host thomasroehl/smarti:firsttry
 
-sleep 3m
+sleep 2m
 docker ps
 
 curl -X POST --header 'Content-Type: application/json' --header 'Accept: application/json' -d '{"defaultClient": true, "description": "", "name": "testclient"}' 'http://localhost:8080/client' > out.json
