@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 docker pull thomasroehl/smarti:firsttry
-docker run -d -p 8080:8080 thomasroehl/smarti:firsttry
+docker run -p 8080:8080 thomasroehl/smarti:firsttry
 
 sleep 3m
 docker ps
