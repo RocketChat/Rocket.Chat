@@ -2,8 +2,6 @@
 
 docker pull thomasroehl/smarti:firsttry
 
-curl http://localhost:27017
-
 docker run --net=host thomasroehl/smarti:firsttry
 
 sleep 3m

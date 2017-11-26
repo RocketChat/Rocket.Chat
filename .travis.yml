@@ -47,12 +47,12 @@ before_script:
 - |-
   echo "  replSetName: \"rs0\"" | sudo tee -a /etc/mongod.conf
 - sudo service mongod restart
-- chmod +x .scripts/smarti.sh
-- .scripts/smarti.sh
 - mkdir /tmp/build
 - travis_retry meteor npm install
 - |-
   mongo --eval 'rs.initiate({_id:"rs0", members: [{"_id":1, "host":"localhost:27017"}]})'
+- chmod +x .scripts/smarti.sh
+- .scripts/smarti.sh
 #- meteor npm run lint
 #- meteor npm run testunit
 #- meteor npm run stylelint
