@@ -84,7 +84,7 @@ describe('[Smarti Connection]', ()=>{
 	// 	});
 	// });
     //
-	describe('[BREAK]', ()=> {
+	describe.skip('[BREAK]', ()=> {
 		it('BREAK', ()=> {
 			true.should.equal(false);
 		});
