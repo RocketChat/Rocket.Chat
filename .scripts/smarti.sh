@@ -3,7 +3,8 @@
 docker pull thomasroehl/smarti:firsttry
 docker run -d -p 8080:8080 thomasroehl/smarti:firsttry
 
-sleep 2m
+sleep 3m
+docker ps
 
 curl -X POST --header 'Content-Type: application/json' --header 'Accept: application/json' -d '{"defaultClient": true, "description": "", "name": "testclient"}' 'http://localhost:8080/client' > out.json
 x=$(grep -Eo '"id":.*?[^\\]",' out.json)
