@@ -54,7 +54,7 @@ before_script:
 #- meteor npm run lint
 #- meteor npm run testunit
 #- meteor npm run stylelint
-- docker pull thomasroehl/smarti:firsttry
+- .scripts/smarti.sh
 - travis_retry meteor build --headless /tmp/build
 - mkdir /tmp/build-test
 - tar -xf /tmp/build/Rocket.Chat.tar.gz -C /tmp/build-test/

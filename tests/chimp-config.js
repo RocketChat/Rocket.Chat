@@ -135,7 +135,7 @@ module.exports = {
 	// 	},
 
 	// 	// - - - - METEOR  - - - -
-	ddp: 'http://rocketchat:3000'
+	ddp: 'http://localhost:3000'
 // 	serverExecuteTimeout: 10000,
 
 // 	// - - - - PHANTOM  - - - -

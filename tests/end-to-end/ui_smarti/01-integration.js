@@ -5,14 +5,9 @@ import {adminUsername, adminEmail, adminPassword} from '../../data/user.js';
 
 const topicName = 'smarti-test-topic4';
 const topicExpert = 'rocketchat.internal.admin.test';
-const smartiResult = 'http://rocketchat:3000/api/v1/smarti.result/key123';
 const message = 'Mit allgemeinen Anfragen verschaffen Sie sich einen Überblick über den Markt, indem Sie Produkte, Preise und Bestellbedingungen unterschiedlicher Lieferanten und Dienstleister kennen lernen. In einem allgemeinen Anfragebrief bitten Sie zum die Zusendung von Katalogen, Prospekten, Preislisten und Produktmustern. Wie kann ich dieses Wissen nutzen?';
 const answer = 'Das ist die Antwort auf diese Anfrage!';
 const comment = 'Anfrage wurde erfolgreich beantwortet';
-
-const smarti_user = 'smarti';
-const smarti_email = 'smarti@test.com';
-const smarti_pass = 'smarti';
 
 import supertest from 'supertest';
 

@@ -2,11 +2,12 @@
 /* eslint-disable func-names, prefer-arrow-callback */
 
 import supertest from 'supertest';
-export const request = supertest.agent('http://smarti:8080');
+export const request = supertest.agent('http://localhost:8080');
 export const credentials = {
 	username: 'admin',
 	password: 'admin'
 };
+const clientconfig = '{"queryBuilder":[{"_class":"io.redlink.smarti.model.config.ComponentConfiguration","name":"conversationmlt","displayName":"conversationmlt","type":"conversationmlt","enabled":true,"unbound":false,"pageSize":3,"filter":["support_area"]},{"_class":"io.redlink.smarti.model.config.ComponentConfiguration","name":"conversationsearch","displayName":"conversationsearch","type":"conversationsearch","enabled":true,"unbound":false,"pageSize":3,"filter":["support_area"]}]}';
 
 describe('[Smarti Connection]', ()=>{
 
@@ -32,30 +33,58 @@ describe('[Smarti Connection]', ()=>{
 		});
 	});
 
-	describe.skip('[Conversation]', ()=> {
-		it('Get Conversation', (done)=> {
-			request.get('/conversation/59f1d5e8857aba0006307ef2')
-				.expect(200)
-				.end(done);
-		});
-		it('Get Analysis', (done)=> {
-			request.get('/conversation/59f1d5e8857aba0006307ef2/analysis')
-				.expect(200)
-				.end(done);
-		});
-	});
+	// describe('[]', function() {
+	// 	describe('client', ()=> {
+	// 		var response;
+	// 		it('create new client', function(done) {
+	// 			response = request.post('/client')
+	// 				.send({
+	// 					defaultClient: true,
+	// 					description: "",
+	// 					name: "testclient"
+	// 				})
+	// 				.set('Accept', 'application/json')
+	// 				.expect(200)
+	// 				.end(function (err, res) {
+	// 					var clientid = res.body.id
+	// 					console.log(clientid)
+	// 					request.post(`/client/${clientid}config`)
+	// 						.send({
+	// 							jsonData: clientconfig
+	// 						})
+	// 						.set('Accept', 'text/plain')
+	// 						.expect(200)
+	// 						.end(done);
+	// 					done();
+	// 				});
+	// 		});
+	// 	});
+	// });
 
-	describe('[Rocket.Chat]', ()=> {
-		it('Get client list', (done)=> {
-			request.get('/client')
-				.auth(credentials['username'], credentials['password'])
-				.expect(200)
-				.expect('Content-Type', 'application/json;charset=UTF-8')
-				.end(done);
-		});
-	});
-
-	describe.skip('[BREAK]', ()=> {
+	// describe.skip('[Conversation]', ()=> {
+	// 	it('Get Conversation', (done)=> {
+	// 		request.get('/conversation/59f1d5e8857aba0006307ef2')
+	// 			.expect(200)
+	// 			.end(done);
+	// 	});
+	// 	it('Get Analysis', (done)=> {
+	// 		request.get('/conversation/59f1d5e8857aba0006307ef2/analysis')
+	// 			.expect(200)
+	// 			.end(done);
+	// 	});
+	// });
+    //
+	// describe('[Rocket.Chat]', ()=> {
+	// 	it('Get client list', (done)=> {
+	// 		request.get('/client')
+	// 			.auth(credentials['username'], credentials['password'])
+	// 			.expect(200)
+	// 			.expect('Content-Type', 'application/json;charset=UTF-8')
+	// 			.end(done);
+	// 	});
+	// });
+    //
+	describe('[BREAK]', ()=> {
 		it('BREAK', ()=> {
 			true.should.equal(false);
 		});
