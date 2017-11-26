@@ -4,7 +4,7 @@ docker pull thomasroehl/smarti:firsttry
 
 curl http://localhost:27017
 
-docker run -p 8080:8080 thomasroehl/smarti:firsttry
+docker run --net=host thomasroehl/smarti:firsttry
 
 sleep 3m
 docker ps
