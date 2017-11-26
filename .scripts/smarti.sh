@@ -10,5 +10,8 @@ docker ps
 curl -X POST --header 'Content-Type: application/json' --header 'Accept: application/json' -d '{"defaultClient": true, "description": "", "name": "testclient"}' 'http://localhost:8080/client' > out.json
 x=$(grep -Eo '"id":.*?[^\\]",' out.json)
 x=${x:6:25}
+echo ${x}
 
 curl -X POST --header 'Content-Type: application/json' --header 'Accept: text/plain' -d '{"queryBuilder":[{"_class":"io.redlink.smarti.model.config.ComponentConfiguration","name":"conversationmlt","displayName":"conversationmlt","type":"conversationmlt","enabled":true,"unbound":false,"pageSize":3,"filter":["support_area"]},{"_class":"io.redlink.smarti.model.config.ComponentConfiguration","name":"conversationsearch","displayName":"conversationsearch","type":"conversationsearch","enabled":true,"unbound":false,"pageSize":3,"filter":["support_area"]}]}' 'http://localhost:8080/client/${x}/config'
+
+echo curl -X GET --header 'Accept: */*' 'http://localhost:8080/client/${x}/config'
