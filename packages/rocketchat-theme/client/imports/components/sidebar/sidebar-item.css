@@ -13,11 +13,20 @@
 
 	&__picture {
 		flex: 0 0 var(--sidebar-item-big-thumb-size);
+		color: var(--sidebar-item-unread-color);
+		border-radius: var(--sidebar-item-radius);
+
+		width: var(--sidebar-item-big-thumb-size);
+		height: var(--sidebar-item-big-thumb-size);
+	}
+
+	&__user-thumb {
+		width: var(--sidebar-item-big-thumb-size);
+		height: var(--sidebar-item-big-thumb-size);
 	}
 
 	&__icon {
-		width: var(--sidebar-item-big-thumb-size);
-		height: var(--sidebar-item-big-thumb-size);
+		margin: 0 auto;
 	}
 }
 
