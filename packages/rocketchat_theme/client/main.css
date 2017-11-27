@@ -57,6 +57,7 @@
 
 /* User Info */
 @import 'imports/components/userInfo.css';
+@import 'imports/components/modal/forward-message.css';
 
 /* RTL */
 @import 'imports/general/rtl.css';

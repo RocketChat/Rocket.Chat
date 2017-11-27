@@ -1235,6 +1235,8 @@
   "Forgot_password_section": "Esqueceu a senha",
   "Forward": "Encaminhar",
   "Forward_chat": "Encaminhar chat",
+  "Forward_Has_Empty_Destination": "Selecione pelo menos um destino para a mensagem",
+  "Forward_Message_Modal_Title": "Encaminhar Mensagem",
   "Forward_to_department": "Encaminhar ao departamento",
   "Forward_to_user": "Encaminhar ao utilizador",
   "Frequently_Used": "Usados frequentemente",

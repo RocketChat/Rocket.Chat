@@ -1,0 +1,33 @@
+<template name="forwardMessage">
+	<section class="forward-message">
+		<header class="forward-message__header">
+			<h1 class="forward-message__title">{{_ "Forward_Message_Modal_Title"}}</h1>
+		</header>
+
+		<form class="forward-message__content">
+			{{> messagePreview message}}
+
+			{{#each subscriptions}}
+				<span class="rc-checklist__item">
+					<span class="rc-checklist__item-avatar">
+						{{#if $eq this.t 'd'}}
+							{{> avatar username=this.name}}
+						{{/if}}
+
+						{{#if $eq this.t 'p'}}
+							<i class="rc-checklist__item-icon icon-lock"></i>
+						{{/if}}
+
+						{{#if $eq this.t 'c'}}
+							<i class="rc-checklist__item-icon icon-hash"></i>
+						{{/if}}
+					</span>
+					<span class="rc-checklist__item-name"> <strong>{{this.name}}</strong></span>
+					<span class="rc-checklist__item-switch">{{> switch name=this.rid}}</span>
+				</span>
+			{{/each}}
+
+			<input class="rc-button rc-button--primary" type="submit" data-button="forward" value="{{_ "Forward"}}" {{forwardDisabled}}>
+		</form>
+	</section>
+</template>
