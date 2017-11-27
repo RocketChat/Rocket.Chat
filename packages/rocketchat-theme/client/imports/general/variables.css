@@ -175,8 +175,10 @@
 		* Sidebar Item
 		*/
 		--sidebar-item-radius: 2px;
-		--sidebar-item-height: 55px;
+		--sidebar-item-height: 32px;
+		--sidebar-item-big-height: 62px;
 		--sidebar-item-thumb-size: 20px;
+		--sidebar-item-big-thumb-size: 36px;
 
 		--sidebar-item-text-color: var(--color-gray);
 		--sidebar-item-background: inherit;

@@ -18,18 +18,32 @@
 				{{/if}}
 			{{/if}}
 			<div class="sidebar-item__body">
-				<div class="sidebar-item__name {{archivedClass}}">{{name}}</div>
-				<div class="sidebar-item__last-message">{{lastMessage}}</div>
-			</div>
-
-			{{#if unread}}
-				<span class="badge badge--unread">{{#if userMentions}}@ {{/if}}{{unread}}</span>
-			{{/if}}
-			{{#if isRoom}}
-				<div class="sidebar-item__menu">
-					{{> icon block="sidebar-item__menu-icon" icon="menu"}}
+				<div class="sidebar-item__message">
+					<div class="sidebar-item__name {{archivedClass}}">{{name}}</div>
+					{{#if lastMessage}}
+						<div class="sidebar-item__last-message">{{lastMessage.u.username}}: {{lastMessage.msg}}</div>
+						{{else}}
+						<div class="sidebar-item__last-message">No last message</div>
+					{{/if}}
 				</div>
-			{{/if}}
+
+				<div class="sidebar-item__info">
+					{{#if lastMessage}}
+						<span class="sidebar-item__time">
+							3h
+						</span>
+					{{/if}}
+					{{#if unread}}
+						<span class="badge badge--unread">{{#if userMentions}}@ {{/if}}{{unread}}</span>
+					{{/if}}
+				</div>
+
+				{{#if isRoom}}
+					<div class="sidebar-item__menu">
+						{{> icon block="sidebar-item__menu-icon" icon="menu"}}
+					</div>
+				{{/if}}
+			</div>
 		</a>
 	</li>
 </template>
