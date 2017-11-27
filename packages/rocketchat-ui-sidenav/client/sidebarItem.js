@@ -1,4 +1,6 @@
 /* globals menu popover */
+import moment from 'moment';
+
 Template.sidebarItem.helpers({
 	or(...args) {
 		args.pop();
@@ -9,8 +11,10 @@ Template.sidebarItem.helpers({
 	},
 	lastMessage() {
 		if (this.lastMessage) {
-			return `${ this.lastMessage.u.username }: ${ this.lastMessage.msg }`;
+			return this.lastMessage;
 		}
+
+		return false;
 	}
 });
 

@@ -8,6 +8,19 @@
 	}
 }
 
+.sidebar--big > .rooms-list .sidebar-item {
+	height: var(--sidebar-item-big-height);
+
+	&__picture {
+		flex: 0 0 var(--sidebar-item-big-thumb-size);
+	}
+
+	&__icon {
+		width: var(--sidebar-item-big-thumb-size);
+		height: var(--sidebar-item-big-thumb-size);
+	}
+}
+
 .sidebar-item {
 	position: relative;
 
@@ -113,11 +126,19 @@
 	&__body {
 		display: flex;
 		flex: 1;
-		flex-direction: column;
+		flex-direction: row;
+		align-items: center;
 
 		margin: 0 4px;
 
 		overflow: hidden;
+	}
+
+	&__message {
+		flex: 1;
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
 	}
 
 	&__name {
@@ -127,15 +148,31 @@
 		text-overflow: ellipsis;
 
 		font-size: var(--sidebar-item-text-size);
+
+		margin-bottom: 8px;
+		line-height: 1.2rem;
 	}
 
 	&__last-message {
 		flex: 1;
-		font-size: 10pt;
-		color: rgba(255,255,255,0.4);
+		font-size: 12px;
+		line-height: 12px;
 		overflow: hidden;
 		text-overflow: ellipsis;
 		white-space: nowrap;
+	}
+
+	&__info {
+		flex: 0;
+		align-self: flex-start;
+		margin-top: 4px;
+	}
+
+	&__time {
+		display: flex;
+		justify-content: flex-end;
+		font-size: 10px;
+		color: var(--sidebar-item-text-color);
 	}
 
 	&__menu {
@@ -143,6 +180,7 @@
 		position: absolute;
 		right: 0;
 		display: none;
+		flex: 0;
 
 		&-icon {
 			fill: var(--color-white);
