@@ -5,7 +5,7 @@
 		{{/if}}
 		<a class="sidebar-item__link" href="{{#if route}}{{route}}{{else}}{{pathFor pathSection group=pathGroup}}{{/if}}" title="{{name}}">
 			{{#if icon}}
-				<div class="sidebar-item__picture">
+				<div class="sidebar-item__picture" style="{{colorStyle}}">
 					{{> icon block="sidebar-item__icon" icon=icon}}
 				</div>
 			{{else}}
