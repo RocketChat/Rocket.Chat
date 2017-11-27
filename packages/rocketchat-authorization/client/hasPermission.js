@@ -1,8 +1,8 @@
-/* globals ChatPermissions, SettingPermissions */
+/* globals ChatPermissions */
 
 function atLeastOne(permissions = [], scope) {
 	return permissions.some((permissionId) => {
-		const permission = ChatPermissions.findOne(permissionId) || SettingPermissions.findOne(permissionId);
+		const permission = ChatPermissions.findOne(permissionId);
 		const roles = (permission && permission.roles) || [];
 
 		return roles.some((roleName) => {
@@ -17,7 +17,7 @@ function atLeastOne(permissions = [], scope) {
 
 function all(permissions = [], scope) {
 	return permissions.every((permissionId) => {
-		const permission = ChatPermissions.findOne(permissionId) || SettingPermissions.findOne(permissionId);
+		const permission = ChatPermissions.findOne(permissionId);
 		const roles = (permission && permission.roles) || [];
 
 		return roles.some((roleName) => {

@@ -1,5 +1,11 @@
-/* globals ChatPermissions, SettingPermissions */
+/* globals ChatPermissions */
 import {permissionLevel} from '../../lib/rocketchat';
+
+const whereNotSetting = {
+	$where: function() {
+		return this.level !== permissionLevel.SETTING;
+	}.toString()
+};
 
 Template.permissions.helpers({
 	roles() {
@@ -7,15 +13,16 @@ Template.permissions.helpers({
 	},
 
 	permissions() {
-		return ChatPermissions.find({}, {
-			sort: {
-				_id: 1
-			}
-		});
+		return ChatPermissions.find(whereNotSetting,
+			{
+				sort: {
+					_id: 1
+				}
+			}).fetch().filter((setting)=>!setting.level);
 	},
 
 	settingPermissions() {
-		return SettingPermissions.find();
+		return ChatPermissions.find({level: permissionLevel.SETTING});
 	},
 
 	hasPermission() {
@@ -110,11 +117,11 @@ Template.permissionsTable.onCreated(function() {
 			}
 		};
 		if (this.data.collection === 'Chat') {
-			ChatPermissions.find().observeChanges(observer);
+			ChatPermissions.find(whereNotSetting).observeChanges(observer);
 		}
 
 		if (this.data.collection === 'Setting') {
-			SettingPermissions.find().observeChanges(observer);
+			ChatPermissions.find({level: permissionLevel.SETTING}).observeChanges(observer);
 		}
 	});
 });
