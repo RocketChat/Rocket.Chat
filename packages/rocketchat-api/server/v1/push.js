@@ -13,7 +13,7 @@ RocketChat.API.v1.addRoute('push.token/:token', { authRequired: true }, {
 
 		if (affectedRecords === 0) {
 			return {
-				statusCode: 404,
+				statusCode: 404
 			};
 		}
 
