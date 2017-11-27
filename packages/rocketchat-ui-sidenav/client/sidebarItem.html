@@ -5,7 +5,7 @@
 		{{/if}}
 		<a class="sidebar-item__link" href="{{#if route}}{{route}}{{else}}{{pathFor pathSection group=pathGroup}}{{/if}}" title="{{name}}">
 			{{#if icon}}
-				<div class="sidebar-item__picture" style="{{colorStyle}}">
+				<div class="sidebar-item__picture" style="{{#if isRoom}}{{colorStyle}}{{/if}}">
 					{{> icon block="sidebar-item__icon" icon=icon}}
 				</div>
 			{{else}}
@@ -19,23 +19,20 @@
 			{{/if}}
 			<div class="sidebar-item__body">
 				<div class="sidebar-item__message">
-					<div class="sidebar-item__name {{archivedClass}}">{{name}}</div>
-					{{#if lastMessage}}
-						<div class="sidebar-item__last-message">{{lastMessage.u.username}}: {{lastMessage.msg}}</div>
-						{{else}}
-						<div class="sidebar-item__last-message">No last message</div>
-					{{/if}}
-				</div>
-
-				<div class="sidebar-item__info">
-					{{#if lastMessage}}
-						<span class="sidebar-item__time">
-							3h
-						</span>
-					{{/if}}
-					{{#if unread}}
-						<span class="badge badge--unread">{{#if userMentions}}@ {{/if}}{{unread}}</span>
-					{{/if}}
+					<div class="sidebar-item__message-top">
+						<div class="sidebar-item__name">{{name}}</div>
+						{{#if lastMessage.ts}}
+							<span class="sidebar-item__time">{{timeAgo lastMessage.ts}}</span>
+						{{/if}}
+					</div>
+					<div class="sidebar-item__message-bottom">
+						{{#with lastMessage}}
+							<div class="sidebar-item__last-message">{{{renderedMessage}}}</div>
+						{{/with}}
+						{{#if unread}}
+							<span class="badge badge--unread">{{#if userMentions}}@ {{/if}}{{unread}}</span>
+						{{/if}}
+					</div>
 				</div>
 
 				{{#if isRoom}}

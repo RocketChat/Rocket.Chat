@@ -14,6 +14,5 @@
 	&--unread {
 		background-color: var(--badge-unread-background);
 		white-space: nowrap;
-		margin-top: 10px;
 	}
 }

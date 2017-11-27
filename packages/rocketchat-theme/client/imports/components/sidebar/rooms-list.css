@@ -54,10 +54,6 @@
 		width: 100%;
 
 		background-color: var(--sidebar-background);
-
-		& .sidebar-item__info, & .sidebar-item__last-message {
-			display: none;
-		}
 	}
 }
 
