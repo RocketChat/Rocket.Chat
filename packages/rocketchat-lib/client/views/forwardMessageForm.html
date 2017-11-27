@@ -1,0 +1,33 @@
+<template name="forwardMessage">
+	<section class="forward-message">
+		<header class="forward-message__header">
+			<h1 class="forward-message__title">{{_ "Forward_Message_Modal_Title"}}</h1>
+		</header>
+		<form class="forward-message__content">
+			<div class="forward-message__inputs">
+				<div class="rc-input">
+					<label class="rc-input__label">
+						<div class="rc-input__title">{{_ "Select_Forward_Destinations"}}</div>
+						<div class="rc-input__wrapper">
+							<div class="rc-input__icon">
+								{{> icon block="rc-input__icon-svg" icon="at"}}
+							</div>
+							<div class="rc-tags">
+								<select name="destinations">
+									<option value=""></option>
+									{{#each channels}}
+										<option value="{{_id}}">{{name}}</option>
+									{{/each}}
+									{{#each users}}
+										<option value="{{_id}}">{{name}}</option>
+									{{/each}}
+								</select>
+							</div>
+						</div>
+					</label>
+				</div>
+			</div>
+			<input class="rc-button rc-button--primary" type="submit" data-button="forward" {{forwardIsDisabled}} value="{{_ "Forward"}}">
+		</form>
+	</section>
+</template>
