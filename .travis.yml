@@ -107,3 +107,8 @@ env:
   - MONGO_OPLOG_URL: "mongodb://localhost:27017/local"
   - MONGO_URL: "mongodb://localhost:27017/meteor"
   - TEST_MODE: "true"
+  - OVERWRITE_SETTING_DBS_AI_Redlink_Domain: testclient
+  - OVERWRITE_SETTING_DBS_AI_Source: 2
+  - OVERWRITE_SETTING_DBS_AI_Enabled: true
+  - OVERWRITE_SETTING_DBS_AI_Redlink_Hook_Token: key123
+  - OVERWRITE_SETTING_DBS_AI_Redlink_URL: http://localhost:8080/
