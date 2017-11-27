@@ -1,6 +1,4 @@
-/* globals menu popover */
-import moment from 'moment';
-
+/* globals menu popover renderMessageBody */
 Template.sidebarItem.helpers({
 	or(...args) {
 		args.pop();
@@ -11,6 +9,17 @@ Template.sidebarItem.helpers({
 	},
 	lastMessage() {
 		if (this.lastMessage) {
+			if (this.lastMessage._id) {
+				const sender = Meteor.userId() === this.lastMessage.u._id ? t('You') : this.lastMessage.u.username;
+				if (this.lastMessage.msg === '') {
+					this.lastMessage.renderedMessage = t('sent_an_attachment', {user: sender});
+				} else {
+					this.lastMessage.renderedMessage = `${ sender }: ${ renderMessageBody(this.lastMessage) }`;
+				}
+			} else {
+				this.lastMessage.renderedMessage = this.lastMessage.msg;
+			}
+
 			return this.lastMessage;
 		}
 
@@ -18,6 +27,41 @@ Template.sidebarItem.helpers({
 	},
 	colorStyle() {
 		return `background-color: ${ RocketChat.getAvatarColor(this.name) }`;
+	},
+	timeAgo(time) {
+		if (!time) {
+			return;
+		}
+		const templates = {
+			minutes: '%dm',
+			hours: '%dh',
+			days: '%dd',
+			months: '%dm',
+			years: '%dy'
+		};
+		const template = function(t, n) {
+			return templates[t] && templates[t].replace(/%d/i, Math.abs(Math.round(n)));
+		};
+
+		const now = new Date();
+		const seconds = ((now.getTime() - time) * .001) >> 0;
+		const minutes = seconds / 60;
+		const hours = minutes / 60;
+		const days = hours / 24;
+		const years = days / 365;
+
+		return (
+			seconds < 90 && template('minutes', 1) ||
+			minutes < 45 && template('minutes', minutes) ||
+			minutes < 90 && template('hours', 1) ||
+			hours < 24 && template('hours', hours) ||
+			hours < 42 && template('days', 1) ||
+			days < 30 && template('days', days) ||
+			days < 45 && template('months', 1) ||
+			days < 365 && template('months', days / 30) ||
+			years < 1.5 && template('years', 1) ||
+			template('years', years)
+		);
 	}
 });
 
