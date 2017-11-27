@@ -15,6 +15,9 @@ Template.sidebarItem.helpers({
 		}
 
 		return false;
+	},
+	colorStyle() {
+		return `background-color: ${ RocketChat.getAvatarColor(this.name) }`;
 	}
 });
 
