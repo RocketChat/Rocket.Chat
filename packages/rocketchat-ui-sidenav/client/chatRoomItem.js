@@ -39,8 +39,8 @@ Template.chatRoomItem.helpers({
 
 		if (RocketChat.settings.get('Store_Last_Message')) {
 			const room = RocketChat.models.Rooms.findOne(this.rid, { fields: { lastMessage: 1 } });
-
-			roomData.lastMessage = room.lastMessage;
+			console.log(this.rid, room);
+			roomData.lastMessage = room.lastMessage ? room.lastMessage : false;
 		}
 
 		return roomData;
