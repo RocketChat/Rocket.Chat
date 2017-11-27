@@ -2,9 +2,9 @@
   "lockfileVersion": 1,
   "dependencies": {
     "ajv": {
-      "version": "5.4.0",
-      "resolved": "https://registry.npmjs.org/ajv/-/ajv-5.4.0.tgz",
-      "integrity": "sha1-MtHPCNvIDEMvQm8S4QslEfa0ZHQ="
+      "version": "5.5.0",
+      "resolved": "https://registry.npmjs.org/ajv/-/ajv-5.5.0.tgz",
+      "integrity": "sha1-6yhAdG6dxIvV4GOjbj/UAMXqtak="
     },
     "ansi-regex": {
       "version": "2.1.1",
@@ -331,9 +331,9 @@
           "integrity": "sha1-m+3VygiXlJvKR+f/QIBi1Un1h/I="
         },
         "protobufjs": {
-          "version": "6.8.0",
-          "resolved": "https://registry.npmjs.org/protobufjs/-/protobufjs-6.8.0.tgz",
-          "integrity": "sha512-47Y49f5JN5Qsbxas2TyI2zFO8j9GpQAQm5thf54fr2O8qcP/jkIXYxmYx1hN2WQFAhESU1xpVn5NWVDBB8WFnw=="
+          "version": "6.8.1",
+          "resolved": "https://registry.npmjs.org/protobufjs/-/protobufjs-6.8.1.tgz",
+          "integrity": "sha512-xOyhhFjawVl3aLCxARV6LfOBUJUPM/GPOxy3yx0heGRKQOpL5aCG5j11eeR//oiE2TRghX8jbdqIjiaCAhn7nQ=="
         }
       }
     },
@@ -1099,9 +1099,9 @@
       "integrity": "sha1-6AomYY5S9cQiKGG7dIUQvRDikIk="
     },
     "mime": {
-      "version": "1.5.0",
-      "resolved": "https://registry.npmjs.org/mime/-/mime-1.5.0.tgz",
-      "integrity": "sha512-v/jMDoK/qKptnTuC3YUNbIj8uUYvTCIHzVu9BHldKSWja48wusAtfjlcBlqnFrqClu3yf69ScDxBPrIyFnF51g=="
+      "version": "1.6.0",
+      "resolved": "https://registry.npmjs.org/mime/-/mime-1.6.0.tgz",
+      "integrity": "sha512-x0Vn8spI+wuJ1O6S7gnbaQg8Pxh4NNHb7KSINmEWKiPE4RKOplvijn+NkmYmmRgP68mc70j2EbeTFRsrswaQeg=="
     },
     "mime-db": {
       "version": "1.30.0",

@@ -5,28 +5,50 @@
 		&:hover {
 			background-color: var(--sidebar-background-light-hover);
 		}
+
+		&__picture {
+			color: inherit;
+		}
 	}
 }
 
-.sidebar--big > .rooms-list .sidebar-item {
-	height: var(--sidebar-item-big-height);
+.sidebar--big {
+	& > .rooms-list,
+	& .rooms-list__toolbar-search {
+		& .sidebar-item {
+			height: var(--sidebar-item-big-height);
 
-	&__picture {
-		flex: 0 0 var(--sidebar-item-big-thumb-size);
-		color: var(--sidebar-item-unread-color);
-		border-radius: var(--sidebar-item-radius);
+			&__picture {
+				flex: 0 0 var(--sidebar-item-big-thumb-size);
 
-		width: var(--sidebar-item-big-thumb-size);
-		height: var(--sidebar-item-big-thumb-size);
-	}
+				width: var(--sidebar-item-big-thumb-size);
+				height: var(--sidebar-item-big-thumb-size);
+			}
 
-	&__user-thumb {
-		width: var(--sidebar-item-big-thumb-size);
-		height: var(--sidebar-item-big-thumb-size);
-	}
+			&__icon {
+				margin: 0 auto;
+			}
 
-	&__icon {
-		margin: 0 auto;
+			&__user-thumb {
+				width: var(--sidebar-item-big-thumb-size);
+				height: var(--sidebar-item-big-thumb-size);
+			}
+
+			&__message {
+				flex-direction: column;
+
+				&-top,
+				&-bottom {
+					display: flex;
+					width: 100%;
+					align-items: center;
+				}
+
+				&-bottom {
+					margin-top: 6px;
+				}
+			}
+		}
 	}
 }
 
@@ -126,6 +148,8 @@
 	&__picture {
 		display: flex;
 		flex: 0 0 var(--sidebar-item-thumb-size);
+		color: var(--sidebar-item-unread-color);
+		border-radius: var(--sidebar-item-radius);
 
 		margin: 0 4px;
 
@@ -135,7 +159,6 @@
 	&__body {
 		display: flex;
 		flex: 1;
-		flex-direction: row;
 		align-items: center;
 
 		margin: 0 4px;
@@ -146,8 +169,19 @@
 	&__message {
 		flex: 1;
 		display: flex;
-		flex-direction: column;
+		flex-direction: row;
 		justify-content: center;
+		overflow: hidden;
+		align-items: center;
+
+		&-top {
+			flex: 1;
+			overflow: hidden;
+		}
+
+		&-bottom {
+			flex: 0 0;
+		}
 	}
 
 	&__name {
@@ -158,8 +192,9 @@
 
 		font-size: var(--sidebar-item-text-size);
 
-		margin-bottom: 8px;
 		line-height: 1.2rem;
+
+		flex: 1;
 	}
 
 	&__last-message {
@@ -171,15 +206,7 @@
 		white-space: nowrap;
 	}
 
-	&__info {
-		flex: 0;
-		align-self: flex-start;
-		margin-top: 4px;
-	}
-
 	&__time {
-		display: flex;
-		justify-content: flex-end;
 		font-size: 10px;
 		color: var(--sidebar-item-text-color);
 	}
@@ -194,6 +221,11 @@
 		&-icon {
 			fill: var(--color-white);
 		}
+	}
+
+	& .mention-link {
+		background: transparent;
+    color: inherit;
 	}
 }
 
