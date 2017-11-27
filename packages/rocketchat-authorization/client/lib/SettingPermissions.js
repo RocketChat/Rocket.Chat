@@ -1,8 +1,8 @@
-RocketChat.authz.settingCachedCollectiong = new RocketChat.CachedCollection({
+RocketChat.authz.settingCachedCollection = new RocketChat.CachedCollection({
 	name: 'setting-permissions',
 	eventType: 'onLogged',
 	userRelated: false
 });
-RocketChat.authz.settingCachedCollectiong.init();
+RocketChat.authz.settingCachedCollection.init();
 
-this.SettingPermissions = RocketChat.authz.settingCachedCollectiong.collection;
+this.SettingPermissions = RocketChat.authz.settingCachedCollection.collection;

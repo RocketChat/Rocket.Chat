@@ -48,21 +48,19 @@ Meteor.methods({
 	}
 });
 
-function notifySettings(type, permission) {
-	if (permission.level === permissionLevel.SETTING) {
-		// if the permission changes, the effect on the visible settings depends on the role affected.
-		// The selected-settings-based consumers have to react accordingly and either add or remove the
-		// setting from the user's collection
-		const setting = RocketChat.models.Settings.findOneById(permission.settingId);
-		RocketChat.Notifications.notifyLoggedInThisInstance('private-settings-changed', 'auth', setting);
-	}
+function notifyPermissionSettingsChanged(type, permission) {
+	// if the permission changes, the effect on the visible settings depends on the role affected.
+	// The selected-settings-based consumers have to react accordingly and either add or remove the
+	// setting from the user's collection
+	const setting = RocketChat.models.Settings.findOneById(permission.settingId);
+	RocketChat.Notifications.notifyLoggedInThisInstance('private-settings-changed', 'auth', setting);
+	RocketChat.Notifications.notifyLoggedInThisInstance('setting-permissions-changed', type, permission);
 }
 
 RocketChat.models.Permissions.on('changed', (type, permission) => {
-	RocketChat.Notifications.notifyLoggedInThisInstance('permissions-changed', type, permission);
-	notifySettings(type, permission);
-});
-
-RocketChat.models.Permissions.on('removed', (type, permission) => {
-	notifySettings(type, permission);
+	if (permission.level && permission.level === permissionLevel.SETTING) {
+		notifyPermissionSettingsChanged(type, permission);
+	} else {
+		RocketChat.Notifications.notifyLoggedInThisInstance('permissions-changed', type, permission);
+	}
 });

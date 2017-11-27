@@ -99,18 +99,27 @@ Meteor.startup(function() {
 		});
 	}
 
-	// for each setting, create a permission to allow just this one setting
 
+	// setting-based permissions
 	const getSettingPermissionId = function(settingId) {
 		return `change-setting-${ settingId }`;
 	};
 
-	const previousSettingPermissions = {};
-	RocketChat.models.Permissions.find({level: permissionLevel.SETTING}).fetch().forEach(
-		function(permission) {
-			previousSettingPermissions[permission._id] = permission;
-		});
-	RocketChat.models.Settings.findNotHidden().fetch().forEach((setting) => {
+	const getPreviousPermissions = function(settingId) {
+		const previousSettingPermissions = {};
+
+		const selector = {level: permissionLevel.SETTING};
+		if (settingId) {
+			selector.settingId = settingId;
+		}
+
+		RocketChat.models.Permissions.find(selector).fetch().forEach(
+			function(permission) {
+				previousSettingPermissions[permission._id] = permission;
+			});
+		return previousSettingPermissions;
+	};
+	const createSettingPermission = function(setting, previousSettingPermissions) {
 		const permissionId = getSettingPermissionId(setting._id);
 		const permission = {
 			_id: permissionId,
@@ -133,13 +142,33 @@ Meteor.startup(function() {
 		}
 		RocketChat.models.Permissions.upsert(permission._id, {$set: permission});
 		delete previousSettingPermissions[permissionId];
-	});
+	};
 
-	for (const obsoletePermission in previousSettingPermissions) {
-		if (previousSettingPermissions.hasOwnProperty(obsoletePermission)) {
-			RocketChat.models.Permissions.remove({_id: obsoletePermission});
-			SystemLogger.info('Removed permission', obsoletePermission);
+	const createPermissionsForExistingSettings = function() {
+		const previousSettingPermissions = getPreviousPermissions();
+
+		RocketChat.models.Settings.findNotHidden().fetch().forEach((setting) => {
+			createSettingPermission(setting, previousSettingPermissions);
+		});
+
+		// remove permissions for non-existent settings
+		for (const obsoletePermission in previousSettingPermissions) {
+			if (previousSettingPermissions.hasOwnProperty(obsoletePermission)) {
+				RocketChat.models.Permissions.remove({_id: obsoletePermission});
+				SystemLogger.info('Removed permission', obsoletePermission);
+			}
 		}
-	}
+	};
 
+	// for each setting which already exists, create a permission to allow changing just this one setting
+	createPermissionsForExistingSettings();
+
+	// register a callback for settings for be create in higher-level-packages
+	const createPermissionForAddedSetting = function(settingId) {
+		const previousSettingPermissions = getPreviousPermissions(settingId);
+		const setting = RocketChat.models.Settings.findOneNotHiddenById(settingId);
+		createSettingPermission(setting, previousSettingPermissions);
+	};
+
+	RocketChat.settings.onload('*', createPermissionForAddedSetting);
 });
