@@ -15,7 +15,6 @@ import 'moment-timezone';
 export class HipChatImporter extends Base {
 	constructor(info) {
 		super(info);
-		this.logger.debug(`Constructed a new ${ info.name } Importer.`);
 
 		this.userTags = [];
 		this.roomPrefix = 'hipchat_export/rooms/';
