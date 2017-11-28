@@ -204,6 +204,10 @@
 		overflow: hidden;
 		text-overflow: ellipsis;
 		white-space: nowrap;
+
+		& > p {
+			display: inline;
+		}
 	}
 
 	&__time {

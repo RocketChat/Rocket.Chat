@@ -8,22 +8,10 @@ Template.sidebarItem.helpers({
 		return this.rid || this._id;
 	},
 	lastMessage() {
-		if (this.lastMessage) {
-			if (this.lastMessage._id) {
-				const sender = Meteor.userId() === this.lastMessage.u._id ? t('You') : this.lastMessage.u.username;
-				if (this.lastMessage.msg === '') {
-					this.lastMessage.renderedMessage = t('sent_an_attachment', {user: sender});
-				} else {
-					this.lastMessage.renderedMessage = `${ sender }: ${ renderMessageBody(this.lastMessage) }`;
-				}
-			} else {
-				this.lastMessage.renderedMessage = this.lastMessage.msg;
-			}
-
-			return this.lastMessage;
-		}
-
-		return false;
+		return Template.instance().renderedMessage;
+	},
+	lastMessageTs() {
+		return Template.instance().lastMessageTs.get();
 	},
 	colorStyle() {
 		return `background-color: ${ RocketChat.getAvatarColor(this.name) }`;
@@ -32,6 +20,11 @@ Template.sidebarItem.helpers({
 		if (!time) {
 			return;
 		}
+	}
+});
+
+Template.sidebarItem.onCreated(function() {
+	function timeAgo(time) {
 		const templates = {
 			minutes: '%dm',
 			hours: '%dh',
@@ -63,6 +56,39 @@ Template.sidebarItem.helpers({
 			template('years', years)
 		);
 	}
+
+	this.lastMessageTs = new ReactiveVar();
+	this.timeAgoInterval;
+	function setLastMessageTs(instance, ts) {
+		if (instance.timeAgoInterval) {
+			Meteor.clearInterval(instance.timeAgoInterval);
+		}
+
+		instance.lastMessageTs.set(timeAgo(ts));
+
+		instance.timeAgoInterval = Meteor.setInterval(() => {
+			instance.lastMessageTs.set(timeAgo(ts));
+		}, 60000);
+	}
+
+	this.autorun(() => {
+		const currentData = Template.currentData();
+
+		if (currentData.lastMessage) {
+			if (currentData.lastMessage._id) {
+				const sender = Meteor.userId() === currentData.lastMessage.u._id ? t('You') : currentData.lastMessage.u.username;
+				if (currentData.lastMessage.msg === '') {
+					this.renderedMessage = t('sent_an_attachment', {user: sender});
+				} else {
+					this.renderedMessage = `${ sender }: ${ renderMessageBody(currentData.lastMessage) }`;
+				}
+
+				setLastMessageTs(this, currentData.lastMessage.ts);
+			} else {
+				this.renderedMessage = currentData.lastMessage.msg;
+			}
+		}
+	});
 });
 
 Template.sidebarItem.events({
