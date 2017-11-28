@@ -9,7 +9,6 @@ import {
 export class CsvImporter extends Base {
 	constructor(info) {
 		super(info);
-		this.logger.debug(`Constructed a new ${ info.name } Importer.`);
 
 		this.csvParser = Npm.require('csv-parse/lib/sync');
 		this.messages = new Map();
