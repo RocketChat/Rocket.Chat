@@ -1,25 +1,69 @@
 <template name="roomList">
-	{{#if isLivechat}}
-		{{> livechat . }}
-	{{else}}
-		{{#with rooms}}
-			{{#if shouldAppear .. .}}
-					<h3 class="rooms-list__type">
-						<div class="rooms-list__type-text">{{_ ../label}}</div>
-						{{#with count}}
-							{{#if .}}
-								<span class="badge">{{.}}</span>
-							{{/if}}
-						{{/with}}
-					</h3>
-					<ul class="rooms-list__list {{ roomType ..}}">
-						{{#each room in this}}
-							{{> chatRoomItem room }}
-						{{else}}
-							<p class="rooms-list__empty-room">{{_ "No_channels_yet" }}</p>
-						{{/each}}
-					</ul>
-				{{/if}}
-		{{/with}}
-	{{/if}}
+
+   {{#if isLivechat}}
+   {{> livechat . }}
+   {{else}}
+
+   {{#with rooms}}
+   {{#if shouldAppear .. .}}
+
+   <h3 class="rooms-list__type">
+      <div class="rooms-list__type-text">{{_ ../label}}</div>
+      {{#with count}}
+      {{#if .}}
+      <span class="badge">{{.}}</span>
+      {{/if}}
+      {{/with}}
+   </h3>
+
+   <div class="panel">
+      <button class="accordion"> + </button>
+      <div class="panel">
+         <ul class="rooms-list__list {{ roomType ..}}">
+            {{#each room in this}}
+            {{> chatRoomItem room }}
+            {{else}}
+            <p class="rooms-list__empty-room">{{_ "No_channels_yet" }}</p>
+            {{/each}}
+         </ul>
+         <p>
+
+         </p>
+      </div>
+      <script>
+         let acc = document.getElementsByClassName("accordion");
+         let i;
+
+         for (i = 0; i < acc.length; i++) {
+            acc[i].onclick = function () {
+               this.classList.toggle("active");
+               let panel = this.nextElementSibling;
+               if (panel.style.display === "block") {
+                  panel.style.display = "none";
+               } else {
+                  panel.style.display = "block";
+               }
+            }
+         }
+      </script>
+   </div>
+
+   {{/if}}
+   {{/with}}
+   {{/if}}
+
+   <style>
+      button.accordion {
+         background-color: #2f343d;
+         color: #ed5210;
+         cursor: pointer;
+         padding: 18px;
+         width: 100%;
+         border: none;
+         text-align: left;
+         outline: none;
+         font-size: 15px;
+         transition: 0.1s;
+      }
+   </style>
 </template>
