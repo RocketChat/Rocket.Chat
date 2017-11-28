@@ -1,4 +1,6 @@
 /* globals menu popover renderMessageBody */
+import moment from 'moment';
+
 Template.sidebarItem.helpers({
 	or(...args) {
 		args.pop();
@@ -15,45 +17,18 @@ Template.sidebarItem.helpers({
 	},
 	colorStyle() {
 		return `background-color: ${ RocketChat.getAvatarColor(this.name) }`;
-	},
-	timeAgo(time) {
-		if (!time) {
-			return;
-		}
 	}
 });
 
 Template.sidebarItem.onCreated(function() {
 	function timeAgo(time) {
-		const templates = {
-			minutes: '%dm',
-			hours: '%dh',
-			days: '%dd',
-			months: '%dm',
-			years: '%dy'
-		};
-		const template = function(t, n) {
-			return templates[t] && templates[t].replace(/%d/i, Math.abs(Math.round(n)));
-		};
-
 		const now = new Date();
-		const seconds = ((now.getTime() - time) * .001) >> 0;
-		const minutes = seconds / 60;
-		const hours = minutes / 60;
-		const days = hours / 24;
-		const years = days / 365;
+		const yesterday = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
 
 		return (
-			seconds < 90 && template('minutes', 1) ||
-			minutes < 45 && template('minutes', minutes) ||
-			minutes < 90 && template('hours', 1) ||
-			hours < 24 && template('hours', hours) ||
-			hours < 42 && template('days', 1) ||
-			days < 30 && template('days', days) ||
-			days < 45 && template('months', 1) ||
-			days < 365 && template('months', days / 30) ||
-			years < 1.5 && template('years', 1) ||
-			template('years', years)
+			now.getDate() === time.getDate() && moment(time).format('LT') ||
+			yesterday.getDate() === time.getDate() && t('yesterday') ||
+			moment(time).format('L')
 		);
 	}
 
