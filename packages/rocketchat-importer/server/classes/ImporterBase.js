@@ -92,7 +92,7 @@ export class Base {
 		this.info = info;
 
 		this.logger = new Logger(`${ this.info.name } Importer`, {});
-		this.progress = new Progress(this.info.name);
+		this.progress = new Progress(this.info.key, this.info.name);
 		this.collection = RawImports;
 
 		const importId = Imports.insert({ 'type': this.info.name, 'ts': Date.now(), 'status': this.progress.step, 'valid': true, 'user': Meteor.user()._id });
