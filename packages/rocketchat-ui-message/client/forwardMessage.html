@@ -3,6 +3,9 @@
 		<header class="forward-message__header">
 			<h1 class="forward-message__title">{{_ "Forward_Message_Modal_Title"}}</h1>
 		</header>
+		<p>
+			{{#nrr nrrargs 'messagePreview' getMessage}}{{/nrr}}
+		</p>
 		<form class="forward-message__content">
 			<div class="forward-message__inputs">
 				<div class="rc-input">

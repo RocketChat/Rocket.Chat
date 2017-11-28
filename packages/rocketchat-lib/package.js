@@ -214,8 +214,6 @@ Package.onUse(function(api) {
 	// CLIENT VIEWS
 	api.addFiles('client/views/customFieldsForm.html', 'client');
 	api.addFiles('client/views/customFieldsForm.js', 'client');
-	api.addFiles('client/views/forwardMessage.html', 'client');
-	api.addFiles('client/views/forwardMessage.js', 'client');
 
 	api.addFiles('startup/defaultRoomTypes.js');
 

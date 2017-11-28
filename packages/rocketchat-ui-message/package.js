@@ -21,9 +21,11 @@ Package.onUse(function(api) {
 		'rocketchat:ui-vrecord'
 	]);
 
+	api.addFiles('client/forwardMessage.html', 'client');
 	api.addFiles('client/message.html', 'client');
 	api.addFiles('client/messageBox.html', 'client');
 	api.addFiles('client/messageDropdown.html', 'client');
+	api.addFiles('client/messagePreview.html', 'client');
 	api.addFiles('client/popup/messagePopup.html', 'client');
 	api.addFiles('client/popup/messagePopupChannel.html', 'client');
 	api.addFiles('client/popup/messagePopupConfig.html', 'client');
@@ -31,8 +33,10 @@ Package.onUse(function(api) {
 	api.addFiles('client/popup/messagePopupSlashCommand.html', 'client');
 	api.addFiles('client/popup/messagePopupUser.html', 'client');
 
+	api.addFiles('client/forwardMessage.js', 'client');
 	api.addFiles('client/message.js', 'client');
 	api.addFiles('client/messageBox.js', 'client');
+	api.addFiles('client/messagePreview.js', 'client');
 	api.addFiles('client/popup/messagePopup.js', 'client');
 	api.addFiles('client/popup/messagePopupChannel.js', 'client');
 	api.addFiles('client/popup/messagePopupConfig.js', 'client');
