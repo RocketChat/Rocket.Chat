@@ -1709,6 +1709,8 @@
   "Stats_Total_Users": "Total Users",
   "Status": "Status",
   "Stop_Recording": "Stop Recording",
+  "Store_Last_Message": "Store Last Message",
+  "Store_Last_Message_Sent_per_Room": "Store last message sent on each room.",
   "Stream_Cast": "Stream Cast",
   "Stream_Cast_Address": "Stream Cast Address",
   "Stream_Cast_Address_Description": "IP or Host of your Rocket.Chat central Stream Cast. E.g. `192.168.1.1:3000` or `localhost:4000`",

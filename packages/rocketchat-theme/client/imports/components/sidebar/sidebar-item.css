@@ -216,8 +216,17 @@
 		font-size: 12px;
 		line-height: 12px;
 
-		& > p {
+		& > p, & code, & pre {
 			display: inline;
+			white-space: unset;
+		}
+
+		& br {
+			display: none;
+		}
+
+		& a {
+			pointer-events: none;
 		}
 	}
 
