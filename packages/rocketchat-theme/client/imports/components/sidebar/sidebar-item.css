@@ -40,6 +40,7 @@
 				&-top,
 				&-bottom {
 					display: flex;
+
 					width: 100%;
 					align-items: center;
 				}
@@ -63,13 +64,14 @@
 
 	cursor: pointer;
 
-	border-radius: var(--sidebar-item-radius);
-	align-items: center;
+	transition: all 0.3s;
 
-	background-color: var(--sidebar-item-background);
 	color: var(--sidebar-item-text-color);
 
-	transition: all 0.3s;
+	border-radius: var(--sidebar-item-radius);
+
+	background-color: var(--sidebar-item-background);
+	align-items: center;
 
 	&:hover {
 		background-color: var(--sidebar-item-hover-background);
@@ -148,35 +150,38 @@
 	&__picture {
 		display: flex;
 		flex: 0 0 var(--sidebar-item-thumb-size);
-		color: var(--sidebar-item-unread-color);
-		border-radius: var(--sidebar-item-radius);
 
 		margin: 0 4px;
+
+		color: var(--sidebar-item-unread-color);
+		border-radius: var(--sidebar-item-radius);
 
 		align-items: center;
 	}
 
 	&__body {
 		display: flex;
-		flex: 1;
-		align-items: center;
-
-		margin: 0 4px;
 
 		overflow: hidden;
+		flex: 1;
+
+		margin: 0 4px;
+		align-items: center;
 	}
 
 	&__message {
-		flex: 1;
 		display: flex;
-		flex-direction: row;
-		justify-content: center;
 		overflow: hidden;
+		flex-direction: row;
+		flex: 1;
+
+		margin: 0 -3px;
 		align-items: center;
+		justify-content: center;
 
 		&-top {
-			flex: 1;
 			overflow: hidden;
+			flex: 1;
 		}
 
 		&-bottom {
@@ -187,23 +192,29 @@
 	&__name {
 		overflow: hidden;
 
+		flex: 1;
+
+		margin: 0 3px;
+
 		white-space: nowrap;
 		text-overflow: ellipsis;
 
 		font-size: var(--sidebar-item-text-size);
 
 		line-height: 1.2rem;
-
-		flex: 1;
 	}
 
 	&__last-message {
+		overflow: hidden;
 		flex: 1;
+
+		margin: 0 3px;
+
+		white-space: nowrap;
+		text-overflow: ellipsis;
+
 		font-size: 12px;
 		line-height: 12px;
-		overflow: hidden;
-		text-overflow: ellipsis;
-		white-space: nowrap;
 
 		& > p {
 			display: inline;
@@ -211,16 +222,21 @@
 	}
 
 	&__time {
-		font-size: 10px;
+		margin: 0 3px;
+
 		color: var(--sidebar-item-text-color);
+
+		font-size: 10px;
 	}
 
 	&__menu {
-		padding: 6px;
 		position: absolute;
 		right: 0;
+
 		display: none;
 		flex: 0;
+
+		padding: 6px;
 
 		&-icon {
 			fill: var(--color-white);
@@ -228,14 +244,14 @@
 	}
 
 	& .mention-link {
+		color: inherit;
 		background: transparent;
-    color: inherit;
 	}
 }
 
 .rtl .sidebar-item__menu {
-  left: 0;
-  right: auto;
+	right: auto;
+	left: 0;
 }
 
 .rtl .sidebar-item__user-status {
