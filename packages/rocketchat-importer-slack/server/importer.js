@@ -13,8 +13,6 @@ export class SlackImporter extends Base {
 		super(info);
 		this.userTags = [];
 		this.bots = {};
-
-		this.logger.debug(`Constructed a new ${ info.name } Importer.`);
 	}
 
 	prepare(dataURI, sentContentType, fileName) {

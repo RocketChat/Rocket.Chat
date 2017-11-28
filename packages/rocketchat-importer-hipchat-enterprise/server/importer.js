@@ -9,7 +9,6 @@ import {
 export class HipChatEnterpriseImporter extends Base {
 	constructor(info) {
 		super(info);
-		this.logger.debug(`Constructed a new ${ info.name } Importer.`);
 
 		this.Readable = require('stream').Readable;
 		this.zlib = require('zlib');
