@@ -21,14 +21,14 @@
 				<div class="sidebar-item__message">
 					<div class="sidebar-item__message-top">
 						<div class="sidebar-item__name">{{name}}</div>
-						{{#if lastMessage.ts}}
-							<span class="sidebar-item__time">{{timeAgo lastMessage.ts}}</span>
+						{{#if lastMessageTs}}
+							<span class="sidebar-item__time">{{lastMessageTs}}</span>
 						{{/if}}
 					</div>
 					<div class="sidebar-item__message-bottom">
-						{{#with lastMessage}}
-							<div class="sidebar-item__last-message">{{{renderedMessage}}}</div>
-						{{/with}}
+						{{#if lastMessage}}
+							<div class="sidebar-item__last-message">{{{lastMessage}}}</div>
+						{{/if}}
 						{{#if unread}}
 							<span class="badge badge--unread">{{#if userMentions}}@ {{/if}}{{unread}}</span>
 						{{/if}}
