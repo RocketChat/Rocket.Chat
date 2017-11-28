@@ -10,10 +10,10 @@ Template.sidebarItem.helpers({
 		return this.rid || this._id;
 	},
 	lastMessage() {
-		return Template.instance().renderedMessage;
+		return this.lastMessage && Template.instance().renderedMessage;
 	},
 	lastMessageTs() {
-		return Template.instance().lastMessageTs.get();
+		return this.lastMessage && Template.instance().lastMessageTs.get();
 	},
 	colorStyle() {
 		return `background-color: ${ RocketChat.getAvatarColor(this.name) }`;
@@ -51,9 +51,10 @@ Template.sidebarItem.onCreated(function() {
 
 		if (currentData.lastMessage) {
 			if (currentData.lastMessage._id) {
-				const sender = Meteor.userId() === currentData.lastMessage.u._id ? t('You') : currentData.lastMessage.u.username;
+				const otherUser = RocketChat.settings.get('UI_Use_Real_Name') ? currentData.lastMessage.u.name || currentData.lastMessage.u.username : currentData.lastMessage.u.username;
+				const sender = Meteor.userId() === currentData.lastMessage.u._id ? t('You') : otherUser;
 				if (currentData.lastMessage.msg === '') {
-					this.renderedMessage = t('sent_an_attachment', {user: sender});
+					this.renderedMessage = t('user_sent_an_attachment', {user: sender});
 				} else {
 					this.renderedMessage = `${ sender }: ${ renderMessageBody(currentData.lastMessage) }`;
 				}
