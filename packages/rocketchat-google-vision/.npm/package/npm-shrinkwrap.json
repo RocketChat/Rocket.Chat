@@ -331,9 +331,9 @@
           "integrity": "sha1-m+3VygiXlJvKR+f/QIBi1Un1h/I="
         },
         "protobufjs": {
-          "version": "6.8.0",
-          "resolved": "https://registry.npmjs.org/protobufjs/-/protobufjs-6.8.0.tgz",
-          "integrity": "sha512-47Y49f5JN5Qsbxas2TyI2zFO8j9GpQAQm5thf54fr2O8qcP/jkIXYxmYx1hN2WQFAhESU1xpVn5NWVDBB8WFnw=="
+          "version": "6.8.1",
+          "resolved": "https://registry.npmjs.org/protobufjs/-/protobufjs-6.8.1.tgz",
+          "integrity": "sha512-xOyhhFjawVl3aLCxARV6LfOBUJUPM/GPOxy3yx0heGRKQOpL5aCG5j11eeR//oiE2TRghX8jbdqIjiaCAhn7nQ=="
         }
       }
     },

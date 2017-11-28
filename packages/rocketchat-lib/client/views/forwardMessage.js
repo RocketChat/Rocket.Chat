@@ -12,11 +12,13 @@ Template.forwardMessage.helpers({
 });
 
 Template.forwardMessage.onCreated(function() {
-	// TODO #396
+	this.message = FlowRouter.getParam('message');
+
 });
 
 Template.forwardMessage.events({
 	// TODO #396
+	// toastr.success(TAPi18n.__('Forwarded'));
 });
 
 const parent = document.querySelector('.main-content');
@@ -24,7 +26,9 @@ const parent = document.querySelector('.main-content');
 FlowRouter.route('/forward-message', {
 	name: 'forward-message',
 
-	action() {
+	action(params, queryParams) {
+		console.log('Query Params:', queryParams);
+
 		if (parent) {
 			Blaze.renderWithData(Template.fullModal, {template: 'forwardMessage'}, parent);
 		} else {

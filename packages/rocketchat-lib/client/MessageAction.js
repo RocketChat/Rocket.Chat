@@ -136,10 +136,9 @@ Meteor.startup(function() {
 		context: ['message', 'message-mobile'],
 		action() {
 			const message = this._arguments[1];
-			// const { input } = chatMessages[message.rid];
-			FlowRouter.go('forward-message');
+			const url = RocketChat.MessageAction.getPermaLink(message._id);
 
-			toastr.success(TAPi18n.__('Forwarded'));
+			FlowRouter.go(FlowRouter.path('forward-message', {}, {message: `[ ](${ url }) `}));
 		},
 		condition(message) {
 			return !(RocketChat.models.Subscriptions.findOne({rid: message.rid}) === null);
