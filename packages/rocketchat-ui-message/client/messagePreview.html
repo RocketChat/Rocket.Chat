@@ -1,12 +1,12 @@
 <template name="messagePreview">
-	<li id="{{_id}}" data-context={{actionContext}} class="message background-transparent-dark-hover {{system}} {{t}} {{own}} {{isTemp}} {{chatops}} {{customClass}}" data-username="{{u.username}}" data-date="{{date}}" data-timestamp="{{timestamp}}">
+	<div id="{{_id}}" data-context={{actionContext}} class="message background-transparent-dark-hover {{system}} {{t}} {{own}} {{isTemp}} {{chatops}} {{customClass}}" data-username="{{u.username}}" data-date="{{date}}" data-timestamp="{{timestamp}}">
 		{{#if avatar}}
 			{{#if avatarFromUsername}}
 				<button class="thumb user-card-message" data-username="{{u.username}}" tabindex="1">{{> avatar username=avatarFromUsername}}</button>
 			{{else}}
 				<button class="thumb user-card-message" data-username="{{u.username}}" tabindex="1">
 					<div class="avatar">
-						<!-- <div class="avatar-image" style="background-image:url({{encodeURI avatar}})"></div> -->
+						<div class="avatar-image" style="background-image:url({{encodeURI avatar}})"></div>
 					</div>
 				</button>
 			{{/if}}
@@ -44,5 +44,5 @@
 				{{injectIndex . @index}} {{> messageAttachment}}
 			{{/each}}
 		</div>
-	</li>
+	</div>
 </template>

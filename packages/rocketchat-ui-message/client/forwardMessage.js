@@ -14,7 +14,7 @@ Template.forwardMessage.helpers({
 Template.forwardMessage.onCreated(function() {
 	this._id = FlowRouter.getQueryParam('id');
 
-	this.message = ChatMessage.find(this._id, {sort: {ts: 1}});
+	this.message = ChatMessage.findOne(this._id, {sort: {ts: 1}});
 });
 
 Template.forwardMessage.events({
