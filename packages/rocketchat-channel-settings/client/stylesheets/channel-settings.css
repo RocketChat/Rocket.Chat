@@ -50,7 +50,6 @@ html.rtl .flex-tab {
 		}
 
 		& .editing {
-			margin: -2px 0 -1px -9px;
 			padding-right: 80px;
 			font-size: 14px;
 		}

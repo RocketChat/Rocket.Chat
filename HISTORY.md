@@ -1,3 +1,13 @@
+<a name="0.59.4"></a>
+## 0.59.4 (2017-11-28)
+
+### Bug Fixes
+
+- [#8413](https://github.com/RocketChat/Rocket.Chat/pull/8413) Store Outgoing Integration Result as String in Mongo
+- [#8753](https://github.com/RocketChat/Rocket.Chat/pull/8753) Fix Channel settings buttons
+
+
+
 <a name="0.59.3"></a>
 ## 0.59.3 (2017-10-29)
 
