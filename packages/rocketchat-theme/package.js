@@ -11,7 +11,6 @@ Package.onUse(function(api) {
 	api.use('rocketchat:assets');
 	api.use('ecmascript');
 	api.use('less');
-	api.use('underscore');
 	api.use('webapp');
 	api.use('webapp-hashing');
 	api.use('templating', 'client');

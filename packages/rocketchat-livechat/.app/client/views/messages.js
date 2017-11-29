@@ -1,5 +1,6 @@
 /* globals Livechat, LivechatVideoCall, MsgTyping */
 import visitor from '../../imports/client/visitor';
+import _ from 'underscore';
 
 Template.messages.helpers({
 	messages() {

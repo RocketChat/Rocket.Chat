@@ -1,8 +1,6 @@
-/* globals KonchatNotification */
-
 Template.chatRoomItem.helpers({
 	roomData() {
-		let name = this.name;
+		let {name} = this;
 		const realNameForDirectMessages = RocketChat.settings.get('UI_Use_Real_Name') && this.t === 'd';
 		const realNameForChannel = RocketChat.settings.get('UI_Allow_room_names_with_special_chars') && this.t !== 'd';
 		if ((realNameForDirectMessages || realNameForChannel) && this.fname) {
@@ -21,14 +19,7 @@ Template.chatRoomItem.helpers({
 
 		const archivedClass = this.archived ? 'archived' : false;
 
-		let alertClass = false;
-		if (!this.hideUnreadStatus && (FlowRouter.getParam('_id') !== this.rid || !document.hasFocus()) && this.alert) {
-			alertClass = 'sidebar-item__link--active';
-		}
-		// Sound notification
-		if (!(FlowRouter.getParam('name') === this.name) && !this.ls && this.alert === true) {
-			KonchatNotification.newRoom(this.rid);
-		}
+		this.alert = !this.hideUnreadStatus && (FlowRouter.getParam('_id') !== this.rid || !document.hasFocus()) && this.alert;
 
 		const icon = RocketChat.roomTypes.getIcon(this.t);
 		const avatar = !icon;
@@ -37,19 +28,13 @@ Template.chatRoomItem.helpers({
 			...this,
 			icon,
 			avatar,
+			username : this.name,
 			route: RocketChat.roomTypes.getRouteLink(this.t, this),
 			name,
 			unread,
 			active,
 			archivedClass,
-			alertClass,
 			statusClass: this.t === 'd' ? Session.get(`user_${ this.name }_status`) || 'offline' : this.t === 'l' ? RocketChat.roomTypes.getUserStatus(this.t, this.rid) || 'offline' : false
 		};
 	}
 });
-
-Template.chatRoomItem.onRendered = function() {
-	if (!(FlowRouter.getParam('name') && (FlowRouter.getParam('name') === this.name)) && !this.ls && (this.alert === true)) {
-		return KonchatNotification.newRoom(this.rid);
-	}
-};

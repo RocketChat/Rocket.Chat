@@ -1,5 +1,6 @@
 /* globals Department, Livechat, LivechatVideoCall */
 import visitor from '../../imports/client/visitor';
+import _ from 'underscore';
 
 Template.register.helpers({
 	error() {

@@ -1,5 +1,6 @@
 /* eslint new-cap: [2, {"capIsNewExceptions": ["Match.ObjectIncluding"]}] */
 import LivechatVisitors from '../models/LivechatVisitors';
+import _ from 'underscore';
 
 Meteor.methods({
 	'livechat:saveSurveyFeedback'(visitorToken, visitorRoom, formData) {

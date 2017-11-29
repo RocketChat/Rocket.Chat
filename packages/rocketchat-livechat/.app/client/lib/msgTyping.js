@@ -1,5 +1,6 @@
 /* globals Notifications */
 import visitor from '../../imports/client/visitor';
+import _ from 'underscore';
 
 export const MsgTyping = (function() {
 	const timeout = 15000;

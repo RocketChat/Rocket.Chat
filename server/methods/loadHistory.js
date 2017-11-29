@@ -1,3 +1,22 @@
+const hideMessagesOfType = [];
+
+RocketChat.settings.get(/Message_HideType_.+/, function(key, value) {
+	const type = key.replace('Message_HideType_', '');
+	const types = type === 'mute_unmute' ? ['user-muted', 'user-unmuted'] : [type];
+
+	return types.forEach((type) => {
+		const index = hideMessagesOfType.indexOf(type);
+
+		if (value === true && index === -1) {
+			return hideMessagesOfType.push(type);
+		}
+
+		if (index > -1) {
+			return hideMessagesOfType.splice(index, 1);
+		}
+	});
+});
+
 Meteor.methods({
 	loadHistory(rid, end, limit = 20, ls) {
 		check(rid, String);
