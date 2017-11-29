@@ -13,16 +13,26 @@ Template.permissions.helpers({
 	},
 
 	permissions() {
-		return ChatPermissions.find(whereNotSetting,
+		return ChatPermissions.find(whereNotSetting, //the $where seems to have no effect - filtered as workaround after fetch()
 			{
 				sort: {
 					_id: 1
 				}
-			}).fetch().filter((setting)=>!setting.level);
+			}).fetch()
+			.filter((setting) => !setting.level);
 	},
 
 	settingPermissions() {
-		return ChatPermissions.find({level: permissionLevel.SETTING});
+		return ChatPermissions.find({
+			level: permissionLevel.SETTING
+		},
+		{
+			sort: { //sorting seems not to be copied from the publication, we need to request it explicitly in find()
+				group: 1,
+				section: 1
+			}
+		}).fetch()
+			.filter((setting) => setting.group); //group permissions are assigned implicitly,  we can hide them. $exists: {group:false} not supported by Minimongo
 	},
 
 	hasPermission() {

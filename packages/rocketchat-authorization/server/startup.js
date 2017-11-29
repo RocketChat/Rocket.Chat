@@ -124,9 +124,11 @@ Meteor.startup(function() {
 		const permission = {
 			_id: permissionId,
 			level: permissionLevel.SETTING,
+			//copy those setting-properties which are needed to properly publish the setting-based permissions
 			settingId: setting._id,
 			group: setting.group,
-			section: setting.section
+			section: setting.section,
+			sorter: setting.sorter
 		};
 		// copy previously assigned roles if available
 		if (previousSettingPermissions[permissionId] && previousSettingPermissions[permissionId].roles) {
@@ -166,8 +168,14 @@ Meteor.startup(function() {
 	// register a callback for settings for be create in higher-level-packages
 	const createPermissionForAddedSetting = function(settingId) {
 		const previousSettingPermissions = getPreviousPermissions(settingId);
-		const setting = RocketChat.models.Settings.findOneNotHiddenById(settingId);
-		createSettingPermission(setting, previousSettingPermissions);
+		const setting = RocketChat.models.Settings.findOneById(settingId);
+		if (setting) {
+			if (!setting.hidden) {
+				createSettingPermission(setting, previousSettingPermissions);
+			}
+		} else {
+			SystemLogger.error('Could not create permission for setting', settingId);
+		}
 	};
 
 	RocketChat.settings.onload('*', createPermissionForAddedSetting);

@@ -21,7 +21,6 @@ Package.onUse(function(api) {
 	api.addFiles('lib/rocketchat.js', ['server', 'client']);
 
 	api.addFiles('client/lib/ChatPermissions.js', ['client']);
-	api.addFiles('client/lib/SettingPermissions.js', ['client']);
 	api.addFiles('client/lib/models/Roles.js', ['client']);
 	api.addFiles('client/lib/models/Users.js', ['client']);
 	api.addFiles('client/lib/models/Subscriptions.js', ['client']);
