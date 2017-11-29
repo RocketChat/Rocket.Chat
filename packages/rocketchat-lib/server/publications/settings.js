@@ -73,5 +73,5 @@ RocketChat.Notifications.streamAll.allowRead('private-settings-changed', functio
 	if (this.userId == null) {
 		return false;
 	}
-	return RocketChat.authz.hasPermission(this.userId, 'view-privileged-setting');
+	return RocketChat.authz.hasAtLeastOnePermission(this.userId, ['view-privileged-setting', 'manage-selected-settings']);
 });
