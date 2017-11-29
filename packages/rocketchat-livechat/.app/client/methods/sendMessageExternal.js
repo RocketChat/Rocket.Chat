@@ -1,4 +1,5 @@
 import visitor from '../../imports/client/visitor';
+import s from 'underscore.string';
 
 Meteor.methods({
 	sendMessageLivechat(message) {

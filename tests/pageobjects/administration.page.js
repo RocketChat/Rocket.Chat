@@ -3,6 +3,7 @@ import Page from './Page';
 class Administration extends Page {
 	get flexNav() { return browser.element('.flex-nav'); }
 	get flexNavContent() { return browser.element('.flex-nav'); }
+	get settingsSearch() { return browser.element('[name=settings-search]'); }
 	get layoutLink() { return browser.element('.flex-nav [href="/admin/Layout"]'); }
 	get infoLink() { return browser.element('.flex-nav [href="/admin/info"]'); }
 	get roomsLink() { return browser.element('.flex-nav [href="/admin/rooms"]'); }
@@ -123,7 +124,11 @@ class Administration extends Page {
 		element.waitForVisible(5000);
 		browser.pause(500);
 		const result = element.isVisible();
-		return result[0];
+		if (Array.isArray(result)) {
+			return result[0];
+		}
+
+		return result;
 	}
 
 	getUserFromList(user) {

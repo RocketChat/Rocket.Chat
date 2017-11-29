@@ -9,7 +9,7 @@ branches:
 git:
   depth: 1
 node_js:
-- '4'
+- '8'
 addons:
   apt:
     sources:
@@ -41,11 +41,13 @@ before_install:
 install:
 - export PATH="$HOME/.meteor:$PATH"
 before_script:
+- if [[ $TRAVIS_TAG ]]; then meteor reset; fi
 - echo "replication:" | sudo tee -a /etc/mongod.conf
 - |-
   echo "  replSetName: \"rs0\"" | sudo tee -a /etc/mongod.conf
 - sudo service mongod restart
 - mkdir /tmp/build
+- meteor --version
 - travis_retry meteor npm install
 - |-
   mongo --eval 'rs.initiate({_id:"rs0", members: [{"_id":1, "host":"localhost:27017"}]})'
@@ -56,16 +58,15 @@ before_script:
 - mkdir /tmp/build-test
 - tar -xf /tmp/build/Rocket.Chat.tar.gz -C /tmp/build-test/
 - cd /tmp/build-test/bundle/programs/server
-- meteor npm install -g node-gyp node-pre-gyp
-- meteor npm install
+- npm install
 - cd -
 - mongo --eval 'rs.status()'
 - mongo meteor --eval 'db.getCollectionNames()'
 script:
-- travis_retry meteor npm test
+- travis_retry npm test
 - mongo meteor --eval 'db.dropDatabase()'
 - unset MONGO_OPLOG_URL
-- travis_retry meteor npm test
+- travis_retry npm test
 before_deploy:
 - source ".travis/setartname.sh"
 - source ".travis/setdeploydir.sh"

@@ -1,6 +1,7 @@
 /* globals readMessage UserRoles RoomRoles*/
 
 import visitor from '../../../imports/client/visitor';
+import _ from 'underscore';
 
 export const RoomHistoryManager = new class {
 	constructor() {
