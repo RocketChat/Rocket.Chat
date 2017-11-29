@@ -172,6 +172,7 @@ jobs:
           name: NPM install
           command: |
             npm install
+            npm install webdriverio@4.8.0
 
       - run:
           name: Run Tests
@@ -206,6 +207,7 @@ jobs:
           name: NPM install
           command: |
             npm install
+            npm install webdriverio@4.8.0
 
       - run:
           name: Run Tests
