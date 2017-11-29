@@ -166,7 +166,7 @@ jobs:
       - run:
           name: Update NPM
           command: |
-            sudo npm install -g npm
+            sudo npm install -g npm@4.6.1
 
       - run:
           name: NPM install
@@ -201,7 +201,7 @@ jobs:
       - run:
           name: Update NPM
           command: |
-            sudo npm install -g npm
+            sudo npm install -g npm@4.6.1
 
       - run:
           name: NPM install
