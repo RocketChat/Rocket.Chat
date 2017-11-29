@@ -32,7 +32,6 @@ const fields = {
 	sentiment: 1
 };
 
-
 const roomMap = (record) => {
 	if (record._room) {
 		return _.pick(record._room, ...Object.keys(fields));
@@ -91,7 +90,11 @@ Meteor.methods({
 			throw new Meteor.Error('error-no-permission', 'No permission', { method: 'getRoomByTypeAndName' });
 		}
 
-		return roomMap({_room: room});
+		if (RocketChat.settings.get('Store_Last_Message') && !RocketChat.authz.hasPermission(Meteor.userId(), 'preview-c-room')) {
+			delete room.lastMessage;
+		}
+
+		return roomMap({ _room: room });
 	}
 });
 
