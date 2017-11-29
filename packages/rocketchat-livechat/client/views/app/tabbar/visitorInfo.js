@@ -1,5 +1,7 @@
 /* globals LivechatVisitor */
 
+import _ from 'underscore';
+import s from 'underscore.string';
 import moment from 'moment';
 import UAParser from 'ua-parser-js';
 

@@ -1,3 +1,5 @@
+import _ from 'underscore';
+
 /**
  * Gets visitor by token
  * @param {string} token - Visitor token

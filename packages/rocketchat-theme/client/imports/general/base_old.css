@@ -3227,17 +3227,13 @@
 			list-style-type: decimal;
 		}
 
-		& > * + * {
-			padding-top: 10px;
-		}
-
 		& > table {
 			display: block;
 			overflow: auto;
 
 			& tr {
-				background-color: #ffffff;
 				border-top: 1px solid #cccccc;
+				background-color: #ffffff;
 
 				&:nth-child(2n) {
 					background-color: #f6f8fa;
@@ -3250,6 +3246,7 @@
 				& th,
 				& td {
 					padding: 6px 13px;
+
 					border: 1px solid #dddddd;
 				}
 			}
@@ -3257,10 +3254,11 @@
 
 		& > hr {
 			height: 3px;
-			padding: 0;
 			margin: 12px 0;
-			background-color: #e7e7e7;
+			padding: 0;
+
 			border: 0;
+			background-color: #e7e7e7;
 		}
 	}
 
@@ -3276,17 +3274,20 @@
 }
 
 .rc-old .image-labels {
-	margin: 5px 0 25px;
 	display: flex;
+
+	margin: 5px 0 25px;
 	flex-wrap: wrap;
 }
 
 .rc-old .image-label {
-	padding: 9px 4px;
-	border-radius: 2px;
-	font-size: 12px;
-	margin-right: 5px;
 	margin-top: 5px;
+	margin-right: 5px;
+	padding: 9px 4px;
+
+	border-radius: 2px;
+
+	font-size: 12px;
 
 	&:last-child {
 		margin-right: 0;
@@ -3428,7 +3429,6 @@ body:not(.is-cordova) {
 		overflow-x: visible;
 
 		width: var(--flex-tab-width);
-		height: calc(100vh - 61px);
 
 		& .control {
 			& .header {
@@ -3515,33 +3515,25 @@ body:not(.is-cordova) {
 		}
 
 		& .content {
-			position: absolute;
-			top: auto;
-			left: 0;
-
-			overflow-x: hidden;
-			overflow-y: auto;
-
-			width: 100%;
-			height: 100%;
-			-webkit-overflow-scrolling: touch;
-
 			& > div {
+				overflow-y: auto;
+
 				transition: transform 0.45s cubic-bezier(0.5, 0, 0, 1), opacity 0.125s ease-out 0.1s;
 			}
 
 			& > .animated-hidden {
-				transform: translateX(100%);
+				transform: translateX(calc(100% + 40px));
 
 				opacity: 0;
 			}
 
 			& .section {
+				margin: 20px;
+				padding: 20px;
+
 				border: 1px solid #dddddd;
 				border-radius: 4px;
 				background-color: #ffffff;
-				padding: 20px;
-				margin: 20px;
 			}
 
 			& > .animated {
@@ -3564,6 +3556,10 @@ body:not(.is-cordova) {
 					line-height: var(--header-min-height);
 				}
 			}
+		}
+
+		& .channel-settings .button {
+			visibility: initial;
 		}
 
 		& footer {
@@ -3746,7 +3742,13 @@ body:not(.is-cordova) {
 	}
 
 	&.uploaded-files-list {
-		& a .file-name {
+	  	& ul {
+		  & li {
+			margin-bottom: 10px;
+		  }
+		}
+
+		& .file-name {
 			display: block;
 
 			padding: 10px 5px;
@@ -3771,19 +3773,14 @@ body:not(.is-cordova) {
 
 		& i {
 			float: left;
-
 			margin-right: 10px;
 
 			&.file-delete {
 				float: right;
-
-				padding-top: 10px;
 			}
 
 			&.file-download {
 				float: right;
-
-				padding-top: 11px;
 			}
 		}
 	}
@@ -4597,7 +4594,7 @@ body:not(.is-cordova) {
 
 .full-page,
 .page-loading {
-	background-color: var(--color-primary);
+	background-color: var(--rc-color-primary);
 }
 
 .rc-old.full-page {
@@ -5188,18 +5185,20 @@ body:not(.is-cordova) {
 	&__content {
 		display: flex;
 		flex-direction: column;
+
 		height: 100%;
 		padding: 20px;
 	}
 
 	&__header {
 		flex: 0 0 auto;
+
 		padding-bottom: 10px;
 	}
 
 	&__result {
+		overflow-y: auto;
 		flex: 1 1 auto;
-    overflow-y: auto;
 	}
 
 	& .message-cog-container {

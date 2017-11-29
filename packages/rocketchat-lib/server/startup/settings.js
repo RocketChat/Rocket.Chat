@@ -585,7 +585,7 @@ RocketChat.settings.addGroup('Email', function() {
 			multiline: true,
 			i18nLabel: 'Footer'
 		});
-		return this.add('Email_Footer_Direct_Reply', '</td></tr></table></td></tr><tr><td border="0" cellspacing="0" cellpadding="0" width="100%" style="font-family: Helvetica,Arial,sans-serif; max-width: 800px; margin: 0 auto; padding: 1.5em; text-align: center; font-size: 8pt; color: #999;">You can directly reply to this email.<br>Do not temper reply email<br>Powered by <a href="https://rocket.chat" target="_blank">Rocket.Chat</a></td></tr></table></td></tr></table></html>', {
+		return this.add('Email_Footer_Direct_Reply', '</td></tr></table></td></tr><tr><td border="0" cellspacing="0" cellpadding="0" width="100%" style="font-family: Helvetica,Arial,sans-serif; max-width: 800px; margin: 0 auto; padding: 1.5em; text-align: center; font-size: 8pt; color: #999;">You can directly reply to this email.<br>Do not modify previous emails in the thread.<br>Powered by <a href="https://rocket.chat" target="_blank">Rocket.Chat</a></td></tr></table></td></tr></table></html>', {
 			type: 'code',
 			code: 'text/html',
 			multiline: true,
@@ -1002,6 +1002,10 @@ RocketChat.settings.addGroup('Message', function() {
 		type: 'boolean',
 		'public': true
 	});
+	this.add('Message_AllowDirectMessagesToYourself', true, {
+		type: 'boolean',
+		'public': true
+	});
 	this.add('Message_AlwaysSearchRegExp', false, {
 		type: 'boolean'
 	});
@@ -1255,7 +1259,7 @@ RocketChat.settings.addGroup('Layout', function() {
 			multiline: true,
 			'public': true
 		});
-		this.add('Layout_Login_Terms', 'By proceeding you are agreeing to our <a href="/terms-of-service">Terms of Service</a> and <a href="/privacy-policy">Privacy Policy</a>.', {
+		this.add('Layout_Login_Terms', 'By proceeding you are agreeing to our <a href="terms-of-service">Terms of Service</a> and <a href="privacy-policy">Privacy Policy</a>.', {
 			type: 'string',
 			multiline: true,
 			'public': true
