@@ -16,7 +16,7 @@ export const request = supertest.agent('http://rocketchat:3000');
 import {checkIfUserIsAdmin} from '../../data/checks';
 
 
-describe('[Smarti Integration]', () => {
+describe.skip('[Smarti Integration]', () => {
 
 	before(() => {
 		checkIfUserIsAdmin(adminUsername, adminEmail, adminPassword); // is broken -- if not admin it will log in as user or create a user
@@ -82,7 +82,7 @@ describe('[Smarti Integration]', () => {
 	describe('Cleanup', () => {
 		it('close new Topic', () => {
 			assistify.closeTopic(topicName);
-		})
+		});
 	});
 
 	describe.skip('[BREAK]', () => {
