@@ -38,19 +38,28 @@ describe('[Smarti Connection]', ()=>{
 			var clientid;
 
 			it('create new client', (done)=>{
-				request.post('/client')
-					.send({
-						defaultClient: true,
-						description: "",
-						name: "testclient"
+				request.get('/client')
+					.expect(200)
+					.expect(function(res){
+						clientid = res.body[0].id;
 					})
-					.set('Accept', 'application/json')
-					.end(function(err, res){
-						clientid = res.body.id;
-						expect(res.status).to.be.equal(200);
-						console.log('clientid',res.body.id);
-						done();
-					});
+					.end(done);
+
+				if (clientid.equal(undefined)){
+					request.post('/client')
+						.send({
+							defaultClient: true,
+							description: "",
+							name: "testclient"
+						})
+						.set('Accept', 'application/json')
+						.end(function(err, res){
+							clientid = res.body.id;
+							expect(res.status).to.be.equal(200);
+							console.log('clientid',res.body.id);
+							done();
+						});
+				}
 			});
 
 			it ('get client id', function(done) {
