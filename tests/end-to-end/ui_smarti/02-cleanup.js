@@ -1,5 +1,7 @@
 import supertest from 'supertest';
 export const request = supertest.agent('http://localhost:8080');
+import assistify from '../../pageobjects/assistify.page';
+
 
 describe('[Smarti Cleanup]', ()=> {
 	var clientid;
@@ -17,5 +19,10 @@ describe('[Smarti Cleanup]', ()=> {
 		request.del('/client/'+clientid)
 			.expect(200)
 			.end(done);
+	});
+
+	it('logout of rocket.chat', function(done) {
+		assistify.logoutRocketchat();
+		done();
 	});
 });

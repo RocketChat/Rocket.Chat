@@ -24,7 +24,13 @@ describe('[Smarti Integration]', () => {
 
 	describe('[Topic]', () => {
 		before(() => {
-			assistify.createTopic(topicName, topicExpert);
+			try {
+				assistify.createTopic(topicName, topicExpert);
+			}
+			catch(e) {
+				console.log(e);
+				sideNav.openChannel(topicName);
+			}
 
 		});
 
@@ -81,14 +87,15 @@ describe('[Smarti Integration]', () => {
 
 	describe('Cleanup', () => {
 		it('close new Topic', () => {
+			console.log('TopicName for cleanup', topicName);
 			assistify.closeTopic(topicName);
 		});
 	});
 
-	describe.skip('[BREAK]', () => {
-		it('BREAK', () => {
-			true.should.equal(false);
-		});
-	});
+	// describe.skip('[BREAK]', () => {
+	// 	it('BREAK', () => {
+	// 		true.should.equal(false);
+	// 	});
+	// });
 
 });

@@ -180,6 +180,13 @@ class Assistify extends Page {
 		this.knowledgebaseTab.waitForVisible(5000);
 		this.knowledgebaseTab.click();
 	}
+
+	logoutRocketchat() {
+		sideNav.accountMenu.waitForVisible(5000);
+		sideNav.accountMenu.click();
+		sideNav.logout.waitForVisible(5000);
+		sideNav.logout.click();
+	}
 }
 
 

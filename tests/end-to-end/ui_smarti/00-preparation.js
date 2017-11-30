@@ -99,10 +99,10 @@ describe('[Smarti Connection]', ()=>{
 		});
 	});
 
-	describe.skip('[BREAK]', ()=> {
-		it('BREAK', ()=> {
-			true.should.equal(false);
-		});
-	});
+	// describe.skip('[BREAK]', ()=> {
+	// 	it('BREAK', ()=> {
+	// 		true.should.equal(false);
+	// 	});
+	// });
 
 });
