@@ -1,3 +1,6 @@
+import _ from 'underscore';
+import s from 'underscore.string';
+
 class LivechatVisitors extends RocketChat.models._Base {
 	constructor() {
 		super('livechat_visitor');
