@@ -1,0 +1,43 @@
+.forward-message {
+	display: flex;
+	flex-direction: column;
+
+	animation-name: fadeIn;
+	animation-duration: 1s;
+
+	&__header,
+	&__inputs,
+	& .rc-input:not(:last-child) {
+		margin-bottom: var(--create-channel-gap-between-elements);
+	}
+
+	&__title {
+		padding: 0.25rem 0;
+
+		color: var(--create-channel-title-color);
+
+		font-size: var(--create-channel-title-text-size);
+	}
+
+	&__description {
+		padding: 0.25rem 0;
+
+		color: var(--create-channel-description-color);
+
+		font-size: var(--create-channel-description-text-size);
+	}
+
+	&__content {
+		overflow-y: auto;
+	}
+}
+
+@keyframes fadeIn {
+	0% {
+		opacity: 0;
+	}
+
+	100% {
+		opacity: 1;
+	}
+}

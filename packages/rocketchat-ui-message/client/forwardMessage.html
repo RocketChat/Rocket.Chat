@@ -5,7 +5,7 @@
 		</header>
 
 		<form class="forward-message__content">
-			{{> messagePreview getMessage}}
+			{{> messagePreview message}}
 
 			<div class="forward-message__inputs">
 				<div class="rc-input">
@@ -16,18 +16,23 @@
 								{{> icon block="rc-input__icon-svg" icon="at"}}
 							</div>
 
-							<div class="rc-tags">
-								<select name="destinations">
-									<option value=""></option>
-									{{#each channels}}
-										<option value="{{_id}}">{{name}}</option>
-									{{/each}}
+							<!--TODO: #396-->
+							{{#each users}}
+								<span class="rc-tags__tag">
+									<span class="rc-tags__tag-avatar">
+										{{> avatar username=username}}
+									</span>
 
-									{{#each users}}
-										<option value="{{_id}}">{{name}}</option>
-									{{/each}}
-								</select>
-							</div>
+									<span class="rc-tags__tag-username">{{username}}</span>
+									{{> icon block="rc-tags__tag-icon" icon="cross"}}
+								</span>
+							{{/each}}
+
+							{{#each channels}}
+								<span class="rc-tags__tag">
+									<span class="rc-tags__tag-username">{{name}}</span>
+								</span>
+							{{/each}}
 						</div>
 					</label>
 				</div>

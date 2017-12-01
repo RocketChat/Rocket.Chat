@@ -37,6 +37,7 @@
 /* Modal */
 @import 'imports/components/modal/full-modal.css';
 @import 'imports/components/modal/create-channel.css';
+@import 'imports/components/modal/forward-message.css';
 
 /* RTL */
 @import 'imports/general/rtl.css';
