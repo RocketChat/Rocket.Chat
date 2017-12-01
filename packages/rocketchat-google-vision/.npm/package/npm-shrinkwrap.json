@@ -331,9 +331,9 @@
           "integrity": "sha1-m+3VygiXlJvKR+f/QIBi1Un1h/I="
         },
         "protobufjs": {
-          "version": "6.8.1",
-          "resolved": "https://registry.npmjs.org/protobufjs/-/protobufjs-6.8.1.tgz",
-          "integrity": "sha512-xOyhhFjawVl3aLCxARV6LfOBUJUPM/GPOxy3yx0heGRKQOpL5aCG5j11eeR//oiE2TRghX8jbdqIjiaCAhn7nQ=="
+          "version": "6.8.3",
+          "resolved": "https://registry.npmjs.org/protobufjs/-/protobufjs-6.8.3.tgz",
+          "integrity": "sha512-/iQhTYnSniRNmdRF9Kvw8odMSokwNOWVDOmMJjW64+EVE6igcdj/82Op/4MJ/WimgMRNac7gChlSVX4Gep/tHg=="
         }
       }
     },
@@ -1239,9 +1239,9 @@
       "integrity": "sha512-lR3gD69osqm6EYLk9wB/G1W/laGWjzH90t1vEa2xuxHD5KUrSzp9pUSfTm+YC5Nxt2T8nMPEvKlhbQayU7bgFw=="
     },
     "retry-request": {
-      "version": "3.1.1",
-      "resolved": "https://registry.npmjs.org/retry-request/-/retry-request-3.1.1.tgz",
-      "integrity": "sha512-Sj3M3bC8ODJT+jfVxbTwvORRkFtc/AlDhhiMch5RJalLMAjz6+lIf5Q/Ox2esAM4tXcAYfG4ecNHPtaGNWIqvQ=="
+      "version": "3.2.0",
+      "resolved": "https://registry.npmjs.org/retry-request/-/retry-request-3.2.0.tgz",
+      "integrity": "sha512-QwzQvJJphYfwOfsLQACcTLx0d2kuHM5LB3CEPJG7urUbHYTbSf9jWW5XJtMFDNd1oylGOe77EccuLZzsPl+UnQ=="
     },
     "rgb-hex": {
       "version": "1.0.0",
