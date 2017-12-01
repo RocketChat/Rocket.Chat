@@ -1,8 +1,8 @@
 {
   "dependencies": {
     "ajv": {
-      "version": "5.4.0",
-      "resolved": "https://registry.npmjs.org/ajv/-/ajv-5.4.0.tgz",
+      "version": "5.5.0",
+      "resolved": "https://registry.npmjs.org/ajv/-/ajv-5.5.0.tgz",
       "from": "ajv@>=5.1.0 <6.0.0"
     },
     "ansi-regex": {
@@ -330,8 +330,8 @@
           "from": "object-assign@>=3.0.0 <4.0.0"
         },
         "protobufjs": {
-          "version": "6.8.0",
-          "resolved": "https://registry.npmjs.org/protobufjs/-/protobufjs-6.8.0.tgz",
+          "version": "6.8.2",
+          "resolved": "https://registry.npmjs.org/protobufjs/-/protobufjs-6.8.2.tgz",
           "from": "protobufjs@>=6.8.0 <7.0.0"
         }
       }
@@ -1098,8 +1098,8 @@
       "from": "methmeth@>=1.1.0 <2.0.0"
     },
     "mime": {
-      "version": "1.4.1",
-      "resolved": "https://registry.npmjs.org/mime/-/mime-1.4.1.tgz",
+      "version": "1.6.0",
+      "resolved": "https://registry.npmjs.org/mime/-/mime-1.6.0.tgz",
       "from": "mime@>=1.4.1 <2.0.0"
     },
     "mime-db": {
