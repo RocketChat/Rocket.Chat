@@ -1,5 +1,5 @@
 import Page from './Page';
-import mainContent from './main-content.page';
+
 import sideNav from './side-nav.page';
 import flexTab from './flex-tab.page';
 import global from './global';
@@ -92,11 +92,11 @@ class Assistify extends Page {
 
 		this.topicExperts.waitForVisible(10000);
 		this.topicExperts.setValue(expert);
-		browser.pause(500)
+		browser.pause(500);
 		browser.element('.rc-popup-list__item').click();
-		browser.pause(500)
+		browser.pause(500);
 
-		browser.waitUntil(function () {
+		browser.waitUntil(function() {
 			return browser.isEnabled('.create-channel__content [data-button="create"]');
 		}, 5000);
 
@@ -117,13 +117,13 @@ class Assistify extends Page {
 		this.topicName.waitForVisible(5000);
 		this.topicName.setValue(topicName);
 
-		browser.pause(1000)
+		browser.pause(1000);
 		try {
 			browser.element('.create-channel__content .rc-popup-list').click();
-			browser.pause(500)
-		}
-		catch(e) {
-
+			browser.pause(500);
+			}
+		catch (e) {
+			console.log(e);
 		}
 
 		browser.waitUntil(function () {
@@ -146,11 +146,11 @@ class Assistify extends Page {
 		this.sendMessageBtn.click();
 	}
 
-	answerRequest(topicName, message) {
-		sideNav.openChannel(topicName);
-
-		this.sendTopicMessage(message);
-	}
+	// answerRequest(topicName, message) {
+	// 	sideNav.openChannel(topicName);
+    //
+	// 	this.sendTopicMessage(message);
+	// }
 
 	closeRequest(topicName, comment) {
 		// sideNav.openChannel(topicName);
@@ -168,7 +168,7 @@ class Assistify extends Page {
 	}
 
 	closeTopic(topicName) {
-		sideNav.openChannel(topicName)
+		sideNav.openChannel(topicName);
 		flexTab.channelTab.waitForVisible(5000);
 		flexTab.channelTab.click();
 		this.closeTopicBtn.waitForVisible(5000);

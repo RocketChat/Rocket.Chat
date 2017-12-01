@@ -2,17 +2,18 @@
 /* eslint-disable func-names, prefer-arrow-callback */
 
 import supertest from 'supertest';
+
 export const request = supertest.agent('http://localhost:8080');
 export const credentials = {
 	username: 'admin',
 	password: 'admin'
 };
 const clientconfig = '{"queryBuilder":[{"_class":"io.redlink.smarti.model.config.ComponentConfiguration","name":"conversationmlt","displayName":"conversationmlt","type":"conversationmlt","enabled":true,"unbound":false,"pageSize":3,"filter":["support_area"]},{"_class":"io.redlink.smarti.model.config.ComponentConfiguration","name":"conversationsearch","displayName":"conversationsearch","type":"conversationsearch","enabled":true,"unbound":false,"pageSize":3,"filter":["support_area"]}]}';
-debugger;
-describe('[Smarti Connection]', ()=>{
 
-	describe('[Status]', function() {
-		describe('health', ()=> {
+describe('[Smarti Connection]', () => {
+
+	describe('[Status]', function () {
+		describe('health', () => {
 			it('Smarti should be UP', (done) => {
 				request.get('/system/health')
 					.expect(200)
@@ -23,8 +24,8 @@ describe('[Smarti Connection]', ()=>{
 					.end(done);
 			});
 		});
-		describe('Info', ()=> {
-			it('Access Smarti info', (done)=> {
+		describe('Info', () => {
+			it('Access Smarti info', (done) => {
 				request.get('/system/info')
 					.expect(200)
 					.expect('Content-Type', 'application/vnd.spring-boot.actuator.v1+json;charset=UTF-8')
@@ -33,15 +34,15 @@ describe('[Smarti Connection]', ()=>{
 		});
 	});
 
-	describe('[]', function() {
-		describe('[Client]', ()=> {
+	describe('[]', function () {
+		describe('[Client]', () => {
 			var clientid;
 
-			it('check if client already exists', function(done) {
+			it('check if client already exists', function (done) {
 				request.get('/client')
 					.expect(200)
-					.expect(function(res){
-						if(typeof res.body[0] != 'undefined') {
+					.expect(function (res) {
+						if (typeof res.body[0] !== 'undefined') {
 							clientid = res.body[0].id;
 						}
 						else {
@@ -52,8 +53,8 @@ describe('[Smarti Connection]', ()=>{
 					.end(done);
 			});
 
-			it('create new client', function(done) {
-				if(typeof clientid != 'undefined') {
+			it('create new client', function (done) {
+				if (typeof clientid !== 'undefined') {
 					console.log('client was alread there', clientid);
 					done();
 				}
@@ -61,8 +62,8 @@ describe('[Smarti Connection]', ()=>{
 					request.post('/client')
 						.send({
 							defaultClient: true,
-							description: "",
-							name: "testclient"
+							description: '',
+							name: 'testclient'
 						})
 						.set('Accept', 'application/json')
 						.end(function (err, res) {
@@ -74,25 +75,25 @@ describe('[Smarti Connection]', ()=>{
 				}
 			});
 
-			it ('check if right client was picked', function(done) {
+			it('check if right client was picked', function (done) {
 				request.get('/client')
 					.expect(200)
-					.expect(function(res){
-						expect(res.body[0].id, clientid)
+					.expect(function (res) {
+						expect(res.body[0].id, clientid);
 						expect(clientid).to.not.equal(undefined);
 					})
 					.end(done);
 			});
 
-			it('post query-builder', function(done) {
-				let code = '/client/'+clientid+'/config';
-				console.log('config post',code);
+			it('post query-builder', function (done) {
+				let code = '/client/' + clientid + '/config';
+				console.log('config post', code);
 				request.post(code)
 					.set('Content-Type', 'application/json')
 					.send(clientconfig)
 					.expect(200)
-					.end(function(err, res){
-						console.log('post config',res.body);
+					.end(function (err, res) {
+						console.log('post config', res.body);
 						done();
 					});
 			});

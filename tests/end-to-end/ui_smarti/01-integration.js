@@ -26,8 +26,8 @@ describe('[Smarti Integration]', () => {
 		before(() => {
 			try {
 				assistify.createTopic(topicName, topicExpert);
-			}
-			catch(e) {
+				}
+			catch (e) {
 				console.log(e);
 				sideNav.openChannel(topicName);
 			}
