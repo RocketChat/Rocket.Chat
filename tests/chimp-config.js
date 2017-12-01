@@ -25,7 +25,7 @@ module.exports = {
 	// 	singleSnippetPerFile: true,
 	// 	recommendedFilenameSeparator: '_',
 	// 	chai: false,
-	screenshotsOnError: false,
+	screenshotsOnError: true,
 	screenshotsPath: '.screenshots',
 	captureAllStepScreenshots: false,
 	saveScreenshotsToDisk: true,
@@ -145,7 +145,7 @@ module.exports = {
 
 // 	// - - - - DEBUGGING  - - - -
 // 	log: 'info',
-// 	debug: true,
+// 	debug: false,
 // 	seleniumDebug: null,
 // 	debugCucumber: null,
 // 	debugBrkCucumber: null,
