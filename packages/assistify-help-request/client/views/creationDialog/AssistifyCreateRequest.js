@@ -140,16 +140,39 @@ Template.AssistifyCreateRequest.events({
 
 Template.AssistifyCreateRequest.onRendered(function() {
 	const instance = this;
-	this.find('input[name="expertise"]').focus();
-	this.ac.element = this.find('input[name="expertise"]');
-	this.ac.$element = $(this.ac.element);
-	this.ac.$element.on('autocompleteselect', function(e, {item}) {
+	const expertiseElement = this.find('input[name="expertise"]');
+	const titleElement = this.find('input[name="request_title"]');
+	const questionElement = this.find('input[name="first_question"]');
+
+	instance.ac.element = expertiseElement;
+	instance.ac.$element = $(instance.ac.element);
+	instance.ac.$element.on('autocompleteselect', function(e, {item}) {
 		instance.expertise.set(item.name);
 		$('input[name="expertise"]').val(item.name);
 		instance.debounceValidateExpertise(item.name);
 
 		return instance.find('.js-save-request').focus();
 	});
+
+	if (instance.requestTitle.get()) {
+		titleElement.value = instance.requestTitle.get();
+	}
+
+	if (instance.openingQuestion.get()) {
+		questionElement.value = instance.openingQuestion.get();
+	}
+
+	// strategy for setting the focus (yac!)
+	if (!expertiseElement.value) {
+		expertiseElement.focus();
+	} else if (!questionElement.value) {
+		questionElement.focus();
+	} else if (!titleElement.value) {
+		titleElement.focus();
+	} else {
+		questionElement.focus();
+	}
+
 });
 
 Template.AssistifyCreateRequest.onCreated(function() {
@@ -212,12 +235,6 @@ Template.AssistifyCreateRequest.onCreated(function() {
 		}
 	}, 500);
 
-	// instance.clearForm = function() {
-	// 	instance.requestRoomName.set('');
-	// 	instance.expertise.set('');
-	// 	instance.find('#expertise-search').value = '';
-	// };
-
 	this.ac = new AutoComplete({
 		selector: {
 			item: '.rc-popup-list__item',
@@ -242,4 +259,23 @@ Template.AssistifyCreateRequest.onCreated(function() {
 
 	});
 	this.ac.tmplInst = this;
+
+	//prefill form based on query parameters if passed
+	if (FlowRouter.current().queryParams) {
+		const expertise = FlowRouter.getQueryParam('topic') || FlowRouter.getQueryParam('expertise');
+		if (expertise) {
+			instance.expertise.set(expertise);
+			instance.debounceValidateExpertise(expertise);
+		}
+
+		const title = FlowRouter.getQueryParam('title');
+		if (title) {
+			instance.requestTitle.set(title);
+		}
+
+		const question = FlowRouter.getQueryParam('question');
+		if (question) {
+			instance.openingQuestion.set(question);
+		}
+	}
 });
