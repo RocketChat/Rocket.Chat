@@ -132,7 +132,6 @@ describe('Mention', function() {
 				'hello #general, how are you?'
 			].forEach(text => {
 				it(`should return "${ JSON.stringify(result) }" from "${ text }"`, () => {
-					console.log('result', mention.getChannelMentions(text));
 					assert.deepEqual(result, mention.getChannelMentions(text));
 				});
 			});
