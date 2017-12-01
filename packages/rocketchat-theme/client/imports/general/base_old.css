@@ -5513,7 +5513,9 @@ body:not(.is-cordova) {
 	.rc-old .flex-tab-container.opened .flex-tab {
 		position: absolute;
 		z-index: 100;
+
 		right: 40px;
+		height: 100%;
 
 		border-width: 0 0 0 1px;
 	}
