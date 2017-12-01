@@ -96,7 +96,7 @@ class Assistify extends Page {
 		browser.element('.rc-popup-list__item').click();
 		browser.pause(500);
 
-		browser.waitUntil(function() {
+		browser.waitUntil(function () {
 			return browser.isEnabled('.create-channel__content [data-button="create"]');
 		}, 5000);
 
@@ -121,7 +121,7 @@ class Assistify extends Page {
 		try {
 			browser.element('.create-channel__content .rc-popup-list').click();
 			browser.pause(500);
-			}
+		}
 		catch (e) {
 			console.log(e);
 		}
@@ -148,7 +148,7 @@ class Assistify extends Page {
 
 	// answerRequest(topicName, message) {
 	// 	sideNav.openChannel(topicName);
-    //
+	//
 	// 	this.sendTopicMessage(message);
 	// }
 
