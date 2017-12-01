@@ -1,3 +1,5 @@
+/* eslint-env mocha */
+
 import mainContent from '../../pageobjects/main-content.page';
 import sideNav from '../../pageobjects/side-nav.page';
 import assistify from '../../pageobjects/assistify.page';
@@ -26,7 +28,7 @@ describe('[Smarti Integration]', () => {
 		before(() => {
 			try {
 				assistify.createTopic(topicName, topicExpert);
-				}
+			}
 			catch (e) {
 				console.log(e);
 				sideNav.openChannel(topicName);
@@ -35,10 +37,10 @@ describe('[Smarti Integration]', () => {
 		});
 
 		describe('Open Topic', () => {
-			it('switch to GENERAL', ()=>{
+			it('switch to GENERAL', () => {
 				sideNav.openChannel('general');
 			});
-			it('switch back to Topic', ()=>{
+			it('switch back to Topic', () => {
 				sideNav.openChannel(topicName);
 			});
 		});
