@@ -18,7 +18,7 @@ Meteor.methods({
 		}
 
 		if (!RocketChat.emoji.list[reaction] && RocketChat.models.EmojiCustom.findByNameOrAlias(reaction).count() === 0) {
-			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'setReaction' });
+			throw new Meteor.Error('error-not-allowed', 'Invalid emoji provided.', { method: 'setReaction' });
 		}
 
 		const user = Meteor.user();
