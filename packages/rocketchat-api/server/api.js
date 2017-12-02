@@ -1,4 +1,4 @@
-/* global Restivus, Auth */
+/* global Restivus, DDP, DDPCommon */
 import _ from 'underscore';
 
 class API extends Restivus {
@@ -158,106 +158,91 @@ class API extends Restivus {
 	}
 
 	_initAuth() {
+		const loginCompatibility = (bodyParams) => {
+			// Grab the username or email that the user is logging in with
+			const {user, username, email, password, code} = bodyParams;
+			const auth = {
+				password
+			};
+
+			if (typeof user === 'string') {
+				auth.user = user.includes('@') ? {email: user} : {username: user};
+			} else if (username) {
+				auth.user = {username};
+			} else if (email) {
+				auth.user = {email};
+			}
+
+			if (auth.user == null) {
+				return bodyParams;
+			}
+
+			if (auth.password && auth.password.hashed) {
+				auth.password = {
+					digest: auth.password,
+					algorithm: 'sha-256'
+				};
+			}
+
+			if (code) {
+				return {
+					totp: {
+						code,
+						login: auth
+					}
+				};
+			}
+
+			return auth;
+		};
+
 		const self = this;
-		/*
-		Add a login endpoint to the API
-		After the user is logged in, the onLoggedIn hook is called (see Restfully.configure() for
-		adding hook).
-		*/
+
 		this.addRoute('login', {authRequired: false}, {
 			post() {
-				// Grab the username or email that the user is logging in with
-				const user = {};
-				if (this.bodyParams.user) {
-					if (this.bodyParams.user.indexOf('@') === -1) {
-						user.username = this.bodyParams.user;
-					} else {
-						user.email = this.bodyParams.user;
-					}
-				} else if (this.bodyParams.username) {
-					user.username = this.bodyParams.username;
-				} else if (this.bodyParams.email) {
-					user.email = this.bodyParams.email;
-				}
+				const args = loginCompatibility(this.bodyParams);
 
-				let password = this.bodyParams.password;
-				if (this.bodyParams.hashed) {
-					password = {
-						digest: password,
-						algorithm: 'sha-256'
-					};
-				}
+				const invocation = new DDPCommon.MethodInvocation({
+					connection: {}
+				});
 
 				let auth;
 				try {
-					// Try to log the user into the user's account (if successful we'll get an auth token back)
-					auth = Auth.loginWithPassword(user, password);
+					auth = DDP._CurrentInvocation.withValue(invocation, () => Meteor.call('login', args));
 				} catch (error) {
-					const e = error;
-					return {
-						statusCode: e.error,
-						body: {
-							status: 'error',
-							message: e.reason
-						}
-					};
-				}
-				// Get the authenticated user
-				// TODO: Consider returning the user in Auth.loginWithPassword(), instead of fetching it again here
-				if (auth.userId && auth.authToken) {
-					const searchQuery = {};
-					searchQuery[self._config.auth.token] = Accounts._hashLoginToken(auth.authToken);
-
-					this.user = Meteor.users.findOne({
-						'_id': auth.userId
-					}, searchQuery);
-
-					this.userId = this.user && this.user._id;
-				}
-
-				// Start changes
-				const attempt = {
-					allowed: true,
-					user: this.user,
-					methodArguments: [{
-						user,
-						password
-					}],
-					type: 'password'
-				};
-
-				if (this.bodyParams.code) {
-					attempt.methodArguments[0] = {
-						totp: {
-							code: this.bodyParams.code,
-							...attempt.methodArguments[0]
-						}
-					};
-				}
-
-				Accounts._validateLogin(null, attempt);
-
-				if (attempt.allowed !== true) {
-					const error = attempt.error || new Meteor.Error('invalid-login-attempt', 'Invalid Login Attempt');
+					let e = error;
+					if (error.reason === 'User not found') {
+						e = {
+							error: 'Unauthorized',
+							reason: 'Unauthorized'
+						};
+					}
 
 					return {
 						statusCode: 401,
 						body: {
 							status: 'error',
-							error: error.error,
-							reason: error.reason,
-							message: error.message
+							error: e.error,
+							message: e.reason || e.message
 						}
 					};
 				}
-				// End changes
+
+				this.user = Meteor.users.findOne({
+					_id: auth.id
+				});
+
+				this.userId = this.user._id;
 
 				const response = {
 					status: 'success',
-					data: auth
+					data: {
+						userId: this.userId,
+						authToken: auth.token,
+						tokenExpires: auth.tokenExpires
+					}
 				};
 
-				// Call the login hook with the authenticated user attached
 				const extraData = self._config.onLoggedIn && self._config.onLoggedIn.call(this);
 
 				if (extraData != null) {
