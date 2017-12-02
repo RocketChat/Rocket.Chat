@@ -89,6 +89,8 @@ RocketChat.API.v1.addRoute('service.configurations', { authRequired: false }, {
 	get() {
 		const ServiceConfiguration = Package['service-configuration'].ServiceConfiguration;
 
-		return RocketChat.API.v1.success(ServiceConfiguration.configurations.find({}, {fields: {secret: 0}}).fetch());
+		return RocketChat.API.v1.success({
+			configurations: ServiceConfiguration.configurations.find({}, {fields: {secret: 0}}).fetch()
+		});
 	}
 });

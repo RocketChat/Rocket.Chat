@@ -2,22 +2,16 @@ import s from 'underscore.string';
 
 Meteor.methods({
 	messageSearch(text, rid, limit) {
+		check(text, String);
+		check(rid, String);
+		check(limit, Match.Optional(Number));
+
+		// TODO: Evaluate why we are returning `users` and `channels`, as the only thing that gets set is the `messages`.
 		const result = {
 			messages: [],
 			users: [],
 			channels: []
 		};
-		const query = {};
-		const options = {
-			sort: {
-				ts: -1
-			},
-			limit: limit || 20
-		};
-
-		check(text, String);
-		check(rid, String);
-		check(limit, Match.Optional(Number));
 
 		const currentUserId = Meteor.userId();
 		if (!currentUserId) {
@@ -25,8 +19,22 @@ Meteor.methods({
 				method: 'messageSearch'
 			});
 		}
+
+		// Don't process anything else if the user can't access the room
+		if (!Meteor.call('canAccessRoom', rid, currentUserId)) {
+			return result;
+		}
+
 		const currentUserName = Meteor.user().username;
 		const currentUserTimezoneOffset = Meteor.user().utcOffset;
+
+		const query = {};
+		const options = {
+			sort: {
+				ts: -1
+			},
+			limit: limit || 20
+		};
 
 		// I would place these methods at the bottom of the file for clarity but travis doesn't appreciate that.
 		// (no-use-before-define)
@@ -121,24 +129,28 @@ Meteor.methods({
 			from.push(username);
 			return '';
 		});
+
 		if (from.length > 0) {
 			query['u.username'] = {
 				$regex: from.join('|'),
 				$options: 'i'
 			};
 		}
+
 		// Query for senders
 		const mention = [];
 		text = text.replace(/mention:([a-z0-9.-_]+)/ig, function(match, username) {
 			mention.push(username);
 			return '';
 		});
+
 		if (mention.length > 0) {
 			query['mentions.username'] = {
 				$regex: mention.join('|'),
 				$options: 'i'
 			};
 		}
+
 		// Filter on messages that are starred by the current user.
 		text = text.replace(/has:star/g, filterStarred);
 		// Filter on messages that have an url.
@@ -184,6 +196,7 @@ Meteor.methods({
 				};
 			}
 		}
+
 		if (Object.keys(query).length > 0) {
 			query.t = {
 				$ne: 'rm' //hide removed messages (useful when searching for user messages)
@@ -191,17 +204,14 @@ Meteor.methods({
 			query._hidden = {
 				$ne: true // don't return _hidden messages
 			};
-			if (rid != null) {
-				query.rid = rid;
-				if (Meteor.call('canAccessRoom', rid, currentUserId) !== false) {
-					if (!RocketChat.settings.get('Message_ShowEditedStatus')) {
-						options.fields = {
-							'editedAt': 0
-						};
-					}
-					result.messages = RocketChat.models.Messages.find(query, options).fetch();
-				}
+			query.rid = rid;
+
+			if (!RocketChat.settings.get('Message_ShowEditedStatus')) {
+				options.fields = {
+					'editedAt': 0
+				};
 			}
+			result.messages = RocketChat.models.Messages.find(query, options).fetch();
 		}
 
 		return result;

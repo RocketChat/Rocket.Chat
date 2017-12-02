@@ -13,6 +13,7 @@ class API extends Restivus {
 			$loki: 0,
 			meta: 0,
 			members: 0,
+			usernames: 0, // Please use the `channel/dm/group.members` endpoint. This is disabled for performance reasons
 			importIds: 0
 		};
 		this.limitedUserFieldsToExclude = {
@@ -31,7 +32,7 @@ class API extends Restivus {
 			customFields: 0
 		};
 
-		this._config.defaultOptionsEndpoint = function() {
+		this._config.defaultOptionsEndpoint = function _defaultOptionsEndpoint() {
 			if (this.request.method === 'OPTIONS' && this.request.headers['access-control-request-method']) {
 				if (RocketChat.settings.get('API_Enable_CORS') === true) {
 					this.response.writeHead(200, {
@@ -57,6 +58,8 @@ class API extends Restivus {
 	success(result={}) {
 		if (_.isObject(result)) {
 			result.success = true;
+			// TODO: Remove this after three versions have been released. That means at 0.64 this should be gone. ;)
+			result.developerWarning = '[WARNING]: The "usernames" field has been removed for performance reasons. Please use the "*.members" endpoint to get a list of members/users in a room.';
 		}
 
 		return {
@@ -92,6 +95,16 @@ class API extends Restivus {
 			body: {
 				success: false,
 				error: msg ? msg : 'unauthorized'
+			}
+		};
+	}
+
+	notFound(msg) {
+		return {
+			statusCode: 404,
+			body: {
+				success: false,
+				error: msg ? msg : 'Nothing was found'
 			}
 		};
 	}

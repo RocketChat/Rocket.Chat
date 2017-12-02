@@ -1,25 +1,27 @@
 RocketChat.API.v1.addRoute('rooms.get', { authRequired: true }, {
-	get: {
-		//This is defined as such only to provide an example of how the routes can be defined :X
-		action() {
-			let updatedAt;
+	get() {
+		const { updatedSince } = this.queryParams;
 
-			if (typeof this.queryParams.updatedAt === 'string') {
-				try {
-					updatedAt = new Date(this.queryParams.updatedAt);
-
-					if (updatedAt.toString() === 'Invalid Date') {
-						return RocketChat.API.v1.failure('Invalid date for `updatedAt`');
-					}
-				} catch (error) {
-					return RocketChat.API.v1.failure('Invalid date for `updatedAt`');
-				}
+		let updatedSinceDate;
+		if (updatedSince) {
+			if (isNaN(Date.parse(updatedSince))) {
+				throw new Meteor.Error('error-updatedSince-param-invalid', 'The "updatedSince" query parameter must be a valid date.');
+			} else {
+				updatedSinceDate = new Date(updatedSince);
 			}
-
-			return Meteor.runAsUser(this.userId, () => {
-				return RocketChat.API.v1.success(Meteor.call('rooms/get', updatedAt));
-			});
 		}
+
+		let result;
+		Meteor.runAsUser(this.userId, () => result = Meteor.call('rooms/get', updatedSinceDate));
+
+		if (Array.isArray(result)) {
+			result = {
+				update: result,
+				remove: []
+			};
+		}
+
+		return RocketChat.API.v1.success(result);
 	}
 });
 
