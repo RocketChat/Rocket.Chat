@@ -1,0 +1,21 @@
+<template name="switch">
+	<div class="rc-switch">
+		<label class="rc-switch__label" tabindex="{{tabIndex}}">
+			<input type="checkbox" class="rc-switch__input" name="{{name}}" value="{{value}}" checked="{{checked}}">
+
+			<span class="rc-switch__button">
+				<span class="rc-switch__button-inside"></span>
+			</span>
+
+			{{#if label}}
+				<span class="rc-switch__text">
+					{{label}}
+				</span>
+			{{/if}}
+		</label>
+
+		{{#if description}}
+			<span class="rc-switch__description">{{description}}</span>
+		{{/if}}
+	</div>
+</template>
