@@ -1,4 +1,3 @@
-import s from 'underscore.string';
 
 RocketChat.saveRoomDescription = function(rid, roomDescription, user) {
 
