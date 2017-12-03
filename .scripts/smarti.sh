@@ -4,7 +4,7 @@ docker pull thomasroehl/smarti:redlink
 
 #docker run -d --net=host thomasroehl/smarti:firsttry
 
-docker build -t smarti-with-stanfordnlp - < dockerfile
+docker build -t smarti-with-stanfordnlp:latest - < dockerfile
 
 docker run -d --name smarti --net=host smarti-with-stanfordnlp  --security.password=admin
 
