@@ -1,4 +1,3 @@
-import s from 'underscore.string';
 
 RocketChat.saveRoomAnnouncement = function(rid, roomAnnouncement, user, sendMessage=true) {
 	if (!Match.test(rid, String)) {
