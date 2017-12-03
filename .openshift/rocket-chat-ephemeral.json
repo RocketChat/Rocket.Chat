@@ -151,7 +151,6 @@
                 "name": "rocketchat"
             },
             "spec": {
-                "dockerImageRepository": "docker.io/rocket.chat",
                 "tags": [
                     {
                         "name": "latest",
@@ -242,7 +241,7 @@
                         "containers": [
                             {
                                 "name": "rocketchat",
-                                "image": "rocketchat/rocket.chat:latest",
+                                "image": "registry.connect.redhat.com/rocketchat/rocketchat:latest",
                                 "ports": [
                                     {
                                         "containerPort": 3000,
