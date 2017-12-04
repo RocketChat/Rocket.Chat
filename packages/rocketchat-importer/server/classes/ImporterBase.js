@@ -112,17 +112,20 @@ export class Base {
 	 * @param {string} dataURI Base64 string of the uploaded file
 	 * @param {string} sentContentType The sent file type.
 	 * @param {string} fileName The name of the uploaded file.
+	 * @param {boolean} skipTypeCheck Optional property that says to not check the type provided.
 	 * @returns {Progress} The progress record of the import.
 	 */
-	prepare(dataURI, sentContentType, fileName) {
-		const fileType = this.getFileType(new Buffer(dataURI.split(',')[1], 'base64'));
-		this.logger.debug('Uploaded file information is:', fileType);
-		this.logger.debug('Expected file type is:', this.info.mimeType);
+	prepare(dataURI, sentContentType, fileName, skipTypeCheck) {
+		if (!skipTypeCheck) {
+			const fileType = this.getFileType(new Buffer(dataURI.split(',')[1], 'base64'));
+			this.logger.debug('Uploaded file information is:', fileType);
+			this.logger.debug('Expected file type is:', this.info.mimeType);
 
-		if (!fileType || (fileType.mime !== this.info.mimeType)) {
-			this.logger.warn(`Invalid file uploaded for the ${ this.info.name } importer.`);
-			this.updateProgress(ProgressStep.ERROR);
-			throw new Meteor.Error('error-invalid-file-uploaded', `Invalid file uploaded to import ${ this.info.name } data from.`, { step: 'prepare' });
+			if (!fileType || (fileType.mime !== this.info.mimeType)) {
+				this.logger.warn(`Invalid file uploaded for the ${ this.info.name } importer.`);
+				this.updateProgress(ProgressStep.ERROR);
+				throw new Meteor.Error('error-invalid-file-uploaded', `Invalid file uploaded to import ${ this.info.name } data from.`, { step: 'prepare' });
+			}
 		}
 
 		this.updateProgress(ProgressStep.PREPARING_STARTED);
