@@ -93,7 +93,7 @@
   "Accounts_RegistrationForm_Public": "សាធារណៈ",
   "Accounts_RegistrationForm_Secret_URL": "URL ដែលជាការសម្ងាត់",
   "Accounts_RegistrationForm_SecretURL": "ទម្រង់បែបបទចុះឈ្មោះរបស់ URL សម្ងាត់",
-  "Accounts_RegistrationForm_SecretURL_Description": "អ្នកត្រូវតែផ្ដល់ខ្សែអក្សរចៃដន្យដែលនឹងត្រូវបានបន្ថែមទៅ URL ចុះឈ្មោះរបស់អ្នក។ ឧទាហរណ៍: https://demo.rocket.chat/register/[secret_hash]",
+  "Accounts_RegistrationForm_SecretURL_Description": "អ្នកត្រូវតែផ្ដល់ខ្សែអក្សរចៃដន្យដែលនឹងត្រូវបានបន្ថែមទៅ URL ចុះឈ្មោះរបស់អ្នក។ ឧទាហរណ៍: https://open.rocket.chat/register/[secret_hash]",
   "Accounts_RequireNameForSignUp": "ត្រូវការ Name សម្រាប់ការចុះឈ្មោះ",
   "Accounts_ShowFormLogin": "ការចូលជាទម្រង់ដែលមានមូលដ្ឋានបង្ហាញ",
   "Accounts_UseDefaultBlockedDomainsList": "បញ្ជីដែនប្រើលំនាំដើម",

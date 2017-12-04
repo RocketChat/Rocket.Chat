@@ -1,0 +1,14 @@
+<template name="tokenChannelsList">
+	<h3 class="rooms-list__type">
+		Token Channels
+	</h3>
+	<ul class="rooms-list__list">
+		<ul class="rooms-list__list">
+			{{#each room in rooms}}
+				{{> chatRoomItem room }}
+			{{else}}
+				<p class="rooms-list__empty-room">{{_ "No_channels_yet" }}</p>
+			{{/each}}
+		</ul>
+	</ul>
+</template>
