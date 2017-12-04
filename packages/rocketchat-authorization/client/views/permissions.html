@@ -1,36 +1,76 @@
+<template name="permissionsTable">
+	<table border="1" class="permission-grid secondary-background-color">
+		<thead class="content-background-color">
+		<tr>
+			<th class="border-component-color">&nbsp;</th>
+			{{#each role in allRoles}}
+				<th class="border-component-color" title="{{role.description}}">
+					<a href="{{pathFor "admin-permissions-edit" name=role._id}}">
+						{{role._id}}
+						<i class="icon-edit"></i>
+					</a>
+				</th>
+			{{/each}}
+		</tr>
+		</thead>
+		<tbody>
+		{{#each permission in permissions}}
+			<tr class="admin-table-row">
+				<td class="permission-name border-component-color"
+					title="{{permissionDescription permission}}">{{permissionName permission}}<br>[{{permission._id}}]
+				</td>
+				{{#each role in allRoles}}
+					<td class="border-component-color">
+						<input type="checkbox" name="perm[{{_id}}][{{../_id}}]" class="role-permission"
+							   value="1" checked="{{granted permission.roles role}}" data-role="{{role._id}}"
+							   data-permission="{{permission._id}}">
+					</td>
+				{{/each}}
+			</tr>
+		{{/each}}
+		</tbody>
+	</table>
+</template>
 <template name="permissions">
-	<div class="permissions-manager">
-		{{#if hasPermission}}
-			<a href="{{pathFor "admin-permissions-new"}}" class="button primary new-role">{{_ "New_role"}}</a>
-			<table border="1" class="permission-grid secondary-background-color">
-				<thead class="content-background-color">
-					<tr>
-						<th class="border-component-color">&nbsp;</th>
-						{{#each role}}
-							<th class="border-component-color" title="{{description}}">
-								<a href="{{pathFor "admin-permissions-edit" name=_id}}">
-									{{_id}}
-									<i class="icon-edit"></i>
-								</a>
-							</th>
-						{{/each}}
-					</tr>
-				</thead>
-				<tbody>
-					{{#each permission}}
-						<tr class="admin-table-row">
-							<td class="permission-name border-component-color" title="{{_ permissionDescription}}">{{_ permissionName}}<br>[{{_id}}]</td>
-							{{#each role}}
-								<td class="border-component-color">
-									<input type="checkbox" name="perm[{{_id}}][{{../_id}}]" class="role-permission" value="1" checked="{{granted ../roles}}" data-role="{{_id}}" data-permission="{{../_id}}">
-								</td>
-							{{/each}}
-						</tr>
-					{{/each}}
-				</tbody>
-			</table>
-		{{else}}
-			{{_ "Not_authorized"}}
-		{{/if}}
-	</div>
+	<section class="page-settings">
+		<div class="permissions-manager">
+			{{#if hasPermission}}
+				<a href="{{pathFor "admin-permissions-new"}}" class="button primary new-role">{{_ "New_role"}}</a>
+				<div class="rocket-form">
+					<div class="section">
+						{{> permissionsTable permissions=permissions allRoles=roles collection='Chat'}}
+					</div>
+				</div>
+				{{#if hasSettingPermission}}
+					<div class="rocket-form">
+						<div class="section {{#unless settingPermissionExpanded}}section-collapsed{{/unless}}">
+							<div class="section-title">
+								<div class="section-title-text">
+									{{_ "Setting_permissions"}}</div>
+								<div class="section-title-right">
+									<button class="button primary js-toggle-setting-permissions"><span>
+										{{#if settingPermissionExpanded }}
+											{{_ "Collapse"}}
+										{{else}}
+											{{_ "Expand"}}
+										{{/if}}
+									</span>
+									</button>
+								</div>
+							</div>
+							<div class="section-content border-component-color">
+								{{#if settingPermissionExpanded }}
+									{{> permissionsTable permissions=settingPermissions allRoles=roles collection='Setting'}}
+								{{else}}
+									{{_ "Not_authorized"}}
+								{{/if}}
+							</div>
+						</div>
+					</div>
+				{{/if}}
+			{{else}}
+				{{_ "Not_authorized"}}
+			{{/if}}
+		</div>
+	</section>
 </template>

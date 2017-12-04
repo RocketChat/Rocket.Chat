@@ -15,7 +15,7 @@
 			</header>
 
 			<div class="content background-transparent-dark">
-				{{#unless hasPermission 'view-privileged-setting'}}
+				{{#unless hasSettingPermission}}
 					<p>{{_ "You_are_not_authorized_to_view_this_page"}}</p>
 				{{else}}
 					{{#if description}}
@@ -23,7 +23,7 @@
 							<p class="settings-description">{{description}}</p>
 						</div>
 					{{/if}}
-					<div class="rocket-form">
+					<div class="page-settings rocket-form">
 						{{#each sections}}
 							<div class="section {{#if section}}section-collapsed{{/if}}">
 								{{#if section}}
