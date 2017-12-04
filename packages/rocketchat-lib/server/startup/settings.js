@@ -422,6 +422,11 @@ RocketChat.settings.addGroup('General', function() {
 		type: 'action',
 		actionText: 'Restart_the_server'
 	});
+	this.add('Store_Last_Message', false, {
+		type: 'boolean',
+		public: true,
+		i18nDescription: 'Store_Last_Message_Sent_per_Room'
+	});
 	this.section('UTF8', function() {
 		this.add('UTF8_Names_Validation', '[0-9a-zA-Z-_.]+', {
 			type: 'string',
