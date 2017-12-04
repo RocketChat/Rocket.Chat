@@ -48,6 +48,7 @@ First two methods return 2D array with properties defined in a defaults object (
 - `onlineNames`
 - `allIDs`
 - `onlineIDs`
+- `queryUsers`
 
 ## Tests
 

@@ -7,7 +7,7 @@ class BotHelpers {
 	constructor() {
 		this.queries = {
 			online: { 'status': { $ne: 'offline' } },
-			users: { 'roles': { $not: { $all: ['bot'] } } }
+			users: { 'roles': { $all: ['user'] } }
 		};
 	}
 
@@ -75,6 +75,16 @@ class BotHelpers {
 
 	// "public" properties accessed by getters
 	// allUsers / onlineUsers return whichever properties are enabled by settings
+
+	queryUsers(query) {
+		if (!Object.keys(this.userFields).length) {
+			this.requestError();
+			return false;
+		} else {
+			return RocketChat.models.Users.find(query ? query : {}, { fields: this.userFields }).fetch();
+		}
+	}
+
 	get allUsers() {
 		if (!Object.keys(this.userFields).length) {
 			this.requestError();
