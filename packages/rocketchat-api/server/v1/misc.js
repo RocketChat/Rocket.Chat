@@ -1,3 +1,5 @@
+import _ from 'underscore';
+
 RocketChat.API.v1.addRoute('info', { authRequired: false }, {
 	get() {
 		const user = this.getLoggedInUser();

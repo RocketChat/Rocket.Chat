@@ -7,7 +7,11 @@ Meteor.methods({
 		}
 
 		if (!RocketChat.authz.hasPermission(Meteor.userId(), 'run-import')) {
-			throw new Meteor.Error('error-action-not-allowed', 'Importing is not allowed', { method: 'setupImporter'});
+			throw new Meteor.Error('error-action-not-allowed', 'Importing is not allowed', { method: 'startImport'});
+		}
+
+		if (!name) {
+			throw new Meteor.Error('error-invalid-importer', `No defined importer by: "${ name }"`, { method: 'startImport' });
 		}
 
 		if (Importer.Importers[name] && Importer.Importers[name].importerInstance) {

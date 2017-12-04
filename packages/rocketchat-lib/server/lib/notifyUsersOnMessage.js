@@ -1,3 +1,5 @@
+import _ from 'underscore';
+import s from 'underscore.string';
 import moment from 'moment';
 
 RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
@@ -100,13 +102,11 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 	}
 
 	// Update all the room activity tracker fields
-	RocketChat.models.Rooms.incMsgCountAndSetLastMessageTimestampById(message.rid, 1, message.ts);
+	RocketChat.models.Rooms.incMsgCountAndSetLastMessageById(message.rid, 1, message.ts, RocketChat.settings.get('Store_Last_Message') && message);
 
 	// Update all other subscriptions to alert their owners but witout incrementing
 	// the unread counter, as it is only for mentions and direct messages
 	RocketChat.models.Subscriptions.setAlertForRoomIdExcludingUserId(message.rid, message.u._id);
-	// Used to order subscriptions by activity
-	RocketChat.models.Subscriptions.updateUserSubscription(message.rid, message.u._id);
 
 	return message;
 

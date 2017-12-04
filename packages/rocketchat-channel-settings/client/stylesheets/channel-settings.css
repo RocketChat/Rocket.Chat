@@ -1,3 +1,19 @@
+html.rtl .flex-tab {
+  direction: rtl;
+
+  & .channel-settings {
+	& .editing {
+	  padding-right: 8px;
+	  padding-left: 80px;
+	}
+	& .buttons {
+	  right: auto;
+	  left: 1px;
+	  border-radius: 4px 0 0 4px;
+	}
+  }
+}
+
 .flex-tab {
 	& .channel-settings {
 		& ul {
@@ -24,6 +40,7 @@
 
 			cursor: pointer;
 			vertical-align: middle;
+			word-wrap: break-word;
 
 			font-size: 14px;
 
@@ -34,9 +51,7 @@
 		}
 
 		& .editing {
-			margin: -2px 0 -1px -9px;
 			padding-right: 80px;
-
 			font-size: 14px;
 		}
 
@@ -44,7 +59,6 @@
 			position: absolute;
 			top: -1px;
 			right: 10px;
-			bottom: 0;
 
 			border-radius: 0 4px 4px 0;
 
@@ -53,7 +67,7 @@
 			}
 		}
 
-		& .button.edit {
+		& .button {
 			display: inline-block;
 			visibility: hidden;
 
@@ -96,12 +110,14 @@
 
 			font-size: 0;
 
+			display: flex;
+
 			& .loading-animation {
 				top: 30px;
 			}
 
 			&:hover {
-				& .button.edit {
+				& .button {
 					visibility: visible;
 				}
 			}

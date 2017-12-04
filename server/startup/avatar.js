@@ -1,4 +1,5 @@
 /* globals FileUpload */
+import _ from 'underscore';
 
 Meteor.startup(function() {
 	WebApp.connectHandlers.use('/avatar/', Meteor.bindEnvironment(function(req, res/*, next*/) {
@@ -54,8 +55,6 @@ Meteor.startup(function() {
 					}
 				}
 
-				const colors = ['#F44336', '#E91E63', '#9C27B0', '#673AB7', '#3F51B5', '#2196F3', '#03A9F4', '#00BCD4', '#009688', '#4CAF50', '#8BC34A', '#CDDC39', '#FFC107', '#FF9800', '#FF5722', '#795548', '#9E9E9E', '#607D8B'];
-
 				if (RocketChat.settings.get('UI_Use_Name_Avatar')) {
 					const user = RocketChat.models.Users.findOneByUsername(username, {
 						fields: {
@@ -75,9 +74,7 @@ Meteor.startup(function() {
 					color = '#000';
 					initials = username;
 				} else {
-					const position = username.length % colors.length;
-
-					color = colors[position];
+					color = RocketChat.getAvatarColor(username);
 					username = username.replace(/[^A-Za-z0-9]/g, '.').replace(/\.+/g, '.').replace(/(^\.)|(\.$)/g, '');
 
 					const usernameParts = username.split('.');
