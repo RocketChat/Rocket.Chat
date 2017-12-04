@@ -86,6 +86,11 @@ Template.roomList.helpers({
 		if (room.header || room.identifier) {
 			return `type-${ room.header || room.identifier }`;
 		}
+	},
+
+	showCounter() {
+		const user = Meteor.user();
+		return user && user.settings && user.settings.preferences && user.settings.preferences.messageCounterSidebar;
 	}
 });
 
