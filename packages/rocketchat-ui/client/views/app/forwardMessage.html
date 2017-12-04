@@ -8,20 +8,24 @@
 			{{> messagePreview message}}
 
 			{{#each subscriptions}}
-				<span class="rc-checklist__tag">
-					<span class="rc-checklist__tag-avatar">
+				<span class="rc-checklist__item">
+					<span class="rc-checklist__item-avatar">
 						{{#if $eq this.t 'd'}}
 							{{> avatar username=this.name}}
 						{{/if}}
+
 						{{#if $eq this.t 'p'}}
-							<i class="icon-lock"></i>
+							<i class="rc-checklist__item-icon icon-lock"></i>
 						{{/if}}
+
 						{{#if $eq this.t 'c'}}
-							<i class="icon-hash"></i>
+							<i class="rc-checklist__item-icon icon-hash"></i>
 						{{/if}}
 					</span>
-					{{> switch name=this._id}}
-					<span class="rc-checklist__tag-username"> <strong>{{this.name}}</strong></span>
+
+					<span class="rc-checklist__item-name"> <strong>{{this.name}}</strong></span>
+
+					<span class="rc-checklist__item-switch">{{> switch name=this._id}}</span>
 				</span>
 			{{/each}}
 

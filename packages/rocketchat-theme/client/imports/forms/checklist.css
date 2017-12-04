@@ -5,14 +5,7 @@
 	min-height: 43px;
 	padding: 3.25rem 1rem 0 3.25rem;
 
-	border-width: var(--tags-border-width);
-	border-color: var(--tags-border-color);
-	border-radius: var(--tags-border-radius);
-	background-color: transparent;
-	flex-wrap: wrap;
-	justify-content: flex-start;
-
-	&__tag {
+	&__item {
 		display: flex;
 
 		margin: 0.5rem 0;
@@ -28,27 +21,18 @@
 			margin-right: 0.5rem;
 		}
 
-		&-username {
+		&-name {
 			margin-right: 0.5rem;
 		}
 
 		&-icon {
-			width: 10px;
-			height: 10px;
-			stroke: #9d9fa3;
+			&::before {
+				 margin-top: 3px;
+			}
 		}
-	}
 
-	&__input {
-		margin: 0.25rem;
-		padding: 0.35rem 0.5rem;
-
-		border: 0;
-
-		font-size: 0.875rem;
-
-		&::placeholder {
-			color: var(--rc-color-primary-light-medium);
+		&-switch {
+			margin-left: auto;
 		}
 	}
 }

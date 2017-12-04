@@ -14,10 +14,7 @@ Template.forwardMessage.helpers({
 			}
 		});
 	},
-	selectedUsers() {
-		return Template.instance().selectedUsers.get();
-	},
-	selectedChannels() {
+	selected() {
 		return Template.instance().selectedChannels.get();
 	},
 	forwardIsDisabled() {
@@ -28,11 +25,17 @@ Template.forwardMessage.helpers({
 Template.forwardMessage.onCreated(function() {
 	this.data.message = ChatMessage.findOne(FlowRouter.getQueryParam('id'));
 
-	this.selectedUsers = new ReactiveVar([]);
-	this.selectedChannels = new ReactiveVar([]);
+	this.selected =[];
 });
 
 Template.forwardMessage.events({
 	// TODO: #396
 	// toastr.success(TAPi18n.__('Forwarded'));
+	'change input[type="checkbox"]'(e, t) {
+		if (e.target.checked) {
+			t.instance.selected.push(e.target.name);
+		} else {
+			t.instance.selected = _.without(t.instance.selected, _.findWhere(t.instance.selected, e.target.name));
+		}
+	}
 });
