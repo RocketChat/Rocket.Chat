@@ -1,3 +1,6 @@
+import _ from 'underscore';
+import s from 'underscore.string';
+
 class AutoTranslate {
 	constructor() {
 		this.languages = [];
@@ -85,7 +88,7 @@ class AutoTranslate {
 		let count = message.tokens.length;
 
 		message.html = message.msg;
-		message = RocketChat.Markdown.parseNotEscaped(message);
+		message = RocketChat.Markdown.parseMessageNotEscaped(message);
 		message.msg = message.html;
 
 		for (const tokenIndex in message.tokens) {
