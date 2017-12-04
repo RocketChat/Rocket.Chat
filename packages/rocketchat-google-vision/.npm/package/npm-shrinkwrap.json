@@ -253,6 +253,11 @@
       "resolved": "https://registry.npmjs.org/fast-json-stable-stringify/-/fast-json-stable-stringify-2.0.0.tgz",
       "integrity": "sha1-1RQsDK7msRifh9OnYREGT4bIu/I="
     },
+    "fast-json-stable-stringify": {
+      "version": "2.0.0",
+      "resolved": "https://registry.npmjs.org/fast-json-stable-stringify/-/fast-json-stable-stringify-2.0.0.tgz",
+      "from": "fast-json-stable-stringify@>=2.0.0 <3.0.0"
+    },
     "forever-agent": {
       "version": "0.6.1",
       "resolved": "https://registry.npmjs.org/forever-agent/-/forever-agent-0.6.1.tgz",
@@ -1239,9 +1244,9 @@
       "integrity": "sha512-lR3gD69osqm6EYLk9wB/G1W/laGWjzH90t1vEa2xuxHD5KUrSzp9pUSfTm+YC5Nxt2T8nMPEvKlhbQayU7bgFw=="
     },
     "retry-request": {
-      "version": "3.2.0",
-      "resolved": "https://registry.npmjs.org/retry-request/-/retry-request-3.2.0.tgz",
-      "integrity": "sha512-QwzQvJJphYfwOfsLQACcTLx0d2kuHM5LB3CEPJG7urUbHYTbSf9jWW5XJtMFDNd1oylGOe77EccuLZzsPl+UnQ=="
+      "version": "3.3.0",
+      "resolved": "https://registry.npmjs.org/retry-request/-/retry-request-3.3.0.tgz",
+      "integrity": "sha512-bCbvtnZkfgB2TnbKMUUxzSR5W4AJQyMD6D6UcCsE/wBTVmlsS59OrDQr4RKV/Kq1hiIBmUYlbxd9MZ0cfpjrAQ=="
     },
     "rgb-hex": {
       "version": "1.0.0",
