@@ -130,7 +130,7 @@
 
 @keyframes dropdown-show {
 	0% {
-		transform: translate(0, -2%);
+		transform: translate(0, -5%);
 
 		opacity: 0;
 	}

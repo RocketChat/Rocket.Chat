@@ -1,5 +1,6 @@
-/* globals RocketChatTabBar */
 import s from 'underscore.string';
+
+import { RocketChatTabBar } from 'meteor/rocketchat:lib';
 
 Template.adminEmoji.helpers({
 	isReady() {

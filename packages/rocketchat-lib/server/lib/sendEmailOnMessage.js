@@ -121,14 +121,14 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 				}
 
 				if (usersToSendEmail[user._id] === 'direct') {
-					const userEmailPreferenceIsDisable = !user.settings || !user.settings.preferences || !user.settings.preferences.emailNotificationMode || user.settings.preferences.emailNotificationMode === 'disabled';
+					const userEmailPreferenceIsDisabled = user.settings && user.settings.preferences && user.settings.preferences.emailNotificationMode && (user.settings.preferences.emailNotificationMode === 'disabled');
 					const directMessageEmailPreference = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(message.rid, message.rid.replace(message.u._id, '')).emailNotifications;
 
 					if (directMessageEmailPreference === 'nothing') {
 						return;
 					}
 
-					if (directMessageEmailPreference === 'default' && userEmailPreferenceIsDisable) {
+					if ((directMessageEmailPreference === 'default' || directMessageEmailPreference == null) && userEmailPreferenceIsDisabled) {
 						return;
 					}
 				}
