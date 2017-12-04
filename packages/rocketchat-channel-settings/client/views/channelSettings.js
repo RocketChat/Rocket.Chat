@@ -472,6 +472,9 @@ Template.channelSettings.onCreated(function() {
 		const room = ChatRoom.findOne(this.data && this.data.rid);
 		const field = this.editing.get();
 		let value;
+		if (!this.settings[field]) {
+			return;
+		}
 		if (this.settings[field].type === 'select') {
 			value = this.$(`.channel-settings form [name=${ field }]:checked`).val();
 		} else if (this.settings[field].type === 'boolean') {
