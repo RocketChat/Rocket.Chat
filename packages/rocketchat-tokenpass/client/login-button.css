@@ -1,0 +1,14 @@
+.icon-tokenpass.service-icon {
+	display: inline-block;
+
+	width: 25px;
+	height: 1em;
+
+	background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAAAQCAYAAAAbBi9cAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAOxAAADsQBlSsOGwAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAAddEVYdFRpdGxlAFRva2VubHlfTG9nb19JY29uX1doaXRldF224QAAAapJREFUOI2lk89OE1EUxn9nrumS2GZIhiaFBFekQsILsME/JC7AF2DVpT4BBI3GNRvZoG58Ad0SdCEvwKJW3ehCQmfajB1YAr33uJiZOg2hbeK3u1/O/d1zvnuvUFCr1SqVK/4h6EruqdAAVJR3/yrlKOnF9+v1+mXueEVQpeI/LUJulq6Uy/6TojMAhWE4raLb4yF5U/qs2+0G10Aq8hLl9sQgmOo793wIFEXRIkoj834C8QhAnNWA0jjpdJYAbgGosgsY4EqdfYQxDwTuAmDlBwBG99O9fNW+OfCMbQIlz+kusCrtdmcD0Q/ZaSeoe2iMuRg1k7W2hHgHwGzamTyWdhh9AxbGRzJS37202/+WymkUrYvyMTN+o25t3GiXIsZYdwjMpRQ2BCAMo08Kq6RhLxbDVivvAcToJlwPW+DzzExwTyC9fqcck97cL2AK8LPTGgCivM0aioFz4A5gPWE5CIKmBxAEQRP0TVY4n0NukJ9BAN1P9xZetu33t4DeqGyGJJyhupMvB6BardZD5dXEIMeLarU6+AFDvz9J4tcgRxNgviTJn72i8RdLE6KbF5O00AAAAABJRU5ErkJggg==);
+	background-repeat: no-repeat;
+	background-position: center center;
+}
+
+.button.external-login.tokenpass {
+	background-color: #4170a0;
+}

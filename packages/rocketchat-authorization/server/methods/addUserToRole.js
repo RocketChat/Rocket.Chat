@@ -1,3 +1,5 @@
+import _ from 'underscore';
+
 Meteor.methods({
 	'authorization:addUserToRole'(roleName, username, scope) {
 		if (!Meteor.userId() || !RocketChat.authz.hasPermission(Meteor.userId(), 'access-permissions')) {
