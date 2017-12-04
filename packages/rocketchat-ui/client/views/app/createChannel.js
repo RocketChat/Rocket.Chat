@@ -117,6 +117,26 @@ Template.createChannel.helpers({
 			submits: Template.instance().extensions_submits,
 			change: instance.change
 		};
+	},
+	roomTypesBeforeStandard() {
+		const orderLow = RocketChat.roomTypes.roomTypesOrder.filter((roomTypeOrder) => roomTypeOrder.identifier === 'c')[0].order;
+		return RocketChat.roomTypes.roomTypesOrder.filter(
+			(roomTypeOrder) => roomTypeOrder.order < orderLow
+		).map(
+			(roomTypeOrder) => {
+				return RocketChat.roomTypes.roomTypes[roomTypeOrder.identifier];
+			}
+		).filter((roomType) => roomType.creationTemplate);
+	},
+	roomTypesAfterStandard() {
+		const orderHigh = RocketChat.roomTypes.roomTypesOrder.filter((roomTypeOrder) => roomTypeOrder.identifier === 'd')[0].order;
+		return RocketChat.roomTypes.roomTypesOrder.filter(
+			(roomTypeOrder) => roomTypeOrder.order > orderHigh
+		).map(
+			(roomTypeOrder) => {
+				return RocketChat.roomTypes.roomTypes[roomTypeOrder.identifier];
+			}
+		).filter((roomType) => roomType.creationTemplate);
 	}
 });
 
