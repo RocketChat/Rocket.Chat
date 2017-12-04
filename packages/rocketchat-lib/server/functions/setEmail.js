@@ -1,3 +1,5 @@
+import s from 'underscore.string';
+
 RocketChat._setEmail = function(userId, email) {
 	email = s.trim(email);
 	if (!userId) {
