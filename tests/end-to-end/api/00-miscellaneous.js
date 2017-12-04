@@ -3,7 +3,7 @@
 /* eslint no-unused-vars: 0 */
 
 import {getCredentials, api, login, request, credentials} from '../../data/api-data.js';
-import {adminEmail} from '../../data/user.js';
+import {adminEmail, adminUsername, adminPassword} from '../../data/user.js';
 import supertest from 'supertest';
 
 describe('miscellaneous', function() {
@@ -27,6 +27,32 @@ describe('miscellaneous', function() {
 	it('/login', () => {
 		expect(credentials).to.have.property('X-Auth-Token').with.length.at.least(1);
 		expect(credentials).to.have.property('X-User-Id').with.length.at.least(1);
+	});
+
+	it('/login (wrapper username)', (done) => {
+		request.post(api('login'))
+			.send({
+				user: {
+					username: adminUsername
+				},
+				password: adminPassword
+			})
+			.expect('Content-Type', 'application/json')
+			.expect(200)
+			.end(done);
+	});
+
+	it('/login (wrapper email)', (done) => {
+		request.post(api('login'))
+			.send({
+				user: {
+					email: adminEmail
+				},
+				password: adminPassword
+			})
+			.expect('Content-Type', 'application/json')
+			.expect(200)
+			.end(done);
 	});
 
 	it('/me', (done) => {
