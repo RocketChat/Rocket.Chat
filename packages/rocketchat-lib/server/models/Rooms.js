@@ -534,7 +534,7 @@ class ModelRooms extends RocketChat.models._Base {
 		return this.update(query, update);
 	}
 
-	incMsgCountAndSetLastMessageTimestampById(_id, inc, lastMessageTimestamp) {
+	incMsgCountAndSetLastMessageById(_id, inc, lastMessageTimestamp, lastMessage) {
 		if (inc == null) { inc = 1; }
 		const query = {_id};
 
@@ -546,6 +546,10 @@ class ModelRooms extends RocketChat.models._Base {
 				msgs: inc
 			}
 		};
+
+		if (lastMessage) {
+			update.$set.lastMessage = lastMessage;
+		}
 
 		return this.update(query, update);
 	}
