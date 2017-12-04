@@ -3429,7 +3429,6 @@ body:not(.is-cordova) {
 		overflow-x: visible;
 
 		width: var(--flex-tab-width);
-		height: calc(100vh - 61px);
 
 		& .control {
 			& .header {
@@ -3516,23 +3515,14 @@ body:not(.is-cordova) {
 		}
 
 		& .content {
-			position: absolute;
-			top: auto;
-			left: 0;
-
-			overflow-x: hidden;
-			overflow-y: auto;
-
-			width: 100%;
-			height: 100%;
-			-webkit-overflow-scrolling: touch;
-
 			& > div {
+				overflow-y: auto;
+
 				transition: transform 0.45s cubic-bezier(0.5, 0, 0, 1), opacity 0.125s ease-out 0.1s;
 			}
 
 			& > .animated-hidden {
-				transform: translateX(100%);
+				transform: translateX(calc(100% + 40px));
 
 				opacity: 0;
 			}
@@ -3566,6 +3556,10 @@ body:not(.is-cordova) {
 					line-height: var(--header-min-height);
 				}
 			}
+		}
+
+		& .channel-settings .button {
+			visibility: initial;
 		}
 
 		& footer {
