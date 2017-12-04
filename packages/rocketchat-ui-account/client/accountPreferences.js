@@ -1,4 +1,6 @@
 /*globals defaultUserLanguage, KonchatNotification */
+import _ from 'underscore';
+import s from 'underscore.string';
 import toastr from 'toastr';
 
 const notificationLabels = {
@@ -177,7 +179,7 @@ Template.accountPreferences.onCreated(function() {
 		data.autoImageLoad = $('input[name=autoImageLoad]:checked').val();
 		data.emailNotificationMode = $('select[name=emailNotificationMode]').val();
 		data.highlights = _.compact(_.map($('[name=highlights]').val().split(','), function(e) {
-			return _.trim(e);
+			return s.trim(e);
 		}));
 		data.desktopNotificationDuration = $('input[name=desktopNotificationDuration]').val();
 		data.desktopNotifications = $('#desktopNotifications').find('select').val();
@@ -186,6 +188,8 @@ Template.accountPreferences.onCreated(function() {
 		data.enableAutoAway = $('#enableAutoAway').find('input:checked').val();
 		data.idleTimeLimit = parseInt($('input[name=idleTimeLimit]').val());
 		data.notificationsSoundVolume = parseInt($('#notificationsSoundVolume').val());
+
+		data.messageCounterSidebar = $('#messageCounterSidebar').find('input:checked').val();
 
 		Meteor.call('saveUserPreferences', data, function(error, results) {
 			if (results) {

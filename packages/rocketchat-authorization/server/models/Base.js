@@ -1,3 +1,5 @@
+import _ from 'underscore';
+
 RocketChat.models._Base.prototype.roleBaseQuery = function(/*userId, scope*/) {
 	return;
 };

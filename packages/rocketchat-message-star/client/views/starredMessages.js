@@ -1,4 +1,6 @@
 /*globals StarredMessage */
+import _ from 'underscore';
+
 Template.starredMessages.helpers({
 	hasMessages() {
 		return StarredMessage.find({

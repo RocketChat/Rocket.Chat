@@ -1,3 +1,5 @@
+import _ from 'underscore';
+
 RocketChat.API.v1.addRoute('users.create', { authRequired: true }, {
 	post() {
 		check(this.bodyParams, {
@@ -117,40 +119,18 @@ RocketChat.API.v1.addRoute('users.list', { authRequired: true }, {
 		const { offset, count } = this.getPaginationItems();
 		const { sort, fields, query } = this.parseJsonQuery();
 
-		let fieldsToKeepFromRegularUsers;
-		if (!RocketChat.authz.hasPermission(this.userId, 'view-full-other-user-info')) {
-			fieldsToKeepFromRegularUsers = {
-				avatarOrigin: 0,
-				emails: 0,
-				phone: 0,
-				statusConnection: 0,
-				createdAt: 0,
-				lastLogin: 0,
-				services: 0,
-				requirePasswordChange: 0,
-				requirePasswordChangeReason: 0,
-				roles: 0,
-				statusDefault: 0,
-				_updatedAt: 0,
-				customFields: 0
-			};
-		}
-
-		const ourQuery = Object.assign({}, query);
-		const ourFields = Object.assign({}, fields, fieldsToKeepFromRegularUsers, RocketChat.API.v1.defaultFieldsToExclude);
-
-		const users = RocketChat.models.Users.find(ourQuery, {
+		const users = RocketChat.models.Users.find(query, {
 			sort: sort ? sort : { username: 1 },
 			skip: offset,
 			limit: count,
-			fields: ourFields
+			fields
 		}).fetch();
 
 		return RocketChat.API.v1.success({
 			users,
 			count: users.length,
 			offset,
-			total: RocketChat.models.Users.find(ourQuery).count()
+			total: RocketChat.models.Users.find(query).count()
 		});
 	}
 });
