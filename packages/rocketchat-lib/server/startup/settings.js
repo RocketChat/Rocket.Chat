@@ -130,7 +130,7 @@ RocketChat.settings.addGroup('Accounts', function() {
 					i18nLabel: 'Accounts_RegistrationForm_Public'
 				}, {
 					key: 'Disabled',
-					i18nLabel: 'Accounts_RegistrationForm_Disabled'
+					i18nLabel: 'Disabled'
 				}, {
 					key: 'Secret URL',
 					i18nLabel: 'Accounts_RegistrationForm_Secret_URL'
