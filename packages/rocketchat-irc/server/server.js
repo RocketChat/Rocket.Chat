@@ -1,3 +1,4 @@
+import _ from 'underscore';
 import net from 'net';
 import Lru from 'lru-cache';
 

@@ -1,4 +1,5 @@
 /*globals OAuth*/
+import _ from 'underscore';
 
 const logger = new Logger('CustomOAuth');
 
@@ -193,7 +194,11 @@ export class CustomOAuth {
 					identity.id = identity.user.userid;
 					identity.email = identity.user.email;
 				}
-
+				// Fix for Xenforo [BD]API plugin for 'user.user_id; instead of 'id'
+				if (identity.user && identity.user.user_id && !identity.id) {
+					identity.id = identity.user.user_id;
+					identity.email = identity.user.user_email;
+				}
 				// Fix general 'phid' instead of 'id' from phabricator
 				if (identity.phid && !identity.id) {
 					identity.id = identity.phid;
