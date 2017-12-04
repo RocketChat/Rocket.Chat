@@ -1,3 +1,5 @@
+import s from 'underscore.string';
+
 Meteor.methods({
 	'livechat:saveIntegration'(values) {
 		if (!Meteor.userId() || !RocketChat.authz.hasPermission(Meteor.userId(), 'view-livechat-manager')) {
