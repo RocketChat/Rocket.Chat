@@ -39,7 +39,7 @@ apps:
 parts:
     node:
         plugin: nodejs
-        node-engine: 4.8.4
+        node-engine: 8.8.1
         build-packages:
             # For fibers
             - python
@@ -49,7 +49,7 @@ parts:
         plugin: dump
         prepare: cd programs/server; npm install; cd npm/node_modules/meteor/rocketchat_google-vision; npm install grpc
         after: [node]
-        source: https://download.rocket.chat/build/rocket.chat-#{RC_VERSION}.tgz
+        source: https://releases.rocket.chat/${RC_VERSION}/download/
         source-type: tar
         stage-packages:
             - graphicsmagick

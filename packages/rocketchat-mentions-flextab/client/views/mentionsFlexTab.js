@@ -1,4 +1,6 @@
 /*globals MentionedMessage */
+import _ from 'underscore';
+
 Template.mentionsFlexTab.helpers({
 	hasMessages() {
 		return MentionedMessage.find({
