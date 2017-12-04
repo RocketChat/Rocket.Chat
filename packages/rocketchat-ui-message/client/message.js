@@ -1,4 +1,5 @@
 /* globals renderEmoji renderMessageBody */
+import _ from 'underscore';
 import moment from 'moment';
 
 Template.message.helpers({

@@ -1,3 +1,9 @@
 {
-  "0_Errors_Only": "0 - Klaidos Tik"
+  "#channel": "#kanalas",
+  "0_Errors_Only": "0 - Tik klaidos",
+  "1_Errors_and_Information": "1 - Klaidos ir informacija",
+  "2_Erros_Information_and_Debug": "2 - Klaidos, informacija ir tvarkymas",
+  "403": "Prieiga negalima",
+  "500": "Vidinė serverio klaida",
+  "@username": "@vartotojovardas"
 }

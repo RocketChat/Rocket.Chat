@@ -2,6 +2,9 @@
  * KaTeX is a fast, easy-to-use JavaScript library for TeX math rendering on the web.
  * https://github.com/Khan/KaTeX
  */
+import _ from 'underscore';
+import s from 'underscore.string';
+
 const katex = require('katex');
 
 class Boundary {
@@ -195,7 +198,7 @@ class Katex {
 		if (this.katex_enabled()) {
 			let msg = message;
 			if (!_.isString(message)) {
-				if (_.trim(message.html)) {
+				if (s.trim(message.html)) {
 					msg = message.html;
 				} else {
 					return message;

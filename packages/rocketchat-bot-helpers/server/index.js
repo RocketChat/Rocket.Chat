@@ -1,3 +1,5 @@
+import _ from 'underscore';
+
 /**
  * BotHelpers helps bots
  * "private" properties use meteor collection cursors, so they stay reactive

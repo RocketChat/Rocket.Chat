@@ -1,3 +1,5 @@
+import _ from 'underscore';
+
 RocketChat.authz.addUserRoles = function(userId, roleNames, scope) {
 	if (!userId || !roleNames) {
 		return false;
