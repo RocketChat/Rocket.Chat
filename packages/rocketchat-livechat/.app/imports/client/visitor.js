@@ -79,5 +79,10 @@ export default {
 		}
 		this.connected = true;
 		Meteor.call('UserPresence:connect', this.getToken(), { visitor: this.getToken() });
+
+		Meteor.startup(function() {
+			UserPresence.awayTime = 300000; // 5 minutes
+			UserPresence.start(this.getToken());
+		});
 	}
 };

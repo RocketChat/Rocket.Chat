@@ -384,7 +384,7 @@ RocketChat.Livechat = {
 	},
 
 	getLivechatRoomGuestInfo(room) {
-		const visitor = RocketChat.models.Users.findOneById(room.v._id);
+		const visitor = LivechatVisitors.findOneById(room.v._id);
 		const agent = RocketChat.models.Users.findOneById(room.servedBy._id);
 
 		const ua = new UAParser();
