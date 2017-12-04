@@ -6,6 +6,7 @@ docker pull thomasroehl/smarti:redlink
 
 docker build -t smarti-with-stanfordnlp - < .scripts/dockerfile
 
-docker run -d --name smarti --net=host smarti-with-stanfordnlp  --security.password=admin
+docker run -d --name smarti --net=host smarti-with-stanfordnlp  --security.password=admin --spring.data.mongodb.uri=mongodb://localhost/smarti
 
+sleep 1m
 docker ps
