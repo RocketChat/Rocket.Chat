@@ -1,0 +1,96 @@
+.rc-modal {
+	min-width: 400px;
+
+	animation: dropdown-show 0.3s cubic-bezier(0.45, 0.05, 0.55, 0.95);
+
+	background: white;
+
+	box-shadow: 0 0 2px 0 rgba(47, 52, 61, 0.08), 0 0 12px 0 rgba(47, 52, 61, 0.12);
+
+	&-wrapper {
+		position: fixed;
+		z-index: 10;
+		top: 0;
+		right: 0;
+		bottom: 0;
+		left: 0;
+
+		display: flex;
+
+		padding: 10px;
+
+		background: rgba(47, 52, 61, 0.8);
+		align-items: center;
+		justify-content: center;
+	}
+
+	&__title {
+		flex: 1 1 auto;
+
+		font-size: 16px;
+	}
+
+	&__close {
+		cursor: pointer;
+		transform: rotate(45deg);
+
+		font-size: 20px;
+
+		&:hover {
+			color: var(--color-link-active);
+		}
+	}
+
+	&__header {
+		display: flex;
+		flex-direction: row;
+
+		margin-bottom: -16px;
+		padding: 16px;
+
+		font-size: 21px;
+		justify-content: flex-end;
+	}
+
+	&__content {
+		display: flex;
+
+		flex-direction: column;
+
+		padding: 16px;
+
+		animation: dropdown-show 0.1s cubic-bezier(0.45, 0.05, 0.55, 0.95);
+
+		white-space: nowrap;
+
+		background-color: var(--modal-background);
+	}
+
+	&__footer {
+		display: flex;
+
+		padding: 16px;
+
+		background: #f7f8fa;
+		justify-content: space-between;
+
+		& > .rc-button {
+			margin: 0;
+		}
+	}
+}
+
+@media (width <= 400px) {
+	.rc-modal {
+		top: initial !important;
+		bottom: 0;
+		left: 0 !important;
+
+		width: 100%;
+		min-width: 100%;
+		max-width: 100%;
+		margin: 0 16px;
+
+		animation: dropup-show 0.3s cubic-bezier(0.45, 0.05, 0.55, 0.95);
+	}
+}

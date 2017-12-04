@@ -141,10 +141,29 @@
 	font-size: var(--input-font-size);
 }
 
+.rc-form-fieldset {
+	padding: var(--default-padding);
+
+	border-width: var(--input-border-width);
+	border-color: var(--input-border-color);
+	border-radius: var(--input-border-radius);
+	background-color: transparent;
+
+	&--error {
+		color: var(--input-error-color);
+		border-color: var(--input-error-color);
+	}
+}
+
 .rc-form-legend {
+	margin: 0 -5px;
+
+	padding: 0 5px;
+
 	color: #2d343d;
 
 	font-size: 1rem;
+	font-weight: 500;
 }
 
 .rc-grid {
