@@ -1,5 +1,6 @@
 /* globals RoutePolicy, SAML */
 /* jshint newcap: false */
+import _ from 'underscore';
 
 if (!Accounts.saml) {
 	Accounts.saml = {

@@ -40,6 +40,7 @@ html.rtl .flex-tab {
 
 			cursor: pointer;
 			vertical-align: middle;
+			word-wrap: break-word;
 
 			font-size: 14px;
 
@@ -50,7 +51,6 @@ html.rtl .flex-tab {
 		}
 
 		& .editing {
-			margin: -2px 0 -1px -9px;
 			padding-right: 80px;
 			font-size: 14px;
 		}
@@ -59,7 +59,6 @@ html.rtl .flex-tab {
 			position: absolute;
 			top: -1px;
 			right: 10px;
-			bottom: 0;
 
 			border-radius: 0 4px 4px 0;
 
