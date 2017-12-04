@@ -260,9 +260,11 @@ class ModelRooms extends RocketChat.models._Base {
 		return this._db.find(query, options);
 	}
 
-	findByNameAndTypeNotContainingUsername(name, type, username, options) {
+	findByNameAndTypesNotContainingUsername(name, types, username, options) {
 		const query = {
-			t: type,
+			t: {
+				$in: types
+			},
 			name,
 			usernames: {
 				$ne: username
