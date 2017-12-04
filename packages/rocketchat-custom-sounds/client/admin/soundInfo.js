@@ -90,7 +90,7 @@ Template.soundInfo.onCreated(function() {
 
 	this.autorun(() => {
 		const data = Template.currentData();
-		if (data.clear != null) {
+		if (data && data.clear != null) {
 			this.clear = data.clear;
 		}
 	});
@@ -98,7 +98,7 @@ Template.soundInfo.onCreated(function() {
 	this.autorun(() => {
 		const data = Template.currentData();
 		const sound = this.sound.get();
-		if (sound.name != null) {
+		if (sound && sound.name != null) {
 			this.loadedName.set(sound.name);
 		} else if (data.name != null) {
 			this.loadedName.set(data.name);

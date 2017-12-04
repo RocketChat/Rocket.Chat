@@ -675,6 +675,16 @@ input:-webkit-autofill {
 	}
 }
 
+.sidebar-item__last-message {
+	a:not(.mention-link) {
+		color: @link-font-color;
+
+		&:hover {
+			color: darken(@link-font-color, 10%);
+		}
+	}
+}
+
 .message-popup.search-results-list {
 	background-color: lighten(@primary-background-color, 2.5%);
 
@@ -712,10 +722,6 @@ input:-webkit-autofill {
 			.button {
 				.buttonColors(lighten(@primary-font-color, 25%), @secondary-background-color);
 			}
-		}
-
-		.button {
-			.buttonColors(lighten(@primary-font-color, 25%), @secondary-background-color);
 		}
 
 		.input.checkbox.toggle {
