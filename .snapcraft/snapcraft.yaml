@@ -1,0 +1,95 @@
+#
+# Easiest way to work with this file, from an updated Ubuntu 16.04 LTS image
+# 1.   create a non-root user with sudo priv and perform following steps as non-root
+# 2.  `sudo apt-get update`
+# 3.  `sudo apt-get install snapcraft python build-essential`
+# 4.  `snapcraft stage`
+# 5.  `snapcraft snap`
+
+name: rocketchat-server
+version: #{RC_VERSION}
+summary: Rocket.Chat server
+description: Have your own Slack like online chat, built with Meteor. https://rocket.chat/
+confinement: strict
+assumes: [snapd2.21]
+apps:
+    rocketchat-server:
+        command: startRocketChat
+        daemon: simple
+        plugs: [network, network-bind]
+    rocketchat-mongo:
+        command: startmongo
+        daemon: simple
+        plugs: [network, network-bind]
+    rocketchat-caddy:
+        command: env LC_ALL=C caddy -conf=$SNAP_DATA/Caddyfile -host=localhost:8080
+        daemon: simple
+        plugs: [network, network-bind]
+    mongo:
+        command: env LC_ALL=C mongo
+        plugs: [network]
+    restoredb:
+        command: env LC_ALL=C restoredb
+        plugs: [network]
+    backupdb:
+        command: env LC_ALL=c rcbackup
+        plugs: [network]
+    initcaddy:
+        command: env LC_ALL=c initcaddy
+parts:
+    node:
+        plugin: nodejs
+        node-engine: 8.8.1
+        build-packages:
+            # For fibers
+            - python
+            - build-essential
+            - nodejs
+    rocketchat-server:
+        plugin: dump
+        prepare: cd programs/server; npm install; cd npm/node_modules/meteor/rocketchat_google-vision; npm install grpc
+        after: [node]
+        source: https://releases.rocket.chat/${RC_VERSION}/download/
+        source-type: tar
+        stage-packages:
+            - graphicsmagick
+        stage:
+            - programs
+            - main.js
+            - .node_version.txt
+            - usr
+            - lib
+    mongodb:
+        build-packages:
+            - wget
+        source: ./
+        prepare: ./resources/preparemongo
+        plugin: dump
+        stage-packages:
+            - libssl1.0.0
+        prime:
+            - usr
+            - bin
+            - lib
+    scripts:
+        plugin: dump
+        source: resources/
+        organize:
+            rcbackup: bin/rcbackup
+            restoredb: bin/restoredb
+            startmongo: bin/startmongo
+            startRocketChat: bin/startRocketChat
+            initreplset.js: bin/initreplset.js
+            Caddyfile: bin/Caddyfile
+            initcaddy: bin/initcaddy
+        prime:
+            - bin
+    caddy:
+        prepare: ./resources/preparecaddy
+        plugin: dump
+        source: ./
+        prime:
+            - bin
+        organize:
+            caddy: bin/caddy
+        after: [mongodb]

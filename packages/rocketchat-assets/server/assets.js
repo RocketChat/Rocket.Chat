@@ -1,4 +1,5 @@
 /* global WebAppHashing, WebAppInternals */
+import _ from 'underscore';
 
 import sizeOf from 'image-size';
 import mime from 'mime-type/with-db';

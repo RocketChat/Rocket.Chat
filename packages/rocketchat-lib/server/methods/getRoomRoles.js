@@ -1,3 +1,5 @@
+import _ from 'underscore';
+
 Meteor.methods({
 	getRoomRoles(rid) {
 		check(rid, String);

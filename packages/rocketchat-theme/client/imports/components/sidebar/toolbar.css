@@ -1,6 +1,11 @@
 .toolbar {
+	padding: 0 var(--sidebar-default-padding) var(--sidebar-default-padding);
+
 	&__wrapper {
+
 		display: flex;
+
+		margin: 0 -0.25rem;
 
 		color: var(--toolbar-placeholder-color);
 	}
@@ -29,24 +34,32 @@
 
 	&__icon {
 		&--plus {
+			position: absolute;
+			top: 50%;
+			left: 50%;
+
+			transform: translate(-50%, -50%);
+
 			font-size: 1.25rem;
 		}
 	}
 
 	& .rc-input {
+		margin: 0 0.25rem;
+
 		&__wrapper {
 			padding: 0;
 
-			color: var(--color-gray);
+			color: var(--rc-color-primary-light);
 		}
 
 		&__element {
 			color: var(--color-white);
-			border-color: #414852;
-			background-color: var(--color-darkest);
+			border-color: var(--rc-color-primary-dark);
+			background-color: var(--rc-color-primary-darkest);
 
 			&::placeholder {
-				color: var(--color-gray);
+				color: var(--rc-color-primary-light);
 			}
 
 			&:focus + .rc-input__icon--right {
@@ -77,14 +90,27 @@
 	}
 
 	& .rc-button {
-		margin-left: 0.5rem;
+		margin-left: 0.25rem;
+		margin-right: 0.25rem;
 
-		color: var(--color-gray);
-		border-color: #414852;
-		background-color: var(--color-darkest);
+		color: var(--rc-color-primary-light);
+		border-color: var(--rc-color-primary-dark);
+		background-color: var(--rc-color-primary-darkest);
 	}
 
 	& .rc-input__icon-svg--magnifier {
 		font-size: 1rem;
+	}
+}
+
+@media (width <= 400px) {
+	.toolbar {
+		padding: 0 calc(var(--sidebar-small-default-padding) - 8px) var(--sidebar-small-default-padding);
+	}
+}
+
+.rtl .toolbar {
+	& .rc-input__icon + .rc-input__element {
+		padding: 0.5rem 2.25rem 0.5rem 1rem;
 	}
 }

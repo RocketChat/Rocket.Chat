@@ -60,7 +60,7 @@ Meteor.startup(function() {
 		}
 		Meteor.setTimeout(function() {
 			const currentUrl = location.origin + __meteor_runtime_config__.ROOT_URL_PATH_PREFIX;
-			if (__meteor_runtime_config__.ROOT_URL !== currentUrl) {
+			if (__meteor_runtime_config__.ROOT_URL.replace(/\/$/, '') !== currentUrl) {
 				swal({
 					type: 'warning',
 					title: t('Warning'),
