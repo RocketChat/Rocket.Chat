@@ -13,14 +13,8 @@
 		margin-top: 2rem;
 	}
 
-	&__list {
-		& .badge {
-			margin: 0 4px;
-		}
-
-		&:not(:last-child) {
-			margin-bottom: 32px;
-		}
+	&__list:not(:last-child) {
+		margin-bottom: 32px;
 	}
 
 	&__type {
@@ -34,6 +28,7 @@
 
 		font-size: var(--rooms-list-title-text-size);
 		align-items: center;
+		justify-content: space-between;
 
 		&-text--livechat {
 			flex: 1;

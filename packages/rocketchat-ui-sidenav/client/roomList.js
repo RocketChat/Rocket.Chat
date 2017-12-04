@@ -95,6 +95,11 @@ Template.roomList.helpers({
 		const instance = Template.instance();
 		const roomType = (instance.data.header || instance.data.identifier);
 		return RocketChat.roomTypes.roomTypes[roomType].getUiText(UiTextContext.NO_ROOMS_SUBSCRIBED) || 'No_channels_yet';
+	},
+
+	showCounter() {
+		const user = Meteor.user();
+		return user && user.settings && user.settings.preferences && user.settings.preferences.messageCounterSidebar;
 	}
 });
 

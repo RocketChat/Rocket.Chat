@@ -29,6 +29,10 @@ Template.sideNav.helpers({
 
 	loggedInUser() {
 		return !!Meteor.userId();
+	},
+
+	isLastMessageActive() {
+		return RocketChat.settings.get('Store_Last_Message');
 	}
 });
 
