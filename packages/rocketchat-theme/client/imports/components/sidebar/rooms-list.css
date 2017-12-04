@@ -13,14 +13,8 @@
 		margin-top: 2rem;
 	}
 
-	&__list {
-		& .badge {
-			margin: 0 4px;
-		}
-
-		&:not(:last-child) {
-			margin-bottom: 32px;
-		}
+	&__list:not(:last-child) {
+		margin-bottom: 32px;
 	}
 
 	&__type {

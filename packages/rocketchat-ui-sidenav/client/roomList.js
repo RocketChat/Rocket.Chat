@@ -15,7 +15,6 @@ Template.roomList.helpers({
 			return RocketChat.models.Rooms.find({t: 'c'}, { sort: { name: 1 } });
 		}
 
-
 		const favoritesEnabled = RocketChat.settings.get('Favorite_Rooms');
 
 		const query = {
@@ -31,13 +30,22 @@ Template.roomList.helpers({
 			query.f = favoritesEnabled;
 		} else {
 			let types = [this.identifier];
+			const user = Meteor.user();
+
 			if (this.identifier === 'activity') {
 				types = ['c', 'p', 'd'];
 			}
-			if (this.identifier === 'channels' || this.identifier === 'unread') {
-				types = [ 'c', 'p'];
+
+			if (this.identifier === 'channels' || this.identifier === 'unread' || this.identifier === 'tokens') {
+				types = ['c', 'p'];
 			}
-			const user = Meteor.user();
+
+			if (this.identifier === 'tokens' && user && user.services && user.services.tokenpass) {
+				query.tokens = { $exists: true };
+			} else if (this.identifier === 'c' || this.identifier === 'p') {
+				query.tokens = { $exists: false };
+			}
+
 			if (user && user.settings && user.settings.preferences && user.settings.preferences.roomsListExhibitionMode === 'unread') {
 				query.$or = [
 					{ alert: { $ne: true } },
