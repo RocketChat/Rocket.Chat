@@ -1,3 +1,5 @@
+import _ from 'underscore';
+
 RocketChat.AutoTranslate = {
 	messageIdsToWait: {},
 	supportedLanguages: [],
