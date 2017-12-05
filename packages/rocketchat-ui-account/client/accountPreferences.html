@@ -25,6 +25,30 @@
 						</div>
 					</div>
 					<div class="section">
+						<h1>{{_ "User_Presence"}}</h1>
+						<div class="section-content border-component-color">
+							<div class="input-line double-col" id="enableAutoAway">
+								<label>{{_ "Enable_Auto_Away"}}</label>
+								<div>
+									<label><input type="radio" name="enableAutoAway" value="1" checked="{{ checked 'enableAutoAway' true true }}"/> {{_ "True"}}</label>
+									<label><input type="radio" name="enableAutoAway" value="0" checked="{{ checked 'enableAutoAway' false }}"/> {{_ "False"}}</label>
+								</div>
+							</div>
+
+							<div class="input-line double-col" id="idleTimeLimit">
+								<label>{{_ "Idle_Time_Limit"}}</label>
+								<div>
+									{{#if idleTimeLimit}}
+										<input type="number" name="idleTimeLimit" min="0" value="{{idleTimeLimit}}">
+									{{else}}
+										<input type="number" name="idleTimeLimit" min="0" value="" placeholder="{{_ "Use_Global_Settings"}} ({{defaultIdleTimeLimit}})">
+									{{/if}}
+								</div>
+							</div>
+						</div>
+
+					</div>
+					<div class="section">
 						<h1>{{_ "Messages"}}</h1>
 						<div class="section-content border-component-color">
 							<div class="input-line double-col">
@@ -204,11 +228,11 @@
 					<div class="section">
 						<h1>{{_ "Sidebar"}}</h1>
 						<div class="section-content border-component-color">
-							<div class="input-line double-col" id="messageCounterSidebar">
-								<label>{{_ "Show_message_counter_on_sidebar"}}</label>
+							<div class="input-line double-col" id="roomCounterSidebar">
+								<label>{{_ "Show_room_counter_on_sidebar"}}</label>
 								<div>
-									<label><input type="radio" name="messageCounterSidebar" value="1" checked="{{checked 'messageCounterSidebar' true}}"/> {{_ "True"}}</label>
-									<label><input type="radio" name="messageCounterSidebar" value="0" checked="{{checked 'messageCounterSidebar' false true}}"/> {{_ "False"}}</label>
+									<label><input type="radio" name="roomCounterSidebar" value="1" checked="{{checked 'roomCounterSidebar' true}}"/> {{_ "True"}}</label>
+									<label><input type="radio" name="roomCounterSidebar" value="0" checked="{{checked 'roomCounterSidebar' false true}}"/> {{_ "False"}}</label>
 								</div>
 							</div>
 						</div>
