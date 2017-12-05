@@ -561,25 +561,6 @@ input:-webkit-autofill {
 /** ----------------------------------------------------------------------------
  * Message content
  */
-.first-unread {
-	.body {
-		&::before {
-			background: @transparent-darker;
-		}
-
-		&::after {
-			color: @primary-font-color;
-		}
-	}
-}
-
-.first-unread-opaque {
-	.body {
-		&::before {
-			background: @transparent-dark;
-		}
-	}
-}
 
 .message {
 	&.new-day::before {
@@ -672,6 +653,16 @@ input:-webkit-autofill {
 
 	.options button {
 		.buttonColors(@tertiary-font-color, @primary-background-color);
+	}
+}
+
+.sidebar-item__last-message {
+	a:not(.mention-link) {
+		color: @link-font-color;
+
+		&:hover {
+			color: darken(@link-font-color, 10%);
+		}
 	}
 }
 
