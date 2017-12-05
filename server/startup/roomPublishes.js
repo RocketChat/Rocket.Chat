@@ -48,7 +48,8 @@ Meteor.startup(function() {
 				reactWhenReadOnly: 1,
 				jitsiTimeout: 1,
 				description: 1,
-				sysMes: 1
+				sysMes: 1,
+				tokenpass: 1
 			}
 		};
 
