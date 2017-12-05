@@ -1,6 +1,8 @@
+import s from 'underscore.string';
+
 Meteor.methods({
 	sendMessage(message) {
-		if (!Meteor.userId() || _.trim(message.msg) === '') {
+		if (!Meteor.userId() || s.trim(message.msg) === '') {
 			return false;
 		}
 		const user = Meteor.user();

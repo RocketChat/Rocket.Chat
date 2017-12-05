@@ -1,4 +1,6 @@
 /* global Restivus */
+import _ from 'underscore';
+
 class API extends Restivus {
 	constructor(properties) {
 		super(properties);
