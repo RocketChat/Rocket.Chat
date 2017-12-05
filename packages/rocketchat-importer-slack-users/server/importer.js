@@ -11,7 +11,7 @@ export class SlackUsersImporter extends Base {
 
 		this.csvParser = Npm.require('csv-parse/lib/sync');
 		this.userMap = new Map();
-		this.admins = []; //Array of usernames of the admins
+		this.admins = []; //Array of ids of the users which are admins
 	}
 
 	prepare(dataURI, sentContentType, fileName) {
@@ -36,7 +36,7 @@ export class SlackUsersImporter extends Base {
 
 			switch (user[2]) {
 				case 'Admin':
-					this.admins.push(username);
+					this.admins.push(id);
 					break;
 				case 'Bot':
 					isBot = true;
@@ -90,6 +90,7 @@ export class SlackUsersImporter extends Base {
 				Meteor.runAsUser(startedByUserId, () => {
 					const existantUser = RocketChat.models.Users.findOneByEmailAddress(u.email) || RocketChat.models.Users.findOneByUsername(u.username);
 
+					let userId = existantUser._id;
 					if (existantUser) {
 						//since we have an existing user, let's try a few things
 						u.rocketId = existantUser._id;
@@ -98,7 +99,8 @@ export class SlackUsersImporter extends Base {
 						RocketChat.models.Users.setEmail(existantUser._id, u.email);
 						RocketChat.models.Users.setEmailVerified(existantUser._id, u.email);
 					} else {
-						const userId = Accounts.createUser({ username: u.username + Random.id(), password: Date.now() + u.name + u.email.toUpperCase() });
+						userId = Accounts.createUser({ username: u.username + Random.id(), password: Date.now() + u.name + u.email.toUpperCase() });
+
 						if (!userId) {
 							console.warn('An error happened while creating a user.');
 							return;
@@ -112,6 +114,10 @@ export class SlackUsersImporter extends Base {
 							RocketChat.models.Users.setEmailVerified(userId, u.email);
 							u.rocketId = userId;
 						});
+					}
+
+					if (this.admins.includes(u.user_id)) {
+						Meteor.call('setAdminStatus', userId, true);
 					}
 
 					super.addCountCompleted(1);
