@@ -1,0 +1,39 @@
+<template name="rc_modal">
+	<div class="rc-modal-wrapper">
+		<div class="rc-modal rc-modal--{{modalClass}}" data-modal="modal">
+
+
+			{{# if template}}
+				{{> Template.dynamic template=template data=data}}
+			{{else}}
+				<header class="rc-modal__header">
+					<h1 class="rc-modal__title">{{title}}</h1>
+					<button class="contextual-bar__close js-close">
+						{{> icon classes="rc-modal__close" icon="plus"}}
+					</button>
+				</header>
+
+				<main class="rc-modal__content">
+					{{# if content}}
+						{{> Template.dynamic template=content data=data}}
+					{{/if}}
+					{{# if text}}
+						{{# if html}}
+							{{{text}}}
+						{{else}}
+							{{text}}
+						{{/if}}
+					{{/if}}
+				</main>
+				<div class="rc-modal__footer">
+					{{# if showCancelButton}}
+						<input class="rc-button rc-button--nude js-close" type="submit" data-button="cancel" value="{{cancelButtonText}}">
+					{{/if}}
+					<input style="background-color:{{confirmButtonColor}}" class="rc-button rc-button--primary js-confirm" type="submit" data-button="create" value="{{confirmButtonText}}">
+
+				</div>
+			{{/if}}
+
+		</div>
+	</div>
+</template>
