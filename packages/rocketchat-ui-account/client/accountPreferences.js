@@ -156,7 +156,7 @@ Template.accountPreferences.onCreated(function() {
 		this.find('#language').value = localStorage.getItem('userLanguage');
 	};
 
-	this.shouldUpdateLocalStorageSetting = function (setting, newValue) {
+	this.shouldUpdateLocalStorageSetting = function(setting, newValue) {
 		return localStorage.getItem(setting) !== newValue;
 	};
 
@@ -222,7 +222,6 @@ Template.accountPreferences.onCreated(function() {
 				instance.clearForm();
 				if (reload) {
 					setTimeout(function() {
-						console.log('reloading..')
 						Meteor._reload.reload();
 					}, 1000);
 				}
