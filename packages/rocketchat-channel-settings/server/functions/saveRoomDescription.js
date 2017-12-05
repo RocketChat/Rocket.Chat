@@ -6,7 +6,7 @@ RocketChat.saveRoomDescription = function(rid, roomDescription, user) {
 			'function': 'RocketChat.saveRoomDescription'
 		});
 	}
-	const escapedRoomDescription = roomDescription;
+	const escapedRoomDescription = encodeURI(roomDescription);
 	const update = RocketChat.models.Rooms.setDescriptionById(rid, escapedRoomDescription);
 	RocketChat.models.Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser('room_changed_description', rid, escapedRoomDescription, user);
 	return update;
