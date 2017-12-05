@@ -97,9 +97,9 @@ Template.roomList.helpers({
 		return RocketChat.roomTypes.roomTypes[roomType].getUiText(UiTextContext.NO_ROOMS_SUBSCRIBED) || 'No_channels_yet';
 	},
 
-	showCounter() {
+	showRoomCounter() {
 		const user = Meteor.user();
-		return user && user.settings && user.settings.preferences && user.settings.preferences.messageCounterSidebar;
+		return user && user.settings && user.settings.preferences && user.settings.preferences.roomCounterSidebar;
 	}
 });
 
