@@ -7,7 +7,7 @@ const fields = {
 	t: 1,
 	cl: 1,
 	u: 1,
-	// usernames: 1,
+	usernames: 1,
 	topic: 1,
 	announcement: 1,
 	muted: 1,
