@@ -76,6 +76,11 @@ Meteor.methods({
 			if (settings.mobileNotifications) {
 				preferences.mobileNotifications = settings.mobileNotifications;
 			}
+			if (settings.idleTimeLimit) {
+				preferences.idleTimeLimit = settings.idleTimeLimit;
+			}
+
+			preferences.enableAutoAway = settings.enableAutoAway === '1';
 
 			preferences.audioNotificationValue = settings.audioNotificationValue - 0;
 			preferences.desktopNotificationDuration = settings.desktopNotificationDuration - 0;
@@ -86,6 +91,7 @@ Meteor.methods({
 			preferences.hideFlexTab = settings.hideFlexTab === '1';
 			preferences.highlights = settings.highlights;
 			preferences.sendOnEnter = settings.sendOnEnter;
+			preferences.roomCounterSidebar = settings.roomCounterSidebar === '1';
 
 			RocketChat.models.Users.setPreferences(Meteor.userId(), preferences);
 
