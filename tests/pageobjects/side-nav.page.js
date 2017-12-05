@@ -39,10 +39,6 @@ class SideNav extends Page {
 	get avatar() { return browser.element('[href="/changeavatar"]'); }
 	get preferencesClose() { return browser.element('.sidebar-flex__close-button[data-action="close"]'); }
 
-	get accountStatusBullet() { return browser.element('.sidebar__account-status-bullet'); }
-	get accountStatusBulletOnline() { return browser.element('.sidebar__account-status-bullet--online'); }
-	get accountStatusBulletAway() { return browser.element('.sidebar__account-status-bullet--away'); }
-
 	get burgerBtn() { return browser.element('.burger'); }
 
 	// Opens a channel via rooms list
