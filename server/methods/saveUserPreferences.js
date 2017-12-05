@@ -87,7 +87,7 @@ Meteor.methods({
 			preferences.hideFlexTab = settings.hideFlexTab === '1';
 			preferences.highlights = settings.highlights;
 			preferences.sendOnEnter = settings.sendOnEnter;
-			preferences.messageCounterSidebar = settings.messageCounterSidebar === '1';
+			preferences.roomCounterSidebar = settings.roomCounterSidebar === '1';
 
 			RocketChat.models.Users.setPreferences(Meteor.userId(), preferences);
 
