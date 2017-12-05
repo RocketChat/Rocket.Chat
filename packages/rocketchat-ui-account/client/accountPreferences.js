@@ -164,7 +164,7 @@ Template.accountPreferences.onCreated(function() {
 		data.unreadAlert = $('#unreadAlert').find('input:checked').val();
 		data.notificationsSoundVolume = parseInt($('#notificationsSoundVolume').val());
 
-		data.messageCounterSidebar = $('#messageCounterSidebar').find('input:checked').val();
+		data.roomCounterSidebar = $('#roomCounterSidebar').find('input:checked').val();
 
 		Meteor.call('saveUserPreferences', data, function(error, results) {
 			if (results) {
