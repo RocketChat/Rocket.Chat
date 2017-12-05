@@ -18,6 +18,10 @@ Meteor.startup(function() {
 	TimeSync.loggingEnabled = false;
 
 	const userHasPreferences = (user) => {
+		if (!user) {
+			return false;
+		}
+
 		const userHasSettings = user.hasOwnProperty('settings');
 
 		if (!userHasSettings) {
