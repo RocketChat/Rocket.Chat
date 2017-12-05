@@ -525,7 +525,7 @@
   "Duplicate_channel_name": "Ein Kanal mit dem Namen '%s' existiert bereits",
   "Duplicate_private_group_name": "Eine private Gruppe mit dem Namen '%s' existiert bereits.",
   "Duration": "Dauer",
-  "Enable Auto Away": "Schakel Auto Away in",
+  "Enable_Auto_Away": "Schakel Auto Away in",
   "Edit": "Bearbeiten",
   "edit-message": "Nachricht bearbeiten",
   "edit-message_description": "Berechtigung, eine Nachricht in einem Raum zu bearbeiten",
