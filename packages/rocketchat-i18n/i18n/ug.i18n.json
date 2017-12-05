@@ -93,7 +93,7 @@
   "Accounts_RegistrationForm_Public": "ئاشكارا",
   "Accounts_RegistrationForm_Secret_URL": "شەخسىي ئادرېسى",
   "Accounts_RegistrationForm_SecretURL": "شەخسىي تىزىملىتىش جەدۋىلى ",
-  "Accounts_RegistrationForm_SecretURL_Description": "https://demo.rocket.chat/register/[secret_hash] سىز چوقۇم خالىغان ھەرپ-بەلگە تىزىقى بىلەن تەمىنلىشىڭىز كېرەك ، ئۇ ھەرپ-بەلگە تىزىقى سىزنىڭ تىزىملىتىش ئادرېسىڭىزغا قېتىلىدۇ. مەسىلەن: مۇنداق",
+  "Accounts_RegistrationForm_SecretURL_Description": "https://open.rocket.chat/register/[secret_hash] سىز چوقۇم خالىغان ھەرپ-بەلگە تىزىقى بىلەن تەمىنلىشىڭىز كېرەك ، ئۇ ھەرپ-بەلگە تىزىقى سىزنىڭ تىزىملىتىش ئادرېسىڭىزغا قېتىلىدۇ. مەسىلەن: مۇنداق",
   "Accounts_RequireNameForSignUp": "ئىسىم_فامىلە يازغاندىن كېيىن ئاندىن تىزىملىتىلىدۇ",
   "Accounts_ShowFormLogin": "جەدۋەلنى ئاساس قىلغاندىكى كىرىش يۈزىنى كۆرسىتىدۇ",
   "Accounts_UseDefaultBlockedDomainsList": "بەلگىلەنگەن دائىرە نامى توسۇش تىزىملىكىنى ئىشلىتىش",
