@@ -2,9 +2,9 @@
   "lockfileVersion": 1,
   "dependencies": {
     "ajv": {
-      "version": "5.5.0",
-      "resolved": "https://registry.npmjs.org/ajv/-/ajv-5.5.0.tgz",
-      "integrity": "sha1-6yhAdG6dxIvV4GOjbj/UAMXqtak="
+      "version": "5.5.1",
+      "resolved": "https://registry.npmjs.org/ajv/-/ajv-5.5.1.tgz",
+      "integrity": "sha1-s4u4h22ehr7plJVqBOch6IskjrI="
     },
     "ansi-regex": {
       "version": "2.1.1",
@@ -1239,9 +1239,9 @@
       "integrity": "sha512-lR3gD69osqm6EYLk9wB/G1W/laGWjzH90t1vEa2xuxHD5KUrSzp9pUSfTm+YC5Nxt2T8nMPEvKlhbQayU7bgFw=="
     },
     "retry-request": {
-      "version": "3.2.0",
-      "resolved": "https://registry.npmjs.org/retry-request/-/retry-request-3.2.0.tgz",
-      "integrity": "sha512-QwzQvJJphYfwOfsLQACcTLx0d2kuHM5LB3CEPJG7urUbHYTbSf9jWW5XJtMFDNd1oylGOe77EccuLZzsPl+UnQ=="
+      "version": "3.3.0",
+      "resolved": "https://registry.npmjs.org/retry-request/-/retry-request-3.3.0.tgz",
+      "integrity": "sha512-bCbvtnZkfgB2TnbKMUUxzSR5W4AJQyMD6D6UcCsE/wBTVmlsS59OrDQr4RKV/Kq1hiIBmUYlbxd9MZ0cfpjrAQ=="
     },
     "rgb-hex": {
       "version": "1.0.0",
