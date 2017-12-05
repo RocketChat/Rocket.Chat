@@ -187,7 +187,6 @@ Template.accountPreferences.onCreated(function() {
 		data.unreadAlert = $('#unreadAlert').find('input:checked').val();
 		data.notificationsSoundVolume = parseInt($('#notificationsSoundVolume').val());
 		data.roomCounterSidebar = $('#roomCounterSidebar').find('input:checked').val();
-		data.messageCounterSidebar = $('#messageCounterSidebar').find('input:checked').val();
 		data.highlights = _.compact(_.map($('[name=highlights]').val().split(','), function(e) {
 			return s.trim(e);
 		}));
