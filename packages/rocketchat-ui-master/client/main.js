@@ -1,5 +1,6 @@
 /* globals toolbarSearch, menu, isRtl, fireGlobalEvent, CachedChatSubscription, DynamicCss */
 import Clipboard from 'clipboard';
+import s from 'underscore.string';
 
 RocketChat.settings.collection.find({_id:/theme-color-rc/i}, {fields:{ value: 1 }}).observe({changed: () => { DynamicCss.run(true); }});
 
@@ -60,11 +61,11 @@ Template.body.onRendered(function() {
 		if (target.id === 'pswp') {
 			return;
 		}
-		const inputMessage = $('textarea.rc-message-box__textarea');
+		const inputMessage = $('.rc-message-box__textarea');
 		if (inputMessage.length === 0) {
 			return;
 		}
-		return inputMessage.focus();
+		inputMessage.focus();
 	});
 
 	$(document.body).on('click', function(e) {
@@ -86,7 +87,7 @@ Template.body.onRendered(function() {
 	Tracker.autorun(function(c) {
 		const w = window;
 		const d = document;
-		const s = 'script';
+		const script = 'script';
 		const l = 'dataLayer';
 		const i = RocketChat.settings.get('GoogleTagManager_id');
 		if (Match.test(i, String) && i.trim() !== '') {
@@ -103,7 +104,7 @@ Template.body.onRendered(function() {
 				j.async = true;
 				j.src = `//www.googletagmanager.com/gtm.js?id=${ i }${ dl }`;
 				return f.parentNode.insertBefore(j, f);
-			}(w, d, s, l, i));
+			}(w, d, script, l, i));
 		}
 	});
 	if (Meteor.isCordova) {

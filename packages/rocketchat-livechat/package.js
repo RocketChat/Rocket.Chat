@@ -24,7 +24,6 @@ Npm.depends({
 Package.onUse(function(api) {
 	api.use(['webapp', 'autoupdate'], 'server');
 	api.use('ecmascript');
-	api.use('underscorestring:underscore.string');
 	api.use('rocketchat:lib');
 	api.use('rocketchat:authorization');
 	api.use('rocketchat:logger');

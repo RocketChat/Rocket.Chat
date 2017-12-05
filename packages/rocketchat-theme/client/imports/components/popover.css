@@ -1,26 +1,3 @@
-:root {
-	--rc-popover-open: {
-		display: flex;
-
-		animation: dropdown-show 0.1s cubic-bezier(0.45, 0.05, 0.55, 0.95);
-		align-items: flex-start;
-	}
-	--rc-popover-open-mobile: {
-		position: fixed;
-		top: initial;
-		right: 0;
-		bottom: 0;
-		left: 0;
-
-		display: inline-block;
-
-		width: 100vw;
-		padding: 8px;
-
-		animation: dropup-show 0.5s cubic-bezier(0.45, 0.05, 0.55, 0.95);
-	}
-}
-
 .rc-popover {
 	position: fixed;
 	z-index: 9999;
@@ -49,10 +26,6 @@
 		border-radius: var(--popover-radius);
 		background-color: var(--popover-background);
 		box-shadow: 0 0 2px 0 rgba(47, 52, 61, 0.08), 0 0 12px 0 rgba(47, 52, 61, 0.12);
-	}
-
-	&--show {
-		@apply --rc-popover-open;
 	}
 
 	&__column {
@@ -157,7 +130,7 @@
 
 @keyframes dropdown-show {
 	0% {
-		transform: translate(0, -2%);
+		transform: translate(0, -5%);
 
 		opacity: 0;
 	}
