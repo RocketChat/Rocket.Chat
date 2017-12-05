@@ -1,3 +1,5 @@
+import _ from 'underscore';
+
 const getTitle = function(self) {
 	if (self.meta == null) {
 		return;

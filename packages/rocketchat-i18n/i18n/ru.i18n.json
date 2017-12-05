@@ -119,7 +119,7 @@
   "Accounts_RegistrationForm_Public": "Открытая",
   "Accounts_RegistrationForm_Secret_URL": "Секретный URL-адрес",
   "Accounts_RegistrationForm_SecretURL": "Секретный URL-адрес регистрационной формы",
-  "Accounts_RegistrationForm_SecretURL_Description": "Вы должны предоставить случайную строку, которая будет добавлена к вашему регистрационному URL-адресу. Например: https://demo.rocket.chat/register/[secret_hash]",
+  "Accounts_RegistrationForm_SecretURL_Description": "Вы должны предоставить случайную строку, которая будет добавлена к вашему регистрационному URL-адресу. Например: https://open.rocket.chat/register/[secret_hash]",
   "Accounts_RequireNameForSignUp": "Требуется имя для регистрации",
   "Accounts_RequirePasswordConfirmation": "Запрашивать подтверждение пароля",
   "Accounts_SetDefaultAvatar": "Установить аватар по-умолчанию",

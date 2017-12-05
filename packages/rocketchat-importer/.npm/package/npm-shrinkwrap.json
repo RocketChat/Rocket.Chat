@@ -1,19 +1,15 @@
 {
+  "lockfileVersion": 1,
   "dependencies": {
     "adm-zip": {
       "version": "0.4.7",
       "resolved": "https://registry.npmjs.org/adm-zip/-/adm-zip-0.4.7.tgz",
-      "from": "adm-zip@0.4.7"
+      "integrity": "sha1-hgbCy/HEJs6MjsABdER/1Jtur8E="
     },
     "bson": {
       "version": "0.5.5",
       "resolved": "https://registry.npmjs.org/bson/-/bson-0.5.5.tgz",
-      "from": "bson@0.5.5"
-    },
-    "file-type": {
-      "version": "4.0.0",
-      "resolved": "https://registry.npmjs.org/file-type/-/file-type-4.0.0.tgz",
-      "from": "file-type@4.0.0"
+      "integrity": "sha1-HWcl1ADw+/AnG/a6/I+hEmwpmDs="
     }
   }
 }

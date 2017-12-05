@@ -1,4 +1,5 @@
 /* global slugify */
+import _ from 'underscore';
 
 function slug(text) {
 	text = slugify(text, '.');
