@@ -1,4 +1,6 @@
 /* globals Importer */
+import _ from 'underscore';
+import s from 'underscore.string';
 import moment from 'moment';
 
 import 'moment-timezone';
@@ -34,11 +36,11 @@ Importer.HipChat = Importer.HipChat = (function() {
 						this.updateProgress(Importer.ProgressStep.PREPARING_CHANNELS);
 						const tempRooms = JSON.parse(entry.getData().toString()).rooms;
 						tempRooms.forEach(room => {
-							room.name = _.slugify(room.name);
+							room.name = s.slugify(room.name);
 						});
 					} else if (roomName.indexOf('/') > -1) {
 						const item = roomName.split('/');
-						roomName = _.slugify(item[0]);
+						roomName = s.slugify(item[0]);
 						const msgGroupData = item[1].split('.')[0];
 						if (!tempMessages[roomName]) {
 							tempMessages[roomName] = {};

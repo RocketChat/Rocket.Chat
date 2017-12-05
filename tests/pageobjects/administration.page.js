@@ -124,7 +124,11 @@ class Administration extends Page {
 		element.waitForVisible(5000);
 		browser.pause(500);
 		const result = element.isVisible();
-		return result[0];
+		if (Array.isArray(result)) {
+			return result[0];
+		}
+
+		return result;
 	}
 
 	getUserFromList(user) {

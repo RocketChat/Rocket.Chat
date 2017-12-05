@@ -1,3 +1,5 @@
+import _ from 'underscore';
+
 // settings endpoints
 RocketChat.API.v1.addRoute('settings', { authRequired: true }, {
 	get() {

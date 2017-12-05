@@ -1,4 +1,5 @@
 /* globals WebAppInternals */
+import _ from 'underscore';
 
 import url from 'url';
 

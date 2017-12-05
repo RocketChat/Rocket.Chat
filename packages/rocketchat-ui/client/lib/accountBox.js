@@ -1,3 +1,5 @@
+import _ from 'underscore';
+
 this.AccountBox = (function() {
 	let status = 0;
 	const self = {};
