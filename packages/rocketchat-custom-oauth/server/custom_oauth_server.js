@@ -198,7 +198,11 @@ export class CustomOAuth {
 					}
 					identity.email = identity.user.email;
 				}
-
+				// Fix for Xenforo [BD]API plugin for 'user.user_id; instead of 'id'
+				if (identity.user && identity.user.user_id && !identity.id) {
+					identity.id = identity.user.user_id;
+					identity.email = identity.user.user_email;
+				}
 				// Fix general 'phid' instead of 'id' from phabricator
 				if (identity.phid && !identity.id) {
 					identity.id = identity.phid;
