@@ -1,4 +1,6 @@
+import _ from 'underscore';
 import toastr from 'toastr';
+
 Template.livechatDepartmentForm.helpers({
 	department() {
 		return Template.instance().department.get();

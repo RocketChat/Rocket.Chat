@@ -1,9 +1,10 @@
 {
+  "lockfileVersion": 1,
   "dependencies": {
     "atlassian-crowd": {
       "version": "0.5.0",
       "resolved": "https://registry.npmjs.org/atlassian-crowd/-/atlassian-crowd-0.5.0.tgz",
-      "from": "atlassian-crowd@0.5.0"
+      "integrity": "sha1-isdFqHg3mUkNF0H6Cc9HLn/zCTA="
     }
   }
 }

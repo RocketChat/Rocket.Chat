@@ -1,4 +1,6 @@
 /* globals msgStream */
+import _ from 'underscore';
+
 Meteor.methods({
 	setReaction(reaction, messageId) {
 		if (!Meteor.userId()) {

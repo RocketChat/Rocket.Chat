@@ -14,7 +14,6 @@ Package.onUse(function(api) {
 	api.use('webapp', 'server');
 	api.use('accounts-base', 'server');
 
-	api.use('underscore');
 	api.use('ecmascript');
 
 	// Server files
