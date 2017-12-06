@@ -181,7 +181,6 @@ const getUserAuth = function _getUserAuth() {
 };
 
 let enableCors = RocketChat.settings.get('API_Enable_CORS');
-
 const createApi = function() {
 	RocketChat.API.v1 = new API({
 		version: 'v1',
@@ -203,3 +202,6 @@ RocketChat.settings.get('API_Enable_CORS', (key, value) => {
 	enableCors = value;
 	createApi();
 });
+
+// also create the API immediately
+createApi();
