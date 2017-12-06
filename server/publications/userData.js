@@ -20,6 +20,7 @@ Meteor.publish('userData', function() {
 			customFields: 1,
 			'services.github': 1,
 			'services.gitlab': 1,
+			'services.tokenpass': 1,
 			requirePasswordChange: 1,
 			requirePasswordChangeReason: 1,
 			'services.password.bcrypt': 1,
