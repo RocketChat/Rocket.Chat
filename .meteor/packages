@@ -74,6 +74,7 @@ rocketchat:importer-csv
 rocketchat:importer-hipchat
 rocketchat:importer-hipchat-enterprise
 rocketchat:importer-slack
+rocketchat:importer-slack-users
 rocketchat:integrations
 rocketchat:internal-hubot
 rocketchat:irc
