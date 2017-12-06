@@ -168,6 +168,12 @@ Accounts.validateLoginAttempt(function(login) {
 		});
 	}
 
+	if (!{}.hasOwnProperty.call(login.user, 'roles') || !Array.isArray(login.user.roles)) {
+		throw new Meteor.Error('error-user-has-no-roles', 'User has no roles', {
+			'function': 'Accounts.validateLoginAttempt'
+		});
+	}
+
 	if (login.user.roles.includes('admin') === false && login.type === 'password' && RocketChat.settings.get('Accounts_EmailVerification') === true) {
 		const validEmail = login.user.emails.filter(email => email.verified === true);
 		if (validEmail.length === 0) {
