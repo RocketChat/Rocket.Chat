@@ -1,9 +1,14 @@
-/* globals Importer */
+import {
+	Base,
+	ProgressStep,
+	Selection,
+	SelectionChannel,
+	SelectionUser
+} from 'meteor/rocketchat:importer';
 
-Importer.CSV = class ImporterCSV extends Importer.Base {
-	constructor(name, descriptionI18N, mimeType) {
-		super(name, descriptionI18N, mimeType);
-		this.logger.debug('Constructed a new CSV Importer.');
+export class CsvImporter extends Base {
+	constructor(info) {
+		super(info);
 
 		this.csvParser = Npm.require('csv-parse/lib/sync');
 		this.messages = new Map();
@@ -36,7 +41,7 @@ Importer.CSV = class ImporterCSV extends Importer.Base {
 
 			//Parse the channels
 			if (entry.entryName.toLowerCase() === 'channels.csv') {
-				super.updateProgress(Importer.ProgressStep.PREPARING_CHANNELS);
+				super.updateProgress(ProgressStep.PREPARING_CHANNELS);
 				const parsedChannels = this.csvParser(entry.getData().toString());
 				tempChannels = parsedChannels.map((c) => {
 					return {
@@ -52,7 +57,7 @@ Importer.CSV = class ImporterCSV extends Importer.Base {
 
 			//Parse the users
 			if (entry.entryName.toLowerCase() === 'users.csv') {
-				super.updateProgress(Importer.ProgressStep.PREPARING_USERS);
+				super.updateProgress(ProgressStep.PREPARING_USERS);
 				const parsedUsers = this.csvParser(entry.getData().toString());
 				tempUsers = parsedUsers.map((u) => { return { id: u[0].trim().replace('.', '_'), username: u[0].trim(), email: u[1].trim(), name: u[2].trim() }; });
 				continue;
@@ -96,7 +101,7 @@ Importer.CSV = class ImporterCSV extends Importer.Base {
 		super.addCountToTotal(tempChannels.length);
 
 		// Save the messages records to the import record for `startImport` usage
-		super.updateProgress(Importer.ProgressStep.PREPARING_MESSAGES);
+		super.updateProgress(ProgressStep.PREPARING_MESSAGES);
 		let messagesCount = 0;
 		for (const [channel, messagesMap] of tempMessages.entries()) {
 			if (!this.messages.get(channel)) {
@@ -107,8 +112,8 @@ Importer.CSV = class ImporterCSV extends Importer.Base {
 				messagesCount += msgs.length;
 				super.updateRecord({ 'messagesstatus': `${ channel }/${ msgGroupData }` });
 
-				if (Importer.Base.getBSONSize(msgs) > Importer.Base.MaxBSONSize) {
-					Importer.Base.getBSONSafeArraysFromAnArray(msgs).forEach((splitMsg, i) => {
+				if (Base.getBSONSize(msgs) > Base.getMaxBSONSize()) {
+					Base.getBSONSafeArraysFromAnArray(msgs).forEach((splitMsg, i) => {
 						const messagesId = this.collection.insert({ 'import': this.importRecord._id, 'importer': this.name, 'type': 'messages', 'name': `${ channel }/${ msgGroupData }.${ i }`, 'messages': splitMsg });
 						this.messages.get(channel).set(`${ msgGroupData }.${ i }`, this.collection.findOne(messagesId));
 					});
@@ -125,16 +130,16 @@ Importer.CSV = class ImporterCSV extends Importer.Base {
 		//Ensure we have at least a single user, channel, or message
 		if (tempUsers.length === 0 && tempChannels.length === 0 && messagesCount === 0) {
 			this.logger.error('No users, channels, or messages found in the import file.');
-			super.updateProgress(Importer.ProgressStep.ERROR);
+			super.updateProgress(ProgressStep.ERROR);
 			return super.getProgress();
 		}
 
-		const selectionUsers = tempUsers.map((u) => new Importer.SelectionUser(u.id, u.username, u.email, false, false, true));
-		const selectionChannels = tempChannels.map((c) => new Importer.SelectionChannel(c.id, c.name, false, true, c.isPrivate));
+		const selectionUsers = tempUsers.map((u) => new SelectionUser(u.id, u.username, u.email, false, false, true));
+		const selectionChannels = tempChannels.map((c) => new SelectionChannel(c.id, c.name, false, true, c.isPrivate));
 		const selectionMessages = this.importRecord.count.messages;
 
-		super.updateProgress(Importer.ProgressStep.USER_SELECTION);
-		return new Importer.Selection(this.name, selectionUsers, selectionChannels, selectionMessages);
+		super.updateProgress(ProgressStep.USER_SELECTION);
+		return new Selection(this.name, selectionUsers, selectionChannels, selectionMessages);
 	}
 
 	startImport(importSelection) {
@@ -163,7 +168,7 @@ Importer.CSV = class ImporterCSV extends Importer.Base {
 
 		const startedByUserId = Meteor.userId();
 		Meteor.defer(() => {
-			super.updateProgress(Importer.ProgressStep.IMPORTING_USERS);
+			super.updateProgress(ProgressStep.IMPORTING_USERS);
 			//Import the users
 			for (const u of this.users.users) {
 				if (!u.do_import) {
@@ -198,7 +203,7 @@ Importer.CSV = class ImporterCSV extends Importer.Base {
 			this.collection.update({ _id: this.users._id }, { $set: { 'users': this.users.users }});
 
 			//Import the channels
-			super.updateProgress(Importer.ProgressStep.IMPORTING_CHANNELS);
+			super.updateProgress(ProgressStep.IMPORTING_CHANNELS);
 			for (const c of this.channels.channels) {
 				if (!c.do_import) {
 					continue;
@@ -277,7 +282,7 @@ Importer.CSV = class ImporterCSV extends Importer.Base {
 
 
 			//Import the Messages
-			super.updateProgress(Importer.ProgressStep.IMPORTING_MESSAGES);
+			super.updateProgress(ProgressStep.IMPORTING_MESSAGES);
 			for (const [ch, messagesMap] of this.messages.entries()) {
 				const csvChannel = this.getChannelFromName(ch);
 				if (!csvChannel || !csvChannel.do_import) {
@@ -325,8 +330,8 @@ Importer.CSV = class ImporterCSV extends Importer.Base {
 				});
 			}
 
-			super.updateProgress(Importer.ProgressStep.FINISHING);
-			super.updateProgress(Importer.ProgressStep.DONE);
+			super.updateProgress(ProgressStep.FINISHING);
+			super.updateProgress(ProgressStep.DONE);
 			const timeTook = Date.now() - started;
 			this.logger.log(`CSV Import took ${ timeTook } milliseconds.`);
 		});
@@ -335,11 +340,11 @@ Importer.CSV = class ImporterCSV extends Importer.Base {
 	}
 
 	getSelection() {
-		const selectionUsers = this.users.users.map((u) => new Importer.SelectionUser(u.id, u.username, u.email, false, false, true));
-		const selectionChannels = this.channels.channels.map((c) => new Importer.SelectionChannel(c.id, c.name, false, true, c.isPrivate));
+		const selectionUsers = this.users.users.map((u) => new SelectionUser(u.id, u.username, u.email, false, false, true));
+		const selectionChannels = this.channels.channels.map((c) => new SelectionChannel(c.id, c.name, false, true, c.isPrivate));
 		const selectionMessages = this.importRecord.count.messages;
 
-		return new Importer.Selection(this.name, selectionUsers, selectionChannels, selectionMessages);
+		return new Selection(this.name, selectionUsers, selectionChannels, selectionMessages);
 	}
 
 	getChannelFromName(channelName) {
@@ -357,4 +362,4 @@ Importer.CSV = class ImporterCSV extends Importer.Base {
 			}
 		}
 	}
-};
+}
