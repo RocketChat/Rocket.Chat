@@ -95,7 +95,6 @@
 		"conventional-changelog-cli": "^1.3.4",
 		"eslint": "^4.10.0",
 		"mock-require": "^2.0.2",
-		"postcss-calc": "^6.0.1",
 		"postcss-custom-properties": "^6.2.0",
 		"postcss-import": "^11.0.0",
 		"postcss-media-minmax": "^3.0.0",
