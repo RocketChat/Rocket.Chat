@@ -5,6 +5,7 @@ export default {
 	id: new ReactiveVar(null),
 	token: new ReactiveVar(null),
 	room: new ReactiveVar(null),
+	data: new ReactiveVar(null),
 	roomToSubscribe: new ReactiveVar(null),
 	roomSubscribed: null,
 	connected: null,
@@ -23,6 +24,14 @@ export default {
 
 	setId(id) {
 		return this.id.set(id);
+	},
+
+	getData() {
+		return this.data.get();
+	},
+
+	setData(data) {
+		this.data.set(data);
 	},
 
 	getToken() {
@@ -77,12 +86,14 @@ export default {
 		if (this.connected) {
 			return;
 		}
+		const token = this.getToken();
+
 		this.connected = true;
-		Meteor.call('UserPresence:connect', this.getToken(), { visitor: this.getToken() });
+		Meteor.call('UserPresence:connect', token, { visitor: token });
 
 		Meteor.startup(function() {
 			UserPresence.awayTime = 300000; // 5 minutes
-			UserPresence.start(this.getToken());
+			UserPresence.start(token);
 		});
 	}
 };

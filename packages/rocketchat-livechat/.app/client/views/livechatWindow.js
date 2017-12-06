@@ -119,6 +119,10 @@ Template.livechatWindow.onCreated(function() {
 				visitor.setConnected();
 			}
 
+			if (result.visitor) {
+				visitor.setData(result.visitor);
+			}
+
 			if (result.agentData) {
 				Livechat.agent = result.agentData;
 			}

@@ -187,21 +187,6 @@ this.ChatMessages = class ChatMessages {
 		}
 	}
 
-	tryCompletion(input) {
-		let value = input.value.match(/[^\s]+$/);
-		if (value && value.length > 0) {
-			value = value[0];
-
-			const re = new RegExp(value, 'i');
-
-			// @TODO verify if used
-			const user = Meteor.users.findOne({ username: re }, { fields: { username: 1 } });
-			if (user) {
-				input.value = input.value.replace(value, `@${ user.username } `);
-			}
-		}
-	}
-
 	keyup(rid, event) {
 		let i;
 		const input = event.currentTarget;
@@ -244,12 +229,6 @@ this.ChatMessages = class ChatMessages {
 				this.send(rid, input);
 			}
 			return;
-		}
-
-		if (k === 9) {
-			event.preventDefault();
-			event.stopPropagation();
-			this.tryCompletion(input);
 		}
 
 		if (k === 27) {
