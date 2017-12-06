@@ -660,6 +660,7 @@
   "error-the-field-is-required": "The field __field__ is required.",
   "error-too-many-requests": "Error, too many requests. Please slow down. You must wait __seconds__ seconds before trying again.",
   "error-user-is-not-activated": "User is not activated",
+  "error-user-has-no-roles": "User has no roles",
   "error-user-limit-exceeded": "The number of users you are trying to invite to #channel_name exceeds the limit set by the administrator",
   "error-user-not-in-room": "User is not in this room",
   "error-user-registration-disabled": "User registration is disabled",
