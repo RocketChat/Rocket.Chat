@@ -180,29 +180,31 @@ const getUserAuth = function _getUserAuth() {
 	};
 };
 
-let enableCors = RocketChat.settings.get('API_Enable_CORS');
-const createApi = function() {
-	RocketChat.API.v1 = new API({
-		version: 'v1',
-		useDefaultAuth: true,
-		prettyJson: true,
-		enableCors,
-		auth: getUserAuth()
-	});
+const createApi = function(enableCors) {
+	if (!RocketChat.API.v1 || RocketChat.API.v1._config.enableCors !== enableCors) {
+		RocketChat.API.v1 = new API({
+			version: 'v1',
+			useDefaultAuth: true,
+			prettyJson: true,
+			enableCors,
+			auth: getUserAuth()
+		});
+	}
 
-	RocketChat.API.default = new API({
-		useDefaultAuth: true,
-		prettyJson: true,
-		enableCors,
-		auth: getUserAuth()
-	});
+	if (!RocketChat.API.default || RocketChat.API.default._config.enableCors !== enableCors) {
+		RocketChat.API.default = new API({
+			useDefaultAuth: true,
+			prettyJson: true,
+			enableCors,
+			auth: getUserAuth()
+		});
+	}
 };
 
 // register the API to be re-created once the CORS-setting changes.
 RocketChat.settings.get('API_Enable_CORS', (key, value) => {
-	enableCors = value;
-	createApi();
+	createApi(value);
 });
 
 // also create the API immediately
-createApi();
+createApi(!!RocketChat.settings.get('API_Enable_CORS'));
