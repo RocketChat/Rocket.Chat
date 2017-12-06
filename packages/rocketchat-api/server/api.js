@@ -199,7 +199,7 @@ const createApi = function() {
 	});
 };
 
-RocketChat.settings.onload('API_Enable_CORS', (key, value) => {
+RocketChat.settings.get('API_Enable_CORS', (key, value) => {
 	enableCors = value;
 	createApi();
 });
