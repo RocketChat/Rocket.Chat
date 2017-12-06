@@ -1,3 +1,5 @@
+import visitor from '../../imports/client/visitor';
+
 Template.avatar.helpers({
 	imageUrl() {
 		let username = this.username;
@@ -6,8 +8,7 @@ Template.avatar.helpers({
 			username = user && user.username;
 		}
 
-		// @TODO get visitor username
-		const currentUser = Meteor.users.findOne(Meteor.userId(), { fields: { username: 1 }});
+		const currentUser = visitor.getData();
 		if (!username || (currentUser && currentUser.username === username)) {
 			return;
 		}

@@ -15,9 +15,8 @@ this.Commands = {
 
 	promptTranscript() {
 		if (Livechat.transcript) {
-			// @TODO get visitor email
-			const user = Meteor.user();
-			const email = user && user.visitorEmails && user.visitorEmails.length > 0 ? user.visitorEmails[0].address : '';
+			const visitorData = visitor.getData();
+			const email = visitorData && visitorData.visitorEmails && visitorData.visitorEmails.length > 0 ? visitorData.visitorEmails[0].address : '';
 
 			swal({
 				title: t('Chat_ended'),
@@ -41,7 +40,7 @@ this.Commands = {
 						swal.showInputError(t('please enter your email'));
 						return false;
 					} else {
-						Meteor.call('livechat:sendTranscript', visitor.getRoom(), response, (err) => {
+						Meteor.call('livechat:sendTranscript', visitor.getToken(), visitor.getRoom(), response, (err) => {
 							if (err) {
 								console.error(err);
 							}
