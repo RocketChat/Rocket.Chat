@@ -166,7 +166,7 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room, userId) {
 
 	const user = RocketChat.models.Users.findOneById(message.u._id);
 
-	// @TODO maybe a livechat visitor
+	// might be a livechat visitor
 	if (!user) {
 		return message;
 	}
