@@ -1,9 +1,14 @@
-/* globals Importer */
+import {
+	Base,
+	ProgressStep,
+	Selection,
+	SelectionChannel,
+	SelectionUser
+} from 'meteor/rocketchat:importer';
 
-Importer.HipChatEnterprise = class ImporterHipChatEnterprise extends Importer.Base {
-	constructor(name, descriptionI18N, mimeType) {
-		super(name, descriptionI18N, mimeType);
-		this.logger.debug('Constructed a new HipChat Enterprise Importer.');
+export class HipChatEnterpriseImporter extends Base {
+	constructor(info) {
+		super(info);
 
 		this.Readable = require('stream').Readable;
 		this.zlib = require('zlib');
@@ -31,7 +36,7 @@ Importer.HipChatEnterprise = class ImporterHipChatEnterprise extends Importer.Ba
 						const file = JSON.parse(chunk);
 
 						if (info.base === 'users.json') {
-							super.updateProgress(Importer.ProgressStep.PREPARING_USERS);
+							super.updateProgress(ProgressStep.PREPARING_USERS);
 							for (const u of file) {
 								tempUsers.push({
 									id: u.User.id,
@@ -44,7 +49,7 @@ Importer.HipChatEnterprise = class ImporterHipChatEnterprise extends Importer.Ba
 								});
 							}
 						} else if (info.base === 'rooms.json') {
-							super.updateProgress(Importer.ProgressStep.PREPARING_CHANNELS);
+							super.updateProgress(ProgressStep.PREPARING_CHANNELS);
 							for (const r of file) {
 								tempRooms.push({
 									id: r.Room.id,
@@ -136,7 +141,7 @@ Importer.HipChatEnterprise = class ImporterHipChatEnterprise extends Importer.Ba
 				super.addCountToTotal(tempRooms.length);
 
 				// Save the messages records to the import record for `startImport` usage
-				super.updateProgress(Importer.ProgressStep.PREPARING_MESSAGES);
+				super.updateProgress(ProgressStep.PREPARING_MESSAGES);
 				let messagesCount = 0;
 				for (const [channel, msgs] of tempMessages.entries()) {
 					if (!this.messages.get(channel)) {
@@ -146,8 +151,8 @@ Importer.HipChatEnterprise = class ImporterHipChatEnterprise extends Importer.Ba
 					messagesCount += msgs.length;
 					super.updateRecord({ 'messagesstatus': channel });
 
-					if (Importer.Base.getBSONSize(msgs) > Importer.Base.MaxBSONSize) {
-						Importer.Base.getBSONSafeArraysFromAnArray(msgs).forEach((splitMsg, i) => {
+					if (Base.getBSONSize(msgs) > Base.getMaxBSONSize()) {
+						Base.getBSONSafeArraysFromAnArray(msgs).forEach((splitMsg, i) => {
 							const messagesId = this.collection.insert({ 'import': this.importRecord._id, 'importer': this.name, 'type': 'messages', 'name': `${ channel }/${ i }`, 'messages': splitMsg });
 							this.messages.get(channel).set(`${ channel }.${ i }`, this.collection.findOne(messagesId));
 						});
@@ -166,8 +171,8 @@ Importer.HipChatEnterprise = class ImporterHipChatEnterprise extends Importer.Ba
 					messagesCount += msgs.length;
 					super.updateRecord({ 'messagesstatus': directMsgUser });
 
-					if (Importer.Base.getBSONSize(msgs) > Importer.Base.MaxBSONSize) {
-						Importer.Base.getBSONSafeArraysFromAnArray(msgs).forEach((splitMsg, i) => {
+					if (Base.getBSONSize(msgs) > Base.getMaxBSONSize()) {
+						Base.getBSONSafeArraysFromAnArray(msgs).forEach((splitMsg, i) => {
 							const messagesId = this.collection.insert({ 'import': this.importRecord._id, 'importer': this.name, 'type': 'directMessages', 'name': `${ directMsgUser }/${ i }`, 'messages': splitMsg });
 							this.directMessages.get(directMsgUser).set(`${ directMsgUser }.${ i }`, this.collection.findOne(messagesId));
 						});
@@ -183,18 +188,18 @@ Importer.HipChatEnterprise = class ImporterHipChatEnterprise extends Importer.Ba
 				//Ensure we have some users, channels, and messages
 				if (tempUsers.length === 0 || tempRooms.length === 0 || messagesCount === 0) {
 					this.logger.warn(`The loaded users count ${ tempUsers.length }, the loaded rooms ${ tempRooms.length }, and the loaded messages ${ messagesCount }`);
-					super.updateProgress(Importer.ProgressStep.ERROR);
+					super.updateProgress(ProgressStep.ERROR);
 					reject();
 					return;
 				}
 
-				const selectionUsers = tempUsers.map((u) => new Importer.SelectionUser(u.id, u.username, u.email, u.isDeleted, false, true));
-				const selectionChannels = tempRooms.map((r) => new Importer.SelectionChannel(r.id, r.name, r.isArchived, true, r.isPrivate));
+				const selectionUsers = tempUsers.map((u) => new SelectionUser(u.id, u.username, u.email, u.isDeleted, false, true));
+				const selectionChannels = tempRooms.map((r) => new SelectionChannel(r.id, r.name, r.isArchived, true, r.isPrivate));
 				const selectionMessages = this.importRecord.count.messages;
 
-				super.updateProgress(Importer.ProgressStep.USER_SELECTION);
+				super.updateProgress(ProgressStep.USER_SELECTION);
 
-				resolve(new Importer.Selection(this.name, selectionUsers, selectionChannels, selectionMessages));
+				resolve(new Selection(this.name, selectionUsers, selectionChannels, selectionMessages));
 			}));
 
 			//Wish I could make this cleaner :(
@@ -234,7 +239,7 @@ Importer.HipChatEnterprise = class ImporterHipChatEnterprise extends Importer.Ba
 
 		const startedByUserId = Meteor.userId();
 		Meteor.defer(() => {
-			super.updateProgress(Importer.ProgressStep.IMPORTING_USERS);
+			super.updateProgress(ProgressStep.IMPORTING_USERS);
 			//Import the users
 			for (const u of this.users.users) {
 				this.logger.debug(`Starting the user import: ${ u.username } and are we importing them? ${ u.do_import }`);
@@ -282,7 +287,7 @@ Importer.HipChatEnterprise = class ImporterHipChatEnterprise extends Importer.Ba
 			this.collection.update({ _id: this.users._id }, { $set: { 'users': this.users.users }});
 
 			//Import the channels
-			super.updateProgress(Importer.ProgressStep.IMPORTING_CHANNELS);
+			super.updateProgress(ProgressStep.IMPORTING_CHANNELS);
 			for (const c of this.channels.channels) {
 				if (!c.do_import) {
 					continue;
@@ -318,7 +323,7 @@ Importer.HipChatEnterprise = class ImporterHipChatEnterprise extends Importer.Ba
 			this.collection.update({ _id: this.channels._id }, { $set: { 'channels': this.channels.channels }});
 
 			//Import the Messages
-			super.updateProgress(Importer.ProgressStep.IMPORTING_MESSAGES);
+			super.updateProgress(ProgressStep.IMPORTING_MESSAGES);
 			for (const [ch, messagesMap] of this.messages.entries()) {
 				const hipChannel = this.getChannelFromRoomIdentifier(ch);
 				if (!hipChannel.do_import) {
@@ -420,8 +425,8 @@ Importer.HipChatEnterprise = class ImporterHipChatEnterprise extends Importer.Ba
 				}
 			}
 
-			super.updateProgress(Importer.ProgressStep.FINISHING);
-			super.updateProgress(Importer.ProgressStep.DONE);
+			super.updateProgress(ProgressStep.FINISHING);
+			super.updateProgress(ProgressStep.DONE);
 			const timeTook = Date.now() - started;
 			this.logger.log(`HipChat Enterprise Import took ${ timeTook } milliseconds.`);
 		});
@@ -430,11 +435,11 @@ Importer.HipChatEnterprise = class ImporterHipChatEnterprise extends Importer.Ba
 	}
 
 	getSelection() {
-		const selectionUsers = this.users.users.map((u) => new Importer.SelectionUser(u.id, u.username, u.email, false, false, true));
-		const selectionChannels = this.channels.channels.map((c) => new Importer.SelectionChannel(c.id, c.name, false, true, c.isPrivate));
+		const selectionUsers = this.users.users.map((u) => new SelectionUser(u.id, u.username, u.email, false, false, true));
+		const selectionChannels = this.channels.channels.map((c) => new SelectionChannel(c.id, c.name, false, true, c.isPrivate));
 		const selectionMessages = this.importRecord.count.messages;
 
-		return new Importer.Selection(this.name, selectionUsers, selectionChannels, selectionMessages);
+		return new Selection(this.name, selectionUsers, selectionChannels, selectionMessages);
 	}
 
 	getChannelFromRoomIdentifier(roomIdentifier) {
@@ -460,4 +465,4 @@ Importer.HipChatEnterprise = class ImporterHipChatEnterprise extends Importer.Ba
 			}
 		}
 	}
-};
+}
