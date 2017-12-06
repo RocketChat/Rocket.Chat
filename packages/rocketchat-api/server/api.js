@@ -54,7 +54,7 @@ class API extends Restivus {
 		this.authMethods.push(method);
 	}
 
-	success(result={}) {
+	success(result = {}) {
 		if (_.isObject(result)) {
 			result.success = true;
 		}
@@ -113,7 +113,7 @@ class API extends Restivus {
 			if (this.helperMethods) {
 				Object.keys(endpoints).forEach((method) => {
 					if (typeof endpoints[method] === 'function') {
-						endpoints[method] = { action: endpoints[method] };
+						endpoints[method] = {action: endpoints[method]};
 					}
 
 					//Add a try/catch for each endpoint
@@ -180,17 +180,31 @@ const getUserAuth = function _getUserAuth() {
 	};
 };
 
-RocketChat.API.v1 = new API({
-	version: 'v1',
-	useDefaultAuth: true,
-	prettyJson: true,
-	enableCors: false,
-	auth: getUserAuth()
+const createApi = function(enableCors) {
+	if (!RocketChat.API.v1 || RocketChat.API.v1._config.enableCors !== enableCors) {
+		RocketChat.API.v1 = new API({
+			version: 'v1',
+			useDefaultAuth: true,
+			prettyJson: true,
+			enableCors,
+			auth: getUserAuth()
+		});
+	}
+
+	if (!RocketChat.API.default || RocketChat.API.default._config.enableCors !== enableCors) {
+		RocketChat.API.default = new API({
+			useDefaultAuth: true,
+			prettyJson: true,
+			enableCors,
+			auth: getUserAuth()
+		});
+	}
+};
+
+// register the API to be re-created once the CORS-setting changes.
+RocketChat.settings.get('API_Enable_CORS', (key, value) => {
+	createApi(value);
 });
 
-RocketChat.API.default = new API({
-	useDefaultAuth: true,
-	prettyJson: true,
-	enableCors: false,
-	auth: getUserAuth()
-});
+// also create the API immediately
+createApi(!!RocketChat.settings.get('API_Enable_CORS'));
