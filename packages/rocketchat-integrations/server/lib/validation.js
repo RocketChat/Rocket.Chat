@@ -117,11 +117,11 @@ RocketChat.integrations.validateOutgoing = function _validateOutgoing(integratio
 			throw new Meteor.Error('error-invalid-triggerWords', 'Invalid triggerWords', { function: 'validateOutgoing' });
 		}
 
-		for (const [index, triggerWord] of integration.triggerWords) {
-			if (triggerWord.trim() === '') {
+		integration.triggerWords.forEach((word, index) => {
+			if (!word || word.trim() === '') {
 				delete integration.triggerWords[index];
 			}
-		}
+		});
 
 		integration.triggerWords = _.without(integration.triggerWords, [undefined]);
 	} else {
