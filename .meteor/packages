@@ -14,6 +14,7 @@ accounts-twitter@1.4.0
 blaze-html-templates
 check@1.2.5
 ddp-rate-limiter@1.0.7
+ddp-common
 dynamic-import@0.2.0
 ecmascript@0.9.0
 ejson@1.1.0
@@ -74,6 +75,7 @@ rocketchat:importer-csv
 rocketchat:importer-hipchat
 rocketchat:importer-hipchat-enterprise
 rocketchat:importer-slack
+rocketchat:importer-slack-users
 rocketchat:integrations
 rocketchat:internal-hubot
 rocketchat:irc
