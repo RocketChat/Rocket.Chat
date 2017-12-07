@@ -96,7 +96,7 @@ Template.livechat.events({
 		});
 	},
 
-	'click .inquiries .open-room'(event) {
+	'click .inquiries .sidebar-item'(event) {
 		event.preventDefault();
 		event.stopPropagation();
 

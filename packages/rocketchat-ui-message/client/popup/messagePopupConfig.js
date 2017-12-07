@@ -1,4 +1,6 @@
 /* globals filteredUsersMemory */
+import _ from 'underscore';
+
 filteredUsersMemory = new Mongo.Collection(null);
 
 Meteor.startup(function() {
@@ -87,6 +89,42 @@ const getRoomsFromServer = (filter, records, cb, rid) => {
 const getUsersFromServerDelayed = _.throttle(getUsersFromServer, 500);
 
 const getRoomsFromServerDelayed = _.throttle(getRoomsFromServer, 500);
+
+const addEmojiToRecents = (emoji) => {
+	const pickerEl = $('.emoji-picker')[0];
+	if (pickerEl) {
+		const view = Blaze.getView(pickerEl);
+		if (view) {
+			Template._withTemplateInstanceFunc(view.templateInstance, () => {
+				RocketChat.EmojiPicker.addRecent(emoji.replace(/:/g, ''));
+			});
+		}
+	}
+};
+
+const emojiSort = (recents) => {
+	return (a, b) => {
+		let idA = a._id;
+		let idB = a._id;
+
+		if (recents.includes(a._id)) {
+			idA = recents.indexOf(a._id) + idA;
+		}
+		if (recents.includes(b._id)) {
+			idB = recents.indexOf(b._id) + idB;
+		}
+
+		if (idA < idB) {
+			return -1;
+		}
+
+		if (idA > idB) {
+			return 1;
+		}
+
+		return 0;
+	};
+};
 
 Template.messagePopupConfig.helpers({
 	popupUserConfig() {
@@ -273,11 +311,12 @@ Template.messagePopupConfig.helpers({
 				getFilter(collection, filter) {
 					const key = `:${ filter }`;
 
-					if (!RocketChat.emoji.packages.emojione || RocketChat.emoji.packages.emojione.asciiList[key] || filter.length < 2) {
+					if (!RocketChat.emoji.packages.emojione || RocketChat.emoji.packages.emojione.asciiList[key]) {
 						return [];
 					}
 
 					const regExp = new RegExp(`^${ RegExp.escape(key) }`, 'i');
+					const recents = RocketChat.EmojiPicker.getRecent().map(item => `:${ item }:`);
 					return Object.keys(collection).map(key => {
 						const value = collection[key];
 						return {
@@ -286,16 +325,12 @@ Template.messagePopupConfig.helpers({
 						};
 					})
 						.filter(obj => regExp.test(obj._id))
-						.slice(0, 10)
-						.sort(function(a, b) {
-							if (a._id < b._id) {
-								return -1;
-							}
-							if (a._id > b._id) {
-								return 1;
-							}
-							return 0;
-						});
+						.sort(emojiSort(recents))
+						.slice(0, 10);
+				},
+				getValue(_id) {
+					addEmojiToRecents(_id);
+					return _id;
 				}
 			};
 		}
@@ -314,11 +349,12 @@ Template.messagePopupConfig.helpers({
 				getFilter(collection, filter) {
 					const key = `${ filter }`;
 
-					if (!RocketChat.emoji.packages.emojione || RocketChat.emoji.packages.emojione.asciiList[key] || filter.length < 2) {
+					if (!RocketChat.emoji.packages.emojione || RocketChat.emoji.packages.emojione.asciiList[key]) {
 						return [];
 					}
 
 					const regExp = new RegExp(`^${ RegExp.escape(key) }`, 'i');
+					const recents = RocketChat.EmojiPicker.getRecent().map(item => `:${ item }:`);
 					return Object.keys(collection).map(key => {
 						const value = collection[key];
 						return {
@@ -327,16 +363,12 @@ Template.messagePopupConfig.helpers({
 						};
 					})
 						.filter(obj => regExp.test(obj._id))
-						.slice(0, 10)
-						.sort(function(a, b) {
-							if (a._id < b._id) {
-								return -1;
-							}
-							if (a._id > b._id) {
-								return 1;
-							}
-							return 0;
-						});
+						.sort(emojiSort(recents))
+						.slice(0, 10);
+				},
+				getValue(_id) {
+					addEmojiToRecents(_id);
+					return _id;
 				}
 			};
 		}

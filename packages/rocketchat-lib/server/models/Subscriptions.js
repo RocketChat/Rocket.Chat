@@ -1,3 +1,5 @@
+import _ from 'underscore';
+
 class ModelSubscriptions extends RocketChat.models._Base {
 	constructor() {
 		super(...arguments);
@@ -152,6 +154,18 @@ class ModelSubscriptions extends RocketChat.models._Base {
 			'u._id': {
 				$in: userIds
 			}
+		};
+
+		return this.find(query);
+	}
+
+	findByRoomIdAndUserIdsOrAllMessages(roomId, userIds) {
+		const query = {
+			rid: roomId,
+			$or: [
+				{ 'u._id': { $in: userIds } },
+				{ emailNotifications: 'all' }
+			]
 		};
 
 		return this.find(query);
@@ -403,19 +417,6 @@ class ModelSubscriptions extends RocketChat.models._Base {
 		};
 
 		return this.update(query, update, { multi: true });
-	}
-	updateUserSubscription(rid, userId) {
-		const query = {
-			rid,
-			'u._id': userId
-		};
-		const update = {
-			$set: {
-				open: true,
-				lastActivity: new Date
-			}
-		};
-		return this.update(query, update);
 	}
 	setAlertForRoomIdExcludingUserId(roomId, userId) {
 		const query = {

@@ -1,3 +1,4 @@
+import _ from 'underscore';
 /**
  * Livechat Department model
  */

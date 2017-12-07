@@ -1,3 +1,6 @@
+import _ from 'underscore';
+import s from 'underscore.string';
+
 class ModelUsers extends RocketChat.models._Base {
 	constructor() {
 		super(...arguments);
@@ -18,7 +21,11 @@ class ModelUsers extends RocketChat.models._Base {
 	}
 
 	findOneByUsername(username, options) {
-		const query =	{username};
+		if (typeof username === 'string') {
+			username = new RegExp(username, 'i');
+		}
+
+		const query = {username};
 
 		return this.findOne(query, options);
 	}

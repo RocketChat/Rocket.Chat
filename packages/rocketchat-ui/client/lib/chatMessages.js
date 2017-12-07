@@ -1,4 +1,5 @@
 /* globals MsgTyping */
+import s from 'underscore.string';
 import moment from 'moment';
 import toastr from 'toastr';
 this.ChatMessages = class ChatMessages {
@@ -176,7 +177,7 @@ this.ChatMessages = class ChatMessages {
 		* * @param {function?} done callback
 		*/
 	send(rid, input, done = function() {}) {
-		if (_.trim(input.value) !== '') {
+		if (s.trim(input.value) !== '') {
 			readMessage.enable();
 			readMessage.readNow();
 			$('.message.first-unread').removeClass('first-unread');
@@ -243,7 +244,7 @@ this.ChatMessages = class ChatMessages {
 								ts: new Date,
 								msg: TAPi18n.__('No_such_command', { command: match[1] }),
 								u: {
-									username: 'rocketbot'
+									username: RocketChat.settings.get('InternalHubot_Username')
 								},
 								private: true
 							};
@@ -344,7 +345,7 @@ this.ChatMessages = class ChatMessages {
 	}
 
 	update(id, rid, msg, isDescription) {
-		if ((_.trim(msg) !== '') || (isDescription === true)) {
+		if ((s.trim(msg) !== '') || (isDescription === true)) {
 			Meteor.call('updateMessage', { _id: id, msg, rid });
 			this.clearEditing();
 			return this.stopTyping(rid);
@@ -352,7 +353,7 @@ this.ChatMessages = class ChatMessages {
 	}
 
 	startTyping(rid, input) {
-		if (_.trim(input.value) !== '') {
+		if (s.trim(input.value) !== '') {
 			return MsgTyping.start(rid);
 		} else {
 			return MsgTyping.stop(rid);
@@ -376,6 +377,13 @@ this.ChatMessages = class ChatMessages {
 		const user = Meteor.users.findOne({username: re});
 		if (user) {
 			return input.value = input.value.replace(value, `@${ user.username } `);
+		}
+	}
+
+	restoreText(rid) {
+		const text = localStorage.getItem(`messagebox_${ rid }`);
+		if (typeof text === 'string' && this.input) {
+			this.input.value = text;
 		}
 	}
 
@@ -406,6 +414,8 @@ this.ChatMessages = class ChatMessages {
 		if (!Array.from(keyCodes).includes(k)) {
 			this.startTyping(rid, input);
 		}
+
+		localStorage.setItem(`messagebox_${ rid }`, input.value);
 
 		return this.hasValue.set(input.value !== '');
 	}
@@ -520,3 +530,12 @@ this.ChatMessages = class ChatMessages {
 		return !this.hasValue.get();
 	}
 };
+
+
+RocketChat.callbacks.add('afterLogoutCleanUp', () => {
+	Object.keys(localStorage).forEach((item) => {
+		if (item.indexOf('messagebox_') === 0) {
+			localStorage.removeItem(item);
+		}
+	});
+}, RocketChat.callbacks.priority.MEDIUM, 'chatMessages-after-logout-cleanup');
