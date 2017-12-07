@@ -1,11 +1,11 @@
-/* globals popover */
+/* globals popover isRtl */
 
 Template.accountBox.helpers({
 	myUserInfo() {
 		if (Meteor.user() == null && RocketChat.settings.get('Accounts_AllowAnonymousRead')) {
 			return {
 				name: t('Anonymous'),
-				fname: t('Anonymous'),
+				fname: RocketChat.settings.get('UI_Use_Real_Name') && t('Anonymous'),
 				status: 'online',
 				visualStatus: t('online'),
 				bullet: 'general-success-background',
@@ -24,12 +24,12 @@ Template.accountBox.helpers({
 			bullet: userStatus,
 			_id: Meteor.userId(),
 			username,
-			fname: name || username
+			fname: RocketChat.settings.get('UI_Use_Real_Name') && name
 		};
 	},
 
 	isAnonymous() {
-		if (Meteor.user() == null && RocketChat.settings.get('Accounts_AllowAnonymousRead')) {
+		if (Meteor.userId() == null && RocketChat.settings.get('Accounts_AllowAnonymousRead')) {
 			return 'disabled';
 		}
 	}
@@ -62,28 +62,28 @@ Template.accountBox.events({
 									name: t('Online'),
 									type: 'set-state',
 									id: 'online',
-									class: 'online'
+									modifier: 'online'
 								},
 								{
 									icon: 'circle',
 									name: t('Away'),
 									type: 'set-state',
 									id: 'away',
-									class: 'away'
+									modifier: 'away'
 								},
 								{
 									icon: 'circle',
 									name: t('Busy'),
 									type: 'set-state',
 									id: 'busy',
-									class: 'busy'
+									modifier: 'busy'
 								},
 								{
 									icon: 'circle',
 									name: t('Invisible'),
 									type: 'set-state',
 									id: 'offline',
-									class: 'offline'
+									modifier: 'offline'
 								}
 							]
 						},
@@ -93,7 +93,9 @@ Template.accountBox.events({
 									icon: item.icon,
 									name: t(item.name),
 									type: 'open',
-									id: item.name
+									id: item.name,
+									href: item.href,
+									sideNav: item.sideNav
 								};
 							}).concat([
 								adminOption,
@@ -116,11 +118,12 @@ Template.accountBox.events({
 				}
 			],
 			position: {
-				top: accountBox.offsetHeight + parseInt(getComputedStyle(accountBox)['padding-bottom'].replace('px', '')),
-				left: parseInt(getComputedStyle(accountBox)['padding-left'].replace('px', ''))
+				top: accountBox.offsetHeight
 			},
 			customCSSProperties: {
-				width: `${ accountBox.offsetWidth - parseInt(getComputedStyle(accountBox)['padding-left'].replace('px', '')) * 2 }px`
+				width: `${ accountBox.offsetWidth - parseInt(getComputedStyle(accountBox)['padding-left'].replace('px', '')) * 2 }px`,
+				left: isRtl() ? 'auto' : getComputedStyle(accountBox)['padding-left'],
+				right: 'auto'
 			}
 		};
 

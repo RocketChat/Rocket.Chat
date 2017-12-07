@@ -24,7 +24,6 @@ Npm.depends({
 Package.onUse(function(api) {
 	api.use(['webapp', 'autoupdate'], 'server');
 	api.use('ecmascript');
-	api.use('underscorestring:underscore.string');
 	api.use('rocketchat:lib');
 	api.use('rocketchat:authorization');
 	api.use('rocketchat:logger');
@@ -127,6 +126,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/hooks/externalMessage.js', 'server');
 	api.addFiles('server/hooks/markRoomResponded.js', 'server');
 	api.addFiles('server/hooks/offlineMessage.js', 'server');
+	api.addFiles('server/hooks/RDStation.js', 'server');
 	api.addFiles('server/hooks/sendToCRM.js', 'server');
 
 	// methods

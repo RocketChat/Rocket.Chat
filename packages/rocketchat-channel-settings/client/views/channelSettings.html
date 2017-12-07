@@ -66,6 +66,11 @@
 														</button>
 													</div>
 												{{else}}
+													{{#if $value.showHideValue room}}
+														<button type="button" class="button show">
+															<i class="{{#if showingValue $key}}icon-eye-off{{else}}icon-eye{{/if}}"></i>
+														</button>
+													{{/if}}
 													<button type="button" class="button edit">
 														<i class="icon-pencil" data-edit="{{$key}}"></i>
 													</button>

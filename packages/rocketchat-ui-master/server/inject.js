@@ -1,15 +1,29 @@
 /* globals Inject */
-const renderDynamicCssList = () => {
-	const variables = RocketChat.models.Settings.findOne({_id:'theme-custom-variables'}, {fields: { value: 1}});
-	if (!variables || !variables.value) {
+import _ from 'underscore';
+
+const renderDynamicCssList = _.debounce(Meteor.bindEnvironment(() => {
+	// const variables = RocketChat.models.Settings.findOne({_id:'theme-custom-variables'}, {fields: { value: 1}});
+	const colors = RocketChat.models.Settings.find({_id:/theme-color-rc/i}, {fields: { value: 1, editor: 1}}).fetch().filter(color => color && color.value);
+
+	if (!colors) {
 		return;
 	}
-	Inject.rawBody('dynamic-variables', `<style id='css-variables'>${ variables.value }</style>`);
-};
+	const css = colors.map(({_id, value, editor}) => {
+		if (editor === 'expression') {
+			return `--${ _id.replace('theme-color-', '') }: var(--${ value });`;
+		}
+		return `--${ _id.replace('theme-color-', '') }: ${ value };`;
+	}).join('\n');
+	Inject.rawBody('dynamic-variables', `<style id='css-variables'> :root {${ css }}</style>`);
+}), 500);
 
 renderDynamicCssList();
 
-RocketChat.models.Settings.find({_id:'theme-custom-variables'}, {fields: { value: 1}}).observe({
+// RocketChat.models.Settings.find({_id:'theme-custom-variables'}, {fields: { value: 1}}).observe({
+// 	changed: renderDynamicCssList
+// });
+
+RocketChat.models.Settings.find({_id:/theme-color-rc/i}, {fields: { value: 1}}).observe({
 	changed: renderDynamicCssList
 });
 
