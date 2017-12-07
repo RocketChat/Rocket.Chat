@@ -58,17 +58,12 @@ class LivechatRoomType extends RoomTypeConfig {
 
 	getUserStatus(roomId) {
 		const room = Session.get(`roomData${ roomId }`);
-
 		if (room) {
 			return room.v && room.v.status;
-		} else {
-			const inquiry = LivechatInquiry.findOne({ rid: roomId });
-			return inquiry && inquiry.v && inquiry.v.status;
 		}
 
-		// if (guestName) {
-		// 	return Session.get(`user_${ guestName }_status`);
-		// }
+		const inquiry = LivechatInquiry.findOne({ rid: roomId });
+		return inquiry && inquiry.v && inquiry.v.status;
 	}
 
 	allowRoomSettingChange(room, setting) {
