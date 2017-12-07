@@ -6,17 +6,19 @@
 			{{#if shouldAppear .. .}}
 					<h3 class="rooms-list__type">
 						<span class="rooms-list__type-text">{{_ ../label}}</span>
-						{{#with count}}
-							{{#if .}}
-								<span class="badge">{{.}}</span>
-							{{/if}}
-						{{/with}}
+						{{#if showRoomCounter}}
+							{{#with count}}
+								{{#if .}}
+									<span class="badge">{{.}}</span>
+								{{/if}}
+							{{/with}}
+						{{/if}}
 					</h3>
 					<ul class="rooms-list__list {{ roomType ..}}">
 						{{#each room in this}}
 							{{> chatRoomItem room }}
 						{{else}}
-							<p class="rooms-list__empty-room">{{_ "No_channels_yet" }}</p>
+							<p class="rooms-list__empty-room">{{_ noSubscriptionText }}</p>
 						{{/each}}
 					</ul>
 				{{/if}}
