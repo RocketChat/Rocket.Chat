@@ -1,3 +1,5 @@
+import _ from 'underscore';
+
 //Returns the channel IF found otherwise it will return the failure of why it didn't. Check the `statusCode` property
 function findChannelByIdOrName({ params, checkedArchived = true }) {
 	if ((!params.roomId || !params.roomId.trim()) && (!params.roomName || !params.roomName.trim())) {
@@ -191,7 +193,7 @@ RocketChat.API.v1.addRoute('channels.files', { authRequired: true }, {
 			sort: sort ? sort : { name: 1 },
 			skip: offset,
 			limit: count,
-			fields: Object.assign({}, fields, RocketChat.API.v1.defaultFieldsToExclude)
+			fields
 		}).fetch();
 
 		return RocketChat.API.v1.success({
@@ -235,7 +237,7 @@ RocketChat.API.v1.addRoute('channels.getIntegrations', { authRequired: true }, {
 			sort: sort ? sort : { _createdAt: 1 },
 			skip: offset,
 			limit: count,
-			fields: Object.assign({}, fields, RocketChat.API.v1.defaultFieldsToExclude)
+			fields
 		}).fetch();
 
 		return RocketChat.API.v1.success({
@@ -381,7 +383,7 @@ RocketChat.API.v1.addRoute('channels.list', { authRequired: true }, {
 				sort: sort ? sort : { name: 1 },
 				skip: offset,
 				limit: count,
-				fields: Object.assign({}, fields, RocketChat.API.v1.defaultFieldsToExclude)
+				fields
 			}).fetch();
 
 			return RocketChat.API.v1.success({
@@ -405,7 +407,7 @@ RocketChat.API.v1.addRoute('channels.list.joined', { authRequired: true }, {
 			sort: sort ? sort : { name: 1 },
 			skip: offset,
 			limit: count,
-			fields: Object.assign({}, fields, RocketChat.API.v1.defaultFieldsToExclude)
+			fields
 		});
 
 		return RocketChat.API.v1.success({
@@ -424,14 +426,23 @@ RocketChat.API.v1.addRoute('channels.members', { authRequired: true }, {
 		const { offset, count } = this.getPaginationItems();
 		const { sort } = this.parseJsonQuery();
 
-		const members = RocketChat.models.Rooms.processQueryOptionsOnResult(Array.from(findResult.usernames), {
-			sort: sort ? sort : -1,
+		let sortFn = (a, b) => a > b;
+		if (Match.test(sort, Object) && Match.test(sort.username, Number) && sort.username === -1) {
+			sortFn = (a, b) => b < a;
+		}
+
+		const members = RocketChat.models.Rooms.processQueryOptionsOnResult(Array.from(findResult.usernames).sort(sortFn), {
 			skip: offset,
 			limit: count
 		});
 
+		const users = RocketChat.models.Users.find({ username: { $in: members } }, {
+			fields: { _id: 1, username: 1, name: 1, status: 1, utcOffset: 1 },
+			sort: sort ? sort : { username: 1 }
+		}).fetch();
+
 		return RocketChat.API.v1.success({
-			members,
+			members: users,
 			count: members.length,
 			offset,
 			total: findResult.usernames.length
@@ -458,7 +469,7 @@ RocketChat.API.v1.addRoute('channels.messages', { authRequired: true }, {
 			sort: sort ? sort : { ts: -1 },
 			skip: offset,
 			limit: count,
-			fields: Object.assign({}, fields, RocketChat.API.v1.defaultFieldsToExclude)
+			fields
 		}).fetch();
 
 		return RocketChat.API.v1.success({

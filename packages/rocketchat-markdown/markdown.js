@@ -2,6 +2,7 @@
  * Markdown is a named function that will parse markdown syntax
  * @param {Object} message - The message object
  */
+import s from 'underscore.string';
 import { Meteor } from 'meteor/meteor';
 import { Blaze } from 'meteor/blaze';
 import { RocketChat } from 'meteor/rocketchat:lib';
@@ -17,17 +18,39 @@ const parsers = {
 class MarkdownClass {
 	parse(text) {
 		const message = {
-			html: _.escapeHTML(text)
+			html: s.escapeHTML(text)
 		};
-		return this.parseNotEscaped(message).html;
+		return this.mountTokensBack(this.parseMessageNotEscaped(message)).html;
 	}
 
-	parseNotEscaped(message) {
+	parseNotEscaped(text) {
+		const message = {
+			html: text
+		};
+		return this.mountTokensBack(this.parseMessageNotEscaped(message)).html;
+	}
+
+	parseMessageNotEscaped(message) {
 		const parser = RocketChat.settings.get('Markdown_Parser');
+
+		if (parser === 'disabled') {
+			return message;
+		}
+
 		if (typeof parsers[parser] === 'function') {
 			return parsers[parser](message);
 		}
 		return parsers['original'](message);
+	}
+
+	mountTokensBack(message) {
+		if (message.tokens && message.tokens.length > 0) {
+			for (const {token, text} of message.tokens) {
+				message.html = message.html.replace(token, () => text); // Uses lambda so doesn't need to escape $
+			}
+		}
+
+		return message;
 	}
 }
 
@@ -36,8 +59,8 @@ RocketChat.Markdown = Markdown;
 
 // renderMessage already did html escape
 const MarkdownMessage = (message) => {
-	if (_.trim(message != null ? message.html : undefined)) {
-		message = Markdown.parseNotEscaped(message);
+	if (s.trim(message != null ? message.html : undefined)) {
+		message = Markdown.parseMessageNotEscaped(message);
 	}
 
 	return message;

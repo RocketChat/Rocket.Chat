@@ -1,5 +1,10 @@
 /* globals Push */
+import _ from 'underscore';
+import s from 'underscore.string';
 import moment from 'moment';
+
+const CATEGORY_MESSAGE = 'MESSAGE';
+const CATEGORY_MESSAGE_NOREPLY = 'MESSAGE_NOREPLY';
 
 /**
  * Replaces @username with full name
@@ -22,6 +27,10 @@ function replaceMentionedUsernamesWithFullNames(message, mentions) {
 	return message;
 }
 
+function canSendMessageToRoom(room, username) {
+	return !((room.muted || []).includes(username));
+}
+
 /**
  * This function returns a string ready to be shown in the notification
  *
@@ -31,7 +40,7 @@ function parseMessageText(message, userId) {
 	const user = RocketChat.models.Users.findOneById(userId);
 	const lng = user && user.language || RocketChat.settings.get('language') || 'en';
 
-	if (!message.msg && message.attachments[0]) {
+	if (!message.msg && message.attachments && message.attachments[0]) {
 		message.msg = message.attachments[0].image_type ? TAPi18n.__('User_uploaded_image', {lng}) : TAPi18n.__('User_uploaded_file', {lng});
 	}
 	message.msg = RocketChat.callbacks.run('beforeNotifyUser', message.msg);
@@ -114,7 +123,8 @@ function getBadgeCount(userId) {
 		return sub.unread + unread;
 	}, 0);
 }
-const sendPushNotifications = (userIdsToPushNotify = [], message, room, push_room, push_username, push_message) => {
+
+const sendPushNotifications = (userIdsToPushNotify = [], message, room, push_room, push_username, push_message, pushUsernames) => {
 	if (userIdsToPushNotify.length > 0 && Push.enabled === true) {
 		// send a push notification for each user individually (to get his/her badge count)
 		userIdsToPushNotify.forEach((userIdToNotify) => {
@@ -133,11 +143,13 @@ const sendPushNotifications = (userIdsToPushNotify = [], message, room, push_roo
 				},
 				usersTo: {
 					userId: userIdToNotify
-				}
+				},
+				category: canSendMessageToRoom(room, pushUsernames[userIdToNotify]) ? CATEGORY_MESSAGE : CATEGORY_MESSAGE_NOREPLY
 			});
 		});
 	}
 };
+
 const callJoin = (user, rid) => user.active && Meteor.runAsUser(user._id, () => Meteor.call('joinRoom', rid));
 RocketChat.callbacks.add('afterSaveMessage', function(message, room, userId) {
 
@@ -149,6 +161,8 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room, userId) {
 	if (message.ts && Math.abs(moment(message.ts).diff()) > 60000) {
 		return message;
 	}
+
+	const pushUsernames = {};
 
 	const user = RocketChat.models.Users.findOneById(message.u._id);
 
@@ -176,8 +190,8 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room, userId) {
      */
 	function canBeNotified(id, type) {
 		const types = {
-			mobile: [ 'dontNotifyDesktopUsers', 'alwaysNotifyDesktopUsers' ],
-			desktop: [ 'dontNotifyMobileUsers', 'alwaysNotifyMobileUsers' ],
+			desktop: [ 'dontNotifyDesktopUsers', 'alwaysNotifyDesktopUsers' ],
+			mobile: [ 'dontNotifyMobileUsers', 'alwaysNotifyMobileUsers' ],
 			audio: [ 'dontNotifyAudioUsers', 'alwaysNotifyAudioUsers' ]
 		};
 
@@ -268,31 +282,32 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room, userId) {
 			RocketChat.Sandstorm.notify(message, [userOfMention._id],
 				`@${ user.username }: ${ message.msg }`, 'privateMessage');
 
-		}
-		if ((userOfMention != null) && canBeNotified(userOfMentionId, 'mobile')) {
-			const duration = settings.desktopNotificationDurations[userOfMention._id];
-			notifyDesktopUser(userOfMention._id, user, message, room, duration);
-		}
+			if (canBeNotified(userOfMentionId, 'desktop')) {
+				const duration = settings.desktopNotificationDurations[userOfMention._id];
+				notifyDesktopUser(userOfMention._id, user, message, room, duration);
+			}
 
-		if ((userOfMention != null) && canBeNotified(userOfMentionId, 'desktop')) {
-			if (Push.enabled === true && userOfMention.statusConnection !== 'online') {
-				RocketChat.PushNotification.send({
-					roomId: message.rid,
-					username: push_username,
-					message: push_message,
-					badge: getBadgeCount(userOfMention._id),
-					payload: {
-						host: Meteor.absoluteUrl(),
-						rid: message.rid,
-						sender: message.u,
-						type: room.t,
-						name: room.name
-					},
-					usersTo: {
-						userId: userOfMention._id
-					}
-				});
-				return message;
+			if (canBeNotified(userOfMentionId, 'mobile')) {
+				if (Push.enabled === true && userOfMention.statusConnection !== 'online') {
+					RocketChat.PushNotification.send({
+						roomId: message.rid,
+						username: push_username,
+						message: push_message,
+						badge: getBadgeCount(userOfMention._id),
+						payload: {
+							host: Meteor.absoluteUrl(),
+							rid: message.rid,
+							sender: message.u,
+							type: room.t,
+							name: room.name
+						},
+						usersTo: {
+							userId: userOfMention._id
+						},
+						category: canSendMessageToRoom(room, userOfMention.username) ? CATEGORY_MESSAGE : CATEGORY_MESSAGE_NOREPLY
+					});
+					return message;
+				}
 			}
 		}
 
@@ -349,7 +364,10 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room, userId) {
 				usersOfMobileMentions = _.reject(usersOfMobileMentions, usersOfMentionItem => !room.usernames.includes(usersOfMentionItem.username));
 			}
 
-			userIdsToPushNotify = _.pluck(usersOfMobileMentions, '_id');
+			userIdsToPushNotify = usersOfMobileMentions.map(userMobile => {
+				pushUsernames[userMobile._id] = userMobile.username;
+				return userMobile._id;
+			});
 		}
 
 		if (mentionIds.length + settings.alwaysNotifyAudioUsers.length > 0) {
@@ -380,7 +398,6 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room, userId) {
 				.forEach(user =>callJoin(user, room._id));
 		}
 
-
 		if ([toAll, toHere].some(e => e) && room.usernames && room.usernames.length > 0) {
 			RocketChat.models.Users.find({
 				username: { $in: room.usernames },
@@ -398,6 +415,7 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room, userId) {
 					userIdsForAudio.push(user._id);
 				}
 				if (toAll && user.statusConnection !== 'online' && !(settings.dontNotifyMobileUsers || []).includes(user._id)) {
+					pushUsernames[user._id] = user.username;
 					return userIdsToPushNotify.push(user._id);
 				}
 				if (toAll && user.statusConnection !== 'online') {
@@ -424,7 +442,7 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room, userId) {
 		for (const usersOfMentionId of userIdsForAudio) {
 			notifyAudioUser(usersOfMentionId, message, room);
 		}
-		sendPushNotifications(userIdsToPushNotify, message, room, push_room, push_username, push_message);
+		sendPushNotifications(userIdsToPushNotify, message, room, push_room, push_username, push_message, pushUsernames);
 
 		const allUserIdsToNotify = _.unique(userIdsToNotify.concat(userIdsToPushNotify));
 		RocketChat.Sandstorm.notify(message, allUserIdsToNotify,

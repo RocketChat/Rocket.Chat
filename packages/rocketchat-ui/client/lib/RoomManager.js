@@ -1,3 +1,5 @@
+import _ from 'underscore';
+
 const RoomManager = new function() {
 	const openedRooms = {};
 	const msgStream = new Meteor.Streamer('room-messages');
@@ -265,7 +267,12 @@ Meteor.startup(() => {
 		if ((currentUsername === undefined) && ((user != null ? user.username : undefined) != null)) {
 			currentUsername = user.username;
 			RoomManager.closeAllRooms();
-			FlowRouter.reload();
+			const roomTypes = RocketChat.roomTypes.roomTypes;
+			// Reload only if the current route is a channel route
+			const roomType = Object.keys(roomTypes).find(key => roomTypes[key].route && roomTypes[key].route.name === FlowRouter.current().route.name);
+			if (roomType) {
+				FlowRouter.reload();
+			}
 		}
 	});
 

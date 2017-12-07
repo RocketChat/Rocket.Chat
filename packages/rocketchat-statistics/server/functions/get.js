@@ -1,4 +1,6 @@
 /* global InstanceStatus, MongoInternals */
+import _ from 'underscore';
+
 RocketChat.statistics.get = function _getStatistics() {
 	const statistics = {};
 

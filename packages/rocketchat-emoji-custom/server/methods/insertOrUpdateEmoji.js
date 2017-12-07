@@ -1,4 +1,7 @@
 /* globals RocketChatFileEmojiCustomInstance */
+import _ from 'underscore';
+import s from 'underscore.string';
+
 Meteor.methods({
 	insertOrUpdateEmoji(emojiData) {
 		if (!RocketChat.authz.hasPermission(this.userId, 'manage-emoji')) {
@@ -9,13 +12,10 @@ Meteor.methods({
 			throw new Meteor.Error('error-the-field-is-required', 'The field Name is required', { method: 'insertOrUpdateEmoji', field: 'Name' });
 		}
 
-		//let nameValidation = new RegExp('^[0-9a-zA-Z-_+;.]+$');
-		//let aliasValidation = new RegExp('^[0-9a-zA-Z-_+;., ]+$');
-
 		//allow all characters except colon, whitespace, comma, >, <, &, ", ', /, \, (, )
 		//more practical than allowing specific sets of characters; also allows foreign languages
 		const nameValidation = /[\s,:><&"'\/\\\(\)]/;
-		const aliasValidation = /[:><&"'\/\\\(\)]/;
+		const aliasValidation = /[:><&\|"'\/\\\(\)]/;
 
 		//silently strip colon; this allows for uploading :emojiname: as emojiname
 		emojiData.name = emojiData.name.replace(/:/g, '');

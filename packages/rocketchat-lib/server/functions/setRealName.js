@@ -1,3 +1,5 @@
+import s from 'underscore.string';
+
 RocketChat._setRealName = function(userId, name) {
 	name = s.trim(name);
 	if (!userId || !name) {
