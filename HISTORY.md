@@ -1,7 +1,17 @@
+<a name="assistify-0.5.0"></a>
+## Assistify-0.5.0 (2017-12-07)
+
+### Enhancements
+- You can add a title and the actual question to the request while creating it
+- The request creation screen allows to pass url-parameters. This enables a very loosely coupled integration, e. g. into a [confluence-based wiki](https://github.com/assistify/confluence-integration)
+- Roles can be authorized to change particular settings only. This allows you to customize Assistify with respect to colors, texts and more - given you've got the `config-expert` role!
+- :de: Wir kennen euch nun besser. Wir wollen ab jetzt “Du” zu einander sagen, ok? 😉 :de:
+
+
 <a name="assistify-0.4.4"></a>
 ## Assistify-0.4.4 (2017-11-10)
 
-## Enhancements
+### Enhancements
 - Based on <a href="#0.59.3">Rocket.Chat 0.59.3</a>
 - Provide more explanation texts for dialogs
 - [#140](https://github.com/assistify/Rocket.Chat/issues/140) Provide more information for disabled users when trying to log-in

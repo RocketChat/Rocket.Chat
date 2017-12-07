@@ -38,7 +38,7 @@ Template.accountBox.helpers({
 Template.accountBox.events({
 	'click .sidebar__account.active'() {
 		let adminOption;
-		if (RocketChat.authz.hasAtLeastOnePermission(['view-statistics', 'view-room-administration', 'view-user-administration', 'view-privileged-setting' ]) || (RocketChat.AdminBox.getOptions().length > 0)) {
+		if (RocketChat.authz.hasAtLeastOnePermission(['view-statistics', 'view-room-administration', 'view-user-administration', 'view-privileged-setting', 'edit-privileged-setting', 'manage-selected-settings']) || (RocketChat.AdminBox.getOptions().length > 0)) {
 			adminOption = {
 				icon: 'customize',
 				name: t('Administration'),

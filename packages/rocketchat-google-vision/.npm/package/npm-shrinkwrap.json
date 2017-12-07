@@ -1,8 +1,8 @@
 {
   "dependencies": {
     "ajv": {
-      "version": "5.3.0",
-      "resolved": "https://registry.npmjs.org/ajv/-/ajv-5.3.0.tgz",
+      "version": "5.5.1",
+      "resolved": "https://registry.npmjs.org/ajv/-/ajv-5.5.1.tgz",
       "from": "ajv@>=5.1.0 <6.0.0"
     },
     "ansi-regex": {
@@ -330,8 +330,8 @@
           "from": "object-assign@>=3.0.0 <4.0.0"
         },
         "protobufjs": {
-          "version": "6.8.0",
-          "resolved": "https://registry.npmjs.org/protobufjs/-/protobufjs-6.8.0.tgz",
+          "version": "6.8.3",
+          "resolved": "https://registry.npmjs.org/protobufjs/-/protobufjs-6.8.3.tgz",
           "from": "protobufjs@>=6.8.0 <7.0.0"
         }
       }
@@ -352,9 +352,9 @@
       "from": "graceful-fs@>=4.1.2 <5.0.0"
     },
     "grpc": {
-      "version": "1.7.1",
-      "resolved": "https://registry.npmjs.org/grpc/-/grpc-1.7.1.tgz",
-      "from": "grpc@>=1.6.0 <2.0.0",
+      "version": "1.7.2",
+      "resolved": "https://registry.npmjs.org/grpc/-/grpc-1.7.2.tgz",
+      "from": "grpc@>=1.7.1 <2.0.0",
       "dependencies": {
         "abbrev": {
           "version": "1.0.9",
@@ -1098,8 +1098,8 @@
       "from": "methmeth@>=1.1.0 <2.0.0"
     },
     "mime": {
-      "version": "1.4.1",
-      "resolved": "https://registry.npmjs.org/mime/-/mime-1.4.1.tgz",
+      "version": "1.6.0",
+      "resolved": "https://registry.npmjs.org/mime/-/mime-1.6.0.tgz",
       "from": "mime@>=1.4.1 <2.0.0"
     },
     "mime-db": {
@@ -1123,9 +1123,9 @@
       "from": "modelo@>=4.2.0 <5.0.0"
     },
     "nan": {
-      "version": "2.7.0",
-      "resolved": "https://registry.npmjs.org/nan/-/nan-2.7.0.tgz",
-      "from": "nan@>=2.0.0 <3.0.0"
+      "version": "2.8.0",
+      "resolved": "https://registry.npmjs.org/nan/-/nan-2.8.0.tgz",
+      "from": "nan@>=2.8.0 <3.0.0"
     },
     "node-forge": {
       "version": "0.7.1",
@@ -1208,8 +1208,8 @@
       "from": "protobufjs@>=5.0.0 <6.0.0"
     },
     "pump": {
-      "version": "1.0.2",
-      "resolved": "https://registry.npmjs.org/pump/-/pump-1.0.2.tgz",
+      "version": "1.0.3",
+      "resolved": "https://registry.npmjs.org/pump/-/pump-1.0.3.tgz",
       "from": "pump@>=1.0.0 <2.0.0"
     },
     "pumpify": {
@@ -1238,8 +1238,8 @@
       "from": "request@>=2.79.0 <3.0.0"
     },
     "retry-request": {
-      "version": "3.1.1",
-      "resolved": "https://registry.npmjs.org/retry-request/-/retry-request-3.1.1.tgz",
+      "version": "3.3.0",
+      "resolved": "https://registry.npmjs.org/retry-request/-/retry-request-3.3.0.tgz",
       "from": "retry-request@>=3.0.0 <4.0.0"
     },
     "rgb-hex": {
