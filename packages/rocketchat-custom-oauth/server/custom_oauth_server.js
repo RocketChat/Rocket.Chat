@@ -213,6 +213,13 @@ export class CustomOAuth {
 				if (identity.userid && !identity.id) {
 					identity.id = identity.userid;
 				}
+
+				// Fix when authenticating from a meteor app with 'emails' field
+				if (!identity.email && (identity.emails && Array.isArray(identity.emails) && identity.emails.length >= 1)) {
+					if (identity.emails[0].address) {
+						identity.email = identity.emails[0].address;
+					}
+				}
 			}
 
 			// console.log 'id:', JSON.stringify identity, null, '  '
