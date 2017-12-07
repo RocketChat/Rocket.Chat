@@ -36,6 +36,10 @@ RocketChat.Notifications = new class {
 				}
 			});
 			const room = RocketChat.models.Rooms.findOneById(roomId);
+			if (!room) {
+				console.warn(`Invalid streamRoom eventName: "${ eventName }"`);
+				return false;
+			}
 			if (room.t === 'l' && room.v._id === user._id) {
 				return true;
 			}

@@ -1,4 +1,5 @@
 /* globals MongoInternals */
+import _ from 'underscore';
 
 const baseName = 'rocketchat_';
 import {EventEmitter} from 'events';

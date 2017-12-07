@@ -153,7 +153,19 @@ export default () => {
 	DynamicCss.test = () => window.CSS && window.CSS.supports && window.CSS.supports('(--foo: red)');
 	DynamicCss.run = debounce((replace = false) => {
 		if (replace) {
-			document.querySelector('#css-variables').innerHTML = RocketChat.settings.get('theme-custom-variables');
+			// const variables = RocketChat.models.Settings.findOne({_id:'theme-custom-variables'}, {fields: { value: 1}});
+			const colors = RocketChat.settings.collection.find({_id:/theme-color-rc/i}, {fields: { value: 1, editor: 1}}).fetch().filter(color => color && color.value);
+
+			if (!colors) {
+				return;
+			}
+			const css = colors.map(({_id, value, editor}) => {
+				if (editor === 'expression') {
+					return `--${ _id.replace('theme-color-', '') }: var(--${ value });`;
+				}
+				return `--${ _id.replace('theme-color-', '') }: ${ value };`;
+			}).join('\n');
+			document.querySelector('#css-variables').innerHTML = `:root {${ css }}`;
 		}
 		cssVarPoly.init();
 	}, 1000);
