@@ -1,4 +1,5 @@
 import moment from 'moment';
+import s from 'underscore.string';
 
 RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 	// skips this callback if the message was edited
@@ -43,27 +44,52 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 	if (room.t === 'd') {
 		usersToSendEmail[message.rid.replace(message.u._id, '')] = 'direct';
 	} else {
-		RocketChat.models.Subscriptions.findWithSendEmailByRoomId(room._id).forEach((sub) => {
+		let isMentionAll = message.mentions.find(mention => mention._id === 'all');
+
+		if (isMentionAll) {
+			const maxMembersForNotification = RocketChat.settings.get('Notifications_Max_Room_Members');
+			if (maxMembersForNotification !== 0 && room.usernames.length > maxMembersForNotification) {
+				isMentionAll = undefined;
+			}
+		}
+
+		let query;
+		if (isMentionAll) {
+			// Query all users in room limited by the max room members setting
+			query = RocketChat.models.Subscriptions.findByRoomId(room._id);
+		} else {
+			// Query only mentioned users, will be always a few users
+			const userIds = message.mentions.map(mention => mention._id);
+			query = RocketChat.models.Subscriptions.findByRoomIdAndUserIdsOrAllMessages(room._id, userIds);
+		}
+
+		query.forEach((sub) => {
 			if (sub.disableNotifications) {
 				return delete usersToSendEmail[sub.u._id];
 			}
 
 			const emailNotifications = sub.emailNotifications;
 
-			if (emailNotifications !== 'nothing') {
-				const mentionedUser = message.mentions.find((mention) => {
-					return mention._id === sub.u._id;
-				});
-
-				if (emailNotifications === 'mentions' || mentionedUser) {
-					return usersToSendEmail[sub.u._id] = 'mention';
-				}
-
-				if (emailNotifications === 'all') {
-					return usersToSendEmail[sub.u._id] = 'all';
-				}
+			if (emailNotifications === 'nothing') {
+				return delete usersToSendEmail[sub.u._id];
 			}
-			delete usersToSendEmail[sub.u._id];
+
+			const mentionedUser = isMentionAll || message.mentions.find(mention => mention._id === sub.u._id);
+
+			if (emailNotifications === 'default' || emailNotifications == null) {
+				if (mentionedUser) {
+					return usersToSendEmail[sub.u._id] = 'default';
+				}
+				return delete usersToSendEmail[sub.u._id];
+			}
+
+			if (emailNotifications === 'mentions' && mentionedUser) {
+				return usersToSendEmail[sub.u._id] = 'mention';
+			}
+
+			if (emailNotifications === 'all') {
+				return usersToSendEmail[sub.u._id] = 'all';
+			}
 		});
 	}
 	const userIdsToSendEmail = Object.keys(usersToSendEmail);
@@ -86,8 +112,25 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 
 		if (usersOfMention && usersOfMention.length > 0) {
 			usersOfMention.forEach((user) => {
-				if (user.settings && user.settings.preferences && user.settings.preferences.emailNotificationMode && user.settings.preferences.emailNotificationMode === 'disabled' && usersToSendEmail[user._id] !== 'force') {
-					return;
+				if (usersToSendEmail[user._id] === 'default') {
+					if (!user.settings || !user.settings.preferences || !user.settings.preferences.emailNotificationMode || user.settings.preferences.emailNotificationMode === 'all') { //Mention/DM
+						usersToSendEmail[user._id] = 'mention';
+					} else {
+						return;
+					}
+				}
+
+				if (usersToSendEmail[user._id] === 'direct') {
+					const userEmailPreferenceIsDisabled = user.settings && user.settings.preferences && user.settings.preferences.emailNotificationMode && (user.settings.preferences.emailNotificationMode === 'disabled');
+					const directMessageEmailPreference = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(message.rid, message.rid.replace(message.u._id, '')).emailNotifications;
+
+					if (directMessageEmailPreference === 'nothing') {
+						return;
+					}
+
+					if ((directMessageEmailPreference === 'default' || directMessageEmailPreference == null) && userEmailPreferenceIsDisabled) {
+						return;
+					}
 				}
 
 				// Checks if user is in the room he/she is mentioned (unless it's public channel)

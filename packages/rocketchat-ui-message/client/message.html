@@ -1,5 +1,5 @@
 <template name="message">
-	<li id="{{_id}}" class="message background-transparent-dark-hover {{isSequential}} {{system}} {{t}} {{own}} {{isTemp}} {{chatops}} {{customClass}}" data-username="{{u.username}}" data-groupable="{{isGroupable}}" data-date="{{date}}" data-timestamp="{{timestamp}}">
+	<li id="{{_id}}" data-context={{actionContext}} class="message background-transparent-dark-hover {{isSequential}} {{system}} {{t}} {{own}} {{isTemp}} {{chatops}} {{customClass}}" data-username="{{u.username}}" data-groupable="{{isGroupable}}" data-date="{{date}}" data-timestamp="{{timestamp}}">
 		{{#if avatar}}
 			{{#if avatarFromUsername}}
 				<button class="thumb user-card-message" data-username="{{u.username}}" tabindex="1">{{> avatar username=avatarFromUsername}}</button>
@@ -63,36 +63,20 @@
 		</div>
 		{{#unless system}}
 			<div class="message-actions">
-				<div class="message-actions__buttons">
-					{{#each action in messageActions}}
-						<button class="message-actions__button" data-message-action="{{action.id}}">
-								{{> icon block="message-actions__button-icon" icon=action.icon}}
-						</button>
-					{{/each}}
-				</div>
-				<label class="message-actions__label" for="message-actions__menu--{{_id}}" data-popover="label">
-					{{> icon block="message-actions__menu" icon="menu"}}
-				</label>
-				<input id="message-actions__menu--{{_id}}" type="checkbox" class="rc-popover-anchor" data-popover="anchor">
-				<div class="rc-popover" data-popover="popover">
-				<div class="rc-popover__wrapper"></div>
-					<div class="rc-popover__content">
-						<div class="rc-popover__column">
-							<ul class="rc-popover__list">
-								{{#each action in messageActionsMenu}}
-									<li class="rc-popover__item" data-message-action="{{action.id}}">
-										{{#if action.icon}}
-											<span class="rc-popover__icon">
-												{{> icon block="rc-popover__icon-element" icon=action.icon}}
-											</span>
-										{{/if}}
-										<span class="rc-popover__item-text">{{_ action.label}}</span>
-									</li>
-								{{/each}}
-							</ul>
-						</div>
+				{{#if messageActions 'message'}}
+					<div class="message-actions__buttons">
+						{{#each action in messageActions 'message'}}
+							<button class="message-actions__button" data-message-action="{{action.id}}">
+									{{> icon block="message-actions__button-icon" icon=action.icon}}
+							</button>
+						{{/each}}
 					</div>
-				</div>
+				{{/if}}
+				{{#if messageActions 'menu'}}
+					<div class="message-actions__menu">
+						{{> icon block="message-actions__menu-icon" icon="menu"}}
+					</div>
+				{{/if}}
 			</div>
 		{{/unless}}
 		<ul class="actionLinks {{hideActionLinks}}">

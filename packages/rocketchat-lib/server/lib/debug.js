@@ -1,4 +1,6 @@
 /* global InstanceStatus */
+import _ from 'underscore';
+
 const logger = new Logger('Meteor', {
 	methods: {
 		method: {
