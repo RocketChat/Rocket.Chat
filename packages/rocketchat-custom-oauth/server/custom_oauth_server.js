@@ -216,9 +216,7 @@ export class CustomOAuth {
 
 				// Fix when authenticating from a meteor app with 'emails' field
 				if (!identity.email && (identity.emails && Array.isArray(identity.emails) && identity.emails.length >= 1)) {
-					if (identity.emails[0].address) {
-						identity.email = identity.emails[0].address;
-					}
+					identity.email = identity.emails[0].address ? identity.emails[0].address : undefined
 				}
 			}
 
