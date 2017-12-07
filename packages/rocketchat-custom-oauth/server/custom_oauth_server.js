@@ -55,8 +55,13 @@ export class CustomOAuth {
 		this.tokenPath = options.tokenPath;
 		this.identityPath = options.identityPath;
 		this.tokenSentVia = options.tokenSentVia;
+		this.identityTokenSentVia = options.identityTokenSentVia;
 		this.usernameField = (options.usernameField || '').trim();
 		this.mergeUsers = options.mergeUsers;
+
+		if (this.identityTokenSentVia == null || this.identityTokenSentVia === 'default') {
+			this.identityTokenSentVia = this.tokenSentVia;
+		}
 
 		if (!/^https?:\/\/.+/.test(this.tokenPath)) {
 			this.tokenPath = this.serverURL + this.tokenPath;
@@ -127,7 +132,7 @@ export class CustomOAuth {
 			'User-Agent': this.userAgent // http://doc.gitlab.com/ce/api/users.html#Current-user
 		};
 
-		if (this.tokenSentVia === 'header') {
+		if (this.identityTokenSentVia === 'header') {
 			headers['Authorization'] = `Bearer ${ accessToken }`;
 		} else {
 			params['access_token'] = accessToken;
