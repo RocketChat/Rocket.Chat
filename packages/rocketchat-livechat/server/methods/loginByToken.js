@@ -11,24 +11,5 @@ Meteor.methods({
 		return {
 			_id: user._id
 		};
-
-		// const stampedToken = Accounts._generateStampedLoginToken();
-		// const hashStampedToken = Accounts._hashStampedToken(stampedToken);
-
-		// const updateUser = {
-		// 	$set: {
-		// 		services: {
-		// 			resume: {
-		// 				loginTokens: [ hashStampedToken ]
-		// 			}
-		// 		}
-		// 	}
-		// };
-
-		// Meteor.users.update(user._id, updateUser);
-
-		// return {
-		// 	token: stampedToken.token
-		// };
 	}
 });
