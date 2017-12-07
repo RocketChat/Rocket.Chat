@@ -1,13 +1,14 @@
 <template name="accountFlex">
 	<aside class="sidebar-light" role="navigation">
-		<header class="sidebar__header">
-			{{> accountBox lighten=true modifier="--account" }}
-			<button class="sidebar-flex__back-button" data-action="back">
-				{{> icon block="sidebar-flex__back-icon" icon="back"}}
-				<span>{{_ "Back_to_chat"}}</span>
-			</button>
+		<header class="sidebar-flex__header">
+			<h1 class="sidebar-flex__title">{{_ "My_Account"}}</h1>
+			{{#unless embeddedVersion}}
+				<button class="sidebar-flex__close-button" data-action="close">
+					{{> icon block="sidebar-flex__close-icon" icon="cross"}}
+				</button>
+			{{/unless}}
 		</header>
-		<div class="rooms-list">
+		<div class="rooms-list {{#if embeddedVersion}}rooms-list--embedded{{/if}}">
 			<ul class="rooms-list__list">
 				{{> sidebarItem menuItem "Preferences" "customize" "account" "preferences" }}
 

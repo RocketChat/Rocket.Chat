@@ -414,8 +414,10 @@ describe('[Administration]', () => {
 
 		describe('[General Settings]', () => {
 			before(() => {
+				admin.settingsSearch.setValue('general');
 				admin.generalLink.waitForVisible(5000);
 				admin.generalLink.click();
+				admin.settingsSearch.setValue('');
 				admin.generalSiteUrl.waitForVisible(5000);
 			});
 

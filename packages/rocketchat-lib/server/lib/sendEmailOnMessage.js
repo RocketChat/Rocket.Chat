@@ -1,4 +1,5 @@
 import moment from 'moment';
+import s from 'underscore.string';
 
 RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 	// skips this callback if the message was edited
@@ -113,8 +114,21 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 			usersOfMention.forEach((user) => {
 				if (usersToSendEmail[user._id] === 'default') {
 					if (!user.settings || !user.settings.preferences || !user.settings.preferences.emailNotificationMode || user.settings.preferences.emailNotificationMode === 'all') { //Mention/DM
-						usersToSendEmail[user._id] === 'mention';
+						usersToSendEmail[user._id] = 'mention';
 					} else {
+						return;
+					}
+				}
+
+				if (usersToSendEmail[user._id] === 'direct') {
+					const userEmailPreferenceIsDisabled = user.settings && user.settings.preferences && user.settings.preferences.emailNotificationMode && (user.settings.preferences.emailNotificationMode === 'disabled');
+					const directMessageEmailPreference = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(message.rid, message.rid.replace(message.u._id, '')).emailNotifications;
+
+					if (directMessageEmailPreference === 'nothing') {
+						return;
+					}
+
+					if ((directMessageEmailPreference === 'default' || directMessageEmailPreference == null) && userEmailPreferenceIsDisabled) {
 						return;
 					}
 				}

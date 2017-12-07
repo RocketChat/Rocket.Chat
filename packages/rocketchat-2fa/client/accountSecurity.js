@@ -10,6 +10,9 @@ Template.accountSecurity.helpers({
 	imageData() {
 		return Template.instance().imageData.get();
 	},
+	imageSecret() {
+		return Template.instance().imageSecret.get();
+	},
 	isEnabled() {
 		const user = Meteor.user();
 		return user && user.services && user.services.totp && user.services.totp.enabled;
@@ -27,6 +30,7 @@ Template.accountSecurity.helpers({
 Template.accountSecurity.events({
 	'click .enable-2fa'(event, instance) {
 		Meteor.call('2fa:enable', (error, result) => {
+			instance.imageSecret.set(result.secret);
 			instance.imageData.set(qrcode(result.url, { size: 200 }));
 
 			instance.state.set('registering');
@@ -115,6 +119,7 @@ Template.accountSecurity.events({
 Template.accountSecurity.onCreated(function() {
 	this.showImage = new ReactiveVar(false);
 	this.imageData = new ReactiveVar();
+	this.imageSecret = new ReactiveVar();
 
 	this.state = new ReactiveVar();
 

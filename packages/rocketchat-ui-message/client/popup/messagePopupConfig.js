@@ -1,4 +1,6 @@
 /* globals filteredUsersMemory */
+import _ from 'underscore';
+
 filteredUsersMemory = new Mongo.Collection(null);
 
 Meteor.startup(function() {

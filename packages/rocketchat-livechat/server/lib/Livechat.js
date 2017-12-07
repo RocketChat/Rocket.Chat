@@ -1,4 +1,6 @@
 /* globals HTTP */
+import _ from 'underscore';
+import s from 'underscore.string';
 import UAParser from 'ua-parser-js';
 
 RocketChat.Livechat = {

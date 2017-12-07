@@ -50,16 +50,16 @@
 		&__wrapper {
 			padding: 0;
 
-			color: var(--color-gray);
+			color: var(--rc-color-primary-light);
 		}
 
 		&__element {
 			color: var(--color-white);
-			border-color: #414852;
-			background-color: var(--color-darkest);
+			border-color: var(--rc-color-primary-dark);
+			background-color: var(--rc-color-primary-darkest);
 
 			&::placeholder {
-				color: var(--color-gray);
+				color: var(--rc-color-primary-light);
 			}
 
 			&:focus + .rc-input__icon--right {
@@ -90,11 +90,12 @@
 	}
 
 	& .rc-button {
-		margin: 0 0.25rem;
+		margin-left: 0.25rem;
+		margin-right: 0.25rem;
 
-		color: var(--color-gray);
-		border-color: #414852;
-		background-color: var(--color-darkest);
+		color: var(--rc-color-primary-light);
+		border-color: var(--rc-color-primary-dark);
+		background-color: var(--rc-color-primary-darkest);
 	}
 
 	& .rc-input__icon-svg--magnifier {
@@ -104,6 +105,12 @@
 
 @media (width <= 400px) {
 	.toolbar {
-		padding: 0 var(--sidebar-small-default-padding) var(--sidebar-small-default-padding);
+		padding: 0 calc(var(--sidebar-small-default-padding) - 8px) var(--sidebar-small-default-padding);
+	}
+}
+
+.rtl .toolbar {
+	& .rc-input__icon + .rc-input__element {
+		padding: 0.5rem 2.25rem 0.5rem 1rem;
 	}
 }
