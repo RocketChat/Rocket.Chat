@@ -62,8 +62,6 @@ RocketChat.Livechat = {
 
 			newRoom = true;
 		}
-		console.log('getRoom.room ->', room);
-		console.log('getRoom.guest ->', guest);
 
 		if (room.v.token !== guest.token) {
 			throw new Meteor.Error('cannot-access-room');
@@ -94,12 +92,6 @@ RocketChat.Livechat = {
 
 		if (user) {
 			userId = user._id;
-			// if (loginToken) {
-			// 	if (!updateUser.$addToSet) {
-			// 		updateUser.$addToSet = {};
-			// 	}
-			// 	updateUser.$addToSet['services.resume.loginTokens'] = loginToken;
-			// }
 		} else {
 			if (!username) {
 				username = LivechatVisitors.getNextVisitorUsername();
@@ -108,21 +100,11 @@ RocketChat.Livechat = {
 			let existingUser = null;
 
 			if (s.trim(email) !== '' && (existingUser = LivechatVisitors.findOneGuestByEmailAddress(email))) {
-				// if (loginToken) {
-				// 	if (!updateUser.$addToSet) {
-				// 		updateUser.$addToSet = {};
-				// 	}
-				// 	updateUser.$addToSet['services.resume.loginTokens'] = loginToken;
-				// }
-
 				userId = existingUser._id;
 			} else {
 				const userData = {
 					username,
-					// globalRoles: ['livechat-guest'],
 					department
-					// type: 'visitor',
-					// joinDefaultChannels: false
 				};
 
 				if (this.connection) {
@@ -131,15 +113,6 @@ RocketChat.Livechat = {
 					userData.host = this.connection.httpHeaders.host;
 				}
 
-				// userId = Accounts.insertUserDoc({}, userData);
-
-				// if (loginToken) {
-				// 	updateUser.$set.services = {
-				// 		resume: {
-				// 			loginTokens: [ loginToken ]
-				// 		}
-				// 	};
-				// }
 				userId = LivechatVisitors.insert(userData);
 			}
 		}
