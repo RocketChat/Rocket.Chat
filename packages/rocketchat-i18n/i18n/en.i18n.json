@@ -790,7 +790,7 @@
   "Hide_Unread_Room_Status": "Hide Unread Room Status",
   "Hide_usernames": "Hide Usernames",
   "Highlights": "Highlights",
-  "Highlights_How_To": "To be notified when someone mentions a word or phrase, add it here. You can separate words or phrases with commas. Highlight Words are not case sensitive.",
+  "Highlights_How_To": "To be notified when someone mentions a word or phrase, add it here. You can separate words or phrases with <Enter>. Highlight Words are not case sensitive.",
   "Highlights_List": "Highlight words",
   "History": "History",
   "Host": "Host",

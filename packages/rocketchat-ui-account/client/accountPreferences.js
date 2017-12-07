@@ -82,7 +82,7 @@ Template.accountPreferences.helpers({
 	},
 	highlights() {
 		const user = Meteor.user();
-		return user && user.settings && user.settings.preferences && user.settings.preferences['highlights'] && user.settings.preferences['highlights'].join(', ');
+		return user && user.settings && user.settings.preferences && user.settings.preferences['highlights'] && user.settings.preferences['highlights'].join('\n');
 	},
 	desktopNotificationEnabled() {
 		return KonchatNotification.notificationStatus.get() === 'granted' || (window.Notification && Notification.permission === 'granted');
@@ -187,7 +187,7 @@ Template.accountPreferences.onCreated(function() {
 		data.unreadAlert = $('#unreadAlert').find('input:checked').val();
 		data.notificationsSoundVolume = parseInt($('#notificationsSoundVolume').val());
 		data.roomCounterSidebar = $('#roomCounterSidebar').find('input:checked').val();
-		data.highlights = _.compact(_.map($('[name=highlights]').val().split(','), function(e) {
+		data.highlights = _.compact(_.map($('[name=highlights]').val().split('\n'), function(e) {
 			return s.trim(e);
 		}));
 
@@ -199,6 +199,17 @@ Template.accountPreferences.onCreated(function() {
 		data.idleTimeLimit = idleTimeLimit;
 
 		let reload = false;
+
+		// if highlights changed we need page reload
+		const user = Meteor.user();
+		if (user &&
+			user.settings &&
+			user.settings.preferences &&
+			user.settings.preferences['highlights'] &&
+			user.settings.preferences['highlights'].join('\n') !== data.highlights.join('\n')) {
+			reload = true;
+		}
+
 
 		if (this.shouldUpdateLocalStorageSetting('userLanguage', selectedLanguage)) {
 			localStorage.setItem('userLanguage', selectedLanguage);
