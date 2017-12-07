@@ -316,7 +316,6 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room, userId) {
 		const mentionIds = (message.mentions || []).map(({_id}) => _id);
 		const toAll = mentionIds.includes('all');
 		const toHere = mentionIds.includes('here');
-		let usersOfMobileMentions = [];
 
 		if (mentionIds.length + settings.alwaysNotifyDesktopUsers.length > 0) {
 			let desktopMentionIds = _.union(mentionIds, settings.alwaysNotifyDesktopUsers);
@@ -347,36 +346,25 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room, userId) {
 			let mobileMentionIds = _.union(mentionIds, settings.alwaysNotifyMobileUsers);
 			mobileMentionIds = _.difference(mobileMentionIds, settings.dontNotifyMobileUsers);
 
-			if (alwaysNotifyMobileBoolean === true) {
-				usersOfMobileMentions = RocketChat.models.Users.find({
-					_id: {
-						$in: mobileMentionIds
-					}
-				}, {
-					fields: {
-						_id: 1,
-						username: 1,
-						statusConnection: 1,
-						active: 1
-					}
-				}).fetch();
-			} else {
-				usersOfMobileMentions = RocketChat.models.Users.find({
-					_id: {
-						$in: mobileMentionIds
-					},
-					statusConnection: {
-						$ne: 'online'
-					}
-				}, {
-					fields: {
-						_id: 1,
-						username: 1,
-						statusConnection: 1,
-						active: 1
-					}
-				}).fetch();
+			const usersOfMobileMentionsQuery = {
+				_id: {
+					$in: mobileMentionIds
+				}
+			};
+
+			if (alwaysNotifyMobileBoolean !== true) {
+				usersOfMobileMentionsQuery.statusConnection = { $ne: 'online' };
 			}
+
+			let usersOfMobileMentions = RocketChat.models.Users.find(usersOfMobileMentionsQuery, {
+				fields: {
+					_id: 1,
+					username: 1,
+					statusConnection: 1,
+					active: 1
+				}
+			}).fetch();
+
 			mentions.push(...usersOfMobileMentions);
 			if (room.t !== 'c') {
 				usersOfMobileMentions = _.reject(usersOfMobileMentions, usersOfMentionItem => !room.usernames.includes(usersOfMentionItem.username));
