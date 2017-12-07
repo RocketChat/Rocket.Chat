@@ -239,7 +239,7 @@ Template.accountPreferences.onCreated(function() {
 		this.showSnoozeNotificationsOptions.set(true);
 	}
 
-  this.shouldUpdateLocalStorageSetting = function(setting, newValue) {
+	this.shouldUpdateLocalStorageSetting = function(setting, newValue) {
 		return localStorage.getItem(setting) !== newValue;
 	};
 
