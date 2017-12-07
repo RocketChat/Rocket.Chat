@@ -249,6 +249,7 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room, userId) {
 	let userIdsToNotify = [];
 	let userIdsToPushNotify = [];
 	const mentions = [];
+	const alwaysNotifyMobileBoolean = RocketChat.settings.get('Notifications_Always_Notify_Mobile');
 
 	const usersWithHighlights = RocketChat.models.Users.findUsersByUsernamesWithHighlights(room.usernames, { fields: { '_id': 1, 'settings.preferences.highlights': 1 }}).fetch()
 		.filter(user => messageContainsHighlight(message, user.settings.preferences.highlights));
@@ -288,7 +289,7 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room, userId) {
 			}
 
 			if (canBeNotified(userOfMentionId, 'mobile')) {
-				if (Push.enabled === true && userOfMention.statusConnection !== 'online') {
+				if (Push.enabled === true && (userOfMention.statusConnection !== 'online' || alwaysNotifyMobileBoolean === true)) {
 					RocketChat.PushNotification.send({
 						roomId: message.rid,
 						username: push_username,
@@ -315,6 +316,7 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room, userId) {
 		const mentionIds = (message.mentions || []).map(({_id}) => _id);
 		const toAll = mentionIds.includes('all');
 		const toHere = mentionIds.includes('here');
+
 		if (mentionIds.length + settings.alwaysNotifyDesktopUsers.length > 0) {
 			let desktopMentionIds = _.union(mentionIds, settings.alwaysNotifyDesktopUsers);
 			desktopMentionIds = _.difference(desktopMentionIds, settings.dontNotifyDesktopUsers);
@@ -344,14 +346,17 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room, userId) {
 			let mobileMentionIds = _.union(mentionIds, settings.alwaysNotifyMobileUsers);
 			mobileMentionIds = _.difference(mobileMentionIds, settings.dontNotifyMobileUsers);
 
-			let usersOfMobileMentions = RocketChat.models.Users.find({
+			const usersOfMobileMentionsQuery = {
 				_id: {
 					$in: mobileMentionIds
-				},
-				statusConnection: {
-					$ne:'online'
 				}
-			}, {
+			};
+
+			if (alwaysNotifyMobileBoolean !== true) {
+				usersOfMobileMentionsQuery.statusConnection = { $ne: 'online' };
+			}
+
+			let usersOfMobileMentions = RocketChat.models.Users.find(usersOfMobileMentionsQuery, {
 				fields: {
 					_id: 1,
 					username: 1,
@@ -359,6 +364,7 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room, userId) {
 					active: 1
 				}
 			}).fetch();
+
 			mentions.push(...usersOfMobileMentions);
 			if (room.t !== 'c') {
 				usersOfMobileMentions = _.reject(usersOfMobileMentions, usersOfMentionItem => !room.usernames.includes(usersOfMentionItem.username));
