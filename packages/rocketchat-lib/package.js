@@ -27,14 +27,13 @@ Package.onUse(function(api) {
 	api.use('check');
 	api.use('tracker');
 	api.use('ddp-rate-limiter');
-	api.use('underscore');
 	api.use('mongo');
 	api.use('oauth');
-	api.use('underscorestring:underscore.string@3.3.4');
 	api.use('matb33:collection-hooks');
 	api.use('service-configuration');
 	api.use('check');
 	api.use('rocketchat:accounts');
+	api.use('modules');
 	api.use('rocketchat:i18n');
 	api.use('rocketchat:streamer');
 	api.use('rocketchat:version');
@@ -51,15 +50,29 @@ Package.onUse(function(api) {
 	// DEBUGGER
 	api.addFiles('server/lib/debug.js', 'server');
 
+	// ROOM TYPES
+	api.addFiles('lib/RoomTypeConfig.js');
+	api.addFiles([
+		'lib/roomTypes/channels.js',
+		'lib/roomTypes/conversation.js',
+		'lib/roomTypes/direct.js',
+		'lib/roomTypes/favorite.js',
+		'lib/roomTypes/index.js',
+		'lib/roomTypes/private.js',
+		'lib/roomTypes/public.js',
+		'lib/roomTypes/unread.js'
+	]);
+
 	// COMMON LIB
 	api.addFiles('lib/getURL.js');
 	api.addFiles('lib/settings.js');
 	api.addFiles('lib/callbacks.js');
 	api.addFiles('lib/fileUploadRestrictions.js');
+	api.addFiles('lib/getAvatarColor.js');
 	api.addFiles('lib/getValidRoomName.js');
 	api.addFiles('lib/placeholders.js');
 	api.addFiles('lib/promises.js');
-	api.addFiles('lib/roomTypesCommon.js');
+	api.addFiles('lib/RoomTypesCommon.js');
 	api.addFiles('lib/slashCommand.js');
 	api.addFiles('lib/Message.js');
 	api.addFiles('lib/messageBox.js');
@@ -153,6 +166,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/methods/filterATAllTag.js', 'server');
 	api.addFiles('server/methods/getChannelHistory.js', 'server');
 	api.addFiles('server/methods/getFullUserData.js', 'server');
+	api.addFiles('server/methods/getRoomJoinCode.js', 'server');
 	api.addFiles('server/methods/getRoomRoles.js', 'server');
 	api.addFiles('server/methods/getServerInfo.js', 'server');
 	api.addFiles('server/methods/getSingleMessage.js', 'server');
@@ -191,6 +205,7 @@ Package.onUse(function(api) {
 	api.addFiles('client/OAuthProxy.js', 'client');
 	api.addFiles('client/lib/TabBar.js', 'client');
 	api.addFiles('client/lib/RocketChatTabBar.js', 'client');
+	api.addFiles('client/lib/RestApiClient.js', 'client');
 	api.addFiles('client/lib/cachedCollection.js', 'client');
 	api.addFiles('client/lib/openRoom.js', 'client');
 	api.addFiles('client/lib/roomExit.js', 'client');
@@ -223,7 +238,10 @@ Package.onUse(function(api) {
 
 	// EXPORT
 	api.export('RocketChat');
-	api.export('RocketChatTabBar');
+
+	// exports
+	api.mainModule('server/lib/index.js', 'server');
+	api.mainModule('client/lib/index.js', 'client');
 
 	api.imply('tap:i18n');
 });

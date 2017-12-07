@@ -1,3 +1,5 @@
+import _ from 'underscore';
+
 RocketChat.sendMessage = function(user, message, room, upsert = false) {
 	if (!user || !message || !room._id) {
 		return false;

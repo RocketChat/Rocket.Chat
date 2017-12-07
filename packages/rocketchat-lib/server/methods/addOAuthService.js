@@ -1,5 +1,6 @@
 /* eslint no-multi-spaces: 0 */
 /* eslint comma-spacing: 0 */
+import s from 'underscore.string';
 
 Meteor.methods({
 	addOAuthService(name) {

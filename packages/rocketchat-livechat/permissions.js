@@ -1,3 +1,5 @@
+import _ from 'underscore';
+
 Meteor.startup(() => {
 	const roles = _.pluck(RocketChat.models.Roles.find().fetch(), 'name');
 	if (roles.indexOf('livechat-agent') === -1) {
