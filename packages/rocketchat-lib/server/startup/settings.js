@@ -36,6 +36,10 @@ RocketChat.settings.addGroup('Accounts', function() {
 		type: 'boolean',
 		'public': true
 	});
+	this.add('Accounts_AllowRealNameChange', true, {
+		type: 'boolean',
+		'public': true
+	});
 	this.add('Accounts_AllowUsernameChange', true, {
 		type: 'boolean',
 		'public': true
@@ -505,6 +509,12 @@ RocketChat.settings.addGroup('General', function() {
 			type: 'int',
 			public: true,
 			i18nDescription: 'Notifications_Max_Room_Members_Description'
+		});
+
+		this.add('Notifications_Always_Notify_Mobile', false, {
+			type: 'boolean',
+			public: true,
+			i18nDescription: 'Notifications_Always_Notify_Mobile_Description'
 		});
 	});
 	this.section('REST API', function() {
