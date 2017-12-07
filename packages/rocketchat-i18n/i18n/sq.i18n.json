@@ -93,7 +93,7 @@
   "Accounts_RegistrationForm_Public": "publik",
   "Accounts_RegistrationForm_Secret_URL": "URL Secret",
   "Accounts_RegistrationForm_SecretURL": "Regjistrimi Form Secret URL",
-  "Accounts_RegistrationForm_SecretURL_Description": "Ju duhet të sigurojë një varg të rastit që do të shtohet në URL tuaj e regjistrimit. Shembull: https://demo.rocket.chat/register/[secret_hash]",
+  "Accounts_RegistrationForm_SecretURL_Description": "Ju duhet të sigurojë një varg të rastit që do të shtohet në URL tuaj e regjistrimit. Shembull: https://open.rocket.chat/register/[secret_hash]",
   "Accounts_RequireNameForSignUp": "Nevojitet emri për regjistrim",
   "Accounts_ShowFormLogin": "Tregojnë formë të bazuar Login",
   "Accounts_UseDefaultBlockedDomainsList": "Përdorimi Default Blocked Lista Domains",

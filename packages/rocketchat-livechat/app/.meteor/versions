@@ -45,7 +45,7 @@ livedata@1.0.18
 localstorage@1.2.0
 logging@1.1.19
 mdg:validation-error@0.5.1
-meteor@1.8.0
+meteor@1.8.1
 meteorspark:util@0.2.0
 minifier-css@1.2.16
 minifier-js@2.2.1
