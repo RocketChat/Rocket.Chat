@@ -200,7 +200,7 @@ Template.accountPreferences.onCreated(function() {
 
 		let reload = false;
     
-    // if highlights changed we need page reload
+		// if highlights changed we need page reload
 		const user = Meteor.user();
 		if (user &&
 			user.settings &&
