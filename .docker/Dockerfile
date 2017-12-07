@@ -5,8 +5,8 @@ ENV RC_VERSION 0.60.0-develop
 MAINTAINER buildmaster@rocket.chat
 
 RUN set -x \
- && curl -SLf "https://download.rocket.chat/build/rocket.chat-${RC_VERSION}.tgz" -o rocket.chat.tgz \
- && curl -SLf "https://download.rocket.chat/build/rocket.chat-${RC_VERSION}.tgz.asc" -o rocket.chat.tgz.asc \
+ && curl -SLf "https://releases.rocket.chat/${RC_VERSION}/download/" -o rocket.chat.tgz \
+ && curl -SLf "https://releases.rocket.chat/${RC_VERSION}/asc" -o rocket.chat.tgz.asc \
  && gpg --verify rocket.chat.tgz.asc \
  && mkdir -p /app \
  && tar -zxf rocket.chat.tgz -C /app \
