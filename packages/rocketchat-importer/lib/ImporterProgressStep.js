@@ -1,6 +1,5 @@
-/* globals Importer */
-// "ENUM" of the import step, the value is the translation string
-Importer.ProgressStep = Object.freeze({
+/** The progress step that an importer is at. */
+export const ProgressStep = Object.freeze({
 	NEW: 'importer_new',
 	PREPARING_STARTED: 'importer_preparing_started',
 	PREPARING_USERS: 'importer_preparing_users',
