@@ -1,4 +1,4 @@
-import Mentions from './Mentions';
+import Mentions from '../Mentions';
 const MentionsClient = new Mentions({
 	pattern() {
 		return RocketChat.settings.get('UTF8_Names_Validation');
