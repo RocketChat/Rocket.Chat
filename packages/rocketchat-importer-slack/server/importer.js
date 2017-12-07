@@ -1,12 +1,18 @@
-/* globals Importer */
+import {
+	Base,
+	ProgressStep,
+	Selection,
+	SelectionChannel,
+	SelectionUser
+} from 'meteor/rocketchat:importer';
+
 import _ from 'underscore';
 
-Importer.Slack = class extends Importer.Base {
-	constructor(name, descriptionI18N, mimeType) {
-		super(name, descriptionI18N, mimeType);
+export class SlackImporter extends Base {
+	constructor(info) {
+		super(info);
 		this.userTags = [];
 		this.bots = {};
-		this.logger.debug('Constructed a new Slack Importer.');
 	}
 
 	prepare(dataURI, sentContentType, fileName) {
@@ -26,13 +32,13 @@ Importer.Slack = class extends Importer.Base {
 			}
 
 			if (entry.entryName === 'channels.json') {
-				this.updateProgress(Importer.ProgressStep.PREPARING_CHANNELS);
+				this.updateProgress(ProgressStep.PREPARING_CHANNELS);
 				tempChannels = JSON.parse(entry.getData().toString()).filter(channel => channel.creator != null);
 				return;
 			}
 
 			if (entry.entryName === 'users.json') {
-				this.updateProgress(Importer.ProgressStep.PREPARING_USERS);
+				this.updateProgress(ProgressStep.PREPARING_USERS);
 				tempUsers = JSON.parse(entry.getData().toString());
 
 				tempUsers.forEach(user => {
@@ -72,7 +78,7 @@ Importer.Slack = class extends Importer.Base {
 		this.addCountToTotal(tempChannels.length);
 
 		// Insert the messages records
-		this.updateProgress(Importer.ProgressStep.PREPARING_MESSAGES);
+		this.updateProgress(ProgressStep.PREPARING_MESSAGES);
 
 		let messagesCount = 0;
 		Object.keys(tempMessages).forEach(channel => {
@@ -83,8 +89,8 @@ Importer.Slack = class extends Importer.Base {
 				const msgs = messagesObj[date];
 				messagesCount += msgs.length;
 				this.updateRecord({ 'messagesstatus': `${ channel }/${ date }` });
-				if (Importer.Base.getBSONSize(msgs) > Importer.Base.MaxBSONSize) {
-					const tmp = Importer.Base.getBSONSafeArraysFromAnArray(msgs);
+				if (Base.getBSONSize(msgs) > Base.getMaxBSONSize()) {
+					const tmp = Base.getBSONSafeArraysFromAnArray(msgs);
 					Object.keys(tmp).forEach(i => {
 						const splitMsg = tmp[i];
 						const messagesId = this.collection.insert({ 'import': this.importRecord._id, 'importer': this.name, 'type': 'messages', 'name': `${ channel }/${ date }.${ i }`, 'messages': splitMsg });
@@ -99,18 +105,22 @@ Importer.Slack = class extends Importer.Base {
 
 		this.updateRecord({ 'count.messages': messagesCount, 'messagesstatus': null });
 		this.addCountToTotal(messagesCount);
+
 		if ([tempUsers.length, tempChannels.length, messagesCount].some(e => e === 0)) {
 			this.logger.warn(`The loaded users count ${ tempUsers.length }, the loaded channels ${ tempChannels.length }, and the loaded messages ${ messagesCount }`);
 			console.log(`The loaded users count ${ tempUsers.length }, the loaded channels ${ tempChannels.length }, and the loaded messages ${ messagesCount }`);
-			this.updateProgress(Importer.ProgressStep.ERROR);
+			this.updateProgress(ProgressStep.ERROR);
 			return this.getProgress();
 		}
-		const selectionUsers = tempUsers.map(user => new Importer.SelectionUser(user.id, user.name, user.profile.email, user.deleted, user.is_bot, !user.is_bot));
-		const selectionChannels = tempChannels.map(channel => new Importer.SelectionChannel(channel.id, channel.name, channel.is_archived, true, false));
+
+		const selectionUsers = tempUsers.map(user => new SelectionUser(user.id, user.name, user.profile.email, user.deleted, user.is_bot, !user.is_bot));
+		const selectionChannels = tempChannels.map(channel => new SelectionChannel(channel.id, channel.name, channel.is_archived, true, false));
 		const selectionMessages = this.importRecord.count.messages;
-		this.updateProgress(Importer.ProgressStep.USER_SELECTION);
-		return new Importer.Selection(this.name, selectionUsers, selectionChannels, selectionMessages);
+		this.updateProgress(ProgressStep.USER_SELECTION);
+
+		return new Selection(this.name, selectionUsers, selectionChannels, selectionMessages);
 	}
+
 	startImport(importSelection) {
 		super.startImport(importSelection);
 		const start = Date.now();
@@ -140,7 +150,7 @@ Importer.Slack = class extends Importer.Base {
 		const startedByUserId = Meteor.userId();
 		Meteor.defer(() => {
 			try {
-				this.updateProgress(Importer.ProgressStep.IMPORTING_USERS);
+				this.updateProgress(ProgressStep.IMPORTING_USERS);
 				this.users.users.forEach(user => {
 					if (!user.do_import) {
 						return;
@@ -199,7 +209,7 @@ Importer.Slack = class extends Importer.Base {
 				});
 				this.collection.update({ _id: this.users._id }, { $set: { 'users': this.users.users }});
 
-				this.updateProgress(Importer.ProgressStep.IMPORTING_CHANNELS);
+				this.updateProgress(ProgressStep.IMPORTING_CHANNELS);
 				this.channels.channels.forEach(channel => {
 					if (!channel.do_import) {
 						return;
@@ -255,7 +265,7 @@ Importer.Slack = class extends Importer.Base {
 
 				const missedTypes = {};
 				const ignoreTypes = { 'bot_add': true, 'file_comment': true, 'file_mention': true };
-				this.updateProgress(Importer.ProgressStep.IMPORTING_MESSAGES);
+				this.updateProgress(ProgressStep.IMPORTING_MESSAGES);
 				Object.keys(this.messages).forEach(channel => {
 					const messagesObj = this.messages[channel];
 
@@ -277,6 +287,7 @@ Importer.Slack = class extends Importer.Base {
 									msgDataDefaults.reactions = {};
 
 									message.reactions.forEach(reaction => {
+										reaction.name = `:${ reaction.name }:`;
 										msgDataDefaults.reactions[reaction.name] = { usernames: [] };
 
 										reaction.users.forEach(u => {
@@ -420,7 +431,7 @@ Importer.Slack = class extends Importer.Base {
 					console.log('Missed import types:', missedTypes);
 				}
 
-				this.updateProgress(Importer.ProgressStep.FINISHING);
+				this.updateProgress(ProgressStep.FINISHING);
 
 				this.channels.channels.forEach(channel => {
 					if (channel.do_import && channel.is_archived) {
@@ -429,30 +440,32 @@ Importer.Slack = class extends Importer.Base {
 						});
 					}
 				});
-				this.updateProgress(Importer.ProgressStep.DONE);
+				this.updateProgress(ProgressStep.DONE);
 
-				const timeTook = Date.now() - start;
-
-				this.logger.log(`Import took ${ timeTook } milliseconds.`);
+				this.logger.log(`Import took ${ Date.now() - start } milliseconds.`);
 			} catch (e) {
 				this.logger.error(e);
-				this.updateProgress(Importer.ProgressStep.ERROR);
+				this.updateProgress(ProgressStep.ERROR);
 			}
 		});
 
 		return this.getProgress();
 	}
+
 	getSlackChannelFromName(channelName) {
 		return this.channels.channels.find(channel => channel.name === channelName);
 	}
+
 	getRocketUser(slackId) {
 		const user = this.users.users.find(user => user.id === slackId);
+
 		if (user) {
 			return RocketChat.models.Users.findOneById(user.rocketId, { fields: { username: 1, name: 1 }});
 		}
 	}
+
 	convertSlackMessageToRocketChat(message) {
-		if (message != null) {
+		if (message) {
 			message = message.replace(/<!everyone>/g, '@all');
 			message = message.replace(/<!channel>/g, '@all');
 			message = message.replace(/<!here>/g, '@here');
@@ -464,6 +477,7 @@ Importer.Slack = class extends Importer.Base {
 			message = message.replace(/:piggy:/g, ':pig:');
 			message = message.replace(/:uk:/g, ':gb:');
 			message = message.replace(/<(http[s]?:[^>]*)>/g, '$1');
+
 			for (const userReplace of Array.from(this.userTags)) {
 				message = message.replace(userReplace.slack, userReplace.rocket);
 				message = message.replace(userReplace.slackLong, userReplace.rocket);
@@ -471,12 +485,13 @@ Importer.Slack = class extends Importer.Base {
 		} else {
 			message = '';
 		}
+
 		return message;
 	}
+
 	getSelection() {
-		const selectionUsers = this.users.users.map(user => new Importer.SelectionUser(user.id, user.name, user.profile.email, user.deleted, user.is_bot, !user.is_bot));
-		const selectionChannels = this.channels.channels.map(channel => new Importer.SelectionChannel(channel.id, channel.name, channel.is_archived, true, false));
-		const selectionMessages = this.importRecord.count.messages;
-		return new Importer.Selection(this.name, selectionUsers, selectionChannels, selectionMessages);
+		const selectionUsers = this.users.users.map(user => new SelectionUser(user.id, user.name, user.profile.email, user.deleted, user.is_bot, !user.is_bot));
+		const selectionChannels = this.channels.channels.map(channel => new SelectionChannel(channel.id, channel.name, channel.is_archived, true, false));
+		return new Selection(this.name, selectionUsers, selectionChannels, this.importRecord.count.messages);
 	}
-};
+}
