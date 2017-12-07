@@ -32,20 +32,19 @@ class MainContent extends Page {
 	get lastMessageUserTag() { return browser.element('.message:last-child .role-tag'); }
 	get lastMessageImg() { return browser.element('.message:last-child .attachment-image img'); }
 	get lastMessageTextAttachment() { return browser.element('.message:last-child .attachment-text'); }
-	get messageOptionsBtn() { return browser.element('.message:last-child .message-actions__label'); }
-	get messageReply() { return browser.element('.message:last-child .rc-popover [data-message-action=reply-message]'); }
-	get messageActionMenu() { return browser.element('.message:last-child .rc-popover'); }
-	get messageActionMenuWrapper() { return browser.element('.message:last-child .rc-popover__wrapper'); }
-	get messageEdit() { return browser.element('.message:last-child .rc-popover [data-message-action=edit-message]'); }
-	get messageDelete() { return browser.element('.message:last-child .rc-popover [data-message-action=delete-message]'); }
-	get messagePermalink() { return browser.element('.message:last-child .rc-popover [data-message-action=permalink]'); }
-	get messageCopy() { return browser.element('.message:last-child .rc-popover [data-message-action=copy]'); }
-	get messageQuote() { return browser.element('.message:last-child .rc-popover [data-message-action=quote-message]'); }
-	get messageStar() { return browser.element('.message:last-child .rc-popover [data-message-action=star-message]'); }
-	get messageUnread() { return browser.element('.message:last-child .rc-popover [data-message-action=mark-message-as-unread]'); }
-	// get messageReaction() { return browser.element('.message:last-child .rc-popover [data-message-action=reaction-message]'); }
-	get messagePin() { return browser.element('.message:last-child .rc-popover [data-message-action=pin-message]'); }
-	// get messageClose() { return browser.element('.message:last-child .rc-popover [data-message-action=rc-popover-close]'); }
+	get messageOptionsBtn() { return browser.element('.message:last-child .message-actions__menu'); }
+	get messageActionMenu() { return browser.element('.rc-popover__content'); }
+	get messageReply() { return browser.element('[data-id="reply-message"][data-type="message-action"]'); }
+	get messageEdit() { return browser.element('[data-id="edit-message"][data-type="message-action"]'); }
+	get messageDelete() { return browser.element('[data-id="delete-message"][data-type="message-action"]'); }
+	get messagePermalink() { return browser.element('[data-id="permalink"][data-type="message-action"]'); }
+	get messageCopy() { return browser.element('[data-id="copy"][data-type="message-action"]'); }
+	get messageQuote() { return browser.element('[data-id="quote-message"][data-type="message-action"]'); }
+	get messageStar() { return browser.element('[data-id="star-message"][data-type="message-action"]'); }
+	get messageUnread() { return browser.element('[data-id="mark-message-as-unread"][data-type="message-action"]'); }
+	// get messageReaction() { return browser.element('.message-actions__button[data-message-action="reaction-message"]'); }
+	get messagePin() { return browser.element('[data-id="pin-message"][data-type="message-action"]'); }
+	// get messageClose() { return browser.element('[data-id="rc-popover-close"][data-type="message-action"]'); }
 
 	// Emojis
 	get emojiPickerMainScreen() { return browser.element('.emoji-picker'); }
@@ -65,6 +64,9 @@ class MainContent extends Page {
 	get emojiPickerEmojiContainer() { return browser.element('.emoji-picker .emojis'); }
 	get emojiGrinning() { return browser.element('.emoji-picker .emoji-grinning'); }
 	get emojiSmile() { return browser.element('.emoji-picker .emoji-smile'); }
+
+	// Popover
+	get popoverWrapper() { return browser.element('.rc-popover'); }
 
 	// Sends a message and wait for the message to equal the text sent
 	sendMessage(text) {
@@ -122,12 +124,6 @@ class MainContent extends Page {
 		this.messageOptionsBtn.click();
 		this.messageActionMenu.waitForVisible(5000);
 		browser.pause(100);
-	}
-
-	closeMessageActionMenu() {
-		browser.moveToObject(this.messageActionMenu.selector, -30, -30);
-		browser.buttonPress(0);
-		this.messageActionMenu.waitForVisible(5000, true);
 	}
 
 	setLanguageToEnglish() {

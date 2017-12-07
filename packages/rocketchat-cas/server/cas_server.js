@@ -1,5 +1,6 @@
 /* globals RoutePolicy, logger */
 /* jshint newcap: false */
+import _ from 'underscore';
 
 const fiber = Npm.require('fibers');
 const url = Npm.require('url');

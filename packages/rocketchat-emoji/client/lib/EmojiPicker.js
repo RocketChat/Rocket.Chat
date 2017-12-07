@@ -1,4 +1,6 @@
 /* globals Blaze, Template */
+import _ from 'underscore';
+
 RocketChat.EmojiPicker = {
 	width: 390,
 	height: 238,

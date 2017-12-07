@@ -15,7 +15,6 @@ Package.onUse(function(api) {
 		'rocketchat:markdown',
 		'rocketchat:theme',
 		'random',
-		'underscore',
 		'tracker',
 		'webapp'
 	]);

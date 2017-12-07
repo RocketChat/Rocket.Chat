@@ -1,3 +1,4 @@
+import s from 'underscore.string';
 
 RocketChat._setUsername = function(userId, u) {
 	const username = s.trim(u);
