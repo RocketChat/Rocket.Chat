@@ -1,5 +1,7 @@
+
 Meteor.methods({
-	createRequest(name, expertise = '', members = [], environment) {
+	createRequest(name, expertise = '', openingQuestion, members = [], environment) {
+		const requestTitle = name;
 		check(name, String);
 		check(expertise, String);
 
@@ -59,17 +61,25 @@ Meteor.methods({
 		// experts of this expertise. A new room name shall be created
 		if (expertise && !name) {
 			name = `${ expertise }-${ getNextId(expertise) }`;
+		} else if (expertise && name) {
+			name = `${ requestTitle }`;
 		}
 
 		if (expertise) {
 			members = getExperts(expertise);
 		}
-
 		const roomCreateResult = RocketChat.createRoom('r', name, Meteor.user() && Meteor.user().username, members, false, {expertise});
-
+		if (requestTitle) {
+			RocketChat.saveRoomTopic (roomCreateResult.rid, expertise, Meteor.user());
+		}
 		createNotifications(roomCreateResult.rid, members.concat([Meteor.user().username]));
-
 		const room = RocketChat.models.Rooms.findOneById(roomCreateResult.rid);
+		if (openingQuestion) {
+			const msg = openingQuestion;
+			const msgObject = { _id: Random.id(), rid:roomCreateResult.rid, msg};
+			RocketChat.sendMessage(Meteor.user(), msgObject, room);
+		}
+
 		const helpRequestId = RocketChat.models.HelpRequests.createForSupportArea(expertise, roomCreateResult.rid, '', environment);
 		//propagate help-id to room in order to identify it as a "helped" room
 		RocketChat.models.Rooms.addHelpRequestInfo(room, helpRequestId);

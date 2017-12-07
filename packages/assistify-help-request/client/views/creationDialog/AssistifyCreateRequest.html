@@ -5,17 +5,25 @@
 	</header>
 	<form class="create-channel__content">
 		<div class="create-channel__inputs">
-			<div class="rc-input">
+			<div class="rc-input {{#if expertiseError}} rc-input--error {{/if}}">
 				<label class="rc-input__label">
-					<div class="rc-input__title">{{_ "New_request_for_expertise"}}</div>
+					<div class="rc-input__title">{{_ "Expertise"}}</div>
 					<div class="rc-input__wrapper">
 						<div class="rc-input__icon">
 							<svg class="rc-icon rc-input__icon-svg rc-input__icon-svg--lock" aria-hidden="true">
 								<use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon-lock"></use>
 							</svg>
 						</div>
-						<input name="expertise" type="text" class="rc-input__element" id="expertise-search" placeholder="Expertise" autocomplete=off value={{expertise}}>
+						<input name="expertise" type="text" class="rc-input__element" id="expertise-search"
+							   placeholder={{_ "New_request_for_expertise"}}  autocomplete=off value={{expertise}}>
 					</div>
+					{{#unless autocomplete 'isShowing'}}
+						{{#if expertise}}
+							{{#if expertiseError}}
+								{{> AssistifyCreateInputError text=expertiseError}}
+							{{/if}}
+						{{/if}}
+					{{/unless}}
 					{{#with config}}
 						{{#if autocomplete 'isShowing'}}
 							<div class="fadeInDown">
@@ -25,10 +33,40 @@
 							</div>
 						{{/if}}
 					{{/with}}
-					<input class="rc-button rc-button--primary js-save-request" type="submit" data-button="create"
-						   value="{{_ "Create"}}" {{createIsDisabled}}>
 				</label>
-
+			</div>
+			<div class="rc-input {{#if titleError}}rc-input--error{{/if}}">
+				<label class="rc-input__label">
+					<div class="rc-input__title">{{_ "Title"}}</div>
+					<div class="rc-input__wrapper">
+						<div class="rc-input__icon">
+							<svg class="rc-icon rc-input__icon-svg rc-input__icon-svg--flag" aria-hidden="true">
+								<use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon-flag"></use>
+							</svg>
+						</div>
+						<input name="request_title" type="text" class="rc-input__element" id="request_title"
+							   placeholder={{_ "New_request_title"}} autocomplete="off">
+					</div>
+				</label>
+				{{#if titleError}}
+					{{> AssistifyCreateInputError text=titleError}}
+				{{/if}}
+			</div>
+			<div class="rc-input">
+				<label class="rc-input__label">
+					<div class="rc-input__title">{{_ "Your_question"}}</div>
+					<div class="rc-input__wrapper">
+						<div class="rc-input__icon">
+							{{> icon block="rc-input__icon-svg" icon="send"}}
+						</div>
+						<input name="first_question" type="text" class="rc-input__element" id="first_question"
+							   placeholder={{_ "New_request_first_question"}} autocomplete="off">
+					</div>
+				</label>
+			</div>
+			<div class="rc-input">
+				<input class="rc-button rc-button--primary js-save-request" type="submit" data-button="create"
+					   value="{{_ "Create"}}" {{createIsDisabled}}>
 			</div>
 		</div>
 	</form>
@@ -37,5 +75,5 @@
 <template name="AssistifyCreateRequestAutocomplete">
 	<li class="rc-popup-list__item">
 		<span class="rc-popup-list__item-name">{{{modifier item.name}}}</span>
-   </li>
+	</li>
 </template>
