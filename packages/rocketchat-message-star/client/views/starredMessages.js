@@ -1,4 +1,6 @@
 /*globals StarredMessage */
+import _ from 'underscore';
+
 Template.starredMessages.helpers({
 	hasMessages() {
 		return StarredMessage.find({
@@ -19,9 +21,7 @@ Template.starredMessages.helpers({
 		});
 	},
 	message() {
-		return _.extend(this, {
-			customClass: 'starred'
-		});
+		return _.extend(this, { customClass: 'starred', actionContext: 'starred'});
 	},
 	hasMore() {
 		return Template.instance().hasMore.get();
@@ -43,21 +43,6 @@ Template.starredMessages.onCreated(function() {
 });
 
 Template.starredMessages.events({
-	'click .message-cog'(e, t) {
-		e.stopPropagation();
-		e.preventDefault();
-		const message_id = $(e.currentTarget).closest('.message').attr('id');
-		RocketChat.MessageAction.hideDropDown();
-		t.$(`\#${ message_id } .message-dropdown`).remove();
-		const message = StarredMessage.findOne(message_id);
-		const actions = RocketChat.MessageAction.getButtons(message, 'starred');
-		const el = Blaze.toHTMLWithData(Template.messageDropdown, {
-			actions
-		});
-		t.$(`\#${ message_id } .message-cog-container`).append(el);
-		const dropDown = t.$(`\#${ message_id } .message-dropdown`);
-		return dropDown.show();
-	},
 	'scroll .js-list': _.throttle(function(e, instance) {
 		if (e.target.scrollTop >= e.target.scrollHeight - e.target.clientHeight) {
 			return instance.limit.set(instance.limit.get() + 50);

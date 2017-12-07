@@ -6,11 +6,11 @@ import { markdown } from './markdown.js';
 import { code } from './code.js';
 
 export const original = (message) => {
-	// Parse markdown
-	message = markdown(message);
-
 	// Parse markdown code
 	message = code(message);
+
+	// Parse markdown
+	message = markdown(message);
 
 	// Replace linebreak to br
 	message.html = message.html.replace(/\n/gm, '<br>');

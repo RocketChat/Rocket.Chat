@@ -1,3 +1,5 @@
+import _ from 'underscore';
+
 export const MsgTyping = (function() {
 	const timeout = 15000;
 	const timeouts = {};

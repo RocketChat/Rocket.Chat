@@ -1,3 +1,5 @@
+import s from 'underscore.string';
+
 Meteor.methods({
 	registerUser(formData) {
 		const AllowAnonymousRead = RocketChat.settings.get('Accounts_AllowAnonymousRead');

@@ -287,8 +287,8 @@ textarea {
 	background-color: mix(contrast(@content-background-color), @content-background-color, 20%);
 }
 
-input[type="button"],
-input[type="submit"] {
+.rc-old input[type="button"],
+.rc-old input[type="submit"] {
 	color: @primary-font-color;
 	background: mix(contrast(@content-background-color), @content-background-color, 10%);
 	border-color: mix(contrast(@content-background-color), @content-background-color, 10%);
@@ -561,25 +561,6 @@ input:-webkit-autofill {
 /** ----------------------------------------------------------------------------
  * Message content
  */
-.first-unread {
-	.body {
-		&::before {
-			background: @transparent-darker;
-		}
-
-		&::after {
-			color: @primary-font-color;
-		}
-	}
-}
-
-.first-unread-opaque {
-	.body {
-		&::before {
-			background: @transparent-dark;
-		}
-	}
-}
 
 .message {
 	&.new-day::before {
@@ -675,6 +656,16 @@ input:-webkit-autofill {
 	}
 }
 
+.sidebar-item__last-message {
+	a:not(.mention-link) {
+		color: @link-font-color;
+
+		&:hover {
+			color: darken(@link-font-color, 10%);
+		}
+	}
+}
+
 .message-popup.search-results-list {
 	background-color: lighten(@primary-background-color, 2.5%);
 
@@ -712,10 +703,6 @@ input:-webkit-autofill {
 			.button {
 				.buttonColors(lighten(@primary-font-color, 25%), @secondary-background-color);
 			}
-		}
-
-		.button.edit {
-			.buttonColors(lighten(@primary-font-color, 25%), @secondary-background-color);
 		}
 
 		.input.checkbox.toggle {

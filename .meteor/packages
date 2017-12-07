@@ -4,36 +4,39 @@
 # but you can also edit it by hand.
 
 rocketchat:cors
-accounts-facebook@1.2.1
-accounts-github@1.3.0
-accounts-google@1.2.0
-accounts-meteor-developer@1.3.0
-accounts-password@1.4.0
-accounts-twitter@1.3.0
+
+accounts-facebook@1.3.0
+accounts-github@1.4.0
+accounts-google@1.3.0
+accounts-meteor-developer@1.4.0
+accounts-password@1.5.0
+accounts-twitter@1.4.0
 blaze-html-templates
 check@1.2.5
 ddp-rate-limiter@1.0.7
-ecmascript@0.8.1
-ejson@1.0.13
+ddp-common
+dynamic-import@0.2.0
+ecmascript@0.9.0
+ejson@1.1.0
 email@1.2.3
 fastclick@1.0.13
-http@1.2.12
+http@1.3.0
 jquery@1.11.10
-less@2.7.9
-logging@1.1.17
-meteor-base@1.1.0
-mobile-experience@1.0.4
-mongo@1.1.19
+less@2.7.11
+logging@1.1.19
+meteor-base@1.2.0
+mobile-experience@1.0.5
+mongo@1.3.0
 random@1.0.10
 rate-limit@1.0.8
-reactive-dict@1.1.9
+reactive-dict@1.2.0
 reactive-var@1.0.11
 reload@1.1.11
 service-configuration@1.0.11
 session@1.1.7
-shell-server@0.2.4
+shell-server@0.3.0
 spacebars
-standard-minifier-js@2.1.1
+standard-minifier-js@2.2.0
 tracker@1.1.3
 
 rocketchat:2fa
@@ -53,6 +56,7 @@ rocketchat:crowd
 rocketchat:custom-oauth
 rocketchat:custom-sounds
 rocketchat:dolphin
+rocketchat:drupal
 rocketchat:emoji
 rocketchat:emoji-custom
 rocketchat:emoji-emojione
@@ -62,6 +66,7 @@ rocketchat:file
 rocketchat:file-upload
 rocketchat:github-enterprise
 rocketchat:gitlab
+#rocketchat:google-natural-language
 rocketchat:google-vision
 rocketchat:highlight-words
 rocketchat:iframe-login
@@ -70,6 +75,7 @@ rocketchat:importer-csv
 rocketchat:importer-hipchat
 rocketchat:importer-hipchat-enterprise
 rocketchat:importer-slack
+rocketchat:importer-slack-users
 rocketchat:integrations
 rocketchat:internal-hubot
 rocketchat:irc
@@ -88,11 +94,14 @@ rocketchat:mentions-flextab
 rocketchat:message-attachments
 rocketchat:message-mark-as-unread
 rocketchat:message-pin
+rocketchat:message-snippet
 rocketchat:message-star
 rocketchat:migrations
+rocketchat:monitoring
 rocketchat:oauth2-server-config
 rocketchat:oembed
 rocketchat:otr
+rocketchat:postcss
 rocketchat:push-notifications
 rocketchat:reactions
 rocketchat:sandstorm
@@ -118,6 +127,7 @@ rocketchat:spotify
 rocketchat:statistics
 rocketchat:streamer
 rocketchat:theme
+rocketchat:tokenpass
 rocketchat:tooltip
 rocketchat:tutum
 rocketchat:ui
@@ -133,11 +143,6 @@ rocketchat:version
 rocketchat:videobridge
 rocketchat:webrtc
 rocketchat:wordpress
-rocketchat:message-snippet
-#rocketchat:google-natural-language
-rocketchat:drupal
-rocketchat:monitoring
-#rocketchat:chatops
 
 konecty:change-case
 konecty:delayed-task
@@ -146,6 +151,7 @@ konecty:multiple-instances-status
 konecty:nrr
 konecty:user-presence
 
+deepwell:bootstrap-datepicker2
 dispatch:run-as-user
 francocatena:status
 jalik:ufs
@@ -153,6 +159,7 @@ jalik:ufs-gridfs
 jparker:gravatar
 kadira:blaze-layout
 kadira:flow-router
+keepnox:perfect-scrollbar
 #kenton:accounts-sandstorm
 mizzao:autocomplete
 mizzao:timesync
@@ -168,11 +175,6 @@ raix:push
 raix:ui-dropped-event
 smoral:sweetalert
 steffo:meteor-accounts-saml
-tmeasday:crypto-md5
 todda00:friendly-slugs
-underscorestring:underscore.string
 yasaricli:slugify
 yasinuslu:blaze-meta
-deepwell:bootstrap-datepicker2
-rocketchat:postcss
-dynamic-import@0.1.1
