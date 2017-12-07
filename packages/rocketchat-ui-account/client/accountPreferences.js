@@ -199,7 +199,7 @@ Template.accountPreferences.onCreated(function() {
 		data.idleTimeLimit = idleTimeLimit;
 
 		let reload = false;
-    
+
 		// if highlights changed we need page reload
 		const user = Meteor.user();
 		if (user &&
