@@ -3,9 +3,6 @@
 @import "utils/_keyframes.import.less";
 @import "utils/_loading.import.less";
 
-@smartphones: ~"only screen and (max-width: 480px)";
-@footer-min-height-media: 65px;
-
 * {
 	box-sizing: border-box;
 	-moz-box-sizing: border-box;
@@ -79,10 +76,6 @@ input:focus {
 	cursor: pointer;
 	color: rgba(255, 255, 255, 0.85);
 	background-color: lighten(desaturate(@primary-background-color, 15%), 12.5%);
-
-  @media @smartphones{
-	font-size: 15px;
-  }
 
 	span {
 		position: relative;
@@ -165,22 +158,10 @@ input:focus {
 		cursor: pointer;
 		padding: 0 10px;
 
-	  @media @smartphones{
-		border-top-right-radius: 0px;
-		border-top-left-radius: 0px;
-		flex: 1 0 50px;
-		line-height: 50px;
-	  }
-
 		h1 {
 			margin: 0;
 			font-size: 10pt;
 			display: inline-block;
-
-		  @media @smartphones{
-			font-size: 13pt;
-		  }
-
 		}
 
 		.toolbar {
@@ -188,31 +169,16 @@ input:focus {
 			float: right;
 
 			svg {
-			  cursor: pointer;
-			  fill: currentColor;
-			  width: 14px;
-			  margin: 0 5px;
-			  vertical-align: middle;
+				cursor: pointer;
+				fill: currentColor;
+				width: 14px;
+				margin: 0 5px;
+				vertical-align: middle;
 
-			  @media @smartphones {
-				width: 20px;
-			  }
-
-			  &:last-of-type {
-				margin-right: 0;
-			  }
+				&:last-of-type {
+					margin-right: 0;
+				}
 			}
-			  svg.maximize {
-				@media @smartphones{
-				  display: none;
-				}
-			  }
-			  svg.popout {
-				@media @smartphones{
-				  display: none;
-				}
-			  }
-
 		}
 	}
 
@@ -239,36 +205,14 @@ input:focus {
 		.info {
 			flex: 1;
 			padding: 5px 0;
-		  }
-
-		  ul{
-
-			@media @smartphones{
-			  width: 95%;
-			  margin-right: -10px;
-
-		  }
 
 			h2 {
 				color: @primary-font-color;
 				font-size: 14px;
-
-			  @media @smartphones{
-				font-size: 16px;
-				margin-bottom: 7px;
-				margin-top: 5px;
-			  }
 			}
 
 			li {
 				font-size: 11px;
-
-			  @media @smartphones{
-				font-size: 14px;
-				text-overflow: ellipsis;
-				overflow: hidden;
-				white-space: nowrap;
-			  }
 			}
 		}
 	}
@@ -280,16 +224,8 @@ input:focus {
 		border-right: 1px solid @window-border-color;
 		overflow-y: auto;
 
-	  @media @smartphones{
-		margin-bottom: 64px;
-	  }
-
 		.wrapper {
 			padding-bottom: 6px;
-
-		  @media @smartphones{
-			padding-bottom: 13px;
-		  }
 
 			ul {
 				list-style-type: none;
@@ -306,10 +242,6 @@ input:focus {
 				position: relative;
 				line-height: 18px;
 				min-height: 36px;
-
-			  @media @smartphones{
-				line-height: 18px;
-			  }
 
 				&::after {
 					content: '';
@@ -367,10 +299,6 @@ input:focus {
 						padding: 0 10px;
 						background-color: #ffffff;
 						min-width: 120px;
-
-					  @media @smartphones{
-						font-size:12px;
-					  }
 					}
 
 					.content {
@@ -426,11 +354,6 @@ input:focus {
 					margin-right: 5px;
 					outline: none;
 
-				  @media @smartphones{
-					font-size: 15px;
-					margin-bottom: 5px;
-				  }
-
 					&:hover {
 						color: #333333;
 					}
@@ -454,10 +377,6 @@ input:focus {
 					text-align: right;
 					left: -10px;
 					width: 55px;
-
-				  @media @smartphones{
-					font-size: 10px;
-				  }
 
 					.edited {
 						display: inline-block;
@@ -514,10 +433,6 @@ input:focus {
 				.body {
 					opacity: 1;
 					transition: opacity 1s linear;
-
-				  @media @smartphones{
-					font-size: 15px;
-				  }
 				}
 
 				&.temp .body {
@@ -561,19 +476,9 @@ input:focus {
 			z-index: 5;
 			transition: transform 0.3s ease-out;
 			transform: translateY(-40px);
-		  	visibility: visible;
-
-		  @media @smartphones{
-			width: 145px;
-			height: 34px;
-			font-size: 14px;
-			line-height: 33px;
-			bottom: 30px;
-		  }
 
 			&.not {
 				transform: translateY(100%);
-			  	visibility: hidden;
 			}
 		}
 
@@ -586,15 +491,9 @@ input:focus {
 			z-index: 8;
 			transition: transform 0.2s ease-out;
 			transform: translateY(100%);
-		  	visibility: hidden;
-
-		  @media @smartphones{
-			bottom: @footer-min-height-media;
-		  }
 
 			&.show {
 				transform: translateY(0);
-			  	visibility: visible;
 			}
 		}
 	}
@@ -606,13 +505,6 @@ input:focus {
 		border-top: 1px solid @window-border-color;
 		border-left: 1px solid @window-border-color;
 		border-right: 1px solid @window-border-color;
-
-	  @media @smartphones{
-		flex: 1 0 @footer-min-height-media;
-		position: fixed;
-		bottom: 0;
-		width: 100%;
-	  }
 
 		.message-bar {
 			display: flex;
@@ -638,12 +530,6 @@ input:focus {
 					line-height: normal;
 					background-color: #ffffff;
 					position: relative;
-
-				  @media @smartphones{
-					padding-top:7px;
-					font-size: 15px;
-					height: 35px!important;
-				  }
 				}
 			}
 
@@ -661,11 +547,6 @@ input:focus {
 					cursor: pointer;
 					transition: fill 0.15s ease-out;
 
-				  @media @smartphones{
-					width: 23px;
-					height: 23px;
-				  }
-
 					&:hover {
 						fill: @primary-font-color;
 					}
@@ -680,11 +561,6 @@ input:focus {
 			outline: none;
 			margin-top: 5px;
 			font-size: 0.65rem;
-
-		  @media @smartphones{
-			margin-top: 5px;
-			margin-bottom: 6px;
-		  }
 		}
 
 		.typing {
@@ -694,11 +570,6 @@ input:focus {
 			outline: none;
 			margin-top: 2px;
 			font-size: 0.65rem;
-
-		  @media @smartphones{
-			margin-top: 4px;
-			margin-bottom: 4px;
-		  }
 		}
 
 		.options-menu {
@@ -738,10 +609,6 @@ input:focus {
 						display: block;
 						padding: 4px 2px;
 						outline: none;
-
-					  @media @smartphones{
-						font-size: 14px;
-					  }
 					}
 				}
 			}
@@ -754,10 +621,6 @@ input:focus {
 		padding: 1em 10px;
 		border-left: 1px solid @window-border-color;
 		border-right: 1px solid @window-border-color;
-
-	  	@media @smartphones{
-		  font-size: 15px;
-		}
 
 		.offline-message {
 			padding: 1em 0;
@@ -772,18 +635,10 @@ input:focus {
 			textarea {
 				display: block;
 				width: 100%;
-
-			  @media @smartphones {
-				width: 85%;
-				margin: 15px auto;
-			  }
 			}
 
 			.buttons {
 				text-align: center;
-			  @media @smartphones{
-				font-size: 15px!important;
-			  }
 			}
 
 			.error {
@@ -830,15 +685,6 @@ input:focus {
 		input,
 		select {
 			width: 100%;
-
-		  @media @smartphones{
-			font-size: 15px;
-		  }
-
-		  @media @smartphones {
-			margin: 15px auto;
-			width: 85%;
-		  }
 		}
 	}
 }
@@ -928,8 +774,6 @@ input:focus {
 	opacity: 0.5;
 	align-self: flex-end;
 	transition: opacity 0.15s ease-out;
-  	bottom: 0;
-  	position: fixed;
 
 	&:hover {
 		opacity: 1;
