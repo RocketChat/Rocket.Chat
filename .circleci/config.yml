@@ -273,7 +273,6 @@ workflows:
             branches:
               only:
                 - develop
-                - circle-ci
             tags:
               only:
                 - "/^\\d+\\.\\d+\\.\\d+(-rc\\.\\d+)?$/"
