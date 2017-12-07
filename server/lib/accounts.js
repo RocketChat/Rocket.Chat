@@ -168,7 +168,7 @@ Accounts.validateLoginAttempt(function(login) {
 		});
 	}
 
-	if (!{}.hasOwnProperty.call(login.user, 'roles') || !Array.isArray(login.user.roles)) {
+	if (!login.user.roles || !Array.isArray(login.user.roles)) {
 		throw new Meteor.Error('error-user-has-no-roles', 'User has no roles', {
 			'function': 'Accounts.validateLoginAttempt'
 		});
