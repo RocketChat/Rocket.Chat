@@ -98,7 +98,7 @@
   "Accounts_RegistrationForm_Public": "公開",
   "Accounts_RegistrationForm_Secret_URL": "揭秘網址",
   "Accounts_RegistrationForm_SecretURL": "登記表秘密網址",
-  "Accounts_RegistrationForm_SecretURL_Description": "您必須提供將被添加到您的註冊URL隨機字符串。例如：https://demo.rocket.chat/register/[secret_hash]",
+  "Accounts_RegistrationForm_SecretURL_Description": "您必須提供將被添加到您的註冊URL隨機字符串。例如：https://open.rocket.chat/register/[secret_hash]",
   "Accounts_RequireNameForSignUp": "註冊需要名稱",
   "Accounts_ShowFormLogin": "顯示基於表單的登入",
   "Accounts_UseDefaultBlockedDomainsList": "使用預設的黑名單網域列表",

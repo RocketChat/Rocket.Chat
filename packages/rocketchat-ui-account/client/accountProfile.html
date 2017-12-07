@@ -38,10 +38,10 @@
 									{{#if allowAvatarChange}}
 										{{#if suggestions.ready}}
 											<div class="rc-select-avatar__list">
-												<div class="rc-select-avatar__list-item rc-tooltip js-select-avatar-initials" aria-label="{{_ "Username_initials" }}">
+												<div class="rc-select-avatar__list-item rc-tooltip js-select-avatar-initials" aria-label="{{_ "initials_avatar" }}">
 													{{> avatar username=initialsUsername }}
 												</div>
-												<div class="rc-select-avatar__list-item rc-tooltip js-select-avatar-upload" aria-label="{{_ "Upload_file" }}">
+												<div class="rc-select-avatar__list-item rc-tooltip js-select-avatar-upload" aria-label="{{_ "Upload_user_avatar" }}">
 													<label class="rc-select-avatar__upload-label avatar" for="upload-avatar">
 														{{> icon block="rc-select-avatar__upload-icon" icon="upload"}}
 													</label>
@@ -116,7 +116,7 @@
 								{{/unless}}
 								{{#unless emailVerified}}
 									<div class="rc-input__error">
-										<button class="rc-button rc-button--small" id="resend-verification-email">{{_ "Resend_verification_mail"}}</button>
+										<button class="rc-button rc-button--small" id="resend-verification-email">{{_ "Resend_verification_email"}}</button>
 									</div>
 								{{/unless}}
 							</div>

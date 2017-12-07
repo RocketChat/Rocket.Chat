@@ -120,6 +120,19 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 					}
 				}
 
+				if (usersToSendEmail[user._id] === 'direct') {
+					const userEmailPreferenceIsDisabled = user.settings && user.settings.preferences && user.settings.preferences.emailNotificationMode && (user.settings.preferences.emailNotificationMode === 'disabled');
+					const directMessageEmailPreference = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(message.rid, message.rid.replace(message.u._id, '')).emailNotifications;
+
+					if (directMessageEmailPreference === 'nothing') {
+						return;
+					}
+
+					if ((directMessageEmailPreference === 'default' || directMessageEmailPreference == null) && userEmailPreferenceIsDisabled) {
+						return;
+					}
+				}
+
 				// Checks if user is in the room he/she is mentioned (unless it's public channel)
 				if (room.t !== 'c' && room.usernames.indexOf(user.username) === -1) {
 					return;
