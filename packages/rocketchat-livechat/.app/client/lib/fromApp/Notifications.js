@@ -47,23 +47,23 @@ this.Notifications = new class {
 		return this.streamUser.emit.apply(this.streamUser, args);
 	}
 	onAll(eventName, callback) {
-		return this.streamAll.on(eventName, callback);
+		return this.streamAll.on(eventName, { token: visitor.getToken() }, callback);
 	}
 	onLogged(eventName, callback) {
 		return this.onLogin(() => {
-			return this.streamLogged.on(eventName, callback);
+			return this.streamLogged.on(eventName, { token: visitor.getToken() }, callback);
 		});
 	}
 	onRoom(room, eventName, callback) {
 		if (this.debug === true) {
-			this.streamRoom.on(room, function() {
+			this.streamRoom.on(room, { token: visitor.getToken() }, function() {
 				return console.log(`RocketChat.Notifications: onRoom ${ room }`, arguments);
 			});
 		}
-		return this.streamRoom.on(`${ room }/${ eventName }`, callback);
+		return this.streamRoom.on(`${ room }/${ eventName }`, { token: visitor.getToken() }, callback);
 	}
 	onUser(eventName, callback) {
-		return this.streamUser.on(`${ visitor.getId() }/${ eventName }`, callback);
+		return this.streamUser.on(`${ visitor.getId() }/${ eventName }`, { token: visitor.getToken() }, callback);
 	}
 	unAll(callback) {
 		return this.streamAll.removeListener('notify', callback);

@@ -16,7 +16,7 @@ export const MsgTyping = (function() {
 			return;
 		}
 		usersTyping[room] = { users: {} };
-		return Notifications.onRoom(room, 'typing', function(username, typing) {
+		return Notifications.onRoom(room, 'typing', function(username, typing, extraData) {
 			const user = Meteor.user();
 			if (username === (user && user.username)) {
 				return;
@@ -49,8 +49,8 @@ export const MsgTyping = (function() {
 			clearTimeout(timeouts[room]);
 			timeouts[room] = null;
 		}
-		const user = Meteor.user();
-		return Notifications.notifyRoom(room, 'typing', user && user.username, false);
+		const visitorData = visitor.getData();
+		return Notifications.notifyRoom(room, 'typing', visitorData && visitorData.username, false, { token: visitor.getToken() });
 	};
 	const start = function(room) {
 		if (!renew) { return; }
@@ -59,8 +59,8 @@ export const MsgTyping = (function() {
 
 		renew = false;
 		selfTyping.set(true);
-		const user = Meteor.user();
-		Notifications.notifyRoom(room, 'typing', user && user.username, true);
+		const visitorData = visitor.getData();
+		Notifications.notifyRoom(room, 'typing', visitorData && visitorData.username, true, { token: visitor.getToken() });
 		clearTimeout(timeouts[room]);
 		return timeouts[room] = Meteor.setTimeout(() => stop(room), timeout);
 	};

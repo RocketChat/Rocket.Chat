@@ -16,8 +16,6 @@ Meteor.methods({
 			}
 		});
 
-		console.log('guest ->', guest);
-
 		if (!guest) {
 			throw new Meteor.Error('invalid-token');
 		}

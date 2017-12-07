@@ -1,4 +1,7 @@
 /* eslint new-cap: [2, {"capIsNewExceptions": ["Match.Optional"]}] */
+
+import LivechatVisitors from '../models/LivechatVisitors';
+
 Meteor.methods({
 	'livechat:transfer'(transferData) {
 		if (!Meteor.userId() || !RocketChat.authz.hasPermission(Meteor.userId(), 'view-l-room')) {
@@ -13,7 +16,7 @@ Meteor.methods({
 
 		const room = RocketChat.models.Rooms.findOneById(transferData.roomId);
 
-		const guest = RocketChat.models.Users.findOneById(room.v._id);
+		const guest = LivechatVisitors.findOneById(room.v._id);
 
 		const user = Meteor.user();
 

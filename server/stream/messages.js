@@ -3,26 +3,24 @@ this.msgStream = msgStream;
 
 msgStream.allowWrite('none');
 
-msgStream.allowRead('all');
-// @TODO fix livechat
-// msgStream.allowRead(function(eventName) {
-// 	try {
-// 		const room = Meteor.call('canAccessRoom', eventName, this.userId);
+msgStream.allowRead(function(eventName, args) {
+	try {
+		const room = Meteor.call('canAccessRoom', eventName, this.userId, args);
 
-// 		if (!room) {
-// 			return false;
-// 		}
+		if (!room) {
+			return false;
+		}
 
-// 		if (room.t === 'c' && !RocketChat.authz.hasPermission(this.userId, 'preview-c-room') && room.usernames.indexOf(room.username) === -1) {
-// 			return false;
-// 		}
+		if (room.t === 'c' && !RocketChat.authz.hasPermission(this.userId, 'preview-c-room') && room.usernames.indexOf(room.username) === -1) {
+			return false;
+		}
 
-// 		return true;
-// 	} catch (error) {
-// 		/*error*/
-// 		return false;
-// 	}
-// });
+		return true;
+	} catch (error) {
+		/*error*/
+		return false;
+	}
+});
 
 msgStream.allowRead('__my_messages__', 'all');
 

@@ -63,7 +63,7 @@ export default {
 
 		this.roomSubscribed = roomId;
 
-		msgStream.on(roomId, (msg) => {
+		msgStream.on(roomId, { token: this.getToken() }, (msg) => {
 			if (msg.t === 'command') {
 				Commands[msg.msg] && Commands[msg.msg]();
 			} else if (msg.t !== 'livechat_video_call') {
