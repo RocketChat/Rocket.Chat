@@ -551,8 +551,17 @@ RocketChat.Livechat = {
 
 RocketChat.Livechat.stream = new Meteor.Streamer('livechat-room');
 
-// @TODO create a allow function
-RocketChat.Livechat.stream.allowRead('all');
+RocketChat.Livechat.stream.allowRead((roomId, extraData) => {
+	const room = RocketChat.models.Rooms.findOneById(roomId);
+	if (!room) {
+		console.warn(`Invalid eventName: "${ roomId }"`);
+		return false;
+	}
+	if (room.t === 'l' && extraData && extraData.token && room.v.token === extraData.token) {
+		return true;
+	}
+	return false;
+});
 
 RocketChat.settings.get('Livechat_history_monitor_type', (key, value) => {
 	RocketChat.Livechat.historyMonitorType = value;
