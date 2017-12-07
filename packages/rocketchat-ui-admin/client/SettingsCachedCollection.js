@@ -16,7 +16,7 @@ export class PrivateSettingsCachedCollection extends RocketChat.CachedCollection
 			this.log('record received', t, record);
 			if (t === 'auth') {
 				if (! (RocketChat.authz.hasAllPermission([`change-setting-${ record._id }`, 'manage-selected-settings'])
-					|| RocketChat.authz.hasAllPermission('view-privileged-setting'))) {
+					|| RocketChat.authz.hasAtLeastOnePermission('view-privileged-setting', 'edit-privileged-setting'))) {
 					this.collection.remove(record._id);
 					RoomManager.close(record.t + record.name);
 				} else {

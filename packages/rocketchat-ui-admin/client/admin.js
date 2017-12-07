@@ -85,7 +85,7 @@ Template.admin.onDestroyed(function() {
 
 Template.admin.helpers({
 	hasSettingPermission() {
-		return RocketChat.authz.hasAtLeastOnePermission(['view-privileged-setting', 'manage-selected-settings']);
+		return RocketChat.authz.hasAtLeastOnePermission(['view-privileged-setting', 'edit-privileged-setting', 'manage-selected-settings']);
 	},
 	languages() {
 		const languages = TAPi18n.getLanguages();

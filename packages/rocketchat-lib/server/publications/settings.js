@@ -32,7 +32,7 @@ Meteor.methods({
 		}
 		this.unblock();
 		const records = RocketChat.models.Settings.find().fetch().filter(function(record) {
-			if (RocketChat.authz.hasPermission(Meteor.userId(), 'view-privileged-setting')) {
+			if (RocketChat.authz.hasAtLeastOnePermission(Meteor.userId(), ['view-privileged-setting', 'edit-privileged-setting'])) {
 				return record.hidden !== true;
 			} else if (RocketChat.authz.hasPermission(Meteor.userId(), 'manage-selected-settings')) {
 				return record.hidden !== true && RocketChat.authz.hasPermission(Meteor.userId(), `change-setting-${ record._id }`);
@@ -73,5 +73,5 @@ RocketChat.Notifications.streamAll.allowRead('private-settings-changed', functio
 	if (this.userId == null) {
 		return false;
 	}
-	return RocketChat.authz.hasAtLeastOnePermission(this.userId, ['view-privileged-setting', 'manage-selected-settings']);
+	return RocketChat.authz.hasAtLeastOnePermission(this.userId, ['view-privileged-setting', 'edit-privileged-setting', 'manage-selected-settings']);
 });
