@@ -164,31 +164,6 @@ Meteor.startup(function() {
 		]
 	});
 
-	RocketChat.settings.add('Livechat_Routing_Method', 'Least_Amount', {
-		type: 'select',
-		group: 'Livechat',
-		public: true,
-		values: [
-			{key: 'Least_Amount', i18nLabel: 'Least_Amount'},
-			{key: 'Guest_Pool', i18nLabel: 'Guest_Pool'}
-		]
-	});
-
-	RocketChat.settings.add('Livechat_guest_pool_with_no_agents', false, {
-		type: 'boolean',
-		group: 'Livechat',
-		i18nLabel: 'Accept_with_no_online_agents',
-		i18nDescription: 'Accept_incoming_livechat_requests_even_if_there_are_no_online_agents',
-		enableQuery: { _id: 'Livechat_Routing_Method', value: 'Guest_Pool' }
-	});
-
-	RocketChat.settings.add('Livechat_show_queue_list_link', false, {
-		type: 'boolean',
-		group: 'Livechat',
-		public: true,
-		i18nLabel: 'Show_queue_list_to_all_agents'
-	});
-
 	RocketChat.settings.add('Livechat_enable_office_hours', false, {
 		type: 'boolean',
 		group: 'Livechat',
@@ -242,5 +217,54 @@ Meteor.startup(function() {
 		public: false,
 		section: 'RD Station',
 		i18nLabel: 'RDStation_Token'
+	});
+
+	RocketChat.settings.add('Livechat_Routing_Method', 'Least_Amount', {
+		type: 'select',
+		group: 'Livechat',
+		public: true,
+		section: 'Routing',
+		values: [
+			{key: 'External', i18nLabel: 'External_Service'},
+			{key: 'Least_Amount', i18nLabel: 'Least_Amount'},
+			{key: 'Guest_Pool', i18nLabel: 'Guest_Pool'}
+		]
+	});
+
+	RocketChat.settings.add('Livechat_guest_pool_with_no_agents', false, {
+		type: 'boolean',
+		group: 'Livechat',
+		section: 'Routing',
+		i18nLabel: 'Accept_with_no_online_agents',
+		i18nDescription: 'Accept_incoming_livechat_requests_even_if_there_are_no_online_agents',
+		enableQuery: { _id: 'Livechat_Routing_Method', value: 'Guest_Pool' }
+	});
+
+	RocketChat.settings.add('Livechat_show_queue_list_link', false, {
+		type: 'boolean',
+		group: 'Livechat',
+		public: true,
+		section: 'Routing',
+		i18nLabel: 'Show_queue_list_to_all_agents',
+		enableQuery: { _id: 'Livechat_Routing_Method', value: { $ne: 'External' } }
+	});
+
+	RocketChat.settings.add('Livechat_External_Queue_URL', '', {
+		type: 'string',
+		group: 'Livechat',
+		public: false,
+		section: 'Routing',
+		i18nLabel: 'External_Queue_Service_URL',
+		i18nDescription: 'For_more_details_please_check_our_docs',
+		enableQuery: { _id: 'Livechat_Routing_Method', value: 'External' }
+	});
+
+	RocketChat.settings.add('Livechat_External_Queue_Token', '', {
+		type: 'string',
+		group: 'Livechat',
+		public: false,
+		section: 'Routing',
+		i18nLabel: 'Secret_token',
+		enableQuery: { _id: 'Livechat_Routing_Method', value: 'External' }
 	});
 });
