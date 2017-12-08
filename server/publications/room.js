@@ -23,6 +23,7 @@ const fields = {
 	livechatData: 1,
 	tags: 1,
 	sms: 1,
+	facebook: 1,
 	code: 1,
 	joinCodeRequired: 1,
 	open: 1,
