@@ -196,7 +196,11 @@ export class CustomOAuth {
 
 				// Fix Dataporten having 'user.userid' instead of 'id'
 				if (identity.user && identity.user.userid && !identity.id) {
-					identity.id = identity.user.userid;
+					if (identity.user.userid_sec && identity.user.userid_sec[0]) {
+						identity.id = identity.user.userid_sec[0];
+					} else {
+						identity.id = identity.user.userid;
+					}
 					identity.email = identity.user.email;
 				}
 				// Fix for Xenforo [BD]API plugin for 'user.user_id; instead of 'id'
