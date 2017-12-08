@@ -1,3 +1,5 @@
+import _ from 'underscore';
+
 const getTitle = function(self) {
 	if (self.meta == null) {
 		return;
@@ -42,7 +44,7 @@ Template.oembedUrlWidget.helpers({
 		if (this.meta.ogImage && this.meta.ogImage.replace) {
 			decodedOgImage = this.meta.ogImage.replace(/&amp;/g, '&');
 		}
-		let url = this.meta.msapplicationTileImage || decodedOgImage || this.meta.twitterImage;
+		let url = decodedOgImage || this.meta.twitterImage || this.meta.msapplicationTileImage;
 		if (url == null) {
 			return;
 		}

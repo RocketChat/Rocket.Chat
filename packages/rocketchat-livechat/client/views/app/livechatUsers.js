@@ -1,3 +1,4 @@
+import _ from 'underscore';
 import toastr from 'toastr';
 let ManagerUsers;
 
