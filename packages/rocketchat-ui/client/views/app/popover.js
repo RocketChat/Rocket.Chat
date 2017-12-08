@@ -1,5 +1,7 @@
 /* globals popover isRtl */
 
+import {UiTextContext} from 'meteor/rocketchat:lib';
+
 this.popover = {
 	renderedPopover: null,
 	open(config) {
@@ -183,13 +185,7 @@ Template.popover.events({
 		const { rid, name, template } = instance.data.data;
 
 		if (e.currentTarget.dataset.id === 'hide') {
-			let warnText;
-			switch (template) {
-				case 'c': warnText = 'Hide_Room_Warning'; break;
-				case 'p': warnText = 'Hide_Group_Warning'; break;
-				case 'd': warnText = 'Hide_Private_Warning'; break;
-				case 'l': warnText = 'Hide_Livechat_Warning'; break;
-			}
+			const warnText = RocketChat.roomTypes.roomTypes[template].getUiText(UiTextContext.HIDE_WARNING);
 
 			swal({
 				title: t('Are_you_sure'),
@@ -229,7 +225,7 @@ Template.popover.events({
 
 			swal({
 				title: t('Are_you_sure'),
-				text: t(warnText, name),
+				text: warnText ? t(warnText, name) : '',
 				type: 'warning',
 				showCancelButton: true,
 				confirmButtonColor: '#DD6B55',
