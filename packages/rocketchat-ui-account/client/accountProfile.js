@@ -53,16 +53,19 @@ Template.accountProfile.helpers({
 	},
 	services() {
 		const suggestions = Template.instance().suggestions.get();
-		return ['gravatar', 'facebook', 'google', 'github', 'gitlab', 'linkedIn', 'twitter']
-			.map((service) => {
-				return {
-					name: service,
-					// TODO: improve this fix
-					service: !suggestions.avatars[service.toLowerCase()] ? RocketChat.settings.get(`Accounts_OAuth_${ s.capitalize(service.toLowerCase()) }`) : false,
-					suggestion: suggestions.avatars[service.toLowerCase()]
-				};
-			})
-			.filter(({service, suggestion}) => service || suggestion);
+
+		if (suggestions.avatars) {
+			return Object.keys(suggestions.avatars).map((service) => {
+					return {
+						name: service,
+						// TODO: improve this fix
+						service: !suggestions.avatars[service.toLowerCase()] ? RocketChat.settings.get(`Accounts_OAuth_${ s.capitalize(service.toLowerCase()) }`) : false,
+						suggestion: suggestions.avatars[service.toLowerCase()]
+					};
+				})
+				.filter(({service, suggestion}) => service || suggestion);
+		}
+
 	},
 	initialsUsername() {
 		const user = Meteor.user();

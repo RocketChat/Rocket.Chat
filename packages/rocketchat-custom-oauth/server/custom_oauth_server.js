@@ -56,6 +56,7 @@ export class CustomOAuth {
 		this.identityPath = options.identityPath;
 		this.tokenSentVia = options.tokenSentVia;
 		this.usernameField = (options.usernameField || '').trim();
+		this.avatarField = (options.avatarField || '').trim();
 		this.mergeUsers = options.mergeUsers;
 
 		if (!/^https?:\/\/.+/.test(this.tokenPath)) {
@@ -233,8 +234,6 @@ export class CustomOAuth {
 				}
 			};
 
-			// console.log data
-
 			return data;
 		});
 	}
@@ -261,6 +260,15 @@ export class CustomOAuth {
 		}
 
 		return username;
+	}
+
+	getAvatarUrl(data) {
+		const avatarUrl = data[this.avatarField];
+		if (!avatarUrl) {
+			throw new Meteor.Error('field_not_found', `Avatar field "${ this.avatarField }" not found in data`, data);
+		}
+
+		return avatarUrl;
 	}
 
 	addHookToProcessUser() {
