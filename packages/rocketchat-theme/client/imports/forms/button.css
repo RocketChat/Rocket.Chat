@@ -26,6 +26,10 @@
 		background: inherit;
 	}
 
+	&--invisible {
+		visibility: hidden;
+	}
+
 	&--primary {
 		color: var(--button-primary-text-color);
 		border: 0;
