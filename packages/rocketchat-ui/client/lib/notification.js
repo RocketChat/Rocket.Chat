@@ -80,7 +80,7 @@ const KonchatNotification = {
 	},
 
 	newMessage(rid) {
-		if (!Session.equals(`user_${ Meteor.userId() }_status`, 'busy')) {
+		if (!Session.equals(`user_${ Meteor.user().username }_status`, 'busy')) {
 			const user = Meteor.user();
 			const newMessageNotification = user && user.settings && user.settings.preferences && user.settings.preferences.newMessageNotification || 'chime';
 			const audioVolume = user && user.settings && user.settings.preferences && user.settings.preferences.notificationsSoundVolume || 100;
