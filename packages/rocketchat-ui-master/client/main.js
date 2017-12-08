@@ -17,7 +17,7 @@ Template.body.onRendered(function() {
 		if (e.keyCode === 27 && e.shiftKey === true && (unread != null) && unread !== '') {
 			e.preventDefault();
 			e.stopPropagation();
-			return swal({
+			modal.open({
 				title: t('Clear_all_unreads_question'),
 				type: 'warning',
 				confirmButtonText: t('Yes_clear_all'),
@@ -188,9 +188,6 @@ Template.main.onRendered(function() {
 		}, 100);
 	});
 	return Tracker.autorun(function() {
-		swal.setDefaults({
-			cancelButtonText: t('Cancel')
-		});
 		const user = Meteor.user();
 		const settings = user && user.settings;
 		const prefs = settings && settings.preferences;
