@@ -8,6 +8,8 @@ Meteor.startup(function() {
 			'message',
 			'message-mobile'
 		],
+		order: 10,
+		group: 'menu',
 		action() {
 			const message = this._arguments[1];
 
@@ -48,7 +50,7 @@ Meteor.startup(function() {
 				return false;
 			}
 
-			RocketChat.authz.hasAtLeastOnePermission('snippet-message', message.rid);
+			return RocketChat.authz.hasAtLeastOnePermission('snippet-message', message.rid);
 		}
 	});
 });
