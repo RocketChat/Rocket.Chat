@@ -135,5 +135,8 @@ RocketChat.QueueMethods = {
 		RocketChat.models.Rooms.insert(room);
 
 		return room;
+	},
+	'External'(guest, message, roomInfo) {
+		return this['Least_Amount'](guest, message, roomInfo); // eslint-disable-line
 	}
 };
