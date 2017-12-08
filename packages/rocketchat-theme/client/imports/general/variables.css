@@ -50,6 +50,7 @@
 		--status-busy: var(--rc-color-error);
 		--status-invisible: var(--color-gray-medium);
 		--status-invisible-sidebar: var(--rc-color-primary-darkest);
+		--default-padding: 1.5rem;
 		--default-small-padding: 1rem;
 
 		/*
@@ -176,7 +177,9 @@
 		*/
 		--sidebar-item-radius: 2px;
 		--sidebar-item-height: 32px;
+		--sidebar-item-big-height: 62px;
 		--sidebar-item-thumb-size: 20px;
+		--sidebar-item-big-thumb-size: 36px;
 
 		--sidebar-item-text-color: var(--color-gray);
 		--sidebar-item-background: inherit;

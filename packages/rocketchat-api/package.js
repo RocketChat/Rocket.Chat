@@ -7,7 +7,6 @@ Package.describe({
 
 Package.onUse(function(api) {
 	api.use([
-		'underscore',
 		'ecmascript',
 		'rocketchat:lib',
 		'nimble:restivus'
@@ -33,12 +32,15 @@ Package.onUse(function(api) {
 
 	//Add v1 routes
 	api.addFiles('server/v1/channels.js', 'server');
+	api.addFiles('server/v1/rooms.js', 'server');
+	api.addFiles('server/v1/subscriptions.js', 'server');
 	api.addFiles('server/v1/chat.js', 'server');
 	api.addFiles('server/v1/commands.js', 'server');
 	api.addFiles('server/v1/groups.js', 'server');
 	api.addFiles('server/v1/im.js', 'server');
 	api.addFiles('server/v1/integrations.js', 'server');
 	api.addFiles('server/v1/misc.js', 'server');
+	api.addFiles('server/v1/push.js', 'server');
 	api.addFiles('server/v1/settings.js', 'server');
 	api.addFiles('server/v1/stats.js', 'server');
 	api.addFiles('server/v1/users.js', 'server');

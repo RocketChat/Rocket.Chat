@@ -1,4 +1,4 @@
-RocketChat.API.v1.addRoute('commands.getOne', { authRequired: true }, {
+RocketChat.API.v1.addRoute('commands.get', { authRequired: true }, {
 	get() {
 		const params = this.queryParams;
 
@@ -32,7 +32,7 @@ RocketChat.API.v1.addRoute('commands.list', { authRequired: true }, {
 			sort: sort ? sort : { name: 1 },
 			skip: offset,
 			limit: count,
-			fields: Object.assign({}, fields, RocketChat.API.v1.defaultFieldsToExclude)
+			fields
 		});
 
 		return RocketChat.API.v1.success({
@@ -57,7 +57,6 @@ RocketChat.API.v1.addRoute('commands.run', { authRequired: true }, {
 		if (body.params && typeof body.params !== 'string') {
 			return RocketChat.API.v1.failure('The parameters for the command must be a single string.');
 		}
-		const params = body.params ? body.params : '';
 
 		if (typeof body.roomId !== 'string') {
 			return RocketChat.API.v1.failure('The room\'s id where to execute this command must provided and be a string.');
@@ -70,6 +69,8 @@ RocketChat.API.v1.addRoute('commands.run', { authRequired: true }, {
 
 		// This will throw an error if they can't or the room is invalid
 		Meteor.call('canAccessRoom', body.roomId, user._id);
+
+		const params = body.params ? body.params : '';
 
 		let result;
 		Meteor.runAsUser(user._id, () => {

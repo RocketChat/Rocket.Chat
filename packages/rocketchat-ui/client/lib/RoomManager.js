@@ -1,3 +1,5 @@
+import _ from 'underscore';
+
 const RoomManager = new function() {
 	const openedRooms = {};
 	const msgStream = new Meteor.Streamer('room-messages');

@@ -15,6 +15,10 @@
 								<a href="#favorite" class="toggle-favorite"><i class="{{favorite}}" aria-label="{{_ favoriteLabel}}"></i></a>
 							{{/if}}
 
+							{{#if tokenAccessChannel}}
+								<i class="icon-tokenpass" aria-label="{{_ "Tokenpass_Channel_Label"}}"></i>
+							{{/if}}
+
 							{{> icon block="room-icon" icon=roomIcon classes=userStatus}}
 
 							<span class="room-title">{{roomName}}</span>
@@ -47,7 +51,7 @@
 					<div class="messages-container-main">
 						{{#unless embeddedVersion}}
 							{{#if showAnnouncement}}
-							<div class="fixed-title announcement">
+							<div class="fixed-title announcement" title="{{RocketChatMarkdown roomAnnouncement}}">
 								{{{RocketChatMarkdown roomAnnouncement}}}
 							</div>
 							{{/if}}
@@ -79,18 +83,18 @@
 									{{#if error}}
 										<div class="upload-progress-text">
 											{{error}}
-											<button>
-												{{_ "close"}}
-											</button>
 										</div>
+										<button>
+											{{_ "close"}}
+										</button>
 									{{else}}
 										<div class="upload-progress-progress" style="width: {{percentage}}%;"></div>
 										<div class="upload-progress-text">
-											{{name}}... {{percentage}}%
-											<button>
-												{{_ "Cancel"}}
-											</button>
+											[{{percentage}}%] {{name}}
 										</div>
+										<button>
+											{{_ "Cancel"}}
+										</button>
 									{{/if}}
 								</div>
 							{{/each}}

@@ -1,4 +1,7 @@
 // @TODO implementar 'clicar na notificacao' abre a janela do chat
+import _ from 'underscore';
+import s from 'underscore.string';
+
 const KonchatNotification = {
 	notificationStatus: new ReactiveVar,
 
@@ -20,7 +23,7 @@ const KonchatNotification = {
 			return RocketChat.promises.run('onClientMessageReceived', message).then(function(message) {
 				const n = new Notification(notification.title, {
 					icon: notification.icon || getAvatarUrlFromUsername(notification.payload.sender.username),
-					body: _.stripTags(message.msg),
+					body: s.stripTags(message.msg),
 					tag: notification.payload._id,
 					silent: true,
 					canReply: true
@@ -77,7 +80,7 @@ const KonchatNotification = {
 	},
 
 	newMessage(rid) {
-		if (!Session.equals(`user_${ Meteor.userId() }_status`, 'busy')) {
+		if (!Session.equals(`user_${ Meteor.user().username }_status`, 'busy')) {
 			const user = Meteor.user();
 			const newMessageNotification = user && user.settings && user.settings.preferences && user.settings.preferences.newMessageNotification || 'chime';
 			const audioVolume = user && user.settings && user.settings.preferences && user.settings.preferences.notificationsSoundVolume || 100;

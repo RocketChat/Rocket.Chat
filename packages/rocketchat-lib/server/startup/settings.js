@@ -36,6 +36,10 @@ RocketChat.settings.addGroup('Accounts', function() {
 		type: 'boolean',
 		'public': true
 	});
+	this.add('Accounts_AllowRealNameChange', true, {
+		type: 'boolean',
+		'public': true
+	});
 	this.add('Accounts_AllowUsernameChange', true, {
 		type: 'boolean',
 		'public': true
@@ -422,6 +426,11 @@ RocketChat.settings.addGroup('General', function() {
 		type: 'action',
 		actionText: 'Restart_the_server'
 	});
+	this.add('Store_Last_Message', false, {
+		type: 'boolean',
+		public: true,
+		i18nDescription: 'Store_Last_Message_Sent_per_Room'
+	});
 	this.section('UTF8', function() {
 		this.add('UTF8_Names_Validation', '[0-9a-zA-Z-_.]+', {
 			type: 'string',
@@ -500,6 +509,12 @@ RocketChat.settings.addGroup('General', function() {
 			type: 'int',
 			public: true,
 			i18nDescription: 'Notifications_Max_Room_Members_Description'
+		});
+
+		this.add('Notifications_Always_Notify_Mobile', false, {
+			type: 'boolean',
+			public: true,
+			i18nDescription: 'Notifications_Always_Notify_Mobile_Description'
 		});
 	});
 	this.section('REST API', function() {
@@ -585,7 +600,7 @@ RocketChat.settings.addGroup('Email', function() {
 			multiline: true,
 			i18nLabel: 'Footer'
 		});
-		return this.add('Email_Footer_Direct_Reply', '</td></tr></table></td></tr><tr><td border="0" cellspacing="0" cellpadding="0" width="100%" style="font-family: Helvetica,Arial,sans-serif; max-width: 800px; margin: 0 auto; padding: 1.5em; text-align: center; font-size: 8pt; color: #999;">You can directly reply to this email.<br>Do not temper reply email<br>Powered by <a href="https://rocket.chat" target="_blank">Rocket.Chat</a></td></tr></table></td></tr></table></html>', {
+		return this.add('Email_Footer_Direct_Reply', '</td></tr></table></td></tr><tr><td border="0" cellspacing="0" cellpadding="0" width="100%" style="font-family: Helvetica,Arial,sans-serif; max-width: 800px; margin: 0 auto; padding: 1.5em; text-align: center; font-size: 8pt; color: #999;">You can directly reply to this email.<br>Do not modify previous emails in the thread.<br>Powered by <a href="https://rocket.chat" target="_blank">Rocket.Chat</a></td></tr></table></td></tr></table></html>', {
 			type: 'code',
 			code: 'text/html',
 			multiline: true,
