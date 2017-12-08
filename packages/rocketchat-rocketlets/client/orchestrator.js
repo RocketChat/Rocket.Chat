@@ -61,7 +61,7 @@ FlowRouter.route('/admin/rocketlets', {
 	}
 });
 
-FlowRouter.route('/admin/rocketlets-install', {
+FlowRouter.route('/admin/rocketlet/install', {
 	name: 'rocketlet-install',
 	action() {
 		BlazeLayout.render('main', { center: 'rocketletInstall' });
