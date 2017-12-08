@@ -100,7 +100,7 @@ Template.livechat.events({
 		event.preventDefault();
 		event.stopPropagation();
 
-		swal({
+		modal.open({
 			title: t('Livechat_Take_Confirm'),
 			text: `${ t('Message') }: ${ this.message }`,
 			showCancelButton: true,

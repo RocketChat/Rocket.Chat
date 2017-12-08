@@ -106,7 +106,7 @@ Template.popover.events({
 
 		if (e.currentTarget.dataset.id === 'report-abuse') {
 			const message = t.data.data._arguments[1];
-			swal({
+			modal.open({
 				title: TAPi18n.__('Report_this_message_question_mark'),
 				text: message.msg,
 				inputPlaceholder: TAPi18n.__('Why_do_you_want_to_report_question_mark'),
@@ -123,13 +123,13 @@ Template.popover.events({
 				}
 
 				if (inputValue === '') {
-					swal.showInputError(TAPi18n.__('You_need_to_write_something'));
+					modal.showInputError(TAPi18n.__('You_need_to_write_something'));
 					return false;
 				}
 
 				Meteor.call('reportMessage', message._id, inputValue);
 
-				swal({
+				modal.open({
 					title: TAPi18n.__('Report_sent'),
 					text: TAPi18n.__('Thank_you_exclamation_mark '),
 					type: 'success',
@@ -187,7 +187,7 @@ Template.popover.events({
 		if (e.currentTarget.dataset.id === 'hide') {
 			const warnText = RocketChat.roomTypes.roomTypes[template].getUiText(UiTextContext.HIDE_WARNING);
 
-			return swal({
+			return modal.open({
 				title: t('Are_you_sure'),
 				text: warnText ? t(warnText, name) : '',
 				type: 'warning',
@@ -210,42 +210,42 @@ Template.popover.events({
 					}
 				});
 			});
-		} else {
-			const warnText = RocketChat.roomTypes.roomTypes[template].getUiText(UiTextContext.LEAVE_WARNING);
-
-			swal({
-				title: t('Are_you_sure'),
-				text: warnText ? t(warnText, name) : '',
-				type: 'warning',
-				showCancelButton: true,
-				confirmButtonColor: '#DD6B55',
-				confirmButtonText: t('Yes_leave_it'),
-				cancelButtonText: t('Cancel'),
-				closeOnConfirm: false,
-				html: false
-			}, function(isConfirm) {
-				if (isConfirm) {
-					Meteor.call('leaveRoom', rid, function(err) {
-						if (err) {
-							swal({
-								title: t('Warning'),
-								text: handleError(err, false),
-								type: 'warning',
-								html: false
-							});
-						} else {
-							swal.close();
-							if (['channel', 'group', 'direct'].includes(FlowRouter.getRouteName()) && (Session.get('openedRoom') === rid)) {
-								FlowRouter.go('home');
-							}
-
-							RoomManager.close(rid);
-						}
-					});
-				} else {
-					swal.close();
-				}
-			});
 		}
+
+		const warnText = RocketChat.roomTypes.roomTypes[template].getUiText(UiTextContext.LEAVE_WARNING);
+
+		modal.open({
+			title: t('Are_you_sure'),
+			text: warnText ? t(warnText, name) : '',
+			type: 'warning',
+			showCancelButton: true,
+			confirmButtonColor: '#DD6B55',
+			confirmButtonText: t('Yes_leave_it'),
+			cancelButtonText: t('Cancel'),
+			closeOnConfirm: false,
+			html: false
+		}, function(isConfirm) {
+			if (isConfirm) {
+				Meteor.call('leaveRoom', rid, function(err) {
+					if (err) {
+						modal.open({
+							title: t('Warning'),
+							text: handleError(err, false),
+							type: 'warning',
+							html: false
+						});
+					} else {
+						modal.close();
+						if (['channel', 'group', 'direct'].includes(FlowRouter.getRouteName()) && (Session.get('openedRoom') === rid)) {
+							FlowRouter.go('home');
+						}
+
+						RoomManager.close(rid);
+					}
+				});
+			} else {
+				modal.close();
+			}
+		});
 	}
 });
