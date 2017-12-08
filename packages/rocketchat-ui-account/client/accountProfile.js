@@ -56,13 +56,13 @@ Template.accountProfile.helpers({
 
 		if (suggestions.avatars) {
 			return Object.keys(suggestions.avatars).map((service) => {
-					return {
-						name: service,
-						// TODO: improve this fix
-						service: !suggestions.avatars[service.toLowerCase()] ? RocketChat.settings.get(`Accounts_OAuth_${ s.capitalize(service.toLowerCase()) }`) : false,
-						suggestion: suggestions.avatars[service.toLowerCase()]
-					};
-				})
+				return {
+					name: service,
+					// TODO: improve this fix
+					service: !suggestions.avatars[service.toLowerCase()] ? RocketChat.settings.get(`Accounts_OAuth_${ s.capitalize(service.toLowerCase()) }`) : false,
+					suggestion: suggestions.avatars[service.toLowerCase()]
+				};
+			})
 				.filter(({service, suggestion}) => service || suggestion);
 		}
 
