@@ -39,6 +39,7 @@ function _OAuthServicesUpdate() {
 				data.loginStyle = RocketChat.settings.get(`${ service.key }-login_style`);
 				data.buttonColor = RocketChat.settings.get(`${ service.key }-button_color`);
 				data.tokenSentVia = RocketChat.settings.get(`${ service.key }-token_sent_via`);
+				data.identityTokenSentVia = RocketChat.settings.get(`${ service.key }-identity_token_sent_via`);
 				data.usernameField = RocketChat.settings.get(`${ service.key }-username_field`);
 				data.mergeUsers = RocketChat.settings.get(`${ service.key }-merge_users`);
 				new CustomOAuth(serviceName.toLowerCase(), {
@@ -49,6 +50,7 @@ function _OAuthServicesUpdate() {
 					scope: data.scope,
 					loginStyle: data.loginStyle,
 					tokenSentVia: data.tokenSentVia,
+					identityTokenSentVia: data.identityTokenSentVia,
 					usernameField: data.usernameField,
 					mergeUsers: data.mergeUsers
 				});
