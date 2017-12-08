@@ -203,7 +203,9 @@ class API extends Restivus {
 				const args = loginCompatibility(this.bodyParams);
 
 				const invocation = new DDPCommon.MethodInvocation({
-					connection: {}
+					connection: {
+						close() {}
+					}
 				});
 
 				let auth;
