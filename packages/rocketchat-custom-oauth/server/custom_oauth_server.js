@@ -55,9 +55,14 @@ export class CustomOAuth {
 		this.tokenPath = options.tokenPath;
 		this.identityPath = options.identityPath;
 		this.tokenSentVia = options.tokenSentVia;
+		this.identityTokenSentVia = options.identityTokenSentVia;
 		this.usernameField = (options.usernameField || '').trim();
 		this.avatarField = (options.avatarField || '').trim();
 		this.mergeUsers = options.mergeUsers;
+
+		if (this.identityTokenSentVia == null || this.identityTokenSentVia === 'default') {
+			this.identityTokenSentVia = this.tokenSentVia;
+		}
 
 		if (!/^https?:\/\/.+/.test(this.tokenPath)) {
 			this.tokenPath = this.serverURL + this.tokenPath;
@@ -128,7 +133,7 @@ export class CustomOAuth {
 			'User-Agent': this.userAgent // http://doc.gitlab.com/ce/api/users.html#Current-user
 		};
 
-		if (this.tokenSentVia === 'header') {
+		if (this.identityTokenSentVia === 'header') {
 			headers['Authorization'] = `Bearer ${ accessToken }`;
 		} else {
 			params['access_token'] = accessToken;
@@ -192,7 +197,11 @@ export class CustomOAuth {
 
 				// Fix Dataporten having 'user.userid' instead of 'id'
 				if (identity.user && identity.user.userid && !identity.id) {
-					identity.id = identity.user.userid;
+					if (identity.user.userid_sec && identity.user.userid_sec[0]) {
+						identity.id = identity.user.userid_sec[0];
+					} else {
+						identity.id = identity.user.userid;
+					}
 					identity.email = identity.user.email;
 				}
 				// Fix for Xenforo [BD]API plugin for 'user.user_id; instead of 'id'
@@ -213,6 +222,11 @@ export class CustomOAuth {
 				// Fix general 'userid' instead of 'id' from provider
 				if (identity.userid && !identity.id) {
 					identity.id = identity.userid;
+				}
+
+				// Fix when authenticating from a meteor app with 'emails' field
+				if (!identity.email && (identity.emails && Array.isArray(identity.emails) && identity.emails.length >= 1)) {
+					identity.email = identity.emails[0].address ? identity.emails[0].address : undefined;
 				}
 			}
 
