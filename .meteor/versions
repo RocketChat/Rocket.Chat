@@ -235,7 +235,6 @@ session@1.1.7
 sha@1.0.9
 shell-server@0.3.0
 simple:json-routes@2.1.0
-smoral:sweetalert@1.1.1
 spacebars@1.0.15
 spacebars-compiler@1.1.3
 srp@1.0.10
