@@ -34,7 +34,12 @@ this.modal = {
 		}
 	},
 	confirm(value) {
-		this.fn(value);
+		if (this.fn) {
+			this.fn(value);
+		} else {
+			this.close();
+		}
+
 		this.config.closeOnConfirm && this.close();
 	},
 	showInputError(text) {
