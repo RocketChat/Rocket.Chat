@@ -1,10 +1,24 @@
 /*globals defaultUserLanguage, KonchatNotification */
+import _ from 'underscore';
+import s from 'underscore.string';
 import toastr from 'toastr';
 
 const notificationLabels = {
 	all: 'All_messages',
 	mentions: 'Mentions',
 	nothing: 'Nothing'
+};
+
+const DEFAULT_IDLE_TIME_LIMIT = 300000;
+
+const userHasPreferences = (user) => {
+	const userHasSettings = user.hasOwnProperty('settings');
+
+	if (!userHasSettings) {
+		return false;
+	}
+
+	return user.settings.hasOwnProperty('preferences');
 };
 
 Template.accountPreferences.helpers({
@@ -44,14 +58,18 @@ Template.accountPreferences.helpers({
 	},
 	checked(property, value, defaultValue) {
 		const user = Meteor.user();
-		const propertyeExists = !!(user && user.settings && user.settings.preferences && user.settings.preferences[property]);
-		let currentValue;
-		if (propertyeExists) {
-			currentValue = !!user.settings.preferences[property];
-		} else if (!propertyeExists && defaultValue === true) {
-			currentValue = value;
+
+		if (!userHasPreferences(user)) {
+			return defaultValue;
 		}
-		return currentValue === value;
+
+		const userPreferences = user.settings.preferences;
+
+		if (userPreferences.hasOwnProperty(property)) {
+			return value === userPreferences[property];
+		}
+
+		return defaultValue;
 	},
 	selected(property, value, defaultValue) {
 		const user = Meteor.user();
@@ -64,7 +82,7 @@ Template.accountPreferences.helpers({
 	},
 	highlights() {
 		const user = Meteor.user();
-		return user && user.settings && user.settings.preferences && user.settings.preferences['highlights'] && user.settings.preferences['highlights'].join(', ');
+		return user && user.settings && user.settings.preferences && user.settings.preferences['highlights'] && user.settings.preferences['highlights'].join('\n');
 	},
 	desktopNotificationEnabled() {
 		return KonchatNotification.notificationStatus.get() === 'granted' || (window.Notification && Notification.permission === 'granted');
@@ -85,6 +103,13 @@ Template.accountPreferences.helpers({
 	defaultDesktopNotificationDuration() {
 		return RocketChat.settings.get('Desktop_Notifications_Duration');
 	},
+	idleTimeLimit() {
+		const user = Meteor.user();
+		return (user && user.settings && user.settings.preferences && user.settings.preferences.idleTimeLimit) || DEFAULT_IDLE_TIME_LIMIT;
+	},
+	defaultIdleTimeLimit() {
+		return DEFAULT_IDLE_TIME_LIMIT;
+	},
 	defaultDesktopNotification() {
 		return notificationLabels[RocketChat.settings.get('Desktop_Notifications_Default_Alert')];
 	},
@@ -103,9 +128,11 @@ Template.accountPreferences.helpers({
 Template.accountPreferences.onCreated(function() {
 	const user = Meteor.user();
 	const settingsTemplate = this.parentTemplate(3);
+
 	if (settingsTemplate.child == null) {
 		settingsTemplate.child = [];
 	}
+
 	settingsTemplate.child.push(this);
 
 	if (user && user.settings && user.settings.preferences) {
@@ -114,7 +141,9 @@ Template.accountPreferences.onCreated(function() {
 	} else {
 		this.roomsListExhibitionMode = new ReactiveVar('category');
 	}
+
 	let instance = this;
+
 	this.autorun(() => {
 		if (instance.useEmojis && instance.useEmojis.get()) {
 			Tracker.afterFlush(() => $('#convertAsciiEmoji').show());
@@ -122,19 +151,19 @@ Template.accountPreferences.onCreated(function() {
 			Tracker.afterFlush(() => $('#convertAsciiEmoji').hide());
 		}
 	});
+
 	this.clearForm = function() {
 		this.find('#language').value = localStorage.getItem('userLanguage');
 	};
+
+	this.shouldUpdateLocalStorageSetting = function(setting, newValue) {
+		return localStorage.getItem(setting) !== newValue;
+	};
+
 	this.save = function() {
 		instance = this;
 		const data = {};
-		let reload = false;
-		const selectedLanguage = $('#language').val();
-		if (localStorage.getItem('userLanguage') !== selectedLanguage) {
-			localStorage.setItem('userLanguage', selectedLanguage);
-			data.language = selectedLanguage;
-			reload = true;
-		}
+
 		data.newRoomNotification = $('select[name=newRoomNotification]').val();
 		data.newMessageNotification = $('select[name=newMessageNotification]').val();
 		data.useEmojis = $('input[name=useEmojis]:checked').val();
@@ -150,17 +179,53 @@ Template.accountPreferences.onCreated(function() {
 		data.sendOnEnter = $('#sendOnEnter').find('select').val();
 		data.unreadRoomsMode = $('input[name=unreadRoomsMode]:checked').val();
 		data.roomsListExhibitionMode = $('select[name=roomsListExhibitionMode]').val();
-
 		data.autoImageLoad = $('input[name=autoImageLoad]:checked').val();
 		data.emailNotificationMode = $('select[name=emailNotificationMode]').val();
-		data.highlights = _.compact(_.map($('[name=highlights]').val().split(','), function(e) {
-			return _.trim(e);
-		}));
 		data.desktopNotificationDuration = $('input[name=desktopNotificationDuration]').val();
 		data.desktopNotifications = $('#desktopNotifications').find('select').val();
 		data.mobileNotifications = $('#mobileNotifications').find('select').val();
 		data.unreadAlert = $('#unreadAlert').find('input:checked').val();
 		data.notificationsSoundVolume = parseInt($('#notificationsSoundVolume').val());
+		data.roomCounterSidebar = $('#roomCounterSidebar').find('input:checked').val();
+		data.highlights = _.compact(_.map($('[name=highlights]').val().split('\n'), function(e) {
+			return s.trim(e);
+		}));
+
+		const selectedLanguage = $('#language').val();
+		const enableAutoAway = $('#enableAutoAway').find('input:checked').val();
+		const idleTimeLimit = parseInt($('input[name=idleTimeLimit]').val());
+
+		data.enableAutoAway = enableAutoAway;
+		data.idleTimeLimit = idleTimeLimit;
+
+		let reload = false;
+
+		// if highlights changed we need page reload
+		const user = Meteor.user();
+		if (user &&
+			user.settings &&
+			user.settings.preferences &&
+			user.settings.preferences['highlights'] &&
+			user.settings.preferences['highlights'].join('\n') !== data.highlights.join('\n')) {
+			reload = true;
+		}
+
+
+		if (this.shouldUpdateLocalStorageSetting('userLanguage', selectedLanguage)) {
+			localStorage.setItem('userLanguage', selectedLanguage);
+			data.language = selectedLanguage;
+			reload = true;
+		}
+
+		if (this.shouldUpdateLocalStorageSetting('enableAutoAway', enableAutoAway)) {
+			localStorage.setItem('enableAutoAway', enableAutoAway);
+			reload = true;
+		}
+
+		if (this.shouldUpdateLocalStorageSetting('idleTimeLimit', idleTimeLimit)) {
+			localStorage.setItem('idleTimeLimit', idleTimeLimit);
+			reload = true;
+		}
 
 		Meteor.call('saveUserPreferences', data, function(error, results) {
 			if (results) {

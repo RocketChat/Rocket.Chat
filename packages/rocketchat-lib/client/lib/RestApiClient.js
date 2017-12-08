@@ -8,6 +8,7 @@ RocketChat.API = {
 			body = params;
 			params = {};
 		}
+
 		return RocketChat.API._jqueryCall('POST', endpoint, params, body);
 	},
 

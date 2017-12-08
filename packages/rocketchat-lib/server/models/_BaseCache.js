@@ -1,5 +1,5 @@
 /* eslint new-cap: 0 */
-
+import _ from 'underscore';
 import loki from 'lokijs';
 import {EventEmitter} from 'events';
 import objectPath from 'object-path';
