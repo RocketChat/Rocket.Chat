@@ -170,10 +170,15 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 					if (email.verified) {
 						email = {
 							to: email.address,
-							from: RocketChat.settings.get('From_Email'),
 							subject: emailSubject,
 							html: header + messageHTML + divisorMessage + (linkByUser[user._id] || defaultLink) + footer
 						};
+						// using user full-name/channel name in from address
+						if (room.t === 'd') {
+							email.from = `${ message.u.name } <${ RocketChat.settings.get('From_Email') }>`;
+						} else {
+							email.from = `${ room.name } <${ RocketChat.settings.get('From_Email') }>`;
+						}
 						// If direct reply enabled, email content with headers
 						if (RocketChat.settings.get('Direct_Reply_Enable')) {
 							email.headers = {
