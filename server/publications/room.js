@@ -17,6 +17,7 @@ const fields = {
 	description: 1,
 	default: 1,
 	customFields: 1,
+	lastMessage: 1,
 
 	// @TODO create an API to register this fields based on room type
 	livechatData: 1,
@@ -29,9 +30,9 @@ const fields = {
 	v: 1,
 	label: 1,
 	ro: 1,
-	sentiment: 1
+	sentiment: 1,
+	tokenpass: 1
 };
-
 
 const roomMap = (record) => {
 	if (record._room) {
@@ -91,7 +92,11 @@ Meteor.methods({
 			throw new Meteor.Error('error-no-permission', 'No permission', { method: 'getRoomByTypeAndName' });
 		}
 
-		return roomMap({_room: room});
+		if (RocketChat.settings.get('Store_Last_Message') && !RocketChat.authz.hasPermission(Meteor.userId(), 'preview-c-room')) {
+			delete room.lastMessage;
+		}
+
+		return roomMap({ _room: room });
 	}
 });
 
