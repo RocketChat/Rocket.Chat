@@ -57,15 +57,32 @@ export class RocketletsRestApi {
 				return { success: true, rocketlets };
 			},
 			post() {
-				const buff = fileHandler(this.request, 'rocketlet');
+				let buff;
+
+				if (this.bodyParams.url) {
+					const result = HTTP.call('GET', this.bodyParams.url, { npmRequestOptions: { encoding: 'base64' }});
+
+					if (result.statusCode !== 200 || !result.headers['content-type'] || result.headers['content-type'] !== 'application/zip') {
+						return RocketChat.API.v1.failure({ error: 'Invalid url. It doesn\'t exist or is not "application/zip".' });
+					}
+
+					buff = Buffer.from(result.content, 'base64');
+				} else {
+					buff = fileHandler(this.request, 'rocketlet');
+				}
+
+				if (!buff) {
+					return RocketChat.API.v1.failure({ error: 'Failed to get a file to install for the Rocketlet. '});
+				}
+
 				const item = Meteor.wrapAsync((callback) => {
-					manager.add(buff.toString('base64')).then((rl) => callback(undefined, rl)).catch((e) => {
+					manager.add(buff.toString('base64'), false).then((rl) => callback(undefined, rl)).catch((e) => {
 						console.warn('Error!', e);
 						callback(e);
 					});
 				})();
 
-				return { success: true, rocketlet: item.rocketlet.info };
+				return RocketChat.API.v1.success({ rocketlet: item.rocketlet.info });
 			}
 		});
 

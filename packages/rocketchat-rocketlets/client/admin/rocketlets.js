@@ -33,6 +33,6 @@ Template.rocketlets.events({
 	},
 
 	'click .install'() {
-		FlowRouter.go('/admin/rocketlets-install');
+		FlowRouter.go('/admin/rocketlet/install');
 	}
 });

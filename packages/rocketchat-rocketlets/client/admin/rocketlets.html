@@ -1,52 +1,48 @@
 <template name="rocketlets">
-	<div class="main-content-flex">
-		<section class="page-container page-list flex-tab-main-content">
-			<header class="fixed-title">
-				{{> burger}}
-				<h2>
-					<span class="room-title">{{_ "Manage_Rocketlets"}}</span>
-				</h2>
-			</header>
-			<div class="content">
-				{{#requiresPermission 'manage-rocketlets'}}
-					<div class="rc-discovery">
+	<section class="preferences-page">
+		<header class="preferences-page__header">
+			{{> burger}}
+			<h2>{{_ "Manage_Rocketlets"}}</h2>
+		</header>
+		<div class="preferences-page__content">
+			{{#requiresPermission 'manage-rocketlets'}}
+				<div class="rc-discovery">
+					<div class="rc-discovery-wrap">
+						<div class="rc-discovery__item">
+							<div class="rc-discovery__item__image-wrap">
+								<div class="rc-discovery__item__image"></div>
+							</div>
+							<div class="rc-discovery__item__footer">
+								<div class="rc-discovery__container">
+									<div class="discovery__item__footer__title">Add New</div>
+									<div class="rc-discovery__item__footer__description">Install or import a new Rocketlet.</div>
+								</div>
+								<button class="rc-button rc-button--square rc-tooltip install" aria-label="Install">
+									{{> icon icon="plus"}}
+								</button>
+							</div>
+						</div>
+					</div>
+					{{#each rocketlets}}
 						<div class="rc-discovery-wrap">
 							<div class="rc-discovery__item">
 								<div class="rc-discovery__item__image-wrap">
-									<div class="rc-discovery__item__image"></div>
+									<div class="rc-discovery__item__image" style="background-image: url({{ iconFileContent }})"></div>
 								</div>
 								<div class="rc-discovery__item__footer">
 									<div class="rc-discovery__container">
-										<div class="discovery__item__footer__title">Add New</div>
-										<div class="rc-discovery__item__footer__description">Install or import a new Rocketlet.</div>
+										<div class="discovery__item__footer__title">{{name}}</div>
+										<div class="rc-discovery__item__footer__description">{{description}}</div>
 									</div>
-									<button class="rc-button rc-button--square rc-tooltip install" aria-label="Install">
-										{{> icon icon="plus"}}
+									<button class="rc-button rc-button--square rc-tooltip manage" aria-label="{{_ "Manage_the_Rocketlet"}}">
+										{{> icon icon="cog"}}
 									</button>
 								</div>
 							</div>
 						</div>
-						{{#each rocketlets}}
-							<div class="rc-discovery-wrap">
-								<div class="rc-discovery__item">
-									<div class="rc-discovery__item__image-wrap">
-										<div class="rc-discovery__item__image" style="background-image: url({{ iconFileContent }})"></div>
-									</div>
-									<div class="rc-discovery__item__footer">
-										<div class="rc-discovery__container">
-											<div class="discovery__item__footer__title">{{name}}</div>
-											<div class="rc-discovery__item__footer__description">{{description}}</div>
-										</div>
-										<button class="rc-button rc-button--square rc-tooltip manage" aria-label="{{_ "Manage_the_Rocketlet"}}">
-											{{> icon icon="cog"}}
-										</button>
-									</div>
-								</div>
-							</div>
-						{{/each}}
-					</div>
-				{{/requiresPermission}}
-			</div>
-		</section>
-	</div>
+					{{/each}}
+				</div>
+			{{/requiresPermission}}
+		</div>
+	</section>
 </template>
