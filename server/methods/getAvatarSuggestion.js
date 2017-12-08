@@ -58,12 +58,12 @@ function getAvatarSuggestionForUser(user) {
 		}
 
 		if (user.services[service]._OAuthCustom) {
-			const services = ServiceConfiguration.configurations.find({service: service}, {fields: {secret: 0}}).fetch();
+			const services = ServiceConfiguration.configurations.find({service}, {fields: {secret: 0}}).fetch();
 
 			if (services.length > 0) {
 				if (services[0].avatarField) {
 					avatars.push({
-						service: service,
+						service,
 						url: user.services[service][services[0].avatarField]
 					});
 				}
