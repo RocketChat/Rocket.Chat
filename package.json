@@ -121,7 +121,7 @@
 		"mailparser-node4": "^2.0.2-2",
 		"mime-db": "^1.31.0",
 		"mime-type": "^3.0.5",
-		"moment": "^2.19.1",
+		"moment": "^2.19.3",
 		"moment-timezone": "^0.5.14",
 		"photoswipe": "^4.1.2",
 		"poplib": "^0.1.7",
