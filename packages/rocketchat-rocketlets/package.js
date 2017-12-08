@@ -83,6 +83,8 @@ Package.onUse(function(api) {
 
 Npm.depends({
 	'busboy': '0.2.13',
-	'temporary-rocketlets-server': '0.1.34',
-	'temporary-rocketlets-ts-definition': '0.6.31'
+	'temporary-rocketlets-server': '0.1.38',
+	'temporary-rocketlets-ts-definition': '0.6.33'
 });
+
+// TODO: Save whether a rocketlet is enabled or not, that way when the server restarts it doesn't enable one that isn't enabled

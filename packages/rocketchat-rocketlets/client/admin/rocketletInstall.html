@@ -1,3 +1,31 @@
 <template name="rocketletInstall">
-	<h1>Install!</h1>
+	<section class="preferences-page">
+		<header class="preferences-page__header">
+			{{> burger}}
+			<a href="{{pathFor "rocketlets"}}" title="{{_ "Back_to_Manage_Rocketlets"}}">
+				<i class="icon-left-open"></i>
+			</a> &nbsp;
+
+			<h2>{{_ "Rocketlet_Installation"}}</h2>
+		</header>
+		<div class="preferences-page__content">
+			<div class="rc-form-group rc-grid">
+				<div class="rc-input rc-w50 padded">
+					<div class="rc-select-avatar__list-item rc-tooltip js-select-rocketlet-upload" aria-label="{{_ "Upload_file" }}">
+						<label class="rc-select-avatar__upload-label rocketlet" for="upload-rocketlet">
+							{{> icon block="rc-select-avatar__upload-icon" icon="upload"}}
+						</label>
+						<input type="file" name="" value="" id="upload-rocketlet" style="display:none;">
+					</div>
+					<label class="rc-input__label">
+						<div class="rc-input__title">{{_ "Rocketlet_Url_to_Install_From"}}</div>
+						<div class="rc-input__wrapper">
+							<input type="text" class="rc-input__element" name="rocketletPackageUrl" id="rocketletPackage" placeholder="https://rocket.chat/rocketlets/package.zip" value="{{rocketletUrl}}" >
+						</div>
+					</label>
+					<button class="rc-button install">{{ _ "Install" }}</button>
+				</div>
+			</div>
+		</div>
+	</section>
 </template>
