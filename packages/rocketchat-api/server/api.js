@@ -317,8 +317,6 @@ class API extends Restivus {
 	}
 }
 
-RocketChat.API = {};
-
 const getUserAuth = function _getUserAuth() {
 	const invalidResults = [undefined, null, false];
 	return {
@@ -350,6 +348,11 @@ const getUserAuth = function _getUserAuth() {
 			};
 		}
 	};
+};
+
+RocketChat.API = {
+	getUserAuth,
+	ApiClass: API
 };
 
 const createApi = function _createApi(enableCors) {

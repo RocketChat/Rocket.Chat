@@ -28,17 +28,6 @@ Template.rocketletInstall.onCreated(function() {
 });
 
 Template.rocketletInstall.events({
-	'change .js-select-rocketlet-upload [type=file]'(event, tmpl) {
-		const e = event.originalEvent || event;
-		let files = e.target.files;
-		if (!files || files.length === 0) {
-			files = (e.dataTransfer && e.dataTransfer.files) || [];
-		}
-
-		Object.keys(files).forEach(key => {
-			console.log(key, files[key]);
-		});
-	},
 	'click .install'() {
 		const url = $('#rocketletPackage').val().trim();
 
