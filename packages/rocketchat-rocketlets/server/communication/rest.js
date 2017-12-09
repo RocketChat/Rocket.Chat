@@ -49,12 +49,13 @@ export class RocketletsRestApi {
 					} else {
 						const info = prl.getInfo();
 						info.languages = prl.getStorageItem().languageContent;
+						info.status = prl.getStatus();
 
 						return info;
 					}
 				});
 
-				return { success: true, rocketlets };
+				return RocketChat.API.v1.success({ rocketlets });
 			},
 			post() {
 				let buff;
@@ -82,7 +83,10 @@ export class RocketletsRestApi {
 					});
 				})();
 
-				return RocketChat.API.v1.success({ rocketlet: item.rocketlet.info });
+				const info = item.getInfo();
+				info.status = item.getStatus();
+
+				return RocketChat.API.v1.success({ rocketlet: info });
 			}
 		});
 
@@ -93,8 +97,9 @@ export class RocketletsRestApi {
 
 				if (prl) {
 					const info = prl.getInfo();
+					info.status = prl.getStatus();
 
-					return { success: true, rocketlet: info };
+					return RocketChat.API.v1.success({ rocketlet: info });
 				} else {
 					return RocketChat.API.v1.notFound(`No Rocketlet found by the id of: ${ this.urlParams.id }`);
 				}
@@ -108,7 +113,10 @@ export class RocketletsRestApi {
 					manager.update(buff.toString('base64')).then((rl) => callback(rl)).catch((e) => callback(e));
 				});
 
-				return { success: false, item };
+				const info = item.getInfo();
+				info.status = item.getStatus();
+
+				return RocketChat.API.v1.success({ rocketlet: info });
 			}
 		});
 
@@ -120,7 +128,7 @@ export class RocketletsRestApi {
 				if (prl) {
 					const info = prl.getInfo();
 
-					return { success: true, iconFileContent: info.iconFileContent };
+					return RocketChat.API.v1.success({ iconFileContent: info.iconFileContent });
 				} else {
 					return RocketChat.API.v1.notFound(`No Rocketlet found by the id of: ${ this.urlParams.id }`);
 				}
@@ -135,7 +143,7 @@ export class RocketletsRestApi {
 				if (prl) {
 					const languages = prl.getStorageItem().languageContent || {};
 
-					return { success: true, languages };
+					return RocketChat.API.v1.success({ languages });
 				} else {
 					return RocketChat.API.v1.notFound(`No Rocketlet found by the id of: ${ this.urlParams.id }`);
 				}
@@ -156,7 +164,7 @@ export class RocketletsRestApi {
 						}
 					});
 
-					return { success: true, settings };
+					return RocketChat.API.v1.success({ settings });
 				} else {
 					return RocketChat.API.v1.notFound(`No Rocketlet found by the id of: ${ this.urlParams.id }`);
 				}
@@ -184,7 +192,7 @@ export class RocketletsRestApi {
 					}
 				});
 
-				return { success: true, updated };
+				return RocketChat.API.v1.success({ updated });
 			}
 		});
 
@@ -195,10 +203,7 @@ export class RocketletsRestApi {
 				try {
 					const setting = manager.getSettingsManager().getRocketletSetting(this.urlParams.id, this.urlParams.settingId);
 
-					return {
-						success: true,
-						setting
-					};
+					RocketChat.API.v1.success({ setting });
 				} catch (e) {
 					if (e.message.includes('No setting found')) {
 						return RocketChat.API.v1.notFound(`No Setting found on the Rocketlet by the id of: "${ this.urlParams.settingId }"`);
@@ -219,7 +224,7 @@ export class RocketletsRestApi {
 				try {
 					Promise.await(manager.getSettingsManager().updateRocketletSetting(this.urlParams.id, this.bodyParams.setting));
 
-					return { success: true };
+					return RocketChat.API.v1.success();
 				} catch (e) {
 					if (e.message.includes('No setting found')) {
 						return RocketChat.API.v1.notFound(`No Setting found on the Rocketlet by the id of: "${ this.urlParams.settingId }"`);
@@ -228,6 +233,35 @@ export class RocketletsRestApi {
 					} else {
 						return RocketChat.API.v1.failure(e.message);
 					}
+				}
+			}
+		});
+
+		this.api.addRoute(':id/status', { authRequired: true }, {
+			get() {
+				console.log(`Getting ${ this.urlParams.id }'s status..`);
+				const prl = manager.getOneById(this.urlParams.id);
+
+				if (prl) {
+					return RocketChat.API.v1.success({ status: prl.getStatus() });
+				} else {
+					return RocketChat.API.v1.notFound(`No Rocketlet found by the id of: ${ this.urlParams.id }`);
+				}
+			},
+			post() {
+				if (!this.bodyParams.status || typeof this.bodyParams.status !== 'string') {
+					return RocketChat.API.v1.failure('Invalid status provided, it must be "status" field and a string.');
+				}
+
+				console.log(`Updating ${ this.urlParams.id }'s status...`, this.bodyParams.status);
+				const prl = manager.getOneById(this.urlParams.id);
+
+				if (prl) {
+					const result = Promise.await(manager.changeStatus(prl.getID(), this.bodyParams.status));
+
+					return RocketChat.API.v1.success({ status: result.getStatus() });
+				} else {
+					return RocketChat.API.v1.notFound(`No Rocketlet found by the id of: ${ this.urlParams.id }`);
 				}
 			}
 		});

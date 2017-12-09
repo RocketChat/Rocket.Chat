@@ -2,3 +2,8 @@ input.rocketlet-author-name {
 	width: auto !important;
 	display: inline-block !important;
 }
+
+div.rocketlet-enable-loading .loading-animation {
+	justify-content: left;
+	margin-left: 50px;
+}

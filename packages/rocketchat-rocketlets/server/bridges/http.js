@@ -9,6 +9,8 @@ export class RocketletHttpBridge {
 
 		// TODO: Maybe modify the resulting object? :thinking:
 
+		console.log(`And the result for ${ info.rocketletId } is:`, result);
+
 		return result;
 	}
 }
