@@ -9,6 +9,9 @@
 // over the passed in body, so if both are found it will only use the url.
 
 Template.rocketletInstall.helpers({
+	isInstalling() {
+		return Template.instance().isInstalling.get();
+	},
 	rocketletUrl() {
 		return Template.instance().rocketletUrl.get();
 	}
@@ -16,7 +19,7 @@ Template.rocketletInstall.helpers({
 
 Template.rocketletInstall.onCreated(function() {
 	const instance = this;
-	instance.status = new ReactiveVar(false);
+	instance.isInstalling = new ReactiveVar(false);
 	instance.rocketletUrl = new ReactiveVar('');
 
 	// Allow passing in a url as a query param to show installation of
@@ -28,16 +31,20 @@ Template.rocketletInstall.onCreated(function() {
 });
 
 Template.rocketletInstall.events({
-	'click .install'() {
+	'click .install'(e, t) {
 		const url = $('#rocketletPackage').val().trim();
 
 		// Handle url installations
 		if (url) {
 			console.log('Installing via url.');
+			t.isInstalling.set(true);
 			RocketChat.API.post('rocketlets', { url }).then((result) => {
 				console.log('result', result);
+
+				FlowRouter.go(`/admin/rocketlets/${ result.rocketlet.id }`);
 			}).catch((err) => {
 				console.warn('err', err);
+				t.isInstalling.set(false);
 			});
 
 			return;
