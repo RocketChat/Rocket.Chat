@@ -1,3 +1,5 @@
+import _ from 'underscore';
+
 Template.rocketletManage.onCreated(function() {
 	const instance = this;
 	this.ready = new ReactiveVar(false);
