@@ -4,7 +4,7 @@ export class RocketletsRestApi {
 		this.api = new RocketChat.API.ApiClass({
 			version: 'rocketlets',
 			useDefaultAuth: true,
-			prettyJson: true,
+			prettyJson: false,
 			enableCors: false,
 			auth: RocketChat.API.getUserAuth()
 		});
