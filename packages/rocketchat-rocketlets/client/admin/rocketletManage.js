@@ -125,6 +125,9 @@ Template.rocketletManage.events({
 
 		RocketChat.API.post(`rocketlets/${ t.id.get() }/settings`, undefined, { settings: toSave }).then((result) => {
 			console.log('Updating results:', result);
+			result.updated.forEach((setting) => {
+				t.settings.get()[setting.id].oldValue = setting.value;
+			});
 		});
 	},
 
