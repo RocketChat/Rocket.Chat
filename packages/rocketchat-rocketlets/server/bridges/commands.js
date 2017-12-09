@@ -98,7 +98,8 @@ export class RocketletCommandsBridge {
 
 		const cmd = command.toLowerCase();
 		if (typeof RocketChat.slashCommands.commands[cmd] === 'undefined' || !this.disabledCommands.has(cmd)) {
-			throw new Error(`Command does not exist in the system currently: "${ cmd }"`);
+			// There is no need to fail if the command doesn't exist already
+			return;
 		}
 
 		this.disabledCommands.delete(cmd);

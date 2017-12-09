@@ -17,7 +17,7 @@ export class RocketletWebsocketReceiver {
 	}
 
 	onCommandAdded(command) {
-		RocketChat.API.v1.get('commands.getOne', { command }).then((result) => {
+		RocketChat.API.v1.get('commands.get', { command }).then((result) => {
 			RocketChat.slashCommands.commands[command] = result.command;
 		});
 	}
@@ -27,7 +27,7 @@ export class RocketletWebsocketReceiver {
 	}
 
 	onCommandUpdated(command) {
-		RocketChat.API.v1.get('commands.getOne', { command }).then((result) => {
+		RocketChat.API.v1.get('commands.get', { command }).then((result) => {
 			RocketChat.slashCommands.commands[command] = result.command;
 		});
 	}
