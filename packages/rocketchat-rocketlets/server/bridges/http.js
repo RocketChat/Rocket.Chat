@@ -5,12 +5,11 @@ export class RocketletHttpBridge {
 		}
 
 		console.log(`The Rocketlet ${ info.rocketletId } is requesting from the outter webs:`, info);
-		const result = HTTP.call(info.method, info.url, info.request);
 
-		// TODO: Maybe modify the resulting object? :thinking:
-
-		console.log(`And the result for ${ info.rocketletId } is:`, result);
-
-		return result;
+		try {
+			return HTTP.call(info.method, info.url, info.request);
+		} catch (e) {
+			return e.response;
+		}
 	}
 }
