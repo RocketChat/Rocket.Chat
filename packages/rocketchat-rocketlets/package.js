@@ -83,7 +83,7 @@ Package.onUse(function(api) {
 
 Npm.depends({
 	'busboy': '0.2.13',
-	'temporary-rocketlets-server': '0.2.1',
+	'temporary-rocketlets-server': '0.2.2',
 	'temporary-rocketlets-ts-definition': '0.6.33'
 });
 
