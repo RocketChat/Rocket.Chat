@@ -237,21 +237,21 @@ Template.pushNotificationsFlexTab.helpers({
 	},
 	defaultAudioNotification() {
 		let preference = getUserPreference('audioNotifications');
-		if (preference === 'default' || preference === null) {
+		if (preference === 'default' || preference == null) {
 			preference = RocketChat.settings.get('Audio_Notifications_Default_Alert');
 		}
 		return notificationLabels[preference];
 	},
 	defaultDesktopNotification() {
 		let preference = getUserPreference('desktopNotifications');
-		if (preference === 'default' || preference === null) {
+		if (preference === 'default' || preference == null) {
 			preference = RocketChat.settings.get('Desktop_Notifications_Default_Alert');
 		}
 		return notificationLabels[preference];
 	},
 	defaultMobileNotification() {
 		let preference = getUserPreference('mobileNotifications');
-		if (preference === 'default' || preference === null) {
+		if (preference === 'default' || preference == null) {
 			preference = RocketChat.settings.get('Mobile_Notifications_Default_Alert');
 		}
 		return notificationLabels[preference];
