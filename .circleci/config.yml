@@ -202,14 +202,8 @@ jobs:
           command: |
             for i in $(seq 1 5); do npm test && s=0 && break || s=$? && sleep 1; done; (exit $s)
 
-      # - run:
-      #     name: Build Failed
-      #     when: on_fail
-      #     command: |
-      #       cp -R .screenshots /tmp/screenshots
-
-      # - store_artifacts:
-      #     path: ~/repo/.screenshots
+      - store_artifacts:
+          path: .screenshots/
 
   deploy:
     <<: *defaults
@@ -273,7 +267,6 @@ workflows:
             branches:
               only:
                 - develop
-                - circle-ci
             tags:
               only:
                 - "/^\\d+\\.\\d+\\.\\d+(-rc\\.\\d+)?$/"

@@ -1,6 +1,57 @@
 import moment from 'moment';
 import s from 'underscore.string';
 
+function getEmailContent({ messageContent, message, user, room }) {
+	const lng = user && user.language || RocketChat.settings.get('language') || 'en';
+
+	const roomName = `#${ RocketChat.settings.get('UI_Allow_room_names_with_special_chars') ? room.fname || room.name : room.name }`;
+
+	const userName = RocketChat.settings.get('UI_Use_Real_Name') ? message.u.name || message.u.username : message.u.username;
+
+	const header = TAPi18n.__(room.t === 'd' ? 'User_sent_a_message_to_you' : 'User_sent_a_message_on_channel', {
+		username: userName,
+		channel: roomName,
+		lng
+	});
+
+	if (messageContent) {
+		return `${ header }<br/><br/>${ messageContent }`;
+	}
+
+	if (message.file) {
+		const fileHeader = TAPi18n.__(room.t === 'd' ? 'User_uploaded_a_file_to_you' : 'User_uploaded_a_file_on_channel', {
+			username: userName,
+			channel: roomName,
+			lng
+		});
+
+		let content = `${ TAPi18n.__('Attachment_File_Uploaded') }: ${ message.file.name }`;
+
+		if (message.attachments && message.attachments.length === 1 && message.attachments[0].description !== '') {
+			content += `<br/><br/>${ message.attachments[0].description }`;
+		}
+
+		return `${ fileHeader }<br/><br/>${ content }`;
+	}
+
+	if (message.attachments.length > 0) {
+		const [ attachment ] = message.attachments;
+
+		let content = '';
+
+		if (attachment.title) {
+			content += `${ attachment.title }<br/>`;
+		}
+		if (attachment.text) {
+			content += `${ attachment.text }<br/>`;
+		}
+
+		return `${ header }<br/><br/>${ content }`;
+	}
+
+	return header;
+}
+
 RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 	// skips this callback if the message was edited
 	if (message.editedAt) {
@@ -26,19 +77,23 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 	};
 
 	const divisorMessage = '<hr style="margin: 20px auto; border: none; border-bottom: 1px solid #dddddd;">';
-	let messageHTML = s.escapeHTML(message.msg);
 
-	message = RocketChat.callbacks.run('renderMessage', message);
-	if (message.tokens && message.tokens.length > 0) {
-		message.tokens.forEach((token) => {
-			token.text = token.text.replace(/([^\$])(\$[^\$])/gm, '$1$$$2');
-			messageHTML = messageHTML.replace(token.token, token.text);
-		});
+	let messageHTML;
+
+	if (message.msg !== '') {
+		messageHTML = s.escapeHTML(message.msg);
+		message = RocketChat.callbacks.run('renderMessage', message);
+		if (message.tokens && message.tokens.length > 0) {
+			message.tokens.forEach((token) => {
+				token.text = token.text.replace(/([^\$])(\$[^\$])/gm, '$1$$$2');
+				messageHTML = messageHTML.replace(token.token, token.text);
+			});
+		}
+		messageHTML = messageHTML.replace(/\n/gm, '<br/>');
 	}
 
 	const header = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Header') || '');
 	let footer = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Footer') || '');
-	messageHTML = messageHTML.replace(/\n/gm, '<br/>');
 
 	const usersToSendEmail = {};
 	if (room.t === 'd') {
@@ -120,6 +175,19 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 					}
 				}
 
+				if (usersToSendEmail[user._id] === 'direct') {
+					const userEmailPreferenceIsDisabled = user.settings && user.settings.preferences && user.settings.preferences.emailNotificationMode && (user.settings.preferences.emailNotificationMode === 'disabled');
+					const directMessageEmailPreference = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(message.rid, message.rid.replace(message.u._id, '')).emailNotifications;
+
+					if (directMessageEmailPreference === 'nothing') {
+						return;
+					}
+
+					if ((directMessageEmailPreference === 'default' || directMessageEmailPreference == null) && userEmailPreferenceIsDisabled) {
+						return;
+					}
+				}
+
 				// Checks if user is in the room he/she is mentioned (unless it's public channel)
 				if (room.t !== 'c' && room.usernames.indexOf(user.username) === -1) {
 					return;
@@ -131,34 +199,47 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 				}
 
 				let emailSubject;
+				const username = RocketChat.settings.get('UI_Use_Real_Name') ? message.u.name : message.u.username;
+				const roomName = RocketChat.settings.get('UI_Allow_room_names_with_special_chars') ? room.fname : room.name;
 				switch (usersToSendEmail[user._id]) {
 					case 'all':
 						emailSubject = RocketChat.placeholders.replace(RocketChat.settings.get('Offline_Mention_All_Email'), {
-							user: message.u.username,
-							room: room.name || room.label
+							user: username,
+							room: roomName || room.label
 						});
 						break;
 					case 'direct':
 						emailSubject = RocketChat.placeholders.replace(RocketChat.settings.get('Offline_DM_Email'), {
-							user: message.u.username,
-							room: room.name
+							user: username,
+							room: roomName
 						});
 						break;
 					case 'mention':
 						emailSubject = RocketChat.placeholders.replace(RocketChat.settings.get('Offline_Mention_Email'), {
-							user: message.u.username,
-							room: room.name
+							user: username,
+							room: roomName
 						});
 						break;
 				}
 				user.emails.some((email) => {
 					if (email.verified) {
+						const content = getEmailContent({
+							messageContent: messageHTML,
+							message,
+							user,
+							room
+						});
 						email = {
 							to: email.address,
-							from: RocketChat.settings.get('From_Email'),
 							subject: emailSubject,
-							html: header + messageHTML + divisorMessage + (linkByUser[user._id] || defaultLink) + footer
+							html: header + content + divisorMessage + (linkByUser[user._id] || defaultLink) + footer
 						};
+						// using user full-name/channel name in from address
+						if (room.t === 'd') {
+							email.from = `${ message.u.name } <${ RocketChat.settings.get('From_Email') }>`;
+						} else {
+							email.from = `${ room.name } <${ RocketChat.settings.get('From_Email') }>`;
+						}
 						// If direct reply enabled, email content with headers
 						if (RocketChat.settings.get('Direct_Reply_Enable')) {
 							email.headers = {
