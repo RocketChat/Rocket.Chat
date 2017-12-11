@@ -261,8 +261,8 @@ export class CustomOAuth {
 		let username = '';
 
 		username = this.usernameField.split('.').reduce(function(prev, curr) {
-			return prev ? prev[curr] : undefined
-		}, data)
+			return prev ? prev[curr] : undefined;
+		}, data);
 		if (!username) {
 			throw new Meteor.Error('field_not_found', `Username field "${ this.usernameField }" not found in data`, data);
 		}
