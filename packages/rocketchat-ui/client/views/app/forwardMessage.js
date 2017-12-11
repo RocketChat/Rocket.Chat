@@ -1,3 +1,6 @@
+import _ from 'underscore';
+import toastr from 'toastr';
+
 Template.forwardMessage.helpers({
 	subscriptions() {
 		return RocketChat.models.Subscriptions.find({
@@ -15,7 +18,7 @@ Template.forwardMessage.helpers({
 		});
 	},
 	selected() {
-		return Template.instance().selectedChannels.get();
+		return Template.instance().forwardDestinationList;
 	},
 	forwardIsDisabled() {
 		// TODO: #396
@@ -25,17 +28,34 @@ Template.forwardMessage.helpers({
 Template.forwardMessage.onCreated(function() {
 	this.data.message = ChatMessage.findOne(FlowRouter.getQueryParam('id'));
 
-	this.selected =[];
+	this.forwardDestinationList = [];
 });
 
 Template.forwardMessage.events({
-	// TODO: #396
-	// toastr.success(TAPi18n.__('Forwarded'));
-	'change input[type="checkbox"]'(e, t) {
-		if (e.target.checked) {
-			t.instance.selected.push(e.target.name);
+	'change .rc-switch__input'(event, instance) {
+		if (event.target.checked) {
+			instance.forwardDestinationList.push(event.target.name);
 		} else {
-			t.instance.selected = _.without(t.instance.selected, _.findWhere(t.instance.selected, e.target.name));
+			instance.forwardDestinationList = _.without(
+				instance.forwardDestinationList, _.findWhere(
+					instance.forwardDestinationList, event.target.name
+				)
+			);
 		}
+		console.log('Selected: ', instance.forwardDestinationList);
+	},
+
+	'submit .forward-message__content'(event, instance) {
+		event.preventDefault();
+
+		instance.forwardDestinationList.forEach(destination => {
+			// TODO: #396
+			console.log(destination);
+
+			// Send attached message...
+			RocketChat.sendMessage(user, message, room);
+		});
+
+		toastr.success(TAPi18n.__('Forwarded'));
 	}
 });
