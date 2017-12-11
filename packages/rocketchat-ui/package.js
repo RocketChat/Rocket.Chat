@@ -100,6 +100,7 @@ Package.onUse(function(api) {
 	api.addFiles('client/views/app/videoCall/videoButtons.html', 'client');
 	api.addFiles('client/views/app/videoCall/videoCall.html', 'client');
 	api.addFiles('client/views/app/popover.html', 'client');
+	api.addFiles('client/views/app/modal.html', 'client');
 	api.addFiles('client/views/app/photoswipe.html', 'client');
 
 	api.addFiles('client/views/cmsPage.js', 'client');
@@ -118,6 +119,7 @@ Package.onUse(function(api) {
 	api.addFiles('client/views/app/videoCall/videoButtons.js', 'client');
 	api.addFiles('client/views/app/videoCall/videoCall.js', 'client');
 	api.addFiles('client/views/app/popover.js', 'client');
+	api.addFiles('client/views/app/modal.js', 'client');
 	api.addFiles('client/views/app/photoswipe.js', 'client');
 
 	api.addFiles('client/components/icon.html', 'client');
@@ -127,8 +129,6 @@ Package.onUse(function(api) {
 
 	api.addFiles('client/components/selectDropdown.html', 'client');
 	api.addFiles('client/components/selectDropdown.js', 'client');
-
-
 
 	api.export('fileUpload');
 });
