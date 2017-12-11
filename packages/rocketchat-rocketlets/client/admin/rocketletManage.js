@@ -100,6 +100,10 @@ Template.rocketletManage.events({
 			const info = t.rocketlet.get();
 			info.status = result.status;
 			t.rocketlet.set(info);
+
+			if (info.status.indexOf('disabled') !== -1) {
+				$('#enabled').prop('checked', false);
+			}
 		}).catch(() => {
 			$('#enabled').prop('checked', !$('#enabled').prop('checked'));
 		}).then(() => {

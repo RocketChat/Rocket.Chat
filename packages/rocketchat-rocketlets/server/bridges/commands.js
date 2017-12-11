@@ -43,8 +43,13 @@ export class RocketletCommandsBridge {
 		}
 
 		const cmd = command.toLowerCase();
+		if (this.disabledCommands.has(cmd)) {
+			// The command is already disabled, no need to disable it yet again
+			return;
+		}
+
 		if (typeof RocketChat.slashCommands.commands[cmd] === 'undefined') {
-			throw new Error(`Command does not exist in the system currently (or it is disabled): "${ cmd }"`);
+			throw new Error(`Command does not exist in the system currently: "${ cmd }"`);
 		}
 
 		this.disabledCommands.set(cmd, RocketChat.slashCommands.commands[cmd]);
@@ -97,11 +102,6 @@ export class RocketletCommandsBridge {
 		}
 
 		const cmd = command.toLowerCase();
-		if (typeof RocketChat.slashCommands.commands[cmd] === 'undefined' || !this.disabledCommands.has(cmd)) {
-			// There is no need to fail if the command doesn't exist already
-			return;
-		}
-
 		this.disabledCommands.delete(cmd);
 		delete RocketChat.slashCommands.commands[cmd];
 
