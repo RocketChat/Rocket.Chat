@@ -111,7 +111,16 @@ this.ChatMessages = class ChatMessages {
 			};
 			MsgTyping.stop(rid);
 
-			Meteor.call('sendMessageLivechat', msgObject, (error, result) => {
+			let agent;
+			const currentAgent = !visitor.roomSubscribed && Livechat.agent;
+			if (currentAgent) {
+				agent = {
+					_id: currentAgent._id,
+					username: currentAgent.username
+				};
+			}
+
+			Meteor.call('sendMessageLivechat', msgObject, agent, (error, result) => {
 				if (error) {
 					ChatMessage.update(msgObject._id, { $set: { error: true } });
 					showError(error.reason);
