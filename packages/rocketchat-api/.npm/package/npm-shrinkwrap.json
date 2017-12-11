@@ -1,0 +1,45 @@
+{
+  "lockfileVersion": 1,
+  "dependencies": {
+    "busboy": {
+      "version": "0.2.13",
+      "resolved": "https://registry.npmjs.org/busboy/-/busboy-0.2.13.tgz",
+      "integrity": "sha1-kPxPajln2BVhb8l2v6jlau0MWLY="
+    },
+    "core-util-is": {
+      "version": "1.0.2",
+      "resolved": "https://registry.npmjs.org/core-util-is/-/core-util-is-1.0.2.tgz",
+      "integrity": "sha1-tf1UIgqivFq1eqtxQMlAdUUDwac="
+    },
+    "dicer": {
+      "version": "0.2.5",
+      "resolved": "https://registry.npmjs.org/dicer/-/dicer-0.2.5.tgz",
+      "integrity": "sha1-WZbAhrszIYyBLAkL3cCc0S+stw8="
+    },
+    "inherits": {
+      "version": "2.0.3",
+      "resolved": "https://registry.npmjs.org/inherits/-/inherits-2.0.3.tgz",
+      "integrity": "sha1-Yzwsg+PaQqUC9SRmAiSA9CCCYd4="
+    },
+    "isarray": {
+      "version": "0.0.1",
+      "resolved": "https://registry.npmjs.org/isarray/-/isarray-0.0.1.tgz",
+      "integrity": "sha1-ihis/Kmo9Bd+Cav8YDiTmwXR7t8="
+    },
+    "readable-stream": {
+      "version": "1.1.14",
+      "resolved": "https://registry.npmjs.org/readable-stream/-/readable-stream-1.1.14.tgz",
+      "integrity": "sha1-fPTFTvZI44EwhMY23SB54WbAgdk="
+    },
+    "streamsearch": {
+      "version": "0.1.2",
+      "resolved": "https://registry.npmjs.org/streamsearch/-/streamsearch-0.1.2.tgz",
+      "integrity": "sha1-gIudDlb8Jz2Am6VzOOkpkZoanxo="
+    },
+    "string_decoder": {
+      "version": "0.10.31",
+      "resolved": "https://registry.npmjs.org/string_decoder/-/string_decoder-0.10.31.tgz",
+      "integrity": "sha1-YuIDvEF2bGwoyfyEMB2rHFMQ+pQ="
+    }
+  }
+}

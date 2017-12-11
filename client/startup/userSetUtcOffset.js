@@ -1,9 +1,10 @@
+import moment from 'moment';
+
 Meteor.startup(function() {
 	Tracker.autorun(function() {
-		var user, utcOffset;
-		user = Meteor.user();
+		const user = Meteor.user();
 		if (user && user.statusConnection === 'online') {
-			utcOffset = moment().utcOffset() / 60;
+			const utcOffset = moment().utcOffset() / 60;
 			if (user.utcOffset !== utcOffset) {
 				Meteor.call('userSetUtcOffset', utcOffset);
 			}

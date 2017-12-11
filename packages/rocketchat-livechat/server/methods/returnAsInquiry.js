@@ -8,12 +8,12 @@ Meteor.methods({
 		RocketChat.models.Subscriptions.removeByRoomId(rid);
 
 		// remove user from room
-		var username = Meteor.user().username;
+		const username = Meteor.user().username;
 
 		RocketChat.models.Rooms.removeUsernameById(rid, username);
 
 		// find inquiry corresponding to room
-		var inquiry = RocketChat.models.LivechatInquiry.findOne({rid: rid});
+		const inquiry = RocketChat.models.LivechatInquiry.findOne({rid});
 
 		// mark inquiry as open
 		return RocketChat.models.LivechatInquiry.openInquiry(inquiry._id);

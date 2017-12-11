@@ -1,32 +1,28 @@
 <template name="livechatTriggers">
-	<form id="trigger-form">
-		<div class="rocket-form">
-			<fieldset>
-				<legend>{{_ "Condition"}}</legend>
-				<div class="conditions">
-					{{#each conditions}}
-						{{> livechatTriggerCondition}}
+	{{#requiresPermission 'view-livechat-manager'}}
+		<div class="list">
+			<table>
+				<thead>
+					<tr>
+						<th width="30%">{{_ "Name"}}</th>
+						<th width="50%">{{_ "Description"}}</th>
+						<th width="20%">{{_ "Enabled"}}</th>
+						<th>{{_ "Delete"}}</th>
+					</tr>
+				</thead>
+				<tbody>
+					{{#each triggers}}
+						<tr class="trigger-info row-link" data-id="{{_id}}">
+							<td>{{name}}</td>
+							<td>{{description}}</td>
+							<td>{{#if enabled}}{{_ "Yes"}}{{else}}{{_ "No"}}{{/if}}</td>
+							<td><a href="#remove" class="remove-trigger"><i class="icon-trash"></i></a></td>
+						</tr>
 					{{/each}}
-					{{#unless conditions}}
-						{{> livechatTriggerCondition}}
-					{{/unless}}
-				</div>
-			</fieldset>
-			<fieldset>
-				<legend>{{_ "Action"}}</legend>
-				<div class="actions">
-					{{#each actions}}
-						{{> livechatTriggerAction}}
-					{{/each}}
-					{{#unless actions}}
-						{{> livechatTriggerAction}}
-					{{/unless}}
-				</div>
-			</fieldset>
-			<div class="submit">
-				<button type="button" class="button delete-trigger">{{_ "Delete"}}</button>
-				<button class="button save"><i class="icon-floppy"></i><span>{{_ "Save"}}</span></button>
-			</div>
+				</tbody>
+			</table>
 		</div>
-	</form>
+
+		<a href="{{pathFor 'livechat-trigger-new'}}" class="button primary">{{_ "New_Trigger"}}</a>
+	{{/requiresPermission}}
 </template>

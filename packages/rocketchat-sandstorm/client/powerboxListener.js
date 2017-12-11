@@ -2,26 +2,26 @@ RocketChat.Sandstorm = RocketChat.Sandstorm || {};
 
 RocketChat.Sandstorm.request = function() {};
 if (Meteor.settings.public.sandstorm) {
-	var callbackMap = {};
+	const callbackMap = {};
 
-	var messageListener = function(event) {
+	const messageListener = function(event) {
 		if (event.data.rpcId) {
-			var cb = callbackMap[event.data.rpcId];
+			const cb = callbackMap[event.data.rpcId];
 
 			cb(event.data.error, event.data);
 		}
 	};
 	window.addEventListener('message', messageListener);
 
-	var interfaces = {
+	const interfaces = {
 		uiView: 'EAZQAQEAABEBF1EEAQH_5-Jn6pjXtNsAAAA'
 	};
 
 	RocketChat.Sandstorm.request = function(interfaceName, cb) {
-		var rpcId = Math.random().toString();
+		const rpcId = Math.random().toString();
 		callbackMap[rpcId] = cb;
 		window.parent.postMessage({ powerboxRequest: {
-			rpcId: rpcId,
+			rpcId,
 			query: [interfaces[interfaceName]]
 		}}, '*');
 	};

@@ -1,0 +1,20 @@
+{
+  "lockfileVersion": 1,
+  "dependencies": {
+    "base32.js": {
+      "version": "0.0.1",
+      "resolved": "https://registry.npmjs.org/base32.js/-/base32.js-0.0.1.tgz",
+      "integrity": "sha1-0EVzalex9sE58MffQlGKhOkbsro="
+    },
+    "speakeasy": {
+      "version": "2.0.0",
+      "resolved": "https://registry.npmjs.org/speakeasy/-/speakeasy-2.0.0.tgz",
+      "integrity": "sha1-hckaBxsJpcuGQlkNmDVmFl9XYTo="
+    },
+    "yaqrcode": {
+      "version": "0.2.1",
+      "resolved": "https://registry.npmjs.org/yaqrcode/-/yaqrcode-0.2.1.tgz",
+      "integrity": "sha1-7xyzMgNJ9rO7MctoCjeouBS9itc="
+    }
+  }
+}

@@ -1,27 +1,29 @@
 <template name="livechatCustomFields">
-	<div class="list">
-		<table>
-			<thead>
-				<tr>
-					<th width="25%">{{_ "Field"}}</th>
-					<th width="25%">{{_ "Label"}}</th>
-					<th width="25%">{{_ "Scope"}}</th>
-					<th width="25%">{{_ "Visibility"}}</th>
-					<th>{{_ "Delete"}}</th>
-				</tr>
-			</thead>
-			<tbody>
-				{{#each customFields}}
-					<tr class="custom-field-info row-link" data-id="{{_id}}">
-						<td>{{_id}}</td>
-						<td>{{label}}</td>
-						<td>{{scope}}</td>
-						<td>{{visibility}}</td>
-						<td><a href="#remove" class="remove-custom-field"><i class="icon-trash"></i></a></td>
+	{{#requiresPermission 'view-livechat-manager'}}
+		<div class="list">
+			<table>
+				<thead>
+					<tr>
+						<th width="25%">{{_ "Field"}}</th>
+						<th width="25%">{{_ "Label"}}</th>
+						<th width="25%">{{_ "Scope"}}</th>
+						<th width="25%">{{_ "Visibility"}}</th>
+						<th>{{_ "Delete"}}</th>
 					</tr>
-				{{/each}}
-			</tbody>
-		</table>
-	</div>
-	<a href="{{pathFor 'livechat-customfield-new'}}" class="button primary">{{_ "New_Custom_Field"}}</a>
+				</thead>
+				<tbody>
+					{{#each customFields}}
+						<tr class="custom-field-info row-link" data-id="{{_id}}">
+							<td>{{_id}}</td>
+							<td>{{label}}</td>
+							<td>{{scope}}</td>
+							<td>{{visibility}}</td>
+							<td><a href="#remove" class="remove-custom-field"><i class="icon-trash"></i></a></td>
+						</tr>
+					{{/each}}
+				</tbody>
+			</table>
+		</div>
+		<a href="{{pathFor 'livechat-customfield-new'}}" class="button primary">{{_ "New_Custom_Field"}}</a>
+	{{/requiresPermission}}
 </template>

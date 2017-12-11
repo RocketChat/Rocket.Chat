@@ -60,6 +60,22 @@ AccountBox.addRoute({
 }, livechatManagerRoutes);
 
 AccountBox.addRoute({
+	name: 'livechat-trigger-edit',
+	path: '/triggers/:_id/edit',
+	sideNav: 'livechatFlex',
+	i18nPageTitle: 'Edit_Trigger',
+	pageTemplate: 'livechatTriggersForm'
+}, livechatManagerRoutes);
+
+AccountBox.addRoute({
+	name: 'livechat-trigger-new',
+	path: '/triggers/new',
+	sideNav: 'livechatFlex',
+	i18nPageTitle: 'New_Trigger',
+	pageTemplate: 'livechatTriggersForm'
+}, livechatManagerRoutes);
+
+AccountBox.addRoute({
 	name: 'livechat-installation',
 	path: '/installation',
 	sideNav: 'livechatFlex',
@@ -108,11 +124,19 @@ AccountBox.addRoute({
 }, livechatManagerRoutes);
 
 AccountBox.addRoute({
-	name: 'livechat-integrations',
-	path: '/integrations',
+	name: 'livechat-webhooks',
+	path: '/webhooks',
 	sideNav: 'livechatFlex',
-	i18nPageTitle: 'Integrations',
-	pageTemplate: 'livechatIntegrations'
+	i18nPageTitle: 'Webhooks',
+	pageTemplate: 'livechatIntegrationWebhook'
+}, livechatManagerRoutes);
+
+AccountBox.addRoute({
+	name: 'livechat-facebook',
+	path: '/facebook',
+	sideNav: 'livechatFlex',
+	i18nPageTitle: 'Facebook Messenger',
+	pageTemplate: 'livechatIntegrationFacebook'
 }, livechatManagerRoutes);
 
 AccountBox.addRoute({

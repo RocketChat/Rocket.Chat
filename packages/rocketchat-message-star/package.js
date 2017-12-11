@@ -7,28 +7,27 @@ Package.describe({
 
 Package.onUse(function(api) {
 	api.use([
-		'coffeescript',
-		'underscore',
-		'less',
+		'mongo',
+		'ecmascript',
 		'rocketchat:lib'
 	]);
 
 	api.use('templating', 'client');
 
 	api.addFiles([
-		'client/lib/StarredMessage.coffee',
-		'client/actionButton.coffee',
-		'client/starMessage.coffee',
-		'client/tabBar.coffee',
+		'client/lib/StarredMessage.js',
+		'client/actionButton.js',
+		'client/starMessage.js',
+		'client/tabBar.js',
 		'client/views/starredMessages.html',
-		'client/views/starredMessages.coffee',
-		'client/views/stylesheets/messagestar.less'
+		'client/views/starredMessages.js',
+		'client/views/stylesheets/messagestar.css'
 	], 'client');
 
 	api.addFiles([
-		'server/settings.coffee',
-		'server/starMessage.coffee',
-		'server/publications/starredMessages.coffee',
-		'server/startup/indexes.coffee'
+		'server/settings.js',
+		'server/starMessage.js',
+		'server/publications/starredMessages.js',
+		'server/startup/indexes.js'
 	], 'server');
 });

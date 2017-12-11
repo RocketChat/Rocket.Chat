@@ -6,19 +6,24 @@ class LivechatTrigger extends RocketChat.models._Base {
 		super('livechat_trigger');
 	}
 
-	// FIND
-	save(data) {
-		const trigger = this.findOne();
-
-		if (trigger) {
-			return this.update({ _id: trigger._id }, { $set: data });
-		} else {
-			return this.insert(data);
-		}
+	updateById(_id, data) {
+		return this.update({ _id }, { $set: data });
 	}
 
 	removeAll() {
-		this.remove({});
+		return this.remove({});
+	}
+
+	findById(_id) {
+		return this.find({ _id });
+	}
+
+	removeById(_id) {
+		return this.remove({ _id });
+	}
+
+	findEnabled() {
+		return this.find({ enabled: true });
 	}
 }
 

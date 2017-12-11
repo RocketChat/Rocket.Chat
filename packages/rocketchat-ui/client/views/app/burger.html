@@ -1,0 +1,14 @@
+<template name="burger">
+	<div class="rc-old burger {{isMenuOpen}}">
+		<i></i>
+		<i></i>
+		<i></i>
+		{{#unless embeddedVersion}}
+			{{#if unread}}
+				<div class="unread-burger-alert color-error-contrast background-error-color">
+					{{unread}}
+				</div>
+			{{/if}}
+		{{/unless}}
+	</div>
+</template>

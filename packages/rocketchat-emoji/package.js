@@ -8,28 +8,26 @@ Package.describe({
 Package.onUse(function(api) {
 	api.use([
 		'ecmascript',
-		'underscore',
 		'templating',
-		'less',
 		'rocketchat:lib',
 		'rocketchat:ui-message'
 	]);
 
-	api.addFiles('function-isSet.js', 'client');
-	api.addFiles('rocketchat.js', 'client');
+	api.addFiles('client/function-isSet.js', 'client');
+	api.addFiles('client/rocketchat.js');
 
-	api.addFiles('emojiParser.js', 'client');
+	api.addFiles('client/emojiParser.js', 'client');
 
-	api.addFiles('emojiPicker.html', 'client');
-	api.addFiles('emojiPicker.js', 'client');
+	api.addFiles('client/emojiPicker.html', 'client');
+	api.addFiles('client/emojiPicker.js', 'client');
+	api.addFiles('client/emojiPicker.css', 'client');
 
-	api.addAssets('emojiPicker.less', 'server');
-	api.addFiles('loadStylesheet.js', 'server');
-	api.addFiles('emoji.css', 'client');
+	api.addFiles('client/emoji.css', 'client');
 
-	api.addFiles('lib/emojiRenderer.js', 'client');
-	api.addFiles('lib/EmojiPicker.js', 'client');
-	api.addFiles('emojiButton.js', 'client');
+	api.addFiles('client/lib/emojiRenderer.js', 'client');
+	api.addFiles('client/lib/EmojiPicker.js', 'client');
+	api.addFiles('client/emojiButton.js', 'client');
+	api.addFiles('client/keyboardFix.js', 'client');
 
 	api.export('renderEmoji');
 });

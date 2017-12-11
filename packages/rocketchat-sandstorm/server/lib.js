@@ -1,15 +1,15 @@
-/* globals getHttpBridge, waitPromise */
+/* globals getHttpBridge, waitPromise, UploadFS */
 /* exported getHttpBridge, waitPromise */
 
 RocketChat.Sandstorm = {};
 
 if (process.env.SANDSTORM === '1') {
-	var Future = Npm.require('fibers/future');
-	var Capnp = Npm.require('capnp');
-	var SandstormHttpBridge = Npm.require('sandstorm/sandstorm-http-bridge.capnp').SandstormHttpBridge;
+	const Future = Npm.require('fibers/future');
+	const Capnp = Npm.require('capnp');
+	const SandstormHttpBridge = Npm.require('sandstorm/sandstorm-http-bridge.capnp').SandstormHttpBridge;
 
-	var capnpConnection = null;
-	var httpBridge = null;
+	let capnpConnection = null;
+	let httpBridge = null;
 
 	getHttpBridge = function() {
 		if (!httpBridge) {
@@ -27,5 +27,11 @@ if (process.env.SANDSTORM === '1') {
 
 	waitPromise = function(promise) {
 		return promiseToFuture(promise).wait();
+	};
+
+	// This usual implementation of this method returns an absolute URL that is invalid
+	// under Sandstorm.
+	UploadFS.Store.prototype.getURL = function(path) {
+		return this.getRelativeURL(path);
 	};
 }

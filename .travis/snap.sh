@@ -1,35 +1,54 @@
 #!/bin/bash
-set -x
 set -euvo pipefail
 IFS=$'\n\t'
 
-if [ -z "$SNAPCRAFT_SECRET" ]; then
-    exit 0
-fi
+# Add launchpad to known hosts
+ssh-keyscan -t rsa -H git.launchpad.net > ~/.ssh/known_hosts
 
-mkdir -p ".encrypted"
-if [ ! -e ".encrypted/snapcraft.cfg.enc" ]; then
-    echo "Seeding a new macaroon."
-    echo "$SNAPCRAFT_CONFIG" > ".encrypted/snapcraft.cfg.enc"
-fi
+git config user.name "CI Bot"
+git config user.email "rocketchat.buildmaster@git.launchpad.net"
 
-mkdir -p "$HOME/.config/snapcraft"
-openssl enc -aes-256-cbc -base64 -pass env:SNAPCRAFT_SECRET -d -in ".encrypted/snapcraft.cfg.enc" -out "$HOME/.config/snapcraft/snapcraft.cfg"
-
-if [[ $TRAVIS_TAG ]]
- then
+# Determine the channel to push snap to.
+if [[ $TRAVIS_TAG =~ ^[0-9]+\.[0-9]+\.[0-9]+-rc\.[0-9]+ ]]; then
+    CHANNEL=candidate
+    RC_VERSION=$TRAVIS_TAG
+elif [[ $TRAVIS_TAG ]]; then
     CHANNEL=stable
-    SNAP_FOLDER=$PWD/.snapcraft/stable
+    RC_VERSION=$TRAVIS_TAG
 else
     CHANNEL=edge
-    SNAP_FOLDER=$PWD/.snapcraft/edge
+    RC_VERSION=0.60.0-develop
 fi
 
-echo "snapping release for $CHANNEL channel"
+echo "Preparing to trigger a snap release for $CHANNEL channel"
 
-docker run -v $HOME:/root -v $SNAP_FOLDER:/cwd snapcore/snapcraft sh -c 'cd /cwd; apt update && snapcraft'
-docker run -v $HOME:/root -v $SNAP_FOLDER:/cwd -e CHANNEL=$CHANNEL snapcore/snapcraft sh -c "cd /cwd; snapcraft push *.snap --release $CHANNEL"
+cd $PWD/.snapcraft
 
-openssl enc -aes-256-cbc -base64 -pass env:SNAPCRAFT_SECRET -out ".encrypted/snapcraft.cfg.enc" < "$HOME/.config/snapcraft/snapcraft.cfg"
-rm -f "$HOME/.config/snapcraft/snapcraft.cfg"
+# Decrypt key
+openssl aes-256-cbc -K $encrypted_f5c8ae370556_key -iv $encrypted_f5c8ae370556_iv -in launchpadkey.enc -out launchpadkey -d
 
+# Change permissions
+chmod 0600 launchpadkey
+
+# We need some meta data so it'll actually commit.  This could be useful to have for debugging later.
+echo "Tag: $TRAVIS_TAG \r\nBranch: $TRAVIS_BRANCH\r\nBuild: $TRAVIS_BUILD_NUMBER\r\nCommit: $TRAVIS_COMMIT" > buildinfo
+
+# Clone launchpad repo for the channel down.
+GIT_SSH_COMMAND="ssh -i launchpadkey" git clone -b $CHANNEL git+ssh://rocket.chat.buildmaster@git.launchpad.net/rocket.chat launchpad
+
+# Rarely will change, but just incase we copy it all
+cp -r resources buildinfo launchpad/
+sed s/#{RC_VERSION}/$RC_VERSION/ snapcraft.yaml > launchpad/snapcraft.yaml
+
+cd launchpad
+git add resources snapcraft.yaml buildinfo
+
+# Another place where basic meta data will live for at a glance info
+git commit -m "Travis Build: $TRAVIS_BUILD_NUMBER Travis Commit: $TRAVIS_COMMIT"
+
+# Push up up to the branch of choice.
+GIT_SSH_COMMAND="ssh -i ../launchpadkey" git push origin $CHANNEL
+
+# Clean up
+cd ..
+rm -rf launchpadkey launchpad

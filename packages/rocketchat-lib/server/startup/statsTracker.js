@@ -5,7 +5,7 @@ RocketChat.statsTracker = new (class StatsTracker {
 	}
 
 	track(type, stats, ...args) {
-		this.dogstatsd[type](`RocketChat.${stats}`, ...args);
+		this.dogstatsd[type](`RocketChat.${ stats }`, ...args);
 	}
 
 	now() {

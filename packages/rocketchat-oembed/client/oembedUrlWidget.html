@@ -1,12 +1,16 @@
 <template name="oembedUrlWidget">
 	{{#if show}}
-		<blockquote>
+		<blockquote class="background-transparent-darker-before">
 			<div style="{{#if image}}min-height: 80px;{{/if}} padding: 10px 3px;">
 				{{#if image}}
 					{{#if meta.ogImageUserGenerated}}
 						<div>
 							<a href="{{url}}" target="{{target}}">
-								<img src="{{image}}" height="200" />
+								{{#if meta.ogImage}}
+									<img src="{{meta.ogImage}}" height="200" />
+								{{else}}
+									<img src="{{image}}" height="200" />
+								{{/if}}
 							</a>
 						</div>
 					{{else}}

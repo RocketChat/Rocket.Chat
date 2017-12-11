@@ -1,0 +1,955 @@
+/** ----------------------------------------------------------------------------
+ * Derivative colours (fixed variants of inherited variables)
+ */
+@default-action-color: darken(@secondary-background-color, 15%);
+@default-action-contrast: contrast(@default-action-color, #444444);
+@primary-background-contrast: contrast(@primary-background-color, #444444);
+@primary-action-contrast: contrast(@primary-action-color, #444444);
+@secondary-background-contrast: contrast(@secondary-background-color, #444444);
+@secondary-action-contrast: contrast(@secondary-action-color, #444444);
+@selection-background: lighten(@selection-color, 30%);
+@success-background: lighten(@success-color, 45%);
+@success-border: lighten(@success-color, 30%);
+@error-background: lighten(@error-color, 45%);
+@error-border: lighten(@error-color, 30%);
+@error-contrast: contrast(@error-color);
+@pending-background: lighten(@pending-color, 45%);
+@pending-border: lighten(@pending-color, 30%);
+
+/** ----------------------------------------------------------------------------
+ * Transparency variables
+ */
+
+@transparent-darkest: rgba(0, 0, 0, 0.5);
+@transparent-darker: rgba(0, 0, 0, 0.15);
+@transparent-dark: rgba(0, 0, 0, 0.05);
+@transparent-light: rgba(255, 255, 255, 0.1);
+@transparent-lighter: rgba(255, 255, 255, 0.3);
+@transparent-lightest: rgba(255, 255, 255, 0.6);
+
+/** ----------------------------------------------------------------------------
+ * Mixins
+ */
+
+.buttonColors(@color, @bg) {
+	color: @color;
+	background-color: @bg;
+
+	&:hover {
+		color: mix(@color, contrast(@bg), 60%);
+		background-color: mix(@bg, contrast(@color), 60%);
+	}
+}
+
+/** ----------------------------------------------------------------------------
+ * Classes for variables
+ */
+
+// Major colors
+
+.content-background-color {
+	background-color: @content-background-color;
+}
+
+.color-content-background-color {
+	color: @content-background-color;
+}
+
+.primary-background-color {
+	background-color: @primary-background-color;
+}
+
+.global-font-family {
+	font-family: @body-font-family;
+}
+
+.color-primary-font-color {
+	color: @primary-font-color;
+}
+
+.color-primary-action-color {
+	color: @primary-action-color;
+}
+
+.background-primary-action-color {
+	background-color: @primary-action-color;
+}
+
+.secondary-background-color {
+	background-color: @secondary-background-color;
+}
+
+.border-secondary-background-color {
+	border-color: @secondary-background-color;
+}
+
+.secondary-font-color {
+	color: @secondary-font-color;
+}
+
+.border-component-color {
+	border-color: @component-color;
+}
+
+.background-component-color {
+	background-color: @component-color;
+}
+
+.success-color {
+	color: @success-color;
+}
+
+.pending-color {
+	color: @pending-color;
+}
+
+.pending-background {
+	background-color: @pending-background;
+}
+
+.pending-border {
+	border-color: @pending-border;
+}
+
+.error-color {
+	color: @error-color;
+}
+
+.background-error-color {
+	background-color: @error-color;
+}
+
+.color-info-font-color {
+	color: @info-font-color;
+}
+
+.background-info-font-color {
+	background-color: @info-font-color;
+}
+
+.background-attention-color {
+	background-color: @attention-color;
+}
+
+// Minor Colors
+
+.tertiary-background-color {
+	background-color: @tertiary-background-color;
+}
+
+.border-tertiary-background-color {
+	border-color: @tertiary-background-color;
+}
+
+// Derivative Colors
+
+.color-tertiary-font-color {
+	color: @tertiary-font-color;
+}
+
+.error-background {
+	background-color: @error-background;
+}
+
+.error-border {
+	border-color: @error-border;
+}
+
+.color-error-contrast {
+	color: @error-contrast;
+}
+
+// transparent
+
+.background-transparent-darkest {
+	background-color: @transparent-darkest;
+}
+
+.background-transparent-darker {
+	background-color: @transparent-darker;
+}
+
+.background-transparent-darker-hover:hover {
+	background-color: @transparent-darker;
+}
+
+.background-transparent-darker-before::before {
+	background-color: @transparent-darker;
+}
+
+.background-transparent-dark {
+	background-color: @transparent-dark;
+}
+
+.background-transparent-dark-hover:hover {
+	background-color: @transparent-dark;
+}
+
+.border-transparent-dark {
+	border-color: @transparent-dark;
+}
+
+.background-transparent-light {
+	background-color: @transparent-light;
+}
+
+.border-transparent-lighter {
+	border-color: @transparent-lighter;
+}
+
+.background-transparent-lightest {
+	background-color: @transparent-lightest;
+}
+
+// Derivative Colors
+.color-primary-action-contrast {
+	color: @primary-action-contrast;
+}
+
+/** ----------------------------------------------------------------------------
+ * Special components
+ */
+
+* {
+	-webkit-overflow-scrolling: touch;
+
+	&::-webkit-scrollbar {
+		height: 8px;
+		width: 8px;
+		background: @transparent-dark;
+	}
+
+	&::-webkit-scrollbar-thumb {
+		background-color: @custom-scrollbar-color;
+		-webkit-border-radius: 50px;
+	}
+
+	&::-webkit-scrollbar-corner {
+		background-color: @transparent-dark;
+	}
+}
+
+.filter-item {
+	&:hover {
+		border-color: @info-font-color;
+	}
+
+	&.active {
+		border-color: @primary-background-color;
+	}
+}
+
+/** ----------------------------------------------------------------------------
+ * Document components
+ */
+
+.page-container {
+	tr:hover td {
+		background-color: @content-background-color;
+	}
+}
+
+.burger i {
+	background-color: @primary-font-color;
+}
+
+/** ----------------------------------------------------------------------------
+ * Forms
+ */
+
+input,
+select,
+textarea {
+	color: @primary-font-color;
+	background-color: transparent;
+	border-color: mix(contrast(@content-background-color), @content-background-color, 10%);
+	border-style: solid;
+
+	&::placeholder {
+		color: mix(@primary-font-color, @content-background-color, 75%);
+	}
+
+	&[disabled] {
+		background-color: mix(contrast(@content-background-color), @content-background-color, 10%);
+	}
+}
+
+.disabled label,
+[disabled] label {
+	color: mix(@primary-font-color, @content-background-color, 75%);
+}
+
+.-autocomplete-container {
+	background-color: mix(contrast(@content-background-color), @content-background-color, 10%);
+}
+
+.-autocomplete-item.selected {
+	background-color: mix(contrast(@content-background-color), @content-background-color, 20%);
+}
+
+.rc-old input[type="button"],
+.rc-old input[type="submit"] {
+	color: @primary-font-color;
+	background: mix(contrast(@content-background-color), @content-background-color, 10%);
+	border-color: mix(contrast(@content-background-color), @content-background-color, 10%);
+}
+
+.toolbar-search__input {
+	&:focus {
+		border-color: fade(@primary-background-contrast, 50%);
+	}
+
+	&::placeholder {
+		color: @transparent-lighter;
+	}
+}
+
+.toolbar-search__buttons i:hover {
+	color: fade(@primary-background-contrast, 50%);
+}
+
+// .flex-nav {
+// 	input,
+// 	select,
+// 	textarea {
+// 		color: @primary-background-contrast;
+// 		background-color: transparent;
+// 		border-color: mix(contrast(@transparent-lighter), @transparent-lighter, 10%);
+// 		border-style: solid;
+
+// 		&::placeholder {
+// 			color: mix(@primary-background-contrast, @transparent-lighter, 75%);
+// 		}
+
+// 		&[disabled] {
+// 			background-color: mix(contrast(@transparent-lighter), @transparent-lighter, 10%);
+// 		}
+// 	}
+
+// 	.disabled label,
+// 	[disabled] label {
+// 		color: mix(@primary-background-contrast, @transparent-lighter, 75%);
+// 	}
+
+// 	.-autocomplete-container {
+// 		background-color: mix(contrast(@transparent-lighter), @transparent-lighter, 10%);
+// 	}
+
+// 	.-autocomplete-item.selected {
+// 		background-color: mix(contrast(@transparent-lighter), @transparent-lighter, 20%);
+// 	}
+
+// 	input[type="button"],
+// 	input[type="submit"] {
+// 		color: @primary-background-contrast;
+// 		background: mix(contrast(@transparent-lighter), @transparent-lighter, 10%);
+// 		border-color: mix(contrast(@transparent-lighter), @transparent-lighter, 10%);
+// 	}
+
+// 	input {
+// 		&:focus {
+// 			border-color: fade(@primary-background-contrast, 50%);
+// 		}
+// 	}
+
+// 	.input.checkbox.toggle {
+// 		input:checked + label::before {
+// 			background-color: @primary-action-color;
+// 		}
+// 	}
+// }
+
+.input-line {
+	&.setting-changed > label {
+		color: @selection-color;
+	}
+}
+
+input:-webkit-autofill {
+	color: @primary-font-color !important;
+	background-color: transparent !important;
+}
+
+.input {
+	&.radio {
+		label {
+			&::before {
+				border-color: lighten(@secondary-background-contrast, 30%);
+				background-color: @content-background-color;
+			}
+
+			&::after {
+				background-color: @secondary-background-contrast;
+			}
+		}
+	}
+
+	&.checkbox.toggle {
+		input:checked + label::before {
+			background-color: @secondary-background-contrast;
+		}
+
+		input:disabled + label::before {
+			background-color: lighten(@secondary-background-contrast, 50%) !important;
+		}
+
+		label {
+			&::before {
+				background-color: lighten(@secondary-background-contrast, 30%);
+			}
+
+			&::after {
+				background-color: @content-background-color;
+			}
+
+			&:hover {
+				&::before {
+					background-color: lighten(@secondary-background-contrast, 20%);
+				}
+			}
+		}
+	}
+}
+
+/** ----------------------------------------------------------------------------
+ * Misc typography variants
+ */
+
+// a:active,
+// a:hover {
+// 	color: @primary-action-color;
+// }
+
+.message,
+.flex-tab {
+	a i,
+	a[class^="icon-"] {
+		color: @primary-font-color;
+
+		&:hover {
+			color: darken(@primary-font-color, 10%);
+		}
+	}
+}
+
+.error {
+	border-color: @error-color;
+}
+
+/** ----------------------------------------------------------------------------
+ * Admin and settings styles
+ */
+
+.page-list,
+.page-settings {
+	a {
+		color: @primary-font-color;
+
+		&:hover {
+			color: @primary-action-color;
+		}
+	}
+}
+
+.admin-table-row {
+	background-color: @transparent-light;
+
+	&:nth-of-type(even) {
+		background-color: @transparent-lightest;
+	}
+}
+
+.new-logs {
+	background: @primary-action-contrast;
+}
+
+.avatar-suggestion-item {
+	.question-mark::before {
+		color: @secondary-font-color;
+	}
+}
+
+/** ----------------------------------------------------------------------------
+ * Asides (external to main application views)
+ */
+
+.full-page,
+.page-loading {
+	a {
+		color: @tertiary-font-color;
+	}
+
+	a:hover {
+		color: @primary-background-contrast;
+	}
+}
+
+#login-card {
+	.input-text {
+		input:-webkit-autofill {
+			-webkit-box-shadow: 0 0 0 20px @content-background-color inset;
+		}
+	}
+}
+
+/** ----------------------------------------------------------------------------
+ * Room components
+ */
+
+.toggle-favorite {
+	color: @component-color;
+}
+
+.upload-progress-progress {
+	background-color: @success-background;
+}
+
+.messages-container {
+	.edit-room-title {
+		color: @secondary-font-color;
+
+		&:hover {
+			color: @primary-font-color;
+		}
+	}
+
+	.footer {
+		background: @content-background-color;
+	}
+}
+
+.message-form {
+	.message-buttons {
+		.buttonColors(lighten(@primary-font-color, 25%), @secondary-background-color);
+
+		&:hover {
+			background-color: mix(@secondary-background-color, contrast(@primary-font-color), 20%);
+		}
+	}
+
+	.message-form-text {
+		&.editing {
+			background-color: lighten(@pending-color, 40%);
+		}
+	}
+}
+
+.message.editing {
+	background-color: lighten(@pending-color, 40%);
+}
+
+.rc-old {
+	& .popup-item {
+		&.selected {
+			color: @primary-action-contrast;
+			background-color: @primary-action-color;
+		}
+	}
+}
+
+.messages-box {
+	&.selectable .selected {
+		background-color: @selection-background;
+	}
+
+	// .editing .body,
+	// textarea.editing {
+	// 	background-color: lighten(@pending-color, 40%);
+	// }
+}
+
+/** ----------------------------------------------------------------------------
+ * Message content
+ */
+
+.message {
+	&.new-day::before {
+		background-color: @content-background-color;
+	}
+
+	&.new-day::after {
+		border-color: @component-color;
+	}
+
+	.message-dropdown,
+	.options-menu {
+		color: lighten(@primary-font-color, 13%);
+
+		ul li:hover {
+			background-color: @tertiary-background-color;
+		}
+	}
+
+	.is-bot,
+	.role-tag {
+		color: contrast(@info-font-color);
+	}
+
+	a {
+		color: @link-font-color;
+
+		&:hover {
+			color: darken(@link-font-color, 10%);
+		}
+	}
+
+	.mention-link {
+		&.mention-link-me {
+			color: @primary-action-contrast;
+		}
+
+		&.mention-link-all {
+			color: @primary-action-contrast;
+		}
+	}
+
+	.highlight-text {
+		background-color: @selection-background;
+	}
+}
+
+/** ----------------------------------------------------------------------------
+ * Side nav
+ */
+.side-nav {
+	.arrow::before,
+	.arrow::after {
+		background-color: @tertiary-font-color;
+	}
+
+	li.active {
+		background-color: @transparent-light !important;
+	}
+
+	i.status-offline {
+		color: @transparent-lighter !important;
+	}
+
+	i {
+		color: @transparent-lighter;
+	}
+
+	.opt i:hover {
+		color: @transparent-lightest;
+	}
+
+	.has-alert .name {
+		color: @primary-background-contrast;
+	}
+
+	.unread {
+		color: @success-color;
+		border: 1px solid @success-color;
+	}
+
+	.unread.unread-mention {
+		background-color: @success-color;
+		color: contrast(@success-color, #000000, #ffffff, 50%);
+	}
+
+	.button {
+		.buttonColors(@tertiary-font-color, mix(@primary-action-color, @primary-background-color));
+	}
+
+	.options button {
+		.buttonColors(@tertiary-font-color, @primary-background-color);
+	}
+}
+
+.sidebar-item__last-message {
+	a:not(.mention-link) {
+		color: @link-font-color;
+
+		&:hover {
+			color: darken(@link-font-color, 10%);
+		}
+	}
+}
+
+.message-popup.search-results-list {
+	background-color: lighten(@primary-background-color, 2.5%);
+
+	.popup-item.selected {
+		background-color: @transparent-darker;
+	}
+}
+
+/** ----------------------------------------------------------------------------
+ * Flex tabs / admin fly-out panels
+ */
+.flex-tab {
+	input,
+	select,
+	textarea {
+		&:focus {
+			border-color: lighten(@secondary-background-contrast, 30%);
+		}
+	}
+
+	.content,
+	.user-view,
+	.list-view {
+		background-color: @secondary-background-color;
+	}
+
+	.message {
+		&.new-day::before {
+			background-color: @secondary-background-color;
+		}
+	}
+
+	.channel-settings {
+		.buttons {
+			.button {
+				.buttonColors(lighten(@primary-font-color, 25%), @secondary-background-color);
+			}
+		}
+
+		.input.checkbox.toggle {
+			input:checked + label::before {
+				background-color: @primary-background-color;
+			}
+		}
+	}
+}
+
+.flex-tab-bar {
+	.tab-button {
+		&:hover {
+			background-color: @secondary-background-color;
+		}
+
+		&.active {
+			background-color: @secondary-background-color;
+			border-right-color: @selection-color;
+		}
+
+		&.attention {
+			animation-duration: 1000ms;
+			animation-name: blink;
+			animation-iteration-count: infinite;
+			animation-direction: alternate;
+		}
+	}
+
+	.counter {
+		background: @secondary-font-color;
+		color: white;
+	}
+}
+
+/** ----------------------------------------------------------------------------
+ * User status / user meta
+ */
+i.status-online {
+	color: @status-online;
+}
+
+.status-bg-online {
+	background-color: @status-online;
+}
+
+.account-box .status-online .thumb::after,
+.account-box .status.online::after,
+.popup-user-status-online,
+.status-online::after,
+.user-image.status-online .avatar::after {
+	background-color: @status-online;
+	border-color: darken(@status-online, 10%);
+}
+
+.account-box .status-offline .thumb::after,
+.account-box .status.offline::after {
+	background-color: @transparent-lighter;
+}
+
+i.status-away {
+	color: @status-away;
+}
+
+.status-bg-away {
+	background-color: @status-away;
+}
+
+.account-box .status-away .thumb::after,
+.account-box .status.away::after,
+.popup-user-status-away,
+.status-pending::after,
+.user-image.status-away .avatar::after {
+	background-color: @status-away;
+	border-color: darken(@status-away, 10%);
+}
+
+i.status-busy {
+	color: @status-busy;
+}
+
+.status-bg-busy {
+	background-color: @status-busy;
+}
+
+.account-box .status-busy .thumb::after,
+.account-box .status.busy::after,
+.popup-user-status-busy,
+.status-busy::after,
+.user-image.status-busy .avatar::after {
+	background-color: @status-busy;
+	border-color: darken(@status-busy, 10%);
+}
+
+i.status-offline {
+	color: @status-offline;
+}
+
+.status-bg-offline {
+	background-color: @status-offline;
+}
+
+.popup-user-status-offline,
+.status-offline::after,
+.user-image.status-offline .avatar::after {
+	background-color: @status-offline;
+	border-color: darken(@status-offline, 10%);
+}
+
+// .popup-user-status-system {
+// 	border-color: transparent;
+// }
+
+// .user-view {
+// 	.box::after,
+// 	.stats li,
+// 	.tags li {
+// 		background-color: @component-color;
+// 	}
+// }
+
+/** ----------------------------------------------------------------------------
+ * Buttons!
+ */
+.actionLinks li .action-link {
+	.buttonColors(@primary-action-contrast, @primary-action-color);
+}
+
+// new layout buttons
+
+.button {
+	.buttonColors(@default-action-contrast, @default-action-color);
+
+	&.primary {
+		.buttonColors(@primary-action-contrast, @primary-action-color);
+
+		&[disabled] {
+			background-color: lighten(desaturate(@primary-action-color, 50%), 30%);
+		}
+	}
+
+	&.secondary {
+		.buttonColors(@secondary-action-contrast, @secondary-action-color);
+
+		&[disabled] {
+			background-color: lighten(desaturate(@secondary-action-color, 50%), 30%);
+		}
+	}
+
+	&.tertiary {
+		.buttonColors(@primary-action-contrast, @selection-color);
+
+		&[disabled] {
+			background-color: lighten(desaturate(@selection-color, 50%), 30%);
+		}
+	}
+
+	&.danger {
+		.buttonColors(@error-contrast, @error-color);
+
+		&[disabled] {
+			background-color: lighten(desaturate(@error-color, 50%), 30%);
+		}
+	}
+}
+
+/** ----------------------------------------------------------------------------
+ * Feedback and overlay content
+ */
+
+.alert-warning {
+	color: darken(@pending-color, 25%);
+	background-color: @pending-background;
+}
+
+.alert-link {
+	color: @link-font-color;
+
+	&:hover {
+		color: darken(@link-font-color, 10%);
+	}
+}
+
+label.required::after {
+	color: @error-color;
+}
+
+/** ----------------------------------------------------------------------------
+ * Loading
+ */
+
+.main-content,
+.flex-tab {
+	.loading-animation > div {
+		background-color: @primary-font-color;
+	}
+}
+
+@keyframes blink {
+	from {
+		color: @selection-color;
+	}
+
+	to {
+		opacity: inherit;
+	}
+}
+
+/** ----------------------------------------------------------------------------
+ * Input Range Slider
+ */
+
+.range-slider-range::-webkit-slider-thumb {
+	background-color: @primary-background-color;
+}
+
+.range-slider-range::-webkit-slider-thumb:hover {
+	background-color: darken(@success-color, 30%);
+}
+
+.range-slider-range:active::-webkit-slider-thumb {
+	background-color: darken(@success-color, 10%);
+}
+
+.range-slider-range::-moz-range-thumb {
+	background-color: @primary-background-color;
+}
+
+.range-slider-range::-moz-range-thumb:hover {
+	background-color: darken(@success-color, 30%);
+}
+
+.range-slider-range:active::-moz-range-thumb {
+	background-color: darken(@success-color, 10%);
+}
+
+.range-slider-value {
+	color: lighten(@tertiary-background-color, 50%);
+	background-color: @primary-background-color;
+}
+
+.range-slider-value::after {
+	border-top-color: transparent;
+	border-right-color: @primary-background-color;
+	border-bottom-color: transparent;
+}
+
+.range-slider-range::-moz-range-track {
+	background-color: @tertiary-background-color;
+}

@@ -6,10 +6,11 @@ Package.describe({
 
 Package.registerBuildPlugin({
 	name: 'compileVersion',
-	use: ['coffeescript'],
-	sources: ['plugin/compile-version.coffee']
+	use: ['ecmascript'],
+	sources: ['plugin/compile-version.js']
 });
 
 Package.onUse(function(api) {
+	api.use('ecmascript');
 	api.use('isobuild:compiler-plugin@1.0.0');
 });

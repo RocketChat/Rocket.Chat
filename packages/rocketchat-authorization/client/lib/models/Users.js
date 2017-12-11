@@ -1,22 +1,26 @@
+import _ from 'underscore';
+
 if (_.isUndefined(RocketChat.models.Users)) {
 	RocketChat.models.Users = {};
 }
 
-RocketChat.models.Users.isUserInRole = function(userId, roleName) {
-	var query = {
-		_id: userId,
-		roles: roleName
-	};
+Object.assign(RocketChat.models.Users, {
+	isUserInRole(userId, roleName) {
+		const query = {
+			_id: userId,
+			roles: roleName
+		};
 
-	return !_.isUndefined(this.findOne(query));
-};
+		return !_.isUndefined(this.findOne(query));
+	},
 
-RocketChat.models.Users.findUsersInRoles = function(roles, scope, options) {
-	roles = [].concat(roles);
+	findUsersInRoles(roles, scope, options) {
+		roles = [].concat(roles);
 
-	var query = {
-		roles: { $in: roles }
-	};
+		const query = {
+			roles: { $in: roles }
+		};
 
-	return this.find(query, options);
-};
+		return this.find(query, options);
+	}
+});

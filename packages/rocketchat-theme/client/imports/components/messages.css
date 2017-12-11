@@ -1,0 +1,102 @@
+.message-actions {
+	position: absolute;
+	top: 2px;
+	right: 0.4rem;
+
+	display: none;
+
+	color: #6c727a;
+
+	font-size: 1rem;
+
+	&__buttons {
+		display: flex;
+	}
+
+	&__button {
+		margin: 0 0.2rem;
+
+		&:hover {
+			color: var(--rc-color-button-primary);
+		}
+	}
+
+	&__menu {
+		padding: 2px 0;
+
+		cursor: pointer;
+
+		&:hover &-icon {
+			fill: var(--rc-color-button-primary);
+		}
+
+		&-icon {
+			fill: currentColor;
+		}
+	}
+}
+
+.message {
+	&.active {
+		& .message-actions__label {
+			color: var(--rc-color-button-primary);
+		}
+	}
+
+	& .rc-popover-anchor {
+		display: block;
+
+		visibility: hidden;
+
+		width: 0;
+		height: 0;
+
+		opacity: 0;
+	}
+
+	& .rc-popover {
+		top: -200vh;
+		right: 180px;
+
+		&__wrapper {
+			position: fixed;
+			top: -100vh;
+			left: -100vw;
+
+			width: 300vw;
+			height: 300vh;
+		}
+
+		&__content {
+			position: absolute;
+			top: 0;
+			left: 0;
+		}
+	}
+}
+
+.messages-box .rc-popover__list {
+	padding: 0;
+}
+
+.first-unread .message-actions {
+	top: 18px;
+}
+
+.rtl .message-actions {
+	right: auto;
+	left: 2px;
+}
+
+@media (width >= 500px) {
+	.message {
+		&:hover,
+		&.active {
+			background-color: rgba(0, 0, 0, 0.05);
+
+			& .message-actions {
+				display: flex;
+			}
+		}
+	}
+}

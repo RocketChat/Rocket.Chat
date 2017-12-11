@@ -23,7 +23,7 @@ RocketChat.API.v1.addRoute('livechat/department', { authRequired: true }, {
 
 			if (department) {
 				return RocketChat.API.v1.success({
-					department: department,
+					department,
 					agents: RocketChat.models.LivechatDepartmentAgents.find({ departmentId: department._id }).fetch()
 				});
 			}

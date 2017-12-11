@@ -1,6 +1,8 @@
+import _ from 'underscore';
+
 Meteor.methods({
 	'livechat:getInitialData'(visitorToken) {
-		var info = {
+		const info = {
 			enabled: null,
 			title: null,
 			color: null,
@@ -8,6 +10,7 @@ Meteor.methods({
 			room: null,
 			triggers: [],
 			departments: [],
+			allowSwitchingDepartments: null,
 			online: true,
 			offlineColor: null,
 			offlineMessage: null,
@@ -24,7 +27,8 @@ Meteor.methods({
 				cl: 1,
 				u: 1,
 				usernames: 1,
-				v: 1
+				v: 1,
+				servedBy: 1
 			}
 		}).fetch();
 
@@ -49,14 +53,16 @@ Meteor.methods({
 		info.transcript = initSettings.Livechat_enable_transcript;
 		info.transcriptMessage = initSettings.Livechat_transcript_message;
 
+		info.agentData = room && room[0] && room[0].servedBy && RocketChat.models.Users.getAgentInfo(room[0].servedBy._id);
 
-		RocketChat.models.LivechatTrigger.find().forEach((trigger) => {
-			info.triggers.push(trigger);
+		RocketChat.models.LivechatTrigger.findEnabled().forEach((trigger) => {
+			info.triggers.push(_.pick(trigger, '_id', 'actions', 'conditions'));
 		});
 
 		RocketChat.models.LivechatDepartment.findEnabledWithAgents().forEach((department) => {
 			info.departments.push(department);
 		});
+		info.allowSwitchingDepartments = initSettings.Livechat_allow_switching_departments;
 
 		info.online = RocketChat.models.Users.findOnlineAgents().count() > 0;
 

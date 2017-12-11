@@ -1,148 +1,165 @@
 <template name="livechatAppearance">
-	<div class="livechat-settings-div">
-		<h2>{{_ "Settings"}}</h2>
+	{{#requiresPermission 'view-livechat-manager'}}
+		<div class="livechat-settings-div">
+			<h2>{{_ "Settings"}}</h2>
 
-		<form class="rocket-form">
-			<fieldset>
-				<legend>{{_ "Livechat_online"}}</legend>
-				<div class="input-line">
-					<label for="title">{{_ "Title"}}</label>
-					<input type="text" class="preview-settings" name="title" id="title" value="{{title}}">
-				</div>
-				<div class="input-line">
-					<label for="color">{{_ "Title_bar_color"}}</label>
-					<input type="text" class="preview-settings minicolors" name="color" id="color" value="{{color}}">
-				</div>
-			</fieldset>
-			<fieldset>
-				<legend>{{_ "Livechat_offline"}}</legend>
-				<div class="input-line">
-					<label for="displayOfflineForm">{{_ "Display_offline_form"}}</label>
-					<div class="inline-fields">
-						<input type="radio" class="preview-settings" name="displayOfflineForm" id="displayOfflineFormTrue" checked="{{displayOfflineFormTrueChecked}}" value="true">
-						<label for="displayOfflineFormTrue">{{_ "True"}}</label>
-						<input type="radio" class="preview-settings" name="displayOfflineForm" id="displayOfflineFormFalse" checked="{{displayOfflineFormFalseChecked}}" value="false">
-						<label for="displayOfflineFormFalse">{{_ "False"}}</label>
+			<form class="rocket-form">
+				<fieldset>
+					<legend>{{_ "Livechat_online"}}</legend>
+					<div class="input-line">
+						<label for="title">{{_ "Title"}}</label>
+						<input type="text" class="preview-settings" name="title" id="title" value="{{title}}">
 					</div>
-				</div>
-				<div class="input-line">
-					<label for="offlineUnavailableMessage">{{_ "Offline_form_unavailable_message"}}</label>
-					<textarea class="preview-settings" name="offlineUnavailableMessage" id="offlineUnavailableMessage">{{offlineUnavailableMessage}}</textarea>
-				</div>
-				<div class="input-line">
-					<label for="offlineMessage">{{_ "Offline_message"}}</label>
-					<textarea class="preview-settings" name="offlineMessage" id="offlineMessage">{{offlineMessage}}</textarea>
-				</div>
-				<div class="input-line">
-					<label for="titleOffline">{{_ "Title_offline"}}</label>
-					<input type="text" class="preview-settings" name="titleOffline" id="titleOffline" value="{{titleOffline}}">
-				</div>
-				<div class="input-line">
-					<label for="colorOffline">{{_ "Title_bar_color_offline"}}</label>
-					<input type="text" class="preview-settings minicolors" name="colorOffline" id="colorOffline" value="{{colorOffline}}">
-				</div>
-				<div class="input-line">
-					<label for="emailOffline">{{_ "Email_address_to_send_offline_messages"}}</label>
-					<input type="text" class="preview-settings" name="emailOffline" id="emailOffline" value="{{emailOffline}}">
-				</div>
-				<div class="input-line">
-					<label for="offlineSuccessMessage">{{_ "Offline_success_message"}}</label>
-					<textarea class="preview-settings" name="offlineSuccessMessage" id="offlineSuccessMessage">{{offlineSuccessMessage}}</textarea>
-				</div>
-			</fieldset>
-			<div class="submit">
-				<button class="button secondary reset-settings"><i class="icon-ccw"></i>{{_ "Reset"}}</button>
-				<button class="button"><i class="icon-floppy"></i>{{_ "Save"}}</button>
-			</div>
-		</form>
-	</div>
-
-	<div class="livechat-preview-div">
-		<h2>{{_ "Preview"}}</h2>
-
-		<select class="preview-mode">
-			<optgroup label="{{_ "Online"}}">
-				<option value="opened">{{_ "Chat_window"}}</option>
-				<option value="closed">{{_ "Chat_button"}}</option>
-			</optgroup>
-			<optgroup label="{{_ "Offline"}}">
-				<option value="opened-offline">{{_ "Offline_form"}}</option>
-				<option value="offline-unavailable">{{_ "Offline_unavailable"}}</option>
-				<option value="offline-success">{{_ "Success_message"}}</option>
-				<option value="closed-offline">{{_ "Chat_button"}}</option>
-			</optgroup>
-		</select>
-
-		<div class="livechat-preview {{previewState}}">
-			<div class="preview-wrapper">
-				{{#with sampleData}}
-					<div class="livechat-room">
-						<div class="title" style="background-color:{{sampleColor}}">
-							<div class="toolbar">
-								&nbsp;
-								<i class="popout icon-link-ext" title="Open in a new window"></i>
-							</div>
-							<h1>{{sampleTitle}}</h1>
+					<div class="input-line">
+						<label for="color">{{_ "Title_bar_color"}}</label>
+						<div>
+							<input type="text" class="preview-settings colorpicker-input" name="color" id="color" value="{{color}}">
+							<span class="colorpicker-swatch border-component-color" style="background-color: {{color}}"></span>
 						</div>
-						{{#if showOnline}}
-							<div class="messages">
-								<div class="wrapper">
-									<ul>
-										{{#each messages}}
-											<li id="{{_id}}" class="message {{sequential}}" data-username="{{u.username}}" data-date="{{date}}">
-												<span class="thumb thumb-small" data-username="{{u.username}}" tabindex="1">{{> avatar username=u.username}}</span>
-												<span class="user" data-username="{{u.username}}" tabindex="1">{{u.username}}</span>
-												<span class="info">
-													<span class="time">{{time}}</span>
-												</span>
-												<div class="body" dir="auto">
-													{{{body}}}
-												</div>
-											</li>
-										{{/each}}
-									</ul>
-								</div>
-							</div>
-							<div class="footer">
-								<div class="input-wrapper">
-									<textarea class="input-message" placeholder="Type your message"></textarea>
-								</div>
-								<i class="send-button icon-paper-plane" aria-label="{{_ "Send"}}"></i>
-							</div>
-						{{/if}}
-
-						{{#if showOfflineForm}}
-							<div class="offline">
-								<p class="offline-message">{{{sampleOfflineMessage}}}</p>
-
-								<form>
-									<input type="text" id="name" name="name" placeholder="{{_ "Type_your_name"}}">
-
-									<input type="email" id="email" name="email" placeholder="{{_ "Type_your_email"}}">
-
-									<textarea id="message" name="message" placeholder="{{_"Type_your_message"}}" rows="2"></textarea>
-
-									<div class="buttons">
-										<button class="button send">{{_ "Send"}}</button>
-									</div>
-								</form>
-							</div>
-						{{/if}}
-
-						{{#if showOfflineSuccess}}
-							<div class="offline">
-								<p class="message-sent">{{{sampleOfflineSuccessMessage}}}</p>
-							</div>
-						{{/if}}
-
-						{{#if showOfflineUnavailable}}
-							<div class="offline">
-								<p class="offline-message">{{{sampleOfflineUnavailableMessage}}}</p>
-							</div>
-						{{/if}}
 					</div>
-				{{/with}}
+					<div class="input-line">
+						<label for="showAgentEmail">{{_ "Show_agent_email"}}</label>
+						<div class="inline-fields">
+							<input type="radio" class="preview-settings" name="showAgentEmail" id="showAgentEmailFormTrue" checked="{{showAgentEmailFormTrueChecked}}" value="true">
+							<label for="showAgentEmailFormTrue">{{_ "True"}}</label>
+							<input type="radio" class="preview-settings" name="showAgentEmail" id="showAgentEmailFormFalse" checked="{{showAgentEmailFormFalseChecked}}" value="false">
+							<label for="showAgentEmailFormFalse">{{_ "False"}}</label>
+						</div>
+					</div>
+				</fieldset>
+				<fieldset>
+					<legend>{{_ "Livechat_offline"}}</legend>
+					<div class="input-line">
+						<label for="displayOfflineForm">{{_ "Display_offline_form"}}</label>
+						<div class="inline-fields">
+							<input type="radio" class="preview-settings" name="displayOfflineForm" id="displayOfflineFormTrue" checked="{{displayOfflineFormTrueChecked}}" value="true">
+							<label for="displayOfflineFormTrue">{{_ "True"}}</label>
+							<input type="radio" class="preview-settings" name="displayOfflineForm" id="displayOfflineFormFalse" checked="{{displayOfflineFormFalseChecked}}" value="false">
+							<label for="displayOfflineFormFalse">{{_ "False"}}</label>
+						</div>
+					</div>
+					<div class="input-line">
+						<label for="offlineUnavailableMessage">{{_ "Offline_form_unavailable_message"}}</label>
+						<textarea class="preview-settings" name="offlineUnavailableMessage" id="offlineUnavailableMessage">{{offlineUnavailableMessage}}</textarea>
+					</div>
+					<div class="input-line">
+						<label for="offlineMessage">{{_ "Offline_message"}}</label>
+						<textarea class="preview-settings" name="offlineMessage" id="offlineMessage">{{offlineMessage}}</textarea>
+					</div>
+					<div class="input-line">
+						<label for="titleOffline">{{_ "Title_offline"}}</label>
+						<input type="text" class="preview-settings" name="titleOffline" id="titleOffline" value="{{titleOffline}}">
+					</div>
+					<div class="input-line">
+						<label for="colorOffline">{{_ "Title_bar_color_offline"}}</label>
+						<div>
+							<input type="text" class="preview-settings colorpicker-input" name="colorOffline" id="colorOffline" value="{{colorOffline}}">
+							<span class="colorpicker-swatch border-component-color" style="background-color: {{colorOffline}}"></span>
+						</div>
+					</div>
+					<div class="input-line">
+						<label for="emailOffline">{{_ "Email_address_to_send_offline_messages"}}</label>
+						<input type="text" class="preview-settings" name="emailOffline" id="emailOffline" value="{{emailOffline}}">
+					</div>
+					<div class="input-line">
+						<label for="offlineSuccessMessage">{{_ "Offline_success_message"}}</label>
+						<textarea class="preview-settings" name="offlineSuccessMessage" id="offlineSuccessMessage">{{offlineSuccessMessage}}</textarea>
+					</div>
+				</fieldset>
+				<div class="submit">
+					<button class="button secondary reset-settings"><i class="icon-ccw"></i>{{_ "Reset"}}</button>
+					<button class="button primary save"><i class="icon-floppy"></i>{{_ "Save"}}</button>
+				</div>
+			</form>
+		</div>
+
+		<div class="livechat-preview-div">
+			<h2>{{_ "Preview"}}</h2>
+
+			<select class="preview-mode">
+				<optgroup label="{{_ "Online"}}">
+					<option value="opened">{{_ "Chat_window"}}</option>
+					<option value="closed">{{_ "Chat_button"}}</option>
+				</optgroup>
+				<optgroup label="{{_ "Offline"}}">
+					<option value="opened-offline">{{_ "Offline_form"}}</option>
+					<option value="offline-unavailable">{{_ "Offline_unavailable"}}</option>
+					<option value="offline-success">{{_ "Success_message"}}</option>
+					<option value="closed-offline">{{_ "Chat_button"}}</option>
+				</optgroup>
+			</select>
+
+			<div class="livechat-preview {{previewState}}">
+				<div class="preview-wrapper">
+					{{#with sampleData}}
+						<div class="livechat-room">
+							<div class="title" style="background-color:{{sampleColor}}">
+								<div class="toolbar">
+									&nbsp;
+									<i class="popout icon-link-ext" title="Open in a new window"></i>
+								</div>
+								<h1>{{sampleTitle}}</h1>
+							</div>
+							{{#if showOnline}}
+								<div class="messages">
+									<div class="wrapper">
+										<ul>
+											{{#each messages}}
+												<li id="{{_id}}" class="message {{sequential}}" data-username="{{u.username}}" data-date="{{date}}">
+													<span class="thumb thumb-small" data-username="{{u.username}}" tabindex="1">{{> avatar username=u.username}}</span>
+													<span class="user" data-username="{{u.username}}" tabindex="1">{{u.username}}</span>
+													<span class="info">
+														<span class="time">{{time}}</span>
+													</span>
+													<div class="body" dir="auto">
+														{{{body}}}
+													</div>
+												</li>
+											{{/each}}
+										</ul>
+									</div>
+								</div>
+								<div class="footer">
+									<div class="input-wrapper">
+										<textarea class="input-message" placeholder="Type your message"></textarea>
+									</div>
+									<i class="send-button icon-paper-plane" aria-label="{{_ "Send"}}"></i>
+								</div>
+							{{/if}}
+
+							{{#if showOfflineForm}}
+								<div class="offline">
+									<p class="offline-message">{{{sampleOfflineMessage}}}</p>
+
+									<form>
+										<input type="text" id="name" name="name" placeholder="{{_ "Type_your_name"}}">
+
+										<input type="email" id="email" name="email" placeholder="{{_ "Type_your_email"}}">
+
+										<textarea id="message" name="message" placeholder="{{_"Type_your_message"}}" rows="2"></textarea>
+
+										<div class="buttons">
+											<button class="button primary send">{{_ "Send"}}</button>
+										</div>
+									</form>
+								</div>
+							{{/if}}
+
+							{{#if showOfflineSuccess}}
+								<div class="offline">
+									<p class="message-sent">{{{sampleOfflineSuccessMessage}}}</p>
+								</div>
+							{{/if}}
+
+							{{#if showOfflineUnavailable}}
+								<div class="offline">
+									<p class="offline-message">{{{sampleOfflineUnavailableMessage}}}</p>
+								</div>
+							{{/if}}
+						</div>
+					{{/with}}
+				</div>
 			</div>
 		</div>
-	</div>
+	{{/requiresPermission}}
 </template>

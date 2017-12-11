@@ -8,7 +8,7 @@ Template.externalSearch.events({
 	'click button.pick-message'(event, instance) {
 		event.preventDefault();
 
-		$('#chat-window-' + instance.roomId + ' .input-message').val(this.msg).focus();
+		$(`#chat-window-${ instance.roomId } .input-message`).val(this.msg).focus();
 	}
 });
 

@@ -18,12 +18,14 @@ Meteor.methods({
 		};
 
 		// add subscription
-		var subscriptionData = {
+		const subscriptionData = {
 			rid: inquiry.rid,
 			name: inquiry.name,
 			alert: true,
 			open: true,
 			unread: 1,
+			userMentions: 1,
+			groupMentions: 0,
 			code: inquiry.code,
 			u: {
 				_id: agent.agentId,
@@ -38,11 +40,9 @@ Meteor.methods({
 
 		// update room
 		const room = RocketChat.models.Rooms.findOneById(inquiry.rid);
-		const usernames = room.usernames.concat(agent.username);
 
-		RocketChat.models.Rooms.changeAgentByRoomId(inquiry.rid, usernames, agent);
+		RocketChat.models.Rooms.changeAgentByRoomId(inquiry.rid, agent);
 
-		room.usernames = usernames;
 		room.servedBy = {
 			_id: agent.agentId,
 			username: agent.username
@@ -50,6 +50,16 @@ Meteor.methods({
 
 		// mark inquiry as taken
 		RocketChat.models.LivechatInquiry.takeInquiry(inquiry._id);
+
+		// remove sending message from guest widget
+		// dont check if setting is true, because if settingwas switched off inbetween  guest entered pool,
+		// and inquiry being taken, message would not be switched off.
+		RocketChat.models.Messages.createCommandWithRoomIdAndUser('connected', room._id, user);
+
+		RocketChat.Livechat.stream.emit(room._id, {
+			type: 'agentData',
+			data: RocketChat.models.Users.getAgentInfo(agent.agentId)
+		});
 
 		// return room corresponding to inquiry (for redirecting agent to the room route)
 		return room;

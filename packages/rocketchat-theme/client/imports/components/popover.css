@@ -1,0 +1,168 @@
+.rc-popover {
+	position: fixed;
+	z-index: 9999;
+
+	top: 0;
+	left: 0;
+
+	display: none;
+
+	width: 100vw;
+	height: 100vh;
+
+	&__content {
+		position: absolute;
+
+		display: flex;
+
+		padding: var(--popover-padding);
+
+		animation: dropdown-show 0.1s cubic-bezier(0.45, 0.05, 0.55, 0.95);
+
+		white-space: nowrap;
+
+		opacity: 0;
+
+		border-radius: var(--popover-radius);
+		background-color: var(--popover-background);
+		box-shadow: 0 0 2px 0 rgba(47, 52, 61, 0.08), 0 0 12px 0 rgba(47, 52, 61, 0.12);
+	}
+
+	&__column {
+		display: flex;
+		flex-direction: column;
+		flex: 1 0 auto;
+
+		min-width: var(--popover-column-min-width);
+
+		&:not(:first-child) {
+			padding-left: var(--popover-column-padding);
+		}
+
+		&-wrapper:not(:first-child) {
+			margin-top: var(--popover-column-padding);
+		}
+	}
+
+	&__title {
+		margin-bottom: 8px;
+
+		text-transform: uppercase;
+
+		color: var(--popover-title-color);
+
+		font-size: var(--popover-title-text-size);
+	}
+
+	&__item {
+		display: flex;
+
+		padding: 4px 0;
+
+		cursor: pointer;
+
+		color: var(--popover-item-color);
+
+		font-size: var(--popover-item-text-size);
+		align-items: center;
+
+		&--alert {
+			color: var(--rc-color-error);
+
+			& .rc-icon {
+				fill: var(--rc-color-error);
+			}
+		}
+
+		&--star-filled .rc-icon {
+			fill: currentColor;
+		}
+	}
+
+	&__icon {
+		display: flex;
+
+		width: 20px;
+		margin: 0.25rem 0;
+		align-items: center;
+		justify-content: center;
+	}
+
+	&__icon-element {
+		font-size: 18px;
+
+		&--star {
+			fill: none;
+		}
+	}
+
+	&__item-text {
+		margin-left: 0.25rem;
+	}
+
+	&__divider {
+		width: 100%;
+		height: var(--popover-divider-height);
+		margin: 1rem 0;
+
+		background: var(--popover-divider-color);
+
+		&:last-child {
+			display: none;
+		}
+	}
+}
+
+[data-message-action="unstar-message"] .rc-popover__icon-element--star {
+	fill: currentColor;
+}
+
+@media (width <= 500px) {
+	.rc-popover {
+		& .rc-popover__content {
+			top: initial !important;
+			bottom: 0;
+			left: 0 !important;
+
+			width: calc(100vw - 16px) !important;
+			margin: 8px !important;
+
+			animation: dropup-show 0.3s cubic-bezier(0.45, 0.05, 0.55, 0.95);
+		}
+	}
+}
+
+@keyframes dropdown-show {
+	0% {
+		transform: translate(0, -5%);
+
+		opacity: 0;
+	}
+
+	100% {
+		transform: translate(0, 0);
+
+		opacity: 1;
+	}
+}
+
+@keyframes dropup-show {
+	0% {
+		transform: translate(0, 100%);
+
+		opacity: 0;
+	}
+
+	100% {
+		transform: translate(0, 0);
+
+		opacity: 1;
+	}
+}
+
+.rtl .rc-popover {
+	&__item-text {
+		margin-right: 0.25rem;
+		margin-left: auto;
+	}
+}

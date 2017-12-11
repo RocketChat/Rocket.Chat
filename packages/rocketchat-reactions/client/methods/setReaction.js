@@ -1,3 +1,5 @@
+import _ from 'underscore';
+
 Meteor.methods({
 	setReaction(reaction, messageId) {
 		if (!Meteor.userId()) {
@@ -6,12 +8,14 @@ Meteor.methods({
 
 		const user = Meteor.user();
 
-		let message = RocketChat.models.Messages.findOne({ _id: messageId });
-		let room = RocketChat.models.Rooms.findOne({ _id: message.rid });
+		const message = RocketChat.models.Messages.findOne({ _id: messageId });
+		const room = RocketChat.models.Rooms.findOne({ _id: message.rid });
 
-		if (Array.isArray(room.muted) && room.muted.indexOf(user.username) !== -1) {
+		if (Array.isArray(room.muted) && room.muted.indexOf(user.username) !== -1 && !room.reactWhenReadOnly) {
 			return false;
 		} else if (!RocketChat.models.Subscriptions.findOne({ rid: message.rid })) {
+			return false;
+		} else if (message.private) {
 			return false;
 		}
 
@@ -25,8 +29,10 @@ Meteor.methods({
 			if (_.isEmpty(message.reactions)) {
 				delete message.reactions;
 				RocketChat.models.Messages.unsetReactions(messageId);
+				RocketChat.callbacks.run('unsetReaction', messageId, reaction);
 			} else {
 				RocketChat.models.Messages.setReactions(messageId, message.reactions);
+				RocketChat.callbacks.run('setReaction', messageId, reaction);
 			}
 		} else {
 			if (!message.reactions) {
@@ -40,6 +46,7 @@ Meteor.methods({
 			message.reactions[reaction].usernames.push(user.username);
 
 			RocketChat.models.Messages.setReactions(messageId, message.reactions);
+			RocketChat.callbacks.run('setReaction', messageId, reaction);
 		}
 
 		return;

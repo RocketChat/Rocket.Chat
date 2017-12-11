@@ -61,14 +61,14 @@ Meteor.methods({
 			}]
 		};
 
-		let options = {
+		const options = {
 			headers: {
 				'X-RocketChat-Livechat-Token': RocketChat.settings.get('Livechat_secret_token')
 			},
 			data: sampleData
 		};
 
-		let response = postCatchError(RocketChat.settings.get('Livechat_webhookUrl'), options);
+		const response = postCatchError(RocketChat.settings.get('Livechat_webhookUrl'), options);
 
 		console.log('response ->', response);
 

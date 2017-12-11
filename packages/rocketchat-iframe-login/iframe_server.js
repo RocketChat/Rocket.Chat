@@ -7,7 +7,7 @@ Accounts.registerLoginHandler('iframe', function(result) {
 
 	console.log('[Method] registerLoginHandler');
 
-	var user = Meteor.users.findOne({
+	const user = Meteor.users.findOne({
 		'services.iframe.token': result.token
 	});
 

@@ -1,21 +1,24 @@
 language: node_js
 services:
 - docker
+- mongodb
 branches:
   only:
   - develop
-  - experimental
-  - "/^(\\d+\\.)?(\\d+\\.)?(\\*|\\d+)$/"
+  - "/^\\d+\\.\\d+\\.\\d+(-rc\\.\\d+)?$/"
 git:
   depth: 1
 node_js:
-- '4'
+- '8'
 addons:
   apt:
     sources:
+    - google-chrome
     - ubuntu-toolchain-r-test
     packages:
+    - google-chrome-stable
     - g++-4.8
+  firefox: "latest"
 before_cache:
 - rm -rf $HOME/build/RocketChat/Rocket.Chat/.meteor/local/log
 - rm -rf $HOME/build/RocketChat/Rocket.Chat/.meteor/local/run
@@ -33,14 +36,37 @@ cache:
   - "$HOME/build/RocketChat/Rocket.Chat/packages/rocketchat-livechat/app/.meteor/local"
 before_install:
 - if [ ! -e "$HOME/.meteor/meteor" ]; then curl https://install.meteor.com | sed s/--progress-bar/-sL/g | /bin/sh; fi
+# Start X Virtual Frame Buffer for headless testing with real browsers
+- .scripts/start-xvfb.sh
 install:
 - export PATH="$HOME/.meteor:$PATH"
 before_script:
+- if [[ $TRAVIS_TAG ]]; then meteor reset; fi
+- echo "replication:" | sudo tee -a /etc/mongod.conf
+- |-
+  echo "  replSetName: \"rs0\"" | sudo tee -a /etc/mongod.conf
+- sudo service mongod restart
 - mkdir /tmp/build
-- travis_retry npm install
-- npm run lint
-script:
+- meteor --version
+- travis_retry meteor npm install
+- |-
+  mongo --eval 'rs.initiate({_id:"rs0", members: [{"_id":1, "host":"localhost:27017"}]})'
+- meteor npm run lint
+- meteor npm run testunit
+- meteor npm run stylelint
 - travis_retry meteor build --headless /tmp/build
+- mkdir /tmp/build-test
+- tar -xf /tmp/build/Rocket.Chat.tar.gz -C /tmp/build-test/
+- cd /tmp/build-test/bundle/programs/server
+- npm install
+- cd -
+- mongo --eval 'rs.status()'
+- mongo meteor --eval 'db.getCollectionNames()'
+script:
+- travis_retry npm test
+- mongo meteor --eval 'db.dropDatabase()'
+- unset MONGO_OPLOG_URL
+- travis_retry npm test
 before_deploy:
 - source ".travis/setartname.sh"
 - source ".travis/setdeploydir.sh"
@@ -48,23 +74,33 @@ before_deploy:
 - ".travis/namefiles.sh"
 - echo ".travis/sandstorm.sh"
 deploy:
-  provider: s3
-  access_key_id: AKIAIKIA7H7D47KUHYCA
-  secret_access_key: "$ACCESSKEY"
-  bucket: download.rocket.chat
-  skip_cleanup: true
-  upload_dir: build
-  local_dir: "$ROCKET_DEPLOY_DIR"
-  on:
-    condition: "$TRAVIS_PULL_REQUEST=false"
-    all_branches: true
+  - provider: s3
+    access_key_id: AKIAIKIA7H7D47KUHYCA
+    secret_access_key: "$ACCESSKEY"
+    bucket: download.rocket.chat
+    skip_cleanup: true
+    upload_dir: build
+    local_dir: "$ROCKET_DEPLOY_DIR"
+    on:
+      condition: "$TRAVIS_PULL_REQUEST=false"
+      all_branches: true
+  # - provider: releases
+  #   api-key: "$GITHUB_TOKEN"
+  #   file_glob: true
+  #   file: build/*
+  #   skip_cleanup: true
+  #   on:
+  #     tags: true
+
 after_deploy:
 - ".travis/docker.sh"
 - ".travis/update-releases.sh"
 - ".travis/snap.sh"
 env:
   global:
+  - DISPLAY=:99.0
   - CXX=g++-4.8
   - secure: HrPOM5sBibYkMcf9aeQThYPCDiXeLkg0Xgv0HvH88/ku/gphDpNEjHNReHZM3cyfm9y3RhHpVdD+Zzy38S2goKyewRzpXJsuyerOYkjND0v3tivhs9CAX8PAUxj1U5zllTyH4bgW2ZwRtNnwnmtIM/JJlnySMpKVDqIZBpbhn3ph9bJ2J+BW3D3Jw8meQ1vCX8szIibyJK/5QX6HG2RBFXJGYoQ8DmR8jQv0aJQvT1Az5DO4yImk8tX4NP95qOc19Jywr1DsbaSBZeJ8lFJAmBpIGx7KAmUVCcxSxfbXGRhs2K4iEYb3rJ/dU6KiyPsKGUG4aYNGgbvcX0ZxX/BZ6ZU9ff0E4IIf43IxoN3ElrOqOFk5msJAXbrJEreINSzDqKOy8NFYtCQ49E2gwzfage4ZXkhFyx3wMPa5bzpr3ncsTceMjMVz03uL781X6NLuCkUmXv+n8K2MNhJU9Xinpdx1GRJm+0lXJspNNJ1ruHeJtls4epj4bmCwKmmZbFKPXqa5e8xVcMIkwt1LMiHduhE+WgKNHdOMhXrCcTxF62ybLlsHXmyLLJeNjTeKS8QG2XSoonClDAz/1R41I1DsMPblcgz9uvYCf7UtyftbhJ83bnJeEmOYQiwijLG0+QMq+B2+mmZan3Z7Hl7O53dnwuLxz7EO7EhQhY+CqHVgc6s=
-  - secure: w55v/9dmQ9wKbc+fhkZdWfaXIGi+5Qo365J0/IEZRCle2jFWUMBSzEghUuubw9Pys56uAcivOzKozT7+qozVaQW9kSgTLK4bSUSWKeSuynF7Too0CNdzt8CWgjcxGvYVWP0vlp+2eTI0x9+HJlFZn1hP+3v9C+ASH6+sqXvi24kNOPANsUvlbwIC7+T3kOdOOFzrA/tNLkXp2NGs9OaHVnvOVrZlHIn0TL8kGV1HyW4k4KLPgAcwgDq8DRWQBWk+E59HyTGXMyt/GxAJkjEebcJ/TnrbCiExbrTY+OmHjwk8Yfp9CbWsEtEYWSdLoNaFMhUrJRGGKjtansqQWktfkrN/Ro6Scl+lorQQ3eBu+ZVdmx3BXj8TRyqkhh6sqbola5XGhffp61fKxLcbYFE6Ph7g9twvFArCt2/zifmKYxH/NniCKGir5eZZnfFwTE6y2b+m37gjd7jd4t8SEcbFKH7tvOVRNm79VDqBQo0rNieCM5fPKsZkYD7sjB9G7cuZaZLAKUJf1K/FYqCeGeNV0Wcxi95nBh5usenm88xdajShxxKJedi1n77qqj03KxW7ictDnt/sEzz6vHjyf1O2pFUuPZ2eVwenpa0utDOvBTYd10OSlqlWaG/ldNJ8ofl/fawm0of4xp0rY3UNaTYdCZsPm6qfq7NIocefb/qeAJ4=
-  - secure: iihMgVr2PaP9d0GXuEe3JU/eK5agWWHWDH0WFOTHQ42L1x6wT6oom3zJfwGmFL28BDVp5qQQ3V5isc0p1Vca7PCsRWUht/37EzzLbfrutLDvCpvzGqzqTkvKeW9WINYcIwEQoDE0M2I12WZN9NhGCaT5Z3WanwYX1x6AzjHX4GK/gBzX0WWOqKp7UQijLpuWpdlMUhoWKatGKi9ft+PCBgOonhoqy6Pk9QYNG+jrq86RydOP428DE2Mo5aFxPwhSoMFukOlTIPQylJ3q3q9NDHI9XhV6AJwty/CE9UXr4wAI5RAR/9q0cHkoXj7P/y7cj+SI9pZMt5EaS4DPs4MVb8vvVP+7K0VfbVc5kcoXZoUsORtxiaPk5yPeqaqpB89xp7BjQizr5fOXeTp3Xe8UiZeWvpnbvzWEUAW7XXbMLJjyKT6OLRyVmZ240aMY7zdgC/e3nNePaam1LHYJRejJGM0aFIuwDqryGN9KJMjMFOL6LHm+OBQcjfDokBLc1wjfomNXcIrWWjdNTckpDEIhAFzwgxy9OlJQBJqtpPajPrcU1bxfrnbLks0KeQj9YTSTR0D7FknhVF8OpOnDZDPWdUBJL/dGd4eIf0UIr5xW7ZdFJ0xxhGXpJuH5ITG/C8CMOFsFvUMR1EG+cY4UN8YlVcUyp/S6eJgEzJM9fyWwDgs=
+  - MONGO_OPLOG_URL: "mongodb://localhost:27017/local"
+  - MONGO_URL: "mongodb://localhost:27017/meteor"
+  - TEST_MODE: "true"

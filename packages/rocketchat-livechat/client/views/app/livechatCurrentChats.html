@@ -1,65 +1,64 @@
 <template name="livechatCurrentChats">
-	<fieldset>
-		<form class="form-inline" method="post">
-			<div class="form-group">
-				<label for="name">{{_ "Name"}}</label>
-				<input type="text" name="name">
-			</div>
-
-			<div class="form-group">
-				<label for="agent">{{_ "Served_By"}}</label>
-				<select name="agent">
-					<option value=""></option>
-					{{#each agents}}
-						<option value="{{_id}}">{{username}}</option>
-					{{/each}}
-				</select>
-			</div>
-			<div class="form-group">
-				<label for="status">{{_ "Status"}}</label>
-				<select name="status">
-					<option value=""></option>
-					<option value="opened">{{_ "Opened"}}</option>
-					<option value="closed">{{_ "Closed"}}</option>
-				</select>
-			</div>
-			<!--Added by Deepankar-->
-				<div class="input-group input-daterange" data-date-autoclose="true" data-date-todayHighlight="true" data-provide="datepicker" >
-					<span class="input-group-addon">From</span>
-					<input type="text" class="form-control" id="from" name="from" >
-						<span class="input-group-addon">to</span>
-					<input type="text" class="form-control" id="to" name="to">
-
-					<button class="button">{{_ "Filter"}}</button>
+	{{#requiresPermission 'view-livechat-manager'}}
+		<fieldset>
+			<form class="form-inline" method="post">
+				<div class="form-group">
+					<label for="name">{{_ "Name"}}</label>
+					<input type="text" name="name">
 				</div>
-			<!--Added by Deepankar-->
-		</form>
-	</fieldset>
-	<div class="list">
-		<table>
-			<thead>
-				<tr>
-					<th width="25%">{{_ "Name"}}</th>
-					<th width="25%">{{_ "Served_By"}}</th>
-					<th width="15%">{{_ "Started_At"}}</th>
-					<th width="15%">{{_ "Last_Message_At"}}</th>
-					<th width="10%">{{_ "Status"}}</th>
-				</tr>
-			</thead>
-			<tbody>
-				{{#each livechatRoom}}
-					<tr class="row-link">
-						<td>{{label}}</td>
-						<td>{{servedBy}}</td>
-						<td>{{startedAt}}</td>
-						<td>{{lastMessage}}</td>
-						<td>{{status}}</td>
+
+				<div class="form-group">
+					<label for="agent">{{_ "Served_By"}}</label>
+					<select name="agent">
+						<option value=""></option>
+						{{#each agents}}
+							<option value="{{_id}}">{{username}}</option>
+						{{/each}}
+					</select>
+				</div>
+				<div class="form-group">
+					<label for="status">{{_ "Status"}}</label>
+					<select name="status">
+						<option value=""></option>
+						<option value="opened">{{_ "Opened"}}</option>
+						<option value="closed">{{_ "Closed"}}</option>
+					</select>
+				</div>
+				<div class="form-group input-daterange">
+					<span class="input-group-addon">{{_ "Date_From"}}</span>
+					<input type="text" class="form-control" id="from" name="from" >
+						<span class="input-group-addon">{{_ "Date_to"}}</span>
+					<input type="text" class="form-control" id="to" name="to">
+				</div>
+				<button class="button">{{_ "Filter"}}</button>
+			</form>
+		</fieldset>
+		<div class="list">
+			<table>
+				<thead>
+					<tr>
+						<th width="25%">{{_ "Name"}}</th>
+						<th width="25%">{{_ "Served_By"}}</th>
+						<th width="15%">{{_ "Started_At"}}</th>
+						<th width="15%">{{_ "Last_Message_At"}}</th>
+						<th width="10%">{{_ "Status"}}</th>
 					</tr>
-				{{/each}}
-			</tbody>
-		</table>
-	</div>
-	<div class="text-center">
-		<button class="button load-more">{{_ "Load_more"}}</button>
-	</div>
+				</thead>
+				<tbody>
+					{{#each livechatRoom}}
+						<tr class="row-link">
+							<td>{{label}}</td>
+							<td>{{servedBy}}</td>
+							<td>{{startedAt}}</td>
+							<td>{{lastMessage}}</td>
+							<td>{{status}}</td>
+						</tr>
+					{{/each}}
+				</tbody>
+			</table>
+		</div>
+		<div class="text-center">
+			<button class="button load-more">{{_ "Load_more"}}</button>
+		</div>
+	{{/requiresPermission}}
 </template>

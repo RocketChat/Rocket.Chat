@@ -1,3 +1,4 @@
+import _ from 'underscore';
 /**
  * Livechat Department model
  */
@@ -7,7 +8,7 @@ class LivechatDepartmentAgents extends RocketChat.models._Base {
 	}
 
 	findByDepartmentId(departmentId) {
-		return this.find({ departmentId: departmentId });
+		return this.find({ departmentId });
 	}
 
 	saveAgent(agent) {
@@ -24,42 +25,42 @@ class LivechatDepartmentAgents extends RocketChat.models._Base {
 	}
 
 	removeByDepartmentIdAndAgentId(departmentId, agentId) {
-		this.remove({ departmentId: departmentId, agentId: agentId });
+		this.remove({ departmentId, agentId });
 	}
 
 	getNextAgentForDepartment(departmentId) {
-		var agents = this.findByDepartmentId(departmentId).fetch();
+		const agents = this.findByDepartmentId(departmentId).fetch();
 
 		if (agents.length === 0) {
 			return;
 		}
 
-		var onlineUsers = RocketChat.models.Users.findOnlineUserFromList(_.pluck(agents, 'username'));
+		const onlineUsers = RocketChat.models.Users.findOnlineUserFromList(_.pluck(agents, 'username'));
 
-		var onlineUsernames = _.pluck(onlineUsers.fetch(), 'username');
+		const onlineUsernames = _.pluck(onlineUsers.fetch(), 'username');
 
-		var query = {
-			departmentId: departmentId,
+		const query = {
+			departmentId,
 			username: {
 				$in: onlineUsernames
 			}
 		};
 
-		var sort = {
+		const sort = {
 			count: 1,
 			order: 1,
 			username: 1
 		};
-		var update = {
+		const update = {
 			$inc: {
 				count: 1
 			}
 		};
 
-		var collectionObj = this.model.rawCollection();
-		var findAndModify = Meteor.wrapAsync(collectionObj.findAndModify, collectionObj);
+		const collectionObj = this.model.rawCollection();
+		const findAndModify = Meteor.wrapAsync(collectionObj.findAndModify, collectionObj);
 
-		var agent = findAndModify(query, sort, update);
+		const agent = findAndModify(query, sort, update);
 		if (agent && agent.value) {
 			return {
 				agentId: agent.value.agentId,
@@ -71,34 +72,34 @@ class LivechatDepartmentAgents extends RocketChat.models._Base {
 	}
 
 	getOnlineForDepartment(departmentId) {
-		var agents = this.findByDepartmentId(departmentId).fetch();
+		const agents = this.findByDepartmentId(departmentId).fetch();
 
 		if (agents.length === 0) {
-			return;
+			return [];
 		}
 
-		var onlineUsers = RocketChat.models.Users.findOnlineUserFromList(_.pluck(agents, 'username'));
+		const onlineUsers = RocketChat.models.Users.findOnlineUserFromList(_.pluck(agents, 'username'));
 
-		var onlineUsernames = _.pluck(onlineUsers.fetch(), 'username');
+		const onlineUsernames = _.pluck(onlineUsers.fetch(), 'username');
 
-		var query = {
-			departmentId: departmentId,
+		const query = {
+			departmentId,
 			username: {
 				$in: onlineUsernames
 			}
 		};
 
-		var depAgents = this.find(query);
+		const depAgents = this.find(query);
 
 		if (depAgents) {
 			return depAgents;
 		} else {
-			return null;
+			return [];
 		}
 	}
 
 	findUsersInQueue(usersList) {
-		let query = {};
+		const query = {};
 
 		if (!_.isEmpty(usersList)) {
 			query.username = {
@@ -106,7 +107,7 @@ class LivechatDepartmentAgents extends RocketChat.models._Base {
 			};
 		}
 
-		let options = {
+		const options = {
 			sort: {
 				departmentId: 1,
 				count: 1,

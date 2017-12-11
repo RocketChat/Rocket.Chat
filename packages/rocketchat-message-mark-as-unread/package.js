@@ -6,9 +6,7 @@ Package.describe({
 
 Package.onUse(function(api) {
 	api.use([
-		'coffeescript',
-		'underscore',
-		'less',
+		'ecmascript',
 		'rocketchat:lib',
 		'rocketchat:logger',
 		'rocketchat:ui'
@@ -17,11 +15,11 @@ Package.onUse(function(api) {
 	api.use('templating', 'client');
 
 	api.addFiles([
-		'client/actionButton.coffee'
+		'client/actionButton.js'
 	], 'client');
 
 	api.addFiles([
 		'server/logger.js',
-		'server/unreadMessages.coffee'
+		'server/unreadMessages.js'
 	], 'server');
 });

@@ -1,82 +1,91 @@
 <template name="livechatDepartmentForm">
-	<form id="department-form" data-id="{{department._id}}">
-		<div class="rocket-form">
-			{{#if Template.subscriptionsReady}}
-				<fieldset>
-					<div class="input-line">
-						<label>{{_ "Enabled"}}</label>
-						<div>
-							<label><input type="radio" name="enabled" value="1" checked="{{$eq department.enabled true}}" /> {{_ "Yes"}}</label>
-							<label><input type="radio" name="enabled" value="0" checked="{{$eq department.enabled false}}" /> {{_ "No"}}</label>
-						</div>
-					</div>
-					<div class="input-line">
-						<label>{{_ "Name"}}</label>
-						<div>
-							<input type="text" name="name" value="{{department.name}}" placeholder="{{_ "Name"}}" />
-						</div>
-					</div>
-					<div class="input-line">
-						<label>{{_ "Description"}}</label>
-						<div>
-							<textarea name="description" rows="6">{{department.description}}</textarea>
-						</div>
-					</div>
-					<hr />
-					<h2>{{_ "Agents"}}</h2>
-
+	{{#requiresPermission 'view-livechat-manager'}}
+		<form id="department-form" data-id="{{department._id}}">
+			<div class="rocket-form">
+				{{#if Template.subscriptionsReady}}
 					<fieldset>
-						<legend>{{_ "Available_agents"}}</legend>
+						<div class="input-line">
+							<label>{{_ "Enabled"}}</label>
+							<div>
+								<label><input type="radio" name="enabled" value="1" checked="{{$eq department.enabled true}}" /> {{_ "Yes"}}</label>
+								<label><input type="radio" name="enabled" value="0" checked="{{$eq department.enabled false}}" /> {{_ "No"}}</label>
+							</div>
+						</div>
+						<div class="input-line">
+							<label>{{_ "Name"}}</label>
+							<div>
+								<input type="text" name="name" value="{{department.name}}" placeholder="{{_ "Name"}}" />
+							</div>
+						</div>
+						<div class="input-line">
+							<label>{{_ "Description"}}</label>
+							<div>
+								<textarea name="description" rows="6">{{department.description}}</textarea>
+							</div>
+						</div>
+						<div class="input-line">
+							<label>{{_ "Show_on_registration_page"}}</label>
+							<div>
+								<label><input type="radio" name="showOnRegistration" value="1" checked="{{showOnRegistration true}}" /> {{_ "Yes"}}</label>
+								<label><input type="radio" name="showOnRegistration" value="0" checked="{{showOnRegistration false}}" /> {{_ "No"}}</label>
+							</div>
+						</div>
+						<hr />
+						<h2>{{_ "Agents"}}</h2>
 
-						<ul class="department-agents available-agents">
-							{{#each availableAgents}}
-								<li><i class="icon-plus-circled"></i>{{username}}</li>
-							{{/each}}
-						</ul>
-					</fieldset>
+						<fieldset>
+							<legend>{{_ "Available_agents"}}</legend>
 
-					<fieldset>
-						<legend>{{_ "Selected_agents"}}</legend>
+							<ul class="department-agents available-agents">
+								{{#each availableAgents}}
+									<li><i class="icon-plus-circled"></i>{{username}}</li>
+								{{/each}}
+							</ul>
+						</fieldset>
 
-						<div class="list">
-							<table>
-								<thead>
-									<tr>
-										<th width="25%">{{_ "Username"}}</th>
-										<th>{{_ "Count"}}</th>
-										<th>{{_ "Order"}}</th>
-										<th>&nbsp;</th>
-									</tr>
-								</thead>
-								<tbody>
-									{{#if selectedAgents}}
-										{{#each selectedAgents}}
-											<tr class="agent-info">
-												<td>{{username}}</td>
-												<td><input type="text" class="count-{{agentId}}" name="count" value="{{count}}" size="3"></td>
-												<td><input type="text" class="order-{{agentId}}" name="order" value="{{order}}" size="3"></td>
-												<td><a href="#remove" class="remove-agent"><i class="icon-trash"></i></a></td>
-											</tr>
-										{{/each}}
-									{{else}}
+						<fieldset>
+							<legend>{{_ "Selected_agents"}}</legend>
+
+							<div class="list">
+								<table>
+									<thead>
 										<tr>
-											<td colspan="4">{{_ "There_are_no_agents_added_to_this_department_yet"}}</td>
+											<th width="25%">{{_ "Username"}}</th>
+											<th>{{_ "Count"}}</th>
+											<th>{{_ "Order"}}</th>
+											<th>&nbsp;</th>
 										</tr>
-									{{/if}}
-								</tbody>
-							</table>
-						</div>
+									</thead>
+									<tbody>
+										{{#if selectedAgents}}
+											{{#each selectedAgents}}
+												<tr class="agent-info">
+													<td>{{username}}</td>
+													<td><input type="text" class="count-{{agentId}}" name="count" value="{{count}}" size="3"></td>
+													<td><input type="text" class="order-{{agentId}}" name="order" value="{{order}}" size="3"></td>
+													<td><a href="#remove" class="remove-agent"><i class="icon-trash"></i></a></td>
+												</tr>
+											{{/each}}
+										{{else}}
+											<tr>
+												<td colspan="4">{{_ "There_are_no_agents_added_to_this_department_yet"}}</td>
+											</tr>
+										{{/if}}
+									</tbody>
+								</table>
+							</div>
+
+						</fieldset>
 
 					</fieldset>
-
-				</fieldset>
-				<div class="submit">
-					<button type="button" class="button secondary back"><i class="icon-left-big"></i><span>{{_ "Back"}}</span></button>
-					<button class="button save"><i class="icon-floppy"></i><span>{{_ "Save"}}</span></button>
-				</div>
-			{{else}}
-				{{> loading}}
-			{{/if}}
-		</div>
-	</form>
+					<div class="submit">
+						<button class="button back" type="button"><i class="icon-left-big"></i><span>{{_ "Back"}}</span></button>
+						<button class="button primary save"><i class="icon-floppy"></i><span>{{_ "Save"}}</span></button>
+					</div>
+				{{else}}
+					{{> loading}}
+				{{/if}}
+			</div>
+		</form>
+	{{/requiresPermission}}
 </template>

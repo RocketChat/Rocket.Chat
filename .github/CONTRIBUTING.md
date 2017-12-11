@@ -36,3 +36,7 @@ Then run:
 ```
 eslint .
 ```
+
+# Contributor License Agreement
+
+Please review and sign our CLA at https://cla-assistant.io/RocketChat/Rocket.Chat

@@ -1,3 +1,5 @@
+import _ from 'underscore';
+
 /**
  * Livechat Custom Fields model
  */
@@ -8,22 +10,22 @@ class LivechatCustomField extends RocketChat.models._Base {
 
 	// FIND
 	findOneById(_id, options) {
-		const query = { _id: _id };
+		const query = { _id };
 
 		return this.findOne(query, options);
 	}
 
 	createOrUpdateCustomField(_id, field, label, scope, visibility, extraData) {
-		var record = {
-			label: label,
-			scope: scope,
-			visibility: visibility
+		const record = {
+			label,
+			scope,
+			visibility
 		};
 
 		_.extend(record, extraData);
 
 		if (_id) {
-			this.update({ _id: _id }, { $set: record });
+			this.update({ _id }, { $set: record });
 		} else {
 			record._id = field;
 			_id = this.insert(record);
@@ -34,7 +36,7 @@ class LivechatCustomField extends RocketChat.models._Base {
 
 	// REMOVE
 	removeById(_id) {
-		const query = { _id: _id };
+		const query = { _id };
 
 		return this.remove(query);
 	}

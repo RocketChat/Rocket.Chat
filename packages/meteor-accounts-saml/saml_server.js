@@ -1,5 +1,6 @@
 /* globals RoutePolicy, SAML */
 /* jshint newcap: false */
+import _ from 'underscore';
 
 if (!Accounts.saml) {
 	Accounts.saml = {
@@ -11,43 +12,55 @@ if (!Accounts.saml) {
 	};
 }
 
-var fiber = Npm.require('fibers');
-var connect = Npm.require('connect');
+const fiber = Npm.require('fibers');
+const connect = Npm.require('connect');
 RoutePolicy.declare('/_saml/', 'network');
 
+/**
+ * Fetch SAML provider configs for given 'provider'.
+ */
+function getSamlProviderConfig(provider) {
+	if (! provider) {
+		throw new Meteor.Error('no-saml-provider',
+			'SAML internal error',
+			{ method: 'getSamlProviderConfig' });
+	}
+	const samlProvider = function(element) {
+		return (element.provider === provider);
+	};
+	return Accounts.saml.settings.providers.filter(samlProvider)[0];
+}
+
 Meteor.methods({
-	samlLogout: function(provider) {
+	samlLogout(provider) {
 		// Make sure the user is logged in before initiate SAML SLO
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'samlLogout' });
 		}
-		var samlProvider = function(element) {
-			return (element.provider === provider);
-		};
-		var providerConfig = Accounts.saml.settings.providers.filter(samlProvider)[0];
+		const providerConfig = getSamlProviderConfig(provider);
 
 		if (Accounts.saml.settings.debug) {
-			console.log('Logout request from ' + JSON.stringify(providerConfig));
+			console.log(`Logout request from ${ JSON.stringify(providerConfig) }`);
 		}
 		// This query should respect upcoming array of SAML logins
-		var user = Meteor.users.findOne({
+		const user = Meteor.users.findOne({
 			_id: Meteor.userId(),
 			'services.saml.provider': provider
 		}, {
 			'services.saml': 1
 		});
-		var nameID = user.services.saml.nameID;
-		var sessionIndex = user.services.saml.idpSession;
+		let nameID = user.services.saml.nameID;
+		const sessionIndex = user.services.saml.idpSession;
 		nameID = sessionIndex;
 		if (Accounts.saml.settings.debug) {
-			console.log('NameID for user ' + Meteor.userId() + ' found: ' + JSON.stringify(nameID));
+			console.log(`NameID for user ${ Meteor.userId() } found: ${ JSON.stringify(nameID) }`);
 		}
 
-		var _saml = new SAML(providerConfig);
+		const _saml = new SAML(providerConfig);
 
-		var request = _saml.generateLogoutRequest({
-			nameID: nameID,
-			sessionIndex: sessionIndex
+		const request = _saml.generateLogoutRequest({
+			nameID,
+			sessionIndex
 		});
 
 		// request.request: actual XML SAML Request
@@ -61,10 +74,10 @@ Meteor.methods({
 			}
 		});
 
-		var _syncRequestToUrl = Meteor.wrapAsync(_saml.requestToUrl, _saml);
-		var result = _syncRequestToUrl(request.request, 'logout');
+		const _syncRequestToUrl = Meteor.wrapAsync(_saml.requestToUrl, _saml);
+		const result = _syncRequestToUrl(request.request, 'logout');
 		if (Accounts.saml.settings.debug) {
-			console.log('SAML Logout Request ' + result);
+			console.log(`SAML Logout Request ${ result }`);
 		}
 
 
@@ -77,9 +90,9 @@ Accounts.registerLoginHandler(function(loginRequest) {
 		return undefined;
 	}
 
-	var loginResult = Accounts.saml.retrieveCredential(loginRequest.credentialToken);
+	const loginResult = Accounts.saml.retrieveCredential(loginRequest.credentialToken);
 	if (Accounts.saml.settings.debug) {
-		console.log('RESULT :' + JSON.stringify(loginResult));
+		console.log(`RESULT :${ JSON.stringify(loginResult) }`);
 	}
 
 	if (loginResult === undefined) {
@@ -90,12 +103,14 @@ Accounts.registerLoginHandler(function(loginRequest) {
 	}
 
 	if (loginResult && loginResult.profile && loginResult.profile.email) {
-		var user = Meteor.users.findOne({
-			'emails.address': loginResult.profile.email
+		const email = RegExp.escape(loginResult.profile.email);
+		const emailRegex = new RegExp(`^${ email }$`, 'i');
+		let user = Meteor.users.findOne({
+			'emails.address': emailRegex
 		});
 
 		if (!user) {
-			var newUser = {
+			const newUser = {
 				name: loginResult.profile.cn || loginResult.profile.username,
 				active: true,
 				globalRoles: ['user'],
@@ -106,7 +121,7 @@ Accounts.registerLoginHandler(function(loginRequest) {
 			};
 
 			if (Accounts.saml.settings.generateUsername === true) {
-				var username = RocketChat.generateUsernameSuggestion(newUser);
+				const username = RocketChat.generateUsernameSuggestion(newUser);
 				if (username) {
 					newUser.username = username;
 				}
@@ -114,19 +129,19 @@ Accounts.registerLoginHandler(function(loginRequest) {
 				newUser.username = loginResult.profile.username;
 			}
 
-			var userId = Accounts.insertUserDoc({}, newUser);
+			const userId = Accounts.insertUserDoc({}, newUser);
 			user = Meteor.users.findOne(userId);
 		}
 
 		//creating the token and adding to the user
-		var stampedToken = Accounts._generateStampedLoginToken();
+		const stampedToken = Accounts._generateStampedLoginToken();
 		Meteor.users.update(user, {
 			$push: {
 				'services.resume.loginTokens': stampedToken
 			}
 		});
 
-		var samlLogin = {
+		const samlLogin = {
 			provider: Accounts.saml.RelayState,
 			idp: loginResult.profile.issuer,
 			idpSession: loginResult.profile.sessionIndex,
@@ -143,7 +158,7 @@ Accounts.registerLoginHandler(function(loginRequest) {
 		});
 
 		//sending token along with the userId
-		var result = {
+		const result = {
 			userId: user._id,
 			token: stampedToken.token
 		};
@@ -163,29 +178,30 @@ Accounts.saml.hasCredential = function(credentialToken) {
 
 Accounts.saml.retrieveCredential = function(credentialToken) {
 	// The credentialToken in all these functions corresponds to SAMLs inResponseTo field and is mandatory to check.
-	var result = Accounts.saml._loginResultForCredentialToken[credentialToken];
+	const result = Accounts.saml._loginResultForCredentialToken[credentialToken];
 	delete Accounts.saml._loginResultForCredentialToken[credentialToken];
 	return result;
 };
 
-var closePopup = function(res, err) {
+const closePopup = function(res, err) {
 	res.writeHead(200, {
 		'Content-Type': 'text/html'
 	});
-	var content = '<html><head><script>window.close()</script></head><body><H1>Verified</H1></body></html>';
+	let content = '<html><head><script>window.close()</script></head><body><H1>Verified</H1></body></html>';
 	if (err) {
-		content = '<html><body><h2>Sorry, an annoying error occured</h2><div>' + err + '</div><a onclick="window.close();">Close Window</a></body></html>';
+		content = `<html><body><h2>Sorry, an annoying error occured</h2><div>${ err }</div><a onclick="window.close();">Close Window</a></body></html>`;
 	}
 	res.end(content, 'utf-8');
 };
 
-var samlUrlToObject = function(url) {
+const samlUrlToObject = function(url) {
 	// req.url will be '/_saml/<action>/<service name>/<credentialToken>'
 	if (!url) {
 		return null;
 	}
 
-	var splitPath = url.split('/');
+	const splitUrl = url.split('?');
+	const splitPath = splitUrl[0].split('/');
 
 	// Any non-saml request will continue down the default
 	// middlewares.
@@ -193,7 +209,7 @@ var samlUrlToObject = function(url) {
 		return null;
 	}
 
-	var result = {
+	const result = {
 		actionName: splitPath[2],
 		serviceName: splitPath[3],
 		credentialToken: splitPath[4]
@@ -204,11 +220,11 @@ var samlUrlToObject = function(url) {
 	return result;
 };
 
-var middleware = function(req, res, next) {
+const middleware = function(req, res, next) {
 	// Make sure to catch any exceptions because otherwise we'd crash
 	// the runner
 	try {
-		var samlObject = samlUrlToObject(req.url);
+		const samlObject = samlUrlToObject(req.url);
 		if (!samlObject || !samlObject.serviceName) {
 			next();
 			return;
@@ -220,19 +236,19 @@ var middleware = function(req, res, next) {
 
 		console.log(Accounts.saml.settings.providers);
 		console.log(samlObject.serviceName);
-		var service = _.find(Accounts.saml.settings.providers, function(samlSetting) {
+		const service = _.find(Accounts.saml.settings.providers, function(samlSetting) {
 			return samlSetting.provider === samlObject.serviceName;
 		});
 
 		// Skip everything if there's no service set by the saml middleware
 		if (!service) {
-			throw new Error('Unexpected SAML service ' + samlObject.serviceName);
+			throw new Error(`Unexpected SAML service ${ samlObject.serviceName }`);
 		}
-		var _saml;
+		let _saml;
 		switch (samlObject.actionName) {
 			case 'metadata':
 				_saml = new SAML(service);
-				service.callbackUrl = Meteor.absoluteUrl('_saml/validate/' + service.provider);
+				service.callbackUrl = Meteor.absoluteUrl(`_saml/validate/${ service.provider }`);
 				res.writeHead(200);
 				res.write(_saml.generateServiceProviderMetadata(service.callbackUrl));
 				res.end();
@@ -243,16 +259,16 @@ var middleware = function(req, res, next) {
 				_saml = new SAML(service);
 				_saml.validateLogoutResponse(req.query.SAMLResponse, function(err, result) {
 					if (!err) {
-						var logOutUser = function(inResponseTo) {
+						const logOutUser = function(inResponseTo) {
 							if (Accounts.saml.settings.debug) {
-								console.log('Logging Out user via inResponseTo ' + inResponseTo);
+								console.log(`Logging Out user via inResponseTo ${ inResponseTo }`);
 							}
-							var loggedOutUser = Meteor.users.find({
+							const loggedOutUser = Meteor.users.find({
 								'services.saml.inResponseTo': inResponseTo
 							}).fetch();
 							if (loggedOutUser.length === 1) {
 								if (Accounts.saml.settings.debug) {
-									console.log('Found user ' + loggedOutUser[0]._id);
+									console.log(`Found user ${ loggedOutUser[0]._id }`);
 								}
 								Meteor.users.update({
 									_id: loggedOutUser[0]._id
@@ -289,15 +305,14 @@ var middleware = function(req, res, next) {
 				});
 				break;
 			case 'sloRedirect':
-				var idpLogout = req.query.redirect;
 				res.writeHead(302, {
 					// credentialToken here is the SAML LogOut Request that we'll send back to IDP
-					'Location': idpLogout
+					'Location': req.query.redirect
 				});
 				res.end();
 				break;
 			case 'authorize':
-				service.callbackUrl = Meteor.absoluteUrl('_saml/validate/' + service.provider);
+				service.callbackUrl = Meteor.absoluteUrl(`_saml/validate/${ service.provider }`);
 				service.id = samlObject.credentialToken;
 				_saml = new SAML(service);
 				_saml.getAuthorizeUrl(req, function(err, url) {
@@ -315,21 +330,31 @@ var middleware = function(req, res, next) {
 				Accounts.saml.RelayState = req.body.RelayState;
 				_saml.validateResponse(req.body.SAMLResponse, req.body.RelayState, function(err, profile/*, loggedOut*/) {
 					if (err) {
-						throw new Error('Unable to validate response url: ' + err);
+						throw new Error(`Unable to validate response url: ${ err }`);
 					}
 
-					var credentialToken = profile.inResponseToId || profile.InResponseTo || samlObject.credentialToken;
+					const credentialToken = profile.inResponseToId || profile.InResponseTo || samlObject.credentialToken;
 					if (!credentialToken) {
-						throw new Error('Unable to determine credentialToken');
+						// No credentialToken in IdP-initiated SSO
+						const saml_idp_credentialToken = Random.id();
+						Accounts.saml._loginResultForCredentialToken[saml_idp_credentialToken] = {
+							profile
+						};
+						const url = `${ Meteor.absoluteUrl('home') }?saml_idp_credentialToken=${ saml_idp_credentialToken }`;
+						res.writeHead(302, {
+							'Location': url
+						});
+						res.end();
+					} else {
+						Accounts.saml._loginResultForCredentialToken[credentialToken] = {
+							profile
+						};
+						closePopup(res);
 					}
-					Accounts.saml._loginResultForCredentialToken[credentialToken] = {
-						profile: profile
-					};
-					closePopup(res);
 				});
 				break;
 			default:
-				throw new Error('Unexpected SAML action ' + samlObject.actionName);
+				throw new Error(`Unexpected SAML action ${ samlObject.actionName }`);
 
 		}
 	} catch (err) {

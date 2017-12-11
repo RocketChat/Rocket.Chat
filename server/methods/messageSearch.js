@@ -1,17 +1,40 @@
+import s from 'underscore.string';
+
 Meteor.methods({
-	messageSearch: function(text, rid, limit) {
-		var from, mention, options, query, r, result, currentUserName, currentUserId, currentUserTimezoneOffset;
+	messageSearch(text, rid, limit) {
 		check(text, String);
 		check(rid, String);
 		check(limit, Match.Optional(Number));
-		currentUserId = Meteor.userId();
+
+		// TODO: Evaluate why we are returning `users` and `channels`, as the only thing that gets set is the `messages`.
+		const result = {
+			messages: [],
+			users: [],
+			channels: []
+		};
+
+		const currentUserId = Meteor.userId();
 		if (!currentUserId) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: 'messageSearch'
 			});
 		}
-		currentUserName = Meteor.user().username;
-		currentUserTimezoneOffset = Meteor.user().utcOffset;
+
+		// Don't process anything else if the user can't access the room
+		if (!Meteor.call('canAccessRoom', rid, currentUserId)) {
+			return result;
+		}
+
+		const currentUserName = Meteor.user().username;
+		const currentUserTimezoneOffset = Meteor.user().utcOffset;
+
+		const query = {};
+		const options = {
+			sort: {
+				ts: -1
+			},
+			limit: limit || 20
+		};
 
 		// I would place these methods at the bottom of the file for clarity but travis doesn't appreciate that.
 		// (no-use-before-define)
@@ -42,7 +65,7 @@ Meteor.methods({
 
 		function filterBeforeDate(_, day, month, year) {
 			month--;
-			var beforeDate = new Date(year, month, day);
+			const beforeDate = new Date(year, month, day);
 			beforeDate.setHours(beforeDate.getUTCHours() + beforeDate.getTimezoneOffset()/60 + currentUserTimezoneOffset);
 			query.ts = {
 				$lte: beforeDate
@@ -53,7 +76,7 @@ Meteor.methods({
 		function filterAfterDate(_, day, month, year) {
 			month--;
 			day++;
-			var afterDate = new Date(year, month, day);
+			const afterDate = new Date(year, month, day);
 			afterDate.setUTCHours(afterDate.getUTCHours() + afterDate.getTimezoneOffset()/60 + currentUserTimezoneOffset);
 			if (query.ts) {
 				query.ts.$gte = afterDate;
@@ -67,16 +90,20 @@ Meteor.methods({
 
 		function filterOnDate(_, day, month, year) {
 			month--;
-			var date, dayAfter;
-			date = new Date(year, month, day);
+			const date = new Date(year, month, day);
 			date.setUTCHours(date.getUTCHours() + date.getTimezoneOffset()/60 + currentUserTimezoneOffset);
-			dayAfter = new Date(date);
+			const dayAfter = new Date(date);
 			dayAfter.setDate(dayAfter.getDate() + 1);
 			delete query.ts;
 			query.ts = {
 				$gte: date,
 				$lt: dayAfter
 			};
+			return '';
+		}
+
+		function filterLabel(_, tag) {
+			query['attachments.0.labels'] = new RegExp(s.escapeRegExp(tag), 'i');
 			return '';
 		}
 
@@ -92,21 +119,9 @@ Meteor.methods({
 		/*
 		 text = 'from:rodrigo mention:gabriel chat'
 		 */
-		result = {
-			messages: [],
-			users: [],
-			channels: []
-		};
-		query = {};
-		options = {
-			sort: {
-				ts: -1
-			},
-			limit: limit || 20
-		};
 
 		// Query for senders
-		from = [];
+		const from = [];
 		text = text.replace(/from:([a-z0-9.-_]+)/ig, function(match, username) {
 			if (username === 'me' && !from.includes(currentUserName)) {
 				username = currentUserName;
@@ -114,24 +129,28 @@ Meteor.methods({
 			from.push(username);
 			return '';
 		});
+
 		if (from.length > 0) {
 			query['u.username'] = {
 				$regex: from.join('|'),
 				$options: 'i'
 			};
 		}
+
 		// Query for senders
-		mention = [];
+		const mention = [];
 		text = text.replace(/mention:([a-z0-9.-_]+)/ig, function(match, username) {
 			mention.push(username);
 			return '';
 		});
+
 		if (mention.length > 0) {
 			query['mentions.username'] = {
 				$regex: mention.join('|'),
 				$options: 'i'
 			};
 		}
+
 		// Filter on messages that are starred by the current user.
 		text = text.replace(/has:star/g, filterStarred);
 		// Filter on messages that have an url.
@@ -140,6 +159,8 @@ Meteor.methods({
 		text = text.replace(/is:pinned|has:pin/g, filterPinned);
 		// Filter on messages which have a location attached.
 		text = text.replace(/has:location|has:map/g, filterLocation);
+		// Filter image tags
+		text = text.replace(/label:(\w+)/g, filterLabel);
 		// Filtering before/after/on a date
 		// matches dd-MM-yyyy, dd/MM/yyyy, dd-MM-yyyy, prefixed by before:, after: and on: respectively.
 		// Example: before:15/09/2016 after: 10-08-2016
@@ -148,13 +169,13 @@ Meteor.methods({
 		text = text.replace(/after:(\d{1,2})[\/\.-](\d{1,2})[\/\.-](\d{4})/g, filterAfterDate);
 		text = text.replace(/on:(\d{1,2})[\/\.-](\d{1,2})[\/\.-](\d{4})/g, filterOnDate);
 		// Sort order
-		text = text.replace(/(?:order|sort):(asc|ascend|ascending|desc|descend|descening)/g, sortByTimestamp);
+		text = text.replace(/(?:order|sort):(asc|ascend|ascending|desc|descend|descending)/g, sortByTimestamp);
 
 		// Query in message text
 		text = text.trim().replace(/\s\s/g, ' ');
 		if (text !== '') {
 			if (/^\/.+\/[imxs]*$/.test(text)) {
-				r = text.split('/');
+				const r = text.split('/');
 				query.msg = {
 					$regex: r[1],
 					$options: r[2]
@@ -175,24 +196,22 @@ Meteor.methods({
 				};
 			}
 		}
+
 		if (Object.keys(query).length > 0) {
 			query.t = {
-				$ne: 'rm'  //hide removed messages (useful when searching for user messages)
+				$ne: 'rm' //hide removed messages (useful when searching for user messages)
 			};
 			query._hidden = {
-				$ne: true  // don't return _hidden messages
+				$ne: true // don't return _hidden messages
 			};
-			if (rid != null) {
-				query.rid = rid;
-				if (Meteor.call('canAccessRoom', rid, currentUserId) !== false) {
-					if (!RocketChat.settings.get('Message_ShowEditedStatus')) {
-						options.fields = {
-							'editedAt': 0
-						};
-					}
-					result.messages = RocketChat.models.Messages.find(query, options).fetch();
-				}
+			query.rid = rid;
+
+			if (!RocketChat.settings.get('Message_ShowEditedStatus')) {
+				options.fields = {
+					'editedAt': 0
+				};
 			}
+			result.messages = RocketChat.models.Messages.find(query, options).fetch();
 		}
 
 		return result;

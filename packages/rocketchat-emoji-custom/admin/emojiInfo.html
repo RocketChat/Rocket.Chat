@@ -15,8 +15,8 @@
 		{{/with}}
 		<nav>
 			{{#if hasPermission 'manage-emoji'}}
-			<button class='button edit-emoji button-block'><span><i class='icon-edit'></i> {{_ "Edit"}}</span></button>
-			<button class='button delete button-block'><span><i class='icon-trash'></i> {{_ "Delete"}}</span></button>
+			<button class='button button-block danger delete'><span><i class='icon-trash'></i> {{_ "Delete"}}</span></button>
+			<button class='button button-block primary edit-emoji'><span><i class='icon-edit'></i> {{_ "Edit"}}</span></button>
 			{{/if}}
 		</nav>
 	{{/if}}

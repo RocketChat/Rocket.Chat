@@ -1,0 +1,294 @@
+<template name="accountPreferences">
+	<section class="page-container page-home page-static">
+		<header class="fixed-title border-component-color">
+			{{> burger}}
+			<h2>
+				<span class="room-title">{{_ "Preferences"}}</span>
+			</h2>
+		</header>
+		<div class="content">
+			<div class="rocket-form">
+				<fieldset>
+					<div class="section">
+						<h1>{{_ "Localization"}}</h1>
+						<div class="section-content border-component-color">
+							<div class="input-line">
+								<label for="language">{{_ "Language"}}</label>
+								<div>
+									<select id="language" class="required">
+										{{#each languages}}
+											<option value="{{key}}" selected="{{userLanguage key}}" dir="auto">{{name}}</option>
+										{{/each}}
+									</select>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="section">
+						<h1>{{_ "User_Presence"}}</h1>
+						<div class="section-content border-component-color">
+							<div class="input-line double-col" id="enableAutoAway">
+								<label>{{_ "Enable_Auto_Away"}}</label>
+								<div>
+									<label><input type="radio" name="enableAutoAway" value="1" checked="{{ checked 'enableAutoAway' true true }}"/> {{_ "True"}}</label>
+									<label><input type="radio" name="enableAutoAway" value="0" checked="{{ checked 'enableAutoAway' false }}"/> {{_ "False"}}</label>
+								</div>
+							</div>
+
+							<div class="input-line double-col" id="idleTimeLimit">
+								<label>{{_ "Idle_Time_Limit"}}</label>
+								<div>
+									{{#if idleTimeLimit}}
+										<input type="number" name="idleTimeLimit" min="0" value="{{idleTimeLimit}}">
+									{{else}}
+										<input type="number" name="idleTimeLimit" min="0" value="" placeholder="{{_ "Use_Global_Settings"}} ({{defaultIdleTimeLimit}})">
+									{{/if}}
+								</div>
+							</div>
+						</div>
+
+					</div>
+					<div class="section">
+						<h1>{{_ "Messages"}}</h1>
+						<div class="section-content border-component-color">
+							<div class="input-line double-col">
+								<label>{{_ "Desktop_Notifications"}}</label>
+								<div>
+									{{#if desktopNotificationEnabled}}
+										<label>{{_ "Desktop_Notifications_Enabled"}}</label>
+										<label><button class="button test-notifications"><i class="icon-comment-empty secondary-font-color"></i> <span>{{_ "Test_Desktop_Notifications"}}</span></button></label>
+									{{else}}
+										{{#if desktopNotificationDisabled}}
+											<label>{{_ "Desktop_Notifications_Disabled"}}</label>
+										{{else}}
+											<label><button class="button enable-notifications"><i class="icon-comment-empty secondary-font-color"></i> <span>{{_ "Enable_Desktop_Notifications"}}</span></button></label>
+										{{/if}}
+									{{/if}}
+								</div>
+							</div>
+							<div class="input-line double-col">
+								<label>{{_ "Notification_Duration"}}</label>
+								<div>
+									{{#if desktopNotificationDuration}}
+										<input type="number" name="desktopNotificationDuration" min="0" value="{{desktopNotificationDuration}}">
+									{{else}}
+										<input type="number" name="desktopNotificationDuration" min="0" value="" placeholder="{{_ "Use_Global_Settings"}} ({{defaultDesktopNotificationDuration}})">
+									{{/if}}
+								</div>
+							</div>
+							<div class="input-line double-col" id="desktopNotifications">
+								<label>{{_ "Notification_Desktop_Default_For"}}</label>
+								<div>
+									<select class="input-monitor" name="desktopNotifications">
+										<option value="default" selected="{{selected 'desktopNotifications' 'default' true}}">{{_ "Default"}} ({{_ defaultDesktopNotification}})</option>
+										<option value="all" selected="{{selected 'desktopNotifications' 'all' false}}">{{_ "All_messages"}}</option>
+										<option value="mentions" selected="{{selected 'desktopNotifications' 'mentions' false}}">{{_ "Mentions"}}</option>
+										<option value="nothing" selected="{{selected 'desktopNotifications' 'nothing' false}}">{{_ "Nothing"}}</option>
+									</select>
+								</div>
+							</div>
+							<div class="input-line double-col" id="mobileNotifications">
+								<label>{{_ "Notification_Mobile_Default_For"}}</label>
+								<div>
+									<select class="input-monitor" name="mobileNotifications">
+										<option value="default" selected="{{selected 'mobileNotifications' 'default' true}}">{{_ "Default"}} ({{_ defaultMobileNotification}})</option>
+										<option value="all" selected="{{selected 'mobileNotifications' 'all' false}}">{{_ "All_messages"}}</option>
+										<option value="mentions" selected="{{selected 'mobileNotifications' 'mentions' false}}">{{_ "Mentions"}}</option>
+										<option value="nothing" selected="{{selected 'mobileNotifications' 'nothing' false}}">{{_ "Nothing"}}</option>
+									</select>
+								</div>
+							</div>
+							<div class="input-line double-col" id="unreadAlert">
+								<label>{{_ "Unread_Tray_Icon_Alert"}}</label>
+								<div>
+									<label><input type="radio" name="unreadAlert" value="1" checked="{{checked 'unreadAlert' true true}}"/> {{_ "On"}}</label>
+									<label><input type="radio" name="unreadAlert" value="0" checked="{{checked 'unreadAlert' false}}"/> {{_ "Off"}}</label>
+								</div>
+							</div>
+							<div class="input-line double-col">
+								<label>{{_ "Use_Emojis"}}</label>
+								<div>
+									<label><input type="radio" name="useEmojis" value="1" checked="{{checked 'useEmojis' true true}}" /> {{_ "True"}}</label>
+									<label><input type="radio" name="useEmojis" value="0" checked="{{checked 'useEmojis' false}}" /> {{_ "False"}}</label>
+								</div>
+							</div>
+							<div class="input-line double-col" id="convertAsciiEmoji">
+								<label>{{_ "Convert_Ascii_Emojis"}}</label>
+								<div>
+									<label><input type="radio" name="convertAsciiEmoji" value="1" checked="{{checked 'convertAsciiEmoji' true true}}" /> {{_ "True"}}</label>
+									<label><input type="radio" name="convertAsciiEmoji" value="0" checked="{{checked 'convertAsciiEmoji' false}}" /> {{_ "False"}}</label>
+								</div>
+							</div>
+							<div class="input-line double-col" id="autoImageLoad">
+								<label>{{_ "Auto_Load_Images"}}</label>
+								<div>
+									<label><input type="radio" name="autoImageLoad" value="1" checked="{{checked 'autoImageLoad' true true}}" /> {{_ "True"}}</label>
+									<label><input type="radio" name="autoImageLoad" value="0" checked="{{checked 'autoImageLoad' false}}" /> {{_ "False"}}</label>
+								</div>
+							</div>
+							<div class="input-line double-col" id="saveMobileBandwidth">
+								<label>{{_ "Save_Mobile_Bandwidth"}}</label>
+								<div>
+									<label><input type="radio" name="saveMobileBandwidth" value="1" checked="{{checked 'saveMobileBandwidth' true true}}" /> {{_ "True"}}</label>
+									<label><input type="radio" name="saveMobileBandwidth" value="0" checked="{{checked 'saveMobileBandwidth' false}}" /> {{_ "False"}}</label>
+								</div>
+							</div>
+							<div class="input-line double-col" id="collapseMediaByDefault">
+								<label>{{_ "Collapse_Embedded_Media_By_Default"}}</label>
+								<div>
+									<label><input type="radio" name="collapseMediaByDefault" value="1" checked="{{checked 'collapseMediaByDefault' true}}" /> {{_ "True"}}</label>
+									<label><input type="radio" name="collapseMediaByDefault" value="0" checked="{{checked 'collapseMediaByDefault' false true}}" /> {{_ "False"}}</label>
+								</div>
+							</div>
+							<div class="input-line double-col" id="hideUsernames">
+								<label>{{_ "Hide_usernames"}}</label>
+								<div>
+									<label><input type="radio" name="hideUsernames" value="1" checked="{{checked 'hideUsernames' true}}" /> {{_ "True"}}</label>
+									<label><input type="radio" name="hideUsernames" value="0" checked="{{checked 'hideUsernames' false true}}" /> {{_ "False"}}</label>
+								</div>
+							</div>
+							{{#if showRoles}}
+								<div class="input-line double-col" id="hideRoles">
+									<label>{{_ "Hide_roles"}}</label>
+									<div>
+										<label><input type="radio" name="hideRoles" value="1" checked="{{checked 'hideRoles' true}}" /> {{_ "True"}}</label>
+										<label><input type="radio" name="hideRoles" value="0" checked="{{checked 'hideRoles' false true}}" /> {{_ "False"}}</label>
+									</div>
+								</div>
+							{{/if}}
+							<div class="input-line double-col" id="hideFlexTab">
+								<label>{{_ "Hide_flextab"}}</label>
+								<div>
+									<label><input type="radio" name="hideFlexTab" value="1" checked="{{checked 'hideFlexTab' true}}" /> {{_ "True"}}</label>
+									<label><input type="radio" name="hideFlexTab" value="0" checked="{{checked 'hideFlexTab' false true}}" /> {{_ "False"}}</label>
+								</div>
+							</div>
+							<div class="input-line double-col" id="hideAvatars">
+								<label>{{_ "Hide_Avatars"}}</label>
+								<div>
+									<label><input type="radio" name="hideAvatars" value="1" checked="{{checked 'hideAvatars' true}}"/> {{_ "True"}}</label>
+									<label><input type="radio" name="hideAvatars" value="0" checked="{{checked 'hideAvatars' false true}}"/> {{_ "False"}}</label>
+								</div>
+							</div>
+							<div class="input-line double-col">
+								<label for="roomsListExhibitionMode">{{_ "Sidebar_list_mode"}}</label>
+								<div>
+									<select class="input-monitor" name="roomsListExhibitionMode" id="roomsListExhibitionMode">
+										<option value="unread" selected="{{selected 'roomsListExhibitionMode' 'unread'}}">{{_ "Unread_Rooms_Mode"}}</option>
+										<option value="activity" selected="{{selected 'roomsListExhibitionMode' 'activity'}}">{{_ "Sort_by_activity"}}</option>
+										<option value="category" selected="{{selected 'roomsListExhibitionMode' 'category' true}}">{{_ "Split_by_categories"}}</option>
+									</select>
+								</div>
+							</div>
+							{{# with disabled=showMergedChannels}}
+							<div class="input-line double-col" id="mergeChannels" {{disabled}}>
+								<label>{{_ "UI_Merge_Channels_Groups"}}</label>
+								<div>
+									<label><input type="radio" name="mergeChannels" value="1" checked="{{checked 'mergeChannels' true}}" {{disabled}}/> {{_ "True"}}</label>
+									<label><input type="radio" name="mergeChannels" value="0" checked="{{checked 'mergeChannels' false}}" {{disabled}}/> {{_ "False"}}</label>
+									<label><input type="radio" name="mergeChannels" value="-1" checked="{{checked 'mergeChannels' undefined true}}" {{disabled}}/> {{_ "Default"}}</label>
+								</div>
+							</div>
+							{{/with}}
+
+							<div class="input-line double-col" id="sendOnEnter">
+								<label>{{_ "Enter_Behaviour"}}</label>
+								<div>
+									<select class="input-monitor" name="sendOnEnter">
+										<option value="normal" selected="{{selected 'sendOnEnter' 'normal' true}}">{{_ "Enter_Normal"}}</option>
+										<option value="alternative" selected="{{selected 'sendOnEnter' 'alternative'}}">{{_ "Enter_Alternative"}}</option>
+										<option value="desktop" selected="{{selected 'sendOnEnter' 'desktop'}}">{{_ "Only_On_Desktop"}}</option>
+									</select>
+									<div class="info">{{_ "Enter_Behaviour_Description"}}</div>
+								</div>
+							</div>
+							<div class="input-line double-col" id="viewMode">
+								<label>{{_ "View_mode"}}</label>
+								<div>
+									<select class="input-monitor" name="viewMode">
+										<option value="0" selected="{{selected 'viewMode' 0 true}}">{{_ "Normal"}}</option>
+										<option value="1" selected="{{selected 'viewMode' 1 false}}">{{_ "Cozy"}}</option>
+										<option value="2" selected="{{selected 'viewMode' 2 false}}">{{_ "Compact"}}</option>
+									</select>
+									<div class="info">{{_ "View_mode_info"}}</div>
+								</div>
+							</div>
+							<div class="input-line double-col" id="emailNotificationMode">
+								<label>{{_ "Email_Notification_Mode"}}</label>
+								<div>
+									<select class="input-monitor" name="emailNotificationMode">
+										<option value="disabled" selected="{{selected 'emailNotificationMode' 'disabled' false}}">{{_ "Email_Notification_Mode_Disabled"}}</option>
+										<option value="all" selected="{{selected 'emailNotificationMode' 'all' true}}">{{_ "Email_Notification_Mode_All"}}</option>
+									</select>
+								</div>
+								<div class="info">{{_ "You_need_to_verifiy_your_email_address_to_get_notications"}}</div>
+							</div>
+						</div>
+					</div>
+					<div class="section">
+						<h1>{{_ "Sidebar"}}</h1>
+						<div class="section-content border-component-color">
+							<div class="input-line double-col" id="roomCounterSidebar">
+								<label>{{_ "Show_room_counter_on_sidebar"}}</label>
+								<div>
+									<label><input type="radio" name="roomCounterSidebar" value="1" checked="{{checked 'roomCounterSidebar' true}}"/> {{_ "True"}}</label>
+									<label><input type="radio" name="roomCounterSidebar" value="0" checked="{{checked 'roomCounterSidebar' false true}}"/> {{_ "False"}}</label>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="section">
+						<h1>{{_ "Highlights"}}</h1>
+						<div class="section-content border-component-color">
+							<div class="input-line double-col">
+								<label>{{_ "Highlights_List"}}</label>
+								<div>
+									<label>{{_ "Highlights_How_To"}}</label>
+									<textarea name="highlights" id="highlights" cols="30" rows="10">{{highlights}}</textarea>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="section">
+						<h1>{{_ "Sound"}}</h1>
+						<div class="section-content border-component-color">
+							<div class="input-line double-col">
+								<label>{{_ "New_Room_Notification"}}</label>
+								<div>
+									<select name="newRoomNotification" class="audio">
+										<option value="none" selected="{{$eq newRoomNotification 'none'}}">{{_ "None"}}</option>
+										<option value="door" selected="{{$eq newRoomNotification 'door'}}">Door ({{_ "Default"}})</option>
+										{{#each audioAssets}}
+											<option value="{{_id}}" selected="{{$eq newRoomNotification _id}}">{{name}}</option>
+										{{/each}}
+									</select>
+								</div>
+							</div>
+							<div class="input-line double-col">
+								<label>{{_ "New_Message_Notification"}}</label>
+								<div>
+									<select name="newMessageNotification" class="audio">
+										<option value="none" selected="{{$eq newMessageNotification 'none'}}">{{_ "None"}}</option>
+										<option value="chime" selected="{{$eq newMessageNotification 'chime'}}">Chime ({{_ "Default"}})</option>
+										{{#each audioAssets}}
+											<option value="{{_id}}" selected="{{$eq newMessageNotification _id}}">{{name}}</option>
+										{{/each}}
+									</select>
+								</div>
+							</div>
+							<div class="input-line double-col">
+								<label>{{_ "Notifications_Sound_Volume"}}</label>
+								<div>
+									{{> slider id="notificationsSoundVolume" min="0" max="100" value=notificationsSoundVolume}}
+								</div>
+							</div>
+						</div>
+					</div>
+				</fieldset>
+				<div class="submit">
+					<button class="button primary save"><i class="icon-send"></i><span>{{_ "Save_changes"}}</span></button>
+				</div>
+			</div>
+		</div>
+	</section>
+</template>

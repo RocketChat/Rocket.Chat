@@ -7,14 +7,14 @@ Meteor.methods({
 
 		const guest = Meteor.user();
 
-		let message = {
+		const message = {
 			_id: Random.id(),
 			rid: roomId || Random.id(),
 			msg: '',
 			ts: new Date()
 		};
 
-		let { room } = RocketChat.Livechat.getRoom(guest, message, { jitsiTimeout: new Date(Date.now() + 3600 * 1000) });
+		const { room } = RocketChat.Livechat.getRoom(guest, message, { jitsiTimeout: new Date(Date.now() + 3600 * 1000) });
 		message.rid = room._id;
 
 		RocketChat.models.Messages.createWithTypeRoomIdMessageAndUser('livechat_video_call', room._id, '', guest, {
@@ -27,7 +27,7 @@ Meteor.methods({
 		return {
 			roomId: room._id,
 			domain: RocketChat.settings.get('Jitsi_Domain'),
-			jitsiRoom: 'RocketChat' + CryptoJS.MD5(RocketChat.settings.get('uniqueID') + roomId).toString()
+			jitsiRoom: RocketChat.settings.get('Jitsi_URL_Room_Prefix') + RocketChat.settings.get('uniqueID') + roomId
 		};
 	}
 });

@@ -1,0 +1,10 @@
+{
+  "lockfileVersion": 1,
+  "dependencies": {
+    "marked": {
+      "version": "0.3.6",
+      "resolved": "https://registry.npmjs.org/marked/-/marked-0.3.6.tgz",
+      "integrity": "sha1-ssbGGPzOzk74bE/Gy4p8v1rtqNc="
+    }
+  }
+}

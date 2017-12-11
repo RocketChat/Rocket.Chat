@@ -12,40 +12,38 @@ Package.describe({
 
 Package.onUse(function(api) {
 	api.use([
+		'mongo',
 		'ecmascript',
 		'templating',
-		'coffeescript',
-		'underscore',
 		'rocketchat:lib'
 	]);
 
 	// template files
-	api.addFiles('admin/admin.html', 'client');
-	api.addFiles('admin/adminFlex.html', 'client');
-	api.addFiles('admin/adminInfo.html', 'client');
+	api.addFiles('client/admin.html', 'client');
+	api.addFiles('client/adminFlex.html', 'client');
+	api.addFiles('client/adminInfo.html', 'client');
 
-	api.addFiles('admin/rooms/adminRooms.html', 'client');
-	api.addFiles('admin/rooms/adminRoomInfo.html', 'client');
-	api.addFiles('admin/rooms/adminRoomInfo.coffee', 'client');
-	api.addFiles('admin/rooms/channelSettingsDefault.html', 'client');
-	api.addFiles('admin/rooms/channelSettingsDefault.js', 'client');
+	api.addFiles('client/rooms/adminRooms.html', 'client');
+	api.addFiles('client/rooms/adminRoomInfo.html', 'client');
+	api.addFiles('client/rooms/adminRoomInfo.js', 'client');
+	api.addFiles('client/rooms/channelSettingsDefault.html', 'client');
+	api.addFiles('client/rooms/channelSettingsDefault.js', 'client');
 
-	api.addFiles('admin/users/adminInviteUser.html', 'client');
-	api.addFiles('admin/users/adminUserChannels.html', 'client');
-	api.addFiles('admin/users/adminUserEdit.html', 'client');
-	api.addFiles('admin/users/adminUserInfo.html', 'client');
-	api.addFiles('admin/users/adminUsers.html', 'client');
+	api.addFiles('client/users/adminInviteUser.html', 'client');
+	api.addFiles('client/users/adminUserChannels.html', 'client');
+	api.addFiles('client/users/adminUserEdit.html', 'client');
+	api.addFiles('client/users/adminUserInfo.html', 'client');
+	api.addFiles('client/users/adminUsers.html', 'client');
 
-	// coffee files
-	api.addFiles('admin/admin.coffee', 'client');
-	api.addFiles('admin/adminFlex.coffee', 'client');
-	api.addFiles('admin/adminInfo.coffee', 'client');
+	api.addFiles('client/admin.js', 'client');
+	api.addFiles('client/adminFlex.js', 'client');
+	api.addFiles('client/adminInfo.js', 'client');
 
-	api.addFiles('admin/rooms/adminRooms.coffee', 'client');
+	api.addFiles('client/rooms/adminRooms.js', 'client');
 
-	api.addFiles('admin/users/adminInviteUser.coffee', 'client');
-	api.addFiles('admin/users/adminUserChannels.coffee', 'client');
-	api.addFiles('admin/users/adminUsers.coffee', 'client');
+	api.addFiles('client/users/adminInviteUser.js', 'client');
+	api.addFiles('client/users/adminUserChannels.js', 'client');
+	api.addFiles('client/users/adminUsers.js', 'client');
 
 	api.addFiles('publications/adminRooms.js', 'server');
 

@@ -8,9 +8,7 @@ Package.describe({
 Package.onUse(function(api) {
 	api.use([
 		'ecmascript',
-		'rocketchat:lib',
-		'underscore',
-		'aldeed:moment-timezone'
+		'rocketchat:lib'
 	]);
 
 	api.addFiles('lib/rocketchat.js', [ 'client', 'server' ]);

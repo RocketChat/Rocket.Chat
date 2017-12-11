@@ -1,25 +1,26 @@
 <template name="livechatFlex">
-	<header>
-		<div>
-			<h4>{{_ "Livechat"}}</h4>
-		</div>
-	</header>
-	<div class="content">
-		<div class="wrapper">
-			<ul class="flex-list">
-				<li>
-					<!-- <a href="{{pathFor 'livechat-dashboard'}}" class="{{active 'livechat-dashboard'}}">{{_ "Dashboard"}}</a> -->
-					<a href="{{pathFor 'livechat-current-chats'}}" class="{{active 'livechat-current-chats'}}">{{_ "Current_Chats"}}</a>
-					<a href="{{pathFor 'livechat-users'}}" class="{{active 'livechat-users'}}">{{_ "User_management"}}</a>
-					<a href="{{pathFor 'livechat-departments'}}" class="{{active 'livechat-departments' 'livechat-department-edit'}}">{{_ "Departments"}}</a>
-					<a href="{{pathFor 'livechat-triggers'}}" class="{{active 'livechat-triggers'}}">{{_ "Triggers"}}</a>
-					<a href="{{pathFor 'livechat-customfields'}}" class="{{active 'livechat-customfields'}}">{{_ "Custom_Fields"}}</a>
-					<a href="{{pathFor 'livechat-installation'}}" class="{{active 'livechat-installation'}}">{{_ "Installation"}}</a>
-					<a href="{{pathFor 'livechat-appearance'}}" class="{{active 'livechat-appearance'}}">{{_ "Appearance"}}</a>
-					<a href="{{pathFor 'livechat-integrations'}}" class="{{active 'livechat-integrations'}}">{{_ "Integrations"}}</a>
-					<a href="{{pathFor 'livechat-officeHours'}}" class="{{active 'livechat-officeHours'}}">{{_ "Office_Hours"}}</a>
-				</li>
+	<aside class="sidebar-light" role="navigation">
+		<header class="sidebar-flex__header">
+			<h1 class="sidebar-flex__title">{{_ "Livechat"}}</h1>
+			{{#unless embeddedVersion}}
+				<button class="sidebar-flex__close-button" data-action="close">
+					{{> icon block="sidebar-flex__close-icon" icon="cross"}}
+				</button>
+			{{/unless}}
+		</header>
+		<div class="rooms-list {{#if embeddedVersion}}rooms-list--embedded{{/if}}">
+			<ul class="rooms-list__list">
+				{{> sidebarItem menuItem "Current_Chats" false "livechat-current-chats" }}
+				{{> sidebarItem menuItem "User_management" false "livechat-users" }}
+				{{> sidebarItem menuItem "Departments" false "livechat-departments" }}
+				{{> sidebarItem menuItem "Triggers" false "livechat-triggers" }}
+				{{> sidebarItem menuItem "Custom_Fields" false "livechat-customfields" }}
+				{{> sidebarItem menuItem "Installation" false "livechat-installation" }}
+				{{> sidebarItem menuItem "Appearance" false "livechat-appearance" }}
+				{{> sidebarItem menuItem "Webhooks" false "livechat-webhooks" }}
+				{{> sidebarItem menuItem "Facebook Messenger" false "livechat-facebook" }}
+				{{> sidebarItem menuItem "Office_Hours" false "livechat-officeHours" }}
 			</ul>
 		</div>
-	</div>
+	</aside>
 </template>

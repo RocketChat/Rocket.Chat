@@ -1,0 +1,15 @@
+<template name="videoButtons">
+	<div class="buttons-group">
+		{{#if videoAvaliable}}
+			{{#unless videoActive}}
+				{{#if callInProgress}}
+					<button class="button join-video-call primary" aria-label="{{_ "Join_video_call"}}"><i class="icon-videocam"></i></button>
+					<button class="button join-audio-call secondary" aria-label="{{_ "Join_audio_call"}}"><i class="icon-phone"></i></button>
+				{{else}}
+					<button class="button start-video-call primary" aria-label="{{_ "Start_video_call"}}"><i class="icon-videocam"></i></button>
+					<button class="button start-audio-call secondary" aria-label="{{_ "Start_audio_call"}}"><i class="icon-phone"></i></button>
+				{{/if}}
+			{{/unless}}
+		{{/if}}
+	</div>
+</template>

@@ -6,14 +6,14 @@ Package.describe({
 });
 
 Npm.depends({
-	autolinker: '1.2.0'
+	autolinker: '1.4.0'
 });
 
 Package.onUse(function(api) {
 	api.use('ecmascript');
 	api.use('rocketchat:lib');
 
-	api.addFiles('client.js', 'client');
+	api.addFiles('client/client.js', 'client');
 
-	api.addFiles('settings.js', 'server');
+	api.addFiles('server/settings.js', 'server');
 });

@@ -1,3 +1,7 @@
+import _ from 'underscore';
+import moment from 'moment';
+import 'moment-timezone';
+
 const start = '<table style="width: 100%; border: 1px solid; border-collapse: collapse; table-layout: fixed; margin-top: 10px; font-size: 12px; word-break: break-word;"><tbody>';
 const end = '</tbody></table>';
 const opentr = '<tr style="border: 1px solid;">';
@@ -36,7 +40,7 @@ RocketChat.smarsh.generateEml = () => {
 				msgs: 0,
 				files: [],
 				time: smarshHistory ? moment(date).diff(moment(smarshHistory.lastRan), 'minutes') : moment(date).diff(moment(room.ts), 'minutes'),
-				room: room.name ? `#${room.name}` : `Direct Message Between: ${room.usernames.join(' & ')}`
+				room: room.name ? `#${ room.name }` : `Direct Message Between: ${ room.usernames.join(' & ') }`
 			};
 
 			RocketChat.models.Messages.find(query).forEach((message) => {
@@ -56,9 +60,9 @@ RocketChat.smarsh.generateEml = () => {
 
 				//Get the user's email, can be nothing if it is an unconfigured bot account (like rocket.cat)
 				if (sender.emails && sender.emails[0] && sender.emails[0].address) {
-					rows.push(`${sender.name} &lt;${sender.emails[0].address}&gt;`);
+					rows.push(`${ sender.name } &lt;${ sender.emails[0].address }&gt;`);
 				} else {
-					rows.push(`${sender.name} &lt;${smarshMissingEmail}&gt;`);
+					rows.push(`${ sender.name } &lt;${ smarshMissingEmail }&gt;`);
 				}
 				rows.push(closetd);
 
@@ -70,11 +74,11 @@ RocketChat.smarsh.generateEml = () => {
 					if (messageType) {
 						rows.push(TAPi18n.__(messageType.message, messageType.data ? messageType.data(message) : '', 'en'));
 					} else {
-						rows.push(`${message.msg} (${message.t})`);
+						rows.push(`${ message.msg } (${ message.t })`);
 					}
 				} else if (message.file) {
 					data.files.push(message.file._id);
-					rows.push(`${message.attachments[0].title} (${_getLink(message.attachments[0])})`);
+					rows.push(`${ message.attachments[0].title } (${ _getLink(message.attachments[0]) })`);
 				} else if (message.attachments) {
 					const attaches = [];
 					_.each(message.attachments, function _loopThroughMessageAttachments(a) {
@@ -87,7 +91,7 @@ RocketChat.smarsh.generateEml = () => {
 						// }
 					});
 
-					rows.push(`${message.msg} (${attaches.join(', ')})`);
+					rows.push(`${ message.msg } (${ attaches.join(', ') })`);
 				} else {
 					rows.push(message.msg);
 				}
@@ -107,7 +111,7 @@ RocketChat.smarsh.generateEml = () => {
 
 				RocketChat.smarsh.sendEmail({
 					body: result,
-					subject: `Rocket.Chat, ${data.users.length} Users, ${data.msgs} Messages, ${data.files.length} Files, ${data.time} Minutes, in ${data.room}`,
+					subject: `Rocket.Chat, ${ data.users.length } Users, ${ data.msgs } Messages, ${ data.files.length } Files, ${ data.time } Minutes, in ${ data.room }`,
 					files: data.files
 				});
 			}

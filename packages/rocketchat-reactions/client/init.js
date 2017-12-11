@@ -1,18 +1,18 @@
 Template.room.events({
-	'click .add-reaction'(event) {
+	'click .add-reaction, click [data-message-action="reaction-message"]'(event) {
 		event.preventDefault();
 		event.stopPropagation();
 		const data = Blaze.getData(event.currentTarget);
 
-		let user = Meteor.user();
-		let room = RocketChat.models.Rooms.findOne({ _id: data._arguments[1].rid });
+		const user = Meteor.user();
+		const room = RocketChat.models.Rooms.findOne({ _id: data._arguments[1].rid });
 
-		if (Array.isArray(room.muted) && room.muted.indexOf(user.username) !== -1) {
+		if (Array.isArray(room.muted) && room.muted.indexOf(user.username) !== -1 && !room.reactWhenReadOnly) {
 			return false;
 		}
 
 		RocketChat.EmojiPicker.open(event.currentTarget, (emoji) => {
-			Meteor.call('setReaction', ':' + emoji + ':', data._arguments[1]._id);
+			Meteor.call('setReaction', `:${ emoji }:`, data._arguments[1]._id);
 		});
 	},
 
@@ -38,8 +38,8 @@ Template.room.events({
 Meteor.startup(function() {
 	RocketChat.MessageAction.addButton({
 		id: 'reaction-message',
-		icon: 'icon-people-plus',
-		i18nLabel: 'Reactions',
+		icon: 'add-reaction',
+		label: 'Reactions',
 		context: [
 			'message',
 			'message-mobile'
@@ -50,21 +50,26 @@ Meteor.startup(function() {
 			event.stopPropagation();
 
 			RocketChat.EmojiPicker.open(event.currentTarget, (emoji) => {
-				Meteor.call('setReaction', ':' + emoji + ':', data._arguments[1]._id);
+				Meteor.call('setReaction', `:${ emoji }:`, data._arguments[1]._id);
 			});
 		},
-		validation(message) {
-			let room = RocketChat.models.Rooms.findOne({ _id: message.rid });
-			let user = Meteor.user();
+		condition(message) {
+			const room = RocketChat.models.Rooms.findOne({ _id: message.rid });
+			const user = Meteor.user();
 
-			if (Array.isArray(room.muted) && room.muted.indexOf(user.username) !== -1) {
+			if (!room) {
+				return false;
+			} else if (Array.isArray(room.muted) && room.muted.indexOf(user.username) !== -1 && !room.reactWhenReadOnly) {
 				return false;
 			} else if (!RocketChat.models.Subscriptions.findOne({ rid: message.rid })) {
+				return false;
+			} else if (message.private) {
 				return false;
 			}
 
 			return true;
 		},
-		order: 22
+		order: 22,
+		group: 'message'
 	});
 });

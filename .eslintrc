@@ -1,6 +1,10 @@
 {
 	"parserOptions": {
-		"sourceType": "module"
+		"sourceType": "module",
+		"ecmaVersion": 2017,
+		"ecmaFeatures": {
+				"experimentalObjectRestSpread" : true
+		}
 	},
 	"env": {
 		"browser": true,
@@ -23,6 +27,7 @@
 		"no-delete-var": 2,
 		"no-dupe-keys": 2,
 		"no-dupe-args": 2,
+		"no-dupe-class-members": 2,
 		"no-duplicate-case": 2,
 		"no-empty": 2,
 		"no-empty-character-class": 2,
@@ -47,6 +52,9 @@
 			"vars": "all",
 			"args": "after-used"
 		}],
+		"no-void": 2,
+		"no-var": 2,
+		"one-var": [2, "never"],
 		"no-lonely-if": 2,
 		"no-trailing-spaces": 2,
 		"complexity": [1, 31],
@@ -54,6 +62,7 @@
 		"space-before-function-paren": [2, "never"],
 		"space-before-blocks": [2, "always"],
 		"indent": [2, "tab", {"SwitchCase": 1}],
+		"eol-last": [2, "always"],
 		"comma-dangle": [2, "never"],
 		"keyword-spacing": 2,
 		"block-spacing": 2,
@@ -67,16 +76,19 @@
 		"curly": [2, "all"],
 		"eqeqeq": [2, "allow-null"],
 		"new-cap":  [2, {
-			"capIsNewExceptions": ["Match.Optional", "Match.Maybe", "Match.ObjectIncluding"]
+			"capIsNewExceptions": ["Match.Optional", "Match.Maybe", "Match.ObjectIncluding", "Push.Configure", "SHA256"]
 		}],
 		"use-isnan": 2,
 		"valid-typeof": 2,
 		"linebreak-style": [2, "unix"],
+		"prefer-template": 2,
+		"template-curly-spacing": [2, "always"],
 		"quotes": [2, "single"],
-		"semi": [2, "always"]
+		"semi": [2, "always"],
+		"prefer-const": 2,
+		"object-shorthand": 2
 	},
 	"globals": {
-		"_"                           : false,
 		"__meteor_runtime_config__"   : false,
 		"AccountBox"                  : false,
 		"Accounts"                    : false,
@@ -92,9 +104,11 @@
 		"check"                       : false,
 		"CryptoJS"                    : false,
 		"Department"                  : false,
+		"DDPRateLimiter"              : false,
 		"EJSON"                       : false,
 		"Email"                       : false,
 		"FlowRouter"                  : false,
+		"FileUpload"                  : false,
 		"HTTP"                        : false,
 		"getNextAgent"                : false,
 		"handleError"                 : false,
@@ -118,9 +132,8 @@
 		"ReactiveVar"                 : false,
 		"RocketChat"                  : true,
 		"RocketChatFile"              : false,
-		"RocketChatFileAvatarInstance": false,
 		"RoomHistoryManager"          : false,
-		"s"                           : false,
+		"RoomManager"                 : false,
 		"ServiceConfiguration"        : false,
 		"Session"                     : false,
 		"Settings"                    : false,
@@ -138,6 +151,8 @@
 		"Triggers"                    : false,
 		"UAParser"                    : false,
 		"visitor"                     : false,
-		"WebApp"                      : false
+		"WebApp"                      : false,
+		"VideoRecorder"               : false,
+		"VRecDialog"                  : false
 	}
 }

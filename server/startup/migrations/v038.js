@@ -1,8 +1,8 @@
 RocketChat.Migrations.add({
 	version: 38,
-	up: function() {
+	up() {
 		if (RocketChat && RocketChat.settings && RocketChat.settings.get) {
-			var allowPinning = RocketChat.settings.get('Message_AllowPinningByAnyone');
+			const allowPinning = RocketChat.settings.get('Message_AllowPinningByAnyone');
 
 			// If public pinning was allowed, add pinning permissions to 'users', else leave it to 'owners' and 'moderators'
 			if (allowPinning) {

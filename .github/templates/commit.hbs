@@ -1,0 +1,40 @@
+{{!-- pr reference --}}- {{#if pr}}[#{{pr}}]({{pr_url}}){{/if}}
+
+{{~!-- subject --}} {{subject}}
+
+{{~!-- commit references --}}
+{{~#if references~}}
+  , closes
+  {{~#each references}} {{#if @root.linkReferences~}}
+    [
+    {{~#if this.owner}}
+      {{~this.owner}}/
+    {{~/if}}
+    {{~this.repository}}#{{this.issue}}](
+    {{~#if @root.repository}}
+      {{~#if @root.host}}
+        {{~@root.host}}/
+      {{~/if}}
+      {{~#if this.repository}}
+        {{~#if this.owner}}
+          {{~this.owner}}/
+        {{~/if}}
+        {{~this.repository}}
+      {{~else}}
+        {{~#if @root.owner}}
+          {{~@root.owner}}/
+        {{~/if}}
+          {{~@root.repository}}
+        {{~/if}}
+    {{~else}}
+      {{~@root.repoUrl}}
+    {{~/if}}/
+    {{~@root.issue}}/{{this.issue}})
+  {{~else}}
+    {{~#if this.owner}}
+      {{~this.owner}}/
+    {{~/if}}
+    {{~this.repository}}#{{this.issue}}
+  {{~/if}}{{/each}}
+{{~/if}}
+

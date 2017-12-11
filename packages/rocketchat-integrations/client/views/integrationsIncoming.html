@@ -16,50 +16,46 @@
 							<label>{{_ "Name"}} ({{_ "optional"}})</label>
 							<div>
 								<input type="text" name="name" value="{{data.name}}" placeholder="{{_ 'Optional'}}" />
-								<div class="settings-description">{{_ "You_should_name_it_to_easily_manage_your_integrations"}}</div>
+								<div class="settings-description secondary-font-color">{{_ "You_should_name_it_to_easily_manage_your_integrations"}}</div>
 							</div>
 						</div>
 						<div class="input-line double-col">
 							<label>{{_ "Post_to_Channel"}}</label>
 							<div>
 								<input type="text" name="channel" value="{{data.channel}}" placeholder="{{_ 'User_or_channel_name'}}" />
-								<div class="settings-description">{{_ "Messages_that_are_sent_to_the_Incoming_WebHook_will_be_posted_here"}}</div>
-								<div class="settings-description">{{{_ "Start_with_s_for_user_or_s_for_channel_Eg_s_or_s" "@" "#" "@john" "#general"}}}</div>
+								<div class="settings-description secondary-font-color">{{_ "Messages_that_are_sent_to_the_Incoming_WebHook_will_be_posted_here"}}</div>
+								<div class="settings-description secondary-font-color">{{{_ "Start_with_s_for_user_or_s_for_channel_Eg_s_or_s" "@" "#" "@john" "#general"}}}</div>
 							</div>
 						</div>
 						<div class="input-line double-col">
 							<label>{{_ "Post_as"}}</label>
 							<div>
-								{{#if data.token}}
-									<input type="text" name="username" value="{{data.username}}" readonly="readonly" />
-								{{else}}
-									<input type="text" name="username" value="{{data.username}}" />
-								{{/if}}
-								<div class="settings-description">{{_ "Choose_the_username_that_this_integration_will_post_as"}}</div>
-								<div class="settings-description">{{_ "Should_exists_a_user_with_this_username"}}</div>
+								<input type="text" name="username" value="{{data.username}}" />
+								<div class="settings-description secondary-font-color">{{_ "Choose_the_username_that_this_integration_will_post_as"}}</div>
+								<div class="settings-description secondary-font-color">{{_ "Should_exists_a_user_with_this_username"}}</div>
 							</div>
 						</div>
 						<div class="input-line double-col">
 							<label>{{_ "Alias"}} ({{_ "optional"}})</label>
 							<div>
 								<input type="text" name="alias" value="{{data.alias}}" placeholder="{{_ 'Optional'}}" />
-								<div class="settings-description">{{_ "Choose_the_alias_that_will_appear_before_the_username_in_messages"}}</div>
+								<div class="settings-description secondary-font-color">{{_ "Choose_the_alias_that_will_appear_before_the_username_in_messages"}}</div>
 							</div>
 						</div>
 						<div class="input-line double-col">
 							<label>{{_ "Avatar_URL"}} ({{_ "optional"}})</label>
 							<div>
 								<input type="url" name="avatar" value="{{data.avatar}}" placeholder="{{_ 'Optional'}}" />
-								<div class="settings-description">{{_ "You_can_change_a_different_avatar_too"}}</div>
-								<div class="settings-description">{{_ "Should_be_a_URL_of_an_image"}}</div>
+								<div class="settings-description secondary-font-color">{{_ "You_can_change_a_different_avatar_too"}}</div>
+								<div class="settings-description secondary-font-color">{{_ "Should_be_a_URL_of_an_image"}}</div>
 							</div>
 						</div>
 						<div class="input-line double-col">
 							<label>{{_ "Emoji"}} ({{_ "optional"}})</label>
 							<div>
 								<input type="text" name="emoji" value="{{data.emoji}}" placeholder="{{_ 'Optional'}}" />
-								<div class="settings-description">{{_ "You_can_use_an_emoji_as_avatar"}}</div>
-								<div class="settings-description">{{{_ "Example_s" ":ghost:"}}}</div>
+								<div class="settings-description secondary-font-color">{{_ "You_can_use_an_emoji_as_avatar"}}</div>
+								<div class="settings-description secondary-font-color">{{{_ "Example_s" ":ghost:"}}}</div>
 							</div>
 						</div>
 						<div class="input-line double-col">
@@ -78,20 +74,16 @@
 									</div>
 									{{> CodeMirror name="script" options=editorOptions code=data.script }}
 									<div class="buttons">
-										<button class="button button-primary button-fullscreen">
-											Full Screen
-										</button>
-										<button class="button button-primary button-restore">
-											Exit Full Screen
-										</button>
+										<button class="button primary button-fullscreen">Full Screen</button>
+										<button class="button primary button-restore">Exit Full Screen</button>
 									</div>
 								</div>
 								{{#if data.scriptError}}
 									<div class="code-error-box">
-										<div class="title">
+										<div class="title color-content-background-color background-error-color">
 											{{data.scriptError.name}}
 										</div>
-										<pre>{{data.scriptError.message}}</pre>
+										<pre class="script-error background-transparent-lightest error-color error-border">{{data.scriptError.message}}</pre>
 									</div>
 								{{/if}}
 							</div>
@@ -101,25 +93,25 @@
 								<label>Webhook URL</label>
 								<div>
 									<input type="text" name="webhookurl" value="{{data.url}}" readonly="readonly" />
-									<div class="settings-description">{{_ "Send_your_JSON_payloads_to_this_URL"}}</div>
-									<div class="settings-description"><button class="clipboard" data-clipboard-target="[name=webhookurl]">{{_ "COPY_TO_CLIPBOARD"}}</button></div>
+									<div class="settings-description secondary-font-color">{{_ "Send_your_JSON_payloads_to_this_URL"}}</div>
+									<div class="settings-description secondary-font-color"><button class="clipboard" data-clipboard-target="[name=webhookurl]">{{_ "COPY_TO_CLIPBOARD"}}</button></div>
 								</div>
 							</div>
 							<div class="input-line double-col">
 								<label>Token</label>
 								<div>
 									<input type="text" name="completeToken" value="{{data.completeToken}}" readonly="readonly" />
-									<div class="settings-description"><button class="clipboard" data-clipboard-target="[name=completeToken]">{{_ "COPY_TO_CLIPBOARD"}}</button></div>
+									<div class="settings-description secondary-font-color"><button class="clipboard" data-clipboard-target="[name=completeToken]">{{_ "COPY_TO_CLIPBOARD"}}</button></div>
 								</div>
 							</div>
 						{{/if}}
 						<div class="input-line double-col">
 							<label>{{_ "Example"}}</label>
 							<div>
-								<pre><code class="hljs json json-example">{{{exampleJson}}}</code></pre>
+								<pre><code class="code-colors hljs json json-example">{{{exampleJson}}}</code></pre>
 								{{#if curl}}
 									<input type="text" name="curl" value="{{curl}}" readonly="readonly" />
-									<div class="settings-description"><button class="clipboard" data-clipboard-target="[name=curl]">{{_ "COPY_TO_CLIPBOARD"}}</button></div>
+									<div class="settings-description secondary-font-color"><button class="clipboard" data-clipboard-target="[name=curl]">{{_ "COPY_TO_CLIPBOARD"}}</button></div>
 								{{/if}}
 							</div>
 						</div>
@@ -130,9 +122,9 @@
 				</div>
 				<div class="submit">
 					{{#if data.token}}
-						<button class="button delete"><i class="icon-trash"></i><span>{{_ "Delete"}}</span></button>
+						<button class="button danger delete"><i class="icon-trash"></i><span>{{_ "Delete"}}</span></button>
 					{{/if}}
-					<button class="button save"><i class="icon-send"></i><span>{{_ "Save_changes"}}</span></button>
+					<button class="button primary save"><i class="icon-send"></i><span>{{_ "Save_changes"}}</span></button>
 				</div>
 			</div>
 		{{else}}

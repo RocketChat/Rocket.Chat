@@ -9,34 +9,36 @@ Package.onUse(function(api) {
 	api.use('rocketchat:lib');
 	api.use('rocketchat:logger');
 	api.use('rocketchat:assets');
-	api.use('coffeescript');
-	api.use('underscore');
+	api.use('ecmascript');
+	api.use('less');
 	api.use('webapp');
 	api.use('webapp-hashing');
-
 	api.use('templating', 'client');
 
+	// Compiled stylesheets
+	api.addFiles('client/main.css', 'client');
 
-	api.addFiles('server/server.coffee', 'server');
-	api.addFiles('server/variables.coffee', 'server');
+	// Server side files
+	api.addFiles('server/server.js', 'server');
+	api.addFiles('server/variables.js', 'server');
 
-	api.addFiles('client/minicolors/jquery.minicolors.css', 'client');
-	api.addFiles('client/minicolors/jquery.minicolors.js', 'client');
+	// Colorpicker
+	api.addFiles('client/vendor/jscolor.js', 'client');
 
+	// Photoswipe
+	api.addFiles('client/vendor/photoswipe.css', 'client');
 
-	api.addAssets('assets/stylesheets/global/_variables.less', 'server');
-	api.addAssets('assets/stylesheets/utils/_mixins.import.less', 'server');
-	api.addAssets('assets/stylesheets/utils/_colors.import.less', 'server');
-	api.addAssets('assets/stylesheets/utils/_keyframes.import.less', 'server');
-	api.addAssets('assets/stylesheets/utils/_lesshat.import.less', 'server');
-	api.addAssets('assets/stylesheets/utils/_preloader.import.less', 'server');
-	api.addAssets('assets/stylesheets/utils/_reset.import.less', 'server');
-	api.addAssets('assets/stylesheets/utils/_chatops.less', 'server');
-	api.addAssets('assets/stylesheets/animation.css', 'server');
-	api.addAssets('assets/stylesheets/base.less', 'server');
-	api.addAssets('assets/stylesheets/fontello.css', 'server');
-	api.addAssets('assets/stylesheets/rtl.less', 'server');
-	api.addAssets('assets/stylesheets/swipebox.min.css', 'server');
+	api.addAssets('client/imports/general/variables.css', 'server');
+	// Fontello
+	api.addFiles('client/vendor/fontello/css/fontello.css', 'client');
+	api.addAssets('client/vendor/fontello/font/fontello.eot', 'client');
+	api.addAssets('client/vendor/fontello/font/fontello.svg', 'client');
+	api.addAssets('client/vendor/fontello/font/fontello.ttf', 'client');
+	api.addAssets('client/vendor/fontello/font/fontello.woff', 'client');
+	api.addAssets('client/vendor/fontello/font/fontello.woff2', 'client');
+
+	// Run-time stylesheets
+	api.addAssets('server/colors.less', 'server');
 });
 
 Npm.depends({

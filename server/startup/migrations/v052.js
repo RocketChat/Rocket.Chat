@@ -1,6 +1,6 @@
 RocketChat.Migrations.add({
 	version: 52,
-	up: function() {
+	up() {
 		RocketChat.models.Users.update({ _id: 'rocket.cat' }, { $addToSet: { roles: 'bot' } });
 	}
 });

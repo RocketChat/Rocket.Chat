@@ -1,106 +1,109 @@
 <template name="channelSettings">
-	<div class="content">
-		<div class="list-view channel-settings">
-			<div class="title">
-				<h2>{{_ "Project Info"}}</h2>
-			</div>
-			<form>
-				<ul class="list clearfix">
-					{{#let projectInfo = getProjectInfo}}
-						{{#each toArray projectInfo}}
-							{{#if $value}}
-								<li>
-									<label>{{$key}}</label>
-									<span class='current-setting'>{{{$value}}}</span>
-								</li>
-							{{/if}}
-						{{/each}}
-					{{/let}}
-					<!--
-					{{#let room=getRoom}}
-						{{#each toArray settings}}
-
-							{{#if $value.canView room}}
-								{{#let value=(valueOf room $key)}}
-									<li>
-										<label>{{_ $value.label}}</label>
-										<div>
-											{{#if $eq $value.type 'text'}}
-												{{#if editing $key}}
-													<input type="text" name="{{$key}}" value="{{value}}" class="editing" />
-												{{else}}
-													<span class='current-setting'>{{value}}</span>
-												{{/if}}
-											{{/if}}
-
-											{{#if $eq $value.type 'markdown'}}
-												{{#if editing $key}}
-													<input type="text" name="{{$key}}" value="{{unscape value}}" class="editing" />
-												{{else}}
-													<span class='current-setting'>{{{RocketChatMarkdown value}}}</span>
-												{{/if}}
-											{{/if}}
-
-											{{#if $eq $value.type 'select'}}
-												{{#if editing $key}}
-													{{#each toArray $value.options}}
-														<label>
-															<input type="radio" name="{{../$key}}" value="{{$key}}" checked="{{$eq value $key}}" class="editing" />
-															{{_ $value}}
-														</label>
-													{{/each}}
-												{{else}}
-													<span class='current-setting'>{{_ (valueOf $value.options value)}}</span>
-												{{/if}}
-											{{/if}}
-
-											{{#if $eq $value.type 'boolean'}}
-												{{#if editing $key}}
-													<label>
-														<input type="radio" name="{{$key}}" value="true" checked="{{$eq value true}}" class="editing" />
-														{{_ 'True'}}
-													</label>
-													<label>
-														<input type="radio" name="{{$key}}" value="false" checked="{{$neq value true}}" class="editing" />
-														{{_ 'False'}}
-													</label>
-												{{else}}
-													{{#if value}}
-														<span class='current-setting'>{{_ 'True'}}</span>
-													{{else}}
-														<span class='current-setting'>{{_ 'False'}}</span>
-													{{/if}}
-												{{/if}}
-											{{/if}}
-
-											{{#if editing $key}}
-												<button type="button" class="button secondary cancel">{{_ "Cancel"}}</button>
-												<button type="button" class="button primary save">{{_ "Save"}}</button>
-											{{else}}
-												<span>{{#if $value.canEdit room}} <i class="icon-pencil" data-edit="{{$key}}"></i>{{/if}}</span>
-											{{/if}}
-										</div>
-									</li>
-								{{/let}}
-							{{/if}}
-						{{/each}}
-					{{/let}}
-
-					{{#each channelSettings}}
-						{{> Template.dynamic template=template data=data}}
-					{{/each}}
-					-->
-				</ul>
-			</form>
-			<nav>
-			{{#if canDeleteRoom}}
-				<button class='button edit red'><span><i class='icon-trash'></i> {{_ "Edit"}}</span></button>
-				<!--
-				<button class='button delete red'><span><i class='icon-trash'></i> {{_ "Delete"}}</span></button>
-				-->
-			{{/if}}
-				<button type="button" class="button black secondary" id="open_profile" style="float:right">{{_ "Open Profile"}}</button>
-			</nav>
+	<div class="list-view channel-settings">
+		<div class="title">
+			<h2>{{_ "Room_Info"}}</h2>
 		</div>
+		<form>
+			<ul class="list clearfix">
+				{{#let room=getRoom}}
+					{{#each toArray settings}}
+						{{#if $value.canView room}}
+							{{#let value=(valueOf room $key)}}
+								<li class="{{$value.type}}">
+									<label>{{_ $value.label}}</label>
+									<div class="setting-block">
+										{{#if $eq $value.type 'text'}}
+											{{#if editing $key}}
+												{{#if $value.canEdit room}}
+													<input type="text" name="{{$key}}" value="{{value}}" class="content-background-color editing" />
+												{{/if}}
+											{{else}}
+												<span class='current-setting' data-edit="{{#if $value.canEdit room}}{{$key}}{{else}}false{{/if}}">{{value}}</span>
+											{{/if}}
+										{{/if}}
+
+										{{#if $eq $value.type 'markdown'}}
+											{{#if editing $key}}
+												{{#if $value.canEdit room}}
+													<input type="text" name="{{$key}}" value="{{unscape value}}" class="content-background-color editing" />
+												{{/if}}
+											{{else}}
+												<span class='current-setting' data-edit="{{#if $value.canEdit room}}{{$key}}{{else}}false{{/if}}">{{{RocketChatMarkdown value}}}</span>
+											{{/if}}
+										{{/if}}
+
+										{{#if $eq $value.type 'select'}}
+											{{#each toArray $value.options}}
+												<div class="input radio">
+													<input type="radio" id="{{$key}}" name="{{../$key}}" value="{{$key}}" checked="{{$eq value $key}}" disabled="{{isDisabled $key room}}" />
+													<label for="{{$key}}">{{_ $value}}</label>
+												</div>
+											{{/each}}
+										{{/if}}
+
+										{{#if $eq $value.type 'boolean'}}
+											<div class="input checkbox toggle">
+												<input type="checkbox" id="{{$key}}" name="{{$key}}" value="{{value}}" checked="{{$eq value true}}" disabled="{{isDisabled $key room}}" />
+												<label for="{{$key}}"></label>
+											</div>
+											{{#if $value.canEdit room}}
+												{{#if $value.processing.get}}
+													{{> loading}}
+												{{/if}}
+											{{/if}}
+										{{/if}}
+
+										{{#unless $value.isToggle}}
+											{{#if $value.canEdit room}}
+												{{#if editing $key}}
+													<div class="buttons secondary-background-color">
+														<button type="button" class="button cancel">
+															<i class="icon-cancel"></i>
+														</button>
+														<button type="button" class="button primary save">
+															<i class="icon-ok success-color"></i>
+														</button>
+													</div>
+												{{else}}
+													{{#if $value.showHideValue room}}
+														<button type="button" class="button show">
+															<i class="{{#if showingValue $key}}icon-eye-off{{else}}icon-eye{{/if}}"></i>
+														</button>
+													{{/if}}
+													<button type="button" class="button edit">
+														<i class="icon-pencil" data-edit="{{$key}}"></i>
+													</button>
+												{{/if}}
+											{{/if}}
+										{{/unless}}
+									</div>
+								</li>
+								{{# if has $value 'message' }}
+									{{#let message=($value.message room)}}
+										{{#if message}}
+											<li>
+												<div class="alert alert-warning pending-background pending-border">
+													{{_ message}}
+												</div>
+											</li>
+										{{/if}}
+									{{/let}}
+								{{/if}}
+							{{/let}}
+						{{/if}}
+					{{/each}}
+
+				{{/let}}
+
+				{{#each channelSettings}}
+					{{> Template.dynamic template=template data=data}}
+				{{/each}}
+			</ul>
+		</form>
+		{{#if canDeleteRoom}}
+			<nav>
+				<button class="button danger delete" title="{{_ 'Delete'}}"><i class="icon-trash"></i></button>
+			</nav>
+		{{/if}}
 	</div>
 </template>

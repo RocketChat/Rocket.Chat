@@ -1,3 +1,5 @@
+import _ from 'underscore';
+
 Meteor.methods({
 	'livechat:searchAgent'(username) {
 		if (!Meteor.userId() || !RocketChat.authz.hasPermission(Meteor.userId(), 'view-livechat-manager')) {
@@ -8,7 +10,7 @@ Meteor.methods({
 			throw new Meteor.Error('error-invalid-arguments', 'Invalid arguments', { method: 'livechat:searchAgent' });
 		}
 
-		var user = RocketChat.models.Users.findOneByUsername(username, { fields: { _id: 1, username: 1 } });
+		const user = RocketChat.models.Users.findOneByUsername(username, { fields: { _id: 1, username: 1 } });
 
 		if (!user) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'livechat:searchAgent' });

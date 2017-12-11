@@ -1,5 +1,8 @@
 /* globals RocketChat */
-RocketChat.createRoom = function(type, name, owner, members, readOnly) {
+import _ from 'underscore';
+import s from 'underscore.string';
+
+RocketChat.createRoom = function(type, name, owner, members, readOnly, extraData={}) {
 	name = s.trim(name);
 	owner = s.trim(owner);
 	members = [].concat(members);
@@ -13,36 +16,18 @@ RocketChat.createRoom = function(type, name, owner, members, readOnly) {
 		throw new Meteor.Error('error-invalid-user', 'Invalid user', { function: 'RocketChat.createRoom' });
 	}
 
-	let nameValidation;
-	try {
-		nameValidation = new RegExp('^' + RocketChat.settings.get('UTF8_Names_Validation') + '$');
-	} catch (error) {
-		nameValidation = new RegExp('^[0-9a-zA-Z-_.]+$');
-	}
+	const slugifiedRoomName = RocketChat.getValidRoomName(name);
 
-	if (!nameValidation.test(name)) {
-		throw new Meteor.Error('error-invalid-name', 'Invalid name', { function: 'RocketChat.createRoom' });
-	}
-
-	let now = new Date();
+	const now = new Date();
 	if (!_.contains(members, owner.username)) {
 		members.push(owner.username);
-	}
-
-	// avoid duplicate names
-	let room = RocketChat.models.Rooms.findOneByName(name);
-	if (room) {
-		if (room.archived) {
-			throw new Meteor.Error('error-archived-duplicate-name', 'There\'s an archived channel with name ' + name, { function: 'RocketChat.createRoom', room_name: name });
-		} else {
-			throw new Meteor.Error('error-duplicate-channel-name', 'A channel with name \'' + name + '\' exists', { function: 'RocketChat.createRoom', room_name: name });
-		}
 	}
 
 	if (type === 'c') {
 		RocketChat.callbacks.run('beforeCreateChannel', owner, {
 			t: 'c',
-			name: name,
+			name: slugifiedRoomName,
+			fname: name,
 			ts: now,
 			ro: readOnly === true,
 			sysMes: readOnly !== true,
@@ -54,14 +39,16 @@ RocketChat.createRoom = function(type, name, owner, members, readOnly) {
 		});
 	}
 
-	room = RocketChat.models.Rooms.createWithTypeNameUserAndUsernames(type, name, owner.username, members, {
+	extraData = Object.assign({}, extraData, {
 		ts: now,
 		ro: readOnly === true,
 		sysMes: readOnly !== true
 	});
 
-	for (let username of members) {
-		let member = RocketChat.models.Users.findOneByUsername(username, { fields: { username: 1 }});
+	const room = RocketChat.models.Rooms.createWithTypeNameUserAndUsernames(type, slugifiedRoomName, name, owner, members, extraData);
+
+	for (const username of members) {
+		const member = RocketChat.models.Users.findOneByUsername(username, { fields: { username: 1 }});
 		if (!member) {
 			continue;
 		}
@@ -71,7 +58,7 @@ RocketChat.createRoom = function(type, name, owner, members, readOnly) {
 			RocketChat.models.Rooms.muteUsernameByRoomId(room._id, username);
 		}
 
-		let extra = { open: true };
+		const extra = { open: true };
 
 		if (username === owner.username) {
 			extra.ls = now;
@@ -86,9 +73,14 @@ RocketChat.createRoom = function(type, name, owner, members, readOnly) {
 		Meteor.defer(() => {
 			RocketChat.callbacks.run('afterCreateChannel', owner, room);
 		});
+	} else if (type === 'p') {
+		Meteor.defer(() => {
+			RocketChat.callbacks.run('afterCreatePrivateGroup', owner, room);
+		});
 	}
 
 	return {
-		rid: room._id
+		rid: room._id,
+		name: slugifiedRoomName
 	};
 };

@@ -1,0 +1,123 @@
+<template name="loginForm">
+	{{#if state 'sandstorm'}}
+		<div class="alert error-color error-background error-border">
+			You must login to Sandstorm (on the top right) in order to access this chat.
+		</div>
+	{{else}}
+		<form id="login-card" class="content-background-color color-primary-font-color" method='/' novalidate>
+			{{#if state 'wait-activation'}}
+				<header>
+					<h2 data-i18n="Registration_Succeeded">{{{_ "Registration_Succeeded"}}}</h2>
+					<p>{{{_ "Wait_activation_warning"}}}</p>
+					<p>{{{_ "Please_wait_activation"}}}</p>
+				</header>
+			{{else}}
+				{{> loginServices }}
+				{{#if needsValidateEmail}}
+					<div class="alert error-color error-background error-border">
+						{{_ "You_need_confirm_email"}}
+					</div>
+				{{/if}}
+				{{#if showFormLogin}}
+					<div class="fields">
+						{{#if state 'login'}}
+							<div class="input-line">
+								<label for="emailOrUsername">{{emailOrUsernamePlaceholder}}</label>
+								<div>
+									<input type="text" name='emailOrUsername' id="emailOrUsername" autocapitalize="off" autocorrect="off" />
+									{{#if hasOnePassword}}
+										<div class="one-passsword"></div>
+									{{/if}}
+									<div class="input-error"></div>
+								</div>
+							</div>
+							<div class="input-line">
+								<label for="pass">{{passwordPlaceholder}}</label>
+								<div>
+									<input type="password" name='pass' id="pass" />
+									<div class="input-error"></div>
+								</div>
+							</div>
+						{{/if}}
+						{{#if state 'register'}}
+							<div class="input-line">
+								<label for="name">{{namePlaceholder}}</label>
+								<div>
+									<input type="text" name='name' id="name" dir="auto" />
+									<div class="input-error"></div>
+								</div>
+							</div>
+							<div class="input-line">
+								<label for="email">{{_ "Email"}}</label>
+								<div>
+									<input type="email" name='email' id="email" />
+									<div class="input-error"></div>
+								</div>
+							</div>
+
+							{{> customFieldsForm hideFromForm=true}}
+
+							<div class="input-line">
+								<label for="pass">{{passwordPlaceholder}}</label>
+								<div>
+									<input type="password" name='pass' id="pass" />
+									<div class="input-error"></div>
+								</div>
+							</div>
+							{{#if requirePasswordConfirmation}}
+								<div class="input-line">
+									<label for="confirm-pass">{{_ "Confirm_password"}}</label>
+									<div>
+										<input type="password" name='confirm-pass' id="confirm-pass" />
+										<div class="input-error"></div>
+									</div>
+								</div>
+							{{/if}}
+						{{/if}}
+						{{#if state 'forgot-password' 'email-verification'}}
+							<div class="input-line">
+								<label for="email">{{_ "Email"}}</label>
+								<div>
+									<input type="email" name='email' id="email" />
+									<div class="input-error"></div>
+								</div>
+							</div>
+						{{/if}}
+					</div>
+					<div class="submit">
+						<button class='button primary login'><span>{{btnLoginSave}}</span></button>
+					</div>
+					{{#if state 'login'}}
+						{{#if registrationAllowed}}
+							<div>
+								<button type="button" class="register">{{_ 'Register'}}</button>
+							</div>
+						{{else}}
+							{{#if linkReplacementText}}
+								<div class="register-link-replacement">
+									{{{linkReplacementText}}}
+								</div>
+							{{/if}}
+						{{/if}}
+						{{#if passwordResetAllowed}}
+							<div>
+								<button type="button" class="forgot-password">{{_ 'Forgot_password'}}</button>
+							</div>
+						{{/if}}
+					{{/if}}
+				{{/if}}
+			{{/if}}
+			{{#unless state 'login'}}
+				<div>
+					<button type="button" class="back-to-login">{{_ 'Back_to_login'}}</button>
+				</div>
+			{{/unless}}
+		</form>
+		<div class='login-terms'>
+			{{{loginTerms}}}
+			<div class="powered-by">
+				Powered by <a class="color-tertiary-font-color" href="https://rocket.chat">Open Source Chat Platform Rocket.Chat</a>.
+			</div>
+		</div>
+	{{/if}}
+</template>

@@ -7,11 +7,9 @@ Package.describe({
 });
 
 Package.onUse(function(api) {
-	api.use('coffeescript');
-	api.use('underscore');
+	api.use('mongo');
 	api.use('ecmascript');
 	api.use('babel-compiler');
-	api.use('simple:highlight.js');
 	api.use('rocketchat:lib');
 	api.use('rocketchat:authorization');
 	api.use('rocketchat:api');
@@ -21,46 +19,53 @@ Package.onUse(function(api) {
 	api.use('kadira:flow-router', 'client');
 	api.use('templating', 'client');
 
-	api.addFiles('lib/rocketchat.coffee', ['server', 'client']);
-	api.addFiles('client/collection.coffee', ['client']);
-	api.addFiles('client/startup.coffee', 'client');
-	api.addFiles('client/route.coffee', 'client');
+	api.addFiles('lib/rocketchat.js', ['server', 'client']);
+
+	// items
+	api.addFiles('client/collections.js', 'client');
+	api.addFiles('client/startup.js', 'client');
+	api.addFiles('client/route.js', 'client');
 
 	// views
 	api.addFiles('client/views/integrations.html', 'client');
-	api.addFiles('client/views/integrations.coffee', 'client');
+	api.addFiles('client/views/integrations.js', 'client');
 	api.addFiles('client/views/integrationsNew.html', 'client');
-	api.addFiles('client/views/integrationsNew.coffee', 'client');
+	api.addFiles('client/views/integrationsNew.js', 'client');
 	api.addFiles('client/views/integrationsIncoming.html', 'client');
-	api.addFiles('client/views/integrationsIncoming.coffee', 'client');
+	api.addFiles('client/views/integrationsIncoming.js', 'client');
 	api.addFiles('client/views/integrationsOutgoing.html', 'client');
-	api.addFiles('client/views/integrationsOutgoing.coffee', 'client');
+	api.addFiles('client/views/integrationsOutgoing.js', 'client');
+	api.addFiles('client/views/integrationsOutgoingHistory.html', 'client');
+	api.addFiles('client/views/integrationsOutgoingHistory.js', 'client');
 
 	// stylesheets
-	api.addAssets('client/stylesheets/integrations.less', 'server');
-	api.addFiles('client/stylesheets/load.coffee', 'server');
+	api.addFiles('client/stylesheets/integrations.css', 'client');
 
 	api.addFiles('server/logger.js', 'server');
-	api.addFiles('server/lib/validation.coffee', 'server');
+	api.addFiles('server/lib/validation.js', 'server');
 
-	api.addFiles('server/models/Integrations.coffee', 'server');
+	api.addFiles('server/models/Integrations.js', 'server');
+	api.addFiles('server/models/IntegrationHistory.js', 'server');
 
 	// publications
-	api.addFiles('server/publications/integrations.coffee', 'server');
+	api.addFiles('server/publications/integrations.js', 'server');
+	api.addFiles('server/publications/integrationHistory.js', 'server');
 
 	// methods
-	api.addFiles('server/methods/incoming/addIncomingIntegration.coffee', 'server');
-	api.addFiles('server/methods/incoming/updateIncomingIntegration.coffee', 'server');
-	api.addFiles('server/methods/incoming/deleteIncomingIntegration.coffee', 'server');
-	api.addFiles('server/methods/outgoing/addOutgoingIntegration.coffee', 'server');
-	api.addFiles('server/methods/outgoing/updateOutgoingIntegration.coffee', 'server');
-	api.addFiles('server/methods/outgoing/deleteOutgoingIntegration.coffee', 'server');
+	api.addFiles('server/methods/incoming/addIncomingIntegration.js', 'server');
+	api.addFiles('server/methods/incoming/updateIncomingIntegration.js', 'server');
+	api.addFiles('server/methods/incoming/deleteIncomingIntegration.js', 'server');
+	api.addFiles('server/methods/outgoing/addOutgoingIntegration.js', 'server');
+	api.addFiles('server/methods/outgoing/updateOutgoingIntegration.js', 'server');
+	api.addFiles('server/methods/outgoing/replayOutgoingIntegration.js', 'server');
+	api.addFiles('server/methods/outgoing/deleteOutgoingIntegration.js', 'server');
+	api.addFiles('server/methods/clearIntegrationHistory.js', 'server');
 
 	// api
-	api.addFiles('server/api/api.coffee', 'server');
+	api.addFiles('server/api/api.js', 'server');
 
-
-	api.addFiles('server/triggers.coffee', 'server');
+	api.addFiles('server/lib/triggerHandler.js', 'server');
+	api.addFiles('server/triggers.js', 'server');
 
 	api.addFiles('server/processWebhookMessage.js', 'server');
 });

@@ -1,3 +1,5 @@
+import _ from 'underscore';
+
 /**
  * BotHelpers helps bots
  * "private" properties use meteor collection cursors, so they stay reactive
@@ -20,19 +22,52 @@ class BotHelpers {
 		fieldsSetting.forEach((n) => {
 			this.userFields[n.trim()] = 1;
 		});
-		this._allUsers = Meteor.users.find(this.queries.users, { fields: this.userFields });
-		this._onlineUsers = Meteor.users.find({ $and: [this.queries.users, this.queries.online] }, { fields: this.userFields });
+		this._allUsers = RocketChat.models.Users.find(this.queries.users, { fields: this.userFields });
+		this._onlineUsers = RocketChat.models.Users.find({ $and: [this.queries.users, this.queries.online] }, { fields: this.userFields });
 	}
 
 	// request methods or props as arguments to Meteor.call
-	request(prop) {
+	request(prop, ...params) {
 		if (typeof this[prop] === 'undefined') {
 			return null;
 		} else if (typeof this[prop] === 'function') {
-			return this[prop]();
+			return this[prop](...params);
 		} else {
 			return this[prop];
 		}
+	}
+
+	addUserToRole(userName, roleName) {
+		Meteor.call('authorization:addUserToRole', roleName, userName);
+	}
+
+	removeUserFromRole(userName, roleName) {
+		Meteor.call('authorization:removeUserFromRole', roleName, userName);
+	}
+
+	addUserToRoom(userName, room) {
+		const foundRoom = RocketChat.models.Rooms.findOneByIdOrName(room);
+
+		if (!_.isObject(foundRoom)) {
+			throw new Meteor.Error('invalid-channel');
+		}
+
+		const data = {};
+		data.rid = foundRoom._id;
+		data.username = userName;
+		Meteor.call('addUserToRoom', data);
+	}
+
+	removeUserFromRoom(userName, room) {
+		const foundRoom = RocketChat.models.Rooms.findOneByIdOrName(room);
+
+		if (!_.isObject(foundRoom)) {
+			throw new Meteor.Error('invalid-channel');
+		}
+		const data = {};
+		data.rid = foundRoom._id;
+		data.username = userName;
+		Meteor.call('removeUserFromRoom', data);
 	}
 
 	// generic error whenever property access insufficient to fill request
@@ -43,7 +78,7 @@ class BotHelpers {
 	// "public" properties accessed by getters
 	// allUsers / onlineUsers return whichever properties are enabled by settings
 	get allUsers() {
-		if (!this.userFields.length) {
+		if (!Object.keys(this.userFields).length) {
 			this.requestError();
 			return false;
 		} else {
@@ -51,7 +86,7 @@ class BotHelpers {
 		}
 	}
 	get onlineUsers() {
-		if (!this.userFields.length) {
+		if (!Object.keys(this.userFields).length) {
 			this.requestError();
 			return false;
 		} else {
@@ -122,7 +157,7 @@ RocketChat.settings.get('BotHelpers_userFields', function(settingKey, settingVal
 
 Meteor.methods({
 	botRequest: (...args) => {
-		let userID = Meteor.userId();
+		const userID = Meteor.userId();
 		if (userID && RocketChat.authz.hasRole(userID, 'bot')) {
 			return botHelpers.request(...args);
 		} else {

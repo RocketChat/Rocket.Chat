@@ -1,45 +1,43 @@
 /* globals LivechatInquiry, KonchatNotification */
 Template.livechat.helpers({
 	isActive() {
-		if (ChatSubscription.findOne({
+		const query = {
 			t: 'l',
-			f: {
-				$ne: true
-			},
+			f: { $ne: true },
 			open: true,
 			rid: Session.get('openedRoom')
-		}, {
-			fields: {
-				_id: 1
-			}
-		}) != null) {
+		};
+
+		const options = { fields: { _id: 1 } };
+
+		if (ChatSubscription.findOne(query, options)) {
 			return 'active';
 		}
 	},
+
 	rooms() {
-		var query = {
+		const query = {
 			t: 'l',
 			open: true
 		};
 
-		const user = RocketChat.models.Users.findOne(Meteor.userId(), { fields: { 'settings.preferences.unreadRoomsMode': 1 } });
+		const user = RocketChat.models.Users.findOne(Meteor.userId(), {
+			fields: { 'settings.preferences.unreadRoomsMode': 1 }
+		});
 
 		if (user && user.settings && user.settings.preferences && user.settings.preferences.unreadRoomsMode) {
-			query.alert = {
-				$ne: true
-			};
+			query.alert = { $ne: true };
 		}
 
-		return ChatSubscription.find(query, {
-			sort: {
-				't': 1,
-				'name': 1
-			}
-		});
+		return ChatSubscription.find(query, { sort: {
+			't': 1,
+			'name': 1
+		}});
 	},
+
 	inquiries() {
 		// get all inquiries of the department
-		var inqs = LivechatInquiry.find({
+		const inqs = LivechatInquiry.find({
 			agents: Meteor.userId(),
 			status: 'open'
 		}, {
@@ -49,26 +47,25 @@ Template.livechat.helpers({
 		});
 
 		// for notification sound
-		inqs.forEach(function(inq) {
+		inqs.forEach((inq) => {
 			KonchatNotification.newRoom(inq.rid);
 		});
 
 		return inqs;
 	},
+
 	guestPool() {
 		return RocketChat.settings.get('Livechat_Routing_Method') === 'Guest_Pool';
 	},
+
 	available() {
 		const statusLivechat = Template.instance().statusLivechat.get();
 
 		return {
-			status: statusLivechat,
+			status: statusLivechat === 'available' ? 'status-online' : '',
 			icon: statusLivechat === 'available' ? 'icon-toggle-on' : 'icon-toggle-off',
 			hint: statusLivechat === 'available' ? t('Available') : t('Not_Available')
 		};
-	},
-	livechatAvailable() {
-		return Template.instance().statusLivechat.get();
 	},
 
 	isLivechatAvailable() {
@@ -99,13 +96,13 @@ Template.livechat.events({
 		});
 	},
 
-	'click .inquiries .open-room'(event) {
+	'click .inquiries .sidebar-item'(event) {
 		event.preventDefault();
 		event.stopPropagation();
 
 		swal({
 			title: t('Livechat_Take_Confirm'),
-			text: t('Message') + ': ' + this.message,
+			text: `${ t('Message') }: ${ this.message }`,
 			showCancelButton: true,
 			confirmButtonColor: '#3085d6',
 			cancelButtonColor: '#d33',
@@ -114,7 +111,7 @@ Template.livechat.events({
 			if (isConfirm) {
 				Meteor.call('livechat:takeInquiry', this._id, (error, result) => {
 					if (!error) {
-						FlowRouter.go(RocketChat.roomTypes.getRouteLink(result.t, result));
+						RocketChat.roomTypes.openRouteLink(result.t, result);
 					}
 				});
 			}
@@ -126,8 +123,12 @@ Template.livechat.onCreated(function() {
 	this.statusLivechat = new ReactiveVar();
 
 	this.autorun(() => {
-		const user = RocketChat.models.Users.findOne(Meteor.userId(), { fields: { statusLivechat: 1 } });
-		this.statusLivechat.set(user.statusLivechat);
+		if (Meteor.userId()) {
+			const user = RocketChat.models.Users.findOne(Meteor.userId(), { fields: { statusLivechat: 1 } });
+			this.statusLivechat.set(user.statusLivechat);
+		} else {
+			this.statusLivechat.set();
+		}
 	});
 
 	this.subscribe('livechat:inquiry');

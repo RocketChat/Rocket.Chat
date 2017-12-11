@@ -1,4 +1,6 @@
-var ManagerUsers;
+import _ from 'underscore';
+import toastr from 'toastr';
+let ManagerUsers;
 
 Meteor.startup(function() {
 	ManagerUsers = new Mongo.Collection('managerUsers');
@@ -124,7 +126,7 @@ Template.livechatUsers.events({
 			return toastr.error(t('Please_fill_a_username'));
 		}
 
-		var oldBtnValue = e.currentTarget.elements.add.value;
+		const oldBtnValue = e.currentTarget.elements.add.value;
 
 		e.currentTarget.elements.add.value = t('Saving');
 
@@ -145,7 +147,7 @@ Template.livechatUsers.events({
 			return toastr.error(t('Please_fill_a_username'));
 		}
 
-		var oldBtnValue = e.currentTarget.elements.add.value;
+		const oldBtnValue = e.currentTarget.elements.add.value;
 
 		e.currentTarget.elements.add.value = t('Saving');
 

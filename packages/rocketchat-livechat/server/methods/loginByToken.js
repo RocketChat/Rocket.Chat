@@ -9,7 +9,7 @@ Meteor.methods({
 		const stampedToken = Accounts._generateStampedLoginToken();
 		const hashStampedToken = Accounts._hashStampedToken(stampedToken);
 
-		let updateUser = {
+		const updateUser = {
 			$set: {
 				services: {
 					resume: {

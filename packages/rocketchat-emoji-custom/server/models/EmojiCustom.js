@@ -14,7 +14,7 @@ class EmojiCustom extends RocketChat.models._Base {
 
 	//find
 	findByNameOrAlias(name, options) {
-		let query = {
+		const query = {
 			$or: [
 				{name},
 				{aliases: name}
@@ -25,7 +25,7 @@ class EmojiCustom extends RocketChat.models._Base {
 	}
 
 	findByNameOrAliasExceptID(name, except, options) {
-		let query = {
+		const query = {
 			_id: { $nin: [ except ] },
 			$or: [
 				{name},
@@ -39,7 +39,7 @@ class EmojiCustom extends RocketChat.models._Base {
 
 	//update
 	setName(_id, name) {
-		let update = {
+		const update = {
 			$set: {
 				name
 			}
@@ -49,7 +49,7 @@ class EmojiCustom extends RocketChat.models._Base {
 	}
 
 	setAliases(_id, aliases) {
-		let update = {
+		const update = {
 			$set: {
 				aliases
 			}
@@ -59,7 +59,7 @@ class EmojiCustom extends RocketChat.models._Base {
 	}
 
 	setExtension(_id, extension) {
-		let update = {
+		const update = {
 			$set: {
 				extension
 			}

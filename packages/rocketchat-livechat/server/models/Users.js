@@ -1,12 +1,14 @@
+import _ from 'underscore';
+import s from 'underscore.string';
 /**
  * Sets an user as (non)operator
  * @param {string} _id - User's _id
  * @param {boolean} operator - Flag to set as operator or not
  */
 RocketChat.models.Users.setOperator = function(_id, operator) {
-	var update = {
+	const update = {
 		$set: {
-			operator: operator
+			operator
 		}
 	};
 
@@ -18,8 +20,8 @@ RocketChat.models.Users.setOperator = function(_id, operator) {
  * @return
  */
 RocketChat.models.Users.findOnlineAgents = function() {
-	var query = {
-		statusConnection: {
+	const query = {
+		status: {
 			$exists: true,
 			$ne: 'offline'
 		},
@@ -35,7 +37,7 @@ RocketChat.models.Users.findOnlineAgents = function() {
  * @return
  */
 RocketChat.models.Users.findAgents = function() {
-	var query = {
+	const query = {
 		roles: 'livechat-agent'
 	};
 
@@ -48,8 +50,8 @@ RocketChat.models.Users.findAgents = function() {
  * @return
  */
 RocketChat.models.Users.findOnlineUserFromList = function(userList) {
-	var query = {
-		statusConnection: {
+	const query = {
+		status: {
 			$exists: true,
 			$ne: 'offline'
 		},
@@ -68,8 +70,8 @@ RocketChat.models.Users.findOnlineUserFromList = function(userList) {
  * @return {object} User from db
  */
 RocketChat.models.Users.getNextAgent = function() {
-	var query = {
-		statusConnection: {
+	const query = {
+		status: {
 			$exists: true,
 			$ne: 'offline'
 		},
@@ -77,21 +79,21 @@ RocketChat.models.Users.getNextAgent = function() {
 		roles: 'livechat-agent'
 	};
 
-	var collectionObj = this.model.rawCollection();
-	var findAndModify = Meteor.wrapAsync(collectionObj.findAndModify, collectionObj);
+	const collectionObj = this.model.rawCollection();
+	const findAndModify = Meteor.wrapAsync(collectionObj.findAndModify, collectionObj);
 
-	var sort = {
+	const sort = {
 		livechatCount: 1,
 		username: 1
 	};
 
-	var update = {
+	const update = {
 		$inc: {
 			livechatCount: 1
 		}
 	};
 
-	var user = findAndModify(query, sort, update);
+	const user = findAndModify(query, sort, update);
 	if (user && user.value) {
 		return {
 			agentId: user.value._id,
@@ -107,7 +109,7 @@ RocketChat.models.Users.getNextAgent = function() {
  * @param {string} token - Visitor token
  */
 RocketChat.models.Users.getVisitorByToken = function(token, options) {
-	var query = {
+	const query = {
 		'profile.guest': true,
 		'profile.token': token
 	};
@@ -120,7 +122,7 @@ RocketChat.models.Users.getVisitorByToken = function(token, options) {
  * @param {string} token - Visitor token
  */
 RocketChat.models.Users.findVisitorByToken = function(token) {
-	var query = {
+	const query = {
 		'profile.guest': true,
 		'profile.token': token
 	};
@@ -133,11 +135,11 @@ RocketChat.models.Users.findVisitorByToken = function(token) {
  * @param {string} token - Visitor token
  */
 RocketChat.models.Users.setLivechatStatus = function(userId, status) {
-	let query = {
+	const query = {
 		'_id': userId
 	};
 
-	let update = {
+	const update = {
 		$set: {
 			'statusLivechat': status
 		}
@@ -166,14 +168,21 @@ RocketChat.models.Users.openOffice = function() {
 	});
 };
 
-RocketChat.models.Users.updateLivechatDataByToken = function(token, key, value) {
+RocketChat.models.Users.updateLivechatDataByToken = function(token, key, value, overwrite = true) {
 	const query = {
 		'profile.token': token
 	};
 
+	if (!overwrite) {
+		const user = this.findOne(query, { fields: { livechatData: 1 } });
+		if (user.livechatData && typeof user.livechatData[key] !== 'undefined') {
+			return true;
+		}
+	}
+
 	const update = {
 		$set: {
-			[`livechatData.${key}`]: value
+			[`livechatData.${ key }`]: value
 		}
 	};
 
@@ -212,5 +221,82 @@ RocketChat.models.Users.getNextVisitorUsername = function() {
 
 	const livechatCount = findAndModify(query, null, update);
 
-	return 'guest-' + (livechatCount.value.value + 1);
+	return `guest-${ livechatCount.value.value + 1 }`;
+};
+
+RocketChat.models.Users.saveGuestById = function(_id, data) {
+	const setData = {};
+	const unsetData = {};
+
+	if (data.name) {
+		if (!_.isEmpty(s.trim(data.name))) {
+			setData.name = s.trim(data.name);
+		} else {
+			unsetData.name = 1;
+		}
+	}
+
+	if (data.email) {
+		if (!_.isEmpty(s.trim(data.email))) {
+			setData.visitorEmails = [
+				{ address: s.trim(data.email) }
+			];
+		} else {
+			unsetData.visitorEmails = 1;
+		}
+	}
+
+	if (data.phone) {
+		if (!_.isEmpty(s.trim(data.phone))) {
+			setData.phone = [
+				{ phoneNumber: s.trim(data.phone) }
+			];
+		} else {
+			unsetData.phone = 1;
+		}
+	}
+
+	const update = {};
+
+	if (!_.isEmpty(setData)) {
+		update.$set = setData;
+	}
+
+	if (!_.isEmpty(unsetData)) {
+		update.$unset = unsetData;
+	}
+
+	if (_.isEmpty(update)) {
+		return true;
+	}
+
+	return this.update({ _id }, update);
+};
+
+RocketChat.models.Users.findOneGuestByEmailAddress = function(emailAddress) {
+	const query = {
+		'visitorEmails.address': new RegExp(`^${ s.escapeRegExp(emailAddress) }$`, 'i')
+	};
+
+	return this.findOne(query);
+};
+
+RocketChat.models.Users.getAgentInfo = function(agentId) {
+	const query = {
+		_id: agentId
+	};
+
+	const options = {
+		fields: {
+			name: 1,
+			username: 1,
+			customFields: 1
+		}
+	};
+
+	if (RocketChat.settings.get('Livechat_show_agent_email')) {
+		options.fields.emails = 1;
+	}
+
+	return this.findOne(query, options);
 };

@@ -2,19 +2,22 @@ Meteor.methods({
 	'permissions/get'(updatedAt) {
 		this.unblock();
 
+		const records = RocketChat.models.Permissions.find().fetch();
+
 		if (updatedAt instanceof Date) {
-			return RocketChat.models.Permissions.dinamicFindChangesAfter('find', updatedAt);
+			return {
+				update: records.filter((record) => {
+					return record._updatedAt > updatedAt;
+				}),
+				remove: RocketChat.models.Permissions.trashFindDeletedAfter(updatedAt, {}, {fields: {_id: 1, _deletedAt: 1}}).fetch()
+			};
 		}
 
-		return RocketChat.models.Permissions.find().fetch();
+		return records;
 	}
 });
 
 
-RocketChat.models.Permissions.on('change', (type, ...args) => {
-	const records = RocketChat.models.Permissions.getChangedRecords(type, args[0]);
-
-	for (const record of records) {
-		RocketChat.Notifications.notifyAll('permissions-changed', type, record);
-	}
+RocketChat.models.Permissions.on('changed', (type, permission) => {
+	RocketChat.Notifications.notifyLoggedInThisInstance('permissions-changed', type, permission);
 });

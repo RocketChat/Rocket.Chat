@@ -1,3 +1,5 @@
+import _ from 'underscore';
+import toastr from 'toastr';
 /* globals crypto */
 
 RocketChat.OTR.Room = class {
@@ -19,7 +21,7 @@ RocketChat.OTR.Room = class {
 		this.establishing.set(true);
 		this.firstPeer = true;
 		this.generateKeyPair().then(() => {
-			RocketChat.Notifications.notifyUser(this.peerId, 'otr', 'handshake', { roomId: this.roomId, userId: this.userId, publicKey: EJSON.stringify(this.exportedPublicKey), refresh: refresh });
+			RocketChat.Notifications.notifyUser(this.peerId, 'otr', 'handshake', { roomId: this.roomId, userId: this.userId, publicKey: EJSON.stringify(this.exportedPublicKey), refresh });
 		});
 	}
 
@@ -52,8 +54,8 @@ RocketChat.OTR.Room = class {
 		}
 
 		this.userOnlineComputation = Tracker.autorun(() => {
-			var $room = $('#chat-window-' + this.roomId);
-			var $title = $('.fixed-title h2', $room);
+			const $room = $(`#chat-window-${ this.roomId }`);
+			const $title = $('.fixed-title h2', $room);
 			if (this.established.get()) {
 				if ($room.length && $title.length && !$('.otr-icon', $title).length) {
 					$title.prepend('<i class=\'otr-icon icon-key\'></i>');
@@ -103,7 +105,7 @@ RocketChat.OTR.Room = class {
 			}, bits);
 		}).then((hashedBits) => {
 			// We truncate the hash to 128 bits.
-			var sessionKeyData = new Uint8Array(hashedBits).slice(0, 16);
+			const sessionKeyData = new Uint8Array(hashedBits).slice(0, 16);
 			return RocketChat.OTR.crypto.importKey('raw', sessionKeyData, {
 				name: 'AES-GCM'
 			}, false, ['encrypt', 'decrypt']);
@@ -117,14 +119,14 @@ RocketChat.OTR.Room = class {
 		if (!_.isObject(data)) {
 			data = new TextEncoder('UTF-8').encode(EJSON.stringify({ text: data, ack: Random.id((Random.fraction()+1)*20) }));
 		}
-		var iv = crypto.getRandomValues(new Uint8Array(12));
+		const iv = crypto.getRandomValues(new Uint8Array(12));
 
 		return RocketChat.OTR.crypto.encrypt({
 			name: 'AES-GCM',
-			iv: iv
+			iv
 		}, this.sessionKey, data).then((cipherText) => {
 			cipherText = new Uint8Array(cipherText);
-			var output = new Uint8Array(iv.length + cipherText.length);
+			const output = new Uint8Array(iv.length + cipherText.length);
 			output.set(iv, 0);
 			output.set(cipherText, iv.length);
 			return EJSON.stringify(output);
@@ -141,25 +143,25 @@ RocketChat.OTR.Room = class {
 			ts = new Date(Date.now() + TimeSync.serverOffset());
 		}
 
-		var data = new TextEncoder('UTF-8').encode(EJSON.stringify({
+		const data = new TextEncoder('UTF-8').encode(EJSON.stringify({
 			_id: message._id,
 			text: message.msg,
 			userId: this.userId,
 			ack: Random.id((Random.fraction()+1)*20),
-			ts: ts
+			ts
 		}));
-		var enc = this.encryptText(data);
+		const enc = this.encryptText(data);
 		return enc;
 	}
 
 	decrypt(message) {
-		var cipherText = EJSON.parse(message);
-		var iv = cipherText.slice(0, 12);
+		let cipherText = EJSON.parse(message);
+		const iv = cipherText.slice(0, 12);
 		cipherText = cipherText.slice(12);
 
 		return RocketChat.OTR.crypto.decrypt({
 			name: 'AES-GCM',
-			iv: iv
+			iv
 		}, this.sessionKey, cipherText)
 			.then((data) => {
 				data = EJSON.parse(new TextDecoder('UTF-8').decode(new Uint8Array(data)));
@@ -177,7 +179,7 @@ RocketChat.OTR.Room = class {
 			case 'handshake':
 				let timeout = null;
 
-				let establishConnection = () => {
+				const establishConnection = () => {
 					this.establishing.set(true);
 					Meteor.clearTimeout(timeout);
 					this.generateKeyPair().then(() => {
@@ -201,7 +203,7 @@ RocketChat.OTR.Room = class {
 					}
 
 					swal({
-						title: '<i class=\'icon-key alert-icon\'></i>' + TAPi18n.__('OTR'),
+						title: `<i class='icon-key alert-icon success-color'></i>${ TAPi18n.__('OTR') }`,
 						text: TAPi18n.__('Username_wants_to_start_otr_Do_you_want_to_accept', { username: user.username }),
 						html: true,
 						showCancelButton: true,
@@ -236,7 +238,7 @@ RocketChat.OTR.Room = class {
 					this.reset();
 					const user = Meteor.users.findOne(this.peerId);
 					swal({
-						title: '<i class=\'icon-key alert-icon\'></i>' + TAPi18n.__('OTR'),
+						title: `<i class='icon-key alert-icon success-color'></i>${ TAPi18n.__('OTR') }`,
 						text: TAPi18n.__('Username_denied_the_OTR_session', { username: user.username }),
 						html: true
 					});
@@ -248,7 +250,7 @@ RocketChat.OTR.Room = class {
 					this.reset();
 					const user = Meteor.users.findOne(this.peerId);
 					swal({
-						title: '<i class=\'icon-key alert-icon\'></i>' + TAPi18n.__('OTR'),
+						title: `<i class='icon-key alert-icon success-color'></i>${ TAPi18n.__('OTR') }`,
 						text: TAPi18n.__('Username_ended_the_OTR_session', { username: user.username }),
 						html: true
 					});

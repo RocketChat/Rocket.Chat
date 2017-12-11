@@ -14,6 +14,14 @@ Meteor.startup(function() {
 		i18nLabel: 'Display_offline_form'
 	});
 
+	RocketChat.settings.add('Livechat_validate_offline_email', true, {
+		type: 'boolean',
+		group: 'Livechat',
+		public: true,
+		section: 'Offline',
+		i18nLabel: 'Validate_email_address'
+	});
+
 	RocketChat.settings.add('Livechat_offline_form_unavailable', '', {
 		type: 'string',
 		group: 'Livechat',
@@ -59,6 +67,8 @@ Meteor.startup(function() {
 	});
 
 	RocketChat.settings.add('Livechat_registration_form', true, { type: 'boolean', group: 'Livechat', public: true, i18nLabel: 'Show_preregistration_form' });
+	RocketChat.settings.add('Livechat_allow_switching_departments', true, { type: 'boolean', group: 'Livechat', public: true, i18nLabel: 'Allow_switching_departments' });
+	RocketChat.settings.add('Livechat_show_agent_email', true, { type: 'boolean', group: 'Livechat', public: true, i18nLabel: 'Show_agent_email' });
 	RocketChat.settings.add('Livechat_guest_count', 1, { type: 'int', group: 'Livechat' });
 
 	RocketChat.settings.add('Livechat_Room_Count', 1, {
@@ -96,35 +106,35 @@ Meteor.startup(function() {
 	RocketChat.settings.add('Livechat_webhookUrl', false, {
 		type: 'string',
 		group: 'Livechat',
-		section: 'CRM Integration',
+		section: 'CRM_Integration',
 		i18nLabel: 'Webhook_URL'
 	});
 
 	RocketChat.settings.add('Livechat_secret_token', false, {
 		type: 'string',
 		group: 'Livechat',
-		section: 'CRM Integration',
+		section: 'CRM_Integration',
 		i18nLabel: 'Secret_token'
 	});
 
 	RocketChat.settings.add('Livechat_webhook_on_close', false, {
 		type: 'boolean',
 		group: 'Livechat',
-		section: 'CRM Integration',
+		section: 'CRM_Integration',
 		i18nLabel: 'Send_request_on_chat_close'
 	});
 
 	RocketChat.settings.add('Livechat_webhook_on_offline_msg', false, {
 		type: 'boolean',
 		group: 'Livechat',
-		section: 'CRM Integration',
+		section: 'CRM_Integration',
 		i18nLabel: 'Send_request_on_offline_messages'
 	});
 
 	RocketChat.settings.add('Livechat_Knowledge_Enabled', false, {
 		type: 'boolean',
 		group: 'Livechat',
-		section: 'Knowledge Base',
+		section: 'Knowledge_Base',
 		public: true,
 		i18nLabel: 'Enabled'
 	});
@@ -132,7 +142,7 @@ Meteor.startup(function() {
 	RocketChat.settings.add('Livechat_Knowledge_Apiai_Key', '', {
 		type: 'string',
 		group: 'Livechat',
-		section: 'Knowledge Base',
+		section: 'Knowledge_Base',
 		public: true,
 		i18nLabel: 'Apiai_Key'
 	});
@@ -140,7 +150,7 @@ Meteor.startup(function() {
 	RocketChat.settings.add('Livechat_Knowledge_Apiai_Language', 'en', {
 		type: 'string',
 		group: 'Livechat',
-		section: 'Knowledge Base',
+		section: 'Knowledge_Base',
 		public: true,
 		i18nLabel: 'Apiai_Language'
 	});
@@ -184,7 +194,7 @@ Meteor.startup(function() {
 		type: 'boolean',
 		group: 'Livechat',
 		public: true,
-		i18nLabel: 'Office_Hours_Enabled'
+		i18nLabel: 'Office_hours_enabled'
 	});
 
 	RocketChat.settings.add('Livechat_videocall_enabled', false, {
@@ -211,4 +221,47 @@ Meteor.startup(function() {
 		enableQuery: { _id: 'Livechat_enable_transcript', value: true }
 	});
 
+	RocketChat.settings.add('Livechat_open_inquiery_show_connecting', false, {
+		type: 'boolean',
+		group: 'Livechat',
+		public: true,
+		i18nLabel: 'Livechat_open_inquiery_show_connecting',
+		enableQuery: { _id: 'Livechat_Routing_Method', value: 'Guest_Pool' }
+	});
+
+	RocketChat.settings.add('Livechat_AllowedDomainsList', '', {
+		type: 'string',
+		group: 'Livechat',
+		public: true,
+		i18nLabel: 'Livechat_AllowedDomainsList',
+		i18nDescription: 'Domains_allowed_to_embed_the_livechat_widget'
+	});
+
+	RocketChat.settings.add('Livechat_Facebook_Enabled', false, {
+		type: 'boolean',
+		group: 'Livechat',
+		section: 'Facebook'
+	});
+
+	RocketChat.settings.add('Livechat_Facebook_API_Key', '', {
+		type: 'string',
+		group: 'Livechat',
+		section: 'Facebook',
+		i18nDescription: 'If_you_dont_have_one_send_an_email_to_omni_rocketchat_to_get_yours'
+	});
+
+	RocketChat.settings.add('Livechat_Facebook_API_Secret', '', {
+		type: 'string',
+		group: 'Livechat',
+		section: 'Facebook',
+		i18nDescription: 'If_you_dont_have_one_send_an_email_to_omni_rocketchat_to_get_yours'
+	});
+
+	RocketChat.settings.add('Livechat_RDStation_Token', '', {
+		type: 'string',
+		group: 'Livechat',
+		public: false,
+		section: 'RD Station',
+		i18nLabel: 'RDStation_Token'
+	});
 });

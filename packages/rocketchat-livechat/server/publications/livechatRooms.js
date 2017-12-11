@@ -11,11 +11,11 @@ Meteor.publish('livechat:rooms', function(filter = {}, offset = 0, limit = 20) {
 		name: Match.Maybe(String), // room name to filter
 		agent: Match.Maybe(String), // agent _id who is serving
 		status: Match.Maybe(String), // either 'opened' or 'closed'
-		from: Match.Maybe(String),
-		to: Match.Maybe(String)
+		from: Match.Maybe(Date),
+		to: Match.Maybe(Date)
 	});
 
-	let query = {};
+	const query = {};
 	if (filter.name) {
 		query.label = new RegExp(filter.name, 'i');
 	}
@@ -29,12 +29,38 @@ Meteor.publish('livechat:rooms', function(filter = {}, offset = 0, limit = 20) {
 			query.open = { $exists: false };
 		}
 	}
-	if (filter.from && filter.to) {
-		var StartDate = new Date(filter.from);
-		var ToDate = new Date(filter.to);
-		ToDate.setDate(ToDate.getDate() + 1);
-		query['ts'] = { $gt: StartDate, $lt: ToDate };
+	if (filter.from) {
+		query.ts = {
+			$gte: filter.from
+		};
+	}
+	if (filter.to) {
+		filter.to.setDate(filter.to.getDate() + 1);
+		filter.to.setSeconds(filter.to.getSeconds() - 1);
+
+		if (!query.ts) {
+			query.ts = {};
+		}
+		query.ts.$lte = filter.to;
 	}
 
-	return RocketChat.models.Rooms.findLivechat(query, offset, limit);
+	const self = this;
+
+	const handle = RocketChat.models.Rooms.findLivechat(query, offset, limit).observeChanges({
+		added(id, fields) {
+			self.added('livechatRoom', id, fields);
+		},
+		changed(id, fields) {
+			self.changed('livechatRoom', id, fields);
+		},
+		removed(id) {
+			self.removed('livechatRoom', id);
+		}
+	});
+
+	this.ready();
+
+	this.onStop(() => {
+		handle.stop();
+	});
 });

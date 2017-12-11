@@ -7,35 +7,35 @@ Package.describe({
 
 Package.onUse(function(api) {
 	api.use([
-		'coffeescript',
 		'ecmascript',
 		'reactive-var',
 		'tracker',
 		'templating',
-		'less',
 		'rocketchat:lib'
 	]);
 
 	api.addFiles([
-		'client/lib/ChannelSettings.coffee',
-		'client/startup/messageTypes.coffee',
-		'client/startup/tabBar.coffee',
+		'client/lib/ChannelSettings.js',
+		'client/startup/messageTypes.js',
+		'client/startup/tabBar.js',
 		'client/startup/trackSettingsChange.js',
 		'client/views/channelSettings.html',
-		'client/views/channelSettings.coffee',
-		'client/stylesheets/channel-settings.less'
+		'client/views/channelSettings.js',
+		'client/stylesheets/channel-settings.css'
 	], 'client');
 
 	api.addFiles([
-		'server/functions/saveRoomType.coffee',
-		'server/functions/saveRoomTopic.coffee',
-		'server/functions/saveRoomName.coffee',
-		'server/functions/saveRoomReadOnly.coffee',
-		'server/functions/saveRoomDescription.coffee',
-		'server/functions/saveRoomSystemMessages.coffee',
-		'server/methods/saveRoomSettings.coffee',
-		'server/models/Messages.coffee',
-		'server/models/Rooms.coffee',
+		'server/functions/saveReactWhenReadOnly.js',
+		'server/functions/saveRoomType.js',
+		'server/functions/saveRoomTopic.js',
+		'server/functions/saveRoomAnnouncement.js',
+		'server/functions/saveRoomName.js',
+		'server/functions/saveRoomReadOnly.js',
+		'server/functions/saveRoomDescription.js',
+		'server/functions/saveRoomSystemMessages.js',
+		'server/methods/saveRoomSettings.js',
+		'server/models/Messages.js',
+		'server/models/Rooms.js',
 		'server/startup.js'
 	], 'server');
 });

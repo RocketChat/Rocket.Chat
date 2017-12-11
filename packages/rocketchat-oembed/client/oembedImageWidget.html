@@ -5,13 +5,11 @@
 		{{else}}
 			<span class="collapse-switch icon-down-dir" data-index="{{index}}" data-collapsed="{{collapsed}}"></span>
 			{{#if loadImage}}
-				<div>
-					<a href="{{url}}" class="swipebox" target="_blank">
-						<div class="inline-image" style="background-image: url('{{url}}');">
-							<img src="{{url}}" height="200">
-						</div>
-					</a>
-				</div>
+				<figure>
+					<div class="inline-image" style="background-image: url('{{url}}');">
+						<img src="{{url}}" height="200" class="gallery-item">
+					</div>
+				</figure>
 			{{else}}
 				<div class="image-to-download" data-url="{{url}}">
 					<i class="icon-picture"></i>

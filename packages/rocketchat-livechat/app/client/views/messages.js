@@ -1,4 +1,5 @@
-/* globals Livechat, LivechatVideoCall */
+/* globals Livechat, LivechatVideoCall, MsgTyping */
+import _ from 'underscore';
 
 Template.messages.helpers({
 	messages() {
@@ -29,36 +30,89 @@ Template.messages.helpers({
 	},
 	videoCallEnabled() {
 		return Livechat.videoCall;
+	},
+	showConnecting() {
+		return Livechat.connecting;
+	},
+	usersTyping() {
+		const users = MsgTyping.get(visitor.getRoom());
+		if (users.length === 0) {
+			return;
+		}
+		if (users.length === 1) {
+			return {
+				multi: false,
+				selfTyping: MsgTyping.selfTyping.get(),
+				users: users[0]
+			};
+		}
+		// usernames = _.map messages, (message) -> return message.u.username
+		let last = users.pop();
+		if (users.length > 4) {
+			last = t('others');
+		}
+		// else
+		let usernames = users.join(', ');
+		usernames = [usernames, last];
+		return {
+			multi: true,
+			selfTyping: MsgTyping.selfTyping.get(),
+			users: usernames.join(` ${ t('and') } `)
+		};
+	},
+	agentData() {
+		const agent = Livechat.agent;
+		if (!agent) {
+			return null;
+		}
+
+		const agentData = {
+			avatar: getAvatarUrlFromUsername(agent.username)
+		};
+
+		if (agent.name) {
+			agentData.name = agent.name;
+		}
+
+		if (agent.emails && agent.emails[0] && agent.emails[0].address) {
+			agentData.email = agent.emails[0].address;
+		}
+
+		if (agent.customFields && agent.customFields.phone) {
+			agentData.phone = agent.customFields.phone;
+		}
+
+		return agentData;
 	}
 });
 
 Template.messages.events({
-	'keyup .input-message': function(event, instance) {
+	'keyup .input-message'(event, instance) {
 		instance.chatMessages.keyup(visitor.getRoom(), event, instance);
 		instance.updateMessageInputHeight(event.currentTarget);
 	},
-	'keydown .input-message': function(event, instance) {
+	'keydown .input-message'(event, instance) {
 		return instance.chatMessages.keydown(visitor.getRoom(), event, instance);
 	},
-	'click .send-button': function(event, instance) {
-		let input = instance.find('.input-message');
-		let sent = instance.chatMessages.send(visitor.getRoom(), input);
+	'click .send-button'(event, instance) {
+		const input = instance.find('.input-message');
+		const sent = instance.chatMessages.send(visitor.getRoom(), input);
 		input.focus();
 		instance.updateMessageInputHeight(input);
 
 		return sent;
 	},
-	'click .new-message': function(event, instance) {
+	'click .new-message'(event, instance) {
 		instance.atBottom = true;
 		return instance.find('.input-message').focus();
 	},
-	'click .error': function(event) {
+	'click .error'(event) {
 		return $(event.currentTarget).removeClass('show');
 	},
-	'click .toggle-options': function(event, instance) {
+	'click .toggle-options'(event, instance) {
 		instance.showOptions.set(!instance.showOptions.get());
 	},
-	'click .video-button': function(event) {
+	'click .video-button'(event) {
 		event.preventDefault();
 
 		if (!Meteor.userId()) {
@@ -92,8 +146,7 @@ Template.messages.onCreated(function() {
 		// even if the scrollHeight become bigger than that it should never exceed that.
 		// Account for no text in the textarea when increasing the height.
 		// If there is no text, reset the height.
-		let inputScrollHeight;
-		inputScrollHeight = $(input).prop('scrollHeight');
+		const inputScrollHeight = $(input).prop('scrollHeight');
 		if (inputScrollHeight > 28) {
 			return $(input).height($(input).val() === '' ? '15px' : (inputScrollHeight >= 200 ? inputScrollHeight - 50 : inputScrollHeight - 20));
 		}
@@ -103,7 +156,7 @@ Template.messages.onCreated(function() {
 		if (!this.showOptions.get()) {
 			return;
 		}
-		let target = $(event.target);
+		const target = $(event.target);
 		if (!target.closest('.options-menu').length && !target.is('.options-menu') && !target.closest('.toggle-options').length && !target.is('.toggle-options')) {
 			this.showOptions.set(false);
 		}
@@ -116,12 +169,12 @@ Template.messages.onRendered(function() {
 });
 
 Template.messages.onRendered(function() {
-	var messages, newMessage, onscroll, template;
-	messages = this.find('.messages');
-	newMessage = this.find('.new-message');
-	template = this;
+	const messages = this.find('.messages');
+	const newMessage = this.find('.new-message');
+	const template = this;
+
 	if (messages) {
-		onscroll = _.throttle(function() {
+		const onscroll = _.throttle(function() {
 			template.atBottom = messages.scrollTop >= messages.scrollHeight - messages.clientHeight;
 		}, 200);
 		Meteor.setInterval(function() {

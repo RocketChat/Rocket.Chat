@@ -7,16 +7,17 @@ Package.describe({
 
 Package.onUse(function(api) {
 	api.use([
-		'coffeescript',
+		'mongo',
+		'ecmascript',
 		'rocketchat:lib'
 	]);
 
 	// Statistics
-	api.addFiles('lib/rocketchat.coffee', [ 'client', 'server' ]);
+	api.addFiles('lib/rocketchat.js', [ 'client', 'server' ]);
 	api.addFiles([
-		'server/models/Statistics.coffee',
-		'server/functions/get.coffee',
-		'server/functions/save.coffee',
-		'server/methods/getStatistics.coffee'
+		'server/models/Statistics.js',
+		'server/functions/get.js',
+		'server/functions/save.js',
+		'server/methods/getStatistics.js'
 	], 'server');
 });

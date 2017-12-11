@@ -6,7 +6,7 @@ Meteor.methods({
 
 		const user = Meteor.user();
 
-		let newStatus = user.statusLivechat === 'available' ? 'not-available' : 'available';
+		const newStatus = user.statusLivechat === 'available' ? 'not-available' : 'available';
 
 		return RocketChat.models.Users.setLivechatStatus(user._id, newStatus);
 	}

@@ -6,12 +6,12 @@ Package.describe({
 
 Package.onUse(function(api) {
 	api.use([
-		'coffeescript',
+		'ecmascript',
 		'rocketchat:lib'
 	]);
 
-	api.addFiles('server/settings.coffee', 'server');
+	api.addFiles('server/settings.js', 'server');
 
-	api.addFiles('client/mapview.coffee', 'client');
+	api.addFiles('client/mapview.js', 'client');
 
 });

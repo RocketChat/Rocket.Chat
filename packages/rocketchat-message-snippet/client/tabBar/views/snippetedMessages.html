@@ -1,28 +1,24 @@
 <template name="snippetedMessages">
-	<div class="content">
-		<div class="list-view pinned-messages-list">
-			<div class="title">
-				<h2>{{_ "Snippet_Messages"}}</h2>
-			</div>
-			{{#if Template.subscriptionsReady}}
-				{{#unless hasMessages}}
-					<h2>{{_ "No_snippet_messages"}}</h2>
-				{{/unless}}
-			{{/if}}
+	<div class="list-view snippeted-messages-list flex-tab__header">
+		<div class="title">
+			<h2>{{_ "Snippet_Messages"}}</h2>
 		</div>
+		{{#if Template.subscriptionsReady}}
+			{{#unless hasMessages}}
+				<h2>{{_ "No_snippet_messages"}}</h2>
+			{{/unless}}
+		{{/if}}
+	</div>
+	<div class="flex-tab__result js-list">
 		<ul class="list clearfix">
 			{{#each messages}}
-				{{#nrr nrrargs 'snippetMessage' message}}{{/nrr}}
+				{{#nrr nrrargs 'message' message}}{{/nrr}}
 			{{/each}}
-			{{#if hasMore}}
-				<li class="load-more">
-					{{#if Template.subscriptionsReady}}
-						<button>{{_ "Has_more"}}...</button>
-					{{else}}
-						<div class="load-more-loading">{{_ "Loading..."}}</div>
-					{{/if}}
-				</li>
-			{{/if}}
 		</ul>
+		{{#if hasMore}}
+		<div class="load-more">
+			{{> loading}}
+		</div>
+		{{/if}}
 	</div>
 </template>

@@ -1,6 +1,6 @@
 <template name="mailer">
 	<section class="page-container page-list">
-		<header class="fixed-title">
+		<header class="fixed-title border-component-color">
 			{{> burger}}
 			<h2>
 				<span class="room-title">{{_ "Mailer"}}</span>
@@ -19,7 +19,7 @@
 									<input type="text" name="from" value="" placeholder="{{fromEmail}}" />
 								</div>
 								<div>
-									<small class="settings-description">{{{_ "From_email_warning"}}}</small>
+									<small class="settings-description secondary-font-color">{{{_ "From_email_warning"}}}</small>
 								</div>
 							</div>
 							<div class="input-line">
@@ -28,7 +28,7 @@
 									<input type="checkbox" name="dryrun" value="1" />
 								</div>
 								<div>
-									<small class="settings-description">{{{_ "Dry_run_description"}}}</small>
+									<small class="settings-description secondary-font-color">{{{_ "Dry_run_description"}}}</small>
 								</div>
 							</div>
 							<div class="input-line">
@@ -37,7 +37,7 @@
 									<input type="text" name="query" value="" />
 								</div>
 								<div>
-									<small class="settings-description">{{{_ "Query_description"}}}</small>
+									<small class="settings-description secondary-font-color">{{{_ "Query_description"}}}</small>
 								</div>
 							</div>
 							<div class="input-line">
@@ -52,12 +52,12 @@
 									<textarea name="body" rows="10" style="height: auto"></textarea>
 								</div>
 								<div>
-									<small class="settings-description">{{{_ "Mailer_body_tags"}}}</small>
+									<small class="settings-description secondary-font-color">{{{_ "Mailer_body_tags"}}}</small>
 								</div>
 							</div>
 						</fieldset>
 						<div class="submit">
-							<button class="button send"><i class="icon-send"></i><span>{{_ "Send_email"}}</span></button>
+							<button class="button primary send"><i class="icon-send"></i><span>{{_ "Send_email"}}</span></button>
 						</div>
 					</div>
 				</form>

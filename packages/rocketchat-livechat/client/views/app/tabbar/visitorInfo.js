@@ -1,20 +1,23 @@
+import _ from 'underscore';
+import s from 'underscore.string';
+import moment from 'moment';
 import UAParser from 'ua-parser-js';
 
 Template.visitorInfo.helpers({
 	user() {
 		const user = Template.instance().user.get();
 		if (user && user.userAgent) {
-			var ua = new UAParser();
+			const ua = new UAParser();
 			ua.setUA(user.userAgent);
 
-			user.os = ua.getOS().name + ' ' + ua.getOS().version;
+			user.os = `${ ua.getOS().name } ${ ua.getOS().version }`;
 			if (['Mac OS', 'iOS'].indexOf(ua.getOS().name) !== -1) {
 				user.osIcon = 'icon-apple';
 			} else {
-				user.osIcon = 'icon-' + ua.getOS().name.toLowerCase();
+				user.osIcon = `icon-${ ua.getOS().name.toLowerCase() }`;
 			}
-			user.browser = ua.getBrowser().name + ' ' + ua.getBrowser().version;
-			user.browserIcon = 'icon-' + ua.getBrowser().name.toLowerCase();
+			user.browser = `${ ua.getBrowser().name } ${ ua.getBrowser().version }`;
+			user.browserIcon = `icon-${ ua.getBrowser().name.toLowerCase() }`;
 		}
 
 		return user;
@@ -29,27 +32,27 @@ Template.visitorInfo.helpers({
 	},
 
 	customFields() {
-		let fields = [];
+		const fields = [];
 		let livechatData = {};
 		const user = Template.instance().user.get();
 		if (user) {
 			livechatData = _.extend(livechatData, user.livechatData);
 		}
 
-		let data = Template.currentData();
+		const data = Template.currentData();
 		if (data && data.rid) {
-			let room = RocketChat.models.Rooms.findOne(data.rid);
+			const room = RocketChat.models.Rooms.findOne(data.rid);
 			if (room) {
 				livechatData = _.extend(livechatData, room.livechatData);
 			}
 		}
 
 		if (!_.isEmpty(livechatData)) {
-			for (let _id in livechatData) {
+			for (const _id in livechatData) {
 				if (livechatData.hasOwnProperty(_id)) {
-					let customFields = Template.instance().customFields.get();
+					const customFields = Template.instance().customFields.get();
 					if (customFields) {
-						let field = _.findWhere(customFields, { _id: _id });
+						const field = _.findWhere(customFields, { _id });
 						if (field && field.visibility !== 'hidden') {
 							fields.push({ label: field.label, value: livechatData[_id] });
 						}
@@ -224,11 +227,11 @@ Template.visitorInfo.onCreated(function() {
 		}
 	});
 
-	var currentData = Template.currentData();
+	const currentData = Template.currentData();
 
 	if (currentData && currentData.rid) {
 		this.autorun(() => {
-			let room = ChatRoom.findOne(currentData.rid);
+			const room = ChatRoom.findOne(currentData.rid);
 			if (room && room.v && room.v._id) {
 				this.visitorId.set(room.v._id);
 			} else {

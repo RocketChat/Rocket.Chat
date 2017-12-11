@@ -1,21 +1,33 @@
+import _ from 'underscore';
+
 Meteor.methods({
-	'sendFileMessage'(roomId, store, file) {
+	'sendFileMessage'(roomId, store, file, msgData = {}) {
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'sendFileMessage' });
 		}
 
-		var room = Meteor.call('canAccessRoom', roomId, Meteor.userId());
+		const room = Meteor.call('canAccessRoom', roomId, Meteor.userId());
 
 		if (!room) {
 			return false;
 		}
 
+		check(msgData, {
+			avatar: Match.Optional(String),
+			emoji: Match.Optional(String),
+			alias: Match.Optional(String),
+			groupable: Match.Optional(Boolean),
+			msg: Match.Optional(String)
+		});
+
 		RocketChat.models.Uploads.updateFileComplete(file._id, Meteor.userId(), _.omit(file, '_id'));
 
-		var fileUrl = '/file-upload/' + file._id + '/' + file.name;
+		const fileUrl = `/file-upload/${ file._id }/${ encodeURI(file.name) }`;
 
-		var attachment = {
-			title: `${TAPi18n.__('Attachment_File_Uploaded')}: ${file.name}`,
+		const attachment = {
+			title: file.name,
+			type: 'file',
+			description: file.description,
 			title_link: fileUrl,
 			title_link_download: true
 		};
@@ -37,17 +49,25 @@ Meteor.methods({
 			attachment.video_size = file.size;
 		}
 
-		const msg = {
+		const user = Meteor.user();
+		let msg = Object.assign({
 			_id: Random.id(),
 			rid: roomId,
+			ts: new Date(),
 			msg: '',
 			file: {
-				_id: file._id
+				_id: file._id,
+				name: file.name,
+				type: file.type
 			},
 			groupable: false,
 			attachments: [attachment]
-		};
+		}, msgData);
 
-		return Meteor.call('sendMessage', msg);
+		msg = Meteor.call('sendMessage', msg);
+
+		Meteor.defer(() => RocketChat.callbacks.run('afterFileUpload', { user, room, message: msg }));
+
+		return msg;
 	}
 });

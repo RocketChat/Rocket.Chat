@@ -1,10 +1,18 @@
+@header-min-height: 30px;
+@footer-min-height: 55px;
+@link-font-color: #008ce3;
+@primary-font-color: #444444;
+@secondary-font-color: #7f7f7f;
+@info-font-color: #aaaaaa;
+
 .flex-list {
 	.active {
-		background-color: rgba(255,255,255,0.075);
+		background-color: rgba(255, 255, 255, 0.075);
 	}
 }
 
-.trigger-option, .trigger-value {
+.trigger-option,
+.trigger-value {
 	float: left;
 	display: inline-block;
 }
@@ -33,7 +41,7 @@
 		text-align: left;
 		width: 100%;
 		height: 200px;
-		background-color: #EFEFEF;
+		background-color: #efefef;
 		font-family: courier;
 		font-size: 12px;
 		display: block;
@@ -45,7 +53,8 @@
 	margin-bottom: 1em;
 }
 
-.livechat-settings-div, .livechat-preview-div {
+.livechat-settings-div,
+.livechat-preview-div {
 	width: 50%;
 	float: left;
 	height: 95%;
@@ -54,15 +63,14 @@
 }
 
 .livechat-settings-div {
-	border-right: 1px solid #CCC;
+	border-right: 1px solid #cccccc;
 }
 
 .livechat-preview {
 	width: 340px;
 	height: 350px;
 	margin: 0 auto;
-
-	border-bottom: 1px solid #CCC;
+	border-bottom: 1px solid #cccccc;
 	position: relative;
 
 	.preview-wrapper {
@@ -71,14 +79,6 @@
 		padding: 0 20px;
 		height: 300px;
 		bottom: 0;
-
-		@header-min-height: 30px;
-		@footer-min-height: 55px;
-		@link-font-color: #008CE3;
-		@primary-font-color: #444444;
-		@secondary-font-color: #7f7f7f;
-		@info-font-color: #AAAAAA;
-
 		font-family: 'Helvetica Neue', Helvetica, Roboto, Arial, sans-serif, "Meiryo UI";
 		font-size: 0.8rem;
 		color: @primary-font-color;
@@ -94,7 +94,7 @@
 			line-height: inherit;
 			padding: 5px;
 			margin: 5px 0;
-			border: 1px solid #E7E7E7;
+			border: 1px solid #e7e7e7;
 			border-radius: 5px;
 			outline: none;
 		}
@@ -122,14 +122,15 @@
 			border-radius: 0;
 			line-height: 16px;
 			position: relative;
-			cursor: pointer;background-color: #FFF;
+			cursor: pointer;
 			color: rgba(255, 255, 255, 0.85);
-			background-color: lighten(desaturate(@primary-background-color, 15%), 12.5%);
+
 			span {
 				position: relative;
 				z-index: 2;
 			}
-			&:before {
+
+			&::before {
 				background-color: rgba(0, 0, 0, 0.1);
 				content: " ";
 				position: absolute;
@@ -139,29 +140,27 @@
 				height: 100%;
 				opacity: 0;
 				z-index: 1;
-				.transition(opacity .1s ease-out);
+				transition: opacity 0.1s ease-out;
 			}
+
 			&:hover {
 				text-decoration: none;
-				color: #FFF;
-				&:before {
+				color: #ffffff;
+
+				&::before {
 					opacity: 1;
 				}
 			}
-			&.secondary {
-				background-color: @tertiary-background-color;
-				color: @primary-font-color;
-				&:before {
-					background-color: rgba(0, 0, 0, 0.045);
-				}
-			}
+
 			&.clean {
 				font-size: 14px;
 				box-shadow: 0 0 3px rgba(0, 0, 0, 0.08);
+
 				&.primary {
 					font-weight: 600;
 				}
 			}
+
 			&.button-block {
 				display: block;
 				width: 100%;
@@ -183,14 +182,13 @@
             }
 			.title {
 				flex: 1 0 @header-min-height;
-
 				line-height: @header-min-height;
-
 				border-top-right-radius: 5px;
 				border-top-left-radius: 5px;
-				color: #FFF;
+				color: #ffffff;
 				z-index: 10;
 				cursor: pointer;
+
 				h1 {
 					margin: 0;
 					padding: 0 5px;
@@ -205,19 +203,21 @@
 					padding-right: 5px;
 				}
 			}
+
 			.messages {
 				flex: 1 1 100%;
-
-				background-color: #FFF;
-				border-left: 1px solid #E7E7E7;
-				border-right: 1px solid #E7E7E7;
+				background-color: #ffffff;
+				border-left: 1px solid #e7e7e7;
+				border-right: 1px solid #e7e7e7;
 				overflow-y: auto;
+
 				.wrapper {
 					padding-bottom: 6px;
 
 					ul {
 						list-style-type: none;
 						padding: 0;
+
 						li {
 							padding: 0;
 						}
@@ -230,63 +230,71 @@
 						line-height: 18px;
 						margin: 12px 10px 0;
 						min-height: 36px;
+
 						&:nth-child(1) {
 							margin-top: 0;
 						}
+
 						&.new-day {
 							margin-top: 60px;
-						}
-						&.new-day {
-							&:before {
+
+							&::before {
 								content: attr(data-date);
 								display: block;
 								position: absolute;
 								top: -30px;
-								left: 0;
+								left: calc(~'50% - 70px');
 								font-size: 10px;
 								font-weight: 600;
 								text-align: center;
-								.calc(left, ~'50% - 70px');
 								color: @secondary-font-color;
 								z-index: 10;
 								padding: 0 10px;
-								background-color: #FFF;
+								background-color: #ffffff;
 								min-width: 120px;
 							}
-							&:after {
+
+							&::after {
 								content: " ";
 								display: block;
 								position: absolute;
 								top: -20px;
 								left: 0;
 								width: 100%;
-								border-top: 1px solid #ddd;
+								border-top: 1px solid #dddddd;
 							}
 						}
+
 						.edit-message {
 							display: none;
 							cursor: pointer;
 						}
+
 						&.own:hover:not(.system) .edit-message {
 							display: inline-block;
 						}
+
 						.delete-message {
 							display: none;
 							cursor: pointer;
 						}
+
 						&.own:hover:not(.system) .delete-message {
 							display: inline-block;
 						}
+
 						.user {
 							display: inline-block;
 							font-weight: 600;
 							color: #444444;
 							margin-right: 5px;
 							outline: none;
+
 							&:hover {
-								color: #333;
+								color: #333333;
 							}
 						}
+
 						.thumb {
 							position: absolute;
 							left: 0;
@@ -295,78 +303,96 @@
 							width: 30px;
 							height: 30px;
 						}
+
 						.info {
 							font-size: 10px;
 							color: @info-font-color;
 						}
+
 						&.sequential {
-							// margin-top: 5px;
 							padding-top: 5px;
 							margin-top: 0;
 							margin-bottom: 0;
 							min-height: 20px;
+
 							.user {
 								display: none;
 							}
+
 							.thumb {
 								display: none;
 							}
+
 							.info {
 								position: absolute;
 								text-align: right;
 								left: -20px;
 								width: 55px;
+
 								.time {
 									display: none;
 								}
+
 								.edited {
 									display: inline-block;
 								}
+
 								.edit-message {
 									float: left;
 									margin-left: 1px;
 								}
+
 								.delete-message {
 									float: left;
 								}
 							}
+
 							&:hover {
 								.time {
 									display: inline-block;
 								}
+
 								.edited {
 									display: none;
 								}
 							}
 						}
+
 						&.system {
 							.body {
 								color: @info-font-color;
 								font-style: italic;
 								text-transform: lowercase;
+
 								em {
 									font-weight: 600;
 								}
 							}
 						}
+
 						.avatar-initials {
 							line-height: 40px;
 						}
+
 						a {
 							color: @link-font-color;
 							font-weight: 400;
+
 							&:hover {
 								color: darken(@link-font-color, 10%);
 								text-decoration: underline;
 							}
 						}
+
 						.body {
 							opacity: 1;
-							.transition(opacity 1s linear);
+							transition: opacity 1s linear;
 						}
+
 						&.temp .body {
-							opacity: .5;
+							opacity: 0.5;
 						}
+
 						&.msg-error .body {
 							text-decoration: line-through;
 						}
@@ -386,6 +412,7 @@
 						}
 					}
 				}
+
 				.new-message {
 					margin: 0 -65px;
 					position: absolute;
@@ -394,17 +421,18 @@
 					width: 130px;
 					height: 30px;
 					text-align: center;
-					color: #FFF;
+					color: #ffffff;
 					line-height: 30px;
 					font-size: 0.8em;
 					cursor: pointer;
 					bottom: 8px;
 					left: 50%;
 					z-index: 5;
-					.transition(transform 0.3s ease-out);
-					.transform(translateY(-40px));
+					transition: transform 0.3s ease-out;
+					transform: translateY(-40px);
+
 					&.not {
-						.transform(translateY(100%));
+						transform: translateY(100%);
 					}
 				}
 
@@ -412,39 +440,37 @@
 					bottom: 40px;
 					position: fixed;
 					width: 100%;
-					background-color: #F7D799;
+					background-color: #f7d799;
 					padding: 5px;
 					z-index: 8;
-
-					.transition(transform 0.2s ease-out);
-					.transform(translateY(100%));
+					transition: transform 0.2s ease-out;
+					transform: translateY(100%);
 
 					&.show {
-						.transform(translateY(0));
+						transform: translateY(0);
 					}
 				}
 			}
+
 			.footer {
 				flex: 1 0 @footer-min-height;
-
 				z-index: 10;
-
-				background-color: #FCFCFC;
-				border-top: 1px solid #E7E7E7;
-				border-left: 1px solid #E7E7E7;
-				border-right: 1px solid #E7E7E7;
+				background-color: #fcfcfc;
+				border-top: 1px solid #e7e7e7;
+				border-left: 1px solid #e7e7e7;
+				border-right: 1px solid #e7e7e7;
 
 				.input-wrapper {
-					padding: 6px 6px 0 6px;
+					padding: 6px 6px 0;
 					padding-right: 30px;
+
 					textarea {
 						display: block;
 						padding: 6px 8px;
 						padding-right: 38px;
 						overflow-y: auto;
 						resize: none;
-						border: 1px solid #E7E7E7;
-						// margin: 10px;
+						border: 1px solid #e7e7e7;
 						border-radius: 5px;
 						max-height: 200px;
 						width: 100%;
@@ -452,7 +478,7 @@
 						-webkit-appearance: none;
 						height: 28px;
 						line-height: normal;
-						background-color: #fff;
+						background-color: #ffffff;
 						position: relative;
 						outline: none;
 					}
@@ -465,7 +491,7 @@
 					top: -28px;
 					color: @secondary-font-color;
 					cursor: pointer;
-					.transition(color .15s ease-out);
+					transition: color 0.15s ease-out;
 
 					&:hover {
 						color: @primary-font-color;
@@ -477,8 +503,8 @@
 				flex: 1 1 100%;
 				background-color: white;
 				padding: 1em 10px;
-				border-left: 1px solid #E7E7E7;
-				border-right: 1px solid #E7E7E7;
+				border-left: 1px solid #e7e7e7;
+				border-right: 1px solid #e7e7e7;
 
 				.offline-message {
 					padding: 1em 0;
@@ -489,7 +515,8 @@
 				}
 
 				form {
-					input, textarea {
+					input,
+					textarea {
 						display: block;
 						width: 100%;
 					}
@@ -504,7 +531,7 @@
 
 					.error {
 						display: none;
-						background-color: #F7D799;
+						background-color: #f7d799;
 						padding: 5px;
 
 						&.show {
@@ -516,18 +543,23 @@
 		}
 	}
 
-	&.closed, &.closed-offline {
+	&.closed,
+	&.closed-offline {
 		.preview-wrapper {
 			height: 32px;
+
 			.livechat-room .title .toolbar {
 				display: none;
 			}
+
 			.messages {
 				display: none;
 			}
+
 			.footer {
 				display: none;
 			}
+
 			.offline {
 				display: none;
 			}
@@ -540,7 +572,7 @@
 
 	li {
 		display: inline-block;
-		background-color: #DDD;
+		background-color: #dddddd;
 		border-radius: 10px;
 		padding: 2px 8px 2px 2px;
 		margin: 1px 0;
@@ -561,40 +593,16 @@
 	}
 }
 
-.user-view {
-	li {
-		color: @secondary-font-color;
-		line-height: 18px;
-		font-size: 12px;
-		font-weight: 300;
-	}
-}
-
-.icon-chat-empty.status-offline {
-	color: @status-offline;
-}
-
-.icon-chat-empty.status-online {
-	color: @status-online;
-}
-
-.icon-chat-empty.status-busy {
-	color: @status-busy;
-}
-
-.icon-chat-empty.status-away {
-	color: @status-away;
-}
-
 .visitor-custom-fields {
 	padding: 0 20px;
 }
 
-.visitor-navigation, .visitor-custom-fields {
+.visitor-navigation,
+.visitor-custom-fields {
 	.visitor-scroll {
 		height: 130px;
 		overflow-y: auto;
-		border: 1px solid #E7E7E7;
+		border: 1px solid #e7e7e7;
 		border-radius: 4px;
 		padding: 4px;
 		margin-top: 4px;
@@ -608,7 +616,6 @@
 					text-overflow: ellipsis;
 					display: block;
 					overflow: hidden;
-
 					color: @secondary-font-color;
 					text-decoration: underline;
 
@@ -622,34 +629,23 @@
 }
 
 .livechat-section {
-	opacity: 0.5;
-
-	.transition(opacity .4s ease);
-
-	&.available {
-		opacity: 1;
-	}
+	margin-bottom: 32px;
 }
 
 .livechat-status {
-	float: right;
-	margin-right: 10px;
 	font-size: 20px;
-	&.available {
-		color: @status-online;
-	}
-	&.not-available {
-		color: @status-offline;
-	}
+	line-height: 18px;
+	color: #9d9fa3;
 }
 
 .external-message {
 	padding: 10px;
 	position: relative;
-	&:after {
+
+	&::after {
 		content: " ";
 		position: absolute;
-		border-bottom: 1px solid #CCC;
+		border-bottom: 1px solid #cccccc;
 		left: 10px;
 		right: 10px;
 		bottom: 0;
@@ -657,9 +653,17 @@
 }
 
 .user-view {
+	li {
+		color: @secondary-font-color;
+		line-height: 18px;
+		font-size: 12px;
+		font-weight: 300;
+	}
+
 	nav.centered-buttons {
 		text-align: center;
 		margin-bottom: 1em;
+
 		button {
 			display: inline-block;
 			width: auto;
@@ -677,6 +681,7 @@
 
 .visitor-edit {
 	padding: 20px;
+
 	h3 {
 		font-size: 24px;
 		margin-bottom: 8px;

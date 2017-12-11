@@ -1,14 +1,16 @@
+import _ from 'underscore';
+
 RocketChat.models._Base.prototype.roleBaseQuery = function(/*userId, scope*/) {
 	return;
 };
 
 RocketChat.models._Base.prototype.findRolesByUserId = function(userId/*, options*/) {
-	var query = this.roleBaseQuery(userId);
+	const query = this.roleBaseQuery(userId);
 	return this.find(query, { fields: { roles: 1 } });
 };
 
 RocketChat.models._Base.prototype.isUserInRole = function(userId, roleName, scope) {
-	var query = this.roleBaseQuery(userId, scope);
+	const query = this.roleBaseQuery(userId, scope);
 
 	if (query == null) {
 		return false;
@@ -20,8 +22,8 @@ RocketChat.models._Base.prototype.isUserInRole = function(userId, roleName, scop
 
 RocketChat.models._Base.prototype.addRolesByUserId = function(userId, roles, scope) {
 	roles = [].concat(roles);
-	var query = this.roleBaseQuery(userId, scope);
-	var update = {
+	const query = this.roleBaseQuery(userId, scope);
+	const update = {
 		$addToSet: {
 			roles: { $each: roles }
 		}
@@ -31,10 +33,10 @@ RocketChat.models._Base.prototype.addRolesByUserId = function(userId, roles, sco
 
 RocketChat.models._Base.prototype.removeRolesByUserId = function(userId, roles, scope) {
 	roles = [].concat(roles);
-	var query = this.roleBaseQuery(userId, scope);
-	var update = {
+	const query = this.roleBaseQuery(userId, scope);
+	const update = {
 		$pullAll: {
-			roles: roles
+			roles
 		}
 	};
 	return this.update(query, update);

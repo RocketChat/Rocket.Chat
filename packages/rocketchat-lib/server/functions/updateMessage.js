@@ -10,21 +10,21 @@ RocketChat.updateMessage = function(message, user) {
 		username: user.username
 	};
 
-	let urls = message.msg.match(/([A-Za-z]{3,9}):\/\/([-;:&=\+\$,\w]+@{1})?([-A-Za-z0-9\.]+)+:?(\d+)?((\/[-\+=!:~%\/\.@\,\w]*)?\??([-\+=&!:;%@\/\.\,\w]+)?(?:#([^\s\)]+))?)?/g);
+	const urls = message.msg.match(/([A-Za-z]{3,9}):\/\/([-;:&=\+\$,\w]+@{1})?([-A-Za-z0-9\.]+)+:?(\d+)?((\/[-\+=!:~%\/\.@\,\w]*)?\??([-\+=&!:;%@\/\.\,\w]+)?(?:#([^\s\)]+))?)?/g);
 	if (urls) {
-		message.urls = urls.map((url) => { return { url: url }; });
+		message.urls = urls.map((url) => { return { url }; });
 	}
 
 	message = RocketChat.callbacks.run('beforeSaveMessage', message);
 
-	let tempid = message._id;
+	const tempid = message._id;
 	delete message._id;
 
 	RocketChat.models.Messages.update({ _id: tempid }, { $set: message });
 
-	let room = RocketChat.models.Rooms.findOneById(message.rid);
+	const room = RocketChat.models.Rooms.findOneById(message.rid);
 
 	Meteor.defer(function() {
-		RocketChat.callbacks.run('afterSaveMessage', RocketChat.models.Messages.findOneById(tempid), room);
+		RocketChat.callbacks.run('afterSaveMessage', RocketChat.models.Messages.findOneById(tempid), room, user._id);
 	});
 };

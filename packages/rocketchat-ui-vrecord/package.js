@@ -10,20 +10,16 @@ Package.onUse(function(api) {
 		'mongo',
 		'ecmascript',
 		'templating',
-		'coffeescript',
-		'underscore',
 		'tracker',
-		'rocketchat:lib',
-		'less'
+		'rocketchat:lib'
 	]);
 
 
-	api.addAssets('client/vrecord.less', 'server');
+	api.addFiles('client/vrecord.css', 'client');
 
 	api.addFiles('client/vrecord.html', 'client');
-	api.addFiles('client/vrecord.coffee', 'client');
-	api.addFiles('client/VRecDialog.coffee', 'client');
+	api.addFiles('client/vrecord.js', 'client');
 
-	api.addFiles('server/settings.coffee', 'server');
-	api.addFiles('loadStylesheet.coffee', 'server');
+	api.addFiles('server/settings.js', 'server');
+	api.mainModule('client/VRecDialog.js', 'client');
 });

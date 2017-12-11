@@ -5,8 +5,8 @@ Package.describe({
 });
 
 Package.onUse(function(api) {
-	api.use('coffeescript');
-	api.use('underscore');
+	api.use('mongo');
+	api.use('ecmascript');
 	api.use('random');
 	api.use('logging');
 	api.use('nooitaf:colors');
@@ -14,13 +14,15 @@ Package.onUse(function(api) {
 	api.use('templating', 'client');
 	api.use('kadira:flow-router', 'client');
 
-	api.addFiles('ansispan.js', 'client');
-	api.addFiles('logger.coffee', 'client');
-	api.addFiles('client/viewLogs.coffee', 'client');
+	api.addFiles('client/ansispan.js', 'client');
+	api.addFiles('client/logger.js', 'client');
+	api.addFiles('client/viewLogs.js', 'client');
 	api.addFiles('client/views/viewLogs.html', 'client');
-	api.addFiles('client/views/viewLogs.coffee', 'client');
+	api.addFiles('client/views/viewLogs.js', 'client');
 
-	api.addFiles('server.coffee', 'server');
+	api.addFiles('server/server.js', 'server');
 
 	api.export('Logger');
+	api.export('SystemLogger');
+	api.export('LoggerManager');
 });

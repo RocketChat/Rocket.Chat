@@ -6,7 +6,7 @@ Package.describe({
 
 Package.onUse(function(api) {
 	api.use([
-		'coffeescript',
+		'ecmascript',
 		'ddp-rate-limiter',
 		'kadira:flow-router',
 		'rocketchat:lib',
@@ -15,24 +15,24 @@ Package.onUse(function(api) {
 
 	api.use('templating', 'client');
 
-	api.addFiles('lib/Mailer.coffee');
+	api.addFiles('lib/Mailer.js');
 
 	api.addFiles([
-		'client/startup.coffee',
-		'client/router.coffee',
+		'client/startup.js',
+		'client/router.js',
 		'client/views/mailer.html',
-		'client/views/mailer.coffee',
+		'client/views/mailer.js',
 		'client/views/mailerUnsubscribe.html',
-		'client/views/mailerUnsubscribe.coffee'
+		'client/views/mailerUnsubscribe.js'
 	], 'client');
 
 	api.addFiles([
-		'server/startup.coffee',
-		'server/models/Users.coffee',
-		'server/functions/sendMail.coffee',
-		'server/functions/unsubscribe.coffee',
-		'server/methods/sendMail.coffee',
-		'server/methods/unsubscribe.coffee'
+		'server/startup.js',
+		'server/models/Users.js',
+		'server/functions/sendMail.js',
+		'server/functions/unsubscribe.js',
+		'server/methods/sendMail.js',
+		'server/methods/unsubscribe.js'
 	], 'server');
 
 	api.export('Mailer');
