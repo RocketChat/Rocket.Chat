@@ -340,7 +340,7 @@ Template.room.helpers({
 
 	viewMode() {
 		const user = Meteor.user();
-		const viewMode = user && user.settings && user.settings.preferences && user.settings.preferences.viewMode;
+		const viewMode = RocketChat.getUserPreference(user, 'viewMode');
 		const modes = ['', 'cozy', 'compact'];
 		return modes[viewMode] || modes[0];
 	},
@@ -351,12 +351,12 @@ Template.room.helpers({
 
 	hideUsername() {
 		const user = Meteor.user();
-		return user && user.settings && user.settings.preferences && user.settings.preferences.hideUsernames ? 'hide-usernames' : undefined;
+		return RocketChat.getUserPreference(user, 'hideUsernames') ? 'hide-usernames' : undefined;
 	},
 
 	hideAvatar() {
 		const user = Meteor.user();
-		return user && user.settings && user.settings.preferences && user.settings.preferences.hideAvatars ? 'hide-avatars' : undefined;
+		return RocketChat.getUserPreference(user, 'hideAvatars') ? 'hide-avatars' : undefined;
 	},
 
 	userCanDrop() {
@@ -418,7 +418,7 @@ Template.room.events({
 	'click .messages-container-main'() {
 		const user = Meteor.user();
 
-		if ((Template.instance().tabBar.getState() === 'opened') && user && user.settings && user.settings.preferences && user.settings.preferences.hideFlexTab) {
+		if ((Template.instance().tabBar.getState() === 'opened') && RocketChat.getUserPreference(user, 'hideFlexTab')) {
 			Template.instance().tabBar.close();
 		}
 	},
