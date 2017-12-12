@@ -1,3 +1,5 @@
+/* globals swal */
+
 Template.livechatIntegrationFacebook.helpers({
 	pages() {
 		return Template.instance().pages.get();
