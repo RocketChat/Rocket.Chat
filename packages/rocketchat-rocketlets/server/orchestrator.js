@@ -1,5 +1,5 @@
 import { RealRocketletBridges } from './bridges';
-import { RocketletsRestApi, RocketletWebsocketNotifier } from './communication';
+import { RocketletMethods, RocketletsRestApi, RocketletWebsocketNotifier } from './communication';
 import { RocketletMessagesConverter, RocketletRoomsConverter, RocketletSettingsConverter, RocketletUsersConverter } from './converters';
 import { RocketletsModel, RocketletsPersistenceModel, RocketletRealStorage } from './storage';
 
@@ -26,6 +26,7 @@ class RocketletServerOrchestrator {
 		this._manager = new RocketletManager(this._storage, this._bridges);
 
 		this._communicators = new Map();
+		this._communicators.set('methods', new RocketletMethods(this._manager));
 		this._communicators.set('notifier', new RocketletWebsocketNotifier());
 		this._communicators.set('restapi', new RocketletsRestApi(this._manager));
 	}
@@ -60,6 +61,11 @@ class RocketletServerOrchestrator {
 }
 
 Meteor.startup(function _rocketletServerOrchestrator() {
+	// Ensure that everything is setup
+	if (process.env.NODE_ENV !== 'development' && (process.env[RocketletManager.ENV_VAR_NAME_FOR_ENABLING] !== 'true' && process.env[RocketletManager.SUPER_FUN_ENV_ENABLEMENT_NAME] !== 'true')) {
+		return new RocketletMethods();
+	}
+
 	console.log('Orchestrating the rocketlet piece...');
 	global.Rocketlets = new RocketletServerOrchestrator();
 
