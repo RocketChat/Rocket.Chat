@@ -1,46 +1,63 @@
 <template name="rocketlets">
-	<section class="preferences-page">
+	<section class="preferences-page preferences-page--apps">
 		<header class="preferences-page__header">
 			{{> burger}}
 			<h2>{{_ "Manage_Rocketlets"}}</h2>
+			<button class="rc-button rc-button--primary" data-button="install">{{_ "Install_package"}}</button>
 		</header>
 		<div class="preferences-page__content">
 			{{#requiresPermission 'manage-rocketlets'}}
 				<div class="rc-discovery">
 					<div class="rc-discovery-wrap">
-						<div class="rc-discovery__item">
-							<div class="rc-discovery__item__image-wrap">
-								<div class="rc-discovery__item__image"></div>
-							</div>
-							<div class="rc-discovery__item__footer">
-								<div class="rc-discovery__container">
-									<div class="discovery__item__footer__title">Add New</div>
-									<div class="rc-discovery__item__footer__description">Install or import a new Rocketlet.</div>
-								</div>
-								<button class="rc-button rc-button--square rc-tooltip install" aria-label="Install">
-									{{> icon icon="plus"}}
-								</button>
-							</div>
-						</div>
-					</div>
-					{{#each rocketlets}}
-						<div class="rc-discovery-wrap">
+						{{#each rocketlets}}
 							<div class="rc-discovery__item">
-								<div class="rc-discovery__item__image-wrap">
-									<div class="rc-discovery__item__image" style="background-image: url({{ iconFileContent }})"></div>
+								<div class="rc-discovery__item-image-wrap">
+									<div class="rc-discovery__item-image" style="background-image: url({{ iconFileContent }})"></div>
 								</div>
-								<div class="rc-discovery__item__footer">
+								<div class="rc-discovery__item-footer">
 									<div class="rc-discovery__container">
-										<div class="discovery__item__footer__title">{{name}}</div>
-										<div class="rc-discovery__item__footer__description">{{description}}</div>
+										<div class="discovery__item-footer-title">{{name}}</div>
+										<div class="rc-discovery__item-footer-description">{{description}}</div>
 									</div>
 									<button class="rc-button rc-button--square rc-tooltip manage" aria-label="{{_ "Manage_the_Rocketlet"}}">
 										{{> icon icon="cog"}}
 									</button>
 								</div>
 							</div>
+						{{/each}}
+						{{#each rocketlets}}
+						<div class="rc-discovery__item">
+							<div class="rc-discovery__item-image-wrap">
+								<div class="rc-discovery__item-image" style="background-image: url({{ iconFileContent }})"></div>
+							</div>
+							<div class="rc-discovery__item-footer">
+								<div class="rc-discovery__container">
+									<div class="discovery__item-footer-title">{{name}}</div>
+									<div class="rc-discovery__item-footer-description">{{description}}</div>
+								</div>
+								<button class="rc-button rc-button--square rc-tooltip manage" aria-label="{{_ "Manage_the_Rocketlet"}}">
+									{{> icon icon="cog"}}
+								</button>
+							</div>
 						</div>
 					{{/each}}
+					{{#each rocketlets}}
+					<div class="rc-discovery__item">
+						<div class="rc-discovery__item-image-wrap">
+							<div class="rc-discovery__item-image" style="background-image: url({{ iconFileContent }})"></div>
+						</div>
+						<div class="rc-discovery__item-footer">
+							<div class="rc-discovery__container">
+								<div class="discovery__item-footer-title">{{name}}</div>
+								<div class="rc-discovery__item-footer-description">{{description}}</div>
+							</div>
+							<button class="rc-button rc-button--square rc-tooltip manage" aria-label="{{_ "Manage_the_Rocketlet"}}">
+								{{> icon icon="cog"}}
+							</button>
+						</div>
+					</div>
+				{{/each}}
+					</div>
 				</div>
 			{{/requiresPermission}}
 		</div>
