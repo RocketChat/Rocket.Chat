@@ -80,7 +80,7 @@ describe('[User Preferences]', ()=> {
 			preferencesMainContent.saveChanges();
 		});
 
-		it.skip('it should put the password in the sweet alert input', ()=> {
+		it.skip('it should put the password in the modal input', ()=> {
 			preferencesMainContent.acceptPasswordOverlay(password);
 		});
 
