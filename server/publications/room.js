@@ -30,6 +30,7 @@ const fields = {
 	v: 1,
 	label: 1,
 	ro: 1,
+	reactWhenReadOnly: 1,
 	sentiment: 1,
 	tokenpass: 1
 };
