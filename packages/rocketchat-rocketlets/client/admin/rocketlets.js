@@ -1,3 +1,5 @@
+import Masonry from 'masonry-layout';
+
 Template.rocketlets.onCreated(function() {
 	const instance = this;
 	this.ready = new ReactiveVar(false);
@@ -5,6 +7,17 @@ Template.rocketlets.onCreated(function() {
 
 	RocketChat.API.get('rocketlets').then((result) => {
 		instance.rocketlets.set(result.rocketlets);
+		instance.ready.set(true);
+	});
+
+	Tracker.autorun(() => {
+		if (this.ready.get() === true) {
+			console.log('render');
+			const grid = new Masonry('.rc-discovery-wrap', {
+				itemSelector: '.rc-discovery__item',
+				columnWidth: 350
+			});
+		}
 	});
 });
 
