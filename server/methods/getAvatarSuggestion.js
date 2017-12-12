@@ -62,9 +62,13 @@ function getAvatarSuggestionForUser(user) {
 
 			if (services.length > 0) {
 				if (services[0].avatarField) {
+					const avatarUrl = services[0].avatarField.split('.').reduce(function(prev, curr) {
+						return prev ? prev[curr] : undefined;
+					}, user.services[service]);
+
 					avatars.push({
 						service,
-						url: user.services[service][services[0].avatarField]
+						url: avatarUrl
 					});
 				}
 			}
