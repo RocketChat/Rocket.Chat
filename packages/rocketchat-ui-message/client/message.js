@@ -13,8 +13,7 @@ Template.message.helpers({
 	},
 	roleTags() {
 		const user = Meteor.user();
-		// test user -> settings -> preferences -> hideRoles
-		if (!RocketChat.settings.get('UI_DisplayRoles') || (user && ['settings', 'preferences', 'hideRoles'].reduce((obj, field) => typeof obj !== 'undefined' && obj[field], user))) {
+		if (!RocketChat.settings.get('UI_DisplayRoles') || RocketChat.getUserPreference(user, 'hideRoles')) {
 			return [];
 		}
 
