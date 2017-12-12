@@ -202,14 +202,8 @@ jobs:
           command: |
             for i in $(seq 1 5); do npm test && s=0 && break || s=$? && sleep 1; done; (exit $s)
 
-      # - run:
-      #     name: Build Failed
-      #     when: on_fail
-      #     command: |
-      #       cp -R .screenshots /tmp/screenshots
-
-      # - store_artifacts:
-      #     path: ~/repo/.screenshots
+      - store_artifacts:
+          path: .screenshots/
 
   deploy:
     <<: *defaults
@@ -258,21 +252,29 @@ workflows:
   version: 2
   build-and-test:
     jobs:
-      - build
+      - build:
+          filters:
+            tags:
+              only: /^[0-9]+\.[0-9]+\.[0-9]+(-rc\.[0-9]+)?$/
       - test-with-oplog:
           requires:
             - build
+          filters:
+            tags:
+              only: /^[0-9]+\.[0-9]+\.[0-9]+(-rc\.[0-9]+)?$/
       - test-without-oplog:
           requires:
             - build
+          filters:
+            tags:
+              only: /^[0-9]+\.[0-9]+\.[0-9]+(-rc\.[0-9]+)?$/
       - deploy:
           requires:
             - test-with-oplog
             - test-without-oplog
           filters:
             branches:
-              only:
-                - develop
+              only: develop
             tags:
-              only:
-                - "/^\\d+\\.\\d+\\.\\d+(-rc\\.\\d+)?$/"
+              only: /^[0-9]+\.[0-9]+\.[0-9]+(-rc\.[0-9]+)?$/
+

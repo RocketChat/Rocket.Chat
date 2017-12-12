@@ -78,6 +78,8 @@ Package.onUse(function(api) {
 	api.addFiles('lib/MessageTypes.js');
 	api.addFiles('lib/templateVarHandler.js');
 
+	api.addFiles('lib/getUserPreference.js');
+
 	api.addFiles('server/lib/bugsnag.js', 'server');
 	api.addFiles('server/lib/metrics.js', 'server');
 
