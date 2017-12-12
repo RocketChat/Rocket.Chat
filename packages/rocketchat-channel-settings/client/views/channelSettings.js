@@ -364,13 +364,13 @@ Template.channelSettings.onCreated(function() {
 			},
 			save(value, room) {
 				this.processing.set(true);
-				return Meteor.call('saveRoomSettings', room._id, 'reactWhenReadOnly', value, (err) => {
+				Meteor.call('saveRoomSettings', room._id, 'reactWhenReadOnly', value, (err) => {
 					if (err) {
 						return handleError(err);
 					}
 
 					this.processing.set(false);
-					return toastr.success(TAPi18n.__('React_when_read_only_changed_successfully'));
+					toastr.success(TAPi18n.__('React_when_read_only_changed_successfully'));
 				});
 			}
 		},

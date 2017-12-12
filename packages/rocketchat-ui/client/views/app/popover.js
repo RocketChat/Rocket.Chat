@@ -187,7 +187,7 @@ Template.popover.events({
 		if (e.currentTarget.dataset.id === 'hide') {
 			const warnText = RocketChat.roomTypes.roomTypes[template].getUiText(UiTextContext.HIDE_WARNING);
 
-			return modal.open({
+			modal.open({
 				title: t('Are_you_sure'),
 				text: warnText ? t(warnText, name) : '',
 				type: 'warning',
@@ -210,42 +210,66 @@ Template.popover.events({
 					}
 				});
 			});
+
+			return false;
 		}
 
-		const warnText = RocketChat.roomTypes.roomTypes[template].getUiText(UiTextContext.LEAVE_WARNING);
-
-		modal.open({
-			title: t('Are_you_sure'),
-			text: warnText ? t(warnText, name) : '',
-			type: 'warning',
-			showCancelButton: true,
-			confirmButtonColor: '#DD6B55',
-			confirmButtonText: t('Yes_leave_it'),
-			cancelButtonText: t('Cancel'),
-			closeOnConfirm: false,
-			html: false
-		}, function(isConfirm) {
-			if (isConfirm) {
-				Meteor.call('leaveRoom', rid, function(err) {
-					if (err) {
-						modal.open({
-							title: t('Warning'),
-							text: handleError(err, false),
-							type: 'warning',
-							html: false
-						});
-					} else {
-						modal.close();
-						if (['channel', 'group', 'direct'].includes(FlowRouter.getRouteName()) && (Session.get('openedRoom') === rid)) {
-							FlowRouter.go('home');
-						}
-
-						RoomManager.close(rid);
-					}
-				});
-			} else {
-				modal.close();
+		if (e.currentTarget.dataset.id === 'leave') {
+			let warnText;
+			switch (template) {
+				case 'c': warnText = 'Leave_Room_Warning'; break;
+				case 'p': warnText = 'Leave_Group_Warning'; break;
+				case 'd': warnText = 'Leave_Private_Warning'; break;
+				case 'l': warnText = 'Hide_Livechat_Warning'; break;
 			}
-		});
+
+			modal.open({
+				title: t('Are_you_sure'),
+				text: warnText ? t(warnText, name) : '',
+				type: 'warning',
+				showCancelButton: true,
+				confirmButtonColor: '#DD6B55',
+				confirmButtonText: t('Yes_leave_it'),
+				cancelButtonText: t('Cancel'),
+				closeOnConfirm: false,
+				html: false
+			}, function(isConfirm) {
+				if (isConfirm) {
+					Meteor.call('leaveRoom', rid, function(err) {
+						if (err) {
+							modal.open({
+								title: t('Warning'),
+								text: handleError(err, false),
+								type: 'warning',
+								html: false
+							});
+						} else {
+							modal.close();
+							if (['channel', 'group', 'direct'].includes(FlowRouter.getRouteName()) && (Session.get('openedRoom') === rid)) {
+								FlowRouter.go('home');
+							}
+						}
+					});
+				}
+			});
+
+			return false;
+		}
+
+		if (e.currentTarget.dataset.id === 'read') {
+			Meteor.call('readMessages', rid);
+			return false;
+		}
+
+		if (e.currentTarget.dataset.id === 'favorite') {
+			Meteor.call('toggleFavorite', rid, !$(e.currentTarget).hasClass('rc-popover__item--star-filled'), function(err) {
+				popover.close();
+				if (err) {
+					handleError(err);
+				}
+			});
+
+			return false;
+		}
 	}
 });
