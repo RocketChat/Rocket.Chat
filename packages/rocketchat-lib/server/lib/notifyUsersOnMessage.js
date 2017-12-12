@@ -63,7 +63,8 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 		}
 
 		highlights.forEach(function(user) {
-			if (user && user.settings && user.settings.preferences && messageContainsHighlight(message, user.settings.preferences.highlights)) {
+			const userHighlights = RocketChat.getUserPreference(user, 'highlights');
+			if (userHighlights && messageContainsHighlight(message, userHighlights)) {
 				if (user._id !== message.u._id) {
 					highlightsIds.push(user._id);
 				}

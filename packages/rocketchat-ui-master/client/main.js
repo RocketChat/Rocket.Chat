@@ -192,9 +192,7 @@ Template.main.onRendered(function() {
 			cancelButtonText: t('Cancel')
 		});
 		const user = Meteor.user();
-		const settings = user && user.settings;
-		const prefs = settings && settings.preferences;
-		if (prefs && prefs.hideUsernames != null) {
+		if (RocketChat.getUserPreference(user, 'hideUsernames')) {
 			$(document.body).on('mouseleave', 'button.thumb', function() {
 				return RocketChat.tooltip.hide();
 			});
