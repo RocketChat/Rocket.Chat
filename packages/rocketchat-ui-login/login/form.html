@@ -1,0 +1,137 @@
+<template name="loginForm">
+	{{#if state 'sandstorm'}}
+		<div class="alert alert-danger">
+			You must login to Sandstorm (on the top right) in order to access this chat.
+		</div>
+	{{else}}
+		<form id="login-card" method='/' novalidate>
+			{{#if state 'wait-activation'}}
+				<header>
+					<h2>{{{_ "Registration_Succeeded"}}}</h2>
+					<p>{{{_ "Wait_activation_warning"}}}</p>
+					<p>{{{_ "Please_wait_activation"}}}</p>
+				</header>
+			{{else}}
+				<!--
+				{{ > loginServices }}
+				-->
+				{{#if needsValidateEmail}}
+					<div class="alert alert-danger">
+						{{_ "You_need_confirm_email"}}
+					</div>
+				{{/if}}
+				{{#if showFormLogin}}
+					<div class="fields" style="display:none">
+						{{#if state 'login'}}
+							<div class='input-text active'>
+								<label for="emailOrUsername">{{emailOrUsernamePlaceholder}}</label>
+								<input type="text" name='emailOrUsername' id="emailOrUsername" autocapitalize="off" autocorrect="off" />
+								{{#if hasOnePassword}}
+									<div class="one-passsword"></div>
+								{{/if}}
+								<div class="input-error"></div>
+							</div>
+							<div class='input-text active'>
+								<label for="pass">{{passwordPlaceholder}}</label>
+								<input type="password" name='pass' id="pass" />
+								<div class="input-error"></div>
+							</div>
+						{{/if}}
+						{{#if state 'register'}}
+							<div class='input-text active'>
+								<label for="name">{{namePlaceholder}}</label>
+								<input type="text" name='name' id="name" dir="auto" />
+								<div class="input-error"></div>
+							</div>
+							<div class='input-text active'>
+								<label for="email">{{_ "Email"}}</label>
+								<input type="email" name='email' id="email" />
+								<div class="input-error"></div>
+							</div>
+							{{#each customFields}}
+								{{#if $eq field.type 'select'}}
+									<div class='input-text active focus'>
+										<label for="{{fieldName}}">{{_ fieldName}}</label>
+										<div class="select-arrow">
+											<i class="icon-down-open"></i>
+										</div>
+										<select name="{{fieldName}}" data-customfield="true">
+											{{#each field.options}}
+												{{#if $eq . ../field.defaultValue}}
+													<option value="{{.}}" selected>{{_ .}}</option>
+												{{else}}
+													<option value="{{.}}">{{_ .}}</option>
+												{{/if}}
+											{{/each}}
+										</select>
+										<div class="input-error"></div>
+									</div>
+								{{/if}}
+								{{#if $eq field.type 'text'}}
+									<div class='input-text active'>
+										<label for="{{fieldName}}">{{_ fieldName}}</label>
+										<input type="text" name="{{fieldName}}" id="{{fieldName}}" data-customfield="true" value="{{field.defaultValue}}" maxlength="{{field.maxLength}}" />
+										<div class="input-error"></div>
+									</div>
+								{{/if}}
+							{{/each}}
+							<div class='input-text active'>
+								<label for="pass">{{passwordPlaceholder}}</label>
+								<input type="password" name='pass' id="pass" />
+								<div class="input-error"></div>
+							</div>
+							{{#if requirePasswordConfirmation}}
+								<div class='input-text active'>
+									<label for="confirm-pass">{{_ "Confirm_password"}}</label>
+									<input type="password" name='confirm-pass' id="confirm-pass" />
+									<div class="input-error"></div>
+								</div>
+							{{/if}}
+						{{/if}}
+						{{#if state 'forgot-password' 'email-verification'}}
+							<div class='input-text active'>
+								<label for="email">{{_ "Email"}}</label>
+								<input type="email" name='email' id="email" />
+								<div class="input-error"></div>
+							</div>
+						{{/if}}
+					</div>
+					<!--
+					<div class="submit">
+						<button data-loading-text="{{_ "Please_wait"}}..." class='button primary login'><span>{{btnLoginSave}}</span></button>
+					</div>
+					-->
+					{{#if state 'login'}}
+						{{#if registrationAllowed}}
+							<div>
+								<button type="button" class="register">{{_ 'Register'}}</button>
+							</div>
+						{{else}}
+							{{#if linkReplacementText}}
+								<div class="register-link-replacement">
+									{{{linkReplacementText}}}
+								</div>
+							{{/if}}
+						{{/if}}
+						{{#if passwordResetAllowed}}
+							<div>
+								<button type="button" class="forgot-password">{{_ 'Forgot_password'}}</button>
+							</div>
+						{{/if}}
+					{{/if}}
+				{{/if}}
+			{{/if}}
+			{{#unless state 'login'}}
+				<div>
+					<button type="button" class="back-to-login">{{_ 'Back_to_login'}}</button>
+				</div>
+			{{/unless}}
+		</form>
+		<div class='login-terms'>
+			{{{loginTerms}}}
+			<div class="powered-by">
+				Powered by <a href="https://rocket.chat">Open Source Chat Platform Rocket.Chat</a>.
+			</div>
+		</div>
+	{{/if}}
+</template>

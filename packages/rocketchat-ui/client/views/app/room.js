@@ -256,7 +256,9 @@ Template.room.helpers({
 		return {
 			_id: this._id,
 			onResize: () => {
-				instance.sendToBottomIfNecessary();
+				if (instance.sendToBottomIfNecessary) {
+					instance.sendToBottomIfNecessary();
+				}
 			}
 		};
 	},

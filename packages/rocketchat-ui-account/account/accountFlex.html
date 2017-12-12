@@ -1,0 +1,25 @@
+<template name="accountFlex">
+	<header>
+		<div>
+			<h4>{{_ "My_Account"}}</h4>
+		</div>
+	</header>
+	<div class="content">
+		<div class="wrapper">
+			<ul>
+				<li>
+					<a href="{{pathFor 'account' group='preferences'}}" class="account-link">{{_ "Preferences"}}</a>
+					{{#if allowUserProfileChange}}
+						<a href="#" class="account-link edit-profile">{{_ "Profile"}}</a>
+					{{/if}}
+					<!--
+					{{#if allowUserAvatarChange}}
+						<a href="{{pathFor 'changeAvatar'}}" class="account-link">{{_ "Avatar"}}</a>
+					{{/if}}
+					-->
+					{{!-- move this to profile --}}
+				</li>
+			</ul>
+		</div>
+	</div>
+</template>

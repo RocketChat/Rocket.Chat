@@ -7,7 +7,6 @@
 			<ul class="list clearfix">
 				{{#let room=getRoom}}
 					{{#each toArray settings}}
-
 						{{#if $value.canView room}}
 							{{#let value=(valueOf room $key)}}
 								<li class="{{$value.type}}">
@@ -93,6 +92,7 @@
 							{{/let}}
 						{{/if}}
 					{{/each}}
+
 				{{/let}}
 
 				{{#each channelSettings}}
