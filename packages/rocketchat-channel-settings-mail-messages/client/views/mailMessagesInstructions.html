@@ -26,13 +26,13 @@
 					<div class="input-line double-col">
 						<label>{{_ "Additional_emails"}}</label>
 						<div>
-							<input type="text" name="to_emails" value="" />
+							<input type="text" name="to_emails" value=""  class="rc-input__element"/>
 						</div>
 					</div>
 					<div class="input-line double-col">
 						<label>{{_ "Subject"}}</label>
 						<div>
-							<input type="text" name="subject" value="{{_ "Mail_Messages_Subject" roomName}}" />
+							<input type="text" name="subject" class="rc-input__element" value="{{_ "Mail_Messages_Subject" roomName}}" />
 						</div>
 					</div>
 				</fieldset>
@@ -47,8 +47,8 @@
 				{{{_ "Mail_Message_No_messages_selected_select_all"}}}
 			</div>
 			<p style="margin-top: 30px">
-				<button type="button" class="button cancel">{{_ "Cancel"}}</button>
-				<button type="button" class="button primary send">{{_ "Send"}}</button>
+				<button class="rc-button rc-button--outline cancel">{{_ 'Cancel'}}</button>
+				<button class="rc-button rc-button--primary send">{{_ 'Send'}}</button>
 			</p>
 		</div>
 	</div>

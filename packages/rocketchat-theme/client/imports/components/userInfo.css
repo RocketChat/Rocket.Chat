@@ -55,6 +55,61 @@
 		font-size: 14px;
 	}
 
+	&__scroll {
+		overflow: auto;
+	}
+
+	&__flex {
+		display: flex;
+
+		& > .rc-button {
+			flex: 1;
+
+			margin: 0 5px;
+		}
+	}
+
+	&__block {
+		margin: 47px 0;
+		padding: 28px 0;
+
+		border-top: 1px solid #d7d7d7;
+		border-bottom: 1px solid #d7d7d7;
+	}
+
+	&__row {
+
+		display: flex;
+		flex-direction: row;
+
+		padding: 15px 0;
+
+		& > .rc-switch {
+			flex: 1;
+
+			color: #a1a1a1;
+
+			& > .rc-switch__label > .rc-switch__text {
+				flex: 1;
+			}
+		}
+	}
+
+	&__label {
+		display: block;
+
+		margin-bottom: 37px;
+
+		font-size: 15px;
+		font-weight: 400;
+	}
+
+	&__description {
+		padding: 8px 0;
+
+		color: #9ea2a8;
+	}
+
 	&-action {
 		display: flex;
 

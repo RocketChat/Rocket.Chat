@@ -1,109 +1,187 @@
 <template name="channelSettings">
-	<div class="list-view channel-settings">
-		<div class="title">
-			<h2>{{_ "Room_Info"}}</h2>
-		</div>
-		<form>
-			<ul class="list clearfix">
-				{{#let room=getRoom}}
-					{{#each toArray settings}}
+	{{#if editing}}
+		{{> channelSettingsEditing}}
+	{{else}}
+		{{> channelSettingsInfo}}
+	{{/if}}
+</template>
+<template name="channelSettingsEditing">
+	<div class="rc-user-info__scroll">
+		{{#with settings.name}}
+			{{#if canView}}
+			<div class="rc-user-info__row">
+				<div class="rc-input">
+					<label class="rc-input__label">
+						<div class="rc-input__title">{{_ label}}{{equal default value}}</div>
+						<div class="rc-input__wrapper">
+							<input type="text" name="name" value="{{value}}" class="rc-input__element js-input" {{./disabled}}/>
+						</div>
+					</label>
+				</div>
+			</div>
+			{{/if}}
+		{{/with}}
 
-						{{#if $value.canView room}}
-							{{#let value=(valueOf room $key)}}
-								<li class="{{$value.type}}">
-									<label>{{_ $value.label}}</label>
-									<div class="setting-block">
-										{{#if $eq $value.type 'text'}}
-											{{#if editing $key}}
-												{{#if $value.canEdit room}}
-													<input type="text" name="{{$key}}" value="{{value}}" class="content-background-color editing" />
-												{{/if}}
-											{{else}}
-												<span class='current-setting' data-edit="{{#if $value.canEdit room}}{{$key}}{{else}}false{{/if}}">{{value}}</span>
-											{{/if}}
-										{{/if}}
+		{{#with settings.topic}}
+			<div class="rc-user-info__row">
+				<div class="rc-input">
+					<label class="rc-input__label">
+						<div class="rc-input__title">{{_ label}}{{equal default value}}</div>
+						<div class="rc-input__wrapper">
+							<input type="text" name="topic" value="{{value}}" class="rc-input__element js-input" {{./disabled}}/>
+						</div>
+					</label>
+				</div>
+			</div>
+		{{/with}}
 
-										{{#if $eq $value.type 'markdown'}}
-											{{#if editing $key}}
-												{{#if $value.canEdit room}}
-													<input type="text" name="{{$key}}" value="{{unscape value}}" class="content-background-color editing" />
-												{{/if}}
-											{{else}}
-												<span class='current-setting' data-edit="{{#if $value.canEdit room}}{{$key}}{{else}}false{{/if}}">{{{RocketChatMarkdown value}}}</span>
-											{{/if}}
-										{{/if}}
+		{{#with settings.announcement}}
+			<div class="rc-user-info__row">
+				<div class="rc-input">
+					<label class="rc-input__label">
+						<div class="rc-input__title">{{_ label}}{{equal default value}}</div>
+						<div class="rc-input__wrapper">
+							<input type="text" name="announcement" value="{{value}}" class="rc-input__element js-input" {{./disabled}}/>
+						</div>
+					</label>
+				</div>
+			</div>
+		{{/with}}
 
-										{{#if $eq $value.type 'select'}}
-											{{#each toArray $value.options}}
-												<div class="input radio">
-													<input type="radio" id="{{$key}}" name="{{../$key}}" value="{{$key}}" checked="{{$eq value $key}}" disabled="{{isDisabled $key room}}" />
-													<label for="{{$key}}">{{_ $value}}</label>
-												</div>
-											{{/each}}
-										{{/if}}
+		{{#with settings.description}}
+			<div class="rc-user-info__row">
+				<div class="rc-input">
+					<label class="rc-input__label">
+						<div class="rc-input__title">{{_ label}}{{equal default value}}</div>
+						<div class="rc-input__wrapper">
+							<input type="text" name="description" value="{{value}}" class="rc-input__element js-input" {{./disabled}}/>
+						</div>
+					</label>
+				</div>
+			</div>
+		{{/with}}
 
-										{{#if $eq $value.type 'boolean'}}
-											<div class="input checkbox toggle">
-												<input type="checkbox" id="{{$key}}" name="{{$key}}" value="{{value}}" checked="{{$eq value true}}" disabled="{{isDisabled $key room}}" />
-												<label for="{{$key}}"></label>
-											</div>
-											{{#if $value.canEdit room}}
-												{{#if $value.processing.get}}
-													{{> loading}}
-												{{/if}}
-											{{/if}}
-										{{/if}}
+		{{#with settings.t}}
+			<div class="rc-user-info__row">
+				<div class="rc-switch">
+					<label class="rc-switch__label">
+						<span class="rc-switch__text">
+							{{_ label}}{{equal default value}}
+						</span>
+						<input type="checkbox" class="rc-switch__input js-input-check" name="readOnly" {{checked}} {{./disabled}}>
+						<span class="rc-switch__button">
+							<span class="rc-switch__button-inside"></span>
+						</span>
+					</label>
+				</div>
+			</div>
+		{{/with}}
 
-										{{#unless $value.isToggle}}
-											{{#if $value.canEdit room}}
-												{{#if editing $key}}
-													<div class="buttons secondary-background-color">
-														<button type="button" class="button cancel">
-															<i class="icon-cancel"></i>
-														</button>
-														<button type="button" class="button primary save">
-															<i class="icon-ok success-color"></i>
-														</button>
-													</div>
-												{{else}}
-													{{#if $value.showHideValue room}}
-														<button type="button" class="button show">
-															<i class="{{#if showingValue $key}}icon-eye-off{{else}}icon-eye{{/if}}"></i>
-														</button>
-													{{/if}}
-													<button type="button" class="button edit">
-														<i class="icon-pencil" data-edit="{{$key}}"></i>
-													</button>
-												{{/if}}
-											{{/if}}
-										{{/unless}}
-									</div>
-								</li>
-								{{# if has $value 'message' }}
-									{{#let message=($value.message room)}}
-										{{#if message}}
-											<li>
-												<div class="alert alert-warning pending-background pending-border">
-													{{_ message}}
-												</div>
-											</li>
-										{{/if}}
-									{{/let}}
-								{{/if}}
-							{{/let}}
-						{{/if}}
-					{{/each}}
-				{{/let}}
+		{{#with settings.ro}}
+			<div class="rc-user-info__row">
+				<div class="rc-switch">
+					<label class="rc-switch__label">
+						<span class="rc-switch__text">
+							{{_ label}}{{equal default value}}
+						</span>
+						<input type="checkbox" class="rc-switch__input js-input-check" name="ro" {{checked}} {{./disabled}}>
+						<span class="rc-switch__button">
+							<span class="rc-switch__button-inside"></span>
+						</span>
+					</label>
+				</div>
+			</div>
+		{{/with}}
 
-				{{#each channelSettings}}
-					{{> Template.dynamic template=template data=data}}
-				{{/each}}
-			</ul>
-		</form>
-		{{#if canDeleteRoom}}
-			<nav>
-				<button class="button danger delete" title="{{_ 'Delete'}}"><i class="icon-trash"></i></button>
-			</nav>
-		{{/if}}
+
+		{{#with settings.reactWhenReadOnly}}
+			{{#if canView}}
+			<div class="rc-user-info__row">
+				<div class="rc-switch">
+					<label class="rc-switch__label">
+						<span class="rc-switch__text">
+							{{_ label}}{{equal default value}}
+						</span>
+						<input type="checkbox" class="rc-switch__input js-input-check" name="reactWhenReadOnly" {{checked}} {{./disabled}}>
+						<span class="rc-switch__button">
+							<span class="rc-switch__button-inside"></span>
+						</span>
+					</label>
+				</div>
+			</div>
+			{{/if}}
+		{{/with}}
+		{{#with settings.archived}}
+			{{#if canView}}
+			<div class="rc-user-info__row">
+				<div class="rc-switch">
+					<label class="rc-switch__label">
+						<span class="rc-switch__text">
+							{{_ label}}{{equal default value}}
+						</span>
+						<input type="checkbox" class="rc-switch__input js-input-check" name="archived" {{checked}} {{./disabled}}>
+						<span class="rc-switch__button">
+							<span class="rc-switch__button-inside"></span>
+						</span>
+					</label>
+				</div>
+			</div>
+			{{/if}}
+		{{/with}}
+		{{#with settings.joinCode}}
+			<div class="rc-user-info__row">
+				<div class="rc-input">
+					<label class="rc-input__label">
+						<div class="rc-input__title">{{_ label}}{{equal default value}}</div>
+						<div class="rc-input__wrapper">
+							<input type="text" name="joinCode" value="{{value}}" class="rc-input__element js-input" {{./disabled}}/>
+						</div>
+					</label>
+				</div>
+			</div>
+		{{/with}}
 	</div>
+	<div class="rc-user-info__flex rc-user-info__row">
+		<button class="rc-button rc-button--secondary js-cancel rc-button--outline" title="{{_ 'Cancel'}}">{{_ 'Cancel'}}</button>
+		<button class="rc-button rc-button--secondary js-reset" {{modified 'disabled'}} title="{{_ 'Reset'}}">{{_ 'Reset'}}</button>
+		<button class="rc-button rc-button--primary js-save" {{modified 'disabled'}} title="{{_ 'Save'}}">{{_ 'Save'}}</button>
+	</div>
+</template>
+<template name="channelSettingsInfo">
+	<main class="contextual-bar__container rc-user-info-wrapper">
+		{{# with settings=settings}}
+			<div class="rc-user-info">
+				<h3 title="{{name}}" class="rc-user-info__name">{{> icon block="rc-header__icon" icon=channelIcon}}{{ unscape name}}</h3>
+			</div>
+			<label class="rc-user-info__label">
+				{{_ "Description"}}
+				<div class="rc-user-info__description">
+					{{unscape description}}
+				</div>
+			</label>
+			<label class="rc-user-info__label">
+				{{_ "Announcement"}}
+				<div class="rc-user-info__description">
+					{{unscape announcement}}
+				</div>
+			</label>
+			<label class="rc-user-info__label">
+				{{_ "Topic"}}
+				<div class="rc-user-info__description">
+					{{unscape topic}}
+				</div>
+			</label>
+		{{/with}}
+		{{#each channelSettings}}
+			<div class="rc-user-info__row">
+				{{> Template.dynamic template=template data=data}}
+			</div>
+		{{/each}}
+		<div class="rc-user-info__flex">
+			{{#if canDeleteRoom}}
+				<button class="rc-button rc-button--outline rc-button--cancel js-delete" title="{{_ 'Delete'}}">{{> icon icon='trash'}}{{_ 'Delete'}}</button>
+			{{/if}}
+			<button class="rc-button rc-button--outline rc-button--secondary js-edit" type="submit" data-button="Edit" {{createIsDisabled}}>{{> icon icon='edit'}}{{_ "Edit"}}</button>
+		</div>
+	</main>
 </template>
