@@ -10,6 +10,10 @@
 				<h2>
 					<span class="room-title">{{_ "Manage_the_Rocketlet"}}: "{{name}}"</span>
 				</h2>
+
+				<div class="submit">
+					<button class="button danger uninstall">{{_ "Uninstall"}}</button>
+				</div>
 			</header>
 			<div class="content background-transparent-dark">
 				{{#requiresPermission 'manage-rocketlets'}}
