@@ -189,11 +189,15 @@ export class Base {
 
 				this.oldSettings.Accounts_AllowUsernameChange = RocketChat.models.Settings.findOneById('Accounts_AllowUsernameChange').value;
 				RocketChat.models.Settings.updateValueById('Accounts_AllowUsernameChange', true);
+
+				this.oldSettings.FileUpload_MaxFileSize = RocketChat.models.Settings.findOneById('FileUpload_MaxFileSize').value;
+				RocketChat.models.Settings.updateValueById('FileUpload_MaxFileSize', 0);
 				break;
 			case ProgressStep.DONE:
 			case ProgressStep.ERROR:
 				RocketChat.models.Settings.updateValueById('Accounts_AllowedDomainsList', this.oldSettings.Accounts_AllowedDomainsList);
 				RocketChat.models.Settings.updateValueById('Accounts_AllowUsernameChange', this.oldSettings.Accounts_AllowUsernameChange);
+				RocketChat.models.Settings.updateValueById('FileUpload_MaxFileSize', this.oldSettings.FileUpload_MaxFileSize);
 				break;
 		}
 
