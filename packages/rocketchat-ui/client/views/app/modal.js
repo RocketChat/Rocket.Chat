@@ -62,6 +62,19 @@ Template.rc_modal.onRendered(function() {
 	if (this.data.onRendered) {
 		this.data.onRendered();
 	}
+
+	document.addEventListener('keydown', function(e) {
+		e.preventDefault();
+		e.stopPropagation();
+
+		if (e.key === 'Enter') {
+			modal.confirm(true);
+		}
+
+		if (e.key === 'Escape') {
+			modal.close();
+		}
+	}, {once: true});
 });
 
 Template.rc_modal.events({
