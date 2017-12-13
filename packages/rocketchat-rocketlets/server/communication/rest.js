@@ -117,6 +117,21 @@ export class RocketletsRestApi {
 				info.status = item.getStatus();
 
 				return RocketChat.API.v1.success({ rocketlet: info });
+			},
+			delete() {
+				console.log('Uninstalling:', this.urlParams.id);
+				const prl = manager.getOneById(this.urlParams.id);
+
+				if (prl) {
+					Promise.await(manager.remove(prl.getID()));
+
+					const info = prl.getInfo();
+					info.status = prl.getStatus();
+
+					return RocketChat.API.v1.success({ rocketlet: info });
+				} else {
+					return RocketChat.API.v1.notFound(`No Rocketlet found by the id of: ${ this.urlParams.id }`);
+				}
 			}
 		});
 

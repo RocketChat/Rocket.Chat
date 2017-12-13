@@ -50,7 +50,7 @@ class RocketletClientOrchestrator {
 }
 
 Meteor.startup(function _rlClientOrch() {
-	Meteor.call('rocketlets/is-enabled', (error, isEnabled) => isEnabled ? window.Rocketlets = new RocketletClientOrchestrator() : undefined);
+	Meteor.call('rocketlets/is-enabled', (error, e) => e ? window.Rocketlets = new RocketletClientOrchestrator() : undefined);
 });
 
 // Bah, this has to be done *before* `Meteor.startup`

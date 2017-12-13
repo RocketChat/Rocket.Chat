@@ -1,4 +1,8 @@
 RocketChat.API = {
+	delete(endpoint, params) {
+		return RocketChat.API._jqueryCall('DELETE', endpoint, params);
+	},
+
 	get(endpoint, params) {
 		return RocketChat.API._jqueryCall('GET', endpoint, params);
 	},
@@ -86,6 +90,10 @@ RocketChat.API = {
 	},
 
 	v1: {
+		delete(endpoint, params) {
+			return RocketChat.API.delete(`v1/${ endpoint }`, params);
+		},
+
 		get(endpoint, params) {
 			return RocketChat.API.get(`v1/${ endpoint }`, params);
 		},
