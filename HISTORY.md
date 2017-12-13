@@ -1,3 +1,29 @@
+<a name="0.60.0-rc.1"></a>
+# 0.60.0-rc.1 (2017-12-13)
+
+
+### New Features
+
+- [#9092](https://github.com/RocketChat/Rocket.Chat/pull/9092) Modal
+
+
+### Bug Fixes
+
+- [#9109](https://github.com/RocketChat/Rocket.Chat/pull/9109) Creating channels on Firefox
+- [#9108](https://github.com/RocketChat/Rocket.Chat/pull/9108) REST API file upload not respecting size limit
+- [#9095](https://github.com/RocketChat/Rocket.Chat/pull/9095) Some UI problems on 0.60
+- [#9094](https://github.com/RocketChat/Rocket.Chat/pull/9094) Update rocketchat:streamer to be compatible with previous version
+
+
+<details>
+<summary>Others</summary>
+
+- [#9110](https://github.com/RocketChat/Rocket.Chat/pull/9110) Fix regression in api channels.members
+- [#9111](https://github.com/RocketChat/Rocket.Chat/pull/9111) Fix: users listed as online after API login
+</details>
+
+
+
 <a name="0.60.0-rc.0"></a>
 # 0.60.0-rc.0 (2017-12-12)
 
