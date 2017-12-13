@@ -112,6 +112,17 @@ Template.rocketletManage.events({
 		});
 	},
 
+	'click .uninstall': (e, t) => {
+		t.ready.set(false);
+
+		RocketChat.API.delete(`rocketlets/${ t.id.get() }`).then(() => {
+			FlowRouter.go('/admin/rocketlets');
+		}).catch((err) => {
+			console.warn('Error:', err);
+			t.ready.set(true);
+		});
+	},
+
 	'click .save': (e, t) => {
 		const toSave = [];
 
