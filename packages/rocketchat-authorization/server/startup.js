@@ -174,7 +174,7 @@ Meteor.startup(function() {
 				createSettingPermission(setting, previousSettingPermissions);
 			}
 		} else {
-			SystemLogger.error('Could not create permission for setting', settingId);
+			SystemLogger.error('Could not create permission for setting', settingId, 'may it have been removed?');
 		}
 	};
 

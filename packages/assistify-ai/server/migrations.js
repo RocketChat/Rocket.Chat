@@ -7,11 +7,19 @@ on startup which migrate data - ignoring the actual version
 const settingsDbsToAssistify = function() {
 
 	const renameSetting = function(oldId, newId) {
-		const setting = RocketChat.models.Settings.findById(oldId).fetch()[0];
-		if (setting) {
-			RocketChat.models.Settings.removeById(setting._id);
-			setting._id = newId;
-			RocketChat.models.Settings.upsert({_id: setting._id}, setting);
+		const oldSetting = RocketChat.models.Settings.findById(oldId).fetch()[0];
+		if (oldSetting) {
+			RocketChat.models.Settings.removeById(oldSetting._id);
+
+			// there has been some problem with upsert() when changing the complete doc, so decide explicitly for insert or update
+			let newSetting = RocketChat.models.Settings.findById(newId).fetch()[0];
+			if (newSetting) {
+				RocketChat.models.Settings.updateValueById(newId, oldSetting.value);
+			} else {
+				newSetting = oldSetting;
+				newSetting._id = newId;
+				RocketChat.models.Settings.insert(newSetting);
+			}
 		}
 	};
 
