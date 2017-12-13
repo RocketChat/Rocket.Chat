@@ -1,9 +1,14 @@
 .rc-button {
+	&:not([disabled]):hover {
+		opacity: 0.6;
+	}
+
+	min-height: 40px;
 	margin: 0.5rem 0;
 	padding: var(--button-padding);
 
 	cursor: pointer;
-	transition: background-color 0.3s;
+	transition: opacity 0.3s, background-color 0.3s, color 0.3s;
 	text-align: center;
 
 	border-width: var(--button-border-width);
@@ -18,6 +23,7 @@
 
 		color: var(--button-disabled-text-color);
 		border: 0;
+		border-color: var(--button-disabled-background);
 		background-color: var(--button-disabled-background);
 	}
 
@@ -27,16 +33,33 @@
 		background-color: var(--button-primary-background);
 	}
 
+	&--primary.rc-button--outline {
+		color: var(--button-primary-background);
+		border-color: var(--button-primary-background);
+	}
+
 	&--secondary {
 		color: var(--button-secondary-text-color);
 		border: 0;
+		border-color: var(--button-secondary-background);
 		background-color: var(--button-secondary-background);
+	}
+
+	&--secondary.rc-button--outline {
+		color: var(--button-secondary-background);
+		border-color: var(--button-secondary-background);
 	}
 
 	&--cancel {
 		color: var(--button-primary-text-color);
 		border: 0;
+		border-color: var(--button-cancel-color);
 		background-color: var(--button-cancel-color);
+	}
+
+	&--cancel.rc-button--outline {
+		color: var(--button-cancel-color);
+		border-color: var(--button-cancel-color);
 	}
 
 	&--small {
@@ -51,6 +74,12 @@
 		padding: 0;
 		align-items: center;
 		justify-content: center;
+	}
+
+	&--outline {
+		border-width: 2px;
+		border-style: solid;
+		background: transparent;
 	}
 
 	&.loading {
