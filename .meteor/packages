@@ -173,7 +173,6 @@ percolate:synced-cron
 raix:handlebar-helpers
 raix:push
 raix:ui-dropped-event
-smoral:sweetalert
 steffo:meteor-accounts-saml
 todda00:friendly-slugs
 yasaricli:slugify
