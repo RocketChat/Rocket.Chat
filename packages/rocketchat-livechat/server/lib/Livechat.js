@@ -63,7 +63,7 @@ RocketChat.Livechat = {
 			newRoom = true;
 		}
 
-		if (room.v.token !== guest.token) {
+		if (!room || room.v.token !== guest.token) {
 			throw new Meteor.Error('cannot-access-room');
 		}
 

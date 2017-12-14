@@ -42,8 +42,9 @@ export class PublicRoomType extends RoomTypeConfig {
 
 	condition() {
 		const user = Meteor.user();
-		const preferences = (user && user.settings && user.settings.preferences && user.settings.preferences) || {};
-		return !preferences.roomsListExhibitionMode || ['unread', 'category'].includes(preferences.roomsListExhibitionMode) && !preferences.mergeChannels && (RocketChat.authz.hasAtLeastOnePermission(['view-c-room', 'view-joined-room']) || RocketChat.settings.get('Accounts_AllowAnonymousRead') === true);
+		const roomsListExhibitionMode = RocketChat.getUserPreference(user, 'roomsListExhibitionMode');
+		const mergeChannels = RocketChat.getUserPreference(user, 'mergeChannels');
+		return !roomsListExhibitionMode || ['unread', 'category'].includes(roomsListExhibitionMode) && !mergeChannels && (RocketChat.authz.hasAtLeastOnePermission(['view-c-room', 'view-joined-room']) || RocketChat.settings.get('Accounts_AllowAnonymousRead') === true);
 	}
 
 	showJoinLink(roomId) {

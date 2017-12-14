@@ -1,4 +1,4 @@
-/* globals LivechatVideoCall, Livechat */
+/* globals LivechatVideoCall, Livechat, swal */
 import visitor from '../../imports/client/visitor';
 
 // Functions to call on messages of type 'command'
