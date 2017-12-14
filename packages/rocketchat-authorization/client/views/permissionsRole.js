@@ -105,7 +105,7 @@ Template.permissionsRole.helpers({
 Template.permissionsRole.events({
 	'click .remove-user'(e, instance) {
 		e.preventDefault();
-		swal({
+		modal.open({
 			title: t('Are_you_sure'),
 			type: 'warning',
 			showCancelButton: true,
@@ -120,7 +120,7 @@ Template.permissionsRole.events({
 					return handleError(error);
 				}
 
-				swal({
+				modal.open({
 					title: t('Removed'),
 					text: t('User_removed'),
 					type: 'success',
