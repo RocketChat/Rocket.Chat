@@ -1,3 +1,5 @@
+import s from 'underscore.string';
+
 RocketChat.Message = {
 	parse(msg, language) {
 		const messageType = RocketChat.MessageTypes.getType(msg);
@@ -20,8 +22,8 @@ RocketChat.Message = {
 			return msg.html;
 		}
 		msg.html = msg.msg;
-		if (_.trim(msg.html) !== '') {
-			msg.html = _.escapeHTML(msg.html);
+		if (s.trim(msg.html) !== '') {
+			msg.html = s.escapeHTML(msg.html);
 		}
 		msg.html = msg.html.replace(/\n/gm, '<br/>');
 		return msg.html;

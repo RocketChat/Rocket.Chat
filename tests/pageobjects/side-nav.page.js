@@ -8,6 +8,7 @@ class SideNav extends Page {
 	get saveChannelBtn() { return browser.element('.create-channel__content [data-button="create"]'); }
 
 	// Account box
+	getPopOverContent() { return browser.element('.rc-popover__content'); }
 	get accountBoxUserName() { return browser.element('.sidebar__account-username'); }
 	get accountBoxUserAvatar() { return browser.element('.sidebar__account .avatar-image'); }
 	get accountMenu() { return browser.element('.sidebar__account'); }
@@ -37,7 +38,7 @@ class SideNav extends Page {
 	get preferences() { return browser.element('[href="/account/preferences"]'); }
 	get profile() { return browser.element('[href="/account/profile"]'); }
 	get avatar() { return browser.element('[href="/changeavatar"]'); }
-	get preferencesClose() { return browser.element('.sidebar-flex__back-button[data-action="back"]'); }
+	get preferencesClose() { return browser.element('.sidebar-flex__close-button[data-action="close"]'); }
 
 	get burgerBtn() { return browser.element('.burger'); }
 
