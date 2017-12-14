@@ -3,13 +3,24 @@
  * @param {String} msg - The message html
  */
 import { Meteor } from 'meteor/meteor';
-import { _ } from 'meteor/underscore';
+import { Random } from 'meteor/random';
 import { RocketChat } from 'meteor/rocketchat:lib';
+import s from 'underscore.string';
 
 const parseNotEscaped = function(msg, message) {
 	if (message && message.tokens == null) {
 		message.tokens = [];
 	}
+
+	const addAsToken = function(html) {
+		const token = `=!=${ Random.id() }=!=`;
+		message.tokens.push({
+			token,
+			text: html
+		});
+
+		return token;
+	};
 
 	const schemes = RocketChat.settings.get('Markdown_SupportSchemesForLink').split(',').join('|');
 
@@ -53,34 +64,21 @@ const parseNotEscaped = function(msg, message) {
 	msg = msg.replace(/<\/blockquote>\n<blockquote/gm, '</blockquote><blockquote');
 
 	// Support ![alt text](http://image url)
-	msg = msg.replace(new RegExp(`!\\[([^\\]]+)\\]\\(((?:${ schemes }):\\/\\/[^\\)]+)\\)`, 'gm'), function(match, title, url) {
+	msg = msg.replace(new RegExp(`!\\[([^\\]]+)\\]\\(((?:${ schemes }):\\/\\/[^\\)]+)\\)`, 'gm'), (match, title, url) => {
 		const target = url.indexOf(Meteor.absoluteUrl()) === 0 ? '' : '_blank';
-		const html = `<a href="${ _.escapeHTML(url) }" title="${ _.escapeHTML(title) }" target="${ _.escapeHTML(target) }" rel="noopener noreferrer"><div class="inline-image" style="background-image: url(${ _.escapeHTML(url) });"></div></a>`;
-
-		if (message && message.tokens) {
-			const token = `=!=${ Random.id() }=!=`;
-
-			message.tokens.push({
-				token,
-				text: html
-			});
-
-			return token;
-		}
-
-		return html;
+		return addAsToken(`<a href="${ s.escapeHTML(url) }" title="${ s.escapeHTML(title) }" target="${ s.escapeHTML(target) }" rel="noopener noreferrer"><div class="inline-image" style="background-image: url(${ s.escapeHTML(url) });"></div></a>`);
 	});
 
 	// Support [Text](http://link)
-	msg = msg.replace(new RegExp(`\\[([^\\]]+)\\]\\(((?:${ schemes }):\\/\\/[^\\)]+)\\)`, 'gm'), function(match, title, url) {
+	msg = msg.replace(new RegExp(`\\[([^\\]]+)\\]\\(((?:${ schemes }):\\/\\/[^\\)]+)\\)`, 'gm'), (match, title, url) => {
 		const target = url.indexOf(Meteor.absoluteUrl()) === 0 ? '' : '_blank';
-		return `<a href="${ _.escapeHTML(url) }" target="${ _.escapeHTML(target) }" rel="noopener noreferrer">${ _.escapeHTML(title) }</a>`;
+		return addAsToken(`<a href="${ s.escapeHTML(url) }" target="${ s.escapeHTML(target) }" rel="noopener noreferrer">${ s.escapeHTML(title) }</a>`);
 	});
 
 	// Support <http://link|Text>
 	msg = msg.replace(new RegExp(`(?:<|&lt;)((?:${ schemes }):\\/\\/[^\\|]+)\\|(.+?)(?=>|&gt;)(?:>|&gt;)`, 'gm'), (match, url, title) => {
 		const target = url.indexOf(Meteor.absoluteUrl()) === 0 ? '' : '_blank';
-		return `<a href="${ _.escapeHTML(url) }" target="${ _.escapeHTML(target) }" rel="noopener noreferrer">${ _.escapeHTML(title) }</a>`;
+		return addAsToken(`<a href="${ s.escapeHTML(url) }" target="${ s.escapeHTML(target) }" rel="noopener noreferrer">${ s.escapeHTML(title) }</a>`);
 	});
 
 	return msg;

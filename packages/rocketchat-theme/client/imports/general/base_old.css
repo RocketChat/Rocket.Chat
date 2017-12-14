@@ -104,8 +104,6 @@
 }
 
 .upload-preview {
-	padding: 1rem;
-
 	& .upload-preview-file {
 		height: 200px;
 
@@ -121,7 +119,7 @@
 	border-radius: 0 0 5px 5px;
 }
 
-.rc-old .copyonly {
+.copyonly {
 	display: inline-block;
 	float: left;
 
@@ -133,50 +131,6 @@
 
 	font-size: 0;
 	-moz-box-orient: vertical;
-}
-
-.rc-old .first-unread,
-.rc-old .cozy .first-unread,
-.rc-old .compact .first-unread {
-	&.message,
-	&.sequential.message {
-		padding-top: 20px;
-	}
-
-	& .body {
-		&::before {
-			position: absolute;
-			top: 0;
-			right: 0;
-			left: 0;
-
-			display: block;
-
-			height: 16px;
-
-			content: "";
-			transition: background-color, 0.5s, linear;
-		}
-
-		&::after {
-			position: absolute;
-			top: 0;
-			right: 0;
-			left: 0;
-
-			display: block;
-
-			padding: 0 5px;
-
-			content: attr(data-unread-text);
-			transition: color, 0.5s, linear;
-			text-align: center;
-			text-transform: uppercase;
-
-			font-size: 12px;
-			line-height: 16px;
-		}
-	}
 }
 
 .rc-old .text-center {
@@ -1772,8 +1726,11 @@
 	overflow: hidden;
 
 	height: 40px;
+	padding: 0 20px;
 
 	text-align: center;
+	white-space: nowrap;
+	text-overflow: ellipsis;
 
 	color: white;
 	background-color: #04436a;
@@ -2246,8 +2203,14 @@
 			right: 0;
 			left: 0;
 
+			overflow: hidden;
+
+			width: 50%;
+
 			height: 100%;
 			padding: 0 10px;
+
+			text-overflow: ellipsis;
 
 			& > a {
 				float: right;
@@ -2258,6 +2221,9 @@
 		}
 
 		& button {
+			position: relative;
+			z-index: 3;
+
 			float: right;
 
 			text-transform: uppercase;
@@ -3227,10 +3193,6 @@
 			list-style-type: decimal;
 		}
 
-		& > * + * {
-			padding-top: 10px;
-		}
-
 		& > table {
 			display: block;
 			overflow: auto;
@@ -3433,7 +3395,6 @@ body:not(.is-cordova) {
 		overflow-x: visible;
 
 		width: var(--flex-tab-width);
-		height: calc(100vh - 61px);
 
 		& .control {
 			& .header {
@@ -3520,23 +3481,14 @@ body:not(.is-cordova) {
 		}
 
 		& .content {
-			position: absolute;
-			top: auto;
-			left: 0;
-
-			overflow-x: hidden;
-			overflow-y: auto;
-
-			width: 100%;
-			height: 100%;
-			-webkit-overflow-scrolling: touch;
-
 			& > div {
+				overflow-y: auto;
+
 				transition: transform 0.45s cubic-bezier(0.5, 0, 0, 1), opacity 0.125s ease-out 0.1s;
 			}
 
 			& > .animated-hidden {
-				transform: translateX(100%);
+				transform: translateX(calc(100% + 40px));
 
 				opacity: 0;
 			}
@@ -3570,6 +3522,10 @@ body:not(.is-cordova) {
 					line-height: var(--header-min-height);
 				}
 			}
+		}
+
+		& .channel-settings .button {
+			visibility: initial;
 		}
 
 		& footer {
@@ -3752,7 +3708,13 @@ body:not(.is-cordova) {
 	}
 
 	&.uploaded-files-list {
-		& a .file-name {
+	  	& ul {
+		  & li {
+			margin-bottom: 10px;
+		  }
+		}
+
+		& .file-name {
 			display: block;
 
 			padding: 10px 5px;
@@ -3777,19 +3739,14 @@ body:not(.is-cordova) {
 
 		& i {
 			float: left;
-
 			margin-right: 10px;
 
 			&.file-delete {
 				float: right;
-
-				padding-top: 10px;
 			}
 
 			&.file-download {
 				float: right;
-
-				padding-top: 11px;
 			}
 		}
 	}
@@ -4603,7 +4560,7 @@ body:not(.is-cordova) {
 
 .full-page,
 .page-loading {
-	background-color: var(--color-primary);
+	background-color: var(--rc-color-primary);
 }
 
 .rc-old.full-page {
@@ -5522,7 +5479,9 @@ body:not(.is-cordova) {
 	.rc-old .flex-tab-container.opened .flex-tab {
 		position: absolute;
 		z-index: 100;
+
 		right: 40px;
+		height: 100%;
 
 		border-width: 0 0 0 1px;
 	}

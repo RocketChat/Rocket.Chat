@@ -1,3 +1,5 @@
+import _ from 'underscore';
+
 Meteor.startup(function() {
 	Meteor.defer(function() {
 		if (!RocketChat.models.Rooms.findOneById('GENERAL')) {

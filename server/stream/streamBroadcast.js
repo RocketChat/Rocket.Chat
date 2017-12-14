@@ -1,5 +1,6 @@
 /* global InstanceStatus, DDP, LoggerManager */
 
+import _ from 'underscore';
 import {DDPCommon} from 'meteor/ddp-common';
 
 process.env.PORT = String(process.env.PORT).trim();

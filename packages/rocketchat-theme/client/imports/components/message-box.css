@@ -100,11 +100,13 @@
 	}
 
 	&__textarea {
+		overflow-y: auto;
+
 		width: 100%;
 		height: 15px;
+
 		min-height: 21px;
 		max-height: 155px;
-
 		padding: 0;
 
 		resize: none;
@@ -242,4 +244,10 @@
 			margin-top: var(--popover-column-padding);
 		}
 	}
+}
+
+.rtl .rc-message-box__typing {
+	right: 0;
+
+	margin-right: 24px;
 }

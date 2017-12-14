@@ -1,24 +1,46 @@
 <template name="sidebarItem">
-	<li class="sidebar-item {{#if active}}sidebar-item--active{{else}}{{#if darken}}sidebar-item--darken{{else}}sidebar-item--lighten{{/if}}{{/if}} {{#if toolbar}}popup-item{{/if}}" data-id="{{_id}}">
+	<li class="sidebar-item {{#if or unread alert }}sidebar-item--unread{{/if}} {{#if active}}sidebar-item--active{{/if}} {{#if toolbar}}popup-item{{/if}}" data-id="{{_id}}">
 		{{#if statusClass}}
 			<div class="sidebar-item__user-status sidebar-item__user-status--{{statusClass}}"></div>
 		{{/if}}
-		<a class="sidebar-item__link {{alertClass}} {{#if active}}sidebar-item__link--active{{/if}}" href="{{#if route}}{{route}}{{else}}{{pathFor pathSection group=pathGroup}}{{/if}}" title="{{name}}">
-			<div class="sidebar-item__picture">
-				{{#if icon}}
+		<a class="sidebar-item__link" href="{{#if route}}{{route}}{{else}}{{pathFor pathSection group=pathGroup}}{{/if}}" title="{{name}}">
+			{{#if icon}}
+				<div class="sidebar-item__picture" style="{{#if isRoom}}{{colorStyle}}{{/if}}">
 					{{> icon block="sidebar-item__icon" icon=icon}}
-				{{else}}
-					{{#if avatar}}
+				</div>
+			{{else}}
+				{{#if avatar}}
+					<div class="sidebar-item__picture">
 						<div class="sidebar-item__user-thumb">
-							{{> avatar username=name}}
+							{{> avatar username=username}}
 						</div>
-					{{/if}}
+					</div>
+				{{/if}}
+			{{/if}}
+			<div class="sidebar-item__body">
+				<div class="sidebar-item__message">
+					<div class="sidebar-item__message-top">
+						<div class="sidebar-item__name">{{name}}</div>
+						{{#if lastMessageTs}}
+							<span class="sidebar-item__time">{{lastMessageTs}}</span>
+						{{/if}}
+					</div>
+					<div class="sidebar-item__message-bottom">
+						{{#if lastMessage}}
+							<div class="sidebar-item__last-message">{{{lastMessage}}}</div>
+						{{/if}}
+						{{#if unread}}
+							<span class="badge badge--unread">{{#if userMentions}}@ {{/if}}{{unread}}</span>
+						{{/if}}
+					</div>
+				</div>
+
+				{{#if isRoom}}
+					<div class="sidebar-item__menu">
+						{{> icon block="sidebar-item__menu-icon" icon="menu"}}
+					</div>
 				{{/if}}
 			</div>
-			<div class='sidebar-item__name {{archivedClass}}'>{{name}}</div>
-			{{#if unread}}
-			<span class="badge badge--unread">{{unread}}</span>
-			{{/if}}
 		</a>
 	</li>
 </template>

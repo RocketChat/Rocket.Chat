@@ -3,30 +3,26 @@
 		<header class="fixed-title border-component-color">
 			{{> burger}}
 			<h2>
-				<span class="room-title">Import</span>
+				<span class="room-title">{{_ "Import"}}</span>
 			</h2>
 		</header>
 		<div class="content">
 			{{#unless isAdmin}}
-				<p>You are not authorized to view this page.</p>
+				<p>{{_ "You_are_not_authorized_to_view_this_page"}}</p>
 			{{else}}
-				{{#if isImporters}}
 				<div class="rocket-form">
 					<fieldset>
 						{{#each importers}}
 							<div class="section">
-								<h1>{{name}}</h1>
+								<h1>{{ name }}</h1>
 								<div class="section-content">
 									<div>{{getDescription .}}</div>
-									<button class="button primary start-import">Start</button>
+									<button class="button primary start-import">{{_ "Start"}}</button>
 								</div>
 							</div>
 						{{/each}}
 					</fieldset>
 				</div>
-				{{else}}
-					No Importers Available
-				{{/if}}
 			{{/unless}}
 		</div>
 	</section>
