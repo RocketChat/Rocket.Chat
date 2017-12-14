@@ -18,6 +18,7 @@ const settingsDbsToAssistify = function() {
 			} else {
 				newSetting = oldSetting;
 				newSetting._id = newId;
+				delete newSetting.$loki;
 				RocketChat.models.Settings.insert(newSetting);
 			}
 		}

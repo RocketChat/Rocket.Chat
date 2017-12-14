@@ -31,11 +31,11 @@ Package.onUse(function(api) {
 	api.addFiles('server/SmartiProxy.js', 'server');
 	api.addFiles('server/SmartiRouter.js', 'server');
 
-	//migration scripts
-	api.addFiles('server/migrations.js', 'server');
-
 	//Configuration
 	api.addFiles('config.js', 'server');
+
+	//migration scripts
+	api.addFiles('server/migrations.js', 'server');
 
 	//Client business logic
 	api.addFiles('client/tabbar.js', 'client');
