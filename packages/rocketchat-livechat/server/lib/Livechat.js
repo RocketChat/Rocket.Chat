@@ -397,14 +397,14 @@ RocketChat.Livechat = {
 		}
 
 		if (visitor.visitorEmails && visitor.visitorEmails.length > 0) {
-			postData.visitor.email = visitor.visitorEmails[0].address;
+			postData.visitor.email = visitor.visitorEmails;
 		}
 		if (visitor.phone && visitor.phone.length > 0) {
-			postData.visitor.phone = visitor.phone[0].phoneNumber;
+			postData.visitor.phone = visitor.phone;
 		}
 
 		if (agent.emails && agent.emails.length > 0) {
-			postData.agent.email = agent.emails[0].address;
+			postData.agent.email = agent.emails;
 		}
 
 		return postData;
