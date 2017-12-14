@@ -47,7 +47,11 @@ Template.livechatIntegrationWebhook.events({
 				if (err) {
 					return handleError(err);
 				}
-				swal(t('It_works'), null, 'success');
+				modal.open({
+					title: t('It_works'),
+					type: 'success',
+					timer: 2000
+				});
 			});
 		}
 	},

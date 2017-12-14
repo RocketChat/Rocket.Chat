@@ -6,6 +6,15 @@ this.modal = {
 		config.confirmButtonText = config.confirmButtonText || t('Send');
 		config.cancelButtonText = config.cancelButtonText || t('Cancel');
 
+		if (config.type === 'input') {
+			config.input = true;
+			config.type = false;
+
+			if (!config.inputType) {
+				config.inputType = 'text';
+			}
+		}
+
 		this.close();
 		this.renderedModal = Blaze.renderWithData(Template.rc_modal, config, document.body);
 		this.fn = fn;
@@ -24,15 +33,28 @@ this.modal = {
 			clearTimeout(this.timer);
 		}
 	},
-	confirm() {
-		this.fn(true);
+	confirm(value) {
+		if (this.fn) {
+			this.fn(value);
+		} else {
+			this.close();
+		}
+
 		this.config.closeOnConfirm && this.close();
+	},
+	showInputError(text) {
+		const errorEl = document.querySelector('.rc-modal__content-error');
+		errorEl.innerHTML = text;
+		errorEl.style.display = 'block';
 	}
 };
 
 Template.rc_modal.helpers({
 	hasAction() {
 		return !!this.action;
+	},
+	modalIcon() {
+		return `modal-${ this.type }`;
 	}
 });
 
@@ -41,11 +63,18 @@ Template.rc_modal.onRendered(function() {
 		this.data.onRendered();
 	}
 
-	$('.rc-modal-wrapper').click(function(e) {
-		if (e.currentTarget === e.target) {
+	document.addEventListener('keydown', function(e) {
+		e.preventDefault();
+		e.stopPropagation();
+
+		if (e.key === 'Enter') {
+			modal.confirm(true);
+		}
+
+		if (e.key === 'Escape') {
 			modal.close();
 		}
-	});
+	}, {once: true});
 });
 
 Template.rc_modal.events({
@@ -56,7 +85,20 @@ Template.rc_modal.events({
 	'click .js-close'() {
 		modal.close();
 	},
-	'click .js-confirm'() {
-		modal.confirm();
+	'click .js-confirm'(e, instance) {
+		if (instance.data.input) {
+			return modal.confirm($('.js-modal-input').val());
+		}
+
+		modal.confirm(true);
+	},
+	'click .rc-modal-wrapper'(e, instance) {
+		if (instance.data.allowOutsideClick === false) {
+			return false;
+		}
+
+		if (e.currentTarget === e.target) {
+			modal.close();
+		}
 	}
 });
