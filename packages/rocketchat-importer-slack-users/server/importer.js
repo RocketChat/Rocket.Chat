@@ -82,50 +82,57 @@ export class SlackUsersImporter extends Base {
 		Meteor.defer(() => {
 			super.updateProgress(ProgressStep.IMPORTING_USERS);
 
-			for (const u of this.users.users) {
-				if (!u.do_import) {
-					continue;
-				}
+			try {
+				for (const u of this.users.users) {
+					if (!u.do_import) {
+						continue;
+					}
 
-				Meteor.runAsUser(startedByUserId, () => {
-					const existantUser = RocketChat.models.Users.findOneByEmailAddress(u.email) || RocketChat.models.Users.findOneByUsername(u.username);
+					Meteor.runAsUser(startedByUserId, () => {
+						const existantUser = RocketChat.models.Users.findOneByEmailAddress(u.email) || RocketChat.models.Users.findOneByUsername(u.username);
 
-					let userId = existantUser._id;
-					if (existantUser) {
-						//since we have an existing user, let's try a few things
-						u.rocketId = existantUser._id;
-						RocketChat.models.Users.update({ _id: u.rocketId }, { $addToSet: { importIds: u.id } });
+						let userId;
+						if (existantUser) {
+							//since we have an existing user, let's try a few things
+							userId = existantUser._id
+							u.rocketId = existantUser._id;
+							RocketChat.models.Users.update({ _id: u.rocketId }, { $addToSet: { importIds: u.id } });
 
-						RocketChat.models.Users.setEmail(existantUser._id, u.email);
-						RocketChat.models.Users.setEmailVerified(existantUser._id, u.email);
-					} else {
-						userId = Accounts.createUser({ username: u.username + Random.id(), password: Date.now() + u.name + u.email.toUpperCase() });
+							RocketChat.models.Users.setEmail(existantUser._id, u.email);
+							RocketChat.models.Users.setEmailVerified(existantUser._id, u.email);
+						} else {
+							userId = Accounts.createUser({ username: u.username + Random.id(), password: Date.now() + u.name + u.email.toUpperCase() });
 
-						if (!userId) {
-							console.warn('An error happened while creating a user.');
-							return;
+							if (!userId) {
+								console.warn('An error happened while creating a user.');
+								return;
+							}
+
+							Meteor.runAsUser(userId, () => {
+								Meteor.call('setUsername', u.username, {joinDefaultChannelsSilenced: true});
+								RocketChat.models.Users.setName(userId, u.name);
+								RocketChat.models.Users.update({ _id: userId }, { $addToSet: { importIds: u.id } });
+								RocketChat.models.Users.setEmail(userId, u.email);
+								RocketChat.models.Users.setEmailVerified(userId, u.email);
+								u.rocketId = userId;
+							});
 						}
 
-						Meteor.runAsUser(userId, () => {
-							Meteor.call('setUsername', u.username, {joinDefaultChannelsSilenced: true});
-							RocketChat.models.Users.setName(userId, u.name);
-							RocketChat.models.Users.update({ _id: userId }, { $addToSet: { importIds: u.id } });
-							RocketChat.models.Users.setEmail(userId, u.email);
-							RocketChat.models.Users.setEmailVerified(userId, u.email);
-							u.rocketId = userId;
-						});
-					}
+						if (this.admins.includes(u.user_id)) {
+							Meteor.call('setAdminStatus', userId, true);
+						}
 
-					if (this.admins.includes(u.user_id)) {
-						Meteor.call('setAdminStatus', userId, true);
-					}
+						super.addCountCompleted(1);
+					});
+				}
 
-					super.addCountCompleted(1);
-				});
+				super.updateProgress(ProgressStep.FINISHING);
+				super.updateProgress(ProgressStep.DONE);
+			} catch (e) {
+				this.logger.error(e);
+				super.updateProgress(ProgressStep.ERROR);
 			}
 
-			super.updateProgress(ProgressStep.FINISHING);
-			super.updateProgress(ProgressStep.DONE);
 			const timeTook = Date.now() - started;
 			this.logger.log(`Slack Users Import took ${ timeTook } milliseconds.`);
 		});
