@@ -116,6 +116,11 @@
 		& > .rc-button {
 			margin: 0;
 		}
+
+		&--empty {
+			padding: 0;
+			background: transparent;
+		}
 	}
 }
 

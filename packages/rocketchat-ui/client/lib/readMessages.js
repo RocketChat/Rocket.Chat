@@ -180,6 +180,7 @@ const readMessage = new class {
 
 			if (firstUnreadRecord != null) {
 				room.unreadFirstId = firstUnreadRecord._id;
+				$(room.dom).find(`.message.first-unread:not(#${ firstUnreadRecord._id })`).removeClass('first-unread');
 				$(room.dom).find(`.message#${ firstUnreadRecord._id }`).addClass('first-unread');
 			}
 		}
