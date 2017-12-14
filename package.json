@@ -72,6 +72,7 @@
 		"testunit-watch": "mocha --watch --opts ./mocha.opts \"`node -e \"console.log(require('./package.json').mocha.tests.join(' '))\"`\"",
 		"coverage": "nyc -r html mocha --opts ./mocha.opts \"`node -e \"console.log(require('./package.json').mocha.tests.join(' '))\"`\"",
 		"testunit": "mocha --opts ./mocha.opts \"`node -e \"console.log(require('./package.json').mocha.tests.join(' '))\"`\"",
+		"testgraphql": "mocha --opts ./mocha.opts tests/end-to-end/graphql/*.js",
 		"version": "node .scripts/version.js",
 		"set-version": "node .scripts/set-version.js",
 		"release": "npm run set-version --silent"
