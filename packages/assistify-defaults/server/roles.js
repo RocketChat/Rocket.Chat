@@ -179,7 +179,8 @@ const createConfigurationRole = function() {
 		'change-setting-Accounts_AllowedDomainsList',
 		'change-setting-Accounts_ManuallyApproveNewUsers',
 		'change-setting-Accounts_EmailVerification',
-		'change-setting-Accounts'
+		'change-setting-Accounts',
+		'change-setting-Assistify_Deactivate_request_closing_comments'
 	];
 
 	assignPermissions(CONFIGURATION_ROLE_NAME,

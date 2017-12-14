@@ -8,6 +8,7 @@ create-e: Thema anlegen
 create-r: Anfrage anlegen
 delete-e: Thema löschen
 delete-r: Anfrage löschen
+Deactivate_close_comment: Kommentieren beim Schließen von Anfragen verhindern
 Expertise_description: Ein Thema beschreibt ein Wissensgebiet. Experten beantworten hierzu Anfragen
 Expertise_does_not_exist: Das Thema gibt es nicht
 Expertise_explanation: Ein Thema beschreibt ein Wissensgebiet. Zu einem Thema können Anfragen erstellt werden, die von den Experten, die dem Thema als Mitglieder zugeordnet sind, beantwortet werden können.
