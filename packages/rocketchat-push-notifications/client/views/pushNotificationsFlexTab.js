@@ -8,6 +8,11 @@ const notificationLabels = {
 	nothing: 'Nothing'
 };
 
+function getUserPreference(preference) {
+	const user = Meteor.user();
+	return user && user.settings && user.settings.preferences && user.settings.preferences[preference];
+}
+
 Template.pushNotificationsFlexTab.helpers({
 	audioAssets() {
 		return RocketChat.CustomSounds && RocketChat.CustomSounds.getList && RocketChat.CustomSounds.getList() || [];
@@ -231,23 +236,23 @@ Template.pushNotificationsFlexTab.helpers({
 		return Meteor.user().emails && Meteor.user().emails[0] && Meteor.user().emails[0].verified;
 	},
 	defaultAudioNotification() {
-		let preference = RocketChat.getUserPreference(Meteor.user(), 'audioNotifications');
-		if (preference === 'default') {
-			preference = RocketChat.settings.get('Accounts_Default_User_Preferences_audioNotifications');
+		let preference = getUserPreference('audioNotifications');
+		if (preference === 'default' || preference == null) {
+			preference = RocketChat.settings.get('Audio_Notifications_Default_Alert');
 		}
 		return notificationLabels[preference];
 	},
 	defaultDesktopNotification() {
-		let preference = RocketChat.getUserPreference(Meteor.user(), 'desktopNotifications');
-		if (preference === 'default') {
-			preference = RocketChat.settings.get('Accounts_Default_User_Preferences_desktopNotifications');
+		let preference = getUserPreference('desktopNotifications');
+		if (preference === 'default' || preference == null) {
+			preference = RocketChat.settings.get('Desktop_Notifications_Default_Alert');
 		}
 		return notificationLabels[preference];
 	},
 	defaultMobileNotification() {
-		let preference = RocketChat.getUserPreference(Meteor.user(), 'mobileNotifications');
-		if (preference === 'default') {
-			preference = RocketChat.settings.get('Accounts_Default_User_Preferences_mobileNotifications');
+		let preference = getUserPreference('mobileNotifications');
+		if (preference === 'default' || preference == null) {
+			preference = RocketChat.settings.get('Mobile_Notifications_Default_Alert');
 		}
 		return notificationLabels[preference];
 	}
@@ -415,11 +420,11 @@ Template.pushNotificationsFlexTab.events({
 		const user = Meteor.user();
 
 		if (audio === 'Use account preference' || audio === 'none') {
-			audio = RocketChat.getUserPreference(user, 'newMessageNotification');
+			audio = user && user.settings && user.settings.preferences && user.settings.preferences.newMessageNotification || 'chime';
 		}
 
 		if (audio && audio !== 'none') {
-			const audioVolume = RocketChat.getUserPreference(user, 'notificationsSoundVolume');
+			const audioVolume = user && user.settings && user.settings.preferences && user.settings.preferences.notificationsSoundVolume || 100;
 			const $audio = $(`audio#${ audio }`);
 
 			if ($audio && $audio[0] && $audio[0].play) {
@@ -436,10 +441,10 @@ Template.pushNotificationsFlexTab.events({
 		const user = Meteor.user();
 
 		if (audio==='') {
-			audio = RocketChat.getUserPreference(user, 'newMessageNotification');
+			audio = user && user.settings && user.settings.preferences && user.settings.preferences.newMessageNotification || 'chime';
 		}
 		if (audio && audio !== 'none') {
-			const audioVolume = RocketChat.getUserPreference(user, 'notificationsSoundVolume');
+			const audioVolume = user && user.settings && user.settings.preferences && user.settings.preferences.notificationsSoundVolume || 100;
 			const $audio = $(`audio#${ audio }`);
 
 			if ($audio && $audio[0] && $audio[0].play) {
