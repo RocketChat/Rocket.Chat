@@ -14,7 +14,7 @@
 				<div class="create-channel__switches">
 					<div class="rc-switch">
 						<label class="rc-switch__label" tabindex="-1">
-							<input type="checkbox" class="rc-switch__input" name="type" value="p" checked>
+							<input type="checkbox" class="rc-switch__input" name="type" value="p" checked {{groupChatIsDisabled}}>
 							<span class="rc-switch__button">
 							<span class="rc-switch__button-inside"></span>
 						</span>
@@ -36,6 +36,18 @@
 						</label>
 						<span class="rc-switch__description">{{readOnlyDescription}}</span>
 					</div>
+					<div class="rc-switch">
+						<label class="rc-switch__label">
+							<input type="checkbox" class="rc-switch__input" name="groupChat" {{privateIsDisabled}}>
+							<span class="rc-switch__button">
+								<span class="rc-switch__button-inside"></span>
+							</span>
+							<span class="rc-switch__text">
+								{{groupChatLabel}}
+							</span>
+						</label>
+						<span class="rc-switch__description">{{groupChatDescription}}</span>
+					</div>
 				</div>
 				<div class="create-channel__inputs">
 					<div class="rc-input {{#if invalidChannel}}rc-input--error{{/if}}">
@@ -46,7 +58,7 @@
 									{{> icon block="rc-input__icon-svg" icon=iconType }}
 								</div>
 								<input name="name" type="text" class="rc-input__element"
-									   placeholder="{{_ "Channel_Name_Placeholder"}}" autofocus>
+									   placeholder="{{_ "Channel_Name_Placeholder"}}" autofocus {{groupChatIsDisabled}}>
 							</div>
 						</label>
 						{{#if inUse}}
@@ -83,6 +95,14 @@
 								{{/if}}
 							{{/with}}
 						</label>
+						{{#if noUsers}}
+							<div class="rc-input__error">
+								<div class="rc-input__error-icon">
+									{{> icon block="rc-input__error-icon" icon="warning" classes="rc-input__error-icon-svg"}}
+								</div>
+								<div class="rc-input__error-message">{{_ "Not_enough_users_static"}}</div>
+							</div>
+						{{/if}}
 					</div>
 				</div>
 				{{#if tokenAccessEnabled}}

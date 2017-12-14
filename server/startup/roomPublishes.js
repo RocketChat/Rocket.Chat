@@ -17,7 +17,8 @@ Meteor.startup(function() {
 				description: 1,
 				sysMes: 1,
 				joinCodeRequired: 1,
-				streamingOptions: 1
+				streamingOptions: 1,
+				groupChat: 1
 			}
 		};
 
@@ -51,7 +52,8 @@ Meteor.startup(function() {
 				description: 1,
 				sysMes: 1,
 				tokenpass: 1,
-				streamingOptions: 1
+				streamingOptions: 1,
+				groupChat: 1
 			}
 		};
 

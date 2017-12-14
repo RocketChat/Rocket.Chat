@@ -6,6 +6,9 @@ Template.chatRoomItem.helpers({
 		if ((realNameForDirectMessages || realNameForChannel) && this.fname) {
 			name = this.fname;
 		}
+		if (this.groupChat) {
+			name = this.usernames.join(', ');
+		}
 
 		let unread = false;
 		if (((FlowRouter.getParam('_id') !== this.rid) || !document.hasFocus()) && (this.unread > 0)) {

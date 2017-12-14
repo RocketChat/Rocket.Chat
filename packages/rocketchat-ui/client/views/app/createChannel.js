@@ -71,6 +71,9 @@ Template.createChannel.helpers({
 	inUse() {
 		return Template.instance().inUse.get();
 	},
+	noUsers() {
+		return Template.instance().noUsers.get();
+	},
 	invalidChannel() {
 		const instance = Template.instance();
 		const invalid = instance.invalid.get();
@@ -86,6 +89,30 @@ Template.createChannel.helpers({
 	readOnlyDescription() {
 		return t(Template.instance().readOnly.get() ? t('Only_authorized_users_can_write_new_messages') : t('All_users_in_the_channel_can_write_new_messages'));
 	},
+	groupChatLabel() {
+		return t(Template.instance().groupChat.get() ? t('Group_Chat') : t('Normal_Channel'));
+	},
+	groupChatDescription() {
+		return t(Template.instance().groupChat.get() ? t('Group_chat_instead_of_normal_channel') : t('Normal_channel_instead_of_group_chat'));
+	},
+	privateIsDisabled() {
+		const instance = Template.instance();
+		const isPrivate = instance.type.get() === 'p';
+
+		if (!isPrivate) {
+			return 'disabled';
+		}
+		return '';
+	},
+	groupChatIsDisabled() {
+		const instance = Template.instance();
+		const groupChat = instance.groupChat.get();
+
+		if (groupChat) {
+			return 'disabled';
+		}
+		return '';
+	},
 	createIsDisabled() {
 		const instance = Template.instance();
 		const invalid = instance.invalid.get();
@@ -93,7 +120,7 @@ Template.createChannel.helpers({
 		const inUse = instance.inUse.get();
 		const name = instance.name.get();
 
-		if (name.length === 0 || invalid || inUse === true || inUse === undefined || extensions_invalid) {
+		if ((!instance.groupChat.get() && name.length === 0) || invalid || inUse === true || inUse === undefined || extensions_invalid) {
 			return 'disabled';
 		}
 		return '';
@@ -161,6 +188,14 @@ Template.createChannel.events({
 	'change [name="readOnly"]'(e, t) {
 		t.readOnly.set(e.target.checked);
 	},
+	'change [name="groupChat"]'(e, t) {
+		t.groupChat.set(e.target.checked);
+		if (t.groupChat.get()) {
+			t.inUse.set(false);
+		} else {
+			t.noUsers.set(false);
+		}
+	},
 	'input [name="users"]'(e, t) {
 		const input = e.target;
 		const position = input.selectionEnd || input.selectionStart;
@@ -189,13 +224,23 @@ Template.createChannel.events({
 	'submit .create-channel__content'(e, instance) {
 		e.preventDefault();
 		e.stopPropagation();
-		const name = e.target.name.value;
+		let name = e.target.name.value;
 		const type = instance.type.get();
 		const readOnly = instance.readOnly.get();
 		const isPrivate = type === 'p';
+		let method = isPrivate ? 'createPrivateGroup' : 'createChannel';
+		const users = instance.selectedUsers.get().map(user => user.username);
 
 		if (instance.invalid.get() || instance.inUse.get()) {
 			return e.target.name.focus();
+		}
+		if (instance.groupChat.get()) {
+			if (users.length < 2) {
+				instance.noUsers.set(true);
+				return e.target.users.focus();
+			}
+			name = users.sort().join('-');
+			method = 'createGroupChat';
 		}
 		if (!Object.keys(instance.extensions_validations).map(key => instance.extensions_validations[key]).reduce((valid, fn) => fn(instance) && valid, true)) {
 			return instance.extensions_invalid.set(true);
@@ -206,7 +251,7 @@ Template.createChannel.events({
 				return { ...result, ...instance.extensions_submits[key](instance) };
 			}, {});
 
-		Meteor.call(isPrivate ? 'createPrivateGroup' : 'createChannel', name, instance.selectedUsers.get().map(user => user.username), readOnly, {}, extraData, function(err, result) {
+		Meteor.call(method, name, users, readOnly, {}, extraData, function(err, result) {
 			if (err) {
 				if (err.error === 'error-invalid-name') {
 					return instance.invalid.set(true);
@@ -253,6 +298,8 @@ Template.createChannel.onCreated(function() {
 	this.name = new ReactiveVar('');
 	this.type = new ReactiveVar('p');
 	this.readOnly = new ReactiveVar(false);
+	this.groupChat = new ReactiveVar(false);
+	this.noUsers = new ReactiveVar(false);
 	this.inUse = new ReactiveVar(undefined);
 	this.invalid = new ReactiveVar(false);
 	this.extensions_invalid = new ReactiveVar(false);

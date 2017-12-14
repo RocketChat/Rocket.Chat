@@ -28,7 +28,9 @@ const fields = {
 	autoTranslate: 1,
 	autoTranslateLanguage: 1,
 	disableNotifications: 1,
-	hideUnreadStatus: 1
+	hideUnreadStatus: 1,
+	usernames: 1,
+	groupChat: 1
 };
 
 Meteor.methods({
