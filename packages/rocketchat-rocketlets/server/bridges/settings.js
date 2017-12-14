@@ -39,6 +39,7 @@ export class RocketletSettingBridge {
 
 	hideGroup(name, rocketletId) {
 		console.log(`The Rocketlet ${ rocketletId } is hidding the group ${ name }.`);
+
 		throw new Error('Method not implemented.');
 	}
 
