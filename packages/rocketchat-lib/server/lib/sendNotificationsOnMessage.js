@@ -251,10 +251,6 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room, userId) {
 			return;
 		}
 
-		const userAudioNotificationPreference = preferences.audioNotifications !== 'default' ? preferences.audioNotifications : undefined;
-		const userDesktopNotificationPreference = preferences.desktopNotifications !== 'default' ? preferences.desktopNotifications : undefined;
-		const userMobileNotificationPreference = preferences.mobileNotifications !== 'default' ? preferences.mobileNotifications : undefined;
-		// Set defaults if they don't exist
 		const {
 			audioNotifications = RocketChat.getUserPreference(users[subscription.u._id], 'audioNotifications'),
 			desktopNotifications = RocketChat.getUserPreference(users[subscription.u._id], 'desktopNotifications'),
