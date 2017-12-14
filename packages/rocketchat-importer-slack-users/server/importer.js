@@ -94,7 +94,7 @@ export class SlackUsersImporter extends Base {
 						let userId;
 						if (existantUser) {
 							//since we have an existing user, let's try a few things
-							userId = existantUser._id
+							userId = existantUser._id;
 							u.rocketId = existantUser._id;
 							RocketChat.models.Users.update({ _id: u.rocketId }, { $addToSet: { importIds: u.id } });
 
