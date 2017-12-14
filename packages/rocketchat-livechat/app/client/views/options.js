@@ -1,4 +1,4 @@
-/* globals Department, Livechat */
+/* globals Department, Livechat, swal */
 
 Template.options.helpers({
 	showDepartments() {

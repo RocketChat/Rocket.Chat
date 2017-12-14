@@ -69,7 +69,7 @@ konecty:delayed-task@1.0.0
 konecty:mongo-counter@0.0.5_3
 konecty:multiple-instances-status@1.1.0
 konecty:nrr@2.0.2
-konecty:user-presence@1.2.9
+konecty:user-presence@2.0.1
 launch-screen@1.1.1
 less@2.7.11
 livedata@1.0.18
@@ -212,7 +212,7 @@ rocketchat:smarsh-connector@0.0.1
 rocketchat:sms@0.0.1
 rocketchat:spotify@0.0.1
 rocketchat:statistics@0.0.1
-rocketchat:streamer@0.6.0
+rocketchat:streamer@0.6.1
 rocketchat:theme@0.0.1
 rocketchat:tokenpass@0.0.1
 rocketchat:tooltip@0.0.1
@@ -236,7 +236,6 @@ session@1.1.7
 sha@1.0.9
 shell-server@0.3.1
 simple:json-routes@2.1.0
-smoral:sweetalert@1.1.1
 spacebars@1.0.15
 spacebars-compiler@1.1.3
 srp@1.0.10
