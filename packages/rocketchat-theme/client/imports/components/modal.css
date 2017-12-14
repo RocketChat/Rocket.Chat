@@ -1,5 +1,6 @@
 .rc-modal {
 	min-width: 400px;
+	max-width: 500px;
 
 	animation: dropdown-show 0.3s cubic-bezier(0.45, 0.05, 0.55, 0.95);
 
@@ -35,10 +36,6 @@
 		transform: rotate(45deg);
 
 		font-size: 20px;
-
-		&:hover {
-			color: var(--color-link-active);
-		}
 	}
 
 	&__header {
@@ -60,10 +57,52 @@
 		padding: 16px;
 
 		animation: dropdown-show 0.1s cubic-bezier(0.45, 0.05, 0.55, 0.95);
+		align-items: center;
+	}
 
-		white-space: nowrap;
+	&__content-icon {
+		margin: 1.2rem;
 
-		background-color: var(--modal-background);
+		font-size: 6rem;
+
+		&--modal-warning {
+			color: var(--rc-color-alert);
+		}
+
+		&--modal-success {
+			color: var(--rc-color-success-light);
+		}
+
+		&--modal-info {
+			color: var(--rc-color-alert);
+		}
+
+		&--modal-error {
+			color: var(--rc-color-error-light);
+		}
+	}
+
+	&__content-text {
+		text-align: center;
+		word-break: break-word;
+
+		font-size: 1rem;
+		line-height: 1.5;
+	}
+
+	&__content-error {
+		display: none;
+
+		width: 100%;
+		margin: 0.5rem 0;
+
+		text-align: center;
+		word-break: break-word;
+
+		color: var(--color-white);
+		background: var(--rc-color-error);
+
+		line-height: 2;
 	}
 
 	&__footer {

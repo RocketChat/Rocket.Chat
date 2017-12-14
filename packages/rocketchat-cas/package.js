@@ -19,6 +19,7 @@ Package.onUse(function(api) {
 	// Server files
 	api.add_files('server/cas_rocketchat.js', 'server');
 	api.add_files('server/cas_server.js', 'server');
+	api.add_files('server/models/CredentialTokens.js', 'server');
 
 	// Client files
 	api.add_files('client/cas_client.js', 'client');
