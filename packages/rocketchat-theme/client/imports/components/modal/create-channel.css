@@ -1,4 +1,9 @@
 .create-channel {
+	display: flex;
+	flex-direction: column;
+
+	width: 100%;
+
 	animation-name: fadeIn;
 	animation-duration: 1s;
 
@@ -25,12 +30,22 @@
 		font-size: var(--create-channel-description-text-size);
 	}
 
+	&__content {
+		overflow-x: hidden;
+		overflow-y: auto;
+	}
+
 	&__switches {
 		display: flex;
+		flex-wrap: wrap;
 	}
 
 	& .rc-switch {
-		width: 50%;
+		width: 100%;
+
+		&:not(:last-child) {
+			margin-bottom: 2rem;
+		}
 	}
 
 	& .rc-input__icon-svg {
