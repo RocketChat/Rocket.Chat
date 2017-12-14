@@ -17,9 +17,9 @@ const resolver = {
 				return avatar.url;
 			}
 		},
-		channels: ({ _id }) => {
-			return RocketChat.models.Rooms.findBySubscriptionUserId(_id).fetch();
-		},
+		channels: Meteor.bindEnvironment(async({ _id }) => {
+			return await RocketChat.models.Rooms.findBySubscriptionUserId(_id).fetch();
+		}),
 		directMessages: ({ username }) => {
 			return RocketChat.models.Rooms.findByTypeContainingUsername('d', username).fetch();
 		}
