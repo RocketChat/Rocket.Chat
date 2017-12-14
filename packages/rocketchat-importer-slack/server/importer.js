@@ -32,13 +32,13 @@ export class SlackImporter extends Base {
 			}
 
 			if (entry.entryName === 'channels.json') {
-				this.updateProgress(ProgressStep.PREPARING_CHANNELS);
+				super.updateProgress(ProgressStep.PREPARING_CHANNELS);
 				tempChannels = JSON.parse(entry.getData().toString()).filter(channel => channel.creator != null);
 				return;
 			}
 
 			if (entry.entryName === 'users.json') {
-				this.updateProgress(ProgressStep.PREPARING_USERS);
+				super.updateProgress(ProgressStep.PREPARING_USERS);
 				tempUsers = JSON.parse(entry.getData().toString());
 
 				tempUsers.forEach(user => {
@@ -78,7 +78,7 @@ export class SlackImporter extends Base {
 		this.addCountToTotal(tempChannels.length);
 
 		// Insert the messages records
-		this.updateProgress(ProgressStep.PREPARING_MESSAGES);
+		super.updateProgress(ProgressStep.PREPARING_MESSAGES);
 
 		let messagesCount = 0;
 		Object.keys(tempMessages).forEach(channel => {
@@ -109,14 +109,14 @@ export class SlackImporter extends Base {
 		if ([tempUsers.length, tempChannels.length, messagesCount].some(e => e === 0)) {
 			this.logger.warn(`The loaded users count ${ tempUsers.length }, the loaded channels ${ tempChannels.length }, and the loaded messages ${ messagesCount }`);
 			console.log(`The loaded users count ${ tempUsers.length }, the loaded channels ${ tempChannels.length }, and the loaded messages ${ messagesCount }`);
-			this.updateProgress(ProgressStep.ERROR);
+			super.updateProgress(ProgressStep.ERROR);
 			return this.getProgress();
 		}
 
 		const selectionUsers = tempUsers.map(user => new SelectionUser(user.id, user.name, user.profile.email, user.deleted, user.is_bot, !user.is_bot));
 		const selectionChannels = tempChannels.map(channel => new SelectionChannel(channel.id, channel.name, channel.is_archived, true, false));
 		const selectionMessages = this.importRecord.count.messages;
-		this.updateProgress(ProgressStep.USER_SELECTION);
+		super.updateProgress(ProgressStep.USER_SELECTION);
 
 		return new Selection(this.name, selectionUsers, selectionChannels, selectionMessages);
 	}
@@ -150,7 +150,7 @@ export class SlackImporter extends Base {
 		const startedByUserId = Meteor.userId();
 		Meteor.defer(() => {
 			try {
-				this.updateProgress(ProgressStep.IMPORTING_USERS);
+				super.updateProgress(ProgressStep.IMPORTING_USERS);
 				this.users.users.forEach(user => {
 					if (!user.do_import) {
 						return;
@@ -209,7 +209,7 @@ export class SlackImporter extends Base {
 				});
 				this.collection.update({ _id: this.users._id }, { $set: { 'users': this.users.users }});
 
-				this.updateProgress(ProgressStep.IMPORTING_CHANNELS);
+				super.updateProgress(ProgressStep.IMPORTING_CHANNELS);
 				this.channels.channels.forEach(channel => {
 					if (!channel.do_import) {
 						return;
@@ -265,7 +265,7 @@ export class SlackImporter extends Base {
 
 				const missedTypes = {};
 				const ignoreTypes = { 'bot_add': true, 'file_comment': true, 'file_mention': true };
-				this.updateProgress(ProgressStep.IMPORTING_MESSAGES);
+				super.updateProgress(ProgressStep.IMPORTING_MESSAGES);
 				Object.keys(this.messages).forEach(channel => {
 					const messagesObj = this.messages[channel];
 
@@ -431,7 +431,7 @@ export class SlackImporter extends Base {
 					console.log('Missed import types:', missedTypes);
 				}
 
-				this.updateProgress(ProgressStep.FINISHING);
+				super.updateProgress(ProgressStep.FINISHING);
 
 				this.channels.channels.forEach(channel => {
 					if (channel.do_import && channel.is_archived) {
@@ -440,12 +440,12 @@ export class SlackImporter extends Base {
 						});
 					}
 				});
-				this.updateProgress(ProgressStep.DONE);
+				super.updateProgress(ProgressStep.DONE);
 
 				this.logger.log(`Import took ${ Date.now() - start } milliseconds.`);
 			} catch (e) {
 				this.logger.error(e);
-				this.updateProgress(ProgressStep.ERROR);
+				super.updateProgress(ProgressStep.ERROR);
 			}
 		});
 
