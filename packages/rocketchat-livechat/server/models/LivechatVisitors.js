@@ -158,6 +158,38 @@ class LivechatVisitors extends RocketChat.models._Base {
 
 		return this.findOne(query);
 	}
+
+	saveGuestEmailPhoneById(_id, emails, phones) {
+		const update = {
+			$addToSet: {}
+		};
+
+		const saveEmail = [].concat(emails)
+			.filter(email => email && email.trim())
+			.map(email => {
+				return { address: email };
+			});
+
+		if (saveEmail.length > 0) {
+			update.$addToSet.visitorEmails = { $each: saveEmail };
+		}
+
+		const savePhone = [].concat(phones)
+			.filter(phone => phone && phone.trim().replace(/[^\d]/g, ''))
+			.map(phone => {
+				return { phoneNumber: phone };
+			});
+
+		if (savePhone.length > 0) {
+			update.$addToSet.phone = { $each: savePhone };
+		}
+
+		if (!update.$addToSet.visitorEmails && !update.$addToSet.phone) {
+			return;
+		}
+
+		return this.update({ _id }, update);
+	}
 }
 
 export default new LivechatVisitors();
