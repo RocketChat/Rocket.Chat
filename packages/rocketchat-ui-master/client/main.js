@@ -61,11 +61,11 @@ Template.body.onRendered(function() {
 		if (target.id === 'pswp') {
 			return;
 		}
-		const inputMessage = $('textarea.rc-message-box__textarea');
+		const inputMessage = $('.rc-message-box__textarea');
 		if (inputMessage.length === 0) {
 			return;
 		}
-		return inputMessage.focus();
+		inputMessage.focus();
 	});
 
 	$(document.body).on('click', function(e) {
@@ -192,9 +192,7 @@ Template.main.onRendered(function() {
 			cancelButtonText: t('Cancel')
 		});
 		const user = Meteor.user();
-		const settings = user && user.settings;
-		const prefs = settings && settings.preferences;
-		if (prefs && prefs.hideUsernames != null) {
+		if (RocketChat.getUserPreference(user, 'hideUsernames')) {
 			$(document.body).on('mouseleave', 'button.thumb', function() {
 				return RocketChat.tooltip.hide();
 			});

@@ -244,7 +244,7 @@ this.ChatMessages = class ChatMessages {
 								ts: new Date,
 								msg: TAPi18n.__('No_such_command', { command: match[1] }),
 								u: {
-									username: 'rocketbot'
+									username: RocketChat.settings.get('InternalHubot_Username')
 								},
 								private: true
 							};
@@ -422,7 +422,7 @@ this.ChatMessages = class ChatMessages {
 
 	keydown(rid, event) {
 		const user = Meteor.user();
-		const sendOnEnter = user && user.settings && user.settings.preferences && user.settings.preferences.sendOnEnter;
+		const sendOnEnter = RocketChat.getUserPreference(user, 'sendOnEnter');
 		const input = event.currentTarget;
 		// const $input = $(input);
 		const k = event.which;

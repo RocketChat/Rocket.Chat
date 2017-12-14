@@ -1,4 +1,6 @@
-/* globals RocketChatTabBar , chatMessages, fileUpload , fireGlobalEvent , cordova , readMessage , RoomRoles, popover , device */
+/* globals chatMessages, fileUpload , fireGlobalEvent , cordova , readMessage , RoomRoles, popover , device */
+import { RocketChatTabBar } from 'meteor/rocketchat:lib';
+
 import _ from 'underscore';
 import moment from 'moment';
 import mime from 'mime-type/with-db';
@@ -21,7 +23,7 @@ const openProfileTab = (e, instance, username) => {
 		return;
 	}
 
-	if (['c', 'p', 'd'].includes(roomData.t)) {
+	if (RocketChat.roomTypes.roomTypes[roomData.t].enableMembersListProfile()) {
 		instance.setUserDetail(username);
 	}
 
@@ -278,6 +280,10 @@ Template.room.helpers({
 		return roomIcon;
 	},
 
+	tokenAccessChannel() {
+		return Template.instance().hasTokenpass.get();
+	},
+
 	userStatus() {
 		const roomData = Session.get(`roomData${ this._id }`);
 		return RocketChat.roomTypes.getUserStatus(roomData.t, this._id) || 'offline';
@@ -332,7 +338,7 @@ Template.room.helpers({
 
 	viewMode() {
 		const user = Meteor.user();
-		const viewMode = user && user.settings && user.settings.preferences && user.settings.preferences.viewMode;
+		const viewMode = RocketChat.getUserPreference(user, 'viewMode');
 		const modes = ['', 'cozy', 'compact'];
 		return modes[viewMode] || modes[0];
 	},
@@ -343,12 +349,12 @@ Template.room.helpers({
 
 	hideUsername() {
 		const user = Meteor.user();
-		return user && user.settings && user.settings.preferences && user.settings.preferences.hideUsernames ? 'hide-usernames' : undefined;
+		return RocketChat.getUserPreference(user, 'hideUsernames') ? 'hide-usernames' : undefined;
 	},
 
 	hideAvatar() {
 		const user = Meteor.user();
-		return user && user.settings && user.settings.preferences && user.settings.preferences.hideAvatars ? 'hide-avatars' : undefined;
+		return RocketChat.getUserPreference(user, 'hideAvatars') ? 'hide-avatars' : undefined;
 	},
 
 	userCanDrop() {
@@ -410,7 +416,7 @@ Template.room.events({
 	'click .messages-container-main'() {
 		const user = Meteor.user();
 
-		if ((Template.instance().tabBar.getState() === 'opened') && user && user.settings && user.settings.preferences && user.settings.preferences.hideFlexTab) {
+		if ((Template.instance().tabBar.getState() === 'opened') && RocketChat.getUserPreference(user, 'hideFlexTab')) {
 			Template.instance().tabBar.close();
 		}
 	},
@@ -766,6 +772,16 @@ Template.room.onCreated(function() {
 	this.clearUserDetail = () => {
 		this.userDetail.set(null);
 	};
+
+	this.hasTokenpass = new ReactiveVar(false);
+
+	if (RocketChat.settings.get('API_Tokenpass_URL') !== '') {
+		Meteor.call('getChannelTokenpass', this.data._id, (error, result) => {
+			if (!error) {
+				this.hasTokenpass.set(!!(result && result.tokens && result.tokens.length > 0));
+			}
+		});
+	}
 
 	Meteor.call('getRoomRoles', this.data._id, function(error, results) {
 		if (error) {

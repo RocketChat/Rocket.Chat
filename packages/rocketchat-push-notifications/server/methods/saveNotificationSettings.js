@@ -15,6 +15,12 @@ Meteor.methods({
 					repeatFor: String,
 					limitDateTime: Match.Maybe(Date)
 				});
+
+				const timeFormat = new RegExp('([01]?[0-9]|2[0-3]):[0-5][0-9]');
+
+				if (!timeFormat.test(value.initialTime) || !timeFormat.test(value.finalTime)) {
+					throw new Meteor.Error('error-invalid-time-format', 'Invalid time format', { method: 'saveNotificationSettings' });
+				}
 			} else {
 				value = {};
 			}
