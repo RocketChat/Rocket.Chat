@@ -1,3 +1,4 @@
+/* globals swal */
 import visitor from '../../imports/client/visitor';
 
 Template.survey.events({

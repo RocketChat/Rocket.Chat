@@ -1,4 +1,4 @@
-/* globals Department, Livechat */
+/* globals Department, Livechat, swal */
 import visitor from '../../imports/client/visitor';
 
 Template.switchDepartment.helpers({

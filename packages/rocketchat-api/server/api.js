@@ -1,4 +1,4 @@
-/* global Restivus */
+/* global Restivus, DDP, DDPCommon */
 import _ from 'underscore';
 
 class API extends Restivus {
@@ -13,6 +13,7 @@ class API extends Restivus {
 			$loki: 0,
 			meta: 0,
 			members: 0,
+			usernames: 0, // Please use the `channel/dm/group.members` endpoint. This is disabled for performance reasons
 			importIds: 0
 		};
 		this.limitedUserFieldsToExclude = {
@@ -31,7 +32,7 @@ class API extends Restivus {
 			customFields: 0
 		};
 
-		this._config.defaultOptionsEndpoint = function() {
+		this._config.defaultOptionsEndpoint = function _defaultOptionsEndpoint() {
 			if (this.request.method === 'OPTIONS' && this.request.headers['access-control-request-method']) {
 				if (RocketChat.settings.get('API_Enable_CORS') === true) {
 					this.response.writeHead(200, {
@@ -54,9 +55,11 @@ class API extends Restivus {
 		this.authMethods.push(method);
 	}
 
-	success(result={}) {
+	success(result = {}) {
 		if (_.isObject(result)) {
 			result.success = true;
+			// TODO: Remove this after three versions have been released. That means at 0.64 this should be gone. ;)
+			result.developerWarning = '[WARNING]: The "usernames" field has been removed for performance reasons. Please use the "*.members" endpoint to get a list of members/users in a room.';
 		}
 
 		return {
@@ -96,6 +99,16 @@ class API extends Restivus {
 		};
 	}
 
+	notFound(msg) {
+		return {
+			statusCode: 404,
+			body: {
+				success: false,
+				error: msg ? msg : 'Nothing was found'
+			}
+		};
+	}
+
 	addRoute(routes, options, endpoints) {
 		//Note: required if the developer didn't provide options
 		if (typeof endpoints === 'undefined') {
@@ -113,7 +126,7 @@ class API extends Restivus {
 			if (this.helperMethods) {
 				Object.keys(endpoints).forEach((method) => {
 					if (typeof endpoints[method] === 'function') {
-						endpoints[method] = { action: endpoints[method] };
+						endpoints[method] = {action: endpoints[method]};
 					}
 
 					//Add a try/catch for each endpoint
@@ -143,7 +156,168 @@ class API extends Restivus {
 			super.addRoute(route, options, endpoints);
 		});
 	}
+
+	_initAuth() {
+		const loginCompatibility = (bodyParams) => {
+			// Grab the username or email that the user is logging in with
+			const {user, username, email, password, code} = bodyParams;
+			const auth = {
+				password
+			};
+
+			if (typeof user === 'string') {
+				auth.user = user.includes('@') ? {email: user} : {username: user};
+			} else if (username) {
+				auth.user = {username};
+			} else if (email) {
+				auth.user = {email};
+			}
+
+			if (auth.user == null) {
+				return bodyParams;
+			}
+
+			if (auth.password && auth.password.hashed) {
+				auth.password = {
+					digest: auth.password,
+					algorithm: 'sha-256'
+				};
+			}
+
+			if (code) {
+				return {
+					totp: {
+						code,
+						login: auth
+					}
+				};
+			}
+
+			return auth;
+		};
+
+		const self = this;
+
+		this.addRoute('login', {authRequired: false}, {
+			post() {
+				const args = loginCompatibility(this.bodyParams);
+
+				const invocation = new DDPCommon.MethodInvocation({
+					connection: {
+						close() {}
+					}
+				});
+
+				let auth;
+				try {
+					auth = DDP._CurrentInvocation.withValue(invocation, () => Meteor.call('login', args));
+				} catch (error) {
+					let e = error;
+					if (error.reason === 'User not found') {
+						e = {
+							error: 'Unauthorized',
+							reason: 'Unauthorized'
+						};
+					}
+
+					return {
+						statusCode: 401,
+						body: {
+							status: 'error',
+							error: e.error,
+							message: e.reason || e.message
+						}
+					};
+				}
+
+				this.user = Meteor.users.findOne({
+					_id: auth.id
+				});
+
+				this.userId = this.user._id;
+
+				// Remove tokenExpires to keep the old behavior
+				Meteor.users.update({
+					_id: this.user._id,
+					'services.resume.loginTokens.hashedToken': Accounts._hashLoginToken(auth.token)
+				}, {
+					$unset: {
+						'services.resume.loginTokens.$.when': 1
+					}
+				});
+
+				const response = {
+					status: 'success',
+					data: {
+						userId: this.userId,
+						authToken: auth.token
+					}
+				};
+
+				const extraData = self._config.onLoggedIn && self._config.onLoggedIn.call(this);
+
+				if (extraData != null) {
+					_.extend(response.data, {
+						extra: extraData
+					});
+				}
+
+				return response;
+			}
+		});
+
+		const logout = function() {
+			// Remove the given auth token from the user's account
+			const authToken = this.request.headers['x-auth-token'];
+			const hashedToken = Accounts._hashLoginToken(authToken);
+			const tokenLocation = self._config.auth.token;
+			const index = tokenLocation.lastIndexOf('.');
+			const tokenPath = tokenLocation.substring(0, index);
+			const tokenFieldName = tokenLocation.substring(index + 1);
+			const tokenToRemove = {};
+			tokenToRemove[tokenFieldName] = hashedToken;
+			const tokenRemovalQuery = {};
+			tokenRemovalQuery[tokenPath] = tokenToRemove;
+
+			Meteor.users.update(this.user._id, {
+				$pull: tokenRemovalQuery
+			});
+
+			const response = {
+				status: 'success',
+				data: {
+					message: 'You\'ve been logged out!'
+				}
+			};
+
+			// Call the logout hook with the authenticated user attached
+			const extraData = self._config.onLoggedOut && self._config.onLoggedOut.call(this);
+			if (extraData != null) {
+				_.extend(response.data, {
+					extra: extraData
+				});
+			}
+			return response;
+		};
+
+		/*
+		Add a logout endpoint to the API
+		After the user is logged out, the onLoggedOut hook is called (see Restfully.configure() for
+		adding hook).
+		*/
+		return this.addRoute('logout', {
+			authRequired: true
+		}, {
+			get() {
+				console.warn('Warning: Default logout via GET will be removed in Restivus v1.0. Use POST instead.');
+				console.warn('    See https://github.com/kahmali/meteor-restivus/issues/100');
+				return logout.call(this);
+			},
+			post: logout
+		});
+	}
 }
+
 
 RocketChat.API = {};
 
@@ -180,17 +354,31 @@ const getUserAuth = function _getUserAuth() {
 	};
 };
 
-RocketChat.API.v1 = new API({
-	version: 'v1',
-	useDefaultAuth: true,
-	prettyJson: true,
-	enableCors: false,
-	auth: getUserAuth()
+const createApi = function(enableCors) {
+	if (!RocketChat.API.v1 || RocketChat.API.v1._config.enableCors !== enableCors) {
+		RocketChat.API.v1 = new API({
+			version: 'v1',
+			useDefaultAuth: true,
+			prettyJson: process.env.NODE_ENV === 'development',
+			enableCors,
+			auth: getUserAuth()
+		});
+	}
+
+	if (!RocketChat.API.default || RocketChat.API.default._config.enableCors !== enableCors) {
+		RocketChat.API.default = new API({
+			useDefaultAuth: true,
+			prettyJson: process.env.NODE_ENV === 'development',
+			enableCors,
+			auth: getUserAuth()
+		});
+	}
+};
+
+// register the API to be re-created once the CORS-setting changes.
+RocketChat.settings.get('API_Enable_CORS', (key, value) => {
+	createApi(value);
 });
 
-RocketChat.API.default = new API({
-	useDefaultAuth: true,
-	prettyJson: true,
-	enableCors: false,
-	auth: getUserAuth()
-});
+// also create the API immediately
+createApi(!!RocketChat.settings.get('API_Enable_CORS'));
