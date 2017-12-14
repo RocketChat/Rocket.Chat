@@ -6,6 +6,8 @@ this.modal = {
 		config.confirmButtonText = config.confirmButtonText || t('Send');
 		config.cancelButtonText = config.cancelButtonText || t('Cancel');
 		config.closeOnConfirm = config.closeOnConfirm == null ? true : config.closeOnConfirm;
+		config.showConfirmButton = config.showConfirmButton == null ? true : config.showConfirmButton;
+		config.showFooter = config.showConfirmButton === true || config.showCancelButton === true;
 
 		if (config.type === 'input') {
 			config.input = true;
