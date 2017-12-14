@@ -131,6 +131,7 @@ Package.onUse(function(api) {
 
 	// hooks
 	api.addFiles('server/hooks/externalMessage.js', 'server');
+	api.addFiles('server/hooks/leadCapture.js', 'server');
 	api.addFiles('server/hooks/markRoomResponded.js', 'server');
 	api.addFiles('server/hooks/offlineMessage.js', 'server');
 	api.addFiles('server/hooks/RDStation.js', 'server');
