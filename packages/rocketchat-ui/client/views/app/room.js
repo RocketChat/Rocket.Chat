@@ -815,6 +815,8 @@ Template.room.onCreated(function() {
 			ChatMessage.update({ rid: this.data._id, 'u._id': role.u._id }, { $pull: { roles: role._id } }, { multi: true });
 		}
 	});
+
+	this.sendToBottomIfNecessary = () => {};
 }); // Update message to re-render DOM
 
 Template.room.onDestroyed(function() {
