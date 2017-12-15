@@ -121,7 +121,7 @@ button {
 	&::before {
 		position: absolute;
 		z-index: 1;
-		top: 0;
+		top: -10px;
 		left: 0;
 
 		width: 100%;
@@ -130,12 +130,14 @@ button {
 		content: "";
 
 		background: var(--rc-color-error);
+
+		pointer-events: none;
 	}
 
 	&::after {
 		position: absolute;
 		z-index: 2;
-		top: -10px;
+		top: -20px;
 		right: 0;
 
 		padding: 0 1rem;
@@ -148,6 +150,8 @@ button {
 		background: #ffffff;
 
 		font-size: 10px;
+
+		pointer-events: none;
 	}
 }
 
