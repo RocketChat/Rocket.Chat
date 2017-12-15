@@ -1,3 +1,20 @@
+<a name="0.60.0-rc.3"></a>
+# 0.60.0-rc.3 (2017-12-15)
+
+
+### Bug Fixes
+
+- [#9062](https://github.com/RocketChat/Rocket.Chat/pull/9062) Update Rocket.Chat for sandstorm
+
+
+<details>
+<summary>Others</summary>
+
+- [#9144](https://github.com/RocketChat/Rocket.Chat/pull/9144) Fix: Messages being displayed in reverse order
+</details>
+
+
+
 <a name="0.60.0-rc.2"></a>
 # 0.60.0-rc.2 (2017-12-15)
 
