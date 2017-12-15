@@ -5,6 +5,7 @@ this.modal = {
 	open(config = {}, fn) {
 		config.confirmButtonText = config.confirmButtonText || t('Send');
 		config.cancelButtonText = config.cancelButtonText || t('Cancel');
+		config.closeOnConfirm = config.closeOnConfirm == null ? true : config.closeOnConfirm;
 		config.showConfirmButton = config.showConfirmButton == null ? true : config.showConfirmButton;
 		config.showFooter = config.showConfirmButton === true || config.showCancelButton === true;
 
@@ -48,6 +49,18 @@ this.modal = {
 		const errorEl = document.querySelector('.rc-modal__content-error');
 		errorEl.innerHTML = text;
 		errorEl.style.display = 'block';
+	},
+	onKeydown(e) {
+		e.preventDefault();
+		e.stopPropagation();
+
+		if (e.key === 'Enter') {
+			modal.confirm(true);
+		}
+
+		if (e.key === 'Escape') {
+			modal.close();
+		}
 	}
 };
 
@@ -65,29 +78,25 @@ Template.rc_modal.onRendered(function() {
 		this.data.onRendered();
 	}
 
-	document.addEventListener('keydown', function(e) {
-		e.preventDefault();
-		e.stopPropagation();
+	document.addEventListener('keydown', modal.onKeydown);
+});
 
-		if (e.key === 'Enter') {
-			modal.confirm(true);
-		}
-
-		if (e.key === 'Escape') {
-			modal.close();
-		}
-	}, {once: true});
+Template.rc_modal.onDestroyed(function() {
+	document.removeEventListener('keydown', modal.onKeydown);
 });
 
 Template.rc_modal.events({
 	'click .js-action'(e, instance) {
 		!this.action || this.action.call(instance.data.data, e, instance);
+		e.stopPropagation();
 		modal.close();
 	},
-	'click .js-close'() {
+	'click .js-close'(e) {
+		e.stopPropagation();
 		modal.close();
 	},
 	'click .js-confirm'(e, instance) {
+		e.stopPropagation();
 		if (instance.data.input) {
 			return modal.confirm($('.js-modal-input').val());
 		}
@@ -100,6 +109,7 @@ Template.rc_modal.events({
 		}
 
 		if (e.currentTarget === e.target) {
+			e.stopPropagation();
 			modal.close();
 		}
 	}
