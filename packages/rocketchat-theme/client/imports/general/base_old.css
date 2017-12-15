@@ -3093,6 +3093,11 @@
 		&:hover .edited {
 			display: none;
 		}
+
+	}
+
+	&.first-unread {
+		margin-top: 20px;
 	}
 
 	&.system .body {
