@@ -51,14 +51,15 @@ this.modal = {
 		errorEl.style.display = 'block';
 	},
 	onKeydown(e) {
-		e.preventDefault();
-		e.stopPropagation();
-
 		if (e.key === 'Enter') {
-			modal.confirm(true);
-		}
+			e.preventDefault();
+			e.stopPropagation();
 
-		if (e.key === 'Escape') {
+			modal.confirm(true);
+		} else if (e.key === 'Escape') {
+			e.preventDefault();
+			e.stopPropagation();
+
 			modal.close();
 		}
 	}
