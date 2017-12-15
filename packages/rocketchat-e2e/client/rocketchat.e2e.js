@@ -25,13 +25,6 @@ function getKeyFromLS(keyID) {
 // Load the keypairs from localstorage to make them ready for use.
 function loadKeyGlobalsFromLS() {
 
-	// Signal keys
-	RocketChat.E2EStorage.put('registrationId', parseInt(localStorage.getItem('registrationId')));
-	RocketChat.E2EStorage.put('identityKey', getKeyFromLS('identityKey'));
-	RocketChat.E2EStorage.storePreKey(RocketChat.E2EStorage.get('registrationId'), getKeyFromLS('preKey'));
-	RocketChat.E2EStorage.storeSignedPreKey(RocketChat.E2EStorage.get('registrationId'), getKeyFromLS('signedPreKey'));
-	RocketChat.E2EStorage.put(`signedPreKeySignature${ RocketChat.E2EStorage.get('registrationId') }`, str2ab(localStorage.getItem('signedPreKeySignature')));
-
 	// E2E's public-private keypairs
 	crypto.subtle.importKey('jwk', JSON.parse(localStorage.getItem('RSA-PrivKey')), {name: 'RSA-OAEP', modulusLength: 2048, publicExponent: new Uint8Array([0x01, 0x00, 0x01]), hash: {name: 'SHA-256'}}, true, ['decrypt']).then(function(key) {
 		RocketChat.E2EStorage.put('RSA-PrivKey', key);
@@ -43,11 +36,6 @@ function loadKeyGlobalsFromLS() {
 
 	// Store public keys in server
 	Meteor.call('addKeyToChain', {
-		'identityKey': ab2str(RocketChat.E2EStorage.get('identityKey').pubKey),
-		'preKey': ab2str(RocketChat.E2EStorage.loadPreKey(RocketChat.E2EStorage.get('registrationId')).pubKey),
-		'signedPreKey': ab2str(RocketChat.E2EStorage.loadSignedPreKey(RocketChat.E2EStorage.get('registrationId')).pubKey),
-		'signedPreKeySignature': ab2str(RocketChat.E2EStorage.get(`signedPreKeySignature${ RocketChat.E2EStorage.get('registrationId') }`)),
-		'registrationId': RocketChat.E2EStorage.get('registrationId'),
 		'RSA-PubKey': localStorage.getItem('RSA-PubKey')
 	});
 }
@@ -90,32 +78,15 @@ class E2E {
 		//   localStorage.clear();
 
 		// This is a new device for signal encryption
-		if (localStorage.getItem('registrationId') == null) {
-			const KeyHelper = libsignal.KeyHelper;
-			const registrationId = KeyHelper.generateRegistrationId();
-			localStorage.setItem('registrationId', registrationId);
-
-			KeyHelper.generateIdentityKeyPair().then(function(identityKeyPair) {
-				saveKeyToLS('identityKey', identityKeyPair);
-
-				KeyHelper.generatePreKey(registrationId).then(function(preKey) {
-					saveKeyToLS('preKey', preKey.keyPair);
-				});
-
-				KeyHelper.generateSignedPreKey(getKeyFromLS('identityKey'), registrationId).then(function(signedPreKey) {
-					saveKeyToLS('signedPreKey', signedPreKey.keyPair);
-					localStorage.setItem('signedPreKeySignature', ab2str(signedPreKey.signature));
-
-					promise_key = crypto.subtle.generateKey({name: 'RSA-OAEP', modulusLength: 2048, publicExponent: new Uint8Array([0x01, 0x00, 0x01]), hash: {name: 'SHA-256'}}, true, ['encrypt', 'decrypt']);
-					promise_key.then(function(key) {
-						crypto.subtle.exportKey('jwk', key.publicKey).then(function(result) {
-							localStorage.setItem('RSA-PubKey', JSON.stringify(result));
-							crypto.subtle.exportKey('jwk', key.privateKey).then(function(result) {
-								// All signal keys have been generated and stored.
-								localStorage.setItem('RSA-PrivKey', JSON.stringify(result));
-								loadKeyGlobalsFromLS();
-							});
-						});
+		if (localStorage.getItem('RSA-PubKey') == null) {
+			promise_key = crypto.subtle.generateKey({name: 'RSA-OAEP', modulusLength: 2048, publicExponent: new Uint8Array([0x01, 0x00, 0x01]), hash: {name: 'SHA-256'}}, true, ['encrypt', 'decrypt']);
+			promise_key.then(function(key) {
+				crypto.subtle.exportKey('jwk', key.publicKey).then(function(result) {
+					localStorage.setItem('RSA-PubKey', JSON.stringify(result));
+					crypto.subtle.exportKey('jwk', key.privateKey).then(function(result) {
+						// All signal keys have been generated and stored.
+						localStorage.setItem('RSA-PrivKey', JSON.stringify(result));
+						loadKeyGlobalsFromLS();
 					});
 				});
 			});
@@ -221,47 +192,7 @@ Meteor.startup(function() {
 
 					return decryptedMsg;
 				}
-			}			else {
-				// Control should never reach here as both cases (private group and direct) have been covered above.
-				// This is for future, in case of Signal integration.
-				const peerRegistrationId = e2eRoom.peerRegistrationId;
-				const existingSession = RocketChat.E2EStorage.sessionExists(peerRegistrationId);
-				if (message.notification) {
-					message.msg = t('Encrypted_message');
-					return Promise.resolve(message);
-				} else {
-					const otrRoom = RocketChat.E2E.getInstanceByRoomId(message.rid);
-
-					// If existing signal session exists
-					if (existingSession) {
-						return otrRoom.decrypt(message.msg)
-							.then((data) => {
-								const {_id, text, ack} = data;
-								message._id = _id;
-								message.msg = text;
-								message.ack = ack;
-								if (data.ts) {
-									message.ts = data.ts;
-								}
-								return message;
-							});
-
-					}					else {
-						// Decrypt message using special first-time decryption function
-						return e2eRoom.decryptInitial(message.msg)
-							.then((data) => {
-								const {_id, text, ack} = data;
-								message._id = _id;
-								message.msg = text;
-								message.ack = ack;
-								if (data.ts) {
-									message.ts = data.ts;
-								}
-								return message;
-							});
-					}
-				}
-			}
+			}	
 		}		else {
 			// Message is not encrypted.
 			try {

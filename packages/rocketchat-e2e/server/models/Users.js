@@ -1,16 +1,16 @@
 RocketChat.models.Users.addKeyToChain = function(key) {
 	const userId = Meteor.userId();
 	const query = { _id: userId };
-	this.update(query, { $set: { 'lastUsedIdentityKey': key.identityKey } });
+	// this.update(query, { $set: { 'lastUsedIdentityKey': key.identityKey } });
 	this.update(query, { $set: { 'RSA-PubKey': key['RSA-PubKey'] } });
-	this.update(query, { $addToSet: { 'publicKeychain' : [ key.identityKey, key.signedPreKey, key.signedPreKeySignature, key.preKey, key.registrationId ] } });
+	// this.update(query, { $addToSet: { 'publicKeychain' : [ key.identityKey, key.signedPreKey, key.signedPreKeySignature, key.preKey, key.registrationId ] } });
 };
 
 RocketChat.models.Users.fetchKeychain = function(userId) {
-	const identityKey = this.findOne({ _id: userId }).lastUsedIdentityKey;
-	const publicKeychain = this.findOne({ _id: userId }).publicKeychain;
+	// const identityKey = this.findOne({ _id: userId }).lastUsedIdentityKey;
+	// const publicKeychain = this.findOne({ _id: userId }).publicKeychain;
 	const RSAPubKey = this.findOne({ _id: userId })['RSA-PubKey'];
-	return JSON.stringify({ 'lastUsedIdentityKey': identityKey, 'RSA-PubKey': RSAPubKey, publicKeychain });
+	return JSON.stringify({ 'RSA-PubKey': RSAPubKey });
 };
 
 RocketChat.models.Users.emptyKeychain = function() {
