@@ -121,7 +121,7 @@ button {
 	&::before {
 		position: absolute;
 		z-index: 1;
-		top: -10px;
+		top: 0;
 		left: 0;
 
 		width: 100%;
@@ -137,14 +137,15 @@ button {
 	&::after {
 		position: absolute;
 		z-index: 2;
-		top: -20px;
+		top: -6px;
 		right: 0;
 
-		padding: 0 1rem;
+		padding: 0 5px;
+		padding-bottom: 2px;
 
 		content: attr(data-unread-text);
 		text-align: right;
-		text-transform: uppercase;
+		text-transform: lowercase;
 
 		color: var(--rc-color-error);
 		background: #ffffff;
@@ -152,6 +153,8 @@ button {
 		font-size: 10px;
 
 		pointer-events: none;
+		line-height: 10px;
+		border-radius: 2px;
 	}
 }
 
@@ -166,7 +169,7 @@ button {
 		}
 
 		&::after {
-			top: -30px;
+			top: -26px;
 		}
 	}
 }
