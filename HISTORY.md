@@ -1,3 +1,25 @@
+<a name="0.60.0-rc.2"></a>
+# 0.60.0-rc.2 (2017-12-15)
+
+
+### Bug Fixes
+
+- [#9091](https://github.com/RocketChat/Rocket.Chat/pull/9091) Channel page error
+- [#9121](https://github.com/RocketChat/Rocket.Chat/pull/9121) Do not block room while loading history
+- [#9134](https://github.com/RocketChat/Rocket.Chat/pull/9134) Importers not recovering when an error occurs
+
+
+<details>
+<summary>Others</summary>
+
+- [#9137](https://github.com/RocketChat/Rocket.Chat/pull/9137) Fix: Clear all unreads modal not closing after confirming
+- [#9136](https://github.com/RocketChat/Rocket.Chat/pull/9136) Fix: Confirmation modals showing `Send` button
+- [#9138](https://github.com/RocketChat/Rocket.Chat/pull/9138) Fix: Message action quick buttons drops if "new message" divider is being shown
+- [#9120](https://github.com/RocketChat/Rocket.Chat/pull/9120) Fix: Multiple unread indicators
+</details>
+
+
+
 <a name="0.60.0-rc.1"></a>
 # 0.60.0-rc.1 (2017-12-13)
 
