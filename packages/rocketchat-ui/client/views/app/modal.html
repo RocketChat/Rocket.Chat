@@ -38,9 +38,9 @@
 						<div class="rc-modal__content-error"></div>
 					{{/if}}
 				</main>
-				<div class="rc-modal__footer">
+				<div class="rc-modal__footer {{#unless showFooter}}rc-modal__footer--empty{{/unless}}">
 					<input class="rc-button rc-button--nude js-close {{#unless showCancelButton}}rc-button--invisible{{/unless}}" type="submit" data-button="cancel" value="{{cancelButtonText}}">
-					<input style="background-color:{{confirmButtonColor}}" class="rc-button rc-button--primary js-confirm" type="submit" data-button="create" value="{{confirmButtonText}}">
+					<input style="background-color:{{confirmButtonColor}}" class="rc-button rc-button--primary js-confirm {{#unless showConfirmButton}}rc-button--invisible{{/unless}}" type="submit" data-button="create" value="{{confirmButtonText}}">
 				</div>
 			{{/if}}
 		</div>
