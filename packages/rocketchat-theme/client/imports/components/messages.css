@@ -79,10 +79,6 @@
 	padding: 0;
 }
 
-.first-unread .message-actions {
-	top: 18px;
-}
-
 .rtl .message-actions {
 	right: auto;
 	left: 2px;
