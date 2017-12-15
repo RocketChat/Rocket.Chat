@@ -3,9 +3,9 @@
 RocketChat.Sandstorm.offerUiView = function() {};
 
 if (process.env.SANDSTORM === '1') {
-	const Capnp = Npm.require('capnp');
-	const Powerbox = Npm.require('sandstorm/powerbox.capnp');
-	const Grain = Npm.require('sandstorm/grain.capnp');
+	const Capnp = Npm.require('/node_modules/capnp.js');
+	const Powerbox = Capnp.importSystem('sandstorm/powerbox.capnp');
+	const Grain = Capnp.importSystem('sandstorm/grain.capnp');
 
 	RocketChat.Sandstorm.offerUiView = function(token, serializedDescriptor, sessionId) {
 		const httpBridge = getHttpBridge();
