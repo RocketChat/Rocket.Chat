@@ -160,7 +160,7 @@ jparker:gravatar
 kadira:blaze-layout
 kadira:flow-router
 keepnox:perfect-scrollbar
-#kenton:accounts-sandstorm
+kenton:accounts-sandstorm
 mizzao:autocomplete
 mizzao:timesync
 mrt:reactive-store
