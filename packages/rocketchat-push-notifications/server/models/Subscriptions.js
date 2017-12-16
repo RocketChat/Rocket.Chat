@@ -130,6 +130,22 @@ RocketChat.models.Subscriptions.updateHideUnreadStatusById = function(_id, hideU
 	return this.update(query, update);
 };
 
+RocketChat.models.Subscriptions.updateDoNotDisturbById = function(_id, doNotDisturb) {
+	return this.update(_id, {
+		$set: {
+			doNotDisturb
+		}
+	});
+};
+
+RocketChat.models.Subscriptions.updateSnoozeNotificationsById = function(_id, snoozeNotifications) {
+	return this.update(_id, {
+		$set: {
+			snoozeNotifications
+		}
+	});
+};
+
 RocketChat.models.Subscriptions.findAlwaysNotifyAudioUsersByRoomId = function(roomId) {
 	const query = {
 		rid: roomId,
@@ -192,7 +208,7 @@ RocketChat.models.Subscriptions.findNotificationPreferencesByRoom = function(roo
 		];
 	}
 
-	return this.find(query, { fields: { 'u._id': 1, audioNotifications: 1, audioNotificationValue: 1, desktopNotificationDuration: 1, desktopNotifications: 1, mobilePushNotifications: 1, disableNotifications: 1 } });
+	return this.find(query, { fields: { 'u._id': 1, audioNotifications: 1, audioNotificationValue: 1, desktopNotificationDuration: 1, desktopNotifications: 1, mobilePushNotifications: 1, disableNotifications: 1, snoozeNotifications: 1, doNotDisturb: 1 } });
 };
 
 RocketChat.models.Subscriptions.findWithSendEmailByRoomId = function(roomId) {

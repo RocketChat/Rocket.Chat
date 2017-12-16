@@ -13,6 +13,86 @@
 					</div>
 				</li>
 				{{#if $neq disableNotifications true}}
+					<li class="snooze-notifications">
+						<label>{{_ "Snooze_Notifications_Label"}}</label>
+						<div class="input checkbox toggle">
+							<input type="checkbox" id="snoozeNotifications" name="snoozeNotifications" value="1" checked="{{snoozeNotificationsIsValid}}" />
+							<label for="snoozeNotifications"></label>
+						</div>
+						{{#if snoozeNotificationsIsValid }}
+							<li class="snooze-notifications-time-period">
+								<div>
+									{{#if editing 'snoozeNotifications'}}
+										<label><input type="radio" name="snoozeNotificationsOptions" value="20" checked="{{$eq snoozeNotifications.duration 20}}"/> {{_ "Snooze_Notifications_20_Minutes_Option"}}</label>
+										<label><input type="radio" name="snoozeNotificationsOptions" value="60" checked="{{$eq snoozeNotifications.duration 60}}"/> {{_ "Snooze_Notifications_1_Hour_Option"}}</label>
+										<label><input type="radio" name="snoozeNotificationsOptions" value="120" checked="{{$eq snoozeNotifications.duration 120}}"/> {{_ "Snooze_Notifications_2_Hours_Option"}}</label>
+										<label><input type="radio" name="snoozeNotificationsOptions" value="240" checked="{{$eq snoozeNotifications.duration 240}}"/> {{_ "Snooze_Notifications_4_Hours_Option"}}</label>
+										<label><input type="radio" name="snoozeNotificationsOptions" value="480" checked="{{$eq snoozeNotifications.duration 480}}"/> {{_ "Snooze_Notifications_8_Hours_Option"}}</label>
+										<label><input type="radio" name="snoozeNotificationsOptions" value="1440" checked="{{$eq snoozeNotifications.duration 1440}}"/> {{_ "Snooze_Notifications_24_Hours_Option"}}</label>
+
+										<button type="button" class="button cancel">{{_ "Cancel"}}</button>
+										<button type="button" class="button primary save">{{_ "Save"}}</button>
+									{{else}}
+										{{#if snoozeNotifications.duration}}
+											<span class="current-setting">{{snoozeNotificationsInfo.description}} - {{_ "Snooze_Notifications_Final_Time_Label"}} {{snoozeNotificationsInfo.to}}<i class="icon-pencil" data-edit="snoozeNotifications"></i></span>
+										{{/if}}
+									{{/if}}
+								</div>
+							</li>
+						{{/if}}
+					</li>
+
+					<li class="do-not-disturb">
+						<label>{{_ "Do_Not_Disturb_Label"}}</label>
+						<div class="input checkbox toggle">
+							<input type="checkbox" id="doNotDisturb" name="doNotDisturb" value="1" checked="{{doNotDisturbIsValid}}" />
+							<label for="doNotDisturb"></label>
+						</div>
+						{{#if doNotDisturbIsValid}}
+							<li class="do-not-disturb">
+								<div>
+									{{#if editing 'doNotDisturb'}}
+										<section id="do-not-disturb-initial-period-select">
+											<label>{{_ "Do_Not_Disturb_Initial_Time_Label"}}</label>
+											<label>
+												<select name="doNotDisturbInitialTime">
+													{{#each selectHoursOptions}}
+														<option value="{{this}}" selected="{{$eq this doNotDisturb.initialTime}}">{{this}}</option>
+													{{/each}}
+												</select>
+											</label>
+
+											<label>{{_ "Do_Not_Disturb_Final_Time_Label"}}</label>
+											<label>
+												<select name="doNotDisturbFinalTime">
+													{{#each selectHoursOptions}}
+														<option value="{{this}}" selected="{{$eq this doNotDisturb.finalTime}}">{{this}}</option>
+													{{/each}}
+												</select>
+											</label>
+
+											<label>{{_ "Do_Not_Disturb_Repeat_For_Label"}}</label>
+											<label>
+												<select name="doNotDisturbRepeatFor">
+													<option value="1 day" selected="{{$eq doNotDisturb.repeatFor '1 day'}}">{{_ "Do_Not_Disturb_Repeat_For_1_Day_Option"}}</option>
+													<option value="1 week" selected="{{$eq doNotDisturb.repeatFor '1 week'}}">{{_ "Do_Not_Disturb_Repeat_For_1_Week_Option"}}</option>
+													<option value="1 month" selected="{{$eq doNotDisturb.repeatFor '1 month'}}">{{_ "Do_Not_Disturb_Repeat_For_1_Month_Option"}}</option>
+													<option value="1 year" selected="{{$eq doNotDisturb.repeatFor '1 year'}}">{{_ "Do_Not_Disturb_Repeat_For_1_Year_Option"}}</option>
+													<option value="every day" selected="{{$eq doNotDisturb.repeatFor 'every day'}}">{{_ "Do_Not_Disturb_Repeat_For_Every_Day_Option"}}</option>
+												</select>
+											</label>
+										</section>
+
+										<button type="button" class="button cancel">{{_ "Cancel"}}</button>
+										<button type="button" class="button primary save">{{_ "Save"}}</button>
+									{{else}}
+										<span class="current-setting">{{_ "Do_Not_Disturb_Initial_Time_Label"}} {{doNotDisturbInfo.initialTime}} {{_ "Do_Not_Disturb_Final_Time_Label"}} {{doNotDisturbInfo.finalTime}} ({{doNotDisturbInfo.repeatFor}}{{#if doNotDisturbInfo.limitDateTime}} - {{_ "Do_Not_Disturb_Repeat_For_Limit_Date_Label"}} {{doNotDisturbInfo.limitDateTime}}{{/if}}) <i class="icon-pencil" data-edit="doNotDisturb"></i></span>
+									{{/if}}
+								</div>
+							</li>
+						{{/if}}
+					</li>
+
 					<li class="audio-notifications">
 						<label>{{_ "Audio"}}</label>
 						<div>
@@ -65,7 +145,7 @@
 					<li class="desktop-notifications-duration">
 						<label>{{_ "Desktop_Notifications_Duration"}}</label>
 						<div>
-							<span class="current-setting">{{#if desktopNotificationDuration}}{{desktopNotificationDuration}} {{_"seconds"}}{{else}}{{_ "Use_User_Preferences_or_Global_Settings"}}{{/if}}</span>
+							<span class="current-setting">{{#if desktopNotificationDuration}}{{desktopNotificationDuration}} {{_ "seconds"}}{{else}}{{_ "Use_User_Preferences_or_Global_Settings"}}{{/if}}</span>
 						</div>
 					</li>
 					{{/unless}}

@@ -6,13 +6,43 @@ Meteor.methods({
 
 		check(rid, String);
 		check(field, String);
-		check(value, String);
 
-		if (['audioNotifications', 'desktopNotifications', 'mobilePushNotifications', 'emailNotifications', 'unreadAlert', 'disableNotifications', 'hideUnreadStatus'].indexOf(field) === -1) {
+		if (field === 'doNotDisturb') {
+			if (value && value.initialTime && value.finalTime) {
+				check(value, {
+					initialTime: String,
+					finalTime: String,
+					repeatFor: String,
+					limitDateTime: Match.Maybe(Date)
+				});
+
+				const timeFormat = new RegExp('([01]?[0-9]|2[0-3]):[0-5][0-9]');
+
+				if (!timeFormat.test(value.initialTime) || !timeFormat.test(value.finalTime)) {
+					throw new Meteor.Error('error-invalid-time-format', 'Invalid time format', { method: 'saveNotificationSettings' });
+				}
+			} else {
+				value = {};
+			}
+		} else if (field === 'snoozeNotifications') {
+			if (value && value.initialDateTime && value.finalDateTime) {
+				check(value, {
+					duration: Match.Maybe(Number),
+					initialDateTime: Date,
+					finalDateTime: Date
+				});
+			} else {
+				value = {};
+			}
+		} else {
+			check(value, String);
+		}
+
+		if (['audioNotifications', 'desktopNotifications', 'mobilePushNotifications', 'emailNotifications', 'unreadAlert', 'disableNotifications', 'hideUnreadStatus', 'snoozeNotifications', 'doNotDisturb'].indexOf(field) === -1) {
 			throw new Meteor.Error('error-invalid-settings', 'Invalid settings field', { method: 'saveNotificationSettings' });
 		}
 
-		if (field !== 'hideUnreadStatus' && field !== 'disableNotifications' && ['all', 'mentions', 'nothing', 'default'].indexOf(value) === -1) {
+		if (field !== 'hideUnreadStatus' && field !== 'disableNotifications' && field !== 'snoozeNotifications' && field !== 'doNotDisturb' && ['all', 'mentions', 'nothing', 'default'].indexOf(value) === -1) {
 			throw new Meteor.Error('error-invalid-settings', 'Invalid settings value', { method: 'saveNotificationSettings' });
 		}
 
@@ -42,6 +72,12 @@ Meteor.methods({
 				break;
 			case 'hideUnreadStatus':
 				RocketChat.models.Subscriptions.updateHideUnreadStatusById(subscription._id, value === '1' ? true : false);
+				break;
+			case 'doNotDisturb':
+				RocketChat.models.Subscriptions.updateDoNotDisturbById(subscription._id, value);
+				break;
+			case 'snoozeNotifications':
+				RocketChat.models.Subscriptions.updateSnoozeNotificationsById(subscription._id, value);
 				break;
 		}
 

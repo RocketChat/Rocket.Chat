@@ -206,13 +206,45 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room, userId) {
 	subscriptions.forEach((s) => {
 		userIds.push(s.u._id);
 	});
+
 	const users = {};
-	RocketChat.models.Users.findUsersByIds(userIds, { fields: { 'settings.preferences': 1 } }).forEach((user) => {
-		users[user._id] = user;
+	RocketChat.models.Users.findUsersByIds(userIds, { fields: { 'settings.preferences.audioNotifications': 1, 'settings.preferences.desktopNotifications': 1, 'settings.preferences.mobileNotifications': 1, 'settings.preferences.snoozeNotifications': 1, 'settings.preferences.doNotDisturb': 1 } }).forEach((user) => {
+		users[user._id] = user.settings;
 	});
 
 	subscriptions.forEach(subscription => {
-		if (subscription.disableNotifications) {
+		const preferences = users[subscription.u._id] ? users[subscription.u._id].preferences || {} : {};
+
+		let snoozeNotifications = !!(subscription.snoozeNotifications && subscription.snoozeNotifications.duration && subscription.snoozeNotifications.finalDateTime && moment().isBefore(subscription.snoozeNotifications.finalDateTime));
+
+		if (!snoozeNotifications) {
+			snoozeNotifications = !!(preferences.snoozeNotifications && preferences.snoozeNotifications.duration && preferences.snoozeNotifications.finalDateTime && moment().isBefore(preferences.snoozeNotifications.finalDateTime));
+		}
+
+		let doNotDisturb = false;
+
+		const doNotDisturbValidate = (doNotDisturbObject) => {
+			if (doNotDisturbObject.repeatFor && (doNotDisturbObject.repeatFor === 'every day' || (doNotDisturbObject.limitDateTime && moment().isBefore(moment(doNotDisturbObject.limitDateTime).utcOffset(user.utcOffset))))) {
+				const initialMoment = moment(doNotDisturbObject.initialTime, 'HH:mm').utcOffset(user.utcOffset);
+				let finalMoment = moment(doNotDisturbObject.finalTime, 'HH:mm').utcOffset(user.utcOffset);
+
+				if (initialMoment.isAfter(finalMoment)) {
+					finalMoment = finalMoment.add(1, 'day');
+				}
+
+				doNotDisturb = moment().isBetween(initialMoment, finalMoment);
+			}
+		};
+
+		if (subscription.doNotDisturb && subscription.doNotDisturb.initialTime && subscription.doNotDisturb.finalTime) {
+			doNotDisturbValidate(subscription.doNotDisturb);
+		}
+
+		if (!doNotDisturb && preferences.doNotDisturb && preferences.doNotDisturb.initialTime && preferences.doNotDisturb.finalTime) {
+			doNotDisturbValidate(preferences.doNotDisturb);
+		}
+
+		if (subscription.disableNotifications || snoozeNotifications || doNotDisturb) {
 			settings.dontNotifyDesktopUsers.push(subscription.u._id);
 			settings.dontNotifyMobileUsers.push(subscription.u._id);
 			settings.dontNotifyAudioUsers.push(subscription.u._id);
@@ -228,11 +260,13 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room, userId) {
 		if (audioNotifications === 'all' && !disableAllMessageNotifications) {
 			settings.alwaysNotifyAudioUsers.push(subscription.u._id);
 		}
+
 		if (desktopNotifications === 'all' && !disableAllMessageNotifications) {
 			settings.alwaysNotifyDesktopUsers.push(subscription.u._id);
 		} else if (desktopNotifications === 'nothing') {
 			settings.dontNotifyDesktopUsers.push(subscription.u._id);
 		}
+
 		if (mobilePushNotifications === 'all' && !disableAllMessageNotifications) {
 			settings.alwaysNotifyMobileUsers.push(subscription.u._id);
 		} else if (mobilePushNotifications === 'nothing') {
@@ -375,7 +409,7 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room, userId) {
 
 		if (mentionIds.length + settings.alwaysNotifyAudioUsers.length > 0) {
 			let audioMentionIds = _.union(mentionIds, settings.alwaysNotifyAudioUsers);
-			audioMentionIds = _.difference(audioMentionIds, userIdsToNotify);
+			audioMentionIds = _.difference(audioMentionIds, settings.dontNotifyAudioUsers);
 
 			let usersOfAudioMentions = RocketChat.models.Users.find({ _id: { $in: audioMentionIds }, statusConnection: {
 				$ne:'offline'

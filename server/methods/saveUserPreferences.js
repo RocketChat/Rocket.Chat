@@ -1,3 +1,5 @@
+import moment from 'moment';
+
 Meteor.methods({
 	saveUserPreferences(settings) {
 		check(settings, Object);
@@ -86,6 +88,42 @@ Meteor.methods({
 			preferences.hideFlexTab = settings.hideFlexTab === '1';
 			preferences.sendOnEnter = settings.sendOnEnter;
 			preferences.roomCounterSidebar = settings.roomCounterSidebar === '1';
+
+			if (settings.snoozeNotificationsDuration && settings.snoozeNotificationsDuration > 0) {
+				const initialDateTime = new Date();
+
+				preferences.snoozeNotifications = {
+					duration: settings.snoozeNotificationsDuration,
+					initialDateTime,
+					finalDateTime: (moment(initialDateTime).add(settings.snoozeNotificationsDuration, 'minutes')).toDate()
+				};
+			} else {
+				preferences.snoozeNotifications = {};
+			}
+
+			if (settings.doNotDisturbInitialTime && settings.doNotDisturbFinalTime) {
+				preferences.doNotDisturb = {
+					initialTime: settings.doNotDisturbInitialTime,
+					finalTime: settings.doNotDisturbFinalTime,
+					repeatFor: settings.doNotDisturbRepeatFor
+				};
+
+				if (preferences.doNotDisturb.repeatFor && preferences.doNotDisturb.repeatFor !== '') {
+					const addLimitDateTime = (durationValue, durationType) => {
+						return preferences.doNotDisturb.limitDateTime = moment(`${ moment().format('YYYY-MM-DD') } ${ preferences.doNotDisturb.finalTime }`, 'YYYY-MM-DD HH:mm').add(durationValue, durationType).toDate();
+					};
+
+					switch (preferences.doNotDisturb.repeatFor) {
+						case '1 day': addLimitDateTime(1, 'day'); break;
+						case '1 week': addLimitDateTime(1, 'week'); break;
+						case '1 month': addLimitDateTime(1, 'month'); break;
+						case '1 year': addLimitDateTime(1, 'year'); break;
+						case 'every day': preferences.doNotDisturb.limitDateTime = undefined;
+					}
+				}
+			} else {
+				preferences.doNotDisturb = {};
+			}
 
 			RocketChat.models.Users.setPreferences(Meteor.userId(), preferences);
 
