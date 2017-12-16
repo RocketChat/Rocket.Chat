@@ -1652,6 +1652,7 @@
   "Should_exists_a_user_with_this_username": "The user must already exist.",
   "Show_agent_email": "Show agent email",
   "Show_all": "Show All",
+  "Show_hidden_rooms_when_unread_messages": "Show hidden rooms when unread messages",
   "Show_room_counter_on_sidebar": "Show room counter on sidebar",
   "Show_more": "Show more",
   "show_offline_users": "show offline users",

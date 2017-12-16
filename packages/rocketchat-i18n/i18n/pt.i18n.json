@@ -1066,6 +1066,7 @@
   "Should_be_a_URL_of_an_image": "Deve ser uma URL de uma imagem.",
   "Should_exists_a_user_with_this_username": "O usuário já deve existir.",
   "Show_all": "Mostrar tudo",
+  "Show_hidden_rooms_when_unread_messages": "Mostrar salas escondidas ao receber mensagens",
   "Show_more": "Mostrar mais",
   "show_offline_users": "mostrar usuários offline",
   "Show_only_online": "Mostrar apenas online",
