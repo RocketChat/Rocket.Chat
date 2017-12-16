@@ -1,3 +1,5 @@
+import _ from 'underscore';
+
 if (_.isUndefined(RocketChat.models.Subscriptions)) {
 	RocketChat.models.Subscriptions = {};
 }

@@ -97,7 +97,7 @@
   "Accounts_RegistrationForm_Public": "суспільного",
   "Accounts_RegistrationForm_Secret_URL": "секретний URL",
   "Accounts_RegistrationForm_SecretURL": "Форма реєстрації Секретний URL",
-  "Accounts_RegistrationForm_SecretURL_Description": "Ви повинні забезпечити випадкову рядок, яка буде додана до вашої реєстрації URL. Приклад: https://demo.rocket.chat/register/[secret_hash]",
+  "Accounts_RegistrationForm_SecretURL_Description": "Ви повинні забезпечити випадкову рядок, яка буде додана до вашої реєстрації URL. Приклад: https://open.rocket.chat/register/[secret_hash]",
   "Accounts_RequireNameForSignUp": "Вимагати ім'я для Signup",
   "Accounts_ShowFormLogin": "Показати на основі форм Ввійти",
   "Accounts_UseDefaultBlockedDomainsList": "Використовувати за замовчуванням Заблоковані Список доменів",

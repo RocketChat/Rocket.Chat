@@ -1,3 +1,4 @@
+import _ from 'underscore';
 const dns = Npm.require('dns');
 
 let emailDomainBlackList = [];

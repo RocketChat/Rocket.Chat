@@ -1,4 +1,5 @@
 /* globals logger */
+import _ from 'underscore';
 
 class SlackBridge {
 
